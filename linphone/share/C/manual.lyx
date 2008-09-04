@@ -1,0 +1,654 @@
+#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
+\lyxformat 245
+\begin_document
+\begin_header
+\textclass docbook
+\language english
+\inputencoding default
+\fontscheme default
+\graphics default
+\paperfontsize default
+\spacing single
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language french
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes true
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Linphone's User Manual
+\end_layout
+
+\begin_layout Date
+July, 24th 2004
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+Linphone is a simple web-phone.
+ It allows you to make two party-calls using an IP network like the internet.
+ What you need to run Linphone is :
+\end_layout
+
+\begin_layout Itemize
+a computer running the GNU/Linux operating system
+\end_layout
+
+\begin_layout Itemize
+gtk+>=2.4, in order to use the graphical interface (highly recommended!).
+ The console-only application (linphonec) does not need gtk but libreadline.
+\end_layout
+
+\begin_layout Itemize
+a sound card correctly configured to use the ALSA linux sound system
+\end_layout
+
+\begin_layout Itemize
+headphones or speakers
+\end_layout
+
+\begin_layout Itemize
+a microphone
+\end_layout
+
+\begin_layout Itemize
+a connection to a network (the Internet for example), using a modem, an
+ ethernet card, a Wifi adapter or anything else
+\end_layout
+
+\begin_layout Standard
+Since linphone needs to use the computer's sound system,  before running
+ linphone, please make sure that no other application is using the audio
+ device.
+ 
+\end_layout
+
+\begin_layout Standard
+Linphone is free, it is released under 
+\emph on
+GNU Public License
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+WARNING: This software is provided with NO WARRANTY see file COPYING for
+ details.
+ This means you SHOULD NOT use linphone for confidential conversations:
+ there is NO encryption, so it is easy for any bad-intentioned person to
+ monitor the audio streams, and thus your conversation.
+ Note also that it is not recommended to run Linphone as root.
+\end_layout
+
+\begin_layout Section
+Running linphone
+\end_layout
+
+\begin_layout Standard
+Linphone can be run in three different ways:
+\end_layout
+
+\begin_layout Itemize
+as a normal application: in the gnome menu, linphone should appear in the
+ network sub-menu.
+ If you are not running gnome, you can execute linphone directly by typing
+ linphone in a terminal, for example.
+ Please note, that when linphone is not running, you cannot receive calls.
+\end_layout
+
+\begin_layout Itemize
+as a gnome applet: add the linphone applet by right-clicking on the gnome
+ panel, linphone appears in the network menu.
+ When linphone is running silently as a gnome panel, it is able to receive
+ calls even if its window is not shown.
+ If you want the main linphone window to appear, click on the applet.
+ When somebody calls you, the main window is shown and you will hear the
+ ring normally.
+\end_layout
+
+\begin_layout Section
+Making a call
+\end_layout
+
+\begin_layout Subsection
+Basic principles
+\end_layout
+
+\begin_layout Standard
+Linphone uses the Session Initiation Protocol (SIP) to establish a connection
+ with a remote host.
+ In this protocol each caller or callee is identified by a SIP url: sip:user_nam
+e@host_name.
+ A SIP url's syntax like an email address, with a 
+\begin_inset Quotes sld
+\end_inset
+
+sip:
+\begin_inset Quotes sld
+\end_inset
+
+ prefix.
+\end_layout
+
+\begin_layout Standard
+User_name is probably your login account on a Unix machine, and host_name
+ is the machines fully qualified domain name (FQDN) or IP address.
+\end_layout
+
+\begin_layout Standard
+Note that SIP is a new telecommunication protocol designed to be simple,
+ and it is not compatible with H323 at all.
+\end_layout
+
+\begin_layout Subsection
+When IP address are not static, or not routable.
+\end_layout
+
+\begin_layout Standard
+For that purpose, you can register to a SIP provider or SIP proxy.
+ There exist several SIP proxies on the net, and some of them are free.
+ See, for example, http://iptel.org.
+ You'll have to get an account on the proxy and then tell linphone to use
+ it.
+ In this case, the user_name will assigned to you by the VoIP provider,
+ when you register, and host_name is the provider's host name (usually something
+ like sip.example.com).
+ 
+\end_layout
+
+\begin_layout Subsection
+Test trial: If you have no friends to call at the moment (because it is
+ too late for example), but would like to know if linphone is really working.
+\end_layout
+
+\begin_layout Standard
+\begin_inset LatexCommand \label{sipomatic}
+
+\end_inset
+
+Since version 0.3.0, linphone comes with a test program called '
+\emph on
+sipomatic
+\emph default
+'.
+ Sipomatic can answer automatically calls from linphone.
+ To do this:
+\end_layout
+
+\begin_layout Itemize
+run sipomatic from a terminal.
+ Sipomatic does not have a graphical interface, but you don't have to interact
+ with it, so it doesn't need one.
+ 
+\end_layout
+
+\begin_layout Itemize
+Then type the following SIP url in the main window of linphone: sip:robot@127.0.0.1
+:5064 .
+ 127.0.0.1 is the local address for your computer, and robot is the name to
+ use for calling sipomatic.
+ 5064 is the port that sipomatic is listening to.
+ Normally you should always use 5060 (i.e the default port when no port is
+ specified) to call somebody, but sipomatic is the exception: it runs on
+ port 5064.
+ The reason for this is that linphone itself already runs on 5060, and you
+ cannot have two applications running on the same port, at the same time
+ and on the same machine.
+\end_layout
+
+\begin_layout Itemize
+Then press the call button.
+ After one second, sipomatic should answer to your call and you should hear
+ a short announcement.
+\end_layout
+
+\begin_layout Section
+\begin_inset LatexCommand \label{params}
+
+\end_inset
+
+Call parameters
+\end_layout
+
+\begin_layout Subsection
+\begin_inset LatexCommand \label{paramnetwork}
+
+\end_inset
+
+Network
+\end_layout
+
+\begin_layout Standard
+Linphone allows you to set your firewall address (see section 7) or a stun
+ server address that might help linphone calling and receiving calls.
+\end_layout
+
+\begin_layout Standard
+Linphone supports ipv6: you can enable it by toggling the 
+\begin_inset Quotes fld
+\end_inset
+
+Enable ipv6
+\begin_inset Quotes frd
+\end_inset
+
+ checkbox.
+ However it can support Ipv6 and Ipv4 together.
+\end_layout
+
+\begin_layout Subsection
+\begin_inset LatexCommand \label{paramrtp}
+
+\end_inset
+
+RTP
+\end_layout
+
+\begin_layout Standard
+RTP (Real Time Protocol) is a protocol used to send media streams over networks.
+\end_layout
+
+\begin_layout Itemize
+RTP port: linphone uses default port 7078 to send and receive audio streams.
+ If you think port 7078 is used by another application, change it as you
+ wish.
+\end_layout
+
+\begin_layout Itemize
+Jitter compensation: This number represents the number of audio packets
+ linphone is waiting for before starting to play them.
+ If sometimes some audio packets are late, they have a greater chance to
+ be played.
+ Increase this parameter, if the other person's voice sounds 'chopped',
+ in order to improve the quality of the transmission.
+ This will however increase the delay (you will hear the remote user's talk
+ with a few seconds delay).
+ If, on the other hand, you are using a fast network, and you have good
+ audio drivers, you can set this parameters down to three packets, and you
+ will have a very small delay.
+\end_layout
+
+\begin_layout Subsection
+\begin_inset LatexCommand \label{paramsip}
+
+\end_inset
+
+SIP
+\end_layout
+
+\begin_layout Standard
+SIP (Session Initiation Protocol) is a protocol to establish and destroy
+ media sessions over a network.
+ In simple words, it's responsible for controlling calls.
+ It rings the remote user, initiates the call and terminates it when one
+ of the two parties hangs up.
+\end_layout
+
+\begin_layout Itemize
+SIP port: linphone uses default port 5060 to send and receive SIP packets.
+ It is highly recommended by SIP's RFC to use port 5060.
+ So, please don't change this unless you really know what you are doing.
+\end_layout
+
+\begin_layout Itemize
+Use registrar: toggle this button if you need the services of a remote SIP
+ server.
+ See section 
+\begin_inset Quotes eld
+\end_inset
+
+Registering on a remote server
+\begin_inset Quotes erd
+\end_inset
+
+ for details about this.
+\end_layout
+
+\begin_layout Subsection
+\begin_inset LatexCommand \label{paramcodec}
+
+\end_inset
+
+Codecs
+\end_layout
+
+\begin_layout Standard
+Codecs are algorithms especially designed to compress voice data.
+ For example, digitized voice in 16bit / 8000 Hz represents a data flow
+ of 128 kbits/second.
+ Using the GSM codec, this flow is reduced to 13 kbits/second, without significa
+nt loss of quality.
+ Currently the best bitrate/quality compromise is achieved by using the
+ speex codec.
+\end_layout
+
+\begin_layout Itemize
+Codec choice: linphone can use several codecs.
+ Use buttons at the bottom of the codec list to put them in order of preference.
+ Note, that according to your network connection type, some codecs are not
+ usable.
+ They appear in red and they are not selectable.
+ You can decide to use or not a usable codec (in blue) by changing its status
+ with the enable/disable buttons at the bottom of the list.
+\end_layout
+
+\begin_layout Itemize
+Connection type: select how you are connected to the network you want to
+ use (in most cases that will be the internet).
+ This helps linphone configure itself according to the bandwidth of your
+ connection type.
+ For example some some high-bitrate codecs will be automatically disabled,
+ if you select connection with a 56k modem.
+\end_layout
+
+\begin_layout Subsection
+\begin_inset LatexCommand \label{paramaudio}
+
+\end_inset
+
+Audio parameters
+\end_layout
+
+\begin_layout Standard
+In this section you will find parameters related to your sound equipment.
+\end_layout
+
+\begin_layout Itemize
+Sound card choice: if you have several sound cards on your PC, you can select
+ the one to be used by linphone.
+\end_layout
+
+\begin_layout Itemize
+Source choice: in this combo box you can choose the recording source for
+ your voice.
+ In most cases it will be the microphone (mic).
+\end_layout
+
+\begin_layout Section
+Address book
+\end_layout
+
+\begin_layout Standard
+The address book lets you store and recall names and sip addresses of people.
+ 
+\end_layout
+
+\begin_layout Standard
+When adding a new contact, a little contact box is displayed, where you
+ can fill in information about the person, mainly of course his SIP address.
+ Additionally you can toggle the 
+\begin_inset Quotes fld
+\end_inset
+
+send subscription
+\begin_inset Quotes frd
+\end_inset
+
+ button if you want the person to keep you informed of his online status
+ (ready, busy, gone...).
+ You can also choose to reject subscription from this person, meaning that
+ he will not be informed of your online status.
+\end_layout
+
+\begin_layout Section
+Using SIP proxies and registrar.
+\end_layout
+
+\begin_layout Standard
+Registering with a SIP server can be useful in two main cases:
+\end_layout
+
+\begin_layout Itemize
+Your machine does not have a public domain name, which prevents other users
+ to call you as they can't guess your IP address.
+ In this case, you can register with a proxy or redirect SIP server to get
+ a public SIP address.
+ For example, you are <sip:bob@no-host-name> and let's suppose that there
+ exists a redirect or proxy SIP server at <sip:myserver.org>.
+ By registering as 'bob' with <sip:myserver.org>, your friends will be able
+ to call you at the address <sip:bob@myserver.org> .
+ Of course, the user_name assigned to you by the SIP server may be different
+ from your login name on the local machine.
+ It can even be a number resembling a regular (PSTN) phone number, eg.
+ 5002000307.
+ The proxy or redirect server myserver.org will forward or redirect the calls
+ from your friends to your exact location.
+\end_layout
+
+\begin_layout Standard
+With linphone>=1.0.0 you can choose to use several proxies simultaneously.
+ Go to the property box, section sip, and click on add proxy.
+ You'll be prompted for a proxy address, route and your identity (also known
+ as address of record).
+ This information should be given to you by the SIP provider you registered
+ with.
+ Route can be omitted (ie.
+ is optional), so leave it empty in case you don't know what to put there.
+ The identity is the SIP address you are known by the proxy.
+ Other users on the network are supposed to always be able to find you at
+ this SIP address.
+\end_layout
+
+\begin_layout Section
+Behind a firewall
+\end_layout
+
+\begin_layout Standard
+In some cases the configuration of your network is such that linphone (or
+ any other SIP phone program) cannot tell with certainty, how other computers
+ on the network can talk to your computer.
+ This is usually the case, when your machine is behind a firewall/router
+ that uses the Network Address Translation (NAT) protocol (RFC 1631).
+ In order to find out linphone can use the services of a "Simple Traversal
+ of User datagram through Network address translators" (STUN) server (RFC
+ 3489).
+ If you are behind a NAT firewall/router put the name of your STUN server
+ in the respective field.
+ This information is usually provided to you by your SIP proxy/server and
+ most times, assuming that your SIP server is 'sip.example.com', it looks
+ like 'stun.example.com'.
+ You may also have to specify the port your STUN server listens to (default
+ 3478).
+\end_layout
+
+\begin_layout Section
+Problems
+\end_layout
+
+\begin_layout Subsection
+Connection problems
+\end_layout
+
+\begin_layout Standard
+Firewalls are the main cause of problems in call routing.
+ Check that udp ports are opened and masqueraded, and subscribe to a SIP
+ proxy outside: most proxies are able to handle firewalls issues themselves.
+ If not possible read section 7 (Behind a firewall).
+\end_layout
+
+\begin_layout Subsection
+Audio problems
+\end_layout
+
+\begin_layout Quotation
+Linphone seems to connect to the remote SIP url, it rings, but when the
+ callee answers, nothing happens and we can't hear each other.
+\end_layout
+
+\begin_layout Itemize
+Using your audio mixer program (eg.
+ 'alsamixer', 'kmix', or 'aumix') make make sure the audio output is not
+ muted and that the playback (master volume, PCM) and recording (mic) controls
+ are set to at least their medium values.
+\end_layout
+
+\begin_layout Itemize
+If the voice is sometimes interrupted, you can modify parameter RTP->jitter
+ compensation in the property box to greater values to avoid this.
+ But this will also increase the transmission delay.
+\end_layout
+
+\begin_layout Itemize
+If linphone cannot open the audio device, check if the user has the right
+ permissions to open /dev/dsp, and close all programs able to use audio
+ device (xmms, kaiman...), as at this point linphone cannot share the audio
+ device with other applications.
+\end_layout
+
+\begin_layout Itemize
+Use ALSA drivers (see 
+\begin_inset LatexCommand \url[http://www.alsa-project.org]{http://www.alsa-project.org}
+
+\end_inset
+
+).
+ Most distributions still use the old OSS kernel-official drivers, that
+ have big latency problems and are often buggy.
+ ALSA drivers are much better.
+ 
+\end_layout
+
+\begin_layout Section
+Bugs reporting and suggestions
+\end_layout
+
+\begin_layout Standard
+First go to linphone's home page at 
+\begin_inset LatexCommand \url[http://www.linphone.org]{http://www.linphone.org}
+
+\end_inset
+
+ to check if you have the latest version if linphone.
+\end_layout
+
+\begin_layout Standard
+If linphone crashes, send a report to the mailing list, linphone-users@nongnu.org.
+ If linphone does not work, but does not crash, please ensure you have read
+ this manual in its entirety before sending a bug report at the above address.
+ You can also send e-mail to the mailing list to request a specific feature,
+ that you think is missing from linphone.
+ Note that video support, and conferencing are planned features.
+ If someone is interested in helping with the translations of linphone to
+ other languages, s/he can send me a xx.po file based on the po/linphone.pot
+ file of the distribution.
+ You can also translate this user manual in other languages.
+ In any case, please contact me if you want more details.
+\end_layout
+
+\begin_layout Section
+Authors
+\end_layout
+
+\begin_layout Standard
+Simon MORLAT (simon.morlat@linphone.org) wrote: 
+\end_layout
+
+\begin_layout Itemize
+main library (coreapi)
+\end_layout
+
+\begin_layout Itemize
+gnome interface (thanks to glade !)
+\end_layout
+
+\begin_layout Itemize
+RTP library (oRTP)
+\end_layout
+
+\begin_layout Itemize
+audio/video framework and wrappers (mediastreamer)
+\end_layout
+
+\begin_layout Standard
+Aymeric Moizard (jack@atosc.org) wrotes the osip and eXosip stacks that is
+ used by linphone.
+ 
+\end_layout
+
+\begin_layout Standard
+The speex codec 
+\begin_inset LatexCommand \url[http://www.speex.org]{http://www.speex.org}
+
+\end_inset
+
+ is a high quality low bitrate codec by Jean Marc Valin.
+\end_layout
+
+\begin_layout Standard
+The GSM library was written by : Jutta Degener and Carsten Bormann,Technische
+ Universitaet Berlin.
+\end_layout
+
+\begin_layout Standard
+The LPC10-1.5 library was written by: Andy Fingerhut Applied Research Laboratory
+ <-- this line is optional if Washington University, Campus Box 1045/Bryan
+ 509 you have limited space One Brookings Drive Saint Louis, MO 63130-4899
+ jaf@arl.wustl.edu http://www.arl.wustl.edu/~jaf/ See text files in gsmlib and
+ lpc10-1.5 directories for further information.
+\end_layout
+
+\begin_layout Standard
+Icons by Pablo Marcelo Moia.
+\end_layout
+
+\begin_layout Section
+Thanks
+\end_layout
+
+\begin_layout Standard
+Thanks to Daemon Chaplin, for having done Glade, the gtk interface builder.
+\end_layout
+
+\begin_layout Standard
+Thanks to Aymeric Moizard, for his famous oSIP library.
+\end_layout
+
+\begin_layout Standard
+Thanks to Florian Winstertein, for the console interface of linphone.
+\end_layout
+
+\begin_layout Standard
+Thanks to Jean Marc Valin, for his great speex codec.
+\end_layout
+
+\begin_layout Standard
+Thanks to the authors of LPC10-1.5 and GSM code.
+\end_layout
+
+\begin_layout Standard
+Thanks to Joel Barrios ( jbarrios@-NO-SPAM-linuxparatodos.com ) for his RPMS.
+\end_layout
+
+\begin_layout Standard
+Thanks to Pablo Marcelo Moia for the great icons he has made for linphone.
+\end_layout
+
+\begin_layout Standard
+\begin_inset LatexCommand \tableofcontents{}
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

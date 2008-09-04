@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Linphone Applet
+Comment=Linphone is a web-phone
+Comment[fr]=Linphone est un web-phone.
+Comment[de]=Linphone ist ein web-phone.
+Type=Application
+Exec=linphone --applet --activate-goad-server=linphone_applet
+Icon=linphone/linphone2.png
+Terminal=0

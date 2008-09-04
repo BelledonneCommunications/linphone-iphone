@@ -1,0 +1,34 @@
+
+This code was extracted from the mplayer 
+project (http://mplayerhq.hu) and slimmed down to support
+only audio codecs.  Apparently the mplayer project extracted 
+it from the Wine project (http://winehq.org).
+
+
+The difficult work to load and use the Windows DLLs and emulate the 
+Windows ACM interface was done by (at a minimum) the following 
+individuals from the mplayer and Wine projects
+as found in the current body of source code:
+
+Eugene Kuznetsov (divx@euro.ru) - WIN32 binary loader interface
+                                   shamelessly stolen from Wine
+Bertho A. Stultiens - Elf-dll loader functions
+Felix Buenemann <atmosfear at users dot sourceforge dot net> - CPU detection
+Alexandre Julliard - modules, pe_resource, lots of wine code
+Eric Youndale - pe_image
+Erik Bos - pe_image
+Martin von Loewis - pe_image, pe_resource
+Marcus Meissner - pe_image
+Thomas Sandford - pe_resource
+Robert J. Amstadt - pe_resource
+
+
+The extraction from mplayer, slimming down, and use for encoding
+TrueSpeech was done by the following individuals:
+
+Robert W. Brewer <rbrewer at op.net> - test_truespeech.c, win32codec.c,
+                                           slimming, and documentation
+
+Piotr P. Karwasz <karwasz at clipper.en.fr> - initial extraction from
+                                           mplayer code and example 
+                                           loading of TrueSpeech dll

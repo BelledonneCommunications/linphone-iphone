@@ -1,0 +1,99 @@
+LIBRARY mediastreamer2
+
+EXPORTS
+
+	ms_init
+	ms_exit
+	ms_reload_snd_card
+		
+	ms_filter_new
+	ms_filter_new_from_desc
+	ms_filter_destroy
+	ms_filter_create_encoder
+	ms_filter_create_decoder
+	ms_filter_call_method
+	ms_filter_call_method_noarg
+	ms_filter_link
+	ms_filter_unlink
+	ms_filter_preprocess
+	ms_filter_postprocess
+	ms_filter_codec_supported
+	
+	ms_snd_card_create_reader
+	ms_snd_card_create_writer
+	ms_snd_card_get_name
+	ms_snd_card_get_string_id
+	ms_snd_card_manager_get
+	ms_snd_card_manager_get_default_card
+	ms_snd_card_manager_get_card
+	ms_snd_card_manager_get_list
+	ms_snd_card_dup
+	ms_snd_card_destroy
+	
+	ms_ticker_new
+	ms_ticker_destroy
+	ms_ticker_attach
+	ms_ticker_detach
+	ms_ticker_set_time_func
+	ms_filter_register
+	ms_ticker_print_graphs
+
+	ms_bufferizer_init
+	ms_bufferizer_uninit
+	ms_bufferizer_read
+	ms_bufferizer_put
+	ms_bufferizer_put_from_queue
+	
+	audio_stream_start
+	audio_stream_stop
+	audio_stream_free
+	create_duplex_rtpsession
+
+	ms_load_plugins
+
+	ms_display_new
+	ms_display_set_window_id
+	ms_display_destroy
+
+	video_preview_stop
+	video_preview_start
+	video_stream_new
+	video_stream_start
+	video_stream_stop
+	
+	ms_is_ipv6
+	
+	ms_queue_flush
+
+	yuv_buf_alloc
+	yuv_buf_init_from_mblk
+	yuv_buf_init_from_mblk_with_size
+
+	ms_sleep
+	ms_filter_new_from_name
+	
+	ms_queue_init
+	
+	rfc3984_init
+	rfc3984_uninit
+	rfc3984_pack
+	rfc3984_unpack
+	rfc3984_set_mode
+
+	ms_list_free
+	ms_list_for_each
+	ms_list_append
+	ms_list_remove
+	ms_filter_set_notify_callback
+	
+	ice_sound_send_stun_request
+	ice_process_stun_message
+	
+	ms_web_cam_manager_get_default_cam
+	ms_web_cam_manager_get
+	
+	video_stream_iterate
+	ms_discover_mtu
+	ms_set_mtu
+	
+	

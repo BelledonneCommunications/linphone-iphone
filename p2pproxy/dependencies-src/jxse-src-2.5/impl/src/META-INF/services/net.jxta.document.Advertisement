@@ -1,0 +1,23 @@
+# The list of Advertisement Instance Classes included with this distribution.
+# Used by AdvertisementFactory
+net.jxta.impl.protocol.PeerAdv
+net.jxta.impl.protocol.PlatformConfig
+net.jxta.impl.protocol.PeerGroupAdv
+net.jxta.impl.protocol.PeerGroupConfigAdv
+net.jxta.impl.protocol.TCPAdv
+net.jxta.impl.protocol.HTTPAdv
+net.jxta.impl.protocol.PSEConfigAdv
+net.jxta.impl.protocol.RdvConfigAdv
+net.jxta.impl.protocol.DiscoveryConfigAdv
+net.jxta.impl.protocol.PipeAdv
+net.jxta.impl.protocol.RelayConfigAdv
+net.jxta.impl.protocol.RdvAdv
+net.jxta.impl.protocol.ModuleImplAdv
+net.jxta.impl.protocol.ModuleSpecAdv
+net.jxta.impl.protocol.ModuleClassAdv
+net.jxta.impl.protocol.RouteAdv
+net.jxta.impl.protocol.AccessPointAdv
+net.jxta.impl.protocol.SignedAdv
+net.jxta.impl.protocol.GroupConfig
+
+org.linphone.p2pproxy.core.P2pUserProfileAdvertisement

@@ -1,0 +1,82 @@
+.\" Encoding: ISO-8859-2
+.\" Sipomatic is a SIP phone server. It answers automatically to incoming calls by playing a short message.
+.\" Translation into Czech by Petr Písaø <petr.pisar@atlas.cz>, 2006-02-26
+.TH "sipomatic" "1" "1.0.0" "Simon Morlat" "linphone"
+.do hla cs
+.do hpf hyphen.cs
+.SH "JMÉNO"
+.LP 
+sipomatic \- SIP auto\-responder z projektu linphone.
+.SH "SYNTAXE"
+.LP 
+sipomatic [\fI\-u\fP] <\fIsip\-url\fP> [\fI\-f\fP] <\fInahrávka\fP>
+[\fI\-s\fP] <\fIodchozí_port\fP> 
+.LP 
+sipomatic \fI\-v\fP
+.br 
+sipomatic \fI\-\-version\fP
+.LP 
+sipomatic \fI\-h\fP
+.br 
+sipomatic \fI\-\-help\fP
+.SH "POPIS"
+.LP
+Sipomatic je základní testovací nástroj pro linphone.
+Èeká na pøíchozí sipový hovor a odpoví na nìj pøehráním zvukového souboru typu
+WAV z disku. Odeslaný zvukový proud je kódován preferovaným kodekem volajícího
+sipového telefonu.
+.LP 
+Výchozí adresa sipomaticu je <sip:robot@127.0.0.1:5064>. Mù¾e být zmìnìna
+volbou \-u.
+.br 
+Namísto výchozího oznamovacího souboru "hello.wav" lze vybrat jiný volbou \-f. 
+.br
+Jestli¾e se budete pokou¹et spustit více sipomatic klientù na jednom stroji,
+pak budete potøebovat volbou \-s explicitnì urèit UDP port, který bude pou¾it
+k odeslání vlastních SIP zpráv.
+
+.SH "VOLBY"
+.LP 
+.TP 
+\fB\-u\fR <\fIurl\fP>
+Nastaví SIP URL, na které bude sipomatic poslouchat. Èást adresy se jménem
+poèítaèe MUSÍ být v¾dy èíselná IP adresa. Výchozí URL je sip:robot@127.0.0.1:5064
+.TP 
+\fB\-f\fR <\fInahrávka\fP>
+Urèuje 8000Hz 16bitový WAV soubor, který bude pøehrán volajícímu u¾ivateli.
+Výchozí cesta bývá /usr/share/sounds/linphone/hello.wav.
+.TP 
+\fB\-s\fR <\fIodchozí_port\fP>
+Explicitnì definuje èíslo UDP portu, který bude pou¾it pro odchozí SIP zprávy. 
+.TP 
+\fB\-v\fR
+\fB\-\-version\fR
+Vytiskne informace o verzi a skonèí.
+.TP 
+\fB\-h\fR
+\fB\-\-help\fR
+Vypí¹e nápovìdu a skonèí.
+.LP 
+.SH "SOUBORY"
+.LP 
+\fI/usr/share/sounds/linphone/hello.raw\fP 
+.br
+Toto je soubor, který sipomatic standardnì pøehraje volajícímu telefonu.
+Formát tohoto souboru je WAV vzorkovaný 16bitovou hodnotou s frekvencí
+8000 Hz.
+.br 
+
+.SH "PROMÌNNÉ PROSTØEDÍ"
+.LP 
+.TP 
+\fBSIPOMATIC_URL\fP
+Definuje adresu, na které sipomatic poslouchá. Jinak je pou¾ita 
+<sip:robot@127.0.0.1:5064> 
+.SH "PØÍKLADY"
+
+.SH "AUTOØI"
+.LP 
+Simon MORLAT <simon.morlat@linphone.org>
+.SH "VIZ TAKÉ"
+.LP 
+linphone(1) linphonec(1)

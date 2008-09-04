@@ -1,0 +1,745 @@
+#LyX 1.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 218
+\textclass docbook
+\language french
+\inputencoding latin1
+\fontscheme default
+\graphics default
+\paperfontsize default
+\spacing single 
+\papersize Default
+\paperpackage a4
+\use_geometry 0
+\use_amsmath 0
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language french
+\quotes_times 2
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+
+\layout Title
+
+
+\begin_inset LatexCommand \label{manual}
+
+\end_inset 
+
+MANUEL DE L'UTILISATEUR DE LINPHONE
+\layout Author
+
+Simon Morlat (simon.morlat@linphone.org)
+\layout Date
+
+11-13-2001
+\layout Section
+
+Introduction
+\layout Standard
+
+Linphone est un simple logiciel de téléphonie sur le web.
+ Il permet d'effectuer des conversations comprenants deux participants en
+ utilisant un réseau IP comme Internet.
+ Ainsi, voici l'équipement nécessaire pour utiliser Linphone : 
+\layout Itemize
+
+Linux ( Peut fonctionner dans d'autres environnements tels que BSD ou d'autres
+ UNIX, mais personne ne l'a encore testé.)
+\layout Itemize
+
+Gnome 1.2 ou supérieur, installé mais pas nécessairement utilisé.
+\layout Itemize
+
+Une carte son configuré correctement.
+\layout Itemize
+
+Des écouteurs ou haut-parleurs.
+\layout Itemize
+
+Un micro.
+\layout Itemize
+
+Une connection réseau (Internet par exemple), par modem, carte réseau Ethernet
+ ...
+\layout Standard
+
+Il est préférable de fermer toutes les applications utilisant la carte son
+ avant d'utiliser Linphone.
+ Linphone est un logiciel libre, il est distribué sous la license publique
+ GNU.
+\layout Standard
+
+
+\emph on 
+ATTENTION : Ce logiciel est distribué SANS GARANTIE.
+ Lisez le fichier COPYING pour plus de détails.
+ Ceci signifie entre autre que vous ne devez pas utiliser Linphone pour
+ des conversations confidentielles : il y a AUCUN CRYPTAGE, de ce fait,
+ il est peut-être facile pour quelqu'un de mal intentionné de pirater les
+ flux audios.
+ Notez toutefois, qu'il n'est pas recommandé d'utiliser Linphone en tant
+ qu'utilisateur root.
+\layout Section
+
+Utilisation
+\layout Standard
+
+Linphone peut être utilisé suivant 3 modes différents : 
+\layout Itemize
+
+En tant qu'application (normale) : Dans le menu de Gnome, Linphone devrait
+ apparaître dans la section Réseau ( "Network" ).
+ Si vous n'utilisez pas Gnome, vous pouvez démarrer Linphone dans une fenêtre
+ terminal par exemple.
+ Quand Linphone n'est pas en cours d'éxecution, vous ne pouvez pas recevoir
+ d'appel(s).
+\layout Itemize
+
+En tant qu'applet Gnome : en cliquant sur le panneau Gnome du bouton droit,
+ ajoutez l'applet.
+ Linphone apparait dans la section Réseau.
+ En tournant en tâche de fond dans le panneau Gnome, Linphone est capable
+ de recevoir des appel(s) même si sa fenêtre n'est pas visible.
+ Si vous voulez voir la fenêtre principale, cliquez sur l'applet.
+ Quand un appel arrive, la fenêtre principale passe en premier plan,et vous
+ entendrez normalement la sonnerie retentir.
+\layout Itemize
+
+En tant que démon : Ceci est intéressant pour les non-utilisateurs de Gnome.
+ Par exemple pour KDE, vous avez un repertoire /home/user/.kde2/AutoStart/
+ où vous pouvez rajouter les applications que vous voulez voir démarrer
+ à votre début de session.
+ Ainsi, dans le repertoire cité, à l'aide du gestionnaire de fichiers, ajouter
+ un lien en cliquant du bouton droit.
+ La commande à rentrer est "linphone -daemon".
+ Vous ne verrez pas l'interface de Linphone, donc, pour la faire apparaitre,
+ démarrez Linphone normalement, par exemple à travers une fenêtre terminal.
+\layout Section
+
+Comment appeler
+\layout Subsection
+
+Principes de base
+\layout Standard
+
+Linphone utilise le protocole SIP (Session Initiation Protocol) pour établir
+ les appels avec vos correspondants.
+ Le protocole spécifie que chaque personne doit être identifié par une URL
+ sip de la forme: sip:user_name@host_name.
+ Cette manière d'adresser les personnes est très proche de celle utilisée
+ pour le courrier électronique.
+\layout Standard
+
+User_name est un nom d'utilisateurs sur une machine, comme un nom de login
+ sur une machine linux, par exemple.
+ Host_name est le nom d'une machine, soit sous forme d'adresse IP, ou plus
+ simplement sous forme de nom de domaine (ex: linphone.org)
+\layout Standard
+
+Notez que SIP est un nouveau protocole de télécommunication fait pour être
+ simple et efficace sur l'internet, et qu'il est totalement différent et
+ incompatible avec H.323.
+ H.323 est le protocole actuellement utilisé par NetMeeting ou GnomeMeeting.
+\layout Subsection
+
+Application: deux personnes (Bob et Tom) se connectent à internet par un
+ modem analogique classique.
+\layout Standard
+
+Voici la manière la plus simple de procéder : 
+\layout Standard
+
+Pré-requis : 
+\layout Itemize
+
+Un modem 28.8 Baud ou plus.
+ 
+\layout Standard
+
+Déroulement : 
+\layout Itemize
+
+Il est convenu que Bob doit appeler Tom à 21h00.
+ A 21h00, Tom se connecte à Internet en utilisant kppp, gppp ou wvdial (ou
+ un autre).
+ Dès qu'il est connecté sur l'Internet, il peut lancer Linphone.En ouvrant
+ la fenêtre de statistiques de kppp ou gppp, il peut voir son adresse IP
+ (sinon, il peut taper /sbin/ifconfig pour l'obtenir).
+ Le nom de l'interface modem doit être ppp0.
+\layout Itemize
+
+Ensuite, il envoit un email à Bob disant : "Mon adresse IP estxxx.xxx.xxx.xxx".
+\layout Itemize
+
+Bob recoit l'email et tape dans la fenêtre de Linphone le nom est l'adresse
+ IP de la personne à contacter : Tom@xxx.xxx.xxx.xxx(L'adresse IP de Tom) et
+ pour finir, il appuit sur le bouton Appeler.
+ 
+\layout Itemize
+
+Linphone sonne à la maison de Tom ...Tom a juste à répondre à l'appel en cliquant
+ sur le bouton "répondre" et ainsi devrait pouvoir commencer la discussion.
+ 
+\layout Standard
+
+Si vous rencontrez des problèmes dans une de ces étapes, allez à la section
+ 4-Problèmes.
+\layout Subsection
+
+Essai en local: vous n'avez personne à appeler pour l'instant, mais vous
+ souhaiteriez voir si linphone marche vraiment.
+\layout Standard
+
+
+\begin_inset LatexCommand \label{sipomatic}
+
+\end_inset 
+
+Depuis la version 0.3.0, Linphone est livré avec un programme de test appelé
+ "sipomatic".
+ Sipomatic peut répondre automatiquement aux appels provenant de Linphone.
+ A vous d'essayer : 
+\layout Itemize
+
+Demarrez linphone.
+\layout Itemize
+
+Démarrez sipomatic dans une fenêtre terminal.
+ Ne soyez pas supris, sipomatic ne possède aucune interface graphique, mais
+ vous n'avez pas besoin de modifier quoi-que-ce-soit.
+ 
+\layout Itemize
+
+Dans Linphone, allez dans les propriétés, section réseau, et choisissez
+ "lo" comme interface par défaut.
+ Appliquez les changements en cliquant sur OK.
+ Tapez l'adresse S.I.P suivante dans la fenêtre principale : sip:robot@127.0.0.1:5064.
+ 127.0.0.1 est l'adresse locale de votre ordinateur, et robot est le nom à
+ utiliser pour appeler sipomatic.
+ 5064 est le port par lequel sipomatic peut-être contacté.
+ Normalement, vous devez toujours utiliser 5060 pour appeler quelqu'un,
+ mais sipomatic est une exception : il fonctionne sur le port 5064.
+ La raison est que Linphone fonctionne déjà sur le port 5060, et il est
+ impossible d'avoir deux applications utilisant le même port au même instant,
+ sur la même machine.
+ 
+\layout Itemize
+
+Appuyez sur le bouton "Appeler".
+ Après quelques secondes, sipomatic devrait répondre à votre appel et vous
+ devez entendre une courte annonce.
+\layout Section
+
+
+\begin_inset LatexCommand \label{params}
+
+\end_inset 
+
+Paramètres des appels
+\layout Subsection
+
+
+\begin_inset LatexCommand \label{paramnetwork}
+
+\end_inset 
+
+Réseau
+\layout Itemize
+
+Liste des interfaces réseau: vous devez choisir une interface réseau à utiliser
+ avec Linphone.
+ Si vous voulez contacter quelqu'un sur l'Internet, vous devez choisir l'interfa
+ce réseau connectée à l'Internet.
+ Par exemple, si vous utilisez un modem, celle-ci devrait être ppp0.
+ Si vous n'êtes connecté à aucun réseau, seulement l'interface réseau locale
+ appelé lo apparaitra dans la liste.
+ La seule chose que vous pouvez faire dans ce cas la est d'appeler 
+\begin_inset LatexCommand \ref[sipomatic]{sipomatic}
+
+\end_inset 
+
+.
+\layout Itemize
+
+Type de connection: choisissez le type de connection que vous utilisez pour
+ vous connecter au réseau que vous désirez utiliser.
+ Ceci aidera Linphone à s'auto-configurer en fonction de la bande passante
+ de votre type de connection.
+\layout Subsection
+
+
+\begin_inset LatexCommand \label{paramrtp}
+
+\end_inset 
+
+RTP
+\layout Standard
+
+RTP signifie Real Time Protocol, il permet d'envoyer des flux de données
+ multimedia.
+\layout Itemize
+
+port RTP: Linphone utilise le port 7072 par défaut pour envoyer et recevoir
+ des signaux audios.
+ Si vous pensez que le port 7072 est utilisé par une autre application,
+ changez le comme vous voulez.
+\layout Itemize
+
+Jitter compensation: ce nombre représente le nombre de paquets audios que
+ Linphone attend avant de vous les faire entendre.
+ Augmentez ce nombre si vous entendez une voix hachée de manière à améliorer
+ la qualité de la transmission, mais attention, ceci augmente le delai (vous
+ entendrez la voix de l'utilisateur distant quelques millisecondes plus
+ tard).D'un autre côté, si vous utilisez un réseau parfait, et que vous disposez
+ de bon drivers audios, vous pouvez descendre ces paramètres très bas jusqu'à
+ 3 paquets, ainsi vous aurez un délai très faible.
+\layout Subsection
+
+
+\begin_inset LatexCommand \label{paramsip}
+
+\end_inset 
+
+SIP
+\layout Standard
+
+SIP (Session Initiation Protocol) est un protocole qui permet d'établir
+ des sessions de téléphonie par l'intermédiaire d'un réseau IP.
+ En simplifiant, c'est la chose qui permet de faire sonner chez l'autre
+ utilisateur, démarrer ou terminer l'appel quand l'un des deux correspondants
+ raccroche.
+\layout Itemize
+
+port SIP: Linphone utilise par défaut le port 5060 pour envoyer / recevoir
+ des paquets SIP.
+ Il est hautement recommandé par la RFC du protocole SIP d'utiliser celui-ci.
+ Donc, ne le changez pas à moins que vous n'ayez vraiment pas le choix.
+\layout Itemize
+
+Votre adresse SIP: modifiez ici votre nom d'utilisateur et votre nom de
+ machine à votre gré.
+ Bien entendu donner un nom de machine ici ne signifie pas que ce nom soit
+ connue des autres machines du réseau.
+ Néammoins linphone utilisera peu ce nom de machine et préfèrera utiliser
+ votre adresse IP pour communiquer avec d'autres machines.
+\layout Itemize
+
+Utiliser un serveur sip registrar: Cochez ce choix, si vous voulez vous
+ enregistrer sur un serveur SIP (registrar) pour obtenir différents services.
+ Quand vous n'avez pas d'adresse IP fixe, cela peut-être très intéressant
+ pour permettre à vos amis de vous appeler.
+ Regardez la section intitulée "
+\begin_inset LatexCommand \ref[enregistrement sur un serveur sip]{registering}
+
+\end_inset 
+
+".
+\layout Subsection
+
+
+\begin_inset LatexCommand \label{paramcodec}
+
+\end_inset 
+
+Codecs
+\layout Standard
+
+Les codecs sont des algorithmes utilisés pour compresser la voix.
+ Par exemple, une voix digitalisée en 16bit/8000Hz représente un flux de
+ données de 128kbits/seconde.
+ En utilisant le vocodeur GSM, ce flux est réduit à 13kbits/seconde, sans
+ perte significative de qualité.
+\layout Itemize
+
+Choix de codecs: Linphone peut utiliser plusieurs codecs.
+ Utilisez les boutons situés en dessous de la liste des codecs de manière
+ à les placer dans un order de préférence.
+ Notez bien, qu'en fonction de votre type de connection réseau, certains
+ codecs sont inutilisables.Ils apparaitront en rouge et ne seront pas sélectionna
+ble.
+ Vous pouvez décider d'utiliser ou non un codec "utilisable" (en bleu) en
+ changeant son état à l'aide du bouton activer/désactiver en dessous de
+ la liste.
+\layout Subsection
+
+
+\begin_inset LatexCommand \label{paramaudio}
+
+\end_inset 
+
+Audio parameters
+\layout Itemize
+
+Mode de pilotage: si vous avez installé des drivers ALSA avec une librairie
+ ALSA <0.9, choisissez ALSA pour avoir de meilleires performances.
+ Sinon, ou si vous n'en savez rien, choisissez OSS, cela marche suffisemment
+ bien.
+\layout Itemize
+
+Choix de la source d'enregistrement: vous pouvez choisir votre source d'enregist
+rement pour la voix.
+ Dans la plupart des cas, celle-ci sera le microphone.
+\layout Itemize
+
+Auto-kill option: en choissant cette option, Linphone essaiera de stopper
+ les processus sonores (esd & artsd) qui peuvent bloquer votre périphérique
+ sonore et ainsi provoquer des problèmes d'ouverture des périphériques par
+ Linphone quand il en a besoin.
+ Il est recommandé d'activer cette option.
+\layout Section
+
+Carnet d'adresses
+\layout Standard
+
+Depuis la version 0.4.1 linphone dispose d'un carnet d'adresses (menu connexion,
+ carnet d'addresses), avec lequel vous pouvez memoriser des adresses, et
+ les rappeler facilement lorsque vous souhaitez appeler.
+\layout Section
+
+
+\begin_inset LatexCommand \label{registering}
+
+\end_inset 
+
+Enregistrement sur un serveur sip
+\layout Standard
+
+Vous pouvez souscrire des services sur des serveurs sip distants appelés
+ registrar, proxy ou redirect server.
+ Ces services peuvent être:
+\layout Standard
+
+You can suscribe for services on remote SIP servers.
+ These services can be:
+\layout Itemize
+
+redirection: linphone va demander au serveur la création d' un compte <sip:votre
+_nom@le_serveur_sip>.
+ Cette adresse pourra alors être utilisée par vos correspondants pour vous
+ joindre.
+ Un petit example concret pour bien comprendre: vous n'êtes qu'un pauvre
+ internaute connecté temporairement grace à un modem 56k.
+ Votre machine n'a pas de nom de domaine connu et votre adresse IP change
+ à chaque nouvelle connexion.
+ Il est impossible pour vos amis de vous joindre car il ne peuvent deviner
+ votre adresse IP, à moins que vous ne leur donniez en envoyant un courriel,
+ par exemple.
+ Pour palier à ce problème, vous pouvez demander à avoir un compte sur un
+ serveur sip connu de vos amis, qui lui est fixe et tout le temps connecté.
+ Pour cela, spécifiez l'adresse du serveur dans la boite de propriété, section
+ sip.
+ Cette adresse est par exemple <sip:serveur_exemple.com> et votre nom d'utilisate
+ur est 
+\begin_inset Quotes fld
+\end_inset 
+
+Bob
+\begin_inset Quotes frd
+\end_inset 
+
+.
+ Linphone va alors envoyer au serveur un message pour l'informer de la correspon
+dance entre l'adresse <sip:bob@serveur_exemple.com> et votre adresse IP actuelle.
+ Desormais vos amis peuvent vous appeler en utilisant cette nouvelle adresse,
+ leurs appels seront alors automatiquement redirigés vers votre machine.
+ Il n'ont plus besoin de connaitre votre adresse IP qui change tout le temps
+ pour vous joindre.
+ Bien sur, <sip:serveur_exemple.com> est supposée être bien connue de tout
+ vos amis.
+ 
+\layout Itemize
+
+proxy: c'est exactement le meme principe, excepté que la redirection se
+ fait de manière transparente et invisible le linphone de l'appelant.
+\layout Standard
+
+Le registrar que vous avez spécifié peut aussi être utilisé comme proxy
+ sortant.
+ Dans ce cas tous les appels émanant de votre linphone seront dirigé vers
+ ce serveur, et il sera supposé les faire suivre vers les bonnes personnes.
+ Ceci est très utile et même indispensable lorsque vous utilisez linphone
+ dans un réseau privé abrité par un firewall, si bien sur un proxy sip est
+ actif sur le firewall.
+ 
+\layout Standard
+
+Pour utiliser solliciter un serveur sip, vous devez aller à la boîte de
+ propriété, rubrique SIP, et cocher le bouton qui se trouve en face de "use
+ registrar".
+ Tapez l'adresse du registrar, et choisissez un nom d'utilisateur qui n'est
+ pas trop fréquent de manière à éviter les conflits de noms.
+ Donnez une indication du service que le serveur doit effectuer pour vous
+ en cochant les boutons 
+\begin_inset Quotes fld
+\end_inset 
+
+redirection
+\begin_inset Quotes frd
+\end_inset 
+
+ ou 
+\begin_inset Quotes fld
+\end_inset 
+
+proxy
+\begin_inset Quotes frd
+\end_inset 
+
+.
+ Sélectionnez aussi l'option 
+\begin_inset Quotes fld
+\end_inset 
+
+le serveur est un proxy sortant
+\begin_inset Quotes frd
+\end_inset 
+
+ si vous êtes derrière un pare-feu.
+\layout Standard
+
+Enfin en fermant la boite de propriétés linphone communiquera immédiatement
+ avec le serveur SIP pour y obtenir les services demandés.
+ De même lorsque vous fermez linphone, celui ci prendra quelques secondes
+ pour se désenregistrer auprès du serveur.
+\layout Standard
+
+Une liste de serveurs sip peut être trouvée à cette addresse: 
+\begin_inset LatexCommand \url[http://www.cs.columbia.edu/~hgs/sip/servers.html]{http://www.cs.columbia.edu/~hgs/sip/servers.html}
+
+\end_inset 
+
+.
+ Malheureusement, beaucoup de ces serveurs ne fonctionnent plus, peut-être
+ à cause de la crise et de ses faillites.
+ Certains ne sont pas utilisables car ils requierent des méthodes d'autentificat
+ion qui ne sont pas encore implémentées dans linphone.
+ Afin donc de ne pas vous faire perdre votre temps, une liste des serveurs
+ sip publiques fonctionnant avec linphone est disponible sur 
+\begin_inset LatexCommand \url[http://simon.morlat.free.fr/english/servers.html]{http://simon.morlat.free.fr/english/servers.html}
+
+\end_inset 
+
+.
+\layout Section
+
+Utilisation derrière les pares-feux
+\layout Standard
+
+Linphone est capable de fonctionner derrière les firewalls grâce à un serveur
+ proxy SIP fonctionnant sur la machine firewall.
+ Un tel serveur est en cours de développement sur 
+\begin_inset LatexCommand \url[http://osipproxy.sourceforge.net]{http://osipproxy.sourceforge.net}
+
+\end_inset 
+
+.
+ Bien sûr il sera libre et basé sur la librairie LGPL oSIP.
+\layout Standard
+
+Une fois le proxy serveur mis en place, il vous faut configurer linphone
+ pour qu'il l'utilise.
+ Pour cela rendez vous dans la boite de propriétés, section SIP et cochez
+ la case 
+\begin_inset Quotes fld
+\end_inset 
+
+Utiliser un registrar SIP
+\begin_inset Quotes frd
+\end_inset 
+
+, indiquez son adresse, et cocher l'option 
+\begin_inset Quotes fld
+\end_inset 
+
+le serveur est un proxy sortant
+\begin_inset Quotes frd
+\end_inset 
+
+.
+\layout Standard
+
+Il y a un cas pour lequel le proxy n'est pas indispensable: c'est le cas
+ où les machines du réseau privé possèdent une adresse publique, le firewall
+ étant là pour filtrer les paquets entrants ou sortants.
+ Vous devez pour permettre a linphone de fonctionner avec des machines exterieur
+es, autoriser le traffic UDP sur le port SIP (par defaut 5060, il est deconseill
+é de le changer), et sur le port RTP de chaque linphone du sous réseau.
+ Le port RTP est paramètrable comme bon vous semble dans la boite de proprietés.
+\layout Section
+
+Problèmes divers
+\layout Subsection
+
+Problèmes de connexion
+\layout Quotation
+
+J'essaye d'appeler mon pote <sip:toto@example.com>, mais rien ne se passe,
+ pas de sonnerie.
+\layout Standard
+
+Vous devez vérifier que linphone utilise l'interface réseau qui vous connecte
+ sur le réseau ou se trouve votre ami.
+ La liste des interface disponibles est donnée dans la boite de propriété,
+ section réseau.
+ Sélectionnez la bonne.
+ 
+\layout Standard
+
+Si le problème persiste, il y a fort à parier que votre ami ne soit pas
+ joignable actuellement.
+\layout Subsection
+
+Problèmes audio
+\layout Quotation
+
+Linphone semble correctement établir l'appel, il sonne, mais une fois que
+ le correspondant a décrocher, plus rien ne se passe et on ne s'entend pas.
+\layout Itemize
+
+La plupart des gens ont ce genre de symptome car ils n'ont pas choisi la
+ bonne interface réseau.
+ Si vous êtes connectés par modem, ce doit être ppp0.
+ En aucun cas l'interface 
+\begin_inset Quotes fld
+\end_inset 
+
+lo
+\begin_inset Quotes frd
+\end_inset 
+
+ ne peut permettre d'avoir une communication via le réseau.
+ Elle ne sert que pour le test local avec sipomatic (voir plus haut).
+\layout Itemize
+
+Augmentez le niveau sonore d'acquisition et de restitution, à l'aide des
+ potentiomètres situés en bas de la fenêtre principale.
+\layout Itemize
+
+Si la voix de votre correspondant vous semble coupée ou hachée, vous pouvez
+ essayer d'augmenter le paramètre jitter compensation de l'onglet RTP de
+ la boite de propriété.
+ Mais attention, cela augmente la latence en contrepartie.
+\layout Itemize
+
+Si linphone ne peut se servir de la carte son, vérifiez que celle ci n'est
+ pas utilisée au meme moment par d'autres programmes audio.
+ 
+\layout Itemize
+
+Enfin utilisez les drivers sons alsa (voir 
+\begin_inset LatexCommand \url[http://www.alsa-project.org]{http://www.alsa-project.org}
+
+\end_inset 
+
+) , plutôt que les oss fournit avec le kernel linux.
+ Malheureusement la plupart des distributions utilsent encore ces vieux
+ pilotes alors qu'ils presentent de nombreux bugs et problèmes de latence.
+ Les drivers ALSA sont beaucoup plus performants.
+ Notez que si vous changer vos drivers, vous n'avez nul besoin de recompiler
+ linphone ou de changer quoi que ce soit a sa configuration.
+ 
+\layout Section
+
+Rapports de bogues et suggestions
+\layout Standard
+
+En premier lieu, allez sur le site de Linphone 
+\begin_inset LatexCommand \url[http://www.linphone.org]{http://www.linphone.org}
+
+\end_inset 
+
+ afin de vérifier que vous ayez bien la dernière version de Linphone.
+ 
+\layout Standard
+
+Si linphone plante, envoyez moi directement un message à bugs@linphone.org.
+ Si Linphone ne fonctionne pas, mais ne se plante pas, vérifiez bien que
+ vous avez bien lu ce manuel entièrement avant de m'envoyer un compte rendu
+ à l'adresse précédente.
+ Dans tous les cas veillez à m'envoyer le plus d'information possible relatifs
+ à votre problème, notamment la sortie de debug que linphone écrit lorsque
+ vous l'executez depuis un terminal.
+ Si vous désirez autre chose, n'hésitez pas à m'envoyer un email à l'adresse
+ help@linphone.org.
+ Prenez note que l'ajout de la vidéo et du mode conférence sont planifiés.
+ 
+\layout Standard
+
+Si quelqu'un est interessé pour faire des traductions de Linphone, envoyez
+ moi un fichier xx.po basé sur celui se trouvant dans po/linphone.pot de la
+ distribution.
+ Vous pouvez aussi traduire ce manuel utilisateur dans d'autres langues.
+ Dans tous les cas, contactez moi si vous voulez plus de détails.
+\layout Section
+
+Auteurs
+\layout Standard
+
+Simon MORLAT (simon.morlat@linphone.org) a ecrit: 
+\layout Itemize
+
+Programme principal (src)
+\layout Itemize
+
+librairie RTP (lprtplib)
+\layout Itemize
+
+osipua : la librarie sip User Agent au dessus d'osip.
+\layout Itemize
+
+interface pour les drivers audio (audio)
+\layout Itemize
+
+les wrappers pour les codecs lpc10-1.5, gsm et g711.
+ 
+\layout Standard
+
+Aymeric Moizard (jack@atosc.org) a ecrit la pile SIP oSIP utilisé par linphone.
+ 
+\layout Standard
+
+La librairie GSM a été écrite par: Jutta Degener and Carsten Bormann,Technische
+ Universitaet Berlin.
+\layout Standard
+
+La librairie LPC10-1.5 par: Andy Fingerhut Applied Research Laboratory <--
+ this line is optional if Washington University, Campus Box 1045/Bryan 509
+ you have limited space One Brookings Drive Saint Louis, MO 63130-4899 jaf@arl.wu
+stl.edu http://www.arl.wustl.edu/~jaf/ Lisez les fichiers textes README dans
+ les repertoire gsmlib et lpc10-1.5 pour plus d'informations.
+\layout Standard
+
+Les icones sont de Pablo Marcelo Moia et le logo de Philippe Beau.
+\layout Section
+
+Remerciements
+\layout Standard
+
+Merci à Daemon Chaplin pour avoir fait Glade, le constructeur d'interface
+ graphique GTK+.
+\layout Standard
+
+Merci aux auteurs du code des LPC10-1.5 et GSM.
+\layout Standard
+
+Merci à Joel Barrios ( jbarrios@-NO-SPAM-linuxparatodos.com ) pour ses RPMS.
+\layout Standard
+
+Merci à Pablo Marcelo Moia pour les icones.
+\layout Standard
+
+Merci à Philippe Beau pour la traduction de ce manuel en Francais, pour
+ le logo, et pour le nouveau site web qu'il a fait pour linphone.
+\layout Standard
+
+
+\begin_inset LatexCommand \tableofcontents{}
+
+\end_inset 
+
+
+\the_end

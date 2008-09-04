@@ -1,0 +1,378 @@
+dnl Process this file with autoconf to produce a configure script.
+
+AC_INIT([linphone],[2.99.4],[linphone-developers@nongnu.org])
+
+dnl Source packaging numbers
+
+LINPHONE_MAJOR_VERSION=$(echo $PACKAGE_VERSION | cut -d. -f1)
+LINPHONE_MINOR_VERSION=$(echo $PACKAGE_VERSION | cut -d. -f2)
+LINPHONE_MICRO_VERSION=$(echo $PACKAGE_VERSION | cut -d. -f3)
+LINPHONE_EXTRA_VERSION=$(echo $PACKAGE_VERSION | cut -d. -f4)
+
+dnl program extension
+LINPHONE_VERSION=$LINPHONE_MAJOR_VERSION.$LINPHONE_MINOR_VERSION.${LINPHONE_MICRO_VERSION}.${LINPHONE_EXTRA_VERSION}
+
+LIBLINPHONE_SO_VERSION=`expr $LINPHONE_MINOR_VERSION + $LINPHONE_MAJOR_VERSION`:$LINPHONE_MICRO_VERSION:$LINPHONE_MINOR_VERSION
+
+AC_SUBST(LIBLINPHONE_SO_VERSION, $LIBLINPHONE_SO_VERSION)
+AC_SUBST(LINPHONE_VERSION)
+
+AC_MSG_NOTICE([$PACKAGE_NAME-$PACKAGE_VERSION		A full featured audio/video sip phone.])
+AC_MSG_NOTICE([licensed under the terms of the General Public License (GPL)])
+
+AM_INIT_AUTOMAKE([tar-ustar])
+AC_CONFIG_HEADER(config.h)
+
+AC_SUBST([mkdir_p])
+AC_ISC_POSIX
+AC_PROG_CC
+AC_C_INLINE
+AM_PROG_CC_STDC
+AC_HEADER_STDC
+dnl localization tools
+ifdef([IT_PROG_INTLTOOL],[IT_PROG_INTLTOOL],[AC_PROG_INTLTOOL])
+dnl Initialize libtool
+AC_PROG_LIBTOOL
+AM_PROG_LIBTOOL
+AC_ENABLE_SHARED(yes)
+AC_ENABLE_STATIC(no)
+dnl Add the languages which your application supports here.
+PKG_PROG_PKG_CONFIG
+ALL_LINGUAS="fr it de ja es pl cs nl sv pt_BR hu"
+GETTEXT_PACKAGE=linphone
+AM_GNU_GETTEXT([external])
+AC_SUBST(GETTEXT_PACKAGE)
+AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE",[The name of the gettext package name])
+AC_CHECK_LIB(intl,libintl_gettext)
+
+AC_CHECK_FUNCS([get_current_dir_name strndup stpcpy] )
+
+dnl conditionnal build of console interface.
+AC_ARG_ENABLE(console_ui,
+      [  --enable-console_ui=[yes/no]    Turn on or off compilation of console interface [default=yes]],
+      [case "${enableval}" in
+        yes) console_ui=true ;;
+        no)  console_ui=false ;;
+        *) AC_MSG_ERROR(bad value ${enableval} for --enable-console_ui) ;;
+      esac],[console_ui=true])
+
+dnl conditionnal build of gtk interface.
+AC_ARG_ENABLE(gtk_ui,
+      [  --enable-gtk_ui=[yes/no]    Turn on or off compilation of gtk interface [default=yes]],
+      [case "${enableval}" in
+        yes) gtk_ui=true ;;
+        no)  gtk_ui=false ;;
+        *) AC_MSG_ERROR(bad value ${enableval} for --enable-gtk_ui) ;;
+      esac],[gtk_ui=true])
+
+dnl conditionnal build of old gtk interface.
+AC_ARG_ENABLE(old-gtk_ui,
+      [  --enable-old-gtk_ui=[yes/no]    Turn on or off compilation of old gtk interface [default=no]],
+      [case "${enableval}" in
+        yes) old_gtk_ui=true ;;
+        no)  old_gtk_ui=false ;;
+        *) AC_MSG_ERROR(bad value ${enableval} for --enable-old-gtk_ui) ;;
+      esac],[old_gtk_ui=false])
+
+if test "$gtk_ui" = "true" ; then
+	PKG_CHECK_MODULES(LIBGTK, gtk+-2.0 >= 2.4.0 gthread-2.0, ,gtk_ui=false)
+	AC_SUBST(LIBGTK_CFLAGS)
+	AC_SUBST(LIBGTK_LIBS)
+	
+	if test "$gtk_ui" = "true" ; then
+		AC_DEFINE(HAVE_GTK,1,[Defined if we can use the gtk api])
+	else
+		missing_gtk_libs=true
+	fi
+else
+	echo "GTK interface compilation is disabled."
+fi
+
+
+if test "$gtk_ui" = "true" ; then
+	PKG_CHECK_MODULES(GNOME_APPLETS, libpanelapplet-2.0 >= 2.0.0 , 
+			build_gnome_applet=true,build_gnome_applet=false)
+	AC_SUBST(GNOME_APPLETS_CFLAGS)
+	AC_SUBST(GNOME_APPLETS_LIBS)
+	PKG_CHECK_MODULES(LIBGLADE, libglade-2.0 >= 2.4.0 , glade_ui=true, glade_ui=false)
+	AC_SUBST(LIBGLADE_CFLAGS)
+	AC_SUBST(LIBGLADE_LIBS)
+else
+	build_gnome_applet=false
+fi
+
+
+dnl os-specific problems not handled by existing macros.
+case "$host_os" in
+	*freebsd*)
+		LDFLAGS="$LDFLAGS -pthread"
+		;;
+esac
+
+case "$host_cpu" in
+	*arm*)
+		AC_DEFINE(__ARM__,1,[Defined if we are compiling for arm processor])
+		use_arm_toolchain=yes
+		;;
+esac
+
+AC_ARG_WITH( realprefix,
+      [  --with-realprefix      Set the real installation prefix. This option has to be used for cross-compilation only. (ex:/usr or /usr/local)[default=none] ],
+      [ realprefix=${withval}],[ realprefix="none" ])
+
+
+
+AC_ARG_ENABLE(manual,
+      [  --disable-manual    Do not attempt to build html linphone's user documentation],
+      [case "${enableval}" in
+        yes) build_manual=yes ;;
+        no)  build_manual=false ;;
+        *) AC_MSG_ERROR(bad value ${enableval} for --enable-manual) ;;
+      esac],[build_manual=yes])
+
+
+dnl enable ipv6 support
+AC_ARG_ENABLE(ipv6,
+      [  --enable-ipv6    Turn on ipv6 support],
+      [case "${enableval}" in
+        yes)  ipv6=true;;
+        no)   ipv6=false;;
+        *) AC_MSG_ERROR(bad value ${enableval} for --enable-ipv6) ;;
+      esac],[ipv6=true])
+IPV6_CFLAGS=
+if test x$ipv6 = xtrue ; then
+	IPV6_CFLAGS=-DINET6
+fi
+AC_SUBST(IPV6_CFLAGS)
+
+dnl enable truespeech codec support
+AC_ARG_ENABLE(truespeech,
+      [  --enable-truespeech    Turn on TrueSpeech support (x86 only)],
+      [case "${enableval}" in
+        yes)  truespeech=true;;
+        no)   truespeech=false;;
+        *) AC_MSG_ERROR(bad value ${enableval} for --enable-truespeech) ;;
+      esac],[truespeech=false])
+TRUESPEECH_CFLAGS=
+if test x$truespeech = xtrue ; then
+	TRUESPEECH_CFLAGS=-DTRUESPEECH
+fi
+AC_SUBST(TRUESPEECH_CFLAGS)
+AM_CONDITIONAL([BUILD_TRUESPEECH], [test x$truespeech = xtrue])
+
+
+
+
+dnl support for RSVP (by Vincent Maury)
+AC_ARG_ENABLE(rsvp,
+[  --enable-rsvp           enable support for QoS reservations.],
+AC_DEFINE(VINCENT_MAURY_RSVP,1,[Tell whether RSVP support
+should be compiled.]) )
+
+if test "x${prefix}" = "xNONE"; then
+	prefix=${ac_default_prefix}
+fi
+
+dnl Set PACKAGE_LOCALE_DIR in config.h.
+DATADIRNAME=share
+AC_DEFINE_UNQUOTED(PACKAGE_LOCALE_DIR, "${prefix}/${DATADIRNAME}/locale",[Defines the place where locales can be found])
+
+AC_DEFINE_UNQUOTED(PACKAGE_DATA_DIR, "${prefix}/${DATADIRNAME}",[Defines the place where data are found])
+
+dnl Set PACKAGE_SOUND_DIR in config.h.
+AC_DEFINE_UNQUOTED(PACKAGE_SOUND_DIR, "${prefix}/${DATADIRNAME}/sounds/linphone",[Defines the place where linphone sounds are found])
+
+
+dnl check if we have the getifaddrs() sytem call
+AC_CHECK_FUNCS(getifaddrs)
+
+dnl check for osip2
+LP_CHECK_OSIP2
+
+dnl setup flags for exosip library
+LP_SETUP_EXOSIP
+
+if test "$console_ui" = "true" ; then
+dnl check gnu readline
+LP_CHECK_READLINE
+else
+echo "Console interface compilation is disabled."
+fi
+
+AC_WORDS_BIGENDIAN
+
+dnl normaly this should only by done by mediastreamer2/configure.ac
+dnl but to workaround bugs when cross-compiling for arm-linux,
+dnl we need to have SPEEX_LIBS defined
+dnl Furthermore it is good to repeat here all mediastreamer2 toggles
+dnl since top-level configure --help will not print them.
+
+PKG_CHECK_MODULES(SPEEX, speex >= 1.1.6, build_speex=yes)
+AC_SUBST(SPEEX_LIBS)
+
+dnl conditionnal build of video support
+AC_ARG_ENABLE(video,
+		[  --enable-video    Turn on video support compiling],
+		[case "${enableval}" in
+		yes) video=true ;;
+		no)  video=false ;;
+		*) AC_MSG_ERROR(bad value ${enableval} for --enable-video) ;;
+		esac],[video=true])
+		
+AC_ARG_WITH( ffmpeg,
+		[  --with-ffmpeg		Sets the installation prefix of ffmpeg, needed for video support. [default=/usr] ],
+		[ ffmpegdir=${withval}],[ ffmpegdir=/usr ])
+
+AC_ARG_WITH( sdl,
+		[  --with-sdl		Sets the installation prefix of libSDL, needed for video support. [default=/usr] ],
+		[ libsdldir=${withval}],[ libsdldir=/usr ])
+
+if test "$video" = "true"; then
+	AC_DEFINE(VIDEO_ENABLED,1,[defined if video support is available])
+fi
+
+AC_ARG_ENABLE(alsa,
+      [  --enable-alsa    Turn on alsa native support compiling],
+      [case "${enableval}" in
+        yes) alsa=true ;;
+        no)  alsa=false ;;
+        *) AC_MSG_ERROR(bad value ${enableval} for --enable-alsa) ;;
+      esac],[alsa=true])
+
+AC_ARG_ENABLE(artsc,
+      [  --enable-artsc    Turn on artsc (kde) sound input/output (auto) ],
+      [case "${enableval}" in
+        yes) artsc=true ;;
+        no)  artsc=false ;;
+        *) AC_MSG_ERROR(bad value ${enableval} for --enable-artsc) ;;
+      esac],[artsc=false])
+
+AC_ARG_ENABLE(portaudio,
+      [  --enable-portaudio    Turn on portaudio native support compiling],
+      [case "${enableval}" in
+        yes) portaudio=true ;;
+        no)  portaudio=false ;;
+        *) AC_MSG_ERROR(bad value ${enableval} for --enable-portaudio) ;;
+      esac],[portaudio=false])
+
+dnl same thing for media_api
+AM_CONDITIONAL(BUILD_MEDIA_API, test x$media_api = xtrue)
+
+
+dnl build console if required
+AM_CONDITIONAL(BUILD_CONSOLE, test x$console_ui = xtrue)
+dnl build gtk if required
+AM_CONDITIONAL(BUILD_GTK, test x$old_gtk_ui = xtrue)
+dnl build gnome applet if possible
+AM_CONDITIONAL(BUILD_GNOME_APPLET, test x$build_gnome_applet = xtrue)
+dnl special things for arm-linux cross compilation toolchain
+AM_CONDITIONAL(ARMBUILD, test x$use_arm_toolchain = xyes)
+dnl compilation of gtk-glade user interface
+AM_CONDITIONAL(BUILD_GLADE_UI, [test x$glade_ui = xtrue ] )
+
+##################################################
+# Stricter build options (after external packages)
+##################################################
+
+
+AC_ARG_ENABLE(strict,
+	AC_HELP_STRING([--enable-strict],
+		       [Build with stricter options (gcc only) @<:@yes@:>@]),[
+	strictness="${enableval}"],[strictness=yes]
+)
+
+if test "$GCC$strictness" = "yesyes" ; then
+	STRICT_OPTIONS="-Wall -Wp,-D_FORTIFY_SOURCE=2"
+	STRICT_OPTIONS="$STRICT_OPTIONS -Werror"
+	CFLAGS="$CFLAGS -fno-strict-aliasing"
+fi
+
+AC_SUBST(STRICT_OPTIONS)
+
+AC_CONFIG_SUBDIRS( mediastreamer2 )
+
+dnl check for db2html (docbook) to generate html user manual
+AC_CHECK_PROG(have_sgmltools,sgmltools, yes, no)
+AM_CONDITIONAL(ENABLE_MANUAL, test x$have_sgmltools$build_manual = xyesyes )
+
+dnl for external use of linphone libs
+LINPHONE_CFLAGS="-I${includedir} -I${includedir}/linphone -I${includedir}/ortp "
+LINPHONE_LIBS="-L${libdir}  -llinphone"
+AC_SUBST(LINPHONE_CFLAGS)
+AC_SUBST(LINPHONE_LIBS)
+
+
+AC_DEFINE_UNQUOTED(LINPHONE_VERSION,"$PACKAGE_VERSION",[Linphone's version number])
+
+
+AC_ARG_ENABLE(external-ortp,
+      [  --enable-external-ortp    Use external oRTP library],
+      [case "${enableval}" in
+        yes) external_ortp=true ;;
+        no)  external_ortp=false ;;
+        *) AC_MSG_ERROR(bad value ${enableval} for --enable-external-ortp) ;;
+      esac],[external_ortp=false])
+
+if test "$external_ortp" = 'true'; then
+	LP_CHECK_ORTP
+else
+	AC_CONFIG_SUBDIRS( oRTP )
+	ORTP_CFLAGS="-I\$(top_srcdir)/oRTP/include"
+	ORTP_LIBS="\$(top_builddir)/oRTP/src/libortp.la"
+	if test x$ac_cv_c_bigendian = xyes ; then
+		ORTP_CFLAGS="$ORTP_CFLAGS -DORTP_BIGENDIAN"
+	fi
+fi
+AC_SUBST(ORTP_CFLAGS)
+AC_SUBST(ORTP_LIBS)
+
+AM_CONDITIONAL(EXTERNAL_ORTP, [test "$external_ortp" = 'true'])
+
+dnl Packaging: Pick oRTP version from ${top_srcdir}/oRTP/configure.ac
+dnl Feel free to propose an alternative & cleaner version...
+top_srcdir=`dirname $0`
+changequote(, )dnl
+ORTP_VERSION=`grep -E ^[AC]+_INIT ${top_srcdir}/oRTP/configure.ac | sed -e 's:^.*_INIT(.*,\[\(.*\)\]):\1:g'`
+MS2_VERSION=`grep -E ^[AC]+_INIT ${top_srcdir}/mediastreamer2/configure.ac | sed -e 's:^.*_INIT(.*,\[\(.*\)\]):\1:g'`
+changequote([, ])dnl
+AC_SUBST([ORTP_VERSION])
+AC_SUBST([MS2_VERSION])
+
+AC_OUTPUT([ 
+Makefile 
+m4/Makefile
+po/Makefile.in 
+pixmaps/Makefile
+ipkg/Makefile
+ipkg/linphone.control
+media_api/Makefile
+coreapi/Makefile
+gtk/Makefile
+gtk-glade/Makefile
+console/Makefile
+share/Makefile
+share/C/Makefile
+share/fr/Makefile
+share/it/Makefile
+share/ja/Makefile
+share/cs/Makefile
+share/linphone.pc
+linphone.spec
+])
+
+echo "Linphone build configuration ended."
+
+if test x$gtk_ui = xtrue ; then
+echo "* GTK interface will be compiled."
+fi
+if test x$gtk_ui = xtrue ; then
+echo "* Console interface will be compiled."
+fi
+if test x$glade_ui = xtrue ; then
+	echo "* Gtk-glade still in early development interface will be compiled"
+fi
+if test "$have_db2html" = "no" ; then
+	echo "* db2html not found; user documentation will not be generated."
+fi
+
+echo "Now type 'make' to compile, and then 'make install' as root to install it."

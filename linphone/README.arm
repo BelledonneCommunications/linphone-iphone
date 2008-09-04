@@ -1,0 +1,106 @@
+					LINPHONE ON ARM-LINUX (HANDHELD COMPUTERS)
+					******************************************
+
+The console version of linphone works on arm-linux and has been tested on ipaqs
+under the familiar linux distribution (http://www.handhelds.org).
+You can find .ipk binary packages on the linphone's download page. 
+If you want to build your own arm-linux packages, here are some instructions to
+cross compile linphone and its dependencies: readline, speex and libosip.
+This is my own experience on cross compiling software. As there is no precise
+step by step documentation (as far as I know) on how to cross-compile on arm, 
+there is no guaranty that the following instructions are the best way to do it.
+First, be aware that only the console version of linphone can compile on ARM.
+
+
+* You need the lastest arm toolchain from http://www.handhelds.org. Uncompress it in / .
+	It contains all the cross-compilation tools. Be sure that the arm-linux-gcc binaries
+	are in your PATH (export PATH=$PATH:/usr/local/arm/3.4.1/bin/ , for example)
+* create within your home directory a arm/ directory, copy into it the fresh 
+	tarballs of libosip2>=2.2.x, speex>=1.1.6, linphone>=1.2.1 readline>=5.1 and ncurses>=5.5 (readline needs ncurses)
+	 Uncompress all these
+	tarballs. 
+	
+
+Very important things common to all packages being cross compiled:
+******************************************************************
+* copy the ipaq-config.site in the ipkg/ directory of linphone into some safe place,
+for example: ~/ipaq-config.site .
+* You need a directory that we call ARM_INSTALL_TREE that will own files in the same way they will be installed on the target computer.
+It is also used to build linphone over the arm binaries of its dependencies (speex,osip,ncurses,readline).
+
+For example:
+
+export CONFIG_SITE=~/ipaq-config.site
+export ARM_INSTALL_TREE=/armbuild
+
+
+Cross compiling ncurses for ARM:
+********************************
+./configure --prefix=/usr --host=arm-linux --with-gnu-ld --with-shared
+make
+make install DESTDIR=$ARM_INSTALL_TREE
+make install DESTDIR=`pwd`/armbuild
+
+
+Cross compiling readline for ARM:
+*********************************
+./configure --prefix=/usr --host=arm-linux --with-gnu-ld --disable-static
+make
+make install DESTDIR=$ARM_INSTALL_TREE
+make install DESTDIR=`pwd`/armbuild
+
+
+
+Cross compiling libosip for ARM:
+********************************
+./configure --prefix=/usr --host=arm-linux --with-gnu-ld --disable-static
+make
+make install DESTDIR=$ARM_INSTALL_TREE
+make install DESTDIR=`pwd`/armbuild
+
+Cross compiling speex for ARM:
+********************************
+First you need to remove ogg headers from your build system to avoid a dirty conflict between
+your build machine binaries and the arm binaries. They are usually in a libogg-dev package (rpm or deb).
+Then:
+./configure --prefix=/usr --host=arm-linux --with-gnu-ld --disable-static --enable-fixed-point --enable-arm-asm
+make
+make install DESTDIR=$ARM_INSTALL_TREE
+make install DESTDIR='pwd'/armbuild
+
+
+Cross compiling linphone for ARM
+********************************
+First you need to remove all .la files from the ARM_INSTALL_TREE because it confuses libtool and makes
+the linker use your build machine binaries instead of the arm-crosscompiled ones.
+rm -f $ARM_INSTALL_TREE/usr/lib/*.la
+#for some reason pkg-config doesn't like cross-compiling...
+export PKG_CONFIG=/usr/bin/pkg-config
+./configure --prefix=/usr --host=arm-linux --with-gnu-ld --disable-static \
+	--disable-glib --with-osip=$ARM_INSTALL_TREE/usr \
+    --with-readline=$ARM_INSTALL_TREE/usr \
+	SPEEX_CFLAGS="-I$ARM_INSTALL_TREE/usr/include" \
+	SPEEX_LIBS="-L$ARM_INSTALL_TREE/usr/lib -lspeex "
+make 
+make install DESTDIR='pwd'/armbuild
+
+You can use the install trees libosip2-x.x.x/armbuild speex-x.x.x/armbuild and 
+linphone-0.x.x/armbuild/ to make binary packages of
+each software, as ipkgs for the familiar distribution (http://www.familiar.org).
+In the ipkg/ directory of linphone you can find .control files for ipkg-build. 
+In order to make the osip ipkg, you have to do the following:
+- create a directory named CONTROL inside libosip2-2.2.x/armbuild
+- copy the libosip.control file into CONTROL/ and rename it into "control".
+- edit the "control" file to adjust version number accordingly.
+- remove the non essential parts of libosip inside libosip2-2.x.x/armbuild/usr/ : just 
+	leave the lib/ directory. This saves space on the destination computer.
+- then inside libosip2-2.x.x, run ipkg-build -o root -g root armbuild
+The same procedure applies to make linphone's ipkg.
+Binaries can also be stripped with arm-linux-strip to save more space.
+
+Running linphone under the handheld computer
+********************************************
+
+You just have to start linphone from a terminal by typing 'linphonec'.
+
+Simon

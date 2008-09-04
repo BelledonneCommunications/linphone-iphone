@@ -1,0 +1,1156 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 山口善也 <yushiya@anet.ne.jp>, 2002.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: linphone 0.10\n"
+"Report-Msgid-Bugs-To: linphone-developers@nongnu.org\n"
+"POT-Creation-Date: 2008-08-26 14:26+0200\n"
+"PO-Revision-Date: 2003-01-21 00:05+9000\n"
+"Last-Translator: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\n"
+"Language-Team: <ja@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=EUC-JP\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: gtk/main.c:58
+msgid "A free SIP video-phone"
+msgstr ""
+
+#: gtk/interface.c:138
+msgid "linphone"
+msgstr "Linphone"
+
+#: gtk/interface.c:155
+msgid "Go"
+msgstr ""
+
+#: gtk/interface.c:162
+msgid "Address book"
+msgstr "電話帳"
+
+#: gtk/interface.c:174
+msgid "Call history"
+msgstr ""
+
+#: gtk/interface.c:177
+msgid "Shows calls"
+msgstr ""
+
+#: gtk/interface.c:188
+msgid "Exit"
+msgstr ""
+
+#: gtk/interface.c:196
+msgid "Help"
+msgstr ""
+
+#: gtk/interface.c:236
+#, fuzzy
+msgid "Enter sip address or phone number here"
+msgstr "レジストラサーバーのSIPアドレス"
+
+#: gtk/interface.c:237 gtk/interface.c:1398 gtk/interface.c:2335
+#: gtk/interface.c:2357 gtk/interface.c:2497
+msgid "sip:"
+msgstr "sip:"
+
+#: gtk/interface.c:239 gtk/interface.c:2512
+msgid "Sip address:"
+msgstr "Sipアドレス:"
+
+#: gtk/interface.c:247
+#, fuzzy
+msgid "Shows the address book"
+msgstr "電話帳"
+
+#: gtk/interface.c:261
+msgid "..."
+msgstr ""
+
+#: gtk/interface.c:269 gtk/interface.c:2519
+msgid "Proxy to use:"
+msgstr ""
+
+#: gtk/interface.c:278
+#, fuzzy
+msgid ""
+"Call or\n"
+"answer"
+msgstr ""
+"電話をかける\n"
+"電話に出る"
+
+#: gtk/interface.c:283
+msgid ""
+"Hangup\n"
+"or refuse"
+msgstr ""
+
+#: gtk/interface.c:288
+msgid "Or chat !"
+msgstr ""
+
+#: gtk/interface.c:310
+msgid "Show more..."
+msgstr "詳細"
+
+#: gtk/interface.c:332
+msgid "Playback level:"
+msgstr "受話音量"
+
+#: gtk/interface.c:343
+msgid "Recording level:"
+msgstr "送話音量"
+
+#: gtk/interface.c:354
+#, fuzzy
+msgid "Ring level:"
+msgstr "送話音量"
+
+#: gtk/interface.c:365
+msgid "Sound"
+msgstr "サウンド"
+
+#: gtk/interface.c:382
+#, fuzzy
+msgid "Enable video"
+msgstr "使用する"
+
+#: gtk/interface.c:387
+msgid "Video"
+msgstr ""
+
+#: gtk/interface.c:392
+msgid "Controls"
+msgstr ""
+
+#: gtk/interface.c:410
+msgid "Reachable"
+msgstr "在席中"
+
+#: gtk/interface.c:421
+msgid "Busy, I'll be back in "
+msgstr "今席をはずしています。"
+
+#: gtk/interface.c:430
+msgid "The other party will be informed that you'll be back in X minutes"
+msgstr "発信者は、あなたがX分後に戻ってくることが分かります。"
+
+#: gtk/interface.c:431
+msgid "5"
+msgstr "5"
+
+#: gtk/interface.c:433
+msgid "mn"
+msgstr "分"
+
+#: gtk/interface.c:438 coreapi/presence.c:146
+msgid "Away"
+msgstr "退席中"
+
+#: gtk/interface.c:444
+msgid "Do not disturb"
+msgstr "手が離せません"
+
+#: gtk/interface.c:450
+msgid "Moved temporarily"
+msgstr "すぐ戻ります"
+
+#: gtk/interface.c:456
+msgid "Alternative service"
+msgstr "他の連絡手段を使って下さい"
+
+#: gtk/interface.c:466
+msgid "URL:"
+msgstr "URL:"
+
+#: gtk/interface.c:475
+msgid "Presence"
+msgstr "状態"
+
+#: gtk/interface.c:492
+msgid "Press digits to send DTMFs."
+msgstr "DTMFを送信するための数字を押して下さい。"
+
+#: gtk/interface.c:501
+msgid ""
+"  3\n"
+"def"
+msgstr ""
+
+#: gtk/interface.c:507
+msgid ""
+"  2\n"
+"abc"
+msgstr ""
+
+#: gtk/interface.c:513
+msgid "1"
+msgstr "1"
+
+#: gtk/interface.c:519
+msgid ""
+"  4\n"
+"ghi"
+msgstr ""
+
+#: gtk/interface.c:525
+msgid ""
+" 5\n"
+"jkl"
+msgstr ""
+
+#: gtk/interface.c:531
+msgid ""
+"  6\n"
+"mno"
+msgstr ""
+
+#: gtk/interface.c:537
+msgid ""
+"   7\n"
+"pqrs"
+msgstr ""
+
+#: gtk/interface.c:543
+msgid ""
+"  8\n"
+"tuv"
+msgstr ""
+
+#: gtk/interface.c:549
+msgid ""
+"   9\n"
+"wxyz"
+msgstr ""
+
+#: gtk/interface.c:555
+msgid "*"
+msgstr "*"
+
+#: gtk/interface.c:561
+msgid "0"
+msgstr "0"
+
+#: gtk/interface.c:567
+msgid "#"
+msgstr "#"
+
+#: gtk/interface.c:573
+msgid "DTMF"
+msgstr "DTMF"
+
+#: gtk/interface.c:590
+msgid "My online friends"
+msgstr ""
+
+#: gtk/interface.c:849 gtk/interface.c:3029
+#, fuzzy
+msgid "Linphone"
+msgstr "Linphone"
+
+#: gtk/interface.c:850 gtk/interface.c:3030
+msgid ""
+"C: 2001\n"
+"Made in Old Europe"
+msgstr ""
+
+#: gtk/interface.c:851 gtk/interface.c:3031
+msgid ""
+"Linphone is a web-phone.\n"
+"It is compatible with SIP and RTP protocols."
+msgstr ""
+"Linphoneはインターネット電話です。\n"
+"SIP・RTPプロトコルと互換性があります。"
+
+#: gtk/interface.c:854
+msgid "http://www.linphone.org"
+msgstr ""
+
+#: gtk/interface.c:1028
+msgid "Parameters"
+msgstr "パラメーター"
+
+#: gtk/interface.c:1061
+#, fuzzy
+msgid "Use IPv6 network (if available)"
+msgstr "ユーザーは、今出られません。"
+
+#: gtk/interface.c:1064
+msgid ""
+"Toggle this if you are on an ipv6 network and you wish linphone to use it."
+msgstr ""
+
+#: gtk/interface.c:1066
+msgid "Global"
+msgstr ""
+
+#: gtk/interface.c:1081
+msgid ""
+"These options is only for users in a private network, behind a gateway. If "
+"you are not in this situation, then leave this empty."
+msgstr ""
+
+#: gtk/interface.c:1091
+msgid "No firewall"
+msgstr ""
+
+#: gtk/interface.c:1099
+msgid "Use this STUN server to guess firewall address :"
+msgstr ""
+
+#: gtk/interface.c:1107
+msgid "Specify firewall address manually:"
+msgstr ""
+
+#: gtk/interface.c:1127
+msgid "NAT traversal options (experimental)"
+msgstr ""
+
+#: gtk/interface.c:1156
+#, fuzzy
+msgid "Number of buffered miliseconds (jitter compensation):"
+msgstr ""
+"バッファするミリ秒\n"
+"(音声が途切れるときは大きくします)"
+
+#: gtk/interface.c:1164
+msgid "RTP port used for audio:"
+msgstr "オーディオに使用するRTPポート番号"
+
+#: gtk/interface.c:1171
+msgid "RTP properties"
+msgstr "RTPのプロパティー"
+
+#: gtk/interface.c:1189
+msgid "Use SIP INFO message instead of RTP rfc2833 for DTMF transmitting"
+msgstr ""
+
+#: gtk/interface.c:1192
+msgid "RTP-RFC2833 is the recommended way."
+msgstr ""
+
+#: gtk/interface.c:1194
+msgid "Other"
+msgstr ""
+
+#: gtk/interface.c:1199
+msgid "Network"
+msgstr "ネットワーク"
+
+#: gtk/interface.c:1225
+#, fuzzy
+msgid "Playback sound device:"
+msgstr "使用するサウンドデバイス"
+
+#: gtk/interface.c:1240 gtk/propertybox.c:629 gtk/propertybox.c:654
+msgid "micro"
+msgstr "マイク入力"
+
+#: gtk/interface.c:1241 gtk/propertybox.c:632 gtk/propertybox.c:655
+msgid "line"
+msgstr "ライン入力"
+
+#: gtk/interface.c:1250
+#, fuzzy
+msgid "Capture sound device:"
+msgstr "使用するサウンドデバイス"
+
+#: gtk/interface.c:1270
+msgid "Recording source:"
+msgstr "録音する音源"
+
+#: gtk/interface.c:1277
+#, fuzzy
+msgid "Ring sound device"
+msgstr "使用するサウンドデバイス"
+
+#: gtk/interface.c:1285
+#, fuzzy
+msgid "Ring sound:"
+msgstr "録音する音源"
+
+#: gtk/interface.c:1305
+msgid "Enable echo-canceler (cancels the echo heard by the remote party)"
+msgstr ""
+
+#: gtk/interface.c:1319
+msgid "Choose file"
+msgstr ""
+
+#: gtk/interface.c:1339
+msgid "Listen"
+msgstr ""
+
+#: gtk/interface.c:1343
+msgid "Sound properties"
+msgstr "サウンドのプロパティー"
+
+#: gtk/interface.c:1347
+#, fuzzy
+msgid "Sound device"
+msgstr "使用するサウンドデバイス"
+
+#: gtk/interface.c:1365
+msgid "Run sip user agent on port:"
+msgstr "SIPユーザーエージェントが起動するポート"
+
+#: gtk/interface.c:1374
+msgid "It is strongly recommended to use port 5060."
+msgstr "5060番ポートを使うことを強く推奨します。"
+
+#: gtk/interface.c:1376
+msgid "SIP port"
+msgstr "SIPのポート"
+
+#: gtk/interface.c:1393
+msgid "Your sip address:"
+msgstr "あなたのSIPアドレス"
+
+#: gtk/interface.c:1407
+msgid "@"
+msgstr "@"
+
+#: gtk/interface.c:1416
+msgid "Automatically guess a valid hostname"
+msgstr ""
+
+#: gtk/interface.c:1420
+msgid "Identity"
+msgstr "個人情報"
+
+#: gtk/interface.c:1467
+#, fuzzy
+msgid "Add proxy/registrar"
+msgstr "SIPレジストラを使う"
+
+#: gtk/interface.c:1488 gtk/interface.c:2114
+msgid "Edit"
+msgstr ""
+
+#: gtk/interface.c:1509
+msgid "Remove"
+msgstr "削除する"
+
+#: gtk/interface.c:1513
+msgid "Remote services"
+msgstr "リモートのサービス"
+
+#: gtk/interface.c:1543
+msgid "Clear all stored authentication information (username,password...)"
+msgstr ""
+
+#: gtk/interface.c:1547
+#, fuzzy
+msgid "Authentication information"
+msgstr "コーデックの情報"
+
+#: gtk/interface.c:1551
+msgid "SIP"
+msgstr "SIP"
+
+#: gtk/interface.c:1574
+msgid "List of audio codecs, in order of preference:"
+msgstr "コーデックのリストです。使いたい順に並べてください。"
+
+#: gtk/interface.c:1595
+#, fuzzy
+msgid "Audio codecs"
+msgstr "オーディオコーデックのプロパティー"
+
+#: gtk/interface.c:1608
+#, fuzzy
+msgid "Video Codecs"
+msgstr "オーディオコーデックのプロパティー"
+
+#: gtk/interface.c:1644
+msgid "Enable"
+msgstr "使用する"
+
+#: gtk/interface.c:1665
+msgid "Disable"
+msgstr "使用しない"
+
+#: gtk/interface.c:1673
+msgid "Upload bandwidth (kbit/sec):"
+msgstr ""
+
+#: gtk/interface.c:1681
+msgid "Download bandwidth (kbit/sec):"
+msgstr ""
+
+#: gtk/interface.c:1708
+msgid ""
+"Note: Codecs in red are not usable regarding to your connection type to the "
+"internet."
+msgstr "注意:赤い色のコーデックは、現在のネットワーク接続方法では使えません。"
+
+#: gtk/interface.c:1720
+#, fuzzy
+msgid "No information availlable"
+msgstr "特に情報はありません"
+
+#: gtk/interface.c:1727
+msgid "Codec information"
+msgstr "コーデックの情報"
+
+#: gtk/interface.c:1731
+#, fuzzy
+msgid "Audio and video codecs"
+msgstr "オーディオコーデックのプロパティー"
+
+#: gtk/interface.c:1736
+msgid "Codecs"
+msgstr "コーデック"
+
+#: gtk/interface.c:2044
+msgid "Address Book"
+msgstr "電話帳"
+
+#: gtk/interface.c:2140
+msgid "Select"
+msgstr "選択する"
+
+#: gtk/interface.c:2199
+msgid "Information"
+msgstr "情報"
+
+#: gtk/interface.c:2217
+msgid ""
+"User is not reachable at the moment but he invites you to contact him using "
+"the following alternate ressource:"
+msgstr ""
+"ユーザーに接続することができませんが、ユーザーは代わりの手段に招待していま"
+"す。他の手段で連絡をとってください。"
+
+#: gtk/interface.c:2224
+msgid "None."
+msgstr "ありません。"
+
+#: gtk/interface.c:2285 gtk/interface.c:2394
+msgid "Proxy/Registrar configuration box"
+msgstr ""
+
+#: gtk/interface.c:2315
+msgid "Route (optional):"
+msgstr ""
+
+#: gtk/interface.c:2337
+msgid "SIP Proxy:"
+msgstr ""
+
+#: gtk/interface.c:2344
+#, fuzzy
+msgid "SIP Identity:"
+msgstr "個人情報"
+
+#: gtk/interface.c:2359
+#, fuzzy
+msgid "Registration Period:"
+msgstr "登録しました。"
+
+#: gtk/interface.c:2374
+msgid "Send registration:"
+msgstr ""
+
+#: gtk/interface.c:2381
+#, fuzzy
+msgid "Publish presence information:"
+msgstr "コーデックの情報"
+
+#: gtk/interface.c:2466
+#, fuzzy
+msgid "Edit contact information"
+msgstr "(接続するための情報がありません!)"
+
+#: gtk/interface.c:2505
+#, fuzzy
+msgid "Name:"
+msgstr "名前"
+
+#: gtk/interface.c:2526
+msgid "Subscribe policy:"
+msgstr ""
+
+#: gtk/interface.c:2533
+msgid "Send subscription (see person's online status)"
+msgstr ""
+
+#: gtk/interface.c:2537
+#, fuzzy
+msgid "Contact information"
+msgstr "コーデックの情報"
+
+#: gtk/interface.c:2608
+msgid "New incoming subscription"
+msgstr ""
+
+#: gtk/interface.c:2628
+msgid "You have received a new subscription..."
+msgstr ""
+
+#: gtk/interface.c:2655
+msgid "Refuse"
+msgstr ""
+
+#: gtk/interface.c:2676 gtk/addressbook.c:57
+msgid "Accept"
+msgstr ""
+
+#: gtk/interface.c:2729
+msgid "Authentication requested"
+msgstr ""
+
+#: gtk/interface.c:2755
+msgid "Authentication required for realm"
+msgstr ""
+
+#: gtk/interface.c:2791
+msgid "userid:"
+msgstr ""
+
+#: gtk/interface.c:2799
+#, fuzzy
+msgid "password:"
+msgstr "パスワード"
+
+#: gtk/interface.c:2807
+msgid "username:"
+msgstr ""
+
+#: gtk/interface.c:2815
+msgid "realm:"
+msgstr ""
+
+#: gtk/interface.c:2876
+msgid "Linphone - Call history"
+msgstr ""
+
+#: gtk/interface.c:2943
+msgid "Chat Room"
+msgstr ""
+
+#: gtk/interface.c:2971
+msgid "Text:"
+msgstr ""
+
+#: gtk/callbacks.c:600
+#, c-format
+msgid "Chat with %s"
+msgstr ""
+
+#: gtk/support.c:90 gtk/support.c:114
+#, c-format
+msgid "Couldn't find pixmap file: %s"
+msgstr "pixmapファイルが見つかりません %s"
+
+#: gtk/propertybox.c:207
+msgid "Account"
+msgstr ""
+
+#: gtk/propertybox.c:439 gtk/propertybox.c:524 gtk/propertybox.c:536
+#: gtk/propertybox.c:883
+msgid "Enabled"
+msgstr "使用する"
+
+#: gtk/propertybox.c:440 gtk/propertybox.c:884
+msgid "Disabled"
+msgstr "使用しない"
+
+#: gtk/propertybox.c:458 gtk/friends.c:110
+msgid "Name"
+msgstr "名前"
+
+#: gtk/propertybox.c:464
+msgid "Rate (Hz)"
+msgstr ""
+
+#: gtk/propertybox.c:470
+msgid "Status"
+msgstr "状態"
+
+#: gtk/propertybox.c:476
+msgid "Min bitrate (kbit/s)"
+msgstr "最低限のビットレート (kbit/s)"
+
+#: gtk/propertybox.c:504 gtk/propertybox.c:509 gtk/propertybox.c:1061
+#: gtk/propertybox.c:1072
+msgid "Unlimited"
+msgstr ""
+
+#: gtk/linphone.c:215
+msgid "The caller asks for resource reservation. Do you agree ?"
+msgstr ""
+
+#: gtk/linphone.c:218
+msgid ""
+"The caller doesn't use resource reservation. \t\t\t\t\tDo you wish to "
+"continue anyway ?"
+msgstr ""
+
+#: gtk/linphone.c:245
+#, c-format
+msgid "linphone - receiving call from %s"
+msgstr ""
+
+#: gtk/linphone.c:272
+#, c-format
+msgid ""
+"You have received a subscription from %s.This means that this person wishes "
+"to be notified of your presence information (online, busy, away...).\n"
+"Do you agree ?"
+msgstr ""
+
+#: gtk/linphone.c:287
+#, c-format
+msgid "Authentication required for realm %s"
+msgstr ""
+
+#: gtk/linphone.c:410
+#, fuzzy
+msgid "None"
+msgstr "ありません。"
+
+#: gtk/friends.c:117
+#, fuzzy
+msgid "Presence status"
+msgstr "状態"
+
+#: gtk/addressbook.c:55
+msgid "Wait"
+msgstr ""
+
+#: gtk/addressbook.c:56
+msgid "Deny"
+msgstr ""
+
+#: gtk/addressbook.c:124
+#, fuzzy
+msgid "Bad sip address: a sip address looks like sip:user@domain"
+msgstr ""
+"SIPアドレスの形式エラーです。SIPアドレスは、<sip:username@domainname>のような"
+"形式です。"
+
+#: gtk/addressbook.c:226
+#, fuzzy
+msgid "Contact list"
+msgstr "接続中"
+
+#: coreapi/linphonecore.c:186
+#, c-format
+msgid "You have missed %i call(s)."
+msgstr ""
+
+#: coreapi/linphonecore.c:212
+msgid "aborted"
+msgstr ""
+
+#: coreapi/linphonecore.c:215
+msgid "completed"
+msgstr ""
+
+#: coreapi/linphonecore.c:218
+msgid "missed"
+msgstr ""
+
+#: coreapi/linphonecore.c:223
+#, c-format
+msgid ""
+"%s at %s\n"
+"From: %s\n"
+"To: %s\n"
+"Status: %s\n"
+"Duration: %i mn %i sec\n"
+msgstr ""
+
+#: coreapi/linphonecore.c:224
+msgid "Incoming call"
+msgstr ""
+
+#: coreapi/linphonecore.c:224
+msgid "Outgoing call"
+msgstr ""
+
+#: coreapi/linphonecore.c:410
+msgid ""
+"Your machine appears to be connected to an IPv6 network. By default linphone "
+"always uses IPv4. Please update your configuration if you want to use IPv6"
+msgstr ""
+
+#: coreapi/linphonecore.c:692
+#, fuzzy
+msgid "Ready"
+msgstr "準備完了。"
+
+#: coreapi/linphonecore.c:741
+msgid "Stun lookup in progress..."
+msgstr ""
+
+#: coreapi/linphonecore.c:750
+msgid "Stun lookup done..."
+msgstr ""
+
+#: coreapi/linphonecore.c:985
+msgid "Remote end seems to have disconnected, the call is going to be closed."
+msgstr ""
+
+#: coreapi/linphonecore.c:1077
+msgid "Looking for telephone number destination..."
+msgstr ""
+
+#: coreapi/linphonecore.c:1079
+msgid "Could not resolve this number."
+msgstr ""
+
+#: coreapi/linphonecore.c:1138
+#, fuzzy
+msgid ""
+"Could not parse given sip address. A sip url usually looks like sip:"
+"user@domain"
+msgstr ""
+"SIPアドレスの形式エラーです。SIPアドレスは、<sip:username@domainname>のような"
+"形式です。"
+
+#: coreapi/linphonecore.c:1187
+msgid "Sorry, having multiple simultaneous calls is not supported yet !"
+msgstr ""
+
+#: coreapi/linphonecore.c:1198
+#, fuzzy
+msgid "Contacting"
+msgstr "接続中"
+
+#: coreapi/linphonecore.c:1235
+msgid "could not call"
+msgstr ""
+
+#: coreapi/linphonecore.c:1524 coreapi/exevents.c:41
+msgid "Connected."
+msgstr "接続しました。"
+
+#: coreapi/linphonecore.c:1550
+#, fuzzy
+msgid "Call ended"
+msgstr "通話は拒否されました。"
+
+#: coreapi/linphonecore.c:1846
+msgid "No nat/firewall address supplied !"
+msgstr ""
+
+#: coreapi/linphonecore.c:1858 coreapi/linphonecore.c:1870
+#, c-format
+msgid "Invalid nat address '%s' : %s"
+msgstr ""
+
+#: coreapi/misc.c:130
+msgid ""
+"Your computer appears to be using ALSA sound drivers.\n"
+"This is the best choice. However the pcm oss emulation module\n"
+"is missing and linphone needs it. Please execute\n"
+"'modprobe snd-pcm-oss' as root to load it."
+msgstr ""
+"このコンピューターはALSAサウンドドライバーを使用しているようです。\n"
+"それは最良の選択です。しかし、Linphoneが必要とする\n"
+"pcm ossエミュレーションモジュールが見つかりません。\n"
+"ロードするために、ルート権限で'modprobe snd-pcm-oss'を実行してください。"
+
+#: coreapi/misc.c:133
+msgid ""
+"Your computer appears to be using ALSA sound drivers.\n"
+"This is the best choice. However the mixer oss emulation module\n"
+"is missing and linphone needs it. Please execute\n"
+" 'modprobe snd-mixer-oss' as root to load it."
+msgstr ""
+"このコンピューターはALSAサウンドドライバーを使用しているようです。\n"
+"それは最良の選択です。しかし、Linphoneが必要とする\n"
+"mixer ossエミュレーションモジュールが見つかりません。\n"
+"ロードするために、ルート権限で'modprobe snd-mixer-oss'を実行してください。"
+
+#: coreapi/exevents.c:115
+#, fuzzy
+msgid "Call terminated."
+msgstr "通話は拒否されました。"
+
+#: coreapi/exevents.c:137
+msgid "Could not reach destination."
+msgstr ""
+
+#: coreapi/exevents.c:146
+msgid "User is busy."
+msgstr "ユーザーはビジーです"
+
+#: coreapi/exevents.c:147
+msgid "User is temporarily unavailable."
+msgstr "ユーザーは、今出られません。"
+
+#: coreapi/exevents.c:148
+#, fuzzy
+msgid "Request Cancelled."
+msgstr "通話はキャンセルされました。"
+
+#: coreapi/exevents.c:150
+msgid "User does not want to be disturbed."
+msgstr "ユーザーは手が離せないようです。"
+
+#: coreapi/exevents.c:151
+msgid "Call declined."
+msgstr "通話は拒否されました。"
+
+#: coreapi/exevents.c:170
+msgid "Bad request"
+msgstr ""
+
+#: coreapi/exevents.c:173
+msgid "User cannot be found at given address."
+msgstr "ユーザーが見つかりません。"
+
+#: coreapi/exevents.c:176
+msgid "Remote user cannot support any of proposed codecs."
+msgstr "相手側では、提案したコーデックを一つもサポートしていません。"
+
+#: coreapi/exevents.c:202
+msgid "Timeout."
+msgstr "時間切れです。"
+
+#: coreapi/exevents.c:205
+msgid "Remote host was found but refused connection."
+msgstr "リモートホストが見つかりましたが、接続を拒否されました。"
+
+#: coreapi/exevents.c:312
+#, fuzzy
+msgid "is contacting you."
+msgstr "から電話です。"
+
+#: coreapi/exevents.c:392
+#, c-format
+msgid "Redirected to %s..."
+msgstr ""
+
+#: coreapi/exevents.c:408
+msgid ""
+"User is not reachable at the moment but he invites you\n"
+"to contact him using the following alternate resource:"
+msgstr ""
+"ユーザーに接続することができませんが、ユーザーは代わりの手段に招待していま"
+"す。\n"
+"他の手段で連絡をとってください。"
+
+#: coreapi/exevents.c:775
+msgid "Early media."
+msgstr ""
+
+#: coreapi/exevents.c:837
+#, fuzzy, c-format
+msgid "Registration on %s failed: %s"
+msgstr "登録しました。"
+
+#: coreapi/exevents.c:837
+msgid "no response timeout"
+msgstr ""
+
+#: coreapi/exevents.c:851
+#, fuzzy, c-format
+msgid "Registration on %s successful."
+msgstr "登録しました。"
+
+#: coreapi/presence.c:112 coreapi/presence.c:164
+#, fuzzy
+msgid "Gone"
+msgstr "ありません。"
+
+#: coreapi/presence.c:129
+msgid "Waiting for Approval"
+msgstr ""
+
+#: coreapi/presence.c:133
+#, fuzzy
+msgid "Online"
+msgstr "ライン入力"
+
+#: coreapi/presence.c:137
+msgid "Busy"
+msgstr ""
+
+#: coreapi/presence.c:142
+msgid "Be Right Back"
+msgstr ""
+
+#: coreapi/presence.c:151
+msgid "On The Phone"
+msgstr ""
+
+#: coreapi/presence.c:156
+msgid "Out To Lunch"
+msgstr ""
+
+#: coreapi/presence.c:160
+msgid "Closed"
+msgstr ""
+
+#~ msgid "User manual"
+#~ msgstr "ユーザーマニュアル"
+
+#~ msgid "Communication ended."
+#~ msgstr "会話は終了しました。"
+
+#~ msgid "Call cancelled."
+#~ msgstr "通話はキャンセルされました。"
+
+#~ msgid "Address"
+#~ msgstr "アドレス"
+
+#, fuzzy
+#~ msgid "Server address"
+#~ msgstr "サーバーのアドレス"
+
+#~ msgid "28k modem"
+#~ msgstr "28kのモデム"
+
+#~ msgid "56k modem"
+#~ msgstr "56kのモデム"
+
+#~ msgid "64k modem (numeris)"
+#~ msgstr "64Kのモデム(ISDN)"
+
+#~ msgid "ADSL or Cable modem"
+#~ msgstr "ADSL・CATVモデム"
+
+#~ msgid "Ethernet or equivalent"
+#~ msgstr "イーサネットなど"
+
+#~ msgid "Connection type:"
+#~ msgstr "接続のタイプ"
+
+#, fuzzy
+#~ msgid ""
+#~ "Linphone could not open audio device %s. Check if your sound card is "
+#~ "fully configured and working."
+#~ msgstr ""
+#~ "Linphoneはオーディオデバイスをオープンできませんでした。サウンドカードの設"
+#~ "定が完全で、正しく動いているかどうか確認して下さい。"
+
+#~ msgid "Type here the sip address of the person you want to call."
+#~ msgstr "電話をかけたい相手のSIPアドレスを入力して下さい。"
+
+#~ msgid ""
+#~ "Release or\n"
+#~ "Refuse"
+#~ msgstr ""
+#~ "電話を切る\n"
+#~ "会話を拒否"
+
+#~ msgid "%s. Retry after %i minute(s)."
+#~ msgstr "%s。%i 分後にかけ直して下さい。"
+
+#, fuzzy
+#~ msgid "Timeout..."
+#~ msgstr "時間切れです。"
+
+#~ msgid "Connection"
+#~ msgstr "コネクション"
+
+#, fuzzy
+#~ msgid ""
+#~ "Add address\n"
+#~ "book"
+#~ msgstr "電話帳"
+
+#~ msgid "Toggle this if you want to be registered on a remote server."
+#~ msgstr "リモートサーバーに登録するときは、チェックして下さい。"
+
+#~ msgid "Address of record:"
+#~ msgstr "登録するアドレス"
+
+#~ msgid ""
+#~ "The password used for registration. On some servers it is not necessary"
+#~ msgstr "登録にパスワードを用います。必須でないサーバーもあります。"
+
+#~ msgid "Use this registrar server as outbound proxy."
+#~ msgstr "レジストラサーバーをアウトバウンドプロクシとして使用します。"
+
+#~ msgid "sip address:"
+#~ msgstr "SIPアドレス"
+
+#~ msgid "Display name:"
+#~ msgstr "表示される名前"
+
+#~ msgid "Modify"
+#~ msgstr "修正"
+
+#~ msgid "Registering..."
+#~ msgstr "登録中……"
+
+#, fuzzy
+#~ msgid ""
+#~ "You are currently using the i810_audio driver.\n"
+#~ "This driver is buggy and so does not work with Linphone.\n"
+#~ "We suggest that you replace it by its equivalent ALSA driver,\n"
+#~ "either with packages from your distribution, or by downloading\n"
+#~ "ALSA drivers at http://www.alsa-project.org."
+#~ msgstr ""
+#~ "現在、i810オーディオドライバーを使っています。\n"
+#~ "このドライバーにはバグがあり、Linphoneではうまく動作しません。\n"
+#~ "ALSAドライバーに相当する\n"
+#~ "あなたのディストリビュージョンのパッケージか、\n"
+#~ "ALSAドライバー(http://www.alsa-project.org)への交換を推奨します。"
+
+#~ msgid "Unregistration successfull."
+#~ msgstr "登録を解除しました。"
+
+#~ msgid "3"
+#~ msgstr "3"
+
+#~ msgid "2"
+#~ msgstr "2"
+
+#~ msgid "4"
+#~ msgstr "4"
+
+#~ msgid "6"
+#~ msgstr "6"
+
+#~ msgid "7"
+#~ msgstr "7"
+
+#~ msgid "8"
+#~ msgstr "8"
+
+#~ msgid "9"
+#~ msgstr "9"
+
+#~ msgid "Select network interface to use:"
+#~ msgstr "使用するネットワークインターフェースを選んで下さい"
+
+#~ msgid "Network interface properties"
+#~ msgstr "ネットワークインターフェースのプロパティー"
+
+#~ msgid "RTP"
+#~ msgstr "RTP"
+
+#~ msgid "Audio"
+#~ msgstr "オーディオ"
+
+#~ msgid "C: 2001"
+#~ msgstr "C: 2001"
+
+#~ msgid "/dev/dsp"
+#~ msgstr "/dev/dsp"
+
+#~ msgid "/dev/dsp1"
+#~ msgstr "/dev/dsp1"
+
+#~ msgid "/dev/dsp2"
+#~ msgstr "/dev/dsp2"
+
+#~ msgid "/dev/dsp3"
+#~ msgstr "/dev/dsp3"
+
+#~ msgid "Add"
+#~ msgstr "追加する"
+
+#~ msgid "Set the selected address in linphone'main window."
+#~ msgstr "選択したアドレスがLinphoneのメインウインドウに現れます。"

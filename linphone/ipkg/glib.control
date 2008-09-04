@@ -1,0 +1,8 @@
+Package: libglib2.2
+Section: libs
+Priority: optional
+Version: 2.2.2
+Architecture: arm
+Maintainer: Simon Morlat
+Depends: libc6
+Description: a usefull set of C routines in a portable library.

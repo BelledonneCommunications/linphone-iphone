@@ -1,0 +1,128 @@
+Windows ACM (Audio Compression Manager) DLL library
+
+
+PURPOSE
+
+This directory contains support for loading and using Windows ACM
+(Audio Compression Manager) codecs from the native Windows DLL files.
+Its purpose is to allow Linux programs running on the x86 architecture
+to use proprietary Windows audio codecs.  This enables Linux 
+users to interoperate with Windows users without 
+reverse engineering the codec completely from scratch.  
+For example, it should be straightforward to write a Linux 
+program based on this library to allow TrueSpeech encoded
+.wav files to be exchanged with Windows users.  Indeed, the provided
+test program comes close to doing that, but for coding simplicity
+it does not use .wav headers.
+
+
+ACKNOWLEDGMENTS
+
+This code was extracted from the mplayer project (http://mplayerhq.hu),
+which apparently extracted it from the Wine project (http://winehq.org).
+It was slimmed down to support only the ACM audio codecs and not
+video codecs.  See the CREDITS file for details.
+
+
+REQUIREMENTS
+
+To use the included TrueSpeech test program, the following Windows
+DLLs are required:
+
+  tsd32.dll
+  tssoft32.acm
+
+Other codecs may require other DLL files.  A good source of
+DLL files is the w32codecs archive, available at 
+  http://mplayerhq.hu/MPlayer/releases/codecs/win32codecs.tar.bz2 
+Debian users can install it using "apt-get install w32codecs".  
+Unfortunately, version 0.9 of w32codecs does not contain tsd32.dll.  
+You may need to obtain it via other means, such as copying it from 
+your Windows installation.
+
+
+INSTALLATION
+
+The code is a library to be used in a larger program.  To compile
+it separately:
+  
+  vi config.h  # edit as needed
+  vi Makefile  # edit as needed
+  make
+
+This will build the output files libwin32acm.a and test_truespeech.
+
+
+USAGE
+
+test_truespeech.c contains an example program to demonstrate use of
+the ACM under Windows and to test the library with the TrueSpeech 
+codec.  More documentation about using the ACM library functions
+under Windows can be found at http://microsoft.com, specifically
+http://msdn.microsoft.com/library/default.asp?url=/library/en-us/multimed/audcomp_3kc2.asp
+Or search for ACM on Microsoft's site.
+
+test_truespeech exercises the TrueSpeech
+codec.  It will read the file pcmin.raw in the current directory
+and encode it via the TrueSpeech codec and write the result
+to truespeechout.raw.  It will then decode truespeechout.raw and
+and produce the file pcmout.raw.  Because TrueSpeech is a lossy
+codec, the file pcmin.raw is not byte-for-byte identical to pcmout.raw,
+however they should sound very similar.
+
+The files pcmin.raw and pcmout.raw can be played with the sox 
+utility "play" under Linux as follows.  The options are
+required because there is no header information in the file to inform
+the player what format the file is in:
+
+  play -f s -r 8000 -c 1 -s w pcmout.raw
+
+An example pcmin.raw file is included.
+The format of the pcmin.raw file is PCM (pulse code modulation)
+with 16-bit signed linear samples, mono (1 channel), at 8 KHz sampling rate.
+It is basically a .wav file with the WAV headers removed, and can
+be generated via the sox utility under Linux using options similar
+to the "play" line above (specify a conversion
+to .raw format).  truespeechout.raw is a raw TrueSpeech file and
+is approximately 1/15 the size of the input file.  It is normally
+not playable directly under Linux, although mplayer and some other
+players which load the TrueSpeech DLL like this library does can
+convert it to PCM on the fly for playing.
+
+If you would like to use the library with other ACM codecs besides
+TrueSpeech, read the file CODECS for more information.  
+
+win32codec.h and win32codec.c contain a simple wrapper around the
+ACM codec functions to aid their use in Linphone.  They can be
+considered as another example.
+
+
+TIPS FOR DEVELOPERS
+
+As shown in test_truespeech.c, the same input and output buffers
+can be used for each block of data to convert without calling
+acmStreamPrepareHeader() and acmStreamUnprepareHeader() over and
+over.  But if your application is using a different buffer for
+each block of data, it is quite allowable to prepare and unprepare
+the buffers each time a new block of data is converted.  This is
+what mplayer does, and it is also done in win32codec.c.  Microsoft's
+documentation about the ACM API is good, but the test_truespeech.c
+example should be quite helpful.  
+
+Microsoft's documentation does not clearly mention
+that often a codec used in encoding mode requires 
+ACM_STREAMOPENF_NONREALTIME to be passed to 
+acmStreamOpen() or it will fail to open.  This
+parameter indicates that realtime operation is not required.
+In the case of TrueSpeech, although the codec can operate perfectly
+well in realtime on a modern PC, it appears the designers were conservative
+and acmStreamOpen() will fail if realtime operation is requested.
+
+When converting from one proprietary codec format to another,
+often 16-bit signed linear PCM must be used as an intermediate codec
+step.  Most codecs will support 16-bit signed linear PCM at a minimum
+in addition to their own format.  See CODECS for details on 
+using the library with ACM codecs besides TrueSpeech.
+
+  Robert W. Brewer <rbrewer at op.net>
+  2003-05-31

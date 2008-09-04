@@ -1,0 +1,38 @@
+# -*- rpm-spec -*- ############################################################
+# 
+# EPM list file.  See epm(1) and epm.list(5) for details
+# 
+###############################################################################
+
+%product	${SUMMARY}
+%version	${VERSION}
+%release	${RELEASE}
+%description  	${SUMMARY}
+%vendor		${VENDOR}
+%copyright	${LICENSE}
+%license	${LICENSE}
+%readme		${srcdir}/README
+%packager	${PACKAGER}
+
+%system linux
+
+# Package all-in one: should be split later on...
+%provides ortp-devel
+
+%postinstall << EOF
+ldconfig 2>&1 | logger -i -s -t ${PACKAGE}
+EOF
+
+%postremove << EOF
+ldconfig 2>&1 | logger -i -s -t ${PACKAGE}
+EOF
+
+%system hpux
+
+%system all
+
+%include files.list
+
+%provides ortp
+%replaces ortp
+

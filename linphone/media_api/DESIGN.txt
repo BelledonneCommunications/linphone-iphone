@@ -1,0 +1,135 @@
+MEDIA API DESIGN DRAFT
+**********************
+
+
+The objective of the media_api is to construct and run the necessary
+processing on audio and video data flows for a given call (two party call) or
+conference.
+The media_api must support calls where callmember can be remote as well
+local hosted, in other words the media_api can be used inside linphone as
+well as in sip conferencing server. The api must support multiples way of
+getting media data: from disk, from rtp, from soundcard...
+The media_api is object oriented in C, and is based on the mediastreamer library
+to deal with audio or video signals, and on glib for types and usefull routines.
+
+The api must provide object and methods that describes the call, and then functions
+that executes the processing (using the mediastreamer) that is necessary for the
+call described.
+
+Proposed API:
+
+************************************************************************
+object: MediaFlow
+This object reprensent a media that is shared between all members of the call,
+for example voice.
+methods:
+MediaFlow *media_flow_new(char *id_string,gint type,gint duplex);
+type can be FLOW_AUDIO, FLOW_VIDEO.
+if duplex is 1, it means that the media flow is used by every member in both
+receiving and sending mode.
+id_string is just a string to identify the flow.
+
+void media_flow_destroy(MediaFlow *flow);
+destructor
+
+**************************************************************************
+object: CallMember
+This object reprensent a member of a call.
+methods:
+CallMember *call_member_new();
+
+gint call_member_setup_flow(CallMember *member, MediaFlow *flow,
+													  char *rx_endpoint, char *tx_endpoint);
+	This is the most important function of the API. It describes the way each
+	call member receives and send a given media flow.
+	The MediaFlow "flow" is added to the list of flows used by the member "member".
+	rx_endpoint is a string that described how data is received by the call member.
+	It should be an url, for example "rtp://213.21.54.127:7080". In this case it
+	means that data will be received on port 7080 at ip address 213.21.54.127.
+	tx_endpoint is a string that described how data is sent by the call member.
+	The role of url is very important. They can be:
+	"rtp://213.21.54.127:7080"
+	"file://tmp/media.out"  -a file on disk
+	"oss://0"               -souncard 0 using oss api
+	"alsa://0"							-soundcard 0 using alsa api.
+	In order to work, the call member must be part of a BasicCall, as well as
+	the flow must be part of the BasicCall too (using basic_call_add_flow())
+	This function may (on the backend) create a MediaEndpoint object that stores
+	the rx_endpoint and tx_endpoint parameter. This object is added to:
+	-the list of MediaEndpoint maintained by the member (list per member)
+	-the list of MediaEndpoint maintained by the flow (list per flow)
+
+
+**************************************************************************
+object: BasicCall
+This object handles simple calls (two party calls). It defines inside itself
+two CallMember objects.
+method:
+BasicCall *basic_call_new();
+
+CallMember *basic_call_get_member(BasicCall *call, gint member_number);
+	Returns a member of a BasicCall according to a number.
+	
+void basic_call_add_flow(BasicCall *call, MediaFlow *flow);
+	Adds a flow to the call's list of flow.
+	
+gint basic_call_start_flow(BasicCall *call, MediaFlow *flow);
+	This function construct the mediastreamer processing chain necessary to make
+	the call running, if not done, and runs it using ms_start()
+	
+gint basic_call_stop_flow(BasicCall *call, MediaFlow *flow);
+
+gint basic_call_start_all_flows(BasicCall *call);
+	
+void basic_call_destroy(BasicCall *call);
+	Destroy all data used by the call: call members, call flows.
+
+**************************************************************************
+object: ConferenceCall
+This object handles conference call (which are quite much complicated than basic
+calls). But this object should have the same method as the BasicCall object.
+
+*******************************************************************
+			EXAMPLE
+*******************************************************************
+
+Two party call between call member A on machine "linphone.org" and call member B on machine "home.com". 
+The media_api is running on "home.com".
+
+	A (on linphone.org)								B (on home.com)
+
+------>(send to rtp://home.com:7080              MSRTPReceiver------>Decode----->(send to oss:/0)
+
+------<(recv on rtp://linphone.org:7020		  MSRTPSender<--------Encode<-----(read on oss://0)
+
+This is how to setup this call using the media_api:
+BasicCall *call;
+CallMember *memberA,*memberB;
+MediaFlow *flow;
+
+/* create a basic call*/
+call=basic_call_new();
+/* get a pointer to the pre-define members of the call */
+memberA=basic_call_get_member(call,0);
+memberB=basic_call_get_member(call,1);
+
+/* create a media flow */
+flow=media_flow_new("voice",FLOW_AUDIO,1);
+/* tell that the flow is used by the call */
+basic_call_add_flow(call,flow);
+/* tell how each member uses the flow (how is the interface ?)*/
+call_member_setup_flow(memberA,flow,"rtp://linphone.org:7020","rtp://home.com:7080");
+/* note: it is not efficient to do name resolution at this stage: that's why in reality numeric ip address
+should be given instead of host name */
+call_member_setup_flow(memberB,flow,"oss://0","oss://0");
+
+/* start the flow */
+basic_call_start_flow(call,flow);
+
+In case where the media api is running on another host called "toto" (in a media translator application for example),
+ the only thing that would change is the url given to memberB: tx="rtp://home.com:8820" for example and
+ rx="rtp://toto:9522".
+ 
+In the sipomatic application (the test application I use to test linphone (it answers to call and plays
+a short annoucement)), I would write rx="file://path_to_annoucement.raw" and tx="file://dev/null" instead of
+"oss://0".

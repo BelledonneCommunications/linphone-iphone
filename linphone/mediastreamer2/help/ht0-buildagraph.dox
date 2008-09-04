@@ -1,0 +1,153 @@
+/**
+ * @defgroup howto0_samplegraph Howto 1: build a sample audio graph.
+ * @ingroup mediastreamer2
+
+<H1>Initialize mediastreamer2</H1>
+
+When using mediastreamer2, your first task is to initialize the
+library:
+
+<PRE>
+	##include <mediastreamer2/mscommon.h>
+
+	int i;
+
+	i=ms_init();
+	if (i!=0)
+	  return -1;
+
+</PRE>
+
+Mediastreamer2 provides internal components which are called filters. Those
+filters must be linked together so that OUTPUT from one filter is sent to
+INPUT of the other filters.
+
+Usually, filters are used for processing audio or video data. They could
+capture data, play/draw data, encode/decode data, mix data (conference),
+transform data (echo canceller). One of the most important filter is the
+RTP filters that are able to send and receive RTP data.
+
+<H1>Graph sample</H1>
+
+If you are using mediastreamer2, you probably want to do Voice Over IP
+and get a graph providing a 2 way communication. This 2 graphs are very
+simple:
+
+This first graph shows the filters needed to capture data from a sound
+card, encode them and send it through an RTP session.
+
+<PRE>
+             AUDIO    ->    ENCODER   ->   RTP
+            CAPTURE   ->              ->  SENDER
+</PRE>
+
+ This second graph shows the filters needed to receive data from an RTP
+session  decode it and send it to the playback device.
+
+<PRE>
+        RTP      ->    DECODER   ->   DTMF       ->   AUDIO
+       RECEIVER  ->              ->  GENERATION  ->  PLAYBACK
+</PRE>
+
+<H1>Code to initiate the filters of the Graph sample</H1>
+
+Note that the NULL/error checks are not done for better reading.
+To build the graph, you'll need some information: you need to
+select the sound card and of course have an RTP session created
+with oRTP.
+
+<PRE>
+	MSSndCard *sndcard;
+	sndcard=ms_snd_card_manager_get_default_card(ms_snd_card_manager_get());
+
+        /* audio capture filter */
+	MSFilter *soundread=ms_snd_card_create_reader(captcard);
+	MSFilter *soundwrite=ms_snd_card_create_writer(playcard);
+
+	MSFilter *encoder=ms_filter_create_encoder("PCMU");
+	MSFilter *decoder=ms_filter_create_decoder("PCMU");
+
+	MSFilter *rtpsend=ms_filter_new(MS_RTP_SEND_ID);
+	MSFilter *rtprecv=ms_filter_new(MS_RTP_RECV_ID);
+
+	RtpSession *rtp_session = *** your_ortp_session *** ;
+
+	ms_filter_call_method(rtpsend,MS_RTP_SEND_SET_SESSION,rtp_session);
+	ms_filter_call_method(rtprecv,MS_RTP_RECV_SET_SESSION,rtp_session);
+
+	MSFilter *dtmfgen=ms_filter_new(MS_DTMF_GEN_ID);
+</PRE>
+
+In most cases, the above graph is not enough: you'll need to configure
+filter's options. As an example, you need to set sampling rate of sound
+cards' filters:
+
+<PRE>
+        int sr = 8000;
+	int chan=1;
+	ms_filter_call_method(soundread,MS_FILTER_SET_SAMPLE_RATE,&sr);
+	ms_filter_call_method(soundwrite,MS_FILTER_SET_SAMPLE_RATE,&sr);
+	ms_filter_call_method(stream->encoder,MS_FILTER_SET_SAMPLE_RATE,&sr);
+	ms_filter_call_method(stream->decoder,MS_FILTER_SET_SAMPLE_RATE,&sr);
+
+	ms_filter_call_method(soundwrite,MS_FILTER_SET_NCHANNELS, &chan);
+
+        /* if you have some fmtp parameters (from SDP for example!)
+        char *fmtp1 = ** get your fmtp line **;
+        char *fmtp2 = ** get your fmtp line **;
+	ms_filter_call_method(stream->encoder,MS_FILTER_ADD_FMTP, (void*)fmtp1);
+	ms_filter_call_method(stream->decoder,MS_FILTER_ADD_FMTP,(void*)fmtp2);
+</PRE>
+
+
+<H1>Code to link the filters and run the graph sample</H1>
+
+<PRE>
+	ms_filter_link(stream->soundread,0,stream->encoder,0);
+	ms_filter_link(stream->encoder,0,stream->rtpsend,0);
+
+	ms_filter_link(stream->rtprecv,0,stream->decoder,0);
+	ms_filter_link(stream->decoder,0,stream->dtmfgen,0);
+	ms_filter_link(stream->dtmfgen,0,stream->soundwrite,0);	
+</PRE>
+
+Then you need to 'attach' the filters to a ticker. A ticker is a graph
+manager responsible for running filters.
+
+In the above case, there is 2 independant graph within the ticker: you
+need to attach the first element of each graph (the one that does not
+contains any INPUT pins)
+
+<PRE>
+	/* create ticker */
+	MSTicker *ticker=ms_ticker_new();
+
+	ms_ticker_attach(ticker,soundread);
+	ms_ticker_attach(ticker,rtprecv);
+</PRE>
+
+<H1>Code to unlink the filters and stop the graph sample</H1>
+
+<PRE>
+	ms_ticker_detach(ticker,soundread);
+	ms_ticker_detach(ticker,rtprecv);
+
+	ms_filter_unlink(stream->soundread,0,stream->encoder,0);
+	ms_filter_unlink(stream->encoder,0,stream->rtpsend,0);
+
+	ms_filter_unlink(stream->rtprecv,0,stream->decoder,0);
+	ms_filter_unlink(stream->decoder,0,stream->dtmfgen,0);
+	ms_filter_unlink(stream->dtmfgen,0,stream->soundwrite,0);
+
+	if (rtp_session!=NULL) rtp_session_destroy(rtp_session);
+	if (rtpsend!=NULL) ms_filter_destroy(rtpsend);
+	if (rtprecv!=NULL) ms_filter_destroy(rtprecv);
+	if (soundread!=NULL) ms_filter_destroy(soundread);
+	if (soundwrite!=NULL) ms_filter_destroy(soundwrite);
+	if (encoder!=NULL) ms_filter_destroy(encoder);
+	if (decoder!=NULL) ms_filter_destroy(decoder);
+	if (dtmfgen!=NULL) ms_filter_destroy(dtmfgen);
+	if (ticker!=NULL) ms_ticker_destroy(ticker);
+</PRE>
+
+*/

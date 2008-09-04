@@ -1,0 +1,76 @@
+# MacOS X Temporary make file
+# H.M 2007.05.23
+
+SPEEXDIR = ../../../speex-1.2beta1
+GSMDIR = ../../../gsm-1.0-pl12
+ORTPDIR = ../../oRTP
+
+INCPATH = -I../include -I$(ORTPDIR)/include -I$(SPEEXDIR)/include -I$(GSMDIR)/inc/
+LIBPATH = -L. -L../../../gsm-1.0-pl12/lib
+FRAMEWORK = -framework CoreAudio -framework AudioToolbox -framework Carbon -framework AudioUnit
+CFLUGS = -g $(INCPATH) -DWORDS_BIGENDIAN -DDEBUG
+#CFLUGS = $(INCPATH) -DWORDS_BIGENDIAN
+
+
+LIBOBJ = mscommon.o msqueue.o msfilerec.o msfilter.o msspeex.o mssndcard.o alaw.o ulaw.o msconf.o msjoin.o msrtp.o ice.o tee.o gsm.o speexec.o audiostream.o msticker.o macsnd.o msfileplayer.o
+DYLIB = libms.dylib
+
+all:	echo
+
+echo:	../tests/echo.c $(DYLIB)
+	cc -c $(CFLUGS) ../tests/echo.c
+	cc -o echo $(FRAMEWORK) $(LIBPATH) echo.o $(DYLIB) -lortp -lspeex -lgsm
+
+clean:
+	rm -rf *.o *.dylib
+
+$(DYLIB):	$(LIBOBJ) libortp.dylib libspeex.dylib
+	cc -o $(DYLIB) $(FRAMEWORK) -dynamiclib -compatibility_version 1 -current_version 1  $(LIBOBJ) $(LIBPATH) -lortp -lspeex -lgsm
+
+libortp.dylib:
+	cp $(ORTPDIR)/src/.libs/libortp.dylib .
+	install_name_tool -id @executable_path/libortp.dylib libortp.dylib
+
+libspeex.dylib:
+	cp $(SPEEXDIR)/libspeex/.libs/libspeex.dylib .
+	install_name_tool -id @executable_path/libspeex.dylib libspeex.dylib
+
+msfileplayer.o:	msfileplayer.c
+	gcc -c $(CFLUGS) msfileplayer.c
+msticker.o:	msticker.c
+	gcc -c $(CFLUGS) msticker.c
+audiostream.o:	audiostream.c
+	gcc -c $(CFLUGS) audiostream.c
+speexec.o:	speexec.c
+	gcc -c $(CFLUGS) speexec.c
+gsm.o:		gsm.c
+	gcc -c $(CFLUGS) gsm.c
+tee.o:		tee.c
+	gcc -c $(CFLUGS) tee.c
+ice.o:		ice.c
+	gcc -c $(CFLUGS) ice.c
+msrtp.o:	msrtp.c
+	gcc -c $(CFLUGS) msrtp.c
+msjoin.o:	msjoin.c
+	gcc -c $(CFLUGS) msjoin.c
+msconf.o:	msconf.c
+	gcc -c $(CFLUGS) msconf.c
+msfilter.o:	msfilter.c
+	gcc -c $(CFLUGS) msfilter.c
+alaw.o:	alaw.c
+	gcc -c $(CFLUGS) alaw.c
+ulaw.o:	ulaw.c
+	gcc -c $(CFLUGS) ulaw.c
+msfilerec.o:	msfilerec.c
+	gcc -c $(CFLUGS) msfilerec.c
+msspeex.o:	msspeex.c
+	gcc -c $(CFLUGS) msspeex.c
+mssndcard.o:	mssndcard.c 
+	gcc -c $(CFLUGS) mssndcard.c 
+msqueue.o:	msqueue.c
+	gcc -c $(CFLUGS) msqueue.c
+macsnd.o:	macsnd.c
+	gcc -c $(CFLUGS) macsnd.c
+
+mscommon.o:	mscommon.c
+	gcc -c $(CFLUGS) -DPACKAGE_PLUGINS_DIR=\".\" mscommon.c

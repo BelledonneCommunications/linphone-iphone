@@ -1,0 +1,81 @@
+              U.S. Department of Defense
+             LPC-10 2400 bps Voice Coder
+                   Release 1.5
+                   October 1997
+
+(Note that this release 1.5 is not from any "official" source.  It is
+from Andy Fingerhut.  Contact information below.)
+
+This package is available from:
+
+http://www.arl.wustl.edu/~jaf/lpc/lpc10-1.5.tar.gz
+
+
+New in release 1.5:
+
+Just some minor fixes to sample applications "nuke" and "unnuke" that
+caused them not to work correctly on compilers with 16 bit int's.
+This was only a bug in the sample application code, not in the LPC-10
+library itself.
+
+NEW IN RELEASE 1.4!
+
+You can now compress (or decompress) multiple audio streams
+"simultaneously", by alternating the compression (or decompression) of
+frames for each audio stream.  Only the C version supports this
+feature, but who really cared whether the Fortran version supported
+this or not, eh?
+
+
+Contents:
+   README               - This file
+   README-1.0           - The original README file from Release 1.0
+   FAQ                  - Frequently Asked Questions items for LPC and CELP
+   lpc55                - modified Fortran code for LPC-10 Version 55
+      README            - summary of modifications made
+      README.f2c        - hints on installing f2c on some machines,
+                          and notes on the f2c invocation options used
+      README.jaf        - hints on using the LPC-10 coder from a C application
+      RCS               - Revision Control System directory containing
+                          master files for all sources, showing the steps
+                          of changes that I made to the original 1.0 sources.
+   lpc55-C              - Hand-modified C version of code, most of
+                          which was created by running f2c on the
+                          Fortran code in directory lpc55 above.  I'm
+                          fairly certain that the C code from the 1.0
+                          release was out of date with respect to the
+                          Fortran code, so it was not included in this
+                          distribution.
+   data                 - Sample speech files, containing:
+      dam9.spd          - Sample input speech file
+      dam9-out.spd      - Speech processed by modified Fortran code.
+                          This is identical to dam9_lpc55.spd from
+                          release 1.0, except for 180 0 samples at the
+                          beginning, and many samples here and there
+                          that are off by 1, probably due to different
+                          rounding of reals.
+   abtool_1.2	        - Sun GUI tool for playing listening comparisons
+			   between speech files (this is a beta version)
+   misc
+      bin               - Several useful shell scripts for audio on Sun machines
+         README         - Description of audio file formats
+      fortran-locals    - Some files I made when determining whether local
+                          variables in Fortran subroutines and functions
+                          were like C "static" local variables or not.
+      gcc-2.6.0-bug     - A program that demonstrates a bug in GCC 2.6.0
+                          on the Solaris 2.4 machine siesta.cs.wustl.edu.
+                          I don't know how widespread this problem is,
+                          but it does have an unpleasant side effect if
+                          GCC 2.6.0 is used to compile f2c.
+
+See also the file README-1.0 for some other useful details.
+
+
+Andy Fingerhut
+Applied Research Laboratory                     <-- this line is optional if
+Washington University, Campus Box 1045/Bryan 509      you have limited space
+One Brookings Drive
+Saint Louis, MO 63130-4899
+
+jaf@arl.wustl.edu
+http://www.arl.wustl.edu/~jaf/

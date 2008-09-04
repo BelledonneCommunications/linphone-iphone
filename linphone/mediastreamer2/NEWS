@@ -1,0 +1,23 @@
+mediastreamer-2.2.1: 25, january 2008
+	* video output resizing
+	* 4CIF and VGA support
+	* bugfixes
+	* added snow codec (experimental)
+	* enable setting of max rtp payload size for all encoders
+
+mediastreamer-2.2.0: 19, November 2007
+	* new "no webcam" screen
+	* bandwidth settings improvements
+	* new REQ_VFU command to request a video encoder to send an I-frame
+		(implemented for ffmpeg based encoders)
+	* contributed macosx sound support
+	* new MSVolume filter to make sound power measurements
+	* rate control of ffmpeg video codecs
+
+mediastreamer-2.1.0: 23, January 2007
+	* add support for Video4Linux V2 cameras
+	* support for mpjeg cameras
+	* webcam support on windows operational
+	* video window display ok on windows
+	* fix bug with quickcam driver on linux
+	* bandwidth setting improvements.

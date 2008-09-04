@@ -1,0 +1,59 @@
+USING OTHER CODECS
+
+To use the library with other ACM-supported codecs besides
+TrueSpeech, the following things are required:
+
+  1. DLL file supporting the codec
+  2. correct format tag for the codec
+  3. correct WAVEFORMATEX structure for the codec
+
+For codecs which are supported by mplayer, the easiest
+way to get items 1 and 2 is by looking at the audio codec
+section of mplayer's codec status table:
+  http://mplayerhq.hu/DOCS/codecs-status.html
+If mplayer says it is using a .acm file to support the 
+audio codec, then most likely it can be used with this
+library.  If mplayer is using another method to support
+that codec, you should probably consider using that
+same method in your Linux program instead of this library,
+because it is most likely a native way of supporting the
+codec.  Using a native codec should allow greater portability
+of your code to other architectures besides x86
+and does not require your users to have Windows DLLs available.
+
+Determining item 3, the correct WAVEFORMATEX structure
+for the codec, is the hardest part.  If your code is 
+simply playing files encoded by the codec this is easy.
+Your code must register the mapping between format tags
+and DLL filenames (items 1 and 2 above) by making repeated
+calls to MSACM_RegisterDriver().  Note that you will 
+often have to call MSACM_RegisterDriver() twice for each
+codec, once to register it for the codec's format tag for
+decoding, and once to register it with the PCM format tag
+for encoding.  Then to play a file you read the .wav header 
+from the beginning of the file and use that to create a
+WAVEFORMATEX structure which you pass to the acmStreamOpen()
+function.  From there on out everything can be the same
+as the example program.
+
+On the other hand, if your user is choosing the codec to 
+use for some encoding tasks, you do not have a .wav header
+to read.  The easiest thing to do in this case is probably
+to create a .wav file in the desired format under Windows using
+the Windows sound recorder.  Then examine this file with
+a hex editor and determine the appropriate values of the
+fields to use in the WAVEFORMATEX structure.  Note that
+most codecs use extra fields beyond the basic WAVEFORMATEX
+structure.  test_truespeech.c shows how to create an extended
+length WAVEFORMATEX and how to initialize the extra parts
+for the TrueSpeech codec.  A thorough writeup of the .wav
+format headers is at
+  http://www.borg.com/~jglatt/tech/wave.htm
+  
+
+Most codecs will support 16-bit signed linear PCM, but probably
+do not support a direct conversion to another proprietary
+codec.  To convert from one proprietary codec format to 
+another, typically a conversion to an intermediate 16-bit PCM
+form is required.
+

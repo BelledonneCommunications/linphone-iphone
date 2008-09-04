@@ -1,0 +1,51 @@
+# this file is used to store user config values for linphonec
+# please modify and copy it to ~/.linphonec
+#
+#
+
+logfile=~/linphonec.log
+debuglevel=0
+
+local_addr=192.168.1.10
+if_name=eth0
+# type of network connection 4 = ethernet
+con_type=4
+
+
+# rtp
+audio_rtp_port=7078
+jitt_comp=150
+
+
+# audio
+driver_mode=0
+rec_lev=100
+play_lev=100
+source=109
+autokill=0
+
+
+# sip
+sip_port=5060
+use_registrar=0
+username=1006
+hostname=192.168.1.1
+registrar=sip:192.168.1.1:5060
+reg_passwd=
+addr_of_rec=sip:1006@192.168.1.1
+reg_expires=900
+as_proxy=1
+as_redirect=0
+as_outbound=1
+
+
+# codecs
+audio_codecs=259 371 264 256 
+
+
+# short dial
+s0=sip:1002@130.83.176.121
+s1=sip:1001@192.168.1.1
+s2=sip:1002@192.168.1.1
+s3=sip:1003@192.168.1.1
+s4=sip:1004@192.168.1.1

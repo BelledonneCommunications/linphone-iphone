@@ -1,0 +1,31 @@
+# The list of Builtin Module Implementation Classes included with this distribution.
+# Used by PeerGroup Implementation.
+
+urn:jxta:uuid-deadbeefdeafbabafeedbabe000000020106 net.jxta.impl.resolver.ResolverServiceImpl Reference Implementation of the Resolver service
+urn:jxta:uuid-deadbeefdeafbabafeedbabe000000030106 net.jxta.impl.discovery.DiscoveryServiceImpl Reference Implementation of the Discovery service
+urn:jxta:uuid-deadbeefdeafbabafeedbabe000000040106 net.jxta.impl.pipe.PipeServiceImpl Reference Implementation of the Pipe Service
+urn:jxta:uuid-deadbeefdeafbabafeedbabe000000050106 net.jxta.impl.membership.none.NoneMembershipService None Membership Service
+urn:jxta:uuid-deadbeefdeafbabafeedbabe000000050206 net.jxta.impl.membership.passwd.PasswdMembershipService Password Membership Service.
+urn:jxta:uuid-deadbeefdeafbabafeedbabe000000050306 net.jxta.impl.membership.pse.PSEMembershipService PSE Membership Service
+urn:jxta:uuid-deadbeefdeafbabafeedbabe000000060106 net.jxta.impl.rendezvous.RendezVousServiceImpl Reference Implementation of the Rendezvous Service
+urn:jxta:uuid-deadbeefdeafbabafeedbabe000000070106 net.jxta.impl.peer.PeerInfoServiceImpl Reference Implementation of the Peerinfo Service
+urn:jxta:uuid-deadbeefdeafbabafeedbabe000000080106 net.jxta.impl.endpoint.EndpointServiceImpl Reference Implementation of the Endpoint service
+urn:jxta:uuid-deadbeefdeafbabafeedbabe000000090106 net.jxta.impl.endpoint.tcp.TcpTransport Reference Implementation of the TCP Message Transport
+urn:jxta:uuid-deadbeefdeafbabafeedbabe0000000A0106 net.jxta.impl.endpoint.servlethttp.ServletHttpTransport Reference Implementation of the HTTP Message Transport
+urn:jxta:uuid-deadbeefdeafbabafeedbabe0000000B0106 net.jxta.impl.endpoint.router.EndpointRouter Reference Implementation of the Router Message Transport
+urn:jxta:uuid-deadbeefdeafbabafeedbabe0000000D0106 net.jxta.impl.endpoint.tls.TlsTransport Reference Implementation of the TLS Message Transport
+urn:jxta:uuid-deadbeefdeafbabafeedbabe0000000E0106 net.jxta.impl.proxy.ProxyService Reference Implementation of the JXME Proxy Service
+urn:jxta:uuid-deadbeefdeafbabafeedbabe0000000F0106 net.jxta.impl.endpoint.relay.RelayTransport Reference Implementation of the Relay Message Transport
+urn:jxta:uuid-deadbeefdeafbabafeedbabe000000100106 net.jxta.impl.access.always.AlwaysAccessService Always Access Service
+urn:jxta:uuid-deadbeefdeafbabafeedbabe000000100206 net.jxta.impl.access.simpleACL.SimpleACLAccessService Simple ACL Access Service
+urn:jxta:uuid-deadbeefdeafbabafeedbabe000000100306 net.jxta.impl.access.pse.PSEAccessService PSE Access Service
+urn:jxta:uuid-deadbeefdeafbabafeedbabe000000110106 net.jxta.impl.endpoint.cbjx.CbJxTransport Reference Implementation of the Cryptobased-ID Message Transport
+urn:jxta:uuid-0C801F65D38F421C9884D706B337B8110106 net.jxta.impl.endpoint.mcast.McastTransport Reference Implementation of the IP Multicast Message Transport
+
+# Since the peer groups refer to other modules in their ModuleImplAdvertisements it's necessary to load them last.
+
+urn:jxta:uuid-deadbeefdeafbabafeedbabe000000010106 net.jxta.impl.peergroup.Platform Standard World PeerGroup Reference Implementation
+urn:jxta:uuid-deadbeefdeafbabafeedbabe000000010206 net.jxta.impl.peergroup.ShadowPeerGroup Default Network PeerGroup Reference Implementation
+urn:jxta:uuid-deadbeefdeafbabafeedbabe000000010306 net.jxta.impl.peergroup.StdPeerGroup General Purpose Peer Group Implementation
+
+ 

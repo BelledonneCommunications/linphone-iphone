@@ -1,0 +1,18 @@
+# List of source files containing translatable strings.
+
+gtk/main.c
+gtk/interface.c
+gtk/callbacks.c
+gtk/support.c
+gtk/propertybox.c
+gtk/gui_utils.c
+gtk/linphone.c
+gtk/presence.c
+gtk/friends.c
+gtk/addressbook.c
+
+coreapi/linphonecore.c
+coreapi/misc.c
+coreapi/exevents.c
+coreapi/presence.c
+

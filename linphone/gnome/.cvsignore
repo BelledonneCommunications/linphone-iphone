@@ -1,0 +1,8 @@
+.deps
+.libs
+Makefile
+Makefile.in
+linphone
+linphone_applet
+GNOME_LinphoneApplet.server
+GNOME_LinphoneApplet.server.in

@@ -1,0 +1,32 @@
+<oaf_info>
+
+<oaf_server iid="OAFIID:GNOME_LinphoneApplet_Factory"
+	    type="exe"
+	    location="@LIBEXECDIR@/linphone_applet">
+
+	<oaf_attribute name="repo_ids" type="stringv">
+		<item value="IDL:Bonobo/GenericFactory:1.0"/>
+		<item value="IDL:Bonobo/Unknown:1.0"/>
+	</oaf_attribute>
+	<oaf_attribute name="name" type="string" value="Linphone Applet Factory"/>
+	<oaf_attribute name="description" type="string" value="Linphone Applet Factory"/>
+
+</oaf_server>
+
+<oaf_server iid="OAFIID:GNOME_LinphoneApplet"
+	    type="factory"
+	    location="OAFIID:GNOME_LinphoneApplet_Factory">
+
+	<oaf_attribute name="repo_ids" type="stringv">
+		<item value="IDL:GNOME/Vertigo/PanelAppletShell:1.0"/>
+		<item value="IDL:Bonobo/Control:1.0"/>
+		<item value="IDL:Bonobo/Unknown:1.0"/>
+	</oaf_attribute>
+	<oaf_attribute name="name" type="string" _value="Linphone"/>
+	<oaf_attribute name="description" type="string" _value="Linphone"/>
+	<oaf_attribute name="panel:category" type="string" _value="Internet"/>
+	<oaf_attribute name="panel:icon" type="string" value="linphone/linphone2.png"/>
+
+</oaf_server>
+
+</oaf_info>

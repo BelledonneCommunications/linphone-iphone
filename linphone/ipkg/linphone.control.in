@@ -1,0 +1,8 @@
+Package: linphone
+Section: net
+Priority: optional
+Version: @VERSION@-1
+Architecture: arm
+Maintainer: Simon Morlat
+Depends: libc6, libosip
+Description: a SIP (RFC3261) internet phone.

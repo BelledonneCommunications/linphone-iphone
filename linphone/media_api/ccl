@@ -1,0 +1,1 @@
+gcc -I/home/skudupa/linphone/mediastreamer -I/home/skudupa/linphone/ffmpeg/libavcodec -I/home/skudupa/linphone/gsmlib -I/home/skudupa/linphone/lpc10-1.5 -I/home/skudupa/linphone/oRTP/src -I/usr/include/glib-1.2 -I/usr/lib/glib/include -I/usr/include/gtk-1.2 -I/usr/include/glib-1.2 -I/usr/lib/glib/include -I/usr/X11R6/include -I/home/skudupa/linphone/oRTP mediaflow.c

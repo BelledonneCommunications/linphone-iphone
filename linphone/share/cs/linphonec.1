@@ -1,0 +1,76 @@
+.\" Encoding: ISO-8859-2
+.\" Linphone is an internet phone compatible with the Session Initiation Protocol (SIP: RFC3261 )
+.\" Translation into Czech by Petr Písaø <petr.pisar@atlas.cz>, 2006-02-26
+.TH "linphonec" "1" "1.0.0" "Florian Winterstein & Simon MORLAT" "linphone, internetový telefon"
+.do hla cs
+.do hpf hyphen.cs
+.SH "JMÉNO"
+.LP 
+linphonec \- Øádkové rozhraní k linphone, internetový telefon podporující SIP.
+.SH "SYNTAXE"
+.LP 
+linphonec [\fI\-d\fP] <\fIúroveò_ladìní\fP> [\fI\-l\fP] <\fIlogovací_soubor\fP>
+[\fI\-c\fP] <\fIkonfiguraèní_soubor\fP> 
+.br 
+linphonec \fI\-v\fP
+.SH "POPIS"
+.LP 
+Linphonec je konzolová verze internetového telefonu linphone urèeného pro
+Gnome prostøedí (http://www.linphone.org).
+.LP 
+Linphonec mù¾e být spu¹tìn bez jakýchkoliv parametrù. Pro správné spu¹tìní
+nepotøebuje ¾ádný konfiguraèní soubor. Pokud ten neexistuje, pøi prvním spu¹tìní
+bude vytvoøen vzorový.
+Standardnì je konfiguraèní soubor ulo¾en v ~/.linphonerc.
+Vìt¹ina parametrù (proxy, hesla) mù¾e být zmìnìna z pøíkazové øádky. Nìkteré
+z nich (cesta k souboru s vyzvánìním) v¹ak lze zmìnit jen úpravou
+konfiguraèního souboru .linponerc.
+.LP 
+Jakmile je linphonec spu¹tìn, oèekává pøíkazy a je pøipraven pøijímat hovory.
+.LP
+Nejdùle¾itìj¹í pøíkazy jsou:
+.br 
+.TP 
+call <sip_url>  zavolat nìkomu. sip_url je ve tvaru sip:user@host
+.TP 
+terminate       ukonèit hovor
+.TP 
+answer          pøijmout pøíchozí hovor
+.TP 
+help            zobrazit interaktivní nápovìdu
+
+.SH "VOLBY"
+.LP 
+.TP 
+\fB\-d\fR <\fIúroveò_ladìní\fP>
+Pou¾ije ladící re¾im s danou mírou upovídanosti (úroveò_ladìní). úroveò_ladìní
+je celé èíslo v rozsahu 0..5.
+.TP 
+\fB\-h\fR
+Vypí¹e nápovìdu a skonèí.
+.TP 
+\fB\-l\fR <\fIlogovací_soubor\fP>
+Urèuje soubor, kam budou zapisovány ladící informace. Jinak se pou¾ije
+standardní výstup.
+.TP 
+\fB\-c\fR <\fIkonfiguraèní_soubor\fP>
+Urèuje konfiguraèní soubor, který bude naèten pøi spu¹tìní.
+ 
+.SH "SOUBORY"
+.LP 
+\fI~/.linphonec\fP 
+.br 
+ 
+.SH "PROMÌNNÉ PROSTØEDÍ"
+.LP 
+.SH "PØÍKLADY"
+.LP 
+
+.SH "AUTOØI"
+.LP 
+Florian Winterstein <fwin at gmx.de>
+.br 
+Simon Morlat <simon.morlat at linphone.org>
+.SH "VIZ TAKÉ"
+.LP 
+linphone(1) sipomatic(1)

@@ -1,0 +1,182 @@
+<?xml version="1.0"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. -->
+<project name="p2pproxy" default="build" basedir=".">
+  <property environment="env"/>
+  <property name="junit.output.dir" value="junit"/>
+  <property name="debuglevel" value="source,lines,vars"/>
+  <property name="target" value="1.5"/>
+  <property name="source" value="1.5"/>
+  <property name="seeding-address" value="tcp://localhost:9701"/>
+  <property name="public-address" value="127.0.0.1"/>
+  <property name="public-address-user" value="root"/>   
+  <property name="version" value="0.1"/>     
+  <property name="jxta-src" location="dependencies-src/jxse-src-2.5"/>  
+  <property name="dist.dir" location="antbuild/dist/p2pproxy_${version}"/>
+  
+   <path id="p2pproxy.classpath">
+    <pathelement location="antbuild/p2pproxy"/>
+    <pathelement location="dependencies/log4j.jar"/>
+    <pathelement location="dependencies/sip.jar"/>
+    <pathelement location="dependencies/bcprov-jdk14.jar"/>
+    <pathelement location="dependencies/junit-4.3.1.jar"/>
+    <pathelement location="dependencies/javax.servlet.jar"/>
+    <pathelement location="dependencies/org.mortbay.jetty.jar"/>
+  </path>
+  <target name="init">
+   <mkdir dir="antbuild"/>
+   <mkdir dir="antbuild/p2pproxy"/>
+   <mkdir dir="antbuild/p2pproxy-tester"/>
+   <mkdir dir="${dist.dir}"/>
+   <mkdir dir="antbuild/META-INF"/>
+   <copy todir="antbuild" includeemptydirs="false">
+     <fileset dir="src" excludes="**/*.launch, **/*.java"/>
+   </copy>
+  </target>
+  <target name="clean">
+    <delete dir="antbuild"/>
+  </target>
+  <target name="cleanall" depends="clean"/>
+  <target name="build" depends="build-subprojects,build-project"/>
+  <target name="build-subprojects"/>
+  
+   <target name="build-project" depends="init">
+    <echo message="${ant.project.name}: ${ant.file}"/>
+ 
+      <javac destdir="antbuild/p2pproxy" debug="true" debuglevel="${debuglevel}" source="${source}" target="${target}">
+      <src path="src"/>
+      <src path="${jxta-src}/api/src"/>
+      <src path="${jxta-src}/impl/src"/> 
+      <exclude name="**/*Tester.java"/> 
+      <classpath refid="p2pproxy.classpath"/>
+    </javac>
+   <copy todir="antbuild/p2pproxy">
+         <fileset dir="${jxta-src}/impl/src">
+            <include name="**/*.properties"/>
+         	<include name="META-INF/**/*"/>
+         </fileset>  
+   </copy> 
+      <copy todir="antbuild/p2pproxy">
+            <fileset dir="${jxta-src}/api/src">
+               <include name="**/*.properties"/>
+             </fileset>  
+      </copy> 
+      <javac destdir="antbuild/p2pproxy-tester" debug="true" debuglevel="${debuglevel}" source="${source}" target="${target}">
+     <src path="test-src"/>
+    <!-- include api for Class loader isolation --> 
+      <!--src path="${jxta-src}/api/src"/-->  
+      <!--include name="**/*Tester.java"/--> 
+      <!--include name="**/*Tester.java"/-->
+      <src path="src"/>
+      <include name="**/*.java"/>  
+      <include name="org/linphone/p2pproxy/api/P2pProxyInstance.java"/>   
+      <exclude name="org/linphone/p2pproxy/core/**/*.java"/>  
+     <classpath refid="p2pproxy.classpath"/>
+   </javac>
+  </target>
+  
+   <target name="build-refprojects" description="Build all projects which reference this project. Useful to propagate changes."/>
+  <target name="P2pProxyMain-relay">
+    <java fork="yes" classname="org.linphone.p2pproxy.core.P2pProxyMain" failonerror="true">
+      <jvmarg value="-Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"/> 
+      <arg value="-jxta"/>
+      <arg path="${user.home}/relay"/>
+         <arg line="-sip 5041 -relay -seeding-relay ${seeding-address} -seeding-rdv ${seeding-address}"/>
+      <classpath refid="p2pproxy.classpath"/>
+    </java>
+  </target>
+  <target name="P2pProxyMain-edge">
+    <java fork="yes" classname="org.linphone.p2pproxy.core.P2pProxyMain" failonerror="true">
+      <jvmarg value="-Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"/> 
+      <arg value="-jxta"/>
+      <arg path="${user.home}/edge"/>
+      <arg line="-sip 5042 -edge-only -seeding-relay ${seeding-address} -seeding-rdv ${seeding-address}"/>
+      <classpath refid="p2pproxy.classpath"/>
+    </java>
+  </target>
+  <target name="junit-test">
+      <junit printsummary="withOutAndErr" haltonfailure="no" showoutput="yes" fork="yes">
+      <jvmarg value="-Xdebug"/> 
+      <jvmarg value="-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"/> 
+         <formatter type="plain" />
+           <classpath>
+                   <pathelement location="dependencies/junit-4.3.1.jar" />
+                   <pathelement location="antbuild/p2pproxy-tester" />
+                   <pathelement location="dependencies/log4j.jar"/>
+                   <pathelement location="dependencies/sip.jar"/>
+           </classpath>
+           <batchtest>
+                   <fileset dir="antbuild/p2pproxy-tester">
+                           <include name="org/linphone/p2pproxy/test/P2pProxyNetworkingTester.class" />
+                           <!--include name="org/linphone/p2pproxy/test/P2pProxyNatedNetworkTester.class" /--> 
+                   </fileset>
+           </batchtest>
+   </junit>
+ </target>
+     <target name="junit-test-nat">
+         <junit printsummary="withOutAndErr" haltonfailure="no" showoutput="yes" fork="yes">
+         <jvmarg value="-Xdebug"/> 
+         <jvmarg value="-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"/> 
+         <jvmarg value="-Dp2pproxy.publicAddress=${public-address}"/>
+         <jvmarg value="-Dp2pproxy.publicAddressUser=${public-address-user}"/>  
+            <formatter type="plain" />
+              <classpath>
+                      <pathelement location="dependencies/junit-4.3.1.jar" />
+                      <pathelement location="antbuild/p2pproxy-tester" />
+                      <pathelement location="dependencies/log4j.jar"/>
+                      <pathelement location="dependencies/sip.jar"/>
+              </classpath>
+              <batchtest>
+                      <fileset dir="antbuild/p2pproxy-tester">
+                              <include name="org/linphone/p2pproxy/test/P2pProxyNatedNetworkTester.class" /> 
+                      </fileset>
+              </batchtest>
+      </junit>
+    </target>
+   
+  <target name="junitreport">
+    <junitreport todir="${junit.output.dir}">
+      <fileset dir="${junit.output.dir}">
+        <include name="TEST-*.xml"/>
+      </fileset>
+      <report format="frames" todir="${junit.output.dir}"/>
+    </junitreport>
+  </target>
+  <target name="dist" depends="build-project">
+   <!--prep-->
+   <copy todir="${dist.dir}">
+            <fileset dir="dependencies">
+               <include name="*"/>
+             </fileset>  
+   </copy> 
+   
+   <copy file="log4j.properties" tofile="${dist.dir}/log4j.properties"/>
+   <copy file="bin/p2pproxy.sh" tofile="${dist.dir}/p2pproxy.sh"/>
+   <copy file="bin/p2pproxy.bat" tofile="${dist.dir}/p2pproxy.bat"/>
+   <copy file="bin/p2pproxy-cmd.sh" tofile="${dist.dir}/p2pproxy-cmd.sh"/>
+   <copy file="bin/p2pproxy-cmd.bat" tofile="${dist.dir}/p2pproxy-cmd.bat"/>
+
+      <fixcrlf srcdir="${dist.dir}" includes="*.sh"
+            eol="lf" eof="remove" />
+   <fixcrlf srcdir="${dist.dir}"
+            includes="*.bat" eol="crlf" />
+   <chmod file="${dist.dir}/*.sh" perm="ugo+rx"/>
+   
+   <!-- build jar-->
+   <jar jarfile="${dist.dir}/p2pproxy.jar" basedir="antbuild/p2pproxy"/>
+
+   <manifest file="antbuild/META-INF/MANIFEST.MF">
+     <attribute name="Built-By" value="${user.name}"/>
+     <attribute name="Main-Class" value="org.linphone.p2pproxy.core.P2pProxyMain"/>
+     <attribute name="Class-Path" value="log4j.jar bcprov-jdk14.jar javax.servlet.jar org.mortbay.jetty.jar sip.jar"/>   
+   </manifest>
+   <!-- put manifest -->
+   <jar jarfile="${dist.dir}/p2pproxy.jar" compress="false" keepcompression="true" update="true"  manifest="antbuild/META-INF/MANIFEST.MF"/>
+   
+   <zip destfile="antbuild/p2pproxy_${version}.zip"  basedir="antbuild/dist" />
+   
+  </target>  
+</project>

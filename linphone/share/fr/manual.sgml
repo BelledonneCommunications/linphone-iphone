@@ -1,0 +1,488 @@
+<!doctype article public "-//OASIS//DTD DocBook V3.1//EN">
+
+<article lang="fr">
+<!-- DocBook file was created by LyX 1.1
+  See http://www.lyx.org/ for more information -->
+  <artheader id="manual">
+   <title>
+   MANUEL DE L'UTILISATEUR DE LINPHONE
+  </title>
+  <author>
+   Simon Morlat (simon.morlat@linphone.org)
+  </author>
+  <date>
+   11-13-2001
+  </date>
+  </artheader>
+  <sect1>
+   <title>
+   Introduction
+  </title>
+  <para>
+   Linphone est un simple logiciel de téléphonie sur le web. Il permet d'effectuer des conversations comprenants deux participants en utilisant un réseau IP comme Internet. Ainsi, voici l'équipement nécessaire pour utiliser Linphone : 
+  </para>
+  <itemizedlist>
+   <listitem>
+   <para>
+   Linux ( Peut fonctionner dans d'autres environnements tels que BSD ou d'autres UNIX, mais personne ne l'a encore testé.)
+   </para>
+  </listitem>
+   <listitem>
+   <para>
+   Gnome 1.2 ou supérieur, installé mais pas nécessairement utilisé.
+   </para>
+  </listitem>
+   <listitem>
+   <para>
+   Une carte son configuré correctement.
+   </para>
+  </listitem>
+   <listitem>
+   <para>
+   Des écouteurs ou haut-parleurs.
+   </para>
+  </listitem>
+   <listitem>
+   <para>
+   Un micro.
+   </para>
+  </listitem>
+   <listitem>
+   <para>
+   Une connection réseau (Internet par exemple), par modem, carte réseau Ethernet ...
+   </para>
+  </listitem>
+  </itemizedlist>
+  <para>
+   Il est préférable de fermer toutes les applications utilisant la carte son avant d'utiliser Linphone. Linphone est un logiciel libre, il est distribué sous la license publique GNU.
+  </para>
+  <para>
+   ATTENTION : Ce logiciel est distribué SANS GARANTIE. Lisez le fichier COPYING pour plus de détails. Ceci signifie entre autre que vous ne devez pas utiliser Linphone pour des conversations confidentielles : il y a AUCUN CRYPTAGE, de ce fait, il est peut-être facile pour quelqu'un de mal intentionné de pirater les flux audios. Notez toutefois, qu'il n'est pas recommandé d'utiliser Linphone en tant qu'utilisateur root.
+  </para>
+  </sect1>
+  <sect1>
+   <title>
+   Utilisation
+  </title>
+  <para>
+   Linphone peut être utilisé suivant 3 modes différents : 
+  </para>
+  <itemizedlist>
+   <listitem>
+   <para>
+   En tant qu'application (normale) : Dans le menu de Gnome, Linphone devrait apparaître dans la section Réseau ( &quot;Network&quot; ). Si vous n'utilisez pas Gnome, vous pouvez démarrer Linphone dans une fenêtre terminal par exemple. Quand Linphone n'est pas en cours d'éxecution, vous ne pouvez pas recevoir d'appel(s).
+   </para>
+  </listitem>
+   <listitem>
+   <para>
+   En tant qu'applet Gnome : en cliquant sur le panneau Gnome du bouton droit, ajoutez l'applet. Linphone apparait dans la section Réseau. En tournant en tâche de fond dans le panneau Gnome, Linphone est capable de recevoir des appel(s) même si sa fenêtre n'est pas visible. Si vous voulez voir la fenêtre principale, cliquez sur l'applet. Quand un appel arrive, la fenêtre principale passe en premier plan,et vous entendrez normalement la sonnerie retentir.
+   </para>
+  </listitem>
+   <listitem>
+   <para>
+   En tant que démon : Ceci est intéressant pour les non-utilisateurs de Gnome. Par exemple pour KDE, vous avez un repertoire /home/user/.kde2/AutoStart/ où vous pouvez rajouter les applications que vous voulez voir démarrer à votre début de session. Ainsi, dans le repertoire cité, à l'aide du gestionnaire de fichiers, ajouter un lien en cliquant du bouton droit. La commande à rentrer est &quot;linphone -daemon&quot;. Vous ne verrez pas l'interface de Linphone, donc, pour la faire apparaitre, démarrez Linphone normalement, par exemple à travers une fenêtre terminal.
+   </para>
+  </listitem>
+  </itemizedlist>
+  </sect1>
+  <sect1>
+   <title>
+   Comment appeler
+  </title>
+   <sect2>
+    <title>
+    Principes de base
+   </title>
+   <para>
+    Linphone utilise le protocole SIP (Session Initiation Protocol) pour établir les appels avec vos correspondants. Le protocole spécifie que chaque personne doit être identifié par une URL sip de la forme: sip:user_name@host_name. Cette manière d'adresser les personnes est très proche de celle utilisée pour le courrier électronique.
+   </para>
+   <para>
+    User_name est un nom d'utilisateurs sur une machine, comme un nom de login sur une machine linux, par exemple. Host_name est le nom d'une machine, soit sous forme d'adresse IP, ou plus simplement sous forme de nom de domaine (ex: linphone.org)
+   </para>
+   <para>
+    Notez que SIP est un nouveau protocole de télécommunication fait pour être simple et efficace sur l'internet, et qu'il est totalement différent et incompatible avec H.323. H.323 est le protocole actuellement utilisé par NetMeeting ou GnomeMeeting.
+   </para>
+   </sect2>
+   <sect2>
+    <title>
+    Application: deux personnes (Bob et Tom) se connectent à internet par un modem analogique classique.
+   </title>
+   <para>
+    Voici la manière la plus simple de procéder : 
+   </para>
+   <para>
+    Pré-requis : 
+   </para>
+   <itemizedlist>
+    <listitem>
+    <para>
+    Un modem 28.8 Baud ou plus. 
+    </para>
+   </listitem>
+   </itemizedlist>
+   <para>
+    Déroulement : 
+   </para>
+   <itemizedlist>
+    <listitem>
+    <para>
+    Il est convenu que Bob doit appeler Tom à 21h00. A 21h00, Tom se connecte à Internet en utilisant kppp, gppp ou wvdial (ou un autre). Dès qu'il est connecté sur l'Internet, il peut lancer Linphone.En ouvrant la fenêtre de statistiques de kppp ou gppp, il peut voir son adresse IP (sinon, il peut taper /sbin/ifconfig pour l'obtenir). Le nom de l'interface modem doit être ppp0.
+    </para>
+   </listitem>
+    <listitem>
+    <para>
+    Ensuite, il envoit un email à Bob disant : &quot;Mon adresse IP estxxx.xxx.xxx.xxx&quot;.
+    </para>
+   </listitem>
+    <listitem>
+    <para>
+    Bob recoit l'email et tape dans la fenêtre de Linphone le nom est l'adresse IP de la personne à contacter : Tom@xxx.xxx.xxx.xxx(L'adresse IP de Tom) et pour finir, il appuit sur le bouton Appeler. 
+    </para>
+   </listitem>
+    <listitem>
+    <para>
+    Linphone sonne à la maison de Tom ...Tom a juste à répondre à l'appel en cliquant sur le bouton &quot;répondre&quot; et ainsi devrait pouvoir commencer la discussion. 
+    </para>
+   </listitem>
+   </itemizedlist>
+   <para>
+    Si vous rencontrez des problèmes dans une de ces étapes, allez à la section 4-Problèmes.
+   </para>
+   </sect2>
+   <sect2>
+    <title>
+    Essai en local: vous n'avez personne à appeler pour l'instant, mais vous souhaiteriez voir si linphone marche vraiment.
+   </title>
+   <para>
+    <anchor id="sipomatic" ></anchor>Depuis la version 0.3.0, Linphone est livré avec un programme de test appelé &quot;sipomatic&quot;. Sipomatic peut répondre automatiquement aux appels provenant de Linphone. A vous d'essayer : 
+   </para>
+   <itemizedlist>
+    <listitem>
+    <para>
+    Demarrez linphone.
+    </para>
+   </listitem>
+    <listitem>
+    <para>
+    Démarrez sipomatic dans une fenêtre terminal. Ne soyez pas supris, sipomatic ne possède aucune interface graphique, mais vous n'avez pas besoin de modifier quoi-que-ce-soit. 
+    </para>
+   </listitem>
+    <listitem>
+    <para>
+    Dans Linphone, allez dans les propriétés, section réseau, et choisissez &quot;lo&quot; comme interface par défaut. Appliquez les changements en cliquant sur OK. Tapez l'adresse S.I.P suivante dans la fenêtre principale : sip:robot@127.0.0.1:5064. 127.0.0.1 est l'adresse locale de votre ordinateur, et robot est le nom à utiliser pour appeler sipomatic. 5064 est le port par lequel sipomatic peut-être contacté. Normalement, vous devez toujours utiliser 5060 pour appeler quelqu'un, mais sipomatic est une exception : il fonctionne sur le port 5064. La raison est que Linphone fonctionne déjà sur le port 5060, et il est impossible d'avoir deux applications utilisant le même port au même instant, sur la même machine. 
+    </para>
+   </listitem>
+    <listitem>
+    <para>
+    Appuyez sur le bouton &quot;Appeler&quot;. Après quelques secondes, sipomatic devrait répondre à votre appel et vous devez entendre une courte annonce.
+    </para>
+   </listitem>
+   </itemizedlist>
+   </sect2>
+  </sect1>
+  <sect1 id="params">
+   <title>
+   Paramètres des appels
+  </title>
+   <sect2 id="paramnetwork">
+    <title>
+    Réseau
+   </title>
+   <itemizedlist>
+    <listitem>
+    <para>
+    Liste des interfaces réseau: vous devez choisir une interface réseau à utiliser avec Linphone. Si vous voulez contacter quelqu'un sur l'Internet, vous devez choisir l'interface réseau connectée à l'Internet. Par exemple, si vous utilisez un modem, celle-ci devrait être ppp0. Si vous n'êtes connecté à aucun réseau, seulement l'interface réseau locale appelé lo apparaitra dans la liste. La seule chose que vous pouvez faire dans ce cas la est d'appeler <link linkend="sipomatic">sipomatic</link>.
+    </para>
+   </listitem>
+    <listitem>
+    <para>
+    Type de connection: choisissez le type de connection que vous utilisez pour vous connecter au réseau que vous désirez utiliser. Ceci aidera Linphone à s'auto-configurer en fonction de la bande passante de votre type de connection.
+    </para>
+   </listitem>
+   </itemizedlist>
+   </sect2>
+   <sect2 id="paramrtp">
+    <title>
+    RTP
+   </title>
+   <para>
+    RTP signifie Real Time Protocol, il permet d'envoyer des flux de données multimedia.
+   </para>
+   <itemizedlist>
+    <listitem>
+    <para>
+    port RTP: Linphone utilise le port 7072 par défaut pour envoyer et recevoir des signaux audios. Si vous pensez que le port 7072 est utilisé par une autre application, changez le comme vous voulez.
+    </para>
+   </listitem>
+    <listitem>
+    <para>
+    Jitter compensation: ce nombre représente le nombre de paquets audios que Linphone attend avant de vous les faire entendre. Augmentez ce nombre si vous entendez une voix hachée de manière à améliorer la qualité de la transmission, mais attention, ceci augmente le delai (vous entendrez la voix de l'utilisateur distant quelques millisecondes plus tard).D'un autre côté, si vous utilisez un réseau parfait, et que vous disposez de bon drivers audios, vous pouvez descendre ces paramètres très bas jusqu'à 3 paquets, ainsi vous aurez un délai très faible.
+    </para>
+   </listitem>
+   </itemizedlist>
+   </sect2>
+   <sect2 id="paramsip">
+    <title>
+    SIP
+   </title>
+   <para>
+    SIP (Session Initiation Protocol) est un protocole qui permet d'établir des sessions de téléphonie par l'intermédiaire d'un réseau IP. En simplifiant, c'est la chose qui permet de faire sonner chez l'autre utilisateur, démarrer ou terminer l'appel quand l'un des deux correspondants raccroche.
+   </para>
+   <itemizedlist>
+    <listitem>
+    <para>
+    port SIP: Linphone utilise par défaut le port 5060 pour envoyer / recevoir des paquets SIP. Il est hautement recommandé par la RFC du protocole SIP d'utiliser celui-ci. Donc, ne le changez pas à moins que vous n'ayez vraiment pas le choix.
+    </para>
+   </listitem>
+    <listitem>
+    <para>
+    Votre adresse SIP: modifiez ici votre nom d'utilisateur et votre nom de machine à votre gré. Bien entendu donner un nom de machine ici ne signifie pas que ce nom soit connue des autres machines du réseau. Néammoins linphone utilisera peu ce nom de machine et préfèrera utiliser votre adresse IP pour communiquer avec d'autres machines.
+    </para>
+   </listitem>
+    <listitem>
+    <para>
+    Utiliser un serveur sip registrar: Cochez ce choix, si vous voulez vous enregistrer sur un serveur SIP (registrar) pour obtenir différents services. Quand vous n'avez pas d'adresse IP fixe, cela peut-être très intéressant pour permettre à vos amis de vous appeler. Regardez la section intitulée &quot;<link linkend="registering">enregistrement sur un serveur sip</link>&quot;.
+    </para>
+   </listitem>
+   </itemizedlist>
+   </sect2>
+   <sect2 id="paramcodec">
+    <title>
+    Codecs
+   </title>
+   <para>
+    Les codecs sont des algorithmes utilisés pour compresser la voix. Par exemple, une voix digitalisée en 16bit/8000Hz représente un flux de données de 128kbits/seconde. En utilisant le vocodeur GSM, ce flux est réduit à 13kbits/seconde, sans perte significative de qualité.
+   </para>
+   <itemizedlist>
+    <listitem>
+    <para>
+    Choix de codecs: Linphone peut utiliser plusieurs codecs. Utilisez les boutons situés en dessous de la liste des codecs de manière à les placer dans un order de préférence. Notez bien, qu'en fonction de votre type de connection réseau, certains codecs sont inutilisables.Ils apparaitront en rouge et ne seront pas sélectionnable. Vous pouvez décider d'utiliser ou non un codec &quot;utilisable&quot; (en bleu) en changeant son état à l'aide du bouton activer/désactiver en dessous de la liste.
+    </para>
+   </listitem>
+   </itemizedlist>
+   </sect2>
+   <sect2 id="paramaudio">
+    <title>
+    Audio parameters
+   </title>
+   <itemizedlist>
+    <listitem>
+    <para>
+    Mode de pilotage: si vous avez installé des drivers ALSA avec une librairie ALSA &lt;0.9, choisissez ALSA pour avoir de meilleires performances. Sinon, ou si vous n'en savez rien, choisissez OSS, cela marche suffisemment bien.
+    </para>
+   </listitem>
+    <listitem>
+    <para>
+    Choix de la source d'enregistrement: vous pouvez choisir votre source d'enregistrement pour la voix. Dans la plupart des cas, celle-ci sera le microphone.
+    </para>
+   </listitem>
+    <listitem>
+    <para>
+    Auto-kill option: en choissant cette option, Linphone essaiera de stopper les processus sonores (esd &amp; artsd) qui peuvent bloquer votre périphérique sonore et ainsi provoquer des problèmes d'ouverture des périphériques par Linphone quand il en a besoin. Il est recommandé d'activer cette option.
+    </para>
+   </listitem>
+   </itemizedlist>
+   </sect2>
+  </sect1>
+  <sect1>
+   <title>
+   Carnet d'adresses
+  </title>
+  <para>
+   Depuis la version 0.4.1 linphone dispose d'un carnet d'adresses (menu connexion, carnet d'addresses), avec lequel vous pouvez memoriser des adresses, et les rappeler facilement lorsque vous souhaitez appeler.
+  </para>
+  </sect1>
+  <sect1 id="registering">
+   <title>
+   Enregistrement sur un serveur sip
+  </title>
+  <para>
+   Vous pouvez souscrire des services sur des serveurs sip distants appelés registrar, proxy ou redirect server. Ces services peuvent être:
+  </para>
+  <para>
+   You can suscribe for services on remote SIP servers. These services can be:
+  </para>
+  <itemizedlist>
+   <listitem>
+   <para>
+   redirection: linphone va demander au serveur la création d' un compte &lt;sip:votre_nom@le_serveur_sip&gt;. Cette adresse pourra alors être utilisée par vos correspondants pour vous joindre. Un petit example concret pour bien comprendre: vous n'êtes qu'un pauvre internaute connecté temporairement grace à un modem 56k. Votre machine n'a pas de nom de domaine connu et votre adresse IP change à chaque nouvelle connexion. Il est impossible pour vos amis de vous joindre car il ne peuvent deviner votre adresse IP, à moins que vous ne leur donniez en envoyant un courriel, par exemple. Pour palier à ce problème, vous pouvez demander à avoir un compte sur un serveur sip connu de vos amis, qui lui est fixe et tout le temps connecté. Pour cela, spécifiez l'adresse du serveur dans la boite de propriété, section sip. Cette adresse est par exemple &lt;sip:serveur_exemple.com&gt; et votre nom d'utilisateur est &ldquo;Bob&rdquo;. Linphone va alors envoyer au serveur un message pour l'informer de la correspondance entre l'adresse &lt;sip:bob@serveur_exemple.com&gt; et votre adresse IP actuelle. Desormais vos amis peuvent vous appeler en utilisant cette nouvelle adresse, leurs appels seront alors automatiquement redirigés vers votre machine. Il n'ont plus besoin de connaitre votre adresse IP qui change tout le temps pour vous joindre. Bien sur, &lt;sip:serveur_exemple.com&gt; est supposée être bien connue de tout vos amis. 
+   </para>
+  </listitem>
+   <listitem>
+   <para>
+   proxy: c'est exactement le meme principe, excepté que la redirection se fait de manière transparente et invisible le linphone de l'appelant.
+   </para>
+  </listitem>
+  </itemizedlist>
+  <para>
+   Le registrar que vous avez spécifié peut aussi être utilisé comme proxy sortant. Dans ce cas tous les appels émanant de votre linphone seront dirigé vers ce serveur, et il sera supposé les faire suivre vers les bonnes personnes. Ceci est très utile et même indispensable lorsque vous utilisez linphone dans un réseau privé abrité par un firewall, si bien sur un proxy sip est actif sur le firewall. 
+  </para>
+  <para>
+   Pour utiliser solliciter un serveur sip, vous devez aller à la boîte de propriété, rubrique SIP, et cocher le bouton qui se trouve en face de &quot;use registrar&quot;. Tapez l'adresse du registrar, et choisissez un nom d'utilisateur qui n'est pas trop fréquent de manière à éviter les conflits de noms. Donnez une indication du service que le serveur doit effectuer pour vous en cochant les boutons &ldquo;redirection&rdquo; ou &ldquo;proxy&rdquo;. Sélectionnez aussi l'option &ldquo;le serveur est un proxy sortant&rdquo; si vous êtes derrière un pare-feu.
+  </para>
+  <para>
+   Enfin en fermant la boite de propriétés linphone communiquera immédiatement avec le serveur SIP pour y obtenir les services demandés. De même lorsque vous fermez linphone, celui ci prendra quelques secondes pour se désenregistrer auprès du serveur.
+  </para>
+  <para>
+   Une liste de serveurs sip peut être trouvée à cette addresse: <ulink url="http://www.cs.columbia.edu/~hgs/sip/servers.html">http://www.cs.columbia.edu/~hgs/sip/servers.html</ulink>. Malheureusement, beaucoup de ces serveurs ne fonctionnent plus, peut-être à cause de la crise et de ses faillites. Certains ne sont pas utilisables car ils requierent des méthodes d'autentification qui ne sont pas encore implémentées dans linphone. Afin donc de ne pas vous faire perdre votre temps, une liste des serveurs sip publiques fonctionnant avec linphone est disponible sur <ulink url="http://simon.morlat.free.fr/english/servers.html">http://simon.morlat.free.fr/english/servers.html</ulink>.
+  </para>
+  </sect1>
+  <sect1>
+   <title>
+   Utilisation derrière les pares-feux
+  </title>
+  <para>
+   Linphone est capable de fonctionner derrière les firewalls grâce à un serveur proxy SIP fonctionnant sur la machine firewall. Un tel serveur est en cours de développement sur <ulink url="http://osipproxy.sourceforge.net">http://osipproxy.sourceforge.net</ulink>. Bien sûr il sera libre et basé sur la librairie LGPL oSIP.
+  </para>
+  <para>
+   Une fois le proxy serveur mis en place, il vous faut configurer linphone pour qu'il l'utilise. Pour cela rendez vous dans la boite de propriétés, section SIP et cochez la case &ldquo;Utiliser un registrar SIP&rdquo;, indiquez son adresse, et cocher l'option &ldquo;le serveur est un proxy sortant&rdquo;.
+  </para>
+  <para>
+   Il y a un cas pour lequel le proxy n'est pas indispensable: c'est le cas où les machines du réseau privé possèdent une adresse publique, le firewall étant là pour filtrer les paquets entrants ou sortants. Vous devez pour permettre a linphone de fonctionner avec des machines exterieures, autoriser le traffic UDP sur le port SIP (par defaut 5060, il est deconseillé de le changer), et sur le port RTP de chaque linphone du sous réseau. Le port RTP est paramètrable comme bon vous semble dans la boite de proprietés.
+  </para>
+  </sect1>
+  <sect1>
+   <title>
+   Problèmes divers
+  </title>
+   <sect2>
+    <title>
+    Problèmes de connexion
+   </title>
+   <blockquote>
+   <para>
+    J'essaye d'appeler mon pote &lt;sip:toto@example.com&gt;, mais rien ne se passe, pas de sonnerie.
+   </para>
+   </blockquote>
+   <para>
+    Vous devez vérifier que linphone utilise l'interface réseau qui vous connecte sur le réseau ou se trouve votre ami. La liste des interface disponibles est donnée dans la boite de propriété, section réseau. Sélectionnez la bonne. 
+   </para>
+   <para>
+    Si le problème persiste, il y a fort à parier que votre ami ne soit pas joignable actuellement.
+   </para>
+   </sect2>
+   <sect2>
+    <title>
+    Problèmes audio
+   </title>
+   <blockquote>
+   <para>
+    Linphone semble correctement établir l'appel, il sonne, mais une fois que le correspondant a décrocher, plus rien ne se passe et on ne s'entend pas.
+   </para>
+   </blockquote>
+   <itemizedlist>
+    <listitem>
+    <para>
+    La plupart des gens ont ce genre de symptome car ils n'ont pas choisi la bonne interface réseau. Si vous êtes connectés par modem, ce doit être ppp0. En aucun cas l'interface &ldquo;lo&rdquo; ne peut permettre d'avoir une communication via le réseau. Elle ne sert que pour le test local avec sipomatic (voir plus haut).
+    </para>
+   </listitem>
+    <listitem>
+    <para>
+    Augemtez le niveau sonore d'acquisition et de restitution, à l'aide des potentiomètres situés en bas de la fenêtre principale.
+    </para>
+   </listitem>
+    <listitem>
+    <para>
+    Si la voix de votre correspondant vous semble coupée ou hachée, vous pouvez essayer d'augmenter le paramètre jitter compensation de l'onglet RTP de la boite de propriété. Mais attention, cela augmente la latence en contrepartie.
+    </para>
+   </listitem>
+    <listitem>
+    <para>
+    Si linphone ne peut se servir de la carte son, vérifiez que celle ci n'est pas utilisée au meme moment par d'autres programmes audio. 
+    </para>
+   </listitem>
+    <listitem>
+    <para>
+    Enfin utilisez les drivers sons alsa (voir <ulink url="http://www.alsa-project.org">http://www.alsa-project.org</ulink>) , plutôt que les oss fournit avec le kernel linux. Malheureusement la plupart des distributions utilsent encore ces vieux pilotes alors qu'ils presentent de nombreux bugs et problèmes de latence. Les drviers ALSA sont beaucoup plus performants. Notez que si vous changer vos drivers, vous n'avez nul besoin de recompiler linphone ou de changer quoi que ce soit a sa configuration. 
+    </para>
+   </listitem>
+   </itemizedlist>
+   </sect2>
+  </sect1>
+  <sect1>
+   <title>
+   Rapports de bogues et suggestions
+  </title>
+  <para>
+   En premier lieu, allez sur le site de Linphone <ulink url="http://www.linphone.org">http://www.linphone.org</ulink> afin de vérifier que vous ayez bien la dernière version de Linphone. 
+  </para>
+  <para>
+   Si linphone plante, envoyez moi durectement un message à bugs@linphone.org. Si Linphone ne fonctionne pas, mais ne se plante pas, vérifiez bien que vous avez bien lu ce manuel entièrement avant de m'envoyer un compte rendu à l'adresse précédente. Dans tous les cas veillez à m'envoyer le plus d'information possible relatifs à votre problème, notamment la sortie de debug que linphone ecrit lorsque vous l'executez depuis un terminal. Si vous désirez autre chose, n'hésitez pas à m'envoyer un email à l'adresse help@linphone.org. Prenez note que l'ajout de la vidéo et du mode conférence sont planifiés. 
+  </para>
+  <para>
+   Si quelqu'un est interessé pour faire des traductions de Linphone, envoyez moi un fichier xx.po basé sur celui se trouvant dans po/linphone.pot de la distribution. Vous pouvez aussi traduire ce manuel utiisateur dans d'autres langues. Dans tous les cas, contactez moi si vous voulez plus de détails.
+  </para>
+  </sect1>
+  <sect1>
+   <title>
+   Auteurs
+  </title>
+  <para>
+   Simon MORLAT (simon.morlat@linphone.org) a ecrit: 
+  </para>
+  <itemizedlist>
+   <listitem>
+   <para>
+   Programme principal (src)
+   </para>
+  </listitem>
+   <listitem>
+   <para>
+   librairie RTP (lprtplib)
+   </para>
+  </listitem>
+   <listitem>
+   <para>
+   osipua : la librarie sip User Agent au dessus d'osip.
+   </para>
+  </listitem>
+   <listitem>
+   <para>
+   interface pour les drivers audio (audio)
+   </para>
+  </listitem>
+   <listitem>
+   <para>
+   les wrappers pour les codecs lpc10-1.5, gsm et g711. 
+   </para>
+  </listitem>
+  </itemizedlist>
+  <para>
+   Aymeric Moizard (jack@atosc.org) a ecrit la pile SIP oSIP utilisé par linphone. 
+  </para>
+  <para>
+   La librairie GSM a été écrite par: Jutta Degener and Carsten Bormann,Technische Universitaet Berlin.
+  </para>
+  <para>
+   La librairie LPC10-1.5 par: Andy Fingerhut Applied Research Laboratory &lt;-- this line is optional if Washington University, Campus Box 1045/Bryan 509 you have limited space One Brookings Drive Saint Louis, MO 63130-4899 jaf@arl.wustl.edu http://www.arl.wustl.edu/&tilde;jaf/ Lisez les fichiers textes README dans les repertoire gsmlib et lpc10-1.5 pour plus d'informations.
+  </para>
+  <para>
+   Les icones sont de Pablo Marcelo Moia et le logo de Philippe Beau.
+  </para>
+  </sect1>
+  <sect1>
+   <title>
+   Remerciements
+  </title>
+  <para>
+   Merci à Daemon Chaplin pour avoir fait Glade, le constructeur d'interface graphique GTK+.
+  </para>
+  <para>
+   Merci aux auteurs du code des LPC10-1.5 et GSM.
+  </para>
+  <para>
+   Merci à Joel Barrios ( jbarrios@-NO-SPAM-linuxparatodos.com ) pour ses RPMS.
+  </para>
+  <para>
+   Merci à Pablo Marcelo Moia pour les icones.
+  </para>
+  <para>
+   Merci à Philippe Beau pour la traduction de ce manuel en Francais, pour le logo, et pour le nouveau site web qu'il a fait pour linphone.
+  </para>
+  <para>
+   <toc></toc>
+  </para>
+  </sect1>
+
+
+</article>

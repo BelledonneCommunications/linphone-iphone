@@ -1,0 +1,10 @@
+# This is a comment
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+includedir=@includedir@
+
+Name: oRTP 
+Description: Implement the RFC3550 (RTP) with a easy to use API with high and low level access. 
+Version: @ORTP_PKGCONFIG_VERSION@                           
+Libs: -L@libdir@ -lortp @ORTPDEPS_LIBS@
+Cflags: -I@includedir@ @ORTPDEPS_CFLAGS@

@@ -1,0 +1,48 @@
+/*
+p2pproxy Copyright (C) 2007  Jehan Monnier ()
+
+RtpRoutingRules.java - .
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
+package org.linphone.p2pproxy.core.media.rtprelay;
+
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+
+import org.linphone.p2pproxy.api.P2pProxyException;
+
+public interface RtpRoutingRules {
+   
+   /**
+    * add route for a given ssrc
+    * @param aSource
+    */
+   public void addRoute(int anSsrc, InetSocketAddress aSource); 
+   
+   /**
+    * remove route
+    * @param aSource
+    */
+   public void removeRoute(int anSsrc); 
+   
+   /**
+    * return dest address 
+    * @param aSource
+    * @return the destination address
+    * @throws P2pProxyException
+    */
+   public SocketAddress getRoute(int anSsrc) throws P2pProxyException;
+}

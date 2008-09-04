@@ -1,0 +1,70 @@
+.\" Sipomatic is a SIP phone server. It answers automatically to incoming calls by playing a short message.
+.TH "sipomatic" "1" "1.0.0" "Simon Morlat" "linphone"
+.SH "NAME"
+.LP 
+sipomatic \- SIP auto\-responder from the linphone project.
+.SH "SYNTAX"
+.LP 
+sipomatic [\fI\-u\fP] <\fIsip\-url\fP> [\fI\-f\fP] <\fIannouce\-file\fP> [\fI\-s\fP] <\fIsend\-port\fP> 
+.LP 
+sipomatic \fI\-v\fP
+.br 
+sipomatic \fI\-\-version\fP
+.LP 
+sipomatic \fI\-h\fP
+.br 
+sipomatic \fI\-\-help\fP
+.SH "DESCRIPTION"
+.LP 
+Sipomatic is primilarly a test tool for linphone.
+It waits for incoming sip calls, and answer to them by playing a wav sound file on disk. The sended stream is encoded using the preferred codec of the calling sip\-phone.
+.br 
+The default address of sipomatic is <sip:robot@127.0.0.1:5064>
+It can be overriden with the \-u option.
+.br 
+The default annouce file 'hello.wav' can be overriden with the \-f option.
+.br 
+If you attempt to run several sipomatic on the same machine, then you will require the \-s option to specify explicitely the UDP port used by sipomatic to send its SIP messages.
+
+.SH "OPTIONS"
+.LP 
+.TP 
+\fB\-u\fR <\fIurl\fP>
+Set the sip url sipomatic listens to. The host part of address MUST always be a numerical ip address. The default url is sip:robot@127.0.0.1:5064 .
+.TP 
+\fB\-f\fR <\fIannouce\-file\fP>
+Specifies a 8000Hz 16 bits wav file to be played to the calling users. Default is usually /usr/share/sounds/linphone/hello.wav.
+.TP 
+\fB\-s\fR <\fIsend\-port\fP>
+Specifies explicitely the udp port number to be used to send SIP messages.
+.TP 
+\fB\-v\fR
+\fB\-\-version\fR
+Output version information and exits.
+.TP 
+\fB\-h\fR
+\fB\-\-help\fR
+Output help information and exits.
+.TP 
+.SH "FILES"
+.LP 
+\fI/usr/share/sounds/linphone/hello.raw\fP 
+.br 
+This is the file that sipomatic plays by default to the calling phones.
+The format of this file is a 8000 Hz 16 bit wav file.
+.br 
+
+.SH "ENVIRONMENT VARIABLES"
+.LP 
+.TP 
+\fBSIPOMATIC_URL\fP
+Specifies the address sipomatic listens to. By default it is
+<sip:robot@127.0.0.1:5064> . 
+.SH "EXAMPLES"
+
+.SH "AUTHORS"
+.LP 
+Simon MORLAT <simon.morlat@linphone.org>
+.SH "SEE ALSO"
+.LP 
+linphone(1) linphonec(1)

@@ -1,0 +1,58 @@
+What is it ?
+************
+
+oRTP is a LGPL licensed C library implementing the RTP protocol (rfc3550). It is available
+for most unix clones (primilarly Linux and HP-UX), and Microsoft Windows.
+
+What are the build prequisites ?
+********************************
+libc library and header files.
+
+How do you I test ?
+*******************
+
+There are shorts and easy to understand programs given with the library. There are good example
+to understand how to use oRTP api.
+- rtpsend : sends a stream from a file on disk.
+- rtprecv : receives a stream and writes it to disk.
+- mrtpsend: sends multiple streams from a file on disk to a range of remote port.
+- mrtprecv:	receives mutiple streams on a range of local ports and writes them on disk.
+
+
+Is there some documentation ?
+*****************************
+
+See the doxygen generated API documentation in docs/html. Program examples are a very good
+starting point.
+
+
+What are the current features ?
+******************************
+	- works with ipv6
+	- packet scheduler
+	- adaptive jitter compensation
+	- automatic sending of RTCP SR or RR coumpounded with a SDES
+	- RTCP parser API
+
+
+What are the planned features ?
+*******************************
+	- multi-endpoint rtp sessions.
+
+
+In which application oRTP is being used ?
+*****************************************
+	- linphone (http://www.linphone.org) was the first.
+	- the OCMP platform (a Hewlett Packard product).
+
+How to compile my program using ortp ?
+**************************************
+gcc -o myprogram  `pkg-config --cflags ortp` myprogram.c  \
+			`pkg-config --libs ortp`
+
+
+What about Windows port ?
+*************************
+There are instructions and Microsoft Visual C++ project files in build/win32native/oRTP.
+
+

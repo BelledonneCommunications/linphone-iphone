@@ -1,0 +1,193 @@
+# Anjuta Version 1.1.97 
+Compatibility Level: 1 
+
+<PROJECT_DESCRIPTION_START>
+Some description<PROJECT_DESCRIPTION_END>
+<CONFIG_PROGS_START>
+<CONFIG_PROGS_END>
+<CONFIG_LIBS_START>
+<CONFIG_LIBS_END>
+<CONFIG_HEADERS_START>
+<CONFIG_HEADERS_END>
+<CONFIG_CHARACTERISTICS_START>
+<CONFIG_CHARACTERISTICS_END>
+<CONFIG_LIB_FUNCS_START>
+<CONFIG_LIB_FUNCS_END>
+<CONFIG_ADDITIONAL_START>
+<CONFIG_ADDITIONAL_END>
+<CONFIG_FILES_START>
+<CONFIG_FILES_END>
+<MAKEFILE_AM_START>
+<MAKEFILE_AM_END>
+
+props.file.type=project
+
+anjuta.version=1.1.97
+anjuta.compatibility.level=1
+
+project.name=oRTP
+project.type=GENERIC
+project.target.type=EXECUTABLE
+project.version=0.99
+project.author=Simon Morlat
+project.source.target=Rtp stack
+project.has.gettext=0
+project.gui.command=
+project.programming.language=C
+project.excluded.modules=intl
+
+project.config.extra.modules.before=
+project.config.extra.modules.after=
+project.config.blocked=1
+project.config.disable.overwriting=1 1 1 1 1 1 1 1 1 
+
+project.menu.entry=oRTP Version 0.99
+project.menu.group=Application
+project.menu.comment=oRTP Version 0.99
+project.menu.icon=
+project.menu.need.terminal=0
+
+project.configure.options=
+anjuta.program.arguments=
+preferences.build.option.jobs=0
+preferences.build.option.silent=0
+preferences.build.option.autosave=1
+preferences.anjuta.make.options=-k
+preferences.make=make
+preferences.build.option.keep.going=1
+preferences.build.option.warn.undef=0
+preferences.autoformat.custom.style= -i8 -sc -bli0 -bl0 -cbi0 -ss
+preferences.autoformat.style=Style of Kangleipak
+preferences.indent.opening=0
+preferences.autoformat.disable=0
+preferences.indent.automatic=1
+preferences.use.tabs=1
+preferences.indent.size=4
+preferences.tabsize=4
+preferences.indent.closing=0
+
+module.include.name=.
+module.include.type=
+module.include.files=\
+	src/errno-win32.h\
+	src/export.h\
+	src/ortp-config-win32.h\
+	src/ortp.h\
+	src/payloadtype.h\
+	src/port_fct.h\
+	src/rtp.h\
+	src/rtpmod.h\
+	src/rtpport.h\
+	src/rtpsession.h\
+	src/rtpsignaltable.h\
+	src/rtptimer.h\
+	src/scheduler.h\
+	src/sessionset.h\
+	src/str_utils.h\
+	src/telephonyevents.h\
+	src/rtcp.h\
+	ortp-config.h
+
+module.source.name=.
+module.source.type=
+module.source.files=\
+	src/avprofile.c\
+	src/export.c\
+	src/mrtprecv.c\
+	src/mrtpsend.c\
+	src/ortp.c\
+	src/ortpdlkm.c\
+	src/payloadtype.c\
+	src/port_fct.c\
+	src/posixtimer.c\
+	src/rtpmemtest.c\
+	src/rtpmod.c\
+	src/rtpparse.c\
+	src/rtprecv.c\
+	src/rtpsend.c\
+	src/rtpsession.c\
+	src/rtpsignaltable.c\
+	src/rtptimer.c\
+	src/scheduler.c\
+	src/sessionset.c\
+	src/str_utils.c\
+	src/telephonyevents.c\
+	src/test_tevrecv.c\
+	src/test_tevsend.c\
+	src/test_timer.c\
+	src/tevmrtprecv.c\
+	src/tevrtprecv.c\
+	src/tevrtpsend.c
+
+module.pixmap.name=.
+module.pixmap.type=
+module.pixmap.files=\
+	docs/html/home.png\
+	docs/html/left.png\
+	docs/html/right.png\
+	docs/html/up.png
+
+module.data.name=.
+module.data.type=
+module.data.files=
+
+module.help.name=.
+module.help.type=
+module.help.files=
+
+module.doc.name=.
+module.doc.type=
+module.doc.files=\
+	build/win32/oRTP/README\
+	AUTHORS\
+	COPYING\
+	ChangeLog\
+	INSTALL\
+	NEWS\
+	README\
+	TODO\
+	docs/tmpl/multiplexing.sgml\
+	docs/tmpl/ortp-unused.sgml\
+	docs/tmpl/payloads.sgml\
+	docs/tmpl/rtpsessionapi.sgml\
+	docs/tmpl/stackinit.sgml\
+	docs/tmpl/stackmanagement.sgml\
+	docs/tmpl/telephoneevents.sgml\
+	docs/sgml/payloads.sgml\
+	docs/sgml/tree_index.sgml\
+	docs/sgml/object_index.sgml\
+	docs/sgml/rtpsessionapi.sgml\
+	docs/sgml/stackmanagement.sgml\
+	docs/sgml/multiplexing.sgml\
+	docs/sgml/telephoneevents.sgml\
+	docs/ortp-docs.sgml\
+	docs/html/book1.html\
+	docs/html/ortpapi.html\
+	docs/html/ortp-stack-management-functions.html\
+	docs/html/ortp-rtpsession-api.html\
+	docs/html/ortp-rtp-payloads-and-profiles.html\
+	docs/html/ortp-multiplexing-sessions-(in-a-one-thread-design).html\
+	docs/html/ortp-telephone-events-(rfc2833)-.html\
+	docs/html/index.sgml\
+	docs/html/ortp-library-management-functions.html
+
+module.po.files=
+
+compiler.options.supports=
+compiler.options.include.paths=\
+	.\
+	..
+compiler.options.library.paths=
+compiler.options.libraries=
+compiler.options.libraries.selected=
+compiler.options.defines=\
+	HAVE_CONFIG_H
+compiler.options.defines.selected=
+compiler.options.warning.buttons=0 0 1 1 0 1 0 0 0 0 0 0 0 1 0 0 
+compiler.options.optimize.buttons=0 0 1 0 
+compiler.options.other.buttons=1 0 
+compiler.options.other.c.flags=
+compiler.options.other.l.flags=
+compiler.options.other.l.libs=
+
+project.src.paths=

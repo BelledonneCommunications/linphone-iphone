@@ -1,0 +1,15 @@
+Makefile
+Makefile.in
+.deps
+.libs
+*.lo
+*.la
+mrtprecv
+mrtpsend
+rtpmemtest
+rtprecv
+rtpsend
+test_timer
+tevmrtprecv
+tevrtprecv
+tevrtpsend

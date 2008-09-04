@@ -1,0 +1,97 @@
+2007-01-17  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* Makefile.in.in: Upgrade to gettext-0.16.1.
+	* cat-id-tbl.c: Remove file.
+
+2006-07-20  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* Makefile.in.in: Upgrade to gettext-0.14.6.
+	* boldquot.sed: New file, from gettext-0.14.6.
+	* en@boldquot.header: New file, from gettext-0.14.6.
+	* en@quot.header: New file, from gettext-0.14.6.
+	* insert-header.sin: New file, from gettext-0.14.6.
+	* quot.sed: New file, from gettext-0.14.6.
+	* remove-potcdate.sin: New file, from gettext-0.14.6.
+	* Rules-quot: New file, from gettext-0.14.6.
+	* cat-id-tbl.c: Remove file.
+
+2002-10-15  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* cat-id-tbl.c: Remove file.
+	* stamp-cat-id: Remove file.
+
+2002-10-08  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* cat-id-tbl.c: Remove file.
+	* stamp-cat-id: Remove file.
+
+2002-10-08  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* boldquot.sed: New file, from gettext-0.11.5.
+	* en@boldquot.header: New file, from gettext-0.11.5.
+	* en@quot.header: New file, from gettext-0.11.5.
+	* insert-header.sin: New file, from gettext-0.11.5.
+	* quot.sed: New file, from gettext-0.11.5.
+	* remove-potcdate.sin: New file, from gettext-0.11.5.
+	* Rules-quot: New file, from gettext-0.11.5.
+	* cat-id-tbl.c: Remove file.
+	* stamp-cat-id: Remove file.
+
+2002-10-04  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* cat-id-tbl.c: Remove file.
+	* stamp-cat-id: Remove file.
+
+2002-10-04  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* Makefile.in.in: Upgrade to gettext-0.11.5.
+
+2002-10-04  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* Makefile.in.in: New file, from gettext-0.11.5.
+
+2002-10-01  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* Makefile.in.in: Upgrade to gettext-0.11.5.
+	* boldquot.sed: New file, from gettext-0.11.5.
+	* en@boldquot.header: New file, from gettext-0.11.5.
+	* en@quot.header: New file, from gettext-0.11.5.
+	* insert-header.sin: New file, from gettext-0.11.5.
+	* quot.sed: New file, from gettext-0.11.5.
+	* remove-potcdate.sin: New file, from gettext-0.11.5.
+	* Rules-quot: New file, from gettext-0.11.5.
+	* cat-id-tbl.c: Remove file.
+	* stamp-cat-id: Remove file.
+
+2002-08-04  gettextize  <bug-gnu-utils@gnu.org>
+
+	* Makefile.in.in: Upgrade to gettext-0.10.40.
+
+2002-08-04  gettextize  <bug-gnu-utils@gnu.org>
+
+	* Makefile.in.in: Upgrade to gettext-0.10.40.
+	* cat-id-tbl.c: Remove file.
+	* stamp-cat-id: Remove file.
+
+2002-07-16  gettextize  <bug-gnu-utils@gnu.org>
+
+	* Makefile.in.in: Upgrade to gettext-0.10.40.
+	* cat-id-tbl.c: Remove file.
+	* stamp-cat-id: Remove file.
+
+2002-02-16  gettextize  <bug-gnu-utils@gnu.org>
+
+	* Makefile.in.in: Upgrade to gettext-0.10.40.
+	* cat-id-tbl.c: Remove file.
+	* stamp-cat-id: Remove file.
+
+2002-02-10  gettextize  <bug-gnu-utils@gnu.org>
+
+	* Makefile.in.in: Upgrade to gettext-0.10.40.
+
+2002-02-10  gettextize  <bug-gnu-utils@gnu.org>
+
+	* Makefile.in.in: Upgrade to gettext-0.10.40.
+	* cat-id-tbl.c: Remove file.
+	* stamp-cat-id: Remove file.
+

@@ -1,0 +1,19 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<HTML>
+  <HEAD>
+  </HEAD>
+  <BODY>
+    A JXTA {@link net.jxta.access.AccessService} implementation which 
+    utilizes the PSE Membership service to make access control descisions.
+
+    <p/>This Access Service is essentially an interface to PKIX Certificate
+    path validation. The trust anchor for the validation takes the place of the
+    The privledged operation for access determination. If the provided
+    credential cannot be validated against the provided trust anchor then the
+    operation will be disallowed.
+    
+    @see net.jxta.access.AccessService
+    @see net.jxta.impl.membership.pse.PSEMembershipService
+  </BODY>
+</HTML>

@@ -1,0 +1,3 @@
+# The list of MessageWireFormat Instance Classes included in this distribution.
+# Used by MessageWireFormatFactory.
+net.jxta.impl.endpoint.WireFormatMessageBinary

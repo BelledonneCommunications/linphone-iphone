@@ -1,0 +1,9 @@
+linphone-1.0.0:
+	It seems ipv6 support is "broken". Some help is welcome.
+
+linphone-0.12.0
+	When compiling with gcc-2.95.4 on debian, an assert fails and cause abort()
+	in libasound (alsa-lib). When compiling with gcc-3.2, it does not happen.
+	It seems that asoundlib and linphone must be compiled with the same compiler.
+
+Simon MORLAT

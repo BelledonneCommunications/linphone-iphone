@@ -1,0 +1,6 @@
+*.lo
+.deps
+.libs
+Makefile
+Makefile.in
+liblpc10.la

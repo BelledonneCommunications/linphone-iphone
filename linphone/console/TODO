@@ -1,0 +1,20 @@
+
+In pseudo-order of priority: 
+---------------------------
+
+- Exctract presence info in friends list
+
+- Allow friend call arg to be a pattern
+
+- hide input during password insertions
+	[ could use ncurses noecho() ]
+
+- Allow for single-shot mode (call somebody and quit after the fact)
+  maybe "linphonec [OPTS] <sip-uri>" would do..
+  Unfortunately the -s switch would confuse people, I'd rather
+  change its semantic to "source file" where file wold contain
+  a list of commands, so ./linephone -s myfriend.sip would call
+  yourfriend...
+
+- implement "smart" command completion
+

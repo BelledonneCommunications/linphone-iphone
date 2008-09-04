@@ -1,0 +1,57 @@
+Simon MORLAT (simon dot morlat at linphone dot org) wrotes:
+	- main graphical program (gnome)
+	- RTP library (oRTP)
+	- SIP user-agent library (osipua)
+	- audio library (mediastreamer), for codec and i/o handling.
+	- sipomatic, the automatic sip replier, which is often used for testing.
+
+Florian Wintertein < f-win at gmx dot net > wrotes the console version of linphone (linphonec)
+in console/ directory.
+
+Aymeric Moizard (jack at atosc dot org) wrotes:
+	- the oSIP SIP transactionnal stack (not part of linphone)
+	- some piece of code of the osip distribution have been reused in osipua
+	- presence information support in osipua
+	- and contributes to some parts of osipua (digest authentification)
+For more information about oSIP, see http://osip.atosc.org
+
+Sharath Udupa is developing the media_api, a usefull library to manage audio and video streams 
+for basic calls as well as conference.
+
+Sandro Santilli < strk at keybit dot net > wrote enhancements in the
+console interface (readline, new commands) and some bug fixes for
+the core api.
+
+Bryan Ogawa ( bko at cisco dot com ) sent a patch that made the linphone-0.7.1 release. 
+This patch fixed several issues in the SIP part while working with proxies.
+
+Koichi KUNITAKE < kunitake at linux-ipv6 dot org > has contributed a patch bringing 
+full IPv6 support.
+
+The Speex codec is a project from Jean Marc Valin. See http://speex.sourceforge.net for more 
+information.
+	
+The GSM library was written by :
+	 Jutta Degener and Carsten Bormann,Technische Universitaet Berlin.
+	
+The LPC10-1.5 library was written by:
+	Andy Fingerhut
+	Applied Research Laboratory                     <-- this line is optional if
+	Washington University, Campus Box 1045/Bryan 509      you have limited space
+	One Brookings Drive
+	Saint Louis, MO 63130-4899
+	jaf@arl.wustl.edu
+	http://www.arl.wustl.edu/~jaf/
+
+	See text files in gsmlib and lpc10-1.5 directories for further information.
+	
+G711 library has some code from the alsa-lib on http://www.alsa-project.org
+
+Icons by Pablo Marcelo Moia.
+
+Translations:
+fr: Simon Morlat
+en: Simon Morlat and Delphine Perreau
+it: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>
+de: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>
+es: Jesús Benítez <gnelson at inMail dot sk>

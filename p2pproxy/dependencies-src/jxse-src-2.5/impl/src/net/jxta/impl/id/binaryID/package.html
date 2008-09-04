@@ -1,0 +1,49 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<HTML>
+<HEAD>
+</HEAD>
+<BODY>
+The 'binary' format is a general purpose JXTA ID Format. It implements Peer,
+group, and pipe ID types. The remaining types are supported, but not
+guarenteed (CODAT not supported at all yet).<p>
+
+    The DigestTool class is probably the main entry point for most developers.
+    The class creates various BinaryID types with an SHA digest hashing. The
+    intent is to make secure but non-random possible for ID pipes, peers,
+    and peer groups. When using the utility, it is recomended tha you use
+    a hash size apropriate to your address space.
+
+    @see net.jxta.impl.id.binaryID.DigestTool
+
+    This package supports the creation of an identifier given a binary value
+    that is 0 to 255 bytes long that is encoded as Base64. The value needs to
+    be a unique value so that it can be used for addressing peers, pipes, and
+    groups.
+
+<p>
+
+    The implementation also includes the creation of a digest hash given an
+    arbirary length string. This allows you to encode any type of data into
+    a secure digest. The digest hash is recomended unless you are sure that
+    your binary id is truely unique. Using a digest hash is also preferrable
+    for situatins when you have an id that could be comprimized if known (like
+    a socal security number). The digest tools also have convenience methods
+    for mixing an id with a function name and a way to create a time
+    limited ID.
+
+<p>
+
+    Note that this ID currently only allows parent peer group ID to be of
+    type UUID.
+
+<p>
+
+    @author Daniel Brookshier <a HREF="mailto:turbogeek@cluck.com">turbogeek@cluck.com</a>
+
+
+    @see <a href="https://jxta-spec.dev.java.net/nonav/JXTAProtocols.html#refimpls-ids-jiuft" target="_blank">JXTA
+    Protocols Specification : IDs</a>
+
+</BODY>
+</HTML>

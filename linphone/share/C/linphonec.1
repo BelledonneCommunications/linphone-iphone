@@ -1,0 +1,69 @@
+.\" Linphone is an internet phone compatible with the Session Initiation Protocol (SIP: RFC3261 )
+.TH "linphonec" "1" "1.0.0" "Florian Winterstein & Simon MORLAT" "linphone, internet phone"
+.SH "NAME"
+.LP 
+linphonec \- Console interface of linphone, a SIP compatible
+internet phone.
+.SH "SYNTAX"
+.LP 
+linphonec [\fI\-d\fP] <\fIdebug_level\fP> [\fI\-l\fP] <\fIdebug_file\fP> [\fI\-c\fP] <\fIconfig_file\fP> 
+.br 
+linphonec \fI\-v\fP
+.SH "DESCRIPTION"
+.LP 
+Linphonec is the console version of originally Gnome internet phone linphone (http://www.linphone.org) .
+.br 
+Linphonec can be started without arguments. It doesn't need any config file to start correctly and will create a default one at the first startup if the file does not exist.
+By default the path of the config file is ~/.linphonerc .
+Most parameters (proxy, passwords) can be changed from the command line, for some of them (path of sound rings), you'll need
+to edit the .linphonerc config file.
+.br 
+Once linphonec has started, linphonec wait for some commands and is ready to receive calls.
+.br 
+The most important commands are
+.br 
+.TP 
+call <sip url> : to call someone. A sip url is in the form sip:user@host
+.TP 
+terminate 	: to terminate a call
+.TP 
+answer	: to accept an incoming call.
+.TP 
+help	: to display interactive help.
+.TP 
+
+
+
+.SH "OPTIONS"
+.LP 
+.TP 
+\fB\-d\fR <\fIdebug_level\fP>
+Use debug mode with given verbosity (debug_level). The debug_level is an integer in the range 0..5 .
+.TP 
+\fB\-h\fR
+Output help information and exit.
+.TP 
+\fB\-l\fR <\fIlog_file\fP>
+Specifies a file where debug information will be written. Default is stdout.
+.TP 
+\fB\-c\fR <\fIconfig_file\fP>
+Specifies the config file to read at startup.
+.TP 
+.SH "FILES"
+.LP 
+\fI~/.linphonec\fP 
+.br 
+ 
+.SH "ENVIRONMENT VARIABLES"
+.LP 
+.SH "EXAMPLES"
+.LP 
+
+.SH "AUTHORS"
+.LP 
+Florian Winterstein <fwin at gmx.de>
+.br 
+Simon Morlat <simon.morlat at linphone.org>
+.SH "SEE ALSO"
+.LP 
+linphone(1) sipomatic(1)

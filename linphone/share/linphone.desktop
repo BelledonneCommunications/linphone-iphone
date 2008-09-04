@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Linphone
+Comment=Linphone is a web-phone
+Comment[fr]=Linphone est un web-phone.
+Comment[de]=Linphone ist ein web-phone.
+Type=Application
+Exec=linphone-3
+Icon=linphone/linphone2.png
+Terminal=false
+Categories=Application;Network;

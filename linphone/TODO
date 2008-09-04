@@ -1,0 +1,22 @@
+hot stuff:
+---------
+
+* ice support
+* run a user given command upon incoming calls
+* linphonec on win32
+* RTP inactivity timeout to close lost calls.
+
+
+low priority:
+-------------
+
+* random RTP ports (to enable direct mapping NAT)
+* zeroconf support for advertising services (cool stuff!)
+* have the possibility to define several profiles (config files) and switch between them
+* display call duration
+* help tips for the registration box
+* The length (or duration) of the call could be displayed (see icons2.png)
+* 2. There could be a sound effect for "busy" - a short "beep-beep-beep" would be      sufficient (try http://www.google.com/search?q=busy.wav)
+* The call history could be a bit more clear (see history.png). And it
+  should be saved somewhere, so you can track your calls if you need to...
+* move resampling stuff to use speex instead of libresample.

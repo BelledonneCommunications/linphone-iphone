@@ -1,0 +1,2 @@
+@echo off
+"%JAVA_HOME%\bin\java.exe" -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=6789 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -jar p2pproxy.jar  %1 %2 %3 %4 %5 %6 %7 %8 %9

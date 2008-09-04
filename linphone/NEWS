@@ -1,0 +1,75 @@
+linphone-2.1.1 -- February 13, 2008
+	* fix interroperability bug with Asterisk about a BYE not sent by linphone.
+	* fix alsa support weakness (capture underruns not recovered)
+
+linphone-2.1.0 -- January 25, 2008
+	* 4CIF support
+	* enable resizing of video output
+	* hu translation added
+
+linphone-2.0.1 -- November 30, 2007
+	* fix interop issue with asterisk
+	* answer OPTIONS and other SIP messages
+	* allow usage of ALSA user pcm devices with the sound->alsadev config item.
+
+linphone-2.0.0 -- November 15, 2007
+	* port to libeXosip2-3.0.x with libosip2-3.0.x
+	* implements early media
+	* implements incoming re-INVITE
+	* presence support improvements
+	* ipv6 working on windows
+	* implements SDP over 200ok/ACK
+	* add experimental snow codec support
+	* answers to VFU request in SIP-INFO by sending an I-frame.
+	* ffmpeg rate control enabled, improved mpeg4 quality for low bandwidths
+	* separate video grabbing and display in linphonec
+
+linphone-1.7.1 -- April 16, 2007
+	* cz translation
+	* compilation bugfixes (when video support is disabled)
+	* fix IM icons path bug
+
+linphone-1.7.0 -- April 11, 2007
+	* new splash screen when no webcam is detected
+	* new friend commands for linphonec
+	* gnome interface becomes gtk-only
+	* fix issue with codec bitrate settings when no bandwidth limits are given
+	* open rtp sockets before sending SDP offer or answer (so that we don't miss the
+	  first I-frame)
+
+linphone-1.6.0 -- January 23, 2007
+	* Video4Linux V2 support with mjpeg cameras
+	* use MPEG4 config string provided in the SDP (if any)
+	* fix bug when choosing an invalid ring sound file
+	* fix bug when using quickcam driver with CIF size
+	* reduce audio bandwidth usage for <128kbit/s connections with video
+
+linphone-1.5.1 -- November 14, 2006
+	* fix translations
+
+linphone-1.5.0 -- October 11, 2006
+	* compliant theora support (using Luca Barbato's draft)
+	* mpeg4 support (compliant with RFC3016)
+	* controls to display and modify video codec list (gnome interface)
+	* banwidth usage improvements
+	* splash screen when no webcam is detected
+
+linphone-1.4.1 -- September 18, 2006
+	* fixes crash when attempting to make two simultaneous calls
+	* fixes crash when having no soundcard
+	* require theora>=1.0.0-alpha7
+	* do not allow resizing of the gnome interface
+	* do not change mixer settings at startup
+
+linphone-1.4.0 -- September 11, 2006
+	* no more glib dependency at all 
+	* new mediastreamer2 framework for audio/video streaming
+	* stable video support with H.263-1998
+	* echo cancelation
+	* experimental theora support
+	* jack support unported to mediastreamer2, sorry : volunteer needed
+	* video resolution and framerate set according to bandwidth constraints.
+	* linphonec new "soundcard" command to list and choose sound devices.
+	* new download and upload bandwidth parameters used to find suitable video/audio codec choice and parameters.
+	* new 'play' and 'record' functions to linphonec to play and record wav files
+	* arts sound backend

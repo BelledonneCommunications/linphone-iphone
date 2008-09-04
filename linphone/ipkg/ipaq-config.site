@@ -1,0 +1,89 @@
+# config.site for configure
+# iPAQ Familiar Linux TARGET
+
+# this config file is only suitable for the 3.2 release of the arm toolchain.
+
+# run with
+#   CONFIG_SITE=/wherever/you/store/it/ipaq-config.site ./configure
+# or
+#   export CONFIG_SITE=/wherever/you/store/it/ipaq-config.site
+# if this is going to be a whole compilation orgy
+
+# Modified from the one provided by Bradley D. LaRonde
+# Edited by Andrej Cedilnik <acedil1@csee.umbc.edu>
+# Used some of solutions by Tilman Vogel <Tilman.Vogel@web.de>
+# Ported for iPAQ Familiar by Oliver Kurth <oliver.kurth@innominate.com>
+
+HOSTCC=gcc
+
+# Names of the cross-compilers
+CC=arm-linux-gcc
+CXX=arm-linux-g++
+
+# The cross compiler specific options
+CFLAGS="-O2 -fno-exceptions"
+CXXFLAGS="-O2 -fno-exceptions"
+CPPFLAGS="-O2 -fno-exceptions"
+LDFLAGS=""
+
+# Some other programs
+AR=arm-linux-ar
+RANLIB=arm-linux-ranlib
+NM=arm-linux-nm
+ac_cv_path_NM=arm-linux-nm
+ac_cv_func_setpgrp_void=yes
+host=arm-linux
+#prefix=/usr/mipsel-linux
+x_includes=/skiff/local/arm-linux/include/X11
+x_libraries=/skiff/local/arm-linux/lib/X11
+
+# These are for GNU shellutils
+jm_cv_have_proc_uptime=yes
+jm_cv_func_working_gnu_strftime=yes
+
+# Some options for ease of compiling python
+# (these are left over from the agenda. Not checked for iPAQ)
+ac_cv_sizeof_int=4
+ac_cv_sizeof_char=1
+ac_cv_sizeof_short=2
+ac_cv_sizeof_float=4
+ac_cv_sizeof_double=8
+ac_cv_sizeof_pthread_t=4
+ac_cv_sizeof_long=4
+ac_cv_sizeof_void_p=4
+ac_cv_sizeof_long_long=8
+ac_cv_sizeof_off_t=4
+ac_cv_sizeof_fpos_t=4
+ac_cv_sizeof_time_t=4
+
+# Some other stuff nobody knows why
+#bad_forward=no
+#LDSHARED='mipsel-linux-gcc -msoft-float -shared'
+#ac_cv_malloc_zero=nonnull
+
+# squeak wants this
+# can't do misaligned access to doubles
+ac_cv_double_align=no
+# dunno what order doubles are in
+ac_cv_double_order=no
+
+ac_cv_header_wchar_h=no
+
+# added by oku, for compiling glib:
+glib_cv_has__inline=yes
+glib_cv_has__inline__=yes
+glib_cv_hasinline=yes
+glib_cv_sane_realloc=yes
+glib_cv_va_copy=no
+glib_cv___va_copy=yes
+glib_cv_va_val_copy=yes
+glib_cv_rtldglobal_broken=no
+glib_cv_uscore=yes
+ac_cv_func_getpwuid_r=yes
+glib_cv_sizeof_gmutex=24
+
+#added by Simon Morlat, for compiling glib-2.2.x
+
+glib_cv_stack_grows=no
+ac_cv_func_posix_getpwuid_r=yes
+glib_cv_use_pid_surrogate=yes

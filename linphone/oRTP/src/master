@@ -1,0 +1,33 @@
+*############################################################
+*#
+*# $Header: /sources/linphone/linphone/oRTP/src/master,v 1.1 2002/02/25 08:41:53 smorlat Exp $
+*#
+*# $Source: /sources/linphone/linphone/oRTP/src/master,v $
+*# $Revision: 1.1 $
+*# $Locker:  $
+*# 
+*############################################################
+$VERSION
+1
+$$$
+
+$DRIVER_INSTALL
+oRTP	-1	-1
+$$$
+
+$LOADABLE
+$$$
+
+$INTERFACE
+base
+$$$
+
+$DRIVER_DEPENDENCY
+$$$
+
+$TYPE
+oRTP	wsio_class	pseudo	pmi	-1	-1
+$$$
+
+$TUNABLE
+$$$

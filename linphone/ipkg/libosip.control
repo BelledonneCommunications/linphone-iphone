@@ -1,0 +1,8 @@
+Package: libosip
+Section: libs
+Priority: optional
+Version: 0.9.7-1
+Architecture: arm
+Maintainer: Simon Morlat
+Depends: libc6
+Description: a SIP (RFC3261) C library.

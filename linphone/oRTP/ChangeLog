@@ -1,0 +1,153 @@
+2007-07-26  Francois-Xavier Kowalski  <fix@hp.com>
+
+	* pkg.list: 1.3 
+	  Do not run makewhatis when installing EPM-generated package.
+
+2007-04-19 Francois-Xavier Kowalski <fix@hp.com>
+
+	* ortp.spec.in (Requires): 1.4
+	  Adapt  to new  documentation generation  change from  gtk-doc to
+	  Doxygen.
+
+	* Makefile.am (docdir): 1.27
+	  automake's  docdir is  not  always defined  &  is generally  not
+	  package specific, so we manually define docdir & pkgdocdir.
+
+2007-03-01 Francois-Xavier Kowalski <fix@hp.com>
+
+	* include/ortp/payloadtype.h: 1.28
+	  Encompass every declaration (whether lvalue or not) under extern
+	  "C".
+
+2007-01-18 Francois-Xavier Kowalski <fix@hp.com>
+
+	* oRTP/Makefile.am: 1.24 
+	  Fix     RPM     package     generattion     to     cope     with
+	  <https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=206841>
+
+2006-10-24  Francois-Xavier 'FiX' KOWALSKI  <fix@hp.com>
+
+	* include/ortp/port.h: 1.21 
+	* src/scheduler.h (ortp_get_scheduler): 1.13
+	  Disable some Intel C/C++ warnings to build with icc.
+
+	* include/ortp/stun_udp.h (__STUN_UDP_H__): 1.6 
+	* include/ortp/stun.h: 1.6
+	  Use <ortp/port.h>
+
+2006-07-10 Francois-Xavier 'FiX' KOWALSKI <fix@hp.com>
+
+	* configure.ac: 1.89 
+	* gtk-doc.make (dist-check-gtkdoc): 1.1
+	  Non-fatal  but  incomplete  "make  dist"  when  gtk-doc  is  not
+	  installed.
+
+2006-07-07 Francois-Xavier 'FiX' KOWALSKI <fix@hp.com>
+
+	* src/avprofile.c (NORMAL_BITRATE): 1.27
+	  Use ISO C/99 tagged struct syntax rather than GCC's legacy one.
+
+2006-07-07 Francois-Xavier Kowalski <fix@hp.com>
+
+	* src/rtpsession.c (RTP_SEQ_IS_GREATER): 1.132 
+	  Fix  comment   content  (using  <>)  that   breaks  gtkdoc  SGML
+	  generation.
+
+	* include/ortp/event.h: 1.3 
+	  OrtpEventData cannot be a type a s struct at the same time.
+
+	* ortp.spec.in (Requires): 1.2
+	  Drop glib option
+
+	* gtk-doc.make:
+	* docs/Makefile.am (#DOC_MAIN_SGML_FILE): 1.7 
+	* Makefile.am
+	  Use slightly modified gtkdocize. 
+
+	* ortp.spec.in (Requires): 1.2 
+	  Force build  of gtk-doc, as  the default choice that  comes with
+	  GTK_DOC_CHECK m4 macro is "no".
+
+2006-07-06  Francois-Xavier Kowalski  <fix@hp.com>
+
+	* src/payloadtype.c (rtp_profile_destroy): 1.20 
+	  avoid double-free
+
+	* configure.ac: 1.88
+	  ortp-0.10.1.1
+
+Friday March 10 2006 : ortp-0.9.1
+	- fix package name (was 0.9.0.)
+
+Wednesday March 8 2006	: ortp-0.9.0
+	- a lot of cleanups, glib dropped, win32 port reactivated
+
+Tuesday December 20 2005 : ortp-0.8.1
+	- change session's clockrate dependant parameters upon payload type changed events at socket level 
+	- rtp_session_set_recv_buf_size() added.
+	- bugfix in rtp_session_set_remote_addr()
+	- memory leak fixed in rtp_profile_destroy()
+
+Wednesday December 07 2005: ortp-0.8.0
+	- make package modifications
+	- make rpm added
+	- add support for different payload types for incoming and outgoing stream (which breaks api compatibility)
+	- prefix all PayloadType with payload_type_* to avoid naming conflicts
+
+Wednesday August 24 2005: ortp-0.7.1
+	- added patch for pkgconfig support from Jean-Philippe Barrette-LaPierre
+
+Monday August 8 2005: ortp-0.7.1pre5
+	- adaptive jitter buffer improvements
+	- timestamp compensated packets returned by rtp_session_recvm_with_ts
+	- new payload definitions.
+
+Tuesday August 2 2005: ortp-0.7.1pre4
+	- adaptive jitter buffer cleanups.
+	- hton24 utility function added for RTCP
+
+Tuesday July 4 2005: ortp-0.7.1pre3
+	- improve automatic jitter buffer: no more closed-loop; just estimation.
+	- merge patch for multicast from Samuel Thibault
+	- merge patch for parsing of rtcp packets from Nicola Baldo
+	- add static payload definitions for g723.1 and g729.
+
+Wednesday November 17 2004: ortp-0.7.0 series starts
+	- add automatic jitter buffer:
+		* compensate clock slides
+		* estimate the jitter and sets the minimum jitter compensation delay accordingly	
+	- posix timer simplified
+	- less system calls: use non blocking recv() and don't use select() or poll()
+	- add new functions for optimized packet sending
+	- recv() and send() are always made within the rtp_session_recv..() and rtp_session_send..()
+		functions. That means that scheduled non blocking mode does no more work as it worked before, ie 
+		that packet will be sent immediately rather than being sent on time by the scheduler as it was before.
+	- HPUX kernel target removed.
+	- scheduler always built.
+
+Tuesday August 12 2003 : ortp-0.6.3
+	- some improvements by Aymeric Moizard for Win32 build
+	- some bug fixes concerning ipv6 support.
+
+Thursday August 7 2003 : ortp-0.6.2
+	- just some minor improvements for using oRTP in a C++ environment.
+
+Wednesday January 8 2003: ortp-0.6.0
+	- many bug fixes by Telisma: the most important bug concerned the windows port.
+	- some new functionnalities concerning the RTP profiles and payload management.
+	- ported to glib-2.0 .
+
+Monday September 23 2002: ortp-0.5.0
+	- ortp has been ported to the Microsoft Windows OS (version 2000 and later) by Eloquant
+		(http://www.eloquant.com)
+	- some bug fixes and improvements of the windows port have been made by Telisma 
+		(http://www.telisma.com)
+
+Wednesday June 5 2002: ortp-0.4.4
+	- Some crashing bugs fixed.
+
+Wednesday May 15 2002: ortp-0.4.3
+	- Install include files properly.
+
+Tuesday May 7 2002: ortp-0.4.2
+	- First official and public release of oRTP.

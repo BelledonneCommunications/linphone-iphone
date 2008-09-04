@@ -1,0 +1,5 @@
+[linphone_applet]
+type=exe
+repo_id=IDL:GNOME/Applet:1.0
+description=Linphone is a web phone.
+location_info=linphone --applet

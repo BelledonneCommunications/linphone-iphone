@@ -1,0 +1,1031 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2001 Free Software Foundation, Inc.
+# Simon Morlat <simon.morlat@linphone.org>, 2001.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Linphone 0.9.1\n"
+"Report-Msgid-Bugs-To: linphone-developers@nongnu.org\n"
+"POT-Creation-Date: 2008-08-26 14:26+0200\n"
+"PO-Revision-Date: 2002-12-06 17:33+0100\n"
+"Last-Translator: Simon Morlat <simon.morlat@linphone.org>\n"
+"Language-Team: french <fr@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: gtk/main.c:58
+msgid "A free SIP video-phone"
+msgstr ""
+
+#: gtk/interface.c:138
+msgid "linphone"
+msgstr "linphone"
+
+#: gtk/interface.c:155
+msgid "Go"
+msgstr "Aller à"
+
+#: gtk/interface.c:162
+msgid "Address book"
+msgstr "Carnet d'adresses"
+
+#: gtk/interface.c:174
+msgid "Call history"
+msgstr "Historique des appels"
+
+#: gtk/interface.c:177
+msgid "Shows calls"
+msgstr "Affichage des appels"
+
+#: gtk/interface.c:188
+#, fuzzy
+msgid "Exit"
+msgstr "Editer"
+
+#: gtk/interface.c:196
+msgid "Help"
+msgstr ""
+
+#: gtk/interface.c:236
+msgid "Enter sip address or phone number here"
+msgstr ""
+
+#: gtk/interface.c:237 gtk/interface.c:1398 gtk/interface.c:2335
+#: gtk/interface.c:2357 gtk/interface.c:2497
+msgid "sip:"
+msgstr "sip:"
+
+#: gtk/interface.c:239 gtk/interface.c:2512
+msgid "Sip address:"
+msgstr "Adresse sip:"
+
+#: gtk/interface.c:247
+msgid "Shows the address book"
+msgstr "Affiche le carnet d'adresses"
+
+#: gtk/interface.c:261
+msgid "..."
+msgstr "..."
+
+#: gtk/interface.c:269 gtk/interface.c:2519
+msgid "Proxy to use:"
+msgstr "Serveur proxy"
+
+#: gtk/interface.c:278
+msgid ""
+"Call or\n"
+"answer"
+msgstr ""
+"Appeler ou\n"
+"Répondre"
+
+#: gtk/interface.c:283
+msgid ""
+"Hangup\n"
+"or refuse"
+msgstr ""
+"Raccrocher\n"
+"ou refuser"
+
+#: gtk/interface.c:288
+msgid "Or chat !"
+msgstr "Ou chatter !"
+
+#: gtk/interface.c:310
+msgid "Show more..."
+msgstr "Plus d'options..."
+
+#: gtk/interface.c:332
+msgid "Playback level:"
+msgstr "Niveau d'écoute:"
+
+#: gtk/interface.c:343
+msgid "Recording level:"
+msgstr "Niveau d'enregistrement:"
+
+#: gtk/interface.c:354
+msgid "Ring level:"
+msgstr "Volume de la sonnerie :"
+
+#: gtk/interface.c:365
+msgid "Sound"
+msgstr "Son"
+
+#: gtk/interface.c:382
+msgid "Enable video"
+msgstr "video active"
+
+#: gtk/interface.c:387
+msgid "Video"
+msgstr "Video"
+
+#: gtk/interface.c:392
+msgid "Controls"
+msgstr "Controles"
+
+#: gtk/interface.c:410
+msgid "Reachable"
+msgstr "Joignable"
+
+#: gtk/interface.c:421
+msgid "Busy, I'll be back in "
+msgstr "Occupé, de retour dans "
+
+#: gtk/interface.c:430
+msgid "The other party will be informed that you'll be back in X minutes"
+msgstr ""
+"Vos correspondants seront informés que vous serez de retour dans X minutes"
+
+#: gtk/interface.c:431
+msgid "5"
+msgstr ""
+
+#: gtk/interface.c:433
+msgid "mn"
+msgstr ""
+
+#: gtk/interface.c:438 coreapi/presence.c:146
+msgid "Away"
+msgstr "Absent"
+
+#: gtk/interface.c:444
+msgid "Do not disturb"
+msgstr "Ne pas déranger"
+
+#: gtk/interface.c:450
+msgid "Moved temporarily"
+msgstr "En déplacement"
+
+#: gtk/interface.c:456
+msgid "Alternative service"
+msgstr "Autre service"
+
+#: gtk/interface.c:466
+msgid "URL:"
+msgstr ""
+
+#: gtk/interface.c:475
+msgid "Presence"
+msgstr "Présence"
+
+#: gtk/interface.c:492
+msgid "Press digits to send DTMFs."
+msgstr "Utiliser ce clavier pour envoyer des DTMFs."
+
+#: gtk/interface.c:501
+msgid ""
+"  3\n"
+"def"
+msgstr ""
+
+#: gtk/interface.c:507
+msgid ""
+"  2\n"
+"abc"
+msgstr ""
+
+#: gtk/interface.c:513
+msgid "1"
+msgstr ""
+
+#: gtk/interface.c:519
+msgid ""
+"  4\n"
+"ghi"
+msgstr ""
+
+#: gtk/interface.c:525
+msgid ""
+" 5\n"
+"jkl"
+msgstr ""
+
+#: gtk/interface.c:531
+msgid ""
+"  6\n"
+"mno"
+msgstr ""
+
+#: gtk/interface.c:537
+msgid ""
+"   7\n"
+"pqrs"
+msgstr ""
+
+#: gtk/interface.c:543
+msgid ""
+"  8\n"
+"tuv"
+msgstr ""
+
+#: gtk/interface.c:549
+msgid ""
+"   9\n"
+"wxyz"
+msgstr ""
+
+#: gtk/interface.c:555
+msgid "*"
+msgstr ""
+
+#: gtk/interface.c:561
+msgid "0"
+msgstr ""
+
+#: gtk/interface.c:567
+msgid "#"
+msgstr ""
+
+#: gtk/interface.c:573
+msgid "DTMF"
+msgstr ""
+
+#: gtk/interface.c:590
+msgid "My online friends"
+msgstr "Mes amis en ligne"
+
+#: gtk/interface.c:849 gtk/interface.c:3029
+#, fuzzy
+msgid "Linphone"
+msgstr "linphone"
+
+#: gtk/interface.c:850 gtk/interface.c:3030
+msgid ""
+"C: 2001\n"
+"Made in Old Europe"
+msgstr ""
+"Avril 2001\n"
+"Fabriqué en France"
+
+#: gtk/interface.c:851 gtk/interface.c:3031
+msgid ""
+"Linphone is a web-phone.\n"
+"It is compatible with SIP and RTP protocols."
+msgstr ""
+"Linphone est un téléhone internet.\n"
+"Il est compatible avec les protocoles SIP et RTP."
+
+#: gtk/interface.c:854
+msgid "http://www.linphone.org"
+msgstr ""
+
+#: gtk/interface.c:1028
+msgid "Parameters"
+msgstr "Paramètres"
+
+#: gtk/interface.c:1061
+msgid "Use IPv6 network (if available)"
+msgstr "Utiliser un réseau IPv6 (si disponible)"
+
+#: gtk/interface.c:1064
+msgid ""
+"Toggle this if you are on an ipv6 network and you wish linphone to use it."
+msgstr ""
+"Cocher cette case si vous êtes sur un réseau IPv6 et que vous voulez que "
+"linphone l'utilise."
+
+#: gtk/interface.c:1066
+msgid "Global"
+msgstr ""
+
+#: gtk/interface.c:1081
+msgid ""
+"These options is only for users in a private network, behind a gateway. If "
+"you are not in this situation, then leave this empty."
+msgstr ""
+"Utiliser ceci si vous êtes dans un réseau privé derrière un pare-feu et que "
+"vous souhaitez passer  des appels vers l'internet public."
+
+#: gtk/interface.c:1091
+msgid "No firewall"
+msgstr "Pas de pare-feu"
+
+#: gtk/interface.c:1099
+msgid "Use this STUN server to guess firewall address :"
+msgstr "Utiliser ce serveur STUN pour deviner l'adresse du pare feu:"
+
+#: gtk/interface.c:1107
+msgid "Specify firewall address manually:"
+msgstr "Donner l'addresse du pare-feu manuellement:"
+
+#: gtk/interface.c:1127
+msgid "NAT traversal options (experimental)"
+msgstr "Options d'utilisation avec un pare-feu (expérimental)"
+
+#: gtk/interface.c:1156
+msgid "Number of buffered miliseconds (jitter compensation):"
+msgstr "Temps de bufferisation (jitter compensation):"
+
+#: gtk/interface.c:1164
+msgid "RTP port used for audio:"
+msgstr "Port RTP pour l'audio:"
+
+#: gtk/interface.c:1171
+msgid "RTP properties"
+msgstr "Paramètres RTP"
+
+#: gtk/interface.c:1189
+msgid "Use SIP INFO message instead of RTP rfc2833 for DTMF transmitting"
+msgstr ""
+"Utilise les messages SIP INFO à la place des RTP RFC2833 pour signaler les "
+"DTMFs"
+
+#: gtk/interface.c:1192
+msgid "RTP-RFC2833 is the recommended way."
+msgstr "RTP-RFC2833 est recommandé"
+
+#: gtk/interface.c:1194
+msgid "Other"
+msgstr "Autre"
+
+#: gtk/interface.c:1199
+msgid "Network"
+msgstr "Réseau"
+
+#: gtk/interface.c:1225
+msgid "Playback sound device:"
+msgstr "Carte son (pour l'écoute)"
+
+#: gtk/interface.c:1240 gtk/propertybox.c:629 gtk/propertybox.c:654
+msgid "micro"
+msgstr "micro"
+
+#: gtk/interface.c:1241 gtk/propertybox.c:632 gtk/propertybox.c:655
+msgid "line"
+msgstr "line"
+
+#: gtk/interface.c:1250
+msgid "Capture sound device:"
+msgstr "Carte son (pour le micro) :"
+
+#: gtk/interface.c:1270
+msgid "Recording source:"
+msgstr "Source d'enregistrement:"
+
+#: gtk/interface.c:1277
+msgid "Ring sound device"
+msgstr "Carte son (pour la sonnerie) :"
+
+#: gtk/interface.c:1285
+msgid "Ring sound:"
+msgstr "Son de sonnerie:"
+
+#: gtk/interface.c:1305
+msgid "Enable echo-canceler (cancels the echo heard by the remote party)"
+msgstr ""
+"Annulation d'écho active (annule l'écho entendu par votre correspondant)"
+
+#: gtk/interface.c:1319
+msgid "Choose file"
+msgstr ""
+
+#: gtk/interface.c:1339
+msgid "Listen"
+msgstr "Ecouter"
+
+#: gtk/interface.c:1343
+msgid "Sound properties"
+msgstr "Paramètres son"
+
+#: gtk/interface.c:1347
+msgid "Sound device"
+msgstr "Carte son"
+
+#: gtk/interface.c:1365
+msgid "Run sip user agent on port:"
+msgstr "SIP user agent sur le port:"
+
+#: gtk/interface.c:1374
+msgid "It is strongly recommended to use port 5060."
+msgstr "Il est FORTEMENT recommand�d'utiliser le port 5060."
+
+#: gtk/interface.c:1376
+msgid "SIP port"
+msgstr "Port SIP"
+
+#: gtk/interface.c:1393
+msgid "Your sip address:"
+msgstr "Votre adresse sip:"
+
+#: gtk/interface.c:1407
+msgid "@"
+msgstr ""
+
+#: gtk/interface.c:1416
+msgid "Automatically guess a valid hostname"
+msgstr "Choix automatique du nom d'hôte (recommandé)"
+
+#: gtk/interface.c:1420
+msgid "Identity"
+msgstr "Identité"
+
+#: gtk/interface.c:1467
+msgid "Add proxy/registrar"
+msgstr "Ajouter un proxy ou un registrar"
+
+#: gtk/interface.c:1488 gtk/interface.c:2114
+msgid "Edit"
+msgstr "Editer"
+
+#: gtk/interface.c:1509
+msgid "Remove"
+msgstr "Supprimer"
+
+#: gtk/interface.c:1513
+msgid "Remote services"
+msgstr "Services sur serveur distant"
+
+#: gtk/interface.c:1543
+msgid "Clear all stored authentication information (username,password...)"
+msgstr ""
+"Effacer les informations d'authentification (utilisateur, mot de passe...)"
+
+#: gtk/interface.c:1547
+msgid "Authentication information"
+msgstr "Information d'authentification"
+
+#: gtk/interface.c:1551
+msgid "SIP"
+msgstr "SIP"
+
+#: gtk/interface.c:1574
+msgid "List of audio codecs, in order of preference:"
+msgstr "Liste des codecs audio, par ordre de préférence:"
+
+#: gtk/interface.c:1595
+msgid "Audio codecs"
+msgstr "Codecs audio"
+
+#: gtk/interface.c:1608
+msgid "Video Codecs"
+msgstr "Codecs video"
+
+#: gtk/interface.c:1644
+msgid "Enable"
+msgstr "Active"
+
+#: gtk/interface.c:1665
+msgid "Disable"
+msgstr "Désactive"
+
+#: gtk/interface.c:1673
+msgid "Upload bandwidth (kbit/sec):"
+msgstr "Bande passante montante (kbit/sec)"
+
+#: gtk/interface.c:1681
+msgid "Download bandwidth (kbit/sec):"
+msgstr "Bande passante descendante (kbit/sec)"
+
+#: gtk/interface.c:1708
+msgid ""
+"Note: Codecs in red are not usable regarding to your connection type to the "
+"internet."
+msgstr ""
+"Remarque: les codecs en rouge ne sont pas utilisables compte tenu de votre "
+"type de connection internet."
+
+#: gtk/interface.c:1720
+msgid "No information availlable"
+msgstr "Pas d'information disponible"
+
+#: gtk/interface.c:1727
+msgid "Codec information"
+msgstr "Information sur le codec"
+
+#: gtk/interface.c:1731
+msgid "Audio and video codecs"
+msgstr "Codecs audio et video"
+
+#: gtk/interface.c:1736
+msgid "Codecs"
+msgstr ""
+
+#: gtk/interface.c:2044
+msgid "Address Book"
+msgstr "Carnet d'adresses"
+
+#: gtk/interface.c:2140
+msgid "Select"
+msgstr "Sélectionner"
+
+#: gtk/interface.c:2199
+msgid "Information"
+msgstr ""
+
+#: gtk/interface.c:2217
+msgid ""
+"User is not reachable at the moment but he invites you to contact him using "
+"the following alternate ressource:"
+msgstr ""
+"Votre correspondant n'est pas joignable actuellement mais il vous propose\n"
+"de le contacter en utilisant le moyen alternatif suivant:"
+
+#: gtk/interface.c:2224
+msgid "None."
+msgstr "Aucun."
+
+#: gtk/interface.c:2285 gtk/interface.c:2394
+msgid "Proxy/Registrar configuration box"
+msgstr "Paramétrage des proxy"
+
+#: gtk/interface.c:2315
+msgid "Route (optional):"
+msgstr "Route (optionnel):"
+
+#: gtk/interface.c:2337
+msgid "SIP Proxy:"
+msgstr "Proxy SIP:"
+
+#: gtk/interface.c:2344
+msgid "SIP Identity:"
+msgstr "Identité SIP:"
+
+#: gtk/interface.c:2359
+msgid "Registration Period:"
+msgstr "Période d'enregistrement"
+
+#: gtk/interface.c:2374
+msgid "Send registration:"
+msgstr "Enregistrement (REGISTER):"
+
+#: gtk/interface.c:2381
+msgid "Publish presence information:"
+msgstr "Envoyer les informations de presence"
+
+#: gtk/interface.c:2466
+msgid "Edit contact information"
+msgstr "Editer le contact"
+
+#: gtk/interface.c:2505
+msgid "Name:"
+msgstr "Nom:"
+
+#: gtk/interface.c:2526
+msgid "Subscribe policy:"
+msgstr "Politique concernant les souscriptions:"
+
+#: gtk/interface.c:2533
+msgid "Send subscription (see person's online status)"
+msgstr "Envoie une soucription (pour connaitre la disponibilit�de la personne)"
+
+#: gtk/interface.c:2537
+msgid "Contact information"
+msgstr "Information sur le contact"
+
+#: gtk/interface.c:2608
+msgid "New incoming subscription"
+msgstr "Nouvelle souscription entrante"
+
+#: gtk/interface.c:2628
+msgid "You have received a new subscription..."
+msgstr "Vous avez reçu une souscription..."
+
+#: gtk/interface.c:2655
+msgid "Refuse"
+msgstr "Refuser"
+
+#: gtk/interface.c:2676 gtk/addressbook.c:57
+msgid "Accept"
+msgstr "Accepter"
+
+#: gtk/interface.c:2729
+msgid "Authentication requested"
+msgstr "Vous devez vous authentifier"
+
+#: gtk/interface.c:2755
+msgid "Authentication required for realm"
+msgstr "Authentification requise sur le realm"
+
+#: gtk/interface.c:2791
+msgid "userid:"
+msgstr ""
+
+#: gtk/interface.c:2799
+msgid "password:"
+msgstr "mot de passe:"
+
+#: gtk/interface.c:2807
+msgid "username:"
+msgstr "nom d'utilisateur:"
+
+#: gtk/interface.c:2815
+msgid "realm:"
+msgstr ""
+
+#: gtk/interface.c:2876
+msgid "Linphone - Call history"
+msgstr "Linphone - Historique des appels"
+
+#: gtk/interface.c:2943
+msgid "Chat Room"
+msgstr ""
+
+#: gtk/interface.c:2971
+msgid "Text:"
+msgstr "Texte:"
+
+#: gtk/callbacks.c:600
+#, c-format
+msgid "Chat with %s"
+msgstr "Chat avec %s"
+
+#: gtk/support.c:90 gtk/support.c:114
+#, c-format
+msgid "Couldn't find pixmap file: %s"
+msgstr "Ne peut trouvé l'icone : %s"
+
+#: gtk/propertybox.c:207
+msgid "Account"
+msgstr "Compte"
+
+#: gtk/propertybox.c:439 gtk/propertybox.c:524 gtk/propertybox.c:536
+#: gtk/propertybox.c:883
+msgid "Enabled"
+msgstr "Activé"
+
+#: gtk/propertybox.c:440 gtk/propertybox.c:884
+msgid "Disabled"
+msgstr "Désactivé"
+
+#: gtk/propertybox.c:458 gtk/friends.c:110
+msgid "Name"
+msgstr "Nom"
+
+#: gtk/propertybox.c:464
+msgid "Rate (Hz)"
+msgstr "Fréquence (Hz)"
+
+#: gtk/propertybox.c:470
+msgid "Status"
+msgstr "Etat"
+
+#: gtk/propertybox.c:476
+msgid "Min bitrate (kbit/s)"
+msgstr "Débit min. (kbit/s)"
+
+#: gtk/propertybox.c:504 gtk/propertybox.c:509 gtk/propertybox.c:1061
+#: gtk/propertybox.c:1072
+msgid "Unlimited"
+msgstr "Pas de limite"
+
+#: gtk/linphone.c:215
+msgid "The caller asks for resource reservation. Do you agree ?"
+msgstr ""
+"Votre correspondant propose d'utiliser des m?anismes de r?ervation de "
+"ressources. Souhaitez-vous accepter ?"
+
+#: gtk/linphone.c:218
+msgid ""
+"The caller doesn't use resource reservation. \t\t\t\t\tDo you wish to "
+"continue anyway ?"
+msgstr ""
+"Votre correspondant n'utilise pas de m?anisme de r?ervation de ressources. "
+"Souhaitez-vous continuer tout de m?e ?"
+
+#: gtk/linphone.c:245
+#, c-format
+msgid "linphone - receiving call from %s"
+msgstr "linphone - appel entrant de %s"
+
+#: gtk/linphone.c:272
+#, c-format
+msgid ""
+"You have received a subscription from %s.This means that this person wishes "
+"to be notified of your presence information (online, busy, away...).\n"
+"Do you agree ?"
+msgstr ""
+"Vous avez reçu une souscription de %s. Cela signifie que cette personne "
+"souhaite être au courant de votre disponibilité au téléhone (en ligne, "
+"occupé, parti...)\n"
+"Etes vous d'accord ?"
+
+#: gtk/linphone.c:287
+#, c-format
+msgid "Authentication required for realm %s"
+msgstr "Authentification requise sur le realm %s"
+
+#: gtk/linphone.c:410
+msgid "None"
+msgstr "Aucun"
+
+#: gtk/friends.c:117
+msgid "Presence status"
+msgstr "Info de présence"
+
+#: gtk/addressbook.c:55
+msgid "Wait"
+msgstr ""
+
+#: gtk/addressbook.c:56
+msgid "Deny"
+msgstr ""
+
+#: gtk/addressbook.c:124
+#, fuzzy
+msgid "Bad sip address: a sip address looks like sip:user@domain"
+msgstr ""
+"Adresse SIP mal formulée. Une address sip ressemble à <sip:nom@machine>"
+
+#: gtk/addressbook.c:226
+#, fuzzy
+msgid "Contact list"
+msgstr "Appel de"
+
+#: coreapi/linphonecore.c:186
+#, c-format
+msgid "You have missed %i call(s)."
+msgstr "Vous avez manqué %i appel(s)"
+
+#: coreapi/linphonecore.c:212
+msgid "aborted"
+msgstr "abandonné"
+
+#: coreapi/linphonecore.c:215
+msgid "completed"
+msgstr "terminé"
+
+#: coreapi/linphonecore.c:218
+msgid "missed"
+msgstr "manqué"
+
+#: coreapi/linphonecore.c:223
+#, fuzzy, c-format
+msgid ""
+"%s at %s\n"
+"From: %s\n"
+"To: %s\n"
+"Status: %s\n"
+"Duration: %i mn %i sec\n"
+msgstr ""
+"%s le %sDe: %s\n"
+"A destination de: %s\n"
+"Etat: %s\n"
+"Durée: %i mn %i sec\n"
+
+#: coreapi/linphonecore.c:224
+msgid "Incoming call"
+msgstr "Appel entrant"
+
+#: coreapi/linphonecore.c:224
+msgid "Outgoing call"
+msgstr "Appel sortant"
+
+#: coreapi/linphonecore.c:410
+msgid ""
+"Your machine appears to be connected to an IPv6 network. By default linphone "
+"always uses IPv4. Please update your configuration if you want to use IPv6"
+msgstr ""
+"Votre machine semble être connectée à un réseau IPv6. Par defaut linphone "
+"utilise toujours de l'IPv4. Merci de mettre à jour votre configuration si "
+"vous souhaitez utilisez un réseau IPv6."
+
+#: coreapi/linphonecore.c:692
+msgid "Ready"
+msgstr "Prêt."
+
+#: coreapi/linphonecore.c:741
+msgid "Stun lookup in progress..."
+msgstr "Découverte STUN en cours"
+
+#: coreapi/linphonecore.c:750
+msgid "Stun lookup done..."
+msgstr "Découverte STUN effectuée."
+
+#: coreapi/linphonecore.c:985
+msgid "Remote end seems to have disconnected, the call is going to be closed."
+msgstr ""
+
+#: coreapi/linphonecore.c:1077
+msgid "Looking for telephone number destination..."
+msgstr "Recherche de la destination du numéro de téléphone..."
+
+#: coreapi/linphonecore.c:1079
+msgid "Could not resolve this number."
+msgstr "La destination n'a pu être trouvée."
+
+#: coreapi/linphonecore.c:1138
+msgid ""
+"Could not parse given sip address. A sip url usually looks like sip:"
+"user@domain"
+msgstr ""
+"Adresse SIP mal formulée. Une address sip ressemble à <sip:nom@machine>"
+
+#: coreapi/linphonecore.c:1187
+msgid "Sorry, having multiple simultaneous calls is not supported yet !"
+msgstr "Désolé, vous ne pouvez appeler plusieurs personnes simultanément !"
+
+#: coreapi/linphonecore.c:1198
+msgid "Contacting"
+msgstr "Appel de"
+
+#: coreapi/linphonecore.c:1235
+msgid "could not call"
+msgstr "Echec"
+
+#: coreapi/linphonecore.c:1524 coreapi/exevents.c:41
+msgid "Connected."
+msgstr "En ligne."
+
+#: coreapi/linphonecore.c:1550
+msgid "Call ended"
+msgstr "Appel terminé."
+
+#: coreapi/linphonecore.c:1846
+msgid "No nat/firewall address supplied !"
+msgstr ""
+
+#: coreapi/linphonecore.c:1858 coreapi/linphonecore.c:1870
+#, c-format
+msgid "Invalid nat address '%s' : %s"
+msgstr "Adresse nat invalide '%s' : %s"
+
+#: coreapi/misc.c:130
+msgid ""
+"Your computer appears to be using ALSA sound drivers.\n"
+"This is the best choice. However the pcm oss emulation module\n"
+"is missing and linphone needs it. Please execute\n"
+"'modprobe snd-pcm-oss' as root to load it."
+msgstr ""
+"Votre ordinateur semble utiliser les pilotes sons ALSA.\n"
+"C'est en g��al le meilleur choix, cependant un module\n"
+"d'emulation oss est manquant et linphone en a besoin.\n"
+"Veuillez s'il vous plait executer la commande\n"
+"'modprobe snd-pcm-oss' en tant que root afin de le charger."
+
+#: coreapi/misc.c:133
+msgid ""
+"Your computer appears to be using ALSA sound drivers.\n"
+"This is the best choice. However the mixer oss emulation module\n"
+"is missing and linphone needs it. Please execute\n"
+" 'modprobe snd-mixer-oss' as root to load it."
+msgstr ""
+"Votre ordinateur semble utiliser les pilotes sons ALSA. C'est en g��al le\n"
+"meilleur choix, cependant un module d'emulation est manquant et linphone en\n"
+"a besoin. Veuillez s'il vous plait executer la commande\n"
+"'modprobe snd-mixer-oss' en tant que root afin de le charger."
+
+#: coreapi/exevents.c:115
+msgid "Call terminated."
+msgstr "Appel terminé."
+
+#: coreapi/exevents.c:137
+msgid "Could not reach destination."
+msgstr "Impossible de joindre votre correspondant."
+
+#: coreapi/exevents.c:146
+msgid "User is busy."
+msgstr "Occupé..."
+
+#: coreapi/exevents.c:147
+msgid "User is temporarily unavailable."
+msgstr "L'usager est temporairement indisponible."
+
+#: coreapi/exevents.c:148
+msgid "Request Cancelled."
+msgstr "Requête annulée."
+
+#: coreapi/exevents.c:150
+msgid "User does not want to be disturbed."
+msgstr "L'usager ne souhaite pas être dérangé"
+
+#: coreapi/exevents.c:151
+msgid "Call declined."
+msgstr "Appel décliné."
+
+#: coreapi/exevents.c:170
+msgid "Bad request"
+msgstr "Requete erronée"
+
+#: coreapi/exevents.c:173
+msgid "User cannot be found at given address."
+msgstr "L'utilisateur n'a pu être trouvé à l'addresse spécifiée"
+
+#: coreapi/exevents.c:176
+msgid "Remote user cannot support any of proposed codecs."
+msgstr "Votre correspondant ne supporte aucun des codecs proposés."
+
+#: coreapi/exevents.c:202
+msgid "Timeout."
+msgstr "Temps d'attente dépassé..."
+
+#: coreapi/exevents.c:205
+msgid "Remote host was found but refused connection."
+msgstr "La machine distante a été trouvée mais a refusé la connexion."
+
+#: coreapi/exevents.c:312
+msgid "is contacting you."
+msgstr "vous appelle."
+
+#: coreapi/exevents.c:392
+#, c-format
+msgid "Redirected to %s..."
+msgstr "Redirigé vers %s ..."
+
+#: coreapi/exevents.c:408
+msgid ""
+"User is not reachable at the moment but he invites you\n"
+"to contact him using the following alternate resource:"
+msgstr ""
+"Votre correspondant n'est pas joignable actuellement mais il vous propose\n"
+"de le contacter en utilisant le moyen alternatif suivant:"
+
+#: coreapi/exevents.c:775
+msgid "Early media."
+msgstr ""
+
+#: coreapi/exevents.c:837
+#, fuzzy, c-format
+msgid "Registration on %s failed: %s"
+msgstr "Echec de l'enregistrement sur %s (trop long)"
+
+#: coreapi/exevents.c:837
+msgid "no response timeout"
+msgstr ""
+
+#: coreapi/exevents.c:851
+#, fuzzy, c-format
+msgid "Registration on %s successful."
+msgstr "Enregistrement sur %s effectué."
+
+#: coreapi/presence.c:112 coreapi/presence.c:164
+msgid "Gone"
+msgstr "Parti"
+
+#: coreapi/presence.c:129
+msgid "Waiting for Approval"
+msgstr "En attente"
+
+#: coreapi/presence.c:133
+msgid "Online"
+msgstr "Disponible"
+
+#: coreapi/presence.c:137
+msgid "Busy"
+msgstr "Occupé"
+
+#: coreapi/presence.c:142
+msgid "Be Right Back"
+msgstr "De retour"
+
+#: coreapi/presence.c:151
+msgid "On The Phone"
+msgstr "Au téléphone"
+
+#: coreapi/presence.c:156
+msgid "Out To Lunch"
+msgstr "A table"
+
+#: coreapi/presence.c:160
+msgid "Closed"
+msgstr "Eteint"
+
+#~ msgid "enter sip uri here"
+#~ msgstr "entrer une adresse sip ici"
+
+#~ msgid "User manual"
+#~ msgstr "Manuel de l'utilisateur"
+
+#~ msgid "Ring sound selection"
+#~ msgstr "Selection de la sonnerie"
+
+#~ msgid "Communication ended."
+#~ msgstr "Communication termin�."
+
+#~ msgid "Call cancelled."
+#~ msgstr "Appel annulé"
+
+#~ msgid "28k modem"
+#~ msgstr "modem 28k"
+
+#~ msgid "56k modem"
+#~ msgstr "modem 56k"
+
+#~ msgid "64k modem (numeris)"
+#~ msgstr "modem 64k (numeris)"
+
+#~ msgid "ADSL or Cable modem"
+#~ msgstr "modem ADSL ou cable"
+
+#~ msgid "Ethernet or equivalent"
+#~ msgstr "Ethernet ou semblable"
+
+#~ msgid "Firewall 's external ip address (in dot notations):"
+#~ msgstr "Adresse IP du pare-feu (de.ce.format.la) :"
+
+#~ msgid "Connection type:"
+#~ msgstr "Type de connexion:"
+
+#~ msgid "Address"
+#~ msgstr "Adresse"
+
+#~ msgid "Server address"
+#~ msgstr "Adresse du serveur:"
+
+#, fuzzy
+#~ msgid ""
+#~ "Linphone could not open audio device %s. Check if your sound card is "
+#~ "fully configured and working."
+#~ msgstr ""
+#~ "Linphone n'a pu utilis?votre carte son. Veuillez v?ifier qu'elle "
+#~ "fonctionne correctement."

@@ -1,0 +1,480 @@
+<!doctype article public "-//OASIS//DTD DocBook V3.1//EN">
+
+<article lang="en">
+<!-- DocBook file was created by LyX 1.1
+  See http://www.lyx.org/ for more information -->
+  <artheader>
+   <title>
+   LINPHONEユーザーマニュアル
+  </title>
+  <author>
+   Simon Morlat (simon.morlat@linphone.org)
+   訳：山口善也(yushiya@anet.ne.jp)
+  </author>
+  <date>
+   11-13-2001
+  </date>
+  </artheader>
+  <sect1>
+   <title>
+   はじめに
+  </title>
+  <para>
+   Linphoneは、シンプルなインターネット電話であり、二者間の通話をインターネットなどのIP網を通じて可能にするものである。Linphoneを起動するには以下のものが必要となる。
+  </para>
+  <itemizedlist>
+   <listitem>
+   <para>
+   Linux(BSDのような他のUNIXでも起動するだろうが、Linux環境ほど他の環境はテストされていない。) 
+   </para>
+  </listitem>
+   <listitem>
+   <para>
+   gnome1.2以上がインストールされていること。必ずしも起動している必要はない。
+   </para>
+  </listitem>
+   <listitem>
+   <para>
+   ヘッドホンかスピーカー。
+   </para>
+  </listitem>
+   <listitem>
+   <para>
+   サウンドカードが正しく設定されていること。 
+   </para>
+  </listitem>
+   <listitem>
+   <para>
+   マイクロフォン 
+   </para>
+  </listitem>
+   <listitem>
+   <para>
+   モデムやイーサネット等を用いた、ネットワーク(インターネット等)への接続。 
+   </para>
+  </listitem>
+  </itemizedlist>
+  <para>
+   なお、Linphoneを起動する前にオーディオデバイスを使用するすべてのアプリケーションを終了しておくのがよいだろう。
+  </para>
+  <para>
+   Linphoneはフリーウェアであり、GNU Public Licenceに従って配布される。
+  </para>
+  <para>
+   警告 - 当ソフトウェアは保証なしに提供されるものである。詳しくはCOPYINGファイルを参照されたい。なお、Linphoneは暗号化を用いないため、悪意ある人物が容易に音声情報を拾うことができる。つまり、Linphoneは秘密の会話に用いるべきではない。また、Linphoneはルート権限で起動しない推奨する。
+  </para>
+  </sect1>
+  <sect1>
+   <title>
+   Linphoneの起動
+  </title>
+  <para>
+   Linphoneは三つの方法で起動できる。
+  </para>
+  <itemizedlist>
+   <listitem>
+   <para>
+   通常のアプリケーションとして - Linphoneは、gnomeメニューの中のネットワークサブメニューに現れる。もし、gnomeを起動してないのであれば、例えばターミナルに&ldquo;linphone&rdquo;とタイプすることで実行できる。Linphoneが起動していないときは、電話を受けることはできない。 
+   </para>
+  </listitem>
+   <listitem>
+   <para>
+   gnomeアプレットとして - gnomeパネルを右クリックすると、パネルにLinphoneを追加することができる。Linphoneはネットーワークメニューの中にある。ひっそりとパネルの中で起動することで、Linphoneは、たとえウインドウが現れていなくても電話を受けることができる。メインウインドウに表示させたいときには、アプレットをクリックすればよい。電話がかかってきたときには、メインウインドウが表れて、通常通りにベルが鳴っているのが聞こえるだろう。 
+   </para>
+  </listitem>
+   <listitem>
+   <para>
+   ひっそりとデーモンとして - これは、非gnomeユーザーのためのものである。例えばkdeでは、/home/user/.kde2/AutoStartディレクトリに、ログイン時に起動したいアプリケーションのリンクを貼る。したがって、上述のディレクトリにファイルマネージャーで移動し、右クリックで現れるアプレットから、「リンクの追加」を実行すればよい。なお、起動するコマンドは、&ldquo; linphone -deamon&rdquo;である。この場合、Linphoneのインターフェースを見ることはないが、表示させたいときにはターミナル等からLinphoneを起動させるのと同様にタイプすればよい。 
+   </para>
+  </listitem>
+  </itemizedlist>
+  </sect1>
+  <sect1>
+   <title>
+   電話をかける
+  </title>
+   <sect2>
+    <title>
+    基本的な原則
+   </title>
+   <para>
+    「sip:ユーザー名@ホスト名」のようなSIP URLによって区別される。SIP URLは、頭の「sip:」を除けば非常にe-mailアドレスと似ている。
+   </para>
+   <para>
+    ユーザー名は、UNIXマシンのログインネームのようなもので、ホスト名はユーザーが接続するマシンの名前やIPアドレスである。
+   </para>
+   <para>
+    なお、SIPはシンプルに設計された新しい通信のプロトコルであり、H323とはまったく互換性がないことに注意されたい。
+   </para>
+   </sect2>
+   <sect2>
+    <title>
+    使用例:二人のユーザーがインターネットにモデムで接続しているとき
+   </title>
+   <para>
+    これは、単純な手続きである。必要とされるネットワークは、
+   </para>
+   <itemizedlist>
+    <listitem>
+    <para>
+    28k以上のモデム 
+    </para>
+   </listitem>
+   </itemizedlist>
+   <para>
+    である。
+   </para>
+   <para>
+    シナリオは、以下の通りである。
+   </para>
+   <itemizedlist>
+    <listitem>
+    <para>
+    ボブはトムに21:00に電話することになっている。トムはインターネットにkpppやgpppやwmdialなどで接続している。 
+    </para>
+   </listitem>
+    <listitem>
+    <para>
+    インターネットに接続したら、ボブはLinphoneを起動できる。kpppやgpppなどの統計ボックスを開いて、ボブは自分のIPアドレスを知ることができる。(/sbin/ifconfigを使わなくても確認することができる)。 
+    </para>
+   </listitem>
+    <listitem>
+    <para>
+    次に、トムはボブに「僕のIPアドレスは、xxx.xxx.xxx.xxxだよ。」という内容 のeメールを送る。 
+    </para>
+   </listitem>
+    <listitem>
+    <para>
+    そのすぐあとで、トムの家のLinphoneのベルが鳴る。そのとき、ボブにも向こうでベルが鳴っているのが分かるようにベルの音が聞こえる。そこで、トムが電話に出るために「電話をとる」ボタンをクリックするだけでよい。そうすれば、互いに会話ができるはずである。 
+    </para>
+   </listitem>
+   </itemizedlist>
+   <para>
+    問題があったら、第4節の問題を参照して欲しい。
+   </para>
+   </sect2>
+   <sect2>
+    <title>
+    テストの試行 - 現在(例えば深夜などで)電話をかける友人がいないが、Linphoneが本当に動いているかどうか知りたいとき
+   </title>
+   <para>
+    <anchor id="sipomatic" ></anchor>バージョン3.0からは、Linphoneには「siptomatic」というプログラムが付属している。これは、以下の手順で使用できる。
+   </para>
+   <itemizedlist>
+    <listitem>
+    <para>
+    siptomaticをターミナルから起動する。siptomaticはグラフィカルインターフェイスを備えていないが、驚かないで欲しい。相互的なやりとりをする必要がないからである。 
+    </para>
+   </listitem>
+    <listitem>
+    <para>
+    Linphoneのプロパティーボックスのネットワークのタブから、「lo」をデフォルトのインターフェースに決定し、変更をOKをクリックして適用する。 
+    </para>
+   </listitem>
+    <listitem>
+    <para>
+    「sip:robot@127.0.0.1:5064」というSIP URLをメインウインドウに入力する。127.0.0.1は、あなたのコンピューターの ローカルアドレスで、robotはsipomaticに電話をかける際の名前である。5064ポートが、sipomaticに接続可能なポートである。通常は電話をかけるのに5060番ポートを用いるが、sipomaticは例外で5064番ポートで起動している。これは、Linphoneがすでに5060番ポート(すなわち、ポートが指定されていなければデフォルトのポートとして)で起動しているからであり、同じポートを使う2つのアプリケーションを同時に同じコンピューターで起動することができないからである。
+    </para>
+   </listitem>
+    <listitem>
+    <para>
+    ボタンをクリックすると、数秒後にsiptomaticがあなたの電話に返答し、短いアナウンスが聞こえるだろう。 
+    </para>
+   </listitem>
+   </itemizedlist>
+   </sect2>
+  </sect1>
+  <sect1 id="params">
+   <title>
+   電話のパラメーター
+  </title>
+   <sect2 id="paramnetwork">
+    <title>
+    ネットワーク
+   </title>
+   <itemizedlist>
+    <listitem>
+    <para>
+    ネットワークインターフェースのリスト - あなたは、Linphoneに使うネットワークインターフェースを選ぶ必要がある。もし、インターネット上の誰かに連絡をしたいのなら、あなたのコンピューターがインターネットに接続しているネットワークインターフェースを選ぶべきである。何のネットワークにもつながっていない場合には、「lo」と呼ばれるローカルインターフェースだけがリストに現れるだろう。それは、siptomaticに電話をすることだけができるインターフェースである。 
+    </para>
+   </listitem>
+    <listitem>
+    <para>
+    接続のタイプ - 使いたいネットワークへの接続の方法を選択する(大抵の場合はインターネットである)。これは、Linphoneがあなたの帯域を設定するのを補助するためである。 
+    </para>
+   </listitem>
+   </itemizedlist>
+   </sect2>
+   <sect2 id="paramrtp">
+    <title>
+    RTP
+   </title>
+   <para>
+    RTP(Real Time Protocol)は、メディアストリームをネットワーク越しに送信する際に用いるプロトコルである。
+   </para>
+   <itemizedlist>
+    <listitem>
+    <para>
+    RTPポート - Linphoneは、デフォルトで音声データの送受信に7000番ポートを利用する。7000番ポートが他のアプリケーションに使われていると思われる場合には、任意のポートに変更する。
+    </para>
+   </listitem>
+    <listitem>
+    <para>
+    バッファするミリ秒 - この数字は、Linphoneが再生を待機する音声パケットの数を表している。音声パケットが送れがちな場合に、再生されずに破棄される音声パケットを減らすことができる。「途切れ途切れ音」が聞こえる場合、この値を大きくすると伝送の効率を上げることができるが、音声の遅延が大きくなる(相手の声が少し遅れて聞こえる)。ゆえに、ネットワークが完全で高品質のオーディオドライバを使用している場合は、この値を3パケットに下げれば短い遅延時間で話せるようになる。
+    </para>
+   </listitem>
+   </itemizedlist>
+   </sect2>
+   <sect2 id="paramsip">
+    <title>
+    SIP
+   </title>
+   <para>
+    SIP(Session Initiation Protocol)は、ネットワーク越しにメディアのセッションを確立するプロトコルである。つまりは、リモートユーザー間の会話を開始したり、片方が電話を切ったときに会話を終了したりするプロトコルである。
+   </para>
+   <itemizedlist>
+    <listitem>
+    <para>
+    SIPポート - Linphoneは、デフォルトでSIPパケットの送受信に5060番ポートを用いる。SIPのポートは、RFCに5060番を用いることが強く推奨されている。よって、何をしたいのかを明確に理解しているときを除いては、これを変更すべきではない。
+    </para>
+   </listitem>
+    <listitem>
+    <para>
+    SIPの登録にする - リモートのSIPサーバーに登録すしたいときには、このボタンをチェックする。SIPサーバーのサービスには、転送やアウトバウンドプロクシがある。詳しくは、「リモートのサーバーに接続する」の節を参照されたい。 
+    </para>
+   </listitem>
+   </itemizedlist>
+   </sect2>
+   <sect2 id="paramcodec">
+    <title>
+    コーデック
+   </title>
+   <para>
+    コーデックとは、特に音声データの圧縮のために設計されたアルゴリズムのことを言う。例えば、16bit/8000Hzのデジタル化された音声と言えば、128kbit/秒のデータの流れを表している。GSMボコーダーを使用すると、これは13bit kbit/秒に縮小される。
+   </para>
+   <itemizedlist>
+    <listitem>
+    <para>
+    コーデックの選択 - Linphoneは数種類のコーデックをサポートしている。 コーデックのリストの下部にあるボタンを使うと、使いたい順番に並べることができる。だが、ネットワーク接続のタイプによっては(ネットワークの節を参照)、使えないコーデックの種類も、使用するかどうかを決定することができる。 
+    </para>
+   </listitem>
+   </itemizedlist>
+   </sect2>
+   <sect2 id="paramaudio">
+    <title>
+    オーディオパラメーター
+   </title>
+   <para>
+    この節では、音声技術に関するパラメーターを解説する。
+   </para>
+   <itemizedlist>
+    <listitem>
+    <para>
+    ドライバの選択 - Linuxでは、OSS(カーネルドライバーとも呼ばれる)とALSAと、異なる2種類のサウンドカードライバを使用することができるが、ALSAドライバはALSAライブラリを通すことで、さらな るパフォーマンスを発揮することができる。したがって、ALSAドライバー(snd_*で始まる名前である)を使用している場合は、ALSAモードを選択するのがよい。分からなければ、OSSを選択する。
+    </para>
+   </listitem>
+    <listitem>
+    <para>
+    Auto-killオプション - このオプションを使うと、linphoneはサウンドデーモン(esdとartsd)を停止しようとする。これは、オーディオデバイスに恒久的な取り外せないロックをかけてしまい、Linphoneが必要としているオーディオデバイスをオープンさせないようにするものである、このオプションは、オンにしておくことを推奨する。 
+    </para>
+   </listitem>
+   </itemizedlist>
+   </sect2>
+  </sect1>
+  <sect1>
+   <title>
+   電話帳
+  </title>
+  <para>
+   電話帳(conectionのメニューの中にある)を使うと、SIPアドレスを記憶と呼出しができる。SIPアドレスは、sip:ユーザー名@ドメイン名の形式である。また、自分が分かりやすくするために、表示される名前を追加することもできる。SIPアドレスを呼び出すには、アドレスのリストから選択し、「OK」のボタンをクリックする。すると、選択したアドレスがメインウインドウに現れるのが確認できるだろう。後は、電話をかけるために「電話をかける」のボタンを押せばよいだけである。
+  </para>
+  </sect1>
+  <sect1>
+   <title>
+   SIPサーバーに登録する
+  </title>
+  <para>
+   リモートのSIPサーバーのサービスに登録することも可能である。このようなサービスには、以下のようなものがある。
+  </para>
+  <itemizedlist>
+   <listitem>
+   <para>
+   転送 - Linphonは、サーバーに&lt;sip:example_registrar.com&gt;のようなSIPアカウントを作成するよう要請する。例えば、56kのモデムを使って単純にインターネットに接続している場合、あなたのIPアドレスは静的ではなく、ネームサーバーに知られているホスト名も持っていない。これでは、友達はあなたがIPアドレスを通知するメールを送らない限り、あなたに連絡をすることができない。例として、&lt;sip:example_registrar.com&gt;に登録を行うのは簡単である。あなたのユーザー名は「bob」だとする。サーバーに登録する際に、LinphoneはあなたのIPアドレスをサーバーに送信し、アカウント「sip:bob@example_registrar.com」が作成される。そうすると、あなたの友達のジムは、&lt;sip:bob@example_registrar.com&gt;というアドレスに電話をかけることができる。当然のことながら、&ldquo;example_registar.com&rdquo;は、ウェルノン・ドメインネームである。次に、ジムのLinphoneはボブの確実なロケーションを示す転送メッセージを受け取る。そうして、ボブの家でベルが鳴るのである。
+   </para>
+  </listitem>
+   <listitem>
+   <para>
+   プロクシ - これも、転送メッセージがジムの電話に送信されないことをのぞけば、同様の原理である。その代わりに、プロクシはボブのLinphoneまでダイレクトな転送を行う。 
+   </para>
+  </listitem>
+  </itemizedlist>
+  <para>
+   このような登録は、アウトバウンドプロクシにおいても同様に行われる。これは、Linphoneをファイヤーウォールの中で使うときに有効である。アウトバウンドプロクシは、プライベートサブネットにあるHTTPプロクシと同様の役割を果たす。外部への会話はアウトバウンドプロクシが扱い、ネットワーク外にいると思われる人への会話の転送の任を負う。
+  </para>
+  <para>
+   登録サーバーをLinphoneで使うには、プロパティーボックスからSIPのタブを選択し、「SIPアドレスを登録する」のボックスをチェックする。登録するアドレスを適切なフィールドに入力したら、次に、転送かプロクシか、対応するボックスをチェックし、登録を要求するサービスのタイプを選択する。また、外部のネットワークへ会話を透過させるための登録サーバーが必要なときには、「アウトバウンドプロクシとして使う」をチェックする。
+  </para>
+  <para>
+   最後にプロパティーボックスのOKボタンを押すと、プロパティーボックスは閉じられ、ただちに登録サーバーにあなたの正確な場所を知らせるための交渉が始まる。Linphoneをシャットダウンするときには、登録サーバーからあなたの場所の登録を解除するため、数秒間かかる。
+  </para>
+  <para>
+   パブリックな登録サーバーのリストは、以下に掲載されている。<ulink url="http://www.cs.columbia.edu/~hgs/sip/servers.html">http://www.cs.columbia.edu/~hgs/sip/servers.html</ulink>
+  </para>
+  <para>
+   だが、残念なことに、これらのサーバーの多くはもう動いていない。おそらく、近頃の電気通信業界の危機によるものであろう。他の必要とされる認証方法は、現在Linphoneではサポートされていない。
+  </para>
+  <para>
+   無用な手間を避けたいときには、使用可能な動作しているパブリックなSIPサーバーのリストが、Linphoeの以前のWEBサイトのリストが<ulink url="http://simon.morlat.free.fr/english/servers.html">http://simon.morlat.free.fr/english/servers.html</ulink>で参照できる。
+  </para>
+  </sect1>
+  <sect1>
+   <title>
+   ファイヤーウォールの内側で
+  </title>
+  <para>
+   現在では、SIPプロクシを用いることで、Linphoneはファイヤーウォールの内側で利用可能である。SIPサーバーは、プライベートネットワークからの会話を外部のネットワークへ転送する任を負う。oSIPライブラリを利用したSIPプロクシは、<ulink url="http://osipproxy.sourceforge.net">http://osipproxy.sourceforge.net</ulink>で開発されている。
+  </para>
+  <para>
+   SIPの節の、「SIPに登録する」の項目を参考に、プロパティーボックスで用いるSIPプロクシを指定して欲しい。設定するには、SIPプロクシのアドレスを入力し、「アウトバウンドプロクシとして登録する」のボタンをチェックする。
+  </para>
+  <para>
+   なお、SIPプロクシが必要ない場合もある。パブリックアドレスを持っているネットワーク下にあなたのコンピューターがあり、ファイヤーウォールは外部ネットワークからのパケットの送受信をフィルターするだけの場合である。この場合には、ファイヤーウォールのマシンのSIPとRTPのポートをオープンするだけでよい。SIPポートはプロパティーボックスのSIPのタブに、RTPポートは、RTPポートはRTPのタブにある。両者ともに変更可能であるが、SIPポート(5060番)は、変更しないでおくことが強く推奨される。
+  </para>
+  </sect1>
+  <sect1>
+   <title>
+   困ったときには
+  </title>
+   <sect2>
+    <title>
+    接続上における問題
+   </title>
+   <blockquote>
+   <para>
+    私は、友人&lt;sip:toto@example.com&gt;に電話をかけようとしただが、なにも起きない。ベルも鳴らない、まったく何も起こらない。
+   </para>
+   </blockquote>
+   <para>
+    Linphoneが使用しているインターネットへ接続しているネットワークインターフェース(または、会話が出ていくべきネットワーク)を検証してみるべきであろう。プロパティーボックスの、ネットワークタブから、正しいインターフェースを選んでみるのがよいだろう。
+   </para>
+   <para>
+    あるいは、あなたが接続しようとしている人が、現在経路が接続できない状況にあるのかも知れない……。
+   </para>
+   </sect2>
+   <sect2>
+    <title>
+    音声における問題
+   </title>
+   <blockquote>
+   <para>
+    Linphoneは、リモートのSIP URLに接続しているようで、ベルは鳴っているようだ。けれども、相手が電話に出たときには何も起こらず、お互いの声が聞こえない。
+   </para>
+   </blockquote>
+   <itemizedlist>
+    <listitem>
+    <para>
+    大抵の人は、プロパティーボックスから、正しいネットワークインターフェースを選んでいないために、問題を生じさせてしまう。ダイヤルアップ接続では、「ppp0」になるはずである。「\"{}lo」は、テスト用に、sipomaticだけに使用されるインターフェースであることに注意されたい。その他の場合では 機能しない。
+    </para>
+   </listitem>
+    <listitem>
+    <para>
+    まずは、送話音量と受話音量を上げてみるのがよいだろう。
+    </para>
+   </listitem>
+    <listitem>
+    <para>
+    音声がとぎれとぎれになる場合は、これを回避するために、プロパティーボックスのRTPタブの「バッファするミリ秒」の値を大きくしてみるのがよいだろう。しかし、これは通信の遅延を増大させる。
+    </para>
+   </listitem>
+    <listitem>
+    <para>
+    Linphoneが、オーディオデバイスをオープンできないときには、/dev/dspのパーミッションを確認し、オーディオデバイスを使用するすべてのプログラム(xmms kaiman等)を停止するのがよいだろう。
+    </para>
+   </listitem>
+    <listitem>
+    <para>
+    ALSAドライバーを使用する(<ulink url="http://www.alsa-project.org">http://www.alsa-project.org</ulink>を参照されたい)。大抵のディストリビュージョンは、まだ古いカーネル公認のドライバーを使用しているが、これは大きな遅延と多くのバグを含んでいる。Linphoneは、ALSAドライバーをインストールした後のリコンパイルを必要としないこと、また、オーディオの節のプロパティーボックスからのALSAモードへの変更は必須ではないことも述べておこう。 
+    </para>
+   </listitem>
+   </itemizedlist>
+   </sect2>
+  </sect1>
+  <sect1>
+   <title>
+   バグ報告と提案
+  </title>
+  <para>
+   まずは、Linphoneのホームページ<ulink url="http://www.linphone.org">http://www.linphone.org</ulink>から、最新のLinphoneを使用しているかを確認して欲しい。 
+  </para>
+  <para>
+   もし、Linphoneがクラッシュしたときには、バグレポートを直接bugs@linphone.orgまで送って欲しい。もし、クラッシュはしないがLinphoneが動作しないときには、上のアドレスにバグレポートを送る前に、マニュアルを もう一度読みかえして欲しい。もし、何かを提案したいときには、遠慮せずに、help@linphone.orgまでメールを送って欲しい。なお、ビデオサポートと会議は、将来の計画にあることを述べておこう。また、Linphonrの翻訳に興味を持った人は、配布されているpo/linpyhone.potに基づいたxx.poファイルを私に送って欲しい。また、このマニュアルを他の言語に翻訳することも可能である。いずれにしても、詳しいことが知りたいときは私に連絡して欲しい。
+  </para>
+  </sect1>
+  <sect1>
+   <title>
+   作者
+  </title>
+  <para>
+   Simon MORLAT (simon.morlat@free.fr) が製作した部分は以下の通りである。
+  </para>
+  <itemizedlist>
+   <listitem>
+   <para>
+   メインプログラム(src) 
+   </para>
+  </listitem>
+   <listitem>
+   <para>
+   RTP ライブラリ (lprtplib) 
+   </para>
+  </listitem>
+   <listitem>
+   <para>
+   osipua -- osipスタックに基づいたユーザーエージェントのAPI。ossとALSAドライバーの音声インターフェース。
+   </para>
+  </listitem>
+   <listitem>
+   <para>
+   (音声) lpc10-1.5用のwrappers, gsm and g711 コーデック 
+   </para>
+  </listitem>
+  </itemizedlist>
+  <para>
+   Aymeric Moizard (jack@atosc.org)は、 Linphoneが利用しているosipスタックを製作した。
+  </para>
+  <para>
+   GSMライブラリは、Jutta DegenerとCarsten Bormann(Technische Universitaet Berlin)によって書かれた。
+  </para>
+  <para>
+   The LPC10-1.5 ライブラリは、Andy Fingerhut(Applied Research Laboratory)によって書かれた。 &lt;-- この部分はスペースの都合により省略可能である。 Washington University, Campus Box 1045/Bryan 509 スペースに限りがある場合は、ここから。One Brookings Drive Saint Louis, MO 63130-4899 jaf@arl.wustl.edu http://www.arl.wustl.edu/&tilde;jaf/さらなる情報は、gsmlibとlpc10-1.5のディレクトリのテキストファイルを参照されたい。
+  </para>
+  <para>
+   Pablo Marcelo Moia -- アイコン製作
+  </para>
+  </sect1>
+  <sect1>
+   <title>
+   謝辞
+  </title>
+  <para>
+   GTKインターフェースビルダーのDaemon Chaplinに感謝を。
+  </para>
+  <para>
+   著明なoSIPライブラリーのAymeric Moizardに感謝を。
+  </para>
+  <para>
+   LPC10-1.5とGSMコードの作者に感謝を。
+  </para>
+  <para>
+   RPMを提供してくれた、Joel Barrios ( jbarrios@-NO-SPAM-linuxparatodos.com )に感謝を。
+  </para>
+  <para>
+   Linphoneに素敵なアイコンを提供してくれた、Pablo Marcelo Moiaに感謝を。
+  </para>
+  <para>
+   <toc></toc>
+  </para>
+  </sect1>
+
+
+</article>

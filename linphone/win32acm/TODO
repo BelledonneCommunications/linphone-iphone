@@ -1,0 +1,29 @@
+
+use ./configure script to determine appropriate settings in config.h
+and Makefile.
+
+fix segfault when closing acmStreams.  Looks like it could
+have something to do with using 2 streams at the same time
+and then deallocating them.  Appears that acmStreamClose()
+attempting to close the driver when it is done is the wrong
+thing.  Maybe need reference counting of the driver so that
+subsequent acmStreamOpen() calls just increment a refcount,
+acmStreamClose() decrements it and when it reaches 0 it 
+closes the driver.  Maybe make a simple test program to 
+open two acmStreams and then close them and see what happens.
+Could run it under etrace for extra understanding.  For
+now the code in win32codec_destroy is commented out so 
+codecs are not properly destroyed.  We can probably live with
+a memory leak like that for a while.
+
+test with other audio codecs besides TrueSpeech.
+
+
+
+***** DONE ******
+
+document the general procedure needed to get a new codec
+working with the library.
+
+finish CREDITS file
+
