@@ -38,55 +38,14 @@ import org.zoolu.sdp.SessionDescriptor;
 import org.zoolu.sip.message.Message;
 
 /**
- * rewrite SDP to insert an ICE aware rtp relay 
+ * rewrite SDP to insert a=relay-add
  *
  * 
  */
 public class SdpProcessorImpl implements SdpProcessor {
    private final String CANDIDATE_RELAY_NAME="relay";
 
-   class CandidateAttributeParser {
-      final private  String mCandidateAttribute;
-
-      final private String mfoundation;
-      final private String mComponentId;
-      final private String mTransport;
-      final private String mPriority; 
-      final private String mConnectionAddress;
-      final private String mPort;    
-      final private String mType;    
-
-      public CandidateAttributeParser(String aCandidateAttribute){
-         mCandidateAttribute = aCandidateAttribute;
-         StringTokenizer st = new StringTokenizer(mCandidateAttribute);
-         mfoundation = st.nextToken();
-         mComponentId = st.nextToken();
-         mTransport = st.nextToken();
-         mPriority = st.nextToken(); 
-         mConnectionAddress = st.nextToken();
-         mPort = st.nextToken();
-         st.nextToken(); //skip typ
-         mType = st.nextToken();;
-      }
-      public CandidateAttributeParser(InetSocketAddress aRelayAddress){
-         mfoundation = "3";
-         mComponentId = "1";
-         mTransport = "UDP";
-         mPriority = "0"; 
-         mConnectionAddress =  aRelayAddress.getAddress().getHostAddress();
-         mPort =  String.valueOf(aRelayAddress.getPort());    
-         mType = CANDIDATE_RELAY_NAME; 
-         mCandidateAttribute = toString();
-      }
-
-      InetSocketAddress getAddress() {
-         return new InetSocketAddress(mConnectionAddress,Integer.parseInt(mPort));
-      }
-      public String toString() {
-         return mfoundation +" "+ mComponentId +" "+ mTransport +" "+ mPriority +" "+ mConnectionAddress +" "+ mPort +" typ " +mType;
-      }
-   }
-
+ 
    private final static Logger mLog = Logger.getLogger(SdpProcessorImpl.class);
    private final Map<String,Registration> mRegistrationTab;
    private final P2pProxyRtpRelayManagement mP2pProxyRtpRelayManagement;
