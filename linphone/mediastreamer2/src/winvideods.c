@@ -144,7 +144,28 @@ HRESULT ( Callback)(IMediaSample* pSample, REFERENCE_TIME* sTime, REFERENCE_TIME
 	return S_OK;
 }
 
-int try_format(V4wState *s, int format)
+HRESULT GetPinCategory(IPin *pPin, GUID *pPinCategory)
+{
+    HRESULT hr;
+    IKsPropertySet *pKs;
+    hr = pPin->QueryInterface(IID_IKsPropertySet, (void **)&pKs);
+    if (FAILED(hr))
+    {
+        // The pin does not support IKsPropertySet.
+        return hr;
+    }
+    // Try to retrieve the pin category.
+    DWORD cbReturned;
+    hr = pKs->Get(AMPROPSETID_Pin, AMPROPERTY_PIN_CATEGORY, NULL, 0, 
+        pPinCategory, sizeof(GUID), &cbReturned);
+
+    // If this succeeded, pPinCategory now contains the category GUID.
+
+    pKs->Release();
+    return hr;
+}
+
+int try_format(V4wState *s, int format, GUID *pPinCategory)
 {
     HRESULT hr=S_OK;
     IEnumPins *pEnum=0;
@@ -229,8 +250,13 @@ int try_format(V4wState *s, int format)
 				if (pvi->bmiHeader.biBitCount!=biBitCount)
 					continue;
 
-		        pPin->Release();
-			    pEnum->Release();
+        GetPinCategory(pPin, pPinCategory);
+        if (*pPinCategory!=PIN_CATEGORY_CAPTURE
+          && *pPinCategory!=PIN_CATEGORY_PREVIEW)
+          continue;
+
+        pPin->Release();
+			  pEnum->Release();
 				return 0;
 			}
 		}
@@ -436,17 +462,20 @@ static int v4w_open_videodevice(V4wState *s)
 	pEnumMoniker->Release();
 	pCreateDevEnum->Release();
 
-	if (try_format(s, s->pix_fmt)==0)
+
+  GUID pPinCategory;
+
+	if (try_format(s, s->pix_fmt, &pPinCategory)==0)
 		s->pix_fmt = s->pix_fmt;
-	else if (try_format(s,MS_YUV420P)==0)
+	else if (try_format(s,MS_YUV420P, &pPinCategory)==0)
 		s->pix_fmt = MS_YUV420P;
-	else if (try_format(s,MS_YUY2)==0)
+	else if (try_format(s,MS_YUY2, &pPinCategory)==0)
 		s->pix_fmt = MS_YUY2;
-	else if (try_format(s,MS_YUYV)==0)
+	else if (try_format(s,MS_YUYV, &pPinCategory)==0)
 		s->pix_fmt = MS_YUYV;
-	else if (try_format(s,MS_UYVY)==0)
+	else if (try_format(s,MS_UYVY, &pPinCategory)==0)
 		s->pix_fmt = MS_UYVY;
-	else if (try_format(s,MS_RGB24)==0)
+	else if (try_format(s,MS_RGB24, &pPinCategory)==0)
 		s->pix_fmt = MS_RGB24;
 	else
 	{
@@ -585,7 +614,7 @@ static int v4w_open_videodevice(V4wState *s)
 		s->m_pGraph->AddFilter(s->m_pNullRenderer, L"Null Renderer");
 	}
 
-	hr = s->m_pBuilder->RenderStream(&PIN_CATEGORY_PREVIEW,
+	hr = s->m_pBuilder->RenderStream(&pPinCategory,
 		&MEDIATYPE_Video, s->m_pDeviceFilter, s->m_pIDXFilter, s->m_pNullRenderer);
 	if (FAILED(hr))
 	{
