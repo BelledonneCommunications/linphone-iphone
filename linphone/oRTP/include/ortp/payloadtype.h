@@ -167,6 +167,7 @@ VAR_DECLSPEC PayloadType payload_type_l16_stereo;
 VAR_DECLSPEC PayloadType payload_type_lpc1016;
 VAR_DECLSPEC PayloadType payload_type_g729;
 VAR_DECLSPEC PayloadType payload_type_g7231;
+VAR_DECLSPEC PayloadType payload_type_g7221;
 VAR_DECLSPEC PayloadType payload_type_g726_40;
 VAR_DECLSPEC PayloadType payload_type_g726_32;
 VAR_DECLSPEC PayloadType payload_type_g726_24;
