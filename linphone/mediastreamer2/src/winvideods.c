@@ -230,8 +230,14 @@ int try_format(V4wState *s, int format, GUID *pPinCategory)
         if(pindir != PINDIR_INPUT)
 		{
 			IEnumMediaTypes *ppEnum;
-		    ULONG ulFound2;
-			hr = pPin->EnumMediaTypes(&ppEnum);
+	    ULONG ulFound2;
+
+      GetPinCategory(pPin, pPinCategory);
+      if (*pPinCategory!=PIN_CATEGORY_CAPTURE
+        && *pPinCategory!=PIN_CATEGORY_PREVIEW)
+        continue;
+
+      hr = pPin->EnumMediaTypes(&ppEnum);
 			if(FAILED(hr)) 
 				continue;
 
@@ -250,11 +256,6 @@ int try_format(V4wState *s, int format, GUID *pPinCategory)
 				if (pvi->bmiHeader.biBitCount!=biBitCount)
 					continue;
 
-        GetPinCategory(pPin, pPinCategory);
-        if (*pPinCategory!=PIN_CATEGORY_CAPTURE
-          && *pPinCategory!=PIN_CATEGORY_PREVIEW)
-          continue;
-
         pPin->Release();
 			  pEnum->Release();
 				return 0;
@@ -268,7 +269,7 @@ int try_format(V4wState *s, int format, GUID *pPinCategory)
     return -1;
 }
 
-int try_format_size(V4wState *s, int format, int width, int height)
+int try_format_size(V4wState *s, int format, int width, int height, GUID *pPinCategory)
 {
     HRESULT hr=S_OK;
     IEnumPins *pEnum=0;
@@ -337,6 +338,11 @@ int try_format_size(V4wState *s, int format, int width, int height)
 			hr = pPin->EnumMediaTypes(&ppEnum);
 			if(FAILED(hr)) 
 				continue;
+
+      GUID pCurrentPinCategory;
+      GetPinCategory(pPin, &pCurrentPinCategory);
+      if (*pPinCategory!=pCurrentPinCategory)
+        continue;
 
 			AM_MEDIA_TYPE *ppMediaTypes;
 			while(S_OK == ppEnum->Next(1, &ppMediaTypes, &ulFound2))
@@ -494,17 +500,17 @@ static int v4w_open_videodevice(V4wState *s)
 	else if (s->pix_fmt == MS_RGB24)
 		ms_message("Driver supports RGB24, using that format.");
 
-	if (try_format_size(s, s->pix_fmt, s->vsize.width, s->vsize.height)==0)
+	if (try_format_size(s, s->pix_fmt, s->vsize.width, s->vsize.height, &pPinCategory)==0)
 		ms_message("Selected Size: %ix%i.", s->vsize.width, s->vsize.height);
-	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_QCIF_W, MS_VIDEO_SIZE_QCIF_H)==0)
+	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_QCIF_W, MS_VIDEO_SIZE_QCIF_H, &pPinCategory)==0)
 		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_QCIF_W, MS_VIDEO_SIZE_QCIF_H);
-	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_CIF_W, MS_VIDEO_SIZE_CIF_H)==0)
+	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_CIF_W, MS_VIDEO_SIZE_CIF_H, &pPinCategory)==0)
 		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_CIF_W, MS_VIDEO_SIZE_CIF_H);
-	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_4CIF_W, MS_VIDEO_SIZE_4CIF_H)==0)
+	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_4CIF_W, MS_VIDEO_SIZE_4CIF_H, &pPinCategory)==0)
 		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_4CIF_W, MS_VIDEO_SIZE_4CIF_H);
-	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_VGA_W, MS_VIDEO_SIZE_VGA_H)==0)
+	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_VGA_W, MS_VIDEO_SIZE_VGA_H, &pPinCategory)==0)
 		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_VGA_W, MS_VIDEO_SIZE_VGA_H);
-	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_QVGA_W, MS_VIDEO_SIZE_QVGA_H)==0)
+	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_QVGA_W, MS_VIDEO_SIZE_QVGA_H, &pPinCategory)==0)
 		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_QVGA_W, MS_VIDEO_SIZE_QVGA_H);
 	else
 	{
