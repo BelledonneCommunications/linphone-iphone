@@ -61,7 +61,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="Ws2_32.lib Winmm.lib ortp.lib mediastreamer2.lib"
 				LinkIncremental="2"
+				AdditionalLibraryDirectories="&quot;$(IntDir)/&quot;;&quot;..\..\..\oRTP\build\win32native\debug&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
@@ -135,7 +137,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="Ws2_32.lib Winmm.lib ortp.lib mediastreamer2.lib"
 				LinkIncremental="1"
+				AdditionalLibraryDirectories="&quot;$(IntDir)/&quot;;&quot;..\..\..\oRTP\build\win32native\release&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"

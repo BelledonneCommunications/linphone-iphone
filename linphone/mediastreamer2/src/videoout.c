@@ -523,6 +523,7 @@ typedef struct VideoOut
 	mblk_t *local_msg;
   MSPicture tmp_local_pic;
   mblk_t *tmp_local_msg;
+  mblk_t *previous_selfview;
 	int corner;
 	struct SwsContext *sws1;
 	struct SwsContext *sws2;
@@ -595,6 +596,7 @@ static void video_out_init(MSFilter  *f){
 	def_size.height=MS_VIDEO_SIZE_CIF_H;
 	obj->local_msg=NULL;
   obj->tmp_local_msg=NULL;
+  obj->previous_selfview=NULL;
 	obj->corner=0;
 	obj->sws1=NULL;
 	obj->sws2=NULL;
@@ -648,6 +650,12 @@ static void video_out_preprocess(MSFilter *f){
 		freemsg(obj->local_msg);
 		obj->local_msg=NULL;
 	}
+  if (obj->previous_selfview!=NULL)
+  {
+    freemsg(obj->previous_selfview);
+    obj->previous_selfview=NULL;
+  }
+
 	if (obj->tmp_local_msg!=NULL) {
 		freemsg(obj->tmp_local_msg);
 		obj->tmp_local_msg=NULL;
@@ -700,10 +708,16 @@ static void video_out_process(MSFilter *f){
 		      freemsg(obj->local_msg);
 		      obj->local_msg=NULL;
 	      }
+        if (obj->previous_selfview!=NULL)
+        {
+          freemsg(obj->previous_selfview);
+          obj->previous_selfview=NULL;
+        }
 	    }
 	  else
 	    {
 	      MSPicture src;
+        static mblk_t *previous_selfview = NULL;
 	      if (yuv_buf_init_from_mblk(&src,inm)==0){
 
 		      if (obj->sws2==NULL){
@@ -721,20 +735,37 @@ static void video_out_process(MSFilter *f){
 	          obj->local_msg=yuv_buf_alloc(&obj->local_pic,
 				               obj->local_pic.w,obj->local_pic.h);
 	        }
-          if (sws_scale(obj->sws2,src.planes,src.strides, 0,
-		              src.h, obj->tmp_local_pic.planes, obj->tmp_local_pic.strides)<0){
-	          ms_error("Error in sws_scale().");
-	        }
 
-          mirror(obj->local_pic.planes[0],obj->tmp_local_pic.planes[0],
-             obj->local_pic.strides[0],obj->tmp_local_pic.strides[0],
-             obj->local_pic.w,obj->local_pic.h);
-          mirror(obj->local_pic.planes[1],obj->tmp_local_pic.planes[1],
-             obj->local_pic.strides[1],obj->tmp_local_pic.strides[1],
-             obj->local_pic.w>>1,obj->local_pic.h>>1);
-          mirror(obj->local_pic.planes[2],obj->tmp_local_pic.planes[2],
-             obj->local_pic.strides[2],obj->tmp_local_pic.strides[2],
-             obj->local_pic.w>>1,obj->local_pic.h>>1);
+          if (previous_selfview==NULL
+            || (msgdsize(inm)!=msgdsize(previous_selfview))
+            || memcmp(inm->b_rptr, previous_selfview->b_rptr, msgdsize(inm))!=0)
+          {
+            if (sws_scale(obj->sws2,src.planes,src.strides, 0,
+		                src.h, obj->tmp_local_pic.planes, obj->tmp_local_pic.strides)<0){
+	            ms_error("Error in sws_scale().");
+	          }
+
+            mirror(obj->local_pic.planes[0],obj->tmp_local_pic.planes[0],
+               obj->local_pic.strides[0],obj->tmp_local_pic.strides[0],
+               obj->local_pic.w,obj->local_pic.h);
+            mirror(obj->local_pic.planes[1],obj->tmp_local_pic.planes[1],
+               obj->local_pic.strides[1],obj->tmp_local_pic.strides[1],
+               obj->local_pic.w>>1,obj->local_pic.h>>1);
+            mirror(obj->local_pic.planes[2],obj->tmp_local_pic.planes[2],
+               obj->local_pic.strides[2],obj->tmp_local_pic.strides[2],
+               obj->local_pic.w>>1,obj->local_pic.h>>1);
+          }
+          else
+          {
+            if (sws_scale(obj->sws2,src.planes,src.strides, 0,
+		                src.h, obj->local_pic.planes, obj->local_pic.strides)<0){
+	            ms_error("Error in sws_scale().");
+	          }
+          }
+
+          if (previous_selfview!=NULL)
+            freemsg(previous_selfview);
+          previous_selfview = dupb(inm);
 	    }
 	  }
 	  ms_queue_flush(f->inputs[1]);
