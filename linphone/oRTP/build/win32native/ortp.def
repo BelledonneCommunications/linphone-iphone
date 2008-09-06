@@ -172,3 +172,9 @@ EXPORTS
 	rtp_session_set_jitter_buffer_params
 
 	rtp_get_payload
+
+	rtp_session_set_remote_addr_full
+	rtp_session_send_rtcp_APP
+	b64_decode
+	b64_encode
+	

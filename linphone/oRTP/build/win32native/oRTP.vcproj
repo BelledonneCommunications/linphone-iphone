@@ -191,6 +191,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\b64.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\dll_entry.c"
 				>
 			</File>
@@ -284,6 +288,10 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath="..\..\include\ortp\b64.h"
+				>
+			</File>
 			<File
 				RelativePath="..\..\include\ortp\event.h"
 				>
