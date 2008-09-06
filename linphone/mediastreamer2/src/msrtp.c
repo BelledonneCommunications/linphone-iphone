@@ -21,7 +21,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/msticker.h"
 
 #include "ortp/telephonyevents.h"
+#if defined(__cplusplus)
+#define B64_NO_NAMESPACE
+#endif
 #include "ortp/b64.h"
+
 
 struct SenderData {
 	RtpSession *session;
@@ -126,7 +130,7 @@ static int sender_unmute_mic(MSFilter * f, void *arg)
 static int sender_set_relay_session_id(MSFilter *f, void*arg){
 	SenderData *d = (SenderData *) f->data;
 	const char *tmp=(const char *)arg;
-	d->relay_session_id_size=b64_decode(tmp, strlen(tmp), d->relay_session_id, sizeof(d->relay_session_id));
+	d->relay_session_id_size=b64_decode(tmp, strlen(tmp), (void*)d->relay_session_id, (unsigned int)sizeof(d->relay_session_id));
 	return 0;
 }
 
@@ -185,7 +189,7 @@ static void sender_process(MSFilter * f)
 	if (d->relay_session_id_size>0 && 
 		( (f->ticker->time-d->last_rsi_time)>5000 || d->last_rsi_time==0) ) {
 		ms_message("relay session id sent in RTCP APP");
-		rtp_session_send_rtcp_APP(s,0,"RSID",d->relay_session_id,d->relay_session_id_size);
+		rtp_session_send_rtcp_APP(s,0,"RSID",(const uint8_t *)d->relay_session_id,d->relay_session_id_size);
 		d->last_rsi_time=f->ticker->time;
 	}
 
