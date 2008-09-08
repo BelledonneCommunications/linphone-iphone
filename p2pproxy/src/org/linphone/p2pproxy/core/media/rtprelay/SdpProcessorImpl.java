@@ -43,7 +43,7 @@ import org.zoolu.sip.message.Message;
  * 
  */
 public class SdpProcessorImpl implements SdpProcessor {
-   private final String CANDIDATE_RELAY_NAME="relay";
+   private final String RELAY_ADDR_NAME="relay-addr";
 
  
    private final static Logger mLog = Logger.getLogger(SdpProcessorImpl.class);
@@ -61,31 +61,38 @@ public class SdpProcessorImpl implements SdpProcessor {
    }
 
    public void processSdpBeforeSendingToSipUA(Message aMessage) throws P2pProxyException {
-      String lUserName="";
-      if (aMessage.isInvite()) {
-         lUserName = aMessage.getToHeader().getNameAddress().getAddress().toString();
-      } else if (aMessage.isResponse()) {
-         lUserName = aMessage.getFromHeader().getNameAddress().getAddress().toString();
-      } else if (aMessage.isAck()) {
-         lUserName = aMessage.getToHeader().getNameAddress().getAddress().toString();
-      } else {
-         mLog.warn("strange, sdp in message ["+aMessage+"]");
-      }
-      processSdp(aMessage,lUserName);
+      //nop
    }
 
    public void processSdpBeforeSendingToPipe(Message aMessage) throws P2pProxyException {
-      String lUserName="";
-      if (aMessage.isInvite()) {
-         lUserName = aMessage.getFromHeader().getNameAddress().getAddress().toString();
-      } else if (aMessage.isResponse()) {
-         lUserName = aMessage.getToHeader().getNameAddress().getAddress().toString();
-      } else if (aMessage.isAck()) {
-         lUserName = aMessage.getFromHeader().getNameAddress().getAddress().toString();
+      if (aMessage.isInvite() || aMessage.isAck()) {
+         //check if sdp present
+         if (aMessage.hasBody() && "application/sdp".equals(aMessage.getBodyType())) {
+            SessionDescriptor lOrigSessionDescriptor = new SessionDescriptor(aMessage.getBody());
+            //check if already have relay-session-id
+            Map <MediaType,InetSocketAddress> lRelayAddresses = null;
+            for (Object lMediaDescriptorObject :lOrigSessionDescriptor.getMediaDescriptors()) {
+               MediaDescriptor lMediaDescriptor = (MediaDescriptor)lMediaDescriptorObject;
+               MediaType lMediaType = MediaType.parseString(lMediaDescriptor.getMedia().getMedia());
+               AttributeField lSessionID = lMediaDescriptor.getAttribute("relay-session-id");
+               AttributeField lRelayAddr = lMediaDescriptor.getAttribute("relay-addr");
+               if (lSessionID != null  && lRelayAddr == null) {
+                  //need to find a relay
+                  if (lRelayAddresses == null) lRelayAddresses = mP2pProxyRtpRelayManagement.getAddresses();
+                  if (lRelayAddresses.get(lMediaType) !=  null) {
+                     lRelayAddr = new AttributeField(RELAY_ADDR_NAME, lRelayAddresses.get(lMediaType));
+                  } else {
+                     mLog.warn("no relay for this media type ["+lMediaType+"]");
+               
+               }
+            }
+            
+         } else {
+            //nop, because no sdp
+         }
       } else {
-         mLog.warn("strange, sdp in message ["+aMessage+"]");
+         mLog.info("strange, sdp in message ["+aMessage+"]");
       }
-      processSdp(aMessage,lUserName);
    }
 
    //check if already have relay candidate
@@ -107,13 +114,9 @@ public class SdpProcessorImpl implements SdpProcessor {
          if (lRegistration == null) {
             throw new P2pProxyException("unknown user ["+aUserName+"]");
          }
-         boolean lrelayCandidateDetected = false;
-         //check if already have relay candidate
-         for (Object lMediaDescriptorObject :lOrigSessionDescriptor.getMediaDescriptors()) {
-            MediaDescriptor lMediaDescriptor = (MediaDescriptor)lMediaDescriptorObject;
-            MediaType lMediaType = MediaType.parseString(lMediaDescriptor.getMedia().getMedia());
-            String lRelayCandidateValue = getRelayCandidate(lMediaDescriptor); 
+         boolean lSessionIdDetected = false;
 
+            
             if (lRelayCandidateValue != null) {
                if (lRegistration.RtpRelays.containsKey(lMediaType) == false) {// get relay address from from candidate
                   CandidateAttributeParser lCandidateAttributeParser = new CandidateAttributeParser(lRelayCandidateValue);
@@ -167,7 +170,7 @@ public class SdpProcessorImpl implements SdpProcessor {
       }
    }
 
-   private String getRelayCandidate(MediaDescriptor aMediaDescriptor) {
+   private String getRelayAdress(MediaDescriptor aMediaDescriptor) {
       //1 get candidate
       for (Object lField:aMediaDescriptor.getAttributes()) {
          AttributeField lAttributeField = (AttributeField)lField;
