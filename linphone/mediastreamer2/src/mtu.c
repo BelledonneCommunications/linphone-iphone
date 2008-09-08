@@ -130,7 +130,7 @@ int ms_discover_mtu(const char *host)
                           &ip_opts,
                           reply_buffer,
                           sizeof(reply_buffer),
-                          3000L); // 5 seconds
+                          3000L); // 3 seconds
     if (status || GetLastError() == IP_REQ_TIMED_OUT)
     {
       pIcmpCloseHandle( hIcmp );
