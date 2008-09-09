@@ -68,14 +68,15 @@ public class RtpRelayService  implements ServiceProvider{
                      lInputObj = lIn.readObject();
                      mLog.info("request message ["+lInputObj+"] received");
                      if (lInputObj instanceof AddressRequest) {
-                        SingleAddressResponse lAddressResponse = new SingleAddressResponse(mConfig.getAudioVideoPublicSocketAddress());
+                    	Map<MediaType,InetSocketAddress> lList = new HashMap<MediaType,InetSocketAddress>();
+                    	lList.put(MediaType.audio, mConfig.getAudioVideoPublicSocketAddress());
+                    	lList.put(MediaType.video, mConfig.getAudioVideoPublicSocketAddress());
+                    	AddressResponse lAddressResponse = new AddressResponse(lList);
                         lOut.writeObject(lAddressResponse);
                         lOut.flush();
                      } else {
                         mLog.error("unknown request ["+lInputObj+"]");
-
                      }
-
                      lStop = true;
                   }
                } catch (Exception e) {

@@ -47,11 +47,9 @@ public class SipClient {
                                           +"s=\n"
                                           +"c=IN IP4 192.0.2.3\n"
                                           +"t=0 0\n"
-                                          +"a=ice-pwd:asd88fgpdd777uzjYhagZg\n"
-                                          +"a=ice-ufrag:8hhY\n"
                                           +"m=audio 45664 RTP/AVP 0\n"
                                           +"a=rtpmap:0 PCMU/8000\n"
-                                          +"a=candidate:1 1 UDP 2130706431 127.0.0.1 8998 typ host";
+                                          +"a=relay-session-id:toto";
    
    
    
@@ -130,6 +128,14 @@ public class SipClient {
     * @param should I put an SDP ?
     */
    public void call(String aTo,SipProvider aCalleeProvider,boolean enableSdp) {
+	   call(aTo, aCalleeProvider, enableSdp, 0);
+   }
+   /**
+    * @param aTo uri to call
+    * @param aProvider sip provider of the To party
+    * @param should I put an SDP ?
+    */
+   public Call call(String aTo,SipProvider aCalleeProvider,boolean enableSdp,final long aCallDuration) {
 
         try {
             String lCallerUri = mSipIdentity;
@@ -161,7 +167,15 @@ public class SipClient {
             CallListener lCalleeListener = new DefaultCallListener() {
                 public void onCallConfirmed(Call call, String sdp, Message ack) {
                     lCalleeSemaphoreConfirmed.release();
-                    call.bye();
+                    if (aCallDuration != Long.MAX_VALUE) {
+                    	try {
+							Thread.sleep(aCallDuration);
+						} catch (InterruptedException e) {
+							//nop
+						}
+                    	call.bye();
+                    }
+                    
                 }
                 public void onCallIncoming(Call call, NameAddress callee, NameAddress caller, String sdp, Message invite) {
                     lCalleeSemaphoreIncoming.release();
@@ -183,12 +197,13 @@ public class SipClient {
             Assert.assertTrue("caller  call not accepted until ["+lTimout+"]", lCallerSemaphoreAccepted.tryAcquire(lTimout,TimeUnit.MILLISECONDS));
             Assert.assertTrue("callee  call not confirmed until ["+lTimout+"]", lCalleeSemaphoreConfirmed.tryAcquire(lTimout,TimeUnit.MILLISECONDS));
             Assert.assertTrue("caller  call not closed until ["+lTimout+"]", lCalleeSemaphoreClosed.tryAcquire(lTimout,TimeUnit.MILLISECONDS));
-            
  
             mLog.info("Call ok");
+            return lCaller;
         } catch (Exception e) {
             mLog.error("Call ko",e);
             Assert.fail(e.getMessage());
+            return null;
         }       
 
           
