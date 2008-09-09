@@ -21,15 +21,11 @@ package org.linphone.p2pproxy.core.media.rtprelay;
 
 import java.net.InetSocketAddress;
 import java.util.Map;
-import java.util.StringTokenizer;
-
 import net.jxta.pipe.OutputPipe;
-
 import org.apache.log4j.Logger;
 import org.linphone.p2pproxy.api.P2pProxyException;
 import org.linphone.p2pproxy.api.P2pProxyRtpRelayManagement;
 import org.linphone.p2pproxy.core.SdpProcessor;
-import org.linphone.p2pproxy.core.SipProxyRegistrar.Registration;
 import org.zoolu.sdp.AttributeField;
 import org.zoolu.sdp.MediaDescriptor;
 import org.zoolu.sdp.SessionDescriptor;
@@ -45,10 +41,8 @@ public class SdpProcessorImpl implements SdpProcessor {
 
  
    private final static Logger mLog = Logger.getLogger(SdpProcessorImpl.class);
-   private final Map<String,Registration> mRegistrationTab;
    private final P2pProxyRtpRelayManagement mP2pProxyRtpRelayManagement;
-   public SdpProcessorImpl(Map<String,Registration> aRegistrationTab,P2pProxyRtpRelayManagement aP2pProxyRtpRelayManagement) {
-      mRegistrationTab = aRegistrationTab;
+   public SdpProcessorImpl(P2pProxyRtpRelayManagement aP2pProxyRtpRelayManagement) {
       mP2pProxyRtpRelayManagement = aP2pProxyRtpRelayManagement;
 
    }

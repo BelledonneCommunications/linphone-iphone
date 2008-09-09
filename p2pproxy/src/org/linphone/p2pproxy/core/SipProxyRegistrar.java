@@ -175,7 +175,7 @@ public class SipProxyRegistrar implements SipProviderListener,PipeMsgListener,Si
       mProvider=new SipProvider(null,lPort,lProto,SipProvider.ALL_INTERFACES);
       mProvider.addSipProviderListener(SipProvider.PROMISQUE,this);
       mPool = Executors.newCachedThreadPool();
-      mSdpProcessor = new SdpProcessorImpl(mRegistrationTab,aP2pProxyRtpRelayManagement);
+      mSdpProcessor = new SdpProcessorImpl(aP2pProxyRtpRelayManagement);
       
    }
    public synchronized void onReceivedMessage(SipProvider aProvider, Message aMessage) {
@@ -197,9 +197,6 @@ public class SipProxyRegistrar implements SipProviderListener,PipeMsgListener,Si
          Message lInviteResp = MessageFactory.createResponse(lPendingSipMessageTask.getMessage(),487,"Request Terminated",null);
          TransactionServer lInviteTransactionServer = new TransactionServer(mProvider,lPendingSipMessageTask.getMessage(),null);
          lInviteTransactionServer.respondWith(lInviteResp);          
-
- 
-       
       } else {
          // normal behavior
          SipMessageTask lSipMessageTask = new SipMessageTask(aProvider,aMessage);
