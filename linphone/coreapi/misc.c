@@ -27,7 +27,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <poll.h>
 
+#include <ortp/stun.h>
 
 #ifndef WIN32
 
@@ -448,3 +450,165 @@ bool_t host_has_ipv6_network()
 
 
 #endif
+
+static ortp_socket_t create_socket(int local_port){
+	struct sockaddr_in laddr;
+	ortp_socket_t sock;
+	int optval;
+	sock=socket(PF_INET,SOCK_DGRAM,IPPROTO_UDP);
+	if (sock<0) {
+		ms_error("Fail to create socket");
+		return -1;
+	}
+	memset (&laddr,0,sizeof(laddr));
+	laddr.sin_family=AF_INET;
+	laddr.sin_addr.s_addr=INADDR_ANY;
+	laddr.sin_port=htons(local_port);
+	if (bind(sock,(struct sockaddr*)&laddr,sizeof(laddr))<0){
+		ms_error("Bind to 0.0.0.0:%i failed: %s",local_port,strerror(errno));
+		close_socket(sock);
+		return -1;
+	}
+	optval=1;
+	if (setsockopt (sock, SOL_SOCKET, SO_REUSEADDR,
+				(SOCKET_OPTION_VALUE)&optval, sizeof (optval))<0){
+		ms_warning("Fail to set SO_REUSEADDR");
+	}
+	set_non_blocking_socket(sock);
+	return sock;
+}
+
+static int sendStunRequest(int sock, const struct sockaddr *server, socklen_t addrlen, int id){
+	char buf[STUN_MAX_MESSAGE_SIZE];
+	int len = STUN_MAX_MESSAGE_SIZE;
+	StunAtrString username;
+   	StunAtrString password;
+	StunMessage req;
+	int err;
+	memset(&req, 0, sizeof(StunMessage));
+	memset(&username,0,sizeof(username));
+	memset(&password,0,sizeof(password));
+	stunBuildReqSimple( &req, &username, FALSE , FALSE , id);
+	len = stunEncodeMessage( &req, buf, len, &password, FALSE);
+	if (len<=0){
+		ms_error("Fail to encode stun message.");
+		return -1;
+	}
+	err=sendto(sock,buf,len,0,server,addrlen);
+	if (err<0){
+		ms_error("sendto failed: %s",strerror(errno));
+		return -1;
+	}
+	return 0;
+}
+
+static int parse_stun_server_addr(const char *server, struct sockaddr_storage *ss, socklen_t *socklen){
+	struct addrinfo hints,*res=NULL;
+	int ret;
+	const char *port;
+	char host[NI_MAXHOST];
+	char *p;
+	host[NI_MAXHOST-1]='\0';
+	strncpy(host,server,sizeof(host)-1);
+	p=strchr(server,':');
+	if (p) {
+		*p='\0';
+		port=p+1;
+	}else port="3478";
+	memset(&hints,0,sizeof(hints));
+	hints.ai_family=PF_INET;
+	hints.ai_socktype=SOCK_DGRAM;
+	hints.ai_protocol=IPPROTO_UDP;
+	ret=getaddrinfo(host,port,&hints,&res);
+	if (ret!=0){
+		ms_error("getaddrinfo() failed for %s:%s : %s",host,port,gai_strerror(ret));
+		return -1;
+	}
+	if (!res) return -1;
+	memcpy(ss,res->ai_addr,res->ai_addrlen);
+	*socklen=res->ai_addrlen;
+	freeaddrinfo(res);
+	return 0;
+}
+
+static int recvStunResponse(ortp_socket_t sock, char *ipaddr, int *port){
+	char buf[STUN_MAX_MESSAGE_SIZE];
+   	int len = STUN_MAX_MESSAGE_SIZE;
+	StunMessage resp;
+	len=recv(sock,buf,len,0);
+	if (len>0){
+		struct in_addr ia;
+		stunParseMessage(buf,len, &resp,FALSE );
+		*port = resp.changedAddress.ipv4.port;
+		ia.s_addr=htonl(resp.changedAddress.ipv4.addr);
+		strncpy(ipaddr,inet_ntoa(ia),LINPHONE_IPADDR_SIZE);
+	}
+	return len;
+}
+
+void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
+	const char *server=linphone_core_get_stun_server(lc);
+	
+	if (lc->sip_conf.ipv6_enabled){
+		ms_warning("stun support is not implemented for ipv6");
+		return;
+	}
+	if (server!=NULL){
+		struct sockaddr_storage ss;
+		socklen_t ss_len;
+		ortp_socket_t sock1=-1, sock2=-1;
+		bool_t video_enabled=linphone_core_video_enabled(lc);
+		bool_t got_audio,got_video;
+		struct timeval init,cur;
+		if (parse_stun_server_addr(server,&ss,&ss_len)<0){
+			return;
+		}
+		if (lc->vtable.display_status!=NULL)
+			lc->vtable.display_status(lc,_("Stun lookup in progress..."));
+		
+		/*create the two audio and video RTP sockets, and send STUN message to our stun server */
+		sock1=create_socket(linphone_core_get_audio_port(lc));
+		if (sock1<0) return;
+		if (video_enabled){
+			sock2=create_socket(linphone_core_get_video_port(lc));
+			if (sock2<0) return ;
+		}
+		sendStunRequest(sock1,(struct sockaddr*)&ss,ss_len,1);
+		if (sock2>=0)
+			sendStunRequest(sock2,(struct sockaddr*)&ss,ss_len,2);
+		
+		got_audio=FALSE;
+		got_video=FALSE;
+		gettimeofday(&init,NULL);
+		do{
+			double elapsed;
+#ifdef WIN32
+			Sleep(10);
+#else
+			usleep(10000);
+#endif
+
+			if (recvStunResponse(sock1,call->audio_params.natd_addr,
+						&call->audio_params.natd_port)>0){
+				ms_message("STUN test result: local audio port maps to %s:%i",
+						call->audio_params.natd_addr,
+						call->audio_params.natd_port);
+				got_audio=TRUE;
+			}
+			if (recvStunResponse(sock2,call->video_params.natd_addr,
+							&call->video_params.natd_port)>0){
+				ms_message("STUN test result: local video port maps to %s:%i",
+					call->video_params.natd_addr,
+					call->video_params.natd_port);
+					got_video=TRUE;
+			}
+			gettimeofday(&cur,NULL);
+			elapsed=((cur.tv_sec-init.tv_sec)*1000.0) +  ((cur.tv_usec-init.tv_usec)/1000.0);
+			if (elapsed>2000)  break;
+		}while(!(got_audio && (got_video||sock2<0)  ) );
+		close_socket(sock1);
+		if (sock2>=0) close_socket(sock2);
+	}
+}
+
+

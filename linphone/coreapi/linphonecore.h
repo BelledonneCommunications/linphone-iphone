@@ -25,6 +25,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ortp/payloadtype.h"
 #include "mediastreamer2/mscommon.h"
 
+#define LINPHONE_IPADDR_SIZE 64
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -145,6 +147,8 @@ typedef struct _StreamParams
 	char *remoteaddr;
 	int pt;
 	char *relay_session_id;
+	char natd_addr[LINPHONE_IPADDR_SIZE];
+	int natd_port;
 } StreamParams;
 
 typedef enum _LCState{
@@ -486,7 +490,7 @@ typedef struct _LinphoneCore
 #endif
 } LinphoneCore;
 
-#define LINPHONE_IPADDR_SIZE 64
+
 
 /* THE main API */
 

@@ -436,7 +436,8 @@ int linphone_set_audio_offer(sdp_context_t *ctx)
 			sdp_payload_init(&payload);
 			payload.a_rtpmap=ortp_strdup_printf("%s/%i/1",codec->mime_type,codec->clock_rate);
 			payload.pt=rtp_profile_get_payload_number_from_rtpmap(lc->local_profile,payload.a_rtpmap);
-			payload.localport=lc->rtp_conf.audio_rtp_port;
+			payload.localport=call->audio_params.natd_port > 0 ? 
+						call->audio_params.natd_port : lc->rtp_conf.audio_rtp_port;
 			if (strcasecmp(codec->mime_type,"iLBC")==0){
 				/* prefer the 30 ms mode */
 				payload.a_fmtp="ptime=30";
@@ -511,7 +512,8 @@ int linphone_set_video_offer(sdp_context_t *ctx)
 			sdp_payload_init(&payload);
 			payload.line=1;
 			payload.a_rtpmap=ortp_strdup_printf("%s/%i",codec->mime_type,codec->clock_rate);
-			payload.localport=lc->rtp_conf.video_rtp_port;
+			payload.localport=call->video_params.natd_port>0 ? 
+					call->video_params.natd_port : lc->rtp_conf.video_rtp_port;
 			payload.pt=find_payload_type_number(lc->local_profile,codec);
 			payload.a_fmtp=codec->recv_fmtp;
 			if(firsttime){
@@ -628,7 +630,9 @@ int linphone_accept_audio_offer(sdp_context_t *ctx,sdp_payload_t *payload)
 		params=&call->audio_params;
 		if (params->initialized==0){
 			/* this is the first codec we accept, it is going to be used*/
-			params->localport=payload->localport=lc->rtp_conf.audio_rtp_port;
+			params->localport=lc->rtp_conf.audio_rtp_port;
+			payload->localport=params->natd_port>0 ? 
+				params->natd_port : lc->rtp_conf.audio_rtp_port;
 			params->line=payload->line;
 			params->pt=payload->pt; /* remember the first payload accepted */
 			if (payload->relay_host!=NULL){
@@ -678,7 +682,8 @@ int linphone_accept_video_offer(sdp_context_t *ctx,sdp_payload_t *payload)
 		params=&call->video_params;
 		if (params->initialized==0){
 			/* this is the first codec we may accept*/
-			params->localport=payload->localport=lc->rtp_conf.video_rtp_port;
+			params->localport=lc->rtp_conf.video_rtp_port;
+			payload->localport=params->natd_port>0 ? params->natd_port : lc->rtp_conf.video_rtp_port;
 			params->line=payload->line;
 			params->pt=payload->pt; /* remember the first payload accepted */
 			if (payload->relay_host!=NULL){

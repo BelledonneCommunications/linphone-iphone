@@ -25,7 +25,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "sdphandler.h"
 
 #include <ortp/telephonyevents.h>
-#include <ortp/stun.h>
 #include "exevents.h"
 
 
@@ -81,6 +80,8 @@ static void  linphone_call_init_common(LinphoneCall *call, char *from, char *to)
 	call->start_time=time(NULL);
 	call->log=linphone_call_log_new(call, from, to);
 	linphone_core_notify_all_friends(call->core,LINPHONE_STATUS_ONTHEPHONE);
+	if (linphone_core_get_firewall_policy(call->core)==LINPHONE_POLICY_USE_STUN) 
+		linphone_core_run_stun_tests(call->core,call);
 }
 
 void linphone_call_init_media_params(LinphoneCall *call){
@@ -112,10 +113,12 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, const osip_f
 	call->tid=-1;
 	call->core=lc;
 	linphone_core_get_local_ip(lc,to->url->host,localip);
-	call->sdpctx=sdp_handler_create_context(&linphone_sdphandler,localip,from->url->username,NULL);
 	osip_from_to_str(from,&fromstr);
 	osip_to_to_str(to,&tostr);
 	linphone_call_init_common(call,fromstr,tostr);
+	call->sdpctx=sdp_handler_create_context(&linphone_sdphandler,
+		call->audio_params.natd_port>0 ? call->audio_params.natd_addr : localip,
+		from->url->username,NULL);
 	discover_mtu(lc,to->url->host);
 	return call;
 }
@@ -135,8 +138,10 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, const char *from, co
 	osip_from_init(&from_url);
 	osip_from_parse(from_url, from);
 	linphone_core_get_local_ip(lc,from_url->url->host,localip);
-	call->sdpctx=sdp_handler_create_context(&linphone_sdphandler,localip,me->url->username,NULL);
 	linphone_call_init_common(call, osip_strdup(from), osip_strdup(to));
+	call->sdpctx=sdp_handler_create_context(&linphone_sdphandler,
+		call->audio_params.natd_port>0 ? call->audio_params.natd_addr : localip,
+		me->url->username,NULL);
 	discover_mtu(lc,from_url->url->host);
 	osip_from_free(me);
 	osip_from_free(from_url);
@@ -733,35 +738,6 @@ int linphone_core_set_primary_contact(LinphoneCore *lc, const char *contact)
 	return 0;
 }
 
-static bool_t stun_get_localip(LinphoneCore *lc, char *result, int *port){
-	const char *server=linphone_core_get_stun_server(lc);
-	StunAddress4 addr;
-	StunAddress4 mapped;
-	StunAddress4 changed;
-	if (server!=NULL){
-		if (stunParseServerName((char*)server,&addr)){
-			if (lc->vtable.display_status!=NULL)
-				lc->vtable.display_status(lc,_("Stun lookup in progress..."));
-			if (stunTest(&addr,1,TRUE,NULL,&mapped,&changed)==0){
-				struct in_addr inaddr;
-				char *tmp;
-				inaddr.s_addr=ntohl(mapped.addr);
-				tmp=inet_ntoa(inaddr);
-				*port=ntohs(mapped.port);
-				strncpy(result,tmp,LINPHONE_IPADDR_SIZE);
-				if (lc->vtable.display_status!=NULL)
-					lc->vtable.display_status(lc,_("Stun lookup done..."));
-				ms_message("Stun server says we have address %s:i",result,*port);
-				return TRUE;
-			}else{
-				ms_warning("stun lookup failed.");
-			}
-		}else{
-			ms_warning("Fail to resolv or parse %s",server);
-		}
-	}
-	return FALSE;
-}
 
 /*result must be an array of chars at least LINPHONE_IPADDR_SIZE */
 void linphone_core_get_local_ip(LinphoneCore *lc, const char *dest, char *result){
@@ -777,14 +753,17 @@ void linphone_core_get_local_ip(LinphoneCore *lc, const char *dest, char *result
 		if (lc->sip_conf.ipv6_enabled){
 			ms_warning("stun support is not implemented for ipv6");
 		}else{
+			/* we no more use stun for sip socket*/
+#if 0
 			int mport=0;
 			ms_message("doing stun lookup for local address...");
-			if (stun_get_localip(lc,result,&mport)){
+			if (stun_get_localip(lc,sock,linphone_core_get_sip_port(lc),result,&mport)){
 				if (!lc->net_conf.nat_sdp_only)
 					eXosip_masquerade_contact(result,mport);
 				return;
 			}
 			ms_warning("stun lookup failed, falling back to a local interface...");
+#endif
 		}
 		
 	}

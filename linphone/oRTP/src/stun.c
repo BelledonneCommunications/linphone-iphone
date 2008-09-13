@@ -2067,6 +2067,8 @@ stunTest( StunAddress4 *dest, int testNum, bool_t verbose, StunAddress4* sAddr ,
 }
 
 
+
+
 NatType
 stunNatType( StunAddress4 *dest, 
              bool_t verbose,
