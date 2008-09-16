@@ -39,6 +39,7 @@ import org.apache.log4j.PropertyConfigurator;
 import org.linphone.p2pproxy.api.P2pProxyException;
 import org.linphone.p2pproxy.api.P2pProxyManagement;
 import org.linphone.p2pproxy.core.media.rtprelay.RtpRelayService;
+import org.linphone.p2pproxy.core.sipproxy.SipProxyRegistrar;
 import org.zoolu.sip.provider.SipStack;
 
 public class P2pProxyMain  implements P2pProxyMainMBean {

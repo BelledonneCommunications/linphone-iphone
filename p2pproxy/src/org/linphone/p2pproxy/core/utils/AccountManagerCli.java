@@ -34,7 +34,7 @@ import org.linphone.p2pproxy.core.JxtaNetworkManager;
 import org.linphone.p2pproxy.core.P2pProxyAccountManagementMBean;
 import org.linphone.p2pproxy.core.P2pProxyMain;
 import org.linphone.p2pproxy.core.P2pProxyMainMBean;
-import org.linphone.p2pproxy.core.SipProxyRegistrar;
+import org.linphone.p2pproxy.core.sipproxy.SipProxyRegistrar;
 
 public class AccountManagerCli {
    public final static String USER_ADD = "user-add";

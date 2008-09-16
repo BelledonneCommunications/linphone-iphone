@@ -31,9 +31,9 @@ import org.linphone.p2pproxy.api.P2pProxyException;
 import org.linphone.p2pproxy.core.Configurator;
 
 import org.linphone.p2pproxy.core.NetworkResources;
-import org.linphone.p2pproxy.core.SdpProcessor;
-import org.linphone.p2pproxy.core.SipProxyRegistrar;
-import org.linphone.p2pproxy.core.SipProxyRegistrar.Registration;
+import org.linphone.p2pproxy.core.sipproxy.SdpProcessor;
+import org.linphone.p2pproxy.core.sipproxy.SipProxyRegistrar;
+import org.linphone.p2pproxy.core.sipproxy.SipProxyRegistrar.Registration;
 import org.zoolu.sdp.AttributeField;
 import org.zoolu.sdp.ConnectionField;
 import org.zoolu.sdp.MediaDescriptor;

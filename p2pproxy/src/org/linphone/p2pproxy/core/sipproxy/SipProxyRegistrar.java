@@ -18,7 +18,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-package org.linphone.p2pproxy.core;
+package org.linphone.p2pproxy.core.sipproxy;
 
 
 import java.io.File;
@@ -44,6 +44,11 @@ import org.linphone.p2pproxy.api.P2pProxyException;
 import org.linphone.p2pproxy.api.P2pProxyRtpRelayManagement;
 import org.linphone.p2pproxy.api.P2pProxyUserNotFoundException;
 
+import org.linphone.p2pproxy.core.Configurator;
+import org.linphone.p2pproxy.core.JxtaNetworkManager;
+import org.linphone.p2pproxy.core.NetworkResources;
+import org.linphone.p2pproxy.core.P2pProxyAccountManagementMBean;
+import org.linphone.p2pproxy.core.P2pProxyAdvertisementNotFoundException;
 import org.linphone.p2pproxy.core.media.rtprelay.MediaType;
 import org.linphone.p2pproxy.core.media.rtprelay.SdpProcessorImpl;
 import org.zoolu.sip.address.NameAddress;
@@ -120,6 +125,9 @@ public class SipProxyRegistrar implements SipProviderListener,PipeMsgListener,Si
                   proxyRequest(mProvider, mMessage);
                }
             } else {
+               //1 remove via header   
+               SipUtils.removeVia(mProvider,mMessage);
+               //2 process response
                proxyResponse(mProvider, mMessage);
             }
             synchronized (SipProxyRegistrar.this) {
@@ -187,7 +195,7 @@ public class SipProxyRegistrar implements SipProviderListener,PipeMsgListener,Si
          lPendingSipMessageTask.getFuture().cancel(true);
          mCancalableTaskTab.remove(lCallId);
 
-         removeVia(mProvider,lPendingSipMessageTask.getMessage());
+         SipUtils.removeVia(mProvider,lPendingSipMessageTask.getMessage());
          // accept cancel
          Message lCancelResp = MessageFactory.createResponse(aMessage,200,"ok",null);
          TransactionServer lCancelTransactionServer = new TransactionServer(mProvider,aMessage,null);
@@ -212,60 +220,9 @@ public class SipProxyRegistrar implements SipProviderListener,PipeMsgListener,Si
 ////Proxy methods
 /////////////////////////////////////////////////////////////////////	
    private void proxyResponse(SipProvider aProvider, Message aMessage) throws NumberFormatException, InterruptedException, P2pProxyException, IOException {
-      //1 remove via header   
-      removeVia(aProvider,aMessage);
-      String lFrom =  aMessage.getFromHeader().getNameAddress().getAddress().toString();
-      mSdpProcessor.processSdpBeforeSendingToPipe(aMessage);
-      OutputPipe lOutputPipe = sendMessageToPipe(lFrom,aMessage.toString());
-      mSdpProcessor.processSdpAfterSentToPipe( aMessage,lOutputPipe);
+
    }
-   private void proxyRequest(SipProvider aProvider, Message aMessage) throws Exception {
-
-	   if (aMessage.isAck() && aMessage.getToHeader().getTag() == null) {
-		   // just terminate the Invite transaction
-		   return;
-	   }
-
-	   if (aMessage.isInvite() == true) {
-		   // 100 trying
-		   TransactionServer lTransactionServer = new TransactionServer(aProvider,aMessage,null);
-		   Message l100Trying = MessageFactory.createResponse(aMessage,100,"trying",null);
-		   lTransactionServer.respondWith(l100Trying);
-	   }
-
-	   String lTo =  aMessage.getToHeader().getNameAddress().getAddress().toString();
-	   //remove route
-	   MultipleHeader lMultipleRoute = aMessage.getRoutes();
-	   if (lMultipleRoute != null) {
-		   lMultipleRoute.removeTop();
-		   aMessage.setRoutes(lMultipleRoute);
-	   }
-	   // add Via only udp
-	   addVia(aProvider,aMessage);
-	   // add recordRoute
-	   addRecordRoute(aProvider,aMessage);
-	   try {
-	      mSdpProcessor.processSdpBeforeSendingToPipe(aMessage);
-	         // proxy message to pipe
-		   OutputPipe lOutputPipe = sendMessageToPipe(lTo,aMessage.toString());
-		   mSdpProcessor.processSdpAfterSentToPipe( aMessage,lOutputPipe);
-	   } catch (P2pProxyUserNotFoundException e) {
-		   //remove via 
-		   removeVia(aProvider, aMessage);
-		   if (aMessage.isInvite()) {
-			   Message lresp = MessageFactory.createResponse(aMessage,404,e.getMessage(),null);
-			   TransactionServer lTransactionServer = new TransactionServer(aProvider,aMessage,null);
-			   lTransactionServer.respondWith(lresp);
-		   } else {
-			   throw e;
-		   }
-	   } catch (Exception e2) {
-		   //remove via 
-		   removeVia(aProvider, aMessage);
-		   throw e2;
-
-	   }
-   }
+   private void proxyRequest(SipProvider aProvider, Message aMessage) throws Exception {}
    
    
 //////////////////////////////////////////////////////////////////////
@@ -369,14 +326,14 @@ public class SipProxyRegistrar implements SipProviderListener,PipeMsgListener,Si
             lSipMessage.addRouteHeader(lRouteHeader);
          }
          // add Via only udp
-         addVia(mProvider,lSipMessage);
+         SipUtils.addVia(mProvider,lSipMessage);
          // add recordRoute
-         addRecordRoute(mProvider,lSipMessage);
+         SipUtils.addRecordRoute(mProvider,lSipMessage);
          
       } else {
          //response
          //1 remove via header   
-         removeVia(mProvider,lSipMessage);
+         SipUtils.removeVia(mProvider,lSipMessage);
       }
       try {
          mSdpProcessor.processSdpBeforeSendingToSipUA( lSipMessage);
@@ -388,61 +345,8 @@ public class SipProxyRegistrar implements SipProviderListener,PipeMsgListener,Si
       //
    }
    
-   private Advertisement getPipeAdv(String aUser,long aDiscoveryTimout,boolean isTryFromLocal) throws InterruptedException, P2pProxyUserNotFoundException, IOException {
-      // search on all peers
-      try {
-         return mJxtaNetworkManager.getAdvertisement(null,aUser, isTryFromLocal);
-      } catch (P2pProxyAdvertisementNotFoundException e) {
-         throw new P2pProxyUserNotFoundException(e);
-      }	
-   }
-   private OutputPipe sendMessageToPipe(String aDestination,String lContent) throws NumberFormatException, InterruptedException, P2pProxyException, IOException {
-      
-      //1 search for pipe
-      long lTimeout = JxtaNetworkManager.ADV_DISCOVERY_TIMEOUT_INT;
-      PipeAdvertisement lPipeAdvertisement = (PipeAdvertisement)getPipeAdv(aDestination,lTimeout,true);
-      OutputPipe lOutputPipe=null;
-      try {
-         // create output pipe
-         lOutputPipe = mJxtaNetworkManager.getPeerGroup().getPipeService().createOutputPipe(lPipeAdvertisement, lTimeout);
-         //create the message
-      } catch (IOException e) {
-         //second try from remote only to avoid wrong cached value
-    	  mJxtaNetworkManager.getPeerGroup().getDiscoveryService().flushAdvertisement(lPipeAdvertisement);
-    	  mLog.warn("cannot create output pipe, trying to ask from rdv ",e);
-         lPipeAdvertisement = (PipeAdvertisement)getPipeAdv(aDestination,lTimeout,false);
-         lOutputPipe = mJxtaNetworkManager.getPeerGroup().getPipeService().createOutputPipe(lPipeAdvertisement, lTimeout);
-      }
-      net.jxta.endpoint.Message lMessage = new net.jxta.endpoint.Message();
-      StringMessageElement lStringMessageElement = new StringMessageElement("SIP", lContent, null);
-      lMessage.addMessageElement("SIP", lStringMessageElement);
-      //send the message
-      lOutputPipe.send(lMessage);
-      mLog.debug("message sent to ["+aDestination+"]");
-      return lOutputPipe;
-      
-   }
-   private void addVia(SipProvider aProvider, Message aMessage) {
-      ViaHeader via=new ViaHeader("udp",aProvider.getViaAddress(),aProvider.getPort());
-      String branch=aProvider.pickBranch(aMessage);
-      via.setBranch(branch);
-      aMessage.addViaHeader(via);      
-   }
-   private void addRecordRoute(SipProvider aProvider, Message aMessage) {
-      SipURL lRecordRoute;
-      lRecordRoute=new SipURL(aProvider.getViaAddress(),aProvider.getPort());
-      lRecordRoute.addLr();
-      RecordRouteHeader lRecordRouteHeader=new RecordRouteHeader(new NameAddress(lRecordRoute));
-      aMessage.addRecordRouteHeader(lRecordRouteHeader);    
-   }
-   private void removeVia(SipProvider aProvider, Message aMessage) {
-	   synchronized (aMessage) {
-		   ViaHeader lViaHeader =new ViaHeader((Header)aMessage.getVias().getHeaders().elementAt(0));
-		   if (lViaHeader.getHost().equals(aProvider.getViaAddress()) && lViaHeader.getPort() == aProvider.getPort() ) {
-			   aMessage.removeViaHeader();
-		   }       
-	   }
-   }
+
+ 
  //   public long getNumberOfEstablishedCall() {
 //      return mNumberOfEstablishedCall;
 //   }

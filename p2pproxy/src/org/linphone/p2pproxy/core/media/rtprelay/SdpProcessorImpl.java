@@ -25,7 +25,7 @@ import net.jxta.pipe.OutputPipe;
 import org.apache.log4j.Logger;
 import org.linphone.p2pproxy.api.P2pProxyException;
 import org.linphone.p2pproxy.api.P2pProxyRtpRelayManagement;
-import org.linphone.p2pproxy.core.SdpProcessor;
+import org.linphone.p2pproxy.core.sipproxy.SdpProcessor;
 import org.zoolu.sdp.AttributeField;
 import org.zoolu.sdp.MediaDescriptor;
 import org.zoolu.sdp.SessionDescriptor;

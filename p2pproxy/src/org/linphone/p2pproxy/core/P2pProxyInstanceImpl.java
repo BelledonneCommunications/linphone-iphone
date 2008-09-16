@@ -38,6 +38,7 @@ import org.linphone.p2pproxy.api.P2pProxyInstance;
 import org.linphone.p2pproxy.api.P2pProxyManagement;
 import org.linphone.p2pproxy.api.P2pProxyNetworkProbe;
 import org.linphone.p2pproxy.api.P2pProxyRtpRelayManagement;
+import org.linphone.p2pproxy.core.sipproxy.SipProxyRegistrar;
 import org.zoolu.net.SocketAddress;
 import org.zoolu.sip.provider.SipProvider;
 

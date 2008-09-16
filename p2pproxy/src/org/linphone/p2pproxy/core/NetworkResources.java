@@ -46,7 +46,7 @@ public class NetworkResources {
    private final JxtaNetworkManager mJxtaNetworkManager;
    private final static Logger mLog = Logger.getLogger(NetworkResources.class);
    private State mState = State.idle;
-   NetworkResources(String aUserName, JxtaNetworkManager aJxtaNetworkManager) throws IOException {
+   public NetworkResources(String aUserName, JxtaNetworkManager aJxtaNetworkManager) throws IOException {
       mJxtaNetworkManager = aJxtaNetworkManager;
       mInputPipe = mJxtaNetworkManager.createPipe(PIPE_ID+"-"+aUserName, aUserName, mMessageDispatcher);
    }
