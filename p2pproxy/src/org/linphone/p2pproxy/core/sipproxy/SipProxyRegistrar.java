@@ -65,7 +65,7 @@ import org.zoolu.sip.provider.SipProvider;
 import org.zoolu.sip.provider.SipProviderListener;
 import org.zoolu.sip.provider.SipStack;
 import org.zoolu.sip.transaction.TransactionServer;
-public class SipProxyRegistrar implements SipProviderListener,PipeMsgListener,SipProxyRegistrarMBean {
+public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarMBean {
    private final static Logger mLog = Logger.getLogger(SipProxyRegistrar.class);   
    public final static String REGISTRAR_PORT="org.linphone.p2pproxy.SipListener.registrar.port";
    public final static String UDP_PORT_BEGING="org.linphone.p2pproxy.udp.port.begin";
@@ -81,7 +81,7 @@ public class SipProxyRegistrar implements SipProviderListener,PipeMsgListener,Si
 
    private final P2pProxyAccountManagementMBean mP2pProxyAccountManagement;
    private final Configurator mProperties;
-   private final SdpProcessor mSdpProcessor;
+  
    //private long mNumberOfEstablishedCall;
    private long mNumberOfRefusedRegistration;
    private long mNumberOfSuccessfullRegistration;
@@ -183,7 +183,7 @@ public class SipProxyRegistrar implements SipProviderListener,PipeMsgListener,Si
       mProvider=new SipProvider(null,lPort,lProto,SipProvider.ALL_INTERFACES);
       mProvider.addSipProviderListener(SipProvider.PROMISQUE,this);
       mPool = Executors.newCachedThreadPool();
-      mSdpProcessor = new SdpProcessorImpl(aP2pProxyRtpRelayManagement);
+     
       
    }
    public synchronized void onReceivedMessage(SipProvider aProvider, Message aMessage) {
@@ -289,61 +289,6 @@ public class SipProxyRegistrar implements SipProviderListener,PipeMsgListener,Si
       aRegistration.NetResources.publish(aRegistration.Expiration);
    }
    
-//////////////////////////////////////////////////////////////////////
-////jxta service methods
-/////////////////////////////////////////////////////////////////////	
-   
- 
-   public void pipeMsgEvent(PipeMsgEvent anEvent) {
-	  MessageElement lMessageElement = anEvent.getMessage().getMessageElement("SIP");
-	  if (lMessageElement == null) {
-		  //nop, this is not for me
-		  return;
-	  }
-	  String lMesssage = lMessageElement.toString();
-      mLog.info("pipe event sip message["+lMesssage+"]");
-      Message lSipMessage = new Message(lMesssage);
-      // process request
-      if (lSipMessage.isRequest()) {
-         SipURL  lNextHope ;
-         // get next hope from registrar
-         String lToName = lSipMessage.getToHeader().getNameAddress().getAddress().toString();
-         if (mRegistrationTab.containsKey(lToName)) {
-            lNextHope = new SipURL(mRegistrationTab.get(lToName).Contact); 
-         } else {
-            mLog.error("user ["+lToName+"] not found");
-            return;
-         }
-         //RequestLine lRequestLine = new RequestLine(lSipMessage.getRequestLine().getMethod(),lNextHope);
-         //lSipMessage.setRequestLine(lRequestLine);
-         MultipleHeader lMultipleRoute = lSipMessage.getRoutes();
-         RouteHeader lRouteHeader = new RouteHeader(new NameAddress(lNextHope+";lr"));
-         //lRouteHeader.setParameter("lr", null);
-         if (lMultipleRoute != null) {
-            lMultipleRoute.addTop(lRouteHeader);
-            lSipMessage.setRoutes(lMultipleRoute);
-         } else {
-            lSipMessage.addRouteHeader(lRouteHeader);
-         }
-         // add Via only udp
-         SipUtils.addVia(mProvider,lSipMessage);
-         // add recordRoute
-         SipUtils.addRecordRoute(mProvider,lSipMessage);
-         
-      } else {
-         //response
-         //1 remove via header   
-         SipUtils.removeVia(mProvider,lSipMessage);
-      }
-      try {
-         mSdpProcessor.processSdpBeforeSendingToSipUA( lSipMessage);
-	} catch (P2pProxyException e) {
-		mLog.error("enable to re-write sdp",e);
-	}
-      
-      mProvider.sendMessage(lSipMessage);
-      //
-   }
    
 
  

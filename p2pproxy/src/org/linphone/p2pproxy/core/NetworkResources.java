@@ -25,12 +25,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.linphone.p2pproxy.core.media.jxtaudpproxy.RtpSession;
+
 import org.linphone.p2pproxy.core.media.jxtaudpproxy.RtpSessionImpl;
 
 import net.jxta.discovery.DiscoveryService;
 import net.jxta.pipe.InputPipe;
-import net.jxta.pipe.OutputPipe;
+
 import net.jxta.pipe.PipeMsgListener;
 
 /**
