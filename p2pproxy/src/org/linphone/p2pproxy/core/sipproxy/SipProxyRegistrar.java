@@ -91,12 +91,12 @@ public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarM
    
    public static class Registration {
       long RegistrationDate;
-      long Expiration;
+      public long Expiration;
       //implementation specific context
       public Object NetResources;
       public  Map<MediaType,InetSocketAddress> RtpRelays = new HashMap<MediaType,InetSocketAddress>() ;
-      String Contact;
-      final String From;
+      public String Contact;
+      public final String From;
       public Registration(String aFrom) {From = aFrom;}
    }
    

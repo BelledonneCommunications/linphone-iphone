@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package org.linphone.p2pproxy.core.sipproxy;
+package org.linphone.p2pproxy.core.sipproxy.peers;
 
 import java.io.IOException;
 import java.util.Map;
@@ -38,6 +38,11 @@ import org.linphone.p2pproxy.api.P2pProxyUserNotFoundException;
 import org.linphone.p2pproxy.core.JxtaNetworkManager;
 import org.linphone.p2pproxy.core.P2pProxyAdvertisementNotFoundException;
 import org.linphone.p2pproxy.core.media.rtprelay.SdpProcessorImpl;
+import org.linphone.p2pproxy.core.sipproxy.RegistrationHandler;
+import org.linphone.p2pproxy.core.sipproxy.SdpProcessor;
+import org.linphone.p2pproxy.core.sipproxy.SipProxy;
+import org.linphone.p2pproxy.core.sipproxy.SipProxyRegistrar;
+import org.linphone.p2pproxy.core.sipproxy.SipUtils;
 import org.linphone.p2pproxy.core.sipproxy.SipProxyRegistrar.Registration;
 import org.zoolu.sip.address.NameAddress;
 import org.zoolu.sip.address.SipURL;
