@@ -46,7 +46,6 @@ import org.linphone.p2pproxy.api.P2pProxyUserNotFoundException;
 
 import org.linphone.p2pproxy.core.Configurator;
 import org.linphone.p2pproxy.core.JxtaNetworkManager;
-import org.linphone.p2pproxy.core.NetworkResources;
 import org.linphone.p2pproxy.core.P2pProxyAccountManagementMBean;
 import org.linphone.p2pproxy.core.P2pProxyAdvertisementNotFoundException;
 import org.linphone.p2pproxy.core.media.rtprelay.MediaType;
@@ -93,7 +92,8 @@ public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarM
    public static class Registration {
       long RegistrationDate;
       long Expiration;
-      public NetworkResources NetResources;
+      //implementation specific context
+      public Object NetResources;
       public  Map<MediaType,InetSocketAddress> RtpRelays = new HashMap<MediaType,InetSocketAddress>() ;
       String Contact;
       final String From;
@@ -274,19 +274,13 @@ public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarM
    }
    private void updateRegistration(Registration aRegistration, Message aRegistrationMessage) throws IOException {
       aRegistration.RegistrationDate = System.currentTimeMillis();
-      // default registration periode
+      // default registration period
       aRegistration.Expiration = 3600000;
       if (aRegistrationMessage.getExpiresHeader() != null ) {
          aRegistration.Expiration =  aRegistrationMessage.getExpiresHeader().getDeltaSeconds()*1000; 
       }
       
-      if (aRegistration.NetResources == null) {
-         // new registration, create pipe
-         aRegistration.NetResources = new NetworkResources(aRegistration.From,mJxtaNetworkManager);
-         aRegistration.NetResources.addPipeMsgListener(this);
-      }
-      
-      aRegistration.NetResources.publish(aRegistration.Expiration);
+      //TODO handle registration 
    }
    
    

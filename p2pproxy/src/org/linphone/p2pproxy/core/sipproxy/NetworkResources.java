@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-package org.linphone.p2pproxy.core;
+package org.linphone.p2pproxy.core.sipproxy;
 
 import java.io.IOException;
 
@@ -26,6 +26,8 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import org.linphone.p2pproxy.core.JxtaNetworkManager;
+import org.linphone.p2pproxy.core.MessageDispatcher;
 import org.linphone.p2pproxy.core.media.jxtaudpproxy.RtpSessionImpl;
 
 import net.jxta.discovery.DiscoveryService;

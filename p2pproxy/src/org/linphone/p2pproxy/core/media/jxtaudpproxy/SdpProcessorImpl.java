@@ -30,7 +30,7 @@ import org.apache.log4j.Logger;
 import org.linphone.p2pproxy.api.P2pProxyException;
 import org.linphone.p2pproxy.core.Configurator;
 
-import org.linphone.p2pproxy.core.NetworkResources;
+import org.linphone.p2pproxy.core.sipproxy.NetworkResources;
 import org.linphone.p2pproxy.core.sipproxy.SdpProcessor;
 import org.linphone.p2pproxy.core.sipproxy.SipProxyRegistrar;
 import org.linphone.p2pproxy.core.sipproxy.SipProxyRegistrar.Registration;
@@ -164,20 +164,20 @@ public class SdpProcessorImpl implements SdpProcessor {
 
             String lMLineName = lMediaDescriptor.getMedia().getMedia();
             RtpSessionImpl lRtpSession = null;
-            if (lRegistration.NetResources.hasRtpSession(lMLineName) == false) {
+            if (((NetworkResources) lRegistration.NetResources).hasRtpSession(lMLineName) == false) {
                // first time, just create
                int lPortStart = Integer.parseInt(mProperties.getProperty(SipProxyRegistrar.UDP_MEDIA_RELAY_PORT_START, "15000"));
                lRtpSession = new RtpSessionImpl (lPortStart,lMLineName);
-               lRegistration.NetResources.putRtpSession(lMLineName, lRtpSession);
+               ((NetworkResources) lRegistration.NetResources).putRtpSession(lMLineName, lRtpSession);
             } else {
-               lRtpSession = lRegistration.NetResources.getRtpSession(lMLineName);
+               lRtpSession = ((NetworkResources) lRegistration.NetResources).getRtpSession(lMLineName);
             }
             if (aRemotePipe != null) {
            	 lRtpSession.setRemotePipe(aRemotePipe);
             }
 
          }
-         return lRegistration.NetResources;
+         return (NetworkResources) lRegistration.NetResources;
       }catch (Exception e) {
          throw new P2pProxyException(e);
       }

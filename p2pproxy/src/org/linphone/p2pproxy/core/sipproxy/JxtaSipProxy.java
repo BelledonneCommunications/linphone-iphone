@@ -22,6 +22,7 @@ package org.linphone.p2pproxy.core.sipproxy;
 import java.io.IOException;
 import java.util.Map;
 
+import net.jxta.discovery.DiscoveryService;
 import net.jxta.document.Advertisement;
 import net.jxta.endpoint.MessageElement;
 import net.jxta.endpoint.StringMessageElement;
@@ -37,6 +38,7 @@ import org.linphone.p2pproxy.api.P2pProxyUserNotFoundException;
 import org.linphone.p2pproxy.core.JxtaNetworkManager;
 import org.linphone.p2pproxy.core.P2pProxyAdvertisementNotFoundException;
 import org.linphone.p2pproxy.core.media.rtprelay.SdpProcessorImpl;
+import org.linphone.p2pproxy.core.sipproxy.SipProxyRegistrar.Registration;
 import org.zoolu.sip.address.NameAddress;
 import org.zoolu.sip.address.SipURL;
 import org.zoolu.sip.header.MultipleHeader;
@@ -46,7 +48,7 @@ import org.zoolu.sip.message.MessageFactory;
 import org.zoolu.sip.provider.SipProvider;
 import org.zoolu.sip.transaction.TransactionServer;
 
-public class JxtaSipProxy implements SipProxy, PipeMsgListener {
+public class JxtaSipProxy implements SipProxy, PipeMsgListener,RegistrationHandler {
    private final JxtaNetworkManager mJxtaNetworkManager;
    private final Map<String,SipProxyRegistrar.Registration> mRegistrationTab;
    private final SdpProcessor mSdpProcessor;
@@ -211,5 +213,20 @@ public class JxtaSipProxy implements SipProxy, PipeMsgListener {
      mProvider.sendMessage(lSipMessage);
      //
   }
+public void updateRegistration(Registration aRegistration, Message aRegistrationMessage) throws P2pProxyException {
+   try {
+   if (aRegistration.NetResources == null) {
+      // new registration, create pipe
+      NetworkResources lRegistration = new NetworkResources(aRegistration.From,mJxtaNetworkManager);  
+      aRegistration.NetResources = lRegistration;
+      lRegistration.addPipeMsgListener(this);
+   }
+   
+   ((NetworkResources) aRegistration.NetResources).publish(aRegistration.Expiration);
+   } catch (Exception e) {
+      throw new P2pProxyException(e);
+   }
+   
+}
 
 }

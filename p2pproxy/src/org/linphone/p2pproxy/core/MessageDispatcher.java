@@ -46,7 +46,7 @@ public class MessageDispatcher implements PipeMsgListener {
 			}
 		}
 	}
-	synchronized void addPipeMsgListener(PipeMsgListener aPipeMsgListener) {
+	public synchronized void addPipeMsgListener(PipeMsgListener aPipeMsgListener) {
 		mPipeMsgListenerList.add(aPipeMsgListener);
 	}
 
