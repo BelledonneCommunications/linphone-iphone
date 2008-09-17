@@ -20,14 +20,22 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 package org.linphone.p2pproxy.core.sipproxy.superpeers;
 
 import org.linphone.p2pproxy.api.P2pProxyException;
+import org.linphone.p2pproxy.core.JxtaNetworkManager;
 import org.linphone.p2pproxy.core.sipproxy.RegistrationHandler;
 import org.linphone.p2pproxy.core.sipproxy.SipProxy;
 import org.linphone.p2pproxy.core.sipproxy.SipProxyRegistrar.Registration;
+import org.zoolu.sip.address.SipURL;
 import org.zoolu.sip.message.Message;
 import org.zoolu.sip.provider.SipProvider;
 
 public class SuperPeerProxy implements SipProxy, RegistrationHandler {
-
+   private final JxtaNetworkManager mJxtaNetworkManager;
+   private final String mRegistrarAddress;
+   
+   SuperPeerProxy(JxtaNetworkManager aJxtaNetworkManager, String aRegistrarAddress) {
+      mJxtaNetworkManager = aJxtaNetworkManager;
+      mRegistrarAddress = aRegistrarAddress;
+   }
    public void proxyRequest(SipProvider provider, Message message) throws P2pProxyException {
       // TODO Auto-generated method stub
 
@@ -38,9 +46,13 @@ public class SuperPeerProxy implements SipProxy, RegistrationHandler {
 
    }
 
-   public void updateRegistration(Registration registration, Message registrationMessage) throws P2pProxyException {
-      // TODO Auto-generated method stub
+   public void updateRegistration(Registration aRegistration, Message aRegistrationMessage) throws P2pProxyException {
+      if (aRegistration.NetResources == null) {
+         // new registration, create adv
+         JxtaNetworkResources lRegistration = new JxtaNetworkResources(aRegistration.From, mJxtaNetworkManager,mRegistrarAddress);  
+         aRegistration.NetResources = lRegistration;
+      }
 
+      ((JxtaNetworkResources) aRegistration.NetResources).publish(aRegistration.Expiration);
    }
-
 }

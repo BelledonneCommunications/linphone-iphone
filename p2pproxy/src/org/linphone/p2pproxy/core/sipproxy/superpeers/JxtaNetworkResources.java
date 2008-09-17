@@ -37,7 +37,7 @@ public class JxtaNetworkResources {
    private final P2pUserRegistrationAdvertisement mP2pUserRegistrationAdvertisement;
    private final static long EXPIRATION= 120000;
    
-   JxtaNetworkResources (SipURL aUserName, JxtaNetworkManager aJxtaNetworkManager,SipURL aRegistrarAddress) {
+   JxtaNetworkResources (String aUserName, JxtaNetworkManager aJxtaNetworkManager,String aRegistrarAddress) {
       mJxtaNetworkManager = aJxtaNetworkManager;
       mP2pUserRegistrationAdvertisement = (P2pUserRegistrationAdvertisement) AdvertisementFactory.newAdvertisement(P2pUserProfileAdvertisement.getAdvertisementType());
       mP2pUserRegistrationAdvertisement.setID(IDFactory.newCodatID(mJxtaNetworkManager.getPeerGroup().getPeerGroupID(), aUserName.toString().getBytes()));
