@@ -32,7 +32,7 @@ public class SuperPeerProxy implements SipProxy, RegistrationHandler {
    private final JxtaNetworkManager mJxtaNetworkManager;
    private final String mRegistrarAddress;
    
-   SuperPeerProxy(JxtaNetworkManager aJxtaNetworkManager, String aRegistrarAddress) {
+   public SuperPeerProxy(JxtaNetworkManager aJxtaNetworkManager, String aRegistrarAddress) {
       mJxtaNetworkManager = aJxtaNetworkManager;
       mRegistrarAddress = aRegistrarAddress;
    }

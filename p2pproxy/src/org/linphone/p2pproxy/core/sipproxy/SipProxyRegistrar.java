@@ -50,6 +50,7 @@ import org.linphone.p2pproxy.core.P2pProxyAccountManagementMBean;
 import org.linphone.p2pproxy.core.P2pProxyAdvertisementNotFoundException;
 import org.linphone.p2pproxy.core.media.rtprelay.MediaType;
 import org.linphone.p2pproxy.core.media.rtprelay.SdpProcessorImpl;
+import org.linphone.p2pproxy.core.sipproxy.superpeers.SuperPeerProxy;
 import org.zoolu.sip.address.NameAddress;
 import org.zoolu.sip.address.SipURL;
 import org.zoolu.sip.header.ExpiresHeader;
@@ -67,9 +68,8 @@ import org.zoolu.sip.transaction.TransactionServer;
 public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarMBean {
    private final static Logger mLog = Logger.getLogger(SipProxyRegistrar.class);   
    public final static String REGISTRAR_PORT="org.linphone.p2pproxy.SipListener.registrar.port";
-   public final static String UDP_PORT_BEGING="org.linphone.p2pproxy.udp.port.begin";
-   public final static String UDP_MEDIA_RELAY_PORT_START="org.linphone.p2pproxy.udp-media-relay.port.start";
-
+   public final static String REGISTRAR_PUBLIC_ADDRESS="org.linphone.p2pproxy.SipListener.registrar.public.address";
+   
    //
    private final SipProvider mProvider;
    private final JxtaNetworkManager mJxtaNetworkManager;
@@ -80,6 +80,7 @@ public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarM
 
    private final P2pProxyAccountManagementMBean mP2pProxyAccountManagement;
    private final Configurator mProperties;
+   private final SuperPeerProxy mSuperPeerProxy;
   
    //private long mNumberOfEstablishedCall;
    private long mNumberOfRefusedRegistration;
@@ -178,12 +179,13 @@ public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarM
       mProperties = lProperties;
       File lFile = new File(SipStack.log_path);
       if (lFile.exists() == false) lFile.mkdir();
+      String lViaAddress = lProperties.getProperty(REGISTRAR_PUBLIC_ADDRESS);
       int lPort = Integer.parseInt(lProperties.getProperty(REGISTRAR_PORT, "5060"));
       String[] lProto = {SipProvider.PROTO_UDP};
-      mProvider=new SipProvider(null,lPort,lProto,SipProvider.ALL_INTERFACES);
+      mProvider=new SipProvider(lViaAddress,lPort,lProto,SipProvider.ALL_INTERFACES);
       mProvider.addSipProviderListener(SipProvider.PROMISQUE,this);
       mPool = Executors.newCachedThreadPool();
-     
+      mSuperPeerProxy = new SuperPeerProxy(aJxtaNetworkManager, "sip:"+mProvider.getViaAddress()+":"+mProvider.getPort());
       
    }
    public synchronized void onReceivedMessage(SipProvider aProvider, Message aMessage) {
@@ -272,7 +274,7 @@ public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarM
       lTransactionServer.respondWith(lresp);
       
    }
-   private void updateRegistration(Registration aRegistration, Message aRegistrationMessage) throws IOException {
+   private void updateRegistration(Registration aRegistration, Message aRegistrationMessage) throws P2pProxyException {
       aRegistration.RegistrationDate = System.currentTimeMillis();
       // default registration period
       aRegistration.Expiration = 3600000;
@@ -280,7 +282,7 @@ public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarM
          aRegistration.Expiration =  aRegistrationMessage.getExpiresHeader().getDeltaSeconds()*1000; 
       }
       
-      //TODO handle registration 
+      mSuperPeerProxy.updateRegistration(aRegistration, aRegistrationMessage); 
    }
    
    

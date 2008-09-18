@@ -166,7 +166,7 @@ public class SdpProcessorImpl implements SdpProcessor {
             RtpSessionImpl lRtpSession = null;
             if (((NetworkResources) lRegistration.NetResources).hasRtpSession(lMLineName) == false) {
                // first time, just create
-               int lPortStart = Integer.parseInt(mProperties.getProperty(SipProxyRegistrar.UDP_MEDIA_RELAY_PORT_START, "15000"));
+               int lPortStart = 15000;
                lRtpSession = new RtpSessionImpl (lPortStart,lMLineName);
                ((NetworkResources) lRegistration.NetResources).putRtpSession(lMLineName, lRtpSession);
             } else {

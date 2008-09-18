@@ -29,7 +29,7 @@ import org.apache.log4j.Logger;
 import org.linphone.p2pproxy.api.P2pProxyException;
 import org.linphone.p2pproxy.core.JxtaNetworkManager;
 import org.linphone.p2pproxy.core.P2pUserProfileAdvertisement;
-import org.zoolu.sip.address.SipURL;
+
 
 public class JxtaNetworkResources {
    private final JxtaNetworkManager mJxtaNetworkManager;
@@ -43,6 +43,7 @@ public class JxtaNetworkResources {
       mP2pUserRegistrationAdvertisement.setID(IDFactory.newCodatID(mJxtaNetworkManager.getPeerGroup().getPeerGroupID(), aUserName.toString().getBytes()));
       mP2pUserRegistrationAdvertisement.setUserName(aUserName.toString());
       mP2pUserRegistrationAdvertisement.setRegistrarAddress(aRegistrarAddress.toString());
+      mLog.info("creating network resource for user ["+aUserName+"] on registrar ["+aRegistrarAddress+"]");
    }
    
    void publish(long aLiveTime) throws P2pProxyException {
@@ -57,7 +58,7 @@ public class JxtaNetworkResources {
       } catch (IOException e1) {
          throw new P2pProxyException(e1);
       }
-      mLog.debug("publishing P2pUserRegistration Advertisement published expire ["+aLiveTime+"]");
+      mLog.debug("publishing P2pUserRegistration Advertisement ["+mP2pUserRegistrationAdvertisement+"]published expire ["+aLiveTime+"]");
    }   
    
 }
