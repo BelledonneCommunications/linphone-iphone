@@ -1,0 +1,62 @@
+		Linphone win32 build HOW-TO
+		***************************
+
+Linphone for windows requires the wxDev-C++ IDE (integrated with mingw32 compiler) from
+http://wxdsgn.sourceforge.net/
+However wxWidget is not used or required here.
+Inno setup compiler is required to make the binary package:
+http://www.innosetup.com/
+
+Follows the list of linphone's dependencies:
+For engine (ie liblinphone):
+1/ libspeex>=1.1.11
+2/ libtheora
+3/ libogg
+4/ libavcodec and libavutil (ffmpeg)
+5/ libosip2>=3.1.0
+6/ libeXosip2>=3.1.0
+7/ libgsm
+For the gtk+/glade graphical interface:
+8/ gtk+ and all its mandatory dependencies
+9/ iconv
+10/ libxml2
+11/ libglade>=2.4.0
+
+All dependencies must be built with mingw32, gcc>=4.2.0 being required for ffmpeg to get it properly working.
+How to get them built is unspecified here.
+First build 1-9 items and install them into a linphone-deps directory as follows:
+linphone-deps/bin: all dlls
+linphone-deps/lib: all lib*.a (interface libraries)
+linphone-deps/include: all header files
+This linphone-deps directory should be placed next to the linphone base directory (in the same parent directory).
+As getting 1-9 dependencies built can be very long and complex (such as for ffmpeg), I provide a linphone-deps bundle so 
+that you have nothing to do, here:
+http://download.savannah.gnu.org/releases/linphone/misc/
+
+The simpler to get binaries and header files for 8-11 dependencies is to trust people who are making
+binary packages for them :
+You can download:
+- gtk+>=2.12.2 all-in-one bundle 
+	from http://www.gtk.org/download-windows.html
+	or directly http://ftp.gnome.org/pub/gnome/binaries/win32/gtk+/2.14/gtk+-bundle_2.14.2-20080919_win32.zip
+- iconv from http://xmlsoft.org/sources/win32/
+- libxml2 from http://xmlsoft.org/sources/win32/
+- libglade bin and dev package from http://gladewin32.sourceforge.net
+	or directly http://sourceforge.net/project/showfiles.php?group_id=98754&package_id=107065 
+Unzip gtk+ bundle, iconv and libxml2 into the c:\Dev-Cpp directory.
+Inside the gtk+ bundle, unzip libglade bin and dev zips.
+
+Once you have all this, you are ready to build linphone.
+With wxDev-C++, open the following .dev files included in linphone's source tree,
+and for each of them click on the "rebuild all" wxDev-C++ menu item:
+oRTP/build/win32native/ortp-dll.dev
+mediastreamer2/build/win32native/mediastreamer2.dev
+win32/liblinphone.dev
+gtk-glade/linphone.dev
+
+Now you just need to make a binary package with Inno Setup Compiler.
+With this tool, open 
+gtk-glade/linphone.iss
+and click "compile" to generate the setup.exe
+
+
