@@ -75,7 +75,6 @@ int lc_callback_obj_invoke(LCCallbackObj *obj, LinphoneCore *lc){
 }
 
 static void  linphone_call_init_common(LinphoneCall *call, char *from, char *to){
-	sdp_context_set_user_pointer(call->sdpctx,(void*)call);
 	call->state=LCStateInit;
 	call->start_time=time(NULL);
 	call->log=linphone_call_log_new(call, from, to);
@@ -119,6 +118,7 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, const osip_f
 	call->sdpctx=sdp_handler_create_context(&linphone_sdphandler,
 		call->audio_params.natd_port>0 ? call->audio_params.natd_addr : localip,
 		from->url->username,NULL);
+	sdp_context_set_user_pointer(call->sdpctx,(void*)call);
 	discover_mtu(lc,to->url->host);
 	return call;
 }
@@ -142,6 +142,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, const char *from, co
 	call->sdpctx=sdp_handler_create_context(&linphone_sdphandler,
 		call->audio_params.natd_port>0 ? call->audio_params.natd_addr : localip,
 		me->url->username,NULL);
+	sdp_context_set_user_pointer(call->sdpctx,(void*)call);
 	discover_mtu(lc,from_url->url->host);
 	osip_from_free(me);
 	osip_from_free(from_url);
@@ -2142,6 +2143,7 @@ void sound_config_uninit(LinphoneCore *lc)
 	lp_config_set_string(lc->config,"sound","local_ring",config->local_ring);
 	lp_config_set_string(lc->config,"sound","remote_ring",config->remote_ring);
 	lp_config_set_int(lc->config,"sound","echocancelation",config->ec);
+	if (config->local_ring) ms_free(config->local_ring);
 }
 
 void video_config_uninit(LinphoneCore *lc)

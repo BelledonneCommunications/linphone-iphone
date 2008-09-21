@@ -55,7 +55,7 @@ static void linphone_connect_incoming(LinphoneCore *lc){
 int linphone_call_accepted(LinphoneCore *lc, eXosip_event_t *ev)
 {
 	LinphoneCall *call=lc->call;
-	sdp_message_t *sdp=eXosip_get_sdp_info(ev->response);
+	sdp_message_t *sdp;
 	const char *sdpanswer=NULL;
 	osip_message_t *msg=NULL;
 	int err;
@@ -69,6 +69,7 @@ int linphone_call_accepted(LinphoneCore *lc, eXosip_event_t *ev)
 		return 0; /*already accepted*/
 	}
 	linphone_call_init_media_params(call);
+	sdp=eXosip_get_sdp_info(ev->response);
 	if (!lc->sip_conf.sdp_200_ack){
 		err=0;
 		sdp_context_read_answer(call->sdpctx,sdp);
@@ -90,6 +91,7 @@ int linphone_call_accepted(LinphoneCore *lc, eXosip_event_t *ev)
 		ms_error("Incompatible SDP offer received in 200Ok, need to abort the call");
 		linphone_core_terminate_call(lc,NULL);
 	}
+	sdp_message_free(sdp);
 	return 0;
 }
 
@@ -247,7 +249,7 @@ static int linphone_answer_sdp(LinphoneCore *lc, eXosip_event_t *ev, sdp_message
 
 int linphone_inc_new_call(LinphoneCore *lc, eXosip_event_t *ev)
 {
-	sdp_message_t *sdp=eXosip_get_sdp_info(ev->request);
+	sdp_message_t *sdp=NULL;
 	osip_from_t *from_url=ev->request->from;
 	char *barmesg;
 	char *from;
@@ -297,6 +299,7 @@ int linphone_inc_new_call(LinphoneCore *lc, eXosip_event_t *ev)
 		goto end;
 	}
 	lc->call=linphone_call_new_incoming(lc,from,to,ev->cid,ev->did,ev->tid);
+	sdp=eXosip_get_sdp_info(ev->request);
 	if (sdp==NULL){
 		ms_message("No sdp body in invite, 200-ack scheme");
 		err=0;
@@ -336,6 +339,7 @@ int linphone_inc_new_call(LinphoneCore *lc, eXosip_event_t *ev)
 	end:
 	osip_free(from);
 	osip_free(to);
+	if (sdp) sdp_message_free(sdp);
 	return 0;
 }
 
@@ -344,6 +348,7 @@ void linphone_handle_ack(LinphoneCore *lc, eXosip_event_t *ev){
 	if (sdp){
 		sdp_context_read_answer(lc->call->sdpctx,sdp);
 		linphone_connect_incoming(lc);
+		sdp_message_free(sdp);
 	}
 }
 
@@ -374,6 +379,7 @@ void linphone_handle_reinvite(LinphoneCore *lc, eXosip_event_t *ev){
 			ms_warning("Reinvite for closed call ?");
                         eXosip_unlock();
                         linphone_core_stop_media_streams(lc);
+			sdp_message_free(sdp);
 			return ;
 		}
 		answer=call->sdpctx->answerstr;	/* takes the sdp already computed*/
@@ -386,6 +392,7 @@ void linphone_handle_reinvite(LinphoneCore *lc, eXosip_event_t *ev){
 		eXosip_call_send_answer(ev->tid,status,NULL);
 		eXosip_unlock();
 	}
+	sdp_message_free(sdp);
 }
 
 void linphone_do_automatic_redirect(LinphoneCore *lc, const char *contact){
