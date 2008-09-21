@@ -10,8 +10,8 @@ AppSupportURL=http://www.linphone.org
 AppUpdatesURL=http://www.linphone.org
 DefaultDirName={pf}\Linphone
 DefaultGroupName=Linphone
-LicenseFile=C:\Documents and Settings\simorl.EMEA\cvs\linphone\COPYING
-InfoBeforeFile=C:\Documents and Settings\simorl.EMEA\cvs\linphone\README
+LicenseFile=..\COPYING
+InfoBeforeFile=..\README
 OutputBaseFilename=setup
 Compression=lzma
 SolidCompression=yes
@@ -23,11 +23,33 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "C:\Documents and Settings\simorl.EMEA\cvs\linphone\gtk-glade\linphone.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Documents and Settings\simorl.EMEA\cvs\linphone\mediastreamer2\build\win32native\mediastream.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Documents and Settings\simorl.EMEA\cvs\linphone\gtk-glade\*.glade"; DestDir: "{app}/linphone"; Flags: ignoreversion
-Source: "C:\Documents and Settings\simorl.EMEA\cvs\linphone\pixmaps\*.png"; DestDir: "{app}/linphone"; Flags: ignoreversion
-Source: "C:\Documents and Settings\simorl.EMEA\cvs\linphone\pixmaps\*.png"; DestDir: "{app}/pixmaps"; Flags: ignoreversion
+Source: "linphone.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\mediastreamer2\build\win32native\mediastream.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "*.glade"; DestDir: "{app}/linphone"; Flags: ignoreversion
+Source: "..\pixmaps\*.png"; DestDir: "{app}/linphone"; Flags: ignoreversion
+Source: "*.png"; DestDir: "{app}/linphone"; Flags: ignoreversion
+Source: "..\mediastreamer2\src\nowebcamCIF.jpg"; DestDir: "{app}\images"; Flags: ignoreversion
+;;internal linphone dlls:
+Source: "..\..\linphone-deps\bin\osipparser2.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\linphone-deps\bin\osip2.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\linphone-deps\bin\exosip2.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\linphone-deps\bin\libogg.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\linphone-deps\bin\speex.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\linphone-deps\bin\avcodec.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\linphone-deps\bin\avutil.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\mediastreamer2\build\win32native\mediastreamer2.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\oRTP\build\win32native\ortp.dll"; DestDir: "{app}"; Flags: ignoreversion
+;;Sound files:
+Source: "..\COPYING"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\share\ringback.wav"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\share\rings\orig.wav"; DestDir: "{app}\rings"; Flags: ignoreversion
+Source: "..\share\rings\bigben.wav"; DestDir: "{app}\rings"; Flags: ignoreversion
+Source: "..\share\rings\toy.wav"; DestDir: "{app}\rings"; Flags: ignoreversion
+Source: "..\share\rings\tapping.wav"; DestDir: "{app}\rings"; Flags: ignoreversion
+Source: "..\share\rings\oldphone.wav"; DestDir: "{app}\rings"; Flags: ignoreversion
+
+
+;;GTK stuff:
 Source: "C:\Dev-Cpp\gtk+2.12\bin\*.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Dev-Cpp\gtk+2.12\etc\gtk-2.0\*"; DestDir: "{app}\etc\gtk-2.0\"; Flags: ignoreversion
 Source: "C:\Dev-Cpp\libxml2-2.6.32+.win32\bin\*.dll"; DestDir: "{app}"; Flags: ignoreversion
@@ -35,28 +57,6 @@ Source: "C:\Dev-Cpp\iconv-1.9.2.win32\bin\*.dll"; DestDir: "{app}"; Flags: ignor
 Source: "C:\Dev-Cpp\gtk+2.12\lib\gtk-2.0\2.10.0\engines\*"; DestDir: "{app}\lib\gtk-2.0\2.10.0\engines"; Flags: ignoreversion
 Source: "C:\Dev-Cpp\gtk+2.12\lib\gtk-2.0\2.10.0\loaders\*"; DestDir: "{app}\lib\gtk-2.0\2.10.0\loaders"; Flags: ignoreversion
 Source: "C:\Dev-Cpp\gtk+2.12\lib\gtk-2.0\2.10.0\immodules\*"; DestDir: "{app}\lib\gtk-2.0\2.10.0\immodules"; Flags: ignoreversion
-; all icons:
-;Source: "C:\Documents and Settings\simorl.EMEA\cvs\linphone\win32\linphonec.exe"; DestDir: "{app}"; Flags: ignoreversion
-;Source: "C:\Documents and Settings\simorl.EMEA\cvs\linphone\win32\linphonec-remote.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Documents and Settings\simorl.EMEA\cvs\linphone\mediastreamer2\src\nowebcamCIF.jpg"; DestDir: "{app}\images"; Flags: ignoreversion
-
-Source: "C:\Documents and Settings\simorl.EMEA\cvs\linphone\COPYING"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Documents and Settings\simorl.EMEA\cvs\linphone\share\ringback.wav"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Documents and Settings\simorl.EMEA\cvs\linphone\share\rings\orig.wav"; DestDir: "{app}\rings"; Flags: ignoreversion
-Source: "C:\Documents and Settings\simorl.EMEA\cvs\linphone\share\rings\bigben.wav"; DestDir: "{app}\rings"; Flags: ignoreversion
-Source: "C:\Documents and Settings\simorl.EMEA\cvs\linphone\share\rings\toy.wav"; DestDir: "{app}\rings"; Flags: ignoreversion
-Source: "C:\Documents and Settings\simorl.EMEA\cvs\linphone\share\rings\tapping.wav"; DestDir: "{app}\rings"; Flags: ignoreversion
-Source: "C:\Documents and Settings\simorl.EMEA\cvs\linphone\share\rings\oldphone.wav"; DestDir: "{app}\rings"; Flags: ignoreversion
-
-Source: "C:\Documents and Settings\simorl.EMEA\cvs\linphone-deps\bin\osipparser2.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Documents and Settings\simorl.EMEA\cvs\linphone-deps\bin\osip2.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Documents and Settings\simorl.EMEA\cvs\linphone-deps\bin\exosip2.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Documents and Settings\simorl.EMEA\cvs\linphone-deps\bin\libogg.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Documents and Settings\simorl.EMEA\cvs\linphone-deps\bin\speex.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Documents and Settings\simorl.EMEA\cvs\linphone-deps\bin\avcodec.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Documents and Settings\simorl.EMEA\cvs\linphone-deps\bin\avutil.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Documents and Settings\simorl.EMEA\cvs\linphone\mediastreamer2\build\win32native\mediastreamer2.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Documents and Settings\simorl.EMEA\cvs\linphone\oRTP\build\win32native\ortp.dll"; DestDir: "{app}"; Flags: ignoreversion
 
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 

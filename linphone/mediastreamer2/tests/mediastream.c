@@ -45,10 +45,10 @@ static void stop_handler(int signum)
 
 static bool_t parse_addr(const char *addr, char *ip, int len, int *port)
 {
-	char *semicolon=NULL;
+	const char *semicolon=NULL;
 	int iplen;
 	int slen;
-	char *p;
+	const char *p;
 
 	*port=0;
 	semicolon=strchr(addr,':');
