@@ -50,13 +50,13 @@ Source: "..\share\rings\oldphone.wav"; DestDir: "{app}\rings"; Flags: ignorevers
 
 
 ;;GTK stuff:
-Source: "C:\Dev-Cpp\gtk+2.12\bin\*.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Dev-Cpp\gtk+2.12\etc\gtk-2.0\*"; DestDir: "{app}\etc\gtk-2.0\"; Flags: ignoreversion
-Source: "C:\Dev-Cpp\libxml2-2.6.32+.win32\bin\*.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Dev-Cpp\iconv-1.9.2.win32\bin\*.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Dev-Cpp\gtk+2.12\lib\gtk-2.0\2.10.0\engines\*"; DestDir: "{app}\lib\gtk-2.0\2.10.0\engines"; Flags: ignoreversion
-Source: "C:\Dev-Cpp\gtk+2.12\lib\gtk-2.0\2.10.0\loaders\*"; DestDir: "{app}\lib\gtk-2.0\2.10.0\loaders"; Flags: ignoreversion
-Source: "C:\Dev-Cpp\gtk+2.12\lib\gtk-2.0\2.10.0\immodules\*"; DestDir: "{app}\lib\gtk-2.0\2.10.0\immodules"; Flags: ignoreversion
+Source: "..\..\gtk+2.12\bin\*.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\gtk+2.12\etc\gtk-2.0\*"; DestDir: "{app}\etc\gtk-2.0\"; Flags: ignoreversion
+Source: "..\..\libxml2-2.6.32+.win32\bin\*.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\iconv-1.9.2.win32\bin\*.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\gtk+2.12\lib\gtk-2.0\2.10.0\engines\*"; DestDir: "{app}\lib\gtk-2.0\2.10.0\engines"; Flags: ignoreversion
+Source: "..\..\gtk+2.12\lib\gtk-2.0\2.10.0\loaders\*"; DestDir: "{app}\lib\gtk-2.0\2.10.0\loaders"; Flags: ignoreversion
+Source: "..\..\gtk+2.12\lib\gtk-2.0\2.10.0\immodules\*"; DestDir: "{app}\lib\gtk-2.0\2.10.0\immodules"; Flags: ignoreversion
 
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
