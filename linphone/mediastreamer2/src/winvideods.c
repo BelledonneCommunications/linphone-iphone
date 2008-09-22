@@ -37,8 +37,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <initguid.h>
 #include "dxfilter.h"
 #include <qedit.h>
-#include <atlbase.h>
-#include <atlcom.h>
+//#include <atlbase.h>
+//#include <atlcom.h>
 
 HRESULT AddGraphToRot(IUnknown *pUnkGraph, DWORD *pdwRegister);
 void RemoveGraphFromRot(DWORD pdwRegister);
@@ -48,13 +48,19 @@ typedef struct V4wState{
 	char dev[512];
 	int devidx;
 
-	CComPtr<IGraphBuilder> m_pGraph;
-	CComPtr<ICaptureGraphBuilder2> m_pBuilder;
-	CComPtr<IMediaControl> m_pControl;
+	//CComPtr<IGraphBuilder> m_pGraph;
+	//CComPtr<ICaptureGraphBuilder2> m_pBuilder;
+	//CComPtr<IMediaControl> m_pControl;
+	IGraphBuilder *m_pGraph;
+	ICaptureGraphBuilder2 *m_pBuilder;
+	IMediaControl *m_pControl;
 	CDXFilter *m_pDXFilter;
-	CComPtr<IBaseFilter> m_pIDXFilter;	
-	CComPtr<IBaseFilter> m_pNullRenderer;
-	CComPtr<IBaseFilter> m_pDeviceFilter;
+	//CComPtr<IBaseFilter> m_pIDXFilter;	
+	//CComPtr<IBaseFilter> m_pNullRenderer;
+	//CComPtr<IBaseFilter> m_pDeviceFilter;
+	IBaseFilter *m_pIDXFilter;	
+	IBaseFilter *m_pNullRenderer;
+	IBaseFilter *m_pDeviceFilter;
 	DWORD rotregvalue;
 
 	MSVideoSize vsize;
@@ -385,14 +391,24 @@ static int v4w_open_videodevice(V4wState *s)
 	CoInitialize(NULL);
 
 	// get a Graph
-	HRESULT hr=s->m_pGraph.CoCreateInstance(CLSID_FilterGraph);
+	//HRESULT hr=s->m_pGraph.CoCreateInstance(CLSID_FilterGraph);
+	HRESULT hr= CoCreateInstance (CLSID_FilterGraph,
+                          NULL,
+                          CLSCTX_INPROC_SERVER,
+                          IID_IGraphBuilder, //IID_IBaseFilter,
+                          (void **)&s->m_pGraph);
 	if(FAILED(hr))
 	{
 		return -1;
 	}
 
 	// get a CaptureGraphBuilder2
-	hr=s->m_pBuilder.CoCreateInstance(CLSID_CaptureGraphBuilder2);
+	//hr=s->m_pBuilder.CoCreateInstance(CLSID_CaptureGraphBuilder2);
+	hr= CoCreateInstance (CLSID_CaptureGraphBuilder2,
+                          NULL,
+                          CLSCTX_INPROC_SERVER,
+                          IID_ICaptureGraphBuilder2, //IID_IBaseFilter,
+                          (void **)&s->m_pBuilder);
 	if(FAILED(hr))
 	{
 		return -2;
@@ -402,7 +418,8 @@ static int v4w_open_videodevice(V4wState *s)
 	s->m_pBuilder->SetFiltergraph(s->m_pGraph);
 
 	// get mediacontrol so we can start and stop the filter graph
-	hr=s->m_pGraph.QueryInterface(&(s->m_pControl));
+	//hr=s->m_pGraph.QueryInterface(&(s->m_pControl));
+	hr=s->m_pGraph->QueryInterface (IID_IMediaControl, (void **)&s->m_pControl);
 	if(FAILED(hr))
 	{
 		return -3;
@@ -610,7 +627,12 @@ static int v4w_open_videodevice(V4wState *s)
 
 
 	// get null renderer
-	hr=s->m_pNullRenderer.CoCreateInstance(CLSID_NullRenderer);
+	//hr=s->m_pNullRenderer.CoCreateInstance(CLSID_NullRenderer);
+	hr=CoCreateInstance (CLSID_NullRenderer,
+                          NULL,
+                          CLSCTX_INPROC_SERVER,
+                          IID_IBaseFilter,
+                          (void **)&s->m_pNullRenderer);
 	if(FAILED(hr))
 	{
 		return -16;
@@ -747,22 +769,42 @@ static int _v4w_start(V4wState *s, void *arg)
 	i = v4w_open_videodevice(s);
 
 	if (s->rotregvalue==0){
-		//RemoveGraphFromRot(s->rotregvalue);		
-		if (s->m_pNullRenderer!=NULL)
-			s->m_pGraph->RemoveFilter(s->m_pNullRenderer);
-		if (s->m_pIDXFilter!=NULL)
-			s->m_pGraph->RemoveFilter(s->m_pIDXFilter);
-		if (s->m_pDeviceFilter!=NULL)
-			s->m_pGraph->RemoveFilter(s->m_pDeviceFilter);
-		s->m_pBuilder=NULL;
-		s->m_pControl=NULL;
-		s->m_pIDXFilter=NULL;
+		//RemoveGraphFromRot(s->rotregvalue);
+		if (s->m_pGraph!=NULL)
+		{
+			if (s->m_pNullRenderer!=NULL)
+				s->m_pGraph->RemoveFilter(s->m_pNullRenderer);
+			if (s->m_pIDXFilter!=NULL)
+				s->m_pGraph->RemoveFilter(s->m_pIDXFilter);
+			if (s->m_pDeviceFilter!=NULL)
+				s->m_pGraph->RemoveFilter(s->m_pDeviceFilter);
+		}
+
+		if (s->m_pNullRenderer)
+			s->m_pNullRenderer->Release();
+		if (s->m_pIDXFilter)
+			s->m_pIDXFilter->Release();
+		if (s->m_pDeviceFilter)
+			s->m_pDeviceFilter->Release();
+
+		if (s->m_pBuilder)
+			s->m_pBuilder->Release();
+		if (s->m_pControl)
+			s->m_pControl->Release();
+		if (s->m_pGraph)
+			s->m_pGraph->Release();
+
 		if (s->m_pDXFilter!=NULL)
 			s->m_pDXFilter->Release();
-		s->m_pDXFilter=NULL;
-		s->m_pGraph=NULL;
+
 		s->m_pNullRenderer=NULL;
+		s->m_pIDXFilter=NULL;
 		s->m_pDeviceFilter=NULL;
+		s->m_pBuilder=NULL;
+		s->m_pControl=NULL;
+		s->m_pGraph=NULL;
+		s->m_pDXFilter=NULL;
+
 		CoUninitialize();
 		s_callback = NULL;
 		flushq(&s->rq,0);
@@ -781,22 +823,42 @@ static int _v4w_stop(V4wState *s, void *arg){
 		{
 			ms_message("v4w: could not stop graph");
 		}
-		if (s->m_pNullRenderer!=NULL)
-			s->m_pGraph->RemoveFilter(s->m_pNullRenderer);
-		if (s->m_pIDXFilter!=NULL)
-			s->m_pGraph->RemoveFilter(s->m_pIDXFilter);
-		if (s->m_pDeviceFilter!=NULL)
-			s->m_pGraph->RemoveFilter(s->m_pDeviceFilter);
-		//RemoveGraphFromRot(s->rotregvalue);
-		s->m_pBuilder=NULL;
-		s->m_pControl=NULL;
-		s->m_pIDXFilter=NULL;
+
+		if (s->m_pGraph!=NULL)
+		{
+			if (s->m_pNullRenderer!=NULL)
+				s->m_pGraph->RemoveFilter(s->m_pNullRenderer);
+			if (s->m_pIDXFilter!=NULL)
+				s->m_pGraph->RemoveFilter(s->m_pIDXFilter);
+			if (s->m_pDeviceFilter!=NULL)
+				s->m_pGraph->RemoveFilter(s->m_pDeviceFilter);
+		}
+
+		if (s->m_pNullRenderer)
+			s->m_pNullRenderer->Release();
+		if (s->m_pIDXFilter)
+			s->m_pIDXFilter->Release();
+		if (s->m_pDeviceFilter)
+			s->m_pDeviceFilter->Release();
+
+		if (s->m_pBuilder)
+			s->m_pBuilder->Release();
+		if (s->m_pControl)
+			s->m_pControl->Release();
+		if (s->m_pGraph)
+			s->m_pGraph->Release();
+
 		if (s->m_pDXFilter!=NULL)
 			s->m_pDXFilter->Release();
-		s->m_pDXFilter=NULL;
-		s->m_pGraph=NULL;
+
 		s->m_pNullRenderer=NULL;
+		s->m_pIDXFilter=NULL;
 		s->m_pDeviceFilter=NULL;
+		s->m_pBuilder=NULL;
+		s->m_pControl=NULL;
+		s->m_pGraph=NULL;
+		s->m_pDXFilter=NULL;
+
 		CoUninitialize();
 		s_callback = NULL;
 		flushq(&s->rq,0);
@@ -837,22 +899,42 @@ static void v4w_uninit(MSFilter *f){
 		{
 			ms_message("v4w: could not stop graph");
 		}
-		if (s->m_pNullRenderer!=NULL)
-			s->m_pGraph->RemoveFilter(s->m_pNullRenderer);
-		if (s->m_pIDXFilter!=NULL)
-			s->m_pGraph->RemoveFilter(s->m_pIDXFilter);
-		if (s->m_pDeviceFilter!=NULL)
-			s->m_pGraph->RemoveFilter(s->m_pDeviceFilter);
-		//RemoveGraphFromRot(s->rotregvalue);
-		s->m_pBuilder=NULL;
-		s->m_pControl=NULL;
-		s->m_pIDXFilter=NULL;
+
+		if (s->m_pGraph!=NULL)
+		{
+			if (s->m_pNullRenderer!=NULL)
+				s->m_pGraph->RemoveFilter(s->m_pNullRenderer);
+			if (s->m_pIDXFilter!=NULL)
+				s->m_pGraph->RemoveFilter(s->m_pIDXFilter);
+			if (s->m_pDeviceFilter!=NULL)
+				s->m_pGraph->RemoveFilter(s->m_pDeviceFilter);
+		}
+
+		if (s->m_pNullRenderer)
+			s->m_pNullRenderer->Release();
+		if (s->m_pIDXFilter)
+			s->m_pIDXFilter->Release();
+		if (s->m_pDeviceFilter)
+			s->m_pDeviceFilter->Release();
+
+		if (s->m_pBuilder)
+			s->m_pBuilder->Release();
+		if (s->m_pControl)
+			s->m_pControl->Release();
+		if (s->m_pGraph)
+			s->m_pGraph->Release();
+
 		if (s->m_pDXFilter!=NULL)
 			s->m_pDXFilter->Release();
-		s->m_pDXFilter=NULL;
-		s->m_pGraph=NULL;
+
 		s->m_pNullRenderer=NULL;
+		s->m_pIDXFilter=NULL;
 		s->m_pDeviceFilter=NULL;
+		s->m_pBuilder=NULL;
+		s->m_pControl=NULL;
+		s->m_pGraph=NULL;
+		s->m_pDXFilter=NULL;
+
 		CoUninitialize();
 		s_callback = NULL;
 		flushq(&s->rq,0);
