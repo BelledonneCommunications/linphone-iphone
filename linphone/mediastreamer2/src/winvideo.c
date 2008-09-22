@@ -91,6 +91,10 @@ static bool_t try_format(V4wState *s, BITMAPINFO *videoformat, MSPixFmt pixfmt){
 			videoformat->bmiHeader.biBitCount = 12;
 			videoformat->bmiHeader.biCompression=MAKEFOURCC('I','4','2','0');
 		break;
+		case MS_YUY2:
+			videoformat->bmiHeader.biBitCount = 16;
+			videoformat->bmiHeader.biCompression=MAKEFOURCC('Y','U','Y','2');
+		break;
 		case MS_RGB24:
 			videoformat->bmiHeader.biBitCount = 24;
 			videoformat->bmiHeader.biCompression=BI_RGB;
@@ -189,6 +193,9 @@ static int v4w_open_videodevice(V4wState *s)
 		s->pix_fmt=MS_RGB24;
 		ms_message("Using RGB24");
 		s->startwith_yuv_bug=TRUE;
+	}else if (try_format(s,&videoformat,MS_YUY2)){
+		s->pix_fmt=MS_YUY2;
+		ms_message("Using YUY2");
 	}else{
 		ms_error("v4w: Failed to set any video format.");
 		capDriverDisconnect (s->capvideo);

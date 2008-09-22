@@ -43,7 +43,7 @@ int ms_pix_fmt_to_ffmpeg(MSPixFmt fmt){
 		case MS_UYVY:
 			return PIX_FMT_UYVY422;
 		case MS_YUY2:
-			return PIX_FMT_YUYV422;   /* <- same as MS_UYVY */
+			return PIX_FMT_YUYV422;   /* <- same as MS_YUYV */
 		default:
 			ms_fatal("format not supported.");
 			return -1;

@@ -562,8 +562,9 @@ static GtkWidget *create_icon_menu(){
 	return menu;
 }
 
+static GtkStatusIcon *icon=NULL;
+
 static void linphone_gtk_init_status_icon(){
-	GtkStatusIcon *icon;
 	GdkPixbuf *pbuf=create_pixbuf("linphone2.png");
 	GtkWidget *menu=create_icon_menu();
 	icon=gtk_status_icon_new_from_pixbuf(pbuf);
@@ -719,6 +720,8 @@ int main(int argc, char *argv[]){
 	gdk_threads_leave();
 	linphone_gtk_destroy_log_window();
 	linphone_core_destroy(the_core);
+	/*workaround a bug on win32 that makes status icon still present in the systray even after program exit.*/
+	gtk_status_icon_set_visible(icon,FALSE);
 	return 0;
 }
 
