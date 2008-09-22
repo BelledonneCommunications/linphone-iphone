@@ -178,3 +178,6 @@ EXPORTS
 	b64_decode
 	b64_encode
 	
+	payload_type_set_recv_fmtp
+	rtp_session_get_local_port
+	
