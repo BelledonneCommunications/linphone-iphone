@@ -263,7 +263,7 @@ AC_ARG_ENABLE(macaqsnd,
         *) AC_MSG_ERROR(bad value ${enableval} for --enable-macaqsnd) ;;
       esac],[macaqsnd=false])
 
-if test "$macsnd" = "true"; then
+if test "$macaqsnd" = "true"; then
 	AC_DEFINE(__MAC_AQ_ENABLED__,1,[defined if native macosx AQ sound support is available])
 	macaqsnd_enabled=true
 	found_sound=yes
