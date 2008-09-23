@@ -86,6 +86,10 @@ LRESULT CALLBACK VideoStreamCallback(HWND hWnd, LPVIDEOHDR lpVHdr)
 }
 
 static bool_t try_format(V4wState *s, BITMAPINFO *videoformat, MSPixFmt pixfmt){
+	capGetVideoFormat(s->capvideo, videoformat, sizeof(BITMAPINFO));
+	videoformat->bmiHeader.biSizeImage = 0;
+	videoformat->bmiHeader.biWidth  = s->vsize.width;
+	videoformat->bmiHeader.biHeight = s->vsize.height;
 	switch(pixfmt){
 		case MS_YUV420P:
 			videoformat->bmiHeader.biBitCount = 12;
@@ -173,10 +177,6 @@ static int v4w_open_videodevice(V4wState *s)
 	}
 	capSetUserData(s->capvideo, s);
 	capGetVideoFormat(s->capvideo, &videoformat, sizeof(BITMAPINFO));
-
-	videoformat.bmiHeader.biSizeImage = 0;
-	videoformat.bmiHeader.biWidth  = s->vsize.width;
-	videoformat.bmiHeader.biHeight = s->vsize.height;
 	/* "orig planes = " disp->videoformat.bmiHeader.biPlanes */
 	/* "orig bitcount = " disp->videoformat.bmiHeader.biBitCount */
 	/* "orig compression = " disp->videoformat.bmiHeader.biCompression */
@@ -506,7 +506,6 @@ static void v4w_process(MSFilter * obj){
 			timestamp=obj->ticker->time*90;/* rtp uses a 90000 Hz clockrate for video*/
 			mblk_set_timestamp_info(om,timestamp);
 			ms_queue_put(obj->outputs[0],om);
-			/*ms_message("picture sent");*/
 		}
 		s->frame_count++;
 	}
