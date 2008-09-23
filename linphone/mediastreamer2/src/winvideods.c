@@ -1043,6 +1043,13 @@ static int v4w_set_fps(MSFilter *f, void *arg){
 	return 0;
 }
 
+
+static int v4w_set_pix_fmt(MSFilter *f,void *arg){
+	V4wState *s=(V4wState*)f->data;
+  s->pix_fmt=*((MSPixFmt*)arg);
+	return 0;
+}
+
 static int v4w_get_pix_fmt(MSFilter *f,void *arg){
 	V4wState *s=(V4wState*)f->data;
 	*((MSPixFmt*)arg) = (MSPixFmt)s->pix_fmt;
@@ -1092,6 +1099,7 @@ static int v4w_set_image(MSFilter *f, void *arg){
 
 static MSFilterMethod methods[]={
 	{	MS_FILTER_SET_FPS	,	v4w_set_fps	},
+	{	MS_FILTER_SET_PIX_FMT	,	v4w_set_pix_fmt	},
 	{	MS_FILTER_GET_PIX_FMT	,	v4w_get_pix_fmt	},
 	{	MS_FILTER_SET_VIDEO_SIZE, v4w_set_vsize	},
 	{	MS_FILTER_GET_VIDEO_SIZE, v4w_get_vsize	},
