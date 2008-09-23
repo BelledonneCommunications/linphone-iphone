@@ -412,6 +412,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\include\mediastreamer2\msv4l.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\include\mediastreamer2\msvideo.h"
 				>
 			</File>
