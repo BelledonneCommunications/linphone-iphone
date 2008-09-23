@@ -926,6 +926,10 @@ static void v4l_preprocess(MSFilter *f){
 		v4l_start(f,NULL);
 		v4l_start_capture(s);
 	}
+	else
+	{
+		v4l_start_capture(s);
+	}
 }
 
 static void v4l_postprocess(MSFilter *f){
@@ -933,6 +937,10 @@ static void v4l_postprocess(MSFilter *f){
 	if (s->auto_started){
 		v4l_stop_capture(s);
 		v4l_stop(f,NULL);
+	}
+	else
+	{
+		v4l_stop_capture(s);
 	}
 }
 
