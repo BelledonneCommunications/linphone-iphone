@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone 0.7.1\n"
 "Report-Msgid-Bugs-To: linphone-developers@nongnu.org\n"
-"POT-Creation-Date: 2008-08-26 14:26+0200\n"
+"POT-Creation-Date: 2008-09-23 12:23+0200\n"
 "PO-Revision-Date: 2003-05-23 17:51-0400\n"
 "Last-Translator: Jean-Jacques Sarton <jj.sarton@t-online.de>, Ursula Herles-"
 "Hartz <UAHartz@t-online.de>\n"
@@ -730,24 +730,24 @@ msgstr ""
 msgid "Contact list"
 msgstr "Kontaktliste"
 
-#: coreapi/linphonecore.c:186
+#: coreapi/linphonecore.c:192
 #, c-format
 msgid "You have missed %i call(s)."
 msgstr "Sie haben %i Anruf(e) in Abwesenheit."
 
-#: coreapi/linphonecore.c:212
+#: coreapi/linphonecore.c:218
 msgid "aborted"
 msgstr "abgebrochen"
 
-#: coreapi/linphonecore.c:215
+#: coreapi/linphonecore.c:221
 msgid "completed"
 msgstr "beendet"
 
-#: coreapi/linphonecore.c:218
+#: coreapi/linphonecore.c:224
 msgid "missed"
 msgstr "verpasst"
 
-#: coreapi/linphonecore.c:223
+#: coreapi/linphonecore.c:229
 #, c-format
 msgid ""
 "%s at %s\n"
@@ -761,15 +761,15 @@ msgstr ""
 "Status: %s\n"
 "Dauer: %i mn %i sec\n"
 
-#: coreapi/linphonecore.c:224
+#: coreapi/linphonecore.c:230
 msgid "Incoming call"
 msgstr "Eingehendes Gesprï¿½h"
 
-#: coreapi/linphonecore.c:224
+#: coreapi/linphonecore.c:230
 msgid "Outgoing call"
 msgstr "Abgehendes Gespräch"
 
-#: coreapi/linphonecore.c:410
+#: coreapi/linphonecore.c:416
 msgid ""
 "Your machine appears to be connected to an IPv6 network. By default linphone "
 "always uses IPv4. Please update your configuration if you want to use IPv6"
@@ -778,31 +778,23 @@ msgstr ""
 "Linphoneverwendet normalerweise IPv4. Bitte Konfiguration anpassen wenn sie "
 "IPv6 verwenden wollen"
 
-#: coreapi/linphonecore.c:692
+#: coreapi/linphonecore.c:701
 msgid "Ready"
 msgstr "Bereit"
 
-#: coreapi/linphonecore.c:741
-msgid "Stun lookup in progress..."
-msgstr "Stun Ermittlung läuft..."
-
-#: coreapi/linphonecore.c:750
-msgid "Stun lookup done..."
-msgstr "Stun Ermittlung beendet..."
-
-#: coreapi/linphonecore.c:985
+#: coreapi/linphonecore.c:976
 msgid "Remote end seems to have disconnected, the call is going to be closed."
 msgstr ""
 
-#: coreapi/linphonecore.c:1077
+#: coreapi/linphonecore.c:1069
 msgid "Looking for telephone number destination..."
 msgstr "Suche Telefonnummernziel.."
 
-#: coreapi/linphonecore.c:1079
+#: coreapi/linphonecore.c:1071
 msgid "Could not resolve this number."
 msgstr "Konnte dies Nummer nicht auflösen."
 
-#: coreapi/linphonecore.c:1138
+#: coreapi/linphonecore.c:1130
 msgid ""
 "Could not parse given sip address. A sip url usually looks like sip:"
 "user@domain"
@@ -810,36 +802,36 @@ msgstr ""
 "Sip-Adresse kann nicht bestimmt werden. Eine Sip-Adresse hat folgenden "
 "Aufbau <sip:anwendername@domainname>"
 
-#: coreapi/linphonecore.c:1187
+#: coreapi/linphonecore.c:1179
 msgid "Sorry, having multiple simultaneous calls is not supported yet !"
 msgstr "Mehrfachen gleichzeitigen Anrufen nicht unterstützt !"
 
-#: coreapi/linphonecore.c:1198
+#: coreapi/linphonecore.c:1190
 msgid "Contacting"
 msgstr "Rufe an"
 
-#: coreapi/linphonecore.c:1235
+#: coreapi/linphonecore.c:1227
 msgid "could not call"
 msgstr "Konnte kein Anruf vornehmen"
 
-#: coreapi/linphonecore.c:1524 coreapi/exevents.c:41
+#: coreapi/linphonecore.c:1522 coreapi/exevents.c:41
 msgid "Connected."
 msgstr "Verbunden."
 
-#: coreapi/linphonecore.c:1550
+#: coreapi/linphonecore.c:1548
 msgid "Call ended"
 msgstr "Anruf beendet"
 
-#: coreapi/linphonecore.c:1846
+#: coreapi/linphonecore.c:1859
 msgid "No nat/firewall address supplied !"
 msgstr "Keine Nat/Firewall Adresse vorgegeben !"
 
-#: coreapi/linphonecore.c:1858 coreapi/linphonecore.c:1870
+#: coreapi/linphonecore.c:1871 coreapi/linphonecore.c:1883
 #, c-format
 msgid "Invalid nat address '%s' : %s"
 msgstr "Ungültige NAT Adresse '%s' : '%s'"
 
-#: coreapi/misc.c:130
+#: coreapi/misc.c:132
 msgid ""
 "Your computer appears to be using ALSA sound drivers.\n"
 "This is the best choice. However the pcm oss emulation module\n"
@@ -852,7 +844,7 @@ msgstr ""
 "nicht vorhanden. Für die Einbindung des Moduls\n"
 "bitte den Befehl 'modprobe snd-pcm-oss' als Anwender-Root verwenden."
 
-#: coreapi/misc.c:133
+#: coreapi/misc.c:135
 msgid ""
 "Your computer appears to be using ALSA sound drivers.\n"
 "This is the best choice. However the mixer oss emulation module\n"
@@ -865,64 +857,68 @@ msgstr ""
 "nicht vorhanden. Fr die Einbindung des Moduls\n"
 "bitte den Befehl 'modprobe snd-pcm-oss' als Anwender-Root verwenden."
 
-#: coreapi/exevents.c:115
+#: coreapi/misc.c:567
+msgid "Stun lookup in progress..."
+msgstr "Stun Ermittlung läuft..."
+
+#: coreapi/exevents.c:117
 msgid "Call terminated."
 msgstr "Anruf beendet"
 
-#: coreapi/exevents.c:137
+#: coreapi/exevents.c:139
 msgid "Could not reach destination."
 msgstr "Konnte Ziel nicht erreichen"
 
-#: coreapi/exevents.c:146
+#: coreapi/exevents.c:148
 msgid "User is busy."
 msgstr "Besetzt."
 
-#: coreapi/exevents.c:147
+#: coreapi/exevents.c:149
 msgid "User is temporarily unavailable."
 msgstr "Teilnehmer zur Zeit nicht ansprechbar."
 
-#: coreapi/exevents.c:148
+#: coreapi/exevents.c:150
 msgid "Request Cancelled."
 msgstr "Anruf annulliert."
 
-#: coreapi/exevents.c:150
+#: coreapi/exevents.c:152
 msgid "User does not want to be disturbed."
 msgstr "Teilnehmer möchte nicht gestört werden."
 
-#: coreapi/exevents.c:151
+#: coreapi/exevents.c:153
 msgid "Call declined."
 msgstr "Anruf abgewiesen"
 
-#: coreapi/exevents.c:170
+#: coreapi/exevents.c:172
 msgid "Bad request"
 msgstr "Fehlerhafte Anfrage"
 
-#: coreapi/exevents.c:173
+#: coreapi/exevents.c:175
 msgid "User cannot be found at given address."
 msgstr "Teilnehmer ist unter der angegebene Adresse nicht erreichbar."
 
-#: coreapi/exevents.c:176
+#: coreapi/exevents.c:178
 msgid "Remote user cannot support any of proposed codecs."
 msgstr "Die Gegenstelle untersttzt die angebotenen Codecs nicht."
 
-#: coreapi/exevents.c:202
+#: coreapi/exevents.c:204
 msgid "Timeout."
 msgstr "Zeitberschreitung."
 
-#: coreapi/exevents.c:205
+#: coreapi/exevents.c:207
 msgid "Remote host was found but refused connection."
 msgstr "Die Gegenstelle hat die Verbindung abgewiesen."
 
-#: coreapi/exevents.c:312
+#: coreapi/exevents.c:315
 msgid "is contacting you."
 msgstr "ruft Sie an"
 
-#: coreapi/exevents.c:392
+#: coreapi/exevents.c:399
 #, c-format
 msgid "Redirected to %s..."
 msgstr "Nach %s umgeleitet..."
 
-#: coreapi/exevents.c:408
+#: coreapi/exevents.c:415
 msgid ""
 "User is not reachable at the moment but he invites you\n"
 "to contact him using the following alternate resource:"
@@ -930,20 +926,20 @@ msgstr ""
 "Teilnehmer nicht erreichbar. Bitte versuchen Sie es unter nachstehender "
 "Ressource:"
 
-#: coreapi/exevents.c:775
+#: coreapi/exevents.c:819
 msgid "Early media."
 msgstr ""
 
-#: coreapi/exevents.c:837
+#: coreapi/exevents.c:881
 #, fuzzy, c-format
 msgid "Registration on %s failed: %s"
 msgstr "Registrierung auf %s schlug fehl (Zeitberschreitung)."
 
-#: coreapi/exevents.c:837
+#: coreapi/exevents.c:881
 msgid "no response timeout"
 msgstr ""
 
-#: coreapi/exevents.c:851
+#: coreapi/exevents.c:895
 #, c-format
 msgid "Registration on %s successful."
 msgstr "Registrierung auf %s erfolgreich."
@@ -979,6 +975,9 @@ msgstr "Beim Essen"
 #: coreapi/presence.c:160
 msgid "Closed"
 msgstr ""
+
+#~ msgid "Stun lookup done..."
+#~ msgstr "Stun Ermittlung beendet..."
 
 #~ msgid "enter sip uri here"
 #~ msgstr "Sip URI eingeben"

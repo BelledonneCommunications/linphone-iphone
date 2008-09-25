@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone 1.1.0\n"
 "Report-Msgid-Bugs-To: linphone-developers@nongnu.org\n"
-"POT-Creation-Date: 2008-08-26 14:26+0200\n"
+"POT-Creation-Date: 2008-09-23 12:23+0200\n"
 "PO-Revision-Date: 2005-11-23 13:51+0100\n"
 "Last-Translator: Daniel Nylander <po@danielnylander.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
@@ -755,24 +755,24 @@ msgstr ""
 msgid "Contact list"
 msgstr "Kontaktar"
 
-#: coreapi/linphonecore.c:186
+#: coreapi/linphonecore.c:192
 #, c-format
 msgid "You have missed %i call(s)."
 msgstr "Du har %i missade samtal."
 
-#: coreapi/linphonecore.c:212
+#: coreapi/linphonecore.c:218
 msgid "aborted"
 msgstr "avbruten"
 
-#: coreapi/linphonecore.c:215
+#: coreapi/linphonecore.c:221
 msgid "completed"
 msgstr "genomförd"
 
-#: coreapi/linphonecore.c:218
+#: coreapi/linphonecore.c:224
 msgid "missed"
 msgstr "missad"
 
-#: coreapi/linphonecore.c:223
+#: coreapi/linphonecore.c:229
 #, fuzzy, c-format
 msgid ""
 "%s at %s\n"
@@ -786,15 +786,15 @@ msgstr ""
 "Status: %s\n"
 "Längd: %i min %i sek\n"
 
-#: coreapi/linphonecore.c:224
+#: coreapi/linphonecore.c:230
 msgid "Incoming call"
 msgstr "Inkommande samtal"
 
-#: coreapi/linphonecore.c:224
+#: coreapi/linphonecore.c:230
 msgid "Outgoing call"
 msgstr "Utgående samtal"
 
-#: coreapi/linphonecore.c:410
+#: coreapi/linphonecore.c:416
 msgid ""
 "Your machine appears to be connected to an IPv6 network. By default linphone "
 "always uses IPv4. Please update your configuration if you want to use IPv6"
@@ -803,32 +803,24 @@ msgstr ""
 "linphone alltid IPv4. Vänligen uppdatera din konfiguration om du vill "
 "använda IPv6."
 
-#: coreapi/linphonecore.c:692
+#: coreapi/linphonecore.c:701
 #, fuzzy
 msgid "Ready"
 msgstr "Klar."
 
-#: coreapi/linphonecore.c:741
-msgid "Stun lookup in progress..."
-msgstr ""
-
-#: coreapi/linphonecore.c:750
-msgid "Stun lookup done..."
-msgstr ""
-
-#: coreapi/linphonecore.c:985
+#: coreapi/linphonecore.c:976
 msgid "Remote end seems to have disconnected, the call is going to be closed."
 msgstr ""
 
-#: coreapi/linphonecore.c:1077
+#: coreapi/linphonecore.c:1069
 msgid "Looking for telephone number destination..."
 msgstr "Letar efter destination för telefonnummer..."
 
-#: coreapi/linphonecore.c:1079
+#: coreapi/linphonecore.c:1071
 msgid "Could not resolve this number."
 msgstr "Kunde inte slå upp detta nummer."
 
-#: coreapi/linphonecore.c:1138
+#: coreapi/linphonecore.c:1130
 msgid ""
 "Could not parse given sip address. A sip url usually looks like sip:"
 "user@domain"
@@ -836,38 +828,38 @@ msgstr ""
 "Kunde inte tolka angiven SIP-address. En SIP URL ser normalt sett ut som sip:"
 "användare@domän"
 
-#: coreapi/linphonecore.c:1187
+#: coreapi/linphonecore.c:1179
 msgid "Sorry, having multiple simultaneous calls is not supported yet !"
 msgstr ""
 
-#: coreapi/linphonecore.c:1198
+#: coreapi/linphonecore.c:1190
 #, fuzzy
 msgid "Contacting"
 msgstr "Kontaktar"
 
-#: coreapi/linphonecore.c:1235
+#: coreapi/linphonecore.c:1227
 msgid "could not call"
 msgstr ""
 
-#: coreapi/linphonecore.c:1524 coreapi/exevents.c:41
+#: coreapi/linphonecore.c:1522 coreapi/exevents.c:41
 msgid "Connected."
 msgstr "Ansluten."
 
-#: coreapi/linphonecore.c:1550
+#: coreapi/linphonecore.c:1548
 #, fuzzy
 msgid "Call ended"
 msgstr "Samtal vägrades."
 
-#: coreapi/linphonecore.c:1846
+#: coreapi/linphonecore.c:1859
 msgid "No nat/firewall address supplied !"
 msgstr ""
 
-#: coreapi/linphonecore.c:1858 coreapi/linphonecore.c:1870
+#: coreapi/linphonecore.c:1871 coreapi/linphonecore.c:1883
 #, c-format
 msgid "Invalid nat address '%s' : %s"
 msgstr ""
 
-#: coreapi/misc.c:130
+#: coreapi/misc.c:132
 msgid ""
 "Your computer appears to be using ALSA sound drivers.\n"
 "This is the best choice. However the pcm oss emulation module\n"
@@ -879,7 +871,7 @@ msgstr ""
 "för OSS-PCM och linphone behöver den. Vänligen\n"
 "kör \"modprobe snd-pcm-oss\" som root för att läsa in den."
 
-#: coreapi/misc.c:133
+#: coreapi/misc.c:135
 msgid ""
 "Your computer appears to be using ALSA sound drivers.\n"
 "This is the best choice. However the mixer oss emulation module\n"
@@ -891,66 +883,70 @@ msgstr ""
 "för OSS-mixern och linphone behöver den. Vänligen\n"
 "kör \"modprobe snd-mixer-oss\" som root för att läsa in den."
 
-#: coreapi/exevents.c:115
+#: coreapi/misc.c:567
+msgid "Stun lookup in progress..."
+msgstr ""
+
+#: coreapi/exevents.c:117
 #, fuzzy
 msgid "Call terminated."
 msgstr "Samtal vägrades."
 
-#: coreapi/exevents.c:137
+#: coreapi/exevents.c:139
 msgid "Could not reach destination."
 msgstr "Kunde inte nå destination."
 
-#: coreapi/exevents.c:146
+#: coreapi/exevents.c:148
 msgid "User is busy."
 msgstr "Användaren är upptagen."
 
-#: coreapi/exevents.c:147
+#: coreapi/exevents.c:149
 msgid "User is temporarily unavailable."
 msgstr "Användaren är temporärt ej tillgänglig."
 
-#: coreapi/exevents.c:148
+#: coreapi/exevents.c:150
 msgid "Request Cancelled."
 msgstr "Begäran avbruten."
 
-#: coreapi/exevents.c:150
+#: coreapi/exevents.c:152
 msgid "User does not want to be disturbed."
 msgstr "Användaren vill inte bli störd."
 
-#: coreapi/exevents.c:151
+#: coreapi/exevents.c:153
 msgid "Call declined."
 msgstr "Samtal vägrades."
 
-#: coreapi/exevents.c:170
+#: coreapi/exevents.c:172
 msgid "Bad request"
 msgstr "Felaktig begäran"
 
-#: coreapi/exevents.c:173
+#: coreapi/exevents.c:175
 msgid "User cannot be found at given address."
 msgstr "Användaren kunde inte hittas på den angivna addressen."
 
-#: coreapi/exevents.c:176
+#: coreapi/exevents.c:178
 msgid "Remote user cannot support any of proposed codecs."
 msgstr "Fjärranvändaren har inte stöd för någon av de förslagna kodarna."
 
-#: coreapi/exevents.c:202
+#: coreapi/exevents.c:204
 msgid "Timeout."
 msgstr "Timeout."
 
-#: coreapi/exevents.c:205
+#: coreapi/exevents.c:207
 msgid "Remote host was found but refused connection."
 msgstr "Fjärrvärden hittades med vägrade ta emot anslutningen."
 
-#: coreapi/exevents.c:312
+#: coreapi/exevents.c:315
 #, fuzzy
 msgid "is contacting you."
 msgstr "ringer dig."
 
-#: coreapi/exevents.c:392
+#: coreapi/exevents.c:399
 #, c-format
 msgid "Redirected to %s..."
 msgstr "Omdirigerad till %s..."
 
-#: coreapi/exevents.c:408
+#: coreapi/exevents.c:415
 msgid ""
 "User is not reachable at the moment but he invites you\n"
 "to contact him using the following alternate resource:"
@@ -958,20 +954,20 @@ msgstr ""
 "Användare är inte tillgänglig för tillfället men han/hon inbjuder\n"
 "dig att kontakta honom/henne med följande alternativa resurs:"
 
-#: coreapi/exevents.c:775
+#: coreapi/exevents.c:819
 msgid "Early media."
 msgstr ""
 
-#: coreapi/exevents.c:837
+#: coreapi/exevents.c:881
 #, fuzzy, c-format
 msgid "Registration on %s failed: %s"
 msgstr "Registrering misslyckades (timeout)."
 
-#: coreapi/exevents.c:837
+#: coreapi/exevents.c:881
 msgid "no response timeout"
 msgstr ""
 
-#: coreapi/exevents.c:851
+#: coreapi/exevents.c:895
 #, fuzzy, c-format
 msgid "Registration on %s successful."
 msgstr "Registrering på %s lyckades."

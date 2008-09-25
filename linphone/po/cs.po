@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-2.0.0\n"
 "Report-Msgid-Bugs-To: linphone-developers@nongnu.org\n"
-"POT-Creation-Date: 2008-08-26 14:26+0200\n"
+"POT-Creation-Date: 2008-09-23 12:23+0200\n"
 "PO-Revision-Date: 2007-11-21 17:50+0100\n"
 "Last-Translator: Petr Pisar <petr.pisar@atlas.cz>\n"
 "Language-Team: Czech <translation-team-cs@lists.sourceforge.net>\n"
@@ -735,24 +735,24 @@ msgstr "Špatně zadaná SIP adresa: SIP adresa má tvar sip:uživatel@doména"
 msgid "Contact list"
 msgstr "Seznam kontaktů"
 
-#: coreapi/linphonecore.c:186
+#: coreapi/linphonecore.c:192
 #, c-format
 msgid "You have missed %i call(s)."
 msgstr "Zameškané hovory: %i"
 
-#: coreapi/linphonecore.c:212
+#: coreapi/linphonecore.c:218
 msgid "aborted"
 msgstr "přerušen"
 
-#: coreapi/linphonecore.c:215
+#: coreapi/linphonecore.c:221
 msgid "completed"
 msgstr "dokončen"
 
-#: coreapi/linphonecore.c:218
+#: coreapi/linphonecore.c:224
 msgid "missed"
 msgstr "promeškán"
 
-#: coreapi/linphonecore.c:223
+#: coreapi/linphonecore.c:229
 #, c-format
 msgid ""
 "%s at %s\n"
@@ -767,15 +767,15 @@ msgstr ""
 "Stav: %s\n"
 "Trvání: %i min %i s\n"
 
-#: coreapi/linphonecore.c:224
+#: coreapi/linphonecore.c:230
 msgid "Incoming call"
 msgstr "Příchozí hovor"
 
-#: coreapi/linphonecore.c:224
+#: coreapi/linphonecore.c:230
 msgid "Outgoing call"
 msgstr "Odchozí hovor"
 
-#: coreapi/linphonecore.c:410
+#: coreapi/linphonecore.c:416
 msgid ""
 "Your machine appears to be connected to an IPv6 network. By default linphone "
 "always uses IPv4. Please update your configuration if you want to use IPv6"
@@ -784,67 +784,59 @@ msgstr ""
 "pouze IPv4. Prosím, povedtě změny v konfiguraci programu, pokud chcete "
 "používat IPv6."
 
-#: coreapi/linphonecore.c:692
+#: coreapi/linphonecore.c:701
 msgid "Ready"
 msgstr "Připraven."
 
-#: coreapi/linphonecore.c:741
-msgid "Stun lookup in progress..."
-msgstr "Hledá se adresa pomocí STUN…"
-
-#: coreapi/linphonecore.c:750
-msgid "Stun lookup done..."
-msgstr "STUN vyhledávání dokončeno…"
-
-#: coreapi/linphonecore.c:985
+#: coreapi/linphonecore.c:976
 msgid "Remote end seems to have disconnected, the call is going to be closed."
 msgstr ""
 
-#: coreapi/linphonecore.c:1077
+#: coreapi/linphonecore.c:1069
 msgid "Looking for telephone number destination..."
 msgstr "Vyhledává se umístění čísla…"
 
-#: coreapi/linphonecore.c:1079
+#: coreapi/linphonecore.c:1071
 msgid "Could not resolve this number."
 msgstr "Toto číslo nelze vyhledat."
 
-#: coreapi/linphonecore.c:1138
+#: coreapi/linphonecore.c:1130
 msgid ""
 "Could not parse given sip address. A sip url usually looks like sip:"
 "user@domain"
 msgstr ""
 "Špatně zadaná SIP adresa. Adresa má mít tento formát <sip:uživatel@doména>"
 
-#: coreapi/linphonecore.c:1187
+#: coreapi/linphonecore.c:1179
 msgid "Sorry, having multiple simultaneous calls is not supported yet !"
 msgstr "Promiňte, vedení více současných hovorů není podporováno!"
 
-#: coreapi/linphonecore.c:1198
+#: coreapi/linphonecore.c:1190
 msgid "Contacting"
 msgstr "Kontaktuji"
 
-#: coreapi/linphonecore.c:1235
+#: coreapi/linphonecore.c:1227
 msgid "could not call"
 msgstr "Nelze volat."
 
-#: coreapi/linphonecore.c:1524 coreapi/exevents.c:41
+#: coreapi/linphonecore.c:1522 coreapi/exevents.c:41
 msgid "Connected."
 msgstr "Připojeno."
 
-#: coreapi/linphonecore.c:1550
+#: coreapi/linphonecore.c:1548
 msgid "Call ended"
 msgstr "Hovor skončil."
 
-#: coreapi/linphonecore.c:1846
+#: coreapi/linphonecore.c:1859
 msgid "No nat/firewall address supplied !"
 msgstr "Žádná adresa NATu/firewallu nebyla zadána!"
 
-#: coreapi/linphonecore.c:1858 coreapi/linphonecore.c:1870
+#: coreapi/linphonecore.c:1871 coreapi/linphonecore.c:1883
 #, c-format
 msgid "Invalid nat address '%s' : %s"
 msgstr "Neplatná adresa NATu '%s': '%s"
 
-#: coreapi/misc.c:130
+#: coreapi/misc.c:132
 msgid ""
 "Your computer appears to be using ALSA sound drivers.\n"
 "This is the best choice. However the pcm oss emulation module\n"
@@ -856,7 +848,7 @@ msgstr ""
 "oss, který chybí. Prosím zadejte jako uživatel root příkaz\n"
 "'modprobe snd-pcm-oss', kterým modul zavede."
 
-#: coreapi/misc.c:133
+#: coreapi/misc.c:135
 msgid ""
 "Your computer appears to be using ALSA sound drivers.\n"
 "This is the best choice. However the mixer oss emulation module\n"
@@ -868,64 +860,68 @@ msgstr ""
 "oss, který chybí. Prosím zadejte jako uživatel root příkaz\n"
 "'modprobe snd-mixer-oss', kterým modul zavede."
 
-#: coreapi/exevents.c:115
+#: coreapi/misc.c:567
+msgid "Stun lookup in progress..."
+msgstr "Hledá se adresa pomocí STUN…"
+
+#: coreapi/exevents.c:117
 msgid "Call terminated."
 msgstr "Hovor ukončen."
 
-#: coreapi/exevents.c:137
+#: coreapi/exevents.c:139
 msgid "Could not reach destination."
 msgstr "Cíl je nedostupný."
 
-#: coreapi/exevents.c:146
+#: coreapi/exevents.c:148
 msgid "User is busy."
 msgstr "Uživatel je zaneprázdněn."
 
-#: coreapi/exevents.c:147
+#: coreapi/exevents.c:149
 msgid "User is temporarily unavailable."
 msgstr "Uživatel je dočasně nedostupný."
 
-#: coreapi/exevents.c:148
+#: coreapi/exevents.c:150
 msgid "Request Cancelled."
 msgstr "Dotaz přerušen."
 
-#: coreapi/exevents.c:150
+#: coreapi/exevents.c:152
 msgid "User does not want to be disturbed."
 msgstr "Uživatel si nepřeje být rušen."
 
-#: coreapi/exevents.c:151
+#: coreapi/exevents.c:153
 msgid "Call declined."
 msgstr "Volání odmítnuto."
 
-#: coreapi/exevents.c:170
+#: coreapi/exevents.c:172
 msgid "Bad request"
 msgstr "Chybný dotaz"
 
-#: coreapi/exevents.c:173
+#: coreapi/exevents.c:175
 msgid "User cannot be found at given address."
 msgstr "Uživatele nelze na dané adrese zastihnout."
 
-#: coreapi/exevents.c:176
+#: coreapi/exevents.c:178
 msgid "Remote user cannot support any of proposed codecs."
 msgstr "Vzdálený uživatel nemá podporu pro žádný z navržených kodeků."
 
-#: coreapi/exevents.c:202
+#: coreapi/exevents.c:204
 msgid "Timeout."
 msgstr "Vypršení časového limitu."
 
-#: coreapi/exevents.c:205
+#: coreapi/exevents.c:207
 msgid "Remote host was found but refused connection."
 msgstr "Vzdálený počítač byl nalezen, ale odmítl připojení."
 
-#: coreapi/exevents.c:312
+#: coreapi/exevents.c:315
 msgid "is contacting you."
 msgstr "vás volá."
 
-#: coreapi/exevents.c:392
+#: coreapi/exevents.c:399
 #, c-format
 msgid "Redirected to %s..."
 msgstr "Přesměrováno na %s…"
 
-#: coreapi/exevents.c:408
+#: coreapi/exevents.c:415
 msgid ""
 "User is not reachable at the moment but he invites you\n"
 "to contact him using the following alternate resource:"
@@ -933,20 +929,20 @@ msgstr ""
 "Uživatel je nedostupný, ale navrhuje tyto alternativní\n"
 "setkání:"
 
-#: coreapi/exevents.c:775
+#: coreapi/exevents.c:819
 msgid "Early media."
 msgstr "Časná média."
 
-#: coreapi/exevents.c:837
+#: coreapi/exevents.c:881
 #, c-format
 msgid "Registration on %s failed: %s"
 msgstr "Registrace na %s selhala: %s"
 
-#: coreapi/exevents.c:837
+#: coreapi/exevents.c:881
 msgid "no response timeout"
 msgstr "odpověď nedorazila včas"
 
-#: coreapi/exevents.c:851
+#: coreapi/exevents.c:895
 #, c-format
 msgid "Registration on %s successful."
 msgstr "Registrace na %s byla úspěšná."
@@ -982,6 +978,9 @@ msgstr "Na obědě"
 #: coreapi/presence.c:160
 msgid "Closed"
 msgstr "Zavřeno"
+
+#~ msgid "Stun lookup done..."
+#~ msgstr "STUN vyhledávání dokončeno…"
 
 #~ msgid "enter sip uri here"
 #~ msgstr "Sem zadejte SIP URI"

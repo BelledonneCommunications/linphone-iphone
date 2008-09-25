@@ -620,6 +620,19 @@ static void video_out_uninit(MSFilter *f){
 		sws_freeContext(obj->sws2);
 		obj->sws2=NULL;
 	}
+	if (obj->local_msg!=NULL) {
+		freemsg(obj->local_msg);
+		obj->local_msg=NULL;
+	}
+	if (obj->previous_selfview!=NULL)
+	{
+		freemsg(obj->previous_selfview);
+		obj->previous_selfview=NULL;
+	}
+	if (obj->tmp_local_msg!=NULL) {
+		freemsg(obj->tmp_local_msg);
+		obj->tmp_local_msg=NULL;
+	}
 	ms_free(obj);
 }
 
@@ -650,12 +663,11 @@ static void video_out_preprocess(MSFilter *f){
 		freemsg(obj->local_msg);
 		obj->local_msg=NULL;
 	}
-  if (obj->previous_selfview!=NULL)
-  {
-    freemsg(obj->previous_selfview);
-    obj->previous_selfview=NULL;
-  }
-
+	if (obj->previous_selfview!=NULL)
+	{
+		freemsg(obj->previous_selfview);
+		obj->previous_selfview=NULL;
+	}
 	if (obj->tmp_local_msg!=NULL) {
 		freemsg(obj->tmp_local_msg);
 		obj->tmp_local_msg=NULL;
