@@ -213,7 +213,9 @@ static void prepare_h263(EncState *s){
 	AVCodecContext *c=&s->av_context;
 	/* we don't use the rtp_callback but use rtp_mode that forces ffmpeg to insert
 	Start Codes as much as possible in the bitstream */
-	c->rtp_mode = 1;
+#if LIBAVCODEC_VERSION_INT < ((52<<16)+(0<<8)+0)
+        c->rtp_mode = 1;
+#endif
 	c->rtp_payload_size = s->mtu/2;
 	if (s->profile==0){
 		s->codec=CODEC_ID_H263;
