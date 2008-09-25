@@ -14,7 +14,8 @@
   <property name="public-address" value="127.0.0.1"/>
   <property name="public-address-user" value="root"/>   
   <property name="version" value="0.1"/>     
-  <property name="jxta-src" location="dependencies-src/jxse-src-2.5"/>  
+  <property name="jxta-src" location="dependencies-src/jxse-src-2.5"/>
+  <property name="jstun-src" location="dependencies-src/jstun-src-0.7.1"/>
   <property name="dist.dir" location="antbuild/dist/p2pproxy_${version}"/>
   
    <path id="p2pproxy.classpath">
@@ -50,6 +51,7 @@
       <src path="src"/>
       <src path="${jxta-src}/api/src"/>
       <src path="${jxta-src}/impl/src"/> 
+      <src path="${jstun-src}" />
       <exclude name="**/*Tester.java"/> 
       <classpath refid="p2pproxy.classpath"/>
     </javac>

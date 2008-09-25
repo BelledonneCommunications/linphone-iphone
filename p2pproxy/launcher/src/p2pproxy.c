@@ -1,44 +1,59 @@
 #include <stdio.h>
 #include <jni.h>
-#include "p2pproxy.c"
+#include "p2pproxy.h"
 
-#ifndef P2PPROXY_CLASSPATH
-	#define P2PPROXY_INSTALL_PREFIX "/usr/"
-#endif 
 #ifndef P2PPROXY_JMX_PORT
 	#define P2PPROXY_JMX_PORT "5678"
 #endif
+#ifndef P2PPROXY_INSTALLDIR
+	#define P2PPROXY_INSTALLDIR "/usr/local/share/java"
+#endif 
+#ifndef P2PPROXY_BUILDDIR
+	#define P2PPROXY_BUILDDIR "./antbuild/dist/p2pproxy_0.1"
+#endif
 JNIEnv* p2pproxy_application_jnienv = 0;
+JavaVM* p2pproxy_application_jvm = 0;
 
 int p2pproxy_application_start(int argc, char **argv) {
-	JavaVM* jvm;
-	JNIEnv* env;
+	
 	JavaVMInitArgs args;
-	JavaVMOption options[5];
+	JavaVMOption options[0];
+	jint res=-1;
 	
 	if (p2pproxy_application_jnienv != 0) {
 		fprintf(stderr,"p2pproxy already started");
 		return P2PPROXY_ERROR_APPLICATION_ALREADY_STARTED;
 	}
-	args.version = JNI_VERSION_1_6;
+	args.version = JNI_VERSION_1_4;
 	args.nOptions = sizeof (options);
-	options[0].optionString = "-Dcom.sun.management.jmxremote";
-	options[1].optionString = "-Dcom.sun.management.jmxremote.port="P2PPROXY_JMX_POR";
-	options[2].optionString = "-Dcom.sun.management.jmxremote.authenticate=false";
-	options[3].optionString = "-Dcom.sun.management.jmxremote.ssl=false";
-	options[4].optionString = "-Djava.class.path="P2PPROXY_INSTALL_PREFIX"/share/java/p2pproxy.jar";
+	/*options[0].optionString = "-verbose:jni";*/
+	/*options[1].optionString = "-Djava.class.path="P2PPROXY_BUILDDIR"/p2pproxy.jar:"\
+													P2PPROXY_INSTALLDIR"/p2pproxy.jar:"\
+													P2PPROXY_BUILDDIR"/log4j.jar:"\
+													P2PPROXY_INSTALLDIR"/log4j.jar";
+	
+
+/*
+	options[1].optionString = "-Dcom.sun.management.jmxremote";
+	options[2].optionString = "-Dcom.sun.management.jmxremote.port="P2PPROXY_JMX_PORT;
+	options[3].optionString = "-Dcom.sun.management.jmxremote.authenticate=false";
+	options[4].optionString = "-Dcom.sun.management.jmxremote.ssl=false";
+	*/							
  		
 	args.options = options;
 	args.ignoreUnrecognized = JNI_FALSE;
 
-	JNI_CreateJavaVM(&jvm, (void **)&env, &args);
-	return env;
-	return P2PPROXY_ERROR;
+	res = JNI_CreateJavaVM(&p2pproxy_application_jvm, (void **)&p2pproxy_application_jnienv, &args);
+	if (res < 0) {
+		fprintf(stderr,"cannot start p2pproxy vm [%i]",res);
+		return P2PPROXY_ERROR;
+	}
+	return P2PPROXY_NO_ERROR;
 }
 
 
 const char* p2pproxy_status_string(int status_code) {
-	return P2PPROXY_ERROR;
+	return 0;
 }
 
 
@@ -78,7 +93,3 @@ void invoke_class(JNIEnv* env) {
 }
 
 
-int main(int argc, char **argv) {
-	JNIEnv* env = create_vm();
-	invoke_class( env );
-}
