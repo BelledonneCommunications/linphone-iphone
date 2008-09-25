@@ -588,6 +588,9 @@ static int v4l_configure(V4lState *s)
 		ms_message("Driver supports UYVY, using that format.");
 		s->pix_fmt=MS_UYVY;
 	}else{	
+	  s->vsize.width=MS_VIDEO_SIZE_CIF_W;
+	  s->vsize.height=MS_VIDEO_SIZE_CIF_H;
+		s->pix_fmt=MS_YUV420P;
 		ms_fatal("Unsupported video pixel format.");
 		return -1;
 	}
@@ -598,7 +601,9 @@ static int v4l_configure(V4lState *s)
 				if (!try_size(s,MS_VIDEO_SIZE_CIF)) {
 					if (!try_size(s,MS_VIDEO_SIZE_QCIF)) {
 						if (!try_size(s,MS_VIDEO_SIZE_QVGA)) {
+						  if (!try_size(s,MS_VIDEO_SIZE_1024)) {
 							return -1;
+						  }
 						}
 					}
 				}

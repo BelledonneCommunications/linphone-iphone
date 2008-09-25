@@ -60,6 +60,9 @@ int yuv_buf_init_from_mblk(YuvBuf *buf, mblk_t *m){
 	}else if (size==(MS_VIDEO_SIZE_NS1_W*MS_VIDEO_SIZE_NS1_H*3)/2){
 		w=MS_VIDEO_SIZE_NS1_W;
 		h=MS_VIDEO_SIZE_NS1_H;
+	}else if (size==(MS_VIDEO_SIZE_1024_W*MS_VIDEO_SIZE_1024_H*3)/2){
+		w=MS_VIDEO_SIZE_1024_W;
+		h=MS_VIDEO_SIZE_1024_H;
 	}else if (size==(160*112*3)/2){/*format used by econf*/
 		w=160;
 		h=112;
