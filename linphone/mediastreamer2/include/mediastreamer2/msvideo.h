@@ -79,7 +79,8 @@ typedef enum{
 	MS_RGB24,
 	MS_MJPEG,
 	MS_UYVY,
-	MS_YUY2   /* -> same as MS_YUYV */
+	MS_YUY2,   /* -> same as MS_YUYV */
+	MS_PIX_FMT_UNKNOWN
 }MSPixFmt;
 
 typedef struct _MSPicture{
@@ -96,6 +97,7 @@ extern "C"{
 
 int ms_pix_fmt_to_ffmpeg(MSPixFmt fmt);
 MSPixFmt ffmpeg_pix_fmt_to_ms(int fmt);
+MSPixFmt ms_fourcc_to_pix_fmt(uint32_t fourcc);
 void ms_ffmpeg_check_init(void);
 int yuv_buf_init_from_mblk(MSPicture *buf, mblk_t *m);
 void yuv_buf_init_from_mblk_with_size(MSPicture *buf, mblk_t *m, int w, int h);

@@ -105,3 +105,31 @@ void yuv_buf_copy(uint8_t *src_planes[], const int src_strides[],
 	plane_copy(src_planes[2],src_strides[2],dst_planes[2],dst_strides[2],roi);
 }
 
+#ifndef MAKEFOURCC
+#define MAKEFOURCC(a,b,c,d) ((d)<<24 | (c)<<16 | (b)<<8 | (a))
+#endif
+
+MSPixFmt ms_fourcc_to_pix_fmt(uint32_t fourcc){
+	MSPixFmt ret;
+	switch (fourcc){
+		case MAKEFOURCC('I','4','2','0'):
+			ret=MS_YUV420P;
+		break;
+		case MAKEFOURCC('Y','U','Y','2'):
+			ret=MS_YUY2;
+		break;
+		case MAKEFOURCC('Y','U','Y','V'):
+			ret=MS_YUYV;
+		break;
+		case MAKEFOURCC('U','Y','V','Y'):
+			ret=MS_UYVY;
+		break;
+		case 0: /*BI_RGB on windows*/
+			ret=MS_RGB24;
+		break;
+		default:
+			ret=MS_PIX_FMT_UNKNOWN;
+	}
+	return ret;
+}
+

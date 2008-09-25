@@ -115,6 +115,7 @@ static int v4w_open_videodevice(V4wState *s)
 	BITMAPINFO videoformat;
 	char compname[5];
 	int i;
+	MSPixFmt driver_last;
 	char dev[80];
 	char ver[80];
 	compname[4]='\0';
@@ -183,9 +184,14 @@ static int v4w_open_videodevice(V4wState *s)
 	memcpy(compname,&videoformat.bmiHeader.biCompression,4);
 	ms_message("v4w: camera's current format is %s", compname);
 
+	driver_last=ms_fourcc_to_pix_fmt(videoformat.bmiHeader.biCompression);
+
 	if (s->startwith_yuv_bug==TRUE && try_format(s,&videoformat,MS_RGB24)){
 		s->pix_fmt=MS_RGB24;
 		ms_message("Using RGB24");
+	}else if (driver_last!=MS_PIX_FMT_UNKNOWN && try_format(s,&videoformat,driver_last)){
+		ms_message("Using driver last setting");
+		s->pix_fmt=driver_last;
 	}else if (try_format(s,&videoformat,MS_YUV420P)){
 		s->pix_fmt=MS_YUV420P;
 		ms_message("Using YUV420P");
