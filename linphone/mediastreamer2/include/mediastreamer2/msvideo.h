@@ -42,12 +42,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define MS_VIDEO_SIZE_720P_W 1280
 #define MS_VIDEO_SIZE_720P_H 720
 
-
 #define MS_VIDEO_SIZE_NS1_W 324
 #define MS_VIDEO_SIZE_NS1_H 248
 
-#define MS_VIDEO_SIZE_MAX_W MS_VIDEO_SIZE_720P_W
-#define MS_VIDEO_SIZE_MAX_H MS_VIDEO_SIZE_720P_H
+#define MS_VIDEO_SIZE_1024_W 1024
+#define MS_VIDEO_SIZE_1024_H 768
+
+#define MS_VIDEO_SIZE_MAX_W MS_VIDEO_SIZE_1024_W
+#define MS_VIDEO_SIZE_MAX_H MS_VIDEO_SIZE_1024_H
 
 typedef struct MSVideoSize{
 	int width,height;
@@ -68,6 +70,8 @@ typedef struct MSRect{
 #define MS_VIDEO_SIZE_720P (MSVideoSize){MS_VIDEO_SIZE_720P_W, MS_VIDEO_SIZE_720P_H}
 
 #define MS_VIDEO_SIZE_NS1 (MSVideoSize){MS_VIDEO_SIZE_NS1_W,MS_VIDEO_SIZE_NS1_H}
+
+#define MS_VIDEO_SIZE_1024 (MSVideoSize){MS_VIDEO_SIZE_1024_W, MS_VIDEO_SIZE_1024_H}
 
 typedef enum{
 	MS_YUV420P,

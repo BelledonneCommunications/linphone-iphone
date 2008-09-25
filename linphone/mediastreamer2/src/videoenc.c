@@ -509,7 +509,11 @@ static int enc_set_br(MSFilter *f, void *arg){
 	EncState *s=(EncState*)f->data;
 	bool_t snow=s->codec==CODEC_ID_SNOW;
 	s->maxbr=*(int*)arg;
-	if (s->maxbr>=512000){
+	if (s->maxbr>=1024000 && s->codec!=CODEC_ID_H263P){
+		s->vsize.width = MS_VIDEO_SIZE_1024_W;
+		s->vsize.height = MS_VIDEO_SIZE_1024_H;
+		s->fps=17;
+	}else if (s->maxbr>=512000){
 		s->vsize.width=MS_VIDEO_SIZE_CIF_W;
 		s->vsize.height=MS_VIDEO_SIZE_CIF_H;
 		s->fps=17;
