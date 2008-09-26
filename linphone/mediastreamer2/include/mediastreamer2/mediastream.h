@@ -112,6 +112,7 @@ struct _VideoStream
 	MSFilter *source;
 	MSFilter *predec;
 	MSFilter *pixconv;
+	MSFilter *sizeconv;
 	MSFilter *tee;
 	MSFilter *output;
 	MSFilter *encoder;
