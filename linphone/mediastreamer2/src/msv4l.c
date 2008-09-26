@@ -992,6 +992,13 @@ static MSFilterMethod methods[]={
 	{	0	,	NULL			}
 };
 
+static int v4l_set_devfile(MSFilter *f, void *arg){
+	V4lState *s=(V4lState*)f->data;
+	if (s->dev) ms_free(s->dev);
+	s->dev=ms_strdup((char*)arg);
+	return 0;
+}
+
 MSFilterDesc ms_v4l_desc={
 	.id=MS_V4L_ID,
 	.name="MSV4l",
@@ -1012,6 +1019,7 @@ MS_FILTER_DESC_EXPORT(ms_v4l_desc)
 static MSFilter *v4l_create_reader(MSWebCam *obj){
 	MSFilter *f=ms_filter_new_from_desc(&ms_v4l_desc);
 	V4lState *s=(V4lState*)f->data;
+	v4l_set_devfile(f,obj->name);
 	s->force_v1=TRUE;
 	return f;
 }
@@ -1034,6 +1042,17 @@ static void v4l_detect(MSWebCamManager *obj){
 	struct video_capability cap;
 	const char *devname="/dev/video0";
 	int fd=open(devname,O_RDWR);
+	if (fd!=-1){
+		if (ioctl (fd, VIDIOCGCAP, &cap)==0) {
+			/* is a V4Lv1 */
+			MSWebCam *cam=ms_web_cam_new(&v4l_desc);
+			cam->name=ms_strdup(devname);
+			ms_web_cam_manager_add_cam(obj,cam);
+		}
+		close(fd);
+	}
+	devname="/dev/video1";
+	fd=open(devname,O_RDWR);
 	if (fd!=-1){
 		if (ioctl (fd, VIDIOCGCAP, &cap)==0) {
 			/* is a V4Lv1 */
