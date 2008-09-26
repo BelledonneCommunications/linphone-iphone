@@ -56,6 +56,7 @@ public class P2pProxyMain  implements P2pProxyMainMBean {
    private static Configurator mConfigurator;
    private static String mConfigHomeDir;
    
+   
    static {
 //      System.setProperty("com.sun.management.jmxremote", "true");
 //      System.setProperty("com.sun.management.jmxremote.port", "6789");
@@ -364,5 +365,8 @@ public  static void staticLoadTraceConfigFile()  throws P2pProxyException {
    } catch (Exception e) {
       throw new P2pProxyException("enable to load traces",e);
    }
+}
+public static P2pProxyAccountManagementMBean getAccountManager() {
+   return mP2pProxyAccountManagement;
 }
 }

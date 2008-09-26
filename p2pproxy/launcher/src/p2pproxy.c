@@ -17,7 +17,7 @@ JavaVM* p2pproxy_application_jvm = 0;
 int p2pproxy_application_start(int argc, char **argv) {
 
 	JavaVMInitArgs args;
-	JavaVMOption options[8];
+	JavaVMOption options[7];
 	jint res=-1;
 	jclass lP2pProxyMainClass;
 	jmethodID mainMethod;
@@ -30,21 +30,21 @@ int p2pproxy_application_start(int argc, char **argv) {
 		return P2PPROXY_ERROR_APPLICATION_ALREADY_STARTED;
 	}
 	args.version = JNI_VERSION_1_4;
-	args.nOptions = 8;
-	options[0].optionString = "-verbose:jni";
-	options[1].optionString = "-Djava.class.path="P2PPROXY_BUILDDIR"/p2pproxy.jar:"\
+	args.nOptions = 7;
+	/*options[0].optionString = "-verbose:jni";*/
+	options[0].optionString = "-Djava.class.path="P2PPROXY_BUILDDIR"/p2pproxy.jar:"\
 								P2PPROXY_INSTALLDIR"/p2pproxy.jar:"\
 								P2PPROXY_BUILDDIR"/log4j.jar:"\
 								P2PPROXY_INSTALLDIR"/log4j.jar";
 
 
 
-	options[2].optionString = "-Dcom.sun.management.jmxremote";
-	options[3].optionString = "-Dcom.sun.management.jmxremote.port="P2PPROXY_JMX_PORT;
-	options[4].optionString = "-Dcom.sun.management.jmxremote.authenticate=false";
-	options[5].optionString = "-Dcom.sun.management.jmxremote.ssl=false";
-	options[6].optionString = "-Dorg.linphone.p2pproxy.install.dir="P2PPROXY_INSTALLDIR;
-	options[7].optionString = "-Dorg.linphone.p2pproxy.build.dir="P2PPROXY_BUILDDIR;
+	options[1].optionString = "-Dcom.sun.management.jmxremote";
+	options[2].optionString = "-Dcom.sun.management.jmxremote.port="P2PPROXY_JMX_PORT;
+	options[3].optionString = "-Dcom.sun.management.jmxremote.authenticate=false";
+	options[4].optionString = "-Dcom.sun.management.jmxremote.ssl=false";
+	options[5].optionString = "-Dorg.linphone.p2pproxy.install.dir="P2PPROXY_INSTALLDIR;
+	options[6].optionString = "-Dorg.linphone.p2pproxy.build.dir="P2PPROXY_BUILDDIR;
 
 
 	args.options = options;
@@ -72,7 +72,6 @@ int p2pproxy_application_start(int argc, char **argv) {
 
 	}
 
-
 	(*p2pproxy_application_jnienv)->CallStaticVoidMethod(p2pproxy_application_jnienv, lP2pProxyMainClass, mainMethod, applicationArgsList);
 
 	return P2PPROXY_NO_ERROR;
@@ -96,14 +95,16 @@ int p2pproxy_accountmgt_deleteAccount(const char* user_name) {
 	return P2PPROXY_ERROR;
 }
 
-
-
-JNIEnv* create_vm() {
-
-}
-
-void invoke_class(JNIEnv* env) {
+jobject p2pproxy_get_accountmgt() {
+	jclass lP2pProxyMainClass;
+	jmethodID getAccountMgtMethod;
+	
+	lP2pProxyMainClass = (*p2pproxy_application_jnienv)->FindClass(p2pproxy_application_jnienv, "org/linphone/p2pproxy/core/P2pProxyMain");
+	getAccountMgtMethod = (*p2pproxy_application_jnienv)->GetStaticMethodID(p2pproxy_application_jnienv, lP2pProxyMainClass, "getAccountManager", "(V)Lorg/linphone/p2pproxy/core/P2pProxyAccountManagementMBean");
+	
 	
 }
+
+
 
 
