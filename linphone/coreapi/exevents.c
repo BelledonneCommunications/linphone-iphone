@@ -490,14 +490,14 @@ static int find_payload_type_number_best_match(RtpProfile *prof, const char *rtp
 	pt=rtp_profile_get_payload(prof,localpt);
 	if (strcasecmp(pt->mime_type,"H264")==0){
 		/*hack for H264: need to answer with same packetization-mode*/
+		PayloadType tmp;
+		memset(&tmp,0,sizeof(tmp));
+		tmp.mime_type="H264";
+		tmp.clock_rate=pt->clock_rate;
 		if (fmtp && fmtp_get_value(fmtp,"packetization-mode",value,sizeof(value))){
-			PayloadType tmp;
-			memset(&tmp,0,sizeof(tmp));
-			tmp.mime_type="H264";
-			tmp.clock_rate=pt->clock_rate;
 			tmp.recv_fmtp=(atoi(value)==1) ? "packetization-mode=1" : NULL;
-			localpt=find_payload_type_number(prof,&tmp);
 		}
+		localpt=find_payload_type_number(prof,&tmp);
 	}
 	return localpt;
 }
@@ -643,12 +643,12 @@ int linphone_accept_audio_offer(sdp_context_t *ctx,sdp_payload_t *payload)
 			params->line=payload->line;
 			params->pt=payload->pt; /* remember the first payload accepted */
 			if (payload->relay_host!=NULL){
-				params->remoteaddr=payload->relay_host;
+				strncpy(params->remoteaddr,payload->relay_host,sizeof(params->remoteaddr)-1);
 				params->remoteport=payload->relay_port;
 				params->remotertcpport=payload->relay_port;
 				params->relay_session_id=payload->relay_session_id;
 			}else{
-				params->remoteaddr=payload->c_addr;
+				strncpy(params->remoteaddr,payload->c_addr,sizeof(params->remoteaddr)-1);
 				params->remoteport=payload->remoteport;
 				params->remotertcpport=payload->remoteport+1;
 			}
@@ -694,12 +694,12 @@ int linphone_accept_video_offer(sdp_context_t *ctx,sdp_payload_t *payload)
 			params->line=payload->line;
 			params->pt=payload->pt; /* remember the first payload accepted */
 			if (payload->relay_host!=NULL){
-				params->remoteaddr=payload->relay_host;
+				strncpy(params->remoteaddr,payload->relay_host,sizeof(params->remoteaddr)-1);
 				params->remoteport=payload->relay_port;
 				params->remotertcpport=payload->relay_port;
 				params->relay_session_id=payload->relay_session_id;
 			}else{
-				params->remoteaddr=payload->c_addr;
+				strncpy(params->remoteaddr,payload->c_addr,sizeof(params->remoteaddr)-1);
 				params->remoteport=payload->remoteport;
 				params->remotertcpport=params->remoteport+1;
 			}
@@ -735,12 +735,12 @@ int linphone_read_audio_answer(sdp_context_t *ctx,sdp_payload_t *payload)
 			params->line=payload->line;
 			params->pt=payload->pt; /* remember the first payload accepted */
 			if (payload->relay_host!=NULL){
-				params->remoteaddr=payload->relay_host;
+				strncpy(params->remoteaddr,payload->relay_host,sizeof(params->remoteaddr)-1);
 				params->remoteport=payload->relay_port;
 				params->remotertcpport=payload->relay_port;
 				params->relay_session_id=payload->relay_session_id;
 			}else{
-				params->remoteaddr=payload->c_addr;
+				strncpy(params->remoteaddr,payload->c_addr,sizeof(params->remoteaddr)-1);
 				params->remoteport=payload->remoteport;
 				params->remotertcpport=payload->remoteport+1;
 			}
@@ -774,12 +774,12 @@ int linphone_read_video_answer(sdp_context_t *ctx,sdp_payload_t *payload)
 			params->line=payload->line;
 			params->pt=payload->pt; /* remember the first payload accepted */
 			if (payload->relay_host!=NULL){
-				params->remoteaddr=payload->relay_host;
+				strncpy(params->remoteaddr,payload->relay_host,sizeof(params->remoteaddr)-1);
 				params->remoteport=payload->relay_port;
 				params->remotertcpport=payload->relay_port;
 				params->relay_session_id=payload->relay_session_id;
 			}else{
-				params->remoteaddr=payload->c_addr;
+				strncpy(params->remoteaddr,payload->c_addr,sizeof(params->remoteaddr)-1);
 				params->remoteport=payload->remoteport;
 				params->remotertcpport=payload->remoteport+1;
 			}

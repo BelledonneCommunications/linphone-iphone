@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/mscommon.h"
 
 #define LINPHONE_IPADDR_SIZE 64
+#define LINPHONE_HOSTNAME_SIZE 128
 
 #ifdef __cplusplus
 extern "C" {
@@ -144,11 +145,11 @@ typedef struct _StreamParams
 	int localport;
 	int remoteport;
 	int remotertcpport;
-	char *remoteaddr;
 	int pt;
 	char *relay_session_id;
-	char natd_addr[LINPHONE_IPADDR_SIZE];
 	int natd_port;
+	char remoteaddr[LINPHONE_HOSTNAME_SIZE];
+	char natd_addr[LINPHONE_HOSTNAME_SIZE];
 } StreamParams;
 
 typedef enum _LCState{

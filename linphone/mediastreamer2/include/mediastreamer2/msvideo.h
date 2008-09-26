@@ -104,6 +104,7 @@ void yuv_buf_init_from_mblk_with_size(MSPicture *buf, mblk_t *m, int w, int h);
 mblk_t * yuv_buf_alloc(MSPicture *buf, int w, int h);
 void yuv_buf_copy(uint8_t *src_planes[], const int src_strides[], 
 		uint8_t *dst_planes[], const int dst_strides[3], MSVideoSize roi);
+void yuv_buf_mirror(YuvBuf *buf);
 #ifdef __cplusplus
 }
 #endif

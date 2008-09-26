@@ -1506,18 +1506,13 @@ int linphone_core_accept_call(LinphoneCore *lc, const char *url)
 			ms_error("fail to generate sdp offer !");
 			return -1;
 		}
-		ms_message("sdp message generated (sdpmesg=%p):\n%s",sdpmesg,sdpmesg);
 		linphone_set_sdp(msg,sdpmesg);
-		ms_message("sdp message attached to SIP answer");
 		linphone_core_init_media_streams(lc);
-		ms_message("init_media_streams done");
 	}else{
 		linphone_set_sdp(msg,sdpmesg);
 	}
 	eXosip_lock();
-	ms_message("eXosip_lock() done");
 	eXosip_call_send_answer(call->tid,200,msg);
-	ms_message("SIP answer sent.");
 	eXosip_unlock();
 	lc->vtable.display_status(lc,_("Connected."));
 	gstate_new_state(lc, GSTATE_CALL_IN_CONNECTED, NULL);

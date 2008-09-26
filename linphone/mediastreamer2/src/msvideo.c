@@ -105,6 +105,26 @@ void yuv_buf_copy(uint8_t *src_planes[], const int src_strides[],
 	plane_copy(src_planes[2],src_strides[2],dst_planes[2],dst_strides[2],roi);
 }
 
+static void plane_mirror(uint8_t *p, int linesize, int w, int h){
+	int i,j;
+	uint8_t tmp;
+	for(j=0;j<h;++j){
+		for(i=0;i<w/2;++i){
+			tmp=p[i];
+			p[i]=p[w-1-i];
+			p[w-1-i]=tmp;
+		}
+		p+=linesize;
+	}
+}
+
+/*in place mirroring*/
+void yuv_buf_mirror(YuvBuf *buf){
+	plane_mirror(buf->planes[0],buf->strides[0],buf->w,buf->h);
+	plane_mirror(buf->planes[1],buf->strides[1],buf->w/2,buf->h/2);
+	plane_mirror(buf->planes[2],buf->strides[2],buf->w/2,buf->h/2);
+}
+
 #ifndef MAKEFOURCC
 #define MAKEFOURCC(a,b,c,d) ((d)<<24 | (c)<<16 | (b)<<8 | (a))
 #endif

@@ -521,9 +521,6 @@ typedef struct VideoOut
 	MSPicture local_pic;
 	MSRect local_rect;
 	mblk_t *local_msg;
-  MSPicture tmp_local_pic;
-  mblk_t *tmp_local_msg;
-  mblk_t *previous_selfview;
 	int corner;
 	struct SwsContext *sws1;
 	struct SwsContext *sws2;
@@ -537,44 +534,42 @@ typedef struct VideoOut
 
 static void set_corner(VideoOut *s, int corner)
 {
-  s->corner=corner;
-  s->local_pic.w=s->fbuf.w/SCALE_FACTOR;
-  s->local_pic.h=s->fbuf.h/SCALE_FACTOR;
-  s->tmp_local_pic.h = s->local_pic.h;
-  s->tmp_local_pic.w = s->local_pic.w;
-  if (corner==1)
-    {
-      /* top left corner */
+	s->corner=corner;
+	s->local_pic.w=s->fbuf.w/SCALE_FACTOR;
+	s->local_pic.h=s->fbuf.h/SCALE_FACTOR;
+	if (corner==1)
+	{
+	/* top left corner */
 	s->local_rect.x=0;
 	s->local_rect.y=0;
 	s->local_rect.w=s->local_pic.w;
 	s->local_rect.h=s->local_pic.h;
-    }
-  else if (corner==2)
-    {
-      /* top right corner */
+	}
+	else if (corner==2)
+	{
+	/* top right corner */
 	s->local_rect.x=s->fbuf.w-s->local_pic.w;
 	s->local_rect.y=0;
 	s->local_rect.w=s->local_pic.w;
 	s->local_rect.h=s->local_pic.h;
-    }
-  else if (corner==3)
-    {
-      /* bottom left corner */
+	}
+	else if (corner==3)
+	{
+	/* bottom left corner */
 	s->local_rect.x=0;
 	s->local_rect.y=s->fbuf.h-s->local_pic.h;
 	s->local_rect.w=s->local_pic.w;
 	s->local_rect.h=s->local_pic.h;
-    }
-  else
-    {
-      /* default: bottom right corner */
-      /* corner can be set to -1: to disable the self view... */
+	}
+	else
+	{
+	/* default: bottom right corner */
+	/* corner can be set to -1: to disable the self view... */
 	s->local_rect.x=s->fbuf.w-s->local_pic.w;
 	s->local_rect.y=s->fbuf.h-s->local_pic.h;
 	s->local_rect.w=s->local_pic.w;
 	s->local_rect.h=s->local_pic.h;
-    }
+	}
 }
 
 static void set_vsize(VideoOut *s, MSVideoSize *sz){
@@ -595,8 +590,6 @@ static void video_out_init(MSFilter  *f){
 	def_size.width=MS_VIDEO_SIZE_CIF_W;
 	def_size.height=MS_VIDEO_SIZE_CIF_H;
 	obj->local_msg=NULL;
-  obj->tmp_local_msg=NULL;
-  obj->previous_selfview=NULL;
 	obj->corner=0;
 	obj->sws1=NULL;
 	obj->sws2=NULL;
@@ -623,15 +616,6 @@ static void video_out_uninit(MSFilter *f){
 	if (obj->local_msg!=NULL) {
 		freemsg(obj->local_msg);
 		obj->local_msg=NULL;
-	}
-	if (obj->previous_selfview!=NULL)
-	{
-		freemsg(obj->previous_selfview);
-		obj->previous_selfview=NULL;
-	}
-	if (obj->tmp_local_msg!=NULL) {
-		freemsg(obj->tmp_local_msg);
-		obj->tmp_local_msg=NULL;
 	}
 	ms_free(obj);
 }
@@ -663,30 +647,10 @@ static void video_out_preprocess(MSFilter *f){
 		freemsg(obj->local_msg);
 		obj->local_msg=NULL;
 	}
-	if (obj->previous_selfview!=NULL)
-	{
-		freemsg(obj->previous_selfview);
-		obj->previous_selfview=NULL;
-	}
-	if (obj->tmp_local_msg!=NULL) {
-		freemsg(obj->tmp_local_msg);
-		obj->tmp_local_msg=NULL;
-	}
 	obj->ready=TRUE;
 }
 
 static void video_out_postprocess(MSFilter *f){
-}
-
-static void mirror(unsigned char* dst,unsigned char* src,int dststride,int srcstride,int w,int h){
-    int y;
-    for(y=0;y<h;y++){
-      int x;
-      for(x=0;x<w;x++)
-        dst[x]=src[w-x-1];
-      src+=srcstride;
-      dst+=dststride;
-    }
 }
 
 
@@ -702,85 +666,39 @@ static void video_out_process(MSFilter *f){
 	if (obj->display==NULL){
 		ms_filter_unlock(f);
 		if (f->inputs[0]!=NULL)
-		  ms_queue_flush(f->inputs[0]);
+			ms_queue_flush(f->inputs[0]);
 		if (f->inputs[1]!=NULL)
-		  ms_queue_flush(f->inputs[1]);
+			ms_queue_flush(f->inputs[1]);
 		return;
 	}
 	/*get most recent message and draw it*/
 	if (f->inputs[1]!=NULL && (inm=ms_queue_peek_last(f->inputs[1]))!=0) {
-
-	  if (obj->corner==-1)
-	    {
-        if (obj->tmp_local_msg!=NULL) {
-          freemsg(obj->tmp_local_msg);
-          obj->tmp_local_msg=NULL;
-        }
-	      if (obj->local_msg!=NULL) {
-		      freemsg(obj->local_msg);
-		      obj->local_msg=NULL;
-	      }
-        if (obj->previous_selfview!=NULL)
-        {
-          freemsg(obj->previous_selfview);
-          obj->previous_selfview=NULL;
-        }
-	    }
-	  else
-	    {
-	      MSPicture src;
-        static mblk_t *previous_selfview = NULL;
-	      if (yuv_buf_init_from_mblk(&src,inm)==0){
-
-		      if (obj->sws2==NULL){
-		        obj->sws2=sws_getContext(src.w,src.h,PIX_FMT_YUV420P,
-					         obj->local_pic.w,obj->local_pic.h,PIX_FMT_YUV420P,
-					         SWS_FAST_BILINEAR, NULL, NULL, NULL);
-		      }
-          obj->tmp_local_pic.h = obj->local_pic.h;
-          obj->tmp_local_pic.w = obj->local_pic.w;
-	        if (obj->tmp_local_msg==NULL){
-	          obj->tmp_local_msg=yuv_buf_alloc(&obj->tmp_local_pic,
-				               obj->tmp_local_pic.w,obj->tmp_local_pic.h);
-          }
-	        if (obj->local_msg==NULL){
-	          obj->local_msg=yuv_buf_alloc(&obj->local_pic,
-				               obj->local_pic.w,obj->local_pic.h);
-	        }
-
-          if (previous_selfview==NULL
-            || (msgdsize(inm)!=msgdsize(previous_selfview))
-            || memcmp(inm->b_rptr, previous_selfview->b_rptr, msgdsize(inm))!=0)
-          {
-            if (sws_scale(obj->sws2,src.planes,src.strides, 0,
-		                src.h, obj->tmp_local_pic.planes, obj->tmp_local_pic.strides)<0){
-	            ms_error("Error in sws_scale().");
-	          }
-
-            mirror(obj->local_pic.planes[0],obj->tmp_local_pic.planes[0],
-               obj->local_pic.strides[0],obj->tmp_local_pic.strides[0],
-               obj->local_pic.w,obj->local_pic.h);
-            mirror(obj->local_pic.planes[1],obj->tmp_local_pic.planes[1],
-               obj->local_pic.strides[1],obj->tmp_local_pic.strides[1],
-               obj->local_pic.w>>1,obj->local_pic.h>>1);
-            mirror(obj->local_pic.planes[2],obj->tmp_local_pic.planes[2],
-               obj->local_pic.strides[2],obj->tmp_local_pic.strides[2],
-               obj->local_pic.w>>1,obj->local_pic.h>>1);
-          }
-          else
-          {
-            if (sws_scale(obj->sws2,src.planes,src.strides, 0,
-		                src.h, obj->local_pic.planes, obj->local_pic.strides)<0){
-	            ms_error("Error in sws_scale().");
-	          }
-          }
-
-          if (previous_selfview!=NULL)
-            freemsg(previous_selfview);
-          previous_selfview = dupb(inm);
-	    }
-	  }
-	  ms_queue_flush(f->inputs[1]);
+		if (obj->corner==-1){
+			if (obj->local_msg!=NULL) {
+				freemsg(obj->local_msg);
+				obj->local_msg=NULL;
+			}
+		}else{
+			MSPicture src;
+			if (yuv_buf_init_from_mblk(&src,inm)==0){
+			
+				if (obj->sws2==NULL){
+					obj->sws2=sws_getContext(src.w,src.h,PIX_FMT_YUV420P,
+								obj->local_pic.w,obj->local_pic.h,PIX_FMT_YUV420P,
+								SWS_FAST_BILINEAR, NULL, NULL, NULL);
+				}
+				if (obj->local_msg==NULL){
+					obj->local_msg=yuv_buf_alloc(&obj->local_pic,
+						obj->local_pic.w,obj->local_pic.h);
+				}
+				if (sws_scale(obj->sws2,src.planes,src.strides, 0,
+					src.h, obj->local_pic.planes, obj->local_pic.strides)<0){
+					ms_error("Error in sws_scale().");
+				}
+				yuv_buf_mirror(&obj->local_pic);
+			}
+		}
+		ms_queue_flush(f->inputs[1]);
 	}
 	
 	if (f->inputs[0]!=NULL && (inm=ms_queue_peek_last(f->inputs[0]))!=0) {
