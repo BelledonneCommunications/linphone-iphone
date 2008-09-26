@@ -601,8 +601,10 @@ static int v4l_configure(V4lState *s)
 				if (!try_size(s,MS_VIDEO_SIZE_CIF)) {
 					if (!try_size(s,MS_VIDEO_SIZE_QCIF)) {
 						if (!try_size(s,MS_VIDEO_SIZE_QVGA)) {
-						  if (!try_size(s,MS_VIDEO_SIZE_1024)) {
-							return -1;
+						  if (!try_size(s,MS_VIDEO_SIZE_4CIF)) {
+						    if (!try_size(s,MS_VIDEO_SIZE_1024)) {
+						      return -1;
+						    }
 						  }
 						}
 					}
