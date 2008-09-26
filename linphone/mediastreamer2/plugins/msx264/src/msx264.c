@@ -174,7 +174,7 @@ static int enc_set_br(MSFilter *f, void *arg){
 	d->bitrate=*(int*)arg;
 
         if (d->bitrate>=1024000){
-	  d->vsize=MS_VIDEO_SIZE_4CIF;
+	  d->vsize=MS_VIDEO_SIZE_VGA;
 	  d->fps=15;
         }else if (d->bitrate>=384000){
 	  d->vsize=MS_VIDEO_SIZE_CIF;
