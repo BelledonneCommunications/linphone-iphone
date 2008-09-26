@@ -55,8 +55,8 @@ void video_stream_free (VideoStream * stream)
 		ms_filter_destroy (stream->output);
 	if (stream->decoder != NULL)
 		ms_filter_destroy (stream->decoder);
-	if (stream->encoder != NULL)
-		ms_filter_destroy (stream->encoder);
+	if (stream->sizeconv != NULL)
+		ms_filter_destroy (stream->sizeconv);
 	if (stream->pixconv!=NULL)
 		ms_filter_destroy(stream->pixconv);
 	if (stream->tee!=NULL)
@@ -227,8 +227,7 @@ int video_stream_start (VideoStream *stream, RtpProfile *profile, const char *re
 	stream->source = ms_web_cam_create_reader(cam);
 	stream->tee = ms_filter_new(MS_TEE_ID);
 	stream->output=ms_filter_new(MS_VIDEO_OUT_ID);
-
-	
+	stream->sizeconv=ms_filter_new(MS_SIZE_CONV_ID);
 	
 	if (pt->normal_bitrate>0){
 		ms_message("Limiting bitrate of video encoder to %i bits/s",pt->normal_bitrate);
@@ -254,8 +253,16 @@ int video_stream_start (VideoStream *stream, RtpProfile *profile, const char *re
 		stream->pixconv = ms_filter_new(MS_PIX_CONV_ID);
 		/*set it to the pixconv */
 		ms_filter_call_method(stream->pixconv,MS_FILTER_SET_PIX_FMT,&format);
+
+		ms_filter_call_method(stream->source,MS_FILTER_GET_VIDEO_SIZE,&vsize);
+	
 		ms_filter_call_method(stream->pixconv,MS_FILTER_SET_VIDEO_SIZE,&vsize);
+		  
 	}
+
+	ms_filter_call_method(stream->encoder,MS_FILTER_GET_VIDEO_SIZE,&vsize);
+	ms_filter_call_method(stream->sizeconv,MS_FILTER_SET_VIDEO_SIZE,&vsize);
+
 	/*force the decoder to output YUV420P */
 	format=MS_YUV420P;
 	ms_filter_call_method(stream->decoder,MS_FILTER_SET_PIX_FMT,&format);
@@ -273,7 +280,8 @@ int video_stream_start (VideoStream *stream, RtpProfile *profile, const char *re
 
 	/* and then connect all */
 	ms_filter_link (stream->source, 0, stream->pixconv, 0);
-	ms_filter_link (stream->pixconv, 0, stream->tee, 0);
+	ms_filter_link (stream->pixconv, 0, stream->sizeconv, 0);
+	ms_filter_link (stream->sizeconv, 0, stream->tee, 0);
 	ms_filter_link (stream->tee, 0 ,stream->encoder, 0 );
 	ms_filter_link (stream->encoder,0, stream->rtpsend,0);
 	
@@ -303,7 +311,8 @@ video_stream_stop (VideoStream * stream)
 		rtp_stats_display(rtp_session_get_stats(stream->session),"Video session's RTP statistics");
 		
 		ms_filter_unlink(stream->source,0,stream->pixconv,0);
-		ms_filter_unlink(stream->pixconv,0,stream->tee,0);
+		ms_filter_unlink (stream->pixconv, 0, stream->sizeconv, 0);
+		ms_filter_unlink (stream->sizeconv, 0, stream->tee, 0);
 		ms_filter_unlink(stream->tee,0,stream->encoder,0);
 		ms_filter_unlink(stream->encoder, 0, stream->rtpsend,0);
 		ms_filter_unlink(stream->rtprecv, 0, stream->decoder, 0);
@@ -334,6 +343,7 @@ VideoStream * video_preview_start(MSWebCam *device){
 	stream->source = ms_web_cam_create_reader(device);
 	stream->output = ms_filter_new(MS_VIDEO_OUT_ID);
 
+
 	/* configure the filters */
 	ms_filter_call_method(stream->source,MS_FILTER_GET_PIX_FMT,&format);
 	ms_filter_call_method(stream->source,MS_FILTER_GET_VIDEO_SIZE,&vsize);
@@ -345,12 +355,15 @@ VideoStream * video_preview_start(MSWebCam *device){
 		ms_filter_call_method(stream->pixconv,MS_FILTER_SET_PIX_FMT,&format);
 		ms_filter_call_method(stream->pixconv,MS_FILTER_SET_VIDEO_SIZE,&vsize);
 	}
+
 	format=MS_YUV420P;
 	ms_filter_call_method(stream->output,MS_FILTER_SET_PIX_FMT,&format);
 	ms_filter_call_method(stream->output,MS_FILTER_SET_VIDEO_SIZE,&vsize);
 	/* and then connect all */
+
 	ms_filter_link(stream->source,0, stream->pixconv,0);
-	ms_filter_link(stream->pixconv,0,stream->output,0);
+	ms_filter_link(stream->pixconv, 0, stream->output, 0);
+
 	/* create the ticker */
 	stream->ticker = ms_ticker_new(); 
 	ms_ticker_attach (stream->ticker, stream->source);
@@ -404,8 +417,7 @@ int video_stream_send_only_start(VideoStream* stream, RtpProfile *profile, const
 
 	/* creates the filters */
 	stream->source = ms_web_cam_create_reader(device);
-	stream->pixconv= ms_filter_new(MS_PIX_CONV_ID);
-	
+	stream->sizeconv=ms_filter_new(MS_SIZE_CONV_ID);
 
 	/* configure the filters */
 	if (pt->send_fmtp)
@@ -420,15 +432,28 @@ int video_stream_send_only_start(VideoStream* stream, RtpProfile *profile, const
 	/* get the output format for webcam reader */
 	ms_filter_call_method(stream->source,MS_FILTER_GET_PIX_FMT,&format);
 	/*set it to the pixconv */
-	ms_filter_call_method(stream->pixconv,MS_FILTER_SET_PIX_FMT,&format);
-	ms_filter_call_method(stream->pixconv,MS_FILTER_SET_VIDEO_SIZE,&vsize);
+
+	/* bug fix from AMD: What about MJPEG mode???*/
+	if (format==MS_MJPEG){
+		stream->pixconv=ms_filter_new(MS_MJPEG_DEC_ID);
+	}else{
+		stream->pixconv=ms_filter_new(MS_PIX_CONV_ID);
+		ms_filter_call_method(stream->pixconv,MS_FILTER_SET_PIX_FMT,&format);
+
+		ms_filter_call_method(stream->source,MS_FILTER_GET_VIDEO_SIZE,&vsize);
+		ms_filter_call_method(stream->pixconv,MS_FILTER_SET_VIDEO_SIZE,&vsize);
+	}
+
+	ms_filter_call_method(stream->encoder,MS_FILTER_GET_VIDEO_SIZE,&vsize);
+	ms_filter_call_method(stream->sizeconv,MS_FILTER_SET_VIDEO_SIZE,&vsize);
 	
 	ms_message("vsize=%ix%i, fps=%f, send format: %s, capture format: %d, bitrate: %d",
 			vsize.width,vsize.height,fps,pt->send_fmtp,format, pt->normal_bitrate);
 
 	/* and then connect all */
 	ms_filter_link (stream->source, 0, stream->pixconv, 0);
-	ms_filter_link (stream->pixconv, 0, stream->encoder, 0);
+	ms_filter_link (stream->pixconv, 0, stream->sizeconv, 0);
+	ms_filter_link (stream->sizeconv, 0, stream->encoder, 0);
 	ms_filter_link (stream->encoder,0, stream->rtpsend,0);
 
 	/* create the ticker */
@@ -442,7 +467,8 @@ void video_stream_send_only_stop(VideoStream *stream){
 	if (stream->ticker){
 		ms_ticker_detach (stream->ticker, stream->source);
 		ms_filter_unlink(stream->source,0,stream->pixconv,0);
-		ms_filter_unlink(stream->pixconv,0,stream->encoder,0);
+		ms_filter_unlink (stream->pixconv, 0, stream->sizeconv, 0);
+		ms_filter_unlink (stream->sizeconv, 0, stream->encoder, 0);
 		ms_filter_unlink(stream->encoder,0,stream->rtpsend,0);
 	}
 	video_stream_free(stream);
