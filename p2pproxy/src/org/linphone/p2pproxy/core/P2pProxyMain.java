@@ -54,6 +54,8 @@ public class P2pProxyMain  implements P2pProxyMainMBean {
    public final static String MAIN_MBEAN_NAME="org.linphone.p2proxy:type=main";
    private static P2pProxyMain mP2pProxyMain = new P2pProxyMain();
    private static Configurator mConfigurator;
+   private static String mConfigHomeDir;
+   
    static {
 //      System.setProperty("com.sun.management.jmxremote", "true");
 //      System.setProperty("com.sun.management.jmxremote.port", "6789");
@@ -72,7 +74,7 @@ public class P2pProxyMain  implements P2pProxyMainMBean {
     */
    public static void main(String[] args) {
 	   try {
-		   String lconfigHomeDir=System.getProperty("user.home")+"/.p2pproxy";
+		   mConfigHomeDir=System.getProperty("user.home")+"/.p2pproxy";
 		   int lsipPort=5040;
 		   JxtaNetworkManager.Mode lMode = JxtaNetworkManager.Mode.auto;
 		   boolean lEnableHttp = false;
@@ -82,14 +84,14 @@ public class P2pProxyMain  implements P2pProxyMainMBean {
 		   for (int i=0; i < args.length; i=i+2) {  
 			   String argument = args[i];
 			   if (argument.equals("-jxta")) {
-				   lconfigHomeDir = args[i + 1];
-				   File lFile = new File(lconfigHomeDir);
+				   mConfigHomeDir = args[i + 1];
+				   File lFile = new File(mConfigHomeDir);
 				   if (lFile.exists() == false) lFile.mkdir();
 				 
-				   System.out.println("lconfigHomeDir detected[" + lconfigHomeDir + "]");
+				   System.out.println("mConfigHomeDir detected[" + mConfigHomeDir + "]");
 			   } 
 		   }
-		   System.setProperty("org.linphone.p2pproxy.home", lconfigHomeDir);
+		   System.setProperty("org.linphone.p2pproxy.home", mConfigHomeDir);
 		  
 		   
 		   System.setProperty("net.jxta.logging.Logging", "FINEST");
@@ -101,7 +103,7 @@ public class P2pProxyMain  implements P2pProxyMainMBean {
 		   
 		   mLog.info("p2pproxy initilizing...");
 
-		   File lPropertyFile =  new File(lconfigHomeDir+"/p2pproxy.properties.xml");
+		   File lPropertyFile =  new File(mConfigHomeDir+"/p2pproxy.properties.xml");
 		   mConfigurator = new Configurator(lPropertyFile);
 		   try {
 			   ObjectName lObjectName = new ObjectName(MAIN_MBEAN_NAME);
@@ -121,7 +123,7 @@ public class P2pProxyMain  implements P2pProxyMainMBean {
 		   for (int i=0; i < args.length; i=i+2) {  
 			   String argument = args[i];
 			   if (argument.equals("-jxta")) {
-				   lconfigHomeDir = args[i + 1];
+				   mConfigHomeDir = args[i + 1];
 				   //nop
 			   } else if (argument.equals("-sip")) {
 				   lsipPort = Integer.parseInt(args[i + 1]);
@@ -219,7 +221,7 @@ public class P2pProxyMain  implements P2pProxyMainMBean {
 
 		   //check from env
 
-		   File lJxtaDirectory = new File (lconfigHomeDir);
+		   File lJxtaDirectory = new File (mConfigHomeDir);
 		   if (lJxtaDirectory.exists() == false) lJxtaDirectory.mkdir();
 
 
@@ -256,7 +258,7 @@ public class P2pProxyMain  implements P2pProxyMainMBean {
 		   //setup account manager
 		   mP2pProxyAccountManagement = new P2pProxyAccountManagement(mJxtaNetworkManager);
 		   // setup sip provider
-		   SipStack.log_path = lconfigHomeDir+"/logs";
+		   SipStack.log_path = mConfigHomeDir+"/logs";
 		   mSipAndPipeListener = new SipProxyRegistrar(mConfigurator,mJxtaNetworkManager,mP2pProxyAccountManagement,mP2pProxyManagement);
 		   //set management
 		   try {
@@ -339,13 +341,25 @@ public void loadTraceConfigFile() throws P2pProxyException {
    }
 public  static void staticLoadTraceConfigFile()  throws P2pProxyException {
    try {
-      PropertyConfigurator.configureAndWatch("log4j.properties");
+      String lSearchDir;
+      //search build dir
+      lSearchDir = System.getProperty("org.linphone.p2pproxy.build.dir");
+      File lFile = new File(lSearchDir+"/log4j.properties");
+      if (lFile.exists() == false) {
+         lSearchDir = mConfigHomeDir;
+         lFile = new File(lSearchDir+"/log4j.properties");
+         if (lFile.exists() == false) {
+            lSearchDir=".";
+         }
+      }
+      String lLog4jFile= lSearchDir+"/log4j.properties";
+      PropertyConfigurator.configureAndWatch(lLog4jFile);
       // read java.util.logging properties 
       Properties lLogginProperties = new Properties();
-      lLogginProperties.load(new FileInputStream("log4j.properties"));
+      lLogginProperties.load(new FileInputStream(lLog4jFile));
       lLogginProperties.setProperty("java.util.logging.FileHandler.pattern",System.getProperty("org.linphone.p2pproxy.home")+"/logs/p2pproxy.log");
-      lLogginProperties.store(new FileOutputStream("log4j.properties.tmp"), "tmp");
-      System.setProperty("java.util.logging.config.file","log4j.properties.tmp");
+      lLogginProperties.store(new FileOutputStream(lLog4jFile+".tmp"), "tmp");
+      System.setProperty("java.util.logging.config.file",lLog4jFile+".tmp");
       java.util.logging.LogManager.getLogManager().readConfiguration();
    } catch (Exception e) {
       throw new P2pProxyException("enable to load traces",e);

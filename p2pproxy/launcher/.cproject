@@ -49,7 +49,7 @@
 <option id="gnu.c.compiler.option.warnings.toerrors.168149749" name="Warnings as errors (-Werror)" superClass="gnu.c.compiler.option.warnings.toerrors"/>
 <option id="gnu.c.compiler.option.misc.other.465456911" name="Other flags" superClass="gnu.c.compiler.option.misc.other"/>
 <option id="gnu.c.compiler.option.misc.verbose.1739414683" name="Verbose (-v)" superClass="gnu.c.compiler.option.misc.verbose"/>
-<option id="gnu.c.compiler.option.misc.ansi.2034289138" name="Support ANSI programs (-ansi)" superClass="gnu.c.compiler.option.misc.ansi"/>
+<option id="gnu.c.compiler.option.misc.ansi.2034289138" name="Support ANSI programs (-ansi)" superClass="gnu.c.compiler.option.misc.ansi" value="true" valueType="boolean"/>
 <inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1981684865" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 </tool>
 <tool id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.1568763747" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug">
@@ -107,7 +107,7 @@
 <option id="gnu.c.compiler.option.warnings.toerrors.2063337025" name="Warnings as errors (-Werror)" superClass="gnu.c.compiler.option.warnings.toerrors"/>
 <option id="gnu.c.compiler.option.misc.other.676396200" name="Other flags" superClass="gnu.c.compiler.option.misc.other"/>
 <option id="gnu.c.compiler.option.misc.verbose.1885722707" name="Verbose (-v)" superClass="gnu.c.compiler.option.misc.verbose"/>
-<option id="gnu.c.compiler.option.misc.ansi.134114436" name="Support ANSI programs (-ansi)" superClass="gnu.c.compiler.option.misc.ansi"/>
+<option id="gnu.c.compiler.option.misc.ansi.134114436" name="Support ANSI programs (-ansi)" superClass="gnu.c.compiler.option.misc.ansi" value="true" valueType="boolean"/>
 <inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.479507797" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 </tool>
 </fileInfo>
@@ -120,6 +120,7 @@
 <storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
 <storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 <storageModule moduleId="org.eclipse.cdt.core.language.mapping"/>
+
 <storageModule moduleId="scannerConfiguration">
 <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.make.core.GCCStandardMakePerProjectProfile"/>
 <profile id="org.eclipse.cdt.make.core.GCCStandardMakePerProjectProfile">
@@ -504,6 +505,7 @@
 <storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
 <storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 <storageModule moduleId="org.eclipse.cdt.core.language.mapping"/>
+
 <storageModule moduleId="scannerConfiguration">
 <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.make.core.GCCStandardMakePerProjectProfile"/>
 <profile id="org.eclipse.cdt.make.core.GCCStandardMakePerProjectProfile">
