@@ -125,8 +125,8 @@ static int enc_set_br(MSFilter *f, void*data){
 	s->tinfo.keyframe_data_target_bitrate=codecbr;
 	/*those default settings would need to be affined*/
 	if (br>=1024000){
-		vsize.width = MS_VIDEO_SIZE_1024_W;
-		vsize.height = MS_VIDEO_SIZE_1024_H;
+		vsize.width = MS_VIDEO_SIZE_4CIF_W;
+		vsize.height = MS_VIDEO_SIZE_4CIF_H;
 		s->tinfo.quality=32;
 		fps=15;
 	}else if (br>=512000){
