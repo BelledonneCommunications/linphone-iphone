@@ -538,8 +538,8 @@ static int recvStunResponse(ortp_socket_t sock, char *ipaddr, int *port){
 	if (len>0){
 		struct in_addr ia;
 		stunParseMessage(buf,len, &resp,FALSE );
-		*port = resp.changedAddress.ipv4.port;
-		ia.s_addr=htonl(resp.changedAddress.ipv4.addr);
+		*port = resp.mappedAddress.ipv4.port;
+		ia.s_addr=htonl(resp.mappedAddress.ipv4.addr);
 		strncpy(ipaddr,inet_ntoa(ia),LINPHONE_IPADDR_SIZE);
 	}
 	return len;
@@ -560,6 +560,7 @@ void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 		bool_t got_audio,got_video;
 		struct timeval init,cur;
 		if (parse_stun_server_addr(server,&ss,&ss_len)<0){
+			ms_error("Fail to parser stun server address: %s",server);
 			return;
 		}
 		if (lc->vtable.display_status!=NULL)
@@ -599,12 +600,18 @@ void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 				ms_message("STUN test result: local video port maps to %s:%i",
 					call->video_params.natd_addr,
 					call->video_params.natd_port);
-					got_video=TRUE;
+				got_video=TRUE;
 			}
 			gettimeofday(&cur,NULL);
 			elapsed=((cur.tv_sec-init.tv_sec)*1000.0) +  ((cur.tv_usec-init.tv_usec)/1000.0);
 			if (elapsed>2000)  break;
 		}while(!(got_audio && (got_video||sock2<0)  ) );
+		if (!got_audio){
+			ms_error("No stun server response for audio port.");
+		}
+		if (!got_video && sock2>=0){
+			ms_error("No stun server response for video port.");
+		}
 		close_socket(sock1);
 		if (sock2>=0) close_socket(sock2);
 	}

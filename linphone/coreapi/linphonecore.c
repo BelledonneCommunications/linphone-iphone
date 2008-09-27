@@ -1187,9 +1187,6 @@ int linphone_core_invite(LinphoneCore *lc, const char *url)
 		gstate_new_state(lc, GSTATE_CALL_ERROR, NULL);
 		return -1;
 	}
-	barmsg=ortp_strdup_printf("%s %s", _("Contacting"), real_url);
-	lc->vtable.display_status(lc,barmsg);
-	ms_free(barmsg);
 	if (proxy!=NULL) {
 		from=linphone_proxy_config_get_identity(proxy);
 		
@@ -1211,6 +1208,9 @@ int linphone_core_invite(LinphoneCore *lc, const char *url)
 	osip_from_parse(parsed_url2,from);
 	
 	lc->call=linphone_call_new_outgoing(lc,parsed_url2,real_parsed_url);
+	barmsg=ortp_strdup_printf("%s %s", _("Contacting"), real_url);
+	lc->vtable.display_status(lc,barmsg);
+	ms_free(barmsg);
 	if (!lc->sip_conf.sdp_200_ack){
 		ctx=lc->call->sdpctx;
 		lc->call->profile=lc->local_profile;
