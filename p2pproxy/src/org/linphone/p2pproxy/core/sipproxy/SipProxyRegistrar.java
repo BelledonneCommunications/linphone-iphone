@@ -222,9 +222,44 @@ public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarM
 ////Proxy methods
 /////////////////////////////////////////////////////////////////////	
    private void proxyResponse(SipProvider aProvider, Message aMessage) throws NumberFormatException, InterruptedException, P2pProxyException, IOException {
-
+      mSuperPeerProxy.proxyResponse(aProvider, aMessage);
    }
-   private void proxyRequest(SipProvider aProvider, Message aMessage) throws Exception {}
+   private void proxyRequest(SipProvider aProvider, Message aMessage) throws Exception {
+      if (aMessage.isAck() && aMessage.getToHeader().getTag() == null) {
+         // just terminate the Invite transaction
+         return;
+      }
+
+      if (aMessage.isInvite() == true) {
+         // 100 trying
+         TransactionServer lTransactionServer = new TransactionServer(aProvider,aMessage,null);
+         Message l100Trying = MessageFactory.createResponse(aMessage,100,"trying",null);
+         lTransactionServer.respondWith(l100Trying);
+      }
+      //remove route
+      MultipleHeader lMultipleRoute = aMessage.getRoutes();
+      if (lMultipleRoute != null) {
+         lMultipleRoute.removeTop();
+         aMessage.setRoutes(lMultipleRoute);
+      }
+      // add Via only udp
+      SipUtils.addVia(aProvider,aMessage);
+      // add recordRoute
+      SipUtils.addRecordRoute(aProvider,aMessage);
+      try {
+         mSuperPeerProxy.proxyRequest(aProvider, aMessage);
+      }catch (P2pProxyUserNotFoundException e) {
+         //remove via 
+         SipUtils.removeVia(aProvider, aMessage);
+         if (aMessage.isInvite()) {
+            Message lresp = MessageFactory.createResponse(aMessage,404,e.getMessage(),null);
+            TransactionServer lTransactionServer = new TransactionServer(aProvider,aMessage,null);
+            lTransactionServer.respondWith(lresp);
+         } else {
+            throw e;
+         }
+      }
+   }
    
    
 //////////////////////////////////////////////////////////////////////

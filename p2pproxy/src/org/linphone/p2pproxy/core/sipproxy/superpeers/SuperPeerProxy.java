@@ -19,25 +19,30 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 package org.linphone.p2pproxy.core.sipproxy.superpeers;
 
+import java.util.Map;
+
 import org.linphone.p2pproxy.api.P2pProxyException;
 import org.linphone.p2pproxy.core.JxtaNetworkManager;
 import org.linphone.p2pproxy.core.sipproxy.RegistrationHandler;
 import org.linphone.p2pproxy.core.sipproxy.SipProxy;
 import org.linphone.p2pproxy.core.sipproxy.SipProxyRegistrar.Registration;
-import org.zoolu.sip.address.SipURL;
+
 import org.zoolu.sip.message.Message;
 import org.zoolu.sip.provider.SipProvider;
 
 public class SuperPeerProxy implements SipProxy, RegistrationHandler {
    private final JxtaNetworkManager mJxtaNetworkManager;
    private final String mRegistrarAddress;
+   private final Map<String,Registration> mRegistrationTab;
    
-   public SuperPeerProxy(JxtaNetworkManager aJxtaNetworkManager, String aRegistrarAddress) {
+   public SuperPeerProxy(JxtaNetworkManager aJxtaNetworkManager, String aRegistrarAddress, Map<String,Registration> aRegistrationTab ) {
       mJxtaNetworkManager = aJxtaNetworkManager;
       mRegistrarAddress = aRegistrarAddress;
+      mRegistrationTab = aRegistrationTab;
    }
    public void proxyRequest(SipProvider provider, Message message) throws P2pProxyException {
-      // TODO Auto-generated method stub
+      // 1 check if user is a local user
+      
 
    }
 

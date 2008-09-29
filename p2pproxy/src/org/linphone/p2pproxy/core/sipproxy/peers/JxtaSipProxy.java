@@ -68,47 +68,13 @@ public class JxtaSipProxy implements SipProxy, PipeMsgListener,RegistrationHandl
       mProvider = aProvider;
    }
    public void proxyRequest(SipProvider aProvider, Message aMessage) throws P2pProxyException {
-
-
-      if (aMessage.isAck() && aMessage.getToHeader().getTag() == null) {
-         // just terminate the Invite transaction
-         return;
-      }
-
-      if (aMessage.isInvite() == true) {
-         // 100 trying
-         TransactionServer lTransactionServer = new TransactionServer(aProvider,aMessage,null);
-         Message l100Trying = MessageFactory.createResponse(aMessage,100,"trying",null);
-         lTransactionServer.respondWith(l100Trying);
-      }
-
       String lTo =  aMessage.getToHeader().getNameAddress().getAddress().toString();
-      //remove route
-      MultipleHeader lMultipleRoute = aMessage.getRoutes();
-      if (lMultipleRoute != null) {
-         lMultipleRoute.removeTop();
-         aMessage.setRoutes(lMultipleRoute);
-      }
-      // add Via only udp
-      SipUtils.addVia(aProvider,aMessage);
-      // add recordRoute
-      SipUtils.addRecordRoute(aProvider,aMessage);
       try {
          mSdpProcessor.processSdpBeforeSendingToPipe(aMessage);
          // proxy message to pipe
          OutputPipe lOutputPipe = sendMessageToPipe(lTo,aMessage.toString());
          mSdpProcessor.processSdpAfterSentToPipe( aMessage,lOutputPipe);
-      } catch (P2pProxyUserNotFoundException e) {
-         //remove via 
-         SipUtils.removeVia(aProvider, aMessage);
-         if (aMessage.isInvite()) {
-            Message lresp = MessageFactory.createResponse(aMessage,404,e.getMessage(),null);
-            TransactionServer lTransactionServer = new TransactionServer(aProvider,aMessage,null);
-            lTransactionServer.respondWith(lresp);
-         } else {
-            throw e;
-         }
-      } catch (Exception e2) {
+      }  catch (Exception e2) {
          //remove via 
          SipUtils.removeVia(aProvider, aMessage);
          throw new P2pProxyException(e2);
