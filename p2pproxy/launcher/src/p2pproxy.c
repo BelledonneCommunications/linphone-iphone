@@ -13,13 +13,14 @@
 #endif
 JNIEnv* p2pproxy_application_jnienv = 0;
 JavaVM* p2pproxy_application_jvm = 0;
+jclass  p2pproxy_proxy_main_class = 0;
 
 int p2pproxy_application_start(int argc, char **argv) {
 
 	JavaVMInitArgs args;
 	JavaVMOption options[7];
 	jint res=-1;
-	jclass lP2pProxyMainClass;
+	jclass lP2pProxyMainClass=0;
 	jmethodID mainMethod;
 	jobjectArray applicationArgsList;
 	jstring applicationArg;
@@ -56,13 +57,13 @@ int p2pproxy_application_start(int argc, char **argv) {
 		return P2PPROXY_ERROR;
 	}
 
-	lP2pProxyMainClass = (*p2pproxy_application_jnienv)->FindClass(p2pproxy_application_jnienv, "org/linphone/p2pproxy/core/P2pProxyMain");
+	p2pproxy_proxy_main_class = (*p2pproxy_application_jnienv)->FindClass(p2pproxy_application_jnienv, "org/linphone/p2pproxy/core/P2pProxyMain");
 
 	if (lP2pProxyMainClass == 0) {
 		fprintf(stderr,"cannot find class org/linphone/p2pproxy/core/P2pProxyMain");
 		return P2PPROXY_ERROR;
 	}
-	mainMethod = (*p2pproxy_application_jnienv)->GetStaticMethodID(p2pproxy_application_jnienv, lP2pProxyMainClass, "main", "([Ljava/lang/String;)V");
+	mainMethod = (*p2pproxy_application_jnienv)->GetStaticMethodID(p2pproxy_application_jnienv, p2pproxy_proxy_main_class, "main", "([Ljava/lang/String;)V");
 
 	applicationArgsList = (*p2pproxy_application_jnienv)->NewObjectArray(p2pproxy_application_jnienv, argc, (*p2pproxy_application_jnienv)->FindClass(p2pproxy_application_jnienv, "java/lang/String"), NULL);
 	
@@ -72,7 +73,7 @@ int p2pproxy_application_start(int argc, char **argv) {
 
 	}
 
-	(*p2pproxy_application_jnienv)->CallStaticVoidMethod(p2pproxy_application_jnienv, lP2pProxyMainClass, mainMethod, applicationArgsList);
+	(*p2pproxy_application_jnienv)->CallStaticVoidMethod(p2pproxy_application_jnienv, p2pproxy_proxy_main_class, mainMethod, applicationArgsList);
 
 	return P2PPROXY_NO_ERROR;
 }
@@ -84,26 +85,33 @@ const char* p2pproxy_status_string(int status_code) {
 
 
 int p2pproxy_accountmgt_createAccount(const char* user_name) {
-	return P2PPROXY_ERROR;
+	jmethodID createAccountMethod;
+	jstring applicationArg; 
+	
+	createAccountMethod = (*p2pproxy_application_jnienv)->GetStaticMethodID(p2pproxy_application_jnienv, p2pproxy_proxy_main_class, "createAccount", "([java/lang/String;)I");
+	applicationArg = (*p2pproxy_application_jnienv)->NewStringUTF(p2pproxy_application_jnienv, user_name);
+	return (*p2pproxy_application_jnienv)->CallStaticIntMethod(p2pproxy_application_jnienv, p2pproxy_proxy_main_class, createAccountMethod, applicationArg);
 }
 
 int p2pproxy_accountmgt_isValidAccount(const char* user_name) {
-	return P2PPROXY_ERROR;
+	jmethodID isValidAccountMethod;
+	jstring applicationArg; 
+	
+	isValidAccountMethod = (*p2pproxy_application_jnienv)->GetStaticMethodID(p2pproxy_application_jnienv, p2pproxy_proxy_main_class, "isValidAccount", "([java/lang/String;)I");
+	applicationArg = (*p2pproxy_application_jnienv)->NewStringUTF(p2pproxy_application_jnienv, user_name);
+	return (*p2pproxy_application_jnienv)->CallStaticIntMethod(p2pproxy_application_jnienv, p2pproxy_proxy_main_class, isValidAccountMethod, applicationArg);
 }
 
 int p2pproxy_accountmgt_deleteAccount(const char* user_name) {
-	return P2PPROXY_ERROR;
+	jmethodID deleteAccountMethod;
+	jstring applicationArg; 
+	
+	deleteAccountMethod = (*p2pproxy_application_jnienv)->GetStaticMethodID(p2pproxy_application_jnienv, p2pproxy_proxy_main_class, "deleteAccount", "([java/lang/String;)I");
+	applicationArg = (*p2pproxy_application_jnienv)->NewStringUTF(p2pproxy_application_jnienv, user_name);
+	return (*p2pproxy_application_jnienv)->CallStaticIntMethod(p2pproxy_application_jnienv, p2pproxy_proxy_main_class, deleteAccountMethod, applicationArg);
 }
 
-jobject p2pproxy_get_accountmgt() {
-	jclass lP2pProxyMainClass;
-	jmethodID getAccountMgtMethod;
-	
-	lP2pProxyMainClass = (*p2pproxy_application_jnienv)->FindClass(p2pproxy_application_jnienv, "org/linphone/p2pproxy/core/P2pProxyMain");
-	getAccountMgtMethod = (*p2pproxy_application_jnienv)->GetStaticMethodID(p2pproxy_application_jnienv, lP2pProxyMainClass, "getAccountManager", "(V)Lorg/linphone/p2pproxy/core/P2pProxyAccountManagementMBean");
-	
-	
-}
+
 
 
 

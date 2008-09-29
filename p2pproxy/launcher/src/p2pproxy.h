@@ -20,6 +20,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef P2PPROXY_LAUNCHER_H_
 #define P2PPROXY_LAUNCHER_H_
 
+#ifdef SWIG
+%module P2pProxylauncher
+%javaconst(1);
+%include "p2pproxy.h"
+#endif /*SWIG*/
+
 #define P2PPROXY_ACCOUNTMGT_USER_EXIST 1
 #define P2PPROXY_ACCOUNTMGT_USER_NOT_EXIST 0 
 
@@ -33,6 +39,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define P2PPROXY_ERROR_ACCOUNTMGT_USER_ALREADY_EXIST  -4
 #define P2PPROXY_ERROR_ACCOUNTMGT_BAD_SIP_URI  -5
 
+#ifndef SWIG
 /**
  *  start p2pproxy application
  *  blocking call
@@ -46,7 +53,7 @@ int p2pproxy_application_start(int argc, char **argv);
 /**
  * return the status string corresponding to the status code
  */
-const char* p2pproxy_status_string(int status_code);
+/*const char* p2pproxy_status_string(int status_code);*/
 
 /************************/
 /***account management***/
@@ -72,5 +79,7 @@ int p2pproxy_accountmgt_isValidAccount(const char* user_name);
 * @return P2PPROXY_NO_ERROR, P2PPROXY_ERROR_APPLICATIONNOTSTARTED
 */
 int p2pproxy_accountmgt_deleteAccount(const char* user_name);
-   
+
+#endif /*SWIG*/
+
 #endif /*P2PPROXY_LAUNCHER_H_*/

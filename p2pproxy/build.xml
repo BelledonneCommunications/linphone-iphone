@@ -17,6 +17,7 @@
   <property name="jxta-src" location="dependencies-src/jxse-src-2.5"/>
   <property name="jstun-src" location="dependencies-src/jstun-src-0.7.1"/>
   <property name="dist.dir" location="antbuild/dist/p2pproxy_${version}"/>
+  <property name="jni-src" location="antbuild/p2pproxy/jni_src/org/linphone/p2pproxy/launcher"/>
   
    <path id="p2pproxy.classpath">
     <pathelement location="antbuild/p2pproxy"/>
@@ -44,7 +45,16 @@
   <target name="build" depends="build-subprojects,build-project"/>
   <target name="build-subprojects"/>
   
-   <target name="build-project" depends="init">
+	<target name="jni-src" depends="init" >
+		<property name="p2pproxy-h"	location="launcher/src/p2pproxy.h"/>
+		<mkdir dir="${jni-src}"/>
+				<exec failonerror="yes" executable="swig">
+					<arg line=" -java -outdir ${jni-src} -package org.linphone.p2pproxy.launcher"/>
+					<arg line=" ${p2pproxy-h} "/>
+				</exec>		
+	</target>
+
+	<target name="build-project" depends="init">
     <echo message="${ant.project.name}: ${ant.file}"/>
  
       <javac destdir="antbuild/p2pproxy" debug="true" debuglevel="${debuglevel}" source="${source}" target="${target}">

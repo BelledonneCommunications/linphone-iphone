@@ -14,4 +14,11 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>jni_src</name>
+			<type>2</type>
+			<locationURI>jni_src</locationURI>
+		</link>
+	</linkedResources>
 </projectDescription>

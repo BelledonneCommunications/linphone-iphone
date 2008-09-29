@@ -38,9 +38,11 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.linphone.p2pproxy.api.P2pProxyException;
 import org.linphone.p2pproxy.api.P2pProxyManagement;
+import org.linphone.p2pproxy.api.P2pProxyUserAlreadyExistException;
 import org.linphone.p2pproxy.core.media.rtprelay.RtpRelayService;
 import org.linphone.p2pproxy.core.sipproxy.SipProxyRegistrar;
 import org.zoolu.sip.provider.SipStack;
+import org.linphone.p2pproxy.launcher.P2pProxylauncherConstants;
 
 public class P2pProxyMain  implements P2pProxyMainMBean {
    private final static Logger mLog = Logger.getLogger(P2pProxyMain.class);
@@ -366,7 +368,37 @@ public  static void staticLoadTraceConfigFile()  throws P2pProxyException {
       throw new P2pProxyException("enable to load traces",e);
    }
 }
-public static P2pProxyAccountManagementMBean getAccountManager() {
-   return mP2pProxyAccountManagement;
+
+/* p2pproxy.h implementation*/
+
+public static int createAccount(String aUserName) {
+   try {
+      mP2pProxyAccountManagement.createAccount(aUserName);
+   } catch (P2pProxyUserAlreadyExistException e) {
+      return P2pProxylauncherConstants.P2PPROXY_ACCOUNTMGT_USER_EXIST;
+   } catch (P2pProxyException e) {
+      return P2pProxylauncherConstants.P2PPROXY_ERROR;
+   }
+   return P2pProxylauncherConstants.P2PPROXY_NO_ERROR;
+}
+public static int deleteAccount(String aUserName)  {
+   try {
+      mP2pProxyAccountManagement.deleteAccount(aUserName);
+   } catch (P2pProxyException e) {
+      return P2pProxylauncherConstants.P2PPROXY_ERROR;
+   }
+   return P2pProxylauncherConstants.P2PPROXY_NO_ERROR;
+
+}
+public static int isValidAccount(String aUserName){
+   try {
+      if (mP2pProxyAccountManagement.isValidAccount(aUserName)) {
+         return P2pProxylauncherConstants.P2PPROXY_ACCOUNTMGT_USER_EXIST;
+      } else {
+         return P2pProxylauncherConstants.P2PPROXY_ACCOUNTMGT_USER_NOT_EXIST;
+      }
+   } catch (P2pProxyException e) {
+      return P2pProxylauncherConstants.P2PPROXY_ERROR;
+   }
 }
 }

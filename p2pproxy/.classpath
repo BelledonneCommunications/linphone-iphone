@@ -11,6 +11,7 @@
 	<classpathentry kind="src" path="dependencies-src/jxse-src-2.5/impl/src"/>
 	<classpathentry kind="src" path="dependencies-src/jxse-src-2.5/api/src"/>
 	<classpathentry kind="src" path="test-src"/>
+	<classpathentry kind="src" path="jni_src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="dependencies/junit-4.3.1.jar"/>
 	<classpathentry kind="output" path="eclipsebuild"/>
