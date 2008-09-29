@@ -1020,8 +1020,10 @@ static void v4w_process(MSFilter * obj){
 			}
 		}else {
 			mblk_t *nowebcam = v4w_make_nowebcam(s);
-			if (nowebcam!=NULL)
+			if (nowebcam!=NULL){
 				om=dupmsg(nowebcam);
+				mblk_set_precious_flag(om,1);
+			}
 		}
 		ms_mutex_unlock(&s->mutex);
 		if (om!=NULL){

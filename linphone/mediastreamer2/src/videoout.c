@@ -695,7 +695,7 @@ static void video_out_process(MSFilter *f){
 					src.h, obj->local_pic.planes, obj->local_pic.strides)<0){
 					ms_error("Error in sws_scale().");
 				}
-				yuv_buf_mirror(&obj->local_pic);
+				if (!mblk_get_precious_flag(inm)) yuv_buf_mirror(&obj->local_pic);
 			}
 		}
 		ms_queue_flush(f->inputs[1]);

@@ -74,8 +74,9 @@ void ms_queue_destroy(MSQueue *q);
 #define mblk_set_rate(m,bits)         (m)->reserved2=((m)->reserved2|(bits)<<1)
 #define mblk_get_rate(m)              (((m)->reserved2>>1)&0x3)
 #define mblk_set_payload_type(m,bits) (m)->reserved2=((m)->reserved2|(bits<<3))
-#define mblk_get_payload_type(m)      (((m)->reserved2>>3)&0xFF)
-
+#define mblk_get_payload_type(m)      (((m)->reserved2>>3)&0x7F)
+#define mblk_set_precious_flag(m,bit)    (m)->reserved2=(m)->reserved2|((bit & 0x1)<<10) /*use to prevent mirroring*/
+#define mblk_get_precious_flag(m)    (((m)->reserved2)>>10 & 0x1)
 
 struct _MSBufferizer{
 	queue_t q;

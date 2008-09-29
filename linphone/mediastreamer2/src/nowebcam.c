@@ -143,7 +143,12 @@ void static_image_process(MSFilter *f){
 	SIData *d=(SIData*)f->data;
 	/*output a frame every second*/
 	if ((f->ticker->time - d->lasttime>1000) || d->lasttime==0){
-		if (d->pic) ms_queue_put(f->outputs[0],dupb(d->pic));
+		if (d->pic) {
+			mblk_t *o=dupb(d->pic);
+			/*prevent mirroring at the output*/
+			mblk_set_precious_flag(o,1);
+			ms_queue_put(f->outputs[0],o);
+		}
 		d->lasttime=f->ticker->time;
 	}
 }

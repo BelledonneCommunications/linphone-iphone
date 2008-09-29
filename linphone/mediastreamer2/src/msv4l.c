@@ -911,7 +911,10 @@ static void v4l_process(MSFilter * obj){
 				om=dupmsg(v4l_make_mire(s));
 			}else {
 				mblk_t *tmpm=v4l_make_nowebcam(s);
-				if (tmpm) om=dupmsg(tmpm);
+				if (tmpm) {
+					om=dupmsg(tmpm);
+					mblk_set_precious_flag(om,1);
+				}
 			}
 		}
 		ms_mutex_unlock(&s->mutex);
