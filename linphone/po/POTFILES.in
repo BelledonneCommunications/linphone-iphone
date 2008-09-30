@@ -1,15 +1,12 @@
 # List of source files containing translatable strings.
+gtk-glade/calllogs.c
+gtk-glade/logging.c
+gtk-glade/support.c
+gtk-glade/chat.c
+gtk-glade/main.c
+gtk-glade/friendlist.c
+gtk-glade/propertybox.c
 
-gtk/main.c
-gtk/interface.c
-gtk/callbacks.c
-gtk/support.c
-gtk/propertybox.c
-gtk/gui_utils.c
-gtk/linphone.c
-gtk/presence.c
-gtk/friends.c
-gtk/addressbook.c
 
 coreapi/linphonecore.c
 coreapi/misc.c

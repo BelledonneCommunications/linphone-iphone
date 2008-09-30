@@ -10,7 +10,7 @@ ORTP_DIR = oRTP
 endif
 
 SUBDIRS = m4 pixmaps po ipkg $(ORTP_DIR) mediastreamer2\
-		media_api coreapi console gtk gtk-glade share
+		media_api coreapi console gtk-glade share
 
 
 EXTRA_DIST = config.rpath   linphone2.glade BUGS linphone.kdevprj \

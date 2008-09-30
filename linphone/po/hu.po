@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: linphone-developers@nongnu.org\n"
-"POT-Creation-Date: 2008-09-23 12:23+0200\n"
+"POT-Creation-Date: 2008-09-30 21:25+0200\n"
 "PO-Revision-Date: 2007-12-14 11:12+0100\n"
 "Last-Translator: \n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,725 +15,93 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: gtk/main.c:58
-msgid "A free SIP video-phone"
-msgstr "Egy ingyenes SIP video-telefon"
-
-#: gtk/interface.c:138
-msgid "linphone"
-msgstr "linphone"
-
-#: gtk/interface.c:155
-msgid "Go"
-msgstr "Ugrás"
-
-#: gtk/interface.c:162
-msgid "Address book"
-msgstr "Címjegyzék"
-
-#: gtk/interface.c:174
-msgid "Call history"
-msgstr "Hivás előzmények"
-
-#: gtk/interface.c:177
-msgid "Shows calls"
-msgstr "Mutasd a hívásokat"
-
-#: gtk/interface.c:188
-msgid "Exit"
-msgstr "Kilépés"
-
-#: gtk/interface.c:196
-msgid "Help"
-msgstr "Help"
-
-#: gtk/interface.c:236
-msgid "Enter sip address or phone number here"
-msgstr "Gépeld ide a sip címet vagy a telefonszámot"
-
-#: gtk/interface.c:237 gtk/interface.c:1398 gtk/interface.c:2335
-#: gtk/interface.c:2357 gtk/interface.c:2497
-msgid "sip:"
-msgstr "sip:"
-
-#: gtk/interface.c:239 gtk/interface.c:2512
-msgid "Sip address:"
-msgstr "Sip cím:"
-
-#: gtk/interface.c:247
-msgid "Shows the address book"
-msgstr "Mutasd a címjegyzéket"
-
-#: gtk/interface.c:261
-msgid "..."
-msgstr "..."
-
-#: gtk/interface.c:269 gtk/interface.c:2519
-msgid "Proxy to use:"
-msgstr "Használt SIP Proxy:"
-
-#: gtk/interface.c:278
-msgid ""
-"Call or\n"
-"answer"
-msgstr ""
-"Hívás vagy\n"
-"Válasz"
-
-#: gtk/interface.c:283
-msgid ""
-"Hangup\n"
-"or refuse"
-msgstr ""
-"Lerak vagy\n"
-"Nem válaszol"
-
-#: gtk/interface.c:288
-msgid "Or chat !"
-msgstr "Vagy chat-elj!"
-
-#: gtk/interface.c:310
-msgid "Show more..."
-msgstr "További beállítások..."
-
-#: gtk/interface.c:332
-msgid "Playback level:"
-msgstr "Lejátszási hangerő:"
-
-#: gtk/interface.c:343
-msgid "Recording level:"
-msgstr "Felvételi hangerő:"
-
-#: gtk/interface.c:354
-msgid "Ring level:"
-msgstr "Csengetési hangerő:"
-
-#: gtk/interface.c:365
-msgid "Sound"
-msgstr "Hang"
-
-#: gtk/interface.c:382
-msgid "Enable video"
-msgstr "Video engedélyezés"
-
-#: gtk/interface.c:387
-msgid "Video"
-msgstr "Video"
-
-#: gtk/interface.c:392
-msgid "Controls"
-msgstr "Vezérlés"
-
-#: gtk/interface.c:410
-msgid "Reachable"
-msgstr "Elérhető"
-
-#: gtk/interface.c:421
-msgid "Busy, I'll be back in "
-msgstr "Foglalt vagyok, jövök vissza"
-
-#: gtk/interface.c:430
-msgid "The other party will be informed that you'll be back in X minutes"
-msgstr "A másik fél tájékoztatva lesz, hogy X perc alatt vissza fogsz jönni"
-
-#: gtk/interface.c:431
-msgid "5"
-msgstr "5"
-
-#: gtk/interface.c:433
-msgid "mn"
-msgstr "perc"
-
-#: gtk/interface.c:438 coreapi/presence.c:146
-msgid "Away"
-msgstr "Nem elérhető"
-
-#: gtk/interface.c:444
-msgid "Do not disturb"
-msgstr "Ne zavarj"
-
-#: gtk/interface.c:450
-msgid "Moved temporarily"
-msgstr "Ideiglenesen nem elérhető"
-
-#: gtk/interface.c:456
-msgid "Alternative service"
-msgstr "Átirányítás"
-
-#: gtk/interface.c:466
-msgid "URL:"
-msgstr "URL:"
-
-#: gtk/interface.c:475
-msgid "Presence"
-msgstr "Elérhető"
-
-#: gtk/interface.c:492
-msgid "Press digits to send DTMFs."
-msgstr "Nyomja le a számokat a DTMF küldéshez"
-
-#: gtk/interface.c:501
-msgid ""
-"  3\n"
-"def"
-msgstr ""
-"  3\n"
-"def"
-
-#: gtk/interface.c:507
-msgid ""
-"  2\n"
-"abc"
-msgstr ""
-"  2\n"
-"abc"
-
-#: gtk/interface.c:513
-msgid "1"
-msgstr "1"
-
-#: gtk/interface.c:519
-msgid ""
-"  4\n"
-"ghi"
-msgstr ""
-"  4\n"
-"ghi"
-
-#: gtk/interface.c:525
-msgid ""
-" 5\n"
-"jkl"
-msgstr ""
-" 5\n"
-"jkl"
-
-#: gtk/interface.c:531
-msgid ""
-"  6\n"
-"mno"
-msgstr ""
-"  6\n"
-"mno"
-
-#: gtk/interface.c:537
-msgid ""
-"   7\n"
-"pqrs"
-msgstr ""
-"   7\n"
-"pqrs"
-
-#: gtk/interface.c:543
-msgid ""
-"  8\n"
-"tuv"
-msgstr ""
-"  8\n"
-"tuv"
-
-#: gtk/interface.c:549
-msgid ""
-"   9\n"
-"wxyz"
-msgstr ""
-"   9\n"
-"wxyz"
-
-#: gtk/interface.c:555
-msgid "*"
-msgstr "*"
-
-#: gtk/interface.c:561
-msgid "0"
-msgstr "0"
-
-#: gtk/interface.c:567
-msgid "#"
-msgstr "#"
-
-#: gtk/interface.c:573
-msgid "DTMF"
-msgstr "DTMF"
-
-#: gtk/interface.c:590
-msgid "My online friends"
-msgstr "Elérhető partnerek"
-
-#: gtk/interface.c:849 gtk/interface.c:3029
-msgid "Linphone"
-msgstr "Linphone"
-
-#: gtk/interface.c:850 gtk/interface.c:3030
-msgid ""
-"C: 2001\n"
-"Made in Old Europe"
-msgstr ""
-"C: 2001\n"
-"Made in Old Europe"
-
-#: gtk/interface.c:851 gtk/interface.c:3031
-msgid ""
-"Linphone is a web-phone.\n"
-"It is compatible with SIP and RTP protocols."
-msgstr ""
-"A Linphone egy web-telefon.\n"
-"SIP és RTP kompatíbilis."
-
-#: gtk/interface.c:854
-msgid "http://www.linphone.org"
-msgstr "http://www.linphone.org"
-
-#: gtk/interface.c:1028
-msgid "Parameters"
-msgstr "Paraméterek"
-
-#: gtk/interface.c:1061
-msgid "Use IPv6 network (if available)"
-msgstr "IPv6 hálózat használata (ha elérhető)"
-
-#: gtk/interface.c:1064
-msgid ""
-"Toggle this if you are on an ipv6 network and you wish linphone to use it."
-msgstr "Ha egy IPv6 hálózat elérhető, akkor a linphone használja azt."
-
-#: gtk/interface.c:1066
-msgid "Global"
-msgstr "Általános"
-
-#: gtk/interface.c:1081
-msgid ""
-"These options is only for users in a private network, behind a gateway. If "
-"you are not in this situation, then leave this empty."
-msgstr ""
-"Ez az opció azoknak a felhasználóknak kell, akik egy privát hálózaton tűzfal "
-"mögül interneteznek. Egyébként üresen kell hagyni."
-
-#: gtk/interface.c:1091
-msgid "No firewall"
-msgstr "Nincs tűzfal"
-
-#: gtk/interface.c:1099
-msgid "Use this STUN server to guess firewall address :"
-msgstr "STUN szerver használata a tűzfal címének meghatározásához."
-
-#: gtk/interface.c:1107
-msgid "Specify firewall address manually:"
-msgstr "Tűzfal külső címe:"
-
-#: gtk/interface.c:1127
-msgid "NAT traversal options (experimental)"
-msgstr "NAT beállítások áttekintése (kísérleti)"
-
-#: gtk/interface.c:1156
-msgid "Number of buffered miliseconds (jitter compensation):"
-msgstr "A pufferelt milisecondok száma (jitter compensation):"
-
-#: gtk/interface.c:1164
-msgid "RTP port used for audio:"
-msgstr "RTP port, audió használatra:"
-
-#: gtk/interface.c:1171
-msgid "RTP properties"
-msgstr "RTP beállítások"
-
-#: gtk/interface.c:1189
-msgid "Use SIP INFO message instead of RTP rfc2833 for DTMF transmitting"
-msgstr "Használj SIP INFO üzenetet RTP rfc2833 helyett a DTMF átvitelnél"
-
-#: gtk/interface.c:1192
-msgid "RTP-RFC2833 is the recommended way."
-msgstr "RTP-RFC2833 az ajánlott."
-
-#: gtk/interface.c:1194
-msgid "Other"
-msgstr "Egyéb"
-
-#: gtk/interface.c:1199
-msgid "Network"
-msgstr "Hálózat"
-
-#: gtk/interface.c:1225
-msgid "Playback sound device:"
-msgstr "Lejátszó hang eszköz:"
-
-#: gtk/interface.c:1240 gtk/propertybox.c:629 gtk/propertybox.c:654
-msgid "micro"
-msgstr "mikrofon"
-
-#: gtk/interface.c:1241 gtk/propertybox.c:632 gtk/propertybox.c:655
-msgid "line"
-msgstr "line"
-
-#: gtk/interface.c:1250
-msgid "Capture sound device:"
-msgstr "Felvevő hang eszköz:"
-
-#: gtk/interface.c:1270
-msgid "Recording source:"
-msgstr "Felvételi forrás:"
-
-#: gtk/interface.c:1277
-msgid "Ring sound device"
-msgstr "Csengőhang forrás:"
-
-#: gtk/interface.c:1285
-msgid "Ring sound:"
-msgstr "Csengőhang:"
-
-#: gtk/interface.c:1305
-msgid "Enable echo-canceler (cancels the echo heard by the remote party)"
-msgstr ""
-"Visszhang törlés engedélyezése (törli a visszhangot, amit hall a távoli "
-"partner"
-
-#: gtk/interface.c:1319
-msgid "Choose file"
-msgstr "Fájl kiválasztás"
-
-#: gtk/interface.c:1339
-msgid "Listen"
-msgstr "Hallgatás"
-
-#: gtk/interface.c:1343
-msgid "Sound properties"
-msgstr "Hang beállítások"
-
-#: gtk/interface.c:1347
-msgid "Sound device"
-msgstr "Hang eszköz"
-
-#: gtk/interface.c:1365
-msgid "Run sip user agent on port:"
-msgstr "SIP felhasználó ügynök által használt port:"
-
-#: gtk/interface.c:1374
-msgid "It is strongly recommended to use port 5060."
-msgstr "Erősen ajánlott az 5060-as port használata."
-
-#: gtk/interface.c:1376
-msgid "SIP port"
-msgstr "SIP port"
-
-#: gtk/interface.c:1393
-msgid "Your sip address:"
-msgstr "Saját sip cím:"
-
-#: gtk/interface.c:1407
-msgid "@"
-msgstr "@"
-
-#: gtk/interface.c:1416
-msgid "Automatically guess a valid hostname"
-msgstr "Automatikus valós hostnév megállapítása"
-
-#: gtk/interface.c:1420
-msgid "Identity"
-msgstr "Azonosító"
-
-#: gtk/interface.c:1467
-msgid "Add proxy/registrar"
-msgstr "Proxy vagy regisztráció hozzáadás"
-
-#: gtk/interface.c:1488 gtk/interface.c:2114
-msgid "Edit"
-msgstr "Szerkesztés"
-
-#: gtk/interface.c:1509
-msgid "Remove"
-msgstr "Eltávolítás"
-
-#: gtk/interface.c:1513
-msgid "Remote services"
-msgstr "Távoli szolgáltatások"
-
-#: gtk/interface.c:1543
-msgid "Clear all stored authentication information (username,password...)"
-msgstr ""
-"Az összes tárolt hitelesítési információ törlése (felhasználónév, jelszó...)"
-
-#: gtk/interface.c:1547
-msgid "Authentication information"
-msgstr "Hitelesítési információ"
-
-#: gtk/interface.c:1551
-msgid "SIP"
-msgstr "SIP"
-
-#: gtk/interface.c:1574
-msgid "List of audio codecs, in order of preference:"
-msgstr "Az audió kódoló-dekódolók listája, a preferencia rendjében:"
-
-#: gtk/interface.c:1595
-msgid "Audio codecs"
-msgstr "Audio kodekek"
-
-#: gtk/interface.c:1608
-msgid "Video Codecs"
-msgstr "Audio kodekek"
-
-#: gtk/interface.c:1644
-msgid "Enable"
-msgstr "Engedélyezés"
-
-#: gtk/interface.c:1665
-msgid "Disable"
-msgstr "Tiltás"
-
-#: gtk/interface.c:1673
-msgid "Upload bandwidth (kbit/sec):"
-msgstr "Feltöltési sávszélesség (kbit/sec):"
-
-#: gtk/interface.c:1681
-msgid "Download bandwidth (kbit/sec):"
-msgstr "Letöltési sávszélesség (kbit/sec):"
-
-#: gtk/interface.c:1708
-msgid ""
-"Note: Codecs in red are not usable regarding to your connection type to the "
-"internet."
-msgstr ""
-"Figyelem: A pirosban lévő kodekek nem használhatók a jelenlegi "
-"internetkapcsolattal."
-
-#: gtk/interface.c:1720
-msgid "No information availlable"
-msgstr "Nem érhető el információ"
-
-#: gtk/interface.c:1727
-msgid "Codec information"
-msgstr "Kodekinformáció"
-
-#: gtk/interface.c:1731
-msgid "Audio and video codecs"
-msgstr "Audio és video kodekek"
-
-#: gtk/interface.c:1736
-msgid "Codecs"
-msgstr "Kodekek"
-
-#: gtk/interface.c:2044
-msgid "Address Book"
-msgstr "Címjegyzék"
-
-#: gtk/interface.c:2140
-msgid "Select"
-msgstr "Kiválasztás"
-
-#: gtk/interface.c:2199
-msgid "Information"
-msgstr "Információk"
-
-#: gtk/interface.c:2217
-msgid ""
-"User is not reachable at the moment but he invites you to contact him using "
-"the following alternate ressource:"
-msgstr ""
-"A felhasználó jelenleg nem elérhető, de kéri, hogy lépj vele kapcsolatba itt:"
-
-#: gtk/interface.c:2224
-msgid "None."
-msgstr "Nincs."
-
-#: gtk/interface.c:2285 gtk/interface.c:2394
-msgid "Proxy/Registrar configuration box"
-msgstr "Proxy/Regisztráció konfigurációs doboz"
-
-#: gtk/interface.c:2315
-msgid "Route (optional):"
-msgstr "Út (nem kötelező):"
-
-#: gtk/interface.c:2337
-msgid "SIP Proxy:"
-msgstr "SIP Proxy:"
-
-#: gtk/interface.c:2344
-msgid "SIP Identity:"
-msgstr "SIP azonosító:"
-
-#: gtk/interface.c:2359
-msgid "Registration Period:"
-msgstr "Regisztrálási Időköz:"
-
-#: gtk/interface.c:2374
-msgid "Send registration:"
-msgstr "Regisztárció küldés:"
-
-#: gtk/interface.c:2381
-msgid "Publish presence information:"
-msgstr "Jelenléti információ közlése:"
-
-#: gtk/interface.c:2466
-msgid "Edit contact information"
-msgstr "Kapcsolatinformációk szerkesztése"
-
-#: gtk/interface.c:2505
-msgid "Name:"
-msgstr "Név:"
-
-#: gtk/interface.c:2526
-msgid "Subscribe policy:"
-msgstr "Láthatósági szabály:"
-
-#: gtk/interface.c:2533
-msgid "Send subscription (see person's online status)"
-msgstr "Láthatóság küldése (látszik a személy elérhetőségi státusza)"
-
-#: gtk/interface.c:2537
-msgid "Contact information"
-msgstr "Kapcsolatiinformáció"
-
-#: gtk/interface.c:2608
-msgid "New incoming subscription"
-msgstr "Új beérkező előfizetés"
-
-#: gtk/interface.c:2628
-msgid "You have received a new subscription..."
-msgstr "Megkaptál egy új előfizetést."
-
-#: gtk/interface.c:2655
-msgid "Refuse"
-msgstr "Hulladék"
-
-#: gtk/interface.c:2676 gtk/addressbook.c:57
-msgid "Accept"
-msgstr "Elfogad"
-
-#: gtk/interface.c:2729
-msgid "Authentication requested"
-msgstr "Hitelesítést kértek"
-
-#: gtk/interface.c:2755
-msgid "Authentication required for realm"
-msgstr "Hitelesítési kérelem a tartománynak"
-
-#: gtk/interface.c:2791
-msgid "userid:"
-msgstr "felhasználói azonosító:"
-
-#: gtk/interface.c:2799
-msgid "password:"
-msgstr "jelszó:"
-
-#: gtk/interface.c:2807
-msgid "username:"
-msgstr "felhasználónév:"
-
-#: gtk/interface.c:2815
-msgid "realm:"
-msgstr "tartomány:"
-
-#: gtk/interface.c:2876
-msgid "Linphone - Call history"
-msgstr "Linphone - Híváselőzmények"
-
-#: gtk/interface.c:2943
-msgid "Chat Room"
-msgstr "Chat szoba"
-
-#: gtk/interface.c:2971
-msgid "Text:"
-msgstr "Szöveg:"
-
-#: gtk/callbacks.c:600
-#, c-format
-msgid "Chat with %s"
-msgstr "Chat-elés %s -el"
-
-#: gtk/support.c:90 gtk/support.c:114
+#: gtk-glade/support.c:49 gtk-glade/support.c:73
 #, c-format
 msgid "Couldn't find pixmap file: %s"
 msgstr "Nemtalálható a pixmap fájl: %s"
 
-#: gtk/propertybox.c:207
-msgid "Account"
-msgstr "Hozzáférés"
+#: gtk-glade/chat.c:27
+#, c-format
+msgid "Chat with %s"
+msgstr "Chat-elés %s -el"
 
-#: gtk/propertybox.c:439 gtk/propertybox.c:524 gtk/propertybox.c:536
-#: gtk/propertybox.c:883
-msgid "Enabled"
-msgstr "Engedélyezve"
+#: gtk-glade/main.c:397
+#, fuzzy, c-format
+msgid "Incoming call from %s"
+msgstr "Beérkező hívás"
 
-#: gtk/propertybox.c:440 gtk/propertybox.c:884
-msgid "Disabled"
-msgstr "Tiltva"
+#: gtk-glade/main.c:433
+#, c-format
+msgid ""
+"%s would like to add you to his contact list.\n"
+"Would you allow him to see your presence status or add him to your contact "
+"list ?\n"
+"If you answer no, this person will be temporarily blacklisted."
+msgstr ""
 
-#: gtk/propertybox.c:458 gtk/friends.c:110
+#: gtk-glade/main.c:500
+#, c-format
+msgid "Please enter your password for domain %s:"
+msgstr ""
+
+#: gtk-glade/main.c:574
+msgid "Linphone - a video internet phone"
+msgstr ""
+
+#: gtk-glade/main.c:591
+#, c-format
+msgid "%s (Default)"
+msgstr ""
+
+#: gtk-glade/main.c:699
+msgid "A free SIP video-phone"
+msgstr "Egy ingyenes SIP video-telefon"
+
+#: gtk-glade/friendlist.c:199 gtk-glade/propertybox.c:209
 msgid "Name"
 msgstr "Név"
 
-#: gtk/propertybox.c:464
-msgid "Rate (Hz)"
-msgstr "Érték (Hz)"
-
-#: gtk/propertybox.c:470
-msgid "Status"
-msgstr "Állapot"
-
-#: gtk/propertybox.c:476
-msgid "Min bitrate (kbit/s)"
-msgstr "Min bitrate (kbit/s)"
-
-#: gtk/propertybox.c:504 gtk/propertybox.c:509 gtk/propertybox.c:1061
-#: gtk/propertybox.c:1072
-msgid "Unlimited"
-msgstr "Korlátlan"
-
-#: gtk/linphone.c:215
-msgid "The caller asks for resource reservation. Do you agree ?"
-msgstr "A hívó forrásfoglalást kér. Egyetértesz?"
-
-#: gtk/linphone.c:218
-msgid ""
-"The caller doesn't use resource reservation. \t\t\t\t\tDo you wish to "
-"continue anyway ?"
-msgstr ""
-"A hívó nem használ forrásfoglalást. \t\t\t\t\tÍgy is szeretnéd folytatni?"
-
-#: gtk/linphone.c:245
-#, c-format
-msgid "linphone - receiving call from %s"
-msgstr "linphone - hívást fogad innen %s"
-
-#: gtk/linphone.c:272
-#, c-format
-msgid ""
-"You have received a subscription from %s.This means that this person wishes "
-"to be notified of your presence information (online, busy, away...).\n"
-"Do you agree ?"
-msgstr ""
-"Kaptál egy előfizetést tőle %s. Ez azt jelenti, hogy ez a személy szeretné, "
-"hogy értesítsék a jelenlétinformációd (online, elfoglalt, away...).\n"
-"Egyetértesz?"
-
-#: gtk/linphone.c:287
-#, c-format
-msgid "Authentication required for realm %s"
-msgstr "Hitelesítési kérelem ebből a tartományból %s"
-
-#: gtk/linphone.c:410
-msgid "None"
-msgstr "Nincs"
-
-#: gtk/friends.c:117
+#: gtk-glade/friendlist.c:206
 msgid "Presence status"
 msgstr "Jelenlét státusz"
 
-#: gtk/addressbook.c:55
-msgid "Wait"
-msgstr "Várakozás"
+#: gtk-glade/friendlist.c:397
+#, fuzzy, c-format
+msgid "Call %s"
+msgstr "Hivás előzmények"
 
-#: gtk/addressbook.c:56
-msgid "Deny"
-msgstr "Tiltás"
+#: gtk-glade/friendlist.c:398
+#, c-format
+msgid "Send text to %s"
+msgstr ""
 
-#: gtk/addressbook.c:124
-msgid "Bad sip address: a sip address looks like sip:user@domain"
-msgstr "Rossz sip cím: egy sip cím általában így néz ki: user@domain"
+#: gtk-glade/propertybox.c:215
+msgid "Rate (Hz)"
+msgstr "Érték (Hz)"
 
-#: gtk/addressbook.c:226
-msgid "Contact list"
-msgstr "Kapcsolatilista"
+#: gtk-glade/propertybox.c:221
+msgid "Status"
+msgstr "Állapot"
+
+#: gtk-glade/propertybox.c:227
+msgid "Min bitrate (kbit/s)"
+msgstr "Min bitrate (kbit/s)"
+
+#: gtk-glade/propertybox.c:233
+msgid "Parameters"
+msgstr "Paraméterek"
+
+#: gtk-glade/propertybox.c:260 gtk-glade/propertybox.c:397
+msgid "Enabled"
+msgstr "Engedélyezve"
+
+#: gtk-glade/propertybox.c:261 gtk-glade/propertybox.c:397
+msgid "Disabled"
+msgstr "Tiltva"
+
+#: gtk-glade/propertybox.c:442
+msgid "Account"
+msgstr "Hozzáférés"
 
 #: coreapi/linphonecore.c:192
 #, c-format
@@ -811,7 +179,7 @@ msgstr ""
 msgid "Sorry, having multiple simultaneous calls is not supported yet !"
 msgstr "Bocsánat, a többszörös egyidejű hívások még nem támogatottak!"
 
-#: coreapi/linphonecore.c:1190
+#: coreapi/linphonecore.c:1211
 msgid "Contacting"
 msgstr "Kapcsolódás"
 
@@ -819,24 +187,24 @@ msgstr "Kapcsolódás"
 msgid "could not call"
 msgstr "nem sikerült hívni"
 
-#: coreapi/linphonecore.c:1522 coreapi/exevents.c:41
+#: coreapi/linphonecore.c:1517 coreapi/exevents.c:41
 msgid "Connected."
 msgstr "Kapcsolódva."
 
-#: coreapi/linphonecore.c:1548
+#: coreapi/linphonecore.c:1543
 msgid "Call ended"
 msgstr "Hívás vége"
 
-#: coreapi/linphonecore.c:1859
+#: coreapi/linphonecore.c:1854
 msgid "No nat/firewall address supplied !"
 msgstr "Nincs nat/tűzfal cím megadva!"
 
-#: coreapi/linphonecore.c:1871 coreapi/linphonecore.c:1883
+#: coreapi/linphonecore.c:1866 coreapi/linphonecore.c:1878
 #, c-format
 msgid "Invalid nat address '%s' : %s"
 msgstr "Hibás nat cím '%s' : %s"
 
-#: coreapi/misc.c:132
+#: coreapi/misc.c:131
 msgid ""
 "Your computer appears to be using ALSA sound drivers.\n"
 "This is the best choice. However the pcm oss emulation module\n"
@@ -848,7 +216,7 @@ msgstr ""
 " a linphone-nak szüksége van és ez hiányzik. Kérem futassa le a\n"
 "'modprobe snd-pcm-oss' parancsot rendszergazdaként."
 
-#: coreapi/misc.c:135
+#: coreapi/misc.c:134
 msgid ""
 "Your computer appears to be using ALSA sound drivers.\n"
 "This is the best choice. However the mixer oss emulation module\n"
@@ -969,6 +337,10 @@ msgstr "Foglalt"
 msgid "Be Right Back"
 msgstr "Legyen igazad"
 
+#: coreapi/presence.c:146
+msgid "Away"
+msgstr "Nem elérhető"
+
 #: coreapi/presence.c:151
 msgid "On The Phone"
 msgstr "Telefonál"
@@ -980,6 +352,520 @@ msgstr "Ebédelni ment"
 #: coreapi/presence.c:160
 msgid "Closed"
 msgstr "Lezárva"
+
+#~ msgid "linphone"
+#~ msgstr "linphone"
+
+#~ msgid "Go"
+#~ msgstr "Ugrás"
+
+#~ msgid "Address book"
+#~ msgstr "Címjegyzék"
+
+#~ msgid "Shows calls"
+#~ msgstr "Mutasd a hívásokat"
+
+#~ msgid "Exit"
+#~ msgstr "Kilépés"
+
+#~ msgid "Help"
+#~ msgstr "Help"
+
+#~ msgid "Enter sip address or phone number here"
+#~ msgstr "Gépeld ide a sip címet vagy a telefonszámot"
+
+#~ msgid "sip:"
+#~ msgstr "sip:"
+
+#~ msgid "Sip address:"
+#~ msgstr "Sip cím:"
+
+#~ msgid "Shows the address book"
+#~ msgstr "Mutasd a címjegyzéket"
+
+#~ msgid "..."
+#~ msgstr "..."
+
+#~ msgid "Proxy to use:"
+#~ msgstr "Használt SIP Proxy:"
+
+#~ msgid ""
+#~ "Call or\n"
+#~ "answer"
+#~ msgstr ""
+#~ "Hívás vagy\n"
+#~ "Válasz"
+
+#~ msgid ""
+#~ "Hangup\n"
+#~ "or refuse"
+#~ msgstr ""
+#~ "Lerak vagy\n"
+#~ "Nem válaszol"
+
+#~ msgid "Or chat !"
+#~ msgstr "Vagy chat-elj!"
+
+#~ msgid "Show more..."
+#~ msgstr "További beállítások..."
+
+#~ msgid "Playback level:"
+#~ msgstr "Lejátszási hangerő:"
+
+#~ msgid "Recording level:"
+#~ msgstr "Felvételi hangerő:"
+
+#~ msgid "Ring level:"
+#~ msgstr "Csengetési hangerő:"
+
+#~ msgid "Sound"
+#~ msgstr "Hang"
+
+#~ msgid "Enable video"
+#~ msgstr "Video engedélyezés"
+
+#~ msgid "Video"
+#~ msgstr "Video"
+
+#~ msgid "Controls"
+#~ msgstr "Vezérlés"
+
+#~ msgid "Reachable"
+#~ msgstr "Elérhető"
+
+#~ msgid "Busy, I'll be back in "
+#~ msgstr "Foglalt vagyok, jövök vissza"
+
+#~ msgid "The other party will be informed that you'll be back in X minutes"
+#~ msgstr "A másik fél tájékoztatva lesz, hogy X perc alatt vissza fogsz jönni"
+
+#~ msgid "5"
+#~ msgstr "5"
+
+#~ msgid "mn"
+#~ msgstr "perc"
+
+#~ msgid "Do not disturb"
+#~ msgstr "Ne zavarj"
+
+#~ msgid "Moved temporarily"
+#~ msgstr "Ideiglenesen nem elérhető"
+
+#~ msgid "Alternative service"
+#~ msgstr "Átirányítás"
+
+#~ msgid "URL:"
+#~ msgstr "URL:"
+
+#~ msgid "Presence"
+#~ msgstr "Elérhető"
+
+#~ msgid "Press digits to send DTMFs."
+#~ msgstr "Nyomja le a számokat a DTMF küldéshez"
+
+#~ msgid ""
+#~ "  3\n"
+#~ "def"
+#~ msgstr ""
+#~ "  3\n"
+#~ "def"
+
+#~ msgid ""
+#~ "  2\n"
+#~ "abc"
+#~ msgstr ""
+#~ "  2\n"
+#~ "abc"
+
+#~ msgid "1"
+#~ msgstr "1"
+
+#~ msgid ""
+#~ "  4\n"
+#~ "ghi"
+#~ msgstr ""
+#~ "  4\n"
+#~ "ghi"
+
+#~ msgid ""
+#~ " 5\n"
+#~ "jkl"
+#~ msgstr ""
+#~ " 5\n"
+#~ "jkl"
+
+#~ msgid ""
+#~ "  6\n"
+#~ "mno"
+#~ msgstr ""
+#~ "  6\n"
+#~ "mno"
+
+#~ msgid ""
+#~ "   7\n"
+#~ "pqrs"
+#~ msgstr ""
+#~ "   7\n"
+#~ "pqrs"
+
+#~ msgid ""
+#~ "  8\n"
+#~ "tuv"
+#~ msgstr ""
+#~ "  8\n"
+#~ "tuv"
+
+#~ msgid ""
+#~ "   9\n"
+#~ "wxyz"
+#~ msgstr ""
+#~ "   9\n"
+#~ "wxyz"
+
+#~ msgid "*"
+#~ msgstr "*"
+
+#~ msgid "0"
+#~ msgstr "0"
+
+#~ msgid "#"
+#~ msgstr "#"
+
+#~ msgid "DTMF"
+#~ msgstr "DTMF"
+
+#~ msgid "My online friends"
+#~ msgstr "Elérhető partnerek"
+
+#~ msgid "Linphone"
+#~ msgstr "Linphone"
+
+#~ msgid ""
+#~ "C: 2001\n"
+#~ "Made in Old Europe"
+#~ msgstr ""
+#~ "C: 2001\n"
+#~ "Made in Old Europe"
+
+#~ msgid ""
+#~ "Linphone is a web-phone.\n"
+#~ "It is compatible with SIP and RTP protocols."
+#~ msgstr ""
+#~ "A Linphone egy web-telefon.\n"
+#~ "SIP és RTP kompatíbilis."
+
+#~ msgid "http://www.linphone.org"
+#~ msgstr "http://www.linphone.org"
+
+#~ msgid "Use IPv6 network (if available)"
+#~ msgstr "IPv6 hálózat használata (ha elérhető)"
+
+#~ msgid ""
+#~ "Toggle this if you are on an ipv6 network and you wish linphone to use it."
+#~ msgstr "Ha egy IPv6 hálózat elérhető, akkor a linphone használja azt."
+
+#~ msgid "Global"
+#~ msgstr "Általános"
+
+#~ msgid ""
+#~ "These options is only for users in a private network, behind a gateway. "
+#~ "If you are not in this situation, then leave this empty."
+#~ msgstr ""
+#~ "Ez az opció azoknak a felhasználóknak kell, akik egy privát hálózaton "
+#~ "tűzfal mögül interneteznek. Egyébként üresen kell hagyni."
+
+#~ msgid "No firewall"
+#~ msgstr "Nincs tűzfal"
+
+#~ msgid "Use this STUN server to guess firewall address :"
+#~ msgstr "STUN szerver használata a tűzfal címének meghatározásához."
+
+#~ msgid "Specify firewall address manually:"
+#~ msgstr "Tűzfal külső címe:"
+
+#~ msgid "NAT traversal options (experimental)"
+#~ msgstr "NAT beállítások áttekintése (kísérleti)"
+
+#~ msgid "Number of buffered miliseconds (jitter compensation):"
+#~ msgstr "A pufferelt milisecondok száma (jitter compensation):"
+
+#~ msgid "RTP port used for audio:"
+#~ msgstr "RTP port, audió használatra:"
+
+#~ msgid "RTP properties"
+#~ msgstr "RTP beállítások"
+
+#~ msgid "Use SIP INFO message instead of RTP rfc2833 for DTMF transmitting"
+#~ msgstr "Használj SIP INFO üzenetet RTP rfc2833 helyett a DTMF átvitelnél"
+
+#~ msgid "RTP-RFC2833 is the recommended way."
+#~ msgstr "RTP-RFC2833 az ajánlott."
+
+#~ msgid "Other"
+#~ msgstr "Egyéb"
+
+#~ msgid "Network"
+#~ msgstr "Hálózat"
+
+#~ msgid "Playback sound device:"
+#~ msgstr "Lejátszó hang eszköz:"
+
+#~ msgid "micro"
+#~ msgstr "mikrofon"
+
+#~ msgid "line"
+#~ msgstr "line"
+
+#~ msgid "Capture sound device:"
+#~ msgstr "Felvevő hang eszköz:"
+
+#~ msgid "Recording source:"
+#~ msgstr "Felvételi forrás:"
+
+#~ msgid "Ring sound device"
+#~ msgstr "Csengőhang forrás:"
+
+#~ msgid "Ring sound:"
+#~ msgstr "Csengőhang:"
+
+#~ msgid "Enable echo-canceler (cancels the echo heard by the remote party)"
+#~ msgstr ""
+#~ "Visszhang törlés engedélyezése (törli a visszhangot, amit hall a távoli "
+#~ "partner"
+
+#~ msgid "Choose file"
+#~ msgstr "Fájl kiválasztás"
+
+#~ msgid "Listen"
+#~ msgstr "Hallgatás"
+
+#~ msgid "Sound properties"
+#~ msgstr "Hang beállítások"
+
+#~ msgid "Sound device"
+#~ msgstr "Hang eszköz"
+
+#~ msgid "Run sip user agent on port:"
+#~ msgstr "SIP felhasználó ügynök által használt port:"
+
+#~ msgid "It is strongly recommended to use port 5060."
+#~ msgstr "Erősen ajánlott az 5060-as port használata."
+
+#~ msgid "SIP port"
+#~ msgstr "SIP port"
+
+#~ msgid "Your sip address:"
+#~ msgstr "Saját sip cím:"
+
+#~ msgid "@"
+#~ msgstr "@"
+
+#~ msgid "Automatically guess a valid hostname"
+#~ msgstr "Automatikus valós hostnév megállapítása"
+
+#~ msgid "Identity"
+#~ msgstr "Azonosító"
+
+#~ msgid "Add proxy/registrar"
+#~ msgstr "Proxy vagy regisztráció hozzáadás"
+
+#~ msgid "Edit"
+#~ msgstr "Szerkesztés"
+
+#~ msgid "Remove"
+#~ msgstr "Eltávolítás"
+
+#~ msgid "Remote services"
+#~ msgstr "Távoli szolgáltatások"
+
+#~ msgid "Clear all stored authentication information (username,password...)"
+#~ msgstr ""
+#~ "Az összes tárolt hitelesítési információ törlése (felhasználónév, "
+#~ "jelszó...)"
+
+#~ msgid "Authentication information"
+#~ msgstr "Hitelesítési információ"
+
+#~ msgid "SIP"
+#~ msgstr "SIP"
+
+#~ msgid "List of audio codecs, in order of preference:"
+#~ msgstr "Az audió kódoló-dekódolók listája, a preferencia rendjében:"
+
+#~ msgid "Audio codecs"
+#~ msgstr "Audio kodekek"
+
+#~ msgid "Video Codecs"
+#~ msgstr "Audio kodekek"
+
+#~ msgid "Enable"
+#~ msgstr "Engedélyezés"
+
+#~ msgid "Disable"
+#~ msgstr "Tiltás"
+
+#~ msgid "Upload bandwidth (kbit/sec):"
+#~ msgstr "Feltöltési sávszélesség (kbit/sec):"
+
+#~ msgid "Download bandwidth (kbit/sec):"
+#~ msgstr "Letöltési sávszélesség (kbit/sec):"
+
+#~ msgid ""
+#~ "Note: Codecs in red are not usable regarding to your connection type to "
+#~ "the internet."
+#~ msgstr ""
+#~ "Figyelem: A pirosban lévő kodekek nem használhatók a jelenlegi "
+#~ "internetkapcsolattal."
+
+#~ msgid "No information availlable"
+#~ msgstr "Nem érhető el információ"
+
+#~ msgid "Codec information"
+#~ msgstr "Kodekinformáció"
+
+#~ msgid "Audio and video codecs"
+#~ msgstr "Audio és video kodekek"
+
+#~ msgid "Codecs"
+#~ msgstr "Kodekek"
+
+#~ msgid "Address Book"
+#~ msgstr "Címjegyzék"
+
+#~ msgid "Select"
+#~ msgstr "Kiválasztás"
+
+#~ msgid "Information"
+#~ msgstr "Információk"
+
+#~ msgid ""
+#~ "User is not reachable at the moment but he invites you to contact him "
+#~ "using the following alternate ressource:"
+#~ msgstr ""
+#~ "A felhasználó jelenleg nem elérhető, de kéri, hogy lépj vele kapcsolatba "
+#~ "itt:"
+
+#~ msgid "None."
+#~ msgstr "Nincs."
+
+#~ msgid "Proxy/Registrar configuration box"
+#~ msgstr "Proxy/Regisztráció konfigurációs doboz"
+
+#~ msgid "Route (optional):"
+#~ msgstr "Út (nem kötelező):"
+
+#~ msgid "SIP Proxy:"
+#~ msgstr "SIP Proxy:"
+
+#~ msgid "SIP Identity:"
+#~ msgstr "SIP azonosító:"
+
+#~ msgid "Registration Period:"
+#~ msgstr "Regisztrálási Időköz:"
+
+#~ msgid "Send registration:"
+#~ msgstr "Regisztárció küldés:"
+
+#~ msgid "Publish presence information:"
+#~ msgstr "Jelenléti információ közlése:"
+
+#~ msgid "Edit contact information"
+#~ msgstr "Kapcsolatinformációk szerkesztése"
+
+#~ msgid "Name:"
+#~ msgstr "Név:"
+
+#~ msgid "Subscribe policy:"
+#~ msgstr "Láthatósági szabály:"
+
+#~ msgid "Send subscription (see person's online status)"
+#~ msgstr "Láthatóság küldése (látszik a személy elérhetőségi státusza)"
+
+#~ msgid "Contact information"
+#~ msgstr "Kapcsolatiinformáció"
+
+#~ msgid "New incoming subscription"
+#~ msgstr "Új beérkező előfizetés"
+
+#~ msgid "You have received a new subscription..."
+#~ msgstr "Megkaptál egy új előfizetést."
+
+#~ msgid "Refuse"
+#~ msgstr "Hulladék"
+
+#~ msgid "Accept"
+#~ msgstr "Elfogad"
+
+#~ msgid "Authentication requested"
+#~ msgstr "Hitelesítést kértek"
+
+#~ msgid "Authentication required for realm"
+#~ msgstr "Hitelesítési kérelem a tartománynak"
+
+#~ msgid "userid:"
+#~ msgstr "felhasználói azonosító:"
+
+#~ msgid "password:"
+#~ msgstr "jelszó:"
+
+#~ msgid "username:"
+#~ msgstr "felhasználónév:"
+
+#~ msgid "realm:"
+#~ msgstr "tartomány:"
+
+#~ msgid "Linphone - Call history"
+#~ msgstr "Linphone - Híváselőzmények"
+
+#~ msgid "Chat Room"
+#~ msgstr "Chat szoba"
+
+#~ msgid "Text:"
+#~ msgstr "Szöveg:"
+
+#~ msgid "Unlimited"
+#~ msgstr "Korlátlan"
+
+#~ msgid "The caller asks for resource reservation. Do you agree ?"
+#~ msgstr "A hívó forrásfoglalást kér. Egyetértesz?"
+
+#~ msgid ""
+#~ "The caller doesn't use resource reservation. \t\t\t\t\tDo you wish to "
+#~ "continue anyway ?"
+#~ msgstr ""
+#~ "A hívó nem használ forrásfoglalást. \t\t\t\t\tÍgy is szeretnéd folytatni?"
+
+#~ msgid "linphone - receiving call from %s"
+#~ msgstr "linphone - hívást fogad innen %s"
+
+#~ msgid ""
+#~ "You have received a subscription from %s.This means that this person "
+#~ "wishes to be notified of your presence information (online, busy, "
+#~ "away...).\n"
+#~ "Do you agree ?"
+#~ msgstr ""
+#~ "Kaptál egy előfizetést tőle %s. Ez azt jelenti, hogy ez a személy "
+#~ "szeretné, hogy értesítsék a jelenlétinformációd (online, elfoglalt, "
+#~ "away...).\n"
+#~ "Egyetértesz?"
+
+#~ msgid "Authentication required for realm %s"
+#~ msgstr "Hitelesítési kérelem ebből a tartományból %s"
+
+#~ msgid "None"
+#~ msgstr "Nincs"
+
+#~ msgid "Wait"
+#~ msgstr "Várakozás"
+
+#~ msgid "Deny"
+#~ msgstr "Tiltás"
+
+#~ msgid "Bad sip address: a sip address looks like sip:user@domain"
+#~ msgstr "Rossz sip cím: egy sip cím általában így néz ki: user@domain"
+
+#~ msgid "Contact list"
+#~ msgstr "Kapcsolatilista"
 
 #~ msgid "Stun lookup done..."
 #~ msgstr "Stun keresés kész..."

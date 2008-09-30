@@ -65,40 +65,22 @@ AC_ARG_ENABLE(gtk_ui,
         *) AC_MSG_ERROR(bad value ${enableval} for --enable-gtk_ui) ;;
       esac],[gtk_ui=true])
 
-dnl conditionnal build of old gtk interface.
-AC_ARG_ENABLE(old-gtk_ui,
-      [  --enable-old-gtk_ui=[yes/no]    Turn on or off compilation of old gtk interface [default=no]],
-      [case "${enableval}" in
-        yes) old_gtk_ui=true ;;
-        no)  old_gtk_ui=false ;;
-        *) AC_MSG_ERROR(bad value ${enableval} for --enable-old-gtk_ui) ;;
-      esac],[old_gtk_ui=false])
 
 if test "$gtk_ui" = "true" ; then
 	PKG_CHECK_MODULES(LIBGTK, gtk+-2.0 >= 2.4.0 gthread-2.0, ,gtk_ui=false)
+	PKG_CHECK_MODULES(LIBGLADE, libglade-2.0 >= 2.4.0 , glade_ui=true, glade_ui=false)
 	AC_SUBST(LIBGTK_CFLAGS)
 	AC_SUBST(LIBGTK_LIBS)
+	AC_SUBST(LIBGLADE_CFLAGS)
+	AC_SUBST(LIBGLADE_LIBS)
 	
-	if test "$gtk_ui" = "true" ; then
+	if test "$gtk_ui$glade_ui" = "truetrue" ; then
 		AC_DEFINE(HAVE_GTK,1,[Defined if we can use the gtk api])
 	else
 		missing_gtk_libs=true
 	fi
 else
 	echo "GTK interface compilation is disabled."
-fi
-
-
-if test "$gtk_ui" = "true" ; then
-	PKG_CHECK_MODULES(GNOME_APPLETS, libpanelapplet-2.0 >= 2.0.0 , 
-			build_gnome_applet=true,build_gnome_applet=false)
-	AC_SUBST(GNOME_APPLETS_CFLAGS)
-	AC_SUBST(GNOME_APPLETS_LIBS)
-	PKG_CHECK_MODULES(LIBGLADE, libglade-2.0 >= 2.4.0 , glade_ui=true, glade_ui=false)
-	AC_SUBST(LIBGLADE_CFLAGS)
-	AC_SUBST(LIBGLADE_LIBS)
-else
-	build_gnome_applet=false
 fi
 
 
@@ -261,10 +243,6 @@ AM_CONDITIONAL(BUILD_MEDIA_API, test x$media_api = xtrue)
 
 dnl build console if required
 AM_CONDITIONAL(BUILD_CONSOLE, test x$console_ui = xtrue)
-dnl build gtk if required
-AM_CONDITIONAL(BUILD_GTK, test x$old_gtk_ui = xtrue)
-dnl build gnome applet if possible
-AM_CONDITIONAL(BUILD_GNOME_APPLET, test x$build_gnome_applet = xtrue)
 dnl special things for arm-linux cross compilation toolchain
 AM_CONDITIONAL(ARMBUILD, test x$use_arm_toolchain = xyes)
 dnl compilation of gtk-glade user interface
@@ -347,7 +325,6 @@ ipkg/Makefile
 ipkg/linphone.control
 media_api/Makefile
 coreapi/Makefile
-gtk/Makefile
 gtk-glade/Makefile
 console/Makefile
 share/Makefile

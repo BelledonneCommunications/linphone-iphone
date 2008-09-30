@@ -18,6 +18,7 @@ AC_DEFUN([MS_CHECK_DEP],[
 	
 	CPPFLAGS_save=$CPPFLAGS
 	LDFLAGS_save=$LDFLAGS
+	LIBS_save=$LIBS
 	CPPFLAGS=`echo "-I$dep_headersdir"|sed -e "s:-I/usr/include[\ ]*$::"`
 	LIBS="-l$dep_lib"
 	LDFLAGS=`echo "-L$dep_libsdir"|sed -e "s:-L/usr/lib\(64\)*[\ ]*::"`
@@ -39,6 +40,7 @@ AC_DEFUN([MS_CHECK_DEP],[
 	AC_SUBST($2_LIBS)
 	CPPFLAGS=$CPPFLAGS_save
 	LDFLAGS=$LDFLAGS_save
+	LIBS=$LIBS_save
 ])
 
 
