@@ -514,7 +514,7 @@ ResourceIncludes=
 MakeIncludes=
 Compiler=-ggdb_@@_-DINET6 _@@_-DORTP_INET6 _@@_-D_WORKAROUND_MINGW32_BUGS_@@_-D_WIN32_WINNT=0x0501 _@@_-DNOSDL_@@_-DVIDEO_ENABLED_@@_-DNORESAMPLE_@@_-Wall _@@_-DHAVE_LIBAVCODEC_AVCODEC_H_@@_
 CppCompiler=
-Linker=-lortp_@@_-lavcodec_@@_-lavutil_@@_-ltheora_@@_-lspeex_@@_-lgsm_@@_-lws2_32_@@_-lwinmm_@@_-lvfw32_@@_-logg_@@__@@_
+Linker=-lortp_@@_-lavcodec_@@_-lavutil_@@_-ltheora_@@_-lspeex_@@_-lspeexdsp_@@_-lgsm_@@_-lws2_32_@@_-lwinmm_@@_-lvfw32_@@_-logg_@@__@@_
 PreprocDefines=
 CompilerSettings=0000000000010000000000
 Icon=

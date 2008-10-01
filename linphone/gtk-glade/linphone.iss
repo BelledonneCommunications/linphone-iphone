@@ -37,6 +37,8 @@ Source: "..\..\linphone-deps\bin\libogg.dll"; DestDir: "{app}"; Flags: ignorever
 Source: "..\..\linphone-deps\bin\speex.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\linphone-deps\bin\avcodec.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\linphone-deps\bin\avutil.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\linphone-deps\bin\libspeex-1.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\linphone-deps\bin\libspeexdsp-1.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\mediastreamer2\build\win32native\mediastreamer2.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\oRTP\build\win32native\ortp.dll"; DestDir: "{app}"; Flags: ignoreversion
 ;;Sound files:

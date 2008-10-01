@@ -3,15 +3,15 @@
 
 [Setup]
 AppName=msx264
-AppVerName=msx264 H.264 plugin for linphone. Plugin version is 1.1.2.
+AppVerName=msx264 H.264 plugin for linphone. Plugin version is 1.1.3.
 AppPublisher=linphone.org
 AppPublisherURL=http://www.linphone.org
 AppSupportURL=http://www.linphone.org
 AppUpdatesURL=http://www.linphone.org
 DefaultDirName={pf}\Linphone
 DefaultGroupName=Linphone
-LicenseFile=C:\Documents and Settings\simorl.EMEA\cvs\linphone\mediastreamer2\plugins\msx264\COPYING
-InfoBeforeFile=C:\Documents and Settings\simorl.EMEA\cvs\linphone\mediastreamer2\plugins\msx264\README
+LicenseFile=COPYING
+InfoBeforeFile=README
 OutputBaseFilename=setup
 Compression=lzma
 SolidCompression=yes
@@ -23,7 +23,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 ;Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "C:\Documents and Settings\simorl.EMEA\cvs\linphone\mediastreamer2\plugins\msx264\libmsx264.dll"; DestDir: "{app}\plugins"; Flags: ignoreversion
+Source: "libmsx264.dll"; DestDir: "{app}\plugins"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
