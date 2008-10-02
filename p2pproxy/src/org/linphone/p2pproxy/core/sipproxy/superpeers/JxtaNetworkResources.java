@@ -39,7 +39,7 @@ public class JxtaNetworkResources {
    
    JxtaNetworkResources (String aUserName, JxtaNetworkManager aJxtaNetworkManager,String aRegistrarAddress) {
       mJxtaNetworkManager = aJxtaNetworkManager;
-      mP2pUserRegistrationAdvertisement = (P2pUserRegistrationAdvertisement) AdvertisementFactory.newAdvertisement(P2pUserProfileAdvertisement.getAdvertisementType());
+      mP2pUserRegistrationAdvertisement = (P2pUserRegistrationAdvertisement) AdvertisementFactory.newAdvertisement(P2pUserRegistrationAdvertisement.getAdvertisementType());
       mP2pUserRegistrationAdvertisement.setID(IDFactory.newCodatID(mJxtaNetworkManager.getPeerGroup().getPeerGroupID(), aUserName.toString().getBytes()));
       mP2pUserRegistrationAdvertisement.setUserName(aUserName.toString());
       mP2pUserRegistrationAdvertisement.setRegistrarAddress(aRegistrarAddress.toString());

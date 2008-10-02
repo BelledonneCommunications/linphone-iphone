@@ -32,6 +32,7 @@ import org.linphone.p2pproxy.core.JxtaNetworkManager;
 import org.linphone.p2pproxy.core.P2pProxyAccountManagement;
 import org.linphone.p2pproxy.core.P2pProxyAccountManagementMBean;
 import org.linphone.p2pproxy.core.P2pProxyInstanceImpl;
+import org.linphone.p2pproxy.core.P2pProxyMain;
 import org.linphone.p2pproxy.test.utils.DefaultCallListener;
 import org.linphone.p2pproxy.test.utils.SipClient;
 import org.zoolu.sip.address.NameAddress;
@@ -61,10 +62,12 @@ public class P2pProxyTester extends TestCase {
        
        }   
 	protected void setUp() throws Exception {
-	      // setup logging
-	    PropertyConfigurator.configure("log4j.properties");
         
 		if (mP2pProxyInstance == null) {
+	          // setup logging
+	       System.setProperty("org.linphone.p2pproxy.home", ".");
+	       P2pProxyMain.staticLoadTraceConfigFile(); 
+	       //PropertyConfigurator.configure("log4j.properties");
            setupJxta(); 
            mProvider = mP2pProxyInstance.getSipClientProvider() ;
            mSipClient = new SipClient(mProvider, mDefaultSipIdentity,RDV_DISCOVERY_TIMEOUT*2);

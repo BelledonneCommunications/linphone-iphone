@@ -185,7 +185,7 @@ public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarM
       mProvider=new SipProvider(lViaAddress,lPort,lProto,SipProvider.ALL_INTERFACES);
       mProvider.addSipProviderListener(SipProvider.PROMISQUE,this);
       mPool = Executors.newCachedThreadPool();
-      mSuperPeerProxy = new SuperPeerProxy(aJxtaNetworkManager, "sip:"+mProvider.getViaAddress()+":"+mProvider.getPort());
+      mSuperPeerProxy = new SuperPeerProxy(aJxtaNetworkManager, "sip:"+mProvider.getViaAddress()+":"+mProvider.getPort(),mRegistrationTab);
       
    }
    public synchronized void onReceivedMessage(SipProvider aProvider, Message aMessage) {
@@ -244,8 +244,6 @@ public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarM
       }
       // add Via only udp
       SipUtils.addVia(aProvider,aMessage);
-      // add recordRoute
-      SipUtils.addRecordRoute(aProvider,aMessage);
       try {
          mSuperPeerProxy.proxyRequest(aProvider, aMessage);
       }catch (P2pProxyUserNotFoundException e) {
@@ -295,7 +293,7 @@ public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarM
          mRegistrationTab.put(lFromName, lRegistration);
          } else {
             // create negative answers
-            mLog.info("account for user ["+lFromName+"not crteated yet");
+            mLog.info("account for user ["+lFromName+"] not created yet");
             Message lresp = MessageFactory.createResponse(aMessage,404,"Not found",null);
             lTransactionServer.respondWith(lresp);
             return;

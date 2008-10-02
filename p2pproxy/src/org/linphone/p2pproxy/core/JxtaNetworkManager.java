@@ -36,6 +36,7 @@ import javax.security.cert.CertificateException;
 
 import org.apache.log4j.Logger;
 import org.linphone.p2pproxy.api.P2pProxyException;
+import org.linphone.p2pproxy.core.sipproxy.superpeers.P2pUserRegistrationAdvertisement;
 
 
 
@@ -203,6 +204,7 @@ public class JxtaNetworkManager {
       // associating an advertisement name space with the proper obect
       // in this cast the AdvertisementTutorial
       AdvertisementFactory.registerAdvertisementInstance(P2pUserProfileAdvertisement.getAdvertisementType(),new P2pUserProfileAdvertisement.Instantiator());
+      AdvertisementFactory.registerAdvertisementInstance(P2pUserRegistrationAdvertisement.getAdvertisementType(),new P2pUserRegistrationAdvertisement.Instantiator());
 
       
       mRendezVousService = mNetworkPeerGroup.getRendezVousService();

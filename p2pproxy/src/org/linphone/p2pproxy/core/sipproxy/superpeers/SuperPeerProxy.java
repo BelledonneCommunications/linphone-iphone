@@ -36,6 +36,7 @@ import org.zoolu.sip.address.SipURL;
 import org.zoolu.sip.header.Header;
 import org.zoolu.sip.header.MultipleHeader;
 import org.zoolu.sip.header.RecordRouteHeader;
+import org.zoolu.sip.header.RequestLine;
 import org.zoolu.sip.header.RouteHeader;
 import org.zoolu.sip.message.Message;
 import org.zoolu.sip.provider.SipProvider;
@@ -69,41 +70,35 @@ public class SuperPeerProxy implements SipProxy, RegistrationHandler {
 				   throw new P2pProxyUserNotFoundException("user ["+lTo+"] not found");
 			   }
 		   }
+		      // add recordRoute
+	       SipUtils.addRecordRoute(aProvider,aMessage);    
+
 		   
 	   } else {
 		   //just look at route set
-		   MultipleHeader lMultipleRecordRoute = aMessage.getRecordRoutes();
-		   if (lMultipleRecordRoute != null) {
-			   lMultipleRecordRoute.removeTop();
+		   MultipleHeader lMultipleRoute = aMessage.getRoutes();
+		   if (lMultipleRoute != null) {
+		      lMultipleRoute.removeTop();
 		   }
-		   if (lMultipleRecordRoute.getTop() != null) {
-			   lNextHope = ((RecordRouteHeader)lMultipleRecordRoute.getTop()).getNameAddress().getAddress();
+		   if (lMultipleRoute != null && lMultipleRoute.isEmpty()== false) {
+			   lNextHope = ((RecordRouteHeader)lMultipleRoute.getTop()).getNameAddress().getAddress();
 		   } else {
-			   // last proxy, get route
+			   // last proxy, get route from request uri
+		      lNextHope = aMessage.getRequestLine().getAddress();
 		   }
-		   throw new P2pProxyException("not implemented yet");
+		   
 	   }
-       //RequestLine lRequestLine = new RequestLine(lSipMessage.getRequestLine().getMethod(),lNextHope);
-       //lSipMessage.setRequestLine(lRequestLine);
-       MultipleHeader lMultipleRoute = aMessage.getRoutes();
-       RouteHeader lRouteHeader = new RouteHeader(new NameAddress(lNextHope+";lr"));
-       //lRouteHeader.setParameter("lr", null);
-       if (lMultipleRoute != null) {
-          lMultipleRoute.addTop(lRouteHeader);
-          aMessage.setRoutes(lMultipleRoute);
-       } else {
-    	   aMessage.addRouteHeader(lRouteHeader);
-       }
-       // add Via only udp
-       SipUtils.addVia(aProvider,aMessage);
-       // add recordRoute
-       SipUtils.addRecordRoute(aProvider,aMessage);	   
+       
+       aMessage.setRequestLine(new RequestLine(aMessage.getRequestLine().getMethod(), lNextHope));
        aProvider.sendMessage(aMessage);
 
    }
 
-   public void proxyResponse(SipProvider provider, Message message) throws P2pProxyException {
-      // TODO Auto-generated method stub
+   public void proxyResponse(SipProvider aProvider, Message aMessage) throws P2pProxyException {
+      if (mLog.isInfoEnabled()) mLog.info("processing response " +aMessage);
+      //1 remove via header   
+      SipUtils.removeVia(aProvider,aMessage);
+      aProvider.sendMessage(aMessage);
 
    }
 
