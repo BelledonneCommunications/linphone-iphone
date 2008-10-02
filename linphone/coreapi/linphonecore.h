@@ -699,6 +699,11 @@ void *linphone_core_get_user_data(LinphoneCore *lc);
 the config file with your own sections */
 struct _LpConfig *linphone_core_get_config(LinphoneCore *lc);
 
+/* attempts to wake up another linphone engine already running.
+The "show" callback is called for the other linphone, causing gui to show up.
+The method returns 0 if an already running linphone was found*/
+int linphone_core_wake_up_possible_already_running_instance(const char *config_file);
+
 void linphone_core_uninit(LinphoneCore *lc);
 void linphone_core_destroy(LinphoneCore *lc);
 

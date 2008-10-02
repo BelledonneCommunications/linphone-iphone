@@ -509,7 +509,7 @@ static int parse_stun_server_addr(const char *server, struct sockaddr_storage *s
 	char *p;
 	host[NI_MAXHOST-1]='\0';
 	strncpy(host,server,sizeof(host)-1);
-	p=strchr(server,':');
+	p=strchr(host,':');
 	if (p) {
 		*p='\0';
 		port=p+1;
@@ -617,4 +617,62 @@ void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 	}
 }
 
+static int extract_sip_port(const char *config){
+	char line[512];
+	char port[12];
+	int ret=-1;
+	FILE *f=fopen(config,"r");
+	if (f){
+		while(fgets(line,sizeof(line),f)!=NULL){
+			if (fmtp_get_value(line,"sip_port",port,sizeof(port))){
+				ret=atoi(port);
+			}
+		}
+		fclose(f);
+	}
+	return ret;
+}
 
+int linphone_core_wake_up_possible_already_running_instance(const char *config_file){
+	int port=extract_sip_port(config_file);
+	const char *wakeup="WAKEUP sip:127.0.0.1 SIP/2.0\r\n"
+		"Via: SIP/2.0/UDP 127.0.0.1:57655;rport;branch=z9hG4bK%u\r\n"
+		"From: <sip:another_linphone@127.0.0.1>;tag=%u\r\n"
+		"To:   <sip:you@127.0.0.1>\r\n"
+		"CSeq: 1 WAKEUP\r\n"
+		"Call-ID: %u@onsantape\r\n"
+		"Content-length: 0\r\n\r\n";
+	/*make sure ortp is initialized (it initializes win32 socket api)*/
+	ortp_init();
+	if (port>0){
+		struct sockaddr_storage ss;
+		socklen_t sslen;
+		char tmp[100];
+		snprintf(tmp,sizeof(tmp),"127.0.0.1:%i",port);
+		if (parse_stun_server_addr(tmp,&ss,&sslen)==0){
+			int sock=create_socket(57655);
+			if (sock>=0){
+				char req[512];
+				snprintf(req,sizeof(req),wakeup,random(),random(),random());
+				if (sendto(sock,req,strlen(req),0,(struct sockaddr*)&ss,sslen)>0){
+					/*wait a bit for a response*/
+					int i;
+					for(i=0;i<10;++i){
+						if (recv(sock,tmp,sizeof(tmp),0)>0){
+							ms_message("Another linphone has been woken-up !");
+							close(sock);
+							return 0;
+						}
+#ifdef WIN32
+						Sleep(10);
+#else
+						usleep(10000);
+#endif
+					}
+				}
+			}else ms_error("Fail to create socket on port 57655");
+			close(sock);
+		}
+	}
+	return -1;
+}

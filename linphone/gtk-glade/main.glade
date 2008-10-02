@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.4.5 on Thu Jul 31 11:31:30 2008 -->
+<!--Generated with glade3 3.4.5 on Thu Oct  2 16:20:18 2008 -->
 <glade-interface>
   <widget class="GtkWindow" id="main">
     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
@@ -18,7 +18,7 @@
               <widget class="GtkMenuItem" id="menuitem2">
                 <property name="visible">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                <property name="label" translatable="yes">É_dition</property>
+                <property name="label" translatable="yes">_View</property>
                 <property name="use_underline">True</property>
                 <child>
                   <widget class="GtkMenu" id="menu2">
@@ -27,15 +27,10 @@
                     <child>
                       <widget class="GtkImageMenuItem" id="menuitem5">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">_Properties</property>
+                        <property name="label" translatable="yes">gtk-preferences</property>
                         <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
                         <signal name="activate" handler="linphone_gtk_show_parameters"/>
-                        <child internal-child="image">
-                          <widget class="GtkImage" id="menu-item-image3">
-                            <property name="visible">True</property>
-                            <property name="stock">gtk-preferences</property>
-                          </widget>
-                        </child>
                       </widget>
                     </child>
                     <child>
@@ -69,7 +64,7 @@
               <widget class="GtkMenuItem" id="modes">
                 <property name="visible">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                <property name="label" translatable="yes">Modes</property>
+                <property name="label" translatable="yes">_Modes</property>
                 <property name="use_underline">True</property>
                 <child>
                   <widget class="GtkMenu" id="menu1">
@@ -103,11 +98,12 @@
               </widget>
             </child>
             <child>
-              <widget class="GtkMenuItem" id="menuitem4">
+              <widget class="GtkImageMenuItem" id="menuitem4">
                 <property name="visible">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                <property name="label" translatable="yes">Aid_e</property>
+                <property name="label" translatable="yes">gtk-help</property>
                 <property name="use_underline">True</property>
+                <property name="use_stock">True</property>
                 <child>
                   <widget class="GtkMenu" id="menu3">
                     <property name="visible">True</property>
@@ -129,15 +125,10 @@
                     <child>
                       <widget class="GtkImageMenuItem" id="menuitem6">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">_About</property>
+                        <property name="label" translatable="yes">gtk-about</property>
                         <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
                         <signal name="activate" handler="linphone_gtk_show_about"/>
-                        <child internal-child="image">
-                          <widget class="GtkImage" id="menu-item-image2">
-                            <property name="visible">True</property>
-                            <property name="stock">gtk-about</property>
-                          </widget>
-                        </child>
                       </widget>
                     </child>
                   </widget>

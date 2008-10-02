@@ -89,26 +89,31 @@ static GOptionEntry linphone_options[2]={
 #define BUILD_TREE_XML_DIR "gtk-glade"
 #define CONFIG_FILE ".linphonerc"
 
-static void linphone_gtk_init_liblinphone(){
+static char _config_file[1024];
+
+const char *linphone_gtk_get_config_file(){
 	const char *home;
-	char file[1024];
 	/*try accessing a local file first if exists*/
 	if (access(CONFIG_FILE,F_OK)==0){
-		snprintf(file,sizeof(file),"%s",CONFIG_FILE);
+		snprintf(_config_file,sizeof(_config_file),"%s",CONFIG_FILE);
 	}else{
 #ifdef WIN32
 		const char *appdata=getenv("APPDATA");
 		if (appdata){
-			snprintf(file,sizeof(file),"%s\\%s",appdata,"Linphone\\");
-			CreateDirectory(file,NULL);
-			snprintf(file,sizeof(file),"%s\\%s",appdata,"Linphone\\linphonerc");
+			snprintf(_config_file,sizeof(_config_file),"%s\\%s",appdata,"Linphone\\");
+			CreateDirectory(_config_file,NULL);
+			snprintf(_config_file,sizeof(_config_file),"%s\\%s",appdata,"Linphone\\linphonerc");
 		}
 #else
 		home=getenv("HOME");
 		if (home==NULL) home="";
-		snprintf(file,sizeof(file),"%s/%s",home,CONFIG_FILE);
+		snprintf(_config_file,sizeof(_config_file),"%s/%s",home,CONFIG_FILE);
 #endif
 	}
+	return _config_file;
+}
+
+static void linphone_gtk_init_liblinphone(const char *file){
 	the_core=linphone_core_new(&vtable,file,NULL);
 }
 
@@ -685,6 +690,7 @@ void linphone_gtk_log_handler(OrtpLogLevel lev, const char *fmt, va_list args){
 
 int main(int argc, char *argv[]){
 	void *p;
+	const char *config_file;
 	g_thread_init(NULL);
 	gdk_threads_init();
 #ifdef ENABLE_NLS
@@ -695,6 +701,12 @@ int main(int argc, char *argv[]){
 #else
 	g_message("NLS disabled.\n");
 #endif
+	config_file=linphone_gtk_get_config_file();
+	if (linphone_core_wake_up_possible_already_running_instance(config_file)==0){
+		g_warning("Another running instance of linphone has been detected. It has been woken-up.");
+		g_warning("This instance is going to exit now.");
+		return 0;
+	}
 	gdk_threads_enter();
 	if (!gtk_init_with_args(&argc,&argv,_("A free SIP video-phone"),
 				linphone_options,NULL,NULL)){
@@ -710,7 +722,7 @@ int main(int argc, char *argv[]){
 	linphone_gtk_create_log_window();
 	linphone_core_enable_logs_with_cb(linphone_gtk_log_handler);
 
-	linphone_gtk_init_liblinphone();
+	linphone_gtk_init_liblinphone(config_file);
 	gtk_timeout_add(20,(GtkFunction)linphone_gtk_iterate,(gpointer)linphone_gtk_get_core());
 	gtk_timeout_add(20,(GtkFunction)linphone_gtk_check_logs,(gpointer)NULL);
 	linphone_gtk_init_main_window();

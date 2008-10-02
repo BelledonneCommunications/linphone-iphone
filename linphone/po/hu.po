@@ -7,12 +7,12 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: linphone-developers@nongnu.org\n"
-"POT-Creation-Date: 2008-09-30 21:25+0200\n"
+"POT-Creation-Date: 2008-10-02 16:37+0200\n"
 "PO-Revision-Date: 2007-12-14 11:12+0100\n"
 "Last-Translator: \n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: gtk-glade/support.c:49 gtk-glade/support.c:73
@@ -25,12 +25,12 @@ msgstr "Nemtalálható a pixmap fájl: %s"
 msgid "Chat with %s"
 msgstr "Chat-elés %s -el"
 
-#: gtk-glade/main.c:397
+#: gtk-glade/main.c:402
 #, fuzzy, c-format
 msgid "Incoming call from %s"
 msgstr "Beérkező hívás"
 
-#: gtk-glade/main.c:433
+#: gtk-glade/main.c:438
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
@@ -39,25 +39,26 @@ msgid ""
 "If you answer no, this person will be temporarily blacklisted."
 msgstr ""
 
-#: gtk-glade/main.c:500
+#: gtk-glade/main.c:505
 #, c-format
 msgid "Please enter your password for domain %s:"
 msgstr ""
 
-#: gtk-glade/main.c:574
+#: gtk-glade/main.c:579
 msgid "Linphone - a video internet phone"
 msgstr ""
 
-#: gtk-glade/main.c:591
+#: gtk-glade/main.c:596
 #, c-format
 msgid "%s (Default)"
 msgstr ""
 
-#: gtk-glade/main.c:699
+#: gtk-glade/main.c:711
 msgid "A free SIP video-phone"
 msgstr "Egy ingyenes SIP video-telefon"
 
 #: gtk-glade/friendlist.c:199 gtk-glade/propertybox.c:209
+#: gtk-glade/contact.glade:41 gtk-glade/gtk-linphone.glade:2319
 msgid "Name"
 msgstr "Név"
 
@@ -103,6 +104,609 @@ msgstr "Tiltva"
 msgid "Account"
 msgstr "Hozzáférés"
 
+#: gtk-glade/main.glade:21
+#, fuzzy
+msgid "_View"
+msgstr "Video"
+
+#: gtk-glade/main.glade:30
+msgid "gtk-preferences"
+msgstr ""
+
+#: gtk-glade/main.glade:39 gtk-glade/call_logs.glade:9
+#, fuzzy
+msgid "Call history"
+msgstr "Linphone - Híváselőzmények"
+
+#: gtk-glade/main.glade:53
+msgid "gtk-quit"
+msgstr ""
+
+#: gtk-glade/main.glade:67
+#, fuzzy
+msgid "_Modes"
+msgstr "Kodekek"
+
+#: gtk-glade/main.glade:77 gtk-glade/gtk-linphone.glade:59
+#, fuzzy
+msgid "Audio only"
+msgstr "Audio kodekek"
+
+#: gtk-glade/main.glade:88 gtk-glade/gtk-linphone.glade:70
+#, fuzzy
+msgid "Audio & Video"
+msgstr "Audio kodekek"
+
+#: gtk-glade/main.glade:104
+msgid "gtk-help"
+msgstr ""
+
+#: gtk-glade/main.glade:115
+msgid "Show debug window"
+msgstr ""
+
+#: gtk-glade/main.glade:128
+msgid "gtk-about"
+msgstr ""
+
+#: gtk-glade/main.glade:189 gtk-glade/gtk-linphone.glade:175
+msgid "Terminate call"
+msgstr ""
+
+#: gtk-glade/main.glade:228 gtk-glade/gtk-linphone.glade:214
+msgid "Start call"
+msgstr ""
+
+#: gtk-glade/main.glade:252 gtk-glade/gtk-linphone.glade:238
+#, fuzzy
+msgid "Current call"
+msgstr "nem sikerült hívni"
+
+#: gtk-glade/main.glade:302 gtk-glade/gtk-linphone.glade:289
+msgid ""
+"Show All\n"
+"Show Online"
+msgstr ""
+
+#: gtk-glade/main.glade:311 gtk-glade/gtk-linphone.glade:297
+msgid "Search:"
+msgstr ""
+
+#: gtk-glade/main.glade:337 gtk-glade/gtk-linphone.glade:322
+msgid "Display filters"
+msgstr ""
+
+#: gtk-glade/main.glade:380 gtk-glade/gtk-linphone.glade:404
+#, fuzzy
+msgid "<b>Contact list</b>"
+msgstr "Kapcsolatilista"
+
+#: gtk-glade/main.glade:419 gtk-glade/gtk-linphone.glade:474
+msgid "D"
+msgstr ""
+
+#: gtk-glade/main.glade:437 gtk-glade/gtk-linphone.glade:492
+msgid "#"
+msgstr "#"
+
+#: gtk-glade/main.glade:455 gtk-glade/gtk-linphone.glade:510
+msgid "0"
+msgstr "0"
+
+#: gtk-glade/main.glade:473 gtk-glade/gtk-linphone.glade:528
+msgid "*"
+msgstr "*"
+
+#: gtk-glade/main.glade:489 gtk-glade/gtk-linphone.glade:544
+msgid "C"
+msgstr ""
+
+#: gtk-glade/main.glade:507 gtk-glade/gtk-linphone.glade:562
+msgid "9"
+msgstr ""
+
+#: gtk-glade/main.glade:525 gtk-glade/gtk-linphone.glade:580
+msgid "8"
+msgstr ""
+
+#: gtk-glade/main.glade:543 gtk-glade/gtk-linphone.glade:598
+msgid "7"
+msgstr ""
+
+#: gtk-glade/main.glade:559 gtk-glade/gtk-linphone.glade:614
+msgid "B"
+msgstr ""
+
+#: gtk-glade/main.glade:577 gtk-glade/gtk-linphone.glade:632
+msgid "6"
+msgstr ""
+
+#: gtk-glade/main.glade:595 gtk-glade/gtk-linphone.glade:650
+msgid "5"
+msgstr "5"
+
+#: gtk-glade/main.glade:613 gtk-glade/gtk-linphone.glade:668
+msgid "4"
+msgstr ""
+
+#: gtk-glade/main.glade:629 gtk-glade/gtk-linphone.glade:684
+msgid "A"
+msgstr ""
+
+#: gtk-glade/main.glade:645 gtk-glade/gtk-linphone.glade:700
+msgid "3"
+msgstr ""
+
+#: gtk-glade/main.glade:661 gtk-glade/gtk-linphone.glade:716
+msgid "2"
+msgstr ""
+
+#: gtk-glade/main.glade:677 gtk-glade/gtk-linphone.glade:732
+msgid "1"
+msgstr "1"
+
+#: gtk-glade/main.glade:693 gtk-glade/gtk-linphone.glade:748
+msgid "Digits"
+msgstr ""
+
+#: gtk-glade/main.glade:731
+msgid "Default"
+msgstr ""
+
+#: gtk-glade/main.glade:741
+#, fuzzy
+msgid "My identity :"
+msgstr "SIP azonosító:"
+
+#: gtk-glade/about.glade:8
+#, fuzzy
+msgid "About linphone"
+msgstr "linphone"
+
+#: gtk-glade/about.glade:16
+msgid "Created by Simon Morlat\n"
+msgstr ""
+
+#: gtk-glade/about.glade:18
+msgid "An internet video phone using the standart SIP (rfc3261) protocol."
+msgstr ""
+
+#: gtk-glade/about.glade:23
+msgid ""
+"fr: Simon Morlat\n"
+"en: Simon Morlat and Delphine Perreau\n"
+"it: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>\n"
+"de: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>\n"
+"sv: Daniel Nylander <po@danielnylander.se>\n"
+"es: Jesus Benitez <gnelson at inMail dot sk>\n"
+"ja: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\n"
+"pt_BR: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\n"
+"pl: Robert Nasiadek <darkone@darkone.pl>\n"
+"cs: Petr Pisar <petr.pisar@atlas.cz>\n"
+"hu: anonymous\n"
+msgstr ""
+
+#: gtk-glade/contact.glade:51 gtk-glade/gtk-linphone.glade:2307
+#, fuzzy
+msgid "SIP Address"
+msgstr "Sip cím:"
+
+#: gtk-glade/contact.glade:95 gtk-glade/gtk-linphone.glade:2335
+msgid "Show this contact presence status"
+msgstr ""
+
+#: gtk-glade/contact.glade:109 gtk-glade/gtk-linphone.glade:2349
+msgid "Allow this contact to see my presence status"
+msgstr ""
+
+#: gtk-glade/contact.glade:126 gtk-glade/gtk-linphone.glade:2366
+msgid "Contact information"
+msgstr "Kapcsolatiinformáció"
+
+#: gtk-glade/contact.glade:149 gtk-glade/password.glade:71
+#: gtk-glade/gtk-linphone.glade:2146 gtk-glade/gtk-linphone.glade:2228
+#: gtk-glade/gtk-linphone.glade:2389 gtk-glade/sip_account.glade:202
+msgid "gtk-cancel"
+msgstr ""
+
+#: gtk-glade/contact.glade:161 gtk-glade/password.glade:59
+#: gtk-glade/gtk-linphone.glade:2134 gtk-glade/gtk-linphone.glade:2217
+#: gtk-glade/gtk-linphone.glade:2400 gtk-glade/sip_account.glade:190
+msgid "gtk-ok"
+msgstr ""
+
+#: gtk-glade/log.glade:9
+msgid "Linphone debug window"
+msgstr ""
+
+#: gtk-glade/log.glade:54 gtk-glade/call_logs.glade:49
+#: gtk-glade/gtk-linphone.glade:1950 gtk-glade/chatroom.glade:82
+#: gtk-glade/parameters.glade:1379
+msgid "gtk-close"
+msgstr ""
+
+#: gtk-glade/password.glade:8 gtk-glade/gtk-linphone.glade:2167
+#, fuzzy
+msgid "Linphone - Authentication required"
+msgstr "Hitelesítést kértek"
+
+#: gtk-glade/password.glade:27 gtk-glade/gtk-linphone.glade:2186
+msgid "Please enter your password for domain..."
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:21
+msgid "É_dition"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:30
+#, fuzzy
+msgid "_Properties"
+msgstr "RTP beállítások"
+
+#: gtk-glade/gtk-linphone.glade:49
+#, fuzzy
+msgid "Modes"
+msgstr "Kodekek"
+
+#: gtk-glade/gtk-linphone.glade:86
+msgid "Aid_e"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:96
+#, fuzzy
+msgid "Show logs"
+msgstr "Mutasd a hívásokat"
+
+#: gtk-glade/gtk-linphone.glade:109
+#, fuzzy
+msgid "_About"
+msgstr "Hozzáférés"
+
+#: gtk-glade/gtk-linphone.glade:357
+msgid "gtk-add"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:368
+msgid "gtk-edit"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:382
+#, fuzzy
+msgid "gtk-remove"
+msgstr "Eltávolítás"
+
+#: gtk-glade/gtk-linphone.glade:440
+#, fuzzy
+msgid "Proxy in use"
+msgstr "Használt SIP Proxy:"
+
+#: gtk-glade/gtk-linphone.glade:822 gtk-glade/parameters.glade:36
+msgid "Use IPv6 instead of IPv4"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:833 gtk-glade/parameters.glade:48
+msgid "<b>IPv6 usage</b>"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:902 gtk-glade/parameters.glade:120
+msgid "Video RTP/UDP"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:913 gtk-glade/parameters.glade:131
+msgid "Audio RTP/UDP"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:924 gtk-glade/parameters.glade:142
+msgid "SIP (UDP)"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:935 gtk-glade/parameters.glade:153
+#, fuzzy
+msgid "<b>Ports used</b>"
+msgstr "Kapcsolatilista"
+
+#: gtk-glade/gtk-linphone.glade:969 gtk-glade/parameters.glade:187
+#, fuzzy
+msgid "Public IP address"
+msgstr "Sip cím:"
+
+#: gtk-glade/gtk-linphone.glade:992 gtk-glade/parameters.glade:211
+#, fuzzy
+msgid "Stun server"
+msgstr "Hang eszköz"
+
+#: gtk-glade/gtk-linphone.glade:1018 gtk-glade/parameters.glade:282
+msgid "<b>Firewall settings</b>"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:1047 gtk-glade/parameters.glade:383
+#, fuzzy
+msgid "Network settings"
+msgstr "Hálózat"
+
+#: gtk-glade/gtk-linphone.glade:1095 gtk-glade/parameters.glade:435
+msgid "gtk-media-play"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:1116 gtk-glade/parameters.glade:457
+#, fuzzy
+msgid "Ring sound"
+msgstr "Csengőhang:"
+
+#: gtk-glade/gtk-linphone.glade:1180 gtk-glade/parameters.glade:513
+msgid "ALSA special device (optional)"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:1192 gtk-glade/parameters.glade:525
+#, fuzzy
+msgid "Capture device"
+msgstr "Felvevő hang eszköz:"
+
+#: gtk-glade/gtk-linphone.glade:1204 gtk-glade/parameters.glade:537
+#, fuzzy
+msgid "Ring device"
+msgstr "Csengőhang forrás:"
+
+#: gtk-glade/gtk-linphone.glade:1216 gtk-glade/parameters.glade:549
+#, fuzzy
+msgid "Playback device"
+msgstr "Lejátszó hang eszköz:"
+
+#: gtk-glade/gtk-linphone.glade:1231
+msgid "Sound"
+msgstr "Hang"
+
+#: gtk-glade/gtk-linphone.glade:1263 gtk-glade/parameters.glade:678
+msgid "Multimedia settings"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:1284 gtk-glade/parameters.glade:699
+msgid "This section defines your SIP address when not using a SIP account"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:1301 gtk-glade/parameters.glade:716
+msgid "Your display name (eg: John Doe):"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:1319 gtk-glade/parameters.glade:735
+#, fuzzy
+msgid "Your username:"
+msgstr "felhasználónév:"
+
+#: gtk-glade/gtk-linphone.glade:1330 gtk-glade/parameters.glade:746
+#, fuzzy
+msgid "Your resulting SIP address:"
+msgstr "Saját sip cím:"
+
+#: gtk-glade/gtk-linphone.glade:1372
+#, fuzzy
+msgid "Default identity"
+msgstr "SIP azonosító:"
+
+#: gtk-glade/gtk-linphone.glade:1438 gtk-glade/parameters.glade:856
+msgid "Add"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:1470 gtk-glade/parameters.glade:889
+msgid "Edit"
+msgstr "Szerkesztés"
+
+#: gtk-glade/gtk-linphone.glade:1505 gtk-glade/parameters.glade:925
+msgid "Remove"
+msgstr "Eltávolítás"
+
+#: gtk-glade/gtk-linphone.glade:1532
+#, fuzzy
+msgid "Proxy accounts"
+msgstr "Használt SIP Proxy:"
+
+#: gtk-glade/gtk-linphone.glade:1580 gtk-glade/parameters.glade:1001
+msgid "Erase all passwords"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:1598
+msgid "Privacy"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:1630 gtk-glade/parameters.glade:1051
+msgid "Manage SIP Accounts"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:1666 gtk-glade/parameters.glade:1087
+#, fuzzy
+msgid ""
+"Audio codecs\n"
+"Video codecs"
+msgstr "Audio és video kodekek"
+
+#: gtk-glade/gtk-linphone.glade:1705 gtk-glade/parameters.glade:1128
+msgid "gtk-go-up"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:1716 gtk-glade/parameters.glade:1140
+msgid "gtk-go-down"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:1746 gtk-glade/parameters.glade:1172
+msgid "Enable"
+msgstr "Engedélyezés"
+
+#: gtk-glade/gtk-linphone.glade:1781 gtk-glade/parameters.glade:1208
+msgid "Disable"
+msgstr "Tiltás"
+
+#: gtk-glade/gtk-linphone.glade:1813 gtk-glade/gtk-linphone.glade:1924
+#: gtk-glade/parameters.glade:1353
+#, fuzzy
+msgid "Codecs"
+msgstr "Kodekek"
+
+#: gtk-glade/gtk-linphone.glade:1843 gtk-glade/gtk-linphone.glade:1858
+#: gtk-glade/parameters.glade:1270 gtk-glade/parameters.glade:1286
+msgid "0 stands for \"unlimited\""
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:1870 gtk-glade/parameters.glade:1299
+#, fuzzy
+msgid "Upload limit in kbits/sec"
+msgstr "Feltöltési sávszélesség (kbit/sec):"
+
+#: gtk-glade/gtk-linphone.glade:1881 gtk-glade/parameters.glade:1310
+#, fuzzy
+msgid "Download limit in kbits/sec"
+msgstr "Letöltési sávszélesség (kbit/sec):"
+
+#: gtk-glade/gtk-linphone.glade:1892
+msgid "Bandwidth usage"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:1966 gtk-glade/sip_account.glade:8
+msgid "Linphone - Configure a SIP account"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:2014 gtk-glade/sip_account.glade:109
+#, fuzzy
+msgid "Registration period (sec):"
+msgstr "Regisztrálási Időköz:"
+
+#: gtk-glade/gtk-linphone.glade:2038 gtk-glade/sip_account.glade:85
+msgid "Route (optional):"
+msgstr "Út (nem kötelező):"
+
+#: gtk-glade/gtk-linphone.glade:2062 gtk-glade/sip_account.glade:60
+#, fuzzy
+msgid "SIP Proxy address:"
+msgstr "SIP Proxy:"
+
+#: gtk-glade/gtk-linphone.glade:2084 gtk-glade/sip_account.glade:42
+#, fuzzy
+msgid "Your SIP identity:"
+msgstr "SIP azonosító:"
+
+#: gtk-glade/gtk-linphone.glade:2094 gtk-glade/sip_account.glade:150
+#, fuzzy
+msgid "Publish presence information"
+msgstr "Jelenléti információ közlése:"
+
+#: gtk-glade/gtk-linphone.glade:2111 gtk-glade/sip_account.glade:167
+msgid "Configure a SIP account"
+msgstr ""
+
+#: gtk-glade/sip_account.glade:72
+msgid "sip:"
+msgstr "sip:"
+
+#: gtk-glade/sip_account.glade:136
+msgid "Register at startup"
+msgstr ""
+
+#: gtk-glade/chatroom.glade:50
+#, fuzzy
+msgid "Send"
+msgstr "Hang"
+
+#: gtk-glade/incoming_call.glade:9
+#, fuzzy
+msgid "Linphone - Incoming call"
+msgstr "Beérkező hívás"
+
+#: gtk-glade/incoming_call.glade:36
+#, fuzzy
+msgid "Incoming call from"
+msgstr "Beérkező hívás"
+
+#: gtk-glade/incoming_call.glade:45 coreapi/linphonecore.c:230
+msgid "Incoming call"
+msgstr "Beérkező hívás"
+
+#: gtk-glade/incoming_call.glade:85
+msgid "Accept"
+msgstr "Elfogad"
+
+#: gtk-glade/incoming_call.glade:118
+#, fuzzy
+msgid "Decline"
+msgstr "line"
+
+#: gtk-glade/parameters.glade:234
+msgid "I'm not behing a firewall"
+msgstr ""
+
+#: gtk-glade/parameters.glade:248
+msgid "I'm behind a firewall, use supplied public IP address"
+msgstr ""
+
+#: gtk-glade/parameters.glade:263
+msgid "Use the supplied stun server above and do as best as possible"
+msgstr ""
+
+#: gtk-glade/parameters.glade:327
+msgid "Set Maximum Transmission Unit"
+msgstr ""
+
+#: gtk-glade/parameters.glade:337
+msgid "Send DTMFs as SIP info"
+msgstr ""
+
+#: gtk-glade/parameters.glade:354
+msgid "<b>Miscelaneous</b>"
+msgstr ""
+
+#: gtk-glade/parameters.glade:483
+msgid "default soundcard\n"
+msgstr ""
+
+#: gtk-glade/parameters.glade:499
+msgid "default soundcard"
+msgstr ""
+
+#: gtk-glade/parameters.glade:560
+msgid "a sound card\n"
+msgstr ""
+
+#: gtk-glade/parameters.glade:575
+msgid "Enable echo cancelation"
+msgstr ""
+
+#: gtk-glade/parameters.glade:595
+msgid "<b>Sound</b>"
+msgstr ""
+
+#: gtk-glade/parameters.glade:620
+#, fuzzy
+msgid "Video input device"
+msgstr "Hang eszköz"
+
+#: gtk-glade/parameters.glade:629
+msgid "default camera"
+msgstr ""
+
+#: gtk-glade/parameters.glade:645
+msgid "<b>Video</b>"
+msgstr ""
+
+#: gtk-glade/parameters.glade:789
+msgid "<b>Default identity</b>"
+msgstr ""
+
+#: gtk-glade/parameters.glade:952
+#, fuzzy
+msgid "<b>Proxy accounts</b>"
+msgstr "Kapcsolatilista"
+
+#: gtk-glade/parameters.glade:1019
+msgid "<b>Privacy</b>"
+msgstr ""
+
+#: gtk-glade/parameters.glade:1240
+#, fuzzy
+msgid "<b>Codecs</b>"
+msgstr "Kapcsolatilista"
+
+#: gtk-glade/parameters.glade:1321
+msgid "<b>Bandwidth usage</b>"
+msgstr ""
+
 #: coreapi/linphonecore.c:192
 #, c-format
 msgid "You have missed %i call(s)."
@@ -134,10 +738,6 @@ msgstr ""
 "Ig: %s\n"
 "Állapot: %s\n"
 "Időtartam: %i perc %i másodperc\n"
-
-#: coreapi/linphonecore.c:230
-msgid "Incoming call"
-msgstr "Beérkező hívás"
 
 #: coreapi/linphonecore.c:230
 msgid "Outgoing call"
@@ -353,17 +953,11 @@ msgstr "Ebédelni ment"
 msgid "Closed"
 msgstr "Lezárva"
 
-#~ msgid "linphone"
-#~ msgstr "linphone"
-
 #~ msgid "Go"
 #~ msgstr "Ugrás"
 
 #~ msgid "Address book"
 #~ msgstr "Címjegyzék"
-
-#~ msgid "Shows calls"
-#~ msgstr "Mutasd a hívásokat"
 
 #~ msgid "Exit"
 #~ msgstr "Kilépés"
@@ -374,20 +968,11 @@ msgstr "Lezárva"
 #~ msgid "Enter sip address or phone number here"
 #~ msgstr "Gépeld ide a sip címet vagy a telefonszámot"
 
-#~ msgid "sip:"
-#~ msgstr "sip:"
-
-#~ msgid "Sip address:"
-#~ msgstr "Sip cím:"
-
 #~ msgid "Shows the address book"
 #~ msgstr "Mutasd a címjegyzéket"
 
 #~ msgid "..."
 #~ msgstr "..."
-
-#~ msgid "Proxy to use:"
-#~ msgstr "Használt SIP Proxy:"
 
 #~ msgid ""
 #~ "Call or\n"
@@ -418,14 +1003,8 @@ msgstr "Lezárva"
 #~ msgid "Ring level:"
 #~ msgstr "Csengetési hangerő:"
 
-#~ msgid "Sound"
-#~ msgstr "Hang"
-
 #~ msgid "Enable video"
 #~ msgstr "Video engedélyezés"
-
-#~ msgid "Video"
-#~ msgstr "Video"
 
 #~ msgid "Controls"
 #~ msgstr "Vezérlés"
@@ -438,9 +1017,6 @@ msgstr "Lezárva"
 
 #~ msgid "The other party will be informed that you'll be back in X minutes"
 #~ msgstr "A másik fél tájékoztatva lesz, hogy X perc alatt vissza fogsz jönni"
-
-#~ msgid "5"
-#~ msgstr "5"
 
 #~ msgid "mn"
 #~ msgstr "perc"
@@ -477,9 +1053,6 @@ msgstr "Lezárva"
 #~ "  2\n"
 #~ "abc"
 
-#~ msgid "1"
-#~ msgstr "1"
-
 #~ msgid ""
 #~ "  4\n"
 #~ "ghi"
@@ -521,15 +1094,6 @@ msgstr "Lezárva"
 #~ msgstr ""
 #~ "   9\n"
 #~ "wxyz"
-
-#~ msgid "*"
-#~ msgstr "*"
-
-#~ msgid "0"
-#~ msgstr "0"
-
-#~ msgid "#"
-#~ msgstr "#"
 
 #~ msgid "DTMF"
 #~ msgstr "DTMF"
@@ -592,9 +1156,6 @@ msgstr "Lezárva"
 #~ msgid "RTP port used for audio:"
 #~ msgstr "RTP port, audió használatra:"
 
-#~ msgid "RTP properties"
-#~ msgstr "RTP beállítások"
-
 #~ msgid "Use SIP INFO message instead of RTP rfc2833 for DTMF transmitting"
 #~ msgstr "Használj SIP INFO üzenetet RTP rfc2833 helyett a DTMF átvitelnél"
 
@@ -604,29 +1165,11 @@ msgstr "Lezárva"
 #~ msgid "Other"
 #~ msgstr "Egyéb"
 
-#~ msgid "Network"
-#~ msgstr "Hálózat"
-
-#~ msgid "Playback sound device:"
-#~ msgstr "Lejátszó hang eszköz:"
-
 #~ msgid "micro"
 #~ msgstr "mikrofon"
 
-#~ msgid "line"
-#~ msgstr "line"
-
-#~ msgid "Capture sound device:"
-#~ msgstr "Felvevő hang eszköz:"
-
 #~ msgid "Recording source:"
 #~ msgstr "Felvételi forrás:"
-
-#~ msgid "Ring sound device"
-#~ msgstr "Csengőhang forrás:"
-
-#~ msgid "Ring sound:"
-#~ msgstr "Csengőhang:"
 
 #~ msgid "Enable echo-canceler (cancels the echo heard by the remote party)"
 #~ msgstr ""
@@ -642,9 +1185,6 @@ msgstr "Lezárva"
 #~ msgid "Sound properties"
 #~ msgstr "Hang beállítások"
 
-#~ msgid "Sound device"
-#~ msgstr "Hang eszköz"
-
 #~ msgid "Run sip user agent on port:"
 #~ msgstr "SIP felhasználó ügynök által használt port:"
 
@@ -653,9 +1193,6 @@ msgstr "Lezárva"
 
 #~ msgid "SIP port"
 #~ msgstr "SIP port"
-
-#~ msgid "Your sip address:"
-#~ msgstr "Saját sip cím:"
 
 #~ msgid "@"
 #~ msgstr "@"
@@ -668,12 +1205,6 @@ msgstr "Lezárva"
 
 #~ msgid "Add proxy/registrar"
 #~ msgstr "Proxy vagy regisztráció hozzáadás"
-
-#~ msgid "Edit"
-#~ msgstr "Szerkesztés"
-
-#~ msgid "Remove"
-#~ msgstr "Eltávolítás"
 
 #~ msgid "Remote services"
 #~ msgstr "Távoli szolgáltatások"
@@ -692,23 +1223,8 @@ msgstr "Lezárva"
 #~ msgid "List of audio codecs, in order of preference:"
 #~ msgstr "Az audió kódoló-dekódolók listája, a preferencia rendjében:"
 
-#~ msgid "Audio codecs"
-#~ msgstr "Audio kodekek"
-
 #~ msgid "Video Codecs"
 #~ msgstr "Audio kodekek"
-
-#~ msgid "Enable"
-#~ msgstr "Engedélyezés"
-
-#~ msgid "Disable"
-#~ msgstr "Tiltás"
-
-#~ msgid "Upload bandwidth (kbit/sec):"
-#~ msgstr "Feltöltési sávszélesség (kbit/sec):"
-
-#~ msgid "Download bandwidth (kbit/sec):"
-#~ msgstr "Letöltési sávszélesség (kbit/sec):"
 
 #~ msgid ""
 #~ "Note: Codecs in red are not usable regarding to your connection type to "
@@ -722,12 +1238,6 @@ msgstr "Lezárva"
 
 #~ msgid "Codec information"
 #~ msgstr "Kodekinformáció"
-
-#~ msgid "Audio and video codecs"
-#~ msgstr "Audio és video kodekek"
-
-#~ msgid "Codecs"
-#~ msgstr "Kodekek"
 
 #~ msgid "Address Book"
 #~ msgstr "Címjegyzék"
@@ -751,23 +1261,8 @@ msgstr "Lezárva"
 #~ msgid "Proxy/Registrar configuration box"
 #~ msgstr "Proxy/Regisztráció konfigurációs doboz"
 
-#~ msgid "Route (optional):"
-#~ msgstr "Út (nem kötelező):"
-
-#~ msgid "SIP Proxy:"
-#~ msgstr "SIP Proxy:"
-
-#~ msgid "SIP Identity:"
-#~ msgstr "SIP azonosító:"
-
-#~ msgid "Registration Period:"
-#~ msgstr "Regisztrálási Időköz:"
-
 #~ msgid "Send registration:"
 #~ msgstr "Regisztárció küldés:"
-
-#~ msgid "Publish presence information:"
-#~ msgstr "Jelenléti információ közlése:"
 
 #~ msgid "Edit contact information"
 #~ msgstr "Kapcsolatinformációk szerkesztése"
@@ -781,9 +1276,6 @@ msgstr "Lezárva"
 #~ msgid "Send subscription (see person's online status)"
 #~ msgstr "Láthatóság küldése (látszik a személy elérhetőségi státusza)"
 
-#~ msgid "Contact information"
-#~ msgstr "Kapcsolatiinformáció"
-
 #~ msgid "New incoming subscription"
 #~ msgstr "Új beérkező előfizetés"
 
@@ -792,12 +1284,6 @@ msgstr "Lezárva"
 
 #~ msgid "Refuse"
 #~ msgstr "Hulladék"
-
-#~ msgid "Accept"
-#~ msgstr "Elfogad"
-
-#~ msgid "Authentication requested"
-#~ msgstr "Hitelesítést kértek"
 
 #~ msgid "Authentication required for realm"
 #~ msgstr "Hitelesítési kérelem a tartománynak"
@@ -808,14 +1294,8 @@ msgstr "Lezárva"
 #~ msgid "password:"
 #~ msgstr "jelszó:"
 
-#~ msgid "username:"
-#~ msgstr "felhasználónév:"
-
 #~ msgid "realm:"
 #~ msgstr "tartomány:"
-
-#~ msgid "Linphone - Call history"
-#~ msgstr "Linphone - Híváselőzmények"
 
 #~ msgid "Chat Room"
 #~ msgstr "Chat szoba"
@@ -863,9 +1343,6 @@ msgstr "Lezárva"
 
 #~ msgid "Bad sip address: a sip address looks like sip:user@domain"
 #~ msgstr "Rossz sip cím: egy sip cím általában így néz ki: user@domain"
-
-#~ msgid "Contact list"
-#~ msgstr "Kapcsolatilista"
 
 #~ msgid "Stun lookup done..."
 #~ msgstr "Stun keresés kész..."

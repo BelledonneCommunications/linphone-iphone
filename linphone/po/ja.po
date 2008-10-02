@@ -1,37 +1,37 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# »³¸ıÁ±Ìé <yushiya@anet.ne.jp>, 2002.
+# å±±å£å–„ä¹Ÿ <yushiya@anet.ne.jp>, 2002.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: linphone 0.10\n"
 "Report-Msgid-Bugs-To: linphone-developers@nongnu.org\n"
-"POT-Creation-Date: 2008-09-30 21:25+0200\n"
+"POT-Creation-Date: 2008-10-02 16:37+0200\n"
 "PO-Revision-Date: 2003-01-21 00:05+9000\n"
 "Last-Translator: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\n"
 "Language-Team: <ja@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=EUC-JP\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: gtk-glade/support.c:49 gtk-glade/support.c:73
 #, c-format
 msgid "Couldn't find pixmap file: %s"
-msgstr "pixmap¥Õ¥¡¥¤¥ë¤¬¸«¤Ä¤«¤ê¤Ş¤»¤ó %s"
+msgstr "pixmapãƒ•ã‚¡ã‚¤ãƒ«ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ %s"
 
 #: gtk-glade/chat.c:27
 #, c-format
 msgid "Chat with %s"
 msgstr ""
 
-#: gtk-glade/main.c:397
+#: gtk-glade/main.c:402
 #, c-format
 msgid "Incoming call from %s"
 msgstr ""
 
-#: gtk-glade/main.c:433
+#: gtk-glade/main.c:438
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
@@ -40,32 +40,33 @@ msgid ""
 "If you answer no, this person will be temporarily blacklisted."
 msgstr ""
 
-#: gtk-glade/main.c:500
+#: gtk-glade/main.c:505
 #, c-format
 msgid "Please enter your password for domain %s:"
 msgstr ""
 
-#: gtk-glade/main.c:574
+#: gtk-glade/main.c:579
 msgid "Linphone - a video internet phone"
 msgstr ""
 
-#: gtk-glade/main.c:591
+#: gtk-glade/main.c:596
 #, c-format
 msgid "%s (Default)"
 msgstr ""
 
-#: gtk-glade/main.c:699
+#: gtk-glade/main.c:711
 msgid "A free SIP video-phone"
 msgstr ""
 
 #: gtk-glade/friendlist.c:199 gtk-glade/propertybox.c:209
+#: gtk-glade/contact.glade:41 gtk-glade/gtk-linphone.glade:2319
 msgid "Name"
-msgstr "Ì¾Á°"
+msgstr "åå‰"
 
 #: gtk-glade/friendlist.c:206
 #, fuzzy
 msgid "Presence status"
-msgstr "¾õÂÖ"
+msgstr "çŠ¶æ…‹"
 
 #: gtk-glade/friendlist.c:397
 #, c-format
@@ -83,26 +84,618 @@ msgstr ""
 
 #: gtk-glade/propertybox.c:221
 msgid "Status"
-msgstr "¾õÂÖ"
+msgstr "çŠ¶æ…‹"
 
 #: gtk-glade/propertybox.c:227
 msgid "Min bitrate (kbit/s)"
-msgstr "ºÇÄã¸Â¤Î¥Ó¥Ã¥È¥ì¡¼¥È (kbit/s)"
+msgstr "æœ€ä½é™ã®ãƒ“ãƒƒãƒˆãƒ¬ãƒ¼ãƒˆ (kbit/s)"
 
 #: gtk-glade/propertybox.c:233
 msgid "Parameters"
-msgstr "¥Ñ¥é¥á¡¼¥¿¡¼"
+msgstr "ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼"
 
 #: gtk-glade/propertybox.c:260 gtk-glade/propertybox.c:397
 msgid "Enabled"
-msgstr "»ÈÍÑ¤¹¤ë"
+msgstr "ä½¿ç”¨ã™ã‚‹"
 
 #: gtk-glade/propertybox.c:261 gtk-glade/propertybox.c:397
 msgid "Disabled"
-msgstr "»ÈÍÑ¤·¤Ê¤¤"
+msgstr "ä½¿ç”¨ã—ãªã„"
 
 #: gtk-glade/propertybox.c:442
 msgid "Account"
+msgstr ""
+
+#: gtk-glade/main.glade:21
+msgid "_View"
+msgstr ""
+
+#: gtk-glade/main.glade:30
+msgid "gtk-preferences"
+msgstr ""
+
+#: gtk-glade/main.glade:39 gtk-glade/call_logs.glade:9
+msgid "Call history"
+msgstr ""
+
+#: gtk-glade/main.glade:53
+msgid "gtk-quit"
+msgstr ""
+
+#: gtk-glade/main.glade:67
+#, fuzzy
+msgid "_Modes"
+msgstr "ã‚³ãƒ¼ãƒ‡ãƒƒã‚¯"
+
+#: gtk-glade/main.glade:77 gtk-glade/gtk-linphone.glade:59
+#, fuzzy
+msgid "Audio only"
+msgstr "ã‚ªãƒ¼ãƒ‡ã‚£ã‚ª"
+
+#: gtk-glade/main.glade:88 gtk-glade/gtk-linphone.glade:70
+#, fuzzy
+msgid "Audio & Video"
+msgstr "ã‚ªãƒ¼ãƒ‡ã‚£ã‚ªã‚³ãƒ¼ãƒ‡ãƒƒã‚¯ã®ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ãƒ¼"
+
+#: gtk-glade/main.glade:104
+msgid "gtk-help"
+msgstr ""
+
+#: gtk-glade/main.glade:115
+msgid "Show debug window"
+msgstr ""
+
+#: gtk-glade/main.glade:128
+msgid "gtk-about"
+msgstr ""
+
+#: gtk-glade/main.glade:189 gtk-glade/gtk-linphone.glade:175
+msgid "Terminate call"
+msgstr ""
+
+#: gtk-glade/main.glade:228 gtk-glade/gtk-linphone.glade:214
+msgid "Start call"
+msgstr ""
+
+#: gtk-glade/main.glade:252 gtk-glade/gtk-linphone.glade:238
+msgid "Current call"
+msgstr ""
+
+#: gtk-glade/main.glade:302 gtk-glade/gtk-linphone.glade:289
+msgid ""
+"Show All\n"
+"Show Online"
+msgstr ""
+
+#: gtk-glade/main.glade:311 gtk-glade/gtk-linphone.glade:297
+msgid "Search:"
+msgstr ""
+
+#: gtk-glade/main.glade:337 gtk-glade/gtk-linphone.glade:322
+#, fuzzy
+msgid "Display filters"
+msgstr "è¡¨ç¤ºã•ã‚Œã‚‹åå‰"
+
+#: gtk-glade/main.glade:380 gtk-glade/gtk-linphone.glade:404
+#, fuzzy
+msgid "<b>Contact list</b>"
+msgstr "æ¥ç¶šä¸­"
+
+#: gtk-glade/main.glade:419 gtk-glade/gtk-linphone.glade:474
+msgid "D"
+msgstr ""
+
+#: gtk-glade/main.glade:437 gtk-glade/gtk-linphone.glade:492
+msgid "#"
+msgstr "#"
+
+#: gtk-glade/main.glade:455 gtk-glade/gtk-linphone.glade:510
+msgid "0"
+msgstr "0"
+
+#: gtk-glade/main.glade:473 gtk-glade/gtk-linphone.glade:528
+msgid "*"
+msgstr "*"
+
+#: gtk-glade/main.glade:489 gtk-glade/gtk-linphone.glade:544
+msgid "C"
+msgstr ""
+
+#: gtk-glade/main.glade:507 gtk-glade/gtk-linphone.glade:562
+msgid "9"
+msgstr "9"
+
+#: gtk-glade/main.glade:525 gtk-glade/gtk-linphone.glade:580
+msgid "8"
+msgstr "8"
+
+#: gtk-glade/main.glade:543 gtk-glade/gtk-linphone.glade:598
+msgid "7"
+msgstr "7"
+
+#: gtk-glade/main.glade:559 gtk-glade/gtk-linphone.glade:614
+msgid "B"
+msgstr ""
+
+#: gtk-glade/main.glade:577 gtk-glade/gtk-linphone.glade:632
+msgid "6"
+msgstr "6"
+
+#: gtk-glade/main.glade:595 gtk-glade/gtk-linphone.glade:650
+msgid "5"
+msgstr "5"
+
+#: gtk-glade/main.glade:613 gtk-glade/gtk-linphone.glade:668
+msgid "4"
+msgstr "4"
+
+#: gtk-glade/main.glade:629 gtk-glade/gtk-linphone.glade:684
+msgid "A"
+msgstr ""
+
+#: gtk-glade/main.glade:645 gtk-glade/gtk-linphone.glade:700
+msgid "3"
+msgstr "3"
+
+#: gtk-glade/main.glade:661 gtk-glade/gtk-linphone.glade:716
+msgid "2"
+msgstr "2"
+
+#: gtk-glade/main.glade:677 gtk-glade/gtk-linphone.glade:732
+msgid "1"
+msgstr "1"
+
+#: gtk-glade/main.glade:693 gtk-glade/gtk-linphone.glade:748
+msgid "Digits"
+msgstr ""
+
+#: gtk-glade/main.glade:731
+msgid "Default"
+msgstr ""
+
+#: gtk-glade/main.glade:741
+#, fuzzy
+msgid "My identity :"
+msgstr "å€‹äººæƒ…å ±"
+
+#: gtk-glade/about.glade:8
+#, fuzzy
+msgid "About linphone"
+msgstr "Linphone"
+
+#: gtk-glade/about.glade:16
+msgid "Created by Simon Morlat\n"
+msgstr ""
+
+#: gtk-glade/about.glade:18
+msgid "An internet video phone using the standart SIP (rfc3261) protocol."
+msgstr ""
+
+#: gtk-glade/about.glade:23
+msgid ""
+"fr: Simon Morlat\n"
+"en: Simon Morlat and Delphine Perreau\n"
+"it: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>\n"
+"de: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>\n"
+"sv: Daniel Nylander <po@danielnylander.se>\n"
+"es: Jesus Benitez <gnelson at inMail dot sk>\n"
+"ja: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\n"
+"pt_BR: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\n"
+"pl: Robert Nasiadek <darkone@darkone.pl>\n"
+"cs: Petr Pisar <petr.pisar@atlas.cz>\n"
+"hu: anonymous\n"
+msgstr ""
+
+#: gtk-glade/contact.glade:51 gtk-glade/gtk-linphone.glade:2307
+#, fuzzy
+msgid "SIP Address"
+msgstr "ã‚¢ãƒ‰ãƒ¬ã‚¹"
+
+#: gtk-glade/contact.glade:95 gtk-glade/gtk-linphone.glade:2335
+msgid "Show this contact presence status"
+msgstr ""
+
+#: gtk-glade/contact.glade:109 gtk-glade/gtk-linphone.glade:2349
+msgid "Allow this contact to see my presence status"
+msgstr ""
+
+#: gtk-glade/contact.glade:126 gtk-glade/gtk-linphone.glade:2366
+#, fuzzy
+msgid "Contact information"
+msgstr "ã‚³ãƒ¼ãƒ‡ãƒƒã‚¯ã®æƒ…å ±"
+
+#: gtk-glade/contact.glade:149 gtk-glade/password.glade:71
+#: gtk-glade/gtk-linphone.glade:2146 gtk-glade/gtk-linphone.glade:2228
+#: gtk-glade/gtk-linphone.glade:2389 gtk-glade/sip_account.glade:202
+msgid "gtk-cancel"
+msgstr ""
+
+#: gtk-glade/contact.glade:161 gtk-glade/password.glade:59
+#: gtk-glade/gtk-linphone.glade:2134 gtk-glade/gtk-linphone.glade:2217
+#: gtk-glade/gtk-linphone.glade:2400 gtk-glade/sip_account.glade:190
+msgid "gtk-ok"
+msgstr ""
+
+#: gtk-glade/log.glade:9
+msgid "Linphone debug window"
+msgstr ""
+
+#: gtk-glade/log.glade:54 gtk-glade/call_logs.glade:49
+#: gtk-glade/gtk-linphone.glade:1950 gtk-glade/chatroom.glade:82
+#: gtk-glade/parameters.glade:1379
+msgid "gtk-close"
+msgstr ""
+
+#: gtk-glade/password.glade:8 gtk-glade/gtk-linphone.glade:2167
+msgid "Linphone - Authentication required"
+msgstr ""
+
+#: gtk-glade/password.glade:27 gtk-glade/gtk-linphone.glade:2186
+msgid "Please enter your password for domain..."
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:21
+msgid "Ã‰_dition"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:30
+#, fuzzy
+msgid "_Properties"
+msgstr "RTPã®ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ãƒ¼"
+
+#: gtk-glade/gtk-linphone.glade:49
+#, fuzzy
+msgid "Modes"
+msgstr "ã‚³ãƒ¼ãƒ‡ãƒƒã‚¯"
+
+#: gtk-glade/gtk-linphone.glade:86
+msgid "Aid_e"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:96
+msgid "Show logs"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:109
+msgid "_About"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:357
+msgid "gtk-add"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:368
+msgid "gtk-edit"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:382
+#, fuzzy
+msgid "gtk-remove"
+msgstr "å‰Šé™¤ã™ã‚‹"
+
+#: gtk-glade/gtk-linphone.glade:440
+msgid "Proxy in use"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:822 gtk-glade/parameters.glade:36
+msgid "Use IPv6 instead of IPv4"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:833 gtk-glade/parameters.glade:48
+msgid "<b>IPv6 usage</b>"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:902 gtk-glade/parameters.glade:120
+msgid "Video RTP/UDP"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:913 gtk-glade/parameters.glade:131
+msgid "Audio RTP/UDP"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:924 gtk-glade/parameters.glade:142
+msgid "SIP (UDP)"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:935 gtk-glade/parameters.glade:153
+#, fuzzy
+msgid "<b>Ports used</b>"
+msgstr "æ¥ç¶šä¸­"
+
+#: gtk-glade/gtk-linphone.glade:969 gtk-glade/parameters.glade:187
+#, fuzzy
+msgid "Public IP address"
+msgstr "Sipã‚¢ãƒ‰ãƒ¬ã‚¹:"
+
+#: gtk-glade/gtk-linphone.glade:992 gtk-glade/parameters.glade:211
+#, fuzzy
+msgid "Stun server"
+msgstr "ä½¿ç”¨ã™ã‚‹ã‚µã‚¦ãƒ³ãƒ‰ãƒ‡ãƒã‚¤ã‚¹"
+
+#: gtk-glade/gtk-linphone.glade:1018 gtk-glade/parameters.glade:282
+msgid "<b>Firewall settings</b>"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:1047 gtk-glade/parameters.glade:383
+#, fuzzy
+msgid "Network settings"
+msgstr "ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯"
+
+#: gtk-glade/gtk-linphone.glade:1095 gtk-glade/parameters.glade:435
+msgid "gtk-media-play"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:1116 gtk-glade/parameters.glade:457
+#, fuzzy
+msgid "Ring sound"
+msgstr "éŒ²éŸ³ã™ã‚‹éŸ³æº"
+
+#: gtk-glade/gtk-linphone.glade:1180 gtk-glade/parameters.glade:513
+msgid "ALSA special device (optional)"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:1192 gtk-glade/parameters.glade:525
+#, fuzzy
+msgid "Capture device"
+msgstr "ä½¿ç”¨ã™ã‚‹ã‚µã‚¦ãƒ³ãƒ‰ãƒ‡ãƒã‚¤ã‚¹"
+
+#: gtk-glade/gtk-linphone.glade:1204 gtk-glade/parameters.glade:537
+#, fuzzy
+msgid "Ring device"
+msgstr "ä½¿ç”¨ã™ã‚‹ã‚µã‚¦ãƒ³ãƒ‰ãƒ‡ãƒã‚¤ã‚¹"
+
+#: gtk-glade/gtk-linphone.glade:1216 gtk-glade/parameters.glade:549
+#, fuzzy
+msgid "Playback device"
+msgstr "ä½¿ç”¨ã™ã‚‹ã‚µã‚¦ãƒ³ãƒ‰ãƒ‡ãƒã‚¤ã‚¹"
+
+#: gtk-glade/gtk-linphone.glade:1231
+msgid "Sound"
+msgstr "ã‚µã‚¦ãƒ³ãƒ‰"
+
+#: gtk-glade/gtk-linphone.glade:1263 gtk-glade/parameters.glade:678
+msgid "Multimedia settings"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:1284 gtk-glade/parameters.glade:699
+msgid "This section defines your SIP address when not using a SIP account"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:1301 gtk-glade/parameters.glade:716
+msgid "Your display name (eg: John Doe):"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:1319 gtk-glade/parameters.glade:735
+msgid "Your username:"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:1330 gtk-glade/parameters.glade:746
+#, fuzzy
+msgid "Your resulting SIP address:"
+msgstr "ã‚ãªãŸã®SIPã‚¢ãƒ‰ãƒ¬ã‚¹"
+
+#: gtk-glade/gtk-linphone.glade:1372
+#, fuzzy
+msgid "Default identity"
+msgstr "å€‹äººæƒ…å ±"
+
+#: gtk-glade/gtk-linphone.glade:1438 gtk-glade/parameters.glade:856
+msgid "Add"
+msgstr "è¿½åŠ ã™ã‚‹"
+
+#: gtk-glade/gtk-linphone.glade:1470 gtk-glade/parameters.glade:889
+msgid "Edit"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:1505 gtk-glade/parameters.glade:925
+msgid "Remove"
+msgstr "å‰Šé™¤ã™ã‚‹"
+
+#: gtk-glade/gtk-linphone.glade:1532
+msgid "Proxy accounts"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:1580 gtk-glade/parameters.glade:1001
+msgid "Erase all passwords"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:1598
+msgid "Privacy"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:1630 gtk-glade/parameters.glade:1051
+msgid "Manage SIP Accounts"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:1666 gtk-glade/parameters.glade:1087
+#, fuzzy
+msgid ""
+"Audio codecs\n"
+"Video codecs"
+msgstr "ã‚ªãƒ¼ãƒ‡ã‚£ã‚ªã‚³ãƒ¼ãƒ‡ãƒƒã‚¯ã®ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ãƒ¼"
+
+#: gtk-glade/gtk-linphone.glade:1705 gtk-glade/parameters.glade:1128
+msgid "gtk-go-up"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:1716 gtk-glade/parameters.glade:1140
+msgid "gtk-go-down"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:1746 gtk-glade/parameters.glade:1172
+msgid "Enable"
+msgstr "ä½¿ç”¨ã™ã‚‹"
+
+#: gtk-glade/gtk-linphone.glade:1781 gtk-glade/parameters.glade:1208
+msgid "Disable"
+msgstr "ä½¿ç”¨ã—ãªã„"
+
+#: gtk-glade/gtk-linphone.glade:1813 gtk-glade/gtk-linphone.glade:1924
+#: gtk-glade/parameters.glade:1353
+#, fuzzy
+msgid "Codecs"
+msgstr "ã‚³ãƒ¼ãƒ‡ãƒƒã‚¯"
+
+#: gtk-glade/gtk-linphone.glade:1843 gtk-glade/gtk-linphone.glade:1858
+#: gtk-glade/parameters.glade:1270 gtk-glade/parameters.glade:1286
+msgid "0 stands for \"unlimited\""
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:1870 gtk-glade/parameters.glade:1299
+msgid "Upload limit in kbits/sec"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:1881 gtk-glade/parameters.glade:1310
+msgid "Download limit in kbits/sec"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:1892
+msgid "Bandwidth usage"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:1966 gtk-glade/sip_account.glade:8
+msgid "Linphone - Configure a SIP account"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:2014 gtk-glade/sip_account.glade:109
+#, fuzzy
+msgid "Registration period (sec):"
+msgstr "ç™»éŒ²ã—ã¾ã—ãŸã€‚"
+
+#: gtk-glade/gtk-linphone.glade:2038 gtk-glade/sip_account.glade:85
+msgid "Route (optional):"
+msgstr ""
+
+#: gtk-glade/gtk-linphone.glade:2062 gtk-glade/sip_account.glade:60
+#, fuzzy
+msgid "SIP Proxy address:"
+msgstr "Sipã‚¢ãƒ‰ãƒ¬ã‚¹:"
+
+#: gtk-glade/gtk-linphone.glade:2084 gtk-glade/sip_account.glade:42
+#, fuzzy
+msgid "Your SIP identity:"
+msgstr "å€‹äººæƒ…å ±"
+
+#: gtk-glade/gtk-linphone.glade:2094 gtk-glade/sip_account.glade:150
+#, fuzzy
+msgid "Publish presence information"
+msgstr "ã‚³ãƒ¼ãƒ‡ãƒƒã‚¯ã®æƒ…å ±"
+
+#: gtk-glade/gtk-linphone.glade:2111 gtk-glade/sip_account.glade:167
+msgid "Configure a SIP account"
+msgstr ""
+
+#: gtk-glade/sip_account.glade:72
+msgid "sip:"
+msgstr "sip:"
+
+#: gtk-glade/sip_account.glade:136
+msgid "Register at startup"
+msgstr ""
+
+#: gtk-glade/chatroom.glade:50
+#, fuzzy
+msgid "Send"
+msgstr "ã‚µã‚¦ãƒ³ãƒ‰"
+
+#: gtk-glade/incoming_call.glade:9
+msgid "Linphone - Incoming call"
+msgstr ""
+
+#: gtk-glade/incoming_call.glade:36
+msgid "Incoming call from"
+msgstr ""
+
+#: gtk-glade/incoming_call.glade:45 coreapi/linphonecore.c:230
+msgid "Incoming call"
+msgstr ""
+
+#: gtk-glade/incoming_call.glade:85
+msgid "Accept"
+msgstr ""
+
+#: gtk-glade/incoming_call.glade:118
+#, fuzzy
+msgid "Decline"
+msgstr "ãƒ©ã‚¤ãƒ³å…¥åŠ›"
+
+#: gtk-glade/parameters.glade:234
+msgid "I'm not behing a firewall"
+msgstr ""
+
+#: gtk-glade/parameters.glade:248
+msgid "I'm behind a firewall, use supplied public IP address"
+msgstr ""
+
+#: gtk-glade/parameters.glade:263
+msgid "Use the supplied stun server above and do as best as possible"
+msgstr ""
+
+#: gtk-glade/parameters.glade:327
+msgid "Set Maximum Transmission Unit"
+msgstr ""
+
+#: gtk-glade/parameters.glade:337
+msgid "Send DTMFs as SIP info"
+msgstr ""
+
+#: gtk-glade/parameters.glade:354
+msgid "<b>Miscelaneous</b>"
+msgstr ""
+
+#: gtk-glade/parameters.glade:483
+msgid "default soundcard\n"
+msgstr ""
+
+#: gtk-glade/parameters.glade:499
+msgid "default soundcard"
+msgstr ""
+
+#: gtk-glade/parameters.glade:560
+msgid "a sound card\n"
+msgstr ""
+
+#: gtk-glade/parameters.glade:575
+msgid "Enable echo cancelation"
+msgstr ""
+
+#: gtk-glade/parameters.glade:595
+msgid "<b>Sound</b>"
+msgstr ""
+
+#: gtk-glade/parameters.glade:620
+#, fuzzy
+msgid "Video input device"
+msgstr "ä½¿ç”¨ã™ã‚‹ã‚µã‚¦ãƒ³ãƒ‰ãƒ‡ãƒã‚¤ã‚¹"
+
+#: gtk-glade/parameters.glade:629
+msgid "default camera"
+msgstr ""
+
+#: gtk-glade/parameters.glade:645
+msgid "<b>Video</b>"
+msgstr ""
+
+#: gtk-glade/parameters.glade:789
+msgid "<b>Default identity</b>"
+msgstr ""
+
+#: gtk-glade/parameters.glade:952
+#, fuzzy
+msgid "<b>Proxy accounts</b>"
+msgstr "æ¥ç¶šä¸­"
+
+#: gtk-glade/parameters.glade:1019
+msgid "<b>Privacy</b>"
+msgstr ""
+
+#: gtk-glade/parameters.glade:1240
+#, fuzzy
+msgid "<b>Codecs</b>"
+msgstr "æ¥ç¶šä¸­"
+
+#: gtk-glade/parameters.glade:1321
+msgid "<b>Bandwidth usage</b>"
 msgstr ""
 
 #: coreapi/linphonecore.c:192
@@ -133,10 +726,6 @@ msgid ""
 msgstr ""
 
 #: coreapi/linphonecore.c:230
-msgid "Incoming call"
-msgstr ""
-
-#: coreapi/linphonecore.c:230
 msgid "Outgoing call"
 msgstr ""
 
@@ -149,7 +738,7 @@ msgstr ""
 #: coreapi/linphonecore.c:701
 #, fuzzy
 msgid "Ready"
-msgstr "½àÈ÷´°Î»¡£"
+msgstr "æº–å‚™å®Œäº†ã€‚"
 
 #: coreapi/linphonecore.c:976
 msgid "Remote end seems to have disconnected, the call is going to be closed."
@@ -169,8 +758,8 @@ msgid ""
 "Could not parse given sip address. A sip url usually looks like sip:"
 "user@domain"
 msgstr ""
-"SIP¥¢¥É¥ì¥¹¤Î·Á¼°¥¨¥é¡¼¤Ç¤¹¡£SIP¥¢¥É¥ì¥¹¤Ï¡¢<sip:username@domainname>¤Î¤è¤¦¤Ê"
-"·Á¼°¤Ç¤¹¡£"
+"SIPã‚¢ãƒ‰ãƒ¬ã‚¹ã®å½¢å¼ã‚¨ãƒ©ãƒ¼ã§ã™ã€‚SIPã‚¢ãƒ‰ãƒ¬ã‚¹ã¯ã€<sip:username@domainname>ã®ã‚ˆã†ãª"
+"å½¢å¼ã§ã™ã€‚"
 
 #: coreapi/linphonecore.c:1179
 msgid "Sorry, having multiple simultaneous calls is not supported yet !"
@@ -179,7 +768,7 @@ msgstr ""
 #: coreapi/linphonecore.c:1211
 #, fuzzy
 msgid "Contacting"
-msgstr "ÀÜÂ³Ãæ"
+msgstr "æ¥ç¶šä¸­"
 
 #: coreapi/linphonecore.c:1227
 msgid "could not call"
@@ -187,12 +776,12 @@ msgstr ""
 
 #: coreapi/linphonecore.c:1517 coreapi/exevents.c:41
 msgid "Connected."
-msgstr "ÀÜÂ³¤·¤Ş¤·¤¿¡£"
+msgstr "æ¥ç¶šã—ã¾ã—ãŸã€‚"
 
 #: coreapi/linphonecore.c:1543
 #, fuzzy
 msgid "Call ended"
-msgstr "ÄÌÏÃ¤ÏµñÈİ¤µ¤ì¤Ş¤·¤¿¡£"
+msgstr "é€šè©±ã¯æ‹’å¦ã•ã‚Œã¾ã—ãŸã€‚"
 
 #: coreapi/linphonecore.c:1854
 msgid "No nat/firewall address supplied !"
@@ -210,10 +799,10 @@ msgid ""
 "is missing and linphone needs it. Please execute\n"
 "'modprobe snd-pcm-oss' as root to load it."
 msgstr ""
-"¤³¤Î¥³¥ó¥Ô¥å¡¼¥¿¡¼¤ÏALSA¥µ¥¦¥ó¥É¥É¥é¥¤¥Ğ¡¼¤ò»ÈÍÑ¤·¤Æ¤¤¤ë¤è¤¦¤Ç¤¹¡£\n"
-"¤½¤ì¤ÏºÇÎÉ¤ÎÁªÂò¤Ç¤¹¡£¤·¤«¤·¡¢Linphone¤¬É¬Í×¤È¤¹¤ë\n"
-"pcm oss¥¨¥ß¥å¥ì¡¼¥·¥ç¥ó¥â¥¸¥å¡¼¥ë¤¬¸«¤Ä¤«¤ê¤Ş¤»¤ó¡£\n"
-"¥í¡¼¥É¤¹¤ë¤¿¤á¤Ë¡¢¥ë¡¼¥È¸¢¸Â¤Ç'modprobe snd-pcm-oss'¤ò¼Â¹Ô¤·¤Æ¤¯¤À¤µ¤¤¡£"
+"ã“ã®ã‚³ãƒ³ãƒ”ãƒ¥ãƒ¼ã‚¿ãƒ¼ã¯ALSAã‚µã‚¦ãƒ³ãƒ‰ãƒ‰ãƒ©ã‚¤ãƒãƒ¼ã‚’ä½¿ç”¨ã—ã¦ã„ã‚‹ã‚ˆã†ã§ã™ã€‚\n"
+"ãã‚Œã¯æœ€è‰¯ã®é¸æŠã§ã™ã€‚ã—ã‹ã—ã€LinphoneãŒå¿…è¦ã¨ã™ã‚‹\n"
+"pcm ossã‚¨ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã€‚\n"
+"ãƒ­ãƒ¼ãƒ‰ã™ã‚‹ãŸã‚ã«ã€ãƒ«ãƒ¼ãƒˆæ¨©é™ã§'modprobe snd-pcm-oss'ã‚’å®Ÿè¡Œã—ã¦ãã ã•ã„ã€‚"
 
 #: coreapi/misc.c:134
 msgid ""
@@ -222,10 +811,10 @@ msgid ""
 "is missing and linphone needs it. Please execute\n"
 " 'modprobe snd-mixer-oss' as root to load it."
 msgstr ""
-"¤³¤Î¥³¥ó¥Ô¥å¡¼¥¿¡¼¤ÏALSA¥µ¥¦¥ó¥É¥É¥é¥¤¥Ğ¡¼¤ò»ÈÍÑ¤·¤Æ¤¤¤ë¤è¤¦¤Ç¤¹¡£\n"
-"¤½¤ì¤ÏºÇÎÉ¤ÎÁªÂò¤Ç¤¹¡£¤·¤«¤·¡¢Linphone¤¬É¬Í×¤È¤¹¤ë\n"
-"mixer oss¥¨¥ß¥å¥ì¡¼¥·¥ç¥ó¥â¥¸¥å¡¼¥ë¤¬¸«¤Ä¤«¤ê¤Ş¤»¤ó¡£\n"
-"¥í¡¼¥É¤¹¤ë¤¿¤á¤Ë¡¢¥ë¡¼¥È¸¢¸Â¤Ç'modprobe snd-mixer-oss'¤ò¼Â¹Ô¤·¤Æ¤¯¤À¤µ¤¤¡£"
+"ã“ã®ã‚³ãƒ³ãƒ”ãƒ¥ãƒ¼ã‚¿ãƒ¼ã¯ALSAã‚µã‚¦ãƒ³ãƒ‰ãƒ‰ãƒ©ã‚¤ãƒãƒ¼ã‚’ä½¿ç”¨ã—ã¦ã„ã‚‹ã‚ˆã†ã§ã™ã€‚\n"
+"ãã‚Œã¯æœ€è‰¯ã®é¸æŠã§ã™ã€‚ã—ã‹ã—ã€LinphoneãŒå¿…è¦ã¨ã™ã‚‹\n"
+"mixer ossã‚¨ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã€‚\n"
+"ãƒ­ãƒ¼ãƒ‰ã™ã‚‹ãŸã‚ã«ã€ãƒ«ãƒ¼ãƒˆæ¨©é™ã§'modprobe snd-mixer-oss'ã‚’å®Ÿè¡Œã—ã¦ãã ã•ã„ã€‚"
 
 #: coreapi/misc.c:567
 msgid "Stun lookup in progress..."
@@ -234,7 +823,7 @@ msgstr ""
 #: coreapi/exevents.c:117
 #, fuzzy
 msgid "Call terminated."
-msgstr "ÄÌÏÃ¤ÏµñÈİ¤µ¤ì¤Ş¤·¤¿¡£"
+msgstr "é€šè©±ã¯æ‹’å¦ã•ã‚Œã¾ã—ãŸã€‚"
 
 #: coreapi/exevents.c:139
 msgid "Could not reach destination."
@@ -242,24 +831,24 @@ msgstr ""
 
 #: coreapi/exevents.c:148
 msgid "User is busy."
-msgstr "¥æ¡¼¥¶¡¼¤Ï¥Ó¥¸¡¼¤Ç¤¹"
+msgstr "ãƒ¦ãƒ¼ã‚¶ãƒ¼ã¯ãƒ“ã‚¸ãƒ¼ã§ã™"
 
 #: coreapi/exevents.c:149
 msgid "User is temporarily unavailable."
-msgstr "¥æ¡¼¥¶¡¼¤Ï¡¢º£½Ğ¤é¤ì¤Ş¤»¤ó¡£"
+msgstr "ãƒ¦ãƒ¼ã‚¶ãƒ¼ã¯ã€ä»Šå‡ºã‚‰ã‚Œã¾ã›ã‚“ã€‚"
 
 #: coreapi/exevents.c:150
 #, fuzzy
 msgid "Request Cancelled."
-msgstr "ÄÌÏÃ¤Ï¥­¥ã¥ó¥»¥ë¤µ¤ì¤Ş¤·¤¿¡£"
+msgstr "é€šè©±ã¯ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã•ã‚Œã¾ã—ãŸã€‚"
 
 #: coreapi/exevents.c:152
 msgid "User does not want to be disturbed."
-msgstr "¥æ¡¼¥¶¡¼¤Ï¼ê¤¬Î¥¤»¤Ê¤¤¤è¤¦¤Ç¤¹¡£"
+msgstr "ãƒ¦ãƒ¼ã‚¶ãƒ¼ã¯æ‰‹ãŒé›¢ã›ãªã„ã‚ˆã†ã§ã™ã€‚"
 
 #: coreapi/exevents.c:153
 msgid "Call declined."
-msgstr "ÄÌÏÃ¤ÏµñÈİ¤µ¤ì¤Ş¤·¤¿¡£"
+msgstr "é€šè©±ã¯æ‹’å¦ã•ã‚Œã¾ã—ãŸã€‚"
 
 #: coreapi/exevents.c:172
 msgid "Bad request"
@@ -267,24 +856,24 @@ msgstr ""
 
 #: coreapi/exevents.c:175
 msgid "User cannot be found at given address."
-msgstr "¥æ¡¼¥¶¡¼¤¬¸«¤Ä¤«¤ê¤Ş¤»¤ó¡£"
+msgstr "ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã€‚"
 
 #: coreapi/exevents.c:178
 msgid "Remote user cannot support any of proposed codecs."
-msgstr "Áê¼êÂ¦¤Ç¤Ï¡¢Äó°Æ¤·¤¿¥³¡¼¥Ç¥Ã¥¯¤ò°ì¤Ä¤â¥µ¥İ¡¼¥È¤·¤Æ¤¤¤Ş¤»¤ó¡£"
+msgstr "ç›¸æ‰‹å´ã§ã¯ã€ææ¡ˆã—ãŸã‚³ãƒ¼ãƒ‡ãƒƒã‚¯ã‚’ä¸€ã¤ã‚‚ã‚µãƒãƒ¼ãƒˆã—ã¦ã„ã¾ã›ã‚“ã€‚"
 
 #: coreapi/exevents.c:204
 msgid "Timeout."
-msgstr "»ş´ÖÀÚ¤ì¤Ç¤¹¡£"
+msgstr "æ™‚é–“åˆ‡ã‚Œã§ã™ã€‚"
 
 #: coreapi/exevents.c:207
 msgid "Remote host was found but refused connection."
-msgstr "¥ê¥â¡¼¥È¥Û¥¹¥È¤¬¸«¤Ä¤«¤ê¤Ş¤·¤¿¤¬¡¢ÀÜÂ³¤òµñÈİ¤µ¤ì¤Ş¤·¤¿¡£"
+msgstr "ãƒªãƒ¢ãƒ¼ãƒˆãƒ›ã‚¹ãƒˆãŒè¦‹ã¤ã‹ã‚Šã¾ã—ãŸãŒã€æ¥ç¶šã‚’æ‹’å¦ã•ã‚Œã¾ã—ãŸã€‚"
 
 #: coreapi/exevents.c:315
 #, fuzzy
 msgid "is contacting you."
-msgstr "¤«¤éÅÅÏÃ¤Ç¤¹¡£"
+msgstr "ã‹ã‚‰é›»è©±ã§ã™ã€‚"
 
 #: coreapi/exevents.c:399
 #, c-format
@@ -296,9 +885,9 @@ msgid ""
 "User is not reachable at the moment but he invites you\n"
 "to contact him using the following alternate resource:"
 msgstr ""
-"¥æ¡¼¥¶¡¼¤ËÀÜÂ³¤¹¤ë¤³¤È¤¬¤Ç¤­¤Ş¤»¤ó¤¬¡¢¥æ¡¼¥¶¡¼¤ÏÂå¤ï¤ê¤Î¼êÃÊ¤Ë¾·ÂÔ¤·¤Æ¤¤¤Ş"
-"¤¹¡£\n"
-"Â¾¤Î¼êÃÊ¤ÇÏ¢Íí¤ò¤È¤Ã¤Æ¤¯¤À¤µ¤¤¡£"
+"ãƒ¦ãƒ¼ã‚¶ãƒ¼ã«æ¥ç¶šã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“ãŒã€ãƒ¦ãƒ¼ã‚¶ãƒ¼ã¯ä»£ã‚ã‚Šã®æ‰‹æ®µã«æ‹›å¾…ã—ã¦ã„ã¾"
+"ã™ã€‚\n"
+"ä»–ã®æ‰‹æ®µã§é€£çµ¡ã‚’ã¨ã£ã¦ãã ã•ã„ã€‚"
 
 #: coreapi/exevents.c:819
 msgid "Early media."
@@ -307,7 +896,7 @@ msgstr ""
 #: coreapi/exevents.c:881
 #, fuzzy, c-format
 msgid "Registration on %s failed: %s"
-msgstr "ÅĞÏ¿¤·¤Ş¤·¤¿¡£"
+msgstr "ç™»éŒ²ã—ã¾ã—ãŸã€‚"
 
 #: coreapi/exevents.c:881
 msgid "no response timeout"
@@ -316,12 +905,12 @@ msgstr ""
 #: coreapi/exevents.c:895
 #, fuzzy, c-format
 msgid "Registration on %s successful."
-msgstr "ÅĞÏ¿¤·¤Ş¤·¤¿¡£"
+msgstr "ç™»éŒ²ã—ã¾ã—ãŸã€‚"
 
 #: coreapi/presence.c:112 coreapi/presence.c:164
 #, fuzzy
 msgid "Gone"
-msgstr "¤¢¤ê¤Ş¤»¤ó¡£"
+msgstr "ã‚ã‚Šã¾ã›ã‚“ã€‚"
 
 #: coreapi/presence.c:129
 msgid "Waiting for Approval"
@@ -330,7 +919,7 @@ msgstr ""
 #: coreapi/presence.c:133
 #, fuzzy
 msgid "Online"
-msgstr "¥é¥¤¥óÆşÎÏ"
+msgstr "ãƒ©ã‚¤ãƒ³å…¥åŠ›"
 
 #: coreapi/presence.c:137
 msgid "Busy"
@@ -342,7 +931,7 @@ msgstr ""
 
 #: coreapi/presence.c:146
 msgid "Away"
-msgstr "ÂàÀÊÃæ"
+msgstr "é€€å¸­ä¸­"
 
 #: coreapi/presence.c:151
 msgid "On The Phone"
@@ -356,98 +945,71 @@ msgstr ""
 msgid "Closed"
 msgstr ""
 
-#~ msgid "linphone"
-#~ msgstr "Linphone"
-
 #~ msgid "Address book"
-#~ msgstr "ÅÅÏÃÄ¢"
+#~ msgstr "é›»è©±å¸³"
 
 #, fuzzy
 #~ msgid "Enter sip address or phone number here"
-#~ msgstr "¥ì¥¸¥¹¥È¥é¥µ¡¼¥Ğ¡¼¤ÎSIP¥¢¥É¥ì¥¹"
-
-#~ msgid "sip:"
-#~ msgstr "sip:"
-
-#~ msgid "Sip address:"
-#~ msgstr "Sip¥¢¥É¥ì¥¹:"
+#~ msgstr "ãƒ¬ã‚¸ã‚¹ãƒˆãƒ©ã‚µãƒ¼ãƒãƒ¼ã®SIPã‚¢ãƒ‰ãƒ¬ã‚¹"
 
 #, fuzzy
 #~ msgid "Shows the address book"
-#~ msgstr "ÅÅÏÃÄ¢"
+#~ msgstr "é›»è©±å¸³"
 
 #, fuzzy
 #~ msgid ""
 #~ "Call or\n"
 #~ "answer"
 #~ msgstr ""
-#~ "ÅÅÏÃ¤ò¤«¤±¤ë\n"
-#~ "ÅÅÏÃ¤Ë½Ğ¤ë"
+#~ "é›»è©±ã‚’ã‹ã‘ã‚‹\n"
+#~ "é›»è©±ã«å‡ºã‚‹"
 
 #~ msgid "Show more..."
-#~ msgstr "¾ÜºÙ"
+#~ msgstr "è©³ç´°"
 
 #~ msgid "Playback level:"
-#~ msgstr "¼õÏÃ²»ÎÌ"
+#~ msgstr "å—è©±éŸ³é‡"
 
 #~ msgid "Recording level:"
-#~ msgstr "Á÷ÏÃ²»ÎÌ"
+#~ msgstr "é€è©±éŸ³é‡"
 
 #, fuzzy
 #~ msgid "Ring level:"
-#~ msgstr "Á÷ÏÃ²»ÎÌ"
-
-#~ msgid "Sound"
-#~ msgstr "¥µ¥¦¥ó¥É"
+#~ msgstr "é€è©±éŸ³é‡"
 
 #, fuzzy
 #~ msgid "Enable video"
-#~ msgstr "»ÈÍÑ¤¹¤ë"
+#~ msgstr "ä½¿ç”¨ã™ã‚‹"
 
 #~ msgid "Reachable"
-#~ msgstr "ºßÀÊÃæ"
+#~ msgstr "åœ¨å¸­ä¸­"
 
 #~ msgid "Busy, I'll be back in "
-#~ msgstr "º£ÀÊ¤ò¤Ï¤º¤·¤Æ¤¤¤Ş¤¹¡£"
+#~ msgstr "ä»Šå¸­ã‚’ã¯ãšã—ã¦ã„ã¾ã™ã€‚"
 
 #~ msgid "The other party will be informed that you'll be back in X minutes"
-#~ msgstr "È¯¿®¼Ô¤Ï¡¢¤¢¤Ê¤¿¤¬XÊ¬¸å¤ËÌá¤Ã¤Æ¤¯¤ë¤³¤È¤¬Ê¬¤«¤ê¤Ş¤¹¡£"
-
-#~ msgid "5"
-#~ msgstr "5"
+#~ msgstr "ç™ºä¿¡è€…ã¯ã€ã‚ãªãŸãŒXåˆ†å¾Œã«æˆ»ã£ã¦ãã‚‹ã“ã¨ãŒåˆ†ã‹ã‚Šã¾ã™ã€‚"
 
 #~ msgid "mn"
-#~ msgstr "Ê¬"
+#~ msgstr "åˆ†"
 
 #~ msgid "Do not disturb"
-#~ msgstr "¼ê¤¬Î¥¤»¤Ş¤»¤ó"
+#~ msgstr "æ‰‹ãŒé›¢ã›ã¾ã›ã‚“"
 
 #~ msgid "Moved temporarily"
-#~ msgstr "¤¹¤°Ìá¤ê¤Ş¤¹"
+#~ msgstr "ã™ãæˆ»ã‚Šã¾ã™"
 
 #~ msgid "Alternative service"
-#~ msgstr "Â¾¤ÎÏ¢Íí¼êÃÊ¤ò»È¤Ã¤Æ²¼¤µ¤¤"
+#~ msgstr "ä»–ã®é€£çµ¡æ‰‹æ®µã‚’ä½¿ã£ã¦ä¸‹ã•ã„"
 
 #~ msgid "URL:"
 #~ msgstr "URL:"
 
 #~ msgid "Presence"
-#~ msgstr "¾õÂÖ"
+#~ msgstr "çŠ¶æ…‹"
 
 #~ msgid "Press digits to send DTMFs."
-#~ msgstr "DTMF¤òÁ÷¿®¤¹¤ë¤¿¤á¤Î¿ô»ú¤ò²¡¤·¤Æ²¼¤µ¤¤¡£"
-
-#~ msgid "1"
-#~ msgstr "1"
-
-#~ msgid "*"
-#~ msgstr "*"
-
-#~ msgid "0"
-#~ msgstr "0"
-
-#~ msgid "#"
-#~ msgstr "#"
+#~ msgstr "DTMFã‚’é€ä¿¡ã™ã‚‹ãŸã‚ã®æ•°å­—ã‚’æŠ¼ã—ã¦ä¸‹ã•ã„ã€‚"
 
 #~ msgid "DTMF"
 #~ msgstr "DTMF"
@@ -460,285 +1022,207 @@ msgstr ""
 #~ "Linphone is a web-phone.\n"
 #~ "It is compatible with SIP and RTP protocols."
 #~ msgstr ""
-#~ "Linphone¤Ï¥¤¥ó¥¿¡¼¥Í¥Ã¥ÈÅÅÏÃ¤Ç¤¹¡£\n"
-#~ "SIP¡¦RTP¥×¥í¥È¥³¥ë¤È¸ß´¹À­¤¬¤¢¤ê¤Ş¤¹¡£"
+#~ "Linphoneã¯ã‚¤ãƒ³ã‚¿ãƒ¼ãƒãƒƒãƒˆé›»è©±ã§ã™ã€‚\n"
+#~ "SIPãƒ»RTPãƒ—ãƒ­ãƒˆã‚³ãƒ«ã¨äº’æ›æ€§ãŒã‚ã‚Šã¾ã™ã€‚"
 
 #, fuzzy
 #~ msgid "Use IPv6 network (if available)"
-#~ msgstr "¥æ¡¼¥¶¡¼¤Ï¡¢º£½Ğ¤é¤ì¤Ş¤»¤ó¡£"
+#~ msgstr "ãƒ¦ãƒ¼ã‚¶ãƒ¼ã¯ã€ä»Šå‡ºã‚‰ã‚Œã¾ã›ã‚“ã€‚"
 
 #, fuzzy
 #~ msgid "Number of buffered miliseconds (jitter compensation):"
 #~ msgstr ""
-#~ "¥Ğ¥Ã¥Õ¥¡¤¹¤ë¥ß¥êÉÃ\n"
-#~ "(²»À¼¤¬ÅÓÀÚ¤ì¤ë¤È¤­¤ÏÂç¤­¤¯¤·¤Ş¤¹)"
+#~ "ãƒãƒƒãƒ•ã‚¡ã™ã‚‹ãƒŸãƒªç§’\n"
+#~ "(éŸ³å£°ãŒé€”åˆ‡ã‚Œã‚‹ã¨ãã¯å¤§ããã—ã¾ã™)"
 
 #~ msgid "RTP port used for audio:"
-#~ msgstr "¥ª¡¼¥Ç¥£¥ª¤Ë»ÈÍÑ¤¹¤ëRTP¥İ¡¼¥ÈÈÖ¹æ"
-
-#~ msgid "RTP properties"
-#~ msgstr "RTP¤Î¥×¥í¥Ñ¥Æ¥£¡¼"
-
-#~ msgid "Network"
-#~ msgstr "¥Í¥Ã¥È¥ï¡¼¥¯"
-
-#, fuzzy
-#~ msgid "Playback sound device:"
-#~ msgstr "»ÈÍÑ¤¹¤ë¥µ¥¦¥ó¥É¥Ç¥Ğ¥¤¥¹"
+#~ msgstr "ã‚ªãƒ¼ãƒ‡ã‚£ã‚ªã«ä½¿ç”¨ã™ã‚‹RTPãƒãƒ¼ãƒˆç•ªå·"
 
 #~ msgid "micro"
-#~ msgstr "¥Ş¥¤¥¯ÆşÎÏ"
-
-#~ msgid "line"
-#~ msgstr "¥é¥¤¥óÆşÎÏ"
-
-#, fuzzy
-#~ msgid "Capture sound device:"
-#~ msgstr "»ÈÍÑ¤¹¤ë¥µ¥¦¥ó¥É¥Ç¥Ğ¥¤¥¹"
+#~ msgstr "ãƒã‚¤ã‚¯å…¥åŠ›"
 
 #~ msgid "Recording source:"
-#~ msgstr "Ï¿²»¤¹¤ë²»¸»"
-
-#, fuzzy
-#~ msgid "Ring sound device"
-#~ msgstr "»ÈÍÑ¤¹¤ë¥µ¥¦¥ó¥É¥Ç¥Ğ¥¤¥¹"
-
-#, fuzzy
-#~ msgid "Ring sound:"
-#~ msgstr "Ï¿²»¤¹¤ë²»¸»"
+#~ msgstr "éŒ²éŸ³ã™ã‚‹éŸ³æº"
 
 #~ msgid "Sound properties"
-#~ msgstr "¥µ¥¦¥ó¥É¤Î¥×¥í¥Ñ¥Æ¥£¡¼"
-
-#, fuzzy
-#~ msgid "Sound device"
-#~ msgstr "»ÈÍÑ¤¹¤ë¥µ¥¦¥ó¥É¥Ç¥Ğ¥¤¥¹"
+#~ msgstr "ã‚µã‚¦ãƒ³ãƒ‰ã®ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ãƒ¼"
 
 #~ msgid "Run sip user agent on port:"
-#~ msgstr "SIP¥æ¡¼¥¶¡¼¥¨¡¼¥¸¥§¥ó¥È¤¬µ¯Æ°¤¹¤ë¥İ¡¼¥È"
+#~ msgstr "SIPãƒ¦ãƒ¼ã‚¶ãƒ¼ã‚¨ãƒ¼ã‚¸ã‚§ãƒ³ãƒˆãŒèµ·å‹•ã™ã‚‹ãƒãƒ¼ãƒˆ"
 
 #~ msgid "It is strongly recommended to use port 5060."
-#~ msgstr "5060ÈÖ¥İ¡¼¥È¤ò»È¤¦¤³¤È¤ò¶¯¤¯¿ä¾©¤·¤Ş¤¹¡£"
+#~ msgstr "5060ç•ªãƒãƒ¼ãƒˆã‚’ä½¿ã†ã“ã¨ã‚’å¼·ãæ¨å¥¨ã—ã¾ã™ã€‚"
 
 #~ msgid "SIP port"
-#~ msgstr "SIP¤Î¥İ¡¼¥È"
-
-#~ msgid "Your sip address:"
-#~ msgstr "¤¢¤Ê¤¿¤ÎSIP¥¢¥É¥ì¥¹"
+#~ msgstr "SIPã®ãƒãƒ¼ãƒˆ"
 
 #~ msgid "@"
 #~ msgstr "@"
 
 #~ msgid "Identity"
-#~ msgstr "¸Ä¿Í¾ğÊó"
+#~ msgstr "å€‹äººæƒ…å ±"
 
 #, fuzzy
 #~ msgid "Add proxy/registrar"
-#~ msgstr "SIP¥ì¥¸¥¹¥È¥é¤ò»È¤¦"
-
-#~ msgid "Remove"
-#~ msgstr "ºï½ü¤¹¤ë"
+#~ msgstr "SIPãƒ¬ã‚¸ã‚¹ãƒˆãƒ©ã‚’ä½¿ã†"
 
 #~ msgid "Remote services"
-#~ msgstr "¥ê¥â¡¼¥È¤Î¥µ¡¼¥Ó¥¹"
+#~ msgstr "ãƒªãƒ¢ãƒ¼ãƒˆã®ã‚µãƒ¼ãƒ“ã‚¹"
 
 #, fuzzy
 #~ msgid "Authentication information"
-#~ msgstr "¥³¡¼¥Ç¥Ã¥¯¤Î¾ğÊó"
+#~ msgstr "ã‚³ãƒ¼ãƒ‡ãƒƒã‚¯ã®æƒ…å ±"
 
 #~ msgid "SIP"
 #~ msgstr "SIP"
 
 #~ msgid "List of audio codecs, in order of preference:"
-#~ msgstr "¥³¡¼¥Ç¥Ã¥¯¤Î¥ê¥¹¥È¤Ç¤¹¡£»È¤¤¤¿¤¤½ç¤ËÊÂ¤Ù¤Æ¤¯¤À¤µ¤¤¡£"
-
-#, fuzzy
-#~ msgid "Audio codecs"
-#~ msgstr "¥ª¡¼¥Ç¥£¥ª¥³¡¼¥Ç¥Ã¥¯¤Î¥×¥í¥Ñ¥Æ¥£¡¼"
+#~ msgstr "ã‚³ãƒ¼ãƒ‡ãƒƒã‚¯ã®ãƒªã‚¹ãƒˆã§ã™ã€‚ä½¿ã„ãŸã„é †ã«ä¸¦ã¹ã¦ãã ã•ã„ã€‚"
 
 #, fuzzy
 #~ msgid "Video Codecs"
-#~ msgstr "¥ª¡¼¥Ç¥£¥ª¥³¡¼¥Ç¥Ã¥¯¤Î¥×¥í¥Ñ¥Æ¥£¡¼"
-
-#~ msgid "Enable"
-#~ msgstr "»ÈÍÑ¤¹¤ë"
-
-#~ msgid "Disable"
-#~ msgstr "»ÈÍÑ¤·¤Ê¤¤"
+#~ msgstr "ã‚ªãƒ¼ãƒ‡ã‚£ã‚ªã‚³ãƒ¼ãƒ‡ãƒƒã‚¯ã®ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ãƒ¼"
 
 #~ msgid ""
 #~ "Note: Codecs in red are not usable regarding to your connection type to "
 #~ "the internet."
 #~ msgstr ""
-#~ "Ãí°Õ:ÀÖ¤¤¿§¤Î¥³¡¼¥Ç¥Ã¥¯¤Ï¡¢¸½ºß¤Î¥Í¥Ã¥È¥ï¡¼¥¯ÀÜÂ³ÊıË¡¤Ç¤Ï»È¤¨¤Ş¤»¤ó¡£"
+#~ "æ³¨æ„:èµ¤ã„è‰²ã®ã‚³ãƒ¼ãƒ‡ãƒƒã‚¯ã¯ã€ç¾åœ¨ã®ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯æ¥ç¶šæ–¹æ³•ã§ã¯ä½¿ãˆã¾ã›ã‚“ã€‚"
 
 #, fuzzy
 #~ msgid "No information availlable"
-#~ msgstr "ÆÃ¤Ë¾ğÊó¤Ï¤¢¤ê¤Ş¤»¤ó"
+#~ msgstr "ç‰¹ã«æƒ…å ±ã¯ã‚ã‚Šã¾ã›ã‚“"
 
 #~ msgid "Codec information"
-#~ msgstr "¥³¡¼¥Ç¥Ã¥¯¤Î¾ğÊó"
-
-#, fuzzy
-#~ msgid "Audio and video codecs"
-#~ msgstr "¥ª¡¼¥Ç¥£¥ª¥³¡¼¥Ç¥Ã¥¯¤Î¥×¥í¥Ñ¥Æ¥£¡¼"
-
-#~ msgid "Codecs"
-#~ msgstr "¥³¡¼¥Ç¥Ã¥¯"
+#~ msgstr "ã‚³ãƒ¼ãƒ‡ãƒƒã‚¯ã®æƒ…å ±"
 
 #~ msgid "Address Book"
-#~ msgstr "ÅÅÏÃÄ¢"
+#~ msgstr "é›»è©±å¸³"
 
 #~ msgid "Select"
-#~ msgstr "ÁªÂò¤¹¤ë"
+#~ msgstr "é¸æŠã™ã‚‹"
 
 #~ msgid "Information"
-#~ msgstr "¾ğÊó"
+#~ msgstr "æƒ…å ±"
 
 #~ msgid ""
 #~ "User is not reachable at the moment but he invites you to contact him "
 #~ "using the following alternate ressource:"
 #~ msgstr ""
-#~ "¥æ¡¼¥¶¡¼¤ËÀÜÂ³¤¹¤ë¤³¤È¤¬¤Ç¤­¤Ş¤»¤ó¤¬¡¢¥æ¡¼¥¶¡¼¤ÏÂå¤ï¤ê¤Î¼êÃÊ¤Ë¾·ÂÔ¤·¤Æ¤¤¤Ş"
-#~ "¤¹¡£Â¾¤Î¼êÃÊ¤ÇÏ¢Íí¤ò¤È¤Ã¤Æ¤¯¤À¤µ¤¤¡£"
+#~ "ãƒ¦ãƒ¼ã‚¶ãƒ¼ã«æ¥ç¶šã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“ãŒã€ãƒ¦ãƒ¼ã‚¶ãƒ¼ã¯ä»£ã‚ã‚Šã®æ‰‹æ®µã«æ‹›å¾…ã—ã¦ã„ã¾"
+#~ "ã™ã€‚ä»–ã®æ‰‹æ®µã§é€£çµ¡ã‚’ã¨ã£ã¦ãã ã•ã„ã€‚"
 
 #~ msgid "None."
-#~ msgstr "¤¢¤ê¤Ş¤»¤ó¡£"
-
-#, fuzzy
-#~ msgid "SIP Identity:"
-#~ msgstr "¸Ä¿Í¾ğÊó"
-
-#, fuzzy
-#~ msgid "Registration Period:"
-#~ msgstr "ÅĞÏ¿¤·¤Ş¤·¤¿¡£"
-
-#, fuzzy
-#~ msgid "Publish presence information:"
-#~ msgstr "¥³¡¼¥Ç¥Ã¥¯¤Î¾ğÊó"
+#~ msgstr "ã‚ã‚Šã¾ã›ã‚“ã€‚"
 
 #, fuzzy
 #~ msgid "Edit contact information"
-#~ msgstr "(ÀÜÂ³¤¹¤ë¤¿¤á¤Î¾ğÊó¤¬¤¢¤ê¤Ş¤»¤ó!)"
+#~ msgstr "(æ¥ç¶šã™ã‚‹ãŸã‚ã®æƒ…å ±ãŒã‚ã‚Šã¾ã›ã‚“!)"
 
 #, fuzzy
 #~ msgid "Name:"
-#~ msgstr "Ì¾Á°"
-
-#, fuzzy
-#~ msgid "Contact information"
-#~ msgstr "¥³¡¼¥Ç¥Ã¥¯¤Î¾ğÊó"
+#~ msgstr "åå‰"
 
 #, fuzzy
 #~ msgid "password:"
-#~ msgstr "¥Ñ¥¹¥ï¡¼¥É"
+#~ msgstr "ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰"
 
 #, fuzzy
 #~ msgid "None"
-#~ msgstr "¤¢¤ê¤Ş¤»¤ó¡£"
+#~ msgstr "ã‚ã‚Šã¾ã›ã‚“ã€‚"
 
 #, fuzzy
 #~ msgid "Bad sip address: a sip address looks like sip:user@domain"
 #~ msgstr ""
-#~ "SIP¥¢¥É¥ì¥¹¤Î·Á¼°¥¨¥é¡¼¤Ç¤¹¡£SIP¥¢¥É¥ì¥¹¤Ï¡¢<sip:username@domainname>¤Î¤è"
-#~ "¤¦¤Ê·Á¼°¤Ç¤¹¡£"
-
-#, fuzzy
-#~ msgid "Contact list"
-#~ msgstr "ÀÜÂ³Ãæ"
+#~ "SIPã‚¢ãƒ‰ãƒ¬ã‚¹ã®å½¢å¼ã‚¨ãƒ©ãƒ¼ã§ã™ã€‚SIPã‚¢ãƒ‰ãƒ¬ã‚¹ã¯ã€<sip:username@domainname>ã®ã‚ˆ"
+#~ "ã†ãªå½¢å¼ã§ã™ã€‚"
 
 #~ msgid "User manual"
-#~ msgstr "¥æ¡¼¥¶¡¼¥Ş¥Ë¥å¥¢¥ë"
+#~ msgstr "ãƒ¦ãƒ¼ã‚¶ãƒ¼ãƒãƒ‹ãƒ¥ã‚¢ãƒ«"
 
 #~ msgid "Communication ended."
-#~ msgstr "²ñÏÃ¤Ï½ªÎ»¤·¤Ş¤·¤¿¡£"
+#~ msgstr "ä¼šè©±ã¯çµ‚äº†ã—ã¾ã—ãŸã€‚"
 
 #~ msgid "Call cancelled."
-#~ msgstr "ÄÌÏÃ¤Ï¥­¥ã¥ó¥»¥ë¤µ¤ì¤Ş¤·¤¿¡£"
-
-#~ msgid "Address"
-#~ msgstr "¥¢¥É¥ì¥¹"
+#~ msgstr "é€šè©±ã¯ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã•ã‚Œã¾ã—ãŸã€‚"
 
 #, fuzzy
 #~ msgid "Server address"
-#~ msgstr "¥µ¡¼¥Ğ¡¼¤Î¥¢¥É¥ì¥¹"
+#~ msgstr "ã‚µãƒ¼ãƒãƒ¼ã®ã‚¢ãƒ‰ãƒ¬ã‚¹"
 
 #~ msgid "28k modem"
-#~ msgstr "28k¤Î¥â¥Ç¥à"
+#~ msgstr "28kã®ãƒ¢ãƒ‡ãƒ "
 
 #~ msgid "56k modem"
-#~ msgstr "56k¤Î¥â¥Ç¥à"
+#~ msgstr "56kã®ãƒ¢ãƒ‡ãƒ "
 
 #~ msgid "64k modem (numeris)"
-#~ msgstr "64K¤Î¥â¥Ç¥à(ISDN)"
+#~ msgstr "64Kã®ãƒ¢ãƒ‡ãƒ (ISDN)"
 
 #~ msgid "ADSL or Cable modem"
-#~ msgstr "ADSL¡¦CATV¥â¥Ç¥à"
+#~ msgstr "ADSLãƒ»CATVãƒ¢ãƒ‡ãƒ "
 
 #~ msgid "Ethernet or equivalent"
-#~ msgstr "¥¤¡¼¥µ¥Í¥Ã¥È¤Ê¤É"
+#~ msgstr "ã‚¤ãƒ¼ã‚µãƒãƒƒãƒˆãªã©"
 
 #~ msgid "Connection type:"
-#~ msgstr "ÀÜÂ³¤Î¥¿¥¤¥×"
+#~ msgstr "æ¥ç¶šã®ã‚¿ã‚¤ãƒ—"
 
 #, fuzzy
 #~ msgid ""
 #~ "Linphone could not open audio device %s. Check if your sound card is "
 #~ "fully configured and working."
 #~ msgstr ""
-#~ "Linphone¤Ï¥ª¡¼¥Ç¥£¥ª¥Ç¥Ğ¥¤¥¹¤ò¥ª¡¼¥×¥ó¤Ç¤­¤Ş¤»¤ó¤Ç¤·¤¿¡£¥µ¥¦¥ó¥É¥«¡¼¥É¤ÎÀß"
-#~ "Äê¤¬´°Á´¤Ç¡¢Àµ¤·¤¯Æ°¤¤¤Æ¤¤¤ë¤«¤É¤¦¤«³ÎÇ§¤·¤Æ²¼¤µ¤¤¡£"
+#~ "Linphoneã¯ã‚ªãƒ¼ãƒ‡ã‚£ã‚ªãƒ‡ãƒã‚¤ã‚¹ã‚’ã‚ªãƒ¼ãƒ—ãƒ³ã§ãã¾ã›ã‚“ã§ã—ãŸã€‚ã‚µã‚¦ãƒ³ãƒ‰ã‚«ãƒ¼ãƒ‰ã®è¨­"
+#~ "å®šãŒå®Œå…¨ã§ã€æ­£ã—ãå‹•ã„ã¦ã„ã‚‹ã‹ã©ã†ã‹ç¢ºèªã—ã¦ä¸‹ã•ã„ã€‚"
 
 #~ msgid "Type here the sip address of the person you want to call."
-#~ msgstr "ÅÅÏÃ¤ò¤«¤±¤¿¤¤Áê¼ê¤ÎSIP¥¢¥É¥ì¥¹¤òÆşÎÏ¤·¤Æ²¼¤µ¤¤¡£"
+#~ msgstr "é›»è©±ã‚’ã‹ã‘ãŸã„ç›¸æ‰‹ã®SIPã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’å…¥åŠ›ã—ã¦ä¸‹ã•ã„ã€‚"
 
 #~ msgid ""
 #~ "Release or\n"
 #~ "Refuse"
 #~ msgstr ""
-#~ "ÅÅÏÃ¤òÀÚ¤ë\n"
-#~ "²ñÏÃ¤òµñÈİ"
+#~ "é›»è©±ã‚’åˆ‡ã‚‹\n"
+#~ "ä¼šè©±ã‚’æ‹’å¦"
 
 #~ msgid "%s. Retry after %i minute(s)."
-#~ msgstr "%s¡£%i Ê¬¸å¤Ë¤«¤±Ä¾¤·¤Æ²¼¤µ¤¤¡£"
+#~ msgstr "%sã€‚%i åˆ†å¾Œã«ã‹ã‘ç›´ã—ã¦ä¸‹ã•ã„ã€‚"
 
 #, fuzzy
 #~ msgid "Timeout..."
-#~ msgstr "»ş´ÖÀÚ¤ì¤Ç¤¹¡£"
+#~ msgstr "æ™‚é–“åˆ‡ã‚Œã§ã™ã€‚"
 
 #~ msgid "Connection"
-#~ msgstr "¥³¥Í¥¯¥·¥ç¥ó"
+#~ msgstr "ã‚³ãƒã‚¯ã‚·ãƒ§ãƒ³"
 
 #, fuzzy
 #~ msgid ""
 #~ "Add address\n"
 #~ "book"
-#~ msgstr "ÅÅÏÃÄ¢"
+#~ msgstr "é›»è©±å¸³"
 
 #~ msgid "Toggle this if you want to be registered on a remote server."
-#~ msgstr "¥ê¥â¡¼¥È¥µ¡¼¥Ğ¡¼¤ËÅĞÏ¿¤¹¤ë¤È¤­¤Ï¡¢¥Á¥§¥Ã¥¯¤·¤Æ²¼¤µ¤¤¡£"
+#~ msgstr "ãƒªãƒ¢ãƒ¼ãƒˆã‚µãƒ¼ãƒãƒ¼ã«ç™»éŒ²ã™ã‚‹ã¨ãã¯ã€ãƒã‚§ãƒƒã‚¯ã—ã¦ä¸‹ã•ã„ã€‚"
 
 #~ msgid "Address of record:"
-#~ msgstr "ÅĞÏ¿¤¹¤ë¥¢¥É¥ì¥¹"
+#~ msgstr "ç™»éŒ²ã™ã‚‹ã‚¢ãƒ‰ãƒ¬ã‚¹"
 
 #~ msgid ""
 #~ "The password used for registration. On some servers it is not necessary"
-#~ msgstr "ÅĞÏ¿¤Ë¥Ñ¥¹¥ï¡¼¥É¤òÍÑ¤¤¤Ş¤¹¡£É¬¿Ü¤Ç¤Ê¤¤¥µ¡¼¥Ğ¡¼¤â¤¢¤ê¤Ş¤¹¡£"
+#~ msgstr "ç™»éŒ²ã«ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰ã‚’ç”¨ã„ã¾ã™ã€‚å¿…é ˆã§ãªã„ã‚µãƒ¼ãƒãƒ¼ã‚‚ã‚ã‚Šã¾ã™ã€‚"
 
 #~ msgid "Use this registrar server as outbound proxy."
-#~ msgstr "¥ì¥¸¥¹¥È¥é¥µ¡¼¥Ğ¡¼¤ò¥¢¥¦¥È¥Ğ¥¦¥ó¥É¥×¥í¥¯¥·¤È¤·¤Æ»ÈÍÑ¤·¤Ş¤¹¡£"
+#~ msgstr "ãƒ¬ã‚¸ã‚¹ãƒˆãƒ©ã‚µãƒ¼ãƒãƒ¼ã‚’ã‚¢ã‚¦ãƒˆãƒã‚¦ãƒ³ãƒ‰ãƒ—ãƒ­ã‚¯ã‚·ã¨ã—ã¦ä½¿ç”¨ã—ã¾ã™ã€‚"
 
 #~ msgid "sip address:"
-#~ msgstr "SIP¥¢¥É¥ì¥¹"
-
-#~ msgid "Display name:"
-#~ msgstr "É½¼¨¤µ¤ì¤ëÌ¾Á°"
+#~ msgstr "SIPã‚¢ãƒ‰ãƒ¬ã‚¹"
 
 #~ msgid "Modify"
-#~ msgstr "½¤Àµ"
+#~ msgstr "ä¿®æ­£"
 
 #~ msgid "Registering..."
-#~ msgstr "ÅĞÏ¿Ãæ¡Ä¡Ä"
+#~ msgstr "ç™»éŒ²ä¸­â€¦â€¦"
 
 #, fuzzy
 #~ msgid ""
@@ -748,47 +1232,23 @@ msgstr ""
 #~ "either with packages from your distribution, or by downloading\n"
 #~ "ALSA drivers at http://www.alsa-project.org."
 #~ msgstr ""
-#~ "¸½ºß¡¢i810¥ª¡¼¥Ç¥£¥ª¥É¥é¥¤¥Ğ¡¼¤ò»È¤Ã¤Æ¤¤¤Ş¤¹¡£\n"
-#~ "¤³¤Î¥É¥é¥¤¥Ğ¡¼¤Ë¤Ï¥Ğ¥°¤¬¤¢¤ê¡¢Linphone¤Ç¤Ï¤¦¤Ş¤¯Æ°ºî¤·¤Ş¤»¤ó¡£\n"
-#~ "ALSA¥É¥é¥¤¥Ğ¡¼¤ËÁêÅö¤¹¤ë\n"
-#~ "¤¢¤Ê¤¿¤Î¥Ç¥£¥¹¥È¥ê¥Ó¥å¡¼¥¸¥ç¥ó¤Î¥Ñ¥Ã¥±¡¼¥¸¤«¡¢\n"
-#~ "ALSA¥É¥é¥¤¥Ğ¡¼(http://www.alsa-project.org)¤Ø¤Î¸ò´¹¤ò¿ä¾©¤·¤Ş¤¹¡£"
+#~ "ç¾åœ¨ã€i810ã‚ªãƒ¼ãƒ‡ã‚£ã‚ªãƒ‰ãƒ©ã‚¤ãƒãƒ¼ã‚’ä½¿ã£ã¦ã„ã¾ã™ã€‚\n"
+#~ "ã“ã®ãƒ‰ãƒ©ã‚¤ãƒãƒ¼ã«ã¯ãƒã‚°ãŒã‚ã‚Šã€Linphoneã§ã¯ã†ã¾ãå‹•ä½œã—ã¾ã›ã‚“ã€‚\n"
+#~ "ALSAãƒ‰ãƒ©ã‚¤ãƒãƒ¼ã«ç›¸å½“ã™ã‚‹\n"
+#~ "ã‚ãªãŸã®ãƒ‡ã‚£ã‚¹ãƒˆãƒªãƒ“ãƒ¥ãƒ¼ã‚¸ãƒ§ãƒ³ã®ãƒ‘ãƒƒã‚±ãƒ¼ã‚¸ã‹ã€\n"
+#~ "ALSAãƒ‰ãƒ©ã‚¤ãƒãƒ¼(http://www.alsa-project.org)ã¸ã®äº¤æ›ã‚’æ¨å¥¨ã—ã¾ã™ã€‚"
 
 #~ msgid "Unregistration successfull."
-#~ msgstr "ÅĞÏ¿¤ò²ò½ü¤·¤Ş¤·¤¿¡£"
-
-#~ msgid "3"
-#~ msgstr "3"
-
-#~ msgid "2"
-#~ msgstr "2"
-
-#~ msgid "4"
-#~ msgstr "4"
-
-#~ msgid "6"
-#~ msgstr "6"
-
-#~ msgid "7"
-#~ msgstr "7"
-
-#~ msgid "8"
-#~ msgstr "8"
-
-#~ msgid "9"
-#~ msgstr "9"
+#~ msgstr "ç™»éŒ²ã‚’è§£é™¤ã—ã¾ã—ãŸã€‚"
 
 #~ msgid "Select network interface to use:"
-#~ msgstr "»ÈÍÑ¤¹¤ë¥Í¥Ã¥È¥ï¡¼¥¯¥¤¥ó¥¿¡¼¥Õ¥§¡¼¥¹¤òÁª¤ó¤Ç²¼¤µ¤¤"
+#~ msgstr "ä½¿ç”¨ã™ã‚‹ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ãƒ¼ã‚¹ã‚’é¸ã‚“ã§ä¸‹ã•ã„"
 
 #~ msgid "Network interface properties"
-#~ msgstr "¥Í¥Ã¥È¥ï¡¼¥¯¥¤¥ó¥¿¡¼¥Õ¥§¡¼¥¹¤Î¥×¥í¥Ñ¥Æ¥£¡¼"
+#~ msgstr "ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ãƒ¼ã‚¹ã®ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ãƒ¼"
 
 #~ msgid "RTP"
 #~ msgstr "RTP"
-
-#~ msgid "Audio"
-#~ msgstr "¥ª¡¼¥Ç¥£¥ª"
 
 #~ msgid "C: 2001"
 #~ msgstr "C: 2001"
@@ -805,8 +1265,5 @@ msgstr ""
 #~ msgid "/dev/dsp3"
 #~ msgstr "/dev/dsp3"
 
-#~ msgid "Add"
-#~ msgstr "ÄÉ²Ã¤¹¤ë"
-
 #~ msgid "Set the selected address in linphone'main window."
-#~ msgstr "ÁªÂò¤·¤¿¥¢¥É¥ì¥¹¤¬Linphone¤Î¥á¥¤¥ó¥¦¥¤¥ó¥É¥¦¤Ë¸½¤ì¤Ş¤¹¡£"
+#~ msgstr "é¸æŠã—ãŸã‚¢ãƒ‰ãƒ¬ã‚¹ãŒLinphoneã®ãƒ¡ã‚¤ãƒ³ã‚¦ã‚¤ãƒ³ãƒ‰ã‚¦ã«ç¾ã‚Œã¾ã™ã€‚"

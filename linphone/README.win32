@@ -43,7 +43,7 @@ You can download:
 - libxml2 from http://xmlsoft.org/sources/win32/
 - libglade bin and dev package from http://gladewin32.sourceforge.net
 	or directly http://sourceforge.net/project/showfiles.php?group_id=98754&package_id=107065 
-Unzip gtk+ bundle, iconv and libxml2 into the c:\Dev-Cpp directory.
+Unzip gtk+ bundle, iconv and libxml2 into the same directory as "linphone-deps"
 Inside the gtk+ bundle, unzip libglade bin and dev zips.
 
 Once you have all this, you are ready to build linphone.

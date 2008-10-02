@@ -903,15 +903,40 @@ void linphone_registration_success(LinphoneCore *lc,eXosip_event_t *ev){
 	gstate_new_state(lc, GSTATE_REG_OK, NULL);
 }
 
+static bool_t comes_from_local_if(osip_message_t *msg){
+	osip_via_t *via=NULL;
+	osip_message_get_via(msg,0,&via);
+	if (via){
+		const char *host;
+		host=osip_via_get_host(via);
+		if (strcmp(host,"127.0.0.1")==0 || strcmp(host,"::1")==0){
+			osip_generic_param_t *param=NULL;
+			osip_via_param_get_byname(via,"received",&param);
+			if (param==NULL) return TRUE;
+			if (param->gvalue && 
+				(strcmp(param->gvalue,"127.0.0.1")==0 || strcmp(param->gvalue,"::1")==0)){
+				return TRUE;
+			}
+		}
+	}
+	return FALSE;
+}
+
 static void linphone_other_request(LinphoneCore *lc, eXosip_event_t *ev){
+	ms_message("in linphone_other_request");
 	if (ev->request==NULL) return;
 	if (strcmp(ev->request->sip_method,"MESSAGE")==0){
 		linphone_core_text_received(lc,ev);
 		eXosip_message_send_answer(ev->tid,200,NULL);
 	}else if (strcmp(ev->request->sip_method,"OPTIONS")==0){
 		eXosip_options_send_answer(ev->tid,200,NULL);
-	}
-	else {
+	}else if (strcmp(ev->request->sip_method,"WAKEUP")==0
+		&& comes_from_local_if(ev->request)) {
+		eXosip_message_send_answer(ev->tid,200,NULL);
+		ms_message("Receiving WAKEUP request !");
+		if (lc->vtable.show)
+			lc->vtable.show(lc);
+	}else {
 		ms_message("Unsupported request received.");
 		/*answer with a 501 Not implemented*/
 		eXosip_message_send_answer(ev->tid,501,NULL);
@@ -1018,6 +1043,7 @@ void linphone_core_process_event(LinphoneCore *lc,eXosip_event_t *ev)
 			}
 			break;
 		default:
+			ms_message("Unhandled exosip event !");
 			break;
 	}
 	eXosip_event_free(ev);

@@ -153,3 +153,21 @@ MSPixFmt ms_fourcc_to_pix_fmt(uint32_t fourcc){
 	return ret;
 }
 
+void rgb24_revert(uint8_t *buf, int w, int h, int linesize){
+	uint8_t *p,*pe;
+	int i,j;
+	uint8_t *end=buf+(h*linesize*3);
+	uint8_t exch;
+	p=buf;
+	pe=end-1;
+	for(i=0;i<h/2;++i){
+		for(j=0;i<w;++j){
+			exch=p[i];
+			p[i]=pe[-i];
+			pe[-i]=exch;
+		}
+		p+=linesize;
+		pe-=linesize;
+	}	
+}
+
