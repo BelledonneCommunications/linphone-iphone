@@ -65,6 +65,8 @@ import org.zoolu.sip.provider.SipProvider;
 import org.zoolu.sip.provider.SipProviderListener;
 import org.zoolu.sip.provider.SipStack;
 import org.zoolu.sip.transaction.TransactionServer;
+import java.util.Collections;
+
 public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarMBean {
    private final static Logger mLog = Logger.getLogger(SipProxyRegistrar.class);   
    public final static String REGISTRAR_PORT="org.linphone.p2pproxy.SipListener.registrar.port";
@@ -75,8 +77,9 @@ public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarM
    private final JxtaNetworkManager mJxtaNetworkManager;
    private final ExecutorService mPool;
 
-   private final Map<String,Registration> mRegistrationTab = new HashMap<String,Registration>(); 
-   private final Map<String,SipMessageTask> mCancalableTaskTab = new HashMap<String,SipMessageTask>(); 
+   private final Map<String,Registration> mRegistrationTab = Collections.synchronizedMap(new HashMap<String,Registration>()); 
+   private final Map<String,SipMessageTask> mCancalableTaskTab = Collections.synchronizedMap(new HashMap<String,SipMessageTask>());
+   //private final Map<String,SipMessageTask> mCancalableTaskTab = new HashMap<String,SipMessageTask>();
 
    private final P2pProxyAccountManagementMBean mP2pProxyAccountManagement;
    private final Configurator mProperties;
@@ -131,10 +134,8 @@ public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarM
                //2 process response
                proxyResponse(mProvider, mMessage);
             }
-            synchronized (SipProxyRegistrar.this) {
-               if (mMessage.isInvite() && mCancalableTaskTab.containsKey(mMessage.getCallIdHeader().getCallId()) )  {
-                  mCancalableTaskTab.remove(mMessage.getCallIdHeader().getCallId());
-               }
+            if (mMessage.isInvite() && mCancalableTaskTab.containsKey(mMessage.getCallIdHeader().getCallId()) )  {
+               mCancalableTaskTab.remove(mMessage.getCallIdHeader().getCallId());
             }
          } catch (InterruptedException eInter) {
             mLog.info("request interrupted",eInter);
@@ -188,12 +189,13 @@ public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarM
       mSuperPeerProxy = new SuperPeerProxy(aJxtaNetworkManager, "sip:"+mProvider.getViaAddress()+":"+mProvider.getPort(),mRegistrationTab);
       
    }
-   public synchronized void onReceivedMessage(SipProvider aProvider, Message aMessage) {
+   public  void onReceivedMessage(SipProvider aProvider, Message aMessage) {
       String lCallId = aMessage.getCallIdHeader().getCallId();
       if (mLog.isInfoEnabled()) mLog.info("receiving message ["+aMessage+"]");
-      if (aMessage.isCancel() && mCancalableTaskTab.containsKey(lCallId) ) {
+      SipMessageTask lPendingSipMessageTask = mCancalableTaskTab.get(lCallId);
+      if (aMessage.isCancel() && lPendingSipMessageTask != null ) {
          // search for pending transaction
-         SipMessageTask lPendingSipMessageTask = mCancalableTaskTab.get(lCallId);
+         
          lPendingSipMessageTask.getFuture().cancel(true);
          mCancalableTaskTab.remove(lCallId);
 
@@ -264,7 +266,7 @@ public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarM
 ////Registrar methods
 /////////////////////////////////////////////////////////////////////	
    
-   private synchronized void processRegister(SipProvider aProvider, Message aMessage) throws IOException, P2pProxyException {
+   private  void processRegister(SipProvider aProvider, Message aMessage) throws IOException, P2pProxyException {
       
       TransactionServer lTransactionServer = new TransactionServer(aProvider,aMessage,null);
       Message l100Trying = MessageFactory.createResponse(aMessage,100,"trying",null);
@@ -274,9 +276,9 @@ public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarM
       //check if already registered
       
       String lFromName = aMessage.getFromHeader().getNameAddress().getAddress().toString();
-      if (mRegistrationTab.containsKey(lFromName)) {
+      if ((lRegistration = mRegistrationTab.get(lFromName)) != null) {
          
-         updateRegistration(lRegistration = mRegistrationTab.get(lFromName),aMessage);
+         updateRegistration(lRegistration,aMessage);
          
          if (aMessage.getExpiresHeader().getDeltaSeconds() == 0) {
             mRegistrationTab.remove(lFromName);

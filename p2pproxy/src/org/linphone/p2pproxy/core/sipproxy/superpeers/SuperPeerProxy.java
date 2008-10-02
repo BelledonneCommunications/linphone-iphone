@@ -77,9 +77,7 @@ public class SuperPeerProxy implements SipProxy, RegistrationHandler {
 	   } else {
 		   //just look at route set
 		   MultipleHeader lMultipleRoute = aMessage.getRoutes();
-		   if (lMultipleRoute != null) {
-		      lMultipleRoute.removeTop();
-		   }
+		   
 		   if (lMultipleRoute != null && lMultipleRoute.isEmpty()== false) {
 			   lNextHope = ((RecordRouteHeader)lMultipleRoute.getTop()).getNameAddress().getAddress();
 		   } else {
