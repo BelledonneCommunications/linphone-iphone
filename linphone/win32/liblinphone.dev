@@ -211,6 +211,7 @@ ProductName=
 ProductVersion=
 AutoIncBuildNrOnRebuild=0
 AutoIncBuildNrOnCompile=0
+UnitCount=18
 
 [Profile1]
 ProfileName=Default Profile
@@ -225,7 +226,7 @@ Compiler=-Wall -Werror_@@_-D_WIN32_WINNT=0x501_@@_-D_WORKAROUND_MINGW32_BUGS_@@_
 CppCompiler=
 Linker=
 PreprocDefines=
-CompilerSettings=0000000000100000000000
+CompilerSettings=0000000000010000000000
 Icon=
 ExeOutput=..\win32
 ObjectOutput=Default Profile

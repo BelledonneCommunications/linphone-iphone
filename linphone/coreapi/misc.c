@@ -464,7 +464,7 @@ static ortp_socket_t create_socket(int local_port){
 	laddr.sin_addr.s_addr=INADDR_ANY;
 	laddr.sin_port=htons(local_port);
 	if (bind(sock,(struct sockaddr*)&laddr,sizeof(laddr))<0){
-		ms_error("Bind to 0.0.0.0:%i failed: %s",local_port,strerror(errno));
+		ms_error("Bind socket to 0.0.0.0:%i failed: %s",local_port,getSocketError());
 		close_socket(sock);
 		return -1;
 	}
@@ -636,7 +636,7 @@ static int extract_sip_port(const char *config){
 int linphone_core_wake_up_possible_already_running_instance(const char *config_file){
 	int port=extract_sip_port(config_file);
 	const char *wakeup="WAKEUP sip:127.0.0.1 SIP/2.0\r\n"
-		"Via: SIP/2.0/UDP 127.0.0.1:57655;rport;branch=z9hG4bK%u\r\n"
+		"Via: SIP/2.0/UDP 127.0.0.1:%i;rport;branch=z9hG4bK%u\r\n"
 		"From: <sip:another_linphone@127.0.0.1>;tag=%u\r\n"
 		"To:   <sip:you@127.0.0.1>\r\n"
 		"CSeq: 1 WAKEUP\r\n"
@@ -650,18 +650,23 @@ int linphone_core_wake_up_possible_already_running_instance(const char *config_f
 		char tmp[100];
 		snprintf(tmp,sizeof(tmp),"127.0.0.1:%i",port);
 		if (parse_stun_server_addr(tmp,&ss,&sslen)==0){
-			int sock=create_socket(57655);
+			int locport=57123;
+			ortp_socket_t sock=create_socket(locport);
+			if (sock<0) sock=create_socket(++locport);
 			if (sock>=0){
 				char req[512];
-				snprintf(req,sizeof(req),wakeup,random(),random(),random());
-				if (sendto(sock,req,strlen(req),0,(struct sockaddr*)&ss,sslen)>0){
+				snprintf(req,sizeof(req),wakeup,locport,random(),random(),random());
+				if (connect(sock,(struct sockaddr*)&ss,sslen)<0){
+					fprintf(stderr,"connect failed: %s\n",getSocketError());
+				}else if (send(sock,req,strlen(req),0)>0){
 					/*wait a bit for a response*/
 					int i;
 					for(i=0;i<10;++i){
-						if (recv(sock,tmp,sizeof(tmp),0)>0){
-							ms_message("Another linphone has been woken-up !");
-							close(sock);
+						if (recv(sock,req,sizeof(req),0)>0){
+							close_socket(sock);
 							return 0;
+						}else if (getSocketErrorCode()!=EWOULDBLOCK){
+							break;
 						}
 #ifdef WIN32
 						Sleep(10);
@@ -669,9 +674,9 @@ int linphone_core_wake_up_possible_already_running_instance(const char *config_f
 						usleep(10000);
 #endif
 					}
-				}
-			}else ms_error("Fail to create socket on port 57655");
-			close(sock);
+				}else ms_message("sendto() of WAKEUP request failed, nobody to wakeup.");
+			}
+			close_socket(sock);
 		}
 	}
 	return -1;

@@ -58,6 +58,7 @@ typedef struct V4wState{
 	bool_t startwith_yuv_bug; /* avoid bug with USB vimicro cards. */
 	bool_t started;
 	bool_t autostarted;
+	bool_t invert_rgb;
 }V4wState;
 
 static void dummy(void*p){
@@ -86,6 +87,7 @@ LRESULT CALLBACK VideoStreamCallback(HWND hWnd, LPVIDEOHDR lpVHdr)
 }
 
 static bool_t try_format(V4wState *s, BITMAPINFO *videoformat, MSPixFmt pixfmt){
+	bool_t ret;
 	capGetVideoFormat(s->capvideo, videoformat, sizeof(BITMAPINFO));
 	videoformat->bmiHeader.biSizeImage = 0;
 	videoformat->bmiHeader.biWidth  = s->vsize.width;
@@ -106,7 +108,12 @@ static bool_t try_format(V4wState *s, BITMAPINFO *videoformat, MSPixFmt pixfmt){
 		default:
 			return FALSE;
 	}
-	return capSetVideoFormat(s->capvideo, videoformat, sizeof(BITMAPINFO));
+	ret=capSetVideoFormat(s->capvideo, videoformat, sizeof(BITMAPINFO));
+	if (ret) {
+		/*recheck video format */
+		capGetVideoFormat(s->capvideo, videoformat, sizeof(BITMAPINFO));
+	}
+	return ret;
 }
 
 static int v4w_open_videodevice(V4wState *s)
@@ -185,7 +192,6 @@ static int v4w_open_videodevice(V4wState *s)
 	ms_message("v4w: camera's current format is %s", compname);
 
 	driver_last=ms_fourcc_to_pix_fmt(videoformat.bmiHeader.biCompression);
-
 	if (s->startwith_yuv_bug==TRUE && try_format(s,&videoformat,MS_RGB24)){
 		s->pix_fmt=MS_RGB24;
 		ms_message("Using RGB24");
@@ -209,6 +215,9 @@ static int v4w_open_videodevice(V4wState *s)
 		s->capvideo=NULL;
 		return -1;
 	}
+	if (s->pix_fmt==MS_RGB24){
+		s->invert_rgb=(videoformat.bmiHeader.biHeight>0);
+	}else s->invert_rgb=FALSE;
 	if (!capSetCallbackOnVideoStream(s->capvideo, VideoStreamCallback))
 	{
 		ms_error("v4w: fail to set capture callback");
@@ -246,7 +255,7 @@ static void v4w_init(MSFilter *f){
 	s->fps=15;
 	s->started=FALSE;
 	s->autostarted=FALSE;
-
+	s->invert_rgb=FALSE;
 #ifdef AMD_HACK2
 	/* avoid bug with USB vimicro cards:
 		How can I detect that this problem exist?
@@ -501,6 +510,9 @@ static void v4w_process(MSFilter * obj){
 			while((m=getq(&s->rq))!=NULL){
 				if (om!=NULL) freemsg(om);
 				om=m;
+			}
+			if (om!=NULL){
+				if (s->invert_rgb) rgb24_revert(om->b_rptr,s->vsize.width,s->vsize.height,s->vsize.width*3);
 			}
 		}else {
 			mblk_t *nowebcam = v4w_make_nowebcam(s);

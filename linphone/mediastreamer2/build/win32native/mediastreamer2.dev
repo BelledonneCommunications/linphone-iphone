@@ -444,7 +444,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit42]
-FileName=..\..\src\winsnd2.c
+FileName=..\..\src\winsnd3.c
 CompileCpp=0
 Folder=mediastreamer2
 Compile=1
@@ -512,7 +512,7 @@ Libs=../../../../linphone-deps/lib;../../../oRTP/build/win32native
 PrivateResource=
 ResourceIncludes=
 MakeIncludes=
-Compiler=-ggdb_@@_-DINET6 _@@_-DORTP_INET6 _@@_-D_WORKAROUND_MINGW32_BUGS_@@_-D_WIN32_WINNT=0x0501 _@@_-DNOSDL_@@_-DVIDEO_ENABLED_@@_-DNORESAMPLE_@@_-Wall _@@_-DHAVE_LIBAVCODEC_AVCODEC_H_@@_
+Compiler=-ggdb_@@_-DINET6 _@@_-DORTP_INET6 _@@_-D_WORKAROUND_MINGW32_BUGS_@@_-D_WIN32_WINNT=0x0501 _@@_-DNOSDL_@@_-DVIDEO_ENABLED_@@_-DNORESAMPLE_@@_-Wall _@@_-DHAVE_LIBAVCODEC_AVCODEC_H_@@_-D_TRUE_TIME_@@_
 CppCompiler=
 Linker=-lortp_@@_-lavcodec_@@_-lavutil_@@_-ltheora_@@_-lspeex_@@_-lspeexdsp_@@_-lgsm_@@_-lws2_32_@@_-lwinmm_@@_-lvfw32_@@_-logg_@@__@@_
 PreprocDefines=

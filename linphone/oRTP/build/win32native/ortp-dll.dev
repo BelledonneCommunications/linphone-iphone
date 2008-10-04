@@ -381,7 +381,7 @@ ProductName=
 ProductVersion=
 AutoIncBuildNrOnRebuild=0
 AutoIncBuildNrOnCompile=0
-UnitCount=40
+UnitCount=41
 
 [Unit37]
 FileName=..\..\src\stun_udp.c
@@ -469,5 +469,5 @@ Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
-BuildCmd=	$(CC) -c b64.c -o "Default Profile/b64.o" $(CFLAGS)
+BuildCmd=$(CC) -c b64.c -o "Default Profile/b64.o" $(CFLAGS)
 

@@ -31,11 +31,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //#define DISABLE_SPEEX
 //#define WCE_OPTICON_WORKAROUND 1000
 #endif
-#ifndef DISABLE_SPEEX
-#include <speex/speex_preprocess.h>
-#endif
+
 
 #define WINSND_NBUFS 10
+#define WINSND_OUT_DELAY 0.100
 #define WINSND_OUT_NBUFS 20
 #define WINSND_NSAMPLES 320
 #define WINSND_MINIMUMBUFFER 5
@@ -217,20 +216,17 @@ typedef struct WinSnd{
 	unsigned int bytes_read;
 	unsigned int nbufs_playing;
 	bool_t running;
-
+	int outcurbuf;
+	int nsamples;
+	queue_t wq;
 	int32_t stat_input;
 	int32_t stat_output;
 	int32_t stat_notplayed;
 
 	int32_t stat_minimumbuffer;
-
-	queue_t write_rq;
-#ifndef DISABLE_SPEEX
-	SpeexPreprocessState *pst;
-	int pst_frame_size;
-#endif
 	int ready;
 	int workaround; /* workaround for opticon audio device */
+	bool_t overrun;
 }WinSnd;
 
 static void winsnd_apply_settings(WinSnd *d){
@@ -259,11 +255,7 @@ static void winsnd_init(MSFilter *f){
 	d->wfx.nSamplesPerSec = 8000;
 	d->wfx.wBitsPerSample = 16;
 	qinit(&d->rq);
-	qinit(&d->write_rq);
-#ifndef DISABLE_SPEEX
-	d->pst=NULL;
-	d->pst_frame_size=0;
-#endif
+	qinit(&d->wq);
 	d->ready=0;
 	d->workaround=0;
 	ms_mutex_init(&d->mutex,NULL);
@@ -278,13 +270,7 @@ static void winsnd_init(MSFilter *f){
 static void winsnd_uninit(MSFilter *f){
 	WinSnd *d=(WinSnd*)f->data;
 	flushq(&d->rq,0);
-	flushq(&d->write_rq,0);
-#ifndef DISABLE_SPEEX
-	if (d->pst!=NULL)
-	    speex_preprocess_state_destroy(d->pst);
-	d->pst=NULL;
-	d->pst_frame_size=0;
-#endif
+	flushq(&d->wq,0);
 	d->ready=0;
 	d->workaround=0;
 	ms_mutex_destroy(&d->mutex);
@@ -330,24 +316,6 @@ read_callback (HWAVEIN waveindev, UINT uMsg, DWORD dwInstance, DWORD dwParam1,
 		break;
 		case WIM_DATA:
 			bsize=wHdr->dwBytesRecorded;
-			if (bsize<=0) {
-#if 0
-				if (d->running==TRUE) /* avoid adding buffer back when calling waveInReset */
-				{
-					MMRESULT mr;
-					mr=waveInAddBuffer(d->indev,wHdr,sizeof(*wHdr));
-					if (mr != MMSYSERR_NOERROR){
-						ms_error("waveInAddBuffer() error");
-						return ;
-					}
-					ms_warning("read_callback : EMPTY DATA, WIM_DATA (%p,%i)",wHdr,bsize);
-				}
-				m=(mblk_t*)wHdr->dwUser;
-				wHdr->dwUser=0;
-				freemsg(m);
-				return;
-#endif
-			}
 
 			/* ms_warning("read_callback : WIM_DATA (%p,%i)",wHdr,bsize); */
 			m=(mblk_t*)wHdr->dwUser;
@@ -535,6 +503,9 @@ static void winsnd_write_preprocess(MSFilter *f){
 		hdr->dwFlags=0;
 		hdr->dwUser=0;
 	}
+	d->outcurbuf=0;
+	d->overrun=FALSE;
+	d->nsamples=0;
 }
 
 static void winsnd_write_postprocess(MSFilter *f){
@@ -565,205 +536,86 @@ static void winsnd_write_postprocess(MSFilter *f){
 		ms_error("waveOutClose() error");
 		return ;
 	}
-	ms_message("Shutting down sound device (playing: %i) (d->write_rq.q_mcount=%i) (input-output: %i) (notplayed: %i)", d->nbufs_playing, d->write_rq.q_mcount, d->stat_input - d->stat_output, d->stat_notplayed);
-	flushq(&d->write_rq,0);
 	d->ready=0;
 	d->workaround=0;
+}
 
-#ifndef DISABLE_SPEEX
-	if (d->pst!=NULL)
-	    speex_preprocess_state_destroy(d->pst);
-	d->pst=NULL;
-	d->pst_frame_size=0;
-#endif
+static void playout_buf(WinSnd *d, WAVEHDR *hdr, mblk_t *m){
+	MMRESULT mr;
+	hdr->dwUser=(DWORD)m;
+	hdr->lpData=(LPSTR)m->b_rptr;
+	hdr->dwBufferLength=msgdsize(m);
+	hdr->dwFlags = 0;
+	mr = waveOutPrepareHeader(d->outdev,hdr,sizeof(*hdr));
+	if (mr != MMSYSERR_NOERROR){
+		ms_error("waveOutPrepareHeader() error");
+		d->stat_notplayed++;
+	}
+	mr=waveOutWrite(d->outdev,hdr,sizeof(*hdr));
+	if (mr != MMSYSERR_NOERROR){
+		ms_error("waveOutWrite() error");
+		d->stat_notplayed++;
+	}else {
+		d->nbufs_playing++;
+	}
 }
 
 static void winsnd_write_process(MSFilter *f){
 	WinSnd *d=(WinSnd*)f->data;
-	mblk_t *m,*old;
+	mblk_t *m;
 	MMRESULT mr;
-	int i;
-	int discarded=0;
-	int possible_size=0;
-
+	mblk_t *old;
 	if (d->outdev==NULL) {
 		ms_queue_flush(f->inputs[0]);
 		return;
 	}
-
-	while((m=ms_queue_get(f->inputs[0]))!=NULL){
-		possible_size = msgdsize(m);
-#ifndef DISABLE_SPEEX
-		if (d->pst_frame_size==0)
-		{
-			d->pst_frame_size=possible_size;
-
-			d->pst = speex_preprocess_state_init(d->pst_frame_size/2, d->wfx.nSamplesPerSec);
-			if (d->pst!=NULL) {
-				float f;
-				i=1;
-				speex_preprocess_ctl(d->pst, SPEEX_PREPROCESS_SET_VAD, &i);
-				i=0;
-				speex_preprocess_ctl(d->pst, SPEEX_PREPROCESS_SET_DENOISE, &i);
-				i=0;
-				speex_preprocess_ctl(d->pst, SPEEX_PREPROCESS_SET_AGC, &i);
-				f=8000;
-				speex_preprocess_ctl(d->pst, SPEEX_PREPROCESS_SET_AGC_LEVEL, &f);
-				i=0;
-				speex_preprocess_ctl(d->pst, SPEEX_PREPROCESS_SET_DEREVERB, &i);
-			}
+	if (d->overrun){
+		ms_warning("nbufs_playing=%i",d->nbufs_playing);
+		if (d->nbufs_playing>0){
+			ms_queue_flush(f->inputs[0]);
+			return;
 		}
-#endif
-
-		putq(&d->write_rq,m);
+		else d->overrun=FALSE;
 	}
-
-#ifdef AMD_HACK
-	/* too many sound card are crappy on windows... */
-	d->stat_minimumbuffer=15;
-  if (d->wfx.nSamplesPerSec>=32000) /* better results for high rates */
-  	d->stat_minimumbuffer=8;
-#endif
-
-  if (d->wfx.nSamplesPerSec>=32000) /* better results for high rates */
-  {
-	  if (d->nbufs_playing+d->write_rq.q_mcount<4)
-	  {
-		  d->ready=0;
-	  }
-  }
-  else
-  {
-	  if (d->nbufs_playing+d->write_rq.q_mcount<7)
-	  {
-		  d->ready=0;
-	  }
-  }
-#if defined(WCE_OPTICON_WORKAROUND)
-	if (d->workaround==0)
-	{
-		d->workaround=1;
-		Sleep(WCE_OPTICON_WORKAROUND);
-	}
-#endif
-
-	while((m=peekq(&d->write_rq))!=NULL){
-
-#ifndef DISABLE_SPEEX
-		int vad=1;
-		if (d->pst!=NULL && msgdsize(m)==d->pst_frame_size && d->pst_frame_size<=4096)
-		{
-			char tmp[4096];
-			memcpy(tmp, m->b_rptr, msgdsize(m));
-			vad = speex_preprocess(d->pst, (short*)tmp, NULL);
-
-			if (d->ready==0)
-			{
-				if (vad==0)
-				{
-					int missing;
-          missing = 10 - d->write_rq.q_mcount - d->nbufs_playing;
-          if (d->wfx.nSamplesPerSec>=32000) /* better results for high rates */
-            missing = 6 - d->write_rq.q_mcount - d->nbufs_playing;
-
-		      ms_message("WINSND trouble: inserting %i silence", missing);
-					while(missing>0)
-					{
-						old=dupb(m);
-						putq(&d->write_rq,old);
-						missing--;
-					}
-				}
-				d->ready=1;
-			}
+	while(1){
+		int outcurbuf=d->outcurbuf % WINSND_OUT_NBUFS;
+		WAVEHDR *hdr=&d->hdrs_write[outcurbuf];
+		old=(mblk_t*)hdr->dwUser;
+		if (d->nsamples==0){
+			int tmpsize=WINSND_OUT_DELAY*d->wfx.nAvgBytesPerSec;
+			mblk_t *tmp=allocb(tmpsize,0);
+			memset(tmp->b_wptr,0,tmpsize);
+			tmp->b_wptr+=tmpsize;
+			playout_buf(d,hdr,tmp);
+			d->outcurbuf++;
+			d->nsamples+=WINSND_OUT_DELAY*d->wfx.nSamplesPerSec;
+			continue;
 		}
-#else
-		if (d->ready==0)
-		{
-      int missing;
-			missing = 10 - d->write_rq.q_mcount - d->nbufs_playing;
-      if (d->wfx.nSamplesPerSec>=32000) /* better results for high rates */
-  			missing = 6 - d->write_rq.q_mcount - d->nbufs_playing;
-			ms_message("WINSND trouble: inserting %i silence", missing);
-			while(missing>0)
-			{
-				old=dupb(m);
-				putq(&d->write_rq,old);
-				missing--;
+		m=ms_queue_get(f->inputs[0]);
+		if (!m) break;
+		d->nsamples+=msgdsize(m)/d->wfx.nBlockAlign;
+		/*if the output buffer has finished to play, unprepare it*/
+		if (hdr->dwFlags & WHDR_DONE){
+			mr=waveOutUnprepareHeader(d->outdev,hdr,sizeof(*hdr));
+			if (mr != MMSYSERR_NOERROR){
+				ms_error("waveOutUnprepareHeader error");
 			}
-			d->ready=1;
+			freemsg(old);
+			old=NULL;
+			hdr->dwFlags=0;
+			hdr->dwUser=0;
 		}
-#endif
-
-		for(i=0;i<d->stat_minimumbuffer;++i){
-			WAVEHDR *hdr=&d->hdrs_write[i];
-			if (hdr->dwFlags & WHDR_DONE){
-				old=(mblk_t*)hdr->dwUser;
-				mr=waveOutUnprepareHeader(d->outdev,hdr,sizeof(*hdr));
-				if (mr != MMSYSERR_NOERROR){
-					ms_error("waveOutUnprepareHeader error");
-				}
-				freemsg(old);
-				hdr->dwUser=0;
-			}
-			if (hdr->dwUser==0){
-				hdr->lpData=(LPSTR)m->b_rptr;
-				hdr->dwBufferLength=msgdsize(m);
-				hdr->dwFlags = 0;
-			    hdr->dwUser = (DWORD)m;
-			    mr = waveOutPrepareHeader(d->outdev,hdr,sizeof(*hdr));
-			    if (mr != MMSYSERR_NOERROR){
-					ms_error("waveOutPrepareHeader() error");
-					getq(&d->write_rq);
-					freemsg(m);
-					discarded++;
-					d->stat_notplayed++;
-					break;
-				}
-				mr=waveOutWrite(d->outdev,hdr,sizeof(*hdr));
-				if (mr != MMSYSERR_NOERROR){
-					ms_error("waveOutWrite() error");
-					getq(&d->write_rq);
-					freemsg(m);
-					discarded++;
-					d->stat_notplayed++;
-					break;
-				}else {
-					getq(&d->write_rq);
-					d->nbufs_playing++;
-					/* ms_debug("waveOutWrite() done"); */
-				}
-				break;
-			}
+		if (old==NULL){
+			/* a free wavheader */
+			playout_buf(d,hdr,m);
+		}else{
+			/* no more free wavheader, overrun !*/
+			ms_warning("WINSND overrun, restarting");
+			d->overrun=TRUE;
+			d->nsamples=0;
+			waveOutReset(d->outdev);
 		}
-		if (i==d->stat_minimumbuffer){
-			//ms_error("winsnd_write_process: All buffers are busy.");
-#ifndef DISABLE_SPEEX
-			if (d->pst==NULL)
-			{
-				/* initial behavior (detection in process?) */
-				getq(&d->write_rq);
-				freemsg(m);
-			}
-			else
-			{
-				if (vad==0)
-				{
-					getq(&d->write_rq);
-					freemsg(m);
-		            ms_message("WINSND trouble: silence removed");
-				}
-			}
-#else
-			getq(&d->write_rq);
-			freemsg(m);
-#endif
-
-			discarded++;
-			d->stat_notplayed++;
-
-			break;
-		}
+		d->outcurbuf++;
 	}
 }
 
