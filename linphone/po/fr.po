@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Linphone 0.9.1\n"
 "Report-Msgid-Bugs-To: linphone-developers@nongnu.org\n"
-"POT-Creation-Date: 2008-10-02 16:37+0200\n"
+"POT-Creation-Date: 2008-10-02 21:20+0200\n"
 "PO-Revision-Date: 2002-12-06 17:33+0100\n"
 "Last-Translator: Simon Morlat <simon.morlat@linphone.org>\n"
 "Language-Team: french <fr@li.org>\n"
@@ -57,7 +57,7 @@ msgid "A free SIP video-phone"
 msgstr "Un visiophone libre"
 
 #: gtk-glade/friendlist.c:199 gtk-glade/propertybox.c:209
-#: gtk-glade/contact.glade:41 gtk-glade/gtk-linphone.glade:2319
+#: gtk-glade/contact.glade:41
 msgid "Name"
 msgstr "Nom"
 
@@ -123,11 +123,11 @@ msgstr ""
 msgid "_Modes"
 msgstr "_Modes"
 
-#: gtk-glade/main.glade:77 gtk-glade/gtk-linphone.glade:59
+#: gtk-glade/main.glade:77
 msgid "Audio only"
 msgstr "Audio seul"
 
-#: gtk-glade/main.glade:88 gtk-glade/gtk-linphone.glade:70
+#: gtk-glade/main.glade:88
 msgid "Audio & Video"
 msgstr "Audio et video"
 
@@ -143,19 +143,19 @@ msgstr "Fenêtre de debug"
 msgid "gtk-about"
 msgstr ""
 
-#: gtk-glade/main.glade:189 gtk-glade/gtk-linphone.glade:175
+#: gtk-glade/main.glade:189
 msgid "Terminate call"
 msgstr "Raccrocher"
 
-#: gtk-glade/main.glade:228 gtk-glade/gtk-linphone.glade:214
+#: gtk-glade/main.glade:228
 msgid "Start call"
 msgstr "Démarrer l'appel"
 
-#: gtk-glade/main.glade:252 gtk-glade/gtk-linphone.glade:238
+#: gtk-glade/main.glade:252
 msgid "Current call"
 msgstr "Appel en cours"
 
-#: gtk-glade/main.glade:302 gtk-glade/gtk-linphone.glade:289
+#: gtk-glade/main.glade:302
 msgid ""
 "Show All\n"
 "Show Online"
@@ -163,83 +163,83 @@ msgstr ""
 "Voir tout\n"
 "Connectés seulement"
 
-#: gtk-glade/main.glade:311 gtk-glade/gtk-linphone.glade:297
+#: gtk-glade/main.glade:311
 msgid "Search:"
 msgstr "Chercher:"
 
-#: gtk-glade/main.glade:337 gtk-glade/gtk-linphone.glade:322
+#: gtk-glade/main.glade:337
 msgid "Display filters"
 msgstr "Filtre d'affichage"
 
-#: gtk-glade/main.glade:380 gtk-glade/gtk-linphone.glade:404
+#: gtk-glade/main.glade:380
 msgid "<b>Contact list</b>"
 msgstr "<b>List de contacts</b>"
 
-#: gtk-glade/main.glade:419 gtk-glade/gtk-linphone.glade:474
+#: gtk-glade/main.glade:419
 msgid "D"
 msgstr ""
 
-#: gtk-glade/main.glade:437 gtk-glade/gtk-linphone.glade:492
+#: gtk-glade/main.glade:437
 msgid "#"
 msgstr ""
 
-#: gtk-glade/main.glade:455 gtk-glade/gtk-linphone.glade:510
+#: gtk-glade/main.glade:455
 msgid "0"
 msgstr ""
 
-#: gtk-glade/main.glade:473 gtk-glade/gtk-linphone.glade:528
+#: gtk-glade/main.glade:473
 msgid "*"
 msgstr ""
 
-#: gtk-glade/main.glade:489 gtk-glade/gtk-linphone.glade:544
+#: gtk-glade/main.glade:489
 msgid "C"
 msgstr ""
 
-#: gtk-glade/main.glade:507 gtk-glade/gtk-linphone.glade:562
+#: gtk-glade/main.glade:507
 msgid "9"
 msgstr ""
 
-#: gtk-glade/main.glade:525 gtk-glade/gtk-linphone.glade:580
+#: gtk-glade/main.glade:525
 msgid "8"
 msgstr ""
 
-#: gtk-glade/main.glade:543 gtk-glade/gtk-linphone.glade:598
+#: gtk-glade/main.glade:543
 msgid "7"
 msgstr ""
 
-#: gtk-glade/main.glade:559 gtk-glade/gtk-linphone.glade:614
+#: gtk-glade/main.glade:559
 msgid "B"
 msgstr ""
 
-#: gtk-glade/main.glade:577 gtk-glade/gtk-linphone.glade:632
+#: gtk-glade/main.glade:577
 msgid "6"
 msgstr ""
 
-#: gtk-glade/main.glade:595 gtk-glade/gtk-linphone.glade:650
+#: gtk-glade/main.glade:595
 msgid "5"
 msgstr ""
 
-#: gtk-glade/main.glade:613 gtk-glade/gtk-linphone.glade:668
+#: gtk-glade/main.glade:613
 msgid "4"
 msgstr ""
 
-#: gtk-glade/main.glade:629 gtk-glade/gtk-linphone.glade:684
+#: gtk-glade/main.glade:629
 msgid "A"
 msgstr ""
 
-#: gtk-glade/main.glade:645 gtk-glade/gtk-linphone.glade:700
+#: gtk-glade/main.glade:645
 msgid "3"
 msgstr ""
 
-#: gtk-glade/main.glade:661 gtk-glade/gtk-linphone.glade:716
+#: gtk-glade/main.glade:661
 msgid "2"
 msgstr ""
 
-#: gtk-glade/main.glade:677 gtk-glade/gtk-linphone.glade:732
+#: gtk-glade/main.glade:677
 msgid "1"
 msgstr ""
 
-#: gtk-glade/main.glade:693 gtk-glade/gtk-linphone.glade:748
+#: gtk-glade/main.glade:693
 msgid "Digits"
 msgstr ""
 
@@ -278,31 +278,29 @@ msgid ""
 "hu: anonymous\n"
 msgstr ""
 
-#: gtk-glade/contact.glade:51 gtk-glade/gtk-linphone.glade:2307
+#: gtk-glade/contact.glade:51
 msgid "SIP Address"
 msgstr "Adresse SIP"
 
-#: gtk-glade/contact.glade:95 gtk-glade/gtk-linphone.glade:2335
+#: gtk-glade/contact.glade:95
 msgid "Show this contact presence status"
 msgstr "Voir l'état de présence de ce contact"
 
-#: gtk-glade/contact.glade:109 gtk-glade/gtk-linphone.glade:2349
+#: gtk-glade/contact.glade:109
 msgid "Allow this contact to see my presence status"
 msgstr "Autoriser ce contact à voir ma présence"
 
-#: gtk-glade/contact.glade:126 gtk-glade/gtk-linphone.glade:2366
+#: gtk-glade/contact.glade:126
 msgid "Contact information"
 msgstr "Information sur le contact"
 
 #: gtk-glade/contact.glade:149 gtk-glade/password.glade:71
-#: gtk-glade/gtk-linphone.glade:2146 gtk-glade/gtk-linphone.glade:2228
-#: gtk-glade/gtk-linphone.glade:2389 gtk-glade/sip_account.glade:202
+#: gtk-glade/sip_account.glade:202
 msgid "gtk-cancel"
 msgstr ""
 
 #: gtk-glade/contact.glade:161 gtk-glade/password.glade:59
-#: gtk-glade/gtk-linphone.glade:2134 gtk-glade/gtk-linphone.glade:2217
-#: gtk-glade/gtk-linphone.glade:2400 gtk-glade/sip_account.glade:190
+#: gtk-glade/sip_account.glade:190
 msgid "gtk-ok"
 msgstr ""
 
@@ -311,366 +309,296 @@ msgid "Linphone debug window"
 msgstr "Fenêtre de débogage de linphone"
 
 #: gtk-glade/log.glade:54 gtk-glade/call_logs.glade:49
-#: gtk-glade/gtk-linphone.glade:1950 gtk-glade/chatroom.glade:82
-#: gtk-glade/parameters.glade:1379
+#: gtk-glade/chatroom.glade:82 gtk-glade/parameters.glade:1379
 msgid "gtk-close"
 msgstr ""
 
-#: gtk-glade/password.glade:8 gtk-glade/gtk-linphone.glade:2167
+#: gtk-glade/password.glade:8
 msgid "Linphone - Authentication required"
 msgstr "Linphone - Autentification requise"
 
-#: gtk-glade/password.glade:27 gtk-glade/gtk-linphone.glade:2186
+#: gtk-glade/password.glade:27
 msgid "Please enter your password for domain..."
 msgstr "Entrez votre mot de passe pour le domaine %s"
 
-#: gtk-glade/gtk-linphone.glade:21
-msgid "É_dition"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:30
-msgid "_Properties"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:49
-msgid "Modes"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:86
-msgid "Aid_e"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:96
-msgid "Show logs"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:109
-#, fuzzy
-msgid "_About"
-msgstr "Compte"
-
-#: gtk-glade/gtk-linphone.glade:357
-msgid "gtk-add"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:368
-msgid "gtk-edit"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:382
-msgid "gtk-remove"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:440
-msgid "Proxy in use"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:822 gtk-glade/parameters.glade:36
-msgid "Use IPv6 instead of IPv4"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:833 gtk-glade/parameters.glade:48
-msgid "<b>IPv6 usage</b>"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:902 gtk-glade/parameters.glade:120
-msgid "Video RTP/UDP"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:913 gtk-glade/parameters.glade:131
-msgid "Audio RTP/UDP"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:924 gtk-glade/parameters.glade:142
-msgid "SIP (UDP)"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:935 gtk-glade/parameters.glade:153
-msgid "<b>Ports used</b>"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:969 gtk-glade/parameters.glade:187
-msgid "Public IP address"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:992 gtk-glade/parameters.glade:211
-msgid "Stun server"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:1018 gtk-glade/parameters.glade:282
-msgid "<b>Firewall settings</b>"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:1047 gtk-glade/parameters.glade:383
-msgid "Network settings"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:1095 gtk-glade/parameters.glade:435
-msgid "gtk-media-play"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:1116 gtk-glade/parameters.glade:457
-msgid "Ring sound"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:1180 gtk-glade/parameters.glade:513
-msgid "ALSA special device (optional)"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:1192 gtk-glade/parameters.glade:525
-msgid "Capture device"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:1204 gtk-glade/parameters.glade:537
-msgid "Ring device"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:1216 gtk-glade/parameters.glade:549
-msgid "Playback device"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:1231
-msgid "Sound"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:1263 gtk-glade/parameters.glade:678
-msgid "Multimedia settings"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:1284 gtk-glade/parameters.glade:699
-msgid "This section defines your SIP address when not using a SIP account"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:1301 gtk-glade/parameters.glade:716
-msgid "Your display name (eg: John Doe):"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:1319 gtk-glade/parameters.glade:735
-msgid "Your username:"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:1330 gtk-glade/parameters.glade:746
-msgid "Your resulting SIP address:"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:1372
-#, fuzzy
-msgid "Default identity"
-msgstr "%s (par défaut)"
-
-#: gtk-glade/gtk-linphone.glade:1438 gtk-glade/parameters.glade:856
-msgid "Add"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:1470 gtk-glade/parameters.glade:889
-msgid "Edit"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:1505 gtk-glade/parameters.glade:925
-msgid "Remove"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:1532
-msgid "Proxy accounts"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:1580 gtk-glade/parameters.glade:1001
-msgid "Erase all passwords"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:1598
-msgid "Privacy"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:1630 gtk-glade/parameters.glade:1051
-msgid "Manage SIP Accounts"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:1666 gtk-glade/parameters.glade:1087
-msgid ""
-"Audio codecs\n"
-"Video codecs"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:1705 gtk-glade/parameters.glade:1128
-msgid "gtk-go-up"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:1716 gtk-glade/parameters.glade:1140
-msgid "gtk-go-down"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:1746 gtk-glade/parameters.glade:1172
-#, fuzzy
-msgid "Enable"
-msgstr "Activé"
-
-#: gtk-glade/gtk-linphone.glade:1781 gtk-glade/parameters.glade:1208
-#, fuzzy
-msgid "Disable"
-msgstr "Désactivé"
-
-#: gtk-glade/gtk-linphone.glade:1813 gtk-glade/gtk-linphone.glade:1924
-#: gtk-glade/parameters.glade:1353
-msgid "Codecs"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:1843 gtk-glade/gtk-linphone.glade:1858
-#: gtk-glade/parameters.glade:1270 gtk-glade/parameters.glade:1286
-msgid "0 stands for \"unlimited\""
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:1870 gtk-glade/parameters.glade:1299
-msgid "Upload limit in kbits/sec"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:1881 gtk-glade/parameters.glade:1310
-msgid "Download limit in kbits/sec"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:1892
-msgid "Bandwidth usage"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:1966 gtk-glade/sip_account.glade:8
+#: gtk-glade/sip_account.glade:8
 msgid "Linphone - Configure a SIP account"
-msgstr ""
+msgstr "Linphone - Configurer un compte SIP"
 
-#: gtk-glade/gtk-linphone.glade:2014 gtk-glade/sip_account.glade:109
-#, fuzzy
-msgid "Registration period (sec):"
-msgstr "Echec de l'enregistrement sur %s: %s"
-
-#: gtk-glade/gtk-linphone.glade:2038 gtk-glade/sip_account.glade:85
-msgid "Route (optional):"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:2062 gtk-glade/sip_account.glade:60
-msgid "SIP Proxy address:"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:2084 gtk-glade/sip_account.glade:42
+#: gtk-glade/sip_account.glade:42
 msgid "Your SIP identity:"
-msgstr ""
+msgstr "Votre identité SIP:"
 
-#: gtk-glade/gtk-linphone.glade:2094 gtk-glade/sip_account.glade:150
-msgid "Publish presence information"
-msgstr ""
-
-#: gtk-glade/gtk-linphone.glade:2111 gtk-glade/sip_account.glade:167
-msgid "Configure a SIP account"
-msgstr ""
+#: gtk-glade/sip_account.glade:60
+msgid "SIP Proxy address:"
+msgstr "Addresse du proxy SIP"
 
 #: gtk-glade/sip_account.glade:72
 msgid "sip:"
 msgstr ""
 
+#: gtk-glade/sip_account.glade:85
+msgid "Route (optional):"
+msgstr "Route (optionnel):"
+
+#: gtk-glade/sip_account.glade:109
+msgid "Registration period (sec):"
+msgstr "Période d'enregistrement"
+
 #: gtk-glade/sip_account.glade:136
 msgid "Register at startup"
-msgstr ""
+msgstr "S'enregistrer au démarrage"
+
+#: gtk-glade/sip_account.glade:150
+msgid "Publish presence information"
+msgstr "Publier la présence"
+
+#: gtk-glade/sip_account.glade:167
+msgid "Configure a SIP account"
+msgstr "Configuer un compte SIP"
 
 #: gtk-glade/chatroom.glade:50
 msgid "Send"
-msgstr ""
+msgstr "Envoyer"
 
 #: gtk-glade/incoming_call.glade:9
-#, fuzzy
 msgid "Linphone - Incoming call"
-msgstr "Appel entrant"
+msgstr "Linphone - Appel entrant"
 
 #: gtk-glade/incoming_call.glade:36
-#, fuzzy
 msgid "Incoming call from"
-msgstr "Appel entrant de %s"
+msgstr "Appel entrant de"
 
 #: gtk-glade/incoming_call.glade:45 coreapi/linphonecore.c:230
 msgid "Incoming call"
 msgstr "Appel entrant"
 
 #: gtk-glade/incoming_call.glade:85
-#, fuzzy
 msgid "Accept"
-msgstr "Compte"
+msgstr "Accepter"
 
 #: gtk-glade/incoming_call.glade:118
-#, fuzzy
 msgid "Decline"
-msgstr "Disponible"
+msgstr "Refuser"
+
+#: gtk-glade/parameters.glade:36
+msgid "Use IPv6 instead of IPv4"
+msgstr "Utiliser l'IPv6 au lieu d'IPv4"
+
+#: gtk-glade/parameters.glade:48
+msgid "<b>IPv6 usage</b>"
+msgstr "<b>Usage de l'IPv6</b>"
+
+#: gtk-glade/parameters.glade:120
+msgid "Video RTP/UDP"
+msgstr ""
+
+#: gtk-glade/parameters.glade:131
+msgid "Audio RTP/UDP"
+msgstr ""
+
+#: gtk-glade/parameters.glade:142
+msgid "SIP (UDP)"
+msgstr ""
+
+#: gtk-glade/parameters.glade:153
+msgid "<b>Ports used</b>"
+msgstr "Ports utilisés"
+
+#: gtk-glade/parameters.glade:187
+msgid "Public IP address"
+msgstr "Addresse IP publique"
+
+#: gtk-glade/parameters.glade:211
+msgid "Stun server"
+msgstr "Serveur STUN"
 
 #: gtk-glade/parameters.glade:234
 msgid "I'm not behing a firewall"
-msgstr ""
+msgstr "Je ne suis pas derrière un pare-feu"
 
 #: gtk-glade/parameters.glade:248
 msgid "I'm behind a firewall, use supplied public IP address"
-msgstr ""
+msgstr "Je suis derrière un pare-feu, utiliser l'addresse publique fournie"
 
 #: gtk-glade/parameters.glade:263
 msgid "Use the supplied stun server above and do as best as possible"
-msgstr ""
+msgstr "Utiliser le serveur STUN et faire du mieux possible"
+
+#: gtk-glade/parameters.glade:282
+msgid "<b>Firewall settings</b>"
+msgstr "<b>Paramètres liés au pare-feu</b>"
 
 #: gtk-glade/parameters.glade:327
 msgid "Set Maximum Transmission Unit"
-msgstr ""
+msgstr "Spécifier la Maximum Transmission Unit"
 
 #: gtk-glade/parameters.glade:337
 msgid "Send DTMFs as SIP info"
-msgstr ""
+msgstr "Envoyer les digits en tant que SIP INFO"
 
 #: gtk-glade/parameters.glade:354
 msgid "<b>Miscelaneous</b>"
+msgstr "<b>Divers</b>"
+
+#: gtk-glade/parameters.glade:383
+msgid "Network settings"
+msgstr "Paramètres réseau"
+
+#: gtk-glade/parameters.glade:435
+msgid "gtk-media-play"
 msgstr ""
+
+#: gtk-glade/parameters.glade:457
+msgid "Ring sound"
+msgstr "Sonnerie"
 
 #: gtk-glade/parameters.glade:483
 msgid "default soundcard\n"
-msgstr ""
+msgstr "Carte son par défaut\n"
 
 #: gtk-glade/parameters.glade:499
 msgid "default soundcard"
+msgstr "Carte son par défaut"
+
+#: gtk-glade/parameters.glade:513
+msgid "ALSA special device (optional)"
 msgstr ""
+
+#: gtk-glade/parameters.glade:525
+msgid "Capture device"
+msgstr "Périphérique de capture"
+
+#: gtk-glade/parameters.glade:537
+msgid "Ring device"
+msgstr "Périphérique de sonnerie"
+
+#: gtk-glade/parameters.glade:549
+msgid "Playback device"
+msgstr "Périphérique d'écoute"
 
 #: gtk-glade/parameters.glade:560
 msgid "a sound card\n"
-msgstr ""
+msgstr "une carte son\n"
 
 #: gtk-glade/parameters.glade:575
 msgid "Enable echo cancelation"
-msgstr ""
+msgstr "Activer l'annulation d'écho"
 
 #: gtk-glade/parameters.glade:595
 msgid "<b>Sound</b>"
-msgstr ""
+msgstr "<b>Son</b>"
 
 #: gtk-glade/parameters.glade:620
 msgid "Video input device"
-msgstr ""
+msgstr "Périphérique d'entrée video"
 
 #: gtk-glade/parameters.glade:629
 msgid "default camera"
-msgstr ""
+msgstr "camera par défaut"
 
 #: gtk-glade/parameters.glade:645
 msgid "<b>Video</b>"
 msgstr ""
 
+#: gtk-glade/parameters.glade:678
+msgid "Multimedia settings"
+msgstr "Paramètres multimedia"
+
+#: gtk-glade/parameters.glade:699
+msgid "This section defines your SIP address when not using a SIP account"
+msgstr "Cette rubrique permet de définir son addresse SIP lorsqu'on ne possède pas de compte SIP"
+
+#: gtk-glade/parameters.glade:716
+msgid "Your display name (eg: John Doe):"
+msgstr "Votre nom d'affichage (ex: James Bond)"
+
+#: gtk-glade/parameters.glade:735
+msgid "Your username:"
+msgstr "Votre nom d'utilisateur"
+
+#: gtk-glade/parameters.glade:746
+msgid "Your resulting SIP address:"
+msgstr "Votre addresse SIP:"
+
 #: gtk-glade/parameters.glade:789
 msgid "<b>Default identity</b>"
-msgstr ""
+msgstr "<b>Identité par défaut</b>"
+
+#: gtk-glade/parameters.glade:856
+msgid "Add"
+msgstr "Ajouter"
+
+#: gtk-glade/parameters.glade:889
+msgid "Edit"
+msgstr "Editer"
+
+#: gtk-glade/parameters.glade:925
+msgid "Remove"
+msgstr "Enlever"
 
 #: gtk-glade/parameters.glade:952
 msgid "<b>Proxy accounts</b>"
-msgstr ""
+msgstr "<b>Comptes SIP via des proxy</b>"
+
+#: gtk-glade/parameters.glade:1001
+msgid "Erase all passwords"
+msgstr "Effacer tous les mots de passe"
 
 #: gtk-glade/parameters.glade:1019
 msgid "<b>Privacy</b>"
+msgstr "<b>Sécurité</b>"
+
+#: gtk-glade/parameters.glade:1051
+msgid "Manage SIP Accounts"
+msgstr "Gérer mes comptes SIP"
+
+#: gtk-glade/parameters.glade:1087
+msgid ""
+"Audio codecs\n"
+"Video codecs"
 msgstr ""
+"Codecs audio\n"
+"Codecs video"
+
+#: gtk-glade/parameters.glade:1128
+msgid "gtk-go-up"
+msgstr ""
+
+#: gtk-glade/parameters.glade:1140
+msgid "gtk-go-down"
+msgstr ""
+
+#: gtk-glade/parameters.glade:1172
+msgid "Enable"
+msgstr "Active"
+
+#: gtk-glade/parameters.glade:1208
+msgid "Disable"
+msgstr "Désactive"
 
 #: gtk-glade/parameters.glade:1240
 msgid "<b>Codecs</b>"
-msgstr ""
+msgstr "<b>Codecs</b>"
+
+#: gtk-glade/parameters.glade:1270 gtk-glade/parameters.glade:1286
+msgid "0 stands for \"unlimited\""
+msgstr "Indiquez 0 pour ne pas mettre de limite"
+
+#: gtk-glade/parameters.glade:1299
+msgid "Upload limit in kbits/sec"
+msgstr "Limite de débit montant en kbits/sec"
+
+#: gtk-glade/parameters.glade:1310
+msgid "Download limit in kbits/sec"
+msgstr "Limite de débit descendant en kbits/sec"
 
 #: gtk-glade/parameters.glade:1321
 msgid "<b>Bandwidth usage</b>"
+msgstr "<b>Gestion de la bande passante</b>"
+
+#: gtk-glade/parameters.glade:1353
+msgid "Codecs"
 msgstr ""
 
 #: coreapi/linphonecore.c:192
@@ -916,3 +844,11 @@ msgstr "A table"
 #: coreapi/presence.c:160
 msgid "Closed"
 msgstr "Eteint"
+
+#, fuzzy
+#~ msgid "_About"
+#~ msgstr "Compte"
+
+#, fuzzy
+#~ msgid "Default identity"
+#~ msgstr "%s (par défaut)"

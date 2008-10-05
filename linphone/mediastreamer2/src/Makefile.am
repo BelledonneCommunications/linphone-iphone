@@ -1,5 +1,5 @@
 
-EXTRA_DIST= winsnd2.c winsnd.c winvideo.c winvideods.c wincevideods.c dxfilter.h dxfilter.cpp msfileplayer_win.c msfilerec_win.c winsndds.cpp nowebcamCIF.jpg
+EXTRA_DIST= winsnd2.c winsnd.c winvideo.c winvideods.c wincevideods.c dxfilter.h dxfilter.cpp msfileplayer_win.c msfilerec_win.c winsndds.cpp nowebcamCIF.jpg winsnd3.c
 
 BUILT_SOURCES=alldescs.h
 
