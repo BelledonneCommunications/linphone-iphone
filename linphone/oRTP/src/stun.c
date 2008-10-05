@@ -380,7 +380,7 @@ stunParseMessage( char* buf, unsigned int bufLen, StunMessage *msg, bool_t verbo
                if (verbose) ortp_message("stun: ChangedAddress = %s\n", ipaddr(&msg->changedAddress.ipv4));
             }
       }
-      else if (atrType == Username)
+      else if (atrType == STUNUsername)
       {
             msg->hasUsername = TRUE;
             if (stunParseAtrString( body, attrLen, &msg->username) == FALSE)
@@ -394,7 +394,7 @@ stunParseMessage( char* buf, unsigned int bufLen, StunMessage *msg, bool_t verbo
 				   ortp_message("stun: Username = %s\n", msg->username.value );
             }					
       }
-      else if (atrType == Password)
+      else if (atrType == STUNPassword)
       {
             msg->hasPassword = TRUE;
             if (stunParseAtrString( body, attrLen, &msg->password) == FALSE)
@@ -677,12 +677,12 @@ stunEncodeMessage( const StunMessage *msg,
    if (msg->hasUsername)
    {
       if (verbose) ortp_message("stun: Encoding Username: %s\n", msg->username.value );
-      ptr = encodeAtrString(ptr, Username, &msg->username);
+      ptr = encodeAtrString(ptr, STUNUsername, &msg->username);
    }
    if (msg->hasPassword)
    {
       if (verbose) ortp_message("stun: Encoding Password: %s\n", msg->password.value );
-      ptr = encodeAtrString(ptr, Password, &msg->password);
+      ptr = encodeAtrString(ptr, STUNPassword, &msg->password);
    }
    if (msg->hasErrorCode)
    {

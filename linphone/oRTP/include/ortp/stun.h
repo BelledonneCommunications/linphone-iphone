@@ -116,8 +116,8 @@ typedef struct { unsigned char octet[16]; }  UInt128;
 #define ChangeRequest     0x0003
 #define SourceAddress     0x0004
 #define ChangedAddress    0x0005
-#define Username          0x0006
-#define Password          0x0007
+#define STUNUsername      0x0006 /* Username is too common: rename to avoid conflict */
+#define STUNPassword      0x0007 /* Password is too common: rename to avoid conflict */
 #define MessageIntegrity  0x0008
 #define ErrorCode         0x0009
 #define UnknownAttribute  0x000A
