@@ -21,14 +21,20 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "config.h"
 #else
 #define PACKAGE_DATA_DIR "./"
-#define LINPHONE_VERSION "2.99.4"
+
+#ifndef LINPHONE_VERSION
+#include "private.h" /*from coreapi */
+#endif
+
 #endif
 
 #include <gtk/gtk.h>
 #include "linphonecore.h"
 
 #include <libintl.h>
+#ifndef _
 #define _(String) gettext (String)
+#endif
 
 GdkPixbuf * create_pixbuf(const gchar *filename);
 void add_pixmap_directory(const gchar *directory);

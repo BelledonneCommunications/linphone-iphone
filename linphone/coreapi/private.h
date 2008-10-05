@@ -33,7 +33,7 @@
 #endif
 
 #ifndef LINPHONE_VERSION
-#define LINPHONE_VERSION "2.99.4"
+#define LINPHONE_VERSION "2.99.5"
 #endif
 
 #ifndef LIBLINPHONE_VERSION 
@@ -54,7 +54,9 @@
 #define _(String) gettext(String)
 #endif
 #else
+#ifndef _
 #define _(something)	(something)
+#endif
 #endif
 
 void linphone_core_init_media_streams(LinphoneCore *lc);
