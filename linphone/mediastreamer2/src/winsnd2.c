@@ -744,6 +744,8 @@ static void winsnd_write_process(MSFilter *f){
 				/* initial behavior (detection in process?) */
 				getq(&d->write_rq);
 				freemsg(m);
+		    discarded++;
+		    d->stat_notplayed++;
 			}
 			else
 			{
@@ -751,16 +753,17 @@ static void winsnd_write_process(MSFilter *f){
 				{
 					getq(&d->write_rq);
 					freemsg(m);
-		            ms_message("WINSND trouble: silence removed");
+          ms_message("WINSND trouble: silence removed");
+			    discarded++;
+			    d->stat_notplayed++;
 				}
 			}
 #else
 			getq(&d->write_rq);
 			freemsg(m);
-#endif
-
 			discarded++;
 			d->stat_notplayed++;
+#endif
 
 			break;
 		}
