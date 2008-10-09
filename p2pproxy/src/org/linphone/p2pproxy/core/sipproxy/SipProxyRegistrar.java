@@ -24,6 +24,7 @@ package org.linphone.p2pproxy.core.sipproxy;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -64,6 +65,8 @@ import org.zoolu.sip.message.MessageFactory;
 import org.zoolu.sip.provider.SipProvider;
 import org.zoolu.sip.provider.SipProviderListener;
 import org.zoolu.sip.provider.SipStack;
+import org.zoolu.sip.provider.TransactionIdentifier;
+import org.zoolu.sip.transaction.Transaction;
 import org.zoolu.sip.transaction.TransactionServer;
 import java.util.Collections;
 
@@ -79,7 +82,7 @@ public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarM
 
    private final Map<String,Registration> mRegistrationTab = Collections.synchronizedMap(new HashMap<String,Registration>()); 
    private final Map<String,SipMessageTask> mCancalableTaskTab = Collections.synchronizedMap(new HashMap<String,SipMessageTask>());
-   //private final Map<String,SipMessageTask> mCancalableTaskTab = new HashMap<String,SipMessageTask>();
+   private final Map<TransactionIdentifier,Transaction> mPendingTransactionTab = Collections.synchronizedMap(new HashMap<TransactionIdentifier,Transaction>());
 
    private final P2pProxyAccountManagementMBean mP2pProxyAccountManagement;
    private final Configurator mProperties;
@@ -192,7 +195,15 @@ public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarM
    public  void onReceivedMessage(SipProvider aProvider, Message aMessage) {
       String lCallId = aMessage.getCallIdHeader().getCallId();
       if (mLog.isInfoEnabled()) mLog.info("receiving message ["+aMessage+"]");
+      if (aProvider.getListeners().containsKey(aMessage.getTransactionId())) {
+         if (mLog.isInfoEnabled()) mLog.info ("nothing to do, transaction alrady handled");
+         return;
+      }
       SipMessageTask lPendingSipMessageTask = mCancalableTaskTab.get(lCallId);
+      
+      
+     
+      
       if (aMessage.isCancel() && lPendingSipMessageTask != null ) {
          // search for pending transaction
          
@@ -267,7 +278,6 @@ public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarM
 /////////////////////////////////////////////////////////////////////	
    
    private  void processRegister(SipProvider aProvider, Message aMessage) throws IOException, P2pProxyException {
-      
       TransactionServer lTransactionServer = new TransactionServer(aProvider,aMessage,null);
       Message l100Trying = MessageFactory.createResponse(aMessage,100,"trying",null);
       lTransactionServer.respondWith(l100Trying);
