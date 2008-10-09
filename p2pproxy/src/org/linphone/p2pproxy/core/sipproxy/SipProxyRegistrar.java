@@ -82,7 +82,6 @@ public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarM
 
    private final Map<String,Registration> mRegistrationTab = Collections.synchronizedMap(new HashMap<String,Registration>()); 
    private final Map<String,SipMessageTask> mCancalableTaskTab = Collections.synchronizedMap(new HashMap<String,SipMessageTask>());
-   private final Map<TransactionIdentifier,Transaction> mPendingTransactionTab = Collections.synchronizedMap(new HashMap<TransactionIdentifier,Transaction>());
 
    private final P2pProxyAccountManagementMBean mP2pProxyAccountManagement;
    private final Configurator mProperties;
@@ -193,16 +192,13 @@ public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarM
       
    }
    public  void onReceivedMessage(SipProvider aProvider, Message aMessage) {
-      String lCallId = aMessage.getCallIdHeader().getCallId();
-      if (mLog.isInfoEnabled()) mLog.info("receiving message ["+aMessage+"]");
       if (aProvider.getListeners().containsKey(aMessage.getTransactionId())) {
-         if (mLog.isInfoEnabled()) mLog.info ("nothing to do, transaction alrady handled");
+         if (mLog.isDebugEnabled()) mLog.debug ("nothing to do, transaction already handled for ["+aMessage+"]");
          return;
       }
+      if (mLog.isInfoEnabled()) mLog.info("receiving message ["+aMessage+"]");
+      String lCallId = aMessage.getCallIdHeader().getCallId();
       SipMessageTask lPendingSipMessageTask = mCancalableTaskTab.get(lCallId);
-      
-      
-     
       
       if (aMessage.isCancel() && lPendingSipMessageTask != null ) {
          // search for pending transaction
@@ -242,12 +238,13 @@ public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarM
          // just terminate the Invite transaction
          return;
       }
-
+      
       if (aMessage.isInvite() == true) {
          // 100 trying
          TransactionServer lTransactionServer = new TransactionServer(aProvider,aMessage,null);
          Message l100Trying = MessageFactory.createResponse(aMessage,100,"trying",null);
          lTransactionServer.respondWith(l100Trying);
+         lTransactionServer.terminate();
       }
       //remove route
       MultipleHeader lMultipleRoute = aMessage.getRoutes();
@@ -266,6 +263,7 @@ public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarM
             Message lresp = MessageFactory.createResponse(aMessage,404,e.getMessage(),null);
             TransactionServer lTransactionServer = new TransactionServer(aProvider,aMessage,null);
             lTransactionServer.respondWith(lresp);
+            lTransactionServer.terminate();
          } else {
             throw e;
          }

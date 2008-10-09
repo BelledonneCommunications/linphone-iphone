@@ -55,11 +55,11 @@ public class SuperPeerProxy implements SipProxy, RegistrationHandler {
    public void proxyRequest(SipProvider aProvider, Message aMessage) throws P2pProxyException {
       // 1 check if user is a local user
       
-	   if (mLog.isInfoEnabled()) mLog.info("processing request " +aMessage);
-	   String lTo = aMessage.getFromHeader().getNameAddress().getAddress().toString();
+	   if (mLog.isDebugEnabled()) mLog.debug("processing request " +aMessage);
+	   String lTo = aMessage.getToHeader().getNameAddress().getAddress().toString();
 	   SipURL lNextHope = null;
 	   //check if invite
-	   if (aMessage.isInvite()) {
+	   if (aMessage.isInvite() || aMessage.isCancel()) {
 		   //ok need to find the root
 		   //is local ?
 		   synchronized (mRegistrationTab) {
