@@ -40,13 +40,13 @@ typedef struct V4wState{
 	ms_cond_t thread_cond;
 	bool_t thread_running;
 #endif
-
 	char dev[512];
 	int devidx;
 	HWND capvideo;
 	MSVideoSize vsize;
 	int pix_fmt;
 	mblk_t *mire[10];
+	mblk_t *reverted;
 	queue_t rq;
 	ms_mutex_t mutex;
 	int frame_ind;
@@ -256,6 +256,7 @@ static void v4w_init(MSFilter *f){
 	s->started=FALSE;
 	s->autostarted=FALSE;
 	s->invert_rgb=FALSE;
+	s->reverted=NULL;
 #ifdef AMD_HACK2
 	/* avoid bug with USB vimicro cards:
 		How can I detect that this problem exist?
@@ -432,6 +433,9 @@ static void v4w_uninit(MSFilter *f){
 		ms_message("v4w: capture window destroyed");
 		s->capvideo=NULL;
 	}
+	if (s->reverted){
+		freemsg(s->reverted);
+	}
 #ifdef AMD_HACK2
 	ms_cond_destroy(&s->thread_cond);
 	ms_mutex_destroy(&s->thread_lock);
@@ -512,7 +516,18 @@ static void v4w_process(MSFilter * obj){
 				om=m;
 			}
 			if (om!=NULL){
-				if (s->invert_rgb) rgb24_revert(om->b_rptr,s->vsize.width,s->vsize.height,s->vsize.width*3);
+				if (s->invert_rgb){
+					MSVideoSize roi;
+					if (s->reverted==NULL){
+						s->reverted=allocb(om->b_wptr-om->b_rptr,0);
+						s->reverted->b_wptr=s->reverted->b_datap->db_lim;
+					}
+					roi=s->vsize;
+					rgb24_copy_revert(s->reverted->b_rptr,roi.width*3,
+									om->b_rptr,roi.width*3,roi);
+					freemsg(om);
+					om=dupb(s->reverted);
+				}
 			}
 		}else {
 			mblk_t *nowebcam = v4w_make_nowebcam(s);
@@ -652,6 +667,7 @@ static void ms_v4w_detect(MSWebCamManager *obj){
 				capDriverDisconnect(hwnd);
 				DestroyWindow(hwnd);
 			}
+			capGetDriverDescription(i, dev, sizeof (dev),ver, sizeof (ver));
 			snprintf(name, sizeof(name), "%s/%s",dev,ver);
 			cam=ms_web_cam_new(&ms_v4w_cam_desc);
 			cam->data=(void*)i;/*store the device index */

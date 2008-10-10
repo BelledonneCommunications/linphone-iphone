@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=Linphone
-AppVerName=Linphone for windows 2.99.5 (gtk/glade interface based on liblinphone)
+AppVerName=Linphone for windows 3.0.0 (gtk/glade interface based on liblinphone)
 AppPublisher=linphone.org
 AppPublisherURL=http://www.linphone.org
 AppSupportURL=http://www.linphone.org
@@ -11,7 +11,7 @@ AppUpdatesURL=http://www.linphone.org
 DefaultDirName={pf}\Linphone
 DefaultGroupName=Linphone
 LicenseFile=..\COPYING
-InfoBeforeFile=..\README
+;InfoBeforeFile=..\README
 OutputBaseFilename=setup
 Compression=lzma
 SolidCompression=yes

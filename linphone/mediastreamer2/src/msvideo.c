@@ -171,3 +171,18 @@ void rgb24_revert(uint8_t *buf, int w, int h, int linesize){
 	}	
 }
 
+void rgb24_copy_revert(uint8_t *dstbuf, int dstlsz,
+				const uint8_t *srcbuf, int srclsz, MSVideoSize roi){
+	int i,j;
+	const uint8_t *psrc;
+	uint8_t *pdst;
+	psrc=srcbuf;
+	pdst=dstbuf+(dstlsz*roi.height);
+	for(i=0;i<roi.height;++i){
+		for(j=0;j<roi.width;++j){
+			pdst[roi.width-1-j]=psrc[j];
+		}
+		pdst-=dstlsz;
+		psrc+=srclsz;
+	}
+}

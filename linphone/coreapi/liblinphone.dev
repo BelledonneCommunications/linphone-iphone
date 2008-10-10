@@ -14,7 +14,7 @@ ProfilesCount=1
 ProfileIndex=0
 
 [Unit1]
-FileName=..\coreapi\sdphandler.h
+FileName=sdphandler.h
 CompileCpp=0
 Folder=liblinphone
 Compile=1
@@ -24,7 +24,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit2]
-FileName=..\coreapi\authentication.c
+FileName=authentication.c
 CompileCpp=0
 Folder=liblinphone
 Compile=1
@@ -34,7 +34,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit3]
-FileName=..\coreapi\chat.c
+FileName=chat.c
 CompileCpp=0
 Folder=liblinphone
 Compile=1
@@ -44,7 +44,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit4]
-FileName=..\coreapi\enum.c
+FileName=enum.c
 CompileCpp=0
 Folder=liblinphone
 Compile=1
@@ -54,7 +54,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit5]
-FileName=..\coreapi\enum.h
+FileName=enum.h
 CompileCpp=0
 Folder=liblinphone
 Compile=1
@@ -64,7 +64,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit6]
-FileName=..\coreapi\exevents.c
+FileName=exevents.c
 CompileCpp=0
 Folder=liblinphone
 Compile=1
@@ -74,7 +74,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit7]
-FileName=..\coreapi\exevents.h
+FileName=exevents.h
 CompileCpp=0
 Folder=liblinphone
 Compile=1
@@ -84,7 +84,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit8]
-FileName=..\coreapi\friend.c
+FileName=friend.c
 CompileCpp=0
 Folder=liblinphone
 Compile=1
@@ -94,7 +94,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit9]
-FileName=..\coreapi\linphonecore.c
+FileName=linphonecore.c
 CompileCpp=0
 Folder=liblinphone
 Compile=1
@@ -104,7 +104,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit10]
-FileName=..\coreapi\linphonecore.h
+FileName=linphonecore.h
 CompileCpp=0
 Folder=liblinphone
 Compile=1
@@ -114,7 +114,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit11]
-FileName=..\coreapi\lpconfig.c
+FileName=lpconfig.c
 CompileCpp=0
 Folder=liblinphone
 Compile=1
@@ -124,7 +124,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit12]
-FileName=..\coreapi\lpconfig.h
+FileName=lpconfig.h
 CompileCpp=0
 Folder=liblinphone
 Compile=1
@@ -134,7 +134,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit13]
-FileName=..\coreapi\misc.c
+FileName=misc.c
 CompileCpp=0
 Folder=liblinphone
 Compile=1
@@ -144,7 +144,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit14]
-FileName=..\coreapi\presence.c
+FileName=presence.c
 CompileCpp=0
 Folder=liblinphone
 Compile=1
@@ -154,7 +154,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit15]
-FileName=..\coreapi\private.h
+FileName=private.h
 CompileCpp=0
 Folder=liblinphone
 Compile=1
@@ -164,7 +164,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit16]
-FileName=..\coreapi\proxy.c
+FileName=proxy.c
 CompileCpp=0
 Folder=liblinphone
 Compile=1
@@ -174,7 +174,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit17]
-FileName=..\coreapi\sdphandler.c
+FileName=sdphandler.c
 CompileCpp=0
 Folder=liblinphone
 Compile=1
@@ -184,7 +184,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit18]
-FileName=..\coreapi\general_state.c
+FileName=general_state.c
 CompileCpp=1
 Folder=liblinphone
 Compile=1
@@ -228,7 +228,7 @@ Linker=
 PreprocDefines=
 CompilerSettings=0000000000010000000000
 Icon=
-ExeOutput=..\win32
+ExeOutput=
 ObjectOutput=Default Profile
 OverrideOutput=0
 OverrideOutputName=liblinphone.lib
