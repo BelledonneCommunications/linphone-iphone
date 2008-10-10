@@ -1,4 +1,4 @@
-DATE	ortp-0.15.0
+October 13, 2008:	ortp-0.15.0
 	- telephone event detection bugfix
 	- reduce number of memory allocation: !! attention here ABI/API change !!
 		If you are using mp=rtp_session_recvm_with_ts(), the payload data is no more pointed by mp->b_cont->b_rptr.
