@@ -337,7 +337,14 @@ public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarM
    }
    
    
-
+public void stop() {
+   try {
+      mJxtaNetworkManager.getPeerGroup().getDiscoveryService().flushAdvertisement(mProxyRegistrationAdvertisement);
+   } catch (IOException e) {
+      mLog.warn("cannot flush registrar adv",e );
+   }
+   mProvider.halt();
+}
  
  //   public long getNumberOfEstablishedCall() {
 //      return mNumberOfEstablishedCall;

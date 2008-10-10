@@ -58,6 +58,7 @@ public class P2pProxyMain  implements P2pProxyMainMBean {
    private static P2pProxyMain mP2pProxyMain = new P2pProxyMain();
    private static Configurator mConfigurator;
    private static String mConfigHomeDir;
+   static private boolean mExit = false;
    
    
    static {
@@ -279,9 +280,15 @@ public class P2pProxyMain  implements P2pProxyMainMBean {
 
 		   mLog.warn("p2pproxy initilized");
 
-		   while (true) {
+		   while (mExit == false) {
 			   Thread.sleep(1000);
 		   }
+		   if (mServiceProvider!= null) mServiceProvider.stop();
+		   if (mServiceProvider!= null) mServiceProvider.stop();
+		   if (mSipAndPipeListener!= null) mSipAndPipeListener.stop();
+		   if (mJxtaNetworkManager != null) mJxtaNetworkManager.stop();
+		   mLog.info("p2pproxy stopped");
+		   
 	   } catch (Exception e) {
 		   mLog.fatal("error",e);
 		   System.exit(1);
@@ -429,5 +436,9 @@ public static int getState() {
    } catch (P2pProxyException e) {
       return P2pProxylauncherConstants.P2PPROXY_NOT_CONNECTED;
    }   
+}
+public static void stop() {
+   mExit = true;
+  
 }
 }

@@ -9,8 +9,9 @@
 	#define P2PPROXY_INSTALLDIR "/usr/local/share/java"
 #endif 
 #ifndef P2PPROXY_BUILDDIR
-	#define P2PPROXY_BUILDDIR ".././antbuild/dist/p2pproxy_0.1"
+	#define P2PPROXY_BUILDDIR "../antbuild/dist/p2pproxy_0.1"
 #endif
+#define NUMBER_OF_OPTION 7
 JNIEnv* p2pproxy_application_jnienv = 0;
 JavaVM* p2pproxy_application_jvm = 0;
 jclass  p2pproxy_proxy_main_class = 0;
@@ -18,36 +19,38 @@ jclass  p2pproxy_proxy_main_class = 0;
 int p2pproxy_application_start(int argc, char **argv) {
 
 	JavaVMInitArgs args;
-	JavaVMOption options[7];
+	JavaVMOption options[NUMBER_OF_OPTION];
 	jint res=-1;
-	jclass lP2pProxyMainClass=0;
 	jmethodID mainMethod;
 	jobjectArray applicationArgsList;
 	jstring applicationArg;
 	int i=0;
+	int optioncount=0;
 
 	if (p2pproxy_application_jnienv != 0) {
 		fprintf(stderr,"p2pproxy already started");
 		return P2PPROXY_ERROR_APPLICATION_ALREADY_STARTED;
 	}
 	args.version = JNI_VERSION_1_4;
-	args.nOptions = 7;
-	/*options[0].optionString = "-verbose:jni";*/
-	options[0].optionString = "-Djava.class.path="P2PPROXY_BUILDDIR"/p2pproxy.jar:"\
+	
+	/*options[optioncount++].optionString = "-verbose:jni";*/
+	/*options[optioncount++].optionString = "-verbose:class";*/
+	/*options[optioncount++].optionString = "-verbose:class";*/
+	options[optioncount++].optionString = "-Djava.class.path="P2PPROXY_BUILDDIR"/p2pproxy.jar:"\
 								P2PPROXY_INSTALLDIR"/p2pproxy.jar:"\
 								P2PPROXY_BUILDDIR"/log4j.jar:"\
 								P2PPROXY_INSTALLDIR"/log4j.jar";
 
 
 
-	options[1].optionString = "-Dcom.sun.management.jmxremote";
-	options[2].optionString = "-Dcom.sun.management.jmxremote.port="P2PPROXY_JMX_PORT;
-	options[3].optionString = "-Dcom.sun.management.jmxremote.authenticate=false";
-	options[4].optionString = "-Dcom.sun.management.jmxremote.ssl=false";
-	options[5].optionString = "-Dorg.linphone.p2pproxy.install.dir="P2PPROXY_INSTALLDIR;
-	options[6].optionString = "-Dorg.linphone.p2pproxy.build.dir="P2PPROXY_BUILDDIR;
+	options[optioncount++].optionString = "-Dcom.sun.management.jmxremote";
+	options[optioncount++].optionString = "-Dcom.sun.management.jmxremote.port="P2PPROXY_JMX_PORT;
+	options[optioncount++].optionString = "-Dcom.sun.management.jmxremote.authenticate=false";
+	options[optioncount++].optionString = "-Dcom.sun.management.jmxremote.ssl=false";
+	options[optioncount++].optionString = "-Dorg.linphone.p2pproxy.install.dir="P2PPROXY_INSTALLDIR;
+	options[optioncount++].optionString = "-Dorg.linphone.p2pproxy.build.dir="P2PPROXY_BUILDDIR;
 
-
+	args.nOptions = NUMBER_OF_OPTION;
 	args.options = options;
 	args.ignoreUnrecognized = JNI_FALSE;
 
@@ -59,8 +62,8 @@ int p2pproxy_application_start(int argc, char **argv) {
 
 	p2pproxy_proxy_main_class = (*p2pproxy_application_jnienv)->FindClass(p2pproxy_application_jnienv, "org/linphone/p2pproxy/core/P2pProxyMain");
 
-	if (lP2pProxyMainClass == 0) {
-		fprintf(stderr,"cannot find class org/linphone/p2pproxy/core/P2pProxyMain");
+	if (p2pproxy_proxy_main_class == 0) {
+		fprintf(stderr,"cannot load class org/linphone/p2pproxy/core/P2pProxyMain\n");
 		return P2PPROXY_ERROR;
 	}
 	mainMethod = (*p2pproxy_application_jnienv)->GetStaticMethodID(p2pproxy_application_jnienv, p2pproxy_proxy_main_class, "main", "([Ljava/lang/String;)V");
@@ -134,6 +137,14 @@ int p2pproxy_application_get_state() {
 	stateMethod = (*p2pproxy_application_jnienv)->GetStaticMethodID(p2pproxy_application_jnienv, p2pproxy_proxy_main_class, "getState", "()I");
 	return (*p2pproxy_application_jnienv)->CallStaticIntMethod(p2pproxy_application_jnienv, p2pproxy_proxy_main_class, stateMethod);
 	
+}
+void p2pproxy_application_stop() {
+	jmethodID stopMethod;
+	
+	stopMethod = (*p2pproxy_application_jnienv)->GetStaticMethodID(p2pproxy_application_jnienv, p2pproxy_proxy_main_class, "stop", "()V");
+	(*p2pproxy_application_jnienv)->CallStaticVoidMethod(p2pproxy_application_jnienv, p2pproxy_proxy_main_class, stopMethod);
+	return;
+
 }
 
 

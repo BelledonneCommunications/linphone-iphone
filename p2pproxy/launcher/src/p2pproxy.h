@@ -62,6 +62,12 @@ int p2pproxy_application_start(int argc, char **argv);
 int p2pproxy_application_get_state();
 
 /**
+ *  stop p2pproxy application
+ * 
+ */
+void p2pproxy_application_stop();
+
+/**
  * return the status string corresponding to the status code
  */
 /*const char* p2pproxy_status_string(int status_code);*/

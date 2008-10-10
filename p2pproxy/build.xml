@@ -54,7 +54,7 @@
 				</exec>		
 	</target>
 
-	<target name="build-project" depends="init">
+	<target name="build-project" depends="init,jni-src">
     <echo message="${ant.project.name}: ${ant.file}"/>
  
       <javac destdir="antbuild/p2pproxy" debug="true" debuglevel="${debuglevel}" source="${source}" target="${target}">
@@ -62,6 +62,7 @@
       <src path="${jxta-src}/api/src"/>
       <src path="${jxta-src}/impl/src"/> 
       <src path="${jstun-src}" />
+      <src path="${jni-src}" />
       <exclude name="**/*Tester.java"/> 
       <classpath refid="p2pproxy.classpath"/>
     </javac>
