@@ -118,16 +118,22 @@ int p2pproxy_resourcelocation_get_sip_proxyregistrar_uri(char* aStringArray, siz
 	jboolean  lIsCopy;
 	
 	getSipProxyRegistrarUriMethod = (*p2pproxy_application_jnienv)->GetStaticMethodID(p2pproxy_application_jnienv, p2pproxy_proxy_main_class, "getSipProxyRegistrarUriMethod", "()[java/lang/String;");
-	jstring lJStringResult = (*p2pproxy_application_jnienv)->CallStaticObjectMethod(p2pproxy_application_jnienv, p2pproxy_proxy_main_class, getSipProxyRegistrarUriMethod);
+	lJStringResult = (*p2pproxy_application_jnienv)->CallStaticObjectMethod(p2pproxy_application_jnienv, p2pproxy_proxy_main_class, getSipProxyRegistrarUriMethod);
 	if (lJStringResult == 0) {
 		return P2PPROXY_ERROR_RESOURCELOCATOR_SERVER_NOT_FOUND;
 	}
-	lString =  GetStringUTFChars(p2pproxy_application_jnienv, lJStringResult, &lIsCopy);
-	strcpy(aStringArray,lString,aSize);
-	ReleaseStringUTFChars(p2pproxy_application_jnienv, lJStringResult, lString);
+	lString =  (*p2pproxy_application_jnienv)->GetStringUTFChars(p2pproxy_application_jnienv, lJStringResult, &lIsCopy);
+	memcpy(aStringArray,lString,aSize);
+	(*p2pproxy_application_jnienv)->ReleaseStringUTFChars(p2pproxy_application_jnienv, lJStringResult, lString);
 	return P2PPROXY_NO_ERROR;
 }
 
-
+int p2pproxy_application_get_state() {
+	jmethodID stateMethod;
+	
+	stateMethod = (*p2pproxy_application_jnienv)->GetStaticMethodID(p2pproxy_application_jnienv, p2pproxy_proxy_main_class, "getState", "()I");
+	return (*p2pproxy_application_jnienv)->CallStaticIntMethod(p2pproxy_application_jnienv, p2pproxy_proxy_main_class, stateMethod);
+	
+}
 
 

@@ -30,7 +30,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define P2PPROXY_ACCOUNTMGT_USER_EXIST 1
 #define P2PPROXY_ACCOUNTMGT_USER_NOT_EXIST 0 
 
-
+/* state code*/
+#define P2PPROXY_CONNECTED 2
+#define P2PPROXY_NOT_CONNECTED 1
 /* status code*/
 #define P2PPROXY_NO_ERROR 0
 /*error codes*/
@@ -51,6 +53,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  * 
  */
 int p2pproxy_application_start(int argc, char **argv);
+
+/**
+ *  return status
+ * 	@return P2PPROXY_CONNECTED, P2PPROXY_NOT_ERROR
+ * 
+ */
+int p2pproxy_application_get_state();
 
 /**
  * return the status string corresponding to the status code

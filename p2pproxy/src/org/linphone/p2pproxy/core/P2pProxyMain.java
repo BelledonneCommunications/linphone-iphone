@@ -422,4 +422,12 @@ public static String getSipProxyRegistrarUri() {
       return null;
    }   
 }
+public static int getState() {
+   try {
+      isReady();
+      return P2pProxylauncherConstants.P2PPROXY_CONNECTED;
+   } catch (P2pProxyException e) {
+      return P2pProxylauncherConstants.P2PPROXY_NOT_CONNECTED;
+   }   
+}
 }
