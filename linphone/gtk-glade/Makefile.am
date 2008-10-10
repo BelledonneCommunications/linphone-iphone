@@ -15,7 +15,9 @@ PIXMAPS=	linphone2.png \
 		stock_people.png 
 
 EXTRA_DIST=	$(PIXMAPS) \
-		$(GLADE_FILES)
+		$(GLADE_FILES) \
+		linphone.iss \
+		linphone.dev
 
 if BUILD_GLADE_UI
 

@@ -10,14 +10,15 @@ ORTP_DIR = oRTP
 endif
 
 SUBDIRS = m4 pixmaps po ipkg $(ORTP_DIR) mediastreamer2\
-		media_api coreapi console gtk-glade share
+		coreapi console gtk-glade share
 
 
-EXTRA_DIST = config.rpath   linphone2.glade BUGS linphone.kdevprj \
+EXTRA_DIST = config.rpath  BUGS linphone.kdevprj \
 				intltool-extract.in	\
 				intltool-merge.in	\
 				intltool-update.in \
 				README.arm \
+				README.win32 \
 				autogen.sh \
 				linphone.spec.in linphone.spec
 ACLOCAL_FLAGS=-I$(top_srcdir)/m4

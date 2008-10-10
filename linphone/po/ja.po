@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone 0.10\n"
 "Report-Msgid-Bugs-To: linphone-developers@nongnu.org\n"
-"POT-Creation-Date: 2008-10-02 21:20+0200\n"
+"POT-Creation-Date: 2008-10-10 14:55+0200\n"
 "PO-Revision-Date: 2003-01-21 00:05+9000\n"
 "Last-Translator: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\n"
 "Language-Team: <ja@li.org>\n"
@@ -40,21 +40,21 @@ msgid ""
 "If you answer no, this person will be temporarily blacklisted."
 msgstr ""
 
-#: gtk-glade/main.c:505
+#: gtk-glade/main.c:507
 #, c-format
 msgid "Please enter your password for domain %s:"
 msgstr ""
 
-#: gtk-glade/main.c:579
+#: gtk-glade/main.c:582
 msgid "Linphone - a video internet phone"
 msgstr ""
 
-#: gtk-glade/main.c:596
+#: gtk-glade/main.c:599
 #, c-format
 msgid "%s (Default)"
 msgstr ""
 
-#: gtk-glade/main.c:711
+#: gtk-glade/main.c:714
 msgid "A free SIP video-phone"
 msgstr ""
 
@@ -304,12 +304,12 @@ msgstr ""
 msgid "Contact information"
 msgstr "コーデックの情報"
 
-#: gtk-glade/contact.glade:149 gtk-glade/password.glade:71
+#: gtk-glade/contact.glade:149 gtk-glade/password.glade:110
 #: gtk-glade/sip_account.glade:202
 msgid "gtk-cancel"
 msgstr ""
 
-#: gtk-glade/contact.glade:161 gtk-glade/password.glade:59
+#: gtk-glade/contact.glade:161 gtk-glade/password.glade:98
 #: gtk-glade/sip_account.glade:190
 msgid "gtk-ok"
 msgstr ""
@@ -319,7 +319,7 @@ msgid "Linphone debug window"
 msgstr ""
 
 #: gtk-glade/log.glade:54 gtk-glade/call_logs.glade:49
-#: gtk-glade/chatroom.glade:82 gtk-glade/parameters.glade:1379
+#: gtk-glade/chatroom.glade:82 gtk-glade/parameters.glade:1412
 msgid "gtk-close"
 msgstr ""
 
@@ -330,6 +330,16 @@ msgstr ""
 #: gtk-glade/password.glade:27
 msgid "Please enter your password for domain..."
 msgstr ""
+
+#: gtk-glade/password.glade:49
+#, fuzzy
+msgid "Username"
+msgstr "ユーザーマニュアル"
+
+#: gtk-glade/password.glade:55
+#, fuzzy
+msgid "Password:"
+msgstr "パスワード"
 
 #: gtk-glade/sip_account.glade:8
 msgid "Linphone - Configure a SIP account"
@@ -405,16 +415,16 @@ msgstr ""
 msgid "<b>IPv6 usage</b>"
 msgstr ""
 
-#: gtk-glade/parameters.glade:120
-msgid "Video RTP/UDP"
+#: gtk-glade/parameters.glade:77
+msgid "SIP (UDP)"
 msgstr ""
 
-#: gtk-glade/parameters.glade:131
+#: gtk-glade/parameters.glade:84
 msgid "Audio RTP/UDP"
 msgstr ""
 
-#: gtk-glade/parameters.glade:142
-msgid "SIP (UDP)"
+#: gtk-glade/parameters.glade:95
+msgid "Video RTP/UDP"
 msgstr ""
 
 #: gtk-glade/parameters.glade:153
@@ -448,12 +458,12 @@ msgstr ""
 msgid "<b>Firewall settings</b>"
 msgstr ""
 
-#: gtk-glade/parameters.glade:327
-msgid "Set Maximum Transmission Unit"
+#: gtk-glade/parameters.glade:315
+msgid "Send DTMFs as SIP info"
 msgstr ""
 
-#: gtk-glade/parameters.glade:337
-msgid "Send DTMFs as SIP info"
+#: gtk-glade/parameters.glade:329
+msgid "Set Maximum Transmission Unit"
 msgstr ""
 
 #: gtk-glade/parameters.glade:354
@@ -465,48 +475,48 @@ msgstr ""
 msgid "Network settings"
 msgstr "ネットワーク"
 
-#: gtk-glade/parameters.glade:435
-msgid "gtk-media-play"
+#: gtk-glade/parameters.glade:422
+msgid "Enable echo cancelation"
 msgstr ""
 
-#: gtk-glade/parameters.glade:457
-#, fuzzy
-msgid "Ring sound"
-msgstr "録音する音源"
+#: gtk-glade/parameters.glade:438
+msgid "a sound card\n"
+msgstr ""
 
-#: gtk-glade/parameters.glade:483
-msgid "default soundcard\n"
+#: gtk-glade/parameters.glade:453
+#, fuzzy
+msgid "Playback device"
+msgstr "使用するサウンドデバイス"
+
+#: gtk-glade/parameters.glade:464
+#, fuzzy
+msgid "Ring device"
+msgstr "使用するサウンドデバイス"
+
+#: gtk-glade/parameters.glade:476
+#, fuzzy
+msgid "Capture device"
+msgstr "使用するサウンドデバイス"
+
+#: gtk-glade/parameters.glade:487
+msgid "ALSA special device (optional)"
 msgstr ""
 
 #: gtk-glade/parameters.glade:499
 msgid "default soundcard"
 msgstr ""
 
-#: gtk-glade/parameters.glade:513
-msgid "ALSA special device (optional)"
+#: gtk-glade/parameters.glade:514
+msgid "default soundcard\n"
 msgstr ""
 
-#: gtk-glade/parameters.glade:525
+#: gtk-glade/parameters.glade:544
 #, fuzzy
-msgid "Capture device"
-msgstr "使用するサウンドデバイス"
+msgid "Ring sound"
+msgstr "録音する音源"
 
-#: gtk-glade/parameters.glade:537
-#, fuzzy
-msgid "Ring device"
-msgstr "使用するサウンドデバイス"
-
-#: gtk-glade/parameters.glade:549
-#, fuzzy
-msgid "Playback device"
-msgstr "使用するサウンドデバイス"
-
-#: gtk-glade/parameters.glade:560
-msgid "a sound card\n"
-msgstr ""
-
-#: gtk-glade/parameters.glade:575
-msgid "Enable echo cancelation"
+#: gtk-glade/parameters.glade:569
+msgid "gtk-media-play"
 msgstr ""
 
 #: gtk-glade/parameters.glade:595
@@ -514,13 +524,13 @@ msgid "<b>Sound</b>"
 msgstr ""
 
 #: gtk-glade/parameters.glade:620
+msgid "default camera"
+msgstr ""
+
+#: gtk-glade/parameters.glade:632
 #, fuzzy
 msgid "Video input device"
 msgstr "使用するサウンドデバイス"
-
-#: gtk-glade/parameters.glade:629
-msgid "default camera"
-msgstr ""
 
 #: gtk-glade/parameters.glade:645
 msgid "<b>Video</b>"
@@ -534,18 +544,18 @@ msgstr ""
 msgid "This section defines your SIP address when not using a SIP account"
 msgstr ""
 
-#: gtk-glade/parameters.glade:716
-msgid "Your display name (eg: John Doe):"
-msgstr ""
-
-#: gtk-glade/parameters.glade:735
-msgid "Your username:"
-msgstr ""
-
-#: gtk-glade/parameters.glade:746
+#: gtk-glade/parameters.glade:744
 #, fuzzy
 msgid "Your resulting SIP address:"
 msgstr "あなたのSIPアドレス"
+
+#: gtk-glade/parameters.glade:755
+msgid "Your username:"
+msgstr ""
+
+#: gtk-glade/parameters.glade:778
+msgid "Your display name (eg: John Doe):"
+msgstr ""
 
 #: gtk-glade/parameters.glade:789
 msgid "<b>Default identity</b>"
@@ -563,68 +573,74 @@ msgstr ""
 msgid "Remove"
 msgstr "削除する"
 
-#: gtk-glade/parameters.glade:952
+#: gtk-glade/parameters.glade:956
+msgid ""
+"Register to FONICS\n"
+"virtual network !"
+msgstr ""
+
+#: gtk-glade/parameters.glade:985
 #, fuzzy
 msgid "<b>Proxy accounts</b>"
 msgstr "接続中"
 
-#: gtk-glade/parameters.glade:1001
+#: gtk-glade/parameters.glade:1034
 msgid "Erase all passwords"
 msgstr ""
 
-#: gtk-glade/parameters.glade:1019
+#: gtk-glade/parameters.glade:1052
 msgid "<b>Privacy</b>"
 msgstr ""
 
-#: gtk-glade/parameters.glade:1051
+#: gtk-glade/parameters.glade:1084
 msgid "Manage SIP Accounts"
 msgstr ""
 
-#: gtk-glade/parameters.glade:1087
+#: gtk-glade/parameters.glade:1120
 #, fuzzy
 msgid ""
 "Audio codecs\n"
 "Video codecs"
 msgstr "オーディオコーデックのプロパティー"
 
-#: gtk-glade/parameters.glade:1128
+#: gtk-glade/parameters.glade:1161
 msgid "gtk-go-up"
 msgstr ""
 
-#: gtk-glade/parameters.glade:1140
+#: gtk-glade/parameters.glade:1173
 msgid "gtk-go-down"
 msgstr ""
 
-#: gtk-glade/parameters.glade:1172
+#: gtk-glade/parameters.glade:1205
 msgid "Enable"
 msgstr "使用する"
 
-#: gtk-glade/parameters.glade:1208
+#: gtk-glade/parameters.glade:1241
 msgid "Disable"
 msgstr "使用しない"
 
-#: gtk-glade/parameters.glade:1240
+#: gtk-glade/parameters.glade:1273
 #, fuzzy
 msgid "<b>Codecs</b>"
 msgstr "接続中"
 
-#: gtk-glade/parameters.glade:1270 gtk-glade/parameters.glade:1286
-msgid "0 stands for \"unlimited\""
-msgstr ""
-
-#: gtk-glade/parameters.glade:1299
-msgid "Upload limit in kbits/sec"
-msgstr ""
-
-#: gtk-glade/parameters.glade:1310
+#: gtk-glade/parameters.glade:1302
 msgid "Download limit in kbits/sec"
 msgstr ""
 
-#: gtk-glade/parameters.glade:1321
+#: gtk-glade/parameters.glade:1309
+msgid "Upload limit in kbits/sec"
+msgstr ""
+
+#: gtk-glade/parameters.glade:1321 gtk-glade/parameters.glade:1335
+msgid "0 stands for \"unlimited\""
+msgstr ""
+
+#: gtk-glade/parameters.glade:1354
 msgid "<b>Bandwidth usage</b>"
 msgstr ""
 
-#: gtk-glade/parameters.glade:1353
+#: gtk-glade/parameters.glade:1386
 #, fuzzy
 msgid "Codecs"
 msgstr "コーデック"
@@ -747,7 +763,7 @@ msgstr ""
 "mixer ossエミュレーションモジュールが見つかりません。\n"
 "ロードするために、ルート権限で'modprobe snd-mixer-oss'を実行してください。"
 
-#: coreapi/misc.c:567
+#: coreapi/misc.c:589
 msgid "Stun lookup in progress..."
 msgstr ""
 
@@ -1074,10 +1090,6 @@ msgstr ""
 #~ msgstr "名前"
 
 #, fuzzy
-#~ msgid "password:"
-#~ msgstr "パスワード"
-
-#, fuzzy
 #~ msgid "None"
 #~ msgstr "ありません。"
 
@@ -1086,9 +1098,6 @@ msgstr ""
 #~ msgstr ""
 #~ "SIPアドレスの形式エラーです。SIPアドレスは、<sip:username@domainname>のよ"
 #~ "うな形式です。"
-
-#~ msgid "User manual"
-#~ msgstr "ユーザーマニュアル"
 
 #~ msgid "Communication ended."
 #~ msgstr "会話は終了しました。"

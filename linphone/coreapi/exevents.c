@@ -901,6 +901,7 @@ void linphone_registration_success(LinphoneCore *lc,eXosip_event_t *ev){
 	cfg->auth_pending=FALSE;
 	cfg->registered=TRUE;
 	gstate_new_state(lc, GSTATE_REG_OK, NULL);
+	linphone_proxy_config_register_again_with_updated_contact(cfg,ev->request,ev->response);
 }
 
 static bool_t comes_from_local_if(osip_message_t *msg){
@@ -1030,8 +1031,8 @@ void linphone_core_process_event(LinphoneCore *lc,eXosip_event_t *ev)
 			linphone_registration_faillure(lc,ev);
 			break;
 		case EXOSIP_REGISTRATION_SUCCESS:
-			linphone_registration_success(lc,ev);
 			linphone_authentication_ok(lc,ev);
+			linphone_registration_success(lc,ev);
 			break;
 		case EXOSIP_MESSAGE_NEW:
 			linphone_other_request(lc,ev);

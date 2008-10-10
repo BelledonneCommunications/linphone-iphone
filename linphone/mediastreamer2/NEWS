@@ -1,3 +1,7 @@
+mediastreamer-2.2.2: 6, october 2008
+	* new winsnd3.c file for support of soundcard under windows (seems to work a bit better)
+	* bugfixes
+
 mediastreamer-2.2.1: 25, january 2008
 	* video output resizing
 	* 4CIF and VGA support

@@ -51,7 +51,7 @@ With wxDev-C++, open the following .dev files included in linphone's source tree
 and for each of them click on the "rebuild all" wxDev-C++ menu item:
 oRTP/build/win32native/ortp-dll.dev
 mediastreamer2/build/win32native/mediastreamer2.dev
-win32/liblinphone.dev
+coreapi/liblinphone.dev
 gtk-glade/linphone.dev
 
 Now you just need to make a binary package with Inno Setup Compiler.

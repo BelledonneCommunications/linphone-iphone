@@ -54,6 +54,14 @@ void linphone_auth_info_set_passwd(LinphoneAuthInfo *info, const char *passwd){
 	if (passwd!=NULL && (strlen(passwd)>0)) info->passwd=ms_strdup(passwd);
 }
 
+void linphone_auth_info_set_username(LinphoneAuthInfo *info, const char *username){
+	if (info->username){
+		ms_free(info->username);
+		info->username=NULL;
+	}
+	if (username && strlen(username)>0) info->username=ms_strdup(username);
+}
+
 void linphone_auth_info_destroy(LinphoneAuthInfo *obj){
 	if (obj->username!=NULL) ms_free(obj->username);
 	if (obj->userid!=NULL) ms_free(obj->userid);
@@ -122,6 +130,14 @@ static int auth_info_compare(const void *pinfo,const void *pref){
 	return -1;
 }
 
+static int auth_info_compare_only_realm(const void *pinfo,const void *pref){
+	LinphoneAuthInfo *info=(LinphoneAuthInfo*)pinfo;
+	LinphoneAuthInfo *ref=(LinphoneAuthInfo*)pref;
+	if (key_match(info->realm,ref->realm) ) return 0;
+	return -1;
+}
+
+
 LinphoneAuthInfo *linphone_core_auth_info_find(LinphoneCore *lc, const char *realm, const char *username)
 {
 	LinphoneAuthInfo ref;
@@ -129,7 +145,10 @@ LinphoneAuthInfo *linphone_core_auth_info_find(LinphoneCore *lc, const char *rea
 	ref.realm=(char*)realm;
 	ref.username=(char*)username;
 	elem=ms_list_find_custom(lc->auth_info,auth_info_compare,(void*)&ref);
-	if (elem==NULL) return NULL;
+	if (elem==NULL) {
+		elem=ms_list_find_custom(lc->auth_info,auth_info_compare_only_realm,(void*)&ref);
+		if (elem==NULL) return NULL;
+	}
 	return (LinphoneAuthInfo*)elem->data;
 }
 

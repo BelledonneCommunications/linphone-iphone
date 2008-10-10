@@ -323,6 +323,7 @@ typedef struct _LinphoneAuthInfo
 LinphoneAuthInfo *linphone_auth_info_new(const char *username, const char *userid,
 		const char *passwd, const char *ha1,const char *realm);
 void linphone_auth_info_set_passwd(LinphoneAuthInfo *info, const char *passwd);
+void linphone_auth_info_set_username(LinphoneAuthInfo *info, const char *username);
 /* you don't need those function*/
 void linphone_auth_info_destroy(LinphoneAuthInfo *info);
 LinphoneAuthInfo * linphone_auth_info_new_from_config_file(struct _LpConfig *config, int pos);

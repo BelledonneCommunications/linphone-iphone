@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([linphone],[2.99.5],[linphone-developers@nongnu.org])
+AC_INIT([linphone],[3.0.0],[linphone-developers@nongnu.org])
 
 dnl Source packaging numbers
 
@@ -67,18 +67,12 @@ AC_ARG_ENABLE(gtk_ui,
 
 
 if test "$gtk_ui" = "true" ; then
-	PKG_CHECK_MODULES(LIBGTK, gtk+-2.0 >= 2.4.0 gthread-2.0, ,gtk_ui=false)
-	PKG_CHECK_MODULES(LIBGLADE, libglade-2.0 >= 2.4.0 , glade_ui=true, glade_ui=false)
+	PKG_CHECK_MODULES(LIBGTK, gtk+-2.0 >= 2.4.0 gthread-2.0)
+	PKG_CHECK_MODULES(LIBGLADE, libglade-2.0 >= 2.4.0)
 	AC_SUBST(LIBGTK_CFLAGS)
 	AC_SUBST(LIBGTK_LIBS)
 	AC_SUBST(LIBGLADE_CFLAGS)
 	AC_SUBST(LIBGLADE_LIBS)
-	
-	if test "$gtk_ui$glade_ui" = "truetrue" ; then
-		AC_DEFINE(HAVE_GTK,1,[Defined if we can use the gtk api])
-	else
-		missing_gtk_libs=true
-	fi
 else
 	echo "GTK interface compilation is disabled."
 fi
@@ -237,16 +231,12 @@ AC_ARG_ENABLE(portaudio,
         *) AC_MSG_ERROR(bad value ${enableval} for --enable-portaudio) ;;
       esac],[portaudio=false])
 
-dnl same thing for media_api
-AM_CONDITIONAL(BUILD_MEDIA_API, test x$media_api = xtrue)
-
-
 dnl build console if required
 AM_CONDITIONAL(BUILD_CONSOLE, test x$console_ui = xtrue)
 dnl special things for arm-linux cross compilation toolchain
 AM_CONDITIONAL(ARMBUILD, test x$use_arm_toolchain = xyes)
 dnl compilation of gtk-glade user interface
-AM_CONDITIONAL(BUILD_GLADE_UI, [test x$glade_ui = xtrue ] )
+AM_CONDITIONAL(BUILD_GLADE_UI, [test x$gtk_ui = xtrue ] )
 
 ##################################################
 # Stricter build options (after external packages)
@@ -323,7 +313,6 @@ po/Makefile.in
 pixmaps/Makefile
 ipkg/Makefile
 ipkg/linphone.control
-media_api/Makefile
 coreapi/Makefile
 gtk-glade/Makefile
 console/Makefile
@@ -340,16 +329,10 @@ linphone.spec
 echo "Linphone build configuration ended."
 
 if test x$gtk_ui = xtrue ; then
-echo "* GTK interface will be compiled."
+	echo "* GTK interface will be compiled."
 fi
-if test x$gtk_ui = xtrue ; then
-echo "* Console interface will be compiled."
-fi
-if test x$glade_ui = xtrue ; then
-	echo "* Gtk-glade still in early development interface will be compiled"
-fi
-if test "$have_db2html" = "no" ; then
-	echo "* db2html not found; user documentation will not be generated."
+if test x$console_ui = xtrue ; then
+	echo "* Console interface will be compiled."
 fi
 
 echo "Now type 'make' to compile, and then 'make install' as root to install it."

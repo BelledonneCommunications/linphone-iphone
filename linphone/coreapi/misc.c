@@ -279,6 +279,20 @@ static PayloadType * find_payload(RtpProfile *prof, PayloadType *pt /*from confi
 	return candidate;
 }
 
+static bool_t check_h264_packmode(PayloadType *payload, MSFilterDesc *desc){
+	if (payload->recv_fmtp==NULL || strstr(payload->recv_fmtp,"packetization-mode")==0){
+		/*this is packetization-mode=0 H264, we only support it with a multislicing
+		enabled version of x264*/
+		if (strstr(desc->text,"x264") && strstr(desc->text,"multislicing")==0){
+			/*this is x264 without multisclicing*/
+			ms_message("Disabling packetization-mode=0 H264 codec because "
+			"of lack of multislicing support");
+			return FALSE;
+		}
+	}
+	return TRUE;
+}
+
 static MSList *fix_codec_list(RtpProfile *prof, MSList *conflist)
 {
 	MSList *elem;
@@ -292,6 +306,11 @@ static MSList *fix_codec_list(RtpProfile *prof, MSList *conflist)
 		if (payload!=NULL){
 			if (ms_filter_codec_supported(confpayload->mime_type)){
 				MSFilterDesc *desc=ms_filter_get_encoder(confpayload->mime_type);
+				if (strcasecmp(confpayload->mime_type,"H264")==0){
+					if (!check_h264_packmode(confpayload,desc)){
+						continue;
+					}
+				}
 				payload_type_set_user_data(payload,(void*)desc->text);
 				payload_type_set_enable(payload,payload_type_enabled(confpayload));
 				newlist=ms_list_append(newlist,payload);
@@ -336,10 +355,13 @@ void linphone_core_setup_local_rtp_profile(LinphoneCore *lc)
 				/* by default, put speex, mpeg4, or h264 on top of list*/
 				if (strcmp(payload->mime_type,"speex")==0)
 					prepend=TRUE;
-				if (strcmp(payload->mime_type,"MP4V-ES")==0)
+				else if (strcmp(payload->mime_type,"MP4V-ES")==0)
 					prepend=TRUE;
-				if (strcmp(payload->mime_type,"H264")==0)
-					prepend=TRUE;
+				else if (strcasecmp(payload->mime_type,"H264")==0){
+					if (check_h264_packmode(payload,desc))
+						prepend=TRUE;
+					else continue;
+				}
 				switch (payload->type){
 					case PAYLOAD_AUDIO_CONTINUOUS:
 					case PAYLOAD_AUDIO_PACKETIZED:

@@ -248,7 +248,11 @@ static MSFilterMethod enc_methods[]={
 static MSFilterDesc x264_enc_desc={
 	.id=MS_FILTER_PLUGIN_ID,
 	.name="MSX264Enc",
+#ifdef HACKED_X264
+	.text="A H264 encoder based on x264 project (with multislicing enabled)",
+#else
 	.text="A H264 encoder based on x264 project.",
+#endif
 	.category=MS_FILTER_ENCODER,
 	.enc_fmt="H264",
 	.ninputs=1,

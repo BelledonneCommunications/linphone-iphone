@@ -1,3 +1,12 @@
+linphone-3.0.0  -- October 13, 2008
+	* new graphical interface based on Glade/Gtk
+	* systray icon
+	* STUN working for RTP
+	* fully ported to windows
+	* accurate bandwidth management (to let video occupy all remaning bandwidth)
+	* new H264 plugin based on x264 (msx264)
+	* automatic call hangup upon media transmission faillure
+
 linphone-2.1.1 -- February 13, 2008
 	* fix interroperability bug with Asterisk about a BYE not sent by linphone.
 	* fix alsa support weakness (capture underruns not recovered)

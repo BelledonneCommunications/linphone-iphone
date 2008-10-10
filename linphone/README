@@ -1,4 +1,7 @@
-******************Building linphone ***********************************
+This is Linphone, a free (GPL) video softphone based on the SIP protocol.
+
+
+******************Building linphone on linux ***********************************
 - you need at least:
 		- libosip2>=3.0.3
 		- libeXosip2>=3.0.3
