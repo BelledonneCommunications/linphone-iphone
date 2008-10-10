@@ -71,7 +71,7 @@ int p2pproxy_application_start(int argc, char **argv) {
 	applicationArgsList = (*p2pproxy_application_jnienv)->NewObjectArray(p2pproxy_application_jnienv, argc, (*p2pproxy_application_jnienv)->FindClass(p2pproxy_application_jnienv, "java/lang/String"), NULL);
 	
 	for (i=0;i<argc;i++) {
-		applicationArg = (*p2pproxy_application_jnienv)->NewStringUTF(p2pproxy_application_jnienv, *argv++);
+		applicationArg = (*p2pproxy_application_jnienv)->NewStringUTF(p2pproxy_application_jnienv, argv[i]);
 		(*p2pproxy_application_jnienv)->SetObjectArrayElement(p2pproxy_application_jnienv, applicationArgsList, 0, applicationArg);
 
 	}
