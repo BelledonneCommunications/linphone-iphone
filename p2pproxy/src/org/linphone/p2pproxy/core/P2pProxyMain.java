@@ -38,6 +38,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.linphone.p2pproxy.api.P2pProxyException;
 import org.linphone.p2pproxy.api.P2pProxyManagement;
+import org.linphone.p2pproxy.api.P2pProxyNotReadyException;
 import org.linphone.p2pproxy.api.P2pProxyUserAlreadyExistException;
 import org.linphone.p2pproxy.core.media.rtprelay.RtpRelayService;
 import org.linphone.p2pproxy.core.sipproxy.SipProxyRegistrar;
@@ -369,10 +370,20 @@ public  static void staticLoadTraceConfigFile()  throws P2pProxyException {
    }
 }
 
+private static void isReady() throws P2pProxyNotReadyException {
+    try {
+      if (mJxtaNetworkManager!=null && mJxtaNetworkManager.isConnectedToRendezVous(0) == false) {
+         throw new P2pProxyNotReadyException("not connected to any rdv");
+      }
+   } catch (InterruptedException e) {
+      throw new P2pProxyNotReadyException(e);
+   }
+}
 /* p2pproxy.h implementation*/
 
 public static int createAccount(String aUserName) {
    try {
+      isReady();
       mP2pProxyAccountManagement.createAccount(aUserName);
    } catch (P2pProxyUserAlreadyExistException e) {
       return P2pProxylauncherConstants.P2PPROXY_ACCOUNTMGT_USER_EXIST;
@@ -383,6 +394,7 @@ public static int createAccount(String aUserName) {
 }
 public static int deleteAccount(String aUserName)  {
    try {
+      isReady();
       mP2pProxyAccountManagement.deleteAccount(aUserName);
    } catch (P2pProxyException e) {
       return P2pProxylauncherConstants.P2PPROXY_ERROR;
@@ -392,6 +404,7 @@ public static int deleteAccount(String aUserName)  {
 }
 public static int isValidAccount(String aUserName){
    try {
+      isReady();
       if (mP2pProxyAccountManagement.isValidAccount(aUserName)) {
          return P2pProxylauncherConstants.P2PPROXY_ACCOUNTMGT_USER_EXIST;
       } else {
@@ -400,5 +413,13 @@ public static int isValidAccount(String aUserName){
    } catch (P2pProxyException e) {
       return P2pProxylauncherConstants.P2PPROXY_ERROR;
    }
+}
+public static String getSipProxyRegistrarUri() {
+   try {
+      isReady();
+      return mP2pProxyManagement.getSipProxyRegistrarUri();
+   } catch (P2pProxyException e) {
+      return null;
+   }   
 }
 }

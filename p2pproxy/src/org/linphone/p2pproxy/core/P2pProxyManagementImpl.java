@@ -19,9 +19,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package org.linphone.p2pproxy.core;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
+import java.net.URI;
 import java.net.UnknownHostException;
 import java.util.Map;
 
@@ -31,6 +33,7 @@ import org.linphone.p2pproxy.api.P2pProxyManagement;
 import org.linphone.p2pproxy.core.media.rtprelay.MediaType;
 import org.linphone.p2pproxy.core.media.rtprelay.RtpRelayServiceClient;
 import org.linphone.p2pproxy.core.rdvautoconfig.PeerInfoServiceClient;
+import org.linphone.p2pproxy.core.sipproxy.SipProxyRegistrarAdvertisement;
 
 public abstract class P2pProxyManagementImpl implements ServiceProvider,P2pProxyManagement {
    protected final JxtaNetworkManager mJxtaNetworkManager;
@@ -74,6 +77,14 @@ public abstract class P2pProxyManagementImpl implements ServiceProvider,P2pProxy
    public Map<MediaType, InetSocketAddress> getAddresses() throws P2pProxyException {
       return  mRtpRelayServiceClient.getAddresses();
    }
+   public String getSipProxyRegistrarUri() throws P2pProxyException  {
+      try {
+         SipProxyRegistrarAdvertisement lSipProxyRegistrarAdvertisement = (SipProxyRegistrarAdvertisement) (mJxtaNetworkManager.getAdvertisement(null, SipProxyRegistrarAdvertisement.NAME, true));
+         return lSipProxyRegistrarAdvertisement.getAddress();
+      }catch (Exception e) {
+            throw new P2pProxyException(e);
+         }
 
+      }
 
 }

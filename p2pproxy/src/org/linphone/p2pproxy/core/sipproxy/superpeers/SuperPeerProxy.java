@@ -109,4 +109,7 @@ public class SuperPeerProxy implements SipProxy, RegistrationHandler {
 
       ((JxtaNetworkResources) aRegistration.NetResources).publish(aRegistration.Expiration);
    }
+   public String getSipProxyRegistrarAddress() {
+      return mRegistrarAddress;
+   }
 }

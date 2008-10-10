@@ -111,7 +111,22 @@ int p2pproxy_accountmgt_deleteAccount(const char* user_name) {
 	return (*p2pproxy_application_jnienv)->CallStaticIntMethod(p2pproxy_application_jnienv, p2pproxy_proxy_main_class, deleteAccountMethod, applicationArg);
 }
 
-
+int p2pproxy_resourcelocation_get_sip_proxyregistrar_uri(char* aStringArray, size_t aSize) {
+	jmethodID getSipProxyRegistrarUriMethod;
+	jstring lJStringResult; 
+	const jbyte* lString;
+	jboolean  lIsCopy;
+	
+	getSipProxyRegistrarUriMethod = (*p2pproxy_application_jnienv)->GetStaticMethodID(p2pproxy_application_jnienv, p2pproxy_proxy_main_class, "getSipProxyRegistrarUriMethod", "()[java/lang/String;");
+	jstring lJStringResult = (*p2pproxy_application_jnienv)->CallStaticObjectMethod(p2pproxy_application_jnienv, p2pproxy_proxy_main_class, getSipProxyRegistrarUriMethod);
+	if (lJStringResult == 0) {
+		return P2PPROXY_ERROR_RESOURCELOCATOR_SERVER_NOT_FOUND;
+	}
+	lString =  GetStringUTFChars(p2pproxy_application_jnienv, lJStringResult, &lIsCopy);
+	strcpy(aStringArray,lString,aSize);
+	ReleaseStringUTFChars(p2pproxy_application_jnienv, lJStringResult, lString);
+	return P2PPROXY_NO_ERROR;
+}
 
 
 

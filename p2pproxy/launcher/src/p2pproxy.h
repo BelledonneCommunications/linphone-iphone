@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef P2PPROXY_LAUNCHER_H_
 #define P2PPROXY_LAUNCHER_H_
 
+#include <stdio.h>
 #ifdef SWIG
 %module P2pProxylauncher
 %javaconst(1);
@@ -38,6 +39,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define P2PPROXY_ERROR_APPLICATION_ALREADY_STARTED  -3
 #define P2PPROXY_ERROR_ACCOUNTMGT_USER_ALREADY_EXIST  -4
 #define P2PPROXY_ERROR_ACCOUNTMGT_BAD_SIP_URI  -5
+#define P2PPROXY_ERROR_RESOURCELOCATOR_SERVER_NOT_FOUND  -6
 
 #ifndef SWIG
 /**
@@ -79,6 +81,17 @@ int p2pproxy_accountmgt_isValidAccount(const char* user_name);
 * @return P2PPROXY_NO_ERROR, P2PPROXY_ERROR_APPLICATIONNOTSTARTED
 */
 int p2pproxy_accountmgt_deleteAccount(const char* user_name);
+
+/***************************/
+/***resource location******/
+/***************************/
+/**
+* access a proxy registrar sip addreess 
+* @param buffer allocated by the user
+* @param size buffer size
+* @return status code P2PPROXY_NO_ERROR, P2PPROXY_ERROR_RESOURCELOCATOR_SERVER_NOT_FOUND
+*/
+int p2pproxy_resourcelocation_get_sip_proxyregistrar_uri(char* string_buffer,size_t size) ;
 
 #endif /*SWIG*/
 

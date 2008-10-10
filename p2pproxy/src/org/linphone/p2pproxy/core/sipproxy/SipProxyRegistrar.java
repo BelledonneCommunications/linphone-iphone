@@ -32,8 +32,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import net.jxta.document.Advertisement;
+import net.jxta.document.AdvertisementFactory;
 import net.jxta.endpoint.MessageElement;
 import net.jxta.endpoint.StringMessageElement;
+import net.jxta.id.IDFactory;
 import net.jxta.pipe.OutputPipe;
 import net.jxta.pipe.PipeMsgEvent;
 import net.jxta.pipe.PipeMsgListener;
@@ -51,6 +53,7 @@ import org.linphone.p2pproxy.core.P2pProxyAccountManagementMBean;
 import org.linphone.p2pproxy.core.P2pProxyAdvertisementNotFoundException;
 import org.linphone.p2pproxy.core.media.rtprelay.MediaType;
 import org.linphone.p2pproxy.core.media.rtprelay.SdpProcessorImpl;
+import org.linphone.p2pproxy.core.sipproxy.superpeers.P2pUserRegistrationAdvertisement;
 import org.linphone.p2pproxy.core.sipproxy.superpeers.SuperPeerProxy;
 import org.zoolu.sip.address.NameAddress;
 import org.zoolu.sip.address.SipURL;
@@ -86,6 +89,7 @@ public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarM
    private final P2pProxyAccountManagementMBean mP2pProxyAccountManagement;
    private final Configurator mProperties;
    private final SuperPeerProxy mSuperPeerProxy;
+   private final SipProxyRegistrarAdvertisement mProxyRegistrationAdvertisement;
   
    //private long mNumberOfEstablishedCall;
    private long mNumberOfRefusedRegistration;
@@ -176,7 +180,7 @@ public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarM
       
    }
    
-   public SipProxyRegistrar(Configurator lProperties,JxtaNetworkManager aJxtaNetworkManager,P2pProxyAccountManagementMBean aP2pProxyAccountManagement,P2pProxyRtpRelayManagement aP2pProxyRtpRelayManagement) {
+   public SipProxyRegistrar(Configurator lProperties,JxtaNetworkManager aJxtaNetworkManager,P2pProxyAccountManagementMBean aP2pProxyAccountManagement,P2pProxyRtpRelayManagement aP2pProxyRtpRelayManagement) throws IOException {
       mJxtaNetworkManager =  aJxtaNetworkManager;
       mP2pProxyAccountManagement = aP2pProxyAccountManagement;
       mProperties = lProperties;
@@ -189,7 +193,11 @@ public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarM
       mProvider.addSipProviderListener(SipProvider.PROMISQUE,this);
       mPool = Executors.newCachedThreadPool();
       mSuperPeerProxy = new SuperPeerProxy(aJxtaNetworkManager, "sip:"+mProvider.getViaAddress()+":"+mProvider.getPort(),mRegistrationTab);
-      
+      mProxyRegistrationAdvertisement = (SipProxyRegistrarAdvertisement) AdvertisementFactory.newAdvertisement(SipProxyRegistrarAdvertisement.getAdvertisementType());
+      mProxyRegistrationAdvertisement.setID(IDFactory.newCodatID(mJxtaNetworkManager.getPeerGroup().getPeerGroupID(), mSuperPeerProxy.getSipProxyRegistrarAddress().toString().getBytes()));
+      mProxyRegistrationAdvertisement.setAddress(mSuperPeerProxy.getSipProxyRegistrarAddress());
+      mJxtaNetworkManager.getPeerGroup().getDiscoveryService().publish(mProxyRegistrationAdvertisement,60000,30000);
+      mLog.info(mProxyRegistrationAdvertisement + "published");
    }
    public  void onReceivedMessage(SipProvider aProvider, Message aMessage) {
       if (aProvider.getListeners().containsKey(aMessage.getTransactionId())) {

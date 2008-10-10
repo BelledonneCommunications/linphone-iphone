@@ -19,10 +19,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package org.linphone.p2pproxy.test;
 
+import java.util.Enumeration;
+import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 
+
+import net.jxta.discovery.DiscoveryEvent;
+import net.jxta.discovery.DiscoveryListener;
+import net.jxta.discovery.DiscoveryService;
+import net.jxta.document.Advertisement;
+import net.jxta.protocol.DiscoveryResponseMsg;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -33,6 +41,7 @@ import org.linphone.p2pproxy.core.P2pProxyAccountManagement;
 import org.linphone.p2pproxy.core.P2pProxyAccountManagementMBean;
 import org.linphone.p2pproxy.core.P2pProxyInstanceImpl;
 import org.linphone.p2pproxy.core.P2pProxyMain;
+import org.linphone.p2pproxy.core.sipproxy.SipProxyRegistrarAdvertisement;
 import org.linphone.p2pproxy.test.utils.DefaultCallListener;
 import org.linphone.p2pproxy.test.utils.SipClient;
 import org.zoolu.sip.address.NameAddress;
@@ -97,6 +106,16 @@ public class P2pProxyTester extends TestCase {
 	protected void tearDown() throws Exception {
 	}
 
+	public void testGetRegistrarAdress() {
+	   try {
+	      SipProxyRegistrarAdvertisement lSipProxyRegistrarAdvertisement = (SipProxyRegistrarAdvertisement) (((JxtaNetworkManager)mP2pProxyInstance.getOpaqueNetworkManager()).getAdvertisement(null, SipProxyRegistrarAdvertisement.NAME, true));
+	      mLog.info("testGetRegistrarAdress ok ["+lSipProxyRegistrarAdvertisement.getAddress()+"]");
+	   } catch (Exception e) {
+	      mLog.error("testGetRegistrarAdress ko",e);
+	      Assert.fail(e.getMessage());
+	   }
+
+	}
 	public void testSipRegisterUnregister() {
 		try {
 		 	//register

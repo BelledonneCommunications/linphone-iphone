@@ -2,7 +2,7 @@
 p2pproxy
 Copyright (C) 2007  Jehan Monnier ()
 
-P2pProxyManagement.java - .
+P2pProxyUserNotFoundException.java - .
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,13 +21,35 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 package org.linphone.p2pproxy.api;
 
 
-public interface P2pProxyManagement extends P2pProxyNetworkProbe,P2pProxyRtpRelayManagement,P2pProxySipProxyRegistrarManagement {
+@SuppressWarnings("serial")
+public class P2pProxyNotReadyException extends P2pProxyException {
 
    /**
-    * test if according both to local peer capabilities and supeer peer election polity this peer should become a super peer
     * 
-    * @return
-    */  
-   public boolean shouldIBehaveAsAnRdv() throws P2pProxyException;
+    */
+   public P2pProxyNotReadyException() {
+      super();
+   }
 
+   /**
+    * @param arg0
+    * @param arg1
+    */
+   public P2pProxyNotReadyException(String arg0, Throwable arg1) {
+      super(arg0, arg1);
+   }
+
+   /**
+    * @param arg0
+    */
+   public P2pProxyNotReadyException(String arg0) {
+      super(arg0);
+   }
+
+   /**
+    * @param arg0
+    */
+   public P2pProxyNotReadyException(Throwable arg0) {
+      super(arg0);
+   }
 }
