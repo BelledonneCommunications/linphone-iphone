@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package org.linphone.p2pproxy.core;
 
+import java.io.IOException;
 import java.net.Socket;
 import java.net.URI;
 import java.util.concurrent.ExecutorService;
@@ -56,6 +57,7 @@ public class GenericService implements Runnable,ServiceProvider {
    private Thread mSocketServerThread ;
    private final ExecutorService mPool;
    private final ServiceSocketHandlerFactory mServiceSocketHandlerFactory;
+   private boolean mExist = false;
   
    public GenericService(Configurator lProperties,JxtaNetworkManager aJxtaNetworkManager,String aServiceName,ServiceSocketHandlerFactory aServiceSocketHandlerFactory) {
        mJxtaNetworkManager = aJxtaNetworkManager; 
@@ -122,10 +124,15 @@ public class GenericService implements Runnable,ServiceProvider {
       }        
    }
    public void stop(){
-      throw new RuntimeException("Not implemented");
+	   try {
+		mJxtaServerSocket.close();
+	} catch (IOException e) {
+		//nop
+	}
+	   mExist = true;
    }
    public void run() {
-      while (true) {
+      while (mExist) {
          try {
             mLog.info("Waiting for connection on service ["+ADV_NAME+"]");
              Socket lSocket = mJxtaServerSocket.accept();

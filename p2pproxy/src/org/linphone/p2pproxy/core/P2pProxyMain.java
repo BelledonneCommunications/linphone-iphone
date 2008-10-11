@@ -42,6 +42,7 @@ import org.linphone.p2pproxy.api.P2pProxyNotReadyException;
 import org.linphone.p2pproxy.api.P2pProxyUserAlreadyExistException;
 import org.linphone.p2pproxy.core.media.rtprelay.RtpRelayService;
 import org.linphone.p2pproxy.core.sipproxy.SipProxyRegistrar;
+import org.linphone.p2pproxy.core.sipproxy.SipProxyRegistrarAdvertisement;
 import org.zoolu.sip.provider.SipStack;
 import org.linphone.p2pproxy.launcher.P2pProxylauncherConstants;
 
@@ -379,8 +380,13 @@ public  static void staticLoadTraceConfigFile()  throws P2pProxyException {
 
 private static void isReady() throws P2pProxyNotReadyException {
     try {
-      if (mJxtaNetworkManager!=null && mJxtaNetworkManager.isConnectedToRendezVous(0) == false) {
-         throw new P2pProxyNotReadyException("not connected to any rdv");
+      if ((mJxtaNetworkManager!=null && mJxtaNetworkManager.isConnectedToRendezVous(0) == true) 
+    	  || 
+    	  (mJxtaNetworkManager!=null && mJxtaNetworkManager.getPeerGroup().getRendezVousService().isRendezVous()))
+      {
+         //nop connected
+      } else {
+    	  throw new P2pProxyNotReadyException("not connected to any rdv");
       }
    } catch (InterruptedException e) {
       throw new P2pProxyNotReadyException(e);
@@ -424,10 +430,11 @@ public static int isValidAccount(String aUserName){
 public static String getSipProxyRegistrarUri() {
    try {
       isReady();
-      return mP2pProxyManagement.getSipProxyRegistrarUri();
-   } catch (P2pProxyException e) {
+      SipProxyRegistrarAdvertisement lSipProxyRegistrarAdvertisement = (SipProxyRegistrarAdvertisement) (mJxtaNetworkManager.getAdvertisement(null, SipProxyRegistrarAdvertisement.NAME, true));
+      return lSipProxyRegistrarAdvertisement.getAddress();
+   } catch (Exception e) {
       return null;
-   }   
+   } 
 }
 public static int getState() {
    try {

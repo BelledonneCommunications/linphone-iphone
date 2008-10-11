@@ -61,6 +61,7 @@ public class PeerInfoProviderService implements Runnable,PeerInfoProvider,Servic
    private final static int SO_TIMOUT=3000;
    public final static String PEERINFO_MODULE_CLASS_ID="org.linphone.p2pproxy.PeerInfoProviderService.module-class.id";
    public final static String PEERINFO_MODULE_SPEC_ID="org.linphone.p2pproxy.PeerInfoProviderService.module-spec.id";
+   private boolean mExist = false; 
    
    public PeerInfoProviderService(Configurator lProperties,JxtaNetworkManager aJxtaNetworkManager) {
        mJxtaNetworkManager = aJxtaNetworkManager; 
@@ -118,12 +119,18 @@ public class PeerInfoProviderService implements Runnable,PeerInfoProvider,Servic
          PeerInfoProviderService.mLog.error("socket instance error", e);
       }        
    }
-   public void stop(){
-      throw new RuntimeException("Not implemented");
+   public void stop() {
+	   try {
+		   mJxtaServerSocket.close();
+	   } catch (IOException e) {
+		   //nop
+	   }
+	   mExist = true;
+	   mLog.info("PeerInfoProviderService stopped");
    }
 
    public void run() {
-      while (true) {
+      while (mExist) {
          try {
             mLog.info("Waiting for connection on ["+ADV_NAME+"]");
              Socket lSocket = mJxtaServerSocket.accept();
@@ -155,8 +162,7 @@ public class PeerInfoProviderService implements Runnable,PeerInfoProvider,Servic
          ObjectInputStream lIn = new ObjectInputStream(mSocket.getInputStream());
          Object lInputObj;
          Object lOutputObj;
-         boolean lStop = false;
-         while (lStop == false) {
+         while (mExist == false) {
             lInputObj = lIn.readObject();
             mLog.info("request message ["+lInputObj+"] received");
             
