@@ -466,7 +466,7 @@ void sip_config_read(LinphoneCore *lc)
 	}
 	/*for test*/
 	lc->sip_conf.sdp_200_ack=lp_config_get_int(lc->config,"sip","sdp_200_ack",0);
-	
+	lc->sip_conf.only_one_codec=lp_config_get_int(lc->config,"sip","only_one_codec",0);
 }
 
 void rtp_config_read(LinphoneCore *lc)

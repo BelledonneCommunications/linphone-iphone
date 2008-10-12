@@ -248,15 +248,14 @@ void linphone_authentication_ok(LinphoneCore *lc, eXosip_event_t *ev){
 
 void linphone_core_find_or_ask_for_auth_info(LinphoneCore *lc,const char *username,const char* realm, int tid)
 {
-	LinphoneAuthInfo *as;
-	if ((as=linphone_core_auth_info_find(lc,realm,username))==NULL || 
-		(as->works==FALSE && as->first_time==FALSE) ) {
-		if (lc->vtable.auth_info_requested!=NULL) {
+	LinphoneAuthInfo *as=linphone_core_auth_info_find(lc,realm,username);
+	if ( as==NULL || (as!=NULL && as->works==FALSE && as->first_time==FALSE)){
+		if (lc->vtable.auth_info_requested!=NULL){
 			lc->vtable.auth_info_requested(lc,realm,username);
 			lc->automatic_action++;/*suspends eXosip_automatic_action until the user supplies a password */
 		}
-		if (as) as->first_time=FALSE;
 	}
+	if (as) as->first_time=FALSE;
 }
 
 void linphone_process_authentication(LinphoneCore *lc, eXosip_event_t *ev)

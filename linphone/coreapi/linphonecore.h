@@ -58,6 +58,7 @@ typedef struct sip_config
 	bool_t loopback_only;
 	bool_t ipv6_enabled;
 	bool_t sdp_200_ack;
+	bool_t only_one_codec; /*in SDP answers*/
 } sip_config_t;
 
 typedef struct rtp_config

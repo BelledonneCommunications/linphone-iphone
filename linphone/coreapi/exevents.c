@@ -621,7 +621,8 @@ int linphone_accept_audio_offer(sdp_context_t *ctx,sdp_payload_t *payload)
 	LinphoneCall *call=(LinphoneCall*)sdp_context_get_user_pointer(ctx);
 	LinphoneCore *lc=call->core;
 	PayloadType *lpt=NULL;
-	
+
+	params=&call->audio_params;
 	if (call->profile==NULL){
 		/* create a remote user agent profile */
 		call->profile=remote_profile=rtp_profile_new("remote");
@@ -633,8 +634,10 @@ int linphone_accept_audio_offer(sdp_context_t *ctx,sdp_payload_t *payload)
 		ms_message("Refusing audio codec %i (%s)",payload->pt,payload->a_rtpmap);
 		return -1;
 	}
-	if (supported==SupportedAndValid) {
-		params=&call->audio_params;
+	if (lc->sip_conf.only_one_codec && params->initialized){
+		return -1;
+	}
+	if (supported==SupportedAndValid) {		
 		if (params->initialized==0){
 			/* this is the first codec we accept, it is going to be used*/
 			params->localport=lc->rtp_conf.audio_rtp_port;
@@ -678,6 +681,7 @@ int linphone_accept_video_offer(sdp_context_t *ctx,sdp_payload_t *payload)
 		/* create a remote user agent profile */
 		call->profile=rtp_profile_new("remote");
 	}
+	params=&call->video_params;
 	remote_profile=call->profile;
 	/* see if this codec is supported in our local rtp profile*/
 	supported=linphone_payload_is_supported(lc,payload,lc->local_profile,remote_profile,TRUE,&lpt);
@@ -685,8 +689,10 @@ int linphone_accept_video_offer(sdp_context_t *ctx,sdp_payload_t *payload)
 		ms_message("Refusing video codec %i (%s)",payload->pt,payload->a_rtpmap);
 		return -1;
 	}
+	if (lc->sip_conf.only_one_codec && params->initialized){
+		return -1;
+	}
 	if (supported==SupportedAndValid){
-		params=&call->video_params;
 		if (params->initialized==0){
 			/* this is the first codec we may accept*/
 			params->localport=lc->rtp_conf.video_rtp_port;
