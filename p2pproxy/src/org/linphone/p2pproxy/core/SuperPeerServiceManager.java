@@ -5,9 +5,6 @@
 
 package org.linphone.p2pproxy.core;
 
-
-
-import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 

@@ -35,31 +35,26 @@ import org.linphone.p2pproxy.core.media.rtprelay.RtpRelayServiceClient;
 import org.linphone.p2pproxy.core.rdvautoconfig.PeerInfoServiceClient;
 import org.linphone.p2pproxy.core.sipproxy.SipProxyRegistrarAdvertisement;
 
-public abstract class P2pProxyManagementImpl implements ServiceProvider,P2pProxyManagement {
-   protected final JxtaNetworkManager mJxtaNetworkManager;
+public abstract class P2pProxyManagementImpl extends P2pProxySipProxyRegistrarManagementImpl implements ServiceProvider,P2pProxyManagement {
    protected final Configurator mConfigurator;
    private final PeerInfoServiceClient mPeerInfoServiceClient;
-   private final RtpRelayServiceClient mRtpRelayServiceClient;
    private final static Logger mLog = Logger.getLogger(P2pProxyManagementImpl.class);
    
    P2pProxyManagementImpl(Configurator aConfigurator, JxtaNetworkManager aJxtaNetworkManager) throws SocketException, UnknownHostException
     {
-        mJxtaNetworkManager = aJxtaNetworkManager;
+        super(aJxtaNetworkManager);
         mConfigurator = aConfigurator;
         mPeerInfoServiceClient = new PeerInfoServiceClient(aConfigurator, aJxtaNetworkManager);
-        mRtpRelayServiceClient = new RtpRelayServiceClient(aConfigurator, aJxtaNetworkManager);
     }
 
     public void start(long aTimeout) throws P2pProxyException
     {
         mPeerInfoServiceClient.start(aTimeout);
-        mRtpRelayServiceClient.start(aTimeout);
         
     }
 
     public void stop() {
         mPeerInfoServiceClient.stop();
-        mRtpRelayServiceClient.stop();
         mLog.info("P2pProxyManagementImpl stopped");
     }
 
@@ -74,17 +69,6 @@ public abstract class P2pProxyManagementImpl implements ServiceProvider,P2pProxy
    }
 
  
-   public Map<MediaType, InetSocketAddress> getAddresses() throws P2pProxyException {
-      return  mRtpRelayServiceClient.getAddresses();
-   }
-   public String getSipProxyRegistrarUri() throws P2pProxyException  {
-      try {
-         SipProxyRegistrarAdvertisement lSipProxyRegistrarAdvertisement = (SipProxyRegistrarAdvertisement) (mJxtaNetworkManager.getAdvertisement(null, SipProxyRegistrarAdvertisement.NAME, true));
-         return lSipProxyRegistrarAdvertisement.getAddress();
-      }catch (Exception e) {
-            throw new P2pProxyException(e);
-         }
-
-      }
+ 
 
 }

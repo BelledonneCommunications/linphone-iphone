@@ -17,15 +17,14 @@ import org.linphone.p2pproxy.core.media.rtprelay.RtpRelayService;
 import org.linphone.p2pproxy.core.media.rtprelay.RtpRelayServerConfig;
 import org.linphone.p2pproxy.core.rdvautoconfig.PeerInfoProviderService;
 
-public class SeedingPeerServiceManager implements ServiceProvider {
-   protected final JxtaNetworkManager mJxtaNetworkManager;
+public class SeedingPeerServiceManager extends P2pProxySipProxyRegistrarManagementImpl implements ServiceProvider {
    protected final Configurator mConfigurator;
    private final PeerInfoProviderService mPeerInfoProviderService; 
    private RtpRelayService mUdpRelayService = null; 
 
    private final static Logger mLog = Logger.getLogger(SeedingPeerServiceManager.class);
    SeedingPeerServiceManager(Configurator aConfigurator, JxtaNetworkManager aJxtaNetworkManager,boolean enableUdpRelay) throws SocketException, UnknownHostException {
-      mJxtaNetworkManager = aJxtaNetworkManager;
+      super(aJxtaNetworkManager);
       mConfigurator = aConfigurator;
       mPeerInfoProviderService = new PeerInfoProviderService(aConfigurator, aJxtaNetworkManager);
       if (enableUdpRelay == true) {

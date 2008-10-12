@@ -39,10 +39,10 @@ import org.apache.log4j.PropertyConfigurator;
 import org.linphone.p2pproxy.api.P2pProxyException;
 import org.linphone.p2pproxy.api.P2pProxyManagement;
 import org.linphone.p2pproxy.api.P2pProxyNotReadyException;
+import org.linphone.p2pproxy.api.P2pProxySipProxyRegistrarManagement;
 import org.linphone.p2pproxy.api.P2pProxyUserAlreadyExistException;
 import org.linphone.p2pproxy.core.media.rtprelay.RtpRelayService;
 import org.linphone.p2pproxy.core.sipproxy.SipProxyRegistrar;
-import org.linphone.p2pproxy.core.sipproxy.SipProxyRegistrarAdvertisement;
 import org.zoolu.sip.provider.SipStack;
 import org.linphone.p2pproxy.launcher.P2pProxylauncherConstants;
 
@@ -53,6 +53,7 @@ public class P2pProxyMain  implements P2pProxyMainMBean {
    private  static P2pProxyManagement mP2pProxyManagement;
    private  static SipProxyRegistrar mSipAndPipeListener;
    private static P2pProxyAccountManagementMBean mP2pProxyAccountManagement;
+   private static P2pProxySipProxyRegistrarManagement mP2pProxySipProxyRegistrarManagement;
    public final static String ACCOUNT_MGR_MBEAN_NAME="org.linphone.p2proxy:type=account-manager";
    public final static String PROXY_REG_MBEAN_NAME="org.linphone.p2proxy:type=proxy-registrar";
    public final static String MAIN_MBEAN_NAME="org.linphone.p2proxy:type=main";
@@ -265,7 +266,7 @@ public class P2pProxyMain  implements P2pProxyMainMBean {
 		   mP2pProxyAccountManagement = new P2pProxyAccountManagement(mJxtaNetworkManager);
 		   // setup sip provider
 		   SipStack.log_path = mConfigHomeDir+"/logs";
-		   mSipAndPipeListener = new SipProxyRegistrar(mConfigurator,mJxtaNetworkManager,mP2pProxyAccountManagement,mP2pProxyManagement);
+		   mSipAndPipeListener = new SipProxyRegistrar(mConfigurator,mJxtaNetworkManager,mP2pProxyAccountManagement);
 		   //set management
 		   try {
 			   ObjectName lObjectName = new ObjectName(ACCOUNT_MGR_MBEAN_NAME);
@@ -300,6 +301,7 @@ public class P2pProxyMain  implements P2pProxyMainMBean {
       mJxtaNetworkManager = new JxtaNetworkManager(aProperties,aConfigDir);
       mServiceProvider = new EdgePeerServiceManager(aProperties, mJxtaNetworkManager);
       mP2pProxyManagement = (P2pProxyManagement) mServiceProvider;
+      mP2pProxySipProxyRegistrarManagement = (P2pProxySipProxyRegistrarManagement) mServiceProvider;
       mServiceProvider.start(3000L);
    }
 
@@ -308,6 +310,7 @@ public class P2pProxyMain  implements P2pProxyMainMBean {
       mJxtaNetworkManager = new JxtaNetworkManager(aProperties,aConfigDir);
       mServiceProvider = new SuperPeerServiceManager(aProperties, mJxtaNetworkManager);
       mP2pProxyManagement = (P2pProxyManagement) mServiceProvider;
+      mP2pProxySipProxyRegistrarManagement = (P2pProxySipProxyRegistrarManagement) mServiceProvider;
       mServiceProvider.start(3000L);
    }
    private static void startSeeding(Configurator aProperties,File aConfigDir) throws Exception{
@@ -315,6 +318,7 @@ public class P2pProxyMain  implements P2pProxyMainMBean {
       mJxtaNetworkManager = new JxtaNetworkManager(aProperties,aConfigDir);
       mServiceProvider = new SeedingPeerServiceManager(aProperties, mJxtaNetworkManager,true);
       mP2pProxyManagement = null;
+      mP2pProxySipProxyRegistrarManagement = (P2pProxySipProxyRegistrarManagement) mServiceProvider;
       mServiceProvider.start(3000L);
    }   
    private static void usage() {
@@ -430,8 +434,7 @@ public static int isValidAccount(String aUserName){
 public static String getSipProxyRegistrarUri() {
    try {
       isReady();
-      SipProxyRegistrarAdvertisement lSipProxyRegistrarAdvertisement = (SipProxyRegistrarAdvertisement) (mJxtaNetworkManager.getAdvertisement(null, SipProxyRegistrarAdvertisement.NAME, true));
-      return lSipProxyRegistrarAdvertisement.getAddress();
+      return mP2pProxySipProxyRegistrarManagement.getSipProxyRegistrarUri();
    } catch (Exception e) {
       return null;
    } 

@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 package org.linphone.p2pproxy.api;
 
 
-public interface P2pProxyManagement extends P2pProxyNetworkProbe,P2pProxyRtpRelayManagement,P2pProxySipProxyRegistrarManagement {
+public interface P2pProxyManagement extends P2pProxyNetworkProbe,P2pProxySipProxyRegistrarManagement {
 
    /**
     * test if according both to local peer capabilities and supeer peer election polity this peer should become a super peer

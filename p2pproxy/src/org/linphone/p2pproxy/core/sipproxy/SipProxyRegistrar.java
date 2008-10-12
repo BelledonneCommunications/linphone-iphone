@@ -24,52 +24,31 @@ package org.linphone.p2pproxy.core.sipproxy;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import net.jxta.document.Advertisement;
 import net.jxta.document.AdvertisementFactory;
-import net.jxta.endpoint.MessageElement;
-import net.jxta.endpoint.StringMessageElement;
 import net.jxta.id.IDFactory;
-import net.jxta.pipe.OutputPipe;
-import net.jxta.pipe.PipeMsgEvent;
-import net.jxta.pipe.PipeMsgListener;
-import net.jxta.protocol.PipeAdvertisement;
-
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.linphone.p2pproxy.api.P2pProxyException;
-import org.linphone.p2pproxy.api.P2pProxyRtpRelayManagement;
 import org.linphone.p2pproxy.api.P2pProxyUserNotFoundException;
 
 import org.linphone.p2pproxy.core.Configurator;
 import org.linphone.p2pproxy.core.JxtaNetworkManager;
 import org.linphone.p2pproxy.core.P2pProxyAccountManagementMBean;
-import org.linphone.p2pproxy.core.P2pProxyAdvertisementNotFoundException;
 import org.linphone.p2pproxy.core.media.rtprelay.MediaType;
-import org.linphone.p2pproxy.core.media.rtprelay.SdpProcessorImpl;
-import org.linphone.p2pproxy.core.sipproxy.superpeers.P2pUserRegistrationAdvertisement;
 import org.linphone.p2pproxy.core.sipproxy.superpeers.SuperPeerProxy;
-import org.zoolu.sip.address.NameAddress;
-import org.zoolu.sip.address.SipURL;
 import org.zoolu.sip.header.ExpiresHeader;
-import org.zoolu.sip.header.Header;
 import org.zoolu.sip.header.MultipleHeader;
-import org.zoolu.sip.header.RecordRouteHeader;
-import org.zoolu.sip.header.RouteHeader;
-import org.zoolu.sip.header.ViaHeader;
 import org.zoolu.sip.message.Message;
 import org.zoolu.sip.message.MessageFactory;
 import org.zoolu.sip.provider.SipProvider;
 import org.zoolu.sip.provider.SipProviderListener;
 import org.zoolu.sip.provider.SipStack;
-import org.zoolu.sip.provider.TransactionIdentifier;
-import org.zoolu.sip.transaction.Transaction;
 import org.zoolu.sip.transaction.TransactionServer;
 import java.util.Collections;
 
@@ -180,7 +159,7 @@ public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarM
       
    }
    
-   public SipProxyRegistrar(Configurator lProperties,JxtaNetworkManager aJxtaNetworkManager,P2pProxyAccountManagementMBean aP2pProxyAccountManagement,P2pProxyRtpRelayManagement aP2pProxyRtpRelayManagement) throws IOException {
+   public SipProxyRegistrar(Configurator lProperties,JxtaNetworkManager aJxtaNetworkManager,P2pProxyAccountManagementMBean aP2pProxyAccountManagement) throws IOException {
       mJxtaNetworkManager =  aJxtaNetworkManager;
       mP2pProxyAccountManagement = aP2pProxyAccountManagement;
       mProperties = lProperties;

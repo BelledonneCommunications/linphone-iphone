@@ -24,7 +24,6 @@ package org.linphone.p2pproxy.core;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.URI;
-import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.Properties;
@@ -144,7 +143,7 @@ public class P2pProxyInstanceImpl implements P2pProxyInstance {
                mConfigurator.setProperty(SipProxyRegistrar.REGISTRAR_PORT,Integer.toString(BASE_PROXY_SIP_PORT+mIndex));
                // setup sip proxy
                mP2pProxyAccountManagement = new P2pProxyAccountManagement(mJxtaNetworkManager);
-               mSipProxy = new SipProxyRegistrar(mConfigurator,mJxtaNetworkManager,mP2pProxyAccountManagement,mP2pProxyManagement);
+               mSipProxy = new SipProxyRegistrar(mConfigurator,mJxtaNetworkManager,mP2pProxyAccountManagement);
                // setup sip client                
                mProviderForSipClient = new SipProvider(getPrivateHostAddress(),BASE_CLIENT_SIP_PORT+mIndex);
                mProviderForSipClient.setOutboundProxy(new SocketAddress(getPrivateHostAddress(),BASE_PROXY_SIP_PORT+mIndex));
