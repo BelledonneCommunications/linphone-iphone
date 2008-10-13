@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <jni.h>
+#include <string.h>
 #include "p2pproxy.h"
 
 #ifndef P2PPROXY_JMX_PORT
@@ -138,25 +139,43 @@ int p2pproxy_accountmgt_deleteAccount(const char* user_name) {
 	return lResult;
 }
 
-int p2pproxy_resourcelocation_get_sip_proxyregistrar_uri(char* aStringArray, size_t aSize) {
-	jmethodID getSipProxyRegistrarUriMethod;
+int p2pproxy_resourcemgt_lookup_sip_proxy(char* proxy_uri,size_t size, char* domaine) {
+	jmethodID lLookupSipProxyUriMethod;
 	jstring lJStringResult; 
 	const jbyte* lString;
 	jboolean  lIsCopy;
-	GET_JNI_ENV
+	jstring applicationArg;
 	
-	getSipProxyRegistrarUriMethod = (*lJniEnv)->GetStaticMethodID(lJniEnv, lMainClass, "getSipProxyRegistrarUri", "()Ljava/lang/String;");
-	lJStringResult = (*lJniEnv)->CallStaticObjectMethod(lJniEnv, lMainClass, getSipProxyRegistrarUriMethod);
+	GET_JNI_ENV
+	 
+	
+	applicationArg = (*lJniEnv)->NewStringUTF(lJniEnv, domaine);
+	lLookupSipProxyUriMethod = (*lJniEnv)->GetStaticMethodID(lJniEnv, lMainClass, "lookupSipProxyUri", "(Ljava/lang/String;)Ljava/lang/String;");
+	lJStringResult = (*lJniEnv)->CallStaticObjectMethod(lJniEnv, lMainClass, lLookupSipProxyUriMethod, applicationArg);
 	if (lJStringResult == 0) {
-		return P2PPROXY_ERROR_RESOURCELOCATOR_SERVER_NOT_FOUND;
+		return P2PPROXY_RESOURCEMGT_SERVER_NOT_FOUND;
 	}
 	lString =  (*lJniEnv)->GetStringUTFChars(lJniEnv, lJStringResult, &lIsCopy);
-	memcpy(aStringArray,lString,aSize);
+	memcpy(proxy_uri,lString,size);
 	(*lJniEnv)->ReleaseStringUTFChars(lJniEnv, lJStringResult, lString);
 	(*p2pproxy_application_jvm)->DetachCurrentThread(p2pproxy_application_jvm);
 	return P2PPROXY_NO_ERROR;
 }
 
+int p2pproxy_resourcemgt_revoke_sip_proxy(char* proxy_uri) {
+	jmethodID revokeProxyMethod;
+	jstring lJStringResult; 
+	const jbyte* lString;
+	jboolean  lIsCopy;
+	GET_JNI_ENV
+	
+	revokeProxyMethod = (*lJniEnv)->GetStaticMethodID(lJniEnv, lMainClass, "revokeSipProxy", "(Ljava/lang/String;)V");
+	(*lJniEnv)->CallStaticVoidMethod(lJniEnv, lMainClass, revokeProxyMethod);
+	if (lJStringResult == 0) {
+		return P2PPROXY_ERROR;
+	}
+	return P2PPROXY_NO_ERROR;
+}
 int p2pproxy_application_get_state() {
 	jmethodID stateMethod;
 	GET_JNI_ENV

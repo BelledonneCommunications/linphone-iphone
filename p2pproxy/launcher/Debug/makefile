@@ -29,7 +29,7 @@ all: p2pproxy-launcher
 p2pproxy-launcher: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C Linker'
-	gcc -L/usr/lib/jvm/java-6-openjdk/jre/lib/amd64 -L/usr/lib/jvm/java-6-openjdk/jre/lib/i386 -L/usr/lib/jvm/java-6-openjdk/jre/lib/amd64/server -L/usr/lib/jvm/java-6-openjdk/jre/lib/i386/server -o"p2pproxy-launcher" $(OBJS) $(USER_OBJS) $(LIBS)
+	gcc -L/usr/lib/jvm/java-6-openjdk/jre/lib/amd64 -L/usr/lib/jvm/java-6-openjdk/jre/lib/amd64/server -o"p2pproxy-launcher" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 

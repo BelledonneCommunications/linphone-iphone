@@ -25,7 +25,8 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
-import org.linphone.p2pproxy.core.turnserver.TurnServer;
+import org.linphone.p2pproxy.core.stun.StunServer;
+
 
 
 import de.javawi.jstun.attribute.ChangeRequest;
@@ -40,8 +41,8 @@ import de.javawi.jstun.header.MessageHeaderParsingException;
 import de.javawi.jstun.test.DiscoveryInfo;
 import de.javawi.jstun.util.UtilityException;
 
-public class TurnServerTester extends TestCase {
-	private static Logger logger = Logger.getLogger(TurnServerTester.class);
+public class StunServerTester extends TestCase {
+	private static Logger logger = Logger.getLogger(StunServerTester.class);
 	InetAddress iaddress ;
 	String stunServer = "localhost";
 	int port = 16000;
@@ -51,14 +52,14 @@ public class TurnServerTester extends TestCase {
 	boolean nodeNatted = true;
 	DatagramSocket socketTest1 = null;
 	DiscoveryInfo di = null;
-	static TurnServer mSturServer = null;
+	static StunServer mSturServer = null;
 	
 
 	public void setUp() throws Exception {
 	    
 	   if (mSturServer == null) {
 	       BasicConfigurator.configure();
-	       if (mSturServer == null) mSturServer = new TurnServer(port,InetAddress.getByName("localhost"));
+	       if (mSturServer == null) mSturServer = new StunServer(port,InetAddress.getByName("localhost"),port+1);
 	       mSturServer.start();
 	       iaddress = InetAddress.getLocalHost();
 	      }

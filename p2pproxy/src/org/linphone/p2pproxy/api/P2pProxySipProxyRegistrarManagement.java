@@ -19,12 +19,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 package org.linphone.p2pproxy.api;
 
-import java.net.InetSocketAddress;
+
 
 public interface P2pProxySipProxyRegistrarManagement {
    /**
     * 
-    * @return the SIP uri of an available sip proxy registrar 
+    * @return the SIP uri of an available sip proxy registrar for a given domaine 
     */
-   public String getSipProxyRegistrarUri() throws P2pProxyException ;
+   public String lookupSipProxyUri(String aDomaine) throws P2pProxyException ;
+   
+   public void revokeSipProxy(String aProxy) throws P2pProxyException;
+   
 }

@@ -29,7 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define P2PPROXY_ACCOUNTMGT_USER_EXIST 1
 #define P2PPROXY_ACCOUNTMGT_USER_NOT_EXIST 0 
-
+#define P2PPROXY_RESOURCEMGT_SERVER_NOT_FOUND  3
 /* state code*/
 #define P2PPROXY_CONNECTED 2
 #define P2PPROXY_NOT_CONNECTED 1
@@ -41,7 +41,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define P2PPROXY_ERROR_APPLICATION_ALREADY_STARTED  -3
 #define P2PPROXY_ERROR_ACCOUNTMGT_USER_ALREADY_EXIST  -4
 #define P2PPROXY_ERROR_ACCOUNTMGT_BAD_SIP_URI  -5
-#define P2PPROXY_ERROR_RESOURCELOCATOR_SERVER_NOT_FOUND  -6
+#define P2PPROXY_ERROR_RESOURCEMGT_SERVER_NOT_FOUND  -6
 
 #ifndef SWIG
 /**
@@ -97,16 +97,24 @@ int p2pproxy_accountmgt_isValidAccount(const char* user_name);
 */
 int p2pproxy_accountmgt_deleteAccount(const char* user_name);
 
-/***************************/
-/***resource location******/
-/***************************/
+/****************************/
+/***resource management******/
+/****************************/
 /**
-* access a proxy registrar sip addreess 
-* @param buffer allocated by the user
-* @param size buffer size
+* access a proxy registrar sip addreess for a given domaine name 
+* @param [out] proxy_uri buffer allocated by the user
+* @param [in] size buffer size
+* @param [in] domaine name
 * @return status code P2PPROXY_NO_ERROR, P2PPROXY_ERROR_RESOURCELOCATOR_SERVER_NOT_FOUND
 */
-int p2pproxy_resourcelocation_get_sip_proxyregistrar_uri(char* string_buffer,size_t size) ;
+int p2pproxy_resourcemgt_lookup_sip_proxy(char* proxy_uri,size_t size, char* domaine) ;
+/*
+ * notify the library at a given proxy is no longuer reachable 
+* @param [in] proxy sip uri
+* @return status code P2PPROXY_NO_ERROR
+*/
+int p2pproxy_resourcemgt_revoke_sip_proxy(char* proxy_uri);
+
 
 #endif /*SWIG*/
 

@@ -136,7 +136,8 @@ public class JxtaNetworkManager {
       } else {
          lNetworkConfigurator.load();
       }
-      
+      //mode is alway taken from start line
+      lNetworkConfigurator.setMode(lMode);
       // set sedding host
       if (aProperties.getProperty(SEEDING_RDV) != null) {
          StringTokenizer lSeedingRdvList =  new StringTokenizer(aProperties.getProperty(SEEDING_RDV),"|" );

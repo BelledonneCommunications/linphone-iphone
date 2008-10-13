@@ -386,11 +386,10 @@ private static void isReady() throws P2pProxyNotReadyException {
     try {
       if ((mJxtaNetworkManager!=null && mJxtaNetworkManager.isConnectedToRendezVous(0) == true) 
     	  || 
-    	  (mJxtaNetworkManager!=null && mJxtaNetworkManager.getPeerGroup().getRendezVousService().isRendezVous()))
-      {
+    	  (mJxtaNetworkManager!=null && mJxtaNetworkManager.getPeerGroup().getRendezVousService().isRendezVous())) {
          //nop connected
       } else {
-    	  throw new P2pProxyNotReadyException("not connected to any rdv");
+    	  throw new P2pProxyNotReadyException("not connected to any rdv: status ["+mJxtaNetworkManager.getPeerGroup().getRendezVousService().getRendezVousStatus()+"]");
       }
    } catch (InterruptedException e) {
       throw new P2pProxyNotReadyException(e);
@@ -431,10 +430,10 @@ public static int isValidAccount(String aUserName){
       return P2pProxylauncherConstants.P2PPROXY_ERROR;
    }
 }
-public static String getSipProxyRegistrarUri() {
+public static String lookupSipProxyUri(String aDomaine) {
    try {
       isReady();
-      return mP2pProxySipProxyRegistrarManagement.getSipProxyRegistrarUri();
+      return mP2pProxySipProxyRegistrarManagement.lookupSipProxyUri(aDomaine);
    } catch (Exception e) {
       return null;
    } 
@@ -444,9 +443,20 @@ public static int getState() {
       isReady();
       return P2pProxylauncherConstants.P2PPROXY_CONNECTED;
    } catch (P2pProxyException e) {
+      mLog.error("cannot get state",e);
       return P2pProxylauncherConstants.P2PPROXY_NOT_CONNECTED;
    }   
 }
+public static int revokeSipProxy(String aProxy) {
+   try {
+      isReady();
+      mLog.error("not implemented");
+      return P2pProxylauncherConstants.P2PPROXY_ERROR;
+   } catch (P2pProxyException e) {
+      return P2pProxylauncherConstants.P2PPROXY_NOT_CONNECTED;
+   }   
+}
+
 public static void stop() {
    mExit = true;
   

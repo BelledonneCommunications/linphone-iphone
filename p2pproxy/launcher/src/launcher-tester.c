@@ -32,14 +32,26 @@ int main(int argc, char **argv) {
 	}
 	
 	char string_buffer[256];
-	if (p2pproxy_resourcelocation_get_sip_proxyregistrar_uri(string_buffer,256) != P2PPROXY_NO_ERROR) {
+	if (p2pproxy_resourcemgt_lookup_sip_proxy(string_buffer,256,"p2p.linphone.org") != P2PPROXY_NO_ERROR) {
 		printf("cannot get proxy\n");	
 	} else {
 		printf("registrar is [%s]\n",string_buffer);
 	}
+	
+	if (p2pproxy_resourcemgt_revoke_sip_proxy(string_buffer) != P2PPROXY_NO_ERROR) {
+		printf("cannot fulsh  proxy [%s]\n",string_buffer);	
+	}
+
+	if (p2pproxy_resourcemgt_lookup_sip_proxy(string_buffer,256,"toto.linphone.org") != P2PPROXY_RESOURCEMGT_SERVER_NOT_FOUND) {
+		printf("unexpected proxy [%s]\n",string_buffer);	
+	} else {
+		printf("unknown domaine\n");
+	}
+
 	if (p2pproxy_accountmgt_deleteAccount("sip:titi@p2p.linphone.org") != P2PPROXY_NO_ERROR) {
 		printf("cannot delete account \n");	
 	}
+	
 	
 	p2pproxy_application_stop();
 	pthread_join(th,NULL);
