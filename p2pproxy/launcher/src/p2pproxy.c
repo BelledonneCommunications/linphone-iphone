@@ -16,11 +16,11 @@
 JavaVM* p2pproxy_application_jvm = 0;
 
 #define GET_JNI_ENV \
-	jint lResut = 0 ;\
+	jint lResult = 0 ;\
 	JNIEnv* lJniEnv = 0;\
 	jclass  lMainClass = 0;\
-	lResut = (*p2pproxy_application_jvm)->AttachCurrentThread(p2pproxy_application_jvm,&lJniEnv,NULL);\
-	if (lResut != 0) { \
+	lResult = (*p2pproxy_application_jvm)->AttachCurrentThread(p2pproxy_application_jvm,&lJniEnv,NULL);\
+	if (lResult != 0) { \
 		fprintf(stderr,"cannot attach VM\n");\
 		return P2PPROXY_ERROR;\
 	}\
@@ -95,10 +95,11 @@ int p2pproxy_application_start(int argc, char **argv) {
 	}
 
 	(*lJniEnv)->CallStaticVoidMethod(lJniEnv, lMainClass, mainMethod, applicationArgsList);
-
+	(*p2pproxy_application_jvm)->DestroyJavaVM(p2pproxy_application_jvm);
+	p2pproxy_application_jvm = 0;
 	return P2PPROXY_NO_ERROR;
 }
-	int lResult;
+	
 
 
 const char* p2pproxy_status_string(int status_code) {
@@ -164,17 +165,14 @@ int p2pproxy_resourcemgt_lookup_sip_proxy(char* proxy_uri,size_t size, char* dom
 
 int p2pproxy_resourcemgt_revoke_sip_proxy(char* proxy_uri) {
 	jmethodID revokeProxyMethod;
-	jstring lJStringResult; 
-	const jbyte* lString;
-	jboolean  lIsCopy;
+	jstring applicationArg;
 	GET_JNI_ENV
 	
-	revokeProxyMethod = (*lJniEnv)->GetStaticMethodID(lJniEnv, lMainClass, "revokeSipProxy", "(Ljava/lang/String;)V");
-	(*lJniEnv)->CallStaticVoidMethod(lJniEnv, lMainClass, revokeProxyMethod);
-	if (lJStringResult == 0) {
-		return P2PPROXY_ERROR;
-	}
-	return P2PPROXY_NO_ERROR;
+	applicationArg = (*lJniEnv)->NewStringUTF(lJniEnv, proxy_uri);
+	revokeProxyMethod = (*lJniEnv)->GetStaticMethodID(lJniEnv, lMainClass, "revokeSipProxy", "(Ljava/lang/String;)I");
+	lResult = (*lJniEnv)->CallStaticIntMethod(lJniEnv, lMainClass, revokeProxyMethod,applicationArg);
+	(*p2pproxy_application_jvm)->DetachCurrentThread(p2pproxy_application_jvm);
+	return lResult;
 }
 int p2pproxy_application_get_state() {
 	jmethodID stateMethod;
@@ -193,8 +191,6 @@ void p2pproxy_application_stop() {
 	stopMethod = (*lJniEnv)->GetStaticMethodID(lJniEnv, lMainClass, "stop", "()V");
 	(*lJniEnv)->CallStaticVoidMethod(lJniEnv, lMainClass, stopMethod);
 	(*p2pproxy_application_jvm)->DetachCurrentThread(p2pproxy_application_jvm);
-	(*p2pproxy_application_jvm)->DestroyJavaVM(p2pproxy_application_jvm);
-	p2pproxy_application_jvm = 0;
 	return;
 
 }

@@ -1,34 +1,37 @@
 /*
- * This file is part of JSTUN. 
- * 
- * Copyright (c) 2005 Thomas King <king@t-king.de> - All rights
- * reserved.
- * 
- * This software is licensed under either the GNU Public License (GPL),
- * or the Apache 2.0 license. Copies of both license agreements are
- * included in this distribution.
- */
+p2pproxy Copyright (C) 2007  Jehan Monnier ()
 
+StunServer.java - .
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
 package org.linphone.p2pproxy.core.stun;
 
-import java.io.IOException;
+
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.util.Vector;
-import java.util.logging.FileHandler;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
+import org.apache.log4j.Logger;
+import org.linphone.p2pproxy.api.P2pProxyException;
+import org.linphone.p2pproxy.core.GenericUdpSession;
+import org.linphone.p2pproxy.core.ServiceProvider;
 
 import de.javawi.jstun.attribute.ChangeRequest;
-import de.javawi.jstun.attribute.ChangedAddress;
+import de.javawi.jstun.attribute.ErrorCode;
 import de.javawi.jstun.attribute.MappedAddress;
 import de.javawi.jstun.attribute.MessageAttributeException;
-import de.javawi.jstun.attribute.MessageAttributeParsingException;
 import de.javawi.jstun.attribute.ResponseAddress;
 import de.javawi.jstun.attribute.SourceAddress;
 import de.javawi.jstun.attribute.UnknownAttribute;
@@ -38,147 +41,107 @@ import de.javawi.jstun.header.MessageHeader;
 import de.javawi.jstun.header.MessageHeaderParsingException;
 import de.javawi.jstun.header.MessageHeaderInterface.MessageHeaderType;
 import de.javawi.jstun.util.Address;
-import de.javawi.jstun.util.UtilityException;
+
 
 /*
  * This class implements a STUN server as described in RFC 3489.
- * The server requires a machine that is dual-homed to be functional. 
+ * neither change port nor change address are implemented 
  */
-public class StunServer {
-	private static Logger logger = Logger.getLogger("org.linphone.p2pproxy.core.stun.StunServer");
-	Vector<DatagramSocket> sockets;
-	
-	public StunServer(int primaryPort, InetAddress primary, int secondaryPort) throws SocketException {
-		sockets = new Vector<DatagramSocket>();
-		sockets.add(new DatagramSocket(primaryPort, primary));
-		sockets.add(new DatagramSocket(secondaryPort, primary));
+public class StunServer implements GenericUdpSession.MessageHandler {
+	private static Logger mLog = Logger.getLogger(StunServer.class);
+	private final DatagramSocket mSocket;
+	public StunServer(DatagramSocket mListeningSocket) throws SocketException {
+		mSocket = mListeningSocket;
 	}
-	
-	public void start() throws SocketException {
-		for (DatagramSocket socket : sockets) {
-			socket.setReceiveBufferSize(2000);
-			StunServerReceiverThread ssrt = new StunServerReceiverThread(socket);
-			ssrt.start();
+
+	public void onMessage(DatagramPacket lMessage) {
+		// derivated from JSTUN (Thomas King) 
+		MessageHeader receiveMH = null;
+		try {
+			receiveMH = MessageHeader.parseHeader(lMessage.getData());
+		} catch (MessageHeaderParsingException e1) {
+			if (mLog.isInfoEnabled()) mLog.info("not a stun message");
+			return;
 		}
-	}
-	
-	/*
-	 * Inner class to handle incoming packets and react accordingly.
-	 * I decided not to start a thread for every received Binding Request, because the time
-	 * required to receive a Binding Request, parse it, generate a Binding Response and send
-	 * it varies only between 2 and 4 milliseconds. This amount of time is small enough so
-	 * that no extra thread is needed for incoming Binding Request. 
-	 */
-	class StunServerReceiverThread extends Thread {
-		private DatagramSocket receiverSocket;
-		private DatagramSocket changedPort;
-		
-		StunServerReceiverThread(DatagramSocket datagramSocket) {
-			this.receiverSocket = datagramSocket;
-			for (DatagramSocket socket : sockets) {
-				if ((socket.getLocalPort() != receiverSocket.getLocalPort()) &&
-					(socket.getLocalAddress().equals(receiverSocket.getLocalAddress())))
-					changedPort = socket;
-			}
-		}
-		
-		public void run() {
-			while (true) {
-				try {
-					DatagramPacket receive = new DatagramPacket(new byte[200], 200);
-					receiverSocket.receive(receive);
-					logger.finest(receiverSocket.getLocalAddress().getHostAddress() + ":" + receiverSocket.getLocalPort() + " datagram received from " + receive.getAddress().getHostAddress() + ":" + receive.getPort());
-					MessageHeader receiveMH = MessageHeader.parseHeader(receive.getData()); 
-					try {
-						receiveMH.parseAttributes(receive.getData());
-						if (receiveMH.getType() == MessageHeaderType.BindingRequest) {
-							logger.config(receiverSocket.getLocalAddress().getHostAddress() + ":" + receiverSocket.getLocalPort() + " Binding Request received from " + receive.getAddress().getHostAddress() + ":" + receive.getPort());
-							ChangeRequest cr = (ChangeRequest) receiveMH.getMessageAttribute(MessageAttributeType.ChangeRequest);
-							if (cr == null) throw new MessageAttributeException("Message attribute change request is not set.");
-							ResponseAddress ra = (ResponseAddress) receiveMH.getMessageAttribute(MessageAttributeType.ResponseAddress);
-						
-							MessageHeader sendMH = new MessageHeader(MessageHeaderType.BindingResponse);
-							sendMH.setTransactionID(receiveMH.getTransactionID());
-						
-							// Mapped address attribute
-							MappedAddress ma = new MappedAddress();
-							ma.setAddress(new Address(receive.getAddress().getAddress()));
-							ma.setPort(receive.getPort());
-							sendMH.addMessageAttribute(ma);
-							if (cr.isChangePort()) {
-								logger.finer("Change port received in Change Request attribute");
-								// Source address attribute
-								SourceAddress sa = new SourceAddress();
-								sa.setAddress(new Address(changedPort.getLocalAddress().getAddress()));
-								sa.setPort(changedPort.getLocalPort());
-								sendMH.addMessageAttribute(sa);
-								byte[] data = sendMH.getBytes();
-								DatagramPacket send = new DatagramPacket(data, data.length);
-								if (ra != null) {
-									send.setPort(ra.getPort());
-									send.setAddress(ra.getAddress().getInetAddress());
-								} else {
-									send.setPort(receive.getPort());
-									send.setAddress(receive.getAddress());
-								}
-								changedPort.send(send);
-								logger.config(changedPort.getLocalAddress().getHostAddress() + ":" + changedPort.getLocalPort() + " send Binding Response to " + send.getAddress().getHostAddress() + ":" + send.getPort());
-							} else if ((!cr.isChangePort()) && (!cr.isChangeIP())) {
-								logger.finer("Nothing received in Change Request attribute");
-								// Source address attribute
-								SourceAddress sa = new SourceAddress();
-								sa.setAddress(new Address(receiverSocket.getLocalAddress().getAddress()));
-								sa.setPort(receiverSocket.getLocalPort());
-								sendMH.addMessageAttribute(sa);
-								byte[] data = sendMH.getBytes();
-								DatagramPacket send = new DatagramPacket(data, data.length);
-								if (ra != null) {
-									send.setPort(ra.getPort());
-									send.setAddress(ra.getAddress().getInetAddress());
-								} else {
-									send.setPort(receive.getPort());
-									send.setAddress(receive.getAddress());
-								}
-								receiverSocket.send(send);
-								logger.config(receiverSocket.getLocalAddress().getHostAddress() + ":" + receiverSocket.getLocalPort() + " send Binding Response to " + send.getAddress().getHostAddress() + ":" + send.getPort());
-							} else {
-							   logger.warning("cannot handle cr ["+cr+"]");
-							}
-						}
-					} catch (UnknownMessageAttributeException umae) {
-						umae.printStackTrace();
-						// Generate Binding error response
-						MessageHeader sendMH = new MessageHeader(MessageHeaderType.BindingErrorResponse);
-						sendMH.setTransactionID(receiveMH.getTransactionID());
-						
-						// Unknown attributes
-						UnknownAttribute ua = new UnknownAttribute();
-						ua.addAttribute(umae.getType());
-						sendMH.addMessageAttribute(ua);
-						
-						byte[] data = sendMH.getBytes();
-						DatagramPacket send = new DatagramPacket(data, data.length);
-						send.setPort(receive.getPort());
-						send.setAddress(receive.getAddress());
-						receiverSocket.send(send);
-						logger.config(" send Binding Error Response to " + send.getAddress().getHostAddress() + ":" + send.getPort());
-					}	
-				} catch (IOException ioe) {
-					ioe.printStackTrace();
-				} catch (MessageAttributeParsingException mape) {
-					mape.printStackTrace();
-				} catch (MessageAttributeException mae) {
-					mae.printStackTrace();
-				} catch (MessageHeaderParsingException mhpe) {
-					mhpe.printStackTrace();
-				} catch (UtilityException ue) {
-					ue.printStackTrace();
-				} catch (ArrayIndexOutOfBoundsException aioobe) {
-					aioobe.printStackTrace();
+
+		try {
+			receiveMH.parseAttributes(lMessage.getData());
+			if (receiveMH.getType() == MessageHeaderType.BindingRequest) {
+				ChangeRequest cr = (ChangeRequest) receiveMH.getMessageAttribute(MessageAttributeType.ChangeRequest);
+				if (cr == null) throw new MessageAttributeException("Message attribute change request is not set.");
+				ResponseAddress ra = (ResponseAddress) receiveMH.getMessageAttribute(MessageAttributeType.ResponseAddress);
+
+				MessageHeader sendMH = new MessageHeader(MessageHeaderType.BindingResponse);
+				sendMH.setTransactionID(receiveMH.getTransactionID());
+
+				// Mapped address attribute
+				MappedAddress ma = new MappedAddress();
+				ma.setAddress(new Address(lMessage.getAddress().getAddress()));
+				ma.setPort(lMessage.getPort());
+				sendMH.addMessageAttribute(ma);
+				if ((!cr.isChangePort()) && (!cr.isChangeIP())) {
+					if (mLog.isInfoEnabled()) mLog.info("Nothing received in Change Request attribute");
+					// Source address attribute
+					SourceAddress sa = new SourceAddress();
+					sa.setAddress(new Address(mSocket.getLocalAddress().getAddress()));
+					sa.setPort(mSocket.getLocalPort());
+					sendMH.addMessageAttribute(sa);
+					byte[] data = sendMH.getBytes();
+					DatagramPacket send = new DatagramPacket(data, data.length);
+					if (ra != null) {
+						send.setPort(ra.getPort());
+						send.setAddress(ra.getAddress().getInetAddress());
+					} else {
+						send.setPort(lMessage.getPort());
+						send.setAddress(lMessage.getAddress());
+					}
+					mSocket.send(send);
+					if (mLog.isInfoEnabled()) mLog.info(mSocket.getLocalAddress().getHostAddress() + ":" + mSocket.getLocalPort() + " send Binding Response to " + send.getAddress().getHostAddress() + ":" + send.getPort());
+				} else {
+//					Generate Binding error response
+					sendMH = new MessageHeader(MessageHeaderType.BindingErrorResponse);
+					sendMH.setTransactionID(receiveMH.getTransactionID());
+					ErrorCode lErrorCode = new ErrorCode();
+					lErrorCode.setResponseCode(400); //bad request
+					sendMH.addMessageAttribute(lErrorCode);
+					byte[] data = sendMH.getBytes();
+					DatagramPacket send = new DatagramPacket(data, data.length);
+					send.setPort(lMessage.getPort());
+					send.setAddress(lMessage.getAddress());
+					mSocket.send(send);
+					if (mLog.isInfoEnabled()) mLog.info("cannot handle cr ["+cr+"] attibute");
 				}
 			}
-		}
+		} catch ( Exception e) {
+
+			try {
+				// Generate Binding error response
+
+				MessageHeader sendMH = new MessageHeader(MessageHeaderType.BindingErrorResponse);
+				sendMH.setTransactionID(receiveMH.getTransactionID());
+
+				if (e instanceof UnknownMessageAttributeException) {
+					// Unknown attributes
+					UnknownAttribute ua = new UnknownAttribute();
+					ua.addAttribute(((UnknownMessageAttributeException) e).getType());
+					sendMH.addMessageAttribute(ua);
+				} else {
+					ErrorCode lErrorCode = new ErrorCode();
+					lErrorCode.setResponseCode(500);
+					sendMH.addMessageAttribute(lErrorCode);	
+				}
+				byte[] data = sendMH.getBytes();
+				DatagramPacket send = new DatagramPacket(data, data.length);
+				send.setPort(lMessage.getPort());
+				send.setAddress(lMessage.getAddress());
+				mSocket.send(send);
+				mLog.error(" send Binding Error Response to " + send.getAddress().getHostAddress() + ":" + send.getPort(),e);
+			} catch(Exception e1) {
+				mLog.error("cannot handle error", e1);
+			}
+		}	
+
 	}
-	
+
 
 }

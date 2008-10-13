@@ -55,7 +55,7 @@ public class GenericUdpSession implements Runnable {
                byte[] lBuff = new byte[1500];
                DatagramPacket lDatagramPacket = new DatagramPacket(lBuff,lBuff.length);
                mLocalSocket.receive(lDatagramPacket);
-               // if destination is known just send
+   			if (mLog.isInfoEnabled()) mLog.info(mLocalSocket.getLocalAddress().getHostAddress() + ":" + mLocalSocket.getLocalPort() + " datagram received from " + lDatagramPacket.getAddress().getHostAddress() + ":" + lDatagramPacket.getPort());
                mMessageHandler.onMessage(lDatagramPacket);
  
            }catch(Exception e) {

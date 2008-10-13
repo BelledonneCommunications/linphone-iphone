@@ -2,14 +2,14 @@ package org.linphone.p2pproxy.core;
 
 import org.apache.log4j.Logger;
 import org.linphone.p2pproxy.api.P2pProxyException;
-import org.linphone.p2pproxy.api.P2pProxySipProxyRegistrarManagement;
+import org.linphone.p2pproxy.api.P2pProxyResourceManagement;
 import org.linphone.p2pproxy.core.sipproxy.SipProxyRegistrarAdvertisement;
 
-public class P2pProxySipProxyRegistrarManagementImpl implements P2pProxySipProxyRegistrarManagement {
+public class P2pProxyResourceManagementImpl implements P2pProxyResourceManagement {
    protected final JxtaNetworkManager mJxtaNetworkManager;
    private final String DOMAINE="p2p.linphone.org";
-   private final static Logger mLog = Logger.getLogger(P2pProxySipProxyRegistrarManagementImpl.class);
-   P2pProxySipProxyRegistrarManagementImpl(JxtaNetworkManager aJxtaNetworkManager) {
+   private final static Logger mLog = Logger.getLogger(P2pProxyResourceManagementImpl.class);
+   P2pProxyResourceManagementImpl(JxtaNetworkManager aJxtaNetworkManager) {
       mJxtaNetworkManager = aJxtaNetworkManager;
    }
    public String lookupSipProxyUri(String aDomaine) throws P2pProxyException {
@@ -34,5 +34,8 @@ public class P2pProxySipProxyRegistrarManagementImpl implements P2pProxySipProxy
          throw new P2pProxyException(e);
       }  
    }
+public String[] getMediaServerList() throws P2pProxyException {
+	throw new RuntimeException("not implmented yet");
+}
 
 }

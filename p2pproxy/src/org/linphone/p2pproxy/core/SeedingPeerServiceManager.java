@@ -17,7 +17,7 @@ import org.linphone.p2pproxy.core.media.rtprelay.RtpRelayService;
 import org.linphone.p2pproxy.core.media.rtprelay.RtpRelayServerConfig;
 import org.linphone.p2pproxy.core.rdvautoconfig.PeerInfoProviderService;
 
-public class SeedingPeerServiceManager extends P2pProxySipProxyRegistrarManagementImpl implements ServiceProvider {
+public class SeedingPeerServiceManager extends P2pProxyResourceManagementImpl implements ServiceProvider {
    protected final Configurator mConfigurator;
    private final PeerInfoProviderService mPeerInfoProviderService; 
    private RtpRelayService mUdpRelayService = null; 

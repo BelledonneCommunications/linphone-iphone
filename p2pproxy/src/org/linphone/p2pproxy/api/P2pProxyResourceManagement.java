@@ -21,7 +21,7 @@ package org.linphone.p2pproxy.api;
 
 
 
-public interface P2pProxySipProxyRegistrarManagement {
+public interface P2pProxyResourceManagement {
    /**
     * 
     * @return the SIP uri of an available sip proxy registrar for a given domaine 
@@ -29,5 +29,9 @@ public interface P2pProxySipProxyRegistrarManagement {
    public String lookupSipProxyUri(String aDomaine) throws P2pProxyException ;
    
    public void revokeSipProxy(String aProxy) throws P2pProxyException;
+   /**
+    * return 2 adresses where to contact media server (stun/rtprelay)
+    */
+   public String[] getMediaServerList() throws P2pProxyException;
    
 }

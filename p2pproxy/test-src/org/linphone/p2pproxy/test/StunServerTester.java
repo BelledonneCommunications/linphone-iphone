@@ -25,6 +25,7 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
+import org.linphone.p2pproxy.core.GenericUdpSession;
 import org.linphone.p2pproxy.core.stun.StunServer;
 
 
@@ -53,12 +54,14 @@ public class StunServerTester extends TestCase {
 	DatagramSocket socketTest1 = null;
 	DiscoveryInfo di = null;
 	static StunServer mSturServer = null;
+	static GenericUdpSession mGenericUdpSession = null;
 	
 
 	public void setUp() throws Exception {
 	    
 	   if (mSturServer == null) {
 	       BasicConfigurator.configure();
+	       mGenericUdpSession = new GenericUdpSession(aSocketAddress,this);
 	       if (mSturServer == null) mSturServer = new StunServer(port,InetAddress.getByName("localhost"),port+1);
 	       mSturServer.start();
 	       iaddress = InetAddress.getLocalHost();

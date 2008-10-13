@@ -35,7 +35,7 @@ import org.linphone.p2pproxy.core.media.rtprelay.RtpRelayServiceClient;
 import org.linphone.p2pproxy.core.rdvautoconfig.PeerInfoServiceClient;
 import org.linphone.p2pproxy.core.sipproxy.SipProxyRegistrarAdvertisement;
 
-public abstract class P2pProxyManagementImpl extends P2pProxySipProxyRegistrarManagementImpl implements ServiceProvider,P2pProxyManagement {
+public abstract class P2pProxyManagementImpl extends P2pProxyResourceManagementImpl implements ServiceProvider,P2pProxyManagement {
    protected final Configurator mConfigurator;
    private final PeerInfoServiceClient mPeerInfoServiceClient;
    private final static Logger mLog = Logger.getLogger(P2pProxyManagementImpl.class);

@@ -5,6 +5,7 @@
 static void * thread_starter(void *args){
 	char* largs[] = {"-seeding-server","-sip", "5058"};
 	p2pproxy_application_start(3,largs);
+	printf("exit from application \n");
 	return NULL;
 }
 
