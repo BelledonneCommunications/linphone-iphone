@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Linphone 0.9.1\n"
 "Report-Msgid-Bugs-To: linphone-developers@nongnu.org\n"
-"POT-Creation-Date: 2008-10-10 14:55+0200\n"
+"POT-Creation-Date: 2008-10-12 11:04+0200\n"
 "PO-Revision-Date: 2002-10-15 HO:MI+ZONE\n"
 "Last-Translator: Alberto Zanoni <alberto.zanoni@tiscalinet.it>\n"
 "Language-Team: it <it@li.org>\n"
@@ -302,12 +302,12 @@ msgstr ""
 msgid "Contact information"
 msgstr "Informazioni"
 
-#: gtk-glade/contact.glade:149 gtk-glade/password.glade:110
+#: gtk-glade/contact.glade:149 gtk-glade/password.glade:112
 #: gtk-glade/sip_account.glade:202
 msgid "gtk-cancel"
 msgstr ""
 
-#: gtk-glade/contact.glade:161 gtk-glade/password.glade:98
+#: gtk-glade/contact.glade:161 gtk-glade/password.glade:100
 #: gtk-glade/sip_account.glade:190
 msgid "gtk-ok"
 msgstr ""
@@ -329,15 +329,15 @@ msgstr ""
 msgid "Please enter your password for domain..."
 msgstr ""
 
-#: gtk-glade/password.glade:49
-#, fuzzy
-msgid "Username"
-msgstr "Manuale utente"
-
-#: gtk-glade/password.glade:55
+#: gtk-glade/password.glade:56
 #, fuzzy
 msgid "Password:"
 msgstr "Password:"
+
+#: gtk-glade/password.glade:66
+#, fuzzy
+msgid "Username"
+msgstr "Manuale utente"
 
 #: gtk-glade/sip_account.glade:8
 msgid "Linphone - Configure a SIP account"
@@ -815,20 +815,20 @@ msgid ""
 "to contact him using the following alternate resource:"
 msgstr ""
 
-#: coreapi/exevents.c:819
+#: coreapi/exevents.c:825
 msgid "Early media."
 msgstr ""
 
-#: coreapi/exevents.c:881
+#: coreapi/exevents.c:887
 #, c-format
 msgid "Registration on %s failed: %s"
 msgstr ""
 
-#: coreapi/exevents.c:881
+#: coreapi/exevents.c:887
 msgid "no response timeout"
 msgstr ""
 
-#: coreapi/exevents.c:895
+#: coreapi/exevents.c:901
 #, c-format
 msgid "Registration on %s successful."
 msgstr ""

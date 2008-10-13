@@ -346,7 +346,8 @@ int ms_load_plugins(const char *dir){
 		return -1;
 	}
 	while( (de=readdir(ds))!=NULL){
-		if (de->d_type==DT_REG && strstr(de->d_name,PLUGINS_EXT)!=NULL){
+		if ((de->d_type==DT_REG || de->d_type==DT_LNK  || de->d_type==DT_UNKNOWN) 
+			&& strstr(de->d_name,PLUGINS_EXT)==de->d_name+strlen(de->d_name)-strlen(PLUGINS_EXT) ) {
 			void *handle;
 			fullpath=ms_strdup_printf("%s/%s",dir,de->d_name);
 			ms_message("Loading plugin %s...",fullpath);

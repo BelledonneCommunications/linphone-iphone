@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Linphone 0.9.1\n"
 "Report-Msgid-Bugs-To: linphone-developers@nongnu.org\n"
-"POT-Creation-Date: 2008-10-10 14:55+0200\n"
+"POT-Creation-Date: 2008-10-12 11:04+0200\n"
 "PO-Revision-Date: 2002-12-06 17:33+0100\n"
 "Last-Translator: Simon Morlat <simon.morlat@linphone.org>\n"
 "Language-Team: french <fr@li.org>\n"
@@ -294,12 +294,12 @@ msgstr "Autoriser ce contact à voir ma présence"
 msgid "Contact information"
 msgstr "Information sur le contact"
 
-#: gtk-glade/contact.glade:149 gtk-glade/password.glade:110
+#: gtk-glade/contact.glade:149 gtk-glade/password.glade:112
 #: gtk-glade/sip_account.glade:202
 msgid "gtk-cancel"
 msgstr ""
 
-#: gtk-glade/contact.glade:161 gtk-glade/password.glade:98
+#: gtk-glade/contact.glade:161 gtk-glade/password.glade:100
 #: gtk-glade/sip_account.glade:190
 msgid "gtk-ok"
 msgstr ""
@@ -321,14 +321,14 @@ msgstr "Linphone - Autentification requise"
 msgid "Please enter your password for domain..."
 msgstr "Entrez votre mot de passe pour le domaine %s"
 
-#: gtk-glade/password.glade:49
+#: gtk-glade/password.glade:56
+msgid "Password:"
+msgstr ""
+
+#: gtk-glade/password.glade:66
 #, fuzzy
 msgid "Username"
 msgstr "Votre nom d'utilisateur"
-
-#: gtk-glade/password.glade:55
-msgid "Password:"
-msgstr ""
 
 #: gtk-glade/sip_account.glade:8
 msgid "Linphone - Configure a SIP account"
@@ -808,20 +808,20 @@ msgstr ""
 "Votre correspondant n'est pas joignable actuellement mais il vous propose\n"
 "de le contacter en utilisant le moyen alternatif suivant:"
 
-#: coreapi/exevents.c:819
+#: coreapi/exevents.c:825
 msgid "Early media."
 msgstr "Prise d'appel anticipée"
 
-#: coreapi/exevents.c:881
+#: coreapi/exevents.c:887
 #, c-format
 msgid "Registration on %s failed: %s"
 msgstr "Echec de l'enregistrement sur %s: %s"
 
-#: coreapi/exevents.c:881
+#: coreapi/exevents.c:887
 msgid "no response timeout"
 msgstr "Pas de réponse."
 
-#: coreapi/exevents.c:895
+#: coreapi/exevents.c:901
 #, c-format
 msgid "Registration on %s successful."
 msgstr "Enregistrement sur %s effectué."

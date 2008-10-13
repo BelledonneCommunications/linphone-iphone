@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-2.0.0\n"
 "Report-Msgid-Bugs-To: linphone-developers@nongnu.org\n"
-"POT-Creation-Date: 2008-10-10 14:55+0200\n"
+"POT-Creation-Date: 2008-10-12 11:04+0200\n"
 "PO-Revision-Date: 2007-11-21 17:50+0100\n"
 "Last-Translator: Petr Pisar <petr.pisar@atlas.cz>\n"
 "Language-Team: Czech <translation-team-cs@lists.sourceforge.net>\n"
@@ -304,12 +304,12 @@ msgstr ""
 msgid "Contact information"
 msgstr "Informace o kontaktu"
 
-#: gtk-glade/contact.glade:149 gtk-glade/password.glade:110
+#: gtk-glade/contact.glade:149 gtk-glade/password.glade:112
 #: gtk-glade/sip_account.glade:202
 msgid "gtk-cancel"
 msgstr ""
 
-#: gtk-glade/contact.glade:161 gtk-glade/password.glade:98
+#: gtk-glade/contact.glade:161 gtk-glade/password.glade:100
 #: gtk-glade/sip_account.glade:190
 msgid "gtk-ok"
 msgstr ""
@@ -332,15 +332,15 @@ msgstr "Žádost o ověření"
 msgid "Please enter your password for domain..."
 msgstr ""
 
-#: gtk-glade/password.glade:49
-#, fuzzy
-msgid "Username"
-msgstr "uživatelské jméno:"
-
-#: gtk-glade/password.glade:55
+#: gtk-glade/password.glade:56
 #, fuzzy
 msgid "Password:"
 msgstr "heslo:"
+
+#: gtk-glade/password.glade:66
+#, fuzzy
+msgid "Username"
+msgstr "uživatelské jméno:"
 
 #: gtk-glade/sip_account.glade:8
 msgid "Linphone - Configure a SIP account"
@@ -842,20 +842,20 @@ msgstr ""
 "Uživatel je nedostupný, ale navrhuje tyto alternativní\n"
 "setkání:"
 
-#: coreapi/exevents.c:819
+#: coreapi/exevents.c:825
 msgid "Early media."
 msgstr "Časná média."
 
-#: coreapi/exevents.c:881
+#: coreapi/exevents.c:887
 #, c-format
 msgid "Registration on %s failed: %s"
 msgstr "Registrace na %s selhala: %s"
 
-#: coreapi/exevents.c:881
+#: coreapi/exevents.c:887
 msgid "no response timeout"
 msgstr "odpověď nedorazila včas"
 
-#: coreapi/exevents.c:895
+#: coreapi/exevents.c:901
 #, c-format
 msgid "Registration on %s successful."
 msgstr "Registrace na %s byla úspěšná."

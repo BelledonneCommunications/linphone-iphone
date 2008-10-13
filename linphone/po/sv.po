@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone 1.1.0\n"
 "Report-Msgid-Bugs-To: linphone-developers@nongnu.org\n"
-"POT-Creation-Date: 2008-10-10 14:55+0200\n"
+"POT-Creation-Date: 2008-10-12 11:04+0200\n"
 "PO-Revision-Date: 2005-11-23 13:51+0100\n"
 "Last-Translator: Daniel Nylander <po@danielnylander.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
@@ -304,12 +304,12 @@ msgstr ""
 msgid "Contact information"
 msgstr "Kontaktinformation"
 
-#: gtk-glade/contact.glade:149 gtk-glade/password.glade:110
+#: gtk-glade/contact.glade:149 gtk-glade/password.glade:112
 #: gtk-glade/sip_account.glade:202
 msgid "gtk-cancel"
 msgstr ""
 
-#: gtk-glade/contact.glade:161 gtk-glade/password.glade:98
+#: gtk-glade/contact.glade:161 gtk-glade/password.glade:100
 #: gtk-glade/sip_account.glade:190
 msgid "gtk-ok"
 msgstr ""
@@ -332,15 +332,15 @@ msgstr "Autentiserings krävs"
 msgid "Please enter your password for domain..."
 msgstr ""
 
-#: gtk-glade/password.glade:49
-#, fuzzy
-msgid "Username"
-msgstr "användarnamn:"
-
-#: gtk-glade/password.glade:55
+#: gtk-glade/password.glade:56
 #, fuzzy
 msgid "Password:"
 msgstr "lösenord:"
+
+#: gtk-glade/password.glade:66
+#, fuzzy
+msgid "Username"
+msgstr "användarnamn:"
 
 #: gtk-glade/sip_account.glade:8
 msgid "Linphone - Configure a SIP account"
@@ -845,20 +845,20 @@ msgstr ""
 "Användare är inte tillgänglig för tillfället men han/hon inbjuder\n"
 "dig att kontakta honom/henne med följande alternativa resurs:"
 
-#: coreapi/exevents.c:819
+#: coreapi/exevents.c:825
 msgid "Early media."
 msgstr ""
 
-#: coreapi/exevents.c:881
+#: coreapi/exevents.c:887
 #, fuzzy, c-format
 msgid "Registration on %s failed: %s"
 msgstr "Registrering misslyckades (timeout)."
 
-#: coreapi/exevents.c:881
+#: coreapi/exevents.c:887
 msgid "no response timeout"
 msgstr ""
 
-#: coreapi/exevents.c:895
+#: coreapi/exevents.c:901
 #, fuzzy, c-format
 msgid "Registration on %s successful."
 msgstr "Registrering på %s lyckades."
