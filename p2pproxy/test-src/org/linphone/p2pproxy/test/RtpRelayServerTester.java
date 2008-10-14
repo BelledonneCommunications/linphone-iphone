@@ -13,17 +13,26 @@ import junit.framework.TestCase;
 import org.apache.log4j.BasicConfigurator;
 import org.junit.After;
 import org.junit.Before;
+import org.linphone.p2pproxy.core.GenericUdpSession;
 import org.linphone.p2pproxy.core.media.rtprelay.RtpRelayServer;
+import org.linphone.p2pproxy.core.stun.StunServer;
 
 public class RtpRelayServerTester extends TestCase{
 
 	static private RtpRelayServer mRtpRelayServer;
 	static private int RTP_SERVER_PORT = 16000;
+	private static  GenericUdpSession mGenericUdpSession;
+	static StunServer mSturServer = null;
+	
 	@Before
 	public void setUp() throws Exception {
 		if (mRtpRelayServer == null) {
 		   BasicConfigurator.configure();
-		   mRtpRelayServer =  new RtpRelayServer(new InetSocketAddress(RTP_SERVER_PORT),1000,1000); 
+		   mGenericUdpSession = new GenericUdpSession(new InetSocketAddress(RTP_SERVER_PORT));
+		   mRtpRelayServer =  new RtpRelayServer(mGenericUdpSession.getSocket(),1000,1000);
+		   mGenericUdpSession.addMessageHandler(mRtpRelayServer);
+		   mSturServer = new StunServer(mGenericUdpSession.getSocket());
+           mGenericUdpSession.addMessageHandler(mSturServer);
 		}
 	}
 

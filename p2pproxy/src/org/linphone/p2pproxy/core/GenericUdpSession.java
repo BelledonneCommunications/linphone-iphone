@@ -26,6 +26,8 @@ import java.net.InetSocketAddress;
 
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 
@@ -40,13 +42,16 @@ public class GenericUdpSession implements Runnable {
    private  final DatagramSocket mLocalSocket;
    private final Thread mLocalSocketThread;
 
-   private final MessageHandler mMessageHandler;
+   private final List<MessageHandler> mMessageHandlerList = new ArrayList<MessageHandler>();
    private boolean mExit = false;
-   public GenericUdpSession(InetSocketAddress aSocketAddress,MessageHandler aMessageHandler) throws SocketException, UnknownHostException {
-      mMessageHandler =  aMessageHandler;
+   public GenericUdpSession(InetSocketAddress aSocketAddress) throws SocketException, UnknownHostException {
       mLocalSocket = new DatagramSocket(aSocketAddress);
       mLocalSocketThread = new Thread(this,"udp session rtp ["+aSocketAddress+"]");
       mLocalSocketThread.start();
+   }
+   public GenericUdpSession(InetSocketAddress aSocketAddress,MessageHandler aMessageHandler) throws SocketException, UnknownHostException {
+      this(aSocketAddress);
+      mMessageHandlerList.add(aMessageHandler);
    }
    public void run() {
 
@@ -56,7 +61,9 @@ public class GenericUdpSession implements Runnable {
                DatagramPacket lDatagramPacket = new DatagramPacket(lBuff,lBuff.length);
                mLocalSocket.receive(lDatagramPacket);
    			if (mLog.isInfoEnabled()) mLog.info(mLocalSocket.getLocalAddress().getHostAddress() + ":" + mLocalSocket.getLocalPort() + " datagram received from " + lDatagramPacket.getAddress().getHostAddress() + ":" + lDatagramPacket.getPort());
-               mMessageHandler.onMessage(lDatagramPacket);
+               for (MessageHandler lmMessageHandlerList : mMessageHandlerList) {
+                  lmMessageHandlerList.onMessage(lDatagramPacket);
+               }
  
            }catch(Exception e) {
                //nop
@@ -73,6 +80,9 @@ public class GenericUdpSession implements Runnable {
 
    public DatagramSocket getSocket() {
       return mLocalSocket;
+   }
+   public void addMessageHandler(MessageHandler aMessageHandler) {
+      mMessageHandlerList.add(aMessageHandler);
    }
 
 

@@ -21,6 +21,7 @@ package org.linphone.p2pproxy.core.media.rtprelay;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.SocketException;
@@ -37,8 +38,9 @@ import org.linphone.p2pproxy.core.GenericUdpSession;
 
 
 public class RtpRelayServer implements GenericUdpSession.MessageHandler {
-   private final static Logger mLog = Logger.getLogger(RtpRelayServer.class); 
-   private final GenericUdpSession mGenericUdpSession;
+   private final static Logger mLog = Logger.getLogger(RtpRelayServer.class);
+   private final DatagramSocket mSocket;
+   
    
    class RoutingTable {
       class GarbageCollectorTask extends TimerTask {
@@ -187,12 +189,13 @@ public class RtpRelayServer implements GenericUdpSession.MessageHandler {
    
    private static final String SESSIONID_NAME="RSID"; //Relay session Id 
    private  final RoutingTable mRoutingTable;
-   public RtpRelayServer(InetSocketAddress aSocketAddress) throws SocketException, UnknownHostException {
-      this(aSocketAddress,3600000,60000);
+   public RtpRelayServer(DatagramSocket aListeningSocket) throws SocketException, UnknownHostException {
+      this(aListeningSocket,3600000,60000);
    }
-   public RtpRelayServer(InetSocketAddress aSocketAddress,long aMaxSilenceDuration, long aGCPeriod) throws SocketException, UnknownHostException {
+   public RtpRelayServer(DatagramSocket aListeningSocket,long aMaxSilenceDuration, long aGCPeriod) throws SocketException, UnknownHostException {
       mRoutingTable = new RoutingTable(aMaxSilenceDuration,aGCPeriod);
-      mGenericUdpSession = new GenericUdpSession(aSocketAddress,this);
+      mSocket = aListeningSocket;
+     
    }
    public void onMessage(DatagramPacket aMessage) {
       try {
@@ -218,7 +221,7 @@ public class RtpRelayServer implements GenericUdpSession.MessageHandler {
             // ok forwarding
             if (mLog.isInfoEnabled()) mLog.info("forwarding ["+aMessage.getLength()+"] bytes  from ["+aMessage.getSocketAddress()+"] to ["+lDestAddress+"]");
             aMessage.setSocketAddress(lDestAddress);
-            mGenericUdpSession.getSocket().send(aMessage);
+            mSocket.send(aMessage);
          }
       } catch (IOException e) {
          mLog.error("cannot forward ["+aMessage+"]", e);
@@ -228,11 +231,9 @@ public class RtpRelayServer implements GenericUdpSession.MessageHandler {
       }      
    }
    public InetSocketAddress getInetSocketAddress() {
-      return (InetSocketAddress) mGenericUdpSession.getSocket().getLocalSocketAddress();
+      return (InetSocketAddress) mSocket.getLocalSocketAddress();
    }
-   public void close() {
-      mGenericUdpSession.close();
-   }
+ 
    private long getSsrc(DatagramPacket aMessage) {
 //      The RTP header has the following format:
 //
