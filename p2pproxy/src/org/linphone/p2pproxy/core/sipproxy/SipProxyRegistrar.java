@@ -56,7 +56,7 @@ public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarM
    private final static Logger mLog = Logger.getLogger(SipProxyRegistrar.class);   
    public final static String REGISTRAR_PORT="org.linphone.p2pproxy.SipListener.registrar.port";
    public final static String REGISTRAR_PUBLIC_ADDRESS="org.linphone.p2pproxy.SipListener.registrar.public.address";
-   
+   public final static String ADV_NAME = "p2p-proxy-proxyregistrar";
    //
    private final SipProvider mProvider;
    private final JxtaNetworkManager mJxtaNetworkManager;
@@ -68,7 +68,7 @@ public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarM
    private final P2pProxyAccountManagementMBean mP2pProxyAccountManagement;
    private final Configurator mProperties;
    private final SuperPeerProxy mSuperPeerProxy;
-   private final SipProxyRegistrarAdvertisement mProxyRegistrationAdvertisement;
+   private final NetworkResourceAdvertisement mProxyRegistrationAdvertisement;
   
    //private long mNumberOfEstablishedCall;
    private long mNumberOfRefusedRegistration;
@@ -172,7 +172,7 @@ public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarM
       mProvider.addSipProviderListener(SipProvider.PROMISQUE,this);
       mPool = Executors.newCachedThreadPool();
       mSuperPeerProxy = new SuperPeerProxy(aJxtaNetworkManager, "sip:"+mProvider.getViaAddress()+":"+mProvider.getPort(),mRegistrationTab);
-      mProxyRegistrationAdvertisement = (SipProxyRegistrarAdvertisement) AdvertisementFactory.newAdvertisement(SipProxyRegistrarAdvertisement.getAdvertisementType());
+      mProxyRegistrationAdvertisement = (NetworkResourceAdvertisement) AdvertisementFactory.newAdvertisement(NetworkResourceAdvertisement.getAdvertisementType());
       mProxyRegistrationAdvertisement.setID(IDFactory.newCodatID(mJxtaNetworkManager.getPeerGroup().getPeerGroupID(), mSuperPeerProxy.getSipProxyRegistrarAddress().toString().getBytes()));
       mProxyRegistrationAdvertisement.setAddress(mSuperPeerProxy.getSipProxyRegistrarAddress());
       mJxtaNetworkManager.getPeerGroup().getDiscoveryService().publish(mProxyRegistrationAdvertisement,60000,30000);

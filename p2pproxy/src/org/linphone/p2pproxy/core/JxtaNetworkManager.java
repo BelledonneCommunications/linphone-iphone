@@ -36,7 +36,7 @@ import javax.security.cert.CertificateException;
 
 import org.apache.log4j.Logger;
 import org.linphone.p2pproxy.api.P2pProxyException;
-import org.linphone.p2pproxy.core.sipproxy.SipProxyRegistrarAdvertisement;
+import org.linphone.p2pproxy.core.sipproxy.NetworkResourceAdvertisement;
 import org.linphone.p2pproxy.core.sipproxy.superpeers.P2pUserRegistrationAdvertisement;
 
 
@@ -207,7 +207,7 @@ public class JxtaNetworkManager {
       // in this cast the AdvertisementTutorial
       AdvertisementFactory.registerAdvertisementInstance(P2pUserProfileAdvertisement.getAdvertisementType(),new P2pUserProfileAdvertisement.Instantiator());
       AdvertisementFactory.registerAdvertisementInstance(P2pUserRegistrationAdvertisement.getAdvertisementType(),new P2pUserRegistrationAdvertisement.Instantiator());
-      AdvertisementFactory.registerAdvertisementInstance(SipProxyRegistrarAdvertisement.getAdvertisementType(),new SipProxyRegistrarAdvertisement.Instantiator());
+      AdvertisementFactory.registerAdvertisementInstance(NetworkResourceAdvertisement.getAdvertisementType(),new NetworkResourceAdvertisement.Instantiator());
       
       mRendezVousService = mNetworkPeerGroup.getRendezVousService();
       mLog.info("Node PeerID ["+mNetworkPeerGroup.getPeerID()+"]");

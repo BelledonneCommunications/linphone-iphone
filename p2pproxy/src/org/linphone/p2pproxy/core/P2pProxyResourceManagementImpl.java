@@ -3,7 +3,8 @@ package org.linphone.p2pproxy.core;
 import org.apache.log4j.Logger;
 import org.linphone.p2pproxy.api.P2pProxyException;
 import org.linphone.p2pproxy.api.P2pProxyResourceManagement;
-import org.linphone.p2pproxy.core.sipproxy.SipProxyRegistrarAdvertisement;
+import org.linphone.p2pproxy.core.sipproxy.NetworkResourceAdvertisement;
+import org.linphone.p2pproxy.core.sipproxy.SipProxyRegistrar;
 
 public class P2pProxyResourceManagementImpl implements P2pProxyResourceManagement {
    protected final JxtaNetworkManager mJxtaNetworkManager;
@@ -18,7 +19,7 @@ public class P2pProxyResourceManagementImpl implements P2pProxyResourceManagemen
             //unknown domaine
             return null;
          }
-         SipProxyRegistrarAdvertisement lSipProxyRegistrarAdvertisement = (SipProxyRegistrarAdvertisement) (mJxtaNetworkManager.getAdvertisement(null, SipProxyRegistrarAdvertisement.NAME, true));
+         NetworkResourceAdvertisement lSipProxyRegistrarAdvertisement = (NetworkResourceAdvertisement) (mJxtaNetworkManager.getAdvertisement(null, SipProxyRegistrar.ADV_NAME, true));
          return lSipProxyRegistrarAdvertisement.getAddress();
       }catch (Exception e) {
          throw new P2pProxyException(e);
@@ -27,7 +28,7 @@ public class P2pProxyResourceManagementImpl implements P2pProxyResourceManagemen
    }
    public void revokeSipProxy(String aProxy) throws P2pProxyException {
       try {
-         SipProxyRegistrarAdvertisement lSipProxyRegistrarAdvertisement = (SipProxyRegistrarAdvertisement) (mJxtaNetworkManager.getAdvertisement(null, SipProxyRegistrarAdvertisement.ADDRESS_TAG, true));
+         NetworkResourceAdvertisement lSipProxyRegistrarAdvertisement = (NetworkResourceAdvertisement) (mJxtaNetworkManager.getAdvertisement(null, NetworkResourceAdvertisement.ADDRESS_TAG, true));
          mJxtaNetworkManager.getPeerGroup().getDiscoveryService().flushAdvertisement(lSipProxyRegistrarAdvertisement);
          mLog.info(aProxy +"revoked");
       } catch (Exception e) {

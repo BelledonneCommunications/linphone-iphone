@@ -56,7 +56,7 @@ import net.jxta.id.IDFactory;
  * &lt;/jxta:System>
  * </pre>
  */
-public class SipProxyRegistrarAdvertisement extends ExtendableAdvertisement implements Comparable, Cloneable, Serializable {
+public class NetworkResourceAdvertisement extends ExtendableAdvertisement implements Comparable, Cloneable, Serializable {
    /**
     * Instantiator
     */
@@ -68,7 +68,7 @@ public class SipProxyRegistrarAdvertisement extends ExtendableAdvertisement impl
        * @return String the type of advertisement
        */
       public String getAdvertisementType() {
-         return SipProxyRegistrarAdvertisement.getAdvertisementType();
+         return NetworkResourceAdvertisement.getAdvertisementType();
       }
 
       /**
@@ -79,7 +79,7 @@ public class SipProxyRegistrarAdvertisement extends ExtendableAdvertisement impl
        *         could not be created.
        */
       public Advertisement newInstance() {
-         return new SipProxyRegistrarAdvertisement();
+         return new NetworkResourceAdvertisement();
       }
 
       /**
@@ -92,21 +92,22 @@ public class SipProxyRegistrarAdvertisement extends ExtendableAdvertisement impl
        *         could not be created.
        */
       public Advertisement newInstance(net.jxta.document.Element root) {
-         return new SipProxyRegistrarAdvertisement(root);
+         return new NetworkResourceAdvertisement(root);
       }
    }
    private ID mId ;;
    private String mAddress;
+   private String mName;
    public final static String ADDRESS_TAG = "address";
    private final static String ID_TAG = "ID";
    final static String NAME_TAG = "Name";
-   public final static String NAME = "p2p-proxy-proxyregistrar";
+   //public final static String NAME = "p2p-proxy-proxyregistrar";
    private final static String[] mIndexs = {NAME_TAG};
-   private final static Logger mLog = Logger.getLogger(SipProxyRegistrarAdvertisement.class);
+   private final static Logger mLog = Logger.getLogger(NetworkResourceAdvertisement.class);
    /**
     * 
     */
-   public SipProxyRegistrarAdvertisement(Element root) {
+   public NetworkResourceAdvertisement(Element root) {
 
       TextElement doc = (TextElement) root;
 
@@ -116,7 +117,7 @@ public class SipProxyRegistrarAdvertisement extends ExtendableAdvertisement impl
       initialize(doc);
 
    }
-   public SipProxyRegistrarAdvertisement() {
+   public NetworkResourceAdvertisement() {
 
       // TODO Auto-generated constructor stub
    }
@@ -142,7 +143,7 @@ public class SipProxyRegistrarAdvertisement extends ExtendableAdvertisement impl
    }
 
    public String getName() {
-      return NAME;
+      return mName;
    }
    @Override
    public ID getID() {
@@ -154,7 +155,7 @@ public class SipProxyRegistrarAdvertisement extends ExtendableAdvertisement impl
       return mIndexs;
    }
    public static String getAdvertisementType() {
-      return "jxta:" +NAME;
+      return "jxta:p2p-proxy-networkresource";
    }
    /* (non-Javadoc)
     * @see net.jxta.document.Advertisement#toString()
@@ -215,7 +216,7 @@ public class SipProxyRegistrarAdvertisement extends ExtendableAdvertisement impl
          setAddress(elem.getTextValue());
          return true;
       } else if (elem.getName().equals(NAME_TAG)) {
-         //nop, name is static
+    	  setName(elem.getTextValue());
          return true;
       } else {
          return false;
@@ -241,6 +242,9 @@ public class SipProxyRegistrarAdvertisement extends ExtendableAdvertisement impl
    public void setAddress(String anAddress) {
       mAddress = anAddress;
    }
+   public void setName(String aName) {
+	   mName = aName;
+   }
 
    /* (non-Javadoc)
     * @see java.lang.Object#equals(java.lang.Object)
@@ -251,8 +255,8 @@ public class SipProxyRegistrarAdvertisement extends ExtendableAdvertisement impl
       if (this == obj) {
           return true;
       }
-      if (obj instanceof SipProxyRegistrarAdvertisement) {
-         SipProxyRegistrarAdvertisement adv = (SipProxyRegistrarAdvertisement) obj;
+      if (obj instanceof NetworkResourceAdvertisement) {
+         NetworkResourceAdvertisement adv = (NetworkResourceAdvertisement) obj;
           return getID().equals(adv.getID());
       }
 

@@ -37,6 +37,7 @@ import org.apache.log4j.Logger;
 import org.linphone.p2pproxy.api.P2pProxyException;
 import org.linphone.p2pproxy.core.Configurator;
 import org.linphone.p2pproxy.core.GenericService;
+import org.linphone.p2pproxy.core.GenericUdpSession;
 import org.linphone.p2pproxy.core.JxtaNetworkManager;
 import org.linphone.p2pproxy.core.ServiceProvider;
 
@@ -51,6 +52,7 @@ public class RtpRelayService  implements ServiceProvider{
    // 
    private final RtpRelayServerConfig mConfig;
    private final GenericService mGenericService;
+   private final GenericUdpSession mGenericUdpSession;
    private class SocketHandlerFactory implements GenericService.ServiceSocketHandlerFactory {
 
       public Runnable create(final Socket socket) {
@@ -109,7 +111,9 @@ public class RtpRelayService  implements ServiceProvider{
 
       mGenericService = new GenericService(properties, jxtaNetworkManager,SRV_NAME ,new SocketHandlerFactory());
       mConfig = aConfig;
-      mRtpRelayServer = new RtpRelayServer(mConfig.getAudioVideoPrivateSocketAddress());
+      mGenericUdpSession = new GenericUdpSession(mConfig.getAudioVideoPrivateSocketAddress());
+      mRtpRelayServer = new RtpRelayServer(mGenericUdpSession.getSocket());
+      mGenericUdpSession.addMessageHandler(mRtpRelayServer);
       mLog.info("UdpRelayService created "+this);
    }
 
@@ -124,7 +128,7 @@ public class RtpRelayService  implements ServiceProvider{
    }
 
    public void stop() {
-      mRtpRelayServer.close();
+	   mGenericUdpSession.close();
       mGenericService.stop();
       
    }

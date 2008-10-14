@@ -33,7 +33,7 @@ import org.linphone.p2pproxy.api.P2pProxyManagement;
 import org.linphone.p2pproxy.core.media.rtprelay.MediaType;
 import org.linphone.p2pproxy.core.media.rtprelay.RtpRelayServiceClient;
 import org.linphone.p2pproxy.core.rdvautoconfig.PeerInfoServiceClient;
-import org.linphone.p2pproxy.core.sipproxy.SipProxyRegistrarAdvertisement;
+import org.linphone.p2pproxy.core.sipproxy.NetworkResourceAdvertisement;
 
 public abstract class P2pProxyManagementImpl extends P2pProxyResourceManagementImpl implements ServiceProvider,P2pProxyManagement {
    protected final Configurator mConfigurator;

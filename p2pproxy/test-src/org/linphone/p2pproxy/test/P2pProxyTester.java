@@ -41,7 +41,8 @@ import org.linphone.p2pproxy.core.P2pProxyAccountManagement;
 import org.linphone.p2pproxy.core.P2pProxyAccountManagementMBean;
 import org.linphone.p2pproxy.core.P2pProxyInstanceImpl;
 import org.linphone.p2pproxy.core.P2pProxyMain;
-import org.linphone.p2pproxy.core.sipproxy.SipProxyRegistrarAdvertisement;
+import org.linphone.p2pproxy.core.sipproxy.NetworkResourceAdvertisement;
+import org.linphone.p2pproxy.core.sipproxy.SipProxyRegistrar;
 import org.linphone.p2pproxy.test.utils.DefaultCallListener;
 import org.linphone.p2pproxy.test.utils.SipClient;
 import org.zoolu.sip.address.NameAddress;
@@ -108,7 +109,7 @@ public class P2pProxyTester extends TestCase {
 
 	public void testGetRegistrarAdress() {
 	   try {
-	      SipProxyRegistrarAdvertisement lSipProxyRegistrarAdvertisement = (SipProxyRegistrarAdvertisement) (((JxtaNetworkManager)mP2pProxyInstance.getOpaqueNetworkManager()).getAdvertisement(null, SipProxyRegistrarAdvertisement.NAME, true));
+	      NetworkResourceAdvertisement lSipProxyRegistrarAdvertisement = (NetworkResourceAdvertisement) (((JxtaNetworkManager)mP2pProxyInstance.getOpaqueNetworkManager()).getAdvertisement(null,SipProxyRegistrar.ADV_NAME, true));
 	      mLog.info("testGetRegistrarAdress ok ["+lSipProxyRegistrarAdvertisement.getAddress()+"]");
 	   } catch (Exception e) {
 	      mLog.error("testGetRegistrarAdress ko",e);
