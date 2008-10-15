@@ -22,5 +22,33 @@ package org.linphone.p2pproxy.core.stun;
 import java.net.InetSocketAddress;
 
 public class AddressInfo {
-   InetSocketAddress  mPublicAddress,mPrivateAddress;
+   enum Mode {
+        open
+      , blockedUDP
+      , fullCone
+      , restrictedCone
+      , portRestrictedCone
+      , symmetric
+      , symmetricUDPFirewall
+      , unknown
+   }
+   private final InetSocketAddress mPrivateAddress;
+   private InetSocketAddress mPublicAddress;
+   private Mode mMode = Mode.unknown;
+   
+   AddressInfo(InetSocketAddress aPrivateAddress) {
+      mPrivateAddress = aPrivateAddress;
+   }
+   public Mode getType() {
+      return mMode;
+   }
+   public void setMode(Mode aMode) {
+      mMode = aMode;
+   }
+   public InetSocketAddress getPrivateAddress() {
+      return mPrivateAddress;
+   }
+   public InetSocketAddress getPublicAddress() {
+      return mPrivateAddress;
+   }
 }
