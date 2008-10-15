@@ -361,7 +361,8 @@ static void update_sps(DecData *d, mblk_t *sps){
 static void update_pps(DecData *d, mblk_t *pps){
 	if (d->pps)
 		freemsg(d->pps);
-	d->pps=dupb(pps);
+	if (pps) d->pps=dupb(pps);
+	else d->pps=NULL;
 }
 
 static bool_t check_sps_pps_change(DecData *d, mblk_t *sps, mblk_t *pps){
@@ -372,6 +373,7 @@ static bool_t check_sps_pps_change(DecData *d, mblk_t *sps, mblk_t *pps){
 			if (ret1) {
 				update_sps(d,sps);
 				ms_message("SPS changed !");
+				update_pps(d,NULL);
 			}
 		}
 	}else if (sps) {
