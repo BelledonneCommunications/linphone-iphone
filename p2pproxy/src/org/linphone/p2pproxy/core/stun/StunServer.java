@@ -50,6 +50,7 @@ import de.javawi.jstun.util.Address;
 public class StunServer implements GenericUdpSession.MessageHandler {
 	private static Logger mLog = Logger.getLogger(StunServer.class);
 	private final DatagramSocket mSocket;
+	public final static String ADV_NAME = "p2p-proxy-stunserver";
 	public StunServer(DatagramSocket mListeningSocket) throws SocketException {
 		mSocket = mListeningSocket;
 	}
