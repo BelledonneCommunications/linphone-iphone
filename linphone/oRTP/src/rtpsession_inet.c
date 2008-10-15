@@ -47,7 +47,11 @@ static bool_t try_connect(int fd, const struct sockaddr *dest, socklen_t addrlen
 static ortp_socket_t create_and_bind(const char *addr, int port, int *sock_family, bool_t reuse_addr){
 	int err;
 	int optval = 1;
-	ortp_socket_t sock=-1;
+#if defined(WIN32) || defined(_WIN32_WCE)
+  ortp_socket_t sock=INVALID_SOCKET;
+#else
+  ortp_socket_t sock=-1;
+#endif
 #ifdef ORTP_INET6
 	char num[8];
 	struct addrinfo hints, *res0, *res;
@@ -64,13 +68,22 @@ static ortp_socket_t create_and_bind(const char *addr, int port, int *sock_famil
 	err = getaddrinfo(addr,num, &hints, &res0);
 	if (err!=0) {
 		ortp_warning ("Error in getaddrinfo on (addr=%s port=%i): %s", addr, port, gai_strerror(err));
+#if defined(WIN32) || defined(_WIN32_WCE)
+		return INVALID_SOCKET;
+#else
 		return -1;
+#endif
 	}
 	
 	for (res = res0; res; res = res->ai_next) {
 		sock = socket(res->ai_family, res->ai_socktype, 0);
-		if (sock < 0)
+#if defined(WIN32) || defined(_WIN32_WCE)
+    if (sock==INVALID_SOCKET)
+      continue;
+#else
+    if (sock < 0)
 		  continue;
+#endif
 		if (reuse_addr){
 			err = setsockopt (sock, SOL_SOCKET, SO_REUSEADDR,
 					(SOCKET_OPTION_VALUE)&optval, sizeof (optval));
@@ -86,7 +99,11 @@ static ortp_socket_t create_and_bind(const char *addr, int port, int *sock_famil
 		  {
 		    ortp_warning ("Fail to bind rtp socket to (addr=%s port=%i) : %s.", addr,port, getSocketError());
 		    close_socket (sock);
-			sock=-1;
+#if defined(WIN32) || defined(_WIN32_WCE)
+		    sock=INVALID_SOCKET;
+#else
+		    sock=-1;
+#endif
 		    continue;
 		  }
 #ifndef __hpux
@@ -103,7 +120,11 @@ static ortp_socket_t create_and_bind(const char *addr, int port, int *sock_famil
 			    {
 			      ortp_warning ("Fail to join address group: %s.", getSocketError());
 			      close_socket (sock);
-					sock=-1;
+#if defined(WIN32) || defined(_WIN32_WCE)
+			      sock=INVALID_SOCKET;
+#else
+			      sock=-1;
+#endif
 			      continue;
 			    }
 			}
@@ -119,7 +140,11 @@ static ortp_socket_t create_and_bind(const char *addr, int port, int *sock_famil
 			    {
 			      ortp_warning ("Fail to join address group: %s.", getSocketError());
 			      close_socket (sock);
-					sock=-1;
+#if defined(WIN32) || defined(_WIN32_WCE)
+			      sock=INVALID_SOCKET;
+#else
+			      sock=-1;
+#endif
 			      continue;
 			    }
 			}
@@ -136,14 +161,23 @@ static ortp_socket_t create_and_bind(const char *addr, int port, int *sock_famil
 	if (err < 0)
 	{
 		ortp_warning ("Error in socket address:%s.", getSocketError());
+#if defined(WIN32) || defined(_WIN32_WCE)
+		return INVALID_SOCKET;
+#else
 		return err;
+#endif
 	}
 	saddr.sin_port = htons (port);
 
 	sock = socket (PF_INET, SOCK_DGRAM, 0);
-	
+#if defined(WIN32) || defined(_WIN32_WCE)
+  if (sock==INVALID_SOCKET)
+    return INVALID_SOCKET;
+#else
 	if (sock<0) return -1;
-	if (reuse_addr){
+#endif
+
+  if (reuse_addr){
 		err = setsockopt (sock, SOL_SOCKET, SO_REUSEADDR,
 				(SOCKET_OPTION_VALUE)&optval, sizeof (optval));
 		if (err < 0)
@@ -160,12 +194,22 @@ static ortp_socket_t create_and_bind(const char *addr, int port, int *sock_famil
 	{
 		ortp_warning ("Fail to bind rtp socket to port %i: %s.", port, getSocketError());
 		close_socket (sock);
+#if defined(WIN32) || defined(_WIN32_WCE)
+    return INVALID_SOCKET;
+#else
 		return -1;
+#endif
 	}
 #endif
+#if defined(WIN32) || defined(_WIN32_WCE)
+	if (sock!=INVALID_SOCKET){
+		set_non_blocking_socket (sock);
+	}
+#else
 	if (sock>=0){
 		set_non_blocking_socket (sock);
 	}
+#endif
 	return sock;
 }
 
@@ -217,10 +261,17 @@ static ortp_socket_t create_and_bind_random(const char *localip, int *sock_famil
 		while ((localport < 5000) || (localport > 0xffff));
 		/*do not set REUSEADDR in case of random allocation */
 		sock = create_and_bind(localip, localport, sock_family,FALSE);
+#if defined(WIN32) || defined(_WIN32_WCE)
+    if (sock!=INVALID_SOCKET) {
+			*port=localport;
+			return sock;
+		}      
+#else
 		if (sock>=0) {
 			*port=localport;
 			return sock;
 		}
+#endif
 	}
 	ortp_warning("create_and_bind_random: Could not find a random port for %s !",localip);
 	return -1;
@@ -255,14 +306,24 @@ rtp_session_set_local_addr (RtpSession * session, const char * addr, int port)
 		sock=create_and_bind(addr,port,&sockfamily,TRUE);
 	else
 		sock=create_and_bind_random(addr,&sockfamily,&port);
-	if (sock>=0){
+#if defined(WIN32) || defined(_WIN32_WCE)
+  if (sock!=INVALID_SOCKET)
+#else
+  if (sock>=0)  
+#endif
+  {
 		set_socket_sizes(sock,session->rtp.snd_socket_size,session->rtp.rcv_socket_size);
 		session->rtp.sockfamily=sockfamily;
 		session->rtp.socket=sock;
 		session->rtp.loc_port=port;
 		/*try to bind rtcp port */
 		sock=create_and_bind(addr,port+1,&sockfamily,TRUE);
-		if (sock>=0){
+#if defined(WIN32) || defined(_WIN32_WCE)
+  if (sock!=INVALID_SOCKET)
+#else
+  if (sock>=0)  
+#endif
+		{
 			session->rtcp.sockfamily=sockfamily;
 			session->rtcp.socket=sock;
 		}else{
