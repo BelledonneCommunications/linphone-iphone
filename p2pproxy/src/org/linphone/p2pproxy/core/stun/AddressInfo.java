@@ -39,7 +39,7 @@ public class AddressInfo {
    AddressInfo(InetSocketAddress aPrivateAddress) {
       mPrivateAddress = aPrivateAddress;
    }
-   public Mode getType() {
+   public Mode getMode() {
       return mMode;
    }
    public void setMode(Mode aMode) {
@@ -49,6 +49,9 @@ public class AddressInfo {
       return mPrivateAddress;
    }
    public InetSocketAddress getPublicAddress() {
-      return mPrivateAddress;
+      return mPublicAddress;
+   }
+   public void setPublicAddress(InetSocketAddress aPublicAddress) {
+	   mPublicAddress = aPublicAddress;
    }
 }
