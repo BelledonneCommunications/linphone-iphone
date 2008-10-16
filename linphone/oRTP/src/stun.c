@@ -2146,7 +2146,7 @@ stunNatType( StunAddress4 *dest,
    second_started = stunGetSystemTimeSecs();
    second_elapsed = 1;
 
-   while ( count < 7 && second_elapsed < 5)
+   while ( count < 3 && second_elapsed < 5)
    {
       struct timeval tv;
       fd_set fdSet; 
@@ -2186,7 +2186,6 @@ stunNatType( StunAddress4 *dest,
       {
          /* timeout occured */
          count++;
-			
          if ( !respTestI ) 
          {
             stunSendTest( myFd1, dest, &username, &password, 1 ,verbose );
@@ -2220,6 +2219,7 @@ stunNatType( StunAddress4 *dest,
                stunSendTest( myFd1, &testImappedAddr, &username, &password, 11 ,verbose );
             }
          }
+
       }
       else
       {
