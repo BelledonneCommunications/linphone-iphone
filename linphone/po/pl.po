@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone 0.7.1\n"
 "Report-Msgid-Bugs-To: linphone-developers@nongnu.org\n"
-"POT-Creation-Date: 2008-10-12 11:04+0200\n"
+"POT-Creation-Date: 2008-10-16 18:38+0200\n"
 "PO-Revision-Date: 2003-08-22 12:50+0200\n"
 "Last-Translator: Robert Nasiadek <darkone@darkone.pl>\n"
 "Language-Team: Polski <pl@li.org>\n"
@@ -159,101 +159,100 @@ msgstr ""
 msgid "Current call"
 msgstr ""
 
-#: gtk-glade/main.glade:302
+#: gtk-glade/main.glade:289
+msgid "Lookup:"
+msgstr ""
+
+#: gtk-glade/main.glade:310
+msgid "in"
+msgstr ""
+
+#: gtk-glade/main.glade:322
 msgid ""
-"Show All\n"
-"Show Online"
+"All users\n"
+"Online users"
 msgstr ""
 
-#: gtk-glade/main.glade:311
-msgid "Search:"
-msgstr ""
-
-#: gtk-glade/main.glade:337
-#, fuzzy
-msgid "Display filters"
-msgstr "Wyświetlana nazwa:"
-
-#: gtk-glade/main.glade:380
+#: gtk-glade/main.glade:366
 #, fuzzy
 msgid "<b>Contact list</b>"
 msgstr "Dzwonie do "
 
-#: gtk-glade/main.glade:419
+#: gtk-glade/main.glade:404
 msgid "D"
 msgstr ""
 
-#: gtk-glade/main.glade:437
+#: gtk-glade/main.glade:422
 msgid "#"
 msgstr "#"
 
-#: gtk-glade/main.glade:455
+#: gtk-glade/main.glade:440
 msgid "0"
 msgstr "0"
 
-#: gtk-glade/main.glade:473
+#: gtk-glade/main.glade:458
 msgid "*"
 msgstr "*"
 
-#: gtk-glade/main.glade:489
+#: gtk-glade/main.glade:474
 msgid "C"
 msgstr ""
 
-#: gtk-glade/main.glade:507
+#: gtk-glade/main.glade:492
 msgid "9"
 msgstr "9"
 
-#: gtk-glade/main.glade:525
+#: gtk-glade/main.glade:510
 msgid "8"
 msgstr "8"
 
-#: gtk-glade/main.glade:543
+#: gtk-glade/main.glade:528
 msgid "7"
 msgstr "7"
 
-#: gtk-glade/main.glade:559
+#: gtk-glade/main.glade:544
 msgid "B"
 msgstr ""
 
-#: gtk-glade/main.glade:577
+#: gtk-glade/main.glade:562
 msgid "6"
 msgstr "6"
 
-#: gtk-glade/main.glade:595
+#: gtk-glade/main.glade:580
 msgid "5"
 msgstr "5"
 
-#: gtk-glade/main.glade:613
+#: gtk-glade/main.glade:598
 msgid "4"
 msgstr "4"
 
-#: gtk-glade/main.glade:629
+#: gtk-glade/main.glade:614
 msgid "A"
 msgstr ""
 
-#: gtk-glade/main.glade:645
+#: gtk-glade/main.glade:630
 msgid "3"
 msgstr "3"
 
-#: gtk-glade/main.glade:661
+#: gtk-glade/main.glade:646
 msgid "2"
 msgstr "2"
 
-#: gtk-glade/main.glade:677
+#: gtk-glade/main.glade:662
 msgid "1"
 msgstr "1"
 
-#: gtk-glade/main.glade:693
+#: gtk-glade/main.glade:678
 msgid "Digits"
 msgstr ""
 
-#: gtk-glade/main.glade:731
+#: gtk-glade/main.glade:716
 msgid "Default"
 msgstr ""
 
-#: gtk-glade/main.glade:741
+#: gtk-glade/main.glade:726
 #, fuzzy
-msgid "My identity :"
+msgid "My current identity:"
 msgstr "Tożsamość"
 
 #: gtk-glade/about.glade:8
@@ -302,13 +301,13 @@ msgstr ""
 msgid "Contact information"
 msgstr "Informacje o kodeku"
 
-#: gtk-glade/contact.glade:149 gtk-glade/password.glade:112
-#: gtk-glade/sip_account.glade:202
+#: gtk-glade/contact.glade:149 gtk-glade/password.glade:114
+#: gtk-glade/sip_account.glade:206
 msgid "gtk-cancel"
 msgstr ""
 
-#: gtk-glade/contact.glade:161 gtk-glade/password.glade:100
-#: gtk-glade/sip_account.glade:190
+#: gtk-glade/contact.glade:161 gtk-glade/password.glade:102
+#: gtk-glade/sip_account.glade:194
 msgid "gtk-ok"
 msgstr ""
 
@@ -317,7 +316,7 @@ msgid "Linphone debug window"
 msgstr ""
 
 #: gtk-glade/log.glade:54 gtk-glade/call_logs.glade:49
-#: gtk-glade/chatroom.glade:82 gtk-glade/parameters.glade:1412
+#: gtk-glade/chatroom.glade:82 gtk-glade/parameters.glade:1402
 msgid "gtk-close"
 msgstr ""
 
@@ -326,56 +325,56 @@ msgid "Linphone - Authentication required"
 msgstr ""
 
 #: gtk-glade/password.glade:27
-msgid "Please enter your password for domain..."
+msgid "Please enter the domain password"
 msgstr ""
+
+#: gtk-glade/password.glade:49
+#, fuzzy
+msgid "Username:"
+msgstr "Podręcznik"
 
 #: gtk-glade/password.glade:56
 #, fuzzy
 msgid "Password:"
 msgstr "Twoje hasło:"
 
-#: gtk-glade/password.glade:66
-#, fuzzy
-msgid "Username"
-msgstr "Podręcznik"
-
 #: gtk-glade/sip_account.glade:8
 msgid "Linphone - Configure a SIP account"
 msgstr ""
 
-#: gtk-glade/sip_account.glade:42
+#: gtk-glade/sip_account.glade:56
 #, fuzzy
-msgid "Your SIP identity:"
-msgstr "Tożsamość"
+msgid "Registration duration (sec):"
+msgstr "Rejestracja powiodła się."
 
-#: gtk-glade/sip_account.glade:60
+#: gtk-glade/sip_account.glade:81
+msgid "Route (optional):"
+msgstr ""
+
+#: gtk-glade/sip_account.glade:94
+msgid "sip:"
+msgstr "sip:"
+
+#: gtk-glade/sip_account.glade:107
 #, fuzzy
 msgid "SIP Proxy address:"
 msgstr "Adres sip:"
 
-#: gtk-glade/sip_account.glade:72
-msgid "sip:"
-msgstr "sip:"
-
-#: gtk-glade/sip_account.glade:85
-msgid "Route (optional):"
-msgstr ""
-
-#: gtk-glade/sip_account.glade:109
+#: gtk-glade/sip_account.glade:130
 #, fuzzy
-msgid "Registration period (sec):"
-msgstr "Rejestracja powiodła się."
+msgid "Your SIP identity:"
+msgstr "Tożsamość"
 
-#: gtk-glade/sip_account.glade:136
+#: gtk-glade/sip_account.glade:140
 msgid "Register at startup"
 msgstr ""
 
-#: gtk-glade/sip_account.glade:150
+#: gtk-glade/sip_account.glade:154
 #, fuzzy
 msgid "Publish presence information"
 msgstr "Informacje o kodeku"
 
-#: gtk-glade/sip_account.glade:167
+#: gtk-glade/sip_account.glade:171
 msgid "Configure a SIP account"
 msgstr ""
 
@@ -405,241 +404,239 @@ msgstr ""
 msgid "Decline"
 msgstr "linia"
 
-#: gtk-glade/parameters.glade:36
-msgid "Use IPv6 instead of IPv4"
+#: gtk-glade/parameters.glade:41
+msgid "Set Maximum Transmission Unit:"
 msgstr ""
 
-#: gtk-glade/parameters.glade:48
-msgid "<b>IPv6 usage</b>"
-msgstr ""
-
-#: gtk-glade/parameters.glade:77
-msgid "SIP (UDP)"
-msgstr ""
-
-#: gtk-glade/parameters.glade:84
-msgid "Audio RTP/UDP"
-msgstr ""
-
-#: gtk-glade/parameters.glade:95
-msgid "Video RTP/UDP"
-msgstr ""
-
-#: gtk-glade/parameters.glade:153
-#, fuzzy
-msgid "<b>Ports used</b>"
-msgstr "Dzwonie do "
-
-#: gtk-glade/parameters.glade:187
-#, fuzzy
-msgid "Public IP address"
-msgstr "Adres sip:"
-
-#: gtk-glade/parameters.glade:211
-#, fuzzy
-msgid "Stun server"
-msgstr "Dźwięk"
-
-#: gtk-glade/parameters.glade:234
-msgid "I'm not behing a firewall"
-msgstr ""
-
-#: gtk-glade/parameters.glade:248
-msgid "I'm behind a firewall, use supplied public IP address"
-msgstr ""
-
-#: gtk-glade/parameters.glade:263
-msgid "Use the supplied stun server above and do as best as possible"
-msgstr ""
-
-#: gtk-glade/parameters.glade:282
-msgid "<b>Firewall settings</b>"
-msgstr ""
-
-#: gtk-glade/parameters.glade:315
+#: gtk-glade/parameters.glade:64
 msgid "Send DTMFs as SIP info"
 msgstr ""
 
-#: gtk-glade/parameters.glade:329
-msgid "Set Maximum Transmission Unit"
+#: gtk-glade/parameters.glade:78
+msgid "Use IPv6 instead of IPv4"
 msgstr ""
 
-#: gtk-glade/parameters.glade:354
-msgid "<b>Miscelaneous</b>"
+#: gtk-glade/parameters.glade:95
+#, fuzzy
+msgid "<b>Transport</b>"
+msgstr "Dzwonie do "
+
+#: gtk-glade/parameters.glade:167
+msgid "Video RTP/UDP:"
 msgstr ""
 
-#: gtk-glade/parameters.glade:383
+#: gtk-glade/parameters.glade:179
+msgid "Audio RTP/UDP:"
+msgstr ""
+
+#: gtk-glade/parameters.glade:191
+msgid "SIP (UDP):"
+msgstr ""
+
+#: gtk-glade/parameters.glade:203
+#, fuzzy
+msgid "<b>Ports</b>"
+msgstr "Dzwonie do "
+
+#: gtk-glade/parameters.glade:227
+msgid "Direct connection to the Internet"
+msgstr ""
+
+#: gtk-glade/parameters.glade:241
+msgid "Behind NAT / Firewall (specify gateway IP below)"
+msgstr ""
+
+#: gtk-glade/parameters.glade:257
+#, fuzzy
+msgid "Public IP address:"
+msgstr "Adres sip:"
+
+#: gtk-glade/parameters.glade:289
+msgid "Behind NAT / Firewall (use STUN to resolve)"
+msgstr ""
+
+#: gtk-glade/parameters.glade:305
+#, fuzzy
+msgid "Stun server:"
+msgstr "Dźwięk"
+
+#: gtk-glade/parameters.glade:336
+msgid "<b>NAT and Firewall</b>"
+msgstr ""
+
+#: gtk-glade/parameters.glade:365
 #, fuzzy
 msgid "Network settings"
 msgstr "Sieć"
 
-#: gtk-glade/parameters.glade:422
-msgid "Enable echo cancelation"
-msgstr ""
-
-#: gtk-glade/parameters.glade:438
-msgid "a sound card\n"
-msgstr ""
-
-#: gtk-glade/parameters.glade:453
-#, fuzzy
-msgid "Playback device"
-msgstr "Użyj tego urządzenia dźwięku:"
-
-#: gtk-glade/parameters.glade:464
-#, fuzzy
-msgid "Ring device"
-msgstr "Użyj tego urządzenia dźwięku:"
-
-#: gtk-glade/parameters.glade:476
-#, fuzzy
-msgid "Capture device"
-msgstr "Użyj tego urządzenia dźwięku:"
-
-#: gtk-glade/parameters.glade:487
-msgid "ALSA special device (optional)"
-msgstr ""
-
-#: gtk-glade/parameters.glade:499
-msgid "default soundcard"
-msgstr ""
-
-#: gtk-glade/parameters.glade:514
-msgid "default soundcard\n"
-msgstr ""
-
-#: gtk-glade/parameters.glade:544
-#, fuzzy
-msgid "Ring sound"
-msgstr "Źródło nagrywania:"
-
-#: gtk-glade/parameters.glade:569
+#: gtk-glade/parameters.glade:417
 msgid "gtk-media-play"
 msgstr ""
 
-#: gtk-glade/parameters.glade:595
-msgid "<b>Sound</b>"
+#: gtk-glade/parameters.glade:439
+#, fuzzy
+msgid "Ring sound:"
+msgstr "Źródło nagrywania:"
+
+#: gtk-glade/parameters.glade:466
+msgid "default soundcard\n"
 msgstr ""
 
-#: gtk-glade/parameters.glade:620
+#: gtk-glade/parameters.glade:482
+msgid "default soundcard"
+msgstr ""
+
+#: gtk-glade/parameters.glade:496
+msgid "ALSA special device (optional):"
+msgstr ""
+
+#: gtk-glade/parameters.glade:509
+#, fuzzy
+msgid "Capture device:"
+msgstr "Użyj tego urządzenia dźwięku:"
+
+#: gtk-glade/parameters.glade:522
+#, fuzzy
+msgid "Ring device:"
+msgstr "Użyj tego urządzenia dźwięku:"
+
+#: gtk-glade/parameters.glade:535
+#, fuzzy
+msgid "Playback device:"
+msgstr "Użyj tego urządzenia dźwięku:"
+
+#: gtk-glade/parameters.glade:547
+msgid "a sound card\n"
+msgstr ""
+
+#: gtk-glade/parameters.glade:562
+msgid "Enable echo cancellation"
+msgstr ""
+
+#: gtk-glade/parameters.glade:582
+#, fuzzy
+msgid "<b>Audio</b>"
+msgstr "Dzwonie do "
+
+#: gtk-glade/parameters.glade:607
+#, fuzzy
+msgid "Video input device:"
+msgstr "Dźwięk"
+
+#: gtk-glade/parameters.glade:617
 msgid "default camera"
 msgstr ""
 
-#: gtk-glade/parameters.glade:632
-#, fuzzy
-msgid "Video input device"
-msgstr "Dźwięk"
-
-#: gtk-glade/parameters.glade:645
+#: gtk-glade/parameters.glade:633
 msgid "<b>Video</b>"
 msgstr ""
 
-#: gtk-glade/parameters.glade:678
+#: gtk-glade/parameters.glade:666
 msgid "Multimedia settings"
 msgstr ""
 
-#: gtk-glade/parameters.glade:699
+#: gtk-glade/parameters.glade:687
 msgid "This section defines your SIP address when not using a SIP account"
 msgstr ""
 
-#: gtk-glade/parameters.glade:744
+#: gtk-glade/parameters.glade:704
+msgid "Your display name (eg: John Doe):"
+msgstr ""
+
+#: gtk-glade/parameters.glade:723
+msgid "Your username:"
+msgstr ""
+
+#: gtk-glade/parameters.glade:734
 #, fuzzy
 msgid "Your resulting SIP address:"
 msgstr "Twój adres sip:"
 
-#: gtk-glade/parameters.glade:755
-msgid "Your username:"
-msgstr ""
-
-#: gtk-glade/parameters.glade:778
-msgid "Your display name (eg: John Doe):"
-msgstr ""
-
-#: gtk-glade/parameters.glade:789
+#: gtk-glade/parameters.glade:777
 msgid "<b>Default identity</b>"
 msgstr ""
 
-#: gtk-glade/parameters.glade:856
+#: gtk-glade/parameters.glade:844
 #, fuzzy
 msgid "Add"
 msgstr "Adres"
 
-#: gtk-glade/parameters.glade:889
+#: gtk-glade/parameters.glade:877
 msgid "Edit"
 msgstr ""
 
-#: gtk-glade/parameters.glade:925
+#: gtk-glade/parameters.glade:913
 msgid "Remove"
 msgstr ""
 
-#: gtk-glade/parameters.glade:956
+#: gtk-glade/parameters.glade:944
 msgid ""
 "Register to FONICS\n"
 "virtual network !"
 msgstr ""
 
-#: gtk-glade/parameters.glade:985
+#: gtk-glade/parameters.glade:973
 #, fuzzy
 msgid "<b>Proxy accounts</b>"
 msgstr "Dzwonie do "
 
-#: gtk-glade/parameters.glade:1034
+#: gtk-glade/parameters.glade:1022
 msgid "Erase all passwords"
 msgstr ""
 
-#: gtk-glade/parameters.glade:1052
+#: gtk-glade/parameters.glade:1040
 msgid "<b>Privacy</b>"
 msgstr ""
 
-#: gtk-glade/parameters.glade:1084
+#: gtk-glade/parameters.glade:1072
 msgid "Manage SIP Accounts"
 msgstr ""
 
-#: gtk-glade/parameters.glade:1120
+#: gtk-glade/parameters.glade:1108
 #, fuzzy
 msgid ""
 "Audio codecs\n"
 "Video codecs"
 msgstr "Kodeki audio"
 
-#: gtk-glade/parameters.glade:1161
+#: gtk-glade/parameters.glade:1149
 msgid "gtk-go-up"
 msgstr ""
 
-#: gtk-glade/parameters.glade:1173
+#: gtk-glade/parameters.glade:1161
 msgid "gtk-go-down"
 msgstr ""
 
-#: gtk-glade/parameters.glade:1205
+#: gtk-glade/parameters.glade:1193
 msgid "Enable"
 msgstr "Włączony"
 
-#: gtk-glade/parameters.glade:1241
+#: gtk-glade/parameters.glade:1229
 msgid "Disable"
 msgstr "Wyłącz"
 
-#: gtk-glade/parameters.glade:1273
+#: gtk-glade/parameters.glade:1261
 #, fuzzy
 msgid "<b>Codecs</b>"
 msgstr "Dzwonie do "
 
-#: gtk-glade/parameters.glade:1302
-msgid "Download limit in kbits/sec"
-msgstr ""
-
-#: gtk-glade/parameters.glade:1309
-msgid "Upload limit in kbits/sec"
-msgstr ""
-
-#: gtk-glade/parameters.glade:1321 gtk-glade/parameters.glade:1335
+#: gtk-glade/parameters.glade:1291 gtk-glade/parameters.glade:1307
 msgid "0 stands for \"unlimited\""
 msgstr ""
 
-#: gtk-glade/parameters.glade:1354
-msgid "<b>Bandwidth usage</b>"
+#: gtk-glade/parameters.glade:1320
+msgid "Upload speed limit in Kbit/sec:"
 msgstr ""
 
-#: gtk-glade/parameters.glade:1386
+#: gtk-glade/parameters.glade:1332
+msgid "Download speed limit in Kbit/sec:"
+msgstr ""
+
+#: gtk-glade/parameters.glade:1344
+msgid "<b>Bandwidth control</b>"
+msgstr ""
+
+#: gtk-glade/parameters.glade:1376
 #, fuzzy
 msgid "Codecs"
 msgstr "Kodeki"
@@ -887,6 +884,10 @@ msgstr ""
 #: coreapi/presence.c:160
 msgid "Closed"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Display filters"
+#~ msgstr "Wyświetlana nazwa:"
 
 #, fuzzy
 #~ msgid "_Properties"

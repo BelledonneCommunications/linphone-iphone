@@ -188,6 +188,8 @@ AC_ARG_ENABLE(artsc,
 
 arts_enabled=false
 
+PKG_PROG_PKG_CONFIG()
+
 if test "$artsc" = "true" ; then
 
 	dnl check for arts (kde sound daemon) support
