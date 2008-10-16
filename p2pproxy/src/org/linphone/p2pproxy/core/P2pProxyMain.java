@@ -83,6 +83,7 @@ public class P2pProxyMain  implements P2pProxyMainMBean {
 	   try {
 		   mConfigHomeDir=System.getProperty("user.home")+"/.p2pproxy";
 		   int lsipPort=5040;
+		   int lMediaPort=16000;
 		   JxtaNetworkManager.Mode lMode = JxtaNetworkManager.Mode.auto;
 		   boolean lEnableHttp = false;
 		   // setup logging
@@ -139,7 +140,7 @@ public class P2pProxyMain  implements P2pProxyMainMBean {
 			   } else if (argument.equals("-media")) {
                   lMediaPort = Integer.parseInt(args[i + 1]);
                   System.out.println("media detected[" + lsipPort + "]");
-                  mConfigurator.setProperty(SipProxyRegistrar.REGISTRAR_PORT, Integer.toString(lMediaPort));
+                  mConfigurator.setProperty(RtpRelayService.AUDIO_VIDEO_LOCAL_PORT, Integer.toString(lMediaPort));
               } else if (argument.equals("-relay")) {
 				   lMode = JxtaNetworkManager.Mode.relay;
 				   mConfigurator.setProperty(JxtaNetworkManager.MODE, lMode.name());
@@ -171,7 +172,7 @@ public class P2pProxyMain  implements P2pProxyMainMBean {
 			   else if (argument.equals("-public-address")) {
 				   mConfigurator.setProperty(JxtaNetworkManager.HTTP_LISTENING_PUBLIC_ADDRESS,args[i + 1]+":9700");
 				   mConfigurator.setProperty(JxtaNetworkManager.TCP_LISTENING_PUBLIC_ADDRESS,args[i + 1]+":9701");
-                   mConfigurator.setProperty(RtpRelayService.AUDIO_VIDEO_PUBLIC_URI,"udp://"+args[i + 1]+":16000");
+                   mConfigurator.setProperty(RtpRelayService.AUDIO_VIDEO_PUBLIC_URI,"udp://"+args[i + 1]+":"+lMediaPort);
                    System.out.println("public address detected[" + args[i + 1] + "]");
 			   }            
 			   else if (argument.equals("-socks-url")) {
@@ -330,6 +331,7 @@ public class P2pProxyMain  implements P2pProxyMainMBean {
       System.out.println("p2pproxy");
       System.out.println("-jxta : directory where configuration/cache is located  (including jxta cache.default is $HOME/.p2pproxy");
       System.out.println("-sip : udp proxy port, default 5060");
+      System.out.println("-media : udp relay/stun port, default 16000");
       System.out.println("-relay : super peer mode");
       System.out.println("-edge-only : edge mode");
       System.out.println("-seeding-server : seeding server mode");
