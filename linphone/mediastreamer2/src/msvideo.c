@@ -156,12 +156,12 @@ MSPixFmt ms_fourcc_to_pix_fmt(uint32_t fourcc){
 void rgb24_revert(uint8_t *buf, int w, int h, int linesize){
 	uint8_t *p,*pe;
 	int i,j;
-	uint8_t *end=buf+(h*linesize);
+	uint8_t *end=buf+((h-1)*linesize);
 	uint8_t exch;
 	p=buf;
 	pe=end-1;
 	for(i=0;i<h/2;++i){
-		for(j=0;i<w*3;++j){
+		for(j=0;j<w*3;++j){
 			exch=p[i];
 			p[i]=pe[-i];
 			pe[-i]=exch;
@@ -177,10 +177,10 @@ void rgb24_copy_revert(uint8_t *dstbuf, int dstlsz,
 	const uint8_t *psrc;
 	uint8_t *pdst;
 	psrc=srcbuf;
-	pdst=dstbuf+(dstlsz*roi.height);
+	pdst=dstbuf+(dstlsz*(roi.height-1));
 	for(i=0;i<roi.height;++i){
-		for(j=0;j<roi.width;++j){
-			pdst[roi.width-1-j]=psrc[j];
+		for(j=0;j<roi.width*3;++j){
+			pdst[(roi.width*3)-1-j]=psrc[j];
 		}
 		pdst-=dstlsz;
 		psrc+=srclsz;

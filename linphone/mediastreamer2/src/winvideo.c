@@ -218,6 +218,7 @@ static int v4w_open_videodevice(V4wState *s)
 	if (s->pix_fmt==MS_RGB24){
 		s->invert_rgb=(videoformat.bmiHeader.biHeight>0);
 	}else s->invert_rgb=FALSE;
+
 	if (!capSetCallbackOnVideoStream(s->capvideo, VideoStreamCallback))
 	{
 		ms_error("v4w: fail to set capture callback");
@@ -664,10 +665,10 @@ static void ms_v4w_detect(MSWebCamManager *obj){
 				DestroyWindow(hwnd);
 				break;
 			}else{
+				capGetDriverDescription(i, dev, sizeof (dev),ver, sizeof (ver));
 				capDriverDisconnect(hwnd);
 				DestroyWindow(hwnd);
 			}
-			capGetDriverDescription(i, dev, sizeof (dev),ver, sizeof (ver));
 			snprintf(name, sizeof(name), "%s/%s",dev,ver);
 			cam=ms_web_cam_new(&ms_v4w_cam_desc);
 			cam->data=(void*)i;/*store the device index */
