@@ -29,16 +29,13 @@ import java.net.URI;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.linphone.p2pproxy.api.P2pProxyException;
 import org.linphone.p2pproxy.core.JxtaNetworkManager;
 import org.linphone.p2pproxy.core.P2pProxyAdvertisementNotFoundException;
+import org.linphone.p2pproxy.core.media.MediaResourceService;
 import org.linphone.p2pproxy.core.sipproxy.NetworkResourceAdvertisement;
-import org.linphone.p2pproxy.test.StunServerTester;
-
 import de.javawi.jstun.attribute.ChangeRequest;
-import de.javawi.jstun.attribute.ChangedAddress;
 import de.javawi.jstun.attribute.ErrorCode;
 import de.javawi.jstun.attribute.MappedAddress;
 import de.javawi.jstun.attribute.MessageAttribute;
@@ -51,13 +48,13 @@ public class StunClient {
 	private static Logger mLog = Logger.getLogger(StunClient.class);
 	private List<InetSocketAddress> mStunServerList;
    JxtaNetworkManager mJxtaNetworkManager;
-   private DiscoveryInfo mDiscoveryInfo;
+   
    private int SO_TIME_OUT = 300;
    
    StunClient(List<InetSocketAddress> aStunServerList) {
       mStunServerList = aStunServerList;
    }
-   StunClient(JxtaNetworkManager aJxtaNetworkManager) throws P2pProxyException {
+   public StunClient(JxtaNetworkManager aJxtaNetworkManager) throws P2pProxyException {
       //need to acquire stun server address()
       mJxtaNetworkManager = aJxtaNetworkManager;
       try {
@@ -67,7 +64,7 @@ public class StunClient {
       }
    }   
    private List<InetSocketAddress> acquireStunServerAddress() throws P2pProxyAdvertisementNotFoundException, InterruptedException, IOException {
-      List<NetworkResourceAdvertisement> lStunServerAdv = (List<NetworkResourceAdvertisement>) mJxtaNetworkManager.getAdvertisementList(null, StunServer.ADV_NAME, true);
+      List<NetworkResourceAdvertisement> lStunServerAdv = (List<NetworkResourceAdvertisement>) mJxtaNetworkManager.getAdvertisementList(null, MediaResourceService.ADV_NAME, true);
       List<InetSocketAddress> lSocketAddressList = new ArrayList<InetSocketAddress>(lStunServerAdv.size());
       for (NetworkResourceAdvertisement lNetworkResourceAdvertisement: lStunServerAdv) {
          URI lServerUri = URI.create(lNetworkResourceAdvertisement.getAddress());
@@ -77,17 +74,28 @@ public class StunClient {
    }
    
    public AddressInfo computeAddressInfo(DatagramSocket lLocalSocket) throws P2pProxyException {
-	   //1 bind request
+      AddressInfo lAddressInfo = new AddressInfo((InetSocketAddress) lLocalSocket.getLocalSocketAddress()); 
 	   try {
-		   //1 bind request 
-		   bindRequest(lLocalSocket,lLocalSocket, mStunServerList.get(0));
-		   //open new socket
+	      DiscoveryInfo lDiscoveryInfo = new DiscoveryInfo((InetSocketAddress) lLocalSocket.getLocalSocketAddress()); 
+	      //1 bind request 
+		   bindRequest(lDiscoveryInfo,lLocalSocket,lLocalSocket, mStunServerList.get(0));
+		   //2 bind request
+		   if (mStunServerList.size() > 1) {
+	           //open new socket
+	           DatagramSocket lDatagramSocket = new DatagramSocket();
+	           bindRequest(lDiscoveryInfo,lLocalSocket,lDatagramSocket, mStunServerList.get(1));
+	           lDatagramSocket.close();
+		   }
+		   //analyse
+		    
+		   lAddressInfo.setPublicAddress(lDiscoveryInfo.getPublicSocketAddress());
+		   
 	} catch (Exception e) {
 		throw new P2pProxyException(e);
 	}
-	   return null;
+	   return lAddressInfo;
    }
-	private void bindRequest(DatagramSocket aLocalSocket, DatagramSocket aResponseSocket,InetSocketAddress aStunAddress) throws UtilityException, SocketException, UnknownHostException, IOException, MessageAttributeParsingException, MessageHeaderParsingException, P2pProxyException {
+	private void bindRequest(DiscoveryInfo aDiscoveryInfo,DatagramSocket aLocalSocket, DatagramSocket aResponseSocket,InetSocketAddress aStunAddress) throws UtilityException, SocketException, UnknownHostException, IOException, MessageAttributeParsingException, MessageHeaderParsingException, P2pProxyException {
 		int timeSinceFirstTransmission = 0;
 		int lSoTimeOut = SO_TIME_OUT;
 		while (true) {
@@ -117,7 +125,7 @@ public class StunClient {
 				MappedAddress lMappedAddress = (MappedAddress) receiveMH.getMessageAttribute(MessageAttribute.MessageAttributeType.MappedAddress);
 				ErrorCode ec = (ErrorCode) receiveMH.getMessageAttribute(MessageAttribute.MessageAttributeType.ErrorCode);
 				if (ec != null) {
-					mDiscoveryInfo.setError(ec.getResponseCode(), ec.getReason());
+				   aDiscoveryInfo.setError(ec.getResponseCode(), ec.getReason());
 					throw new P2pProxyException("Message header contains an Errorcode message attribute. ["+ec+"]");
 				}
 				if ((lMappedAddress == null)) {
@@ -125,9 +133,9 @@ public class StunClient {
 					
 				} else {
 					if (aLocalSocket.getLocalSocketAddress().equals(aResponseSocket.getLocalSocketAddress())) {
-						mDiscoveryInfo.setPublicSocketAddress(new InetSocketAddress(lMappedAddress.getAddress().getInetAddress(),lMappedAddress.getPort()));
+					   aDiscoveryInfo.setPublicSocketAddress(new InetSocketAddress(lMappedAddress.getAddress().getInetAddress(),lMappedAddress.getPort()));
 					} else {
-						mDiscoveryInfo.setFullCone();
+					   aDiscoveryInfo.setFullCone();
 					}
 					}
 					return;
@@ -143,9 +151,9 @@ public class StunClient {
 					// node is not capable of udp communication
 					if (mLog.isInfoEnabled()) mLog.info("Socket timeout while receiving the response. Maximum retry limit exceed. Give up.");
 					if (aLocalSocket.getLocalSocketAddress().equals(aResponseSocket.getLocalSocketAddress())) {
-						mDiscoveryInfo.setBlockedUDP();
+					   aDiscoveryInfo.setBlockedUDP();
 					} else {
-						mDiscoveryInfo.setSymmetric();
+					   aDiscoveryInfo.setSymmetric();
 					}
 					if (mLog.isInfoEnabled()) mLog.info("Node is not capable of UDP communication.");
 					return ;

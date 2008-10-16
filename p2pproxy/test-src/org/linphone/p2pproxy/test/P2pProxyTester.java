@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package org.linphone.p2pproxy.test;
 
+import java.net.DatagramSocket;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.concurrent.Semaphore;
@@ -43,6 +44,8 @@ import org.linphone.p2pproxy.core.P2pProxyInstanceImpl;
 import org.linphone.p2pproxy.core.P2pProxyMain;
 import org.linphone.p2pproxy.core.sipproxy.NetworkResourceAdvertisement;
 import org.linphone.p2pproxy.core.sipproxy.SipProxyRegistrar;
+import org.linphone.p2pproxy.core.stun.AddressInfo;
+import org.linphone.p2pproxy.core.stun.StunClient;
 import org.linphone.p2pproxy.test.utils.DefaultCallListener;
 import org.linphone.p2pproxy.test.utils.SipClient;
 import org.zoolu.sip.address.NameAddress;
@@ -107,6 +110,25 @@ public class P2pProxyTester extends TestCase {
 	protected void tearDown() throws Exception {
 	}
 
+	public void testStunClient() {
+	   try {
+//	      if (mP2pProxyInstance2 == null) {
+//	         try {
+//	            setupJxta2();
+//	         } catch (Exception e) {
+//	            mLog.error("cannot start peer2");
+//	         }
+//	      }
+	      DatagramSocket lDatagramSocket = new DatagramSocket();
+	      StunClient lStunClient = new StunClient((JxtaNetworkManager)mP2pProxyInstance.getOpaqueNetworkManager());
+	      AddressInfo lAddressInfo = lStunClient.computeAddressInfo(lDatagramSocket);
+	      mLog.info("AddressInfo ["+lAddressInfo+"]");
+	   }catch (Exception e) {
+	      mLog.error("testStunClient ko",e);
+	      Assert.fail(e.getMessage());
+	   }
+
+	}
 	public void testGetRegistrarAdress() {
 	   try {
 	      NetworkResourceAdvertisement lSipProxyRegistrarAdvertisement = (NetworkResourceAdvertisement) (((JxtaNetworkManager)mP2pProxyInstance.getOpaqueNetworkManager()).getAdvertisement(null,SipProxyRegistrar.ADV_NAME, true));
@@ -394,12 +416,13 @@ public class P2pProxyTester extends TestCase {
 
 	private void setupJxta() throws Exception {
        mP2pProxyInstance = new P2pProxyInstanceImpl();
-       mP2pProxyInstance.setMode(Mode.relay);
-       mP2pProxyInstance.setIndex(0);
+       mP2pProxyInstance.setMode(Mode.seeding_server);
+       mP2pProxyInstance.setIndex(1);
        mP2pProxyInstance.setProperty(JxtaNetworkManager.ADV_DISCOVERY_TIMEOUT, String.valueOf(RDV_DISCOVERY_TIMEOUT));
        mP2pProxyInstance.start();
        while (mP2pProxyInstance.isStarted() == false) Thread.sleep(500);
 	}
+
 	private void call(String aCaller,String aCallee) throws Exception {
 	   call(aCaller,aCallee,false);
 	}

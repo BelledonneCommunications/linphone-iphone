@@ -136,7 +136,11 @@ public class P2pProxyMain  implements P2pProxyMainMBean {
 				   lsipPort = Integer.parseInt(args[i + 1]);
 				   System.out.println("sipPort detected[" + lsipPort + "]");
 				   mConfigurator.setProperty(SipProxyRegistrar.REGISTRAR_PORT, Integer.toString(lsipPort));
-			   } else if (argument.equals("-relay")) {
+			   } else if (argument.equals("-media")) {
+                  lMediaPort = Integer.parseInt(args[i + 1]);
+                  System.out.println("media detected[" + lsipPort + "]");
+                  mConfigurator.setProperty(SipProxyRegistrar.REGISTRAR_PORT, Integer.toString(lMediaPort));
+              } else if (argument.equals("-relay")) {
 				   lMode = JxtaNetworkManager.Mode.relay;
 				   mConfigurator.setProperty(JxtaNetworkManager.MODE, lMode.name());
 				   System.out.println("relay mode detected");

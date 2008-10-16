@@ -200,6 +200,10 @@ public class RtpRelayServer implements GenericUdpSession.MessageHandler {
    public void onMessage(DatagramPacket aMessage) {
       try {
          if (mLog.isInfoEnabled()) mLog.info("new incoming message from ["+aMessage.getSocketAddress()+"]");
+         if (isRtpRtcpPacket(aMessage) == false) {
+            if (mLog.isInfoEnabled()) mLog.info("not rtp/rtcp packet skip");
+            return;
+         }
          long lSsrc = getSsrc(aMessage);
          if (isSessionIdPresent(aMessage)) {
             String lSessionId = getSessionId(aMessage);
@@ -322,6 +326,9 @@ public class RtpRelayServer implements GenericUdpSession.MessageHandler {
    //stats
    public int getRoutingtableSize() {
       return mRoutingTable.getSize();
+   }
+   boolean isRtpRtcpPacket(DatagramPacket aMessage) {
+      return (aMessage.getData()[0]  >> 6) != 0;
    }
    
 }

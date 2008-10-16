@@ -36,7 +36,7 @@ public class AddressInfo {
    private InetSocketAddress mPublicAddress;
    private Mode mMode = Mode.unknown;
    
-   AddressInfo(InetSocketAddress aPrivateAddress) {
+   public AddressInfo(InetSocketAddress aPrivateAddress) {
       mPrivateAddress = aPrivateAddress;
    }
    public Mode getMode() {
@@ -53,5 +53,15 @@ public class AddressInfo {
    }
    public void setPublicAddress(InetSocketAddress aPublicAddress) {
 	   mPublicAddress = aPublicAddress;
+   }
+   public boolean isNated() {
+      if (mPublicAddress != null) { 
+         return mPublicAddress.equals(mPrivateAddress);
+      } else {
+         return false;
+      }
+   }
+   public String toString() {
+      return "private ["+mPrivateAddress+"] public ["+mPublicAddress+"] mode ["+mMode+"]";
    }
 }

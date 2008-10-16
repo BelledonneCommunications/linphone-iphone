@@ -102,11 +102,12 @@ public class P2pProxyInstanceImpl implements P2pProxyInstance {
                   lNetworkConfigurator.load();
                }
               // set sedding host
-                  lNetworkConfigurator.addSeedRendezvous(new URI("http://"+getPublicHostAddress()+":"+BASE_HTTP));
-                  lNetworkConfigurator.addSeedRelay(new URI("http://"+getPublicHostAddress()+":"+BASE_HTTP));
+                  lNetworkConfigurator.addSeedRendezvous(new URI("tcp://"+getPublicHostAddress()+":"+BASE_TCP));
+                  lNetworkConfigurator.addSeedRelay(new URI("tcp://"+getPublicHostAddress()+":"+BASE_TCP));
                // set listening ports
-                  lNetworkConfigurator.setHttpInterfaceAddress(getPrivateHostAddress());
-                  lNetworkConfigurator.setHttpPort(BASE_HTTP + mIndex);
+//                  lNetworkConfigurator.setTcpInterfaceAddress(getPrivateHostAddress());
+//                  lNetworkConfigurator.setHttpInterfaceAddress(getPrivateHostAddress());
+//                  lNetworkConfigurator.setHttpPort(BASE_HTTP + mIndex);
                   lNetworkConfigurator.setTcpPort(BASE_TCP + mIndex);
                
                   switch (mMode) {
@@ -244,7 +245,7 @@ public class P2pProxyInstanceImpl implements P2pProxyInstance {
       aNetworkConfigurator.setMode(JxtaNetworkManager.SUPER_PEER_MODE);
       if (isSeeding == true) {
          mJxtaNetworkManager = new JxtaNetworkManager(aProperties,aNetworkConfigurator,60000,JxtaNetworkManager.Mode.seeding_server);
-         mServiceProvider = new SeedingPeerServiceManager(aProperties, mJxtaNetworkManager,false);
+         mServiceProvider = new SeedingPeerServiceManager(aProperties, mJxtaNetworkManager,true);
          mP2pProxyManagement = null;
       } else {
          mJxtaNetworkManager = new JxtaNetworkManager(aProperties,aNetworkConfigurator,60000,JxtaNetworkManager.Mode.relay);

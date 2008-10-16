@@ -23,6 +23,7 @@ public class RtpRelayServerTester extends TestCase{
 	static private int RTP_SERVER_PORT = 16000;
 	private static  GenericUdpSession mGenericUdpSession;
 	static StunServer mSturServer = null;
+	private final int SO_TIMEOUT=100;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -74,27 +75,27 @@ public class RtpRelayServerTester extends TestCase{
 			//1 send rtcp app A
 			DatagramSocket lRtcpSocketA = new DatagramSocket(new InetSocketAddress("localhost", 0));
 			DatagramPacket lRtcpaPacket = new DatagramPacket(lRtcpA,lRtcpA.length,InetAddress.getByName("localhost"), RTP_SERVER_PORT);
-			lRtcpSocketA.setSoTimeout(100);
+			lRtcpSocketA.setSoTimeout(SO_TIMEOUT);
 			lRtcpSocketA.send(lRtcpaPacket);
 			
 			//2 send rtcp app B
 			DatagramSocket lRtcpSocketB = new DatagramSocket(new InetSocketAddress("localhost", 0));
 			DatagramPacket lRtcpbPacket = new DatagramPacket(lRtcpB,lRtcpB.length,InetAddress.getByName("localhost"), RTP_SERVER_PORT);
-			lRtcpSocketB.setSoTimeout(100);
+			lRtcpSocketB.setSoTimeout(SO_TIMEOUT);
 			lRtcpSocketB.send(lRtcpbPacket);
 			
 
             //3 send rtp A
             DatagramSocket lRtpSocketA = new DatagramSocket(new InetSocketAddress("localhost", 0));
             DatagramPacket lRtpaPacket = new DatagramPacket(lRtpA,lRtpA.length,InetAddress.getByName("localhost"), RTP_SERVER_PORT);
-            lRtpSocketA.setSoTimeout(100);
+            lRtpSocketA.setSoTimeout(SO_TIMEOUT);
             lRtpSocketA.send(lRtpaPacket);
             
             //4 send rtp B
             DatagramSocket lRtpSocketB = new DatagramSocket(new InetSocketAddress("localhost", 0));
             DatagramPacket lRtpblPacket = new DatagramPacket(lRtpB,lRtpB.length,InetAddress.getByName("localhost"), RTP_SERVER_PORT);
             lRtpSocketB.send(lRtpblPacket);
-            lRtpSocketB.setSoTimeout(100);
+            lRtpSocketB.setSoTimeout(SO_TIMEOUT);
             
             
             
@@ -112,7 +113,7 @@ public class RtpRelayServerTester extends TestCase{
 
             //check RTP A->B
             DatagramPacket lReceivedRtpbPacket = new DatagramPacket(new byte[1500],1500);
-            lRtpSocketA.setSoTimeout(100);
+            lRtpSocketA.setSoTimeout(SO_TIMEOUT);
             lRtpSocketA.send(lRtpaPacket);
             try {
                lRtpSocketB.receive(lReceivedRtpbPacket);

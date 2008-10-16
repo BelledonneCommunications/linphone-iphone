@@ -175,6 +175,7 @@ public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarM
       mProxyRegistrationAdvertisement = (NetworkResourceAdvertisement) AdvertisementFactory.newAdvertisement(NetworkResourceAdvertisement.getAdvertisementType());
       mProxyRegistrationAdvertisement.setID(IDFactory.newCodatID(mJxtaNetworkManager.getPeerGroup().getPeerGroupID(), mSuperPeerProxy.getSipProxyRegistrarAddress().toString().getBytes()));
       mProxyRegistrationAdvertisement.setAddress(mSuperPeerProxy.getSipProxyRegistrarAddress());
+      mProxyRegistrationAdvertisement.setName(ADV_NAME);
       mJxtaNetworkManager.getPeerGroup().getDiscoveryService().publish(mProxyRegistrationAdvertisement,60000,30000);
       mLog.info(mProxyRegistrationAdvertisement + "published");
    }

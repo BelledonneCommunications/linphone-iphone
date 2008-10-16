@@ -22,8 +22,8 @@ package org.linphone.p2pproxy.api;
 import org.zoolu.sip.provider.SipProvider;
 
 public interface P2pProxyInstance {
-   public static int BASE_HTTP = 9700;
-   public static int BASE_TCP = 30700;
+   public static int BASE_HTTP = 30700;
+   public static int BASE_TCP = 9701;
     
    public enum Mode {relay, edge, auto,seeding_server};
    /**
