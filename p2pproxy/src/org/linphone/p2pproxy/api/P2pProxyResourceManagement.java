@@ -22,7 +22,8 @@ package org.linphone.p2pproxy.api;
 
 
 public interface P2pProxyResourceManagement {
-   /**
+	public final String DOMAINE="p2p.linphone.org";
+	/**
     * 
     * @return the SIP uri of an available sip proxy registrar for a given domaine 
     */

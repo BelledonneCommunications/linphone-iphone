@@ -318,6 +318,17 @@ public class P2pProxyMain  implements P2pProxyMainMBean {
       mP2pProxyManagement = (P2pProxyManagement) mServiceProvider;
       mP2pProxySipProxyRegistrarManagement = (P2pProxyResourceManagement) mServiceProvider;
       mServiceProvider.start(3000L);
+//    setup sip provider
+	   SipStack.log_path = mConfigHomeDir+"/logs";
+	   mSipAndPipeListener = new SipProxyRegistrar(mConfigurator,mJxtaNetworkManager,mP2pProxyAccountManagement);
+	   //set management
+	   try {
+		   ObjectName lObjectName  = new ObjectName(PROXY_REG_MBEAN_NAME);
+		   ManagementFactory.getPlatformMBeanServer().registerMBean(mSipAndPipeListener,lObjectName);
+
+	   } catch (Exception e) {
+		   mLog.warn("cannot register MBean",e);
+	   }
    }
    private static void startSeeding(Configurator aProperties,File aConfigDir) throws Exception{
       // setup jxta
@@ -326,6 +337,17 @@ public class P2pProxyMain  implements P2pProxyMainMBean {
       mP2pProxyManagement = null;
       mP2pProxySipProxyRegistrarManagement = (P2pProxyResourceManagement) mServiceProvider;
       mServiceProvider.start(3000L);
+//    setup sip provider
+	   SipStack.log_path = mConfigHomeDir+"/logs";
+	   mSipAndPipeListener = new SipProxyRegistrar(mConfigurator,mJxtaNetworkManager,mP2pProxyAccountManagement);
+	   //set management
+	   try {
+		   ObjectName lObjectName  = new ObjectName(PROXY_REG_MBEAN_NAME);
+		   ManagementFactory.getPlatformMBeanServer().registerMBean(mSipAndPipeListener,lObjectName);
+
+	   } catch (Exception e) {
+		   mLog.warn("cannot register MBean",e);
+	   }
    }   
    private static void usage() {
       System.out.println("p2pproxy");

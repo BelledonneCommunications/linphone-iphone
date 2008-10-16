@@ -8,7 +8,7 @@ import org.linphone.p2pproxy.core.sipproxy.SipProxyRegistrar;
 
 public class P2pProxyResourceManagementImpl implements P2pProxyResourceManagement {
    protected final JxtaNetworkManager mJxtaNetworkManager;
-   private final String DOMAINE="p2p.linphone.org";
+   
    private final static Logger mLog = Logger.getLogger(P2pProxyResourceManagementImpl.class);
    P2pProxyResourceManagementImpl(JxtaNetworkManager aJxtaNetworkManager) {
       mJxtaNetworkManager = aJxtaNetworkManager;
