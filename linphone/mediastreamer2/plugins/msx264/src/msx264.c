@@ -80,7 +80,7 @@ static void enc_preprocess(MSFilter *f){
 	ms_message("Lucky guy, you have a hacked x264 lib that allows multislicing !");
 	params.slice_size_threshold=ms_get_payload_max_size()-100; /*-100 security margin*/
 #endif
-	/*params.i_level_idc=10;*/
+	/*params.i_level_idc=30;*/
 	params.rc.i_rc_method = X264_RC_ABR;
 	params.rc.i_bitrate=(int)( ( ((float)d->bitrate)*0.8)/1000.0);
 	params.rc.f_rate_tolerance=0.1;
@@ -131,6 +131,10 @@ static void enc_process(MSFilter *f){
 			x264_picture_t oxpic;
 			x264_nal_t *xnals=NULL;
 			int num_nals=0;
+
+			/*send I frame 2 seconds and 4 seconds after the beginning */
+			if (d->framenum==(int)d->fps*2 || d->framenum==(int)d->fps*4)
+				d->generate_keyframe=TRUE;
 
 			if (d->generate_keyframe){
 				xpic.i_type=X264_TYPE_IDR;
