@@ -25,6 +25,7 @@ import java.net.DatagramSocket;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.apache.log4j.Logger;
 import org.linphone.p2pproxy.api.P2pProxyException;
 import org.linphone.p2pproxy.api.P2pProxyResourceManagement;
 import org.linphone.p2pproxy.core.P2pProxyMain;
@@ -38,8 +39,8 @@ private final Thread mFonisThread;
 private Timer mTimer;
 private final SipProvider mProvider;
 private final SipClient mSipClient;
-
-
+private final int REGISTRATION_PERIOD=60;
+private final static Logger mLog = Logger.getLogger(UserInstance.class);
 public UserInstance(final String userName) throws  P2pProxyException {
 	try {
 	DatagramSocket lSocket = new DatagramSocket();
@@ -73,19 +74,66 @@ public UserInstance(final String userName) throws  P2pProxyException {
     if (lFile.exists() == false) lFile.mkdir();
 	mProvider=new SipProvider(null,lSipPort);
 	mSipClient = new SipClient(mProvider,userName,30000);
-	TimerTask lTimerTask = new  TimerTask() {
+	final TimerTask lTimerTask = new  TimerTask() {
 		@Override
 		public void run() {
+			try {
 			// 1 get proxy address
 			String lProxyUri = P2pProxyMain.lookupSipProxyUri(P2pProxyResourceManagement.DOMAINE);
 			//2 setOutbound proxy
 			mProvider.setOutboundProxy(new SocketAddress(lProxyUri));
-			
+			mSipClient.register(REGISTRATION_PERIOD,userName);
+			} catch(Exception e) {
+				mLog.error("cannot register user["+userName+"]",e);
+			} finally {
+				mTimer.schedule(this, REGISTRATION_PERIOD-REGISTRATION_PERIOD/10);
+			}
 		}
 		
 	};
+	mTimer.schedule(lTimerTask, REGISTRATION_PERIOD-REGISTRATION_PERIOD/10);
+	mSipClient.listen();
 	} catch (Exception e) {
 		throw new P2pProxyException("cannot start client",e);
 	}
+}
+public void call(String aTo, int duration) {
+	mSipClient.call(aTo, true, duration);
+}
+static int main(String[] args) throws P2pProxyException {
+	String lFrom="sip:toto", lTo;
+	int lDuration = 10, lLoop=1;
+	for (int i=0; i < args.length; i=i+2) {  
+		   String argument = args[i];
+		   if (argument.equals("-from")) {
+			   lFrom = args[i + 1];
+			   System.out.println("from [" + lFrom + "]");
+			   //nop
+		   } else if (argument.equals("-to")) {
+			   lTo = args[i + 1];
+			   System.out.println("to [" + lTo + "]");
+			   
+		   } else if (argument.equals("-duration")) {
+			   lDuration =  Integer.parseInt(args[i + 1]);
+			   System.out.println("duration [" + lDuration + "]");
+			   
+		   } else if (argument.equals("-nb-call")) {
+			   lLoop =  Integer.parseInt(args[i + 1]);
+			   System.out.println("nb-call [" + lLoop + "]");
+			   
+		   } else {
+			   System.out.println("Invalid option: " + args[i]);
+			   usage();
+			   System.exit(1);
+		   }
+	   }	UserInstance lUserInstance= new UserInstance(lFrom);
+	   for (int i=0;i<lLoop;i++) {
+		   lUserInstance.call(lTo, lDuration);
+	   }
+	   
+}
+private static void usage() {
+	// TODO Auto-generated method stub
+	
 }
 }

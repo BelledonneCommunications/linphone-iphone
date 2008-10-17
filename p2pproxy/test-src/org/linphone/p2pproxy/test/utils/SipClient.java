@@ -208,4 +208,75 @@ public class SipClient {
 
           
    }
+   /**
+    * @param aTo uri to call
+    * @param should I put an SDP ?
+    */
+   public Call call(String aTo,boolean enableSdp,final long aCallDuration) {
+
+        try {
+            String lCallerUri = mSipIdentity;
+            String lCalleeUri = aTo;
+            mLog.info("Calling  ["+aTo+"] from ["+mSipIdentity+"]");
+            long lTimout = 75000;
+
+            final Semaphore lCallerSemaphoreAccepted = new Semaphore(0);
+            final Semaphore lCalleeSemaphoreClosed = new Semaphore(0);
+            final Semaphore lCallerSemaphoreRinging = new Semaphore(0);
+            CallListener lCallerListener = new DefaultCallListener() {
+                public void onCallAccepted(Call call, String sdp, Message resp) {
+                    lCallerSemaphoreAccepted.release();
+                  call.ackWithAnswer(sdp);
+              }
+              public void onCallClosing(Call call, Message bye) {
+                  //nop
+              }
+                public void onCallRinging(Call call, Message resp) {
+                    lCallerSemaphoreRinging.release();
+                }
+            };
+            Call  lCaller = new Call(mProvider, lCallerUri, getContact(mProvider), lCallerListener);
+            if (enableSdp) {
+               lCaller.setLocalSessionDescriptor(sdp_offer);
+            }
+
+            lCaller.call(lCalleeUri);
+            Assert.assertTrue("caller  call not accepted until ["+lTimout+"]", lCallerSemaphoreAccepted.tryAcquire(lTimout,TimeUnit.MILLISECONDS));
+            
+        	try {
+				Thread.sleep(aCallDuration);
+			} catch (InterruptedException e) {
+				//nop
+			}
+			lCaller.bye();
+
+            Assert.assertTrue("caller  call not closed until ["+lTimout+"]", lCalleeSemaphoreClosed.tryAcquire(lTimout,TimeUnit.MILLISECONDS));
+ 
+            mLog.info("Call ok");
+            return lCaller;
+        } catch (Exception e) {
+            mLog.error("Call ko",e);
+            Assert.fail(e.getMessage());
+            return null;
+        }       
+
+          
+   }  
+   public void listen() {
+      CallListener lCalleeListener = new DefaultCallListener() {
+           public void onCallConfirmed(Call call, String sdp, Message ack) {
+ 
+               
+           }
+           public void onCallIncoming(Call call, NameAddress callee, NameAddress caller, String sdp, Message invite) {
+               call.accept(sdp);
+           }
+         public void onCallClosed(Call call, Message resp) {
+             //nop
+         }
+       };
+       Call  lCallee = new Call(mProvider, mSipIdentity, getContact(mProvider), lCalleeListener);
+       lCallee.setLocalSessionDescriptor(sdp_offer);
+       lCallee.listen();
+   }
 }
