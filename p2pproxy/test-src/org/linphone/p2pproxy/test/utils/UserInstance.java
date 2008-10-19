@@ -22,6 +22,7 @@ package org.linphone.p2pproxy.test.utils;
 
 import java.io.File;
 import java.net.DatagramSocket;
+import java.net.URI;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -36,21 +37,23 @@ import org.zoolu.sip.provider.SipStack;
 
 public class UserInstance {
 private final Thread mFonisThread;
-private Timer mTimer;
+private Timer mTimer = new Timer("Registartion timer");
 private final SipProvider mProvider;
 private final SipClient mSipClient;
 private final int REGISTRATION_PERIOD=60;
 private final static Logger mLog = Logger.getLogger(UserInstance.class);
+private static boolean mIsRegistered = false;
 public UserInstance(final String userName) throws  P2pProxyException {
 	try {
 	DatagramSocket lSocket = new DatagramSocket();
 	lSocket.setReuseAddress(true);
 	int lSipPort = lSocket.getLocalPort();
 	lSocket.close();
-	final String[] lParam = {"-jxta userinstance-"+userName
-							," -edge-only"
-							," -seeding-rdv tcp://82.67.74.86:9701"
-							," -seeding-relay tcp://82.67.74.86:9701"};
+	URI lUserNameUri = URI.create(userName);
+	final String[] lParam = {"-jxta" ,"userinstance-"+lUserNameUri.getUserInfo()
+							,"-edge-only"
+							,"-seeding-rdv", "tcp://82.67.74.86:9701"
+							,"-seeding-relay", "tcp://82.67.74.86:9701"};
 	lSocket.close();
 	
 	Runnable lFonisTask = new Runnable() {
@@ -69,7 +72,7 @@ public UserInstance(final String userName) throws  P2pProxyException {
 		throw new P2pProxyException("Cannot connect to fonis network");
 	}
 	P2pProxyMain.createAccount(userName);
-	SipStack.log_path = "userinstance-"+userName+"/logs";
+	SipStack.log_path = "userinstance-"+lUserNameUri.getUserInfo()+"/logs";
 	File lFile = new File(SipStack.log_path);
     if (lFile.exists() == false) lFile.mkdir();
 	mProvider=new SipProvider(null,lSipPort);
@@ -80,9 +83,14 @@ public UserInstance(final String userName) throws  P2pProxyException {
 			try {
 			// 1 get proxy address
 			String lProxyUri = P2pProxyMain.lookupSipProxyUri(P2pProxyResourceManagement.DOMAINE);
+			if (lProxyUri == null) {
+				 System.out.println("cannot find registrar");
+				 return;
+			}
 			//2 setOutbound proxy
 			mProvider.setOutboundProxy(new SocketAddress(lProxyUri));
 			mSipClient.register(REGISTRATION_PERIOD,userName);
+			mIsRegistered = true;
 			} catch(Exception e) {
 				mLog.error("cannot register user["+userName+"]",e);
 			} finally {
@@ -100,8 +108,8 @@ public UserInstance(final String userName) throws  P2pProxyException {
 public void call(String aTo, int duration) {
 	mSipClient.call(aTo, true, duration);
 }
-static int main(String[] args) throws P2pProxyException {
-	String lFrom="sip:toto", lTo;
+public static void main(String[] args) throws P2pProxyException {
+	String lFrom=null, lTo=null;
 	int lDuration = 10, lLoop=1;
 	for (int i=0; i < args.length; i=i+2) {  
 		   String argument = args[i];
@@ -120,16 +128,43 @@ static int main(String[] args) throws P2pProxyException {
 		   } else if (argument.equals("-nb-call")) {
 			   lLoop =  Integer.parseInt(args[i + 1]);
 			   System.out.println("nb-call [" + lLoop + "]");
-			   
+			   isRegistered
 		   } else {
 			   System.out.println("Invalid option: " + args[i]);
 			   usage();
 			   System.exit(1);
 		   }
-	   }	UserInstance lUserInstance= new UserInstance(lFrom);
-	   for (int i=0;i<lLoop;i++) {
-		   lUserInstance.call(lTo, lDuration);
+	   }	
+	
+   if (lFrom == null) {
+	   System.out.println("missing -from ");
+	   usage();
+	   System.exit(1);
+   }
+   if (lTo == null) {
+	   System.out.println("missing -to ");
+	   usage();
+	   System.exit(1);
+   }
+
+   UserInstance lUserInstance= new UserInstance(lFrom);
+   while (mIsRegistered == false) {
+	   try {
+		   Thread.sleep(1000);
+	   } catch (InterruptedException e) {
+		   //nop;
 	   }
+   }
+   for (int i=0;i<lLoop;i++) {
+	   lUserInstance.call(lTo, lDuration);
+   }
+   while (true) {
+	   try {
+		   Thread.sleep(1000);
+	   } catch (InterruptedException e) {
+		   //nop;
+	   }
+   }
 	   
 }
 private static void usage() {

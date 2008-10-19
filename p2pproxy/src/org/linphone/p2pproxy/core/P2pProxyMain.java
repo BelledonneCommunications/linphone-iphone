@@ -269,17 +269,10 @@ public class P2pProxyMain  implements P2pProxyMainMBean {
 
 		   //setup account manager
 		   mP2pProxyAccountManagement = new P2pProxyAccountManagement(mJxtaNetworkManager);
-		   // setup sip provider
-		   SipStack.log_path = mConfigHomeDir+"/logs";
-		   mSipAndPipeListener = new SipProxyRegistrar(mConfigurator,mJxtaNetworkManager,mP2pProxyAccountManagement);
 		   //set management
 		   try {
 			   ObjectName lObjectName = new ObjectName(ACCOUNT_MGR_MBEAN_NAME);
 			   ManagementFactory.getPlatformMBeanServer().registerMBean(mP2pProxyAccountManagement,lObjectName);
-
-			   lObjectName = new ObjectName(PROXY_REG_MBEAN_NAME);
-			   ManagementFactory.getPlatformMBeanServer().registerMBean(mSipAndPipeListener,lObjectName);
-
 		   } catch (Exception e) {
 			   mLog.warn("cannot register MBean",e);
 		   }
@@ -418,7 +411,11 @@ private static void isReady() throws P2pProxyNotReadyException {
     	  (mJxtaNetworkManager!=null && mJxtaNetworkManager.getPeerGroup().getRendezVousService().isRendezVous())) {
          //nop connected
       } else {
-    	  throw new P2pProxyNotReadyException("not connected to any rdv: status ["+mJxtaNetworkManager.getPeerGroup().getRendezVousService().getRendezVousStatus()+"]");
+    	  if (mJxtaNetworkManager != null ) {
+    		  throw new P2pProxyNotReadyException("not connected to any rdv: status ["+mJxtaNetworkManager.getPeerGroup().getRendezVousService().getRendezVousStatus()+"]");
+    	  } else {
+    		  throw new P2pProxyNotReadyException("initializing");
+    	  }
       }
    } catch (InterruptedException e) {
       throw new P2pProxyNotReadyException(e);
