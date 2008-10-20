@@ -773,7 +773,7 @@ void linphone_core_get_local_ip(LinphoneCore *lc, const char *dest, char *result
 		strncpy(result,lc->sip_conf.ipv6_enabled ? "::1" : "127.0.0.1",LINPHONE_IPADDR_SIZE);
 		ms_error("Could not find default routable ip address !"); 
 	}	
-	eXosip_masquerade_contact("",0);
+	eXosip_masquerade_contact(NULL,0);
 }
 
 const char *linphone_core_get_primary_contact(LinphoneCore *lc)

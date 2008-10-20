@@ -379,14 +379,14 @@ static void yuv420p_to_rgb(MSPicture *src, uint8_t *rgb){
 
 	p=rgb+(src->w*3*(src->h-1));
 	sws=sws_getContext(src->w,src->h,PIX_FMT_YUV420P,
-			src->w,src->h,PIX_FMT_RGB24,
+			src->w,src->h,PIX_FMT_BGR24,
 			0, NULL, NULL, NULL);
 	if (sws_scale(sws,src->planes,src->strides, 0,
            			0, &p, &rgb_stride)<0){
 			ms_error("Error in 420->rgb sws_scale().");
 	}
 	sws_freeContext(sws);
-
+#if 0
 	/*revert colors*/	
 	{
 		int i,j,stride;
@@ -404,7 +404,7 @@ static void yuv420p_to_rgb(MSPicture *src, uint8_t *rgb){
 			p+=stride;
 		}
 	}
-
+#endif
 }
 
 static void win_display_update(MSDisplay *obj){

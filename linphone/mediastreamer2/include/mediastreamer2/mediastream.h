@@ -110,7 +110,6 @@ struct _VideoStream
 	MSTicker *ticker;
 	RtpSession *session;
 	MSFilter *source;
-	MSFilter *predec;
 	MSFilter *pixconv;
 	MSFilter *sizeconv;
 	MSFilter *tee;

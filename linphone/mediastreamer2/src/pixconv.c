@@ -36,6 +36,8 @@ int ms_pix_fmt_to_ffmpeg(MSPixFmt fmt){
 	switch(fmt){
 		case MS_RGB24:
 			return PIX_FMT_RGB24;
+		case MS_RGB24_REV:
+			return PIX_FMT_BGR24;
 		case MS_YUV420P:
 			return PIX_FMT_YUV420P;
 		case MS_YUYV:
@@ -55,6 +57,8 @@ MSPixFmt ffmpeg_pix_fmt_to_ms(int fmt){
 	switch(fmt){
 		case PIX_FMT_RGB24:
 			return MS_RGB24;
+		case PIX_FMT_BGR24:
+			return MS_RGB24_REV;
 		case PIX_FMT_YUV420P:
 			return MS_YUV420P;
 		case PIX_FMT_YUYV422:
