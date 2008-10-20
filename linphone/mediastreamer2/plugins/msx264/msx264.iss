@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=msx264
-AppVerName=msx264 version 1.1.4., an H.264 plugin for linphone.
+AppVerName=msx264 version 1.1.5., an H.264 plugin for linphone.
 AppPublisher=linphone.org
 AppPublisherURL=http://www.linphone.org
 AppSupportURL=http://www.linphone.org

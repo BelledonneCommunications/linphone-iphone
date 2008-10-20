@@ -41,6 +41,7 @@ extern MSFilterDesc ms_resample_desc;
 extern MSFilterDesc ms_volume_desc;
 extern MSFilterDesc ms_static_image_desc;
 extern MSFilterDesc ms_mire_desc;
+extern MSFilterDesc ms_vfw_desc;
 MSFilterDesc * ms_filter_descs[]={
 &ms_alaw_dec_desc,
 &ms_alaw_enc_desc,
@@ -85,6 +86,7 @@ MSFilterDesc * ms_filter_descs[]={
 &ms_volume_desc,
 &ms_static_image_desc,
 &ms_mire_desc,
+&ms_vfw_desc,
 NULL
 };
 

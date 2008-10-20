@@ -77,6 +77,7 @@ typedef enum{
 	MS_YUV420P,
 	MS_YUYV,
 	MS_RGB24,
+	MS_RGB24_REV, /*->microsoft down-top bitmaps */
 	MS_MJPEG,
 	MS_UYVY,
 	MS_YUY2,   /* -> same as MS_YUYV */

@@ -257,7 +257,6 @@ int video_stream_start (VideoStream *stream, RtpProfile *profile, const char *re
 		ms_filter_call_method(stream->source,MS_FILTER_GET_VIDEO_SIZE,&vsize);
 	
 		ms_filter_call_method(stream->pixconv,MS_FILTER_SET_VIDEO_SIZE,&vsize);
-		  
 	}
 
 	ms_filter_call_method(stream->encoder,MS_FILTER_GET_VIDEO_SIZE,&vsize);

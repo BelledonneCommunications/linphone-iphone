@@ -1,7 +1,7 @@
 [Project]
 FileName=mediastreamer2.dev
 Name=mediastreamer2
-UnitCount=54
+UnitCount=55
 Type=2
 Ver=3
 IsCpp=1
@@ -600,4 +600,14 @@ Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
+
+[Unit55]
+FileName=..\..\src\winvideo2.c
+CompileCpp=0
+Folder=
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=	$(CC) -c winvideo2.c -o "Default Profile/winvideo2.o" $(CFLAGS)
 

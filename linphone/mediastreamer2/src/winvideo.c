@@ -627,6 +627,7 @@ MSFilterDesc ms_v4w_desc={
 
 MS_FILTER_DESC_EXPORT(ms_v4w_desc)
 
+#if 0
 static void ms_v4w_detect(MSWebCamManager *obj);
 
 static void ms_v4w_cam_init(MSWebCam *cam){
@@ -678,3 +679,4 @@ static void ms_v4w_detect(MSWebCamManager *obj){
 	}
 }
 
+#endif

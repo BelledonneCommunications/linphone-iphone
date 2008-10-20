@@ -472,7 +472,7 @@ extern MSWebCamDesc v4l2_desc;
 #endif
 
 #ifdef WIN32
-extern MSWebCamDesc ms_v4w_cam_desc;
+extern MSWebCamDesc ms_vfw_cam_desc;
 #endif
 
 extern MSWebCamDesc static_image_desc;
@@ -486,7 +486,7 @@ static MSWebCamDesc * ms_web_cam_descs[]={
 	&v4l_desc,
 #endif
 #ifdef WIN32
-	&ms_v4w_cam_desc,
+	&ms_vfw_cam_desc,
 #endif
 	&mire_desc,
 	&static_image_desc,

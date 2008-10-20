@@ -38,6 +38,28 @@ typedef struct tagCaptureParms {
     UINT        AVStreamMaster;             // Which stream controls length?
 } CAPTUREPARMS, *PCAPTUREPARMS, FAR *LPCAPTUREPARMS;
 
+typedef struct { 
+    UINT     uiImageWidth; 
+    UINT     uiImageHeight; 
+    BOOL     fLiveWindow; 
+    BOOL     fOverlayWindow; 
+    BOOL     fScale; 
+    POINT    ptScroll; 
+    BOOL     fUsingDefaultPalette; 
+    BOOL     fAudioHardware; 
+    BOOL     fCapFileExists; 
+    DWORD    dwCurrentVideoFrame; 
+    DWORD    dwCurrentVideoFramesDropped; 
+    DWORD    dwCurrentWaveSamples; 
+    DWORD    dwCurrentTimeElapsedMS; 
+    HPALETTE hPalCurrent; 
+    BOOL     fCapturingNow; 
+    DWORD    dwReturn; 
+    UINT     wNumVideoAllocated; 
+    UINT     wNumAudioAllocated; 
+} CAPSTATUS, *PCAPSTATUS, FAR *LPCAPSTATUS;
+
+
 #ifdef __cplusplus
 /* SendMessage in C++*/
 #define AVICapSM(hwnd,m,w,l) ( (::IsWindow(hwnd)) ? ::SendMessage(hwnd,m,w,l) : 0)
