@@ -136,6 +136,10 @@ static void pixconv_process(MSFilter *f){
 				s->out_fmt,SWS_FAST_BILINEAR,
                 		NULL, NULL, NULL);
 			}
+			if (s->in_fmt==PIX_FMT_BGR24){
+				inbuf.data[0]+=inbuf.linesize[0]*(s->size.height-1);
+				inbuf.linesize[0]=-inbuf.linesize[0];
+			}
 			if (sws_scale(s->sws_ctx,inbuf.data,inbuf.linesize, 0,
 				s->size.height, s->outbuf.planes, s->outbuf.strides)<0){
 				ms_error("MSPixConv: Error in sws_scale().");
