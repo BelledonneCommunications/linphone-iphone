@@ -173,6 +173,7 @@ public class P2pProxyMain  implements P2pProxyMainMBean {
 				   mConfigurator.setProperty(JxtaNetworkManager.HTTP_LISTENING_PUBLIC_ADDRESS,args[i + 1]+":9700");
 				   mConfigurator.setProperty(JxtaNetworkManager.TCP_LISTENING_PUBLIC_ADDRESS,args[i + 1]+":9701");
                    mConfigurator.setProperty(RtpRelayService.AUDIO_VIDEO_PUBLIC_URI,"udp://"+args[i + 1]+":"+lMediaPort);
+                   mConfigurator.setProperty(SipProxyRegistrar.REGISTRAR_PUBLIC_ADDRESS,args[i + 1]);
                    System.out.println("public address detected[" + args[i + 1] + "]");
 			   }            
 			   else if (argument.equals("-socks-url")) {
@@ -267,8 +268,7 @@ public class P2pProxyMain  implements P2pProxyMainMBean {
 
 		   }
 
-		   //setup account manager
-		   mP2pProxyAccountManagement = new P2pProxyAccountManagement(mJxtaNetworkManager);
+
 		   //set management
 		   try {
 			   ObjectName lObjectName = new ObjectName(ACCOUNT_MGR_MBEAN_NAME);
@@ -301,6 +301,8 @@ public class P2pProxyMain  implements P2pProxyMainMBean {
       mServiceProvider = new EdgePeerServiceManager(aProperties, mJxtaNetworkManager);
       mP2pProxyManagement = (P2pProxyManagement) mServiceProvider;
       mP2pProxySipProxyRegistrarManagement = (P2pProxyResourceManagement) mServiceProvider;
+	   //setup account manager
+	   mP2pProxyAccountManagement = new P2pProxyAccountManagement(mJxtaNetworkManager);
       mServiceProvider.start(3000L);
    }
 
@@ -311,6 +313,8 @@ public class P2pProxyMain  implements P2pProxyMainMBean {
       mP2pProxyManagement = (P2pProxyManagement) mServiceProvider;
       mP2pProxySipProxyRegistrarManagement = (P2pProxyResourceManagement) mServiceProvider;
       mServiceProvider.start(3000L);
+	   //setup account manager
+	   mP2pProxyAccountManagement = new P2pProxyAccountManagement(mJxtaNetworkManager);
 //    setup sip provider
 	   SipStack.log_path = mConfigHomeDir+"/logs";
 	   mSipAndPipeListener = new SipProxyRegistrar(mConfigurator,mJxtaNetworkManager,mP2pProxyAccountManagement);
@@ -330,7 +334,9 @@ public class P2pProxyMain  implements P2pProxyMainMBean {
       mP2pProxyManagement = null;
       mP2pProxySipProxyRegistrarManagement = (P2pProxyResourceManagement) mServiceProvider;
       mServiceProvider.start(3000L);
-//    setup sip provider
+	   //setup account manager
+	   mP2pProxyAccountManagement = new P2pProxyAccountManagement(mJxtaNetworkManager);
+	   //    setup sip provider
 	   SipStack.log_path = mConfigHomeDir+"/logs";
 	   mSipAndPipeListener = new SipProxyRegistrar(mConfigurator,mJxtaNetworkManager,mP2pProxyAccountManagement);
 	   //set management

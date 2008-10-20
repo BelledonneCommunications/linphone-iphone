@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
@@ -57,6 +59,7 @@ public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarM
    public final static String REGISTRAR_PORT="org.linphone.p2pproxy.SipListener.registrar.port";
    public final static String REGISTRAR_PUBLIC_ADDRESS="org.linphone.p2pproxy.SipListener.registrar.public.address";
    public final static String ADV_NAME = "p2p-proxy-proxyregistrar";
+   private final int ADV_LIFE_TIME=60000;
    //
    private final SipProvider mProvider;
    private final JxtaNetworkManager mJxtaNetworkManager;
@@ -68,7 +71,8 @@ public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarM
    private final P2pProxyAccountManagementMBean mP2pProxyAccountManagement;
    private final Configurator mProperties;
    private final SuperPeerProxy mSuperPeerProxy;
-   private final NetworkResourceAdvertisement mProxyRegistrationAdvertisement;
+   private  NetworkResourceAdvertisement mProxyRegistrationAdvertisement;
+   private final Timer mTimer = new Timer ("Proxy registrar adv publisher");
   
    //private long mNumberOfEstablishedCall;
    private long mNumberOfRefusedRegistration;
@@ -172,12 +176,21 @@ public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarM
       mProvider.addSipProviderListener(SipProvider.PROMISQUE,this);
       mPool = Executors.newCachedThreadPool();
       mSuperPeerProxy = new SuperPeerProxy(aJxtaNetworkManager, "sip:"+mProvider.getViaAddress()+":"+mProvider.getPort(),mRegistrationTab);
-      mProxyRegistrationAdvertisement = (NetworkResourceAdvertisement) AdvertisementFactory.newAdvertisement(NetworkResourceAdvertisement.getAdvertisementType());
-      mProxyRegistrationAdvertisement.setID(IDFactory.newCodatID(mJxtaNetworkManager.getPeerGroup().getPeerGroupID(), mSuperPeerProxy.getSipProxyRegistrarAddress().toString().getBytes()));
-      mProxyRegistrationAdvertisement.setAddress(mSuperPeerProxy.getSipProxyRegistrarAddress());
-      mProxyRegistrationAdvertisement.setName(ADV_NAME);
-      mJxtaNetworkManager.getPeerGroup().getDiscoveryService().publish(mProxyRegistrationAdvertisement,60000,30000);
-      mLog.info(mProxyRegistrationAdvertisement + "published");
+      TimerTask lPublisherTask = new TimerTask() {
+
+		@Override
+		public void run() {
+			try {
+				SipProxyRegistrar.this.publishAdvertisement();
+			} catch (IOException e) {
+				mLog.error("cannot publish proxy registar adv", e);
+			}
+			
+		}
+    	  
+      };
+      mTimer.scheduleAtFixedRate(lPublisherTask, 0, ADV_LIFE_TIME-ADV_LIFE_TIME/10);
+      
    }
    public  void onReceivedMessage(SipProvider aProvider, Message aMessage) {
       if (aProvider.getListeners().containsKey(aMessage.getTransactionId())) {
@@ -354,5 +367,15 @@ public void stop() {
    }
    public long getNumberOfUnRegistration() {
       return mNumberOfUnRegistration;
+   }
+   private void publishAdvertisement() throws IOException {
+	   if (mProxyRegistrationAdvertisement == null) {   
+	   mProxyRegistrationAdvertisement = (NetworkResourceAdvertisement) AdvertisementFactory.newAdvertisement(NetworkResourceAdvertisement.getAdvertisementType());
+	      mProxyRegistrationAdvertisement.setID(IDFactory.newCodatID(mJxtaNetworkManager.getPeerGroup().getPeerGroupID(), mSuperPeerProxy.getSipProxyRegistrarAddress().toString().getBytes()));
+	      mProxyRegistrationAdvertisement.setAddress(mSuperPeerProxy.getSipProxyRegistrarAddress());
+	      mProxyRegistrationAdvertisement.setName(ADV_NAME);
+	   }
+	   mJxtaNetworkManager.getPeerGroup().getDiscoveryService().publish(mProxyRegistrationAdvertisement,ADV_LIFE_TIME,ADV_LIFE_TIME/2);	   
+	   mLog.info(mProxyRegistrationAdvertisement + "published");
    }
 }

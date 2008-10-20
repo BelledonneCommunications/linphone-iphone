@@ -77,7 +77,7 @@ public UserInstance(final String userName) throws  P2pProxyException {
     if (lFile.exists() == false) lFile.mkdir();
 	mProvider=new SipProvider(null,lSipPort);
 	mSipClient = new SipClient(mProvider,userName,30000);
-	final TimerTask lTimerTask = new  TimerTask() {
+	 class RegistrarTimerTask extends  TimerTask {
 		@Override
 		public void run() {
 			try {
@@ -94,12 +94,12 @@ public UserInstance(final String userName) throws  P2pProxyException {
 			} catch(Exception e) {
 				mLog.error("cannot register user["+userName+"]",e);
 			} finally {
-				mTimer.schedule(this, REGISTRATION_PERIOD-REGISTRATION_PERIOD/10);
+				mTimer.schedule(new  RegistrarTimerTask(), REGISTRATION_PERIOD-REGISTRATION_PERIOD/10);
 			}
 		}
 		
 	};
-	mTimer.schedule(lTimerTask, REGISTRATION_PERIOD-REGISTRATION_PERIOD/10);
+	mTimer.schedule(new  RegistrarTimerTask(), REGISTRATION_PERIOD-REGISTRATION_PERIOD/10);
 	mSipClient.listen();
 	} catch (Exception e) {
 		throw new P2pProxyException("cannot start client",e);
@@ -128,7 +128,6 @@ public static void main(String[] args) throws P2pProxyException {
 		   } else if (argument.equals("-nb-call")) {
 			   lLoop =  Integer.parseInt(args[i + 1]);
 			   System.out.println("nb-call [" + lLoop + "]");
-			   isRegistered
 		   } else {
 			   System.out.println("Invalid option: " + args[i]);
 			   usage();
