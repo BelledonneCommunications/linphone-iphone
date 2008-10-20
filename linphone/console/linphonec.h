@@ -27,9 +27,11 @@
 
 #ifdef HAVE_READLINE_H
 #include <readline.h>
+#define HAVE_READLINE
 #else
 #ifdef HAVE_READLINE_READLINE_H
 #include <readline/readline.h>
+#define HAVE_READLINE
 #endif
 #endif
 #ifdef HAVE_HISTORY_H
@@ -99,6 +101,7 @@ typedef struct {
 extern int linphonec_parse_command_line(LinphoneCore *lc, char *cl);
 extern char *linphonec_command_generator(const char *text, int state);
 extern void linphonec_finish(int exit_status);
+extern char *linphonec_readline(char *prompt);
 
 #endif /* def LINPHONEC_H */
 

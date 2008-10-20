@@ -592,9 +592,13 @@ lpc_cmd_proxy(LinphoneCore *lc, char *args)
 
 	if (strcmp(arg1,"add")==0)
 	{
+#ifdef HAVE_READLINE
 		rl_inhibit_completion=1;
+#endif
 		linphonec_proxy_add(lc);
+#ifdef HAVE_READLINE
 		rl_inhibit_completion=0;
+#endif
 	}
 	else if (strcmp(arg1,"list")==0)
 	{
@@ -739,7 +743,7 @@ linphonec_proxy_add(LinphoneCore *lc)
 	 */
 	while (1)
 	{
-		char *input=readline("Enter proxy sip address: ");
+		char *input=linphonec_readline("Enter proxy sip address: ");
 		char *clean;
 
 		if ( ! input ) {
@@ -771,7 +775,7 @@ linphonec_proxy_add(LinphoneCore *lc)
 	 */
 	while (1)
 	{
-		char *input=readline("Your identity for this proxy: ");
+		char *input=linphonec_readline("Your identity for this proxy: ");
 		char *clean;
 
 		if ( ! input ) {
@@ -803,7 +807,7 @@ linphonec_proxy_add(LinphoneCore *lc)
 	 */
 	while (1)
 	{
-		char *input=readline("Do you want to register on this proxy (yes/no): ");
+		char *input=linphonec_readline("Do you want to register on this proxy (yes/no): ");
 		char *clean;
 
 		if ( ! input ) {
@@ -839,7 +843,7 @@ linphonec_proxy_add(LinphoneCore *lc)
 		long int expires=0;
 		while (1)
 		{
-			char *input=readline("Specify register expiration time"
+			char *input=linphonec_readline("Specify register expiration time"
 				" in seconds (default is 600): ");
 
 			if ( ! input ) {
@@ -869,7 +873,7 @@ linphonec_proxy_add(LinphoneCore *lc)
 	 */
 	while (1)
 	{
-		char *input=readline("Specify route if needed: ");
+		char *input=linphonec_readline("Specify route if needed: ");
 		char *clean;
 
 		if ( ! input ) {
@@ -909,7 +913,7 @@ linphonec_proxy_add(LinphoneCore *lc)
 		printf("--------------------------------------------\n");
 		linphonec_proxy_display(cfg);
 		printf("--------------------------------------------\n");
-		input=readline("Accept the above proxy configuration (yes/no) ?: ");
+		input=linphonec_readline("Accept the above proxy configuration (yes/no) ?: ");
 
 
 		if ( ! input ) {
@@ -1214,7 +1218,7 @@ lpc_find_command(const char *name)
  *
  * Revision 1.16  2006/01/18 09:25:32  strk
  * Command completion inhibited in proxy addition and auth request prompts.
- * Avoided use of readline's internal filename completion.
+ * Avoided use of linphonec_readline's internal filename completion.
  *
  * Revision 1.15  2006/01/14 13:29:32  strk
  * Reworked commands interface to use a table structure,
@@ -1229,7 +1233,7 @@ lpc_find_command(const char *name)
  * Added linphonec.h. Code layout change (added comments, forward decl,
  * globals on top, copyright notices and Logs). Handled out-of-memory
  * condition on history management. Removed assumption on sizeof(char).
- * Fixed bug in authentication prompt (introduced by readline).
+ * Fixed bug in authentication prompt (introduced by linphonec_readline).
  * Added support for multiple authentication requests (up to MAX_PENDING_AUTH).
  *
  *

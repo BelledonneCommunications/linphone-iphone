@@ -31,6 +31,7 @@
 #include <string.h>
 #include <signal.h>
 #include <limits.h>
+#include <ctype.h>
 #include <linphonecore.h>
 #include "linphonec.h"
 
@@ -69,13 +70,15 @@ char *lpc_strip_blanks(char *input);
 static int handle_configfile_migration(void);
 static int copy_file(const char *from, const char *to);
 static int linphonec_parse_cmdline(int argc, char **argv);
-static int linphonec_initialize_readline(void);
-static int linphonec_finish_readline();
 static int linphonec_init(int argc, char **argv);
 static int linphonec_main_loop (LinphoneCore * opm, char * sipAddr);
 static int linphonec_idle_call (void);
+#ifdef HAVE_READLINE
+static int linphonec_initialize_readline(void);
+static int linphonec_finish_readline();
 static char **linephonec_readline_completion(const char *text,
 	int start, int end);
+#endif
 
 /* These are callback for linphone core */
 static void linphonec_call_received(LinphoneCore *lc, const char *from);
@@ -95,7 +98,6 @@ static void linphonec_text_received(LinphoneCore *lc, LinphoneChatRoom *cr,
 static void linphonec_display_status (LinphoneCore * lc, const char *something);
 static void linphonec_general_state (LinphoneCore * lc, LinphoneGeneralState *gstate);
 static void print_prompt(LinphoneCore *opm);
-
 /***************************************************************************
  *
  * Global variables 
@@ -104,8 +106,10 @@ static void print_prompt(LinphoneCore *opm);
 
 LinphoneCore linphonec;
 FILE *mylogfile;
+#ifdef HAVE_READLINE
 static char *histfile_name=NULL;
 static char last_in_history[256];
+#endif
 //auto answer (-a) option
 static bool_t auto_answer=FALSE;
 static bool_t answer_call=FALSE;
@@ -322,6 +326,64 @@ linphonec_general_state (LinphoneCore * lc, LinphoneGeneralState *gstate)
         }  
 }
 
+#ifndef HAVE_READLINE
+static char received_prompt[PROMPT_MAX_LEN];
+static ms_mutex_t prompt_mutex;
+static bool_t have_prompt=FALSE;
+
+static void *prompt_reader_thread(void *arg){
+	char *ret;
+	char tmp[PROMPT_MAX_LEN];
+	while ((ret=fgets(tmp,sizeof(tmp),stdin))!=NULL){
+		ms_mutex_lock(&prompt_mutex);
+		strcpy(received_prompt,ret);
+		have_prompt=TRUE;
+		ms_mutex_unlock(&prompt_mutex);
+	}
+	ms_mutex_lock(&prompt_mutex);
+	strcpy(received_prompt,"quit");
+	have_prompt=TRUE;
+	ms_mutex_unlock(&prompt_mutex);
+	return NULL;
+}
+
+static void start_prompt_reader(void){
+	ortp_thread_t th;
+	ms_mutex_init(&prompt_mutex,NULL);
+	ortp_thread_create(&th,NULL,prompt_reader_thread,NULL);
+}
+
+#endif
+
+char *linphonec_readline(char *prompt){
+#ifdef HAVE_READLINE
+	return readline(prompt);
+#else
+	static bool_t prompt_reader_started=FALSE;
+	if (!prompt_reader_started){
+		start_prompt_reader();
+		prompt_reader_started=TRUE;
+	}
+	fprintf(stdout,prompt);
+	fflush(stdout);
+	while(1){
+		ms_mutex_lock(&prompt_mutex);
+		if (have_prompt){
+			char *ret=strdup(received_prompt);
+			have_prompt=FALSE;
+			ms_mutex_unlock(&prompt_mutex);
+			return ret;
+		}
+		ms_mutex_unlock(&prompt_mutex);
+		linphonec_idle_call();
+#ifdef WIN32
+		Sleep(20);
+#else
+		usleep(20000);
+#endif
+	}
+#endif
+}
 
 /***************************************************************************/
 /*
@@ -418,11 +480,12 @@ linphonec_init(int argc, char **argv)
 			    NULL);
 	linphone_core_enable_video(&linphonec,vcap_enabled,display_enabled);
 	if (!(vcap_enabled || display_enabled)) printf("Warning: video is disabled in linphonec.\n");
+#ifdef HAVE_READLINE
 	/*
 	 * Initialize readline
 	 */
 	linphonec_initialize_readline();
-
+#endif
 	/*
 	 * Initialize signal handlers
 	 */
@@ -444,9 +507,9 @@ linphonec_finish(int exit_status)
 
 	/* Terminate any pending call */
    	linphonec_parse_command_line(&linphonec, "terminate");
-
+#ifdef HAVE_READLINE
 	linphonec_finish_readline();
-
+#endif
 	linphone_core_uninit (&linphonec);
 
 	if (mylogfile != NULL && mylogfile != stdout)
@@ -474,15 +537,16 @@ linphonec_prompt_for_auth_final(LinphoneCore *lc)
 {
 	char *input, *iptr;
 	char auth_prompt[256];
+#ifdef HAVE_READLINE
 	rl_hook_func_t *old_event_hook;
-
+#endif
 	LinphoneAuthInfo *pending_auth=auth_stack.elem[auth_stack.nitems-1];
 
 	snprintf(auth_prompt, 256, "Password for %s on %s: ",
 		pending_auth->username, pending_auth->realm);
 
 	printf("\n");
-
+#ifdef HAVE_READLINE
 	/*
 	 * Disable event hook to avoid entering an
 	 * infinite loop. This would prevent idle_call
@@ -491,10 +555,11 @@ linphonec_prompt_for_auth_final(LinphoneCore *lc)
 	 */
 	old_event_hook=rl_event_hook;
 	rl_event_hook=NULL;
+#endif
 
 	while (1)
 	{
-		input=readline(auth_prompt);
+		input=linphonec_readline(auth_prompt);
 
 		/*
 		 * If EOF (^D) is sent you probably don't want
@@ -531,15 +596,14 @@ linphonec_prompt_for_auth_final(LinphoneCore *lc)
 	linphone_auth_info_set_passwd(pending_auth, input);
 	linphone_core_add_auth_info(lc, pending_auth);
 	--(auth_stack.nitems);
-
+#ifdef HAVE_READLINE
 	/*
 	 * Reset line_buffer, to avoid the password
 	 * to be used again from outer readline
 	 */
 	rl_line_buffer[0]='\0';
-
 	rl_event_hook=old_event_hook;
-
+#endif
 	return 1;
 }
 
@@ -590,28 +654,25 @@ linphonec_idle_call ()
 		answer_call=FALSE;
 	}
 
-#if 0 /* Automatic exit should be requested with a command line switch */
-	/* Quit if autocall mode was on and no call is in progress */
-	if ( sipAddr != NULL && opm->call == NULL )
-	{
-   		linphonec_parse_command_line(&linphonec, "quit");
-	}
-#endif
-
 	if ( auth_stack.nitems )
 	{
 		/*
 		 * Inhibit command completion
 		 * during password prompts
 		 */
+#ifdef HAVE_READLINE
 		rl_inhibit_completion=1;
+#endif
 		linphonec_prompt_for_auth_final(opm);
+#ifdef HAVE_READLINE
 		rl_inhibit_completion=0;
+#endif
 	}
 
 	return 0;
 }
 
+#ifdef HAVE_READLINE
 /*
  * Use globals:
  *
@@ -664,6 +725,8 @@ linphonec_finish_readline()
 	return 0;
 }
 
+#endif
+
 static void print_prompt(LinphoneCore *opm){
 #ifdef IDENTITY_AS_PROMPT
 	snprintf(prompt, PROMPT_MAX_LEN, "%s> ",
@@ -690,7 +753,7 @@ linphonec_main_loop (LinphoneCore * opm, char * sipAddr)
 		run=linphonec_parse_command_line(&linphonec, buf);
 	}
 
-	while ((input=readline(prompt)))
+	while ((input=linphonec_readline(prompt)))
 	{
 		char *iptr; /* input and input pointer */
 		size_t input_len;
@@ -710,7 +773,7 @@ linphonec_main_loop (LinphoneCore * opm, char * sipAddr)
 			continue;
 		}
 
-
+#ifdef HAVE_READLINE
 		/*
 		 * Only add to history if not already
 		 * last item in it
@@ -721,6 +784,7 @@ linphonec_main_loop (LinphoneCore * opm, char * sipAddr)
 			last_in_history[sizeof(last_in_history)-1]='\0';
 			add_history(iptr);
 		}
+#endif
 
 		linphonec_parse_command_line(&linphonec, iptr);
 		free(input);
@@ -953,6 +1017,7 @@ copy_file(const char *from, const char *to)
 	return 1;
 }
 
+#ifdef HAVE_READLINE
 static char **
 linephonec_readline_completion(const char *text, int start, int end)
 {
@@ -981,6 +1046,8 @@ linephonec_readline_completion(const char *text, int start, int end)
 
 	return matches;
 }
+
+#endif
 
 /*
  * Strip blanks from a string.

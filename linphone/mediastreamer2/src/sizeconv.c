@@ -33,7 +33,6 @@ typedef struct SizeConvState{
 	YuvBuf outbuf;
 	struct SwsContext *sws_ctx;
 	mblk_t *om;
-
 	float fps;
 	float start_time;
 	int frame_count;
