@@ -59,7 +59,7 @@ public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarM
    public final static String REGISTRAR_PORT="org.linphone.p2pproxy.SipListener.registrar.port";
    public final static String REGISTRAR_PUBLIC_ADDRESS="org.linphone.p2pproxy.SipListener.registrar.public.address";
    public final static String ADV_NAME = "p2p-proxy-proxyregistrar";
-   private final int ADV_LIFE_TIME=60000;
+   private final int ADV_LIFE_TIME=6000000;
    //
    private final SipProvider mProvider;
    private final JxtaNetworkManager mJxtaNetworkManager;
