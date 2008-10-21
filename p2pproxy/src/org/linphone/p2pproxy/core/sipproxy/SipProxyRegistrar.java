@@ -299,7 +299,8 @@ public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarM
          
          if (mP2pProxyAccountManagement.isValidAccount(lFromName)) {
          lRegistration = new Registration(lFromName);
-         lRegistration.Contact = aMessage.getContactHeader().getNameAddress().getAddress().toString();;
+         // forgot contact, use rport lRegistration.Contact = aMessage.getContactHeader().getNameAddress().getAddress().toString();;
+         
          updateRegistration(lRegistration,aMessage);
          mRegistrationTab.put(lFromName, lRegistration);
          } else {
@@ -325,7 +326,7 @@ public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarM
       if (aRegistrationMessage.getExpiresHeader() != null ) {
          aRegistration.Expiration =  aRegistrationMessage.getExpiresHeader().getDeltaSeconds()*1000; 
       }
-      
+      aRegistration.Contact = "sip:"+aRegistrationMessage.getRemoteAddress()+":"+aRegistrationMessage.getRemotePort();
       mSuperPeerProxy.updateRegistration(aRegistration, aRegistrationMessage); 
    }
    

@@ -141,7 +141,7 @@ public class SipClient {
             String lCallerUri = mSipIdentity;
             String lCalleeUri = aTo;
             mLog.info("Calling  ["+aTo+"] from ["+mSipIdentity+"]");
-            long lTimout = 75000;
+            long lTimout = 30000;
 
             final Semaphore lCallerSemaphoreAccepted = new Semaphore(0);
             final Semaphore lCalleeSemaphoreClosed = new Semaphore(0);
@@ -218,7 +218,7 @@ public class SipClient {
             String lCallerUri = mSipIdentity;
             String lCalleeUri = aTo;
             mLog.info("Calling  ["+aTo+"] from ["+mSipIdentity+"]");
-            long lTimout = 75000;
+            long lTimout = 30000;
 
             final Semaphore lCallerSemaphoreAccepted = new Semaphore(0);
             final Semaphore lCalleeSemaphoreClosed = new Semaphore(0);
@@ -228,11 +228,12 @@ public class SipClient {
                     lCallerSemaphoreAccepted.release();
                   call.ackWithAnswer(sdp);
               }
-              public void onCallClosing(Call call, Message bye) {
-                  //nop
-              }
+
                 public void onCallRinging(Call call, Message resp) {
                     lCallerSemaphoreRinging.release();
+                }
+                public void onCallClosed(Call call, Message resp) {
+                	lCalleeSemaphoreClosed.release();
                 }
             };
             Call  lCaller = new Call(mProvider, lCallerUri, getContact(mProvider), lCallerListener);
@@ -250,8 +251,8 @@ public class SipClient {
 			}
 			lCaller.bye();
 
-            Assert.assertTrue("caller  call not closed until ["+lTimout+"]", lCalleeSemaphoreClosed.tryAcquire(lTimout,TimeUnit.MILLISECONDS));
- 
+            Assert.assertTrue("caller  call not closed until ["+aCallDuration + aCallDuration/10+"]", lCalleeSemaphoreClosed.tryAcquire(aCallDuration + aCallDuration/10,TimeUnit.MILLISECONDS));
+   
             mLog.info("Call ok");
             return lCaller;
         } catch (Exception e) {
@@ -271,9 +272,9 @@ public class SipClient {
            public void onCallIncoming(Call call, NameAddress callee, NameAddress caller, String sdp, Message invite) {
                call.accept(sdp);
            }
-         public void onCallClosed(Call call, Message resp) {
-             //nop
-         }
+           public void onCallClosing(Call call, Message bye) {
+               //nop
+           }
        };
        Call  lCallee = new Call(mProvider, mSipIdentity, getContact(mProvider), lCalleeListener);
        lCallee.setLocalSessionDescriptor(sdp_offer);

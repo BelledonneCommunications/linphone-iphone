@@ -58,8 +58,7 @@ public class SuperPeerProxy implements SipProxy, RegistrationHandler {
 	   if (mLog.isDebugEnabled()) mLog.debug("processing request " +aMessage);
 	   String lTo = aMessage.getToHeader().getNameAddress().getAddress().toString();
 	   SipURL lNextHope = null;
-	   //check if invite
-	   if (aMessage.isInvite() || aMessage.isCancel()) {
+	
 		   //ok need to find the root
 		   //is local ?
 		   synchronized (mRegistrationTab) {
@@ -70,11 +69,14 @@ public class SuperPeerProxy implements SipProxy, RegistrationHandler {
 				   throw new P2pProxyUserNotFoundException("user ["+lTo+"] not found");
 			   }
 		   }
-		      // add recordRoute
-	       SipUtils.addRecordRoute(aProvider,aMessage);    
-
+		   if (aMessage.isInvite() || aMessage.isCancel()) {
+			   //check if invite
+			   // add recordRoute
+			   SipUtils.addRecordRoute(aProvider,aMessage);    
+		   }
 		   
-	   } else {
+	   if (lNextHope == null) {
+		   // not for us
 		   //just look at route set
 		   MultipleHeader lMultipleRoute = aMessage.getRoutes();
 		   
@@ -82,7 +84,8 @@ public class SuperPeerProxy implements SipProxy, RegistrationHandler {
 			   lNextHope = ((RecordRouteHeader)lMultipleRoute.getTop()).getNameAddress().getAddress();
 		   } else {
 			   // last proxy, get route from request uri
-		      lNextHope = aMessage.getRequestLine().getAddress();
+			   //check if we know the user
+			   lNextHope = aMessage.getRequestLine().getAddress();
 		   }
 		   
 	   }

@@ -61,6 +61,7 @@ public class P2pProxyMain  implements P2pProxyMainMBean {
    private static Configurator mConfigurator;
    private static String mConfigHomeDir;
    static private boolean mExit = false;
+   static private boolean isReady = false;
    
    
    static {
@@ -279,7 +280,7 @@ public class P2pProxyMain  implements P2pProxyMainMBean {
 
 
 		   mLog.warn("p2pproxy initilized");
-
+		   isReady = true;
 		   while (mExit == false) {
 			   Thread.sleep(1000);
 		   }
@@ -412,9 +413,9 @@ public  static void staticLoadTraceConfigFile()  throws P2pProxyException {
 
 private static void isReady() throws P2pProxyNotReadyException {
     try {
-      if ((mJxtaNetworkManager!=null && mJxtaNetworkManager.isConnectedToRendezVous(0) == true) 
+      if ((isReady == true && mJxtaNetworkManager.isConnectedToRendezVous(0) == true) 
     	  || 
-    	  (mJxtaNetworkManager!=null && mJxtaNetworkManager.getPeerGroup().getRendezVousService().isRendezVous())) {
+    	  (isReady == true && mJxtaNetworkManager.getPeerGroup().getRendezVousService().isRendezVous())) {
          //nop connected
       } else {
     	  if (mJxtaNetworkManager != null ) {

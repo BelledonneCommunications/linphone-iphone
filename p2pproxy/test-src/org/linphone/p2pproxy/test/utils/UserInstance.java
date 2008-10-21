@@ -22,6 +22,7 @@ package org.linphone.p2pproxy.test.utils;
 
 import java.io.File;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.URI;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -75,26 +76,27 @@ public UserInstance(final String userName) throws  P2pProxyException {
 	SipStack.log_path = "userinstance-"+lUserNameUri.getUserInfo()+"/logs";
 	File lFile = new File(SipStack.log_path);
     if (lFile.exists() == false) lFile.mkdir();
-	mProvider=new SipProvider(null,lSipPort);
+    //InetAddress[] lAddresses = InetAddress.getAllByName("localhost");
+    mProvider=new SipProvider(null,lSipPort);
 	mSipClient = new SipClient(mProvider,userName,30000);
 	 class RegistrarTimerTask extends  TimerTask {
 		@Override
 		public void run() {
 			try {
 			// 1 get proxy address
-			String lProxyUri = P2pProxyMain.lookupSipProxyUri(P2pProxyResourceManagement.DOMAINE);
+			URI lProxyUri = URI.create(P2pProxyMain.lookupSipProxyUri(P2pProxyResourceManagement.DOMAINE));
 			if (lProxyUri == null) {
 				 System.out.println("cannot find registrar");
 				 return;
 			}
 			//2 setOutbound proxy
-			mProvider.setOutboundProxy(new SocketAddress(lProxyUri));
+			mProvider.setOutboundProxy(new SocketAddress(lProxyUri.getRawSchemeSpecificPart()));
 			mSipClient.register(REGISTRATION_PERIOD,userName);
 			mIsRegistered = true;
 			} catch(Exception e) {
 				mLog.error("cannot register user["+userName+"]",e);
 			} finally {
-				mTimer.schedule(new  RegistrarTimerTask(), REGISTRATION_PERIOD-REGISTRATION_PERIOD/10);
+				mTimer.schedule(new  RegistrarTimerTask(), 1000 *(REGISTRATION_PERIOD-REGISTRATION_PERIOD/10));
 			}
 		}
 		
@@ -110,7 +112,7 @@ public void call(String aTo, int duration) {
 }
 public static void main(String[] args) throws P2pProxyException {
 	String lFrom=null, lTo=null;
-	int lDuration = 10, lLoop=1;
+	int lDuration = 10, lLoop=0;
 	for (int i=0; i < args.length; i=i+2) {  
 		   String argument = args[i];
 		   if (argument.equals("-from")) {
