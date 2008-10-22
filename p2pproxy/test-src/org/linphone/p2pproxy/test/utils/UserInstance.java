@@ -44,7 +44,7 @@ private final SipClient mSipClient;
 private final int REGISTRATION_PERIOD=60;
 private final static Logger mLog = Logger.getLogger(UserInstance.class);
 private static boolean mIsRegistered = false;
-public UserInstance(final String userName) throws  P2pProxyException {
+public UserInstance(final String userName,final String aPreferedProxyUri) throws  P2pProxyException {
 	try {
 	DatagramSocket lSocket = new DatagramSocket();
 	lSocket.setReuseAddress(true);
@@ -83,14 +83,25 @@ public UserInstance(final String userName) throws  P2pProxyException {
 		@Override
 		public void run() {
 			try {
+			URI	lProxyUri = null;
 			// 1 get proxy address
-			URI lProxyUri = URI.create(P2pProxyMain.lookupSipProxyUri(P2pProxyResourceManagement.DOMAINE));
-			if (lProxyUri == null) {
+			String [] lProxies = P2pProxyMain.lookupSipProxiesUri(P2pProxyResourceManagement.DOMAINE);
+			if (lProxies.length == 0) {
 				 System.out.println("cannot find registrar");
 				 return;
 			}
+			//default choice
+			lProxyUri = URI.create(lProxies[0]);
+			//search
+			for (String lProxy: lProxies) {
+				if  (lProxy.equals(aPreferedProxyUri)) {
+					lProxyUri = URI.create(lProxy);
+					break;
+				}
+			}
 			//2 setOutbound proxy
 			mProvider.setOutboundProxy(new SocketAddress(lProxyUri.getRawSchemeSpecificPart()));
+			mLog.info("use outband proxy ["+mProvider.getOutboundProxy()+"]");
 			mSipClient.register(REGISTRATION_PERIOD,userName);
 			mIsRegistered = true;
 			} catch(Exception e) {
@@ -111,7 +122,7 @@ public void call(String aTo, int duration) {
 	mSipClient.call(aTo, true, duration);
 }
 public static void main(String[] args) throws P2pProxyException {
-	String lFrom=null, lTo=null;
+	String lFrom=null, lTo=null, lPreferedProxyUri=null;
 	int lDuration = 10, lLoop=0;
 	for (int i=0; i < args.length; i=i+2) {  
 		   String argument = args[i];
@@ -130,7 +141,11 @@ public static void main(String[] args) throws P2pProxyException {
 		   } else if (argument.equals("-nb-call")) {
 			   lLoop =  Integer.parseInt(args[i + 1]);
 			   System.out.println("nb-call [" + lLoop + "]");
-		   } else {
+		   } else if (argument.equals("-prefered-proxy")) {
+			   lPreferedProxyUri =  args[i + 1];
+			   System.out.println("prefered-proxy [" + lLoop + "]");
+		   } 
+		   else {
 			   System.out.println("Invalid option: " + args[i]);
 			   usage();
 			   System.exit(1);
@@ -148,7 +163,7 @@ public static void main(String[] args) throws P2pProxyException {
 	   System.exit(1);
    }
 
-   UserInstance lUserInstance= new UserInstance(lFrom);
+   UserInstance lUserInstance= new UserInstance(lFrom,lPreferedProxyUri);
    while (mIsRegistered == false) {
 	   try {
 		   Thread.sleep(1000);

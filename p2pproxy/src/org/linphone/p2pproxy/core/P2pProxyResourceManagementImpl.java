@@ -1,5 +1,7 @@
 package org.linphone.p2pproxy.core;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.linphone.p2pproxy.api.P2pProxyException;
 import org.linphone.p2pproxy.api.P2pProxyResourceManagement;
@@ -13,14 +15,18 @@ public class P2pProxyResourceManagementImpl implements P2pProxyResourceManagemen
    P2pProxyResourceManagementImpl(JxtaNetworkManager aJxtaNetworkManager) {
       mJxtaNetworkManager = aJxtaNetworkManager;
    }
-   public String lookupSipProxyUri(String aDomaine) throws P2pProxyException {
+   public String[] lookupSipProxiesUri(String aDomaine) throws P2pProxyException {
       try {
          if (!DOMAINE.equals(aDomaine)) {
             //unknown domaine
-            return null;
+            return new String[0];
          }
-         NetworkResourceAdvertisement lSipProxyRegistrarAdvertisement = (NetworkResourceAdvertisement) (mJxtaNetworkManager.getAdvertisement(null, SipProxyRegistrar.ADV_NAME, true));
-         return lSipProxyRegistrarAdvertisement.getAddress();
+         List<NetworkResourceAdvertisement> lSipProxyRegistrarAdvertisements =  (List<NetworkResourceAdvertisement>) (mJxtaNetworkManager.getAdvertisementList(null, "Name",SipProxyRegistrar.ADV_NAME, true,2));
+         String[] lAddresses = new String[lSipProxyRegistrarAdvertisements.size()];
+         for (int i=0;i<lSipProxyRegistrarAdvertisements.size();i++) {
+        	 lAddresses[i] = lSipProxyRegistrarAdvertisements.get(i).getAddress();
+         }
+         return lAddresses;
       }catch (Exception e) {
          throw new P2pProxyException(e);
       }

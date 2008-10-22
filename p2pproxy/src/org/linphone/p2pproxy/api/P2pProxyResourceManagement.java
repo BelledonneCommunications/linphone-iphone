@@ -25,14 +25,16 @@ public interface P2pProxyResourceManagement {
 	public final String DOMAINE="p2p.linphone.org";
 	/**
     * 
-    * @return the SIP uri of an available sip proxy registrar for a given domaine 
+    * @return the SIP uris of an available sip proxy registrar for a given domaine 
     */
-   public String lookupSipProxyUri(String aDomaine) throws P2pProxyException ;
+   public String[] lookupSipProxiesUri(String aDomaine) throws P2pProxyException ;
    
    public void revokeSipProxy(String aProxy) throws P2pProxyException;
    /**
     * return 2 adresses where to contact media server (stun/rtprelay)
     */
    public String[] getMediaServerList() throws P2pProxyException;
+
+
    
 }

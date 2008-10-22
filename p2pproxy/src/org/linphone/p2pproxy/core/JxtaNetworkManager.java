@@ -271,15 +271,19 @@ public class JxtaNetworkManager {
    }
    
    public  List<? extends Advertisement> getAdvertisementList(String aPeerId, String anAttributeName,String anAttributeValue, boolean isTryFromLocal) throws InterruptedException, IOException, P2pProxyAdvertisementNotFoundException {
+	   return getAdvertisementList(aPeerId, anAttributeName, anAttributeValue, isTryFromLocal, 1);
+   }
+   public  List<? extends Advertisement> getAdvertisementList(String aPeerId, String anAttributeName,String anAttributeValue, boolean isTryFromLocal, int numberOfexpectedAdv) throws InterruptedException, IOException, P2pProxyAdvertisementNotFoundException {
       DiscoveryService lDiscoveryService = getPeerGroup().getDiscoveryService();
-      final Semaphore lSemaphore = new Semaphore(0);
+      final Semaphore lSemaphore = new Semaphore(1-numberOfexpectedAdv);
       final List<Advertisement> lReturnList = new ArrayList<Advertisement>();
       DiscoveryListener lDiscoveryListener = new DiscoveryListener() {
          
          public void discoveryEvent(DiscoveryEvent event) {
             DiscoveryResponseMsg lRes = event.getResponse();
+            int lOrigListSize = lReturnList.size();
             enumeration2List(lRes.getAdvertisements(), lReturnList);
-            lSemaphore.release();
+            lSemaphore.release(lReturnList.size()-lOrigListSize);
          }
          
       };
@@ -288,10 +292,10 @@ public class JxtaNetworkManager {
          Enumeration lEnumeration = lDiscoveryService.getLocalAdvertisements(DiscoveryService.ADV, anAttributeName,anAttributeValue);
          enumeration2List(lEnumeration, lReturnList);
       }
-      if (lReturnList.isEmpty() == true) {
-         mLog.info("no advertisement found in local, trying remote...");
+      if (lReturnList.size() < numberOfexpectedAdv) {
+         mLog.info(lReturnList.size() +" of ["+numberOfexpectedAdv+"] advertisements found in local, trying remote...");
          lDiscoveryService.getRemoteAdvertisements(aPeerId, DiscoveryService.ADV, anAttributeName,anAttributeValue, 10,lDiscoveryListener);
-         if (lSemaphore.tryAcquire(ADV_DISCOVERY_TIMEOUT_INT,TimeUnit.MILLISECONDS) == false) {
+         if (lSemaphore.tryAcquire(ADV_DISCOVERY_TIMEOUT_INT,TimeUnit.MILLISECONDS) == false && lReturnList.isEmpty()) {
             throw new P2pProxyAdvertisementNotFoundException( anAttributeName+"="+anAttributeValue+ " not found");
          }
          lSemaphore.release();
@@ -354,14 +358,26 @@ public class JxtaNetworkManager {
       mNetworkPeerGroup.stopApp();
       //mNetworkPeerGroup.unref();
    }
-   private List<Advertisement> enumeration2List(Enumeration<Advertisement> lEnumeration,List<Advertisement> lList) {
-      if (lList == null) {
-         lList = new ArrayList<Advertisement>();
+   private List<Advertisement> enumeration2List(Enumeration<Advertisement> lEnumeration,List<Advertisement> aList) {
+      if (aList == null) {
+         aList = new ArrayList<Advertisement>();
       }
       while (lEnumeration.hasMoreElements()) {
-         lList.add((Advertisement) lEnumeration.nextElement()) ;
+    	  Advertisement lNewAdv =  lEnumeration.nextElement();
+    	  //1 check if already exist
+    	  for (Advertisement lAdv: aList) {
+    		  if (lAdv.equals(lNewAdv)) {
+    			  if (mLog.isDebugEnabled()) mLog.debug("adv ["+lNewAdv.getID()+"]already gathered");
+    			  lNewAdv = null;
+    			  break;
+    		  }
+    	  }
+    	  
+    	  if (lNewAdv != null) {
+    		  aList.add((lNewAdv)) ;
+    	  }
        }
-      return lList;
+      return aList;
    }
    
 }

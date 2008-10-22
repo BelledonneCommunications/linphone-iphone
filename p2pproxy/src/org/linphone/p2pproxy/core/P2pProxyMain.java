@@ -466,11 +466,25 @@ public static int isValidAccount(String aUserName){
 public static String lookupSipProxyUri(String aDomaine) {
    try {
       isReady();
-      return mP2pProxySipProxyRegistrarManagement.lookupSipProxyUri(aDomaine);
+      String[] lProxies = mP2pProxySipProxyRegistrarManagement.lookupSipProxiesUri(aDomaine);
+      if (lProxies.length != 0) {
+    	  return lProxies[0];
+      } else {
+    	  return null;
+      }
    } catch (Exception e) {
       return null;
    } 
 }
+public static String[] lookupSipProxiesUri(String aDomaine) {
+	   try {
+	      isReady();
+	      return mP2pProxySipProxyRegistrarManagement.lookupSipProxiesUri(aDomaine);
+	   } catch (Exception e) {
+	      return null;
+	   } 
+	}
+
 public static int getState() {
    try {
       isReady();
