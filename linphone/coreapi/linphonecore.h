@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ortp/ortp.h"
 #include "ortp/payloadtype.h"
 #include "mediastreamer2/mscommon.h"
+#include "mediastreamer2/msvideo.h"
 
 #define LINPHONE_IPADDR_SIZE 64
 #define LINPHONE_HOSTNAME_SIZE 128
@@ -111,6 +112,7 @@ typedef struct codecs_config
 typedef struct video_config{
 	struct _MSWebCam *device;
 	const char **cams;
+	MSVideoSize vsize;
 	bool_t capture;
 	bool_t show_local;
 	bool_t display;
@@ -673,12 +675,15 @@ MSList * linphone_core_get_call_logs(LinphoneCore *lc);
 void linphone_core_enable_video(LinphoneCore *lc, bool_t vcap_enabled, bool_t display_enabled);
 bool_t linphone_core_video_enabled(LinphoneCore *lc);
 
-/*play/record support: use files instead of soundcard*/
-void linphone_core_use_files(LinphoneCore *lc, bool_t yesno);
-void linphone_core_set_play_file(LinphoneCore *lc, const char *file);
-void linphone_core_set_record_file(LinphoneCore *lc, const char *file);
-
-
+typedef struct MSVideoSizeDef{
+	MSVideoSize vsize;
+	const char *name;
+}MSVideoSizeDef;
+/* returns a zero terminated table of MSVideoSizeDef*/
+const MSVideoSizeDef *linphone_core_get_supported_video_sizes(LinphoneCore *lc);
+void linphone_core_set_preferred_video_size(LinphoneCore *lc, MSVideoSize vsize);
+MSVideoSize linphone_core_get_preferred_video_size(LinphoneCore *lc);
+void linphone_core_set_preferred_video_size_by_name(LinphoneCore *lc, const char *name);
 
 void linphone_core_enable_video_preview(LinphoneCore *lc, bool_t val);
 bool_t linphone_core_video_preview_enabled(const LinphoneCore *lc);
@@ -689,6 +694,16 @@ bool_t linphone_core_video_preview_enabled(const LinphoneCore *lc);
 const char**  linphone_core_get_video_devices(const LinphoneCore *lc);
 int linphone_core_set_video_device(LinphoneCore *lc, const char *id);
 const char *linphone_core_get_video_device(const LinphoneCore *lc);
+
+
+
+
+/*play/record support: use files instead of soundcard*/
+void linphone_core_use_files(LinphoneCore *lc, bool_t yesno);
+void linphone_core_set_play_file(LinphoneCore *lc, const char *file);
+void linphone_core_set_record_file(LinphoneCore *lc, const char *file);
+
+
 
 int linphone_core_get_mtu(const LinphoneCore *lc);
 void linphone_core_set_mtu(LinphoneCore *lc, int mtu);

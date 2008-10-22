@@ -47,6 +47,7 @@ typedef struct V4l2State{
 	MSVideoSize got_vsize;
 	int pix_fmt;
 	int int_pix_fmt; /*internal pixel format */
+	int picture_size;
 	mblk_t *frames[VIDEO_MAX_FRAME];
 	int frame_ind;
 	int frame_max;
@@ -90,6 +91,23 @@ static bool_t v4lv2_try_format(V4l2State *s, int fmtid){
 		return FALSE;
 	}
 	return TRUE;
+}
+
+static int get_picture_buffer_size(MSPixFmt pix_fmt, int w, int h){
+	switch(pix_fmt){
+		case MS_YUV420P:
+			return (w*h*3)/2;
+		break;
+		case MS_RGB24:
+			return w*h*3;
+		break;
+		case MS_YUYV:
+			return w*h*2;
+		break;
+		default:
+			return 0;
+	}
+	return 0;
 }
 
 static int v4l2_configure(V4l2State *s){
@@ -144,7 +162,7 @@ static int v4l2_configure(V4l2State *s){
 	}else{
 		ms_message("Size of picture is %ix%i",fmt.fmt.pix.width,fmt.fmt.pix.height);
 	}
-
+	s->picture_size=get_picture_buffer_size(s->pix_fmt,fmt.fmt.pix.width,fmt.fmt.pix.height);
 	return 0;
 }
 
@@ -270,7 +288,11 @@ static mblk_t * v4lv2_grab_image(V4l2State *s){
 					ms_warning("Ignoring empty buffer...");
 					return NULL;
 				}
-				ret->b_wptr=ret->b_rptr+buf.bytesused;
+				/*normally buf.bytesused should contain the right buffer size; however we have found a buggy
+				driver that puts a random value inside */
+				if (s->picture_size!=0)
+					ret->b_wptr=ret->b_rptr+s->picture_size;
+				else ret->b_wptr=ret->b_rptr+buf.bytesused;
 			}
 		}
 	}

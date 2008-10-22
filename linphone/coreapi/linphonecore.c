@@ -557,6 +557,9 @@ void video_config_read(LinphoneCore *lc)
 	if (str && str[0]==0) str=NULL;
 	linphone_core_set_video_device(lc,str);
 	
+	linphone_core_set_preferred_video_size_by_name(lc,
+		lp_config_get_string(lc->config,"video","size","cif"));
+
 	enabled=lp_config_get_int(lc->config,"video","enabled",1);
 	capture=lp_config_get_int(lc->config,"video","capture",enabled);
 	display=lp_config_get_int(lc->config,"video","display",enabled);
@@ -2001,6 +2004,61 @@ const char *linphone_core_get_video_device(const LinphoneCore *lc){
 	return NULL;
 }
 
+static MSVideoSizeDef supported_resolutions[]={
+	{	MS_VIDEO_SIZE_4CIF	,	"4cif"	},
+	{	MS_VIDEO_SIZE_VGA	,	"vga"	},
+	{	MS_VIDEO_SIZE_CIF	,	"cif"	},
+	{	MS_VIDEO_SIZE_QCIF	,	"qcif"	},
+	{	{0,0}			,	NULL	}
+};
+
+const MSVideoSizeDef *linphone_core_get_supported_video_sizes(LinphoneCore *lc){
+	return supported_resolutions;
+}
+
+static MSVideoSize video_size_get_by_name(const char *name){
+	MSVideoSizeDef *pdef=supported_resolutions;
+	for(;pdef->name!=NULL;pdef++){
+		if (strcasecmp(name,pdef->name)==0){
+			return pdef->vsize;
+		}
+	}
+	ms_warning("Video resolution %s is not supported in linphone.",name);
+	return (MSVideoSize){0,0};
+}
+
+const char *video_size_get_name(MSVideoSize vsize){
+	MSVideoSizeDef *pdef=supported_resolutions;
+	for(;pdef->name!=NULL;pdef++){
+		if (pdef->vsize.width==vsize.width && pdef->vsize.height==vsize.height){
+			return pdef->name;
+		}
+	}
+	return NULL;
+}
+
+static bool_t video_size_supported(MSVideoSize vsize){
+	if (video_size_get_name(vsize)) return TRUE;
+	ms_warning("Video resolution %ix%i is not supported in linphone.",vsize.width,vsize.height);
+	return FALSE;
+}
+
+
+void linphone_core_set_preferred_video_size(LinphoneCore *lc, MSVideoSize vsize){
+	if (video_size_supported(vsize))
+		lc->video_conf.vsize=vsize;
+}
+
+void linphone_core_set_preferred_video_size_by_name(LinphoneCore *lc, const char *name){
+	MSVideoSize vsize=video_size_get_by_name(name);
+	if (vsize.width!=0)	linphone_core_set_preferred_video_size(lc,vsize);
+	else linphone_core_set_preferred_video_size(lc,MS_VIDEO_SIZE_CIF);
+}
+
+MSVideoSize linphone_core_get_preferred_video_size(LinphoneCore *lc){
+	return lc->video_conf.vsize;
+}
+
 void linphone_core_use_files(LinphoneCore *lc, bool_t yesno){
 	lc->use_files=yesno;
 }
@@ -2152,6 +2210,7 @@ void video_config_uninit(LinphoneCore *lc)
 	lp_config_set_int(lc->config,"video","display",config->display);
 	lp_config_set_int(lc->config,"video","capture",config->capture);
 	lp_config_set_int(lc->config,"video","show_local",config->show_local);
+	lp_config_set_string(lc->config,"video","size",video_size_get_name(config->vsize));
 }
 
 void codecs_config_uninit(LinphoneCore *lc)
