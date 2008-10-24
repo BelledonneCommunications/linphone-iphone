@@ -190,10 +190,12 @@ static int _vfw_engine_setup(VfwEngine *obj){
 static VfwEngine * vfw_engine_new(int i){
 	char dev[512];
 	char ver[512];
-	VfwEngine *obj=ms_new0(VfwEngine,1);
+	VfwEngine *obj=(VfwEngine*)ms_new0(VfwEngine,1);
 	if (capGetDriverDescription(i, dev, sizeof (dev),
 		ver, sizeof (ver))){
-		MSVideoSize sz=MS_VIDEO_SIZE_CIF;
+    MSVideoSize sz;
+	  sz.width=MS_VIDEO_SIZE_CIF_W;
+	  sz.height=MS_VIDEO_SIZE_CIF_H;
 		HWND hwnd=capCreateCaptureWindow("Capture Window",WS_CHILD /* WS_OVERLAPPED */
 			,0,0,sz.width,sz.height,HWND_MESSAGE, 0) ;
 		

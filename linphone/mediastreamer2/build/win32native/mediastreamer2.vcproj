@@ -342,6 +342,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\winvideo2.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\winvideods.c"
 				>
 			</File>
@@ -433,6 +437,10 @@
 			</File>
 			<File
 				RelativePath="..\..\include\mediastreamer2\rfc2429.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\vfw-missing.h"
 				>
 			</File>
 			<File
