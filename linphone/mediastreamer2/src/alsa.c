@@ -680,6 +680,7 @@ static void * alsa_write_thread(void *p){
 	      {
 		ms_warning("nothing to read");
 		//ms_warning("Fail to read samples %i", count);
+		freemsg(om); /* leak fixed */
 		continue;
 	      }
 	    //ms_warning(" read %i", err);
