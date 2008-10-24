@@ -86,6 +86,7 @@ static int _vfw_engine_select_format(VfwEngine *obj){
 	
 	capGetVideoFormat(obj->capvideo, &videoformat, sizeof(BITMAPINFO));
 	memcpy(compname,&videoformat.bmiHeader.biCompression,4);
+	compname[4]='\0';
 	ms_message("vfw: camera's current format is %s", compname);
 	driver_last=ms_fourcc_to_pix_fmt(videoformat.bmiHeader.biCompression);
 	if (driver_last!=MS_PIX_FMT_UNKNOWN && try_format(obj,&videoformat,driver_last)){
