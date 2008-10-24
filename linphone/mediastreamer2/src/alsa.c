@@ -208,10 +208,33 @@ static snd_pcm_t * alsa_open_r(const char *pcmdev,int bits,int stereo,int rate)
 		return NULL;
 	}
 #endif
-	if (alsa_set_params(pcm_handle,0,bits,stereo,rate)<0){
-		snd_pcm_close(pcm_handle);
-		return NULL;
+
+	{
+	struct timeval tv1;
+	struct timeval tv2;
+	struct timezone tz;
+	int diff = 0;
+	err = gettimeofday(&tv1, &tz);
+	while (1) { 
+		if (!(alsa_set_params(pcm_handle,0,bits,stereo,rate)<0)){
+			ms_message("alsa_open_r: Audio params set");
+			break;
+		}
+		if (!gettimeofday(&tv2, &tz) && !err) {
+			diff = ((tv2.tv_sec - tv1.tv_sec) * 1000000) + (tv2.tv_usec - tv1.tv_usec);
+		} else {
+			diff = -1;
+		}
+		if ((diff < 0) || (diff > 3000000)) { /* 3 secondes */
+			ms_error("alsa_open_r: Error setting params for more than 3 seconds");
+			snd_pcm_close(pcm_handle);
+			return NULL;
+		}
+		ms_warning("alsa_open_r: Error setting params (for %d micros)", diff);
+		usleep(200000);
 	}
+	}
+
 	err=snd_pcm_start(pcm_handle);
 	if (err<0){
 		ms_warning("snd_pcm_start() failed: %s", snd_strerror(err));
@@ -227,10 +250,34 @@ static snd_pcm_t * alsa_open_w(const char *pcmdev,int bits,int stereo,int rate)
 		ms_warning("alsa_open_w: Error opening PCM device %s",pcmdev );
 		return NULL;
 	}
-	if (alsa_set_params(pcm_handle,1,bits,stereo,rate)<0){
-		snd_pcm_close(pcm_handle);
-		return NULL;
+	
+	{
+	struct timeval tv1;
+	struct timeval tv2;
+	struct timezone tz;
+	int diff = 0;
+	int err;
+	err = gettimeofday(&tv1, &tz);
+	while (1) { 
+		if (!(alsa_set_params(pcm_handle,1,bits,stereo,rate)<0)){
+			ms_message("alsa_open_w: Audio params set");
+			break;
+		}
+		if (!gettimeofday(&tv2, &tz) && !err) {
+			diff = ((tv2.tv_sec - tv1.tv_sec) * 1000000) + (tv2.tv_usec - tv1.tv_usec);
+		} else {
+			diff = -1;
+		}
+		if ((diff < 0) || (diff > 3000000)) { /* 3 secondes */
+			ms_error("alsa_open_w: Error setting params for more than 3 seconds");
+			snd_pcm_close(pcm_handle);
+			return NULL;
+		}
+		ms_warning("alsa_open_w: Error setting params (for %d micros)", diff);
+		usleep(200000);
 	}
+	}
+
 	return pcm_handle;
 }
 
