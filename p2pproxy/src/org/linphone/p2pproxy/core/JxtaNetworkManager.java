@@ -49,6 +49,7 @@ import net.jxta.document.AdvertisementFactory;
 import net.jxta.exception.JxtaException;
 import net.jxta.id.ID;
 import net.jxta.id.IDFactory;
+import net.jxta.peer.PeerID;
 import net.jxta.peergroup.NetPeerGroupFactory;
 import net.jxta.peergroup.PeerGroup;
 import net.jxta.peergroup.PeerGroupID;
@@ -379,5 +380,8 @@ public class JxtaNetworkManager {
        }
       return aList;
    }
-   
+//   private List<PeerID> getRdvPeers() {
+//   
+//	   
+//   }
 }

@@ -129,7 +129,7 @@ public class EdgePeerRdvService extends StdRendezVousService {
     /**
      * Number of rendezvous we will try to connect to.
      */
-    private final int MAX_RDV_CONNECTIONS = 1;
+    private final int MAX_RDV_CONNECTIONS = 2;
     
     /**
      * The default amount of time we will attempt to renew a lease before it
