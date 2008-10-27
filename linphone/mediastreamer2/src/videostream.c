@@ -143,9 +143,11 @@ static void video_steam_process_rtcp(VideoStream *stream, mblk_t *m){
 }
 
 void video_stream_iterate(VideoStream *stream){
+	
 	if (stream->output!=NULL)
 		ms_filter_call_method_noarg(stream->output,
 			MS_VIDEO_OUT_HANDLE_RESIZING);
+	
 	if (stream->evq){
 		OrtpEvent *ev=ortp_ev_queue_get(stream->evq);
 		if (ev!=NULL){
@@ -170,7 +172,13 @@ VideoStream *video_stream_new(int locport, bool_t use_ipv6){
 	stream->evq=ortp_ev_queue_new();
 	stream->rtpsend=ms_filter_new(MS_RTP_SEND_ID);
 	rtp_session_register_event_queue(stream->session,stream->evq);
+	stream->sent_vsize.width=MS_VIDEO_SIZE_CIF_W;
+	stream->sent_vsize.height=MS_VIDEO_SIZE_CIF_H;
 	return stream;
+}
+
+void video_stream_set_sent_video_size(VideoStream *stream, MSVideoSize vsize){
+	stream->sent_vsize=vsize;
 }
 
 void video_stream_set_relay_session_id(VideoStream *stream, const char *id){
@@ -183,16 +191,15 @@ void video_stream_enable_adaptive_bitrate_control(VideoStream *s, bool_t yesno){
 }
 
 int video_stream_start (VideoStream *stream, RtpProfile *profile, const char *remip, int remport,
-	int rem_rtcp_port, int payload, int jitt_comp, MSWebCam *cam)
-{
+	int rem_rtcp_port, int payload, int jitt_comp, MSWebCam *cam){
 	PayloadType *pt;
 	RtpSession *rtps=stream->session;
 	MSPixFmt format;
-	MSVideoSize vsize;
+	MSVideoSize vsize,cam_vsize,disp_size;
 	float fps=15;
-
-	vsize.height=MS_VIDEO_SIZE_CIF_H;
-	vsize.width=MS_VIDEO_SIZE_CIF_W;
+	int tmp;
+	JBParameters jbp;
+	const int socket_buf_size=2000000;
 
 	pt=rtp_profile_get_payload(profile,payload);
 	if (pt==NULL){
@@ -217,6 +224,13 @@ int video_stream_start (VideoStream *stream, RtpProfile *profile, const char *re
 
 	rtp_session_set_recv_buf_size(stream->session,MAX_RTP_SIZE);
 
+	rtp_session_get_jitter_buffer_params(stream->session,&jbp);
+	jbp.max_packets=1000;//needed for high resolution video
+	rtp_session_set_jitter_buffer_params(stream->session,&jbp);
+
+	rtp_session_set_rtp_socket_recv_buffer_size(stream->session,socket_buf_size);
+	rtp_session_set_rtp_socket_send_buffer_size(stream->session,socket_buf_size);
+
 	/* creates two rtp filters to recv send streams (remote part) */
 	if (remport>0) ms_filter_call_method(stream->rtpsend,MS_RTP_SEND_SET_SESSION,stream->session);
 	
@@ -239,6 +253,8 @@ int video_stream_start (VideoStream *stream, RtpProfile *profile, const char *re
 		ms_filter_call_method(stream->decoder,MS_FILTER_ADD_FMTP,pt->send_fmtp);
 	}
 	ms_filter_call_method(stream->encoder,MS_FILTER_GET_VIDEO_SIZE,&vsize);
+	vsize=ms_video_size_min(vsize,stream->sent_vsize);
+	ms_filter_call_method(stream->encoder,MS_FILTER_SET_VIDEO_SIZE,&vsize);
 	ms_filter_call_method(stream->encoder,MS_FILTER_GET_FPS,&fps);
 	ms_message("Setting vsize=%ix%i, fps=%f",vsize.width,vsize.height,fps);
 	/* configure the filters */
@@ -254,24 +270,22 @@ int video_stream_start (VideoStream *stream, RtpProfile *profile, const char *re
 		/*set it to the pixconv */
 		ms_filter_call_method(stream->pixconv,MS_FILTER_SET_PIX_FMT,&format);
 
-		ms_filter_call_method(stream->source,MS_FILTER_GET_VIDEO_SIZE,&vsize);
+		ms_filter_call_method(stream->source,MS_FILTER_GET_VIDEO_SIZE,&cam_vsize);
 	
-		ms_filter_call_method(stream->pixconv,MS_FILTER_SET_VIDEO_SIZE,&vsize);
+		ms_filter_call_method(stream->pixconv,MS_FILTER_SET_VIDEO_SIZE,&cam_vsize);
 	}
 
-	ms_filter_call_method(stream->encoder,MS_FILTER_GET_VIDEO_SIZE,&vsize);
 	ms_filter_call_method(stream->sizeconv,MS_FILTER_SET_VIDEO_SIZE,&vsize);
 
 	/*force the decoder to output YUV420P */
 	format=MS_YUV420P;
 	ms_filter_call_method(stream->decoder,MS_FILTER_SET_PIX_FMT,&format);
 
-
-	/*ask the video display to always output CIF */
-	vsize.height=MS_VIDEO_SIZE_CIF_H;
-	vsize.width=MS_VIDEO_SIZE_CIF_W;
-
-	ms_filter_call_method(stream->output,MS_FILTER_SET_VIDEO_SIZE,&vsize);
+	disp_size.width=MS_VIDEO_SIZE_CIF_W;
+	disp_size.height=MS_VIDEO_SIZE_CIF_H;
+	tmp=1;
+	ms_filter_call_method(stream->output,MS_FILTER_SET_VIDEO_SIZE,&disp_size);
+	ms_filter_call_method(stream->output,MS_VIDEO_OUT_AUTO_FIT,&tmp);
 	ms_filter_call_method(stream->output,MS_FILTER_SET_PIX_FMT,&format);
 
 	if (pt->recv_fmtp!=NULL)
@@ -331,12 +345,9 @@ void video_stream_set_rtcp_information(VideoStream *st, const char *cname, const
 
 
 
-VideoStream * video_preview_start(MSWebCam *device){
+VideoStream * video_preview_start(MSWebCam *device, MSVideoSize vsize){
 	VideoStream *stream = (VideoStream *)ms_new0 (VideoStream, 1);
 	MSPixFmt format;
-	MSVideoSize vsize;
-	vsize.width=MS_VIDEO_SIZE_CIF_W;
-	vsize.height=MS_VIDEO_SIZE_CIF_H;
 
 	/* creates the filters */
 	stream->source = ms_web_cam_create_reader(device);
@@ -344,9 +355,9 @@ VideoStream * video_preview_start(MSWebCam *device){
 
 
 	/* configure the filters */
-	ms_filter_call_method(stream->source,MS_FILTER_GET_PIX_FMT,&format);
+	ms_filter_call_method(stream->source,MS_FILTER_SET_VIDEO_SIZE,&vsize);
 	ms_filter_call_method(stream->source,MS_FILTER_GET_VIDEO_SIZE,&vsize);
-	
+	ms_filter_call_method(stream->source,MS_FILTER_GET_PIX_FMT,&format);
 	if (format==MS_MJPEG){
 		stream->pixconv=ms_filter_new(MS_MJPEG_DEC_ID);
 	}else{

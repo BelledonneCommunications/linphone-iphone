@@ -153,7 +153,7 @@ static void enc_init(MSFilter *f, enum CodecID codec)
 	f->data=s;
 	ms_ffmpeg_check_init();
 	s->profile=0;/*always default to profile 0*/
-	s->comp_buf=allocb(32000,0);
+	s->comp_buf=NULL;
 	s->fps=15;
 	s->mtu=ms_get_payload_max_size()-2;/*-2 for the H263 payload header*/
 	s->maxbr=500000;
@@ -202,7 +202,7 @@ static void prepare(EncState *s){
 	c->time_base.den = (int)s->fps;
 	c->gop_size=(int)s->fps*5; /*emit I frame every 5 seconds*/
 	c->pix_fmt=PIX_FMT_YUV420P;
-	
+	s->comp_buf=allocb(c->bit_rate*2,0);
 	if (s->codec==CODEC_ID_SNOW){
 		c->strict_std_compliance=-2;
 	}
@@ -245,7 +245,6 @@ static void prepare_mpeg4(EncState *s){
 
 static void enc_uninit(MSFilter  *f){
 	EncState *s=(EncState*)f->data;
-	if (s->comp_buf!=NULL)	freemsg(s->comp_buf);
 	ms_free(s);
 }
 #if 0
@@ -291,6 +290,10 @@ static void enc_postprocess(MSFilter *f){
 	if (s->av_context.codec!=NULL){
 		avcodec_close(&s->av_context);
 		s->av_context.codec=NULL;
+	}
+	if (s->comp_buf!=NULL)	{
+		freemsg(s->comp_buf);
+		s->comp_buf=NULL;
 	}
 }
 

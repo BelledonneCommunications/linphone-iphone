@@ -1460,7 +1460,7 @@ void linphone_core_stop_media_streams(LinphoneCore *lc){
 	}
 	if (linphone_core_video_preview_enabled(lc)){
 		if (lc->previewstream==NULL){
-			lc->previewstream=video_preview_start(lc->video_conf.device);
+			lc->previewstream=video_preview_start(lc->video_conf.device, lc->video_conf.vsize);
 		}
 	}
 #endif
@@ -1940,7 +1940,8 @@ static void toggle_video_preview(LinphoneCore *lc, bool_t val){
 	if (lc->videostream==NULL){
 		if (val){
 			if (lc->previewstream==NULL){
-				lc->previewstream=video_preview_start(lc->video_conf.device);
+				lc->previewstream=video_preview_start(lc->video_conf.device,
+							lc->video_conf.vsize);
 			}
 		}else{
 			if (lc->previewstream!=NULL){
@@ -2045,8 +2046,14 @@ static bool_t video_size_supported(MSVideoSize vsize){
 
 
 void linphone_core_set_preferred_video_size(LinphoneCore *lc, MSVideoSize vsize){
-	if (video_size_supported(vsize))
+	if (video_size_supported(vsize)){
+		MSVideoSize oldvsize=lc->video_conf.vsize;
 		lc->video_conf.vsize=vsize;
+		if (!ms_video_size_equal(oldvsize,vsize) && lc->previewstream!=NULL){
+			toggle_video_preview(lc,FALSE);
+			toggle_video_preview(lc,TRUE);
+		}
+	}
 }
 
 void linphone_core_set_preferred_video_size_by_name(LinphoneCore *lc, const char *name){

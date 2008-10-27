@@ -101,17 +101,24 @@ AC_DEFUN([MS_CHECK_VIDEO],[
 		PKG_CHECK_MODULES(SWSCALE, [libswscale >= 0.5.0 ], [echo "We have libswscale"], 
 			[echo "We don't have libswscale, let's hope its symbols are in libavcodec"] )
 
-		MS_CHECK_DEP([SDL],[SDL],[${libsdldir}/include],[${libsdldir}/lib],[SDL/SDL.h],[SDL],[SDL_Init])
-		if test "$SDL_found" = "no" ; then
-			AC_MSG_ERROR([Could not find libsdl headers and library. This is mandatory for video support])
+		if test "$libsdldir" != "none" ; then
+			MS_CHECK_DEP([SDL],[SDL],[${libsdldir}/include],[${libsdldir}/lib],[SDL/SDL.h],[SDL],[SDL_Init])
+			if test "$SDL_found" = "no" ; then
+				AC_MSG_ERROR([Could not find libsdl headers and library. This is mandatory for video support])
+			fi
 		fi
 
 		PKG_CHECK_MODULES(THEORA, [theora >= 1.0alpha7 ], [have_theora=yes],
 					[have_theora=no])
 		AC_CHECK_HEADERS(X11/Xlib.h)
 		
-		VIDEO_CFLAGS=" $FFMPEG_CFLAGS $SDL_CFLAGS -DVIDEO_ENABLED "
-		VIDEO_LIBS=" $FFMPEG_LIBS $SWSCALE_LIBS $SDL_LIBS"
+		VIDEO_CFLAGS=" $FFMPEG_CFLAGS -DVIDEO_ENABLED"
+		VIDEO_LIBS=" $FFMPEG_LIBS $SWSCALE_LIBS"
+
+		if test "$SDL_found" = "yes" ; then
+			VIDEO_CFLAGS="$VIDEO_CFLAGS $SDL_CFLAGS -DHAVE_SDL"
+			VIDEO_LIBS="$VIDEO_LIBS $SDL_LIBS"
+		fi
 
 		if test "${ac_cv_header_X11_Xlib_h}" = "yes" ; then
 			VIDEO_LIBS="$VIDEO_LIBS -lX11"

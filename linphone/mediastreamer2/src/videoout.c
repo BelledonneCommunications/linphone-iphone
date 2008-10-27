@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "ffmpeg-priv.h"
 
-static int video_out_handle_resize(MSFilter *f, void *arg);
+static int video_out_set_vsize(MSFilter *f,void *arg);
 
 bool_t ms_display_poll_event(MSDisplay *d, MSDisplayEvent *ev){
 	if (d->desc->pollevent)
@@ -35,7 +35,7 @@ bool_t ms_display_poll_event(MSDisplay *d, MSDisplayEvent *ev){
 	else return FALSE;
 }
 
-#ifndef WIN32
+#ifdef HAVE_SDL
 
 #include <SDL/SDL.h>
 #include <SDL/SDL_video.h>
@@ -78,6 +78,8 @@ static void sdl_show_window(bool_t show){
 
 #endif
 
+static void sdl_display_uninit(MSDisplay *obj);
+
 static SDL_Overlay * sdl_create_window(int w, int h){
 	SDL_Overlay *lay;
 	sdl_screen = SDL_SetVideoMode(w,h, 0,SDL_SWSURFACE|SDL_RESIZABLE);
@@ -89,13 +91,16 @@ static SDL_Overlay * sdl_create_window(int w, int h){
 	if (sdl_screen->flags & SDL_HWSURFACE) ms_message("SDL surface created in hardware");
 	SDL_WM_SetCaption("Linphone Video", NULL);
 	ms_message("Using yuv overlay.");
-	lay=SDL_CreateYUVOverlay(w,h,SDL_YV12_OVERLAY,sdl_screen);
+	lay=SDL_CreateYUVOverlay(w , h ,SDL_YV12_OVERLAY,sdl_screen);
 	if (lay==NULL){
 		ms_warning("Couldn't create yuv overlay: %s\n",
 						SDL_GetError());
 		return NULL;
 	}else{
-		if (lay->hw_overlay) ms_message("YUV overlay using hardware acceleration.");
+		ms_message("%i x %i YUV overlay created: hw_accel=%i, pitches=%i,%i,%i",lay->w,lay->h,lay->hw_overlay,
+			lay->pitches[0],lay->pitches[1],lay->pitches[2]);
+		ms_message("planes= %p %p %p  %i %i",lay->pixels[0],lay->pixels[1],lay->pixels[2],
+			lay->pixels[1]-lay->pixels[0],lay->pixels[2]-lay->pixels[1]);
 	}
 	return lay;
 }
@@ -113,8 +118,9 @@ static bool_t sdl_display_init(MSDisplay *obj, MSPicture *fbuf){
 		sdl_initialized=TRUE;
 		ms_mutex_init(&sdl_mutex,NULL);
 	}
-	if (obj->data!=NULL)
+	if (obj->data!=NULL){
 		SDL_FreeYUVOverlay((SDL_Overlay*)obj->data);
+	}
 	
 	lay=sdl_create_window(fbuf->w, fbuf->h);
 	if (lay){
@@ -124,6 +130,8 @@ static bool_t sdl_display_init(MSDisplay *obj, MSPicture *fbuf){
 		fbuf->strides[0]=lay->pitches[0];
 		fbuf->strides[1]=lay->pitches[2];
 		fbuf->strides[2]=lay->pitches[1];
+		fbuf->w=lay->w;
+		fbuf->h=lay->h;
 		obj->data=lay;
 		sdl_show_window(TRUE);
 		return TRUE;
@@ -158,36 +166,22 @@ static void sdl_display_update(MSDisplay *obj){
 
 static bool_t sdl_poll_event(MSDisplay *obj, MSDisplayEvent *ev){
 	SDL_Event event;
-	static MSDisplayEvent last_ev;
-	static struct timeval tv;
-	static bool_t got_rs_ev=FALSE;
-	struct timeval cur;
-	int elapsed;
 	bool_t ret=FALSE;
+	if (sdl_screen==NULL) return FALSE;
 	ms_mutex_lock(&sdl_mutex);
 	if (SDL_PollEvent(&event)){
 		ms_mutex_unlock(&sdl_mutex);
 		switch(event.type){
 			case SDL_VIDEORESIZE:
-				last_ev.evtype=MS_DISPLAY_RESIZE_EVENT;
-				last_ev.w=event.resize.w;
-				last_ev.h=event.resize.h;
-				got_rs_ev=TRUE;
-				gettimeofday(&tv,NULL);
+				ev->evtype=MS_DISPLAY_RESIZE_EVENT;
+				ev->w=event.resize.w;
+				ev->h=event.resize.h;
+				return TRUE;
 			break;
 			default:
 			break;
 		}
 	}else ms_mutex_unlock(&sdl_mutex);
-	if (got_rs_ev){
-		gettimeofday(&cur,NULL);
-		elapsed=((cur.tv_sec-tv.tv_sec)*1000) + ((cur.tv_usec-tv.tv_usec)/1000);
-		if (elapsed>1000){
-			got_rs_ev=FALSE;
-			*ev=last_ev;
-			ret=TRUE;
-		}
-	}
 	return ret;
 }
 
@@ -213,7 +207,7 @@ MSDisplayDesc ms_sdl_display_desc={
 	.pollevent=sdl_poll_event
 };
 
-#else
+#elif defined(WIN32)
 
 #include <Vfw.h>
 
@@ -386,25 +380,6 @@ static void yuv420p_to_rgb(MSPicture *src, uint8_t *rgb){
 			ms_error("Error in 420->rgb sws_scale().");
 	}
 	sws_freeContext(sws);
-#if 0
-	/*revert colors*/	
-	{
-		int i,j,stride;
-		rgb_t pix;
-		stride=src->w*3;
-		p=rgb;
-		for(i=0;i<src->h;++i){
-			for(j=0;j<stride;j+=3){
-				pix.r=p[j];
-				pix.g=p[j+1];
-				pix.b=p[j+2];
-				p[j]=pix.b;
-				p[j+2]=pix.r;
-			}
-			p+=stride;
-		}
-	}
-#endif
 }
 
 static void win_display_update(MSDisplay *obj){
@@ -465,12 +440,6 @@ static void win_display_uninit(MSDisplay *obj){
 }
 
 bool_t win_display_pollevent(MSDisplay *d, MSDisplayEvent *ev){
-	WinDisplay *wd=(WinDisplay*)d->data;
-	if (wd->new_ev){
-		wd->new_ev=FALSE;
-		*ev=wd->last_rsz;
-		return TRUE;
-	}
 	return FALSE;
 }
 
@@ -514,6 +483,24 @@ void ms_display_destroy(MSDisplay *obj){
 	ms_free(obj);
 }
 
+#ifdef HAVE_SDL
+static MSDisplayDesc *default_display_desc=&ms_sdl_display_desc;
+#elif defined(WIN32)
+static MSDisplayDesc *default_display_desc=&ms_win_display_desc;
+#endif
+
+void ms_display_desc_set_default(MSDisplayDesc *desc){
+	default_display_desc=desc;
+}
+
+MSDisplayDesc * ms_display_desc_get_default(void){
+	return default_display_desc;
+}
+
+void ms_display_desc_set_default_window_id(MSDisplayDesc *desc, long id){
+	desc->default_window_id=id;
+}
+
 typedef struct VideoOut
 {
 	AVRational ratio;
@@ -527,6 +514,7 @@ typedef struct VideoOut
 	MSDisplay *display;
 	bool_t own_display;
 	bool_t ready;
+	bool_t autofit;
 } VideoOut;
 
 
@@ -535,8 +523,8 @@ typedef struct VideoOut
 static void set_corner(VideoOut *s, int corner)
 {
 	s->corner=corner;
-	s->local_pic.w=s->fbuf.w/SCALE_FACTOR;
-	s->local_pic.h=s->fbuf.h/SCALE_FACTOR;
+	s->local_pic.w=(s->fbuf.w/SCALE_FACTOR) & ~0x1;
+	s->local_pic.h=(s->fbuf.h/SCALE_FACTOR) & ~0x1;
 	if (corner==1)
 	{
 	/* top left corner */
@@ -573,13 +561,10 @@ static void set_corner(VideoOut *s, int corner)
 }
 
 static void set_vsize(VideoOut *s, MSVideoSize *sz){
-	if (s->ratio.num!=0){
-		sz->width=sz->width & (~0x1);
-		sz->height=sz->width*s->ratio.den/s->ratio.num;
-	}
-	s->fbuf.w=sz->width;
-	s->fbuf.h=sz->height;
-	set_corner(s, s->corner);
+	s->fbuf.w=sz->width & ~0x1;
+	s->fbuf.h=sz->height & ~0x1;
+	set_corner(s,s->corner);
+	ms_message("Video size set to %ix%i",s->fbuf.w,s->fbuf.h);
 }
 
 static void video_out_init(MSFilter  *f){
@@ -596,6 +581,7 @@ static void video_out_init(MSFilter  *f){
 	obj->display=NULL;
 	obj->own_display=FALSE;
 	obj->ready=FALSE;
+	obj->autofit=FALSE;
 	set_vsize(obj,&def_size);
 	f->data=obj;
 }
@@ -620,15 +606,10 @@ static void video_out_uninit(MSFilter *f){
 	ms_free(obj);
 }
 
-
-static void video_out_preprocess(MSFilter *f){
+static void video_out_prepare(MSFilter *f){
 	VideoOut *obj=(VideoOut*)f->data;
 	if (obj->display==NULL){
-#ifndef WIN32
-		obj->display=ms_display_new(&ms_sdl_display_desc);
-#else
-		obj->display=ms_display_new(&ms_win_display_desc);
-#endif
+		obj->display=ms_display_new(default_display_desc);
 		obj->own_display=TRUE;
 	}
 	if (!ms_display_init(obj->display,&obj->fbuf)){
@@ -647,7 +628,28 @@ static void video_out_preprocess(MSFilter *f){
 		freemsg(obj->local_msg);
 		obj->local_msg=NULL;
 	}
+	set_corner(obj,obj->corner);
 	obj->ready=TRUE;
+}
+
+static int video_out_handle_resizing(MSFilter *f, void *data){
+	VideoOut *s=(VideoOut*)f->data;
+	MSDisplay *disp=s->display;
+	if (disp!=NULL){
+		MSDisplayEvent ev;
+		if (ms_display_poll_event(disp,&ev)){
+			if (ev.evtype==MS_DISPLAY_RESIZE_EVENT){
+				MSVideoSize sz;
+				sz.width=ev.w;
+				sz.height=ev.h;
+				ms_filter_lock(f);
+				set_vsize(s,&sz);
+				s->ready=FALSE;
+				ms_filter_unlock(f);
+			}
+		}
+	}
+	return 0;
 }
 
 static void video_out_postprocess(MSFilter *f){
@@ -658,11 +660,8 @@ static void video_out_process(MSFilter *f){
 	VideoOut *obj=(VideoOut*)f->data;
 	mblk_t *inm;
 
-#ifdef WIN32
-	video_out_handle_resize(f, NULL);
-#endif
-
 	ms_filter_lock(f);
+	if (!obj->ready) video_out_prepare(f);
 	if (obj->display==NULL){
 		ms_filter_unlock(f);
 		if (f->inputs[0]!=NULL)
@@ -705,6 +704,17 @@ static void video_out_process(MSFilter *f){
 		MSPicture src;
 		if (yuv_buf_init_from_mblk(&src,inm)==0){
 			if (obj->sws1==NULL){
+				MSVideoSize cur,newsize;
+				cur.width=obj->fbuf.w;
+				cur.height=obj->fbuf.h;
+				newsize.width=src.w;
+				newsize.height=src.h;
+				if (obj->autofit && (ms_video_size_greater_than(newsize,cur) && 
+					!ms_video_size_equal(newsize,cur) ) ){
+					set_vsize(obj,&newsize);
+					video_out_prepare(f);
+					obj->autofit=FALSE;
+				}
 				obj->sws1=sws_getContext(src.w,src.h,PIX_FMT_YUV420P,
 				obj->fbuf.w,obj->fbuf.h,PIX_FMT_YUV420P,
 				SWS_FAST_BILINEAR, NULL, NULL, NULL);
@@ -734,18 +744,14 @@ static void video_out_process(MSFilter *f){
 				corner.planes,corner.strides,roi);
 		ms_display_unlock(obj->display);
 	}
-	
 	ms_display_update(obj->display);
 	ms_filter_unlock(f);
 }
 
 static int video_out_set_vsize(MSFilter *f,void *arg){
 	VideoOut *s=(VideoOut*)f->data;
-	bool_t reconfigure;
 	ms_filter_lock(f);
-	reconfigure=s->ready;
 	set_vsize(s,(MSVideoSize*)arg);
-	if (reconfigure) video_out_preprocess(f);
 	ms_filter_unlock(f);
 	return 0;
 }
@@ -756,30 +762,16 @@ static int video_out_set_display(MSFilter *f,void *arg){
 	return 0;
 }
 
-static int video_out_handle_resize(MSFilter *f, void *arg){
+static int video_out_auto_fit(MSFilter *f, void *arg){
 	VideoOut *s=(VideoOut*)f->data;
-	MSDisplay *disp=s->display;
-	if (disp!=NULL){
-		MSDisplayEvent ev;
-		if (ms_display_poll_event(disp,&ev)){
-			if (ev.evtype==MS_DISPLAY_RESIZE_EVENT){
-				MSVideoSize sz;
-				sz.width=ev.w;
-				sz.height=ev.h;
-#ifndef WIN32
-				video_out_set_vsize(f,&sz);
-#endif
-			}
-		}
-	}
+	s->autofit=*(int*)arg;
 	return 0;
 }
 
 static int video_out_set_corner(MSFilter *f,void *arg){
 	VideoOut *s=(VideoOut*)f->data;
-	set_corner(s, *(int*)arg);
-#if 1
 	ms_filter_lock(f);
+	set_corner(s, *(int*)arg);
 	ms_display_lock(s->display);
 	{
 	  int w=s->fbuf.w;
@@ -793,15 +785,15 @@ static int video_out_set_corner(MSFilter *f,void *arg){
 	}
 	ms_display_unlock(s->display);
 	ms_filter_unlock(f);
-#endif
 	return 0;
 }
 
 static MSFilterMethod methods[]={
 	{	MS_FILTER_SET_VIDEO_SIZE	,	video_out_set_vsize },
 	{	MS_VIDEO_OUT_SET_DISPLAY	,	video_out_set_display},
-	{ 	MS_VIDEO_OUT_HANDLE_RESIZING	,	video_out_handle_resize},
 	{	MS_VIDEO_OUT_SET_CORNER 	,	video_out_set_corner},
+	{	MS_VIDEO_OUT_AUTO_FIT		,	video_out_auto_fit},
+	{	MS_VIDEO_OUT_HANDLE_RESIZING	,	video_out_handle_resizing},
 	{	0	,NULL}
 };
 
@@ -816,7 +808,7 @@ MSFilterDesc ms_video_out_desc={
 	2,
 	0,
 	video_out_init,
-	video_out_preprocess,
+	NULL,
 	video_out_process,
 	video_out_postprocess,
 	video_out_uninit,
@@ -833,7 +825,7 @@ MSFilterDesc ms_video_out_desc={
 	.ninputs=2,
 	.noutputs=0,
 	.init=video_out_init,
-	.preprocess=video_out_preprocess,
+	.preprocess=NULL,
 	.process=video_out_process,
 	.postprocess=video_out_postprocess,
 	.uninit=video_out_uninit,

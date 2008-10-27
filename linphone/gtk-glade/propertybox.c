@@ -33,6 +33,23 @@ static void linphone_gtk_fill_combo_box(GtkWidget *combo, const char **devices, 
 	gtk_combo_box_set_active(GTK_COMBO_BOX(combo),active);
 }
 
+void linphone_gtk_fill_video_sizes(GtkWidget *combo){
+	const MSVideoSizeDef *def=linphone_core_get_supported_video_sizes(linphone_gtk_get_core());;
+	int i,active=0;
+	char vsize_def[256];
+	MSVideoSize cur=linphone_core_get_preferred_video_size(linphone_gtk_get_core());
+	/* glade creates a combo box without list model and text renderer,
+	unless we fill it with a dummy text.
+	This dummy text needs to be removed first*/
+	gtk_combo_box_remove_text(GTK_COMBO_BOX(combo),0);
+	for(i=0;def->name!=NULL;++def,++i){
+		snprintf(vsize_def,sizeof(vsize_def),"%s (%ix%i)",def->name,def->vsize.width,def->vsize.height);
+		gtk_combo_box_append_text(GTK_COMBO_BOX(combo),vsize_def);
+		if (cur.width==def->vsize.width && cur.height==def->vsize.height) active=i;
+	}
+	gtk_combo_box_set_active(GTK_COMBO_BOX(combo),active);
+}
+
 void linphone_gtk_parameters_closed(GtkWidget *button){
 	GtkWidget *pb=gtk_widget_get_toplevel(button);
 	gtk_widget_destroy(pb);
@@ -151,6 +168,14 @@ void linphone_gtk_cam_changed(GtkWidget *w){
 	gchar *sel=gtk_combo_box_get_active_text(GTK_COMBO_BOX(w));
 	linphone_core_set_video_device(linphone_gtk_get_core(),sel);
 	g_free(sel);
+}
+
+void linphone_gtk_video_size_changed(GtkWidget *w){
+	int sel=gtk_combo_box_get_active(GTK_COMBO_BOX(w));
+	const MSVideoSizeDef *defs=linphone_core_get_supported_video_sizes(linphone_gtk_get_core());
+	if (defs<0) return;
+	linphone_core_set_preferred_video_size(linphone_gtk_get_core(),
+					defs[sel].vsize);
 }
 
 void linphone_gtk_ring_file_set(GtkWidget *w){
@@ -623,6 +648,7 @@ void linphone_gtk_show_parameters(void){
 					linphone_core_get_capture_device(lc));
 	linphone_gtk_fill_combo_box(linphone_gtk_get_widget(pb,"webcams"),linphone_core_get_video_devices(lc),
 					linphone_core_get_video_device(lc));
+	linphone_gtk_fill_video_sizes(linphone_gtk_get_widget(pb,"video_size"));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb,"echo_cancelation")),
 					linphone_core_echo_cancelation_enabled(lc));
 

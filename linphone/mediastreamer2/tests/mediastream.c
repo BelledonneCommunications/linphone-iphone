@@ -119,8 +119,10 @@ static void parse_events(OrtpEvQueue *q){
 
 const char *usage="mediastream --local <port> --remote <ip:port> --payload <payload type number>\n"
 								"[ --fmtp <fmtpline>]\n"
-								"[ --jitter <miliseconds>]\n";
-static void run_media_streams(int localport, const char *remote_ip, int remoteport, int payload, const char *fmtp, int jitter, bool_t ec, int bitrate);
+								"[ --jitter <miliseconds>]\n"
+								"[ --width <pixels>]\n"
+								"[ --height <pixels> ]\n";
+static void run_media_streams(int localport, const char *remote_ip, int remoteport, int payload, const char *fmtp, int jitter, bool_t ec, int bitrate, MSVideoSize vs);
 
 
 int main(int argc, char * argv[])
@@ -131,6 +133,7 @@ int main(int argc, char * argv[])
 	const char *fmtp=NULL;
 	int jitter=50;
 	int bitrate=0;
+	MSVideoSize vs;
 	bool_t ec=FALSE;
 	/*create the rtp session */
 	ortp_init();
@@ -146,6 +149,9 @@ int main(int argc, char * argv[])
 	rtp_profile_set_payload(&av_profile,100,&payload_type_x_snow);
 	rtp_profile_set_payload(&av_profile,102,&payload_type_h264);
 #endif
+
+	vs.width=MS_VIDEO_SIZE_CIF_W;
+	vs.height=MS_VIDEO_SIZE_CIF_H;
 	if (argc<4) {
 		printf(usage);
 		return -1;
@@ -173,17 +179,23 @@ int main(int argc, char * argv[])
 		}else if (strcmp(argv[i],"--bitrate")==0){
 			i++;
 			bitrate=atoi(argv[i]);
+		}else if (strcmp(argv[i],"--width")==0){
+			i++;
+			vs.width=atoi(argv[i]);
+		}else if (strcmp(argv[i],"--height")==0){
+			i++;
+			vs.height=atoi(argv[i]);
 		}else if (strcmp(argv[i],"--ec")==0){
 			ec=TRUE;
 		}
 		
 		
 	}
-	run_media_streams(localport,ip,remoteport,payload,fmtp,jitter,ec,bitrate);
+	run_media_streams(localport,ip,remoteport,payload,fmtp,jitter,ec,bitrate,vs);
 	return 0;
 }
 
-void run_media_streams(int localport,  const char *remote_ip, int remoteport, int payload, const char *fmtp, int jitter, bool_t ec, int bitrate)
+void run_media_streams(int localport,  const char *remote_ip, int remoteport, int payload, const char *fmtp, int jitter, bool_t ec, int bitrate, MSVideoSize vs)
 {
 	AudioStream *audio=NULL;
 #ifdef VIDEO_ENABLED
@@ -212,7 +224,7 @@ void run_media_streams(int localport,  const char *remote_ip, int remoteport, in
 #ifdef VIDEO_ENABLED
 		printf("Starting video stream.\n");
 		video=video_stream_new(localport, ms_is_ipv6(remote_ip));
-
+		video_stream_set_sent_video_size(video,vs);
 		video_stream_start(video,profile,
 					remote_ip,
 					remoteport,remoteport+1,

@@ -177,7 +177,10 @@ static int enc_set_br(MSFilter *f, void *arg){
 	EncData *d=(EncData*)f->data;
 	d->bitrate=*(int*)arg;
 
-        if (d->bitrate>=1024000){
+	if (d->bitrate>=1024000){
+		d->vsize=MS_VIDEO_SIZE_VGA;
+		d->fps=25;
+	}else if (d->bitrate>=512000){
 		d->vsize=MS_VIDEO_SIZE_VGA;
 		d->fps=15;
         }else if (d->bitrate>=384000){

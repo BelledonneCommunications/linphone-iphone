@@ -24,7 +24,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 int main(int argc, char *argv[]){
 	VideoStream *vs;
 	MSWebCam *cam;
+	MSVideoSize vsize;
 	int i;
+
+	vsize.width=MS_VIDEO_SIZE_CIF_W;
+	vsize.height=MS_VIDEO_SIZE_CIF_H;
+
 	ortp_init();
 	ortp_set_log_level_mask(ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
 	ms_init();
@@ -32,7 +37,7 @@ int main(int argc, char *argv[]){
 	/* this is to test the sequence start/stop */
 	for(i=0;i<1;++i){
 		int n;
-		vs=video_preview_start(cam);
+		vs=video_preview_start(cam,vsize);
 
         	for(n=0;n<1000;++n){
 #ifdef WIN32

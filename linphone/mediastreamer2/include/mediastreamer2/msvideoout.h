@@ -45,6 +45,7 @@ typedef struct _MSDisplayDesc{
 	void (*update)(struct _MSDisplay *); /*display the picture to the screen*/
 	void (*uninit)(struct _MSDisplay *);
 	bool_t (*pollevent)(struct _MSDisplay *, MSDisplayEvent *ev);
+	long default_window_id;
 }MSDisplayDesc;
 
 typedef struct _MSDisplay{
@@ -76,6 +77,12 @@ extern MSDisplayDesc ms_sdl_display_desc;
 extern "C"{
 #endif
 
+/*plugins can set their own display using this method:*/
+void ms_display_desc_set_default(MSDisplayDesc *desc);
+
+MSDisplayDesc * ms_display_desc_get_default(void);
+void ms_display_desc_set_default_window_id(MSDisplayDesc *desc, long id);
+
 MSVAR_DECLSPEC MSDisplayDesc ms_win_display_desc;
 
 MSDisplay *ms_display_new(MSDisplayDesc *desc);
@@ -85,6 +92,7 @@ void ms_display_destroy(MSDisplay *d);
 #define MS_VIDEO_OUT_SET_DISPLAY MS_FILTER_METHOD(MS_VIDEO_OUT_ID,0,MSDisplay*)
 #define MS_VIDEO_OUT_HANDLE_RESIZING MS_FILTER_METHOD_NO_ARG(MS_VIDEO_OUT_ID,1)
 #define MS_VIDEO_OUT_SET_CORNER MS_FILTER_METHOD(MS_VIDEO_OUT_ID,2,int*)
+#define MS_VIDEO_OUT_AUTO_FIT	MS_FILTER_METHOD(MS_VIDEO_OUT_ID,3,int)
 
 #ifdef __cplusplus
 }

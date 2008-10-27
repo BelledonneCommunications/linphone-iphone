@@ -48,11 +48,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define MS_VIDEO_SIZE_1024_W 1024
 #define MS_VIDEO_SIZE_1024_H 768
 
+#define MS_VIDEO_SIZE_800X600_W 800
+#define MS_VIDEO_SIZE_800X600_H 600
+
 #define MS_VIDEO_SIZE_MAX_W MS_VIDEO_SIZE_1024_W
 #define MS_VIDEO_SIZE_MAX_H MS_VIDEO_SIZE_1024_H
 
 typedef struct MSVideoSize{
-	int width,height;
+	int16_t width,height;
 } MSVideoSize;
 
 typedef struct MSRect{
@@ -72,6 +75,24 @@ typedef struct MSRect{
 #define MS_VIDEO_SIZE_NS1 (MSVideoSize){MS_VIDEO_SIZE_NS1_W,MS_VIDEO_SIZE_NS1_H}
 
 #define MS_VIDEO_SIZE_1024 (MSVideoSize){MS_VIDEO_SIZE_1024_W, MS_VIDEO_SIZE_1024_H}
+
+#define MS_VIDEO_SIZE_800X600 (MSVideoSize){MS_VIDEO_SIZE_800X600_W, MS_VIDEO_SIZE_800X600_H}
+
+static inline bool_t ms_video_size_greater_than(MSVideoSize vs1, MSVideoSize vs2){
+	return (vs1.width>=vs2.width) && (vs1.height>=vs2.height);
+}
+
+static inline MSVideoSize ms_video_size_max(MSVideoSize vs1, MSVideoSize vs2){
+	return ms_video_size_greater_than(vs1,vs2) ? vs1 : vs2;
+}
+
+static inline MSVideoSize ms_video_size_min(MSVideoSize vs1, MSVideoSize vs2){
+	return ms_video_size_greater_than(vs1,vs2) ? vs2 : vs1;
+}
+
+static inline bool_t ms_video_size_equal(MSVideoSize vs1, MSVideoSize vs2){
+	return vs1.width==vs2.width && vs1.height==vs2.height;
+}
 
 typedef enum{
 	MS_YUV420P,

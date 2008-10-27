@@ -21,10 +21,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef MEDIASTREAM_H
 #define MEDIASTREAM_H
 
-#include "msfilter.h"
-#include "msticker.h"
-#include "mssndcard.h"
-#include "mswebcam.h"
+#include "mediastreamer2/msfilter.h"
+#include "mediastreamer2/msticker.h"
+#include "mediastreamer2/mssndcard.h"
+#include "mediastreamer2/mswebcam.h"
+#include "mediastreamer2/msvideo.h"
 #include "ortp/ortp.h"
 #include "ortp/event.h"
 
@@ -119,11 +120,12 @@ struct _VideoStream
 	MSFilter *rtprecv;
 	MSFilter *rtpsend;
 	OrtpEvQueue *evq;
+	MSVideoSize sent_vsize;
 	bool_t adapt_bitrate;
 };
 
-
 typedef struct _VideoStream VideoStream;
+
 VideoStream *video_stream_new(int locport, bool_t use_ipv6);
 void video_stream_enable_adaptive_bitrate_control(VideoStream *s, bool_t yesno);
 int video_stream_start(VideoStream * stream, RtpProfile *profile, const char *remip, int remport, int rem_rtcp_port,
@@ -133,9 +135,10 @@ void video_stream_set_rtcp_information(VideoStream *st, const char *cname, const
 /*function to call periodically to handle various events */
 void video_stream_iterate(VideoStream *stream);
 void video_stream_send_vfu(VideoStream *stream);
-void video_stream_stop (VideoStream * stream);
+void video_stream_stop(VideoStream * stream);
+void video_stream_set_sent_video_size(VideoStream *stream, MSVideoSize vsize);
 
-VideoStream * video_preview_start(MSWebCam *device);
+VideoStream * video_preview_start(MSWebCam *device, MSVideoSize vsize);
 void video_preview_stop(VideoStream *stream);
 
 int video_stream_recv_only_start(VideoStream * stream, RtpProfile *profile, const char *remip, int remport, int payload, int jitt_comp);
