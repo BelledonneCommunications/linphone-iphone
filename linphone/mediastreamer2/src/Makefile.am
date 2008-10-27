@@ -72,8 +72,7 @@ else
 libmediastreamer_la_SOURCES+=msv4l.c msv4l2.c
 endif
 
-libmediastreamer_la_SOURCES+=	sdlout.c   \
-				videoenc.c \
+libmediastreamer_la_SOURCES+=	videoenc.c \
 				videodec.c \
 				pixconv.c  \
 				sizeconv.c \

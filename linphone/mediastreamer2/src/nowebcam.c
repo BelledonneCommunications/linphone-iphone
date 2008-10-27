@@ -167,6 +167,12 @@ int static_image_set_vsize(MSFilter *f, void* data){
 	return 0;
 }
 
+int static_image_get_vsize(MSFilter *f, void* data){
+	SIData *d=(SIData*)f->data;
+	*(MSVideoSize*)data=d->vsize;
+	return 0;
+}
+
 int static_image_get_pix_fmt(MSFilter *f, void *data){
 	*(MSPixFmt*)data=MS_YUV420P;
 	return 0;
@@ -174,6 +180,7 @@ int static_image_get_pix_fmt(MSFilter *f, void *data){
 
 MSFilterMethod static_image_methods[]={
 	{	MS_FILTER_SET_VIDEO_SIZE, static_image_set_vsize },
+	{	MS_FILTER_GET_VIDEO_SIZE, static_image_get_vsize },
 	{	MS_FILTER_GET_PIX_FMT, static_image_get_pix_fmt },
 	{	0,0 }
 };
