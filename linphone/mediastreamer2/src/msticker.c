@@ -184,7 +184,7 @@ static bool_t filter_can_process(MSFilter *f, int tick){
 
 static void call_process(MSFilter *f){
 	bool_t process_done=FALSE;
-	if (f->desc->ninputs==0){
+	if (f->desc->ninputs==0 || f->desc->flags & MS_FILTER_IS_PUMP){
 		ms_filter_process(f);
 	}else{
 		while (ms_filter_inputs_have_data(f)) {

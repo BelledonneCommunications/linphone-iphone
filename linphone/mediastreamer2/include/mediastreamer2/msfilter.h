@@ -89,6 +89,12 @@ enum _MSFilterCategory{
  */
 typedef enum _MSFilterCategory MSFilterCategory;
 
+enum _MSFilterFlags{
+	MS_FILTER_IS_PUMP = 1
+};
+
+typedef enum _MSFilterFlags MSFilterFlags;
+
 struct _MSFilterDesc{
 	MSFilterId id;	/* the id declared in allfilters.h */
 	const char *name; /* filter name */
@@ -103,6 +109,7 @@ struct _MSFilterDesc{
 	MSFilterFunc postprocess;	/*called once after processing */
 	MSFilterFunc uninit;
 	MSFilterMethod *methods;
+	unsigned int flags;
 };
 
 /**

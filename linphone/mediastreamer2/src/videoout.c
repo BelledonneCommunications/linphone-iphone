@@ -387,6 +387,7 @@ static void win_display_update(MSDisplay *obj){
 	HDC hdc;
 	BITMAPINFOHEADER bi;
 	RECT rect;
+	MSG msg;
 	bool_t ret;
 	if (wd->window==NULL) return;
 	hdc=GetDC(wd->window);
@@ -426,6 +427,11 @@ static void win_display_update(MSDisplay *obj){
 	
   	if (!ret) ms_error("DrawDibDraw failed.");
 	ReleaseDC(NULL,hdc);
+	while (PeekMessage(&msg, wd->window, 0, 0, PM_REMOVE) != 0)
+	{
+		  TranslateMessage(&msg);
+		  DispatchMessage(&msg);
+	}
 }
 
 static void win_display_uninit(MSDisplay *obj){
@@ -814,7 +820,8 @@ MSFilterDesc ms_video_out_desc={
 	video_out_process,
 	video_out_postprocess,
 	video_out_uninit,
-	methods
+	methods,
+	MS_FILTER_IS_PUMP
 };
 
 #else
@@ -831,7 +838,8 @@ MSFilterDesc ms_video_out_desc={
 	.process=video_out_process,
 	.postprocess=video_out_postprocess,
 	.uninit=video_out_uninit,
-	.methods=methods
+	.methods=methods,
+	.flags=MS_FILTER_IS_PUMP
 };
 
 #endif
