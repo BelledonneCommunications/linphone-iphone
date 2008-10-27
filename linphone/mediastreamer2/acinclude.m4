@@ -75,7 +75,7 @@ AC_DEFUN([MS_CHECK_VIDEO],[
 
 		dnl check for new/old ffmpeg header file layout
 		CPPFLAGS_save=$CPPFLAGS
-		CPPFLAGS=$FFMPEG_CFLAGS
+		CPPFLAGS="$FFMPEG_CFLAGS $CPPFLAGS"
 		AC_CHECK_HEADERS(libavcodec/avcodec.h)
 		CPPFLAGS=$CPPFLAGS_save
 
@@ -94,7 +94,7 @@ AC_DEFUN([MS_CHECK_VIDEO],[
 		dnl # include "swscale.h" // private linhone swscale.h
 		dnl #endif
 		CPPFLAGS_save=$CPPFLAGS
-		CPPFLAGS=$FFMPEG_CFLAGS
+		CPPFLAGS="$FFMPEG_CFLAGS $CPPFLAGS"
 		AC_CHECK_HEADERS(libswscale/swscale.h)
 		CPPFLAGS=$CPPFLAGS_save
 
