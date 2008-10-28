@@ -360,8 +360,8 @@ VideoStream * video_preview_start(MSWebCam *device, MSVideoSize vsize){
 
 	/* configure the filters */
 	ms_filter_call_method(stream->source,MS_FILTER_SET_VIDEO_SIZE,&vsize);
-	ms_filter_call_method(stream->source,MS_FILTER_GET_VIDEO_SIZE,&vsize);
 	ms_filter_call_method(stream->source,MS_FILTER_GET_PIX_FMT,&format);
+	ms_filter_call_method(stream->source,MS_FILTER_GET_VIDEO_SIZE,&vsize);
 	if (format==MS_MJPEG){
 		stream->pixconv=ms_filter_new(MS_MJPEG_DEC_ID);
 	}else{
