@@ -58,7 +58,7 @@ public class JxtaNetworkResources {
       } catch (IOException e1) {
          throw new P2pProxyException(e1);
       }
-      mLog.debug("publishing P2pUserRegistration Advertisement ["+mP2pUserRegistrationAdvertisement+"]published expire ["+aLiveTime+"]");
+      mLog.info("publishing P2pUserRegistration Advertisement ["+mP2pUserRegistrationAdvertisement+"]published expire ["+aLiveTime+"]");
    }   
    
 }

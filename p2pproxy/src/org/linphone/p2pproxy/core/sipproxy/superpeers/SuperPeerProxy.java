@@ -19,6 +19,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 package org.linphone.p2pproxy.core.sipproxy.superpeers;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 
@@ -26,6 +28,7 @@ import org.apache.log4j.Logger;
 import org.linphone.p2pproxy.api.P2pProxyException;
 import org.linphone.p2pproxy.api.P2pProxyUserNotFoundException;
 import org.linphone.p2pproxy.core.JxtaNetworkManager;
+import org.linphone.p2pproxy.core.P2pProxyAdvertisementNotFoundException;
 import org.linphone.p2pproxy.core.sipproxy.RegistrationHandler;
 import org.linphone.p2pproxy.core.sipproxy.SipProxy;
 import org.linphone.p2pproxy.core.sipproxy.SipUtils;
@@ -66,7 +69,16 @@ public class SuperPeerProxy implements SipProxy, RegistrationHandler {
 				   //great, just need to get it
 				   lNextHope = new SipURL(mRegistrationTab.get(lTo).Contact);
 			   } else {
-				   throw new P2pProxyUserNotFoundException("user ["+lTo+"] not found");
+				   if (aMessage.isInvite() || aMessage.isCancel()) {
+					   //need to found the right proxy
+					   try {
+						   List<P2pUserRegistrationAdvertisement> lAdvList = (List<P2pUserRegistrationAdvertisement>) mJxtaNetworkManager.getAdvertisementList(null, P2pUserRegistrationAdvertisement.USER_NAME_TAG,lTo, true);
+						   lNextHope = new SipURL(lAdvList.get(0).getUserName());
+					   } catch (Exception e) {
+						   throw new P2pProxyUserNotFoundException("user ["+lTo+"] not found",e);
+					   } 
+					   
+				   }
 			   }
 		   }
 		   if (aMessage.isInvite() || aMessage.isCancel()) {

@@ -24,6 +24,7 @@ package org.linphone.p2pproxy.core.sipproxy;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
@@ -81,6 +82,7 @@ public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarM
    private long mNumberOfUnknownUSers;
    private long mNumberOfUnknownUsersForRegistration;
    private long mNumberOfUnRegistration;
+   
    
    public static class Registration {
       long RegistrationDate;
@@ -190,6 +192,23 @@ public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarM
     	  
       };
       mTimer.scheduleAtFixedRate(lPublisherTask, 0, ADV_LIFE_TIME-ADV_LIFE_TIME/10);
+      TimerTask lRegistrationTableGC = new TimerTask() {
+
+		@Override
+		public void run() {
+			// copy list
+			Collection<Registration> lCurrentRegistrations = mRegistrationTab.values();
+			long lCurrentDate = System.currentTimeMillis();
+			for (Registration lRegistration : lCurrentRegistrations) {
+				if ((lCurrentDate - lRegistration.RegistrationDate - lRegistration.Expiration) > 0) {
+					if (mLog.isInfoEnabled()) mLog.info("registration entry ["+lRegistration+"] has expired");
+					mRegistrationTab.remove(lRegistration.From);
+				}
+			}
+		}
+    	  
+      };
+      mTimer.scheduleAtFixedRate(lRegistrationTableGC, 0, 60000);
       
    }
    public  void onReceivedMessage(SipProvider aProvider, Message aMessage) {

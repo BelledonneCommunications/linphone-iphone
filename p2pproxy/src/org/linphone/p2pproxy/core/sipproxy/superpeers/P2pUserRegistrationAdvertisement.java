@@ -99,7 +99,7 @@ public class P2pUserRegistrationAdvertisement extends ExtendableAdvertisement im
    private String mRegistrarAddress;
    private String mUserUri;
    public final static String REGISTRAR_ADDRESS_TAG = "registrar-address";
-   public final static String USER_NAME_TAG = "user-name";
+   public final static String USER_NAME_TAG = "registration-user-name";
    private final static String ID_TAG = "ID";
    private final static String[] mIndexs = {USER_NAME_TAG};
    private final static Logger mLog = Logger.getLogger(P2pUserRegistrationAdvertisement.class);
