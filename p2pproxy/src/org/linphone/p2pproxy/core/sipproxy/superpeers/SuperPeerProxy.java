@@ -73,11 +73,13 @@ public class SuperPeerProxy implements SipProxy, RegistrationHandler {
 					   //need to found the right proxy
 					   try {
 						   List<P2pUserRegistrationAdvertisement> lAdvList = (List<P2pUserRegistrationAdvertisement>) mJxtaNetworkManager.getAdvertisementList(null, P2pUserRegistrationAdvertisement.USER_NAME_TAG,lTo, true);
-						   lNextHope = new SipURL(lAdvList.get(0).getUserName());
+						   lNextHope = new SipURL(lAdvList.get(0).getRegistrarAddress());
 					   } catch (Exception e) {
 						   throw new P2pProxyUserNotFoundException("user ["+lTo+"] not found",e);
 					   } 
 					   
+				   } else {
+					   //nop
 				   }
 			   }
 		   }
@@ -93,7 +95,8 @@ public class SuperPeerProxy implements SipProxy, RegistrationHandler {
 		   MultipleHeader lMultipleRoute = aMessage.getRoutes();
 		   
 		   if (lMultipleRoute != null && lMultipleRoute.isEmpty()== false) {
-			   lNextHope = ((RecordRouteHeader)lMultipleRoute.getTop()).getNameAddress().getAddress();
+			   RouteHeader lRouteHeader = new RouteHeader(lMultipleRoute.getTop());
+			   lNextHope = lRouteHeader.getNameAddress().getAddress();
 		   } else {
 			   // last proxy, get route from request uri
 			   //check if we know the user

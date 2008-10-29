@@ -93,6 +93,9 @@ public class SipProxyRegistrar implements SipProviderListener,SipProxyRegistrarM
       public String Contact;
       public final String From;
       public Registration(String aFrom) {From = aFrom;}
+      public String toString() {
+    	  return "reg date ["+RegistrationDate+"] exp ["+Expiration+"] contact ["+Contact+"] from ["+From+"]";
+      }
    }
    
    class SipMessageTask implements Callable<Boolean> {

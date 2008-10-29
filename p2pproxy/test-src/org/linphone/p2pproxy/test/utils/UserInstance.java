@@ -51,7 +51,7 @@ public UserInstance(final String userName,final String aPreferedProxyUri) throws
 	int lSipPort = lSocket.getLocalPort();
 	lSocket.close();
 	URI lUserNameUri = URI.create(userName);
-	final String[] lParam = {"-jxta" ,"userinstance-"+lUserNameUri.getUserInfo()
+	final String[] lParam = {"-jxta" ,"userinstance-"+lUserNameUri.getSchemeSpecificPart()
 							,"-edge-only"
 							,"-seeding-rdv", "tcp://82.67.74.86:9701"
 							,"-seeding-relay", "tcp://82.67.74.86:9701"};
@@ -73,7 +73,7 @@ public UserInstance(final String userName,final String aPreferedProxyUri) throws
 		throw new P2pProxyException("Cannot connect to fonis network");
 	}
 	P2pProxyMain.createAccount(userName);
-	SipStack.log_path = "userinstance-"+lUserNameUri.getUserInfo()+"/logs";
+	SipStack.log_path = "userinstance-"+lUserNameUri.getSchemeSpecificPart()+"/logs";
 	File lFile = new File(SipStack.log_path);
     if (lFile.exists() == false) lFile.mkdir();
     //InetAddress[] lAddresses = InetAddress.getAllByName("localhost");

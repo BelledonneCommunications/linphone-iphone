@@ -69,7 +69,7 @@ public class SipClient {
       register(expiration,aTo, 200);
    }
    public boolean register(int expiration,String aTo,final int aReturnCode) throws InterruptedException {
-            final long TryingTimout = 1000;
+            final long TryingTimout = 2000;
             
             NameAddress lContact = new NameAddress(getContact(mProvider));
             NameAddress lT0 = new NameAddress(aTo);
