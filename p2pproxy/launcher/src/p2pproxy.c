@@ -7,19 +7,19 @@
 	#define P2PPROXY_JMX_PORT "5678"
 #endif
 #ifndef P2PPROXY_INSTALLDIR
-	#define P2PPROXY_INSTALLDIR "/usr/local/share/java"
+	#define P2PPROXY_INSTALLDIR "/usr/share/java/fonis"
 #endif 
 #ifndef P2PPROXY_BUILDDIR
 	#define P2PPROXY_BUILDDIR "../antbuild/dist/p2pproxy_0.1"
 #endif
 #define NUMBER_OF_OPTION 7
-JavaVM* p2pproxy_application_jvm = 0;
+JavaVM *p2pproxy_application_jvm = 0;
 
 #define GET_JNI_ENV \
 	jint lResult = 0 ;\
-	JNIEnv* lJniEnv = 0;\
+	JNIEnv *lJniEnv = 0;\
 	jclass  lMainClass = 0;\
-	lResult = (*p2pproxy_application_jvm)->AttachCurrentThread(p2pproxy_application_jvm,&lJniEnv,NULL);\
+	lResult = (*p2pproxy_application_jvm)->AttachCurrentThread(p2pproxy_application_jvm,(void**)&lJniEnv,NULL);\
 	if (lResult != 0) { \
 		fprintf(stderr,"cannot attach VM\n");\
 		return P2PPROXY_ERROR;\
@@ -32,9 +32,8 @@ JavaVM* p2pproxy_application_jvm = 0;
 
 
 int p2pproxy_application_start(int argc, char **argv) {
-	JNIEnv* lJniEnv = 0;
+	JNIEnv *lJniEnv = 0;
 	jclass  lMainClass = 0;
-	
 	JavaVMInitArgs args;
 	JavaVMOption options[NUMBER_OF_OPTION];
 	jint res=-1;
@@ -69,15 +68,14 @@ int p2pproxy_application_start(int argc, char **argv) {
 
 	args.nOptions = NUMBER_OF_OPTION;
 	args.options = options;
-	args.ignoreUnrecognized = JNI_FALSE;	int lResult;
+	args.ignoreUnrecognized = JNI_FALSE;
 	
 
-	res = JNI_CreateJavaVM(&p2pproxy_application_jvm, (void **)&lJniEnv, &args);
+	res = JNI_CreateJavaVM(&p2pproxy_application_jvm,  (void**)& lJniEnv, &args);
 	if (res < 0) {
 		fprintf(stderr,"cannot start p2pproxy vm [%i]",res);
 		return P2PPROXY_ERROR;
 	}
-
 	lMainClass = (*lJniEnv)->FindClass(lJniEnv, "org/linphone/p2pproxy/core/P2pProxyMain");
 
 	if (lMainClass == 0) {
@@ -143,7 +141,7 @@ int p2pproxy_accountmgt_deleteAccount(const char* user_name) {
 int p2pproxy_resourcemgt_lookup_sip_proxy(char* proxy_uri,size_t size, char* domaine) {
 	jmethodID lLookupSipProxyUriMethod;
 	jstring lJStringResult; 
-	const jbyte* lString;
+	const char* lString;
 	jboolean  lIsCopy;
 	jstring applicationArg;
 	
@@ -184,15 +182,15 @@ int p2pproxy_application_get_state() {
 	return lResult;
 	
 }
-void p2pproxy_application_stop() {
+
+int p2pproxy_application_stop() {
 	jmethodID stopMethod = 0;
 	GET_JNI_ENV
 	
 	stopMethod = (*lJniEnv)->GetStaticMethodID(lJniEnv, lMainClass, "stop", "()V");
 	(*lJniEnv)->CallStaticVoidMethod(lJniEnv, lMainClass, stopMethod);
 	(*p2pproxy_application_jvm)->DetachCurrentThread(p2pproxy_application_jvm);
-	return;
-
+	return 0;
 }
 
 

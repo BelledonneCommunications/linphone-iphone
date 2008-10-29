@@ -59,13 +59,13 @@ int p2pproxy_application_start(int argc, char **argv);
  * 	@return P2PPROXY_CONNECTED, P2PPROXY_NOT_ERROR
  * 
  */
-int p2pproxy_application_get_state();
+int p2pproxy_application_get_state(void);
 
 /**
  *  stop p2pproxy application
  * 
  */
-void p2pproxy_application_stop();
+int p2pproxy_application_stop(void);
 
 /**
  * return the status string corresponding to the status code
