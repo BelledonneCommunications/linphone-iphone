@@ -387,7 +387,7 @@ the method index (_cnt_) and the argument size */
 #define MS_FILTER_GET_STAT_INPUT	MS_FILTER_BASE_METHOD(18,int)
 #define MS_FILTER_GET_STAT_OUTPUT	MS_FILTER_BASE_METHOD(19,int)
 #define MS_FILTER_ENABLE_AGC 		MS_FILTER_BASE_METHOD(20,int)
-
+#define MS_FILTER_SET_PLAYBACKDELAY MS_FILTER_BASE_METHOD(21,int)
 /** @} */
 
 /*private methods*/
