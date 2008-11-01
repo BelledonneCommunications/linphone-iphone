@@ -180,4 +180,6 @@ EXPORTS
 	
 	payload_type_set_recv_fmtp
 	rtp_session_get_local_port
-	
+	rtp_session_get_jitter_buffer_params
+
+	copyb
