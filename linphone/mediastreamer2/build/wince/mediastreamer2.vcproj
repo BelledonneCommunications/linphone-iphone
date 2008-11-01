@@ -217,7 +217,7 @@
 				ExecutionBucket="7"
 				Optimization="2"
 				FavorSizeOrSpeed="1"
-				AdditionalIncludeDirectories=".;..\..\include;..\..\..\oRTP\include;..\..\..\codecs\speex-svn\include"
+				AdditionalIncludeDirectories=".;..\..\include;..\..\..\oRTP\include;..\..\..\codecs\speex\include"
 				PreprocessorDefinitions="__VIDEO_DISABLED__;AMD_HACK;HAVE_SPEEX_NOISE;ORTP_INET6;MEDIASTREAMER2_EXPORT;_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);_DEBUG;_USRDLL;$(ARCHFAM);$(_ARCHFAM_);POCKETPC2003_UI_MODEL;POCKETPC2003_UI_MODEL"
 				RuntimeLibrary="3"
 				TreatWChar_tAsBuiltInType="false"
@@ -386,7 +386,7 @@
 				ExecutionBucket="7"
 				Optimization="2"
 				FavorSizeOrSpeed="1"
-				AdditionalIncludeDirectories=".;..\..\include;..\..\..\oRTP\include;..\..\..\codecs\speex-svn\include"
+				AdditionalIncludeDirectories=".;..\..\include;..\..\..\oRTP\include;..\..\..\codecs\speex\include"
 				PreprocessorDefinitions="__VIDEO_DISABLED__;AMD_HACK;HAVE_SPEEX_NOISE;ORTP_INET6;MEDIASTREAMER2_EXPORT;_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);_DEBUG;_USRDLL;$(ARCHFAM);$(_ARCHFAM_)"
 				ExceptionHandling="1"
 				RuntimeLibrary="3"
@@ -630,7 +630,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
-				AdditionalIncludeDirectories=".;..\..\include;..\..\..\oRTP\include;..\..\..\codecs\speex-svn\include"
+				AdditionalIncludeDirectories=".;..\..\include;..\..\..\oRTP\include;..\..\..\codecs\speex\include"
 				PreprocessorDefinitions="__VIDEO_DISABLED__;AMD_HACK;HAVE_SPEEX_NOISE;ORTP_INET6;MEDIASTREAMER2_EXPORT;_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);NDEBUG;_USRDLL;$(ARCHFAM);$(_ARCHFAM_);POCKETPC2003_UI_MODEL;POCKETPC2003_UI_MODEL"
 				RuntimeLibrary="2"
 				TreatWChar_tAsBuiltInType="false"
@@ -711,7 +711,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
-				AdditionalIncludeDirectories=".;..\..\include;..\..\..\oRTP\include;..\..\..\codecs\speex-svn\include"
+				AdditionalIncludeDirectories=".;..\..\include;..\..\..\oRTP\include;..\..\..\codecs\speex\include"
 				PreprocessorDefinitions="__VIDEO_DISABLED__;ORTP_INET6;MEDIASTREAMER2_EXPORT;AMD_HACK;_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);NDEBUG;_USRDLL;$(ARCHFAM);$(_ARCHFAM_);SMARTPHONE2003_UI_MODEL;SMARTPHONE2003_UI_MODEL"
 				RuntimeLibrary="2"
 				TreatWChar_tAsBuiltInType="false"
@@ -793,7 +793,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
-				AdditionalIncludeDirectories=".;..\..\include;..\..\..\oRTP\include;..\..\..\codecs\speex-svn\include"
+				AdditionalIncludeDirectories=".;..\..\include;..\..\..\oRTP\include;..\..\..\codecs\speex\include"
 				PreprocessorDefinitions="__VIDEO_DISABLED__;AMD_HACK;HAVE_SPEEX_NOISE;ORTP_INET6;MEDIASTREAMER2_EXPORT;_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);NDEBUG;_USRDLL;$(ARCHFAM);$(_ARCHFAM_)"
 				RuntimeLibrary="2"
 				TreatWChar_tAsBuiltInType="false"
@@ -921,6 +921,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\mtu.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\speexec.c"
 				>
 			</File>
@@ -938,10 +942,6 @@
 			</File>
 			<File
 				RelativePath="..\..\src\winsnd.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\mtu.c"
 				>
 			</File>
 		</Filter>
