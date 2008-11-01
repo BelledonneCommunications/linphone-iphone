@@ -382,14 +382,20 @@ static void winsnd_read_preprocess(MSFilter *f){
 
 	winsnd_apply_settings(d);
 	/* Init Microphone device */
-	dwFlag = CALLBACK_FUNCTION;
-	if (d->dev_id != WAVE_MAPPER)
-		dwFlag = WAVE_MAPPED | CALLBACK_FUNCTION;
-	mr = waveInOpen (&d->indev, d->dev_id, &d->wfx,
-	            (DWORD) read_callback, (DWORD)f, dwFlag);
+  dwFlag = CALLBACK_FUNCTION | WAVE_FORMAT_DIRECT;
+  mr = waveInOpen (&d->indev, d->dev_id, &d->wfx,
+              (DWORD) read_callback, (DWORD)f, dwFlag);
 	if (mr != MMSYSERR_NOERROR)
 	{
-	    ms_error("Failed to prepare windows sound device. (waveInOpen:0x%i)", mr);
+    ms_error("Failed to prepare windows sound device. (waveInOpen:0x%i)", mr);
+    if (d->dev_id != WAVE_MAPPER)
+		    dwFlag = WAVE_MAPPED | CALLBACK_FUNCTION;
+    mr = waveInOpen (&d->indev, d->dev_id, &d->wfx,
+              (DWORD) read_callback, (DWORD)f, dwFlag);
+  }
+	if (mr != MMSYSERR_NOERROR)
+	{
+    ms_error("Failed to prepare windows sound device. (waveInOpen:0x%i)", mr);
 		mr = waveInOpen (&d->indev, WAVE_MAPPER, &d->wfx,
 					(DWORD) read_callback, (DWORD)d, CALLBACK_FUNCTION);
 		if (mr != MMSYSERR_NOERROR)
@@ -513,11 +519,17 @@ static void winsnd_write_preprocess(MSFilter *f){
 
 	winsnd_apply_settings(d);
 	/* Init Microphone device */
-	dwFlag = CALLBACK_FUNCTION;
-	if (d->dev_id != WAVE_MAPPER)
-		dwFlag = WAVE_MAPPED | CALLBACK_FUNCTION;
+	dwFlag = CALLBACK_FUNCTION | WAVE_FORMAT_DIRECT;
 	mr = waveOutOpen (&d->outdev, d->dev_id, &d->wfx,
 	            (DWORD) write_callback, (DWORD)d, dwFlag);
+	if (mr != MMSYSERR_NOERROR)
+	{
+		ms_error("Failed to open windows sound device %i. (waveOutOpen:0x%i)",d->dev_id, mr);
+	  if (d->dev_id != WAVE_MAPPER)
+		  dwFlag = WAVE_MAPPED | CALLBACK_FUNCTION;
+	  mr = waveOutOpen (&d->outdev, d->dev_id, &d->wfx,
+  	            (DWORD) write_callback, (DWORD)d, dwFlag);
+  }
 	if (mr != MMSYSERR_NOERROR)
 	{
 		ms_error("Failed to open windows sound device %i. (waveOutOpen:0x%i)",d->dev_id, mr);
