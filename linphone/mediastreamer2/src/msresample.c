@@ -20,7 +20,7 @@ static ResampleData * resample_data_new(){
 	obj->ts=0;
 	obj->input_rate=8000;
 	obj->output_rate=16000;
-  obj->handle=NULL;
+	obj->handle=NULL;
 
 	obj->nb_unprocessed=0;
 	return obj;
@@ -42,16 +42,16 @@ static void resample_uninit(MSFilter *obj){
 
 static void resample_preprocess(MSFilter *obj){
 	ResampleData *dt=(ResampleData*)obj->data;
-  int err=0;
+	int err=0;
 
 	dt->handle = speex_resampler_init(1, dt->input_rate, dt->output_rate, SPEEX_RESAMPLER_QUALITY_VOIP, &err);
 }
 
 static void resample_postprocess(MSFilter *obj){
 	ResampleData *dt=(ResampleData*)obj->data;
-  if (dt->handle!=NULL)
+	if (dt->handle!=NULL)
   	speex_resampler_destroy((SpeexResamplerState*)dt->handle);
-  dt->handle=NULL;
+	dt->handle=NULL;
 }
 
 static void resample_process_ms2(MSFilter *obj){
@@ -85,31 +85,31 @@ static void resample_process_ms2(MSFilter *obj){
 
 		float *in;
 		float *out;
-    spx_uint32_t in_len;
-    spx_uint32_t out_len;
-    int err;
+		spx_uint32_t in_len;
+		spx_uint32_t out_len;
+		int err;
 
 		short *data = (short*)buffer;
-    short *data_out = (short*)obl->b_wptr;
+		short *data_out = (short*)obl->b_wptr;
 
 		int i;
     
-    in = (float*) alloca((size_of_input/2)*sizeof(float));
-    out = (float*) alloca((size_of_output/2)*sizeof(float));
+		in = (float*) alloca((size_of_input/2)*sizeof(float));
+		out = (float*) alloca((size_of_output/2)*sizeof(float));
 
 		/* Convert the samples to floats */
 		for (i = 0; i < size_of_input/2; i++)
 			in[i] = (float) data[i];
 
-    in_len = size_of_input/2;
-    out_len = size_of_output/2;
-    err = speex_resampler_process_float(dt->handle, 0, in, &in_len, out, &out_len);
+		in_len = size_of_input/2;
+		out_len = size_of_output/2;
+		err = speex_resampler_process_float(dt->handle, 0, in, &in_len, out, &out_len);
 
-    /* ms_message("resampling info: err=%i in_len=%i, out_len=%i", err, in_len, out_len); */
+		/* ms_message("resampling info: err=%i in_len=%i, out_len=%i", err, in_len, out_len); */
 
-    for (i=0;i<out_len;i++)
-      data_out[i]=floor(.5+out[i]);
-    obl->b_wptr=obl->b_wptr+(out_len*2); /* size_of_output; */
+		for (i=0;i<out_len;i++)
+		  data_out[i]=floor(.5+out[i]);
+		obl->b_wptr=obl->b_wptr+(out_len*2); /* size_of_output; */
 
 		mblk_set_timestamp_info(obl,dt->ts);
 		dt->ts+=160;
@@ -173,3 +173,4 @@ MSFilterDesc ms_resample_desc={
 #endif
 
 MS_FILTER_DESC_EXPORT(ms_resample_desc)
+
