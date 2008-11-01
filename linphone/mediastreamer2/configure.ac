@@ -314,14 +314,17 @@ PKG_CHECK_MODULES(SPEEX, speex >= 1.1.12,
 	[try_other_speex=yes]
 )
 PKG_CHECK_MODULES(SPEEX, speex >= 1.1.6, build_speex=yes)
+build_resample=false
 PKG_CHECK_MODULES(SPEEXDSP, speexdsp >= 1.2beta3,
-    [SPEEX_LIBS="$SPEEX_LIBS $SPEEXDSP_LIBS"], [
-	AC_MSG_NOTICE([No speexdsp library found.])
+    [SPEEX_LIBS="$SPEEX_LIBS $SPEEXDSP_LIBS"
+    build_resample=yes] ,
+    [AC_MSG_NOTICE([No speexdsp library found.])
 ]
 )
 AC_SUBST(SPEEX_CFLAGS)
 AC_SUBST(SPEEX_LIBS)
 AM_CONDITIONAL(BUILD_SPEEX, test x$build_speex = xyes )
+AM_CONDITIONAL(BUILD_RESAMPLE, test x$build_resample = xyes )
 
 dnl check for gsm
 build_gsm=no
@@ -340,10 +343,6 @@ else
 	build_gsm=no
 fi
 AM_CONDITIONAL(BUILD_GSM, test x$build_gsm = xyes )
-
-build_resample=false
-AC_CHECK_LIB(resample,resample_open,[LIBS="$LIBS -lresample"; build_resample=yes])
-AM_CONDITIONAL(BUILD_RESAMPLE, test x$build_resample = xyes )
 
 MS_CHECK_VIDEO
 AM_CONDITIONAL(BUILD_VIDEO, test "$video" = "true")
