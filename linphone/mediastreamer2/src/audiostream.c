@@ -119,6 +119,20 @@ RtpSession * create_duplex_rtpsession( int locport, bool_t ipv6){
 	return rtpr;
 }
 
+#if defined(_WIN32_WCE)
+time_t
+time (time_t *t)
+{
+    DWORD timemillis = GetTickCount();
+	if (timemillis>0)
+	{
+		if (t!=NULL)
+			*t = timemillis/1000;
+	}
+	return timemillis/1000;
+}
+#endif
+
 bool_t audio_stream_alive(AudioStream * stream, int timeout){
 	RtpSession *session=stream->session;
 	const rtp_stats_t *stats=rtp_session_get_stats(session);
