@@ -115,6 +115,7 @@ mblk_t *ms_load_nowebcam(MSVideoSize *reqsize, int idx){
 
 typedef struct _SIData{
 	MSVideoSize vsize;
+	char nowebcamimage[256];
 	int index;
 	uint64_t lasttime;
 	mblk_t *pic;
@@ -124,6 +125,7 @@ void static_image_init(MSFilter *f){
 	SIData *d=(SIData*)ms_new(SIData,1);
 	d->vsize.width=MS_VIDEO_SIZE_CIF_W;
 	d->vsize.height=MS_VIDEO_SIZE_CIF_H;
+	memset(d->nowebcamimage, 0, sizeof(d->nowebcamimage));
 	d->index=-1;
 	d->lasttime=0;
 	d->pic=NULL;
@@ -136,19 +138,27 @@ void static_image_uninit(MSFilter *f){
 
 void static_image_preprocess(MSFilter *f){
 	SIData *d=(SIData*)f->data;
-	d->pic=ms_load_nowebcam(&d->vsize,d->index);
+  if (d->pic==NULL)
+  {
+    if (d->nowebcamimage[0] != '\0')
+  	  d->pic=ms_load_jpeg_as_yuv(d->nowebcamimage,&d->vsize);
+    else
+  	  d->pic=ms_load_nowebcam(&d->vsize,d->index);
+  }
 }
 
 void static_image_process(MSFilter *f){
 	SIData *d=(SIData*)f->data;
 	/*output a frame every second*/
 	if ((f->ticker->time - d->lasttime>1000) || d->lasttime==0){
+    ms_mutex_lock(&f->lock);
 		if (d->pic) {
 			mblk_t *o=dupb(d->pic);
 			/*prevent mirroring at the output*/
 			mblk_set_precious_flag(o,1);
 			ms_queue_put(f->outputs[0],o);
 		}
+    ms_mutex_unlock(&f->lock);
 		d->lasttime=f->ticker->time;
 	}
 }
@@ -178,10 +188,31 @@ int static_image_get_pix_fmt(MSFilter *f, void *data){
 	return 0;
 }
 
+static int static_image_set_image(MSFilter *f, void *arg){
+	SIData *d=(SIData*)f->data;
+	char *image = (char *)arg;
+  ms_mutex_lock(&f->lock);
+	if (image!=NULL && image[0]!='\0')
+	  snprintf(d->nowebcamimage, sizeof(d->nowebcamimage), "%s", image);
+	else
+	  d->nowebcamimage[0] = '\0';
+
+  if (d->pic!=NULL)
+		freemsg(d->pic);
+
+  //if (d->nowebcamimage[0] != '\0')
+	 // d->pic=ms_load_jpeg_as_yuv(d->nowebcamimage,&d->vsize);
+  //else
+	 // d->pic=ms_load_nowebcam(&d->vsize,d->index);
+  ms_mutex_unlock(&f->lock);
+	return 0;
+}
+
 MSFilterMethod static_image_methods[]={
 	{	MS_FILTER_SET_VIDEO_SIZE, static_image_set_vsize },
 	{	MS_FILTER_GET_VIDEO_SIZE, static_image_get_vsize },
 	{	MS_FILTER_GET_PIX_FMT, static_image_get_pix_fmt },
+	{	MS_FILTER_SET_IMAGE, static_image_set_image },
 	{	0,0 }
 };
 
