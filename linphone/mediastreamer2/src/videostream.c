@@ -349,8 +349,9 @@ void video_stream_set_rtcp_information(VideoStream *st, const char *cname, const
 
 
 
-VideoStream * video_preview_start(MSWebCam *device, MSVideoSize vsize){
+VideoStream * video_preview_start(MSWebCam *device, MSVideoSize disp_size){
 	VideoStream *stream = (VideoStream *)ms_new0 (VideoStream, 1);
+	MSVideoSize vsize=disp_size;
 	MSPixFmt format;
 
 	/* creates the filters */
@@ -372,7 +373,7 @@ VideoStream * video_preview_start(MSWebCam *device, MSVideoSize vsize){
 
 	format=MS_YUV420P;
 	ms_filter_call_method(stream->output,MS_FILTER_SET_PIX_FMT,&format);
-	ms_filter_call_method(stream->output,MS_FILTER_SET_VIDEO_SIZE,&vsize);
+	ms_filter_call_method(stream->output,MS_FILTER_SET_VIDEO_SIZE,&disp_size);
 	/* and then connect all */
 
 	ms_filter_link(stream->source,0, stream->pixconv,0);

@@ -189,3 +189,26 @@ void rgb24_copy_revert(uint8_t *dstbuf, int dstlsz,
 		psrc+=srclsz;
 	}
 }
+
+static MSVideoSize _ordered_vsizes[]={
+	MS_VIDEO_SIZE_QCIF,
+	MS_VIDEO_SIZE_QVGA,
+	MS_VIDEO_SIZE_CIF,
+	MS_VIDEO_SIZE_VGA,
+	MS_VIDEO_SIZE_4CIF,
+	MS_VIDEO_SIZE_720P,
+	{0,0}
+};
+
+MSVideoSize ms_video_size_get_just_lower_than(MSVideoSize vs){
+	MSVideoSize *p;
+	MSVideoSize ret;
+	ret.width=0;
+	ret.height=0;
+	for(p=_ordered_vsizes;p->width!=0;++p){
+		if (ms_video_size_greater_than(vs,*p) && !ms_video_size_equal(vs,*p)){
+			ret=*p;
+		}else return ret;
+	}
+	return ret;
+};

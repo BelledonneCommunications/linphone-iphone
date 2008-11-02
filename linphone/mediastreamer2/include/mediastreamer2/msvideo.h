@@ -54,8 +54,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define MS_VIDEO_SIZE_MAX_W MS_VIDEO_SIZE_1024_W
 #define MS_VIDEO_SIZE_MAX_H MS_VIDEO_SIZE_1024_H
 
+/* those structs are part of the ABI: don't change their size otherwise binary plugins will be broken*/
+
 typedef struct MSVideoSize{
-	int16_t width,height;
+	int width,height;
 } MSVideoSize;
 
 typedef struct MSRect{
@@ -78,21 +80,6 @@ typedef struct MSRect{
 
 #define MS_VIDEO_SIZE_800X600 (MSVideoSize){MS_VIDEO_SIZE_800X600_W, MS_VIDEO_SIZE_800X600_H}
 
-static inline bool_t ms_video_size_greater_than(MSVideoSize vs1, MSVideoSize vs2){
-	return (vs1.width>=vs2.width) && (vs1.height>=vs2.height);
-}
-
-static inline MSVideoSize ms_video_size_max(MSVideoSize vs1, MSVideoSize vs2){
-	return ms_video_size_greater_than(vs1,vs2) ? vs1 : vs2;
-}
-
-static inline MSVideoSize ms_video_size_min(MSVideoSize vs1, MSVideoSize vs2){
-	return ms_video_size_greater_than(vs1,vs2) ? vs2 : vs1;
-}
-
-static inline bool_t ms_video_size_equal(MSVideoSize vs1, MSVideoSize vs2){
-	return vs1.width==vs2.width && vs1.height==vs2.height;
-}
 
 typedef enum{
 	MS_YUV420P,
@@ -130,6 +117,25 @@ void yuv_buf_mirror(YuvBuf *buf);
 void rgb24_revert(uint8_t *buf, int w, int h, int linesize);
 void rgb24_copy_revert(uint8_t *dstbuf, int dstlsz,
 				const uint8_t *srcbuf, int srclsz, MSVideoSize roi);
+
+static inline bool_t ms_video_size_greater_than(MSVideoSize vs1, MSVideoSize vs2){
+	return (vs1.width>=vs2.width) && (vs1.height>=vs2.height);
+}
+
+static inline MSVideoSize ms_video_size_max(MSVideoSize vs1, MSVideoSize vs2){
+	return ms_video_size_greater_than(vs1,vs2) ? vs1 : vs2;
+}
+
+static inline MSVideoSize ms_video_size_min(MSVideoSize vs1, MSVideoSize vs2){
+	return ms_video_size_greater_than(vs1,vs2) ? vs2 : vs1;
+}
+
+static inline bool_t ms_video_size_equal(MSVideoSize vs1, MSVideoSize vs2){
+	return vs1.width==vs2.width && vs1.height==vs2.height;
+}
+
+MSVideoSize ms_video_size_get_just_lower_than(MSVideoSize vs);
+
 #ifdef __cplusplus
 }
 #endif

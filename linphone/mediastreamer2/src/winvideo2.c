@@ -26,8 +26,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "mediastreamer2/mswebcam.h"
 
-#ifndef _MSC_VER
-#include "vfw-missing.h"
+#ifndef AVSTREAMMASTER_NONE
+#define AVSTREAMMASTER_NONE 1
 #endif
 
 typedef void (*queue_msg_t)(void *, mblk_t *);
@@ -42,6 +42,7 @@ typedef struct VfwEngine{
 	queue_msg_t cb;
 	void *cb_data;
 	bool_t started;
+	bool_t configured;
 	bool_t thread_running;
 }VfwEngine;
 
@@ -50,31 +51,38 @@ typedef struct VfwEngine{
 static VfwEngine *engines[VFW_ENGINE_MAX_INSTANCES]={0};
 
 static bool_t try_format(VfwEngine *s, BITMAPINFO *videoformat, MSPixFmt pixfmt){
+	MSVideoSize tried_size=s->vsize;
 	bool_t ret;
-	capGetVideoFormat(s->capvideo, videoformat, sizeof(BITMAPINFO));
-	videoformat->bmiHeader.biSizeImage = 0;
-	videoformat->bmiHeader.biWidth  = s->vsize.width;
-	videoformat->bmiHeader.biHeight = s->vsize.height;
-	switch(pixfmt){
-		case MS_YUV420P:
-			videoformat->bmiHeader.biBitCount = 12;
-			videoformat->bmiHeader.biCompression=MAKEFOURCC('I','4','2','0');
-		break;
-		case MS_YUY2:
-			videoformat->bmiHeader.biBitCount = 16;
-			videoformat->bmiHeader.biCompression=MAKEFOURCC('Y','U','Y','2');
-		break;
-		case MS_RGB24:
-			videoformat->bmiHeader.biBitCount = 24;
-			videoformat->bmiHeader.biCompression=BI_RGB;
-		break;
-		default:
-			return FALSE;
-	}
-	ret=capSetVideoFormat(s->capvideo, videoformat, sizeof(BITMAPINFO));
+	do{
+		capGetVideoFormat(s->capvideo, videoformat, sizeof(BITMAPINFO));
+		videoformat->bmiHeader.biSizeImage = 0;
+		videoformat->bmiHeader.biWidth  = tried_size.width;
+		videoformat->bmiHeader.biHeight = tried_size.height;
+		switch(pixfmt){
+			case MS_YUV420P:
+				videoformat->bmiHeader.biBitCount = 12;
+				videoformat->bmiHeader.biCompression=MAKEFOURCC('I','4','2','0');
+			break;
+			case MS_YUY2:
+				videoformat->bmiHeader.biBitCount = 16;
+				videoformat->bmiHeader.biCompression=MAKEFOURCC('Y','U','Y','2');
+			break;
+			case MS_RGB24:
+				videoformat->bmiHeader.biBitCount = 24;
+				videoformat->bmiHeader.biCompression=BI_RGB;
+			break;
+			default:
+				return FALSE;
+		}
+		ms_message("Trying video size %ix%i",tried_size.width,tried_size.height);
+		ret=capSetVideoFormat(s->capvideo, videoformat, sizeof(BITMAPINFO));
+		tried_size=ms_video_size_get_just_lower_than(tried_size);
+	}while(ret==FALSE && tried_size.width!=0);
 	if (ret) {
 		/*recheck video format */
 		capGetVideoFormat(s->capvideo, videoformat, sizeof(BITMAPINFO));
+		s->vsize.width=videoformat->bmiHeader.biWidth;
+		s->vsize.height=videoformat->bmiHeader.biHeight;
 	}
 	return ret;
 }
@@ -87,7 +95,8 @@ static int _vfw_engine_select_format(VfwEngine *obj){
 	capGetVideoFormat(obj->capvideo, &videoformat, sizeof(BITMAPINFO));
 	memcpy(compname,&videoformat.bmiHeader.biCompression,4);
 	compname[4]='\0';
-	ms_message("vfw: camera's current format is %s", compname);
+	ms_message("vfw: camera's current format is '%s' at %ix%i", compname,
+			videoformat.bmiHeader.biWidth,videoformat.bmiHeader.biHeight);
 	driver_last=ms_fourcc_to_pix_fmt(videoformat.bmiHeader.biCompression);
 	if (driver_last!=MS_PIX_FMT_UNKNOWN && try_format(obj,&videoformat,driver_last)){
 		ms_message("Using driver last setting");
@@ -144,26 +153,38 @@ vfw_engine_thread(void *arg)
 	while(s->thread_running)
 	{
 		BOOL fGotMessage;
-		if((fGotMessage = PeekMessage(&msg, (HWND) s->capvideo, 0, 0, PM_REMOVE)) != 0)
+		while((fGotMessage = PeekMessage(&msg, (HWND) s->capvideo, 0, 0, PM_REMOVE)) != 0)
 		{
 		  TranslateMessage(&msg);
 		  DispatchMessage(&msg);
 		}
-		else
-			Sleep(10);
+		Sleep(10);
 	}
 	ms_thread_exit(NULL);
 	return NULL;
 }
 
-static void vfw_engine_destroy(VfwEngine *obj){
+static void _vfw_engine_unconfigure(VfwEngine *obj){
 	if (!capCaptureStop(obj->capvideo)){
 		ms_error("vfw: fail to stop capture !");
 	}
 	obj->thread_running=FALSE;
 	ms_thread_join(obj->thread,NULL);
+	obj->configured=FALSE;
+}
+
+static void _vfw_engine_disconnect(VfwEngine *obj){
 	capDriverDisconnect(obj->capvideo);
 	DestroyWindow(obj->capvideo);
+	obj->capvideo=NULL;
+}
+
+static void vfw_engine_destroy(VfwEngine *obj){
+	if (obj->configured){
+		_vfw_engine_unconfigure(obj);
+	}
+	_vfw_engine_disconnect(obj);
+	ms_free(obj);
 }
 
 static int _vfw_engine_setup(VfwEngine *obj){
@@ -188,55 +209,77 @@ static int _vfw_engine_setup(VfwEngine *obj){
 	return 0;
 }
 
+static int _vfw_engine_connect(VfwEngine *obj){
+	MSVideoSize sz;
+	sz.width=MS_VIDEO_SIZE_CIF_W;
+	sz.height=MS_VIDEO_SIZE_CIF_H;
+	HWND hwnd=capCreateCaptureWindow("Capture Window",WS_CHILD /* WS_OVERLAPPED */
+			,0,0,sz.width,sz.height,HWND_MESSAGE, 0) ;
+
+	if (hwnd==NULL) return -1;
+	if(!capDriverConnect(hwnd,obj->devidx)){
+		ms_warning("vfw: could not connect to capture driver, no webcam connected.");
+		DestroyWindow(hwnd);
+		return -1;
+	}
+	obj->capvideo=hwnd;
+	obj->vsize=sz;
+	return 0;
+}
+
 static VfwEngine * vfw_engine_new(int i){
 	char dev[512];
 	char ver[512];
 	VfwEngine *obj=(VfwEngine*)ms_new0(VfwEngine,1);
 	if (capGetDriverDescription(i, dev, sizeof (dev),
 		ver, sizeof (ver))){
-    MSVideoSize sz;
-	  sz.width=MS_VIDEO_SIZE_CIF_W;
-	  sz.height=MS_VIDEO_SIZE_CIF_H;
-		HWND hwnd=capCreateCaptureWindow("Capture Window",WS_CHILD /* WS_OVERLAPPED */
-			,0,0,sz.width,sz.height,HWND_MESSAGE, 0) ;
-		
-		if (hwnd==NULL) return NULL;
-		if(!capDriverConnect(hwnd,i)){
-			ms_warning("vfw: could not connect to capture driver, no webcam connected.");
-			DestroyWindow(hwnd);
+		obj->devidx=i;
+		if (_vfw_engine_connect(obj)==-1){
+			ms_free(obj);
 			return NULL;
 		}
 		strcpy(obj->dev,dev);
-		obj->devidx=i;
-		obj->capvideo=hwnd;
-		obj->vsize=sz;
-		
-		if (_vfw_engine_setup(obj)==-1){
-			vfw_engine_destroy(obj);
-			return NULL;
-		}
-		
-		if (_vfw_engine_select_format(obj)==-1){		
-			vfw_engine_destroy(obj);
-			return NULL;
-		}
-		capSetCallbackOnVideoStream(obj->capvideo, vfw_engine_stream_callback);
-		if (!capCaptureSequenceNoFile(obj->capvideo)){
-			ms_error("vfw: fail to start capture !");
-		}
-		ms_thread_create(&obj->thread,NULL,vfw_engine_thread,obj);
 		engines[i]=obj;
 		return obj;
 	}
 	return NULL;
 }
 
+static void _vfw_engine_configure(VfwEngine *obj){
+	if (_vfw_engine_setup(obj)==-1){
+		return;
+	}
+	if (_vfw_engine_select_format(obj)==-1){
+		return ;
+	}
+	capSetCallbackOnVideoStream(obj->capvideo, vfw_engine_stream_callback);
+	if (!capCaptureSequenceNoFile(obj->capvideo)){
+		ms_error("vfw: fail to start capture !");
+	}
+	ms_thread_create(&obj->thread,NULL,vfw_engine_thread,obj);
+	obj->configured=TRUE;
+}
+
 static MSPixFmt vfw_engine_get_pix_fmt(VfwEngine *obj){
+	if (!obj->configured)
+		_vfw_engine_configure(obj); 
 	return obj->pix_fmt;
 }
 
 static MSVideoSize vfw_engine_get_video_size(VfwEngine *obj){
 	return obj->vsize;
+}
+
+static void vfw_engine_set_video_size(VfwEngine *obj, MSVideoSize vsize){
+	if (!obj->configured)
+		obj->vsize=vsize;
+	else if (ms_video_size_greater_than(vsize,obj->vsize) && !ms_video_size_equal(vsize,obj->vsize) ){
+		_vfw_engine_unconfigure(obj);
+		_vfw_engine_disconnect(obj);
+		_vfw_engine_connect(obj);
+		obj->vsize=vsize;
+		_vfw_engine_configure(obj);
+	}
 }
 
 static void vfw_engine_set_callback(VfwEngine* obj, queue_msg_t cb, void *cb_data){
@@ -245,6 +288,7 @@ static void vfw_engine_set_callback(VfwEngine* obj, queue_msg_t cb, void *cb_dat
 }
 
 static void vfw_engine_start_capture(VfwEngine *obj){
+	if (!obj->configured) _vfw_engine_configure(obj);
 	obj->started=TRUE;
 }
 
@@ -326,7 +370,6 @@ static void vfw_process(MSFilter * obj){
 		s->frame_count=0;
 	}
 
-
 	cur_frame=((obj->ticker->time-s->start_time)*s->fps/1000.0);
 	if (cur_frame>s->frame_count){
 		mblk_t *om=NULL;
@@ -366,6 +409,7 @@ static int vfw_get_pix_fmt(MSFilter *f,void *arg){
 static int vfw_set_vsize(MSFilter *f, void *arg){
 	VfwState *s=(VfwState*)f->data;
 	s->vsize=*((MSVideoSize*)arg);
+	vfw_engine_set_video_size(s->eng,s->vsize);
 	return 0;
 }
 

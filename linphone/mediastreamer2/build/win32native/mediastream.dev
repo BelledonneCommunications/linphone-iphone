@@ -51,7 +51,7 @@ Libs=../../../oRTP/build/win32native;../../../../linphone-deps/lib
 PrivateResource=
 ResourceIncludes=
 MakeIncludes=
-Compiler=-DINET6 _@@_-DORTP_INET6 _@@_-DORTP_STATIC_@@_-D_WORKAROUND_MINGW32_BUGS_@@_-D_WIN32_WINNT=0x0501 _@@_-DDISABLE_RESAMPLE_@@_-DVIDEO_ENABLED_@@_-Wall -Werror_@@_-g_@@_
+Compiler=-DINET6 _@@_-DORTP_INET6 _@@_-DORTP_STATIC_@@_-D_WIN32_WINNT=0x0501 _@@_-DDISABLE_RESAMPLE_@@_-DVIDEO_ENABLED_@@_-Wall -Werror_@@_-g_@@_
 CppCompiler=
 Linker=libmediastreamer2.a_@@_-lortp_@@_-lgsm_@@_-lspeex_@@_-lws2_32_@@_-liphlpapi_@@_-lwinmm_@@_-lavcodec_@@_-lavutil_@@_-ltheora_@@_-logg_@@_-lvfw32_@@__@@_
 PreprocDefines=

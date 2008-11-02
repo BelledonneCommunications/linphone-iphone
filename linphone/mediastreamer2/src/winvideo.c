@@ -27,8 +27,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "nowebcam.h"
 #include "mediastreamer2/mswebcam.h"
 
-#ifndef _MSC_VER
-#include "vfw-missing.h"
+#ifndef AVSTREAMMASTER_NONE
+#define AVSTREAMMASTER_NONE 1
 #endif
 
 #define AMD_HACK2

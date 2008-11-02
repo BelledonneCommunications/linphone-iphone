@@ -224,6 +224,12 @@ static int enc_get_vsize(MSFilter *f, void *arg){
 	return 0;
 }
 
+static int enc_set_vsize(MSFilter *f, void *arg){
+	EncData *d=(EncData*)f->data;
+	d->vsize=*(MSVideoSize*)arg;
+	return 0;
+}
+
 static int enc_add_fmtp(MSFilter *f, void *arg){
 	EncData *d=(EncData*)f->data;
 	const char *fmtp=(const char *)arg;
@@ -247,6 +253,7 @@ static MSFilterMethod enc_methods[]={
 	{	MS_FILTER_SET_BITRATE	,	enc_set_br	},
 	{	MS_FILTER_GET_FPS	,	enc_get_fps	},
 	{	MS_FILTER_GET_VIDEO_SIZE,	enc_get_vsize	},
+	{	MS_FILTER_SET_VIDEO_SIZE,	enc_set_vsize	},
 	{	MS_FILTER_ADD_FMTP	,	enc_add_fmtp	},
 	{	MS_FILTER_REQ_VFU	,	enc_req_vfu	},
 	{	0	,			NULL		}

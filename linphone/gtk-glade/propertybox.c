@@ -173,7 +173,7 @@ void linphone_gtk_cam_changed(GtkWidget *w){
 void linphone_gtk_video_size_changed(GtkWidget *w){
 	int sel=gtk_combo_box_get_active(GTK_COMBO_BOX(w));
 	const MSVideoSizeDef *defs=linphone_core_get_supported_video_sizes(linphone_gtk_get_core());
-	if (defs<0) return;
+	if (sel<0) return;
 	linphone_core_set_preferred_video_size(linphone_gtk_get_core(),
 					defs[sel].vsize);
 }
