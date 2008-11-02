@@ -96,4 +96,11 @@ EXPORTS
 	ms_discover_mtu
 	ms_set_mtu
 	
-	
+	ms_web_cam_manager_get_list
+	ms_web_cam_manager_get_cam
+	ms_web_cam_manager_add_cam
+	ms_web_cam_manager_register_desc
+	ms_web_cam_create_reader
+	ms_web_cam_get_driver_type
+	ms_web_cam_get_name
+	ms_web_cam_get_string_id
