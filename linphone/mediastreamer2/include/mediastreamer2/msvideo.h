@@ -152,4 +152,6 @@ MSVideoSize ms_video_size_get_just_lower_than(MSVideoSize vs);
 /* request a video-fast-update (=I frame for H263,MP4V-ES) to a video encoder*/
 #define MS_FILTER_REQ_VFU		MS_FILTER_BASE_METHOD_NO_ARG(106)
 
+#define	MS_FILTER_SET_IMAGE	MS_FILTER_BASE_METHOD(107,char)
+
 #endif
