@@ -37,8 +37,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <initguid.h>
 #include "dxfilter.h"
 #include <qedit.h>
-//#include <atlbase.h>
-//#include <atlcom.h>
 
 HRESULT AddGraphToRot(IUnknown *pUnkGraph, DWORD *pdwRegister);
 void RemoveGraphFromRot(DWORD pdwRegister);
@@ -48,16 +46,10 @@ typedef struct V4wState{
 	char dev[512];
 	int devidx;
 
-	//CComPtr<IGraphBuilder> m_pGraph;
-	//CComPtr<ICaptureGraphBuilder2> m_pBuilder;
-	//CComPtr<IMediaControl> m_pControl;
 	IGraphBuilder *m_pGraph;
 	ICaptureGraphBuilder2 *m_pBuilder;
 	IMediaControl *m_pControl;
 	CDXFilter *m_pDXFilter;
-	//CComPtr<IBaseFilter> m_pIDXFilter;	
-	//CComPtr<IBaseFilter> m_pNullRenderer;
-	//CComPtr<IBaseFilter> m_pDeviceFilter;
 	IBaseFilter *m_pIDXFilter;	
 	IBaseFilter *m_pNullRenderer;
 	IBaseFilter *m_pDeviceFilter;
@@ -74,7 +66,6 @@ typedef struct V4wState{
 	float fps;
 	float start_time;
 	int frame_count;
-	bool_t running;
 }V4wState;
 
 static V4wState *s_callback=NULL;
@@ -385,13 +376,12 @@ int try_format_size(V4wState *s, int format, int width, int height, GUID *pPinCa
     return -1;
 }
 
-static int v4w_open_videodevice(V4wState *s)
+static int v4w_configure_videodevice(V4wState *s)
 {
 	// Initialize COM
 	CoInitialize(NULL);
 
 	// get a Graph
-	//HRESULT hr=s->m_pGraph.CoCreateInstance(CLSID_FilterGraph);
 	HRESULT hr= CoCreateInstance (CLSID_FilterGraph,
                           NULL,
                           CLSCTX_INPROC_SERVER,
@@ -403,7 +393,6 @@ static int v4w_open_videodevice(V4wState *s)
 	}
 
 	// get a CaptureGraphBuilder2
-	//hr=s->m_pBuilder.CoCreateInstance(CLSID_CaptureGraphBuilder2);
 	hr= CoCreateInstance (CLSID_CaptureGraphBuilder2,
                           NULL,
                           CLSCTX_INPROC_SERVER,
@@ -418,7 +407,6 @@ static int v4w_open_videodevice(V4wState *s)
 	s->m_pBuilder->SetFiltergraph(s->m_pGraph);
 
 	// get mediacontrol so we can start and stop the filter graph
-	//hr=s->m_pGraph.QueryInterface(&(s->m_pControl));
 	hr=s->m_pGraph->QueryInterface (IID_IMediaControl, (void **)&s->m_pControl);
 	if(FAILED(hr))
 	{
@@ -460,14 +448,228 @@ static int v4w_open_videodevice(V4wState *s)
 	pEnumMoniker->Reset();
 
 	int pos=0;
+  while(S_OK == pEnumMoniker->Next(1, &pMoniker, &nFetched) )
+  {
+    IPropertyBag *pBag;
+    hr = pMoniker->BindToStorage( 0, 0, IID_IPropertyBag, (void**) &pBag );
+    if( hr != S_OK )
+       continue; 
+
+    if (s->dev[0]=='\0')
+      break;
+
+    VARIANT var;
+    VariantInit(&var);
+    hr = pBag->Read( L"FriendlyName", &var, NULL ); 
+    if( hr != S_OK )
+    {
+      pMoniker->Release();
+      continue;
+    }
+    //USES_CONVERSION;
+    char szName[256];
+
+    WideCharToMultiByte(CP_ACP,0,var.bstrVal,-1,szName,256,0,0);
+    VariantClear(&var); 
+
+    if (strcmp(szName, s->dev)==0)
+      break;
+
+    pMoniker->Release();
+    pBag->Release();
+    pMoniker=NULL;
+    pBag=NULL;
+	}
+
+	if(pMoniker==NULL)
+  {
+	  int pos=0;
     while(S_OK == pEnumMoniker->Next(1, &pMoniker, &nFetched) )
     {
-		if (pos>=s->devidx)
-			break;
-		pos++;
-		pMoniker->Release();
-		pMoniker=NULL;
+      IPropertyBag *pBag;
+      hr = pMoniker->BindToStorage( 0, 0, IID_IPropertyBag, (void**) &pBag );
+      if( hr != S_OK )
+         continue; 
+    }
+
 	}
+
+	if(pMoniker==NULL)
+	{
+		return -6;
+	}
+
+	hr = pMoniker->BindToObject(0, 0, IID_IBaseFilter, (void**)&s->m_pDeviceFilter );
+	if(FAILED(hr))
+	{
+		return -7;
+	}
+
+	s->m_pGraph->AddFilter(s->m_pDeviceFilter, L"Device Filter");
+
+	pMoniker->Release();
+	pEnumMoniker->Release();
+	pCreateDevEnum->Release();
+
+
+  GUID pPinCategory;
+
+	if (try_format(s, s->pix_fmt, &pPinCategory)==0)
+		s->pix_fmt = s->pix_fmt;
+	else if (try_format(s,MS_YUV420P, &pPinCategory)==0)
+		s->pix_fmt = MS_YUV420P;
+	else if (try_format(s,MS_YUY2, &pPinCategory)==0)
+		s->pix_fmt = MS_YUY2;
+	else if (try_format(s,MS_YUYV, &pPinCategory)==0)
+		s->pix_fmt = MS_YUYV;
+	else if (try_format(s,MS_UYVY, &pPinCategory)==0)
+		s->pix_fmt = MS_UYVY;
+	else if (try_format(s,MS_RGB24, &pPinCategory)==0)
+		s->pix_fmt = MS_RGB24;
+	else
+	{
+		ms_error("Unsupported video pixel format.");
+		return -8;
+	}
+	
+	if (s->pix_fmt == MS_YUV420P)
+		ms_message("Driver supports YUV420P, using that format.");
+	else if (s->pix_fmt == MS_YUY2)
+		ms_message("Driver supports YUY2 (UYVY), using that format.");
+	else if (s->pix_fmt == MS_YUYV)
+		ms_message("Driver supports YUV422, using that format.");
+	else if (s->pix_fmt == MS_UYVY)
+		ms_message("Driver supports UYVY, using that format.");
+	else if (s->pix_fmt == MS_RGB24)
+		ms_message("Driver supports RGB24, using that format.");
+
+	if (try_format_size(s, s->pix_fmt, s->vsize.width, s->vsize.height, &pPinCategory)==0)
+		ms_message("Selected Size: %ix%i.", s->vsize.width, s->vsize.height);
+	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_QCIF_W, MS_VIDEO_SIZE_QCIF_H, &pPinCategory)==0)
+		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_QCIF_W, MS_VIDEO_SIZE_QCIF_H);
+	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_CIF_W, MS_VIDEO_SIZE_CIF_H, &pPinCategory)==0)
+		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_CIF_W, MS_VIDEO_SIZE_CIF_H);
+	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_4CIF_W, MS_VIDEO_SIZE_4CIF_H, &pPinCategory)==0)
+		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_4CIF_W, MS_VIDEO_SIZE_4CIF_H);
+	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_VGA_W, MS_VIDEO_SIZE_VGA_H, &pPinCategory)==0)
+		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_VGA_W, MS_VIDEO_SIZE_VGA_H);
+	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_QVGA_W, MS_VIDEO_SIZE_QVGA_H, &pPinCategory)==0)
+		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_QVGA_W, MS_VIDEO_SIZE_QVGA_H);
+	else
+	{
+		ms_error("No supported size found for format.");
+		/* size not supported? */
+		return -9;
+	}
+
+	return 0;
+}
+
+static int v4w_open_videodevice(V4wState *s)
+{
+	// Initialize COM
+	CoInitialize(NULL);
+
+	// get a Graph
+	HRESULT hr= CoCreateInstance (CLSID_FilterGraph,
+                          NULL,
+                          CLSCTX_INPROC_SERVER,
+                          IID_IGraphBuilder, //IID_IBaseFilter,
+                          (void **)&s->m_pGraph);
+	if(FAILED(hr))
+	{
+		return -1;
+	}
+
+	// get a CaptureGraphBuilder2
+	hr= CoCreateInstance (CLSID_CaptureGraphBuilder2,
+                          NULL,
+                          CLSCTX_INPROC_SERVER,
+                          IID_ICaptureGraphBuilder2, //IID_IBaseFilter,
+                          (void **)&s->m_pBuilder);
+	if(FAILED(hr))
+	{
+		return -2;
+	}
+
+	// connect capture graph builder with the graph
+	s->m_pBuilder->SetFiltergraph(s->m_pGraph);
+
+	// get mediacontrol so we can start and stop the filter graph
+	hr=s->m_pGraph->QueryInterface (IID_IMediaControl, (void **)&s->m_pControl);
+	if(FAILED(hr))
+	{
+		return -3;
+	}
+
+
+#ifdef _DEBUG
+	HANDLE m_hLogFile=CreateFile(L"DShowGraphLog.txt",GENERIC_READ|GENERIC_WRITE,FILE_SHARE_READ,NULL,OPEN_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL);
+	if(m_hLogFile!=INVALID_HANDLE_VALUE)
+	{
+		hr=s->m_pGraph->SetLogFile((DWORD_PTR)m_hLogFile);
+		/* ASSERT(SUCCEEDED(hr)); */
+	}
+	
+	//AddGraphToRot(s->m_pGraph, &s->rotregvalue);
+#endif
+
+	ICreateDevEnum *pCreateDevEnum = NULL;
+	IEnumMoniker *pEnumMoniker = NULL;
+	IMoniker *pMoniker = NULL;
+
+	ULONG nFetched = 0;
+
+	hr = CoCreateInstance(CLSID_SystemDeviceEnum, NULL, CLSCTX_INPROC_SERVER, 
+		IID_ICreateDevEnum, (PVOID *)&pCreateDevEnum);
+	if(FAILED(hr))
+	{
+		return -4;
+	}
+
+	hr = pCreateDevEnum->CreateClassEnumerator(CLSID_VideoInputDeviceCategory,
+		&pEnumMoniker, 0);
+	if (FAILED(hr) || pEnumMoniker == NULL) {
+		//printf("no device\n");
+		return -5;
+	}
+
+	pEnumMoniker->Reset();
+
+	int pos=0;
+  while(S_OK == pEnumMoniker->Next(1, &pMoniker, &nFetched) )
+  {
+    IPropertyBag *pBag;
+    hr = pMoniker->BindToStorage( 0, 0, IID_IPropertyBag, (void**) &pBag );
+    if( hr != S_OK )
+       continue; 
+
+    if (s->dev[0]=='\0')
+      break;
+
+    VARIANT var;
+    VariantInit(&var);
+    hr = pBag->Read( L"FriendlyName", &var, NULL ); 
+    if( hr != S_OK )
+    {
+      pMoniker->Release();
+      continue;
+    }
+    //USES_CONVERSION;
+    char szName[256];
+
+    WideCharToMultiByte(CP_ACP,0,var.bstrVal,-1,szName,256,0,0);
+    VariantClear(&var); 
+
+    if (strcmp(szName, s->dev)==0)
+      break;
+
+    pMoniker->Release();
+    pBag->Release();
+    pMoniker=NULL;
+    pBag=NULL;
+	}
+
 	if(pMoniker==NULL)
 	{
 		return -6;
@@ -627,7 +829,6 @@ static int v4w_open_videodevice(V4wState *s)
 
 
 	// get null renderer
-	//hr=s->m_pNullRenderer.CoCreateInstance(CLSID_NullRenderer);
 	hr=CoCreateInstance (CLSID_NullRenderer,
                           NULL,
                           CLSCTX_INPROC_SERVER,
@@ -646,12 +847,7 @@ static int v4w_open_videodevice(V4wState *s)
 		&MEDIATYPE_Video, s->m_pDeviceFilter, s->m_pIDXFilter, s->m_pNullRenderer);
 	if (FAILED(hr))
 	{
-		//hr = s->m_pBuilder->RenderStream(&PIN_CATEGORY_CAPTURE,
-		//	&MEDIATYPE_Video, s->m_pDeviceFilter, s->m_pIDXFilter, s->m_pNullRenderer);
-		if (FAILED(hr))
-		{
-			return -17;
-		}
+		return -17;
 	}
 	
 	//m_pDXFilter->SetBufferSamples(TRUE);
@@ -735,7 +931,6 @@ static void v4w_init(MSFilter *f){
 	s->devidx=0;
 	s->vsize.width=MS_VIDEO_SIZE_CIF_W;
 	s->vsize.height=MS_VIDEO_SIZE_CIF_H;
-	//s->pix_fmt=MS_RGB24;
 	s->pix_fmt=MS_YUV420P;
 
 	s->rotregvalue = 0;
@@ -756,10 +951,66 @@ static void v4w_init(MSFilter *f){
 	s->start_time=0;
 	s->frame_count=-1;
 	s->fps=15;
+  memset(s->dev, 0, sizeof(s->dev));
 
 	f->data=s;
 }
 
+static int _v4w_test(V4wState *s, void *arg)
+{
+	int i;
+	i = v4w_configure_videodevice(s);
+
+  if (i!=0)
+  {
+  	s->pix_fmt = MS_YUV420P;
+    s->vsize.width = MS_VIDEO_SIZE_CIF_W;
+    s->vsize.height = MS_VIDEO_SIZE_CIF_H;
+  }
+
+	//RemoveGraphFromRot(s->rotregvalue);
+	if (s->m_pGraph!=NULL)
+	{
+		if (s->m_pNullRenderer!=NULL)
+			s->m_pGraph->RemoveFilter(s->m_pNullRenderer);
+		if (s->m_pIDXFilter!=NULL)
+			s->m_pGraph->RemoveFilter(s->m_pIDXFilter);
+		if (s->m_pDeviceFilter!=NULL)
+			s->m_pGraph->RemoveFilter(s->m_pDeviceFilter);
+	}
+
+	if (s->m_pNullRenderer)
+		s->m_pNullRenderer->Release();
+	if (s->m_pIDXFilter)
+		s->m_pIDXFilter->Release();
+	if (s->m_pDeviceFilter)
+		s->m_pDeviceFilter->Release();
+
+	if (s->m_pBuilder)
+		s->m_pBuilder->Release();
+	if (s->m_pControl)
+		s->m_pControl->Release();
+	if (s->m_pGraph)
+		s->m_pGraph->Release();
+
+	if (s->m_pDXFilter!=NULL)
+		s->m_pDXFilter->Release();
+
+	s->m_pNullRenderer=NULL;
+	s->m_pIDXFilter=NULL;
+	s->m_pDeviceFilter=NULL;
+	s->m_pBuilder=NULL;
+	s->m_pControl=NULL;
+	s->m_pGraph=NULL;
+	s->m_pDXFilter=NULL;
+
+	CoUninitialize();
+	s_callback = NULL;
+	flushq(&s->rq,0);
+  ms_message("v4w: checked device size=%ix%i format=%i (err=%i)", s->vsize.width, s->vsize.height, s->pix_fmt, i);
+
+	return i;
+}
 
 static int _v4w_start(V4wState *s, void *arg)
 {
@@ -868,20 +1119,6 @@ static int _v4w_stop(V4wState *s, void *arg){
 	return 0;
 }
 
-
-static int v4w_start(MSFilter *f, void *arg){
-	V4wState *s=(V4wState*)f->data;
-	_v4w_start(s, NULL);
-	return 0;
-}
-
-static int v4w_stop(MSFilter *f, void *arg){
-	V4wState *s=(V4wState*)f->data;
-	_v4w_stop(s, NULL);
-	return 0;
-}
-
-
 static void v4w_uninit(MSFilter *f){
 	V4wState *s=(V4wState*)f->data;
 	int idx;
@@ -984,14 +1221,14 @@ static mblk_t * v4w_make_nowebcam(V4wState *s){
 
 static void v4w_preprocess(MSFilter * obj){
 	V4wState *s=(V4wState*)obj->data;
-	s->running=TRUE;
+	if (s->rotregvalue==0)
+    _v4w_start(s, NULL);
 	if (s->rotregvalue==0)
 		s->fps=1;
 }
 
 static void v4w_postprocess(MSFilter * obj){
 	V4wState *s=(V4wState*)obj->data;
-	s->running=FALSE;
 	s->start_time=0;
 	s->frame_count=-1;
 	flushq(&s->rq,0);
@@ -1054,6 +1291,11 @@ static int v4w_set_pix_fmt(MSFilter *f,void *arg){
 
 static int v4w_get_pix_fmt(MSFilter *f,void *arg){
 	V4wState *s=(V4wState*)f->data;
+	if (s->rotregvalue==0){
+		_v4w_test(s, NULL); /* check supported format */
+		*((MSPixFmt*)arg) = (MSPixFmt)s->pix_fmt;
+    return 0;
+	}
 	*((MSPixFmt*)arg) = (MSPixFmt)s->pix_fmt;
 	return 0;
 }
@@ -1099,16 +1341,20 @@ static int v4w_set_image(MSFilter *f, void *arg){
 	return 0;
 }
 
+static int v4w_set_name(MSFilter *f, void *arg){
+	V4wState *s=(V4wState*)f->data;
+  snprintf(s->dev, sizeof(s->dev), (char*)arg);
+	return 0;
+}
+
 static MSFilterMethod methods[]={
 	{	MS_FILTER_SET_FPS	,	v4w_set_fps	},
 	{	MS_FILTER_SET_PIX_FMT	,	v4w_set_pix_fmt	},
 	{	MS_FILTER_GET_PIX_FMT	,	v4w_get_pix_fmt	},
 	{	MS_FILTER_SET_VIDEO_SIZE, v4w_set_vsize	},
 	{	MS_FILTER_GET_VIDEO_SIZE, v4w_get_vsize	},
-	{	MS_V4L_START			,	v4w_start		},
-	{	MS_V4L_STOP			,	v4w_stop		},
-	{	MS_V4L_SET_DEVICE	,	v4w_set_device		},
-	{       MS_V4L_SET_IMAGE        ,       v4w_set_image           },
+	{	MS_V4L_SET_DEVICE,	v4w_set_device },
+	{ MS_FILTER_SET_IMAGE, v4w_set_image },
 	{	0								,	NULL			}
 };
 
@@ -1152,16 +1398,17 @@ MSFilterDesc ms_v4w_desc={
 MS_FILTER_DESC_EXPORT(ms_v4w_desc)
 
 static MSFilter *vfw_create_reader(MSWebCam *obj){
-	return ms_filter_new_from_desc(&ms_v4w_desc);
+	MSFilter *f=ms_filter_new_from_desc(&ms_v4w_desc);
+	v4w_set_name(f,obj->name);
+	return f;
 }
 
 static void vfw_detect(MSWebCamManager *obj);
 
 static void vfw_cam_init(MSWebCam *cam){
-	cam->name=ms_strdup("dx0");
 }
 
-MSWebCamDesc ms_v4w_cam_desc={
+MSWebCamDesc ms_directx_cam_desc={
 	"DirectX Video Grabber",
 	&vfw_detect,
 	&vfw_cam_init,
@@ -1170,6 +1417,61 @@ MSWebCamDesc ms_v4w_cam_desc={
 };
 
 static void vfw_detect(MSWebCamManager *obj){
-	MSWebCam *cam=ms_web_cam_new(&ms_v4w_cam_desc);
-	ms_web_cam_manager_add_cam(obj,cam);
+	ICreateDevEnum *pCreateDevEnum = NULL;
+	IEnumMoniker *pEnumMoniker = NULL;
+	IMoniker *pMoniker = NULL;
+  HRESULT hr;
+
+	ULONG nFetched = 0;
+
+	hr = CoCreateInstance(CLSID_SystemDeviceEnum, NULL, CLSCTX_INPROC_SERVER, 
+		IID_ICreateDevEnum, (PVOID *)&pCreateDevEnum);
+	if(FAILED(hr))
+	{
+		return ;
+	}
+
+	hr = pCreateDevEnum->CreateClassEnumerator(CLSID_VideoInputDeviceCategory,
+		&pEnumMoniker, 0);
+	if (FAILED(hr) || pEnumMoniker == NULL) {
+		//printf("no device\n");
+		return ;
+	}
+
+	pEnumMoniker->Reset();
+
+	int pos=0;
+  while(S_OK == pEnumMoniker->Next(1, &pMoniker, &nFetched) )
+  {
+    IPropertyBag *pBag;
+    hr = pMoniker->BindToStorage( 0, 0, IID_IPropertyBag, (void**) &pBag );
+    if( hr != S_OK )
+       continue; 
+
+    VARIANT var;
+    VariantInit(&var);
+    hr = pBag->Read( L"FriendlyName", &var, NULL ); 
+    if( hr != S_OK )
+    {
+      pMoniker->Release();
+      continue;
+    }
+    //USES_CONVERSION;
+    char szName[256];
+
+    WideCharToMultiByte(CP_ACP,0,var.bstrVal,-1,szName,256,0,0);
+    VariantClear(&var); 
+
+	  MSWebCam *cam=ms_web_cam_new(&ms_directx_cam_desc);
+    cam->name=ms_strdup(szName);
+	  ms_web_cam_manager_add_cam(obj,cam);
+
+    pMoniker->Release();
+    pBag->Release();
+    pMoniker=NULL;
+    pBag=NULL;
+	}
+
+	pEnumMoniker->Release();
+	pCreateDevEnum->Release();
 }
