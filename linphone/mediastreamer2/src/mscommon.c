@@ -474,6 +474,9 @@ extern MSWebCamDesc v4l2_desc;
 #ifdef WIN32
 extern MSWebCamDesc ms_vfw_cam_desc;
 #endif
+#if defined(WIN32) && defined(HAVE_DIRECTSHOW)
+extern MSWebCamDesc ms_directx_cam_desc;
+#endif
 
 extern MSWebCamDesc static_image_desc;
 extern MSWebCamDesc mire_desc;
@@ -484,6 +487,9 @@ static MSWebCamDesc * ms_web_cam_descs[]={
 #endif
 #ifdef __linux
 	&v4l_desc,
+#endif
+#if defined(WIN32) && defined(HAVE_DIRECTSHOW)
+	&ms_directx_cam_desc,
 #endif
 #if defined(WIN32) && !defined(HAVE_DIRECTSHOW)
 	&ms_vfw_cam_desc,
