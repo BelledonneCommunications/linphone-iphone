@@ -172,8 +172,10 @@ void static_image_postprocess(MSFilter *f){
 }
 
 int static_image_set_vsize(MSFilter *f, void* data){
-	SIData *d=(SIData*)f->data;
-	d->vsize=*(MSVideoSize*)data;
+	/* IMAGE MUST BE IN CIF 
+  SIData *d=(SIData*)f->data;
+  d->vsize=*(MSVideoSize*)data;
+  */
 	return 0;
 }
 
