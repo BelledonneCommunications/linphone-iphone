@@ -74,9 +74,9 @@ static int sender_send_dtmf(MSFilter * f, void *arg)
 	const char *dtmf = (const char *) arg;
 	SenderData *d = (SenderData *) f->data;
 
-	ms_mutex_lock(&f->lock);
+	ms_filter_lock(f);
 	d->dtmf = dtmf[0];
-	ms_mutex_unlock(&f->lock);
+	ms_filter_unlock(f);
 	return 0;
 }
 
