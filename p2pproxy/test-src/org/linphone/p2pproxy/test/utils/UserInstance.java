@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 import org.linphone.p2pproxy.api.P2pProxyException;
 import org.linphone.p2pproxy.api.P2pProxyResourceManagement;
 import org.linphone.p2pproxy.core.P2pProxyMain;
+import org.linphone.p2pproxy.core.stun.StunClient;
 import org.linphone.p2pproxy.launcher.P2pProxylauncherConstants;
 import org.zoolu.net.SocketAddress;
 import org.zoolu.sip.provider.SipProvider;
@@ -41,6 +42,7 @@ private final Thread mFonisThread;
 private Timer mTimer = new Timer("Registartion timer");
 private final SipProvider mProvider;
 private final SipClient mSipClient;
+private  StunClient mStunClient;
 private final int REGISTRATION_PERIOD=60;
 private final static Logger mLog = Logger.getLogger(UserInstance.class);
 private static boolean mIsRegistered = false;
@@ -79,6 +81,7 @@ public UserInstance(final String userName,final String aPreferedProxyUri) throws
     //InetAddress[] lAddresses = InetAddress.getAllByName("localhost");
     mProvider=new SipProvider(null,lSipPort);
 	mSipClient = new SipClient(mProvider,userName,30000);
+	
 	 class RegistrarTimerTask extends  TimerTask {
 		@Override
 		public void run() {
@@ -102,6 +105,10 @@ public UserInstance(final String userName,final String aPreferedProxyUri) throws
 			//2 setOutbound proxy
 			mProvider.setOutboundProxy(new SocketAddress(lProxyUri.getRawSchemeSpecificPart()));
 			mLog.info("use outband proxy ["+mProvider.getOutboundProxy()+"]");
+			//3 setup stun client
+			
+			String [] lMediaServer = P2pProxyMain.lookupMediaServerAddress(P2pProxyResourceManagement.DOMAINE);
+			mStunClient =  new StunClient(lMediaServer);
 			mSipClient.register(REGISTRATION_PERIOD,userName);
 			mIsRegistered = true;
 			} catch(Exception e) {
@@ -112,7 +119,7 @@ public UserInstance(final String userName,final String aPreferedProxyUri) throws
 		}
 		
 	};
-	mTimer.schedule(new  RegistrarTimerTask(), REGISTRATION_PERIOD-REGISTRATION_PERIOD/10);
+	mTimer.schedule(new  RegistrarTimerTask(), 0);
 	mSipClient.listen();
 	} catch (Exception e) {
 		throw new P2pProxyException("cannot start client",e);
@@ -123,7 +130,7 @@ public void call(String aTo, int duration) {
 }
 public static void main(String[] args) throws P2pProxyException {
 	String lFrom=null, lTo=null, lPreferedProxyUri=null;
-	int lDuration = 10, lLoop=0;
+	int lDuration = 10000, lLoop=0;
 	for (int i=0; i < args.length; i=i+2) {  
 		   String argument = args[i];
 		   if (argument.equals("-from")) {
@@ -157,7 +164,7 @@ public static void main(String[] args) throws P2pProxyException {
 	   usage();
 	   System.exit(1);
    }
-   if (lTo == null) {
+   if (lLoop != 0 && lTo == null) {
 	   System.out.println("missing -to ");
 	   usage();
 	   System.exit(1);

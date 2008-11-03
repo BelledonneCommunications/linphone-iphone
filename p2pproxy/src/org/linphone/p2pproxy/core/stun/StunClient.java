@@ -51,6 +51,15 @@ public class StunClient {
    
    private int SO_TIME_OUT = 300;
    
+   public StunClient(String[] aStunServerList) {
+      List<InetSocketAddress> lAddressList = new ArrayList<InetSocketAddress>();
+      for (String lStunInstance:aStunServerList) {
+         URI lUri = URI.create(lStunInstance);
+         InetSocketAddress lInetSocketAddress = new InetSocketAddress(lUri.getHost(),lUri.getPort());
+         lAddressList.add(lInetSocketAddress);
+      }
+      mStunServerList = lAddressList;
+   }
    StunClient(List<InetSocketAddress> aStunServerList) {
       mStunServerList = aStunServerList;
    }

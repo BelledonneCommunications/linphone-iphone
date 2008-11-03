@@ -476,6 +476,7 @@ public static String lookupSipProxyUri(String aDomaine) {
       return null;
    } 
 }
+
 public static String[] lookupSipProxiesUri(String aDomaine) {
 	   try {
 	      isReady();
@@ -484,6 +485,15 @@ public static String[] lookupSipProxiesUri(String aDomaine) {
 	      return null;
 	   } 
 	}
+
+public static String[] lookupMediaServerAddress(String aDomaine) {
+   try {
+      isReady();
+      return mP2pProxyManagement.getMediaServerList();
+   } catch (Exception e) {
+      return null;
+   } 
+}
 
 public static int getState() {
    try {
