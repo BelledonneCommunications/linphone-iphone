@@ -129,6 +129,8 @@ static int v4l2_configure(V4l2State *s){
 		return -1;
 	}
 
+	ms_message("Driver is %s",cap.driver);
+
 	if (v4lv2_try_format(s,V4L2_PIX_FMT_YUV420)){
 		s->pix_fmt=MS_YUV420P;
 		s->int_pix_fmt=V4L2_PIX_FMT_YUV420;

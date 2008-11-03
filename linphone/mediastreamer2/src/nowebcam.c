@@ -138,27 +138,26 @@ void static_image_uninit(MSFilter *f){
 
 void static_image_preprocess(MSFilter *f){
 	SIData *d=(SIData*)f->data;
-  if (d->pic==NULL)
-  {
-    if (d->nowebcamimage[0] != '\0')
-  	  d->pic=ms_load_jpeg_as_yuv(d->nowebcamimage,&d->vsize);
-    else
-  	  d->pic=ms_load_nowebcam(&d->vsize,d->index);
-  }
+	if (d->pic==NULL){
+		if (d->nowebcamimage[0] != '\0')
+			d->pic=ms_load_jpeg_as_yuv(d->nowebcamimage,&d->vsize);
+		else
+			d->pic=ms_load_nowebcam(&d->vsize,d->index);
+	}
 }
 
 void static_image_process(MSFilter *f){
 	SIData *d=(SIData*)f->data;
 	/*output a frame every second*/
 	if ((f->ticker->time - d->lasttime>1000) || d->lasttime==0){
-    ms_mutex_lock(&f->lock);
+		ms_mutex_lock(&f->lock);
 		if (d->pic) {
 			mblk_t *o=dupb(d->pic);
 			/*prevent mirroring at the output*/
 			mblk_set_precious_flag(o,1);
 			ms_queue_put(f->outputs[0],o);
 		}
-    ms_mutex_unlock(&f->lock);
+		ms_mutex_unlock(&f->lock);
 		d->lasttime=f->ticker->time;
 	}
 }
@@ -193,20 +192,20 @@ int static_image_get_pix_fmt(MSFilter *f, void *data){
 static int static_image_set_image(MSFilter *f, void *arg){
 	SIData *d=(SIData*)f->data;
 	char *image = (char *)arg;
-  ms_mutex_lock(&f->lock);
+	ms_mutex_lock(&f->lock);
 	if (image!=NULL && image[0]!='\0')
-	  snprintf(d->nowebcamimage, sizeof(d->nowebcamimage), "%s", image);
+		snprintf(d->nowebcamimage, sizeof(d->nowebcamimage), "%s", image);
 	else
-	  d->nowebcamimage[0] = '\0';
+		d->nowebcamimage[0] = '\0';
 
-  if (d->pic!=NULL)
+	if (d->pic!=NULL)
 		freemsg(d->pic);
 
   //if (d->nowebcamimage[0] != '\0')
 	 // d->pic=ms_load_jpeg_as_yuv(d->nowebcamimage,&d->vsize);
   //else
 	 // d->pic=ms_load_nowebcam(&d->vsize,d->index);
-  ms_mutex_unlock(&f->lock);
+	ms_mutex_unlock(&f->lock);
 	return 0;
 }
 

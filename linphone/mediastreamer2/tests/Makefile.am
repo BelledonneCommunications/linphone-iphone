@@ -22,7 +22,7 @@ LDADD=	$(top_builddir)/src/libmediastreamer.la \
 	$(SPEEX_LIBS) \
 	$(GSM_LIBS) \
 	$(THEORA_LIBS) \
-	$(FFMPEG_LIBS)
+	$(VIDEO_LIBS)
 
 
 
