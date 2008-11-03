@@ -219,6 +219,7 @@ typedef struct _WinDisplay{
 	MSDisplayEvent last_rsz;
 	uint8_t *rgb;
 	int rgb_len;
+	struct SwsContext *sws;
 	bool_t new_ev;
 }WinDisplay;
 
@@ -309,6 +310,8 @@ static bool_t win_display_init(MSDisplay *obj, MSPicture *fbuf){
 		if (wd->rgb) ms_free(wd->rgb);
 		wd->rgb=NULL;
 		wd->rgb_len=0;
+		sws_freeContext(wd->sws);
+		wd->sws=NULL;
 	}
 	else
 		wd=(WinDisplay*)ms_new0(WinDisplay,1);
@@ -366,20 +369,20 @@ typedef struct yuv{
 
 
 
-static void yuv420p_to_rgb(MSPicture *src, uint8_t *rgb){
-	struct SwsContext *sws;
+static void yuv420p_to_rgb(WinDisplay *wd, MSPicture *src, uint8_t *rgb){
 	int rgb_stride=-src->w*3;
 	uint8_t *p;
 
 	p=rgb+(src->w*3*(src->h-1));
-	sws=sws_getContext(src->w,src->h,PIX_FMT_YUV420P,
+	if (wd->sws==NULL){
+		wd->sws=sws_getContext(src->w,src->h,PIX_FMT_YUV420P,
 			src->w,src->h,PIX_FMT_BGR24,
 			0, NULL, NULL, NULL);
-	if (sws_scale(sws,src->planes,src->strides, 0,
-           			0, &p, &rgb_stride)<0){
-			ms_error("Error in 420->rgb sws_scale().");
 	}
-	sws_freeContext(sws);
+	if (sws_scale(wd->sws,src->planes,src->strides, 0,
+           			src->h, &p, &rgb_stride)<0){
+		ms_error("Error in 420->rgb sws_scale().");
+	}
 }
 
 static void win_display_update(MSDisplay *obj){
@@ -442,6 +445,7 @@ static void win_display_uninit(MSDisplay *obj){
 	if (wd->ddh) DrawDibClose(wd->ddh);
 	if (wd->fb.planes[0]) ms_free(wd->fb.planes[0]);
 	if (wd->rgb) ms_free(wd->rgb);
+	if (wd->sws) sws_freeContext(wd->sws);
 	ms_free(wd);
 }
 
