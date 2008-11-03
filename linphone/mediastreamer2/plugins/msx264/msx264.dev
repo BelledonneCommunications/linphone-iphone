@@ -49,7 +49,7 @@ ResourceIncludes=
 MakeIncludes=
 Compiler=-DBUILDING_DLL=1_@@_-DORTP_INET6_@@_-DHAVE_LIBAVCODEC_AVCODEC_H_@@_-DHACKED_X264_@@_
 CppCompiler=-DBUILDING_DLL=1_@@_
-Linker=-no-undefined_@@_--enable-runtime-pseudo-reloc_@@_-lx264_@@_-lmediastreamer2_@@_-lortp_@@_-lavcodec_@@_
+Linker=-no-undefined_@@_--enable-runtime-pseudo-reloc_@@_-lx264_@@_-lmediastreamer2_@@_-lortp_@@_-lavcodec_@@_-lswscale_@@_
 PreprocDefines=
 CompilerSettings=0000000001001000000000
 Icon=

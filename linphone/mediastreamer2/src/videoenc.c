@@ -518,6 +518,10 @@ static int enc_set_br(MSFilter *f, void *arg){
 		s->vsize.width = MS_VIDEO_SIZE_4CIF_W;
 		s->vsize.height = MS_VIDEO_SIZE_4CIF_H;
 		s->fps=17;
+	}else if (s->maxbr>=800000 && s->codec!=CODEC_ID_H263P){
+		s->vsize.width = MS_VIDEO_SIZE_VGA_W;
+		s->vsize.height = MS_VIDEO_SIZE_VGA_H;
+		s->fps=17;
 	}else if (s->maxbr>=512000){
 		s->vsize.width=MS_VIDEO_SIZE_CIF_W;
 		s->vsize.height=MS_VIDEO_SIZE_CIF_H;

@@ -398,7 +398,7 @@ static void win_display_update(MSDisplay *obj){
 		ms_error("Could not get window dc");
 		return;
 	}
-	yuv420p_to_rgb(&wd->fb, wd->rgb);
+	yuv420p_to_rgb(wd, &wd->fb, wd->rgb);
 	memset(&bi,0,sizeof(bi));
 	bi.biSize=sizeof(bi);
 	GetClientRect(wd->window,&rect);
