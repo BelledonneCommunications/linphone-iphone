@@ -430,11 +430,6 @@ static void win_display_update(MSDisplay *obj){
 	
   	if (!ret) ms_error("DrawDibDraw failed.");
 	ReleaseDC(NULL,hdc);
-	while (PeekMessage(&msg, wd->window, 0, 0, PM_REMOVE) != 0)
-	{
-		  TranslateMessage(&msg);
-		  DispatchMessage(&msg);
-	}
 }
 
 static void win_display_uninit(MSDisplay *obj){
@@ -450,6 +445,10 @@ static void win_display_uninit(MSDisplay *obj){
 }
 
 bool_t win_display_pollevent(MSDisplay *d, MSDisplayEvent *ev){
+	while (PeekMessage(&msg, wd->window, 0, 0, PM_REMOVE) != 0){
+		  TranslateMessage(&msg);
+		  DispatchMessage(&msg);
+	}
 	return FALSE;
 }
 
@@ -824,8 +823,7 @@ MSFilterDesc ms_video_out_desc={
 	video_out_process,
 	video_out_postprocess,
 	video_out_uninit,
-	methods,
-	MS_FILTER_IS_PUMP
+	methods
 };
 
 #else
@@ -838,12 +836,10 @@ MSFilterDesc ms_video_out_desc={
 	.ninputs=2,
 	.noutputs=0,
 	.init=video_out_init,
-	.preprocess=NULL,
 	.process=video_out_process,
 	.postprocess=video_out_postprocess,
 	.uninit=video_out_uninit,
-	.methods=methods,
-	.flags=MS_FILTER_IS_PUMP
+	.methods=methods
 };
 
 #endif

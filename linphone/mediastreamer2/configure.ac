@@ -392,12 +392,12 @@ dnl check various things
 AC_FUNC_ALLOCA
 
 dnl define path of plugins:
-PACKAGE_PLUGINS_DIR=`eval echo $prefix/lib/mediastreamer/plugins`
-AC_DEFINE_UNQUOTED(PACKAGE_PLUGINS_DIR,  "$PACKAGE_PLUGINS_DIR" ,[path of plugins])
+AC_DEFINE_UNQUOTED(PACKAGE_PLUGINS_DIR, "${prefix}/lib/mediastreamer/plugins" ,[path of plugins])
+PACKAGE_PLUGINS_DIR="${prefix}/lib/mediastreamer/plugins"
 AC_SUBST(PACKAGE_PLUGINS_DIR)
 
-PACKAGE_DATA_DIR=`eval echo $prefix/share`
-AC_DEFINE_UNQUOTED(PACKAGE_DATA_DIR,  "$PACKAGE_DATA_DIR" ,[path of data])
+PACKAGE_DATA_DIR="$prefix/share"
+AC_DEFINE_UNQUOTED(PACKAGE_DATA_DIR,  "$prefix/share" ,[path of data])
 AC_SUBST(PACKAGE_DATA_DIR)
 
 dnl check for video4linux headers
