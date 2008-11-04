@@ -491,7 +491,8 @@ public static String[] lookupMediaServerAddress(String aDomaine) {
       isReady();
       return mP2pProxyManagement.getMediaServerList();
    } catch (Exception e) {
-      return null;
+	   mLog.error("cannot find media resource",e);
+	   return null;
    } 
 }
 

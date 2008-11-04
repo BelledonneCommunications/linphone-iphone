@@ -39,9 +39,12 @@ import de.javawi.jstun.attribute.ChangeRequest;
 import de.javawi.jstun.attribute.ErrorCode;
 import de.javawi.jstun.attribute.MappedAddress;
 import de.javawi.jstun.attribute.MessageAttribute;
+import de.javawi.jstun.attribute.MessageAttributeException;
 import de.javawi.jstun.attribute.MessageAttributeParsingException;
+import de.javawi.jstun.attribute.ResponseAddress;
 import de.javawi.jstun.header.MessageHeader;
 import de.javawi.jstun.header.MessageHeaderParsingException;
+import de.javawi.jstun.util.Address;
 import de.javawi.jstun.util.UtilityException;
 
 public class StunClient {
@@ -87,12 +90,12 @@ public class StunClient {
 	   try {
 	      DiscoveryInfo lDiscoveryInfo = new DiscoveryInfo((InetSocketAddress) lLocalSocket.getLocalSocketAddress()); 
 	      //1 bind request 
-		   bindRequest(lDiscoveryInfo,lLocalSocket,lLocalSocket, mStunServerList.get(0));
+		   bindRequest(lDiscoveryInfo,lLocalSocket,lLocalSocket,null, mStunServerList.get(0));
 		   //2 bind request
 		   if (mStunServerList.size() > 1) {
 	           //open new socket
 	           DatagramSocket lDatagramSocket = new DatagramSocket();
-	           bindRequest(lDiscoveryInfo,lLocalSocket,lDatagramSocket, mStunServerList.get(1));
+	           bindRequest(lDiscoveryInfo,lDatagramSocket, lLocalSocket, lDiscoveryInfo.getPublicSocketAddress(),mStunServerList.get(1));
 	           lDatagramSocket.close();
 		   }
 		   //analyse
@@ -104,7 +107,7 @@ public class StunClient {
 	}
 	   return lAddressInfo;
    }
-	private void bindRequest(DiscoveryInfo aDiscoveryInfo,DatagramSocket aLocalSocket, DatagramSocket aResponseSocket,InetSocketAddress aStunAddress) throws UtilityException, SocketException, UnknownHostException, IOException, MessageAttributeParsingException, MessageHeaderParsingException, P2pProxyException {
+	private void bindRequest(DiscoveryInfo aDiscoveryInfo,DatagramSocket aLocalSocket, DatagramSocket aResponseSocket,InetSocketAddress aResponseAddress, InetSocketAddress aStunAddress) throws UtilityException, SocketException, UnknownHostException, IOException, MessageAttributeParsingException, MessageHeaderParsingException, P2pProxyException {
 		int timeSinceFirstTransmission = 0;
 		int lSoTimeOut = SO_TIME_OUT;
 		while (true) {
@@ -118,6 +121,17 @@ public class StunClient {
 				
 				ChangeRequest changeRequest = new ChangeRequest();
 				sendMH.addMessageAttribute(changeRequest);
+				if (!((InetSocketAddress)aLocalSocket.getLocalSocketAddress()).equals((InetSocketAddress)aResponseSocket.getLocalSocketAddress()) && aResponseAddress != null) {
+					// add response address
+					ResponseAddress lResponseAddress = new ResponseAddress();
+					lResponseAddress.setAddress(new Address(aResponseAddress.getAddress().getHostAddress()));
+					try {
+						lResponseAddress.setPort(aResponseAddress.getPort());
+						sendMH.addMessageAttribute(lResponseAddress);
+					} catch (MessageAttributeException e) {
+						mLog.info("Cannot set Response address ["+lResponseAddress+"]");
+					}
+				}
 				
 				byte[] data = sendMH.getBytes();
 				DatagramPacket send = new DatagramPacket(data, data.length);

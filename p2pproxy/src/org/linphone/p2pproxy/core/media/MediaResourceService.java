@@ -23,6 +23,8 @@ import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.net.URI;
 import java.net.UnknownHostException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import net.jxta.document.AdvertisementFactory;
 import net.jxta.id.IDFactory;
@@ -47,7 +49,10 @@ public class MediaResourceService implements ServiceProvider {
    private RtpRelayServerConfig mConfig;
    private final JxtaNetworkManager mJxtaNetworkManager;
    private NetworkResourceAdvertisement mStunRtpServerAdvertisement;
+   Timer mPublishTimer = new Timer("MediaResourceService publish timer");
    public final static String ADV_NAME = "p2p-proxy-stunrtp";
+   private final int ADV_LIFE_TIME=6000000;
+   TimerTask mPublishTask;
    public MediaResourceService(Configurator aConfigurator, JxtaNetworkManager aJxtaNetworkManager) throws SocketException, UnknownHostException {
       URI lAudioVideoPublicUri = URI.create(aConfigurator.getProperty(RtpRelayService.AUDIO_VIDEO_PUBLIC_URI,RtpRelayService.getDefaultAudioVideoPublicUri()));
       int lAudioVideoLocalPort = Integer.valueOf(aConfigurator.getProperty(RtpRelayService.AUDIO_VIDEO_LOCAL_PORT,String.valueOf(lAudioVideoPublicUri.getPort())));
@@ -62,21 +67,32 @@ public class MediaResourceService implements ServiceProvider {
    }
 
    public void start(long timeOut) throws P2pProxyException {
-      try {
-         mStunRtpServerAdvertisement = (NetworkResourceAdvertisement) AdvertisementFactory.newAdvertisement(NetworkResourceAdvertisement.getAdvertisementType());
-         mStunRtpServerAdvertisement.setAddress("udp://"+mConfig.getAudioVideoPublicSocketAddress().getAddress().getHostAddress()+":"+mConfig.getAudioVideoPublicSocketAddress().getPort());
-         mStunRtpServerAdvertisement.setID(IDFactory.newCodatID(mJxtaNetworkManager.getPeerGroup().getPeerGroupID(), mStunRtpServerAdvertisement.getAddress().toString().getBytes()));
-         mStunRtpServerAdvertisement.setName(ADV_NAME);
-         mJxtaNetworkManager.getPeerGroup().getDiscoveryService().publish(mStunRtpServerAdvertisement,60000,30000);
-         mLog.info(mStunRtpServerAdvertisement + "published");
-      } catch (Exception e) {
-         throw new P2pProxyException(e);
-      }
+	   mPublishTask = new TimerTask() {
+
+		   @Override
+		   public void run() {
+			   try {
+				   mStunRtpServerAdvertisement = (NetworkResourceAdvertisement) AdvertisementFactory.newAdvertisement(NetworkResourceAdvertisement.getAdvertisementType());
+				   mStunRtpServerAdvertisement.setAddress("udp://"+mConfig.getAudioVideoPublicSocketAddress().getAddress().getHostAddress()+":"+mConfig.getAudioVideoPublicSocketAddress().getPort());
+				   mStunRtpServerAdvertisement.setID(IDFactory.newCodatID(mJxtaNetworkManager.getPeerGroup().getPeerGroupID(), mStunRtpServerAdvertisement.getAddress().toString().getBytes()));
+				   mStunRtpServerAdvertisement.setName(ADV_NAME);
+				   mJxtaNetworkManager.getPeerGroup().getDiscoveryService().publish(mStunRtpServerAdvertisement,ADV_LIFE_TIME,ADV_LIFE_TIME/2);
+				   mLog.info(mStunRtpServerAdvertisement + "published");
+				  
+			   } catch (Exception e) {
+				   mLog.error("Cannot publish StunRtpServerAdvertisement", e);
+			   }
+
+		   }
+
+	   };
+	   mPublishTimer.scheduleAtFixedRate(mPublishTask, 0, ADV_LIFE_TIME - ADV_LIFE_TIME/10);
    }
 
    public void stop() {
       try {
-         mJxtaNetworkManager.getPeerGroup().getDiscoveryService().flushAdvertisement(mStunRtpServerAdvertisement);
+    	  mPublishTask.cancel();
+    	  mJxtaNetworkManager.getPeerGroup().getDiscoveryService().flushAdvertisement(mStunRtpServerAdvertisement);
          mUdpSessionForStunRtp.close();
       } catch (Exception e) {
          mLog.error("cannot stop MediaResourceService",e);

@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 import org.linphone.p2pproxy.api.P2pProxyException;
 import org.linphone.p2pproxy.api.P2pProxyResourceManagement;
 import org.linphone.p2pproxy.core.P2pProxyMain;
+import org.linphone.p2pproxy.core.stun.AddressInfo;
 import org.linphone.p2pproxy.core.stun.StunClient;
 import org.linphone.p2pproxy.launcher.P2pProxylauncherConstants;
 import org.zoolu.net.SocketAddress;
@@ -46,81 +47,86 @@ private  StunClient mStunClient;
 private final int REGISTRATION_PERIOD=60;
 private final static Logger mLog = Logger.getLogger(UserInstance.class);
 private static boolean mIsRegistered = false;
+DatagramSocket mAudioSocket;
 public UserInstance(final String userName,final String aPreferedProxyUri) throws  P2pProxyException {
 	try {
-	DatagramSocket lSocket = new DatagramSocket();
-	lSocket.setReuseAddress(true);
-	int lSipPort = lSocket.getLocalPort();
-	lSocket.close();
-	URI lUserNameUri = URI.create(userName);
-	final String[] lParam = {"-jxta" ,"userinstance-"+lUserNameUri.getSchemeSpecificPart()
-							,"-edge-only"
-							,"-seeding-rdv", "tcp://82.67.74.86:9701"
-							,"-seeding-relay", "tcp://82.67.74.86:9701"};
-	lSocket.close();
-	
-	Runnable lFonisTask = new Runnable() {
-		public void run() {
-			P2pProxyMain.main(lParam);
-		}
-		
-	};
-	mFonisThread = new Thread(lFonisTask,"fonis lib");
-	mFonisThread.start();
-	int lRetry=0;
-	while (P2pProxyMain.getState() != P2pProxylauncherConstants.P2PPROXY_CONNECTED && lRetry++<20) {
-		Thread.sleep(500);
-	}
-	if (P2pProxyMain.getState() != P2pProxylauncherConstants.P2PPROXY_CONNECTED) {
-		throw new P2pProxyException("Cannot connect to fonis network");
-	}
-	P2pProxyMain.createAccount(userName);
-	SipStack.log_path = "userinstance-"+lUserNameUri.getSchemeSpecificPart()+"/logs";
-	File lFile = new File(SipStack.log_path);
-    if (lFile.exists() == false) lFile.mkdir();
-    //InetAddress[] lAddresses = InetAddress.getAllByName("localhost");
-    mProvider=new SipProvider(null,lSipPort);
-	mSipClient = new SipClient(mProvider,userName,30000);
-	
-	 class RegistrarTimerTask extends  TimerTask {
-		@Override
-		public void run() {
-			try {
-			URI	lProxyUri = null;
-			// 1 get proxy address
-			String [] lProxies = P2pProxyMain.lookupSipProxiesUri(P2pProxyResourceManagement.DOMAINE);
-			if (lProxies.length == 0) {
-				 System.out.println("cannot find registrar");
-				 return;
+		mAudioSocket  = new DatagramSocket();
+		DatagramSocket lSocket = new DatagramSocket();
+		lSocket.setReuseAddress(true);
+		int lSipPort = lSocket.getLocalPort();
+		lSocket.close();
+		URI lUserNameUri = URI.create(userName);
+		final String[] lParam = {"-jxta" ,"userinstance-"+lUserNameUri.getSchemeSpecificPart()
+				,"-edge-only"
+				,"-seeding-rdv", "tcp://82.67.74.86:9701"
+				,"-seeding-relay", "tcp://82.67.74.86:9701"};
+		lSocket.close();
+
+		Runnable lFonisTask = new Runnable() {
+			public void run() {
+				P2pProxyMain.main(lParam);
 			}
-			//default choice
-			lProxyUri = URI.create(lProxies[0]);
-			//search
-			for (String lProxy: lProxies) {
-				if  (lProxy.equals(aPreferedProxyUri)) {
-					lProxyUri = URI.create(lProxy);
-					break;
+
+		};
+		mFonisThread = new Thread(lFonisTask,"fonis lib");
+		mFonisThread.start();
+		int lRetry=0;
+		while (P2pProxyMain.getState() != P2pProxylauncherConstants.P2PPROXY_CONNECTED && lRetry++<20) {
+			Thread.sleep(500);
+		}
+		if (P2pProxyMain.getState() != P2pProxylauncherConstants.P2PPROXY_CONNECTED) {
+			throw new P2pProxyException("Cannot connect to fonis network");
+		}
+		P2pProxyMain.createAccount(userName);
+		SipStack.log_path = "userinstance-"+lUserNameUri.getSchemeSpecificPart()+"/logs";
+		File lFile = new File(SipStack.log_path);
+		if (lFile.exists() == false) lFile.mkdir();
+		//InetAddress[] lAddresses = InetAddress.getAllByName("localhost");
+		mProvider=new SipProvider(null,lSipPort);
+		mSipClient = new SipClient(mProvider,userName,30000);
+
+		class RegistrarTimerTask extends  TimerTask {
+			@Override
+			public void run() {
+				try {
+					URI	lProxyUri = null;
+					// 1 get proxy address
+					String [] lProxies = P2pProxyMain.lookupSipProxiesUri(P2pProxyResourceManagement.DOMAINE);
+					if (lProxies.length == 0) {
+						System.out.println("cannot find registrar");
+						return;
+					}
+					//default choice
+					lProxyUri = URI.create(lProxies[0]);
+					//search
+					for (String lProxy: lProxies) {
+						if  (lProxy.equals(aPreferedProxyUri)) {
+							lProxyUri = URI.create(lProxy);
+							break;
+						}
+					}
+					//2 setOutbound proxy
+					mProvider.setOutboundProxy(new SocketAddress(lProxyUri.getRawSchemeSpecificPart()));
+					mLog.info("use outband proxy ["+mProvider.getOutboundProxy()+"]");
+					//3 setup stun client
+
+					String [] lMediaServer = P2pProxyMain.lookupMediaServerAddress(P2pProxyResourceManagement.DOMAINE);
+					
+					mStunClient =  new StunClient(lMediaServer);
+					AddressInfo lAudioAddressInfo = mStunClient.computeAddressInfo(mAudioSocket);
+					mLog.info("audio socket info ["+lAudioAddressInfo+"]");
+					mSipClient.register(REGISTRATION_PERIOD,userName);
+					mIsRegistered = true;
+				} catch(Exception e) {
+					mLog.error("cannot register user["+userName+"]",e);
+				} finally {
+					mTimer.schedule(new  RegistrarTimerTask(), 1000 *(REGISTRATION_PERIOD-REGISTRATION_PERIOD/10));
 				}
 			}
-			//2 setOutbound proxy
-			mProvider.setOutboundProxy(new SocketAddress(lProxyUri.getRawSchemeSpecificPart()));
-			mLog.info("use outband proxy ["+mProvider.getOutboundProxy()+"]");
-			//3 setup stun client
-			
-			String [] lMediaServer = P2pProxyMain.lookupMediaServerAddress(P2pProxyResourceManagement.DOMAINE);
-			mStunClient =  new StunClient(lMediaServer);
-			mSipClient.register(REGISTRATION_PERIOD,userName);
-			mIsRegistered = true;
-			} catch(Exception e) {
-				mLog.error("cannot register user["+userName+"]",e);
-			} finally {
-				mTimer.schedule(new  RegistrarTimerTask(), 1000 *(REGISTRATION_PERIOD-REGISTRATION_PERIOD/10));
-			}
-		}
-		
-	};
-	mTimer.schedule(new  RegistrarTimerTask(), 0);
-	mSipClient.listen();
+
+		};
+		mTimer.schedule(new  RegistrarTimerTask(), 0);
+		mSipClient.listen();
 	} catch (Exception e) {
 		throw new P2pProxyException("cannot start client",e);
 	}

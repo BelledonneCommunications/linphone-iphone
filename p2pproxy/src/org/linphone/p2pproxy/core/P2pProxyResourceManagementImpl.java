@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.linphone.p2pproxy.api.P2pProxyException;
 import org.linphone.p2pproxy.api.P2pProxyResourceManagement;
+import org.linphone.p2pproxy.core.media.MediaResourceService;
 import org.linphone.p2pproxy.core.sipproxy.NetworkResourceAdvertisement;
 import org.linphone.p2pproxy.core.sipproxy.SipProxyRegistrar;
 
@@ -42,7 +43,17 @@ public class P2pProxyResourceManagementImpl implements P2pProxyResourceManagemen
       }  
    }
 public String[] getMediaServerList() throws P2pProxyException {
-	throw new RuntimeException("not implmented yet");
+    try {
+
+        List<NetworkResourceAdvertisement> lMediaResoureAdvertisements =  (List<NetworkResourceAdvertisement>) (mJxtaNetworkManager.getAdvertisementList(null, "Name",MediaResourceService.ADV_NAME, true,2));
+        String[] lAddresses = new String[lMediaResoureAdvertisements.size()];
+        for (int i=0;i<lMediaResoureAdvertisements.size();i++) {
+       	 lAddresses[i] = lMediaResoureAdvertisements.get(i).getAddress();
+        }
+        return lAddresses;
+     }catch (Exception e) {
+        throw new P2pProxyException(e);
+     }
 }
 
 }
