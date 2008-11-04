@@ -390,7 +390,6 @@ static void win_display_update(MSDisplay *obj){
 	HDC hdc;
 	BITMAPINFOHEADER bi;
 	RECT rect;
-	MSG msg;
 	bool_t ret;
 	if (wd->window==NULL) return;
 	hdc=GetDC(wd->window);
@@ -445,10 +444,6 @@ static void win_display_uninit(MSDisplay *obj){
 }
 
 bool_t win_display_pollevent(MSDisplay *d, MSDisplayEvent *ev){
-	while (PeekMessage(&msg, wd->window, 0, 0, PM_REMOVE) != 0){
-		  TranslateMessage(&msg);
-		  DispatchMessage(&msg);
-	}
 	return FALSE;
 }
 
@@ -663,7 +658,8 @@ static int video_out_handle_resizing(MSFilter *f, void *data){
 	return 0;
 }
 
-static void video_out_postprocess(MSFilter *f){
+static void video_out_preprocess(MSFilter *f){
+	video_out_prepare(f);
 }
 
 
@@ -820,8 +816,9 @@ MSFilterDesc ms_video_out_desc={
 	0,
 	video_out_init,
 	NULL,
+	video_out_preprocess,
 	video_out_process,
-	video_out_postprocess,
+	NULL,
 	video_out_uninit,
 	methods
 };
@@ -836,8 +833,8 @@ MSFilterDesc ms_video_out_desc={
 	.ninputs=2,
 	.noutputs=0,
 	.init=video_out_init,
+	.preprocess=video_out_preprocess,
 	.process=video_out_process,
-	.postprocess=video_out_postprocess,
 	.uninit=video_out_uninit,
 	.methods=methods
 };
