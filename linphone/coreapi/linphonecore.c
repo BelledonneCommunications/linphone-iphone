@@ -1403,6 +1403,7 @@ void linphone_core_start_media_streams(LinphoneCore *lc, LinphoneCall *call){
 			if (video_params->remoteport>0){
 				if (video_params->relay_session_id!=NULL) 
 					video_stream_set_relay_session_id(lc->videostream,video_params->relay_session_id);
+				video_stream_set_sent_video_size(lc->videostream,linphone_core_get_preferred_video_size(lc));
 				if (lc->video_conf.display && lc->video_conf.capture)
 					video_stream_start(lc->videostream,
 					call->profile, video_params->remoteaddr, video_params->remoteport,

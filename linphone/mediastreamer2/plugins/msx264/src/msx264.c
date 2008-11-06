@@ -287,7 +287,8 @@ typedef struct _DecData{
 	struct SwsContext *sws_ctx;
 	AVCodecContext av_context;
 	unsigned int packet_num;
-	uint8_t bitstream[65000];
+	uint8_t *bitstream;
+	int bitstream_size;
 }DecData;
 
 static void ffmpeg_init(){
@@ -323,6 +324,8 @@ static void dec_init(MSFilter *f){
 	dec_open(d);
 	d->outbuf.w=0;
 	d->outbuf.h=0;
+	d->bitstream_size=65536;
+	d->bitstream=ms_malloc0(d->bitstream_size);
 	f->data=d;
 }
 
@@ -338,6 +341,7 @@ static void dec_uninit(MSFilter *f){
 	if (d->yuv_msg) freemsg(d->yuv_msg);
 	if (d->sps) freemsg(d->sps);
 	if (d->pps) freemsg(d->pps);
+	ms_free(d->bitstream);
 	ms_free(d);
 }
 
@@ -409,14 +413,28 @@ static bool_t check_sps_pps_change(DecData *d, mblk_t *sps, mblk_t *pps){
 	return ret1 || ret2;
 }
 
-static int nalusToFrame(DecData *d, MSQueue *naluq, uint8_t *bitstream, int size, bool_t *new_sps_pps){
+static void enlarge_bitstream(DecData *d){
+	d->bitstream_size*=2;
+	d->bitstream=ms_realloc(d->bitstream,d->bitstream_size);
+}
+
+static int nalusToFrame(DecData *d, MSQueue *naluq, bool_t *new_sps_pps){
 	mblk_t *im;
-	uint8_t *dst=bitstream,*src;
+	uint8_t *dst=d->bitstream,*src,*end;
+	int nal_len;
 	bool_t start_picture=TRUE;
 	uint8_t nalu_type;
 	*new_sps_pps=FALSE;
+	end=d->bitstream+d->bitstream_size;
 	while((im=ms_queue_get(naluq))!=NULL){
 		src=im->b_rptr;
+		nal_len=im->b_wptr-src;
+		if (dst+nal_len+100>end){
+			int pos=dst-d->bitstream;
+			enlarge_bitstream(d);
+			dst=d->bitstream+pos;
+			end=d->bitstream+d->bitstream_size;
+		}
 		nalu_type=(*src) & ((1<<5)-1);
 		if (nalu_type==7)
 			*new_sps_pps=check_sps_pps_change(d,im,NULL) || *new_sps_pps;
@@ -432,14 +450,12 @@ static int nalusToFrame(DecData *d, MSQueue *naluq, uint8_t *bitstream, int size
 		*dst++=1;
 		*dst++=*src++;
 		while(src<(im->b_wptr-3)){
-#ifdef REMOVE_PREVENTING_BYTES
 			if (src[0]==0 && src[1]==0 && src[2]<=3){
 				*dst++=0;
 				*dst++=0;
 				*dst++=3;
 				src+=2;
 			}
-#endif
 			*dst++=*src++;
 		}
 		*dst++=*src++;
@@ -447,7 +463,7 @@ static int nalusToFrame(DecData *d, MSQueue *naluq, uint8_t *bitstream, int size
 		*dst++=*src++;
 		freemsg(im);
 	}
-	return dst-bitstream;
+	return dst-d->bitstream;
 }
 
 static void dec_process(MSFilter *f){
@@ -472,7 +488,7 @@ static void dec_process(MSFilter *f){
 			uint8_t *p,*end;
 			bool_t need_reinit=FALSE;
 
-			size=nalusToFrame(d,&nalus,d->bitstream,sizeof(d->bitstream),&need_reinit);
+			size=nalusToFrame(d,&nalus,&need_reinit);
 			if (need_reinit)
 				dec_reinit(d);
 			p=d->bitstream;

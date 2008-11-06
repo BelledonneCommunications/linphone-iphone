@@ -593,7 +593,12 @@ SupportLevel linphone_payload_is_supported(LinphoneCore *lc, sdp_payload_t *payl
 					payload->b_as_bandwidth, ubw);
 			}else{
 				/*limit to upload bandwidth if exist, else no limit*/
-				rtppayload->normal_bitrate=(ubw>0)? 1000*ubw : -1;
+				if (ubw>0) rtppayload->normal_bitrate=1000*ubw;
+				else {
+					if (rtppayload->type!=PAYLOAD_VIDEO){
+						rtppayload->normal_bitrate=-1; /*allow speex to use maximum bitrate*/
+					}
+				}
 			}
 			if (payload->a_fmtp!=NULL){
 				payload_type_set_send_fmtp(rtppayload,payload->a_fmtp);

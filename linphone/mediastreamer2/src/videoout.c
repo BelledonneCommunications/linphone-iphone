@@ -335,6 +335,11 @@ static bool_t win_display_init(MSDisplay *obj, MSPicture *fbuf){
 			if (wd->window!=NULL) SetWindowLongPtr(wd->window,GWLP_USERDATA,(LONG_PTR)obj);
 			else return FALSE;
 		}
+	}else{
+		/* the window might need to be resized*/
+		RECT cur;
+		GetWindowRect(wd->window,&cur);
+		MoveWindow(wd->window,cur.left, cur.top, wd->fb.w, wd->fb.h,FALSE);
 	}
 	
 	if (wd->ddh==NULL) wd->ddh=DrawDibOpen();
