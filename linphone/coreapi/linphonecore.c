@@ -153,6 +153,7 @@ void linphone_call_destroy(LinphoneCall *obj)
 {
 	linphone_core_notify_all_friends(obj->core,obj->core->prev_mode);
 	linphone_call_log_completed(obj->log,obj);
+	linphone_core_update_allocated_audio_bandwidth(obj->core);
 	if (obj->profile!=NULL && obj->profile!=obj->core->local_profile) rtp_profile_destroy(obj->profile);
 	if (obj->sdpctx!=NULL) sdp_context_free(obj->sdpctx);
 	ms_free(obj);
@@ -595,17 +596,8 @@ void linphone_core_set_download_bandwidth(LinphoneCore *lc, int bw){
 		lc->dw_audio_bw=-1;
 		lc->dw_video_bw=-1;
 	}else {
-		if (bw>=256){
-			lc->dw_audio_bw=80;
-		}else if (bw>=128){
-			if (linphone_core_video_enabled(lc))
-				lc->dw_audio_bw=30;
-			else
-				lc->dw_audio_bw=bw;
-		}else{
-			lc->dw_audio_bw=bw;
-		}
-		lc->dw_video_bw=bw-lc->dw_audio_bw;
+		lc->dw_audio_bw=MIN(lc->audio_bw,bw);
+		lc->dw_video_bw=MAX(bw-lc->dw_audio_bw-10,0);/*-10: security margin*/
 	}
 }
 
@@ -614,16 +606,10 @@ void linphone_core_set_upload_bandwidth(LinphoneCore *lc, int bw){
 	if (bw==0){ /*infinite*/
 		lc->up_audio_bw=-1;
 		lc->up_video_bw=-1;
-		return;
-	}else if (bw>=128){
-		if (linphone_core_video_enabled(lc))
-			lc->up_audio_bw=lc->audio_bw;
-		else 
-			lc->up_audio_bw=bw;
 	}else{
-		lc->up_audio_bw=bw;
+		lc->up_audio_bw=MIN(lc->audio_bw,bw);
+		lc->up_video_bw=MAX(bw-lc->up_audio_bw-10,0);/*-10: security margin*/
 	}
-	lc->up_video_bw=bw-lc->up_audio_bw-10;/*-10: security margin*/
 }
 
 int linphone_core_get_download_bandwidth(const LinphoneCore *lc){
@@ -2006,9 +1992,11 @@ const char *linphone_core_get_video_device(const LinphoneCore *lc){
 }
 
 static MSVideoSizeDef supported_resolutions[]={
+	{	MS_VIDEO_SIZE_SVGA	,	"svga"	},
 	{	MS_VIDEO_SIZE_4CIF	,	"4cif"	},
 	{	MS_VIDEO_SIZE_VGA	,	"vga"	},
 	{	MS_VIDEO_SIZE_CIF	,	"cif"	},
+	{	MS_VIDEO_SIZE_QVGA	,	"qvga"	},
 	{	MS_VIDEO_SIZE_QCIF	,	"qcif"	},
 	{	{0,0}			,	NULL	}
 };

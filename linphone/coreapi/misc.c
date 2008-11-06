@@ -195,13 +195,14 @@ static double get_audio_payload_bandwidth(const PayloadType *pt){
 	return packet_size*8.0*npacket;
 }
 
-void linphone_core_update_allocated_audio_bandwidth(LinphoneCore *lc, const PayloadType *pt){
+void linphone_core_update_allocated_audio_bandwidth_in_call(LinphoneCore *lc, const PayloadType *pt){
 	lc->audio_bw=(int)(get_audio_payload_bandwidth(pt)/1000.0);
 	/*update*/
+	linphone_core_set_download_bandwidth(lc,lc->net_conf.download_bw);
 	linphone_core_set_upload_bandwidth(lc,lc->net_conf.upload_bw);
 }
 
-static void update_allocated_audio_bandwidth(LinphoneCore *lc){
+void linphone_core_update_allocated_audio_bandwidth(LinphoneCore *lc){
 	const MSList *elem;
 	PayloadType *max=NULL;
 	for(elem=linphone_core_get_audio_codecs(lc);elem!=NULL;elem=elem->next){
@@ -214,7 +215,7 @@ static void update_allocated_audio_bandwidth(LinphoneCore *lc){
 		}
 	}
 	if (max) {
-		linphone_core_update_allocated_audio_bandwidth(lc,max);
+		linphone_core_update_allocated_audio_bandwidth_in_call(lc,max);
 	}
 }
 
@@ -230,7 +231,7 @@ bool_t linphone_core_check_payload_type_usability(LinphoneCore *lc, PayloadType 
 	  This must be done outside calls, because after sdp negociation
 	  the audio bandwidth is refined to the selected codec
 	*/
-	if (!linphone_core_in_call(lc)) update_allocated_audio_bandwidth(lc);
+	if (!linphone_core_in_call(lc)) linphone_core_update_allocated_audio_bandwidth(lc);
 	min_audio_bw=get_min_bandwidth(linphone_core_get_download_bandwidth(lc),
 					linphone_core_get_upload_bandwidth(lc));
 	if (min_audio_bw==0) min_audio_bw=-1;
@@ -249,7 +250,7 @@ bool_t linphone_core_check_payload_type_usability(LinphoneCore *lc, PayloadType 
 				if (min_video_bw>0)
 					pt->normal_bitrate=min_video_bw*1000;
 				else 
-					pt->normal_bitrate=512000;
+					pt->normal_bitrate=1500000; /*around 1.5 Mbit/s*/
 				ret=TRUE;
 			}
 			else ret=FALSE;
@@ -389,6 +390,7 @@ void linphone_core_setup_local_rtp_profile(LinphoneCore *lc)
 	/* set the fixed lists instead:*/
 	lc->codecs_conf.audio_codecs=audiopt;
 	lc->codecs_conf.video_codecs=videopt;
+	linphone_core_update_allocated_audio_bandwidth(lc);
 }
 
 int from_2char_without_params(osip_from_t *from,char **str)

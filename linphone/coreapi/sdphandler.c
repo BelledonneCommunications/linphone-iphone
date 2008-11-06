@@ -310,6 +310,7 @@ sdp_context_get_answer ( sdp_context_t *ctx,sdp_message_t *remote)
 	int i, j, ncodec, m_lines_accepted = 0;
 	int err;
 	sdp_payload_t payload;
+	sdp_payload_t init_payload;
 	sdp_handler_t *sdph=ctx->handler;
 	sdp_bandwidth_t *sbw=NULL;
 	char *relay;
@@ -327,29 +328,28 @@ sdp_context_get_answer ( sdp_context_t *ctx,sdp_message_t *remote)
 	answer = sdp_context_generate_template (ctx);
 	
 	/* for each m= line */
-	for (i = 0; !sdp_message_endof_media (remote, i); i++)
-	{
-		sdp_payload_init(&payload);
+	for (i = 0; !sdp_message_endof_media (remote, i); i++){
+		sdp_payload_init(&init_payload);
 		mtype = sdp_message_m_media_get (remote, i);
 		proto = sdp_message_m_proto_get (remote, i);
 		port = sdp_message_m_port_get (remote, i);
-		payload.remoteport = osip_atoi (port);
-		payload.proto = proto;
-		payload.line = i;
-		payload.c_addr = sdp_message_c_addr_get (remote, i, 0);
-		if (payload.c_addr == NULL)
-			payload.c_addr = sdp_message_c_addr_get (remote, -1, 0);
+		init_payload.remoteport = osip_atoi (port);
+		init_payload.proto = proto;
+		init_payload.line = i;
+		init_payload.c_addr = sdp_message_c_addr_get (remote, i, 0);
+		if (init_payload.c_addr == NULL)
+			init_payload.c_addr = sdp_message_c_addr_get (remote, -1, 0);
 		/*parse relay address if given*/
 		relay=sdp_message_a_attr_value_get(remote,i,"relay-addr");
 		if (relay){
-			payload.relay_host=parse_relay_addr(relay,&payload.relay_port);
+			init_payload.relay_host=parse_relay_addr(relay,&init_payload.relay_port);
 		}
-		payload.relay_session_id=sdp_message_a_attr_value_get(remote,i,"relay-session-id");
+		init_payload.relay_session_id=sdp_message_a_attr_value_get(remote,i,"relay-session-id");
 		/* get application specific bandwidth, if any */
 		for(j=0;(sbw=sdp_message_bandwidth_get(remote,i,j))!=NULL;j++){
-			if (strcasecmp(sbw->b_bwtype,"AS")==0) payload.b_as_bandwidth=atoi(sbw->b_bandwidth);
+			if (strcasecmp(sbw->b_bwtype,"AS")==0) init_payload.b_as_bandwidth=atoi(sbw->b_bandwidth);
 		}
-		payload.a_ptime=_sdp_message_get_a_ptime(remote,i);
+		init_payload.a_ptime=_sdp_message_get_a_ptime(remote,i);
 		if (keywordcmp ("audio", mtype) == 0)
 		{
 			if (sdph->accept_audio_codecs != NULL)
@@ -361,6 +361,7 @@ sdp_context_get_answer ( sdp_context_t *ctx,sdp_message_t *remote)
 				       sdp_message_m_payload_get (remote, i,
 							  j)) != NULL); j++)
 				{
+					memcpy(&payload,&init_payload,sizeof(payload));
 					payload.pt = osip_atoi (pt);
 					/* get the rtpmap associated to this codec, if any */
 					payload.a_rtpmap =
@@ -469,6 +470,7 @@ sdp_context_get_answer ( sdp_context_t *ctx,sdp_message_t *remote)
 				       sdp_message_m_payload_get (remote, i,
 							  j)) != NULL); j++)
 				{
+					memcpy(&payload,&init_payload,sizeof(payload));
 					payload.pt = osip_atoi (pt);
 					/* get the rtpmap associated to this codec, if any */
 					payload.a_rtpmap =

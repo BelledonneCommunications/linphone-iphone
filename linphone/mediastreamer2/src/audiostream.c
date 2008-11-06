@@ -251,6 +251,7 @@ int audio_stream_start_full(AudioStream *stream, RtpProfile *profile, const char
 	
 	/* give the encoder/decoder some parameters*/
 	ms_filter_call_method(stream->encoder,MS_FILTER_SET_SAMPLE_RATE,&pt->clock_rate);
+	ms_message("Payload's bitrate is %i",pt->normal_bitrate);
 	if (pt->normal_bitrate>0){
 		ms_message("Setting audio encoder network bitrate to %i",pt->normal_bitrate);
 		ms_filter_call_method(stream->encoder,MS_FILTER_SET_BITRATE,&pt->normal_bitrate);

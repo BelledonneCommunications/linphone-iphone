@@ -88,6 +88,7 @@ static bool_t v4lv2_try_format(V4l2State *s, int fmtid){
 	fmt.fmt.pix.field = V4L2_FIELD_ANY;
 
         if (ioctl (s->fd, VIDIOC_S_FMT, &fmt)<0){
+		ms_message("VIDIOC_S_FMT: %s",strerror(errno));
 		return FALSE;
 	}
 	return TRUE;

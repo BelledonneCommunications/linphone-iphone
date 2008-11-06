@@ -595,8 +595,6 @@ SupportLevel linphone_payload_is_supported(LinphoneCore *lc, sdp_payload_t *payl
 				/*limit to upload bandwidth if exist, else no limit*/
 				rtppayload->normal_bitrate=(ubw>0)? 1000*ubw : -1;
 			}
-			/* but anyway give our download bandwidth constraint*/
-			payload->b_as_bandwidth=(dbw>0) ? dbw : 0;
 			if (payload->a_fmtp!=NULL){
 				payload_type_set_send_fmtp(rtppayload,payload->a_fmtp);
 			}
@@ -657,7 +655,9 @@ int linphone_accept_audio_offer(sdp_context_t *ctx,sdp_payload_t *payload)
 			}
 			params->initialized=1;
 			/* we can now update the allocated bandwidth for audio, and then video*/
-			linphone_core_update_allocated_audio_bandwidth(lc,lpt);
+			linphone_core_update_allocated_audio_bandwidth_in_call(lc,lpt);
+			/* give our download bandwidth constraint*/
+			payload->b_as_bandwidth=(lc->dw_audio_bw>0) ? lc->dw_audio_bw : 0;
 		}else{
 			/* refuse all other audio lines*/
 			if(params->line!=payload->line) return -1;
@@ -710,6 +710,7 @@ int linphone_accept_video_offer(sdp_context_t *ctx,sdp_payload_t *payload)
 				params->remotertcpport=params->remoteport+1;
 			}
 			params->initialized=1;
+			payload->b_as_bandwidth=(lc->dw_video_bw>0) ? lc->dw_video_bw : 0;
 		}else{
 			/* refuse all other video lines*/
 			if(params->line!=payload->line) return -1;
@@ -752,7 +753,7 @@ int linphone_read_audio_answer(sdp_context_t *ctx,sdp_payload_t *payload)
 			}
 			params->initialized=1;
 			/* we can now update the allocated bandwidth for audio, and then video*/
-			linphone_core_update_allocated_audio_bandwidth(lc,lpt);
+			linphone_core_update_allocated_audio_bandwidth_in_call(lc,lpt);
 		}
 	}
 	return 0;

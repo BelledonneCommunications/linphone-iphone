@@ -118,7 +118,8 @@ MSList *find_friend(MSList *fl, const osip_from_t *friend, LinphoneFriend **lf);
 LinphoneFriend *linphone_find_friend_by_nid(MSList *l, int nid);
 LinphoneFriend *linphone_find_friend_by_sid(MSList *l, int sid);
 
-void linphone_core_update_allocated_audio_bandwidth(LinphoneCore *lc, const PayloadType *pt);
+void linphone_core_update_allocated_audio_bandwidth(LinphoneCore *lc);
+void linphone_core_update_allocated_audio_bandwidth_in_call(LinphoneCore *lc, const PayloadType *pt);
 void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call);
 
 #endif /* _PRIVATE_H */
