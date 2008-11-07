@@ -820,7 +820,6 @@ MSFilterDesc ms_video_out_desc={
 	2,
 	0,
 	video_out_init,
-	NULL,
 	video_out_preprocess,
 	video_out_process,
 	NULL,
