@@ -21,18 +21,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/msfilter.h"
 #include "mediastreamer2/msvideo.h"
 #include "mediastreamer2/msrtp.h"
-
-
-#if defined(WIN32) || defined(_WIN32_WCE)
-/* avoid double declaration of ms_win_display_desc
-   -> Including twice msvideoout.h inside mediastreamer2
-   is NOT support with MSVC compiler.
-*/
-#define MS_VIDEO_OUT_HANDLE_RESIZING MS_FILTER_METHOD_NO_ARG(MS_VIDEO_OUT_ID,1)
-#define MS_VIDEO_OUT_AUTO_FIT	MS_FILTER_METHOD(MS_VIDEO_OUT_ID,3,int)
-#else
 #include "mediastreamer2/msvideoout.h"
-#endif
+
 
 #ifdef HAVE_CONFIG_H
 #include "mediastreamer-config.h"

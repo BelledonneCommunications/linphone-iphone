@@ -190,7 +190,7 @@ static void vfw_engine_destroy(VfwEngine *obj){
 static int _vfw_engine_setup(VfwEngine *obj){
 	CAPTUREPARMS capparam ;
 	capCaptureGetSetup(obj->capvideo,&capparam,sizeof(capparam)) ;
-	capparam.dwRequestMicroSecPerFrame = 100000 ;
+	capparam.dwRequestMicroSecPerFrame = 33000 ; /*makes around 30fps*/
 	// detach capture from application
 	capparam.fYield                    = TRUE ;
 	capparam.fMakeUserHitOKToCapture   = FALSE;

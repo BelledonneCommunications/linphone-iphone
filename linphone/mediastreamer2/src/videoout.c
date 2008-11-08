@@ -23,6 +23,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "mediastreamer2/msfilter.h"
 #include "mediastreamer2/msvideo.h"
+
+/*required for dllexport of win_display_desc */
+#define INVIDEOUT_C 1
 #include "mediastreamer2/msvideoout.h"
 
 #include "ffmpeg-priv.h"
