@@ -526,6 +526,7 @@ typedef struct VideoOut
 	bool_t own_display;
 	bool_t ready;
 	bool_t autofit;
+	bool_t mirror;
 } VideoOut;
 
 
@@ -593,6 +594,7 @@ static void video_out_init(MSFilter  *f){
 	obj->own_display=FALSE;
 	obj->ready=FALSE;
 	obj->autofit=FALSE;
+	obj->mirror=FALSE;
 	set_vsize(obj,&def_size);
 	f->data=obj;
 }
@@ -736,6 +738,7 @@ static void video_out_process(MSFilter *f){
             			src.h, obj->fbuf.planes, obj->fbuf.strides)<0){
 				ms_error("Error in sws_scale().");
 			}
+			if (obj->mirror && !mblk_get_precious_flag(inm)) yuv_buf_mirror(&obj->fbuf);
 			ms_display_unlock(obj->display);
 		}
 		ms_queue_flush(f->inputs[0]);
@@ -800,12 +803,19 @@ static int video_out_set_corner(MSFilter *f,void *arg){
 	return 0;
 }
 
+static int video_out_enable_mirroring(MSFilter *f,void *arg){
+	VideoOut *s=(VideoOut*)f->data;
+	s->mirror=*(int*)arg;
+	return 0;
+}
+
 static MSFilterMethod methods[]={
 	{	MS_FILTER_SET_VIDEO_SIZE	,	video_out_set_vsize },
 	{	MS_VIDEO_OUT_SET_DISPLAY	,	video_out_set_display},
 	{	MS_VIDEO_OUT_SET_CORNER 	,	video_out_set_corner},
 	{	MS_VIDEO_OUT_AUTO_FIT		,	video_out_auto_fit},
 	{	MS_VIDEO_OUT_HANDLE_RESIZING	,	video_out_handle_resizing},
+	{	MS_VIDEO_OUT_ENABLE_MIRRORING	,	video_out_enable_mirroring},
 	{	0	,NULL}
 };
 

@@ -82,12 +82,21 @@ static bool_t v4lv2_try_format(V4l2State *s, int fmtid){
 	memset(&fmt,0,sizeof(fmt));
 
 	fmt.type                = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+	if (ioctl (s->fd, VIDIOC_G_FMT, &fmt)<0){
+		ms_error("VIDIOC_G_FMT failed: %s",strerror(errno));
+	}
+
+	fmt.type                = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	fmt.fmt.pix.width       = s->vsize.width; 
 	fmt.fmt.pix.height      = s->vsize.height;
 	fmt.fmt.pix.pixelformat = fmtid;
 	fmt.fmt.pix.field = V4L2_FIELD_ANY;
 
-        if (ioctl (s->fd, VIDIOC_S_FMT, &fmt)<0){
+        if (ioctl (s->fd, VIDIOC_TRY_FMT, &fmt)<0){
+		ms_message("VIDIOC_TRY_FMT: %s",strerror(errno));
+		return FALSE;
+	}
+	if (ioctl (s->fd, VIDIOC_S_FMT, &fmt)<0){
 		ms_message("VIDIOC_S_FMT: %s",strerror(errno));
 		return FALSE;
 	}
@@ -114,6 +123,7 @@ static int get_picture_buffer_size(MSPixFmt pix_fmt, int w, int h){
 static int v4l2_configure(V4l2State *s){
 	struct v4l2_capability cap;
 	struct v4l2_format fmt;
+	MSVideoSize vsize;
 
         if (ioctl (s->fd, VIDIOC_QUERYCAP, &cap)<0) {
 		ms_message("Not a v4lv2 driver.");
@@ -131,29 +141,41 @@ static int v4l2_configure(V4l2State *s){
 	}
 
 	ms_message("Driver is %s",cap.driver);
-
-	if (v4lv2_try_format(s,V4L2_PIX_FMT_YUV420)){
-		s->pix_fmt=MS_YUV420P;
-		s->int_pix_fmt=V4L2_PIX_FMT_YUV420;
-		ms_message("v4lv2: YUV420P choosen");
-	}else if (v4lv2_try_format(s,V4L2_PIX_FMT_NV12)){
-		s->pix_fmt=MS_YUV420P;
-		s->int_pix_fmt=V4L2_PIX_FMT_NV12;
-		ms_message("v4lv2: V4L2_PIX_FMT_NV12 choosen");
-	}else if (v4lv2_try_format(s,V4L2_PIX_FMT_MJPEG)){
-		s->pix_fmt=MS_MJPEG;
-		s->int_pix_fmt=V4L2_PIX_FMT_MJPEG;
-		ms_message("v4lv2: MJPEG choosen");
-	}else if (v4lv2_try_format(s,V4L2_PIX_FMT_YUYV)){
-		s->pix_fmt=MS_YUYV;
-		s->int_pix_fmt=V4L2_PIX_FMT_YUYV;
-		ms_message("v4lv2: V4L2_PIX_FMT_YUYV choosen");
-	}else if (v4lv2_try_format(s,V4L2_PIX_FMT_RGB24)){
-		s->pix_fmt=MS_RGB24;
-		s->int_pix_fmt=V4L2_PIX_FMT_RGB24;
-		ms_message("v4lv2: RGB24 choosen");
-	}else{
-		ms_error("Could not find supported pixel format.");
+	vsize=s->vsize;
+	do{
+		if (v4lv2_try_format(s,V4L2_PIX_FMT_YUV420)){
+			s->pix_fmt=MS_YUV420P;
+			s->int_pix_fmt=V4L2_PIX_FMT_YUV420;
+			ms_message("v4lv2: YUV420P choosen");
+			break;
+		}else if (v4lv2_try_format(s,V4L2_PIX_FMT_MJPEG)){
+			s->pix_fmt=MS_MJPEG;
+			s->int_pix_fmt=V4L2_PIX_FMT_MJPEG;
+			ms_message("v4lv2: MJPEG choosen");
+			break;
+		}else if (v4lv2_try_format(s,V4L2_PIX_FMT_YUYV)){
+			s->pix_fmt=MS_YUYV;
+			s->int_pix_fmt=V4L2_PIX_FMT_YUYV;
+			ms_message("v4lv2: V4L2_PIX_FMT_YUYV choosen");
+			break;
+		}else if (v4lv2_try_format(s,V4L2_PIX_FMT_NV12)){
+			s->pix_fmt=MS_YUV420P;
+			s->int_pix_fmt=V4L2_PIX_FMT_NV12;
+			ms_message("v4lv2: V4L2_PIX_FMT_NV12 choosen");
+			break;
+		}else if (v4lv2_try_format(s,V4L2_PIX_FMT_RGB24)){
+			s->pix_fmt=MS_RGB24;
+			s->int_pix_fmt=V4L2_PIX_FMT_RGB24;
+			ms_message("v4lv2: RGB24 choosen");
+			break;
+		}else{
+			ms_error("Could not find supported pixel format for %ix%i", s->vsize.width, s->vsize.height);
+		}
+		s->vsize=ms_video_size_get_just_lower_than(s->vsize);
+	}while(s->vsize.width!=0);
+	if (s->vsize.width==0){
+		ms_message("Could not find any combination of resolution/pixel-format that works !");
+		s->vsize=vsize;
 		return -1;
 	}
 	memset(&fmt,0,sizeof(fmt));
@@ -339,9 +361,8 @@ static void v4l2_uninit(MSFilter *f){
 	ms_free(s);
 }
 
-static void v4l2_process(MSFilter *f){
+static void v4l2_preprocess(MSFilter *f){
 	V4l2State *s=(V4l2State*)f->data;
-	uint32_t elapsed;
 	if (s->fd==-1){
 		if (v4l2_open(s)==0 && v4l2_configure(s)==0 && v4l2_do_mmap(s)==0){
 			ms_message("V4L2 video capture started.");
@@ -350,6 +371,12 @@ static void v4l2_process(MSFilter *f){
 		}
 		s->start_time=f->ticker->time;
 	}
+}
+
+static void v4l2_process(MSFilter *f){
+	V4l2State *s=(V4l2State*)f->data;
+	uint32_t elapsed;
+	
 	if (s->fd!=-1){
 		/*see it is necessary to output a frame:*/
 		elapsed=f->ticker->time-s->start_time;
@@ -429,6 +456,7 @@ MSFilterDesc ms_v4l2_desc={
 	.ninputs=0,
 	.noutputs=1,
 	.init=v4l2_init,
+	.preprocess=v4l2_preprocess,
 	.process=v4l2_process,
 	.postprocess=v4l2_postprocess,
 	.uninit=v4l2_uninit,

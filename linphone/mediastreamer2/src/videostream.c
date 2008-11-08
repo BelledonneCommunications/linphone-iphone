@@ -353,6 +353,8 @@ VideoStream * video_preview_start(MSWebCam *device, MSVideoSize disp_size){
 	VideoStream *stream = (VideoStream *)ms_new0 (VideoStream, 1);
 	MSVideoSize vsize=disp_size;
 	MSPixFmt format;
+	float fps=29.97;
+	int mirroring=1;
 
 	/* creates the filters */
 	stream->source = ms_web_cam_create_reader(device);
@@ -361,6 +363,7 @@ VideoStream * video_preview_start(MSWebCam *device, MSVideoSize disp_size){
 
 	/* configure the filters */
 	ms_filter_call_method(stream->source,MS_FILTER_SET_VIDEO_SIZE,&vsize);
+	ms_filter_call_method(stream->source,MS_FILTER_SET_FPS,&fps);
 	ms_filter_call_method(stream->source,MS_FILTER_GET_PIX_FMT,&format);
 	ms_filter_call_method(stream->source,MS_FILTER_GET_VIDEO_SIZE,&vsize);
 	if (format==MS_MJPEG){
@@ -374,6 +377,7 @@ VideoStream * video_preview_start(MSWebCam *device, MSVideoSize disp_size){
 	format=MS_YUV420P;
 	ms_filter_call_method(stream->output,MS_FILTER_SET_PIX_FMT,&format);
 	ms_filter_call_method(stream->output,MS_FILTER_SET_VIDEO_SIZE,&disp_size);
+	ms_filter_call_method(stream->output,MS_VIDEO_OUT_ENABLE_MIRRORING,&mirroring);
 	/* and then connect all */
 
 	ms_filter_link(stream->source,0, stream->pixconv,0);

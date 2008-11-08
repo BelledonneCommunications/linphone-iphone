@@ -44,6 +44,7 @@ typedef struct _EncData{
 	int mode;
 	uint64_t framenum;
 	Rfc3984Context packer;
+	int keyframe_int;
 	bool_t generate_keyframe;
 }EncData;
 
@@ -54,6 +55,7 @@ static void enc_init(MSFilter *f){
 	d->bitrate=384000;
 	d->vsize=MS_VIDEO_SIZE_CIF;
 	d->fps=30;
+	d->keyframe_int=10; /*10 seconds */
 	d->mode=0;
 	d->framenum=0;
 	d->generate_keyframe=FALSE;
@@ -87,6 +89,11 @@ static void enc_preprocess(MSFilter *f){
 	params.rc.i_vbv_max_bitrate=(int) (((float)d->bitrate)*0.9/1000.0);
 	params.rc.i_vbv_buffer_size=params.rc.i_vbv_max_bitrate;
 	params.rc.f_vbv_buffer_init=0.5;
+	/*enable this by config ?*/
+	/*
+	params.i_keyint_max = (int)d->fps*d->keyframe_int;
+	params.i_keyint_min = (int)d->fps;
+	*/
 	params.b_repeat_headers=1;
 	params.b_cabac=0;//disable cabac to be baseline
 	params.i_bframe=0;/*no B frames*/
