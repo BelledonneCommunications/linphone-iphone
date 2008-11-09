@@ -55,7 +55,7 @@ typedef struct V4l2State{
 	float start_time;
 	int frame_count;
 	int queued;
-	bool_t run;
+	bool_t configured;
 }V4l2State;
 
 static int v4l2_open(V4l2State *s){
@@ -72,31 +72,22 @@ static int v4l2_close(V4l2State *s){
 	if (s->fd!=-1){
 		close(s->fd);
 		s->fd=-1;
+		s->configured=FALSE;
 	}
 	return 0;
 }
 
-static bool_t v4lv2_try_format(V4l2State *s, int fmtid){
-	struct v4l2_format fmt;
+static bool_t v4lv2_try_format( V4l2State *s, struct v4l2_format *fmt, int fmtid){
+	
+	fmt->type                = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+	fmt->fmt.pix.pixelformat = fmtid;
+	fmt->fmt.pix.field = V4L2_FIELD_ANY;
 
-	memset(&fmt,0,sizeof(fmt));
-
-	fmt.type                = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-	if (ioctl (s->fd, VIDIOC_G_FMT, &fmt)<0){
-		ms_error("VIDIOC_G_FMT failed: %s",strerror(errno));
-	}
-
-	fmt.type                = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-	fmt.fmt.pix.width       = s->vsize.width; 
-	fmt.fmt.pix.height      = s->vsize.height;
-	fmt.fmt.pix.pixelformat = fmtid;
-	fmt.fmt.pix.field = V4L2_FIELD_ANY;
-
-        if (ioctl (s->fd, VIDIOC_TRY_FMT, &fmt)<0){
+        if (ioctl (s->fd, VIDIOC_TRY_FMT, fmt)<0){
 		ms_message("VIDIOC_TRY_FMT: %s",strerror(errno));
 		return FALSE;
 	}
-	if (ioctl (s->fd, VIDIOC_S_FMT, &fmt)<0){
+	if (ioctl (s->fd, VIDIOC_S_FMT, fmt)<0){
 		ms_message("VIDIOC_S_FMT: %s",strerror(errno));
 		return FALSE;
 	}
@@ -139,31 +130,34 @@ static int v4l2_configure(V4l2State *s){
 		ms_error("%s does not support streaming i/o\n",s->dev);
 		return -1;
 	}
-
+	
 	ms_message("Driver is %s",cap.driver);
+	memset(&fmt,0,sizeof(fmt));
+
+	fmt.type                = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+	if (ioctl (s->fd, VIDIOC_G_FMT, &fmt)<0){
+		ms_error("VIDIOC_G_FMT failed: %s",strerror(errno));
+	}
 	vsize=s->vsize;
 	do{
-		if (v4lv2_try_format(s,V4L2_PIX_FMT_YUV420)){
+		fmt.fmt.pix.width       = s->vsize.width; 
+		fmt.fmt.pix.height      = s->vsize.height;
+		if (v4lv2_try_format(s,&fmt,V4L2_PIX_FMT_YUV420)){
 			s->pix_fmt=MS_YUV420P;
 			s->int_pix_fmt=V4L2_PIX_FMT_YUV420;
 			ms_message("v4lv2: YUV420P choosen");
 			break;
-		}else if (v4lv2_try_format(s,V4L2_PIX_FMT_MJPEG)){
+		}else if (v4lv2_try_format(s,&fmt,V4L2_PIX_FMT_MJPEG)){
 			s->pix_fmt=MS_MJPEG;
 			s->int_pix_fmt=V4L2_PIX_FMT_MJPEG;
 			ms_message("v4lv2: MJPEG choosen");
 			break;
-		}else if (v4lv2_try_format(s,V4L2_PIX_FMT_YUYV)){
+		}else if (v4lv2_try_format(s,&fmt,V4L2_PIX_FMT_YUYV)){
 			s->pix_fmt=MS_YUYV;
 			s->int_pix_fmt=V4L2_PIX_FMT_YUYV;
 			ms_message("v4lv2: V4L2_PIX_FMT_YUYV choosen");
 			break;
-		}else if (v4lv2_try_format(s,V4L2_PIX_FMT_NV12)){
-			s->pix_fmt=MS_YUV420P;
-			s->int_pix_fmt=V4L2_PIX_FMT_NV12;
-			ms_message("v4lv2: V4L2_PIX_FMT_NV12 choosen");
-			break;
-		}else if (v4lv2_try_format(s,V4L2_PIX_FMT_RGB24)){
+		}else if (v4lv2_try_format(s,&fmt,V4L2_PIX_FMT_RGB24)){
 			s->pix_fmt=MS_RGB24;
 			s->int_pix_fmt=V4L2_PIX_FMT_RGB24;
 			ms_message("v4lv2: RGB24 choosen");
@@ -188,6 +182,7 @@ static int v4l2_configure(V4l2State *s){
 		ms_message("Size of picture is %ix%i",fmt.fmt.pix.width,fmt.fmt.pix.height);
 	}
 	s->picture_size=get_picture_buffer_size(s->pix_fmt,fmt.fmt.pix.width,fmt.fmt.pix.height);
+	s->configured=TRUE;
 	return 0;
 }
 
@@ -352,6 +347,7 @@ static void v4l2_init(MSFilter *f){
 	s->fd=-1;
 	s->vsize=MS_VIDEO_SIZE_CIF;
 	s->fps=15;
+	s->configured=FALSE;
 	f->data=s;
 }
 
@@ -363,14 +359,18 @@ static void v4l2_uninit(MSFilter *f){
 
 static void v4l2_preprocess(MSFilter *f){
 	V4l2State *s=(V4l2State*)f->data;
-	if (s->fd==-1){
-		if (v4l2_open(s)==0 && v4l2_configure(s)==0 && v4l2_do_mmap(s)==0){
-			ms_message("V4L2 video capture started.");
-		}else{
-			v4l2_close(s);
-		}
-		s->start_time=f->ticker->time;
+	if (s->fd==-1 && v4l2_open(s)!=0) {
+		return;
 	}
+	if (!s->configured && v4l2_configure(s)!=0){
+		return;
+	}
+	if (v4l2_do_mmap(s)==0){
+		ms_message("V4L2 video capture started.");
+	}else{
+		v4l2_close(s);
+	}
+	s->start_time=f->ticker->time;
 }
 
 static void v4l2_process(MSFilter *f){
@@ -425,7 +425,6 @@ static int v4l2_get_pixfmt(MSFilter *f, void *arg){
 		if (v4l2_open(s)==0){
 			v4l2_configure(s);
 			*(MSPixFmt*)arg=s->pix_fmt;
-			v4l2_close(s);
 			return 0;
 		}else return -1;
 	}

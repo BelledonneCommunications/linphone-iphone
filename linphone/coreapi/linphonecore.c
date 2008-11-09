@@ -154,7 +154,7 @@ void linphone_call_destroy(LinphoneCall *obj)
 	linphone_core_notify_all_friends(obj->core,obj->core->prev_mode);
 	linphone_call_log_completed(obj->log,obj);
 	linphone_core_update_allocated_audio_bandwidth(obj->core);
-	if (obj->profile!=NULL && obj->profile!=obj->core->local_profile) rtp_profile_destroy(obj->profile);
+	if (obj->profile!=NULL) rtp_profile_destroy(obj->profile);
 	if (obj->sdpctx!=NULL) sdp_context_free(obj->sdpctx);
 	ms_free(obj);
 }
@@ -1202,7 +1202,7 @@ int linphone_core_invite(LinphoneCore *lc, const char *url)
 	ms_free(barmsg);
 	if (!lc->sip_conf.sdp_200_ack){
 		ctx=lc->call->sdpctx;
-		lc->call->profile=lc->local_profile;
+		lc->call->profile=rtp_profile_clone_full(lc->local_profile);
 		sdpmesg=sdp_context_get_offer(ctx);
 		linphone_set_sdp(invite,sdpmesg);
 		linphone_core_init_media_streams(lc);
@@ -1488,7 +1488,7 @@ int linphone_core_accept_call(LinphoneCore *lc, const char *url)
 	sdpmesg=call->sdpctx->answerstr;
 	if (sdpmesg==NULL){
 		offering=TRUE;
-		call->profile=lc->local_profile;
+		call->profile=rtp_profile_clone_full(lc->local_profile);
 		ms_message("generating sdp offer");
 		sdpmesg=sdp_context_get_offer(call->sdpctx);
 		
