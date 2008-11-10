@@ -23,6 +23,7 @@ package org.linphone.p2pproxy.test.utils;
 import java.io.File;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.PortUnreachableException;
 import java.net.URI;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -31,6 +32,7 @@ import org.apache.log4j.Logger;
 import org.linphone.p2pproxy.api.P2pProxyException;
 import org.linphone.p2pproxy.api.P2pProxyResourceManagement;
 import org.linphone.p2pproxy.core.P2pProxyMain;
+import org.linphone.p2pproxy.core.media.MediaResoureUnreachableException;
 import org.linphone.p2pproxy.core.stun.AddressInfo;
 import org.linphone.p2pproxy.core.stun.StunClient;
 import org.linphone.p2pproxy.launcher.P2pProxylauncherConstants;
@@ -58,8 +60,7 @@ public UserInstance(final String userName,final String aPreferedProxyUri) throws
 		URI lUserNameUri = URI.create(userName);
 		final String[] lParam = {"-jxta" ,"userinstance-"+lUserNameUri.getSchemeSpecificPart()
 				,"-edge-only"
-				,"-seeding-rdv", "tcp://82.67.74.86:9701"
-				,"-seeding-relay", "tcp://82.67.74.86:9701"};
+				,"-seeding", "tcp://91.121.81.212:9701|tcp://91.121.81.212:9702"};
 		lSocket.close();
 
 		Runnable lFonisTask = new Runnable() {
@@ -113,11 +114,18 @@ public UserInstance(final String userName,final String aPreferedProxyUri) throws
 					String [] lMediaServer = P2pProxyMain.lookupMediaServerAddress(P2pProxyResourceManagement.DOMAINE);
 					
 					mStunClient =  new StunClient(lMediaServer);
-					AddressInfo lAudioAddressInfo = mStunClient.computeAddressInfo(mAudioSocket);
-					mLog.info("audio socket info ["+lAudioAddressInfo+"]");
+					try {
+						AddressInfo lAudioAddressInfo = mStunClient.computeAddressInfo(mAudioSocket);
+						mLog.info("audio socket info ["+lAudioAddressInfo+"]");
+					}catch (MediaResoureUnreachableException pex) {
+						mLog.error("cannot reach media server, flushing ["+pex.getResourceAddress()+"]",pex);
+						P2pProxyMain.revokeMediaServer(pex.getResourceAddress());
+					}
+					
 					mSipClient.register(REGISTRATION_PERIOD,userName);
 					mIsRegistered = true;
-				} catch(Exception e) {
+				} 	
+					catch(Exception e) {
 					mLog.error("cannot register user["+userName+"]",e);
 				} finally {
 					mTimer.schedule(new  RegistrarTimerTask(), 1000 *(REGISTRATION_PERIOD-REGISTRATION_PERIOD/10));

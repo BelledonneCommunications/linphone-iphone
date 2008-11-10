@@ -41,7 +41,7 @@ import org.linphone.p2pproxy.api.P2pProxyManagement;
 import org.linphone.p2pproxy.api.P2pProxyNotReadyException;
 import org.linphone.p2pproxy.api.P2pProxyResourceManagement;
 import org.linphone.p2pproxy.api.P2pProxyUserAlreadyExistException;
-import org.linphone.p2pproxy.core.media.rtprelay.RtpRelayService;
+import org.linphone.p2pproxy.core.media.MediaResourceService;
 import org.linphone.p2pproxy.core.sipproxy.SipProxyRegistrar;
 import org.zoolu.sip.provider.SipStack;
 import org.linphone.p2pproxy.launcher.P2pProxylauncherConstants;
@@ -84,9 +84,9 @@ public class P2pProxyMain  implements P2pProxyMainMBean {
 	   try {
 		   mConfigHomeDir=System.getProperty("user.home")+"/.p2pproxy";
 		   int lsipPort=5040;
-		   int lMediaPort=16000;
+		   int lMediaPort=MediaResourceService.AUDIO_VIDEO_LOCAL_PORT_DEFAULT_VALUE;
+		   int lP2pPort = 9701;
 		   JxtaNetworkManager.Mode lMode = JxtaNetworkManager.Mode.auto;
-		   boolean lEnableHttp = false;
 		   // setup logging
 
 		   // get config dire first
@@ -122,16 +122,11 @@ public class P2pProxyMain  implements P2pProxyMainMBean {
 		   } catch (Exception e) {
 			   mLog.warn("cannot register MBean",e);
 		   }         
-		   String lSocksHost = null;
-		   String lSocksPort = null;
-		   //         if (args.length <= 0) {
-//		   usage();
-//		   System.exit(1);
-//		   }
+	
 		   // get other params
 		   for (int i=0; i < args.length; i=i+2) {  
 			   String argument = args[i];
-			   if (argument.equals("-jxta")) {
+			   if (argument.equals("-jxta") || argument.equals("-home")) {
 				   mConfigHomeDir = args[i + 1];
 				   //nop
 			   } else if (argument.equals("-sip")) {
@@ -140,8 +135,12 @@ public class P2pProxyMain  implements P2pProxyMainMBean {
 				   mConfigurator.setProperty(SipProxyRegistrar.REGISTRAR_PORT, Integer.toString(lsipPort));
 			   } else if (argument.equals("-media")) {
                   lMediaPort = Integer.parseInt(args[i + 1]);
-                  System.out.println("media detected[" + lsipPort + "]");
-                  mConfigurator.setProperty(RtpRelayService.AUDIO_VIDEO_LOCAL_PORT, Integer.toString(lMediaPort));
+                  System.out.println("media detected[" + lMediaPort + "]");
+                  mConfigurator.setProperty(MediaResourceService.AUDIO_VIDEO_LOCAL_PORT, Integer.toString(lMediaPort));
+              } else if (argument.equals("-p2p")) {
+                  lP2pPort = Integer.parseInt(args[i + 1]);
+                  System.out.println("p2p port detected[" + lP2pPort + "]");
+                  mConfigurator.setProperty(JxtaNetworkManager.TCP_LISTENING_PORT, Integer.toString(lP2pPort));
               } else if (argument.equals("-relay")) {
 				   lMode = JxtaNetworkManager.Mode.relay;
 				   mConfigurator.setProperty(JxtaNetworkManager.MODE, lMode.name());
@@ -169,28 +168,17 @@ public class P2pProxyMain  implements P2pProxyMainMBean {
 			   else if (argument.equals("-seeding-relay")) {
 				   mConfigurator.setProperty(JxtaNetworkManager.SEEDING_RELAY, args[i + 1]);
 				   System.out.println("seeding relay detected[" + args[i + 1] + "]");
+			   }  else if (argument.equals("-seeding")) {
+				   mConfigurator.setProperty(JxtaNetworkManager.SEEDING_RDV, args[i + 1]);
+				   mConfigurator.setProperty(JxtaNetworkManager.SEEDING_RELAY, args[i + 1]);
+				   System.out.println("seeding  detected[" + args[i + 1] + "]");
 			   }
 			   else if (argument.equals("-public-address")) {
 				   mConfigurator.setProperty(JxtaNetworkManager.HTTP_LISTENING_PUBLIC_ADDRESS,args[i + 1]+":9700");
-				   mConfigurator.setProperty(JxtaNetworkManager.TCP_LISTENING_PUBLIC_ADDRESS,args[i + 1]+":9701");
-                   mConfigurator.setProperty(RtpRelayService.AUDIO_VIDEO_PUBLIC_URI,"udp://"+args[i + 1]+":"+lMediaPort);
+				   mConfigurator.setProperty(JxtaNetworkManager.TCP_LISTENING_PUBLIC_ADDRESS,args[i + 1]+":"+lP2pPort);
+                   mConfigurator.setProperty(MediaResourceService.AUDIO_VIDEO_PUBLIC_URI,"udp://"+args[i + 1]+":"+lMediaPort);
                    mConfigurator.setProperty(SipProxyRegistrar.REGISTRAR_PUBLIC_ADDRESS,args[i + 1]);
                    System.out.println("public address detected[" + args[i + 1] + "]");
-			   }            
-			   else if (argument.equals("-socks-url")) {
-				   try {
-				      URI lSocksUrl = new URI(args[i + 1]);
-					   lSocksHost = lSocksUrl.getHost();
-					   lSocksPort = Integer.toString(lSocksUrl.getPort());
-				   }catch (Exception e) {
-					   mLog.warn("enable to get socks proxy from env",e);
-				   }
-				   System.out.println("socks serveur detected[" + args[i + 1] + "]");
-			   } else if (argument.equals("-enable-http-client")) {
-				   lEnableHttp = true;
-				   mConfigurator.setProperty(JxtaNetworkManager.ENABLE_HTTP_CLIENT, "true");
-				   System.out.println("enable-http mode detected");
-				   i--;
 			   }            
 			   else
 			   {
@@ -199,41 +187,6 @@ public class P2pProxyMain  implements P2pProxyMainMBean {
 				   System.exit(1);
 			   }
 		   }
-		   String lProxyUrlString = null;
-		   String lProxyHost = null;
-		   String lProxyPort = null;
-		   //configure http proxy 
-		   if ((lProxyUrlString = System.getenv("http_proxy")) != null) {
-			   //get from env
-			   try {
-				   URL lProxyUrl = new URL(lProxyUrlString);
-				   lProxyHost = lProxyUrl.getHost();
-				   lProxyPort = Integer.toString(lProxyUrl.getPort());
-			   }catch (Exception e) {
-				   mLog.warn("enable do get http proxy from env",e);
-			   }
-		   }
-		   //check from config 
-		   if (lProxyHost != null || (lProxyHost = mConfigurator.getProperty("http.proxyHost")) != null)  {
-			   System.setProperty("http.proxyHost", lProxyHost);
-		   }
-		   if (lProxyPort != null || (lProxyPort = mConfigurator.getProperty("http.proxyPort")) != null) {
-			   System.setProperty("http.proxyPort", lProxyPort);
-		   }
-		   //configure socks proxy
-		   if ((lProxyUrlString = System.getenv("socks_proxy")) != null) {
-			   //get from env
-
-		   }
-		   //check from config 
-		   if (lSocksHost != null || (lSocksHost = mConfigurator.getProperty("socksProxyHost")) != null)  {
-			   System.setProperty("socksProxyHost", lSocksHost);
-		   }
-		   if (lSocksPort != null || (lSocksPort = mConfigurator.getProperty("socksProxyPort")) != null) {
-			   System.setProperty("socksProxyPort", lSocksPort);
-		   }
-
-		   //check from env
 
 		   File lJxtaDirectory = new File (mConfigHomeDir);
 		   if (lJxtaDirectory.exists() == false) lJxtaDirectory.mkdir();
@@ -351,35 +304,17 @@ public class P2pProxyMain  implements P2pProxyMainMBean {
    }   
    private static void usage() {
       System.out.println("p2pproxy");
-      System.out.println("-jxta : directory where configuration/cache is located  (including jxta cache.default is $HOME/.p2pproxy");
+      System.out.println("-home : directory where configuration/cache is located  (including jxta cache.default is $HOME/.p2pproxy");
       System.out.println("-sip : udp proxy port, default 5060");
       System.out.println("-media : udp relay/stun port, default 16000");
+      System.out.println("-p2p : p2p tcp port, default 9701");
       System.out.println("-relay : super peer mode");
       System.out.println("-edge-only : edge mode");
       System.out.println("-seeding-server : seeding server mode");
       System.out.println("-auto-config : automatically choose edge or relay (default mode)");
-      System.out.println("-seeding-rdv : list of boostrap rdv separated by | (ex tcp://127.0.0.1:9701|http://127.0.0.2:9700)");
-      System.out.println("-seeding-relay : list of boostrap relay separated by |(ex tcp://127.0.0.1:9701|http://127.0.0.2:9700)");
+      System.out.println("-seeding : list of boostrap rdv separated by | (ex tcp://127.0.0.1:9701|http://127.0.0.2:9700)");
       System.out.println("-public-address : ip as exported to peers (ex myPublicAddress.no-ip.org)");
-      System.out.println("-socks-url : tcp://ip:port for socks server (ex tcp://socks.com:1080)");
-      System.out.println("-enable-http-client : enable http transport for client (default = false)");
    }
-   public String getHttpProxy() {
-      return System.getProperty("http.proxyHost", "not-set")+":"+System.getProperty("http.proxyPort", "not-set");
-   }
-
-   public void setHttpProxy(String aProxyHost, String aProxyPort, String aUserName, String aPassword) {
-      System.setProperty("http.proxyHost",aProxyHost);
-      System.setProperty("http.proxyPort",aProxyPort);
-
-   }
-public String getSocksServer() {
-    return System.getProperty("socksProxyHost", "not-set")+":"+System.getProperty("socksProxyPort", "not-set");
-}
-public void setSocksServer(String aSocksHost, String aSocksPort, String aUserName, String aPassword) {
-    System.setProperty("socksProxyHost",aSocksHost);
-    System.setProperty("socksProxyPort",aSocksPort);
-}
   
 public void loadTraceConfigFile() throws P2pProxyException {
    staticLoadTraceConfigFile();
@@ -514,7 +449,15 @@ public static int revokeSipProxy(String aProxy) {
       return P2pProxylauncherConstants.P2PPROXY_NOT_CONNECTED;
    }   
 }
-
+public static int revokeMediaServer(String aServer) {
+	   try {
+	      isReady();
+	      mP2pProxyManagement.revokeMediaServer(aServer);
+	      return P2pProxylauncherConstants.P2PPROXY_NO_ERROR;
+	   } catch (P2pProxyException e) {
+	      return P2pProxylauncherConstants.P2PPROXY_NOT_CONNECTED;
+	   }   
+	}
 public static void stop() {
    mExit = true;
   

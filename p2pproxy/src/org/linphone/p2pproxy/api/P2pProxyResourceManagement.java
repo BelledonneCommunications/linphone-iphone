@@ -30,6 +30,8 @@ public interface P2pProxyResourceManagement {
    public String[] lookupSipProxiesUri(String aDomaine) throws P2pProxyException ;
    
    public void revokeSipProxy(String aProxy) throws P2pProxyException;
+   
+   public void revokeMediaServer(String aMediaServer) throws P2pProxyException;
    /**
     * return 2 adresses where to contact media server (stun/rtprelay)
     */

@@ -39,7 +39,8 @@ import org.linphone.p2pproxy.api.P2pProxyNetworkProbe;
 import org.linphone.p2pproxy.core.Configurator;
 import org.linphone.p2pproxy.core.JxtaNetworkManager;
 import org.linphone.p2pproxy.core.ServiceProvider;
-import org.linphone.p2pproxy.core.media.rtprelay.RtpRelayService;
+import org.linphone.p2pproxy.core.media.MediaResourceService;
+
 
 public class AutoConfigService implements ServiceProvider {
    private final static Logger mLog = Logger.getLogger(AutoConfigService.class);
@@ -131,7 +132,7 @@ public class AutoConfigService implements ServiceProvider {
 	   }
    }
    public boolean startUdpProxyIfPossible() {
-      int lAudioVideoPort = Integer.parseInt(mProperties.getProperty(RtpRelayService.AUDIO_VIDEO_LOCAL_PORT,"16000"));
+      int lAudioVideoPort = Integer.parseInt(mProperties.getProperty(MediaResourceService.AUDIO_VIDEO_LOCAL_PORT,"16000"));
       InetSocketAddress  lSocketAddress=null;
       try {
           lSocketAddress = new InetSocketAddress(mPubliAddress,lAudioVideoPort);

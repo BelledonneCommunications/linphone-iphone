@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 package org.linphone.p2pproxy.core.media;
 
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.net.URI;
@@ -37,12 +38,15 @@ import org.linphone.p2pproxy.core.JxtaNetworkManager;
 import org.linphone.p2pproxy.core.ServiceProvider;
 import org.linphone.p2pproxy.core.media.rtprelay.RtpRelayServer;
 import org.linphone.p2pproxy.core.media.rtprelay.RtpRelayServerConfig;
-import org.linphone.p2pproxy.core.media.rtprelay.RtpRelayService;
 import org.linphone.p2pproxy.core.sipproxy.NetworkResourceAdvertisement;
 import org.linphone.p2pproxy.core.stun.StunServer;
 
 public class MediaResourceService implements ServiceProvider {
    private final static Logger mLog = Logger.getLogger(MediaResourceService.class);   
+   public final static String AUDIO_VIDEO_LOCAL_PORT="org.linphone.p2pproxy.udp-media-relay.audio-video.port";
+   public final static int AUDIO_VIDEO_LOCAL_PORT_DEFAULT_VALUE=16000;
+   public final static String AUDIO_VIDEO_PUBLIC_URI="org.linphone.p2pproxy.udp-media-relay.audio-video.public-uri";
+
    private GenericUdpSession mUdpSessionForStunRtp;
    private  RtpRelayServer mRtpRelayServer;
    private  StunServer mSturServer;
@@ -54,8 +58,9 @@ public class MediaResourceService implements ServiceProvider {
    private final int ADV_LIFE_TIME=6000000;
    TimerTask mPublishTask;
    public MediaResourceService(Configurator aConfigurator, JxtaNetworkManager aJxtaNetworkManager) throws SocketException, UnknownHostException {
-      URI lAudioVideoPublicUri = URI.create(aConfigurator.getProperty(RtpRelayService.AUDIO_VIDEO_PUBLIC_URI,RtpRelayService.getDefaultAudioVideoPublicUri()));
-      int lAudioVideoLocalPort = Integer.valueOf(aConfigurator.getProperty(RtpRelayService.AUDIO_VIDEO_LOCAL_PORT,String.valueOf(lAudioVideoPublicUri.getPort())));
+	  
+	  int lAudioVideoLocalPort = Integer.valueOf(aConfigurator.getProperty(MediaResourceService.AUDIO_VIDEO_LOCAL_PORT,String.valueOf(AUDIO_VIDEO_LOCAL_PORT_DEFAULT_VALUE)));
+      URI lAudioVideoPublicUri = URI.create(aConfigurator.getProperty(MediaResourceService.AUDIO_VIDEO_PUBLIC_URI,"udp://"+InetAddress.getLocalHost().getHostAddress()+":"+lAudioVideoLocalPort));
       mConfig = new RtpRelayServerConfig(new InetSocketAddress(lAudioVideoPublicUri.getHost(),lAudioVideoPublicUri.getPort())
                                           ,new InetSocketAddress(lAudioVideoLocalPort));
       mUdpSessionForStunRtp = new GenericUdpSession(new InetSocketAddress(lAudioVideoLocalPort));
@@ -74,7 +79,7 @@ public class MediaResourceService implements ServiceProvider {
 			   try {
 				   mStunRtpServerAdvertisement = (NetworkResourceAdvertisement) AdvertisementFactory.newAdvertisement(NetworkResourceAdvertisement.getAdvertisementType());
 				   mStunRtpServerAdvertisement.setAddress("udp://"+mConfig.getAudioVideoPublicSocketAddress().getAddress().getHostAddress()+":"+mConfig.getAudioVideoPublicSocketAddress().getPort());
-				   mStunRtpServerAdvertisement.setID(IDFactory.newCodatID(mJxtaNetworkManager.getPeerGroup().getPeerGroupID(), mStunRtpServerAdvertisement.getAddress().toString().getBytes()));
+				   mStunRtpServerAdvertisement.setID(IDFactory.newCodatID(mJxtaNetworkManager.getPeerGroup().getPeerGroupID()/*, mStunRtpServerAdvertisement.getAddress().getBytes("US-ASCII")*/));
 				   mStunRtpServerAdvertisement.setName(ADV_NAME);
 				   mJxtaNetworkManager.getPeerGroup().getDiscoveryService().publish(mStunRtpServerAdvertisement,ADV_LIFE_TIME,ADV_LIFE_TIME/2);
 				   mLog.info(mStunRtpServerAdvertisement + "published");

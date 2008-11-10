@@ -55,5 +55,20 @@ public String[] getMediaServerList() throws P2pProxyException {
         throw new P2pProxyException(e);
      }
 }
+public void revokeMediaServer(String aMediaServer) throws P2pProxyException {
+    try {
+        List<NetworkResourceAdvertisement> lMediaResourceAdvertisement = (List<NetworkResourceAdvertisement>) (mJxtaNetworkManager.getAdvertisementList(null,MediaResourceService.ADV_NAME, true));
+        for (NetworkResourceAdvertisement lMediaResource:lMediaResourceAdvertisement) {
+            if (lMediaResource.getAddress().equals("udp://"+aMediaServer)) {
+        	mJxtaNetworkManager.getPeerGroup().getDiscoveryService().flushAdvertisement(lMediaResource);
+            mLog.info(aMediaServer +" revoked");
+            }
+        	
+        }
+     } catch (Exception e) {
+        throw new P2pProxyException(e);
+     }  
+	
+}
 
 }

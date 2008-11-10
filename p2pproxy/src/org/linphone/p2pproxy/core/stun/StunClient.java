@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
+import java.net.PortUnreachableException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URI;
@@ -34,6 +35,7 @@ import org.linphone.p2pproxy.api.P2pProxyException;
 import org.linphone.p2pproxy.core.JxtaNetworkManager;
 import org.linphone.p2pproxy.core.P2pProxyAdvertisementNotFoundException;
 import org.linphone.p2pproxy.core.media.MediaResourceService;
+import org.linphone.p2pproxy.core.media.MediaResoureUnreachableException;
 import org.linphone.p2pproxy.core.sipproxy.NetworkResourceAdvertisement;
 import de.javawi.jstun.attribute.ChangeRequest;
 import de.javawi.jstun.attribute.ErrorCode;
@@ -85,103 +87,111 @@ public class StunClient {
       return lSocketAddressList;
    }
    
-   public AddressInfo computeAddressInfo(DatagramSocket lLocalSocket) throws P2pProxyException {
+   public AddressInfo computeAddressInfo(DatagramSocket lLocalSocket) throws PortUnreachableException, P2pProxyException {
       AddressInfo lAddressInfo = new AddressInfo((InetSocketAddress) lLocalSocket.getLocalSocketAddress()); 
-	   try {
+      InetSocketAddress lCurrentMediaServerAddress = null; 
+      try {
 	      DiscoveryInfo lDiscoveryInfo = new DiscoveryInfo((InetSocketAddress) lLocalSocket.getLocalSocketAddress()); 
 	      //1 bind request 
-		   bindRequest(lDiscoveryInfo,lLocalSocket,lLocalSocket,null, mStunServerList.get(0));
+	      bindRequest(lDiscoveryInfo,lLocalSocket,lLocalSocket,null,lCurrentMediaServerAddress = mStunServerList.get(0));
 		   //2 bind request
 		   if (mStunServerList.size() > 1) {
 	           //open new socket
 	           DatagramSocket lDatagramSocket = new DatagramSocket();
-	           bindRequest(lDiscoveryInfo,lDatagramSocket, lLocalSocket, lDiscoveryInfo.getPublicSocketAddress(),mStunServerList.get(1));
+	           bindRequest(lDiscoveryInfo,lDatagramSocket, lLocalSocket, lDiscoveryInfo.getPublicSocketAddress(),lCurrentMediaServerAddress = mStunServerList.get(1));
 	           lDatagramSocket.close();
 		   }
 		   //analyse
 		    
 		   lAddressInfo.setPublicAddress(lDiscoveryInfo.getPublicSocketAddress());
 		   
+	} catch (PortUnreachableException pex) {
+		MediaResoureUnreachableException lExeption = new MediaResoureUnreachableException(pex);
+		lExeption.setRourceAddress(lCurrentMediaServerAddress.getAddress().getHostAddress()+":"+lCurrentMediaServerAddress.getPort());
+		throw lExeption;
 	} catch (Exception e) {
 		throw new P2pProxyException(e);
 	}
 	   return lAddressInfo;
    }
-	private void bindRequest(DiscoveryInfo aDiscoveryInfo,DatagramSocket aLocalSocket, DatagramSocket aResponseSocket,InetSocketAddress aResponseAddress, InetSocketAddress aStunAddress) throws UtilityException, SocketException, UnknownHostException, IOException, MessageAttributeParsingException, MessageHeaderParsingException, P2pProxyException {
-		int timeSinceFirstTransmission = 0;
-		int lSoTimeOut = SO_TIME_OUT;
-		while (true) {
-			try {
-				aLocalSocket.setReuseAddress(true);
-				aLocalSocket.connect(aStunAddress);
-				aLocalSocket.setSoTimeout(lSoTimeOut);
-				
-				MessageHeader sendMH = new MessageHeader(MessageHeader.MessageHeaderType.BindingRequest);
-				sendMH.generateTransactionID();
-				
-				ChangeRequest changeRequest = new ChangeRequest();
-				sendMH.addMessageAttribute(changeRequest);
-				if (!((InetSocketAddress)aLocalSocket.getLocalSocketAddress()).equals((InetSocketAddress)aResponseSocket.getLocalSocketAddress()) && aResponseAddress != null) {
-					// add response address
-					ResponseAddress lResponseAddress = new ResponseAddress();
-					lResponseAddress.setAddress(new Address(aResponseAddress.getAddress().getHostAddress()));
-					try {
-						lResponseAddress.setPort(aResponseAddress.getPort());
-						sendMH.addMessageAttribute(lResponseAddress);
-					} catch (MessageAttributeException e) {
-						mLog.info("Cannot set Response address ["+lResponseAddress+"]");
-					}
-				}
-				
-				byte[] data = sendMH.getBytes();
-				DatagramPacket send = new DatagramPacket(data, data.length);
-				aLocalSocket.send(send);
-							
-				MessageHeader receiveMH = new MessageHeader();
-				while (!(receiveMH.equalTransactionID(sendMH))) {
-					DatagramPacket receive = new DatagramPacket(new byte[200], 200);
-					aResponseSocket.receive(receive);
-					receiveMH = MessageHeader.parseHeader(receive.getData());
-					receiveMH.parseAttributes(receive.getData());
-				}
-				
-				MappedAddress lMappedAddress = (MappedAddress) receiveMH.getMessageAttribute(MessageAttribute.MessageAttributeType.MappedAddress);
-				ErrorCode ec = (ErrorCode) receiveMH.getMessageAttribute(MessageAttribute.MessageAttributeType.ErrorCode);
-				if (ec != null) {
+   private void bindRequest(DiscoveryInfo aDiscoveryInfo,DatagramSocket aLocalSocket, DatagramSocket aResponseSocket,InetSocketAddress aResponseAddress, InetSocketAddress aStunAddress) throws UtilityException, SocketException, UnknownHostException, IOException, MessageAttributeParsingException, MessageHeaderParsingException, P2pProxyException {
+	   int timeSinceFirstTransmission = 0;
+	   int lSoTimeOut = SO_TIME_OUT;
+	   while (true) {
+		   try {
+			   aLocalSocket.setReuseAddress(true);
+			   aLocalSocket.connect(aStunAddress);
+			   aLocalSocket.setSoTimeout(lSoTimeOut);
+
+			   MessageHeader sendMH = new MessageHeader(MessageHeader.MessageHeaderType.BindingRequest);
+			   sendMH.generateTransactionID();
+
+			   ChangeRequest changeRequest = new ChangeRequest();
+			   sendMH.addMessageAttribute(changeRequest);
+			   if (!((InetSocketAddress)aLocalSocket.getLocalSocketAddress()).equals((InetSocketAddress)aResponseSocket.getLocalSocketAddress()) && aResponseAddress != null) {
+				   // add response address
+				   ResponseAddress lResponseAddress = new ResponseAddress();
+				   lResponseAddress.setAddress(new Address(aResponseAddress.getAddress().getHostAddress()));
+				   try {
+					   lResponseAddress.setPort(aResponseAddress.getPort());
+					   sendMH.addMessageAttribute(lResponseAddress);
+				   } catch (MessageAttributeException e) {
+					   mLog.info("Cannot set Response address ["+lResponseAddress+"]");
+				   }
+			   }
+
+			   byte[] data = sendMH.getBytes();
+			   DatagramPacket send = new DatagramPacket(data, data.length);
+			   aLocalSocket.send(send);
+
+			   MessageHeader receiveMH = new MessageHeader();
+			   while (!(receiveMH.equalTransactionID(sendMH))) {
+				   DatagramPacket receive = new DatagramPacket(new byte[200], 200);
+				   aResponseSocket.receive(receive);
+				   receiveMH = MessageHeader.parseHeader(receive.getData());
+				   receiveMH.parseAttributes(receive.getData());
+			   }
+
+			   MappedAddress lMappedAddress = (MappedAddress) receiveMH.getMessageAttribute(MessageAttribute.MessageAttributeType.MappedAddress);
+			   ErrorCode ec = (ErrorCode) receiveMH.getMessageAttribute(MessageAttribute.MessageAttributeType.ErrorCode);
+			   if (ec != null) {
 				   aDiscoveryInfo.setError(ec.getResponseCode(), ec.getReason());
-					throw new P2pProxyException("Message header contains an Errorcode message attribute. ["+ec+"]");
-				}
-				if ((lMappedAddress == null)) {
-					throw new P2pProxyException("Response does not contain a Mapped Address message attribute.");
-					
-				} else {
-					if (aLocalSocket.getLocalSocketAddress().equals(aResponseSocket.getLocalSocketAddress())) {
+				   throw new P2pProxyException("Message header contains an Errorcode message attribute. ["+ec+"]");
+			   }
+			   if ((lMappedAddress == null)) {
+				   throw new P2pProxyException("Response does not contain a Mapped Address message attribute.");
+
+			   } else {
+				   if (aLocalSocket.getLocalSocketAddress().equals(aResponseSocket.getLocalSocketAddress())) {
 					   aDiscoveryInfo.setPublicSocketAddress(new InetSocketAddress(lMappedAddress.getAddress().getInetAddress(),lMappedAddress.getPort()));
-					} else {
+				   } else {
 					   aDiscoveryInfo.setFullCone();
-					}
-					}
-					return;
-				
-			} catch (SocketTimeoutException ste) {
-				if (timeSinceFirstTransmission < 7900) {
-					if (mLog.isInfoEnabled()) mLog.info("Socket timeout while receiving the response.");
-					timeSinceFirstTransmission += lSoTimeOut;
-					int timeoutAddValue = (timeSinceFirstTransmission * 2);
-					if (timeoutAddValue > 1600) timeoutAddValue = 1600;
-					lSoTimeOut = timeoutAddValue;
-				} else {
-					// node is not capable of udp communication
-					if (mLog.isInfoEnabled()) mLog.info("Socket timeout while receiving the response. Maximum retry limit exceed. Give up.");
-					if (aLocalSocket.getLocalSocketAddress().equals(aResponseSocket.getLocalSocketAddress())) {
+				   }
+			   }
+			   return;
+
+		   } catch (PortUnreachableException pex ) {
+			   throw pex;
+		   }
+		   catch (SocketTimeoutException ste) {
+			   if (timeSinceFirstTransmission < 7900) {
+				   if (mLog.isInfoEnabled()) mLog.info("Socket timeout while receiving the response.");
+				   timeSinceFirstTransmission += lSoTimeOut;
+				   int timeoutAddValue = (timeSinceFirstTransmission * 2);
+				   if (timeoutAddValue > 1600) timeoutAddValue = 1600;
+				   lSoTimeOut = timeoutAddValue;
+			   } else {
+				   // node is not capable of udp communication
+				   if (mLog.isInfoEnabled()) mLog.info("Socket timeout while receiving the response. Maximum retry limit exceed. Give up.");
+				   if (aLocalSocket.getLocalSocketAddress().equals(aResponseSocket.getLocalSocketAddress())) {
 					   aDiscoveryInfo.setBlockedUDP();
-					} else {
+				   } else {
 					   aDiscoveryInfo.setSymmetric();
-					}
-					if (mLog.isInfoEnabled()) mLog.info("Node is not capable of UDP communication.");
-					return ;
-				}
-			} 
-		}
-	}
+				   }
+				   if (mLog.isInfoEnabled()) mLog.info("Node is not capable of UDP communication.");
+				   return ;
+			   }
+		   } 
+	   }
+   }
 }

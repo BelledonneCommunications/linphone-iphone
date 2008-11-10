@@ -21,6 +21,7 @@ package org.linphone.p2pproxy.core;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -132,6 +133,7 @@ public class JxtaNetworkManager {
      
       if (!lNetworkConfigurator.exists()) {
          lNetworkConfigurator.setPeerID(IDFactory.newPeerID(PeerGroupID.defaultNetPeerGroupID));
+         lNetworkConfigurator.setName(InetAddress.getLocalHost().toString()+" "+aProperties.getProperty(TCP_LISTENING_PORT));
          lNetworkConfigurator.setDescription("p2p proxy instance");
          lNetworkConfigurator.save();
       } else {
@@ -368,7 +370,8 @@ public class JxtaNetworkManager {
     	  //1 check if already exist
     	  for (Advertisement lAdv: aList) {
     		  if (lAdv.equals(lNewAdv)) {
-    			  if (mLog.isDebugEnabled()) mLog.debug("adv ["+lNewAdv.getID()+"]already gathered");
+    			  if (mLog.isInfoEnabled()) mLog.info("adv ["+lNewAdv.getID()+"]already gathered");
+    			  if (mLog.isDebugEnabled()) mLog.debug(lNewAdv);
     			  lNewAdv = null;
     			  break;
     		  }

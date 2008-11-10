@@ -394,7 +394,7 @@ public void stop() {
    private void publishAdvertisement() throws IOException {
 	   if (mProxyRegistrationAdvertisement == null) {   
 	   mProxyRegistrationAdvertisement = (NetworkResourceAdvertisement) AdvertisementFactory.newAdvertisement(NetworkResourceAdvertisement.getAdvertisementType());
-	      mProxyRegistrationAdvertisement.setID(IDFactory.newCodatID(mJxtaNetworkManager.getPeerGroup().getPeerGroupID(), mSuperPeerProxy.getSipProxyRegistrarAddress().toString().getBytes()));
+	      mProxyRegistrationAdvertisement.setID(IDFactory.newCodatID(mJxtaNetworkManager.getPeerGroup().getPeerGroupID()/*, mSuperPeerProxy.getSipProxyRegistrarAddress().getBytes("US-ASCII")*/));
 	      mProxyRegistrationAdvertisement.setAddress(mSuperPeerProxy.getSipProxyRegistrarAddress());
 	      mProxyRegistrationAdvertisement.setName(ADV_NAME);
 	   }

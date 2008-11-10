@@ -23,10 +23,7 @@ package org.linphone.p2pproxy.core;
 import org.linphone.p2pproxy.api.P2pProxyException;
 
 public interface P2pProxyMainMBean {
-   public void setHttpProxy(String aProxyHost,String aProxyPort,String aUserName,String aPassword);
-   public String getHttpProxy();
-   public void setSocksServer(String aSocksHost,String aSocksPort,String aUserName,String aPassword);
-   public String getSocksServer();
+ 
    /**
     * reload traces from file
     * @throws P2pProxyException
