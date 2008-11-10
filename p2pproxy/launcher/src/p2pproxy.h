@@ -101,6 +101,25 @@ int p2pproxy_accountmgt_deleteAccount(const char* user_name);
 /***resource management******/
 /****************************/
 /**
+ * Structure to store resource list, must be instanciated by 
+ * p2pproxy_resourcemgt_new_resource_list and deleted by p2pproxy_resourcemgt_delete_resource_list.
+ * 
+ */
+struct p2pproxy_resourcemgt_resource_list {
+	char[]* resource_uri; /* uri list*/
+	unsigned char size;   /*number of element in the list*/
+} p2pproxy_resourcemgt_resource_list_t;
+
+/**
+ * Instanciate a p2pproxy_resourcemgt_resource_list
+ */
+p2pproxy_resourcemgt_resource_list_t* p2pproxy_resourcemgt_new_resource_list();
+/**
+ * delete a p2pproxy_resourcemgt_resource_list 
+ */
+void p2pproxy_resourcemgt_delete_resource_list(p2pproxy_resourcemgt_resource_list_t* resource_list);
+
+/**
 * access a proxy registrar sip addreess for a given domaine name 
 * @param [out] proxy_uri buffer allocated by the user
 * @param [in] size buffer size
@@ -108,6 +127,13 @@ int p2pproxy_accountmgt_deleteAccount(const char* user_name);
 * @return status code P2PPROXY_NO_ERROR, P2PPROXY_ERROR_RESOURCELOCATOR_SERVER_NOT_FOUND
 */
 int p2pproxy_resourcemgt_lookup_sip_proxy(char* proxy_uri,size_t size, char* domaine) ;
+/**
+* access a media ressource addresses for a given domaine name 
+* @param [out] p2pproxy_resourcemgt_resource_list_t  allocated by the user
+* @param [in] domaine name
+* @return status code P2PPROXY_NO_ERROR, P2PPROXY_ERROR_RESOURCELOCATOR_SERVER_NOT_FOUND
+*/
+int p2pproxy_resourcemgt_lookup_media_resource(p2pproxy_resourcemgt_resource_list_t* resource_list, char* domaine) ;
 /*
  * notify the library at a given proxy is no longuer reachable 
 * @param [in] proxy sip uri
@@ -115,6 +141,12 @@ int p2pproxy_resourcemgt_lookup_sip_proxy(char* proxy_uri,size_t size, char* dom
 */
 int p2pproxy_resourcemgt_revoke_sip_proxy(char* proxy_uri);
 
+/*
+ * notify the library at a given Media resoure is no longuer reachable 
+* @param [in] media resource uri (udp://hostname:port)
+* @return status code P2PPROXY_NO_ERROR
+*/
+int p2pproxy_resourcemgt_revoke_media_resource(char* resource_uri);
 
 #endif /*SWIG*/
 

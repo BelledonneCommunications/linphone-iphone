@@ -443,8 +443,8 @@ public static int getState() {
 public static int revokeSipProxy(String aProxy) {
    try {
       isReady();
-      mLog.error("not implemented");
-      return P2pProxylauncherConstants.P2PPROXY_ERROR;
+      mP2pProxyManagement.revokeSipProxy(aProxy);
+      return P2pProxylauncherConstants.P2PPROXY_NO_ERROR;
    } catch (P2pProxyException e) {
       return P2pProxylauncherConstants.P2PPROXY_NOT_CONNECTED;
    }   
