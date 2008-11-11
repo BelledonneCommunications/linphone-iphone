@@ -56,11 +56,7 @@ int main(int argc, char *argv[]){
 			if (vs) video_stream_iterate(vs);
 #endif
 
-#if 0 /* test code */
-			if (n==300)
-			  {
-			    ms_filter_call_method_noarg (vs->source, MS_V4L_STOP);
-			  }
+/* test code */
 			if (n==400)
 			  {
 			    ms_ticker_detach (vs->ticker, vs->source);
@@ -110,10 +106,8 @@ int main(int argc, char *argv[]){
 			    ms_filter_link(vs->pixconv,0, vs->output,0);
 
 			    
-			    //ms_filter_unlink(vs->tee,0,vs->output,0);
 			    ms_ticker_attach (vs->ticker, vs->source);
 			  }
-#endif
 		}
 		video_preview_stop(vs);
 	}
