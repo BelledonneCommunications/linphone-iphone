@@ -338,7 +338,7 @@ static bool_t win_display_init(MSDisplay *obj, MSPicture *fbuf){
 			if (wd->window!=NULL) SetWindowLongPtr(wd->window,GWLP_USERDATA,(LONG_PTR)obj);
 			else return FALSE;
 		}
-	}else{
+	}else if (obj->window_id==0){
 		/* the window might need to be resized*/
 		RECT cur;
 		GetWindowRect(wd->window,&cur);
