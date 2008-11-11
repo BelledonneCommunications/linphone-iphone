@@ -424,7 +424,7 @@ public static String[] lookupSipProxiesUri(String aDomaine) {
 public static String[] lookupMediaServerAddress(String aDomaine) {
    try {
       isReady();
-      return mP2pProxyManagement.getMediaServerList();
+      return mP2pProxySipProxyRegistrarManagement.getMediaServerList();
    } catch (Exception e) {
 	   mLog.error("cannot find media resource",e);
 	   return null;
@@ -443,7 +443,7 @@ public static int getState() {
 public static int revokeSipProxy(String aProxy) {
    try {
       isReady();
-      mP2pProxyManagement.revokeSipProxy(aProxy);
+      mP2pProxySipProxyRegistrarManagement.revokeSipProxy(aProxy);
       return P2pProxylauncherConstants.P2PPROXY_NO_ERROR;
    } catch (P2pProxyException e) {
       return P2pProxylauncherConstants.P2PPROXY_NOT_CONNECTED;
@@ -452,7 +452,7 @@ public static int revokeSipProxy(String aProxy) {
 public static int revokeMediaServer(String aServer) {
 	   try {
 	      isReady();
-	      mP2pProxyManagement.revokeMediaServer(aServer);
+	      mP2pProxySipProxyRegistrarManagement.revokeMediaServer(aServer);
 	      return P2pProxylauncherConstants.P2PPROXY_NO_ERROR;
 	   } catch (P2pProxyException e) {
 	      return P2pProxylauncherConstants.P2PPROXY_NOT_CONNECTED;

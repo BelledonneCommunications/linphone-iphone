@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <jni.h>
 #include <string.h>
+#include <stdlib.h>
 #include "p2pproxy.h"
 
 #ifndef P2PPROXY_JMX_PORT
@@ -194,3 +195,67 @@ int p2pproxy_application_stop() {
 }
 
 
+p2pproxy_resourcemgt_resource_list_t* p2pproxy_resourcemgt_new_resource_list() {
+	p2pproxy_resourcemgt_resource_list_t* resource_list = malloc(sizeof (p2pproxy_resourcemgt_resource_list_t));
+	resource_list->size = 0;
+	return resource_list;
+}
+
+void p2pproxy_resourcemgt_delete_resource_list(p2pproxy_resourcemgt_resource_list_t* resource_list) {
+	int i;
+	if (resource_list == 0 ) {
+		return;
+	}
+	for (i=0;i<resource_list->size;i++) {
+		free(resource_list->resource_uri[i]);
+	}
+	resource_list->size = 0;
+	free(resource_list);  
+}
+
+int p2pproxy_resourcemgt_lookup_media_resource(p2pproxy_resourcemgt_resource_list_t* resource_list, char* domaine)  {
+	jmethodID lLookupMediaResourceMethod;
+	jarray lJStringResults;
+	jstring lResourceInstance; 
+	const char* lString;
+	jboolean  lIsCopy;
+	jstring applicationArg;
+	int i;
+	jsize lStringSize;
+	jsize lArraySize;
+	
+	GET_JNI_ENV
+	 
+	
+	applicationArg = (*lJniEnv)->NewStringUTF(lJniEnv, domaine);
+	lLookupMediaResourceMethod = (*lJniEnv)->GetStaticMethodID(lJniEnv, lMainClass, "lookupMediaServerAddress", "(Ljava/lang/String;)[Ljava/lang/String;");
+	lJStringResults = (*lJniEnv)->CallStaticObjectMethod(lJniEnv, lMainClass, lLookupMediaResourceMethod, applicationArg);
+	if (lJStringResults == 0) {
+		return P2PPROXY_RESOURCEMGT_SERVER_NOT_FOUND;
+	}
+	
+	lArraySize = (*lJniEnv)->GetArrayLength(lJniEnv, lJStringResults);
+	for (i=0;i<lArraySize & i<P2PPROXY_MAX_RESOURCE_LIST_SIZE; i++) {
+		lResourceInstance =  (*lJniEnv)->GetObjectArrayElement(lJniEnv,lJStringResults, i);
+		lString =  (*lJniEnv)->GetStringUTFChars(lJniEnv, lResourceInstance, &lIsCopy);
+		lStringSize = (*lJniEnv)->GetStringLength(lJniEnv, lResourceInstance);
+		resource_list->resource_uri[i] = malloc(lStringSize);
+		strcpy(resource_list->resource_uri[i],lString);
+		resource_list->size=i;
+		(*lJniEnv)->ReleaseStringUTFChars(lJniEnv, lResourceInstance, lString);
+	}
+	
+	(*p2pproxy_application_jvm)->DetachCurrentThread(p2pproxy_application_jvm);
+	return P2PPROXY_NO_ERROR;
+}
+int p2pproxy_resourcemgt_revoke_media_resource(char* resource_uri) {
+	jmethodID revokeMediaResourceMethod;
+	jstring applicationArg;
+	GET_JNI_ENV
+	
+	applicationArg = (*lJniEnv)->NewStringUTF(lJniEnv, resource_uri);
+	revokeMediaResourceMethod = (*lJniEnv)->GetStaticMethodID(lJniEnv, lMainClass, "revokeMediaServer", "(Ljava/lang/String;)I");
+	lResult = (*lJniEnv)->CallStaticIntMethod(lJniEnv, lMainClass, revokeMediaResourceMethod,applicationArg);
+	(*p2pproxy_application_jvm)->DetachCurrentThread(p2pproxy_application_jvm);
+	return lResult;
+}

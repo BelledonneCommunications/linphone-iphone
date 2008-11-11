@@ -105,15 +105,16 @@ int p2pproxy_accountmgt_deleteAccount(const char* user_name);
  * p2pproxy_resourcemgt_new_resource_list and deleted by p2pproxy_resourcemgt_delete_resource_list.
  * 
  */
-struct p2pproxy_resourcemgt_resource_list {
-	char[]* resource_uri; /* uri list*/
+#define P2PPROXY_MAX_RESOURCE_LIST_SIZE 10
+typedef struct p2pproxy_resourcemgt_resource_list {
+	char* resource_uri[P2PPROXY_MAX_RESOURCE_LIST_SIZE]; /* uri list*/
 	unsigned char size;   /*number of element in the list*/
 } p2pproxy_resourcemgt_resource_list_t;
 
 /**
  * Instanciate a p2pproxy_resourcemgt_resource_list
  */
-p2pproxy_resourcemgt_resource_list_t* p2pproxy_resourcemgt_new_resource_list();
+p2pproxy_resourcemgt_resource_list_t* p2pproxy_resourcemgt_new_resource_list(void);
 /**
  * delete a p2pproxy_resourcemgt_resource_list 
  */
@@ -129,7 +130,7 @@ void p2pproxy_resourcemgt_delete_resource_list(p2pproxy_resourcemgt_resource_lis
 int p2pproxy_resourcemgt_lookup_sip_proxy(char* proxy_uri,size_t size, char* domaine) ;
 /**
 * access a media ressource addresses for a given domaine name 
-* @param [out] p2pproxy_resourcemgt_resource_list_t  allocated by the user
+* @param [out] p2pproxy_resourcemgt_resource_list_t  allocated by the user (size = 0)
 * @param [in] domaine name
 * @return status code P2PPROXY_NO_ERROR, P2PPROXY_ERROR_RESOURCELOCATOR_SERVER_NOT_FOUND
 */
