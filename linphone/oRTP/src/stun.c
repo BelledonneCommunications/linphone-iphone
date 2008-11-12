@@ -776,7 +776,7 @@ stunRand(void)
 	read(fd,&tick,sizeof(tick));
 	closesocket(fd);
       }
-#elif defined(__linux) 
+#elif defined(__linux) || defined(HAVE_DEV_RANDOM) 
       {
  	fd_set fdSet;
 	int maxFd=0;

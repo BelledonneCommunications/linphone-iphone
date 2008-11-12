@@ -633,7 +633,19 @@ static void linphone_gtk_check_menu_items(void){
 					audio_only ? "audio_only_item" : "video_item")), TRUE);
 }
 
+static void linphone_gtk_configure_main_window(){
+	static LpConfig *conf=NULL;
+	static int show_digits=1;
+	GtkWidget *w=linphone_gtk_get_main_window();
+	if (conf==NULL){
+		conf=linphone_core_get_config(linphone_gtk_get_core());
+		show_digits=lp_config_get_int(conf,"GtkUi","show_digits",show_digits);
+	}
+	if (show_digits==0) gtk_widget_hide(linphone_gtk_get_widget(w,"dialpad"));
+}
+
 static void linphone_gtk_init_main_window(){
+	linphone_gtk_configure_main_window();
 	load_uri_history();
 	linphone_gtk_load_identities();
 	linphone_gtk_set_my_presence(linphone_core_get_presence_info(linphone_gtk_get_core()));
