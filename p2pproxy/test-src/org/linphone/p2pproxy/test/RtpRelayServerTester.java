@@ -6,6 +6,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
@@ -24,7 +25,15 @@ public class RtpRelayServerTester extends TestCase{
 	private static  GenericUdpSession mGenericUdpSession;
 	static StunServer mSturServer = null;
 	private final int SO_TIMEOUT=100;
+	private final InetSocketAddress mServerSocket;
 	
+	public RtpRelayServerTester() throws UnknownHostException {
+		mServerSocket = new InetSocketAddress(InetAddress.getByName("localhost"), RTP_SERVER_PORT);
+	}
+	
+	public RtpRelayServerTester(InetSocketAddress aServerAddress) {
+		mServerSocket = aServerAddress;
+	}
 	@Before
 	public void setUp() throws Exception {
 		if (mRtpRelayServer == null) {
@@ -74,26 +83,26 @@ public class RtpRelayServerTester extends TestCase{
 		try {
 			//1 send rtcp app A
 			DatagramSocket lRtcpSocketA = new DatagramSocket(new InetSocketAddress("localhost", 0));
-			DatagramPacket lRtcpaPacket = new DatagramPacket(lRtcpA,lRtcpA.length,InetAddress.getByName("localhost"), RTP_SERVER_PORT);
+			DatagramPacket lRtcpaPacket = new DatagramPacket(lRtcpA,lRtcpA.length,mServerSocket);
 			lRtcpSocketA.setSoTimeout(SO_TIMEOUT);
 			lRtcpSocketA.send(lRtcpaPacket);
 			
 			//2 send rtcp app B
 			DatagramSocket lRtcpSocketB = new DatagramSocket(new InetSocketAddress("localhost", 0));
-			DatagramPacket lRtcpbPacket = new DatagramPacket(lRtcpB,lRtcpB.length,InetAddress.getByName("localhost"), RTP_SERVER_PORT);
+			DatagramPacket lRtcpbPacket = new DatagramPacket(lRtcpB,lRtcpB.length,mServerSocket);
 			lRtcpSocketB.setSoTimeout(SO_TIMEOUT);
 			lRtcpSocketB.send(lRtcpbPacket);
 			
 
             //3 send rtp A
             DatagramSocket lRtpSocketA = new DatagramSocket(new InetSocketAddress("localhost", 0));
-            DatagramPacket lRtpaPacket = new DatagramPacket(lRtpA,lRtpA.length,InetAddress.getByName("localhost"), RTP_SERVER_PORT);
+            DatagramPacket lRtpaPacket = new DatagramPacket(lRtpA,lRtpA.length,mServerSocket);
             lRtpSocketA.setSoTimeout(SO_TIMEOUT);
             lRtpSocketA.send(lRtpaPacket);
             
             //4 send rtp B
             DatagramSocket lRtpSocketB = new DatagramSocket(new InetSocketAddress("localhost", 0));
-            DatagramPacket lRtpblPacket = new DatagramPacket(lRtpB,lRtpB.length,InetAddress.getByName("localhost"), RTP_SERVER_PORT);
+            DatagramPacket lRtpblPacket = new DatagramPacket(lRtpB,lRtpB.length,mServerSocket);
             lRtpSocketB.send(lRtpblPacket);
             lRtpSocketB.setSoTimeout(SO_TIMEOUT);
             
@@ -128,7 +137,7 @@ public class RtpRelayServerTester extends TestCase{
                               ,0x0,0x01,0x02,lSsrcA //ssrc
                               ,'B','L','A','B','L','A'};
             
-            DatagramPacket lRtcpASRPacket = new DatagramPacket(lRtcpASR,lRtcpASR.length,InetAddress.getByName("localhost"), RTP_SERVER_PORT);
+            DatagramPacket lRtcpASRPacket = new DatagramPacket(lRtcpASR,lRtcpASR.length,mServerSocket);
             lRtcpSocketA.send(lRtcpASRPacket);
             try {
                lRtcpSocketB.receive(lReceivedRtpbPacket);
@@ -143,7 +152,7 @@ public class RtpRelayServerTester extends TestCase{
                               ,0x04,0x05,0x06,lSsrcB //ssrc
                               ,'B','L','A','B','L','A'};
             
-            DatagramPacket lRtcpBSRPacket = new DatagramPacket(lRtcpBSR,lRtcpBSR.length,InetAddress.getByName("localhost"), RTP_SERVER_PORT);
+            DatagramPacket lRtcpBSRPacket = new DatagramPacket(lRtcpBSR,lRtcpBSR.length,mServerSocket);
             lRtcpSocketB.send(lRtcpBSRPacket);
             try {
                lRtcpSocketA.receive(lReceivedRtpbPacket);
@@ -158,7 +167,7 @@ public class RtpRelayServerTester extends TestCase{
                               ,0x55,0x55,0x56,0x55 //ssrc
                               ,'B','L','A','B','L','A'};
             
-            DatagramPacket lRtcpSRPacket = new DatagramPacket(lRtcpSR,lRtcpSR.length,InetAddress.getByName("localhost"), RTP_SERVER_PORT);
+            DatagramPacket lRtcpSRPacket = new DatagramPacket(lRtcpSR,lRtcpSR.length,mServerSocket);
             lRtcpSocketB.send(lRtcpSRPacket);
             try {
                lRtcpSocketA.receive(lReceivedRtpbPacket);
