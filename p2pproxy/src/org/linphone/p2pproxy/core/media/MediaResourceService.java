@@ -79,7 +79,7 @@ public class MediaResourceService implements ServiceProvider {
 			   try {
 				   mStunRtpServerAdvertisement = (NetworkResourceAdvertisement) AdvertisementFactory.newAdvertisement(NetworkResourceAdvertisement.getAdvertisementType());
 				   mStunRtpServerAdvertisement.setAddress("udp://"+mConfig.getAudioVideoPublicSocketAddress().getAddress().getHostAddress()+":"+mConfig.getAudioVideoPublicSocketAddress().getPort());
-				   mStunRtpServerAdvertisement.setID(IDFactory.newCodatID(mJxtaNetworkManager.getPeerGroup().getPeerGroupID()/*, mStunRtpServerAdvertisement.getAddress().getBytes("US-ASCII")*/));
+				   mStunRtpServerAdvertisement.setID(IDFactory.newCodatID(mJxtaNetworkManager.getPeerGroup().getPeerGroupID(), Integer.toHexString(mStunRtpServerAdvertisement.getAddress().hashCode()).getBytes("US-ASCII")));
 				   mStunRtpServerAdvertisement.setName(ADV_NAME);
 				   mJxtaNetworkManager.getPeerGroup().getDiscoveryService().publish(mStunRtpServerAdvertisement,ADV_LIFE_TIME,ADV_LIFE_TIME/2);
 				   mLog.info(mStunRtpServerAdvertisement + "published");

@@ -82,6 +82,9 @@ public class JxtaNetworkManager {
    public final static String HTTP_LISTENING_PORT="org.linphone.p2pproxy.JxtaNetworkManager.http.port";
    public final static String HTTP_LISTENING_PUBLIC_ADDRESS="org.linphone.p2pproxy.JxtaNetworkManager.http.listening.public.address";
    public final static String TCP_LISTENING_PUBLIC_ADDRESS="org.linphone.p2pproxy.JxtaNetworkManager.tcp.listening.public.address";
+   public final static String SEEDING_RDV_URL="org.linphone.p2pproxy.JxtaNetworkManager.seeding-rdv.url-location";
+   public final static String SEEDING_RELAY_URL="org.linphone.p2pproxy.JxtaNetworkManager.seeding-relay.url-location";
+
    public final static String SO_TIMEOUT="org.linphone.p2pproxy.so-timout";
    public final static String ENABLE_HTTP_CLIENT="org.linphone.p2pproxy.JxtaNetworkManager.http.client.enable";
    public static int EDGE_MODE =  NetworkConfigurator.TCP_CLIENT| NetworkConfigurator.RDV_CLIENT | NetworkConfigurator.RELAY_CLIENT;
@@ -111,74 +114,92 @@ public class JxtaNetworkManager {
     * @throws CertificateException 
     */
    public JxtaNetworkManager(Configurator aProperties,File aConfigDir) throws JxtaException, InterruptedException, P2pProxyException, IOException, URISyntaxException, CertificateException {
-      super();
-      // get configuration
-      //System.setProperty("JXTA_HOME", aConfigDir.getAbsolutePath());
-      
-      NetworkConfigurator lNetworkConfigurator;
-      mProperties = aProperties;
-      // set mode
-      mMode = Mode.valueOf(aProperties.getProperty(MODE, Mode.edge.name()));
-      int lMode;
-      if (mMode == Mode.relay || mMode == Mode.seeding_server) {
-    	  lMode = SUPER_PEER_MODE;
-      } else {
-    	  lMode = EDGE_MODE;
-      }
-      if (aProperties.getProperty(ENABLE_HTTP_CLIENT) != null && Boolean.parseBoolean(aProperties.getProperty(ENABLE_HTTP_CLIENT)) == true) {
-    	  lMode = lMode | NetworkConfigurator.HTTP_CLIENT;
-       } 
-      
-      lNetworkConfigurator = new NetworkConfigurator(lMode,aConfigDir.toURI());
-     
-      if (!lNetworkConfigurator.exists()) {
-         lNetworkConfigurator.setPeerID(IDFactory.newPeerID(PeerGroupID.defaultNetPeerGroupID));
-         lNetworkConfigurator.setName(InetAddress.getLocalHost().toString()+" "+aProperties.getProperty(TCP_LISTENING_PORT));
-         lNetworkConfigurator.setDescription("p2p proxy instance");
-         lNetworkConfigurator.save();
-      } else {
-         lNetworkConfigurator.load();
-      }
-      //mode is alway taken from start line
-      lNetworkConfigurator.setMode(lMode);
-      // set sedding host
-      if (aProperties.getProperty(SEEDING_RDV) != null) {
-         StringTokenizer lSeedingRdvList =  new StringTokenizer(aProperties.getProperty(SEEDING_RDV),"|" );
-         while (lSeedingRdvList.hasMoreTokens()) {
-            lNetworkConfigurator.addSeedRendezvous(new URI(lSeedingRdvList.nextToken()));
-         }
-     }
-      if (aProperties.getProperty(SEEDING_RELAY) != null) {
-         StringTokenizer lSeedingRelayList =  new StringTokenizer(aProperties.getProperty(SEEDING_RELAY),"|" );
-         while (lSeedingRelayList.hasMoreTokens()) {
-            lNetworkConfigurator.addSeedRelay(new URI(lSeedingRelayList.nextToken()));
-         }
-      }
-      
-      if (aProperties.getProperty(HTTP_LISTENING_PUBLIC_ADDRESS) != null) {
-         lNetworkConfigurator.setHttpPublicAddress(aProperties.getProperty(HTTP_LISTENING_PUBLIC_ADDRESS), true);
-      }
-      
-      // set listening ports
-      if (aProperties.getProperty(HTTP_LISTENING_PORT) != null) {
-         lNetworkConfigurator.setHttpPort(Integer.parseInt(aProperties.getProperty(HTTP_LISTENING_PORT)));
-      }
-      
-      if (aProperties.getProperty(TCP_LISTENING_PUBLIC_ADDRESS) != null) {
-          lNetworkConfigurator.setTcpPublicAddress(aProperties.getProperty(TCP_LISTENING_PUBLIC_ADDRESS), true);
-          lNetworkConfigurator.setTcpStartPort(-1);
-          lNetworkConfigurator.setTcpEndPort(-1);
-       }
+	   super();
+	   // get configuration
+	   //System.setProperty("JXTA_HOME", aConfigDir.getAbsolutePath());
 
-      if (aProperties.getProperty(TCP_LISTENING_PORT) != null) {
-         lNetworkConfigurator.setTcpPort(Integer.parseInt(aProperties.getProperty(TCP_LISTENING_PORT)));
-      }
-      
-      // connect to rdv
-      int lRdvConnectionTimout = Integer.parseInt(aProperties.getProperty(RDV_CONNECT_TIMEOUT,"60000"));
-      init(lNetworkConfigurator,lRdvConnectionTimout,mMode);
-      
-      
+	   NetworkConfigurator lNetworkConfigurator;
+	   mProperties = aProperties;
+	   // set mode
+	   mMode = Mode.valueOf(aProperties.getProperty(MODE, Mode.edge.name()));
+	   int lMode;
+	   if (mMode == Mode.relay || mMode == Mode.seeding_server) {
+		   lMode = SUPER_PEER_MODE;
+	   } else {
+		   lMode = EDGE_MODE;
+	   }
+	   if (aProperties.getProperty(ENABLE_HTTP_CLIENT) != null && Boolean.parseBoolean(aProperties.getProperty(ENABLE_HTTP_CLIENT)) == true) {
+		   lMode = lMode | NetworkConfigurator.HTTP_CLIENT;
+	   } 
+
+	   lNetworkConfigurator = new NetworkConfigurator(lMode,aConfigDir.toURI());
+
+	   if (!lNetworkConfigurator.exists()) {
+		   lNetworkConfigurator.setPeerID(IDFactory.newPeerID(PeerGroupID.defaultNetPeerGroupID));
+		   lNetworkConfigurator.setName(InetAddress.getLocalHost().toString()+" "+aProperties.getProperty(TCP_LISTENING_PORT));
+		   lNetworkConfigurator.setDescription("p2p proxy instance");
+		   lNetworkConfigurator.save();
+	   } else {
+		   lNetworkConfigurator.load();
+	   }
+	   //mode is alway taken from start line
+	   lNetworkConfigurator.setMode(lMode);
+	   // set sedding host
+	   if (aProperties.getProperty(SEEDING_RDV) != null) {
+		   StringTokenizer lSeedingRdvList =  new StringTokenizer(aProperties.getProperty(SEEDING_RDV),"|" );
+		   while (lSeedingRdvList.hasMoreTokens()) {
+			   lNetworkConfigurator.addSeedRendezvous(new URI(lSeedingRdvList.nextToken()));
+		   }
+	   }
+	   if (aProperties.getProperty(SEEDING_RELAY) != null) {
+		   StringTokenizer lSeedingRelayList =  new StringTokenizer(aProperties.getProperty(SEEDING_RELAY),"|" );
+		   while (lSeedingRelayList.hasMoreTokens()) {
+			   lNetworkConfigurator.addSeedRelay(new URI(lSeedingRelayList.nextToken()));
+		   }
+	   }
+
+
+	   if (aProperties.getProperty(SEEDING_RDV_URL) != null) {
+		   StringTokenizer lSeedingRdvList =  new StringTokenizer(aProperties.getProperty(SEEDING_RDV_URL),"|" );
+		   while (lSeedingRdvList.hasMoreTokens()) {
+			   lNetworkConfigurator.addRdvSeedingURI(new URI(lSeedingRdvList.nextToken()));
+		   }
+	   } else {
+		   lNetworkConfigurator.addRdvSeedingURI("http://seeding.fonis.net/rdv");
+	   }
+	   if (aProperties.getProperty(SEEDING_RELAY_URL) != null) {
+		   StringTokenizer lSeedingRelayList =  new StringTokenizer(aProperties.getProperty(SEEDING_RELAY_URL),"|" );
+		   while (lSeedingRelayList.hasMoreTokens()) {
+			   lNetworkConfigurator.addRelaySeedingURI(new URI(lSeedingRelayList.nextToken()));
+		   }
+	   } else {
+		   lNetworkConfigurator.addRelaySeedingURI("http://seeding.fonis.net/relay");
+	   }
+
+	   if (aProperties.getProperty(HTTP_LISTENING_PUBLIC_ADDRESS) != null) {
+		   lNetworkConfigurator.setHttpPublicAddress(aProperties.getProperty(HTTP_LISTENING_PUBLIC_ADDRESS), true);
+	   }
+
+	   // set listening ports
+	   if (aProperties.getProperty(HTTP_LISTENING_PORT) != null) {
+		   lNetworkConfigurator.setHttpPort(Integer.parseInt(aProperties.getProperty(HTTP_LISTENING_PORT)));
+	   }
+
+	   if (aProperties.getProperty(TCP_LISTENING_PUBLIC_ADDRESS) != null) {
+		   lNetworkConfigurator.setTcpPublicAddress(aProperties.getProperty(TCP_LISTENING_PUBLIC_ADDRESS), true);
+		   lNetworkConfigurator.setTcpStartPort(-1);
+		   lNetworkConfigurator.setTcpEndPort(-1);
+	   }
+
+	   if (aProperties.getProperty(TCP_LISTENING_PORT) != null) {
+		   lNetworkConfigurator.setTcpPort(Integer.parseInt(aProperties.getProperty(TCP_LISTENING_PORT)));
+	   }
+
+	   // connect to rdv
+	   int lRdvConnectionTimout = Integer.parseInt(aProperties.getProperty(RDV_CONNECT_TIMEOUT,"60000"));
+	   init(lNetworkConfigurator,lRdvConnectionTimout,mMode);
+
+
    }
    /**
     * @param aProperties use to store pipe ID

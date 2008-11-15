@@ -77,6 +77,9 @@ public class StunClient {
          throw new P2pProxyException(e);
       }
    }   
+   public List<InetSocketAddress> getStrunServerList() {
+	   return mStunServerList;
+   }
    private List<InetSocketAddress> acquireStunServerAddress() throws P2pProxyAdvertisementNotFoundException, InterruptedException, IOException {
       List<NetworkResourceAdvertisement> lStunServerAdv = (List<NetworkResourceAdvertisement>) mJxtaNetworkManager.getAdvertisementList(null, MediaResourceService.ADV_NAME, true);
       List<InetSocketAddress> lSocketAddressList = new ArrayList<InetSocketAddress>(lStunServerAdv.size());

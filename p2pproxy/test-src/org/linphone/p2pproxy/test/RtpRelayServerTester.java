@@ -12,6 +12,7 @@ import junit.framework.Assert;
 import junit.framework.TestCase;
 
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.linphone.p2pproxy.core.GenericUdpSession;
@@ -19,7 +20,7 @@ import org.linphone.p2pproxy.core.media.rtprelay.RtpRelayServer;
 import org.linphone.p2pproxy.core.stun.StunServer;
 
 public class RtpRelayServerTester extends TestCase{
-
+	private final static Logger mLog = Logger.getLogger(RtpRelayServerTester.class);
 	static private RtpRelayServer mRtpRelayServer;
 	static private int RTP_SERVER_PORT = 16000;
 	private static  GenericUdpSession mGenericUdpSession;
@@ -82,26 +83,26 @@ public class RtpRelayServerTester extends TestCase{
 		
 		try {
 			//1 send rtcp app A
-			DatagramSocket lRtcpSocketA = new DatagramSocket(new InetSocketAddress("localhost", 0));
+			DatagramSocket lRtcpSocketA = new DatagramSocket();
 			DatagramPacket lRtcpaPacket = new DatagramPacket(lRtcpA,lRtcpA.length,mServerSocket);
 			lRtcpSocketA.setSoTimeout(SO_TIMEOUT);
 			lRtcpSocketA.send(lRtcpaPacket);
 			
 			//2 send rtcp app B
-			DatagramSocket lRtcpSocketB = new DatagramSocket(new InetSocketAddress("localhost", 0));
+			DatagramSocket lRtcpSocketB = new DatagramSocket();
 			DatagramPacket lRtcpbPacket = new DatagramPacket(lRtcpB,lRtcpB.length,mServerSocket);
 			lRtcpSocketB.setSoTimeout(SO_TIMEOUT);
 			lRtcpSocketB.send(lRtcpbPacket);
 			
 
             //3 send rtp A
-            DatagramSocket lRtpSocketA = new DatagramSocket(new InetSocketAddress("localhost", 0));
+            DatagramSocket lRtpSocketA = new DatagramSocket();
             DatagramPacket lRtpaPacket = new DatagramPacket(lRtpA,lRtpA.length,mServerSocket);
             lRtpSocketA.setSoTimeout(SO_TIMEOUT);
             lRtpSocketA.send(lRtpaPacket);
             
             //4 send rtp B
-            DatagramSocket lRtpSocketB = new DatagramSocket(new InetSocketAddress("localhost", 0));
+            DatagramSocket lRtpSocketB = new DatagramSocket();
             DatagramPacket lRtpblPacket = new DatagramPacket(lRtpB,lRtpB.length,mServerSocket);
             lRtpSocketB.send(lRtpblPacket);
             lRtpSocketB.setSoTimeout(SO_TIMEOUT);

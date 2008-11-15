@@ -36,6 +36,7 @@ import org.linphone.p2pproxy.core.media.MediaResoureUnreachableException;
 import org.linphone.p2pproxy.core.stun.AddressInfo;
 import org.linphone.p2pproxy.core.stun.StunClient;
 import org.linphone.p2pproxy.launcher.P2pProxylauncherConstants;
+import org.linphone.p2pproxy.test.RtpRelayServerTester;
 import org.zoolu.net.SocketAddress;
 import org.zoolu.sip.provider.SipProvider;
 import org.zoolu.sip.provider.SipStack;
@@ -45,7 +46,8 @@ private final Thread mFonisThread;
 private Timer mTimer = new Timer("Registartion timer");
 private final SipProvider mProvider;
 private final SipClient mSipClient;
-private  StunClient mStunClient;
+private RtpRelayServerTester mRtpRelayServerTester;
+private StunClient mStunClient;
 private final int REGISTRATION_PERIOD=60;
 private final static Logger mLog = Logger.getLogger(UserInstance.class);
 private static boolean mIsRegistered = false;
@@ -122,7 +124,14 @@ public UserInstance(final String userName,final String aPreferedProxyUri) throws
 						P2pProxyMain.revokeMediaServer(pex.getResourceAddress());
 					}
 					
-					mSipClient.register(REGISTRATION_PERIOD,userName);
+					try{
+						mSipClient.register(REGISTRATION_PERIOD,userName);
+					}catch(Exception e) {
+						mLog.error("registration error", e);
+					}
+					if (lMediaServer.length > 0) {
+						mRtpRelayServerTester = new RtpRelayServerTester(mStunClient.getStrunServerList().get(0));
+					}
 					mIsRegistered = true;
 				} 	
 					catch(Exception e) {
@@ -141,6 +150,10 @@ public UserInstance(final String userName,final String aPreferedProxyUri) throws
 }
 public void call(String aTo, int duration) {
 	mSipClient.call(aTo, true, duration);
+	if (mRtpRelayServerTester != null) {
+		mRtpRelayServerTester.testRouting();
+		mLog.info("rtp relay ok");
+	}
 }
 public static void main(String[] args) throws P2pProxyException {
 	String lFrom=null, lTo=null, lPreferedProxyUri=null;
