@@ -982,7 +982,11 @@ void linphone_core_iterate(LinphoneCore *lc)
 		while((ev=eXosip_event_wait(0,0))!=NULL){
 			linphone_core_process_event(lc,ev);
 		}
-		if (lc->automatic_action==0) eXosip_automatic_action();
+		if (lc->automatic_action==0) {
+			eXosip_lock();
+			eXosip_automatic_action();
+			eXosip_unlock();
+		}
 	}
 	if (lc->call!=NULL){
 		LinphoneCall *call=lc->call;

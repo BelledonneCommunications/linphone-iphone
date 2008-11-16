@@ -353,7 +353,7 @@ void linphone_gtk_terminate_call(GtkWidget *button){
 
 void linphone_gtk_decline_call(GtkWidget *button){
 	linphone_core_terminate_call(linphone_gtk_get_core(),NULL);
-	linphone_gtk_call_terminated(gtk_widget_get_toplevel(button));
+	linphone_gtk_call_terminated(linphone_gtk_get_main_window());
 	gtk_widget_destroy(gtk_widget_get_toplevel(button));
 }
 
