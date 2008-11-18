@@ -120,6 +120,10 @@ void linphone_gtk_contact_activated(GtkTreeView     *treeview,
                                     GtkTreeViewColumn *column,
                                         gpointer         user_data)
 {
+	linphone_gtk_call_selected(treeview);
+}
+
+void linphone_gtk_contact_clicked(GtkTreeView     *treeview){
 	linphone_gtk_set_selection_to_uri_bar(treeview);
 }
 
@@ -356,6 +360,7 @@ void linphone_gtk_contact_cancel(GtkWidget *button){
 void linphone_gtk_contact_ok(GtkWidget *button){
 	GtkWidget *w=gtk_widget_get_toplevel(button);
 	LinphoneFriend *lf=(LinphoneFriend*)g_object_get_data(G_OBJECT(w),"friend_ref");
+	char *fixed_uri=NULL;
 	gboolean editing=FALSE,show_presence,allow_presence;
 	const gchar *name,*uri;
 	if (lf==NULL){
@@ -367,7 +372,13 @@ void linphone_gtk_contact_ok(GtkWidget *button){
 	uri=gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(w,"sip_address")));
 	show_presence=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"show_presence")));
 	allow_presence=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"allow_presence")));
-	linphone_friend_set_sip_addr(lf,uri);
+	linphone_core_interpret_friend_uri(linphone_gtk_get_core(),uri,&fixed_uri);
+	if (fixed_uri==NULL){
+		linphone_gtk_display_something(GTK_MESSAGE_WARNING,_("Invalid sip contact !"));
+		return ;
+	}
+	linphone_friend_set_sip_addr(lf,fixed_uri);
+	ms_free(fixed_uri);
 	linphone_friend_set_name(lf,name);
 	linphone_friend_send_subscribe(lf,show_presence);
 	linphone_friend_set_inc_subscribe_policy(lf,allow_presence==TRUE ? LinphoneSPAccept : LinphoneSPDeny);

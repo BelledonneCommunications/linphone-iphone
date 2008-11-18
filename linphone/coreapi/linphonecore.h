@@ -633,6 +633,8 @@ int linphone_core_set_relay_addr(LinphoneCore *lc, const char *addr);
 /* sound functions */
 /* returns a null terminated static array of string describing the sound devices */ 
 const char**  linphone_core_get_sound_devices(LinphoneCore *lc);
+bool_t linphone_core_sound_device_can_capture(LinphoneCore *lc, const char *device);
+bool_t linphone_core_sound_device_can_playback(LinphoneCore *lc, const char *device);
 int linphone_core_get_ring_level(LinphoneCore *lc);
 int linphone_core_get_play_level(LinphoneCore *lc);
 int linphone_core_get_rec_level(LinphoneCore *lc);
@@ -660,6 +662,7 @@ void linphone_core_set_presence_info(LinphoneCore *lc,int minutes_away,const cha
 
 LinphoneOnlineStatus linphone_core_get_presence_info(const LinphoneCore *lc);
 
+void linphone_core_interpret_friend_uri(LinphoneCore *lc, const char *uri, char **result);
 void linphone_core_add_friend(LinphoneCore *lc, LinphoneFriend *fr);
 void linphone_core_remove_friend(LinphoneCore *lc, LinphoneFriend *fr);
 void linphone_core_reject_subscriber(LinphoneCore *lc, LinphoneFriend *lf);

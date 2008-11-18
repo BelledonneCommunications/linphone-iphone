@@ -42,6 +42,7 @@ GtkWidget *linphone_gtk_create_window(const char *window_name);
 GtkWidget *linphone_gtk_get_widget(GtkWidget *window, const char *name);
 LinphoneCore *linphone_gtk_get_core(void);
 GtkWidget *linphone_gtk_get_main_window();
+void linphone_gtk_display_something(GtkMessageType type,const gchar *message);
 void linphone_gtk_start_call(GtkWidget *button);
 void linphone_gtk_show_friends(void);
 void linphone_gtk_show_contact(LinphoneFriend *lf);

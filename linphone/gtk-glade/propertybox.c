@@ -19,7 +19,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "linphone.h"
 
-static void linphone_gtk_fill_combo_box(GtkWidget *combo, const char **devices, const char *selected){
+typedef enum {
+	CAP_IGNORE,
+	CAP_PLAYBACK,
+	CAP_CAPTURE
+}DeviceCap;
+
+static void linphone_gtk_fill_combo_box(GtkWidget *combo, const char **devices, const char *selected, DeviceCap cap){
 	const char **p=devices;
 	int i=0,active=0;
 	/* glade creates a combo box without list model and text renderer,
@@ -27,8 +33,12 @@ static void linphone_gtk_fill_combo_box(GtkWidget *combo, const char **devices, 
 	This dummy text needs to be removed first*/
 	gtk_combo_box_remove_text(GTK_COMBO_BOX(combo),0);
 	for(;*p!=NULL;++p,++i){
-		gtk_combo_box_append_text(GTK_COMBO_BOX(combo),*p);
-		if (strcmp(selected,*p)==0) active=i;
+		if ( cap==CAP_IGNORE 
+			|| (cap==CAP_CAPTURE && linphone_core_sound_device_can_capture(linphone_gtk_get_core(),*p))
+			|| (cap==CAP_PLAYBACK && linphone_core_sound_device_can_playback(linphone_gtk_get_core(),*p)) ){
+			gtk_combo_box_append_text(GTK_COMBO_BOX(combo),*p);
+			if (strcmp(selected,*p)==0) active=i;
+		}
 	}
 	gtk_combo_box_set_active(GTK_COMBO_BOX(combo),active);
 }
@@ -641,13 +651,13 @@ void linphone_gtk_show_parameters(void){
 					linphone_core_get_use_info_for_dtmf(lc));
 	/* MUTIMEDIA CONFIG */
 	linphone_gtk_fill_combo_box(linphone_gtk_get_widget(pb,"playback_device"), sound_devices,
-					linphone_core_get_playback_device(lc));
+					linphone_core_get_playback_device(lc),CAP_PLAYBACK);
 	linphone_gtk_fill_combo_box(linphone_gtk_get_widget(pb,"ring_device"), sound_devices,
-					linphone_core_get_ringer_device(lc));
+					linphone_core_get_ringer_device(lc),CAP_PLAYBACK);
 	linphone_gtk_fill_combo_box(linphone_gtk_get_widget(pb,"capture_device"), sound_devices,
-					linphone_core_get_capture_device(lc));
+					linphone_core_get_capture_device(lc), CAP_CAPTURE);
 	linphone_gtk_fill_combo_box(linphone_gtk_get_widget(pb,"webcams"),linphone_core_get_video_devices(lc),
-					linphone_core_get_video_device(lc));
+					linphone_core_get_video_device(lc),CAP_IGNORE);
 	linphone_gtk_fill_video_sizes(linphone_gtk_get_widget(pb,"video_size"));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb,"echo_cancelation")),
 					linphone_core_echo_cancelation_enabled(lc));

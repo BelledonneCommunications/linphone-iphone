@@ -1091,6 +1091,7 @@ bool_t linphone_core_interpret_url(LinphoneCore *lc, const char *url, char **rea
 			if (real_parsed_url!=NULL) *real_parsed_url=osip_to_create(sipaddr);
 			if (real_url!=NULL) *real_url=sipaddr;
 			else ms_free(sipaddr);
+#if 0
 			/*if the prompted uri was auto-suffixed with proxy domain,
 			then automatically set a route so that the request goes
 			through the proxy*/
@@ -1107,6 +1108,9 @@ bool_t linphone_core_interpret_url(LinphoneCore *lc, const char *url, char **rea
 				ms_message("setting automatically a route to %s",*route);
 			}
 			else *route=ms_strdup(tmproute);
+#else
+			if (tmproute) *route=ms_strdup(tmproute);
+#endif
 			return TRUE;
 		}
 	}
@@ -1665,6 +1669,20 @@ static MSSndCard *get_card_from_string_id(const char *devid, unsigned int cap){
 	}
 	if (sndcard==NULL) ms_error("Could not find a suitable soundcard !");
 	return sndcard;
+}
+
+bool_t linphone_core_sound_device_can_capture(LinphoneCore *lc, const char *devid){
+	MSSndCard *sndcard;
+	sndcard=ms_snd_card_manager_get_card(ms_snd_card_manager_get(),devid);
+	if (sndcard!=NULL && (ms_snd_card_get_capabilities(sndcard) & MS_SND_CARD_CAP_CAPTURE)) return TRUE;
+	return FALSE;
+}
+
+bool_t linphone_core_sound_device_can_playback(LinphoneCore *lc, const char *devid){
+	MSSndCard *sndcard;
+	sndcard=ms_snd_card_manager_get_card(ms_snd_card_manager_get(),devid);
+	if (sndcard!=NULL && (ms_snd_card_get_capabilities(sndcard) & MS_SND_CARD_CAP_PLAYBACK)) return TRUE;
+	return FALSE;
 }
 
 int linphone_core_set_ringer_device(LinphoneCore *lc, const char * devid){

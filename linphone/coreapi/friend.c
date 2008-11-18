@@ -175,6 +175,35 @@ LinphoneFriend *linphone_friend_new_with_addr(const char *addr){
 	return fr;
 }
 
+void linphone_core_interpret_friend_uri(LinphoneCore *lc, const char *uri, char **result){
+	int err;
+	osip_from_t *fr=NULL;
+	osip_from_init(&fr);
+	err=osip_from_parse(fr,uri);
+	if (err<0){
+		char *tmp=NULL;
+		if (strchr(uri,'@')!=NULL){
+			/*try adding sip:*/
+			tmp=ms_strdup_printf("sip:%s",uri);
+		}else if (lc->default_proxy!=NULL){
+			/*try adding domain part from default current proxy*/
+			osip_from_t *id=NULL;
+			osip_from_init(&id);
+			if (osip_from_parse(id,linphone_core_get_identity(lc))==0){
+				if (id->url->port!=NULL && strlen(id->url->port)>0)
+					tmp=ms_strdup_printf("sip:%s@%s:%s",uri,id->url->host,id->url->port);
+				else tmp=ms_strdup_printf("sip:%s@%s",uri,id->url->host);
+			}
+			osip_from_free(id);
+		}
+		if (osip_from_parse(fr,tmp)==0){
+			/*looks good */
+			ms_message("%s interpreted as %s",uri,tmp);
+			*result=tmp;
+		}else *result=NULL;
+	}else *result=ms_strdup(uri);
+	osip_from_free(fr);
+}
 
 int linphone_friend_set_sip_addr(LinphoneFriend *lf, const char *addr){
 	int err;
