@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
 	int tel=0;
 	
 	if (argc<4){
-		printf(help);
+            	printf("%s",help);
 		return -1;
 	}
 	

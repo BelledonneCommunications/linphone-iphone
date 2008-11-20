@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
 	int have_more;
 
 	if (argc<3){
-		printf(help);
+		printf("%s",help);
 		return -1;
 	}
 

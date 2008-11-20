@@ -187,6 +187,7 @@ void linphone_gtk_display_something(GtkMessageType type,const gchar *message){
                                 GTK_DIALOG_DESTROY_WITH_PARENT,
 				GTK_MESSAGE_QUESTION,
                                 GTK_BUTTONS_YES_NO,
+                                "%s",
 				(const gchar*)message);
 		/* connect to some callback : REVISIT */
 		/*
@@ -203,6 +204,7 @@ void linphone_gtk_display_something(GtkMessageType type,const gchar *message){
                                   GTK_DIALOG_DESTROY_WITH_PARENT,
                                   type,
                                   GTK_BUTTONS_CLOSE,
+                                  "%s",
                                   (const gchar*)message);
 		/* Destroy the dialog when the user responds to it (e.g. clicks a button) */
 		g_signal_connect_swapped (G_OBJECT (dialog), "response",
@@ -326,12 +328,12 @@ static void linphone_gtk_call_started(GtkWidget *mw){
 	gtk_widget_show(linphone_gtk_get_widget(mw,"terminate_call"));
 }
 
-void linphone_gtk_start_call(GtkWidget *button){
+void linphone_gtk_start_call(GtkWidget *w){
 	LinphoneCore *lc=linphone_gtk_get_core();
 	if (linphone_core_inc_invite_pending(lc)){
 		/*already in call */
 	}else{
-		GtkWidget *uri_bar=linphone_gtk_get_widget(gtk_widget_get_toplevel(button),"uribar");
+		GtkWidget *uri_bar=linphone_gtk_get_widget(gtk_widget_get_toplevel(w),"uribar");
 		const char *entered=gtk_entry_get_text(GTK_ENTRY(uri_bar));
 		if (linphone_core_invite(lc,entered)==0) {
 			linphone_gtk_call_started(linphone_gtk_get_main_window());
@@ -339,6 +341,11 @@ void linphone_gtk_start_call(GtkWidget *button){
 		}
 	}
 }
+
+void linphone_gtk_uri_bar_activate(GtkWidget *w){
+	linphone_gtk_start_call(w);
+}
+
 
 static void linphone_gtk_call_terminated(GtkWidget *mw){
 	gtk_widget_hide(linphone_gtk_get_widget(mw,"terminate_call"));
@@ -441,6 +448,7 @@ static void linphone_gtk_new_unknown_subscriber(LinphoneCore *lc, LinphoneFriend
                                 GTK_DIALOG_DESTROY_WITH_PARENT,
 				GTK_MESSAGE_QUESTION,
                                 GTK_BUTTONS_YES_NO,
+                                "%s",
 				message);
 	g_free(message);
 	g_signal_connect(G_OBJECT (dialog), "response",

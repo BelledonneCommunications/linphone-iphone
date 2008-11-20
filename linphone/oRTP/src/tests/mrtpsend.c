@@ -59,13 +59,13 @@ int main(int argc, char *argv[])
 	SessionSet *set;
 	
 	if (argc<5){
-		printf(help);
+		printf("%s",help);
 		return -1;
 	}
 	
 	channels=atoi(argv[4]);
 	if (channels==0){
-		printf(help);
+		printf("%s",help);
 		return -1;
 	}
 	
@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
 				packet_size=atoi(argv[i+1]);
 			}
 			else {
-				printf(help);
+				printf("%s",help);
 				return -1;
 			}
 			if (packet_size==0) {
@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
 				ts_inc=atoi(argv[i+1]);
 			}
 			else {
-				printf(help);
+				printf("%s",help);
 				return -1;
 			}
 			if (ts_inc==0) {

@@ -50,14 +50,14 @@ int main(int argc, char *argv[])
 	int clockslide=0;
 	int jitter=0;
 	if (argc<4){
-		printf(help);
+		printf("%s",help);
 		return -1;
 	}
 	for(i=4;i<argc;i++){
 		if (strcmp(argv[i],"--with-clockslide")==0){
 			i++;
 			if (i>=argc) {
-				printf(help);
+				printf("%s",help);
 				return -1;
 			}
 			clockslide=atoi(argv[i]);
@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
 			ortp_message("Ptime related jitter will be added to outgoing stream.");
 			i++;
 			if (i>=argc) {
-				printf(help);
+				printf("%s",help);
 				return -1;
 			}
 			jitter=atoi(argv[i]);

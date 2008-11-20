@@ -90,12 +90,12 @@ int main(int argc, char*argv[])
 	
 	/* init the lib */
 	if (argc<3){
-		printf(help);
+		printf("%s",help);
 		return -1;
 	}
 	local_port=atoi(argv[2]);
 	if (local_port<=0) {
-		printf(help);
+		printf("%s",help);
 		return -1;
 	}
 	for (i=3;i<argc;i++)

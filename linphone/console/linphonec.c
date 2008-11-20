@@ -364,7 +364,7 @@ char *linphonec_readline(char *prompt){
 		start_prompt_reader();
 		prompt_reader_started=TRUE;
 	}
-	fprintf(stdout,prompt);
+	fprintf(stdout,"%s",prompt);
 	fflush(stdout);
 	while(1){
 		ms_mutex_lock(&prompt_mutex);
@@ -836,7 +836,7 @@ linphonec_parse_cmdline(int argc, char **argv)
 					 argv[arg_num]);
 				exit(EXIT_FAILURE);
 			}
-			snprintf(configfile_name, PATH_MAX, argv[arg_num]);
+			snprintf(configfile_name, PATH_MAX, "%s", argv[arg_num]);
 		}
 		else if (strncmp ("-s", argv[arg_num], 2) == 0)
 		{
@@ -988,7 +988,7 @@ copy_file(const char *from, const char *to)
 	{
 		snprintf(message, 255, "Can't open %s for reading: %s\n",
 			from, strerror(errno));
-		fprintf(stderr, message);
+		fprintf(stderr, "%s", message);
 		return 0;
 	}
 
@@ -998,7 +998,7 @@ copy_file(const char *from, const char *to)
 	{
 		snprintf(message, 255, "Can't open %s for writing: %s\n",
 			to, strerror(errno));
-		fprintf(stderr, message);
+		fprintf(stderr, "%s", message);
 		return 0;
 	}
 

@@ -302,8 +302,6 @@ static void oss_detect(MSSndCardManager *m){
 	if (access(DSP_NAME,F_OK)==0){
 		MSSndCard *card=oss_card_new(DSP_NAME,MIXER_NAME);
 		ms_snd_card_manager_add_card(m,card);
-		card=oss_card_new(DSP_NAME,MIXER_NAME);
-		ms_snd_card_manager_add_card(m,card);
 	}
 	for(i=0;i<10;i++){
 		snprintf(pcmdev,sizeof(pcmdev),"%s%i",DSP_NAME,i);

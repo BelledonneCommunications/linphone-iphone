@@ -97,13 +97,13 @@ int main(int argc, char *argv[])
 	char *filename;
 
 	if (argc<4){
-		printf(help);
+		printf("%s",help);
 		return -1;
 	}
 	
 	channels=atoi(argv[3]);
 	if (channels==0){
-		printf(help);
+		printf("%s",help);
 		return -1;
 	}
 	
