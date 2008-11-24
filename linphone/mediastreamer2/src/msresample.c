@@ -1,6 +1,10 @@
 
 #include "mediastreamer2/msfilter.h"
 
+#ifdef _MSC_VER
+#include <malloc.h>
+#endif
+
 #include <speex/speex_resampler.h>
 #include <math.h>
 
