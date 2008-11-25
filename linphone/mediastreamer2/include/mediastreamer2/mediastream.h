@@ -43,6 +43,7 @@ struct _AudioStream
 	MSFilter *ec;/*echo canceler*/
 	unsigned int last_packet_count;
 	time_t last_packet_time;
+	bool_t play_dtmfs;
 };
 
 #ifdef __cplusplus
@@ -77,6 +78,8 @@ void audio_stream_play(AudioStream *st, const char *name);
 void audio_stream_record(AudioStream *st, const char *name);
 
 void audio_stream_set_rtcp_information(AudioStream *st, const char *cname, const char *tool);
+
+void audio_stream_play_received_dtmfs(AudioStream *st, bool_t yesno);
 
 /* those two function do the same as audio_stream_start() but in two steps
 this is useful to make sure that sockets are open before sending an invite; 

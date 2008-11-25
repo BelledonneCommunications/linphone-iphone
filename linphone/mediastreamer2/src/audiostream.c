@@ -62,14 +62,14 @@ static int dtmf_tab[16]={'0','1','2','3','4','5','6','7','8','9','*','#','A','B'
 
 static void on_dtmf_received(RtpSession *s, int dtmf, void * user_data)
 {
-	MSFilter *dtmfgen=(MSFilter*)user_data;
+	AudioStream *stream=(AudioStream*)user_data;
 	if (dtmf>15){
 		ms_warning("Unsupported telephone-event type.");
 		return;
 	}
 	ms_message("Receiving dtmf %c.",dtmf_tab[dtmf]);
-	if (dtmfgen!=NULL){
-		ms_filter_call_method(dtmfgen,MS_DTMF_GEN_PUT,&dtmf_tab[dtmf]);
+	if (stream->dtmfgen!=NULL && stream->play_dtmfs){
+		ms_filter_call_method(stream->dtmfgen,MS_DTMF_GEN_PUT,&dtmf_tab[dtmf]);
 	}
 }
 
@@ -209,7 +209,7 @@ int audio_stream_start_full(AudioStream *stream, RtpProfile *profile, const char
 	stream->session=rtps;
 	
 	stream->dtmfgen=ms_filter_new(MS_DTMF_GEN_ID);
-	rtp_session_signal_connect(rtps,"telephone-event",(RtpCallback)on_dtmf_received,(unsigned long)stream->dtmfgen);
+	rtp_session_signal_connect(rtps,"telephone-event",(RtpCallback)on_dtmf_received,(unsigned long)stream);
 	rtp_session_signal_connect(rtps,"payload_type_changed",(RtpCallback)payload_type_changed,(unsigned long)stream);
 	
 	/* creates the local part */
@@ -356,7 +356,12 @@ AudioStream *audio_stream_new(int locport, bool_t ipv6){
 	AudioStream *stream=(AudioStream *)ms_new0(AudioStream,1);
 	stream->session=create_duplex_rtpsession(locport,ipv6);
 	stream->rtpsend=ms_filter_new(MS_RTP_SEND_ID);
+	stream->play_dtmfs=TRUE;
 	return stream;
+}
+
+void audio_stream_play_received_dtmfs(AudioStream *st, bool_t yesno){
+	st->play_dtmfs=yesno;
 }
 
 int audio_stream_start_now(AudioStream *stream, RtpProfile * prof,  const char *remip, int remport, int rem_rtcp_port, int payload_type, int jitt_comp, MSSndCard *playcard, MSSndCard *captcard, bool_t use_ec){

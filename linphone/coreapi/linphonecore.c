@@ -1352,6 +1352,12 @@ void linphone_core_init_media_streams(LinphoneCore *lc){
 #endif
 }
 
+static void linphone_core_dtmf_received(RtpSession* s, int dtmf, void* user_data){
+	LinphoneCore* lc = (LinphoneCore*)user_data;
+	if (lc->vtable.dtmf_received != NULL)
+		lc->vtable.dtmf_received(lc, dtmf);
+}
+
 void linphone_core_start_media_streams(LinphoneCore *lc, LinphoneCall *call){
 	osip_from_t *me=linphone_core_get_primary_contact_parsed(lc);
 	const char *tool="linphone-" LINPHONE_VERSION;
@@ -1395,6 +1401,11 @@ void linphone_core_start_media_streams(LinphoneCore *lc, LinphoneCall *call){
 				100,
 				lc->play_file,
 				lc->rec_file);
+		}
+		if (lc->vtable.dtmf_received!=NULL){
+			/* replace by our default action*/
+			audio_stream_play_received_dtmfs(lc->audiostream,FALSE);
+			rtp_session_signal_connect(lc->audiostream->session,"telephone-event",(RtpCallback)linphone_core_dtmf_received,(unsigned long)lc);
 		}
 		audio_stream_set_rtcp_information(lc->audiostream, cname, tool);
 	}

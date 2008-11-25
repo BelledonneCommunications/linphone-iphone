@@ -404,6 +404,7 @@ typedef void (*AuthInfoRequested)(struct _LinphoneCore *lc, const char *realm, c
 typedef void (*CallLogUpdated)(struct _LinphoneCore *lc, struct _LinphoneCallLog *newcl);
 typedef void (*TextMessageReceived)(struct _LinphoneCore *lc, LinphoneChatRoom *room, const char *from, const char *message);
 typedef void (*GeneralStateChange)(struct _LinphoneCore *lc, LinphoneGeneralState *gstate);
+typedef void (*DtmfReceived)(struct _LinphoneCore* lc, int dtmf);
 
 typedef struct _LinphoneVTable
 {
@@ -425,6 +426,7 @@ typedef struct _LinphoneVTable
 	CallLogUpdated call_log_updated;
 	TextMessageReceived text_received;
 	GeneralStateChange general_state;
+	DtmfReceived dtmf_received;
 } LinphoneCoreVTable;
 
 typedef struct _LCCallbackObj
