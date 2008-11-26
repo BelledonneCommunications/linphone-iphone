@@ -81,6 +81,7 @@ static void  linphone_call_init_common(LinphoneCall *call, char *from, char *to)
 	linphone_core_notify_all_friends(call->core,LINPHONE_STATUS_ONTHEPHONE);
 	if (linphone_core_get_firewall_policy(call->core)==LINPHONE_POLICY_USE_STUN) 
 		linphone_core_run_stun_tests(call->core,call);
+	call->profile=rtp_profile_new("Call RTP profile");
 }
 
 void linphone_call_init_media_params(LinphoneCall *call){
@@ -1210,7 +1211,6 @@ int linphone_core_invite(LinphoneCore *lc, const char *url)
 	ms_free(barmsg);
 	if (!lc->sip_conf.sdp_200_ack){
 		ctx=lc->call->sdpctx;
-		lc->call->profile=rtp_profile_clone_full(lc->local_profile);
 		sdpmesg=sdp_context_get_offer(ctx);
 		linphone_set_sdp(invite,sdpmesg);
 		linphone_core_init_media_streams(lc);
@@ -1346,9 +1346,10 @@ int linphone_core_change_qos(LinphoneCore *lc, int answer)
 void linphone_core_init_media_streams(LinphoneCore *lc){
 	lc->audiostream=audio_stream_new(linphone_core_get_audio_port(lc),linphone_core_ipv6_enabled(lc));
 #ifdef VIDEO_ENABLED
-	lc->videostream=video_stream_new(linphone_core_get_video_port(lc),linphone_core_ipv6_enabled(lc));
+	if (lc->video_conf.display || lc->video_conf.capture)
+		lc->videostream=video_stream_new(linphone_core_get_video_port(lc),linphone_core_ipv6_enabled(lc));
 #else
-  lc->videostream=NULL;
+	lc->videostream=NULL;
 #endif
 }
 
@@ -1502,12 +1503,10 @@ int linphone_core_accept_call(LinphoneCore *lc, const char *url)
 		ms_error("Fail to build answer for call: err=%i",err);
 		return -1;
 	}
-	ms_message("eXosip_call_build_answer done");
 	/*if a sdp answer is computed, send it, else send an offer */
 	sdpmesg=call->sdpctx->answerstr;
 	if (sdpmesg==NULL){
 		offering=TRUE;
-		call->profile=rtp_profile_clone_full(lc->local_profile);
 		ms_message("generating sdp offer");
 		sdpmesg=sdp_context_get_offer(call->sdpctx);
 		

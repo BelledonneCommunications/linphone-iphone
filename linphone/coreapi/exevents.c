@@ -577,6 +577,9 @@ SupportLevel linphone_payload_is_supported(LinphoneCore *lc, sdp_payload_t *payl
 			/* this payload is supported in our local rtp profile, so add it to the dialog rtp
 			profile */
 			rtppayload=payload_type_clone(rtppayload);
+			if (rtp_profile_get_payload(dialog_profile,payload->pt)!=NULL){
+				ms_error("Payload %s type already entered, should not happen !",rtppayload->mime_type);
+			}
 			rtp_profile_set_payload(dialog_profile,payload->pt,rtppayload);
 			/* add to the rtp payload type some other parameters (bandwidth) */
 			if (rtppayload->type==PAYLOAD_VIDEO){
@@ -626,10 +629,6 @@ int linphone_accept_audio_offer(sdp_context_t *ctx,sdp_payload_t *payload)
 	PayloadType *lpt=NULL;
 
 	params=&call->audio_params;
-	if (call->profile==NULL){
-		/* create a remote user agent profile */
-		call->profile=remote_profile=rtp_profile_new("remote");
-	}
 	remote_profile=call->profile;
 	/* see if this codec is supported in our local rtp profile*/
 	supported=linphone_payload_is_supported(lc,payload,lc->local_profile,remote_profile,TRUE,&lpt);
@@ -682,10 +681,6 @@ int linphone_accept_video_offer(sdp_context_t *ctx,sdp_payload_t *payload)
 
 	if (!linphone_core_video_enabled(lc)) return -1;
 
-	if (call->profile==NULL){
-		/* create a remote user agent profile */
-		call->profile=rtp_profile_new("remote");
-	}
 	params=&call->video_params;
 	remote_profile=call->profile;
 	/* see if this codec is supported in our local rtp profile*/
