@@ -224,6 +224,7 @@ static void player_process(MSFilter *f){
 				/* special value for playing file only once */
 				if (d->loop_after==-2)
 				{
+  				freemsg(om);
 					player_close(f,NULL);
 					return;
 				}
@@ -252,6 +253,7 @@ static void player_process(MSFilter *f){
 
 				if (d->loop_after==-2)
 				{
+  				freemsg(om);
 					player_close(f,NULL);
 					return;
 				}
