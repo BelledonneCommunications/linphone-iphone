@@ -652,11 +652,10 @@ int linphone_core_set_capture_device(LinphoneCore *lc, const char * devid);
 char linphone_core_get_sound_source(LinphoneCore *lc);
 void linphone_core_set_sound_source(LinphoneCore *lc, char source);
 void linphone_core_set_ring(LinphoneCore *lc, const char *path);
-const char *linphone_core_get_ring(LinphoneCore *lc);
+const char *linphone_core_get_ring(const LinphoneCore *lc);
+void linphone_core_set_ringback(LinphoneCore *lc, const char *path);
+const char * linphone_core_get_ringback(const LinphoneCore *lc);
 int linphone_core_preview_ring(LinphoneCore *lc, const char *ring,LinphoneCoreCbFunc func,void * userdata);
-typedef enum {RINGBACK_TYPE_FR,RINGBACK_TYPE_US} RingBackType;
-void linphone_core_set_ringback(LinphoneCore *lc,RingBackType type);
-RingBackType linphone_core_get_ringback(LinphoneCore *lc);
 void linphone_core_enable_echo_cancelation(LinphoneCore *lc, bool_t val);
 bool_t linphone_core_echo_cancelation_enabled(LinphoneCore *lc);
 

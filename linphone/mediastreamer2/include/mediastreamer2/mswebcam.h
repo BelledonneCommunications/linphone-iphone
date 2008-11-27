@@ -217,6 +217,11 @@ const char *ms_web_cam_get_string_id(MSWebCam *obj);
 
 /** @} */
 
+
+/*specific methods for static image:*/
+
+void ms_static_image_set_default_image(const char *path);
+
 #ifdef __cplusplus
 }
 #endif

@@ -96,6 +96,8 @@ mblk_t *ms_load_jpeg_as_yuv(const char *jpgpath, MSVideoSize *reqsize){
 	return m;
 }
 
+
+
 #ifndef PACKAGE_DATA_DIR
 #define PACKAGE_DATA_DIR "."
 #endif
@@ -103,6 +105,11 @@ mblk_t *ms_load_jpeg_as_yuv(const char *jpgpath, MSVideoSize *reqsize){
 #ifndef NOWEBCAM_JPG
 #define NOWEBCAM_JPG "nowebcamCIF"
 #endif
+
+static char *def_image=NULL;
+
+static const char *def_image_path=PACKAGE_DATA_DIR "/images/" NOWEBCAM_JPG ".jpg";
+
 
 mblk_t *ms_load_nowebcam(MSVideoSize *reqsize, int idx){
 	char tmp[256];
@@ -115,8 +122,7 @@ mblk_t *ms_load_nowebcam(MSVideoSize *reqsize, int idx){
 
 typedef struct _SIData{
 	MSVideoSize vsize;
-	char nowebcamimage[256];
-	int index;
+	char *nowebcamimage;
 	uint64_t lasttime;
 	mblk_t *pic;
 }SIData;
@@ -125,8 +131,11 @@ void static_image_init(MSFilter *f){
 	SIData *d=(SIData*)ms_new(SIData,1);
 	d->vsize.width=MS_VIDEO_SIZE_CIF_W;
 	d->vsize.height=MS_VIDEO_SIZE_CIF_H;
-	memset(d->nowebcamimage, 0, sizeof(d->nowebcamimage));
-	d->index=-1;
+
+	if (def_image==NULL)
+		def_image=ms_strdup(def_image_path);
+
+	d->nowebcamimage=ms_strdup(def_image);
 	d->lasttime=0;
 	d->pic=NULL;
 	f->data=d;
@@ -139,10 +148,7 @@ void static_image_uninit(MSFilter *f){
 void static_image_preprocess(MSFilter *f){
 	SIData *d=(SIData*)f->data;
 	if (d->pic==NULL){
-		if (d->nowebcamimage[0] != '\0')
-			d->pic=ms_load_jpeg_as_yuv(d->nowebcamimage,&d->vsize);
-		else
-			d->pic=ms_load_nowebcam(&d->vsize,d->index);
+		d->pic=ms_load_jpeg_as_yuv(d->nowebcamimage,&d->vsize);
 	}
 }
 
@@ -189,21 +195,20 @@ int static_image_get_pix_fmt(MSFilter *f, void *data){
 
 static int static_image_set_image(MSFilter *f, void *arg){
 	SIData *d=(SIData*)f->data;
-	char *image = (char *)arg;
-	ms_mutex_lock(&f->lock);
+	const char *image = (const char *)arg;
+	ms_filter_lock(f);
+	if (d->nowebcamimage) ms_free(d->nowebcamimage);
 	if (image!=NULL && image[0]!='\0')
-		snprintf(d->nowebcamimage, sizeof(d->nowebcamimage), "%s", image);
+		d->nowebcamimage=ms_strdup(image);
 	else
-		d->nowebcamimage[0] = '\0';
+		d->nowebcamimage = def_image;
 
-	if (d->pic!=NULL)
+	if (d->pic!=NULL){
 		freemsg(d->pic);
+		d->pic=NULL;
+	}
 
-  //if (d->nowebcamimage[0] != '\0')
-	 // d->pic=ms_load_jpeg_as_yuv(d->nowebcamimage,&d->vsize);
-  //else
-	 // d->pic=ms_load_nowebcam(&d->vsize,d->index);
-	ms_mutex_unlock(&f->lock);
+	ms_filter_unlock(f);
 	return 0;
 }
 
@@ -257,3 +262,10 @@ static void static_image_detect(MSWebCamManager *obj){
 	ms_web_cam_manager_add_cam(obj,cam);
 }
 
+void ms_static_image_set_default_image(const char *path){
+	if (def_image!=NULL)
+		ms_free(def_image);
+	def_image=NULL;
+	if (path)
+		def_image=ms_strdup(path);
+}

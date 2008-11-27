@@ -1364,6 +1364,7 @@ void rtp_session_reset (RtpSession * session)
 	rtp_session_clear_recv_error_code(session);
 	rtp_stats_reset(&session->rtp.stats);
 	rtp_session_resync(session);
+	session->ssrc_set=FALSE;
 }
 
 /**

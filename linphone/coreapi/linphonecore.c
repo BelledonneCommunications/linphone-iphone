@@ -50,8 +50,7 @@ static void toggle_video_preview(LinphoneCore *lc, bool_t val);
 /* relative path where is stored local ring*/
 #define LOCAL_RING "rings/oldphone.wav"
 /* same for remote ring (ringback)*/
-#define REMOTE_RING_FR "ringback.wav"
-#define REMOTE_RING_US "ringback.wav"
+#define REMOTE_RING "ringback.wav" 
 
 
 sdp_handler_t linphone_sdphandler={
@@ -384,16 +383,16 @@ void sound_config_read(LinphoneCore *lc)
 	
 	linphone_core_set_ring(lc,tmpbuf);
 	
-	tmpbuf=PACKAGE_SOUND_DIR "/" REMOTE_RING_FR;
+	tmpbuf=PACKAGE_SOUND_DIR "/" REMOTE_RING;
 	tmpbuf=lp_config_get_string(lc->config,"sound","remote_ring",tmpbuf);
 	if (access(tmpbuf,F_OK)==-1){
-		tmpbuf=PACKAGE_SOUND_DIR "/" REMOTE_RING_FR;
+		tmpbuf=PACKAGE_SOUND_DIR "/" REMOTE_RING;
 	}
 	if (strstr(tmpbuf,".wav")==NULL){
 		/* it currently uses old sound files, so replace them */
-		tmpbuf=PACKAGE_SOUND_DIR "/" REMOTE_RING_FR;
+		tmpbuf=PACKAGE_SOUND_DIR "/" REMOTE_RING;
 	}
-	linphone_core_set_ringback(lc,0);
+	linphone_core_set_ringback(lc,tmpbuf);
 	check_sound_device(lc);
 	lc->sound_conf.latency=0;
 
@@ -1762,7 +1761,7 @@ void linphone_core_set_ring(LinphoneCore *lc,const char *path){
 	lc->sound_conf.local_ring=ms_strdup(path);
 }
 
-const char *linphone_core_get_ring(LinphoneCore *lc){
+const char *linphone_core_get_ring(const LinphoneCore *lc){
 	return lc->sound_conf.local_ring;
 }
 
@@ -1786,17 +1785,16 @@ int linphone_core_preview_ring(LinphoneCore *lc, const char *ring,LinphoneCoreCb
 }
 
 
-void linphone_core_set_ringback(LinphoneCore *lc,RingBackType type){
-	switch(type){
-		case RINGBACK_TYPE_FR:
-			lc->sound_conf.remote_ring=PACKAGE_SOUND_DIR "/" REMOTE_RING_FR;
-		break;
-		case RINGBACK_TYPE_US:
-			lc->sound_conf.remote_ring=PACKAGE_SOUND_DIR "/" REMOTE_RING_US;
-		break;
+void linphone_core_set_ringback(LinphoneCore *lc, const char *path){
+	if (lc->sound_conf.remote_ring!=0){
+		ms_free(lc->sound_conf.remote_ring);
 	}
+	lc->sound_conf.remote_ring=ms_strdup(path);
 }
-RingBackType linphone_core_get_ringback(LinphoneCore *lc);
+
+const char * linphone_core_get_ringback(const LinphoneCore *lc){
+	return lc->sound_conf.remote_ring;
+}
 
 void linphone_core_enable_echo_cancelation(LinphoneCore *lc, bool_t val){
 	lc->sound_conf.ec=val;
@@ -2225,6 +2223,7 @@ void sound_config_uninit(LinphoneCore *lc)
 	lp_config_set_string(lc->config,"sound","remote_ring",config->remote_ring);
 	lp_config_set_int(lc->config,"sound","echocancelation",config->ec);
 	if (config->local_ring) ms_free(config->local_ring);
+	if (config->remote_ring) ms_free(config->remote_ring);
 }
 
 void video_config_uninit(LinphoneCore *lc)
