@@ -148,6 +148,12 @@ void rtp_session_rtp_parse(RtpSession *session, mblk_t *mp, uint32_t local_str_t
 				return;
 			}
 		}
+    else{
+			/* The SSRC change must not happen if we still receive
+			ssrc from the initial source. */
+			session->inc_same_ssrc_count=0;
+		}
+
 	}else{
 		session->ssrc_set=TRUE;
 		session->rcv.ssrc=rtp->ssrc;
