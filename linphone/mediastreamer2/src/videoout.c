@@ -289,7 +289,7 @@ static HWND create_window(int w, int h)
 		ms_error("AdjustWindowRect failed.");
 	}
 	ms_message("AdjustWindowRect: %li,%li %li,%li",rect.left,rect.top,rect.right,rect.bottom);
-	hwnd=CreateWindow("Video Window", "Video window", WS_OVERLAPPEDWINDOW|WS_VISIBLE ,
+	hwnd=CreateWindow("Video Window", "Video window", /*WS_OVERLAPPEDWINDOW*/ WS_THICKFRAME|WS_VISIBLE ,
 						CW_USEDEFAULT, CW_USEDEFAULT, rect.right-rect.left,rect.bottom-rect.top,
 													NULL, NULL, hInstance, NULL);
 	if (hwnd==NULL){

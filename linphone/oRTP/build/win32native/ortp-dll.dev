@@ -442,7 +442,7 @@ Libs=
 PrivateResource=
 ResourceIncludes=
 MakeIncludes=
-Compiler=-DORTP_INET6_@@_-D_WORKAROUND_MINGW32_BUGS _@@_-Wall -Werror _@@_-D_WIN32_WINNT=0x0501_@@_-DORTP_STATIC_@@_
+Compiler=-DORTP_INET6_@@_-Wall -Werror _@@_-D_WIN32_WINNT=0x0501_@@_-DORTP_STATIC_@@_
 CppCompiler=_@@_
 Linker=-lws2_32_@@_-liphlpapi_@@_-lwinmm_@@_
 PreprocDefines=

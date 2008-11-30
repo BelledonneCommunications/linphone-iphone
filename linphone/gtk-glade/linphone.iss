@@ -36,7 +36,7 @@ Source: "..\..\linphone-deps\bin\exosip2.dll"; DestDir: "{app}"; Flags: ignoreve
 Source: "..\..\linphone-deps\bin\libogg.dll"; DestDir: "{app}"; Flags: ignoreversion
 ;;Source: "..\..\linphone-deps\bin\speex.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\linphone-deps\bin\avcodec.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\linphone-deps\bin\avutil.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\linphone-deps\bin\avutil-49.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\linphone-deps\bin\swscale.dll"; DestDir: "{app}"; Flags: ignoreversion
 ;;Source: "..\..\linphone-deps\bin\libspeex-1.dll"; DestDir: "{app}"; Flags: ignoreversion
 ;;Source: "..\..\linphone-deps\bin\libspeexdsp-1.dll"; DestDir: "{app}"; Flags: ignoreversion
