@@ -501,7 +501,7 @@ static ortp_socket_t create_socket(int local_port){
 	return sock;
 }
 
-static int sendStunRequest(int sock, const struct sockaddr *server, socklen_t addrlen, int id){
+static int sendStunRequest(int sock, const struct sockaddr *server, socklen_t addrlen, int id, bool_t changeAddr){
 	char buf[STUN_MAX_MESSAGE_SIZE];
 	int len = STUN_MAX_MESSAGE_SIZE;
 	StunAtrString username;
@@ -511,7 +511,7 @@ static int sendStunRequest(int sock, const struct sockaddr *server, socklen_t ad
 	memset(&req, 0, sizeof(StunMessage));
 	memset(&username,0,sizeof(username));
 	memset(&password,0,sizeof(password));
-	stunBuildReqSimple( &req, &username, FALSE , FALSE , id);
+	stunBuildReqSimple( &req, &username, changeAddr , changeAddr , id);
 	len = stunEncodeMessage( &req, buf, len, &password, FALSE);
 	if (len<=0){
 		ms_error("Fail to encode stun message.");
@@ -554,7 +554,7 @@ static int parse_stun_server_addr(const char *server, struct sockaddr_storage *s
 	return 0;
 }
 
-static int recvStunResponse(ortp_socket_t sock, char *ipaddr, int *port){
+static int recvStunResponse(ortp_socket_t sock, char *ipaddr, int *port, int *id){
 	char buf[STUN_MAX_MESSAGE_SIZE];
    	int len = STUN_MAX_MESSAGE_SIZE;
 	StunMessage resp;
@@ -562,6 +562,7 @@ static int recvStunResponse(ortp_socket_t sock, char *ipaddr, int *port){
 	if (len>0){
 		struct in_addr ia;
 		stunParseMessage(buf,len, &resp,FALSE );
+		*id=resp.msgHdr.id.octet[0];
 		*port = resp.mappedAddress.ipv4.port;
 		ia.s_addr=htonl(resp.mappedAddress.ipv4.addr);
 		strncpy(ipaddr,inet_ntoa(ia),LINPHONE_IPADDR_SIZE);
@@ -582,6 +583,7 @@ void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 		ortp_socket_t sock1=-1, sock2=-1;
 		bool_t video_enabled=linphone_core_video_enabled(lc);
 		bool_t got_audio,got_video;
+		bool_t cone_audio=FALSE,cone_video=FALSE;
 		struct timeval init,cur;
 		if (parse_stun_server_addr(server,&ss,&ss_len)<0){
 			ms_error("Fail to parser stun server address: %s",server);
@@ -597,15 +599,18 @@ void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 			sock2=create_socket(linphone_core_get_video_port(lc));
 			if (sock2<0) return ;
 		}
-		sendStunRequest(sock1,(struct sockaddr*)&ss,ss_len,1);
-		if (sock2>=0)
-			sendStunRequest(sock2,(struct sockaddr*)&ss,ss_len,2);
-		
+		sendStunRequest(sock1,(struct sockaddr*)&ss,ss_len,11,TRUE);
+		sendStunRequest(sock1,(struct sockaddr*)&ss,ss_len,1,FALSE);
+		if (sock2>=0){
+			sendStunRequest(sock2,(struct sockaddr*)&ss,ss_len,22,TRUE);
+			sendStunRequest(sock2,(struct sockaddr*)&ss,ss_len,2,FALSE);
+		}
 		got_audio=FALSE;
 		got_video=FALSE;
 		gettimeofday(&init,NULL);
 		do{
 			double elapsed;
+			int id;
 #ifdef WIN32
 			Sleep(10);
 #else
@@ -613,17 +618,21 @@ void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 #endif
 
 			if (recvStunResponse(sock1,call->audio_params.natd_addr,
-						&call->audio_params.natd_port)>0){
+						&call->audio_params.natd_port,&id)>0){
 				ms_message("STUN test result: local audio port maps to %s:%i",
 						call->audio_params.natd_addr,
 						call->audio_params.natd_port);
+				if (id==11)
+					cone_audio=TRUE;
 				got_audio=TRUE;
 			}
 			if (recvStunResponse(sock2,call->video_params.natd_addr,
-							&call->video_params.natd_port)>0){
+							&call->video_params.natd_port,&id)>0){
 				ms_message("STUN test result: local video port maps to %s:%i",
 					call->video_params.natd_addr,
 					call->video_params.natd_port);
+				if (id==22)
+					cone_video=TRUE;
 				got_video=TRUE;
 			}
 			gettimeofday(&cur,NULL);
@@ -632,9 +641,21 @@ void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 		}while(!(got_audio && (got_video||sock2<0)  ) );
 		if (!got_audio){
 			ms_error("No stun server response for audio port.");
+		}else{
+			if (!cone_audio) {
+				ms_warning("NAT is symmetric for audio port");
+				call->audio_params.natd_port=0;
+			}
 		}
-		if (!got_video && sock2>=0){
-			ms_error("No stun server response for video port.");
+		if (sock2>=0){
+			if (!got_video){
+				ms_error("No stun server response for video port.");
+			}else{
+				if (!cone_video) {
+					ms_warning("NAT is symmetric for video port.");
+					call->video_params.natd_port=0;
+				}
+			}
 		}
 		close_socket(sock1);
 		if (sock2>=0) close_socket(sock2);
