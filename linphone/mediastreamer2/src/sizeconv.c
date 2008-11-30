@@ -74,6 +74,7 @@ static void size_conv_postprocess(MSFilter *f){
 		s->om=NULL;
 	}
 	flushq(&s->rq,0);
+  s->frame_count=-1;
 }
 
 static mblk_t *size_conv_alloc_mblk(SizeConvState *s){
