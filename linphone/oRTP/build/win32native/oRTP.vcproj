@@ -146,7 +146,7 @@
 				AdditionalLibraryDirectories="&quot;..\..\..\win32-bin\lib&quot;"
 				IgnoreAllDefaultLibraries="true"
 				ModuleDefinitionFile="oRTP.def"
-				GenerateDebugInformation="true"
+				GenerateDebugInformation="false"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
