@@ -152,7 +152,7 @@
 				AdditionalLibraryDirectories="..\..\..\win32-bin\lib,&quot;..\..\..\oRTP\build\win32native\release&quot;,..\..\..\codecs\speex\lib"
 				IgnoreAllDefaultLibraries="true"
 				ModuleDefinitionFile="mediastreamer2.def"
-				GenerateDebugInformation="true"
+				GenerateDebugInformation="false"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
