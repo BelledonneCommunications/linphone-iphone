@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <initguid.h>
 
 #if !defined(_WIN32_WCE)
-#include "qedit.h"
+EXTERN_C const CLSID CLSID_NullRenderer;
 #endif
 #include "dxfilter.h"
 
