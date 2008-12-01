@@ -80,7 +80,10 @@ static void channel_init(ConfState *s, Channel *chan, int pos){
 	if (chan->speex_pp!=NULL) {
 		float f;
 		int val;
-		val=1;
+		if (pos==0)
+  		val=1;
+    else
+  		val=0;
 		speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_SET_DENOISE, &val);
 		/* enable VAD only on incoming RTP stream */
 		if (pos%2==1)
@@ -289,11 +292,15 @@ static void conf_sum(ConfState *s){
 		{
 			ms_bufferizer_read(&chan->buff,(uint8_t*)chan->input,s->conf_gran);
 #ifndef DISABLE_SPEEX
-			if (chan->speex_pp!=NULL && s->enable_vad==TRUE)
+			if (chan->speex_pp!=NULL && s->enable_vad==TRUE && i==0)
 			{
 				int vad;
 				vad = speex_preprocess(chan->speex_pp, (short*)chan->input, NULL);
 			}
+      else if (chan->speex_pp!=NULL && s->enable_vad==TRUE)
+      {
+        speex_preprocess_estimate_update(chan->speex_pp, (short*)chan->input);
+      }
 #endif
 
 			for(j=0;j<s->conf_nsamples;++j){
