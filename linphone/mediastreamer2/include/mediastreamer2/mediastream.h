@@ -124,6 +124,7 @@ struct _VideoStream
 	MSFilter *rtpsend;
 	OrtpEvQueue *evq;
 	MSVideoSize sent_vsize;
+	int corner; /*for selfview*/
 	bool_t adapt_bitrate;
 };
 
@@ -140,6 +141,7 @@ void video_stream_iterate(VideoStream *stream);
 void video_stream_send_vfu(VideoStream *stream);
 void video_stream_stop(VideoStream * stream);
 void video_stream_set_sent_video_size(VideoStream *stream, MSVideoSize vsize);
+void video_stream_enable_self_view(VideoStream *stream, bool_t val);
 
 VideoStream * video_preview_start(MSWebCam *device, MSVideoSize vsize);
 void video_preview_stop(VideoStream *stream);

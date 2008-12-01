@@ -116,6 +116,7 @@ typedef struct video_config{
 	bool_t capture;
 	bool_t show_local;
 	bool_t display;
+	bool_t selfview; /*during calls*/
 }video_config_t;
 
 typedef struct ui_config
@@ -692,6 +693,8 @@ void linphone_core_set_preferred_video_size_by_name(LinphoneCore *lc, const char
 void linphone_core_enable_video_preview(LinphoneCore *lc, bool_t val);
 bool_t linphone_core_video_preview_enabled(const LinphoneCore *lc);
 
+void linphone_core_enable_self_view(LinphoneCore *lc, bool_t val);
+bool_t linphone_core_self_view_enabled(const LinphoneCore *lc);
 
 
 /* returns a null terminated static array of string describing the webcams */ 

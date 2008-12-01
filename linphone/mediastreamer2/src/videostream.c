@@ -179,6 +179,13 @@ void video_stream_set_relay_session_id(VideoStream *stream, const char *id){
 	ms_filter_call_method(stream->rtpsend, MS_RTP_SEND_SET_RELAY_SESSION_ID,(void*)id);
 }
 
+void video_stream_enable_self_view(VideoStream *stream, bool_t val){
+	MSFilter *out=stream->output;
+	stream->corner=val ? 0 : -1;
+	if (out){
+		ms_filter_call_method(out,MS_VIDEO_OUT_SET_CORNER,&stream->corner);
+	}
+}
 
 void video_stream_enable_adaptive_bitrate_control(VideoStream *s, bool_t yesno){
 	s->adapt_bitrate=yesno;
@@ -281,6 +288,7 @@ int video_stream_start (VideoStream *stream, RtpProfile *profile, const char *re
 	ms_filter_call_method(stream->output,MS_FILTER_SET_VIDEO_SIZE,&disp_size);
 	ms_filter_call_method(stream->output,MS_VIDEO_OUT_AUTO_FIT,&tmp);
 	ms_filter_call_method(stream->output,MS_FILTER_SET_PIX_FMT,&format);
+	ms_filter_call_method(stream->output,MS_VIDEO_OUT_SET_CORNER,&stream->corner);
 
 	if (pt->recv_fmtp!=NULL)
 		ms_filter_call_method(stream->decoder,MS_FILTER_ADD_FMTP,(void*)pt->recv_fmtp);

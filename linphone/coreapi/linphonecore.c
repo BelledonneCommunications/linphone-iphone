@@ -1423,6 +1423,7 @@ void linphone_core_start_media_streams(LinphoneCore *lc, LinphoneCall *call){
 				if (video_params->relay_session_id!=NULL) 
 					video_stream_set_relay_session_id(lc->videostream,video_params->relay_session_id);
 				video_stream_set_sent_video_size(lc->videostream,linphone_core_get_preferred_video_size(lc));
+				video_stream_enable_self_view(lc->videostream,lc->video_conf.selfview);
 				if (lc->video_conf.display && lc->video_conf.capture)
 					video_stream_start(lc->videostream,
 					call->profile, video_params->remoteaddr, video_params->remoteport,
@@ -1999,6 +2000,17 @@ void linphone_core_enable_video_preview(LinphoneCore *lc, bool_t val){
 
 bool_t linphone_core_video_preview_enabled(const LinphoneCore *lc){
 	return lc->video_conf.show_local;
+}
+
+void linphone_core_enable_self_view(LinphoneCore *lc, bool_t val){
+	lc->video_conf.selfview=val;
+	if (lc->videostream){
+		video_stream_enable_self_view(lc->videostream,val);
+	}
+}
+
+bool_t linphone_core_self_view_enabled(const LinphoneCore *lc){
+	return lc->video_conf.selfview;
 }
 
 int linphone_core_set_video_device(LinphoneCore *lc, const char *id){

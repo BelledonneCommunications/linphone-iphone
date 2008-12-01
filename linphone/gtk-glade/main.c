@@ -379,6 +379,11 @@ void linphone_gtk_set_audio_only(){
 	linphone_core_enable_video(linphone_gtk_get_core(),FALSE,FALSE);
 }
 
+void linphone_gtk_enable_self_view(GtkWidget *w){
+	linphone_core_enable_self_view(linphone_gtk_get_core(),
+		gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)));
+}
+
 void linphone_gtk_used_identity_changed(GtkWidget *w){
 	int active=gtk_combo_box_get_active(GTK_COMBO_BOX(w));
 	char *sel=gtk_combo_box_get_active_text(GTK_COMBO_BOX(w));
