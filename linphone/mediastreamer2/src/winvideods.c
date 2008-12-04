@@ -800,6 +800,7 @@ static int v4w_open_videodevice(V4wState *s)
 	pvi->bmiHeader.biSizeImage = GetBitmapSize(&pvi->bmiHeader);
 	pvi->bmiHeader.biClrImportant = 0;
 	mt.SetSampleSize(pvi->bmiHeader.biSizeImage);
+
 	mt.SetFormat((BYTE*)pvi, sizeof(VIDEOINFO));
 
 	hr = s->m_pDXFilter->SetAcceptedMediaType(&mt);
@@ -850,6 +851,60 @@ static int v4w_open_videodevice(V4wState *s)
 		return -17;
 	}
 	
+  IAMStreamConfig *pConfig = NULL;
+  hr = s->m_pBuilder->FindInterface(
+      &pPinCategory, // Preview pin.
+      &MEDIATYPE_Video,    // Any media type.
+      s->m_pDeviceFilter, // Pointer to the capture filter.
+      IID_IAMStreamConfig, (void**)&pConfig); 
+  if (pConfig!=NULL)
+  {
+    AM_MEDIA_TYPE *pType = NULL;
+    int iCount, iSize;
+    pConfig->GetNumberOfCapabilities(&iCount, &iSize);
+
+    for (int i = 0; i < iCount; i++) {
+        VIDEO_STREAM_CONFIG_CAPS scc;
+        pType = NULL;
+        pConfig->GetStreamCaps(i, &pType, (BYTE *)&scc);
+
+        if (!((pType->formattype == FORMAT_VideoInfo) &&
+              (pType->cbFormat >= sizeof(VIDEOINFOHEADER)) &&
+              (pType->pbFormat != NULL)))
+          continue;
+
+        VIDEOINFOHEADER & videoInfo = *(VIDEOINFOHEADER *)pType->pbFormat;
+
+        if (m != pType->subtype)
+          continue;
+
+        if (videoInfo.bmiHeader.biWidth != s->vsize.width)
+          continue;
+
+        if (videoInfo.bmiHeader.biHeight != s->vsize.height)
+          continue;
+
+        if (videoInfo.bmiHeader.biBitCount != pvi->bmiHeader.biBitCount)
+          continue;
+
+        if (videoInfo.bmiHeader.biCompression != pvi->bmiHeader.biCompression)
+          continue;
+
+        videoInfo.AvgTimePerFrame = UNITS / (LONGLONG)s->fps;
+        pConfig->SetFormat(pType);    
+      }
+
+    pConfig->GetFormat(&pType);
+    if (pType!=NULL)
+    {
+      VIDEOINFO *pvi;
+      pvi = (VIDEOINFO *)pType->pbFormat;
+      ms_message("v4w: camera asked fps=%i // real fps=%i", (int)(UNITS / (LONGLONG)s->fps), pvi->AvgTimePerFrame);
+    }
+    
+    pConfig->Release();
+  }
+
 	//m_pDXFilter->SetBufferSamples(TRUE);
 
 	s_callback = s;
@@ -858,6 +913,7 @@ static int v4w_open_videodevice(V4wState *s)
 	{
 		return -18;
 	}
+
 
 	s->rotregvalue=1;
 	return 0;
