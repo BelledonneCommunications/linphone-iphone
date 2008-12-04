@@ -790,18 +790,20 @@ static int video_out_set_corner(MSFilter *f,void *arg){
 	VideoOut *s=(VideoOut*)f->data;
 	ms_filter_lock(f);
 	set_corner(s, *(int*)arg);
-	ms_display_lock(s->display);
-	{
-	  int w=s->fbuf.w;
-	  int h=s->fbuf.h;
-	  int ysize=w*h;
-	  int usize=ysize/4;
-	  
-	  memset(s->fbuf.planes[0], 0, ysize);
-	  memset(s->fbuf.planes[1], 0, usize);
-	  memset(s->fbuf.planes[2], 0, usize);
+	if (s->display){
+		ms_display_lock(s->display);
+		{
+		int w=s->fbuf.w;
+		int h=s->fbuf.h;
+		int ysize=w*h;
+		int usize=ysize/4;
+		
+		memset(s->fbuf.planes[0], 0, ysize);
+		memset(s->fbuf.planes[1], 0, usize);
+		memset(s->fbuf.planes[2], 0, usize);
+		}
+		ms_display_unlock(s->display);
 	}
-	ms_display_unlock(s->display);
 	ms_filter_unlock(f);
 	return 0;
 }

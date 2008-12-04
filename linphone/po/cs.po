@@ -6,32 +6,32 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: linphone-3.0.0\n"
-"Report-Msgid-Bugs-To: linphone-developers@nongnu.org\n"
-"POT-Creation-Date: 2008-10-16 18:38+0200\n"
-"PO-Revision-Date: 2008-10-13 21:16+0200\n"
+"Project-Id-Version: linphone-3.0.0-r185\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-12-03 23:38+0100\n"
+"PO-Revision-Date: 2008-12-03 23:52+0100\n"
 "Last-Translator: Petr Pisar <petr.pisar@atlas.cz>\n"
 "Language-Team: Czech <translation-team-cs@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: gtk-glade/support.c:49 gtk-glade/support.c:73
+#: ../gtk-glade/support.c:49 ../gtk-glade/support.c:73
 #, c-format
 msgid "Couldn't find pixmap file: %s"
 msgstr "Nelze najít soubor s obrázkem: %s"
 
-#: gtk-glade/chat.c:27
+#: ../gtk-glade/chat.c:27
 #, c-format
 msgid "Chat with %s"
 msgstr "Diskuze s %s"
 
-#: gtk-glade/main.c:402
+#: ../gtk-glade/main.c:414
 #, c-format
 msgid "Incoming call from %s"
 msgstr "Příchozí hovor od %s"
 
-#: gtk-glade/main.c:438
+#: ../gtk-glade/main.c:450
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
@@ -44,232 +44,241 @@ msgstr ""
 "do svého adresáře?\n"
 "Odpovíte-li ne, tato osobo bude dočasně blokována."
 
-#: gtk-glade/main.c:507
+#: ../gtk-glade/main.c:520
 #, c-format
 msgid "Please enter your password for domain %s:"
 msgstr "Prosím, zadejte svoje heslo pro doménu %s:"
 
-#: gtk-glade/main.c:582
+#: ../gtk-glade/main.c:595
 msgid "Linphone - a video internet phone"
 msgstr "Lipnhone – internetový videofon"
 
-#: gtk-glade/main.c:599
+#: ../gtk-glade/main.c:612
 #, c-format
 msgid "%s (Default)"
 msgstr "%s (Výchozí)"
 
-#: gtk-glade/main.c:714
+#: ../gtk-glade/main.c:743
 msgid "A free SIP video-phone"
 msgstr "Volný SIP videofon"
 
-#: gtk-glade/friendlist.c:199 gtk-glade/propertybox.c:209
-#: gtk-glade/contact.glade:41
+#: ../gtk-glade/friendlist.c:203 ../gtk-glade/propertybox.c:244
+#: ../gtk-glade/contact.glade.h:3
 msgid "Name"
 msgstr "Jméno"
 
-#: gtk-glade/friendlist.c:206
+#: ../gtk-glade/friendlist.c:210
 msgid "Presence status"
 msgstr "Stav"
 
-#: gtk-glade/friendlist.c:397
+#: ../gtk-glade/friendlist.c:377
+msgid "Invalid sip contact !"
+msgstr "Neplatný sipový kontakt!"
+
+#: ../gtk-glade/friendlist.c:408
 #, c-format
 msgid "Call %s"
 msgstr "Volat komu: %s"
 
-#: gtk-glade/friendlist.c:398
+#: ../gtk-glade/friendlist.c:409
 #, c-format
 msgid "Send text to %s"
 msgstr "Poslat text komu: %s"
 
-#: gtk-glade/propertybox.c:215
+#: ../gtk-glade/propertybox.c:250
 msgid "Rate (Hz)"
 msgstr "Rychlost (Hz)"
 
-#: gtk-glade/propertybox.c:221
+#: ../gtk-glade/propertybox.c:256
 msgid "Status"
 msgstr "Stav"
 
-#: gtk-glade/propertybox.c:227
+#: ../gtk-glade/propertybox.c:262
 msgid "Min bitrate (kbit/s)"
 msgstr "Min. rychlost (kbit/s)"
 
-#: gtk-glade/propertybox.c:233
+#: ../gtk-glade/propertybox.c:268
 msgid "Parameters"
 msgstr "Parametry"
 
-#: gtk-glade/propertybox.c:260 gtk-glade/propertybox.c:397
+#: ../gtk-glade/propertybox.c:295 ../gtk-glade/propertybox.c:432
 msgid "Enabled"
 msgstr "Povoleno"
 
-#: gtk-glade/propertybox.c:261 gtk-glade/propertybox.c:397
+#: ../gtk-glade/propertybox.c:296 ../gtk-glade/propertybox.c:432
 msgid "Disabled"
 msgstr "Zakázáno"
 
-#: gtk-glade/propertybox.c:442
+#: ../gtk-glade/propertybox.c:477
 msgid "Account"
 msgstr "Účet"
 
-#: gtk-glade/main.glade:21
-msgid "_View"
-msgstr "_Zobrazit"
+#: ../gtk-glade/main.glade.h:1
+msgid "#"
+msgstr "#"
 
-#: gtk-glade/main.glade:30
-msgid "gtk-preferences"
-msgstr ""
+#: ../gtk-glade/main.glade.h:2
+msgid "*"
+msgstr "*"
 
-#: gtk-glade/main.glade:39 gtk-glade/call_logs.glade:9
-msgid "Call history"
-msgstr "Historie volání"
+#: ../gtk-glade/main.glade.h:3
+msgid "0"
+msgstr "0"
 
-#: gtk-glade/main.glade:53
-msgid "gtk-quit"
-msgstr ""
+#: ../gtk-glade/main.glade.h:4
+msgid "1"
+msgstr "1"
 
-#: gtk-glade/main.glade:67
-msgid "_Modes"
-msgstr "Reži_my"
+#: ../gtk-glade/main.glade.h:5
+msgid "2"
+msgstr "2"
 
-#: gtk-glade/main.glade:77
-msgid "Audio only"
-msgstr "Pouze zvuk"
+#: ../gtk-glade/main.glade.h:6
+msgid "3"
+msgstr "3"
 
-#: gtk-glade/main.glade:88
-msgid "Audio & Video"
-msgstr "Zvuk i obraz"
+#: ../gtk-glade/main.glade.h:7
+msgid "4"
+msgstr "4"
 
-#: gtk-glade/main.glade:104
-msgid "gtk-help"
-msgstr ""
+#: ../gtk-glade/main.glade.h:8
+msgid "5"
+msgstr "5"
 
-#: gtk-glade/main.glade:115
-msgid "Show debug window"
-msgstr "Zobrazit ladicí okno"
+#: ../gtk-glade/main.glade.h:9
+msgid "6"
+msgstr "6"
 
-#: gtk-glade/main.glade:128
-msgid "gtk-about"
-msgstr ""
+#: ../gtk-glade/main.glade.h:10
+msgid "7"
+msgstr "7"
 
-#: gtk-glade/main.glade:189
-msgid "Terminate call"
-msgstr "Ukončit hovor"
+#: ../gtk-glade/main.glade.h:11
+msgid "8"
+msgstr "8"
 
-#: gtk-glade/main.glade:228
-msgid "Start call"
-msgstr "Zahájit hovor"
+#: ../gtk-glade/main.glade.h:12
+msgid "9"
+msgstr "9"
 
-#: gtk-glade/main.glade:252
-msgid "Current call"
-msgstr "Současný hovor"
+#: ../gtk-glade/main.glade.h:13
+msgid "<b>Contact list</b>"
+msgstr "<b>Seznam kontaktů</b>"
 
-#: gtk-glade/main.glade:289
-msgid "Lookup:"
-msgstr ""
+#: ../gtk-glade/main.glade.h:14
+msgid "A"
+msgstr "A"
 
-#: gtk-glade/main.glade:310
-msgid "in"
-msgstr ""
-
-#: gtk-glade/main.glade:322
+#: ../gtk-glade/main.glade.h:15
 msgid ""
 "All users\n"
 "Online users"
 msgstr ""
+"všech uživatelích\n"
+"připojených uživatelích"
 
-#: gtk-glade/main.glade:366
-msgid "<b>Contact list</b>"
-msgstr "<b>Seznam kontaktů</b>"
+#: ../gtk-glade/main.glade.h:17
+msgid "Audio & Video"
+msgstr "Zvuk i obraz"
 
-#: gtk-glade/main.glade:404
-msgid "D"
-msgstr "D"
+#: ../gtk-glade/main.glade.h:18
+msgid "Audio only"
+msgstr "Pouze zvuk"
 
-#: gtk-glade/main.glade:422
-msgid "#"
-msgstr "#"
-
-#: gtk-glade/main.glade:440
-msgid "0"
-msgstr "0"
-
-#: gtk-glade/main.glade:458
-msgid "*"
-msgstr "*"
-
-#: gtk-glade/main.glade:474
-msgid "C"
-msgstr "C"
-
-#: gtk-glade/main.glade:492
-msgid "9"
-msgstr "9"
-
-#: gtk-glade/main.glade:510
-msgid "8"
-msgstr "8"
-
-#: gtk-glade/main.glade:528
-msgid "7"
-msgstr "7"
-
-#: gtk-glade/main.glade:544
+#: ../gtk-glade/main.glade.h:19
 msgid "B"
 msgstr "B"
 
-#: gtk-glade/main.glade:562
-msgid "6"
-msgstr "6"
+#: ../gtk-glade/main.glade.h:20
+msgid "C"
+msgstr "C"
 
-#: gtk-glade/main.glade:580
-msgid "5"
-msgstr "5"
+#: ../gtk-glade/main.glade.h:21 ../gtk-glade/call_logs.glade.h:1
+msgid "Call history"
+msgstr "Historie volání"
 
-#: gtk-glade/main.glade:598
-msgid "4"
-msgstr "4"
+#: ../gtk-glade/main.glade.h:22
+msgid "Current call"
+msgstr "Současný hovor"
 
-#: gtk-glade/main.glade:614
-msgid "A"
-msgstr "A"
+#: ../gtk-glade/main.glade.h:23
+msgid "D"
+msgstr "D"
 
-#: gtk-glade/main.glade:630
-msgid "3"
-msgstr "3"
-
-#: gtk-glade/main.glade:646
-msgid "2"
-msgstr "2"
-
-#: gtk-glade/main.glade:662
-msgid "1"
-msgstr "1"
-
-#: gtk-glade/main.glade:678
-msgid "Digits"
-msgstr "Číslice"
-
-#: gtk-glade/main.glade:716
+#: ../gtk-glade/main.glade.h:24
 msgid "Default"
 msgstr "Výchozí"
 
-#: gtk-glade/main.glade:726
-#, fuzzy
-msgid "My current identity:"
-msgstr "Moje totožnost:"
+#: ../gtk-glade/main.glade.h:25
+msgid "Digits"
+msgstr "Číslice"
 
-#: gtk-glade/about.glade:8
+#: ../gtk-glade/main.glade.h:26
+msgid "Enable self-view"
+msgstr "Zobrazovat sám sebe"
+
+#: ../gtk-glade/main.glade.h:27
+msgid "Lookup:"
+msgstr "Hledat:"
+
+#: ../gtk-glade/main.glade.h:28
+msgid "My current identity:"
+msgstr "Moje současná totožnost:"
+
+#: ../gtk-glade/main.glade.h:29
+msgid "Show debug window"
+msgstr "Zobrazit ladicí okno"
+
+#: ../gtk-glade/main.glade.h:30
+msgid "Start call"
+msgstr "Zahájit hovor"
+
+#: ../gtk-glade/main.glade.h:31
+msgid "Terminate call"
+msgstr "Ukončit hovor"
+
+#: ../gtk-glade/main.glade.h:32
+msgid "_Modes"
+msgstr "Reži_my"
+
+#: ../gtk-glade/main.glade.h:33
+msgid "_View"
+msgstr "_Zobrazit"
+
+#: ../gtk-glade/main.glade.h:34
+msgid "gtk-about"
+msgstr ""
+
+#: ../gtk-glade/main.glade.h:35
+msgid "gtk-help"
+msgstr ""
+
+#: ../gtk-glade/main.glade.h:36
+msgid "gtk-preferences"
+msgstr ""
+
+#: ../gtk-glade/main.glade.h:37
+msgid "gtk-quit"
+msgstr ""
+
+#: ../gtk-glade/main.glade.h:38
+msgid "in"
+msgstr "ve"
+
+#: ../gtk-glade/about.glade.h:1
 msgid "About linphone"
 msgstr "O Linphonu"
 
-#: gtk-glade/about.glade:16
-msgid "Created by Simon Morlat\n"
-msgstr "Vytvořil Simon Morlat\n"
-
 # FIXME: standart
-#: gtk-glade/about.glade:18
+#: ../gtk-glade/about.glade.h:2
 msgid "An internet video phone using the standart SIP (rfc3261) protocol."
 msgstr "Internetový videofon používající standardní protokol SIP (RFC 3261)."
 
-#: gtk-glade/about.glade:23
+#: ../gtk-glade/about.glade.h:3
+msgid "Created by Simon Morlat\n"
+msgstr "Vytvořil Simon Morlat\n"
+
+#: ../gtk-glade/about.glade.h:5
 msgid ""
 "fr: Simon Morlat\n"
 "en: Simon Morlat and Delphine Perreau\n"
@@ -295,314 +304,174 @@ msgstr ""
 "cs: Petr Písař <petr.pisar@atlas.cz>\n"
 "hu: anonym\n"
 
-#: gtk-glade/contact.glade:51
-msgid "SIP Address"
-msgstr "SIP adresa"
-
-#: gtk-glade/contact.glade:95
-msgid "Show this contact presence status"
-msgstr "U tohoto kontaktu zobrazovat stav přítomnosti"
-
-#: gtk-glade/contact.glade:109
+#: ../gtk-glade/contact.glade.h:1
 msgid "Allow this contact to see my presence status"
 msgstr "Dovolit tomuto kontaktu, aby viděl můj stav přítomnosti"
 
-#: gtk-glade/contact.glade:126
+#: ../gtk-glade/contact.glade.h:2
 msgid "Contact information"
 msgstr "Informace o kontaktu"
 
-#: gtk-glade/contact.glade:149 gtk-glade/password.glade:114
-#: gtk-glade/sip_account.glade:206
+#: ../gtk-glade/contact.glade.h:4
+msgid "SIP Address"
+msgstr "SIP adresa"
+
+#: ../gtk-glade/contact.glade.h:5
+msgid "Show this contact presence status"
+msgstr "U tohoto kontaktu zobrazovat stav přítomnosti"
+
+#: ../gtk-glade/contact.glade.h:6 ../gtk-glade/password.glade.h:5
+#: ../gtk-glade/sip_account.glade.h:9
 msgid "gtk-cancel"
 msgstr ""
 
-#: gtk-glade/contact.glade:161 gtk-glade/password.glade:102
-#: gtk-glade/sip_account.glade:194
+#: ../gtk-glade/contact.glade.h:7 ../gtk-glade/password.glade.h:6
+#: ../gtk-glade/sip_account.glade.h:10
 msgid "gtk-ok"
 msgstr ""
 
-#: gtk-glade/log.glade:9
+#: ../gtk-glade/log.glade.h:1
 msgid "Linphone debug window"
 msgstr "Ladicí okno Linphonu"
 
-#: gtk-glade/log.glade:54 gtk-glade/call_logs.glade:49
-#: gtk-glade/chatroom.glade:82 gtk-glade/parameters.glade:1402
+#: ../gtk-glade/log.glade.h:2 ../gtk-glade/call_logs.glade.h:2
+#: ../gtk-glade/chatroom.glade.h:2 ../gtk-glade/parameters.glade.h:58
 msgid "gtk-close"
 msgstr ""
 
-#: gtk-glade/password.glade:8
+#: ../gtk-glade/password.glade.h:1
 msgid "Linphone - Authentication required"
 msgstr "Linphone – Ověření totožnosti vyžadováno"
 
-#: gtk-glade/password.glade:27
-#, fuzzy
-msgid "Please enter the domain password"
-msgstr "Prosím, zadejte svoje heslo pro doménu…"
-
-#: gtk-glade/password.glade:49
-#, fuzzy
-msgid "Username:"
-msgstr "Uživatelské jméno"
-
-#: gtk-glade/password.glade:56
+#: ../gtk-glade/password.glade.h:2
 msgid "Password:"
 msgstr "Heslo:"
 
-#: gtk-glade/sip_account.glade:8
-msgid "Linphone - Configure a SIP account"
-msgstr "Linphone – Nastav SIP účet"
+#: ../gtk-glade/password.glade.h:3
+msgid "Please enter the domain password"
+msgstr "Prosím, zadejte heslo pro doménu"
 
-#: gtk-glade/sip_account.glade:56
-#, fuzzy
-msgid "Registration duration (sec):"
-msgstr "Registrační období (s):"
+#: ../gtk-glade/password.glade.h:4
+msgid "Username:"
+msgstr "Uživatelské jméno:"
 
-#: gtk-glade/sip_account.glade:81
-msgid "Route (optional):"
-msgstr "Směrování (volitelné):"
-
-#: gtk-glade/sip_account.glade:94
-msgid "sip:"
-msgstr "sip:"
-
-#: gtk-glade/sip_account.glade:107
-msgid "SIP Proxy address:"
-msgstr "Adresa SIP proxy:"
-
-#: gtk-glade/sip_account.glade:130
-msgid "Your SIP identity:"
-msgstr "Vaše SIP totožnost:"
-
-#: gtk-glade/sip_account.glade:140
-msgid "Register at startup"
-msgstr "Zaregistrovat při spuštění"
-
-#: gtk-glade/sip_account.glade:154
-msgid "Publish presence information"
-msgstr "Zveřejnit stav přítomnosti"
-
-#: gtk-glade/sip_account.glade:171
+#: ../gtk-glade/sip_account.glade.h:1
 msgid "Configure a SIP account"
 msgstr "Nastavit SIP účet"
 
-#: gtk-glade/chatroom.glade:50
+#: ../gtk-glade/sip_account.glade.h:2
+msgid "Linphone - Configure a SIP account"
+msgstr "Linphone – Nastav SIP účet"
+
+#: ../gtk-glade/sip_account.glade.h:3
+msgid "Publish presence information"
+msgstr "Zveřejnit stav přítomnosti"
+
+#: ../gtk-glade/sip_account.glade.h:4
+msgid "Register at startup"
+msgstr "Zaregistrovat při spuštění"
+
+#: ../gtk-glade/sip_account.glade.h:5
+msgid "Registration duration (sec):"
+msgstr "Registrační období (s):"
+
+#: ../gtk-glade/sip_account.glade.h:6
+msgid "Route (optional):"
+msgstr "Směrování (volitelné):"
+
+#: ../gtk-glade/sip_account.glade.h:7
+msgid "SIP Proxy address:"
+msgstr "Adresa SIP proxy:"
+
+#: ../gtk-glade/sip_account.glade.h:8
+msgid "Your SIP identity:"
+msgstr "Vaše SIP totožnost:"
+
+#: ../gtk-glade/sip_account.glade.h:11
+msgid "sip:"
+msgstr "sip:"
+
+#: ../gtk-glade/chatroom.glade.h:1
 msgid "Send"
 msgstr "Odeslat"
 
-#: gtk-glade/incoming_call.glade:9
-msgid "Linphone - Incoming call"
-msgstr "Linphone – Příchozí hovor"
-
-#: gtk-glade/incoming_call.glade:36
-msgid "Incoming call from"
-msgstr "Příchozí hovor od"
-
-#: gtk-glade/incoming_call.glade:45 coreapi/linphonecore.c:230
-msgid "Incoming call"
-msgstr "Příchozí hovor"
-
-#: gtk-glade/incoming_call.glade:85
+#: ../gtk-glade/incoming_call.glade.h:1
 msgid "Accept"
 msgstr "Přijmout"
 
-#: gtk-glade/incoming_call.glade:118
+#: ../gtk-glade/incoming_call.glade.h:2
 msgid "Decline"
 msgstr "Odmítnout"
 
-#: gtk-glade/parameters.glade:41
-#, fuzzy
-msgid "Set Maximum Transmission Unit:"
-msgstr "Nastavit MTU (největší přenositelná zpráva)"
+#: ../gtk-glade/incoming_call.glade.h:3 ../coreapi/linphonecore.c:231
+msgid "Incoming call"
+msgstr "Příchozí hovor"
 
-#: gtk-glade/parameters.glade:64
-msgid "Send DTMFs as SIP info"
-msgstr "Odesílat tóny DTMF jako SIP INFO zprávy"
+#: ../gtk-glade/incoming_call.glade.h:4
+msgid "Incoming call from"
+msgstr "Příchozí hovor od"
 
-#: gtk-glade/parameters.glade:78
-msgid "Use IPv6 instead of IPv4"
-msgstr "Používat IPv6 místo IPv4"
+#: ../gtk-glade/incoming_call.glade.h:5
+msgid "Linphone - Incoming call"
+msgstr "Linphone – Příchozí hovor"
 
-#: gtk-glade/parameters.glade:95
-#, fuzzy
-msgid "<b>Transport</b>"
-msgstr "<b>Použité porty</b>"
+#: ../gtk-glade/parameters.glade.h:1
+msgid "0 stands for \"unlimited\""
+msgstr "0 znamená „neomezeno“"
 
-#: gtk-glade/parameters.glade:167
-#, fuzzy
-msgid "Video RTP/UDP:"
-msgstr "Obrazový RTP/UDP"
-
-#: gtk-glade/parameters.glade:179
-#, fuzzy
-msgid "Audio RTP/UDP:"
-msgstr "Zvukový RTP/UDP"
-
-#: gtk-glade/parameters.glade:191
-#, fuzzy
-msgid "SIP (UDP):"
-msgstr "SIP (UDP)"
-
-#: gtk-glade/parameters.glade:203
-#, fuzzy
-msgid "<b>Ports</b>"
-msgstr "<b>Použité porty</b>"
-
-#: gtk-glade/parameters.glade:227
-msgid "Direct connection to the Internet"
-msgstr ""
-
-#: gtk-glade/parameters.glade:241
-msgid "Behind NAT / Firewall (specify gateway IP below)"
-msgstr ""
-
-#: gtk-glade/parameters.glade:257
-#, fuzzy
-msgid "Public IP address:"
-msgstr "Veřejná IP adresa"
-
-#: gtk-glade/parameters.glade:289
-msgid "Behind NAT / Firewall (use STUN to resolve)"
-msgstr ""
-
-#: gtk-glade/parameters.glade:305
-#, fuzzy
-msgid "Stun server:"
-msgstr "STUN server"
-
-#: gtk-glade/parameters.glade:336
-#, fuzzy
-msgid "<b>NAT and Firewall</b>"
-msgstr "<b>Nastavení firewallu</b>"
-
-#: gtk-glade/parameters.glade:365
-msgid "Network settings"
-msgstr "Nastavení sítě"
-
-#: gtk-glade/parameters.glade:417
-msgid "gtk-media-play"
-msgstr ""
-
-#: gtk-glade/parameters.glade:439
-#, fuzzy
-msgid "Ring sound:"
-msgstr "Vyzvánění"
-
-#: gtk-glade/parameters.glade:466
-msgid "default soundcard\n"
-msgstr "implicitní zvuková karta\n"
-
-#: gtk-glade/parameters.glade:482
-msgid "default soundcard"
-msgstr "implicitní zvuková karta"
-
-#: gtk-glade/parameters.glade:496
-#, fuzzy
-msgid "ALSA special device (optional):"
-msgstr "Zvláštní ALSA zařízení (volitelné)"
-
-#: gtk-glade/parameters.glade:509
-#, fuzzy
-msgid "Capture device:"
-msgstr "Zařízení pro nahrávání"
-
-#: gtk-glade/parameters.glade:522
-#, fuzzy
-msgid "Ring device:"
-msgstr "Zařízení pro vyzvánění"
-
-#: gtk-glade/parameters.glade:535
-#, fuzzy
-msgid "Playback device:"
-msgstr "Zařízení pro přehrávání"
-
-#: gtk-glade/parameters.glade:547
-msgid "a sound card\n"
-msgstr "zvuková karta\n"
-
-#: gtk-glade/parameters.glade:562
-#, fuzzy
-msgid "Enable echo cancellation"
-msgstr "Zapnout potlačení ozvěny"
-
-#: gtk-glade/parameters.glade:582
-#, fuzzy
+#: ../gtk-glade/parameters.glade.h:2
 msgid "<b>Audio</b>"
 msgstr "<b>Zvuk</b>"
 
-#: gtk-glade/parameters.glade:607
-#, fuzzy
-msgid "Video input device:"
-msgstr "Vstupní zařízení obrazu"
+#: ../gtk-glade/parameters.glade.h:3
+msgid "<b>Bandwidth control</b>"
+msgstr "<b>Využití šířky pásma</b>"
 
-#: gtk-glade/parameters.glade:617
-msgid "default camera"
-msgstr "implicitní kamera"
+#: ../gtk-glade/parameters.glade.h:4
+msgid "<b>Codecs</b>"
+msgstr "<b>Kodeky</b>"
 
-#: gtk-glade/parameters.glade:633
-msgid "<b>Video</b>"
-msgstr "<b>Obraz</b>"
-
-#: gtk-glade/parameters.glade:666
-msgid "Multimedia settings"
-msgstr "Nastavení multimédií"
-
-#: gtk-glade/parameters.glade:687
-msgid "This section defines your SIP address when not using a SIP account"
-msgstr "Tento oddíl definuje vaši SIP adresu, když se nepoužívá žádný účet"
-
-#: gtk-glade/parameters.glade:704
-msgid "Your display name (eg: John Doe):"
-msgstr "Vaše zobrazované jméno (např. Jan Novák):"
-
-#: gtk-glade/parameters.glade:723
-msgid "Your username:"
-msgstr "Vaše uživatelské jméno:"
-
-#: gtk-glade/parameters.glade:734
-msgid "Your resulting SIP address:"
-msgstr "Vaše výsledná SIP adresa:"
-
-#: gtk-glade/parameters.glade:777
+#: ../gtk-glade/parameters.glade.h:5
 msgid "<b>Default identity</b>"
 msgstr "<b>Implicitní totožnost</b>"
 
-#: gtk-glade/parameters.glade:844
-msgid "Add"
-msgstr "Přidat"
+#: ../gtk-glade/parameters.glade.h:6
+msgid "<b>NAT and Firewall</b>"
+msgstr "<b>NAT a firewall</b>"
 
-#: gtk-glade/parameters.glade:877
-msgid "Edit"
-msgstr "Upravit"
+#: ../gtk-glade/parameters.glade.h:7
+msgid "<b>Ports</b>"
+msgstr "<b>Porty</b>"
 
-#: gtk-glade/parameters.glade:913
-msgid "Remove"
-msgstr "Odstranit"
-
-#: gtk-glade/parameters.glade:944
-msgid ""
-"Register to FONICS\n"
-"virtual network !"
-msgstr ""
-"Zaregistrovat se do\n"
-"virtuální sítě FONICS!"
-
-#: gtk-glade/parameters.glade:973
-msgid "<b>Proxy accounts</b>"
-msgstr "<b>Proxy účty</b>"
-
-#: gtk-glade/parameters.glade:1022
-msgid "Erase all passwords"
-msgstr "Vymazat všechna hesla"
-
-#: gtk-glade/parameters.glade:1040
+#: ../gtk-glade/parameters.glade.h:8
 msgid "<b>Privacy</b>"
 msgstr "<b>Soukromí</b>"
 
-#: gtk-glade/parameters.glade:1072
-msgid "Manage SIP Accounts"
-msgstr "Nastavení SIP účtů"
+#: ../gtk-glade/parameters.glade.h:9
+msgid "<b>Proxy accounts</b>"
+msgstr "<b>Proxy účty</b>"
 
-#: gtk-glade/parameters.glade:1108
+#: ../gtk-glade/parameters.glade.h:10
+msgid "<b>Transport</b>"
+msgstr "<b>Přenos</b>"
+
+#: ../gtk-glade/parameters.glade.h:11
+msgid "<b>Video</b>"
+msgstr "<b>Obraz</b>"
+
+#: ../gtk-glade/parameters.glade.h:12
+msgid "ALSA special device (optional):"
+msgstr "Zvláštní ALSA zařízení (volitelné):"
+
+#: ../gtk-glade/parameters.glade.h:13
+msgid "Add"
+msgstr "Přidat"
+
+#: ../gtk-glade/parameters.glade.h:14
+msgid "Audio RTP/UDP:"
+msgstr "Zvukový RTP/UDP:"
+
+#: ../gtk-glade/parameters.glade.h:15
 msgid ""
 "Audio codecs\n"
 "Video codecs"
@@ -610,68 +479,193 @@ msgstr ""
 "Kodeky zvuku\n"
 "Kodeky obrazu"
 
-#: gtk-glade/parameters.glade:1149
-msgid "gtk-go-up"
-msgstr ""
+#: ../gtk-glade/parameters.glade.h:17
+msgid "Behind NAT / Firewall (specify gateway IP below)"
+msgstr "Za NAT/firewallem (adresu brány zadejte níže)"
 
-#: gtk-glade/parameters.glade:1161
-msgid "gtk-go-down"
-msgstr ""
+#: ../gtk-glade/parameters.glade.h:18
+msgid "Behind NAT / Firewall (use STUN to resolve)"
+msgstr "Za NAT/firewallem (adresu určí STUN)"
 
-#: gtk-glade/parameters.glade:1193
-msgid "Enable"
-msgstr "Povolit"
+#: ../gtk-glade/parameters.glade.h:19
+msgid "CIF"
+msgstr "CIF"
 
-#: gtk-glade/parameters.glade:1229
-msgid "Disable"
-msgstr "Zakázat"
+#: ../gtk-glade/parameters.glade.h:20
+msgid "Capture device:"
+msgstr "Zařízení pro nahrávání:"
 
-#: gtk-glade/parameters.glade:1261
-msgid "<b>Codecs</b>"
-msgstr "<b>Kodeky</b>"
-
-#: gtk-glade/parameters.glade:1291 gtk-glade/parameters.glade:1307
-msgid "0 stands for \"unlimited\""
-msgstr "0 znamená „neomezeno“"
-
-#: gtk-glade/parameters.glade:1320
-#, fuzzy
-msgid "Upload speed limit in Kbit/sec:"
-msgstr "Omezení odchozí rychlosti (kb/s)"
-
-#: gtk-glade/parameters.glade:1332
-#, fuzzy
-msgid "Download speed limit in Kbit/sec:"
-msgstr "Omezení příchozí rychlosti (kb/s)"
-
-#: gtk-glade/parameters.glade:1344
-#, fuzzy
-msgid "<b>Bandwidth control</b>"
-msgstr "<b>Využití šířky pásma</b>"
-
-#: gtk-glade/parameters.glade:1376
+#: ../gtk-glade/parameters.glade.h:21
 msgid "Codecs"
 msgstr "Kodeky"
 
+#: ../gtk-glade/parameters.glade.h:22
+msgid "Direct connection to the Internet"
+msgstr "Přímé připojení do Internetu"
+
+#: ../gtk-glade/parameters.glade.h:23
+msgid "Disable"
+msgstr "Zakázat"
+
+#: ../gtk-glade/parameters.glade.h:24
+msgid "Download speed limit in Kbit/sec:"
+msgstr "Omezení příchozí rychlosti (kb/s):"
+
+#: ../gtk-glade/parameters.glade.h:25
+msgid "Edit"
+msgstr "Upravit"
+
+#: ../gtk-glade/parameters.glade.h:26
+msgid "Enable"
+msgstr "Povolit"
+
+#: ../gtk-glade/parameters.glade.h:27
+msgid "Enable echo cancellation"
+msgstr "Zapnout potlačení ozvěny"
+
+#: ../gtk-glade/parameters.glade.h:28
+msgid "Erase all passwords"
+msgstr "Vymazat všechna hesla"
+
+#: ../gtk-glade/parameters.glade.h:29
+msgid "Manage SIP Accounts"
+msgstr "Nastavení SIP účtů"
+
+#: ../gtk-glade/parameters.glade.h:30
+msgid "Multimedia settings"
+msgstr "Nastavení multimédií"
+
+#: ../gtk-glade/parameters.glade.h:31
+msgid "Network settings"
+msgstr "Nastavení sítě"
+
+#: ../gtk-glade/parameters.glade.h:32
+msgid "Playback device:"
+msgstr "Zařízení pro přehrávání:"
+
+#: ../gtk-glade/parameters.glade.h:33
+msgid "Prefered video resolution:"
+msgstr "Upřednostňované rozlišení obrazu:"
+
+#: ../gtk-glade/parameters.glade.h:34
+msgid "Public IP address:"
+msgstr "Veřejná IP adresa:"
+
+#: ../gtk-glade/parameters.glade.h:35
+msgid ""
+"Register to FONICS\n"
+"virtual network !"
+msgstr ""
+"Zaregistrovat se do\n"
+"virtuální sítě FONICS!"
+
+#: ../gtk-glade/parameters.glade.h:37
+msgid "Remove"
+msgstr "Odstranit"
+
+#: ../gtk-glade/parameters.glade.h:38
+msgid "Ring device:"
+msgstr "Zařízení pro vyzvánění:"
+
+#: ../gtk-glade/parameters.glade.h:39
+msgid "Ring sound:"
+msgstr "Vyzvánění:"
+
+#: ../gtk-glade/parameters.glade.h:40
+msgid "SIP (UDP):"
+msgstr "SIP (UDP):"
+
+#: ../gtk-glade/parameters.glade.h:41
+msgid "Send DTMFs as SIP info"
+msgstr "Odesílat tóny DTMF jako SIP INFO zprávy"
+
+#: ../gtk-glade/parameters.glade.h:42
+msgid "Set Maximum Transmission Unit:"
+msgstr "Nastavit MTU (největší přenositelná zpráva):"
+
+#: ../gtk-glade/parameters.glade.h:43
+msgid "Stun server:"
+msgstr "STUN server:"
+
+#: ../gtk-glade/parameters.glade.h:44
+msgid "This section defines your SIP address when not using a SIP account"
+msgstr "Tento oddíl určuje vaši SIP adresu, když se nepoužívá žádný účet"
+
+#: ../gtk-glade/parameters.glade.h:45
+msgid "Upload speed limit in Kbit/sec:"
+msgstr "Omezení odchozí rychlosti (kb/s):"
+
+#: ../gtk-glade/parameters.glade.h:46
+msgid "Use IPv6 instead of IPv4"
+msgstr "Používat IPv6 místo IPv4"
+
+#: ../gtk-glade/parameters.glade.h:47
+msgid "Video RTP/UDP:"
+msgstr "Obrazový RTP/UDP:"
+
+#: ../gtk-glade/parameters.glade.h:48
+msgid "Video input device:"
+msgstr "Vstupní zařízení obrazu:"
+
+#: ../gtk-glade/parameters.glade.h:49
+msgid "Your display name (eg: John Doe):"
+msgstr "Vaše zobrazované jméno (např. Jan Novák):"
+
+#: ../gtk-glade/parameters.glade.h:50
+msgid "Your resulting SIP address:"
+msgstr "Vaše výsledná SIP adresa:"
+
+#: ../gtk-glade/parameters.glade.h:51
+msgid "Your username:"
+msgstr "Vaše uživatelské jméno:"
+
+#: ../gtk-glade/parameters.glade.h:52
+msgid "a sound card\n"
+msgstr "zvuková karta\n"
+
+#: ../gtk-glade/parameters.glade.h:54
+msgid "default camera"
+msgstr "implicitní kamera"
+
+#: ../gtk-glade/parameters.glade.h:55
+msgid "default soundcard"
+msgstr "implicitní zvuková karta"
+
+#: ../gtk-glade/parameters.glade.h:56
+msgid "default soundcard\n"
+msgstr "implicitní zvuková karta\n"
+
+#: ../gtk-glade/parameters.glade.h:59
+msgid "gtk-go-down"
+msgstr ""
+
+#: ../gtk-glade/parameters.glade.h:60
+msgid "gtk-go-up"
+msgstr ""
+
+#: ../gtk-glade/parameters.glade.h:61
+msgid "gtk-media-play"
+msgstr ""
+
 # FIXME: plural
-#: coreapi/linphonecore.c:192
+#: ../coreapi/linphonecore.c:193
 #, c-format
 msgid "You have missed %i call(s)."
 msgstr "Zameškané hovory: %i"
 
-#: coreapi/linphonecore.c:218
+#: ../coreapi/linphonecore.c:219
 msgid "aborted"
 msgstr "přerušen"
 
-#: coreapi/linphonecore.c:221
+#: ../coreapi/linphonecore.c:222
 msgid "completed"
 msgstr "dokončen"
 
-#: coreapi/linphonecore.c:224
+#: ../coreapi/linphonecore.c:225
 msgid "missed"
 msgstr "promeškán"
 
-#: coreapi/linphonecore.c:229
+#: ../coreapi/linphonecore.c:230
 #, c-format
 msgid ""
 "%s at %s\n"
@@ -686,11 +680,11 @@ msgstr ""
 "Stav: %s\n"
 "Trvání: %i min %i s\n"
 
-#: coreapi/linphonecore.c:230
+#: ../coreapi/linphonecore.c:231
 msgid "Outgoing call"
 msgstr "Odchozí hovor"
 
-#: coreapi/linphonecore.c:416
+#: ../coreapi/linphonecore.c:417
 msgid ""
 "Your machine appears to be connected to an IPv6 network. By default linphone "
 "always uses IPv4. Please update your configuration if you want to use IPv6"
@@ -698,59 +692,59 @@ msgstr ""
 "Zdá se, že váš počítač je připojen do IPv6 sítě. Standardně linphone používá "
 "pouze IPv4. Prosím, změňte nastavení programu, pokud chcete používat IPv6."
 
-#: coreapi/linphonecore.c:701
+#: ../coreapi/linphonecore.c:690
 msgid "Ready"
 msgstr "Připraven."
 
-#: coreapi/linphonecore.c:976
+#: ../coreapi/linphonecore.c:965
 msgid "Remote end seems to have disconnected, the call is going to be closed."
 msgstr "Vzdálený konec se asi odpojil, hovor bude ukončen."
 
-#: coreapi/linphonecore.c:1069
+#: ../coreapi/linphonecore.c:1062
 msgid "Looking for telephone number destination..."
 msgstr "Vyhledává se umístění čísla…"
 
-#: coreapi/linphonecore.c:1071
+#: ../coreapi/linphonecore.c:1064
 msgid "Could not resolve this number."
 msgstr "Toto číslo nelze vyhledat."
 
-#: coreapi/linphonecore.c:1130
+#: ../coreapi/linphonecore.c:1127
 msgid ""
 "Could not parse given sip address. A sip url usually looks like sip:"
 "user@domain"
 msgstr ""
 "Špatně zadaná SIP adresa. Adresa má mít tento formát <sip:uživatel@doména>"
 
-#: coreapi/linphonecore.c:1179
+#: ../coreapi/linphonecore.c:1176
 msgid "Sorry, having multiple simultaneous calls is not supported yet !"
 msgstr "Promiňte, vedení více současných hovorů není podporováno!"
 
-#: coreapi/linphonecore.c:1211
+#: ../coreapi/linphonecore.c:1208
 msgid "Contacting"
 msgstr "Kontaktuji"
 
-#: coreapi/linphonecore.c:1227
+#: ../coreapi/linphonecore.c:1223
 msgid "could not call"
 msgstr "Nelze volat."
 
-#: coreapi/linphonecore.c:1517 coreapi/exevents.c:41
+#: ../coreapi/linphonecore.c:1525 ../coreapi/exevents.c:41
 msgid "Connected."
 msgstr "Připojeno."
 
-#: coreapi/linphonecore.c:1543
+#: ../coreapi/linphonecore.c:1551
 msgid "Call ended"
 msgstr "Hovor skončil."
 
-#: coreapi/linphonecore.c:1854
+#: ../coreapi/linphonecore.c:1875
 msgid "No nat/firewall address supplied !"
 msgstr "Žádná adresa NATu/firewallu nebyla zadána!"
 
-#: coreapi/linphonecore.c:1866 coreapi/linphonecore.c:1878
+#: ../coreapi/linphonecore.c:1887 ../coreapi/linphonecore.c:1899
 #, c-format
 msgid "Invalid nat address '%s' : %s"
 msgstr "Neplatná adresa NATu '%s': '%s"
 
-#: coreapi/misc.c:131
+#: ../coreapi/misc.c:131
 msgid ""
 "Your computer appears to be using ALSA sound drivers.\n"
 "This is the best choice. However the pcm oss emulation module\n"
@@ -762,7 +756,7 @@ msgstr ""
 "oss, který chybí. Prosím zadejte jako uživatel root příkaz\n"
 "'modprobe snd-pcm-oss', kterým modul zavede."
 
-#: coreapi/misc.c:134
+#: ../coreapi/misc.c:134
 msgid ""
 "Your computer appears to be using ALSA sound drivers.\n"
 "This is the best choice. However the mixer oss emulation module\n"
@@ -774,68 +768,70 @@ msgstr ""
 "oss, který chybí. Prosím zadejte jako uživatel root příkaz\n"
 "'modprobe snd-mixer-oss', kterým modul zavede."
 
-#: coreapi/misc.c:589
+#: ../coreapi/misc.c:593
 msgid "Stun lookup in progress..."
 msgstr "Hledá se adresa pomocí STUN…"
 
-#: coreapi/exevents.c:117
+#: ../coreapi/exevents.c:117
 msgid "Call terminated."
 msgstr "Hovor ukončen."
 
-#: coreapi/exevents.c:139
+#: ../coreapi/exevents.c:139
 msgid "Could not reach destination."
 msgstr "Cíl je nedostupný."
 
-#: coreapi/exevents.c:148
+#: ../coreapi/exevents.c:148
 msgid "User is busy."
 msgstr "Uživatel je zaneprázdněn."
 
-#: coreapi/exevents.c:149
+#: ../coreapi/exevents.c:149
 msgid "User is temporarily unavailable."
 msgstr "Uživatel je dočasně nedostupný."
 
-#: coreapi/exevents.c:150
+#: ../coreapi/exevents.c:150
 msgid "Request Cancelled."
 msgstr "Dotaz přerušen."
 
-#: coreapi/exevents.c:152
+#. char *retrymsg=_("%s. Retry after %i minute(s).");
+#: ../coreapi/exevents.c:152
 msgid "User does not want to be disturbed."
 msgstr "Uživatel si nepřeje být rušen."
 
-#: coreapi/exevents.c:153
+#: ../coreapi/exevents.c:153
 msgid "Call declined."
 msgstr "Volání odmítnuto."
 
-#: coreapi/exevents.c:172
+#: ../coreapi/exevents.c:172
 msgid "Bad request"
 msgstr "Chybný dotaz"
 
-#: coreapi/exevents.c:175
+#: ../coreapi/exevents.c:175
 msgid "User cannot be found at given address."
 msgstr "Uživatele nelze na dané adrese zastihnout."
 
-#: coreapi/exevents.c:178
+#: ../coreapi/exevents.c:178
 msgid "Remote user cannot support any of proposed codecs."
 msgstr "Vzdálený uživatel nemá podporu pro žádný z navržených kodeků."
 
-#: coreapi/exevents.c:204
+#. time out, call leg is lost
+#: ../coreapi/exevents.c:204
 msgid "Timeout."
 msgstr "Vypršení časového limitu."
 
-#: coreapi/exevents.c:207
+#: ../coreapi/exevents.c:207
 msgid "Remote host was found but refused connection."
 msgstr "Vzdálený počítač byl nalezen, ale odmítl připojení."
 
-#: coreapi/exevents.c:315
+#: ../coreapi/exevents.c:315
 msgid "is contacting you."
 msgstr "vás volá."
 
-#: coreapi/exevents.c:399
+#: ../coreapi/exevents.c:399
 #, c-format
 msgid "Redirected to %s..."
 msgstr "Přesměrováno na %s…"
 
-#: coreapi/exevents.c:415
+#: ../coreapi/exevents.c:415
 msgid ""
 "User is not reachable at the moment but he invites you\n"
 "to contact him using the following alternate resource:"
@@ -843,57 +839,57 @@ msgstr ""
 "Uživatel je nedostupný, ale navrhuje tyto alternativní\n"
 "setkání:"
 
-#: coreapi/exevents.c:825
+#: ../coreapi/exevents.c:826
 msgid "Early media."
 msgstr "Časná média."
 
-#: coreapi/exevents.c:887
+#: ../coreapi/exevents.c:888
 #, c-format
 msgid "Registration on %s failed: %s"
 msgstr "Registrace na %s selhala: %s"
 
-#: coreapi/exevents.c:887
+#: ../coreapi/exevents.c:888
 msgid "no response timeout"
 msgstr "odpověď nedorazila včas"
 
-#: coreapi/exevents.c:901
+#: ../coreapi/exevents.c:902
 #, c-format
 msgid "Registration on %s successful."
 msgstr "Registrace na %s byla úspěšná."
 
-#: coreapi/presence.c:112 coreapi/presence.c:164
+#: ../coreapi/presence.c:112 ../coreapi/presence.c:164
 msgid "Gone"
 msgstr "Pryč"
 
-#: coreapi/presence.c:129
+#: ../coreapi/presence.c:129
 msgid "Waiting for Approval"
 msgstr "Čekám na schválení"
 
-#: coreapi/presence.c:133
+#: ../coreapi/presence.c:133
 msgid "Online"
 msgstr "Připojeno"
 
-#: coreapi/presence.c:137
+#: ../coreapi/presence.c:137
 msgid "Busy"
 msgstr "Zaneprázdněn"
 
-#: coreapi/presence.c:142
+#: ../coreapi/presence.c:142
 msgid "Be Right Back"
 msgstr "Na chvíli pryč"
 
-#: coreapi/presence.c:146
+#: ../coreapi/presence.c:146
 msgid "Away"
 msgstr "Pryč"
 
-#: coreapi/presence.c:151
+#: ../coreapi/presence.c:151
 msgid "On The Phone"
 msgstr "Na příjmu"
 
-#: coreapi/presence.c:156
+#: ../coreapi/presence.c:156
 msgid "Out To Lunch"
 msgstr "Na obědě"
 
-#: coreapi/presence.c:160
+#: ../coreapi/presence.c:160
 msgid "Closed"
 msgstr "Zavřeno"
 
@@ -920,7 +916,7 @@ msgstr "Zavřeno"
 #~ msgstr "Jsem za firewallem, použij zadanou veřejnou IP adresu"
 
 #~ msgid "Use the supplied stun server above and do as best as possible"
-#~ msgstr "Použit výše zadaný STUN server a snaž se, jak nejlépe umíš"
+#~ msgstr "Použij výše zadaný STUN server a snaž se, jak nejlépe umíš"
 
 #~ msgid "<b>Miscelaneous</b>"
 #~ msgstr "<b>Různé</b>"
@@ -980,9 +976,6 @@ msgstr "Zavřeno"
 
 #~ msgid "Ring level:"
 #~ msgstr "Úroveň vyzvánění:"
-
-#~ msgid "Enable video"
-#~ msgstr "Povolit obraz"
 
 #~ msgid "Controls"
 #~ msgstr "Ovládání"

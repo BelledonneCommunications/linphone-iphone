@@ -188,7 +188,7 @@ static void prepare(EncState *s){
 		/*snow does not like 1st pass rate control*/
 		/*and rate control eats too much cpu with CIF high fps pictures*/
 		c->rc_max_rate=(float)s->maxbr*0.8;
-		c->rc_min_rate=c->bit_rate;
+		c->rc_min_rate=0;
 		c->rc_buffer_size=c->rc_max_rate;
 	}else{
 		/*use qmin instead*/
