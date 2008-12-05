@@ -764,7 +764,7 @@ int main(int argc, char *argv[]){
 	gtk_timeout_add(20,(GtkFunction)linphone_gtk_check_logs,(gpointer)NULL);
 	linphone_gtk_init_main_window();
 	linphone_gtk_init_status_icon();
-	gtk_widget_show(the_ui);
+	linphone_gtk_show_main_window();
 	gtk_main();
 	gdk_threads_leave();
 	linphone_gtk_destroy_log_window();

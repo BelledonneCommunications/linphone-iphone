@@ -566,6 +566,7 @@ void video_config_read(LinphoneCore *lc)
 	display=lp_config_get_int(lc->config,"video","display",enabled);
 #ifdef VIDEO_ENABLED
 	linphone_core_enable_video(lc,capture,display);
+	linphone_core_enable_self_view(lc,TRUE);
 #endif
 }
 
