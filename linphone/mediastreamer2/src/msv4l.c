@@ -539,7 +539,8 @@ static int v4l_configure(V4lState *s)
 		return -1;
 	}
 
-	ms_message("Found %s device. (maxsize=%ix%i)",cap.name, cap.maxwidth, cap.maxheight);
+	ms_message("Found %s device. (maxsize=%ix%i, minsize=%ix%i)",cap.name, cap.maxwidth, cap.maxheight,
+			cap.minwidth, cap.minheight);
 	for (i=0;i<cap.channels;i++)
 	{
 		chan.channel=i;

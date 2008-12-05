@@ -1978,10 +1978,6 @@ void linphone_core_enable_video(LinphoneCore *lc, bool_t vcap_enabled, bool_t di
 #endif
 	lc->video_conf.capture=vcap_enabled;
 	lc->video_conf.display=display_enabled;
-	if (vcap_enabled && display_enabled)
-		lc->video_conf.show_local=1;
-	else
-		lc->video_conf.show_local=0;
 
 	/* need to re-apply network bandwidth settings*/
 	linphone_core_set_download_bandwidth(lc,

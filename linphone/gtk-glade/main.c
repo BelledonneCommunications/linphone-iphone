@@ -373,10 +373,12 @@ void linphone_gtk_accept_call(GtkWidget *button){
 
 void linphone_gtk_set_audio_video(){
 	linphone_core_enable_video(linphone_gtk_get_core(),TRUE,TRUE);
+	linphone_core_enable_video_preview(linphone_gtk_get_core(),TRUE);
 }
 
 void linphone_gtk_set_audio_only(){
 	linphone_core_enable_video(linphone_gtk_get_core(),FALSE,FALSE);
+	linphone_core_enable_video_preview(linphone_gtk_get_core(),FALSE);
 }
 
 void linphone_gtk_enable_self_view(GtkWidget *w){

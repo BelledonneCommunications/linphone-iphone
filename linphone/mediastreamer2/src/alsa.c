@@ -281,13 +281,12 @@ static snd_pcm_t * alsa_open_w(const char *pcmdev,int bits,int stereo,int rate)
 	return pcm_handle;
 }
 
-static int alsa_can_read(snd_pcm_t *dev, int frames)
+static int alsa_can_read(snd_pcm_t *dev)
 {
 	snd_pcm_sframes_t avail;
 	int err;
 
 	avail = snd_pcm_avail_update(dev);
-	ms_debug("*** %s %d %d", __FUNCTION__, (long)avail, frames);
 	if (avail < 0) {
 		ms_error("snd_pcm_avail_update: %s", snd_strerror(avail));	// most probably -EPIPE
 		/* overrun occured, snd_pcm_state() would return SND_PCM_STATE_XRUN
@@ -831,7 +830,7 @@ void alsa_read_process(MSFilter *obj){
 		ad->handle=alsa_open_r(ad->pcmdev,16,ad->nchannels==2,ad->rate);
 	}
 	if (ad->handle==NULL) return;
-	while (alsa_can_read(ad->handle,samples)>=samples){
+	while (alsa_can_read(ad->handle)>=samples){
 	  
 		int size=samples*2;
 		om=allocb(size,0);

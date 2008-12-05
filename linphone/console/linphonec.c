@@ -115,6 +115,7 @@ static bool_t auto_answer=FALSE;
 static bool_t answer_call=FALSE;
 static bool_t vcap_enabled=FALSE;
 static bool_t display_enabled=FALSE;
+static bool_t preview_enabled=FALSE;
 static bool_t show_general_state=FALSE;
 LPC_AUTH_STACK auth_stack;
 static int trace_level = 0;
@@ -479,7 +480,8 @@ linphonec_init(int argc, char **argv)
 	linphone_core_init (&linphonec, &linphonec_vtable, configfile_name,
 			    NULL);
 	linphone_core_enable_video(&linphonec,vcap_enabled,display_enabled);
-	if (!(vcap_enabled || display_enabled)) printf("Warning: video is disabled in linphonec.\n");
+	linphone_core_enable_video_preview(&linphonec,preview_enabled);
+	if (!(vcap_enabled || display_enabled)) printf("Warning: video is disabled in linphonec, use -V or -C or -D to enable.\n");
 #ifdef HAVE_READLINE
 	/*
 	 * Initialize readline
@@ -860,6 +862,7 @@ linphonec_parse_cmdline(int argc, char **argv)
                 {
                         display_enabled = TRUE;
 			vcap_enabled = TRUE;
+			preview_enabled=TRUE;
                 }
 		else if ((strncmp ("-v", argv[arg_num], 2) == 0)
 			 ||
