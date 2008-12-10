@@ -720,18 +720,23 @@ static void video_out_process(MSFilter *f){
 	if (f->inputs[0]!=NULL && (inm=ms_queue_peek_last(f->inputs[0]))!=0) {
 		MSPicture src;
 		if (yuv_buf_init_from_mblk(&src,inm)==0){
-			if (obj->sws1==NULL){
-				MSVideoSize cur,newsize;
-				cur.width=obj->fbuf.w;
-				cur.height=obj->fbuf.h;
-				newsize.width=src.w;
-				newsize.height=src.h;
-				if (obj->autofit && (ms_video_size_greater_than(newsize,cur) && 
-					!ms_video_size_equal(newsize,cur) ) ){
-					set_vsize(obj,&newsize);
-					video_out_prepare(f);
-					obj->autofit=FALSE;
+			MSVideoSize cur,newsize;
+			cur.width=obj->fbuf.w;
+			cur.height=obj->fbuf.h;
+			newsize.width=src.w;
+			newsize.height=src.h;
+			if (obj->autofit && !ms_video_size_equal(newsize,cur) ) {
+				/*don't resize less than QVGA, it is too small*/
+				if (ms_video_size_greater_than(MS_VIDEO_SIZE_QVGA,newsize)){
+					newsize=MS_VIDEO_SIZE_QVGA;
 				}
+				if (!ms_video_size_equal(newsize,cur)){
+					set_vsize(obj,&newsize);
+					ms_message("autofit: new size is %ix%i",newsize.width,newsize.height);
+					video_out_prepare(f);
+				}
+			}
+			if (obj->sws1==NULL){
 				obj->sws1=sws_getContext(src.w,src.h,PIX_FMT_YUV420P,
 				obj->fbuf.w,obj->fbuf.h,PIX_FMT_YUV420P,
 				SWS_FAST_BILINEAR, NULL, NULL, NULL);
