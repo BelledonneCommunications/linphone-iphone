@@ -911,6 +911,9 @@ void linphone_core_set_sip_port(LinphoneCore *lc,int port)
 	lc->sip_conf.sip_port=port;
 	if (exosip_running) eXosip_quit();
 	eXosip_init();
+	err=0;
+	eXosip_set_option(13,&err); /*13=EXOSIP_OPT_SRV_WITH_NAPTR, as it is an enum value, we can't use it unless we are sure of the
+					version of eXosip, which is not the case*/
 	eXosip_enable_ipv6(lc->sip_conf.ipv6_enabled);
 	if (lc->sip_conf.ipv6_enabled)
 		anyaddr="::0";

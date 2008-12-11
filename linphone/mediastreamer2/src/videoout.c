@@ -522,6 +522,7 @@ typedef struct VideoOut
 	MSPicture local_pic;
 	MSRect local_rect;
 	mblk_t *local_msg;
+	MSVideoSize prevsize;
 	int corner;
 	struct SwsContext *sws1;
 	struct SwsContext *sws2;
@@ -589,6 +590,8 @@ static void video_out_init(MSFilter  *f){
 	obj->ratio.den=9;
 	def_size.width=MS_VIDEO_SIZE_CIF_W;
 	def_size.height=MS_VIDEO_SIZE_CIF_H;
+	obj->prevsize.width=0;
+	obj->prevsize.height=0;
 	obj->local_msg=NULL;
 	obj->corner=0;
 	obj->sws1=NULL;
@@ -725,7 +728,8 @@ static void video_out_process(MSFilter *f){
 			cur.height=obj->fbuf.h;
 			newsize.width=src.w;
 			newsize.height=src.h;
-			if (obj->autofit && !ms_video_size_equal(newsize,cur) ) {
+			if (obj->autofit && !ms_video_size_equal(newsize,obj->prevsize) ) {
+				obj->prevsize=newsize;
 				/*don't resize less than QVGA, it is too small*/
 				if (ms_video_size_greater_than(MS_VIDEO_SIZE_QVGA,newsize)){
 					newsize=MS_VIDEO_SIZE_QVGA;

@@ -14,7 +14,7 @@ CPPFLAGS=$CPPFLAGS_save
 
 dnl check for eXosip2 libs
 LDFLAGS_save=$LDFLAGS
-LDFLAGS=$OSIP_LIBS
+LDFLAGS="$OSIP_LIBS $LDFLAGS"
 LIBS_save=$LIBS
 AC_CHECK_LIB([eXosip2],[eXosip_subscribe_remove],
 	[],
@@ -24,6 +24,10 @@ AC_CHECK_LIB([eXosip2],[eXosip_get_version],
 	[AC_DEFINE([HAVE_EXOSIP_GET_VERSION],[1],[Defined when eXosip_get_version is available])],
 	[],
 	[-losipparser2 -losip2 -lpthread])
+dnl AC_CHECK_LIB([eXosip2],[eXosip_get_naptr],
+dnl	[AC_DEFINE([HAVE_EXOSIP_NAPTR_SUPPORT],[1],[Defined when eXosip_get_naptr is available])],
+dnl	[],
+dnl	[-losipparser2 -losip2 -lpthread])
 LIBS=$LIBS_save
 LDFLAGS=$LDFLAGS_save
 
