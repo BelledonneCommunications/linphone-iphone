@@ -298,7 +298,7 @@ int ms_load_plugins(const char *dir){
         }
         SetErrorMode (em);
         if (os_handle==NULL)
-            ms_warning("Fail to load plugin %s :", szPluginFile); 
+            ms_warning("Fail to load plugin %s", szPluginFile); 
         else
         {
             init_func_t initroutine;
@@ -310,7 +310,7 @@ int ms_load_plugins(const char *dir){
             initroutine = (init_func_t) GetProcAddress (os_handle, szMethodName);
 			if (initroutine!=NULL){
 				initroutine();
-				ms_message("Plugin loaded.");
+				ms_message("Plugin loaded (%s)", szPluginFile);
 				num++;
 			}else{
 				ms_warning("Could not locate init routine of plugin %s", szPluginFile);
@@ -382,7 +382,7 @@ int ms_load_plugins(const char *dir){
 				if (initroutine!=NULL){
 					init_func_t func=(init_func_t)initroutine;
 					func();
-					ms_message("Plugin loaded.");
+					ms_message("Plugin loaded (%s)", fullpath);
 					num++;
 				}else{
 					ms_warning("Could not locate init routine of plugin %s",de->d_name);
