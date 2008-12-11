@@ -440,7 +440,9 @@ void ring_stop(RingStream *stream){
 
 int audio_stream_send_dtmf(AudioStream *stream, char dtmf)
 {
-	ms_filter_call_method(stream->rtpsend,MS_RTP_SEND_SEND_DTMF,&dtmf);
-	ms_filter_call_method(stream->dtmfgen,MS_DTMF_GEN_PUT,&dtmf);
+	if (stream->rtpsend)
+		ms_filter_call_method(stream->rtpsend,MS_RTP_SEND_SEND_DTMF,&dtmf);
+	if (stream->dtmfgen)
+		ms_filter_call_method(stream->dtmfgen,MS_DTMF_GEN_PUT,&dtmf);
 	return 0;
 }

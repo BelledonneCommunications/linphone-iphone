@@ -457,7 +457,7 @@ static int nalusToFrame(DecData *d, MSQueue *naluq, bool_t *new_sps_pps){
 		*dst++=1;
 		*dst++=*src++;
 		while(src<(im->b_wptr-3)){
-			if (src[0]==0 && src[1]==0 && src[2]<=3){
+			if (src[0]==0 && src[1]==0 && src[2]<3){
 				*dst++=0;
 				*dst++=0;
 				*dst++=3;
