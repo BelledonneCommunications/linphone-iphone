@@ -729,10 +729,14 @@ static void video_out_process(MSFilter *f){
 			newsize.width=src.w;
 			newsize.height=src.h;
 			if (obj->autofit && !ms_video_size_equal(newsize,obj->prevsize) ) {
+				MSVideoSize qvga_size;
+				qvga_size.width=MS_VIDEO_SIZE_QVGA_W;
+				qvga_size.height=MS_VIDEO_SIZE_QVGA_H;
 				obj->prevsize=newsize;
 				/*don't resize less than QVGA, it is too small*/
-				if (ms_video_size_greater_than(MS_VIDEO_SIZE_QVGA,newsize)){
-					newsize=MS_VIDEO_SIZE_QVGA;
+				if (ms_video_size_greater_than(qvga_size,newsize)){
+					newsize.width=MS_VIDEO_SIZE_QVGA_W;
+					newsize.height=MS_VIDEO_SIZE_QVGA_H;
 				}
 				if (!ms_video_size_equal(newsize,cur)){
 					set_vsize(obj,&newsize);
