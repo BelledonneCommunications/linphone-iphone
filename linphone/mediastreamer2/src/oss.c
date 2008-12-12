@@ -427,9 +427,9 @@ static void * oss_thread(void *p){
 	free(wtmpbuff);
 	if (rm!=NULL) freemsg(rm);
 	/*reset to default parameters */
-	d->bits=16;
-	d->rate=8000;
-	d->stereo=FALSE;
+	//d->bits=16;
+	//d->rate=8000;
+	//d->stereo=FALSE;
 	return NULL;
 }
 
