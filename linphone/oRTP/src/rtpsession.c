@@ -834,8 +834,8 @@ __rtp_session_sendm_with_ts (RtpSession * session, mblk_t *mp, uint32_t packet_t
 	rtp->timestamp=packet_ts;
 	if (session->snd.telephone_events_pt==rtp->paytype)
 	{
-		session->rtp.snd_seq++;
 		rtp->seq_number = session->rtp.snd_seq;
+		session->rtp.snd_seq++;
 	}
 	else
 		session->rtp.snd_seq=rtp->seq_number+1;
