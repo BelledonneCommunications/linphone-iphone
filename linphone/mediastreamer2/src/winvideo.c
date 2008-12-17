@@ -593,7 +593,7 @@ static MSFilterMethod methods[]={
 MSFilterDesc ms_v4w_desc={
 	MS_V4L_ID,
 	"MSV4w",
-	"A video4windows compatible source filter to stream pictures.",
+	N_("A video4windows compatible source filter to stream pictures."),
 	MS_FILTER_OTHER,
 	NULL,
 	0,
@@ -611,7 +611,7 @@ MSFilterDesc ms_v4w_desc={
 MSFilterDesc ms_v4w_desc={
 	.id=MS_V4L_ID,
 	.name="MSV4w",
-	.text="A video4windows compatible source filter to stream pictures.",
+	.text=N_("A video4windows compatible source filter to stream pictures."),
 	.ninputs=0,
 	.noutputs=1,
 	.category=MS_FILTER_OTHER,

@@ -1006,7 +1006,7 @@ static int v4l_set_devfile(MSFilter *f, void *arg){
 MSFilterDesc ms_v4l_desc={
 	.id=MS_V4L_ID,
 	.name="MSV4l",
-	.text="A video4linux compatible source filter to stream pictures.",
+	.text=N_("A video4linux compatible source filter to stream pictures."),
 	.ninputs=0,
 	.noutputs=1,
 	.category=MS_FILTER_OTHER,

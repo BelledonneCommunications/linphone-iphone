@@ -144,7 +144,7 @@ static MSFilterMethod enc_methods[]={
 MSFilterDesc ms_resample_desc={
 	MS_RESAMPLE_ID,
 	"MSResample",
-	"frequency resampler",
+	N_("frequency resampler"),
 	MS_FILTER_OTHER,
 	NULL,
 	1,
@@ -162,7 +162,7 @@ MSFilterDesc ms_resample_desc={
 MSFilterDesc ms_resample_desc={
 	.id=MS_RESAMPLE_ID,
 	.name="MSResample",
-	.text="frequency resampler",
+	.text=N_("frequency resampler"),
 	.category=MS_FILTER_OTHER,
 	.ninputs=1,
 	.noutputs=1,

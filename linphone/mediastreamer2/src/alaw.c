@@ -141,7 +141,7 @@ static MSFilterMethod enc_methods[]={
 MSFilterDesc ms_alaw_enc_desc={
 	MS_ALAW_ENC_ID,
 	"MSAlawEnc",
-	"ITU-G.711 alaw encoder",
+	N_("ITU-G.711 alaw encoder"),
 	MS_FILTER_ENCODER,
 	"pcma",
 	1,
@@ -159,7 +159,7 @@ MSFilterDesc ms_alaw_enc_desc={
 MSFilterDesc ms_alaw_enc_desc={
 	.id=MS_ALAW_ENC_ID,
 	.name="MSAlawEnc",
-	.text="ITU-G.711 alaw encoder",
+	.text=N_("ITU-G.711 alaw encoder"),
 	.category=MS_FILTER_ENCODER,
 	.enc_fmt="pcma",
 	.ninputs=1,
@@ -191,7 +191,7 @@ static void alaw_dec_process(MSFilter *obj){
 MSFilterDesc ms_alaw_dec_desc={
 	MS_ALAW_DEC_ID,
 	"MSAlawDec",
-	"ITU-G.711 alaw decoder",
+	N_("ITU-G.711 alaw decoder"),
 	MS_FILTER_DECODER,
 	"pcma",
 	1,
@@ -208,7 +208,7 @@ MSFilterDesc ms_alaw_dec_desc={
 MSFilterDesc ms_alaw_dec_desc={
 	.id=MS_ALAW_DEC_ID,
 	.name="MSAlawDec",
-	.text="ITU-G.711 alaw decoder",
+	.text=N_("ITU-G.711 alaw decoder"),
 	.category=MS_FILTER_DECODER,
 	.enc_fmt="pcma",
 	.ninputs=1,

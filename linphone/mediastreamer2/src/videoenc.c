@@ -576,7 +576,7 @@ static MSFilterMethod methods[]={
 MSFilterDesc ms_h263_enc_desc={
 	MS_H263_ENC_ID,
 	"MSH263Enc",
-	"A video H.263 encoder using ffmpeg library.",
+	N_("A video H.263 encoder using ffmpeg library."),
 	MS_FILTER_ENCODER,
 	"H263-1998",
 	1, /*MS_YUV420P is assumed on this input */
@@ -592,7 +592,7 @@ MSFilterDesc ms_h263_enc_desc={
 MSFilterDesc ms_h263_old_enc_desc={
 	MS_H263_OLD_ENC_ID,
 	"MSH263OldEnc",
-	"A video H.263 encoder using ffmpeg library. It is compliant with old RFC2190 spec.",
+	N_("A video H.263 encoder using ffmpeg library. It is compliant with old RFC2190 spec."),
 	MS_FILTER_ENCODER,
 	"H263",
 	1, /*MS_YUV420P is assumed on this input */
@@ -608,7 +608,7 @@ MSFilterDesc ms_h263_old_enc_desc={
 MSFilterDesc ms_mpeg4_enc_desc={
 	MS_MPEG4_ENC_ID,
 	"MSMpeg4Enc",
-	"A video MPEG4 encoder using ffmpeg library.",
+	N_("A video MPEG4 encoder using ffmpeg library."),
 	MS_FILTER_ENCODER,
 	"MP4V-ES",
 	1, /*MS_YUV420P is assumed on this input */
@@ -624,7 +624,7 @@ MSFilterDesc ms_mpeg4_enc_desc={
 MSFilterDesc ms_snow_enc_desc={
 	MS_SNOW_ENC_ID,
 	"MSSnowEnc",
-	"A video snow encoder using ffmpeg library.",
+	N_("A video snow encoder using ffmpeg library."),
 	MS_FILTER_ENCODER,
 	"x-snow",
 	1, /*MS_YUV420P is assumed on this input */
@@ -642,7 +642,7 @@ MSFilterDesc ms_snow_enc_desc={
 MSFilterDesc ms_h263_enc_desc={
 	.id=MS_H263_ENC_ID,
 	.name="MSH263Enc",
-	.text="A video H.263 encoder using ffmpeg library.",
+	.text=N_("A video H.263 encoder using ffmpeg library."),
 	.category=MS_FILTER_ENCODER,
 	.enc_fmt="H263-1998",
 	.ninputs=1, /*MS_YUV420P is assumed on this input */
@@ -658,7 +658,7 @@ MSFilterDesc ms_h263_enc_desc={
 MSFilterDesc ms_h263_old_enc_desc={
 	.id=MS_H263_OLD_ENC_ID,
 	.name="MSH263Enc",
-	.text="A video H.263 encoder using ffmpeg library, compliant with old RFC2190 spec.",
+	.text=N_("A video H.263 encoder using ffmpeg library, compliant with old RFC2190 spec."),
 	.category=MS_FILTER_ENCODER,
 	.enc_fmt="H263",
 	.ninputs=1, /*MS_YUV420P is assumed on this input */
@@ -674,7 +674,7 @@ MSFilterDesc ms_h263_old_enc_desc={
 MSFilterDesc ms_mpeg4_enc_desc={
 	.id=MS_MPEG4_ENC_ID,
 	.name="MSMpeg4Enc",
-	.text="A video MPEG4 encoder using ffmpeg library.",
+	.text=N_("A video MPEG4 encoder using ffmpeg library."),
 	.category=MS_FILTER_ENCODER,
 	.enc_fmt="MP4V-ES",
 	.ninputs=1, /*MS_YUV420P is assumed on this input */
@@ -690,11 +690,11 @@ MSFilterDesc ms_mpeg4_enc_desc={
 MSFilterDesc ms_snow_enc_desc={
 	.id=MS_SNOW_ENC_ID,
 	.name="MSSnowEnc",
-	.text="The snow codec is royalty-free and is open-source. \n"
+	.text=N_("The snow codec is royalty-free and is open-source. \n"
 		"It uses innovative techniques that makes it one of the best video "
 		"codec. It is implemented within the ffmpeg project.\n"
 		"However it is under development and compatibility with other versions "
-		"cannot be guaranteed.",
+		"cannot be guaranteed."),
 	.category=MS_FILTER_ENCODER,
 	.enc_fmt="x-snow",
 	.ninputs=1, /*MS_YUV420P is assumed on this input */

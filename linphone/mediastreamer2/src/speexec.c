@@ -287,7 +287,7 @@ static MSFilterMethod speex_ec_methods[]={
 MSFilterDesc ms_speex_ec_desc={
 	MS_SPEEX_EC_ID,
 	"MSSpeexEC",
-	"Echo canceler using speex library",
+	N_("Echo canceler using speex library"),
 	MS_FILTER_OTHER,
 	NULL,
 	2,
@@ -305,7 +305,7 @@ MSFilterDesc ms_speex_ec_desc={
 MSFilterDesc ms_speex_ec_desc={
 	.id=MS_SPEEX_EC_ID,
 	.name="MSSpeexEC",
-	.text="Echo canceler using speex library",
+	.text=N_("Echo canceler using speex library"),
 	.category=MS_FILTER_OTHER,
 	.ninputs=2,
 	.noutputs=2,

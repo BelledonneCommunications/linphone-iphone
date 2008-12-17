@@ -383,7 +383,7 @@ static MSFilterMethod enc_methods[]={
 MSFilterDesc ms_speex_enc_desc={
 	MS_SPEEX_ENC_ID,
 	"MSSpeexEnc",
-	"The free and wonderful speex codec",
+	N_("The free and wonderful speex codec"),
 	MS_FILTER_ENCODER,
 	"speex",
 	1,
@@ -401,7 +401,7 @@ MSFilterDesc ms_speex_enc_desc={
 MSFilterDesc ms_speex_enc_desc={
 	.id=MS_SPEEX_ENC_ID,
 	.name="MSSpeexEnc",
-	.text="The free and wonderful speex codec",
+	.text=N_("The free and wonderful speex codec"),
 	.category=MS_FILTER_ENCODER,
 	.enc_fmt="speex",
 	.ninputs=1,
@@ -528,7 +528,7 @@ static MSFilterMethod dec_methods[]={
 MSFilterDesc ms_speex_dec_desc={
 	MS_SPEEX_DEC_ID,
 	"MSSpeexDec",
-	"The free and wonderful speex codec",
+	N_("The free and wonderful speex codec"),
 	MS_FILTER_DECODER,
 	"speex",
 	1,
@@ -546,7 +546,7 @@ MSFilterDesc ms_speex_dec_desc={
 MSFilterDesc ms_speex_dec_desc={
 	.id=MS_SPEEX_DEC_ID,
 	.name="MSSpeexDec",
-	.text="The free and wonderful speex codec",
+	.text=N_("The free and wonderful speex codec"),
 	.category=MS_FILTER_DECODER,
 	.enc_fmt="speex",
 	.ninputs=1,

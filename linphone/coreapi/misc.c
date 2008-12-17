@@ -160,7 +160,7 @@ void check_sound_device(LinphoneCore *lc)
 #define IP4_HDR_SZ 20   /*20 is the minimum, but there may be some options*/
 
 const char *payload_type_get_description(PayloadType *pt){
-	return (const char *)pt->user_data;
+	return _((const char *)pt->user_data);
 }	
 
 void payload_type_set_enable(PayloadType *pt,int value) 

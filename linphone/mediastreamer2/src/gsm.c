@@ -67,7 +67,7 @@ static void enc_process(MSFilter *f){
 MSFilterDesc ms_gsm_enc_desc={
 	MS_GSM_ENC_ID,
 	"MSGsmEnc",
-	"The GSM full-rate codec",
+	N_("The GSM full-rate codec"),
 	MS_FILTER_ENCODER,
 	"gsm",
 	1,
@@ -85,7 +85,7 @@ MSFilterDesc ms_gsm_enc_desc={
 MSFilterDesc ms_gsm_enc_desc={
 	.id=MS_GSM_ENC_ID,
 	.name="MSGsmEnc",
-	.text="The GSM full-rate codec",
+	.text=N_("The GSM full-rate codec"),
 	.category=MS_FILTER_ENCODER,
 	.enc_fmt="gsm",
 	.ninputs=1,
@@ -131,7 +131,7 @@ static void dec_process(MSFilter *f){
 MSFilterDesc ms_gsm_dec_desc={
 	MS_GSM_DEC_ID,
 	"MSGsmDec",
-	"The GSM codec",
+	N_("The GSM codec"),
 	MS_FILTER_DECODER,
 	"gsm",
 	1,
@@ -149,7 +149,7 @@ MSFilterDesc ms_gsm_dec_desc={
 MSFilterDesc ms_gsm_dec_desc={
 	.id=MS_GSM_DEC_ID,
 	.name="MSGsmDec",
-	.text="The GSM codec",
+	.text=N_("The GSM codec"),
 	.category=MS_FILTER_DECODER,
 	.enc_fmt="gsm",
 	.ninputs=1,

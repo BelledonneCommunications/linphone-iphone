@@ -170,7 +170,7 @@ MSFilterMethod dtmfgen_methods[]={
 MSFilterDesc ms_dtmf_gen_desc={
 	MS_DTMF_GEN_ID,
 	"MSDtmfGen",
-	"DTMF generator",
+	N_("DTMF generator"),
 	MS_FILTER_OTHER,
 	NULL,
     1,
@@ -188,7 +188,7 @@ MSFilterDesc ms_dtmf_gen_desc={
 MSFilterDesc ms_dtmf_gen_desc={
 	.id=MS_DTMF_GEN_ID,
 	.name="MSDtmfGen",
-	.text="DTMF generator",
+	.text=N_("DTMF generator"),
 	.category=MS_FILTER_OTHER,
 	.ninputs=1,
 	.noutputs=1,

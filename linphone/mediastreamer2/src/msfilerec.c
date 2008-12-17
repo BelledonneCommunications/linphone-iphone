@@ -167,7 +167,7 @@ static MSFilterMethod rec_methods[]={
 MSFilterDesc ms_file_rec_desc={
 	MS_FILE_REC_ID,
 	"MSFileRec",
-	"Wav file recorder",
+	N_("Wav file recorder"),
 	MS_FILTER_OTHER,
 	NULL,
     1,
@@ -185,7 +185,7 @@ MSFilterDesc ms_file_rec_desc={
 MSFilterDesc ms_file_rec_desc={
 	.id=MS_FILE_REC_ID,
 	.name="MSFileRec",
-	.text="Wav file recorder",
+	.text=N_("Wav file recorder"),
 	.category=MS_FILTER_OTHER,
 	.ninputs=1,
 	.noutputs=0,

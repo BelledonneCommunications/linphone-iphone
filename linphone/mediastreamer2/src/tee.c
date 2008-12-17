@@ -77,7 +77,7 @@ static MSFilterMethod tee_methods[]={
 MSFilterDesc ms_tee_desc={
 	MS_TEE_ID,
 	"MSTee",
-	"A filter that reads from input and copy to its multiple outputs.",
+	N_("A filter that reads from input and copy to its multiple outputs."),
 	MS_FILTER_OTHER,
 	NULL,
 	1,
@@ -95,7 +95,7 @@ MSFilterDesc ms_tee_desc={
 MSFilterDesc ms_tee_desc={
 	.id=MS_TEE_ID,
 	.name="MSTee",
-	.text="A filter that reads from input and copy to its multiple outputs.",
+	.text=N_("A filter that reads from input and copy to its multiple outputs."),
 	.category=MS_FILTER_OTHER,
 	.ninputs=1,
 	.noutputs=MS_TEE_NOUTPUTS,

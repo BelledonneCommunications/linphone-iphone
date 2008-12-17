@@ -223,7 +223,7 @@ MSFilterMethod static_image_methods[]={
 MSFilterDesc ms_static_image_desc={
 	MS_STATIC_IMAGE_ID,
 	"MSStaticImage",
-	"A filter that outputs a static image.",
+	N_("A filter that outputs a static image."),
 	MS_FILTER_OTHER,
 	NULL,
 	0,

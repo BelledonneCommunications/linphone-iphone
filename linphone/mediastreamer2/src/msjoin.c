@@ -42,7 +42,7 @@ static void join_process(MSFilter *f){
 MSFilterDesc ms_join_desc={
 	MS_JOIN_ID,
 	"MSJoin",
-	"A filter that send several inputs to one output.",
+	N_("A filter that send several inputs to one output."),
 	MS_FILTER_OTHER,
 	NULL,
 	2,
@@ -60,7 +60,7 @@ MSFilterDesc ms_join_desc={
 MSFilterDesc ms_join_desc={
 	.id=MS_JOIN_ID,
 	.name="MSJoin",
-	.text="A filter that send several inputs to one output.",
+	.text=N_("A filter that send several inputs to one output."),
 	.category=MS_FILTER_OTHER,
 	.ninputs=2,
 	.noutputs=1,

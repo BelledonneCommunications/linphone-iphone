@@ -174,7 +174,7 @@ static MSFilterMethod methods[]={
 MSFilterDesc ms_pix_conv_desc={
 	MS_PIX_CONV_ID,
 	"MSPixConv",
-	"A pixel format converter",
+	N_("A pixel format converter"),
 	MS_FILTER_OTHER,
 	NULL,
 	1,
@@ -192,7 +192,7 @@ MSFilterDesc ms_pix_conv_desc={
 MSFilterDesc ms_pix_conv_desc={
 	.id=MS_PIX_CONV_ID,
 	.name="MSPixConv",
-	.text="A pixel format converter",
+	.text=N_("A pixel format converter"),
 	.category=MS_FILTER_OTHER,
 	.ninputs=1,
 	.noutputs=1,

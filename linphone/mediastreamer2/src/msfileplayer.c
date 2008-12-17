@@ -271,7 +271,7 @@ static MSFilterMethod player_methods[]={
 MSFilterDesc ms_file_player_desc={
 	MS_FILE_PLAYER_ID,
 	"MSFilePlayer",
-	"Raw files and wav reader",
+	N_("Raw files and wav reader"),
 	MS_FILTER_OTHER,
 	NULL,
     0,
@@ -289,7 +289,7 @@ MSFilterDesc ms_file_player_desc={
 MSFilterDesc ms_file_player_desc={
 	.id=MS_FILE_PLAYER_ID,
 	.name="MSFilePlayer",
-	.text="Raw files and wav reader",
+	.text=N_("Raw files and wav reader"),
 	.category=MS_FILTER_OTHER,
 	.ninputs=0,
 	.noutputs=1,

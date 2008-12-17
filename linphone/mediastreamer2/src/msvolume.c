@@ -67,7 +67,7 @@ static MSFilterMethod methods[]={
 #ifndef _MSC_VER
 MSFilterDesc ms_volume_desc={
 	.name="MSVolume",
-	.text="A filter to make level measurements on 16 bits pcm audio stream",
+	.text=N_("A filter to make level measurements on 16 bits pcm audio stream"),
 	.id=MS_VOLUME_ID,
 	.category=MS_FILTER_OTHER,
 	.ninputs=1,
@@ -81,7 +81,7 @@ MSFilterDesc ms_volume_desc={
 MSFilterDesc ms_volume_desc={
 	MS_VOLUME_ID,
 	"MSVolume",
-	"A filter to make level measurements on 16 bits pcm audio stream",
+	N_("A filter to make level measurements on 16 bits pcm audio stream"),
 	MS_FILTER_OTHER,
 	NULL,
 	1,

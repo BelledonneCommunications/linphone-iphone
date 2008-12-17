@@ -21,4 +21,5 @@ coreapi/linphonecore.c
 coreapi/misc.c
 coreapi/exevents.c
 coreapi/presence.c
+coreapi/friends.c
 

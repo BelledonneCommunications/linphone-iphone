@@ -342,7 +342,7 @@ static MSFilterMethod methods[]={
 MSFilterDesc ms_sdl_out_desc={
 	MS_SDL_OUT_ID,
 	"MSSdlOut",
-	"A video display window using SDL",
+	N_("A video display window using SDL"),
 	MS_FILTER_OTHER,
 	NULL,
 	2,
@@ -360,7 +360,7 @@ MSFilterDesc ms_sdl_out_desc={
 MSFilterDesc ms_sdl_out_desc={
 	.id=MS_SDL_OUT_ID,
 	.name="MSSdlOut",
-	.text="A video display window using SDL",
+	.text=N_("A video display window using SDL"),
 	.category=MS_FILTER_OTHER,
 	.ninputs=2,
 	.noutputs=0,

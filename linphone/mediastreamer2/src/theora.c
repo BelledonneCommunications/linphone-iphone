@@ -369,7 +369,7 @@ static MSFilterMethod enc_methods[]={
 MSFilterDesc ms_theora_enc_desc={
 	MS_THEORA_ENC_ID,
 	"MSTheoraEnc",
-	"The theora video encoder from xiph.org",
+	N_("The theora video encoder from xiph.org"),
 	MS_FILTER_ENCODER,
 	"theora",
 	1,
@@ -387,7 +387,7 @@ MSFilterDesc ms_theora_enc_desc={
 MSFilterDesc ms_theora_enc_desc={
 	.id=MS_THEORA_ENC_ID,
 	.name="MSTheoraEnc",
-	.text="The open-source and royalty-free 'theora' video codec from xiph.org",
+	.text=N_("The open-source and royalty-free 'theora' video codec from xiph.org"),
 	.category=MS_FILTER_ENCODER,
 	.enc_fmt="theora",
 	.ninputs=1,
@@ -555,7 +555,7 @@ static void dec_process(MSFilter *f){
 MSFilterDesc ms_theora_dec_desc={
 	MS_THEORA_DEC_ID,
 	"MSTheoraDec",
-	"The theora video decoder from xiph.org",
+	N_("The theora video decoder from xiph.org"),
 	MS_FILTER_DECODER,
 	"theora",
 	1,
@@ -573,7 +573,7 @@ MSFilterDesc ms_theora_dec_desc={
 MSFilterDesc ms_theora_dec_desc={
 	.id=MS_THEORA_DEC_ID,
 	.name="MSTheoraDec",
-	.text="The theora video decoder from xiph.org",
+	.text=N_("The theora video decoder from xiph.org"),
 	.category=MS_FILTER_DECODER,
 	.enc_fmt="theora",
 	.ninputs=1,

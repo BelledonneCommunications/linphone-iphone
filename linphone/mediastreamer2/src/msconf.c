@@ -562,7 +562,7 @@ static MSFilterMethod msconf_methods[]={
 MSFilterDesc ms_conf_desc={
 	MS_CONF_ID,
 	"MSConf",
-	"A filter to make conferencing",
+	N_("A filter to make conferencing"),
 	MS_FILTER_OTHER,
 	NULL,
 	CONF_MAX_PINS,
@@ -580,7 +580,7 @@ MSFilterDesc ms_conf_desc={
 MSFilterDesc ms_conf_desc={
 	.id=MS_CONF_ID,
 	.name="MSConf",
-	.text="A filter to make conferencing",
+	.text=N_("A filter to make conferencing"),
 	.category=MS_FILTER_OTHER,
 	.ninputs=CONF_MAX_PINS,
 	.noutputs=CONF_MAX_PINS,

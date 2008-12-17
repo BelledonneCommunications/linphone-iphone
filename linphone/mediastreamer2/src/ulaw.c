@@ -143,7 +143,7 @@ static MSFilterMethod enc_methods[]={
 MSFilterDesc ms_ulaw_enc_desc={
 	MS_ULAW_ENC_ID,
 	"MSUlawEnc",
-	"ITU-G.711 ulaw encoder",
+	N_("ITU-G.711 ulaw encoder"),
 	MS_FILTER_ENCODER,
 	"pcmu",
 	1,
@@ -161,7 +161,7 @@ MSFilterDesc ms_ulaw_enc_desc={
 MSFilterDesc ms_ulaw_enc_desc={
 	.id=MS_ULAW_ENC_ID,
 	.name="MSUlawEnc",
-	.text="ITU-G.711 ulaw encoder",
+	.text=N_("ITU-G.711 ulaw encoder"),
 	.category=MS_FILTER_ENCODER,
 	.enc_fmt="pcmu",
 	.ninputs=1,
@@ -193,7 +193,7 @@ static void ulaw_dec_process(MSFilter *obj){
 MSFilterDesc ms_ulaw_dec_desc={
 	MS_ULAW_DEC_ID,
 	"MSUlawDec",
-	"ITU-G.711 ulaw decoder",
+	N_("ITU-G.711 ulaw decoder"),
 	MS_FILTER_DECODER,
 	"pcmu",
 	1,
@@ -211,7 +211,7 @@ MSFilterDesc ms_ulaw_dec_desc={
 MSFilterDesc ms_ulaw_dec_desc={
 	.id=MS_ULAW_DEC_ID,
 	.name="MSUlawDec",
-	.text="ITU-G.711 ulaw decoder",
+	.text=N_("ITU-G.711 ulaw decoder"),
 	.category=MS_FILTER_DECODER,
 	.enc_fmt="pcmu",
 	.ninputs=1,

@@ -201,7 +201,7 @@ static MSFilterMethod methods[]={
 MSFilterDesc ms_size_conv_desc={
 	MS_SIZE_CONV_ID,
 	"MSSizeConv",
-	"A video size converter",
+	N_("A video size converter"),
 	MS_FILTER_OTHER,
 	NULL,
 	1,
@@ -219,7 +219,7 @@ MSFilterDesc ms_size_conv_desc={
 MSFilterDesc ms_size_conv_desc={
 	.id=MS_SIZE_CONV_ID,
 	.name="MSSizeConv",
-	.text="a small video size converter",
+	.text=N_("a small video size converter"),
 	.ninputs=1,
 	.noutputs=1,
 	.init=size_conv_init,

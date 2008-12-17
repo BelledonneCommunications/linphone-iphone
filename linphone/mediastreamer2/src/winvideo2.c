@@ -433,7 +433,7 @@ static MSFilterMethod methods[]={
 MSFilterDesc ms_vfw_desc={
 	MS_VFW_ID,
 	"MSVfw",
-	"A video for windows (vfw.h) based source filter to grab pictures.",
+	N_("A video for windows (vfw.h) based source filter to grab pictures."),
 	MS_FILTER_OTHER,
 	NULL,
 	0,
@@ -451,7 +451,7 @@ MSFilterDesc ms_vfw_desc={
 MSFilterDesc ms_vfw_desc={
 	.id=MS_VFW_ID,
 	.name="MSVfw",
-	.text="A video for windows (vfw.h) based source filter to grab pictures.",
+	.text=N_("A video for windows (vfw.h) based source filter to grab pictures."),
 	.ninputs=0,
 	.noutputs=1,
 	.category=MS_FILTER_OTHER,

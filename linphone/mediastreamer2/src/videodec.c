@@ -294,7 +294,7 @@ static MSFilterMethod methods[]={
 MSFilterDesc ms_h263_dec_desc={
 	MS_H263_DEC_ID,
 	"MSH263Dec",
-	"A H.263 decoder using ffmpeg library",
+	N_("A H.263 decoder using ffmpeg library"),
 	MS_FILTER_DECODER,
 	"H263-1998",
 	1,
@@ -310,7 +310,7 @@ MSFilterDesc ms_h263_dec_desc={
 MSFilterDesc ms_h263_old_dec_desc={
 	MS_H263_DEC_ID,
 	"MSH263OldDec",
-	"A H.263 decoder using ffmpeg library",
+	N_("A H.263 decoder using ffmpeg library"),
 	MS_FILTER_DECODER,
 	"H263",
 	1,
@@ -327,7 +327,7 @@ MSFilterDesc ms_h263_old_dec_desc={
 MSFilterDesc ms_mpeg4_dec_desc={
 	MS_MPEG4_DEC_ID,
 	"MSMpeg4Dec",
-	"A MPEG4 decoder using ffmpeg library",
+	N_("A MPEG4 decoder using ffmpeg library"),
 	MS_FILTER_DECODER,
 	"MP4V-ES",
 	1,
@@ -343,7 +343,7 @@ MSFilterDesc ms_mpeg4_dec_desc={
 MSFilterDesc ms_mjpeg_dec_desc={
 	MS_MJPEG_DEC_ID,
 	"MSMJpegDec",
-	"A MJPEG decoder using ffmpeg library",
+	N_("A MJPEG decoder using ffmpeg library"),
 	MS_FILTER_DECODER,
 	"MJPEG",
 	1,
@@ -359,7 +359,7 @@ MSFilterDesc ms_mjpeg_dec_desc={
 MSFilterDesc ms_snow_dec_desc={
 	MS_SNOW_DEC_ID,
 	"MSSnowDec",
-	"A snow decoder using ffmpeg library",
+	N_("A snow decoder using ffmpeg library"),
 	MS_FILTER_DECODER,
 	"snow",
 	1,
@@ -377,7 +377,7 @@ MSFilterDesc ms_snow_dec_desc={
 MSFilterDesc ms_h263_dec_desc={
 	.id=MS_H263_DEC_ID,
 	.name="MSH263Dec",
-	.text="A H.263 decoder using ffmpeg library",
+	.text=N_("A H.263 decoder using ffmpeg library"),
 	.category=MS_FILTER_DECODER,
 	.enc_fmt="H263-1998",
 	.ninputs=1,
@@ -393,7 +393,7 @@ MSFilterDesc ms_h263_dec_desc={
 MSFilterDesc ms_h263_old_dec_desc={
 	.id=MS_H263_OLD_DEC_ID,
 	.name="MSH263OldDec",
-	.text="A H.263 decoder using ffmpeg library",
+	.text=N_("A H.263 decoder using ffmpeg library"),
 	.category=MS_FILTER_DECODER,
 	.enc_fmt="H263",
 	.ninputs=1,

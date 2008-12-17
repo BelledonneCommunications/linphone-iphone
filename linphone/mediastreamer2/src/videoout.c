@@ -842,7 +842,7 @@ static MSFilterMethod methods[]={
 MSFilterDesc ms_video_out_desc={
 	MS_VIDEO_OUT_ID,
 	"MSVideoOut",
-	"A generic video display",
+	N_("A generic video display"),
 	MS_FILTER_OTHER,
 	NULL,
 	2,
@@ -860,7 +860,7 @@ MSFilterDesc ms_video_out_desc={
 MSFilterDesc ms_video_out_desc={
 	.id=MS_VIDEO_OUT_ID,
 	.name="MSVideoOut",
-	.text="A generic video display",
+	.text=N_("A generic video display"),
 	.category=MS_FILTER_OTHER,
 	.ninputs=2,
 	.noutputs=0,

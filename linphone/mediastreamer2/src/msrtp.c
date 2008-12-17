@@ -250,7 +250,7 @@ static MSFilterMethod sender_methods[] = {
 MSFilterDesc ms_rtp_send_desc = {
 	MS_RTP_SEND_ID,
 	"MSRtpSend",
-	"RTP output filter",
+	N_("RTP output filter"),
 	MS_FILTER_OTHER,
 	NULL,
 	1,
@@ -268,7 +268,7 @@ MSFilterDesc ms_rtp_send_desc = {
 MSFilterDesc ms_rtp_send_desc = {
 	.id = MS_RTP_SEND_ID,
 	.name = "MSRtpSend",
-	.text = "RTP output filter",
+	.text = N_("RTP output filter"),
 	.category = MS_FILTER_OTHER,
 	.ninputs = 1,
 	.noutputs = 0,
@@ -409,7 +409,7 @@ static MSFilterMethod receiver_methods[] = {
 MSFilterDesc ms_rtp_recv_desc = {
 	MS_RTP_RECV_ID,
 	"MSRtpRecv",
-	"RTP input filter",
+	N_("RTP input filter"),
 	MS_FILTER_OTHER,
 	NULL,
 	0,
@@ -427,7 +427,7 @@ MSFilterDesc ms_rtp_recv_desc = {
 MSFilterDesc ms_rtp_recv_desc = {
 	.id = MS_RTP_RECV_ID,
 	.name = "MSRtpRecv",
-	.text = "RTP input filter",
+	.text = N_("RTP input filter"),
 	.category = MS_FILTER_OTHER,
 	.ninputs = 0,
 	.noutputs = 1,
