@@ -73,6 +73,7 @@ void linphone_proxy_config_register_again_with_updated_contact(LinphoneProxyConf
 		return;
 	}
 	eXosip_lock();
+	msg=NULL;
 	eXosip_register_build_register(obj->rid,obj->expires,&msg);
 	osip_message_get_contact(msg,0,&ctt);
 	if (ctt->url->host!=NULL){

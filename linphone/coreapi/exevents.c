@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/mediastream.h"
 #include <eXosip2/eXosip.h>
 #include <osipparser2/osip_message.h>
+#include <osipparser2/osip_parser.h>
 
 static int linphone_answer_sdp(LinphoneCore *lc, eXosip_event_t *ev, sdp_message_t *sdp);
 
@@ -898,6 +899,7 @@ void linphone_registration_success(LinphoneCore *lc,eXosip_event_t *ev){
 	osip_uri_t *requri=osip_message_get_uri(ev->request);
 	char *msg;
 	char *ru;
+	osip_header_t *h=NULL;
 	osip_uri_to_str(requri,&ru);
 	msg=ms_strdup_printf(_("Registration on %s successful."),ru);
 	lc->vtable.display_status(lc,msg);
@@ -908,7 +910,9 @@ void linphone_registration_success(LinphoneCore *lc,eXosip_event_t *ev){
 	cfg->auth_pending=FALSE;
 	cfg->registered=TRUE;
 	gstate_new_state(lc, GSTATE_REG_OK, NULL);
-	linphone_proxy_config_register_again_with_updated_contact(cfg,ev->request,ev->response);
+	osip_message_get_expires(ev->request,0,&h);
+	if (h!=NULL && atoi(h->hvalue)!=0)
+		linphone_proxy_config_register_again_with_updated_contact(cfg,ev->request,ev->response);
 }
 
 static bool_t comes_from_local_if(osip_message_t *msg){
