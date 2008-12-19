@@ -377,7 +377,7 @@ sdp_context_get_answer ( sdp_context_t *ctx,sdp_message_t *remote)
 					/* ask the application if this codec is supported */
 					err = sdph->accept_audio_codecs (ctx,
 									 &payload);
-					if (err == 0 && payload.localport > 0)
+					if (err == 0)
 					{
 						ncodec++;
 						/* codec accepted */
@@ -485,7 +485,7 @@ sdp_context_get_answer ( sdp_context_t *ctx,sdp_message_t *remote)
 					/* ask the application if this codec is supported */
 					err = sdph->accept_video_codecs (ctx,
 									 &payload);
-					if (err == 0 && payload.localport > 0)
+					if (err == 0 )
 					{
 						ncodec++;
 						/* codec accepted */

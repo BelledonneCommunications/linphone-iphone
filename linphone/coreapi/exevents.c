@@ -638,6 +638,7 @@ int linphone_accept_audio_offer(sdp_context_t *ctx,sdp_payload_t *payload)
 		return -1;
 	}
 	if (lc->sip_conf.only_one_codec && params->initialized){
+		ms_message("Only one codec has to be accepted.");
 		return -1;
 	}
 	if (supported==SupportedAndValid) {		
@@ -665,7 +666,11 @@ int linphone_accept_audio_offer(sdp_context_t *ctx,sdp_payload_t *payload)
 			payload->b_as_bandwidth=(lc->dw_audio_bw>0) ? lc->dw_audio_bw : 0;
 		}else{
 			/* refuse all other audio lines*/
-			if(params->line!=payload->line) return -1;
+			if(params->line!=payload->line) {
+				ms_message("Only one audio line can be accepted.");
+				abort();
+				return -1;
+			}
 		}
 	}
 	return 0;
