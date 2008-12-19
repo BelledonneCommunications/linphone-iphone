@@ -341,10 +341,12 @@ static void *prompt_reader_thread(void *arg){
 		have_prompt=TRUE;
 		ms_mutex_unlock(&prompt_mutex);
 	}
+	/*
 	ms_mutex_lock(&prompt_mutex);
 	strcpy(received_prompt,"quit");
 	have_prompt=TRUE;
 	ms_mutex_unlock(&prompt_mutex);
+	*/
 	return NULL;
 }
 
