@@ -132,6 +132,9 @@ esac
 
 AM_CONDITIONAL(BUILD_MACOSX, test x$macosx_found = xyes)
 
+dnl initialize pkg-config so that we can use it within if else fi statements.
+PKG_PROG_PKG_CONFIG()
+
 AC_SUBST(MSPLUGINS_CFLAGS)
 AC_SUBST(MSPLUGINS_LIBS)
 
@@ -187,8 +190,6 @@ AC_ARG_ENABLE(artsc,
       esac],[artsc=true])
 
 arts_enabled=false
-
-PKG_PROG_PKG_CONFIG()
 
 if test "$artsc" = "true" ; then
 

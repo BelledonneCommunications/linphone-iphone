@@ -674,13 +674,15 @@ static void linphone_gtk_init_main_window(){
 void linphone_gtk_close(){
 	/* couldn't find a way to prevent closing to destroy the main window*/
 	LinphoneCore *lc=linphone_gtk_get_core();
-	/*shutdown call if any*/
-	if (linphone_core_in_call(lc))
-		linphone_core_terminate_call(lc,NULL);
-	linphone_core_enable_video_preview(lc,FALSE);
 	the_ui=NULL;
 	the_ui=linphone_gtk_create_window("main");
 	linphone_gtk_init_main_window();
+	/*shutdown call if any*/
+	if (linphone_core_in_call(lc)){
+		linphone_core_terminate_call(lc,NULL);
+		linphone_gtk_call_terminated(the_ui);
+	}
+	linphone_core_enable_video_preview(lc,FALSE);
 }
 
 void linphone_gtk_log_handler(OrtpLogLevel lev, const char *fmt, va_list args){

@@ -52,10 +52,10 @@ static bool_t win32_init_sockets(void){
 	WSADATA wsaData;
 	int i;
 	
-	wVersionRequested = MAKEWORD(1,1);
+	wVersionRequested = MAKEWORD(2,0);
 	if( (i = WSAStartup(wVersionRequested,  &wsaData))!=0)
 	{
-		ortp_error("Unable to initialize windows socket api, reason: %d",i);
+		ortp_error("Unable to initialize windows socket api, reason: %d (%s)",i,getWinSocketError(i));
 		return FALSE;
 	}
 	return TRUE;
