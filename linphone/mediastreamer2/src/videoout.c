@@ -342,7 +342,7 @@ static bool_t win_display_init(MSDisplay *obj, MSPicture *fbuf){
 		/* the window might need to be resized*/
 		RECT cur;
 		GetWindowRect(wd->window,&cur);
-		MoveWindow(wd->window,cur.left, cur.top, wd->fb.w, wd->fb.h,FALSE);
+		MoveWindow(wd->window,cur.left, cur.top, wd->fb.w, wd->fb.h,TRUE);
 	}
 	
 	if (wd->ddh==NULL) wd->ddh=DrawDibOpen();

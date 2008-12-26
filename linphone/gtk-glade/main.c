@@ -570,9 +570,31 @@ static void icon_popup_menu(GtkStatusIcon *status_icon, guint button, guint acti
 	gtk_menu_popup(GTK_MENU(menu),NULL,NULL,gtk_status_icon_position_menu,status_icon,button,activate_time);
 }
 
+void linphone_gtk_link_to_website(GtkWidget *item){
+	const gchar *home=(const gchar*)g_object_get_data(G_OBJECT(item),"home");
+#ifdef WIN32
+	ShellExecute(0,"open",home,NULL,NULL,1);
+#else
+#endif
+}
+
+static const char *homesite="http://www.linphone.org";
+
 static GtkWidget *create_icon_menu(){
 	GtkWidget *menu=gtk_menu_new();
 	GtkWidget *menu_item;
+	GtkWidget *image;
+	
+	menu_item=gtk_image_menu_item_new_with_label(homesite);
+	g_object_set_data(G_OBJECT(menu_item),"home",homesite);
+	image=gtk_image_new_from_stock(GTK_STOCK_HELP,GTK_ICON_SIZE_MENU);
+	gtk_widget_show(image);
+	gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item),image);
+	//g_object_unref(G_OBJECT(image));
+	gtk_widget_show(menu_item);
+	gtk_menu_shell_append(GTK_MENU_SHELL(menu),menu_item);
+	g_signal_connect(G_OBJECT(menu_item),"activate",(GCallback)linphone_gtk_link_to_website,NULL);
+	
 	menu_item=gtk_image_menu_item_new_from_stock(GTK_STOCK_ABOUT,NULL);
 	gtk_widget_show(menu_item);
 	gtk_menu_shell_append(GTK_MENU_SHELL(menu),menu_item);
