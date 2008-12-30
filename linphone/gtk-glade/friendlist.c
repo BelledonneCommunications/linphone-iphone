@@ -199,6 +199,8 @@ static void linphone_gtk_friend_list_init(GtkWidget *friendlist)
 	gtk_tree_view_column_set_min_width (column, 29);
 	gtk_tree_view_append_column (GTK_TREE_VIEW (friendlist), column);
 
+	gtk_tree_view_column_set_visible(column,linphone_gtk_get_ui_config_int("friendlist_icon",1));
+
 	renderer = gtk_cell_renderer_text_new ();
 	column = gtk_tree_view_column_new_with_attributes (_("Name"),
                                                    renderer,
@@ -213,6 +215,7 @@ static void linphone_gtk_friend_list_init(GtkWidget *friendlist)
                                                    NULL);
 	g_object_set (G_OBJECT(column), "resizable", TRUE, NULL);
 	gtk_tree_view_append_column (GTK_TREE_VIEW (friendlist), column);
+	gtk_tree_view_column_set_visible(column,linphone_gtk_get_ui_config_int("friendlist_status",1));
 	
 	select = gtk_tree_view_get_selection (GTK_TREE_VIEW (friendlist));
 	gtk_tree_selection_set_mode (select, GTK_SELECTION_SINGLE);

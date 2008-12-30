@@ -57,4 +57,6 @@ void linphone_gtk_log_show(void);
 void linphone_gtk_log_push(OrtpLogLevel lev, const char *fmt, va_list args);
 void linphone_gtk_destroy_log_window(void);
 gboolean linphone_gtk_check_logs();
+const gchar *linphone_gtk_get_ui_config(const char *key, const char *def);
+int linphone_gtk_get_ui_config_int(const char *key, int def);
 

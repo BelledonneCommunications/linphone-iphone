@@ -564,6 +564,15 @@ static void linphone_gtk_call_log_updated(LinphoneCore *lc, LinphoneCallLog *cl)
 static void linphone_gtk_general_state(LinphoneCore *lc, LinphoneGeneralState *gstate){
 }
 
+const gchar *linphone_gtk_get_ui_config(const char *key, const char *def){
+	LpConfig *cfg=linphone_core_get_config(linphone_gtk_get_core());
+	return lp_config_get_string(cfg,"GtkUi",key,def);
+}
+
+int linphone_gtk_get_ui_config_int(const char *key, int def){
+	LpConfig *cfg=linphone_core_get_config(linphone_gtk_get_core());
+	return lp_config_get_int(cfg,"GtkUi",key,def);
+}
 
 static void icon_popup_menu(GtkStatusIcon *status_icon, guint button, guint activate_time, gpointer user_data){
 	GtkWidget *menu=(GtkWidget*)g_object_get_data(G_OBJECT(status_icon),"menu");
@@ -575,18 +584,25 @@ void linphone_gtk_link_to_website(GtkWidget *item){
 #ifdef WIN32
 	ShellExecute(0,"open",home,NULL,NULL,1);
 #else
+	char cl[255];
+	snprintf(cl,sizeof(cl),"/usr/bin/x-www-browser %s",home);
+	g_spawn_command_line_async(cl,NULL);
 #endif
 }
-
-static const char *homesite="http://www.linphone.org";
 
 static GtkWidget *create_icon_menu(){
 	GtkWidget *menu=gtk_menu_new();
 	GtkWidget *menu_item;
 	GtkWidget *image;
+	gchar *tmp;
+	const gchar *homesite;
 	
+	homesite=linphone_gtk_get_ui_config("home","http://www.linphone.org");
 	menu_item=gtk_image_menu_item_new_with_label(homesite);
-	g_object_set_data(G_OBJECT(menu_item),"home",homesite);
+	tmp=g_strdup(homesite);
+	g_object_set_data(G_OBJECT(menu_item),"home",tmp);
+	g_object_weak_ref(G_OBJECT(menu_item),(GWeakNotify)g_free,tmp);
+	
 	image=gtk_image_new_from_stock(GTK_STOCK_HELP,GTK_ICON_SIZE_MENU);
 	gtk_widget_show(image);
 	gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item),image);
@@ -612,11 +628,13 @@ static GtkStatusIcon *icon=NULL;
 static void linphone_gtk_init_status_icon(){
 	GdkPixbuf *pbuf=create_pixbuf("linphone2.png");
 	GtkWidget *menu=create_icon_menu();
+	const char *title;
 	icon=gtk_status_icon_new_from_pixbuf(pbuf);
 	g_object_unref(G_OBJECT(pbuf));
 	g_signal_connect_swapped(G_OBJECT(icon),"activate",(GCallback)linphone_gtk_show_main_window,linphone_gtk_get_main_window());
 	g_signal_connect(G_OBJECT(icon),"popup-menu",(GCallback)icon_popup_menu,NULL);
-	gtk_status_icon_set_tooltip(icon,_("Linphone - a video internet phone"));
+	title=linphone_gtk_get_ui_config("title",_("Linphone - a video internet phone"));
+	gtk_status_icon_set_tooltip(icon,title);
 	g_object_set_data(G_OBJECT(icon),"menu",menu);
 	g_object_weak_ref(G_OBJECT(icon),(GWeakNotify)gtk_widget_destroy,menu);
 }
@@ -671,14 +689,25 @@ static void linphone_gtk_check_menu_items(void){
 }
 
 static void linphone_gtk_configure_main_window(){
-	static LpConfig *conf=NULL;
-	static int show_digits=1;
+	static gboolean config_loaded=FALSE;
+	static gboolean show_digits=1;
+	static const char *title;
+	static const char *home;
 	GtkWidget *w=linphone_gtk_get_main_window();
-	if (conf==NULL){
-		conf=linphone_core_get_config(linphone_gtk_get_core());
-		show_digits=lp_config_get_int(conf,"GtkUi","show_digits",show_digits);
+	if (!config_loaded){
+		show_digits=linphone_gtk_get_ui_config_int("show_digits",1);
+		title=linphone_gtk_get_ui_config("title",NULL);
+		home=linphone_gtk_get_ui_config("home","http://www.linphone.org");
+		config_loaded=TRUE;
 	}
 	if (show_digits==0) gtk_widget_hide(linphone_gtk_get_widget(w,"dialpad"));
+	if (title) gtk_window_set_title(GTK_WINDOW(w),title);
+	if (home){
+		gchar *tmp;
+		GtkWidget *menu_item=linphone_gtk_get_widget(w,"home_item");
+		tmp=g_strdup(home);
+		g_object_set_data(G_OBJECT(menu_item),"home",tmp);
+	}
 }
 
 static void linphone_gtk_init_main_window(){
