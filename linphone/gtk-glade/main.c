@@ -39,6 +39,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define PACKAGE_LOCALE_DIR "po"
 #endif
 
+#define LINPHONE_ICON "linphone2.png"
 
 static LinphoneCore *the_core=NULL;
 static GtkWidget *the_ui=NULL;
@@ -626,7 +627,8 @@ static GtkWidget *create_icon_menu(){
 static GtkStatusIcon *icon=NULL;
 
 static void linphone_gtk_init_status_icon(){
-	GdkPixbuf *pbuf=create_pixbuf("linphone2.png");
+	const char *icon_path=linphone_gtk_get_ui_config("icon",LINPHONE_ICON);
+	GdkPixbuf *pbuf=create_pixbuf(icon_path);
 	GtkWidget *menu=create_icon_menu();
 	const char *title;
 	icon=gtk_status_icon_new_from_pixbuf(pbuf);
@@ -693,15 +695,22 @@ static void linphone_gtk_configure_main_window(){
 	static gboolean show_digits=1;
 	static const char *title;
 	static const char *home;
+	static const char *icon_path;
 	GtkWidget *w=linphone_gtk_get_main_window();
 	if (!config_loaded){
 		show_digits=linphone_gtk_get_ui_config_int("show_digits",1);
 		title=linphone_gtk_get_ui_config("title",NULL);
 		home=linphone_gtk_get_ui_config("home","http://www.linphone.org");
+		icon_path=linphone_gtk_get_ui_config("icon",NULL);
 		config_loaded=TRUE;
 	}
 	if (show_digits==0) gtk_widget_hide(linphone_gtk_get_widget(w,"dialpad"));
 	if (title) gtk_window_set_title(GTK_WINDOW(w),title);
+	if (icon_path) {
+		GdkPixbuf *pbuf=create_pixbuf(icon_path);
+		gtk_window_set_icon(GTK_WINDOW(w),pbuf);
+		g_object_unref(G_OBJECT(pbuf));
+	}
 	if (home){
 		gchar *tmp;
 		GtkWidget *menu_item=linphone_gtk_get_widget(w,"home_item");
