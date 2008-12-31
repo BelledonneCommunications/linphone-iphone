@@ -256,7 +256,13 @@ static void __ortp_logv_out(OrtpLogLevel lev, const char *fmt, va_list args){
 			ortp_fatal("Bad level !");
 	}
 	msg=_strdup_vprintf(fmt,args);
+#ifdef _MSC_VER
+  OutputDebugString(msg);
+  OutputDebugString("\r\n");
+#else
 	fprintf(__log_file,"ortp-%s-%s" ENDLINE,lname,msg);
+#endif
+
 	ortp_free(msg);
 }
 
