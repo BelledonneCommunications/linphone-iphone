@@ -2034,6 +2034,14 @@ const char *linphone_core_get_video_device(const LinphoneCore *lc){
 	return NULL;
 }
 
+unsigned long linphone_core_get_native_video_window_id(const LinphoneCore *lc){
+	if (lc->videostream)
+		return video_stream_get_native_window_id(lc->videostream);
+	if (lc->previewstream)
+		return video_stream_get_native_window_id(lc->previewstream);
+	return 0;
+}
+
 static MSVideoSizeDef supported_resolutions[]={
 	{	MS_VIDEO_SIZE_SVGA	,	"svga"	},
 	{	MS_VIDEO_SIZE_4CIF	,	"4cif"	},

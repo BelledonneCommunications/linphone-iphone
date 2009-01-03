@@ -702,7 +702,8 @@ const char**  linphone_core_get_video_devices(const LinphoneCore *lc);
 int linphone_core_set_video_device(LinphoneCore *lc, const char *id);
 const char *linphone_core_get_video_device(const LinphoneCore *lc);
 
-
+/*function to be used for eventually setting window decorations (icons, title...)*/
+unsigned long linphone_core_get_native_video_window_id(const LinphoneCore *lc);
 
 
 /*play/record support: use files instead of soundcard*/

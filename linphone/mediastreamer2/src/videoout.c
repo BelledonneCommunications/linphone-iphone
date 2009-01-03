@@ -53,6 +53,17 @@ static SDL_Surface *sdl_screen=0;
 
 #include <SDL/SDL_syswm.h>
 
+static long sdl_get_native_window_id(){
+	SDL_SysWMinfo info;
+	SDL_VERSION(&info.version);
+	if ( SDL_GetWMInfo(&info) ) {
+		if ( info.subsystem == SDL_SYSWM_X11 ) {
+			return (long) info.info.x11.wmwindow;
+		}
+	}
+	return 0;
+}
+
 static void sdl_show_window(bool_t show){
 	SDL_SysWMinfo info;
 	SDL_VERSION(&info.version);
@@ -79,6 +90,11 @@ static void sdl_show_window(bool_t show){
 	ms_warning("SDL window show/hide not implemented");
 }
 
+static long sdl_get_native_window_id(){
+	ms_warning("sdl_get_native_window_id not implemented");
+	return 0;
+}
+
 #endif
 
 static void sdl_display_uninit(MSDisplay *obj);
@@ -92,7 +108,7 @@ static SDL_Overlay * sdl_create_window(int w, int h){
 		return NULL;
 	}
 	if (sdl_screen->flags & SDL_HWSURFACE) ms_message("SDL surface created in hardware");
-	SDL_WM_SetCaption("Linphone Video", NULL);
+	SDL_WM_SetCaption("Video window", NULL);
 	ms_message("Using yuv overlay.");
 	lay=SDL_CreateYUVOverlay(w , h ,SDL_YV12_OVERLAY,sdl_screen);
 	if (lay==NULL){
@@ -137,6 +153,7 @@ static bool_t sdl_display_init(MSDisplay *obj, MSPicture *fbuf){
 		fbuf->h=lay->h;
 		obj->data=lay;
 		sdl_show_window(TRUE);
+		obj->window_id=sdl_get_native_window_id();
 		return TRUE;
 	}
 	return FALSE;
@@ -207,7 +224,7 @@ MSDisplayDesc ms_sdl_display_desc={
 	.unlock=sdl_display_unlock,
 	.update=sdl_display_update,
 	.uninit=sdl_display_uninit,
-	.pollevent=sdl_poll_event
+	.pollevent=sdl_poll_event,
 };
 
 #elif defined(WIN32)
@@ -325,7 +342,7 @@ static bool_t win_display_init(MSDisplay *obj, MSPicture *fbuf){
 	wd->fb.h=fbuf->h;
 	
 	if (wd->window==NULL){
-		if (obj->window_id!=0){
+		if (obj->use_external_window && obj->window_id!=0){
 			void *p;
 			wd->window=(HWND)obj->window_id;
 			p=(void*)GetWindowLongPtr(wd->window,GWLP_USERDATA);
@@ -335,10 +352,11 @@ static bool_t win_display_init(MSDisplay *obj, MSPicture *fbuf){
 			}else SetWindowLongPtr(wd->window,GWLP_USERDATA,(LONG_PTR)obj);
 		}else{
 			wd->window=create_window(wd->fb.w,wd->fb.h);
+			obj->window_id=wd->window;
 			if (wd->window!=NULL) SetWindowLongPtr(wd->window,GWLP_USERDATA,(LONG_PTR)obj);
 			else return FALSE;
 		}
-	}else if (obj->window_id==0){
+	}else if (!obj->use_external_window){
 		/* the window might need to be resized*/
 		RECT cur;
 		GetWindowRect(wd->window,&cur);
@@ -488,6 +506,7 @@ MSDisplay *ms_display_new(MSDisplayDesc *desc){
 
 void ms_display_set_window_id(MSDisplay *d, long id){
 	d->window_id=id;
+	d->use_external_window=TRUE;
 }
 
 void ms_display_destroy(MSDisplay *obj){
@@ -827,6 +846,17 @@ static int video_out_enable_mirroring(MSFilter *f,void *arg){
 	return 0;
 }
 
+static int video_out_get_native_window_id(MSFilter *f, void*arg){
+	VideoOut *s=(VideoOut*)f->data;
+	unsigned long *id=(unsigned long*)arg;
+	*id=0;
+	if (s->display){
+		*id=s->display->window_id;
+		return 0;
+	}
+	return -1;
+}
+
 static MSFilterMethod methods[]={
 	{	MS_FILTER_SET_VIDEO_SIZE	,	video_out_set_vsize },
 	{	MS_VIDEO_OUT_SET_DISPLAY	,	video_out_set_display},
@@ -834,6 +864,7 @@ static MSFilterMethod methods[]={
 	{	MS_VIDEO_OUT_AUTO_FIT		,	video_out_auto_fit},
 	{	MS_VIDEO_OUT_HANDLE_RESIZING	,	video_out_handle_resizing},
 	{	MS_VIDEO_OUT_ENABLE_MIRRORING	,	video_out_enable_mirroring},
+	{	MS_VIDEO_OUT_GET_NATIVE_WINDOW_ID,	video_out_get_native_window_id},
 	{	0	,NULL}
 };
 

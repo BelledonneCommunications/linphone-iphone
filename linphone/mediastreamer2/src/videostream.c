@@ -345,6 +345,14 @@ void video_stream_set_rtcp_information(VideoStream *st, const char *cname, const
 	}
 }
 
+unsigned long video_stream_get_native_window_id(VideoStream *stream){
+	unsigned long id;
+	if (stream->output){
+		if (ms_filter_call_method(stream->output,MS_VIDEO_OUT_GET_NATIVE_WINDOW_ID,&id)==0)
+			return id;
+	}
+	return 0;
+}
 
 
 VideoStream * video_preview_start(MSWebCam *device, MSVideoSize disp_size){

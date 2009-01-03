@@ -52,6 +52,7 @@ typedef struct _MSDisplay{
 	MSDisplayDesc *desc;
 	long window_id; /*window id if the display should use an existing window*/
 	void *data;
+	bool_t use_external_window;
 } MSDisplay;
 
 
@@ -94,6 +95,7 @@ void ms_display_destroy(MSDisplay *d);
 #define MS_VIDEO_OUT_SET_CORNER 	MS_FILTER_METHOD(MS_VIDEO_OUT_ID,2,int)
 #define MS_VIDEO_OUT_AUTO_FIT		MS_FILTER_METHOD(MS_VIDEO_OUT_ID,3,int)
 #define MS_VIDEO_OUT_ENABLE_MIRRORING	MS_FILTER_METHOD(MS_VIDEO_OUT_ID,4,int)
+#define MS_VIDEO_OUT_GET_NATIVE_WINDOW_ID MS_FILTER_METHOD(MS_VIDEO_OUT_ID,5,unsigned long)
 
 #ifdef __cplusplus
 }

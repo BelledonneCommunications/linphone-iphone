@@ -246,8 +246,39 @@ void linphone_gtk_show_about(){
 	gtk_widget_show(about);
 }
 
+static void set_video_window_decorations(GdkWindow *w){
+	const char *title=linphone_gtk_get_ui_config("title","Linphone");
+	const char *icon_path=linphone_gtk_get_ui_config("icon","linphone2.png");
+	char video_title[256];
+	GdkPixbuf *pbuf=create_pixbuf(icon_path);
+	snprintf(video_title,sizeof(video_title),"%s video",title);
+	gdk_window_set_title(w,video_title);
+	if (pbuf){
+		GList *l=NULL;
+		l=g_list_append(l,pbuf);
+		gdk_window_set_icon_list(w,l);
+		g_list_free(l);
+		g_object_unref(G_OBJECT(pbuf));
+	}
+}
+
 static gboolean linphone_gtk_iterate(LinphoneCore *lc){
+	unsigned long id;
+	static unsigned long previd=0;
 	linphone_core_iterate(lc);
+	id=linphone_core_get_native_video_window_id(lc);
+	if (id!=previd){
+		GdkWindow *w;
+		previd=id;
+		if (id!=0){
+			w=gdk_window_foreign_new(id);
+			if (w) {
+				set_video_window_decorations(w);
+				g_object_unref(G_OBJECT(w));
+			}
+			else ms_error("gdk_window_foreign_new() failed");
+		}
+	}
 	return TRUE;
 }
 
@@ -693,18 +724,21 @@ static void linphone_gtk_check_menu_items(void){
 static void linphone_gtk_configure_main_window(){
 	static gboolean config_loaded=FALSE;
 	static gboolean show_digits=1;
+	static gboolean show_identities=1;
 	static const char *title;
 	static const char *home;
 	static const char *icon_path;
 	GtkWidget *w=linphone_gtk_get_main_window();
 	if (!config_loaded){
 		show_digits=linphone_gtk_get_ui_config_int("show_digits",1);
+		show_identities=linphone_gtk_get_ui_config_int("identity_frame",1);
 		title=linphone_gtk_get_ui_config("title",NULL);
 		home=linphone_gtk_get_ui_config("home","http://www.linphone.org");
 		icon_path=linphone_gtk_get_ui_config("icon",NULL);
 		config_loaded=TRUE;
 	}
-	if (show_digits==0) gtk_widget_hide(linphone_gtk_get_widget(w,"dialpad"));
+	if (show_digits==FALSE) gtk_widget_hide(linphone_gtk_get_widget(w,"dialpad"));
+	if (show_identities==FALSE) gtk_widget_hide(linphone_gtk_get_widget(w,"identity_frame"));
 	if (title) gtk_window_set_title(GTK_WINDOW(w),title);
 	if (icon_path) {
 		GdkPixbuf *pbuf=create_pixbuf(icon_path);

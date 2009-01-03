@@ -142,6 +142,8 @@ void video_stream_send_vfu(VideoStream *stream);
 void video_stream_stop(VideoStream * stream);
 void video_stream_set_sent_video_size(VideoStream *stream, MSVideoSize vsize);
 void video_stream_enable_self_view(VideoStream *stream, bool_t val);
+unsigned long video_stream_get_native_window_id(VideoStream *stream);
+
 
 VideoStream * video_preview_start(MSWebCam *device, MSVideoSize vsize);
 void video_preview_stop(VideoStream *stream);
