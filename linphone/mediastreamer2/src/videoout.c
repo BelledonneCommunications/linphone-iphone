@@ -352,7 +352,7 @@ static bool_t win_display_init(MSDisplay *obj, MSPicture *fbuf){
 			}else SetWindowLongPtr(wd->window,GWLP_USERDATA,(LONG_PTR)obj);
 		}else{
 			wd->window=create_window(wd->fb.w,wd->fb.h);
-			obj->window_id=wd->window;
+			obj->window_id=(long)wd->window;
 			if (wd->window!=NULL) SetWindowLongPtr(wd->window,GWLP_USERDATA,(LONG_PTR)obj);
 			else return FALSE;
 		}
@@ -461,7 +461,7 @@ static void win_display_uninit(MSDisplay *obj){
 	WinDisplay *wd=(WinDisplay*)obj->data;
 	if (wd==NULL)
 		return;
-	if (wd->window && !obj->window_id) DestroyWindow(wd->window);
+	if (wd->window && !obj->use_external_window) DestroyWindow(wd->window);
 	if (wd->ddh) DrawDibClose(wd->ddh);
 	if (wd->fb.planes[0]) ms_free(wd->fb.planes[0]);
 	if (wd->rgb) ms_free(wd->rgb);

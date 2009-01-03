@@ -611,15 +611,19 @@ static void icon_popup_menu(GtkStatusIcon *status_icon, guint button, guint acti
 	gtk_menu_popup(GTK_MENU(menu),NULL,NULL,gtk_status_icon_position_menu,status_icon,button,activate_time);
 }
 
-void linphone_gtk_link_to_website(GtkWidget *item){
-	const gchar *home=(const gchar*)g_object_get_data(G_OBJECT(item),"home");
+void linphone_gtk_open_browser(const char *url){
 #ifdef WIN32
-	ShellExecute(0,"open",home,NULL,NULL,1);
+	ShellExecute(0,"open",url,NULL,NULL,1);
 #else
 	char cl[255];
-	snprintf(cl,sizeof(cl),"/usr/bin/x-www-browser %s",home);
+	snprintf(cl,sizeof(cl),"/usr/bin/x-www-browser %s",url);
 	g_spawn_command_line_async(cl,NULL);
 #endif
+}
+
+void linphone_gtk_link_to_website(GtkWidget *item){
+	const gchar *home=(const gchar*)g_object_get_data(G_OBJECT(item),"home");
+	linphone_gtk_open_browser(home);
 }
 
 static GtkWidget *create_icon_menu(){
@@ -861,6 +865,7 @@ int main(int argc, char *argv[]){
 	linphone_gtk_init_main_window();
 	linphone_gtk_init_status_icon();
 	linphone_gtk_show_main_window();
+	linphone_gtk_check_for_new_version();
 	gtk_main();
 	gdk_threads_leave();
 	linphone_gtk_destroy_log_window();

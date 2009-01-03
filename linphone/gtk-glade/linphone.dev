@@ -1,7 +1,7 @@
 [Project]
 FileName=linphone.dev
 Name=linphone
-UnitCount=8
+UnitCount=9
 PchHead=-1
 PchSource=-1
 Ver=3
@@ -120,7 +120,7 @@ ResourceIncludes=
 MakeIncludes=
 Compiler=-ggdb -O2_@@_-DENABLE_NLS_@@__@@_
 CppCompiler=
-Linker=-mwindows_@@_-Wl,--export-all-symbols_@@_-Wl,--add-stdcall-alias_@@_-llinphone_@@_-lmediastreamer2_@@_-lortp_@@_-lglade-2.0_@@_-lgtk-win32-2.0_@@_-lglib-2.0_@@_-lintl_@@_-lgdk_pixbuf-2.0_@@_-latk-1.0_@@_-lgobject-2.0_@@_-lgthread-2.0_@@_-lgdk-win32-2.0_@@_-losip2_@@_-losipparser2_@@_-leXosip2_@@_-lws2_32_@@_
+Linker=-mwindows_@@_-Wl,--export-all-symbols_@@_-Wl,--add-stdcall-alias_@@_-llinphone_@@_-lmediastreamer2_@@_-lortp_@@_-lglade-2.0_@@_-lgtk-win32-2.0_@@_-lglib-2.0_@@_-lintl_@@_-lgdk_pixbuf-2.0_@@_-latk-1.0_@@_-lgobject-2.0_@@_-lgthread-2.0_@@_-lgdk-win32-2.0_@@_-losip2_@@_-losipparser2_@@_-leXosip2_@@_-lws2_32_@@_-lwininet_@@_
 PreprocDefines=
 CompilerSettings=0000000000000000000000
 Icon=linphone.ico
@@ -163,4 +163,14 @@ IncludeVersionInfo=0
 SupportXPThemes=0
 CompilerSet=1
 compilerType=1
+
+[Unit9]
+FileName=update.c
+CompileCpp=0
+Folder=
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=	$(CC) -c update.c -o Objects/update.o $(CFLAGS)
 
