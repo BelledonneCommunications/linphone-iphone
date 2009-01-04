@@ -58,7 +58,8 @@ static int linphone_gtk_get_new_version(const char *version_url, char *version, 
 
 #else
 
-static int linphone_gtk_get_new_version(char *version, size_t size){
+static int linphone_gtk_get_new_version(const char *url, char *version, size_t size){
+	
 	return -1;
 }
 
@@ -101,6 +102,7 @@ static void *check_for_new_version(void *d){
 			if (download_site) popup_new_version(download_site);
 		}
 	}
+	return NULL;
 }
 
 void linphone_gtk_check_for_new_version(void){

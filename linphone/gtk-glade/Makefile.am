@@ -30,6 +30,7 @@ linphone_3_SOURCES=	main.c\
 			chat.c \
 			calllogs.c \
 			logging.c \
+			update.c \
 			linphone.h
 
 linphone_3_LDADD=$(top_builddir)/oRTP/src/libortp.la \
