@@ -89,8 +89,29 @@ static void popup_new_version(const char *download_site){
 	gtk_widget_show(dialog);
 }
 
+static int copytilldot(char *n, const char *v){
+	int ret=0;
+	while(*v!='\0' || *v!='.' || *v!='-'){
+		*n=*v;
+		ret++;
+		v++;
+		n++;
+	}
+	n[ret]='\0';
+	if (*v!='\0') ret=ret+1;
+	printf("Got %s",n);
+	return ret;
+}
+
 static int version_compare(const char *v1, const char *v2){
-	return strcmp(v1,v2);
+	char n1[16];
+	char n2[16];
+	int ret;
+	v1+=copytilldot(n1,v1);
+	v2+=copytilldot(n2,v2);
+	ret=strcmp(n1,n2);
+	if (ret==0) return version_compare(v1,v2);
+	else return ret;
 }
 
 static void *check_for_new_version(void *d){
@@ -111,7 +132,7 @@ void linphone_gtk_check_for_new_version(void){
 	const char *version_url;
 	if (done) return;
 	done=TRUE;
-	version_url=linphone_gtk_get_ui_config("update_url",NULL);
+	version_url=linphone_gtk_get_ui_config("last_version_url",NULL);
 	if (version_url==NULL) return ;
 	ortp_thread_create(&thread,NULL,check_for_new_version,(void*)version_url);
 }
