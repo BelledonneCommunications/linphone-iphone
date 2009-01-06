@@ -92,7 +92,7 @@ static gboolean popup_new_version(const char *download_site){
 
 static int copytilldot(char *n, const char *v){
 	int ret=0;
-	while(*v!='\0' && *v!='.' && *v!='-' && *v!='\n' && *v!='\r' && v!='\t'){
+	while(*v!='\0' && *v!='.' && *v!='-' && *v!='\n' && *v!='\r' && *v!='\t'){
 		*n=*v;
 		ret++;
 		v++;

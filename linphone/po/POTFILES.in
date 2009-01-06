@@ -6,6 +6,7 @@ gtk-glade/chat.c
 gtk-glade/main.c
 gtk-glade/friendlist.c
 gtk-glade/propertybox.c
+gtk-glade/update.c
 gtk-glade/main.glade
 gtk-glade/about.glade
 gtk-glade/contact.glade

@@ -38,7 +38,7 @@ AC_ENABLE_SHARED(yes)
 AC_ENABLE_STATIC(no)
 dnl Add the languages which your application supports here.
 PKG_PROG_PKG_CONFIG
-ALL_LINGUAS="fr it de ja es pl cs nl sv pt_BR hu ru se"
+ALL_LINGUAS="fr it de ja es pl cs nl sv pt_BR hu ru"
 GETTEXT_PACKAGE=linphone
 AM_GNU_GETTEXT([external])
 AC_SUBST(GETTEXT_PACKAGE)
