@@ -36,7 +36,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 #ifndef PACKAGE_LOCALE_DIR
-#define PACKAGE_LOCALE_DIR "po"
+#define PACKAGE_LOCALE_DIR "share/locale/"
 #endif
 
 #define LINPHONE_ICON "linphone2.png"
@@ -841,6 +841,10 @@ int main(int argc, char *argv[]){
 		g_warning("This instance is going to exit now.");
 		return 0;
 	}
+	
+#ifdef WIN32
+	gtk_rc_add_default_file("./gtkrc");
+#endif
 	gdk_threads_enter();
 	if (!gtk_init_with_args(&argc,&argv,_("A free SIP video-phone"),
 				linphone_options,NULL,NULL)){

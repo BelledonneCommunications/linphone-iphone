@@ -50,7 +50,11 @@ Source: "..\share\rings\bigben.wav"; DestDir: "{app}\rings"; Flags: ignoreversio
 Source: "..\share\rings\toy.wav"; DestDir: "{app}\rings"; Flags: ignoreversion
 Source: "..\share\rings\tapping.wav"; DestDir: "{app}\rings"; Flags: ignoreversion
 Source: "..\share\rings\oldphone.wav"; DestDir: "{app}\rings"; Flags: ignoreversion
-
+;;Default my preferred gtk theme on windows:
+Source: "..\gtk-glade\gtkrc"; DestDir: "{app}"; Flags: ignoreversion
+;;Locales for linphone:
+Source: "..\po\fr.gmo"; DestDir: "{app}\share\locale\fr\LC_MESSAGES"; DestName: "linphone.mo"; Flags: ignoreversion
+Source: "..\po\sv.gmo"; DestDir: "{app}\share\locale\sv\LC_MESSAGES"; DestName: "linphone.mo"; Flags: ignoreversion
 
 ;;GTK stuff:
 Source: "..\..\gtk+2.12\bin\*.dll"; DestDir: "{app}"; Flags: ignoreversion
@@ -60,7 +64,9 @@ Source: "..\..\iconv-1.9.2.win32\bin\*.dll"; DestDir: "{app}"; Flags: ignorevers
 Source: "..\..\gtk+2.12\lib\gtk-2.0\2.10.0\engines\*"; DestDir: "{app}\lib\gtk-2.0\2.10.0\engines"; Flags: ignoreversion
 Source: "..\..\gtk+2.12\lib\gtk-2.0\2.10.0\loaders\*"; DestDir: "{app}\lib\gtk-2.0\2.10.0\loaders"; Flags: ignoreversion
 Source: "..\..\gtk+2.12\lib\gtk-2.0\2.10.0\immodules\*"; DestDir: "{app}\lib\gtk-2.0\2.10.0\immodules"; Flags: ignoreversion
-
+Source: "..\..\gtk+2.12\share\locale\fr\LC_MESSAGES\*"; DestDir: "{app}\share\locale\fr\LC_MESSAGES"; Flags: ignoreversion
+Source: "..\..\gtk+2.12\share\locale\sv\LC_MESSAGES\*"; DestDir: "{app}\share\locale\sv\LC_MESSAGES"; Flags: ignoreversion
+Source: "..\..\gtk+2.12\share\themes\XLiquid_GTK-1.0.3\gtk-2.0\*"; DestDir: "{app}\share\themes\XLiquid_GTK-1.0.3\gtk-2.0"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
