@@ -44,7 +44,7 @@ static int linphone_gtk_get_new_version(const char *version_url, char *version, 
 	}
 
 	if (InternetReadFile(hConnect,version,size,&dwDownloaded)){
-		version[dwDownloaded]=0;
+		version[dwDownloaded]='\0';
         ms_message("Got response: %s", version);
         ret=0;
 	}
@@ -72,11 +72,11 @@ static void new_version_response(GtkWidget *dialog, int response_id, gpointer do
 	gtk_widget_destroy(dialog);
 }
 
-static void popup_new_version(const char *download_site){
+static gboolean popup_new_version(const char *download_site){
 	GtkWidget *dialog;
 	/* draw a question box. link to dialog_click callback */
 	dialog = gtk_message_dialog_new (
-				NULL,
+				GTK_WINDOW(linphone_gtk_get_main_window()),
                 GTK_DIALOG_DESTROY_WITH_PARENT,
 				GTK_MESSAGE_QUESTION,
                 GTK_BUTTONS_YES_NO,
@@ -87,19 +87,19 @@ static void popup_new_version(const char *download_site){
         	(gpointer)download_site);
 	/* actually show the box */
 	gtk_widget_show(dialog);
+	return FALSE;
 }
 
 static int copytilldot(char *n, const char *v){
 	int ret=0;
-	while(*v!='\0' || *v!='.' || *v!='-'){
+	while(*v!='\0' && *v!='.' && *v!='-' && *v!='\n' && *v!='\r' && v!='\t'){
 		*n=*v;
 		ret++;
 		v++;
 		n++;
 	}
-	n[ret]='\0';
+	*n='\0';
 	if (*v!='\0') ret=ret+1;
-	printf("Got %s",n);
 	return ret;
 }
 
@@ -107,8 +107,11 @@ static int version_compare(const char *v1, const char *v2){
 	char n1[16];
 	char n2[16];
 	int ret;
+	if (*v1=='\0' && *v2=='\0') return 0;
 	v1+=copytilldot(n1,v1);
 	v2+=copytilldot(n2,v2);
+	printf("Comparing %s <> %s",n1,n2);
+	fflush(stdout);
 	ret=strcmp(n1,n2);
 	if (ret==0) return version_compare(v1,v2);
 	else return ret;
@@ -120,7 +123,11 @@ static void *check_for_new_version(void *d){
 	if (linphone_gtk_get_new_version(version_url,version,sizeof(version))==0){
 		if (version_compare(version,LINPHONE_VERSION)>0){
 			const char *download_site=linphone_gtk_get_ui_config("download_site",NULL);
-			if (download_site) popup_new_version(download_site);
+			if (download_site)   {
+				gdk_threads_enter();
+				g_idle_add((GSourceFunc)popup_new_version,(gpointer)download_site);
+				gdk_threads_leave();
+			}
 		}
 	}
 	return NULL;
