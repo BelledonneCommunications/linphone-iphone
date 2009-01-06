@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define PACKAGE_DATA_DIR "./"
 
 #ifndef LINPHONE_VERSION
-#define LINPHONE_VERSION "3.0.0-20090105"
+#define LINPHONE_VERSION "3.0.0-20090106"
 #endif
 
 #endif
