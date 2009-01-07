@@ -546,3 +546,9 @@ LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LpConfig *config
 	
 	return cfg;
 }
+
+LinphoneProxyConfig *linphone_proxy_config_new_from_setup(const char *type, const char *identity){
+	return NULL;
+}
+
+

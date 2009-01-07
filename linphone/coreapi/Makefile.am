@@ -24,7 +24,8 @@ liblinphone_la_SOURCES=\
 	authentication.c \
 	lpconfig.c lpconfig.h \
 	chat.c \
-        general_state.c
+        general_state.c \
+	sipsetup.c sipsetup.h
 
 
 liblinphone_la_LDFLAGS= -version-info $(LIBLINPHONE_SO_VERSION)

@@ -284,6 +284,7 @@ typedef struct _LinphoneProxyConfig
 	int expires;
 	int reg_time;
 	int rid;
+	char *type;
 	bool_t frozen;
 	bool_t reg_sendregister;
 	bool_t auth_pending;
@@ -312,6 +313,8 @@ void linphone_proxy_config_enable_publish(LinphoneProxyConfig *obj, bool_t val);
 void linphone_proxy_config_destroy(LinphoneProxyConfig *cfg);
 LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(struct _LpConfig *config, int index);
 void linphone_proxy_config_write_to_config_file(struct _LpConfig* config,LinphoneProxyConfig *obj, int index);
+LinphoneProxyConfig *linphone_proxy_config_new_from_setup(const char *type, const char *identity);
+
 
 typedef struct _LinphoneAuthInfo
 {
