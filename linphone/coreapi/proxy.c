@@ -19,6 +19,7 @@ Copyright (C) 2000  Simon MORLAT (simon.morlat@linphone.org)
  */
  
 #include "linphonecore.h"
+#include "sipsetup.h"
 #include <eXosip2/eXosip.h>
 #include <osipparser2/osip_message.h>
 #include "lpconfig.h"
@@ -42,6 +43,7 @@ void linphone_proxy_config_destroy(LinphoneProxyConfig *obj){
 	if (obj->reg_proxy!=NULL) ms_free(obj->reg_proxy);
 	if (obj->reg_identity!=NULL) ms_free(obj->reg_identity);
 	if (obj->reg_route!=NULL) ms_free(obj->reg_route);
+	if (obj->ssctx!=NULL) sip_setup_context_free(obj->ssctx);
 }
 
 static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
@@ -503,6 +505,9 @@ void linphone_proxy_config_write_to_config_file(LpConfig *config, LinphoneProxyC
 	if (obj==NULL){
 		return;
 	}
+	if (obj->type!=NULL){
+		lp_config_set_string(config,key,"type",obj->type);
+	}
 	if (obj->reg_proxy!=NULL){
 		lp_config_set_string(config,key,"reg_proxy",obj->reg_proxy);
 	}
@@ -520,6 +525,8 @@ void linphone_proxy_config_write_to_config_file(LpConfig *config, LinphoneProxyC
 LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LpConfig *config, int index)
 {
 	const char *tmp;
+	const char *identity;
+	const char *proxy;
 	LinphoneProxyConfig *cfg;
 	char key[50];
 	
@@ -528,17 +535,23 @@ LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LpConfig *config
 	if (!lp_config_has_section(config,key)){
 		return NULL;
 	}
-	tmp=lp_config_get_string(config,key,"reg_proxy",NULL);
-	if (tmp==NULL) return NULL;
-	cfg=linphone_proxy_config_new();
-	linphone_proxy_config_set_server_addr(cfg,tmp);
+	identity=lp_config_get_string(config,key,"reg_identity",NULL);
+	tmp=lp_config_get_string(config,key,"type",NULL);
+	proxy=lp_config_get_string(config,key,"reg_proxy",NULL);
+	if (tmp!=NULL && strlen(tmp)>0){
+		cfg=linphone_proxy_config_new_from_setup(tmp,identity);
+		if (cfg==NULL) return NULL;
+	}else{
+		if (!identity || !proxy) return NULL;
+		cfg=linphone_proxy_config_new();
+		linphone_proxy_config_set_identity(cfg,identity);
+		linphone_proxy_config_set_server_addr(cfg,proxy);
 		
+	}
+	
 	tmp=lp_config_get_string(config,key,"reg_route",NULL);
 	if (tmp!=NULL) linphone_proxy_config_set_route(cfg,tmp);
-		
-	tmp=lp_config_get_string(config,key,"reg_identity",NULL);
-	if (tmp!=NULL) linphone_proxy_config_set_identity(cfg,tmp);
-		
+
 	linphone_proxy_config_expires(cfg,lp_config_get_int(config,key,"reg_expires",600));
 	linphone_proxy_config_enableregister(cfg,lp_config_get_int(config,key,"reg_sendregister",0));
 	
@@ -548,7 +561,21 @@ LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LpConfig *config
 }
 
 LinphoneProxyConfig *linphone_proxy_config_new_from_setup(const char *type, const char *identity){
-	return NULL;
+	SipSetup *ss=sip_setup_lookup(type);
+	LinphoneProxyConfig *cfg;
+	SipSetupContext *ssc;
+	if (!ss) return NULL;
+	cfg=linphone_proxy_config_new();
+	linphone_proxy_config_set_identity(cfg,identity);
+	ssc=sip_setup_context_new(ss);
+	if (sip_setup_context_login_account(ssc,identity,NULL)==0){
+		char proxy[256];
+		if (sip_setup_context_get_proxy(ssc,NULL,proxy,sizeof(proxy))==0){
+			linphone_proxy_config_set_server_addr(cfg,proxy);
+		}
+	}
+	cfg->ssctx=ssc;
+	return cfg;
 }
 
 

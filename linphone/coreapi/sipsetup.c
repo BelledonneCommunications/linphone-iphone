@@ -24,6 +24,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 extern SipSetup fonis_sip_setup;
 #endif
 
+void sip_setup_register_all(void){
+}
 
 SipSetup *sip_setup_lookup(const char *type_name){
 #ifdef HAVE_FONIS
@@ -40,8 +42,16 @@ SipSetup *sip_setup_lookup(const char *type_name){
 	return NULL;
 }
 
+void sip_setup_unregister_all(void){
+#ifdef HAVE_FONIS
+	if (fonis_sip_setup.initialized)
+		fonis_sip_setup.exit();
+#endif
+}
+
+
 SipSetupContext *sip_setup_context_new(SipSetup *s){
-	SipSetupContext *obj=(SipSetupContext*)ms_new(SipSetupContext,1);
+	SipSetupContext *obj=(SipSetupContext*)ms_new0(SipSetupContext,1);
 	obj->funcs=s;
 	obj->data=NULL;
 	return obj;
@@ -54,6 +64,12 @@ int sip_setup_new_account(SipSetup *funcs, const char *uri, const char *passwd){
 }
 
 int sip_setup_context_login_account(SipSetupContext * ctx, const char *uri, const char *passwd){
+	osip_from_t *from;
+	osip_from_init(&from);
+	osip_from_parse(from,uri);
+	strncpy(ctx->domain,from->url->host,sizeof(ctx->domain));
+	strncpy(ctx->username,from->url->username,sizeof(ctx->username));
+	osip_from_free(from);
 	if (ctx->funcs->login_account)
 		return ctx->funcs->login_account(ctx,uri,passwd);
 	return -1;
@@ -61,7 +77,7 @@ int sip_setup_context_login_account(SipSetupContext * ctx, const char *uri, cons
 
 int sip_setup_context_get_proxy(SipSetupContext *ctx, const char *domain, char *proxy, size_t sz){
 	if (ctx->funcs->get_proxy)
-		return ctx->funcs->get_proxy(ctx,domain,proxy,sz);
+		return ctx->funcs->get_proxy(ctx,domain ? domain : ctx->domain,proxy,sz);
 	return -1;
 }
 

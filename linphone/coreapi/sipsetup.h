@@ -26,6 +26,8 @@ struct _SipSetup;
 
 struct _SipSetupContext{
 	struct _SipSetup *funcs;
+	char domain[128];
+	char username[128];
 	void *data;
 };
 
@@ -45,7 +47,9 @@ struct _SipSetup{
 
 typedef struct _SipSetup SipSetup;
 
+void sip_setup_register_all(void);
 SipSetup *sip_setup_lookup(const char *type_name);
+void sip_setup_unregister_all(void);
 
 int sip_setup_new_account(SipSetup *s, const char *uri, const char *passwd);
 SipSetupContext * sip_setup_context_new(SipSetup *s);

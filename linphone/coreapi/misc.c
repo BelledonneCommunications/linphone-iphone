@@ -572,7 +572,7 @@ static int recvStunResponse(ortp_socket_t sock, char *ipaddr, int *port, int *id
 
 void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 	const char *server=linphone_core_get_stun_server(lc);
-	
+
 	if (lc->sip_conf.ipv6_enabled){
 		ms_warning("stun support is not implemented for ipv6");
 		return;

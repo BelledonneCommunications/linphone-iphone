@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "linphonecore.h"
+#include "sipsetup.h"
 #include "lpconfig.h"
 #include "private.h"
 #include "mediastreamer2/mediastream.h"
@@ -676,6 +677,7 @@ void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vtable, co
 	lc->rsvp_enable = 1;
 	lc->rpc_enable = 0;
 #endif
+	sip_setup_register_all();
 	sound_config_read(lc);
 	net_config_read(lc);
 	rtp_config_read(lc);
@@ -1050,6 +1052,33 @@ static osip_to_t *osip_to_create(const char *to){
 	return ret;
 }
 
+static char *guess_route_if_any(LinphoneCore *lc, osip_to_t *parsed_url){
+	const MSList *elem=linphone_core_get_proxy_config_list(lc);
+	for(;elem!=NULL;elem=elem->next){
+		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
+		char prx[256];
+		if (cfg->ssctx && sip_setup_context_get_proxy(cfg->ssctx,parsed_url->url->host,prx,sizeof(prx))==0){
+			ms_message("We have a proxy for domain %s",parsed_url->url->host);
+			if (strcmp(parsed_url->url->host,prx)!=0){
+				char *route=NULL;
+				osip_route_t *rt;
+				osip_route_init(&rt);
+				if (osip_route_parse(rt,prx)==0){
+					char *rtstr;
+					osip_uri_uparam_add(rt->url,osip_strdup("lr"),NULL);
+					osip_route_to_str(rt,&rtstr);
+					route=ms_strdup(rtstr);
+					osip_free(rtstr);
+				}
+				osip_route_free(rt);
+				ms_message("Adding a route: %s",route);
+				return route;
+			}
+		}
+	}
+	return NULL;
+}
+
 bool_t linphone_core_interpret_url(LinphoneCore *lc, const char *url, char **real_url, osip_to_t **real_parsed_url, char **route){
 	enum_lookup_res_t *enumres=NULL;
 	osip_to_t *parsed_url=NULL;
@@ -1113,6 +1142,7 @@ bool_t linphone_core_interpret_url(LinphoneCore *lc, const char *url, char **rea
 			}
 			else *route=ms_strdup(tmproute);
 #else
+			if (tmproute==NULL) *route=guess_route_if_any(lc,*real_parsed_url);
 			if (tmproute) *route=ms_strdup(tmproute);
 #endif
 			return TRUE;
@@ -1124,6 +1154,7 @@ bool_t linphone_core_interpret_url(LinphoneCore *lc, const char *url, char **rea
 		if (real_parsed_url!=NULL) *real_parsed_url=parsed_url;
 		else osip_to_free(parsed_url);
 		if (tmproute) *route=ms_strdup(tmproute);
+		else *route=guess_route_if_any(lc,*real_parsed_url);
 		return TRUE;
 	}
 	/* else we could not do anything with url given by user, so display an error */
@@ -2325,7 +2356,7 @@ void linphone_core_uninit(LinphoneCore *lc)
 	ui_config_uninit(lc);
 	lp_config_sync(lc->config);
 	lp_config_destroy(lc->config);
-
+	sip_setup_unregister_all();
 #ifdef VIDEO_ENABLED
 	if (payload_type_h264_packetization_mode_1!=NULL)
 		payload_type_destroy(payload_type_h264_packetization_mode_1);

@@ -141,6 +141,7 @@ typedef struct autoreplier_config
 
 struct _LinphoneCore;
 struct _sdp_context;
+struct _SipSetupContext;
 	
 typedef struct _StreamParams
 {
@@ -285,6 +286,7 @@ typedef struct _LinphoneProxyConfig
 	int reg_time;
 	int rid;
 	char *type;
+	struct _SipSetupContext *ssctx;
 	bool_t frozen;
 	bool_t reg_sendregister;
 	bool_t auth_pending;

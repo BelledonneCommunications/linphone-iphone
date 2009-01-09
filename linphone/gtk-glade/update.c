@@ -25,35 +25,33 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 static int linphone_gtk_get_new_version(const char *version_url, char *version, size_t size){
 	DWORD dwSize = 0;
-    DWORD dwDownloaded = 0;
-    LPSTR pszOutBuffer;
-    BOOL  bResults = FALSE;
-	HINTERNET  hSession = NULL, 
-               hConnect = NULL;
-    int ret=-1;
-
+	DWORD dwDownloaded = 0;
+	LPSTR pszOutBuffer;
+	BOOL  bResults = FALSE;
+	HINTERNET  hSession = NULL, hConnect = NULL;
+	int ret=-1;
+	
 	hSession=InternetOpen("Linphone",INTERNET_OPEN_TYPE_PRECONFIG,NULL,NULL,0);
-
+	
 	if (hSession==NULL) return -1;
 	
 	hConnect=InternetOpenUrl(hSession,version_url,NULL,0,0,0);
-
+	
 	if (hConnect==NULL) {
 		InternetCloseHandle(hSession);
 		return -1;
 	}
-
-	if (InternetReadFile(hConnect,version,size,&dwDownloaded)){
+	dwDownloaded=0;
+	if (InternetReadFile(hConnect,version,size,&dwDownloaded) && dwDownloaded>0){
 		version[dwDownloaded]='\0';
-        ms_message("Got response: %s", version);
-        ret=0;
+		ms_message("Got response: %s", version);
+		ret=0;
 	}
-
-    
-    // Close any open handles.
-    if (hConnect) InternetCloseHandle(hConnect);
-    if (hSession) InternetCloseHandle(hSession);
-    return ret;
+	
+	// Close any open handles.
+	if (hConnect) InternetCloseHandle(hConnect);
+	if (hSession) InternetCloseHandle(hSession);
+	return ret;
 }
 
 #else

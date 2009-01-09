@@ -23,12 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 static ms_thread_t fonis_thread;
 
-typedef struct _FonisContext{
-	char domain[128];
-	char username[128];
-} FonisContext;
-
-
 
 static void *fonis_thread_func(void *arg){
 	if (p2pproxy_application_start(0,NULL)!=0){
@@ -55,14 +49,6 @@ static int fonis_create_account(const char *uri, const char *passwd){
 
 static int fonis_login_account(SipSetupContext * ctx,const char *uri, const char *passwd){
 	if (p2pproxy_accountmgt_isValidAccount==P2PPROXY_ACCOUNTMGT_USER_EXIST) {
-		FonisContext *fc;
-		osip_from_t *from;
-		ctx->data=fc=(FonisContext*)ms_new0(FonisContext,1);
-		osip_from_init(&from);
-		osip_from_parse(from,uri);
-		strncpy(fc->domain,uri->url->host,sizeof(fc->domain);
-		strncpy(fc->username,uri->url->username,sizeof(fc->username));
-		osip_from_free(from);
 		return 0;
 	}
 	else return -1;
@@ -78,7 +64,7 @@ static int fonis_get_stun_servers(SipSetupContext *ctx, char *stun1, char *stun2
 	FonisContext *fc=(FonisContext*)ctx->data;
 	int ret=-1;
 	p2pproxy_resourcemgt_resource_list_t* l=p2pproxy_resourcemgt_new_resource_list();
-	if (p2pproxy_resourcemgt_lookup_media_resource(l,fc->domain)==0){
+	if (p2pproxy_resourcemgt_lookup_media_resource(l,ctx->domain)==0){
 		if (l->size>0) strncpy(stun1,l->resource_uri[0],size);
 		if (l->size>1) strncpy(stun2,l->resource_uri[1],size);
 		ret=0;
@@ -91,7 +77,7 @@ static int fonis_get_stun_relay(SipSetupContext *ctx, char *relay, size_t size){
 	FonisContext *fc=(FonisContext*)ctx->data;
 	int ret=-1;
 	p2pproxy_resourcemgt_resource_list_t* l=p2pproxy_resourcemgt_new_resource_list();
-	if (p2pproxy_resourcemgt_lookup_media_resource(l,fc->domain)==0){
+	if (p2pproxy_resourcemgt_lookup_media_resource(l,ctx->domain)==0){
 		if (l->size>0) strncpy(relay,l->resource_uri[0],size);
 		ret=0;
 	}

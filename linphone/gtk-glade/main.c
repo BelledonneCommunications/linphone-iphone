@@ -41,6 +41,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define LINPHONE_ICON "linphone2.png"
 
+const char *this_program_ident_string="linphone_ident_string=" LINPHONE_VERSION;
+
 static LinphoneCore *the_core=NULL;
 static GtkWidget *the_ui=NULL;
 
@@ -128,6 +130,52 @@ GtkWidget *linphone_gtk_get_main_window(){
 	return the_ui;
 }
 
+static void parse_item(const char *item, const char *window_name, GtkWidget *w){
+	char tmp[64];
+	char *dot;
+	strcpy(tmp,item);
+	dot=strchr(tmp,'.');
+	if (dot){
+		*dot='\0';
+		dot++;
+		if (strcmp(window_name,tmp)==0){
+			GtkWidget *wd=linphone_gtk_get_widget(w,dot);
+			if (wd) gtk_widget_hide(wd);
+		}
+	}
+}
+
+static void parse_hiddens(const char *hiddens, const char *window_name, GtkWidget *w){
+	char item[64];
+	const char *i;
+	const char *b;
+	int len;
+	for(b=i=hiddens;*i!='\0';++i){
+		if (*i==' '){
+			len=MIN(i-b,sizeof(item)-1);
+			strncpy(item,b,len);
+			item[len]='\0';
+			b=i+1;
+			parse_item(item,window_name,w);
+		}
+	}
+	len=MIN(i-b,sizeof(item)-1);
+	if (len>0){
+		strncpy(item,b,len);
+		item[len]='\0';
+		parse_item(item,window_name,w);
+	}
+}
+
+static void linphone_gtk_configure_window(GtkWidget *w, const char *window_name){
+	const char *hiddens;
+	if (linphone_gtk_get_core()==NULL) return;
+	hiddens=linphone_gtk_get_ui_config("hidden_widgets",NULL);
+	if (hiddens){
+		parse_hiddens(hiddens,window_name,w);
+	}
+}
+
 #ifdef USE_LIBGLADE
 
 GtkWidget *linphone_gtk_create_window(const char *window_name){
@@ -147,6 +195,7 @@ GtkWidget *linphone_gtk_create_window(const char *window_name){
 	glade_xml_signal_autoconnect(gxml);
 	w=glade_xml_get_widget(gxml,window_name);
 	if (w==NULL) g_error("Could not retrieve '%s' window from xml file",window_name);
+	linphone_gtk_configure_window(w,window_name);
 	return w;
 }
 
@@ -355,9 +404,24 @@ static void completion_add_text(GtkEntry *entry, const char *text){
 	save_uri_history();
 }
 
+static void linphone_gtk_call_terminated(GtkWidget *mw){
+	gtk_widget_hide(linphone_gtk_get_widget(mw,"terminate_call"));
+	gtk_widget_show(linphone_gtk_get_widget(mw,"start_call"));
+	g_object_set_data(G_OBJECT(mw),"incoming_call",NULL);
+}
+
+gboolean check_call_active(){
+	if (!linphone_core_in_call(linphone_gtk_get_core())){
+		linphone_gtk_call_terminated(linphone_gtk_get_main_window());
+		return FALSE;
+	}
+	return TRUE;
+}
+
 static void linphone_gtk_call_started(GtkWidget *mw){
 	gtk_widget_hide(linphone_gtk_get_widget(mw,"start_call"));
 	gtk_widget_show(linphone_gtk_get_widget(mw,"terminate_call"));
+	g_timeout_add(250,(GSourceFunc)check_call_active,NULL);
 }
 
 void linphone_gtk_start_call(GtkWidget *w){
@@ -378,12 +442,6 @@ void linphone_gtk_uri_bar_activate(GtkWidget *w){
 	linphone_gtk_start_call(w);
 }
 
-
-static void linphone_gtk_call_terminated(GtkWidget *mw){
-	gtk_widget_hide(linphone_gtk_get_widget(mw,"terminate_call"));
-	gtk_widget_show(linphone_gtk_get_widget(mw,"start_call"));
-	g_object_set_data(G_OBJECT(mw),"incoming_call",NULL);
-}
 
 void linphone_gtk_terminate_call(GtkWidget *button){
 	linphone_core_terminate_call(linphone_gtk_get_core(),NULL);
@@ -727,26 +785,35 @@ static void linphone_gtk_check_menu_items(void){
 
 static void linphone_gtk_configure_main_window(){
 	static gboolean config_loaded=FALSE;
-	static gboolean show_digits=1;
-	static gboolean show_identities=1;
 	static const char *title;
 	static const char *home;
 	static const char *icon_path;
+	static const char *start_call_icon;
+	static const char *stop_call_icon;
 	GtkWidget *w=linphone_gtk_get_main_window();
 	if (!config_loaded){
-		show_digits=linphone_gtk_get_ui_config_int("show_digits",1);
-		show_identities=linphone_gtk_get_ui_config_int("identity_frame",1);
 		title=linphone_gtk_get_ui_config("title",NULL);
 		home=linphone_gtk_get_ui_config("home","http://www.linphone.org");
 		icon_path=linphone_gtk_get_ui_config("icon",NULL);
+		start_call_icon=linphone_gtk_get_ui_config("start_call_icon",NULL);
+		stop_call_icon=linphone_gtk_get_ui_config("stop_call_icon",NULL);
 		config_loaded=TRUE;
 	}
-	if (show_digits==FALSE) gtk_widget_hide(linphone_gtk_get_widget(w,"dialpad"));
-	if (show_identities==FALSE) gtk_widget_hide(linphone_gtk_get_widget(w,"identity_frame"));
+	linphone_gtk_configure_window(w,"main_window");
 	if (title) gtk_window_set_title(GTK_WINDOW(w),title);
 	if (icon_path) {
 		GdkPixbuf *pbuf=create_pixbuf(icon_path);
 		gtk_window_set_icon(GTK_WINDOW(w),pbuf);
+		g_object_unref(G_OBJECT(pbuf));
+	}
+	if (start_call_icon){
+		GdkPixbuf *pbuf=create_pixbuf(start_call_icon);
+		gtk_image_set_from_pixbuf(GTK_IMAGE(linphone_gtk_get_widget(w,"start_call_icon")),pbuf);
+		g_object_unref(G_OBJECT(pbuf));
+	}
+	if (stop_call_icon){
+		GdkPixbuf *pbuf=create_pixbuf(stop_call_icon);
+		gtk_image_set_from_pixbuf(GTK_IMAGE(linphone_gtk_get_widget(w,"terminate_call_icon")),pbuf);
 		g_object_unref(G_OBJECT(pbuf));
 	}
 	if (home){
