@@ -1198,10 +1198,10 @@ computeHmac_longterm(char* hmac, const char* input, int length,
 {
    unsigned int resultSize=0;
    unsigned char HA1[16];
-   unsigned char HA1_text[1024];
+   char HA1_text[1024];
 
    snprintf(HA1_text, sizeof(HA1_text), "%s:%s:%s", username, realm, password);
-   MD5(HA1_text, strlen(HA1_text), HA1);
+   MD5((unsigned char *)HA1_text, strlen(HA1_text), HA1);
 
    HMAC(EVP_sha1(), 
         HA1, 16, 
@@ -1219,28 +1219,6 @@ computeHmac_shortterm(char* hmac, const char* input, int length, const char* key
         (unsigned char*)hmac, &resultSize);
 }
 #endif
-
-
-static void
-toHex(const char* buffer, int bufferSize, char* output) 
-{
-   int i;
-   static char hexmap[] = "0123456789abcdef";
-	
-   const char* p = buffer;
-   char* r = output;
-   for (i=0; i < bufferSize; i++)
-   {
-      unsigned char temp = *p++;
-		
-      int hi = (temp & 0xf0)>>4;
-      int low = (temp & 0xf);
-		
-      *r++ = hexmap[hi];
-      *r++ = hexmap[low];
-   }
-   *r = 0;
-}
 
 UInt64
 stunGetSystemTimeSecs(void)
@@ -2566,8 +2544,6 @@ turnSendAllocate( Socket myFd, StunAddress4 *dest,
               const StunAtrString *username, const StunAtrString *password,
               StunMessage *resp)
 { 
-  bool_t discard=FALSE;
-
   StunMessage req;
   char buf[STUN_MAX_MESSAGE_SIZE];
   int len = STUN_MAX_MESSAGE_SIZE;
