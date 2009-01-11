@@ -512,7 +512,7 @@ static int sendStunRequest(int sock, const struct sockaddr *server, socklen_t ad
 	memset(&username,0,sizeof(username));
 	memset(&password,0,sizeof(password));
 	stunBuildReqSimple( &req, &username, changeAddr , changeAddr , id);
-	len = stunEncodeMessage( &req, buf, len, &password, FALSE);
+	len = stunEncodeMessage( &req, buf, len, &password);
 	if (len<=0){
 		ms_error("Fail to encode stun message.");
 		return -1;
@@ -561,8 +561,8 @@ static int recvStunResponse(ortp_socket_t sock, char *ipaddr, int *port, int *id
 	len=recv(sock,buf,len,0);
 	if (len>0){
 		struct in_addr ia;
-		stunParseMessage(buf,len, &resp,FALSE );
-		*id=resp.msgHdr.id.octet[0];
+		stunParseMessage(buf,len, &resp );
+		*id=resp.msgHdr.tr_id.octet[0];
 		*port = resp.mappedAddress.ipv4.port;
 		ia.s_addr=htonl(resp.mappedAddress.ipv4.addr);
 		strncpy(ipaddr,inet_ntoa(ia),LINPHONE_IPADDR_SIZE);
