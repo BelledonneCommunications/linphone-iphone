@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Ws2_32.lib  libsrtp.lib Winmm.lib libcmtd.lib"
+				AdditionalDependencies="libeay32.lib Ws2_32.lib  libsrtp.lib Winmm.lib libcmtd.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;..\..\..\win32-bin\lib&quot;"
 				IgnoreAllDefaultLibraries="true"
@@ -141,7 +141,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Ws2_32.lib  libsrtp.lib Winmm.lib libcmt.lib"
+				AdditionalDependencies="libeay32.lib Ws2_32.lib  libsrtp.lib Winmm.lib libcmt.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;..\..\..\win32-bin\lib&quot;"
 				IgnoreAllDefaultLibraries="true"
@@ -208,6 +208,10 @@
 			</File>
 			<File
 				RelativePath="..\..\src\ortp.c"
+				>
+			</File>
+			<File
+				RelativePath=".\ortp.def"
 				>
 			</File>
 			<File
