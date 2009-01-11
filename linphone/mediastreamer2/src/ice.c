@@ -31,12 +31,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 static void 
 ice_sendtest( Socket myFd, StunAddress4 *dest, 
               const StunAtrString *username, const StunAtrString *password, 
-              int testNum, bool_t verbose , UInt128 *tid);
+              int testNum, bool_t verbose , UInt96 *tid);
 
 static void 
 ice_sendtest( Socket myFd, StunAddress4 *dest, 
               const StunAtrString *username, const StunAtrString *password, 
-              int testNum, bool_t verbose , UInt128 *tid)
+              int testNum, bool_t verbose , UInt96 *tid)
 {	
    bool_t changePort=FALSE;
    bool_t changeIP=FALSE;
@@ -76,11 +76,11 @@ ice_sendtest( Socket myFd, StunAddress4 *dest,
                        changePort , changeIP , 
                        testNum );
 	
-   len = stunEncodeMessage( &req, buf, len, password,verbose );
+   len = stunEncodeMessage( &req, buf, len, password );
 
-   memcpy(tid , &(req.msgHdr.id), sizeof(req.msgHdr.id));
+   memcpy(tid , &(req.msgHdr.tr_id), sizeof(req.msgHdr.tr_id));
 
-   sendMessage( myFd, buf, len, dest->addr, dest->port, verbose );	
+   sendMessage( myFd, buf, len, dest->addr, dest->port );	
 }
 
 int ice_sound_send_stun_request(RtpSession *session, struct CandidatePair *remote_candidates, int round)
@@ -234,7 +234,7 @@ int ice_process_stun_message(RtpSession *session, struct CandidatePair *remote_c
     udp_remote = (struct sockaddr_in*)&evt_data->ep->addr;
 
     memset( &msg, 0 , sizeof(msg) );
-    res = stunParseMessage((char*)mp->b_rptr, mp->b_wptr-mp->b_rptr, &msg, 0);
+    res = stunParseMessage((char*)mp->b_rptr, mp->b_wptr-mp->b_rptr, &msg);
     if (!res)
     {
         ms_error("ice.c: Malformed STUN packet.");
@@ -258,7 +258,7 @@ int ice_process_stun_message(RtpSession *session, struct CandidatePair *remote_c
         ms_error("ice.c: Error with getnameinfo");
     } else
     {
-	    if (msg.msgHdr.msgType == BindRequestMsg)
+	    if (STUN_IS_REQUEST(msg.msgHdr.msgType))
 		    ms_message("ice.c: Request received from: %s:%i",
 			            src6host, recvport);
 		else
@@ -290,13 +290,12 @@ int ice_process_stun_message(RtpSession *session, struct CandidatePair *remote_c
         }
     }
 
-    if (msg.msgHdr.msgType == BindRequestMsg)
+    if (STUN_IS_REQUEST(msg.msgHdr.msgType))
     {
         StunMessage resp;
         StunAddress4 dest;
         StunAtrString hmacPassword;
         StunAddress4 from;
-        StunAddress4 secondary;
         StunAddress4 myAddr;
         StunAddress4 myAltAddr;
         bool_t changePort = FALSE;
@@ -312,9 +311,6 @@ int ice_process_stun_message(RtpSession *session, struct CandidatePair *remote_c
         from.addr = ntohl(udp_remote->sin_addr.s_addr);
         from.port = ntohs(udp_remote->sin_port);
         
-        secondary.addr = 0;
-        secondary.port = 0;
-
         namelen = sizeof(struct sockaddr_storage);
         rtp_socket = rtp_session_get_rtp_socket(session);
         i = getsockname(rtp_socket, (struct sockaddr*)&name, &namelen);
@@ -340,15 +336,13 @@ int ice_process_stun_message(RtpSession *session, struct CandidatePair *remote_c
 
         res = stunServerProcessMsg((char*)mp->b_rptr, mp->b_wptr-mp->b_rptr,
             &from,
-            &secondary,
             &myAddr,
             &myAltAddr, 
             &resp,
             &dest,
             &hmacPassword,
             &changePort,
-            &changeIp,
-            FALSE );
+            &changeIp );
 
         if (!res)
         {
@@ -474,19 +468,19 @@ int ice_process_stun_message(RtpSession *session, struct CandidatePair *remote_c
         {
             char buf[STUN_MAX_MESSAGE_SIZE];            
             int len = sizeof(buf);
-            len = stunEncodeMessage( &resp, buf, len, &hmacPassword,FALSE );
+            len = stunEncodeMessage( &resp, buf, len, &hmacPassword );
             if (len)
-                sendMessage( rtp_socket, buf, len, dest.addr, dest.port, FALSE );
+                sendMessage( rtp_socket, buf, len, dest.addr, dest.port);
         }
     }
-    else
+    else if (STUN_IS_SUCCESS_RESP(msg.msgHdr.msgType))
     {
         /* set state to RECV-VALID or VALID */
         StunMessage resp;
         StunAddress4 mappedAddr;
         memset(&resp, 0, sizeof(StunMessage));
         res = stunParseMessage((char*)mp->b_rptr, mp->b_wptr-mp->b_rptr,
-            &resp, FALSE );
+            &resp );
         if (!res)
         {
             ms_error("ice.c: Bad format for STUN answer.");
@@ -501,7 +495,7 @@ int ice_process_stun_message(RtpSession *session, struct CandidatePair *remote_c
             {
                 struct CandidatePair *cand_pair = &remote_candidates[pos];
 
-                if (memcmp(&(cand_pair->tid), &(resp.msgHdr.id), sizeof(resp.msgHdr.id))==0)
+                if (memcmp(&(cand_pair->tid), &(resp.msgHdr.tr_id), sizeof(resp.msgHdr.tr_id))==0)
                 {
                     /* Youhouhouhou */
                     if (cand_pair->connectivity_check != VALID)

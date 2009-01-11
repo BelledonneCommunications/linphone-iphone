@@ -54,7 +54,7 @@ struct CandidatePair {
     int max_sn;
     int min_sn;
     char max_candidate_id[256];
-    UInt128 tid;
+    UInt96 tid;
     int connectivity_check;
 };
 
