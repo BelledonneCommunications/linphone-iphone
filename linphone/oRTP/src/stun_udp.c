@@ -120,7 +120,7 @@ int getErrno() { return WSAGetLastError(); }
 #endif
 
 Socket
-openPort( unsigned short port, unsigned int interfaceIp, bool_t verbose )
+openPort( unsigned short port, unsigned int interfaceIp )
 {
    struct sockaddr_in addr;
    Socket fd;
@@ -141,10 +141,7 @@ openPort( unsigned short port, unsigned int interfaceIp, bool_t verbose )
         ( interfaceIp != 0x100007f ) )
    {
       addr.sin_addr.s_addr = htonl(interfaceIp);
-      if (verbose )
-      {
-         ortp_message("Binding to interface 0x%lu\n",(unsigned long) htonl(interfaceIp));
-      }
+      //ortp_debug("Binding to interface 0x%lu\n",(unsigned long) htonl(interfaceIp));
    }
 	
    if ( bind( fd,(struct sockaddr*)&addr, sizeof(addr)) != 0 )
@@ -166,10 +163,7 @@ openPort( unsigned short port, unsigned int interfaceIp, bool_t verbose )
          break;
          case EADDRNOTAVAIL:
          {
-            if ( verbose ) 
-            {
-               ortp_error("stun_udp: Cannot assign requested address");
-            }
+            ortp_error("stun_udp: Cannot assign requested address");
             return INVALID_SOCKET;
          }
          break;
@@ -187,10 +181,8 @@ openPort( unsigned short port, unsigned int interfaceIp, bool_t verbose )
          break;
       }
    }
-   if ( verbose )
-   {
-	   ortp_message("stun: opened port %i with fd %i\n", port, fd);
-   }
+
+	 ortp_debug("stun: opened port %i with fd %i\n", port, fd);
    
    /* assert( fd != INVALID_SOCKET  ); */
 	
@@ -200,8 +192,7 @@ openPort( unsigned short port, unsigned int interfaceIp, bool_t verbose )
 
 bool_t 
 getMessage( Socket fd, char* buf, int* len,
-            unsigned int* srcIp, unsigned short* srcPort,
-            bool_t verbose)
+            unsigned int* srcIp, unsigned short* srcPort)
 {
    /* assert( fd != INVALID_SOCKET ); */
 	
@@ -301,10 +292,7 @@ getMessage( Socket fd, char* buf, int* len,
         	
         if ( (*len)+1 >= originalSize )
         {
-            if (verbose)
-            {
-                ortp_error("stun_udp: Received a message that was too large");
-            }
+            ortp_error("stun_udp: Received a message that was too large");
             return FALSE;
         }
         buf[*len]=0;
@@ -317,8 +305,7 @@ getMessage( Socket fd, char* buf, int* len,
 
 bool_t 
 sendMessage( Socket fd, char* buf, int l, 
-             unsigned int dstIp, unsigned short dstPort,
-             bool_t verbose)
+             unsigned int dstIp, unsigned short dstPort)
 {
    int s;
 
@@ -386,10 +373,7 @@ sendMessage( Socket fd, char* buf, int l,
     
    if ( s != l )
    {
-      if (verbose)
-      {
-         ortp_error("stun_udp: only %i out of %i bytes sent", s, l);
-      }
+      ortp_error("stun_udp: only %i out of %i bytes sent", s, l);
       return FALSE;
    }
     

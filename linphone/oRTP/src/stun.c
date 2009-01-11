@@ -99,7 +99,7 @@
 #endif
 
 
-#define NOSSL
+//#define NOSSL
 /*
   #if defined(__sparc__) || defined(WIN32)
   #define NOSSL
@@ -124,7 +124,10 @@ static char *ipaddr(const StunAddress4 *addr)
 }
 
 static void
-computeHmac(char* hmac, const char* input, int length, const char* key, int keySize);
+computeHmac_longterm(char* hmac, const char* input, int length,
+                     const char *username, const char *realm, const char *password);
+static void
+computeHmac_shortterm(char* hmac, const char* input, int length, const char* key);
 
 static bool_t 
 stunParseAtrAddress( char* body, unsigned int hdrLen,  StunAtrAddress4 *result )
@@ -166,7 +169,7 @@ stunParseAtrChangeRequest( char* body, unsigned int hdrLen,  StunAtrChangeReques
    {
      /* ortp_error("stun: hdr length = %i expecting %i\n",hdrLen, sizeof(result)); */
 		
-      ortp_error("stun: Incorrect size for ChangeRequest");
+      ortp_error("stun: Incorrect size for SA_CHANGEREQUEST");
       return FALSE;
    }
    else
@@ -180,9 +183,9 @@ stunParseAtrChangeRequest( char* body, unsigned int hdrLen,  StunAtrChangeReques
 static bool_t 
 stunParseAtrError( char* body, unsigned int hdrLen,  StunAtrError *result )
 {
-   if ( hdrLen >= sizeof(result) )
+   if ( hdrLen >= sizeof(StunAtrError) )
    {
-      ortp_error("stun: head on Error too large");
+      ortp_error("stun: Incorrect size for SA_ERRORCODE");
       return FALSE;
    }
    else
@@ -204,6 +207,7 @@ stunParseAtrUnknown( char* body, unsigned int hdrLen,  StunAtrUnknown *result )
 {
    if ( hdrLen >= sizeof(result) )
    {
+      ortp_error("stun: Incorrect size for SA_UNKNOWNATTRIBUTE");
       return FALSE;
    }
    else
@@ -220,7 +224,6 @@ stunParseAtrUnknown( char* body, unsigned int hdrLen,  StunAtrUnknown *result )
    }
 }
 
-
 static bool_t 
 stunParseAtrString( char* body, unsigned int hdrLen,  StunAtrString *result )
 {
@@ -231,12 +234,6 @@ stunParseAtrString( char* body, unsigned int hdrLen,  StunAtrString *result )
    }
    else
    {
-      if (hdrLen % 4 != 0)
-      {
-         ortp_error("stun: Bad length string %i\n", hdrLen);
-         return FALSE;
-      }
-		
       result->sizeValue = hdrLen;
       memcpy(&result->value, body, hdrLen);
       result->value[hdrLen] = 0;
@@ -250,7 +247,7 @@ stunParseAtrIntegrity( char* body, unsigned int hdrLen,  StunAtrIntegrity *resul
 {
    if ( hdrLen != 20)
    {
-      ortp_error("stun: MessageIntegrity must be 20 bytes");
+      ortp_error("stun: SA_MESSAGEINTEGRITY must be 20 bytes");
       return FALSE;
    }
    else
@@ -260,19 +257,158 @@ stunParseAtrIntegrity( char* body, unsigned int hdrLen,  StunAtrIntegrity *resul
    }
 }
 
+static bool_t 
+turnParseAtrChannelNumber( char* body, unsigned int hdrLen,  TurnAtrChannelNumber *result )
+{
+   if ( hdrLen >= sizeof(result) )
+   {
+      ortp_error("stun: Incorrect size for TA_CHANNELNUMBER");
+      return FALSE;
+   }
+   else
+   {
+      if (hdrLen % 4 != 0) return FALSE;
+      memcpy(&result->channelNumber, body, 2);
+      body+=2;
+      result->channelNumber = ntohs(result->channelNumber);
+      memcpy(&result->rffu, body, 2);
+      body+=2;
+      result->rffu = ntohs(result->rffu);
+      return TRUE;
+   }
+}
+
+static bool_t 
+turnParseAtrLifetime( char* body, unsigned int hdrLen,  TurnAtrLifetime *result )
+{
+   if ( hdrLen != sizeof(result) )
+   {
+      ortp_error("stun: Incorrect size for TA_LIFETIME");
+      return FALSE;
+   }
+   else
+   {
+      memcpy(&result->lifetime, body, 4);
+      result->lifetime = ntohl(result->lifetime);
+      return TRUE;
+   }
+}
+
+static bool_t 
+turnParseAtrData( char* body, unsigned int hdrLen,  TurnAtrData *result )
+{
+   if ( hdrLen >= 1500 )
+   {
+      ortp_error("stun: Incorrect size for TA_DATA");
+      return FALSE;
+   }
+   else
+   {
+      result->sizeValue = hdrLen;
+      memcpy(&result->value, body, hdrLen);
+      result->value[hdrLen] = 0;
+      return TRUE;
+   }
+}
+
+static bool_t 
+turnParseAtrRequestedTransport( char* body, unsigned int hdrLen,  TurnAtrRequestedTransport *result )
+{
+   if ( hdrLen != 4 )
+   {
+      ortp_error("stun: Incorrect size for TA_REQUESTEDTRANSPORT");
+      return FALSE;
+   }
+   result->proto = *body++;
+   result->pad1 = *body++;
+   result->pad2 = *body++;
+   result->pad3 = *body++;
+   return TRUE;
+}
+
+#ifdef ORTP_BIGENDIAN
+#define htonq(n) n
+#define ntohq(n) n
+#else /* little endian */
+static inline UInt64
+htonq (UInt64 v)
+{
+  return htonl ((UInt32) (v >> 32))
+    | (UInt64) htonl ((UInt32) v) << 32;
+}
+static inline UInt64
+ntohq (UInt64 v)
+{
+  return ntohl ((UInt32) (v >> 32))
+    | (UInt64) ntohl ((UInt32) v) << 32;
+}
+#endif /* little endian */
+
+static bool_t 
+turnParseAtrReservationToken( char* body, unsigned int hdrLen,  TurnAtrReservationToken *result )
+{
+  if ( hdrLen != 8 )
+  {
+    ortp_error("stun: Incorrect size for TA_RESERVATIONTOKEN");
+    return FALSE;
+  }
+  memcpy(&result->value, body, 8);
+  result->value = ntohq(result->value);
+  return TRUE;
+}
+
+static bool_t 
+turnParseAtrFingerprint( char* body, unsigned int hdrLen, TurnAtrFingerprint *result )
+{
+  if ( hdrLen != 4 )
+  {
+    ortp_error("stun: Incorrect size for SA_FINGERPRINT");
+    return FALSE;
+  }
+
+  memcpy(&result->fingerprint, body, 4);
+  result->fingerprint = ntohl(result->fingerprint);
+  return TRUE;
+}
+
+static bool_t 
+iceParseAtrPriority( char* body, unsigned int hdrLen, IceAtrPriority *result )
+{
+  if ( hdrLen != sizeof(result) )
+  {
+    ortp_error("stun: Incorrect size for ICEA_PRIORITY");
+    return FALSE;
+  }
+
+  memcpy(&result->priority, body, 4);
+  result->priority = ntohl(result->priority);
+  return TRUE;
+}
+
+static bool_t 
+iceParseAtrIceControll( char* body, unsigned int hdrLen, IceAtrIceControll *result )
+{
+  if ( hdrLen != sizeof(result) )
+  {
+    ortp_error("stun: Incorrect size for ICEA_ICECONTROLLED/ICEA_ICECONTROLLING");
+    return FALSE;
+  }
+  memcpy(&result->value, body, 8);
+  result->value = ntohq(result->value);
+  return TRUE;
+} 
 
 bool_t
-stunParseMessage( char* buf, unsigned int bufLen, StunMessage *msg, bool_t verbose)
+stunParseMessage( char* buf, unsigned int bufLen, StunMessage *msg)
 {
    char* body;
    unsigned int size;
-   if (verbose)
-	   ortp_message("stun: Received stun message: %i bytes\n", bufLen);
+	 ortp_debug("stun: Received stun message: %i bytes\n", bufLen);
    memset(msg, 0, sizeof(msg));
 	
    if (sizeof(StunMsgHdr) > bufLen)
    {
-      ortp_warning("stun: Bad message\n");
+      ortp_warning("stun: message too short\n");
       return FALSE;
    }
 
@@ -300,7 +436,6 @@ stunParseMessage( char* buf, unsigned int bufLen, StunMessage *msg, bool_t verbo
       unsigned int attrLen = ntohs(attr->length);
       int atrType = ntohs(attr->type);
 		
-      /*if (verbose) ortp_message("stun: Found attribute type=" << AttrNames[atrType] << " length=" << attrLen << endl;*/
       if ( attrLen+4 > size ) 
       {
          ortp_error("stun: claims attribute is larger than size of message (attribute type=%i)\n", atrType);
@@ -310,214 +445,346 @@ stunParseMessage( char* buf, unsigned int bufLen, StunMessage *msg, bool_t verbo
       body += 4; /* skip the length and type in attribute header */
       size -= 4;
 		
-      if (atrType == MappedAddress)
+      if (atrType == SA_MAPPEDADDRESS)
       {
             msg->hasMappedAddress = TRUE;
             if ( stunParseAtrAddress(  body,  attrLen,  &msg->mappedAddress )== FALSE )
             {
-               ortp_error("stun: problem parsing MappedAddress\n");
+               ortp_error("stun: problem parsing SA_MAPPEDADDRESS\n");
                return FALSE;
             }
             else
             {
-               if (verbose)
-				   ortp_message("stun: MappedAddress = %s\n", ipaddr(&msg->mappedAddress.ipv4));
+               ortp_debug("stun: SA_MAPPEDADDRESS = %s\n", ipaddr(&msg->mappedAddress.ipv4));
             }
 					
       }
-      else if (atrType == ResponseAddress)
+      else if (atrType == SA_RESPONSEADDRESS)
       {
             msg->hasResponseAddress = TRUE;
             if ( stunParseAtrAddress(  body,  attrLen,  &msg->responseAddress )== FALSE )
             {
-               ortp_error("stun: problem parsing ResponseAddress");
+               ortp_error("stun: problem parsing SA_RESPONSEADDRESS");
                return FALSE;
             }
             else
             {
-               if (verbose)
-				   ortp_message("stun: ResponseAddress = %s\n", ipaddr(&msg->responseAddress.ipv4));
+               ortp_debug("stun: SA_RESPONSEADDRESS = %s\n", ipaddr(&msg->responseAddress.ipv4));
             }
       }
-      else if (atrType == ChangeRequest)
+      else if (atrType == SA_CHANGEREQUEST)
       {
             msg->hasChangeRequest = TRUE;
             if (stunParseAtrChangeRequest( body, attrLen, &msg->changeRequest) == FALSE)
             {
-               ortp_error("stun: problem parsing ChangeRequest\n");
+               ortp_error("stun: problem parsing SA_CHANGEREQUEST\n");
                return FALSE;
             }
             else
             {
-               if (verbose)
-				   ortp_message("stun: ChangeRequest = %i\n", msg->changeRequest.value);
+               ortp_debug("stun: SA_CHANGEREQUEST = %i\n", msg->changeRequest.value);
             }
       }
-      else if (atrType == SourceAddress)
+      else if (atrType == SA_SOURCEADDRESS)
       {
             msg->hasSourceAddress = TRUE;
             if ( stunParseAtrAddress(  body,  attrLen,  &msg->sourceAddress )== FALSE )
             {
-               ortp_error("stun: problem parsing SourceAddress\n");
+               ortp_error("stun: problem parsing SA_SOURCEADDRESS\n");
                return FALSE;
             }
             else
             {
-               if (verbose)
-				   ortp_message("stun: SourceAddress = %s\n", ipaddr(&msg->sourceAddress.ipv4) );
+               ortp_debug("stun: SA_SOURCEADDRESS = %s\n", ipaddr(&msg->sourceAddress.ipv4) );
             }
       }
-      else if (atrType == ChangedAddress)
+      else if (atrType == SA_CHANGEDADDRESS)
       {
             msg->hasChangedAddress = TRUE;
             if ( stunParseAtrAddress(  body,  attrLen,  &msg->changedAddress )== FALSE )
             {
-               ortp_error("stun: problem parsing ChangedAddress\n");
+               ortp_error("stun: problem parsing SA_CHANGEDADDRESS\n");
                return FALSE;
             }
             else
             {
-               if (verbose) ortp_message("stun: ChangedAddress = %s\n", ipaddr(&msg->changedAddress.ipv4));
+               ortp_debug("stun: SA_CHANGEDADDRESS = %s\n", ipaddr(&msg->changedAddress.ipv4));
             }
       }
-      else if (atrType == STUNUsername)
+      else if (atrType == SA_USERNAME)
       {
             msg->hasUsername = TRUE;
             if (stunParseAtrString( body, attrLen, &msg->username) == FALSE)
             {
-               ortp_error("stun: problem parsing Username");
+               ortp_error("stun: problem parsing SA_USERNAME");
                return FALSE;
             }
             else
             {
-               if (verbose)
-				   ortp_message("stun: Username = %s\n", msg->username.value );
+               ortp_debug("stun: SA_USERNAME = %s\n", msg->username.value );
             }					
       }
-      else if (atrType == STUNPassword)
+      else if (atrType == SA_PASSWORD)
       {
             msg->hasPassword = TRUE;
             if (stunParseAtrString( body, attrLen, &msg->password) == FALSE)
             {
-               ortp_error("stun: problem parsing Password");
+               ortp_error("stun: problem parsing SA_PASSWORD");
                return FALSE;
             }
             else
             {
-               if (verbose)
-				   ortp_message("stun: Password = %s\n", msg->password.value );
+               ortp_debug("stun: SA_PASSWORD = %s\n", msg->password.value );
             }
       }
-      else if (atrType == MessageIntegrity)
+      else if (atrType == SA_MESSAGEINTEGRITY)
       {
             msg->hasMessageIntegrity = TRUE;
             if (stunParseAtrIntegrity( body, attrLen, &msg->messageIntegrity) == FALSE)
             {
-               ortp_error("stun: problem parsing MessageIntegrity");
+               ortp_error("stun: problem parsing SA_MESSAGEINTEGRITY");
                return FALSE;
-            }
-            else
-            {
-               /*if (verbose) ortp_message("stun: MessageIntegrity = " << msg->messageIntegrity.hash ); */
-            }
-					
-            /* read the current HMAC
-               look up the password given the user of given the transaction id 
-               compute the HMAC on the buffer
-               decide if they match or not */
+            }					
       }
-      else if (atrType == ErrorCode)
+      else if (atrType == SA_ERRORCODE)
       {
             msg->hasErrorCode = TRUE;
             if (stunParseAtrError(body, attrLen, &msg->errorCode) == FALSE)
             {
-               ortp_error("stun: problem parsing ErrorCode");
+               ortp_error("stun: problem parsing SA_ERRORCODE");
                return FALSE;
             }
             else
             {
-               if (verbose)
-				   ortp_message("stun: ErrorCode = %i %i %s\n",
+               ortp_debug("stun: SA_ERRORCODE = %i %i %s\n",
                                    msg->errorCode.errorClass ,
                                    msg->errorCode.number ,
                                    msg->errorCode.reason );
             }
 					 
       }
-      else if (atrType == UnknownAttribute)
+      else if (atrType == SA_UNKNOWNATTRIBUTE)
       {
            msg->hasUnknownAttributes = TRUE;
             if (stunParseAtrUnknown(body, attrLen, &msg->unknownAttributes) == FALSE)
             {
-               ortp_error("stun: problem parsing UnknownAttribute");
+               ortp_error("stun: problem parsing SA_UNKNOWNATTRIBUTE");
                return FALSE;
             }
       }
-      else if (atrType == ReflectedFrom)
+      else if (atrType == SA_REFLECTEDFROM)
       {
             msg->hasReflectedFrom = TRUE;
             if ( stunParseAtrAddress(  body,  attrLen,  &msg->reflectedFrom ) == FALSE )
             {
-               ortp_error("stun: problem parsing ReflectedFrom");
+               ortp_error("stun: problem parsing SA_REFLECTEDFROM");
                return FALSE;
             }
       }
-      else if (atrType == XorMappedAddress)
+      else if (atrType == SA_REALM)
+      {
+            msg->hasRealm = TRUE;
+            if (stunParseAtrString( body, attrLen, &msg->realmName) == FALSE)
+            {
+               ortp_error("stun: problem parsing SA_REALM");
+               return FALSE;
+            }
+            else
+            {
+               ortp_debug("stun: SA_REALM = %s\n", msg->realmName.value );
+            }
+      }
+      else if (atrType == SA_NONCE)
+      {
+            msg->hasNonce = TRUE;
+            if (stunParseAtrString( body, attrLen, &msg->nonceName) == FALSE)
+            {
+               ortp_error("stun: problem parsing SA_NONCE");
+               return FALSE;
+            }
+            else
+            {
+               ortp_debug("stun: SA_NONCE = %s\n", msg->nonceName.value );
+            }
+      }
+      else if (atrType == SA_XORMAPPEDADDRESS || atrType == SA_XORMAPPEDADDRESS2)
       { 
            msg->hasXorMappedAddress = TRUE;
             if ( stunParseAtrAddress(  body,  attrLen,  &msg->xorMappedAddress ) == FALSE )
             {
-               ortp_error("stun: problem parsing XorMappedAddress");
+               ortp_error("stun: problem parsing SA_XORMAPPEDADDRESS");
                return FALSE;
             }
             else
             {
-               if (verbose)
-				   ortp_message("stun: XorMappedAddress = %s\n", ipaddr(&msg->mappedAddress.ipv4) );
+               ortp_debug("stun: SA_XORMAPPEDADDRESS = %s\n", ipaddr(&msg->xorMappedAddress.ipv4) );
             }
       }
-      else if (atrType == XorOnly)
+      else if (atrType == SA_XORONLY)
       {
-            msg->xorOnly = TRUE;
+            ortp_warning("stun: SA_XORONLY - non standard extension ignored\n" );
       }
-      else if (atrType == ServerName)
+      else if (atrType == SA_SECONDARYADDRESS)
       {
-            msg->hasServerName = TRUE;
-            if (stunParseAtrString( body, attrLen, &msg->serverName) == FALSE)
+            ortp_debug("stun: SA_SECONDARYADDRESS - non standard extension ignored\n" );
+      }
+      else if (atrType == SA_SOFTWARE)
+      {
+            msg->hasSoftware = TRUE;
+            if (stunParseAtrString( body, attrLen, &msg->softwareName) == FALSE)
             {
-               ortp_error("stun: problem parsing ServerName");
+               ortp_error("stun: problem parsing SA_SOFTWARE");
                return FALSE;
             }
             else
             {
-               if (verbose)
-				   ortp_message("stun: ServerName = %s\n", msg->serverName.value );
+               ortp_debug("stun: SA_SOFTWARE = %s\n", msg->softwareName.value );
             }
       }
-      else if (atrType == SecondaryAddress)
+      else if (atrType == TA_CHANNELNUMBER)
       {
-            msg->hasSecondaryAddress = TRUE;
-            if ( stunParseAtrAddress(  body,  attrLen,  &msg->secondaryAddress ) == FALSE )
+           msg->hasChannelNumberAttributes = TRUE;
+            if (turnParseAtrChannelNumber(body, attrLen, &msg->channelNumberAttributes) == FALSE)
             {
-               ortp_error("stun: problem parsing secondaryAddress");
+               ortp_error("stun: problem parsing TA_CHANNELNUMBER");
+               return FALSE;
+            }					
+      }
+      else if (atrType == TA_LIFETIME)
+      {
+           msg->hasLifetimeAttributes = TRUE;
+            if (turnParseAtrLifetime(body, attrLen, &msg->lifetimeAttributes) == FALSE)
+            {
+               ortp_error("stun: problem parsing TA_LIFETIME");
+               return FALSE;
+            }					
+      }
+      else if (atrType == TA_DEPRECATEDBANDWIDTH)
+      {
+           ortp_warning("stun: deprecated attribute TA_DEPRECATEDBANDWIDTH");
+      }
+      else if (atrType == TA_XORPEERADDRESS)
+      {
+            msg->hasXorPeerAddress = TRUE;
+            if ( stunParseAtrAddress(  body,  attrLen,  &msg->xorPeerAddress )== FALSE )
+            {
+               ortp_error("stun: problem parsing SA_XORPEERADDRESS\n");
                return FALSE;
             }
             else
             {
-               if (verbose)
-				   ortp_message("stun: SecondaryAddress = %s\n", ipaddr(&msg->secondaryAddress.ipv4) );
+               ortp_debug("stun: SA_XORPEERADDRESS = %s\n", ipaddr(&msg->xorPeerAddress.ipv4));
+            }
+      }
+      else if (atrType == TA_DATA)
+      {
+            msg->hasData = TRUE;
+            if (turnParseAtrData( body, attrLen, &msg->data) == FALSE)
+            {
+               ortp_error("stun: problem parsing TA_DATA");
+               return FALSE;
+            }
+            else
+            {
+            }
+      }
+      else if (atrType == TA_XORRELAYEDADDRESS)
+      {
+            msg->hasXorRelayedAddress = TRUE;
+            if ( stunParseAtrAddress(  body,  attrLen,  &msg->xorRelayedAddress )== FALSE )
+            {
+               ortp_error("stun: problem parsing TA_XORRELAYEDADDRESS\n");
+               return FALSE;
+            }
+            else
+            {
+               ortp_debug("stun: TA_XORRELAYEDADDRESS = %s\n", ipaddr(&msg->xorRelayedAddress.ipv4));
+            }
+      }
+      else if (atrType == TA_EVENPORT)
+      {
+           ortp_warning("stun: do we need this... TA_EVENPORT");
+      }
+      else if (atrType == TA_REQUESTEDTRANSPORT)
+      {
+            msg->hasRequestedTransport = TRUE;
+            if ( turnParseAtrRequestedTransport(  body,  attrLen,  &msg->requestedTransport )== FALSE )
+            {
+               ortp_error("stun: problem parsing TA_REQUESTEDTRANSPORT\n");
+               return FALSE;
+            }
+      }
+      else if (atrType == TA_DONTFRAGMENT)
+      {
+            msg->hasDontFragment = TRUE;
+      }
+      else if (atrType == TA_DEPRECATEDTIMERVAL)
+      {
+           ortp_warning("stun: deprecated attribute TA_DEPRECATEDTIMERVAL");
+      }
+      else if (atrType == TA_RESERVATIONTOKEN)
+      {
+            msg->hasReservationToken = TRUE;
+            if ( turnParseAtrReservationToken(  body,  attrLen,  &msg->reservationToken)== FALSE )
+            {
+               ortp_error("stun: problem parsing TA_RESERVATIONTOKEN\n");
+               return FALSE;
+            }
+      }
+      else if (atrType == SA_FINGERPRINT)
+      {
+            msg->hasFingerprint = TRUE;
+            if ( turnParseAtrFingerprint(  body,  attrLen,  &msg->fingerprint)== FALSE )
+            {
+               ortp_error("stun: problem parsing SA_FINGERPRINT\n");
+               return FALSE;
+            }
+      }
+      else if (atrType == ICEA_PRIORITY)
+      {
+            msg->hasLifetimeAttributes = TRUE;
+            if (iceParseAtrPriority(body, attrLen, &msg->priority) == FALSE)
+            {
+               ortp_error("stun: problem parsing ICEA_PRIORITY");
+               return FALSE;
+            }					
+      }
+      else if (atrType == ICEA_USECANDIDATE)
+      {
+            msg->hasUseCandidate = TRUE;
+      }
+      else if (atrType == ICEA_ICECONTROLLED)
+      {
+           msg->hasIceControlled = TRUE;
+           if (iceParseAtrIceControll(body, attrLen, &msg->iceControlled) == FALSE)
+            {
+               ortp_error("stun: problem parsing ICEA_ICECONTROLLED");
+               return FALSE;
+            }
+      }
+      else if (atrType == ICEA_ICECONTROLLING)
+      {
+           msg->hasIceControlling = TRUE;
+           if (iceParseAtrIceControll(body, attrLen, &msg->iceControlling) == FALSE)
+            {
+               ortp_error("stun: problem parsing ICEA_ICECONTROLLING");
+               return FALSE;
             }
       }
       else
       {
-            if (verbose)
-				ortp_message("stun: Unknown attribute: %i\n", atrType );
             if ( atrType <= 0x7FFF ) 
             {
-               return FALSE;
+              ortp_error("stun: Unknown Comprehension-Required attribute: %04x\n", atrType );
+              return FALSE;
             }
+            else
+              ortp_warning("stun: Unknown attribute: %04x\n", atrType );
       }
 		
+      if (attrLen%4>0)
+        attrLen += (4-(attrLen%4));
+      
       body += attrLen;
       size -= attrLen;
    }
@@ -530,7 +797,6 @@ static char*
 encode16(char* buf, UInt16 data)
 {
    UInt16 ndata = htons(data);
-   /*memcpy(buf, reinterpret_cast<void*>(&ndata), sizeof(UInt16)); */
    memcpy(buf, &ndata, sizeof(UInt16));
    return buf + sizeof(UInt16);
 }
@@ -539,7 +805,6 @@ static char*
 encode32(char* buf, UInt32 data)
 {
    UInt32 ndata = htonl(data);
-   /*memcpy(buf, reinterpret_cast<void*>(&ndata), sizeof(UInt32));*/
    memcpy(buf, &ndata, sizeof(UInt32));
    return buf + sizeof(UInt32);
 }
@@ -569,7 +834,7 @@ encodeAtrAddress4(char* ptr, UInt16 type, const StunAtrAddress4 *atr)
 static char* 
 encodeAtrChangeRequest(char* ptr, const StunAtrChangeRequest *atr)
 {
-   ptr = encode16(ptr, ChangeRequest);
+   ptr = encode16(ptr, SA_CHANGEREQUEST);
    ptr = encode16(ptr, 4);
    ptr = encode32(ptr, atr->value);
    return ptr;
@@ -578,7 +843,7 @@ encodeAtrChangeRequest(char* ptr, const StunAtrChangeRequest *atr)
 static char* 
 encodeAtrError(char* ptr, const StunAtrError *atr)
 {
-   ptr = encode16(ptr, ErrorCode);
+   ptr = encode16(ptr, SA_ERRORCODE);
    ptr = encode16(ptr, 6 + atr->sizeReason);
    ptr = encode16(ptr, atr->pad);
    *ptr++ = atr->errorClass;
@@ -592,7 +857,7 @@ static char*
 encodeAtrUnknown(char* ptr, const StunAtrUnknown *atr)
 {
    int i;
-   ptr = encode16(ptr, UnknownAttribute);
+   ptr = encode16(ptr, SA_UNKNOWNATTRIBUTE);
    ptr = encode16(ptr, 2+2*atr->numAttributes);
    for (i=0; i<atr->numAttributes; i++)
    {
@@ -601,23 +866,24 @@ encodeAtrUnknown(char* ptr, const StunAtrUnknown *atr)
    return ptr;
 }
 
-
-static char* 
-encodeXorOnly(char* ptr)
-{
-   ptr = encode16(ptr, XorOnly );
-   return ptr;
-}
-
-
 static char* 
 encodeAtrString(char* ptr, UInt16 type, const StunAtrString *atr)
 {
-   /*assert(atr->sizeValue % 4 == 0);*/
+   int padding;
+   int i;
 	
    ptr = encode16(ptr, type);
    ptr = encode16(ptr, atr->sizeValue);
    ptr = encode(ptr, atr->value, atr->sizeValue);
+
+   padding = atr->sizeValue % 4;
+   if (padding>0)
+   {
+     for (i=0;i<4-padding;i++)
+     {
+       *ptr++ = 0;
+     }
+   }
    return ptr;
 }
 
@@ -625,68 +891,112 @@ encodeAtrString(char* ptr, UInt16 type, const StunAtrString *atr)
 static char* 
 encodeAtrIntegrity(char* ptr, const StunAtrIntegrity *atr)
 {
-   ptr = encode16(ptr, MessageIntegrity);
+   ptr = encode16(ptr, SA_MESSAGEINTEGRITY);
    ptr = encode16(ptr, 20);
    ptr = encode(ptr, atr->hash, sizeof(atr->hash));
    return ptr;
 }
 
 
+static char* 
+encodeAtrRequestedTransport(char* ptr, const TurnAtrRequestedTransport *atr)
+{
+   ptr = encode16(ptr, TA_REQUESTEDTRANSPORT);
+   ptr = encode16(ptr, 4);
+   *ptr++ = atr->proto;
+   *ptr++ = atr->pad1;
+   *ptr++ = atr->pad2;
+   *ptr++ = atr->pad3;
+   return ptr;
+}
+
+static char* 
+encodeAtrLifeTime(char* ptr, const TurnAtrLifetime *atr)
+{
+   ptr = encode16(ptr, TA_LIFETIME);
+   ptr = encode16(ptr, 4);
+   ptr = encode32(ptr, atr->lifetime);
+   return ptr;
+}
+
+static char* 
+encodeAtrDontFragment(char* ptr)
+{
+   ptr = encode16(ptr, TA_DONTFRAGMENT);
+   ptr = encode16(ptr, 0);
+   return ptr;
+}
+
 unsigned int
 stunEncodeMessage( const StunMessage *msg, 
                    char* buf, 
                    unsigned int bufLen, 
-                   const StunAtrString *password, 
-                   bool_t verbose)
+                   const StunAtrString *password)
 {
-   /*assert(bufLen >= sizeof(StunMsgHdr));*/
    char* ptr = buf;
    char* lengthp;
    ptr = encode16(ptr, msg->msgHdr.msgType);
    lengthp = ptr;
    ptr = encode16(ptr, 0);
-   /*ptr = encode(ptr, reinterpret_cast<const char*>(msg->msgHdr.id.octet), sizeof(msg->msgHdr.id));*/
-   ptr = encode(ptr, (const char*)msg->msgHdr.id.octet, sizeof(msg->msgHdr.id));
+   ptr = encode32(ptr, msg->msgHdr.magic_cookie);
+   ptr = encode(ptr, (const char*)msg->msgHdr.tr_id.octet, sizeof(msg->msgHdr.tr_id));
 	
-   if (verbose) ortp_message("stun: Encoding stun message: ");
+   ortp_debug("stun: Encoding stun message: ");
+
+   if (msg->hasRequestedTransport)
+   {
+      ortp_debug("stun: Encoding TA_REQUESTEDTRANSPORT: %i\n", msg->requestedTransport.proto );
+      ptr = encodeAtrRequestedTransport (ptr, &msg->requestedTransport);
+   }
+   if (msg->hasLifetimeAttributes)
+   {
+      ortp_debug("stun: Encoding TA_LIFETIME: %i\n", msg->lifetimeAttributes.lifetime );
+      ptr = encodeAtrLifeTime (ptr, &msg->lifetimeAttributes);
+   }
+   if (msg->hasDontFragment)
+   {
+      ortp_debug("stun: Encoding TA_DONTFRAGMENT: DF\n");
+      ptr = encodeAtrDontFragment (ptr);
+   }
+
    if (msg->hasMappedAddress)
    {
-      if (verbose) ortp_message("stun: Encoding MappedAddress: %s\n", ipaddr(&msg->mappedAddress.ipv4) );
-      ptr = encodeAtrAddress4 (ptr, MappedAddress, &msg->mappedAddress);
+      ortp_debug("stun: Encoding SA_MAPPEDADDRESS: %s\n", ipaddr(&msg->mappedAddress.ipv4) );
+      ptr = encodeAtrAddress4 (ptr, SA_MAPPEDADDRESS, &msg->mappedAddress);
    }
    if (msg->hasResponseAddress)
    {
-      if (verbose) ortp_message("stun: Encoding ResponseAddress: %s\n", ipaddr(&msg->responseAddress.ipv4) );
-      ptr = encodeAtrAddress4(ptr, ResponseAddress, &msg->responseAddress);
+      ortp_debug("stun: Encoding SA_RESPONSEADDRESS: %s\n", ipaddr(&msg->responseAddress.ipv4) );
+      ptr = encodeAtrAddress4(ptr, SA_RESPONSEADDRESS, &msg->responseAddress);
    }
    if (msg->hasChangeRequest)
    {
-      if (verbose) ortp_message("stun: Encoding ChangeRequest: %i\n", msg->changeRequest.value );
+      ortp_debug("stun: Encoding SA_CHANGEREQUEST: %i\n", msg->changeRequest.value );
       ptr = encodeAtrChangeRequest(ptr, &msg->changeRequest);
    }
    if (msg->hasSourceAddress)
    {
-      if (verbose) ortp_message("stun: Encoding SourceAddress: %s\n", ipaddr(&msg->sourceAddress.ipv4) );
-      ptr = encodeAtrAddress4(ptr, SourceAddress, &msg->sourceAddress);
+      ortp_debug("stun: Encoding SA_SOURCEADDRESS: %s\n", ipaddr(&msg->sourceAddress.ipv4) );
+      ptr = encodeAtrAddress4(ptr, SA_SOURCEADDRESS, &msg->sourceAddress);
    }
    if (msg->hasChangedAddress)
    {
-      if (verbose) ortp_message("stun: Encoding ChangedAddress: %s\n", ipaddr(&msg->changedAddress.ipv4) );
-      ptr = encodeAtrAddress4(ptr, ChangedAddress, &msg->changedAddress);
+      ortp_debug("stun: Encoding SA_CHANGEDADDRESS: %s\n", ipaddr(&msg->changedAddress.ipv4) );
+      ptr = encodeAtrAddress4(ptr, SA_CHANGEDADDRESS, &msg->changedAddress);
    }
    if (msg->hasUsername)
    {
-      if (verbose) ortp_message("stun: Encoding Username: %s\n", msg->username.value );
-      ptr = encodeAtrString(ptr, STUNUsername, &msg->username);
+      ortp_debug("stun: Encoding SA_USERNAME: %s\n", msg->username.value );
+      ptr = encodeAtrString(ptr, SA_USERNAME, &msg->username);
    }
-   if (msg->hasPassword)
-   {
-      if (verbose) ortp_message("stun: Encoding Password: %s\n", msg->password.value );
-      ptr = encodeAtrString(ptr, STUNPassword, &msg->password);
-   }
+   //if (msg->hasPassword)
+   //{
+   //   ortp_debug("stun: Encoding SA_PASSWORD: %s\n", msg->password.value );
+   //   ptr = encodeAtrString(ptr, SA_PASSWORD, &msg->password);
+   //}
    if (msg->hasErrorCode)
    {
-      if (verbose) ortp_message("stun: Encoding ErrorCode: class=%i number=%i reason=%s\n" 
+      ortp_debug("stun: Encoding SA_ERRORCODE: class=%i number=%i reason=%s\n" 
                           , msg->errorCode.errorClass 
                           , msg->errorCode.number
                           , msg->errorCode.reason );
@@ -695,41 +1005,59 @@ stunEncodeMessage( const StunMessage *msg,
    }
    if (msg->hasUnknownAttributes)
    {
-      if (verbose) ortp_message("stun: Encoding UnknownAttribute: ???");
+      ortp_debug("stun: Encoding SA_UNKNOWNATTRIBUTE: ???");
       ptr = encodeAtrUnknown(ptr, &msg->unknownAttributes);
    }
    if (msg->hasReflectedFrom)
    {
-      if (verbose) ortp_message("stun: Encoding ReflectedFrom: %s\n", ipaddr(&msg->reflectedFrom.ipv4) );
-      ptr = encodeAtrAddress4(ptr, ReflectedFrom, &msg->reflectedFrom);
+      ortp_debug("stun: Encoding SA_REFLECTEDFROM: %s\n", ipaddr(&msg->reflectedFrom.ipv4) );
+      ptr = encodeAtrAddress4(ptr, SA_REFLECTEDFROM, &msg->reflectedFrom);
    }
+   if (msg->hasNonce)
+   {
+      ortp_debug("stun: Encoding SA_NONCE: %s\n", msg->nonceName.value );
+      ptr = encodeAtrString(ptr, SA_NONCE, &msg->nonceName);
+   }
+   if (msg->hasRealm)
+   {
+      ortp_debug("stun: Encoding SA_REALM: %s\n", msg->realmName.value );
+      ptr = encodeAtrString(ptr, SA_REALM, &msg->realmName);
+   }
+   
    if (msg->hasXorMappedAddress)
    {
-      if (verbose) ortp_message("stun: Encoding XorMappedAddress: %s\n", ipaddr(&msg->xorMappedAddress.ipv4) );
-      ptr = encodeAtrAddress4 (ptr, XorMappedAddress, &msg->xorMappedAddress);
+      ortp_debug("stun: Encoding SA_XORMAPPEDADDRESS: %s\n", ipaddr(&msg->xorMappedAddress.ipv4) );
+      ptr = encodeAtrAddress4 (ptr, SA_XORMAPPEDADDRESS, &msg->xorMappedAddress);
    }
-   if (msg->xorOnly)
+   if (msg->hasSoftware)
    {
-      if (verbose) ortp_message("stun: Encoding xorOnly: ");
-      ptr = encodeXorOnly( ptr );
-   }
-   if (msg->hasServerName)
-   {
-      if (verbose) ortp_message("stun: Encoding ServerName: %s\n", msg->serverName.value );
-      ptr = encodeAtrString(ptr, ServerName, &msg->serverName);
-   }
-   if (msg->hasSecondaryAddress)
-   {
-      if (verbose) ortp_message("stun: Encoding SecondaryAddress: %s\n", ipaddr(&msg->secondaryAddress.ipv4) );
-      ptr = encodeAtrAddress4 (ptr, SecondaryAddress, &msg->secondaryAddress);
+      ortp_debug("stun: Encoding SA_SOFTWARE: %s\n", msg->softwareName.value );
+      ptr = encodeAtrString(ptr, SA_SOFTWARE, &msg->softwareName);
    }
 
-   if (password->sizeValue > 0)
+   if (msg->hasMessageIntegrity
+     &&password!=NULL && password->sizeValue > 0
+     &&msg->username.sizeValue>0
+     &&msg->realmName.sizeValue>0)
    {
       StunAtrIntegrity integrity;
-      if (verbose) ortp_message("stun: HMAC with password: %s\n", password->value );
+      //ortp_debug("stun: HMAC with password: %s\n", password->value );
 
-      computeHmac(integrity.hash, buf, (int)(ptr-buf) , password->value, password->sizeValue);
+      encode16(lengthp, (UInt16)(ptr - buf - sizeof(StunMsgHdr)+24));
+      computeHmac_longterm(integrity.hash, buf, (int)(ptr-buf) ,
+        msg->username.value, msg->realmName.value, password->value);
+      ptr = encodeAtrIntegrity(ptr, &integrity);
+   }
+   else if (msg->hasMessageIntegrity
+     &&password!=NULL && password->sizeValue > 0
+     &&msg->username.sizeValue>0)
+   {
+      StunAtrIntegrity integrity;
+      //ortp_debug("stun: HMAC with password: %s\n", password->value );
+
+      encode16(lengthp, (UInt16)(ptr - buf - sizeof(StunMsgHdr)+24));
+      computeHmac_shortterm(integrity.hash, buf, (int)(ptr-buf) ,
+        password->value);
       ptr = encodeAtrIntegrity(ptr, &integrity);
    }
 	
@@ -850,28 +1178,45 @@ randomPort()
 
 #ifdef NOSSL
 static void
-computeHmac(char* hmac, const char* input, int length, const char* key, int sizeKey)
+computeHmac_longterm(char* hmac, const char* input, int length,
+                     const char *username, const char *realm, const char *password)
+{
+   strncpy(hmac,"hmac-not-implemented",20);
+}
+static void
+computeHmac_shortterm(char* hmac, const char* input, int length, const char* key)
 {
    strncpy(hmac,"hmac-not-implemented",20);
 }
 #else
 #include <openssl/hmac.h>
+#include <openssl/md5.h>
 
 static void
-computeHmac(char* hmac, const char* input, int length, const char* key, int sizeKey)
+computeHmac_longterm(char* hmac, const char* input, int length,
+                     const char *username, const char *realm, const char *password)
+{
+   unsigned int resultSize=0;
+   unsigned char HA1[16];
+   unsigned char HA1_text[1024];
+
+   snprintf(HA1_text, sizeof(HA1_text), "%s:%s:%s", username, realm, password);
+   MD5(HA1_text, strlen(HA1_text), HA1);
+
+   HMAC(EVP_sha1(), 
+        HA1, 16, 
+        (const unsigned char*) input, length, 
+        (unsigned char*)hmac, &resultSize);
+}
+
+static void
+computeHmac_shortterm(char* hmac, const char* input, int length, const char* key)
 {
    unsigned int resultSize=0;
    HMAC(EVP_sha1(), 
-        key, sizeKey, 
+        key, strlen(key), 
         (const unsigned char*) input, length, 
         (unsigned char*)hmac, &resultSize);
-   /*
-     HMAC(EVP_sha1(), 
-        key, sizeKey, 
-        reinterpret_cast<const unsigned char*>(input), length, 
-        reinterpret_cast<unsigned char*>(hmac), &resultSize);
-	//assert(resultSize == 20);
-   */
 }
 #endif
 
@@ -896,62 +1241,6 @@ toHex(const char* buffer, int bufferSize, char* output)
    }
    *r = 0;
 }
-
-void
-stunCreateUserName(const StunAddress4* source, StunAtrString* username)
-{
-   UInt64 time = stunGetSystemTimeSecs();
-   UInt64 lotime;
-   char buffer[1024];
-   char hmac[20];
-   char key[] = "Jason";
-   char hmacHex[41];
-   int l;
-
-   time -= (time % 20*60);
-   /* UInt64 hitime = time >> 32; */
-   lotime = time & 0xFFFFFFFF;
-
-   sprintf(buffer,
-           "%08x:%08x:%08x:", 
-           (UInt32)(source->addr),
-           (UInt32)(stunRand()),
-           (UInt32)(lotime));
-   /*assert( strlen(buffer) < 1024 ); */
-	
-   /*assert(strlen(buffer) + 41 < STUN_MAX_STRING); */
-   
-   computeHmac(hmac, buffer, strlen(buffer), key, strlen(key) );
-   toHex(hmac, 20, hmacHex );
-   hmacHex[40] =0;
-	
-   strcat(buffer,hmacHex);
-	
-   l = strlen(buffer);
-   /* assert( l+1 < STUN_MAX_STRING );*/
-   /* assert( l%4 == 0 ); */
-   
-   username->sizeValue = l;
-   memcpy(username->value,buffer,l);
-   username->value[l]=0;
-	
-   /* if (verbose) ortp_message("stun: computed username=%s\n", username.value ); */
-}
-
-void
-stunCreatePassword(const StunAtrString *username, StunAtrString* password)
-{
-   char hmac[20];
-   char key[] = "Fluffy";
-   /* char buffer[STUN_MAX_STRING]; */
-   computeHmac(hmac, username->value, strlen(username->value), key, strlen(key));
-   toHex(hmac, 20, password->value);
-   password->sizeValue = 40;
-   password->value[40]=0;
-	
-   /* ortp_message("stun: password=%s\n", password->value ); */
-}
-
 
 UInt64
 stunGetSystemTimeSecs(void)
@@ -1098,7 +1387,7 @@ stunParseServerName( char* name, StunAddress4 *addr)
 static void
 stunCreateErrorResponse(StunMessage *response, int cl, int number, const char* msg)
 {
-   response->msgHdr.msgType = BindErrorResponseMsg;
+   response->msgHdr.msgType = (STUN_METHOD_BINDING | STUN_ERR_RESP);
    response->hasErrorCode = TRUE;
    response->errorCode.errorClass = cl;
    response->errorCode.number = number;
@@ -1117,11 +1406,12 @@ stunCreateSharedSecretErrorResponse(StunMessage& response, int cl, int number, c
 }
 #endif
 
+#if 0
 static void
 stunCreateSharedSecretResponse(const StunMessage *request, const StunAddress4 *source, StunMessage *response)
 {
    response->msgHdr.msgType = SharedSecretResponseMsg;
-   response->msgHdr.id = request->msgHdr.id;
+   response->msgHdr.tr_id = request->msgHdr.tr_id;
 	
    response->hasUsername = TRUE;
    stunCreateUserName( source, &response->username);
@@ -1129,7 +1419,7 @@ stunCreateSharedSecretResponse(const StunMessage *request, const StunAddress4 *s
    response->hasPassword = TRUE;
    stunCreatePassword( &response->username, &response->password);
 }
-
+#endif
 
 /* This funtion takes a single message sent to a stun server, parses
    and constructs an apropriate repsonse - returns TRUE if message is
@@ -1138,15 +1428,13 @@ bool_t
 stunServerProcessMsg( char* buf,
                       unsigned int bufLen,
                       StunAddress4 *from, 
-                      StunAddress4 *secondary,
                       StunAddress4 *myAddr,
                       StunAddress4 *altAddr, 
                       StunMessage *resp,
                       StunAddress4 *destination,
                       StunAtrString *hmacPassword,
                       bool_t* changePort,
-                      bool_t* changeIp,
-                      bool_t verbose)
+                      bool_t* changeIp)
 {
    int i;
    StunMessage req;
@@ -1162,38 +1450,29 @@ stunServerProcessMsg( char* buf,
    *changeIp = FALSE;
    *changePort = FALSE;
 	
-   ok = stunParseMessage( buf,bufLen, &req, verbose);
+   ok = stunParseMessage( buf,bufLen, &req);
    
    if (!ok)      /* Complete garbage, drop it on the floor */
    {
-      if (verbose) ortp_error("stun: Request did not parse");
+      ortp_error("stun: Request did not parse");
       return FALSE;
    }
-   if (verbose) ortp_message("stun: Request parsed ok");
+   //ortp_debug("stun: Request parsed ok");
 	
    mapped = req.mappedAddress.ipv4;
    respondTo = req.responseAddress.ipv4;
    flags = req.changeRequest.value;
 	
-   if (req.msgHdr.msgType==SharedSecretRequestMsg)
-   {
-         if(verbose) ortp_message("stun: Received SharedSecretRequestMsg on udp. send error 433.");
-         /* !cj! - should fix so you know if this came over TLS or UDP */
-         stunCreateSharedSecretResponse(&req, from, resp);
-         /* stunCreateSharedSecretErrorResponse(*resp, 4, 33, "this request must be over TLS"); */
-         return TRUE;
-			
-   }
-   else if (req.msgHdr.msgType==BindRequestMsg)
+   if (req.msgHdr.msgType==(STUN_METHOD_BINDING|STUN_REQUEST))
    {
          if (!req.hasMessageIntegrity)
          {
-            if (verbose) ortp_message("stun: BindRequest does not contain MessageIntegrity");
+            //ortp_debug("stun: BindRequest does not contain SA_MESSAGEINTEGRITY");
 				
             if (0) /* !jf! mustAuthenticate */
             {
-               if(verbose) ortp_message("stun: Received BindRequest with no MessageIntegrity. Sending 401.");
-               stunCreateErrorResponse(resp, 4, 1, "Missing MessageIntegrity");
+               ortp_error("stun: Received BindRequest with no SA_MESSAGEINTEGRITY. Sending 401.");
+               stunCreateErrorResponse(resp, 4, 1, "Missing SA_MESSAGEINTEGRITY");
                return TRUE;
             }
          }
@@ -1201,13 +1480,13 @@ stunServerProcessMsg( char* buf,
          {
             if (!req.hasUsername)
             {
-               if (verbose) ortp_message("stun: No UserName. Send 432.");
-               stunCreateErrorResponse(resp, 4, 32, "No UserName and contains MessageIntegrity");
+               ortp_error("stun: No UserName. Send 432.");
+               stunCreateErrorResponse(resp, 4, 32, "No UserName and contains SA_MESSAGEINTEGRITY");
                return TRUE;
             }
             else
             {
-               if (verbose) ortp_message("stun: Validating username: %s", req.username.value );
+               //ortp_debug("stun: Validating username: %s", req.username.value );
                /* !jf! could retrieve associated password from provisioning here */
                if (strcmp(req.username.value, "test") == 0)
                {
@@ -1220,7 +1499,7 @@ stunServerProcessMsg( char* buf,
                   else
                   {
                      unsigned char hmac[20];
-                     if (verbose) ortp_message("stun: Validating MessageIntegrity");
+                     //ortp_debug("stun: Validating SA_MESSAGEINTEGRITY");
                      /* need access to shared secret */
 
 #ifndef NOSSL
@@ -1242,7 +1521,7 @@ stunServerProcessMsg( char* buf,
 							
                      if (memcmp(buf, hmac, 20) != 0)
                      {
-                        if (verbose) ortp_warning("stun: MessageIntegrity is bad. Sending ");
+                        ortp_error("stun: SA_MESSAGEINTEGRITY is bad. Sending ");
                         stunCreateErrorResponse(resp, 4, 3, "Unknown username. Try test with password 1234");
                         return TRUE;
                      }
@@ -1256,7 +1535,7 @@ stunServerProcessMsg( char* buf,
                }
                else
                {
-                  if (verbose) ortp_message("stun: Invalid username: %s Send 430", req.username.value); 
+                  ortp_error("stun: Invalid username: %s Send 430", req.username.value); 
                }
             }
          }
@@ -1278,44 +1557,30 @@ stunServerProcessMsg( char* buf,
          *changeIp   = ( flags & ChangeIpFlag )?TRUE:FALSE;
          *changePort = ( flags & ChangePortFlag )?TRUE:FALSE;
 			
-         if (verbose)
-         {
-            ortp_message("stun: Request is valid:\n");
-            ortp_message("stun: \t flags= %i\n", flags );
-            ortp_message("stun: \t changeIp= %i\n", *changeIp );
-            ortp_message("stun: \t changePort=%i\n", *changePort );
-            ortp_message("stun: \t from= %i\n", from->addr );
-            ortp_message("stun: \t respond to= %i\n", respondTo.addr );
-            ortp_message("stun: \t mapped= %i\n", mapped.addr );
-         }
+         //ortp_debug("stun: Request is valid:\n");
+         //ortp_debug("stun: \t flags= %i\n", flags );
+         //ortp_debug("stun: \t changeIp= %i\n", *changeIp );
+         //ortp_debug("stun: \t changePort=%i\n", *changePort );
+         //ortp_debug("stun: \t from= %i\n", from->addr );
+         //ortp_debug("stun: \t respond to= %i\n", respondTo.addr );
+         //ortp_debug("stun: \t mapped= %i\n", mapped.addr );
 				
          /* form the outgoing message */
-         resp->msgHdr.msgType = BindResponseMsg;
-         for (i=0; i<16; i++ )
+         resp->msgHdr.msgType = (STUN_METHOD_BINDING | STUN_SUCCESS_RESP);
+         resp->msgHdr.magic_cookie = ntohl(req.msgHdr.magic_cookie);
+         for (i=0; i<12; i++ )
          {
-            resp->msgHdr.id.octet[i] = req.msgHdr.id.octet[i];
+            resp->msgHdr.tr_id.octet[i] = req.msgHdr.tr_id.octet[i];
          }
 		
-         if ( req.xorOnly == FALSE )
-         {
-            resp->hasMappedAddress = TRUE;
-            resp->mappedAddress.ipv4.port = mapped.port;
-            resp->mappedAddress.ipv4.addr = mapped.addr;
-         }
-
          if (1) /* do xorMapped address or not */
          {
-            UInt16 id16;
-            UInt32 id32;
+            UInt32 cookie = 0x2112A442;
+            UInt16 cookie16;
             resp->hasXorMappedAddress = TRUE;
-            id16 = req.msgHdr.id.octet[7]<<8 
-               | req.msgHdr.id.octet[6];
-            id32 = req.msgHdr.id.octet[7]<<24 
-               |  req.msgHdr.id.octet[6]<<16 
-               |  req.msgHdr.id.octet[5]<<8 
-               | req.msgHdr.id.octet[4];
-            resp->xorMappedAddress.ipv4.port = mapped.port^id16;
-            resp->xorMappedAddress.ipv4.addr = mapped.addr^id32;
+            cookie16 = ((UInt8*)&cookie)[0]<<8  | ((UInt8*)&cookie)[1];
+            resp->xorMappedAddress.ipv4.port = mapped.port^cookie16;
+            resp->xorMappedAddress.ipv4.addr = mapped.addr^cookie;
          }
          
          resp->hasSourceAddress = TRUE;
@@ -1326,13 +1591,6 @@ stunServerProcessMsg( char* buf,
          resp->changedAddress.ipv4.port = altAddr->port;
          resp->changedAddress.ipv4.addr = altAddr->addr;
 	
-         if ( secondary->port != 0 )
-         {
-            resp->hasSecondaryAddress = TRUE;
-            resp->secondaryAddress.ipv4.port = secondary->port;
-            resp->secondaryAddress.ipv4.addr = secondary->addr;
-         }
-         
          if ( req.hasUsername && req.username.sizeValue > 0 ) 
          {
             /* copy username in */
@@ -1345,23 +1603,25 @@ stunServerProcessMsg( char* buf,
 		
          if (1) /* add ServerName */
          {
-            const char serverName[] = "Vovida.org " STUN_VERSION; /* must pad to mult of 4 */
-            resp->hasServerName = TRUE;
+            const char serverName[] = "oRTP   " STUN_VERSION; /* must pad to mult of 4 */
+            resp->hasSoftware = TRUE;
             
             /* assert( sizeof(serverName) < STUN_MAX_STRING ); */
             /* cerr << "sizeof serverName is "  << sizeof(serverName) ); */
             /* assert( sizeof(serverName)%4 == 0 ); */
-            memcpy( resp->serverName.value, serverName, sizeof(serverName));
-            resp->serverName.sizeValue = sizeof(serverName);
+            memcpy( resp->softwareName.value, serverName, sizeof(serverName));
+            resp->softwareName.sizeValue = sizeof(serverName);
          }
          
+#if 0
          if ( req.hasMessageIntegrity & req.hasUsername )  
          {
             /* this creates the password that will be used in the HMAC when then */
             /* messages is sent */
             stunCreatePassword( &req.username, hmacPassword );
          }
-				
+#endif
+
          if (req.hasUsername && (req.username.sizeValue > 64 ) )
          {
             UInt32 source;
@@ -1380,7 +1640,7 @@ stunServerProcessMsg( char* buf,
    }
    else
    {
-         if (verbose) ortp_error("stun: Unknown or unsupported request ");
+         ortp_error("stun: Unknown or unsupported request ");
          return FALSE;
    }
 	
@@ -1389,7 +1649,7 @@ stunServerProcessMsg( char* buf,
 }
 
 bool_t
-stunInitServer(StunServerInfo *info, const StunAddress4 *myAddr, const StunAddress4 *altAddr, int startMediaPort, bool_t verbose )
+stunInitServer(StunServerInfo *info, const StunAddress4 *myAddr, const StunAddress4 *altAddr, int startMediaPort)
 {
    /* assert( myAddr.port != 0 ); */
    /* assert( altAddr.port!= 0 ); */
@@ -1428,45 +1688,41 @@ stunInitServer(StunServerInfo *info, const StunAddress4 *myAddr, const StunAddre
       info->relay = FALSE;
    }
    
-   if ((info->myFd = openPort(myAddr->port, myAddr->addr,verbose)) == INVALID_SOCKET)
+   if ((info->myFd = openPort(myAddr->port, myAddr->addr)) == INVALID_SOCKET)
    {
       ortp_error("stun: Can't open %i\n", myAddr->addr );
       stunStopServer(info);
 
       return FALSE;
    }
-   /*if (verbose) ortp_message("stun: Opened " << myAddr->addr << ":" << myAddr->port << " --> " << info->myFd ); */
 
-   if ((info->altPortFd = openPort(altAddr->port,myAddr->addr,verbose)) == INVALID_SOCKET)
+   if ((info->altPortFd = openPort(altAddr->port,myAddr->addr)) == INVALID_SOCKET)
    {
       ortp_error("stun: Can't open %i\n", myAddr->addr );
       stunStopServer(info);
       return FALSE;
    }
-   /* if (verbose) ortp_message("stun: Opened " << myAddr->addr << ":" << altAddr->port << " --> " << info->altPortFd ); */
    
    
    info->altIpFd = INVALID_SOCKET;
    if (  altAddr->addr != 0 )
    {
-      if ((info->altIpFd = openPort( myAddr->port, altAddr->addr,verbose)) == INVALID_SOCKET)
+      if ((info->altIpFd = openPort( myAddr->port, altAddr->addr)) == INVALID_SOCKET)
       {
          ortp_error("stun: Can't open %i\n", altAddr->addr );
          stunStopServer(info);
          return FALSE;
       }
-      /* if (verbose) ortp_message("stun: Opened " << altAddr->addr << ":" << myAddr->port << " --> " << info->altIpFd ); */
    }
    
    info->altIpPortFd = INVALID_SOCKET;
    if (  altAddr->addr != 0 )
-   {  if ((info->altIpPortFd = openPort(altAddr->port, altAddr->addr,verbose)) == INVALID_SOCKET)
+   {  if ((info->altIpPortFd = openPort(altAddr->port, altAddr->addr)) == INVALID_SOCKET)
       {
          ortp_error("stun: Can't open %i\n", altAddr->addr );
          stunStopServer(info);
          return FALSE;
       }
-   /* if (verbose) ortp_message("stun: Opened " << altAddr->addr << ":" << altAddr->port << " --> " << info->altIpPortFd ); */
    }
    
    return TRUE;
@@ -1494,304 +1750,6 @@ stunStopServer(StunServerInfo *info)
       }
    }
 }
-
-#if 0 /* no usefull here */
-
-bool_t
-stunServerProcess(StunServerInfo *info, bool_t verbose)
-{
-   char msg[STUN_MAX_MESSAGE_SIZE];
-   int msgLen = sizeof(msg);
-   	
-   bool_t ok = FALSE;
-   bool_t recvAltIp =FALSE;
-   bool_t recvAltPort = FALSE;
-	
-   fd_set fdSet; 
-#if	defined(_WIN32) || defined(_WIN32_WCE)
-   unsigned int maxFd=0;
-#else
-   int maxFd=0;
-#endif
-   struct timeval tv;
-   int e;
-
-   FD_ZERO(&fdSet); 
-   FD_SET(info->myFd,&fdSet); 
-   if ( info->myFd >= maxFd ) maxFd=info->myFd+1;
-   FD_SET(info->altPortFd,&fdSet); 
-   if ( info->altPortFd >= maxFd ) maxFd=info->altPortFd+1;
-
-   if ( info->altIpFd != INVALID_SOCKET )
-   {
-      FD_SET(info->altIpFd,&fdSet);
-      if (info->altIpFd>=maxFd) maxFd=info->altIpFd+1;
-   }
-   if ( info->altIpPortFd != INVALID_SOCKET )
-   {
-      FD_SET(info->altIpPortFd,&fdSet);
-      if (info->altIpPortFd>=maxFd) maxFd=info->altIpPortFd+1;
-   }
-
-   if (info->relay)
-   {
-      int i;
-      for (i=0; i<MAX_MEDIA_RELAYS; ++i)
-      {
-         StunMediaRelay* relay = &info->relays[i];
-         if (relay->fd)
-         {
-            FD_SET(relay->fd, &fdSet);
-            if (relay->fd >= maxFd) maxFd=relay->fd+1;
-         }
-      }
-   }
-   
-   if ( info->altIpFd != INVALID_SOCKET )
-   {
-      FD_SET(info->altIpFd,&fdSet);
-      if (info->altIpFd>=maxFd) maxFd=info->altIpFd+1;
-   }
-   if ( info->altIpPortFd != INVALID_SOCKET )
-   {
-      FD_SET(info->altIpPortFd,&fdSet);
-      if (info->altIpPortFd>=maxFd) maxFd=info->altIpPortFd+1;
-   }
-   
-   tv.tv_sec = 0;
-   tv.tv_usec = 1000;
-	
-   e = select( maxFd, &fdSet, NULL,NULL, &tv );
-   if (e < 0)
-   {
-      int err = getErrno();
-#if !defined(_WIN32_WCE)
-      ortp_error("stun: Error on select: %s\n",  strerror(err) );
-#else
-      ortp_error("stun: Error on select: %i\n",  err );
-#endif
-   }
-   else if (e >= 0)
-   {
-      StunAddress4 from;
-      int relayPort = 0;
-
-      bool_t changePort = FALSE;
-      bool_t changeIp = FALSE;
-		
-      StunMessage resp;
-      StunAddress4 dest;
-      StunAtrString hmacPassword;  
-
-      StunAddress4 secondary;
-               
-      char buf[STUN_MAX_MESSAGE_SIZE];
-      int len = sizeof(buf);
-
-      hmacPassword.sizeValue = 0;
-      secondary.port = 0;
-      secondary.addr = 0;
-
-      /* do the media relaying */
-      if (info->relay)
-      {
-         time_t now;
-         int i;
-#if !defined(_WIN32_WCE)
-         now = time(0);
-#else
-         DWORD timemillis = GetTickCount();
-         now = timemillis/1000;
-#endif
-         for (i=0; i<MAX_MEDIA_RELAYS; ++i)
-         {
-            StunMediaRelay* relay = &info->relays[i];
-            if (relay->fd)
-            {
-               if (FD_ISSET(relay->fd, &fdSet))
-               {
-                  char msg[MAX_RTP_MSG_SIZE];
-                  int msgLen = sizeof(msg);
-                  
-                  StunAddress4 rtpFrom;
-                  ok = getMessage( relay->fd, msg, &msgLen, &rtpFrom.addr, &rtpFrom.port ,verbose);
-                  if (ok)
-                  {
-                     sendMessage(info->myFd, msg, msgLen, relay->destination.addr, relay->destination.port, verbose);
-                     relay->expireTime = now + MEDIA_RELAY_TIMEOUT;
-                     if ( verbose ) ortp_message("stun: Relay packet on %i from %i -> %i",
-                                           relay->fd,
-                                           rtpFrom.addr,
-                                           relay->destination.addr 
-                                         );
-                  }
-               }
-               else if (now > relay->expireTime)
-               {
-                  closesocket(relay->fd);
-                  relay->fd = 0;
-               }
-            }
-         }
-      }
-      
-     
-      if (FD_ISSET(info->myFd,&fdSet))
-      {
-         if (verbose) ortp_message("stun: received on A1:P1");
-         recvAltIp = FALSE;
-         recvAltPort = FALSE;
-         ok = getMessage( info->myFd, msg, &msgLen, &from.addr, &from.port,verbose );
-      }
-      else if (FD_ISSET(info->altPortFd, &fdSet))
-      {
-         if (verbose) ortp_message("stun: received on A1:P2");
-         recvAltIp = FALSE;
-         recvAltPort = TRUE;
-         ok = getMessage( info->altPortFd, msg, &msgLen, &from.addr, &from.port,verbose );
-      }
-      else if ( (info->altIpFd!=INVALID_SOCKET) && FD_ISSET(info->altIpFd,&fdSet))
-      {
-         if (verbose) ortp_message("stun: received on A2:P1");
-         recvAltIp = TRUE;
-         recvAltPort = FALSE;
-         ok = getMessage( info->altIpFd, msg, &msgLen, &from.addr, &from.port ,verbose);
-      }
-      else if ( (info->altIpPortFd!=INVALID_SOCKET) && FD_ISSET(info->altIpPortFd, &fdSet))
-      {
-         if (verbose) ortp_message("stun: received on A2:P2");
-         recvAltIp = TRUE;
-         recvAltPort = TRUE;
-         ok = getMessage( info->altIpPortFd, msg, &msgLen, &from.addr, &from.port,verbose );
-      }
-      else
-      {
-         return TRUE;
-      }
-
-      if (info->relay)
-      {
-         int i;
-         for (i=0; i<MAX_MEDIA_RELAYS; ++i)
-         {
-            StunMediaRelay* relay = &info->relays[i];
-            if (relay->destination.addr == from.addr && 
-                relay->destination.port == from.port)
-            {
-               relayPort = relay->relayPort;
-               relay->expireTime = time(0) + MEDIA_RELAY_TIMEOUT;
-               break;
-            }
-         }
-
-         if (relayPort == 0)
-         {
-            int i;
-            for (i=0; i<MAX_MEDIA_RELAYS; ++i)
-            {
-               StunMediaRelay* relay = &info->relays[i];
-               if (relay->fd == 0)
-               {
-                  if ( verbose ) ortp_message("stun: Open relay port %i\n", relay->relayPort );
-                  relay->fd = openPort(relay->relayPort, info->myAddr.addr, verbose);
-                  relay->destination.addr = from.addr;
-                  relay->destination.port = from.port;
-                  relay->expireTime = time(0) + MEDIA_RELAY_TIMEOUT;
-                  relayPort = relay->relayPort;
-                  break;
-               }
-            }
-         }
-      }
-         
-      if ( !ok ) 
-      {
-         if ( verbose ) ortp_message("stun: Get message did not return a valid message\n");
-         return TRUE;
-      }
-		
-      if ( verbose ) ortp_message("stun: Got a request (len=%i) from %i", msgLen, from.addr);
-		
-      if ( msgLen <= 0 )
-      {
-         return TRUE;
-      }
-		
-      if (info->relay && relayPort)
-      {
-         secondary = from;
-         
-         from.addr = info->myAddr.addr;
-         from.port = relayPort;
-      }
-      
-      ok = stunServerProcessMsg( msg, msgLen, &from, &secondary,
-                                 recvAltIp ? &info->altAddr : &info->myAddr,
-                                 recvAltIp ? &info->myAddr : &info->altAddr, 
-                                 &resp,
-                                 &dest,
-                                 &hmacPassword,
-                                 &changePort,
-                                 &changeIp,
-                                 verbose );
-		
-      if ( !ok )
-      {
-         if ( verbose ) ortp_error("stun: Failed to parse message");
-         return TRUE;
-      }
-		
-      len = stunEncodeMessage( &resp, buf, len, &hmacPassword,verbose );
-		
-      if ( dest.addr == 0 )  ok=FALSE;
-      if ( dest.port == 0 ) ok=FALSE;
-		
-      if ( ok )
-      {
-         /* assert( dest.addr != 0 ); */
-         /* assert( dest.port != 0 ); */
-			
-         Socket sendFd;
-			
-         bool_t sendAltIp   = recvAltIp;   /* send on the received IP address */
-         bool_t sendAltPort = recvAltPort; /* send on the received port */
-			
-         if ( changeIp )   sendAltIp   = !sendAltIp; /* if need to change IP, then flip logic */
-         if ( changePort ) sendAltPort = !sendAltPort; /* if need to change port, then flip logic */
-			
-         if ( !sendAltPort )
-         {
-            if ( !sendAltIp )
-            {
-               sendFd = info->myFd;
-            }
-            else
-            {
-               sendFd = info->altIpFd;
-            }
-         }
-         else
-         {
-            if ( !sendAltIp )
-            {
-               sendFd = info->altPortFd;
-            }
-            else
-            {
-               sendFd = info->altIpPortFd;
-            }
-         }
-	
-         if ( sendFd != INVALID_SOCKET )
-         {
-            sendMessage( sendFd, buf, len, dest.addr, dest.port, verbose );
-         }
-      }
-   }
-   
-   return TRUE;
-}
-#endif
 
 int 
 stunFindLocalInterfaces(UInt32* addresses,int maxRet)
@@ -1868,28 +1826,32 @@ stunBuildReqSimple( StunMessage* msg,
    /* assert( msg ); */
    memset( msg , 0 , sizeof(*msg) );
 	
-   msg->msgHdr.msgType = BindRequestMsg;
+   msg->msgHdr.msgType = (STUN_METHOD_BINDING|STUN_REQUEST);
 	
-   for ( i=0; i<16; i=i+4 )
+   msg->msgHdr.magic_cookie = 0x2112A442;
+   for ( i=0; i<12; i=i+4 )
    {
       /* assert(i+3<16); */
       int r = stunRand();
-      msg->msgHdr.id.octet[i+0]= r>>0;
-      msg->msgHdr.id.octet[i+1]= r>>8;
-      msg->msgHdr.id.octet[i+2]= r>>16;
-      msg->msgHdr.id.octet[i+3]= r>>24;
+      msg->msgHdr.tr_id.octet[i+0]= r>>0;
+      msg->msgHdr.tr_id.octet[i+1]= r>>8;
+      msg->msgHdr.tr_id.octet[i+2]= r>>16;
+      msg->msgHdr.tr_id.octet[i+3]= r>>24;
    }
 	
    if ( id != 0 )
    {
-      msg->msgHdr.id.octet[0] = id; 
+      msg->msgHdr.tr_id.octet[0] = id; 
    }
 	
-   msg->hasChangeRequest = TRUE;
-   msg->changeRequest.value =(changeIp?ChangeIpFlag:0) | 
-      (changePort?ChangePortFlag:0);
-	
-   if ( username->sizeValue > 0 )
+   if (changePort==TRUE || changeIp==TRUE)
+   {
+     msg->hasChangeRequest = TRUE;
+     msg->changeRequest.value =(changeIp?ChangeIpFlag:0) | 
+        (changePort?ChangePortFlag:0);
+   }
+
+   if ( username!=NULL && username->sizeValue > 0 )
    {
       msg->hasUsername = TRUE;
       /* msg->username = username; */
@@ -1901,7 +1863,7 @@ stunBuildReqSimple( StunMessage* msg,
 static void 
 stunSendTest( Socket myFd, StunAddress4 *dest, 
               const StunAtrString *username, const StunAtrString *password, 
-              int testNum, bool_t verbose )
+              int testNum )
 { 
    /* assert( dest.addr != 0 ); */
    /* assert( dest.port != 0 ); */
@@ -1944,14 +1906,11 @@ stunSendTest( Socket myFd, StunAddress4 *dest,
                        changePort , changeIP , 
                        testNum );
 	
-   len = stunEncodeMessage( &req, buf, len, password,verbose );
+   len = stunEncodeMessage( &req, buf, len, password );
 	
-   if ( verbose )
-   {
-      ortp_message("stun: About to send msg of len %i to %s\n", len, ipaddr(dest) );
-   }
+   //ortp_debug("stun: About to send msg of len %i to %s\n", len, ipaddr(dest) );
 	
-   sendMessage( myFd, buf, len, dest->addr, dest->port, verbose );
+   sendMessage( myFd, buf, len, dest->addr, dest->port );
 	
    /* add some delay so the packets don't get sent too quickly */
 #if defined(_WIN32_WCE) 
@@ -1969,6 +1928,7 @@ stunSendTest( Socket myFd, StunAddress4 *dest,
 }
 
 
+#if 0
 void 
 stunGetUserNameAndPassword(  const StunAddress4 *dest, 
                              StunAtrString* username,
@@ -1979,10 +1939,10 @@ stunGetUserNameAndPassword(  const StunAddress4 *dest,
    stunCreateUserName(dest, username);
    stunCreatePassword(username, password);
 }
-
+#endif
 
 int 
-stunTest( StunAddress4 *dest, int testNum, bool_t verbose, StunAddress4* sAddr , StunAddress4 *sMappedAddr, StunAddress4* sChangedAddr)
+stunTest( StunAddress4 *dest, int testNum, StunAddress4* sAddr , StunAddress4 *sMappedAddr, StunAddress4* sChangedAddr)
 {
    /* assert( dest.addr != 0 ); */
    /* assert( dest.port != 0 ); */
@@ -2006,42 +1966,36 @@ stunTest( StunAddress4 *dest, int testNum, bool_t verbose, StunAddress4* sAddr ,
         port = sAddr->port;
       }
    }
-   myFd = openPort(port,interfaceIp,verbose);
+   myFd = openPort(port,interfaceIp);
    if ( myFd == INVALID_SOCKET)
        return -1;
    
    username.sizeValue = 0;
    password.sizeValue = 0;
 	
-#ifdef USE_TLS
+#if 0
    stunGetUserNameAndPassword( dest, &username, &password );
 #endif
 	
-   stunSendTest( myFd, dest, &username, &password, testNum, verbose );
+   stunSendTest( myFd, dest, &username, &password, testNum );
    
    ok = getMessage( myFd,
                msg,
                &msgLen,
                &from.addr,
-               &from.port,verbose );
+               &from.port );
    closesocket(myFd);
    if (!ok)
        return -1;
 
    memset(&resp, 0, sizeof(StunMessage));
 	
-   if ( verbose ) ortp_message("stun: Got a response");
-   ok = stunParseMessage( msg,msgLen, &resp,verbose );
+   //ortp_debug("stun: Got a response");
+   ok = stunParseMessage( msg,msgLen, &resp );
 	
-   if ( verbose )
-   {
-      ortp_message("stun: \t ok=%i\n", ok );
-#if defined(WIN32) || defined(_WIN32_WCE)
-      ortp_message("stun: \t id=%u\n", *(unsigned int*)&resp.msgHdr.id );
-#endif
-      ortp_message("stun: \t mappedAddr=%i\n", resp.mappedAddress.ipv4.addr );
-      ortp_message("stun: \t changedAddr=%i\n", resp.changedAddress.ipv4.addr );
-   }
+   //ortp_debug("stun: \t ok=%i\n", ok );
+   //ortp_debug("stun: \t SA_MAPPEDADDRESS=%i\n", resp.mappedAddress.ipv4.addr );
+   //ortp_debug("stun: \t SA_CHANGEDADDRESS=%i\n", resp.changedAddress.ipv4.addr );
 	
    if (sAddr)
    {
@@ -2071,7 +2025,6 @@ stunTest( StunAddress4 *dest, int testNum, bool_t verbose, StunAddress4* sAddr ,
 
 NatType
 stunNatType( StunAddress4 *dest, 
-             bool_t verbose,
              bool_t* preservePort, /* if set, is return for if NAT preservers ports or not */
              bool_t* hairpin,  /* if set, is the return for if NAT will hairpin packets */
              int port, /* port to use for the test, 0 to choose random port */
@@ -2117,8 +2070,8 @@ stunNatType( StunAddress4 *dest,
    {
       interfaceIp = sAddr->addr;
    }
-   myFd1 = openPort(port,interfaceIp,verbose);
-   myFd2 = openPort(port+1,interfaceIp,verbose);
+   myFd1 = openPort(port,interfaceIp);
+   myFd2 = openPort(port+1,interfaceIp);
 
    if ( ( myFd1 == INVALID_SOCKET) || ( myFd2 == INVALID_SOCKET) )
    {
@@ -2136,11 +2089,11 @@ stunNatType( StunAddress4 *dest,
    username.sizeValue = 0;
    password.sizeValue = 0;
 	
-#ifdef USE_TLS 
+#if 0 
    stunGetUserNameAndPassword( dest, username, password );
 #endif
 	
-   /* stunSendTest( myFd1, dest, username, password, 1, verbose ); */
+   /* stunSendTest( myFd1, dest, username, password, 1 ); */
 
    
    second_started = stunGetSystemTimeSecs();
@@ -2188,7 +2141,7 @@ stunNatType( StunAddress4 *dest,
          count++;
          if ( !respTestI ) 
          {
-            stunSendTest( myFd1, dest, &username, &password, 1 ,verbose );
+            stunSendTest( myFd1, dest, &username, &password, 1 );
          }         
 			
          if ( (!respTestI2) && respTestI ) 
@@ -2197,18 +2150,18 @@ stunNatType( StunAddress4 *dest,
             if (  ( testI2dest.addr != 0 ) &&
                   ( testI2dest.port != 0 ) )
             {
-               stunSendTest( myFd1, &testI2dest, &username, &password, 10  ,verbose);
+               stunSendTest( myFd1, &testI2dest, &username, &password, 10 );
             }
          }
 			
          if ( !respTestII )
          {
-            stunSendTest( myFd2, dest, &username, &password, 2 ,verbose );
+            stunSendTest( myFd2, dest, &username, &password, 2 );
          }
 			
          if ( !respTestIII )
          {
-            stunSendTest( myFd2, dest, &username, &password, 3 ,verbose );
+            stunSendTest( myFd2, dest, &username, &password, 3 );
          }
 			
          if ( respTestI && (!respTestHairpin) )
@@ -2216,7 +2169,7 @@ stunNatType( StunAddress4 *dest,
             if (  ( testImappedAddr.addr != 0 ) &&
                   ( testImappedAddr.port != 0 ) )
             {
-               stunSendTest( myFd1, &testImappedAddr, &username, &password, 11 ,verbose );
+               stunSendTest( myFd1, &testImappedAddr, &username, &password, 11 );
             }
          }
 
@@ -2224,8 +2177,6 @@ stunNatType( StunAddress4 *dest,
       else
       {
          int i;
-         /* if (verbose) ortp_message("stun: -----------------------------------------"); */
-         /* assert( err>0 ); */
          /* data is avialbe on some fd */
 			
          for ( i=0; i<2; i++)
@@ -2254,20 +2205,17 @@ stunNatType( StunAddress4 *dest,
                               msg,
                               &msgLen,
                               &from.addr,
-                              &from.port,verbose );
+                              &from.port );
                   
                   memset(&resp, 0, sizeof(StunMessage));
 						
-                  stunParseMessage( msg,msgLen, &resp,verbose );
+                  stunParseMessage( msg,msgLen, &resp );
 						
-                  if ( verbose )
-                  {
-                     ortp_message("stun: Received message of type %i id=%i\n",
-                            resp.msgHdr.msgType,
-                            (int)(resp.msgHdr.id.octet[0]) );
-                  }
+                  //ortp_debug("stun: Received message of type %i id=%i\n",
+                          //resp.msgHdr.msgType,
+                          //(int)(resp.msgHdr.tr_id.octet[0]) );
 						
-                  switch( resp.msgHdr.id.octet[0] )
+                  switch( resp.msgHdr.tr_id.octet[0] )
                   {
                      case 1:
                      {
@@ -2348,7 +2296,7 @@ stunNatType( StunAddress4 *dest,
 
    /* see if we can bind to this address */
    /* cerr << "try binding to " << testImappedAddr ); */
-   s = openPort( 0/*use ephemeral*/, testImappedAddr.addr, FALSE );
+   s = openPort( 0/*use ephemeral*/, testImappedAddr.addr );
    if ( s != INVALID_SOCKET )
    {
       isNat = FALSE;
@@ -2362,15 +2310,12 @@ stunNatType( StunAddress4 *dest,
 
    closesocket(s); /* AMD */
 	
-   if (verbose)
-   {
-      ortp_message("stun: test I = %i\n", respTestI );
-      ortp_message("stun: test II = %i\n", respTestII );
-      ortp_message("stun: test III = %i\n", respTestIII );
-      ortp_message("stun: test I(2) = %i\n", respTestI2 );
-      ortp_message("stun: is nat  = %i\n", isNat);
-      ortp_message("stun: mapped IP same = %i\n", mappedIpSame );
-   }
+   //ortp_debug("stun: test I = %i\n", respTestI );
+   //ortp_debug("stun: test II = %i\n", respTestII );
+   //ortp_debug("stun: test III = %i\n", respTestIII );
+   //ortp_debug("stun: test I(2) = %i\n", respTestI2 );
+   ortp_debug("stun: is nat  = %i\n", isNat);
+   ortp_debug("stun: mapped IP same = %i\n", mappedIpSame );
 	
    /* implement logic flow chart from draft RFC */
    if ( respTestI )
@@ -2422,8 +2367,7 @@ stunNatType( StunAddress4 *dest,
 
 int
 stunOpenSocket( StunAddress4 *dest, StunAddress4* mapAddr, 
-                int port, StunAddress4* srcAddr, 
-                bool_t verbose )
+                int port, StunAddress4* srcAddr )
 {
    /* assert( dest.addr != 0 ); */
    /* assert( dest.port != 0 ); */
@@ -2451,7 +2395,7 @@ stunOpenSocket( StunAddress4 *dest, StunAddress4* mapAddr,
       interfaceIp = srcAddr->addr;
    }
    
-   myFd = openPort(port,interfaceIp,verbose);
+   myFd = openPort(port,interfaceIp);
    if (myFd == INVALID_SOCKET)
    {
       return myFd;
@@ -2460,24 +2404,32 @@ stunOpenSocket( StunAddress4 *dest, StunAddress4* mapAddr,
    username.sizeValue = 0;
    password.sizeValue = 0;
 	
-#ifdef USE_TLS
+#if 0
    stunGetUserNameAndPassword( dest, username, password );
 #endif
 	
-   stunSendTest(myFd, dest, &username, &password, 1, 0/*FALSE*/ );
+   stunSendTest(myFd, dest, &username, &password, 1 );
 	
-   getMessage( myFd, msg, &msgLen, &from.addr, &from.port,verbose );
+   getMessage( myFd, msg, &msgLen, &from.addr, &from.port );
 
    memset(&resp, 0, sizeof(StunMessage));
 	
-   ok = stunParseMessage( msg, msgLen, &resp,verbose );
+   ok = stunParseMessage( msg, msgLen, &resp );
    if (!ok)
    {
        closesocket(myFd);
        return -1;
    }
-	
-   mappedAddr = resp.mappedAddress.ipv4;
+
+   if (resp.hasXorMappedAddress==TRUE)
+   {
+      UInt32 cookie = 0x2112A442;
+      UInt16 cookie16 = 0x2112A442 >> 16;
+      mappedAddr.port = resp.xorMappedAddress.ipv4.port^cookie16;
+      mappedAddr.addr = resp.xorMappedAddress.ipv4.addr^cookie;
+   }
+   else
+     mappedAddr = resp.mappedAddress.ipv4;
 	
    /*
      ortp_message("stun: --- stunOpenSocket --- ");
@@ -2497,8 +2449,7 @@ stunOpenSocketPair(StunAddress4 *dest,
                    StunAddress4* mapAddr_rtp, 
                    StunAddress4* mapAddr_rtcp, 
                    int* fd1, int* fd2, 
-                   int port, StunAddress4* srcAddr, 
-                   bool_t verbose )
+                   int port, StunAddress4* srcAddr )
 {
    /* assert( dest.addr!= 0 ); */
    /* assert( dest.port != 0 ); */
@@ -2534,8 +2485,7 @@ stunOpenSocketPair(StunAddress4 *dest,
 
    for( i=0; i<NUM; i++)
    {
-      fd[i] = openPort( (port == 0) ? 0 : (port + i), 
-                        interfaceIp, verbose);
+      fd[i] = openPort( (port == 0) ? 0 : (port + i), interfaceIp);
       if (fd[i] < 0) 
       {
          while (i > 0)
@@ -2549,13 +2499,13 @@ stunOpenSocketPair(StunAddress4 *dest,
    username.sizeValue = 0;
    password.sizeValue = 0;
 	
-#ifdef USE_TLS
+#if 0
    stunGetUserNameAndPassword( dest, username, password );
 #endif
 	
    for( i=0; i<NUM; i++)
    {
-      stunSendTest(fd[i], dest, &username, &password, 1/*testNum*/, verbose );
+      stunSendTest(fd[i], dest, &username, &password, 1/*testNum*/ );
    }
    
    for( i=0; i<NUM; i++)
@@ -2567,11 +2517,11 @@ stunOpenSocketPair(StunAddress4 *dest,
                   msg,
                   &msgLen,
                   &from.addr,
-                  &from.port ,verbose);
+                  &from.port);
       
       memset(&resp, 0, sizeof(StunMessage));
 		
-      ok = stunParseMessage( msg, msgLen, &resp, verbose );
+      ok = stunParseMessage( msg, msgLen, &resp );
       if (!ok) 
       {  
           for( i=0; i<NUM; i++)
@@ -2581,56 +2531,234 @@ stunOpenSocketPair(StunAddress4 *dest,
          return FALSE;
       }
 	  
-      mappedAddr[i] = resp.mappedAddress.ipv4;
+      if (resp.hasXorMappedAddress==TRUE)
+      {
+        UInt32 cookie = 0x2112A442;
+        UInt16 cookie16 = 0x2112A442 >> 16;
+        mappedAddr[i].port = resp.xorMappedAddress.ipv4.port^cookie16;
+        mappedAddr[i].addr = resp.xorMappedAddress.ipv4.addr^cookie;
+      }
+      else
+        mappedAddr[i] = resp.mappedAddress.ipv4;
    }
 	
-   if (verbose)
+   //ortp_debug("stun: --- stunOpenSocketPair --- \n");
+   for( i=0; i<NUM; i++)
    {
-      ortp_message("stun: --- stunOpenSocketPair --- \n");
-      for( i=0; i<NUM; i++)
-      {
-         ortp_message("stun: \t mappedAddr=%s\n", ipaddr(&mappedAddr[i]) );
-      }
+      //ortp_debug("stun: \t mappedAddr=%s\n", ipaddr(&mappedAddr[i]) );
    }
 	
-#if 0
-   if ( mappedAddr[0].port %2 == 0 )
-   {
-      if (  mappedAddr[0].port+1 ==  mappedAddr[1].port )
-      {
-         *mapAddr = mappedAddr[0];
-         *fd1 = fd[0];
-         *fd2 = fd[1];
-         closesocket( fd[2] );
-         return TRUE;
-      }
-   }
-   else
-   {
-      if (( mappedAddr[1].port %2 == 0 )
-          && (  mappedAddr[1].port+1 ==  mappedAddr[2].port ))
-      {
-         *mapAddr = mappedAddr[1];
-         *fd1 = fd[1];
-         *fd2 = fd[2];
-         closesocket( fd[0] );
-         return TRUE;
-      }
-   }
-#else
     *mapAddr_rtp = mappedAddr[0];
     *mapAddr_rtcp = mappedAddr[1];
     *fd1 = fd[0];
     *fd2 = fd[1];
-#endif
 
-   /* something failed, close all and return error */
    for( i=0; i<NUM; i++)
    {
       closesocket( fd[i] );
    }
 	
    return TRUE;
+}
+
+static void 
+turnSendAllocate( Socket myFd, StunAddress4 *dest, 
+              const StunAtrString *username, const StunAtrString *password,
+              StunMessage *resp)
+{ 
+  bool_t discard=FALSE;
+
+  StunMessage req;
+  char buf[STUN_MAX_MESSAGE_SIZE];
+  int len = STUN_MAX_MESSAGE_SIZE;
+  const char serverName[] = "oRTP   " STUN_VERSION; /* must pad to mult of 4 */
+
+  memset(&req, 0, sizeof(StunMessage));
+
+  stunBuildReqSimple( &req, username, 
+                     FALSE , FALSE , 
+                     0 );
+  req.msgHdr.msgType = (TURN_MEDHOD_ALLOCATE|STUN_REQUEST);
+
+  req.hasSoftware = TRUE;
+  memcpy( req.softwareName.value, serverName, sizeof(serverName));
+  req.softwareName.sizeValue = sizeof(serverName);
+
+  req.hasRequestedTransport = TRUE;
+  memset(&req.requestedTransport, 0, sizeof(req.requestedTransport));
+  req.requestedTransport.proto = IPPROTO_UDP;
+
+  req.hasDontFragment = TRUE;
+
+  if (resp!=NULL
+    && username!=NULL && username->sizeValue>0
+    && password!=NULL && password->sizeValue>0
+    && resp->hasRealm==TRUE
+    && resp->hasNonce==TRUE)
+  {
+    req.hasUsername = TRUE;
+    memcpy( req.username.value, username->value, username->sizeValue );
+    req.username.sizeValue = username->sizeValue;
+
+    req.hasNonce = TRUE;
+    memcpy( &req.nonceName, &resp->nonceName, sizeof(resp->nonceName));
+
+    req.hasRealm = TRUE;
+    memcpy( &req.realmName, &resp->realmName, sizeof(resp->realmName));
+
+    req.hasMessageIntegrity = TRUE;
+  }
+
+  len = stunEncodeMessage( &req, buf, len, password );
+
+  ortp_debug("stun: About to send msg of len %i to %s\n", len, ipaddr(dest) );
+
+  sendMessage( myFd, buf, len, dest->addr, dest->port);
+
+  /* add some delay so the packets don't get sent too quickly */
+#if defined(_WIN32_WCE) 
+  Sleep (10);
+#elif defined(WIN32)/* !cj! TODO - should fix this up in windows */
+  {
+    clock_t now = clock();
+    /* assert( CLOCKS_PER_SEC == 1000 ); */
+    while ( clock() <= now+10 ) { };
+  }
+#else
+  usleep(10*1000);
+#endif
+}
+
+bool_t
+turnAllocateSocketPair(StunAddress4 *dest,
+                   StunAddress4* mapAddr_rtp, 
+                   StunAddress4* mapAddr_rtcp, 
+                   int* fd1, int* fd2, 
+                   int port, StunAddress4* srcAddr)
+{
+   const int NUM=2;
+   char msg[STUN_MAX_MESSAGE_SIZE];
+   int msgLen =sizeof(msg);
+	
+   StunAddress4 from;
+   int fd[2/*NUM*/];
+   int i;
+	
+   unsigned int interfaceIp = 0;
+	
+   StunAtrString username;
+   StunAtrString password;
+	
+   StunAddress4 mappedAddr[2/*NUM*/];
+
+   if ( port == 0 )
+   {
+      port = randomPort();
+   }
+	
+   *fd1=-1;
+   *fd2=-1;
+	
+   if ( srcAddr )
+   {
+      interfaceIp = srcAddr->addr;
+   }
+
+   for( i=0; i<NUM; i++)
+   {
+      fd[i] = openPort( (port == 0) ? 0 : (port + i), 
+                        interfaceIp);
+      if (fd[i] < 0) 
+      {
+         while (i > 0)
+         {
+            closesocket(fd[--i]);
+         }
+         return FALSE;
+      }
+   }
+	
+   snprintf(username.value, sizeof(username.value), "antisip");
+   username.sizeValue = strlen(username.value);
+   snprintf(password.value, sizeof(password.value), "exosip");
+   password.sizeValue = strlen(password.value);
+	
+   for( i=0; i<NUM; i++)
+   {
+      turnSendAllocate(fd[i], dest, NULL, NULL, NULL );
+   }
+   
+   for( i=0; i<NUM; i++)
+   {
+      StunMessage resp;
+      bool_t ok;
+      msgLen = sizeof(msg)/sizeof(*msg);
+      getMessage( fd[i],
+                  msg,
+                  &msgLen,
+                  &from.addr,
+                  &from.port);
+      
+      memset(&resp, 0, sizeof(StunMessage));
+		
+      ok = stunParseMessage( msg, msgLen, &resp );
+      if (!ok) 
+      {  
+          for( i=0; i<NUM; i++)
+          {
+              closesocket(fd[i]);
+          }
+         return FALSE;
+      }
+
+      if (STUN_IS_ERR_RESP(resp.msgHdr.msgType))
+      {
+        /* check if we need to authenticate */
+        if (resp.hasErrorCode==TRUE
+          && resp.errorCode.errorClass==4 && resp.errorCode.number==1
+          && resp.hasNonce == TRUE
+          && resp.hasRealm == TRUE)
+        {
+          turnSendAllocate(fd[i], dest, &username, &password, &resp);
+          i--;
+        }
+      }
+      else if (STUN_IS_SUCCESS_RESP(resp.msgHdr.msgType))
+      {
+        if (resp.hasXorRelayedAddress==TRUE)
+        {
+          UInt32 cookie = 0x2112A442;
+          UInt16 cookie16 = 0x2112A442 >> 16;
+          mappedAddr[i].port = resp.xorRelayedAddress.ipv4.port^cookie16;
+          mappedAddr[i].addr = resp.xorRelayedAddress.ipv4.addr^cookie;
+        }
+        else
+        {
+          for( i=0; i<NUM; i++)
+          {
+            closesocket(fd[i]);
+          }
+          return FALSE;
+        }
+      }
+   }
+	
+  for( i=0; i<NUM; i++)
+  {
+     ortp_message("stun: stunOpenSocketPair mappedAddr=%s\n", ipaddr(&mappedAddr[i]) );
+  }
+	
+  *mapAddr_rtp = mappedAddr[0];
+  *mapAddr_rtcp = mappedAddr[1];
+  *fd1 = fd[0];
+  *fd2 = fd[1];
+
+  for( i=0; i<NUM; i++)
+  {
+    closesocket( fd[i] );
+  }
+	
+  return TRUE;
 }
 
 /* Local Variables:

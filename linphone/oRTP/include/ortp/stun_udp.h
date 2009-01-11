@@ -113,22 +113,19 @@ int getErrno(void);
    port, if interfaceIp!=0 then use ONLY the interface specified instead of
    all of them  */
 Socket
-openPort( unsigned short port, unsigned int interfaceIp,
-          bool_t verbose);
+openPort( unsigned short port, unsigned int interfaceIp);
 
 
 /* recive a UDP message */
 bool_t 
 getMessage( Socket fd, char* buf, int* len,
-            unsigned int* srcIp, unsigned short* srcPort,
-            bool_t verbose);
+            unsigned int* srcIp, unsigned short* srcPort);
 
 
 /* send a UDP message */
 bool_t 
 sendMessage( Socket fd, char* msg, int len, 
-             unsigned int dstIp, unsigned short dstPort,
-             bool_t verbose);
+             unsigned int dstIp, unsigned short dstPort);
 
 
 /* set up network - does nothing in unix but needed for windows */

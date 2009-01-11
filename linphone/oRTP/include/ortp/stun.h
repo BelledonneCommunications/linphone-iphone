@@ -83,7 +83,7 @@ extern "C"
 #endif
 
 /* if you change this version, change in makefile too  */
-#define STUN_VERSION "0.94"
+#define STUN_VERSION "0.99"
 
 #define STUN_MAX_STRING 256
 #define STUN_MAX_UNKNOWN_ATTRIBUTES 8
@@ -100,7 +100,7 @@ typedef unsigned __int64 UInt64;
 #else
 typedef unsigned long long UInt64;
 #endif
-typedef struct { unsigned char octet[16]; }  UInt128;
+typedef struct { unsigned char octet[12]; }  UInt96;
 
 /* define a structure to hold a stun address  */
 #define  IPv4Family  0x01
@@ -111,35 +111,79 @@ typedef struct { unsigned char octet[16]; }  UInt128;
 #define ChangePortFlag  0x02
 
 /* define  stun attribute */
-#define MappedAddress     0x0001
-#define ResponseAddress   0x0002
-#define ChangeRequest     0x0003
-#define SourceAddress     0x0004
-#define ChangedAddress    0x0005
-#define STUNUsername      0x0006 /* Username is too common: rename to avoid conflict */
-#define STUNPassword      0x0007 /* Password is too common: rename to avoid conflict */
-#define MessageIntegrity  0x0008
-#define ErrorCode         0x0009
-#define UnknownAttribute  0x000A
-#define ReflectedFrom     0x000B
-#define XorMappedAddress  0x0020
-#define XorOnly           0x0021
-#define ServerName        0x0022
-#define SecondaryAddress  0x0050 /* Non standard extention */
+#define SA_MAPPEDADDRESS     0x0001
+#define SA_RESPONSEADDRESS   0x0002 /** deprecated **/
+#define SA_CHANGEREQUEST     0x0003 /** deprecated **/
+#define SA_SOURCEADDRESS     0x0004 /** deprecated **/
+#define SA_CHANGEDADDRESS    0x0005 /** deprecated **/
+#define SA_USERNAME          0x0006
+#define SA_PASSWORD          0x0007  /** deprecated **/
+#define SA_MESSAGEINTEGRITY  0x0008
+#define SA_ERRORCODE         0x0009
+#define SA_UNKNOWNATTRIBUTE  0x000A
+#define SA_REFLECTEDFROM     0x000B /** deprecated **/
+#define SA_REALM             0x0014
+#define SA_NONCE             0x0015
+#define SA_XORMAPPEDADDRESS  0x0020
+
+#define SA_XORMAPPEDADDRESS2 0x8020 /* Non standard extention */
+#define SA_XORONLY           0x0021 /* deprecated */
+#define SA_SECONDARYADDRESS  0x0050 /* Non standard extention */
+
+#define SA_SOFTWARE          0x8022
+#define SA_ALTERNATESERVER   0x8023
+#define SA_FINGERPRINT       0x8028
+
+/* define turn attribute */
+#define TA_CHANNELNUMBER       0x000C
+#define TA_LIFETIME            0x000D
+#define TA_DEPRECATEDBANDWIDTH 0x0010
+#define TA_XORPEERADDRESS      0x0012
+#define TA_DATA                0x0013
+#define TA_XORRELAYEDADDRESS   0x0016
+#define TA_EVENPORT            0x0018
+#define TA_REQUESTEDTRANSPORT  0x0019
+#define TA_DONTFRAGMENT        0x001A
+#define TA_DEPRECATEDTIMERVAL  0x0021
+#define TA_RESERVATIONTOKEN    0x0022
+
+#define ICEA_PRIORITY          0x0024
+#define ICEA_USECANDIDATE      0x0025
+#define ICEA_ICECONTROLLED     0x8029
+#define ICEA_ICECONTROLLING    0x802a
+
+#define STUN_REQUEST           0x0000
+#define STUN_INDICATION        0x0010
+#define STUN_SUCCESS_RESP      0x0100
+#define STUN_ERR_RESP          0x0110
+
+#define STUN_IS_REQUEST(msg_type)       (((msg_type) & 0x0110) == 0x0000)
+#define STUN_IS_INDICATION(msg_type)    (((msg_type) & 0x0110) == 0x0010)
+#define STUN_IS_SUCCESS_RESP(msg_type)  (((msg_type) & 0x0110) == 0x0100)
+#define STUN_IS_ERR_RESP(msg_type)      (((msg_type) & 0x0110) == 0x0110)
 
 /* define types for a stun message */
-#define BindRequestMsg                0x0001
-#define BindResponseMsg               0x0101
-#define BindErrorResponseMsg          0x0111
+#define STUN_METHOD_BINDING           0x0001
+#define TURN_MEDHOD_ALLOCATE          0x0003 //(only request/response semantics defined)
+#define TURN_METHOD_REFRESH           0x0004 //(only request/response semantics defined)
+#define TURN_METHOD_CREATEPERMISSION  0x0008 //(only request/response semantics defined
+#define TURN_METHOD_CHANNELBIND       0x0009 //(only request/response semantics defined)
+
+//#define BindResponseMsg               0x0101
+//#define BindErrorResponseMsg          0x0111
 #define SharedSecretRequestMsg        0x0002
 #define SharedSecretResponseMsg       0x0102
 #define SharedSecretErrorResponseMsg  0x0112
+
+#define TURN_INDICATION_SEND          0x0006 //(only indication semantics defined)
+#define TURN_INDICATION_DATA          0x0007 //(only indication semantics defined)
 
 typedef struct 
 {
       UInt16 msgType;
       UInt16 msgLength;
-      UInt128 id;
+      UInt32 magic_cookie;
+      UInt96 tr_id;
 } StunMsgHdr;
 
 
@@ -184,9 +228,55 @@ typedef struct
 
 typedef struct
 {
+      UInt16 channelNumber;
+      UInt16 rffu; /* Reserved For Future Use */
+} TurnAtrChannelNumber;
+
+typedef struct
+{
+      UInt32 lifetime;
+} TurnAtrLifetime;
+
+typedef struct
+{
+      char value[1500];      
+      UInt16 sizeValue;
+} TurnAtrData;
+
+typedef struct
+{
+      UInt8 proto;
+      UInt8 pad1;
+      UInt8 pad2;
+      UInt8 pad3;
+} TurnAtrRequestedTransport;
+
+typedef struct
+{
+      UInt64 value;
+} TurnAtrReservationToken;
+
+typedef struct
+{
+      UInt32 fingerprint;
+} TurnAtrFingerprint;
+
+
+typedef struct
+{
       char value[STUN_MAX_STRING];      
       UInt16 sizeValue;
 } StunAtrString;
+
+typedef struct
+{
+      UInt32 priority;
+} IceAtrPriority;
+
+typedef struct
+{
+      UInt64 value;
+} IceAtrIceControll;
 
 typedef struct
 {
@@ -201,6 +291,13 @@ typedef enum
    HmacUnkownUserName,
    HmacFailed
 } StunHmacStatus;
+
+
+typedef struct
+{
+      UInt16 attrType[STUN_MAX_UNKNOWN_ATTRIBUTES];
+      UInt16 numAttributes;
+} TurnAtrUnknown;
 
 typedef struct
 {
@@ -239,16 +336,55 @@ typedef struct
       bool_t hasReflectedFrom;
       StunAtrAddress4 reflectedFrom;
 
+      bool_t hasRealm;
+      StunAtrString realmName;
+
+      bool_t hasNonce;
+      StunAtrString nonceName;
+
       bool_t hasXorMappedAddress;
       StunAtrAddress4  xorMappedAddress;
 	
-      bool_t xorOnly;
+      bool_t hasSoftware;
+      StunAtrString softwareName;
 
-      bool_t hasServerName;
-      StunAtrString serverName;
-      
-      bool_t hasSecondaryAddress;
-      StunAtrAddress4 secondaryAddress;
+      /* Turn elements */
+      bool_t hasChannelNumberAttributes;
+      TurnAtrChannelNumber channelNumberAttributes;
+
+      bool_t hasLifetimeAttributes;
+      TurnAtrLifetime lifetimeAttributes;
+
+      bool_t hasXorPeerAddress;
+      StunAtrAddress4 xorPeerAddress;
+
+      bool_t hasData;
+      TurnAtrData data;
+
+      bool_t hasXorRelayedAddress;
+      StunAtrAddress4 xorRelayedAddress;
+
+      bool_t hasRequestedTransport;
+      TurnAtrRequestedTransport requestedTransport;
+
+      bool_t hasDontFragment;
+
+      bool_t hasReservationToken;
+      TurnAtrReservationToken reservationToken;
+
+      bool_t hasFingerprint;
+      TurnAtrFingerprint fingerprint;
+
+      bool_t hasPriority;
+      IceAtrPriority priority;
+
+      bool_t hasUseCandidate;
+
+      bool_t hasIceControlled;
+      IceAtrIceControll iceControlled;
+
+      bool_t hasIceControlling;
+      IceAtrIceControll iceControlling;
 } StunMessage; 
 
 
@@ -294,8 +430,7 @@ typedef struct
 bool_t
 stunParseMessage( char* buf, 
                   unsigned int bufLen, 
-                  StunMessage *message, 
-                  bool_t verbose );
+                  StunMessage *message);
 
 void
 stunBuildReqSimple( StunMessage* msg,
@@ -306,8 +441,7 @@ unsigned int
 stunEncodeMessage( const StunMessage *message, 
                    char* buf, 
                    unsigned int bufLen, 
-                   const StunAtrString *password,
-                   bool_t verbose);
+                   const StunAtrString *password);
 
 void
 stunCreateUserName(const StunAddress4 *addr, StunAtrString* username);
@@ -342,27 +476,20 @@ bool_t
 stunInitServer(StunServerInfo *info, 
                const StunAddress4 *myAddr, 
                const StunAddress4 *altAddr,
-               int startMediaPort,
-               bool_t verbose);
+               int startMediaPort);
 
 void
 stunStopServer(StunServerInfo *info);
-
-#if 0 /* no usefull here */
-/* return true if all is OK */
-bool_t
-stunServerProcess(StunServerInfo *info, bool_t verbose);
-#endif
 
 /* returns number of address found - take array or addres */
 int 
 stunFindLocalInterfaces(UInt32* addresses, int maxSize );
 
 int 
-stunTest( StunAddress4 *dest, int testNum, bool_t verbose, StunAddress4* srcAddr, StunAddress4 *sMappedAddr, StunAddress4* sChangedAddr);
+stunTest( StunAddress4 *dest, int testNum, StunAddress4* srcAddr, StunAddress4 *sMappedAddr, StunAddress4* sChangedAddr);
 
 NatType
-stunNatType( StunAddress4 *dest, bool_t verbose, 
+stunNatType( StunAddress4 *dest, 
              bool_t* preservePort, /* if set, is return for if NAT preservers ports or not */
              bool_t* hairpin ,  /* if set, is the return for if NAT will hairpin packets */
              int port, /* port to use for the test, 0 to choose random port */
@@ -373,30 +500,33 @@ bool_t
 stunServerProcessMsg( char* buf,
                       unsigned int bufLen,
                       StunAddress4 *from, 
-                      StunAddress4 *secondary,
                       StunAddress4 *myAddr,
                       StunAddress4 *altAddr, 
                       StunMessage *resp,
                       StunAddress4 *destination,
                       StunAtrString *hmacPassword,
                       bool_t* changePort,
-                      bool_t* changeIp,
-                      bool_t verbose);
+                      bool_t* changeIp);
 
 int
 stunOpenSocket( StunAddress4 *dest, 
                 StunAddress4* mappedAddr, 
                 int port, 
-                StunAddress4* srcAddr, 
-                bool_t verbose );
+                StunAddress4* srcAddr);
 
 bool_t
 stunOpenSocketPair(StunAddress4 *dest,
                    StunAddress4* mapAddr_rtp, 
                    StunAddress4* mapAddr_rtcp, 
                    int* fd1, int* fd2, 
-                   int srcPort,  StunAddress4* srcAddr,
-                   bool_t verbose);
+                   int srcPort,  StunAddress4* srcAddr);
+
+bool_t
+turnAllocateSocketPair(StunAddress4 *dest,
+                   StunAddress4* mapAddr_rtp, 
+                   StunAddress4* mapAddr_rtcp, 
+                   int* fd1, int* fd2, 
+                   int srcPort,  StunAddress4* srcAddr);
 
 #ifdef __cplusplus
 }
