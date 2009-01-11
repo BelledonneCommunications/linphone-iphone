@@ -1241,7 +1241,7 @@ stunGetSystemTimeSecs(void)
 
 /* returns TRUE if it scucceeded */
 bool_t 
-stunParseHostName( char* peerName,
+stunParseHostName( const char* peerName,
                    UInt32* ip,
                    UInt16* portVal,
                    UInt16 defaultPort )
@@ -1347,7 +1347,7 @@ stunParseHostName( char* peerName,
 
 
 bool_t
-stunParseServerName( char* name, StunAddress4 *addr)
+stunParseServerName( const char* name, StunAddress4 *addr)
 {
    /* assert(name); */
 	
