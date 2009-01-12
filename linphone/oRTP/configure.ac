@@ -233,6 +233,8 @@ if test $GCC = yes && test $wall_werror = yes;  then
 	CFLAGS="$CFLAGS -Werror "
 fi
 
+AC_CHECK_HEADERS(openssl/hmac.h openssl/md5.h)
+
 AC_CHECK_LIB(ssl,SSL_CTX_new,[SSL_LIBS="-lssl"])
 AC_CHECK_LIB(crypto,MD5,[SSL_LIBS="$SSL_LIBS -lcrypto"])
 

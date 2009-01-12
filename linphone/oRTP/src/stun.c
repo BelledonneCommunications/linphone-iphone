@@ -67,6 +67,10 @@
  *
  */
 
+#ifdef HAVE_CONFIG_H
+#include "ortp-config.h"
+#endif
+
 #ifndef _WIN32_WCE
 #include <errno.h>
 #endif
@@ -99,13 +103,9 @@
 #endif
 
 
-//#define NOSSL
-/*
-  #if defined(__sparc__) || defined(WIN32)
-  #define NOSSL
-  #endif
-  #define NOSSL
-*/
+#if !defined(HAVE_OPENSSL_HMAC_H) || !defined(HAVE_OPENSSL_MD5_H)
+#define NOSSL 1
+#endif
 
 #include "ortp/stun_udp.h"
 #include "ortp/stun.h"
