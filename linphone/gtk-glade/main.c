@@ -894,7 +894,13 @@ int main(int argc, char *argv[]){
 	}
 	
 	if ((lang=linphone_gtk_get_lang(config_file))!=NULL && lang[0]!='\0'){
+#ifdef WIN32
+		char tmp[128];
+		snprintf(tmp,sizeof(tmp),"LANG=%s",lang);
+		_putenv(tmp);
+#else
 		setenv("LANG",lang,1);
+#endif
 	}
 
 #ifdef ENABLE_NLS

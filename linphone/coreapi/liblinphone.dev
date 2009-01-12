@@ -1,7 +1,7 @@
 [Project]
 FileName=liblinphone.dev
 Name=liblinphone
-UnitCount=18
+UnitCount=21
 Type=2
 Ver=3
 IsCpp=1
@@ -222,7 +222,7 @@ Libs=../oRTP/build/win32native;../mediastreamer2/build/win32native;../../linphon
 PrivateResource=
 ResourceIncludes=
 MakeIncludes=
-Compiler=-Wall -Werror_@@_-D_WIN32_WINNT=0x501_@@_-DINET6_@@_-DORTP_INET6_@@_-DORTP_STATIC_@@_-DVIDEO_ENABLED_@@_-ggdb_@@_-DOSIP_MT_@@_
+Compiler=-Wall -Werror_@@_-D_WIN32_WINNT=0x501_@@_-DINET6_@@_-DORTP_INET6_@@_-DVIDEO_ENABLED_@@_-g_@@_-DOSIP_MT_@@_
 CppCompiler=
 Linker=
 PreprocDefines=
@@ -240,4 +240,34 @@ IncludeVersionInfo=0
 SupportXPThemes=0
 CompilerSet=0
 compilerType=0
+
+[Unit19]
+FileName=sipsetup.h
+CompileCpp=1
+Folder=liblinphone
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit20]
+FileName=fonis.c
+CompileCpp=0
+Folder=liblinphone
+Compile=0
+Link=0
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=	$(CC) -c fonis.c -o "Default Profile/fonis.o" $(CFLAGS)
+
+[Unit21]
+FileName=sipsetup.c
+CompileCpp=0
+Folder=liblinphone
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=	$(CC) -c sipsetup.c -o "Default Profile/sipsetup.o" $(CFLAGS)
 

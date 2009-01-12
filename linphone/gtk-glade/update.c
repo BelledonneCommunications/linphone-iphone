@@ -45,7 +45,9 @@ static int linphone_gtk_get_new_version(const char *version_url, char *version, 
 	if (InternetReadFile(hConnect,version,size,&dwDownloaded) && dwDownloaded>0){
 		version[dwDownloaded]='\0';
 		ms_message("Got response: %s", version);
-		ret=0;
+		/*check this not just html containing 404 not found*/
+		if (strstr(version,"html")==0)
+			ret=0;
 	}
 	
 	// Close any open handles.
