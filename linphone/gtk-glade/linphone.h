@@ -61,3 +61,5 @@ const gchar *linphone_gtk_get_ui_config(const char *key, const char *def);
 int linphone_gtk_get_ui_config_int(const char *key, int def);
 void linphone_gtk_open_browser(const char *url);
 void linphone_gtk_check_for_new_version(void);
+const char *linphone_gtk_get_lang(const char *config_file);
+

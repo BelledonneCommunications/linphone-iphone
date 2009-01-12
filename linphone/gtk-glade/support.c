@@ -1,5 +1,6 @@
 #include "linphone.h"
 
+#include "lpconfig.h"
 
 static GList *pixmaps_directories = NULL;
 
@@ -100,4 +101,43 @@ glade_set_atk_action_description       (AtkAction       *action,
         atk_action_set_description (action, i, description);
     }
 }
+
+
+static char linphone_lang[256]={0};
+
+/*lang has to be read before the config file is parsed...*/
+const char *linphone_gtk_get_lang(const char *config_file){
+	FILE *f=fopen(config_file,"r");
+	if (f){
+		char tmp[256];
+		while(fgets(tmp,sizeof(tmp),f)!=NULL){
+			char *p;
+			if ((p=strstr(tmp,"lang="))!=NULL){
+				p+=5;
+				sscanf(p,"%s",linphone_lang);
+				g_message("Found lang %s",linphone_lang);
+				break;
+			}
+		}
+	}
+	fclose(f);
+	return linphone_lang;
+}
+
+const gchar *linphone_gtk_get_ui_config(const char *key, const char *def){
+	LinphoneCore *lc=linphone_gtk_get_core();
+	if (lc){
+		LpConfig *cfg=linphone_core_get_config(linphone_gtk_get_core());
+		return lp_config_get_string(cfg,"GtkUi",key,def);
+	}else{
+		ms_warning ("Cannot read config, no core created yet.");
+		return NULL;
+	}
+}
+
+int linphone_gtk_get_ui_config_int(const char *key, int def){
+	LpConfig *cfg=linphone_core_get_config(linphone_gtk_get_core());
+	return lp_config_get_int(cfg,"GtkUi",key,def);
+}
+
 

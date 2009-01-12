@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.4.5 on Thu Jan  8 14:52:09 2009 -->
+<!--Generated with glade3 3.4.5 on Mon Jan 12 14:45:17 2009 -->
 <glade-interface>
   <widget class="GtkAssistant" id="p2pwizard">
     <property name="title" translatable="yes">Creating a FONICS account</property>
@@ -11,7 +11,7 @@
         <property name="visible">True</property>
         <property name="label" translatable="yes">WARNING: experimental feature !
 
-FONICS stands for Free Overlay Network for Interactive Communication Systems
+FONIS stands for Free Overlay Network for Instant SIP.
 Based on SIP and Peer to Peer technologies, it allows people to find each other through the help of a virtual network.
 Once you and your friends registered, you'll be able to call each other simply by entering your friend's username in linphone's sip uri box.
 Read more information about FONICS at http://www.fonics.org

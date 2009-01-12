@@ -333,7 +333,6 @@ static gboolean linphone_gtk_iterate(LinphoneCore *lc){
 
 static void load_uri_history(){
 	GtkEntry *uribar=GTK_ENTRY(linphone_gtk_get_widget(linphone_gtk_get_main_window(),"uribar"));
-	LpConfig *cfg=linphone_core_get_config(linphone_gtk_get_core());
 	char key[20];
 	int i;
 	GtkEntryCompletion *gep=gtk_entry_completion_new();
@@ -341,7 +340,7 @@ static void load_uri_history(){
 	for (i=0;;i++){
 		const char *uri;
 		snprintf(key,sizeof(key),"uri%i",i);
-		uri=lp_config_get_string(cfg,"GtkUi",key,NULL);
+		uri=linphone_gtk_get_ui_config(key,NULL);
 		if (uri!=NULL) {
 			GtkTreeIter iter;
 			gtk_list_store_append(model,&iter);
@@ -654,16 +653,6 @@ static void linphone_gtk_call_log_updated(LinphoneCore *lc, LinphoneCallLog *cl)
 static void linphone_gtk_general_state(LinphoneCore *lc, LinphoneGeneralState *gstate){
 }
 
-const gchar *linphone_gtk_get_ui_config(const char *key, const char *def){
-	LpConfig *cfg=linphone_core_get_config(linphone_gtk_get_core());
-	return lp_config_get_string(cfg,"GtkUi",key,def);
-}
-
-int linphone_gtk_get_ui_config_int(const char *key, int def){
-	LpConfig *cfg=linphone_core_get_config(linphone_gtk_get_core());
-	return lp_config_get_int(cfg,"GtkUi",key,def);
-}
-
 static void icon_popup_menu(GtkStatusIcon *status_icon, guint button, guint activate_time, gpointer user_data){
 	GtkWidget *menu=(GtkWidget*)g_object_get_data(G_OBJECT(status_icon),"menu");
 	gtk_menu_popup(GTK_MENU(menu),NULL,NULL,gtk_status_icon_position_menu,status_icon,button,activate_time);
@@ -892,8 +881,22 @@ void linphone_gtk_log_handler(OrtpLogLevel lev, const char *fmt, va_list args){
 int main(int argc, char *argv[]){
 	void *p;
 	const char *config_file;
+	const char *lang;
+
 	g_thread_init(NULL);
 	gdk_threads_init();
+	
+	config_file=linphone_gtk_get_config_file();
+	if (linphone_core_wake_up_possible_already_running_instance(config_file)==0){
+		g_warning("Another running instance of linphone has been detected. It has been woken-up.");
+		g_warning("This instance is going to exit now.");
+		return 0;
+	}
+	
+	if ((lang=linphone_gtk_get_lang(config_file))!=NULL && lang[0]!='\0'){
+		setenv("LANG",lang,1);
+	}
+
 #ifdef ENABLE_NLS
 	p=bindtextdomain (GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR);
 	if (p==NULL) perror("bindtextdomain failed");
@@ -902,13 +905,6 @@ int main(int argc, char *argv[]){
 #else
 	g_message("NLS disabled.\n");
 #endif
-	config_file=linphone_gtk_get_config_file();
-	if (linphone_core_wake_up_possible_already_running_instance(config_file)==0){
-		g_warning("Another running instance of linphone has been detected. It has been woken-up.");
-		g_warning("This instance is going to exit now.");
-		return 0;
-	}
-	
 #ifdef WIN32
 	gtk_rc_add_default_file("./gtkrc");
 #endif
