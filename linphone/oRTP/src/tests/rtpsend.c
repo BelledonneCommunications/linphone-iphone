@@ -34,7 +34,7 @@ void stophandler(int signum)
 	runcond=0;
 }
 
-static char *help="usage: rtpsend	filename dest_ip4addr dest_port [ --with-clockslide <value> ] [ --with-jitter <milliseconds>]\n";
+static const char *help="usage: rtpsend	filename dest_ip4addr dest_port [ --with-clockslide <value> ] [ --with-jitter <milliseconds>]\n";
 
 int main(int argc, char *argv[])
 {

@@ -27,9 +27,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 static int linphone_answer_sdp(LinphoneCore *lc, eXosip_event_t *ev, sdp_message_t *sdp);
 
+static bool_t linphone_call_matches_event(LinphoneCall *call, eXosip_event_t *ev){
+	return call->cid==ev->cid;
+}
+
 static void linphone_call_proceeding(LinphoneCore *lc, eXosip_event_t *ev){
-	if (lc->call==NULL){
-		ms_warning("Bug in call_proceeding()");
+	if (lc->call==NULL || (lc->call->cid!=-1 && !linphone_call_matches_event(lc->call,ev)) ) {
+		ms_warning("This call has been canceled.");
+		eXosip_lock();
+		eXosip_call_terminate(ev->cid,ev->did);
+		eXosip_unlock();
 		return;
 	}
 	lc->call->cid=ev->cid;
@@ -65,6 +72,7 @@ int linphone_call_accepted(LinphoneCore *lc, eXosip_event_t *ev)
 		return 0;
 	}
 	linphone_call_proceeding(lc,ev);
+	if (!linphone_call_matches_event(lc->call,ev)) return 0;
 	call->auth_pending=FALSE;
 	if (call->state==LCStateAVRunning){
 		return 0; /*already accepted*/
@@ -154,6 +162,15 @@ int linphone_call_failure(LinphoneCore *lc, eXosip_event_t *ev)
 	char *msg603=_("Call declined.");
 	char* tmpmsg=msg486;
 	int code;
+	LinphoneCall *call=lc->call;
+
+	if (call){
+		/*check that the faillure is related to this call, not an old one*/
+		if (!linphone_call_matches_event(call,ev)) {
+			ms_warning("Failure reported for an old call.");
+			return 0;
+		}
+	}
 
 	if (ev->response){
 		code=osip_message_get_status_code(ev->response);
@@ -220,8 +237,8 @@ int linphone_call_failure(LinphoneCore *lc, eXosip_event_t *ev)
 		lc->ringstream=NULL;
 	}
 	linphone_core_stop_media_streams(lc);
-	if (lc->call!=NULL) {
-		linphone_call_destroy(lc->call);
+	if (call!=NULL) {
+		linphone_call_destroy(call);
 		gstate_new_state(lc, GSTATE_CALL_ERROR, NULL);
 		lc->call=NULL;
 	}
@@ -807,7 +824,7 @@ void linphone_call_ringing(LinphoneCore *lc, eXosip_event_t *ev){
 	LinphoneCall *call=lc->call;
 	
 	linphone_call_proceeding(lc,ev);
-	
+	if (call==NULL) return;
 	if (sdp==NULL){
 		if (lc->ringstream!=NULL) return;	/*already ringing !*/
 		if (lc->sound_conf.play_sndcard!=NULL){
