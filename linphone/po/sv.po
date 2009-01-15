@@ -15,8 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: gtk-glade/support.c:49
-#: gtk-glade/support.c:73
+#: gtk-glade/support.c:49 gtk-glade/support.c:73
 #, c-format
 msgid "Couldn't find pixmap file: %s"
 msgstr "Kunde inte hitta pixmap filen: %s"
@@ -35,11 +34,13 @@ msgstr "Inkommande samtal från %s"
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
-"Would you allow him to see your presence status or add him to your contact list ?\n"
+"Would you allow him to see your presence status or add him to your contact "
+"list ?\n"
 "If you answer no, this person will be temporarily blacklisted."
 msgstr ""
 "%s skulle vilja lägga till dig till hans/hennes kontaktlista.\n"
-"Vill du tillåta honom/henne att se din närvarostatus eller lägga till honom/henne till din kontaktlista?\n"
+"Vill du tillåta honom/henne att se din närvarostatus eller lägga till honom/"
+"henne till din kontaktlista?\n"
 "Om du svarar nej, personen kommer att vara bannlyst."
 
 #: gtk-glade/main.c:507
@@ -60,8 +61,7 @@ msgstr "%s (Default)"
 msgid "A free SIP video-phone"
 msgstr "En gratis SIP video-telefon"
 
-#: gtk-glade/friendlist.c:199
-#: gtk-glade/propertybox.c:209
+#: gtk-glade/friendlist.c:199 gtk-glade/propertybox.c:209
 #: gtk-glade/contact.glade:41
 msgid "Name"
 msgstr "Namn"
@@ -96,13 +96,11 @@ msgstr "Min. datahastighet (kbit/s)"
 msgid "Parameters"
 msgstr "Parametrar"
 
-#: gtk-glade/propertybox.c:260
-#: gtk-glade/propertybox.c:397
+#: gtk-glade/propertybox.c:260 gtk-glade/propertybox.c:397
 msgid "Enabled"
 msgstr "På"
 
-#: gtk-glade/propertybox.c:261
-#: gtk-glade/propertybox.c:397
+#: gtk-glade/propertybox.c:261 gtk-glade/propertybox.c:397
 msgid "Disabled"
 msgstr "Av"
 
@@ -118,8 +116,7 @@ msgstr ""
 msgid "gtk-preferences"
 msgstr ""
 
-#: gtk-glade/main.glade:39
-#: gtk-glade/call_logs.glade:9
+#: gtk-glade/main.glade:39 gtk-glade/call_logs.glade:9
 msgid "Call history"
 msgstr "Samtalshistorik"
 
@@ -302,14 +299,12 @@ msgstr "Tillåt den här kontakten att se min närvarostatus"
 msgid "Contact information"
 msgstr "Kontakt information"
 
-#: gtk-glade/contact.glade:149
-#: gtk-glade/password.glade:114
+#: gtk-glade/contact.glade:149 gtk-glade/password.glade:114
 #: gtk-glade/sip_account.glade:206
 msgid "gtk-cancel"
 msgstr ""
 
-#: gtk-glade/contact.glade:161
-#: gtk-glade/password.glade:102
+#: gtk-glade/contact.glade:161 gtk-glade/password.glade:102
 #: gtk-glade/sip_account.glade:194
 msgid "gtk-ok"
 msgstr ""
@@ -318,10 +313,8 @@ msgstr ""
 msgid "Linphone debug window"
 msgstr "Linphone debug fönster"
 
-#: gtk-glade/log.glade:54
-#: gtk-glade/call_logs.glade:49
-#: gtk-glade/chatroom.glade:82
-#: gtk-glade/parameters.glade:1402
+#: gtk-glade/log.glade:54 gtk-glade/call_logs.glade:49
+#: gtk-glade/chatroom.glade:82 gtk-glade/parameters.glade:1402
 msgid "gtk-close"
 msgstr ""
 
@@ -389,8 +382,7 @@ msgstr "Linphone - Inkommande samtal"
 msgid "Incoming call from"
 msgstr "Inkommande samtal från"
 
-#: gtk-glade/incoming_call.glade:45
-#: coreapi/linphonecore.c:230
+#: gtk-glade/incoming_call.glade:45 coreapi/linphonecore.c:230
 msgid "Incoming call"
 msgstr "Inkommande samtal"
 
@@ -524,7 +516,8 @@ msgstr "Multimedia inställningar"
 
 #: gtk-glade/parameters.glade:687
 msgid "This section defines your SIP address when not using a SIP account"
-msgstr "Denna sektion specificerar din SIP adress när du inte använder ett SIP konto"
+msgstr ""
+"Denna sektion specificerar din SIP adress när du inte använder ett SIP konto"
 
 #: gtk-glade/parameters.glade:704
 msgid "Your display name (eg: John Doe):"
@@ -606,8 +599,7 @@ msgstr "Inaktivera"
 msgid "<b>Codecs</b>"
 msgstr "<b>Codecs</b>"
 
-#: gtk-glade/parameters.glade:1291
-#: gtk-glade/parameters.glade:1307
+#: gtk-glade/parameters.glade:1291 gtk-glade/parameters.glade:1307
 msgid "0 stands for \"unlimited\""
 msgstr "0 står för \"utan begränsning\""
 
@@ -664,8 +656,12 @@ msgid "Outgoing call"
 msgstr "Utgående samtal"
 
 #: coreapi/linphonecore.c:416
-msgid "Your machine appears to be connected to an IPv6 network. By default linphone always uses IPv4. Please update your configuration if you want to use IPv6"
-msgstr "Din dator verkar vara kopplad till ett IPv6 nätverk. Default, använder linphone IPv4. Uppdatera din konfiguration om du vill använda IPv6."
+msgid ""
+"Your machine appears to be connected to an IPv6 network. By default linphone "
+"always uses IPv4. Please update your configuration if you want to use IPv6"
+msgstr ""
+"Din dator verkar vara kopplad till ett IPv6 nätverk. Default, använder "
+"linphone IPv4. Uppdatera din konfiguration om du vill använda IPv6."
 
 #: coreapi/linphonecore.c:701
 msgid "Ready"
@@ -684,8 +680,12 @@ msgid "Could not resolve this number."
 msgstr "Kan inte nå dett nummer."
 
 #: coreapi/linphonecore.c:1130
-msgid "Could not parse given sip address. A sip url usually looks like sip:user@domain"
-msgstr "Kan inte förstå angiven SIP adress. En SIP adress vanligen ser ut som sip:användare@domänen"
+msgid ""
+"Could not parse given sip address. A sip url usually looks like sip:"
+"user@domain"
+msgstr ""
+"Kan inte förstå angiven SIP adress. En SIP adress vanligen ser ut som sip:"
+"användare@domänen"
 
 #: coreapi/linphonecore.c:1179
 msgid "Sorry, having multiple simultaneous calls is not supported yet !"
@@ -699,8 +699,7 @@ msgstr "Kontaktar"
 msgid "could not call"
 msgstr "Kunde inte ringa"
 
-#: coreapi/linphonecore.c:1517
-#: coreapi/exevents.c:41
+#: coreapi/linphonecore.c:1517 coreapi/exevents.c:41
 msgid "Connected."
 msgstr "Kopplad"
 
@@ -712,8 +711,7 @@ msgstr "Samtalet slut"
 msgid "No nat/firewall address supplied !"
 msgstr "Ingen NAT / brandväggs adress angiven!"
 
-#: coreapi/linphonecore.c:1866
-#: coreapi/linphonecore.c:1878
+#: coreapi/linphonecore.c:1866 coreapi/linphonecore.c:1878
 #, c-format
 msgid "Invalid nat address '%s' : %s"
 msgstr "Fel NAT adress '%s': %s"
@@ -807,7 +805,9 @@ msgstr "Omdirigerat till %s..."
 msgid ""
 "User is not reachable at the moment but he invites you\n"
 "to contact him using the following alternate resource:"
-msgstr "Användaren kan inte nås för tillfället men han/hon ber dig\att kontakta honom/henna vid följande resurs:"
+msgstr ""
+"Användaren kan inte nås för tillfället men han/hon ber dig\att kontakta "
+"honom/henna vid följande resurs:"
 
 #: coreapi/exevents.c:825
 msgid "Early media."
@@ -827,8 +827,7 @@ msgstr "Inget svar inom angiven tid"
 msgid "Registration on %s successful."
 msgstr "Registrering hos %s lyckades."
 
-#: coreapi/presence.c:112
-#: coreapi/presence.c:164
+#: coreapi/presence.c:112 coreapi/presence.c:164
 msgid "Gone"
 msgstr "Har gått"
 
@@ -863,4 +862,3 @@ msgstr "Lunchar"
 #: coreapi/presence.c:160
 msgid "Closed"
 msgstr "Stängt"
-

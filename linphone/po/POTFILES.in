@@ -22,6 +22,7 @@ coreapi/linphonecore.c
 coreapi/misc.c
 coreapi/exevents.c
 coreapi/presence.c
+coreapi/friend.c
 mediastreamer2/src/alaw.c
 mediastreamer2/src/alsa.c
 mediastreamer2/src/aqsnd.c
@@ -56,5 +57,4 @@ mediastreamer2/src/wincevideods.c
 mediastreamer2/src/winvideo.c
 mediastreamer2/src/winvideods.c
 mediastreamer2/src/winvideo2.c
-gnome/friends.c
-gtk/friends.c
+

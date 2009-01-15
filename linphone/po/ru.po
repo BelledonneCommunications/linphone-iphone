@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone 0.7.1\n"
 "Report-Msgid-Bugs-To: linphone-developers@nongnu.org\n"
-"POT-Creation-Date: 2008-10-12 11:04+0200\n"
+"POT-Creation-Date: 2008-10-16 18:38+0200\n"
 "PO-Revision-Date: 2008-11-25 18:39+0300\n"
 "Last-Translator: Grigory Fateyev <greg@dial.com.ru>\n"
 "Language-Team: Russian <greg@dial.com.ru>\n"
@@ -14,8 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: gtk-glade/support.c:49
-#: gtk-glade/support.c:73
+#: gtk-glade/support.c:49 gtk-glade/support.c:73
 #, c-format
 msgid "Couldn't find pixmap file: %s"
 msgstr "Невозможно найти картинку: %s"
@@ -34,11 +33,13 @@ msgstr "Входящий звонок %s"
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
-"Would you allow him to see your presence status or add him to your contact list ?\n"
+"Would you allow him to see your presence status or add him to your contact "
+"list ?\n"
 "If you answer no, this person will be temporarily blacklisted."
 msgstr ""
 "%s вы бы хотели быть добавленным в этот контактный лист.\n"
-"Вы разрешаете ему(ей) видеть ваш статус присутствия или добавить в контактный лист?\n"
+"Вы разрешаете ему(ей) видеть ваш статус присутствия или добавить в "
+"контактный лист?\n"
 "Если вы ответите Нет, эта персона будет временно заблокированна."
 
 #: gtk-glade/main.c:507
@@ -59,8 +60,7 @@ msgstr "%s (По умолчанию)"
 msgid "A free SIP video-phone"
 msgstr "Свободный SIP видео-телефон"
 
-#: gtk-glade/friendlist.c:199
-#: gtk-glade/propertybox.c:209
+#: gtk-glade/friendlist.c:199 gtk-glade/propertybox.c:209
 #: gtk-glade/contact.glade:41
 msgid "Name"
 msgstr "Имя"
@@ -95,13 +95,11 @@ msgstr "Минимальный битрейт (kbit/s)"
 msgid "Parameters"
 msgstr "Параметры"
 
-#: gtk-glade/propertybox.c:260
-#: gtk-glade/propertybox.c:397
+#: gtk-glade/propertybox.c:260 gtk-glade/propertybox.c:397
 msgid "Enabled"
 msgstr "Включить"
 
-#: gtk-glade/propertybox.c:261
-#: gtk-glade/propertybox.c:397
+#: gtk-glade/propertybox.c:261 gtk-glade/propertybox.c:397
 msgid "Disabled"
 msgstr "Выключить"
 
@@ -117,8 +115,7 @@ msgstr "_Вид"
 msgid "gtk-preferences"
 msgstr "Параметры"
 
-#: gtk-glade/main.glade:39
-#: gtk-glade/call_logs.glade:9
+#: gtk-glade/main.glade:39 gtk-glade/call_logs.glade:9
 msgid "Call history"
 msgstr "История звонков"
 
@@ -162,100 +159,99 @@ msgstr "Позвонить"
 msgid "Current call"
 msgstr "Текущий звонок"
 
-#: gtk-glade/main.glade:302
-msgid ""
-"Show All\n"
-"Show Online"
+#: gtk-glade/main.glade:289
+msgid "Lookup:"
 msgstr ""
-"Показать все\n"
-"Показать Online"
 
-#: gtk-glade/main.glade:311
-msgid "Search:"
-msgstr "Поиск:"
+#: gtk-glade/main.glade:310
+msgid "in"
+msgstr ""
 
-#: gtk-glade/main.glade:337
-msgid "Display filters"
-msgstr "Показать фильтры"
+#: gtk-glade/main.glade:322
+msgid ""
+"All users\n"
+"Online users"
+msgstr ""
 
-#: gtk-glade/main.glade:380
+#: gtk-glade/main.glade:366
 msgid "<b>Contact list</b>"
 msgstr "<b>Контактный лист</b>"
 
-#: gtk-glade/main.glade:419
+#: gtk-glade/main.glade:404
 msgid "D"
 msgstr "Г"
 
-#: gtk-glade/main.glade:437
+#: gtk-glade/main.glade:422
 msgid "#"
 msgstr "#"
 
-#: gtk-glade/main.glade:455
+#: gtk-glade/main.glade:440
 msgid "0"
 msgstr "0"
 
-#: gtk-glade/main.glade:473
+#: gtk-glade/main.glade:458
 msgid "*"
 msgstr "*"
 
-#: gtk-glade/main.glade:489
+#: gtk-glade/main.glade:474
 msgid "C"
 msgstr "В"
 
-#: gtk-glade/main.glade:507
+#: gtk-glade/main.glade:492
 msgid "9"
 msgstr "9"
 
-#: gtk-glade/main.glade:525
+#: gtk-glade/main.glade:510
 msgid "8"
 msgstr "8"
 
-#: gtk-glade/main.glade:543
+#: gtk-glade/main.glade:528
 msgid "7"
 msgstr "7"
 
-#: gtk-glade/main.glade:559
+#: gtk-glade/main.glade:544
 msgid "B"
 msgstr "Б"
 
-#: gtk-glade/main.glade:577
+#: gtk-glade/main.glade:562
 msgid "6"
 msgstr "6"
 
-#: gtk-glade/main.glade:595
+#: gtk-glade/main.glade:580
 msgid "5"
 msgstr "5"
 
-#: gtk-glade/main.glade:613
+#: gtk-glade/main.glade:598
 msgid "4"
 msgstr "4"
 
-#: gtk-glade/main.glade:629
+#: gtk-glade/main.glade:614
 msgid "A"
 msgstr "А"
 
-#: gtk-glade/main.glade:645
+#: gtk-glade/main.glade:630
 msgid "3"
 msgstr "3"
 
-#: gtk-glade/main.glade:661
+#: gtk-glade/main.glade:646
 msgid "2"
 msgstr "2"
 
-#: gtk-glade/main.glade:677
+#: gtk-glade/main.glade:662
 msgid "1"
 msgstr "1"
 
-#: gtk-glade/main.glade:693
+#: gtk-glade/main.glade:678
 msgid "Digits"
 msgstr "Цифры"
 
-#: gtk-glade/main.glade:731
+#: gtk-glade/main.glade:716
 msgid "Default"
 msgstr "По умолчанию"
 
-#: gtk-glade/main.glade:741
-msgid "My identity :"
+#: gtk-glade/main.glade:726
+#, fuzzy
+msgid "My current identity:"
 msgstr "Мой идентификатор:"
 
 #: gtk-glade/about.glade:8
@@ -312,15 +308,13 @@ msgstr "Разрешить этому контакту видеть мой ст�
 msgid "Contact information"
 msgstr "Контактная информация"
 
-#: gtk-glade/contact.glade:149
-#: gtk-glade/password.glade:112
-#: gtk-glade/sip_account.glade:202
+#: gtk-glade/contact.glade:149 gtk-glade/password.glade:114
+#: gtk-glade/sip_account.glade:206
 msgid "gtk-cancel"
 msgstr "Выход"
 
-#: gtk-glade/contact.glade:161
-#: gtk-glade/password.glade:100
-#: gtk-glade/sip_account.glade:190
+#: gtk-glade/contact.glade:161 gtk-glade/password.glade:102
+#: gtk-glade/sip_account.glade:194
 msgid "gtk-ok"
 msgstr "Ок"
 
@@ -328,10 +322,8 @@ msgstr "Ок"
 msgid "Linphone debug window"
 msgstr "Linphone окно ошибок"
 
-#: gtk-glade/log.glade:54
-#: gtk-glade/call_logs.glade:49
-#: gtk-glade/chatroom.glade:82
-#: gtk-glade/parameters.glade:1412
+#: gtk-glade/log.glade:54 gtk-glade/call_logs.glade:49
+#: gtk-glade/chatroom.glade:82 gtk-glade/parameters.glade:1402
 msgid "gtk-close"
 msgstr "Закрыть"
 
@@ -340,50 +332,53 @@ msgid "Linphone - Authentication required"
 msgstr "Linphone - Регистрация необходима"
 
 #: gtk-glade/password.glade:27
-msgid "Please enter your password for domain..."
+#, fuzzy
+msgid "Please enter the domain password"
 msgstr "Пожалуйста, введите свой паспорт для домена..."
+
+#: gtk-glade/password.glade:49
+#, fuzzy
+msgid "Username:"
+msgstr "Имя пользователя:"
 
 #: gtk-glade/password.glade:56
 msgid "Password:"
 msgstr "Пароль"
 
-#: gtk-glade/password.glade:66
-msgid "Username"
-msgstr "Имя пользователя:"
-
 #: gtk-glade/sip_account.glade:8
 msgid "Linphone - Configure a SIP account"
 msgstr "Linphone - Настроить SIP аккаунт"
 
-#: gtk-glade/sip_account.glade:42
-msgid "Your SIP identity:"
-msgstr "Ваш SIP идентификатор:"
+#: gtk-glade/sip_account.glade:56
+#, fuzzy
+msgid "Registration duration (sec):"
+msgstr "Период регистрации (сек):"
 
-#: gtk-glade/sip_account.glade:60
-msgid "SIP Proxy address:"
-msgstr "Адрес SIP прокси:"
-
-#: gtk-glade/sip_account.glade:72
-msgid "sip:"
-msgstr "sip:"
-
-#: gtk-glade/sip_account.glade:85
+#: gtk-glade/sip_account.glade:81
 msgid "Route (optional):"
 msgstr "Маршрут (необязательно):"
 
-#: gtk-glade/sip_account.glade:109
-msgid "Registration period (sec):"
-msgstr "Период регистрации (сек):"
+#: gtk-glade/sip_account.glade:94
+msgid "sip:"
+msgstr "sip:"
 
-#: gtk-glade/sip_account.glade:136
+#: gtk-glade/sip_account.glade:107
+msgid "SIP Proxy address:"
+msgstr "Адрес SIP прокси:"
+
+#: gtk-glade/sip_account.glade:130
+msgid "Your SIP identity:"
+msgstr "Ваш SIP идентификатор:"
+
+#: gtk-glade/sip_account.glade:140
 msgid "Register at startup"
 msgstr "Регистрировать при старте"
 
-#: gtk-glade/sip_account.glade:150
+#: gtk-glade/sip_account.glade:154
 msgid "Publish presence information"
 msgstr "Показывать статус присутствия"
 
-#: gtk-glade/sip_account.glade:167
+#: gtk-glade/sip_account.glade:171
 msgid "Configure a SIP account"
 msgstr "Настроить SIP аккаунт"
 
@@ -399,8 +394,7 @@ msgstr "Linphone - Входящий звонок"
 msgid "Incoming call from"
 msgstr "Входящий звонок от"
 
-#: gtk-glade/incoming_call.glade:45
-#: coreapi/linphonecore.c:230
+#: gtk-glade/incoming_call.glade:45 coreapi/linphonecore.c:230
 msgid "Incoming call"
 msgstr "Входящие звонки"
 
@@ -412,163 +406,176 @@ msgstr "Принять"
 msgid "Decline"
 msgstr "Понижение"
 
-#: gtk-glade/parameters.glade:36
-msgid "Use IPv6 instead of IPv4"
-msgstr "Использовать IPv6 вместо IPv4"
+#: gtk-glade/parameters.glade:41
+#, fuzzy
+msgid "Set Maximum Transmission Unit:"
+msgstr "Установка максимального числа передаваемых единиц"
 
-#: gtk-glade/parameters.glade:48
-msgid "<b>IPv6 usage</b>"
-msgstr "<b>IPv6 использовать</b>"
-
-#: gtk-glade/parameters.glade:77
-msgid "SIP (UDP)"
-msgstr "SIP (UDP)"
-
-#: gtk-glade/parameters.glade:84
-msgid "Audio RTP/UDP"
-msgstr "Аудио RTP/UDP"
-
-#: gtk-glade/parameters.glade:95
-msgid "Video RTP/UDP"
-msgstr "Видео RTP/UDP"
-
-#: gtk-glade/parameters.glade:153
-msgid "<b>Ports used</b>"
-msgstr "<b>Используемые порты</b>"
-
-#: gtk-glade/parameters.glade:187
-msgid "Public IP address"
-msgstr "Публичный IP адрес"
-
-#: gtk-glade/parameters.glade:211
-msgid "Stun server"
-msgstr "Stun сервер"
-
-#: gtk-glade/parameters.glade:234
-msgid "I'm not behing a firewall"
-msgstr "Я не за firewall"
-
-#: gtk-glade/parameters.glade:248
-msgid "I'm behind a firewall, use supplied public IP address"
-msgstr "Я за firewall, использовать доступный IP адрес"
-
-#: gtk-glade/parameters.glade:263
-msgid "Use the supplied stun server above and do as best as possible"
-msgstr "Использовать доступный Stun сервер и делать так хорошо как возможно"
-
-#: gtk-glade/parameters.glade:282
-msgid "<b>Firewall settings</b>"
-msgstr "<b>Настройки firewall</b>"
-
-#: gtk-glade/parameters.glade:315
+#: gtk-glade/parameters.glade:64
 msgid "Send DTMFs as SIP info"
 msgstr "Отправить DTFMы как SIP инфо"
 
-#: gtk-glade/parameters.glade:329
-msgid "Set Maximum Transmission Unit"
-msgstr "Установка максимального числа передаваемых единиц"
+#: gtk-glade/parameters.glade:78
+msgid "Use IPv6 instead of IPv4"
+msgstr "Использовать IPv6 вместо IPv4"
 
-#: gtk-glade/parameters.glade:354
-msgid "<b>Miscelaneous</b>"
-msgstr "<b>Разное</b>"
+#: gtk-glade/parameters.glade:95
+#, fuzzy
+msgid "<b>Transport</b>"
+msgstr "<b>Используемые порты</b>"
 
-#: gtk-glade/parameters.glade:383
+#: gtk-glade/parameters.glade:167
+#, fuzzy
+msgid "Video RTP/UDP:"
+msgstr "Видео RTP/UDP"
+
+#: gtk-glade/parameters.glade:179
+#, fuzzy
+msgid "Audio RTP/UDP:"
+msgstr "Аудио RTP/UDP"
+
+#: gtk-glade/parameters.glade:191
+#, fuzzy
+msgid "SIP (UDP):"
+msgstr "SIP (UDP)"
+
+#: gtk-glade/parameters.glade:203
+#, fuzzy
+msgid "<b>Ports</b>"
+msgstr "<b>Используемые порты</b>"
+
+#: gtk-glade/parameters.glade:227
+msgid "Direct connection to the Internet"
+msgstr ""
+
+#: gtk-glade/parameters.glade:241
+msgid "Behind NAT / Firewall (specify gateway IP below)"
+msgstr ""
+
+#: gtk-glade/parameters.glade:257
+#, fuzzy
+msgid "Public IP address:"
+msgstr "Публичный IP адрес"
+
+#: gtk-glade/parameters.glade:289
+msgid "Behind NAT / Firewall (use STUN to resolve)"
+msgstr ""
+
+#: gtk-glade/parameters.glade:305
+#, fuzzy
+msgid "Stun server:"
+msgstr "Stun сервер"
+
+#: gtk-glade/parameters.glade:336
+#, fuzzy
+msgid "<b>NAT and Firewall</b>"
+msgstr "<b>Настройки firewall</b>"
+
+#: gtk-glade/parameters.glade:365
 msgid "Network settings"
 msgstr "Настройки сети"
 
-#: gtk-glade/parameters.glade:422
-msgid "Enable echo cancelation"
-msgstr "Включить подавление эхо"
-
-#: gtk-glade/parameters.glade:438
-msgid "a sound card\n"
-msgstr "звуковая карта\n"
-
-#: gtk-glade/parameters.glade:453
-msgid "Playback device"
-msgstr "Устройство воспроизведения"
-
-#: gtk-glade/parameters.glade:464
-msgid "Ring device"
-msgstr "Устройство звонка"
-
-#: gtk-glade/parameters.glade:476
-msgid "Capture device"
-msgstr "Устройство захвата"
-
-#: gtk-glade/parameters.glade:487
-msgid "ALSA special device (optional)"
-msgstr "Специальное устройство ALSA (необязательно)"
-
-#: gtk-glade/parameters.glade:499
-msgid "default soundcard"
-msgstr "звуковая карта по умолчанию"
-
-#: gtk-glade/parameters.glade:514
-msgid "default soundcard\n"
-msgstr "звуковая карта по умолчанию\n"
-
-#: gtk-glade/parameters.glade:544
-msgid "Ring sound"
-msgstr "Звук звонка"
-
-#: gtk-glade/parameters.glade:569
+#: gtk-glade/parameters.glade:417
 msgid "gtk-media-play"
 msgstr "Медиа-play"
 
-#: gtk-glade/parameters.glade:595
-msgid "<b>Sound</b>"
+#: gtk-glade/parameters.glade:439
+#, fuzzy
+msgid "Ring sound:"
+msgstr "Звук звонка"
+
+#: gtk-glade/parameters.glade:466
+msgid "default soundcard\n"
+msgstr "звуковая карта по умолчанию\n"
+
+#: gtk-glade/parameters.glade:482
+msgid "default soundcard"
+msgstr "звуковая карта по умолчанию"
+
+#: gtk-glade/parameters.glade:496
+#, fuzzy
+msgid "ALSA special device (optional):"
+msgstr "Специальное устройство ALSA (необязательно)"
+
+#: gtk-glade/parameters.glade:509
+#, fuzzy
+msgid "Capture device:"
+msgstr "Устройство захвата"
+
+#: gtk-glade/parameters.glade:522
+#, fuzzy
+msgid "Ring device:"
+msgstr "Устройство звонка"
+
+#: gtk-glade/parameters.glade:535
+#, fuzzy
+msgid "Playback device:"
+msgstr "Устройство воспроизведения"
+
+#: gtk-glade/parameters.glade:547
+msgid "a sound card\n"
+msgstr "звуковая карта\n"
+
+#: gtk-glade/parameters.glade:562
+#, fuzzy
+msgid "Enable echo cancellation"
+msgstr "Включить подавление эхо"
+
+#: gtk-glade/parameters.glade:582
+#, fuzzy
+msgid "<b>Audio</b>"
 msgstr "<b>Звук</b>"
 
-#: gtk-glade/parameters.glade:620
+#: gtk-glade/parameters.glade:607
+#, fuzzy
+msgid "Video input device:"
+msgstr "Видео устройсво вывода"
+
+#: gtk-glade/parameters.glade:617
 msgid "default camera"
 msgstr "камера по умолчаию"
 
-#: gtk-glade/parameters.glade:632
-msgid "Video input device"
-msgstr "Видео устройсво вывода"
-
-#: gtk-glade/parameters.glade:645
+#: gtk-glade/parameters.glade:633
 msgid "<b>Video</b>"
 msgstr "<b>Видео</b>"
 
-#: gtk-glade/parameters.glade:678
+#: gtk-glade/parameters.glade:666
 msgid "Multimedia settings"
 msgstr "Настройка мультимедиа"
 
-#: gtk-glade/parameters.glade:699
+#: gtk-glade/parameters.glade:687
 msgid "This section defines your SIP address when not using a SIP account"
 msgstr "Поле определяет ваш SIP адрес когда вы не используете SIP аккаунт"
 
-#: gtk-glade/parameters.glade:744
-msgid "Your resulting SIP address:"
-msgstr "Ваш результирующий sip адрес:"
-
-#: gtk-glade/parameters.glade:755
-msgid "Your username:"
-msgstr "Ваше имя пользователя:"
-
-#: gtk-glade/parameters.glade:778
+#: gtk-glade/parameters.glade:704
 msgid "Your display name (eg: John Doe):"
 msgstr "Ваше видимое имя (Иван Сидоров):"
 
-#: gtk-glade/parameters.glade:789
+#: gtk-glade/parameters.glade:723
+msgid "Your username:"
+msgstr "Ваше имя пользователя:"
+
+#: gtk-glade/parameters.glade:734
+msgid "Your resulting SIP address:"
+msgstr "Ваш результирующий sip адрес:"
+
+#: gtk-glade/parameters.glade:777
 msgid "<b>Default identity</b>"
 msgstr "<b>Личность по умолчанию</b>"
 
-#: gtk-glade/parameters.glade:856
+#: gtk-glade/parameters.glade:844
 msgid "Add"
 msgstr "Добавить"
 
-#: gtk-glade/parameters.glade:889
+#: gtk-glade/parameters.glade:877
 msgid "Edit"
 msgstr "Изменить"
 
-#: gtk-glade/parameters.glade:925
+#: gtk-glade/parameters.glade:913
 msgid "Remove"
 msgstr "Удалить"
 
-#: gtk-glade/parameters.glade:956
+#: gtk-glade/parameters.glade:944
 msgid ""
 "Register to FONICS\n"
 "virtual network !"
@@ -576,23 +583,23 @@ msgstr ""
 "Регистрация в FONICS\n"
 "вирнтуальной сети!"
 
-#: gtk-glade/parameters.glade:985
+#: gtk-glade/parameters.glade:973
 msgid "<b>Proxy accounts</b>"
 msgstr "<b>Proxy аккаунт</b>"
 
-#: gtk-glade/parameters.glade:1034
+#: gtk-glade/parameters.glade:1022
 msgid "Erase all passwords"
 msgstr "Стереть все пароли"
 
-#: gtk-glade/parameters.glade:1052
+#: gtk-glade/parameters.glade:1040
 msgid "<b>Privacy</b>"
 msgstr "<b>Секретность</b>"
 
-#: gtk-glade/parameters.glade:1084
+#: gtk-glade/parameters.glade:1072
 msgid "Manage SIP Accounts"
 msgstr "Управление SIP аккаунтами"
 
-#: gtk-glade/parameters.glade:1120
+#: gtk-glade/parameters.glade:1108
 msgid ""
 "Audio codecs\n"
 "Video codecs"
@@ -600,44 +607,46 @@ msgstr ""
 "Аудио кодеки\n"
 " и Видео кодеки"
 
-#: gtk-glade/parameters.glade:1161
+#: gtk-glade/parameters.glade:1149
 msgid "gtk-go-up"
 msgstr "Развернуть"
 
-#: gtk-glade/parameters.glade:1173
+#: gtk-glade/parameters.glade:1161
 msgid "gtk-go-down"
 msgstr "Свернуть"
 
-#: gtk-glade/parameters.glade:1205
+#: gtk-glade/parameters.glade:1193
 msgid "Enable"
 msgstr "Включить"
 
-#: gtk-glade/parameters.glade:1241
+#: gtk-glade/parameters.glade:1229
 msgid "Disable"
 msgstr "Выключить"
 
-#: gtk-glade/parameters.glade:1273
+#: gtk-glade/parameters.glade:1261
 msgid "<b>Codecs</b>"
 msgstr "<b>Кодеки</b>"
 
-#: gtk-glade/parameters.glade:1302
-msgid "Download limit in kbits/sec"
-msgstr "Исходящий поток kbit/sec"
-
-#: gtk-glade/parameters.glade:1309
-msgid "Upload limit in kbits/sec"
-msgstr "Входящий поток kbit/sec"
-
-#: gtk-glade/parameters.glade:1321
-#: gtk-glade/parameters.glade:1335
+#: gtk-glade/parameters.glade:1291 gtk-glade/parameters.glade:1307
 msgid "0 stands for \"unlimited\""
 msgstr "0 поставить для \"безлимитный\""
 
-#: gtk-glade/parameters.glade:1354
-msgid "<b>Bandwidth usage</b>"
+#: gtk-glade/parameters.glade:1320
+#, fuzzy
+msgid "Upload speed limit in Kbit/sec:"
+msgstr "Входящий поток kbit/sec"
+
+#: gtk-glade/parameters.glade:1332
+#, fuzzy
+msgid "Download speed limit in Kbit/sec:"
+msgstr "Исходящий поток kbit/sec"
+
+#: gtk-glade/parameters.glade:1344
+#, fuzzy
+msgid "<b>Bandwidth control</b>"
 msgstr "<b>Пропускная способность</b>"
 
-#: gtk-glade/parameters.glade:1386
+#: gtk-glade/parameters.glade:1376
 msgid "Codecs"
 msgstr "Кодеки"
 
@@ -678,8 +687,13 @@ msgid "Outgoing call"
 msgstr "Исходящие звонки"
 
 #: coreapi/linphonecore.c:416
-msgid "Your machine appears to be connected to an IPv6 network. By default linphone always uses IPv4. Please update your configuration if you want to use IPv6"
-msgstr "Похоже Ваш компьютер подключен по сети с IPv6. Linphone по умолчанию использует IPv4. Пожалуйста, обновите настройки если хотите использовать IPv6."
+msgid ""
+"Your machine appears to be connected to an IPv6 network. By default linphone "
+"always uses IPv4. Please update your configuration if you want to use IPv6"
+msgstr ""
+"Похоже Ваш компьютер подключен по сети с IPv6. Linphone по умолчанию "
+"использует IPv4. Пожалуйста, обновите настройки если хотите использовать "
+"IPv6."
 
 #: coreapi/linphonecore.c:701
 msgid "Ready"
@@ -698,8 +712,12 @@ msgid "Could not resolve this number."
 msgstr "Не может принять решение по этому номеру."
 
 #: coreapi/linphonecore.c:1130
-msgid "Could not parse given sip address. A sip url usually looks like sip:user@domain"
-msgstr "Не могу опознать sip адрес. SIP url обычно выглядит как: <sip:username@domainname>"
+msgid ""
+"Could not parse given sip address. A sip url usually looks like sip:"
+"user@domain"
+msgstr ""
+"Не могу опознать sip адрес. SIP url обычно выглядит как: <sip:"
+"username@domainname>"
 
 #: coreapi/linphonecore.c:1179
 msgid "Sorry, having multiple simultaneous calls is not supported yet !"
@@ -713,8 +731,7 @@ msgstr "Соединение"
 msgid "could not call"
 msgstr "невозможно позвонить"
 
-#: coreapi/linphonecore.c:1517
-#: coreapi/exevents.c:41
+#: coreapi/linphonecore.c:1517 coreapi/exevents.c:41
 msgid "Connected."
 msgstr "Соединён."
 
@@ -726,8 +743,7 @@ msgstr "Разговор окончен"
 msgid "No nat/firewall address supplied !"
 msgstr "NAT/firewall адрес не установлен !"
 
-#: coreapi/linphonecore.c:1866
-#: coreapi/linphonecore.c:1878
+#: coreapi/linphonecore.c:1866 coreapi/linphonecore.c:1878
 #, c-format
 msgid "Invalid nat address '%s' : %s"
 msgstr "Неверный NAT адрес '%s' : '%s'"
@@ -742,7 +758,8 @@ msgstr ""
 "Ваш компьютер использует ALSA звуковой драйвер.\n"
 "Это лучший выбор. Однако, pcm oss модуль эмуляции\n"
 "не найден и он нужен для linphone.\n"
-"Пожалуйста, выполните от пользователя root 'modprobe snd-pcm-oss' чтоб загрузить его."
+"Пожалуйста, выполните от пользователя root 'modprobe snd-pcm-oss' чтоб "
+"загрузить его."
 
 #: coreapi/misc.c:134
 msgid ""
@@ -754,7 +771,8 @@ msgstr ""
 "Ваш компьютер использует ALSA звуковой драйвер.\n"
 "Это лучший выбор. Однако, oss микшера модуля\n"
 "не найден и он нужен для linphone.\n"
-"Пожалуйста, выполните от пользователя root 'modprobe snd-pcm-oss' чтоб загрузить его."
+"Пожалуйста, выполните от пользователя root 'modprobe snd-pcm-oss' чтоб "
+"загрузить его."
 
 #: coreapi/misc.c:589
 msgid "Stun lookup in progress..."
@@ -798,7 +816,8 @@ msgstr "Пользователь не может быть найден."
 
 #: coreapi/exevents.c:178
 msgid "Remote user cannot support any of proposed codecs."
-msgstr "Удалённый пользователь не поддерживает ни одного из предложенных кодеков."
+msgstr ""
+"Удалённый пользователь не поддерживает ни одного из предложенных кодеков."
 
 #: coreapi/exevents.c:204
 msgid "Timeout."
@@ -843,8 +862,7 @@ msgstr "нет ответа"
 msgid "Registration on %s successful."
 msgstr "Регистрация на %s прошла успешно."
 
-#: coreapi/presence.c:112
-#: coreapi/presence.c:164
+#: coreapi/presence.c:112 coreapi/presence.c:164
 msgid "Gone"
 msgstr "Ушёл"
 
@@ -880,138 +898,208 @@ msgstr "На обеде"
 msgid "Closed"
 msgstr "Закрыто"
 
+#~ msgid ""
+#~ "Show All\n"
+#~ "Show Online"
+#~ msgstr ""
+#~ "Показать все\n"
+#~ "Показать Online"
+
+#~ msgid "Search:"
+#~ msgstr "Поиск:"
+
+#~ msgid "Display filters"
+#~ msgstr "Показать фильтры"
+
+#~ msgid "<b>IPv6 usage</b>"
+#~ msgstr "<b>IPv6 использовать</b>"
+
+#~ msgid "I'm not behing a firewall"
+#~ msgstr "Я не за firewall"
+
+#~ msgid "I'm behind a firewall, use supplied public IP address"
+#~ msgstr "Я за firewall, использовать доступный IP адрес"
+
+#~ msgid "Use the supplied stun server above and do as best as possible"
+#~ msgstr "Использовать доступный Stun сервер и делать так хорошо как возможно"
+
+#~ msgid "<b>Miscelaneous</b>"
+#~ msgstr "<b>Разное</b>"
+
 #~ msgid "Go"
 #~ msgstr "Старт"
+
 #~ msgid "Address book"
 #~ msgstr "Адресная книга"
+
 #~ msgid "Shows calls"
 #~ msgstr "Показать звонки"
+
 #~ msgid "Exit"
 #~ msgstr "Выход"
+
 #~ msgid "Help"
 #~ msgstr "Помощь"
+
 #~ msgid "Enter sip address or phone number here"
 #~ msgstr "Введите sip адрес или телефонный номер."
+
 #~ msgid "Shows the address book"
 #~ msgstr "Показать адресную книгу"
+
 #~ msgid "..."
 #~ msgstr "..."
+
 #~ msgid "Proxy to use:"
 #~ msgstr "Какой узел использовать:"
+
 #~ msgid ""
 #~ "Call or\n"
 #~ "answer"
 #~ msgstr ""
 #~ "Позвонить\n"
 #~ "или ответить"
+
 #~ msgid ""
 #~ "Hangup\n"
 #~ "or refuse"
 #~ msgstr ""
 #~ "Прервать\n"
 #~ "или отказать"
+
 #~ msgid "Or chat !"
 #~ msgstr "Или Чат ! "
+
 #~ msgid "Show more..."
 #~ msgstr "Показать больше..."
+
 #~ msgid "Playback level:"
 #~ msgstr "Уровень воспроизведения:"
+
 #~ msgid "Recording level:"
 #~ msgstr "Уровень записи:"
+
 #~ msgid "Ring level:"
 #~ msgstr "Уровень звонка:"
+
 #~ msgid "Enable video"
 #~ msgstr "Включить видео"
+
 #~ msgid "Controls"
 #~ msgstr "Управление"
+
 #~ msgid "Reachable"
 #~ msgstr "Доступен"
+
 #~ msgid "Busy, I'll be back in "
 #~ msgstr "Занят, я вернусь через "
+
 #~ msgid "The other party will be informed that you'll be back in X minutes"
 #~ msgstr "Другая часть информирует, что Вы вернётесь через X минут"
+
 #~ msgid "mn"
 #~ msgstr "мн"
+
 #~ msgid "Do not disturb"
 #~ msgstr "Не беспокоить"
+
 #~ msgid "Moved temporarily"
 #~ msgstr "Временно переехал"
+
 #~ msgid "Alternative service"
 #~ msgstr "Альтернативный сервис"
+
 #~ msgid "URL:"
 #~ msgstr "URL:"
+
 #~ msgid "Presence"
 #~ msgstr "Статус"
+
 #~ msgid "Press digits to send DTMFs."
 #~ msgstr "Введите цифры, чтоб отправить DTMF."
+
 #~ msgid ""
 #~ "  3\n"
 #~ "def"
 #~ msgstr ""
 #~ "  3\n"
 #~ "где"
+
 #~ msgid ""
 #~ "  2\n"
 #~ "abc"
 #~ msgstr ""
 #~ "  2\n"
 #~ "абв"
+
 #~ msgid ""
 #~ "  4\n"
 #~ "ghi"
 #~ msgstr ""
 #~ "  4\n"
 #~ "жзи"
+
 #~ msgid ""
 #~ " 5\n"
 #~ "jkl"
 #~ msgstr ""
 #~ "  5\n"
 #~ "клм"
+
 #~ msgid ""
 #~ "  6\n"
 #~ "mno"
 #~ msgstr ""
 #~ "  6\n"
 #~ "ноп"
+
 #~ msgid ""
 #~ "   7\n"
 #~ "pqrs"
 #~ msgstr ""
 #~ "  7\n"
 #~ "рст"
+
 #~ msgid ""
 #~ "  8\n"
 #~ "tuv"
 #~ msgstr ""
 #~ "  8\n"
 #~ "уфх"
+
 #~ msgid ""
 #~ "   9\n"
 #~ "wxyz"
 #~ msgstr ""
 #~ "  9\n"
 #~ "шюя"
+
 #~ msgid "DTMF"
 #~ msgstr "DTMF"
+
 #~ msgid "My online friends"
 #~ msgstr "Мои друзья онлайн:"
+
 #~ msgid "Linphone"
 #~ msgstr "Linphone"
+
 #~ msgid ""
 #~ "C: 2001\n"
 #~ "Made in Old Europe"
 #~ msgstr ""
 #~ "C: 2001\n"
 #~ "Сделано в старой Европе"
+
 #~ msgid ""
 #~ "Linphone is a web-phone.\n"
 #~ "It is compatible with SIP and RTP protocols."
 #~ msgstr ""
 #~ "Linphone - это интернет телефон.\n"
 #~ "Он совместим с SIP и RTP протоколами."
+
 #~ msgid "http://www.linphone.org"
 #~ msgstr "http://www.linphone.org/"
+
 #~ msgid "Use IPv6 network (if available)"
 #~ msgstr "Использовать IPv6 сеть (если доступно)"
 
@@ -1019,141 +1107,200 @@ msgstr "Закрыто"
 #~ msgid ""
 #~ "Toggle this if you are on an ipv6 network and you wish linphone to use it."
 #~ msgstr "Отметьте, если Вы в сети с ipv6 и будите использовать linphone."
+
 #~ msgid "Global"
 #~ msgstr "Основные"
+
 #~ msgid ""
 #~ "These options is only for users in a private network, behind a gateway. "
 #~ "If you are not in this situation, then leave this empty."
 #~ msgstr ""
 #~ "Эта опция используется в частных сетях, за шлюзом. Если вы не в этой "
 #~ "ситуации, просто оставьте пустой."
+
 #~ msgid "No firewall"
 #~ msgstr "Нет firewall'a"
+
 #~ msgid "Use this STUN server to guess firewall address :"
 #~ msgstr "Используйте этот STUN сервер чтоб определить адрес firewall :"
+
 #~ msgid "Specify firewall address manually:"
 #~ msgstr "Определить адрес Firewall вручную:"
+
 #~ msgid "NAT traversal options (experimental)"
 #~ msgstr "NAT опции (экспериментально)"
+
 #~ msgid "Number of buffered miliseconds (jitter compensation):"
 #~ msgstr "Число милисекунд для буферизации (компенсация дрожания):"
+
 #~ msgid "RTP port used for audio:"
 #~ msgstr "RTP порт для аудио:"
+
 #~ msgid "RTP properties"
 #~ msgstr "RTP свойства"
+
 #~ msgid "Use SIP INFO message instead of RTP rfc2833 for DTMF transmitting"
 #~ msgstr ""
 #~ "Используйте SIP INFO сообщения вместо RTP rfc2833 для DTMF препровождения"
+
 #~ msgid "RTP-RFC2833 is the recommended way."
 #~ msgstr "RTP-RFC2833 рекомендуемый."
+
 #~ msgid "Other"
 #~ msgstr "Другое"
+
 #~ msgid "micro"
 #~ msgstr "Микрофон"
+
 #~ msgid "Recording source:"
 #~ msgstr "Источник записи:"
+
 #~ msgid "Enable echo-canceler (cancels the echo heard by the remote party)"
 #~ msgstr ""
 #~ "Включить подавление эхо (подавляет эхо слышимое с удалённого устройства)"
+
 #~ msgid "Choose file"
 #~ msgstr "Выберите файл"
+
 #~ msgid "Listen"
 #~ msgstr "Слушать"
+
 #~ msgid "Sound properties"
 #~ msgstr "Настройки звука"
+
 #~ msgid "Sound device"
 #~ msgstr "Устройство звука"
+
 #~ msgid "Run sip user agent on port:"
 #~ msgstr "Запустить \"user agent\" на порту:"
+
 #~ msgid "It is strongly recommended to use port 5060."
 #~ msgstr "Рекомендуется использовать порт 5060."
+
 #~ msgid "SIP port"
 #~ msgstr "SIP порт"
+
 #~ msgid "@"
 #~ msgstr "@"
+
 #~ msgid "Automatically guess a valid hostname"
 #~ msgstr "Автоматически определить верный hostname"
+
 #~ msgid "Identity"
 #~ msgstr "Личность"
+
 #~ msgid "Add proxy/registrar"
 #~ msgstr "Добавить прокси/регистратора"
+
 #~ msgid "Remote services"
 #~ msgstr "Удалённые сервисы"
+
 #~ msgid "Clear all stored authentication information (username,password...)"
 #~ msgstr "Удалить всю информацию аунтефикации (логин, пароль...)"
+
 #~ msgid "Authentication information"
 #~ msgstr "Информация аунтефикации"
+
 #~ msgid "SIP"
 #~ msgstr "SIP"
+
 #~ msgid "List of audio codecs, in order of preference:"
 #~ msgstr "Список аудио кодеков в приоритетном порядке:"
+
 #~ msgid ""
 #~ "Note: Codecs in red are not usable regarding to your connection type to "
 #~ "the internet."
 #~ msgstr ""
 #~ "Заметка: Кодеки отмеченные красным не подходят для вашего соединения в "
 #~ "Internet."
+
 #~ msgid "No information availlable"
 #~ msgstr "Информация недоступна"
+
 #~ msgid "Codec information"
 #~ msgstr "Информация о кодеке"
+
 #~ msgid "Address Book"
 #~ msgstr "Адресная книга"
+
 #~ msgid "Select"
 #~ msgstr "Выбор"
+
 #~ msgid "Information"
 #~ msgstr "Информация"
+
 #~ msgid ""
 #~ "User is not reachable at the moment but he invites you to contact him "
 #~ "using the following alternate ressource:"
 #~ msgstr ""
 #~ "Пользователь не доступен в данный момент, но приглашает пообщаться на "
 #~ "альтернативном ресурсе:"
+
 #~ msgid "None."
 #~ msgstr "Нет."
+
 #~ msgid "Proxy/Registrar configuration box"
 #~ msgstr "Прокси/Регистратор конфигуратор"
+
 #~ msgid "Send registration:"
 #~ msgstr "Отправить регистрацию:"
+
 #~ msgid "Edit contact information"
 #~ msgstr "Редактировать контактную информацию"
+
 #~ msgid "Name:"
 #~ msgstr "Имя:"
+
 #~ msgid "Subscribe policy:"
 #~ msgstr "Правило подписки:"
+
 #~ msgid "Send subscription (see person's online status)"
 #~ msgstr "Отправить подписку (смотреть статус персоны в сети)"
+
 #~ msgid "New incoming subscription"
 #~ msgstr "Подтверждение новой подписки"
+
 #~ msgid "You have received a new subscription..."
 #~ msgstr "Вы получили новое подтверждение..."
+
 #~ msgid "Refuse"
 #~ msgstr "Отказать"
+
 #~ msgid "Authentication required for realm"
 #~ msgstr "Регистрация для"
+
 #~ msgid "userid:"
 #~ msgstr "ID пользователя:"
+
 #~ msgid "realm:"
 #~ msgstr "Название:"
+
 #~ msgid "Linphone - Call history"
 #~ msgstr "Linphone - История звонков"
+
 #~ msgid "Chat Room"
 #~ msgstr "Комната чата"
+
 #~ msgid "Text:"
 #~ msgstr "Текст"
+
 #~ msgid "Unlimited"
 #~ msgstr "Безлимитный"
+
 #~ msgid "The caller asks for resource reservation. Do you agree ?"
 #~ msgstr ""
 #~ "Вызывающий абонент спрашивает о резервировании ресурса. Вы согласны ?"
+
 #~ msgid ""
 #~ "The caller doesn't use resource reservation. \t\t\t\t\tDo you wish to "
 #~ "continue anyway ?"
 #~ msgstr ""
 #~ "Вызывающий не использует резервирование ресурса. \t\t\t\t\tВы всё равно "
 #~ "желаете продолжить?"
+
 #~ msgid "linphone - receiving call from %s"
 #~ msgstr "Linphone - принял звонок от %s"
+
 #~ msgid ""
 #~ "You have received a subscription from %s.This means that this person "
 #~ "wishes to be notified of your presence information (online, busy, "
@@ -1163,28 +1310,40 @@ msgstr "Закрыто"
 #~ "Вы получили запрос на подключение от %s. Это значит что этот человек "
 #~ "хочет знать ваш статус (онлайн, занят, отошёл...).\n"
 #~ "Вы согласны ?"
+
 #~ msgid "Authentication required for realm %s"
 #~ msgstr "Регистрация для %s"
+
 #~ msgid "None"
 #~ msgstr "Нет"
+
 #~ msgid "Wait"
 #~ msgstr "Подождать"
+
 #~ msgid "Deny"
 #~ msgstr "Отказать"
+
 #~ msgid "Bad sip address: a sip address looks like sip:user@domain"
 #~ msgstr "Неправильный sip адрес, он выглядит как: <sip:username@domainname>"
+
 #~ msgid "Stun lookup done..."
 #~ msgstr "Поиск Stun завершён..."
+
 #~ msgid "enter sip uri here"
 #~ msgstr "Sip URI eingeben"
+
 #~ msgid "User manual"
 #~ msgstr "Anwender-Handbuch"
+
 #~ msgid "Ring sound selection"
 #~ msgstr "Klingelton ausw�len"
+
 #~ msgid "Communication ended."
 #~ msgstr "Kommunikation beendet."
+
 #~ msgid "Call cancelled."
 #~ msgstr "Anruf annulliert"
+
 #, fuzzy
 #~ msgid "Firewall 's external ip address (in dot notations):"
 #~ msgstr "IP-Adresse des Firewall (in Punktnotation)"
@@ -1192,16 +1351,22 @@ msgstr "Закрыто"
 #, fuzzy
 #~ msgid "Server address"
 #~ msgstr "Server-Adresse:"
+
 #~ msgid "28k modem"
 #~ msgstr "28K Modem"
+
 #~ msgid "56k modem"
 #~ msgstr "56K Modem"
+
 #~ msgid "64k modem (numeris)"
 #~ msgstr "64K Modem (ISDN)"
+
 #~ msgid "ADSL or Cable modem"
 #~ msgstr "ADSL oder Kabel-Modem"
+
 #~ msgid "Ethernet or equivalent"
 #~ msgstr "Ethernet oder �uivalent"
+
 #~ msgid "Connection type:"
 #~ msgstr "Verbindungstyp:"
 
@@ -1212,19 +1377,24 @@ msgstr "Закрыто"
 #~ msgstr ""
 #~ "Linphone kann das Soundger� nicht �fnen. Prfen Sie nach, ob dieSoundkarte "
 #~ "vollst�dig konfiguriert und funktionsf�ig ist."
+
 #~ msgid "Type here the sip address of the person you want to call."
 #~ msgstr ""
 #~ "Geben Sie die Sip-Adresse des Anwenders, den Sie anrufen m�hten, hier ein."
+
 #~ msgid ""
 #~ "Release or\n"
 #~ "Refuse"
 #~ msgstr ""
 #~ "Auflegen oder\n"
 #~ "Abweisen"
+
 #~ msgid "%s. Retry after %i minute(s)."
 #~ msgstr "%s. In %i Minuten wieder versuchen."
+
 #~ msgid "Timeout..."
 #~ msgstr "Zeitberschreitung..."
+
 #~ msgid "Connection"
 #~ msgstr "Verbindung"
 
@@ -1233,23 +1403,31 @@ msgstr "Закрыто"
 #~ "Add address\n"
 #~ "book"
 #~ msgstr "Adressbuch"
+
 #~ msgid "Toggle this if you want to be registered on a remote server."
 #~ msgstr ""
 #~ "Bitte ankreuzen, wenn Sie auf einem Sip-Server registriert werden wollen."
+
 #~ msgid "Address of record:"
 #~ msgstr "Adresse des Eintrags:"
+
 #~ msgid ""
 #~ "The password used for registration. On some servers it is not necessary"
 #~ msgstr ""
 #~ "Passwort fr die Registrierung.  Bei manchen Servern nicht erforderlich."
+
 #~ msgid "Use this registrar server as outbound proxy."
 #~ msgstr "Verwenden Sie diesen Registrarserver als externen proxy."
+
 #~ msgid "sip address:"
 #~ msgstr "SIP-Adresse:"
+
 #~ msgid "Modify"
 #~ msgstr "�dern"
+
 #~ msgid "Registering..."
 #~ msgstr "Registrierung"
+
 #~ msgid ""
 #~ "You are currently using the i810_audio driver.\n"
 #~ "This driver is buggy and so does not work with Linphone.\n"
@@ -1264,24 +1442,33 @@ msgstr "Закрыто"
 #~ "zu ersetzen oder die gewnschten ALSA-Treiber von http://www.alsa-project."
 #~ "org\n"
 #~ "zu beziehen und zu installieren"
+
 #~ msgid "Unregistration successfull."
 #~ msgstr "Abmeldung erfolgreich."
+
 #~ msgid "Select network interface to use:"
 #~ msgstr "Netzwerkschnittstelle w�len:"
+
 #~ msgid "Network interface properties"
 #~ msgstr "Eigenschaften der Netzwerkschnittstelle"
+
 #~ msgid "RTP"
 #~ msgstr "RTP"
+
 #~ msgid "C: 2001"
 #~ msgstr "April 2001"
+
 #~ msgid "Threads not supported by glib. Upgrade your glib.\n"
 #~ msgstr ""
 #~ "Threads werden von glib nicht untersttzt.  Bitte aktualisieren Sie Ihre "
 #~ "glib.\n"
+
 #~ msgid "Run linphone as a gnome-applet."
 #~ msgstr "Linphone als gnome-Applet ausfhren."
+
 #~ msgid "Run linphone as a daemon (for use without gnome)."
 #~ msgstr "Linphone als daemon ausfhren (Verwendung ohne Gnome)."
+
 #~ msgid ""
 #~ "Cannot find network previously used interface %s.\n"
 #~ "If your computer is temporary connected to the internet, please connect "
@@ -1295,6 +1482,7 @@ msgstr "Закрыто"
 #~ "Verbindung her und rufen Sie linphone erneut auf.\n"
 #~ "Wenn Sie die vorgegebene Netzwerkschnittstelle �dern wollen, w�len Sie "
 #~ "bitte \"Einstellungen\"."
+
 #~ msgid ""
 #~ "Linphone cannot open the audio device.\n"
 #~ "It may be caused by other programs using it.\n"
@@ -1303,42 +1491,55 @@ msgstr "Закрыто"
 #~ "Linphone kann die Soundschnittstelle nicht �fnen.\n"
 #~ "Dies kann durch andere Applikationen verursacht sein.\n"
 #~ "M�hten sie diese Programme (esd oder artsd) beenden?"
+
 #~ msgid "label37"
 #~ msgstr "label37"
+
 #~ msgid "Use it as a:"
 #~ msgstr "Verwenden als:"
+
 #~ msgid "Outbound proxy"
 #~ msgstr "Ausgehender Proxy-Server"
+
 #~ msgid ""
 #~ "Toggle this button if the registrar must be used to proxy calls through a "
 #~ "firewall."
 #~ msgstr ""
 #~ "Verwenden Sie diesen Knopf, falls der Registrar zum Tunneln durch einen "
 #~ "Firewall verwendet werden mu�"
+
 #~ msgid "kbit/s"
 #~ msgstr "Kbits/s"
+
 #~ msgid "OSS"
 #~ msgstr "OSS"
+
 #~ msgid "ALSA"
 #~ msgstr "ALSA"
+
 #~ msgid "Automatically kill applications using soundcard when needed"
 #~ msgstr "Applikationen die die Soundkarte verwenden, automatisch beenden."
+
 #~ msgid ""
 #~ "Your computer is connected to several networks. Check in the global "
 #~ "parameters if Linphone uses the one that you want."
 #~ msgstr ""
 #~ "Ihr Rechner ist an mehere Netze angeschlossen. Stellen Sie sicher, da�in "
 #~ "den Globalen Parametern die richtige Schnittstelle selektiert ist."
+
 #~ msgid ""
 #~ "Linphone failed to open the sound device. See the README file included in "
 #~ "the distribution for details."
 #~ msgstr ""
 #~ "Linphone konnte die Soundschnittstelle nicht �fnen. Weitere Informationen "
 #~ "finden Sie in der README-Datei (enthalten in der Distribution)."
+
 #~ msgid "Interface not found."
 #~ msgstr "Schnittstelle nicht gefunden."
+
 #~ msgid "Warning"
 #~ msgstr "Warnung"
+
 #~ msgid ""
 #~ "Linphone cannot open the sound device. It may be caused by other programs "
 #~ "using it. Do you want linphone to kill these programs (esd or artsd) ?"
@@ -1346,16 +1547,21 @@ msgstr "Закрыто"
 #~ "Linphone kann die Soundschnittstelle nicht �fnen. Dies kann durch andere "
 #~ "Applikationen verursacht sein. M�hten sie diese Programme (esd oder "
 #~ "artsd) beenden?"
+
 #~ msgid "Linphone shutdowns..."
 #~ msgstr "Linphone Ende..."
+
 #~ msgid ""
 #~ "Please, wait a few seconds untils linphone unregisters your sip addess "
 #~ "from registrar server..."
 #~ msgstr "Bitte einige Sekunden warten, bis Sip-Adresse ausgetragen ist."
+
 #~ msgid "Bad formuled sip address."
 #~ msgstr "SIP-Adresse fehlerhaft."
+
 #~ msgid "Couldn't create pixmap from file: %s"
 #~ msgstr "Konnte Pixmap nicht aus Datei %s erzeugen."
+
 #~ msgid ""
 #~ "Linphone did not detect any valid network interface. If you use a "
 #~ "temporary internet connection, please connect and then run linphone again."
@@ -1363,6 +1569,6 @@ msgstr "Закрыто"
 #~ "Linphone konnte keine Netzwerkschnittstelle finden. Wenn Sie nur eine "
 #~ "tempor�e Internetverbindung haben, bitte erneut eine Internetverbindung "
 #~ "herstellen und linphone nochmals starten."
+
 #~ msgid "List of network interfaces on your system."
 #~ msgstr "Vorhandene Netzwerkschnittstellen ihres Systems"
-
