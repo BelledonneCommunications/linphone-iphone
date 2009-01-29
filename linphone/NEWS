@@ -1,3 +1,13 @@
+linphone-3.1.0 -- January 19, 2009
+	* linphone can now send large video pictures: up to SVGA, configurable via the user interface
+	* automatic rescaling of the video windows to the video size of incoming stream
+	* improved webcam support on windows
+	* plenty of user interface cosmetic improvements
+	* set a user friendly gtk theme by default on windows
+	* linphonec can compile and work without libreadline
+	* enable translations on windows
+	* bugfixing as usual
+
 linphone-3.0.0  -- October 13, 2008
 	* new graphical interface based on Glade/Gtk
 	* systray icon

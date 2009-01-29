@@ -5,21 +5,21 @@
  *  Copyright (C) 2006  Sandro Santilli <strk@keybit.net>
  *  Copyright (C) 2004  Simon MORLAT <simon.morlat@linphone.org>
  *
- ****************************************************************************
+****************************************************************************
  *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Library General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
  ****************************************************************************/
 
@@ -73,6 +73,10 @@ static int linphonec_friend_delete(LinphoneCore *lc, int num);
 
 /* Command table management */
 static LPC_COMMAND *lpc_find_command(const char *name);
+
+void linphonec_out(const char *fmt,...);
+
+
 
 /***************************************************************************
  *
@@ -199,13 +203,13 @@ linphonec_parse_command_line(LinphoneCore *lc, char *cl)
 	cmd=lpc_find_command(cl);
 	if ( !cmd )
 	{
-		printf("'%s': Cannot understand this.\n", cl);
+		linphonec_out("'%s': Cannot understand this.\n", cl);
 		return 1;
 	}
 
 	if ( ! cmd->func(lc, args) )
 	{
-		printf("Syntax error.\n");
+		linphonec_out("Syntax error.\n");
 		linphonec_display_command_help(cmd);
 	}
 
@@ -262,18 +266,18 @@ lpc_cmd_help(LinphoneCore *lc, char *arg)
 
 	if (!arg || !*arg)
 	{
-		printf("Commands are:\n");
-		printf("---------------------------\n");
+		linphonec_out("Commands are:\n");
+		linphonec_out("---------------------------\n");
 
 		while (commands[i].help)
 		{
-			printf("%10.10s\t%s\n", commands[i].name,
+			linphonec_out("%10.10s\t%s\n", commands[i].name,
 				commands[i].help);
 			i++;
 		}
 		
-		printf("---------------------------\n");
-		printf("Type 'help <command>' for more details.\n");
+		linphonec_out("---------------------------\n");
+		linphonec_out("Type 'help <command>' for more details.\n");
 
 		return 1;
 	}
@@ -281,7 +285,7 @@ lpc_cmd_help(LinphoneCore *lc, char *arg)
 	cmd=lpc_find_command(arg);
 	if ( !cmd )
 	{
-		printf("No such command.\n");
+		linphonec_out("No such command.\n");
 		return 1;
 	}
 
@@ -300,13 +304,13 @@ lpc_cmd_call(LinphoneCore *lc, char *args)
 
 	if ( lc->call != NULL )
 	{
-		printf("Terminate current call first.\n");
+		linphonec_out("Terminate current call first.\n");
 	}
 	else
 	{
 		if ( -1 == linphone_core_invite(lc, args) )
 		{
-			printf("Error from linphone_core_invite.\n");
+			linphonec_out("Error from linphone_core_invite.\n");
 		}
 		else
 		{
@@ -322,7 +326,7 @@ lpc_cmd_refer(LinphoneCore *lc, char *args)
 	if (args)
 		linphone_core_refer(lc, args);
 	else{
-		printf("refer needs an argument\n");
+		linphonec_out("refer needs an argument\n");
 	}
 	return 1;
 }
@@ -332,7 +336,7 @@ lpc_cmd_terminate(LinphoneCore *lc, char *args)
 {
 	if ( -1 == linphone_core_terminate_call(lc, NULL) )
 	{
-		printf("No active call.\n");
+		linphonec_out("No active call.\n");
 	}
 	return 1;
 }
@@ -342,7 +346,7 @@ lpc_cmd_answer(LinphoneCore *lc, char *args)
 {
 	if ( -1 == linphone_core_accept_call(lc, NULL) )
 	{
-		printf("No incoming call.\n");
+		linphonec_out("No incoming call.\n");
 	}
 	return 1;
 }
@@ -370,7 +374,7 @@ lpc_cmd_nat(LinphoneCore *lc, char *args)
 
 	nat = linphone_core_get_nat_address(lc);
 	use = linphone_core_get_firewall_policy(lc)==LINPHONE_POLICY_USE_NAT_ADDRESS;
-	printf("Nat address: %s%s\n", nat ? nat : "unspecified" , use ? "" : " (disabled - use 'firewall nat' to enable)");
+	linphonec_out("Nat address: %s%s\n", nat ? nat : "unspecified" , use ? "" : " (disabled - use 'firewall nat' to enable)");
 
 	return 1;
 }
@@ -391,7 +395,7 @@ lpc_cmd_stun(LinphoneCore *lc, char *args)
 
 	stun = linphone_core_get_stun_server(lc);
 	use = linphone_core_get_firewall_policy(lc)==LINPHONE_POLICY_USE_STUN;
-	printf("Stun server: %s%s\n", stun ? stun : "unspecified" , use? "" : " (disabled - use 'firewall stun' to enable)");
+	linphonec_out("Stun server: %s%s\n", stun ? stun : "unspecified" , use? "" : " (disabled - use 'firewall stun' to enable)");
 
 	return 1;
 }
@@ -414,7 +418,7 @@ lpc_cmd_firewall(LinphoneCore *lc, char *args)
 			setting = linphone_core_get_stun_server(lc);
 			if ( ! setting )
 			{
-				printf("No stun server address is defined, use 'stun <address>' first");
+				linphonec_out("No stun server address is defined, use 'stun <address>' first");
 				return 1;
 			}
 			linphone_core_set_firewall_policy(lc,LINPHONE_POLICY_USE_STUN);
@@ -424,7 +428,7 @@ lpc_cmd_firewall(LinphoneCore *lc, char *args)
 			setting = linphone_core_get_nat_address(lc);
 			if ( ! setting )
 			{
-				printf("No nat address is defined, use 'nat <address>' first");
+				linphonec_out("No nat address is defined, use 'nat <address>' first");
 				return 1;
 			}
 			linphone_core_set_firewall_policy(lc,LINPHONE_POLICY_USE_NAT_ADDRESS);
@@ -434,13 +438,13 @@ lpc_cmd_firewall(LinphoneCore *lc, char *args)
 	switch(linphone_core_get_firewall_policy(lc))
 	{
 		case LINPHONE_POLICY_NO_FIREWALL:
-			printf("No firewall\n");
+			linphonec_out("No firewall\n");
 			break;
 		case LINPHONE_POLICY_USE_STUN:
-			printf("Using stun server %s to discover firewall address\n", setting ? setting : linphone_core_get_stun_server(lc));
+			linphonec_out("Using stun server %s to discover firewall address\n", setting ? setting : linphone_core_get_stun_server(lc));
 			break;
 		case LINPHONE_POLICY_USE_NAT_ADDRESS:
-			printf("Using supplied nat address %s.\n", setting ? setting : linphone_core_get_nat_address(lc));
+			linphonec_out("Using supplied nat address %s.\n", setting ? setting : linphone_core_get_nat_address(lc));
 			break;
 	}
 	return 1;
@@ -496,7 +500,7 @@ lpc_cmd_friend(LinphoneCore *lc, char *args)
 		if ( ! *args ) return 0;
 		friend_num = strtol(args, NULL, 10);
 		if ( errno == ERANGE ) {
-			printf("Invalid friend number\n");
+			linphonec_out("Invalid friend number\n");
 			return 0;
 		}
 		linphonec_friend_call(lc, friend_num);
@@ -516,7 +520,7 @@ lpc_cmd_friend(LinphoneCore *lc, char *args)
 		{
 			friend_num = strtol(args, NULL, 10);
 			if ( errno == ERANGE ) {
-				printf("Invalid friend number\n");
+				linphonec_out("Invalid friend number\n");
 				return 0;
 			}
 		}
@@ -614,23 +618,23 @@ lpc_cmd_proxy(LinphoneCore *lc, char *args)
 		{
 			proxynum=atoi(arg2);
 			if ( linphonec_proxy_use(lc, proxynum) )
-				printf("Default proxy set to %d.\n", proxynum);
+				linphonec_out("Default proxy set to %d.\n", proxynum);
 		}
 		else
 		{
 			proxynum=linphone_core_get_default_proxy(lc, NULL);
-			if ( proxynum == -1 ) printf("No default proxy.\n");
-			else printf("Current default proxy is %d.\n", proxynum);
+			if ( proxynum == -1 ) linphonec_out("No default proxy.\n");
+			else linphonec_out("Current default proxy is %d.\n", proxynum);
 		}
 	}
 	else if (strcmp(arg1, "unuse")==0)
 	{
 		linphone_core_set_default_proxy(lc, NULL);
-		printf("Use no proxy.\n");
+		linphonec_out("Use no proxy.\n");
 	}
 	else
 	{
-		printf("Syntax error - see 'help proxy'\n");
+		linphonec_out("Syntax error - see 'help proxy'\n");
 	}
 
 	return 1;
@@ -644,7 +648,7 @@ lpc_cmd_call_logs(LinphoneCore *lc, char *args)
 	{
 		LinphoneCallLog *cl=(LinphoneCallLog*)elem->data;
 		char *str=linphone_call_log_to_str(cl);
-		printf("%s\n",str);
+		linphonec_out("%s\n",str);
 		ms_free(str);
 	}
 	return 1;
@@ -655,27 +659,27 @@ lpc_cmd_ipv6(LinphoneCore *lc, char *arg1)
 {
 	if ( ! arg1 )
 	{
-		printf("Syntax error - see 'help ipv6'\n");
+		linphonec_out("Syntax error - see 'help ipv6'\n");
 		return 1;
 	}
 
 	if (strcmp(arg1,"status")==0)
 	{
-		printf("ipv6 use enabled: %s\n",linphone_core_ipv6_enabled(lc) ? "true":"false");
+		linphonec_out("ipv6 use enabled: %s\n",linphone_core_ipv6_enabled(lc) ? "true":"false");
 	}
 	else if (strcmp(arg1,"enable")==0)
 	{
 		linphone_core_enable_ipv6(lc,TRUE);
-		printf("ipv6 use enabled.\n");
+		linphonec_out("ipv6 use enabled.\n");
 	}
 	else if (strcmp(arg1,"disable")==0)
 	{
 		linphone_core_enable_ipv6(lc,FALSE);
-		printf("ipv6 use disabled.\n");
+		linphonec_out("ipv6 use disabled.\n");
 	}
 	else
 	{
-		printf("Syntax error - see 'help ipv6'\n");
+		linphonec_out("Syntax error - see 'help ipv6'\n");
 	}
 	return 1;
 }
@@ -683,13 +687,13 @@ lpc_cmd_ipv6(LinphoneCore *lc, char *arg1)
 static int lpc_cmd_soundcard(LinphoneCore *lc, char *cmd){
 	int i;
 	if (cmd==NULL){
-		printf("Syntax error - see 'help soundcard'\n");
+		linphonec_out("Syntax error - see 'help soundcard'\n");
 		return 1;
 	}
 	if (strcmp(cmd,"list")==0){
 		const char **dev=linphone_core_get_sound_devices(lc);
 		for(i=0;dev[i]!=NULL;i++){
-			printf("%i: %s\n",i,dev[i]);
+			linphonec_out("%i: %s\n",i,dev[i]);
 		}
 		return 1;
 	}else{
@@ -699,7 +703,7 @@ static int lpc_cmd_soundcard(LinphoneCore *lc, char *cmd){
 		int n=sscanf(cmd,"%s %s",tmp,card);
 		if (n==2 && strcmp(tmp,"use")==0){
 			if (strcmp(card,"files")==0) {
-				printf("Using wav files instead of soundcard.\n");
+				linphonec_out("Using wav files instead of soundcard.\n");
 				linphone_core_use_files(lc,TRUE);
 				return 1;
 			}else{
@@ -710,15 +714,15 @@ static int lpc_cmd_soundcard(LinphoneCore *lc, char *cmd){
 						linphone_core_set_ringer_device(lc,dev[i]);
 						linphone_core_set_playback_device(lc,dev[i]);
 						linphone_core_set_capture_device(lc,dev[i]);
-						printf("Using sound device %s\n",dev[i]);
+						linphonec_out("Using sound device %s\n",dev[i]);
 						return 1;
 					}
 				}
-				printf("no such sound device\n");
+				linphonec_out("no such sound device\n");
 				return 1;
 			}
 		}
-		printf("Syntax error - see 'help soundcard'\n");
+		linphonec_out("Syntax error - see 'help soundcard'\n");
 	}
 	return 1;
 }
@@ -736,7 +740,7 @@ linphonec_proxy_add(LinphoneCore *lc)
 	bool_t enable_register=FALSE;
 	LinphoneProxyConfig *cfg;
 
-	printf("Adding new proxy setup. Hit ^D to abort.\n");
+	linphonec_out("Adding new proxy setup. Hit ^D to abort.\n");
 
 	/*
 	 * SIP Proxy address
@@ -747,7 +751,7 @@ linphonec_proxy_add(LinphoneCore *lc)
 		char *clean;
 
 		if ( ! input ) {
-			printf("Aborted.\n");
+			linphonec_out("Aborted.\n");
 			return;
 		}
 
@@ -761,7 +765,7 @@ linphonec_proxy_add(LinphoneCore *lc)
 		cfg=linphone_proxy_config_new();
 		if (linphone_proxy_config_set_server_addr(cfg,clean)<0)
 		{
-			printf("Invalid sip address (sip:sip.domain.tld).\n");
+			linphonec_out("Invalid sip address (sip:sip.domain.tld).\n");
 			free(input);
 			linphone_proxy_config_destroy(cfg);
 			continue;
@@ -779,7 +783,7 @@ linphonec_proxy_add(LinphoneCore *lc)
 		char *clean;
 
 		if ( ! input ) {
-			printf("Aborted.\n");
+			linphonec_out("Aborted.\n");
 			linphone_proxy_config_destroy(cfg);
 			return;
 		}
@@ -794,7 +798,7 @@ linphonec_proxy_add(LinphoneCore *lc)
 		linphone_proxy_config_set_identity(cfg, clean);
 		if ( ! cfg->reg_identity )
 		{
-			printf("Invalid identity (sip:name@sip.domain.tld).\n");
+			linphonec_out("Invalid identity (sip:name@sip.domain.tld).\n");
 			free(input);
 			continue;
 		}
@@ -811,7 +815,7 @@ linphonec_proxy_add(LinphoneCore *lc)
 		char *clean;
 
 		if ( ! input ) {
-			printf("Aborted.\n");
+			linphonec_out("Aborted.\n");
 			linphone_proxy_config_destroy(cfg);
 			return;
 		}
@@ -826,7 +830,7 @@ linphonec_proxy_add(LinphoneCore *lc)
 		if ( ! strcmp(clean, "yes") ) enable_register=TRUE;
 		else if ( ! strcmp(clean, "no") ) enable_register=FALSE;
 		else {
-			printf("Please answer with 'yes' or 'no'\n");
+			linphonec_out("Please answer with 'yes' or 'no'\n");
 			free(input);
 			continue;
 		}
@@ -847,7 +851,7 @@ linphonec_proxy_add(LinphoneCore *lc)
 				" in seconds (default is 600): ");
 
 			if ( ! input ) {
-				printf("Aborted.\n");
+				linphonec_out("Aborted.\n");
 				linphone_proxy_config_destroy(cfg);
 				return;
 			}
@@ -855,13 +859,13 @@ linphonec_proxy_add(LinphoneCore *lc)
 			expires=strtol(input, (char **)NULL, 10);
 			if ( expires == LONG_MIN || expires == LONG_MAX )
 			{
-				printf("Invalid value: %s\n", strerror(errno));
+				linphonec_out("Invalid value: %s\n", strerror(errno));
 				free(input);
 				continue;
 			}
 
 			linphone_proxy_config_expires(cfg, expires);
-			printf("Expiration: %d seconds\n", cfg->expires);
+			linphonec_out("Expiration: %d seconds\n", cfg->expires);
 
 			free(input);
 			break;
@@ -877,7 +881,7 @@ linphonec_proxy_add(LinphoneCore *lc)
 		char *clean;
 
 		if ( ! input ) {
-			printf("Aborted.\n");
+			linphonec_out("Aborted.\n");
 			linphone_proxy_config_destroy(cfg);
 			return;
 		}
@@ -886,14 +890,14 @@ linphonec_proxy_add(LinphoneCore *lc)
 		clean=lpc_strip_blanks(input);
 		if ( ! *clean ) {
 			free(input);
-			printf("No route specified.\n");
+			linphonec_out("No route specified.\n");
 			break;
 		}
 
 		linphone_proxy_config_set_route(cfg, clean);
 		if ( ! cfg->reg_route )
 		{
-			printf("Invalid route.\n");
+			linphonec_out("Invalid route.\n");
 			free(input);
 			continue;
 		}
@@ -910,14 +914,14 @@ linphonec_proxy_add(LinphoneCore *lc)
 		char *input;
 		char *clean;
 
-		printf("--------------------------------------------\n");
+		linphonec_out("--------------------------------------------\n");
 		linphonec_proxy_display(cfg);
-		printf("--------------------------------------------\n");
+		linphonec_out("--------------------------------------------\n");
 		input=linphonec_readline("Accept the above proxy configuration (yes/no) ?: ");
 
 
 		if ( ! input ) {
-			printf("Aborted.\n");
+			linphonec_out("Aborted.\n");
 			linphone_proxy_config_destroy(cfg);
 			return;
 		}
@@ -932,13 +936,13 @@ linphonec_proxy_add(LinphoneCore *lc)
 		if ( ! strcmp(clean, "yes") ) break;
 		else if ( ! strcmp(clean, "no") )
 		{
-			printf("Declined.\n");
+			linphonec_out("Declined.\n");
 			linphone_proxy_config_destroy(cfg);
 			free(input);
 			return;
 		}
 
-		printf("Please answer with 'yes' or 'no'\n");
+		linphonec_out("Please answer with 'yes' or 'no'\n");
 		free(input);
 		continue;
 	}
@@ -949,13 +953,13 @@ linphonec_proxy_add(LinphoneCore *lc)
 	/* automatically set the last entered proxy as the default one */
 	linphone_core_set_default_proxy(lc,cfg);
 
-	printf("Proxy added.\n");
+	linphonec_out("Proxy added.\n");
 }
 
 static void
 linphonec_proxy_display(LinphoneProxyConfig *cfg)
 {
-	printf("sip address: %s\nroute: %s\nidentity: %s\nregister: %s\nexpires: %i\n",
+	linphonec_out("sip address: %s\nroute: %s\nidentity: %s\nregister: %s\nexpires: %i\n",
 			cfg->reg_proxy,
 			(cfg->reg_route!=NULL)?cfg->reg_route:"",
 			(cfg->reg_identity!=NULL)?cfg->reg_identity:"",
@@ -973,9 +977,9 @@ linphonec_proxy_list(LinphoneCore *lc)
 	proxies=linphone_core_get_proxy_config_list(lc);
 	for(n=0;proxies!=NULL;proxies=ms_list_next(proxies),n++){
 		if (n==def)
-			printf("****** Proxy %i - this is the default one - *******\n",n);
+			linphonec_out("****** Proxy %i - this is the default one - *******\n",n);
 		else 
-			printf("****** Proxy %i *******\n",n);
+			linphonec_out("****** Proxy %i *******\n",n);
 		linphonec_proxy_display((LinphoneProxyConfig*)proxies->data);
 	}
 }
@@ -988,11 +992,11 @@ linphonec_proxy_remove(LinphoneCore *lc, int index)
 	proxies=linphone_core_get_proxy_config_list(lc);
 	cfg=(LinphoneProxyConfig*)ms_list_nth_data(proxies,index);
 	if (cfg==NULL){
-		printf("No such proxy.\n");
+		linphonec_out("No such proxy.\n");
 		return;
 	}
 	linphone_core_remove_proxy_config(lc,cfg);
-	printf("Proxy %s removed.\n", cfg->reg_proxy);
+	linphonec_out("Proxy %s removed.\n", cfg->reg_proxy);
 	linphone_proxy_config_destroy(cfg);
 }
 
@@ -1004,7 +1008,7 @@ linphonec_proxy_use(LinphoneCore *lc, int index)
 	proxies=linphone_core_get_proxy_config_list(lc);
 	cfg=(LinphoneProxyConfig*)ms_list_nth_data(proxies,index);
 	if (cfg==NULL){
-		printf("No such proxy (try 'proxy list').");
+		linphonec_out("No such proxy (try 'proxy list').");
 		return 0;
 	}
 	linphone_core_set_default_proxy(lc,cfg);
@@ -1018,8 +1022,8 @@ linphonec_friend_display(LinphoneFriend *fr)
 	char *addr = linphone_friend_get_addr(fr);
 	//char *url = linphone_friend_get_url(fr);
 
-	printf("name: %s\n", name);
-	printf("address: %s\n", addr);
+	linphonec_out("name: %s\n", name);
+	linphonec_out("address: %s\n", addr);
 }
 
 static int
@@ -1040,7 +1044,7 @@ linphonec_friend_list(LinphoneCore *lc, char *pat)
 			char *name = linphone_friend_get_name(friend->data);
 			if ( ! strstr(name, pat) ) continue;
 		}
-		printf("****** Friend %i *******\n",n);
+		linphonec_out("****** Friend %i *******\n",n);
 		linphonec_friend_display((LinphoneFriend*)friend->data);
 	}
 
@@ -1062,7 +1066,7 @@ linphonec_friend_call(LinphoneCore *lc, unsigned int num)
 			return lpc_cmd_call(lc, addr);
 		}
 	}
-	printf("No such friend %u\n", num);
+	linphonec_out("No such friend %u\n", num);
 	return 1;
 }
 
@@ -1102,15 +1106,15 @@ linphonec_friend_delete(LinphoneCore *lc, int num)
 		return 0;
 	}
 
-	printf("No such friend %u\n", num);
+	linphonec_out("No such friend %u\n", num);
 	return 1;
 }
 
 static void
 linphonec_display_command_help(LPC_COMMAND *cmd)
 {
-	if ( cmd->doc ) printf ("%s\n", cmd->doc);
-	else printf("%s\n", cmd->help);
+	if ( cmd->doc ) linphonec_out ("%s\n", cmd->doc);
+	else linphonec_out("%s\n", cmd->help);
 }
 
 /***************************************************************************

@@ -58,6 +58,7 @@ int SpeakerCallback(  const void *inputBuffer, void *outputBuffer,
   PASndData *device = (PASndData*)userData;
   uint8_t *wtmpbuff=NULL;
   int err;
+  int ovfl = (device->rate/8000)*320*6;
 
   memset(outputBuffer,0, framesPerBuffer*2);
   if (!device->read_started && !device->write_started)
@@ -73,7 +74,7 @@ int SpeakerCallback(  const void *inputBuffer, void *outputBuffer,
 
   /* remove extra buffer when latency is increasing:
      this often happen with USB device */
-  if (device->bufferizer->size>=320*6){
+  if (device->bufferizer->size>=ovfl){
     ms_warning("Extra data for sound card (total:%i %ims)",
 	       device->bufferizer->size, (device->bufferizer->size*20)/320);
     err=ms_bufferizer_read(device->bufferizer,wtmpbuff, framesPerBuffer*2);

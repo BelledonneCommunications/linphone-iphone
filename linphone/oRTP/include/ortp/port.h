@@ -228,6 +228,7 @@ int set_non_blocking_socket(ortp_socket_t sock);
 
 char *ortp_strndup(const char *str,int n);
 char *ortp_strdup_printf(const char *fmt,...);
+char *ortp_strdup_vprintf(const char *fmt, va_list ap);
 
 #ifdef __cplusplus
 }

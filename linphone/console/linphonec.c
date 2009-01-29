@@ -6,21 +6,21 @@
  *  Copyright (C) 2002  Florian Winterstein <flox@gmx.net>
  *  Copyright (C) 2000  Simon MORLAT <simon.morlat@free.fr>
  *
- ****************************************************************************
+****************************************************************************
  *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Library General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
  ****************************************************************************/
 
@@ -32,12 +32,23 @@
 #include <signal.h>
 #include <limits.h>
 #include <ctype.h>
+
 #include <linphonecore.h>
 #include "linphonec.h"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
+
+#ifdef WIN32
+#include <ws2tcpip.h>
+#include <ctype.h>
+#include <conio.h>
+#else
+#include <sys/socket.h>
+#include <netdb.h>
+#endif
+
 
 #ifdef HAVE_GETTEXT
 #include <libintl.h>
@@ -47,6 +58,8 @@
 #else
 #define _(something)	(something)
 #endif
+
+#define DEFAULT_TCP_PORT 32333
 
 /***************************************************************************
  *
@@ -117,11 +130,13 @@ static bool_t vcap_enabled=FALSE;
 static bool_t display_enabled=FALSE;
 static bool_t preview_enabled=FALSE;
 static bool_t show_general_state=FALSE;
+static int tcp_port=0; /* see --tcp: tcp port to listen for commands */
 LPC_AUTH_STACK auth_stack;
 static int trace_level = 0;
 static char *logfile_name = NULL;
 static char configfile_name[PATH_MAX];
 static char *sipAddr = NULL; /* for autocall */
+static ortp_socket_t client_sock=-1;
 char prompt[PROMPT_MAX_LEN];
 
 LinphoneCoreVTable linphonec_vtable = {
@@ -350,6 +365,76 @@ static void start_prompt_reader(void){
 	ortp_thread_create(&th,NULL,prompt_reader_thread,NULL);
 }
 
+static ortp_socket_t create_server_socket(int port){
+	ortp_socket_t server_sock;
+	char service[12];
+	/*setup the server socket */
+	struct addrinfo *ai=NULL;
+	struct addrinfo hints;
+	memset(&hints,0,sizeof(hints));
+	hints.ai_family=AF_INET;
+	snprintf(service,sizeof(service),"%i",port);
+
+	getaddrinfo("127.0.0.1",service,&hints,&ai);
+	if (ai==NULL){
+		fprintf(stderr,"getaddrinfo failed on port %s",service);
+		exit(-1);
+	}
+	server_sock=socket(PF_INET,SOCK_STREAM,IPPROTO_TCP);
+	if (bind(server_sock,ai->ai_addr,ai->ai_addrlen)!=0){
+		fprintf(stderr,"Failed to bind command socket.");
+		exit(-1);
+	}
+	listen(server_sock,1);
+	return server_sock;
+}
+
+static void *tcp_thread(void*p){
+	char tmp[250];
+	ortp_socket_t server_sock;
+	struct sockaddr_storage ss;
+	socklen_t ssize;
+	bool_t run=TRUE;
+	
+	server_sock=create_server_socket(tcp_port);
+	if (server_sock==-1) return NULL;
+	while(run){
+		while(client_sock!=-1){ /*sleep until the last command is finished*/
+#ifndef WIN32
+			usleep(20000);
+#else
+			Sleep(20);
+#endif
+		}
+		ssize=sizeof(ss);
+		if ((client_sock=accept(server_sock,(struct sockaddr*)&ss,&ssize))!=-1){
+			int len;
+			/*now read from the client */
+			if ((len=recv(client_sock,tmp,sizeof(tmp)-1,0))>0){
+				ortp_mutex_lock(&prompt_mutex);
+				tmp[len]='\0';
+				strcpy(received_prompt,tmp);
+				if (strcmp(received_prompt,"quit")==0) run=FALSE;
+				printf("Receiving command '%s'\n",received_prompt);fflush(stdout);
+				have_prompt=TRUE;
+				ortp_mutex_unlock(&prompt_mutex);
+			}else{
+				printf("read nothing\n");fflush(stdout);
+				close_socket(client_sock);
+				client_sock=-1;
+			}
+			
+		}
+	}
+	return NULL;
+}
+
+static void start_tcp_reader(void){
+	ortp_thread_t th;
+	ms_mutex_init(&prompt_mutex,NULL);
+	ortp_thread_create(&th,NULL,tcp_thread,NULL);
+}
+
 #endif
 
 char *linphonec_readline(char *prompt){
@@ -357,9 +442,14 @@ char *linphonec_readline(char *prompt){
 	return readline(prompt);
 #else
 	static bool_t prompt_reader_started=FALSE;
+	static bool_t tcp_reader_started=FALSE;
 	if (!prompt_reader_started){
 		start_prompt_reader();
 		prompt_reader_started=TRUE;
+	}
+	if (tcp_port>0 && !tcp_reader_started){
+		start_tcp_reader();
+		tcp_reader_started=TRUE;
 	}
 	fprintf(stdout,"%s",prompt);
 	fflush(stdout);
@@ -381,6 +471,30 @@ char *linphonec_readline(char *prompt){
 	}
 #endif
 }
+
+void linphonec_out(const char *fmt,...){
+	char *res;
+	va_list args;
+	va_start (args, fmt);
+	res=ortp_strdup_vprintf(fmt,args);
+	va_end (args);
+	printf("%s",res);fflush(stdout);
+	if (client_sock!=-1){
+		if (write(client_sock,res,strlen(res))==-1){
+			fprintf(stderr,"Fail to send output via socket: %s",getSocketError());
+		}
+	}
+	ortp_free(res);
+}
+
+void linphonec_command_finished(void){
+	if (client_sock!=-1){
+		close_socket(client_sock);
+		client_sock=-1;
+	}
+}
+
+
 
 /***************************************************************************/
 /*
@@ -785,6 +899,7 @@ linphonec_main_loop (LinphoneCore * opm, char * sipAddr)
 #endif
 
 		linphonec_parse_command_line(&linphonec, iptr);
+		linphonec_command_finished();
 		free(input);
 	}
 
@@ -872,6 +987,14 @@ linphonec_parse_cmdline(int argc, char **argv)
 		else if (strncmp ("-S", argv[arg_num], 2) == 0)
 		{
 			show_general_state = TRUE;
+		}
+		else if (strncmp ("--tcp", argv[arg_num], 5) == 0)
+		{
+			if (arg_num+1 < argc){
+				tcp_port = atoi(argv[arg_num+1]);
+				if (tcp_port!=0) arg_num++;
+			}
+			if (tcp_port==0) tcp_port=DEFAULT_TCP_PORT;
 		}
 		else if (old_arg_num == arg_num)
 		{

@@ -164,7 +164,7 @@ void ortp_set_log_level_mask(int levelmask){
 	__ortp_log_mask=levelmask;
 }
 
-static char * _strdup_vprintf(const char *fmt, va_list ap)
+char * ortp_strdup_vprintf(const char *fmt, va_list ap)
 {
 	/* Guess we need no more than 100 bytes. */
 	int n, size = 200;
@@ -210,7 +210,7 @@ char *ortp_strdup_printf(const char *fmt,...){
 	char *ret;
 	va_list args;
 	va_start (args, fmt);
-	ret=_strdup_vprintf(fmt, args);
+	ret=ortp_strdup_vprintf(fmt, args);
  	va_end (args);
 	return ret;
 }
@@ -255,10 +255,10 @@ static void __ortp_logv_out(OrtpLogLevel lev, const char *fmt, va_list args){
 		default:
 			ortp_fatal("Bad level !");
 	}
-	msg=_strdup_vprintf(fmt,args);
+	msg=ortp_strdup_vprintf(fmt,args);
 #ifdef _MSC_VER
-  OutputDebugString(msg);
-  OutputDebugString("\r\n");
+ 	OutputDebugString(msg);
+  	OutputDebugString("\r\n");
 #else
 	fprintf(__log_file,"ortp-%s-%s" ENDLINE,lname,msg);
 #endif

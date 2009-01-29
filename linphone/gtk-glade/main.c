@@ -168,11 +168,22 @@ static void parse_hiddens(const char *hiddens, const char *window_name, GtkWidge
 }
 
 static void linphone_gtk_configure_window(GtkWidget *w, const char *window_name){
-	const char *hiddens;
+	static const char *icon_path=0;
+	static const char *hiddens=0;
+	static bool_t config_loaded=FALSE;
 	if (linphone_gtk_get_core()==NULL) return;
-	hiddens=linphone_gtk_get_ui_config("hidden_widgets",NULL);
+	if (config_loaded==FALSE){
+		hiddens=linphone_gtk_get_ui_config("hidden_widgets",NULL);
+		icon_path=linphone_gtk_get_ui_config("icon",NULL);
+		config_loaded=TRUE;
+	}
 	if (hiddens){
 		parse_hiddens(hiddens,window_name,w);
+	}
+	if (icon_path) {
+		GdkPixbuf *pbuf=create_pixbuf(icon_path);
+		gtk_window_set_icon(GTK_WINDOW(w),pbuf);
+		g_object_unref(G_OBJECT(pbuf));
 	}
 }
 
@@ -776,25 +787,18 @@ static void linphone_gtk_configure_main_window(){
 	static gboolean config_loaded=FALSE;
 	static const char *title;
 	static const char *home;
-	static const char *icon_path;
 	static const char *start_call_icon;
 	static const char *stop_call_icon;
 	GtkWidget *w=linphone_gtk_get_main_window();
 	if (!config_loaded){
 		title=linphone_gtk_get_ui_config("title",NULL);
 		home=linphone_gtk_get_ui_config("home","http://www.linphone.org");
-		icon_path=linphone_gtk_get_ui_config("icon",NULL);
 		start_call_icon=linphone_gtk_get_ui_config("start_call_icon",NULL);
 		stop_call_icon=linphone_gtk_get_ui_config("stop_call_icon",NULL);
 		config_loaded=TRUE;
 	}
 	linphone_gtk_configure_window(w,"main_window");
 	if (title) gtk_window_set_title(GTK_WINDOW(w),title);
-	if (icon_path) {
-		GdkPixbuf *pbuf=create_pixbuf(icon_path);
-		gtk_window_set_icon(GTK_WINDOW(w),pbuf);
-		g_object_unref(G_OBJECT(pbuf));
-	}
 	if (start_call_icon){
 		GdkPixbuf *pbuf=create_pixbuf(start_call_icon);
 		gtk_image_set_from_pixbuf(GTK_IMAGE(linphone_gtk_get_widget(w,"start_call_icon")),pbuf);

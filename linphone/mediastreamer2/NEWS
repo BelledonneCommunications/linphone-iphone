@@ -1,3 +1,12 @@
+mediastreamer-2.2.3: 21, January 2009
+	* rfc3984 support improved 
+	* webcam support on windows largely improved (vfw mode)
+	* support for configuring video size up to svga
+	* video output can automatically resize to the size of received video stream
+	* fix crash when resizing video window
+	* new MSWebcam object to provide Webcam management and MSFilter instantiation
+	* alsa bugfixes
+
 mediastreamer-2.2.2: 6, october 2008
 	* new winsnd3.c file for support of soundcard under windows (seems to work a bit better)
 	* bugfixes

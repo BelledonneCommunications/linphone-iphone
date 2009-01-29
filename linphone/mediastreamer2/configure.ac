@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT([mediastreamer],[2.2.2])
+AC_INIT([mediastreamer],[2.2.3])
 
 AC_MSG_NOTICE([$PACKAGE_NAME-$PACKAGE_VERSION		A mediastreaming library for telephony application.])
 AC_MSG_NOTICE([licensed under the terms of the General Public License (GPL)])
@@ -314,7 +314,7 @@ PKG_CHECK_MODULES(SPEEX, speex >= 1.1.12,
 	[ AC_DEFINE(HAVE_SPEEX_NOISE,1,[tells whether the noise arg of speex_echo_cancel can be used]) ],
 	[try_other_speex=yes]
 )
-PKG_CHECK_MODULES(SPEEX, speex >= 1.1.6, build_speex=yes)
+PKG_CHECK_MODULES(SPEEX, speex >= 1.2beta3, build_speex=yes)
 build_resample=false
 PKG_CHECK_MODULES(SPEEXDSP, speexdsp >= 1.2beta3,
     [SPEEX_LIBS="$SPEEX_LIBS $SPEEXDSP_LIBS"
