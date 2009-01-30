@@ -121,7 +121,8 @@ const char *usage="mediastream --local <port> --remote <ip:port> --payload <payl
 								"[ --fmtp <fmtpline>]\n"
 								"[ --jitter <miliseconds>]\n"
 								"[ --width <pixels>]\n"
-								"[ --height <pixels> ]\n";
+								"[ --height <pixels> ]\n"
+								"[ --bitrate <bits per seconds>]\n";
 static void run_media_streams(int localport, const char *remote_ip, int remoteport, int payload, const char *fmtp, int jitter, bool_t ec, int bitrate, MSVideoSize vs);
 
 

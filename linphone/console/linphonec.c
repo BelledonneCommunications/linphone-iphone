@@ -368,6 +368,7 @@ static void start_prompt_reader(void){
 static ortp_socket_t create_server_socket(int port){
 	ortp_socket_t server_sock;
 	char service[12];
+	int tmp,err;
 	/*setup the server socket */
 	struct addrinfo *ai=NULL;
 	struct addrinfo hints;
@@ -381,6 +382,9 @@ static ortp_socket_t create_server_socket(int port){
 		exit(-1);
 	}
 	server_sock=socket(PF_INET,SOCK_STREAM,IPPROTO_TCP);
+	tmp=1;
+	err=setsockopt(server_sock,SOL_SOCKET,SO_REUSEADDR,(void*)&tmp,sizeof(tmp));
+	if (err<0) fprintf(stderr,"Error in setsockopt(): %s\n",getSocketError());
 	if (bind(server_sock,ai->ai_addr,ai->ai_addrlen)!=0){
 		fprintf(stderr,"Failed to bind command socket.");
 		exit(-1);
