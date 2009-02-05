@@ -44,6 +44,9 @@ typedef struct Channel{
 	int16_t input[CONF_NSAMPLES];
 	bool_t has_contributed;
 	bool_t is_used;
+
+	int is_speaking;
+
 	int count;
 	int missed;
 
@@ -62,6 +65,11 @@ typedef struct ConfState{
 	int sum[CONF_NSAMPLES];
 	int enable_directmode;
 	int enable_vad;
+
+	int enable_halfduplex;
+	int vad_prob_start;
+	int vad_prob_continue;
+
 	int agc_level;
 	int mix_mode;
 	int samplerate;
@@ -73,6 +81,7 @@ typedef struct ConfState{
 
 
 static void channel_init(ConfState *s, Channel *chan, int pos){
+	memset(chan, 0, sizeof(Channel));
 	ms_bufferizer_init(&chan->buff);
 #ifndef DISABLE_SPEEX
 	//chan->speex_pp = speex_preprocess_state_init((s->conf_gran/2) *(s->samplerate/8000), s->samplerate);
@@ -91,6 +100,16 @@ static void channel_init(ConfState *s, Channel *chan, int pos){
 			val=1;
 			speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_SET_VAD, &val);
 		}
+		else if (pos==0 && s->enable_halfduplex>0)
+		{
+			val=1;
+			speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_SET_VAD, &val);
+			val = s->vad_prob_start; // xx%
+			speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_SET_PROB_START, &val);
+			val = s->vad_prob_continue; // xx%
+			speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_SET_PROB_CONTINUE, &val);
+		}
+
 		/* enable AGC only on local soundcard */
 		if (s->agc_level>0 && pos==0)
 		{
@@ -249,12 +268,6 @@ static void conf_sum(ConfState *s){
 		chan=&s->channels[i];
 
 		/* skip soundread and short buffer entry */
-#if 0
-		if (i>0
-			&& ms_bufferizer_get_avail(&chan->buff)>=s->conf_gran*s->adaptative_msconf_buf)
-		{
-			while (ms_bufferizer_get_avail(&chan->buff)>=s->conf_gran*2)
-#endif
 		if (i>0 
 			&& ms_bufferizer_get_avail(&chan->buff)> s->conf_gran
 			&& ms_bufferizer_get_avail(&chan->buff)> (ms_bufferizer_get_avail(&s->channels[0].buff)+s->conf_gran*6) )
@@ -282,10 +295,13 @@ static void conf_sum(ConfState *s){
 				chan->stat_discarded++;
 			}
 
-			for(j=0;j<s->conf_nsamples;++j){
-				s->sum[j]+=chan->input[j];
+			if (s->channels[0].is_speaking<=0)
+			{
+				for(j=0;j<s->conf_nsamples;++j){
+					s->sum[j]+=chan->input[j];
+				}
+				chan->has_contributed=TRUE;
 			}
-			chan->has_contributed=TRUE;
 			chan->stat_processed++;
 		}
 		else if (ms_bufferizer_get_avail(&chan->buff)>=s->conf_gran)
@@ -296,17 +312,41 @@ static void conf_sum(ConfState *s){
 			{
 				int vad;
 				vad = speex_preprocess(chan->speex_pp, (short*)chan->input, NULL);
+				if (s->enable_halfduplex>0)
+				{
+					if (vad>0)
+					{
+						/* speech detected */
+						chan->is_speaking++;
+						if (chan->is_speaking>5)
+							chan->is_speaking=5;
+					}
+					else
+					{
+						chan->is_speaking--;
+						if (chan->is_speaking<-5)
+							chan->is_speaking=-5;
+					}
+				if (chan->is_speaking<=0)
+					ms_message("silence on! (%i)", chan->is_speaking);
+				else
+					ms_message("speech on! (%i)", chan->is_speaking);
+				}
 			}
-      else if (chan->speex_pp!=NULL && s->enable_vad==TRUE)
-      {
-        speex_preprocess_estimate_update(chan->speex_pp, (short*)chan->input);
-      }
+			else if (chan->speex_pp!=NULL && s->enable_vad==TRUE)
+			{
+				speex_preprocess_estimate_update(chan->speex_pp, (short*)chan->input);
+			}
 #endif
 
-			for(j=0;j<s->conf_nsamples;++j){
-				s->sum[j]+=chan->input[j];
+			if (i==0
+				|| s->channels[0].is_speaking<=0)
+			{
+				for(j=0;j<s->conf_nsamples;++j){
+					s->sum[j]+=chan->input[j];
+				}
+				chan->has_contributed=TRUE;
 			}
-			chan->has_contributed=TRUE;
 			chan->stat_processed++;
 		} else {
 			chan->stat_missed++;
@@ -444,16 +484,12 @@ static void conf_process(MSFilter *f){
 static void conf_postprocess(MSFilter *f){
 	int i;
 	ConfState *s=(ConfState*)f->data;
-	Channel *chan;
-	/*read from all inputs and put into bufferizers*/
-	for (i=0;i<CONF_MAX_PINS;++i){
-		if (f->inputs[i]!=NULL){
-			chan=&s->channels[i];
-			ms_bufferizer_uninit(&chan->buff);
-			ms_bufferizer_init(&chan->buff);
-		}
-	}
+	for (i=0;i<CONF_MAX_PINS;i++)
+		channel_uninit(&s->channels[i]);
+    for (i=0;i<CONF_MAX_PINS;i++)
+		channel_init(s, &s->channels[i], i);
 }
+
 static int msconf_set_sr(MSFilter *f, void *arg){
 	ConfState *s=(ConfState*)f->data;
 	int i;
@@ -478,6 +514,42 @@ static int msconf_enable_agc(MSFilter *f, void *arg){
 	ConfState *s=(ConfState*)f->data;
 	int i;
 	s->agc_level = *(int*)arg;
+
+	for (i=0;i<CONF_MAX_PINS;i++)
+		channel_uninit(&s->channels[i]);
+    for (i=0;i<CONF_MAX_PINS;i++)
+		channel_init(s, &s->channels[i], i);
+	return 0;
+}
+
+static int msconf_enable_halfduplex(MSFilter *f, void *arg){
+	ConfState *s=(ConfState*)f->data;
+	int i;
+	s->enable_halfduplex = *(int*)arg;
+
+	for (i=0;i<CONF_MAX_PINS;i++)
+		channel_uninit(&s->channels[i]);
+    for (i=0;i<CONF_MAX_PINS;i++)
+		channel_init(s, &s->channels[i], i);
+	return 0;
+}
+
+static int msconf_set_vad_prob_start(MSFilter *f, void *arg){
+	ConfState *s=(ConfState*)f->data;
+	int i;
+	s->vad_prob_start = *(int*)arg;
+
+	for (i=0;i<CONF_MAX_PINS;i++)
+		channel_uninit(&s->channels[i]);
+    for (i=0;i<CONF_MAX_PINS;i++)
+		channel_init(s, &s->channels[i], i);
+	return 0;
+}
+
+static int msconf_set_vad_prob_continue(MSFilter *f, void *arg){
+	ConfState *s=(ConfState*)f->data;
+	int i;
+	s->vad_prob_continue = *(int*)arg;
 
 	for (i=0;i<CONF_MAX_PINS;i++)
 		channel_uninit(&s->channels[i]);
@@ -554,6 +626,10 @@ static MSFilterMethod msconf_methods[]={
 	{	MS_FILTER_GET_STAT_DISCARDED, msconf_get_stat_discarded },
 	{	MS_FILTER_GET_STAT_MISSED, msconf_get_stat_missed },
 	{	MS_FILTER_GET_STAT_OUTPUT, msconf_get_stat_processed },
+
+	{	MS_FILTER_ENABLE_HALFDUPLEX, msconf_enable_halfduplex },
+	{	MS_FILTER_SET_VAD_PROB_START, msconf_set_vad_prob_start },
+	{	MS_FILTER_SET_VAD_PROB_CONTINUE, msconf_set_vad_prob_continue },
 	{	0			, NULL}
 };
 
