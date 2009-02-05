@@ -101,7 +101,9 @@ static int sender_set_session(MSFilter * f, void *arg)
 		rtp_profile_get_payload(rtp_session_get_profile(s),
 								rtp_session_get_send_payload_type(s));
 	if (pt != NULL) {
-		d->rate = pt->clock_rate;
+		if (strcasecmp("g722", pt->mime_type)==0 )
+			d->rate=8000;
+		else d->rate = pt->clock_rate;
 	} else {
 		ms_warning("Sending undefined payload type ?");
 	}
@@ -323,7 +325,9 @@ static int receiver_set_session(MSFilter * f, void *arg)
 											  rtp_session_get_recv_payload_type
 											  (s));
 	if (pt != NULL) {
-		d->rate = pt->clock_rate;
+		if (strcasecmp("g722", pt->mime_type)==0 )
+			d->rate=8000;
+		else d->rate = pt->clock_rate;
 	} else {
 		ms_warning("Receiving undefined payload type ?");
 	}

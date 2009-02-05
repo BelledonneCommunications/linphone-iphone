@@ -133,6 +133,53 @@ static int send_generic_command(const char *command, int print_result){
 	return err;
 }
 
+static int register_execute(int argc, char *argv[]){
+	char cmd[512];
+	char *username=NULL;
+	char *host=NULL;
+	char *passwd=NULL;
+	int i;
+	for(i=0;i<argc;++i){
+		if (strcmp(argv[i],"--host")==0){
+			i++;
+			if (i<argc){
+				host=argv[i];
+			}else print_usage();
+		}else if (strcmp(argv[i],"--username")==0){
+			i++;
+			if (i<argc){
+				username=argv[i];
+			}else print_usage();
+		}else if (strcmp(argv[i],"--password")==0){
+			i++;
+			if (i<argc){
+				passwd=argv[i];
+			}else print_usage();
+		}else print_usage();
+	}
+	if (username==NULL) {
+		fprintf(stderr,"Missing --username\n");
+		print_usage();
+	}
+	if (host==NULL) {
+		fprintf(stderr,"Missing --host\n");
+		print_usage();
+	}
+	if (passwd) snprintf(cmd,sizeof(cmd),"register sip:%s@%s sip:%s %s",username,host,host,passwd);
+	else snprintf(cmd,sizeof(cmd),"register sip:%s@%s sip:%s",username,host,host);
+	return send_generic_command(cmd,TRUE);
+}
+
+static int dial_execute(int argc, char *argv[]){
+	char cmd[512];
+	if (argc==1){
+		snprintf(cmd,sizeof(cmd),"call %s",argv[0]);
+		return send_generic_command(cmd,TRUE);
+	}else{
+		print_usage();
+	}
+	return -1;
+}
 int main(int argc, char *argv[]){
 	int argi;
 	if (argc<2){
@@ -152,6 +199,10 @@ int main(int argc, char *argv[]){
 			if (argi+1<argc){
 				return send_generic_command(argv[argi+1],1);
 			}else print_usage();
+		}else if (strcmp(argv[argi],"register")==0){
+			return register_execute(argc-argi-1,&argv[argi+1]);
+		}else if (strcmp(argv[argi],"dial")==0){
+			return dial_execute(argc-argi-1,&argv[argi+1]);
 		}
 	}
   	return 0;

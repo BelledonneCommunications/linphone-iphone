@@ -58,6 +58,7 @@ static int lpc_cmd_friend(LinphoneCore *, char*);
 static int lpc_cmd_soundcard(LinphoneCore *, char *);
 static int lpc_cmd_play(LinphoneCore *, char *);
 static int lpc_cmd_record(LinphoneCore *, char *);
+static int lpc_cmd_register(LinphoneCore *, char *);
 /* Command handler helpers */
 static void linphonec_proxy_add(LinphoneCore *lc);
 static void linphonec_proxy_display(LinphoneProxyConfig *lc);
@@ -70,6 +71,8 @@ static void linphonec_display_command_help(LPC_COMMAND *cmd);
 static int linphonec_friend_call(LinphoneCore *lc, unsigned int num);
 static int linphonec_friend_add(LinphoneCore *lc, const char *name, const char *addr);
 static int linphonec_friend_delete(LinphoneCore *lc, int num);
+
+
 
 /* Command table management */
 static LPC_COMMAND *lpc_find_command(const char *name);
@@ -153,6 +156,7 @@ LPC_COMMAND commands[] = {
 		"'record <wav file>'    : record into wav file."
 	},
 	{ "quit", lpc_cmd_quit, "Exit linphonec", NULL },
+	{ "register", lpc_cmd_register, "register <sip uri> <sip proxy>", NULL },
 	{ (char *)NULL, (lpc_cmd_handler)NULL, (char *)NULL, (char *)NULL }
 };
 
@@ -1115,6 +1119,43 @@ linphonec_display_command_help(LPC_COMMAND *cmd)
 {
 	if ( cmd->doc ) linphonec_out ("%s\n", cmd->doc);
 	else linphonec_out("%s\n", cmd->help);
+}
+
+
+static int lpc_cmd_register(LinphoneCore *lc, char *args){
+	char identity[512];
+	char proxy[512];
+	char passwd[512];
+	LinphoneProxyConfig *cfg;
+	const MSList *elem;
+	passwd[0]=proxy[0]=identity[0]='\0';
+	sscanf(args,"%s %s %s",identity,proxy,passwd);
+	if (proxy[0]=='\0' || identity[0]=='\0'){
+		linphonec_out("Missing parameters, see help register\n");
+		return 1;
+	}
+	if (passwd[0]!='\0'){
+		osip_from_t *from;
+		LinphoneAuthInfo *info;
+		osip_from_init(&from);
+		if (osip_from_parse(from,identity)==0){
+			info=linphone_auth_info_new(from->url->username,NULL,passwd,NULL,NULL);
+			linphone_core_add_auth_info(lc,info);
+		}
+		osip_from_free(from);
+	}
+	elem=linphone_core_get_proxy_config_list(lc);
+	if (elem) {
+		cfg=(LinphoneProxyConfig*)elem->data;
+		linphone_proxy_config_edit(cfg);
+	}
+	else cfg=linphone_proxy_config_new();
+	linphone_proxy_config_set_identity(cfg,identity);
+	linphone_proxy_config_set_server_addr(cfg,proxy);
+	linphone_proxy_config_enable_register(cfg,TRUE);
+	if (elem) linphone_proxy_config_done(cfg);
+	else linphone_core_add_proxy_config(lc,cfg);
+	return 1;
 }
 
 /***************************************************************************
