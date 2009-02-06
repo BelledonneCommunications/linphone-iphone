@@ -279,7 +279,7 @@ int audio_stream_start_full(AudioStream *stream, RtpProfile *profile, const char
 	
 	/* create ticker */
 	stream->ticker=ms_ticker_new();
-
+	ms_ticker_set_name(stream->ticker,"Audio MSTicker");
 	ms_ticker_attach(stream->ticker,stream->soundread);
 	ms_ticker_attach(stream->ticker,stream->rtprecv);
 	
@@ -423,6 +423,7 @@ RingStream * ring_start_with_cb(const char *file,int interval,MSSndCard *sndcard
 	ms_filter_call_method(stream->source,MS_FILTER_GET_NCHANNELS,&tmp);
 	ms_filter_call_method(stream->sndwrite,MS_FILTER_SET_NCHANNELS,&tmp);
 	stream->ticker=ms_ticker_new();
+	ms_ticker_set_name(stream->ticker,"Audio (ring) MSTicker");
 	ms_filter_link(stream->source,0,stream->sndwrite,0);
 	ms_ticker_attach(stream->ticker,stream->source);
 	return stream;

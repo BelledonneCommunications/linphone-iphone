@@ -306,7 +306,8 @@ int video_stream_start (VideoStream *stream, RtpProfile *profile, const char *re
 	ms_filter_link(stream->tee,1,stream->output,1);
 
 	/* create the ticker */
-	stream->ticker = ms_ticker_new(); 
+	stream->ticker = ms_ticker_new();
+	ms_ticker_set_name(stream->ticker,"Video MSTicker");
 	/* attach it the graph */
 	ms_ticker_attach (stream->ticker, stream->source);
 	return 0;
@@ -390,7 +391,8 @@ VideoStream * video_preview_start(MSWebCam *device, MSVideoSize disp_size){
 	ms_filter_link(stream->pixconv, 0, stream->output, 0);
 
 	/* create the ticker */
-	stream->ticker = ms_ticker_new(); 
+	stream->ticker = ms_ticker_new();
+	ms_ticker_set_name(stream->ticker,"Video MSTicker");
 	ms_ticker_attach (stream->ticker, stream->source);
 	return stream;
 }

@@ -203,6 +203,9 @@ int main(int argc, char *argv[]){
 			return register_execute(argc-argi-1,&argv[argi+1]);
 		}else if (strcmp(argv[argi],"dial")==0){
 			return dial_execute(argc-argi-1,&argv[argi+1]);
+		}else if (strcmp(argv[argi],"hangup")==0){
+			send_generic_command("terminate",FALSE);
+			send_generic_command("duration",TRUE);
 		}
 	}
   	return 0;

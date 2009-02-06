@@ -45,6 +45,7 @@ void ms_ticker_init(MSTicker *ticker)
 #ifdef WIN32_TIMERS
 	ticker->TimeEvent=NULL;
 #endif
+	ticker->name=ms_strdup("MSTicker");
 	ms_ticker_start(ticker);
 }
 
@@ -61,10 +62,15 @@ void ms_ticker_stop(MSTicker *s){
 	ms_thread_join(s->thread,NULL);
 }
 
+void ms_ticker_set_name(MSTicker *s, const char *name){
+	if (s->name) ms_free(s->name);
+	s->name=ms_strdup(name);
+}
 
 void ms_ticker_uninit(MSTicker *ticker)
 {
 	ms_ticker_stop(ticker);
+	ms_free(ticker->name);
 	ms_mutex_destroy(&ticker->lock);
 }
 
@@ -349,7 +355,7 @@ void * ms_ticker_run(void *arg)
 			}else{
 				late=-diff;
 				if (late>s->interval*5 && late>lastlate){
-					ms_warning("We are late of %d miliseconds.",late);
+					ms_warning("%s: We are late of %d miliseconds.",s->name,late);
 				}
 				lastlate=late;
 				break; /*exit the while loop */
@@ -360,7 +366,7 @@ void * ms_ticker_run(void *arg)
 	}
 	ms_mutex_unlock(&s->lock);
 	unset_high_prio(precision);
-	ms_message("MSTicker thread exiting");
+	ms_message("%s thread exiting",s->name);
 
 	ms_thread_exit(NULL);
 	return NULL;

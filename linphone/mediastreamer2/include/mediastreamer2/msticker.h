@@ -60,6 +60,7 @@ struct _MSTicker
 	uint64_t orig; /* a relative time to take in account difference between time base given by consecutive get_cur_time_ptr() functions.*/
 	MSTickerTimeFunc get_cur_time_ptr;
 	void *get_cur_time_data;
+	char *name;
 	bool_t run;       /* flag to indicate whether the ticker must be run or not */
 #ifdef WIN32_TIMERS
 	HANDLE TimeEvent;
@@ -85,6 +86,11 @@ extern "C"{
  * Returns: MSTicker * if successfull, NULL otherwise.
  */
 MSTicker *ms_ticker_new(void);
+
+/**
+ * Set a name to the ticker (used for logging)
+**/
+void ms_ticker_set_name(MSTicker *ticker, const char *name);
 
 /**
  * Attach a chain of filters to a ticker.

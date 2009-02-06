@@ -59,6 +59,8 @@ static int lpc_cmd_soundcard(LinphoneCore *, char *);
 static int lpc_cmd_play(LinphoneCore *, char *);
 static int lpc_cmd_record(LinphoneCore *, char *);
 static int lpc_cmd_register(LinphoneCore *, char *);
+static int lpc_cmd_duration(LinphoneCore *lc, char *args);
+
 /* Command handler helpers */
 static void linphonec_proxy_add(LinphoneCore *lc);
 static void linphonec_proxy_display(LinphoneProxyConfig *lc);
@@ -156,7 +158,8 @@ LPC_COMMAND commands[] = {
 		"'record <wav file>'    : record into wav file."
 	},
 	{ "quit", lpc_cmd_quit, "Exit linphonec", NULL },
-	{ "register", lpc_cmd_register, "register <sip uri> <sip proxy>", NULL },
+	{ "register", lpc_cmd_register, "Register in one line to a proxy" , "register <sip identity> <sip proxy> <password>"},
+	{ "duration", lpc_cmd_duration, "Print duration in seconds of the last call.", NULL },
 	{ (char *)NULL, (lpc_cmd_handler)NULL, (char *)NULL, (char *)NULL }
 };
 
@@ -1155,6 +1158,18 @@ static int lpc_cmd_register(LinphoneCore *lc, char *args){
 	linphone_proxy_config_enable_register(cfg,TRUE);
 	if (elem) linphone_proxy_config_done(cfg);
 	else linphone_core_add_proxy_config(lc,cfg);
+	return 1;
+}
+
+int lpc_cmd_duration(LinphoneCore *lc, char *args){
+	LinphoneCallLog *cl;
+	const MSList *elem=linphone_core_get_call_logs(lc);
+	for(;elem!=NULL;elem=elem->next){
+		if (elem->next==NULL){
+			cl=(LinphoneCallLog*)elem->data;
+			linphonec_out("%i seconds\n",cl->duration);
+		}
+	}
 	return 1;
 }
 
