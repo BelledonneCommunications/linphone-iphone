@@ -59,6 +59,7 @@ static int lpc_cmd_soundcard(LinphoneCore *, char *);
 static int lpc_cmd_play(LinphoneCore *, char *);
 static int lpc_cmd_record(LinphoneCore *, char *);
 static int lpc_cmd_register(LinphoneCore *, char *);
+static int lpc_cmd_unregister(LinphoneCore *, char *);
 static int lpc_cmd_duration(LinphoneCore *lc, char *args);
 
 /* Command handler helpers */
@@ -67,6 +68,7 @@ static void linphonec_proxy_display(LinphoneProxyConfig *lc);
 static void linphonec_proxy_list(LinphoneCore *lc);
 static void linphonec_proxy_remove(LinphoneCore *lc, int index);
 static  int linphonec_proxy_use(LinphoneCore *lc, int index);
+static void linphonec_proxy_show(LinphoneCore *lc,int index);
 static void linphonec_friend_display(LinphoneFriend *fr);
 static int linphonec_friend_list(LinphoneCore *lc, char *arg);
 static void linphonec_display_command_help(LPC_COMMAND *cmd);
@@ -109,6 +111,8 @@ LPC_COMMAND commands[] = {
 		"'proxy remove <index>' : remove proxy setup with number index.\n"
 		"'proxy use <index>' : use proxy with number index as default proxy.\n"
 		"'proxy unuse' : don't use a default proxy."
+		"'proxy show <index>' : show configuration and status of the proxy numbered by index.\n"
+		"'proxy show default' : show configuration and status of the default proxy.\n"
 	},
 	{ "soundcard", lpc_cmd_soundcard, "Manage soundcards",
 		"'soundcard list' : list all sound devices.\n"
@@ -159,6 +163,7 @@ LPC_COMMAND commands[] = {
 	},
 	{ "quit", lpc_cmd_quit, "Exit linphonec", NULL },
 	{ "register", lpc_cmd_register, "Register in one line to a proxy" , "register <sip identity> <sip proxy> <password>"},
+	{ "unregister", lpc_cmd_unregister, "Unregister from default proxy", NULL	},
 	{ "duration", lpc_cmd_duration, "Print duration in seconds of the last call.", NULL },
 	{ (char *)NULL, (lpc_cmd_handler)NULL, (char *)NULL, (char *)NULL }
 };
@@ -633,13 +638,17 @@ lpc_cmd_proxy(LinphoneCore *lc, char *args)
 			if ( proxynum == -1 ) linphonec_out("No default proxy.\n");
 			else linphonec_out("Current default proxy is %d.\n", proxynum);
 		}
-	}
-	else if (strcmp(arg1, "unuse")==0)
-	{
+	}else if (strcmp(arg1, "unuse")==0){
 		linphone_core_set_default_proxy(lc, NULL);
 		linphonec_out("Use no proxy.\n");
-	}
-	else
+	}else if (strcmp(arg1,"show")==0){
+		if (arg2 && *arg2){
+			if (strstr(arg2,"default")==0){
+				proxynum=linphone_core_get_default_proxy(lc, NULL);
+				linphonec_proxy_show(lc,proxynum);
+			}else linphonec_proxy_show(lc,atoi(arg2));
+		}
+	}else
 	{
 		linphonec_out("Syntax error - see 'help proxy'\n");
 	}
@@ -966,12 +975,26 @@ linphonec_proxy_add(LinphoneCore *lc)
 static void
 linphonec_proxy_display(LinphoneProxyConfig *cfg)
 {
-	linphonec_out("sip address: %s\nroute: %s\nidentity: %s\nregister: %s\nexpires: %i\n",
+	linphonec_out("sip address: %s\nroute: %s\nidentity: %s\nregister: %s\nexpires: %i\nregistered: %s\n",
 			cfg->reg_proxy,
 			(cfg->reg_route!=NULL)?cfg->reg_route:"",
 			(cfg->reg_identity!=NULL)?cfg->reg_identity:"",
 			(cfg->reg_sendregister)?"yes":"no",
-			cfg->expires);
+			cfg->expires,
+			linphone_proxy_config_is_registered(cfg) ? "yes" : "no");
+}
+
+static void linphonec_proxy_show(LinphoneCore *lc, int index){
+	const MSList *elem;
+	int i;
+	for(elem=linphone_core_get_proxy_config_list(lc),i=0;elem!=NULL;elem=elem->next,++i){
+		if (index==i){
+			LinphoneProxyConfig *cfg=(LinphoneProxyConfig *)elem->data;
+			linphonec_proxy_display(cfg);
+			return;
+		}
+	}
+	linphonec_out("No proxy with index %i",index);
 }
 
 static void
@@ -1158,6 +1181,19 @@ static int lpc_cmd_register(LinphoneCore *lc, char *args){
 	linphone_proxy_config_enable_register(cfg,TRUE);
 	if (elem) linphone_proxy_config_done(cfg);
 	else linphone_core_add_proxy_config(lc,cfg);
+	return 1;
+}
+
+static int lpc_cmd_unregister(LinphoneCore *lc, char *args){
+	LinphoneProxyConfig *cfg=NULL;
+	linphone_core_get_default_proxy(lc,&cfg);
+	if (cfg) {
+		linphone_proxy_config_edit(cfg);
+		linphone_proxy_config_enable_register(cfg,FALSE);
+		linphone_proxy_config_done(cfg);
+	}else{
+		linphonec_out("unregistered\n");
+	}
 	return 1;
 }
 

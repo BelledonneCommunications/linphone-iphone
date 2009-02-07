@@ -170,6 +170,11 @@ static int register_execute(int argc, char *argv[]){
 	return send_generic_command(cmd,TRUE);
 }
 
+static int unregister_execute(int argc, char *argv[]){
+	return send_generic_command("unregister",FALSE);
+}
+
+
 static int dial_execute(int argc, char *argv[]){
 	char cmd[512];
 	if (argc==1){
@@ -180,6 +185,18 @@ static int dial_execute(int argc, char *argv[]){
 	}
 	return -1;
 }
+
+static int status_execute(int argc, char *argv[]){
+	char cmd[512];
+	if (argc==1){
+		snprintf(cmd,sizeof(cmd),"call %s",argv[0]);
+		return send_generic_command(cmd,TRUE);
+	}else{
+		print_usage();
+	}
+	return -1;
+}
+
 int main(int argc, char *argv[]){
 	int argi;
 	if (argc<2){
@@ -201,11 +218,15 @@ int main(int argc, char *argv[]){
 			}else print_usage();
 		}else if (strcmp(argv[argi],"register")==0){
 			return register_execute(argc-argi-1,&argv[argi+1]);
+		}else if (strcmp(argv[argi],"unregister")==0){
+			return unregister_execute(argc-argi-1,&argv[argi+1]);
 		}else if (strcmp(argv[argi],"dial")==0){
 			return dial_execute(argc-argi-1,&argv[argi+1]);
 		}else if (strcmp(argv[argi],"hangup")==0){
 			send_generic_command("terminate",FALSE);
 			send_generic_command("duration",TRUE);
+		}else if (strcmp(argv[argi],"status")==0){
+			return status_execute(argc-argi-1,&argv[argi+1]);
 		}
 	}
   	return 0;

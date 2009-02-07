@@ -46,6 +46,10 @@ void linphone_proxy_config_destroy(LinphoneProxyConfig *obj){
 	if (obj->ssctx!=NULL) sip_setup_context_free(obj->ssctx);
 }
 
+bool_t linphone_proxy_config_is_registered(const LinphoneProxyConfig *obj){
+	return obj->registered;
+}
+
 static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
 	osip_message_t *msg;
 	eXosip_lock();
