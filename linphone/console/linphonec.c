@@ -498,7 +498,13 @@ void linphonec_command_finished(void){
 	}
 }
 
+void linphonec_set_autoanswer(bool_t enabled){
+	auto_answer=enabled;
+}
 
+bool_t linphonec_get_autoanswer(){
+	return auto_answer;
+}
 
 /***************************************************************************/
 /*

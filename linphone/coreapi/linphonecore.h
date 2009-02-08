@@ -377,7 +377,8 @@ typedef enum _gstate {
   GSTATE_CALL_IN_INVITE,
   GSTATE_CALL_IN_CONNECTED,
   GSTATE_CALL_END,
-  GSTATE_CALL_ERROR
+  GSTATE_CALL_ERROR,
+  GSTATE_INVALID
 } gstate_t;
 
 struct _LinphoneGeneralState {
@@ -388,14 +389,10 @@ struct _LinphoneGeneralState {
 };
 typedef struct _LinphoneGeneralState LinphoneGeneralState;
 
-/* retrieve the current state of the specified state group */
-gstate_t gstate_get_state(gstate_group_t group);
-
-/* private: set the initial states */
-void gstate_initialize(void);
-
 /* private: set a new state */
 void gstate_new_state(struct _LinphoneCore *lc, gstate_t new_state, const char *message);
+/*private*/
+void gstate_initialize(struct _LinphoneCore *lc) ;
 
 typedef void (*ShowInterfaceCb)(struct _LinphoneCore *lc);
 typedef void (*InviteReceivedCb)(struct _LinphoneCore *lc, const char *from);
@@ -495,6 +492,9 @@ typedef struct _LinphoneCore
 	int up_video_bw;
 	int audio_bw;
 	int automatic_action;
+	gstate_t gstate_power;
+	gstate_t gstate_reg;
+	gstate_t gstate_call;
 	bool_t use_files;
 	bool_t apply_nat_settings;
 #ifdef VINCENT_MAURY_RSVP
@@ -717,7 +717,8 @@ void linphone_core_use_files(LinphoneCore *lc, bool_t yesno);
 void linphone_core_set_play_file(LinphoneCore *lc, const char *file);
 void linphone_core_set_record_file(LinphoneCore *lc, const char *file);
 
-
+gstate_t linphone_core_get_state(const LinphoneCore *lc, gstate_group_t group);
+int linphone_core_get_current_call_duration(const LinphoneCore *lc);
 
 int linphone_core_get_mtu(const LinphoneCore *lc);
 void linphone_core_set_mtu(LinphoneCore *lc, int mtu);

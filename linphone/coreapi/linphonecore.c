@@ -244,6 +244,12 @@ void linphone_call_log_destroy(LinphoneCallLog *cl){
 	ms_free(cl);
 }
 
+int linphone_core_get_current_call_duration(const LinphoneCore *lc){
+	LinphoneCall *call=lc->call;
+	if (call==NULL) return 0;
+	return time(NULL)-call->start_time;
+}
+
 void _osip_trace_func(char *fi, int li, osip_trace_level_t level, char *chfr, va_list ap){
 	int ortp_level=ORTP_DEBUG;
 	switch(level){
@@ -640,7 +646,7 @@ void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vtable, co
 	
 	memcpy(&lc->vtable,vtable,sizeof(LinphoneCoreVTable));
 
-        gstate_initialize();
+        gstate_initialize(lc);
         gstate_new_state(lc, GSTATE_POWER_STARTUP, NULL);
         
 	ortp_init();

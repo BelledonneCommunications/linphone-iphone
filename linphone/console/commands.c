@@ -46,6 +46,7 @@ static int lpc_cmd_help(LinphoneCore *, char *);
 static int lpc_cmd_proxy(LinphoneCore *, char *);
 static int lpc_cmd_call(LinphoneCore *, char *);
 static int lpc_cmd_answer(LinphoneCore *, char *);
+static int lpc_cmd_autoanswer(LinphoneCore *, char *);
 static int lpc_cmd_terminate(LinphoneCore *, char *);
 static int lpc_cmd_call_logs(LinphoneCore *, char *);
 static int lpc_cmd_ipv6(LinphoneCore *, char *);
@@ -61,6 +62,7 @@ static int lpc_cmd_record(LinphoneCore *, char *);
 static int lpc_cmd_register(LinphoneCore *, char *);
 static int lpc_cmd_unregister(LinphoneCore *, char *);
 static int lpc_cmd_duration(LinphoneCore *lc, char *args);
+static int lpc_cmd_status(LinphoneCore *lc, char *args);
 
 /* Command handler helpers */
 static void linphonec_proxy_add(LinphoneCore *lc);
@@ -105,6 +107,9 @@ LPC_COMMAND commands[] = {
 	{ "answer", lpc_cmd_answer, "Answer a call",
 		"Accept an incoming call."
 	},
+	{ "autoanswer", lpc_cmd_autoanswer, "Enable auto-answer mode",
+		"'autoanswer enable'\t: enable autoanswer mode\n"
+		"'autoanswer disable'\t: disable autoanswer mode \n"},
 	{ "proxy", lpc_cmd_proxy, "Manage proxies",
 		"'proxy list' : list all proxy setups.\n"
 		"'proxy add' : add a new proxy setup.\n"
@@ -165,6 +170,11 @@ LPC_COMMAND commands[] = {
 	{ "register", lpc_cmd_register, "Register in one line to a proxy" , "register <sip identity> <sip proxy> <password>"},
 	{ "unregister", lpc_cmd_unregister, "Unregister from default proxy", NULL	},
 	{ "duration", lpc_cmd_duration, "Print duration in seconds of the last call.", NULL },
+	{ "status", lpc_cmd_status, "Print various status information", 
+			"'status register' \t: print status concerning registration\n"
+			"'status autoanswer'\t: tell whether autoanswer mode is enabled\n"
+			"'status hook' \t: print hook status\n" },
+					
 	{ (char *)NULL, (lpc_cmd_handler)NULL, (char *)NULL, (char *)NULL }
 };
 
@@ -306,6 +316,8 @@ lpc_cmd_help(LinphoneCore *lc, char *arg)
 
 }
 
+static char callee_name[256]={0};
+
 static int
 lpc_cmd_call(LinphoneCore *lc, char *args)
 {
@@ -326,10 +338,14 @@ lpc_cmd_call(LinphoneCore *lc, char *args)
 		}
 		else
 		{
-			/* current_call=args; */
+			snprintf(callee_name,sizeof(callee_name),"%s",args);
 		}
 	}
 	return 1;
+}
+
+static const char *linphonec_get_callee(){
+	return callee_name;
 }
 
 static int
@@ -360,6 +376,17 @@ lpc_cmd_answer(LinphoneCore *lc, char *args)
 	{
 		linphonec_out("No incoming call.\n");
 	}
+	return 1;
+}
+
+static int
+lpc_cmd_autoanswer(LinphoneCore *lc, char *args)
+{
+	if (strstr(args,"enable")){
+		linphonec_set_autoanswer(TRUE);
+	}else if (strstr(args,"disable")){
+		linphonec_set_autoanswer(FALSE);
+	}else return 0;
 	return 1;
 }
 
@@ -1197,7 +1224,7 @@ static int lpc_cmd_unregister(LinphoneCore *lc, char *args){
 	return 1;
 }
 
-int lpc_cmd_duration(LinphoneCore *lc, char *args){
+static int lpc_cmd_duration(LinphoneCore *lc, char *args){
 	LinphoneCallLog *cl;
 	const MSList *elem=linphone_core_get_call_logs(lc);
 	for(;elem!=NULL;elem=elem->next){
@@ -1206,6 +1233,50 @@ int lpc_cmd_duration(LinphoneCore *lc, char *args){
 			linphonec_out("%i seconds\n",cl->duration);
 		}
 	}
+	return 1;
+}
+
+static int lpc_cmd_status(LinphoneCore *lc, char *args){
+	LinphoneProxyConfig *cfg;
+	linphone_core_get_default_proxy(lc,&cfg);
+	if (strstr(args,"register")){
+		if (cfg){
+			if (linphone_proxy_config_is_registered(cfg)){
+				linphonec_out("identity=%s duration=%s",
+					linphone_proxy_config_get_identity(cfg),
+					linphone_proxy_config_get_expires(cfg));
+			}else if (linphone_proxy_config_register_enabled(cfg)){
+				linphonec_out("registered=-1");
+			}else linphonec_out("registered=0");
+		}else linphonec_out("registered=0");
+	}else if (strstr(args,"autoanswer")){
+		if (cfg && linphone_proxy_config_is_registered(cfg))
+			linphonec_out("autoanswer=%i",linphonec_get_autoanswer());
+		else linphonec_out("unregistered");
+	}else if (strstr(args,"hook")){
+		gstate_t call_state=linphone_core_get_state(lc,GSTATE_GROUP_CALL);
+		if (!cfg || !linphone_proxy_config_is_registered(cfg)){
+			linphonec_out("unregistered");
+		}
+		switch(call_state){
+			case GSTATE_CALL_OUT_INVITE:
+				linphonec_out("hook=dialing");
+			break;
+			case GSTATE_CALL_IDLE:
+				linphonec_out("hook=offhook");
+			break;
+			case GSTATE_CALL_OUT_CONNECTED:
+				linphonec_out("hook=%s duration=%i", linphonec_get_callee(),
+					linphone_core_get_current_call_duration(lc));
+			break;
+			case GSTATE_CALL_IN_CONNECTED:
+				linphonec_out("hook=answered duration=%i" ,
+					linphone_core_get_current_call_duration(lc));
+			default:
+				break;
+		}
+		
+	}else return 0;
 	return 1;
 }
 
