@@ -468,7 +468,7 @@ static void process_frame(MSFilter *f, mblk_t *inm){
 	/* timestamp used by ffmpeg, unset here */
 	pict.pts=AV_NOPTS_VALUE;
 		
-	if (s->framenum==(int)s->fps*2 || s->framenum==(int)s->fps*4){
+	if (s->framenum==(int)(s->fps*2.0) || s->framenum==(int)(s->fps*4.0)){
 		/*sends an I frame at 2 seconds and 4 seconds after the beginning of the call*/
 		s->req_vfu=TRUE;
 	}
