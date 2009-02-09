@@ -59,6 +59,7 @@ typedef struct EncState{
 	float fps;
 	int maxbr;
 	int qmin;
+	uint32_t framenum;
 	bool_t req_vfu;
 }EncState;
 
@@ -162,6 +163,7 @@ static void enc_init(MSFilter *f, enum CodecID codec)
 	s->vsize.height=MS_VIDEO_SIZE_CIF_H;
 	s->qmin=2;
 	s->req_vfu=FALSE;
+	s->framenum=0;
 	s->av_context.codec=NULL;
 }
 
@@ -458,13 +460,18 @@ static void process_frame(MSFilter *f, mblk_t *inm){
 	int error;
 	mblk_t *comp_buf=s->comp_buf;
 	int comp_buf_sz=comp_buf->b_datap->db_lim-comp_buf->b_datap->db_base;
-	
+
 	/* convert image if necessary */
 	avcodec_get_frame_defaults(&pict);
 	avpicture_fill((AVPicture*)&pict,(uint8_t*)inm->b_rptr,c->pix_fmt,c->width,c->height);
 	
 	/* timestamp used by ffmpeg, unset here */
 	pict.pts=AV_NOPTS_VALUE;
+		
+	if (s->framenum==(int)s->fps*2 || s->framenum==(int)s->fps*4){
+		/*sends an I frame at 2 seconds and 4 seconds after the beginning of the call*/
+		s->req_vfu=TRUE;
+	}
 	if (s->req_vfu){
 		pict.pict_type=FF_I_TYPE;
 		s->req_vfu=FALSE;
@@ -480,6 +487,7 @@ static void process_frame(MSFilter *f, mblk_t *inm){
 	error=avcodec_encode_video(c, (uint8_t*)comp_buf->b_wptr,comp_buf_sz, &pict);
 	if (error<=0) ms_warning("ms_AVencoder_process: error %i.",error);
 	else{
+		s->framenum++;
 		if (c->coded_frame->pict_type==FF_I_TYPE){
 			ms_message("Emitting I-frame");
 		}
