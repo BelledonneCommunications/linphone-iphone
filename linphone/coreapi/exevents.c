@@ -930,11 +930,12 @@ void linphone_registration_success(LinphoneCore *lc,eXosip_event_t *ev){
 	cfg=linphone_core_get_proxy_config_from_rid(lc,ev->rid);
 	ms_return_if_fail(cfg!=NULL);
 	cfg->auth_pending=FALSE;
-	cfg->registered=TRUE;
 	gstate_new_state(lc, GSTATE_REG_OK, NULL);
 	osip_message_get_expires(ev->request,0,&h);
-	if (h!=NULL && atoi(h->hvalue)!=0)
+	if (h!=NULL && atoi(h->hvalue)!=0){
+		cfg->registered=TRUE;
 		linphone_proxy_config_register_again_with_updated_contact(cfg,ev->request,ev->response);
+	}else cfg->registered=FALSE;
 }
 
 static bool_t comes_from_local_if(osip_message_t *msg){

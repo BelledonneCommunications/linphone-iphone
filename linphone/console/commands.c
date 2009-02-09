@@ -1208,13 +1208,14 @@ static int lpc_cmd_register(LinphoneCore *lc, char *args){
 	linphone_proxy_config_enable_register(cfg,TRUE);
 	if (elem) linphone_proxy_config_done(cfg);
 	else linphone_core_add_proxy_config(lc,cfg);
+	linphone_core_set_default_proxy(lc,cfg);
 	return 1;
 }
 
 static int lpc_cmd_unregister(LinphoneCore *lc, char *args){
 	LinphoneProxyConfig *cfg=NULL;
 	linphone_core_get_default_proxy(lc,&cfg);
-	if (cfg) {
+	if (cfg && linphone_proxy_config_is_registered(cfg)) {
 		linphone_proxy_config_edit(cfg);
 		linphone_proxy_config_enable_register(cfg,FALSE);
 		linphone_proxy_config_done(cfg);
@@ -1242,35 +1243,36 @@ static int lpc_cmd_status(LinphoneCore *lc, char *args){
 	if (strstr(args,"register")){
 		if (cfg){
 			if (linphone_proxy_config_is_registered(cfg)){
-				linphonec_out("identity=%s duration=%s",
+				linphonec_out("identity=%s duration=%i\n",
 					linphone_proxy_config_get_identity(cfg),
 					linphone_proxy_config_get_expires(cfg));
 			}else if (linphone_proxy_config_register_enabled(cfg)){
-				linphonec_out("registered=-1");
-			}else linphonec_out("registered=0");
-		}else linphonec_out("registered=0");
+				linphonec_out("registered=-1\n");
+			}else linphonec_out("registered=0\n");
+		}else linphonec_out("registered=0\n");
 	}else if (strstr(args,"autoanswer")){
 		if (cfg && linphone_proxy_config_is_registered(cfg))
-			linphonec_out("autoanswer=%i",linphonec_get_autoanswer());
-		else linphonec_out("unregistered");
+			linphonec_out("autoanswer=%i\n",linphonec_get_autoanswer());
+		else linphonec_out("unregistered\n");
 	}else if (strstr(args,"hook")){
 		gstate_t call_state=linphone_core_get_state(lc,GSTATE_GROUP_CALL);
 		if (!cfg || !linphone_proxy_config_is_registered(cfg)){
-			linphonec_out("unregistered");
+			linphonec_out("unregistered\n");
+			return 1;
 		}
 		switch(call_state){
 			case GSTATE_CALL_OUT_INVITE:
-				linphonec_out("hook=dialing");
+				linphonec_out("hook=dialing\n");
 			break;
 			case GSTATE_CALL_IDLE:
-				linphonec_out("hook=offhook");
+				linphonec_out("hook=offhook\n");
 			break;
 			case GSTATE_CALL_OUT_CONNECTED:
-				linphonec_out("hook=%s duration=%i", linphonec_get_callee(),
+				linphonec_out("hook=%s duration=%i\n", linphonec_get_callee(),
 					linphone_core_get_current_call_duration(lc));
 			break;
 			case GSTATE_CALL_IN_CONNECTED:
-				linphonec_out("hook=answered duration=%i" ,
+				linphonec_out("hook=answered duration=%i\n" ,
 					linphone_core_get_current_call_duration(lc));
 			default:
 				break;

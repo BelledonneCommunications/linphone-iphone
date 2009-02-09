@@ -75,11 +75,16 @@ static int send_command(const char *command, const char * port, char *reply, int
 static void print_usage(void){
 	fprintf(stderr,"Usage:\nlinphonecsh <action> [arguments]\n"
 			"where action is one of\n"
-			"\tinit     : spawn a linphonec daemon (first step to make other actions)\n"
-			"\t\tfollowed by the arguments sent to linphonec\n"
-			"\tgeneric  : sends a generic command to the running linphonec daemon\n"
-			"\t\tfollowed by the generic command surrounded by quotes, for example \"call sip:joe@example.net\"\n"
-			"\tregister : register with specified proxy\n");
+			"\tinit\t\t: spawn a linphonec daemon (first step to make other actions)\n"
+			"\t\t\tfollowed by the arguments sent to linphonec\n"
+			"\tgeneric\t\t: sends a generic command to the running linphonec daemon\n"
+			"\t\t\tfollowed by the generic command surrounded by quotes,\n\t\t\t for example \"call sip:joe@example.net\"\n"
+			"\tregister\t: register; arguments are \n\t\t\t--host <host>\n\t\t\t--username <username>\n\t\t\t--password <password>\n"
+			"\tunregister\t: unregister\n"
+			"\tdial\t\t: dial <sip uri or number>\n"
+			"\tstatus\t\t: can be 'status register', 'status autoanswer' or 'status hook'\n"
+			"\texit\t\t: make the linphonec daemon to exit.\n"
+	);
 	exit(-1);
 }
 
@@ -93,6 +98,8 @@ static void spawn_linphonec(int argc, char *argv[]){
 	args[j++]="linphonec";
 	args[j++]="--tcp";
 	args[j++]=DEFAULT_TCP_PORT;
+	args[j++]="-c";
+	args[j++]="/dev/null";
 	for(i=0;i<argc;++i){
 		args[j++]=argv[i];
 	}
@@ -189,7 +196,7 @@ static int dial_execute(int argc, char *argv[]){
 static int status_execute(int argc, char *argv[]){
 	char cmd[512];
 	if (argc==1){
-		snprintf(cmd,sizeof(cmd),"call %s",argv[0]);
+		snprintf(cmd,sizeof(cmd),"status %s",argv[0]);
 		return send_generic_command(cmd,TRUE);
 	}else{
 		print_usage();
@@ -227,7 +234,9 @@ int main(int argc, char *argv[]){
 			send_generic_command("duration",TRUE);
 		}else if (strcmp(argv[argi],"status")==0){
 			return status_execute(argc-argi-1,&argv[argi+1]);
-		}
+		}else if (strcmp(argv[argi],"exit")==0){
+			return send_generic_command("quit",TRUE);
+		}else print_usage();
 	}
   	return 0;
 }
