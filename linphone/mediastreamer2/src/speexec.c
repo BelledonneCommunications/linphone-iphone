@@ -149,6 +149,7 @@ static void speex_ec_process(MSFilter *f){
 		om1=allocb(nbytes,0);
 		speex_echo_cancel(s->ecstate,(short*)in1,(short*)om0->b_rptr,(short*)om1->b_wptr,NULL);
 		speex_preprocess_run(s->den, (short*)om1->b_wptr);
+		ms_filter_notify(f, MS_SPEEX_EC_ECHO_STATE, (void*)s->ecstate);
 
 		om1->b_wptr+=nbytes;
 		ms_queue_put(f->outputs[1],om1);

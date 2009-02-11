@@ -81,61 +81,74 @@ typedef struct ConfState{
 
 
 static void channel_init(ConfState *s, Channel *chan, int pos){
+	float f;
+	int val;
 	memset(chan, 0, sizeof(Channel));
 	ms_bufferizer_init(&chan->buff);
 #ifndef DISABLE_SPEEX
 	//chan->speex_pp = speex_preprocess_state_init((s->conf_gran/2) *(s->samplerate/8000), s->samplerate);
 	chan->speex_pp = speex_preprocess_state_init(s->conf_gran/2, s->samplerate);
-	if (chan->speex_pp!=NULL) {
-		float f;
-		int val;
-		if (pos==0)
-  		val=1;
-    else
-  		val=0;
-		speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_SET_DENOISE, &val);
-		/* enable VAD only on incoming RTP stream */
-		if (pos%2==1)
-		{
-			val=1;
-			speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_SET_VAD, &val);
-		}
-		else if (pos==0 && s->enable_halfduplex>0)
-		{
-			val=1;
-			speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_SET_VAD, &val);
-			val = s->vad_prob_start; // xx%
-			speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_SET_PROB_START, &val);
-			val = s->vad_prob_continue; // xx%
-			speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_SET_PROB_CONTINUE, &val);
-		}
+	if (chan->speex_pp==NULL)
+		return;
 
-		/* enable AGC only on local soundcard */
-		if (s->agc_level>0 && pos==0)
-		{
-			val=1;
-			speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_SET_AGC, &val);
-			f=s->agc_level;
-			speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_SET_AGC_LEVEL, &f);
-#if 0
-			val=40;
-			speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_SET_AGC_MAX_GAIN, &val);
-#endif
-		}
-		else
-		{
-			val=0;
-			speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_SET_AGC, &val);
-			f=8000;
-			speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_SET_AGC_LEVEL, &f);
-		}
-		val=0;
-		speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_SET_DEREVERB, &val);
-		f=.4;
-		speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_SET_DEREVERB_DECAY, &f);
-		f=.3;
-		speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_SET_DEREVERB_LEVEL, &f);
+	/* configure sound card input on pin 0 */
+	val=0;
+	if (pos==0)
+		val=1;
+
+	if (s->enable_halfduplex>0 && pos%2==1)
+		val=1;
+
+	speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_SET_DENOISE, &val);
+	val = -30;
+	speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_SET_NOISE_SUPPRESS, &val);
+
+	/* enable VAD only on incoming RTP stream */
+	val=0;
+	if (pos%2==1 || (pos==0 && s->enable_halfduplex>0))
+	{
+		val=1;
 	}
+
+	speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_SET_VAD, &val);
+	if (s->vad_prob_start>0 && s->vad_prob_continue>0)
+	{
+		val = s->vad_prob_start; // xx%
+		speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_SET_PROB_START, &val);
+		val = s->vad_prob_continue; // xx%
+		speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_SET_PROB_CONTINUE, &val);
+	}
+
+	/* enable AGC only on local soundcard */
+	val=0;
+	f=8000;
+	if (s->agc_level>0 && pos==0)
+		val=1;
+	else if (pos==0 && s->enable_halfduplex>0)
+		val=1;
+	else if ( pos%2==1 && s->enable_halfduplex>0)
+		val=1;
+	if (s->agc_level>0)
+		f=s->agc_level;
+
+
+	speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_SET_AGC, &val);
+	speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_SET_AGC_LEVEL, &f);
+#if 0
+	val=15;
+	speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_SET_AGC_MAX_GAIN, &val);
+#endif
+
+	val=0;
+#if 0
+	val=1; // do more testing
+#endif
+	speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_SET_DEREVERB, &val);
+	f=.4;
+	speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_SET_DEREVERB_DECAY, &f);
+	f=.3;
+	speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_SET_DEREVERB_LEVEL, &f);
+
 #endif
 }
 
@@ -230,7 +243,7 @@ static bool_t should_process(MSFilter *f, ConfState *s){
 	return FALSE;
 }
 
-static void conf_sum(ConfState *s){
+static void conf_sum(MSFilter *f, ConfState *s){
 	int i,j;
 	Channel *chan;
 	memset(s->sum,0,s->conf_nsamples*sizeof(int));
@@ -272,15 +285,22 @@ static void conf_sum(ConfState *s){
 			&& ms_bufferizer_get_avail(&chan->buff)> s->conf_gran
 			&& ms_bufferizer_get_avail(&chan->buff)> (ms_bufferizer_get_avail(&s->channels[0].buff)+s->conf_gran*6) )
 		{
+#if 0
+			int loudness;
+#endif
+			int vad=0;
 			while (ms_bufferizer_get_avail(&chan->buff)> (ms_bufferizer_get_avail(&s->channels[0].buff)) )
 			{
 				ms_bufferizer_read(&chan->buff,(uint8_t*)chan->input,s->conf_gran);
+#if 0
+				speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_GET_AGC_LOUDNESS, &loudness);
+#endif
 				/* we want to remove 4 packets (40ms) in a near future: */
 #ifndef DISABLE_SPEEX
 				if (chan->speex_pp!=NULL && s->enable_vad==TRUE)
 				{
-					int vad;
 					vad = speex_preprocess(chan->speex_pp, (short*)chan->input, NULL);
+					ms_filter_notify(f, MS_CONF_SPEEX_PREPROCESS_MIC, (void*)chan->speex_pp);
 					if (vad==1)
 						break; /* voice detected: process as usual */
 					if (ms_bufferizer_get_avail(&chan->buff)<s->conf_gran)
@@ -295,13 +315,40 @@ static void conf_sum(ConfState *s){
 				chan->stat_discarded++;
 			}
 
-			if (s->channels[0].is_speaking<=0)
+
+			if (s->enable_halfduplex>0)
 			{
-				for(j=0;j<s->conf_nsamples;++j){
-					s->sum[j]+=chan->input[j];
+#if 0
+				ms_message("prob=%i", loudness);
+#endif
+				// LIMITATION:
+				// HALF DUPLEX MODE IS TO BE USED WITH ONLY 
+				// ONE SOUND CARD AND ONE RTP STREAM.
+				if (vad>0) // && loudness>20)
+				{
+					/* speech detected */
+					s->channels[0].is_speaking++;
+					if (s->channels[0].is_speaking>2)
+						s->channels[0].is_speaking=2;
 				}
-				chan->has_contributed=TRUE;
+				else
+				{
+					s->channels[0].is_speaking--;
+					if (s->channels[0].is_speaking<-2)
+						s->channels[0].is_speaking=-2;
+				}
+
+				if (s->channels[0].is_speaking<=0)
+					ms_message("silence on! (%i)", s->channels[0].is_speaking);
+				else
+					ms_message("speech on! (%i)", s->channels[0].is_speaking);
 			}
+
+			for(j=0;j<s->conf_nsamples;++j){
+				s->sum[j]+=chan->input[j];
+			}
+			chan->has_contributed=TRUE;
+
 			chan->stat_processed++;
 		}
 		else if (ms_bufferizer_get_avail(&chan->buff)>=s->conf_gran)
@@ -312,41 +359,57 @@ static void conf_sum(ConfState *s){
 			{
 				int vad;
 				vad = speex_preprocess(chan->speex_pp, (short*)chan->input, NULL);
-				if (s->enable_halfduplex>0)
-				{
-					if (vad>0)
-					{
-						/* speech detected */
-						chan->is_speaking++;
-						if (chan->is_speaking>5)
-							chan->is_speaking=5;
-					}
-					else
-					{
-						chan->is_speaking--;
-						if (chan->is_speaking<-5)
-							chan->is_speaking=-5;
-					}
-				if (chan->is_speaking<=0)
-					ms_message("silence on! (%i)", chan->is_speaking);
-				else
-					ms_message("speech on! (%i)", chan->is_speaking);
-				}
+				//ms_filter_notify(f, MS_CONF_SPEEX_PREPROCESS_MIC, (void*)chan->speex_pp);
 			}
 			else if (chan->speex_pp!=NULL && s->enable_vad==TRUE)
 			{
-				speex_preprocess_estimate_update(chan->speex_pp, (short*)chan->input);
+#if 0
+				int loudness;
+#endif
+				int vad;
+				if (s->enable_halfduplex>0)
+				{
+					vad = speex_preprocess(chan->speex_pp, (short*)chan->input, NULL);
+					ms_filter_notify(f, MS_CONF_SPEEX_PREPROCESS_MIC, (void*)chan->speex_pp);
+#if 0
+					speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_GET_AGC_LOUDNESS, &loudness);
+					ms_message("prob=%i", loudness);
+#endif
+					// LIMITATION:
+					// HALF DUPLEX MODE IS TO BE USED WITH ONLY 
+					// ONE SOUND CARD AND ONE RTP STREAM.
+					if (vad>0) //&& loudness>20)
+					{
+						s->channels[0].is_speaking++;
+						if (s->channels[0].is_speaking>2)
+							s->channels[0].is_speaking=2;
+					}
+					else
+					{
+						s->channels[0].is_speaking--;
+						if (s->channels[0].is_speaking<-2)
+							s->channels[0].is_speaking=-2;
+					}
+
+					if (s->channels[0].is_speaking<=0)
+						ms_message("silence on! (%i)", s->channels[0].is_speaking);
+					else
+						ms_message("speech on! (%i)", s->channels[0].is_speaking);
+				}
+				else
+				{
+					vad = speex_preprocess(chan->speex_pp, (short*)chan->input, NULL);
+					//speex_preprocess_estimate_update(chan->speex_pp, (short*)chan->input);
+					ms_filter_notify(f, MS_CONF_SPEEX_PREPROCESS_MIC, (void*)chan->speex_pp);
+				}
 			}
 #endif
 
-			if (i==0
-				|| s->channels[0].is_speaking<=0)
-			{
-				for(j=0;j<s->conf_nsamples;++j){
-					s->sum[j]+=chan->input[j];
-				}
-				chan->has_contributed=TRUE;
+			for(j=0;j<s->conf_nsamples;++j){
+				s->sum[j]+=chan->input[j];
 			}
+			chan->has_contributed=TRUE;
+
 			chan->stat_processed++;
 		} else {
 			chan->stat_missed++;
@@ -403,7 +466,17 @@ static void conf_dispatch(MSFilter *f, ConfState *s){
 	for (i=0;i<CONF_MAX_PINS;++i){
 		if (f->outputs[i]!=NULL){
 			chan=&s->channels[i];
-			m=conf_output(s,chan);
+			if (s->channels[0].is_speaking<=0 || i%2==0) // RTP is silent, work as usual
+				m=conf_output(s,chan);
+			else
+			{
+				m=allocb(s->conf_gran,0);
+				int k;
+				for (k=0;k<s->conf_nsamples;++k){
+					*((int16_t*)m->b_wptr)=0;
+					m->b_wptr+=2;
+				}
+			}
 			ms_queue_put(f->outputs[i],m);
 		}
 	}
@@ -433,7 +506,7 @@ static void conf_process(MSFilter *f){
 
 	/*do the job */
 	while(should_process(f,s)==TRUE){
-		conf_sum(s);
+		conf_sum(f, s);
 		conf_dispatch(f,s);
 	}
 
