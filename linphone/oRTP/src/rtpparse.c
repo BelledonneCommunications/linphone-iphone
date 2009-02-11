@@ -87,14 +87,13 @@ void rtp_session_rtp_parse(RtpSession *session, mblk_t *mp, uint32_t local_str_t
 				rtp_session_dispatch_event(session,ev);
 				return;
 			}
-		}else{
-			/* discard*/
-			ortp_debug("Receiving rtp packet with version number !=2...discarded");
-			stats->bad++;
-			ortp_global_stats.bad++;
-			freemsg(mp);
-			return;
 		}
+		/* discard in two case: the packet is not stun OR nobody is interested by STUN (no eventqs) */
+		ortp_debug("Receiving rtp packet with version number !=2...discarded");
+		stats->bad++;
+		ortp_global_stats.bad++;
+		freemsg(mp);
+		return;
 	}
 
 	/* only count non-stun packets. */
