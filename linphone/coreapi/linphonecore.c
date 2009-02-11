@@ -2041,9 +2041,11 @@ bool_t linphone_core_video_preview_enabled(const LinphoneCore *lc){
 
 void linphone_core_enable_self_view(LinphoneCore *lc, bool_t val){
 	lc->video_conf.selfview=val;
+#ifdef VIDEO_ENABLED
 	if (lc->videostream){
 		video_stream_enable_self_view(lc->videostream,val);
 	}
+#endif
 }
 
 bool_t linphone_core_self_view_enabled(const LinphoneCore *lc){
@@ -2072,10 +2074,12 @@ const char *linphone_core_get_video_device(const LinphoneCore *lc){
 }
 
 unsigned long linphone_core_get_native_video_window_id(const LinphoneCore *lc){
+#ifdef VIDEO_ENABLED
 	if (lc->videostream)
 		return video_stream_get_native_window_id(lc->videostream);
 	if (lc->previewstream)
 		return video_stream_get_native_window_id(lc->previewstream);
+#endif
 	return 0;
 }
 
