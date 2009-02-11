@@ -1753,17 +1753,18 @@ int linphone_core_set_capture_device(LinphoneCore *lc, const char * devid){
 
 const char * linphone_core_get_ringer_device(LinphoneCore *lc)
 {
-	return ms_snd_card_get_string_id(lc->sound_conf.ring_sndcard);
+	if (lc->sound_conf.ring_sndcard) return ms_snd_card_get_string_id(lc->sound_conf.ring_sndcard);
+	return NULL;
 }
 
 const char * linphone_core_get_playback_device(LinphoneCore *lc)
 {
-	return ms_snd_card_get_string_id(lc->sound_conf.play_sndcard);
+	return lc->sound_conf.play_sndcard ? ms_snd_card_get_string_id(lc->sound_conf.play_sndcard) : NULL;
 }
 
 const char * linphone_core_get_capture_device(LinphoneCore *lc)
 {
-	return ms_snd_card_get_string_id(lc->sound_conf.capt_sndcard);
+	return lc->sound_conf.capt_sndcard ? ms_snd_card_get_string_id(lc->sound_conf.capt_sndcard) : NULL;
 }
 
 /* returns a static array of string describing the sound devices */ 
@@ -2268,9 +2269,12 @@ void sound_config_uninit(LinphoneCore *lc)
 {
 	/*char tmpbuf[2];*/
 	sound_config_t *config=&lc->sound_conf;
-	lp_config_set_string(lc->config,"sound","playback_dev_id",ms_snd_card_get_string_id(config->play_sndcard));
-	lp_config_set_string(lc->config,"sound","ringer_dev_id",ms_snd_card_get_string_id(config->ring_sndcard));
-	lp_config_set_string(lc->config,"sound","capture_dev_id",ms_snd_card_get_string_id(config->capt_sndcard));
+	if (config->play_sndcard)
+		lp_config_set_string(lc->config,"sound","playback_dev_id",ms_snd_card_get_string_id(config->play_sndcard));
+	if (config->ring_sndcard)
+		lp_config_set_string(lc->config,"sound","ringer_dev_id",ms_snd_card_get_string_id(config->ring_sndcard));
+	if (config->capt_sndcard)
+		lp_config_set_string(lc->config,"sound","capture_dev_id",ms_snd_card_get_string_id(config->capt_sndcard));
 	ms_free(config->cards);
 	/*
 	lp_config_set_int(lc->config,"sound","rec_lev",config->rec_lev);
