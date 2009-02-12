@@ -25,6 +25,8 @@ EXPORTS
 	ms_snd_card_get_string_id
 	ms_snd_card_manager_get
 	ms_snd_card_manager_get_default_card
+	ms_snd_card_manager_get_default_capture_card
+	ms_snd_card_manager_get_default_playback_card
 	ms_snd_card_manager_get_card
 	ms_snd_card_manager_get_list
 	ms_snd_card_dup

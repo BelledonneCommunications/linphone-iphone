@@ -162,6 +162,24 @@ MSSndCard * ms_snd_card_manager_get_card(MSSndCardManager *m, const char *id);
 MSSndCard * ms_snd_card_manager_get_default_card(MSSndCardManager *m);
 
 /**
+ * Retreive the default capture sound card object.
+ *
+ * @param m    A sound card manager containing sound cards.
+ *
+ * Returns: MSSndCard if successfull, NULL otherwise.
+ */
+MSSndCard * ms_snd_card_manager_get_default_capture_card(MSSndCardManager *m);
+
+/**
+ * Retreive the default playback sound card object.
+ *
+ * @param m    A sound card manager containing sound cards.
+ *
+ * Returns: MSSndCard if successfull, NULL otherwise.
+ */
+MSSndCard * ms_snd_card_manager_get_default_playback_card(MSSndCardManager *m);
+
+/**
  * Retreive the list of sound card objects.
  *
  * @param m    A sound card manager containing sound cards.

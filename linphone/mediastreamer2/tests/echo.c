@@ -32,9 +32,11 @@ static void stop(int signum){
 
 int main(int argc, char *argv[]){
 	MSFilter *f1,*f2;
-	MSSndCard *card;
+	MSSndCard *card_capture;
+	MSSndCard *card_playback;
 	MSTicker *ticker;
 	char *card_id=NULL;
+	int rate = 16000;
 	ortp_init();
 	ortp_set_log_level_mask(ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
 	ms_init();
@@ -46,20 +48,32 @@ int main(int argc, char *argv[]){
 
 	if (card_id!=NULL)
 	  {
-		card=ms_snd_card_manager_get_card(ms_snd_card_manager_get(),card_id);
+		card_capture = ms_snd_card_manager_get_card(ms_snd_card_manager_get(),card_id);
+		card_playback = ms_snd_card_manager_get_card(ms_snd_card_manager_get(),card_id);
 #ifdef __linux
-		if (card==NULL)
-		  card = ms_alsa_card_new_custom(card_id, card_id);
+		if (card_playback==NULL)
+		  card_playback = ms_alsa_card_new_custom(card_id, card_id);
+		if (card_capture==NULL)
+		  card_capture = ms_alsa_card_new_custom(card_id, card_id);
 #endif
 	  }
-	else card=ms_snd_card_manager_get_default_card(ms_snd_card_manager_get());
-
-	if (card==NULL){
+	else
+	{
+		card_capture = ms_snd_card_manager_get_default_capture_card(ms_snd_card_manager_get());
+		card_playback = ms_snd_card_manager_get_default_playback_card(ms_snd_card_manager_get());
+	}
+	if (card_playback==NULL || card_capture==NULL){
 		ms_error("No card.");
 		return -1;
 	}
-	f1=ms_snd_card_create_reader(card);
-	f2=ms_snd_card_create_writer(card);
+	f1=ms_snd_card_create_reader(card_capture);
+	f2=ms_snd_card_create_writer(card_playback);
+
+	ms_filter_call_method (f1, MS_FILTER_SET_SAMPLE_RATE,
+		&rate);
+	ms_filter_call_method (f2, MS_FILTER_SET_SAMPLE_RATE,
+		&rate);
+
 	ticker=ms_ticker_new();
 	ms_filter_link(f1,0,f2,0);
 	ms_ticker_attach(ticker,f1);
