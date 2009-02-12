@@ -18,6 +18,9 @@ EXPORTS
 	ms_filter_preprocess
 	ms_filter_postprocess
 	ms_filter_codec_supported
+	ms_filter_register
+	ms_filter_new_from_name
+	ms_filter_set_notify_callback
 	
 	ms_snd_card_create_reader
 	ms_snd_card_create_writer
@@ -37,7 +40,6 @@ EXPORTS
 	ms_ticker_attach
 	ms_ticker_detach
 	ms_ticker_set_time_func
-	ms_filter_register
 	ms_ticker_print_graphs
 
 	ms_bufferizer_init
@@ -62,19 +64,19 @@ EXPORTS
 	video_stream_new
 	video_stream_start
 	video_stream_stop
+	video_stream_iterate
+	video_stream_set_sent_video_size
 	
 	ms_is_ipv6
 	
-	ms_queue_flush
-
 	yuv_buf_alloc
 	yuv_buf_init_from_mblk
 	yuv_buf_init_from_mblk_with_size
 
 	ms_sleep
-	ms_filter_new_from_name
 	
 	ms_queue_init
+	ms_queue_flush
 	
 	rfc3984_init
 	rfc3984_uninit
@@ -86,18 +88,15 @@ EXPORTS
 	ms_list_for_each
 	ms_list_append
 	ms_list_remove
-	ms_filter_set_notify_callback
 	
 	ice_sound_send_stun_request
 	ice_process_stun_message
-	
-	ms_web_cam_manager_get_default_cam
-	ms_web_cam_manager_get
-	
-	video_stream_iterate
+		
 	ms_discover_mtu
 	ms_set_mtu
 	
+	ms_web_cam_manager_get_default_cam
+	ms_web_cam_manager_get
 	ms_web_cam_manager_get_list
 	ms_web_cam_manager_get_cam
 	ms_web_cam_manager_add_cam
