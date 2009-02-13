@@ -6,6 +6,7 @@ linphone-3.1.0 -- January 19, 2009
 	* set a user friendly gtk theme by default on windows
 	* linphonec can compile and work without libreadline
 	* enable translations on windows
+	* enable lookups of SRV records
 	* bugfixing as usual
 
 linphone-3.0.0  -- October 13, 2008

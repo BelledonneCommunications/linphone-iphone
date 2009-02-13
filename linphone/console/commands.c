@@ -1243,7 +1243,7 @@ static int lpc_cmd_status(LinphoneCore *lc, char *args){
 	if (strstr(args,"register")){
 		if (cfg){
 			if (linphone_proxy_config_is_registered(cfg)){
-				linphonec_out("identity=%s duration=%i\n",
+				linphonec_out("registered, identity=%s duration=%i\n",
 					linphone_proxy_config_get_identity(cfg),
 					linphone_proxy_config_get_expires(cfg));
 			}else if (linphone_proxy_config_register_enabled(cfg)){
@@ -1268,7 +1268,7 @@ static int lpc_cmd_status(LinphoneCore *lc, char *args){
 				linphonec_out("hook=offhook\n");
 			break;
 			case GSTATE_CALL_OUT_CONNECTED:
-				linphonec_out("hook=%s duration=%i\n", linphonec_get_callee(),
+				linphonec_out("Call out, hook=%s duration=%i\n", linphonec_get_callee(),
 					linphone_core_get_current_call_duration(lc));
 			break;
 			case GSTATE_CALL_IN_CONNECTED:
