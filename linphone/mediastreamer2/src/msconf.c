@@ -71,6 +71,7 @@ typedef struct ConfState{
 	int vad_prob_continue;
 
 	int agc_level;
+	int max_gain;
 	int mix_mode;
 	int samplerate;
 
@@ -134,10 +135,8 @@ static void channel_init(ConfState *s, Channel *chan, int pos){
 
 	speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_SET_AGC, &val);
 	speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_SET_AGC_LEVEL, &f);
-#if 0
-	val=15;
+	val=s->max_gain;
 	speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_SET_AGC_MAX_GAIN, &val);
-#endif
 
 	val=0;
 #if 0
@@ -172,6 +171,7 @@ static void conf_init(MSFilter *f){
 	s->enable_directmode=FALSE;
 	s->enable_vad=TRUE;
 	s->agc_level=0;
+	s->max_gain=30;
 	s->mix_mode=TRUE;
 	s->adaptative_msconf_buf=2;
 	f->data=s;
@@ -300,7 +300,6 @@ static void conf_sum(MSFilter *f, ConfState *s){
 				if (chan->speex_pp!=NULL && s->enable_vad==TRUE)
 				{
 					vad = speex_preprocess(chan->speex_pp, (short*)chan->input, NULL);
-					ms_filter_notify(f, MS_CONF_SPEEX_PREPROCESS_MIC, (void*)chan->speex_pp);
 					if (vad==1)
 						break; /* voice detected: process as usual */
 					if (ms_bufferizer_get_avail(&chan->buff)<s->conf_gran)
@@ -359,7 +358,7 @@ static void conf_sum(MSFilter *f, ConfState *s){
 			{
 				int vad;
 				vad = speex_preprocess(chan->speex_pp, (short*)chan->input, NULL);
-				//ms_filter_notify(f, MS_CONF_SPEEX_PREPROCESS_MIC, (void*)chan->speex_pp);
+				ms_filter_notify(f, MS_CONF_SPEEX_PREPROCESS_MIC, (void*)chan->speex_pp);
 			}
 			else if (chan->speex_pp!=NULL && s->enable_vad==TRUE)
 			{
@@ -370,7 +369,6 @@ static void conf_sum(MSFilter *f, ConfState *s){
 				if (s->enable_halfduplex>0)
 				{
 					vad = speex_preprocess(chan->speex_pp, (short*)chan->input, NULL);
-					ms_filter_notify(f, MS_CONF_SPEEX_PREPROCESS_MIC, (void*)chan->speex_pp);
 #if 0
 					speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_GET_AGC_LOUDNESS, &loudness);
 					ms_message("prob=%i", loudness);
@@ -400,7 +398,6 @@ static void conf_sum(MSFilter *f, ConfState *s){
 				{
 					vad = speex_preprocess(chan->speex_pp, (short*)chan->input, NULL);
 					//speex_preprocess_estimate_update(chan->speex_pp, (short*)chan->input);
-					ms_filter_notify(f, MS_CONF_SPEEX_PREPROCESS_MIC, (void*)chan->speex_pp);
 				}
 			}
 #endif
@@ -595,6 +592,19 @@ static int msconf_enable_agc(MSFilter *f, void *arg){
 	return 0;
 }
 
+static int msconf_set_max_gain(MSFilter *f, void *arg){
+	ConfState *s=(ConfState*)f->data;
+	int i;
+	s->max_gain = *(int*)arg;
+
+	for (i=0;i<CONF_MAX_PINS;i++)
+		channel_uninit(&s->channels[i]);
+    for (i=0;i<CONF_MAX_PINS;i++)
+		channel_init(s, &s->channels[i], i);
+	return 0;
+}
+
+
 static int msconf_enable_halfduplex(MSFilter *f, void *arg){
 	ConfState *s=(ConfState*)f->data;
 	int i;
@@ -696,6 +706,8 @@ static MSFilterMethod msconf_methods[]={
 	{	MS_FILTER_ENABLE_DIRECTMODE, msconf_enable_directmode },
 	{	MS_FILTER_ENABLE_VAD, msconf_enable_vad },
 	{	MS_FILTER_ENABLE_AGC, msconf_enable_agc },
+	{	MS_FILTER_SET_MAX_GAIN, msconf_set_max_gain },
+	
 	{	MS_FILTER_GET_STAT_DISCARDED, msconf_get_stat_discarded },
 	{	MS_FILTER_GET_STAT_MISSED, msconf_get_stat_missed },
 	{	MS_FILTER_GET_STAT_OUTPUT, msconf_get_stat_processed },
