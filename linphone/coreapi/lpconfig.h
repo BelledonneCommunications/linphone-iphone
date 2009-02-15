@@ -39,6 +39,8 @@ void lp_config_set_int(LpConfig *lpconfig,const char *section, const char *key, 
 int lp_config_sync(LpConfig *lpconfig);
 int lp_config_has_section(LpConfig *lpconfig, const char *section);
 void lp_config_clean_section(LpConfig *lpconfig, const char *section);
+/*tells whether uncommited (with lp_config_sync()) modifications exist*/
+int lp_config_needs_commit(const LpConfig *lpconfig);
 void lp_config_destroy(LpConfig *cfg);
 	
 #ifdef __cplusplus

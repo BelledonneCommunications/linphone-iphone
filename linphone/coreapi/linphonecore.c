@@ -698,6 +698,7 @@ void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vtable, co
 	ms_mutex_init(&lc->lock,NULL);
 	lc->vtable.display_status(lc,_("Ready"));
         gstate_new_state(lc, GSTATE_POWER_ON, NULL);
+	lc->ready=TRUE;
 }
 
 LinphoneCore *linphone_core_new(const LinphoneCoreVTable *vtable,
@@ -983,6 +984,15 @@ void linphone_core_iterate(LinphoneCore *lc)
 	eXosip_event_t *ev;
 	bool_t disconnected=FALSE;
 	int disconnect_timeout = linphone_core_get_nortp_timeout(lc); 
+	time_t curtime=time(NULL);
+	int elapsed;
+	bool_t one_second_elapsed=FALSE;
+	
+	if (curtime-lc->prevtime>=1){
+		lc->prevtime=curtime;
+		one_second_elapsed=TRUE;
+	}
+
 	if (lc->preview_finished){
 		lc->preview_finished=0;
 		ring_stop(lc->ringstream);
@@ -1002,8 +1012,7 @@ void linphone_core_iterate(LinphoneCore *lc)
 	}
 	if (lc->call!=NULL){
 		LinphoneCall *call=lc->call;
-		int elapsed;
-		time_t curtime=time(NULL);
+		
 		if (call->dir==LinphoneCallIncoming && call->state==LCStateRinging){
 			elapsed=curtime-call->start_time;
 			ms_message("incoming call ringing for %i seconds",elapsed);
@@ -1011,8 +1020,7 @@ void linphone_core_iterate(LinphoneCore *lc)
 				linphone_core_terminate_call(lc,NULL);
 			}
 		}else if (call->state==LCStateAVRunning){
-			elapsed=curtime-lc->prevtime;
-			if (elapsed>=1){
+			if (one_second_elapsed){
 				RtpSession *as=NULL,*vs=NULL;
 				lc->prevtime=curtime;
 				if (lc->audiostream!=NULL)
@@ -1041,6 +1049,9 @@ void linphone_core_iterate(LinphoneCore *lc)
 	}
 	if (disconnected)
 		linphone_core_disconnected(lc);
+	if (one_second_elapsed && lp_config_needs_commit(lc->config)){
+		lp_config_sync(lc->config);
+	}
 }
 
 
@@ -1737,17 +1748,26 @@ bool_t linphone_core_sound_device_can_playback(LinphoneCore *lc, const char *dev
 }
 
 int linphone_core_set_ringer_device(LinphoneCore *lc, const char * devid){
-	lc->sound_conf.ring_sndcard=get_card_from_string_id(devid,MS_SND_CARD_CAP_PLAYBACK);
+	MSSndCard *card=get_card_from_string_id(devid,MS_SND_CARD_CAP_PLAYBACK);
+	lc->sound_conf.ring_sndcard=card;
+	if (card && lc->ready)
+		lp_config_set_string(lc->config,"sound","ringer_dev_id",ms_snd_card_get_string_id(card));
 	return 0;
 }
 
 int linphone_core_set_playback_device(LinphoneCore *lc, const char * devid){
-	lc->sound_conf.play_sndcard=get_card_from_string_id(devid,MS_SND_CARD_CAP_PLAYBACK);
+	MSSndCard *card=get_card_from_string_id(devid,MS_SND_CARD_CAP_PLAYBACK);
+	lc->sound_conf.play_sndcard=card;
+	if (card && lc->ready)
+		lp_config_set_string(lc->config,"sound","playback_dev_id",ms_snd_card_get_string_id(card));
 	return 0;
 }
 
 int linphone_core_set_capture_device(LinphoneCore *lc, const char * devid){
-	lc->sound_conf.capt_sndcard=get_card_from_string_id(devid,MS_SND_CARD_CAP_CAPTURE);
+	MSSndCard *card=get_card_from_string_id(devid,MS_SND_CARD_CAP_CAPTURE);
+	lc->sound_conf.capt_sndcard=card;
+	if (card && lc->ready)
+		lp_config_set_string(lc->config,"sound","capture_dev_id",ms_snd_card_get_string_id(card));
 	return 0;
 }
 
@@ -1802,6 +1822,8 @@ void linphone_core_set_ring(LinphoneCore *lc,const char *path){
 		ms_free(lc->sound_conf.local_ring);
 	}
 	lc->sound_conf.local_ring=ms_strdup(path);
+	if (lc->ready && lc->sound_conf.local_ring)
+		lp_config_set_string(lc->config,"sound","local_ring",lc->sound_conf.local_ring);
 }
 
 const char *linphone_core_get_ring(const LinphoneCore *lc){
@@ -1841,6 +1863,8 @@ const char * linphone_core_get_ringback(const LinphoneCore *lc){
 
 void linphone_core_enable_echo_cancelation(LinphoneCore *lc, bool_t val){
 	lc->sound_conf.ec=val;
+	if (lc->ready)
+		lp_config_set_int(lc->config,"sound","echocancelation",val);
 }
 
 bool_t linphone_core_echo_cancelation_enabled(LinphoneCore *lc){
@@ -2021,6 +2045,11 @@ void linphone_core_enable_video(LinphoneCore *lc, bool_t vcap_enabled, bool_t di
 	lc->video_conf.capture=vcap_enabled;
 	lc->video_conf.display=display_enabled;
 
+	if (lc->ready){
+		lp_config_set_int(lc->config,"video","display",display_enabled);
+		lp_config_set_int(lc->config,"video","capture",vcap_enabled);
+	}
+
 	/* need to re-apply network bandwidth settings*/
 	linphone_core_set_download_bandwidth(lc,
 		linphone_core_get_download_bandwidth(lc));
@@ -2034,6 +2063,7 @@ bool_t linphone_core_video_enabled(LinphoneCore *lc){
 
 void linphone_core_enable_video_preview(LinphoneCore *lc, bool_t val){
 	lc->video_conf.show_local=val;
+	if (lc->ready) lp_config_set_int(lc->config,"video","show_local",val);
 }
 
 bool_t linphone_core_video_preview_enabled(const LinphoneCore *lc){
@@ -2055,6 +2085,7 @@ bool_t linphone_core_self_view_enabled(const LinphoneCore *lc){
 
 int linphone_core_set_video_device(LinphoneCore *lc, const char *id){
 	MSWebCam *olddev=lc->video_conf.device;
+	const char *vd;
 	if (id!=NULL){
 		lc->video_conf.device=ms_web_cam_manager_get_cam(ms_web_cam_manager_get(),id);
 		if (lc->video_conf.device==NULL){
@@ -2065,6 +2096,13 @@ int linphone_core_set_video_device(LinphoneCore *lc, const char *id){
 		lc->video_conf.device=ms_web_cam_manager_get_default_cam(ms_web_cam_manager_get());
 	if (olddev!=NULL && olddev!=lc->video_conf.device){
 		toggle_video_preview(lc,FALSE);/*restart the video local preview*/
+	}
+	if (lc->ready){
+		vd=ms_web_cam_get_string_id(lc->video_conf.device);
+		if (vd && strstr(vd,"Static picture")!=NULL){
+			vd=NULL;
+		}
+		lp_config_set_string(lc->config,"video","device",vd);
 	}
 	return 0;
 }
@@ -2134,6 +2172,8 @@ void linphone_core_set_preferred_video_size(LinphoneCore *lc, MSVideoSize vsize)
 			toggle_video_preview(lc,FALSE);
 			toggle_video_preview(lc,TRUE);
 		}
+		if (lc->ready)
+			lp_config_set_string(lc->config,"video","size",video_size_get_name(vsize));
 	}
 }
 
@@ -2267,42 +2307,18 @@ void rtp_config_uninit(LinphoneCore *lc)
 
 void sound_config_uninit(LinphoneCore *lc)
 {
-	/*char tmpbuf[2];*/
 	sound_config_t *config=&lc->sound_conf;
-	if (config->play_sndcard)
-		lp_config_set_string(lc->config,"sound","playback_dev_id",ms_snd_card_get_string_id(config->play_sndcard));
-	if (config->ring_sndcard)
-		lp_config_set_string(lc->config,"sound","ringer_dev_id",ms_snd_card_get_string_id(config->ring_sndcard));
-	if (config->capt_sndcard)
-		lp_config_set_string(lc->config,"sound","capture_dev_id",ms_snd_card_get_string_id(config->capt_sndcard));
 	ms_free(config->cards);
-	/*
-	lp_config_set_int(lc->config,"sound","rec_lev",config->rec_lev);
-	lp_config_set_int(lc->config,"sound","play_lev",config->play_lev);
-	lp_config_set_int(lc->config,"sound","ring_lev",config->ring_lev);
-	tmpbuf[0]=config->source;
-	tmpbuf[1]='\0';
-	lp_config_set_string(lc->config,"sound","source",tmpbuf);
-	*/
-	lp_config_set_string(lc->config,"sound","local_ring",config->local_ring);
+	
 	lp_config_set_string(lc->config,"sound","remote_ring",config->remote_ring);
-	lp_config_set_int(lc->config,"sound","echocancelation",config->ec);
+	
 	if (config->local_ring) ms_free(config->local_ring);
 	if (config->remote_ring) ms_free(config->remote_ring);
 }
 
 void video_config_uninit(LinphoneCore *lc)
 {
-	video_config_t *config=&lc->video_conf;
-	const char *vd=linphone_core_get_video_device(lc);
-	if (vd && strstr(vd,"Static picture")!=NULL){
-		vd=NULL;
-	}
-	lp_config_set_string(lc->config,"video","device",vd);
-	lp_config_set_int(lc->config,"video","display",config->display);
-	lp_config_set_int(lc->config,"video","capture",config->capture);
-	lp_config_set_int(lc->config,"video","show_local",config->show_local);
-	lp_config_set_string(lc->config,"video","size",video_size_get_name(config->vsize));
+		
 }
 
 void codecs_config_uninit(LinphoneCore *lc)
@@ -2335,15 +2351,11 @@ void codecs_config_uninit(LinphoneCore *lc)
 
 void ui_config_uninit(LinphoneCore* lc)
 {
-	MSList *elem;
-	int i;
-	for (elem=lc->friends,i=0; elem!=NULL; elem=ms_list_next(elem),i++){
-		linphone_friend_write_to_config_file(lc->config,(LinphoneFriend*)elem->data,i);
-		linphone_friend_destroy(elem->data);
+	if (lc->friends){
+		ms_list_for_each(lc->friends,(void (*)(void *))linphone_friend_destroy);
+		ms_list_free(lc->friends);
+		lc->friends=NULL;
 	}
-	linphone_friend_write_to_config_file(lc->config,NULL,i);	/* set the end */
-	ms_list_free(lc->friends);
-	lc->friends=NULL;
 }
 
 LpConfig *linphone_core_get_config(LinphoneCore *lc){
@@ -2368,7 +2380,7 @@ void linphone_core_uninit(LinphoneCore *lc)
 	video_config_uninit(lc);
 	codecs_config_uninit(lc);
 	ui_config_uninit(lc);
-	lp_config_sync(lc->config);
+	if (lp_config_needs_commit(lc->config)) lp_config_sync(lc->config);
 	lp_config_destroy(lc->config);
 	sip_setup_unregister_all();
 #ifdef VIDEO_ENABLED

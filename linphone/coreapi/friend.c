@@ -614,6 +614,8 @@ void linphone_friend_apply(LinphoneFriend *fr, LinphoneCore *lc){
 	}
 	fr->lc=lc;
 	
+	linphone_core_write_friends_config(lc);
+
 	if (fr->inc_subscribe_pending){
 		switch(fr->pol){
 			case LinphoneSPWait:
@@ -763,3 +765,15 @@ void linphone_friend_write_to_config_file(LpConfig *config, LinphoneFriend *lf, 
 		lp_config_set_int(config,key,"proxy",a);
 	}else lp_config_set_int(config,key,"proxy",-1);
 }
+
+void linphone_core_write_friends_config(LinphoneCore* lc)
+{
+	MSList *elem;
+	int i;
+	if (!lc->ready) return; /*dont write config when reading it !*/
+	for (elem=lc->friends,i=0; elem!=NULL; elem=ms_list_next(elem),i++){
+		linphone_friend_write_to_config_file(lc->config,(LinphoneFriend*)elem->data,i);
+	}
+	linphone_friend_write_to_config_file(lc->config,NULL,i);	/* set the end */
+}
+

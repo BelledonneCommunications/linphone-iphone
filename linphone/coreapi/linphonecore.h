@@ -497,6 +497,7 @@ typedef struct _LinphoneCore
 	gstate_t gstate_call;
 	bool_t use_files;
 	bool_t apply_nat_settings;
+	bool_t ready;
 #ifdef VINCENT_MAURY_RSVP
 	/* QoS parameters*/
 	int rsvp_enable;

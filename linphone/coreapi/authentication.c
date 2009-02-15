@@ -95,7 +95,6 @@ void linphone_auth_info_write_config(LpConfig *config, LinphoneAuthInfo *obj, in
 	if (obj->realm!=NULL){
 		lp_config_set_string(config,key,"realm",obj->realm);
 	}
-	lp_config_sync(config);
 }
 
 LinphoneAuthInfo *linphone_auth_info_new_from_config_file(LpConfig * config, int pos)

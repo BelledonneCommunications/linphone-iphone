@@ -96,6 +96,7 @@ struct _LpConfig{
 	FILE *file;
 	char *filename;
 	MSList *sections;
+	int modified;
 };
 
 LpItem * lp_item_new(const char *key, const char *value){
@@ -220,6 +221,7 @@ LpConfig * lp_config_new(const char *filename){
 				  	  "configuration file: %s",
 					   strerror(errno));
 			lpconfig->file=NULL;
+			lpconfig->modified=0;
 		}
 	}
 	return lpconfig;
@@ -306,12 +308,14 @@ void lp_config_set_string(LpConfig *lpconfig,const char *section, const char *ke
 		lp_config_add_section(lpconfig,sec);
 		lp_section_add_item(sec,lp_item_new(key,value));
 	}
+	lpconfig->modified++;
 }
 
 void lp_config_set_int(LpConfig *lpconfig,const char *section, const char *key, int value){
 	char tmp[30];
 	snprintf(tmp,30,"%i",value);
 	lp_config_set_string(lpconfig,section,key,tmp);
+	lpconfig->modified++;
 }
 
 void lp_item_write(LpItem *item, FILE *file){
@@ -338,6 +342,7 @@ int lp_config_sync(LpConfig *lpconfig){
 	}
 	ms_list_for_each2(lpconfig->sections,(void (*)(void *,void*))lp_section_write,(void *)file);
 	fclose(file);
+	lpconfig->modified=0;
 	return 0;
 }
 
@@ -351,4 +356,9 @@ void lp_config_clean_section(LpConfig *lpconfig, const char *section){
 	if (sec!=NULL){
 		lp_config_remove_section(lpconfig,sec);
 	}
+	lpconfig->modified++;
+}
+
+int lp_config_needs_commit(const LpConfig *lpconfig){
+	return lpconfig->modified>0;
 }

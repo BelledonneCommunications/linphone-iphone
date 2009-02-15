@@ -122,4 +122,6 @@ void linphone_core_update_allocated_audio_bandwidth(LinphoneCore *lc);
 void linphone_core_update_allocated_audio_bandwidth_in_call(LinphoneCore *lc, const PayloadType *pt);
 void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call);
 
+void linphone_core_write_friends_config(LinphoneCore* lc);
+
 #endif /* _PRIVATE_H */
