@@ -213,7 +213,7 @@ linphonec_parse_command_line(LinphoneCore *lc, char *cl)
 		while ( isdigit(*cl) || *cl == '#' || *cl == '*' )
 		{
 			linphone_core_send_dtmf(lc, *cl);
-			sleep(1); // be nice
+			ms_sleep(1); // be nice
 			++cl;
 		}
 
@@ -489,6 +489,7 @@ lpc_cmd_firewall(LinphoneCore *lc, char *args)
 	return 1;
 }
 
+#ifndef WIN32
 /* Helper function for processing freind names */
 static int
 lpc_friend_name(char **args, char **name)
@@ -518,6 +519,7 @@ lpc_friend_name(char **args, char **name)
 	}
 	return 1;
 }
+#endif
 
 static int
 lpc_cmd_friend(LinphoneCore *lc, char *args)
@@ -568,6 +570,7 @@ lpc_cmd_friend(LinphoneCore *lc, char *args)
 	}
 	else if ( !strncmp(args, "add", 3) )
 	{
+#ifndef WIN32
 		char  *name;
 		char  addr[80];
 		char *addr_p = addr;
@@ -577,6 +580,7 @@ lpc_cmd_friend(LinphoneCore *lc, char *args)
 		if ( ! *args ) return 0;
 		while (*args == ' ') args++;
 		if ( ! *args ) return 0;
+
 		if (!lpc_friend_name(&args,  &name)) return 0;
 
 		while (*args == ' ') args++;
@@ -592,6 +596,11 @@ lpc_cmd_friend(LinphoneCore *lc, char *args)
 		}
 		strcpy(addr_p, addr_orig);
 		linphonec_friend_add(lc, name, addr);
+#else
+		LinphoneFriend *new_friend;
+		new_friend = linphone_friend_new_with_addr(args);
+		linphone_core_add_friend(lc, new_friend);
+#endif
 		return 1;
 	}
 	return 0;

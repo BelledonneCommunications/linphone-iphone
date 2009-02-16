@@ -25,6 +25,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 [Files]
 Source: "linphone.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\mediastreamer2\build\win32native\mediastream.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\console\linphonec.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "*.glade"; DestDir: "{app}/linphone"; Flags: ignoreversion
 Source: "..\pixmaps\*.png"; DestDir: "{app}/linphone"; Flags: ignoreversion
 Source: "*.png"; DestDir: "{app}/linphone"; Flags: ignoreversion

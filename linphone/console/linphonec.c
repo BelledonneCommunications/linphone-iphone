@@ -34,6 +34,7 @@
 #include <ctype.h>
 
 #include <linphonecore.h>
+#include "private.h" /*coreapi/private.h, needed for LINPHONE_VERSION */
 #include "linphonec.h"
 
 #ifdef WIN32
@@ -437,8 +438,10 @@ static void *net_thread(void*p){
 			ssize=sizeof(ss);
 			client_sock=accept(server_sock,(struct sockaddr*)&ss,&ssize);
 		}else{
+#ifndef WIN32
 			ssize=sizeof(su);
 			client_sock=accept(server_sock,(struct sockaddr*)&su,&ssize);
+#endif
 		}
 		if (client_sock!=-1){
 			int len;
