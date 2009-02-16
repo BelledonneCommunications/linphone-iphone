@@ -25,6 +25,10 @@
 #ifndef LINPHONEC_H
 #define LINPHONEC_H 1
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #ifdef HAVE_READLINE_H
 #include <readline.h>
 #define HAVE_READLINE

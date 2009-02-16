@@ -36,10 +36,6 @@
 #include <linphonecore.h>
 #include "linphonec.h"
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #ifdef WIN32
 #include <ws2tcpip.h>
 #include <ctype.h>
@@ -142,9 +138,12 @@ static char *sipAddr = NULL; /* for autocall */
 static ortp_socket_t client_sock=-1;
 char prompt[PROMPT_MAX_LEN];
 char sock_unix_path[128]={0};
+
+#ifndef HAVE_READLINE
 static ortp_thread_t net_reader_th;
 static bool_t net_reader_run=FALSE;
 static ortp_socket_t server_sock;
+#endif
 
 LinphoneCoreVTable linphonec_vtable = {
 	show:(ShowInterfaceCb) stub,
@@ -672,10 +671,12 @@ linphonec_finish(int exit_status)
    	linphonec_parse_command_line(&linphonec, "terminate");
 #ifdef HAVE_READLINE
 	linphonec_finish_readline();
-#endif
-
+#else
 	if (net_reader_run)
 		stop_net_reader();
+#endif
+
+
 	linphone_core_uninit (&linphonec);
 
 	if (mylogfile != NULL && mylogfile != stdout)
