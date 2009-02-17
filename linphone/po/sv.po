@@ -8,14 +8,15 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-02-02 22:29+0100\n"
-"PO-Revision-Date: 2008-12-11 23:03+0100\n"
-"Last-Translator: Emmanuel Frecon <emmanuel.frecon@myjoice.com>\n"
+"PO-Revision-Date: 2009-02-17 15:22+0100\n"
+"Last-Translator: Emmanuel Frécon <emmanuel.frecon@myjoice.com>\n"
 "Language-Team: SWEDISH <SE@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../gtk-glade/support.c:50 ../gtk-glade/support.c:74
+#: ../gtk-glade/support.c:50
+#: ../gtk-glade/support.c:74
 #, c-format
 msgid "Couldn't find pixmap file: %s"
 msgstr "Kunde inte hitta pixmap filen: %s"
@@ -34,13 +35,11 @@ msgstr "Inkommande samtal från %s"
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
-"Would you allow him to see your presence status or add him to your contact "
-"list ?\n"
+"Would you allow him to see your presence status or add him to your contact list ?\n"
 "If you answer no, this person will be temporarily blacklisted."
 msgstr ""
 "%s skulle vilja lägga till dig till hans/hennes kontaktlista.\n"
-"Vill du tillåta honom/henne att se din närvarostatus eller lägga till honom/"
-"henne till din kontaktlista?\n"
+"Vill du tillåta honom/henne att se din närvarostatus eller lägga till honom/henne till din kontaktlista?\n"
 "Om du svarar nej, personen kommer att vara bannlyst."
 
 #: ../gtk-glade/main.c:622
@@ -61,7 +60,8 @@ msgstr "%s (Default)"
 msgid "A free SIP video-phone"
 msgstr "En gratis SIP video-telefon"
 
-#: ../gtk-glade/friendlist.c:205 ../gtk-glade/propertybox.c:244
+#: ../gtk-glade/friendlist.c:205
+#: ../gtk-glade/propertybox.c:244
 #: ../gtk-glade/contact.glade.h:3
 msgid "Name"
 msgstr "Namn"
@@ -72,7 +72,7 @@ msgstr "Närvarostatus"
 
 #: ../gtk-glade/friendlist.c:380
 msgid "Invalid sip contact !"
-msgstr ""
+msgstr "ogiltig SIP kontakt!"
 
 #: ../gtk-glade/friendlist.c:411
 #, c-format
@@ -100,11 +100,13 @@ msgstr "Min. datahastighet (kbit/s)"
 msgid "Parameters"
 msgstr "Parametrar"
 
-#: ../gtk-glade/propertybox.c:295 ../gtk-glade/propertybox.c:432
+#: ../gtk-glade/propertybox.c:295
+#: ../gtk-glade/propertybox.c:432
 msgid "Enabled"
 msgstr "På"
 
-#: ../gtk-glade/propertybox.c:296 ../gtk-glade/propertybox.c:432
+#: ../gtk-glade/propertybox.c:296
+#: ../gtk-glade/propertybox.c:432
 msgid "Disabled"
 msgstr "Av"
 
@@ -118,6 +120,8 @@ msgid ""
 "A more recent version is availalble from %s.\n"
 "Would you like to open a browser to download it ?"
 msgstr ""
+"En nyare version är tillgänglig på %s.\n"
+"Vill du öppna en browser för att ladda ner den?"
 
 #: ../gtk-glade/main.glade.h:1
 msgid "#"
@@ -199,7 +203,8 @@ msgstr ""
 msgid "C"
 msgstr ""
 
-#: ../gtk-glade/main.glade.h:21 ../gtk-glade/call_logs.glade.h:1
+#: ../gtk-glade/main.glade.h:21
+#: ../gtk-glade/call_logs.glade.h:1
 msgid "Call history"
 msgstr "Samtalshistorik"
 
@@ -221,11 +226,11 @@ msgstr "Tangenter"
 
 #: ../gtk-glade/main.glade.h:26
 msgid "Enable self-view"
-msgstr ""
+msgstr "Själv bild"
 
 #: ../gtk-glade/main.glade.h:27
 msgid "Homepage"
-msgstr ""
+msgstr "Hemsidan"
 
 #: ../gtk-glade/main.glade.h:28
 msgid "Lookup:"
@@ -249,11 +254,11 @@ msgstr "Lägg på"
 
 #: ../gtk-glade/main.glade.h:33
 msgid "_Modes"
-msgstr ""
+msgstr "_Media"
 
 #: ../gtk-glade/main.glade.h:34
 msgid "_View"
-msgstr ""
+msgstr "_Vy"
 
 #: ../gtk-glade/main.glade.h:35
 msgid "gtk-about"
@@ -318,12 +323,14 @@ msgstr "SIP Adress"
 msgid "Show this contact presence status"
 msgstr "Visa kontaktens närvarostatus"
 
-#: ../gtk-glade/contact.glade.h:6 ../gtk-glade/password.glade.h:5
+#: ../gtk-glade/contact.glade.h:6
+#: ../gtk-glade/password.glade.h:5
 #: ../gtk-glade/sip_account.glade.h:9
 msgid "gtk-cancel"
 msgstr ""
 
-#: ../gtk-glade/contact.glade.h:7 ../gtk-glade/password.glade.h:6
+#: ../gtk-glade/contact.glade.h:7
+#: ../gtk-glade/password.glade.h:6
 #: ../gtk-glade/sip_account.glade.h:10
 msgid "gtk-ok"
 msgstr ""
@@ -332,8 +339,10 @@ msgstr ""
 msgid "Linphone debug window"
 msgstr "Linphone debug fönster"
 
-#: ../gtk-glade/log.glade.h:2 ../gtk-glade/call_logs.glade.h:2
-#: ../gtk-glade/chatroom.glade.h:2 ../gtk-glade/parameters.glade.h:58
+#: ../gtk-glade/log.glade.h:2
+#: ../gtk-glade/call_logs.glade.h:2
+#: ../gtk-glade/chatroom.glade.h:2
+#: ../gtk-glade/parameters.glade.h:58
 msgid "gtk-close"
 msgstr ""
 
@@ -401,7 +410,8 @@ msgstr "Godkänn"
 msgid "Decline"
 msgstr "Avböj"
 
-#: ../gtk-glade/incoming_call.glade.h:3 ../coreapi/linphonecore.c:232
+#: ../gtk-glade/incoming_call.glade.h:3
+#: ../coreapi/linphonecore.c:232
 msgid "Incoming call"
 msgstr "Inkommande samtal"
 
@@ -543,7 +553,7 @@ msgstr "Uppspelningsenhet:"
 
 #: ../gtk-glade/parameters.glade.h:33
 msgid "Prefered video resolution:"
-msgstr ""
+msgstr "Video upplösning:"
 
 #: ../gtk-glade/parameters.glade.h:34
 msgid "Public IP address:"
@@ -587,8 +597,7 @@ msgstr "STUN server:"
 
 #: ../gtk-glade/parameters.glade.h:44
 msgid "This section defines your SIP address when not using a SIP account"
-msgstr ""
-"Denna sektion specificerar din SIP adress när du inte använder ett SIP konto"
+msgstr "Denna sektion specificerar din SIP adress när du inte använder ett SIP konto"
 
 #: ../gtk-glade/parameters.glade.h:45
 msgid "Upload speed limit in Kbit/sec:"
@@ -683,12 +692,8 @@ msgid "Outgoing call"
 msgstr "Utgående samtal"
 
 #: ../coreapi/linphonecore.c:418
-msgid ""
-"Your machine appears to be connected to an IPv6 network. By default linphone "
-"always uses IPv4. Please update your configuration if you want to use IPv6"
-msgstr ""
-"Din dator verkar vara kopplad till ett IPv6 nätverk. Default, använder "
-"linphone IPv4. Uppdatera din konfiguration om du vill använda IPv6."
+msgid "Your machine appears to be connected to an IPv6 network. By default linphone always uses IPv4. Please update your configuration if you want to use IPv6"
+msgstr "Din dator verkar vara kopplad till ett IPv6 nätverk. Default, använder linphone IPv4. Uppdatera din konfiguration om du vill använda IPv6."
 
 #: ../coreapi/linphonecore.c:693
 msgid "Ready"
@@ -707,12 +712,8 @@ msgid "Could not resolve this number."
 msgstr "Kan inte nå dett nummer."
 
 #: ../coreapi/linphonecore.c:1162
-msgid ""
-"Could not parse given sip address. A sip url usually looks like sip:"
-"user@domain"
-msgstr ""
-"Kan inte förstå angiven SIP adress. En SIP adress vanligen ser ut som sip:"
-"användare@domänen"
+msgid "Could not parse given sip address. A sip url usually looks like sip:user@domain"
+msgstr "Kan inte förstå angiven SIP adress. En SIP adress vanligen ser ut som sip:användare@domänen"
 
 #: ../coreapi/linphonecore.c:1211
 msgid "Sorry, having multiple simultaneous calls is not supported yet !"
@@ -726,7 +727,8 @@ msgstr "Kontaktar"
 msgid "could not call"
 msgstr "Kunde inte ringa"
 
-#: ../coreapi/linphonecore.c:1560 ../coreapi/exevents.c:49
+#: ../coreapi/linphonecore.c:1560
+#: ../coreapi/exevents.c:49
 msgid "Connected."
 msgstr "Kopplad"
 
@@ -738,7 +740,8 @@ msgstr "Samtalet slut"
 msgid "No nat/firewall address supplied !"
 msgstr "Ingen NAT / brandväggs adress angiven!"
 
-#: ../coreapi/linphonecore.c:1922 ../coreapi/linphonecore.c:1934
+#: ../coreapi/linphonecore.c:1922
+#: ../coreapi/linphonecore.c:1934
 #, c-format
 msgid "Invalid nat address '%s' : %s"
 msgstr "Fel NAT adress '%s': %s"
@@ -834,9 +837,7 @@ msgstr "Omdirigerat till %s..."
 msgid ""
 "User is not reachable at the moment but he invites you\n"
 "to contact him using the following alternate resource:"
-msgstr ""
-"Användaren kan inte nås för tillfället men han/hon ber dig\att kontakta "
-"honom/henna vid följande resurs:"
+msgstr "Användaren kan inte nås för tillfället men han/hon ber dig\att kontakta honom/henna vid följande resurs:"
 
 #: ../coreapi/exevents.c:849
 msgid "Early media."
@@ -857,7 +858,9 @@ msgid "Registration on %s successful."
 msgstr "Registrering hos %s lyckades."
 
 #. people for which we don't have yet an answer should appear as offline
-#: ../coreapi/presence.c:112 ../coreapi/presence.c:164 ../coreapi/friend.c:147
+#: ../coreapi/presence.c:112
+#: ../coreapi/presence.c:164
+#: ../coreapi/friend.c:147
 msgid "Gone"
 msgstr "Har gått"
 
@@ -865,11 +868,13 @@ msgstr "Har gått"
 msgid "Waiting for Approval"
 msgstr "Väntar för godkännandet"
 
-#: ../coreapi/presence.c:133 ../coreapi/friend.c:38
+#: ../coreapi/presence.c:133
+#: ../coreapi/friend.c:38
 msgid "Online"
 msgstr "Online"
 
-#: ../coreapi/presence.c:137 ../coreapi/friend.c:41
+#: ../coreapi/presence.c:137
+#: ../coreapi/friend.c:41
 msgid "Busy"
 msgstr "Upptagen"
 
@@ -877,7 +882,8 @@ msgstr "Upptagen"
 msgid "Be Right Back"
 msgstr "Kommer strax tillbaka"
 
-#: ../coreapi/presence.c:146 ../coreapi/friend.c:47
+#: ../coreapi/presence.c:146
+#: ../coreapi/friend.c:47
 msgid "Away"
 msgstr "Borta"
 
@@ -889,13 +895,14 @@ msgstr "På telefon"
 msgid "Out To Lunch"
 msgstr "Lunchar"
 
-#: ../coreapi/presence.c:160 ../coreapi/friend.c:71
+#: ../coreapi/presence.c:160
+#: ../coreapi/friend.c:71
 msgid "Closed"
 msgstr "Stängt"
 
 #: ../coreapi/friend.c:35
 msgid "Unknown"
-msgstr ""
+msgstr "Okänd"
 
 #: ../coreapi/friend.c:44
 #, fuzzy
@@ -914,45 +921,45 @@ msgstr "Lunchar"
 
 #: ../coreapi/friend.c:56
 msgid "Do not disturb"
-msgstr ""
+msgstr "Stör ej"
 
 #: ../coreapi/friend.c:59
 msgid "Moved"
-msgstr ""
+msgstr "Flyttat"
 
 #: ../coreapi/friend.c:62
 msgid "Using another messaging service"
-msgstr ""
+msgstr "Använder en annan tjänst"
 
 #: ../coreapi/friend.c:65
-#, fuzzy
 msgid "Offline"
-msgstr "Online"
+msgstr "Offline"
 
 #: ../coreapi/friend.c:68
 msgid "Pending"
-msgstr ""
+msgstr "Pågående"
 
 #: ../coreapi/friend.c:74
 msgid "Unknown-bug"
 msgstr ""
 
-#: ../mediastreamer2/src/alaw.c:144 ../mediastreamer2/src/alaw.c:162
+#: ../mediastreamer2/src/alaw.c:144
+#: ../mediastreamer2/src/alaw.c:162
 msgid "ITU-G.711 alaw encoder"
 msgstr ""
 
-#: ../mediastreamer2/src/alaw.c:194 ../mediastreamer2/src/alaw.c:211
+#: ../mediastreamer2/src/alaw.c:194
+#: ../mediastreamer2/src/alaw.c:211
 msgid "ITU-G.711 alaw decoder"
 msgstr ""
 
 #: ../mediastreamer2/src/alsa.c:890
-#, fuzzy
 msgid "Alsa sound source"
-msgstr "ett ljud kort\n"
+msgstr "Alsa ljud ingång"
 
 #: ../mediastreamer2/src/alsa.c:987
 msgid "Alsa sound output"
-msgstr ""
+msgstr "Also ljud utgång"
 
 #: ../mediastreamer2/src/aqsnd.c:603
 msgid "Sound capture filter for MacOS X Audio Queue Service"
@@ -962,17 +969,20 @@ msgstr ""
 msgid "Sound playback filter for MacOS X Audio Queue Service"
 msgstr ""
 
-#: ../mediastreamer2/src/dtmfgen.c:173 ../mediastreamer2/src/dtmfgen.c:191
+#: ../mediastreamer2/src/dtmfgen.c:173
+#: ../mediastreamer2/src/dtmfgen.c:191
 msgid "DTMF generator"
-msgstr ""
+msgstr "DTMF generare"
 
-#: ../mediastreamer2/src/gsm.c:70 ../mediastreamer2/src/gsm.c:88
+#: ../mediastreamer2/src/gsm.c:70
+#: ../mediastreamer2/src/gsm.c:88
 msgid "The GSM full-rate codec"
-msgstr ""
+msgstr "Hög hastighet GSM codec"
 
-#: ../mediastreamer2/src/gsm.c:134 ../mediastreamer2/src/gsm.c:152
+#: ../mediastreamer2/src/gsm.c:134
+#: ../mediastreamer2/src/gsm.c:152
 msgid "The GSM codec"
-msgstr ""
+msgstr "GSM codec"
 
 #: ../mediastreamer2/src/macsnd.c:662
 msgid "Sound capture filter for MacOS X Core Audio drivers"
@@ -982,54 +992,62 @@ msgstr ""
 msgid "Sound playback filter for MacOS X Core Audio drivers"
 msgstr ""
 
-#: ../mediastreamer2/src/msconf.c:565 ../mediastreamer2/src/msconf.c:583
+#: ../mediastreamer2/src/msconf.c:565
+#: ../mediastreamer2/src/msconf.c:583
 msgid "A filter to make conferencing"
 msgstr ""
 
 #: ../mediastreamer2/src/msfileplayer.c:274
 #: ../mediastreamer2/src/msfileplayer.c:292
 msgid "Raw files and wav reader"
-msgstr ""
+msgstr "Raw filer och WAV läsare"
 
-#: ../mediastreamer2/src/msfilerec.c:170 ../mediastreamer2/src/msfilerec.c:188
+#: ../mediastreamer2/src/msfilerec.c:170
+#: ../mediastreamer2/src/msfilerec.c:188
 #: ../mediastreamer2/src/msfilerec_win.c:207
 #: ../mediastreamer2/src/msfilerec_win.c:225
 msgid "Wav file recorder"
-msgstr ""
+msgstr "WAV fil inspelare"
 
-#: ../mediastreamer2/src/msjoin.c:45 ../mediastreamer2/src/msjoin.c:63
+#: ../mediastreamer2/src/msjoin.c:45
+#: ../mediastreamer2/src/msjoin.c:63
 msgid "A filter that send several inputs to one output."
-msgstr ""
+msgstr "En filter som skickar flera ingångar till en utgång"
 
 #: ../mediastreamer2/src/msresample.c:147
 #: ../mediastreamer2/src/msresample.c:165
 msgid "frequency resampler"
 msgstr ""
 
-#: ../mediastreamer2/src/msrtp.c:253 ../mediastreamer2/src/msrtp.c:271
+#: ../mediastreamer2/src/msrtp.c:253
+#: ../mediastreamer2/src/msrtp.c:271
 msgid "RTP output filter"
 msgstr ""
 
-#: ../mediastreamer2/src/msrtp.c:412 ../mediastreamer2/src/msrtp.c:430
+#: ../mediastreamer2/src/msrtp.c:412
+#: ../mediastreamer2/src/msrtp.c:430
 msgid "RTP input filter"
 msgstr ""
 
-#: ../mediastreamer2/src/msspeex.c:386 ../mediastreamer2/src/msspeex.c:404
-#: ../mediastreamer2/src/msspeex.c:531 ../mediastreamer2/src/msspeex.c:549
+#: ../mediastreamer2/src/msspeex.c:386
+#: ../mediastreamer2/src/msspeex.c:404
+#: ../mediastreamer2/src/msspeex.c:531
+#: ../mediastreamer2/src/msspeex.c:549
 msgid "The free and wonderful speex codec"
-msgstr ""
+msgstr "Den fria speex codec"
 
-#: ../mediastreamer2/src/msvolume.c:70 ../mediastreamer2/src/msvolume.c:84
+#: ../mediastreamer2/src/msvolume.c:70
+#: ../mediastreamer2/src/msvolume.c:84
 msgid "A filter to make level measurements on 16 bits pcm audio stream"
-msgstr ""
+msgstr "En filter för att mäta nivåer på 16 bitars PCM audio strömmar"
 
 #: ../mediastreamer2/src/msv4l.c:1009
 msgid "A video4linux compatible source filter to stream pictures."
-msgstr ""
+msgstr "En video4linux kompatibel ingångsfilter för att strömma bilder"
 
 #: ../mediastreamer2/src/msv4l2.c:455
 msgid "A filter to grab pictures from Video4Linux2-powered cameras"
-msgstr ""
+msgstr "En filter för att fånga bilder från Video4Linux-2 capabla kameror"
 
 #: ../mediastreamer2/src/msv4m.c:494
 msgid "A video for macosx compatible source filter to stream pictures."
@@ -1037,121 +1055,134 @@ msgstr ""
 
 #: ../mediastreamer2/src/nowebcam.c:226
 msgid "A filter that outputs a static image."
-msgstr ""
+msgstr "En filter med statisk bild"
 
 #: ../mediastreamer2/src/oss.c:557
 msgid "Sound capture filter for OSS drivers"
-msgstr ""
+msgstr "Fånga ljud med OSS drivrutiner"
 
 #: ../mediastreamer2/src/oss.c:571
 msgid "Sound playback filter for OSS drivers"
-msgstr ""
+msgstr "Ljud utgång med OSS drivrutiner"
 
-#: ../mediastreamer2/src/pixconv.c:177 ../mediastreamer2/src/pixconv.c:195
+#: ../mediastreamer2/src/pixconv.c:177
+#: ../mediastreamer2/src/pixconv.c:195
 msgid "A pixel format converter"
-msgstr ""
+msgstr "En pixel format konverterare"
 
-#: ../mediastreamer2/src/sdlout.c:345 ../mediastreamer2/src/sdlout.c:363
+#: ../mediastreamer2/src/sdlout.c:345
+#: ../mediastreamer2/src/sdlout.c:363
 msgid "A video display window using SDL"
-msgstr ""
+msgstr "En video utgångsfönster med SDL"
 
 #: ../mediastreamer2/src/sizeconv.c:204
 msgid "A video size converter"
-msgstr ""
+msgstr "En video storlek konverterare"
 
 #: ../mediastreamer2/src/sizeconv.c:222
 msgid "a small video size converter"
-msgstr ""
+msgstr "En liten video storlek konverterare"
 
-#: ../mediastreamer2/src/speexec.c:290 ../mediastreamer2/src/speexec.c:308
+#: ../mediastreamer2/src/speexec.c:290
+#: ../mediastreamer2/src/speexec.c:308
 msgid "Echo canceler using speex library"
-msgstr ""
+msgstr "Echo cancellering med hjälp av speex"
 
-#: ../mediastreamer2/src/tee.c:80 ../mediastreamer2/src/tee.c:98
+#: ../mediastreamer2/src/tee.c:80
+#: ../mediastreamer2/src/tee.c:98
 msgid "A filter that reads from input and copy to its multiple outputs."
-msgstr ""
+msgstr "En filter som läser från sin ingång och kopierar till multipla utgångar"
 
 #: ../mediastreamer2/src/theora.c:372
 msgid "The theora video encoder from xiph.org"
-msgstr ""
+msgstr "Theora video encoder från xiph.org"
 
 #: ../mediastreamer2/src/theora.c:390
 msgid "The open-source and royalty-free 'theora' video codec from xiph.org"
-msgstr ""
+msgstr "Theora video codec från xiph.org, öppen källkod och utan royalties"
 
-#: ../mediastreamer2/src/theora.c:558 ../mediastreamer2/src/theora.c:576
+#: ../mediastreamer2/src/theora.c:558
+#: ../mediastreamer2/src/theora.c:576
 msgid "The theora video decoder from xiph.org"
-msgstr ""
+msgstr "Theora video decoder från xiph.org"
 
-#: ../mediastreamer2/src/ulaw.c:146 ../mediastreamer2/src/ulaw.c:164
+#: ../mediastreamer2/src/ulaw.c:146
+#: ../mediastreamer2/src/ulaw.c:164
 msgid "ITU-G.711 ulaw encoder"
 msgstr ""
 
-#: ../mediastreamer2/src/ulaw.c:196 ../mediastreamer2/src/ulaw.c:214
+#: ../mediastreamer2/src/ulaw.c:196
+#: ../mediastreamer2/src/ulaw.c:214
 msgid "ITU-G.711 ulaw decoder"
 msgstr ""
 
-#: ../mediastreamer2/src/videodec.c:297 ../mediastreamer2/src/videodec.c:313
-#: ../mediastreamer2/src/videodec.c:380 ../mediastreamer2/src/videodec.c:396
+#: ../mediastreamer2/src/videodec.c:297
+#: ../mediastreamer2/src/videodec.c:313
+#: ../mediastreamer2/src/videodec.c:380
+#: ../mediastreamer2/src/videodec.c:396
 msgid "A H.263 decoder using ffmpeg library"
-msgstr ""
+msgstr "En h.263 decoder via ffmpeg"
 
 #: ../mediastreamer2/src/videodec.c:330
 msgid "A MPEG4 decoder using ffmpeg library"
-msgstr ""
+msgstr "En MPEG4 decoder via ffmpeg"
 
 #: ../mediastreamer2/src/videodec.c:346
 msgid "A MJPEG decoder using ffmpeg library"
-msgstr ""
+msgstr "En MJPEG decode via ffmpeg"
 
 #: ../mediastreamer2/src/videodec.c:362
 msgid "A snow decoder using ffmpeg library"
-msgstr ""
+msgstr "En snow decoder via ffmpeg"
 
-#: ../mediastreamer2/src/videoenc.c:579 ../mediastreamer2/src/videoenc.c:645
+#: ../mediastreamer2/src/videoenc.c:579
+#: ../mediastreamer2/src/videoenc.c:645
 msgid "A video H.263 encoder using ffmpeg library."
-msgstr ""
+msgstr "En video h.263 encoder via ffmpeg"
 
 #: ../mediastreamer2/src/videoenc.c:595
-msgid ""
-"A video H.263 encoder using ffmpeg library. It is compliant with old RFC2190 "
-"spec."
-msgstr ""
+msgid "A video H.263 encoder using ffmpeg library. It is compliant with old RFC2190 spec."
+msgstr "En video h.263 encoder via ffmpeg, kompatibel med den gamla RFC2190 specificationen."
 
-#: ../mediastreamer2/src/videoenc.c:611 ../mediastreamer2/src/videoenc.c:677
+#: ../mediastreamer2/src/videoenc.c:611
+#: ../mediastreamer2/src/videoenc.c:677
 msgid "A video MPEG4 encoder using ffmpeg library."
-msgstr ""
+msgstr "En video MPEG4 encoder via ffmpeg"
 
 #: ../mediastreamer2/src/videoenc.c:627
 msgid "A video snow encoder using ffmpeg library."
-msgstr ""
+msgstr "En video snow encoder via ffmpeg"
 
 #: ../mediastreamer2/src/videoenc.c:661
-msgid ""
-"A video H.263 encoder using ffmpeg library, compliant with old RFC2190 spec."
-msgstr ""
+msgid "A video H.263 encoder using ffmpeg library, compliant with old RFC2190 spec."
+msgstr "En video h.263 encoder via ffmpeg, kompatible med den gamla RFC2190 specifikationen."
 
 #: ../mediastreamer2/src/videoenc.c:693
 msgid ""
 "The snow codec is royalty-free and is open-source. \n"
-"It uses innovative techniques that makes it one of the best video codec. It "
-"is implemented within the ffmpeg project.\n"
-"However it is under development and compatibility with other versions cannot "
-"be guaranteed."
+"It uses innovative techniques that makes it one of the best video codec. It is implemented within the ffmpeg project.\n"
+"However it is under development and compatibility with other versions cannot be guaranteed."
 msgstr ""
+"Snow codec:en är öppen källkod och utan royalties.\n"
+"Den använder sig av innovativa tekniker som gör den en av de bästa. Codec:en implementeras inom ffmpeg projektet.\n"
+"Dock, den är under utveckling och kompatibiliteten mellan versioner kan inte garanteras."
 
-#: ../mediastreamer2/src/videoout.c:876 ../mediastreamer2/src/videoout.c:894
+#: ../mediastreamer2/src/videoout.c:876
+#: ../mediastreamer2/src/videoout.c:894
 msgid "A generic video display"
-msgstr ""
+msgstr "En generisk video utgång"
 
 #: ../mediastreamer2/src/wincevideods.c:966
 #: ../mediastreamer2/src/wincevideods.c:984
-#: ../mediastreamer2/src/winvideo.c:596 ../mediastreamer2/src/winvideo.c:614
+#: ../mediastreamer2/src/winvideo.c:596
+#: ../mediastreamer2/src/winvideo.c:614
 #: ../mediastreamer2/src/winvideods.c:1422
 #: ../mediastreamer2/src/winvideods.c:1440
 msgid "A video4windows compatible source filter to stream pictures."
-msgstr ""
+msgstr "En video4windows kompatibel ingångsfilter för att strömma bilder."
 
-#: ../mediastreamer2/src/winvideo2.c:436 ../mediastreamer2/src/winvideo2.c:454
+#: ../mediastreamer2/src/winvideo2.c:436
+#: ../mediastreamer2/src/winvideo2.c:454
 msgid "A video for windows (vfw.h) based source filter to grab pictures."
-msgstr ""
+msgstr "En video för windows kompatibel ingångsfilter för att fånga bilder."
+
