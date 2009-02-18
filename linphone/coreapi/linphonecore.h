@@ -316,7 +316,7 @@ bool_t linphone_proxy_config_is_registered(const LinphoneProxyConfig *obj);
 void linphone_proxy_config_destroy(LinphoneProxyConfig *cfg);
 LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(struct _LpConfig *config, int index);
 void linphone_proxy_config_write_to_config_file(struct _LpConfig* config,LinphoneProxyConfig *obj, int index);
-LinphoneProxyConfig *linphone_proxy_config_new_from_setup(const char *type, const char *identity);
+void linphone_proxy_config_set_setup_object(LinphoneProxyConfig *cfg, const char *type);
 
 
 typedef struct _LinphoneAuthInfo

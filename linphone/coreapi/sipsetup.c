@@ -93,6 +93,12 @@ int sip_setup_context_get_relay(SipSetupContext *ctx,char *relay, size_t size){
 	return -1;
 }
 
+int sip_setup_context_lookup_buddy(SipSetupContext *ctx, const char *key, BuddyInfo *binfo){
+	if (ctx->funcs->lookup_buddy)
+		return ctx->funcs->lookup_buddy(ctx,key,binfo);
+	return -1;
+}
+
 void sip_setup_context_free(SipSetupContext *ctx){
 	ms_free(ctx);
 }

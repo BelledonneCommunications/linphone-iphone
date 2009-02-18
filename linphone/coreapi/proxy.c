@@ -539,19 +539,14 @@ LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LpConfig *config
 	if (!lp_config_has_section(config,key)){
 		return NULL;
 	}
-	identity=lp_config_get_string(config,key,"reg_identity",NULL);
-	tmp=lp_config_get_string(config,key,"type",NULL);
+
+	cfg=linphone_proxy_config_new();
+
+	identity=lp_config_get_string(config,key,"reg_identity",NULL);	
 	proxy=lp_config_get_string(config,key,"reg_proxy",NULL);
-	if (tmp!=NULL && strlen(tmp)>0){
-		cfg=linphone_proxy_config_new_from_setup(tmp,identity);
-		if (cfg==NULL) return NULL;
-	}else{
-		if (!identity || !proxy) return NULL;
-		cfg=linphone_proxy_config_new();
-		linphone_proxy_config_set_identity(cfg,identity);
-		linphone_proxy_config_set_server_addr(cfg,proxy);
-		
-	}
+	
+	linphone_proxy_config_set_identity(cfg,identity);
+	linphone_proxy_config_set_server_addr(cfg,proxy);
 	
 	tmp=lp_config_get_string(config,key,"reg_route",NULL);
 	if (tmp!=NULL) linphone_proxy_config_set_route(cfg,tmp);
@@ -561,25 +556,25 @@ LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LpConfig *config
 	
 	linphone_proxy_config_enable_publish(cfg,lp_config_get_int(config,key,"publish",0));
 	
+	tmp=lp_config_get_string(config,key,"type",NULL);
+	if (tmp!=NULL && strlen(tmp)>0) 
+		linphone_proxy_config_set_setup_object(cfg,tmp);
+
 	return cfg;
 }
 
-LinphoneProxyConfig *linphone_proxy_config_new_from_setup(const char *type, const char *identity){
+void linphone_proxy_config_set_setup_object(LinphoneProxyConfig *cfg, const char *type){
 	SipSetup *ss=sip_setup_lookup(type);
-	LinphoneProxyConfig *cfg;
 	SipSetupContext *ssc;
-	if (!ss) return NULL;
-	cfg=linphone_proxy_config_new();
-	linphone_proxy_config_set_identity(cfg,identity);
+	if (!ss) return ;
 	ssc=sip_setup_context_new(ss);
-	if (sip_setup_context_login_account(ssc,identity,NULL)==0){
+	if (sip_setup_context_login_account(ssc,cfg->reg_identity,NULL)==0){
 		char proxy[256];
 		if (sip_setup_context_get_proxy(ssc,NULL,proxy,sizeof(proxy))==0){
 			linphone_proxy_config_set_server_addr(cfg,proxy);
 		}
 	}
 	cfg->ssctx=ssc;
-	return cfg;
 }
 
 
