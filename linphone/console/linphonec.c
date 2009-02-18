@@ -527,7 +527,7 @@ void linphonec_out(const char *fmt,...){
 	va_end (args);
 	printf("%s",res);fflush(stdout);
 	if (client_sock!=-1){
-		if (write(client_sock,res,strlen(res))==-1){
+		if (send(client_sock,res,strlen(res),0)==-1){
 			fprintf(stderr,"Fail to send output via socket: %s",getSocketError());
 		}
 	}

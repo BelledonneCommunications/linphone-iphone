@@ -26,6 +26,8 @@
 
 #ifdef WIN32
 #include <ws2tcpip.h>
+#include <ctype.h>
+#include <conio.h>
 #else
 #include <sys/socket.h>
 #include <netdb.h>
@@ -45,7 +47,11 @@
 #define STATUS_IN_CONNECTED (1<<4) /* incoming call accepted */
 #define STATUS_OUT_CONNECTED (1<<5) /*outgoing call accepted */
 
+#ifndef WIN32
 static int tcp=0;
+#else
+static int tcp=1;
+#endif
 
 static int make_status_value(const char *status_string){
 	int ret=0;
@@ -142,6 +148,7 @@ static void print_usage(void){
 
 #define MAX_ARGS 10
 
+#ifndef WIN32
 static void spawn_linphonec(int argc, char *argv[]){
 	char * args[10];
 	int i,j;
@@ -185,12 +192,40 @@ static void spawn_linphonec(int argc, char *argv[]){
 		}
 	}
 }
+#else
+
+static void spawn_linphonec(int argc, char *argv[]){
+	PPROCESS_INFORMATION pi;
+	STARTUPINFO si;
+	ZeroMemory( &si, sizeof(si) );
+    si.cb = sizeof(si);
+    ZeroMemory( &pi, sizeof(pi) );
+
+
+	BOOL ret=CreateProcess(NULL,"linphonec.exe --tcp " DEFAULT_TCP_PORT " -c NUL",
+		NULL,
+		NULL,
+		FALSE,
+		0,
+		NULL,
+		NULL,
+		&si,
+		&pi);
+	if (!ret){
+		fprintf(stderr,"Spawning of linphonec.exe failed.\n");
+	}
+}
+
+#endif
 
 static int send_generic_command(const char *command, int print_result){
 	char reply[DEFAULT_REPLY_SIZE];
 	int err;
 	err=send_command(command,DEFAULT_TCP_PORT,reply,sizeof(reply),print_result);
-	if (err==0 && print_result) printf("%s",reply);
+	if (err==0 && print_result) {
+		printf("%s",reply);
+		fflush(stdout);
+	}
 	return err;
 }
 
@@ -280,6 +315,7 @@ int main(int argc, char *argv[]){
 			/*check if there is running instance*/
 			if (send_generic_command("help",0)==0){
 				fprintf(stderr,"A running linphonec has been found, not spawning a second one.\n");
+				return 0;
 			}
 			spawn_linphonec(argc-argi-1,&argv[argi+1]);
 			if (tcp) fprintf(stderr,"WARNING: using --tcp is unsafe: unprivilegied users can make calls.\n");
