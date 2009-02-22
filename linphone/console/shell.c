@@ -25,6 +25,8 @@
 
 
 #ifdef WIN32
+#include <windows.h>
+#include <winbase.h>
 #include <ws2tcpip.h>
 #include <ctype.h>
 #include <conio.h>
@@ -195,11 +197,11 @@ static void spawn_linphonec(int argc, char *argv[]){
 #else
 
 static void spawn_linphonec(int argc, char *argv[]){
-	PPROCESS_INFORMATION pi;
+	PROCESS_INFORMATION pinfo;
 	STARTUPINFO si;
 	ZeroMemory( &si, sizeof(si) );
     si.cb = sizeof(si);
-    ZeroMemory( &pi, sizeof(pi) );
+    ZeroMemory( &pinfo, sizeof(pinfo) );
 
 
 	BOOL ret=CreateProcess(NULL,"linphonec.exe --tcp " DEFAULT_TCP_PORT " -c NUL",
@@ -210,9 +212,11 @@ static void spawn_linphonec(int argc, char *argv[]){
 		NULL,
 		NULL,
 		&si,
-		&pi);
+		&pinfo);
 	if (!ret){
 		fprintf(stderr,"Spawning of linphonec.exe failed.\n");
+	}else{
+		WaitForInputIdle(pinfo.hProcess,1000);
 	}
 }
 
