@@ -140,13 +140,13 @@ LPC_COMMAND commands[] = {
 	},
 	{ "stun", lpc_cmd_stun, "Set stun server address",
 		"'stun'        : show stun settings.\n"
-		"'stun <addr>' : set stun address.\n"
+		"'stun <addr>' : set stun server address.\n"
 	},
-	{ "firewall", lpc_cmd_firewall, "Set ",
+	{ "firewall", lpc_cmd_firewall, "Set firewall policy",
 		"'firewall'        : show current firewall policy.\n"
 		"'firewall none'   : use direct connection.\n"
 		"'firewall nat'    : use nat address given with the 'nat' command.\n"
-		"'firewall stun'   : use stun server given with the 'server' command.\n"
+		"'firewall stun'   : use stun server given with the 'stun' command.\n"
 	},
         { "call-logs", lpc_cmd_call_logs, "Calls history",
                 NULL },
