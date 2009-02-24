@@ -116,7 +116,7 @@ LPC_COMMAND commands[] = {
 		"'proxy add' : add a new proxy setup.\n"
 		"'proxy remove <index>' : remove proxy setup with number index.\n"
 		"'proxy use <index>' : use proxy with number index as default proxy.\n"
-		"'proxy unuse' : don't use a default proxy."
+		"'proxy unuse' : don't use a default proxy.\n"
 		"'proxy show <index>' : show configuration and status of the proxy numbered by index.\n"
 		"'proxy show default' : show configuration and status of the default proxy.\n"
 	},
@@ -690,14 +690,30 @@ lpc_cmd_proxy(LinphoneCore *lc, char *args)
 	}else if (strcmp(arg1, "unuse")==0){
 		linphone_core_set_default_proxy(lc, NULL);
 		linphonec_out("Use no proxy.\n");
-	}else if (strcmp(arg1,"show")==0){
-		if (arg2 && *arg2){
-			if (strstr(arg2,"default")==0){
-				proxynum=linphone_core_get_default_proxy(lc, NULL);
-				linphonec_proxy_show(lc,proxynum);
-			}else linphonec_proxy_show(lc,atoi(arg2));
+	}
+
+	else if (strcmp(arg1, "show")==0)
+	{
+		if (arg2 && *arg2)
+		{
+			if (strstr(arg2,"default"))
+			{
+		proxynum=linphone_core_get_default_proxy(lc, NULL);
+		if ( proxynum < 0 ) {
+			linphonec_out("No default proxy defined\n");
+			return 1;
 		}
-	}else
+		linphonec_proxy_show(lc,proxynum);
+			}
+			else
+			{
+		linphonec_proxy_show(lc, atoi(arg2));
+			}
+		}
+		else return 0; // syntax error
+	}
+
+	else
 	{
 		linphonec_out("Syntax error - see 'help proxy'\n");
 	}
@@ -1033,7 +1049,8 @@ linphonec_proxy_display(LinphoneProxyConfig *cfg)
 			linphone_proxy_config_is_registered(cfg) ? "yes" : "no");
 }
 
-static void linphonec_proxy_show(LinphoneCore *lc, int index){
+static void linphonec_proxy_show(LinphoneCore *lc, int index)
+{
 	const MSList *elem;
 	int i;
 	for(elem=linphone_core_get_proxy_config_list(lc),i=0;elem!=NULL;elem=elem->next,++i){
@@ -1043,7 +1060,7 @@ static void linphonec_proxy_show(LinphoneCore *lc, int index){
 			return;
 		}
 	}
-	linphonec_out("No proxy with index %i",index);
+	linphonec_out("No proxy with index %i\n", index);
 }
 
 static void
@@ -1061,6 +1078,7 @@ linphonec_proxy_list(LinphoneCore *lc)
 			linphonec_out("****** Proxy %i *******\n",n);
 		linphonec_proxy_display((LinphoneProxyConfig*)proxies->data);
 	}
+	if ( ! n ) linphonec_out("No proxies defined\n");
 }
 
 static void
