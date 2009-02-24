@@ -2,7 +2,7 @@
  *
  *  $Id: commands.c,v 1.39 2008/07/03 15:08:34 smorlat Exp $
  *
- *  Copyright (C) 2006  Sandro Santilli <strk@keybit.net>
+ *  Copyright (C) 2006-2009  Sandro Santilli <strk@keybit.net>
  *  Copyright (C) 2004  Simon MORLAT <simon.morlat@linphone.org>
  *
 ****************************************************************************
@@ -107,7 +107,8 @@ LPC_COMMAND commands[] = {
 	{ "answer", lpc_cmd_answer, "Answer a call",
 		"Accept an incoming call."
 	},
-	{ "autoanswer", lpc_cmd_autoanswer, "Enable auto-answer mode",
+	{ "autoanswer", lpc_cmd_autoanswer, "Show/set auto-answer mode",
+		"'autoanswer'       \t: show current autoanswer mode\n"
 		"'autoanswer enable'\t: enable autoanswer mode\n"
 		"'autoanswer disable'\t: disable autoanswer mode \n"},
 	{ "proxy", lpc_cmd_proxy, "Manage proxies",
@@ -382,10 +383,22 @@ lpc_cmd_answer(LinphoneCore *lc, char *args)
 static int
 lpc_cmd_autoanswer(LinphoneCore *lc, char *args)
 {
+	if ( ! args )
+	{
+		if ( linphonec_get_autoanswer() ) {
+			linphonec_out("Auto answer is enabled. Use 'autoanswer disable' to disable.\n");
+		} else {
+			linphonec_out("Auto answer is disabled. Use 'autoanswer enable' to enable.\n");
+		}
+		return 1;
+	}
+
 	if (strstr(args,"enable")){
 		linphonec_set_autoanswer(TRUE);
+		linphonec_out("Auto answer disabled.\n");
 	}else if (strstr(args,"disable")){
 		linphonec_set_autoanswer(FALSE);
+		linphonec_out("Auto answer enabled.\n");
 	}else return 0;
 	return 1;
 }
@@ -1248,8 +1261,7 @@ static int lpc_cmd_duration(LinphoneCore *lc, char *args){
 
 static int lpc_cmd_status(LinphoneCore *lc, char *args)
 {
-	if ( args ) args=lpc_strip_blanks(args);
-	if ( ! args || ! *args ) return 0;
+	if ( ! args ) return 0;
 
 	LinphoneProxyConfig *cfg;
 	linphone_core_get_default_proxy(lc,&cfg);
