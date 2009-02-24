@@ -946,9 +946,11 @@ linphonec_main_loop (LinphoneCore * opm, char * sipAddr)
 #ifdef HAVE_READLINE
 		/*
 		 * Only add to history if not already
-		 * last item in it
+		 * last item in it, and only if the command
+		 * doesn't start with a space (to allow for
+		 * hiding passwords)
 		 */
-		if ( strcmp(last_in_history, iptr) )
+		if ( iptr == input && strcmp(last_in_history, iptr) )
 		{
 			strncpy(last_in_history,iptr,sizeof(last_in_history));
 			last_in_history[sizeof(last_in_history)-1]='\0';
