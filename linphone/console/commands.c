@@ -710,12 +710,12 @@ lpc_cmd_proxy(LinphoneCore *lc, char *args)
 		linphonec_proxy_show(lc, atoi(arg2));
 			}
 		}
-		else return 0; // syntax error
+		else return 0; /* syntax error */
 	}
 
 	else
 	{
-		linphonec_out("Syntax error - see 'help proxy'\n");
+		return 0; /* syntax error */
 	}
 
 	return 1;
@@ -740,8 +740,7 @@ lpc_cmd_ipv6(LinphoneCore *lc, char *arg1)
 {
 	if ( ! arg1 )
 	{
-		linphonec_out("Syntax error - see 'help ipv6'\n");
-		return 1;
+		return 0; /* syntax error */
 	}
 
 	if (strcmp(arg1,"status")==0)
@@ -760,7 +759,7 @@ lpc_cmd_ipv6(LinphoneCore *lc, char *arg1)
 	}
 	else
 	{
-		linphonec_out("Syntax error - see 'help ipv6'\n");
+		return 0; /* syntax error */
 	}
 	return 1;
 }
@@ -768,8 +767,7 @@ lpc_cmd_ipv6(LinphoneCore *lc, char *arg1)
 static int lpc_cmd_soundcard(LinphoneCore *lc, char *cmd){
 	int i;
 	if (cmd==NULL){
-		linphonec_out("Syntax error - see 'help soundcard'\n");
-		return 1;
+		return 0; /* syntax error */
 	}
 	if (strcmp(cmd,"list")==0){
 		const char **dev=linphone_core_get_sound_devices(lc);
@@ -803,7 +801,7 @@ static int lpc_cmd_soundcard(LinphoneCore *lc, char *cmd){
 				return 1;
 			}
 		}
-		linphonec_out("Syntax error - see 'help soundcard'\n");
+		return 0; /* syntax error */
 	}
 	return 1;
 }
