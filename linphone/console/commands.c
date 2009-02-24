@@ -171,9 +171,9 @@ LPC_COMMAND commands[] = {
 	{ "unregister", lpc_cmd_unregister, "Unregister from default proxy", NULL	},
 	{ "duration", lpc_cmd_duration, "Print duration in seconds of the last call.", NULL },
 	{ "status", lpc_cmd_status, "Print various status information", 
-			"'status register' \t: print status concerning registration\n"
+			"'status register'  \t: print status concerning registration\n"
 			"'status autoanswer'\t: tell whether autoanswer mode is enabled\n"
-			"'status hook' \t: print hook status\n" },
+			"'status hook'      \t: print hook status\n" },
 					
 	{ (char *)NULL, (lpc_cmd_handler)NULL, (char *)NULL, (char *)NULL }
 };
@@ -1246,11 +1246,17 @@ static int lpc_cmd_duration(LinphoneCore *lc, char *args){
 	return 1;
 }
 
-static int lpc_cmd_status(LinphoneCore *lc, char *args){
+static int lpc_cmd_status(LinphoneCore *lc, char *args)
+{
+	if ( args ) args=lpc_strip_blanks(args);
+	if ( ! args || ! *args ) return 0;
+
 	LinphoneProxyConfig *cfg;
 	linphone_core_get_default_proxy(lc,&cfg);
-	if (strstr(args,"register")){
-		if (cfg){
+	if (strstr(args,"register"))
+	{
+		if (cfg)
+		{
 			if (linphone_proxy_config_is_registered(cfg)){
 				linphonec_out("registered, identity=%s duration=%i\n",
 					linphone_proxy_config_get_identity(cfg),
@@ -1258,12 +1264,17 @@ static int lpc_cmd_status(LinphoneCore *lc, char *args){
 			}else if (linphone_proxy_config_register_enabled(cfg)){
 				linphonec_out("registered=-1\n");
 			}else linphonec_out("registered=0\n");
-		}else linphonec_out("registered=0\n");
-	}else if (strstr(args,"autoanswer")){
+		}
+		else linphonec_out("registered=0\n");
+	}
+	else if (strstr(args,"autoanswer"))
+	{
 		if (cfg && linphone_proxy_config_is_registered(cfg))
 			linphonec_out("autoanswer=%i\n",linphonec_get_autoanswer());
 		else linphonec_out("unregistered\n");
-	}else if (strstr(args,"hook")){
+	}
+	else if (strstr(args,"hook"))
+	{
 		gstate_t call_state=linphone_core_get_state(lc,GSTATE_GROUP_CALL);
 		if (!cfg || !linphone_proxy_config_is_registered(cfg)){
 			linphonec_out("unregistered\n");
@@ -1287,7 +1298,9 @@ static int lpc_cmd_status(LinphoneCore *lc, char *args){
 				break;
 		}
 		
-	}else return 0;
+	}
+	else return 0;
+
 	return 1;
 }
 
