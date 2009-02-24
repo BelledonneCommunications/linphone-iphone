@@ -24,29 +24,42 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 extern SipSetup fonis_sip_setup;
 #endif
 
+static SipSetup *all_sip_setups[]={
+#ifdef HAVE_FONIS
+	&fonis_sip_setup,
+#endif
+	NULL
+};
+
 void sip_setup_register_all(void){
 }
 
 SipSetup *sip_setup_lookup(const char *type_name){
-#ifdef HAVE_FONIS
-	if (strcmp(type_name,"fonis")==0){
-		if (!fonis_sip_setup.initialized){
-			if (fonis_sip_setup.init()){
-				fonis_sip_setup.initialized=TRUE;
+	SipSetup **p=all_sip_setups;
+	while(*p!=NULL){
+		if ( strcmp((*p)->name,type_name)==0){
+			if (!(*p)->initialized){
+				(*p)->init();
+				(*p)->initialized=TRUE;
+				if ((*p)->capabilities==0){
+					ms_error("%s SipSetup isn't capable of anything ?");
+				}
 			}
+			return *p;
 		}
-		return &fonis_sip_setup;
 	}
-#endif
 	ms_warning("no %s setup manager declared.",type_name);
 	return NULL;
 }
 
 void sip_setup_unregister_all(void){
-#ifdef HAVE_FONIS
-	if (fonis_sip_setup.initialized)
-		fonis_sip_setup.exit();
-#endif
+	SipSetup **p=all_sip_setups;
+	while(*p!=NULL){
+		if ((*p)->initialized){
+			(*p)->exit();
+			(*p)->initialized=FALSE;
+		}
+	}
 }
 
 
@@ -54,6 +67,9 @@ SipSetupContext *sip_setup_context_new(SipSetup *s){
 	SipSetupContext *obj=(SipSetupContext*)ms_new0(SipSetupContext,1);
 	obj->funcs=s;
 	obj->data=NULL;
+	if (obj->funcs->init_instance){
+		obj->funcs->init_instance(obj);
+	}
 	return obj;
 }
 
@@ -93,9 +109,21 @@ int sip_setup_context_get_relay(SipSetupContext *ctx,char *relay, size_t size){
 	return -1;
 }
 
-int sip_setup_context_lookup_buddy(SipSetupContext *ctx, const char *key, BuddyInfo *binfo){
+int sip_setup_context_lookup_buddy(SipSetupContext *ctx, const char *key){
 	if (ctx->funcs->lookup_buddy)
-		return ctx->funcs->lookup_buddy(ctx,key,binfo);
+		return ctx->funcs->lookup_buddy(ctx,key);
+	return -1;
+}
+
+BuddyLookupStatus sip_setup_context_get_buddy_lookup_status(SipSetupContext *ctx){
+	if (ctx->funcs->get_buddy_lookup_status)
+		return ctx->funcs->get_buddy_lookup_status(ctx);
+	return BuddyLookupFailure;
+}
+
+int sip_setup_context_get_buddy_lookup_results(SipSetupContext *ctx, MSList **results /*of BuddyInfo */){
+	if (ctx->funcs->get_buddy_lookup_results)
+		return ctx->funcs->get_buddy_lookup_results(ctx,results);
 	return -1;
 }
 

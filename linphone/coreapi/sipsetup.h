@@ -26,6 +26,7 @@ struct _SipSetup;
 
 struct _BuddyInfo;
 
+
 struct _SipSetupContext{
 	struct _SipSetup *funcs;
 	char domain[128];
@@ -35,15 +36,26 @@ struct _SipSetupContext{
 
 typedef struct _SipSetupContext SipSetupContext;
 
+#define SIP_SETUP_CAP_PROXY_PROVIDER	(1)
+#define SIP_SETUP_CAP_STUN_PROVIDER	(1<<1)
+#define SIP_SETUP_CAP_RELAY_PROVIDER	(1<<2)
+#define SIP_SETUP_CAP_BUDDY_LOOKUP	(1<<3)
+#define SIP_SETUP_CAP_ACCOUNT_MANAGER	(1<<4)
+
+
 struct _SipSetup{
 	char *name;
+	unsigned int capabilities;
 	bool_t (*init)(void);
+	int (*init_instance)(SipSetupContext *ctx);
 	int (*create_account)( const char *uri, const char *passwd);
 	int (*login_account)(SipSetupContext *ctx, const char *uri, const char *passwd);
 	int (*get_proxy)(SipSetupContext *ctx, const char *domain, char *proxy, size_t sz);
 	int (*get_stun_servers)(SipSetupContext *ctx, char *stun1, char *stun2, size_t size);
 	int (*get_relay)(SipSetupContext *ctx, char *relay, size_t size);
-	int (*lookup_buddy)(SipSetupContext *ctx, const char *key, struct _BuddyInfo *info);
+	int (*lookup_buddy)(SipSetupContext *ctx, const char *key);
+	int (*get_buddy_lookup_status)(SipSetupContext *ctx);
+	int (*get_buddy_lookup_results)(SipSetupContext *ctx, MSList **results);
 	void (*exit)(void);
 	bool_t initialized;
 };
@@ -65,17 +77,29 @@ typedef struct _BuddyInfo{
 	BuddyAddress address;
 }BuddyInfo;
 
+typedef enum _BuddyLookupStatus{
+	BuddyLookupNone,
+	BuddyLookupConnecting,
+	BuddyLookupConnected,
+	BuddyLookupReceivingResponse,
+	BuddyLookupDone,
+	BuddyLookupFailure
+}BuddyLookupStatus;
+
 void sip_setup_register_all(void);
 SipSetup *sip_setup_lookup(const char *type_name);
 void sip_setup_unregister_all(void);
 
 int sip_setup_new_account(SipSetup *s, const char *uri, const char *passwd);
 SipSetupContext * sip_setup_context_new(SipSetup *s);
+int sip_setup_context_get_capabilities(SipSetupContext *ctx);
 int sip_setup_context_login_account(SipSetupContext * ctx, const char *uri, const char *passwd);
 int sip_setup_context_get_proxy(SipSetupContext *ctx, const char *domain, char *proxy, size_t sz);
 int sip_setup_context_get_stun_servers(SipSetupContext *ctx, char *stun1, char *stun2, size_t size);
-int sip_setup_context_get_relay(SipSetupContext *ctx,char *relay, size_t size);
-int sip_setup_context_lookup_buddy(SipSetupContext *ctx, const char *key, BuddyInfo *binfo);
+int sip_setup_context_get_relay(SipSetupContext *ctx, char *relay, size_t size);
+int sip_setup_context_lookup_buddy(SipSetupContext *ctx, const char *key);
+BuddyLookupStatus sip_setup_context_get_buddy_lookup_status(SipSetupContext *ctx);
+int sip_setup_context_get_buddy_lookup_results(SipSetupContext *ctx, MSList **results /*of BuddyInfo */);
 void sip_setup_context_free(SipSetupContext *ctx);
 #endif
 

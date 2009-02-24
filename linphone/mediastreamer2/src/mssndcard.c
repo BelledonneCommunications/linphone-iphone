@@ -60,7 +60,8 @@ MSSndCard * ms_snd_card_manager_get_default_card(MSSndCardManager *m){
 	MSList *elem;
 	for (elem=m->cards;elem!=NULL;elem=elem->next){
 		MSSndCard *card=(MSSndCard*)elem->data;
-		if (card->capabilities==(MS_SND_CARD_CAP_CAPTURE|MS_SND_CARD_CAP_PLAYBACK))
+		if ((card->capabilities & MS_SND_CARD_CAP_CAPTURE )
+			&& (card->capabilities & MS_SND_CARD_CAP_PLAYBACK))
 			return card;
 	}
 	return NULL;
@@ -70,8 +71,7 @@ MSSndCard * ms_snd_card_manager_get_default_capture_card(MSSndCardManager *m){
 	MSList *elem;
 	for (elem=m->cards;elem!=NULL;elem=elem->next){
 		MSSndCard *card=(MSSndCard*)elem->data;
-		if (card->capabilities==(MS_SND_CARD_CAP_CAPTURE|MS_SND_CARD_CAP_PLAYBACK)
-			||card->capabilities==MS_SND_CARD_CAP_CAPTURE)
+		if (card->capabilities & MS_SND_CARD_CAP_CAPTURE)
 			return card;
 	}
 	return NULL;
@@ -81,8 +81,7 @@ MSSndCard * ms_snd_card_manager_get_default_playback_card(MSSndCardManager *m){
 	MSList *elem;
 	for (elem=m->cards;elem!=NULL;elem=elem->next){
 		MSSndCard *card=(MSSndCard*)elem->data;
-		if (card->capabilities==(MS_SND_CARD_CAP_CAPTURE|MS_SND_CARD_CAP_PLAYBACK)
-			||card->capabilities==MS_SND_CARD_CAP_PLAYBACK)
+		if (card->capabilities & MS_SND_CARD_CAP_PLAYBACK)
 			return card;
 	}
 	return NULL;

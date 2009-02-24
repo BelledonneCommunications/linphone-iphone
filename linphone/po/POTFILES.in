@@ -7,6 +7,7 @@ gtk-glade/main.c
 gtk-glade/friendlist.c
 gtk-glade/propertybox.c
 gtk-glade/update.c
+gtk-glade/buddylookup.c
 gtk-glade/main.glade
 gtk-glade/about.glade
 gtk-glade/contact.glade
@@ -18,11 +19,13 @@ gtk-glade/sip_account.glade
 gtk-glade/chatroom.glade
 gtk-glade/incoming_call.glade
 gtk-glade/parameters.glade
+gtk-glade/buddylookup.glade
 coreapi/linphonecore.c
 coreapi/misc.c
 coreapi/exevents.c
 coreapi/presence.c
 coreapi/friend.c
+coreapi/proxy.c
 mediastreamer2/src/alaw.c
 mediastreamer2/src/alsa.c
 mediastreamer2/src/aqsnd.c
@@ -44,7 +47,6 @@ mediastreamer2/src/msv4m.c
 mediastreamer2/src/nowebcam.c
 mediastreamer2/src/oss.c
 mediastreamer2/src/pixconv.c
-mediastreamer2/src/sdlout.c
 mediastreamer2/src/sizeconv.c
 mediastreamer2/src/speexec.c
 mediastreamer2/src/tee.c
