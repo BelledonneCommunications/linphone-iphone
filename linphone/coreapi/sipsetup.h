@@ -100,6 +100,7 @@ int sip_setup_context_get_relay(SipSetupContext *ctx, char *relay, size_t size);
 int sip_setup_context_lookup_buddy(SipSetupContext *ctx, const char *key);
 BuddyLookupStatus sip_setup_context_get_buddy_lookup_status(SipSetupContext *ctx);
 int sip_setup_context_get_buddy_lookup_results(SipSetupContext *ctx, MSList **results /*of BuddyInfo */);
+void sip_setup_context_free_results(MSList *results);
 void sip_setup_context_free(SipSetupContext *ctx);
 #endif
 

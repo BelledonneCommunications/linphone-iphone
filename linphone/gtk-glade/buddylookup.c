@@ -20,6 +20,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "linphone.h"
 #include "sipsetup.h"
 
+static void linphone_gtk_display_lookup_results(GtkWidget *w, const MSList *results);
+
 enum {
 	LOOKUP_RESULT_NAME,
 	LOOKUP_RESULT_SIP_URI,
@@ -83,7 +85,7 @@ static gboolean linphone_gtk_process_buddy_lookup(GtkWidget *w){
 	GtkProgressBar *pb=GTK_PROGRESS_BAR(linphone_gtk_get_widget(w,"progressbar"));
 	ctx=(SipSetupContext*)g_object_get_data(G_OBJECT(w),"SipSetupContext");
 	bls=sip_setup_context_get_buddy_lookup_status(ctx);
-
+	MSList *results=NULL;
 	switch(bls){
 		case BuddyLookupNone:
 		case BuddyLookupFailure:
@@ -105,6 +107,13 @@ static gboolean linphone_gtk_process_buddy_lookup(GtkWidget *w){
 		case BuddyLookupDone:
 			gtk_progress_bar_set_fraction(pb,100);
 			gtk_progress_bar_set_text(pb,_("Done !"));
+			sip_setup_context_get_buddy_lookup_results(ctx,&results);
+			if (results){
+				linphone_gtk_display_lookup_results(
+					linphone_gtk_get_widget(w,"search_results"),
+					results);
+				sip_setup_context_free_results(results);
+			}
 			break;
 	}
 	return TRUE;
@@ -137,3 +146,24 @@ void linphone_gtk_keyword_changed(GtkEditable *e){
 	tid=g_timeout_add(2000,(GSourceFunc)keyword_typing_finished,w);
 	g_object_set_data(G_OBJECT(w),"typing_timeout",GINT_TO_POINTER(tid));
 }
+
+static void linphone_gtk_display_lookup_results(GtkWidget *w, const MSList *results){
+	GtkListStore *store;
+	GtkTreeIter iter;
+	gchar *tmp;
+	const MSList *elem;
+	store=GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(w)));
+	gtk_list_store_clear(store);
+	for(elem=results;elem!=NULL;elem=elem->next){
+		BuddyInfo *bi=(BuddyInfo*)elem->data;
+		gtk_list_store_append(store,&iter);
+		tmp=g_strdup_printf("%s, %s (%s)",bi->firstname,bi->lastname,bi->displayname);
+		gtk_list_store_set(store,&iter,LOOKUP_RESULT_NAME, tmp,-1);
+		g_free(tmp);
+		gtk_list_store_set(store,&iter,LOOKUP_RESULT_SIP_URI, bi->sip_uri,-1);
+		tmp=g_strdup_printf("%s, %s %s\n%s",bi->address.street, bi->address.zip, bi->address.town, bi->address.country);
+		gtk_list_store_set(store,&iter,LOOKUP_RESULT_ADDRESS, tmp,-1);
+		g_free(tmp);
+	}
+}
+
