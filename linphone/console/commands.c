@@ -122,6 +122,7 @@ LPC_COMMAND commands[] = {
 	},
 	{ "soundcard", lpc_cmd_soundcard, "Manage soundcards",
 		"'soundcard list' : list all sound devices.\n"
+		"'soundcard show' : show current sound devices configuration.\n"
 		"'soundcard use <index>' : select a sound device.\n"
 		"'soundcard use files' : use .wav files instead of soundcard\n"
 	},
@@ -764,46 +765,71 @@ lpc_cmd_ipv6(LinphoneCore *lc, char *arg1)
 	return 1;
 }
 
-static int lpc_cmd_soundcard(LinphoneCore *lc, char *cmd){
-	int i;
-	if (cmd==NULL){
-		return 0; /* syntax error */
+static int lpc_cmd_soundcard(LinphoneCore *lc, char *args)
+{
+	int i, index;
+	const char **dev;
+	char *arg1 = args;
+	char *arg2 = NULL;
+	char *ptr = args;
+
+	if (!args) return 0; /* syntax error */
+
+	/* Isolate first and second arg */
+	while(*ptr && !isspace(*ptr)) ++ptr;
+	if ( *ptr )
+	{
+		*ptr='\0';
+		arg2=ptr+1;
+		while(*arg2 && isspace(*arg2)) ++arg2;
 	}
-	if (strcmp(cmd,"list")==0){
-		const char **dev=linphone_core_get_sound_devices(lc);
-		for(i=0;dev[i]!=NULL;i++){
+
+	if (strcmp(arg1, "list")==0)
+	{
+		dev=linphone_core_get_sound_devices(lc);
+		for(i=0; dev[i]!=NULL; ++i){
 			linphonec_out("%i: %s\n",i,dev[i]);
 		}
 		return 1;
-	}else{
-		char *tmp=alloca(strlen(cmd)+1);
-		char *card=alloca(strlen(cmd)+1);
-		int index;
-		int n=sscanf(cmd,"%s %s",tmp,card);
-		if (n==2 && strcmp(tmp,"use")==0){
-			if (strcmp(card,"files")==0) {
-				linphonec_out("Using wav files instead of soundcard.\n");
-				linphone_core_use_files(lc,TRUE);
-				return 1;
-			}else{
-				const char **dev=linphone_core_get_sound_devices(lc);
-				index=atoi(card);
-				for(i=0;dev[i]!=NULL;i++){
-					if (i==index){
-						linphone_core_set_ringer_device(lc,dev[i]);
-						linphone_core_set_playback_device(lc,dev[i]);
-						linphone_core_set_capture_device(lc,dev[i]);
-						linphonec_out("Using sound device %s\n",dev[i]);
-						return 1;
-					}
-				}
-				linphonec_out("no such sound device\n");
-				return 1;
-			}
-		}
-		return 0; /* syntax error */
 	}
-	return 1;
+
+	if (strcmp(arg1, "show")==0)
+	{
+		linphonec_out("Ringer device: %s\n",
+			linphone_core_get_ringer_device(lc));
+		linphonec_out("Playback device: %s\n",
+			linphone_core_get_playback_device(lc));
+		linphonec_out("Capture device: %s\n",
+			linphone_core_get_capture_device(lc));
+		return 1;
+	}
+
+	if (strcmp(arg1, "use")==0 && arg2)
+	{
+		if (strcmp(arg2, "files")==0)
+		{
+			linphonec_out("Using wav files instead of soundcard.\n");
+			linphone_core_use_files(lc,TRUE);
+			return 1;
+		}
+
+		dev=linphone_core_get_sound_devices(lc);
+		index=atoi(arg2); /* FIXME: handle not-a-number */
+		for(i=0;dev[i]!=NULL;i++)
+		{
+			if (i!=index) continue;
+
+			linphone_core_set_ringer_device(lc,dev[i]);
+			linphone_core_set_playback_device(lc,dev[i]);
+			linphone_core_set_capture_device(lc,dev[i]);
+			linphonec_out("Using sound device %s\n",dev[i]);
+			return 1;
+		}
+		linphonec_out("No such sound device\n");
+		return 1;
+	}
+
+	return 0; /* syntax error */
 }
 
 /***************************************************************************
