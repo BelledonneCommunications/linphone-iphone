@@ -382,7 +382,7 @@ iceParseAtrPriority( char* body, unsigned int hdrLen, IceAtrPriority *result )
 static bool_t 
 iceParseAtrIceControll( char* body, unsigned int hdrLen, IceAtrIceControll *result )
 {
-  if ( hdrLen != sizeof(result) )
+  if ( hdrLen != 8 )
   {
     ortp_error("stun: Incorrect size for ICEA_ICECONTROLLED/ICEA_ICECONTROLLING");
     return FALSE;
