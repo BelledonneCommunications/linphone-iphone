@@ -427,6 +427,12 @@ typedef struct
       StunMediaRelay relays[MAX_MEDIA_RELAYS];
 } StunServerInfo;
 
+void
+stunCalculateIntegrity_longterm(char* hmac, const char* input, int length,
+                     const char *username, const char *realm, const char *password);
+void
+stunCalculateIntegrity_shortterm(char* hmac, const char* input, int length, const char* key);
+
 bool_t
 stunParseMessage( char* buf, 
                   unsigned int bufLen, 

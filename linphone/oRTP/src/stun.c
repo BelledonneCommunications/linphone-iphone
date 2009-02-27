@@ -123,12 +123,6 @@ static char *ipaddr(const StunAddress4 *addr)
    return tmp;
 }
 
-static void
-computeHmac_longterm(char* hmac, const char* input, int length,
-                     const char *username, const char *realm, const char *password);
-static void
-computeHmac_shortterm(char* hmac, const char* input, int length, const char* key);
-
 static bool_t 
 stunParseAtrAddress( char* body, unsigned int hdrLen,  StunAtrAddress4 *result )
 {
@@ -1044,7 +1038,7 @@ stunEncodeMessage( const StunMessage *msg,
       //ortp_debug("stun: HMAC with password: %s\n", password->value );
 
       encode16(lengthp, (UInt16)(ptr - buf - sizeof(StunMsgHdr)+24));
-      computeHmac_longterm(integrity.hash, buf, (int)(ptr-buf) ,
+      stunCalculateIntegrity_longterm(integrity.hash, buf, (int)(ptr-buf) ,
         msg->username.value, msg->realmName.value, password->value);
       ptr = encodeAtrIntegrity(ptr, &integrity);
    }
@@ -1056,7 +1050,7 @@ stunEncodeMessage( const StunMessage *msg,
       //ortp_debug("stun: HMAC with password: %s\n", password->value );
 
       encode16(lengthp, (UInt16)(ptr - buf - sizeof(StunMsgHdr)+24));
-      computeHmac_shortterm(integrity.hash, buf, (int)(ptr-buf) ,
+      stunCalculateIntegrity_shortterm(integrity.hash, buf, (int)(ptr-buf) ,
         password->value);
       ptr = encodeAtrIntegrity(ptr, &integrity);
    }
@@ -1177,14 +1171,14 @@ randomPort()
 
 
 #ifdef NOSSL
-static void
-computeHmac_longterm(char* hmac, const char* input, int length,
+void
+stunCalculateIntegrity_longterm(char* hmac, const char* input, int length,
                      const char *username, const char *realm, const char *password)
 {
    strncpy(hmac,"hmac-not-implemented",20);
 }
-static void
-computeHmac_shortterm(char* hmac, const char* input, int length, const char* key)
+void
+stunCalculateIntegrity_shortterm(char* hmac, const char* input, int length, const char* key)
 {
    strncpy(hmac,"hmac-not-implemented",20);
 }
@@ -1192,8 +1186,8 @@ computeHmac_shortterm(char* hmac, const char* input, int length, const char* key
 #include <openssl/hmac.h>
 #include <openssl/md5.h>
 
-static void
-computeHmac_longterm(char* hmac, const char* input, int length,
+void
+stunCalculateIntegrity_longterm(char* hmac, const char* input, int length,
                      const char *username, const char *realm, const char *password)
 {
    unsigned int resultSize=0;
@@ -1209,8 +1203,8 @@ computeHmac_longterm(char* hmac, const char* input, int length,
         (unsigned char*)hmac, &resultSize);
 }
 
-static void
-computeHmac_shortterm(char* hmac, const char* input, int length, const char* key)
+void
+stunCalculateIntegrity_shortterm(char* hmac, const char* input, int length, const char* key)
 {
    unsigned int resultSize=0;
    HMAC(EVP_sha1(), 
