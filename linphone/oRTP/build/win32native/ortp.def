@@ -139,6 +139,8 @@ EXPORTS
     stunTest
     stunOpenSocket
     stunOpenSocketPair
+    stunCalculateIntegrity_shortterm    
+    stunCalculateIntegrity_longterm
     
     getWinSocketError
 
