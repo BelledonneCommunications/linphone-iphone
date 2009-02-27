@@ -1488,12 +1488,6 @@ stunServerProcessMsg( char* buf,
                              "1234", 4, 
                              (const unsigned char*) buf, bufLen-20-4, 
                              hmac, &hmacSize);
-                        /*HMAC(EVP_sha1(), 
-                             "1234", 4, 
-                             reinterpret_cast<const unsigned char*>(buf), bufLen-20-4, 
-                             hmac, &hmacSize);
-                        //assert(hmacSize == 20);
-			*/
                      }
 #endif
 							
