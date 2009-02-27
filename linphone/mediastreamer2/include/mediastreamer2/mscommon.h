@@ -147,6 +147,10 @@ void ms_init(void);
 
 /**
  * Load plugins from a specific directory.
+ * This method basically loads all libraries in the specified directory and attempts to call a C function called
+ * \<libraryname\>_init. For example if a library 'libdummy.so' or 'libdummy.dll' is found, then the loader tries to locate
+ * a C function called 'libdummy_init()' and calls it if it exists.
+ * ms_load_plugins() can be used to load non-mediastreamer2 plugins as it does not expect mediastreamer2 specific entry points.
  *
  * @param directory   A directory where plugins library are available.
  *

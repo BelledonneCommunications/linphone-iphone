@@ -18,7 +18,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 
-#include "sipsetup.h"
+#include "linphonecore.h"
+#include "../config.h"
+
+#ifndef LINPHONE_PLUGINS_DIR
+#ifdef WIN32
+#define LINPHONE_PLUGINS_DIR "liblinphone\plugins\\"
+#else
+#define LINPHONE_PLUGINS_DIR "."
+#endif
+#endif
 
 #ifdef HAVE_FONIS
 extern SipSetup fonis_sip_setup;
@@ -31,21 +40,33 @@ static SipSetup *all_sip_setups[]={
 	NULL
 };
 
+static MSList *registered_sip_setups=NULL;
+
+void sip_setup_register(SipSetup *ss){
+	registered_sip_setups=ms_list_append(registered_sip_setups,ss);
+}
+
 void sip_setup_register_all(void){
+	SipSetup **p=all_sip_setups;
+	ms_load_plugins(LINPHONE_PLUGINS_DIR);
+	while(*p!=NULL){
+		sip_setup_register(*p);
+	}
 }
 
 SipSetup *sip_setup_lookup(const char *type_name){
-	SipSetup **p=all_sip_setups;
-	while(*p!=NULL){
-		if ( strcmp((*p)->name,type_name)==0){
-			if (!(*p)->initialized){
-				(*p)->init();
-				(*p)->initialized=TRUE;
-				if ((*p)->capabilities==0){
-					ms_error("%s SipSetup isn't capable of anything ?");
+	MSList *elem;
+	for(elem=registered_sip_setups;elem!=NULL;elem=elem->next){
+		SipSetup *ss=(SipSetup*)elem->data;
+		if ( strcmp(ss->name,type_name)==0){
+			if (!ss->initialized){
+				ss->init();
+				ss->initialized=TRUE;
+				if (ss->capabilities==0){
+					ms_error("%s SipSetup isn't capable of anything ?",ss->name);
 				}
 			}
-			return *p;
+			return ss;
 		}
 	}
 	ms_warning("no %s setup manager declared.",type_name);
@@ -53,11 +74,12 @@ SipSetup *sip_setup_lookup(const char *type_name){
 }
 
 void sip_setup_unregister_all(void){
-	SipSetup **p=all_sip_setups;
-	while(*p!=NULL){
-		if ((*p)->initialized){
-			(*p)->exit();
-			(*p)->initialized=FALSE;
+	MSList *elem;
+	for(elem=registered_sip_setups;elem!=NULL;elem=elem->next){
+		SipSetup *ss=(SipSetup*)elem->data;
+		if (ss->initialized){
+			ss->exit();
+			ss->initialized=FALSE;
 		}
 	}
 }
@@ -71,6 +93,10 @@ SipSetupContext *sip_setup_context_new(SipSetup *s){
 		obj->funcs->init_instance(obj);
 	}
 	return obj;
+}
+
+int sip_setup_context_get_capabilities(SipSetupContext *ctx){
+	return ctx->funcs->capabilities;
 }
 
 int sip_setup_new_account(SipSetup *funcs, const char *uri, const char *passwd){

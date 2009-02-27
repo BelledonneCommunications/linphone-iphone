@@ -3,7 +3,7 @@ EXTRA_DIST=liblinphone.dev
 ## Process this file with automake to produce Makefile.in
 linphone_includedir=$(includedir)/linphone
 
-linphone_include_HEADERS=linphonecore.h ../config.h lpconfig.h
+linphone_include_HEADERS=linphonecore.h ../config.h lpconfig.h sipsetup.h
 
 INCLUDES = \
 	-I$(top_srcdir)\

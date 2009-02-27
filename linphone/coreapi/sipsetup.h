@@ -20,7 +20,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #ifndef sipsetup_h
 #define sipsetup_h
-#include "linphonecore.h"
+
+#include "mediastreamer2/mscommon.h"
 
 struct _SipSetup;
 
@@ -86,6 +87,7 @@ typedef enum _BuddyLookupStatus{
 	BuddyLookupFailure
 }BuddyLookupStatus;
 
+void sip_setup_register(SipSetup *ss);
 void sip_setup_register_all(void);
 SipSetup *sip_setup_lookup(const char *type_name);
 void sip_setup_unregister_all(void);
@@ -103,4 +105,5 @@ int sip_setup_context_get_buddy_lookup_results(SipSetupContext *ctx, MSList **re
 void sip_setup_context_free_results(MSList *results);
 void sip_setup_context_free(SipSetupContext *ctx);
 #endif
+
 

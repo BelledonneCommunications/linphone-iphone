@@ -273,6 +273,9 @@ AC_SUBST(LINPHONE_LIBS)
 
 AC_DEFINE_UNQUOTED(LINPHONE_VERSION,"$PACKAGE_VERSION",[Linphone's version number])
 
+AC_DEFINE_UNQUOTED(LINPHONE_PLUGINS_DIR, "${prefix}/lib/liblinphone/plugins" ,[path of liblinphone plugins, not mediastreamer2 plugins])
+LINPHONE_PLUGINS_DIR="${prefix}/lib/liblinphone/plugins"
+AC_SUBST(LINPHONE_PLUGINS_DIR)
 
 AC_ARG_ENABLE(external-ortp,
       [  --enable-external-ortp    Use external oRTP library],

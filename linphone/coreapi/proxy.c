@@ -558,12 +558,12 @@ LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LpConfig *config
 	
 	tmp=lp_config_get_string(config,key,"type",NULL);
 	if (tmp!=NULL && strlen(tmp)>0) 
-		linphone_proxy_config_set_setup_object(cfg,tmp);
+		linphone_proxy_config_set_sip_setup(cfg,tmp);
 
 	return cfg;
 }
 
-void linphone_proxy_config_set_setup_object(LinphoneProxyConfig *cfg, const char *type){
+void linphone_proxy_config_set_sip_setup(LinphoneProxyConfig *cfg, const char *type){
 	SipSetup *ss=sip_setup_lookup(type);
 	SipSetupContext *ssc;
 	if (!ss) return ;
@@ -575,6 +575,10 @@ void linphone_proxy_config_set_setup_object(LinphoneProxyConfig *cfg, const char
 		}
 	}
 	cfg->ssctx=ssc;
+}
+
+SipSetupContext *linphone_proxy_config_get_sip_setup_context(LinphoneProxyConfig *cfg){
+	return cfg->ssctx;
 }
 
 

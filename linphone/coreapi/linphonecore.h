@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ortp/payloadtype.h"
 #include "mediastreamer2/mscommon.h"
 #include "mediastreamer2/msvideo.h"
+#include "sipsetup.h"
 
 #define LINPHONE_IPADDR_SIZE 64
 #define LINPHONE_HOSTNAME_SIZE 128
@@ -316,7 +317,8 @@ bool_t linphone_proxy_config_is_registered(const LinphoneProxyConfig *obj);
 void linphone_proxy_config_destroy(LinphoneProxyConfig *cfg);
 LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(struct _LpConfig *config, int index);
 void linphone_proxy_config_write_to_config_file(struct _LpConfig* config,LinphoneProxyConfig *obj, int index);
-void linphone_proxy_config_set_setup_object(LinphoneProxyConfig *cfg, const char *type);
+void linphone_proxy_config_set_sip_setup(LinphoneProxyConfig *cfg, const char *type);
+SipSetupContext *linphone_proxy_config_get_sip_setup_context(LinphoneProxyConfig *cfg);
 
 
 typedef struct _LinphoneAuthInfo
