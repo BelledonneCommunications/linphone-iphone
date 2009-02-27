@@ -368,7 +368,7 @@ turnParseAtrFingerprint( char* body, unsigned int hdrLen, TurnAtrFingerprint *re
 static bool_t 
 iceParseAtrPriority( char* body, unsigned int hdrLen, IceAtrPriority *result )
 {
-  if ( hdrLen != sizeof(result) )
+  if ( hdrLen != 4 )
   {
     ortp_error("stun: Incorrect size for ICEA_PRIORITY");
     return FALSE;
@@ -736,7 +736,7 @@ stunParseMessage( char* buf, unsigned int bufLen, StunMessage *msg)
       }
       else if (atrType == ICEA_PRIORITY)
       {
-            msg->hasLifetimeAttributes = TRUE;
+            msg->hasPriority = TRUE;
             if (iceParseAtrPriority(body, attrLen, &msg->priority) == FALSE)
             {
                ortp_error("stun: problem parsing ICEA_PRIORITY");
@@ -803,6 +803,13 @@ encode32(char* buf, UInt32 data)
    return buf + sizeof(UInt32);
 }
 
+static char* 
+encode64(char* buf, UInt64 data)
+{
+   UInt64 ndata = htonq(data);
+   memcpy(buf, &ndata, sizeof(UInt64));
+   return buf + sizeof(UInt64);
+}
 
 static char* 
 encode(char* buf, const char* data, unsigned int length)
@@ -921,6 +928,32 @@ encodeAtrDontFragment(char* ptr)
    return ptr;
 }
 
+static char* 
+encodeAtrUseCandidate(char* ptr)
+{
+   ptr = encode16(ptr, ICEA_USECANDIDATE);
+   ptr = encode16(ptr, 0);
+   return ptr;
+}
+
+static char* 
+encodeAtrPriority(char* ptr, const IceAtrPriority *atr)
+{
+   ptr = encode16(ptr, ICEA_PRIORITY);
+   ptr = encode16(ptr, 4);
+   ptr = encode32(ptr, atr->priority);
+   return ptr;
+}
+
+static char* 
+encodeAtrIceControll(char* ptr, UInt16 type, const IceAtrIceControll *atr)
+{
+   ptr = encode16(ptr, type);
+   ptr = encode16(ptr, 8);
+   ptr = encode64(ptr, atr->value);
+   return ptr;
+}
+
 unsigned int
 stunEncodeMessage( const StunMessage *msg, 
                    char* buf, 
@@ -951,8 +984,7 @@ stunEncodeMessage( const StunMessage *msg,
    {
       ortp_debug("stun: Encoding TA_DONTFRAGMENT: DF\n");
       ptr = encodeAtrDontFragment (ptr);
-   }
-
+   }		  
    if (msg->hasMappedAddress)
    {
       ortp_debug("stun: Encoding SA_MAPPEDADDRESS: %s\n", ipaddr(&msg->mappedAddress.ipv4) );
@@ -1023,6 +1055,28 @@ stunEncodeMessage( const StunMessage *msg,
       ortp_debug("stun: Encoding SA_XORMAPPEDADDRESS: %s\n", ipaddr(&msg->xorMappedAddress.ipv4) );
       ptr = encodeAtrAddress4 (ptr, SA_XORMAPPEDADDRESS, &msg->xorMappedAddress);
    }
+   
+   if (msg->hasPriority)
+   {	   
+      ortp_debug("stun: Encoding ICEA_PRIORITY\n");
+      ptr = encodeAtrPriority (ptr, &msg->priority);
+   }
+   if (msg->hasUseCandidate)
+   {	   
+      ortp_debug("stun: Encoding ICEA_USECANDIDATE\n");
+      ptr = encodeAtrUseCandidate (ptr);
+   }
+   if (msg->hasIceControlled)
+   {	   
+      ortp_debug("stun: Encoding ICEA_ICECONTROLLED\n");
+      ptr = encodeAtrIceControll (ptr, ICEA_ICECONTROLLED, &msg->iceControlled);
+   }
+   if (msg->hasIceControlling)
+   {	   
+      ortp_debug("stun: Encoding ICEA_ICECONTROLLING\n");
+      ptr = encodeAtrIceControll (ptr, ICEA_ICECONTROLLING, &msg->iceControlling);
+   }
+
    if (msg->hasSoftware)
    {
       ortp_debug("stun: Encoding SA_SOFTWARE: %s\n", msg->softwareName.value );
@@ -1542,10 +1596,8 @@ stunServerProcessMsg( char* buf,
          if (1) /* do xorMapped address or not */
          {
             UInt32 cookie = 0x2112A442;
-            UInt16 cookie16;
             resp->hasXorMappedAddress = TRUE;
-            cookie16 = ((UInt8*)&cookie)[0]<<8  | ((UInt8*)&cookie)[1];
-            resp->xorMappedAddress.ipv4.port = mapped.port^cookie16;
+            resp->xorMappedAddress.ipv4.port = mapped.port^(cookie>>16);
             resp->xorMappedAddress.ipv4.addr = mapped.addr^cookie;
          }
          
