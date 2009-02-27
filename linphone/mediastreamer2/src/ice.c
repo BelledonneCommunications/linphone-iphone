@@ -80,7 +80,7 @@ ice_sendtest( struct CandidatePair *remote_candidate, Socket myFd, StunAddress4 
    req.hasMessageIntegrity=TRUE;
 
    req.hasPriority = TRUE;
-   req.priority.priority = pow(2,24)*(110) + pow(2,8)*(65535) + pow(2,0)*(256 - remote_candidate->remote_candidate.component_id);
+   req.priority.priority = (UInt32)(pow((double)2,(double)24)*(110) + pow((double)2,(double)8)*(65535) + pow((double)2,(double)0)*(256 - remote_candidate->remote_candidate.component_id));
 
    /* TODO: put this parameter only for the candidate selected */
    if (remote_candidate->connectivity_check==VALID)
