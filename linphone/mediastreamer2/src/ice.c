@@ -28,13 +28,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/ice.h"
 #include "mediastreamer2/mscommon.h"
 
+#include <math.h>
+
 static void 
-ice_sendtest( Socket myFd, StunAddress4 *dest, 
+ice_sendtest( struct CandidatePair *remote_candidate, Socket myFd, StunAddress4 *dest, 
               const StunAtrString *username, const StunAtrString *password, 
               int testNum, bool_t verbose , UInt96 *tid);
 
 static void 
-ice_sendtest( Socket myFd, StunAddress4 *dest, 
+ice_sendtest( struct CandidatePair *remote_candidate, Socket myFd, StunAddress4 *dest, 
               const StunAtrString *username, const StunAtrString *password, 
               int testNum, bool_t verbose , UInt96 *tid)
 {	
@@ -71,11 +73,41 @@ ice_sendtest( Socket myFd, StunAddress4 *dest,
    }
    
    memset(&req, 0, sizeof(StunMessage));
-	
+
    stunBuildReqSimple( &req, username, 
                        changePort , changeIP , 
                        testNum );
-	
+   req.hasMessageIntegrity=TRUE;
+
+   req.hasPriority = TRUE;
+   req.priority.priority = pow(2,24)*(110) + pow(2,8)*(65535) + pow(2,0)*(256 - remote_candidate->remote_candidate.component_id);
+
+   /* TODO: put this parameter only for the candidate selected */
+   if (remote_candidate->connectivity_check==VALID)
+	   req.hasUseCandidate = TRUE;
+
+   if (remote_candidate->rem_controlvalue==0)
+	   {
+		   /* calculated once only */
+		   remote_candidate->rem_controlvalue = random();
+		   remote_candidate->rem_controlvalue = remote_candidate->rem_controlvalue >> 32;
+		   remote_candidate->rem_controlvalue = random();
+	   }
+   
+   if (remote_candidate->rem_controlling==1)
+	   {
+		   req.hasIceControlled = TRUE;
+		   req.iceControlled.value = remote_candidate->rem_controlvalue;
+	   }
+   else
+	   {
+		   req.hasIceControlling = TRUE;
+		   req.iceControlling.value	= remote_candidate->rem_controlvalue;
+	   }
+
+   /* TODO: not yet implemented? */
+   req.hasFingerprint = TRUE;
+   
    len = stunEncodeMessage( &req, buf, len, password );
 
    memcpy(tid , &(req.msgHdr.tr_id), sizeof(req.msgHdr.tr_id));
@@ -115,54 +147,40 @@ int ice_sound_send_stun_request(RtpSession *session, struct CandidatePair *remot
         }
 #endif
 
-        for (pos=0;pos<10 && remote_candidates[pos].remote_candidate.ipaddr[0]!='\0';pos++)
+        for (pos=0;pos<1 && remote_candidates[pos].remote_candidate.conn_addr[0]!='\0';pos++)
         {
             int media_socket = rtp_session_get_rtp_socket(session);
             StunAddress4 stunServerAddr;
             StunAtrString username;
             StunAtrString password;
             bool_t res;
+#if 0
             int  pad_size;
-
+#endif
+			
             struct CandidatePair *cand_pair = &remote_candidates[pos]; 
             username.sizeValue = 0;
             password.sizeValue = 0;
 
-            /* set username to L3:1:R2:1 */
-            snprintf(username.value, sizeof(username.value), "%s:%i:%s:%i",
-                cand_pair->local_candidate.candidate_id,
-                1,
-                cand_pair->remote_candidate.candidate_id,
-                1);
+			/* username comes from "ice-ufrag" (rfrag:lfrag) */
+			/* ufrag and pwd are in first row only */
+            snprintf(username.value, sizeof(username.value), "%s:%s",
+                remote_candidates[0].rem_ice_ufrag,
+                remote_candidates[0].loc_ice_ufrag);
             username.sizeValue = (UInt16)strlen(username.value);
-            pad_size = username.sizeValue % 4;
 
-            username.value[username.sizeValue]='\0';
-            username.value[username.sizeValue+1]='\0';
-            username.value[username.sizeValue+2]='\0';
-            username.value[username.sizeValue+3]='\0';
-
-            username.sizeValue = username.sizeValue + 4 - pad_size;
-
+			
             snprintf(password.value, sizeof(password.value), "%s",
-                cand_pair->remote_candidate.password);
+                remote_candidates[0].rem_ice_pwd);
             password.sizeValue = (UInt16)strlen(password.value);
 
-#if 0
-            pad_size = password.sizeValue%4;
-            password.value[password.sizeValue]='\0';
-            password.value[password.sizeValue+1]='\0';
-            password.value[password.sizeValue+2]='\0';
-            password.value[password.sizeValue+3]='\0';
-            password.sizeValue = password.sizeValue + pad_size;
-#endif
 
-            res = stunParseServerName(cand_pair->remote_candidate.ipaddr,
+            res = stunParseServerName(cand_pair->remote_candidate.conn_addr,
                 &stunServerAddr);
             if ( res == TRUE )
             {
-                stunServerAddr.port = cand_pair->remote_candidate.port;
-                ice_sendtest(media_socket, &stunServerAddr, &username, &password, 1, 0/*FALSE*/,
+                stunServerAddr.port = cand_pair->remote_candidate.conn_port;
+                ice_sendtest(&remote_candidates[pos], media_socket, &stunServerAddr, &username, &password, 1, 0/*FALSE*/,
                     &(cand_pair->tid));
             }
         }
@@ -218,6 +236,16 @@ _ice_get_localip_for (struct sockaddr_storage *saddr, size_t saddr_len, char *lo
   return 0;
 }
 
+static void
+_ice_createErrorResponse(StunMessage *response, int cl, int number, const char* msg)
+{
+   response->msgHdr.msgType = (STUN_METHOD_BINDING | STUN_ERR_RESP);
+   response->hasErrorCode = TRUE;
+   response->errorCode.errorClass = cl;
+   response->errorCode.number = number;
+   strcpy(response->errorCode.reason, msg);
+}
+
 int ice_process_stun_message(RtpSession *session, struct CandidatePair *remote_candidates, OrtpEvent *evt)
 {
     int switch_to_address = -1;
@@ -238,6 +266,12 @@ int ice_process_stun_message(RtpSession *session, struct CandidatePair *remote_c
     if (!res)
     {
         ms_error("ice.c: Malformed STUN packet.");
+        return -1;
+    }
+
+	if (remote_candidates==NULL)
+    {
+        ms_error("ice.c: dropping STUN packet: ice is not configured");
         return -1;
     }
 
@@ -266,9 +300,9 @@ int ice_process_stun_message(RtpSession *session, struct CandidatePair *remote_c
 			            src6host, recvport);
     }
 
-    if (remote_candidates!=NULL) {
+	{
         int pos;
-        for (pos=0;pos<10 && remote_candidates[pos].remote_candidate.ipaddr[0]!='\0';pos++)
+        for (pos=0;pos<10 && remote_candidates[pos].remote_candidate.conn_addr[0]!='\0';pos++)
         {
             struct CandidatePair *cand_pair = &remote_candidates[pos];
 #ifdef RESTRICTIVE_ICE
@@ -290,189 +324,183 @@ int ice_process_stun_message(RtpSession *session, struct CandidatePair *remote_c
         }
     }
 
-    if (STUN_IS_REQUEST(msg.msgHdr.msgType))
-    {
+	if (STUN_IS_REQUEST(msg.msgHdr.msgType))
+	{
         StunMessage resp;
-        StunAddress4 dest;
         StunAtrString hmacPassword;
-        StunAddress4 from;
-        StunAddress4 myAddr;
-        StunAddress4 myAltAddr;
-        bool_t changePort = FALSE;
-        bool_t changeIp = FALSE;
-        struct sockaddr_storage name;
-        socklen_t namelen;
-        char localip[128];
+        StunAddress4 remote_addr;
         int rtp_socket;
-        memset(&name, '\0', sizeof(struct sockaddr_storage));
-        memset(localip, '\0', sizeof(localip));
-        _ice_get_localip_for ((struct sockaddr_storage*)&evt_data->ep->addr, evt_data->ep->addrlen, localip, 128);
 
-        from.addr = ntohl(udp_remote->sin_addr.s_addr);
-        from.port = ntohs(udp_remote->sin_port);
-        
-        namelen = sizeof(struct sockaddr_storage);
+		memset( &resp, 0 , sizeof(resp));
+        remote_addr.addr = ntohl(udp_remote->sin_addr.s_addr);
+        remote_addr.port = ntohs(udp_remote->sin_port);
+
         rtp_socket = rtp_session_get_rtp_socket(session);
-        i = getsockname(rtp_socket, (struct sockaddr*)&name, &namelen);
-        if (i!=0)
-        {
-            ms_error("ice.c: getsockname failed.");
-            return -1;
-        }
+		
+		resp.msgHdr.magic_cookie = ntohl(msg.msgHdr.magic_cookie);
+		for (i=0; i<12; i++ )
+			{
+				resp.msgHdr.tr_id.octet[i] = msg.msgHdr.tr_id.octet[i];
+			}
+		 
+		/* check mandatory params */
+		
+		if (!msg.hasUsername)
+         {
+			 char buf[STUN_MAX_MESSAGE_SIZE];
+			 int len = sizeof(buf);
+			 ms_error("Missing USERNAME attribute in connectivity check");
+			 _ice_createErrorResponse(&resp, 4, 32, "Missing USERNAME attribute");
+			 len = stunEncodeMessage(&resp, buf, len, &hmacPassword );
+			 if (len)
+				 sendMessage( rtp_socket, buf, len, remote_addr.addr, remote_addr.port);
+			 return -1;
+		 }
+		if (!msg.hasMessageIntegrity)
+         {
+			 char buf[STUN_MAX_MESSAGE_SIZE];
+			 int len = sizeof(buf);
+			 ms_error("Missing MESSAGEINTEGRITY attribute in connectivity check");
+			 _ice_createErrorResponse(&resp, 4, 1, "Missing MESSAGEINTEGRITY attribute");
+			 len = stunEncodeMessage(&resp, buf, len, &hmacPassword );
+			 if (len)
+				 sendMessage( rtp_socket, buf, len, remote_addr.addr, remote_addr.port);
+			 return -1;
+		 }
 
-        myAddr.port = ntohs (((struct sockaddr_in*)&name)->sin_port);
-        i = stunParseHostName(localip, &myAddr.addr, &myAddr.port, myAddr.port);
-        if (!i)
-        {
-            ms_error("ice.c: stunParseHostName failed.");
-            return -1;
-        }
-        myAddr.port = ntohs (((struct sockaddr_in*)&name)->sin_port);
-    
-        /* changed-address set to local address/port */
-        myAltAddr = myAddr;
-        dest.addr = 0;
-        dest.port = 0;
-
-        res = stunServerProcessMsg((char*)mp->b_rptr, mp->b_wptr-mp->b_rptr,
-            &from,
-            &myAddr,
-            &myAltAddr, 
-            &resp,
-            &dest,
-            &hmacPassword,
-            &changePort,
-            &changeIp );
-
-        if (!res)
-        {
-            ms_error("ice.c: Failed to process STUN request.");
-            return -1;
-        }
-
-        if (changePort == TRUE || changeIp == TRUE)
-        {
-            ms_error("ice.c: STUN request with changePort or changeIP refused.");
-            return -1;
-        }
-
-        res=TRUE;
-        if ( dest.addr == 0 ) res=FALSE;
-        if ( dest.port == 0 ) res=FALSE;
-        if (!res)
-        {
-            ms_error("ice.c: Missing destination value for response.");
-            return -1;
-        }
-
-    
-        if (msg.hasUsername!=TRUE || msg.username.sizeValue<=0)
-        {
-            /* reply 430 */
-            ms_error("ice.c: Missing or bad username value.");
-            return -1;
-        }
-
-        /*
-        USERNAME is considered valid if its topmost portion (the part up to,
-        but not including the second colon) corresponds to a transport address
-        ID known to the agent.
-        */
-	    if (remote_candidates!=NULL) {
-            int pos;
-            for (pos=0;pos<10 && remote_candidates[pos].remote_candidate.ipaddr[0]!='\0';pos++)
-            {
-                char username[256];
-                struct CandidatePair *cand_pair = &remote_candidates[pos]; 
-                size_t len = strlen(cand_pair->remote_candidate.candidate_id);
-
-                if (cand_pair->connectivity_check == VALID)
-                {
-                    break;
-                }
-
-                memset(username, '\0', sizeof(username));
-                snprintf(username, sizeof(username), "%s:%i:%s:%i",
-                    cand_pair->remote_candidate.candidate_id,
-                    1,
-                    cand_pair->local_candidate.candidate_id,
-                    1);
-
-                if (len+3<msg.username.sizeValue
-                    && strncmp(msg.username.value, cand_pair->remote_candidate.candidate_id, len)==0)
-                {
-                    char tmp[10];
-                    int k;
-                    snprintf(tmp, 10, "%s", msg.username.value + len +1);
-                    for (k=0;k<10;k++)
-                    {
-                        if (tmp[k]=='\0')
-                            break;
-                        if (tmp[k]==':')
-                        {
-                            tmp[k]='\0';
-                            break;
-                        }
-                    }
-                    k = atoi(tmp);
-                    /* TODO support for 2 stream RTP+RTCP */
-                    if (k>0 && k<10 && k==1)
-                    {
-                        /* candidate-id found! */
-#if 0
-                        ms_message("ice.c: Find candidate id (index=%i) for incoming STUN request.", pos);
-#endif
-
-                        if (strncmp(msg.username.value, username, strlen(username))==0)
-                        {
-#ifdef RESTRICTIVE_ICE
-                                ms_message("ice.c: Valid STUN request received (to=%s:%i from=%s:%i).",
-                                cand_pair->remote_candidate.ipaddr, cand_pair->remote_candidate.port,
-                                src6host, recvport);
-				/* We can't be sure the remote end will receive our answer:
-				connection could be only one way...
-				*/
-				if (cand_pair->connectivity_check != VALID)
-                            {
-                                switch_to_address = pos;
-                            }
-#else
-				switch_to_address = pos;
-#endif
-                            if (cand_pair->connectivity_check == RECV_VALID
-                                || cand_pair->connectivity_check == VALID)
-                            {
-                                if (cand_pair->connectivity_check != VALID)
-                                {
-	                                switch_to_address = pos;
-                                    ms_message("ice.c: candidate id (index=%i) moved in VALID state (stunbindingrequest received).", pos);
-                                    cand_pair->connectivity_check = VALID;
-                                }
-                            }
-                            else
-                                cand_pair->connectivity_check = SEND_VALID;
-
-                            /* we have a VALID one */
-                        }
-                    }
-                }
-            }
-        }
-        
+		if (remote_candidates==NULL)
+			{
+			 char buf[STUN_MAX_MESSAGE_SIZE];
+			 int len = sizeof(buf);
+			 ms_error("no password for checking MESSAGEINTEGRITY");
+			 _ice_createErrorResponse(&resp, 4, 1, "no password for checking MESSAGEINTEGRITY");
+			 len = stunEncodeMessage(&resp, buf, len, &hmacPassword );
+			 if (len)
+				 sendMessage( rtp_socket, buf, len, remote_addr.addr, remote_addr.port);
+			 return -1;
+			}
         /*
         The password associated with that transport address ID is used to verify
         the MESSAGE-INTEGRITY attribute, if one was present in the request.
         */
+		char hmac[20];
+		stunCalculateIntegrity_shortterm(hmac, (char*)mp->b_rptr, mp->b_wptr-mp->b_rptr-24, remote_candidates[0].loc_ice_pwd);
+		if (memcmp(msg.messageIntegrity.hash, hmac, 20)!=0)
+			{
+			 char buf[STUN_MAX_MESSAGE_SIZE];
+			 int len = sizeof(buf);
+			 ms_error("Wrong MESSAGEINTEGRITY attribute in connectivity check (%s)", msg.messageIntegrity.hash, hmac);
+			 _ice_createErrorResponse(&resp, 4, 1, "Wrong MESSAGEINTEGRITY attribute");
+			 len = stunEncodeMessage(&resp, buf, len, &hmacPassword );
+			 if (len)
+				 sendMessage( rtp_socket, buf, len, remote_addr.addr, remote_addr.port);
+			 return -1;
+			}
 
 
+		/* 7.2.1.1. Detecting and Repairing Role Conflicts */
+		/* TODO */
+		if (!msg.hasIceControlling && !msg.hasIceControlled)
+         {
+			 char buf[STUN_MAX_MESSAGE_SIZE];
+			 int len = sizeof(buf);
+			 ms_error("Missing either ICE-CONTROLLING or ICE-CONTROLLED attribute");
+			 _ice_createErrorResponse(&resp, 4, 87, "Missing either ICE-CONTROLLING or ICE-CONTROLLED attribute");
+			 len = stunEncodeMessage(&resp, buf, len, &hmacPassword );
+			 if (len)
+				 sendMessage( rtp_socket, buf, len, remote_addr.addr, remote_addr.port);
+			 return -1;
+		 }
+		
+		if ((remote_candidates[0].rem_controlling==0 && msg.hasIceControlling)
+			||(remote_candidates[0].rem_controlling==1 && msg.hasIceControlled))
+			{
+			 char buf[STUN_MAX_MESSAGE_SIZE];
+			 int len = sizeof(buf);
+			 ms_error("487 Role Conflict");
+			 _ice_createErrorResponse(&resp, 4, 87, "Role Conflict");
+			 len = stunEncodeMessage(&resp, buf, len, &hmacPassword );
+			 if (len)
+				 sendMessage( rtp_socket, buf, len, remote_addr.addr, remote_addr.port);
+			 return -1;
+			}		
+
+
+
+		/* 7.2.1.3. Learning Peer Reflexive Candidates */
+#if 0
+		if () /* found in table */
+			{
+				resp.hasPriority = TRUE;
+				resp.priority.priority = msg.priority.priority;
+			}
+#endif
+
+		/* TODO: the current algo is not ICE, but give similar results */
+		int pos;
+		for (pos=0;pos<10 && remote_candidates[pos].remote_candidate.conn_addr[0]!='\0';pos++)
+			{
+				struct CandidatePair *cand_pair = &remote_candidates[pos]; 
+				
+				if (cand_pair->connectivity_check == VALID)
+					{
+						/* already found a valid check with highest priority */
+						break;
+					}
+				
+				/* connectivity check is coming from a known remote candidate?
+				   we should also check the port...
+				 */
+				if (strcmp(cand_pair->remote_candidate.conn_addr, src6host)==0)
+					{
+						/* working one way: use it */
+						switch_to_address = pos;
+						if (cand_pair->connectivity_check == RECV_VALID
+							|| cand_pair->connectivity_check == VALID)
+							{
+								if (cand_pair->connectivity_check != VALID)
+									{
+										switch_to_address = pos;
+										ms_message("ice.c: candidate id (index=%i) moved in VALID state (stunbindingrequest received).", pos);
+										cand_pair->connectivity_check = VALID;
+									}
+							}
+						else
+							cand_pair->connectivity_check = SEND_VALID;
+						
+						/* we have a VALID one */
+					}
+			}
+		
+		
+		UInt32 cookie = 0x2112A442;
+		resp.hasXorMappedAddress = TRUE;
+		resp.xorMappedAddress.ipv4.port = remote_addr.port^(cookie>>16);
+		resp.xorMappedAddress.ipv4.addr = remote_addr.addr^cookie;
+
+		
+		resp.msgHdr.msgType = (STUN_METHOD_BINDING | STUN_SUCCESS_RESP);
+		
+		resp.hasUsername = TRUE;
+		memcpy(resp.username.value, msg.username.value, msg.username.sizeValue );
+		resp.username.sizeValue = msg.username.sizeValue;
+
+		/* ? any messageintegrity in response? */
+		resp.hasMessageIntegrity = TRUE;
+
+		const char serverName[] = "mediastreamer2 " STUN_VERSION;
+		resp.hasSoftware = TRUE;
+		memcpy( resp.softwareName.value, serverName, sizeof(serverName));
+		resp.softwareName.sizeValue = sizeof(serverName);
+		
         {
-            char buf[STUN_MAX_MESSAGE_SIZE];            
+            char buf[STUN_MAX_MESSAGE_SIZE];
             int len = sizeof(buf);
             len = stunEncodeMessage( &resp, buf, len, &hmacPassword );
             if (len)
-                sendMessage( rtp_socket, buf, len, dest.addr, dest.port);
+				sendMessage( rtp_socket, buf, len, remote_addr.addr, remote_addr.port);
         }
-    }
+	}
     else if (STUN_IS_SUCCESS_RESP(msg.msgHdr.msgType))
     {
         /* set state to RECV-VALID or VALID */
@@ -491,7 +519,7 @@ int ice_process_stun_message(RtpSession *session, struct CandidatePair *remote_c
 
 	    if (remote_candidates!=NULL) {
             int pos;
-            for (pos=0;pos<10 && remote_candidates[pos].remote_candidate.ipaddr[0]!='\0';pos++)
+            for (pos=0;pos<10 && remote_candidates[pos].remote_candidate.conn_addr[0]!='\0';pos++)
             {
                 struct CandidatePair *cand_pair = &remote_candidates[pos];
 
@@ -504,7 +532,7 @@ int ice_process_stun_message(RtpSession *session, struct CandidatePair *remote_c
                     }
 #if 0
 					ms_message("ice.c: Valid STUN answer received (to=%s:%i from=%s:%i)",
-                        cand_pair->remote_candidate.ipaddr, cand_pair->remote_candidate.port,
+                        cand_pair->remote_candidate.ipaddr, cand_pair->remote_candidate.conn_port,
                         src6host, recvport);
 #endif
                     if (cand_pair->connectivity_check == SEND_VALID
@@ -513,7 +541,7 @@ int ice_process_stun_message(RtpSession *session, struct CandidatePair *remote_c
                         if (cand_pair->connectivity_check != VALID)
                         {
                             ms_message("ice.c: Switch to VALID mode for (to=%s:%i from=%s:%i)",
-                                cand_pair->remote_candidate.ipaddr, cand_pair->remote_candidate.port,
+                                cand_pair->remote_candidate.conn_addr, cand_pair->remote_candidate.conn_port,
                                 src6host, recvport);
                             cand_pair->connectivity_check = VALID;
                         }
@@ -539,7 +567,7 @@ int ice_process_stun_message(RtpSession *session, struct CandidatePair *remote_c
         {
             /* rtp_in_direct_mode = 1; */
             /* current destination address: snprintf(rtp_remote_addr, 256, "%s:%i", src6host, recvport); */
-            ms_warning("ice.c: Modifying remote socket: symmetric RTP (%s:%i)\n",
+            ms_warning("ice.c: Modifying remote destination for RTP stream (%s:%i)\n",
                 src6host, recvport);
             memcpy(&session->rtp.rem_addr, &evt_data->ep->addr, evt_data->ep->addrlen);
 			session->rtp.rem_addrlen=evt_data->ep->addrlen;
