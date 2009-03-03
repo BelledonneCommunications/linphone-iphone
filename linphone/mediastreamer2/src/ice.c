@@ -435,9 +435,14 @@ int ice_process_stun_message(RtpSession *session, struct CandidatePair *remote_c
         int pos;
         for (pos=0;pos<10 && remote_candidates[pos].remote_candidate.conn_addr[0]!='\0';pos++)
           {
+						/* controller agent */
+						int G = remote_candidates[pos].remote_candidate.priority;
+						/* controlled agent */	
+						int D = remote_candidates[pos].local_candidate.priority;
+						remote_candidates[pos].pair_priority = (UInt64)pow((double)2,(double)32)*MIN(G,D) + 2*MAX(G,D) + (G>D?1:0);
+
             remote_candidates[pos].rem_controlling = 1;
           }
-        /* TODO: compute again priority */
       }
     }
 
@@ -450,9 +455,14 @@ int ice_process_stun_message(RtpSession *session, struct CandidatePair *remote_c
         int pos;
         for (pos=0;pos<10 && remote_candidates[pos].remote_candidate.conn_addr[0]!='\0';pos++)
           {
+						/* controller agent */
+						int G = remote_candidates[pos].local_candidate.priority;
+						/* controlled agent */	
+						int D = remote_candidates[pos].remote_candidate.priority;
+						remote_candidates[pos].pair_priority = (UInt64)pow((double)2,(double)32)*MIN(G,D) + 2*MAX(G,D) + (G>D?1:0);
+
             remote_candidates[pos].rem_controlling = 0;
           }
-        /* TODO: compute again priority */
         }
       else {
         char buf[STUN_MAX_MESSAGE_SIZE];
@@ -614,11 +624,34 @@ int ice_process_stun_message(RtpSession *session, struct CandidatePair *remote_c
                   if (resp.hasErrorCode==TRUE && resp.errorCode.errorClass==4 && resp.errorCode.number==87)
                     {
                     /* change role */
-                    if (remote_candidates[0].rem_controlling==1)
-                      remote_candidates[0].rem_controlling=0;
+                    if (remote_candidates[pos].rem_controlling==1)
+                      {
+                        int pos2;
+                        for (pos2=0;pos2<10 && remote_candidates[pos2].remote_candidate.conn_addr[0]!='\0';pos2++)
+                          {
+						                /* controller agent */
+						                int G = remote_candidates[pos2].local_candidate.priority;
+						                /* controlled agent */	
+						                int D = remote_candidates[pos2].remote_candidate.priority;
+						                remote_candidates[pos2].pair_priority = (UInt64)pow((double)2,(double)32)*MIN(G,D) + 2*MAX(G,D) + (G>D?1:0);
+
+                            remote_candidates[pos2].rem_controlling=0;
+                          }
+                      }
                     else
-                      remote_candidates[0].rem_controlling=1;
-                    /* TODO: compute again priority */
+                      {
+                        int pos2;
+                        for (pos2=0;pos2<10 && remote_candidates[pos2].remote_candidate.conn_addr[0]!='\0';pos2++)
+                          {
+						                /* controller agent */
+						                int G = remote_candidates[pos2].remote_candidate.priority;
+						                /* controlled agent */	
+						                int D = remote_candidates[pos2].local_candidate.priority;
+						                remote_candidates[pos2].pair_priority = (UInt64)pow((double)2,(double)32)*MIN(G,D) + 2*MAX(G,D) + (G>D?1:0);
+
+                            remote_candidates[pos2].rem_controlling=1;
+                          }
+                      }
                     }
                 }
             }
