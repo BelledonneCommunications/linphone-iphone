@@ -86,13 +86,10 @@ ice_sendtest( struct CandidatePair *remote_candidate, Socket myFd, StunAddress4 
    if (remote_candidate->connectivity_check==VALID)
 	   req.hasUseCandidate = TRUE;
 
-   if (remote_candidate->rem_controlvalue==0)
-	   {
-		   /* calculated once only */
-		   remote_candidate->rem_controlvalue = random();
-		   remote_candidate->rem_controlvalue = remote_candidate->rem_controlvalue >> 32;
-		   remote_candidate->rem_controlvalue = random();
-	   }
+    if (remote_candidate->rem_controlvalue==0) {
+      /* calculated once only */    
+      remote_candidate->rem_controlvalue = random() * (0x7fffffffffffffff/0x7fff);
+    }
    
    if (remote_candidate->rem_controlling==1)
 	   {
@@ -413,20 +410,49 @@ int ice_process_stun_message(RtpSession *session, struct CandidatePair *remote_c
 			 return -1;
 		 }
 		
-		if ((remote_candidates[0].rem_controlling==0 && msg.hasIceControlling)
-			||(remote_candidates[0].rem_controlling==1 && msg.hasIceControlled))
-			{
-			 char buf[STUN_MAX_MESSAGE_SIZE];
-			 int len = sizeof(buf);
-			 ms_error("487 Role Conflict");
-			 _ice_createErrorResponse(&resp, 4, 87, "Role Conflict");
-			 len = stunEncodeMessage(&resp, buf, len, &hmacPassword );
-			 if (len)
-				 sendMessage( rtp_socket, buf, len, remote_addr.addr, remote_addr.port);
-			 return -1;
-			}		
+    if (remote_candidates->rem_controlvalue==0) {
+      /* calculated once only */    
+      remote_candidates->rem_controlvalue = random() * (0x7fffffffffffffff/0x7fff);
+    }
 
+		if (remote_candidates[0].rem_controlling==0 && msg.hasIceControlling) {
+      /* If the agent's tie-breaker is larger than or equal
+         to the contents of the ICE-CONTROLLING attribute
+         -> send 487, and do not change ROLE */
+      if (remote_candidates->rem_controlvalue >= msg.iceControlling.value) {
+			   char buf[STUN_MAX_MESSAGE_SIZE];
+			   int len = sizeof(buf);
+			   ms_error("487 Role Conflict");
+			   _ice_createErrorResponse(&resp, 4, 87, "Role Conflict");
+			   len = stunEncodeMessage(&resp, buf, len, &hmacPassword );
+			   if (len)
+				   sendMessage( rtp_socket, buf, len, remote_addr.addr, remote_addr.port);
+			   return -1;
+			}
+      else {
+        remote_candidates[0].rem_controlling = 1;
+      }
+    }
 
+		if (remote_candidates[0].rem_controlling==1 && msg.hasIceControlled) {
+
+      /* If the agent's tie-breaker is larger than or equal
+      to the contents of the ICE-CONTROLLED attribute
+      -> change ROLE */
+      if (remote_candidates->rem_controlvalue >= msg.iceControlled.value) {
+        remote_candidates[0].rem_controlling = 0;
+        }
+      else {
+        char buf[STUN_MAX_MESSAGE_SIZE];
+        int len = sizeof(buf);
+        ms_error("487 Role Conflict");
+        _ice_createErrorResponse(&resp, 4, 87, "Role Conflict");
+        len = stunEncodeMessage(&resp, buf, len, &hmacPassword );
+        if (len)
+         sendMessage( rtp_socket, buf, len, remote_addr.addr, remote_addr.port);
+        return -1;
+        }
+      }
 
 		/* 7.2.1.3. Learning Peer Reflexive Candidates */
 #if 0
