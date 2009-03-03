@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;..\..\..\win32-bin\include&quot;;&quot;..\..\include&quot;;&quot;..\..\include\ortp&quot;;&quot;..\..\src&quot;;&quot;..\..\build\win32native\include&quot;"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;ORTP_INET6;WIN32;_DEBUG;_WINDOWS;_USRDLL;ORTP_EXPORTS;WINDOW_NATIVE;_CRT_SECURE_NO_DEPRECATE"
+				PreprocessorDefinitions="HAVE_OPENSSL_HMAC_H;HAVE_OPENSSL_MD5_H;_CRT_SECURE_NO_DEPRECATE;ORTP_INET6;WIN32;_DEBUG;_WINDOWS;_USRDLL;ORTP_EXPORTS;WINDOW_NATIVE;_CRT_SECURE_NO_DEPRECATE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -122,7 +122,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="&quot;..\..\..\win32-bin\include&quot;;&quot;..\..\include&quot;;&quot;..\..\include\ortp&quot;;&quot;..\..\src&quot;;&quot;..\..\build\win32native\include&quot;"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;ORTP_INET6;WIN32;NDEBUG;_WINDOWS;_USRDLL;ORTP_EXPORTS;WINDOW_NATIVE;_CRT_SECURE_NO_DEPRECATE"
+				PreprocessorDefinitions="HAVE_OPENSSL_HMAC_H;HAVE_OPENSSL_MD5_H;_CRT_SECURE_NO_DEPRECATE;ORTP_INET6;WIN32;NDEBUG;_WINDOWS;_USRDLL;ORTP_EXPORTS;WINDOW_NATIVE;_CRT_SECURE_NO_DEPRECATE"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
