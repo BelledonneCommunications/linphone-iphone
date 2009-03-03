@@ -177,7 +177,7 @@ stunParseAtrChangeRequest( char* body, unsigned int hdrLen,  StunAtrChangeReques
 static bool_t 
 stunParseAtrError( char* body, unsigned int hdrLen,  StunAtrError *result )
 {
-   if ( hdrLen >= sizeof(StunAtrError) )
+   if ( hdrLen < 4 || hdrLen >= 128+4)
    {
       ortp_error("stun: Incorrect size for SA_ERRORCODE");
       return FALSE;
@@ -845,7 +845,7 @@ static char*
 encodeAtrError(char* ptr, const StunAtrError *atr)
 {
    ptr = encode16(ptr, SA_ERRORCODE);
-   ptr = encode16(ptr, 6 + atr->sizeReason);
+   ptr = encode16(ptr, 4 + atr->sizeReason);
    ptr = encode16(ptr, atr->pad);
    *ptr++ = atr->errorClass;
    *ptr++ = atr->number;
