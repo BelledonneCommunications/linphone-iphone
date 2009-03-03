@@ -86,20 +86,15 @@ ice_sendtest( struct CandidatePair *remote_candidate, Socket myFd, StunAddress4 
    if (remote_candidate->connectivity_check==VALID)
 	   req.hasUseCandidate = TRUE;
 
-    if (remote_candidate->rem_controlvalue==0) {
-      /* calculated once only */    
-      remote_candidate->rem_controlvalue = random() * (0x7fffffffffffffff/0x7fff);
-    }
-   
    if (remote_candidate->rem_controlling==1)
 	   {
 		   req.hasIceControlled = TRUE;
-		   req.iceControlled.value = remote_candidate->rem_controlvalue;
+		   req.iceControlled.value = remote_candidate->tiebreak_value;
 	   }
    else
 	   {
 		   req.hasIceControlling = TRUE;
-		   req.iceControlling.value	= remote_candidate->rem_controlvalue;
+		   req.iceControlling.value	= remote_candidate->tiebreak_value;
 	   }
 
    /* TODO: not yet implemented? */
@@ -135,16 +130,17 @@ int ice_sound_send_stun_request(RtpSession *session, struct CandidatePair *remot
     {
         int pos;
 
-#if 0
-        /* do this only with application that support this */
-        if (osip_strncasecmp(remote_useragent, "linphone/", 8)!=0)
-        {
-            /* use stun only with linphone to linphone softphone */
-            return 0;
+        /* prepare ONCE tie-break value */
+        if (remote_candidates->tiebreak_value==0) {
+          remote_candidates->tiebreak_value = random() * (0x7fffffffffffffff/0x7fff);
+          for (pos=0;pos<10 && remote_candidates[pos].remote_candidate.conn_addr[0]!='\0';pos++)
+            {
+              remote_candidates[pos].tiebreak_value = remote_candidates[0].tiebreak_value;
+              remote_candidates[pos].rem_controlling = remote_candidates[0].rem_controlling;
+            }
         }
-#endif
 
-        for (pos=0;pos<1 && remote_candidates[pos].remote_candidate.conn_addr[0]!='\0';pos++)
+        for (pos=0;pos<10 && remote_candidates[pos].remote_candidate.conn_addr[0]!='\0';pos++)
         {
             int media_socket = rtp_session_get_rtp_socket(session);
             StunAddress4 stunServerAddr;
@@ -272,6 +268,17 @@ int ice_process_stun_message(RtpSession *session, struct CandidatePair *remote_c
         ms_error("ice.c: dropping STUN packet: ice is not configured");
         return -1;
     }
+
+  /* prepare ONCE tie-break value */
+  if (remote_candidates->tiebreak_value==0) {
+    int pos;
+    remote_candidates->tiebreak_value = random() * (0x7fffffffffffffff/0x7fff);
+    for (pos=0;pos<10 && remote_candidates[pos].remote_candidate.conn_addr[0]!='\0';pos++)
+      {
+        remote_candidates[pos].tiebreak_value = remote_candidates[0].tiebreak_value;
+        remote_candidates[pos].rem_controlling = remote_candidates[0].rem_controlling;
+      }
+  }
 
     memset (src6host, 0, sizeof (src6host));
 
@@ -409,17 +416,12 @@ int ice_process_stun_message(RtpSession *session, struct CandidatePair *remote_c
 				 sendMessage( rtp_socket, buf, len, remote_addr.addr, remote_addr.port);
 			 return -1;
 		 }
-		
-    if (remote_candidates->rem_controlvalue==0) {
-      /* calculated once only */    
-      remote_candidates->rem_controlvalue = random() * (0x7fffffffffffffff/0x7fff);
-    }
 
 		if (remote_candidates[0].rem_controlling==0 && msg.hasIceControlling) {
       /* If the agent's tie-breaker is larger than or equal
          to the contents of the ICE-CONTROLLING attribute
          -> send 487, and do not change ROLE */
-      if (remote_candidates->rem_controlvalue >= msg.iceControlling.value) {
+      if (remote_candidates[0].tiebreak_value >= msg.iceControlling.value) {
 			   char buf[STUN_MAX_MESSAGE_SIZE];
 			   int len = sizeof(buf);
 			   ms_error("487 Role Conflict");
@@ -430,7 +432,12 @@ int ice_process_stun_message(RtpSession *session, struct CandidatePair *remote_c
 			   return -1;
 			}
       else {
-        remote_candidates[0].rem_controlling = 1;
+        int pos;
+        for (pos=0;pos<10 && remote_candidates[pos].remote_candidate.conn_addr[0]!='\0';pos++)
+          {
+            remote_candidates[pos].rem_controlling = 1;
+          }
+        /* TODO: compute again priority */
       }
     }
 
@@ -439,8 +446,13 @@ int ice_process_stun_message(RtpSession *session, struct CandidatePair *remote_c
       /* If the agent's tie-breaker is larger than or equal
       to the contents of the ICE-CONTROLLED attribute
       -> change ROLE */
-      if (remote_candidates->rem_controlvalue >= msg.iceControlled.value) {
-        remote_candidates[0].rem_controlling = 0;
+      if (remote_candidates[0].tiebreak_value >= msg.iceControlled.value) {
+        int pos;
+        for (pos=0;pos<10 && remote_candidates[pos].remote_candidate.conn_addr[0]!='\0';pos++)
+          {
+            remote_candidates[pos].rem_controlling = 0;
+          }
+        /* TODO: compute again priority */
         }
       else {
         char buf[STUN_MAX_MESSAGE_SIZE];
@@ -499,7 +511,7 @@ int ice_process_stun_message(RtpSession *session, struct CandidatePair *remote_c
 					}
 			}
 		
-		
+			
 		UInt32 cookie = 0x2112A442;
 		resp.hasXorMappedAddress = TRUE;
 		resp.xorMappedAddress.ipv4.port = remote_addr.port^(cookie>>16);
@@ -575,6 +587,39 @@ int ice_process_stun_message(RtpSession *session, struct CandidatePair *remote_c
                     }
                     else
                         cand_pair->connectivity_check = RECV_VALID;
+                }
+            }
+        }
+    }
+    else if (STUN_IS_ERR_RESP(msg.msgHdr.msgType))
+    {
+        StunMessage resp;
+        memset(&resp, 0, sizeof(StunMessage));
+        res = stunParseMessage((char*)mp->b_rptr, mp->b_wptr-mp->b_rptr,
+            &resp );
+        if (!res)
+        {
+            ms_error("ice.c: Bad format for STUN answer.");
+            return -1;
+        }
+
+	    if (remote_candidates!=NULL) {
+            int pos;
+            for (pos=0;pos<10 && remote_candidates[pos].remote_candidate.conn_addr[0]!='\0';pos++)
+            {
+                struct CandidatePair *cand_pair = &remote_candidates[pos];
+
+                if (memcmp(&(cand_pair->tid), &(resp.msgHdr.tr_id), sizeof(resp.msgHdr.tr_id))==0)
+                {
+                  if (resp.hasErrorCode==TRUE && resp.errorCode.errorClass==4 && resp.errorCode.number==87)
+                    {
+                    /* change role */
+                    if (remote_candidates[0].rem_controlling==1)
+                      remote_candidates[0].rem_controlling=0;
+                    else
+                      remote_candidates[0].rem_controlling=1;
+                    /* TODO: compute again priority */
+                    }
                 }
             }
         }

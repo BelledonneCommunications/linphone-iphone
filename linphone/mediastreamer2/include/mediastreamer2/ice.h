@@ -53,13 +53,13 @@ struct CandidatePair {
     struct SdpCandidate local_candidate;
     struct SdpCandidate remote_candidate;
     long long pair_priority;
-	/* additionnal information */
-	char loc_ice_ufrag[256];
-	char loc_ice_pwd[256];
-	char rem_ice_ufrag[256];
-	char rem_ice_pwd[256];
-	int rem_controlling;
-	UInt64 rem_controlvalue;
+    /* additionnal information */
+    char loc_ice_ufrag[256];
+    char loc_ice_pwd[256];
+    char rem_ice_ufrag[256];
+    char rem_ice_pwd[256];
+    int rem_controlling;
+    UInt64 tiebreak_value;
     UInt96 tid;
     int connectivity_check;
 };
