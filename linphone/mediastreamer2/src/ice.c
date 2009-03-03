@@ -394,7 +394,7 @@ int ice_process_stun_message(RtpSession *session, struct CandidatePair *remote_c
 			{
 			 char buf[STUN_MAX_MESSAGE_SIZE];
 			 int len = sizeof(buf);
-			 ms_error("Wrong MESSAGEINTEGRITY attribute in connectivity check (%s)", msg.messageIntegrity.hash, hmac);
+			 ms_error("Wrong MESSAGEINTEGRITY attribute in connectivity check");
 			 _ice_createErrorResponse(&resp, 4, 1, "Wrong MESSAGEINTEGRITY attribute");
 			 len = stunEncodeMessage(&resp, buf, len, &hmacPassword );
 			 if (len)
