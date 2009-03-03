@@ -244,6 +244,7 @@ _ice_createErrorResponse(StunMessage *response, int cl, int number, const char* 
    response->errorCode.errorClass = cl;
    response->errorCode.number = number;
    strcpy(response->errorCode.reason, msg);
+   response->errorCode.sizeReason = strlen(msg);
 }
 
 int ice_process_stun_message(RtpSession *session, struct CandidatePair *remote_candidates, OrtpEvent *evt)
