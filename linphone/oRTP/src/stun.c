@@ -844,12 +844,24 @@ encodeAtrChangeRequest(char* ptr, const StunAtrChangeRequest *atr)
 static char* 
 encodeAtrError(char* ptr, const StunAtrError *atr)
 {
+   int padding;
+   int i;
+
    ptr = encode16(ptr, SA_ERRORCODE);
    ptr = encode16(ptr, 4 + atr->sizeReason);
    ptr = encode16(ptr, atr->pad);
    *ptr++ = atr->errorClass;
    *ptr++ = atr->number;
    ptr = encode(ptr, atr->reason, atr->sizeReason);
+
+   padding = (atr->sizeReason+4) % 4;
+   if (padding>0)
+   {
+     for (i=0;i<4-padding;i++)
+     {
+       *ptr++ = 0;
+     }
+   }
    return ptr;
 }
 
