@@ -964,7 +964,15 @@ static void linphone_other_request(LinphoneCore *lc, eXosip_event_t *ev){
 		linphone_core_text_received(lc,ev);
 		eXosip_message_send_answer(ev->tid,200,NULL);
 	}else if (strcmp(ev->request->sip_method,"OPTIONS")==0){
-		eXosip_options_send_answer(ev->tid,200,NULL);
+#if 1
+		osip_message_t *options=NULL;
+		eXosip_options_build_answer(ev->tid,200,&options);
+		osip_message_set_allow(options,"INVITE, ACK, BYE, CANCEL, OPTIONS, MESSAGE, SUBSCRIBE, NOTIFY, INFO");
+		osip_message_set_accept(options,"application/sdp");
+		eXosip_options_send_answer(ev->tid,200,options);
+#else
+		ms_warning("Not answering to this options request.");
+#endif
 	}else if (strcmp(ev->request->sip_method,"WAKEUP")==0
 		&& comes_from_local_if(ev->request)) {
 		eXosip_message_send_answer(ev->tid,200,NULL);
@@ -972,7 +980,13 @@ static void linphone_other_request(LinphoneCore *lc, eXosip_event_t *ev){
 		if (lc->vtable.show)
 			lc->vtable.show(lc);
 	}else {
-		ms_message("Unsupported request received.");
+		char *tmp=NULL;
+		size_t msglen=0;
+		osip_message_to_str(ev->request,&tmp,&msglen);
+		if (tmp){
+			ms_message("Unsupported request received:\n%s",tmp);
+			osip_free(tmp);
+		}
 		/*answer with a 501 Not implemented*/
 		eXosip_message_send_answer(ev->tid,501,NULL);
 	}

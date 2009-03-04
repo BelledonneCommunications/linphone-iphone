@@ -43,25 +43,14 @@ typedef struct _SipSetupContext SipSetupContext;
 #define SIP_SETUP_CAP_BUDDY_LOOKUP	(1<<3)
 #define SIP_SETUP_CAP_ACCOUNT_MANAGER	(1<<4)
 
-
-struct _SipSetup{
-	char *name;
-	unsigned int capabilities;
-	bool_t (*init)(void);
-	int (*init_instance)(SipSetupContext *ctx);
-	int (*create_account)( const char *uri, const char *passwd);
-	int (*login_account)(SipSetupContext *ctx, const char *uri, const char *passwd);
-	int (*get_proxy)(SipSetupContext *ctx, const char *domain, char *proxy, size_t sz);
-	int (*get_stun_servers)(SipSetupContext *ctx, char *stun1, char *stun2, size_t size);
-	int (*get_relay)(SipSetupContext *ctx, char *relay, size_t size);
-	int (*lookup_buddy)(SipSetupContext *ctx, const char *key);
-	int (*get_buddy_lookup_status)(SipSetupContext *ctx);
-	int (*get_buddy_lookup_results)(SipSetupContext *ctx, MSList **results);
-	void (*exit)(void);
-	bool_t initialized;
-};
-
-typedef struct _SipSetup SipSetup;
+typedef enum _BuddyLookupStatus{
+	BuddyLookupNone,
+	BuddyLookupConnecting,
+	BuddyLookupConnected,
+	BuddyLookupReceivingResponse,
+	BuddyLookupDone,
+	BuddyLookupFailure
+}BuddyLookupStatus;
 
 typedef struct _BuddyAddress{
 	char street[64];
@@ -78,14 +67,30 @@ typedef struct _BuddyInfo{
 	BuddyAddress address;
 }BuddyInfo;
 
-typedef enum _BuddyLookupStatus{
-	BuddyLookupNone,
-	BuddyLookupConnecting,
-	BuddyLookupConnected,
-	BuddyLookupReceivingResponse,
-	BuddyLookupDone,
-	BuddyLookupFailure
-}BuddyLookupStatus;
+
+struct _SipSetup{
+	char *name;
+	unsigned int capabilities;
+	bool_t (*init)(void);
+	int (*init_instance)(SipSetupContext *ctx);
+	int (*create_account)( const char *uri, const char *passwd);
+	int (*login_account)(SipSetupContext *ctx, const char *uri, const char *passwd);
+	int (*get_proxy)(SipSetupContext *ctx, const char *domain, char *proxy, size_t sz);
+	int (*get_stun_servers)(SipSetupContext *ctx, char *stun1, char *stun2, size_t size);
+	int (*get_relay)(SipSetupContext *ctx, char *relay, size_t size);
+	int (*lookup_buddy)(SipSetupContext *ctx, const char *key);
+	BuddyLookupStatus (*get_buddy_lookup_status)(SipSetupContext *ctx);
+	int (*get_buddy_lookup_results)(SipSetupContext *ctx, MSList **results);
+	void (*exit)(void);
+	bool_t initialized;
+};
+
+typedef struct _SipSetup SipSetup;
+
+
+#ifdef __cplusplus
+extern "C"{
+#endif
 
 void sip_setup_register(SipSetup *ss);
 void sip_setup_register_all(void);
@@ -104,6 +109,11 @@ BuddyLookupStatus sip_setup_context_get_buddy_lookup_status(SipSetupContext *ctx
 int sip_setup_context_get_buddy_lookup_results(SipSetupContext *ctx, MSList **results /*of BuddyInfo */);
 void sip_setup_context_free_results(MSList *results);
 void sip_setup_context_free(SipSetupContext *ctx);
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif
 
 

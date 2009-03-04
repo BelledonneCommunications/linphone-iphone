@@ -2314,6 +2314,7 @@ void sound_config_uninit(LinphoneCore *lc)
 	
 	if (config->local_ring) ms_free(config->local_ring);
 	if (config->remote_ring) ms_free(config->remote_ring);
+	ms_snd_card_manager_destroy();
 }
 
 void video_config_uninit(LinphoneCore *lc)

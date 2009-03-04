@@ -35,7 +35,7 @@ liblinphone_la_LIBADD= \
 		$(top_builddir)/mediastreamer2/src/libmediastreamer.la 
 
 
-AM_CFLAGS=$(STRICT_OPTIONS)  \
+AM_CFLAGS=$(STRICT_OPTIONS)  -DIN_LINPHONE \
 	$(OSIP_CFLAGS) \
 	$(EXOSIP_CFLAGS) \
 	$(ORTP_CFLAGS) \

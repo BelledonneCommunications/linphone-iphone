@@ -25,7 +25,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ortp/payloadtype.h"
 #include "mediastreamer2/mscommon.h"
 #include "mediastreamer2/msvideo.h"
+
+#ifdef IN_LINPHONE
 #include "sipsetup.h"
+#else
+#include "linphone/sipsetup.h"
+#endif
 
 #define LINPHONE_IPADDR_SIZE 64
 #define LINPHONE_HOSTNAME_SIZE 128

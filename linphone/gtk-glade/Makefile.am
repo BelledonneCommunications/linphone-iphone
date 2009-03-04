@@ -53,7 +53,7 @@ glade_DATA=$(GLADE_FILES) $(PIXMAPS)
 endif
 
 
-AM_CFLAGS= -I$(top_srcdir)/coreapi/ \
+AM_CFLAGS= -DIN_LINPHONE -I$(top_srcdir)/coreapi/ \
 		-I$(top_srcdir)/mediastreamer2/include/ \
 		$(LIBGLADE_CFLAGS) $(STRICT_OPTIONS) $(LIBGTK_CFLAGS) $(IPV6_CFLAGS) \
 		$(ORTP_CFLAGS) $(OSIP_CFLAGS) 
