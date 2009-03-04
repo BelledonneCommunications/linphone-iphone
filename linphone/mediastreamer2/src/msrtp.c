@@ -29,7 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 struct SenderData {
 	RtpSession *session;
-	struct CandidatePair *cpair;	/* table of 10 cpair */
+  struct IceCheckList *check_lists; /* table of 10 cpair */
 	int round;
 	uint32_t tsoff;
 	uint32_t skip_until;
@@ -49,7 +49,7 @@ static void sender_init(MSFilter * f)
 	SenderData *d = (SenderData *)ms_new(SenderData, 1);
 
 	d->session = NULL;
-	d->cpair = NULL;
+	d->check_lists = NULL;
 	d->round = 0;
 	d->tsoff = 0;
 	d->skip_until = 0;
@@ -83,13 +83,13 @@ static int sender_send_dtmf(MSFilter * f, void *arg)
 static int sender_set_sdpcandidates(MSFilter * f, void *arg)
 {
 	SenderData *d = (SenderData *) f->data;
-	struct CandidatePair *scs = NULL;
+	struct IceCheckList *scs = NULL;
 
 	if (d == NULL)
 		return -1;
 
-	scs = (struct CandidatePair *) arg;
-	d->cpair = scs;
+	scs = (struct IceCheckList *) arg;
+	d->check_lists = scs;
 	return 0;
 }
 
@@ -179,7 +179,7 @@ static void sender_process(MSFilter * f)
 	SenderData *d = (SenderData *) f->data;
 	RtpSession *s = d->session;
 
-	struct CandidatePair *cp = d->cpair;
+  struct IceCheckList *cp = d->check_lists;
 	mblk_t *im;
 	uint32_t timestamp;
 
@@ -285,7 +285,7 @@ MSFilterDesc ms_rtp_send_desc = {
 struct ReceiverData {
 	RtpSession *session;
 	OrtpEvQueue *ortp_event;
-	struct CandidatePair *cpair;	/* table of 10 cpair */
+	struct IceCheckList *check_lists;	/* table of 10 cpair */
 	int rate;
 };
 
@@ -297,7 +297,7 @@ static void receiver_init(MSFilter * f)
 
 	d->ortp_event = ortp_ev_queue_new();
 	d->session = NULL;
-	d->cpair = NULL;
+  d->check_lists = NULL;
 	d->rate = 8000;
 	f->data = d;
 }
@@ -339,13 +339,13 @@ static int receiver_set_session(MSFilter * f, void *arg)
 static int receiver_set_sdpcandidates(MSFilter * f, void *arg)
 {
 	ReceiverData *d = (ReceiverData *) f->data;
-	struct CandidatePair *scs = NULL;
+	struct IceCheckList *scs = NULL;
 
 	if (d == NULL)
 		return -1;
 
-	scs = (struct CandidatePair *) arg;
-	d->cpair = scs;
+	scs = (struct IceCheckList *) arg;
+  d->check_lists = scs;
 	return 0;
 }
 
@@ -390,7 +390,7 @@ static void receiver_process(MSFilter * f)
 		while (evt != NULL) {
 			if (ortp_event_get_type(evt) ==
 				ORTP_EVENT_STUN_PACKET_RECEIVED) {
-				ice_process_stun_message(d->session, d->cpair, evt);
+          ice_process_stun_message(d->session, d->check_lists, evt);
 			}
 			if (ortp_event_get_type(evt) ==
 				ORTP_EVENT_TELEPHONE_EVENT) {
