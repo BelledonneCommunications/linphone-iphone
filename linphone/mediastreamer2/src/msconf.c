@@ -23,6 +23,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define DISABLE_SPEEX
 #endif
 
+#ifndef HAVE_SPEEXDSP
+#define DISABLE_SPEEX
+#endif
+
 #ifndef DISABLE_SPEEX
 #include <speex/speex_preprocess.h>
 #endif
