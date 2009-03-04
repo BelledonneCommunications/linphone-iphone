@@ -295,13 +295,15 @@ int audio_stream_start_with_files(AudioStream *stream, RtpProfile *prof,const ch
 
 AudioStream * audio_stream_start(RtpProfile *prof,int locport,const char *remip,int remport,int profile,int jitt_comp,bool_t use_ec)
 {
-	MSSndCard *sndcard;
+	MSSndCard *sndcard_playback;
+	MSSndCard *sndcard_capture;
 	AudioStream *stream;
-	sndcard=ms_snd_card_manager_get_default_card(ms_snd_card_manager_get());
-	if (sndcard==NULL)
+	sndcard_capture=ms_snd_card_manager_get_default_capture_card(ms_snd_card_manager_get());
+	sndcard_playback=ms_snd_card_manager_get_default_playback_card(ms_snd_card_manager_get());
+	if (sndcard_capture==NULL || sndcard_playback==NULL)
 		return NULL;
 	stream=audio_stream_new(locport, ms_is_ipv6(remip));
-	if (audio_stream_start_full(stream,prof,remip,remport,remport+1,profile,jitt_comp,NULL,NULL,sndcard,sndcard,use_ec)==0) return stream;
+	if (audio_stream_start_full(stream,prof,remip,remport,remport+1,profile,jitt_comp,NULL,NULL,sndcard_playback,sndcard_capture,use_ec)==0) return stream;
 	audio_stream_free(stream);
 	return NULL;
 }
