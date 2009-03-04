@@ -25,8 +25,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ortp/ortp.h"
 
 /* list of state for STUN connectivity check */
-#define TESTING 0
-#define WAITING 1
+#define ICE_FROZEN 0
+#define ICE_WAITING 1
+#define ICE_IN_PROGRESS 2 /* STUN request was sent */
+#define ICE_SUCCEEDED 3
+#define ICE_FAILED 4 /* no answer or unrecoverable failure */
+
 #define RECV_VALID 2
 #define SEND_VALID 3
 #define VALID 4
@@ -54,24 +58,37 @@ struct CandidatePair {
     struct SdpCandidate remote_candidate;
     long long pair_priority;
     /* additionnal information */
-    char loc_ice_ufrag[256];
-    char loc_ice_pwd[256];
-    char rem_ice_ufrag[256];
-    char rem_ice_pwd[256];
     int rem_controlling;
-    UInt64 tiebreak_value;
     UInt96 tid;
     int connectivity_check;
 };
 
+#define MAX_ICE_CANDIDATES 10
+
+struct IceCheckList {
+    struct CandidatePair cand_pairs[MAX_ICE_CANDIDATES];
+
+    char loc_ice_ufrag[256];
+    char loc_ice_pwd[256];
+    char rem_ice_ufrag[256];
+    char rem_ice_pwd[256];
+
+    int rem_controlling;
+    UInt64 tiebreak_value;
+
+#define ICE_CL_RUNNING 0
+#define ICE_CL_COMPLETED 1
+#define ICE_CL_FAILED 2
+    int state;
+};
 
 #ifdef __cplusplus
 extern "C"{
 #endif
 
-int ice_sound_send_stun_request(RtpSession *session, struct CandidatePair *remote_candidates, int round);
+int ice_sound_send_stun_request(RtpSession *session, struct IceCheckList *checklist, int round);
 
-int ice_process_stun_message(RtpSession *session, struct CandidatePair *remote_candidates, OrtpEvent *evt);
+int ice_process_stun_message(RtpSession *session, struct IceCheckList *checklist, OrtpEvent *evt);
 
 #ifdef __cplusplus
 }

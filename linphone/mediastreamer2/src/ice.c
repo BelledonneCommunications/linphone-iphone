@@ -31,12 +31,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <math.h>
 
 static void 
-ice_sendtest( struct CandidatePair *remote_candidate, Socket myFd, StunAddress4 *dest, 
+ice_sendtest( struct IceCheckList *checklist, struct CandidatePair *remote_candidate, Socket myFd, StunAddress4 *dest, 
               const StunAtrString *username, const StunAtrString *password, 
               int testNum, bool_t verbose , UInt96 *tid);
 
 static void 
-ice_sendtest( struct CandidatePair *remote_candidate, Socket myFd, StunAddress4 *dest, 
+ice_sendtest( struct IceCheckList *checklist, struct CandidatePair *remote_candidate, Socket myFd, StunAddress4 *dest, 
               const StunAtrString *username, const StunAtrString *password, 
               int testNum, bool_t verbose , UInt96 *tid)
 {	
@@ -89,12 +89,12 @@ ice_sendtest( struct CandidatePair *remote_candidate, Socket myFd, StunAddress4 
    if (remote_candidate->rem_controlling==1)
 	   {
 		   req.hasIceControlled = TRUE;
-		   req.iceControlled.value = remote_candidate->tiebreak_value;
+		   req.iceControlled.value = checklist->tiebreak_value;
 	   }
    else
 	   {
 		   req.hasIceControlling = TRUE;
-		   req.iceControlling.value	= remote_candidate->tiebreak_value;
+		   req.iceControlling.value	= checklist->tiebreak_value;
 	   }
 
    /* TODO: not yet implemented? */
@@ -107,8 +107,9 @@ ice_sendtest( struct CandidatePair *remote_candidate, Socket myFd, StunAddress4 
    sendMessage( myFd, buf, len, dest->addr, dest->port );	
 }
 
-int ice_sound_send_stun_request(RtpSession *session, struct CandidatePair *remote_candidates, int round)
+int ice_sound_send_stun_request(RtpSession *session, struct IceCheckList *checklist, int round)
 {
+  struct CandidatePair *remote_candidates = NULL;
 	int roll=250;
 #if 0
     /* in "passive" mode (UA not behind a NATor behind a full cone NAT),
@@ -120,6 +121,9 @@ int ice_sound_send_stun_request(RtpSession *session, struct CandidatePair *remot
     }
 #endif
 
+	if (checklist==NULL)
+		return 0;
+  remote_candidates = checklist->cand_pairs;
 	if (remote_candidates==NULL)
 		return 0;
 
@@ -131,13 +135,8 @@ int ice_sound_send_stun_request(RtpSession *session, struct CandidatePair *remot
         int pos;
 
         /* prepare ONCE tie-break value */
-        if (remote_candidates->tiebreak_value==0) {
-          remote_candidates->tiebreak_value = random() * (0x7fffffffffffffff/0x7fff);
-          for (pos=0;pos<10 && remote_candidates[pos].remote_candidate.conn_addr[0]!='\0';pos++)
-            {
-              remote_candidates[pos].tiebreak_value = remote_candidates[0].tiebreak_value;
-              remote_candidates[pos].rem_controlling = remote_candidates[0].rem_controlling;
-            }
+        if (checklist->tiebreak_value==0) {
+          checklist->tiebreak_value = random() * (0x7fffffffffffffff/0x7fff);
         }
 
         for (pos=0;pos<10 && remote_candidates[pos].remote_candidate.conn_addr[0]!='\0';pos++)
@@ -158,13 +157,13 @@ int ice_sound_send_stun_request(RtpSession *session, struct CandidatePair *remot
 			/* username comes from "ice-ufrag" (rfrag:lfrag) */
 			/* ufrag and pwd are in first row only */
             snprintf(username.value, sizeof(username.value), "%s:%s",
-                remote_candidates[0].rem_ice_ufrag,
-                remote_candidates[0].loc_ice_ufrag);
+                checklist->rem_ice_ufrag,
+                checklist->loc_ice_ufrag);
             username.sizeValue = (UInt16)strlen(username.value);
 
 			
             snprintf(password.value, sizeof(password.value), "%s",
-                remote_candidates[0].rem_ice_pwd);
+                checklist->rem_ice_pwd);
             password.sizeValue = (UInt16)strlen(password.value);
 
 
@@ -173,7 +172,7 @@ int ice_sound_send_stun_request(RtpSession *session, struct CandidatePair *remot
             if ( res == TRUE )
             {
                 stunServerAddr.port = cand_pair->remote_candidate.conn_port;
-                ice_sendtest(&remote_candidates[pos], media_socket, &stunServerAddr, &username, &password, 1, 0/*FALSE*/,
+                ice_sendtest(checklist, &remote_candidates[pos], media_socket, &stunServerAddr, &username, &password, 1, 0/*FALSE*/,
                     &(cand_pair->tid));
             }
         }
@@ -240,8 +239,9 @@ _ice_createErrorResponse(StunMessage *response, int cl, int number, const char* 
    response->errorCode.sizeReason = strlen(msg);
 }
 
-int ice_process_stun_message(RtpSession *session, struct CandidatePair *remote_candidates, OrtpEvent *evt)
+int ice_process_stun_message(RtpSession *session, struct IceCheckList *checklist, OrtpEvent *evt)
 {
+    struct CandidatePair *remote_candidates = NULL;
     int switch_to_address = -1;
     StunMessage msg;
     bool_t res;
@@ -263,21 +263,22 @@ int ice_process_stun_message(RtpSession *session, struct CandidatePair *remote_c
         return -1;
     }
 
-	if (remote_candidates==NULL)
+    if (checklist==NULL)
+    {
+        ms_error("ice.c: dropping STUN packet: ice is not configured");
+        return -1;
+    }
+
+    remote_candidates = checklist->cand_pairs;
+    if (remote_candidates==NULL)
     {
         ms_error("ice.c: dropping STUN packet: ice is not configured");
         return -1;
     }
 
   /* prepare ONCE tie-break value */
-  if (remote_candidates->tiebreak_value==0) {
-    int pos;
-    remote_candidates->tiebreak_value = random() * (0x7fffffffffffffff/0x7fff);
-    for (pos=0;pos<10 && remote_candidates[pos].remote_candidate.conn_addr[0]!='\0';pos++)
-      {
-        remote_candidates[pos].tiebreak_value = remote_candidates[0].tiebreak_value;
-        remote_candidates[pos].rem_controlling = remote_candidates[0].rem_controlling;
-      }
+  if (checklist->tiebreak_value==0) {
+    checklist->tiebreak_value = random() * (0x7fffffffffffffff/0x7fff);
   }
 
     memset (src6host, 0, sizeof (src6host));
@@ -389,7 +390,7 @@ int ice_process_stun_message(RtpSession *session, struct CandidatePair *remote_c
         the MESSAGE-INTEGRITY attribute, if one was present in the request.
         */
 		char hmac[20];
-		stunCalculateIntegrity_shortterm(hmac, (char*)mp->b_rptr, mp->b_wptr-mp->b_rptr-24, remote_candidates[0].loc_ice_pwd);
+		stunCalculateIntegrity_shortterm(hmac, (char*)mp->b_rptr, mp->b_wptr-mp->b_rptr-24, checklist->loc_ice_pwd);
 		if (memcmp(msg.messageIntegrity.hash, hmac, 20)!=0)
 			{
 			 char buf[STUN_MAX_MESSAGE_SIZE];
@@ -421,7 +422,7 @@ int ice_process_stun_message(RtpSession *session, struct CandidatePair *remote_c
       /* If the agent's tie-breaker is larger than or equal
          to the contents of the ICE-CONTROLLING attribute
          -> send 487, and do not change ROLE */
-      if (remote_candidates[0].tiebreak_value >= msg.iceControlling.value) {
+      if (checklist->tiebreak_value >= msg.iceControlling.value) {
 			   char buf[STUN_MAX_MESSAGE_SIZE];
 			   int len = sizeof(buf);
 			   ms_error("487 Role Conflict");
@@ -451,7 +452,7 @@ int ice_process_stun_message(RtpSession *session, struct CandidatePair *remote_c
       /* If the agent's tie-breaker is larger than or equal
       to the contents of the ICE-CONTROLLED attribute
       -> change ROLE */
-      if (remote_candidates[0].tiebreak_value >= msg.iceControlled.value) {
+      if (checklist->tiebreak_value >= msg.iceControlled.value) {
         int pos;
         for (pos=0;pos<10 && remote_candidates[pos].remote_candidate.conn_addr[0]!='\0';pos++)
           {
