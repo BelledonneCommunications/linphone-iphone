@@ -653,8 +653,8 @@ void linphone_core_add_friend(LinphoneCore *lc, LinphoneFriend *lf)
 {
 	ms_return_if_fail(lf->lc==NULL);
 	ms_return_if_fail(lf->url!=NULL);
-	linphone_friend_apply(lf,lc);
 	lc->friends=ms_list_append(lc->friends,lf);
+	linphone_friend_apply(lf,lc);
 	return ;
 }
 

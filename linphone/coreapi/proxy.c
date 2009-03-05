@@ -92,7 +92,7 @@ void linphone_proxy_config_register_again_with_updated_contact(LinphoneProxyConf
 	ctt->url->port=osip_strdup(rport);
 	eXosip_register_send_register(obj->rid,msg);
 	eXosip_unlock();
-	ms_message("Resending new register with updated contact %s:%i",received,rport);
+	ms_message("Resending new register with updated contact %s:%s",received,rport);
 }
 
 int linphone_proxy_config_set_server_addr(LinphoneProxyConfig *obj, const char *server_addr){
@@ -567,7 +567,7 @@ void linphone_proxy_config_set_sip_setup(LinphoneProxyConfig *cfg, const char *t
 	SipSetup *ss=sip_setup_lookup(type);
 	SipSetupContext *ssc;
 	if (!ss) return ;
-	ssc=sip_setup_context_new(ss);
+	ssc=sip_setup_context_new(ss,cfg);
 	if (sip_setup_context_login_account(ssc,cfg->reg_identity,NULL)==0){
 		char proxy[256];
 		if (sip_setup_context_get_proxy(ssc,NULL,proxy,sizeof(proxy))==0){

@@ -30,6 +30,7 @@ struct _BuddyInfo;
 
 struct _SipSetupContext{
 	struct _SipSetup *funcs;
+	struct _LinphoneProxyConfig *cfg;
 	char domain[128];
 	char username[128];
 	void *data;
@@ -98,7 +99,7 @@ SipSetup *sip_setup_lookup(const char *type_name);
 void sip_setup_unregister_all(void);
 
 int sip_setup_new_account(SipSetup *s, const char *uri, const char *passwd);
-SipSetupContext * sip_setup_context_new(SipSetup *s);
+SipSetupContext * sip_setup_context_new(SipSetup *s, struct _LinphoneProxyConfig *cfg);
 int sip_setup_context_get_capabilities(SipSetupContext *ctx);
 int sip_setup_context_login_account(SipSetupContext * ctx, const char *uri, const char *passwd);
 int sip_setup_context_get_proxy(SipSetupContext *ctx, const char *domain, char *proxy, size_t sz);
@@ -110,9 +111,14 @@ int sip_setup_context_get_buddy_lookup_results(SipSetupContext *ctx, MSList **re
 void sip_setup_context_free_results(MSList *results);
 void sip_setup_context_free(SipSetupContext *ctx);
 
+/*internal methods*/
+struct _LinphoneProxyConfig *sip_setup_context_get_proxy_config(const SipSetupContext *ctx);
+
+
 #ifdef __cplusplus
 }
 #endif
+
 
 #endif
 

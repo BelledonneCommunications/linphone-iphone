@@ -317,7 +317,7 @@ bool_t linphone_proxy_config_is_registered(const LinphoneProxyConfig *obj);
 #define linphone_proxy_config_get_addr(obj) ((obj)->reg_proxy)
 #define linphone_proxy_config_get_expires(obj)	((obj)->expires)
 #define linphone_proxy_config_register_enabled(obj) ((obj)->reg_sendregister)
-
+#define linphone_proxy_config_get_core(obj) ((obj)->lc)
 /* destruction is called automatically when removing the proxy config */
 void linphone_proxy_config_destroy(LinphoneProxyConfig *cfg);
 LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(struct _LpConfig *config, int index);

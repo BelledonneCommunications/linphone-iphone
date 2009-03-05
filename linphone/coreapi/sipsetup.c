@@ -84,11 +84,15 @@ void sip_setup_unregister_all(void){
 	}
 }
 
+LinphoneProxyConfig *sip_setup_context_get_proxy_config(const SipSetupContext *ctx){
+	return ctx->cfg;
+}
 
-SipSetupContext *sip_setup_context_new(SipSetup *s){
+SipSetupContext *sip_setup_context_new(SipSetup *s, struct _LinphoneProxyConfig *cfg){
 	SipSetupContext *obj=(SipSetupContext*)ms_new0(SipSetupContext,1);
 	obj->funcs=s;
 	obj->data=NULL;
+	obj->cfg=cfg;
 	if (obj->funcs->init_instance){
 		obj->funcs->init_instance(obj);
 	}
