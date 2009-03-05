@@ -185,13 +185,13 @@ BuildCmd=
 
 [Unit18]
 FileName=general_state.c
-CompileCpp=1
+CompileCpp=0
 Folder=liblinphone
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
-BuildCmd=
+BuildCmd=	$(CC) -c general_state.c -o "Default Profile/general_state.o" $(CFLAGS)
 
 [VersionInfo]
 Major=0
@@ -222,7 +222,7 @@ Libs=../oRTP/build/win32native;../mediastreamer2/build/win32native;../../linphon
 PrivateResource=
 ResourceIncludes=
 MakeIncludes=
-Compiler=-Wall -Werror_@@_-D_WIN32_WINNT=0x501_@@_-DINET6_@@_-DORTP_INET6_@@_-DVIDEO_ENABLED_@@_-g_@@_-DOSIP_MT_@@_
+Compiler=-Wall -Werror_@@_-D_WIN32_WINNT=0x501_@@_-DINET6_@@_-DORTP_INET6_@@_-DVIDEO_ENABLED_@@_-g_@@_-DOSIP_MT_@@_-DIN_LINPHONE_@@_
 CppCompiler=
 Linker=
 PreprocDefines=
@@ -259,7 +259,7 @@ Compile=0
 Link=0
 Priority=1000
 OverrideBuildCmd=0
-BuildCmd=	$(CC) -c fonis.c -o "Default Profile/fonis.o" $(CFLAGS)
+BuildCmd=$(CC) -c fonis.c -o "Default Profile/fonis.o" $(CFLAGS)
 
 [Unit21]
 FileName=sipsetup.c
@@ -269,5 +269,5 @@ Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
-BuildCmd=	$(CC) -c sipsetup.c -o "Default Profile/sipsetup.o" $(CFLAGS)
+BuildCmd=$(CC) -c sipsetup.c -o "Default Profile/sipsetup.o" $(CFLAGS)
 

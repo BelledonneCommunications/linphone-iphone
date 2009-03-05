@@ -19,11 +19,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
 #include "linphonecore.h"
+
+#ifdef HAVE_CONFIG_H
 #include "../config.h"
+#endif
 
 #ifndef LINPHONE_PLUGINS_DIR
 #ifdef WIN32
-#define LINPHONE_PLUGINS_DIR "liblinphone\plugins\\"
+#define LINPHONE_PLUGINS_DIR "liblinphone\\plugins\\"
 #else
 #define LINPHONE_PLUGINS_DIR "."
 #endif

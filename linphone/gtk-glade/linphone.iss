@@ -59,16 +59,17 @@ Source: "..\po\fr.gmo"; DestDir: "{app}\share\locale\fr\LC_MESSAGES"; DestName: 
 Source: "..\po\sv.gmo"; DestDir: "{app}\share\locale\sv\LC_MESSAGES"; DestName: "linphone.mo"; Flags: ignoreversion
 
 ;;GTK stuff:
-Source: "..\..\gtk+2.12\bin\*.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\gtk+2.12\etc\gtk-2.0\*"; DestDir: "{app}\etc\gtk-2.0\"; Flags: ignoreversion
-Source: "..\..\libxml2-2.6.32+.win32\bin\*.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\gtk+-2.14.7\bin\*.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\libglade-2.6.3\bin\*.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\gtk+-2.14.7\etc\gtk-2.0\*"; DestDir: "{app}\etc\gtk-2.0\"; Flags: ignoreversion
+Source: "..\..\linphone-deps\bin\libxml2.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\iconv-1.9.2.win32\bin\*.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\gtk+2.12\lib\gtk-2.0\2.10.0\engines\*"; DestDir: "{app}\lib\gtk-2.0\2.10.0\engines"; Flags: ignoreversion
-Source: "..\..\gtk+2.12\lib\gtk-2.0\2.10.0\loaders\*"; DestDir: "{app}\lib\gtk-2.0\2.10.0\loaders"; Flags: ignoreversion
-Source: "..\..\gtk+2.12\lib\gtk-2.0\2.10.0\immodules\*"; DestDir: "{app}\lib\gtk-2.0\2.10.0\immodules"; Flags: ignoreversion
-Source: "..\..\gtk+2.12\share\locale\fr\LC_MESSAGES\*"; DestDir: "{app}\share\locale\fr\LC_MESSAGES"; Flags: ignoreversion
-Source: "..\..\gtk+2.12\share\locale\sv\LC_MESSAGES\*"; DestDir: "{app}\share\locale\sv\LC_MESSAGES"; Flags: ignoreversion
-Source: "..\..\gtk+2.12\share\themes\XLiquid_GTK-1.0.3\gtk-2.0\*"; DestDir: "{app}\share\themes\XLiquid_GTK-1.0.3\gtk-2.0"; Flags: ignoreversion
+Source: "..\..\gtk+-2.14.7\lib\gtk-2.0\2.10.0\engines\*"; DestDir: "{app}\lib\gtk-2.0\2.10.0\engines"; Flags: ignoreversion
+Source: "..\..\gtk+-2.14.7\lib\gtk-2.0\2.10.0\loaders\*"; DestDir: "{app}\lib\gtk-2.0\2.10.0\loaders"; Flags: ignoreversion
+;;Source: "..\..\gtk+-2.14.7\lib\gtk-2.0\2.10.0\immodules\*"; DestDir: "{app}\lib\gtk-2.0\2.10.0\immodules"; Flags: ignoreversion
+Source: "..\..\gtk+-2.14.7\share\locale\fr\LC_MESSAGES\*"; DestDir: "{app}\share\locale\fr\LC_MESSAGES"; Flags: ignoreversion
+Source: "..\..\gtk+-2.14.7\share\locale\sv\LC_MESSAGES\*"; DestDir: "{app}\share\locale\sv\LC_MESSAGES"; Flags: ignoreversion
+Source: "..\..\XLiquid_GTK-1.0.3\gtk-2.0\*"; DestDir: "{app}\share\themes\XLiquid_GTK-1.0.3\gtk-2.0"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]

@@ -23,12 +23,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define PACKAGE_DATA_DIR "./"
 
 #ifndef LINPHONE_VERSION
-#define LINPHONE_VERSION "3.0.0-20090216"
+#define LINPHONE_VERSION "3.0.0-20090306"
 #endif
 
 #endif
 
 #include <gtk/gtk.h>
+#ifdef WIN32
+// alloca is already defined by gtk
+#undef alloca
+#endif
 #include "linphonecore.h"
 
 #include <libintl.h>
