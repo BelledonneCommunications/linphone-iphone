@@ -1,0 +1,47 @@
+.\" Linphone is an internet phone compatible with the Session Initiation Protocol (SIP: RFC3261 )
+.TH "linphonecsh" "1" "3.0.0" "Simon MORLAT" "linphone, internet phone"
+.SH "NAME"
+.LP 
+linphonecsh \- Sends a command to a linphonec running in daemon mode, and exits.
+.SH "SYNTAX"
+.LP 
+linphonec <\fIaction\fP>  <\fIARGS...\fP> 
+.br 
+linphonecsh \fI\--help\fP
+.SH "DESCRIPTION"
+.LP 
+Linphonecsh is a small utility to send basic commands to a linphonec (console mode linphone) process.
+Unlike linphonec, linphonecsh does not wait commands from standart input: it takes the command from its arguments 
+and sends it using unix pipe to a linphonec process started in daemon mode.
+The motivation for this tool is for example to simply execute voip calls from scripts, web-servers, or javascript web pages.
+.br 
+
+The very first thing to do before doing actions is to ask linphonecsh to spawn a linphonec daemon using
+.TP
+\fBlinphonecsh init\fR
+.br
+
+When the linphonec daemon is no more needed, the following commands makes it exit properly:
+.TP
+\fBlinphonecsh exit\fR
+.br
+
+.SH "FILES"
+.LP 
+By default a linphonec started as a daemon by 'linphonecsh init' does not use a config file.
+.br 
+ 
+.SH "ENVIRONMENT VARIABLES"
+.LP 
+.SH "EXAMPLES"
+.LP 
+
+.SH "AUTHORS"
+.LP 
+.br 
+Simon Morlat <simon.morlat at linphone.org>
+.SH "SEE ALSO"
+.LP 
+linphonec(1) sipomatic(1) linphone(1)
+.TH <program> <section number> "<date>" "" "Linux User's Manual"
+

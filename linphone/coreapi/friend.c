@@ -663,6 +663,7 @@ void linphone_core_remove_friend(LinphoneCore *lc, LinphoneFriend* fl){
 	if (el!=NULL){
 		lc->friends=ms_list_remove_link(lc->friends,el);
 		linphone_friend_destroy((LinphoneFriend*)el->data);
+		linphone_core_write_friends_config(lc);
 	}
 }
 
