@@ -25,16 +25,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ortp/ortp.h"
 
 /* list of state for STUN connectivity check */
+#define ICE_PRUNED -1
 #define ICE_FROZEN 0
 #define ICE_WAITING 1
 #define ICE_IN_PROGRESS 2 /* STUN request was sent */
 #define ICE_SUCCEEDED 3
 #define ICE_FAILED 4 /* no answer or unrecoverable failure */
 
-#define RECV_VALID 2
-#define SEND_VALID 3
-#define VALID 4
-#define INVALID 5
 
 struct SdpCandidate {
 	/* mandatory attributes: draft 19 */
@@ -61,12 +58,16 @@ struct CandidatePair {
     int rem_controlling;
     UInt96 tid;
     int connectivity_check;
+	int retransmission_number;
+	uint64_t retransmission_time;
+	int nominated_pair;
 };
 
 #define MAX_ICE_CANDIDATES 10
 
 struct IceCheckList {
     struct CandidatePair cand_pairs[MAX_ICE_CANDIDATES];
+	int nominated_pair_index;
 
     char loc_ice_ufrag[256];
     char loc_ice_pwd[256];
@@ -80,15 +81,21 @@ struct IceCheckList {
 #define ICE_CL_COMPLETED 1
 #define ICE_CL_FAILED 2
     int state;
+
+    int RTO;
+    int Ta;
+	uint64_t keepalive_time;
 };
 
 #ifdef __cplusplus
 extern "C"{
 #endif
 
-int ice_sound_send_stun_request(RtpSession *session, struct IceCheckList *checklist, int round);
+int ice_sound_send_stun_request(RtpSession *session, struct IceCheckList *checklist, uint64_t ctime);
 
 int ice_process_stun_message(RtpSession *session, struct IceCheckList *checklist, OrtpEvent *evt);
+
+int ice_restart(struct IceCheckList *checklist);
 
 #ifdef __cplusplus
 }

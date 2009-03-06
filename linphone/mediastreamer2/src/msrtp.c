@@ -29,8 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 struct SenderData {
 	RtpSession *session;
-  struct IceCheckList *check_lists; /* table of 10 cpair */
-	int round;
+	struct IceCheckList *check_lists; /* table of 10 cpair */
 	uint32_t tsoff;
 	uint32_t skip_until;
 	int rate;
@@ -50,7 +49,6 @@ static void sender_init(MSFilter * f)
 
 	d->session = NULL;
 	d->check_lists = NULL;
-	d->round = 0;
 	d->tsoff = 0;
 	d->skip_until = 0;
 	d->skip = FALSE;
@@ -90,6 +88,7 @@ static int sender_set_sdpcandidates(MSFilter * f, void *arg)
 
 	scs = (struct IceCheckList *) arg;
 	d->check_lists = scs;
+	ice_restart(d->check_lists);
 	return 0;
 }
 
@@ -179,7 +178,7 @@ static void sender_process(MSFilter * f)
 	SenderData *d = (SenderData *) f->data;
 	RtpSession *s = d->session;
 
-  struct IceCheckList *cp = d->check_lists;
+	struct IceCheckList *cp = d->check_lists;
 	mblk_t *im;
 	uint32_t timestamp;
 
@@ -232,9 +231,11 @@ static void sender_process(MSFilter * f)
 		ms_filter_unlock(f);
 	}
 
-	/* regularly send STUN request */
-	ice_sound_send_stun_request(s, cp, d->round);
-	d->round++;
+#if !defined(_WIN32_WCE)
+	ice_sound_send_stun_request(s, cp, f->ticker->time);
+#else
+	ice_sound_send_stun_request(s, cp, f->ticker->time));
+#endif
 }
 
 static MSFilterMethod sender_methods[] = {
@@ -297,7 +298,7 @@ static void receiver_init(MSFilter * f)
 
 	d->ortp_event = ortp_ev_queue_new();
 	d->session = NULL;
-  d->check_lists = NULL;
+	d->check_lists = NULL;
 	d->rate = 8000;
 	f->data = d;
 }
@@ -345,7 +346,8 @@ static int receiver_set_sdpcandidates(MSFilter * f, void *arg)
 		return -1;
 
 	scs = (struct IceCheckList *) arg;
-  d->check_lists = scs;
+	d->check_lists = scs;
+	ice_restart(d->check_lists);
 	return 0;
 }
 
@@ -390,7 +392,7 @@ static void receiver_process(MSFilter * f)
 		while (evt != NULL) {
 			if (ortp_event_get_type(evt) ==
 				ORTP_EVENT_STUN_PACKET_RECEIVED) {
-          ice_process_stun_message(d->session, d->check_lists, evt);
+				ice_process_stun_message(d->session, d->check_lists, evt);
 			}
 			if (ortp_event_get_type(evt) ==
 				ORTP_EVENT_TELEPHONE_EVENT) {
