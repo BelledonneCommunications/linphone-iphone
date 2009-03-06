@@ -998,7 +998,7 @@ int ice_process_stun_message(RtpSession *session, struct IceCheckList *checklist
 							/* what is my base address? */
 							new_pair.local_candidate.rel_port = cand_pair->local_candidate.conn_port;
 							snprintf(new_pair.local_candidate.rel_addr, sizeof(new_pair.local_candidate.rel_addr),
-								"%s", cand_pair->local_candidate.conn_port);
+								"%s", cand_pair->local_candidate.conn_addr);
 
 							new_pair.local_candidate.conn_port = mappedAddr.port;
 							snprintf(new_pair.local_candidate.conn_addr, sizeof(new_pair.local_candidate.conn_addr),
