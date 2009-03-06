@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\..\codecs\libresample\include;..\..\..\portaudio\include;&quot;..\..\..\win32-bin\include\baseclasses&quot;;&quot;..\..\..\win32-bin\include&quot;;.;..\..\..\mediastreamer2\include;..\..\..\oRTP\include;..\..\..\codecs\speex\include;..\..\..\codecs\gsm\inc"
-				PreprocessorDefinitions="HAVE_DIRECTSHOW;VIDEO_ENABLED;EMULATE_INTTYPES;AMD_HACK;CONF_GRAN_MAX=4;HAVE_SPEEX_NOISE;ICE_TEST;ORTP_INET6;WIN32;_DEBUG;_WINDOWS;_USRDLL;MEDIASTREAMER2_EXPORTS;WINDOW_NATIVE;_CRT_SECURE_NO_DEPRECATE"
+				PreprocessorDefinitions="HAVE_SPEEXDSP;HAVE_DIRECTSHOW;VIDEO_ENABLED;EMULATE_INTTYPES;AMD_HACK;CONF_GRAN_MAX=4;HAVE_SPEEX_NOISE;ICE_TEST;ORTP_INET6;WIN32;_DEBUG;_WINDOWS;_USRDLL;MEDIASTREAMER2_EXPORTS;WINDOW_NATIVE;_CRT_SECURE_NO_DEPRECATE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -126,7 +126,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="..\..\..\codecs\libresample\include;..\..\..\portaudio\include;&quot;..\..\..\win32-bin\include\baseclasses&quot;;&quot;..\..\..\win32-bin\include&quot;;.;..\..\..\mediastreamer2\include;..\..\..\oRTP\include;..\..\..\codecs\speex\include;..\..\..\codecs\gsm\inc"
-				PreprocessorDefinitions="HAVE_DIRECTSHOW;VIDEO_ENABLED;EMULATE_INTTYPES;CONF_GRAN_MAX=4;AMD_HACK;HAVE_SPEEX_NOISE;ICE_TEST;ORTP_INET6;WIN32;NDEBUG;_WINDOWS;_USRDLL;MEDIASTREAMER2_EXPORTS;WINDOW_NATIVE;_CRT_SECURE_NO_DEPRECATE"
+				PreprocessorDefinitions="HAVE_SPEEXDSP;HAVE_DIRECTSHOW;VIDEO_ENABLED;EMULATE_INTTYPES;CONF_GRAN_MAX=4;AMD_HACK;HAVE_SPEEX_NOISE;ICE_TEST;ORTP_INET6;WIN32;NDEBUG;_WINDOWS;_USRDLL;MEDIASTREAMER2_EXPORTS;WINDOW_NATIVE;_CRT_SECURE_NO_DEPRECATE"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				ProgramDataBaseFileName="$(IntDir)/libmediastreamer2.pdb"
