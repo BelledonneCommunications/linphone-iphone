@@ -351,6 +351,7 @@ int ice_sound_send_stun_request(RtpSession *session, struct IceCheckList *checkl
 							memset(&req, 0, sizeof(StunMessage));
 							stunBuildReqSimple( &req, NULL, FALSE, FALSE, 1);
 							req.msgHdr.msgType = (STUN_METHOD_BINDING|STUN_INDICATION);
+							req.hasFingerprint = TRUE;
 							len = stunEncodeMessage( &req, buf, len, NULL);
 							sendMessage( media_socket, buf, len, stunServerAddr.addr, stunServerAddr.port );
 						}
@@ -446,6 +447,7 @@ _ice_createErrorResponse(StunMessage *response, int cl, int number, const char* 
 	response->errorCode.number = number;
 	strcpy(response->errorCode.reason, msg);
 	response->errorCode.sizeReason = strlen(msg);
+	response->hasFingerprint = TRUE;
 }
 
 int ice_process_stun_message(RtpSession *session, struct IceCheckList *checklist, OrtpEvent *evt)
@@ -585,7 +587,16 @@ int ice_process_stun_message(RtpSession *session, struct IceCheckList *checklist
 		the MESSAGE-INTEGRITY attribute, if one was present in the request.
 		*/
 		char hmac[20];
-		stunCalculateIntegrity_shortterm(hmac, (char*)mp->b_rptr, mp->b_wptr-mp->b_rptr-24, checklist->loc_ice_pwd);
+		/* remove length of fingerprint if present */
+		if (msg.hasFingerprint==TRUE)
+		{
+			char *lenpos = (char *)mp->b_rptr + sizeof(UInt16);
+			UInt16 newlen = htons(msg.msgHdr.msgLength-8); /* remove fingerprint size */
+			memcpy(lenpos, &newlen, sizeof(UInt16));
+			stunCalculateIntegrity_shortterm(hmac, (char*)mp->b_rptr, mp->b_wptr-mp->b_rptr-24-8, checklist->loc_ice_pwd);
+		}
+		else
+			stunCalculateIntegrity_shortterm(hmac, (char*)mp->b_rptr, mp->b_wptr-mp->b_rptr-24, checklist->loc_ice_pwd);
 		if (memcmp(msg.messageIntegrity.hash, hmac, 20)!=0)
 		{
 			char buf[STUN_MAX_MESSAGE_SIZE];
@@ -596,6 +607,12 @@ int ice_process_stun_message(RtpSession *session, struct IceCheckList *checklist
 			if (len)
 				sendMessage( rtp_socket, buf, len, remote_addr.addr, remote_addr.port);
 			return -1;
+		}
+		if (msg.hasFingerprint==TRUE)
+		{
+			char *lenpos = (char *)mp->b_rptr + sizeof(UInt16);
+			UInt16 newlen = htons(msg.msgHdr.msgLength); /* add back fingerprint size */
+			memcpy(lenpos, &newlen, sizeof(UInt16));
 		}
 
 
@@ -868,6 +885,8 @@ int ice_process_stun_message(RtpSession *session, struct IceCheckList *checklist
 		resp.hasSoftware = TRUE;
 		memcpy( resp.softwareName.value, serverName, sizeof(serverName));
 		resp.softwareName.sizeValue = sizeof(serverName);
+
+		resp.hasFingerprint = TRUE;
 
 		{
 			char buf[STUN_MAX_MESSAGE_SIZE];
