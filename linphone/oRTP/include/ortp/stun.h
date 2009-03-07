@@ -259,7 +259,7 @@ typedef struct
 typedef struct
 {
       UInt32 fingerprint;
-} TurnAtrFingerprint;
+} StunAtrFingerprint;
 
 
 typedef struct
@@ -348,6 +348,15 @@ typedef struct
       bool_t hasSoftware;
       StunAtrString softwareName;
 
+      bool_t hasXorPeerAddress;
+      StunAtrAddress4 xorPeerAddress;
+
+      bool_t hasXorRelayedAddress;
+      StunAtrAddress4 xorRelayedAddress;
+
+      bool_t hasFingerprint;
+      StunAtrFingerprint fingerprint;
+
       /* Turn elements */
       bool_t hasChannelNumberAttributes;
       TurnAtrChannelNumber channelNumberAttributes;
@@ -355,14 +364,8 @@ typedef struct
       bool_t hasLifetimeAttributes;
       TurnAtrLifetime lifetimeAttributes;
 
-      bool_t hasXorPeerAddress;
-      StunAtrAddress4 xorPeerAddress;
-
       bool_t hasData;
       TurnAtrData data;
-
-      bool_t hasXorRelayedAddress;
-      StunAtrAddress4 xorRelayedAddress;
 
       bool_t hasRequestedTransport;
       TurnAtrRequestedTransport requestedTransport;
@@ -371,9 +374,6 @@ typedef struct
 
       bool_t hasReservationToken;
       TurnAtrReservationToken reservationToken;
-
-      bool_t hasFingerprint;
-      TurnAtrFingerprint fingerprint;
 
       bool_t hasPriority;
       IceAtrPriority priority;
@@ -432,6 +432,8 @@ stunCalculateIntegrity_longterm(char* hmac, const char* input, int length,
                      const char *username, const char *realm, const char *password);
 void
 stunCalculateIntegrity_shortterm(char* hmac, const char* input, int length, const char* key);
+UInt32
+stunCalculateFingerprint(const char* input, int length);
 
 bool_t
 stunParseMessage( char* buf, 
