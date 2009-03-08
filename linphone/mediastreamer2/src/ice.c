@@ -462,7 +462,6 @@ _ice_createErrorResponse(StunMessage *response, int cl, int number, const char* 
 int ice_process_stun_message(RtpSession *session, struct IceCheckList *checklist, OrtpEvent *evt)
 {
 	struct CandidatePair *remote_candidates = NULL;
-	int switch_to_address = -1;
 	StunMessage msg;
 	bool_t res;
 	int highest_priority_success=-1;
@@ -1185,21 +1184,6 @@ int ice_process_stun_message(RtpSession *session, struct IceCheckList *checklist
 		}
 	}
 
-#if 0
-	if (switch_to_address == -1)
-		return 0;
-
-	/* skip symmetric RTP if any previous connection is working */
-	if (switch_to_address<highest_priority_success || highest_priority_success==-1)
-	{
-		/* rtp_in_direct_mode = 1; */
-		/* current destination address: snprintf(rtp_remote_addr, 256, "%s:%i", src6host, recvport); */
-		ms_warning("ice.c: Modifying remote destination for RTP stream (%s:%i)\n",
-			src6host, recvport);
-		memcpy(&session->rtp.rem_addr, &evt_data->ep->addr, evt_data->ep->addrlen);
-		session->rtp.rem_addrlen=evt_data->ep->addrlen;
-	}
-#endif
 	return 0;
 }
 
