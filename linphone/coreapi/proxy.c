@@ -44,6 +44,7 @@ void linphone_proxy_config_destroy(LinphoneProxyConfig *obj){
 	if (obj->reg_identity!=NULL) ms_free(obj->reg_identity);
 	if (obj->reg_route!=NULL) ms_free(obj->reg_route);
 	if (obj->ssctx!=NULL) sip_setup_context_free(obj->ssctx);
+	if (obj->type!=NULL) ms_free(obj->type);
 }
 
 bool_t linphone_proxy_config_is_registered(const LinphoneProxyConfig *obj){
@@ -563,9 +564,13 @@ LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LpConfig *config
 	return cfg;
 }
 
+
 void linphone_proxy_config_set_sip_setup(LinphoneProxyConfig *cfg, const char *type){
 	SipSetup *ss=sip_setup_lookup(type);
 	SipSetupContext *ssc;
+	if (cfg->type)
+		ms_free(cfg->type);
+	cfg->type=ms_strdup(type);
 	if (!ss) return ;
 	ssc=sip_setup_context_new(ss,cfg);
 	if (sip_setup_context_login_account(ssc,cfg->reg_identity,NULL)==0){

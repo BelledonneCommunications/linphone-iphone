@@ -61,7 +61,7 @@ SipSetup *sip_setup_lookup(const char *type_name){
 	MSList *elem;
 	for(elem=registered_sip_setups;elem!=NULL;elem=elem->next){
 		SipSetup *ss=(SipSetup*)elem->data;
-		if ( strcmp(ss->name,type_name)==0){
+		if ( strcasecmp(ss->name,type_name)==0){
 			if (!ss->initialized){
 				ss->init();
 				ss->initialized=TRUE;
@@ -166,5 +166,8 @@ void sip_setup_context_free_results(MSList *results){
 }
 
 void sip_setup_context_free(SipSetupContext *ctx){
+	if (ctx->funcs->uninit_instance){
+		ctx->funcs->uninit_instance(ctx);
+	}
 	ms_free(ctx);
 }

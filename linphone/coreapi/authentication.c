@@ -137,7 +137,7 @@ static int auth_info_compare_only_realm(const void *pinfo,const void *pref){
 }
 
 
-LinphoneAuthInfo *linphone_core_auth_info_find(LinphoneCore *lc, const char *realm, const char *username)
+LinphoneAuthInfo *linphone_core_find_auth_info(LinphoneCore *lc, const char *realm, const char *username)
 {
 	LinphoneAuthInfo ref;
 	MSList *elem;
@@ -198,6 +198,10 @@ void linphone_core_remove_auth_info(LinphoneCore *lc, LinphoneAuthInfo *info){
 	
 }
 
+const MSList *linphone_core_get_auth_info_list(const LinphoneCore *lc){
+	return lc->auth_info;
+}
+
 void linphone_core_clear_all_auth_info(LinphoneCore *lc){
 	MSList *elem;
 	int i;
@@ -235,9 +239,9 @@ void linphone_authentication_ok(LinphoneCore *lc, eXosip_event_t *ev){
 	}
 	/* see if we already have this auth information , not to ask it everytime to the user */
 	if (prx_realm!=NULL)
-		as=linphone_core_auth_info_find(lc,prx_realm,username);
+		as=linphone_core_find_auth_info(lc,prx_realm,username);
 	if (www_realm!=NULL) 
-		as=linphone_core_auth_info_find(lc,www_realm,username);
+		as=linphone_core_find_auth_info(lc,www_realm,username);
 	if (as){
 		ms_message("Authentication for user=%s realm=%s is working.",username,prx_realm ? prx_realm : www_realm);
 		as->works=TRUE;
@@ -247,7 +251,7 @@ void linphone_authentication_ok(LinphoneCore *lc, eXosip_event_t *ev){
 
 void linphone_core_find_or_ask_for_auth_info(LinphoneCore *lc,const char *username,const char* realm, int tid)
 {
-	LinphoneAuthInfo *as=linphone_core_auth_info_find(lc,realm,username);
+	LinphoneAuthInfo *as=linphone_core_find_auth_info(lc,realm,username);
 	if ( as==NULL || (as!=NULL && as->works==FALSE && as->first_time==FALSE)){
 		if (lc->vtable.auth_info_requested!=NULL){
 			lc->vtable.auth_info_requested(lc,realm,username);

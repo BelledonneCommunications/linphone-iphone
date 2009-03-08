@@ -30,6 +30,7 @@ enum {
 };
 
 void linphone_gtk_buddy_lookup_window_destroyed(GtkWidget *w){
+	g_message("BuddyLookup window is destroyed !");
 	guint tid=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(w),"typing_timeout"));
 	if (tid!=0){
 		g_source_remove(tid);
@@ -48,7 +49,7 @@ void linphone_gtk_show_buddy_lookup_window(SipSetupContext *ctx){
 	GtkTreeSelection *select;
 	GtkWidget *w=linphone_gtk_create_window("buddylookup");
 	GtkWidget *results=linphone_gtk_get_widget(w,"search_results");
-	
+	GtkProgressBar *pb=GTK_PROGRESS_BAR(linphone_gtk_get_widget(w,"progressbar"));
 	
 	store = gtk_list_store_new(LOOKUP_RESULT_NCOL, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
 	
@@ -75,7 +76,10 @@ void linphone_gtk_show_buddy_lookup_window(SipSetupContext *ctx){
 
 	gtk_tree_view_set_tooltip_column(GTK_TREE_VIEW(results),LOOKUP_RESULT_ADDRESS);
 	g_object_set_data(G_OBJECT(w),"SipSetupContext",ctx);
-	g_object_weak_ref(G_OBJECT(w),(GWeakNotify)linphone_gtk_buddy_lookup_window_destroyed,w);
+	//g_object_weak_ref(G_OBJECT(w),(GWeakNotify)linphone_gtk_buddy_lookup_window_destroyed,w);
+	g_signal_connect_swapped(G_OBJECT(results),"destroy",(GCallback)linphone_gtk_buddy_lookup_window_destroyed,w);
+	gtk_progress_bar_set_fraction(pb,0);
+	gtk_progress_bar_set_text(pb,NULL);
 	gtk_widget_show(w);
 }
 
@@ -126,7 +130,7 @@ static gboolean keyword_typing_finished(GtkWidget *w){
 	if (tid!=0){
 		g_source_remove(tid);
 	}
-	keyword=gtk_entry_get_text(GTK_ENTRY(w));
+	keyword=gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(w,"keyword")));
 	if (strlen(keyword)>=4){
 		guint tid2;
 		ctx=(SipSetupContext*)g_object_get_data(G_OBJECT(w),"SipSetupContext");
@@ -166,4 +170,27 @@ static void linphone_gtk_display_lookup_results(GtkWidget *w, const MSList *resu
 		g_free(tmp);
 	}
 }
+
+void linphone_gtk_add_buddy_from_database(GtkWidget *button){
+	GtkWidget *w=gtk_widget_get_toplevel(button);
+	GtkTreeSelection *select;
+	GtkTreeIter iter;
+	GtkTreeModel *model;
+	select = gtk_tree_view_get_selection(GTK_TREE_VIEW(linphone_gtk_get_widget(w,"search_results")));
+	if (gtk_tree_selection_get_selected (select, &model, &iter))
+	{
+		char *uri;
+		char *name;
+		char *addr;
+		LinphoneFriend *lf;
+		gtk_tree_model_get (model, &iter,LOOKUP_RESULT_SIP_URI , &uri,LOOKUP_RESULT_NAME, &name -1);
+		addr=g_strdup_printf("%s <%s>",name,uri);
+		lf=linphone_friend_new_with_addr(addr);
+		g_free(addr);
+		g_free(uri);
+		g_free(name);
+		linphone_gtk_show_contact(lf);
+	}
+}
+
 

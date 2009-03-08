@@ -451,7 +451,8 @@ static GtkWidget *linphone_gtk_create_contact_menu(GtkWidget *contact_list){
 	gtk_menu_shell_append(GTK_MENU_SHELL(menu),menu_item);
 	g_signal_connect_swapped(G_OBJECT(menu_item),"activate",(GCallback)linphone_gtk_remove_contact,contact_list);
 
-	if (ssc && sip_setup_context_get_capabilities(ssc) & SIP_SETUP_CAP_BUDDY_LOOKUP){
+	g_message("ssc=%p",ssc);
+	if (ssc && (sip_setup_context_get_capabilities(ssc) & SIP_SETUP_CAP_BUDDY_LOOKUP)) {
 		menu_item=gtk_image_menu_item_new_with_label(_("Search contact"));
 		image=gtk_image_new_from_stock(GTK_STOCK_FIND,GTK_ICON_SIZE_MENU);
 		gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item),image);

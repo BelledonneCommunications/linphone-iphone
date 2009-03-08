@@ -73,7 +73,7 @@ struct _SipSetup{
 	char *name;
 	unsigned int capabilities;
 	bool_t (*init)(void);
-	int (*init_instance)(SipSetupContext *ctx);
+	void (*init_instance)(SipSetupContext *ctx);
 	int (*create_account)( const char *uri, const char *passwd);
 	int (*login_account)(SipSetupContext *ctx, const char *uri, const char *passwd);
 	int (*get_proxy)(SipSetupContext *ctx, const char *domain, char *proxy, size_t sz);
@@ -82,6 +82,7 @@ struct _SipSetup{
 	int (*lookup_buddy)(SipSetupContext *ctx, const char *key);
 	BuddyLookupStatus (*get_buddy_lookup_status)(SipSetupContext *ctx);
 	int (*get_buddy_lookup_results)(SipSetupContext *ctx, MSList **results);
+	void (*uninit_instance)(SipSetupContext *ctx);
 	void (*exit)(void);
 	bool_t initialized;
 };
