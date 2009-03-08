@@ -399,7 +399,7 @@ int ice_sound_send_stun_request(RtpSession *session, struct IceCheckList *checkl
 		if ( res == TRUE )
 		{
 			ms_message("ice.c: STUN REQ (%s) -> %i (%s:%i:%s -> %s:%i:%s) nominated=%s",
-				msg.hasUseCandidate==0?"":"USE-CANDIDATE",
+				cand_pair->nominated_pair==1?"":"USE-CANDIDATE",
 				pos,
 				cand_pair->local_candidate.conn_addr,
 				cand_pair->local_candidate.conn_port,
