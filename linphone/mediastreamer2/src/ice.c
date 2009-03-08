@@ -773,7 +773,7 @@ int ice_process_stun_message(RtpSession *session, struct IceCheckList *checklist
 						cand_pair->nominated_pair = 1;
 
 						/* USE-CANDIDATE is in STUN request and we already succeeded on that link */
-						ms_message("ice.c: ICE CONCLUDED == %i (%s:%i:%s <- %s:%i:%s nominated=%i)",
+						ms_message("ice.c: ICE CONCLUDED == %i (%s:%i:%s <- %s:%i:%s nominated=%s)",
 							pos,
 							cand_pair->local_candidate.conn_addr,
 							cand_pair->local_candidate.conn_port,
@@ -961,7 +961,7 @@ int ice_process_stun_message(RtpSession *session, struct IceCheckList *checklist
 		{
 			/* 7.1.2.2.  Success Cases
 			-> must be a security issue: refuse non-symmetric answer */
-			ms_message("ice.c: STUN RESP (%s) <- %i (%s:%i:%s <- %s:%i:%s nominated=%i) refused because non-symmetric",
+			ms_message("ice.c: STUN RESP (%s) <- %i (%s:%i:%s <- %s:%i:%s nominated=%s) refused because non-symmetric",
 				msg.hasUseCandidate==0?"":"USE-CANDIDATE",
 				pos,
 				cand_pair->local_candidate.conn_addr,
@@ -976,7 +976,7 @@ int ice_process_stun_message(RtpSession *session, struct IceCheckList *checklist
 		else
 		{
 			/* Youhouhouhou */
-			ms_message("ice.c: STUN RESP (%s) <- %i (%s:%i:%s <- %s:%i:%s nominated=%i)",
+			ms_message("ice.c: STUN RESP (%s) <- %i (%s:%i:%s <- %s:%i:%s nominated=%s)",
 				msg.hasUseCandidate==0?"":"USE-CANDIDATE",
 				pos,
 				cand_pair->local_candidate.conn_addr,
@@ -991,7 +991,7 @@ int ice_process_stun_message(RtpSession *session, struct IceCheckList *checklist
 				if (checklist->rem_controlling==1 && cand_pair->nominated_pair>0)
 				{
 					/* USE-CANDIDATE was in previous STUN request sent */
-					ms_message("ice.c: ICE CONCLUDED == %i (%s:%i:%s <- %s:%i:%s nominated=%i)",
+					ms_message("ice.c: ICE CONCLUDED == %i (%s:%i:%s <- %s:%i:%s nominated=%s)",
 						pos,
 						cand_pair->local_candidate.conn_addr,
 						cand_pair->local_candidate.conn_port,
@@ -1007,7 +1007,7 @@ int ice_process_stun_message(RtpSession *session, struct IceCheckList *checklist
 				if (cand_pair->nominated_pair>0 && checklist->rem_controlling==0)
 				{
 					/* USE-CANDIDATE is in STUN request and we already succeeded on that link */
-					ms_message("ice.c: ICE CONCLUDED == %i (%s:%i:%s <- %s:%i:%s nominated=%i)",
+					ms_message("ice.c: ICE CONCLUDED == %i (%s:%i:%s <- %s:%i:%s nominated=%s)",
 						pos,
 						cand_pair->local_candidate.conn_addr,
 						cand_pair->local_candidate.conn_port,
