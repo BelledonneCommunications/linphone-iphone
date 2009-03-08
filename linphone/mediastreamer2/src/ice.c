@@ -247,7 +247,15 @@ int ice_sound_send_stun_request(RtpSession *session, struct IceCheckList *checkl
 				/* keep same rem_controlling for retransmission */
 				cand_pair->rem_controlling = checklist->rem_controlling;
 				/* send a new STUN with USE-CANDIDATE */
-				ms_message("ice.c: ICE_SUCCEEDED a pair has been nominated (%i)", pos);
+				ms_message("ice.c: nominating pair -> %i (%s:%i:%s -> %s:%i:%s) nominated=%s",
+					pos,
+					cand_pair->local_candidate.conn_addr,
+					cand_pair->local_candidate.conn_port,
+					cand_pair->local_candidate.cand_type,
+					cand_pair->remote_candidate.conn_addr,
+					cand_pair->remote_candidate.conn_port,
+					cand_pair->remote_candidate.cand_type,
+					cand_pair->nominated_pair==0?"FALSE":"TRUE");
 				checklist->keepalive_time=ctime+15*1000;
 			}
 			else if (cand_pair!=NULL)
@@ -285,7 +293,15 @@ int ice_sound_send_stun_request(RtpSession *session, struct IceCheckList *checkl
 					/* keep same rem_controlling for retransmission */
 					cand_pair->rem_controlling = checklist->rem_controlling;
 					/* send a new STUN with USE-CANDIDATE */
-					ms_message("ice.c: ICE_SUCCEEDED a pair has been nominated (%i)", pos);
+					ms_message("ice.c: nominating pair -> %i (%s:%i:%s -> %s:%i:%s) nominated=%s",
+						pos,
+						cand_pair->local_candidate.conn_addr,
+						cand_pair->local_candidate.conn_port,
+						cand_pair->local_candidate.cand_type,
+						cand_pair->remote_candidate.conn_addr,
+						cand_pair->remote_candidate.conn_port,
+						cand_pair->remote_candidate.cand_type,
+						cand_pair->nominated_pair==0?"FALSE":"TRUE");
 					checklist->keepalive_time=ctime+15*1000;
 				}
 			}
@@ -382,7 +398,8 @@ int ice_sound_send_stun_request(RtpSession *session, struct IceCheckList *checkl
 			&stunServerAddr);
 		if ( res == TRUE )
 		{
-			ms_message("ice.c: STUN REQ -> %i (%s:%i:%s -> %s:%i:%s) nominated=%s",
+			ms_message("ice.c: STUN REQ (%s) -> %i (%s:%i:%s -> %s:%i:%s) nominated=%s",
+				msg.hasUseCandidate==0?"":"USE-CANDIDATE",
 				pos,
 				cand_pair->local_candidate.conn_addr,
 				cand_pair->local_candidate.conn_port,
@@ -732,8 +749,8 @@ int ice_process_stun_message(RtpSession *session, struct IceCheckList *checklist
 			if (strcmp(cand_pair->remote_candidate.conn_addr, src6host)==0
 				&& cand_pair->remote_candidate.conn_port==recvport)
 			{
-				ms_message("ice.c: STUN REQ (%s) <- %i (%s:%i:%s//%s:%i:%s) from known peer",
-					msg.hasUseCandidate==0?"USE-CANDIDATE":"",
+				ms_message("ice.c: STUN REQ (%s) <- %i (%s:%i:%s <- %s:%i:%s) from known peer",
+					msg.hasUseCandidate==0?"":"USE-CANDIDATE",
 					pos,
 					cand_pair->local_candidate.conn_addr,
 					cand_pair->local_candidate.conn_port,
@@ -756,7 +773,7 @@ int ice_process_stun_message(RtpSession *session, struct IceCheckList *checklist
 						cand_pair->nominated_pair = 1;
 
 						/* USE-CANDIDATE is in STUN request and we already succeeded on that link */
-						ms_message("ice.c: ICE CONCLUDED == %i (%s:%i:%s//%s:%i:%s//nominated=%i)",
+						ms_message("ice.c: ICE CONCLUDED == %i (%s:%i:%s <- %s:%i:%s nominated=%i)",
 							pos,
 							cand_pair->local_candidate.conn_addr,
 							cand_pair->local_candidate.conn_port,
@@ -828,8 +845,8 @@ int ice_process_stun_message(RtpSession *session, struct IceCheckList *checklist
 			{
 				if (pos==9)
 				{
-					ms_message("ice.c: STUN REQ (%s) <- X (%s:%i:%s//%s:%i:%s) no room for new remote reflexive candidate",
-						msg.hasUseCandidate==0?"USE-CANDIDATE":"",
+					ms_message("ice.c: STUN REQ (%s) <- X (%s:%i:%s <- %s:%i:%s) no room for new remote reflexive candidate",
+						msg.hasUseCandidate==0?"":"USE-CANDIDATE",
 						new_pair.local_candidate.conn_addr,
 						new_pair.local_candidate.conn_port,
 						new_pair.local_candidate.cand_type,
@@ -846,8 +863,8 @@ int ice_process_stun_message(RtpSession *session, struct IceCheckList *checklist
 
 					if (checklist->nominated_pair_index>=pos)
 						checklist->nominated_pair_index++;
-					ms_message("ice.c: STUN REQ (%s) <- %i (%s:%i:%s//%s:%i:%s) new learned remote reflexive candidate",
-						msg.hasUseCandidate==0?"USE-CANDIDATE":"",
+					ms_message("ice.c: STUN REQ (%s) <- %i (%s:%i:%s <- %s:%i:%s) new learned remote reflexive candidate",
+						msg.hasUseCandidate==0?"":"USE-CANDIDATE",
 						pos,
 						new_pair.local_candidate.conn_addr,
 						new_pair.local_candidate.conn_port,
@@ -937,15 +954,15 @@ int ice_process_stun_message(RtpSession *session, struct IceCheckList *checklist
 		if (cand_pair==NULL)
 		{
 			ms_message("ice.c: STUN RESP (%s) <- no transaction for STUN answer?",
-				msg.hasUseCandidate==0?"USE-CANDIDATE":"");
+				msg.hasUseCandidate==0?"":"USE-CANDIDATE");
 		}
 		else if (strcmp(src6host, cand_pair->remote_candidate.conn_addr)!=0
 			|| recvport!=cand_pair->remote_candidate.conn_port)
 		{
 			/* 7.1.2.2.  Success Cases
 			-> must be a security issue: refuse non-symmetric answer */
-			ms_message("ice.c: STUN RESP (%s) <- %i (%s:%i:%s//%s:%i:%s//nominated=%i) refused because non-symmetric",
-				msg.hasUseCandidate==0?"USE-CANDIDATE":"",
+			ms_message("ice.c: STUN RESP (%s) <- %i (%s:%i:%s <- %s:%i:%s nominated=%i) refused because non-symmetric",
+				msg.hasUseCandidate==0?"":"USE-CANDIDATE",
 				pos,
 				cand_pair->local_candidate.conn_addr,
 				cand_pair->local_candidate.conn_port,
@@ -959,12 +976,22 @@ int ice_process_stun_message(RtpSession *session, struct IceCheckList *checklist
 		else
 		{
 			/* Youhouhouhou */
+			ms_message("ice.c: STUN RESP (%s) <- %i (%s:%i:%s <- %s:%i:%s nominated=%i)",
+				msg.hasUseCandidate==0?"":"USE-CANDIDATE",
+				pos,
+				cand_pair->local_candidate.conn_addr,
+				cand_pair->local_candidate.conn_port,
+				cand_pair->local_candidate.cand_type,
+				cand_pair->remote_candidate.conn_addr,
+				cand_pair->remote_candidate.conn_port,
+				cand_pair->remote_candidate.cand_type,
+				cand_pair->nominated_pair==0?"FALSE":"TRUE");
 			if (cand_pair->connectivity_check != ICE_SUCCEEDED)
 			{
 				if (checklist->rem_controlling==1 && cand_pair->nominated_pair>0)
 				{
 					/* USE-CANDIDATE was in previous STUN request sent */
-					ms_message("ice.c: ICE CONCLUDED == %i (%s:%i:%s//%s:%i:%s//nominated=%i)",
+					ms_message("ice.c: ICE CONCLUDED == %i (%s:%i:%s <- %s:%i:%s nominated=%i)",
 						pos,
 						cand_pair->local_candidate.conn_addr,
 						cand_pair->local_candidate.conn_port,
@@ -980,7 +1007,7 @@ int ice_process_stun_message(RtpSession *session, struct IceCheckList *checklist
 				if (cand_pair->nominated_pair>0 && checklist->rem_controlling==0)
 				{
 					/* USE-CANDIDATE is in STUN request and we already succeeded on that link */
-					ms_message("ice.c: ICE CONCLUDED == %i (%s:%i:%s//%s:%i:%s//nominated=%i)",
+					ms_message("ice.c: ICE CONCLUDED == %i (%s:%i:%s <- %s:%i:%s nominated=%i)",
 						pos,
 						cand_pair->local_candidate.conn_addr,
 						cand_pair->local_candidate.conn_port,
@@ -993,11 +1020,12 @@ int ice_process_stun_message(RtpSession *session, struct IceCheckList *checklist
 					session->rtp.rem_addrlen=evt_data->ep->addrlen;
 				}
 
-				cand_pair->connectivity_check = ICE_SUCCEEDED;
+				cand_pair->connectivity_check = ICE_FAILED;
 				if (mappedAddr.port == cand_pair->local_candidate.conn_port
 					&& strcmp(mapped_addr, cand_pair->local_candidate.conn_addr)==0)
 				{
-					/* ms_message("ice.c: SUCCESS_RESPONSE: no peer-reflexive candidate was discovered (%s:%i)", src6host, recvport); */
+					/* no peer-reflexive candidate was discovered */
+					cand_pair->connectivity_check = ICE_SUCCEEDED;
 				}
 				else
 				{
@@ -1015,8 +1043,8 @@ int ice_process_stun_message(RtpSession *session, struct IceCheckList *checklist
 								|| remote_candidates[pos2].connectivity_check==ICE_IN_PROGRESS)
 								remote_candidates[pos2].connectivity_check = ICE_WAITING; /* trigger check */
 							/*
-							ms_message("ice.c: STUN RESP (%s) <- %i (%s:%i:%s//%s:%i:%s) found candidate pair matching XOR-MAPPED-ADDRESS",
-								msg.hasUseCandidate==0?"USE-CANDIDATE":"",
+							ms_message("ice.c: STUN RESP (%s) <- %i (%s:%i:%s <- %s:%i:%s) found candidate pair matching XOR-MAPPED-ADDRESS",
+								msg.hasUseCandidate==0?"":"USE-CANDIDATE",
 								pos,
 								cand_pair->local_candidate.conn_addr,
 								cand_pair->local_candidate.conn_port,
@@ -1079,8 +1107,8 @@ int ice_process_stun_message(RtpSession *session, struct IceCheckList *checklist
 						{
 							if (pos2==9)
 							{
-								ms_message("ice.c: STUN RESP (%s) <- %i (%s:%i:%s//%s:%i:%s) no room for new local peer-reflexive candidate",
-									msg.hasUseCandidate==0?"USE-CANDIDATE":"",
+								ms_message("ice.c: STUN RESP (%s) <- %i (%s:%i:%s <- %s:%i:%s) no room for new local peer-reflexive candidate",
+									msg.hasUseCandidate==0?"":"USE-CANDIDATE",
 									pos2,
 									new_pair.local_candidate.conn_addr,
 									new_pair.local_candidate.conn_port,
@@ -1098,8 +1126,8 @@ int ice_process_stun_message(RtpSession *session, struct IceCheckList *checklist
 
 								if (checklist->nominated_pair_index>=pos2)
 									checklist->nominated_pair_index++;
-								ms_message("ice.c: STUN RESP (%s) <- %i (%s:%i:%s//%s:%i:%s) new discovered local peer-reflexive candidate",
-									msg.hasUseCandidate==0?"USE-CANDIDATE":"",
+								ms_message("ice.c: STUN RESP (%s) <- %i (%s:%i:%s <- %s:%i:%s) new discovered local peer-reflexive candidate",
+									msg.hasUseCandidate==0?"":"USE-CANDIDATE",
 									pos2,
 									new_pair.local_candidate.conn_addr,
 									new_pair.local_candidate.conn_port,
