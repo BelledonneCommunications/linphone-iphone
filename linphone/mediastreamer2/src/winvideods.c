@@ -64,7 +64,7 @@ typedef struct V4wState{
 	int frame_ind;
 	int frame_max;
 	float fps;
-	float start_time;
+	uint64_t start_time;
 	int frame_count;
 }V4wState;
 
@@ -1301,7 +1301,7 @@ static void v4w_process(MSFilter * obj){
 		s->frame_count=0;
 	}
 
-	cur_frame=((obj->ticker->time-s->start_time)*s->fps/1000.0);
+	cur_frame=(int)((obj->ticker->time-s->start_time)*s->fps/1000.0);
 	if (cur_frame>s->frame_count){
 		mblk_t *om=NULL;
 		ms_mutex_lock(&s->mutex);
@@ -1320,7 +1320,7 @@ static void v4w_process(MSFilter * obj){
 		}
 		ms_mutex_unlock(&s->mutex);
 		if (om!=NULL){
-			timestamp=obj->ticker->time*90;/* rtp uses a 90000 Hz clockrate for video*/
+			timestamp=(uint32_t)obj->ticker->time*90;/* rtp uses a 90000 Hz clockrate for video*/
 			mblk_set_timestamp_info(om,timestamp);
 			ms_queue_put(obj->outputs[0],om);
 			/*ms_message("picture sent");*/
