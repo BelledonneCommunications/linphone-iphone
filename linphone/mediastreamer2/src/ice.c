@@ -29,8 +29,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/ice.h"
 #include "mediastreamer2/mscommon.h"
 
-#include <math.h>
-
 static void 
 ice_sendtest( struct IceCheckList *checklist, struct CandidatePair *remote_candidate, Socket myFd, StunAddress4 *dest, 
               const StunAtrString *username, const StunAtrString *password, 
@@ -51,7 +49,12 @@ ice_sendtest( struct IceCheckList *checklist, struct CandidatePair *remote_candi
    reflexive candidate, should one be learned as a consequence of this
    check */
    req.hasPriority = TRUE;
-   req.priority.priority = (UInt32)(pow((double)2,(double)24)*(110) + pow((double)2,(double)8)*(65535) + pow((double)2,(double)0)*(256 - remote_candidate->remote_candidate.component_id));
+
+   UCHAR type_preference = 110;
+   UCHAR interface_preference = 255;
+   UCHAR stun_priority=255;
+   req.priority.priority = (type_preference << 24) | (interface_preference << 16) | (stun_priority << 8)
+	   | (256 - remote_candidate->remote_candidate.component_id);
 
    /* TODO: put this parameter only for the candidate selected */
    if (remote_candidate->nominated_pair==1)
@@ -671,11 +674,10 @@ static int ice_process_stun_message(RtpSession *session, struct IceCheckList *ch
 				for (pos=0;pos<10 && remote_candidates[pos].remote_candidate.conn_addr[0]!='\0';pos++)
 				{
 					/* controller agent */
-					int G = remote_candidates[pos].remote_candidate.priority;
+					uint64_t G = remote_candidates[pos].remote_candidate.priority;
 					/* controlled agent */	
-					int D = remote_candidates[pos].local_candidate.priority;
-					remote_candidates[pos].pair_priority = (UInt64)pow((double)2,(double)32)*MIN(G,D) + 2*MAX(G,D) + (G>D?1:0);
-
+					uint64_t D = remote_candidates[pos].local_candidate.priority;
+					remote_candidates[pos].pair_priority = (MIN(G, D))<<32 | (MAX(G, D))<<1 | (G>D?1:0);
 				}
 				checklist->rem_controlling = 1;
 				/* reset all to initial WAITING state? */
@@ -702,11 +704,10 @@ static int ice_process_stun_message(RtpSession *session, struct IceCheckList *ch
 				for (pos=0;pos<10 && remote_candidates[pos].remote_candidate.conn_addr[0]!='\0';pos++)
 				{
 					/* controller agent */
-					int G = remote_candidates[pos].local_candidate.priority;
+					uint64_t G = remote_candidates[pos].local_candidate.priority;
 					/* controlled agent */	
-					int D = remote_candidates[pos].remote_candidate.priority;
-					remote_candidates[pos].pair_priority = (UInt64)pow((double)2,(double)32)*MIN(G,D) + 2*MAX(G,D) + (G>D?1:0);
-
+					uint64_t D = remote_candidates[pos].remote_candidate.priority;
+					remote_candidates[pos].pair_priority = (MIN(G, D))<<32 | (MAX(G, D))<<1 | (G>D?1:0);
 				}
 				checklist->rem_controlling = 0;
 				/* reset all to initial WAITING state? */
@@ -808,7 +809,13 @@ static int ice_process_stun_message(RtpSession *session, struct IceCheckList *ch
 			/* take it from PRIORITY STUN attr */
 			new_pair.remote_candidate.priority = msg.priority.priority;
 			if (new_pair.remote_candidate.priority==0)
-				new_pair.remote_candidate.priority =  (UInt32)(pow((double)2,(double)24)*(110) + pow((double)2,(double)8)*(65535) + pow((double)2,(double)0)*(256 - new_pair.remote_candidate.component_id));
+			{
+				UCHAR type_preference = 110;
+				UCHAR interface_preference = 255;
+				UCHAR stun_priority=255;
+				new_pair.remote_candidate.priority = (type_preference << 24) | (interface_preference << 16) | (stun_priority << 8)
+					| (256 - new_pair.remote_candidate.component_id);
+			}
 
 			snprintf(new_pair.remote_candidate.cand_type, sizeof(cand_pair->remote_candidate.cand_type),
 				"prflx");
@@ -818,17 +825,17 @@ static int ice_process_stun_message(RtpSession *session, struct IceCheckList *ch
 
 			if (checklist->rem_controlling==0)
 			{
-				int G = new_pair.local_candidate.priority;
+				uint64_t G = new_pair.local_candidate.priority;
 				/* controlled agent */	
-				int D = new_pair.remote_candidate.priority;
-				new_pair.pair_priority = (UInt64)pow((double)2,(double)32)*MIN(G,D) + 2*MAX(G,D) + (G>D?1:0);
+				uint64_t D = new_pair.remote_candidate.priority;
+				new_pair.pair_priority = (MIN(G, D))<<32 | (MAX(G, D))<<1 | (G>D?1:0);
 			}
 			else
 			{
-				int G = new_pair.remote_candidate.priority;
+				uint64_t G = new_pair.remote_candidate.priority;
 				/* controlled agent */	
-				int D = new_pair.local_candidate.priority;
-				new_pair.pair_priority = (UInt64)pow((double)2,(double)32)*MIN(G,D) + 2*MAX(G,D) + (G>D?1:0);
+				uint64_t D = new_pair.local_candidate.priority;
+				new_pair.pair_priority = (MIN(G, D))<<32 | (MAX(G, D))<<1 | (G>D?1:0);
 			}
 			new_pair.connectivity_check = ICE_WAITING;
 			/* insert new pair candidate */
@@ -1074,8 +1081,11 @@ static int ice_process_stun_message(RtpSession *session, struct IceCheckList *ch
 						snprintf(new_pair.local_candidate.conn_addr, sizeof(new_pair.local_candidate.conn_addr),
 							"%s", mapped_addr);
 
-						/* take it from PRIORITY STUN attr */
-						new_pair.local_candidate.priority = (UInt32)(pow((double)2,(double)24)*(110) + pow((double)2,(double)8)*(65535) + pow((double)2,(double)0)*(256 - new_pair.local_candidate.component_id));
+						UCHAR type_preference = 110;
+						UCHAR interface_preference = 255;
+						UCHAR stun_priority=255;
+						new_pair.remote_candidate.priority = (type_preference << 24) | (interface_preference << 16) | (stun_priority << 8)
+							| (256 - new_pair.remote_candidate.component_id);
 
 						snprintf(new_pair.local_candidate.cand_type, sizeof(cand_pair->local_candidate.cand_type),
 							"prflx");
@@ -1085,17 +1095,17 @@ static int ice_process_stun_message(RtpSession *session, struct IceCheckList *ch
 
 						if (checklist->rem_controlling==0)
 						{
-							int G = new_pair.local_candidate.priority;
+							uint64_t G = new_pair.local_candidate.priority;
 							/* controlled agent */	
-							int D = new_pair.remote_candidate.priority;
-							new_pair.pair_priority = (UInt64)pow((double)2,(double)32)*MIN(G,D) + 2*MAX(G,D) + (G>D?1:0);
+							uint64_t D = new_pair.remote_candidate.priority;
+							new_pair.pair_priority = (MIN(G, D))<<32 | (MAX(G, D))<<1 | (G>D?1:0);
 						}
 						else
 						{
-							int G = new_pair.remote_candidate.priority;
+							uint64_t G = new_pair.remote_candidate.priority;
 							/* controlled agent */	
-							int D = new_pair.local_candidate.priority;
-							new_pair.pair_priority = (UInt64)pow((double)2,(double)32)*MIN(G,D) + 2*MAX(G,D) + (G>D?1:0);
+							uint64_t D = new_pair.local_candidate.priority;
+							new_pair.pair_priority = (MIN(G, D))<<32 | (MAX(G, D))<<1 | (G>D?1:0);
 						}
 						new_pair.connectivity_check = ICE_WAITING;
 						/* insert new pair candidate */
@@ -1172,10 +1182,10 @@ static int ice_process_stun_message(RtpSession *session, struct IceCheckList *ch
 						for (pos2=0;pos2<10 && remote_candidates[pos2].remote_candidate.conn_addr[0]!='\0';pos2++)
 						{
 							/* controller agent */
-							int G = remote_candidates[pos2].local_candidate.priority;
+							uint64_t G = remote_candidates[pos2].local_candidate.priority;
 							/* controlled agent */	
-							int D = remote_candidates[pos2].remote_candidate.priority;
-							remote_candidates[pos2].pair_priority = (UInt64)pow((double)2,(double)32)*MIN(G,D) + 2*MAX(G,D) + (G>D?1:0);
+							uint64_t D = remote_candidates[pos2].remote_candidate.priority;
+							remote_candidates[pos2].pair_priority = (MIN(G, D))<<32 | (MAX(G, D))<<1 | (G>D?1:0);
 						}
 						checklist->rem_controlling=0;
 					}
@@ -1185,10 +1195,10 @@ static int ice_process_stun_message(RtpSession *session, struct IceCheckList *ch
 						for (pos2=0;pos2<10 && remote_candidates[pos2].remote_candidate.conn_addr[0]!='\0';pos2++)
 						{
 							/* controller agent */
-							int G = remote_candidates[pos2].remote_candidate.priority;
+							uint64_t G = remote_candidates[pos2].remote_candidate.priority;
 							/* controlled agent */	
-							int D = remote_candidates[pos2].local_candidate.priority;
-							remote_candidates[pos2].pair_priority = (UInt64)pow((double)2,(double)32)*MIN(G,D) + 2*MAX(G,D) + (G>D?1:0);
+							uint64_t D = remote_candidates[pos2].local_candidate.priority;
+							remote_candidates[pos2].pair_priority = (MIN(G, D))<<32 | (MAX(G, D))<<1 | (G>D?1:0);
 						}
 						checklist->rem_controlling=1;
 					}
