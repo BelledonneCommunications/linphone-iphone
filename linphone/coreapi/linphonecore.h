@@ -275,6 +275,7 @@ char *linphone_friend_get_url(LinphoneFriend *lf);	/* name <sip address> */
 bool_t linphone_friend_get_send_subscribe(const LinphoneFriend *lf);
 LinphoneSubscribePolicy linphone_friend_get_inc_subscribe_policy(const LinphoneFriend *lf);
 LinphoneOnlineStatus linphone_friend_get_status(const LinphoneFriend *lf);
+#define linphone_friend_in_list(lf)	((lf)->lc!=NULL)
 
 #define linphone_friend_url(lf) ((lf)->url)
 
@@ -311,6 +312,7 @@ void linphone_proxy_config_edit(LinphoneProxyConfig *obj);
 int linphone_proxy_config_done(LinphoneProxyConfig *obj);
 void linphone_proxy_config_enable_publish(LinphoneProxyConfig *obj, bool_t val);
 bool_t linphone_proxy_config_is_registered(const LinphoneProxyConfig *obj);
+const char *linphone_proxy_config_get_domain(const LinphoneProxyConfig *cfg);
 #define linphone_proxy_config_get_route(obj)  ((obj)->reg_route)
 #define linphone_proxy_config_get_identity(obj)	((obj)->reg_identity)
 #define linphone_proxy_config_publish_enabled(obj) ((obj)->publish)
@@ -519,7 +521,8 @@ typedef struct _LinphoneCore
 void linphone_core_enable_logs(FILE *file);
 void linphone_core_enable_logs_with_cb(OrtpLogFunc logfunc);
 void linphone_core_disable_logs(void);
-
+/*sets the user-agent string in sip messages, must be set before linphone_core_new() or linphone_core_init() */
+void linphone_core_set_user_agent(const char *ua_name, const char *version);
 const char *linphone_core_get_version(void);
 
 LinphoneCore *linphone_core_new(const LinphoneCoreVTable *vtable,

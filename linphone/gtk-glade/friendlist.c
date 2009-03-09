@@ -364,12 +364,10 @@ void linphone_gtk_contact_ok(GtkWidget *button){
 	GtkWidget *w=gtk_widget_get_toplevel(button);
 	LinphoneFriend *lf=(LinphoneFriend*)g_object_get_data(G_OBJECT(w),"friend_ref");
 	char *fixed_uri=NULL;
-	gboolean editing=FALSE,show_presence,allow_presence;
+	gboolean show_presence,allow_presence;
 	const gchar *name,*uri;
 	if (lf==NULL){
 		lf=linphone_friend_new();
-	}else{
-		editing=TRUE;
 	}
 	name=gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(w,"name")));
 	uri=gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(w,"sip_address")));
@@ -385,23 +383,13 @@ void linphone_gtk_contact_ok(GtkWidget *button){
 	linphone_friend_set_name(lf,name);
 	linphone_friend_send_subscribe(lf,show_presence);
 	linphone_friend_set_inc_subscribe_policy(lf,allow_presence==TRUE ? LinphoneSPAccept : LinphoneSPDeny);
-	if (editing){
+	if (linphone_friend_in_list(lf)) {
 		linphone_friend_done(lf);
 	}else{
 		linphone_core_add_friend(linphone_gtk_get_core(),lf);
 	}
 	linphone_gtk_show_friends();
 	gtk_widget_destroy(w);
-}
-
-SipSetupContext* linphone_gtk_get_default_sip_setup_context(void){
-	LinphoneCore *lc=linphone_gtk_get_core();
-	LinphoneProxyConfig *cfg=NULL;
-	linphone_core_get_default_proxy(lc,&cfg);
-	if (cfg){
-		return linphone_proxy_config_get_sip_setup_context(cfg);
-	}
-	return NULL;
 }
 
 static GtkWidget *linphone_gtk_create_contact_menu(GtkWidget *contact_list){
@@ -414,7 +402,14 @@ static GtkWidget *linphone_gtk_create_contact_menu(GtkWidget *contact_list){
 	GtkTreeIter iter;
 	GtkTreeModel *model;
 	GtkWidget *image;
-	SipSetupContext* ssc=linphone_gtk_get_default_sip_setup_context();
+	LinphoneCore *lc=linphone_gtk_get_core();
+	LinphoneProxyConfig *cfg=NULL;
+	SipSetupContext * ssc=NULL;
+
+	linphone_core_get_default_proxy(lc,&cfg);
+	if (cfg){
+		ssc=linphone_proxy_config_get_sip_setup_context(cfg);
+	}
 
 	g_signal_connect(G_OBJECT(menu), "selection-done", G_CALLBACK (gtk_widget_destroy), NULL);
 	select = gtk_tree_view_get_selection(GTK_TREE_VIEW(contact_list));
@@ -451,10 +446,11 @@ static GtkWidget *linphone_gtk_create_contact_menu(GtkWidget *contact_list){
 	gtk_menu_shell_append(GTK_MENU_SHELL(menu),menu_item);
 	g_signal_connect_swapped(G_OBJECT(menu_item),"activate",(GCallback)linphone_gtk_remove_contact,contact_list);
 
-	g_message("ssc=%p",ssc);
 	if (ssc && (sip_setup_context_get_capabilities(ssc) & SIP_SETUP_CAP_BUDDY_LOOKUP)) {
-		menu_item=gtk_image_menu_item_new_with_label(_("Search contact"));
-		image=gtk_image_new_from_stock(GTK_STOCK_FIND,GTK_ICON_SIZE_MENU);
+		gchar *tmp=g_strdup_printf(_("Add new contact from %s directory"),linphone_proxy_config_get_domain(cfg));
+		menu_item=gtk_image_menu_item_new_with_label(tmp);
+		g_free(tmp);
+		image=gtk_image_new_from_stock(GTK_STOCK_ADD,GTK_ICON_SIZE_MENU);
 		gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item),image);
 		gtk_widget_show(image);
 		gtk_widget_show(menu_item);

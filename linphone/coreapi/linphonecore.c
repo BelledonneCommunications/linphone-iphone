@@ -910,11 +910,29 @@ int linphone_core_get_sip_port(LinphoneCore *lc)
 }
 
 static bool_t exosip_running=FALSE;
+static char _ua_name[64]="Linphone";
+static char _ua_version[64]=LINPHONE_VERSION;
+
+static void set_user_agent(){
+	char ua_string[256];
+	snprintf(ua_string,sizeof(ua_string),"%s/%s (eXosip2/%s)",_ua_name,_ua_version,
+#ifdef HAVE_EXOSIP_GET_VERSION
+		 eXosip_get_version()
+#else
+		 "unknown"
+#endif
+	);
+	eXosip_set_user_agent(ua_string);
+}
+
+void linphone_core_set_user_agent(const char *name, const char *ver){
+	strncpy(_ua_name,name,sizeof(_ua_name)-1);
+	strncpy(_ua_version,ver,sizeof(_ua_version));
+}
 
 void linphone_core_set_sip_port(LinphoneCore *lc,int port)
 {
 	const char *anyaddr;
-	char ua_string[256];
 	int err=0;
 	if (port==lc->sip_conf.sip_port) return;
 	lc->sip_conf.sip_port=port;
@@ -942,14 +960,7 @@ void linphone_core_set_sip_port(LinphoneCore *lc,int port)
 	eXosip_set_rsvp_mode (lc->rsvp_enable);
 	eXosip_set_rpc_mode (lc->rpc_enable);
 #endif
-	snprintf(ua_string,sizeof(ua_string),"Linphone/%s (eXosip2/%s)",LINPHONE_VERSION,
-#ifdef HAVE_EXOSIP_GET_VERSION
-		 eXosip_get_version()
-#else
-		 "unknown"
-#endif
-);
-	eXosip_set_user_agent(ua_string);
+	set_user_agent("Linphone",LINPHONE_VERSION);
 	exosip_running=TRUE;
 }
 

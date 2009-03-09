@@ -29,8 +29,6 @@
 #include "lpconfig.h"
 
 extern LinphoneProxyConfig *linphone_core_get_proxy_config_from_rid(LinphoneCore *lc, int rid);
-extern void linphone_proxy_config_set_realm(LinphoneProxyConfig *cfg, const char *realm);
-extern void linphone_core_retry_proxy_register(LinphoneCore *lc, const char *realm);
 
 LinphoneAuthInfo *linphone_auth_info_new(const char *username, const char *userid,
 				   										const char *passwd, const char *ha1,const char *realm)
@@ -122,17 +120,43 @@ static bool_t key_match(const char *tmp1, const char *tmp2){
 	
 }
 
+static char * remove_quotes(char * input){
+	char *tmp;
+	if (*input=='"') input++;
+	tmp=strchr(input,'"');
+	if (tmp) *tmp='\0';
+	return input;
+}
+
+static int realm_match(const char *realm1, const char *realm2){
+	if (realm1==NULL && realm2==NULL) return TRUE;
+	if (realm1!=NULL && realm2!=NULL){
+		if (strcmp(realm1,realm2)==0) return TRUE;
+		else{
+			char tmp1[128];
+			char tmp2[128];
+			char *p1,*p2;
+			strncpy(tmp1,realm1,sizeof(tmp1)-1);
+			strncpy(tmp2,realm2,sizeof(tmp1)-1);
+			p1=remove_quotes(tmp1);
+			p2=remove_quotes(tmp2);
+			return strcmp(p1,p2)==0;
+		}
+	}
+	return FALSE;
+}
+
 static int auth_info_compare(const void *pinfo,const void *pref){
 	LinphoneAuthInfo *info=(LinphoneAuthInfo*)pinfo;
 	LinphoneAuthInfo *ref=(LinphoneAuthInfo*)pref;
-	if (key_match(info->realm,ref->realm) && key_match(info->username,ref->username)) return 0;
+	if (realm_match(info->realm,ref->realm) && key_match(info->username,ref->username)) return 0;
 	return -1;
 }
 
 static int auth_info_compare_only_realm(const void *pinfo,const void *pref){
 	LinphoneAuthInfo *info=(LinphoneAuthInfo*)pinfo;
 	LinphoneAuthInfo *ref=(LinphoneAuthInfo*)pref;
-	if (key_match(info->realm,ref->realm) ) return 0;
+	if (realm_match(info->realm,ref->realm) ) return 0;
 	return -1;
 }
 

@@ -65,6 +65,7 @@ typedef struct _BuddyInfo{
 	char lastname[64];
 	char displayname[64];
 	char sip_uri[128];
+	char email[128];
 	BuddyAddress address;
 }BuddyInfo;
 

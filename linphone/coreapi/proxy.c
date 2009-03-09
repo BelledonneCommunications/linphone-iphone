@@ -44,6 +44,7 @@ void linphone_proxy_config_destroy(LinphoneProxyConfig *obj){
 	if (obj->reg_identity!=NULL) ms_free(obj->reg_identity);
 	if (obj->reg_route!=NULL) ms_free(obj->reg_route);
 	if (obj->ssctx!=NULL) sip_setup_context_free(obj->ssctx);
+	if (obj->realm!=NULL) ms_free(obj->realm);
 	if (obj->type!=NULL) ms_free(obj->type);
 }
 
@@ -51,6 +52,7 @@ bool_t linphone_proxy_config_is_registered(const LinphoneProxyConfig *obj){
 	return obj->registered;
 }
 
+#if 0
 static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
 	osip_message_t *msg;
 	eXosip_lock();
@@ -58,6 +60,7 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
 	eXosip_register_send_register(obj->rid,msg);
 	eXosip_unlock();
 }
+#endif
 
 void linphone_proxy_config_register_again_with_updated_contact(LinphoneProxyConfig *obj, osip_message_t *orig_request, osip_message_t *last_answer){
 	osip_message_t *msg;
@@ -116,7 +119,7 @@ int linphone_proxy_config_set_server_addr(LinphoneProxyConfig *obj, const char *
 
 void linphone_proxy_config_set_identity(LinphoneProxyConfig *obj, const char *identity){
 	int err=0;
-	osip_from_t *url;
+	osip_from_t *url=NULL;
 	if (identity!=NULL && strlen(identity)>0){
 		osip_from_init(&url);
 		err=osip_from_parse(url,identity);
@@ -125,14 +128,23 @@ void linphone_proxy_config_set_identity(LinphoneProxyConfig *obj, const char *id
 			osip_from_free(url);
 			return;
 		}
-		osip_from_free(url);
 	} else err=-2;
 	if (obj->reg_identity!=NULL) {
 		ms_free(obj->reg_identity);
 		obj->reg_identity=NULL;
 	}
 	if (err==-2) obj->reg_identity=NULL;
-	else obj->reg_identity=ms_strdup(identity);
+	else {
+		obj->reg_identity=ms_strdup(identity);
+		if (obj->realm)
+			ms_free(obj->realm);
+		obj->realm=ms_strdup(url->url->host);
+	}
+	if (url) osip_from_free(url);
+}
+
+const char *linphone_proxy_config_get_domain(const LinphoneProxyConfig *cfg){
+	return cfg->realm;
 }
 
 void linphone_proxy_config_set_route(LinphoneProxyConfig *obj, const char *route)
@@ -448,8 +460,7 @@ void linphone_core_set_default_proxy(LinphoneCore *lc, LinphoneProxyConfig *conf
 	}
 	lc->default_proxy=config;
 	
-}
-	
+}	
 
 void linphone_core_set_default_proxy_index(LinphoneCore *lc, int index){
 	if (index<0) linphone_core_set_default_proxy(lc,NULL);
@@ -480,20 +491,6 @@ LinphoneProxyConfig *linphone_core_get_proxy_config_from_rid(LinphoneCore *lc, i
 	}
 	if (elem==NULL) return NULL;
 	else return (LinphoneProxyConfig*)elem->data;
-}
-
-void linphone_core_retry_proxy_register(LinphoneCore *lc, const char *realm)
-{
-	MSList *elem;
-	for (elem=lc->sip_conf.proxies;elem!=NULL;elem=ms_list_next(elem)){
-		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
-		/*ms_message("linphone_core_retry_proxy_register: cfg->auth_pending=%i, cfg->realm=%s, realm=%s",
-					cfg->auth_pending,cfg->realm,realm);*/
-		if (cfg->auth_pending && cfg->realm!=NULL && strcmp(cfg->realm,realm)==0){
-			ms_message("Restarting REGISTER request for %s.",cfg->reg_proxy);
-			linphone_proxy_config_register(cfg);
-		}
-	}
 }
 
 const MSList *linphone_core_get_proxy_config_list(const LinphoneCore *lc){
