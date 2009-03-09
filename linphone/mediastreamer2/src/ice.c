@@ -50,9 +50,9 @@ ice_sendtest( struct IceCheckList *checklist, struct CandidatePair *remote_candi
    check */
    req.hasPriority = TRUE;
 
-   UCHAR type_preference = 110;
-   UCHAR interface_preference = 255;
-   UCHAR stun_priority=255;
+   uint32_t type_preference = 110;
+   uint32_t interface_preference = 255;
+   uint32_t stun_priority=255;
    req.priority.priority = (type_preference << 24) | (interface_preference << 16) | (stun_priority << 8)
 	   | (256 - remote_candidate->remote_candidate.component_id);
 
@@ -810,9 +810,9 @@ static int ice_process_stun_message(RtpSession *session, struct IceCheckList *ch
 			new_pair.remote_candidate.priority = msg.priority.priority;
 			if (new_pair.remote_candidate.priority==0)
 			{
-				UCHAR type_preference = 110;
-				UCHAR interface_preference = 255;
-				UCHAR stun_priority=255;
+				uint32_t type_preference = 110;
+				uint32_t interface_preference = 255;
+				uint32_t stun_priority=255;
 				new_pair.remote_candidate.priority = (type_preference << 24) | (interface_preference << 16) | (stun_priority << 8)
 					| (256 - new_pair.remote_candidate.component_id);
 			}
@@ -1081,9 +1081,9 @@ static int ice_process_stun_message(RtpSession *session, struct IceCheckList *ch
 						snprintf(new_pair.local_candidate.conn_addr, sizeof(new_pair.local_candidate.conn_addr),
 							"%s", mapped_addr);
 
-						UCHAR type_preference = 110;
-						UCHAR interface_preference = 255;
-						UCHAR stun_priority=255;
+						uint32_t type_preference = 110;
+						uint32_t interface_preference = 255;
+						uint32_t stun_priority=255;
 						new_pair.remote_candidate.priority = (type_preference << 24) | (interface_preference << 16) | (stun_priority << 8)
 							| (256 - new_pair.remote_candidate.component_id);
 
