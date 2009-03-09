@@ -89,9 +89,6 @@ EXPORTS
 	ms_list_append
 	ms_list_remove
 	
-	ice_sound_send_stun_request
-	ice_process_stun_message
-		
 	ms_discover_mtu
 	ms_set_mtu
 	

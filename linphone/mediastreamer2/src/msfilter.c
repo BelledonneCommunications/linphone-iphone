@@ -83,8 +83,6 @@ MSFilter *ms_filter_new_from_desc(MSFilterDesc *desc){
 	obj->desc=desc;
 	if (desc->ninputs>0)	obj->inputs=(MSQueue**)ms_new0(MSQueue*,desc->ninputs);
 	if (desc->noutputs>0)	obj->outputs=(MSQueue**)ms_new0(MSQueue*,desc->noutputs);
-	if (desc->ninputs==0 && desc->noutputs==0)
-		ms_fatal("A filter cannot have no inputs and outputs");
 	if (obj->desc->init!=NULL)
 		obj->desc->init(obj);
 	return obj;

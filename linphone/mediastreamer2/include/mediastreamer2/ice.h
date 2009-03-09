@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef ice_hh
 #define ice_hh
 
+#include "msfilter.h"
 #include "ortp/stun_udp.h"
 #include "ortp/stun.h"
 #include "ortp/ortp.h"
@@ -87,18 +88,9 @@ struct IceCheckList {
 	uint64_t keepalive_time;
 };
 
-#ifdef __cplusplus
-extern "C"{
-#endif
+#define MS_ICE_SET_SESSION			MS_FILTER_METHOD(MS_ICE_ID,0,RtpSession*)
+#define MS_ICE_SET_CANDIDATEPAIRS	MS_FILTER_METHOD(MS_ICE_ID,1,struct CandidatePair*)
 
-int ice_sound_send_stun_request(RtpSession *session, struct IceCheckList *checklist, uint64_t ctime);
-
-int ice_process_stun_message(RtpSession *session, struct IceCheckList *checklist, OrtpEvent *evt);
-
-int ice_restart(struct IceCheckList *checklist);
-
-#ifdef __cplusplus
-}
-#endif
+extern MSFilterDesc ms_ice_desc;
 
 #endif

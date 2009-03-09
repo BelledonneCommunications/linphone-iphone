@@ -29,7 +29,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 struct SenderData {
 	RtpSession *session;
-	struct IceCheckList *check_lists; /* table of 10 cpair */
 	uint32_t tsoff;
 	uint32_t skip_until;
 	int rate;
@@ -48,7 +47,6 @@ static void sender_init(MSFilter * f)
 	SenderData *d = (SenderData *)ms_new(SenderData, 1);
 
 	d->session = NULL;
-	d->check_lists = NULL;
 	d->tsoff = 0;
 	d->skip_until = 0;
 	d->skip = FALSE;
@@ -75,20 +73,6 @@ static int sender_send_dtmf(MSFilter * f, void *arg)
 	ms_filter_lock(f);
 	d->dtmf = dtmf[0];
 	ms_filter_unlock(f);
-	return 0;
-}
-
-static int sender_set_sdpcandidates(MSFilter * f, void *arg)
-{
-	SenderData *d = (SenderData *) f->data;
-	struct IceCheckList *scs = NULL;
-
-	if (d == NULL)
-		return -1;
-
-	scs = (struct IceCheckList *) arg;
-	d->check_lists = scs;
-	ice_restart(d->check_lists);
 	return 0;
 }
 
@@ -178,7 +162,6 @@ static void sender_process(MSFilter * f)
 	SenderData *d = (SenderData *) f->data;
 	RtpSession *s = d->session;
 
-	struct IceCheckList *cp = d->check_lists;
 	mblk_t *im;
 	uint32_t timestamp;
 
@@ -230,12 +213,6 @@ static void sender_process(MSFilter * f)
 		}
 		ms_filter_unlock(f);
 	}
-
-#if !defined(_WIN32_WCE)
-	ice_sound_send_stun_request(s, cp, f->ticker->time);
-#else
-	ice_sound_send_stun_request(s, cp, f->ticker->time));
-#endif
 }
 
 static MSFilterMethod sender_methods[] = {
@@ -243,7 +220,6 @@ static MSFilterMethod sender_methods[] = {
 	{MS_RTP_SEND_UNMUTE_MIC, sender_unmute_mic},
 	{MS_RTP_SEND_SET_SESSION, sender_set_session},
 	{MS_RTP_SEND_SEND_DTMF, sender_send_dtmf},
-	{MS_RTP_SEND_SET_CANDIDATEPAIRS, sender_set_sdpcandidates},
 	{MS_RTP_SEND_SET_RELAY_SESSION_ID, sender_set_relay_session_id},
 	{0, NULL}
 };
@@ -285,8 +261,6 @@ MSFilterDesc ms_rtp_send_desc = {
 
 struct ReceiverData {
 	RtpSession *session;
-	OrtpEvQueue *ortp_event;
-	struct IceCheckList *check_lists;	/* table of 10 cpair */
 	int rate;
 };
 
@@ -296,9 +270,7 @@ static void receiver_init(MSFilter * f)
 {
 	ReceiverData *d = (ReceiverData *)ms_new(ReceiverData, 1);
 
-	d->ortp_event = ortp_ev_queue_new();
 	d->session = NULL;
-	d->check_lists = NULL;
 	d->rate = 8000;
 	f->data = d;
 }
@@ -306,15 +278,11 @@ static void receiver_init(MSFilter * f)
 static void receiver_postprocess(MSFilter * f)
 {
 	ReceiverData *d = (ReceiverData *) f->data;
-	if (d->session!=NULL && d->ortp_event!=NULL)
-	  rtp_session_unregister_event_queue(d->session, d->ortp_event);
 }
 
 static void receiver_uninit(MSFilter * f)
 {
 	ReceiverData *d = (ReceiverData *) f->data;
-	if (d->ortp_event!=NULL)
-	  ortp_ev_queue_destroy(d->ortp_event);
 	ms_free(f->data);
 }
 
@@ -337,20 +305,6 @@ static int receiver_set_session(MSFilter * f, void *arg)
 	return 0;
 }
 
-static int receiver_set_sdpcandidates(MSFilter * f, void *arg)
-{
-	ReceiverData *d = (ReceiverData *) f->data;
-	struct IceCheckList *scs = NULL;
-
-	if (d == NULL)
-		return -1;
-
-	scs = (struct IceCheckList *) arg;
-	d->check_lists = scs;
-	ice_restart(d->check_lists);
-	return 0;
-}
-
 static void receiver_preprocess(MSFilter * f){
 	ReceiverData *d = (ReceiverData *) f->data;
 	if (d->session){
@@ -362,8 +316,6 @@ static void receiver_preprocess(MSFilter * f){
 				rtp_session_flush_sockets(d->session);
 		}
 	}
-	if (d->session!=NULL && d->ortp_event!=NULL)
-		rtp_session_register_event_queue(d->session, d->ortp_event);
 }
 
 static void receiver_process(MSFilter * f)
@@ -383,30 +335,10 @@ static void receiver_process(MSFilter * f)
 		rtp_get_payload(m,&m->b_rptr);
 		ms_queue_put(f->outputs[0], m);
 	}
-
-	/* check received STUN request */
-	if (d->ortp_event!=NULL)
-	{
-		OrtpEvent *evt = ortp_ev_queue_get(d->ortp_event);
-
-		while (evt != NULL) {
-			if (ortp_event_get_type(evt) ==
-				ORTP_EVENT_STUN_PACKET_RECEIVED) {
-				ice_process_stun_message(d->session, d->check_lists, evt);
-			}
-			if (ortp_event_get_type(evt) ==
-				ORTP_EVENT_TELEPHONE_EVENT) {
-			}
-
-			ortp_event_destroy(evt);
-			evt = ortp_ev_queue_get(d->ortp_event);
-		}
-	}
 }
 
 static MSFilterMethod receiver_methods[] = {
 	{MS_RTP_RECV_SET_SESSION, receiver_set_session},
-	{MS_RTP_RECV_SET_CANDIDATEPAIRS, receiver_set_sdpcandidates},
 	{0, NULL}
 };
 

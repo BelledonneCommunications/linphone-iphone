@@ -25,15 +25,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <netdb.h>
 #endif
 
+#include "mediastreamer2/msticker.h"
 #include "mediastreamer2/ice.h"
 #include "mediastreamer2/mscommon.h"
 
 #include <math.h>
-
-static void 
-ice_sendtest( struct IceCheckList *checklist, struct CandidatePair *remote_candidate, Socket myFd, StunAddress4 *dest, 
-              const StunAtrString *username, const StunAtrString *password, 
-              UInt96 *tid);
 
 static void 
 ice_sendtest( struct IceCheckList *checklist, struct CandidatePair *remote_candidate, Socket myFd, StunAddress4 *dest, 
@@ -82,7 +78,7 @@ ice_sendtest( struct IceCheckList *checklist, struct CandidatePair *remote_candi
    sendMessage( myFd, buf, len, dest->addr, dest->port );	
 }
 
-int ice_restart(struct IceCheckList *checklist)
+static int ice_restart(struct IceCheckList *checklist)
 {
 	struct CandidatePair *remote_candidates = NULL;
 	int pos;
@@ -148,7 +144,7 @@ int ice_restart(struct IceCheckList *checklist)
 	return 0;
 }
 
-int ice_sound_send_stun_request(RtpSession *session, struct IceCheckList *checklist, uint64_t ctime)
+static int ice_sound_send_stun_request(RtpSession *session, struct IceCheckList *checklist, uint64_t ctime)
 {
 	struct CandidatePair *remote_candidates = NULL;
 
@@ -476,7 +472,7 @@ _ice_createErrorResponse(StunMessage *response, int cl, int number, const char* 
 	response->hasFingerprint = TRUE;
 }
 
-int ice_process_stun_message(RtpSession *session, struct IceCheckList *checklist, OrtpEvent *evt)
+static int ice_process_stun_message(RtpSession *session, struct IceCheckList *checklist, OrtpEvent *evt)
 {
 	struct CandidatePair *remote_candidates = NULL;
 	StunMessage msg;
@@ -1215,3 +1211,157 @@ int ice_process_stun_message(RtpSession *session, struct IceCheckList *checklist
 	return 0;
 }
 
+
+
+
+struct IceData {
+	RtpSession *session;
+	OrtpEvQueue *ortp_event;
+	struct IceCheckList *check_lists;	/* table of 10 cpair */
+	int rate;
+};
+
+typedef struct IceData IceData;
+
+static void ice_init(MSFilter * f)
+{
+	IceData *d = (IceData *)ms_new(IceData, 1);
+
+	d->ortp_event = ortp_ev_queue_new();
+	d->session = NULL;
+	d->check_lists = NULL;
+	d->rate = 8000;
+	f->data = d;
+}
+
+static void ice_postprocess(MSFilter * f)
+{
+	IceData *d = (IceData *) f->data;
+	if (d->session!=NULL && d->ortp_event!=NULL)
+	  rtp_session_unregister_event_queue(d->session, d->ortp_event);
+}
+
+static void ice_uninit(MSFilter * f)
+{
+	IceData *d = (IceData *) f->data;
+	if (d->ortp_event!=NULL)
+	  ortp_ev_queue_destroy(d->ortp_event);
+	ms_free(f->data);
+}
+
+static int ice_set_session(MSFilter * f, void *arg)
+{
+	IceData *d = (IceData *) f->data;
+	RtpSession *s = (RtpSession *) arg;
+	PayloadType *pt = rtp_profile_get_payload(rtp_session_get_profile(s),
+											  rtp_session_get_recv_payload_type
+											  (s));
+	if (pt != NULL) {
+		if (strcasecmp("g722", pt->mime_type)==0 )
+			d->rate=8000;
+		else d->rate = pt->clock_rate;
+	} else {
+		ms_warning("Receiving undefined payload type ?");
+	}
+	d->session = s;
+
+	return 0;
+}
+
+static int ice_set_sdpcandidates(MSFilter * f, void *arg)
+{
+	IceData *d = (IceData *) f->data;
+	struct IceCheckList *scs = NULL;
+
+	if (d == NULL)
+		return -1;
+
+	scs = (struct IceCheckList *) arg;
+	d->check_lists = scs;
+	ice_restart(d->check_lists);
+	return 0;
+}
+
+static void ice_preprocess(MSFilter * f){
+	IceData *d = (IceData *) f->data;
+	if (d->session!=NULL && d->ortp_event!=NULL)
+		rtp_session_register_event_queue(d->session, d->ortp_event);
+}
+
+static void ice_process(MSFilter * f)
+{
+	IceData *d = (IceData *) f->data;
+
+	if (d->session == NULL)
+		return;
+
+	/* check received STUN request */
+	if (d->ortp_event!=NULL)
+	{
+		OrtpEvent *evt = ortp_ev_queue_get(d->ortp_event);
+
+		while (evt != NULL) {
+			if (ortp_event_get_type(evt) ==
+				ORTP_EVENT_STUN_PACKET_RECEIVED) {
+				ice_process_stun_message(d->session, d->check_lists, evt);
+			}
+			if (ortp_event_get_type(evt) ==
+				ORTP_EVENT_TELEPHONE_EVENT) {
+			}
+
+			ortp_event_destroy(evt);
+			evt = ortp_ev_queue_get(d->ortp_event);
+		}
+	}
+
+#if !defined(_WIN32_WCE)
+	ice_sound_send_stun_request(d->session, d->check_lists, f->ticker->time);
+#else
+	ice_sound_send_stun_request(d->session, d->check_lists, f->ticker->time));
+#endif
+}
+
+static MSFilterMethod ice_methods[] = {
+	{MS_ICE_SET_SESSION, ice_set_session},
+	{MS_ICE_SET_CANDIDATEPAIRS, ice_set_sdpcandidates},
+	{0, NULL}
+};
+
+#ifdef _MSC_VER
+
+MSFilterDesc ms_ice_desc = {
+	MS_ICE_ID,
+	"MSIce",
+	N_("ICE filter"),
+	MS_FILTER_OTHER,
+	NULL,
+	0,
+	0,
+	ice_init,
+	ice_preprocess,
+	ice_process,
+	ice_postprocess,
+	ice_uninit,
+	ice_methods
+};
+
+#else
+
+MSFilterDesc ms_ice_desc = {
+	.id = MS_ICE_ID,
+	.name = "MSIce",
+	.text = N_("ICE filter"),
+	.category = MS_FILTER_OTHER,
+	.ninputs = 0,
+	.noutputs = 0,
+	.init = ice_init,
+	.preprocess = ice_preprocess,
+	.process = ice_process,
+	.postprocess=ice_postprocess,
+	.uninit = ice_uninit,
+	.methods = ice_methods
+};
+
+#endif
+
+MS_FILTER_DESC_EXPORT(ms_ice_desc)

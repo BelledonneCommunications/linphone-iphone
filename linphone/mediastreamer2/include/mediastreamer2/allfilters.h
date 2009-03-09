@@ -80,7 +80,8 @@ typedef enum MSFilterId{
 	MS_H263_OLD_DEC_ID,
 	MS_H263_OLD_ENC_ID,
 	MS_MIRE_ID,
-	MS_VFW_ID
+	MS_VFW_ID,
+	MS_ICE_ID
 } MSFilterId;
 
 
