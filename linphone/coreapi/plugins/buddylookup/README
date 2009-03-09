@@ -1,0 +1,35 @@
+This plugin implements a buddy lookup using a xml-rpc lookup to a distant server.
+The server side implementation isn't available here but it is quite simple to implement.
+The format of the xml-rpc request defined below:
+
+The function name is "fp.searchUsers"
+ /**
+ * Arguments:
+ * sip_uri: string, mandatory, the SIP username, ie john.doe@example.net
+ * password: string, mandatory, the SIP password
+ * criteria: string, mandatory, the key or criteria to search for, multiple keywords should be space separated
+ * limit: int, optional default 100, the maximum number of results to get back, -1 for all of them (note that -1 would really be limited by a hard limit at the server, something decent in the style of 100 or similar).
+ * offset: int, optional default 0, where to start in the result list for the given criteria
+ * domain: string, optional default is the same name as the SIP name, in which domain to search for users
+ * 
+ * Returns:
+ * If sip-uri & password is correct, an array where each element is a struct with the following members:
+ * first_name: string, example: "John"
+ * last_name: string, example: "Doe"
+ * display_name: string, example: "John Doe"
+ * street: string, example: "Paradise Avenue"
+ * zip: string, example: "7777777"
+ * city: string, example: "Heaven"
+ * country: string, example: "SKY"
+ * email: string, example: "john.doe@example.net"
+ * sip: string, example "john.doe@example.net"
+ * domain: string, example: "myjoice.com"
+ * 
+ * If username || password is incorrect an error with a numeric code and a message is returned.
+ *
+ */
+
+The server uri is configurable in ~/.linphonerc :
+
+[BuddyLookup]
+url=https://....
