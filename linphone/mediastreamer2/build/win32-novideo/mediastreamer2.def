@@ -63,8 +63,6 @@ EXPORTS
 	ms_list_remove
 	ms_filter_set_notify_callback
 	
-	ice_sound_send_stun_request
-	ice_process_stun_message
 	ms_discover_mtu
 	ms_set_mtu
 	

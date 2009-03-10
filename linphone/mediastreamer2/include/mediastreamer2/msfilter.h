@@ -394,6 +394,8 @@ the method index (_cnt_) and the argument size */
 #define MS_FILTER_SET_MAX_GAIN  MS_FILTER_BASE_METHOD(25,int)
 
 #define MS_CONF_SPEEX_PREPROCESS_MIC	MS_FILTER_EVENT(MS_CONF_ID, 1, void*)
+#define MS_CONF_CHANNEL_VOLUME	MS_FILTER_EVENT(MS_CONF_ID, 3, void*)
+
 #define MS_SPEEX_EC_PREPROCESS_MIC	MS_FILTER_EVENT(MS_SPEEX_EC_ID, 1, void*)
 #define MS_SPEEX_EC_ECHO_STATE	MS_FILTER_EVENT(MS_SPEEX_EC_ID, 2, void*)
 /** @} */

@@ -50,10 +50,7 @@ ice_sendtest( struct IceCheckList *checklist, struct CandidatePair *remote_candi
    check */
    req.hasPriority = TRUE;
 
-   uint32_t type_preference = 110;
-   uint32_t interface_preference = 255;
-   uint32_t stun_priority=255;
-   req.priority.priority = (type_preference << 24) | (interface_preference << 16) | (stun_priority << 8)
+   req.priority.priority = (110 << 24) | (255 << 16) | (255 << 8)
 	   | (256 - remote_candidate->remote_candidate.component_id);
 
    /* TODO: put this parameter only for the candidate selected */
@@ -611,33 +608,35 @@ static int ice_process_stun_message(RtpSession *session, struct IceCheckList *ch
 		The password associated with that transport address ID is used to verify
 		the MESSAGE-INTEGRITY attribute, if one was present in the request.
 		*/
-		char hmac[20];
-		/* remove length of fingerprint if present */
-		if (msg.hasFingerprint==TRUE)
 		{
-			char *lenpos = (char *)mp->b_rptr + sizeof(UInt16);
-			UInt16 newlen = htons(msg.msgHdr.msgLength-8); /* remove fingerprint size */
-			memcpy(lenpos, &newlen, sizeof(UInt16));
-			stunCalculateIntegrity_shortterm(hmac, (char*)mp->b_rptr, mp->b_wptr-mp->b_rptr-24-8, checklist->loc_ice_pwd);
-		}
-		else
-			stunCalculateIntegrity_shortterm(hmac, (char*)mp->b_rptr, mp->b_wptr-mp->b_rptr-24, checklist->loc_ice_pwd);
-		if (memcmp(msg.messageIntegrity.hash, hmac, 20)!=0)
-		{
-			char buf[STUN_MAX_MESSAGE_SIZE];
-			int len = sizeof(buf);
-			ms_error("ice.c: STUN REQ <- Wrong MESSAGEINTEGRITY attribute in connectivity check");
-			_ice_createErrorResponse(&resp, 4, 1, "Wrong MESSAGEINTEGRITY attribute");
-			len = stunEncodeMessage(&resp, buf, len, &hmacPassword );
-			if (len)
-				sendMessage( rtp_socket, buf, len, remote_addr.addr, remote_addr.port);
-			return -1;
-		}
-		if (msg.hasFingerprint==TRUE)
-		{
-			char *lenpos = (char *)mp->b_rptr + sizeof(UInt16);
-			UInt16 newlen = htons(msg.msgHdr.msgLength); /* add back fingerprint size */
-			memcpy(lenpos, &newlen, sizeof(UInt16));
+			char hmac[20];
+			/* remove length of fingerprint if present */
+			if (msg.hasFingerprint==TRUE)
+			{
+				char *lenpos = (char *)mp->b_rptr + sizeof(UInt16);
+				UInt16 newlen = htons(msg.msgHdr.msgLength-8); /* remove fingerprint size */
+				memcpy(lenpos, &newlen, sizeof(UInt16));
+				stunCalculateIntegrity_shortterm(hmac, (char*)mp->b_rptr, mp->b_wptr-mp->b_rptr-24-8, checklist->loc_ice_pwd);
+			}
+			else
+				stunCalculateIntegrity_shortterm(hmac, (char*)mp->b_rptr, mp->b_wptr-mp->b_rptr-24, checklist->loc_ice_pwd);
+			if (memcmp(msg.messageIntegrity.hash, hmac, 20)!=0)
+			{
+				char buf[STUN_MAX_MESSAGE_SIZE];
+				int len = sizeof(buf);
+				ms_error("ice.c: STUN REQ <- Wrong MESSAGEINTEGRITY attribute in connectivity check");
+				_ice_createErrorResponse(&resp, 4, 1, "Wrong MESSAGEINTEGRITY attribute");
+				len = stunEncodeMessage(&resp, buf, len, &hmacPassword );
+				if (len)
+					sendMessage( rtp_socket, buf, len, remote_addr.addr, remote_addr.port);
+				return -1;
+			}
+			if (msg.hasFingerprint==TRUE)
+			{
+				char *lenpos = (char *)mp->b_rptr + sizeof(UInt16);
+				UInt16 newlen = htons(msg.msgHdr.msgLength); /* add back fingerprint size */
+				memcpy(lenpos, &newlen, sizeof(UInt16));
+			}
 		}
 
 
@@ -734,157 +733,160 @@ static int ice_process_stun_message(RtpSession *session, struct IceCheckList *ch
 			}
 		}
 
-		struct CandidatePair *cand_pair;
-		int pos;
-		cand_pair=NULL;
-		for (pos=0;pos<10 && remote_candidates[pos].remote_candidate.conn_addr[0]!='\0';pos++)
 		{
-			cand_pair = &remote_candidates[pos]; 
-			/* connectivity check is coming from a known remote candidate?
-			we should also check the port...
-			*/
-			if (strcmp(cand_pair->remote_candidate.conn_addr, src6host)==0
-				&& cand_pair->remote_candidate.conn_port==recvport)
-			{
-				ms_message("ice.c: STUN REQ (%s) <- %i (%s:%i:%s <- %s:%i:%s) from known peer",
-					msg.hasUseCandidate==0?"":"USE-CANDIDATE",
-					pos,
-					cand_pair->local_candidate.conn_addr,
-					cand_pair->local_candidate.conn_port,
-					cand_pair->local_candidate.cand_type,
-					cand_pair->remote_candidate.conn_addr,
-					cand_pair->remote_candidate.conn_port,
-					cand_pair->remote_candidate.cand_type);
-				if (cand_pair->connectivity_check==ICE_FROZEN
-					|| cand_pair->connectivity_check==ICE_IN_PROGRESS
-					|| cand_pair->connectivity_check==ICE_FAILED)
-				{
-					cand_pair->connectivity_check = ICE_WAITING;
-					if (msg.hasUseCandidate==TRUE && checklist->rem_controlling==0)
-						cand_pair->nominated_pair = 1;
-				}
-				else if (cand_pair->connectivity_check==ICE_SUCCEEDED)
-				{
-					if (msg.hasUseCandidate==TRUE && checklist->rem_controlling==0)
-					{
-						cand_pair->nominated_pair = 1;
-
-						/* USE-CANDIDATE is in STUN request and we already succeeded on that link */
-						ms_message("ice.c: ICE CONCLUDED == %i (%s:%i:%s <- %s:%i:%s nominated=%s)",
-							pos,
-							cand_pair->local_candidate.conn_addr,
-							cand_pair->local_candidate.conn_port,
-							cand_pair->local_candidate.cand_type,
-							cand_pair->remote_candidate.conn_addr,
-							cand_pair->remote_candidate.conn_port,
-							cand_pair->remote_candidate.cand_type,
-							cand_pair->nominated_pair==0?"FALSE":"TRUE");
-						memcpy(&session->rtp.rem_addr, &evt_data->ep->addr, evt_data->ep->addrlen);
-						session->rtp.rem_addrlen=evt_data->ep->addrlen;
-					}
-				}
-				break;
-			}
+			struct CandidatePair *cand_pair;
+			int pos;
 			cand_pair=NULL;
-		}
-		if (cand_pair==NULL)
-		{
-			struct CandidatePair new_pair;
-			memset(&new_pair, 0, sizeof(struct CandidatePair));
-
-			ms_message("ice.c: STUN REQ <- connectivity check received from an unknow candidate (%s:%i)", src6host, recvport);
-			/* TODO: add the peer-reflexive candidate */
-
-			memcpy(&new_pair.local_candidate, &remote_candidates[0].local_candidate, sizeof(new_pair.local_candidate));
-
-			new_pair.remote_candidate.foundation = 6;
-			new_pair.remote_candidate.component_id = remote_candidates[0].remote_candidate.component_id;
-
-			/* -> no known base address for peer */
-
-			new_pair.remote_candidate.conn_port = recvport;
-			snprintf(new_pair.remote_candidate.conn_addr, sizeof(new_pair.remote_candidate.conn_addr),
-				"%s", src6host);
-
-			/* take it from PRIORITY STUN attr */
-			new_pair.remote_candidate.priority = msg.priority.priority;
-			if (new_pair.remote_candidate.priority==0)
-			{
-				uint32_t type_preference = 110;
-				uint32_t interface_preference = 255;
-				uint32_t stun_priority=255;
-				new_pair.remote_candidate.priority = (type_preference << 24) | (interface_preference << 16) | (stun_priority << 8)
-					| (256 - new_pair.remote_candidate.component_id);
-			}
-
-			snprintf(new_pair.remote_candidate.cand_type, sizeof(cand_pair->remote_candidate.cand_type),
-				"prflx");
-			snprintf (new_pair.remote_candidate.transport,
-							sizeof (new_pair.remote_candidate.transport),
-							"UDP");
-
-			if (checklist->rem_controlling==0)
-			{
-				uint64_t G = new_pair.local_candidate.priority;
-				/* controlled agent */	
-				uint64_t D = new_pair.remote_candidate.priority;
-				new_pair.pair_priority = (MIN(G, D))<<32 | (MAX(G, D))<<1 | (G>D?1:0);
-			}
-			else
-			{
-				uint64_t G = new_pair.remote_candidate.priority;
-				/* controlled agent */	
-				uint64_t D = new_pair.local_candidate.priority;
-				new_pair.pair_priority = (MIN(G, D))<<32 | (MAX(G, D))<<1 | (G>D?1:0);
-			}
-			new_pair.connectivity_check = ICE_WAITING;
-			/* insert new pair candidate */
-			if (msg.hasUseCandidate==TRUE && checklist->rem_controlling==0)
-			{
-				new_pair.nominated_pair = 1;
-			}
-
 			for (pos=0;pos<10 && remote_candidates[pos].remote_candidate.conn_addr[0]!='\0';pos++)
 			{
-				if (pos==9)
+				cand_pair = &remote_candidates[pos]; 
+				/* connectivity check is coming from a known remote candidate?
+				we should also check the port...
+				*/
+				if (strcmp(cand_pair->remote_candidate.conn_addr, src6host)==0
+					&& cand_pair->remote_candidate.conn_port==recvport)
 				{
-					ms_message("ice.c: STUN REQ (%s) <- X (%s:%i:%s <- %s:%i:%s) no room for new remote reflexive candidate",
-						msg.hasUseCandidate==0?"":"USE-CANDIDATE",
-						new_pair.local_candidate.conn_addr,
-						new_pair.local_candidate.conn_port,
-						new_pair.local_candidate.cand_type,
-						new_pair.remote_candidate.conn_addr,
-						new_pair.remote_candidate.conn_port,
-						new_pair.remote_candidate.cand_type);
-					break;
-				}
-				if (new_pair.pair_priority > remote_candidates[pos].pair_priority)
-				{
-					/* move upper data */
-					memmove(&remote_candidates[pos+1], &remote_candidates[pos], sizeof(struct CandidatePair)*(10-pos-1));
-					memcpy(&remote_candidates[pos], &new_pair, sizeof(struct CandidatePair));
-
-					if (checklist->nominated_pair_index>=pos)
-						checklist->nominated_pair_index++;
-					ms_message("ice.c: STUN REQ (%s) <- %i (%s:%i:%s <- %s:%i:%s) new learned remote reflexive candidate",
+					ms_message("ice.c: STUN REQ (%s) <- %i (%s:%i:%s <- %s:%i:%s) from known peer",
 						msg.hasUseCandidate==0?"":"USE-CANDIDATE",
 						pos,
-						new_pair.local_candidate.conn_addr,
-						new_pair.local_candidate.conn_port,
-						new_pair.local_candidate.cand_type,
-						new_pair.remote_candidate.conn_addr,
-						new_pair.remote_candidate.conn_port,
-						new_pair.remote_candidate.cand_type);
+						cand_pair->local_candidate.conn_addr,
+						cand_pair->local_candidate.conn_port,
+						cand_pair->local_candidate.cand_type,
+						cand_pair->remote_candidate.conn_addr,
+						cand_pair->remote_candidate.conn_port,
+						cand_pair->remote_candidate.cand_type);
+					if (cand_pair->connectivity_check==ICE_FROZEN
+						|| cand_pair->connectivity_check==ICE_IN_PROGRESS
+						|| cand_pair->connectivity_check==ICE_FAILED)
+					{
+						cand_pair->connectivity_check = ICE_WAITING;
+						if (msg.hasUseCandidate==TRUE && checklist->rem_controlling==0)
+							cand_pair->nominated_pair = 1;
+					}
+					else if (cand_pair->connectivity_check==ICE_SUCCEEDED)
+					{
+						if (msg.hasUseCandidate==TRUE && checklist->rem_controlling==0)
+						{
+							cand_pair->nominated_pair = 1;
+
+							/* USE-CANDIDATE is in STUN request and we already succeeded on that link */
+							ms_message("ice.c: ICE CONCLUDED == %i (%s:%i:%s <- %s:%i:%s nominated=%s)",
+								pos,
+								cand_pair->local_candidate.conn_addr,
+								cand_pair->local_candidate.conn_port,
+								cand_pair->local_candidate.cand_type,
+								cand_pair->remote_candidate.conn_addr,
+								cand_pair->remote_candidate.conn_port,
+								cand_pair->remote_candidate.cand_type,
+								cand_pair->nominated_pair==0?"FALSE":"TRUE");
+							memcpy(&session->rtp.rem_addr, &evt_data->ep->addr, evt_data->ep->addrlen);
+							session->rtp.rem_addrlen=evt_data->ep->addrlen;
+						}
+					}
 					break;
+				}
+				cand_pair=NULL;
+			}
+			if (cand_pair==NULL)
+			{
+				struct CandidatePair new_pair;
+				memset(&new_pair, 0, sizeof(struct CandidatePair));
+
+				ms_message("ice.c: STUN REQ <- connectivity check received from an unknow candidate (%s:%i)", src6host, recvport);
+				/* TODO: add the peer-reflexive candidate */
+
+				memcpy(&new_pair.local_candidate, &remote_candidates[0].local_candidate, sizeof(new_pair.local_candidate));
+
+				new_pair.remote_candidate.foundation = 6;
+				new_pair.remote_candidate.component_id = remote_candidates[0].remote_candidate.component_id;
+
+				/* -> no known base address for peer */
+
+				new_pair.remote_candidate.conn_port = recvport;
+				snprintf(new_pair.remote_candidate.conn_addr, sizeof(new_pair.remote_candidate.conn_addr),
+					"%s", src6host);
+
+				/* take it from PRIORITY STUN attr */
+				new_pair.remote_candidate.priority = msg.priority.priority;
+				if (new_pair.remote_candidate.priority==0)
+				{
+					uint32_t type_preference = 110;
+					uint32_t interface_preference = 255;
+					uint32_t stun_priority=255;
+					new_pair.remote_candidate.priority = (type_preference << 24) | (interface_preference << 16) | (stun_priority << 8)
+						| (256 - new_pair.remote_candidate.component_id);
+				}
+
+				snprintf(new_pair.remote_candidate.cand_type, sizeof(cand_pair->remote_candidate.cand_type),
+					"prflx");
+				snprintf (new_pair.remote_candidate.transport,
+								sizeof (new_pair.remote_candidate.transport),
+								"UDP");
+
+				if (checklist->rem_controlling==0)
+				{
+					uint64_t G = new_pair.local_candidate.priority;
+					/* controlled agent */	
+					uint64_t D = new_pair.remote_candidate.priority;
+					new_pair.pair_priority = (MIN(G, D))<<32 | (MAX(G, D))<<1 | (G>D?1:0);
+				}
+				else
+				{
+					uint64_t G = new_pair.remote_candidate.priority;
+					/* controlled agent */	
+					uint64_t D = new_pair.local_candidate.priority;
+					new_pair.pair_priority = (MIN(G, D))<<32 | (MAX(G, D))<<1 | (G>D?1:0);
+				}
+				new_pair.connectivity_check = ICE_WAITING;
+				/* insert new pair candidate */
+				if (msg.hasUseCandidate==TRUE && checklist->rem_controlling==0)
+				{
+					new_pair.nominated_pair = 1;
+				}
+
+				for (pos=0;pos<10 && remote_candidates[pos].remote_candidate.conn_addr[0]!='\0';pos++)
+				{
+					if (pos==9)
+					{
+						ms_message("ice.c: STUN REQ (%s) <- X (%s:%i:%s <- %s:%i:%s) no room for new remote reflexive candidate",
+							msg.hasUseCandidate==0?"":"USE-CANDIDATE",
+							new_pair.local_candidate.conn_addr,
+							new_pair.local_candidate.conn_port,
+							new_pair.local_candidate.cand_type,
+							new_pair.remote_candidate.conn_addr,
+							new_pair.remote_candidate.conn_port,
+							new_pair.remote_candidate.cand_type);
+						break;
+					}
+					if (new_pair.pair_priority > remote_candidates[pos].pair_priority)
+					{
+						/* move upper data */
+						memmove(&remote_candidates[pos+1], &remote_candidates[pos], sizeof(struct CandidatePair)*(10-pos-1));
+						memcpy(&remote_candidates[pos], &new_pair, sizeof(struct CandidatePair));
+
+						if (checklist->nominated_pair_index>=pos)
+							checklist->nominated_pair_index++;
+						ms_message("ice.c: STUN REQ (%s) <- %i (%s:%i:%s <- %s:%i:%s) new learned remote reflexive candidate",
+							msg.hasUseCandidate==0?"":"USE-CANDIDATE",
+							pos,
+							new_pair.local_candidate.conn_addr,
+							new_pair.local_candidate.conn_port,
+							new_pair.local_candidate.cand_type,
+							new_pair.remote_candidate.conn_addr,
+							new_pair.remote_candidate.conn_port,
+							new_pair.remote_candidate.cand_type);
+						break;
+					}
 				}
 			}
 		}
 
-		UInt32 cookie = 0x2112A442;
-		resp.hasXorMappedAddress = TRUE;
-		resp.xorMappedAddress.ipv4.port = remote_addr.port^(cookie>>16);
-		resp.xorMappedAddress.ipv4.addr = remote_addr.addr^cookie;
-
+		{
+			UInt32 cookie = 0x2112A442;
+			resp.hasXorMappedAddress = TRUE;
+			resp.xorMappedAddress.ipv4.port = remote_addr.port^(cookie>>16);
+			resp.xorMappedAddress.ipv4.addr = remote_addr.addr^cookie;
+		}
 
 		resp.msgHdr.msgType = (STUN_METHOD_BINDING | STUN_SUCCESS_RESP);
 
@@ -895,10 +897,12 @@ static int ice_process_stun_message(RtpSession *session, struct IceCheckList *ch
 		/* ? any messageintegrity in response? */
 		resp.hasMessageIntegrity = TRUE;
 
-		const char serverName[] = "mediastreamer2 " STUN_VERSION;
-		resp.hasSoftware = TRUE;
-		memcpy( resp.softwareName.value, serverName, sizeof(serverName));
-		resp.softwareName.sizeValue = sizeof(serverName);
+		{
+			const char serverName[] = "mediastreamer2 " STUN_VERSION;
+			resp.hasSoftware = TRUE;
+			memcpy( resp.softwareName.value, serverName, sizeof(serverName));
+			resp.softwareName.sizeValue = sizeof(serverName);
+		}
 
 		resp.hasFingerprint = TRUE;
 
@@ -930,218 +934,219 @@ static int ice_process_stun_message(RtpSession *session, struct IceCheckList *ch
 			return -1;
 		}
 
-		UInt32 cookie = 0x2112A442;
-		UInt16 cookie16 = 0x2112A442 >> 16;
-		mappedAddr.port = resp.xorMappedAddress.ipv4.port^cookie16;
-		mappedAddr.addr = resp.xorMappedAddress.ipv4.addr^cookie;
-
-		struct in_addr inaddr;
-		char mapped_addr[64];
-		inaddr.s_addr = htonl (mappedAddr.addr);
-		snprintf(mapped_addr, sizeof(mapped_addr),
-			"%s", inet_ntoa (inaddr));
-
-		struct CandidatePair *cand_pair;
-		int pos;
-		for (pos=0;pos<10 && remote_candidates[pos].remote_candidate.conn_addr[0]!='\0';pos++)
 		{
-			cand_pair = &remote_candidates[pos];
+			UInt32 cookie = 0x2112A442;
+			UInt16 cookie16 = 0x2112A442 >> 16;
+			mappedAddr.port = resp.xorMappedAddress.ipv4.port^cookie16;
+			mappedAddr.addr = resp.xorMappedAddress.ipv4.addr^cookie;
+		}
 
-			if (memcmp(&(cand_pair->tid), &(resp.msgHdr.tr_id), sizeof(resp.msgHdr.tr_id))==0)
+		{
+			struct in_addr inaddr;
+			char mapped_addr[64];
+			struct CandidatePair *cand_pair;
+			int pos;
+			inaddr.s_addr = htonl (mappedAddr.addr);
+			snprintf(mapped_addr, sizeof(mapped_addr),
+				"%s", inet_ntoa (inaddr));
+
+			for (pos=0;pos<10 && remote_candidates[pos].remote_candidate.conn_addr[0]!='\0';pos++)
 			{
-				break;
+				cand_pair = &remote_candidates[pos];
+
+				if (memcmp(&(cand_pair->tid), &(resp.msgHdr.tr_id), sizeof(resp.msgHdr.tr_id))==0)
+				{
+					break;
+				}
+				cand_pair = NULL;
 			}
-			cand_pair = NULL;
-		}
 
-		if (cand_pair==NULL)
-		{
-			ms_message("ice.c: STUN RESP (%s) <- no transaction for STUN answer?",
-				msg.hasUseCandidate==0?"":"USE-CANDIDATE");
-		}
-		else if (strcmp(src6host, cand_pair->remote_candidate.conn_addr)!=0
-			|| recvport!=cand_pair->remote_candidate.conn_port)
-		{
-			/* 7.1.2.2.  Success Cases
-			-> must be a security issue: refuse non-symmetric answer */
-			ms_message("ice.c: STUN RESP (%s) <- %i (%s:%i:%s <- %s:%i:%s nominated=%s) refused because non-symmetric",
-				msg.hasUseCandidate==0?"":"USE-CANDIDATE",
-				pos,
-				cand_pair->local_candidate.conn_addr,
-				cand_pair->local_candidate.conn_port,
-				cand_pair->local_candidate.cand_type,
-				cand_pair->remote_candidate.conn_addr,
-				cand_pair->remote_candidate.conn_port,
-				cand_pair->remote_candidate.cand_type,
-				cand_pair->nominated_pair==0?"FALSE":"TRUE");
-			cand_pair->connectivity_check = ICE_FAILED;
-		}
-		else
-		{
-			/* Youhouhouhou */
-			ms_message("ice.c: STUN RESP (%s) <- %i (%s:%i:%s <- %s:%i:%s nominated=%s)",
-				msg.hasUseCandidate==0?"":"USE-CANDIDATE",
-				pos,
-				cand_pair->local_candidate.conn_addr,
-				cand_pair->local_candidate.conn_port,
-				cand_pair->local_candidate.cand_type,
-				cand_pair->remote_candidate.conn_addr,
-				cand_pair->remote_candidate.conn_port,
-				cand_pair->remote_candidate.cand_type,
-				cand_pair->nominated_pair==0?"FALSE":"TRUE");
-			if (cand_pair->connectivity_check != ICE_SUCCEEDED)
+			if (cand_pair==NULL)
 			{
-				if (checklist->rem_controlling==1 && cand_pair->nominated_pair>0)
-				{
-					/* USE-CANDIDATE was in previous STUN request sent */
-					ms_message("ice.c: ICE CONCLUDED == %i (%s:%i:%s <- %s:%i:%s nominated=%s)",
-						pos,
-						cand_pair->local_candidate.conn_addr,
-						cand_pair->local_candidate.conn_port,
-						cand_pair->local_candidate.cand_type,
-						cand_pair->remote_candidate.conn_addr,
-						cand_pair->remote_candidate.conn_port,
-						cand_pair->remote_candidate.cand_type,
-						cand_pair->nominated_pair==0?"FALSE":"TRUE");
-					memcpy(&session->rtp.rem_addr, &evt_data->ep->addr, evt_data->ep->addrlen);
-					session->rtp.rem_addrlen=evt_data->ep->addrlen;
-				}
-
-				if (cand_pair->nominated_pair>0 && checklist->rem_controlling==0)
-				{
-					/* USE-CANDIDATE is in STUN request and we already succeeded on that link */
-					ms_message("ice.c: ICE CONCLUDED == %i (%s:%i:%s <- %s:%i:%s nominated=%s)",
-						pos,
-						cand_pair->local_candidate.conn_addr,
-						cand_pair->local_candidate.conn_port,
-						cand_pair->local_candidate.cand_type,
-						cand_pair->remote_candidate.conn_addr,
-						cand_pair->remote_candidate.conn_port,
-						cand_pair->remote_candidate.cand_type,
-						cand_pair->nominated_pair==0?"FALSE":"TRUE");
-					memcpy(&session->rtp.rem_addr, &evt_data->ep->addr, evt_data->ep->addrlen);
-					session->rtp.rem_addrlen=evt_data->ep->addrlen;
-				}
-
+				ms_message("ice.c: STUN RESP (%s) <- no transaction for STUN answer?",
+					msg.hasUseCandidate==0?"":"USE-CANDIDATE");
+			}
+			else if (strcmp(src6host, cand_pair->remote_candidate.conn_addr)!=0
+				|| recvport!=cand_pair->remote_candidate.conn_port)
+			{
+				/* 7.1.2.2.  Success Cases
+				-> must be a security issue: refuse non-symmetric answer */
+				ms_message("ice.c: STUN RESP (%s) <- %i (%s:%i:%s <- %s:%i:%s nominated=%s) refused because non-symmetric",
+					msg.hasUseCandidate==0?"":"USE-CANDIDATE",
+					pos,
+					cand_pair->local_candidate.conn_addr,
+					cand_pair->local_candidate.conn_port,
+					cand_pair->local_candidate.cand_type,
+					cand_pair->remote_candidate.conn_addr,
+					cand_pair->remote_candidate.conn_port,
+					cand_pair->remote_candidate.cand_type,
+					cand_pair->nominated_pair==0?"FALSE":"TRUE");
 				cand_pair->connectivity_check = ICE_FAILED;
-				if (mappedAddr.port == cand_pair->local_candidate.conn_port
-					&& strcmp(mapped_addr, cand_pair->local_candidate.conn_addr)==0)
+			}
+			else
+			{
+				/* Youhouhouhou */
+				ms_message("ice.c: STUN RESP (%s) <- %i (%s:%i:%s <- %s:%i:%s nominated=%s)",
+					msg.hasUseCandidate==0?"":"USE-CANDIDATE",
+					pos,
+					cand_pair->local_candidate.conn_addr,
+					cand_pair->local_candidate.conn_port,
+					cand_pair->local_candidate.cand_type,
+					cand_pair->remote_candidate.conn_addr,
+					cand_pair->remote_candidate.conn_port,
+					cand_pair->remote_candidate.cand_type,
+					cand_pair->nominated_pair==0?"FALSE":"TRUE");
+				if (cand_pair->connectivity_check != ICE_SUCCEEDED)
 				{
-					/* no peer-reflexive candidate was discovered */
-					cand_pair->connectivity_check = ICE_SUCCEEDED;
-				}
-				else
-				{
-					int pos2;
-					for (pos2=0;pos2<10 && remote_candidates[pos2].remote_candidate.conn_addr[0]!='\0';pos2++)
+					if (checklist->rem_controlling==1 && cand_pair->nominated_pair>0)
 					{
-						if (mappedAddr.port == remote_candidates[pos2].local_candidate.conn_port
-							&& strcmp(mapped_addr, remote_candidates[pos2].local_candidate.conn_addr)==0
-							&& cand_pair->remote_candidate.conn_port == remote_candidates[pos2].remote_candidate.conn_port
-							&& strcmp(cand_pair->remote_candidate.conn_addr, remote_candidates[pos2].remote_candidate.conn_addr)==0)
-						{
-							if (remote_candidates[pos2].connectivity_check==ICE_PRUNED
-								||remote_candidates[pos2].connectivity_check==ICE_FROZEN
-								||remote_candidates[pos2].connectivity_check==ICE_FAILED
-								|| remote_candidates[pos2].connectivity_check==ICE_IN_PROGRESS)
-								remote_candidates[pos2].connectivity_check = ICE_WAITING; /* trigger check */
-							/*
-							ms_message("ice.c: STUN RESP (%s) <- %i (%s:%i:%s <- %s:%i:%s) found candidate pair matching XOR-MAPPED-ADDRESS",
-								msg.hasUseCandidate==0?"":"USE-CANDIDATE",
-								pos,
-								cand_pair->local_candidate.conn_addr,
-								cand_pair->local_candidate.conn_port,
-								cand_pair->local_candidate.cand_type,
-								cand_pair->remote_candidate.conn_addr,
-								cand_pair->remote_candidate.conn_port,
-								cand_pair->remote_candidate.cand_type);
-								*/
-							break;
-						}
+						/* USE-CANDIDATE was in previous STUN request sent */
+						ms_message("ice.c: ICE CONCLUDED == %i (%s:%i:%s <- %s:%i:%s nominated=%s)",
+							pos,
+							cand_pair->local_candidate.conn_addr,
+							cand_pair->local_candidate.conn_port,
+							cand_pair->local_candidate.cand_type,
+							cand_pair->remote_candidate.conn_addr,
+							cand_pair->remote_candidate.conn_port,
+							cand_pair->remote_candidate.cand_type,
+							cand_pair->nominated_pair==0?"FALSE":"TRUE");
+						memcpy(&session->rtp.rem_addr, &evt_data->ep->addr, evt_data->ep->addrlen);
+						session->rtp.rem_addrlen=evt_data->ep->addrlen;
 					}
-					if (pos2==10 || remote_candidates[pos2].remote_candidate.conn_addr[0]=='\0')
+
+					if (cand_pair->nominated_pair>0 && checklist->rem_controlling==0)
 					{
-						struct CandidatePair new_pair;
-						memset(&new_pair, 0, sizeof(struct CandidatePair));
+						/* USE-CANDIDATE is in STUN request and we already succeeded on that link */
+						ms_message("ice.c: ICE CONCLUDED == %i (%s:%i:%s <- %s:%i:%s nominated=%s)",
+							pos,
+							cand_pair->local_candidate.conn_addr,
+							cand_pair->local_candidate.conn_port,
+							cand_pair->local_candidate.cand_type,
+							cand_pair->remote_candidate.conn_addr,
+							cand_pair->remote_candidate.conn_port,
+							cand_pair->remote_candidate.cand_type,
+							cand_pair->nominated_pair==0?"FALSE":"TRUE");
+						memcpy(&session->rtp.rem_addr, &evt_data->ep->addr, evt_data->ep->addrlen);
+						session->rtp.rem_addrlen=evt_data->ep->addrlen;
+					}
 
-						/* 7.1.2.2.1.  Discovering Peer Reflexive Candidates */
-						/* If IP & port were different than mappedAddr, there was A NAT
-						between me and remote destination. */
-						memcpy(&new_pair.remote_candidate, &cand_pair->remote_candidate, sizeof(new_pair.remote_candidate));
-
-						new_pair.local_candidate.foundation = 6;
-						new_pair.local_candidate.component_id = cand_pair->local_candidate.component_id;
-
-						/* what is my base address? */
-						new_pair.local_candidate.rel_port = cand_pair->local_candidate.conn_port;
-						snprintf(new_pair.local_candidate.rel_addr, sizeof(new_pair.local_candidate.rel_addr),
-							"%s", cand_pair->local_candidate.conn_addr);
-
-						new_pair.local_candidate.conn_port = mappedAddr.port;
-						snprintf(new_pair.local_candidate.conn_addr, sizeof(new_pair.local_candidate.conn_addr),
-							"%s", mapped_addr);
-
-						uint32_t type_preference = 110;
-						uint32_t interface_preference = 255;
-						uint32_t stun_priority=255;
-						new_pair.remote_candidate.priority = (type_preference << 24) | (interface_preference << 16) | (stun_priority << 8)
-							| (256 - new_pair.remote_candidate.component_id);
-
-						snprintf(new_pair.local_candidate.cand_type, sizeof(cand_pair->local_candidate.cand_type),
-							"prflx");
-						snprintf (new_pair.local_candidate.transport,
-										sizeof (new_pair.local_candidate.transport),
-										"UDP");
-
-						if (checklist->rem_controlling==0)
-						{
-							uint64_t G = new_pair.local_candidate.priority;
-							/* controlled agent */	
-							uint64_t D = new_pair.remote_candidate.priority;
-							new_pair.pair_priority = (MIN(G, D))<<32 | (MAX(G, D))<<1 | (G>D?1:0);
-						}
-						else
-						{
-							uint64_t G = new_pair.remote_candidate.priority;
-							/* controlled agent */	
-							uint64_t D = new_pair.local_candidate.priority;
-							new_pair.pair_priority = (MIN(G, D))<<32 | (MAX(G, D))<<1 | (G>D?1:0);
-						}
-						new_pair.connectivity_check = ICE_WAITING;
-						/* insert new pair candidate */
+					cand_pair->connectivity_check = ICE_FAILED;
+					if (mappedAddr.port == cand_pair->local_candidate.conn_port
+						&& strcmp(mapped_addr, cand_pair->local_candidate.conn_addr)==0)
+					{
+						/* no peer-reflexive candidate was discovered */
+						cand_pair->connectivity_check = ICE_SUCCEEDED;
+					}
+					else
+					{
+						int pos2;
 						for (pos2=0;pos2<10 && remote_candidates[pos2].remote_candidate.conn_addr[0]!='\0';pos2++)
 						{
-							if (pos2==9)
+							if (mappedAddr.port == remote_candidates[pos2].local_candidate.conn_port
+								&& strcmp(mapped_addr, remote_candidates[pos2].local_candidate.conn_addr)==0
+								&& cand_pair->remote_candidate.conn_port == remote_candidates[pos2].remote_candidate.conn_port
+								&& strcmp(cand_pair->remote_candidate.conn_addr, remote_candidates[pos2].remote_candidate.conn_addr)==0)
 							{
-								ms_message("ice.c: STUN RESP (%s) <- %i (%s:%i:%s <- %s:%i:%s) no room for new local peer-reflexive candidate",
+								if (remote_candidates[pos2].connectivity_check==ICE_PRUNED
+									||remote_candidates[pos2].connectivity_check==ICE_FROZEN
+									||remote_candidates[pos2].connectivity_check==ICE_FAILED
+									|| remote_candidates[pos2].connectivity_check==ICE_IN_PROGRESS)
+									remote_candidates[pos2].connectivity_check = ICE_WAITING; /* trigger check */
+								/*
+								ms_message("ice.c: STUN RESP (%s) <- %i (%s:%i:%s <- %s:%i:%s) found candidate pair matching XOR-MAPPED-ADDRESS",
 									msg.hasUseCandidate==0?"":"USE-CANDIDATE",
-									pos2,
-									new_pair.local_candidate.conn_addr,
-									new_pair.local_candidate.conn_port,
-									new_pair.local_candidate.cand_type,
-									new_pair.remote_candidate.conn_addr,
-									new_pair.remote_candidate.conn_port,
-									new_pair.remote_candidate.cand_type);
+									pos,
+									cand_pair->local_candidate.conn_addr,
+									cand_pair->local_candidate.conn_port,
+									cand_pair->local_candidate.cand_type,
+									cand_pair->remote_candidate.conn_addr,
+									cand_pair->remote_candidate.conn_port,
+									cand_pair->remote_candidate.cand_type);
+									*/
 								break;
 							}
-							if (new_pair.pair_priority > remote_candidates[pos2].pair_priority)
-							{
-								/* move upper data */
-								memmove(&remote_candidates[pos2+1], &remote_candidates[pos2], sizeof(struct CandidatePair)*(10-pos2-1));
-								memcpy(&remote_candidates[pos2], &new_pair, sizeof(struct CandidatePair));
+						}
+						if (pos2==10 || remote_candidates[pos2].remote_candidate.conn_addr[0]=='\0')
+						{
+							struct CandidatePair new_pair;
+							memset(&new_pair, 0, sizeof(struct CandidatePair));
 
-								if (checklist->nominated_pair_index>=pos2)
-									checklist->nominated_pair_index++;
-								ms_message("ice.c: STUN RESP (%s) <- %i (%s:%i:%s <- %s:%i:%s) new discovered local peer-reflexive candidate",
-									msg.hasUseCandidate==0?"":"USE-CANDIDATE",
-									pos2,
-									new_pair.local_candidate.conn_addr,
-									new_pair.local_candidate.conn_port,
-									new_pair.local_candidate.cand_type,
-									new_pair.remote_candidate.conn_addr,
-									new_pair.remote_candidate.conn_port,
-									new_pair.remote_candidate.cand_type);
-								break;
+							/* 7.1.2.2.1.  Discovering Peer Reflexive Candidates */
+							/* If IP & port were different than mappedAddr, there was A NAT
+							between me and remote destination. */
+							memcpy(&new_pair.remote_candidate, &cand_pair->remote_candidate, sizeof(new_pair.remote_candidate));
+
+							new_pair.local_candidate.foundation = 6;
+							new_pair.local_candidate.component_id = cand_pair->local_candidate.component_id;
+
+							/* what is my base address? */
+							new_pair.local_candidate.rel_port = cand_pair->local_candidate.conn_port;
+							snprintf(new_pair.local_candidate.rel_addr, sizeof(new_pair.local_candidate.rel_addr),
+								"%s", cand_pair->local_candidate.conn_addr);
+
+							new_pair.local_candidate.conn_port = mappedAddr.port;
+							snprintf(new_pair.local_candidate.conn_addr, sizeof(new_pair.local_candidate.conn_addr),
+								"%s", mapped_addr);
+
+							new_pair.remote_candidate.priority = (110 << 24) | (255 << 16) | (255 << 8)
+								| (256 - new_pair.remote_candidate.component_id);
+
+							snprintf(new_pair.local_candidate.cand_type, sizeof(cand_pair->local_candidate.cand_type),
+								"prflx");
+							snprintf (new_pair.local_candidate.transport,
+											sizeof (new_pair.local_candidate.transport),
+											"UDP");
+
+							if (checklist->rem_controlling==0)
+							{
+								uint64_t G = new_pair.local_candidate.priority;
+								/* controlled agent */	
+								uint64_t D = new_pair.remote_candidate.priority;
+								new_pair.pair_priority = (MIN(G, D))<<32 | (MAX(G, D))<<1 | (G>D?1:0);
+							}
+							else
+							{
+								uint64_t G = new_pair.remote_candidate.priority;
+								/* controlled agent */	
+								uint64_t D = new_pair.local_candidate.priority;
+								new_pair.pair_priority = (MIN(G, D))<<32 | (MAX(G, D))<<1 | (G>D?1:0);
+							}
+							new_pair.connectivity_check = ICE_WAITING;
+							/* insert new pair candidate */
+							for (pos2=0;pos2<10 && remote_candidates[pos2].remote_candidate.conn_addr[0]!='\0';pos2++)
+							{
+								if (pos2==9)
+								{
+									ms_message("ice.c: STUN RESP (%s) <- %i (%s:%i:%s <- %s:%i:%s) no room for new local peer-reflexive candidate",
+										msg.hasUseCandidate==0?"":"USE-CANDIDATE",
+										pos2,
+										new_pair.local_candidate.conn_addr,
+										new_pair.local_candidate.conn_port,
+										new_pair.local_candidate.cand_type,
+										new_pair.remote_candidate.conn_addr,
+										new_pair.remote_candidate.conn_port,
+										new_pair.remote_candidate.cand_type);
+									break;
+								}
+								if (new_pair.pair_priority > remote_candidates[pos2].pair_priority)
+								{
+									/* move upper data */
+									memmove(&remote_candidates[pos2+1], &remote_candidates[pos2], sizeof(struct CandidatePair)*(10-pos2-1));
+									memcpy(&remote_candidates[pos2], &new_pair, sizeof(struct CandidatePair));
+
+									if (checklist->nominated_pair_index>=pos2)
+										checklist->nominated_pair_index++;
+									ms_message("ice.c: STUN RESP (%s) <- %i (%s:%i:%s <- %s:%i:%s) new discovered local peer-reflexive candidate",
+										msg.hasUseCandidate==0?"":"USE-CANDIDATE",
+										pos2,
+										new_pair.local_candidate.conn_addr,
+										new_pair.local_candidate.conn_port,
+										new_pair.local_candidate.cand_type,
+										new_pair.remote_candidate.conn_addr,
+										new_pair.remote_candidate.conn_port,
+										new_pair.remote_candidate.cand_type);
+									break;
+								}
 							}
 						}
 					}
@@ -1151,6 +1156,7 @@ static int ice_process_stun_message(RtpSession *session, struct IceCheckList *ch
 	}
 	else if (STUN_IS_ERR_RESP(msg.msgHdr.msgType))
 	{
+		int pos;
 		StunMessage resp;
 		memset(&resp, 0, sizeof(StunMessage));
 		res = stunParseMessage((char*)mp->b_rptr, mp->b_wptr-mp->b_rptr,
@@ -1161,7 +1167,6 @@ static int ice_process_stun_message(RtpSession *session, struct IceCheckList *ch
 			return -1;
 		}
 
-		int pos;
 		for (pos=0;pos<10 && remote_candidates[pos].remote_candidate.conn_addr[0]!='\0';pos++)
 		{
 			struct CandidatePair *cand_pair = &remote_candidates[pos];
