@@ -191,7 +191,7 @@ Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
-BuildCmd=	$(CC) -c general_state.c -o "Default Profile/general_state.o" $(CFLAGS)
+BuildCmd=$(CC) -c general_state.c -o "Default Profile/general_state.o" $(CFLAGS)
 
 [VersionInfo]
 Major=0
@@ -215,7 +215,7 @@ UnitCount=18
 
 [Profile1]
 ProfileName=Default Profile
-Type=2
+Type=3
 ObjFiles=
 Includes=../oRTP/include;../mediastreamer2/include;../../linphone-deps/include
 Libs=../oRTP/build/win32native;../mediastreamer2/build/win32native;../../linphone-deps/lib
@@ -224,14 +224,14 @@ ResourceIncludes=
 MakeIncludes=
 Compiler=-Wall -Werror_@@_-D_WIN32_WINNT=0x501_@@_-DINET6_@@_-DORTP_INET6_@@_-DVIDEO_ENABLED_@@_-g_@@_-DOSIP_MT_@@_-DIN_LINPHONE_@@_
 CppCompiler=
-Linker=
+Linker=-lmediastreamer2_@@_-lortp_@@_-leXosip2_@@_-losipparser2_@@_-lws2_32_@@_
 PreprocDefines=
 CompilerSettings=0000000000010000000000
 Icon=
 ExeOutput=
 ObjectOutput=Default Profile
-OverrideOutput=0
-OverrideOutputName=liblinphone.lib
+OverrideOutput=1
+OverrideOutputName=linphone.dll
 HostApplication=
 CommandLine=
 UseCustomMakefile=0

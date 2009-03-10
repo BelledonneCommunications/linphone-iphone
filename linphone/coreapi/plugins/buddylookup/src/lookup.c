@@ -1,5 +1,10 @@
+#ifdef IN_LINPHONE
+#include "linphonecore.h"
+#include "lpconfig.h"
+#else
 #include <linphone/linphonecore.h>
 #include <linphone/lpconfig.h>
+#endif
 #include <libsoup/soup.h>
 
 static bool_t buddy_lookup_init(void){
@@ -17,9 +22,15 @@ typedef struct _BuddyLookupState{
 
 #define get_buddy_lookup_state(ctx)	((BuddyLookupState*)((ctx)->data))
 
+static void set_proxy(SoupSession *session){
+	SoupURI *uri=soup_uri_new("http://web-proxy.gre.hp.com:8080");
+	g_object_set(G_OBJECT(session),"proxy-uri",uri,NULL);
+}
+
 static void buddy_lookup_instance_init(SipSetupContext *ctx){
 	BuddyLookupState *s=ms_new0(BuddyLookupState,1);
 	s->session=soup_session_sync_new();
+	set_proxy(s->session);
 	ctx->data=s;
 }
 
@@ -145,6 +156,7 @@ static void * process_xml_rpc_request(void *up){
 		ms_message("Got a response from server, yeah !");
 		xml_rpc_parse_response(ctx,sm);
 	}else{
+		ms_error("request failed, error-code=%i (%s)",code,soup_status_get_phrase(code));
 		s->status=BuddyLookupFailure;
 	}
 	s->processing=FALSE;

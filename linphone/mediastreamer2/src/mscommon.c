@@ -288,12 +288,13 @@ int ms_load_plugins(const char *dir){
         /* load library */
         HINSTANCE os_handle;
         UINT em;
-        em = SetErrorMode (SEM_FAILCRITICALERRORS);
-
+//        em = SetErrorMode (SEM_FAILCRITICALERRORS);
+ em = SetErrorMode (0);
         snprintf(szPluginFile, sizeof(szPluginFile), "%s\\%s", szDirPath, FileData.cFileName);
         os_handle = LoadLibraryEx (szPluginFile, NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
         if (os_handle==NULL)
         {
+			ms_warning("Fail to load plugin %s: error %i",szPluginFile,GetLastError());
             os_handle = LoadLibraryEx (szPluginFile, NULL, 0);
         }
         SetErrorMode (em);

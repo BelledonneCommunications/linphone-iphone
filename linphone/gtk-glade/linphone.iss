@@ -42,6 +42,8 @@ Source: "..\..\linphone-deps\bin\avutil-49.dll"; DestDir: "{app}"; Flags: ignore
 Source: "..\..\linphone-deps\bin\swscale.dll"; DestDir: "{app}"; Flags: ignoreversion
 ;;Source: "..\..\linphone-deps\bin\libspeex-1.dll"; DestDir: "{app}"; Flags: ignoreversion
 ;;Source: "..\..\linphone-deps\bin\libspeexdsp-1.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\coreapi\linphone.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\coreapi\plugins\buddylookup\libbuddylookup.dll"; DestDir: "{app}\liblinphone\plugins"; Flags: ignoreversion
 Source: "..\mediastreamer2\build\win32native\mediastreamer2.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\oRTP\build\win32native\ortp.dll"; DestDir: "{app}"; Flags: ignoreversion
 ;;Sound files:
