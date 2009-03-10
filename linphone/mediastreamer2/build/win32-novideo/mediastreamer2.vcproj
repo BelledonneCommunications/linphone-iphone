@@ -62,7 +62,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Ws2_32.lib Winmm.lib ortp.lib libspeex.lib libspeexdsp.lib libcmtd.lib"
+				AdditionalDependencies="Ws2_32.lib Winmm.lib ortp.lib libspeexd.lib libspeexdspd.lib libcmtd.lib"
 				OutputFile="$(IntDir)/mediastreamer2.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;..\..\..\oRTP\build\win32native\debug&quot;,..\..\..\codecs\speex\lib"
