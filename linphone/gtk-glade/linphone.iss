@@ -43,7 +43,6 @@ Source: "..\..\linphone-deps\bin\swscale.dll"; DestDir: "{app}"; Flags: ignoreve
 ;;Source: "..\..\linphone-deps\bin\libspeex-1.dll"; DestDir: "{app}"; Flags: ignoreversion
 ;;Source: "..\..\linphone-deps\bin\libspeexdsp-1.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\coreapi\linphone.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\coreapi\plugins\buddylookup\libbuddylookup.dll"; DestDir: "{app}\liblinphone\plugins"; Flags: ignoreversion
 Source: "..\mediastreamer2\build\win32native\mediastreamer2.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\oRTP\build\win32native\ortp.dll"; DestDir: "{app}"; Flags: ignoreversion
 ;;Sound files:
@@ -73,6 +72,11 @@ Source: "..\..\gtk+-2.14.7\share\locale\fr\LC_MESSAGES\*"; DestDir: "{app}\share
 Source: "..\..\gtk+-2.14.7\share\locale\sv\LC_MESSAGES\*"; DestDir: "{app}\share\locale\sv\LC_MESSAGES"; Flags: ignoreversion
 Source: "..\..\XLiquid_GTK-1.0.3\gtk-2.0\*"; DestDir: "{app}\share\themes\XLiquid_GTK-1.0.3\gtk-2.0"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
+
+;; BuddyLookup plugin
+Source: "..\coreapi\plugins\buddylookup\libbuddylookup.dll"; DestDir: "{app}\liblinphone\plugins"; Flags: ignoreversion
+Source: "..\..\libsoup\bin\libsoup-2.4-1.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\gnutls-2.6.4\bin\*.dll"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\Linphone"; Filename: "{app}\linphone.exe" ; WorkingDir: "{app}"

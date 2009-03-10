@@ -43,11 +43,11 @@ AutoIncBuildNrOnCompile=0
 ProfileName=MingW 3.4.2
 Type=3
 ObjFiles=
-Includes=../../../coreapi;../../../mediastreamer2/include;../../../oRTP/include;../../../../linphone-deps/include;../../../../gtk+-2.14.7/include/glib-2.0;../../../../libsoup-2.4.1/include/libsoup-2.4;../../../../gtk+-2.14.7/lib/glib-2.0/include
-Libs=../../../../gtk+-2.14.7/lib;../../../../libsoup-2.4.1/lib;../../../../linphone-deps/lib;../../../oRTP/build/win32native;../../../mediastreamer2/build/win32native;../../../coreapi
+Includes=../../../coreapi;../../../mediastreamer2/include;../../../oRTP/include;../../../../linphone-deps/include;../../../../gtk+-2.14.7/include/glib-2.0;../../../../libsoup/include/libsoup-2.4;../../../../gtk+-2.14.7/lib/glib-2.0/include
+Libs=../../../../gtk+-2.14.7/lib;../../../../libsoup/lib;../../../../linphone-deps/lib;../../../oRTP/build/win32native;../../../mediastreamer2/build/win32native;../../../coreapi
 ResourceIncludes=
 MakeIncludes=
-Compiler=-DBUILDING_DLL=1_@@_-DIN_LINPHONE_@@_
+Compiler=-DBUILDING_DLL=1_@@_-DIN_LINPHONE_@@_-02 -g_@@_
 CppCompiler=-DBUILDING_DLL=1_@@_
 Linker=--no-export-all-symbols_@@_--add-stdcall-alias_@@_-lsoup-2.4_@@_-lglib-2.0_@@_-lgio-2.0_@@_-lgobject-2.0_@@_-lxml2_@@_-llinphone_@@_-lmediastreamer2_@@_-lortp_@@_-losipparser2_@@_-lws2_32_@@_
 PreprocDefines=
