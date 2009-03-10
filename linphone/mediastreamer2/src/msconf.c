@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "mediastreamer2/msfilter.h"
+#include <math.h>
 
 #if defined(_WIN32_WCE)
 #define DISABLE_SPEEX
@@ -35,13 +36,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define CONF_GRAN_MAX 12 /* limit for 'too much data' */
 #endif
 
-//#ifndef CONF_GRAN
-//#define CONF_GRAN (160*4)
-//#endif
 #define CONF_NSAMPLES 160*4*4 /* (CONF_GRAN/2) */
 #ifndef CONF_MAX_PINS
 #define CONF_MAX_PINS 32
 #endif
+
+static const float max_e=32767*32767;
+static const float coef=0.1;
 
 typedef struct Channel{
 	MSBufferizer buff;
@@ -61,6 +62,8 @@ typedef struct Channel{
 #ifndef DISABLE_SPEEX
 	SpeexPreprocessState *speex_pp;
 #endif
+
+	float energy;
 
 } Channel;
 
@@ -471,8 +474,8 @@ static void conf_dispatch(MSFilter *f, ConfState *s){
 				m=conf_output(s,chan);
 			else
 			{
-				m=allocb(s->conf_gran,0);
 				int k;
+				m=allocb(s->conf_gran,0);
 				for (k=0;k<s->conf_nsamples;++k){
 					*((int16_t*)m->b_wptr)=0;
 					m->b_wptr+=2;
