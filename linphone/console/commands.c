@@ -471,7 +471,7 @@ lpc_cmd_firewall(LinphoneCore *lc, char *args)
 			setting = linphone_core_get_stun_server(lc);
 			if ( ! setting )
 			{
-				linphonec_out("No stun server address is defined, use 'stun <address>' first");
+				linphonec_out("No stun server address is defined, use 'stun <address>' first\n");
 				return 1;
 			}
 			linphone_core_set_firewall_policy(lc,LINPHONE_POLICY_USE_STUN);
