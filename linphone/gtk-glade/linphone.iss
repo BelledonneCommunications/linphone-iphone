@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=Linphone
-AppVerName=Linphone for windows 3.0.0 (gtk/glade interface based on liblinphone)
+AppVerName=Linphone version 3.0.0
 AppPublisher=linphone.org
 AppPublisherURL=http://www.linphone.org
 AppSupportURL=http://www.linphone.org

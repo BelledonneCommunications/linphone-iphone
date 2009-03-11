@@ -24,6 +24,7 @@ typedef struct _BuddyLookupState{
 
 void set_proxy(SoupSession *session, const char *proxy){
 	SoupURI *uri=soup_uri_new(proxy);
+	ms_message("Using http proxy %s",proxy);
 	g_object_set(G_OBJECT(session),"proxy-uri",uri,NULL);
 }
 
@@ -32,7 +33,7 @@ static void buddy_lookup_instance_init(SipSetupContext *ctx){
 	const char *proxy=NULL;
 	s->session=soup_session_sync_new();
 	proxy=getenv("http_proxy");
-	set_proxy(s->session,proxy);
+	if (proxy && strlen(proxy)>0) set_proxy(s->session,proxy);
 	ctx->data=s;
 }
 
@@ -159,7 +160,6 @@ static void * process_xml_rpc_request(void *up){
 		xml_rpc_parse_response(ctx,sm);
 	}else{
 		ms_error("request failed, error-code=%i (%s)",code,soup_status_get_phrase(code));
-		*((int*)NULL)=3;
 		s->status=BuddyLookupFailure;
 	}
 	s->processing=FALSE;
