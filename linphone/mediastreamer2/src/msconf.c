@@ -344,10 +344,10 @@ static void conf_sum(MSFilter *f, ConfState *s){
 						s->channels[0].is_speaking=-2;
 				}
 
-				if (s->channels[0].is_speaking<=0)
-					ms_message("silence on! (%i)", s->channels[0].is_speaking);
-				else
-					ms_message("speech on! (%i)", s->channels[0].is_speaking);
+				//if (s->channels[0].is_speaking<=0)
+				//	ms_message("silence on! (%i)", s->channels[0].is_speaking);
+				//else
+				//	ms_message("speech on! (%i)", s->channels[0].is_speaking);
 			}
 
 			for(j=0;j<s->conf_nsamples;++j){
@@ -363,16 +363,48 @@ static void conf_sum(MSFilter *f, ConfState *s){
 #ifndef DISABLE_SPEEX
 			if (chan->speex_pp!=NULL && s->enable_vad==TRUE && i==0)
 			{
+				struct channel_volume {
+					float energy;
+					int channel;
+				};
+				struct channel_volume vol;
+				float en;
 				int vad;
+
+				en=chan->energy;
+				for(j=0;j<s->conf_nsamples;++j){
+					float s=chan->input[j];
+					en=(s*s*coef) + (1.0-coef)*en;
+				}
+				chan->energy=en;
+				vol.energy = 10*log10f(chan->energy/max_e);
+				vol.channel = i;
+				ms_filter_notify(f, MS_CONF_CHANNEL_VOLUME, (void*)&vol);
+
 				vad = speex_preprocess(chan->speex_pp, (short*)chan->input, NULL);
 				ms_filter_notify(f, MS_CONF_SPEEX_PREPROCESS_MIC, (void*)chan->speex_pp);
 			}
 			else if (chan->speex_pp!=NULL && s->enable_vad==TRUE)
 			{
-#if 0
-				int loudness;
-#endif
+				struct channel_volume {
+					float energy;
+					int channel;
+				};
+				struct channel_volume vol;
+				float en;
+
 				int vad;
+
+				en=chan->energy;
+				for(j=0;j<s->conf_nsamples;++j){
+					float s=chan->input[j];
+					en=(s*s*coef) + (1.0-coef)*en;
+				}
+				chan->energy=en;
+				vol.energy = 10*log10f(chan->energy/max_e);
+				vol.channel = i;
+				ms_filter_notify(f, MS_CONF_CHANNEL_VOLUME, (void*)&vol);
+
 				if (s->enable_halfduplex>0)
 				{
 					vad = speex_preprocess(chan->speex_pp, (short*)chan->input, NULL);
@@ -396,10 +428,10 @@ static void conf_sum(MSFilter *f, ConfState *s){
 							s->channels[0].is_speaking=-2;
 					}
 
-					if (s->channels[0].is_speaking<=0)
-						ms_message("silence on! (%i)", s->channels[0].is_speaking);
-					else
-						ms_message("speech on! (%i)", s->channels[0].is_speaking);
+					//if (s->channels[0].is_speaking<=0)
+					//	ms_message("silence on! (%i)", s->channels[0].is_speaking);
+					//else
+					//	ms_message("speech on! (%i)", s->channels[0].is_speaking);
 				}
 				else
 				{
@@ -470,17 +502,17 @@ static void conf_dispatch(MSFilter *f, ConfState *s){
 	for (i=0;i<CONF_MAX_PINS;++i){
 		if (f->outputs[i]!=NULL){
 			chan=&s->channels[i];
-			if (s->channels[0].is_speaking<=0 || i%2==0) // RTP is silent, work as usual
+			//if (s->channels[0].is_speaking<=0 || i%2==0) // RTP is silent, work as usual
 				m=conf_output(s,chan);
-			else
-			{
-				int k;
-				m=allocb(s->conf_gran,0);
-				for (k=0;k<s->conf_nsamples;++k){
-					*((int16_t*)m->b_wptr)=0;
-					m->b_wptr+=2;
-				}
-			}
+			//else
+			//{
+			//	int k;
+			//	m=allocb(s->conf_gran,0);
+			//	for (k=0;k<s->conf_nsamples;++k){
+			//		*((int16_t*)m->b_wptr)=0;
+			//		m->b_wptr+=2;
+			//	}
+			//}
 			ms_queue_put(f->outputs[i],m);
 		}
 	}
