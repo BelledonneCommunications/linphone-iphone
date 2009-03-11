@@ -41,8 +41,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define CONF_MAX_PINS 32
 #endif
 
-static const float max_e=32767*32767;
-static const float coef=0.1;
+static const float max_e=(float)32767*32767;
+static const float coef=(float)0.1;
 
 typedef struct Channel{
 	MSBufferizer buff;
@@ -94,7 +94,6 @@ static void channel_init(ConfState *s, Channel *chan, int pos){
 	memset(chan, 0, sizeof(Channel));
 	ms_bufferizer_init(&chan->buff);
 #ifndef DISABLE_SPEEX
-	//chan->speex_pp = speex_preprocess_state_init((s->conf_gran/2) *(s->samplerate/8000), s->samplerate);
 	chan->speex_pp = speex_preprocess_state_init(s->conf_gran/2, s->samplerate);
 	if (chan->speex_pp==NULL)
 		return;
@@ -137,7 +136,7 @@ static void channel_init(ConfState *s, Channel *chan, int pos){
 	else if ( pos%2==1 && s->enable_halfduplex>0)
 		val=1;
 	if (s->agc_level>0)
-		f=s->agc_level;
+		f=(float)s->agc_level;
 
 
 	speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_SET_AGC, &val);
@@ -150,9 +149,9 @@ static void channel_init(ConfState *s, Channel *chan, int pos){
 	val=1; // do more testing
 #endif
 	speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_SET_DEREVERB, &val);
-	f=.4;
+	f=(float).4;
 	speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_SET_DEREVERB_DECAY, &f);
-	f=.3;
+	f=(float).3;
 	speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_SET_DEREVERB_LEVEL, &f);
 
 #endif
@@ -250,6 +249,41 @@ static bool_t should_process(MSFilter *f, ConfState *s){
 	return FALSE;
 }
 
+#ifndef DISABLE_SPEEX
+static double powerspectrum_stat_beyond8K(struct Channel *chan)
+{
+	spx_int32_t ps_size = 0;
+	spx_int32_t *ps = NULL;
+	double mystat = 0;
+	float fftmul = 1.0 / (32768.0);
+
+	speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_GET_PSD_SIZE, &ps_size);
+	ps = (spx_int32_t*)ortp_malloc(sizeof(spx_int32_t)*ps_size);
+	speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_GET_PSD, ps);
+
+
+	mystat = 0;
+	for (int i=ps_size/2;i < ps_size; i++) {
+		double yp;
+		yp = sqrtf(sqrtf(static_cast<float>(ps[i]))) - 1.0f;
+		yp = yp * fftmul;
+		yp = MIN(yp * 3000.0, 1.0);
+		mystat = yp + mystat;
+	}
+
+	ortp_free(ps);
+
+	/* value between 0 and 100? */
+	mystat = mystat*100*2/ps_size;
+	if (mystat<0)
+		mystat=0;
+	if (mystat>100)
+		mystat=100;
+
+	return mystat;
+}
+#endif
+
 static void conf_sum(MSFilter *f, ConfState *s){
 	int i,j;
 	Channel *chan;
@@ -321,35 +355,6 @@ static void conf_sum(MSFilter *f, ConfState *s){
 				chan->stat_discarded++;
 			}
 
-
-			if (s->enable_halfduplex>0)
-			{
-#if 0
-				ms_message("prob=%i", loudness);
-#endif
-				// LIMITATION:
-				// HALF DUPLEX MODE IS TO BE USED WITH ONLY 
-				// ONE SOUND CARD AND ONE RTP STREAM.
-				if (vad>0) // && loudness>20)
-				{
-					/* speech detected */
-					s->channels[0].is_speaking++;
-					if (s->channels[0].is_speaking>2)
-						s->channels[0].is_speaking=2;
-				}
-				else
-				{
-					s->channels[0].is_speaking--;
-					if (s->channels[0].is_speaking<-2)
-						s->channels[0].is_speaking=-2;
-				}
-
-				//if (s->channels[0].is_speaking<=0)
-				//	ms_message("silence on! (%i)", s->channels[0].is_speaking);
-				//else
-				//	ms_message("speech on! (%i)", s->channels[0].is_speaking);
-			}
-
 			for(j=0;j<s->conf_nsamples;++j){
 				s->sum[j]+=chan->input[j];
 			}
@@ -359,79 +364,54 @@ static void conf_sum(MSFilter *f, ConfState *s){
 		}
 		else if (ms_bufferizer_get_avail(&chan->buff)>=s->conf_gran)
 		{
+			struct channel_volume {
+				float energy;
+				int channel;
+			};
+			struct channel_volume vol;
+			float en;
+
 			ms_bufferizer_read(&chan->buff,(uint8_t*)chan->input,s->conf_gran);
+
+			en=chan->energy;
+			for(j=0;j<s->conf_nsamples;++j){
+				float s=chan->input[j];
+				en=(s*s*coef) + ((float)1.0-coef)*en;
+			}
+			chan->energy=en;
+			vol.energy = 10*log10f(chan->energy/max_e);
+			vol.channel = i;
+			ms_filter_notify(f, MS_CONF_CHANNEL_VOLUME, (void*)&vol);
+
 #ifndef DISABLE_SPEEX
 			if (chan->speex_pp!=NULL && s->enable_vad==TRUE && i==0)
 			{
-				struct channel_volume {
-					float energy;
-					int channel;
-				};
-				struct channel_volume vol;
-				float en;
 				int vad;
-
-				en=chan->energy;
-				for(j=0;j<s->conf_nsamples;++j){
-					float s=chan->input[j];
-					en=(s*s*coef) + (1.0-coef)*en;
-				}
-				chan->energy=en;
-				vol.energy = 10*log10f(chan->energy/max_e);
-				vol.channel = i;
-				ms_filter_notify(f, MS_CONF_CHANNEL_VOLUME, (void*)&vol);
-
 				vad = speex_preprocess(chan->speex_pp, (short*)chan->input, NULL);
 				ms_filter_notify(f, MS_CONF_SPEEX_PREPROCESS_MIC, (void*)chan->speex_pp);
-			}
-			else if (chan->speex_pp!=NULL && s->enable_vad==TRUE)
-			{
-				struct channel_volume {
-					float energy;
-					int channel;
-				};
-				struct channel_volume vol;
-				float en;
-
-				int vad;
-
-				en=chan->energy;
-				for(j=0;j<s->conf_nsamples;++j){
-					float s=chan->input[j];
-					en=(s*s*coef) + (1.0-coef)*en;
-				}
-				chan->energy=en;
-				vol.energy = 10*log10f(chan->energy/max_e);
-				vol.channel = i;
-				ms_filter_notify(f, MS_CONF_CHANNEL_VOLUME, (void*)&vol);
 
 				if (s->enable_halfduplex>0)
 				{
-					vad = speex_preprocess(chan->speex_pp, (short*)chan->input, NULL);
-#if 0
-					speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_GET_AGC_LOUDNESS, &loudness);
-					ms_message("prob=%i", loudness);
-#endif
-					// LIMITATION:
-					// HALF DUPLEX MODE IS TO BE USED WITH ONLY 
-					// ONE SOUND CARD AND ONE RTP STREAM.
-					if (vad>0) //&& loudness>20)
+					double mystat = powerspectrum_stat_beyond8K(chan);
+					if (mystat>10)
 					{
-						s->channels[0].is_speaking++;
-						if (s->channels[0].is_speaking>2)
-							s->channels[0].is_speaking=2;
+						ms_message("is_speaking (chan=%i) -> on/stat=%d", i, mystat);
+						s->channels[0].is_speaking=20; /* keep RTP muted for the next few ms */
 					}
 					else
 					{
 						s->channels[0].is_speaking--;
-						if (s->channels[0].is_speaking<-2)
-							s->channels[0].is_speaking=-2;
 					}
+				}
 
-					//if (s->channels[0].is_speaking<=0)
-					//	ms_message("silence on! (%i)", s->channels[0].is_speaking);
-					//else
-					//	ms_message("speech on! (%i)", s->channels[0].is_speaking);
+			}
+			else if (chan->speex_pp!=NULL && s->enable_vad==TRUE)
+			{
+				int vad;
+
+				if (s->enable_halfduplex>0)
+				{
+					vad = speex_preprocess(chan->speex_pp, (short*)chan->input, NULL);
 				}
 				else
 				{
@@ -474,20 +454,20 @@ static inline int16_t saturate(int sample){
 	return (int16_t)sample;
 }
 
-static mblk_t * conf_output(ConfState *s, Channel *chan){
+static mblk_t * conf_output(ConfState *s, Channel *chan, int16_t attenuation){
 	mblk_t *m=allocb(s->conf_gran,0);
 	int i;
 	int tmp;
 	if (chan->has_contributed==TRUE){
 		for (i=0;i<s->conf_nsamples;++i){
 			tmp=s->sum[i]-(int)chan->input[i];
-			*((int16_t*)m->b_wptr)=saturate(tmp);
+			*((int16_t*)m->b_wptr)=saturate(tmp)/attenuation;
 			m->b_wptr+=2;
 		}
 	}else{
 		for (i=0;i<s->conf_nsamples;++i){
 			tmp=s->sum[i];
-			*((int16_t*)m->b_wptr)=saturate(tmp);
+			*((int16_t*)m->b_wptr)=saturate(tmp)/attenuation;
 			m->b_wptr+=2;
 		}
 	}
@@ -502,17 +482,10 @@ static void conf_dispatch(MSFilter *f, ConfState *s){
 	for (i=0;i<CONF_MAX_PINS;++i){
 		if (f->outputs[i]!=NULL){
 			chan=&s->channels[i];
-			//if (s->channels[0].is_speaking<=0 || i%2==0) // RTP is silent, work as usual
-				m=conf_output(s,chan);
-			//else
-			//{
-			//	int k;
-			//	m=allocb(s->conf_gran,0);
-			//	for (k=0;k<s->conf_nsamples;++k){
-			//		*((int16_t*)m->b_wptr)=0;
-			//		m->b_wptr+=2;
-			//	}
-			//}
+			if (s->channels[0].is_speaking<0 && i%2==1) // MIC is NOT speaking -> send silence on RTP
+				m=conf_output(s,chan, 5);
+			else
+				m=conf_output(s,chan, 1);
 			ms_queue_put(f->outputs[i],m);
 		}
 	}
@@ -795,3 +768,4 @@ MSFilterDesc ms_conf_desc={
 #endif
 
 MS_FILTER_DESC_EXPORT(ms_conf_desc)
+
