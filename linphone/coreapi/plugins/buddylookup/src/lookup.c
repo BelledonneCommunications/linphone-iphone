@@ -22,11 +22,17 @@ typedef struct _BuddyLookupState{
 
 #define get_buddy_lookup_state(ctx)	((BuddyLookupState*)((ctx)->data))
 
+void set_proxy(SoupSession *session, const char *proxy){
+	SoupURI *uri=soup_uri_new(proxy);
+	g_object_set(G_OBJECT(session),"proxy-uri",uri,NULL);
+}
 
 static void buddy_lookup_instance_init(SipSetupContext *ctx){
 	BuddyLookupState *s=ms_new0(BuddyLookupState,1);
+	const char *proxy=NULL;
 	s->session=soup_session_sync_new();
-	//set_proxy(s->session);
+	proxy=getenv("http_proxy");
+	set_proxy(s->session,proxy);
 	ctx->data=s;
 }
 
