@@ -38,7 +38,7 @@ static void volume_uninit(MSFilter *f){
 static int volume_get(MSFilter *f, void *arg){
 	float *farg=(float*)arg;
 	Volume *v=(Volume*)f->data;
-	*farg=10*log10f(v->energy/max_e);
+	*farg=10*log10f((v->energy+1)/max_e);
 	return 0;
 }
 
