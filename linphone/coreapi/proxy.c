@@ -571,9 +571,11 @@ void linphone_proxy_config_set_sip_setup(LinphoneProxyConfig *cfg, const char *t
 	if (!ss) return ;
 	ssc=sip_setup_context_new(ss,cfg);
 	if (sip_setup_context_login_account(ssc,cfg->reg_identity,NULL)==0){
-		char proxy[256];
-		if (sip_setup_context_get_proxy(ssc,NULL,proxy,sizeof(proxy))==0){
-			linphone_proxy_config_set_server_addr(cfg,proxy);
+		if (sip_setup_context_get_capabilities(ssc) & SIP_SETUP_CAP_PROXY_PROVIDER){
+			char proxy[256];
+			if (sip_setup_context_get_proxy(ssc,NULL,proxy,sizeof(proxy))==0){
+				linphone_proxy_config_set_server_addr(cfg,proxy);
+			}
 		}
 	}
 	cfg->ssctx=ssc;

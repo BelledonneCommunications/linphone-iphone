@@ -32,14 +32,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 #endif
 
-#ifdef HAVE_FONIS
-extern SipSetup fonis_sip_setup;
-#endif
-
 static SipSetup *all_sip_setups[]={
-#ifdef HAVE_FONIS
-	&fonis_sip_setup,
-#endif
 	NULL
 };
 

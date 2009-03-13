@@ -261,6 +261,7 @@ static void __ortp_logv_out(OrtpLogLevel lev, const char *fmt, va_list args){
   	OutputDebugString("\r\n");
 #else
 	fprintf(__log_file,"ortp-%s-%s" ENDLINE,lname,msg);
+	fflush(__log_file);
 #endif
 
 	ortp_free(msg);

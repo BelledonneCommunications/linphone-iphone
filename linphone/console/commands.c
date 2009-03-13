@@ -1256,7 +1256,7 @@ static int lpc_cmd_register(LinphoneCore *lc, char *args){
 		LinphoneAuthInfo *info;
 		osip_from_init(&from);
 		if (osip_from_parse(from,identity)==0){
-			info=linphone_auth_info_new(from->url->username,NULL,passwd,NULL,NULL);
+			info=linphone_auth_info_new(from->url->username,NULL,passwd,NULL,from->url->host);
 			linphone_core_add_auth_info(lc,info);
 		}
 		osip_from_free(from);
