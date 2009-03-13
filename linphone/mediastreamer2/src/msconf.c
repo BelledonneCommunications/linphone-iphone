@@ -159,6 +159,8 @@ static void channel_init(ConfState *s, Channel *chan, int pos){
 
 static void channel_uninit(Channel *chan){
 	ms_bufferizer_uninit(&chan->buff);
+	chan->is_speaking=0;
+	chan->energy=0;
 #ifndef DISABLE_SPEEX
 	if (chan->speex_pp!=NULL)
 	    speex_preprocess_state_destroy(chan->speex_pp);
@@ -393,9 +395,10 @@ static void conf_sum(MSFilter *f, ConfState *s){
 				if (s->enable_halfduplex>0)
 				{
 					double mystat = powerspectrum_stat_beyond8K(chan);
+					//ms_message("is_speaking (chan=%i) -> on/stat=%.3lf", i, mystat);
 					if (mystat>10)
 					{
-						ms_message("is_speaking (chan=%i) -> on/stat=%d", i, mystat);
+						ms_message("is_speaking (chan=%i) -> on/stat=%.3lf", i, mystat);
 						s->channels[0].is_speaking=20; /* keep RTP muted for the next few ms */
 					}
 					else
