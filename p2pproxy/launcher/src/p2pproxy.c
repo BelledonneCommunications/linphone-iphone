@@ -139,7 +139,7 @@ int p2pproxy_accountmgt_deleteAccount(const char* user_name) {
 	return lResult;
 }
 
-int p2pproxy_resourcemgt_lookup_sip_proxy(char* proxy_uri,size_t size, char* domaine) {
+int p2pproxy_resourcemgt_lookup_sip_proxy(char* proxy_uri,size_t size, const char* domain) {
 	jmethodID lLookupSipProxyUriMethod;
 	jstring lJStringResult; 
 	const char* lString;
@@ -149,7 +149,7 @@ int p2pproxy_resourcemgt_lookup_sip_proxy(char* proxy_uri,size_t size, char* dom
 	GET_JNI_ENV
 	 
 	
-	applicationArg = (*lJniEnv)->NewStringUTF(lJniEnv, domaine);
+	applicationArg = (*lJniEnv)->NewStringUTF(lJniEnv, domain);
 	lLookupSipProxyUriMethod = (*lJniEnv)->GetStaticMethodID(lJniEnv, lMainClass, "lookupSipProxyUri", "(Ljava/lang/String;)Ljava/lang/String;");
 	lJStringResult = (*lJniEnv)->CallStaticObjectMethod(lJniEnv, lMainClass, lLookupSipProxyUriMethod, applicationArg);
 	if (lJStringResult == 0) {
@@ -162,7 +162,7 @@ int p2pproxy_resourcemgt_lookup_sip_proxy(char* proxy_uri,size_t size, char* dom
 	return P2PPROXY_NO_ERROR;
 }
 
-int p2pproxy_resourcemgt_revoke_sip_proxy(char* proxy_uri) {
+int p2pproxy_resourcemgt_revoke_sip_proxy(const char* proxy_uri) {
 	jmethodID revokeProxyMethod;
 	jstring applicationArg;
 	GET_JNI_ENV
@@ -213,7 +213,7 @@ void p2pproxy_resourcemgt_delete_resource_list(p2pproxy_resourcemgt_resource_lis
 	free(resource_list);  
 }
 
-int p2pproxy_resourcemgt_lookup_media_resource(p2pproxy_resourcemgt_resource_list_t* resource_list, char* domaine)  {
+int p2pproxy_resourcemgt_lookup_media_resource(p2pproxy_resourcemgt_resource_list_t* resource_list, const char* domain)  {
 	jmethodID lLookupMediaResourceMethod;
 	jarray lJStringResults;
 	jstring lResourceInstance; 
@@ -227,7 +227,7 @@ int p2pproxy_resourcemgt_lookup_media_resource(p2pproxy_resourcemgt_resource_lis
 	GET_JNI_ENV
 	 
 	
-	applicationArg = (*lJniEnv)->NewStringUTF(lJniEnv, domaine);
+	applicationArg = (*lJniEnv)->NewStringUTF(lJniEnv, domain);
 	lLookupMediaResourceMethod = (*lJniEnv)->GetStaticMethodID(lJniEnv, lMainClass, "lookupMediaServerAddress", "(Ljava/lang/String;)[Ljava/lang/String;");
 	lJStringResults = (*lJniEnv)->CallStaticObjectMethod(lJniEnv, lMainClass, lLookupMediaResourceMethod, applicationArg);
 	if (lJStringResults == 0) {
@@ -248,7 +248,7 @@ int p2pproxy_resourcemgt_lookup_media_resource(p2pproxy_resourcemgt_resource_lis
 	(*p2pproxy_application_jvm)->DetachCurrentThread(p2pproxy_application_jvm);
 	return P2PPROXY_NO_ERROR;
 }
-int p2pproxy_resourcemgt_revoke_media_resource(char* resource_uri) {
+int p2pproxy_resourcemgt_revoke_media_resource(const char* resource_uri) {
 	jmethodID revokeMediaResourceMethod;
 	jstring applicationArg;
 	GET_JNI_ENV

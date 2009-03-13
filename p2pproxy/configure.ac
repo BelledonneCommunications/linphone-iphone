@@ -16,8 +16,7 @@ AC_ARG_ENABLE(strict,
 dnl Checks for programs.
 AC_PROG_CC
 AC_PROG_LIBTOOL
-AC_ENABLE_SHARED(yes)
-AC_ENABLE_STATIC(no)
+AC_DISABLE_STATIC
 
 
 CFLAGS="$CFLAGS -Wall"
@@ -58,6 +57,11 @@ else
 fi
 
 AC_DEFINE_UNQUOTED(P2PPROXY_INSTALLDIR,"$jarsdir",[path of jars])
+
+PKG_CHECK_MODULES(LIBLINPHONE, linphone >= 3.0.0)
+
+LINPHONE_PLUGINS_DIR="\$(libdir)/liblinphone/plugins/"
+AC_SUBST(LINPHONE_PLUGINS_DIR)
 
 dnl ##################################################
 dnl # Check for ESP Packager
@@ -124,4 +128,5 @@ AC_OUTPUT(
 Makefile
 launcher/Makefile
 launcher/src/Makefile
+plugin-src/Makefile
 )
