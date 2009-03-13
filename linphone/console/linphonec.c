@@ -140,11 +140,10 @@ static ortp_socket_t client_sock=-1;
 char prompt[PROMPT_MAX_LEN];
 char sock_unix_path[128]={0};
 
-#ifndef HAVE_READLINE
 static ortp_thread_t net_reader_th;
 static bool_t net_reader_run=FALSE;
 static ortp_socket_t server_sock;
-#endif
+
 
 LinphoneCoreVTable linphonec_vtable = {
 	show:(ShowInterfaceCb) stub,
@@ -349,7 +348,6 @@ linphonec_general_state (LinphoneCore * lc, LinphoneGeneralState *gstate)
         }  
 }
 
-#ifndef HAVE_READLINE
 static char received_prompt[PROMPT_MAX_LEN];
 static ms_mutex_t prompt_mutex;
 static bool_t have_prompt=FALSE;
@@ -482,41 +480,47 @@ static void stop_net_reader(void){
 	/*ortp_thread_join(net_reader_th,NULL);*/
 }
 
+#ifdef HAVE_READLINE
+#define BOOL_HAVE_READLINE 1
+#else
+#define BOOL_HAVE_READLINE 0
 #endif
 
 char *linphonec_readline(char *prompt){
-#ifdef HAVE_READLINE
-	return readline(prompt);
-#else
-	static bool_t prompt_reader_started=FALSE;
-	static bool_t net_reader_started=FALSE;
-	if (!prompt_reader_started){
-		start_prompt_reader();
-		prompt_reader_started=TRUE;
-	}
-	if ((tcp_port>0 || unix_socket) && !net_reader_started){
-		start_net_reader();
-		net_reader_started=TRUE;
-	}
-	fprintf(stdout,"%s",prompt);
-	fflush(stdout);
-	while(1){
-		ms_mutex_lock(&prompt_mutex);
-		if (have_prompt){
-			char *ret=strdup(received_prompt);
-			have_prompt=FALSE;
-			ms_mutex_unlock(&prompt_mutex);
-			return ret;
+	if (tcp_port ||unix_socket || !BOOL_HAVE_READLINE ){
+		static bool_t prompt_reader_started=FALSE;
+		static bool_t net_reader_started=FALSE;
+		if (!prompt_reader_started){
+			start_prompt_reader();
+			prompt_reader_started=TRUE;
 		}
-		ms_mutex_unlock(&prompt_mutex);
-		linphonec_idle_call();
+		if ((tcp_port>0 || unix_socket) && !net_reader_started){
+			start_net_reader();
+			net_reader_started=TRUE;
+		}
+		fprintf(stdout,"%s",prompt);
+		fflush(stdout);
+		while(1){
+			ms_mutex_lock(&prompt_mutex);
+			if (have_prompt){
+				char *ret=strdup(received_prompt);
+				have_prompt=FALSE;
+				ms_mutex_unlock(&prompt_mutex);
+				return ret;
+			}
+			ms_mutex_unlock(&prompt_mutex);
+			linphonec_idle_call();
 #ifdef WIN32
-		Sleep(20);
+			Sleep(20);
 #else
-		usleep(20000);
+			usleep(20000);
+#endif
+		}
+	}else{
+#ifdef HAVE_READLINE
+		return readline(prompt);
 #endif
 	}
-#endif
 }
 
 void linphonec_out(const char *fmt,...){
@@ -674,10 +678,9 @@ linphonec_finish(int exit_status)
    	linphonec_parse_command_line(&linphonec, "terminate");
 #ifdef HAVE_READLINE
 	linphonec_finish_readline();
-#else
+#endif
 	if (net_reader_run)
 		stop_net_reader();
-#endif
 
 
 	linphone_core_uninit (&linphonec);
