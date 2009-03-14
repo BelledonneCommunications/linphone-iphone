@@ -137,7 +137,7 @@ static int realm_match(const char *realm1, const char *realm2){
 			char tmp2[128];
 			char *p1,*p2;
 			strncpy(tmp1,realm1,sizeof(tmp1)-1);
-			strncpy(tmp2,realm2,sizeof(tmp1)-1);
+			strncpy(tmp2,realm2,sizeof(tmp2)-1);
 			p1=remove_quotes(tmp1);
 			p2=remove_quotes(tmp2);
 			return strcmp(p1,p2)==0;

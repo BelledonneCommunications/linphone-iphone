@@ -228,19 +228,23 @@ linphonec_call_received(LinphoneCore *lc, const char *from)
 static void
 linphonec_prompt_for_auth(LinphoneCore *lc, const char *realm, const char *username)
 {
-	LinphoneAuthInfo *pending_auth;
-
-	if ( auth_stack.nitems+1 > MAX_PENDING_AUTH )
-	{
-		fprintf(stderr,
-			"Can't accept another authentication request.\n"
-			"Consider incrementing MAX_PENDING_AUTH macro.\n");
-		return;
-	} 
-
-	pending_auth=linphone_auth_info_new(username,NULL,NULL,NULL,realm);
-	auth_stack.elem[auth_stack.nitems++]=pending_auth;
+	/* no prompt possible when using pipes or tcp mode*/
+	if (unix_socket || tcp_port){
+		linphone_core_abort_authentication(lc,NULL);
+	}else{
+		LinphoneAuthInfo *pending_auth;
 	
+		if ( auth_stack.nitems+1 > MAX_PENDING_AUTH )
+		{
+			fprintf(stderr,
+				"Can't accept another authentication request.\n"
+				"Consider incrementing MAX_PENDING_AUTH macro.\n");
+			return;
+		} 
+	
+		pending_auth=linphone_auth_info_new(username,NULL,NULL,NULL,realm);
+		auth_stack.elem[auth_stack.nitems++]=pending_auth;
+	}
 }
 
 /*
