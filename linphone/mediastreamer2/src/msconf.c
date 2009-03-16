@@ -17,6 +17,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#ifdef HAVE_CONFIG_H
+#include "mediastreamer-config.h"
+#endif
+
 #include "mediastreamer2/msfilter.h"
 #include <math.h>
 
@@ -258,16 +262,21 @@ static double powerspectrum_stat_beyond8K(struct Channel *chan)
 	spx_int32_t *ps = NULL;
 	double mystat = 0;
 	float fftmul = 1.0 / (32768.0);
-
+	int i;
+	
 	speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_GET_PSD_SIZE, &ps_size);
 	ps = (spx_int32_t*)ortp_malloc(sizeof(spx_int32_t)*ps_size);
 	speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_GET_PSD, ps);
 
 
 	mystat = 0;
-	for (int i=ps_size/2;i < ps_size; i++) {
+	for (i=ps_size/2;i < ps_size; i++) {
 		double yp;
+#if defined(__cplusplus)
 		yp = sqrtf(sqrtf(static_cast<float>(ps[i]))) - 1.0f;
+#else
+		yp = sqrtf(sqrtf((float)(ps[i]))) - 1.0f;
+#endif
 		yp = yp * fftmul;
 		yp = MIN(yp * 3000.0, 1.0);
 		mystat = yp + mystat;
