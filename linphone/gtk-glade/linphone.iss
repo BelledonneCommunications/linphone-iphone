@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=Linphone
-AppVerName=Linphone version 3.0.0
+AppVerName=Linphone version 3.1.0
 AppPublisher=linphone.org
 AppPublisherURL=http://www.linphone.org
 AppSupportURL=http://www.linphone.org

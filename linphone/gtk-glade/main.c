@@ -323,12 +323,15 @@ static void set_video_window_decorations(GdkWindow *w){
 	}
 }
 
+
 static gboolean linphone_gtk_iterate(LinphoneCore *lc){
 	unsigned long id;
 	static unsigned long previd=0;
+
 	linphone_core_iterate(lc);
 	id=linphone_core_get_native_video_window_id(lc);
 	if (id!=previd){
+		ms_message("Updating window decorations");
 		GdkWindow *w;
 		previd=id;
 		if (id!=0){
@@ -938,8 +941,9 @@ int main(int argc, char *argv[]){
 	linphone_core_enable_logs_with_cb(linphone_gtk_log_handler);
 
 	linphone_gtk_init_liblinphone(config_file);
-	gtk_timeout_add(20,(GtkFunction)linphone_gtk_iterate,(gpointer)linphone_gtk_get_core());
-	gtk_timeout_add(20,(GtkFunction)linphone_gtk_check_logs,(gpointer)NULL);
+	/* do not lower timeouts under 30 ms because it exhibits a bug on gtk+/win32, with cpu running 20% all the time...*/
+	gtk_timeout_add(30,(GtkFunction)linphone_gtk_iterate,(gpointer)linphone_gtk_get_core());
+	gtk_timeout_add(30,(GtkFunction)linphone_gtk_check_logs,(gpointer)NULL);
 	linphone_gtk_init_main_window();
 	linphone_gtk_init_status_icon();
 	linphone_gtk_show_main_window();
