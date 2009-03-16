@@ -196,20 +196,18 @@ static void sender_process(MSFilter * f)
 			}
 			freemsg(im);
 		}else{
-		  if (d->mute_mic==FALSE)
-		    {
-			int pt = mblk_get_payload_type(im);
-			header = rtp_session_create_packet(s, 12, NULL, 0);
-			if (pt>0)
-				rtp_set_payload_type(header, pt);
-			rtp_set_markbit(header, mblk_get_marker_info(im));
-			header->b_cont = im;
-			rtp_session_sendm_with_ts(s, header, timestamp);
-		    }
-		  else
-		    {
-			freemsg(im);
-		    }
+			if (d->mute_mic==FALSE){
+				int pt = mblk_get_payload_type(im);
+				header = rtp_session_create_packet(s, 12, NULL, 0);
+				if (pt>0)
+					rtp_set_payload_type(header, pt);
+				rtp_set_markbit(header, mblk_get_marker_info(im));
+				header->b_cont = im;
+				rtp_session_sendm_with_ts(s, header, timestamp);
+			}
+			else{
+				freemsg(im);
+			}
 		}
 		ms_filter_unlock(f);
 	}

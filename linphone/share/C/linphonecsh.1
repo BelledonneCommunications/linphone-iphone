@@ -5,8 +5,20 @@
 linphonecsh \- Sends a command to a linphonec running in daemon mode, and exits.
 .SH "SYNTAX"
 .LP 
-linphonec <\fIaction\fP>  <\fIARGS...\fP> 
+linphonecsh \fIinit\fP  <\fIoptional linphonec args\fP> 
 .br 
+linphonecsh \fIexit\fP
+.br 
+linphonecsh \fIgeneric\fP  <\fIlinphonec command line surrounded by quotes\fP>
+.br
+linphonecsh \fIregister\fP  \fI--username\fP <\fIusername\fP> \fI--host\fP <\fIproxy\fP> \fI--password\fP <\fIpassword\fP>
+.br
+linphonecsh \fIunregister\fP
+.br
+linphonecsh \fIdial\fP <\fIsip address or number\fP>
+.br
+linphonecsh \fIstatus\fP <\fIdomain = one of 'register', 'hook', 'autoanswer'\fP>
+.br
 linphonecsh \fI\--help\fP
 .SH "DESCRIPTION"
 .LP 
@@ -20,11 +32,13 @@ The very first thing to do before doing actions is to ask linphonecsh to spawn a
 .TP
 \fBlinphonecsh init\fR
 .br
+The resulting linphonec daemon does not read or write any configuration file.
 
 When the linphonec daemon is no more needed, the following commands makes it exit properly:
 .TP
 \fBlinphonecsh exit\fR
 .br
+
 
 .SH "FILES"
 .LP 
