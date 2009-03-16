@@ -294,9 +294,9 @@ typedef struct _LinphoneProxyConfig
 	int rid;
 	char *type;
 	struct _SipSetupContext *ssctx;
+	int auth_failures;
 	bool_t frozen;
 	bool_t reg_sendregister;
-	bool_t auth_pending;
 	bool_t registered;
 	bool_t publish;
 } LinphoneProxyConfig;

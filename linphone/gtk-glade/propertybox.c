@@ -32,12 +32,13 @@ static void linphone_gtk_fill_combo_box(GtkWidget *combo, const char **devices, 
 	unless we fill it with a dummy text.
 	This dummy text needs to be removed first*/
 	gtk_combo_box_remove_text(GTK_COMBO_BOX(combo),0);
-	for(;*p!=NULL;++p,++i){
+	for(;*p!=NULL;++p){
 		if ( cap==CAP_IGNORE 
 			|| (cap==CAP_CAPTURE && linphone_core_sound_device_can_capture(linphone_gtk_get_core(),*p))
 			|| (cap==CAP_PLAYBACK && linphone_core_sound_device_can_playback(linphone_gtk_get_core(),*p)) ){
 			gtk_combo_box_append_text(GTK_COMBO_BOX(combo),*p);
 			if (strcmp(selected,*p)==0) active=i;
+			i++;
 		}
 	}
 	gtk_combo_box_set_active(GTK_COMBO_BOX(combo),active);

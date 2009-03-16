@@ -888,7 +888,6 @@ void linphone_call_message_new(LinphoneCore *lc, eXosip_event_t *ev){
 #endif
 }
 
-
 void linphone_registration_faillure(LinphoneCore *lc, eXosip_event_t *ev){
 	int status_code=0;
 	char *msg;
@@ -907,6 +906,8 @@ void linphone_registration_faillure(LinphoneCore *lc, eXosip_event_t *ev){
 		case 407:
 			linphone_process_authentication(lc,ev);
 			break;
+		case 403:
+			linphone_proxy_config_process_authentication_failure(lc,ev);
 		default:
 			msg=ortp_strdup_printf(_("Registration on %s failed: %s"),ru,(reason!=NULL) ? reason : _("no response timeout"));
 			lc->vtable.display_status(lc,msg);
@@ -929,7 +930,6 @@ void linphone_registration_success(LinphoneCore *lc,eXosip_event_t *ev){
 	osip_free(ru);
 	cfg=linphone_core_get_proxy_config_from_rid(lc,ev->rid);
 	ms_return_if_fail(cfg!=NULL);
-	cfg->auth_pending=FALSE;
 	gstate_new_state(lc, GSTATE_REG_OK, NULL);
 	osip_message_get_expires(ev->request,0,&h);
 	if (h!=NULL && atoi(h->hvalue)!=0){

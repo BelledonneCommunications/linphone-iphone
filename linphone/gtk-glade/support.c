@@ -119,8 +119,8 @@ const char *linphone_gtk_get_lang(const char *config_file){
 				break;
 			}
 		}
+		fclose(f);
 	}
-	fclose(f);
 	return linphone_lang;
 }
 

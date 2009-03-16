@@ -211,6 +211,7 @@ void linphone_proxy_config_enable_publish(LinphoneProxyConfig *obj, bool_t val){
 
 void linphone_proxy_config_edit(LinphoneProxyConfig *obj){
 	obj->frozen=TRUE;
+	obj->auth_failures=0;
 	if (obj->reg_sendregister){
 		/* unregister */
 		if (obj->registered) {
@@ -495,6 +496,18 @@ LinphoneProxyConfig *linphone_core_get_proxy_config_from_rid(LinphoneCore *lc, i
 
 const MSList *linphone_core_get_proxy_config_list(const LinphoneCore *lc){
 	return lc->sip_conf.proxies;
+}
+
+
+void linphone_proxy_config_process_authentication_failure(LinphoneCore *lc, eXosip_event_t *ev){
+	LinphoneProxyConfig *cfg=linphone_core_get_proxy_config_from_rid(lc, ev->rid);
+	if (cfg){
+			cfg->auth_failures++;
+			/*restart a new register */
+			if (cfg->auth_failures==1){
+				linphone_proxy_config_done(cfg);
+			}
+	}
 }
 
 
