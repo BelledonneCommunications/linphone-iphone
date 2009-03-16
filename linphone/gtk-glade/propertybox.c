@@ -594,14 +594,19 @@ void linphone_gtk_remove_proxy(GtkButton *button){
 	if (cfg){
 		linphone_core_remove_proxy_config(linphone_gtk_get_core(),cfg);
 		linphone_gtk_show_sip_accounts(gtk_widget_get_toplevel(GTK_WIDGET(button)));
+		/* also update the main window's list of identities*/
+		linphone_gtk_load_identities();
 	}
 }
 
 void linphone_gtk_edit_proxy(GtkButton *button){
 	GtkWidget *pb=gtk_widget_get_toplevel(GTK_WIDGET(button));
 	LinphoneProxyConfig *cfg=linphone_gtk_get_selected_proxy_config(pb);
-	if (cfg)
+	if (cfg){
 		linphone_gtk_show_proxy_config(pb,cfg);
+		/* also update the main window's list of identities*/
+		linphone_gtk_load_identities();
+	}
 }
 
 void linphone_gtk_show_parameters(void){
