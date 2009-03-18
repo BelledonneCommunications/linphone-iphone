@@ -321,7 +321,8 @@ public void loadTraceConfigFile() throws P2pProxyException {
    }
 public  static void staticLoadTraceConfigFile()  throws P2pProxyException {
    try {
-      String lSearchDir;
+	   URL lLog4jFile = null;
+	   String lSearchDir;
       //search build dir
       lSearchDir = System.getProperty("org.linphone.p2pproxy.build.dir");
       File lFile = new File(lSearchDir+"/log4j.properties");
@@ -330,16 +331,27 @@ public  static void staticLoadTraceConfigFile()  throws P2pProxyException {
          lFile = new File(lSearchDir+"/log4j.properties");
          if (lFile.exists() == false) {
             lSearchDir=".";
+            lFile = new File(lSearchDir+"/log4j.properties");
+            if (lFile.exists() == false) {
+            	lLog4jFile = Thread.currentThread().getContextClassLoader().getResource("log4j.properties"); 
+            }
          }
       }
-      String lLog4jFile= lSearchDir+"/log4j.properties";
-      PropertyConfigurator.configureAndWatch(lLog4jFile);
+      if (lLog4jFile == null) {
+    	  lLog4jFile = lFile.toURL();
+      }
+      
+      PropertyConfigurator.configure(lLog4jFile);
       // read java.util.logging properties 
       Properties lLogginProperties = new Properties();
-      lLogginProperties.load(new FileInputStream(lLog4jFile));
+      lLogginProperties.load(new FileInputStream(new File(lLog4jFile.toURI())));
       lLogginProperties.setProperty("java.util.logging.FileHandler.pattern",System.getProperty("org.linphone.p2pproxy.home")+"/logs/p2pproxy.log");
-      lLogginProperties.store(new FileOutputStream(lLog4jFile+".tmp"), "tmp");
-      System.setProperty("java.util.logging.config.file",lLog4jFile+".tmp");
+      File lLogConfigFile = new File(mConfigHomeDir.concat("log4j.properties")+".tmp");
+      if (lLogConfigFile.exists() == false) {
+    	  lLogConfigFile.createNewFile();
+      }
+      lLogginProperties.store(new FileOutputStream(lLogConfigFile), "tmp");
+      System.setProperty("java.util.logging.config.file",lLogConfigFile.getAbsolutePath());
       java.util.logging.LogManager.getLogManager().readConfiguration();
    } catch (Exception e) {
       throw new P2pProxyException("enable to load traces",e);
