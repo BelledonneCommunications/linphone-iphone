@@ -22,8 +22,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "msfilter.h"
 
+/**
+ * The Volume MSFilter can do:
+ * 	- measurements of the input signal power, returned in dbm0 or linear scale
+ * 	- apply a gain to the input signal and output this amplified signal to its output.
+ * By default gain is 1, in which case the filter does not modify the signal (and even does not
+ * copy the buffers, just post them on its output queue.
+**/
+
+
 /*returns a volume meter in db0 (max=0 db0)*/
 #define MS_VOLUME_GET		MS_FILTER_METHOD(MS_VOLUME_ID,0,float)
+/*returns a volume in linear scale between 0 and 1 */
+#define MS_VOLUME_GET_LINEAR		MS_FILTER_METHOD(MS_VOLUME_ID,1,float)
+/* set a gain */
+#define MS_VOLUME_SET_GAIN		MS_FILTER_METHOD(MS_VOLUME_ID,2,float)
 
 extern MSFilterDesc ms_volume_desc;
 

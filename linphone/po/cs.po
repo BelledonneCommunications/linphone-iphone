@@ -8,15 +8,16 @@
 # catalogue.
 msgid ""
 msgstr ""
-"Project-Id-Version: linphone-3.0.0-r237\n"
+"Project-Id-Version: linphone-3.1.0-r348\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-02-02 22:29+0100\n"
-"PO-Revision-Date: 2009-01-15 12:50+0100\n"
+"POT-Creation-Date: 2009-03-17 00:17+0100\n"
+"PO-Revision-Date: 2009-03-17 10:22+0100\n"
 "Last-Translator: Petr Pisar <petr.pisar@atlas.cz>\n"
 "Language-Team: Czech <translation-team-cs@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
 #: ../gtk-glade/support.c:50 ../gtk-glade/support.c:74
 #, c-format
@@ -28,12 +29,12 @@ msgstr "Nelze najít soubor s obrázkem: %s"
 msgid "Chat with %s"
 msgstr "Diskuze s %s"
 
-#: ../gtk-glade/main.c:516
+#: ../gtk-glade/main.c:520
 #, c-format
 msgid "Incoming call from %s"
 msgstr "Příchozí hovor od %s"
 
-#: ../gtk-glade/main.c:552
+#: ../gtk-glade/main.c:556
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
@@ -46,25 +47,25 @@ msgstr ""
 "do svého adresáře?\n"
 "Odpovíte-li ne, tato osobo bude dočasně blokována."
 
-#: ../gtk-glade/main.c:622
+#: ../gtk-glade/main.c:626
 #, c-format
 msgid "Please enter your password for domain %s:"
 msgstr "Prosím, zadejte svoje heslo pro doménu %s:"
 
-#: ../gtk-glade/main.c:731
+#: ../gtk-glade/main.c:735
 msgid "Linphone - a video internet phone"
 msgstr "Lipnhone – internetový videofon"
 
-#: ../gtk-glade/main.c:749
+#: ../gtk-glade/main.c:753
 #, c-format
 msgid "%s (Default)"
 msgstr "%s (Výchozí)"
 
-#: ../gtk-glade/main.c:922
+#: ../gtk-glade/main.c:926
 msgid "A free SIP video-phone"
 msgstr "Volný SIP videofon"
 
-#: ../gtk-glade/friendlist.c:205 ../gtk-glade/propertybox.c:244
+#: ../gtk-glade/friendlist.c:205 ../gtk-glade/propertybox.c:245
 #: ../gtk-glade/contact.glade.h:3
 msgid "Name"
 msgstr "Jméno"
@@ -73,45 +74,60 @@ msgstr "Jméno"
 msgid "Presence status"
 msgstr "Stav"
 
-#: ../gtk-glade/friendlist.c:380
+#: ../gtk-glade/friendlist.c:378
 msgid "Invalid sip contact !"
 msgstr "Neplatný sipový kontakt!"
 
-#: ../gtk-glade/friendlist.c:411
+#: ../gtk-glade/friendlist.c:420
 #, c-format
 msgid "Call %s"
 msgstr "Volat komu: %s"
 
-#: ../gtk-glade/friendlist.c:412
+#: ../gtk-glade/friendlist.c:421
 #, c-format
 msgid "Send text to %s"
 msgstr "Poslat text komu: %s"
 
-#: ../gtk-glade/propertybox.c:250
+#: ../gtk-glade/friendlist.c:422
+#, c-format
+msgid "Edit contact '%s'"
+msgstr "Upravit kontakt „%s“"
+
+#: ../gtk-glade/friendlist.c:423
+#, c-format
+msgid "Delete contact '%s'"
+msgstr "Odstranit kontakt „%s“"
+
+#: ../gtk-glade/friendlist.c:465
+#, c-format
+msgid "Add new contact from %s directory"
+msgstr "Přidat nový kontakt z adresáře %s"
+
+#: ../gtk-glade/propertybox.c:251
 msgid "Rate (Hz)"
 msgstr "Rychlost (Hz)"
 
-#: ../gtk-glade/propertybox.c:256
+#: ../gtk-glade/propertybox.c:257
 msgid "Status"
 msgstr "Stav"
 
-#: ../gtk-glade/propertybox.c:262
+#: ../gtk-glade/propertybox.c:263
 msgid "Min bitrate (kbit/s)"
 msgstr "Min. rychlost (kbit/s)"
 
-#: ../gtk-glade/propertybox.c:268
+#: ../gtk-glade/propertybox.c:269
 msgid "Parameters"
 msgstr "Parametry"
 
-#: ../gtk-glade/propertybox.c:295 ../gtk-glade/propertybox.c:432
+#: ../gtk-glade/propertybox.c:296 ../gtk-glade/propertybox.c:433
 msgid "Enabled"
 msgstr "Povoleno"
 
-#: ../gtk-glade/propertybox.c:296 ../gtk-glade/propertybox.c:432
+#: ../gtk-glade/propertybox.c:297 ../gtk-glade/propertybox.c:433
 msgid "Disabled"
 msgstr "Zakázáno"
 
-#: ../gtk-glade/propertybox.c:477
+#: ../gtk-glade/propertybox.c:478
 msgid "Account"
 msgstr "Účet"
 
@@ -121,8 +137,40 @@ msgid ""
 "A more recent version is availalble from %s.\n"
 "Would you like to open a browser to download it ?"
 msgstr ""
-"Je dostupná novější verze z %s.\n"
-"Přejete si otevřít prohlížeč, abyste si ji mohli stánout?"
+"Na %s je dostupná novější verze.\n"
+"Přejete si otevřít prohlížeč, abyste si ji mohli stáhnout?"
+
+#: ../gtk-glade/buddylookup.c:58
+msgid "Firstname, Lastname"
+msgstr "První jméno, Poslední jméno"
+
+#: ../gtk-glade/buddylookup.c:65
+msgid "SIP address"
+msgstr "SIP adresa"
+
+#: ../gtk-glade/buddylookup.c:108
+msgid "Error communicating with server."
+msgstr "Chyba komunikace se serverem."
+
+#: ../gtk-glade/buddylookup.c:112
+msgid "Connecting..."
+msgstr "Připojuje se…"
+
+#: ../gtk-glade/buddylookup.c:116
+msgid "Connected"
+msgstr "Připojeno"
+
+#: ../gtk-glade/buddylookup.c:120
+msgid "Receiving data..."
+msgstr "Přijímají se data…"
+
+#: ../gtk-glade/buddylookup.c:128
+#, c-format
+msgid "Found %i contact"
+msgid_plural "Found %i contacts"
+msgstr[0] "Nalezen %i kontakt"
+msgstr[1] "Nalezeny %i kontakty"
+msgstr[2] "Nalezeno %i kontaktů"
 
 #: ../gtk-glade/main.glade.h:1
 msgid "#"
@@ -418,7 +466,7 @@ msgstr "Přijmout"
 msgid "Decline"
 msgstr "Odmítnout"
 
-#: ../gtk-glade/incoming_call.glade.h:3 ../coreapi/linphonecore.c:232
+#: ../gtk-glade/incoming_call.glade.h:3 ../coreapi/linphonecore.c:234
 msgid "Incoming call"
 msgstr "Příchozí hovor"
 
@@ -662,25 +710,39 @@ msgstr ""
 msgid "gtk-media-play"
 msgstr ""
 
-# FIXME: plural
+#: ../gtk-glade/buddylookup.glade.h:1
+msgid "<b>Search somebody</b>"
+msgstr "<b>Hledat někoho</b>"
+
+#: ../gtk-glade/buddylookup.glade.h:2
+msgid "Add to my list"
+msgstr "Přidat na svůj seznam"
+
+#: ../gtk-glade/buddylookup.glade.h:3
+msgid "Search contacts in directory"
+msgstr "Hledat kontakty v adresáři"
+
 #: ../coreapi/linphonecore.c:194
 #, c-format
-msgid "You have missed %i call(s)."
-msgstr "Zameškané hovory: %i"
+msgid "You have missed %i call."
+msgid_plural "You have missed %i calls."
+msgstr[0] "Máte %i zmeškaný hovor."
+msgstr[1] "Máte %i zmeškané hovory."
+msgstr[2] "Máte %i zmeškaných hovorů."
 
-#: ../coreapi/linphonecore.c:220
+#: ../coreapi/linphonecore.c:222
 msgid "aborted"
 msgstr "přerušen"
 
-#: ../coreapi/linphonecore.c:223
+#: ../coreapi/linphonecore.c:225
 msgid "completed"
 msgstr "dokončen"
 
-#: ../coreapi/linphonecore.c:226
+#: ../coreapi/linphonecore.c:228
 msgid "missed"
 msgstr "promeškán"
 
-#: ../coreapi/linphonecore.c:231
+#: ../coreapi/linphonecore.c:233
 #, c-format
 msgid ""
 "%s at %s\n"
@@ -695,11 +757,11 @@ msgstr ""
 "Stav: %s\n"
 "Trvání: %i min %i s\n"
 
-#: ../coreapi/linphonecore.c:232
+#: ../coreapi/linphonecore.c:234
 msgid "Outgoing call"
 msgstr "Odchozí hovor"
 
-#: ../coreapi/linphonecore.c:418
+#: ../coreapi/linphonecore.c:426
 msgid ""
 "Your machine appears to be connected to an IPv6 network. By default linphone "
 "always uses IPv4. Please update your configuration if you want to use IPv6"
@@ -707,54 +769,54 @@ msgstr ""
 "Zdá se, že váš počítač je připojen do IPv6 sítě. Standardně linphone používá "
 "pouze IPv4. Prosím, změňte nastavení programu, pokud chcete používat IPv6."
 
-#: ../coreapi/linphonecore.c:693
+#: ../coreapi/linphonecore.c:701
 msgid "Ready"
 msgstr "Připraven."
 
-#: ../coreapi/linphonecore.c:971
+#: ../coreapi/linphonecore.c:991
 msgid "Remote end seems to have disconnected, the call is going to be closed."
 msgstr "Vzdálený konec se asi odpojil, hovor bude ukončen."
 
-#: ../coreapi/linphonecore.c:1095
+#: ../coreapi/linphonecore.c:1125
 msgid "Looking for telephone number destination..."
 msgstr "Vyhledává se umístění čísla…"
 
-#: ../coreapi/linphonecore.c:1097
+#: ../coreapi/linphonecore.c:1127
 msgid "Could not resolve this number."
 msgstr "Toto číslo nelze vyhledat."
 
-#: ../coreapi/linphonecore.c:1162
+#: ../coreapi/linphonecore.c:1192
 msgid ""
 "Could not parse given sip address. A sip url usually looks like sip:"
 "user@domain"
 msgstr ""
 "Špatně zadaná SIP adresa. Adresa má mít tento formát <sip:uživatel@doména>"
 
-#: ../coreapi/linphonecore.c:1211
+#: ../coreapi/linphonecore.c:1241
 msgid "Sorry, having multiple simultaneous calls is not supported yet !"
 msgstr "Promiňte, vedení více současných hovorů není podporováno!"
 
-#: ../coreapi/linphonecore.c:1243
+#: ../coreapi/linphonecore.c:1273
 msgid "Contacting"
 msgstr "Kontaktuji"
 
-#: ../coreapi/linphonecore.c:1258
+#: ../coreapi/linphonecore.c:1288
 msgid "could not call"
 msgstr "Nelze volat."
 
-#: ../coreapi/linphonecore.c:1560 ../coreapi/exevents.c:49
+#: ../coreapi/linphonecore.c:1590 ../coreapi/exevents.c:49
 msgid "Connected."
 msgstr "Připojeno."
 
-#: ../coreapi/linphonecore.c:1586
+#: ../coreapi/linphonecore.c:1616
 msgid "Call ended"
 msgstr "Hovor skončil."
 
-#: ../coreapi/linphonecore.c:1910
+#: ../coreapi/linphonecore.c:1954
 msgid "No nat/firewall address supplied !"
 msgstr "Žádná adresa NATu/firewallu nebyla zadána!"
 
-#: ../coreapi/linphonecore.c:1922 ../coreapi/linphonecore.c:1934
+#: ../coreapi/linphonecore.c:1966 ../coreapi/linphonecore.c:1978
 #, c-format
 msgid "Invalid nat address '%s' : %s"
 msgstr "Neplatná adresa NATu '%s': '%s"
@@ -858,16 +920,16 @@ msgstr ""
 msgid "Early media."
 msgstr "Časná média."
 
-#: ../coreapi/exevents.c:911
+#: ../coreapi/exevents.c:912
 #, c-format
 msgid "Registration on %s failed: %s"
 msgstr "Registrace na %s selhala: %s"
 
-#: ../coreapi/exevents.c:911
+#: ../coreapi/exevents.c:912
 msgid "no response timeout"
 msgstr "odpověď nedorazila včas"
 
-#: ../coreapi/exevents.c:926
+#: ../coreapi/exevents.c:927
 #, c-format
 msgid "Registration on %s successful."
 msgstr "Registrace na %s byla úspěšná."
@@ -949,6 +1011,22 @@ msgstr "Čeká"
 msgid "Unknown-bug"
 msgstr "Neznámá chyba"
 
+#: ../coreapi/proxy.c:186
+msgid ""
+"The sip proxy address you entered is invalid, it must start with \"sip:\" "
+"followed by a hostname."
+msgstr ""
+"Adresa SIP proxy, kterou jste zadali, není platná. Musí začínat na „sip:“ a "
+"pak musí následovat jméno stroje."
+
+#: ../coreapi/proxy.c:192
+msgid ""
+"The sip identity you entered is invalid.\n"
+"It should look like sip:username@proxydomain, such as sip:alice@example.net"
+msgstr ""
+"SIP identita, kterou jste zadali, není platná.\n"
+"Měla by mít tvar sip:uživatel@proxydoména, například sip:alice@example.net"
+
 #: ../mediastreamer2/src/alaw.c:144 ../mediastreamer2/src/alaw.c:162
 msgid "ITU-G.711 alaw encoder"
 msgstr "Kodér a-law ITU-G.711"
@@ -993,7 +1071,7 @@ msgstr "Filtr zachytávání zvuku přes MacOS X ovladače Core Audio"
 msgid "Sound playback filter for MacOS X Core Audio drivers"
 msgstr "Filtr přehrávání zvuku přes MacOS X ovladače Core Audio"
 
-#: ../mediastreamer2/src/msconf.c:565 ../mediastreamer2/src/msconf.c:583
+#: ../mediastreamer2/src/msconf.c:750 ../mediastreamer2/src/msconf.c:768
 msgid "A filter to make conferencing"
 msgstr "Filtr pro vytváření konferencí"
 
@@ -1017,11 +1095,11 @@ msgstr "Filtr, který směšuje několik vstupů do jednoho výstupu."
 msgid "frequency resampler"
 msgstr "měnič frekvence"
 
-#: ../mediastreamer2/src/msrtp.c:253 ../mediastreamer2/src/msrtp.c:271
+#: ../mediastreamer2/src/msrtp.c:230 ../mediastreamer2/src/msrtp.c:248
 msgid "RTP output filter"
 msgstr "Filtr RTP výstupu"
 
-#: ../mediastreamer2/src/msrtp.c:412 ../mediastreamer2/src/msrtp.c:430
+#: ../mediastreamer2/src/msrtp.c:348 ../mediastreamer2/src/msrtp.c:366
 msgid "RTP input filter"
 msgstr "Filtr RTP vstupu"
 
@@ -1062,10 +1140,6 @@ msgstr "Zvukový přehrávací filtr pro ovladače OSS"
 msgid "A pixel format converter"
 msgstr "Převodník formátu pixelů"
 
-#: ../mediastreamer2/src/sdlout.c:345 ../mediastreamer2/src/sdlout.c:363
-msgid "A video display window using SDL"
-msgstr "Zobrazovaní videa v SDL okně"
-
 #: ../mediastreamer2/src/sizeconv.c:204
 msgid "A video size converter"
 msgstr "Převaděč velikosti videa"
@@ -1074,7 +1148,7 @@ msgstr "Převaděč velikosti videa"
 msgid "a small video size converter"
 msgstr "Převaděč velikosti malých videí"
 
-#: ../mediastreamer2/src/speexec.c:290 ../mediastreamer2/src/speexec.c:308
+#: ../mediastreamer2/src/speexec.c:307 ../mediastreamer2/src/speexec.c:325
 msgid "Echo canceler using speex library"
 msgstr "Potlačení ozvěny používající knihovnu speex"
 
@@ -1121,11 +1195,11 @@ msgstr "Dekodér MPEG používající knihovnu ffmpeg"
 msgid "A snow decoder using ffmpeg library"
 msgstr "Dekodér snow používající knihovnu ffmpeg"
 
-#: ../mediastreamer2/src/videoenc.c:579 ../mediastreamer2/src/videoenc.c:645
+#: ../mediastreamer2/src/videoenc.c:587 ../mediastreamer2/src/videoenc.c:653
 msgid "A video H.263 encoder using ffmpeg library."
 msgstr "Kodér H.263 používající knihovnu ffmpeg."
 
-#: ../mediastreamer2/src/videoenc.c:595
+#: ../mediastreamer2/src/videoenc.c:603
 msgid ""
 "A video H.263 encoder using ffmpeg library. It is compliant with old RFC2190 "
 "spec."
@@ -1133,22 +1207,22 @@ msgstr ""
 "Kodér H.263 videa používající knihovnu ffmpeg. Vyhovuje staré specifikaci "
 "RFC 2190."
 
-#: ../mediastreamer2/src/videoenc.c:611 ../mediastreamer2/src/videoenc.c:677
+#: ../mediastreamer2/src/videoenc.c:619 ../mediastreamer2/src/videoenc.c:685
 msgid "A video MPEG4 encoder using ffmpeg library."
 msgstr "Kodér MPEG4 videa používající knihovnu ffmpeg."
 
-#: ../mediastreamer2/src/videoenc.c:627
+#: ../mediastreamer2/src/videoenc.c:635
 msgid "A video snow encoder using ffmpeg library."
 msgstr "Kodér snow videa používající knihovnu ffmpeg."
 
-#: ../mediastreamer2/src/videoenc.c:661
+#: ../mediastreamer2/src/videoenc.c:669
 msgid ""
 "A video H.263 encoder using ffmpeg library, compliant with old RFC2190 spec."
 msgstr ""
 "Kodér H.263 videa používající knihovnu ffmpeg, vyhovuje staré specifikaci "
 "RFC 2190."
 
-#: ../mediastreamer2/src/videoenc.c:693
+#: ../mediastreamer2/src/videoenc.c:701
 msgid ""
 "The snow codec is royalty-free and is open-source. \n"
 "It uses innovative techniques that makes it one of the best video codec. It "
@@ -1159,7 +1233,7 @@ msgstr ""
 "Kodek snow není zatížen poplatky a má otevřený zdrojový kód.\n"
 "Využívá průkopnické techniky, které jej činí jedním z nejlepších video "
 "kodeků. Je implementován v projektu ffmpeg.\n"
-"Avšak se stále vyvíjí a kompatibilita s ostaními verzemi není zaručena."
+"Avšak se stále vyvíjí a kompatibilita s ostatními verzemi není zaručena."
 
 #: ../mediastreamer2/src/videoout.c:876 ../mediastreamer2/src/videoout.c:894
 msgid "A generic video display"
@@ -1177,6 +1251,13 @@ msgstr "Zdrojový filtr kompatibilní s video4windows proudující obrázky."
 msgid "A video for windows (vfw.h) based source filter to grab pictures."
 msgstr ""
 "Zdrojový filtr založený na videu pro windows (vwf.h) pro zachytávání obrázků."
+
+#: ../mediastreamer2/src/ice.c:1350 ../mediastreamer2/src/ice.c:1368
+msgid "ICE filter"
+msgstr "Filtr ICE"
+
+#~ msgid "A video display window using SDL"
+#~ msgstr "Zobrazovaní videa v SDL okně"
 
 #~ msgid ""
 #~ "Show All\n"
@@ -1516,9 +1597,6 @@ msgstr ""
 
 #~ msgid "Send registration:"
 #~ msgstr "Odeslat registraci:"
-
-#~ msgid "Edit contact information"
-#~ msgstr "Upravit kontaktní informace"
 
 #~ msgid "Name:"
 #~ msgstr "Jméno:"

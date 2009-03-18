@@ -23,12 +23,24 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 static const float max_e=32767*32767;
 static const float coef=0.1;
 
+static const float noise_thres=0.1;
+
+
 typedef struct Volume{
 	float energy;
+	float norm_en;
+	float gain;
+	float static_gain;
+	MSFilter *peer;
 }Volume;
 
 static void volume_init(MSFilter *f){
-	f->data=ms_new0(Volume,1);
+	Volume *v=(Volume*)ms_new(Volume,1);
+	v->energy=0;
+	v->norm_en=0;
+	v->static_gain=v->gain=1;
+	f->data=v;
+	
 }
 
 static void volume_uninit(MSFilter *f){
@@ -39,6 +51,29 @@ static int volume_get(MSFilter *f, void *arg){
 	float *farg=(float*)arg;
 	Volume *v=(Volume*)f->data;
 	*farg=10*log10f((v->energy+1)/max_e);
+	return 0;
+}
+
+static int volume_get_linear(MSFilter *f, void *arg){
+	float *farg=(float*)arg;
+	Volume *v=(Volume*)f->data;
+	*farg=(v->energy+1)/max_e;
+	return 0;
+}
+
+static void volume_echo_avoider_process(Volume *v){
+	float peer_e;
+	ms_filter_call_method(v->peer,MS_VOLUME_GET_LINEAR,&peer_e);
+	if (peer_e>noise_thres){
+		/*lower our output*/
+		v->gain=v->static_gain*(1-peer_e);
+	}else v->gain=v->static_gain;
+}
+
+static void volume_set_gain(MSFilter *f, void *arg){
+	float *farg=(float*)arg;
+	Volume *v=(Volume*)f->data;
+	v->gain=v->static_gain=*farg;
 	return 0;
 }
 
@@ -60,8 +95,10 @@ static void volume_process(MSFilter *f){
 }
 
 static MSFilterMethod methods[]={
-	{	MS_VOLUME_GET	,	volume_get	},
-	{	0		,	NULL		}
+	{	MS_VOLUME_GET		,	volume_get		},
+	{	MS_VOLUME_GET_LINEAR	, 	volume_get_linear	},
+	{	MS_VOLUME_SET_GAIN	,	volume_set_gain		},
+	{	0			,	NULL			}
 };
 
 #ifndef _MSC_VER

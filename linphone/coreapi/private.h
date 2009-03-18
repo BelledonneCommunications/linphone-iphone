@@ -57,6 +57,9 @@
 #ifndef _
 #define _(something)	(something)
 #endif
+#ifndef ngettext
+#define ngettext(singular, plural, number)	(((number)==1)?(singular):(plural))
+#endif
 #endif
 
 void linphone_core_init_media_streams(LinphoneCore *lc);

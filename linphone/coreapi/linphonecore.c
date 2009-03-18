@@ -191,7 +191,9 @@ void linphone_call_log_completed(LinphoneCallLog *calllog, LinphoneCall *call){
 				char *info;
 				calllog->status=LinphoneCallMissed;
 				lc->missed_calls++;
-				info=ortp_strdup_printf(_("You have missed %i call(s)."),lc->missed_calls);
+				info=ortp_strdup_printf(ngettext("You have missed %i call.",
+                            "You have missed %i calls.", lc->missed_calls),
+                        lc->missed_calls);
 				lc->vtable.display_status(lc,info);
 				ms_free(info);
 			}
