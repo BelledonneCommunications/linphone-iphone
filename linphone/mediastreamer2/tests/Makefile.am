@@ -1,4 +1,4 @@
-noinst_PROGRAMS=echo ring mtudiscover
+noinst_PROGRAMS=echo ring mtudiscover bench
 
 if BUILD_VIDEO
 noinst_PROGRAMS+=videodisplay
@@ -8,6 +8,7 @@ echo_SOURCES=echo.c
 ring_SOURCES=ring.c
 videodisplay_SOURCES=videodisplay.c
 mtudiscover_SOURCES=mtudiscover.c
+becnh_SOURCES=bench.c
 
 libexec_PROGRAMS=mediastream
 
