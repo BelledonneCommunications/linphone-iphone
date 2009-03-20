@@ -32,7 +32,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
 /**
- * @defgroup mediastreamer2_soundcard Sound Card API - manage audio capture/play filters.
+ * @defgroup mediastreamer2_webcam Camera API - manage video capture devices
  * @ingroup mediastreamer2_api
  * @{
  */
@@ -85,12 +85,6 @@ typedef struct _MSWebCam MSWebCam;
 #ifdef __cplusplus
 extern "C"{
 #endif
-
-/**
- * @defgroup mediastreamer2_webcammanager WebCam Manager API
- * @ingroup mediastreamer2_webcam
- * @{
- */
 
 /**
  * Retreive a webcam manager object.
@@ -151,14 +145,6 @@ void ms_web_cam_manager_add_cam(MSWebCamManager *m, MSWebCam *c);
  */
 void ms_web_cam_manager_register_desc(MSWebCamManager *m, MSWebCamDesc *desc);
 
-/** @} */
-
-/**
- * @defgroup mediastreamer2_webcamfilter Sound Card Filter API
- * @ingroup mediastreamer2_webcam
- * @{
- */
-
 /**
  * Create an INPUT filter based on the selected camera.
  *
@@ -213,9 +199,6 @@ const char *ms_web_cam_get_name(const MSWebCam *obj);
  * Returns: A string if successfull, NULL otherwise.
  */
 const char *ms_web_cam_get_string_id(MSWebCam *obj);
-
-
-/** @} */
 
 
 /*specific methods for static image:*/

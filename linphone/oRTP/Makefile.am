@@ -7,6 +7,7 @@ SUBDIRS=src build include
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = ortp.pc
 
+SOURCES=include/ortp/*.h src/*.c src/*.h
 
 #html doc
 if HAVE_DOXYGEN
@@ -29,7 +30,7 @@ install-data-hook:
 	cd $(DESTDIR)$(doc_htmldir) && tar xf html.tar && rm -f html.tar
 
 uninstall-hook:
-	cd $(DESTDIR)$(doc_htmldir) && rm -rf *
+	cd $(DESTDIR)$(doc_htmldir) && rm -rf html
 
 endif
 

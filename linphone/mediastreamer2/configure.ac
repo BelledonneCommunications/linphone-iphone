@@ -405,6 +405,13 @@ AC_SUBST(PACKAGE_DATA_DIR)
 dnl check for video4linux headers
 AC_CHECK_HEADERS(linux/videodev.h linux/videodev2.h)
 
+dnl ##################################################
+dnl # Check for doxygen
+dnl ##################################################
+
+AC_PATH_PROG(DOXYGEN,doxygen,false)
+AM_CONDITIONAL(HAVE_DOXYGEN, test $DOXYGEN != false)
+
 
 dnl ##################################################
 dnl # Check for ESP Packager
@@ -480,6 +487,6 @@ build/wince/Makefile
 mediastreamer.pc
 mediastreamer2.spec
 help/Makefile
-help/DoxyFile
+help/Doxyfile
 help/doxygen.dox
 )

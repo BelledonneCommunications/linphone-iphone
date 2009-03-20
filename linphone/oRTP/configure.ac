@@ -247,7 +247,7 @@ echo "$ORTPDEPS_CFLAGS" > ortp.defs
 
 
 dnl ##################################################
-dnl # Check for gtk-doc.
+dnl # Check for doxygen
 dnl ##################################################
 
 AC_PATH_PROG(DOXYGEN,doxygen,false)

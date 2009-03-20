@@ -5,7 +5,7 @@
 #---------------------------------------------------------------------------
 PROJECT_NAME           = mediastreamer2
 PROJECT_NUMBER         = @MEDIASTREAMER_VERSION@
-OUTPUT_DIRECTORY       = help/doc
+OUTPUT_DIRECTORY       = doc
 CREATE_SUBDIRS         = NO
 OUTPUT_LANGUAGE        = English
 USE_WINDOWS_ENCODING   = NO
@@ -80,8 +80,9 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 # configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = help/ \
-                         include/
+INPUT                  = . \
+                         ../include/ \
+			 ../src
 FILE_PATTERNS          = *.h \
                          *.c \
                          *.dox
@@ -89,7 +90,7 @@ RECURSIVE              = YES
 EXCLUDE                = 
 EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       = 
-EXAMPLE_PATH           = .
+EXAMPLE_PATH           = ../
 EXAMPLE_PATTERNS       = 
 EXAMPLE_RECURSIVE      = NO
 IMAGE_PATH             = 
@@ -188,7 +189,7 @@ ENABLE_PREPROCESSING   = YES
 MACRO_EXPANSION        = YES
 EXPAND_ONLY_PREDEF     = NO
 SEARCH_INCLUDES        = YES
-INCLUDE_PATH           = include/
+INCLUDE_PATH           = ../include/mediastreamer2
 INCLUDE_FILE_PATTERNS  = *.h
 PREDEFINED             = DOXYGEN
 EXPAND_AS_DEFINED      = 
