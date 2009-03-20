@@ -64,7 +64,7 @@ struct bench_config {
 	MSList *tsessions; /* list of struct test_session */
 };
 
-#define NUM_SESSION 50
+#define NUM_SESSION 50 /* num of session to start per block */
 #define NUM_SESSION_RECORD 1
 
 struct bench_config cfg[] = {
