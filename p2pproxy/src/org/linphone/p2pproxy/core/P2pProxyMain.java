@@ -25,6 +25,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+
 import java.lang.management.ManagementFactory;
 import java.net.URI;
 import java.net.URL;
@@ -47,7 +49,7 @@ import org.zoolu.sip.provider.SipStack;
 import org.linphone.p2pproxy.launcher.P2pProxylauncherConstants;
 
 public class P2pProxyMain  implements P2pProxyMainMBean {
-   private final static Logger mLog = Logger.getLogger(P2pProxyMain.class);
+   private  static Logger mLog = null;
    private  static JxtaNetworkManager mJxtaNetworkManager;
    private  static ServiceProvider mServiceProvider;
    private  static P2pProxyManagement mP2pProxyManagement;
@@ -321,7 +323,7 @@ public void loadTraceConfigFile() throws P2pProxyException {
    }
 public  static void staticLoadTraceConfigFile()  throws P2pProxyException {
    try {
-	   URL lLog4jFile = null;
+	   InputStream lLog4jStream = null;
 	   String lSearchDir;
       //search build dir
       lSearchDir = System.getProperty("org.linphone.p2pproxy.build.dir");
@@ -333,24 +335,26 @@ public  static void staticLoadTraceConfigFile()  throws P2pProxyException {
             lSearchDir=".";
             lFile = new File(lSearchDir+"/log4j.properties");
             if (lFile.exists() == false) {
-            	lLog4jFile = Thread.currentThread().getContextClassLoader().getResource("log4j.properties"); 
+            	lLog4jStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("log4j.properties");
+            	
             }
          }
       }
-      if (lLog4jFile == null) {
-    	  lLog4jFile = lFile.toURL();
+      if (lLog4jStream == null) {
+    	  lLog4jStream = new FileInputStream(lFile);
       }
-      
-      PropertyConfigurator.configure(lLog4jFile);
+      Properties llog4Properties = new Properties();
+      llog4Properties.load(lLog4jStream);
+      PropertyConfigurator.configure(llog4Properties);
+      mLog = Logger.getLogger(P2pProxyMain.class);
       // read java.util.logging properties 
-      Properties lLogginProperties = new Properties();
-      lLogginProperties.load(new FileInputStream(new File(lLog4jFile.toURI())));
-      lLogginProperties.setProperty("java.util.logging.FileHandler.pattern",System.getProperty("org.linphone.p2pproxy.home")+"/logs/p2pproxy.log");
+
+      llog4Properties.setProperty("java.util.logging.FileHandler.pattern",System.getProperty("org.linphone.p2pproxy.home")+"/logs/p2pproxy.log");
       File lLogConfigFile = new File(mConfigHomeDir.concat("log4j.properties")+".tmp");
       if (lLogConfigFile.exists() == false) {
     	  lLogConfigFile.createNewFile();
       }
-      lLogginProperties.store(new FileOutputStream(lLogConfigFile), "tmp");
+      llog4Properties.store(new FileOutputStream(lLogConfigFile), "tmp");
       System.setProperty("java.util.logging.config.file",lLogConfigFile.getAbsolutePath());
       java.util.logging.LogManager.getLogManager().readConfiguration();
    } catch (Exception e) {

@@ -186,8 +186,8 @@
      <attribute name="Main-Class" value="org.linphone.p2pproxy.core.P2pProxyMain"/>
      <attribute name="Class-Path" value="log4j.jar bcprov-jdk14.jar javax.servlet.jar org.mortbay.jetty.jar sip.jar"/>   
    </manifest>
-   <!-- put manifest -->
-   <jar jarfile="${dist.dir}/p2pproxy.jar" compress="false" keepcompression="true" update="true"  manifest="antbuild/META-INF/MANIFEST.MF"/>
+   <!-- put manifest + log4j.properties -->
+   <jar jarfile="${dist.dir}/p2pproxy.jar" compress="false" keepcompression="true" update="true"  manifest="antbuild/META-INF/MANIFEST.MF" basedir="." includes="log4j.properties"/>
    
    <zip destfile="antbuild/p2pproxy_${version}.zip"  basedir="antbuild/dist" />
    
