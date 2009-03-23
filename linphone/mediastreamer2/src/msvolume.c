@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 static const float max_e=32767*32767;
 static const float coef=0.1;
-static const float gain_k=0.03;
+static const float gain_k=0.02;
 static const float en_weight=4.0;
 static const float noise_thres=0.1;
 
