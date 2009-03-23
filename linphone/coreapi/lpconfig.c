@@ -290,6 +290,14 @@ int lp_config_get_int(LpConfig *lpconfig,const char *section, const char *key, i
 	else return default_value;
 }
 
+float lp_config_get_float(LpConfig *lpconfig,const char *section, const char *key, float default_value){
+	const char *str=lp_config_get_string(lpconfig,section,key,NULL);
+	float ret;
+	if (str==NULL) return default_value;
+	sscanf(str,"%f",&ret);
+	return ret;
+}
+
 void lp_config_set_string(LpConfig *lpconfig,const char *section, const char *key, const char *value){
 	LpItem *item;
 	LpSection *sec=lp_config_find_section(lpconfig,section);

@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "lpconfig.h"
 #include "private.h"
 #include "mediastreamer2/mediastream.h"
+#include "mediastreamer2/msvolume.h"
 #include <eXosip2/eXosip.h>
 #include "sdphandler.h"
 
@@ -407,6 +408,9 @@ void sound_config_read(LinphoneCore *lc)
 
 	linphone_core_enable_echo_cancelation(lc,
 		lp_config_get_int(lc->config,"sound","echocancelation",0));
+
+	linphone_core_enable_echo_limiter(lc,
+		lp_config_get_int(lc->config,"sound","echolimiter",0));
 }
 
 void sip_config_read(LinphoneCore *lc)
@@ -1409,6 +1413,9 @@ int linphone_core_change_qos(LinphoneCore *lc, int answer)
 
 void linphone_core_init_media_streams(LinphoneCore *lc){
 	lc->audiostream=audio_stream_new(linphone_core_get_audio_port(lc),linphone_core_ipv6_enabled(lc));
+	if (linphone_core_echo_limiter_enabled(lc)){
+		audio_stream_enable_echo_limiter(lc->audiostream,TRUE);
+	}
 #ifdef VIDEO_ENABLED
 	if (lc->video_conf.display || lc->video_conf.capture)
 		lc->videostream=video_stream_new(linphone_core_get_video_port(lc),linphone_core_ipv6_enabled(lc));
@@ -1421,6 +1428,23 @@ static void linphone_core_dtmf_received(RtpSession* s, int dtmf, void* user_data
 	LinphoneCore* lc = (LinphoneCore*)user_data;
 	if (lc->vtable.dtmf_received != NULL)
 		lc->vtable.dtmf_received(lc, dtmf);
+}
+
+static void post_configure_audio_streams(LinphoneCore *lc){
+	AudioStream *st=lc->audiostream;
+	if (st->volrecv && st->volsend){
+		float speed=lp_config_get_float(lc->config,"sound","el_speed",-1);
+		float thres=lp_config_get_float(lc->config,"sound","el_thres",-1);
+		if (speed!=-1)
+			ms_filter_call_method(st->volsend,MS_VOLUME_SET_EA_SPEED,&speed);
+		if (thres!=-1)
+			ms_filter_call_method(st->volrecv,MS_VOLUME_SET_EA_THRESHOLD,&thres);
+	}
+	if (lc->vtable.dtmf_received!=NULL){
+		/* replace by our default action*/
+		audio_stream_play_received_dtmfs(lc->audiostream,FALSE);
+		rtp_session_signal_connect(lc->audiostream->session,"telephone-event",(RtpCallback)linphone_core_dtmf_received,(unsigned long)lc);
+	}
 }
 
 void linphone_core_start_media_streams(LinphoneCore *lc, LinphoneCall *call){
@@ -1467,11 +1491,7 @@ void linphone_core_start_media_streams(LinphoneCore *lc, LinphoneCall *call){
 				lc->play_file,
 				lc->rec_file);
 		}
-		if (lc->vtable.dtmf_received!=NULL){
-			/* replace by our default action*/
-			audio_stream_play_received_dtmfs(lc->audiostream,FALSE);
-			rtp_session_signal_connect(lc->audiostream->session,"telephone-event",(RtpCallback)linphone_core_dtmf_received,(unsigned long)lc);
-		}
+		post_configure_audio_streams(lc);	
 		audio_stream_set_rtcp_information(lc->audiostream, cname, tool);
 	}
 #ifdef VIDEO_ENABLED
@@ -1882,6 +1902,14 @@ void linphone_core_enable_echo_cancelation(LinphoneCore *lc, bool_t val){
 
 bool_t linphone_core_echo_cancelation_enabled(LinphoneCore *lc){
 	return lc->sound_conf.ec;
+}
+
+void linphone_core_enable_echo_limiter(LinphoneCore *lc, bool_t val){
+	lc->sound_conf.ea=val;
+}
+
+bool_t linphone_core_echo_limiter_enabled(const LinphoneCore *lc){
+	return lc->sound_conf.ea;
 }
 
 

@@ -393,7 +393,7 @@ void audio_stream_set_relay_session_id(AudioStream *stream, const char *id){
 	ms_filter_call_method(stream->rtpsend, MS_RTP_SEND_SET_RELAY_SESSION_ID,(void*)id);
 }
 
-void audio_stream_enable_echo_avoider(AudioStream *stream, bool_t enabled){
+void audio_stream_enable_echo_limiter(AudioStream *stream, bool_t enabled){
 	stream->use_ea=enabled;
 }
 

@@ -32,6 +32,8 @@ typedef struct Volume{
 	float norm_en;
 	float gain;
 	float static_gain;
+	float gain_k;
+	float thres;
 	MSFilter *peer;
 	bool_t ea_active;
 }Volume;
@@ -42,8 +44,9 @@ static void volume_init(MSFilter *f){
 	v->norm_en=0;
 	v->static_gain=v->gain=1;
 	v->ea_active=FALSE;
+	v->gain_k=gain_k;
+	v->thres=noise_thres;
 	f->data=v;
-	
 }
 
 static void volume_uninit(MSFilter *f){
@@ -69,7 +72,7 @@ static void volume_echo_avoider_process(Volume *v){
 	float gain;
 	ms_filter_call_method(v->peer,MS_VOLUME_GET_LINEAR,&peer_e);
 	if (v->ea_active){
-		if (peer_e>noise_thres){
+		if (peer_e>v->thres){
 			/*lower our output*/
 			gain=v->static_gain*(1-peer_e);
 		}else {
@@ -79,13 +82,13 @@ static void volume_echo_avoider_process(Volume *v){
 	}else{
 		int peer_active=FALSE;
 		ms_filter_call_method(v->peer,MS_VOLUME_GET_EA_STATE,&peer_active);
-		if (peer_e>noise_thres && ! peer_active){
+		if (peer_e>v->thres && ! peer_active){
 			/*lower our output*/
 			gain=v->static_gain*(1-peer_e);
 			v->ea_active=TRUE;
 		}else gain=v->static_gain;
 	}
-	v->gain=(v->gain*(1-gain_k)) + (gain_k*coef);
+	v->gain=(v->gain*(1-v->gain_k)) + (v->gain_k*v->gain);
 }
 
 static int volume_set_gain(MSFilter *f, void *arg){
@@ -107,6 +110,28 @@ static int volume_set_peer(MSFilter *f, void *arg){
 	MSFilter *p=(MSFilter*)arg;
 	Volume *v=(Volume*)f->data;
 	v->peer=p;
+	return 0;
+}
+
+static int volume_set_ea_threshold(MSFilter *f, void*arg){
+	Volume *v=(Volume*)f->data;
+	float val=*(float*)arg;
+	if (val<0 || val>1) {
+		ms_error("Error: threshold must be in range [0..1]");
+		return -1;
+	}
+	v->thres=val;
+	return 0;
+}
+
+static int volume_set_ea_speed(MSFilter *f, void*arg){
+	Volume *v=(Volume*)f->data;
+	float val=*(float*)arg;
+	if (val<0 || val>1) {
+		ms_error("Error: speed must be in range [0..1]");
+		return -1;
+	}
+	v->gain_k=val;
 	return 0;
 }
 
@@ -148,6 +173,8 @@ static MSFilterMethod methods[]={
 	{	MS_VOLUME_SET_GAIN	,	volume_set_gain		},
 	{	MS_VOLUME_GET_EA_STATE	, 	volume_get_ea_state	},
 	{	MS_VOLUME_SET_PEER	,	volume_set_peer		},
+	{	MS_VOLUME_SET_EA_THRESHOLD , 	volume_set_ea_threshold	},
+	{	MS_VOLUME_SET_EA_SPEED	,	volume_set_ea_speed	},
 	{	0			,	NULL			}
 };
 

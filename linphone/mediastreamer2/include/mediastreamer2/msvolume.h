@@ -42,6 +42,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define MS_VOLUME_SET_PEER		MS_FILTER_METHOD(MS_VOLUME_ID,4, MSFilter )
 
+#define MS_VOLUME_SET_EA_THRESHOLD	MS_FILTER_METHOD(MS_VOLUME_ID,5,float)
+
+#define MS_VOLUME_SET_EA_SPEED		MS_FILTER_METHOD(MS_VOLUME_ID,6,float)
+
 extern MSFilterDesc ms_volume_desc;
 
 #endif

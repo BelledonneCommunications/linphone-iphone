@@ -45,7 +45,7 @@ struct _AudioStream
 	unsigned int last_packet_count;
 	time_t last_packet_time;
 	bool_t play_dtmfs;
-	bool_t use_ea; /*use echo avoider: two MSVolume, measured input level controlling local output level*/
+	bool_t use_ea; /*use echo limiter: two MSVolume, measured input level controlling local output level*/
 };
 
 #ifdef __cplusplus
@@ -92,8 +92,8 @@ void audio_stream_set_relay_session_id(AudioStream *stream, const char *relay_se
 /*returns true if we are still receiving some data from remote end in the last timeout seconds*/
 bool_t audio_stream_alive(AudioStream * stream, int timeout);
 
-/*enable echo-avoider dispositve: one MSVolume in input branch controls a MSVolume in the output branch*/
-void audio_stream_enable_echo_avoider(AudioStream *stream, bool_t enabled);
+/*enable echo-limiter dispositve: one MSVolume in input branch controls a MSVolume in the output branch*/
+void audio_stream_enable_echo_limiter(AudioStream *stream, bool_t enabled);
 
 /* stop the above process*/
 void audio_stream_stop (AudioStream * stream);
