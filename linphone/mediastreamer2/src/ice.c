@@ -165,7 +165,7 @@ static int ice_sound_send_stun_request(RtpSession *session, struct IceCheckList 
 
 		/* prepare ONCE tie-break value */
 		if (checklist->tiebreak_value==0) {
-			checklist->tiebreak_value = random() * (0x7fffffffffffffff/0x7fff);
+			checklist->tiebreak_value = random() * (0x7fffffffffffffffLL /0x7fff);
 		}
 
 		cand_pair=NULL;
@@ -513,7 +513,7 @@ static int ice_process_stun_message(RtpSession *session, struct IceCheckList *ch
 
 	/* prepare ONCE tie-break value */
 	if (checklist->tiebreak_value==0) {
-		checklist->tiebreak_value = random() * (0x7fffffffffffffff/0x7fff);
+		checklist->tiebreak_value = random() * (0x7fffffffffffffffLL/0x7fff);
 	}
 
 	memset (src6host, 0, sizeof (src6host));
@@ -947,7 +947,7 @@ static int ice_process_stun_message(RtpSession *session, struct IceCheckList *ch
 		{
 			struct in_addr inaddr;
 			char mapped_addr[64];
-			struct CandidatePair *cand_pair;
+			struct CandidatePair *cand_pair=NULL;
 			int pos;
 			inaddr.s_addr = htonl (mappedAddr.addr);
 			snprintf(mapped_addr, sizeof(mapped_addr),

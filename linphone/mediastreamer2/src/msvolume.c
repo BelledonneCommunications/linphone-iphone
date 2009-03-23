@@ -22,8 +22,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 static const float max_e=32767*32767;
 static const float coef=0.1;
-static const float gain_k=0.2;
-
+static const float gain_k=0.03;
+static const float en_weight=4.0;
 static const float noise_thres=0.1;
 
 
@@ -46,6 +46,7 @@ static void volume_init(MSFilter *f){
 	v->ea_active=FALSE;
 	v->gain_k=gain_k;
 	v->thres=noise_thres;
+	v->peer=NULL;
 	f->data=v;
 }
 
@@ -67,14 +68,22 @@ static int volume_get_linear(MSFilter *f, void *arg){
 	return 0;
 }
 
+static inline float compute_gain(float static_gain, float energy, float weight){
+	float ret=static_gain*(1 - (energy*weight));
+	if (ret<0) ret=0;
+	return ret;
+}
+
 static void volume_echo_avoider_process(Volume *v){
 	float peer_e;
 	float gain;
+	float gain_k2;
 	ms_filter_call_method(v->peer,MS_VOLUME_GET_LINEAR,&peer_e);
+	peer_e=sqrt(peer_e);
 	if (v->ea_active){
 		if (peer_e>v->thres){
 			/*lower our output*/
-			gain=v->static_gain*(1-peer_e);
+			gain=compute_gain(v->static_gain,peer_e,en_weight);
 		}else {
 			gain=v->static_gain;
 			v->ea_active=FALSE;
@@ -84,11 +93,15 @@ static void volume_echo_avoider_process(Volume *v){
 		ms_filter_call_method(v->peer,MS_VOLUME_GET_EA_STATE,&peer_active);
 		if (peer_e>v->thres && ! peer_active){
 			/*lower our output*/
-			gain=v->static_gain*(1-peer_e);
+			gain=compute_gain(v->static_gain,peer_e,en_weight);
 			v->ea_active=TRUE;
 		}else gain=v->static_gain;
 	}
-	v->gain=(v->gain*(1-v->gain_k)) + (v->gain_k*v->gain);
+	if (v->ea_active){
+		gain_k2=5*v->gain_k;
+	}else gain_k2=v->gain_k;
+	v->gain=(v->gain*(1-gain_k2)) + (gain_k2*gain);
+	ms_message("ea_active=%i, peer_e=%f gain=%f gain_k=%f",v->ea_active,peer_e,v->gain, v->gain_k);
 }
 
 static int volume_set_gain(MSFilter *f, void *arg){
@@ -208,3 +221,7 @@ MSFilterDesc ms_volume_desc={
 	methods
 };
 #endif
+
+MS_FILTER_DESC_EXPORT(ms_volume_desc)
+
+

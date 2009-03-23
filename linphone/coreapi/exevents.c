@@ -704,6 +704,11 @@ int linphone_accept_video_offer(sdp_context_t *ctx,sdp_payload_t *payload)
 
 	if (!linphone_core_video_enabled(lc)) return -1;
 
+	if (payload->remoteport==0) {
+		ms_message("Video stream refused by remote.");
+		return 0;
+	}
+
 	params=&call->video_params;
 	remote_profile=call->profile;
 	/* see if this codec is supported in our local rtp profile*/

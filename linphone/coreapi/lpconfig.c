@@ -292,7 +292,7 @@ int lp_config_get_int(LpConfig *lpconfig,const char *section, const char *key, i
 
 float lp_config_get_float(LpConfig *lpconfig,const char *section, const char *key, float default_value){
 	const char *str=lp_config_get_string(lpconfig,section,key,NULL);
-	float ret;
+	float ret=default_value;
 	if (str==NULL) return default_value;
 	sscanf(str,"%f",&ret);
 	return ret;

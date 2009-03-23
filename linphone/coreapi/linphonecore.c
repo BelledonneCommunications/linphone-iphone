@@ -1436,7 +1436,7 @@ static void post_configure_audio_streams(LinphoneCore *lc){
 		float speed=lp_config_get_float(lc->config,"sound","el_speed",-1);
 		float thres=lp_config_get_float(lc->config,"sound","el_thres",-1);
 		if (speed!=-1)
-			ms_filter_call_method(st->volsend,MS_VOLUME_SET_EA_SPEED,&speed);
+			ms_filter_call_method(st->volrecv,MS_VOLUME_SET_EA_SPEED,&speed);
 		if (thres!=-1)
 			ms_filter_call_method(st->volrecv,MS_VOLUME_SET_EA_THRESHOLD,&thres);
 	}
@@ -2406,6 +2406,18 @@ LpConfig *linphone_core_get_config(LinphoneCore *lc){
 
 void linphone_core_uninit(LinphoneCore *lc)
 {
+	if (lc->call){
+		int i;
+		linphone_core_terminate_call(lc,NULL);
+		for(i=0;i<10;++i){
+#ifndef WIN32
+			usleep(50000);
+#else
+			Sleep(50);
+#endif
+			linphone_core_iterate(lc);
+		}
+	}
 	gstate_new_state(lc, GSTATE_POWER_SHUTDOWN, NULL);
 #ifdef VIDEO_ENABLED
 	if (lc->previewstream!=NULL){

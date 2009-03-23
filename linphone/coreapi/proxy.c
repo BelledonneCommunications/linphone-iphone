@@ -25,6 +25,14 @@ Copyright (C) 2000  Simon MORLAT (simon.morlat@linphone.org)
 #include "lpconfig.h"
 #include "private.h"
 
+void linphone_proxy_config_write_all_to_config_file(LinphoneCore *lc){
+	MSList *elem;
+	int i;
+	for(elem=lc->sip_conf.proxies,i=0;elem!=NULL;elem=ms_list_next(elem),i++){
+		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
+		linphone_proxy_config_write_to_config_file(lc->config,cfg,i);
+	}
+}
 
 void linphone_proxy_config_init(LinphoneProxyConfig *obj){
 	memset(obj,0,sizeof(LinphoneProxyConfig));
@@ -231,13 +239,10 @@ void linphone_proxy_config_apply(LinphoneProxyConfig *obj,LinphoneCore *lc)
 	linphone_proxy_config_done(obj);
 }
 
-int linphone_proxy_config_done(LinphoneProxyConfig *obj)
-{
+static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
 	const char *id_str;
-	if (!linphone_proxy_config_check(obj->lc,obj)) return -1;
 	if (obj->reg_identity!=NULL) id_str=obj->reg_identity;
 	else id_str=linphone_core_get_primary_contact(obj->lc);
-	obj->frozen=FALSE;
 	if (obj->reg_sendregister){
 		char *ct=NULL;
 		osip_message_t *msg=NULL;
@@ -245,6 +250,14 @@ int linphone_proxy_config_done(LinphoneProxyConfig *obj)
 		eXosip_register_send_register(obj->rid,msg);
 		if (ct!=NULL) osip_free(ct);
 	}
+}
+
+int linphone_proxy_config_done(LinphoneProxyConfig *obj)
+{
+	if (!linphone_proxy_config_check(obj->lc,obj)) return -1;
+	obj->frozen=FALSE;
+	linphone_proxy_config_register(obj);
+	linphone_proxy_config_write_all_to_config_file(obj->lc);
 	return 0;
 }
 
@@ -502,14 +515,13 @@ const MSList *linphone_core_get_proxy_config_list(const LinphoneCore *lc){
 void linphone_proxy_config_process_authentication_failure(LinphoneCore *lc, eXosip_event_t *ev){
 	LinphoneProxyConfig *cfg=linphone_core_get_proxy_config_from_rid(lc, ev->rid);
 	if (cfg){
-			cfg->auth_failures++;
-			/*restart a new register */
-			if (cfg->auth_failures==1){
-				linphone_proxy_config_done(cfg);
-			}
+		cfg->auth_failures++;
+		/*restart a new register */
+		if (cfg->auth_failures==1){
+			linphone_proxy_config_register(cfg);
+		}
 	}
 }
-
 
 void linphone_proxy_config_write_to_config_file(LpConfig *config, LinphoneProxyConfig *obj, int index)
 {
@@ -536,6 +548,8 @@ void linphone_proxy_config_write_to_config_file(LpConfig *config, LinphoneProxyC
 	lp_config_set_int(config,key,"reg_sendregister",obj->reg_sendregister);
 	lp_config_set_int(config,key,"publish",obj->publish);
 }
+
+
 
 LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LpConfig *config, int index)
 {
