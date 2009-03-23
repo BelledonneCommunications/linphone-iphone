@@ -413,6 +413,7 @@ static int ice_sound_send_stun_request(RtpSession *session, struct IceCheckList 
 	return 0;
 }
 
+#if 0
 static int
 _ice_get_localip_for (struct sockaddr_storage *saddr, size_t saddr_len, char *loc, int size)
 {
@@ -459,6 +460,8 @@ _ice_get_localip_for (struct sockaddr_storage *saddr, size_t saddr_len, char *lo
 	/* ms_message("ice.c: Outgoing interface for sending STUN answer is %s", loc); */
 	return 0;
 }
+
+#endif
 
 static void
 _ice_createErrorResponse(StunMessage *response, int cl, int number, const char* msg)

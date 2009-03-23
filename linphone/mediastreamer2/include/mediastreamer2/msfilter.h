@@ -134,12 +134,32 @@ struct _MSFilter{
 };
 
 
-
 /**
  * Structure to create/link/unlink/destroy filter's object.
  * @var MSFilter
  */
 typedef struct _MSFilter MSFilter;
+
+struct _MSConnectionPoint{
+	MSFilter *filter;
+	int pin;
+};
+
+/**
+ * Structure that represents a connection point of a MSFilter
+ * @var MSConnectionPoint
+ */
+typedef struct _MSConnectionPoint MSConnectionPoint;
+
+struct _MSConnectionHelper{
+	MSConnectionPoint last;
+};
+
+/**
+ * Structure that holds data when using the ms_connection_helper_* functions.
+ * @var MSConnectionHelper
+**/
+typedef struct _MSConnectionHelper MSConnectionHelper;
 
 
 #ifdef __cplusplus
@@ -275,7 +295,7 @@ MSFilter *ms_filter_new_from_desc(MSFilterDesc *desc);
  * @param f2   A MSFilter object containing the INPUT pin
  * @param pin2 An index of an INPUT pin.
  *
- * Returns: a MSFilter if successfull, NULL otherwise.
+ * Returns: 0 if sucessful, -1 otherwise.
  */
 int ms_filter_link(MSFilter *f1, int pin1, MSFilter *f2, int pin2);
 
@@ -287,7 +307,7 @@ int ms_filter_link(MSFilter *f1, int pin1, MSFilter *f2, int pin2);
  * @param f2   A MSFilter object containing the INPUT pin
  * @param pin2 An index of an INPUT pin.
  *
- * Returns: a MSFilter if successfull, NULL otherwise.
+ * Returns: 0 if sucessful, -1 otherwise.
  */
 int ms_filter_unlink(MSFilter *f1, int pin1, MSFilter *f2, int pin2);
 
@@ -340,6 +360,60 @@ MSFilterId ms_filter_get_id(MSFilter *f);
  */
 void ms_filter_destroy(MSFilter *f);
 
+/**
+ * Initialize a MSConnectionHelper.
+ *
+ * @param h A MSConnectionHelper, usually (but not necessarily) on stack
+ *
+**/
+void ms_connection_helper_start(MSConnectionHelper *h);
+
+/**
+ * \brief Enter a MSFilter to be connected into the MSConnectionHelper object.
+ * 
+ * This functions enters a MSFilter to be connected into the MSConnectionHelper
+ * object and connects it to the last entered if not the first one.
+ * The MSConnectionHelper is useful to reduce the amount of code necessary to create graphs in case 
+ * the connections are made in an ordered manner and some filters are present conditionally in graphs.
+ * For example, instead of writing
+ * \code
+ * ms_filter_link(f1,0,f2,1);
+ * ms_filter_link(f2,0,f3,0);
+ * ms_filter_link(f3,1,f4,0);
+ * \endcode
+ * You can write:
+ * \code
+ * MSConnectionHelper h;
+ * ms_connection_helper_start(&h);
+ * ms_connection_helper_link(&h,f1,-1,0);
+ * ms_connection_helper_link(&h,f2,1,0);
+ * ms_connection_helper_link(&h,f3,0,1);
+ * ms_connection_helper_link(&h,f4,0,-1);
+ * \endcode
+ * Which is a bit longer to write here, but now imagine f2 needs to be present in the graph only
+ * in certain conditions: in the first case you have rewrite the two first lines, in the second case
+ * you just need to replace the fourth line by:
+ * \code
+ * if (my_condition) ms_connection_helper_link(&h,f2,1,0);
+ * \endcode
+ *
+ * @param h a connection helper 
+ * @param f a MSFilter
+ * @param inpin an input pin number with which the MSFilter needs to connect to previously entered MSFilter
+ * @param outpin an output pin number with which the MSFilter needs to be connected to the next entered MSFilter
+ * 
+ * Returns: the return value of ms_filter_link() that is called internally to this function.
+**/
+int ms_connection_helper_link(MSConnectionHelper *h, MSFilter *f, int inpin, int outpin);
+
+
+/**
+ * \brief Enter a MSFilter to be disconnected into the MSConnectionHelper object.
+ * Process exactly the same way as ms_connection_helper_link() but calls ms_filter_unlink() on the 
+ * entered filters.
+**/
+int ms_connection_helper_unlink(MSConnectionHelper *h, MSFilter *f, int inpin, int outpin);
+
 /* I define the id taking the lower bits of the address of the MSFilterDesc object,
 the method index (_cnt_) and the argument size */
 /* I hope using this to avoid type mismatch (calling a method on the wrong filter)*/
@@ -365,7 +439,7 @@ the method index (_cnt_) and the argument size */
 #define MS_FILTER_EVENT_NO_ARG(_id_,_count_)\
 	MS_FILTER_METHOD_ID(_id_,_count_,0)
 
-/* some MSFilter base methods:*/
+/* some MSFilter base generic methods:*/
 #define MS_FILTER_SET_SAMPLE_RATE	MS_FILTER_BASE_METHOD(0,int)
 #define MS_FILTER_GET_SAMPLE_RATE	MS_FILTER_BASE_METHOD(1,int)
 #define MS_FILTER_SET_BITRATE		MS_FILTER_BASE_METHOD(2,int)
@@ -377,6 +451,8 @@ the method index (_cnt_) and the argument size */
 #define MS_FILTER_SET_MTU		MS_FILTER_BASE_METHOD(9,int)
 #define MS_FILTER_GET_MTU		MS_FILTER_BASE_METHOD(10,int)
 
+
+/* more specific methods: to be moved into implementation specific header files*/
 #define MS_FILTER_SET_FRAMESIZE 	MS_FILTER_BASE_METHOD(11,int)
 #define MS_FILTER_SET_FILTERLENGTH 	MS_FILTER_BASE_METHOD(12,int)
 #define MS_FILTER_SET_OUTPUT_SAMPLE_RATE MS_FILTER_BASE_METHOD(13,int)

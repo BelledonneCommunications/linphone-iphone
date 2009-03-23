@@ -44,7 +44,7 @@ AC_MSG_CHECKING([warning make an error on compilation])
 AC_ARG_ENABLE(strict,
 [  --enable-strict       Enable error on compilation warning [default=no]],
 [wall_werror=$enableval],
-[wall_werror=no]
+[wall_werror=yes]
 )
 
 CFLAGS="-DORTP_INET6 $CFLAGS "

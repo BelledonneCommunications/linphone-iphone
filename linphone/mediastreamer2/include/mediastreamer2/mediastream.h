@@ -41,9 +41,11 @@ struct _AudioStream
 	MSFilter *rtpsend;
 	MSFilter *dtmfgen;
 	MSFilter *ec;/*echo canceler*/
+	MSFilter *volsend,*volrecv; /*MSVolumes*/
 	unsigned int last_packet_count;
 	time_t last_packet_time;
 	bool_t play_dtmfs;
+	bool_t use_ea; /*use echo avoider: two MSVolume, measured input level controlling local output level*/
 };
 
 #ifdef __cplusplus
@@ -89,6 +91,9 @@ int audio_stream_start_now(AudioStream * stream, RtpProfile * prof,  const char 
 void audio_stream_set_relay_session_id(AudioStream *stream, const char *relay_session_id);
 /*returns true if we are still receiving some data from remote end in the last timeout seconds*/
 bool_t audio_stream_alive(AudioStream * stream, int timeout);
+
+/*enable echo-avoider dispositve: one MSVolume in input branch controls a MSVolume in the output branch*/
+void audio_stream_enable_echo_avoider(AudioStream *stream, bool_t enabled);
 
 /* stop the above process*/
 void audio_stream_stop (AudioStream * stream);

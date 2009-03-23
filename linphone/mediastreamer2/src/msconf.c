@@ -17,6 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+
 #ifdef HAVE_CONFIG_H
 #include "mediastreamer-config.h"
 #endif
@@ -93,8 +94,10 @@ typedef struct ConfState{
 
 
 static void channel_init(ConfState *s, Channel *chan, int pos){
+#ifndef DISABLE_SPEEX
 	float f;
 	int val;
+#endif
 	memset(chan, 0, sizeof(Channel));
 	ms_bufferizer_init(&chan->buff);
 #ifndef DISABLE_SPEEX
@@ -256,8 +259,7 @@ static bool_t should_process(MSFilter *f, ConfState *s){
 }
 
 #ifndef DISABLE_SPEEX
-static double powerspectrum_stat_beyond8K(struct Channel *chan)
-{
+static double powerspectrum_stat_beyond8K(struct Channel *chan){
 	spx_int32_t ps_size = 0;
 	spx_int32_t *ps = NULL;
 	double mystat = 0;
@@ -340,7 +342,6 @@ static void conf_sum(MSFilter *f, ConfState *s){
 #if 0
 			int loudness;
 #endif
-			int vad=0;
 			while (ms_bufferizer_get_avail(&chan->buff)> (ms_bufferizer_get_avail(&s->channels[0].buff)) )
 			{
 				ms_bufferizer_read(&chan->buff,(uint8_t*)chan->input,s->conf_gran);
@@ -351,6 +352,7 @@ static void conf_sum(MSFilter *f, ConfState *s){
 #ifndef DISABLE_SPEEX
 				if (chan->speex_pp!=NULL && s->enable_vad==TRUE)
 				{
+					int vad=0;
 					vad = speex_preprocess(chan->speex_pp, (short*)chan->input, NULL);
 					if (vad==1)
 						break; /* voice detected: process as usual */

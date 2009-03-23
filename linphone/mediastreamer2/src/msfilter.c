@@ -231,3 +231,40 @@ void ms_filter_notify_no_arg(MSFilter *f, unsigned int id){
 	if (f->notify!=NULL)
 		f->notify(f->notify_ud,id,NULL);
 }
+
+void ms_connection_helper_start(MSConnectionHelper *h){
+	h->last.filter=0;
+	h->last.pin=-1;
+}
+
+int ms_connection_helper_link(MSConnectionHelper *h, MSFilter *f, int inpin, int outpin){
+	int err=0;
+	if (h->last.filter==NULL){
+		h->last.filter=f;
+		h->last.pin=outpin;
+	}else{
+		err=ms_filter_link(h->last.filter,h->last.pin,f,inpin);
+		if (err==0){
+			h->last.filter=f;
+			h->last.pin=outpin;
+		}
+	}
+	return err;
+}
+
+int ms_connection_helper_unlink(MSConnectionHelper *h, MSFilter *f, int inpin, int outpin){
+	int err=0;
+	if (h->last.filter==NULL){
+		h->last.filter=f;
+		h->last.pin=outpin;
+	}else{
+		err=ms_filter_unlink(h->last.filter,h->last.pin,f,inpin);
+		if (err==0){
+			h->last.filter=f;
+			h->last.pin=outpin;
+		}
+	}
+	return err;
+}
+
+

@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/msrtp.h"
 #include "mediastreamer2/msfileplayer.h"
 #include "mediastreamer2/msfilerec.h"
+#include "mediastreamer2/msvolume.h"
 
 #ifdef INET6
 	#include <sys/types.h>
@@ -54,6 +55,8 @@ void audio_stream_free(AudioStream *stream)
 	if (stream->decoder!=NULL) ms_filter_destroy(stream->decoder);
 	if (stream->dtmfgen!=NULL) ms_filter_destroy(stream->dtmfgen);
 	if (stream->ec!=NULL)	ms_filter_destroy(stream->ec);
+	if (stream->volrecv!=NULL) ms_filter_destroy(stream->volrecv);
+	if (stream->volsend!=NULL) ms_filter_destroy(stream->volsend);
 	if (stream->ticker!=NULL) ms_ticker_destroy(stream->ticker);
 	ms_free(stream);
 }
@@ -195,7 +198,8 @@ int audio_stream_start_full(AudioStream *stream, RtpProfile *profile, const char
 {
 	RtpSession *rtps=stream->session;
 	PayloadType *pt;
-	int tmp;	
+	int tmp;
+	MSConnectionHelper h;
 
 	rtp_session_set_profile(rtps,profile);
 	if (remport>0) rtp_session_set_remote_addr_full(rtps,remip,remport,rem_rtcp_port);
@@ -241,7 +245,13 @@ int audio_stream_start_full(AudioStream *stream, RtpProfile *profile, const char
 	if (use_ec) {
 		stream->ec=ms_filter_new(MS_SPEEX_EC_ID);
 		ms_filter_call_method(stream->ec,MS_FILTER_SET_SAMPLE_RATE,&pt->clock_rate);
-	}	
+	}
+
+	if (stream->use_ea){
+		stream->volsend=ms_filter_new(MS_VOLUME_ID);
+		stream->volrecv=ms_filter_new(MS_VOLUME_ID);
+		ms_filter_call_method(stream->volrecv,MS_VOLUME_SET_PEER,stream->volsend);
+	}
 
 	/* give the sound filters some properties */
 	ms_filter_call_method(stream->soundread,MS_FILTER_SET_SAMPLE_RATE,&pt->clock_rate);
@@ -263,19 +273,27 @@ int audio_stream_start_full(AudioStream *stream, RtpProfile *profile, const char
 	
 	/* and then connect all */
 	/* tip: draw yourself the picture if you don't understand */
-	if (stream->ec){
-		ms_filter_link(stream->soundread,0,stream->ec,1);
-		ms_filter_link(stream->ec,1,stream->encoder,0);
-		ms_filter_link(stream->dtmfgen,0,stream->ec,0);
-		ms_filter_link(stream->ec,0,stream->soundwrite,0);
-	}else{
-		ms_filter_link(stream->soundread,0,stream->encoder,0);
-		ms_filter_link(stream->dtmfgen,0,stream->soundwrite,0);
-	}
 	
-	ms_filter_link(stream->encoder,0,stream->rtpsend,0);
-	ms_filter_link(stream->rtprecv,0,stream->decoder,0);
-	ms_filter_link(stream->decoder,0,stream->dtmfgen,0);
+	/*sending graph*/
+	ms_connection_helper_start(&h);
+	ms_connection_helper_link(&h,stream->soundread,-1,0);
+	if (stream->ec)
+		ms_connection_helper_link(&h,stream->ec,1,1);
+	if (stream->volsend)
+		ms_connection_helper_link(&h,stream->volsend,0,0);
+	ms_connection_helper_link(&h,stream->encoder,0,0);
+	ms_connection_helper_link(&h,stream->rtpsend,0,-1);
+
+	/*receiving graph*/
+	ms_connection_helper_start(&h);
+	ms_connection_helper_link(&h,stream->rtprecv,-1,0);
+	ms_connection_helper_link(&h,stream->decoder,0,0);
+	ms_connection_helper_link(&h,stream->dtmfgen,0,0);
+	if (stream->volrecv)
+		ms_connection_helper_link(&h,stream->volrecv,0,0);
+	if (stream->ec)
+		ms_connection_helper_link(&h,stream->ec,0,0);
+	ms_connection_helper_link(&h,stream->soundwrite,0,-1);
 	
 	/* create ticker */
 	stream->ticker=ms_ticker_new();
@@ -375,27 +393,40 @@ void audio_stream_set_relay_session_id(AudioStream *stream, const char *id){
 	ms_filter_call_method(stream->rtpsend, MS_RTP_SEND_SET_RELAY_SESSION_ID,(void*)id);
 }
 
+void audio_stream_enable_echo_avoider(AudioStream *stream, bool_t enabled){
+	stream->use_ea=enabled;
+}
+
 void audio_stream_stop(AudioStream * stream)
 {
 	if (stream->ticker){
+		MSConnectionHelper h;
 		ms_ticker_detach(stream->ticker,stream->soundread);
 		ms_ticker_detach(stream->ticker,stream->rtprecv);
 		
 		rtp_stats_display(rtp_session_get_stats(stream->session),"Audio session's RTP statistics");
 		
-		if (stream->ec!=NULL){
-			ms_filter_unlink(stream->soundread,0,stream->ec,1);
-			ms_filter_unlink(stream->ec,1,stream->encoder,0);
-			ms_filter_unlink(stream->dtmfgen,0,stream->ec,0);
-			ms_filter_unlink(stream->ec,0,stream->soundwrite,0);
-		}else{
-			ms_filter_unlink(stream->soundread,0,stream->encoder,0);
-			ms_filter_unlink(stream->dtmfgen,0,stream->soundwrite,0);
-		}
-		
-		ms_filter_unlink(stream->encoder,0,stream->rtpsend,0);
-		ms_filter_unlink(stream->rtprecv,0,stream->decoder,0);
-		ms_filter_unlink(stream->decoder,0,stream->dtmfgen,0);
+		/*dismantle the outgoing graph*/
+		ms_connection_helper_start(&h);
+		ms_connection_helper_unlink(&h,stream->soundread,-1,0);
+		if (stream->ec!=NULL)
+			ms_connection_helper_unlink(&h,stream->ec,1,1);
+		if (stream->volsend!=NULL)
+			ms_connection_helper_unlink(&h,stream->volsend,0,0);
+		ms_connection_helper_unlink(&h,stream->encoder,0,0);
+		ms_connection_helper_unlink(&h,stream->rtpsend,0,-1);
+
+		/*dismantle the receiving graph*/
+		ms_connection_helper_start(&h);
+		ms_connection_helper_unlink(&h,stream->rtprecv,-1,0);
+		ms_connection_helper_unlink(&h,stream->decoder,0,0);
+		ms_connection_helper_unlink(&h,stream->dtmfgen,0,0);
+		if (stream->volrecv!=NULL)
+			ms_connection_helper_unlink(&h,stream->volrecv,0,0);
+		if (stream->ec!=NULL)
+			ms_connection_helper_unlink(&h,stream->ec,0,0);
+		ms_connection_helper_unlink(&h,stream->soundwrite,0,-1);
+
 	}
 	audio_stream_free(stream);
 }

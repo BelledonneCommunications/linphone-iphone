@@ -267,21 +267,18 @@ typedef struct ReceiverData ReceiverData;
 static void receiver_init(MSFilter * f)
 {
 	ReceiverData *d = (ReceiverData *)ms_new(ReceiverData, 1);
-
 	d->session = NULL;
 	d->rate = 8000;
 	f->data = d;
 }
 
-static void receiver_postprocess(MSFilter * f)
-{
-	ReceiverData *d = (ReceiverData *) f->data;
+static void receiver_postprocess(MSFilter * f){
+	/*ReceiverData *d = (ReceiverData *) f->data;*/
 }
 
-static void receiver_uninit(MSFilter * f)
-{
+static void receiver_uninit(MSFilter * f){
 	ReceiverData *d = (ReceiverData *) f->data;
-	ms_free(f->data);
+	ms_free(d);
 }
 
 static int receiver_set_session(MSFilter * f, void *arg)
