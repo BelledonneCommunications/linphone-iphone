@@ -1442,15 +1442,15 @@ static void post_configure_audio_streams(LinphoneCore *lc){
 		float force=lp_config_get_float(lc->config,"sound","el_force",-1);
 		MSFilter *f;
 		if (st->el_type==ELControlMic){
-			f=st->volrecv;
+			f=st->volsend;
 			if (speed==-1) speed=0.15;
 			if (force==-1) force=10;
 		}
-		else{
-			f=st->volsend;
+		else if (st->el_type==ELControlSpeaker){
+			f=st->volrecv;
 			if (speed==-1) speed=0.02;
 			if (force==-1) force=5;
-		}
+		}else ms_fatal("Should not happen");
 		if (speed!=-1)
 			ms_filter_call_method(f,MS_VOLUME_SET_EA_SPEED,&speed);
 		if (thres!=-1)

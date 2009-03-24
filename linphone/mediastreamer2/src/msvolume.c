@@ -104,7 +104,7 @@ static void volume_echo_avoider_process(Volume *v){
 		}
 	}
 	
-	ms_message("ea_active=%i, peer_e=%f gain=%f gain_k=%f",v->ea_active,peer_e,v->gain, v->gain_k);
+	ms_message("ea_active=%i, peer_e=%f gain=%f gain_k=%f force=%f",v->ea_active,peer_e,v->gain, v->gain_k,v->force);
 }
 
 static int volume_set_gain(MSFilter *f, void *arg){
