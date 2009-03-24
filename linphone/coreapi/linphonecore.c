@@ -1414,7 +1414,11 @@ int linphone_core_change_qos(LinphoneCore *lc, int answer)
 void linphone_core_init_media_streams(LinphoneCore *lc){
 	lc->audiostream=audio_stream_new(linphone_core_get_audio_port(lc),linphone_core_ipv6_enabled(lc));
 	if (linphone_core_echo_limiter_enabled(lc)){
-		audio_stream_enable_echo_limiter(lc->audiostream,TRUE);
+		const char * type=lp_config_get_string(lc->config,"sound","el_type","mic");
+		if (strcasecmp(type,"mic")==0)
+			audio_stream_enable_echo_limiter(lc->audiostream,ELControlMic);
+		else if (strcasecmp(type,"speaker")==0)
+			audio_stream_enable_echo_limiter(lc->audiostream,ELControlSpeaker);
 	}
 #ifdef VIDEO_ENABLED
 	if (lc->video_conf.display || lc->video_conf.capture)
@@ -1435,10 +1439,14 @@ static void post_configure_audio_streams(LinphoneCore *lc){
 	if (st->volrecv && st->volsend){
 		float speed=lp_config_get_float(lc->config,"sound","el_speed",-1);
 		float thres=lp_config_get_float(lc->config,"sound","el_thres",-1);
+		MSFilter *f;
+		if (st->el_type==ELControlMic)
+			f=st->volrecv;
+		else f=st->volsend;
 		if (speed!=-1)
-			ms_filter_call_method(st->volrecv,MS_VOLUME_SET_EA_SPEED,&speed);
+			ms_filter_call_method(f,MS_VOLUME_SET_EA_SPEED,&speed);
 		if (thres!=-1)
-			ms_filter_call_method(st->volrecv,MS_VOLUME_SET_EA_THRESHOLD,&thres);
+			ms_filter_call_method(f,MS_VOLUME_SET_EA_THRESHOLD,&thres);
 	}
 	if (lc->vtable.dtmf_received!=NULL){
 		/* replace by our default action*/

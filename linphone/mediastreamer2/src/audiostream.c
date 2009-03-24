@@ -247,10 +247,12 @@ int audio_stream_start_full(AudioStream *stream, RtpProfile *profile, const char
 		ms_filter_call_method(stream->ec,MS_FILTER_SET_SAMPLE_RATE,&pt->clock_rate);
 	}
 
-	if (stream->use_ea){
+	if (stream->el_type!=ELInactive){
 		stream->volsend=ms_filter_new(MS_VOLUME_ID);
 		stream->volrecv=ms_filter_new(MS_VOLUME_ID);
-		ms_filter_call_method(stream->volrecv,MS_VOLUME_SET_PEER,stream->volsend);
+		if (stream->el_type==ELControlSpeaker)
+			ms_filter_call_method(stream->volrecv,MS_VOLUME_SET_PEER,stream->volsend);
+		else ms_filter_call_method(stream->volsend,MS_VOLUME_SET_PEER,stream->volrecv);
 	}
 
 	/* give the sound filters some properties */
@@ -393,8 +395,8 @@ void audio_stream_set_relay_session_id(AudioStream *stream, const char *id){
 	ms_filter_call_method(stream->rtpsend, MS_RTP_SEND_SET_RELAY_SESSION_ID,(void*)id);
 }
 
-void audio_stream_enable_echo_limiter(AudioStream *stream, bool_t enabled){
-	stream->use_ea=enabled;
+void audio_stream_enable_echo_limiter(AudioStream *stream, EchoLimiterType type){
+	stream->el_type=type;
 }
 
 void audio_stream_stop(AudioStream * stream)

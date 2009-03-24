@@ -29,6 +29,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ortp/ortp.h"
 #include "ortp/event.h"
 
+typedef enum EchoLimiterType{
+	ELInactive,
+	ELControlMic,
+	ELControlSpeaker
+} EchoLimiterType;
+
 struct _AudioStream
 {
 	MSTicker *ticker;
@@ -44,8 +50,8 @@ struct _AudioStream
 	MSFilter *volsend,*volrecv; /*MSVolumes*/
 	unsigned int last_packet_count;
 	time_t last_packet_time;
+	EchoLimiterType el_type; /*use echo limiter: two MSVolume, measured input level controlling local output level*/
 	bool_t play_dtmfs;
-	bool_t use_ea; /*use echo limiter: two MSVolume, measured input level controlling local output level*/
 };
 
 #ifdef __cplusplus
@@ -93,7 +99,7 @@ void audio_stream_set_relay_session_id(AudioStream *stream, const char *relay_se
 bool_t audio_stream_alive(AudioStream * stream, int timeout);
 
 /*enable echo-limiter dispositve: one MSVolume in input branch controls a MSVolume in the output branch*/
-void audio_stream_enable_echo_limiter(AudioStream *stream, bool_t enabled);
+void audio_stream_enable_echo_limiter(AudioStream *stream, EchoLimiterType type);
 
 /* stop the above process*/
 void audio_stream_stop (AudioStream * stream);
