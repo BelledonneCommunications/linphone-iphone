@@ -34,6 +34,7 @@ typedef struct Volume{
 	float static_gain;
 	float gain_k;
 	float thres;
+	float force;
 	MSFilter *peer;
 	bool_t ea_active;
 }Volume;
@@ -46,6 +47,7 @@ static void volume_init(MSFilter *f){
 	v->ea_active=FALSE;
 	v->gain_k=gain_k;
 	v->thres=noise_thres;
+	v->force=en_weight;
 	v->peer=NULL;
 	f->data=v;
 }
@@ -83,7 +85,7 @@ static void volume_echo_avoider_process(Volume *v){
 	if (v->ea_active){
 		if (peer_e>v->thres){
 			/*lower our output*/
-			gain=compute_gain(v->static_gain,peer_e,en_weight);
+			gain=compute_gain(v->static_gain,peer_e,v->force);
 		}else {
 			gain=v->static_gain;
 			v->ea_active=FALSE;
@@ -93,7 +95,7 @@ static void volume_echo_avoider_process(Volume *v){
 		ms_filter_call_method(v->peer,MS_VOLUME_GET_EA_STATE,&peer_active);
 		if (peer_e>v->thres && ! peer_active){
 			/*lower our output*/
-			gain=compute_gain(v->static_gain,peer_e,en_weight);
+			gain=compute_gain(v->static_gain,peer_e,v->force);
 			v->ea_active=TRUE;
 		}else gain=v->static_gain;
 	}
@@ -148,6 +150,13 @@ static int volume_set_ea_speed(MSFilter *f, void*arg){
 	return 0;
 }
 
+static int volume_set_ea_force(MSFilter *f, void*arg){
+	Volume *v=(Volume*)f->data;
+	float val=*(float*)arg;
+	v->force=val;
+	return 0;
+}
+
 static inline int16_t saturate(float val){
 	return (val>32767) ? 32767 : ( (val<-32767) ? -32767 : val);
 }
@@ -188,6 +197,7 @@ static MSFilterMethod methods[]={
 	{	MS_VOLUME_SET_PEER	,	volume_set_peer		},
 	{	MS_VOLUME_SET_EA_THRESHOLD , 	volume_set_ea_threshold	},
 	{	MS_VOLUME_SET_EA_SPEED	,	volume_set_ea_speed	},
+	{	MS_VOLUME_SET_EA_FORCE	, 	volume_set_ea_force	},
 	{	0			,	NULL			}
 };
 
