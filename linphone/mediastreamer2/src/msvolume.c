@@ -79,7 +79,6 @@ static inline float compute_gain(float static_gain, float energy, float weight){
 static void volume_echo_avoider_process(Volume *v){
 	float peer_e;
 	float gain;
-	float gain_k2;
 	ms_filter_call_method(v->peer,MS_VOLUME_GET_LINEAR,&peer_e);
 	peer_e=sqrt(peer_e);
 	if (v->ea_active){
@@ -90,6 +89,7 @@ static void volume_echo_avoider_process(Volume *v){
 			gain=v->static_gain;
 			v->ea_active=FALSE;
 		}
+		v->gain=(v->gain*(1-v->gain_k)) + (v->gain_k*gain);
 	}else{
 		int peer_active=FALSE;
 		ms_filter_call_method(v->peer,MS_VOLUME_GET_EA_STATE,&peer_active);
@@ -97,12 +97,13 @@ static void volume_echo_avoider_process(Volume *v){
 			/*lower our output*/
 			gain=compute_gain(v->static_gain,peer_e,v->force);
 			v->ea_active=TRUE;
-		}else gain=v->static_gain;
+			v->gain=gain;
+		}else {
+			gain=v->static_gain;
+			v->gain=(v->gain*(1-v->gain_k)) + (v->gain_k*gain);
+		}
 	}
-	if (v->ea_active){
-		gain_k2=1;
-	}else gain_k2=v->gain_k;
-	v->gain=(v->gain*(1-gain_k2)) + (gain_k2*gain);
+	
 	ms_message("ea_active=%i, peer_e=%f gain=%f gain_k=%f",v->ea_active,peer_e,v->gain, v->gain_k);
 }
 
