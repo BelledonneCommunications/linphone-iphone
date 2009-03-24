@@ -100,7 +100,7 @@ static void volume_echo_avoider_process(Volume *v){
 		}else gain=v->static_gain;
 	}
 	if (v->ea_active){
-		gain_k2=5*v->gain_k;
+		gain_k2=1;
 	}else gain_k2=v->gain_k;
 	v->gain=(v->gain*(1-gain_k2)) + (gain_k2*gain);
 	ms_message("ea_active=%i, peer_e=%f gain=%f gain_k=%f",v->ea_active,peer_e,v->gain, v->gain_k);
