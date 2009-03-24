@@ -1443,7 +1443,7 @@ static void post_configure_audio_streams(LinphoneCore *lc){
 		MSFilter *f=NULL;
 		if (st->el_type==ELControlMic){
 			f=st->volsend;
-			if (speed==-1) speed=0.15;
+			if (speed==-1) speed=0.03;
 			if (force==-1) force=10;
 		}
 		else if (st->el_type==ELControlSpeaker){
@@ -2159,7 +2159,7 @@ int linphone_core_set_video_device(LinphoneCore *lc, const char *id){
 	if (olddev!=NULL && olddev!=lc->video_conf.device){
 		toggle_video_preview(lc,FALSE);/*restart the video local preview*/
 	}
-	if (lc->ready){
+	if (lc->ready && lc->video_conf.device){
 		vd=ms_web_cam_get_string_id(lc->video_conf.device);
 		if (vd && strstr(vd,"Static picture")!=NULL){
 			vd=NULL;
