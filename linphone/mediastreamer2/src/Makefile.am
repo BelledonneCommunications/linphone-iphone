@@ -30,7 +30,8 @@ libmediastreamer_la_SOURCES=	mscommon.c     \
 				g711common.h \
 				msvolume.c \
 				mswebcam.c \
-				mtu.c
+				mtu.c \
+				void.c
 
 
 libmediastreamer_la_SOURCES+=audiostream.c
