@@ -699,9 +699,9 @@ MSFilterDesc ms_snow_enc_desc={
 	.id=MS_SNOW_ENC_ID,
 	.name="MSSnowEnc",
 	.text=N_("The snow codec is royalty-free and is open-source. \n"
-		"It uses innovative techniques that makes it one of the best video "
+		"It uses innovative techniques that makes it one of most promising video "
 		"codec. It is implemented within the ffmpeg project.\n"
-		"However it is under development and compatibility with other versions "
+		"However it is under development, quite unstable and compatibility with other versions "
 		"cannot be guaranteed."),
 	.category=MS_FILTER_ENCODER,
 	.enc_fmt="x-snow",
@@ -717,8 +717,21 @@ MSFilterDesc ms_snow_enc_desc={
 
 #endif
 
+void __register_ffmpeg_encoders_if_possible(void){
+	ms_ffmpeg_check_init();
+	if (avcodec_find_encoder(CODEC_ID_MPEG4))
+		ms_filter_register(&ms_mpeg4_enc_desc);
+	if (avcodec_find_encoder(CODEC_ID_H263)){
+		ms_filter_register(&ms_h263_enc_desc);
+		ms_filter_register(&ms_h263_old_enc_desc);
+	}
+	if (avcodec_find_encoder(CODEC_ID_SNOW))
+		ms_filter_register(&ms_snow_enc_desc);
+}
+
+/*
 MS_FILTER_DESC_EXPORT(ms_mpeg4_enc_desc)
 MS_FILTER_DESC_EXPORT(ms_h263_enc_desc)
 MS_FILTER_DESC_EXPORT(ms_h263_old_enc_desc)
 MS_FILTER_DESC_EXPORT(ms_snow_enc_desc)
-
+*/

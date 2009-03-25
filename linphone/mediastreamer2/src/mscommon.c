@@ -21,6 +21,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer-config.h"
 #endif
 
+extern void __register_ffmpeg_encoders_if_possible(void);
+
 #include "mediastreamer2/mscommon.h"
 #include "mediastreamer2/msfilter.h"
 
@@ -534,6 +536,7 @@ void ms_init(){
 			ms_web_cam_manager_register_desc(wm,ms_web_cam_descs[i]);
 		}
 	}
+	__register_ffmpeg_encoders_if_possible();
 #endif
 	ms_message("Loading plugins");
 	ms_load_plugins(PACKAGE_PLUGINS_DIR);
