@@ -34,7 +34,7 @@
    <mkdir dir="antbuild/p2pproxy-tester"/>
    <mkdir dir="${dist.dir}"/>
    <mkdir dir="antbuild/META-INF"/>
-   <copy todir="antbuild" includeemptydirs="false">
+   <copy overwrite="true" todir="antbuild" includeemptydirs="false">
      <fileset dir="src" excludes="**/*.launch, **/*.java"/>
    </copy>
   </target>
@@ -66,13 +66,13 @@
       <exclude name="**/*Tester.java"/> 
       <classpath refid="p2pproxy.classpath"/>
     </javac>
-   <copy todir="antbuild/p2pproxy">
+    <copy overwrite="true" todir="antbuild/p2pproxy">
          <fileset dir="${jxta-src}/impl/src">
             <include name="**/*.properties"/>
          	<include name="META-INF/**/*"/>
          </fileset>  
    </copy> 
-      <copy todir="antbuild/p2pproxy">
+   <copy overwrite="true" todir="antbuild/p2pproxy">
             <fileset dir="${jxta-src}/api/src">
                <include name="**/*.properties"/>
              </fileset>  
@@ -160,7 +160,7 @@
   </target>
   <target name="dist" depends="build-project">
    <!--prep-->
-   <copy todir="${dist.dir}">
+   <copy overwrite="true" todir="${dist.dir}" >
             <fileset dir="dependencies">
                <include name="*"/>
              </fileset>  

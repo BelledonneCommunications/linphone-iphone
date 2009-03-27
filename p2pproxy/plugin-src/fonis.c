@@ -40,8 +40,11 @@ static bool_t fonis_init(void){
 	if (!initd){
 		ms_thread_create(&fonis_thread,NULL,fonis_thread_func,NULL);
 		initd=TRUE;
+		while( p2pproxy_application_get_state()==P2PPROXY_ERROR_APPLICATION_NOT_STARTED){
+			usleep(200000);
+			ms_message("Waiting for p2pproxy to start");
+		}
 	}
-	sleep(4);
 	return TRUE;
 }
 

@@ -20,6 +20,7 @@ JavaVM *p2pproxy_application_jvm = 0;
 	jint lResult = 0 ;\
 	JNIEnv *lJniEnv = 0;\
 	jclass  lMainClass = 0;\
+	if (p2pproxy_application_jvm==0) return P2PPROXY_ERROR_APPLICATION_NOT_STARTED; \
 	lResult = (*p2pproxy_application_jvm)->AttachCurrentThread(p2pproxy_application_jvm,(void**)&lJniEnv,NULL);\
 	if (lResult != 0) { \
 		fprintf(stderr,"cannot attach VM\n");\
@@ -176,7 +177,6 @@ int p2pproxy_resourcemgt_revoke_sip_proxy(const char* proxy_uri) {
 int p2pproxy_application_get_state() {
 	jmethodID stateMethod;
 	GET_JNI_ENV
-	
 	stateMethod = (*lJniEnv)->GetStaticMethodID(lJniEnv, lMainClass, "getState", "()I");
 	lResult = (*lJniEnv)->CallStaticIntMethod(lJniEnv, lMainClass, stateMethod);
 	(*p2pproxy_application_jvm)->DetachCurrentThread(p2pproxy_application_jvm);

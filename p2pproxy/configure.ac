@@ -46,6 +46,8 @@ AC_SUBST(javadir)
 
 AC_PATH_PROG(ANT,ant,false)
 
+AC_PATH_PROG(SWIG,swig,false)
+
 if test x$ANT = xfalse ; then
 	AC_MSG_ERROR([ant not found: you must install ant to build this package.])
 fi
