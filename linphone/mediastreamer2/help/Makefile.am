@@ -24,9 +24,9 @@ install-data-hook:
 	cd $(DESTDIR)$(doc_htmldir) && tar xf html.tar && rm -f html.tar
 
 uninstall-hook:
-	cd $(DESTDIR)$(doc_htmldir) && rm -rf html
+	cd $(DESTDIR)$(doc_htmldir) && rm -f *
 
 endif
 
-doc-clean:
+clean-local:
 	rm -rf doc

@@ -60,5 +60,6 @@ mediastreamer2/src/winvideo.c
 mediastreamer2/src/winvideods.c
 mediastreamer2/src/winvideo2.c
 mediastreamer2/src/ice.c
+mediastreamer2/src/void.c
 
 
