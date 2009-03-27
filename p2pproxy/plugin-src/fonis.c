@@ -18,7 +18,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 
-#include "sipsetup.h"
+#include "linphonecore.h"
+
 #include "p2pproxy.h"
 
 typedef struct _FonisContext{
@@ -49,14 +50,33 @@ static bool_t fonis_init(void){
 	return TRUE;
 }
 
+static bool_t fonis_check_connected(SipSetupContext *ctx){
+	int retries;
+	LinphoneCore *lc=linphone_proxy_config_get_core(sip_setup_context_get_proxy_config(ctx));
+	for(retries=0;retries<1200;retries++){
+		if (p2pproxy_application_get_state()==P2PPROXY_CONNECTED){
+			if (retries>0) linphone_core_stop_waiting(lc);
+			return TRUE;
+		}
+		if (retries==0){
+			ms_message("Waiting for p2pproxy to connect to the network...");
+			linphone_core_start_waiting(lc,"Trying to connect to the fonis network...");
+		}else linphone_core_update_progress(lc,NULL,-1);
+	}
+	linphone_core_stop_waiting(lc);
+	return FALSE;
+}
 
-static int fonis_create_account(const char *uri, const char *passwd){
-	int err=p2pproxy_accountmgt_createAccount(uri);
+static int fonis_create_account(SipSetupContext *ctx, const char *uri, const char *passwd){
+	int err;
+	if (!fonis_check_connected(ctx)) return -1;
+	err=p2pproxy_accountmgt_createAccount(uri);
 	if (err<0) return -1;
 	return 0;
 }
 
 static int fonis_login_account(SipSetupContext * ctx,const char *uri, const char *passwd){
+	if (!fonis_check_connected(ctx)) return -1;
 	if (p2pproxy_accountmgt_isValidAccount(uri)==P2PPROXY_ACCOUNTMGT_USER_EXIST) {
 		return 0;
 	}
@@ -64,7 +84,9 @@ static int fonis_login_account(SipSetupContext * ctx,const char *uri, const char
 }
 
 static int fonis_get_proxy(SipSetupContext *ctx, const char *domain, char *proxy, size_t sz){
-	int err=p2pproxy_resourcemgt_lookup_sip_proxy(proxy,sz,(char*)domain);
+	int err;
+	if (!fonis_check_connected(ctx)) return -1;
+	err=p2pproxy_resourcemgt_lookup_sip_proxy(proxy,sz,(char*)domain);
 	if (err==0) return 0;
 	else return -1;
 }
@@ -94,6 +116,10 @@ static int fonis_get_relay(SipSetupContext *ctx, char *relay, size_t size){
 	return ret;
 }
 
+static void fonis_exit(){
+	p2pproxy_application_stop();
+}
+
 
 static SipSetup fonis_sip_setup={
 	.capabilities=SIP_SETUP_CAP_PROXY_PROVIDER|SIP_SETUP_CAP_STUN_PROVIDER|
@@ -105,7 +131,7 @@ static SipSetup fonis_sip_setup={
 	.get_proxy=fonis_get_proxy,
 	.get_stun_servers=fonis_get_stun_servers,
 	.get_relay=fonis_get_relay,
-	.exit=p2pproxy_application_stop
+	.exit=fonis_exit
 };
 
 void libfonisprovider_init(void){
