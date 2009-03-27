@@ -29,7 +29,8 @@ static ms_thread_t fonis_thread;
 
 
 static void *fonis_thread_func(void *arg){
-	if (p2pproxy_application_start(0,NULL)!=0){
+	char *argv[]={"-edge-only","-sip", "5058",NULL};
+	if (p2pproxy_application_start(3,argv)!=0){
 		ms_error("Fail to start fonis thread !");
 	}
 	return NULL;

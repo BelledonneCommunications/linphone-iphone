@@ -174,11 +174,18 @@ int p2pproxy_resourcemgt_revoke_sip_proxy(const char* proxy_uri) {
 	(*p2pproxy_application_jvm)->DetachCurrentThread(p2pproxy_application_jvm);
 	return lResult;
 }
+
 int p2pproxy_application_get_state() {
 	jmethodID stateMethod;
 	GET_JNI_ENV
 	stateMethod = (*lJniEnv)->GetStaticMethodID(lJniEnv, lMainClass, "getState", "()I");
+	if (stateMethod==NULL) {
+		lResult=P2PPROXY_ERROR_APPLICATION_NOT_STARTED;
+		goto end;
+	}
 	lResult = (*lJniEnv)->CallStaticIntMethod(lJniEnv, lMainClass, stateMethod);
+	goto end;
+	end:
 	(*p2pproxy_application_jvm)->DetachCurrentThread(p2pproxy_application_jvm);
 	return lResult;
 	
