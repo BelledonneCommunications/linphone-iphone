@@ -295,7 +295,7 @@ typedef struct _LinphoneProxyConfig
 	char *type;
 	struct _SipSetupContext *ssctx;
 	int auth_failures;
-	bool_t frozen;
+	bool_t commit;
 	bool_t reg_sendregister;
 	bool_t registered;
 	bool_t publish;
@@ -418,6 +418,12 @@ typedef void (*CallLogUpdated)(struct _LinphoneCore *lc, struct _LinphoneCallLog
 typedef void (*TextMessageReceived)(struct _LinphoneCore *lc, LinphoneChatRoom *room, const char *from, const char *message);
 typedef void (*GeneralStateChange)(struct _LinphoneCore *lc, LinphoneGeneralState *gstate);
 typedef void (*DtmfReceived)(struct _LinphoneCore* lc, int dtmf);
+typedef enum _LinphoneWaitingState{
+	LinphoneWaitingStart,
+	LinphoneWaitingProgress,
+	LinphoneWaitingFinished
+} LinphoneWaitingState;
+typedef void * (*Waiting)(struct _LinphoneCore *lc, void *context, LinphoneWaitingState ws, const char *purpose, float progress);
 
 typedef struct _LinphoneVTable
 {
@@ -440,6 +446,7 @@ typedef struct _LinphoneVTable
 	TextMessageReceived text_received;
 	GeneralStateChange general_state;
 	DtmfReceived dtmf_received;
+	Waiting waiting;
 } LinphoneCoreVTable;
 
 typedef struct _LCCallbackObj
@@ -504,6 +511,7 @@ typedef struct _LinphoneCore
 	gstate_t gstate_power;
 	gstate_t gstate_reg;
 	gstate_t gstate_call;
+	void *wait_ctx;
 	bool_t use_files;
 	bool_t apply_nat_settings;
 	bool_t ready;
@@ -767,6 +775,10 @@ void linphone_core_stop_media_streams(LinphoneCore *lc);
 const char * linphone_core_get_identity(LinphoneCore *lc);
 const char * linphone_core_get_route(LinphoneCore *lc);
 bool_t linphone_core_interpret_url(LinphoneCore *lc, const char *url, char **real_url, osip_to_t **real_parsed_url, char **route);
+void linphone_core_start_waiting(LinphoneCore *lc, const char *purpose);
+void linphone_core_update_progress(LinphoneCore *lc, const char *purpose, float progresses);
+void linphone_core_stop_waiting(LinphoneCore *lc);
+
 
 #ifdef __cplusplus
 }

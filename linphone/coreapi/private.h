@@ -127,5 +127,6 @@ void linphone_core_update_allocated_audio_bandwidth_in_call(LinphoneCore *lc, co
 void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call);
 
 void linphone_core_write_friends_config(LinphoneCore* lc);
+void linphone_proxy_config_update(LinphoneProxyConfig *cfg);
 
 #endif /* _PRIVATE_H */

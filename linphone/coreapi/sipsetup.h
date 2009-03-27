@@ -75,7 +75,7 @@ struct _SipSetup{
 	unsigned int capabilities;
 	bool_t (*init)(void);
 	void (*init_instance)(SipSetupContext *ctx);
-	int (*create_account)( const char *uri, const char *passwd);
+	int (*create_account)(SipSetupContext *ctx, const char *uri, const char *passwd);
 	int (*login_account)(SipSetupContext *ctx, const char *uri, const char *passwd);
 	int (*get_proxy)(SipSetupContext *ctx, const char *domain, char *proxy, size_t sz);
 	int (*get_stun_servers)(SipSetupContext *ctx, char *stun1, char *stun2, size_t size);
@@ -100,8 +100,8 @@ void sip_setup_register_all(void);
 SipSetup *sip_setup_lookup(const char *type_name);
 void sip_setup_unregister_all(void);
 
-int sip_setup_new_account(SipSetup *s, const char *uri, const char *passwd);
 SipSetupContext * sip_setup_context_new(SipSetup *s, struct _LinphoneProxyConfig *cfg);
+int sip_setup_context_create_account(SipSetupContext *ctx, const char *uri, const char *passwd);
 int sip_setup_context_get_capabilities(SipSetupContext *ctx);
 int sip_setup_context_login_account(SipSetupContext * ctx, const char *uri, const char *passwd);
 int sip_setup_context_get_proxy(SipSetupContext *ctx, const char *domain, char *proxy, size_t sz);

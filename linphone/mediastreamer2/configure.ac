@@ -44,7 +44,13 @@ AC_MSG_CHECKING([warning make an error on compilation])
 AC_ARG_ENABLE(strict,
 [  --enable-strict       Enable error on compilation warning [default=no]],
 [wall_werror=$enableval],
-[wall_werror=yes]
+[
+	if test "$USER" = "smorlat" ; then
+		wall_werror=yes
+	else
+		wall_werror=no
+	fi
+]
 )
 
 CFLAGS="-DORTP_INET6 $CFLAGS "

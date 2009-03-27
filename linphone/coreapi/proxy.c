@@ -218,7 +218,6 @@ void linphone_proxy_config_enable_publish(LinphoneProxyConfig *obj, bool_t val){
 }
 
 void linphone_proxy_config_edit(LinphoneProxyConfig *obj){
-	obj->frozen=TRUE;
 	obj->auth_failures=0;
 	if (obj->reg_sendregister){
 		/* unregister */
@@ -255,7 +254,7 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
 int linphone_proxy_config_done(LinphoneProxyConfig *obj)
 {
 	if (!linphone_proxy_config_check(obj->lc,obj)) return -1;
-	obj->frozen=FALSE;
+	obj->commit=TRUE;
 	linphone_proxy_config_register(obj);
 	linphone_proxy_config_write_all_to_config_file(obj->lc);
 	return 0;
@@ -588,15 +587,16 @@ LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LpConfig *config
 	return cfg;
 }
 
-
-void linphone_proxy_config_set_sip_setup(LinphoneProxyConfig *cfg, const char *type){
-	SipSetup *ss=sip_setup_lookup(type);
+static void linphone_proxy_config_activate_sip_setup(LinphoneProxyConfig *cfg){
 	SipSetupContext *ssc;
-	if (cfg->type)
-		ms_free(cfg->type);
-	cfg->type=ms_strdup(type);
+	SipSetup *ss=sip_setup_lookup(cfg->type);
 	if (!ss) return ;
 	ssc=sip_setup_context_new(ss,cfg);
+
+	if (cfg->reg_identity==NULL){
+		ms_error("Invalid identity for this proxy configuration.");
+		return;
+	}
 	if (sip_setup_context_login_account(ssc,cfg->reg_identity,NULL)==0){
 		if (sip_setup_context_get_capabilities(ssc) & SIP_SETUP_CAP_PROXY_PROVIDER){
 			char proxy[256];
@@ -606,6 +606,25 @@ void linphone_proxy_config_set_sip_setup(LinphoneProxyConfig *cfg, const char *t
 		}
 	}
 	cfg->ssctx=ssc;
+}
+
+void linphone_proxy_config_update(LinphoneProxyConfig *cfg){
+	if (cfg->commit){
+		if (cfg->type && cfg->ssctx==NULL){
+			linphone_proxy_config_activate_sip_setup(cfg);
+		}
+		cfg->commit=FALSE;
+	}
+}
+
+void linphone_proxy_config_set_sip_setup(LinphoneProxyConfig *cfg, const char *type){
+	if (cfg->type)
+		ms_free(cfg->type);
+	cfg->type=ms_strdup(type);
+	if (linphone_proxy_config_get_addr(cfg)==NULL){
+		/*put a placeholder so that the sip setup gets saved into the config */
+		linphone_proxy_config_set_server_addr(cfg,"sip:undefined");
+	}
 }
 
 SipSetupContext *linphone_proxy_config_get_sip_setup_context(LinphoneProxyConfig *cfg){

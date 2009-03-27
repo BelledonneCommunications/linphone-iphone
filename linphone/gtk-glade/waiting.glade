@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
+<!--Generated with glade3 3.4.5 on Fri Mar 27 23:13:04 2009 -->
+<glade-interface>
+  <widget class="GtkWindow" id="waiting">
+    <property name="type">GTK_WINDOW_POPUP</property>
+    <property name="title" translatable="yes">Linphone</property>
+    <property name="resizable">False</property>
+    <property name="icon">linphone2.png</property>
+    <child>
+      <widget class="GtkFrame" id="frame1">
+        <property name="visible">True</property>
+        <property name="label_xalign">0</property>
+        <child>
+          <widget class="GtkAlignment" id="alignment1">
+            <property name="visible">True</property>
+            <property name="left_padding">12</property>
+            <child>
+              <widget class="GtkProgressBar" id="progressbar">
+                <property name="visible">True</property>
+              </widget>
+            </child>
+          </widget>
+        </child>
+        <child>
+          <widget class="GtkLabel" id="label1">
+            <property name="visible">True</property>
+            <property name="label" translatable="yes">Please wait</property>
+            <property name="use_markup">True</property>
+            <property name="justify">GTK_JUSTIFY_CENTER</property>
+          </widget>
+          <packing>
+            <property name="type">label_item</property>
+          </packing>
+        </child>
+      </widget>
+    </child>
+  </widget>
+</glade-interface>

@@ -8,7 +8,8 @@ GLADE_FILES=	about.glade \
 		chatroom.glade \
 		call_logs.glade \
 		log.glade \
-		buddylookup.glade
+		buddylookup.glade \
+		waiting.glade
 
 PIXMAPS=	linphone2.png \
 		linphone.png \
@@ -32,6 +33,7 @@ linphone_3_SOURCES=	main.c\
 			logging.c \
 			update.c \
 			buddylookup.c \
+			utils.c \
 			linphone.h
 
 linphone_3_LDADD=$(top_builddir)/oRTP/src/libortp.la \

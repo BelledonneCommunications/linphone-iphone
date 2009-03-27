@@ -74,7 +74,8 @@ static LinphoneCoreVTable vtable={
 	.display_question=linphone_gtk_display_question,
 	.call_log_updated=linphone_gtk_call_log_updated,
 	.text_received=linphone_gtk_text_received,
-	.general_state=linphone_gtk_general_state
+	.general_state=linphone_gtk_general_state,
+	.waiting=linphone_gtk_wait
 };
 
 static gboolean verbose=0;

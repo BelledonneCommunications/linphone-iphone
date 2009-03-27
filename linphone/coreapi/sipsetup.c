@@ -98,9 +98,9 @@ int sip_setup_context_get_capabilities(SipSetupContext *ctx){
 	return ctx->funcs->capabilities;
 }
 
-int sip_setup_new_account(SipSetup *funcs, const char *uri, const char *passwd){
-	if (funcs->create_account)
-		return funcs->create_account(uri, passwd);
+int sip_setup_context_create_account(SipSetupContext * ctx, const char *uri, const char *passwd){
+	if (ctx->funcs->create_account)
+		return ctx->funcs->create_account(ctx,uri, passwd);
 	else return -1;
 }
 

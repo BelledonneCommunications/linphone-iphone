@@ -1027,6 +1027,9 @@ void linphone_core_iterate(LinphoneCore *lc)
 			eXosip_unlock();
 		}
 	}
+
+	ms_list_for_each(lc->sip_conf.proxies,(void (*)(void*))&linphone_proxy_config_update);
+
 	if (lc->call!=NULL){
 		LinphoneCall *call=lc->call;
 		
@@ -2297,6 +2300,31 @@ void linphone_core_set_mtu(LinphoneCore *lc, int mtu){
 		ms_message("MTU is supposed to be %i, rtp payload max size will be %i",mtu, ms_get_payload_max_size());
 	}else ms_set_mtu(0);//use mediastreamer2 default value
 }
+
+void linphone_core_start_waiting(LinphoneCore *lc, const char *purpose){
+	if (lc->vtable.waiting){
+		lc->wait_ctx=lc->vtable.waiting(lc,NULL,LinphoneWaitingStart,purpose,0);
+	}
+}
+
+void linphone_core_update_progress(LinphoneCore *lc, const char *purpose, float progress){
+	if (lc->vtable.waiting){
+		lc->wait_ctx=lc->vtable.waiting(lc,lc->wait_ctx,LinphoneWaitingProgress,purpose,progress);
+	}else{
+#ifdef WIN32
+		Sleep(50000);
+#else
+		usleep(50000);
+#endif
+	}
+}
+
+void linphone_core_stop_waiting(LinphoneCore *lc){
+	if (lc->vtable.waiting){
+		lc->wait_ctx=lc->vtable.waiting(lc,lc->wait_ctx,LinphoneWaitingFinished,NULL,0);
+	}
+}
+
 
 void net_config_uninit(LinphoneCore *lc)
 {
