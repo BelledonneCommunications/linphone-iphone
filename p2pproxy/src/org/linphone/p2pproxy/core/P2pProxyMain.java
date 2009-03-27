@@ -452,7 +452,7 @@ public static int getState() {
       isReady();
       return P2pProxylauncherConstants.P2PPROXY_CONNECTED;
    } catch (P2pProxyException e) {
-      mLog.error("cannot get state",e);
+      if (mLog != null) mLog.error("cannot get state",e);
       return P2pProxylauncherConstants.P2PPROXY_NOT_CONNECTED;
    }   
 }
