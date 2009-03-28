@@ -80,7 +80,7 @@ void ms_ticker_destroy(MSTicker *ticker){
 }
 
 static void find_filters(MSList **filters, MSFilter *f ){
-	int i;
+	int i,found;
 	MSQueue *link;
 	if (f==NULL) ms_fatal("Bad graph.");
 	/*ms_message("seeing %s, seen=%i",f->desc->name,f->seen);*/
@@ -95,9 +95,15 @@ static void find_filters(MSList **filters, MSFilter *f ){
 		if (link!=NULL) find_filters(filters,link->prev.filter);
 	}
 	/* go downstream */
-	for(i=0;i<f->desc->noutputs;i++){
+	for(i=0,found=0;i<f->desc->noutputs;i++){
 		link=f->outputs[i];
-		if (link!=NULL) find_filters(filters,link->next.filter);
+		if (link!=NULL) {
+			found++;
+			find_filters(filters,link->next.filter);
+		}
+	}
+	if (f->desc->noutputs>=1 && found==0){
+		ms_fatal("Bad graph: filter %s has %i outputs, none is connected.",f->desc->name,f->desc->noutputs);
 	}
 }
 

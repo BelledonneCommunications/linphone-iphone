@@ -328,7 +328,11 @@ static void set_video_window_decorations(GdkWindow *w){
 static gboolean linphone_gtk_iterate(LinphoneCore *lc){
 	unsigned long id;
 	static unsigned long previd=0;
-
+	static gboolean in_iterate=FALSE;
+	
+	/*avoid reentrancy*/
+	if (in_iterate) return TRUE;
+	in_iterate=TRUE;
 	linphone_core_iterate(lc);
 	id=linphone_core_get_native_video_window_id(lc);
 	if (id!=previd){
@@ -344,6 +348,7 @@ static gboolean linphone_gtk_iterate(LinphoneCore *lc){
 			else ms_error("gdk_window_foreign_new() failed");
 		}
 	}
+	in_iterate=FALSE;
 	return TRUE;
 }
 

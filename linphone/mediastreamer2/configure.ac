@@ -316,7 +316,7 @@ dnl	check for various codecs libraries
 dnl	*************************************
 
 dnl check for installed version of speex
-PKG_CHECK_MODULES(SPEEX, speex >= 1.1.12,
+PKG_CHECK_MODULES(SPEEX, speex >= 1.2beta3,
 	[ AC_DEFINE(HAVE_SPEEX_NOISE,1,[tells whether the noise arg of speex_echo_cancel can be used]) ],
 	[try_other_speex=yes]
 )

@@ -60,16 +60,6 @@ bool_t linphone_proxy_config_is_registered(const LinphoneProxyConfig *obj){
 	return obj->registered;
 }
 
-#if 0
-static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
-	osip_message_t *msg;
-	eXosip_lock();
-	eXosip_register_build_register(obj->rid,obj->expires,&msg);
-	eXosip_register_send_register(obj->rid,msg);
-	eXosip_unlock();
-}
-#endif
-
 void linphone_proxy_config_register_again_with_updated_contact(LinphoneProxyConfig *obj, osip_message_t *orig_request, osip_message_t *last_answer){
 	osip_message_t *msg;
 	const char *rport,*received;
@@ -255,7 +245,6 @@ int linphone_proxy_config_done(LinphoneProxyConfig *obj)
 {
 	if (!linphone_proxy_config_check(obj->lc,obj)) return -1;
 	obj->commit=TRUE;
-	linphone_proxy_config_register(obj);
 	linphone_proxy_config_write_all_to_config_file(obj->lc);
 	return 0;
 }
@@ -590,22 +579,35 @@ LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LpConfig *config
 static void linphone_proxy_config_activate_sip_setup(LinphoneProxyConfig *cfg){
 	SipSetupContext *ssc;
 	SipSetup *ss=sip_setup_lookup(cfg->type);
+	LinphoneCore *lc=linphone_proxy_config_get_core(cfg);
+	unsigned int caps;
 	if (!ss) return ;
 	ssc=sip_setup_context_new(ss,cfg);
-
+	cfg->ssctx=ssc;
 	if (cfg->reg_identity==NULL){
 		ms_error("Invalid identity for this proxy configuration.");
 		return;
 	}
-	if (sip_setup_context_login_account(ssc,cfg->reg_identity,NULL)==0){
-		if (sip_setup_context_get_capabilities(ssc) & SIP_SETUP_CAP_PROXY_PROVIDER){
-			char proxy[256];
-			if (sip_setup_context_get_proxy(ssc,NULL,proxy,sizeof(proxy))==0){
-				linphone_proxy_config_set_server_addr(cfg,proxy);
+	caps=sip_setup_context_get_capabilities(ssc);
+	if (caps & SIP_SETUP_CAP_ACCOUNT_MANAGER){
+		if (sip_setup_context_login_account(ssc,cfg->reg_identity,NULL)!=0){
+			if (lc->vtable.display_warning){
+				char *tmp=ms_strdup_printf(_("Could not login as %s"),cfg->reg_identity);
+				lc->vtable.display_warning(lc,tmp);
+				ms_free(tmp);
 			}
+			return;
 		}
 	}
-	cfg->ssctx=ssc;
+	if (caps & SIP_SETUP_CAP_PROXY_PROVIDER){
+		char proxy[256];
+		if (sip_setup_context_get_proxy(ssc,NULL,proxy,sizeof(proxy))==0){
+			linphone_proxy_config_set_server_addr(cfg,proxy);
+		}else{
+			ms_error("Could not retrieve proxy uri !");
+		}
+	}
+	
 }
 
 void linphone_proxy_config_update(LinphoneProxyConfig *cfg){
@@ -613,6 +615,7 @@ void linphone_proxy_config_update(LinphoneProxyConfig *cfg){
 		if (cfg->type && cfg->ssctx==NULL){
 			linphone_proxy_config_activate_sip_setup(cfg);
 		}
+		linphone_proxy_config_register(cfg);
 		cfg->commit=FALSE;
 	}
 }

@@ -123,7 +123,7 @@ static int sender_set_relay_session_id(MSFilter *f, void*arg){
 static uint32_t get_cur_timestamp(MSFilter * f, uint32_t packet_ts)
 {
 	SenderData *d = (SenderData *) f->data;
-	uint32_t curts = (uint32_t)(f->ticker->time * (d->rate/1000));
+	uint32_t curts = (uint32_t)( (f->ticker->time*(uint64_t)d->rate)/(uint64_t)1000) ;
 	int diff;
 	int delta = d->rate / 50;	/*20 ms at 8000Hz */
 	uint32_t netts;
