@@ -128,7 +128,7 @@ static void video_steam_process_rtcp(VideoStream *stream, mblk_t *m){
 				unsigned int ij;
 				float flost;
 				ij=report_block_get_interarrival_jitter(rb);
-				flost=100.0*report_block_get_fraction_lost(rb)/256.0;
+				flost=(float)(100.0*report_block_get_fraction_lost(rb)/256.0);
 				ms_message("interarrival jitter=%u , lost packets percentage since last report=%f ",ij,flost);
 				if (stream->adapt_bitrate) video_stream_adapt_bitrate(stream,ij,flost);
 			}
@@ -360,7 +360,7 @@ VideoStream * video_preview_start(MSWebCam *device, MSVideoSize disp_size){
 	VideoStream *stream = (VideoStream *)ms_new0 (VideoStream, 1);
 	MSVideoSize vsize=disp_size;
 	MSPixFmt format;
-	float fps=29.97;
+	float fps=(float)29.97;
 	int mirroring=1;
 
 	/* creates the filters */

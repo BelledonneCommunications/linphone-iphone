@@ -366,11 +366,11 @@ static void vfw_process(MSFilter * obj){
 	int cur_frame;
 
 	if (s->frame_count==-1){
-		s->start_time=obj->ticker->time;
+		s->start_time=(float)obj->ticker->time;
 		s->frame_count=0;
 	}
 
-	cur_frame=((obj->ticker->time-s->start_time)*s->fps/1000.0);
+	cur_frame=(int)((obj->ticker->time-s->start_time)*s->fps/1000.0);
 	if (cur_frame>s->frame_count){
 		mblk_t *om=NULL;
 		/*keep the most recent frame if several frames have been captured */
@@ -385,7 +385,7 @@ static void vfw_process(MSFilter * obj){
 			ms_mutex_unlock(&s->mutex);
 		}
 		if (om!=NULL){
-			timestamp=obj->ticker->time*90;/* rtp uses a 90000 Hz clockrate for video*/
+			timestamp=(uint32_t)(obj->ticker->time*90);/* rtp uses a 90000 Hz clockrate for video*/
 			mblk_set_timestamp_info(om,timestamp);
 			ms_queue_put(obj->outputs[0],om);
 		}
