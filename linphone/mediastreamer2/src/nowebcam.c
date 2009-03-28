@@ -83,7 +83,27 @@ mblk_t *ms_load_jpeg_as_yuv(const char *jpgpath, MSVideoSize *reqsize){
 #endif
 	if (fd!=-1){
 		fstat(fd,&statbuf);
+		if (statbuf.st_size<=0)
+		{
+#if !defined(_MSC_VER)
+			close(fd);
+#else
+			_close(fd);
+#endif
+			ms_error("Cannot load %s",jpgpath);
+			return NULL;
+		}
 		jpgbuf=(uint8_t*)alloca(statbuf.st_size);
+		if (jpgbuf==NULL)
+		{
+#if !defined(_MSC_VER)
+			close(fd);
+#else
+			_close(fd);
+#endif
+			ms_error("Cannot allocate buffer for %s",jpgpath);
+			return NULL;
+		}
 #if !defined(_MSC_VER)
 		read(fd,jpgbuf,statbuf.st_size);
 #else
@@ -93,6 +113,11 @@ mblk_t *ms_load_jpeg_as_yuv(const char *jpgpath, MSVideoSize *reqsize){
 	}else{
 		ms_error("Cannot load %s",jpgpath);
 	}
+#if !defined(_MSC_VER)
+	close(fd);
+#else
+	_close(fd);
+#endif
 	return m;
 }
 
