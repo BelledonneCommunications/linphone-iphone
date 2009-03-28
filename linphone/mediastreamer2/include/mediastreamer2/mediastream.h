@@ -48,7 +48,7 @@ struct _AudioStream
 	MSFilter *dtmfgen;
 	MSFilter *ec;/*echo canceler*/
 	MSFilter *volsend,*volrecv; /*MSVolumes*/
-	unsigned int last_packet_count;
+	uint64_t last_packet_count;
 	time_t last_packet_time;
 	EchoLimiterType el_type; /*use echo limiter: two MSVolume, measured input level controlling local output level*/
 	bool_t play_dtmfs;
