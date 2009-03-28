@@ -118,14 +118,14 @@ static void size_conv_process(MSFilter *f){
 	ms_filter_lock(f);
 
 	if (s->frame_count==-1){
-		s->start_time=f->ticker->time;
+		s->start_time=(float)f->ticker->time;
 		s->frame_count=0;
 	}
 	while((im=ms_queue_get(f->inputs[0]))!=NULL ){
 		putq(&s->rq, im);
 	}
 
-	cur_frame=((f->ticker->time-s->start_time)*s->fps/1000.0);
+	cur_frame=(int)((f->ticker->time-s->start_time)*s->fps/1000.0);
 	if (cur_frame<=s->frame_count && s->fps>=0) {
 		/* too much frame */
 		while(s->rq.q_mcount>1){

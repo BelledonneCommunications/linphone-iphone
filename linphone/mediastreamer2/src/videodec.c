@@ -110,7 +110,7 @@ static int dec_add_fmtp(MSFilter *f, void *data){
 		for(i=0,j=0;i<max;i+=2,++j){
 			octet[0]=config[i];
 			octet[1]=config[i+1];
-			s->dci[j]=strtol(octet,NULL,16);
+			s->dci[j]=(uint8_t)strtol(octet,NULL,16);
 		}
 		s->dci_size=j;
 		ms_message("Got mpeg4 config string: %s",config);

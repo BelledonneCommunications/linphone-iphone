@@ -77,7 +77,7 @@ void mire_draw(MireData *d){
 
 void mire_process(MSFilter *f){
 	MireData *d=(MireData*)f->data;
-	float elapsed=f->ticker->time-d->starttime;
+	float elapsed=(float)(f->ticker->time-d->starttime);
 	if ((elapsed*d->fps/1000.0)>d->index){
 		mire_draw(d);
 		ms_queue_put(f->outputs[0],dupb(d->pic));

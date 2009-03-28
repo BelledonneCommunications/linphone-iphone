@@ -35,7 +35,7 @@ struct SenderData {
 	char dtmf;
 	char relay_session_id[64];
 	int relay_session_id_size;
-	unsigned int last_rsi_time;
+	uint64_t last_rsi_time;
 	bool_t skip;
 	bool_t mute_mic;
 };
@@ -123,11 +123,7 @@ static int sender_set_relay_session_id(MSFilter *f, void*arg){
 static uint32_t get_cur_timestamp(MSFilter * f, uint32_t packet_ts)
 {
 	SenderData *d = (SenderData *) f->data;
-#if !defined(_WIN32_WCE)
-	uint32_t curts = (f->ticker->time * d->rate) / 1000LL;
-#else
-	uint32_t curts = (f->ticker->time * d->rate) / ((uint64_t)1000);
-#endif
+	uint32_t curts = (uint32_t)(f->ticker->time * (d->rate/1000));
 	int diff;
 	int delta = d->rate / 50;	/*20 ms at 8000Hz */
 	uint32_t netts;
@@ -322,7 +318,7 @@ static void receiver_process(MSFilter * f)
 	if (d->session == NULL)
 		return;
 
-	timestamp = (f->ticker->time * d->rate) / ((uint64_t)1000);
+	timestamp = (uint32_t) (f->ticker->time * (d->rate/1000));
 	while ((m = rtp_session_recvm_with_ts(d->session, timestamp)) != NULL) {
 		mblk_set_timestamp_info(m, rtp_get_timestamp(m));
 		mblk_set_marker_info(m, rtp_get_markbit(m));

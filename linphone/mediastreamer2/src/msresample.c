@@ -97,6 +97,7 @@ static void resample_process_ms2(MSFilter *obj){
 		short *data_out = (short*)obl->b_wptr;
 
 		int i;
+		spx_uint32_t idx;
     
 		in = (float*) alloca((size_of_input/2)*sizeof(float));
 		out = (float*) alloca((size_of_output/2)*sizeof(float));
@@ -111,8 +112,8 @@ static void resample_process_ms2(MSFilter *obj){
 
 		/* ms_message("resampling info: err=%i in_len=%i, out_len=%i", err, in_len, out_len); */
 
-		for (i=0;i<out_len;i++)
-		  data_out[i]=floor(.5+out[i]);
+		for (idx=0;idx<out_len;idx++)
+		  data_out[idx]=(short)floor(.5+out[idx]);
 		obl->b_wptr=obl->b_wptr+(out_len*2); /* size_of_output; */
 
 		mblk_set_timestamp_info(obl,dt->ts);

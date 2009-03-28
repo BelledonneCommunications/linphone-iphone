@@ -190,7 +190,7 @@ static void enc_preprocess(MSFilter *f){
 	if (s->maxbitrate>0){
 		/* convert from network bitrate to codec bitrate:*/
 		/* ((nbr/(50*8)) -20-12-8)*50*8*/
-		int cbr=(((float)s->maxbitrate/(50.0*8))-20-12-8)*50*8;
+		int cbr=(int)( (((float)s->maxbitrate/(50.0*8))-20-12-8)*50*8);
 		if (speex_encoder_ctl(s->state,SPEEX_SET_BITRATE,&cbr)!=0){
 			ms_error("Could not set maxbitrate %i to speex encoder.",s->bitrate);
 		}
