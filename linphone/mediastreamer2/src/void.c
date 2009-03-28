@@ -30,7 +30,7 @@ static void void_sink_process(MSFilter *f){
 #ifdef _MSC_VER
 
 MSFilterDesc ms_void_sink_desc={
-	MS_TEE_ID,
+	MS_VOID_SINK_ID,
 	"MSVoidSink",
 	N_("A filter that trashes its input (useful for terminating some graphs)."),
 	MS_FILTER_OTHER,
@@ -47,7 +47,7 @@ MSFilterDesc ms_void_sink_desc={
 #else
 
 MSFilterDesc ms_void_sink_desc={
-	.id=MS_TEE_ID,
+	.id=MS_VOID_SINK_ID,
 	.name="MSVoidSink",
 	.text=N_("A filter that trashes its input (useful for terminating some graphs)."),
 	.category=MS_FILTER_OTHER,
