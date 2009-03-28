@@ -37,13 +37,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <speex/speex_preprocess.h>
 #endif
 
-#ifndef CONF_GRAN_MAX
-#define CONF_GRAN_MAX 12 /* limit for 'too much data' */
-#endif
-
 #define CONF_NSAMPLES 160*4*4 /* (CONF_GRAN/2) */
 #ifndef CONF_MAX_PINS
-#define CONF_MAX_PINS 32
+#define CONF_MAX_PINS 128
 #endif
 
 static const float max_e=(float)32767*32767;
@@ -410,7 +406,7 @@ static void conf_sum(MSFilter *f, ConfState *s){
 					if (mystat>10)
 					{
 						ms_message("is_speaking (chan=%i) -> on/stat=%.3lf", i, mystat);
-						s->channels[0].is_speaking=20; /* keep RTP muted for the next few ms */
+						s->channels[0].is_speaking=20; /* keep RTP unmuted for the next few ms */
 					}
 					else
 					{
@@ -492,7 +488,7 @@ static void conf_dispatch(MSFilter *f, ConfState *s){
 	int i;
 	Channel *chan;
 	mblk_t *m;
-	//memset(s->sum,0,s->conf_nsamples*sizeof(int));
+
 	for (i=0;i<CONF_MAX_PINS;++i){
 		if (f->outputs[i]!=NULL){
 			chan=&s->channels[i];
