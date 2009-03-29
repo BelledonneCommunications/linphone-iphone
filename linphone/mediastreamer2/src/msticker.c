@@ -297,7 +297,7 @@ static int set_high_prio(void){
 	TIMECAPS ptc;
 	mm=timeGetDevCaps(&ptc,sizeof(ptc));
 	if (mm==0){
-		if (ptc.wPeriodMin<precision)
+		if (ptc.wPeriodMin<(UINT)precision)
 			ptc.wPeriodMin=precision;
 		else
 			precision = ptc.wPeriodMin;
@@ -357,9 +357,9 @@ void * ms_ticker_run(void *arg)
 			diff=s->time-realtime;
 			if (diff>0){
 				/* sleep until next tick */
-				sleepMs(diff);
+				sleepMs((int)diff);
 			}else{
-				late=-diff;
+				late=(int)-diff;
 				if (late>s->interval*5 && late>lastlate){
 					ms_warning("%s: We are late of %d miliseconds.",s->name,late);
 				}
