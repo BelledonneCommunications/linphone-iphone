@@ -22,6 +22,7 @@ EXPORTS
 	ms_filter_new_from_name
 	ms_filter_set_notify_callback
 	
+	ms_snd_card_manager_register_desc
 	ms_snd_card_create_reader
 	ms_snd_card_create_writer
 	ms_snd_card_get_name
