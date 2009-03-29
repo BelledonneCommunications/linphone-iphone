@@ -36,6 +36,7 @@ EXPORTS
 	ms_snd_card_destroy
 	
 	ms_ticker_new
+	ms_ticker_set_name
 	ms_ticker_destroy
 	ms_ticker_attach
 	ms_ticker_detach
