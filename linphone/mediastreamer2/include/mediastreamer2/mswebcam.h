@@ -128,13 +128,23 @@ MSWebCam * ms_web_cam_manager_get_default_cam(MSWebCamManager *m);
 const MSList * ms_web_cam_manager_get_list(MSWebCamManager *m);
 
 /**
- * Add a sound card object in a sound card manager's list.
+ * Add a sound card object in a webcam  manager's list.
  *
- * @param m    A sound card manager containing sound cards.
- * @param c    A sound card object.
+ * @param m    A webcam  manager containing webcams
+ * @param c    A web cam object.
  *
  */
 void ms_web_cam_manager_add_cam(MSWebCamManager *m, MSWebCam *c);
+
+/**
+ * Add a sound card object on top of list of the webcam  manager's list.
+ *
+ * @param m    A webcam  manager containing webcams
+ * @param c    A web cam object.
+ *
+ */
+void ms_web_cam_manager_prepend_cam(MSWebCamManager *m, MSWebCam *c);
+
 
 /**
  * Register a sound card description in a sound card manager.

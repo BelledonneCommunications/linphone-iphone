@@ -27,7 +27,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/mswebcam.h"
 
 #include "nowebcam.h"
+
+#ifdef HAVE_LIBAVCODEC_AVCODEC_H
+#include <libavcodec/avcodec.h>
+#else
 #include <ffmpeg/avcodec.h>
+#endif
 
 #include <dshow.h>
 #include <dmodshow.h>
@@ -35,6 +40,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <streams.h>
 #include <initguid.h>
+
 #include "dxfilter.h"
 EXTERN_C const CLSID CLSID_NullRenderer;
 
@@ -1414,7 +1420,7 @@ static MSFilterMethod methods[]={
 	{	0								,	NULL			}
 };
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(__cplusplus) 
 
 MSFilterDesc ms_v4w_desc={
 	MS_V4L_ID,

@@ -78,6 +78,9 @@ Source: "..\coreapi\plugins\buddylookup\libbuddylookup.dll"; DestDir: "{app}\lib
 Source: "..\..\libsoup\bin\libsoup-2.4-1.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\gnutls-2.6.4\bin\*.dll"; DestDir: "{app}"; Flags: ignoreversion
 
+;;Directshow capture plugin
+Source: "..\mediastreamer2\plugins\msdscap\libmsdscap.dll"; DestDir: "{app}\plugins" ; Flags: ignoreversion
+
 [Icons]
 Name: "{group}\Linphone"; Filename: "{app}\linphone.exe" ; WorkingDir: "{app}"
 Name: "{userdesktop}\Linphone"; Filename: "{app}\linphone.exe"; WorkingDir: "{app}" ; Tasks: desktopicon
