@@ -334,6 +334,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\void.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\winsnd2.c"
 				>
 			</File>
