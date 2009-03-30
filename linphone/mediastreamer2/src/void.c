@@ -37,7 +37,7 @@ MSFilterDesc ms_void_sink_desc={
 	NULL,
 	1,
 	0,
-    	NULL,
+	NULL,
 	NULL,
 	void_sink_process,
 	NULL,
