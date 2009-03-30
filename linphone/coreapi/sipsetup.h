@@ -85,6 +85,7 @@ struct _SipSetup{
 	int (*get_buddy_lookup_results)(SipSetupContext *ctx, MSList **results);
 	void (*uninit_instance)(SipSetupContext *ctx);
 	void (*exit)(void);
+	char *notice;
 	bool_t initialized;
 };
 
