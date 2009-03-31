@@ -65,6 +65,7 @@ typedef struct Channel{
 #endif
 
 	float energy;
+	double average_psd;
 
 } Channel;
 
@@ -164,6 +165,7 @@ static void channel_uninit(Channel *chan){
 	ms_bufferizer_uninit(&chan->buff);
 	chan->is_speaking=0;
 	chan->energy=0;
+	chan->average_psd=0;
 #ifndef DISABLE_SPEEX
 	if (chan->speex_pp!=NULL)
 	    speex_preprocess_state_destroy(chan->speex_pp);
@@ -284,13 +286,17 @@ static double powerspectrum_stat_beyond8K(struct Channel *chan){
 
 	ortp_free(ps);
 
-	//ms_message("average power spectrum on half highest values ONLY: stat=%.3lf", 108.064 - mystat);
 	/* values:
 	Maximum: 108,064 low volume on high frequency.
 	Decrease when volume increase. */
 
 	/* return value between 0 and 108,064? */
-	return 108.064-mystat;
+	mystat = 108.064-mystat;
+
+	chan->average_psd=(mystat*mystat*coef) + (1.0-coef)*chan->average_psd;
+	//ms_message("average power spectrum on half highest values ONLY: stat=%.3lf", chan->average_psd);
+
+	return mystat;
 }
 #endif
 
@@ -403,6 +409,7 @@ static void conf_sum(MSFilter *f, ConfState *s){
 				if (s->enable_halfduplex>0)
 				{
 					double mystat = powerspectrum_stat_beyond8K(chan);
+#if 0
 					if (mystat>12)
 					{
 						ms_message("is_speaking (chan=%i) -> on/stat=%.3lf", i, mystat);
@@ -412,6 +419,17 @@ static void conf_sum(MSFilter *f, ConfState *s){
 					{
 						s->channels[0].is_speaking--;
 					}
+#else
+					if (chan->average_psd>s->vad_prob_start)
+					{
+						ms_message("is_speaking (chan=%i) -> on/stat=%.3lf", i, chan->average_psd);
+						s->channels[0].is_speaking=20; /* keep RTP unmuted for the next few ms */
+					}
+					else if (chan->average_psd<s->vad_prob_continue)
+					{
+						s->channels[0].is_speaking--;
+					}
+#endif
 				}
 
 			}
