@@ -131,13 +131,13 @@ static void channel_init(ConfState *s, Channel *chan, int pos){
 
 	/* enable AGC only on local soundcard */
 	val=0;
-	f=8000;
+	f=12000;
 	if (s->agc_level>0 && pos==0)
 		val=1;
 	else if (pos==0 && s->enable_halfduplex>0)
 		val=1;
 	else if ( pos%2==1 && s->enable_halfduplex>0)
-		val=1;
+		val=1; //1; should not do that
 	if (s->agc_level>0)
 		f=(float)s->agc_level;
 
@@ -266,7 +266,6 @@ static double powerspectrum_stat_beyond8K(struct Channel *chan){
 	ps = (spx_int32_t*)ortp_malloc(sizeof(spx_int32_t)*ps_size);
 	speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_GET_PSD, ps);
 
-
 	mystat = 0;
 	for (i=ps_size/2;i < ps_size; i++) {
 		double yp;
@@ -277,19 +276,21 @@ static double powerspectrum_stat_beyond8K(struct Channel *chan){
 #endif
 		yp = yp * fftmul;
 		yp = MIN(yp * 3000.0, 1.0);
+		yp = (1 - yp) * (100 - 1.0f);
 		mystat = yp + mystat;
 	}
 
+	mystat = (mystat*2)/ps_size;
+
 	ortp_free(ps);
 
-	/* value between 0 and 100? */
-	mystat = mystat*100*2/ps_size;
-	if (mystat<0)
-		mystat=0;
-	if (mystat>100)
-		mystat=100;
+	//ms_message("average power spectrum on half highest values ONLY: stat=%.3lf", 108.064 - mystat);
+	/* values:
+	Maximum: 108,064 low volume on high frequency.
+	Decrease when volume increase. */
 
-	return mystat;
+	/* return value between 0 and 108,064? */
+	return 108.064-mystat;
 }
 #endif
 
@@ -402,8 +403,7 @@ static void conf_sum(MSFilter *f, ConfState *s){
 				if (s->enable_halfduplex>0)
 				{
 					double mystat = powerspectrum_stat_beyond8K(chan);
-					//ms_message("is_speaking (chan=%i) -> on/stat=%.3lf", i, mystat);
-					if (mystat>10)
+					if (mystat>12)
 					{
 						ms_message("is_speaking (chan=%i) -> on/stat=%.3lf", i, mystat);
 						s->channels[0].is_speaking=20; /* keep RTP unmuted for the next few ms */
