@@ -355,7 +355,33 @@ DECLARE_INTERFACE_(IMediaSample,IUnknown)
   STDMETHOD(QueryInterface)(THIS_ REFIID,PVOID*) PURE;
   STDMETHOD_(ULONG,AddRef)(THIS) PURE;
   STDMETHOD_(ULONG,Release)(THIS) PURE;
+  STDMETHOD(GetPointer)(THIS_ BYTE **) PURE;
+  STDMETHOD_(long, GetSize)(THIS) PURE;
 };
+/*
+#define INTERFACE IMediaSample
+DECLARE_INTERFACE_(IMediaSample, IUnknown)
+{
+    STDMETHOD(GetPointer)(THIS_ BYTE **) PURE;
+    STDMETHOD_(long, GetSize)(THIS) PURE;
+    STDMETHOD(GetTime)(THIS_ REFERENCE_TIME *, REFERENCE_TIME *) PURE;
+    STDMETHOD(SetTime)(THIS_ REFERENCE_TIME *, REFERENCE_TIME *) PURE;
+    STDMETHOD(IsSyncPoint)(THIS) PURE;
+    STDMETHOD(SetSyncPoint)(THIS_ BOOL) PURE;
+    STDMETHOD(IsPreroll)(THIS) PURE;
+    STDMETHOD(SetPreroll)(THIS_ BOOL) PURE;
+    STDMETHOD_(long, GetActualDataLength)(THIS) PURE;
+    STDMETHOD(SetActualDataLength)(THIS_ long) PURE;
+    STDMETHOD(GetMediaType)(THIS_ AM_MEDIA_TYPE **) PURE;
+    STDMETHOD(SetMediaType)(THIS_ AM_MEDIA_TYPE *) PURE;
+    STDMETHOD(IsDiscontinuity)(THIS) PURE;
+    STDMETHOD(SetDiscontinuity)(THIS_ BOOL) PURE;
+    STDMETHOD(GetMediaTime)(THIS_ LONGLONG *, LONGLONG *) PURE;
+    STDMETHOD(SetMediaTime)(THIS_ LONGLONG *, LONGLONG *) PURE;
+};
+*/
+
+
 #undef INTERFACE
 
 #define INTERFACE IMemAllocator
@@ -437,11 +463,13 @@ ComPtr< IPin > getPin( IBaseFilter *filter, PIN_DIRECTION direction, int num )
   return retVal;
 }
 
-class Callback: public ISampleGrabberCB
+struct DscapState;
+
+class MSCallback: public ISampleGrabberCB
 {
 public:
-  Callback(void);
-  virtual ~Callback(void);
+  MSCallback(DscapState *s);
+  virtual ~MSCallback(void);
   STDMETHODIMP QueryInterface( REFIID riid, void **ppv );
   STDMETHODIMP_(ULONG) AddRef(void);
   STDMETHODIMP_(ULONG) Release(void);
@@ -449,101 +477,17 @@ public:
   STDMETHODIMP BufferCB(double,BYTE*,long);
 protected:
   long m_refCount;
+  DscapState *mState;
 };
 
-Callback::Callback(void): m_refCount(1)
-{
-#ifndef NDEBUG
-  cerr << "Callback::Callback" << endl;
-#endif
-}
-
-Callback::~Callback(void)
-{
-#ifndef NDEBUG
-  cerr << "Callback::~Callback" << endl;
-#endif
-}
-
-STDMETHODIMP Callback::QueryInterface(REFIID riid, void **ppv)
-{
-#ifndef NDEBUG
-  cerr << "Callback::QueryInterface" << endl;
-#endif
-  HRESULT retval;
-  if ( ppv == NULL ) return E_POINTER;
-  /*
-  if ( riid == IID_IUnknown ) {
-    *ppv = static_cast< IUnknown * >( this );
-    AddRef();
-    retval = S_OK;
-  } else if ( riid == IID_ISampleGrabberCB ) {
-    *ppv = static_cast< ISampleGrabberCB * >( this );
-    AddRef();
-    retval = S_OK;
-    } else */ {
-#ifndef NDEBUG
-    cerr << setbase( 16 ) << setfill('0')
-         << "DEFINE_GUID( ..., 0x" << setw(8) << (int)riid.Data1 << ", 0x"
-         << setw(4) << (int)riid.Data2 << "," << endl
-         << "             0x"
-         << setw(4) << (int)riid.Data3 << ", 0x" << setw(2)
-         << (int)riid.Data4[0] << ", 0x"
-         << (int)riid.Data4[1] << ", 0x"
-         << (int)riid.Data4[2] << ", 0x"
-         << (int)riid.Data4[3] << ", 0x"
-         << (int)riid.Data4[4] << ", 0x"
-         << (int)riid.Data4[5] << ", 0x"
-         << (int)riid.Data4[6] << ", 0x"
-         << (int)riid.Data4[7] << " ) ?" << endl
-         << setfill( ' ' ) << setw( 0 ) << setbase( 10 );
-#endif
-    retval = E_NOINTERFACE;
-  };
-  return retval;
-};
-
-STDMETHODIMP_(ULONG) Callback::AddRef(void)
-{
-#ifndef NDEBUG
-  cerr << "Callback::AddRef" << endl;
-#endif
-  m_refCount++;
-  return m_refCount;
-}
-
-STDMETHODIMP_(ULONG) Callback::Release(void)
-{
-#ifndef NDEBUG
-  cerr << "Callback::Release" << endl;
-#endif
-  if ( !InterlockedDecrement( &m_refCount ) ) delete this;
-  return m_refCount;
-}
-
-STDMETHODIMP Callback::SampleCB( double, IMediaSample * )
-{
-#ifndef NDEBUG
-  cerr << "Callback::SampleCB" << endl;
-#endif
-  return S_OK;
-}
-
-STDMETHODIMP Callback::BufferCB( double, BYTE *, long )
-{
-#ifndef NDEBUG
-  cerr << "Callback::BufferCB" << endl;
-#endif
-  return E_NOTIMPL;
-}
-
+#if 1
 using namespace std;
 
 int toto(void)
 {
   int retVal = 0;
   bool initialized = false;
-  Callback *callback = NULL;
+  MSCallback *callback = NULL;
   try {
     COERRORMACRO( CoInitialize(NULL), Error, , "CoInitialize failed" );
     initialized = true;
@@ -600,8 +544,7 @@ int toto(void)
            mediaType->cbFormat != 0 ) {
         VIDEOINFOHEADER *infoHeader = (VIDEOINFOHEADER*)mediaType->pbFormat;
         // TODO: choose format here !!!
-        cerr << "Setting format " << infoHeader->bmiHeader.biWidth
-             << "x" << infoHeader->bmiHeader.biHeight << endl;
+        ms_message("Setting format %ix%i",infoHeader->bmiHeader.biWidth,infoHeader->bmiHeader.biHeight);
         streamConfig->SetFormat( mediaType );
         ok = true;
       };
@@ -630,7 +573,7 @@ int toto(void)
                   "Error disabling one-shot mode" );
     COERRORMACRO( sampleGrabber->SetBufferSamples( TRUE ), Error, ,
                   "Error enabling buffer sampling" );
-    callback = new Callback;
+    callback = new MSCallback(NULL);
     COERRORMACRO( sampleGrabber->SetCallBack( callback, 0 ), Error, ,
                   "Error setting callback interface for grabbing" );
     ComPtr< IPin > grabberIn = getPin( grabberBase.get(), PINDIR_INPUT, 0 );
@@ -687,9 +630,15 @@ int toto(void)
   return retVal;
 }
 
+#endif 
 
-
-typedef struct DscapState{
+struct DscapState{
+	DscapState(){
+		callback=0;
+	}
+	~DscapState(){
+		if (callback) callback->Release();
+	}
 	int devid;
 	MSVideoSize vsize;
 	queue_t rq;
@@ -700,11 +649,114 @@ typedef struct DscapState{
 	float start_time;
 	int frame_count;
 	MSPixFmt fmt;
-} DscapState;
+	ComPtr< IBaseFilter > source;
+	ComPtr< IBaseFilter > nullRenderer;
+	ComPtr< IBaseFilter > grabberBase;
+	ComPtr< IMediaControl > mediaControl;
+	ComPtr< IMediaEvent > mediaEvent;
+	MSCallback * callback;
+};
 
+
+
+MSCallback::MSCallback(DscapState *s): m_refCount(1), mState(s)
+{
+}
+
+MSCallback::~MSCallback(void)
+{
+  ms_message("MSCallback::~MSCallback");
+}
+
+STDMETHODIMP MSCallback::QueryInterface(REFIID riid, void **ppv)
+{
+#ifndef NDEBUG
+	ms_message("MSCallback::QueryInterface");
+#endif
+  HRESULT retval;
+  if ( ppv == NULL ) return E_POINTER;
+  /*
+  if ( riid == IID_IUnknown ) {
+    *ppv = static_cast< IUnknown * >( this );
+    AddRef();
+    retval = S_OK;
+  } else if ( riid == IID_ISampleGrabberCB ) {
+    *ppv = static_cast< ISampleGrabberCB * >( this );
+    AddRef();
+    retval = S_OK;
+    } else */ {
+#ifndef NDEBUG
+    cerr << setbase( 16 ) << setfill('0')
+         << "DEFINE_GUID( ..., 0x" << setw(8) << (int)riid.Data1 << ", 0x"
+         << setw(4) << (int)riid.Data2 << "," << endl
+         << "             0x"
+         << setw(4) << (int)riid.Data3 << ", 0x" << setw(2)
+         << (int)riid.Data4[0] << ", 0x"
+         << (int)riid.Data4[1] << ", 0x"
+         << (int)riid.Data4[2] << ", 0x"
+         << (int)riid.Data4[3] << ", 0x"
+         << (int)riid.Data4[4] << ", 0x"
+         << (int)riid.Data4[5] << ", 0x"
+         << (int)riid.Data4[6] << ", 0x"
+         << (int)riid.Data4[7] << " ) ?" << endl
+         << setfill( ' ' ) << setw( 0 ) << setbase( 10 );
+#endif
+    retval = E_NOINTERFACE;
+  };
+  return retval;
+};
+
+STDMETHODIMP_(ULONG) MSCallback::AddRef(void)
+{
+	ms_message("MSCallback::AddRef");
+  m_refCount++;
+  return m_refCount;
+}
+
+STDMETHODIMP_(ULONG) MSCallback::Release(void)
+{
+  ms_message("MSCallback::Release");
+
+  if ( !InterlockedDecrement( &m_refCount ) ) {
+		int refcnt=m_refCount;
+		delete this;
+		return refcnt;
+	}
+  return m_refCount;
+}
+
+static void dummy(void*p){
+}
+
+STDMETHODIMP MSCallback::SampleCB( double par1 , IMediaSample * sample)
+{
+	uint8_t *p;
+	unsigned int size;
+	if (sample->GetPointer(&p)!=S_OK){
+		ms_error("error in GetPointer()");
+		return S_OK;
+	}
+	size=sample->GetSize();
+	ms_message( "MSCallback::SampleCB pointer=%p, size=%i",p,size);
+	mblk_t *m=esballoc(p,size,0,dummy);
+	m->b_wptr+=size;
+	ms_mutex_lock(&mState->mutex);
+	putq(&mState->rq,m);
+	ms_mutex_unlock(&mState->mutex);
+  	return S_OK;
+}
+
+
+
+STDMETHODIMP MSCallback::BufferCB( double, BYTE *b, long len)
+{
+	ms_message("MSCallback::BufferCB");
+
+	return S_OK;
+}
 
 static void dscap_init(MSFilter *f){
-	DscapState *s=(DscapState *)ms_new0(DscapState,1);
+	DscapState *s=new DscapState;
 	s->vsize.width=MS_VIDEO_SIZE_CIF_W;
 	s->vsize.height=MS_VIDEO_SIZE_CIF_H;
 	qinit(&s->rq);
@@ -722,22 +774,219 @@ static void dscap_uninit(MSFilter *f){
 	DscapState *s=(DscapState*)f->data;
 	flushq(&s->rq,0);
 	ms_mutex_destroy(&s->mutex);
-	ms_free(s);
+	delete s;
 }
 
-static void dscap_callback(void *data, mblk_t *m){
-	DscapState *s=(DscapState*)data;
-	ms_mutex_lock(&s->mutex);
-	putq(&s->rq,m);
-	ms_mutex_unlock(&s->mutex);
+static char * fourcc_to_char(char *str, uint32_t fcc){
+	memcpy(str,&fcc,4);
+	str[4]='\0';
+	return str;
+}
+
+static int find_best_format(ComPtr<IAMStreamConfig> streamConfig, int count, MSVideoSize *requested_size, MSPixFmt requested_fmt ){
+	int i;
+	MSVideoSize best_found=(MSVideoSize){32768,32768};
+	int best_index=-1;
+	char fccstr[5];
+	char selected_fcc[5];
+	for (i=0; i<count; i++ ) {
+		VIDEO_STREAM_CONFIG_CAPS videoConfig;
+		AM_MEDIA_TYPE *mediaType;
+		COERRORMACRO( streamConfig->GetStreamCaps( i, &mediaType,
+                                                 (BYTE *)&videoConfig ),
+                    Error, , "Error getting stream capabilities" );
+		if ( mediaType->majortype == MEDIATYPE_Video &&
+           mediaType->cbFormat != 0 ) {
+			VIDEOINFOHEADER *infoHeader = (VIDEOINFOHEADER*)mediaType->pbFormat;
+			ms_message("Seeing format %ix%i %s",infoHeader->bmiHeader.biWidth,infoHeader->bmiHeader.biHeight,
+					fourcc_to_char(fccstr,infoHeader->bmiHeader.biCompression));
+			if (ms_fourcc_to_pix_fmt(infoHeader->bmiHeader.biCompression)==requested_fmt){
+				MSVideoSize cur;
+				cur.width=infoHeader->bmiHeader.biWidth;
+				cur.height=infoHeader->bmiHeader.biHeight;
+				if (ms_video_size_greater_than(cur,*requested_size)){
+					if (ms_video_size_greater_than(best_found,cur)){
+						best_found=cur;
+						best_index=i;
+						fourcc_to_char(selected_fcc,infoHeader->bmiHeader.biCompression);
+					}
+				}
+			}
+		};
+		if ( mediaType->cbFormat != 0 )
+			CoTaskMemFree( (PVOID)mediaType->pbFormat );
+		if ( mediaType->pUnk != NULL ) mediaType->pUnk->Release();
+			CoTaskMemFree( (PVOID)mediaType );
+	}
+	if (best_index!=-1) {
+		*requested_size=best_found;
+		ms_message("Best camera format is %s %ix%i",selected_fcc,best_found.width,best_found.height);
+	}
+	return best_index;
+}
+
+static int select_best_format(DscapState *s, ComPtr<IAMStreamConfig> streamConfig, int count){
+	int index;
+	s->fmt=MS_YUV420P;
+	index=find_best_format(streamConfig, count, &s->vsize, s->fmt);
+	if (index!=-1) goto success;
+	s->fmt=MS_YUY2;
+	index=find_best_format(streamConfig, count, &s->vsize, s->fmt);
+	if (index!=-1) goto success;
+	s->fmt=MS_YUYV;
+	index=find_best_format(streamConfig, count, &s->vsize, s->fmt);
+	if (index!=-1) goto success;
+	s->fmt=MS_RGB24;
+	index=find_best_format(streamConfig, count, &s->vsize, s->fmt);
+	if (index!=-1) {
+		s->fmt=MS_RGB24_REV;
+		goto success;
+	}
+	ms_error("This camera does not support any of our pixel formats.");
+	return -1;
+	
+	success:
+	VIDEO_STREAM_CONFIG_CAPS videoConfig;
+	AM_MEDIA_TYPE *mediaType;
+	COERRORMACRO( streamConfig->GetStreamCaps( index, &mediaType,
+                                                 (BYTE *)&videoConfig ),
+                                Error, , "Error getting stream capabilities" );
+    streamConfig->SetFormat( mediaType );
+    return 0;
+}
+
+static void create_dshow_graph(DscapState *s){
+	ComPtr< ICreateDevEnum > createDevEnum;
+	COERRORMACRO( CoInitialize(NULL), Error, , "CoInitialize failed" );
+    createDevEnum.coCreateInstance( CLSID_SystemDeviceEnum,
+                                    IID_ICreateDevEnum, "Could not create "
+                                    "device enumerator" );
+    ComPtr< IEnumMoniker > enumMoniker;
+    if (createDevEnum->CreateClassEnumerator( CLSID_VideoInputDeviceCategory, &enumMoniker, 0 )!=S_OK){
+		ms_error("Fail to create class enumerator.");
+		return;
+	}
+    createDevEnum.reset();
+    enumMoniker->Reset();
+
+    int index = 0;
+    ULONG fetched = 0;
+	ComPtr< IGraphBuilder > graphBuilder;
+	graphBuilder.coCreateInstance( CLSID_FilterGraph, IID_IGraphBuilder,
+                                   "Could not create graph builder "
+                                   "interface" );
+    ComPtr< IMoniker > moniker;
+    for ( int i=0;enumMoniker->Next( 1, &moniker, &fetched )==S_OK;++i ) {
+		if (i==s->devid){
+			if (moniker->BindToObject( 0, 0, IID_IBaseFilter, (void **)&s->source )!=S_OK){
+				ms_error("Error binding moniker to base filter" );
+				return;
+			}
+		}
+	}
+	if (s->source.get()==0){
+		ms_error("Could not interface with webcam devid=%i",s->devid);
+		return;
+	}
+	moniker.reset();
+    enumMoniker.reset();
+    s->callback = new MSCallback(s);
+    ms_message("Callback created");
+    fflush(NULL);
+    try{
+    COERRORMACRO( graphBuilder->AddFilter( s->source.get(), L"Source" ),
+                  Error, , "Error adding camera source to filter graph" );
+    ComPtr< IPin > sourceOut = getPin( s->source.get(), PINDIR_OUTPUT, 0 );
+    ERRORMACRO( sourceOut.get() != NULL, Error, ,
+                "Error getting output pin of camera source" );
+    ComPtr< IAMStreamConfig > streamConfig;
+    COERRORMACRO( sourceOut->
+                  QueryInterface( IID_IAMStreamConfig,
+                                  (void **)&streamConfig ),
+                  Error, , "Error requesting stream configuration API" );
+    int count, size;
+    COERRORMACRO( streamConfig->GetNumberOfCapabilities( &count, &size ),
+                  Error, , "Error getting number of capabilities" );
+    select_best_format(s,streamConfig,count);
+    
+    streamConfig.reset();
+
+    COERRORMACRO( CoCreateInstance( CLSID_SampleGrabber, NULL,
+                                    CLSCTX_INPROC, IID_IBaseFilter,
+                                    (void **)&s->grabberBase ),
+                  Error, , "Error creating sample grabber" );
+    COERRORMACRO( graphBuilder->AddFilter( s->grabberBase.get(), L"Grabber" ),
+                  Error, , "Error adding sample grabber to filter graph" );
+    ComPtr< ISampleGrabber > sampleGrabber;
+    COERRORMACRO( s->grabberBase->QueryInterface( IID_ISampleGrabber,
+                                               (void **)&sampleGrabber ),
+                  Error, , "Error requesting sample grabber interface" );
+    COERRORMACRO( sampleGrabber->SetOneShot( FALSE ), Error, ,
+                  "Error disabling one-shot mode" );
+    COERRORMACRO( sampleGrabber->SetBufferSamples( TRUE ), Error, ,
+                  "Error enabling buffer sampling" );
+
+    COERRORMACRO( sampleGrabber->SetCallBack( s->callback, 0 ), Error, ,
+                  "Error setting callback interface for grabbing" );
+    ComPtr< IPin > grabberIn = getPin( s->grabberBase.get(), PINDIR_INPUT, 0 );
+    ERRORMACRO( grabberIn.get() != NULL, Error, ,
+                "Error getting input of sample grabber" );
+    ComPtr< IPin > grabberOut = getPin( s->grabberBase.get(), PINDIR_OUTPUT, 0 );
+    ERRORMACRO( grabberOut.get() != NULL, Error, ,
+                "Error getting output of sample grabber" );
+
+    
+    COERRORMACRO( CoCreateInstance( CLSID_NullRenderer, NULL,
+                                    CLSCTX_INPROC, IID_IBaseFilter,
+                                    (void **)&s->nullRenderer ),
+                  Error, , "Error creating Null Renderer" );
+    COERRORMACRO( graphBuilder->AddFilter( s->nullRenderer.get(), L"Sink" ),
+                  Error, , "Error adding null renderer to filter graph" );
+    ComPtr< IPin > nullIn = getPin( s->nullRenderer.get(), PINDIR_INPUT, 0 );
+
+    ms_message("Attempting to connect");
+    COERRORMACRO( graphBuilder->Connect( sourceOut.get(), grabberIn.get() ),
+                  Error, , "Error connecting source to sample grabber" );
+    COERRORMACRO( graphBuilder->Connect( grabberOut.get(), nullIn.get() ),
+                  Error, , "Error connecting sample grabber to sink" );
+
+    ms_message("Success!!!!!!!!!!!!!!!!!!!!!");
+
+
+	ms_message("Querying control interface");
+    COERRORMACRO( graphBuilder->QueryInterface( IID_IMediaControl,
+                                                (void **)&s->mediaControl ),
+                  Error, , "Error requesting media control interface" );
+	ms_message("Got the control interface (%p).",s->mediaControl.get());
+    ms_message("Going to start the graph");
+    HRESULT r;
+	if ((r=s->mediaControl->Run())!=S_OK){
+		ms_error("Error starting graph (%i)",r);
+	}
+    ms_message("Graph started");
+    COERRORMACRO( graphBuilder->QueryInterface( IID_IMediaEvent,
+                                                (void **)&s->mediaEvent ),
+                  Error, , "Error requesting event interface" );
+    ms_message("Graph created");
+	} catch ( Error &e ) {
+    	ms_error(e.what());
+	};
 }
 
 static void dscap_preprocess(MSFilter * obj){
 	DscapState *s=(DscapState*)obj->data;
+	create_dshow_graph(s);
+	//toto();
+    ms_message("preprocess done.");
 }
 
 static void dscap_postprocess(MSFilter * obj){
 	DscapState *s=(DscapState*)obj->data;
+	if (s->mediaControl.get()!=NULL){
+		s->mediaControl->Stop();
+    	long evCode = 0;
+    	s->mediaEvent->WaitForCompletion( INFINITE, &evCode );
+	}
 	flushq(&s->rq,0);
 }
 
@@ -756,16 +1005,15 @@ static void dscap_process(MSFilter * obj){
 	if (cur_frame>s->frame_count){
 		mblk_t *om=NULL;
 		/*keep the most recent frame if several frames have been captured */
-		if (0){
-			ms_mutex_lock(&s->mutex);
-			while((m=getq(&s->rq))!=NULL){
-				ms_mutex_unlock(&s->mutex);
-				if (om!=NULL) freemsg(om);
-				om=m;
-				ms_mutex_lock(&s->mutex);
-			}
+		
+		ms_mutex_lock(&s->mutex);
+		while((m=getq(&s->rq))!=NULL){
 			ms_mutex_unlock(&s->mutex);
+			if (om!=NULL) freemsg(om);
+			om=m;
+			ms_mutex_lock(&s->mutex);
 		}
+		ms_mutex_unlock(&s->mutex);
 		if (om!=NULL){
 			timestamp=(uint32_t)(obj->ticker->time*90);/* rtp uses a 90000 Hz clockrate for video*/
 			mblk_set_timestamp_info(om,timestamp);
@@ -845,6 +1093,7 @@ static void ms_dshow_detect(MSWebCamManager *obj){
 	int i;
 	MSWebCam *cam;
 	ComPtr<IPropertyBag> pBag;
+	
 	COERRORMACRO( CoInitialize(NULL), Error, , "CoInitialize failed" );
  
     ComPtr< ICreateDevEnum > createDevEnum;

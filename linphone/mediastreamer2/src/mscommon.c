@@ -494,7 +494,7 @@ static MSWebCamDesc * ms_web_cam_descs[]={
 #if defined(WIN32) && defined(HAVE_DIRECTSHOW)
 	&ms_directx_cam_desc,
 #endif
-#if defined(WIN32) && !defined(HAVE_DIRECTSHOW)
+#if defined(WIN32) && defined(HAVE_VFW)
 	&ms_vfw_cam_desc,
 #endif
 	&mire_desc,
