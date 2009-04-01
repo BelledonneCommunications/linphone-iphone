@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 %javaconst(1);
 %include "p2pproxy.h"
 #endif /*SWIG*/
-
+#define P2PPROXY_EWOULDBLOCK  4
 #define P2PPROXY_ACCOUNTMGT_USER_EXIST 1
 #define P2PPROXY_ACCOUNTMGT_USER_NOT_EXIST 0 
 #define P2PPROXY_RESOURCEMGT_SERVER_NOT_FOUND  3

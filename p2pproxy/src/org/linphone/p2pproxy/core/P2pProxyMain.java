@@ -28,10 +28,10 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import java.lang.management.ManagementFactory;
-import java.net.URI;
-import java.net.URL;
 import java.util.InvalidPropertiesFormatException;
 import java.util.Properties;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 
 import javax.management.ObjectName;
 
@@ -45,6 +45,7 @@ import org.linphone.p2pproxy.api.P2pProxyResourceManagement;
 import org.linphone.p2pproxy.api.P2pProxyUserAlreadyExistException;
 import org.linphone.p2pproxy.core.media.MediaResourceService;
 import org.linphone.p2pproxy.core.sipproxy.SipProxyRegistrar;
+import org.linphone.p2pproxy.core.utils.Excecutor;
 import org.zoolu.sip.provider.SipStack;
 import org.linphone.p2pproxy.launcher.P2pProxylauncherConstants;
 
@@ -64,6 +65,7 @@ public class P2pProxyMain  implements P2pProxyMainMBean {
    private static String mConfigHomeDir;
    static private boolean mExit = false;
    static private boolean isReady = false;
+   
    
    
    static {
@@ -361,7 +363,14 @@ public  static void staticLoadTraceConfigFile()  throws P2pProxyException {
       throw new P2pProxyException("enable to load traces",e);
    }
 }
-
+private static boolean isReadyNoThrow() {
+	try {
+		isReady();
+		return true;
+	} catch (P2pProxyNotReadyException e) {
+		return false;
+	}
+}
 private static void isReady() throws P2pProxyNotReadyException {
     try {
       if ((isReady == true && mJxtaNetworkManager.isConnectedToRendezVous(0) == true) 
@@ -380,41 +389,71 @@ private static void isReady() throws P2pProxyNotReadyException {
    }
 }
 /* p2pproxy.h implementation*/
+private static int excecuteAction(Future<Integer> aResult, Class<? extends Callable<Integer>> classTaskName) {
+	try {
+		if (aResult.isDone() == false)  {
+			return P2pProxylauncherConstants.P2PPROXY_EWOULDBLOCK;
+		} else if (aResult == null) {
+			createAccountResult = Excecutor.pool.submit(classTaskName.newInstance());
+		} else  {
+			Future<Integer> lResult = createAccountResult;
+			createAccountResult = null;
+			return lResult.get();
+		}
+		return P2pProxylauncherConstants.P2PPROXY_ERROR;
+	} catch (Exception e) {
+		return P2pProxylauncherConstants.P2PPROXY_ERROR;
+	}     
+}
 
-public static int createAccount(String aUserName) {
-   try {
-      isReady();
-      mP2pProxyAccountManagement.createAccount(aUserName);
-   } catch (P2pProxyUserAlreadyExistException e) {
-      return P2pProxylauncherConstants.P2PPROXY_ACCOUNTMGT_USER_EXIST;
-   } catch (P2pProxyException e) {
-      return P2pProxylauncherConstants.P2PPROXY_ERROR;
-   }
-   return P2pProxylauncherConstants.P2PPROXY_NO_ERROR;
-}
-public static int deleteAccount(String aUserName)  {
-   try {
-      isReady();
-      mP2pProxyAccountManagement.deleteAccount(aUserName);
-   } catch (P2pProxyException e) {
-      return P2pProxylauncherConstants.P2PPROXY_ERROR;
-   }
-   return P2pProxylauncherConstants.P2PPROXY_NO_ERROR;
+static Future<Integer> createAccountResult = null;
+public synchronized static int createAccount(final String aUserName) {
+	class CreateAcountTask implements Callable<Integer> {
+		public Integer call() throws Exception {
+			try {
+				mP2pProxyAccountManagement.createAccount(aUserName);
+			} catch (P2pProxyUserAlreadyExistException e) {
+				return P2pProxylauncherConstants.P2PPROXY_ACCOUNTMGT_USER_EXIST;
+			} catch (P2pProxyException e) {
+				return P2pProxylauncherConstants.P2PPROXY_ERROR;
+			}
+			return P2pProxylauncherConstants.P2PPROXY_NO_ERROR;
+		}
+	};
+	return excecuteAction(createAccountResult,CreateAcountTask.class);
+} 
 
+static Future<Integer> deleteAccountResult = null;
+public static int deleteAccount(final String aUserName)  {
+	class DeleteAccountTask implements Callable<Integer> {
+
+		public Integer call() throws Exception {
+			mP2pProxyAccountManagement.deleteAccount(aUserName);
+			return P2pProxylauncherConstants.P2PPROXY_NO_ERROR;
+		}
+
+	};
+	return excecuteAction(deleteAccountResult,DeleteAccountTask.class);
 }
-public static int isValidAccount(String aUserName){
-   try {
-      isReady();
-      if (mP2pProxyAccountManagement.isValidAccount(aUserName)) {
-         return P2pProxylauncherConstants.P2PPROXY_ACCOUNTMGT_USER_EXIST;
-      } else {
-         return P2pProxylauncherConstants.P2PPROXY_ACCOUNTMGT_USER_NOT_EXIST;
-      }
-   } catch (P2pProxyException e) {
-      return P2pProxylauncherConstants.P2PPROXY_ERROR;
-   }
+
+static Future<Integer> isValidAccountResult = null;
+public static int isValidAccount(final String aUserName){
+	class IsValidAccountResultTask implements Callable<Integer> {
+
+		public Integer call() throws Exception {
+		      if (mP2pProxyAccountManagement.isValidAccount(aUserName)) {
+		          return P2pProxylauncherConstants.P2PPROXY_ACCOUNTMGT_USER_EXIST;
+		       } else {
+		          return P2pProxylauncherConstants.P2PPROXY_ACCOUNTMGT_USER_NOT_EXIST;
+		       }
+		}
+
+	};
+	return excecuteAction(isValidAccountResult,IsValidAccountResultTask.class);
 }
-public static String lookupSipProxyUri(String aDomaine) {
+
+static Future<Integer> lookupSipProxyUriResult = null;
+public static String lookupSipProxyUri(final String aDomaine) {
    try {
       isReady();
       String[] lProxies = mP2pProxySipProxyRegistrarManagement.lookupSipProxiesUri(aDomaine);
