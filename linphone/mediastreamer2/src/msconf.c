@@ -408,18 +408,7 @@ static void conf_sum(MSFilter *f, ConfState *s){
 
 				if (s->enable_halfduplex>0)
 				{
-					double mystat = powerspectrum_stat_beyond8K(chan);
-#if 0
-					if (mystat>12)
-					{
-						ms_message("is_speaking (chan=%i) -> on/stat=%.3lf", i, mystat);
-						s->channels[0].is_speaking=20; /* keep RTP unmuted for the next few ms */
-					}
-					else
-					{
-						s->channels[0].is_speaking--;
-					}
-#else
+					powerspectrum_stat_beyond8K(chan);
 					if (chan->average_psd>s->vad_prob_start)
 					{
 						ms_message("is_speaking (chan=%i) -> on/stat=%.3lf", i, chan->average_psd);
@@ -429,9 +418,7 @@ static void conf_sum(MSFilter *f, ConfState *s){
 					{
 						s->channels[0].is_speaking--;
 					}
-#endif
 				}
-
 			}
 			else if (chan->speex_pp!=NULL && s->enable_vad==TRUE)
 			{
