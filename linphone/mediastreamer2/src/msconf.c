@@ -52,6 +52,7 @@ typedef struct Channel{
 	bool_t is_used;
 
 	int is_speaking;
+	int count_speaking;
 
 	int count;
 	int missed;
@@ -145,7 +146,11 @@ static void channel_init(ConfState *s, Channel *chan, int pos){
 
 	speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_SET_AGC, &val);
 	speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_SET_AGC_LEVEL, &f);
+
 	val=s->max_gain;
+	if ( pos%2==1 && s->enable_halfduplex>0)
+		val=1;
+
 	speex_preprocess_ctl(chan->speex_pp, SPEEX_PREPROCESS_SET_AGC_MAX_GAIN, &val);
 
 	val=0;
@@ -399,6 +404,14 @@ static void conf_sum(MSFilter *f, ConfState *s){
 			vol.channel = i;
 			ms_filter_notify(f, MS_CONF_CHANNEL_VOLUME, (void*)&vol);
 
+			if (i>0) /* not for MIC */
+			{
+				if (chan->energy>5)
+					chan->count_speaking++;
+				else
+					chan->count_speaking=0;
+			}
+
 #ifndef DISABLE_SPEEX
 			if (chan->speex_pp!=NULL && s->enable_vad==TRUE && i==0)
 			{
@@ -411,12 +424,23 @@ static void conf_sum(MSFilter *f, ConfState *s){
 					powerspectrum_stat_beyond8K(chan);
 					if (chan->average_psd>s->vad_prob_start)
 					{
-						ms_message("is_speaking (chan=%i) -> on/stat=%.3lf", i, chan->average_psd);
+						if (s->channels[0].is_speaking<0)
+							ms_message("MIC is turned on");
+						//ms_message("is_speaking (chan=%i) -> on/stat=%.3lf", i, chan->average_psd);
 						s->channels[0].is_speaking=20; /* keep RTP unmuted for the next few ms */
 					}
 					else if (chan->average_psd<s->vad_prob_continue)
 					{
+						if (s->channels[0].is_speaking==0)
+						{
+							ms_message("MIC is turned off");
+							s->channels[0].count_speaking=0;
+						}
 						s->channels[0].is_speaking--;
+					}
+					if (s->channels[0].is_speaking>0)
+					{
+						s->channels[0].count_speaking++;
 					}
 				}
 			}
@@ -497,7 +521,18 @@ static void conf_dispatch(MSFilter *f, ConfState *s){
 	for (i=0;i<CONF_MAX_PINS;++i){
 		if (f->outputs[i]!=NULL){
 			chan=&s->channels[i];
-			if (s->channels[0].is_speaking<0 && i%2==1) // MIC is NOT speaking -> send silence on RTP
+			if (s->channels[0].is_speaking>0 // if MIC is speaking 
+				&& s->channels[0].count_speaking<25 // if MIC was silence a few time ago
+				&& chan->count_speaking>0 // if RTP has started to talk
+				&& chan->count_speaking<25 // if RTP was silence a few ms ago
+				&& i%2==1) // false detection of MIC speaking
+			{
+				ms_message("false detection of MIC speaking: turned off");
+				s->channels[0].is_speaking=-1;
+				s->channels[0].count_speaking=0;
+				m=conf_output(s,chan, 5);
+			}
+			else if (s->channels[0].is_speaking<0 && i%2==1) // MIC is NOT speaking -> send silence on RTP
 				m=conf_output(s,chan, 5);
 			else
 				m=conf_output(s,chan, 1);
