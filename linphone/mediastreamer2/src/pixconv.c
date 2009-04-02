@@ -28,10 +28,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 extern void ms_ffmpeg_check_init();
 
-#ifndef PIX_FMT_YUYV422
-#define PIX_FMT_YUYV422 PIX_FMT_YUV422
-#endif
-
 int ms_pix_fmt_to_ffmpeg(MSPixFmt fmt){
 	switch(fmt){
 		case MS_RGB24:

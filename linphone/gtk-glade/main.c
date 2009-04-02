@@ -893,7 +893,9 @@ void linphone_gtk_log_handler(OrtpLogLevel lev, const char *fmt, va_list args){
 }
 
 int main(int argc, char *argv[]){
+#ifdef ENABLE_NLS
 	void *p;
+#endif
 	const char *config_file;
 	const char *lang;
 
