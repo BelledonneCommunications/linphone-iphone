@@ -1,3 +1,27 @@
+/* msdscap - mediastreamer2 plugin for video capture using directshow 
+   Copyright (C) 2009 Simon Morlat
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+*/
+/* 
+This plugin has been written by Simon Morlat based on the work made by
+Jan Wedekind, posted on mingw tracker here:
+http://sourceforge.net/tracker/index.php?func=detail&aid=1819367&group_id=2435&atid=302435
+He wrote all the declarations missing to get directshow capture working
+with mingw, and provided a demo code that worked great with minimal code.
+*/
+
 // This is a DirectShow interface. But maybe you'll find that it's easier to
 // access the camera directly ;)
 
@@ -32,7 +56,7 @@
 #include <mediastreamer2/msticker.h>
 #include <mediastreamer2/msvideo.h>
 
-#define FILTER_NAME L"HornetsEye Capture Filter"
+#define FILTER_NAME L"Mediasatreamer2 plugin for video capture"
 #define PIN_NAME L"Capture"
 
 using namespace Hornetseye;
@@ -477,8 +501,10 @@ public:
 		_start_time=0;
 		_frame_count=0;
 		_pixfmt=MS_YUV420P;
+		_ready=false;
 	}
 	virtual ~DSCapture(){
+		if (_ready) stopAndClean();
 		flushq(&_rq,0);
 		ms_mutex_destroy(&_mutex);
 	}
@@ -506,7 +532,8 @@ public:
 	void setFps(float fps){
 		_fps=fps;
 	}
-	MSPixFmt getPixFmt()const{
+	MSPixFmt getPixFmt(){
+		if (!_ready) createDshowGraph(); /* so that _pixfmt is updated*/
 		return _pixfmt;
 	}
 	void setDeviceIndex(int index){
@@ -515,6 +542,7 @@ public:
 protected:
   	long m_refCount;
 private:
+	int createDshowGraph();
 	int	selectBestFormat(ComPtr<IAMStreamConfig> streamConfig, int count);
 	int _devid;
 	MSVideoSize _vsize;
@@ -529,6 +557,7 @@ private:
 	ComPtr< IBaseFilter > _grabberBase;
 	ComPtr< IMediaControl > _mediaControl;
 	ComPtr< IMediaEvent > _mediaEvent;
+	bool _ready;
 };
 
 
@@ -702,8 +731,9 @@ int DSCapture::selectBestFormat(ComPtr<IAMStreamConfig> streamConfig, int count)
     return 0;
 }
 
-int DSCapture::startDshowGraph(){
+int DSCapture::createDshowGraph(){
 	ComPtr< ICreateDevEnum > createDevEnum;
+	
 	CoInitialize(NULL);
     createDevEnum.coCreateInstance( CLSID_SystemDeviceEnum,
                                     IID_ICreateDevEnum, "Could not create "
@@ -826,16 +856,24 @@ int DSCapture::startDshowGraph(){
         ms_error("Error requesting media control interface" );
 		return -1;
 	}
-    HRESULT r=_mediaControl->Run();
-	if (r!=S_OK && r!=S_FALSE){
-		ms_error("Error starting graph (%i)",r);
-	}
-    ms_message("Graph started");
     if (graphBuilder->QueryInterface( IID_IMediaEvent,
                                         (void **)&_mediaEvent )!=S_OK){
     	ms_error("Error requesting event interface" );
     	return -1;
 	}
+	_ready=true;
+}
+
+int DSCapture::startDshowGraph(){
+	if (!_ready) {
+		if (createDshowGraph()!=0) return -1;
+	}
+	HRESULT r=_mediaControl->Run();
+	if (r!=S_OK && r!=S_FALSE){
+		ms_error("Error starting graph (%i)",r);
+		return -1;
+	}
+	ms_message("Graph started");
 }
 
 void DSCapture::stopAndClean(){
@@ -850,6 +888,7 @@ void DSCapture::stopAndClean(){
 	_mediaControl.reset();
 	_mediaEvent.reset();
 	flushq(&_rq,0);
+	_ready=false;
 }
 
 bool DSCapture::isTimeToSend(uint64_t ticker_time){
