@@ -406,7 +406,7 @@ static void conf_sum(MSFilter *f, ConfState *s){
 
 			if (i>0) /* not for MIC */
 			{
-				if (chan->energy>5)
+				if (chan->energy>65)
 					chan->count_speaking++;
 				else
 					chan->count_speaking=0;
@@ -522,18 +522,16 @@ static void conf_dispatch(MSFilter *f, ConfState *s){
 		if (f->outputs[i]!=NULL){
 			chan=&s->channels[i];
 			if (s->channels[0].is_speaking>0 // if MIC is speaking 
-				&& s->channels[0].count_speaking<25 // if MIC was silence a few time ago
+				&& s->channels[0].count_speaking<75 // if MIC was silence a few time ago
 				&& chan->count_speaking>0 // if RTP has started to talk
-				&& chan->count_speaking<25 // if RTP was silence a few ms ago
+				&& chan->count_speaking<75 // if RTP was silence a few ms ago
 				&& i%2==1) // false detection of MIC speaking
 			{
 				ms_message("false detection of MIC speaking: turned off");
-				s->channels[0].is_speaking=-1;
-				s->channels[0].count_speaking=0;
 				m=conf_output(s,chan, 5);
 			}
 			else if (s->channels[0].is_speaking<0 && i%2==1) // MIC is NOT speaking -> send silence on RTP
-				m=conf_output(s,chan, 5);
+				m=conf_output(s,chan, 32000);
 			else
 				m=conf_output(s,chan, 1);
 			ms_queue_put(f->outputs[i],m);
