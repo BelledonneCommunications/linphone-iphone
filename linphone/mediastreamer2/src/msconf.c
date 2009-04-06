@@ -528,7 +528,7 @@ static void conf_dispatch(MSFilter *f, ConfState *s){
 				&& i%2==1) // false detection of MIC speaking
 			{
 				ms_message("false detection of MIC speaking: turned off");
-				m=conf_output(s,chan, 5);
+				m=conf_output(s,chan, 32000);
 			}
 			else if (s->channels[0].is_speaking<0 && i%2==1) // MIC is NOT speaking -> send silence on RTP
 				m=conf_output(s,chan, 32000);
