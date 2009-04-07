@@ -1,3 +1,8 @@
+linphone-3.1.1 -- April 7, 2009
+	* fix crash when opening property box, in some rare case
+	* windows version uses the new libmsdscap plugin (video capture using directshow)
+	* improved translations
+
 linphone-3.1.0 -- March 16, 2009
 	* linphone can now send large video pictures: up to SVGA, configurable via the user interface
 	* automatic rescaling of the video windows to the video size of incoming stream

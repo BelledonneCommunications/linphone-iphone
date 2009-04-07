@@ -67,7 +67,7 @@ msgstr "Info de présence"
 
 #: ../gtk-glade/friendlist.c:380
 msgid "Invalid sip contact !"
-msgstr ""
+msgstr "Contact sip invalide !"
 
 #: ../gtk-glade/friendlist.c:411
 #, c-format
@@ -218,11 +218,11 @@ msgstr ""
 
 #: ../gtk-glade/main.glade.h:27
 msgid "Homepage"
-msgstr ""
+msgstr "Page d'accueil"
 
 #: ../gtk-glade/main.glade.h:28
 msgid "Lookup:"
-msgstr ""
+msgstr "Rechercher:"
 
 #: ../gtk-glade/main.glade.h:29
 msgid "My current identity:"
@@ -411,7 +411,6 @@ msgid "0 stands for \"unlimited\""
 msgstr "Indiquez 0 pour ne pas mettre de limite"
 
 #: ../gtk-glade/parameters.glade.h:2
-#, fuzzy
 msgid "<b>Audio</b>"
 msgstr "<b>Son</b>"
 
@@ -537,7 +536,7 @@ msgstr "Périphérique d'écoute:"
 
 #: ../gtk-glade/parameters.glade.h:33
 msgid "Prefered video resolution:"
-msgstr ""
+msgstr "Résolution video préférée:"
 
 #: ../gtk-glade/parameters.glade.h:34
 msgid "Public IP address:"
@@ -596,7 +595,6 @@ msgid "Video RTP/UDP:"
 msgstr ""
 
 #: ../gtk-glade/parameters.glade.h:48
-#, fuzzy
 msgid "Video input device:"
 msgstr "Périphérique d'entrée video"
 
@@ -892,17 +890,14 @@ msgid "Unknown"
 msgstr ""
 
 #: ../coreapi/friend.c:44
-#, fuzzy
 msgid "Be right back"
 msgstr "De retour"
 
 #: ../coreapi/friend.c:50
-#, fuzzy
 msgid "On the phone"
 msgstr "Au téléphone"
 
 #: ../coreapi/friend.c:53
-#, fuzzy
 msgid "Out to lunch"
 msgstr "A table"
 
@@ -919,17 +914,16 @@ msgid "Using another messaging service"
 msgstr ""
 
 #: ../coreapi/friend.c:65
-#, fuzzy
 msgid "Offline"
-msgstr "Disponible"
+msgstr "Non connecté"
 
 #: ../coreapi/friend.c:68
 msgid "Pending"
-msgstr ""
+msgstr "En attente"
 
 #: ../coreapi/friend.c:74
 msgid "Unknown-bug"
-msgstr ""
+msgstr "Bug inconnu"
 
 #: ../mediastreamer2/src/alaw.c:144 ../mediastreamer2/src/alaw.c:162
 msgid "ITU-G.711 alaw encoder"
@@ -940,13 +934,12 @@ msgid "ITU-G.711 alaw decoder"
 msgstr ""
 
 #: ../mediastreamer2/src/alsa.c:890
-#, fuzzy
 msgid "Alsa sound source"
-msgstr "une carte son\n"
+msgstr "Source alsa"
 
 #: ../mediastreamer2/src/alsa.c:987
 msgid "Alsa sound output"
-msgstr ""
+msgstr "Sortie alsa"
 
 #: ../mediastreamer2/src/aqsnd.c:603
 msgid "Sound capture filter for MacOS X Audio Queue Service"
@@ -962,7 +955,7 @@ msgstr ""
 
 #: ../mediastreamer2/src/gsm.c:70 ../mediastreamer2/src/gsm.c:88
 msgid "The GSM full-rate codec"
-msgstr ""
+msgstr "Le codec GSM full-rate"
 
 #: ../mediastreamer2/src/gsm.c:134 ../mediastreamer2/src/gsm.c:152
 msgid "The GSM codec"

@@ -181,9 +181,11 @@ static int v4l2_configure(V4l2State *s){
         if (ioctl (s->fd, VIDIOC_G_FMT, &fmt)<0){
 		ms_error("VIDIOC_G_FMT failed: %s",strerror(errno));
 	}else{
-		ms_message("Size of picture is %ix%i",fmt.fmt.pix.width,fmt.fmt.pix.height);
+		ms_message("Size of webcam delivered pictures is %ix%i",fmt.fmt.pix.width,fmt.fmt.pix.height);
+		s->vsize.width=fmt.fmt.pix.width;
+		s->vsize.height=fmt.fmt.pix.height;
 	}
-	s->picture_size=get_picture_buffer_size(s->pix_fmt,fmt.fmt.pix.width,fmt.fmt.pix.height);
+	s->picture_size=get_picture_buffer_size(s->pix_fmt,s->vsize.width,s->vsize.height);
 	s->configured=TRUE;
 	return 0;
 }

@@ -69,6 +69,9 @@ int yuv_buf_init_from_mblk(YuvBuf *buf, mblk_t *m){
 	}else if (size==(160*112*3)/2){/*format used by econf*/
 		w=160;
 		h=112;
+	}else if (size==(320*200*3)/2){/*format used by gTalk */
+		w=320;
+		h=200;
 	}else {
 		ms_error("Unsupported image size: size=%i (bug somewhere !)",size);
 		return -1;

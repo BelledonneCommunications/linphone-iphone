@@ -24,7 +24,7 @@ if BUILD_GLADE_UI
 
 bin_PROGRAMS=linphone-3
 
-linphone_3_SOURCES=	main.c\
+linphone_3_SOURCES=	main.c \
 			propertybox.c \
 			friendlist.c \
 			support.c \
@@ -34,6 +34,7 @@ linphone_3_SOURCES=	main.c\
 			update.c \
 			buddylookup.c \
 			utils.c \
+			setupwizard.c\
 			linphone.h
 
 linphone_3_LDADD=$(top_builddir)/oRTP/src/libortp.la \
