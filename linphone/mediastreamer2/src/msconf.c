@@ -43,7 +43,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 static const float max_e=(float)32767*32767;
-static const float coef=(float)0.1;
+static const float coef=(float)0.01;
 
 typedef struct Channel{
 	MSBufferizer buff;
@@ -400,7 +400,7 @@ static void conf_sum(MSFilter *f, ConfState *s){
 				en=(s*s*coef) + ((float)1.0-coef)*en;
 			}
 			chan->energy=en;
-			vol.energy = 10*log10f(chan->energy/max_e);
+			vol.energy = chan->energy; //10*log10f(chan->energy/max_e);
 			vol.channel = i;
 			ms_filter_notify(f, MS_CONF_CHANNEL_VOLUME, (void*)&vol);
 
