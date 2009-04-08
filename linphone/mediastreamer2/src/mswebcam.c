@@ -29,6 +29,7 @@ static MSWebCamManager *scm=NULL;
 static MSWebCamManager * create_manager(){
 	MSWebCamManager *obj=(MSWebCamManager *)ms_new(MSWebCamManager,1);
 	obj->cams=NULL;
+	obj->descs=NULL;
 	return obj;
 }
 
@@ -36,6 +37,7 @@ void ms_web_cam_manager_destroy(void){
 	if (scm!=NULL){
 		ms_list_for_each(scm->cams,(void (*)(void*))ms_web_cam_destroy);
 		ms_list_free(scm->cams);
+		ms_list_free(scm->descs);
 	}
 	ms_free(scm);
 	scm=NULL;
@@ -58,9 +60,9 @@ MSWebCam * ms_web_cam_manager_get_cam(MSWebCamManager *m, const char *id){
 }
 
 MSWebCam * ms_web_cam_manager_get_default_cam(MSWebCamManager *m){
-  if (m->cams!=NULL)
-  	return (MSWebCam*)m->cams->data;
-  return NULL;
+	if (m->cams!=NULL)
+  		return (MSWebCam*)m->cams->data;
+  	return NULL;
 }
 
 const MSList * ms_web_cam_manager_get_list(MSWebCamManager *m){
@@ -77,9 +79,23 @@ void ms_web_cam_manager_prepend_cam(MSWebCamManager *m, MSWebCam *c){
 	m->cams=ms_list_prepend(m->cams,c);
 }
 
-void ms_web_cam_manager_register_desc(MSWebCamManager *m, MSWebCamDesc *desc){
+static void cam_detect(MSWebCamManager *m, MSWebCamDesc *desc){
 	if (desc->detect!=NULL)
 		desc->detect(m);
+}
+
+void ms_web_cam_manager_register_desc(MSWebCamManager *m, MSWebCamDesc *desc){
+	m->descs=ms_list_append(m->descs,desc);
+	cam_detect(m,desc);
+}
+
+void ms_web_cam_manager_reload(MSWebCamManager *m){
+	MSList *elem;
+	ms_list_for_each(m->cams,(void (*)(void*))ms_web_cam_destroy);
+	ms_list_free(m->cams);
+	m->cams=NULL;
+	for(elem=m->descs;elem!=NULL;elem=elem->next)
+		cam_detect(m,(MSWebCamDesc*)elem->data);
 }
 
 MSWebCam * ms_web_cam_new(MSWebCamDesc *desc){

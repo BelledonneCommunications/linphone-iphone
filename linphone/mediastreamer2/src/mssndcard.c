@@ -27,6 +27,7 @@ static MSSndCardManager *scm=NULL;
 static MSSndCardManager * create_manager(){
 	MSSndCardManager *obj=(MSSndCardManager *)ms_new(MSSndCardManager,1);
 	obj->cards=NULL;
+	obj->descs=NULL;
 	return obj;
 }
 
@@ -34,6 +35,7 @@ void ms_snd_card_manager_destroy(void){
 	if (scm!=NULL){
 		ms_list_for_each(scm->cards,(void (*)(void*))ms_snd_card_destroy);
 		ms_list_free(scm->cards);
+		ms_list_free(scm->descs);
 	}
 	ms_free(scm);
 	scm=NULL;
@@ -96,9 +98,23 @@ void ms_snd_card_manager_add_card(MSSndCardManager *m, MSSndCard *c){
 	m->cards=ms_list_append(m->cards,c);
 }
 
-void ms_snd_card_manager_register_desc(MSSndCardManager *m, MSSndCardDesc *desc){
+static void card_detect(MSSndCardManager *m, MSSndCardDesc *desc){
 	if (desc->detect!=NULL)
 		desc->detect(m);
+}
+
+void ms_snd_card_manager_register_desc(MSSndCardManager *m, MSSndCardDesc *desc){
+	m->descs=ms_list_append(m->descs,desc);
+	card_detect(m,desc);
+}
+
+void ms_snd_card_manager_reload(MSSndCardManager *m){
+	MSList *elem;
+	ms_list_for_each(m->cards,(void (*)(void*))ms_snd_card_destroy);
+	ms_list_free(m->cards);
+	m->cards=NULL;
+	for(elem=m->descs;elem!=NULL;elem=elem->next)
+		card_detect(m,(MSSndCardDesc*)elem->data);
 }
 
 MSSndCard * ms_snd_card_dup(MSSndCard *card){

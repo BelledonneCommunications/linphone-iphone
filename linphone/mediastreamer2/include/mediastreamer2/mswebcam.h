@@ -39,6 +39,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 struct _MSWebCamManager{
 	MSList *cams;
+	MSList *descs;
 };
 
 /**
@@ -94,15 +95,15 @@ extern "C"{
 MSWebCamManager * ms_web_cam_manager_get(void);
 
 /**
- * Destroy a sound card manager object.
+ * Destroy the webcam manager object.
  *
  */
 void ms_web_cam_manager_destroy(void);
 
 /**
- * Retreive a sound card object based on its name.
+ * Retreive a webcam object based on its name.
  *
- * @param m    A sound card manager containing sound cards.
+ * @param m    A webcam manager containing webcam.
  * @param id   A name for card to search.
  *
  * Returns: MSWebCam if successfull, NULL otherwise.
@@ -110,9 +111,9 @@ void ms_web_cam_manager_destroy(void);
 MSWebCam * ms_web_cam_manager_get_cam(MSWebCamManager *m, const char *id);
 
 /**
- * Retreive the default sound card object.
+ * Retreive the default webcam object.
  *
- * @param m    A sound card manager containing sound cards.
+ * @param m    A webcam manager containing webcams.
  *
  * Returns: MSWebCam if successfull, NULL otherwise.
  */
@@ -128,7 +129,7 @@ MSWebCam * ms_web_cam_manager_get_default_cam(MSWebCamManager *m);
 const MSList * ms_web_cam_manager_get_list(MSWebCamManager *m);
 
 /**
- * Add a sound card object in a webcam  manager's list.
+ * Add a webcam object in a webcam  manager's list.
  *
  * @param m    A webcam  manager containing webcams
  * @param c    A web cam object.
@@ -137,7 +138,7 @@ const MSList * ms_web_cam_manager_get_list(MSWebCamManager *m);
 void ms_web_cam_manager_add_cam(MSWebCamManager *m, MSWebCam *c);
 
 /**
- * Add a sound card object on top of list of the webcam  manager's list.
+ * Add a webcam object on top of list of the webcam  manager's list.
  *
  * @param m    A webcam  manager containing webcams
  * @param c    A web cam object.
@@ -147,18 +148,26 @@ void ms_web_cam_manager_prepend_cam(MSWebCamManager *m, MSWebCam *c);
 
 
 /**
- * Register a sound card description in a sound card manager.
+ * Register a webcam descriptor in a webcam manager.
  *
- * @param m      A sound card manager containing sound cards.
- * @param desc   A sound card description object.
+ * @param m      A webcam manager containing sound cards.
+ * @param desc   A webcam descriptor object.
  *
  */
 void ms_web_cam_manager_register_desc(MSWebCamManager *m, MSWebCamDesc *desc);
 
+
+/**
+ * Ask all registered MSWebCamDesc to detect the webcams again.
+ *
+ * @param m A webcam manager
+**/
+void ms_web_cam_manager_reload(MSWebCamManager *m);
+
 /**
  * Create an INPUT filter based on the selected camera.
  *
- * @param obj      A sound card object.
+ * @param obj      A webcam object.
  *
  * Returns: A MSFilter if successfull, NULL otherwise.
  */

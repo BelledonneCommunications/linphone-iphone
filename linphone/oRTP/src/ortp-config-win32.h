@@ -29,3 +29,6 @@
 #define RTP_DEBUG 1
 
 #define HAVE_SRTP 1
+
+/* enables SO_REUSEADDR socket option in the rtp_session_set_local_addr() function */
+#define SO_REUSE_ADDR 1

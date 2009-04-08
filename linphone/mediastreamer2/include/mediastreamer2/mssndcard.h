@@ -39,6 +39,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 struct _MSSndCardManager{
 	MSList *cards;
+	MSList *descs;
 };
 
 /**
@@ -205,6 +206,12 @@ void ms_snd_card_manager_add_card(MSSndCardManager *m, MSSndCard *c);
  *
  */
 void ms_snd_card_manager_register_desc(MSSndCardManager *m, MSSndCardDesc *desc);
+
+/**
+ * Ask all registered MSSndCardDesc to re-detect their soundcards.
+ * @param m The sound card manager.
+**/
+void ms_snd_card_manager_reload(MSSndCardManager *m);
 
 /** @} */
 
