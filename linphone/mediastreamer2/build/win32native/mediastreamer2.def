@@ -4,7 +4,6 @@ EXPORTS
 
 	ms_init
 	ms_exit
-	ms_reload_snd_card
 		
 	ms_filter_new
 	ms_filter_new_from_desc
@@ -23,6 +22,7 @@ EXPORTS
 	ms_filter_set_notify_callback
 	
 	ms_snd_card_new
+	ms_snd_card_manager_reload
 	ms_snd_card_manager_add_card
 	ms_snd_card_manager_register_desc
 	ms_snd_card_create_reader
@@ -99,6 +99,7 @@ EXPORTS
 	ms_discover_mtu
 	ms_set_mtu
 	
+	ms_web_cam_manager_reload
 	ms_web_cam_manager_get_default_cam
 	ms_web_cam_manager_get
 	ms_web_cam_manager_get_list

@@ -167,16 +167,6 @@ void ms_exit(void);
 
 struct _MSSndCardDesc;
 
-/**
- * This can be called when new sound cards have been added.
- *
- * Warning: It must NOT be called if one filter is currently created.
- * You have to unlink, destroy everything before doing this.
- *
- * @param snd_desc   A MSSndCardDesc description.
- */
-void ms_reload_snd_card(struct _MSSndCardDesc *snd_desc);
-
 void ms_sleep(int seconds);
 
 /**

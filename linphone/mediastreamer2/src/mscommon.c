@@ -551,30 +551,6 @@ void ms_exit(){
 #endif
 }
 
-void ms_reload_snd_card(MSSndCardDesc *snd_desc){
-	MSSndCardManager *cm;
-	int i;
-
-	ms_snd_card_manager_destroy();
-
-	ms_message("Registering all soundcard handlers");
-	if (snd_desc!=NULL)
-	{
-		cm=ms_snd_card_manager_get();
-		if (cm!=NULL)
-			ms_snd_card_manager_register_desc(cm,snd_desc);
-		return;
-	}
-
-	/*register SndCardDesc */
-	cm=ms_snd_card_manager_get();
-	for (i=0;ms_snd_card_descs[i]!=NULL;i++){
-		ms_snd_card_manager_register_desc(cm,ms_snd_card_descs[i]);
-	}
-
-	return;
-}
-
 void ms_sleep(int seconds){
 #ifdef WIN32
 	Sleep(seconds*1000);
