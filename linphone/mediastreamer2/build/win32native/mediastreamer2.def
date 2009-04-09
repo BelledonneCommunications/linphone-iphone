@@ -37,6 +37,9 @@ EXPORTS
 	ms_snd_card_manager_get_list
 	ms_snd_card_dup
 	ms_snd_card_destroy
+	ms_snd_card_set_level
+	ms_snd_card_get_level
+	ms_snd_card_set_capture
 	
 	ms_ticker_new
 	ms_ticker_set_name
