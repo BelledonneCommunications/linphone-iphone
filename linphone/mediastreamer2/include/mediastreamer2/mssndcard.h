@@ -103,6 +103,7 @@ struct _MSSndCardDesc{
  */
 typedef struct _MSSndCardDesc MSSndCardDesc;
 
+#define MS_SND_CARD_CAP_DISABLED (0)
 #define MS_SND_CARD_CAP_CAPTURE (1)
 #define MS_SND_CARD_CAP_PLAYBACK (1<<1)
 
