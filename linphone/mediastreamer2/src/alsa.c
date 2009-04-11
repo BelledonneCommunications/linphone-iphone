@@ -622,13 +622,27 @@ MSSndCard * ms_alsa_card_new_custom(const char *pcmdev, const char *mixdev){
 	return obj;
 }
 
+static unsigned int get_card_capabilities(const char *devname){
+	snd_pcm_t *pcm_handle;
+	unsigned int ret=0;
+	if (snd_pcm_open(&pcm_handle,devname,SND_PCM_STREAM_CAPTURE,SND_PCM_NONBLOCK)==0) {
+		ret|=MS_SND_CARD_CAP_CAPTURE;
+		snd_pcm_close(pcm_handle);
+	}
+	if (snd_pcm_open(&pcm_handle,devname,SND_PCM_STREAM_PLAYBACK,SND_PCM_NONBLOCK)==0) {
+		ret|=MS_SND_CARD_CAP_PLAYBACK;
+		snd_pcm_close(pcm_handle);
+	}
+	return ret;
+}
+
 static MSSndCard * alsa_card_new(int id)
 {
 	MSSndCard * obj;
 	char *name=NULL;
 	AlsaData *ad;
 	int err;
-	snd_pcm_t *pcm_handle;
+	
 	if (id!=-1){
 		err=snd_card_get_name(id,&name);
 		if (err<0) {
@@ -653,18 +667,16 @@ static MSSndCard * alsa_card_new(int id)
 		ad->mixdev=ms_strdup_printf("default:%i",id);
 	}
 	/*check card capabilities: */
-	obj->capabilities=0;
-	if (snd_pcm_open(&pcm_handle,ad->pcmdev,SND_PCM_STREAM_CAPTURE,SND_PCM_NONBLOCK)==0) {
-		obj->capabilities|=MS_SND_CARD_CAP_CAPTURE;
-		snd_pcm_close(pcm_handle);
-	}
-	if (snd_pcm_open(&pcm_handle,ad->pcmdev,SND_PCM_STREAM_PLAYBACK,SND_PCM_NONBLOCK)==0) {
-		obj->capabilities|=MS_SND_CARD_CAP_PLAYBACK;
-		snd_pcm_close(pcm_handle);
-	}
+	obj->capabilities=get_card_capabilities(ad->pcmdev);
 	if (obj->capabilities==0){
-		ms_warning("Strange, sound card %s does not seems to be capable of anything.",obj->name);
-		obj->capabilities=MS_SND_CARD_CAP_CAPTURE|MS_SND_CARD_CAP_PLAYBACK;
+		ms_warning("Strange, sound card %s does not seems to be capable of anything, retrying with plughw...",obj->name);
+		/*retry with plughw: this workarounds an alsa bug*/
+		ms_free(ad->pcmdev);
+		ad->pcmdev=ms_strdup_printf("plughw:%i",id);
+		obj->capabilities=get_card_capabilities(ad->pcmdev);
+		if (obj->capabilities==0){
+			ms_warning("Strange, sound card %s seems totally unusable.",obj->name);
+		}
 	}
 	free(name);
 	/*ms_message("alsa device %s found",obj->name);*/

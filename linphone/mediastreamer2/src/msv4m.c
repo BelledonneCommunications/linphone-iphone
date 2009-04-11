@@ -32,7 +32,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/msvideo.h"
 #include "mediastreamer2/msticker.h"
 #include "mediastreamer2/msv4l.h"
-#include "nowebcam.h"
+//#include "nowebcam.h"
+#include "mediastreamer2/mswebcam.h"
 
 // build for carbon
 #define TARGET_API_MAC_CARBON 1
@@ -48,7 +49,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
   #include <stdio.h>
 #endif
 
-typedef struct V4lState{
+typedef struct v4mState{
+  char * name;
+  char * id;        
   SeqGrabComponent seqgrab;
   SGChannel sgchanvideo;
   GWorldPtr pgworld;
@@ -71,10 +74,10 @@ typedef struct V4lState{
   int queued;
   bool_t run;
   bool_t usemire;
-}V4lState;
+}v4mState;
 
 static void v4m_init(MSFilter *f){
-	V4lState *s=ms_new0(V4lState,1);
+	v4mState *s=ms_new0(v4mState,1);
 	s->seqgrab=NULL;
 	s->sgchanvideo=NULL;
 	s->pgworld=NULL;
@@ -105,7 +108,7 @@ pascal OSErr sgdata_callback(SGChannel c, Ptr p, long len, long *offset, long ch
 #pragma unused(offset,chRefCon,time,writeType)
     
     CodecFlags     ignore;
-    V4lState *s=(V4lState *)refCon;
+    v4mState *s=(v4mState *)refCon;
     ComponentResult err = noErr;
     
     if (!s) goto bail;
@@ -205,7 +208,7 @@ bail:
   return err;
 }
 
-static int v4m_close(V4lState *s)
+static int v4m_close(v4mState *s)
 {
   if(s->seqgrab)
     CloseComponent(s->seqgrab);
@@ -218,11 +221,70 @@ static int v4m_close(V4lState *s)
   s->pgworld=NULL;
   return 0;
 }
+unsigned char *stdToPascalString(char *buffer, char * str) {
+	if (strlen(str) <= 255) {
+		buffer[0] = strlen(str);
 
-static int sequence_grabber_start(V4lState *s)
+		memcpy(buffer + 1, str, strlen(str));
+
+		return buffer;
+	} else {
+		return NULL;
+	}
+}
+
+static int sequence_grabber_start(v4mState *s)
 {
-  int err;
-  Rect        theRect = {0, 0, s->vsize.height, s->vsize.width};
+   OSErr err = noErr;
+   char *camName;
+
+   ms_warning("Opening component");
+	s->seqgrab = OpenDefaultComponent(SeqGrabComponentType, 0);
+	if (s->seqgrab == NULL) {
+		ms_warning("can't get default sequence grabber component");
+		return -1;
+	}
+
+	ms_warning("Initializing component");
+	err = SGInitialize(s->seqgrab);
+	if (err != noErr) {
+		ms_warning("can't initialize sequence grabber component");
+		return -1;
+	}
+
+	ms_warning("SetDataRef");
+	err = SGSetDataRef(s->seqgrab, 0, 0, seqGrabDontMakeMovie);
+	if (err != noErr) {
+		ms_warning("can't set the destination data reference");
+		return -1;
+	}
+
+	ms_warning("Creating new channel");
+	err = SGNewChannel(s->seqgrab, VideoMediaType, &s->sgchanvideo);
+	if (err != noErr) {
+		ms_warning("can't create a video channel");
+		return -1;
+	}
+    
+	
+	camName = alloca(strlen(s->name) + 1);
+
+    err = SGSetChannelDevice(s->sgchanvideo, stdToPascalString(camName, s->name));
+    if (err != noErr) {
+	ms_warning("can't set channel device");
+	return -1;
+    }
+
+    short input = atoi(s->id);
+    
+    err = SGSetChannelDeviceInput(s->sgchanvideo,input);
+    if (err != noErr) {
+	ms_warning("can't set channel device input");
+	return -1;
+    }
+    
+    ms_warning("createGWorld");
+	Rect        theRect = {0, 0, s->vsize.height, s->vsize.width};
 
   err = QTNewGWorld(&(s->pgworld),  // returned GWorld
 		    k24BGRPixelFormat,
@@ -240,50 +302,35 @@ static int sequence_grabber_start(V4lState *s)
       v4m_close(s);
       return -1;
     }
-
-  s->seqgrab = OpenDefaultComponent(SeqGrabComponentType, 0);
-  err = SGInitialize(s->seqgrab);
-  if (err!=noErr)
-    {
-      v4m_close(s);
-      return -1;
-    }
-  err = SGSetDataRef(s->seqgrab, 0, 0, seqGrabDontMakeMovie);
-  if (err!=noErr)
-    {
-      v4m_close(s);
-      return -1;
-    }
-
+  
   err = SGSetGWorld(s->seqgrab, s->pgworld, GetMainDevice());
-  if (err!=noErr)
-    {
-      v4m_close(s);
-      return -1;
-    }
+	if (err != noErr) {
+		ms_warning("can't set GWorld");
+		return -1;
+	}
 
-  err = SGNewChannel(s->seqgrab, VideoMediaType, &s->sgchanvideo);
-  if (err!=noErr)
-    {
-      v4m_close(s);
-      return -1;
-    }
+	ms_warning("SGSetDataProc");
+	err = SGSetDataProc(s->seqgrab,NewSGDataUPP(sgdata_callback),(long)s);
+	if (err != noErr) {
+		ms_warning("can't set data proc");
+		return -1;
+	}
 
+	ms_warning("SGSetChannelUsage");
+	err = SGSetChannelUsage(s->sgchanvideo, seqGrabRecord);
+	if (err != noErr) {
+		ms_warning("can't set channel usage");
+		return -1;
+	}
+
+	ms_warning("SGPrepare");
+	err = SGPrepare(s->seqgrab,  false, true);
+	if (err != noErr) {
+		ms_warning("can't prepare sequence grabber component");
+		return -1;
+	}
+     
   err = SGSetChannelBounds(s->sgchanvideo, &theRect);
-  if (err!=noErr)
-    {
-      v4m_close(s);
-      return -1;
-    }
-
-  err = SGSetChannelUsage(s->sgchanvideo, seqGrabRecord);
-  if (err!=noErr)
-    {
-      v4m_close(s);
-      return -1;
-    }
-
-  err = SGSetDataProc(s->seqgrab,NewSGDataUPP(sgdata_callback),(long)s);
   if (err!=noErr)
     {
       v4m_close(s);
@@ -302,7 +349,7 @@ static int sequence_grabber_start(V4lState *s)
 
 static int v4m_start(MSFilter *f, void *arg)
 {
-	V4lState *s=(V4lState*)f->data;
+	v4mState *s=(v4mState*)f->data;
 	int err=0;
 
 	err = sequence_grabber_start(s);
@@ -321,14 +368,14 @@ static int v4m_start(MSFilter *f, void *arg)
 	return 0;
 }
 
-static void v4m_start_capture(V4lState *s){
-	if (s->seqgrab!=NULL){
+static void v4m_start_capture(v4mState *s){
+        if (s->seqgrab!=NULL){
 		s->run=TRUE;
 	}
 }
 
 static int v4m_stop(MSFilter *f, void *arg){
-	V4lState *s=(V4lState*)f->data;
+	v4mState *s=(v4mState*)f->data;
 	if (s->seqgrab!=NULL){
 	  ms_mutex_lock(&s->mutex);
 	  SGStop(s->seqgrab);
@@ -339,7 +386,7 @@ static int v4m_stop(MSFilter *f, void *arg){
 	return 0;
 }
 
-static void v4m_stop_capture(V4lState *s){
+static void v4m_stop_capture(v4mState *s){
 	if (s->run){
 		s->run=FALSE;
 		ms_message("v4m capture stopped.");
@@ -348,7 +395,7 @@ static void v4m_stop_capture(V4lState *s){
 
 
 static void v4m_uninit(MSFilter *f){
-	V4lState *s=(V4lState*)f->data;
+	v4mState *s=(v4mState*)f->data;
 	if (s->seqgrab!=NULL) v4m_stop(f,NULL);
 	//ms_free(s->dev);
 	flushq(&s->rq,0);
@@ -357,7 +404,7 @@ static void v4m_uninit(MSFilter *f){
 	ms_free(s);
 }
 
-static mblk_t * v4m_make_mire(V4lState *s){
+static mblk_t * v4m_make_mire(v4mState *s){
 	unsigned char *data;
 	int i,j,line,pos;
 	int patternw=s->vsize.width/6; 
@@ -387,7 +434,7 @@ static mblk_t * v4m_make_mire(V4lState *s){
 	return s->mire;
 }
 
-static mblk_t * v4m_make_nowebcam(V4lState *s){
+static mblk_t * v4m_make_nowebcam(v4mState *s){
 	if (s->mire==NULL && s->frame_ind==0){
 		s->mire=ms_load_nowebcam(&s->vsize, -1);
 	}
@@ -396,7 +443,7 @@ static mblk_t * v4m_make_nowebcam(V4lState *s){
 }
 
 static void v4m_process(MSFilter * obj){
-	V4lState *s=(V4lState*)obj->data;
+	v4mState *s=(v4mState*)obj->data;
 	uint32_t timestamp;
 	int cur_frame;
 	if (s->frame_count==-1){
@@ -405,7 +452,7 @@ static void v4m_process(MSFilter * obj){
 	}
 
 	ms_mutex_lock(&s->mutex);
-
+           
 	if (s->seqgrab!=NULL)
 	{
 	  SGIdle(s->seqgrab);
@@ -433,8 +480,8 @@ static void v4m_process(MSFilter * obj){
 		if (om!=NULL){
 			timestamp=obj->ticker->time*90;/* rtp uses a 90000 Hz clockrate for video*/
 			mblk_set_timestamp_info(om,timestamp);
-			mblk_set_marker_info(om,TRUE);
-			ms_queue_put(obj->outputs[0],om);
+			mblk_set_marker_info(om,TRUE);	
+                        ms_queue_put(obj->outputs[0],om);
 			/*ms_message("picture sent");*/
 			s->frame_count++;
 		}
@@ -444,36 +491,40 @@ static void v4m_process(MSFilter * obj){
 }
 
 static void v4m_preprocess(MSFilter *f){
-	V4lState *s=(V4lState*)f->data;
+	v4mState *s=(v4mState*)f->data;
+        
+        if(s->seqgrab == NULL)
+            v4m_start(f,NULL);
+        
 	v4m_start_capture(s);
 }
 
 static void v4m_postprocess(MSFilter *f){
-	V4lState *s=(V4lState*)f->data;
+	v4mState *s=(v4mState*)f->data;
 	v4m_stop_capture(s);
 }
 
 static int v4m_set_fps(MSFilter *f, void *arg){
-	V4lState *s=(V4lState*)f->data;
+	v4mState *s=(v4mState*)f->data;
 	s->fps=*((float*)arg);
 	s->frame_count=-1;
 	return 0;
 }
 
 static int v4m_get_pix_fmt(MSFilter *f,void *arg){
-	V4lState *s=(V4lState*)f->data;
+	v4mState *s=(v4mState*)f->data;
 	*((MSPixFmt*)arg) = s->pix_fmt;
 	return 0;
 }
 
 static int v4m_set_vsize(MSFilter *f, void *arg){
-	V4lState *s=(V4lState*)f->data;
+	v4mState *s=(v4mState*)f->data;
 	s->vsize=*((MSVideoSize*)arg);
 	return 0;
 }
 
 static int v4m_get_vsize(MSFilter *f, void *arg){
-	V4lState *s=(V4lState*)f->data;
+	v4mState *s=(v4mState*)f->data;
 	*(MSVideoSize*)arg=s->vsize;
 	return 0;
 }
@@ -488,10 +539,10 @@ static MSFilterMethod methods[]={
 	{	0	,	NULL			}
 };
 
-MSFilterDesc ms_v4l_desc={
+MSFilterDesc ms_v4m_desc={
 	.id=MS_V4L_ID,
 	.name="MSV4m",
-	.text=N_("A video for macosx compatible source filter to stream pictures."),
+	.text="A video for macosx compatible source filter to stream pictures.",
 	.ninputs=0,
 	.noutputs=1,
 	.category=MS_FILTER_OTHER,
@@ -503,6 +554,151 @@ MSFilterDesc ms_v4l_desc={
 	.methods=methods
 };
 
-MS_FILTER_DESC_EXPORT(ms_v4l_desc)
+MS_FILTER_DESC_EXPORT(ms_v4m_desc)
+        
+static void ms_v4m_detect(MSWebCamManager *obj);
 
-#endif
+static void ms_v4m_cam_init(MSWebCam *cam)
+{
+
+}
+
+static int v4m_set_device(MSFilter *f, void *arg){
+	v4mState *s=(v4mState*)f->data;
+        
+         s->id = (char*) malloc(sizeof(char)*strlen((char*)arg));
+        strcpy(s->id,(char*)arg);
+
+	return 0;
+}
+
+static int v4m_set_name(MSFilter *f, void *arg){
+	v4mState *s=(v4mState*)f->data;
+        
+        s->name = (char*) malloc(sizeof(char)*strlen((char*)arg));
+        strcpy(s->name,(char*)arg);
+
+	return 0;
+}
+
+static MSFilter *ms_v4m_create_reader(MSWebCam *obj)
+{
+	MSFilter *f= ms_filter_new_from_desc(&ms_v4m_desc); 
+        
+        v4m_set_device(f,obj->id);
+        v4m_set_name(f,obj->data);
+        
+	return f;
+}
+
+MSWebCamDesc ms_v4m_cam_desc={
+	"VideoForMac grabber",
+	&ms_v4m_detect,
+	&ms_v4m_cam_init,
+	&ms_v4m_create_reader,
+	NULL
+};
+
+char * genDeviceName(unsigned char * device,short inputIndex, unsigned char * input) 
+{
+	char buffer[32];
+	sprintf(buffer, "%s:%d:%s", device,inputIndex,input);
+        return buffer;
+}
+
+/*
+ * convert pascal string to c string
+ */
+static char* pas2cstr(const char *pstr)
+{
+    char *cstr = ms_malloc(pstr[0] + 1);
+    memcpy(cstr, pstr+1, pstr[0]);
+    cstr[pstr[0]] = 0;
+    
+    return cstr;
+    
+}
+
+static void ms_v4m_detect(MSWebCamManager *obj){
+  
+        
+        SGDeviceList sgDeviceList;
+	OSErr err = noErr;
+        SGChannel _SGChanVideo;
+
+        SeqGrabComponent _seqGrab;
+        
+        if (_SGChanVideo) {
+		SGDisposeChannel(_seqGrab, _SGChanVideo);
+	}
+        
+        if (_seqGrab) {
+		CloseComponent(_seqGrab);
+	}
+        
+	_seqGrab = OpenDefaultComponent(SeqGrabComponentType, 0);
+	if (_seqGrab == NULL) {
+		ms_warning("can't get default sequence grabber component");
+		return;
+	}
+
+	err = SGInitialize(_seqGrab);
+	if (err != noErr) {
+		ms_warning("can't initialize sequence grabber component");
+		return;
+	}
+
+	err = SGSetDataRef(_seqGrab, 0, 0, seqGrabDontMakeMovie);
+	if (err != noErr) {
+		ms_warning("can't set the destination data reference");
+		return;
+	}
+
+	err = SGNewChannel(_seqGrab, VideoMediaType, &_SGChanVideo);
+	if (err != noErr) {
+		ms_warning("can't create a video channel");
+		return;
+	}
+
+        err = SGGetChannelDeviceList(_SGChanVideo, sgDeviceListIncludeInputs, &sgDeviceList);
+        if (err != noErr)
+                ms_warning("can't get device list");
+
+        register short i = 0;
+        for (; i < (*sgDeviceList)->count ; i++) 
+        {
+                if (!((*sgDeviceList)->entry[i].flags & sgDeviceNameFlagDeviceUnavailable)) 
+                {
+                        SGDeviceInputList inputs = (*sgDeviceList)->entry[i].inputs;
+
+                        register short j = 0;
+                        for (; j < (*inputs)->count ; j++) 
+                        {
+                                if (!((*inputs)->entry[j].flags & sgDeviceInputNameFlagInputUnavailable)) 
+                                {
+                                        MSWebCam *cam=ms_web_cam_new(&ms_v4m_cam_desc);
+                                        char * buffer = (char*)malloc(sizeof(char)*32);
+                                        sprintf(buffer,"%d",(*inputs)->selectedIndex);
+                                        cam->name=pas2cstr((*inputs)->entry[j].name);
+                                        cam->id = buffer;
+                                        cam->data = pas2cstr((*sgDeviceList)->entry[i].name);
+                                        ms_web_cam_manager_add_cam(obj,cam);
+                                        ms_warning("web cam found : %s:%s:%s",cam->name,cam->id,cam->data);
+                                }
+                        }
+                }
+        }
+
+        SGDisposeDeviceList(_seqGrab, sgDeviceList);
+
+
+        if (_SGChanVideo) {
+                SGDisposeChannel(_seqGrab, _SGChanVideo);
+        }
+
+        if (_seqGrab) {
+                CloseComponent(_seqGrab);
+        }
+}
+        
+#endif        
