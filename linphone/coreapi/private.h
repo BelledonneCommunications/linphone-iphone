@@ -33,7 +33,7 @@
 #endif
 
 #ifndef LINPHONE_VERSION
-#define LINPHONE_VERSION "3.0.0"
+#define LINPHONE_VERSION "3.1.1"
 #endif
 
 #ifndef LIBLINPHONE_VERSION 

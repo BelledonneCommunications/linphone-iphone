@@ -619,15 +619,25 @@ Compile=0
 Link=0
 Priority=1000
 OverrideBuildCmd=0
-BuildCmd=	$(CPP) -c winvideods.c -o "Default Profile/winvideods.o" $(CXXFLAGS)
+BuildCmd=$(CPP) -c winvideods.c -o "Default Profile/winvideods.o" $(CXXFLAGS)
 
-[Unit57]
-FileName=..\..\src\mingw-dshow.h
-CompileCpp=1
-Folder=
+[Unit58]
+FileName=..\..\src\void.c
+CompileCpp=0
+Folder=mediastreamer2
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
-BuildCmd=
+BuildCmd=	$(CC) -c void.c -o "Default Profile/void.o" $(CFLAGS)
+
+[Unit57]
+FileName=..\..\src\void.c
+CompileCpp=0
+Folder=mediastreamer2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=	$(CC) -c void.c -o "Default Profile/void.o" $(CFLAGS)
 

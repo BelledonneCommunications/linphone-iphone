@@ -908,6 +908,16 @@ int main(int argc, char *argv[]){
 		g_warning("This instance is going to exit now.");
 		return 0;
 	}
+#ifdef WIN32
+	/*workaround for windows: sometimes LANG is defined to an integer value, not understood by gtk */
+	if ((lang=getenv("LANG"))!=NULL){
+		if (atoi(lang)!=0){
+			char tmp[128];
+			snprintf(tmp,sizeof(tmp),"LANG=",lang);
+			_putenv(tmp);
+		}
+	}
+#endif
 	
 	if ((lang=linphone_gtk_get_lang(config_file))!=NULL && lang[0]!='\0'){
 #ifdef WIN32

@@ -502,6 +502,7 @@ public:
 		_frame_count=0;
 		_pixfmt=MS_YUV420P;
 		_ready=false;
+		m_refCount=1;
 	}
 	virtual ~DSCapture(){
 		if (_ready) stopAndClean();
@@ -552,6 +553,7 @@ private:
 	float _start_time;
 	int _frame_count;
 	MSPixFmt _pixfmt;
+	ComPtr< IGraphBuilder > _graphBuilder;
 	ComPtr< IBaseFilter > _source;
 	ComPtr< IBaseFilter > _nullRenderer;
 	ComPtr< IBaseFilter > _grabberBase;
@@ -746,10 +748,8 @@ int DSCapture::createDshowGraph(){
     createDevEnum.reset();
     enumMoniker->Reset();
 
-    int index = 0;
     ULONG fetched = 0;
-	ComPtr< IGraphBuilder > graphBuilder;
-	graphBuilder.coCreateInstance( CLSID_FilterGraph, IID_IGraphBuilder,
+	_graphBuilder.coCreateInstance( CLSID_FilterGraph, IID_IGraphBuilder,
                                    "Could not create graph builder "
                                    "interface" );
     ComPtr< IMoniker > moniker;
@@ -767,7 +767,7 @@ int DSCapture::createDshowGraph(){
 	}
 	moniker.reset();
     enumMoniker.reset();
-    if (graphBuilder->AddFilter( _source.get(), L"Source" )!=S_OK){
+    if (_graphBuilder->AddFilter( _source.get(), L"Source" )!=S_OK){
     	ms_error("Error adding camera source to filter graph" );
     	return -1;
 	}
@@ -798,7 +798,7 @@ int DSCapture::createDshowGraph(){
     	ms_error("Error creating sample grabber" );
     	return -1;
 	}
-    if (graphBuilder->AddFilter( _grabberBase.get(), L"Grabber" )!=S_OK){
+    if (_graphBuilder->AddFilter( _grabberBase.get(), L"Grabber" )!=S_OK){
 		ms_error("Error adding sample grabber to filter graph");
 		return -1;
 	}
@@ -836,32 +836,33 @@ int DSCapture::createDshowGraph(){
 		ms_error("Error creating Null Renderer" );
 		return -1;
 	}
-	if (graphBuilder->AddFilter( _nullRenderer.get(), L"Sink" )!=S_OK){
+	if (_graphBuilder->AddFilter( _nullRenderer.get(), L"Sink" )!=S_OK){
         ms_error("Error adding null renderer to filter graph" );
         return -1;
 	}
     ComPtr< IPin > nullIn = getPin( _nullRenderer.get(), PINDIR_INPUT, 0 );
-	if (graphBuilder->Connect( sourceOut.get(), grabberIn.get() )!=S_OK){
+	if (_graphBuilder->Connect( sourceOut.get(), grabberIn.get() )!=S_OK){
     	ms_error("Error connecting source to sample grabber" );
     	return -1;
 	}
-    if (graphBuilder->Connect( grabberOut.get(), nullIn.get() )!=S_OK){
+    if (_graphBuilder->Connect( grabberOut.get(), nullIn.get() )!=S_OK){
         ms_error("Error connecting sample grabber to sink" );
         return -1;
 	}
     ms_message("Directshow graph is now ready to run.");
 
-    if (graphBuilder->QueryInterface( IID_IMediaControl,
+    if (_graphBuilder->QueryInterface( IID_IMediaControl,
                                                 (void **)&_mediaControl )!=S_OK){
         ms_error("Error requesting media control interface" );
 		return -1;
 	}
-    if (graphBuilder->QueryInterface( IID_IMediaEvent,
+    if (_graphBuilder->QueryInterface( IID_IMediaEvent,
                                         (void **)&_mediaEvent )!=S_OK){
     	ms_error("Error requesting event interface" );
     	return -1;
 	}
 	_ready=true;
+	return 0;
 }
 
 int DSCapture::startDshowGraph(){
@@ -874,20 +875,31 @@ int DSCapture::startDshowGraph(){
 		return -1;
 	}
 	ms_message("Graph started");
+	return 0;
 }
 
 void DSCapture::stopAndClean(){
 	if (_mediaControl.get()!=NULL){
-		_mediaControl->Stop();
-    	long evCode = 0;
-    	_mediaEvent->WaitForCompletion( INFINITE, &evCode );
+		HRESULT r;
+		r=_mediaControl->Stop();
+		if (r!=S_OK){
+			ms_error("msdscap: Could not stop graph !");
+			fflush(NULL);
+		}
+    	_graphBuilder->RemoveFilter(_source.get());
+    	_graphBuilder->RemoveFilter(_grabberBase.get());
+		_graphBuilder->RemoveFilter(_nullRenderer.get());
 	}
 	_source.reset();
 	_grabberBase.reset();
 	_nullRenderer.reset();
 	_mediaControl.reset();
 	_mediaEvent.reset();
+	_graphBuilder.reset();
+	CoUninitialize();
+	ms_mutex_lock(&_mutex);
 	flushq(&_rq,0);
+	ms_mutex_unlock(&_mutex);
 	_ready=false;
 }
 
@@ -918,7 +930,6 @@ static void dscap_process(MSFilter * obj){
 	DSCapture *s=(DSCapture*)obj->data;
 	mblk_t *m;
 	uint32_t timestamp;
-	int cur_frame;
 
 	if (s->isTimeToSend(obj->ticker->time)){
 		mblk_t *om=NULL;
@@ -1002,8 +1013,6 @@ static MSWebCamDesc ms_dshow_cam_desc={
 };
 
 static void ms_dshow_detect(MSWebCamManager *obj){
-	int i;
-	MSWebCam *cam;
 	ComPtr<IPropertyBag> pBag;
 	
 	CoInitialize(NULL);
@@ -1020,7 +1029,6 @@ static void ms_dshow_detect(MSWebCamManager *obj){
     createDevEnum.reset();
     enumMoniker->Reset();
     
-    int index = 0;
     ULONG fetched = 0;
     ComPtr< IMoniker > moniker;
     for ( int i=0;enumMoniker->Next( 1, &moniker, &fetched )==S_OK;++i ) {

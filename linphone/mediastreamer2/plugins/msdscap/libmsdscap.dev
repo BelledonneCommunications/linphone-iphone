@@ -77,8 +77,8 @@ Includes=../../include;../../../oRTP/include
 Libs=../../build/win32native/;../../../oRTP/build/win32native
 ResourceIncludes=
 MakeIncludes=
-Compiler=-DBUILDING_DLL=1_@@_-DORTP_INET6_@@_
-CppCompiler=-DBUILDING_DLL=1_@@_
+Compiler=_@@_
+CppCompiler=-DBUILDING_DLL=1_@@_-DORTP_INET6_@@_-ggdb -02_@@_-Wall_@@_
 Linker=--no-export-all-symbols_@@_--add-stdcall-alias_@@_-lole32_@@_-loleaut32_@@_-lwinmm_@@_-luuid_@@_-lmediastreamer2_@@_-lortp_@@_
 PreprocDefines=
 CompilerSettings=0000000001001000000000

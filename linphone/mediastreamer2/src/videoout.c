@@ -752,6 +752,7 @@ static void video_out_process(MSFilter *f){
 				qvga_size.width=MS_VIDEO_SIZE_QVGA_W;
 				qvga_size.height=MS_VIDEO_SIZE_QVGA_H;
 				obj->prevsize=newsize;
+				ms_message("received size is %ix%i",newsize.width,newsize.height);
 				/*don't resize less than QVGA, it is too small*/
 				if (ms_video_size_greater_than(qvga_size,newsize)){
 					newsize.width=MS_VIDEO_SIZE_QVGA_W;
