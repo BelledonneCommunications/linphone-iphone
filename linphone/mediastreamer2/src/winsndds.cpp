@@ -747,6 +747,12 @@ static void winsndds_write_process(MSFilter *f){
 		ms_warning("Extra data for sound card removed (%i buf), (playing: %i) (input-output: %i)", discarded, d->nbufs_playing, d->stat_input - d->stat_output);
 }
 
+static int get_rate(MSFilter *f, void *arg){
+	WinSndDs *d=(WinSndDs*)f->data;
+	*((int*)arg)=d->wfx.nSamplesPerSec;
+	return 0;
+}
+
 static int set_rate(MSFilter *f, void *arg){
 	WinSndDs *d=(WinSndDs*)f->data;
 	d->wfx.nSamplesPerSec=*((int*)arg);
@@ -777,6 +783,7 @@ static int winsndds_get_stat_discarded(MSFilter *f, void *arg){
 }
 
 static MSFilterMethod winsndds_methods[]={
+	{	MS_FILTER_GET_SAMPLE_RATE	, get_rate	},
 	{	MS_FILTER_SET_SAMPLE_RATE	, set_rate	},
 	{	MS_FILTER_SET_NCHANNELS		, set_nchannels	},
 	{	MS_FILTER_GET_STAT_INPUT, winsndds_get_stat_input },
