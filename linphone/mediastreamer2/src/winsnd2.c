@@ -16,6 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+#if !defined(_WIN32_WCE) //Allready defined for wince
+#define UNICODE
+#endif
 
 #include "mediastreamer2/mssndcard.h"
 #include "mediastreamer2/msfilter.h"
@@ -389,7 +392,10 @@ static void winsndcard_detect(MSSndCardManager *m){
 			add_or_update_card(m,card,item,-1,MS_SND_CARD_CAP_CAPTURE);
 			/* _tprintf(L"new card: %s", incaps.szPname); */
 #else
-			add_or_update_card(m,incaps.szPname,item,-1,MS_SND_CARD_CAP_CAPTURE);
+			char szName[256];
+			WideCharToMultiByte(CP_UTF8,0,incaps.szPname,-1,szName,256,0,0);
+			add_or_update_card(m,szName,item,-1,MS_SND_CARD_CAP_CAPTURE);
+			//add_or_update_card(m,incaps.szPname,item,-1,MS_SND_CARD_CAP_CAPTURE);
 #endif
 		}
     	mr = waveOutGetDevCaps (item, &outcaps, sizeof (WAVEOUTCAPS));
@@ -401,7 +407,10 @@ static void winsndcard_detect(MSSndCardManager *m){
     		add_or_update_card(m,card,-1,item,MS_SND_CARD_CAP_PLAYBACK);
 			/* _tprintf(L"new card: %s", outcaps.szPname); */
 #else
-    		add_or_update_card(m,outcaps.szPname,-1,item,MS_SND_CARD_CAP_PLAYBACK);
+			char szName[256];
+			WideCharToMultiByte(CP_UTF8,0,outcaps.szPname,-1,szName,256,0,0);
+    		add_or_update_card(m,szName,-1,item,MS_SND_CARD_CAP_PLAYBACK);
+    		//add_or_update_card(m,outcaps.szPname,-1,item,MS_SND_CARD_CAP_PLAYBACK);
 #endif
 		}
     }
@@ -985,6 +994,12 @@ static void winsnd_write_process(MSFilter *f){
 	}
 }
 
+static int get_rate(MSFilter *f, void *arg){
+	WinSnd *d=(WinSnd*)f->data;
+	*((int*)arg)=d->wfx.nSamplesPerSec;
+	return 0;
+}
+
 static int set_rate(MSFilter *f, void *arg){
 	WinSnd *d=(WinSnd*)f->data;
 	d->wfx.nSamplesPerSec=*((int*)arg);
@@ -1015,6 +1030,7 @@ static int winsnd_get_stat_discarded(MSFilter *f, void *arg){
 }
 
 static MSFilterMethod winsnd_methods[]={
+	{	MS_FILTER_GET_SAMPLE_RATE	, get_rate	},
 	{	MS_FILTER_SET_SAMPLE_RATE	, set_rate	},
 	{	MS_FILTER_SET_NCHANNELS		, set_nchannels	},
 	{	MS_FILTER_GET_STAT_INPUT, winsnd_get_stat_input },
