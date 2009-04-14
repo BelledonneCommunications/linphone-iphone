@@ -44,9 +44,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "dxfilter.h"
 EXTERN_C const CLSID CLSID_NullRenderer;
 
-HRESULT AddGraphToRot(IUnknown *pUnkGraph, DWORD *pdwRegister);
-void RemoveGraphFromRot(DWORD pdwRegister);
-
 typedef struct V4wState{
 
 	char dev[512];
@@ -102,7 +99,7 @@ HRESULT ( Callback)(IMediaSample* pSample, REFERENCE_TIME* sTime, REFERENCE_TIME
 		if (s->pix_fmt==MS_RGB24)
 		{
 			/* Conversion from top down bottom up (BGR to RGB and flip) */
- 			unsigned long Index,nPixels;
+			unsigned long Index,nPixels;
 			unsigned char *blue;
 			unsigned char tmp;
 			short iPixelSize;
@@ -111,7 +108,7 @@ HRESULT ( Callback)(IMediaSample* pSample, REFERENCE_TIME* sTime, REFERENCE_TIME
 
 			nPixels=s->vsize.width*s->vsize.height;
 			iPixelSize=24/8;
-		 
+
 			for(Index=0;Index!=nPixels;Index++)  // For each pixel
 			{
 				tmp=*blue;
@@ -119,7 +116,7 @@ HRESULT ( Callback)(IMediaSample* pSample, REFERENCE_TIME* sTime, REFERENCE_TIME
 				*(blue+2)=tmp;
 				blue+=iPixelSize;
 			}
- 
+
 			unsigned char *pLine1, *pLine2;
 			int iLineLen,iIndex;
 
@@ -138,7 +135,7 @@ HRESULT ( Callback)(IMediaSample* pSample, REFERENCE_TIME* sTime, REFERENCE_TIME
 			}
 		}
 		buf->b_wptr+=size;  
-		
+
 		ms_mutex_lock(&s->mutex);
 		putq(&s->rq, buf);
 		ms_mutex_unlock(&s->mutex);
@@ -149,39 +146,39 @@ HRESULT ( Callback)(IMediaSample* pSample, REFERENCE_TIME* sTime, REFERENCE_TIME
 
 HRESULT GetPinCategory(IPin *pPin, GUID *pPinCategory)
 {
-    HRESULT hr;
-    IKsPropertySet *pKs;
-    hr = pPin->QueryInterface(IID_IKsPropertySet, (void **)&pKs);
-    if (FAILED(hr))
-    {
-        // The pin does not support IKsPropertySet.
-        return hr;
-    }
-    // Try to retrieve the pin category.
-    DWORD cbReturned;
-    hr = pKs->Get(AMPROPSETID_Pin, AMPROPERTY_PIN_CATEGORY, NULL, 0, 
-        pPinCategory, sizeof(GUID), &cbReturned);
+	HRESULT hr;
+	IKsPropertySet *pKs;
+	hr = pPin->QueryInterface(IID_IKsPropertySet, (void **)&pKs);
+	if (FAILED(hr))
+	{
+		// The pin does not support IKsPropertySet.
+		return hr;
+	}
+	// Try to retrieve the pin category.
+	DWORD cbReturned;
+	hr = pKs->Get(AMPROPSETID_Pin, AMPROPERTY_PIN_CATEGORY, NULL, 0, 
+		pPinCategory, sizeof(GUID), &cbReturned);
 
-    // If this succeeded, pPinCategory now contains the category GUID.
+	// If this succeeded, pPinCategory now contains the category GUID.
 
-    pKs->Release();
-    return hr;
+	pKs->Release();
+	return hr;
 }
 
 int try_format(V4wState *s, int format, GUID *pPinCategory)
 {
-    HRESULT hr=S_OK;
-    IEnumPins *pEnum=0;
-    ULONG ulFound;
-    IPin *pPin;
+	HRESULT hr=S_OK;
+	IEnumPins *pEnum=0;
+	ULONG ulFound;
+	IPin *pPin;
 
 	GUID guid_format;
 	DWORD biCompression;
 	DWORD biBitCount;
 
 	// Verify input
-    if (!s->m_pDeviceFilter)
-        return -1;
+	if (!s->m_pDeviceFilter)
+		return -1;
 
 	if (format == MS_YUV420P)
 		guid_format = (GUID)FOURCCMap(MAKEFOURCC('I','4','2','0'));
@@ -204,7 +201,7 @@ int try_format(V4wState *s, int format, GUID *pPinCategory)
 		biCompression = BI_RGB;
 	else if (format == MS_YUY2)
 		biCompression = MAKEFOURCC('Y','U','Y','2');
-	
+
 	if (format == MS_YUV420P)
 		biBitCount = 12;
 	else if (format == MS_YUYV)
@@ -215,32 +212,32 @@ int try_format(V4wState *s, int format, GUID *pPinCategory)
 		biBitCount = 24;
 	else if (format == MS_YUY2)
 		biBitCount = 16;
-	
-    // Get pin enumerator
+
+	// Get pin enumerator
 	hr = s->m_pDeviceFilter->EnumPins(&pEnum);
-    if(FAILED(hr)) 
-        return -1;
+	if(FAILED(hr)) 
+		return -1;
 
-    pEnum->Reset();
+	pEnum->Reset();
 
-    // Count every pin on the filter
-    while(S_OK == pEnum->Next(1, &pPin, &ulFound))
-    {
-        PIN_DIRECTION pindir = (PIN_DIRECTION) 3;
+	// Count every pin on the filter
+	while(S_OK == pEnum->Next(1, &pPin, &ulFound))
+	{
+		PIN_DIRECTION pindir = (PIN_DIRECTION) 3;
 
-        hr = pPin->QueryDirection(&pindir);
+		hr = pPin->QueryDirection(&pindir);
 
-        if(pindir != PINDIR_INPUT)
+		if(pindir != PINDIR_INPUT)
 		{
 			IEnumMediaTypes *ppEnum;
-	    ULONG ulFound2;
+			ULONG ulFound2;
 
-      GetPinCategory(pPin, pPinCategory);
-      if (*pPinCategory!=PIN_CATEGORY_CAPTURE
-        && *pPinCategory!=PIN_CATEGORY_PREVIEW)
-        continue;
+			GetPinCategory(pPin, pPinCategory);
+			if (*pPinCategory!=PIN_CATEGORY_CAPTURE
+				&& *pPinCategory!=PIN_CATEGORY_PREVIEW)
+				continue;
 
-      hr = pPin->EnumMediaTypes(&ppEnum);
+			hr = pPin->EnumMediaTypes(&ppEnum);
 			if(FAILED(hr)) 
 				continue;
 
@@ -259,33 +256,33 @@ int try_format(V4wState *s, int format, GUID *pPinCategory)
 				if (pvi->bmiHeader.biBitCount!=biBitCount)
 					continue;
 
-        pPin->Release();
-			  pEnum->Release();
+				pPin->Release();
+				pEnum->Release();
 				return 0;
 			}
 		}
 
-        pPin->Release();
-    }
+		pPin->Release();
+	}
 
-    pEnum->Release();
-    return -1;
+	pEnum->Release();
+	return -1;
 }
 
 int try_format_size(V4wState *s, int format, int width, int height, GUID *pPinCategory)
 {
-    HRESULT hr=S_OK;
-    IEnumPins *pEnum=0;
-    ULONG ulFound;
-    IPin *pPin;
+	HRESULT hr=S_OK;
+	IEnumPins *pEnum=0;
+	ULONG ulFound;
+	IPin *pPin;
 
 	GUID guid_format;
 	DWORD biCompression;
 	DWORD biBitCount;
 
 	// Verify input
-    if (!s->m_pDeviceFilter)
-        return -1;
+	if (!s->m_pDeviceFilter)
+		return -1;
 
 	if (format == MS_YUV420P)
 		guid_format = (GUID)FOURCCMap(MAKEFOURCC('I','4','2','0'));
@@ -308,7 +305,7 @@ int try_format_size(V4wState *s, int format, int width, int height, GUID *pPinCa
 		biCompression = BI_RGB;
 	else if (format == MS_YUY2)
 		biCompression = MAKEFOURCC('Y','U','Y','2');
-	
+
 	if (format == MS_YUV420P)
 		biBitCount = 12;
 	else if (format == MS_YUYV)
@@ -320,32 +317,32 @@ int try_format_size(V4wState *s, int format, int width, int height, GUID *pPinCa
 	else if (format == MS_YUY2)
 		biBitCount = 16;
 
-    // Get pin enumerator
+	// Get pin enumerator
 	hr = s->m_pDeviceFilter->EnumPins(&pEnum);
-    if(FAILED(hr)) 
-        return -1;
+	if(FAILED(hr)) 
+		return -1;
 
-    pEnum->Reset();
+	pEnum->Reset();
 
-    // Count every pin on the filter
-    while(S_OK == pEnum->Next(1, &pPin, &ulFound))
-    {
-        PIN_DIRECTION pindir = (PIN_DIRECTION) 3;
+	// Count every pin on the filter
+	while(S_OK == pEnum->Next(1, &pPin, &ulFound))
+	{
+		PIN_DIRECTION pindir = (PIN_DIRECTION) 3;
 
-        hr = pPin->QueryDirection(&pindir);
+		hr = pPin->QueryDirection(&pindir);
 
-        if(pindir != PINDIR_INPUT)
+		if(pindir != PINDIR_INPUT)
 		{
 			IEnumMediaTypes *ppEnum;
-		    ULONG ulFound2;
+			ULONG ulFound2;
 			hr = pPin->EnumMediaTypes(&ppEnum);
 			if(FAILED(hr)) 
 				continue;
 
-      GUID pCurrentPinCategory;
-      GetPinCategory(pPin, &pCurrentPinCategory);
-      if (*pPinCategory!=pCurrentPinCategory)
-        continue;
+			GUID pCurrentPinCategory;
+			GetPinCategory(pPin, &pCurrentPinCategory);
+			if (*pPinCategory!=pCurrentPinCategory)
+				continue;
 
 			AM_MEDIA_TYPE *ppMediaTypes;
 			while(S_OK == ppEnum->Next(1, &ppMediaTypes, &ulFound2))
@@ -370,16 +367,16 @@ int try_format_size(V4wState *s, int format, int width, int height, GUID *pPinCa
 				s->vsize.height = height;
 
 				pPin->Release();
-			    pEnum->Release();
+				pEnum->Release();
 				return 0;
 			}
 		}
 
-        pPin->Release();
-    } 
+		pPin->Release();
+	} 
 
-    pEnum->Release();
-    return -1;
+	pEnum->Release();
+	return -1;
 }
 
 static int v4w_configure_videodevice(V4wState *s)
@@ -389,10 +386,10 @@ static int v4w_configure_videodevice(V4wState *s)
 
 	// get a Graph
 	HRESULT hr= CoCreateInstance (CLSID_FilterGraph,
-                          NULL,
-                          CLSCTX_INPROC_SERVER,
-                          IID_IGraphBuilder, //IID_IBaseFilter,
-                          (void **)&s->m_pGraph);
+		NULL,
+		CLSCTX_INPROC_SERVER,
+		IID_IGraphBuilder, //IID_IBaseFilter,
+		(void **)&s->m_pGraph);
 	if(FAILED(hr))
 	{
 		return -1;
@@ -400,10 +397,10 @@ static int v4w_configure_videodevice(V4wState *s)
 
 	// get a CaptureGraphBuilder2
 	hr= CoCreateInstance (CLSID_CaptureGraphBuilder2,
-                          NULL,
-                          CLSCTX_INPROC_SERVER,
-                          IID_ICaptureGraphBuilder2, //IID_IBaseFilter,
-                          (void **)&s->m_pBuilder);
+		NULL,
+		CLSCTX_INPROC_SERVER,
+		IID_ICaptureGraphBuilder2, //IID_IBaseFilter,
+		(void **)&s->m_pBuilder);
 	if(FAILED(hr))
 	{
 		return -2;
@@ -419,17 +416,6 @@ static int v4w_configure_videodevice(V4wState *s)
 		return -3;
 	}
 
-
-#ifdef _DEBUG
-	HANDLE m_hLogFile=CreateFile(L"DShowGraphLog.txt",GENERIC_READ|GENERIC_WRITE,FILE_SHARE_READ,NULL,OPEN_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL);
-	if(m_hLogFile!=INVALID_HANDLE_VALUE)
-	{
-		hr=s->m_pGraph->SetLogFile((DWORD_PTR)m_hLogFile);
-		/* ASSERT(SUCCEEDED(hr)); */
-	}
-	
-	//AddGraphToRot(s->m_pGraph, &s->rotregvalue);
-#endif
 
 	ICreateDevEnum *pCreateDevEnum = NULL;
 	IEnumMoniker *pEnumMoniker = NULL;
@@ -454,49 +440,49 @@ static int v4w_configure_videodevice(V4wState *s)
 	pEnumMoniker->Reset();
 
 	int pos=0;
-  while(S_OK == pEnumMoniker->Next(1, &pMoniker, &nFetched) )
-  {
-    IPropertyBag *pBag;
-    hr = pMoniker->BindToStorage( 0, 0, IID_IPropertyBag, (void**) &pBag );
-    if( hr != S_OK )
-       continue; 
+	while(S_OK == pEnumMoniker->Next(1, &pMoniker, &nFetched) )
+	{
+		IPropertyBag *pBag;
+		hr = pMoniker->BindToStorage( 0, 0, IID_IPropertyBag, (void**) &pBag );
+		if( hr != S_OK )
+			continue; 
 
-    if (s->dev[0]=='\0')
-      break;
+		if (s->dev[0]=='\0')
+			break;
 
-    VARIANT var;
-    VariantInit(&var);
-    hr = pBag->Read( L"FriendlyName", &var, NULL ); 
-    if( hr != S_OK )
-    {
-      pMoniker->Release();
-      continue;
-    }
-    //USES_CONVERSION;
-    char szName[256];
+		VARIANT var;
+		VariantInit(&var);
+		hr = pBag->Read( L"FriendlyName", &var, NULL ); 
+		if( hr != S_OK )
+		{
+			pMoniker->Release();
+			continue;
+		}
+		//USES_CONVERSION;
+		char szName[256];
 
-    WideCharToMultiByte(CP_ACP,0,var.bstrVal,-1,szName,256,0,0);
-    VariantClear(&var); 
+		WideCharToMultiByte(CP_UTF8,0,var.bstrVal,-1,szName,256,0,0);
+		VariantClear(&var); 
 
-    if (strcmp(szName, s->dev)==0)
-      break;
+		if (strcmp(szName, s->dev)==0)
+			break;
 
-    pMoniker->Release();
-    pBag->Release();
-    pMoniker=NULL;
-    pBag=NULL;
+		pMoniker->Release();
+		pBag->Release();
+		pMoniker=NULL;
+		pBag=NULL;
 	}
 
 	if(pMoniker==NULL)
-  {
-	  int pos=0;
-    while(S_OK == pEnumMoniker->Next(1, &pMoniker, &nFetched) )
-    {
-      IPropertyBag *pBag;
-      hr = pMoniker->BindToStorage( 0, 0, IID_IPropertyBag, (void**) &pBag );
-      if( hr != S_OK )
-         continue; 
-    }
+	{
+		int pos=0;
+		while(S_OK == pEnumMoniker->Next(1, &pMoniker, &nFetched) )
+		{
+			IPropertyBag *pBag;
+			hr = pMoniker->BindToStorage( 0, 0, IID_IPropertyBag, (void**) &pBag );
+			if( hr != S_OK )
+				continue; 
+		}
 
 	}
 
@@ -518,7 +504,7 @@ static int v4w_configure_videodevice(V4wState *s)
 	pCreateDevEnum->Release();
 
 
-  GUID pPinCategory;
+	GUID pPinCategory;
 
 	if (try_format(s, s->pix_fmt, &pPinCategory)==0)
 		s->pix_fmt = s->pix_fmt;
@@ -537,7 +523,7 @@ static int v4w_configure_videodevice(V4wState *s)
 		ms_error("Unsupported video pixel format.");
 		return -8;
 	}
-	
+
 	if (s->pix_fmt == MS_YUV420P)
 		ms_message("Driver supports YUV420P, using that format.");
 	else if (s->pix_fmt == MS_YUY2)
@@ -578,10 +564,10 @@ static int v4w_open_videodevice(V4wState *s)
 
 	// get a Graph
 	HRESULT hr= CoCreateInstance (CLSID_FilterGraph,
-                          NULL,
-                          CLSCTX_INPROC_SERVER,
-                          IID_IGraphBuilder, //IID_IBaseFilter,
-                          (void **)&s->m_pGraph);
+		NULL,
+		CLSCTX_INPROC_SERVER,
+		IID_IGraphBuilder, //IID_IBaseFilter,
+		(void **)&s->m_pGraph);
 	if(FAILED(hr))
 	{
 		return -1;
@@ -589,10 +575,10 @@ static int v4w_open_videodevice(V4wState *s)
 
 	// get a CaptureGraphBuilder2
 	hr= CoCreateInstance (CLSID_CaptureGraphBuilder2,
-                          NULL,
-                          CLSCTX_INPROC_SERVER,
-                          IID_ICaptureGraphBuilder2, //IID_IBaseFilter,
-                          (void **)&s->m_pBuilder);
+		NULL,
+		CLSCTX_INPROC_SERVER,
+		IID_ICaptureGraphBuilder2, //IID_IBaseFilter,
+		(void **)&s->m_pBuilder);
 	if(FAILED(hr))
 	{
 		return -2;
@@ -608,17 +594,6 @@ static int v4w_open_videodevice(V4wState *s)
 		return -3;
 	}
 
-
-#ifdef _DEBUG
-	HANDLE m_hLogFile=CreateFile(L"DShowGraphLog.txt",GENERIC_READ|GENERIC_WRITE,FILE_SHARE_READ,NULL,OPEN_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL);
-	if(m_hLogFile!=INVALID_HANDLE_VALUE)
-	{
-		hr=s->m_pGraph->SetLogFile((DWORD_PTR)m_hLogFile);
-		/* ASSERT(SUCCEEDED(hr)); */
-	}
-	
-	//AddGraphToRot(s->m_pGraph, &s->rotregvalue);
-#endif
 
 	ICreateDevEnum *pCreateDevEnum = NULL;
 	IEnumMoniker *pEnumMoniker = NULL;
@@ -643,37 +618,37 @@ static int v4w_open_videodevice(V4wState *s)
 	pEnumMoniker->Reset();
 
 	int pos=0;
-  while(S_OK == pEnumMoniker->Next(1, &pMoniker, &nFetched) )
-  {
-    IPropertyBag *pBag;
-    hr = pMoniker->BindToStorage( 0, 0, IID_IPropertyBag, (void**) &pBag );
-    if( hr != S_OK )
-       continue; 
+	while(S_OK == pEnumMoniker->Next(1, &pMoniker, &nFetched) )
+	{
+		IPropertyBag *pBag;
+		hr = pMoniker->BindToStorage( 0, 0, IID_IPropertyBag, (void**) &pBag );
+		if( hr != S_OK )
+			continue; 
 
-    if (s->dev[0]=='\0')
-      break;
+		if (s->dev[0]=='\0')
+			break;
 
-    VARIANT var;
-    VariantInit(&var);
-    hr = pBag->Read( L"FriendlyName", &var, NULL ); 
-    if( hr != S_OK )
-    {
-      pMoniker->Release();
-      continue;
-    }
-    //USES_CONVERSION;
-    char szName[256];
+		VARIANT var;
+		VariantInit(&var);
+		hr = pBag->Read( L"FriendlyName", &var, NULL ); 
+		if( hr != S_OK )
+		{
+			pMoniker->Release();
+			continue;
+		}
+		//USES_CONVERSION;
+		char szName[256];
 
-    WideCharToMultiByte(CP_ACP,0,var.bstrVal,-1,szName,256,0,0);
-    VariantClear(&var); 
+		WideCharToMultiByte(CP_UTF8,0,var.bstrVal,-1,szName,256,0,0);
+		VariantClear(&var); 
 
-    if (strcmp(szName, s->dev)==0)
-      break;
+		if (strcmp(szName, s->dev)==0)
+			break;
 
-    pMoniker->Release();
-    pBag->Release();
-    pMoniker=NULL;
-    pBag=NULL;
+		pMoniker->Release();
+		pBag->Release();
+		pMoniker=NULL;
+		pBag=NULL;
 	}
 
 	if(pMoniker==NULL)
@@ -694,7 +669,7 @@ static int v4w_open_videodevice(V4wState *s)
 	pCreateDevEnum->Release();
 
 
-  GUID pPinCategory;
+	GUID pPinCategory;
 
 	if (try_format(s, s->pix_fmt, &pPinCategory)==0)
 		s->pix_fmt = s->pix_fmt;
@@ -713,7 +688,7 @@ static int v4w_open_videodevice(V4wState *s)
 		ms_error("Unsupported video pixel format.");
 		return -8;
 	}
-	
+
 	if (s->pix_fmt == MS_YUV420P)
 		ms_message("Driver supports YUV420P, using that format.");
 	else if (s->pix_fmt == MS_YUY2)
@@ -767,12 +742,12 @@ static int v4w_open_videodevice(V4wState *s)
 	else if (s->pix_fmt == MS_RGB24)
 		m = MEDIASUBTYPE_RGB24;
 	mt.SetSubtype(&m);
-	
+
 	mt.formattype = FORMAT_VideoInfo;
 	mt.SetTemporalCompression(FALSE);
 
 	VIDEOINFO *pvi = (VIDEOINFO *)
-	mt.AllocFormatBuffer(sizeof(VIDEOINFO));
+		mt.AllocFormatBuffer(sizeof(VIDEOINFO));
 	if (NULL == pvi)
 		return -11;
 	ZeroMemory(pvi, sizeof(VIDEOINFO));
@@ -787,7 +762,7 @@ static int v4w_open_videodevice(V4wState *s)
 		pvi->bmiHeader.biCompression = MAKEFOURCC('U','Y','V','Y');
 	else if (s->pix_fmt == MS_RGB24)
 		pvi->bmiHeader.biCompression = BI_RGB;
-	
+
 	if (s->pix_fmt == MS_YUV420P)
 		pvi->bmiHeader.biBitCount = 12;
 	else if (s->pix_fmt == MS_YUY2)
@@ -822,7 +797,7 @@ static int v4w_open_videodevice(V4wState *s)
 	}
 
 	hr = s->m_pDXFilter->QueryInterface(IID_IBaseFilter,
-	 (LPVOID *)&s->m_pIDXFilter);
+		(LPVOID *)&s->m_pIDXFilter);
 	if(FAILED(hr))
 	{
 		return -14;
@@ -837,10 +812,10 @@ static int v4w_open_videodevice(V4wState *s)
 
 	// get null renderer
 	hr=CoCreateInstance (CLSID_NullRenderer,
-                          NULL,
-                          CLSCTX_INPROC_SERVER,
-                          IID_IBaseFilter,
-                          (void **)&s->m_pNullRenderer);
+		NULL,
+		CLSCTX_INPROC_SERVER,
+		IID_IBaseFilter,
+		(void **)&s->m_pNullRenderer);
 	if(FAILED(hr))
 	{
 		return -16;
@@ -856,60 +831,60 @@ static int v4w_open_videodevice(V4wState *s)
 	{
 		return -17;
 	}
-	
-  IAMStreamConfig *pConfig = NULL;
-  hr = s->m_pBuilder->FindInterface(
-      &pPinCategory, // Preview pin.
-      &MEDIATYPE_Video,    // Any media type.
-      s->m_pDeviceFilter, // Pointer to the capture filter.
-      IID_IAMStreamConfig, (void**)&pConfig); 
-  if (pConfig!=NULL)
-  {
-    AM_MEDIA_TYPE *pType = NULL;
-    int iCount, iSize;
-    pConfig->GetNumberOfCapabilities(&iCount, &iSize);
 
-    for (int i = 0; i < iCount; i++) {
-        VIDEO_STREAM_CONFIG_CAPS scc;
-        pType = NULL;
-        pConfig->GetStreamCaps(i, &pType, (BYTE *)&scc);
+	IAMStreamConfig *pConfig = NULL;
+	hr = s->m_pBuilder->FindInterface(
+		&pPinCategory, // Preview pin.
+		&MEDIATYPE_Video,    // Any media type.
+		s->m_pDeviceFilter, // Pointer to the capture filter.
+		IID_IAMStreamConfig, (void**)&pConfig); 
+	if (pConfig!=NULL)
+	{
+		AM_MEDIA_TYPE *pType = NULL;
+		int iCount, iSize;
+		pConfig->GetNumberOfCapabilities(&iCount, &iSize);
 
-        if (!((pType->formattype == FORMAT_VideoInfo) &&
-              (pType->cbFormat >= sizeof(VIDEOINFOHEADER)) &&
-              (pType->pbFormat != NULL)))
-          continue;
+		for (int i = 0; i < iCount; i++) {
+			VIDEO_STREAM_CONFIG_CAPS scc;
+			pType = NULL;
+			pConfig->GetStreamCaps(i, &pType, (BYTE *)&scc);
 
-        VIDEOINFOHEADER & videoInfo = *(VIDEOINFOHEADER *)pType->pbFormat;
+			if (!((pType->formattype == FORMAT_VideoInfo) &&
+				(pType->cbFormat >= sizeof(VIDEOINFOHEADER)) &&
+				(pType->pbFormat != NULL)))
+				continue;
 
-        if (m != pType->subtype)
-          continue;
+			VIDEOINFOHEADER & videoInfo = *(VIDEOINFOHEADER *)pType->pbFormat;
 
-        if (videoInfo.bmiHeader.biWidth != s->vsize.width)
-          continue;
+			if (m != pType->subtype)
+				continue;
 
-        if (videoInfo.bmiHeader.biHeight != s->vsize.height)
-          continue;
+			if (videoInfo.bmiHeader.biWidth != s->vsize.width)
+				continue;
 
-        if (videoInfo.bmiHeader.biBitCount != pvi->bmiHeader.biBitCount)
-          continue;
+			if (videoInfo.bmiHeader.biHeight != s->vsize.height)
+				continue;
 
-        if (videoInfo.bmiHeader.biCompression != pvi->bmiHeader.biCompression)
-          continue;
+			if (videoInfo.bmiHeader.biBitCount != pvi->bmiHeader.biBitCount)
+				continue;
 
-        videoInfo.AvgTimePerFrame = UNITS / (LONGLONG)s->fps;
-        pConfig->SetFormat(pType);    
-      }
+			if (videoInfo.bmiHeader.biCompression != pvi->bmiHeader.biCompression)
+				continue;
 
-    pConfig->GetFormat(&pType);
-    if (pType!=NULL)
-    {
-      VIDEOINFO *pvi;
-      pvi = (VIDEOINFO *)pType->pbFormat;
-      ms_message("v4w: camera asked fps=%i // real fps=%i", (int)(UNITS / (LONGLONG)s->fps), pvi->AvgTimePerFrame);
-    }
-    
-    pConfig->Release();
-  }
+			videoInfo.AvgTimePerFrame = UNITS / (LONGLONG)s->fps;
+			pConfig->SetFormat(pType);    
+		}
+
+		pConfig->GetFormat(&pType);
+		if (pType!=NULL)
+		{
+			VIDEOINFO *pvi;
+			pvi = (VIDEOINFO *)pType->pbFormat;
+			ms_message("v4w: camera asked fps=%i // real fps=%i", (int)(UNITS / (LONGLONG)s->fps), pvi->AvgTimePerFrame);
+		}
+
+		pConfig->Release();
+	}
 
 	//m_pDXFilter->SetBufferSamples(TRUE);
 
@@ -923,68 +898,6 @@ static int v4w_open_videodevice(V4wState *s)
 
 	s->rotregvalue=1;
 	return 0;
-}
-
-/****************************************************************************
-
-FUNCTION: AddGraphToRot.
-
-DESCRIPTION:
-     Adds a DirectShow filter graph to the Running Object Table,
-     allowing GraphEdit to "spy" on a remote filter graph.
-
-PARAMETERS:
-
-RETURNS:
-  . 0 for success, otherwise an error #.
-    . Standard COM/HRESULT error numbers are returned if a COM/HRESULT error
-        was encountered.
-
-****************************************************************************/
-HRESULT AddGraphToRot(IUnknown *pUnkGraph, DWORD *pdwRegister)
-{
-  IMoniker * pMoniker;
-  IRunningObjectTable *pROT;
-  WCHAR wsz[128];
-  HRESULT hr;
-
-  if (FAILED(GetRunningObjectTable(0, &pROT)))
-    return E_FAIL;
-
-  wsprintfW(wsz, L"FilterGraph %08x pid %08x", (DWORD_PTR)pUnkGraph, GetCurrentProcessId());
-  wsprintfW(wsz, L"FilterGraph %08x pid %08x", (DWORD_PTR)pUnkGraph, GetCurrentProcessId());
-
-  hr = CreateItemMoniker(L"!", wsz, &pMoniker);
-  if (SUCCEEDED(hr))
-  {
-    hr = pROT->Register(0, pUnkGraph, pMoniker, pdwRegister);
-    pMoniker->Release();
-  }
-
-  pROT->Release();
-  return hr;
-}
-
-
-/****************************************************************************
-
-FUNCTION: RemoveGraphFromRot.
-
-DESCRIPTION:
-     Removes a filter graph from the Running Object Table.
-
-PARAMETERS:
-
-****************************************************************************/
-void RemoveGraphFromRot(DWORD pdwRegister)
-{
-  IRunningObjectTable *pROT;
-
-  if (SUCCEEDED(GetRunningObjectTable(0, &pROT)))
-  {
-    pROT->Revoke(pdwRegister);
-    pROT->Release();
-  }
 }
 
 static void v4w_init(MSFilter *f){
@@ -1013,7 +926,7 @@ static void v4w_init(MSFilter *f){
 	s->start_time=0;
 	s->frame_count=-1;
 	s->fps=15;
-  memset(s->dev, 0, sizeof(s->dev));
+	memset(s->dev, 0, sizeof(s->dev));
 
 	f->data=s;
 }
@@ -1023,14 +936,13 @@ static int _v4w_test(V4wState *s, void *arg)
 	int i;
 	i = v4w_configure_videodevice(s);
 
-  if (i!=0)
-  {
-  	s->pix_fmt = MS_YUV420P;
-    s->vsize.width = MS_VIDEO_SIZE_CIF_W;
-    s->vsize.height = MS_VIDEO_SIZE_CIF_H;
-  }
+	if (i!=0)
+	{
+		s->pix_fmt = MS_YUV420P;
+		s->vsize.width = MS_VIDEO_SIZE_CIF_W;
+		s->vsize.height = MS_VIDEO_SIZE_CIF_H;
+	}
 
-	//RemoveGraphFromRot(s->rotregvalue);
 	if (s->m_pGraph!=NULL)
 	{
 		if (s->m_pNullRenderer!=NULL)
@@ -1069,7 +981,7 @@ static int _v4w_test(V4wState *s, void *arg)
 	CoUninitialize();
 	s_callback = NULL;
 	flushq(&s->rq,0);
-  ms_message("v4w: checked device size=%ix%i format=%i (err=%i)", s->vsize.width, s->vsize.height, s->pix_fmt, i);
+	ms_message("v4w: checked device size=%ix%i format=%i (err=%i)", s->vsize.width, s->vsize.height, s->pix_fmt, i);
 
 	return i;
 }
@@ -1082,7 +994,6 @@ static int _v4w_start(V4wState *s, void *arg)
 	i = v4w_open_videodevice(s);
 
 	if (s->rotregvalue==0){
-		//RemoveGraphFromRot(s->rotregvalue);
 		if (s->m_pGraph!=NULL)
 		{
 			if (s->m_pNullRenderer!=NULL)
@@ -1250,9 +1161,9 @@ static mblk_t * v4w_make_nowebcam(V4wState *s){
 	int idx;
 	int count;
 	if(s->mire[0]==NULL &&  s->frame_ind==0 && s->nowebcamimage[0] != '\0')
-	  {
-	    s->mire[0] = ms_load_jpeg_as_yuv(s->nowebcamimage,&s->vsize);
-	  }
+	{
+		s->mire[0] = ms_load_jpeg_as_yuv(s->nowebcamimage,&s->vsize);
+	}
 	if (s->mire[0]==NULL && s->frame_ind==0){
 		/* load several images to fake a movie */
 		for (idx=0;idx<10;idx++)
@@ -1284,7 +1195,7 @@ static mblk_t * v4w_make_nowebcam(V4wState *s){
 static void v4w_preprocess(MSFilter * obj){
 	V4wState *s=(V4wState*)obj->data;
 	if (s->rotregvalue==0)
-    _v4w_start(s, NULL);
+		_v4w_start(s, NULL);
 	if (s->rotregvalue==0)
 		s->fps=1;
 }
@@ -1347,7 +1258,7 @@ static int v4w_set_fps(MSFilter *f, void *arg){
 
 static int v4w_set_pix_fmt(MSFilter *f,void *arg){
 	V4wState *s=(V4wState*)f->data;
-  s->pix_fmt=*((MSPixFmt*)arg);
+	s->pix_fmt=*((MSPixFmt*)arg);
 	return 0;
 }
 
@@ -1356,7 +1267,7 @@ static int v4w_get_pix_fmt(MSFilter *f,void *arg){
 	if (s->rotregvalue==0){
 		_v4w_test(s, NULL); /* check supported format */
 		*((MSPixFmt*)arg) = (MSPixFmt)s->pix_fmt;
-    return 0;
+		return 0;
 	}
 	*((MSPixFmt*)arg) = (MSPixFmt)s->pix_fmt;
 	return 0;
@@ -1388,9 +1299,9 @@ static int v4w_set_image(MSFilter *f, void *arg){
 	char *image = (char *)arg;
 	ms_mutex_lock(&s->mutex);
 	if (image!=NULL && image[0]!='\0')
-	  snprintf(s->nowebcamimage, sizeof(s->nowebcamimage), "%s", image);
+		snprintf(s->nowebcamimage, sizeof(s->nowebcamimage), "%s", image);
 	else
-	  s->nowebcamimage[0] = '\0';
+		s->nowebcamimage[0] = '\0';
 	for (idx=0;idx<10;idx++)
 	{
 		if (s->mire[idx]==NULL)
@@ -1405,7 +1316,7 @@ static int v4w_set_image(MSFilter *f, void *arg){
 
 static int v4w_set_name(MSFilter *f, void *arg){
 	V4wState *s=(V4wState*)f->data;
-  snprintf(s->dev, sizeof(s->dev), (char*)arg);
+	snprintf(s->dev, sizeof(s->dev), (char*)arg);
 	return 0;
 }
 
@@ -1482,7 +1393,7 @@ static void vfw_detect(MSWebCamManager *obj){
 	ICreateDevEnum *pCreateDevEnum = NULL;
 	IEnumMoniker *pEnumMoniker = NULL;
 	IMoniker *pMoniker = NULL;
-  HRESULT hr;
+	HRESULT hr;
 
 	ULONG nFetched = 0;
 
@@ -1503,35 +1414,35 @@ static void vfw_detect(MSWebCamManager *obj){
 	pEnumMoniker->Reset();
 
 	int pos=0;
-  while(S_OK == pEnumMoniker->Next(1, &pMoniker, &nFetched) )
-  {
-    IPropertyBag *pBag;
-    hr = pMoniker->BindToStorage( 0, 0, IID_IPropertyBag, (void**) &pBag );
-    if( hr != S_OK )
-       continue; 
+	while(S_OK == pEnumMoniker->Next(1, &pMoniker, &nFetched) )
+	{
+		IPropertyBag *pBag;
+		hr = pMoniker->BindToStorage( 0, 0, IID_IPropertyBag, (void**) &pBag );
+		if( hr != S_OK )
+			continue; 
 
-    VARIANT var;
-    VariantInit(&var);
-    hr = pBag->Read( L"FriendlyName", &var, NULL ); 
-    if( hr != S_OK )
-    {
-      pMoniker->Release();
-      continue;
-    }
-    //USES_CONVERSION;
-    char szName[256];
+		VARIANT var;
+		VariantInit(&var);
+		hr = pBag->Read( L"FriendlyName", &var, NULL ); 
+		if( hr != S_OK )
+		{
+			pMoniker->Release();
+			continue;
+		}
+		//USES_CONVERSION;
+		char szName[256];
 
-    WideCharToMultiByte(CP_ACP,0,var.bstrVal,-1,szName,256,0,0);
-    VariantClear(&var); 
+		WideCharToMultiByte(CP_UTF8,0,var.bstrVal,-1,szName,256,0,0);
+		VariantClear(&var); 
 
-	  MSWebCam *cam=ms_web_cam_new(&ms_directx_cam_desc);
-    cam->name=ms_strdup(szName);
-	  ms_web_cam_manager_add_cam(obj,cam);
+		MSWebCam *cam=ms_web_cam_new(&ms_directx_cam_desc);
+		cam->name=ms_strdup(szName);
+		ms_web_cam_manager_add_cam(obj,cam);
 
-    pMoniker->Release();
-    pBag->Release();
-    pMoniker=NULL;
-    pBag=NULL;
+		pMoniker->Release();
+		pBag->Release();
+		pMoniker=NULL;
+		pBag=NULL;
 	}
 
 	pEnumMoniker->Release();
