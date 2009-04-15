@@ -247,12 +247,14 @@ int audio_stream_start_full(AudioStream *stream, RtpProfile *profile, const char
 		ms_filter_call_method(stream->ec,MS_FILTER_SET_SAMPLE_RATE,&pt->clock_rate);
 	}
 
-	if (stream->el_type!=ELInactive){
+	if (stream->el_type!=ELInactive || stream->use_gc){
 		stream->volsend=ms_filter_new(MS_VOLUME_ID);
 		stream->volrecv=ms_filter_new(MS_VOLUME_ID);
-		if (stream->el_type==ELControlSpeaker)
-			ms_filter_call_method(stream->volrecv,MS_VOLUME_SET_PEER,stream->volsend);
-		else ms_filter_call_method(stream->volsend,MS_VOLUME_SET_PEER,stream->volrecv);
+		if (stream->el_type!=ELInactive){
+			if (stream->el_type==ELControlSpeaker)
+				ms_filter_call_method(stream->volrecv,MS_VOLUME_SET_PEER,stream->volsend);
+			else ms_filter_call_method(stream->volsend,MS_VOLUME_SET_PEER,stream->volrecv);
+		}
 	}
 
 	/* give the sound filters some properties */
@@ -379,6 +381,7 @@ AudioStream *audio_stream_new(int locport, bool_t ipv6){
 	stream->session=create_duplex_rtpsession(locport,ipv6);
 	stream->rtpsend=ms_filter_new(MS_RTP_SEND_ID);
 	stream->play_dtmfs=TRUE;
+	stream->use_gc=FALSE;
 	return stream;
 }
 
@@ -397,6 +400,17 @@ void audio_stream_set_relay_session_id(AudioStream *stream, const char *id){
 
 void audio_stream_enable_echo_limiter(AudioStream *stream, EchoLimiterType type){
 	stream->el_type=type;
+}
+
+void audio_stream_enable_gain_control(AudioStream *stream, bool_t val){
+	stream->use_gc=val;
+}
+
+void audio_stream_set_mic_gain(AudioStream *stream, float gain){
+	if (stream->volsend){
+		ms_filter_call_method(stream->volsend,MS_VOLUME_SET_GAIN,&gain);
+	}else ms_warning("Could not apply gain: gain control wasn't activated. "
+			"Use audio_stream_enable_gain_control() before starting the stream.");
 }
 
 void audio_stream_stop(AudioStream * stream)

@@ -52,6 +52,7 @@ struct _AudioStream
 	time_t last_packet_time;
 	EchoLimiterType el_type; /*use echo limiter: two MSVolume, measured input level controlling local output level*/
 	bool_t play_dtmfs;
+	bool_t use_gc;
 };
 
 #ifdef __cplusplus
@@ -101,7 +102,12 @@ bool_t audio_stream_alive(AudioStream * stream, int timeout);
 /*enable echo-limiter dispositve: one MSVolume in input branch controls a MSVolume in the output branch*/
 void audio_stream_enable_echo_limiter(AudioStream *stream, EchoLimiterType type);
 
-/* stop the above process*/
+/*enable gain control, to be done before start() */
+void audio_stream_enable_gain_control(AudioStream *stream, bool_t val);
+
+void audio_stream_set_mic_gain(AudioStream *stream, float gain);
+
+/* stop the audio streaming thread and free everything*/
 void audio_stream_stop (AudioStream * stream);
 
 RingStream *ring_start (const char * file, int interval, MSSndCard *sndcard);
