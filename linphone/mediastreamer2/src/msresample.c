@@ -76,9 +76,9 @@ static void resample_process_ms2(MSFilter *obj){
 	  }
 
 	if (dt->input_rate<dt->output_rate)
-	    size_of_input=320;
+	    size_of_input=320*dt->input_rate/8000;
 	else
-	    size_of_input=320;
+	    size_of_input=320*dt->input_rate/8000;
 	size_of_output = (size_of_input * dt->output_rate)/dt->input_rate;
 
 	while((m=ms_queue_get(obj->inputs[0]))!=NULL){
