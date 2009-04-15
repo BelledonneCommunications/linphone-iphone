@@ -1423,7 +1423,7 @@ void linphone_core_init_media_streams(LinphoneCore *lc){
 			audio_stream_enable_echo_limiter(lc->audiostream,ELControlMic);
 		else if (strcasecmp(type,"speaker")==0)
 			audio_stream_enable_echo_limiter(lc->audiostream,ELControlSpeaker);
-		if (gain>0){
+		if (gain!=-1){
 			audio_stream_enable_gain_control(lc->audiostream,TRUE);
 		}
 		
@@ -1470,7 +1470,7 @@ static void post_configure_audio_streams(LinphoneCore *lc){
 		if (force!=-1)
 			ms_filter_call_method(f,MS_VOLUME_SET_EA_FORCE,&force);
 		if (gain!=-1)
-			ms_filter_call_method(st->volsend,MS_VOLUME_SET_GAIN,&gain);
+			audio_stream_set_mic_gain(st,gain);
 	}
 	if (lc->vtable.dtmf_received!=NULL){
 		/* replace by our default action*/
