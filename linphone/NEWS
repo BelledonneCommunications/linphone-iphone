@@ -1,4 +1,4 @@
-linphone-3.1.1 -- April 7, 2009
+linphone-3.1.1 -- April 14, 2009
 	* fix crash when opening property box, in some rare case
 	* windows version uses the new libmsdscap plugin (video capture using directshow)
 	* improved translations
