@@ -261,7 +261,12 @@ static void dec_process_frame(MSFilter *f, mblk_t *inm){
 			frame=s->input;
 			s->input=NULL;
 			while ( (remain=frame->b_wptr-frame->b_rptr)> 0) {
-				len=avcodec_decode_video(&s->av_context,&orig,&got_picture,(uint8_t*)frame->b_rptr,remain );
+				AVPacket pkt;
+				av_init_packet(&pkt);
+				pkt.data = frame->b_rptr;
+				pkt.size = remain;
+				len=avcodec_decode_video2(&s->av_context,&orig,&got_picture,&pkt);
+				/*len=avcodec_decode_video(&s->av_context,&orig,&got_picture,(uint8_t*)frame->b_rptr,remain );*/
 				if (len<=0) {
 					ms_warning("ms_AVdecoder_process: error %i.",len);
 					break;

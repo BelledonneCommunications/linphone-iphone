@@ -503,8 +503,12 @@ static void dec_process(MSFilter *f){
 			while (end-p>0) {
 				int len;
 				int got_picture=0;
+				AVPacket pkt;
 				avcodec_get_frame_defaults(&orig);
-				len=avcodec_decode_video(&d->av_context,&orig,&got_picture,p,end-p);
+				av_init_packet(&pkt);
+				pkt.data = p;
+				pkt.size = end-p;
+				len=avcodec_decode_video2(&d->av_context,&orig,&got_picture,&pkt);
 				if (len<=0) {
 					ms_warning("ms_AVdecoder_process: error %i.",len);
 					break;

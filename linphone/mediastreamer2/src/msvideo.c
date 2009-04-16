@@ -28,9 +28,11 @@ static void yuv_buf_init(YuvBuf *buf, int w, int h, uint8_t *ptr){
 	buf->planes[0]=ptr;
 	buf->planes[1]=buf->planes[0]+ysize;
 	buf->planes[2]=buf->planes[1]+usize;
+	buf->planes[3]=0;
 	buf->strides[0]=w;
 	buf->strides[1]=w/2;
 	buf->strides[2]=buf->strides[1];
+	buf->strides[3]=0;
 }
 
 int yuv_buf_init_from_mblk(YuvBuf *buf, mblk_t *m){

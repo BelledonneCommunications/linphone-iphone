@@ -46,13 +46,17 @@ static mblk_t *jpeg2yuv(uint8_t *jpgbuf, int bufsize, MSVideoSize *reqsize){
 	AVPicture dest;
 	mblk_t *ret;
 	struct SwsContext *sws_ctx;
+	AVPacket pkt;
 
 	avcodec_get_context_defaults(&av_context);
 	if (avcodec_open(&av_context,avcodec_find_decoder(CODEC_ID_MJPEG))<0){
 		ms_error("jpeg2yuv: avcodec_open failed");
 		return NULL;
 	}
-	if (avcodec_decode_video(&av_context,&orig,&got_picture,jpgbuf,bufsize)<0){
+	av_init_packet(&pkt);
+	pkt.data=jpgbuf;
+	pkt.size=bufsize;
+	if (avcodec_decode_video2(&av_context,&orig,&got_picture,&pkt)<0){
 		ms_error("jpeg2yuv: avcodec_decode_video failed");
 		avcodec_close(&av_context);
 		return NULL;
