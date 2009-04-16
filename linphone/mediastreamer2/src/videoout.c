@@ -146,9 +146,11 @@ static bool_t sdl_display_init(MSDisplay *obj, MSPicture *fbuf){
 		fbuf->planes[0]=lay->pixels[0];
 		fbuf->planes[1]=lay->pixels[2];
 		fbuf->planes[2]=lay->pixels[1];
+		fbuf->planes[3]=NULL;
 		fbuf->strides[0]=lay->pitches[0];
 		fbuf->strides[1]=lay->pitches[2];
 		fbuf->strides[2]=lay->pitches[1];
+		fbuf->strides[3]=0;
 		fbuf->w=lay->w;
 		fbuf->h=lay->h;
 		obj->data=lay;
@@ -376,9 +378,11 @@ static bool_t win_display_init(MSDisplay *obj, MSPicture *fbuf){
 	fbuf->planes[0]=wd->fb.planes[0]=(uint8_t*)ms_malloc0(ysize+2*usize);
 	fbuf->planes[1]=wd->fb.planes[1]=wd->fb.planes[0]+ysize;
 	fbuf->planes[2]=wd->fb.planes[2]=wd->fb.planes[1]+usize;
+	fbuf->planes[3]=NULL;
 	fbuf->strides[0]=wd->fb.strides[0]=wd->fb.w;
 	fbuf->strides[1]=wd->fb.strides[1]=wd->fb.w/2;
 	fbuf->strides[2]=wd->fb.strides[2]=wd->fb.w/2;
+	fbuf->strides[3]=0;
 
 	wd->rgb_len=ysize*3;
 	wd->rgb=(uint8_t*)ms_malloc0(wd->rgb_len);

@@ -867,27 +867,59 @@ void linphone_call_ringing(LinphoneCore *lc, eXosip_event_t *ev){
 
 }
 
+static void linphone_process_media_control_xml(LinphoneCore *lc, eXosip_event_t *ev){
+	osip_body_t *body=NULL;
+	osip_message_get_body(ev->request,0,&body);
+	if (body && body->body!=NULL &&
+		strstr(body->body,"picture_fast_update")){
+		osip_message_t *ans=NULL;
+		ms_message("Receiving VFU request !");
+		if (lc->videostream)
+			video_stream_send_vfu(lc->videostream);
+		eXosip_call_build_answer(ev->tid,200,&ans);
+		if (ans)
+			eXosip_call_send_answer(ev->tid,200,ans);
+	}
+}
+
+static void linphone_process_dtmf_relay(LinphoneCore *lc, eXosip_event_t *ev){
+	osip_body_t *body=NULL;
+	osip_message_get_body(ev->request,0,&body);
+	if (body && body->body!=NULL){
+		osip_message_t *ans=NULL;
+		const char *name=strstr(body->body,"Signal");
+		if (name==NULL) name=strstr(body->body,"signal");
+		if (name==NULL) {
+			ms_warning("Could not extract the dtmf name from the SIP INFO.");
+		}else{
+			char tmp[2];
+			name+=strlen("signal");
+			if (sscanf(name," = %1s",tmp)==1){
+				ms_message("Receiving dtmf %s via SIP INFO.",tmp);
+				if (lc->vtable.dtmf_received != NULL)
+					lc->vtable.dtmf_received(lc, tmp[0]);
+			}
+		}
+		
+		eXosip_call_build_answer(ev->tid,200,&ans);
+		if (ans)
+			eXosip_call_send_answer(ev->tid,200,ans);
+	}
+}
+
 void linphone_call_message_new(LinphoneCore *lc, eXosip_event_t *ev){
 #ifdef VIDEO_ENABLED
 	if (ev->request){
 		if (MSG_IS_INFO(ev->request)){
 			osip_content_type_t *ct;
 			ct=osip_message_get_content_type(ev->request);
-			if (ct && ct->subtype &&
-				strcmp(ct->subtype,"media_control+xml")==0){
-				osip_body_t *body=NULL;
-				osip_message_get_body(ev->request,0,&body);
-				if (body && body->body!=NULL &&
-					strstr(body->body,"picture_fast_update")){
-					osip_message_t *ans=NULL;
-					ms_message("Receiving VFU request !");
-					if (lc->videostream)
-						video_stream_send_vfu(lc->videostream);
-					eXosip_call_build_answer(ev->tid,200,&ans);
-					if (ans)
-						eXosip_call_send_answer(ev->tid,200,ans);
-				}
-			}	
+			if (ct && ct->subtype){
+				if (strcmp(ct->subtype,"media_control+xml")==0)
+					linphone_process_media_control_xml(lc,ev);
+				else if (strcmp(ct->subtype,"dtmf-relay")==0)
+					linphone_process_dtmf_relay(lc,ev);
+				else ms_message("Unhandled SIP INFO.");
+			}
 		}
 	}else ms_warning("linphone_call_message_new: No request ?");
 #endif

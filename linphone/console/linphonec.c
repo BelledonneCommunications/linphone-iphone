@@ -109,6 +109,7 @@ static void linphonec_text_received(LinphoneCore *lc, LinphoneChatRoom *cr,
 		const char *from, const char *msg);
 static void linphonec_display_status (LinphoneCore * lc, const char *something);
 static void linphonec_general_state (LinphoneCore * lc, LinphoneGeneralState *gstate);
+static void linphonec_dtmf_received(LinphoneCore *lc, int dtmf);
 static void print_prompt(LinphoneCore *opm);
 /***************************************************************************
  *
@@ -146,23 +147,24 @@ static ortp_socket_t server_sock;
 
 
 LinphoneCoreVTable linphonec_vtable = {
-	show:(ShowInterfaceCb) stub,
-	inv_recv: linphonec_call_received,
-	bye_recv: linphonec_bye_received, 
-	notify_recv: linphonec_notify_received,
-	new_unknown_subscriber: linphonec_new_unknown_subscriber,
-	auth_info_requested: linphonec_prompt_for_auth,
-	display_status:linphonec_display_status,
-	display_message:linphonec_display_something,
+	.show =(ShowInterfaceCb) stub,
+	.inv_recv = linphonec_call_received,
+	.bye_recv = linphonec_bye_received, 
+	.notify_recv = linphonec_notify_received,
+	.new_unknown_subscriber = linphonec_new_unknown_subscriber,
+	.auth_info_requested = linphonec_prompt_for_auth,
+	.display_status = linphonec_display_status,
+	.display_message=linphonec_display_something,
 #ifdef VINCENT_MAURY_RSVP
 	/* the yes/no dialog box */
-	display_yes_no: (DisplayMessageCb) stub,
+	.display_yes_no= (DisplayMessageCb) stub,
 #endif
-	display_warning:linphonec_display_warning,
-	display_url:linphonec_display_url,
-	display_question:(DisplayQuestionCb)stub,
-	text_received:linphonec_text_received,
-        general_state:linphonec_general_state
+	.display_warning=linphonec_display_warning,
+	.display_url=linphonec_display_url,
+	.display_question=(DisplayQuestionCb)stub,
+	.text_received=linphonec_text_received,
+        .general_state=linphonec_general_state,
+	.dtmf_received=linphonec_dtmf_received
 };
 
 /***************************************************************************
@@ -296,6 +298,10 @@ linphonec_text_received(LinphoneCore *lc, LinphoneChatRoom *cr,
 	// TODO: provide mechanism for answering.. ('say' command?)
 }
 
+
+static void linphonec_dtmf_received(LinphoneCore *lc, int dtmf){
+	printf("Receiving tone %c",dtmf);
+}
 
 static void 
 linphonec_general_state (LinphoneCore * lc, LinphoneGeneralState *gstate)
