@@ -794,7 +794,7 @@ static MSFilterMethod winsndds_methods[]={
 
 MSFilterDesc winsndds_read_desc={
 	MS_WINSNDDS_READ_ID,
-	"MSWinSndRead",
+	"MSWinSndDsRead",
 	"Sound capture filter for Windows Sound drivers",
 	MS_FILTER_OTHER,
 	NULL,
@@ -811,7 +811,7 @@ MSFilterDesc winsndds_read_desc={
 
 MSFilterDesc winsndds_write_desc={
 	MS_WINSNDDS_WRITE_ID,
-	"MSWinSndWrite",
+	"MSWinSndDsWrite",
 	"Sound playback filter for Windows Sound drivers",
 	MS_FILTER_OTHER,
 	NULL,
