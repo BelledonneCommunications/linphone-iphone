@@ -45,4 +45,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #  include "swscale.h"
 #endif
 
+
+#if LIBAVCODEC_VERSION_MAJOR <= 51
+/*should work as long as nobody uses avformat.h*/
+typedef struct AVPacket{
+	uint8_t *data;
+	int size;
+}AVPacket;
+
+static inline int avcodec_decode_video2(AVCodecContext *avctx, AVFrame *picture,
+                         int *got_picture_ptr,
+                         AVPacket *avpkt){
+	return avcodec_decode_video(avctx,picture, got_picture_ptr,avpkt->data,avpkt->size);
+}
+#endif
+
 #endif /* FFMPEG_PRIV_H */

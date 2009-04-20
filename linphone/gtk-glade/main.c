@@ -740,6 +740,7 @@ static void linphone_gtk_init_status_icon(){
 	g_signal_connect(G_OBJECT(icon),"popup-menu",(GCallback)icon_popup_menu,NULL);
 	title=linphone_gtk_get_ui_config("title",_("Linphone - a video internet phone"));
 	gtk_status_icon_set_tooltip(icon,title);
+	gtk_status_icon_set_visible(icon,TRUE);
 	g_object_set_data(G_OBJECT(icon),"menu",menu);
 	g_object_weak_ref(G_OBJECT(icon),(GWeakNotify)gtk_widget_destroy,menu);
 }
