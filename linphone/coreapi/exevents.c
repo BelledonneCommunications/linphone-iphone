@@ -874,8 +874,10 @@ static void linphone_process_media_control_xml(LinphoneCore *lc, eXosip_event_t 
 		strstr(body->body,"picture_fast_update")){
 		osip_message_t *ans=NULL;
 		ms_message("Receiving VFU request !");
+#ifdef VIDEO_ENABLED
 		if (lc->videostream)
 			video_stream_send_vfu(lc->videostream);
+#endif
 		eXosip_call_build_answer(ev->tid,200,&ans);
 		if (ans)
 			eXosip_call_send_answer(ev->tid,200,ans);
@@ -908,7 +910,6 @@ static void linphone_process_dtmf_relay(LinphoneCore *lc, eXosip_event_t *ev){
 }
 
 void linphone_call_message_new(LinphoneCore *lc, eXosip_event_t *ev){
-#ifdef VIDEO_ENABLED
 	if (ev->request){
 		if (MSG_IS_INFO(ev->request)){
 			osip_content_type_t *ct;
@@ -922,7 +923,6 @@ void linphone_call_message_new(LinphoneCore *lc, eXosip_event_t *ev){
 			}
 		}
 	}else ms_warning("linphone_call_message_new: No request ?");
-#endif
 }
 
 void linphone_registration_faillure(LinphoneCore *lc, eXosip_event_t *ev){
