@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #else
 #include <ffmpeg/avcodec.h>
 #endif
+
 #include "mediastreamer2/msfilter.h"
 #include "mediastreamer2/msvideo.h"
 #include "mediastreamer2/msticker.h"
@@ -40,11 +41,27 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 static bool_t avcodec_initialized=FALSE;
 
+#ifdef ENABLE_LOG_FFMPEG
+
+void ms_ffmpeg_log_callback(void* ptr, int level, const char* fmt, va_list vl)
+{
+	static char message[8192];
+
+    vsnprintf(message, sizeof message, fmt, vl);
+	ms_message(message);
+}
+
+#endif
+
 void ms_ffmpeg_check_init(){
 	if(!avcodec_initialized){
 		avcodec_init();
 		avcodec_register_all();
 		avcodec_initialized=TRUE;
+#ifdef ENABLE_LOG_FFMPEG
+		av_log_set_level(AV_LOG_WARNING);
+		av_log_set_callback(&ms_ffmpeg_log_callback);
+#endif
 	}
 }
 
