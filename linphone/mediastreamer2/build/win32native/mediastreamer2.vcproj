@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\..\codecs\libresample\include;..\..\..\portaudio\include;&quot;..\..\..\win32-bin\include\baseclasses&quot;;&quot;..\..\..\win32-bin\include&quot;;.;..\..\..\mediastreamer2\include;..\..\..\oRTP\include;..\..\..\codecs\speex\include;..\..\..\codecs\gsm\inc"
-				PreprocessorDefinitions="HAVE_SPEEXDSP;HAVE_DIRECTSHOW;VIDEO_ENABLED;EMULATE_INTTYPES;AMD_HACK;CONF_GRAN_MAX=4;HAVE_SPEEX_NOISE;ICE_TEST;ORTP_INET6;WIN32;_DEBUG;_WINDOWS;_USRDLL;MEDIASTREAMER2_EXPORTS;WINDOW_NATIVE;_CRT_SECURE_NO_DEPRECATE"
+				PreprocessorDefinitions="__STDC_CONSTANT_MACROS;HAVE_LIBSWSCALE_SWSCALE_H;HAVE_LIBAVCODEC_AVCODEC_H;HAVE_SPEEXDSP;HAVE_DIRECTSHOW;VIDEO_ENABLED;AMD_HACK;ORTP_INET6;WIN32;_DEBUG;_WINDOWS;_USRDLL;MEDIASTREAMER2_EXPORTS;WINDOW_NATIVE;_CRT_SECURE_NO_DEPRECATE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -63,7 +63,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="quartz.lib dmoguids.lib strmiids.lib strmbasd.lib libtheora.lib vfw32.lib avcodec-51.lib Ws2_32.lib Winmm.lib ortp.lib libspeexd.lib libspeexdspd.lib libcmtd.lib"
+				AdditionalDependencies="swscale.lib avcodec-52.lib quartz.lib dmoguids.lib strmiids.lib strmbasd.lib libtheora.lib vfw32.lib Ws2_32.lib Winmm.lib ortp.lib libspeexd.lib libspeexdspd.lib libcmtd.lib"
 				OutputFile="$(IntDir)/mediastreamer2.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\..\win32-bin\lib,&quot;..\..\..\oRTP\build\win32native\debug&quot;,..\..\..\codecs\speex\lib"
@@ -126,7 +126,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="..\..\..\codecs\libresample\include;..\..\..\portaudio\include;&quot;..\..\..\win32-bin\include\baseclasses&quot;;&quot;..\..\..\win32-bin\include&quot;;.;..\..\..\mediastreamer2\include;..\..\..\oRTP\include;..\..\..\codecs\speex\include;..\..\..\codecs\gsm\inc"
-				PreprocessorDefinitions="HAVE_SPEEXDSP;HAVE_DIRECTSHOW;VIDEO_ENABLED;EMULATE_INTTYPES;CONF_GRAN_MAX=4;AMD_HACK;HAVE_SPEEX_NOISE;ICE_TEST;ORTP_INET6;WIN32;NDEBUG;_WINDOWS;_USRDLL;MEDIASTREAMER2_EXPORTS;WINDOW_NATIVE;_CRT_SECURE_NO_DEPRECATE"
+				PreprocessorDefinitions="__STDC_CONSTANT_MACROS;HAVE_LIBSWSCALE_SWSCALE_H;HAVE_LIBAVCODEC_AVCODEC_H;HAVE_SPEEXDSP;HAVE_DIRECTSHOW;VIDEO_ENABLED;AMD_HACK;ORTP_INET6;WIN32;NDEBUG;_WINDOWS;_USRDLL;MEDIASTREAMER2_EXPORTS;WINDOW_NATIVE;_CRT_SECURE_NO_DEPRECATE"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				ProgramDataBaseFileName="$(IntDir)/libmediastreamer2.pdb"
@@ -146,7 +146,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="quartz.lib dmoguids.lib strmiids.lib strmbase.lib libtheora.lib vfw32.lib avcodec-51.lib Ws2_32.lib Winmm.lib ortp.lib libspeex.lib libspeexdsp.lib libcmt.lib"
+				AdditionalDependencies="swscale.lib avcodec-52.lib quartz.lib dmoguids.lib strmiids.lib strmbase.lib libtheora.lib vfw32.lib Ws2_32.lib Winmm.lib ortp.lib libspeex.lib libspeexdsp.lib libcmt.lib"
 				OutputFile="$(IntDir)/mediastreamer2.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\..\win32-bin\lib,&quot;..\..\..\oRTP\build\win32native\release&quot;,..\..\..\codecs\speex\lib"
@@ -373,6 +373,10 @@
 			</File>
 			<File
 				RelativePath="..\..\src\dxfilter.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ffmpeg-priv.h"
 				>
 			</File>
 			<File
