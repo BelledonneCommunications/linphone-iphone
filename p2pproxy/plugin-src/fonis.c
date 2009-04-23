@@ -121,6 +121,8 @@ static void fonis_exit(){
 }
 
 
+
+
 static SipSetup fonis_sip_setup={
 	.capabilities=SIP_SETUP_CAP_PROXY_PROVIDER|SIP_SETUP_CAP_STUN_PROVIDER|
 				SIP_SETUP_CAP_RELAY_PROVIDER|SIP_SETUP_CAP_ACCOUNT_MANAGER,
@@ -131,7 +133,13 @@ static SipSetup fonis_sip_setup={
 	.get_proxy=fonis_get_proxy,
 	.get_stun_servers=fonis_get_stun_servers,
 	.get_relay=fonis_get_relay,
-	.exit=fonis_exit
+	.exit=fonis_exit,
+	.notice="<b>WARNING: experimental feature !</b>"
+"FONIS stands for Free Overlay Network for Instant SIP.\n"
+"Based on SIP and Peer to Peer technologies, it allows people to find each other through the help of a virtual network.
+"Once you and your friends are registered, you'll be able to call each other simply by entering your friend's username in 
+"linphone's sip uri box."
+"Read more information about FONIS at http://www.fonis.org"
 };
 
 void libfonisprovider_init(void){
