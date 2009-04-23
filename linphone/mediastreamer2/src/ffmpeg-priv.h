@@ -53,6 +53,9 @@ typedef struct AVPacket{
 	int size;
 }AVPacket;
 
+static inline void av_init_packet(AVPacket *pkt){
+	
+}
 static inline int avcodec_decode_video2(AVCodecContext *avctx, AVFrame *picture,
                          int *got_picture_ptr,
                          AVPacket *avpkt){
