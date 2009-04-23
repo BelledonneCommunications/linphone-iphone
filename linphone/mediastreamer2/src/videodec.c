@@ -38,7 +38,7 @@ typedef struct DecState{
 	YuvBuf outbuf;
 	mblk_t *yuv_msg;
 	struct SwsContext *sws_ctx;
-	PixelFormat output_pix_fmt;
+	enum PixelFormat output_pix_fmt;
 	uint8_t dci[512];
 	int dci_size;
 	bool_t snow_initialized;
