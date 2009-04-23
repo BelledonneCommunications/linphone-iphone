@@ -329,6 +329,7 @@ static bool_t win_display_init(MSDisplay *obj, MSPicture *fbuf){
 		wd->fb.planes[0]=NULL;
 		wd->fb.planes[1]=NULL;
 		wd->fb.planes[2]=NULL;
+		wd->fb.planes[3]=NULL;
 		if (wd->rgb) ms_free(wd->rgb);
 		wd->rgb=NULL;
 		wd->rgb_len=0;
@@ -399,15 +400,15 @@ typedef struct yuv{
 
 
 
-static void yuv420p_to_rgb(WinDisplay *wd, MSPicture *src, uint8_t *rgb){
+void yuv420p_to_rgb(WinDisplay *wd, MSPicture *src, uint8_t *rgb){
 	int rgb_stride=-src->w*3;
 	uint8_t *p;
 
 	p=rgb+(src->w*3*(src->h-1));
 	if (wd->sws==NULL){
 		wd->sws=sws_getContext(src->w,src->h,PIX_FMT_YUV420P,
-			src->w,src->h,PIX_FMT_BGR24,
-			0, NULL, NULL, NULL);
+			src->w,src->h, PIX_FMT_BGR24,
+			SWS_FAST_BILINEAR, NULL, NULL, NULL);
 	}
 	if (sws_scale(wd->sws,src->planes,src->strides, 0,
            			src->h, &p, &rgb_stride)<0){
@@ -794,6 +795,7 @@ static void video_out_process(MSFilter *f){
 		corner.planes[0]+=obj->local_rect.x+(obj->local_rect.y*corner.strides[0]);
 		corner.planes[1]+=(obj->local_rect.x/2)+((obj->local_rect.y/2)*corner.strides[1]);
 		corner.planes[2]+=(obj->local_rect.x/2)+((obj->local_rect.y/2)*corner.strides[2]);
+		corner.planes[3]=0;
 		ms_display_lock(obj->display);
 		yuv_buf_copy(obj->local_pic.planes,obj->local_pic.strides,
 				corner.planes,corner.strides,roi);
@@ -838,6 +840,7 @@ static int video_out_set_corner(MSFilter *f,void *arg){
 		memset(s->fbuf.planes[0], 0, ysize);
 		memset(s->fbuf.planes[1], 0, usize);
 		memset(s->fbuf.planes[2], 0, usize);
+		s->fbuf.planes[3]=NULL;
 		}
 		ms_display_unlock(s->display);
 	}
