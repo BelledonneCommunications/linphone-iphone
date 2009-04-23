@@ -136,8 +136,8 @@ static SipSetup fonis_sip_setup={
 	.exit=fonis_exit,
 	.notice="<b>WARNING: experimental feature !</b>"
 "FONIS stands for Free Overlay Network for Instant SIP.\n"
-"Based on SIP and Peer to Peer technologies, it allows people to find each other through the help of a virtual network.
-"Once you and your friends are registered, you'll be able to call each other simply by entering your friend's username in 
+"Based on SIP and Peer to Peer technologies, it allows people to find each other through the help of a virtual network."
+"Once you and your friends are registered, you'll be able to call each other simply by entering your friend's username in "
 "linphone's sip uri box."
 "Read more information about FONIS at http://www.fonis.org"
 };
