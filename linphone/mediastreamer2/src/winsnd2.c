@@ -16,7 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-#if !defined(_WIN32_WCE) /* Allready defined for wince */
+
+#ifndef UNICODE
 #define UNICODE
 #endif
 
@@ -60,20 +61,20 @@ static void winsndcard_set_level(MSSndCard *card, MSSndCardMixerElem e, int perc
 	MIXERLINE Line;
 	UINT uLineIndex;
 
-    MMRESULT mr = MMSYSERR_NOERROR;
-    DWORD dwVolume = 0xFFFF;
-    dwVolume = ((0xFFFF) * percent) / 100;
+	MMRESULT mr = MMSYSERR_NOERROR;
+	DWORD dwVolume = 0xFFFF;
+	dwVolume = ((0xFFFF) * percent) / 100;
 
 	switch(e){
 		case MS_SND_CARD_MASTER:
 			mr = waveOutSetVolume((HWAVEOUT)d->out_devid, dwVolume);
-	        if (mr != MMSYSERR_NOERROR)
-	        {
-                ms_warning("Failed to set master volume. (waveOutSetVolume:0x%i)", mr);
-                return;
-	        }
-        break;
-        case MS_SND_CARD_CAPTURE:
+			if (mr != MMSYSERR_NOERROR)
+			{
+				ms_warning("Failed to set master volume. (waveOutSetVolume:0x%i)", mr);
+				return;
+			}
+			break;
+		case MS_SND_CARD_CAPTURE:
 			mr = mixerGetID( (HMIXEROBJ)d->in_devid, &uMixerID, MIXER_OBJECTF_WAVEIN );
 			if ( mr != MMSYSERR_NOERROR )
 			{
@@ -212,12 +213,12 @@ static void winsndcard_set_level(MSSndCard *card, MSSndCardMixerElem e, int perc
 				}
 			}
 			mixerClose( (HMIXER)dwMixerHandle );
-	        if (mr != MMSYSERR_NOERROR)
-	        {
-                ms_warning("Failed to set capture volume. (waveInSetVolume:0x%i)", mr);
-                return;
-	        }
-		break;
+			if (mr != MMSYSERR_NOERROR)
+			{
+				ms_warning("Failed to set capture volume. (waveInSetVolume:0x%i)", mr);
+				return;
+			}
+			break;
 		case MS_SND_CARD_PLAYBACK:
 			{
 				MIXERLINECONTROLS mlc = {0};
@@ -279,8 +280,8 @@ static void winsndcard_set_level(MSSndCard *card, MSSndCardMixerElem e, int perc
 					return;
 				}
 			}
-		break;
-        default:
+			break;
+		default:
 			ms_warning("winsnd_card_set_level: unsupported command.");
 	}
 }
@@ -288,15 +289,15 @@ static void winsndcard_set_level(MSSndCard *card, MSSndCardMixerElem e, int perc
 static int winsndcard_get_level(MSSndCard *card, MSSndCardMixerElem e){
 	switch(e){
 		case MS_SND_CARD_MASTER:
-            /*mr=waveOutGetVolume(d->waveoutdev, &dwVolume);*/
-            /* Transform to 0 to 100 scale*/
-            /*dwVolume = (dwVolume *100) / (0xFFFF);*/
-            return 60;
-        break;
-        case MS_SND_CARD_CAPTURE:
-		break;
+			/*mr=waveOutGetVolume(d->waveoutdev, &dwVolume);*/
+			/* Transform to 0 to 100 scale*/
+			/*dwVolume = (dwVolume *100) / (0xFFFF);*/
+			return 60;
+			break;
+		case MS_SND_CARD_CAPTURE:
+			break;
 		case MS_SND_CARD_PLAYBACK:
-		break;
+			break;
 		default:
 			ms_warning("winsnd_card_get_level: unsupported command.");
 			return -1;
@@ -308,9 +309,9 @@ static void winsndcard_set_source(MSSndCard *card, MSSndCardCapture source){
 
 	switch(source){
 		case MS_SND_CARD_MIC:
-		break;
+			break;
 		case MS_SND_CARD_LINE:
-		break;
+			break;
 	}	
 }
 
@@ -370,7 +371,7 @@ static void add_or_update_card(MSSndCardManager *m, const char *name, int indev,
 				d->in_devid=indev;
 			if (outdev!=-1)
 				d->out_devid=outdev;
-				
+
 			return;
 		}
 	}
@@ -379,20 +380,20 @@ static void add_or_update_card(MSSndCardManager *m, const char *name, int indev,
 }
 
 static void winsndcard_detect(MSSndCardManager *m){
-    MMRESULT mr = NOERROR;
-    unsigned int nOutDevices = waveOutGetNumDevs ();
-    unsigned int nInDevices = waveInGetNumDevs ();
-    unsigned int item;
+	MMRESULT mr = NOERROR;
+	unsigned int nOutDevices = waveOutGetNumDevs ();
+	unsigned int nInDevices = waveInGetNumDevs ();
+	unsigned int item;
 
-    if (nOutDevices>nInDevices)
+	if (nOutDevices>nInDevices)
 		nInDevices = nOutDevices;
 
-    for (item = 0; item < nInDevices; item++){
-		
-        WAVEINCAPS incaps;
-        WAVEOUTCAPS outcaps;
-        mr = waveInGetDevCaps (item, &incaps, sizeof (WAVEINCAPS));
-        if (mr == MMSYSERR_NOERROR)
+	for (item = 0; item < nInDevices; item++){
+
+		WAVEINCAPS incaps;
+		WAVEOUTCAPS outcaps;
+		mr = waveInGetDevCaps (item, &incaps, sizeof (WAVEINCAPS));
+		if (mr == MMSYSERR_NOERROR)
 		{
 #if defined(_WIN32_WCE)
 			char card[256];
@@ -405,21 +406,21 @@ static void winsndcard_detect(MSSndCardManager *m){
 			add_or_update_card(m,szName,item,-1,MS_SND_CARD_CAP_CAPTURE);
 #endif
 		}
-    	mr = waveOutGetDevCaps (item, &outcaps, sizeof (WAVEOUTCAPS));
-        if (mr == MMSYSERR_NOERROR)
+		mr = waveOutGetDevCaps (item, &outcaps, sizeof (WAVEOUTCAPS));
+		if (mr == MMSYSERR_NOERROR)
 		{
 #if defined(_WIN32_WCE)
 			char card[256];
 			snprintf(card, sizeof(card), "Output card %i", item);
-    		add_or_update_card(m,card,-1,item,MS_SND_CARD_CAP_PLAYBACK);
+			add_or_update_card(m,card,-1,item,MS_SND_CARD_CAP_PLAYBACK);
 			/* _tprintf(L"new card: %s", outcaps.szPname); */
 #else
 			char szName[256];
 			WideCharToMultiByte(CP_UTF8,0,outcaps.szPname,-1,szName,256,0,0);
-    		add_or_update_card(m,szName,-1,item,MS_SND_CARD_CAP_PLAYBACK);
+			add_or_update_card(m,szName,-1,item,MS_SND_CARD_CAP_PLAYBACK);
 #endif
 		}
-    }
+	}
 }
 
 
@@ -500,7 +501,7 @@ static void winsnd_uninit(MSFilter *f){
 	flushq(&d->write_rq,0);
 #ifndef DISABLE_SPEEX
 	if (d->pst!=NULL)
-	    speex_preprocess_state_destroy(d->pst);
+		speex_preprocess_state_destroy(d->pst);
 	d->pst=NULL;
 	d->pst_frame_size=0;
 #endif
@@ -533,7 +534,7 @@ static void add_input_buffer(WinSnd *d, WAVEHDR *hdr, int buflen){
 
 static void CALLBACK 
 read_callback (HWAVEIN waveindev, UINT uMsg, DWORD dwInstance, DWORD dwParam1,
-                DWORD dwParam2)
+			   DWORD dwParam2)
 {
 	WAVEHDR *wHdr=(WAVEHDR *) dwParam1;
 	MSFilter *f=(MSFilter *)dwInstance;
@@ -543,10 +544,10 @@ read_callback (HWAVEIN waveindev, UINT uMsg, DWORD dwInstance, DWORD dwParam1,
 	switch (uMsg){
 		case WIM_OPEN:
 			ms_debug("read_callback : WIM_OPEN");
-		break;
+			break;
 		case WIM_CLOSE:
 			ms_debug("read_callback : WIM_CLOSE");
-		break;
+			break;
 		case WIM_DATA:
 			bsize=wHdr->dwBytesRecorded;
 			if (bsize<=0) {
@@ -582,7 +583,7 @@ read_callback (HWAVEIN waveindev, UINT uMsg, DWORD dwInstance, DWORD dwParam1,
 			if (f->ticker->TimeEvent!=NULL)
 				SetEvent(f->ticker->TimeEvent);
 #endif
-		break;
+			break;
 	}
 }
 
@@ -601,27 +602,27 @@ static void winsnd_read_preprocess(MSFilter *f){
 
 	winsnd_apply_settings(d);
 	/* Init Microphone device */
-  dwFlag = CALLBACK_FUNCTION | WAVE_FORMAT_DIRECT;
-  mr = waveInOpen (&d->indev, d->dev_id, &d->wfx,
-              (DWORD) read_callback, (DWORD)f, dwFlag);
+	dwFlag = CALLBACK_FUNCTION | WAVE_FORMAT_DIRECT;
+	mr = waveInOpen (&d->indev, d->dev_id, &d->wfx,
+		(DWORD) read_callback, (DWORD)f, dwFlag);
 	if (mr != MMSYSERR_NOERROR)
 	{
-    ms_error("Failed to prepare windows sound device. (waveInOpen:0x%i)", mr);
-    if (d->dev_id != WAVE_MAPPER)
-		    dwFlag = WAVE_MAPPED | CALLBACK_FUNCTION;
-    mr = waveInOpen (&d->indev, d->dev_id, &d->wfx,
-              (DWORD) read_callback, (DWORD)f, dwFlag);
-  }
+		ms_error("Failed to prepare windows sound device. (waveInOpen:0x%i)", mr);
+		if (d->dev_id != WAVE_MAPPER)
+			dwFlag = WAVE_MAPPED | CALLBACK_FUNCTION;
+		mr = waveInOpen (&d->indev, d->dev_id, &d->wfx,
+			(DWORD) read_callback, (DWORD)f, dwFlag);
+	}
 	if (mr != MMSYSERR_NOERROR)
 	{
-    ms_error("Failed to prepare windows sound device. (waveInOpen:0x%i)", mr);
+		ms_error("Failed to prepare windows sound device. (waveInOpen:0x%i)", mr);
 		mr = waveInOpen (&d->indev, WAVE_MAPPER, &d->wfx,
-					(DWORD) read_callback, (DWORD)f, CALLBACK_FUNCTION);
+			(DWORD) read_callback, (DWORD)f, CALLBACK_FUNCTION);
 		if (mr != MMSYSERR_NOERROR)
 		{
 			d->indev=NULL;
 			ms_error("Failed to prepare windows sound device. (waveInOpen:0x%i)", mr);
-		    return ;
+			return ;
 		}
 	}
 	bsize=WINSND_NSAMPLES*d->wfx.nAvgBytesPerSec/8000;
@@ -702,11 +703,11 @@ static void winsnd_read_process(MSFilter *f){
 
 static void CALLBACK
 write_callback(HWAVEOUT outdev, UINT uMsg, DWORD dwInstance,
-                 DWORD dwParam1, DWORD dwParam2)
+			   DWORD dwParam1, DWORD dwParam2)
 {
 	WAVEHDR *hdr=(WAVEHDR *) dwParam1;
 	WinSnd *d=(WinSnd*)dwInstance;
-	
+
 	switch (uMsg){
 		case WOM_OPEN:
 			break;
@@ -721,7 +722,7 @@ write_callback(HWAVEOUT outdev, UINT uMsg, DWORD dwInstance,
 				d->stat_notplayed=0;
 			}
 			d->stat_output++;
-		break;
+			break;
 	}
 }
 
@@ -740,20 +741,20 @@ static void winsnd_write_preprocess(MSFilter *f){
 	/* Init Microphone device */
 	dwFlag = CALLBACK_FUNCTION | WAVE_FORMAT_DIRECT;
 	mr = waveOutOpen (&d->outdev, d->dev_id, &d->wfx,
-	            (DWORD) write_callback, (DWORD)d, dwFlag);
+		(DWORD) write_callback, (DWORD)d, dwFlag);
 	if (mr != MMSYSERR_NOERROR)
 	{
 		ms_error("Failed to open windows sound device %i. (waveOutOpen:0x%i)",d->dev_id, mr);
-	  if (d->dev_id != WAVE_MAPPER)
-		  dwFlag = WAVE_MAPPED | CALLBACK_FUNCTION;
-	  mr = waveOutOpen (&d->outdev, d->dev_id, &d->wfx,
-  	            (DWORD) write_callback, (DWORD)d, dwFlag);
-  }
+		if (d->dev_id != WAVE_MAPPER)
+			dwFlag = WAVE_MAPPED | CALLBACK_FUNCTION;
+		mr = waveOutOpen (&d->outdev, d->dev_id, &d->wfx,
+			(DWORD) write_callback, (DWORD)d, dwFlag);
+	}
 	if (mr != MMSYSERR_NOERROR)
 	{
 		ms_error("Failed to open windows sound device %i. (waveOutOpen:0x%i)",d->dev_id, mr);
 		mr = waveOutOpen (&d->outdev, WAVE_MAPPER, &d->wfx,
-					(DWORD) write_callback, (DWORD)d, CALLBACK_FUNCTION);
+			(DWORD) write_callback, (DWORD)d, CALLBACK_FUNCTION);
 		if (mr != MMSYSERR_NOERROR)
 		{
 			ms_error("Failed to open windows sound device %i. (waveOutOpen:0x%i)",d->dev_id, mr);
@@ -803,7 +804,7 @@ static void winsnd_write_postprocess(MSFilter *f){
 
 #ifndef DISABLE_SPEEX
 	if (d->pst!=NULL)
-	    speex_preprocess_state_destroy(d->pst);
+		speex_preprocess_state_destroy(d->pst);
 	d->pst=NULL;
 	d->pst_frame_size=0;
 #endif
@@ -852,24 +853,24 @@ static void winsnd_write_process(MSFilter *f){
 #ifdef AMD_HACK
 	/* too many sound card are crappy on windows... */
 	d->stat_minimumbuffer=15;
-  if (d->wfx.nSamplesPerSec>=32000) /* better results for high rates */
-  	d->stat_minimumbuffer=8;
+	if (d->wfx.nSamplesPerSec>=32000) /* better results for high rates */
+		d->stat_minimumbuffer=8;
 #endif
 
-  if (d->wfx.nSamplesPerSec>=32000) /* better results for high rates */
-  {
-	  if (d->nbufs_playing+d->write_rq.q_mcount<4)
-	  {
-		  d->ready=0;
-	  }
-  }
-  else
-  {
-	  if (d->nbufs_playing+d->write_rq.q_mcount<7)
-	  {
-		  d->ready=0;
-	  }
-  }
+	if (d->wfx.nSamplesPerSec>=32000) /* better results for high rates */
+	{
+		if (d->nbufs_playing+d->write_rq.q_mcount<4)
+		{
+			d->ready=0;
+		}
+	}
+	else
+	{
+		if (d->nbufs_playing+d->write_rq.q_mcount<7)
+		{
+			d->ready=0;
+		}
+	}
 #if defined(WCE_OPTICON_WORKAROUND)
 	if (d->workaround==0)
 	{
@@ -893,11 +894,11 @@ static void winsnd_write_process(MSFilter *f){
 				if (vad==0)
 				{
 					int missing;
-          missing = 10 - d->write_rq.q_mcount - d->nbufs_playing;
-          if (d->wfx.nSamplesPerSec>=32000) /* better results for high rates */
-            missing = 6 - d->write_rq.q_mcount - d->nbufs_playing;
+					missing = 10 - d->write_rq.q_mcount - d->nbufs_playing;
+					if (d->wfx.nSamplesPerSec>=32000) /* better results for high rates */
+						missing = 6 - d->write_rq.q_mcount - d->nbufs_playing;
 
-		      ms_message("WINSND trouble: inserting %i silence", missing);
+					ms_message("WINSND trouble: inserting %i silence", missing);
 					while(missing>0)
 					{
 						old=dupb(m);
@@ -911,10 +912,10 @@ static void winsnd_write_process(MSFilter *f){
 #else
 		if (d->ready==0)
 		{
-      int missing;
+			int missing;
 			missing = 10 - d->write_rq.q_mcount - d->nbufs_playing;
-      if (d->wfx.nSamplesPerSec>=32000) /* better results for high rates */
-  			missing = 6 - d->write_rq.q_mcount - d->nbufs_playing;
+			if (d->wfx.nSamplesPerSec>=32000) /* better results for high rates */
+				missing = 6 - d->write_rq.q_mcount - d->nbufs_playing;
 			ms_message("WINSND trouble: inserting %i silence", missing);
 			while(missing>0)
 			{
@@ -941,9 +942,9 @@ static void winsnd_write_process(MSFilter *f){
 				hdr->lpData=(LPSTR)m->b_rptr;
 				hdr->dwBufferLength=msgdsize(m);
 				hdr->dwFlags = 0;
-			    hdr->dwUser = (DWORD)m;
-			    mr = waveOutPrepareHeader(d->outdev,hdr,sizeof(*hdr));
-			    if (mr != MMSYSERR_NOERROR){
+				hdr->dwUser = (DWORD)m;
+				mr = waveOutPrepareHeader(d->outdev,hdr,sizeof(*hdr));
+				if (mr != MMSYSERR_NOERROR){
 					ms_error("waveOutPrepareHeader() error");
 					getq(&d->write_rq);
 					freemsg(m);
@@ -975,8 +976,8 @@ static void winsnd_write_process(MSFilter *f){
 				/* initial behavior (detection in process?) */
 				getq(&d->write_rq);
 				freemsg(m);
-		    discarded++;
-		    d->stat_notplayed++;
+				discarded++;
+				d->stat_notplayed++;
 			}
 			else
 			{
@@ -984,9 +985,9 @@ static void winsnd_write_process(MSFilter *f){
 				{
 					getq(&d->write_rq);
 					freemsg(m);
-          ms_message("WINSND trouble: silence removed");
-			    discarded++;
-			    d->stat_notplayed++;
+					ms_message("WINSND trouble: silence removed");
+					discarded++;
+					d->stat_notplayed++;
 				}
 			}
 #else
@@ -1052,13 +1053,13 @@ MSFilterDesc winsnd_read_desc={
 	"Sound capture filter for Windows Sound drivers",
 	MS_FILTER_OTHER,
 	NULL,
-    0,
+	0,
 	1,
 	winsnd_init,
-    winsnd_read_preprocess,
+	winsnd_read_preprocess,
 	winsnd_read_process,
 	winsnd_read_postprocess,
-    winsnd_uninit,
+	winsnd_uninit,
 	winsnd_methods
 };
 
@@ -1069,14 +1070,14 @@ MSFilterDesc winsnd_write_desc={
 	"Sound playback filter for Windows Sound drivers",
 	MS_FILTER_OTHER,
 	NULL,
-    1,
+	1,
 	0,
 	winsnd_init,
-    winsnd_write_preprocess,
+	winsnd_write_preprocess,
 	winsnd_write_process,
 	winsnd_write_postprocess,
 	winsnd_uninit,
-    winsnd_methods
+	winsnd_methods
 };
 
 MSFilter *ms_winsnd_read_new(MSSndCard *card){
