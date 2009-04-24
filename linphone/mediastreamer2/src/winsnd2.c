@@ -457,7 +457,7 @@ static void winsnd_apply_settings(WinSnd *d){
 }
 
 
-//#define _TRUE_TIME
+/*#define _TRUE_TIME*/
 #ifndef _TRUE_TIME
 static uint64_t winsnd_get_cur_time( void *data){
 	WinSnd *d=(WinSnd*)data;
