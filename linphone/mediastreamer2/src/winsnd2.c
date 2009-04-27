@@ -62,12 +62,18 @@ static void winsndcard_set_level(MSSndCard *card, MSSndCardMixerElem e, int perc
 	UINT uLineIndex;
 
 	MMRESULT mr = MMSYSERR_NOERROR;
-	DWORD dwVolume = 0xFFFF;
-	dwVolume = ((0xFFFF) * percent) / 100;
+	DWORD dwVolume = ((0xFFFF) * percent) / 100;
+	
+	WORD wLeftVol, wRightVol;
+	DWORD dwNewVol;
+	wLeftVol = LOWORD(dwVolume); // get higher WORD
+	wRightVol = LOWORD(dwVolume); // get lower WORD
+
+	dwNewVol = MAKELONG(wLeftVol, wRightVol);
 
 	switch(e){
 		case MS_SND_CARD_MASTER:
-			mr = waveOutSetVolume((HWAVEOUT)d->out_devid, dwVolume);
+			mr = waveOutSetVolume((HWAVEOUT)d->out_devid, dwNewVol);
 			if (mr != MMSYSERR_NOERROR)
 			{
 				ms_warning("Failed to set master volume. (waveOutSetVolume:0x%i)", mr);
@@ -215,7 +221,7 @@ static void winsndcard_set_level(MSSndCard *card, MSSndCardMixerElem e, int perc
 			mixerClose( (HMIXER)dwMixerHandle );
 			if (mr != MMSYSERR_NOERROR)
 			{
-				ms_warning("Failed to set capture volume. (waveInSetVolume:0x%i)", mr);
+				ms_warning("Failed to set capture volume. (mixerClose:0x%i)", mr);
 				return;
 			}
 			break;
@@ -287,16 +293,135 @@ static void winsndcard_set_level(MSSndCard *card, MSSndCardMixerElem e, int perc
 }
 
 static int winsndcard_get_level(MSSndCard *card, MSSndCardMixerElem e){
+	WinSndCard *d=(WinSndCard*)card->data;
+
+	UINT uMixerID;
+	DWORD dwMixerHandle;
+	MIXERLINE MixerLine;
+	MIXERLINE Line;
+	UINT uLineIndex;
+
+	MMRESULT mr = MMSYSERR_NOERROR;
+	DWORD dwVolume = 100;
+	int percent;
+
+	WORD dwRightVol;
+
 	switch(e){
 		case MS_SND_CARD_MASTER:
-			/*mr=waveOutGetVolume(d->waveoutdev, &dwVolume);*/
+		case MS_SND_CARD_PLAYBACK:
+			mr=waveOutGetVolume((HWAVEOUT)d->out_devid, &dwVolume);
 			/* Transform to 0 to 100 scale*/
-			/*dwVolume = (dwVolume *100) / (0xFFFF);*/
-			return 60;
+			dwRightVol = LOWORD(dwVolume);
+			percent = (dwRightVol *100) / (0xFFFF);
+			return percent;
 			break;
 		case MS_SND_CARD_CAPTURE:
-			break;
-		case MS_SND_CARD_PLAYBACK:
+			mr = mixerGetID( (HMIXEROBJ)d->in_devid, &uMixerID, MIXER_OBJECTF_WAVEIN );
+			if ( mr != MMSYSERR_NOERROR )
+			{
+				ms_error("winsndcard_set_level: mixerGetID failed. mr=%d\n", mr );
+				return -1;
+			}
+			mr = mixerOpen( (LPHMIXER)&dwMixerHandle, uMixerID, 0L, 0L, 0L );
+			if ( mr != MMSYSERR_NOERROR )
+			{
+				mixerClose( (HMIXER)dwMixerHandle );
+				ms_error("winsndcard_set_level: Could not open Mixer. mr=%d\n", mr );
+				return -1;
+			}
+			memset( &MixerLine, 0, sizeof(MIXERLINE) );
+			MixerLine.cbStruct = sizeof(MIXERLINE);
+			MixerLine.dwComponentType = MIXERLINE_COMPONENTTYPE_DST_WAVEIN;
+			mr = mixerGetLineInfo( (HMIXEROBJ)dwMixerHandle, &MixerLine, MIXER_GETLINEINFOF_COMPONENTTYPE );
+			if ( mr != MMSYSERR_NOERROR )
+			{
+				mixerClose( (HMIXER)dwMixerHandle );
+				ms_error("winsndcard_set_level: Could not get WaveIn Destination Line for the requested source while enumerating. mr=%d\n", mr );
+				return -1;
+			}
+			ms_message("Name: %s\n", MixerLine.szName);
+			ms_message("Source Line: %d\n", MixerLine.dwSource);
+			ms_message("ComponentType: %d\n", MixerLine.dwComponentType);
+
+			for (uLineIndex = 0; uLineIndex < MixerLine.cConnections; uLineIndex++)
+			{
+				memset( &Line, 0, sizeof(MIXERLINE) );
+				Line.cbStruct = sizeof(MIXERLINE);
+				Line.dwDestination = MixerLine.dwDestination;
+				Line.dwSource = uLineIndex;
+				mr = mixerGetLineInfo( (HMIXEROBJ)dwMixerHandle, &Line, MIXER_GETLINEINFOF_LINEID);
+				if ( mr != MMSYSERR_NOERROR )
+				{
+					mixerClose( (HMIXER)dwMixerHandle );
+					ms_error("winsndcard_set_level: Could not get the interated Source Line while enumerating. mr=%d\n", mr );
+					return -1;
+				}
+				else
+				{
+					ms_message("Name: %s\n", MixerLine.szName);
+					ms_message("Source Line: %d\n", MixerLine.dwSource);
+					ms_message("LineID: %d\n", MixerLine.dwLineID);
+					ms_message("ComponentType: %d\n", MixerLine.dwComponentType);
+				}
+				memset( &Line, 0, sizeof(MIXERLINE) );
+				Line.cbStruct = sizeof(MIXERLINE);
+				Line.dwDestination = MixerLine.dwDestination;
+				Line.dwSource = uLineIndex;
+				mr = mixerGetLineInfo( (HMIXEROBJ)dwMixerHandle, &Line, MIXER_GETLINEINFOF_SOURCE);
+				if ( mr != MMSYSERR_NOERROR )
+				{
+					mixerClose( (HMIXER)dwMixerHandle );
+					ms_error("winsndcard_set_level: Could not get the interated Source Line while enumerating. mr=%d\n", mr );
+					return -1;
+				}
+				else
+				{
+					ms_message("Name: %s\n", MixerLine.szName);
+					ms_message("Source Line: %d\n", MixerLine.dwSource);
+					ms_message("LineID: %d\n", MixerLine.dwLineID);
+					ms_message("ComponentType: %d\n", MixerLine.dwComponentType);
+				}
+
+				if (MIXERLINE_COMPONENTTYPE_SRC_MICROPHONE == Line.dwComponentType)  
+				{
+					LPMIXERCONTROL pmxctrl = (LPMIXERCONTROL)malloc(sizeof(MIXERCONTROL));
+					MIXERLINECONTROLS mxlctrl = {sizeof(mxlctrl), Line.dwLineID, MIXERCONTROL_CONTROLTYPE_VOLUME, 1, sizeof(MIXERCONTROL), pmxctrl};  
+					if(!mixerGetLineControls((HMIXEROBJ)dwMixerHandle, &mxlctrl,  
+						MIXER_GETLINECONTROLSF_ONEBYTYPE)){  
+							DWORD cChannels = Line.cChannels;
+							LPMIXERCONTROLDETAILS_UNSIGNED pUnsigned;
+							MIXERCONTROLDETAILS mxcd;
+							if (MIXERCONTROL_CONTROLF_UNIFORM & pmxctrl->fdwControl)  
+								cChannels = 1;  
+							pUnsigned =  
+								(LPMIXERCONTROLDETAILS_UNSIGNED)  
+								malloc(cChannels * sizeof(MIXERCONTROLDETAILS_UNSIGNED));
+
+							mxcd.cbStruct = sizeof(mxcd);
+							mxcd.dwControlID = pmxctrl->dwControlID;
+							mxcd.cChannels = cChannels;
+							mxcd.hwndOwner = (HWND)0;
+							mxcd.cbDetails = sizeof(MIXERCONTROLDETAILS_UNSIGNED);
+							mxcd.paDetails = (LPVOID) pUnsigned;
+
+							mixerGetControlDetails((HMIXEROBJ)dwMixerHandle, &mxcd,  
+								MIXER_SETCONTROLDETAILSF_VALUE);  
+							percent = (pUnsigned[0].dwValue *100) / (pmxctrl->Bounds.dwMaximum);
+							free(pmxctrl);
+							free(pUnsigned);
+					}  
+					else  
+						free(pmxctrl);  
+				}
+			}
+			mixerClose( (HMIXER)dwMixerHandle );
+			if (mr != MMSYSERR_NOERROR)
+			{
+				ms_warning("Failed to get capture volume. (mixerClose:0x%i)", mr);
+				return -1;
+			}
+			return percent;
 			break;
 		default:
 			ms_warning("winsnd_card_get_level: unsupported command.");
