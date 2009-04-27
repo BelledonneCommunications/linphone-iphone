@@ -823,7 +823,9 @@ static void linphone_gtk_configure_main_window(){
 	linphone_gtk_configure_window(w,"main_window");
 	if (title) {
 		gtk_window_set_title(GTK_WINDOW(w),title);
+#if GTK_CHECK_VERSION(2,16,0)
 		gtk_menu_item_set_label(GTK_MENU_ITEM(linphone_gtk_get_widget(w,"main_menu")),title);
+#endif
 	}
 	if (start_call_icon){
 		GdkPixbuf *pbuf=create_pixbuf(start_call_icon);
