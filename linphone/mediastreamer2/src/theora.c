@@ -301,12 +301,6 @@ static void packetize_and_send(MSFilter *f, EncState *s, mblk_t *om, uint32_t ti
 }
 
 bool_t need_send_conf(EncState *s, uint64_t elapsed){
-#ifdef AMD_HACK
-	if (elapsed<5000 && elapsed>=s->conf_time){
-		s->conf_time+=500;
-		return TRUE;
-	}
-#else
 	/*send immediately then 10 seconds later */
 	if ( (elapsed==0 && s->conf_time==0)
 		|| (elapsed>=3000 && s->conf_time==1)
@@ -314,7 +308,6 @@ bool_t need_send_conf(EncState *s, uint64_t elapsed){
 		s->conf_time++;
 		return TRUE;
 	}
-#endif
 	return FALSE;
 }
 
