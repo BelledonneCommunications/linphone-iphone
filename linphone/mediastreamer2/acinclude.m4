@@ -108,9 +108,30 @@ AC_DEFUN([MS_CHECK_VIDEO],[
 			fi
 		fi
 
+		AC_ARG_ENABLE(theora,
+		  [  --disable-theora    Disable theora support],
+		  [case "${enableval}" in
+			yes) theora=true ;;
+			no)  theora=false ;;
+			*) AC_MSG_ERROR(bad value ${enableval} for --disable-theora) ;;
+		  esac],[theora=true])
+
+		if test x$theora = xtrue; then
 		PKG_CHECK_MODULES(THEORA, [theora >= 1.0alpha7 ], [have_theora=yes],
 					[have_theora=no])
+		fi
+
+		AC_ARG_ENABLE(x11,
+		  [  --disable-x11    Disable X11 support],
+		  [case "${enableval}" in
+			yes) enable_x11=true ;;
+			no)  enable_x11=false ;;
+			*) AC_MSG_ERROR(bad value ${enableval} for --disable-x11) ;;
+		  esac],[enable_x11=true])
+
+		if test "$enable_x11" = "true"; then
 		AC_CHECK_HEADERS(X11/Xlib.h)
+		fi
 		
 		VIDEO_CFLAGS=" $FFMPEG_CFLAGS -DVIDEO_ENABLED"
 		VIDEO_LIBS=" $FFMPEG_LIBS $SWSCALE_LIBS"

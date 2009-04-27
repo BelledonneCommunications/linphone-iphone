@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.4.5 on Sun Mar 29 23:23:26 2009 -->
+<?xml version="1.0"?>
 <glade-interface>
+  <!-- interface-requires gtk+ 2.16 -->
+  <!-- interface-naming-policy toplevel-contextual -->
   <widget class="GtkWindow" id="main">
     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
     <property name="icon">linphone2.png</property>
@@ -15,19 +15,33 @@
             <property name="visible">True</property>
             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
             <child>
-              <widget class="GtkMenuItem" id="menuitem2">
+              <widget class="GtkMenuItem" id="main_menu">
                 <property name="visible">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                <property name="label" translatable="yes">_View</property>
-                <property name="use_underline">True</property>
+                <property name="label" translatable="yes">Linphone</property>
                 <child>
                   <widget class="GtkMenu" id="menu2">
                     <property name="visible">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                     <child>
-                      <widget class="GtkImageMenuItem" id="menuitem5">
+                      <widget class="GtkImageMenuItem" id="run_assistant">
+                        <property name="label" translatable="yes">Assistant</property>
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">gtk-preferences</property>
+                        <property name="use_stock">False</property>
+                        <signal name="activate" handler="linphone_gtk_create_assistant"/>
+                        <child internal-child="image">
+                          <widget class="GtkImage" id="image1">
+                            <property name="visible">True</property>
+                            <property name="stock">gtk-preferences</property>
+                            <property name="icon-size">1</property>
+                          </widget>
+                        </child>
+                      </widget>
+                    </child>
+                    <child>
+                      <widget class="GtkImageMenuItem" id="menuitem5">
+                        <property name="label">gtk-preferences</property>
+                        <property name="visible">True</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <signal name="activate" handler="linphone_gtk_show_parameters"/>
@@ -35,22 +49,28 @@
                     </child>
                     <child>
                       <widget class="GtkImageMenuItem" id="menuitem1">
+                        <property name="label">Call history</property>
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">Call history</property>
-                        <property name="use_underline">True</property>
+                        <property name="use_stock">False</property>
                         <signal name="activate" handler="linphone_gtk_show_call_logs"/>
                         <child internal-child="image">
-                          <widget class="GtkImage" id="menu-item-image4">
+                          <widget class="GtkImage" id="image2">
                             <property name="visible">True</property>
-                            <property name="stock">gtk-info</property>
+                            <property name="stock">gtk-justify-fill</property>
+                            <property name="icon-size">1</property>
                           </widget>
                         </child>
                       </widget>
                     </child>
                     <child>
-                      <widget class="GtkImageMenuItem" id="quit">
+                      <widget class="GtkSeparatorMenuItem" id="separatormenuitem2">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">gtk-quit</property>
+                      </widget>
+                    </child>
+                    <child>
+                      <widget class="GtkImageMenuItem" id="quit">
+                        <property name="label">gtk-quit</property>
+                        <property name="visible">True</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <signal name="activate" handler="gtk_main_quit"/>
@@ -113,9 +133,9 @@
             </child>
             <child>
               <widget class="GtkImageMenuItem" id="menuitem4">
+                <property name="label">gtk-help</property>
                 <property name="visible">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                <property name="label" translatable="yes">gtk-help</property>
                 <property name="use_underline">True</property>
                 <property name="use_stock">True</property>
                 <child>
@@ -124,22 +144,24 @@
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                     <child>
                       <widget class="GtkImageMenuItem" id="show_logs">
+                        <property name="label">Show debug messages</property>
                         <property name="visible">True</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                        <property name="label" translatable="yes">Show debug window</property>
-                        <property name="use_underline">True</property>
+                        <property name="use_stock">False</property>
                         <signal name="activate" handler="linphone_gtk_log_show"/>
                         <child internal-child="image">
-                          <widget class="GtkImage" id="menu-item-image1">
-                            <property name="stock">gtk-dialog-info</property>
+                          <widget class="GtkImage" id="image3">
+                            <property name="visible">True</property>
+                            <property name="stock">gtk-info</property>
+                            <property name="icon-size">1</property>
                           </widget>
                         </child>
                       </widget>
                     </child>
                     <child>
                       <widget class="GtkImageMenuItem" id="menuitem6">
+                        <property name="label">gtk-about</property>
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">gtk-about</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <signal name="activate" handler="linphone_gtk_show_about"/>
@@ -147,14 +169,15 @@
                     </child>
                     <child>
                       <widget class="GtkImageMenuItem" id="home_item">
+                        <property name="label">Homepage</property>
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">Homepage</property>
-                        <property name="use_underline">True</property>
+                        <property name="use_stock">False</property>
                         <signal name="activate" handler="linphone_gtk_link_to_website"/>
                         <child internal-child="image">
-                          <widget class="GtkImage" id="menu-item-image3">
+                          <widget class="GtkImage" id="image4">
                             <property name="visible">True</property>
-                            <property name="stock">gtk-info</property>
+                            <property name="stock">gtk-home</property>
+                            <property name="icon-size">1</property>
                           </widget>
                         </child>
                       </widget>
@@ -166,6 +189,7 @@
           </widget>
           <packing>
             <property name="expand">False</property>
+            <property name="position">0</property>
           </packing>
         </child>
         <child>
@@ -192,13 +216,15 @@
                             <property name="can_focus">True</property>
                             <signal name="activate" handler="linphone_gtk_uri_bar_activate"/>
                           </widget>
+                          <packing>
+                            <property name="position">0</property>
+                          </packing>
                         </child>
                         <child>
                           <widget class="GtkButton" id="terminate_call">
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                            <property name="response_id">0</property>
                             <signal name="clicked" handler="linphone_gtk_terminate_call"/>
                             <child>
                               <widget class="GtkHBox" id="hbox21">
@@ -210,6 +236,9 @@
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                     <property name="stock">gtk-close</property>
                                   </widget>
+                                  <packing>
+                                    <property name="position">0</property>
+                                  </packing>
                                 </child>
                                 <child>
                                   <widget class="GtkLabel" id="terminate_call_label">
@@ -227,7 +256,7 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">False</property>
-                            <property name="pack_type">GTK_PACK_END</property>
+                            <property name="pack_type">end</property>
                             <property name="position">2</property>
                           </packing>
                         </child>
@@ -237,7 +266,6 @@
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                            <property name="response_id">0</property>
                             <signal name="clicked" handler="linphone_gtk_start_call"/>
                             <child>
                               <widget class="GtkHBox" id="hbox3">
@@ -249,6 +277,9 @@
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                     <property name="stock">gtk-go-forward</property>
                                   </widget>
+                                  <packing>
+                                    <property name="position">0</property>
+                                  </packing>
                                 </child>
                                 <child>
                                   <widget class="GtkLabel" id="start_call_label">
@@ -266,7 +297,7 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">False</property>
-                            <property name="pack_type">GTK_PACK_END</property>
+                            <property name="pack_type">end</property>
                             <property name="position">1</property>
                           </packing>
                         </child>
@@ -288,6 +319,7 @@
               </widget>
               <packing>
                 <property name="expand">False</property>
+                <property name="position">0</property>
               </packing>
             </child>
             <child>
@@ -319,6 +351,7 @@
                                   </widget>
                                   <packing>
                                     <property name="padding">12</property>
+                                    <property name="position">0</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -361,24 +394,25 @@ Online users</property>
                               </widget>
                               <packing>
                                 <property name="expand">False</property>
+                                <property name="position">0</property>
                               </packing>
                             </child>
                             <child>
                               <widget class="GtkScrolledWindow" id="scrolledwindow1">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
-                                <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-                                <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                                <property name="hscrollbar_policy">automatic</property>
+                                <property name="vscrollbar_policy">automatic</property>
                                 <child>
                                   <widget class="GtkTreeView" id="contact_list">
                                     <property name="height_request">120</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                    <signal name="popup_menu" handler="linphone_gtk_popup_contact_menu"/>
                                     <signal name="button_press_event" handler="linphone_gtk_contact_list_button_pressed"/>
-                                    <signal name="row_activated" handler="linphone_gtk_contact_activated"/>
                                     <signal name="cursor_changed" handler="linphone_gtk_contact_clicked"/>
+                                    <signal name="row_activated" handler="linphone_gtk_contact_activated"/>
+                                    <signal name="popup_menu" handler="linphone_gtk_popup_contact_menu"/>
                                   </widget>
                                 </child>
                               </widget>
@@ -404,6 +438,7 @@ Online users</property>
                   </widget>
                   <packing>
                     <property name="padding">8</property>
+                    <property name="position">0</property>
                   </packing>
                 </child>
                 <child>
@@ -429,12 +464,11 @@ Online users</property>
                                 <property name="homogeneous">True</property>
                                 <child>
                                   <widget class="GtkButton" id="dtmf_D">
+                                    <property name="label" translatable="yes">D</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                    <property name="label" translatable="yes">D</property>
-                                    <property name="response_id">0</property>
                                   </widget>
                                   <packing>
                                     <property name="left_attach">3</property>
@@ -447,12 +481,11 @@ Online users</property>
                                 </child>
                                 <child>
                                   <widget class="GtkButton" id="dtmf_hash">
+                                    <property name="label" translatable="yes">#</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                    <property name="label" translatable="yes">#</property>
-                                    <property name="response_id">0</property>
                                   </widget>
                                   <packing>
                                     <property name="left_attach">2</property>
@@ -465,12 +498,11 @@ Online users</property>
                                 </child>
                                 <child>
                                   <widget class="GtkButton" id="dtmf_0">
+                                    <property name="label" translatable="yes">0</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                    <property name="label" translatable="yes">0</property>
-                                    <property name="response_id">0</property>
                                   </widget>
                                   <packing>
                                     <property name="left_attach">1</property>
@@ -483,12 +515,11 @@ Online users</property>
                                 </child>
                                 <child>
                                   <widget class="GtkButton" id="dtmf_star">
+                                    <property name="label" translatable="yes">*</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                    <property name="label" translatable="yes">*</property>
-                                    <property name="response_id">0</property>
                                   </widget>
                                   <packing>
                                     <property name="top_attach">3</property>
@@ -499,12 +530,11 @@ Online users</property>
                                 </child>
                                 <child>
                                   <widget class="GtkButton" id="dtmf_C">
+                                    <property name="label" translatable="yes">C</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                    <property name="label" translatable="yes">C</property>
-                                    <property name="response_id">0</property>
                                   </widget>
                                   <packing>
                                     <property name="left_attach">3</property>
@@ -517,12 +547,11 @@ Online users</property>
                                 </child>
                                 <child>
                                   <widget class="GtkButton" id="dtmf_9">
+                                    <property name="label" translatable="yes">9</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                    <property name="label" translatable="yes">9</property>
-                                    <property name="response_id">0</property>
                                   </widget>
                                   <packing>
                                     <property name="left_attach">2</property>
@@ -535,12 +564,11 @@ Online users</property>
                                 </child>
                                 <child>
                                   <widget class="GtkButton" id="dtmf_8">
+                                    <property name="label" translatable="yes">8</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                    <property name="label" translatable="yes">8</property>
-                                    <property name="response_id">0</property>
                                   </widget>
                                   <packing>
                                     <property name="left_attach">1</property>
@@ -553,12 +581,11 @@ Online users</property>
                                 </child>
                                 <child>
                                   <widget class="GtkButton" id="dtmf_7">
+                                    <property name="label" translatable="yes">7</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                    <property name="label" translatable="yes">7</property>
-                                    <property name="response_id">0</property>
                                   </widget>
                                   <packing>
                                     <property name="top_attach">2</property>
@@ -569,12 +596,11 @@ Online users</property>
                                 </child>
                                 <child>
                                   <widget class="GtkButton" id="dtmf_B">
+                                    <property name="label" translatable="yes">B</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                    <property name="label" translatable="yes">B</property>
-                                    <property name="response_id">0</property>
                                   </widget>
                                   <packing>
                                     <property name="left_attach">3</property>
@@ -587,12 +613,11 @@ Online users</property>
                                 </child>
                                 <child>
                                   <widget class="GtkButton" id="dtmf_6">
+                                    <property name="label" translatable="yes">6</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                    <property name="label" translatable="yes">6</property>
-                                    <property name="response_id">0</property>
                                   </widget>
                                   <packing>
                                     <property name="left_attach">2</property>
@@ -605,12 +630,11 @@ Online users</property>
                                 </child>
                                 <child>
                                   <widget class="GtkButton" id="dtmf_5">
+                                    <property name="label" translatable="yes">5</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                    <property name="label" translatable="yes">5</property>
-                                    <property name="response_id">0</property>
                                   </widget>
                                   <packing>
                                     <property name="left_attach">1</property>
@@ -623,12 +647,11 @@ Online users</property>
                                 </child>
                                 <child>
                                   <widget class="GtkButton" id="dtmf_4">
+                                    <property name="label" translatable="yes">4</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                    <property name="label" translatable="yes">4</property>
-                                    <property name="response_id">0</property>
                                   </widget>
                                   <packing>
                                     <property name="top_attach">1</property>
@@ -639,12 +662,11 @@ Online users</property>
                                 </child>
                                 <child>
                                   <widget class="GtkButton" id="dtmf_A">
+                                    <property name="label" translatable="yes">A</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                    <property name="label" translatable="yes">A</property>
-                                    <property name="response_id">0</property>
                                   </widget>
                                   <packing>
                                     <property name="left_attach">3</property>
@@ -655,12 +677,11 @@ Online users</property>
                                 </child>
                                 <child>
                                   <widget class="GtkButton" id="dtmf_3">
+                                    <property name="label" translatable="yes">3</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                    <property name="label" translatable="yes">3</property>
-                                    <property name="response_id">0</property>
                                   </widget>
                                   <packing>
                                     <property name="left_attach">2</property>
@@ -671,12 +692,11 @@ Online users</property>
                                 </child>
                                 <child>
                                   <widget class="GtkButton" id="dtmf_2">
+                                    <property name="label" translatable="yes">2</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                    <property name="label" translatable="yes">2</property>
-                                    <property name="response_id">0</property>
                                   </widget>
                                   <packing>
                                     <property name="left_attach">1</property>
@@ -687,12 +707,11 @@ Online users</property>
                                 </child>
                                 <child>
                                   <widget class="GtkButton" id="dtmf_1">
+                                    <property name="label" translatable="yes">1</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                    <property name="label" translatable="yes">1</property>
-                                    <property name="response_id">0</property>
                                   </widget>
                                   <packing>
                                     <property name="x_options"></property>
@@ -718,6 +737,7 @@ Online users</property>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">False</property>
+                        <property name="position">0</property>
                       </packing>
                     </child>
                   </widget>
@@ -755,13 +775,15 @@ Online users</property>
                           </widget>
                         </child>
                       </widget>
+                      <packing>
+                        <property name="position">0</property>
+                      </packing>
                     </child>
                     <child>
                       <widget class="GtkButton" id="presence_button">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
-                        <property name="response_id">0</property>
                         <signal name="clicked" handler="linphone_gtk_my_presence_clicked"/>
                         <child>
                           <placeholder/>

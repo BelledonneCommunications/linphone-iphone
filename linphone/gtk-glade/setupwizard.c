@@ -65,7 +65,15 @@ GtkWidget *create_finish_page(){
 	return vbox;
 }
 
-GtkWidget * linphone_gtk_create_setup_wizard(void){
+static int next_page_handler(int curpage, gpointer data){
+	return curpage+1;
+}
+
+static void linphone_gtk_assistant_closed(GtkWidget *w){
+	gtk_widget_destroy(w);
+}
+
+GtkWidget * linphone_gtk_create_assistant(void){
 	GtkWidget *w=gtk_assistant_new();
 	GtkWidget *p1=create_intro();
 	GtkWidget *p2=create_setup_signin_choice();
@@ -74,15 +82,23 @@ GtkWidget * linphone_gtk_create_setup_wizard(void){
 	gtk_assistant_append_page(GTK_ASSISTANT(w),p1);
 	gtk_assistant_set_page_type(GTK_ASSISTANT(w),p1,GTK_ASSISTANT_PAGE_INTRO);
 	gtk_assistant_set_page_title(GTK_ASSISTANT(w),p1,_("Welcome to the account setup assistant"));
+	gtk_assistant_set_page_complete(GTK_ASSISTANT(w),p1,TRUE);
 	gtk_assistant_append_page(GTK_ASSISTANT(w),p2);
 	gtk_assistant_set_page_type(GTK_ASSISTANT(w),p2,GTK_ASSISTANT_PAGE_CONTENT);
 	gtk_assistant_set_page_title(GTK_ASSISTANT(w),p2,_("Account setup assistant"));
+	gtk_assistant_set_page_complete(GTK_ASSISTANT(w),p2,TRUE);
 	gtk_assistant_append_page(GTK_ASSISTANT(w),p3);
 	gtk_assistant_set_page_type(GTK_ASSISTANT(w),p3,GTK_ASSISTANT_PAGE_CONTENT);
 	gtk_assistant_set_page_title(GTK_ASSISTANT(w),p3,_("Account setup assistant - enter your information"));
 	gtk_assistant_append_page(GTK_ASSISTANT(w),p4);
 	gtk_assistant_set_page_type(GTK_ASSISTANT(w),p4,GTK_ASSISTANT_PAGE_SUMMARY);
 	gtk_assistant_set_page_title(GTK_ASSISTANT(w),p4,_("Now ready !"));
+	
+	gtk_assistant_set_forward_page_func(GTK_ASSISTANT(w),next_page_handler,w,NULL);
+	g_signal_connect(G_OBJECT(w),"close",(GCallback)linphone_gtk_assistant_closed,NULL);
+	g_signal_connect(G_OBJECT(w),"cancel",(GCallback)linphone_gtk_assistant_closed,NULL);
+	gtk_widget_show(w);
+	
 	return w;
 }
 

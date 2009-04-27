@@ -31,6 +31,7 @@ typedef struct EncState{
 	uint64_t start_time;
 	uint64_t conf_time;
 	unsigned int mtu;
+	unsigned int nframes;
 } EncState;
 
 static void enc_init(MSFilter *f){
@@ -63,6 +64,7 @@ static void enc_init(MSFilter *f){
 	s->start_time=0;
 	s->conf_time=0;
 	s->mtu=ms_get_payload_max_size()-6;
+	s->nframes=0;
 	f->data=s;
 }
 
@@ -121,7 +123,7 @@ static int enc_set_br(MSFilter *f, void*data){
 	vsize.width=s->tinfo.width;
 	vsize.height=s->tinfo.height;
 	fps=s->tinfo.fps_numerator;
-	s->tinfo.target_bitrate=codecbr*0.8;
+	s->tinfo.target_bitrate=codecbr*0.9;
 	s->tinfo.keyframe_data_target_bitrate=codecbr;
 	/*those default settings would need to be affined*/
 	if (br>=1024000){
@@ -237,7 +239,7 @@ static void enc_preprocess(MSFilter *f){
 	s->yuv.uv_stride=s->tinfo.width/2;
 	create_packed_conf(s);
 	s->conf_time=0;
-	s->start_time=f->ticker->time;
+	s->nframes=0;
 }
 
 static void enc_postprocess(MSFilter *f){
@@ -306,8 +308,9 @@ bool_t need_send_conf(EncState *s, uint64_t elapsed){
 	}
 #else
 	/*send immediately then 10 seconds later */
-	if ( (elapsed<1000 && s->conf_time==0)
-		|| (elapsed>10000 && s->conf_time==1)){
+	if ( (elapsed==0 && s->conf_time==0)
+		|| (elapsed>=3000 && s->conf_time==1)
+		|| (elapsed>=10000 && s->conf_time==2)){
 		s->conf_time++;
 		return TRUE;
 	}
@@ -321,10 +324,16 @@ static void enc_process(MSFilter *f){
 	EncState *s=(EncState*)f->data;
 	uint64_t timems=f->ticker->time;
 	uint32_t timestamp=timems*90;
-	uint64_t elapsed=timems-s->start_time;
+	uint64_t elapsed;
+
+	
 	while((im=ms_queue_get(f->inputs[0]))!=NULL){
 		/*for the firsts frames only send theora packed conf*/
 		om=NULL;
+		if (s->nframes==0){
+			s->start_time=timems;
+		}
+		elapsed=timems-s->start_time;
 
 		if (need_send_conf(s,elapsed)){
 			if (s->packed_conf) {

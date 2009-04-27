@@ -49,6 +49,10 @@ void sip_setup_register_all(void){
 	}
 }
 
+const MSList * linphone_core_get_sip_setups(LinphoneCore *lc){
+	return registered_sip_setups;
+}
+
 SipSetup *sip_setup_lookup(const char *type_name){
 	MSList *elem;
 	for(elem=registered_sip_setups;elem!=NULL;elem=elem->next){
@@ -92,6 +96,10 @@ SipSetupContext *sip_setup_context_new(SipSetup *s, struct _LinphoneProxyConfig 
 		obj->funcs->init_instance(obj);
 	}
 	return obj;
+}
+
+unsigned int sip_setup_get_capabilities(SipSetup *s){
+	return s->capabilities;
 }
 
 int sip_setup_context_get_capabilities(SipSetupContext *ctx){

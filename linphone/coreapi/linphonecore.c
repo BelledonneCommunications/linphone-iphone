@@ -2333,7 +2333,6 @@ void linphone_core_stop_waiting(LinphoneCore *lc){
 	}
 }
 
-
 void net_config_uninit(LinphoneCore *lc)
 {
 	net_config_t *config=&lc->net_conf;

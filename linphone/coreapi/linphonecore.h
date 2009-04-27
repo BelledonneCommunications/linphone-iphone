@@ -762,6 +762,9 @@ The "show" callback is called for the other linphone, causing gui to show up.
 The method returns 0 if an already running linphone was found*/
 int linphone_core_wake_up_possible_already_running_instance(const char *config_file);
 
+/*returns the list of registered SipSetup (linphonecore plugins) */
+const MSList * linphone_core_get_sip_setups(LinphoneCore *lc);
+
 void linphone_core_uninit(LinphoneCore *lc);
 void linphone_core_destroy(LinphoneCore *lc);
 

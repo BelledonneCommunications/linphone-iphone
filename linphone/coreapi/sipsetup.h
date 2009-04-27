@@ -100,6 +100,7 @@ void sip_setup_register(SipSetup *ss);
 void sip_setup_register_all(void);
 SipSetup *sip_setup_lookup(const char *type_name);
 void sip_setup_unregister_all(void);
+unsigned int sip_setup_get_capabilities(SipSetup *s);
 
 SipSetupContext * sip_setup_context_new(SipSetup *s, struct _LinphoneProxyConfig *cfg);
 int sip_setup_context_create_account(SipSetupContext *ctx, const char *uri, const char *passwd);

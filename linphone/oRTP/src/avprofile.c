@@ -412,6 +412,16 @@ PayloadType payload_type_evrc0={
 	CHANNELS(1)
 };
 
+PayloadType payload_type_evrcb0={
+	TYPE(PAYLOAD_AUDIO_PACKETIZED),
+	CLOCK_RATE(8000),
+	BITS_PER_SAMPLE(0),
+	ZERO_PATTERN(NULL),
+	PATTERN_LENGTH(0),
+	NORMAL_BITRATE(0),
+	MIME_TYPE ("EVRCB0"),
+	CHANNELS(1)
+};
  
 PayloadType payload_type_h263_1998={
 	TYPE( PAYLOAD_VIDEO),

@@ -152,12 +152,22 @@ dnl	*********************************
 
 found_sound=no
 
+AC_ARG_ENABLE(oss,
+      [  --enable-oss    Disable oss support],
+      [case "${enableval}" in
+        yes) oss=true ;;
+        no)  oss=false ;;
+        *) AC_MSG_ERROR(bad value ${enableval} for --disable-oss) ;;
+      esac],[oss=true])
+
+if "$oss" = "true"; then
 AC_CHECK_HEADERS(soundcard.h sys/soundcard.h machine/soundcard.h sys/audio.h)
 if test "${ac_cv_header_sys_soundcard_h}" = "yes" || \
 	test "${ac_cv_header_soundcard_h}" = "yes" || \
 		test "${ac_cv_header_sys_audio_h}" = "yes" || \
 	test "${ac_cv_header_machine_soundcard_h}" = "yes"; then
 	found_sound=yes
+fi
 fi
 
 AM_CONDITIONAL(BUILD_OSS, test x$found_sound = xyes)
@@ -188,12 +198,12 @@ AM_CONDITIONAL(BUILD_ALSA, test x$alsa_enabled = xtrue)
 
 
 AC_ARG_ENABLE(artsc,
-      [  --enable-artsc    Turn on artsc (kde) sound input/output (auto) ],
+      [  --enable-artsc    Turn on artsc (kde<4) sound input/output (no) ],
       [case "${enableval}" in
         yes) artsc=true ;;
         no)  artsc=false ;;
         *) AC_MSG_ERROR(bad value ${enableval} for --enable-artsc) ;;
-      esac],[artsc=true])
+      esac],[artsc=no])
 
 arts_enabled=false
 
@@ -280,6 +290,16 @@ fi
 
 AM_CONDITIONAL(BUILD_MACAQSND, test x$macaqsnd_enabled = xtrue)
 
+AC_ARG_ENABLE(jack,
+      [  --disable-jack    Disable jack support],
+      [case "${enableval}" in
+        yes) jack=true ;;
+        no)  jack=false ;;
+        *) AC_MSG_ERROR(bad value ${enableval} for --disable-jack) ;;
+      esac],[jack=true])
+
+if test x$jack = xtrue; then
+
 dnl Check for samplerate libraries
 dnl Check for jack libraries (sound output plugin)
 PKG_CHECK_MODULES(JACK,jack >= 0.15.0, 
@@ -306,6 +326,8 @@ fi
 AC_SUBST(JACK_CFLAGS)
 AC_SUBST(JACK_LIBS) 
 
+fi
+
 if test "$found_sound" = "no"; then
 	AC_MSG_ERROR([Could not find a support sound driver API])
 fi
@@ -314,6 +336,16 @@ fi
 dnl	*************************************
 dnl	check for various codecs libraries
 dnl	*************************************
+
+AC_ARG_ENABLE(speex,
+      [  --disable-speex    Disable speex support],
+      [case "${enableval}" in
+        yes) speex=true ;;
+        no)  speex=false ;;
+        *) AC_MSG_ERROR(bad value ${enableval} for --disable-speex) ;;
+      esac],[speex=true])
+
+if test x$speex = xtrue; then
 
 dnl check for installed version of speex
 PKG_CHECK_MODULES(SPEEX, speex >= 1.2beta3,
@@ -331,8 +363,21 @@ PKG_CHECK_MODULES(SPEEXDSP, speexdsp >= 1.2beta3,
 )
 AC_SUBST(SPEEX_CFLAGS)
 AC_SUBST(SPEEX_LIBS)
+
+fi
+
 AM_CONDITIONAL(BUILD_SPEEX, test x$build_speex = xyes )
 AM_CONDITIONAL(BUILD_RESAMPLE, test x$build_resample = xyes )
+
+AC_ARG_ENABLE(gsm,
+      [  --disable-gsm    Disable gsm support],
+      [case "${enableval}" in
+        yes) gsm=true ;;
+        no)  gsm=false ;;
+        *) AC_MSG_ERROR(bad value ${enableval} for --disable-gsm) ;;
+      esac],[gsm=true])
+
+if test x$gsm = xtrue; then
 
 dnl check for gsm
 build_gsm=no
@@ -350,6 +395,9 @@ if test x"$gsmdir" != xno ; then
 else
 	build_gsm=no
 fi
+
+fi
+
 AM_CONDITIONAL(BUILD_GSM, test x$build_gsm = xyes )
 
 MS_CHECK_VIDEO

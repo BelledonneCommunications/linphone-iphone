@@ -794,6 +794,18 @@ static void linphone_gtk_check_menu_items(void){
 					audio_only ? "audio_only_item" : "video_item")), TRUE);
 }
 
+static gboolean linphone_gtk_can_manage_accounts(){
+	LinphoneCore *lc=linphone_gtk_get_core();
+	const MSList *elem;
+	for(elem=linphone_core_get_sip_setups(lc);elem!=NULL;elem=elem->next){
+		SipSetup *ss=(SipSetup*)elem->data;
+		if (sip_setup_get_capabilities(ss) & SIP_SETUP_CAP_ACCOUNT_MANAGER){
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
+
 static void linphone_gtk_configure_main_window(){
 	static gboolean config_loaded=FALSE;
 	static const char *title;
@@ -809,7 +821,10 @@ static void linphone_gtk_configure_main_window(){
 		config_loaded=TRUE;
 	}
 	linphone_gtk_configure_window(w,"main_window");
-	if (title) gtk_window_set_title(GTK_WINDOW(w),title);
+	if (title) {
+		gtk_window_set_title(GTK_WINDOW(w),title);
+		gtk_menu_item_set_label(GTK_MENU_ITEM(linphone_gtk_get_widget(w,"main_menu")),title);
+	}
 	if (start_call_icon){
 		GdkPixbuf *pbuf=create_pixbuf(start_call_icon);
 		gtk_image_set_from_pixbuf(GTK_IMAGE(linphone_gtk_get_widget(w,"start_call_icon")),pbuf);
@@ -826,6 +841,8 @@ static void linphone_gtk_configure_main_window(){
 		tmp=g_strdup(home);
 		g_object_set_data(G_OBJECT(menu_item),"home",tmp);
 	}
+	if (!linphone_gtk_can_manage_accounts())
+		gtk_widget_hide(linphone_gtk_get_widget(w,"run_assistant"));
 }
 
 static void linphone_gtk_init_main_window(){
