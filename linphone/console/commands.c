@@ -63,6 +63,7 @@ static int lpc_cmd_register(LinphoneCore *, char *);
 static int lpc_cmd_unregister(LinphoneCore *, char *);
 static int lpc_cmd_duration(LinphoneCore *lc, char *args);
 static int lpc_cmd_status(LinphoneCore *lc, char *args);
+static int lpc_cmd_ports(LinphoneCore *lc, char *args);
 
 /* Command handler helpers */
 static void linphonec_proxy_add(LinphoneCore *lc);
@@ -150,8 +151,7 @@ LPC_COMMAND commands[] = {
 		"'firewall nat'    : use nat address given with the 'nat' command.\n"
 		"'firewall stun'   : use stun server given with the 'stun' command.\n"
 	},
-        { "call-logs", lpc_cmd_call_logs, "Calls history",
-                NULL },
+	{ "call-logs", lpc_cmd_call_logs, "Calls history", NULL },
 	{ "friend", lpc_cmd_friend, "Manage friends",
 		"'friend list [<pattern>]'    : list friends.\n"
 		"'friend call <index>'        : call a friend.\n"
@@ -176,7 +176,9 @@ LPC_COMMAND commands[] = {
 			"'status register'  \t: print status concerning registration\n"
 			"'status autoanswer'\t: tell whether autoanswer mode is enabled\n"
 			"'status hook'      \t: print hook status\n" },
-					
+	{ "ports", lpc_cmd_ports, "Network ports configuration", 
+			"'ports'  \t: prints current used ports.\n"
+			"'ports sip <port number>'\t: Sets the sip port.\n" },
 	{ (char *)NULL, (lpc_cmd_handler)NULL, (char *)NULL, (char *)NULL }
 };
 
@@ -765,6 +767,24 @@ lpc_cmd_ipv6(LinphoneCore *lc, char *arg1)
 	return 1;
 }
 
+static int devname_to_index(LinphoneCore *lc, const char *devname){
+	const char **p;
+	int i;
+	for(i=0,p=linphone_core_get_sound_devices(lc);*p!=NULL;++p,++i){
+		if (strcmp(devname,*p)==0) return i;
+	}
+	return -1;
+}
+
+static const char *index_to_devname(LinphoneCore *lc, int index){
+	const char **p;
+	int i;
+	for(i=0,p=linphone_core_get_sound_devices(lc);*p!=NULL;++p,++i){
+		if (i==index) return *p;
+	}
+	return NULL;
+}
+
 static int lpc_cmd_soundcard(LinphoneCore *lc, char *args)
 {
 	int i, index;
@@ -828,7 +848,60 @@ static int lpc_cmd_soundcard(LinphoneCore *lc, char *args)
 		linphonec_out("No such sound device\n");
 		return 1;
 	}
-
+	if (strcmp(arg1, "capture")==0)
+	{
+		const char *devname=linphone_core_get_capture_device(lc);
+		if (!arg2){
+			linphonec_out("Using capture device #%i (%s)\n",
+					devname_to_index(lc,devname),devname);
+		}else{
+			index=atoi(arg2); /* FIXME: handle not-a-number */
+			devname=index_to_devname(lc,index);
+			if (devname!=NULL){
+				linphone_core_set_capture_device(lc,devname);
+				linphonec_out("Using capture sound device %s\n",devname);
+				return 1;
+			}
+			linphonec_out("No such sound device\n");
+		}
+		return 1;
+	}
+	if (strcmp(arg1, "playback")==0)
+	{
+		const char *devname=linphone_core_get_playback_device(lc);
+		if (!arg2){
+			linphonec_out("Using playback device #%i (%s)\n",
+					devname_to_index(lc,devname),devname);
+		}else{
+			index=atoi(arg2); /* FIXME: handle not-a-number */
+			devname=index_to_devname(lc,index);
+			if (devname!=NULL){
+				linphone_core_set_playback_device(lc,devname);
+				linphonec_out("Using playback sound device %s\n",devname);
+				return 1;
+			}
+			linphonec_out("No such sound device\n");
+		}
+		return 1;
+	}
+	if (strcmp(arg1, "ring")==0)
+	{
+		const char *devname=linphone_core_get_ringer_device(lc);
+		if (!arg2){
+			linphonec_out("Using ring device #%i (%s)\n",
+					devname_to_index(lc,devname),devname);
+		}else{
+			index=atoi(arg2); /* FIXME: handle not-a-number */
+			devname=index_to_devname(lc,index);
+			if (devname!=NULL){
+				linphone_core_set_ringer_device(lc,devname);
+				linphonec_out("Using ring sound device %s\n",devname);
+				return 1;
+			}
+			linphonec_out("No such sound device\n");
+		}
+		return 1;
+	}
 	return 0; /* syntax error */
 }
 
@@ -1356,6 +1429,24 @@ static int lpc_cmd_status(LinphoneCore *lc, char *args)
 		
 	}
 	else return 0;
+
+	return 1;
+}
+
+static int lpc_cmd_ports(LinphoneCore *lc, char *args)
+{
+	int port;
+	if ( ! args ){
+		linphonec_out("sip port = %i\naudio rtp port = %i\nvideo rtp port = %i\n",
+			linphone_core_get_sip_port(lc),
+			linphone_core_get_audio_port(lc),
+			linphone_core_get_video_port(lc));
+		return 1;
+	}
+	if (sscanf(args,"sip %i",&port)==1){
+		linphonec_out("Setting sip port to %i\n",port);
+		linphone_core_set_sip_port(lc,port);
+	}else return 0;
 
 	return 1;
 }

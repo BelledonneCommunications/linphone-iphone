@@ -143,6 +143,9 @@ static void print_usage(void){
 			"\tunregister\t: unregister\n"
 			"\tdial\t\t: dial <sip uri or number>\n"
 			"\tstatus\t\t: can be 'status register', 'status autoanswer' or 'status hook'\n"
+			"\tsoundcard\t: can be 'soundcard capture', 'soundcard playback', 'soundcard ring',\n"
+			"\t\t\t followed by an optional number representing the index of the soundcard,\n"
+			"\t\t\t in which case the soundcard is set instead of just read.\n"
 			"\texit\t\t: make the linphonec daemon to exit.\n"
 	);
 	exit(-1);
@@ -305,6 +308,39 @@ static int status_execute(int argc, char *argv[]){
 	return -1;
 }
 
+static int parse_card_index(const char *reply){
+	int index=-1;
+	reply=strstr(reply,"device #");
+	if (!reply || sscanf(reply,"device #%i",&index)!=1){
+		fprintf(stderr,"Error while parsing linphonec daemon output !\n");
+	}
+	return index;
+}
+
+static int soundcard_execute(int argc, char *argv[]){
+	char cmd[512];
+	char reply[DEFAULT_REPLY_SIZE];
+	int err;
+	if (argc==1){
+		snprintf(cmd,sizeof(cmd),"soundcard %s",argv[0]);
+		err=send_command(cmd,DEFAULT_TCP_PORT,reply,sizeof(reply),TRUE);
+		if (err==0) {
+			printf("%s",reply);
+			return parse_card_index(reply);
+		}
+	}else if (argc==2){/*setting a soundcard */
+		snprintf(cmd,sizeof(cmd),"soundcard %s %s",argv[0],argv[1]);
+		err=send_command(cmd,DEFAULT_TCP_PORT,reply,sizeof(reply),TRUE);
+		if (err==0) {
+			printf("%s",reply);
+			return 0;
+		}
+	}else{
+		print_usage();
+	}
+	return -1;
+}
+
 int main(int argc, char *argv[]){
 	int argi;
 	if (argc<2){
@@ -339,6 +375,8 @@ int main(int argc, char *argv[]){
 			send_generic_command("duration",TRUE);
 		}else if (strcmp(argv[argi],"status")==0){
 			return status_execute(argc-argi-1,&argv[argi+1]);
+		}else if (strcmp(argv[argi],"soundcard")==0){
+			return soundcard_execute(argc-argi-1,&argv[argi+1]);
 		}else if (strcmp(argv[argi],"exit")==0){
 			return send_generic_command("quit",TRUE);
 		}else print_usage();
