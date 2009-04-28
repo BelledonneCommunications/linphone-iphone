@@ -40,6 +40,8 @@ EXPORTS
 	ms_snd_card_set_level
 	ms_snd_card_get_level
 	ms_snd_card_set_capture
+	ms_snd_card_set_control
+	ms_snd_card_get_control
 	
 	ms_ticker_new
 	ms_ticker_set_name

@@ -156,14 +156,14 @@ const char *ms_snd_card_get_string_id(MSSndCard *obj){
 void ms_snd_card_set_level(MSSndCard *obj, MSSndCardMixerElem e, int percent){
 	if (obj->desc->set_level!=NULL)
 		obj->desc->set_level(obj,e,percent);
-	else ms_warning("ms_snd_card_set_capture: unimplemented by %s wrapper",obj->desc->driver_type);
+	else ms_warning("ms_snd_card_set_level: unimplemented by %s wrapper",obj->desc->driver_type);
 }
 
 int ms_snd_card_get_level(MSSndCard *obj, MSSndCardMixerElem e){
 	if (obj->desc->get_level!=NULL)
 		return obj->desc->get_level(obj,e);
 	else {
-		ms_warning("ms_snd_card_set_capture: unimplemented by %s wrapper",obj->desc->driver_type);
+		ms_warning("ms_snd_card_get_level: unimplemented by %s wrapper",obj->desc->driver_type);
 		return -1;
 	}
 }
@@ -172,6 +172,23 @@ void ms_snd_card_set_capture(MSSndCard *obj, MSSndCardCapture c){
 	if (obj->desc->set_capture!=NULL)
 		obj->desc->set_capture(obj,c);
 	else ms_warning("ms_snd_card_set_capture: unimplemented by %s wrapper",obj->desc->driver_type);
+}
+
+void ms_snd_card_set_control(MSSndCard *obj, MSSndCardControlElem e, int val)
+{
+	if (obj->desc->set_control!=NULL)
+		obj->desc->set_control(obj,e,val);
+	else ms_warning("ms_snd_card_set_control: unimplemented by %s wrapper",obj->desc->driver_type);
+}
+
+int ms_snd_card_get_control(MSSndCard *obj, MSSndCardControlElem e)
+{
+	if (obj->desc->get_control!=NULL)
+		return obj->desc->get_control(obj,e);
+	else {
+		ms_warning("ms_snd_card_get_control: unimplemented by %s wrapper",obj->desc->driver_type);
+		return -1;
+	}
 }
 
 struct _MSFilter * ms_snd_card_create_reader(MSSndCard *obj){

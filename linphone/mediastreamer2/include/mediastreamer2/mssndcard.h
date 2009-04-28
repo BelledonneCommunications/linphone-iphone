@@ -66,6 +66,18 @@ enum _MSSndCardCapture {
 };
 
 /**
+ * Structure for sound card mixer values.
+ * @var MSSndCardMixerElem
+ */
+typedef enum _MSSndCardControlElem MSSndCardControlElem;
+
+enum _MSSndCardControlElem {
+	MS_SND_CARD_MASTER_MUTE,
+	MS_SND_CARD_PLAYBACK_MUTE,
+	MS_SND_CARD_CAPTURE_MUTE
+};
+
+/**
  * Structure for sound card capture source values.
  * @var MSSndCardCapture
  */
@@ -79,6 +91,8 @@ typedef void (*MSSndCardUninitFunc)(struct _MSSndCard *obj);
 typedef void (*MSSndCardSetLevelFunc)(struct _MSSndCard *obj, MSSndCardMixerElem e, int percent);
 typedef void (*MSSndCardSetCaptureFunc)(struct _MSSndCard *obj, MSSndCardCapture e);
 typedef int (*MSSndCardGetLevelFunc)(struct _MSSndCard *obj, MSSndCardMixerElem e);
+typedef void (*MSSndCardSetControlFunc)(struct _MSSndCard *obj, MSSndCardControlElem e, int val);
+typedef int (*MSSndCardGetControlFunc)(struct _MSSndCard *obj, MSSndCardControlElem e);
 typedef struct _MSFilter * (*MSSndCardCreateReaderFunc)(struct _MSSndCard *obj);
 typedef struct _MSFilter * (*MSSndCardCreateWriterFunc)(struct _MSSndCard *obj);
 typedef struct _MSSndCard * (*MSSndCardDuplicateFunc)(struct _MSSndCard *obj);
@@ -90,6 +104,8 @@ struct _MSSndCardDesc{
 	MSSndCardSetLevelFunc set_level;
 	MSSndCardGetLevelFunc get_level;
 	MSSndCardSetCaptureFunc set_capture;
+	MSSndCardSetControlFunc set_control;
+	MSSndCardGetControlFunc get_control;
 	MSSndCardCreateReaderFunc create_reader;
 	MSSndCardCreateWriterFunc create_writer;
 	MSSndCardUninitFunc uninit;
@@ -342,7 +358,7 @@ void ms_snd_card_set_level(MSSndCard *obj, MSSndCardMixerElem e, int percent);
  * @param obj      A sound card object.
  * @param e        A sound card mixer object.
  *
- * Returns: A int if successfull, 0 otherwise.
+ * Returns: A int if successfull, <0 otherwise.
  */
 int ms_snd_card_get_level(MSSndCard *obj, MSSndCardMixerElem e);
 
@@ -361,6 +377,40 @@ int ms_snd_card_get_level(MSSndCard *obj, MSSndCardMixerElem e);
  * Returns: A int if successfull, 0 otherwise.
  */
 void ms_snd_card_set_capture(MSSndCard *obj, MSSndCardCapture c);
+
+/**
+ * Set some mixer control.
+ *
+ * <PRE>
+ *   MS_SND_CARD_MASTER_MUTE, -> 0: unmute, 1: mute
+ *   MS_SND_CARD_PLAYBACK_MUTE, -> 0: unmute, 1: mute
+ *   MS_SND_CARD_CAPTURE_MUTE -> 0: unmute, 1: mute
+ * </PRE>
+ * Note: not implemented on all sound card filters.
+ *
+ * @param obj      A sound card object.
+ * @param e        A sound card control object.
+ * @param percent  A value for control.
+ *
+ */
+void ms_snd_card_set_control(MSSndCard *obj, MSSndCardControlElem e, int val);
+
+/**
+ * Get some mixer control.
+ *
+ * <PRE>
+ *   MS_SND_CARD_MASTER_MUTE, -> return 0: unmute, 1: mute
+ *   MS_SND_CARD_PLAYBACK_MUTE, -> return 0: unmute, 1: mute
+ *   MS_SND_CARD_CAPTURE_MUTE -> return 0: unmute, 1: mute
+ * </PRE>
+ * Note: not implemented on all sound card filters.
+ *
+ * @param obj      A sound card object.
+ * @param e        A sound card mixer object.
+ *
+ * Returns: A int if successfull, <0 otherwise.
+ */
+int ms_snd_card_get_control(MSSndCard *obj, MSSndCardControlElem e);
 
 /**
  * Create a alsa card with user supplied pcm name and mixer name.
