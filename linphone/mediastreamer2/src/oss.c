@@ -533,6 +533,13 @@ static void oss_write_process(MSFilter *f){
 	}
 }
 
+static int get_rate(MSFilter *f, void *arg){
+	MSSndCard *card=(MSSndCard*)f->data;
+	OssData *d=(OssData*)card->data;
+	*((int*)arg)=d->rate;
+	return 0;
+}
+
 static int set_rate(MSFilter *f, void *arg){
 	MSSndCard *card=(MSSndCard*)f->data;
 	OssData *d=(OssData*)card->data;
@@ -548,6 +555,7 @@ static int set_nchannels(MSFilter *f, void *arg){
 }
 
 static MSFilterMethod oss_methods[]={
+	{	MS_FILTER_GET_SAMPLE_RATE	, get_rate	},
 	{	MS_FILTER_SET_SAMPLE_RATE	, set_rate	},
 	{	MS_FILTER_SET_NCHANNELS		, set_nchannels	},
 	{	0				, NULL		}
