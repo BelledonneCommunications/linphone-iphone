@@ -118,6 +118,8 @@ MSSndCardDesc winsnd_card_desc={
 	winsndcard_set_level,
 	winsndcard_get_level,
 	winsndcard_set_source,
+	NULL,
+	NULL,
 	ms_winsnd_read_new,
 	ms_winsnd_write_new,
 	winsndcard_uninit,

@@ -196,6 +196,8 @@ static MSFilter * arts_card_create_writer(MSSndCard *card){
 MSSndCardDesc arts_card_desc={
 	.driver_type="aRts",
 	.detect=arts_card_detect,
+	.set_control=NULL,
+	.get_control=NULL,
 	.create_reader=arts_card_create_reader,
 	.create_writer=arts_card_create_writer,
 	.duplicate=NULL

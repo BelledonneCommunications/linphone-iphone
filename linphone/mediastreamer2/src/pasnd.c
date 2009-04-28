@@ -333,6 +333,8 @@ MSSndCardDesc pasnd_card_desc={
 	pasnd_set_level,
 	pasnd_get_level,
 	pasnd_set_source,
+	NULL,
+	NULL,
 	ms_pasnd_read_new,
 	ms_pasnd_write_new,
 	pasnd_uninit,
