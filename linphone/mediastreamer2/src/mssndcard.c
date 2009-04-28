@@ -174,11 +174,14 @@ void ms_snd_card_set_capture(MSSndCard *obj, MSSndCardCapture c){
 	else ms_warning("ms_snd_card_set_capture: unimplemented by %s wrapper",obj->desc->driver_type);
 }
 
-void ms_snd_card_set_control(MSSndCard *obj, MSSndCardControlElem e, int val)
+int ms_snd_card_set_control(MSSndCard *obj, MSSndCardControlElem e, int val)
 {
 	if (obj->desc->set_control!=NULL)
-		obj->desc->set_control(obj,e,val);
-	else ms_warning("ms_snd_card_set_control: unimplemented by %s wrapper",obj->desc->driver_type);
+		return obj->desc->set_control(obj,e,val);
+	else {
+		ms_warning("ms_snd_card_set_control: unimplemented by %s wrapper",obj->desc->driver_type);
+		return -1;
+	}
 }
 
 int ms_snd_card_get_control(MSSndCard *obj, MSSndCardControlElem e)

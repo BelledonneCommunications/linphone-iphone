@@ -91,7 +91,7 @@ typedef void (*MSSndCardUninitFunc)(struct _MSSndCard *obj);
 typedef void (*MSSndCardSetLevelFunc)(struct _MSSndCard *obj, MSSndCardMixerElem e, int percent);
 typedef void (*MSSndCardSetCaptureFunc)(struct _MSSndCard *obj, MSSndCardCapture e);
 typedef int (*MSSndCardGetLevelFunc)(struct _MSSndCard *obj, MSSndCardMixerElem e);
-typedef void (*MSSndCardSetControlFunc)(struct _MSSndCard *obj, MSSndCardControlElem e, int val);
+typedef int (*MSSndCardSetControlFunc)(struct _MSSndCard *obj, MSSndCardControlElem e, int val);
 typedef int (*MSSndCardGetControlFunc)(struct _MSSndCard *obj, MSSndCardControlElem e);
 typedef struct _MSFilter * (*MSSndCardCreateReaderFunc)(struct _MSSndCard *obj);
 typedef struct _MSFilter * (*MSSndCardCreateWriterFunc)(struct _MSSndCard *obj);
@@ -392,8 +392,9 @@ void ms_snd_card_set_capture(MSSndCard *obj, MSSndCardCapture c);
  * @param e        A sound card control object.
  * @param percent  A value for control.
  *
+ * Returns: 0 if successfull, <0 otherwise.
  */
-void ms_snd_card_set_control(MSSndCard *obj, MSSndCardControlElem e, int val);
+int ms_snd_card_set_control(MSSndCard *obj, MSSndCardControlElem e, int val);
 
 /**
  * Get some mixer control.
