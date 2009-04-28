@@ -400,7 +400,7 @@ static void winsndcard_set_source(MSSndCard *card, MSSndCardCapture source){
 	}	
 }
 
-static void winsndcard_set_control(MSSndCard *card, MSSndCardControlElem e, int val){
+static int winsndcard_set_control(MSSndCard *card, MSSndCardControlElem e, int val){
 	WinSndCard *d=(WinSndCard*)card->data;
 
 	UINT uMixerID;
@@ -418,14 +418,14 @@ static void winsndcard_set_control(MSSndCard *card, MSSndCardControlElem e, int 
 			if ( mr != MMSYSERR_NOERROR )
 			{
 				ms_error("winsndcard_set_control: mixerGetID failed. (0x%x)", mr);
-				return;
+				return -1;
 			}
 			mr = mixerOpen( (LPHMIXER)&dwMixerHandle, uMixerID, 0L, 0L, 0L );
 			if ( mr != MMSYSERR_NOERROR )
 			{
 				mixerClose( (HMIXER)dwMixerHandle );
 				ms_error("winsndcard_set_control: mixerOpen failed. (0x%x)", mr);
-				return;
+				return -1;
 			}
 			memset( &MixerLine, 0, sizeof(MIXERLINE) );
 			MixerLine.cbStruct = sizeof(MIXERLINE);
@@ -435,7 +435,7 @@ static void winsndcard_set_control(MSSndCard *card, MSSndCardControlElem e, int 
 			{
 				mixerClose( (HMIXER)dwMixerHandle );
 				ms_error("winsndcard_set_control: mixerGetLineInfo failed. (0x%x)", mr);
-				return;
+				return -1;
 			}
 			/* ms_message("Name: %s\n", MixerLine.szName); */
 			/* ms_message("Source Line: %d\n", MixerLine.dwSource); */
@@ -452,7 +452,7 @@ static void winsndcard_set_control(MSSndCard *card, MSSndCardControlElem e, int 
 				{
 					mixerClose( (HMIXER)dwMixerHandle );
 					ms_error("winsndcard_set_control: mixerGetLineInfo failed. (0x%x)", mr);
-					return;
+					return -1;
 				}
 				
 				/* ms_message("Name: %s\n", MixerLine.szName); */
@@ -469,7 +469,7 @@ static void winsndcard_set_control(MSSndCard *card, MSSndCardControlElem e, int 
 				{
 					mixerClose( (HMIXER)dwMixerHandle );
 					ms_error("winsndcard_set_control: mixerGetLineInfo failed. (0x%x)", mr);
-					return;
+					return -1;
 				}
 
 				/* ms_message("Name: %s\n", MixerLine.szName); */
@@ -518,9 +518,9 @@ static void winsndcard_set_control(MSSndCard *card, MSSndCardControlElem e, int 
 			if (mr != MMSYSERR_NOERROR)
 			{
 				ms_error("winsndcard_set_control: mixerClose failed. (0x%x)", mr);
-				return;
+				return -1;
 			}
-			break;
+			return 0;
 
 		case MS_SND_CARD_MASTER_MUTE:
 		case MS_SND_CARD_PLAYBACK_MUTE:
@@ -536,14 +536,14 @@ static void winsndcard_set_control(MSSndCard *card, MSSndCardControlElem e, int 
 				if ( mr != MMSYSERR_NOERROR )
 				{
 					ms_error("winsndcard_set_control: mixerGetID failed. (0x%x)", mr);
-					return;
+					return -1;
 				}
 				mr = mixerOpen( (LPHMIXER)&dwMixerHandle, uMixerID, 0L, 0L, 0L );
 				if ( mr != MMSYSERR_NOERROR )
 				{
 					mixerClose( (HMIXER)dwMixerHandle );
 					ms_error("winsndcard_set_control: mixerOpen failed. (0x%x)", mr);
-					return;
+					return -1;
 				}
 				memset( &MixerLine, 0, sizeof(MIXERLINE) );
 				MixerLine.cbStruct = sizeof(MIXERLINE);
@@ -553,7 +553,7 @@ static void winsndcard_set_control(MSSndCard *card, MSSndCardControlElem e, int 
 				{
 					mixerClose( (HMIXER)dwMixerHandle );
 					ms_error("winsndcard_set_control: mixerSetControlDetails failed. (0x%x)", mr);
-					return;
+					return -1;
 				}
 
 				/* ms_message("Name: %s\n", MixerLine.szName); */
@@ -581,13 +581,15 @@ static void winsndcard_set_control(MSSndCard *card, MSSndCardControlElem e, int 
 				if (mr != MMSYSERR_NOERROR)
 				{
 					ms_error("winsndcard_set_control: mixerSetControlDetails failed. (0x%x)", mr);
-					return;
+					return -1;
 				}
+				return 0;
 			}
 			break;
 		default:
 			ms_warning("winsndcard_set_control: unsupported command.");
 	}
+	return -1;
 }
 
 static int winsndcard_get_control(MSSndCard *card, MSSndCardControlElem e){
