@@ -667,6 +667,16 @@ static MSSndCard * alsa_card_new(int id)
 		obj->name=pos1;
 		ad->pcmdev=ms_strdup_printf("default:%i",id);
 		ad->mixdev=ms_strdup_printf("default:%i",id);
+		{
+			snd_mixer_t *mixer;
+			mixer = alsa_mixer_open(ad->mixdev);
+			if (mixer==NULL) {
+				ms_free(ad->mixdev);
+				ad->mixdev=ms_strdup_printf("hw:%i",id);
+			} else {
+				alsa_mixer_close(mixer);
+			}
+		}
 	}
 	/*check card capabilities: */
 	obj->capabilities=get_card_capabilities(ad->pcmdev);
@@ -880,6 +890,12 @@ void alsa_read_process(MSFilter *obj){
 }
 #endif
 
+static int alsa_read_get_sample_rate(MSFilter *obj, void *param){
+	AlsaReadData *ad=(AlsaReadData*)obj->data;
+	*((int*)param)=ad->rate;
+	return 0;
+}
+
 static int alsa_read_set_sample_rate(MSFilter *obj, void *param){
 	AlsaReadData *ad=(AlsaReadData*)obj->data;
 	ad->rate=*((int*)param);
@@ -893,8 +909,9 @@ static int alsa_read_set_nchannels(MSFilter *obj, void *param){
 }
 
 MSFilterMethod alsa_read_methods[]={
+	{MS_FILTER_GET_SAMPLE_RATE,	alsa_read_get_sample_rate},
 	{MS_FILTER_SET_SAMPLE_RATE, alsa_read_set_sample_rate},
-	{MS_FILTER_SET_SAMPLE_RATE, alsa_read_set_nchannels},
+	{MS_FILTER_SET_NCHANNELS, alsa_read_set_nchannels},
 	{0,NULL}
 };
 
@@ -946,6 +963,12 @@ void alsa_write_uninit(MSFilter *obj){
 	ms_free(ad);
 }
 
+static int alsa_write_get_sample_rate(MSFilter *obj, void *data){
+	AlsaWriteData *ad=(AlsaWriteData*)obj->data;
+	*((int*)data)=ad->rate;
+	return 0;
+}
+
 int alsa_write_set_sample_rate(MSFilter *obj, void *data){
 	int *rate=(int*)data;
 	AlsaWriteData *ad=(AlsaWriteData*)obj->data;
@@ -990,6 +1013,7 @@ void alsa_write_process(MSFilter *obj){
 }
 
 MSFilterMethod alsa_write_methods[]={
+	{MS_FILTER_GET_SAMPLE_RATE,	alsa_write_get_sample_rate},
 	{MS_FILTER_SET_SAMPLE_RATE, alsa_write_set_sample_rate},
 	{MS_FILTER_SET_NCHANNELS, alsa_write_set_nchannels},
 	{0,NULL}
