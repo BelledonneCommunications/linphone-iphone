@@ -66,10 +66,10 @@ enum _MSSndCardCapture {
 };
 
 /**
- * Structure for sound card mixer values.
- * @var MSSndCardMixerElem
+ * Structure for sound card capture source values.
+ * @var MSSndCardCapture
  */
-typedef enum _MSSndCardControlElem MSSndCardControlElem;
+typedef enum _MSSndCardCapture MSSndCardCapture;
 
 enum _MSSndCardControlElem {
 	MS_SND_CARD_MASTER_MUTE,
@@ -78,10 +78,10 @@ enum _MSSndCardControlElem {
 };
 
 /**
- * Structure for sound card capture source values.
- * @var MSSndCardCapture
+ * Structure for sound card mixer values.
+ * @var MSSndCardControlElem
  */
-typedef enum _MSSndCardCapture MSSndCardCapture;
+typedef enum _MSSndCardControlElem MSSndCardControlElem;
 
 struct _MSSndCard;
 
