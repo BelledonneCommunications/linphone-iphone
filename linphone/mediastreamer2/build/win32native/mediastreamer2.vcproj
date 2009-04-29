@@ -131,7 +131,7 @@
 				UsePrecompiledHeader="0"
 				ProgramDataBaseFileName="$(IntDir)/libmediastreamer2.pdb"
 				WarningLevel="3"
-				DebugInformationFormat="3"
+				DebugInformationFormat="0"
 				CallingConvention="0"
 				CompileAs="2"
 			/>
