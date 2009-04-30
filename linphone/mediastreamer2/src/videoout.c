@@ -137,6 +137,7 @@ static bool_t sdl_display_init(MSDisplay *obj, MSPicture *fbuf){
 		sdl_initialized=TRUE;
 		ms_mutex_init(&sdl_mutex,NULL);
 	}
+	ms_mutex_lock(&sdl_mutex);
 	if (obj->data!=NULL){
 		SDL_FreeYUVOverlay((SDL_Overlay*)obj->data);
 	}
@@ -156,8 +157,10 @@ static bool_t sdl_display_init(MSDisplay *obj, MSPicture *fbuf){
 		obj->data=lay;
 		sdl_show_window(TRUE);
 		obj->window_id=sdl_get_native_window_id();
+		ms_mutex_unlock(&sdl_mutex);
 		return TRUE;
 	}
+	ms_mutex_unlock(&sdl_mutex);
 	return FALSE;
 }
 

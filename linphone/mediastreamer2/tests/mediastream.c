@@ -189,9 +189,8 @@ int main(int argc, char * argv[])
 		}else if (strcmp(argv[i],"--ec")==0){
 			ec=TRUE;
 		}
-		
-		
 	}
+
 	run_media_streams(localport,ip,remoteport,payload,fmtp,jitter,ec,bitrate,vs);
 	return 0;
 }

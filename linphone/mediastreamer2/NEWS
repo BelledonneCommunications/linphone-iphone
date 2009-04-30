@@ -1,3 +1,8 @@
+mediastreamer-2.2.4:
+	* fix crash during video window resizing on windows
+	* improve documentation
+	* various little improvements
+
 mediastreamer-2.2.3: 21, January 2009
 	* rfc3984 support improved 
 	* webcam support on windows largely improved (vfw mode)
