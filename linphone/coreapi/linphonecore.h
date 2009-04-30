@@ -327,6 +327,22 @@ void linphone_proxy_config_write_to_config_file(struct _LpConfig* config,Linphon
 void linphone_proxy_config_set_sip_setup(LinphoneProxyConfig *cfg, const char *type);
 SipSetupContext *linphone_proxy_config_get_sip_setup_context(LinphoneProxyConfig *cfg);
 
+typedef struct _LinphoneAccountCreator{
+	struct _LinphoneCore *lc;
+	struct _SipSetupContext *ssctx;
+	char *username;
+	char *password;
+	char *domain;
+	bool_t succeeded;
+}LinphoneAccountCreator;
+
+void linphone_account_creator_set_username(LinphoneAccountCreator *obj, const char *username);
+void linphone_account_creator_set_password(LinphoneAccountCreator *obj, const char *password);
+void linphone_account_creator_set_domain(LinphoneAccountCreator *obj, const char *domain);
+int linphone_account_creator_test(LinphoneAccountCreator *obj);
+LinphoneProxyConfig * linphone_account_creator_validate(LinphoneAccountCreator *obj);
+void linphone_account_creator_destroy(LinphoneAccountCreator *obj);
+
 
 typedef struct _LinphoneAuthInfo
 {
@@ -418,12 +434,6 @@ typedef void (*CallLogUpdated)(struct _LinphoneCore *lc, struct _LinphoneCallLog
 typedef void (*TextMessageReceived)(struct _LinphoneCore *lc, LinphoneChatRoom *room, const char *from, const char *message);
 typedef void (*GeneralStateChange)(struct _LinphoneCore *lc, LinphoneGeneralState *gstate);
 typedef void (*DtmfReceived)(struct _LinphoneCore* lc, int dtmf);
-typedef enum _LinphoneWaitingState{
-	LinphoneWaitingStart,
-	LinphoneWaitingProgress,
-	LinphoneWaitingFinished
-} LinphoneWaitingState;
-typedef void * (*Waiting)(struct _LinphoneCore *lc, void *context, LinphoneWaitingState ws, const char *purpose, float progress);
 
 typedef struct _LinphoneVTable
 {
@@ -446,7 +456,6 @@ typedef struct _LinphoneVTable
 	TextMessageReceived text_received;
 	GeneralStateChange general_state;
 	DtmfReceived dtmf_received;
-	Waiting waiting;
 } LinphoneCoreVTable;
 
 typedef struct _LCCallbackObj
@@ -462,6 +471,14 @@ typedef enum _LinphoneFirewallPolicy{
 	LINPHONE_POLICY_USE_NAT_ADDRESS,
 	LINPHONE_POLICY_USE_STUN
 } LinphoneFirewallPolicy;
+
+typedef enum _LinphoneWaitingState{
+	LinphoneWaitingStart,
+	LinphoneWaitingProgress,
+	LinphoneWaitingFinished
+} LinphoneWaitingState;
+typedef void * (*LinphoneWaitingCallback)(struct _LinphoneCore *lc, void *context, LinphoneWaitingState ws, const char *purpose, float progress);
+
 
 typedef struct _LinphoneCore
 {
@@ -511,6 +528,7 @@ typedef struct _LinphoneCore
 	gstate_t gstate_power;
 	gstate_t gstate_reg;
 	gstate_t gstate_call;
+	LinphoneWaitingCallback wait_cb;
 	void *wait_ctx;
 	bool_t use_files;
 	bool_t apply_nat_settings;
@@ -761,6 +779,10 @@ struct _LpConfig *linphone_core_get_config(LinphoneCore *lc);
 The "show" callback is called for the other linphone, causing gui to show up.
 The method returns 0 if an already running linphone was found*/
 int linphone_core_wake_up_possible_already_running_instance(const char *config_file);
+
+/*set a callback for some blocking operations, it takes you informed of the progress of the operation*/
+void linphone_core_set_waiting_callback(LinphoneCore *lc, LinphoneWaitingCallback cb);
+
 
 /*returns the list of registered SipSetup (linphonecore plugins) */
 const MSList * linphone_core_get_sip_setups(LinphoneCore *lc);

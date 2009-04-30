@@ -112,6 +112,12 @@ int sip_setup_context_create_account(SipSetupContext * ctx, const char *uri, con
 	else return -1;
 }
 
+int sip_setup_context_account_exists(SipSetupContext *ctx, const char *uri){
+	if (ctx->funcs->account_exists)
+		return ctx->funcs->account_exists(ctx,uri);
+	return -1;
+}
+
 int sip_setup_context_login_account(SipSetupContext * ctx, const char *uri, const char *passwd){
 	osip_from_t *from;
 	osip_from_init(&from);

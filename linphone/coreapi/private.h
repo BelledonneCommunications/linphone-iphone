@@ -102,6 +102,15 @@ static inline bool_t bandwidth_is_greater(int bw1, int bw2){
 	else return bw1>=bw2;
 }
 
+static inline void set_string(char **dest, const char *src){
+	if (*dest){
+		ms_free(*dest);
+		*dest=NULL;
+	}
+	if (src)
+		*dest=ms_strdup(src);
+}
+
 #define PAYLOAD_TYPE_ENABLED	PAYLOAD_TYPE_USER_FLAG_0
 void linphone_proxy_config_register_again_with_updated_contact(LinphoneProxyConfig *obj, osip_message_t *orig_request, osip_message_t *last_answer);
 void linphone_process_authentication(LinphoneCore* lc, eXosip_event_t *ev);

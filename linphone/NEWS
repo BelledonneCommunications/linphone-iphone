@@ -1,6 +1,8 @@
 linphone-3.1.2 --
 	* make it work with lastest ffmpeg swscale
 	* improve theora packer
+	* update theora default settings to match performance of 1.0 release.
+	* fix a random crash during video resizing on linux with SDL.
 
 linphone-3.1.1 -- April 14, 2009
 	* fix crash when opening property box, in some rare case

@@ -634,4 +634,49 @@ SipSetupContext *linphone_proxy_config_get_sip_setup_context(LinphoneProxyConfig
 	return cfg->ssctx;
 }
 
+void linphone_account_creator_set_username(LinphoneAccountCreator *obj, const char *username){
+	set_string(&obj->username,username);
+}
+
+void linphone_account_creator_set_password(LinphoneAccountCreator *obj, const char *password){
+	set_string(&obj->password,password);
+}
+
+void linphone_account_creator_set_domain(LinphoneAccountCreator *obj, const char *domain){
+	set_string(&obj->domain,domain);
+}
+
+int linphone_account_creator_test(LinphoneAccountCreator *obj){
+	SipSetupContext *ssctx=obj->ssctx;
+	char *uri=ms_strdup_printf("%s@%s",obj->username,obj->domain);
+	int err=sip_setup_context_account_exists(ssctx,uri);
+	ms_free(uri);
+	return err;
+}
+
+LinphoneProxyConfig * linphone_account_creator_validate(LinphoneAccountCreator *obj){
+	SipSetupContext *ssctx=obj->ssctx;
+	char *uri=ms_strdup_printf("%s@%s",obj->username,obj->domain);
+	int err=sip_setup_context_create_account(ssctx,uri,obj->password);
+	ms_free(uri);
+	if (err==0) {
+		obj->succeeded=TRUE;
+		return sip_setup_context_get_proxy_config(ssctx);
+	}
+	return NULL;
+}
+
+void linphone_account_creator_destroy(LinphoneAccountCreator *obj){
+	if (obj->username)
+		ms_free(obj->username);
+	if (obj->password)
+		ms_free(obj->password);
+	if (obj->domain)
+		ms_free(obj->domain);
+	if (!obj->succeeded){
+		linphone_proxy_config_destroy(sip_setup_context_get_proxy_config(obj->ssctx));
+	}
+}
+
+
 

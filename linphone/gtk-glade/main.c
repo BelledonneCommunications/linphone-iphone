@@ -74,8 +74,7 @@ static LinphoneCoreVTable vtable={
 	.display_question=linphone_gtk_display_question,
 	.call_log_updated=linphone_gtk_call_log_updated,
 	.text_received=linphone_gtk_text_received,
-	.general_state=linphone_gtk_general_state,
-	.waiting=linphone_gtk_wait
+	.general_state=linphone_gtk_general_state
 };
 
 static gboolean verbose=0;
@@ -120,6 +119,7 @@ const char *linphone_gtk_get_config_file(){
 static void linphone_gtk_init_liblinphone(const char *file){
 	linphone_core_set_user_agent("Linphone", LINPHONE_VERSION);
 	the_core=linphone_core_new(&vtable,file,NULL);
+	linphone_core_set_waiting_callback(the_core,linphone_gtk_wait);
 }
 
 

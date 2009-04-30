@@ -2309,15 +2309,19 @@ void linphone_core_set_mtu(LinphoneCore *lc, int mtu){
 	}else ms_set_mtu(0);//use mediastreamer2 default value
 }
 
+void linphone_core_set_waiting_callback(LinphoneCore *lc, LinphoneWaitingCallback cb){
+	lc->wait_cb=cb;
+}
+
 void linphone_core_start_waiting(LinphoneCore *lc, const char *purpose){
-	if (lc->vtable.waiting){
-		lc->wait_ctx=lc->vtable.waiting(lc,NULL,LinphoneWaitingStart,purpose,0);
+	if (lc->wait_cb){
+		lc->wait_ctx=lc->wait_cb(lc,NULL,LinphoneWaitingStart,purpose,0);
 	}
 }
 
 void linphone_core_update_progress(LinphoneCore *lc, const char *purpose, float progress){
-	if (lc->vtable.waiting){
-		lc->wait_ctx=lc->vtable.waiting(lc,lc->wait_ctx,LinphoneWaitingProgress,purpose,progress);
+	if (lc->wait_cb){
+		lc->wait_ctx=lc->wait_cb(lc,lc->wait_ctx,LinphoneWaitingProgress,purpose,progress);
 	}else{
 #ifdef WIN32
 		Sleep(50000);
@@ -2328,8 +2332,8 @@ void linphone_core_update_progress(LinphoneCore *lc, const char *purpose, float 
 }
 
 void linphone_core_stop_waiting(LinphoneCore *lc){
-	if (lc->vtable.waiting){
-		lc->wait_ctx=lc->vtable.waiting(lc,lc->wait_ctx,LinphoneWaitingFinished,NULL,0);
+	if (lc->wait_cb){
+		lc->wait_ctx=lc->wait_cb(lc,lc->wait_ctx,LinphoneWaitingFinished,NULL,0);
 	}
 }
 
