@@ -46,7 +46,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 
-#if LIBAVCODEC_VERSION_MAJOR <= 51
+#if (LIBAVCODEC_VERSION_MAJOR <= 51) && (LIBAVCODEC_VERSION_MINOR <= 26)
 /*should work as long as nobody uses avformat.h*/
 typedef struct AVPacket{
 	uint8_t *data;
