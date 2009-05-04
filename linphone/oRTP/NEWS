@@ -1,3 +1,8 @@
+May 4, 2009 : ortp-0.16.0
+	- update stun api to support new RFC
+	- fix gcc warnings
+	- added new PayloadType
+
 October 13, 2008:	ortp-0.15.0
 	- telephone event detection bugfix
 	- reduce number of memory allocation: !! attention here ABI/API change !!

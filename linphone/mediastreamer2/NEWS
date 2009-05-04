@@ -1,4 +1,4 @@
-mediastreamer-2.2.4:
+mediastreamer-2.2.4: May 4, 2009
 	* fix crash during video window resizing on windows
 	* improve documentation
 	* various little improvements
