@@ -66,11 +66,13 @@ AC_DEFUN([MS_CHECK_VIDEO],[
 	if test "$video" = "true"; then
 		
 		dnl test for ffmpeg presence
-		PKG_CHECK_MODULES(FFMPEG, [libavcodec >= 50.0.0 ],ffmpeg_found=yes , ffmpeg_found=no)
-		dnl workaround for debian...
-		PKG_CHECK_MODULES(FFMPEG, [libavcodec >= 0d.50.0.0 ], ffmpeg_found=yes, ffmpeg_found=no)
+		PKG_CHECK_MODULES(FFMPEG, [libavcodec >= 51.0.0 ],ffmpeg_found=yes , ffmpeg_found=no)
 		if test x$ffmpeg_found = xno ; then
-			AC_MSG_ERROR([Could not find ffmpeg headers and library. This is mandatory for video support])
+			AC_MSG_ERROR([Could not find libavcodec (from ffmpeg) headers and library. This is mandatory for video support])
+		fi
+		PKG_CHECK_MODULES(SWSCALE, [libswscale >= 0.7.0 ],swscale_found=yes , swscale_found=no)
+		if test x$swscale_found = xno ; then
+			AC_MSG_ERROR([Could not find libswscale (from ffmpeg) headers and library. This is mandatory for video support])
 		fi
 
 		dnl check for new/old ffmpeg header file layout
@@ -94,12 +96,9 @@ AC_DEFUN([MS_CHECK_VIDEO],[
 		dnl # include "swscale.h" // private linhone swscale.h
 		dnl #endif
 		CPPFLAGS_save=$CPPFLAGS
-		CPPFLAGS="$FFMPEG_CFLAGS $CPPFLAGS"
+		CPPFLAGS="SWSCALE_CFLAGS $CPPFLAGS"
 		AC_CHECK_HEADERS(libswscale/swscale.h)
 		CPPFLAGS=$CPPFLAGS_save
-
-		PKG_CHECK_MODULES(SWSCALE, [libswscale >= 0.5.0 ], [echo "We have libswscale"], 
-			[echo "We don't have libswscale, let's hope its symbols are in libavcodec"] )
 
 		if test "$libsdldir" != "none" ; then
 			MS_CHECK_DEP([SDL],[SDL],[${libsdldir}/include],[${libsdldir}/lib],[SDL/SDL.h],[SDL],[SDL_Init])
