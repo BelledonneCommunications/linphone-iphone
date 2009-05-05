@@ -350,7 +350,8 @@ static void conf_sum(MSFilter *f, ConfState *s){
 #if 0
 			int loudness;
 #endif
-			while (ms_bufferizer_get_avail(&chan->buff)> (ms_bufferizer_get_avail(&s->channels[0].buff)) )
+			while (ms_bufferizer_get_avail(&chan->buff)> s->conf_gran
+				&& ms_bufferizer_get_avail(&chan->buff)> (ms_bufferizer_get_avail(&s->channels[0].buff)) )
 			{
 				ms_bufferizer_read(&chan->buff,(uint8_t*)chan->input,s->conf_gran);
 #if 0
