@@ -96,7 +96,7 @@ AC_DEFUN([MS_CHECK_VIDEO],[
 		dnl # include "swscale.h" // private linhone swscale.h
 		dnl #endif
 		CPPFLAGS_save=$CPPFLAGS
-		CPPFLAGS="SWSCALE_CFLAGS $CPPFLAGS"
+		CPPFLAGS="$SWSCALE_CFLAGS $CPPFLAGS"
 		AC_CHECK_HEADERS(libswscale/swscale.h)
 		CPPFLAGS=$CPPFLAGS_save
 

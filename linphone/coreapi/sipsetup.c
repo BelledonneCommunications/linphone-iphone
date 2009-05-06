@@ -77,7 +77,7 @@ void sip_setup_unregister_all(void){
 	for(elem=registered_sip_setups;elem!=NULL;elem=elem->next){
 		SipSetup *ss=(SipSetup*)elem->data;
 		if (ss->initialized){
-			ss->exit();
+			if (ss->exit) ss->exit();
 			ss->initialized=FALSE;
 		}
 	}

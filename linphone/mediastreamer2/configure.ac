@@ -447,6 +447,10 @@ fi
 dnl check various things
 AC_FUNC_ALLOCA
 
+if test "x${prefix}" = "xNONE"; then
+	prefix=${ac_default_prefix}
+fi
+
 dnl define path of plugins:
 AC_DEFINE_UNQUOTED(PACKAGE_PLUGINS_DIR, "${prefix}/lib/mediastreamer/plugins" ,[path of plugins])
 PACKAGE_PLUGINS_DIR="${prefix}/lib/mediastreamer/plugins"

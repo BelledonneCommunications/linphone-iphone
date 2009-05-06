@@ -212,6 +212,8 @@ static bool_t sdl_poll_event(MSDisplay *obj, MSDisplayEvent *ev){
 
 static void sdl_display_uninit(MSDisplay *obj){
 	SDL_Overlay *lay=(SDL_Overlay*)obj->data;
+	SDL_Event event;
+	int i;
 	if (lay==NULL)
 		return;
 	if (lay!=NULL)
@@ -219,6 +221,9 @@ static void sdl_display_uninit(MSDisplay *obj){
 	if (sdl_screen!=NULL){
 		SDL_FreeSurface(sdl_screen);
 		sdl_screen=NULL;
+	}
+	/*purge the event queue before leaving*/
+	for(i=0;SDL_PollEvent(&event) && i<100;++i){
 	}
 	sdl_show_window(FALSE);
 }
@@ -689,8 +694,10 @@ static int video_out_handle_resizing(MSFilter *f, void *data){
 				sz.width=ev.w;
 				sz.height=ev.h;
 				ms_filter_lock(f);
-				set_vsize(s,&sz);
-				s->ready=FALSE;
+				if (s->ready){
+					set_vsize(s,&sz);
+					s->ready=FALSE;
+				}
 				ms_filter_unlock(f);
 			}
 		}

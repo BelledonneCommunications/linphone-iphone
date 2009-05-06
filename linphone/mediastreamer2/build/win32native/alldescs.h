@@ -21,6 +21,8 @@ extern MSFilterDesc ms_v4w_desc;
 extern MSFilterDesc ms_video_out_desc;
 extern MSFilterDesc ms_h263_enc_desc;
 extern MSFilterDesc ms_h263_dec_desc;
+extern MSFilterDesc ms_h263_old_enc_desc;
+extern MSFilterDesc ms_h263_old_dec_desc;
 extern MSFilterDesc ms_mpeg4_enc_desc;
 extern MSFilterDesc ms_mpeg4_dec_desc;
 extern MSFilterDesc ms_snow_enc_desc;
@@ -56,6 +58,8 @@ MSFilterDesc * ms_filter_descs[]={
 &ms_conf_desc,
 &ms_v4w_desc,
 &ms_video_out_desc,
+&ms_h263_old_enc_desc,
+&ms_h263_old_dec_desc,
 &ms_h263_enc_desc,
 &ms_h263_dec_desc,
 &ms_mpeg4_enc_desc,

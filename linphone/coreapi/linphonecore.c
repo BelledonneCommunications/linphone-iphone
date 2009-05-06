@@ -643,18 +643,19 @@ const char * linphone_core_get_version(void){
 static PayloadType * payload_type_h264_packetization_mode_1=NULL;
 static PayloadType * linphone_h263_1998=NULL;
 static PayloadType * linphone_mp4v_es=NULL;
+static PayloadType * linphone_h263_old=NULL;
 #endif
 
 void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vtable, const char *config_path, void * userdata)
 {
 	memset (lc, 0, sizeof (LinphoneCore));
 	lc->data=userdata;
-	
+
 	memcpy(&lc->vtable,vtable,sizeof(LinphoneCoreVTable));
 
-        gstate_initialize(lc);
-        gstate_new_state(lc, GSTATE_POWER_STARTUP, NULL);
-        
+	gstate_initialize(lc);
+	gstate_new_state(lc, GSTATE_POWER_STARTUP, NULL);
+	
 	ortp_init();
 	rtp_profile_set_payload(&av_profile,115,&payload_type_lpc1015);
 	rtp_profile_set_payload(&av_profile,110,&payload_type_speex_nb);
@@ -669,6 +670,10 @@ void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vtable, co
 	linphone_h263_1998=payload_type_clone(&payload_type_h263_1998);
 	payload_type_set_recv_fmtp(linphone_h263_1998,"CIF=1;QCIF=1");
 	rtp_profile_set_payload(&av_profile,98,linphone_h263_1998);
+
+	linphone_h263_old=payload_type_clone(&payload_type_h263);
+    payload_type_set_recv_fmtp(linphone_h263_old,"QCIF=2");
+    rtp_profile_set_payload(&av_profile,34,linphone_h263_old);
 
 	linphone_mp4v_es=payload_type_clone(&payload_type_mp4v);
 	payload_type_set_recv_fmtp(linphone_mp4v_es,"profile-level-id=3");
@@ -778,7 +783,9 @@ void linphone_core_get_local_ip(LinphoneCore *lc, const char *dest, char *result
 		strncpy(result,lc->sip_conf.ipv6_enabled ? "::1" : "127.0.0.1",LINPHONE_IPADDR_SIZE);
 		ms_error("Could not find default routable ip address !"); 
 	}	
+	/*
 	eXosip_masquerade_contact(NULL,0);
+	*/
 }
 
 const char *linphone_core_get_primary_contact(LinphoneCore *lc)
@@ -2050,14 +2057,22 @@ static void apply_nat_settings(LinphoneCore *lc){
 
 	if (lc->net_conf.firewall_policy==LINPHONE_POLICY_USE_NAT_ADDRESS){
 		if (tmp!=NULL){
-			if (!lc->net_conf.nat_sdp_only)
+			if (!lc->net_conf.nat_sdp_only){
+				eXosip_set_option(EXOSIP_OPT_SET_IPV4_FOR_GATEWAY,tmp);
+				/* the following does not work in all cases */
+				/*
 				eXosip_masquerade_contact(tmp,lc->sip_conf.sip_port);
+				*/
+			}
 			ms_free(tmp);
 		}
-		else 
+		else{
+			eXosip_set_option(EXOSIP_OPT_SET_IPV4_FOR_GATEWAY,NULL);
 			eXosip_masquerade_contact("",0);
+		}
 	}
 	else {
+		eXosip_set_option(EXOSIP_OPT_SET_IPV4_FOR_GATEWAY,NULL);
 		eXosip_masquerade_contact("",0);	
 	}
 }
