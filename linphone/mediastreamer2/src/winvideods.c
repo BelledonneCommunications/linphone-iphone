@@ -1039,59 +1039,6 @@ static int _v4w_start(V4wState *s, void *arg)
 	return i;
 }
 
-static int _v4w_stop(V4wState *s, void *arg){
-	s->frame_count=-1;
-	if (s->rotregvalue>0){
-		HRESULT hr = s->m_pControl->Stop();
-		if(FAILED(hr))
-		{
-			ms_message("v4w: could not stop graph");
-		}
-
-		if (s->m_pGraph!=NULL)
-		{
-			if (s->m_pNullRenderer!=NULL)
-				s->m_pGraph->RemoveFilter(s->m_pNullRenderer);
-			if (s->m_pIDXFilter!=NULL)
-				s->m_pGraph->RemoveFilter(s->m_pIDXFilter);
-			if (s->m_pDeviceFilter!=NULL)
-				s->m_pGraph->RemoveFilter(s->m_pDeviceFilter);
-		}
-
-		if (s->m_pNullRenderer)
-			s->m_pNullRenderer->Release();
-		if (s->m_pIDXFilter)
-			s->m_pIDXFilter->Release();
-		if (s->m_pDeviceFilter)
-			s->m_pDeviceFilter->Release();
-
-		if (s->m_pBuilder)
-			s->m_pBuilder->Release();
-		if (s->m_pControl)
-			s->m_pControl->Release();
-		if (s->m_pGraph)
-			s->m_pGraph->Release();
-
-		if (s->m_pDXFilter!=NULL)
-			s->m_pDXFilter->Release();
-
-		s->m_pNullRenderer=NULL;
-		s->m_pIDXFilter=NULL;
-		s->m_pDeviceFilter=NULL;
-		s->m_pBuilder=NULL;
-		s->m_pControl=NULL;
-		s->m_pGraph=NULL;
-		s->m_pDXFilter=NULL;
-
-		CoUninitialize();
-		s_callback = NULL;
-		flushq(&s->rq,0);
-		ms_message("v4w: graph destroyed");
-		s->rotregvalue=0;
-	}
-	return 0;
-}
-
 static void v4w_uninit(MSFilter *f){
 	V4wState *s=(V4wState*)f->data;
 	int idx;
@@ -1327,8 +1274,8 @@ static MSFilterMethod methods[]={
 	{	MS_FILTER_SET_VIDEO_SIZE, v4w_set_vsize	},
 	{	MS_FILTER_GET_VIDEO_SIZE, v4w_get_vsize	},
 	{	MS_V4L_SET_DEVICE,	v4w_set_device },
-	{ MS_FILTER_SET_IMAGE, v4w_set_image },
-	{	0								,	NULL			}
+	{	MS_FILTER_SET_IMAGE, v4w_set_image },
+	{	0,	NULL }
 };
 
 #if defined(_MSC_VER) || defined(__cplusplus) 
