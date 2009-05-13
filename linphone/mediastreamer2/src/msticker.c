@@ -395,7 +395,7 @@ void * ms_ticker_run(void *arg)
 	ms_mutex_lock(&s->lock);
 	s->orig=s->get_cur_time_ptr(s->get_cur_time_data);
 
-	timerId = timeSetEvent (s->interval, precision, s->TimeEvent, 0,
+	timerId = timeSetEvent (s->interval, precision, (LPTIMECALLBACK)s->TimeEvent, 0,
 				  TIME_PERIODIC | TIME_CALLBACK_EVENT_SET);
 	while(s->run){
 		DWORD err;
