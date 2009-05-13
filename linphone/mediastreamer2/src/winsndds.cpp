@@ -368,6 +368,8 @@ winsndds_read_thread(void *arg)
 		if( filled < 0 ) filled += d->inputSize; // unwrap offset
 		bytesFilled = filled;
 
+		//bytesFilled = 480 * d->wfx.nSamplesPerSec/8000;
+
 		hr = IDirectSoundCaptureBuffer_Lock ( d->lpDirectSoundInputBuffer,
 			d->readOffset, bytesFilled,
 			(void **) &lpInBuf1, &dwInSize1,
@@ -391,6 +393,7 @@ winsndds_read_thread(void *arg)
 			putq(&d->rq,m);
 			ms_mutex_unlock(&d->mutex);
 			d->bytes_read+=bytesFilled;
+			//ms_message("bytesFilled=%i\n",bytesFilled);
 		}
 		else
 		{
@@ -402,6 +405,7 @@ winsndds_read_thread(void *arg)
 			putq(&d->rq,m);
 			ms_mutex_unlock(&d->mutex);
 			d->bytes_read+=bytesFilled;
+			//ms_message("bytesFilled=%i\n",bytesFilled);
 		}
 
 		d->readOffset = (d->readOffset + bytesFilled) % d->inputSize;
@@ -425,7 +429,6 @@ static void winsndds_apply_settings(WinSndDs *d){
 static uint64_t winsndds_get_cur_time( void *data){
 	WinSndDs *d=(WinSndDs*)data;
 	uint64_t curtime=((uint64_t)d->bytes_read*1000)/(uint64_t)d->wfx.nAvgBytesPerSec;
-	/* ms_debug("winsndds_get_cur_time: bytes_read=%u return %lu\n",d->bytes_read,(unsigned long)curtime); */
 	return curtime;
 }
 
@@ -448,7 +451,7 @@ static void winsndds_init(MSFilter *f){
 	d->stat_notplayed=0;
 	d->stat_minimumbuffer=WINSNDDS_MINIMUMBUFFER;
 
-	d->framesPerDSBuffer = 4096*3; //320 * (8000 / 1000);
+	d->framesPerDSBuffer = 320 * (8000 / 1000);
 
 	d->thread = NULL;
 	ms_mutex_init(&d->thread_lock,NULL);
@@ -485,12 +488,12 @@ static void winsndds_read_preprocess(MSFilter *f){
 	winsndds_apply_settings(d);
 	ms_DirectSoundCaptureCreate( &d->in_guid, &d->lpDirectSoundCapture, NULL );
 
-	d->inputSize = d->framesPerDSBuffer * 1 * sizeof(short);
+	d->inputSize = d->framesPerDSBuffer;
 
 	ZeroMemory(&captureDesc, sizeof(DSCBUFFERDESC));
     captureDesc.dwSize = sizeof(DSCBUFFERDESC);
     captureDesc.dwFlags =  0;
-    captureDesc.dwBufferBytes = d->framesPerDSBuffer * 1 * sizeof(short); //bytesPerBuffer;
+    captureDesc.dwBufferBytes = d->framesPerDSBuffer; //bytesPerBuffer;
 	captureDesc.lpwfxFormat = &d->wfx;
     // Create the capture buffer
 	if ((hr = IDirectSoundCapture_CreateCaptureBuffer( d->lpDirectSoundCapture,
@@ -585,7 +588,7 @@ static void winsndds_write_preprocess(MSFilter *f){
 
     ZeroMemory(&primaryDesc, sizeof(DSBUFFERDESC));
     primaryDesc.dwSize        = sizeof(DSBUFFERDESC);
-    primaryDesc.dwFlags       = DSBCAPS_PRIMARYBUFFER; // all panning, mixing, etc done by synth
+    primaryDesc.dwFlags       = DSBCAPS_GETCURRENTPOSITION2 | DSBCAPS_PRIMARYBUFFER; // all panning, mixing, etc done by synth
     primaryDesc.dwBufferBytes = 0;
     primaryDesc.lpwfxFormat   = NULL;
     // Create the buffer
@@ -599,12 +602,13 @@ static void winsndds_write_preprocess(MSFilter *f){
 	{
 		return ;//hr;
 	}
+	IDirectSoundBuffer_Release(pPrimaryBuffer);
 
     // Setup the secondary buffer description
     ZeroMemory(&secondaryDesc, sizeof(DSBUFFERDESC));
     secondaryDesc.dwSize = sizeof(DSBUFFERDESC);
     secondaryDesc.dwFlags =  DSBCAPS_GLOBALFOCUS | DSBCAPS_GETCURRENTPOSITION2;
-    secondaryDesc.dwBufferBytes = d->framesPerDSBuffer * 1 * sizeof(short); //bytesPerBuffer;
+    secondaryDesc.dwBufferBytes = d->framesPerDSBuffer; //bytesPerBuffer;
 	secondaryDesc.lpwfxFormat = &d->wfx;
     // Create the secondary buffer
     if ((hr = IDirectSound_CreateSoundBuffer( d->lpDirectSound,
@@ -615,7 +619,7 @@ static void winsndds_write_preprocess(MSFilter *f){
 
     // Lock the DS buffer
 	if ((hr = IDirectSoundBuffer_Lock( d->lpDirectSoundOutputBuffer, 0,
-		d->framesPerDSBuffer * 1 * sizeof(short),
+		d->framesPerDSBuffer,
 		(LPVOID*)&pDSBuffData,
 		&dwDataLen, NULL, 0, 0)) != DS_OK)
 	{
@@ -650,6 +654,7 @@ static void winsndds_write_preprocess(MSFilter *f){
     {
         return ;//hr;
     }
+	d->readOffset=-1;
 	
 	return ;//hr;
 }
@@ -671,12 +676,12 @@ static void winsndds_write_postprocess(MSFilter *f){
     }
 
 	ms_message("Shutting down sound device (playing: %i) (input-output: %i) (notplayed: %i)", d->nbufs_playing, d->stat_input - d->stat_output, d->stat_notplayed);
+	d->readOffset=-1;
 }
 
 static void winsndds_write_process(MSFilter *f){
 	WinSndDs *d=(WinSndDs*)f->data;
 	int discarded=0;
-	static int fillme=0;
 
 	if (d->lpDirectSound==NULL) {
 		ms_queue_flush(f->inputs[0]);
@@ -685,17 +690,21 @@ static void winsndds_write_process(MSFilter *f){
 
 	ms_bufferizer_put_from_queue(&d->output_buff,f->inputs[0]);
 
-	if (fillme==0)
+	if (d->readOffset==-1)
 	{
 		if (ms_bufferizer_get_avail(&d->output_buff)>=4096*3)
 		{
-			fillme=1;
-			return;
+		    DWORD playCursor;
+
+			IDirectSoundBuffer_GetCurrentPosition( d->lpDirectSoundOutputBuffer,
+					&playCursor, &d->outputBufferWriteOffsetBytes );
+			d->readOffset = d->outputBufferWriteOffsetBytes;
 		}
-		return;
+		else
+			return;
 	}
 
-	int msize = 4096;// 1280;
+	int msize=d->framesPerDSBuffer/4;
 	while (ms_bufferizer_get_avail(&d->output_buff)>=msize)
 	{
 		LPBYTE lpOutBuf1 = NULL;
@@ -703,12 +712,12 @@ static void winsndds_write_process(MSFilter *f){
 		DWORD  dwOutSize1 = 0;
 		DWORD  dwOutSize2 = 0;
 		HRESULT hr;
-		char input[4096];
+		char input[15360];
 
 		hr = IDirectSoundBuffer_Lock ( d->lpDirectSoundOutputBuffer,
-			d->outputBufferWriteOffsetBytes, msize, //bytesToXfer,
+			d->readOffset, msize,
 			(void **) &lpOutBuf1, &dwOutSize1,
-			(void **) &lpOutBuf2, &dwOutSize2, DSBLOCK_FROMWRITECURSOR);
+			(void **) &lpOutBuf2, &dwOutSize2, 0); //DSBLOCK_FROMWRITECURSOR);
 		if (hr != DS_OK)
 		{
 			ms_error("DirectSound IDirectSoundBuffer_Lock failed, hresult = 0x%x\n", hr);
@@ -737,6 +746,7 @@ static void winsndds_write_process(MSFilter *f){
 			memcpy(lpOutBuf2, input+dwOutSize1, dwOutSize2);
 		}
 
+		d->readOffset=(d->readOffset+dwOutSize1+dwOutSize2) % d->framesPerDSBuffer;
         IDirectSoundBuffer_Unlock( d->lpDirectSoundOutputBuffer,
 			lpOutBuf1, dwOutSize1, lpOutBuf2, dwOutSize2);
 		if (dwOutSize1==0)
@@ -758,6 +768,7 @@ static int get_rate(MSFilter *f, void *arg){
 static int set_rate(MSFilter *f, void *arg){
 	WinSndDs *d=(WinSndDs*)f->data;
 	d->wfx.nSamplesPerSec=*((int*)arg);
+	d->framesPerDSBuffer = 320 * (d->wfx.nSamplesPerSec / 1000);
 	return 0;
 }
 
