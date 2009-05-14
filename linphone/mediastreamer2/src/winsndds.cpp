@@ -54,42 +54,116 @@ typedef struct WinSndDsCard{
 
 
 static void winsnddscard_set_level(MSSndCard *card, MSSndCardMixerElem e, int percent){
-    MMRESULT mr = MMSYSERR_NOERROR;
-    DWORD dwVolume = 0xFFFF;
-    dwVolume = ((0xFFFF) * percent) / 100;
+	MMRESULT mr = MMSYSERR_NOERROR;
+	WinSndDsCard *d=(WinSndDsCard*)card->data;
+	LONG dWvolume = 10000-percent*(-DSBVOLUME_MIN)/100;
+	DSBUFFERDESC primaryDesc;
+	WAVEFORMATEX wfx;
+	HRESULT hr;
+	LPDIRECTSOUND lpDirectSound;
+	LPDIRECTSOUNDBUFFER  lpDirectSoundOutputBuffer;
 
 	switch(e){
 		case MS_SND_CARD_PLAYBACK:
+
+			wfx.wFormatTag = WAVE_FORMAT_PCM;
+			wfx.cbSize = 0;
+			wfx.nAvgBytesPerSec = 16000;
+			wfx.nBlockAlign = 2;
+			wfx.nChannels = 1;
+			wfx.nSamplesPerSec = 8000;
+			wfx.wBitsPerSample = 16;
+
+			ms_DirectSoundCreate( &d->out_guid, &lpDirectSound, NULL );
+
+			ZeroMemory(&primaryDesc, sizeof(DSBUFFERDESC));
+			primaryDesc.dwSize = sizeof(DSBUFFERDESC);
+			primaryDesc.dwFlags = DSBCAPS_PRIMARYBUFFER | DSBCAPS_GETCURRENTPOSITION2 | DSBCAPS_CTRLVOLUME;
+			primaryDesc.dwBufferBytes = 0;
+			primaryDesc.lpwfxFormat = NULL;
+			if ((hr = IDirectSound_CreateSoundBuffer( lpDirectSound,
+				&primaryDesc, &lpDirectSoundOutputBuffer, NULL)) != DS_OK)
+			{
+				IDirectSound_Release( lpDirectSound );
+				lpDirectSound=NULL;
+				lpDirectSoundOutputBuffer=NULL;
+				return ;
+			}
+
+			if ((hr = IDirectSoundBuffer_SetVolume(lpDirectSoundOutputBuffer, -dWvolume)) != DS_OK)
+			{
+				ms_warning("winsnddscard_set_level: No playback volume control.");
+			}
+
+			IDirectSoundBuffer_Release( lpDirectSoundOutputBuffer );
+			lpDirectSoundOutputBuffer=NULL;
+			IDirectSound_Release( lpDirectSound );
+			lpDirectSound=NULL;
+			break;
 		case MS_SND_CARD_MASTER:
-            /*mr = waveOutSetVolume(d->waveoutdev, dwVolume); */
-	        if (mr != MMSYSERR_NOERROR)
-	        {
-                ms_warning("Failed to set master volume. (waveOutSetVolume:0x%i)", mr);
-                return;
-	        }
-        break;
-        case MS_SND_CARD_CAPTURE:
-		break;
-        default:
-			ms_warning("winsndds_card_set_level: unsupported command.");
+			ms_warning("winsnddscard_set_level: No master volume control.");
+			break;
+		case MS_SND_CARD_CAPTURE:
+			ms_warning("winsnddscard_set_level: No mic volume control.");
+			break;
+		default:
+			ms_warning("winsnddscard_set_level: unsupported command.");
 	}
 }
 
 static int winsnddscard_get_level(MSSndCard *card, MSSndCardMixerElem e){
-	DWORD dWvolume = 10000;
+	WinSndDsCard *d=(WinSndDsCard*)card->data;
+	LONG dWvolume = 10000;
+	DSBUFFERDESC primaryDesc;
+	WAVEFORMATEX wfx;
+	HRESULT hr;
+	LPDIRECTSOUND lpDirectSound;
+	LPDIRECTSOUNDBUFFER  lpDirectSoundOutputBuffer;
+
 	switch(e){
-		case MS_SND_CARD_MASTER:
- 			//IDirectSoundBuffer_GetVolume(hdsbuf, &volume);
-			return dWvolume *100/(-DSBVOLUME_MIN);
-			//vol->left = vol->right = (exp( ((float)(volume + 10000 + 0.1) / 9999) * 6.908) / 1000 - 0.001) * 100;
- 			//printf("ao_dsound: volume: %f\n",vol->left);
-        break;
-        case MS_SND_CARD_CAPTURE:
-		break;
 		case MS_SND_CARD_PLAYBACK:
-		break;
+
+			wfx.wFormatTag = WAVE_FORMAT_PCM;
+			wfx.cbSize = 0;
+			wfx.nAvgBytesPerSec = 16000;
+			wfx.nBlockAlign = 2;
+			wfx.nChannels = 1;
+			wfx.nSamplesPerSec = 8000;
+			wfx.wBitsPerSample = 16;
+
+			ms_DirectSoundCreate( &d->out_guid, &lpDirectSound, NULL );
+
+			ZeroMemory(&primaryDesc, sizeof(DSBUFFERDESC));
+			primaryDesc.dwSize = sizeof(DSBUFFERDESC);
+			primaryDesc.dwFlags =  DSBCAPS_PRIMARYBUFFER | DSBCAPS_GETCURRENTPOSITION2 | DSBCAPS_CTRLVOLUME;
+			primaryDesc.dwBufferBytes = 0;
+			primaryDesc.lpwfxFormat = NULL;
+			if ((hr = IDirectSound_CreateSoundBuffer( lpDirectSound,
+				&primaryDesc, &lpDirectSoundOutputBuffer, NULL)) != DS_OK)
+			{
+				IDirectSound_Release( lpDirectSound );
+				return -1;
+			}
+
+			if ((hr = IDirectSoundBuffer_GetVolume(lpDirectSoundOutputBuffer, &dWvolume)) != DS_OK)
+			{
+				ms_warning("winsnddscard_get_level: No playback volume control.");
+			}
+
+			IDirectSoundBuffer_Release( lpDirectSoundOutputBuffer );
+			lpDirectSoundOutputBuffer=NULL;
+			IDirectSound_Release( lpDirectSound );
+			lpDirectSound=NULL;
+
+			return 100-dWvolume *100/(-DSBVOLUME_MIN);
+		case MS_SND_CARD_MASTER:
+			ms_warning("winsnddscard_get_level: No master volume control.");
+			break;
+		case MS_SND_CARD_CAPTURE:
+			ms_warning("winsnddscard_get_level: No mic volume control.");
+			break;
 		default:
-			ms_warning("winsndds_card_get_level: unsupported command.");
+			ms_warning("winsnddscard_get_level: unsupported command.");
 			return -1;
 	}
 	return -1;
@@ -99,9 +173,9 @@ static void winsnddscard_set_source(MSSndCard *card, MSSndCardCapture source){
 
 	switch(source){
 		case MS_SND_CARD_MIC:
-		break;
+			break;
 		case MS_SND_CARD_LINE:
-		break;
+			break;
 	}	
 }
 
@@ -262,7 +336,7 @@ static void winsnddscard_detect(MSSndCardManager *m){
 		if( ms_lib_instance == NULL )
 		{
 			/* error */
-			ms_debug("winsnddscard_init: no support for dsound (missing dsound.dll)\n");
+			ms_debug("winsnddscard_detect: no support for dsound (missing dsound.dll)\n");
 			return;
 		}
 
@@ -288,7 +362,7 @@ static void winsnddscard_detect(MSSndCardManager *m){
 			ms_DirectSoundCaptureCreate == NULL )
 		{
 			/* error */
-			ms_debug("winsnddscard_init: no support for dsound\n");
+			ms_debug("winsnddscard_detect: no support for dsound\n");
 			return;
 		}
 	}
@@ -703,8 +777,8 @@ static void winsndds_write_process(MSFilter *f){
 	msize_max=current_playOffset-d->writeOffset;
 	if( msize_max < 0 ) msize_max += d->framesPerDSBuffer;
 
-	ms_message("DS information: last_writeOffset=%i current_playOffset=%i current_writeOffset=%i max_writable=%i",
-		d->writeOffset, current_playOffset, currentWriteOffset, msize_max);
+	//ms_message("DS information: last_writeOffset=%i current_playOffset=%i current_writeOffset=%i max_writable=%i",
+	//	d->writeOffset, current_playOffset, currentWriteOffset, msize_max);
 
 	//d->writeOffset = outputBufferWriteOffsetBytes;
 
