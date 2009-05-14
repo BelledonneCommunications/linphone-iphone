@@ -59,6 +59,7 @@ static void winsnddscard_set_level(MSSndCard *card, MSSndCardMixerElem e, int pe
     dwVolume = ((0xFFFF) * percent) / 100;
 
 	switch(e){
+		case MS_SND_CARD_PLAYBACK:
 		case MS_SND_CARD_MASTER:
             /*mr = waveOutSetVolume(d->waveoutdev, dwVolume); */
 	        if (mr != MMSYSERR_NOERROR)
@@ -69,20 +70,19 @@ static void winsnddscard_set_level(MSSndCard *card, MSSndCardMixerElem e, int pe
         break;
         case MS_SND_CARD_CAPTURE:
 		break;
-		case MS_SND_CARD_PLAYBACK:
-		break;
         default:
 			ms_warning("winsndds_card_set_level: unsupported command.");
 	}
 }
 
 static int winsnddscard_get_level(MSSndCard *card, MSSndCardMixerElem e){
+	DWORD dWvolume = 10000;
 	switch(e){
 		case MS_SND_CARD_MASTER:
-            /*mr=waveOutGetVolume(d->waveoutdev, &dwVolume);*/
-            /* Transform to 0 to 100 scale*/
-            /*dwVolume = (dwVolume *100) / (0xFFFF);*/
-            return 60;
+ 			//IDirectSoundBuffer_GetVolume(hdsbuf, &volume);
+			return dWvolume *100/(-DSBVOLUME_MIN);
+			//vol->left = vol->right = (exp( ((float)(volume + 10000 + 0.1) / 9999) * 6.908) / 1000 - 0.001) * 100;
+ 			//printf("ao_dsound: volume: %f\n",vol->left);
         break;
         case MS_SND_CARD_CAPTURE:
 		break;
@@ -477,7 +477,7 @@ static void winsndds_read_preprocess(MSFilter *f){
 	d->stat_output=0;
 	d->stat_notplayed=0;
 
-	d->framesPerDSBuffer = 320 * (d->wfx.nSamplesPerSec / 1000) /2;
+	d->framesPerDSBuffer = d->wfx.nAvgBytesPerSec/4;
 	winsndds_apply_settings(d);
 	ms_DirectSoundCaptureCreate( &d->in_guid, &d->lpDirectSoundCapture, NULL );
 
@@ -564,7 +564,7 @@ static void winsndds_write_preprocess(MSFilter *f){
 	d->stat_output=0;
 	d->stat_notplayed=0;
 
-	d->framesPerDSBuffer = 320 * (d->wfx.nSamplesPerSec / 1000);
+	d->framesPerDSBuffer = d->wfx.nAvgBytesPerSec/4;
 	winsndds_apply_settings(d);
 
 
@@ -573,7 +573,7 @@ static void winsndds_write_preprocess(MSFilter *f){
 
 	hWnd = GetDesktopWindow();
 	if ((hr = IDirectSound_SetCooperativeLevel( d->lpDirectSound,
- 	              hWnd, DSSCL_EXCLUSIVE)) != DS_OK)
+		hWnd, DSSCL_PRIORITY)) != DS_OK) //DSSCL_EXCLUSIVE)) != DS_OK)
 	{
  	        return ;
 	}
@@ -666,6 +666,8 @@ static void winsndds_write_postprocess(MSFilter *f){
 static void winsndds_write_process(MSFilter *f){
 	WinSndDs *d=(WinSndDs*)f->data;
 	int discarded=0;
+	DWORD dwStatus;
+	HRESULT hr;
 
 	if (d->lpDirectSound==NULL) {
 		ms_queue_flush(f->inputs[0]);
@@ -676,7 +678,7 @@ static void winsndds_write_process(MSFilter *f){
 
 	if (d->writeOffset==-1)
 	{
-		if (ms_bufferizer_get_avail(&d->output_buff)>=d->framesPerDSBuffer/2)
+		if (ms_bufferizer_get_avail(&d->output_buff)>=d->framesPerDSBuffer)
 		{
 		    DWORD playCursor;
 			DWORD outputBufferWriteOffsetBytes;
@@ -688,14 +690,42 @@ static void winsndds_write_process(MSFilter *f){
 			return;
 	}
 
+	DWORD current_playOffset;
+	long msize_max = 0;
+	DWORD currentWriteOffset;
+	IDirectSoundBuffer_GetCurrentPosition( d->lpDirectSoundOutputBuffer,
+			&current_playOffset, &currentWriteOffset );
+
+	msize_max = current_playOffset - currentWriteOffset;
+	if( msize_max < 0 ) msize_max += d->framesPerDSBuffer;
+
+	/* write from d->writeOffset up to current_playOffset */
+	msize_max=current_playOffset-d->writeOffset;
+	if( msize_max < 0 ) msize_max += d->framesPerDSBuffer;
+
+	ms_message("DS information: last_writeOffset=%i current_playOffset=%i current_writeOffset=%i max_writable=%i",
+		d->writeOffset, current_playOffset, currentWriteOffset, msize_max);
+
+	//d->writeOffset = outputBufferWriteOffsetBytes;
+
+	hr = IDirectSoundBuffer_GetStatus (d->lpDirectSoundOutputBuffer, &dwStatus);
+	if (dwStatus & DSBSTATUS_BUFFERLOST) {
+		hr = IDirectSoundBuffer_Restore (d->lpDirectSoundOutputBuffer);
+		d->writeOffset = 0;
+		ms_message("DSBSTATUS_BUFFERLOST: restoring buffer");
+	}
+
+	if (msize_max==0)
+		return;
 	int msize=d->framesPerDSBuffer/4;
+	if (msize>msize_max)
+		msize = msize_max;
 	while (ms_bufferizer_get_avail(&d->output_buff)>=msize)
 	{
 		LPBYTE lpOutBuf1 = NULL;
 		LPBYTE lpOutBuf2 = NULL;
 		DWORD  dwOutSize1 = 0;
 		DWORD  dwOutSize2 = 0;
-		HRESULT hr;
 		char input[15360];
 
 		hr = IDirectSoundBuffer_Lock ( d->lpDirectSoundOutputBuffer,
@@ -705,7 +735,7 @@ static void winsndds_write_process(MSFilter *f){
 		if (hr != DS_OK)
 		{
 			ms_error("DirectSound IDirectSoundBuffer_Lock failed, hresult = 0x%x\n", hr);
-			continue;
+			break;
 		}
 
 		if (dwOutSize1==0)
@@ -731,6 +761,9 @@ static void winsndds_write_process(MSFilter *f){
 		}
 
 		d->writeOffset=(d->writeOffset+dwOutSize1+dwOutSize2) % d->framesPerDSBuffer;
+		msize_max = msize_max - (dwOutSize1+dwOutSize2);
+		if (msize>msize_max)
+			msize = msize_max;
         IDirectSoundBuffer_Unlock( d->lpDirectSoundOutputBuffer,
 			lpOutBuf1, dwOutSize1, lpOutBuf2, dwOutSize2);
 		if (dwOutSize1==0)
