@@ -23,8 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/msfilter.h"
 #include "mediastreamer2/msticker.h"
 
-extern void find_filters(MSList **filters, MSFilter *f );
-
 #define UNICODE
 
 #include <mmsystem.h>
@@ -723,7 +721,7 @@ static void winsndds_write_preprocess(MSFilter *f){
 	MSFilter *f_capture_filter=NULL;
 	WinSndDs *d_capture_filter=NULL;
 
-	find_filters(&filters, f);
+	filters=ms_filter_find_neighbours(f);
 	if (filters!=NULL)
 	{
 		MSList *it;
@@ -739,6 +737,7 @@ static void winsndds_write_preprocess(MSFilter *f){
 				d_capture_filter=(WinSndDs*)f_capture_filter->data;
 			}
 		}
+		ms_list_free(filters);
 	}
 
 	d->stat_input=0;

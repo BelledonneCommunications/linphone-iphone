@@ -79,33 +79,6 @@ void ms_ticker_destroy(MSTicker *ticker){
 	ms_free(ticker);
 }
 
-void find_filters(MSList **filters, MSFilter *f ){
-	int i,found;
-	MSQueue *link;
-	if (f==NULL) ms_fatal("Bad graph.");
-	/*ms_message("seeing %s, seen=%i",f->desc->name,f->seen);*/
-	if (f->seen){
-		return;
-	}
-	f->seen=TRUE;
-	*filters=ms_list_append(*filters,f);
-	/* go upstream */
-	for(i=0;i<f->desc->ninputs;i++){
-		link=f->inputs[i];
-		if (link!=NULL) find_filters(filters,link->prev.filter);
-	}
-	/* go downstream */
-	for(i=0,found=0;i<f->desc->noutputs;i++){
-		link=f->outputs[i];
-		if (link!=NULL) {
-			found++;
-			find_filters(filters,link->next.filter);
-		}
-	}
-	if (f->desc->noutputs>=1 && found==0){
-		ms_fatal("Bad graph: filter %s has %i outputs, none is connected.",f->desc->name,f->desc->noutputs);
-	}
-}
 
 static MSList *get_sources(MSList *filters){
 	MSList *sources=NULL;
@@ -130,7 +103,7 @@ int ms_ticker_attach(MSTicker *ticker,MSFilter *f)
 		return 0;
 	}
 
-	find_filters(&filters,f);
+	filters=ms_filter_find_neighbours(f);
 	sources=get_sources(filters);
 	if (sources==NULL){
 		ms_fatal("No sources found around filter %s",f->desc->name);
@@ -161,7 +134,7 @@ int ms_ticker_detach(MSTicker *ticker,MSFilter *f){
 
 	ms_mutex_lock(&ticker->lock);
 
-	find_filters(&filters,f);
+	filters=ms_filter_find_neighbours(f);
 	sources=get_sources(filters);
 	if (sources==NULL){
 		ms_fatal("No sources found around filter %s",f->desc->name);

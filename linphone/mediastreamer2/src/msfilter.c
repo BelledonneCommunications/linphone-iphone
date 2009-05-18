@@ -232,6 +232,47 @@ void ms_filter_notify_no_arg(MSFilter *f, unsigned int id){
 		f->notify(f->notify_ud,id,NULL);
 }
 
+
+static void find_filters(MSList **filters, MSFilter *f ){
+	int i,found;
+	MSQueue *link;
+	if (f==NULL) ms_fatal("Bad graph.");
+	/*ms_message("seeing %s, seen=%i",f->desc->name,f->seen);*/
+	if (f->seen){
+		return;
+	}
+	f->seen=TRUE;
+	*filters=ms_list_append(*filters,f);
+	/* go upstream */
+	for(i=0;i<f->desc->ninputs;i++){
+		link=f->inputs[i];
+		if (link!=NULL) find_filters(filters,link->prev.filter);
+	}
+	/* go downstream */
+	for(i=0,found=0;i<f->desc->noutputs;i++){
+		link=f->outputs[i];
+		if (link!=NULL) {
+			found++;
+			find_filters(filters,link->next.filter);
+		}
+	}
+	if (f->desc->noutputs>=1 && found==0){
+		ms_fatal("Bad graph: filter %s has %i outputs, none is connected.",f->desc->name,f->desc->noutputs);
+	}
+}
+
+MSList * ms_filter_find_neighbours(MSFilter *me){
+	MSList *l=NULL;
+	MSList *it;
+	find_filters(&l,me);
+	/*reset seen boolean for further lookups to succeed !*/
+	for(it=l;it!=NULL;it=it->next){
+		MSFilter *f=(MSFilter*)it->data;
+		f->seen=FALSE;
+	}
+	return l;
+}
+
 void ms_connection_helper_start(MSConnectionHelper *h){
 	h->last.filter=0;
 	h->last.pin=-1;

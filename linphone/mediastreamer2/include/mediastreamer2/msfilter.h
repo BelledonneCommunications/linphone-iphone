@@ -352,6 +352,14 @@ void ms_filter_set_notify_callback(MSFilter *f, MSFilterNotifyFunc fn, void *use
  */
 MSFilterId ms_filter_get_id(MSFilter *f);
 
+
+/**
+ * Obtain the list of current filter's neighbours, ie filters that are part of same graph.
+ *
+ * Returns: a MSList of MSFilter, that needs to be freed by the caller when no more needed.
+**/
+MSList * ms_filter_find_neighbours(MSFilter *me);
+
 /**
  * Destroy a filter object.
  *
