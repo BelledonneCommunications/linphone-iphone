@@ -199,7 +199,6 @@ void ms_filter_process(MSFilter *f){
 }
 
 void ms_filter_preprocess(MSFilter *f, struct _MSTicker *t){
-	f->seen=FALSE;
 	f->last_tick=0;
 	f->ticker=t;
 	if (f->desc->preprocess!=NULL)
@@ -209,7 +208,6 @@ void ms_filter_preprocess(MSFilter *f, struct _MSTicker *t){
 void ms_filter_postprocess(MSFilter *f){
 	if (f->desc->postprocess!=NULL)
 		f->desc->postprocess(f);
-	f->seen=FALSE;
 	f->ticker=NULL;
 }
 
