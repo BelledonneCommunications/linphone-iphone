@@ -23,6 +23,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/msfilter.h"
 #include "mediastreamer2/msticker.h"
 
+extern void find_filters(MSList **filters, MSFilter *f );
+
+#define UNICODE
+
 #include <mmsystem.h>
 #ifdef _MSC_VER
 #include <mmreg.h>
@@ -31,8 +35,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <dsound.h>
 
-const GUID GUID_DSCFX_MS_AEC   =   {0xcdebb919,   0x379a,   0x488a,   {0x87,   0x65,   0xf5,   0x3c,   0xfd,   0x36,   0xde,   0x40}};
-const   GUID   GUID_DSCFX_CLASS_AEC   =   {0xBF963D80L,   0xC559,   0x11D0,   {0x8A,   0x2B,   0x00,   0xA0,   0xC9,   0x25,   0x5A,   0xC1}}; 
+const GUID GUID_DSCFX_MS_AEC = {0xcdebb919, 0x379a, 0x488a, {0x87, 0x65, 0xf5, 0x3c, 0xfd, 0x36, 0xde, 0x40}};
+const GUID GUID_DSCFX_CLASS_AEC = {0xBF963D80L, 0xC559, 0x11D0, {0x8A, 0x2B, 0x00, 0xA0, 0xC9, 0x25, 0x5A, 0xC1}}; 
 
 #define WINSNDDS_MINIMUMBUFFER 5
 
@@ -41,17 +45,17 @@ static MSFilter *ms_winsndds_write_new(MSSndCard *card);
 
 static HMODULE ms_lib_instance=NULL;
 static HRESULT (WINAPI *ms_DllGetClassObject)(REFCLSID , REFIID , LPVOID *);
- 	
+
 static HRESULT (WINAPI *ms_DirectSoundCreate)(LPGUID, LPDIRECTSOUND *, LPUNKNOWN);
-static HRESULT (WINAPI *ms_DirectSoundEnumerate)(LPDSENUMCALLBACKA, LPVOID);
- 	
+static HRESULT (WINAPI *ms_DirectSoundEnumerate)(LPDSENUMCALLBACKW, LPVOID);
+
 static HRESULT (WINAPI *ms_DirectSoundCaptureCreate)(LPGUID, LPDIRECTSOUNDCAPTURE *, LPUNKNOWN);
-static HRESULT (WINAPI *ms_DirectSoundCaptureEnumerate)(LPDSENUMCALLBACKA, LPVOID);
+static HRESULT (WINAPI *ms_DirectSoundCaptureEnumerate)(LPDSENUMCALLBACKW, LPVOID);
 
 static HRESULT (WINAPI *ms_DirectSoundFullDuplexCreate)(LPCGUID , LPCGUID ,
-        LPCDSCBUFFERDESC , LPCDSBUFFERDESC , HWND ,
-        DWORD , LPDIRECTSOUNDFULLDUPLEX* , LPDIRECTSOUNDCAPTUREBUFFER8 *,
-        LPDIRECTSOUNDBUFFER8 *, LPUNKNOWN );
+														LPCDSCBUFFERDESC , LPCDSBUFFERDESC , HWND ,
+														DWORD , LPDIRECTSOUNDFULLDUPLEX* , LPDIRECTSOUNDCAPTUREBUFFER8 *,
+														LPDIRECTSOUNDBUFFER8 *, LPUNKNOWN );
 
 typedef struct WinSndDsCard{
 	int in_devid;
@@ -60,20 +64,19 @@ typedef struct WinSndDsCard{
 	GUID out_guid;
 }WinSndDsCard;
 
-
 static void winsnddscard_set_level(MSSndCard *card, MSSndCardMixerElem e, int percent){
 	MMRESULT mr = MMSYSERR_NOERROR;
 	WinSndDsCard *d=(WinSndDsCard*)card->data;
 	LONG dWvolume = 10000-percent*(-DSBVOLUME_MIN)/100;
 	DSBUFFERDESC bufferDesc;
-    DSCBUFFERDESC captureDesc;
+	DSCBUFFERDESC captureDesc;
 	WAVEFORMATEX wfx;
 	HRESULT hr;
 	LPDIRECTSOUND slDirectSound;
 	LPDIRECTSOUNDBUFFER  slDirectSoundOutputBuffer;
 
 	LPDIRECTSOUNDCAPTURE slDirectSoundCapture;
-    LPDIRECTSOUNDCAPTUREBUFFER slDirectSoundInputBuffer;
+	LPDIRECTSOUNDCAPTUREBUFFER slDirectSoundInputBuffer;
 
 	wfx.wFormatTag = WAVE_FORMAT_PCM;
 	wfx.cbSize = 0;
@@ -151,14 +154,14 @@ static int winsnddscard_get_level(MSSndCard *card, MSSndCardMixerElem e){
 	WinSndDsCard *d=(WinSndDsCard*)card->data;
 	LONG dWvolume = 10000;
 	DSBUFFERDESC primaryDesc;
-    DSCBUFFERDESC captureDesc;
+	DSCBUFFERDESC captureDesc;
 	WAVEFORMATEX wfx;
 	HRESULT hr;
 	LPDIRECTSOUND slDirectSound;
 	LPDIRECTSOUNDBUFFER  slDirectSoundOutputBuffer;
 
 	LPDIRECTSOUNDCAPTURE slDirectSoundCapture;
-    LPDIRECTSOUNDCAPTUREBUFFER slDirectSoundInputBuffer;
+	LPDIRECTSOUNDCAPTUREBUFFER slDirectSoundInputBuffer;
 
 	wfx.wFormatTag = WAVE_FORMAT_PCM;
 	wfx.cbSize = 0;
@@ -340,61 +343,71 @@ static void add_or_update_card(MSSndCardManager *m, const char *name, LPGUID lpg
 }
 
 static BOOL CALLBACK enumerate_capture_devices_callback(LPGUID lpGUID,
- 	                                     LPCTSTR lpszDesc,
- 	                                     LPCTSTR lpszDrvName,
- 	                                     LPVOID lpContext )
+														LPCWSTR lpszDesc,
+														LPCWSTR lpszDrvName,
+														LPVOID lpContext )
 {
 	MSSndCardManager *m = (MSSndCardManager*)lpContext;
 	static int dev_index=0;
 
 	if ( lpGUID == NULL ) /* primary device */
-    {
-		char snd_card_name[256];
-		snprintf(snd_card_name, 256, "ds: %s", lpszDesc);
-		add_or_update_card(m,snd_card_name,lpGUID,dev_index,-1,MS_SND_CARD_CAP_CAPTURE);
+	{
+		char szName[256];
+		wchar_t snd_card_name[256];
+		swprintf(snd_card_name, 256, L"DS: %s", lpszDesc);
+		WideCharToMultiByte(CP_UTF8,0,snd_card_name,-1,szName,256,0,0);
+
+		add_or_update_card(m,szName,lpGUID,dev_index,-1,MS_SND_CARD_CAP_CAPTURE);
 		dev_index++;
-    }
-    else
-    {
-		char snd_card_name[256];
-		snprintf(snd_card_name, 256, "ds: %s", lpszDesc);
-		add_or_update_card(m,snd_card_name,lpGUID,dev_index,-1,MS_SND_CARD_CAP_CAPTURE);
+	}
+	else
+	{
+		char szName[256];
+		wchar_t snd_card_name[256];
+		swprintf(snd_card_name, 256, L"DS: %s", lpszDesc);
+		WideCharToMultiByte(CP_UTF8,0,snd_card_name,-1,szName,256,0,0);
+
+		add_or_update_card(m,szName,lpGUID,dev_index,-1,MS_SND_CARD_CAP_CAPTURE);
 		dev_index++;
-    }
+	}
 
 	return true;
 }
 
 static BOOL CALLBACK enumerate_playback_devices_callback(LPGUID lpGUID,
- 	                                     LPCTSTR lpszDesc,
- 	                                     LPCTSTR lpszDrvName,
- 	                                     LPVOID lpContext )
+														 LPCWSTR lpszDesc,
+														 LPCWSTR lpszDrvName,
+														 LPVOID lpContext )
 {
 	MSSndCardManager *m = (MSSndCardManager*)lpContext;
 	static int dev_index=0;
 
 	if ( lpGUID == NULL ) /* primary device */
-    {
-		char snd_card_name[256];
-		snprintf(snd_card_name, 256, "ds: %s", lpszDesc);
+	{
+		char szName[256];
+		wchar_t snd_card_name[256];
+		swprintf(snd_card_name, 256, L"DS: %s", lpszDesc);
+		WideCharToMultiByte(CP_UTF8,0,snd_card_name,-1,szName,256,0,0);
 
-		add_or_update_card(m,snd_card_name,lpGUID,-1,dev_index,MS_SND_CARD_CAP_PLAYBACK);
+		add_or_update_card(m,szName,lpGUID,-1,dev_index,MS_SND_CARD_CAP_PLAYBACK);
 		dev_index++;
-    }
-    else
-    {
-		char snd_card_name[256];
-		snprintf(snd_card_name, 256, "ds: %s", lpszDesc);
+	}
+	else
+	{
+		char szName[256];
+		wchar_t snd_card_name[256];
+		swprintf(snd_card_name, 256, L"DS: %s", lpszDesc);
+		WideCharToMultiByte(CP_UTF8,0,snd_card_name,-1,szName,256,0,0);
 
-		add_or_update_card(m,snd_card_name,lpGUID,-1,dev_index,MS_SND_CARD_CAP_PLAYBACK);
+		add_or_update_card(m,szName,lpGUID,-1,dev_index,MS_SND_CARD_CAP_PLAYBACK);
 		dev_index++;
-    }
+	}
 
 	return true;
 }
 
 static void winsnddscard_detect(MSSndCardManager *m){
-    MMRESULT mr = NOERROR;
+	MMRESULT mr = NOERROR;
 
 	if (ms_lib_instance==NULL)
 	{
@@ -407,26 +420,26 @@ static void winsnddscard_detect(MSSndCardManager *m){
 		}
 
 		ms_DllGetClassObject =(HRESULT (WINAPI *)(REFCLSID, REFIID , LPVOID *))
-		GetProcAddress( ms_lib_instance, "DllGetClassObject" );
+			GetProcAddress( ms_lib_instance, "DllGetClassObject" );
 
 		ms_DirectSoundCreate =(HRESULT (WINAPI *)(LPGUID, LPDIRECTSOUND *, LPUNKNOWN))
-		GetProcAddress( ms_lib_instance, "DirectSoundCreate" );
+			GetProcAddress( ms_lib_instance, "DirectSoundCreate" );
 
-		ms_DirectSoundEnumerate =(HRESULT (WINAPI *)(LPDSENUMCALLBACKA, LPVOID))
-		GetProcAddress( ms_lib_instance, "DirectSoundEnumerateA" );
+		ms_DirectSoundEnumerate =(HRESULT (WINAPI *)(LPDSENUMCALLBACKW, LPVOID))
+			GetProcAddress( ms_lib_instance, "DirectSoundEnumerateW" );
 
 		ms_DirectSoundCaptureCreate =(HRESULT (WINAPI *)(LPGUID, LPDIRECTSOUNDCAPTURE *, LPUNKNOWN))
-		GetProcAddress( ms_lib_instance, "DirectSoundCaptureCreate" );
+			GetProcAddress( ms_lib_instance, "DirectSoundCaptureCreate" );
 
-		ms_DirectSoundCaptureEnumerate =(HRESULT (WINAPI *)(LPDSENUMCALLBACKA, LPVOID))
-		GetProcAddress( ms_lib_instance, "DirectSoundCaptureEnumerateA" );
+		ms_DirectSoundCaptureEnumerate =(HRESULT (WINAPI *)(LPDSENUMCALLBACKW, LPVOID))
+			GetProcAddress( ms_lib_instance, "DirectSoundCaptureEnumerateW" );
 
 		ms_DirectSoundFullDuplexCreate =(HRESULT (WINAPI *)(LPCGUID , LPCGUID ,
-        LPCDSCBUFFERDESC , LPCDSBUFFERDESC , HWND ,
-        DWORD , LPDIRECTSOUNDFULLDUPLEX* , LPDIRECTSOUNDCAPTUREBUFFER8 *,
-        LPDIRECTSOUNDBUFFER8 *, LPUNKNOWN))
-		GetProcAddress( ms_lib_instance, "DirectSoundFullDuplexCreate" );
-		
+			LPCDSCBUFFERDESC , LPCDSBUFFERDESC , HWND ,
+			DWORD , LPDIRECTSOUNDFULLDUPLEX* , LPDIRECTSOUNDCAPTUREBUFFER8 *,
+			LPDIRECTSOUNDBUFFER8 *, LPUNKNOWN))
+			GetProcAddress( ms_lib_instance, "DirectSoundFullDuplexCreate" );
+
 		if( ms_DllGetClassObject == NULL ||
 			ms_DirectSoundCreate == NULL ||
 			ms_DirectSoundEnumerate == NULL ||
@@ -443,7 +456,6 @@ static void winsnddscard_detect(MSSndCardManager *m){
 	ms_DirectSoundEnumerate( (LPDSENUMCALLBACK)enumerate_playback_devices_callback, (void *)m );
 }
 
-
 typedef struct WinSndDs{
 	int dev_id;
 	GUID in_guid;
@@ -457,13 +469,13 @@ typedef struct WinSndDs{
 	MSBufferizer output_buff;
 	LPDIRECTSOUNDFULLDUPLEX lpDirectSoundFullDuplex;
 	LPDIRECTSOUND lpDirectSound;
-    LPDIRECTSOUNDBUFFER  lpDirectSoundOutputBuffer;
-    double               dsw_framesWritten;
-    UINT                 writeOffset;      /* last read position */
+	LPDIRECTSOUNDBUFFER  lpDirectSoundOutputBuffer;
+	double               dsw_framesWritten;
+	UINT                 writeOffset;      /* last read position */
 
 	LPDIRECTSOUNDCAPTURE lpDirectSoundCapture;
-    LPDIRECTSOUNDCAPTUREBUFFER  lpDirectSoundInputBuffer;
-    UINT                 readOffset;      /* last read position */
+	LPDIRECTSOUNDCAPTUREBUFFER  lpDirectSoundInputBuffer;
+	UINT                 readOffset;      /* last read position */
 
 	int              framesPerDSBuffer;
 
@@ -617,7 +629,7 @@ static void winsndds_uninit(MSFilter *f){
 
 static void winsndds_read_preprocess(MSFilter *f){
 	WinSndDs *d=(WinSndDs*)f->data;
-    DSCBUFFERDESC  captureDesc;
+	DSCBUFFERDESC  captureDesc;
 	HRESULT hr;
 
 	d->stat_input=0;
@@ -630,9 +642,9 @@ static void winsndds_read_preprocess(MSFilter *f){
 	ms_DirectSoundCaptureCreate( &d->in_guid, &d->lpDirectSoundCapture, NULL );
 
 	ZeroMemory(&captureDesc, sizeof(DSCBUFFERDESC));
-    captureDesc.dwSize = sizeof(DSCBUFFERDESC);
-    captureDesc.dwFlags =  0;
-    captureDesc.dwBufferBytes = d->framesPerDSBuffer;
+	captureDesc.dwSize = sizeof(DSCBUFFERDESC);
+	captureDesc.dwFlags =  0;
+	captureDesc.dwBufferBytes = d->framesPerDSBuffer;
 	captureDesc.lpwfxFormat = &d->wfx;
 
 	if ((hr = IDirectSoundCapture_CreateCaptureBuffer( d->lpDirectSoundCapture,
@@ -640,10 +652,10 @@ static void winsndds_read_preprocess(MSFilter *f){
 	{
 		return;
 	}
-    d->readOffset = 0;
+	d->readOffset = 0;
 
 	hr = IDirectSoundCaptureBuffer_Start( d->lpDirectSoundInputBuffer, DSCBSTART_LOOPING );
-	
+
 	ms_ticker_set_time_func(f->ticker,winsndds_get_cur_time,d);
 
 	d->thread_running=TRUE;
@@ -666,18 +678,18 @@ static void winsndds_read_postprocess(MSFilter *f){
 
 	ms_ticker_set_time_func(f->ticker,NULL,NULL);
 
-    if( d->lpDirectSoundInputBuffer )
-    {
-        IDirectSoundCaptureBuffer_Stop( d->lpDirectSoundInputBuffer );
-        IDirectSoundCaptureBuffer_Release( d->lpDirectSoundInputBuffer );
-        d->lpDirectSoundInputBuffer = NULL;
-    }
+	if( d->lpDirectSoundInputBuffer )
+	{
+		IDirectSoundCaptureBuffer_Stop( d->lpDirectSoundInputBuffer );
+		IDirectSoundCaptureBuffer_Release( d->lpDirectSoundInputBuffer );
+		d->lpDirectSoundInputBuffer = NULL;
+	}
 
-    if( d->lpDirectSoundCapture )
-    {
-        IDirectSoundCapture_Release( d->lpDirectSoundCapture );
-        d->lpDirectSoundCapture = NULL;
-    }
+	if( d->lpDirectSoundCapture )
+	{
+		IDirectSoundCapture_Release( d->lpDirectSoundCapture );
+		d->lpDirectSoundCapture = NULL;
+	}
 
 	ms_message("Shutting down sound device (playing: %i) (input-output: %i) (notplayed: %i)", d->nbufs_playing, d->stat_input - d->stat_output, d->stat_notplayed);
 	flushq(&d->rq,0);
@@ -686,7 +698,7 @@ static void winsndds_read_postprocess(MSFilter *f){
 static void winsndds_read_process(MSFilter *f){
 	WinSndDs *d=(WinSndDs*)f->data;
 	mblk_t *m;
-	
+
 	ms_mutex_lock(&d->mutex);
 	while((m=getq(&d->rq))!=NULL){
 		ms_queue_put(f->outputs[0],m);
@@ -697,16 +709,37 @@ static void winsndds_read_process(MSFilter *f){
 static void winsndds_write_preprocess(MSFilter *f){
 	WinSndDs *d=(WinSndDs*)f->data;
 
-    DWORD          dwDataLen;
-    DWORD          playCursor;
-    HWND           hWnd;
-    HRESULT        hr;
+	DWORD          dwDataLen;
+	DWORD          playCursor;
+	HWND           hWnd;
+	HRESULT        hr;
 	LPDIRECTSOUNDBUFFER pPrimaryBuffer;
-    DSBUFFERDESC   primaryDesc;
-    DSBUFFERDESC   secondaryDesc;
-    unsigned char* pDSBuffData;
-    DWORD outputBufferWriteOffsetBytes;
+	DSBUFFERDESC   primaryDesc;
+	DSBUFFERDESC   secondaryDesc;
+	unsigned char* pDSBuffData;
+	DWORD outputBufferWriteOffsetBytes;
 
+	MSList *filters=NULL;
+	MSFilter *f_capture_filter=NULL;
+	WinSndDs *d_capture_filter=NULL;
+
+	find_filters(&filters, f);
+	if (filters!=NULL)
+	{
+		MSList *it;
+		/* search for another winsndds filter */
+		for(it=filters;it!=NULL;it=it->next)
+		{
+			MSFilter *f_tmp = (MSFilter*)it->data;
+			f_tmp->seen = FALSE;
+			if (f_tmp->desc->id == MS_WINSNDDS_READ_ID)
+			{
+				/* found */
+				f_capture_filter = f_tmp;
+				d_capture_filter=(WinSndDs*)f_capture_filter->data;
+			}
+		}
+	}
 
 	d->stat_input=0;
 	d->stat_output=0;
@@ -715,13 +748,13 @@ static void winsndds_write_preprocess(MSFilter *f){
 	d->framesPerDSBuffer = d->wfx.nAvgBytesPerSec/4;
 	winsndds_apply_settings(d);
 
-	ms_message("full duplex and echo canceller! (%x)" ,d->lpDirectSoundCapture);
-	if (d->lpDirectSoundCapture!=NULL)
+	if (d_capture_filter!=NULL
+		&& d_capture_filter->lpDirectSoundCapture!=NULL
+		&& IsEqualIID(d_capture_filter->in_guid, d->in_guid))
 	{
-	    DSCBUFFERDESC captureDesc;
+		DSCBUFFERDESC captureDesc;
 
-		ms_message("full duplex and echo canceller: activating!");
-		winsndds_read_postprocess(f);
+		winsndds_read_postprocess(f_capture_filter);
 
 		DSCEFFECTDESC dscfx[1];
 		ZeroMemory( &dscfx[0], sizeof( DSCEFFECTDESC ) );
@@ -732,32 +765,34 @@ static void winsndds_write_preprocess(MSFilter *f){
 		dscfx[0].dwReserved1 = 0;
 		dscfx[0].dwReserved2 = 0;
 
+		d_capture_filter->framesPerDSBuffer = d_capture_filter->wfx.nAvgBytesPerSec/4;
+		winsndds_apply_settings(d_capture_filter);
+
 		ZeroMemory(&captureDesc, sizeof(DSCBUFFERDESC));
 		captureDesc.dwSize = sizeof(DSCBUFFERDESC);
 		captureDesc.dwFlags =  DSCBCAPS_CTRLFX;
-		captureDesc.dwBufferBytes = d->framesPerDSBuffer;
-		captureDesc.lpwfxFormat = &d->wfx;
+		captureDesc.dwBufferBytes = d_capture_filter->framesPerDSBuffer;
+		captureDesc.lpwfxFormat = &d_capture_filter->wfx;
 		captureDesc.dwFXCount = 1;
-	    captureDesc.lpDSCFXDesc = dscfx;
+		captureDesc.lpDSCFXDesc = dscfx;
 
 		ZeroMemory(&secondaryDesc, sizeof(DSBUFFERDESC));
 		secondaryDesc.dwSize = sizeof(DSBUFFERDESC);
 		secondaryDesc.dwFlags =  DSBCAPS_GLOBALFOCUS | DSBCAPS_GETCURRENTPOSITION2
 			| DSBCAPS_LOCSOFTWARE;
-        //| DSBCAPS_CTRLFREQUENCY;
 		secondaryDesc.dwBufferBytes = d->framesPerDSBuffer;
 		secondaryDesc.lpwfxFormat = &d->wfx;
 
 		hWnd = GetDesktopWindow();
-		hr = ms_DirectSoundFullDuplexCreate(&d->in_guid,
+		hr = ms_DirectSoundFullDuplexCreate(&d_capture_filter->in_guid,
 			&d->out_guid,
 			&captureDesc,
 			&secondaryDesc,
 			hWnd,
 			DSSCL_NORMAL,
 			&d->lpDirectSoundFullDuplex,
-			(LPDIRECTSOUNDCAPTUREBUFFER8*)&d->lpDirectSoundInputBuffer,
-			(LPDIRECTSOUNDBUFFER8*)&d->lpDirectSound,
+			(LPDIRECTSOUNDCAPTUREBUFFER8*)&d_capture_filter->lpDirectSoundInputBuffer,
+			(LPDIRECTSOUNDBUFFER8*)&d->lpDirectSoundOutputBuffer,
 			NULL);
 
 		if (hr!=DS_OK)
@@ -765,17 +800,17 @@ static void winsndds_write_preprocess(MSFilter *f){
 			ms_message("full duplex and echo canceller: disabled!");
 			captureDesc.dwFlags =  0;
 			captureDesc.dwFXCount = 0;
-		    captureDesc.lpDSCFXDesc = NULL;
+			captureDesc.lpDSCFXDesc = NULL;
 
-			hr = ms_DirectSoundFullDuplexCreate(&d->in_guid,
+			hr = ms_DirectSoundFullDuplexCreate(&d_capture_filter->in_guid,
 				&d->out_guid,
 				&captureDesc,
 				&secondaryDesc,
 				hWnd,
 				DSSCL_NORMAL,
 				&d->lpDirectSoundFullDuplex,
-				(LPDIRECTSOUNDCAPTUREBUFFER8*)&d->lpDirectSoundInputBuffer,
-				(LPDIRECTSOUNDBUFFER8*)&d->lpDirectSound,
+				(LPDIRECTSOUNDCAPTUREBUFFER8*)&d_capture_filter->lpDirectSoundInputBuffer,
+				(LPDIRECTSOUNDBUFFER8*)&d->lpDirectSoundOutputBuffer,
 				NULL);
 		}
 		if (hr!=DS_OK)
@@ -785,18 +820,17 @@ static void winsndds_write_preprocess(MSFilter *f){
 		}
 		ms_message("full duplex and echo canceller: activated!");
 
-		d->readOffset = 0;
+		d_capture_filter->readOffset = 0;
 
-		hr = IDirectSoundCaptureBuffer_Start( d->lpDirectSoundInputBuffer, DSCBSTART_LOOPING );
-		
-		ms_ticker_set_time_func(f->ticker,winsndds_get_cur_time,d);
+		hr = IDirectSoundCaptureBuffer_Start( d_capture_filter->lpDirectSoundInputBuffer, DSCBSTART_LOOPING );
 
-		d->thread_running=TRUE;
-		ms_thread_create(&d->thread,NULL,winsndds_read_thread,d);
-		ms_mutex_lock(&d->thread_lock);
-		ms_cond_wait(&d->thread_cond,&d->thread_lock);
-		ms_mutex_unlock(&d->thread_lock);
+		ms_ticker_set_time_func(f_capture_filter->ticker,winsndds_get_cur_time,d_capture_filter);
 
+		d_capture_filter->thread_running=TRUE;
+		ms_thread_create(&d_capture_filter->thread,NULL,winsndds_read_thread,d_capture_filter);
+		ms_mutex_lock(&d_capture_filter->thread_lock);
+		ms_cond_wait(&d_capture_filter->thread_cond,&d_capture_filter->thread_lock);
+		ms_mutex_unlock(&d_capture_filter->thread_lock);
 	}
 	else
 	{
@@ -807,7 +841,7 @@ static void winsndds_write_preprocess(MSFilter *f){
 		if ((hr = IDirectSound_SetCooperativeLevel( d->lpDirectSound,
 			hWnd, DSSCL_PRIORITY)) != DS_OK) //DSSCL_EXCLUSIVE)) != DS_OK)
 		{
- 				return ;
+			return ;
 		}
 
 		ZeroMemory(&primaryDesc, sizeof(DSBUFFERDESC));
@@ -816,7 +850,7 @@ static void winsndds_write_preprocess(MSFilter *f){
 		primaryDesc.dwBufferBytes = 0;
 		primaryDesc.lpwfxFormat   = NULL;
 		if ((hr = IDirectSound_CreateSoundBuffer( d->lpDirectSound,
-					  &primaryDesc, &pPrimaryBuffer, NULL)) != DS_OK)
+			&primaryDesc, &pPrimaryBuffer, NULL)) != DS_OK)
 		{
 			return ;
 		}
@@ -833,7 +867,7 @@ static void winsndds_write_preprocess(MSFilter *f){
 		secondaryDesc.dwBufferBytes = d->framesPerDSBuffer;
 		secondaryDesc.lpwfxFormat = &d->wfx;
 		if ((hr = IDirectSound_CreateSoundBuffer( d->lpDirectSound,
-					  &secondaryDesc, &d->lpDirectSoundOutputBuffer, NULL)) != DS_OK)
+			&secondaryDesc, &d->lpDirectSoundOutputBuffer, NULL)) != DS_OK)
 		{
 			return ;
 		}
@@ -855,48 +889,49 @@ static void winsndds_write_preprocess(MSFilter *f){
 	}
 
 	hr = IDirectSoundBuffer_GetCurrentPosition( d->lpDirectSoundOutputBuffer,
-            &playCursor, &outputBufferWriteOffsetBytes );
-    if( hr != DS_OK )
-    {
-        return ;
-    }
-	
-    hr = IDirectSoundBuffer_SetCurrentPosition( d->lpDirectSoundOutputBuffer, 0 );
-    if( hr != DS_OK )
-    {
-        return ;
-    }
-    hr = IDirectSoundBuffer_Play( d->lpDirectSoundOutputBuffer, 0, 0, DSBPLAY_LOOPING);
-    if( hr != DS_OK )
-    {
-        return ;
-    }
+		&playCursor, &outputBufferWriteOffsetBytes );
+	if( hr != DS_OK )
+	{
+		return ;
+	}
+
+	hr = IDirectSoundBuffer_SetCurrentPosition( d->lpDirectSoundOutputBuffer, 0 );
+	if( hr != DS_OK )
+	{
+		return ;
+	}
+
+	hr = IDirectSoundBuffer_Play( d->lpDirectSoundOutputBuffer, 0, 0, DSBPLAY_LOOPING);
+	if( hr != DS_OK )
+	{
+		return ;
+	}
 	d->writeOffset=-1;
-	
+
 	return ;
 }
 
 static void winsndds_write_postprocess(MSFilter *f){
 	WinSndDs *d=(WinSndDs*)f->data;
 
-    if( d->lpDirectSoundOutputBuffer )
-    {
-        IDirectSoundBuffer_Stop( d->lpDirectSoundOutputBuffer );
-        IDirectSoundBuffer_Release( d->lpDirectSoundOutputBuffer );
-        d->lpDirectSoundOutputBuffer = NULL;
-    }
+	if( d->lpDirectSoundOutputBuffer )
+	{
+		IDirectSoundBuffer_Stop( d->lpDirectSoundOutputBuffer );
+		IDirectSoundBuffer_Release( d->lpDirectSoundOutputBuffer );
+		d->lpDirectSoundOutputBuffer = NULL;
+	}
 
-    if( d->lpDirectSound )
-    {
-        IDirectSound_Release( d->lpDirectSound );
-        d->lpDirectSound = NULL;
-    }
+	if( d->lpDirectSound )
+	{
+		IDirectSound_Release( d->lpDirectSound );
+		d->lpDirectSound = NULL;
+	}
 
 	if( d->lpDirectSoundFullDuplex )
-    {
-        IDirectSoundFullDuplex_Release( d->lpDirectSoundFullDuplex );
-        d->lpDirectSoundFullDuplex = NULL;
-    }
+	{
+		IDirectSoundFullDuplex_Release( d->lpDirectSoundFullDuplex );
+		d->lpDirectSoundFullDuplex = NULL;
+	}
 
 	ms_message("Shutting down sound device (playing: %i) (input-output: %i) (notplayed: %i)", d->nbufs_playing, d->stat_input - d->stat_output, d->stat_notplayed);
 	d->writeOffset=-1;
@@ -908,7 +943,7 @@ static void winsndds_write_process(MSFilter *f){
 	DWORD dwStatus;
 	HRESULT hr;
 
-	if (d->lpDirectSound==NULL) {
+	if (d->lpDirectSoundOutputBuffer==NULL) {
 		ms_queue_flush(f->inputs[0]);
 		return;
 	}
@@ -919,10 +954,10 @@ static void winsndds_write_process(MSFilter *f){
 	{
 		if (ms_bufferizer_get_avail(&d->output_buff)>=d->framesPerDSBuffer)
 		{
-		    DWORD playCursor;
+			DWORD playCursor;
 			DWORD outputBufferWriteOffsetBytes;
 			IDirectSoundBuffer_GetCurrentPosition( d->lpDirectSoundOutputBuffer,
-					&playCursor, &outputBufferWriteOffsetBytes );
+				&playCursor, &outputBufferWriteOffsetBytes );
 			d->writeOffset = outputBufferWriteOffsetBytes;
 		}
 		else
@@ -933,7 +968,7 @@ static void winsndds_write_process(MSFilter *f){
 	long msize_max = 0;
 	DWORD currentWriteOffset;
 	IDirectSoundBuffer_GetCurrentPosition( d->lpDirectSoundOutputBuffer,
-			&current_playOffset, &currentWriteOffset );
+		&current_playOffset, &currentWriteOffset );
 
 	msize_max = current_playOffset - currentWriteOffset;
 	if( msize_max < 0 ) msize_max += d->framesPerDSBuffer;
@@ -944,8 +979,6 @@ static void winsndds_write_process(MSFilter *f){
 
 	//ms_message("DS information: last_writeOffset=%i current_playOffset=%i current_writeOffset=%i max_writable=%i",
 	//	d->writeOffset, current_playOffset, currentWriteOffset, msize_max);
-
-	//d->writeOffset = outputBufferWriteOffsetBytes;
 
 	hr = IDirectSoundBuffer_GetStatus (d->lpDirectSoundOutputBuffer, &dwStatus);
 	if (dwStatus & DSBSTATUS_BUFFERLOST) {
@@ -1003,7 +1036,7 @@ static void winsndds_write_process(MSFilter *f){
 		msize_max = msize_max - (dwOutSize1+dwOutSize2);
 		if (msize>msize_max)
 			msize = msize_max;
-        IDirectSoundBuffer_Unlock( d->lpDirectSoundOutputBuffer,
+		IDirectSoundBuffer_Unlock( d->lpDirectSoundOutputBuffer,
 			lpOutBuf1, dwOutSize1, lpOutBuf2, dwOutSize2);
 		if (dwOutSize1==0)
 			break;
@@ -1075,13 +1108,13 @@ MSFilterDesc winsndds_read_desc={
 	"Sound capture filter for Windows Sound drivers",
 	MS_FILTER_OTHER,
 	NULL,
-    0,
+	0,
 	1,
 	winsndds_init,
-    winsndds_read_preprocess,
+	winsndds_read_preprocess,
 	winsndds_read_process,
 	winsndds_read_postprocess,
-    winsndds_uninit,
+	winsndds_uninit,
 	winsndds_methods
 };
 
@@ -1092,14 +1125,14 @@ MSFilterDesc winsndds_write_desc={
 	"Sound playback filter for Windows Sound drivers",
 	MS_FILTER_OTHER,
 	NULL,
-    1,
+	1,
 	0,
 	winsndds_init,
-    winsndds_write_preprocess,
+	winsndds_write_preprocess,
 	winsndds_write_process,
 	winsndds_write_postprocess,
 	winsndds_uninit,
-    winsndds_methods
+	winsndds_methods
 };
 
 MSFilter *ms_winsndds_read_new(MSSndCard *card){
