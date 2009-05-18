@@ -728,13 +728,14 @@ static void winsndds_write_preprocess(MSFilter *f){
 		/* search for another winsndds filter */
 		for(it=filters;it!=NULL;it=it->next)
 		{
-			MSFilter *f_tmp = (MSFilter*)it->data;
-			if (f_tmp->desc->id == MS_WINSNDDS_READ_ID)
+			f_capture_filter = (MSFilter*)it->data;
+			if (f_capture_filter->desc->id == MS_WINSNDDS_READ_ID)
 			{
 				/* found */
-				f_capture_filter = f_tmp;
 				d_capture_filter=(WinSndDs*)f_capture_filter->data;
+				break;
 			}
+			f_capture_filter=NULL;
 		}
 		ms_list_free(filters);
 	}
