@@ -31,6 +31,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <dsound.h>
 
+const GUID GUID_DSCFX_MS_AEC   =   {0xcdebb919,   0x379a,   0x488a,   {0x87,   0x65,   0xf5,   0x3c,   0xfd,   0x36,   0xde,   0x40}};
+const   GUID   GUID_DSCFX_CLASS_AEC   =   {0xBF963D80L,   0xC559,   0x11D0,   {0x8A,   0x2B,   0x00,   0xA0,   0xC9,   0x25,   0x5A,   0xC1}}; 
+
 #define WINSNDDS_MINIMUMBUFFER 5
 
 static MSFilter *ms_winsndds_read_new(MSSndCard *card);
@@ -45,6 +48,11 @@ static HRESULT (WINAPI *ms_DirectSoundEnumerate)(LPDSENUMCALLBACKA, LPVOID);
 static HRESULT (WINAPI *ms_DirectSoundCaptureCreate)(LPGUID, LPDIRECTSOUNDCAPTURE *, LPUNKNOWN);
 static HRESULT (WINAPI *ms_DirectSoundCaptureEnumerate)(LPDSENUMCALLBACKA, LPVOID);
 
+static HRESULT (WINAPI *ms_DirectSoundFullDuplexCreate)(LPCGUID , LPCGUID ,
+        LPCDSCBUFFERDESC , LPCDSBUFFERDESC , HWND ,
+        DWORD , LPDIRECTSOUNDFULLDUPLEX* , LPDIRECTSOUNDCAPTUREBUFFER8 *,
+        LPDIRECTSOUNDBUFFER8 *, LPUNKNOWN );
+
 typedef struct WinSndDsCard{
 	int in_devid;
 	int out_devid;
@@ -57,54 +65,82 @@ static void winsnddscard_set_level(MSSndCard *card, MSSndCardMixerElem e, int pe
 	MMRESULT mr = MMSYSERR_NOERROR;
 	WinSndDsCard *d=(WinSndDsCard*)card->data;
 	LONG dWvolume = 10000-percent*(-DSBVOLUME_MIN)/100;
-	DSBUFFERDESC primaryDesc;
+	DSBUFFERDESC bufferDesc;
+    DSCBUFFERDESC captureDesc;
 	WAVEFORMATEX wfx;
 	HRESULT hr;
-	LPDIRECTSOUND lpDirectSound;
-	LPDIRECTSOUNDBUFFER  lpDirectSoundOutputBuffer;
+	LPDIRECTSOUND slDirectSound;
+	LPDIRECTSOUNDBUFFER  slDirectSoundOutputBuffer;
+
+	LPDIRECTSOUNDCAPTURE slDirectSoundCapture;
+    LPDIRECTSOUNDCAPTUREBUFFER slDirectSoundInputBuffer;
+
+	wfx.wFormatTag = WAVE_FORMAT_PCM;
+	wfx.cbSize = 0;
+	wfx.nAvgBytesPerSec = 16000;
+	wfx.nBlockAlign = 2;
+	wfx.nChannels = 1;
+	wfx.nSamplesPerSec = 8000;
+	wfx.wBitsPerSample = 16;
 
 	switch(e){
 		case MS_SND_CARD_PLAYBACK:
 
-			wfx.wFormatTag = WAVE_FORMAT_PCM;
-			wfx.cbSize = 0;
-			wfx.nAvgBytesPerSec = 16000;
-			wfx.nBlockAlign = 2;
-			wfx.nChannels = 1;
-			wfx.nSamplesPerSec = 8000;
-			wfx.wBitsPerSample = 16;
+			ms_DirectSoundCreate( &d->out_guid, &slDirectSound, NULL );
 
-			ms_DirectSoundCreate( &d->out_guid, &lpDirectSound, NULL );
-
-			ZeroMemory(&primaryDesc, sizeof(DSBUFFERDESC));
-			primaryDesc.dwSize = sizeof(DSBUFFERDESC);
-			primaryDesc.dwFlags = DSBCAPS_PRIMARYBUFFER | DSBCAPS_GETCURRENTPOSITION2 | DSBCAPS_CTRLVOLUME;
-			primaryDesc.dwBufferBytes = 0;
-			primaryDesc.lpwfxFormat = NULL;
-			if ((hr = IDirectSound_CreateSoundBuffer( lpDirectSound,
-				&primaryDesc, &lpDirectSoundOutputBuffer, NULL)) != DS_OK)
+			ZeroMemory(&bufferDesc, sizeof(DSBUFFERDESC));
+			bufferDesc.dwSize = sizeof(DSBUFFERDESC);
+			bufferDesc.dwFlags = DSBCAPS_PRIMARYBUFFER | DSBCAPS_GETCURRENTPOSITION2 | DSBCAPS_CTRLVOLUME;
+			bufferDesc.dwBufferBytes = 0;
+			bufferDesc.lpwfxFormat = NULL;
+			if ((hr = IDirectSound_CreateSoundBuffer( slDirectSound,
+				&bufferDesc, &slDirectSoundOutputBuffer, NULL)) != DS_OK)
 			{
-				IDirectSound_Release( lpDirectSound );
-				lpDirectSound=NULL;
-				lpDirectSoundOutputBuffer=NULL;
+				IDirectSound_Release( slDirectSound );
+				slDirectSound=NULL;
+				slDirectSoundOutputBuffer=NULL;
 				return ;
 			}
 
-			if ((hr = IDirectSoundBuffer_SetVolume(lpDirectSoundOutputBuffer, -dWvolume)) != DS_OK)
+			if ((hr = IDirectSoundBuffer_SetVolume(slDirectSoundOutputBuffer, -dWvolume)) != DS_OK)
 			{
 				ms_warning("winsnddscard_set_level: No playback volume control.");
 			}
 
-			IDirectSoundBuffer_Release( lpDirectSoundOutputBuffer );
-			lpDirectSoundOutputBuffer=NULL;
-			IDirectSound_Release( lpDirectSound );
-			lpDirectSound=NULL;
+			IDirectSoundBuffer_Release( slDirectSoundOutputBuffer );
+			slDirectSoundOutputBuffer=NULL;
+			IDirectSound_Release( slDirectSound );
+			slDirectSound=NULL;
 			break;
 		case MS_SND_CARD_MASTER:
 			ms_warning("winsnddscard_set_level: No master volume control.");
 			break;
 		case MS_SND_CARD_CAPTURE:
-			ms_warning("winsnddscard_set_level: No mic volume control.");
+
+			ms_DirectSoundCaptureCreate( &d->in_guid, &slDirectSoundCapture, NULL );
+
+			ZeroMemory(&captureDesc, sizeof(DSCBUFFERDESC));
+			captureDesc.dwSize = sizeof(DSCBUFFERDESC);
+			captureDesc.dwFlags = DSBCAPS_CTRLVOLUME;
+			captureDesc.dwBufferBytes = wfx.nAvgBytesPerSec/4;
+			captureDesc.lpwfxFormat = &wfx;
+
+			if ((hr = IDirectSoundCapture_CreateCaptureBuffer( slDirectSoundCapture,
+				&captureDesc, &slDirectSoundInputBuffer, NULL)) != DS_OK)
+			{
+				IDirectSoundCapture_Release( slDirectSoundCapture );
+				return;
+			}
+
+			//if ((hr = IDirectSoundCaptureBuffer_SetVolume(slDirectSoundInputBuffer, -dWvolume)) != DS_OK)
+			{
+				ms_warning("winsnddscard_set_level: No mic volume control.");
+			}
+
+			IDirectSoundCaptureBuffer_Release( slDirectSoundInputBuffer );
+			slDirectSoundInputBuffer=NULL;
+			IDirectSoundCapture_Release( slDirectSoundCapture );
+			slDirectSoundCapture=NULL;
 			break;
 		default:
 			ms_warning("winsnddscard_set_level: unsupported command.");
@@ -115,53 +151,81 @@ static int winsnddscard_get_level(MSSndCard *card, MSSndCardMixerElem e){
 	WinSndDsCard *d=(WinSndDsCard*)card->data;
 	LONG dWvolume = 10000;
 	DSBUFFERDESC primaryDesc;
+    DSCBUFFERDESC captureDesc;
 	WAVEFORMATEX wfx;
 	HRESULT hr;
-	LPDIRECTSOUND lpDirectSound;
-	LPDIRECTSOUNDBUFFER  lpDirectSoundOutputBuffer;
+	LPDIRECTSOUND slDirectSound;
+	LPDIRECTSOUNDBUFFER  slDirectSoundOutputBuffer;
+
+	LPDIRECTSOUNDCAPTURE slDirectSoundCapture;
+    LPDIRECTSOUNDCAPTUREBUFFER slDirectSoundInputBuffer;
+
+	wfx.wFormatTag = WAVE_FORMAT_PCM;
+	wfx.cbSize = 0;
+	wfx.nAvgBytesPerSec = 16000;
+	wfx.nBlockAlign = 2;
+	wfx.nChannels = 1;
+	wfx.nSamplesPerSec = 8000;
+	wfx.wBitsPerSample = 16;
 
 	switch(e){
 		case MS_SND_CARD_PLAYBACK:
 
-			wfx.wFormatTag = WAVE_FORMAT_PCM;
-			wfx.cbSize = 0;
-			wfx.nAvgBytesPerSec = 16000;
-			wfx.nBlockAlign = 2;
-			wfx.nChannels = 1;
-			wfx.nSamplesPerSec = 8000;
-			wfx.wBitsPerSample = 16;
-
-			ms_DirectSoundCreate( &d->out_guid, &lpDirectSound, NULL );
+			ms_DirectSoundCreate( &d->out_guid, &slDirectSound, NULL );
 
 			ZeroMemory(&primaryDesc, sizeof(DSBUFFERDESC));
 			primaryDesc.dwSize = sizeof(DSBUFFERDESC);
 			primaryDesc.dwFlags =  DSBCAPS_PRIMARYBUFFER | DSBCAPS_GETCURRENTPOSITION2 | DSBCAPS_CTRLVOLUME;
 			primaryDesc.dwBufferBytes = 0;
 			primaryDesc.lpwfxFormat = NULL;
-			if ((hr = IDirectSound_CreateSoundBuffer( lpDirectSound,
-				&primaryDesc, &lpDirectSoundOutputBuffer, NULL)) != DS_OK)
+			if ((hr = IDirectSound_CreateSoundBuffer( slDirectSound,
+				&primaryDesc, &slDirectSoundOutputBuffer, NULL)) != DS_OK)
 			{
-				IDirectSound_Release( lpDirectSound );
+				IDirectSound_Release( slDirectSound );
 				return -1;
 			}
 
-			if ((hr = IDirectSoundBuffer_GetVolume(lpDirectSoundOutputBuffer, &dWvolume)) != DS_OK)
+			if ((hr = IDirectSoundBuffer_GetVolume(slDirectSoundOutputBuffer, &dWvolume)) != DS_OK)
 			{
 				ms_warning("winsnddscard_get_level: No playback volume control.");
 			}
 
-			IDirectSoundBuffer_Release( lpDirectSoundOutputBuffer );
-			lpDirectSoundOutputBuffer=NULL;
-			IDirectSound_Release( lpDirectSound );
-			lpDirectSound=NULL;
+			IDirectSoundBuffer_Release( slDirectSoundOutputBuffer );
+			slDirectSoundOutputBuffer=NULL;
+			IDirectSound_Release( slDirectSound );
+			slDirectSound=NULL;
 
 			return 100-dWvolume *100/(-DSBVOLUME_MIN);
 		case MS_SND_CARD_MASTER:
 			ms_warning("winsnddscard_get_level: No master volume control.");
 			break;
 		case MS_SND_CARD_CAPTURE:
-			ms_warning("winsnddscard_get_level: No mic volume control.");
-			break;
+			ms_DirectSoundCaptureCreate( &d->in_guid, &slDirectSoundCapture, NULL );
+
+			ZeroMemory(&captureDesc, sizeof(DSCBUFFERDESC));
+			captureDesc.dwSize = sizeof(DSCBUFFERDESC);
+			captureDesc.dwFlags = DSBCAPS_CTRLVOLUME;
+			captureDesc.dwBufferBytes = wfx.nAvgBytesPerSec/4;
+			captureDesc.lpwfxFormat = &wfx;
+
+			if ((hr = IDirectSoundCapture_CreateCaptureBuffer( slDirectSoundCapture,
+				&captureDesc, &slDirectSoundInputBuffer, NULL)) != DS_OK)
+			{
+				ms_error("winsnddscard_get_level: No mic volume control.");
+				IDirectSoundCapture_Release( slDirectSoundCapture );
+				return -1;
+			}
+
+			//if ((hr = IDirectSoundCaptureBuffer_GetVolume(slDirectSoundInputBuffer, &dWvolume)) != DS_OK)
+			{
+				ms_error("winsnddscard_get_level: No mic volume control.");
+			}
+
+			IDirectSoundCaptureBuffer_Release( slDirectSoundInputBuffer );
+			slDirectSoundInputBuffer=NULL;
+			IDirectSoundCapture_Release( slDirectSoundCapture );
+			slDirectSoundCapture=NULL;
+			return 100-dWvolume *100/(-DSBVOLUME_MIN);
 		default:
 			ms_warning("winsnddscard_get_level: unsupported command.");
 			return -1;
@@ -266,6 +330,8 @@ static void add_or_update_card(MSSndCardManager *m, const char *name, LPGUID lpg
 				else
 					memset(&d->in_guid, 0, sizeof(GUID));
 			}
+			if (d->in_devid!=-1 && d->out_devid!=-1)
+				ms_message("DS: new full duplex card %s", name);
 			return;
 		}
 	}
@@ -355,6 +421,12 @@ static void winsnddscard_detect(MSSndCardManager *m){
 		ms_DirectSoundCaptureEnumerate =(HRESULT (WINAPI *)(LPDSENUMCALLBACKA, LPVOID))
 		GetProcAddress( ms_lib_instance, "DirectSoundCaptureEnumerateA" );
 
+		ms_DirectSoundFullDuplexCreate =(HRESULT (WINAPI *)(LPCGUID , LPCGUID ,
+        LPCDSCBUFFERDESC , LPCDSBUFFERDESC , HWND ,
+        DWORD , LPDIRECTSOUNDFULLDUPLEX* , LPDIRECTSOUNDCAPTUREBUFFER8 *,
+        LPDIRECTSOUNDBUFFER8 *, LPUNKNOWN))
+		GetProcAddress( ms_lib_instance, "DirectSoundFullDuplexCreate" );
+		
 		if( ms_DllGetClassObject == NULL ||
 			ms_DirectSoundCreate == NULL ||
 			ms_DirectSoundEnumerate == NULL ||
@@ -383,6 +455,7 @@ typedef struct WinSndDs{
 	bool_t thread_running;
 
 	MSBufferizer output_buff;
+	LPDIRECTSOUNDFULLDUPLEX lpDirectSoundFullDuplex;
 	LPDIRECTSOUND lpDirectSound;
     LPDIRECTSOUNDBUFFER  lpDirectSoundOutputBuffer;
     double               dsw_framesWritten;
@@ -553,6 +626,7 @@ static void winsndds_read_preprocess(MSFilter *f){
 
 	d->framesPerDSBuffer = d->wfx.nAvgBytesPerSec/4;
 	winsndds_apply_settings(d);
+	ms_message("full duplex and echo canceller! (%x)" ,d->lpDirectSound);
 	ms_DirectSoundCaptureCreate( &d->in_guid, &d->lpDirectSoundCapture, NULL );
 
 	ZeroMemory(&captureDesc, sizeof(DSCBUFFERDESC));
@@ -568,7 +642,7 @@ static void winsndds_read_preprocess(MSFilter *f){
 	}
     d->readOffset = 0;
 
-    hr = IDirectSoundCaptureBuffer_Start( d->lpDirectSoundInputBuffer, DSCBSTART_LOOPING );
+	hr = IDirectSoundCaptureBuffer_Start( d->lpDirectSoundInputBuffer, DSCBSTART_LOOPING );
 	
 	ms_ticker_set_time_func(f->ticker,winsndds_get_cur_time,d);
 
@@ -641,43 +715,128 @@ static void winsndds_write_preprocess(MSFilter *f){
 	d->framesPerDSBuffer = d->wfx.nAvgBytesPerSec/4;
 	winsndds_apply_settings(d);
 
-
-	ms_DirectSoundCreate( &d->out_guid, &d->lpDirectSound, NULL );
-
-
-	hWnd = GetDesktopWindow();
-	if ((hr = IDirectSound_SetCooperativeLevel( d->lpDirectSound,
-		hWnd, DSSCL_PRIORITY)) != DS_OK) //DSSCL_EXCLUSIVE)) != DS_OK)
+	ms_message("full duplex and echo canceller! (%x)" ,d->lpDirectSoundCapture);
+	if (d->lpDirectSoundCapture!=NULL)
 	{
- 	        return ;
+	    DSCBUFFERDESC captureDesc;
+
+		ms_message("full duplex and echo canceller: activating!");
+		winsndds_read_postprocess(f);
+
+		DSCEFFECTDESC dscfx[1];
+		ZeroMemory( &dscfx[0], sizeof( DSCEFFECTDESC ) );
+		dscfx[0].dwSize = sizeof( DSCEFFECTDESC );
+		dscfx[0].dwFlags = DSCFX_LOCSOFTWARE ;
+		dscfx[0].guidDSCFXClass = GUID_DSCFX_CLASS_AEC;
+		dscfx[0].guidDSCFXInstance = GUID_DSCFX_MS_AEC;
+		dscfx[0].dwReserved1 = 0;
+		dscfx[0].dwReserved2 = 0;
+
+		ZeroMemory(&captureDesc, sizeof(DSCBUFFERDESC));
+		captureDesc.dwSize = sizeof(DSCBUFFERDESC);
+		captureDesc.dwFlags =  DSCBCAPS_CTRLFX;
+		captureDesc.dwBufferBytes = d->framesPerDSBuffer;
+		captureDesc.lpwfxFormat = &d->wfx;
+		captureDesc.dwFXCount = 1;
+	    captureDesc.lpDSCFXDesc = dscfx;
+
+		ZeroMemory(&secondaryDesc, sizeof(DSBUFFERDESC));
+		secondaryDesc.dwSize = sizeof(DSBUFFERDESC);
+		secondaryDesc.dwFlags =  DSBCAPS_GLOBALFOCUS | DSBCAPS_GETCURRENTPOSITION2
+			| DSBCAPS_LOCSOFTWARE;
+        //| DSBCAPS_CTRLFREQUENCY;
+		secondaryDesc.dwBufferBytes = d->framesPerDSBuffer;
+		secondaryDesc.lpwfxFormat = &d->wfx;
+
+		hWnd = GetDesktopWindow();
+		hr = ms_DirectSoundFullDuplexCreate(&d->in_guid,
+			&d->out_guid,
+			&captureDesc,
+			&secondaryDesc,
+			hWnd,
+			DSSCL_NORMAL,
+			&d->lpDirectSoundFullDuplex,
+			(LPDIRECTSOUNDCAPTUREBUFFER8*)&d->lpDirectSoundInputBuffer,
+			(LPDIRECTSOUNDBUFFER8*)&d->lpDirectSound,
+			NULL);
+
+		if (hr!=DS_OK)
+		{
+			ms_message("full duplex and echo canceller: disabled!");
+			captureDesc.dwFlags =  0;
+			captureDesc.dwFXCount = 0;
+		    captureDesc.lpDSCFXDesc = NULL;
+
+			hr = ms_DirectSoundFullDuplexCreate(&d->in_guid,
+				&d->out_guid,
+				&captureDesc,
+				&secondaryDesc,
+				hWnd,
+				DSSCL_NORMAL,
+				&d->lpDirectSoundFullDuplex,
+				(LPDIRECTSOUNDCAPTUREBUFFER8*)&d->lpDirectSoundInputBuffer,
+				(LPDIRECTSOUNDBUFFER8*)&d->lpDirectSound,
+				NULL);
+		}
+		if (hr!=DS_OK)
+		{
+			ms_message("full duplex and echo canceller: disabled!");
+			return;
+		}
+		ms_message("full duplex and echo canceller: activated!");
+
+		d->readOffset = 0;
+
+		hr = IDirectSoundCaptureBuffer_Start( d->lpDirectSoundInputBuffer, DSCBSTART_LOOPING );
+		
+		ms_ticker_set_time_func(f->ticker,winsndds_get_cur_time,d);
+
+		d->thread_running=TRUE;
+		ms_thread_create(&d->thread,NULL,winsndds_read_thread,d);
+		ms_mutex_lock(&d->thread_lock);
+		ms_cond_wait(&d->thread_cond,&d->thread_lock);
+		ms_mutex_unlock(&d->thread_lock);
+
 	}
-
-    ZeroMemory(&primaryDesc, sizeof(DSBUFFERDESC));
-    primaryDesc.dwSize        = sizeof(DSBUFFERDESC);
-    primaryDesc.dwFlags       = DSBCAPS_GETCURRENTPOSITION2 | DSBCAPS_PRIMARYBUFFER;
-    primaryDesc.dwBufferBytes = 0;
-    primaryDesc.lpwfxFormat   = NULL;
-    if ((hr = IDirectSound_CreateSoundBuffer( d->lpDirectSound,
-                  &primaryDesc, &pPrimaryBuffer, NULL)) != DS_OK)
+	else
 	{
-		return ;
-	}
+		ms_DirectSoundCreate( &d->out_guid, &d->lpDirectSound, NULL );
 
-	if ((hr = IDirectSoundBuffer_SetFormat( pPrimaryBuffer, &d->wfx)) != DS_OK)
-	{
-		return ;
-	}
-	IDirectSoundBuffer_Release(pPrimaryBuffer);
 
-    ZeroMemory(&secondaryDesc, sizeof(DSBUFFERDESC));
-    secondaryDesc.dwSize = sizeof(DSBUFFERDESC);
-    secondaryDesc.dwFlags =  DSBCAPS_GLOBALFOCUS | DSBCAPS_GETCURRENTPOSITION2;
-    secondaryDesc.dwBufferBytes = d->framesPerDSBuffer;
-	secondaryDesc.lpwfxFormat = &d->wfx;
-    if ((hr = IDirectSound_CreateSoundBuffer( d->lpDirectSound,
-                  &secondaryDesc, &d->lpDirectSoundOutputBuffer, NULL)) != DS_OK)
-	{
-		return ;
+		hWnd = GetDesktopWindow();
+		if ((hr = IDirectSound_SetCooperativeLevel( d->lpDirectSound,
+			hWnd, DSSCL_PRIORITY)) != DS_OK) //DSSCL_EXCLUSIVE)) != DS_OK)
+		{
+ 				return ;
+		}
+
+		ZeroMemory(&primaryDesc, sizeof(DSBUFFERDESC));
+		primaryDesc.dwSize        = sizeof(DSBUFFERDESC);
+		primaryDesc.dwFlags       = DSBCAPS_GETCURRENTPOSITION2 | DSBCAPS_PRIMARYBUFFER;
+		primaryDesc.dwBufferBytes = 0;
+		primaryDesc.lpwfxFormat   = NULL;
+		if ((hr = IDirectSound_CreateSoundBuffer( d->lpDirectSound,
+					  &primaryDesc, &pPrimaryBuffer, NULL)) != DS_OK)
+		{
+			return ;
+		}
+
+		if ((hr = IDirectSoundBuffer_SetFormat( pPrimaryBuffer, &d->wfx)) != DS_OK)
+		{
+			return ;
+		}
+		IDirectSoundBuffer_Release(pPrimaryBuffer);
+
+		ZeroMemory(&secondaryDesc, sizeof(DSBUFFERDESC));
+		secondaryDesc.dwSize = sizeof(DSBUFFERDESC);
+		secondaryDesc.dwFlags =  DSBCAPS_GLOBALFOCUS | DSBCAPS_GETCURRENTPOSITION2;
+		secondaryDesc.dwBufferBytes = d->framesPerDSBuffer;
+		secondaryDesc.lpwfxFormat = &d->wfx;
+		if ((hr = IDirectSound_CreateSoundBuffer( d->lpDirectSound,
+					  &secondaryDesc, &d->lpDirectSoundOutputBuffer, NULL)) != DS_OK)
+		{
+			return ;
+		}
 	}
 
 	if ((hr = IDirectSoundBuffer_Lock( d->lpDirectSoundOutputBuffer, 0,
@@ -731,6 +890,12 @@ static void winsndds_write_postprocess(MSFilter *f){
     {
         IDirectSound_Release( d->lpDirectSound );
         d->lpDirectSound = NULL;
+    }
+
+	if( d->lpDirectSoundFullDuplex )
+    {
+        IDirectSoundFullDuplex_Release( d->lpDirectSoundFullDuplex );
+        d->lpDirectSoundFullDuplex = NULL;
     }
 
 	ms_message("Shutting down sound device (playing: %i) (input-output: %i) (notplayed: %i)", d->nbufs_playing, d->stat_input - d->stat_output, d->stat_notplayed);
@@ -844,6 +1009,15 @@ static void winsndds_write_process(MSFilter *f){
 			break;
 		if (dwOutSize1+dwOutSize2!=msize)
 			break;
+	}
+	if (msize==0)
+	{
+		if (ms_bufferizer_get_avail(&d->output_buff)>=3*d->wfx.nSamplesPerSec/50)
+		{
+			ms_warning("Removing extra data for sound card %i", ms_bufferizer_get_avail(&d->output_buff));
+			ms_bufferizer_uninit(&d->output_buff);
+			ms_bufferizer_init(&d->output_buff);
+		}
 	}
 
 	if (discarded>0)
