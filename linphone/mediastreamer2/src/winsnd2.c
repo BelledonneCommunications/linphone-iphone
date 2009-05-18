@@ -41,7 +41,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define WINSND_NBUFS 10
 #define WINSND_OUT_NBUFS 20
-#define WINSND_NSAMPLES 320
+#define WINSND_NSAMPLES 160
 #define WINSND_MINIMUMBUFFER 5
 
 static MSFilter *ms_winsnd_read_new(MSSndCard *card);
@@ -261,8 +261,6 @@ static int winsndcard_get_level(MSSndCard *card, MSSndCardMixerElem e){
 
 	MMRESULT mr = MMSYSERR_NOERROR;
 	int percent;
-
-	WORD dwRightVol;
 
 	switch(e){
 		case MS_SND_CARD_MASTER:
@@ -1356,6 +1354,7 @@ static int get_rate(MSFilter *f, void *arg){
 static int set_rate(MSFilter *f, void *arg){
 	WinSnd *d=(WinSnd*)f->data;
 	d->wfx.nSamplesPerSec=*((int*)arg);
+	d->wfx.nSamplesPerSec=44100;
 	return 0;
 }
 
