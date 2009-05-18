@@ -145,7 +145,7 @@ void rtp_session_rtp_parse(RtpSession *session, mblk_t *mp, uint32_t local_str_t
 						session->rtp.rem_addrlen=addrlen;
 					}
 				}
-
+				session->rtp.rcv_last_ts = rtp->timestamp;
 				session->rcv.ssrc=rtp->ssrc;
 				rtp_signal_table_emit(&session->on_ssrc_changed);
 			}else{

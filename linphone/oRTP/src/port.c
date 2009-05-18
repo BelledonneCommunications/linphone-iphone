@@ -334,3 +334,77 @@ char * WSAAPI gai_strerror(int errnum){
 
 #endif
 
+#ifndef WIN32
+
+#include <sys/socket.h>
+#include <netdb.h>
+#include <sys/un.h>
+#include <sys/stat.h>
+
+/* portable named pipes */
+ortp_socket_t ortp_server_pipe_create(const char *name){
+	struct sockaddr_un sa;
+	ortp_socket_t sock;
+	sock=socket(AF_UNIX,SOCK_STREAM,0);
+	sa.sun_family=AF_UNIX;
+	strncpy(sa.sun_path,name,sizeof(sa.sun_path)-1);
+	unlink(name);/*in case we didn't finished properly previous time */
+	fchmod(sock,S_IRUSR|S_IWUSR);
+	if (bind(sock,(struct sockaddr*)&sa,sizeof(sa))!=0){
+		ortp_error("Failed to bind command unix socket: %s",strerror(errno));
+		return -1;
+	}
+	listen(sock,1);
+	return sock;
+}
+
+ortp_socket_t ortp_server_pipe_accept_client(ortp_socket_t server){
+	struct sockaddr_un su;
+	socklen_t ssize=sizeof(su);
+	ortp_socket_t client_sock=accept(server,(struct sockaddr*)&su,&ssize);
+	return client_sock;
+}
+
+int ortp_server_pipe_close_client(ortp_socket_t client){
+	return close(client);
+}
+
+int ortp_server_pipe_close(ortp_socket_t spipe){
+	return close(spipe);
+}
+
+ortp_socket_t ortp_client_pipe_connect(const char *name){
+	struct sockaddr_un sa;
+	ortp_socket_t sock=socket(AF_UNIX,SOCK_STREAM,0);
+	sa.sun_family=AF_UNIX;
+	strncpy(sa.sun_path,name,sizeof(sa.sun_path)-1);
+	if (connect(sock,(struct sockaddr*)&sa,sizeof(sa))!=0){
+		close(sock);
+		return -1;
+	}
+	return sock;
+}
+
+int ortp_pipe_read(ortp_socket_t p, uint8_t *buf, int len){
+	return read(p,buf,len);
+}
+
+int ortp_pipe_write(ortp_socket_t p, const uint8_t *buf, int len){
+	return write(p,buf,len);
+}
+
+int ortp_client_pipe_close(ortp_socket_t sock){
+	return close(sock);
+}
+
+#else
+/* portable named pipes */
+ortp_socket_t ortp_server_pipe_create(const char *name);
+ortp_socket_t ortp_server_pipe_accept(ortp_socket_t server);
+int ortp_server_pipe_close(ortp_socket_t spipe);
+
+ortp_socket_t ortp_call_pipe(const char *name);
+
+int ortp_pipe_read(ortp_socket_t p, uint8_t *buf, int len);
+int ortp_pipe_write(ortp_socket_t p, const uint8_t *buf, int len);
+#endif
