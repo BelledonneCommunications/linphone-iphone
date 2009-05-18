@@ -79,7 +79,7 @@ void ms_ticker_destroy(MSTicker *ticker){
 	ms_free(ticker);
 }
 
-static void find_filters(MSList **filters, MSFilter *f ){
+void find_filters(MSList **filters, MSFilter *f ){
 	int i,found;
 	MSQueue *link;
 	if (f==NULL) ms_fatal("Bad graph.");
