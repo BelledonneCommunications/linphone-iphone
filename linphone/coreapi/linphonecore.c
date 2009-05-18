@@ -2324,8 +2324,9 @@ void linphone_core_set_mtu(LinphoneCore *lc, int mtu){
 	}else ms_set_mtu(0);//use mediastreamer2 default value
 }
 
-void linphone_core_set_waiting_callback(LinphoneCore *lc, LinphoneWaitingCallback cb){
+void linphone_core_set_waiting_callback(LinphoneCore *lc, LinphoneWaitingCallback cb, void *user_context){
 	lc->wait_cb=cb;
+	lc->wait_ctx=user_context;
 }
 
 void linphone_core_start_waiting(LinphoneCore *lc, const char *purpose){

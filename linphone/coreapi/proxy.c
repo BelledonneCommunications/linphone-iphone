@@ -634,6 +634,27 @@ SipSetupContext *linphone_proxy_config_get_sip_setup_context(LinphoneProxyConfig
 	return cfg->ssctx;
 }
 
+LinphoneAccountCreator *linphone_account_creator_new(struct _LinphoneCore *core, const char *type){
+	LinphoneAccountCreator *obj;
+	LinphoneProxyConfig *cfg;
+	SipSetup *ss=sip_setup_lookup(type);
+	SipSetupContext *ssctx;
+	if (!ss){
+		return NULL;
+	}
+	if (!(sip_setup_get_capabilities(ss) & SIP_SETUP_CAP_ACCOUNT_MANAGER)){
+		ms_error("%s cannot manage accounts.");
+		return NULL;
+	}
+	obj=ms_new0(LinphoneAccountCreator,1);
+	cfg=linphone_proxy_config_new();
+	ssctx=sip_setup_context_new(ss,cfg);
+	obj->lc=core;
+	obj->ssctx=ssctx;
+	cfg->lc=core;
+	return obj;
+}
+
 void linphone_account_creator_set_username(LinphoneAccountCreator *obj, const char *username){
 	set_string(&obj->username,username);
 }
@@ -646,7 +667,7 @@ void linphone_account_creator_set_domain(LinphoneAccountCreator *obj, const char
 	set_string(&obj->domain,domain);
 }
 
-int linphone_account_creator_test(LinphoneAccountCreator *obj){
+int linphone_account_creator_test_existence(LinphoneAccountCreator *obj){
 	SipSetupContext *ssctx=obj->ssctx;
 	char *uri=ms_strdup_printf("%s@%s",obj->username,obj->domain);
 	int err=sip_setup_context_account_exists(ssctx,uri);

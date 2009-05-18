@@ -146,7 +146,7 @@ static gboolean keyword_typing_finished(GtkWidget *w){
 		g_source_remove(tid);
 	}
 	keyword=gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(w,"keyword")));
-	if (strlen(keyword)>=4){
+	if (strlen(keyword)>=1){
 		guint tid2;
 		ctx=(SipSetupContext*)g_object_get_data(G_OBJECT(w),"SipSetupContext");
 		sip_setup_context_lookup_buddy(ctx,keyword);

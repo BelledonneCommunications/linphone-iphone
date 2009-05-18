@@ -336,10 +336,11 @@ typedef struct _LinphoneAccountCreator{
 	bool_t succeeded;
 }LinphoneAccountCreator;
 
+LinphoneAccountCreator *linphone_account_creator_new(struct _LinphoneCore *core, const char *type);
 void linphone_account_creator_set_username(LinphoneAccountCreator *obj, const char *username);
 void linphone_account_creator_set_password(LinphoneAccountCreator *obj, const char *password);
 void linphone_account_creator_set_domain(LinphoneAccountCreator *obj, const char *domain);
-int linphone_account_creator_test(LinphoneAccountCreator *obj);
+int linphone_account_creator_test_existence(LinphoneAccountCreator *obj);
 LinphoneProxyConfig * linphone_account_creator_validate(LinphoneAccountCreator *obj);
 void linphone_account_creator_destroy(LinphoneAccountCreator *obj);
 
@@ -781,8 +782,7 @@ The method returns 0 if an already running linphone was found*/
 int linphone_core_wake_up_possible_already_running_instance(const char *config_file);
 
 /*set a callback for some blocking operations, it takes you informed of the progress of the operation*/
-void linphone_core_set_waiting_callback(LinphoneCore *lc, LinphoneWaitingCallback cb);
-
+void linphone_core_set_waiting_callback(LinphoneCore *lc, LinphoneWaitingCallback cb, void *user_context);
 
 /*returns the list of registered SipSetup (linphonecore plugins) */
 const MSList * linphone_core_get_sip_setups(LinphoneCore *lc);

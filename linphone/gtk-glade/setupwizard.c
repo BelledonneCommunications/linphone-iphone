@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "linphone.h"
+LinphoneAccountCreator *linphone_gtk_assistant_get_creator(GtkWidget*w);
 
 static GtkWidget *create_intro(){
 	GtkWidget *vbox=gtk_vbox_new(FALSE,2);
@@ -76,14 +77,34 @@ static GtkWidget *create_username_checking_page(){
 	return vbox;
 }
 
+static void *progress_bar_update(LinphoneCore *lc, void *ctx, LinphoneWaitingState ws, const char *purpose, float progress){
+	GtkWidget *pb=(GtkWidget*)ctx;
+	if (ws==LinphoneWaitingProgress) gtk_progress_bar_pulse(GTK_PROGRESS_BAR(pb));
+	else if (ws==LinphoneWaitingFinished) gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(pb),1);
+	return ctx;
+}
+
 static void check_username(GtkWidget *page){
 	GtkWidget *progress=g_object_get_data(G_OBJECT(page),"progress");
 	GtkWidget *label=g_object_get_data(G_OBJECT(page),"label");
 	const char *username=g_object_get_data(G_OBJECT(page),"username");
 	gchar *text=g_strdup_printf(_("Checking if '%s' is available..."),username);
+	LinphoneAccountCreator *c=linphone_gtk_assistant_get_creator(gtk_widget_get_toplevel(page));
+	int res;
 	gtk_label_set_text(GTK_LABEL(label),text);
 	g_free(text);
 	gtk_progress_bar_set_text(GTK_PROGRESS_BAR(progress),_("Please wait..."));
+	linphone_core_set_waiting_callback(linphone_gtk_get_core(),progress_bar_update,progress);
+	res=linphone_account_creator_test_existence(c);
+	if (res==1){
+		gtk_progress_bar_set_text(GTK_PROGRESS_BAR(progress),_("Sorry this username already exists. Please try a new one."));
+	}else if (res==0){
+		gtk_progress_bar_set_text(GTK_PROGRESS_BAR(progress),_("Ok !"));
+		gtk_assistant_set_page_complete(GTK_ASSISTANT(gtk_widget_get_toplevel(page)),page,TRUE);
+	}else if (res==-1){
+		gtk_progress_bar_set_text(GTK_PROGRESS_BAR(progress),_("Communication problem, please try again later."));
+	}
+	linphone_core_set_waiting_callback(linphone_gtk_get_core(),linphone_gtk_wait,NULL);
 }
 
 static GtkWidget *create_finish_page(){
@@ -107,9 +128,8 @@ static int linphone_gtk_assistant_forward(int curpage, gpointer data){
 			g_error("Not implemented yet...");
 		}
 	}else if (curpage==2){
-		GtkWidget *next=gtk_assistant_get_nth_page(GTK_ASSISTANT(w),curpage+1);
-		g_object_set_data(G_OBJECT(next),"username",
-				g_strdup(gtk_entry_get_text(GTK_ENTRY(g_object_get_data(G_OBJECT(box),"username")))));
+		LinphoneAccountCreator *c=linphone_gtk_assistant_get_creator(w);
+		linphone_account_creator_set_username(c,gtk_entry_get_text(GTK_ENTRY(g_object_get_data(G_OBJECT(box),"username"))));
 	}
 	return curpage+1;
 }
@@ -125,6 +145,24 @@ static void linphone_gtk_assistant_prepare(GtkWidget *assistant, GtkWidget *page
 	}
 }
 
+static LinphoneAccountCreator * linphone_gtk_assistant_init(GtkWidget *w){
+	const MSList *elem;
+	LinphoneCore *lc=linphone_gtk_get_core();
+	for(elem=linphone_core_get_sip_setups(lc);elem!=NULL;elem=elem->next){
+		SipSetup *ss=(SipSetup*)elem->data;
+		if (sip_setup_get_capabilities(ss) & SIP_SETUP_CAP_ACCOUNT_MANAGER){
+			LinphoneAccountCreator *creator=linphone_account_creator_new(lc,ss->name);
+			g_object_set_data(G_OBJECT(w),"creator",creator);
+			return creator;
+		}
+	}
+	return NULL;
+}
+
+LinphoneAccountCreator *linphone_gtk_assistant_get_creator(GtkWidget*w){
+	return (LinphoneAccountCreator*)g_object_get_data(G_OBJECT(w),"creator");
+}
+
 GtkWidget * linphone_gtk_create_assistant(void){
 	GtkWidget *w=gtk_assistant_new();
 	GtkWidget *p1=create_intro();
@@ -132,6 +170,8 @@ GtkWidget * linphone_gtk_create_assistant(void){
 	GtkWidget *p3=create_username_chooser();
 	GtkWidget *checking=create_username_checking_page();
 	GtkWidget *end=create_finish_page();
+	
+	linphone_gtk_assistant_init(w);
 	gtk_assistant_append_page(GTK_ASSISTANT(w),p1);
 	gtk_assistant_set_page_type(GTK_ASSISTANT(w),p1,GTK_ASSISTANT_PAGE_INTRO);
 	gtk_assistant_set_page_title(GTK_ASSISTANT(w),p1,_("Welcome to the account setup assistant"));
