@@ -729,7 +729,6 @@ static void winsndds_write_preprocess(MSFilter *f){
 		for(it=filters;it!=NULL;it=it->next)
 		{
 			MSFilter *f_tmp = (MSFilter*)it->data;
-			f_tmp->seen = FALSE;
 			if (f_tmp->desc->id == MS_WINSNDDS_READ_ID)
 			{
 				/* found */
