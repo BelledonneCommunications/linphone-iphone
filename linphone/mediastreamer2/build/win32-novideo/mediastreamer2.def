@@ -22,6 +22,7 @@ EXPORTS
 	ms_filter_set_notify_callback
 	
 	ms_snd_card_new
+	ms_snd_card_manager_destroy
 	ms_snd_card_manager_reload
 	ms_snd_card_manager_add_card
 	ms_snd_card_manager_register_desc
