@@ -257,7 +257,7 @@ static void winsnddscard_detect(MSSndCardManager *m);
 static  MSSndCard *winsnddscard_dup(MSSndCard *obj);
 
 MSSndCardDesc winsndds_card_desc={
-	"WINSNDDS",
+	"DirectSound",
 	winsnddscard_detect,
 	winsnddscard_init,
 	winsnddscard_set_level,
@@ -308,7 +308,8 @@ static void add_or_update_card(MSSndCardManager *m, const char *name, LPGUID lpg
 	const MSList *elem=ms_snd_card_manager_get_list(m);
 	for(;elem!=NULL;elem=elem->next){
 		card=(MSSndCard*)elem->data;
-		if (strcmp(card->name,name)==0){
+		if (strcmp(card->desc->driver_type, winsndds_card_desc.driver_type)==0
+			&& strcmp(card->name,name)==0){
 			/*update already entered card */
 			WinSndDsCard *d=(WinSndDsCard*)card->data;
 			card->capabilities|=capability;
@@ -352,7 +353,7 @@ static BOOL CALLBACK enumerate_capture_devices_callback(LPGUID lpGUID,
 	{
 		char szName[256];
 		wchar_t snd_card_name[256];
-		swprintf(snd_card_name, 256, L"DS: %s", lpszDesc);
+		swprintf(snd_card_name, 256, L"%s", lpszDesc);
 		WideCharToMultiByte(CP_UTF8,0,snd_card_name,-1,szName,256,0,0);
 
 		add_or_update_card(m,szName,lpGUID,dev_index,-1,MS_SND_CARD_CAP_CAPTURE);
@@ -362,7 +363,7 @@ static BOOL CALLBACK enumerate_capture_devices_callback(LPGUID lpGUID,
 	{
 		char szName[256];
 		wchar_t snd_card_name[256];
-		swprintf(snd_card_name, 256, L"DS: %s", lpszDesc);
+		swprintf(snd_card_name, 256, L"%s", lpszDesc);
 		WideCharToMultiByte(CP_UTF8,0,snd_card_name,-1,szName,256,0,0);
 
 		add_or_update_card(m,szName,lpGUID,dev_index,-1,MS_SND_CARD_CAP_CAPTURE);
@@ -384,7 +385,7 @@ static BOOL CALLBACK enumerate_playback_devices_callback(LPGUID lpGUID,
 	{
 		char szName[256];
 		wchar_t snd_card_name[256];
-		swprintf(snd_card_name, 256, L"DS: %s", lpszDesc);
+		swprintf(snd_card_name, 256, L"%s", lpszDesc);
 		WideCharToMultiByte(CP_UTF8,0,snd_card_name,-1,szName,256,0,0);
 
 		add_or_update_card(m,szName,lpGUID,-1,dev_index,MS_SND_CARD_CAP_PLAYBACK);
@@ -394,7 +395,7 @@ static BOOL CALLBACK enumerate_playback_devices_callback(LPGUID lpGUID,
 	{
 		char szName[256];
 		wchar_t snd_card_name[256];
-		swprintf(snd_card_name, 256, L"DS: %s", lpszDesc);
+		swprintf(snd_card_name, 256, L"%s", lpszDesc);
 		WideCharToMultiByte(CP_UTF8,0,snd_card_name,-1,szName,256,0,0);
 
 		add_or_update_card(m,szName,lpGUID,-1,dev_index,MS_SND_CARD_CAP_PLAYBACK);
@@ -1103,8 +1104,8 @@ static MSFilterMethod winsndds_methods[]={
 
 MSFilterDesc winsndds_read_desc={
 	MS_WINSNDDS_READ_ID,
-	"MSWinSndDsRead",
-	"Sound capture filter for Windows Sound drivers",
+	"DirecSoundRead",
+	"DirectSound capture filter for Windows",
 	MS_FILTER_OTHER,
 	NULL,
 	0,
@@ -1120,8 +1121,8 @@ MSFilterDesc winsndds_read_desc={
 
 MSFilterDesc winsndds_write_desc={
 	MS_WINSNDDS_WRITE_ID,
-	"MSWinSndDsWrite",
-	"Sound playback filter for Windows Sound drivers",
+	"DirecSoundWrite",
+	"DirectSound playback filter for Windows",
 	MS_FILTER_OTHER,
 	NULL,
 	1,

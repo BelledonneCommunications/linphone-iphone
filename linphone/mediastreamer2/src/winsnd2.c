@@ -669,7 +669,7 @@ static void winsndcard_detect(MSSndCardManager *m);
 static  MSSndCard *winsndcard_dup(MSSndCard *obj);
 
 MSSndCardDesc winsnd_card_desc={
-	"WINSND",
+	"MME",
 	winsndcard_detect,
 	winsndcard_init,
 	winsndcard_set_level,
@@ -706,7 +706,8 @@ static void add_or_update_card(MSSndCardManager *m, const char *name, int indev,
 	const MSList *elem=ms_snd_card_manager_get_list(m);
 	for(;elem!=NULL;elem=elem->next){
 		card=(MSSndCard*)elem->data;
-		if (strcmp(card->name,name)==0){
+		if (strcmp(card->desc->driver_type, winsnd_card_desc.driver_type)==0
+			&& strcmp(card->name,name)==0){
 			/*update already entered card */
 			WinSndCard *d=(WinSndCard*)card->data;
 			card->capabilities|=capability;
@@ -1393,8 +1394,8 @@ static MSFilterMethod winsnd_methods[]={
 
 MSFilterDesc winsnd_read_desc={
 	MS_WINSND_READ_ID,
-	"MSWinSndRead",
-	"Sound capture filter for Windows Sound drivers",
+	"MMERead",
+	"MME capture filter for Windows",
 	MS_FILTER_OTHER,
 	NULL,
 	0,
@@ -1410,8 +1411,8 @@ MSFilterDesc winsnd_read_desc={
 
 MSFilterDesc winsnd_write_desc={
 	MS_WINSND_WRITE_ID,
-	"MSWinSndWrite",
-	"Sound playback filter for Windows Sound drivers",
+	"MMERead",
+	"MME playback filter for Windows",
 	MS_FILTER_OTHER,
 	NULL,
 	1,
