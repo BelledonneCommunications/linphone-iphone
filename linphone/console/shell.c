@@ -91,14 +91,14 @@ static int send_command(const char *command, char *reply, int reply_len, int pri
 		if (print_errors) fprintf(stderr,"ERROR: Failed to connect pipe: %s\n",strerror(errno));
 		return -1;
 	}
-	if (ortp_pipe_write(pp,command,strlen(command))==-1){
+	if (ortp_pipe_write(pp,(uint8_t*)command,strlen(command))==-1){
 		if (print_errors) fprintf(stderr,"ERROR: Fail to send command to remote linphonec\n");
 		ortp_client_pipe_close(pp);
 		return -1;
 	}
 	/*wait for replies */
 	i=0;
-	while ((err=ortp_pipe_read(pp,&reply[i],reply_len-i-1))>0){
+	while ((err=ortp_pipe_read(pp,(uint8_t*)&reply[i],reply_len-i-1))>0){
 		i+=err;
 	}
 	reply[i]='\0';

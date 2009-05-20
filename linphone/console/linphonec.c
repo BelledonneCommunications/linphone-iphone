@@ -408,7 +408,7 @@ static void *pipe_thread(void*p){
 		if (client_sock!=ORTP_PIPE_INVALID){
 			int len;
 			/*now read from the client */
-			if ((len=ortp_pipe_read(client_sock,tmp,sizeof(tmp)-1))>0){
+			if ((len=ortp_pipe_read(client_sock,(uint8_t*)tmp,sizeof(tmp)-1))>0){
 				ortp_mutex_lock(&prompt_mutex);
 				tmp[len]='\0';
 				strcpy(received_prompt,tmp);
@@ -495,7 +495,7 @@ void linphonec_out(const char *fmt,...){
 	printf("%s",res);
 	fflush(stdout);
 	if (client_sock!=ORTP_PIPE_INVALID){
-		if (ortp_pipe_write(client_sock,res,strlen(res))==-1){
+		if (ortp_pipe_write(client_sock,(uint8_t*)res,strlen(res))==-1){
 			fprintf(stderr,"Fail to send output via pipe: %s",strerror(errno));
 		}
 	}
