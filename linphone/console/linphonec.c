@@ -58,8 +58,6 @@
 #define _(something)	(something)
 #endif
 
-#define DEFAULT_TCP_PORT 32333
-
 /***************************************************************************
  *
  *  Types
@@ -131,19 +129,17 @@ static bool_t display_enabled=FALSE;
 static bool_t preview_enabled=FALSE;
 static bool_t show_general_state=FALSE;
 static bool_t unix_socket=FALSE;
-static int tcp_port=0; /* see --tcp: tcp port to listen for commands */
 LPC_AUTH_STACK auth_stack;
 static int trace_level = 0;
 static char *logfile_name = NULL;
 static char configfile_name[PATH_MAX];
 static char *sipAddr = NULL; /* for autocall */
-static ortp_socket_t client_sock=-1;
+static ortp_pipe_t client_sock=ORTP_PIPE_INVALID;
 char prompt[PROMPT_MAX_LEN];
-char sock_unix_path[128]={0};
 
-static ortp_thread_t net_reader_th;
-static bool_t net_reader_run=FALSE;
-static ortp_socket_t server_sock;
+static ortp_thread_t pipe_reader_th;
+static bool_t pipe_reader_run=FALSE;
+static ortp_pipe_t server_sock;
 
 
 LinphoneCoreVTable linphonec_vtable = {
@@ -231,7 +227,7 @@ static void
 linphonec_prompt_for_auth(LinphoneCore *lc, const char *realm, const char *username)
 {
 	/* no prompt possible when using pipes or tcp mode*/
-	if (unix_socket || tcp_port){
+	if (unix_socket){
 		linphone_core_abort_authentication(lc,NULL);
 	}else{
 		LinphoneAuthInfo *pending_auth;
@@ -380,81 +376,38 @@ static void start_prompt_reader(void){
 	ortp_thread_create(&th,NULL,prompt_reader_thread,NULL);
 }
 
-static ortp_socket_t create_server_socket(int port){
-	ortp_socket_t sock;
-	if (!unix_socket){
-		char service[12];
-		/*setup the server socket */
-		struct addrinfo *ai=NULL;
-		struct addrinfo hints;
-		memset(&hints,0,sizeof(hints));
-		hints.ai_family=AF_INET;
-		snprintf(service,sizeof(service),"%i",port);
-	
-		getaddrinfo("127.0.0.1",service,&hints,&ai);
-		if (ai==NULL){
-			fprintf(stderr,"getaddrinfo failed on port %s",service);
-			exit(-1);
-		}
-		sock=socket(PF_INET,SOCK_STREAM,IPPROTO_TCP);
-		if (bind(sock,ai->ai_addr,ai->ai_addrlen)!=0){
-			fprintf(stderr,"Failed to bind command socket.\n");
-			exit(-1);
-		}
-		listen(sock,1);
-	}else{
+static ortp_pipe_t create_server_socket(void){
+	char path[128];
 #ifndef WIN32
-		struct sockaddr_un sa;
-		sock=socket(AF_UNIX,SOCK_STREAM,0);
-		sa.sun_family=AF_UNIX;
-		snprintf(sock_unix_path,sizeof(sock_unix_path)-1,"/tmp/linphonec-%i",getuid());
-		strncpy(sa.sun_path,sock_unix_path,sizeof(sa.sun_path)-1);
-		unlink(sock_unix_path);/*in case we didn't finished properly previous time */
-		fchmod(sock,S_IRUSR|S_IWUSR);
-		if (bind(sock,(struct sockaddr*)&sa,sizeof(sa))!=0){
-			fprintf(stderr,"Failed to bind command unix socket.\n");
-			exit(-1);
-		}
-		listen(sock,1);
-		printf("Listening from unix socket %s\n",sock_unix_path);
+	snprintf(path,sizeof(path)-1,"linphonec-%i",getuid());
 #else
-		fprintf(stderr,"Window pipe implementation not written yet.\n");
-#endif
+	{
+		char username[128];
+		DWORD size=sizeof(username)-1;
+		GetUserName(username,&size);
+		snprintf(path,sizeof(path)-1,"linphonec-%s",username);
 	}
-	return sock;
+#endif
+	return ortp_server_pipe_create(path);
 }
 
-static void *net_thread(void*p){
+static void *pipe_thread(void*p){
 	char tmp[250];
-	struct sockaddr_storage ss;
-#ifndef WIN32
-	struct sockaddr_un su;
-#endif
-	socklen_t ssize;
-	
-	server_sock=create_server_socket(tcp_port);
-	if (server_sock==-1) return NULL;
-	while(net_reader_run){
-		while(client_sock!=-1){ /*sleep until the last command is finished*/
+	server_sock=create_server_socket();
+	if (server_sock==ORTP_PIPE_INVALID) return NULL;
+	while(pipe_reader_run){
+		while(client_sock!=ORTP_PIPE_INVALID){ /*sleep until the last command is finished*/
 #ifndef WIN32
 			usleep(20000);
 #else
 			Sleep(20);
 #endif
 		}
-		if (!unix_socket){
-			ssize=sizeof(ss);
-			client_sock=accept(server_sock,(struct sockaddr*)&ss,&ssize);
-		}else{
-#ifndef WIN32
-			ssize=sizeof(su);
-			client_sock=accept(server_sock,(struct sockaddr*)&su,&ssize);
-#endif
-		}
-		if (client_sock!=-1){
+		client_sock=ortp_server_pipe_accept_client(server_sock);
+		if (client_sock!=ORTP_PIPE_INVALID){
 			int len;
 			/*now read from the client */
-			if ((len=recv(client_sock,tmp,sizeof(tmp)-1,0))>0){
+			if ((len=ortp_pipe_read(client_sock,tmp,sizeof(tmp)-1))>0){
 				ortp_mutex_lock(&prompt_mutex);
 				tmp[len]='\0';
 				strcpy(received_prompt,tmp);
@@ -463,31 +416,29 @@ static void *net_thread(void*p){
 				ortp_mutex_unlock(&prompt_mutex);
 			}else{
 				printf("read nothing\n");fflush(stdout);
-				close_socket(client_sock);
-				client_sock=-1;
+				ortp_server_pipe_close_client(client_sock);
+				client_sock=ORTP_PIPE_INVALID;
 			}
 			
 		}else{
-			if (net_reader_run) fprintf(stderr,"accept() failed: %s\n",getSocketError());
+			if (pipe_reader_run) fprintf(stderr,"accept() failed: %s\n",strerror(errno));
 		}
 	}
-	
+	printf("Exiting pipe_reader_thread.");
+	fflush(stdout);
 	return NULL;
 }
 
-static void start_net_reader(void){
+static void start_pipe_reader(void){
 	ms_mutex_init(&prompt_mutex,NULL);
-	net_reader_run=TRUE;
-	ortp_thread_create(&net_reader_th,NULL,net_thread,NULL);
+	pipe_reader_run=TRUE;
+	ortp_thread_create(&pipe_reader_th,NULL,pipe_thread,NULL);
 }
 
-static void stop_net_reader(void){
-	net_reader_run=FALSE;
-	close(server_sock);
-	if (sock_unix_path[0]!=0){
-		unlink(sock_unix_path);
-	}
-	/*ortp_thread_join(net_reader_th,NULL);*/
+static void stop_pipe_reader(void){
+	pipe_reader_run=FALSE;
+	ortp_server_pipe_close(server_sock);
+	ortp_thread_join(pipe_reader_th,NULL);
 }
 
 #ifdef HAVE_READLINE
@@ -497,16 +448,16 @@ static void stop_net_reader(void){
 #endif
 
 char *linphonec_readline(char *prompt){
-	if (tcp_port ||unix_socket || !BOOL_HAVE_READLINE ){
+	if (unix_socket || !BOOL_HAVE_READLINE ){
 		static bool_t prompt_reader_started=FALSE;
-		static bool_t net_reader_started=FALSE;
+		static bool_t pipe_reader_started=FALSE;
 		if (!prompt_reader_started){
 			start_prompt_reader();
 			prompt_reader_started=TRUE;
 		}
-		if ((tcp_port>0 || unix_socket) && !net_reader_started){
-			start_net_reader();
-			net_reader_started=TRUE;
+		if (unix_socket && !pipe_reader_started){
+			start_pipe_reader();
+			pipe_reader_started=TRUE;
 		}
 		fprintf(stdout,"%s",prompt);
 		fflush(stdout);
@@ -539,19 +490,20 @@ void linphonec_out(const char *fmt,...){
 	va_start (args, fmt);
 	res=ortp_strdup_vprintf(fmt,args);
 	va_end (args);
-	printf("%s",res);fflush(stdout);
-	if (client_sock!=-1){
-		if (send(client_sock,res,strlen(res),0)==-1){
-			fprintf(stderr,"Fail to send output via socket: %s",getSocketError());
+	printf("%s",res);
+	fflush(stdout);
+	if (client_sock!=ORTP_PIPE_INVALID){
+		if (ortp_pipe_write(client_sock,res,strlen(res))==-1){
+			fprintf(stderr,"Fail to send output via pipe: %s",strerror(errno));
 		}
 	}
 	ortp_free(res);
 }
 
 void linphonec_command_finished(void){
-	if (client_sock!=-1){
-		close_socket(client_sock);
-		client_sock=-1;
+	if (client_sock!=ORTP_PIPE_INVALID){
+		ortp_server_pipe_close_client(client_sock);
+		client_sock=ORTP_PIPE_INVALID;
 	}
 }
 
@@ -689,8 +641,8 @@ linphonec_finish(int exit_status)
 #ifdef HAVE_READLINE
 	linphonec_finish_readline();
 #endif
-	if (net_reader_run)
-		stop_net_reader();
+	if (pipe_reader_run)
+		stop_pipe_reader();
 
 
 	linphone_core_uninit (&linphonec);
@@ -1060,14 +1012,6 @@ linphonec_parse_cmdline(int argc, char **argv)
 		else if (strncmp ("-S", argv[arg_num], 2) == 0)
 		{
 			show_general_state = TRUE;
-		}
-		else if (strncmp ("--tcp", argv[arg_num], 5) == 0)
-		{
-			if (arg_num+1 < argc){
-				tcp_port = atoi(argv[arg_num+1]);
-				if (tcp_port!=0) arg_num++;
-			}
-			if (tcp_port==0) tcp_port=DEFAULT_TCP_PORT;
 		}
 		else if (strncmp ("--pipe", argv[arg_num], 6) == 0)
 		{

@@ -39,7 +39,6 @@
 
 #include "ortp/ortp.h"
 
-#define DEFAULT_TCP_PORT "32333"
 #define DEFAULT_REPLY_SIZE 4096
 
 #define STATUS_REGISTERED (1<<0)
@@ -49,11 +48,6 @@
 #define STATUS_IN_CONNECTED (1<<4) /* incoming call accepted */
 #define STATUS_OUT_CONNECTED (1<<5) /*outgoing call accepted */
 
-#ifndef WIN32
-static int tcp=0;
-#else
-static int tcp=1;
-#endif
 
 static int make_status_value(const char *status_string){
 	int ret=0;
@@ -78,57 +72,37 @@ static int make_status_value(const char *status_string){
 	return ret;
 }
 
-static int send_command(const char *command, const char * port, char *reply, int reply_len, int print_errors){
-	ortp_socket_t sock;
+static int send_command(const char *command, char *reply, int reply_len, int print_errors){
+	ortp_pipe_t pp;
 	int i;
 	int err;
-	if (tcp){
-		struct addrinfo *ai=NULL;
-		struct addrinfo hints;
-		memset(&hints,0,sizeof(hints));
-		hints.ai_family=AF_INET;
-		hints.ai_socktype=SOCK_STREAM;
-		err=getaddrinfo("127.0.0.1",port,&hints,&ai);
-		if (err!=0){
-			if (print_errors) fprintf(stderr,"ERROR: getaddrinfo failed: error %i\n", err);
-			return -1;
-		}
-		sock=socket(PF_INET,SOCK_STREAM,IPPROTO_TCP);
-		if (connect(sock,ai->ai_addr,ai->ai_addrlen)!=0){
-			if (print_errors) fprintf(stderr,"ERROR: Failed to connect socket.\n");
-			freeaddrinfo(ai);
-			return -1;
-		}
-		freeaddrinfo(ai);
-	}else{
+	char path[128];
 #ifndef WIN32
-		struct sockaddr_un sa;
-		char path[128];
-		sock=socket(AF_UNIX,SOCK_STREAM,0);
-		sa.sun_family=AF_UNIX;
-		snprintf(path,sizeof(path)-1,"/tmp/linphonec-%i",getuid());
-		strncpy(sa.sun_path,path,sizeof(sa.sun_path)-1);
-		if (connect(sock,(struct sockaddr*)&sa,sizeof(sa))!=0){
-			if (print_errors) fprintf(stderr,"ERROR: Failed to connect socket: %s\n",getSocketError());
-			return -1;
-		}
+	snprintf(path,sizeof(path)-1,"linphonec-%i",getuid());
 #else
-		fprintf(stderr,"ERROR: windows pipes communication not yet implemented.\n");
-		return -1;
-#endif
+	{
+		char username[128];
+		DWORD size=sizeof(username)-1;
+		GetUserName(username,&size);
+		snprintf(path,sizeof(path)-1,"linphonec-%s",username);
 	}
-	if (send(sock,command,strlen(command),0)<0){
+#endif
+	if ((pp=ortp_client_pipe_connect(path))==ORTP_PIPE_INVALID){
+		if (print_errors) fprintf(stderr,"ERROR: Failed to connect pipe: %s\n",strerror(errno));
+		return -1;
+	}
+	if (ortp_pipe_write(pp,command,strlen(command))==-1){
 		if (print_errors) fprintf(stderr,"ERROR: Fail to send command to remote linphonec\n");
-		close_socket(sock);
+		ortp_client_pipe_close(pp);
 		return -1;
 	}
 	/*wait for replies */
 	i=0;
-	while ((err=recv(sock,&reply[i],reply_len-i-1,0))>0){
+	while ((err=ortp_pipe_read(pp,&reply[i],reply_len-i-1))>0){
 		i+=err;
 	}
 	reply[i]='\0';
-	close_socket(sock);
+	ortp_client_pipe_close(pp);
 	return 0;
 }
 
@@ -160,10 +134,7 @@ static void spawn_linphonec(int argc, char *argv[]){
 	pid_t pid;
 	j=0;
 	args[j++]="linphonec";
-	if (tcp){
-		args[j++]="--tcp";
-		args[j++]=DEFAULT_TCP_PORT;
-	}else args[j++]="--pipe";
+	args[j++]="--pipe";
 	args[j++]="-c";
 	args[j++]="/dev/null";
 	for(i=0;i<argc;++i){
@@ -207,7 +178,7 @@ static void spawn_linphonec(int argc, char *argv[]){
     ZeroMemory( &pinfo, sizeof(pinfo) );
 
 
-	BOOL ret=CreateProcess(NULL,"linphonec.exe --tcp " DEFAULT_TCP_PORT " -c NUL",
+	BOOL ret=CreateProcess(NULL,"linphonec.exe --pipe -c NUL",
 		NULL,
 		NULL,
 		FALSE,
@@ -228,7 +199,7 @@ static void spawn_linphonec(int argc, char *argv[]){
 static int send_generic_command(const char *command, int print_result){
 	char reply[DEFAULT_REPLY_SIZE];
 	int err;
-	err=send_command(command,DEFAULT_TCP_PORT,reply,sizeof(reply),print_result);
+	err=send_command(command,reply,sizeof(reply),print_result);
 	if (err==0 && print_result) {
 		printf("%s",reply);
 		fflush(stdout);
@@ -296,7 +267,7 @@ static int status_execute(int argc, char *argv[]){
 	
 	if (argc==1){
 		snprintf(cmd,sizeof(cmd),"status %s",argv[0]);
-		err=send_command(cmd,DEFAULT_TCP_PORT,reply,sizeof(reply),TRUE);
+		err=send_command(cmd,reply,sizeof(reply),TRUE);
 		if (err==0) {
 			printf("%s",reply);
 			err=make_status_value(reply);
@@ -323,14 +294,14 @@ static int soundcard_execute(int argc, char *argv[]){
 	int err;
 	if (argc==1){
 		snprintf(cmd,sizeof(cmd),"soundcard %s",argv[0]);
-		err=send_command(cmd,DEFAULT_TCP_PORT,reply,sizeof(reply),TRUE);
+		err=send_command(cmd,reply,sizeof(reply),TRUE);
 		if (err==0) {
 			printf("%s",reply);
 			return parse_card_index(reply);
 		}
 	}else if (argc==2){/*setting a soundcard */
 		snprintf(cmd,sizeof(cmd),"soundcard %s %s",argv[0],argv[1]);
-		err=send_command(cmd,DEFAULT_TCP_PORT,reply,sizeof(reply),TRUE);
+		err=send_command(cmd,reply,sizeof(reply),TRUE);
 		if (err==0) {
 			printf("%s",reply);
 			return 0;
@@ -349,16 +320,13 @@ int main(int argc, char *argv[]){
 	}
 	ortp_init();
 	for(argi=1;argi<argc;++argi){
-		if (strcmp(argv[argi],"--tcp")==0){
-			tcp=1;
-		}else if (strcmp(argv[argi],"init")==0){
+		if (strcmp(argv[argi],"init")==0){
 			/*check if there is running instance*/
 			if (send_generic_command("help",0)==0){
 				fprintf(stderr,"A running linphonec has been found, not spawning a second one.\n");
 				return 0;
 			}
 			spawn_linphonec(argc-argi-1,&argv[argi+1]);
-			if (tcp) fprintf(stderr,"WARNING: using --tcp is unsafe: unprivilegied users can make calls.\n");
 			return 0;
 		}else if (strcmp(argv[argi],"generic")==0){
 			if (argi+1<argc){

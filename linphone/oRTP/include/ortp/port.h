@@ -231,16 +231,29 @@ char *ortp_strdup_printf(const char *fmt,...);
 char *ortp_strdup_vprintf(const char *fmt, va_list ap);
 
 /* portable named pipes */
-ortp_socket_t ortp_server_pipe_create(const char *name);
-ortp_socket_t ortp_server_pipe_accept_client(ortp_socket_t server);
-int ortp_server_pipe_close(ortp_socket_t spipe);
-int ortp_server_pipe_close_client(ortp_socket_t client);
+#ifdef WIN32
+typedef HANDLE ortp_pipe_t;
+#define ORTP_PIPE_INVALID INVALID_HANDLE_VALUE
+#else
+typedef int ortp_pipe_t;
+#define ORTP_PIPE_INVALID (-1)
+#endif
 
-ortp_socket_t ortp_client_pipe_connect(const char *name);
-int ortp_client_pipe_close(ortp_socket_t sock);
+ortp_pipe_t ortp_server_pipe_create(const char *name);
+/*
+ * warning: on win32 ortp_server_pipe_accept_client() might return INVALID_HANDLE_VALUE without
+ * any specific error, this happens when ortp_server_pipe_close() is called on another pipe.
+ * This pipe api is not thread-safe.
+*/
+ortp_pipe_t ortp_server_pipe_accept_client(ortp_pipe_t server);
+int ortp_server_pipe_close(ortp_pipe_t spipe);
+int ortp_server_pipe_close_client(ortp_pipe_t client);
 
-int ortp_pipe_read(ortp_socket_t p, uint8_t *buf, int len);
-int ortp_pipe_write(ortp_socket_t p, const uint8_t *buf, int len);
+ortp_pipe_t ortp_client_pipe_connect(const char *name);
+int ortp_client_pipe_close(ortp_pipe_t sock);
+
+int ortp_pipe_read(ortp_pipe_t p, uint8_t *buf, int len);
+int ortp_pipe_write(ortp_pipe_t p, const uint8_t *buf, int len);
 
 
 #ifdef __cplusplus

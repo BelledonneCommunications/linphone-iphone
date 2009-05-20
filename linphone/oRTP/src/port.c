@@ -341,14 +341,20 @@ char * WSAAPI gai_strerror(int errnum){
 #include <sys/un.h>
 #include <sys/stat.h>
 
+static char *make_pipe_name(const char *name){
+	return ortp_strdup_printf("/tmp/%s",name);
+}
+
 /* portable named pipes */
 ortp_socket_t ortp_server_pipe_create(const char *name){
 	struct sockaddr_un sa;
+	char *pipename=make_pipe_name(name);
 	ortp_socket_t sock;
 	sock=socket(AF_UNIX,SOCK_STREAM,0);
 	sa.sun_family=AF_UNIX;
-	strncpy(sa.sun_path,name,sizeof(sa.sun_path)-1);
-	unlink(name);/*in case we didn't finished properly previous time */
+	strncpy(sa.sun_path,pipename,sizeof(sa.sun_path)-1);
+	unlink(pipename);/*in case we didn't finished properly previous time */
+	ortp_free(pipename);
 	fchmod(sock,S_IRUSR|S_IWUSR);
 	if (bind(sock,(struct sockaddr*)&sa,sizeof(sa))!=0){
 		ortp_error("Failed to bind command unix socket: %s",strerror(errno));
@@ -375,9 +381,11 @@ int ortp_server_pipe_close(ortp_socket_t spipe){
 
 ortp_socket_t ortp_client_pipe_connect(const char *name){
 	struct sockaddr_un sa;
+	char *pipename=make_pipe_name(name);
 	ortp_socket_t sock=socket(AF_UNIX,SOCK_STREAM,0);
 	sa.sun_family=AF_UNIX;
-	strncpy(sa.sun_path,name,sizeof(sa.sun_path)-1);
+	strncpy(sa.sun_path,pipename,sizeof(sa.sun_path)-1);
+	ortp_free(pipename);
 	if (connect(sock,(struct sockaddr*)&sa,sizeof(sa))!=0){
 		close(sock);
 		return -1;
@@ -398,13 +406,90 @@ int ortp_client_pipe_close(ortp_socket_t sock){
 }
 
 #else
+
+static char *make_pipe_name(const char *name){
+	return ortp_strdup_printf("\\\\.\\pipe\\%s",name);
+}
+
+static HANDLE event=NULL;
+
 /* portable named pipes */
-ortp_socket_t ortp_server_pipe_create(const char *name);
-ortp_socket_t ortp_server_pipe_accept(ortp_socket_t server);
-int ortp_server_pipe_close(ortp_socket_t spipe);
+ortp_pipe_t ortp_server_pipe_create(const char *name){
+	ortp_pipe_t h;
+	char *pipename=make_pipe_name(name);
+	h=CreateNamedPipe(pipename,PIPE_ACCESS_DUPLEX|FILE_FLAG_OVERLAPPED,PIPE_TYPE_MESSAGE|PIPE_WAIT,1,
+						32768,32768,0,NULL);
+	ortp_free(pipename);
+	if (h==INVALID_HANDLE_VALUE){
+		ortp_error("Fail to create named pipe %s",pipename);
+	}
+	if (event==NULL) event=CreateEvent(NULL,TRUE,FALSE,NULL);
+	return h;
+}
 
-ortp_socket_t ortp_call_pipe(const char *name);
 
-int ortp_pipe_read(ortp_socket_t p, uint8_t *buf, int len);
-int ortp_pipe_write(ortp_socket_t p, const uint8_t *buf, int len);
+/*this function is a bit complex because we need to wakeup someday
+even if nobody connects to the pipe.
+ortp_server_pipe_close() makes this function to exit.
+*/
+ortp_pipe_t ortp_server_pipe_accept_client(ortp_pipe_t server){
+	OVERLAPPED ol;
+	DWORD undef;
+	memset(&ol,0,sizeof(ol));
+	ol.hEvent=event;
+	ResetEvent(event);
+	ConnectNamedPipe(server,&ol);
+	WaitForSingleObject(ol.hEvent,INFINITE);
+	if (GetOverlappedResult(server,&ol,&undef,FALSE)){
+		return server;
+	}
+	return INVALID_HANDLE_VALUE;
+}
+
+int ortp_server_pipe_close_client(ortp_pipe_t server){
+	return DisconnectNamedPipe(server)==TRUE ? 0 : -1;
+}
+
+int ortp_server_pipe_close(ortp_pipe_t spipe){
+	SetEvent(event);
+	//CancelIoEx(spipe,NULL); /*vista only*/
+	return CloseHandle(spipe);
+}
+
+ortp_pipe_t ortp_client_pipe_connect(const char *name){
+	char *pipename=make_pipe_name(name);
+	ortp_pipe_t hpipe = CreateFile( 
+         pipename,   // pipe name 
+         GENERIC_READ |  // read and write access 
+         GENERIC_WRITE, 
+         0,              // no sharing 
+         NULL,           // default security attributes
+         OPEN_EXISTING,  // opens existing pipe 
+         0,              // default attributes 
+         NULL);          // no template file 
+	ortp_free(pipename);
+	return hpipe;
+}
+
+int ortp_pipe_read(ortp_pipe_t p, uint8_t *buf, int len){
+	DWORD ret=0;
+	if (ReadFile(p,buf,len,&ret,NULL))
+		return ret;
+	/*ortp_error("Could not read from pipe: %s",strerror(GetLastError()));*/
+	return -1;
+}
+
+int ortp_pipe_write(ortp_pipe_t p, const uint8_t *buf, int len){
+	DWORD ret=0;
+	if (WriteFile(p,buf,len,&ret,NULL))
+		return ret;
+	/*ortp_error("Could not write to pipe: %s",strerror(GetLastError()));*/
+	return -1;
+}
+
+
+int ortp_client_pipe_close(ortp_pipe_t sock){
+	return CloseHandle(sock);
+}
+
 #endif
