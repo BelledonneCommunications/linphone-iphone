@@ -57,7 +57,7 @@ Includes=../oRTP/include;../mediastreamer2/include;../../linphone-deps/include;.
 Libs=../oRTP/build/win32native;../mediastreamer2/build/win32native;../coreapi/;../../linphone-deps/lib
 ResourceIncludes=
 MakeIncludes=
-Compiler=-g -02_@@_-DIN_LINPHONE_@@_-D_WIN32_WINNT=0x0501 _@@_-Wall -Werror_@@_
+Compiler=-ggdb -O2_@@_-DIN_LINPHONE_@@_-D_WIN32_WINNT=0x0501 _@@_-Wall _@@_
 CppCompiler=
 Linker=-mwindows_@@_-Wl,--export-all-symbols_@@_-Wl,--add-stdcall-alias_@@_-llinphone_@@_-lmediastreamer2_@@_-lortp_@@_-losip2_@@_-losipparser2_@@_-leXosip2_@@_-lws2_32_@@_
 PreprocDefines=

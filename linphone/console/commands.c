@@ -409,7 +409,7 @@ lpc_cmd_autoanswer(LinphoneCore *lc, char *args)
 static int
 lpc_cmd_quit(LinphoneCore *lc, char *args)
 {
-	linphonec_finish(EXIT_SUCCESS);
+	linphonec_main_loop_exit();
 	return 1;
 }
 

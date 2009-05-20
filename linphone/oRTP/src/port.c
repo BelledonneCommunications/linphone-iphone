@@ -435,14 +435,18 @@ ortp_server_pipe_close() makes this function to exit.
 ortp_pipe_t ortp_server_pipe_accept_client(ortp_pipe_t server){
 	OVERLAPPED ol;
 	DWORD undef;
+	HANDLE handles[2];
 	memset(&ol,0,sizeof(ol));
-	ol.hEvent=event;
-	ResetEvent(event);
+	ol.hEvent=CreateEvent(NULL,TRUE,FALSE,NULL);
 	ConnectNamedPipe(server,&ol);
-	WaitForSingleObject(ol.hEvent,INFINITE);
+	handles[0]=ol.hEvent;
+	handles[1]=event;
+	WaitForMultipleObjects(2,handles,FALSE,INFINITE);
 	if (GetOverlappedResult(server,&ol,&undef,FALSE)){
+		CloseHandle(ol.hEvent);
 		return server;
 	}
+	CloseHandle(ol.hEvent);
 	return INVALID_HANDLE_VALUE;
 }
 

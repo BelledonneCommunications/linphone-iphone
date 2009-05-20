@@ -104,10 +104,12 @@ typedef struct {
 
 extern int linphonec_parse_command_line(LinphoneCore *lc, char *cl);
 extern char *linphonec_command_generator(const char *text, int state);
+void linphonec_main_loop_exit();
 extern void linphonec_finish(int exit_status);
 extern char *linphonec_readline(char *prompt);
 void linphonec_set_autoanswer(bool_t enabled);
 bool_t linphonec_get_autoanswer();
+void linphonec_command_finished(void);
 
 
 #endif /* def LINPHONEC_H */

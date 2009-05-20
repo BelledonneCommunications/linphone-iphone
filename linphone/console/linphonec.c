@@ -129,6 +129,7 @@ static bool_t display_enabled=FALSE;
 static bool_t preview_enabled=FALSE;
 static bool_t show_general_state=FALSE;
 static bool_t unix_socket=FALSE;
+static bool_t linphonec_running=TRUE;
 LPC_AUTH_STACK auth_stack;
 static int trace_level = 0;
 static char *logfile_name = NULL;
@@ -424,7 +425,7 @@ static void *pipe_thread(void*p){
 			if (pipe_reader_run) fprintf(stderr,"accept() failed: %s\n",strerror(errno));
 		}
 	}
-	printf("Exiting pipe_reader_thread.");
+	ms_message("Exiting pipe_reader_thread.");
 	fflush(stdout);
 	return NULL;
 }
@@ -437,6 +438,7 @@ static void start_pipe_reader(void){
 
 static void stop_pipe_reader(void){
 	pipe_reader_run=FALSE;
+	linphonec_command_finished();
 	ortp_server_pipe_close(server_sock);
 	ortp_thread_join(pipe_reader_th,NULL);
 }
@@ -627,6 +629,10 @@ linphonec_init(int argc, char **argv)
 }
 
 
+void linphonec_main_loop_exit(void){
+	linphonec_running=FALSE;
+}
+
 /*
  * Close linphonec, cleanly terminating
  * any pending call
@@ -635,9 +641,10 @@ void
 linphonec_finish(int exit_status)
 {
 	printf("Terminating...\n");
-
+	
 	/* Terminate any pending call */
    	linphonec_parse_command_line(&linphonec, "terminate");
+   	linphonec_command_finished();
 #ifdef HAVE_READLINE
 	linphonec_finish_readline();
 #endif
@@ -875,7 +882,6 @@ static int
 linphonec_main_loop (LinphoneCore * opm, char * sipAddr)
 {
 	char buf[LINE_MAX_LEN]; /* auto call handling */
-	bool_t run=TRUE;
 	char *input;
 
 	print_prompt(opm);
@@ -885,10 +891,10 @@ linphonec_main_loop (LinphoneCore * opm, char * sipAddr)
 	if (sipAddr != NULL )
 	{
 		snprintf (buf, sizeof(buf),"call %s", sipAddr);
-		run=linphonec_parse_command_line(&linphonec, buf);
+		linphonec_parse_command_line(&linphonec, buf);
 	}
 
-	while ((input=linphonec_readline(prompt)))
+	while (linphonec_running && (input=linphonec_readline(prompt)))
 	{
 		char *iptr; /* input and input pointer */
 		size_t input_len;
