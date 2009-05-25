@@ -2331,7 +2331,7 @@ void linphone_core_set_waiting_callback(LinphoneCore *lc, LinphoneWaitingCallbac
 
 void linphone_core_start_waiting(LinphoneCore *lc, const char *purpose){
 	if (lc->wait_cb){
-		lc->wait_ctx=lc->wait_cb(lc,NULL,LinphoneWaitingStart,purpose,0);
+		lc->wait_ctx=lc->wait_cb(lc,lc->wait_ctx,LinphoneWaitingStart,purpose,0);
 	}
 }
 

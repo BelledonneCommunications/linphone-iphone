@@ -235,8 +235,10 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
 	if (obj->reg_sendregister){
 		char *ct=NULL;
 		osip_message_t *msg=NULL;
+		eXosip_lock();
 		obj->rid=eXosip_register_build_initial_register(id_str,obj->reg_proxy,NULL,obj->expires,&msg);
 		eXosip_register_send_register(obj->rid,msg);
+		eXosip_unlock();
 		if (ct!=NULL) osip_free(ct);
 	}
 }
@@ -504,7 +506,7 @@ void linphone_proxy_config_process_authentication_failure(LinphoneCore *lc, eXos
 	LinphoneProxyConfig *cfg=linphone_core_get_proxy_config_from_rid(lc, ev->rid);
 	if (cfg){
 		cfg->auth_failures++;
-		/*restart a new register */
+		/*restart a new register so that the user gets a chance to be prompted for a password*/
 		if (cfg->auth_failures==1){
 			linphone_proxy_config_register(cfg);
 		}
@@ -665,6 +667,14 @@ void linphone_account_creator_set_password(LinphoneAccountCreator *obj, const ch
 
 void linphone_account_creator_set_domain(LinphoneAccountCreator *obj, const char *domain){
 	set_string(&obj->domain,domain);
+}
+
+const char * linphone_account_creator_get_username(LinphoneAccountCreator *obj){
+	return obj->username;
+}
+
+const char * linphone_account_creator_get_domain(LinphoneAccountCreator *obj){
+	return obj->domain;
 }
 
 int linphone_account_creator_test_existence(LinphoneAccountCreator *obj){

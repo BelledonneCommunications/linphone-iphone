@@ -340,6 +340,8 @@ LinphoneAccountCreator *linphone_account_creator_new(struct _LinphoneCore *core,
 void linphone_account_creator_set_username(LinphoneAccountCreator *obj, const char *username);
 void linphone_account_creator_set_password(LinphoneAccountCreator *obj, const char *password);
 void linphone_account_creator_set_domain(LinphoneAccountCreator *obj, const char *domain);
+const char * linphone_account_creator_get_username(LinphoneAccountCreator *obj);
+const char * linphone_account_creator_get_domain(LinphoneAccountCreator *obj);
 int linphone_account_creator_test_existence(LinphoneAccountCreator *obj);
 LinphoneProxyConfig * linphone_account_creator_validate(LinphoneAccountCreator *obj);
 void linphone_account_creator_destroy(LinphoneAccountCreator *obj);

@@ -67,10 +67,26 @@ static bool_t fonis_check_connected(SipSetupContext *ctx){
 	return FALSE;
 }
 
+static int fonis_test_account(SipSetupContext *ctx, const char *uri){
+	int ret;
+	LinphoneCore *lc=linphone_proxy_config_get_core(sip_setup_context_get_proxy_config(ctx));
+	if (!fonis_check_connected(ctx)) return -1;
+	linphone_core_start_waiting(lc,"Checking...");
+	ret=(p2pproxy_accountmgt_isValidAccount(uri)==P2PPROXY_ACCOUNTMGT_USER_EXIST) ? 1 : 0;
+	linphone_core_update_progress(lc,NULL,1);
+	linphone_core_stop_waiting(lc);
+	return ret;
+}
+
 static int fonis_create_account(SipSetupContext *ctx, const char *uri, const char *passwd){
 	int err;
+	LinphoneCore *lc=linphone_proxy_config_get_core(sip_setup_context_get_proxy_config(ctx));
 	if (!fonis_check_connected(ctx)) return -1;
+	linphone_core_start_waiting(lc,"Creating account...");
 	err=p2pproxy_accountmgt_createAccount(uri);
+	ms_message("Account creation result for %s: %i",uri,err);
+	linphone_core_update_progress(lc,NULL,1);
+	linphone_core_stop_waiting(lc);
 	if (err<0) return -1;
 	return 0;
 }
@@ -128,6 +144,7 @@ static SipSetup fonis_sip_setup={
 				SIP_SETUP_CAP_RELAY_PROVIDER|SIP_SETUP_CAP_ACCOUNT_MANAGER,
 	.name="fonis",
 	.init=fonis_init,
+	.account_exists=fonis_test_account,
 	.create_account=fonis_create_account,
 	.login_account=fonis_login_account,
 	.get_proxy=fonis_get_proxy,

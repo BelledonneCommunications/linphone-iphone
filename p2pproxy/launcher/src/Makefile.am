@@ -1,5 +1,5 @@
 JAVA_LIBS=-L$(javadir)/jre/lib/amd64 -L$(javadir)/jre/lib/i386 \
-			-L$(javadir)/jre/lib/amd64/server -L$(javadir)/jre/lib/i386/server -ljvm 
+			-L$(javadir)/jre/lib/amd64/server -L$(javadir)/jre/lib/i386/server -ljava 
 
 JAVA_LDFLAGS=\
 	-Wl,-rpath,$(javadir)/jre/lib/amd64 -Wl,-rpath,$(javadir)/jre/lib/i386 \

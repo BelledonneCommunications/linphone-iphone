@@ -39,8 +39,8 @@ if test $GCC = yes && test $wall_werror = yes;  then
 fi
 
 AC_ARG_WITH(java,
-		[  --with-java	Sets directory of java home,  [default=/usr/lib/jvm/java-1.5.0-sun] ],
-		[ javadir=${withval}],[javadir=/usr/lib/jvm/java-1.5.0-sun/])
+		[  --with-java	Sets directory of java home,  [default=/usr/lib/jvm/java-6-sun] ],
+		[ javadir=${withval}],[javadir=/usr/lib/jvm/java-6-sun/])
 
 AC_SUBST(javadir)
 
