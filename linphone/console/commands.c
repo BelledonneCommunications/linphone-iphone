@@ -398,10 +398,10 @@ lpc_cmd_autoanswer(LinphoneCore *lc, char *args)
 
 	if (strstr(args,"enable")){
 		linphonec_set_autoanswer(TRUE);
-		linphonec_out("Auto answer disabled.\n");
+		linphonec_out("Auto answer enabled.\n");
 	}else if (strstr(args,"disable")){
 		linphonec_set_autoanswer(FALSE);
-		linphonec_out("Auto answer enabled.\n");
+		linphonec_out("Auto answer disabled.\n");
 	}else return 0;
 	return 1;
 }
