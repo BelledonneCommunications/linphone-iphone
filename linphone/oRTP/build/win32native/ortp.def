@@ -157,11 +157,23 @@ EXPORTS
     rtp_session_compute_recv_bandwidth
     rtp_session_compute_send_bandwidth
     rtcp_next_packet
-    rtcp_sdes_parse
     rtcp_is_SDES
-    rtcp_SR_get_report_block
+    rtcp_sdes_parse
     rtcp_is_SR
+    rtcp_SR_get_ssrc
+    rtcp_SR_get_report_block
+    rtcp_SR_get_sender_info
     rtcp_is_RR
+    rtcp_RR_get_ssrc
+    rtcp_RR_get_report_block
+    rtcp_is_BYE
+    rtcp_BYE_get_ssrc
+    rtcp_BYE_get_reason
+    rtcp_is_APP
+    rtcp_APP_get_subtype
+    rtcp_APP_get_ssrc
+    rtcp_APP_get_name
+    rtcp_APP_get_data
     rtp_session_flush_sockets
     rtp_session_resync
     rtp_session_set_remote_addr_and_port
