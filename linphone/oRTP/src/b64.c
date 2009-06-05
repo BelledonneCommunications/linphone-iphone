@@ -462,7 +462,8 @@ size_t b64_encode2( void const  *src
             lineLen = 76;
             break;
         default:
-            assert(!"Bad line length flag specified to b64_encode2()");
+            /*the following assert makes a compiler error with icc*/
+            /*assert(!"Bad line length flag specified to b64_encode2()");*/
         case    B64_F_LINE_LEN_INFINITE:
             lineLen = 0;
             break;
