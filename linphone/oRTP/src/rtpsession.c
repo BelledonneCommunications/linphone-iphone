@@ -805,13 +805,13 @@ __rtp_session_sendm_with_ts (RtpSession * session, mblk_t *mp, uint32_t packet_t
 	 * not block */
 	if (session->flags & RTP_SESSION_SCHEDULED)
 	{
+		wait_point_lock(&session->snd.wp);
 		packet_time =
 			rtp_session_ts_to_time (session,
 				     send_ts -
 				     session->rtp.snd_ts_offset) +
 					session->rtp.snd_time_offset;
 		/*ortp_message("rtp_session_send_with_ts: packet_time=%i time=%i",packet_time,sched->time_);*/
-		wait_point_lock(&session->snd.wp);
 		if (TIME_IS_STRICTLY_NEWER_THAN (packet_time, sched->time_))
 		{
 			wait_point_wakeup_at(&session->snd.wp,packet_time,(session->flags & RTP_SESSION_BLOCKING_MODE)!=0);	
@@ -1079,13 +1079,14 @@ rtp_session_recvm_with_ts (RtpSession * session, uint32_t user_ts)
 		 * wanted expires */
 		/* but we must not block the process if the timestamp wanted by the application is older
 		 * than current time */
+		wait_point_lock(&session->rcv.wp);
 		packet_time =
 			rtp_session_ts_to_time (session,
 				     user_ts -
 				     session->rtp.rcv_query_ts_offset) +
 			session->rtp.rcv_time_offset;
 		ortp_debug ("rtp_session_recvm_with_ts: packet_time=%i, time=%i",packet_time, sched->time_);
-		wait_point_lock(&session->rcv.wp);
+		
 		if (TIME_IS_STRICTLY_NEWER_THAN (packet_time, sched->time_))
 		{
 			wait_point_wakeup_at(&session->rcv.wp,packet_time, (session->flags & RTP_SESSION_BLOCKING_MODE)!=0);
