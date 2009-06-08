@@ -136,6 +136,23 @@ static void fonis_exit(){
 	p2pproxy_application_stop();
 }
 
+static const char *fonis_get_notice(SipSetupContext *ssctx){
+	return "<b>WARNING: experimental feature !</b>"
+"FONIS stands for Free Overlay Network for Instant SIP.\n"
+"Based on SIP and Peer to Peer technologies, it allows people to find each other through the help of a virtual network."
+"Once you and your friends are registered, you'll be able to call each other simply by entering your friend's username in "
+"linphone's sip uri box."
+"Read more information about FONIS at http://www.fonis.org";
+}
+
+static const char *fonis_domains[]={
+	"p2p.linphone.org",
+	NULL
+};
+
+static const char ** fonis_get_domains(SipSetupContext *ssctx){
+	return fonis_domains;
+}
 
 
 
@@ -151,12 +168,8 @@ static SipSetup fonis_sip_setup={
 	.get_stun_servers=fonis_get_stun_servers,
 	.get_relay=fonis_get_relay,
 	.exit=fonis_exit,
-	.notice="<b>WARNING: experimental feature !</b>"
-"FONIS stands for Free Overlay Network for Instant SIP.\n"
-"Based on SIP and Peer to Peer technologies, it allows people to find each other through the help of a virtual network."
-"Once you and your friends are registered, you'll be able to call each other simply by entering your friend's username in "
-"linphone's sip uri box."
-"Read more information about FONIS at http://www.fonis.org"
+	.get_notice=fonis_get_notice,
+	.get_domains=fonis_get_domains
 };
 
 void libfonisprovider_init(void){
