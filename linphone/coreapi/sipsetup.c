@@ -166,6 +166,19 @@ int sip_setup_context_get_buddy_lookup_results(SipSetupContext *ctx, MSList **re
 	return -1;
 }
 
+const char * sip_setup_context_get_notice(SipSetupContext *ctx){
+	if (ctx->funcs->get_notice)
+		return ctx->funcs->get_notice(ctx);
+	return NULL;
+}
+
+const char ** sip_setup_context_get_domains(SipSetupContext *ctx){
+	if (ctx->funcs->get_domains)
+		return ctx->funcs->get_domains(ctx);
+	return NULL;
+}
+
+
 void sip_setup_context_free_results(MSList *results){
 	ms_list_for_each(results,(void (*)(void*))&ms_free);
 	ms_list_free(results);

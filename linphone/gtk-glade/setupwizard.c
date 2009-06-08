@@ -24,6 +24,7 @@ static GtkWidget *create_intro(){
 	GtkWidget *vbox=gtk_vbox_new(FALSE,2);
 	GtkWidget *label=gtk_label_new(_("Welcome !\nThis assistant will help you to use a SIP account for your calls."));
 	gtk_box_pack_start (GTK_BOX (vbox), label, TRUE, TRUE, 2);
+	g_object_set_data(G_OBJECT(vbox),"label",label);
 	gtk_widget_show_all(vbox);
 	return vbox;
 }

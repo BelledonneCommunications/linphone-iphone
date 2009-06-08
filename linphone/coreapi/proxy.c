@@ -653,6 +653,7 @@ LinphoneAccountCreator *linphone_account_creator_new(struct _LinphoneCore *core,
 	ssctx=sip_setup_context_new(ss,cfg);
 	obj->lc=core;
 	obj->ssctx=ssctx;
+	set_string(&obj->domain,sip_setup_context_get_domains(ssctx)[0]);
 	cfg->lc=core;
 	return obj;
 }
