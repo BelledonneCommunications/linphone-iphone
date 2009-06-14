@@ -1344,10 +1344,14 @@ static void vfw_detect(MSWebCamManager *obj){
 
 	ULONG nFetched = 0;
 
+	// Initialize COM
+	CoInitialize(NULL);
+
 	hr = CoCreateInstance(CLSID_SystemDeviceEnum, NULL, CLSCTX_INPROC_SERVER, 
 		IID_ICreateDevEnum, (PVOID *)&pCreateDevEnum);
 	if(FAILED(hr))
 	{
+		CoUninitialize();
 		return ;
 	}
 
@@ -1355,6 +1359,7 @@ static void vfw_detect(MSWebCamManager *obj){
 		&pEnumMoniker, 0);
 	if (FAILED(hr) || pEnumMoniker == NULL) {
 		//printf("no device\n");
+		CoUninitialize();
 		return ;
 	}
 
@@ -1394,4 +1399,5 @@ static void vfw_detect(MSWebCamManager *obj){
 
 	pEnumMoniker->Release();
 	pCreateDevEnum->Release();
+	CoUninitialize();
 }
