@@ -577,7 +577,7 @@ static int enc_set_br(MSFilter *f, void *arg){
 		ms_filter_lock(f);
 		enc_postprocess(f);
 		enc_preprocess(f);
-		ms_filter_lock(f);
+		ms_filter_unlock(f);
 	}
 	return 0;
 }

@@ -71,8 +71,9 @@ void linphone_gtk_show_buddy_lookup_window(SipSetupContext *ctx){
 	
 	select = gtk_tree_view_get_selection (GTK_TREE_VIEW (results));
 	gtk_tree_selection_set_mode (select, GTK_SELECTION_SINGLE);
-
+#if GTK_CHECK_VERSION(2,12,0)
 	gtk_tree_view_set_tooltip_column(GTK_TREE_VIEW(results),LOOKUP_RESULT_ADDRESS);
+#endif
 	g_object_set_data(G_OBJECT(w),"SipSetupContext",ctx);
 	g_object_weak_ref(G_OBJECT(w),(GWeakNotify)linphone_gtk_buddy_lookup_window_destroyed,w);
 	//g_signal_connect_swapped(G_OBJECT(w),"destroy",(GCallback)linphone_gtk_buddy_lookup_window_destroyed,w);

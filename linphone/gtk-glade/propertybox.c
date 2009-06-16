@@ -319,7 +319,9 @@ static void linphone_gtk_show_codecs(GtkTreeView *listview, const MSList *codecl
 	selection = gtk_tree_view_get_selection (listview);
 	gtk_tree_selection_set_mode (selection, GTK_SELECTION_SINGLE);
 	//gtk_tree_view_columns_autosize(GTK_TREE_VIEW (sec->interfaces));
+#if GTK_CHECK_VERSION(2,12,0)
 	gtk_tree_view_set_tooltip_column(listview,CODEC_INFO);
+#endif
 }
 
 static void linphone_gtk_check_codec_bandwidth(GtkTreeView *v){

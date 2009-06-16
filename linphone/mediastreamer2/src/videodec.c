@@ -313,7 +313,7 @@ MSFilterDesc ms_h263_dec_desc={
 };
 
 MSFilterDesc ms_h263_old_dec_desc={
-	MS_H263_DEC_ID,
+	MS_H263_OLD_DEC_ID,
 	"MSH263OldDec",
 	N_("A H.263 decoder using ffmpeg library"),
 	MS_FILTER_DECODER,
