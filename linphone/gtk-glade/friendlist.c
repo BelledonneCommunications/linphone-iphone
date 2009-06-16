@@ -219,9 +219,9 @@ static void linphone_gtk_friend_list_init(GtkWidget *friendlist)
 	
 	select = gtk_tree_view_get_selection (GTK_TREE_VIEW (friendlist));
 	gtk_tree_selection_set_mode (select, GTK_SELECTION_SINGLE);
-
+#if GTK_CHECK_VERSION(2,12,0)
 	gtk_tree_view_set_tooltip_column(GTK_TREE_VIEW(friendlist),FRIEND_SIP_ADDRESS);
-
+#endif
 	gtk_combo_box_set_active(GTK_COMBO_BOX(linphone_gtk_get_widget(
 					gtk_widget_get_toplevel(friendlist),"show_category")),0);
 }
