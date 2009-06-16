@@ -746,9 +746,3 @@ void __register_ffmpeg_encoders_if_possible(void){
 		ms_filter_register(&ms_snow_enc_desc);
 }
 
-/*
-MS_FILTER_DESC_EXPORT(ms_mpeg4_enc_desc)
-MS_FILTER_DESC_EXPORT(ms_h263_enc_desc)
-MS_FILTER_DESC_EXPORT(ms_h263_old_enc_desc)
-MS_FILTER_DESC_EXPORT(ms_snow_enc_desc)
-*/
