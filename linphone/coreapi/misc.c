@@ -28,6 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <unistd.h>
 #include <fcntl.h>
 
+#undef snprintf
 #include <ortp/stun.h>
 
 #ifndef WIN32

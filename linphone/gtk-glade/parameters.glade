@@ -1,9 +1,10 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.4.5 on Sat Oct 25 21:56:03 2008 -->
+<?xml version="1.0"?>
 <glade-interface>
+  <!-- interface-requires gtk+ 2.16 -->
+  <!-- interface-naming-policy toplevel-contextual -->
   <widget class="GtkWindow" id="parameters">
     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+    <property name="title" translatable="yes">Settings</property>
     <property name="icon">linphone2.png</property>
     <child>
       <widget class="GtkVBox" id="vbox1">
@@ -15,7 +16,7 @@
             <property name="can_focus">True</property>
             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
             <child>
-              <widget class="GtkVBox" id="vbox1">
+              <widget class="GtkVBox" id="vbox2">
                 <property name="visible">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                 <child>
@@ -29,20 +30,23 @@
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                         <property name="left_padding">12</property>
                         <child>
-                          <widget class="GtkVBox" id="vbox2">
+                          <widget class="GtkVBox" id="vbox3">
                             <property name="visible">True</property>
                             <child>
                               <widget class="GtkHBox" id="hbox2">
                                 <property name="visible">True</property>
                                 <child>
                                   <widget class="GtkCheckButton" id="mtu_set">
+                                    <property name="label" translatable="yes">Set Maximum Transmission Unit:</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
-                                    <property name="label" translatable="yes">Set Maximum Transmission Unit:</property>
-                                    <property name="response_id">0</property>
+                                    <property name="receives_default">False</property>
                                     <property name="draw_indicator">True</property>
                                     <signal name="toggled" handler="linphone_gtk_mtu_set"/>
                                   </widget>
+                                  <packing>
+                                    <property name="position">0</property>
+                                  </packing>
                                 </child>
                                 <child>
                                   <widget class="GtkSpinButton" id="mtu">
@@ -56,13 +60,16 @@
                                   </packing>
                                 </child>
                               </widget>
+                              <packing>
+                                <property name="position">0</property>
+                              </packing>
                             </child>
                             <child>
                               <widget class="GtkCheckButton" id="dtmf_sipinfo">
+                                <property name="label" translatable="yes">Send DTMFs as SIP info</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
-                                <property name="label" translatable="yes">Send DTMFs as SIP info</property>
-                                <property name="response_id">0</property>
+                                <property name="receives_default">False</property>
                                 <property name="draw_indicator">True</property>
                                 <signal name="toggled" handler="linphone_gtk_use_sip_info_dtmf_toggled"/>
                               </widget>
@@ -72,11 +79,11 @@
                             </child>
                             <child>
                               <widget class="GtkCheckButton" id="ipv6_enabled">
+                                <property name="label" translatable="yes">Use IPv6 instead of IPv4</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                <property name="label" translatable="yes">Use IPv6 instead of IPv4</property>
-                                <property name="response_id">0</property>
                                 <property name="draw_indicator">True</property>
                                 <signal name="toggled" handler="linphone_gtk_ipv6_toggled"/>
                               </widget>
@@ -100,6 +107,9 @@
                       </packing>
                     </child>
                   </widget>
+                  <packing>
+                    <property name="position">0</property>
+                  </packing>
                 </child>
                 <child>
                   <widget class="GtkFrame" id="frame2">
@@ -165,7 +175,7 @@
                                 <property name="visible">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <property name="label" translatable="yes">Video RTP/UDP:</property>
-                                <property name="justify">GTK_JUSTIFY_RIGHT</property>
+                                <property name="justify">right</property>
                               </widget>
                               <packing>
                                 <property name="top_attach">2</property>
@@ -177,7 +187,7 @@
                                 <property name="visible">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <property name="label" translatable="yes">Audio RTP/UDP:</property>
-                                <property name="justify">GTK_JUSTIFY_RIGHT</property>
+                                <property name="justify">right</property>
                               </widget>
                               <packing>
                                 <property name="top_attach">1</property>
@@ -189,7 +199,7 @@
                                 <property name="visible">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <property name="label" translatable="yes">SIP (UDP):</property>
-                                <property name="justify">GTK_JUSTIFY_RIGHT</property>
+                                <property name="justify">right</property>
                               </widget>
                             </child>
                           </widget>
@@ -222,29 +232,37 @@
                         <property name="visible">True</property>
                         <child>
                           <widget class="GtkRadioButton" id="no_nat">
+                            <property name="label" translatable="yes">Direct connection to the Internet</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="label" translatable="yes">Direct connection to the Internet</property>
-                            <property name="response_id">0</property>
+                            <property name="receives_default">False</property>
                             <property name="active">True</property>
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="linphone_gtk_no_firewall_toggled"/>
                           </widget>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">False</property>
+                            <property name="position">0</property>
+                          </packing>
                         </child>
                         <child>
-                          <widget class="GtkVBox" id="vbox3">
+                          <widget class="GtkVBox" id="vbox4">
                             <property name="visible">True</property>
                             <child>
                               <widget class="GtkRadioButton" id="use_nat_address">
+                                <property name="label" translatable="yes">Behind NAT / Firewall (specify gateway IP below)</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
-                                <property name="label" translatable="yes">Behind NAT / Firewall (specify gateway IP below)</property>
-                                <property name="response_id">0</property>
+                                <property name="receives_default">False</property>
                                 <property name="active">True</property>
                                 <property name="draw_indicator">True</property>
                                 <property name="group">no_nat</property>
                                 <signal name="toggled" handler="linphone_gtk_use_nat_address_toggled"/>
                               </widget>
+                              <packing>
+                                <property name="position">0</property>
+                              </packing>
                             </child>
                             <child>
                               <widget class="GtkHBox" id="hbox21">
@@ -255,8 +273,11 @@
                                     <property name="visible">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                     <property name="label" translatable="yes">Public IP address:</property>
-                                    <property name="justify">GTK_JUSTIFY_RIGHT</property>
+                                    <property name="justify">right</property>
                                   </widget>
+                                  <packing>
+                                    <property name="position">0</property>
+                                  </packing>
                                 </child>
                                 <child>
                                   <widget class="GtkEntry" id="nat_address">
@@ -276,23 +297,28 @@
                             </child>
                           </widget>
                           <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">False</property>
                             <property name="position">1</property>
                           </packing>
                         </child>
                         <child>
-                          <widget class="GtkVBox" id="vbox4">
+                          <widget class="GtkVBox" id="vbox5">
                             <property name="visible">True</property>
                             <child>
                               <widget class="GtkRadioButton" id="use_stun">
+                                <property name="label" translatable="yes">Behind NAT / Firewall (use STUN to resolve)</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
-                                <property name="label" translatable="yes">Behind NAT / Firewall (use STUN to resolve)</property>
-                                <property name="response_id">0</property>
+                                <property name="receives_default">False</property>
                                 <property name="active">True</property>
                                 <property name="draw_indicator">True</property>
                                 <property name="group">no_nat</property>
                                 <signal name="toggled" handler="linphone_gtk_use_stun_toggled"/>
                               </widget>
+                              <packing>
+                                <property name="position">0</property>
+                              </packing>
                             </child>
                             <child>
                               <widget class="GtkHBox" id="hbox24">
@@ -303,8 +329,11 @@
                                     <property name="visible">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                     <property name="label" translatable="yes">Stun server:</property>
-                                    <property name="justify">GTK_JUSTIFY_RIGHT</property>
+                                    <property name="justify">right</property>
                                   </widget>
+                                  <packing>
+                                    <property name="position">0</property>
+                                  </packing>
                                 </child>
                                 <child>
                                   <widget class="GtkEntry" id="stun_server">
@@ -324,6 +353,8 @@
                             </child>
                           </widget>
                           <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">False</property>
                             <property name="position">2</property>
                           </packing>
                         </child>
@@ -357,6 +388,9 @@
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                     <property name="stock">gtk-network</property>
                   </widget>
+                  <packing>
+                    <property name="position">0</property>
+                  </packing>
                 </child>
                 <child>
                   <widget class="GtkLabel" id="network">
@@ -370,8 +404,8 @@
                 </child>
               </widget>
               <packing>
-                <property name="type">tab</property>
                 <property name="tab_fill">False</property>
+                <property name="type">tab</property>
               </packing>
             </child>
             <child>
@@ -395,9 +429,6 @@
                             <property name="n_rows">6</property>
                             <property name="n_columns">2</property>
                             <child>
-                              <placeholder/>
-                            </child>
-                            <child>
                               <widget class="GtkHBox" id="hbox19">
                                 <property name="visible">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
@@ -407,16 +438,18 @@
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                     <signal name="file_set" handler="linphone_gtk_ring_file_set"/>
                                   </widget>
+                                  <packing>
+                                    <property name="position">0</property>
+                                  </packing>
                                 </child>
                                 <child>
                                   <widget class="GtkButton" id="play_ring">
+                                    <property name="label" translatable="yes">gtk-media-play</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                    <property name="label" translatable="yes">gtk-media-play</property>
                                     <property name="use_stock">True</property>
-                                    <property name="response_id">0</property>
                                     <signal name="clicked" handler="linphone_gtk_play_ring_file"/>
                                   </widget>
                                   <packing>
@@ -437,7 +470,7 @@
                                 <property name="visible">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <property name="label" translatable="yes">Ring sound:</property>
-                                <property name="justify">GTK_JUSTIFY_RIGHT</property>
+                                <property name="justify">right</property>
                               </widget>
                               <packing>
                                 <property name="top_attach">4</property>
@@ -494,7 +527,7 @@
                               <widget class="GtkLabel" id="label36">
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <property name="label" translatable="yes">ALSA special device (optional):</property>
-                                <property name="justify">GTK_JUSTIFY_RIGHT</property>
+                                <property name="justify">right</property>
                               </widget>
                               <packing>
                                 <property name="top_attach">3</property>
@@ -507,7 +540,7 @@
                                 <property name="visible">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <property name="label" translatable="yes">Capture device:</property>
-                                <property name="justify">GTK_JUSTIFY_RIGHT</property>
+                                <property name="justify">right</property>
                               </widget>
                               <packing>
                                 <property name="top_attach">2</property>
@@ -520,7 +553,7 @@
                                 <property name="visible">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <property name="label" translatable="yes">Ring device:</property>
-                                <property name="justify">GTK_JUSTIFY_RIGHT</property>
+                                <property name="justify">right</property>
                               </widget>
                               <packing>
                                 <property name="top_attach">1</property>
@@ -533,7 +566,7 @@
                                 <property name="visible">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <property name="label" translatable="yes">Playback device:</property>
-                                <property name="justify">GTK_JUSTIFY_RIGHT</property>
+                                <property name="justify">right</property>
                               </widget>
                               <packing>
                                 <property name="x_options">GTK_FILL</property>
@@ -557,10 +590,10 @@
                             </child>
                             <child>
                               <widget class="GtkCheckButton" id="echo_cancelation">
+                                <property name="label" translatable="yes">Enable echo cancellation</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
-                                <property name="label" translatable="yes">Enable echo cancellation</property>
-                                <property name="response_id">0</property>
+                                <property name="receives_default">False</property>
                                 <property name="draw_indicator">True</property>
                                 <signal name="toggled" handler="linphone_gtk_echo_cancelation_toggled"/>
                               </widget>
@@ -570,6 +603,9 @@
                                 <property name="top_attach">5</property>
                                 <property name="bottom_attach">6</property>
                               </packing>
+                            </child>
+                            <child>
+                              <placeholder/>
                             </child>
                           </widget>
                         </child>
@@ -587,6 +623,9 @@
                       </packing>
                     </child>
                   </widget>
+                  <packing>
+                    <property name="position">0</property>
+                  </packing>
                 </child>
                 <child>
                   <widget class="GtkFrame" id="frame4">
@@ -605,7 +644,7 @@
                               <widget class="GtkLabel" id="label9">
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">Video input device:</property>
-                                <property name="justify">GTK_JUSTIFY_RIGHT</property>
+                                <property name="justify">right</property>
                               </widget>
                               <packing>
                                 <property name="y_options">GTK_EXPAND</property>
@@ -682,6 +721,9 @@
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                     <property name="stock">gtk-media-play</property>
                   </widget>
+                  <packing>
+                    <property name="position">0</property>
+                  </packing>
                 </child>
                 <child>
                   <widget class="GtkLabel" id="label2">
@@ -695,13 +737,13 @@
                 </child>
               </widget>
               <packing>
-                <property name="type">tab</property>
                 <property name="position">1</property>
                 <property name="tab_fill">False</property>
+                <property name="type">tab</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkVBox" id="vbox9">
+              <widget class="GtkVBox" id="sip_tab">
                 <property name="visible">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                 <child>
@@ -806,6 +848,9 @@
                       </packing>
                     </child>
                   </widget>
+                  <packing>
+                    <property name="position">0</property>
+                  </packing>
                 </child>
                 <child>
                   <widget class="GtkFrame" id="frame12">
@@ -826,17 +871,19 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-                                <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                                <property name="hscrollbar_policy">automatic</property>
+                                <property name="vscrollbar_policy">automatic</property>
                                 <child>
                                   <widget class="GtkTreeView" id="proxy_list">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                    <property name="headers_clickable">True</property>
                                   </widget>
                                 </child>
                               </widget>
+                              <packing>
+                                <property name="position">0</property>
+                              </packing>
                             </child>
                             <child>
                               <widget class="GtkVButtonBox" id="vbuttonbox2">
@@ -848,7 +895,6 @@
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                    <property name="response_id">0</property>
                                     <signal name="clicked" handler="linphone_gtk_add_proxy"/>
                                     <child>
                                       <widget class="GtkHBox" id="hbox14">
@@ -860,6 +906,9 @@
                                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                             <property name="stock">gtk-add</property>
                                           </widget>
+                                          <packing>
+                                            <property name="position">0</property>
+                                          </packing>
                                         </child>
                                         <child>
                                           <widget class="GtkLabel" id="add_proxy_label">
@@ -874,6 +923,11 @@
                                       </widget>
                                     </child>
                                   </widget>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">False</property>
+                                    <property name="position">0</property>
+                                  </packing>
                                 </child>
                                 <child>
                                   <widget class="GtkButton" id="edit_proxy">
@@ -881,7 +935,6 @@
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                    <property name="response_id">0</property>
                                     <signal name="clicked" handler="linphone_gtk_edit_proxy"/>
                                     <child>
                                       <widget class="GtkHBox" id="hbox16">
@@ -893,6 +946,9 @@
                                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                             <property name="stock">gtk-edit</property>
                                           </widget>
+                                          <packing>
+                                            <property name="position">0</property>
+                                          </packing>
                                         </child>
                                         <child>
                                           <widget class="GtkLabel" id="label_proxy2">
@@ -908,6 +964,8 @@
                                     </child>
                                   </widget>
                                   <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">False</property>
                                     <property name="position">1</property>
                                   </packing>
                                 </child>
@@ -917,7 +975,6 @@
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                    <property name="response_id">0</property>
                                     <signal name="clicked" handler="linphone_gtk_remove_proxy"/>
                                     <child>
                                       <widget class="GtkHBox" id="hbox7">
@@ -929,6 +986,9 @@
                                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                             <property name="stock">gtk-delete</property>
                                           </widget>
+                                          <packing>
+                                            <property name="position">0</property>
+                                          </packing>
                                         </child>
                                         <child>
                                           <widget class="GtkLabel" id="label_proxy1">
@@ -944,6 +1004,8 @@
                                     </child>
                                   </widget>
                                   <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">False</property>
                                     <property name="position">2</property>
                                   </packing>
                                 </child>
@@ -951,7 +1013,6 @@
                                   <widget class="GtkButton" id="create_phonics">
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
-                                    <property name="response_id">0</property>
                                     <signal name="clicked" handler="linphone_gtk_create_fonics_account"/>
                                     <child>
                                       <widget class="GtkHBox" id="hbox1">
@@ -961,6 +1022,9 @@
                                             <property name="visible">True</property>
                                             <property name="stock">gtk-network</property>
                                           </widget>
+                                          <packing>
+                                            <property name="position">0</property>
+                                          </packing>
                                         </child>
                                         <child>
                                           <widget class="GtkLabel" id="label11">
@@ -976,6 +1040,8 @@ virtual network !</property>
                                     </child>
                                   </widget>
                                   <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">False</property>
                                     <property name="position">3</property>
                                   </packing>
                                 </child>
@@ -1026,7 +1092,6 @@ virtual network !</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                <property name="response_id">0</property>
                                 <signal name="clicked" handler="linphone_gtk_clear_passwords"/>
                                 <child>
                                   <widget class="GtkHBox" id="hbox18">
@@ -1038,6 +1103,9 @@ virtual network !</property>
                                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                         <property name="stock">gtk-delete</property>
                                       </widget>
+                                      <packing>
+                                        <property name="position">0</property>
+                                      </packing>
                                     </child>
                                     <child>
                                       <widget class="GtkLabel" id="label30">
@@ -1052,6 +1120,11 @@ virtual network !</property>
                                   </widget>
                                 </child>
                               </widget>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">False</property>
+                                <property name="position">0</property>
+                              </packing>
                             </child>
                           </widget>
                         </child>
@@ -1088,6 +1161,9 @@ virtual network !</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                     <property name="pixbuf">stock_people.png</property>
                   </widget>
+                  <packing>
+                    <property name="position">0</property>
+                  </packing>
                 </child>
                 <child>
                   <widget class="GtkLabel" id="label3">
@@ -1101,13 +1177,13 @@ virtual network !</property>
                 </child>
               </widget>
               <packing>
-                <property name="type">tab</property>
                 <property name="position">2</property>
                 <property name="tab_fill">False</property>
+                <property name="type">tab</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkVBox" id="vbox7">
+              <widget class="GtkVBox" id="codec_tab">
                 <property name="visible">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                 <child>
@@ -1135,6 +1211,7 @@ Video codecs</property>
                               </widget>
                               <packing>
                                 <property name="expand">False</property>
+                                <property name="position">0</property>
                               </packing>
                             </child>
                             <child>
@@ -1146,19 +1223,21 @@ Video codecs</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                    <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-                                    <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-                                    <property name="shadow_type">GTK_SHADOW_OUT</property>
+                                    <property name="hscrollbar_policy">automatic</property>
+                                    <property name="vscrollbar_policy">automatic</property>
+                                    <property name="shadow_type">out</property>
                                     <child>
                                       <widget class="GtkTreeView" id="codec_list">
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                         <property name="has_tooltip">True</property>
-                                        <property name="headers_clickable">True</property>
                                       </widget>
                                     </child>
                                   </widget>
+                                  <packing>
+                                    <property name="position">0</property>
+                                  </packing>
                                 </child>
                                 <child>
                                   <widget class="GtkVButtonBox" id="vbuttonbox1">
@@ -1166,28 +1245,33 @@ Video codecs</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                     <child>
                                       <widget class="GtkButton" id="button4">
+                                        <property name="label" translatable="yes">gtk-go-up</property>
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">True</property>
                                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                        <property name="label" translatable="yes">gtk-go-up</property>
                                         <property name="use_stock">True</property>
-                                        <property name="response_id">0</property>
                                         <signal name="clicked" handler="linphone_gtk_codec_up"/>
                                       </widget>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">False</property>
+                                        <property name="position">0</property>
+                                      </packing>
                                     </child>
                                     <child>
                                       <widget class="GtkButton" id="up_codec">
+                                        <property name="label" translatable="yes">gtk-go-down</property>
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">True</property>
                                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                        <property name="label" translatable="yes">gtk-go-down</property>
                                         <property name="use_stock">True</property>
-                                        <property name="response_id">0</property>
                                         <signal name="clicked" handler="linphone_gtk_codec_down"/>
                                       </widget>
                                       <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">False</property>
                                         <property name="position">1</property>
                                       </packing>
                                     </child>
@@ -1197,7 +1281,6 @@ Video codecs</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">True</property>
                                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                        <property name="response_id">0</property>
                                         <signal name="clicked" handler="linphone_gtk_codec_enable"/>
                                         <child>
                                           <widget class="GtkHBox" id="hbox8">
@@ -1209,6 +1292,9 @@ Video codecs</property>
                                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                                 <property name="stock">gtk-yes</property>
                                               </widget>
+                                              <packing>
+                                                <property name="position">0</property>
+                                              </packing>
                                             </child>
                                             <child>
                                               <widget class="GtkLabel" id="label19">
@@ -1224,6 +1310,8 @@ Video codecs</property>
                                         </child>
                                       </widget>
                                       <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">False</property>
                                         <property name="position">2</property>
                                       </packing>
                                     </child>
@@ -1233,7 +1321,6 @@ Video codecs</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">True</property>
                                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                        <property name="response_id">0</property>
                                         <signal name="clicked" handler="linphone_gtk_codec_disable"/>
                                         <child>
                                           <widget class="GtkHBox" id="hbox9">
@@ -1245,6 +1332,9 @@ Video codecs</property>
                                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                                 <property name="stock">gtk-no</property>
                                               </widget>
+                                              <packing>
+                                                <property name="position">0</property>
+                                              </packing>
                                             </child>
                                             <child>
                                               <widget class="GtkLabel" id="label20">
@@ -1260,6 +1350,8 @@ Video codecs</property>
                                         </child>
                                       </widget>
                                       <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">False</property>
                                         <property name="position">3</property>
                                       </packing>
                                     </child>
@@ -1290,6 +1382,9 @@ Video codecs</property>
                       </packing>
                     </child>
                   </widget>
+                  <packing>
+                    <property name="position">0</property>
+                  </packing>
                 </child>
                 <child>
                   <widget class="GtkFrame" id="frame10">
@@ -1342,7 +1437,7 @@ Video codecs</property>
                                 <property name="visible">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <property name="label" translatable="yes">Upload speed limit in Kbit/sec:</property>
-                                <property name="justify">GTK_JUSTIFY_RIGHT</property>
+                                <property name="justify">right</property>
                               </widget>
                               <packing>
                                 <property name="top_attach">1</property>
@@ -1354,7 +1449,7 @@ Video codecs</property>
                                 <property name="visible">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <property name="label" translatable="yes">Download speed limit in Kbit/sec:</property>
-                                <property name="justify">GTK_JUSTIFY_RIGHT</property>
+                                <property name="justify">right</property>
                               </widget>
                             </child>
                           </widget>
@@ -1392,6 +1487,9 @@ Video codecs</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                     <property name="stock">gtk-execute</property>
                   </widget>
+                  <packing>
+                    <property name="position">0</property>
+                  </packing>
                 </child>
                 <child>
                   <widget class="GtkLabel" id="label33">
@@ -1405,29 +1503,36 @@ Video codecs</property>
                 </child>
               </widget>
               <packing>
-                <property name="type">tab</property>
                 <property name="position">3</property>
                 <property name="tab_fill">False</property>
+                <property name="type">tab</property>
               </packing>
             </child>
           </widget>
+          <packing>
+            <property name="position">0</property>
+          </packing>
         </child>
         <child>
           <widget class="GtkHButtonBox" id="hbuttonbox2">
             <property name="visible">True</property>
             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-            <property name="layout_style">GTK_BUTTONBOX_END</property>
+            <property name="layout_style">end</property>
             <child>
               <widget class="GtkButton" id="button5">
+                <property name="label" translatable="yes">gtk-close</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                <property name="label" translatable="yes">gtk-close</property>
                 <property name="use_stock">True</property>
-                <property name="response_id">0</property>
                 <signal name="clicked" handler="linphone_gtk_parameters_closed"/>
               </widget>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">0</property>
+              </packing>
             </child>
           </widget>
           <packing>

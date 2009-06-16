@@ -1,6 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 
 AC_INIT([linphone],[3.1.2],[linphone-developers@nongnu.org])
+AC_CANONICAL_SYSTEM
 
 dnl Source packaging numbers
 
@@ -29,20 +30,54 @@ AC_PROG_CC
 AC_C_INLINE
 AM_PROG_CC_STDC
 AC_HEADER_STDC
+AM_PROG_CC_C_O
+
+case $target_os in
+	*mingw*)
+		CFLAGS="$CFLAGS -DORTP_STATIC -D_WIN32_WINNT=0x0501"
+		CXXFLAGS="$CXXFLAGS -DORTP_STATIC -D_WIN32_WINNT=0x0501"
+		LIBS="$LIBS -lws2_32"
+		GUI_FLAGS="-mwindows"
+		CONSOLE_FLAGS="-mconsole"
+		mingw_found=yes
+	;;
+esac
+
+AC_SUBST(CONSOLE_FLAGS)
+AC_SUBST(GUI_FLAGS)
+
 dnl localization tools
 ifdef([IT_PROG_INTLTOOL],[IT_PROG_INTLTOOL],[AC_PROG_INTLTOOL])
 dnl Initialize libtool
+AC_LIBTOOL_WIN32_DLL
 AC_PROG_LIBTOOL
 AM_PROG_LIBTOOL
-
 AC_ENABLE_SHARED(yes)
 AC_ENABLE_STATIC(no)
+
+
+if test "$mingw_found" = "yes" ; then
+	AC_MSG_NOTICE([Hacking libtool to work with mingw...])
+	sed -e 's/\*\" \$a_deplib \"\*/\*/' < ./libtool > libtool.tmp
+	cp -f ./libtool.tmp ./libtool
+	rm -f ./libtool.tmp
+fi
+
 dnl Add the languages which your application supports here.
 PKG_PROG_PKG_CONFIG
 ALL_LINGUAS="fr it de ja es pl cs nl sv pt_BR hu ru"
 AC_SUBST(ALL_LINGUAS)
-GETTEXT_PACKAGE=linphone
+
+if test "$mingw_found" != "yes" ; then
+dnl gettext macro does not work properly under mingw.
 AM_GNU_GETTEXT([external])
+else
+AC_DEFINE(ENABLE_NLS,1,[Tells whether localisation is possible])
+AC_DEFINE(HAVE_GETTEXT,1,[Tells wheter localisation is possible])
+LIBS="$LIBS -lintl"
+fi
+
+GETTEXT_PACKAGE=linphone
 AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE",[The name of the gettext package name])
 AC_CHECK_LIB(intl,libintl_gettext)
@@ -239,6 +274,7 @@ dnl special things for arm-linux cross compilation toolchain
 AM_CONDITIONAL(ARMBUILD, test x$use_arm_toolchain = xyes)
 dnl compilation of gtk-glade user interface
 AM_CONDITIONAL(BUILD_GLADE_UI, [test x$gtk_ui = xtrue ] )
+AM_CONDITIONAL(BUILD_WIN32, test x$mingw_found = xyes )
 
 ##################################################
 # Stricter build options (after external packages)

@@ -19,10 +19,8 @@ libmediastreamer_la_SOURCES=	mscommon.c     \
 				alaw.c 	       \
 				ulaw.c         \
 				mssndcard.c    \
-				msfileplayer.c \
 				msrtp.c	       \
 				dtmfgen.c      \
-				msfilerec.c    \
 				ice.c          \
 				tee.c          \
 				msconf.c       \
@@ -33,8 +31,27 @@ libmediastreamer_la_SOURCES=	mscommon.c     \
 				mtu.c \
 				void.c
 
+#dummy c++ file to force libtool to use c++ linking (because of msdscap-mingw.cc)
+nodist_EXTRA_libmediastreamer_la_SOURCES = dummy.cxx
 
 libmediastreamer_la_SOURCES+=audiostream.c
+
+
+if BUILD_SPEEX
+libmediastreamer_la_SOURCES+=msspeex.c speexec.c
+endif
+
+if BUILD_GSM
+libmediastreamer_la_SOURCES+=gsm.c
+endif
+
+if BUILD_WIN32
+libmediastreamer_la_SOURCES+=	winsnd3.c \
+				msfileplayer_win.c msfilerec_win.c
+else
+libmediastreamer_la_SOURCES+=	msfileplayer.c \
+				msfilerec.c    
+endif
 
 if BUILD_RESAMPLE
 libmediastreamer_la_SOURCES+=msresample.c
@@ -69,9 +86,20 @@ if BUILD_VIDEO
 
 if BUILD_MACOSX
 libmediastreamer_la_SOURCES+=msv4m.c
-else
+endif
+
+if BUILD_V4L
 libmediastreamer_la_SOURCES+=msv4l.c msv4l2.c
 endif
+
+if BUILD_WIN32
+libmediastreamer_la_SOURCES+=msdscap-mingw.cc
+endif
+
+if BUILD_THEORA
+libmediastreamer_la_SOURCES+=theora.c
+endif
+
 
 libmediastreamer_la_SOURCES+=	videoenc.c \
 				videodec.c \
@@ -89,17 +117,8 @@ libmediastreamer_la_SOURCES+=videostream.c
 
 endif
 
-if BUILD_THEORA
-libmediastreamer_la_SOURCES+=theora.c
-endif
 
-if BUILD_SPEEX
-libmediastreamer_la_SOURCES+=msspeex.c speexec.c
-endif
 
-if BUILD_GSM
-libmediastreamer_la_SOURCES+=gsm.c
-endif
 
 alldescs.h:	Makefile.am $(libmediastreamer_la_SOURCES)
 	builddir=`pwd` && cd $(srcdir) && \
@@ -113,13 +132,26 @@ libmediastreamer_la_LIBADD=	$(ORTP_LIBS) \
 				$(ALSA_LIBS) \
 				$(ARTS_LIBS) \
 				$(SPEEX_LIBS) \
-				$(GSM_LIBS) \
-				$(THEORA_LIBS)
-
+				$(GSM_LIBS) 
+if !BUILD_WIN32
 libmediastreamer_la_LDFLAGS=-rdynamic
+else
+libmediastreamer_la_LDFLAGS=-no-undefined
+endif
 
 if BUILD_VIDEO
-libmediastreamer_la_LIBADD+=$(VIDEO_LIBS)
+libmediastreamer_la_LIBADD+=	$(VIDEO_LIBS) \
+				$(THEORA_LIBS)
+
+
+if BUILD_WIN32
+libmediastreamer_la_LIBADD+=	-lole32 \
+				-loleaut32\
+				-lwinmm \
+				-luuid
+
+endif
+
 endif
 
 
@@ -127,6 +159,10 @@ AM_CFLAGS=	-I$(top_srcdir)  \
                 $(ORTP_CFLAGS)   \
 		$(SPEEX_CFLAGS)  \
 		$(GSM_CFLAGS)    \
+		$(STRICT_OPTIONS)
+
+AM_CXXFLAGS= 	-I$(top_srcdir)  \
+                $(ORTP_CFLAGS)   \
 		$(STRICT_OPTIONS)
 
 if BUILD_VIDEO

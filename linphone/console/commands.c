@@ -76,7 +76,9 @@ static void linphonec_friend_display(LinphoneFriend *fr);
 static int linphonec_friend_list(LinphoneCore *lc, char *arg);
 static void linphonec_display_command_help(LPC_COMMAND *cmd);
 static int linphonec_friend_call(LinphoneCore *lc, unsigned int num);
+#ifndef WIN32
 static int linphonec_friend_add(LinphoneCore *lc, const char *name, const char *addr);
+#endif
 static int linphonec_friend_delete(LinphoneCore *lc, int num);
 
 
@@ -1264,6 +1266,7 @@ linphonec_friend_call(LinphoneCore *lc, unsigned int num)
 	return 1;
 }
 
+#ifndef WIN32
 static int
 linphonec_friend_add(LinphoneCore *lc, const char *name, const char *addr)
 {
@@ -1276,6 +1279,7 @@ linphonec_friend_add(LinphoneCore *lc, const char *name, const char *addr)
 	linphone_core_add_friend(lc, newFriend);
 	return 0;
 }
+#endif
 
 static int
 linphonec_friend_delete(LinphoneCore *lc, int num)

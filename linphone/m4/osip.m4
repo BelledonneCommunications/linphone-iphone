@@ -42,8 +42,6 @@ dnl check for osip2 libs
 	LIBS_save=$LIBS
 	AC_CHECK_LIB(osip2${osip_legacy_version},osip_init, , AC_MSG_ERROR([Could not find osip2 library !]),[-losipparser2${osip_legacy_version} -lpthread])
 	AC_CHECK_LIB(osipparser2${osip_legacy_version},osip_message_init, , AC_MSG_ERROR([Could not find osipparser2 library !]),[-lpthread])
-dnl AC_CHECK_LIB adds osip2 & osipparser2 to LIBS
-	OSIP_LIBS=$LIBS
 	LDFLAGS=$LDFLAGS_save
 	LIBS=$LIBS_save
 fi

@@ -78,7 +78,7 @@ int main(int argc, char *argv[]){
 	ms_filter_link(f1,0,f2,0);
 	ms_ticker_attach(ticker,f1);
 	while(run)
-		sleep(1);
+		ms_sleep(1);
 	ms_ticker_detach(ticker,f1);
 	ms_ticker_destroy(ticker);
 	ms_filter_unlink(f1,0,f2,0);

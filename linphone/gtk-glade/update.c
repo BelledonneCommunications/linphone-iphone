@@ -24,10 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <wininet.h>
 
 static int linphone_gtk_get_new_version(const char *version_url, char *version, size_t size){
-	DWORD dwSize = 0;
 	DWORD dwDownloaded = 0;
-	LPSTR pszOutBuffer;
-	BOOL  bResults = FALSE;
 	HINTERNET  hSession = NULL, hConnect = NULL;
 	int ret=-1;
 	

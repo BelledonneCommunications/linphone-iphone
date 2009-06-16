@@ -481,6 +481,10 @@ extern MSWebCamDesc ms_vfw_cam_desc;
 extern MSWebCamDesc ms_directx_cam_desc;
 #endif
 
+#ifdef __MINGW32__
+extern MSWebCamDesc ms_dshow_cam_desc;
+#endif
+
 extern MSWebCamDesc static_image_desc;
 extern MSWebCamDesc mire_desc;
 
@@ -496,6 +500,9 @@ static MSWebCamDesc * ms_web_cam_descs[]={
 #endif
 #if defined(WIN32) && defined(HAVE_VFW)
 	&ms_vfw_cam_desc,
+#endif
+#ifdef __MINGW32__
+	&ms_dshow_cam_desc,
 #endif
 	&mire_desc,
 	&static_image_desc,

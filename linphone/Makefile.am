@@ -25,6 +25,9 @@ ACLOCAL_FLAGS=-I$(top_srcdir)/m4
 
 DISTCLEANFILES= intltool-extract intltool-merge intltool-update po/stamp-it po/.intltool-merge-cache
 
+INSTALLDIR=$(shell cd $(top_builddir)/linphone-install && pwd)
+ZIPFILE=$(shell cd $(top_builddir) && pwd)/$(PACKAGE)-win32-$(VERSION).zip
+
 # `make rpm'
 
 all-local: linphone.spec
@@ -41,3 +44,16 @@ rpm:
 	gzip $(PACKAGE)-$(VERSION).tar
 # <https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=2068410>
 	TAR_OPTIONS=--wildcards rpmbuild -ta --clean --rmsource --rmspec $(PACKAGE)-$(VERSION).tar.gz
+
+#a zip containing win32 binaries, suitable to generate an installer
+
+
+
+zip:
+	rm -f $(ZIPFILE)
+	rm -rf $(INSTALLDIR)
+	mkdir -p $(INSTALLDIR)
+	make install DESTDIR=$(INSTALLDIR)
+	cd $(INSTALLDIR)/$(prefix) && zip -r $(ZIPFILE) *
+
+	

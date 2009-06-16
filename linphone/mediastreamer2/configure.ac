@@ -80,6 +80,7 @@ AC_ARG_ENABLE(debug,
 
 dnl Checks for programs.
 AC_PROG_CC
+AC_LIBTOOL_WIN32_DLL
 AC_PROG_LIBTOOL
 AC_ENABLE_SHARED(yes)
 AC_ENABLE_STATIC(no)
@@ -122,12 +123,19 @@ fi
 macosx_found=no
 
 dnl add thread flags
-case $OS in
-  darwin*)
-     MSPLUGINS_CFLAGS=""
-     MSPLUGINS_LIBS="-dynamiclib"
-     macosx_found=yes
-     ;;
+case $target_os in
+  	*darwin*)
+		MSPLUGINS_CFLAGS=""
+		MSPLUGINS_LIBS="-dynamiclib"
+		macosx_found=yes
+	;;
+  	*mingw*)
+		CFLAGS="$CFLAGS -DINET6 -DORTP_INET6 -D_WIN32_WINNT=0x0501 -DORTP_STATIC"
+		CXXFLAGS="$CXXFLAGS -DINET6 -DORTP_INET6 -D_WIN32_WINNT=0x0501 -DORTP_STATIC"
+dnl ORTP_STATIC to tell ortp not to export its variable with dllexport, as if we were building statically, or dynamically on linux
+		LIBS="$LIBS -lws2_32 -lwinmm "
+		mingw_found=yes
+	;;
   *)
      MSPLUGINS_CFLAGS="-pthread"
      MSPLUGINS_LIBS="-shared -pthread"
@@ -137,6 +145,14 @@ case $OS in
 esac
 
 AM_CONDITIONAL(BUILD_MACOSX, test x$macosx_found = xyes)
+
+if test "$mingw_found" = "yes" ; then
+	AC_MSG_NOTICE([Hacking libtool to work with mingw...])
+	sed -e 's/\*\" \$a_deplib \"\*/\*/' < ./libtool > libtool.tmp
+	cp -f ./libtool.tmp ./libtool
+	rm -f ./libtool.tmp
+fi
+
 
 dnl initialize pkg-config so that we can use it within if else fi statements.
 PKG_PROG_PKG_CONFIG()
@@ -151,6 +167,10 @@ dnl	various checks for soundcard apis
 dnl	*********************************
 
 found_sound=no
+
+if test x$mingw_found = xyes ; then
+	found_sound=yes
+fi
 
 AC_ARG_ENABLE(oss,
       [  --enable-oss    Disable oss support],
@@ -167,10 +187,12 @@ if test "${ac_cv_header_sys_soundcard_h}" = "yes" || \
 		test "${ac_cv_header_sys_audio_h}" = "yes" || \
 	test "${ac_cv_header_machine_soundcard_h}" = "yes"; then
 	found_sound=yes
+else
+	oss=false
 fi
 fi
 
-AM_CONDITIONAL(BUILD_OSS, test x$found_sound = xyes)
+AM_CONDITIONAL(BUILD_OSS, test x$oss = xtrue)
 
 dnl conditionnal build of ALSA support
 AC_ARG_ENABLE(alsa,
@@ -403,6 +425,7 @@ AM_CONDITIONAL(BUILD_GSM, test x$build_gsm = xyes )
 MS_CHECK_VIDEO
 AM_CONDITIONAL(BUILD_VIDEO, test "$video" = "true")
 AM_CONDITIONAL(BUILD_THEORA, test "$have_theora" = "yes")
+AM_CONDITIONAL(BUILD_WIN32, test "$mingw_found" = "yes")
 
 dnl	*********************************************
 dnl	setup oRTP dependency
@@ -462,6 +485,16 @@ AC_SUBST(PACKAGE_DATA_DIR)
 
 dnl check for video4linux headers
 AC_CHECK_HEADERS(linux/videodev.h linux/videodev2.h)
+if test "${ac_cv_header_linux_videodev_h}" = "yes" || \
+	test "${ac_cv_header_linux_videodev2_h}" = "yes" ; then
+	found_v4l=yes
+else
+	found_v4l=no
+fi
+
+AM_CONDITIONAL(BUILD_V4L, test x$found_v4l = xyes )
+
+
 
 dnl ##################################################
 dnl # Check for doxygen

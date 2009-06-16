@@ -98,10 +98,16 @@ case "$target_os" in
 		AC_DEFINE(NOCONNECT,1,[Defined if we should not use connect() on udp sockets])
 		PTHREAD_LDFLAGS="-pthread"
 		;;
+	*mingw*)
+		CFLAGS="$CFLAGS -D_WIN32_WINNT=0x0501 -DORTP_STATIC"
+		LIBS="$LIBS -lws2_32 -liphlpapi -lwinmm"
+		build_tests=no
+		;;
 esac
 
 dnl Checks for programs.
 AC_PROG_CC
+AC_LIBTOOL_WIN32_DLL
 AC_PROG_LIBTOOL
 AC_ENABLE_SHARED(yes)
 AC_ENABLE_STATIC(no)
@@ -276,7 +282,7 @@ AC_PATH_PROG(EPM,epm,false)
 AC_PATH_PROG(MKEPMLIST,mkepmlist,false)
 AC_PATH_PROG(EPMINSTALL,epminstall,false)
 AM_CONDITIONAL(WITH_EPM,test $EPM != false && test $MKEPMLIST != false && test $EPMINSTALL != false)
-
+AM_CONDITIONAL(BUILD_TESTS,test x$build_tests != xno)
 
 # Preferred packaging system, as per EPM terminology
 case $target in

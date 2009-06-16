@@ -95,7 +95,6 @@ static GOptionEntry linphone_options[2]={
 static char _config_file[1024];
 
 const char *linphone_gtk_get_config_file(){
-	const char *home;
 	/*try accessing a local file first if exists*/
 	if (access(CONFIG_FILE,F_OK)==0){
 		snprintf(_config_file,sizeof(_config_file),"%s",CONFIG_FILE);
@@ -108,8 +107,8 @@ const char *linphone_gtk_get_config_file(){
 			snprintf(_config_file,sizeof(_config_file),"%s\\%s",appdata,"Linphone\\linphonerc");
 		}
 #else
-		home=getenv("HOME");
-		if (home==NULL) home="";
+		const char *home=getenv("HOME");
+		if (home==NULL) home=".";
 		snprintf(_config_file,sizeof(_config_file),"%s/%s",home,CONFIG_FILE);
 #endif
 	}
@@ -340,7 +339,11 @@ static gboolean linphone_gtk_iterate(LinphoneCore *lc){
 		GdkWindow *w;
 		previd=id;
 		if (id!=0){
+#ifndef WIN32
 			w=gdk_window_foreign_new(id);
+#else
+			w=gdk_window_foreign_new((HANDLE)id);
+#endif
 			if (w) {
 				set_video_window_decorations(w);
 				g_object_unref(G_OBJECT(w));

@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT([msx264],[1.1.7])
+AC_INIT([msx264],[1.1.8])
 
 AM_INIT_AUTOMAKE([tar-ustar])
 
@@ -15,9 +15,24 @@ AC_ARG_ENABLE(strict,
 
 dnl Checks for programs.
 AC_PROG_CC
-AC_PROG_LIBTOOL
-AC_DISABLE_STATIC
 
+AC_LIBTOOL_WIN32_DLL
+AC_DISABLE_STATIC
+AC_PROG_LIBTOOL
+
+
+case $target_os in 
+	*mingw*)
+		mingw_found=yes
+	;;
+esac
+
+if test "$mingw_found" = "yes" ; then
+	AC_MSG_NOTICE([Hacking libtool to work with mingw...])
+	sed -e 's/\*\" \$a_deplib \"\*/\*/' < ./libtool > libtool.tmp
+	cp -f ./libtool.tmp ./libtool
+	rm -f ./libtool.tmp
+fi
 
 CFLAGS="$CFLAGS -Wall"
 

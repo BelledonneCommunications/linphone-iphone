@@ -926,7 +926,7 @@ static bool_t exosip_running=FALSE;
 static char _ua_name[64]="Linphone";
 static char _ua_version[64]=LINPHONE_VERSION;
 
-static void set_user_agent(){
+static void apply_user_agent(void){
 	char ua_string[256];
 	snprintf(ua_string,sizeof(ua_string),"%s/%s (eXosip2/%s)",_ua_name,_ua_version,
 #ifdef HAVE_EXOSIP_GET_VERSION
@@ -973,7 +973,7 @@ void linphone_core_set_sip_port(LinphoneCore *lc,int port)
 	eXosip_set_rsvp_mode (lc->rsvp_enable);
 	eXosip_set_rpc_mode (lc->rpc_enable);
 #endif
-	set_user_agent("Linphone",LINPHONE_VERSION);
+	apply_user_agent();
 	exosip_running=TRUE;
 }
 

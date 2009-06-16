@@ -46,7 +46,7 @@ int main(int argc, char *argv[]){
 #endif
 
 	r=ring_start(file,2000,sc);
-	sleep(10);
+	ms_sleep(10);
 	ring_stop(r);
 	return 0;
 }

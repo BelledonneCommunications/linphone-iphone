@@ -28,11 +28,15 @@ liblinphone_la_SOURCES=\
 	sipsetup.c sipsetup.h
 
 
-liblinphone_la_LDFLAGS= -version-info $(LIBLINPHONE_SO_VERSION)
+liblinphone_la_LDFLAGS= -version-info $(LIBLINPHONE_SO_VERSION) -no-undefined
 
 liblinphone_la_LIBADD= \
 		$(EXOSIP_LIBS) \
 		$(top_builddir)/mediastreamer2/src/libmediastreamer.la 
+
+if BUILD_WIN32
+liblinphone_la_LIBADD+=$(top_builddir)/oRTP/src/libortp.la
+endif
 
 
 AM_CFLAGS=$(STRICT_OPTIONS)  -DIN_LINPHONE \

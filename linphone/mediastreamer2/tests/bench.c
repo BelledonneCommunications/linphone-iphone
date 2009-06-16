@@ -347,13 +347,13 @@ int main(int argc, char *argv[]){
 	for (pos=0;cfg[pos].num_session!=0;pos++)
 		{
 			count = count + init_bench(&cfg[pos]);
-			sleep(10);
+			ms_sleep(10);
 		}
 
 	ms_message("Number of session started: %i.", count);
 	
 	while(run)
-		sleep(1);
+		ms_sleep(1);
 
 	for (pos=0;cfg[pos].num_session!=0;pos++)
 		{

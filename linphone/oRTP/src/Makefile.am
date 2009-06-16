@@ -35,7 +35,7 @@ libortp_la_SOURCES=	str_utils.c 	\
 
 libortp_la_LIBADD= $(PTHREAD_LIBS) -lm $(SRTP_LIBS) $(SSL_LIBS)
 
-libortp_la_LDFLAGS= -version-info $(LIBORTP_SO_VERSION)
+libortp_la_LDFLAGS= -version-info $(LIBORTP_SO_VERSION) -no-undefined
 
 
 SUBDIRS= . tests

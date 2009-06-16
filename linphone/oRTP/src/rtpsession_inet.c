@@ -730,10 +730,10 @@ void rtp_session_flush_sockets(RtpSession *session){
 	  }
 
 	if (session->rtp.socket>=0){
-		while (recvfrom(session->rtp.socket,trash,sizeof(trash),0,(struct sockaddr *)&from,&fromlen)>0){};
+		while (recvfrom(session->rtp.socket,(char*)trash,sizeof(trash),0,(struct sockaddr *)&from,&fromlen)>0){};
 	}
 	if (session->rtcp.socket>=0){
-		while (recvfrom(session->rtcp.socket,trash,sizeof(trash),0,(struct sockaddr*)&from,&fromlen)>0){};
+		while (recvfrom(session->rtcp.socket,(char*)trash,sizeof(trash),0,(struct sockaddr*)&from,&fromlen)>0){};
 	}
 }
 
@@ -811,7 +811,7 @@ rtp_session_rtp_send (RtpSession * session, mblk_t * m)
 #else
 		if (m->b_cont!=NULL)
 			msgpullup(m,-1);
-		error = sendto (sockfd, m->b_rptr, (int) (m->b_wptr - m->b_rptr),
+		error = sendto (sockfd, (char*)m->b_rptr, (int) (m->b_wptr - m->b_rptr),
 			 0,destaddr,destlen);
 #endif
 	}
@@ -855,7 +855,7 @@ rtp_session_rtcp_send (RtpSession * session, mblk_t * m)
 			if (m->b_cont!=NULL){
 				msgpullup(m,-1);
 			}
-			error = sendto (sockfd, m->b_rptr,
+			error = sendto (sockfd, (char*)m->b_rptr,
 			(int) (m->b_wptr - m->b_rptr), 0,
 			destaddr, destlen);
 #endif
@@ -896,12 +896,12 @@ rtp_session_rtp_recv (RtpSession * session, uint32_t user_ts)
 		mp=session->rtp.cached_mp;
 		bufsz=(int) (mp->b_datap->db_lim - mp->b_datap->db_base);
 		if (sock_connected){
-			error=recv(sockfd,mp->b_wptr,bufsz,0);
+			error=recv(sockfd,(char*)mp->b_wptr,bufsz,0);
 		}else if (rtp_session_using_transport(session, rtp)) 
 			error = (session->rtp.tr->t_recvfrom)(session->rtp.tr, mp, 0,
 				  (struct sockaddr *) &remaddr,
 				  &addrlen);
-		else error = recvfrom(sockfd, mp->b_wptr,
+		else error = recvfrom(sockfd, (char*)mp->b_wptr,
 				  bufsz, 0,
 				  (struct sockaddr *) &remaddr,
 				  &addrlen);
@@ -977,7 +977,7 @@ rtp_session_rtcp_recv (RtpSession * session)
 		
 		mp=session->rtcp.cached_mp;
 		if (sock_connected){
-			error=recv(session->rtcp.socket,mp->b_wptr,RTCP_MAX_RECV_BUFSIZE,0);
+			error=recv(session->rtcp.socket,(char*)mp->b_wptr,RTCP_MAX_RECV_BUFSIZE,0);
 		}else {
 			addrlen=sizeof (remaddr);
 
@@ -986,7 +986,7 @@ rtp_session_rtcp_recv (RtpSession * session)
 				  (struct sockaddr *) &remaddr,
 				  &addrlen);
 			else
-			  error=recvfrom (session->rtcp.socket, mp->b_wptr,
+			  error=recvfrom (session->rtcp.socket,(char*) mp->b_wptr,
 				  RTCP_MAX_RECV_BUFSIZE, 0,
 				  (struct sockaddr *) &remaddr,
 				  &addrlen);

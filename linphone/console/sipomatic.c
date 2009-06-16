@@ -460,7 +460,11 @@ int main(int argc, char *argv[])
 	
 	while (run_cond){
 		sipomatic_iterate(&sipomatic);
+#ifndef WIN32
 		usleep(20000);
+#else
+		Sleep(20);
+#endif
 	}
 	
 	return(0);

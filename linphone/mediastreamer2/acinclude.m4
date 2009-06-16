@@ -102,7 +102,7 @@ AC_DEFUN([MS_CHECK_VIDEO],[
 
 		if test "$libsdldir" != "none" ; then
 			MS_CHECK_DEP([SDL],[SDL],[${libsdldir}/include],[${libsdldir}/lib],[SDL/SDL.h],[SDL],[SDL_Init])
-			if test "$SDL_found" = "no" ; then
+			if test "$SDL_found" = "no" && test "$mingw_found" != "yes" ; then
 				AC_MSG_ERROR([Could not find libsdl headers and library. This is mandatory for video support])
 			fi
 		fi
@@ -142,6 +142,10 @@ AC_DEFUN([MS_CHECK_VIDEO],[
 
 		if test "${ac_cv_header_X11_Xlib_h}" = "yes" ; then
 			VIDEO_LIBS="$VIDEO_LIBS -lX11"
+		fi
+
+		if test "$mingw_found" = "yes" ; then
+			VIDEO_LIBS="$VIDEO_LIBS -lvfw32"
 		fi
 	fi
 	
