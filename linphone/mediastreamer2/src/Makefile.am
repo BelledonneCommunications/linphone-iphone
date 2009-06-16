@@ -120,8 +120,6 @@ endif
 
 
 
-
-
 alldescs.h:	Makefile.am $(libmediastreamer_la_SOURCES)
 	builddir=`pwd` && cd $(srcdir) && \
 	awk 'BEGIN { FS="[()]" ; }; /^\t*MS_FILTER_DESC_EXPORT/{ printf("%s\n", $$2) } '  > $$builddir/filterdescs.txt $(libmediastreamer_la_SOURCES) && \

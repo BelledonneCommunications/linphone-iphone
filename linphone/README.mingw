@@ -17,6 +17,12 @@ Building
 
 WARNING: During the build, windows might slow down suddenly. Using ctl+alt+del to start the windows system monitor, you might see a process 'LVpSRV.exe' or something like this that eats 90% of cpu. Kill it. Don't know what it is, but once killed, windows runs normally.
 
+
+
+Building
+
+WARNING: During the build, windows might slow down suddenly. Using ctl+alt+del to start the windows system monitor, you might see a process 'LVpSRV.exe' or something like this that eats 90% of cpu. Kill it. Don't know what it is, but once killed, windows runs normally.
+
 #use ActiveState perl instead of mingw perl
 export PERL="/c/Perl/bin/perl"
 export INTLTOOL_PERL="/c/Perl/bin/perl"
