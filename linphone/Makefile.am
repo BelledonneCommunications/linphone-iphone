@@ -25,7 +25,7 @@ ACLOCAL_FLAGS=-I$(top_srcdir)/m4
 
 DISTCLEANFILES= intltool-extract intltool-merge intltool-update po/stamp-it po/.intltool-merge-cache
 
-INSTALLDIR=$(shell cd $(top_builddir)/linphone-install && pwd)
+INSTALLDIR=$(shell cd $(top_builddir) && pwd)/linphone-install
 ZIPFILE=$(shell cd $(top_builddir) && pwd)/$(PACKAGE)-win32-$(VERSION).zip
 
 # `make rpm'
