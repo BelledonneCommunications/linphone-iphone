@@ -27,6 +27,7 @@ DISTCLEANFILES= intltool-extract intltool-merge intltool-update po/stamp-it po/.
 
 INSTALLDIR=$(shell cd $(top_builddir) && pwd)/linphone-install
 ZIPFILE=$(shell cd $(top_builddir) && pwd)/$(PACKAGE)-win32-$(VERSION).zip
+ZIP_EXCLUDED=include lib
 
 # `make rpm'
 

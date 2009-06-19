@@ -472,16 +472,22 @@ dnl check various things
 AC_FUNC_ALLOCA
 
 if test "x${prefix}" = "xNONE"; then
-	prefix=${ac_default_prefix}
+	package_prefix=${ac_default_prefix}
+else
+	package_prefix=${prefix}
+fi
+
+if test x$mingw_found = xyes ; then
+	package_prefix="."
 fi
 
 dnl define path of plugins:
-AC_DEFINE_UNQUOTED(PACKAGE_PLUGINS_DIR, "${prefix}/lib/mediastreamer/plugins" ,[path of plugins])
-PACKAGE_PLUGINS_DIR="${prefix}/lib/mediastreamer/plugins"
+AC_DEFINE_UNQUOTED(PACKAGE_PLUGINS_DIR, "${package_prefix}/lib/mediastreamer/plugins" ,[path of plugins])
+PACKAGE_PLUGINS_DIR="${package_prefix}/lib/mediastreamer/plugins"
 AC_SUBST(PACKAGE_PLUGINS_DIR)
 
 PACKAGE_DATA_DIR="$prefix/share"
-AC_DEFINE_UNQUOTED(PACKAGE_DATA_DIR,  "$prefix/share" ,[path of data])
+AC_DEFINE_UNQUOTED(PACKAGE_DATA_DIR,  "${package_prefix}/share" ,[path of data])
 AC_SUBST(PACKAGE_DATA_DIR)
 
 dnl check for video4linux headers

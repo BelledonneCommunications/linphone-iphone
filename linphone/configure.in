@@ -183,17 +183,24 @@ AC_DEFINE(VINCENT_MAURY_RSVP,1,[Tell whether RSVP support
 should be compiled.]) )
 
 if test "x${prefix}" = "xNONE"; then
-	prefix=${ac_default_prefix}
+	package_prefix=${ac_default_prefix}
+else
+	package_prefix=${prefix}
+fi
+
+if test x$mingw_found = xyes ; then
+dnl allow binaries to install everywhere
+package_prefix="."
 fi
 
 dnl Set PACKAGE_LOCALE_DIR in config.h.
 DATADIRNAME=share
-AC_DEFINE_UNQUOTED(PACKAGE_LOCALE_DIR, "${prefix}/${DATADIRNAME}/locale",[Defines the place where locales can be found])
+AC_DEFINE_UNQUOTED(PACKAGE_LOCALE_DIR, "${package_prefix}/${DATADIRNAME}/locale",[Defines the place where locales can be found])
 
-AC_DEFINE_UNQUOTED(PACKAGE_DATA_DIR, "${prefix}/${DATADIRNAME}",[Defines the place where data are found])
+AC_DEFINE_UNQUOTED(PACKAGE_DATA_DIR, "${package_prefix}/${DATADIRNAME}",[Defines the place where data are found])
 
 dnl Set PACKAGE_SOUND_DIR in config.h.
-AC_DEFINE_UNQUOTED(PACKAGE_SOUND_DIR, "${prefix}/${DATADIRNAME}/sounds/linphone",[Defines the place where linphone sounds are found])
+AC_DEFINE_UNQUOTED(PACKAGE_SOUND_DIR, "${package_prefix}/${DATADIRNAME}/sounds/linphone",[Defines the place where linphone sounds are found])
 
 
 dnl check if we have the getifaddrs() sytem call
@@ -310,8 +317,8 @@ AC_SUBST(LINPHONE_LIBS)
 
 AC_DEFINE_UNQUOTED(LINPHONE_VERSION,"$PACKAGE_VERSION",[Linphone's version number])
 
-AC_DEFINE_UNQUOTED(LINPHONE_PLUGINS_DIR, "${prefix}/lib/liblinphone/plugins" ,[path of liblinphone plugins, not mediastreamer2 plugins])
-LINPHONE_PLUGINS_DIR="${prefix}/lib/liblinphone/plugins"
+AC_DEFINE_UNQUOTED(LINPHONE_PLUGINS_DIR, "${package_prefix}/lib/liblinphone/plugins" ,[path of liblinphone plugins, not mediastreamer2 plugins])
+LINPHONE_PLUGINS_DIR="${package_prefix}/lib/liblinphone/plugins"
 AC_SUBST(LINPHONE_PLUGINS_DIR)
 
 AC_ARG_ENABLE(external-ortp,
