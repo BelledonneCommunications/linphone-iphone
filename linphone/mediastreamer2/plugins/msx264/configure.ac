@@ -27,6 +27,8 @@ case $target_os in
 	;;
 esac
 
+AM_CONDITIONAL(BUILD_WIN32, test x$mingw_found = xyes)
+
 if test "$mingw_found" = "yes" ; then
 	AC_MSG_NOTICE([Hacking libtool to work with mingw...])
 	sed -e 's/\*\" \$a_deplib \"\*/\*/' < ./libtool > libtool.tmp
@@ -64,26 +66,27 @@ AC_ARG_ENABLE(hacked-x264,
 )
 
 dnl test for ffmpeg presence
-PKG_CHECK_MODULES(FFMPEG, [libavcodec >= 50.0.0 ],ffmpeg_found=yes , ffmpeg_found=no)
+PKG_CHECK_MODULES(LIBAVCODEC, [libavcodec >= 50.0.0 ],ffmpeg_found=yes , ffmpeg_found=no)
 dnl workaround for debian...
-PKG_CHECK_MODULES(FFMPEG, [libavcodec >= 0d.50.0.0 ], ffmpeg_found=yes, ffmpeg_found=no)
+PKG_CHECK_MODULES(LIBAVCODEC, [libavcodec >= 0d.50.0.0 ], ffmpeg_found=yes, ffmpeg_found=no)
 if test x$ffmpeg_found = xno ; then
 	AC_MSG_ERROR([Could not find ffmpeg headers and library. This is mandatory for video support])
 fi
 
+PKG_CHECK_MODULES(LIBSWSCALE, [libswscale >= 0.7.0])
+
+
 dnl check for new/old ffmpeg header file layout
 CPPFLAGS_save=$CPPFLAGS
-CPPFLAGS=$FFMPEG_CFLAGS
+CPPFLAGS=$LIBAVCODEC_CFLAGS
 AC_CHECK_HEADERS(libavcodec/avcodec.h)
 CPPFLAGS=$CPPFLAGS_save
 
-CFLAGS="$CFLAGS \$(MEDIASTREAMER_CFLAGS) \$(FFMPEG_CFLAGS)"
 if test "$hacked_x264" = "yes" ; then 
-	AC_MSG_WARN([Trying to compile with multislicing patched version of X264])
+	AC_MSG_NOTICE([Trying to compile with multislicing patched version of X264])
 	CFLAGS="$CFLAGS -DHACKED_X264"
 fi
 
-LIBS="$LIBS \$(X264_LIBS) "
 LDFLAGS="$LDFLAGS -rdynamic "
 
 dnl define path of plugins:

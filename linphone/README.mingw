@@ -38,7 +38,7 @@ make zip
 #build plugins
 cd mediastreamer2/plugins/msx264
 ./autogen.sh
-PKG_CONFIG_PATH=/opt/linphone/lib/pkgconfig ./configure --prefix=/opt/linphone --enable-shared --disable-static 
+PKG_CONFIG_PATH=/opt/linphone/lib/pkgconfig ./configure --prefix=/opt/linphone --enable-shared --disable-static --enable-hacked-x264
 make
 #make a binary zip of this plugin
 make zip

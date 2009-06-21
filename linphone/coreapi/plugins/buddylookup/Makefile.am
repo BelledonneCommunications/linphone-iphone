@@ -2,7 +2,7 @@ SUBDIRS=src
 
 
 
-INSTALLDIR=$(shell cd $(top_builddir) && pwd)/buddylookup-install
+INSTALLDIR=$(shell cd $(top_builddir) && pwd)/$(PACKAGE)-install
 ZIPFILE=$(shell cd $(top_builddir) && pwd)/$(PACKAGE)-win32-$(VERSION).zip
 ZIP_EXCLUDED=include 
 
@@ -17,5 +17,5 @@ zip:
 	zip -r $(ZIPFILE) *
 
 clean-local:
-	rm -rf buddylookup-install
+	rm -rf $(PACKAGE)-install
 	rm $(PACKAGE)-win32-$(VERSION).zip

@@ -18,7 +18,7 @@ EXTRA_DIST = config.rpath  BUGS linphone.kdevprj \
 				intltool-merge.in	\
 				intltool-update.in \
 				README.arm \
-				README.win32 \
+				README.mingw \
 				autogen.sh \
 				linphone.spec.in linphone.spec
 ACLOCAL_FLAGS=-I$(top_srcdir)/m4
