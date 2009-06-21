@@ -45,9 +45,10 @@ linphone_3_LDADD=$(top_builddir)/oRTP/src/libortp.la \
 
 if BUILD_WIN32
 linphone_3_LDADD+=-lwininet
-endif
-
+linphone_3_LDFLAGS=-Wl,--export-all-symbols
+else
 linphone_3_LDFLAGS=-export-dynamic
+endif
 
 gladedir=$(datadir)/linphone
 glade_DATA=$(GLADE_FILES) $(PIXMAPS)

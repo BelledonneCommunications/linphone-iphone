@@ -74,7 +74,7 @@ AM_GNU_GETTEXT([external])
 else
 AC_DEFINE(ENABLE_NLS,1,[Tells whether localisation is possible])
 AC_DEFINE(HAVE_GETTEXT,1,[Tells wheter localisation is possible])
-LIBS="$LIBS -lintl"
+LIBS="$LIBS -L/usr/local/lib -lintl"
 fi
 
 GETTEXT_PACKAGE=linphone
@@ -309,8 +309,12 @@ AC_CHECK_PROG(have_sgmltools,sgmltools, yes, no)
 AM_CONDITIONAL(ENABLE_MANUAL, test x$have_sgmltools$build_manual = xyesyes )
 
 dnl for external use of linphone libs
-LINPHONE_CFLAGS="-I${includedir} -I${includedir}/linphone -I${includedir}/ortp "
+LINPHONE_CFLAGS="-I${includedir} -I${includedir}/linphone  "
 LINPHONE_LIBS="-L${libdir}  -llinphone"
+
+if test x$mingw_found = xyes ; then
+	LINPHONE_LIBS="$LINPHONE_LIBS $OSIP_LIBS"
+fi
 AC_SUBST(LINPHONE_CFLAGS)
 AC_SUBST(LINPHONE_LIBS)
 

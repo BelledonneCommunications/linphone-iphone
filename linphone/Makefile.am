@@ -55,6 +55,7 @@ zip:
 	rm -rf $(INSTALLDIR)
 	mkdir -p $(INSTALLDIR)
 	make install DESTDIR=$(INSTALLDIR)
-	cd $(INSTALLDIR)/$(prefix) && zip -r $(ZIPFILE) *
+	cd $(INSTALLDIR)/$(prefix) && rm -rf $(ZIP_EXCLUDED) && \
+	zip -r $(ZIPFILE) *
 
 	

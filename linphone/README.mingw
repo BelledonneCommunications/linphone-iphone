@@ -27,21 +27,28 @@ export PERL="/c/Perl/bin/perl"
 export INTLTOOL_PERL="/c/Perl/bin/perl"
 #run autogen.sh after a git/svn checkout or update
 ./autogen.sh
-./configure --enable-shared --disable-static --with-osip=/usr/local
+./configure --prefix=/opt/linphone --enable-shared --disable-static --with-osip=/usr/local
 make
-make install DESTDIR=/c/linphone-install
+#will install to /opt/linphone, useful for compilation of plugins.
+make install
+#make a binary zip of linphone
+make zip
 
 
 #build plugins
 cd mediastreamer2/plugins/msx264
 ./autogen.sh
-PKG_CONFIG_PATH=/c/linphone-install/lib/pkgconfig ./configure --enable-shared --disable-static 
-make install DESTDIR=/c/msx264-install
+PKG_CONFIG_PATH=/opt/linphone/lib/pkgconfig ./configure --prefix=/opt/linphone --enable-shared --disable-static 
+make
+#make a binary zip of this plugin
+make zip
 
 cd coreapi/plugins/buddyloolup
 ./autogen.sh
-PKG_CONFIG_PATH=/c/linphone-install/lib/pkgconfig ./configure --enable-shared --disable-static 
-make install DESTDIR=/c/buddylookup-install
+PKG_CONFIG_PATH=/opt/linphone/lib/pkgconfig ./configure --prefix=/opt/linphone --enable-shared --disable-static 
+make
+#make a binary zip of this plugin
+make zip
 
 
 ******************************************************
