@@ -14,26 +14,25 @@ Software to install
 
 
 Building
+********
 
-WARNING: During the build, windows might slow down suddenly. Using ctl+alt+del to start the windows system monitor, you might see a process 'LVpSRV.exe' or something like this that eats 90% of cpu. Kill it. Don't know what it is, but once killed, windows runs normally.
-
-
-Building
-
-WARNING: During the build, windows might slow down suddenly. Using ctl+alt+del to start the windows system monitor, you might see a process 'LVpSRV.exe' or something like this that eats 90% of cpu. Kill it. Don't know what it is, but once killed, windows runs normally.
+WARNING: During the build, windows might slow down suddenly. Using ctl+alt+del to start the windows system monitor,
+ you might see a process 'LVpSRV.exe' or something like this that eats 90% of cpu.
+Kill it. Don't know what it is, but once killed, windows runs normally.
 
 #use ActiveState perl instead of mingw perl
 export PERL="/c/Perl/bin/perl"
 export INTLTOOL_PERL="/c/Perl/bin/perl"
 #run autogen.sh after a git/svn checkout or update
 ./autogen.sh
-./configure --prefix=/opt/linphone --enable-shared --disable-static --with-osip=/usr/local
+./configure --prefix=/opt/linphone --enable-shared --disable-static --with-osip=/usr/local --with-gsm=/usr/local
 make
 #will install to /opt/linphone, useful for compilation of plugins.
 make install
 #make a binary zip of linphone
 make zip
-
+#additionally you can make binary installer if you have Inno Setup 5 installed in its default path
+make setup.exe
 
 #build plugins
 cd mediastreamer2/plugins/msx264

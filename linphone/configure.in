@@ -376,6 +376,7 @@ share/ja/Makefile
 share/cs/Makefile
 share/linphone.pc
 linphone.spec
+linphone.iss
 ])
 
 echo "Linphone build configuration ended."

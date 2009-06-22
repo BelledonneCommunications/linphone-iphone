@@ -672,8 +672,8 @@ void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vtable, co
 	rtp_profile_set_payload(&av_profile,98,linphone_h263_1998);
 
 	linphone_h263_old=payload_type_clone(&payload_type_h263);
-    payload_type_set_recv_fmtp(linphone_h263_old,"QCIF=2");
-    rtp_profile_set_payload(&av_profile,34,linphone_h263_old);
+	payload_type_set_recv_fmtp(linphone_h263_old,"QCIF=2");
+ 	rtp_profile_set_payload(&av_profile,34,linphone_h263_old);
 
 	linphone_mp4v_es=payload_type_clone(&payload_type_mp4v);
 	payload_type_set_recv_fmtp(linphone_mp4v_es,"profile-level-id=3");
