@@ -10,7 +10,7 @@ else
 	AUTOMAKE=automake-${AM_VERSION}
 fi
 
-echo "Generating build scripts in mediastreamer..."
+echo "Generating build scripts in buddylookup..."
 set -x
 libtoolize --copy --force
 autoheader

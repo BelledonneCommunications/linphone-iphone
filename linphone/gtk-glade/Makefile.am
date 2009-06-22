@@ -43,11 +43,17 @@ linphone_3_LDADD=$(top_builddir)/oRTP/src/libortp.la \
 			$(LIBGTK_LIBS) $(INTLLIBS) \
 			$(LIBGLADE_LIBS)
 
-if BUILD_WIN32
-linphone_3_LDADD+=-lwininet
-endif
 
+if BUILD_WIN32
+
+linphone.res:	linphone.rc linphone.ico
+	windres linphone.rc -O coff -o linphone.res
+
+linphone_3_LDADD+=linphone.res -lwininet
+linphone_3_LDFLAGS=-Wl,--export-all-symbols -mwindows
+else
 linphone_3_LDFLAGS=-export-dynamic
+endif
 
 gladedir=$(datadir)/linphone
 glade_DATA=$(GLADE_FILES) $(PIXMAPS)

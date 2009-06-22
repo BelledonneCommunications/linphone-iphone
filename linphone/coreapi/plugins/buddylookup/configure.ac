@@ -9,6 +9,12 @@ AM_INIT_AUTOMAKE([tar-ustar])
 
 AC_CANONICAL_SYSTEM
 
+case $target_os in
+	*mingw*)
+		mingw_found=yes
+	;;
+esac
+
 AC_MSG_CHECKING([warning make an error on compilation])
 AC_ARG_ENABLE(strict,
 [  --enable-strict       Enable error on compilation warning [default=yes]],
@@ -26,8 +32,8 @@ AC_PROG_LIBTOOL
 
 
 # Checks for libraries.
-PKG_CHECK_MODULES(LIBSOUP, libsoup-2.4 >= 2.4.0)
 
+PKG_CHECK_MODULES(LIBSOUP, libsoup-2.4 >= 2.4.0)
 PKG_CHECK_MODULES(LIBLINPHONE, linphone >= 3.0.0)
 
 LINPHONE_PLUGINS_DIR="\$(libdir)/liblinphone/plugins/"
@@ -47,6 +53,8 @@ LDFLAGS="$LDFLAGS -rdynamic "
 		CFLAGS="$CFLAGS -Werror "
 	fi
 fi
+
+AM_CONDITIONAL(BUILD_WIN32, test x$mingw_found = xyes)
 
 AC_OUTPUT(
 Makefile

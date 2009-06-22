@@ -19,13 +19,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
-#else
-#define PACKAGE_DATA_DIR "./"
-
-#ifndef LINPHONE_VERSION
-#define LINPHONE_VERSION "3.1.2-20090520"
-#endif
-
 #endif
 
 #include <gtk/gtk.h>

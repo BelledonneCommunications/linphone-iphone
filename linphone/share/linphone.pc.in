@@ -3,7 +3,7 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
 
-
+Requires: mediastreamer ortp
 Name: liblinphone
 Description: All in one linphone libs.
 Version: @VERSION@

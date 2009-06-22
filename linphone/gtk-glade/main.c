@@ -31,14 +31,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <sys/stat.h>
 #include <unistd.h>
 
-#ifndef GETTEXT_PACKAGE
-#define GETTEXT_PACKAGE "linphone"
-#endif
-
-#ifndef PACKAGE_LOCALE_DIR
-#define PACKAGE_LOCALE_DIR "share/locale/"
-#endif
-
 #define LINPHONE_ICON "linphone2.png"
 
 const char *this_program_ident_string="linphone_ident_string=" LINPHONE_VERSION;
