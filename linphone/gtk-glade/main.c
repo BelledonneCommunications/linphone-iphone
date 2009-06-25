@@ -420,8 +420,8 @@ static void completion_add_text(GtkEntry *entry, const char *text){
 }
 
 static void linphone_gtk_call_terminated(GtkWidget *mw){
-	gtk_widget_hide(linphone_gtk_get_widget(mw,"terminate_call"));
-	gtk_widget_show(linphone_gtk_get_widget(mw,"start_call"));
+	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"terminate_call"),FALSE);
+	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"start_call"),TRUE);
 	g_object_set_data(G_OBJECT(mw),"incoming_call",NULL);
 }
 
@@ -434,8 +434,8 @@ gboolean check_call_active(){
 }
 
 static void linphone_gtk_call_started(GtkWidget *mw){
-	gtk_widget_hide(linphone_gtk_get_widget(mw,"start_call"));
-	gtk_widget_show(linphone_gtk_get_widget(mw,"terminate_call"));
+	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"start_call"),FALSE);
+	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"terminate_call"),TRUE);
 	g_timeout_add(250,(GSourceFunc)check_call_active,NULL);
 }
 
@@ -811,8 +811,8 @@ static void linphone_gtk_configure_main_window(){
 	if (!config_loaded){
 		title=linphone_gtk_get_ui_config("title",NULL);
 		home=linphone_gtk_get_ui_config("home","http://www.linphone.org");
-		start_call_icon=linphone_gtk_get_ui_config("start_call_icon",NULL);
-		stop_call_icon=linphone_gtk_get_ui_config("stop_call_icon",NULL);
+		start_call_icon=linphone_gtk_get_ui_config("start_call_icon","green.png");
+		stop_call_icon=linphone_gtk_get_ui_config("stop_call_icon","red.png");
 		config_loaded=TRUE;
 	}
 	linphone_gtk_configure_window(w,"main_window");
