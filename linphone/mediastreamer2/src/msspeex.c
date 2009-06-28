@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <malloc.h> /* for alloca */
 #endif
 
-typedef struct EncState{
+typedef struct SpeexEncState{
 	int rate;
 	int bitrate;
 	int maxbitrate;
@@ -37,16 +37,16 @@ typedef struct EncState{
 	void *state;
 	uint32_t ts;
 	MSBufferizer *bufferizer;
-} EncState;
+} SpeexEncState;
 
 static void enc_init(MSFilter *f){
-	EncState *s=(EncState *)ms_new(EncState,1);
+	SpeexEncState *s=(SpeexEncState *)ms_new(SpeexEncState,1);
 	s->rate=8000;
 	s->bitrate=-1;
 	s->maxbitrate=-1;
 	s->ptime=0;
-	s->mode=0;
-	s->vbr=1;
+	s->mode=-1;
+	s->vbr=0;
 	s->cng=0;
 	s->frame_size=0;
 	s->state=0;
@@ -56,7 +56,7 @@ static void enc_init(MSFilter *f){
 }
 
 static void enc_uninit(MSFilter *f){
-	EncState *s=(EncState*)f->data;
+	SpeexEncState *s=(SpeexEncState*)f->data;
 	if (s==NULL)
 		return;
 	ms_bufferizer_destroy(s->bufferizer);
@@ -66,7 +66,7 @@ static void enc_uninit(MSFilter *f){
 }
 
 static void enc_preprocess(MSFilter *f){
-	EncState *s=(EncState*)f->data;
+	SpeexEncState *s=(SpeexEncState*)f->data;
 	const SpeexMode *mode=NULL;
 	int _mode=0;
 
@@ -105,7 +105,7 @@ static void enc_preprocess(MSFilter *f){
 		int vad=1;
 		/* VAD */
 		speex_encoder_ctl (s->state, SPEEX_SET_VAD, &vad);
-        	speex_encoder_ctl (s->state, SPEEX_SET_DTX, &vad);
+		speex_encoder_ctl (s->state, SPEEX_SET_DTX, &vad);
 	}
 	else if (s->cng==1)
 	{
@@ -113,77 +113,67 @@ static void enc_preprocess(MSFilter *f){
 	}
 
 	if (s->rate==8000){
-		if (s->mode!=0){/* mode is set*/
-			if (s->mode<=0 || s->mode>=9)
-				s->mode = 3; /* default mode */
-	
-			if (s->mode==1)
-				s->bitrate = 2150;
-			else if (s->mode==2)
-				s->bitrate = 5950;
-			else if (s->mode==3)
-				s->bitrate = 8000;
-			else if (s->mode==4)
-				s->bitrate = 11000;
-			else if (s->mode==5)
-				s->bitrate = 15000;
-			else if (s->mode==6)
-				s->bitrate = 18200;
-			else if (s->mode==7)
-				s->bitrate = 24600;
-			else if (s->mode==8)
-				s->bitrate = 3950;
-	
-			if (s->bitrate!=-1){
-				if (speex_encoder_ctl(s->state,SPEEX_SET_BITRATE,&s->bitrate)!=0){
-					ms_error("Could not set bitrate %i to speex encoder.",s->bitrate);
-				}
+		//+------+---------------+-------------+
+		//| mode | Speex quality |   bit-rate  |
+		//+------+---------------+-------------+
+		//|   1  |       0       | 2.15 kbit/s |
+		//|   2  |       2       | 5.95 kbit/s |
+		//|   3  |     3 or 4    | 8.00 kbit/s |
+		//|   4  |     5 or 6    | 11.0 kbit/s |
+		//|   5  |     7 or 8    | 15.0 kbit/s |
+		//|   6  |       9       | 18.2 kbit/s |
+		//|   7  |      10       | 24.6 kbit/s |
+		//|   8  |       1       | 3.95 kbit/s |
+		//+------+---------------+-------------+
+		if (s->mode<=0 || s->mode>8)
+			s->mode = 3; /* default mode */
+
+		if (s->mode==1)
+			s->bitrate = 2150;
+		else if (s->mode==2)
+			s->bitrate = 5950;
+		else if (s->mode==3)
+			s->bitrate = 8000;
+		else if (s->mode==4)
+			s->bitrate = 11000;
+		else if (s->mode==5)
+			s->bitrate = 15000;
+		else if (s->mode==6)
+			s->bitrate = 18200;
+		else if (s->mode==7)
+			s->bitrate = 24600;
+		else if (s->mode==8)
+			s->bitrate = 3950;
+
+		if (s->bitrate!=-1){
+			if (speex_encoder_ctl(s->state,SPEEX_SET_BITRATE,&s->bitrate)!=0){
+				ms_error("Could not set bitrate %i to speex encoder.",s->bitrate);
 			}
 		}
 	}
-	else if (s->rate==16000){
-		if (s->mode!=0){
-			int q=0;
-			s->bitrate = -1; /* 28000; */
-			if (s->mode<=0 || s->mode>=8)
-				s->mode = 6; /* default mode */
-			/* no table exist for wide and ultra:
-			From libspeex/mode.c, those values seems to make sense... */
-			if (s->mode<=5)
-				q=5;
-			else if (s->mode==5)
-				q=6;
-			else if (s->mode==6)
-				q=8;
-			else if (s->mode>=7)
-				q=10;
-
-			if (speex_encoder_ctl(s->state,SPEEX_SET_QUALITY,&q)!=0){
-				ms_error("Could not set quality %i to speex encoder.",q);
-			}
-		}
-	}
-	else
-	{
-		if (s->mode!=0){
-			int q=0;
-			s->bitrate = -1; /* 28000; */
-			if (s->mode<=0 || s->mode>=8)
-				s->mode = 6; /* default mode */
-			/* no table exist for wide and ultra:
-			From libspeex/mode.c, those values seems to make sense... */
-			if (s->mode<=5)
-				q=5;
-			else if (s->mode==5)
-				q=6;
-			else if (s->mode==6)
-				q=8;
-			else if (s->mode>=7)
-				q=10;
-
-			if (speex_encoder_ctl(s->state,SPEEX_SET_QUALITY,&q)!=0){
-				ms_error("Could not set quality %i to speex encoder.",q);
-			}
+	else if (s->rate==16000 || s->rate==32000){
+		//+------+---------------+-------------------+------------------------+
+		//| mode | Speex quality | wideband bit-rate |     ultra wideband     |
+		//|      |               |                   |        bit-rate        |
+		//+------+---------------+-------------------+------------------------+
+		//|   0  |       0       |    3.95 kbit/s    |       5.75 kbit/s      |
+		//|   1  |       1       |    5.75 kbit/s    |       7.55 kbit/s      |
+		//|   2  |       2       |    7.75 kbit/s    |       9.55 kbit/s      |
+		//|   3  |       3       |    9.80 kbit/s    |       11.6 kbit/s      |
+		//|   4  |       4       |    12.8 kbit/s    |       14.6 kbit/s      |
+		//|   5  |       5       |    16.8 kbit/s    |       18.6 kbit/s      |
+		//|   6  |       6       |    20.6 kbit/s    |       22.4 kbit/s      |
+		//|   7  |       7       |    23.8 kbit/s    |       25.6 kbit/s      |
+		//|   8  |       8       |    27.8 kbit/s    |       29.6 kbit/s      |
+		//|   9  |       9       |    34.2 kbit/s    |       36.0 kbit/s      |
+		//|  10  |       10      |    42.2 kbit/s    |       44.0 kbit/s      |
+		//+------+---------------+-------------------+------------------------+
+		int q=0;
+		if (s->mode<0 || s->mode>10)
+			s->mode = 8; /* default mode */
+		q=s->mode;
+		if (speex_encoder_ctl(s->state,SPEEX_SET_QUALITY,&q)!=0){
+			ms_error("Could not set quality %i to speex encoder.",q);
 		}
 	}
 
@@ -204,7 +194,7 @@ static void enc_preprocess(MSFilter *f){
 }
 
 static void enc_process(MSFilter *f){
-	EncState *s=(EncState*)f->data;
+	SpeexEncState *s=(SpeexEncState*)f->data;
 	mblk_t *im;
 	int nbytes;
 	uint8_t *buf;
@@ -250,20 +240,20 @@ static void enc_process(MSFilter *f){
 }
 
 static void enc_postprocess(MSFilter *f){
-	EncState *s=(EncState*)f->data;
+	SpeexEncState *s=(SpeexEncState*)f->data;
 	speex_encoder_destroy(s->state);
 	s->state=NULL;
 }
 
 static int enc_set_sr(MSFilter *f, void *arg){
-	EncState *s=(EncState*)f->data;
+	SpeexEncState *s=(SpeexEncState*)f->data;
 	/* TODO: should be done with fmtp parameter */
 	s->rate=((int*)arg)[0];
 	return 0;
 }
 
 static int enc_set_br(MSFilter *f, void *arg){
-	EncState *s=(EncState*)f->data;
+	SpeexEncState *s=(SpeexEncState*)f->data;
 	s->maxbitrate=((int*)arg)[0];
 	return 0;
 }
@@ -271,29 +261,7 @@ static int enc_set_br(MSFilter *f, void *arg){
 static int enc_add_fmtp(MSFilter *f, void *arg){
 	char buf[64];
 	const char *fmtp=(const char *)arg;
-	EncState *s=(EncState*)f->data;
-
-	memset(buf, '\0', sizeof(buf));
-	fmtp_get_value(fmtp, "sr", buf, sizeof(buf));
-	if (buf[0]=='\0'){
-	}
-	else {
-		s->rate = atoi(buf);
-	}
-
-	memset(buf, '\0', sizeof(buf));
-	fmtp_get_value(fmtp, "ebw", buf, sizeof(buf));
-	if (buf[0]=='\0'){
-	}
-	else if (strstr(buf,"narrow")!=NULL){
-		s->rate = 8000;
-	}
-	else if (strstr(buf,"wide")!=NULL){
-		s->rate = 16000;
-	}
-	else if (strstr(buf,"ultra")!=NULL){
-		s->rate = 32000;
-	}
+	SpeexEncState *s=(SpeexEncState*)f->data;
 
 	memset(buf, '\0', sizeof(buf));
 	fmtp_get_value(fmtp, "vbr", buf, sizeof(buf));
@@ -317,33 +285,37 @@ static int enc_add_fmtp(MSFilter *f, void *arg){
 		s->cng=0;
 	}
 	else if (strstr(buf,"on")!=NULL){
-		s->vbr=1;
+		s->cng=1;
 	}
 
 	memset(buf, '\0', sizeof(buf));
 	fmtp_get_value(fmtp, "mode", buf, sizeof(buf));
-	if (buf[0]=='\0'){
+	if (buf[0]=='\0' || buf[1]=='\0'){
 	}
-	else if (strstr(buf,"any")!=NULL){
-		s->mode=10;
+	else if (buf[0]=='0' || (buf[0]=='"' && buf[1]=='0')){
+		s->mode=0;
+	}
+	else if (buf[0]=='"' && atoi(buf+1)>=0){
+		s->mode=atoi(buf+1);
+	}
+	else if (buf[0]!='"' && atoi(buf)>=0){
+		s->mode=atoi(buf);
 	}
 	else {
-		s->mode = atoi(buf);
-		if (s->mode<=0 || s->mode>=8)
-			s->mode = 3;
+		s->mode = -1; /* deault mode */
 	}
 	return 0;
 }
 
 static int enc_add_attr(MSFilter *f, void *arg){
 	const char *fmtp=(const char *)arg;
-	EncState *s=(EncState*)f->data;
+	SpeexEncState *s=(SpeexEncState*)f->data;
 	if (strstr(fmtp,"ptime:10")!=NULL){
 		s->ptime=20;
 	}else if (strstr(fmtp,"ptime:20")!=NULL){
 		s->ptime=20;
 	}else if (strstr(fmtp,"ptime:30")!=NULL){
-		s->ptime=40; /* not allowed */
+		s->ptime=40;
 	}else if (strstr(fmtp,"ptime:40")!=NULL){
 		s->ptime=40;
 	}else if (strstr(fmtp,"ptime:50")!=NULL){
