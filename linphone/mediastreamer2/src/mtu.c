@@ -180,6 +180,10 @@ int ms_discover_mtu(const char *host){
 	err=getaddrinfo(host,port,&hints,&ai);
 	if (err!=0){
 		ms_error("getaddrinfo(): %s\n",gai_strerror(err));
+		err = close(sock);
+		if (err!=0)
+			ms_error("close(): %s", strerror(err));
+
 		return -1;
 	}
 	sock=socket(PF_INET,SOCK_DGRAM,0);
@@ -189,21 +193,30 @@ int ms_discover_mtu(const char *host){
 	err=setsockopt(sock,IPPROTO_IP,IP_MTU_DISCOVER,&mtu,optlen);
 	if (err!=0){
 		ms_error("setsockopt(): %s",strerror(errno));
+		err = close(sock);
+		if (err!=0)
+			ms_error("close(): %s", strerror(errno));
 		return -1;
 	}
 	err=connect(sock,ai->ai_addr,ai->ai_addrlen);
 	freeaddrinfo(ai);
 	if (err!=0){
 		ms_error("connect(): %s",strerror(errno));
+		err = close(sock);
+		if (err !=0)
+			ms_error("close(): %s", strerror(errno));
 		return -1;
 	}
 	mtu=sizeof(buf);
 	do{
 		send(sock,buf,mtu,0);
-    usleep(500000);/*wait for an icmp message come back */
-    err=getsockopt(sock,IPPROTO_IP,IP_MTU,&new_mtu,&optlen);
+		usleep(500000);/*wait for an icmp message come back */
+		err=getsockopt(sock,IPPROTO_IP,IP_MTU,&new_mtu,&optlen);
 		if (err!=0){
 			ms_error("getsockopt(): %s",strerror(errno));
+			err = close(sock);
+			if (err!=0)
+				ms_error("close(): %s", strerror(errno));
 			return -1;
 		}else{
 			ms_message("Partial MTU discovered : %i",new_mtu);
@@ -214,6 +227,10 @@ int ms_discover_mtu(const char *host){
 	}while(retry<10);
 	
 	ms_message("mtu to %s is %i",host,mtu);
+
+	err = close(sock);
+	if (err!=0)
+		ms_error("close() %s", strerror(errno));
 	return mtu;
 }
 
