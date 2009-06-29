@@ -1597,7 +1597,7 @@ mblk_t *ms_load_jpeg_as_yuv(const char *jpgpath, MSVideoSize *reqsize){
 			m=ms_load_generate_yuv(reqsize);
 			return m;
 		}
-		jpgbuf=(uint8_t*)alloca(statbuf.st_size);
+		jpgbuf=(uint8_t*)ms_malloc0(statbuf.st_size);
 		if (jpgbuf==NULL)
 		{
 #if !defined(_MSC_VER)
@@ -1615,6 +1615,7 @@ mblk_t *ms_load_jpeg_as_yuv(const char *jpgpath, MSVideoSize *reqsize){
 		_read(fd,jpgbuf,statbuf.st_size);
 #endif
 		m=jpeg2yuv(jpgbuf,statbuf.st_size,reqsize);
+		ms_free(jpgbuf);
 	}else{
 		m=ms_load_generate_yuv(reqsize);
 		ms_error("Cannot load %s",jpgpath);
