@@ -180,10 +180,6 @@ int ms_discover_mtu(const char *host){
 	err=getaddrinfo(host,port,&hints,&ai);
 	if (err!=0){
 		ms_error("getaddrinfo(): %s\n",gai_strerror(err));
-		err = close(sock);
-		if (err!=0)
-			ms_error("close(): %s", strerror(err));
-
 		return -1;
 	}
 	sock=socket(PF_INET,SOCK_DGRAM,0);
