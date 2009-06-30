@@ -125,7 +125,9 @@ int ms_ticker_detach(MSTicker *ticker,MSFilter *f);
 void ms_ticker_destroy(MSTicker *ticker);
 
 /**
- * Destroy a ticker.
+ * Override MSTicker's time function.
+ * This can be used to control the ticker from an external time provider, for example the 
+ * clock of a sound card.
  *
  * @param ticker  A #MSTicker object.
  * @param func    A replacement method for calculating "current time"
