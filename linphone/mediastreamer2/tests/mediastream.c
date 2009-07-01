@@ -122,8 +122,10 @@ const char *usage="mediastream --local <port> --remote <ip:port> --payload <payl
 								"[ --jitter <miliseconds>]\n"
 								"[ --width <pixels>]\n"
 								"[ --height <pixels> ]\n"
-								"[ --bitrate <bits per seconds>]\n";
-static void run_media_streams(int localport, const char *remote_ip, int remoteport, int payload, const char *fmtp, int jitter, bool_t ec, int bitrate, MSVideoSize vs);
+								"[ --bitrate <bits per seconds>]\n"
+								"[ --ec (enable echo canceller)]\n"
+								"[ --agc (enable automatic gain control)]\n";
+static void run_media_streams(int localport, const char *remote_ip, int remoteport, int payload, const char *fmtp, int jitter, bool_t ec, int bitrate, MSVideoSize vs, bool_t agc);
 
 
 int main(int argc, char * argv[])
@@ -136,6 +138,7 @@ int main(int argc, char * argv[])
 	int bitrate=0;
 	MSVideoSize vs;
 	bool_t ec=FALSE;
+	bool_t agc=FALSE;
 	/*create the rtp session */
 	ortp_init();
 	ortp_set_log_level_mask(ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
@@ -188,14 +191,16 @@ int main(int argc, char * argv[])
 			vs.height=atoi(argv[i]);
 		}else if (strcmp(argv[i],"--ec")==0){
 			ec=TRUE;
+		}else if (strcmp(argv[i],"--agc")==0){
+			agc=TRUE;
 		}
 	}
 
-	run_media_streams(localport,ip,remoteport,payload,fmtp,jitter,ec,bitrate,vs);
+	run_media_streams(localport,ip,remoteport,payload,fmtp,jitter,ec,bitrate,vs, agc);
 	return 0;
 }
 
-void run_media_streams(int localport,  const char *remote_ip, int remoteport, int payload, const char *fmtp, int jitter, bool_t ec, int bitrate, MSVideoSize vs)
+void run_media_streams(int localport,  const char *remote_ip, int remoteport, int payload, const char *fmtp, int jitter, bool_t ec, int bitrate, MSVideoSize vs, bool_t agc)
 {
 	AudioStream *audio=NULL;
 #ifdef VIDEO_ENABLED
@@ -218,7 +223,13 @@ void run_media_streams(int localport,  const char *remote_ip, int remoteport, in
 
 	if (pt->type!=PAYLOAD_VIDEO){
 		printf("Starting audio stream.\n");
-		audio=audio_stream_start(profile,localport,remote_ip,remoteport,payload,jitter, ec);
+		MSSndCardManager *manager=ms_snd_card_manager_get();
+		audio=audio_stream_new(localport,ms_is_ipv6(remote_ip));
+		audio_stream_enable_automatic_gain_control(audio,agc);
+		audio_stream_start_now(audio,profile,remote_ip,remoteport,remoteport+1,payload,jitter,
+			ms_snd_card_manager_get_default_playback_card(manager),
+			ms_snd_card_manager_get_default_capture_card(manager),
+			 ec);
 		if (audio) session=audio->session;
 	}else{
 #ifdef VIDEO_ENABLED

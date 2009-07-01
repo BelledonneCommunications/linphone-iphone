@@ -17,8 +17,16 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#ifdef HAVE_CONFIG_H
+#include "mediastreamer-config.h"
+#endif
+
 #include "mediastreamer2/msvolume.h"
 #include <math.h>
+
+#ifdef HAVE_SPEEXDSP
+#include <speex/speex_preprocess.h>
+#endif
 
 static const float max_e=32767*32767;
 static const float coef=0.1;
@@ -36,7 +44,14 @@ typedef struct Volume{
 	float thres;
 	float force;
 	MSFilter *peer;
+#ifdef HAVE_SPEEXDSP
+	SpeexPreprocessState *speex_pp;
+#endif
+	int sample_rate;
+	int nsamples;
+	MSBufferizer *buffer;
 	bool_t ea_active;
+	bool_t agc_enabled;
 }Volume;
 
 static void volume_init(MSFilter *f){
@@ -49,10 +64,19 @@ static void volume_init(MSFilter *f){
 	v->thres=noise_thres;
 	v->force=en_weight;
 	v->peer=NULL;
+	v->agc_enabled=FALSE;
+	v->buffer=ms_bufferizer_new();
+	v->sample_rate=8000;
+	v->nsamples=80;
+#ifdef HAVE_SPEEXDSP
+	v->speex_pp=NULL;
+#endif
 	f->data=v;
 }
 
 static void volume_uninit(MSFilter *f){
+	Volume *v=(Volume*)f->data;
+	ms_bufferizer_destroy(v->buffer);
 	ms_free(f->data);
 }
 
@@ -63,12 +87,29 @@ static int volume_get(MSFilter *f, void *arg){
 	return 0;
 }
 
+static int volume_set_sample_rate(MSFilter *f, void *arg){
+	Volume *v=(Volume*)f->data;
+	v->sample_rate=*(int*)arg;
+	return 0;
+}
+
 static int volume_get_linear(MSFilter *f, void *arg){
 	float *farg=(float*)arg;
 	Volume *v=(Volume*)f->data;
 	*farg=(v->energy+1)/max_e;
 	return 0;
 }
+#ifdef HAVE_SPEEXDSP
+static void volume_agc_process(Volume *v, mblk_t *om){
+	speex_preprocess_run(v->speex_pp,(int16_t*)om->b_rptr);
+}
+#else
+
+static void volume_agc_process(Volume *v, mblk_t *om){
+}
+
+#endif
+
 
 static inline float compute_gain(float static_gain, float energy, float weight){
 	float ret=static_gain*(1 - (energy*weight));
@@ -129,6 +170,12 @@ static int volume_set_peer(MSFilter *f, void *arg){
 	return 0;
 }
 
+static int volume_set_agc(MSFilter *f, void *arg){
+	Volume *v=(Volume*)f->data;
+	v->agc_enabled=*(int*)arg;
+	return 0;
+}
+
 static int volume_set_ea_threshold(MSFilter *f, void*arg){
 	Volume *v=(Volume*)f->data;
 	float val=*(float*)arg;
@@ -162,30 +209,88 @@ static inline int16_t saturate(float val){
 	return (val>32767) ? 32767 : ( (val<-32767) ? -32767 : val);
 }
 
-static void volume_process(MSFilter *f){
-	mblk_t *m;
+static float update_energy(int16_t *signal, int numsamples, float last_energy_value){
+	int i;
+	float en=last_energy_value;
+	for (i=0;i<numsamples;++i){
+		float s=(float)signal[i];
+		en=(s*s*coef) + (1.0-coef)*en;
+	}
+	return en;
+}
+
+static void apply_gain(mblk_t *m, float gain){
 	int16_t *sample;
-	Volume *v=(Volume*)f->data;
-	float en=v->energy;
-	while((m=ms_queue_get(f->inputs[0]))!=NULL){
-		for (	sample=(int16_t*)m->b_rptr;
-			sample<(int16_t*)m->b_wptr;
-			++sample){
-			float s=*sample;
-			en=(s*s*coef) + (1.0-coef)*en;
-		}
-		if (v->peer){
-			volume_echo_avoider_process(v);	
-		}
-		if (v->gain!=1){
-			for (	sample=(int16_t*)m->b_rptr;
+	for (	sample=(int16_t*)m->b_rptr;
 				sample<(int16_t*)m->b_wptr;
 				++sample){
-				float s=*sample;
-				*sample=saturate(s*v->gain);
+		float s=*sample;
+		*sample=saturate(s*gain);
+	}
+}
+
+static void volume_preprocess(MSFilter *f){
+	Volume *v=(Volume*)f->data;
+	/*process agc by chunks of 10 ms*/
+	v->nsamples=(int)(0.01*(float)v->sample_rate);
+	if (v->agc_enabled){
+		ms_message("AGC is enabled.");
+#ifdef HAVE_SPEEXDSP
+		if (v->speex_pp==NULL){
+			int tmp=1;
+			v->speex_pp=speex_preprocess_state_init(v->nsamples,v->sample_rate);
+			if (speex_preprocess_ctl(v->speex_pp,SPEEX_PREPROCESS_SET_AGC,&tmp)==-1){
+				ms_warning("Speex AGC is not available.");
 			}
+			tmp=0;
+			speex_preprocess_ctl(v->speex_pp,SPEEX_PREPROCESS_SET_VAD,&tmp);
+			speex_preprocess_ctl(v->speex_pp,SPEEX_PREPROCESS_SET_DENOISE,&tmp);
+			speex_preprocess_ctl(v->speex_pp,SPEEX_PREPROCESS_SET_DEREVERB,&tmp);
 		}
-		ms_queue_put(f->outputs[0],m);
+#else
+		ms_error("No AGC possible, mediastreamer2 was compiled without libspeexdsp.");
+#endif
+	}
+}
+
+
+
+static void volume_process(MSFilter *f){
+	mblk_t *m;
+	Volume *v=(Volume*)f->data;
+	float en=v->energy;
+
+	if (v->agc_enabled){
+		mblk_t *om;
+		int nbytes=v->nsamples*2;
+		ms_bufferizer_put_from_queue(v->buffer,f->inputs[0]);
+		while(ms_bufferizer_get_avail(v->buffer)>=nbytes){
+			om=allocb(nbytes,0);
+			ms_bufferizer_read(v->buffer,om->b_wptr,nbytes);
+			om->b_wptr+=nbytes;
+			en=update_energy((int16_t*)om->b_rptr,om->b_wptr-om->b_rptr,en);
+			volume_agc_process(v,om);
+	
+			if (v->peer){
+				volume_echo_avoider_process(v);	
+			}
+			if (v->gain!=1){
+				apply_gain(om,v->gain);
+			}
+			ms_queue_put(f->outputs[0],om);
+		}
+	}else{
+		/*light processing: no agc. Work in place in the input buffer*/
+		while((m=ms_queue_get(f->inputs[0]))!=NULL){
+			en=update_energy((int16_t*)m->b_rptr,m->b_wptr-m->b_rptr,en);
+			if (v->peer){
+				volume_echo_avoider_process(v);	
+			}
+			if (v->gain!=1){
+				apply_gain(m,v->gain);
+			}
+			ms_queue_put(f->outputs[0],m);
+		}
 	}
 	v->energy=en;
 }
@@ -199,19 +304,22 @@ static MSFilterMethod methods[]={
 	{	MS_VOLUME_SET_EA_THRESHOLD , 	volume_set_ea_threshold	},
 	{	MS_VOLUME_SET_EA_SPEED	,	volume_set_ea_speed	},
 	{	MS_VOLUME_SET_EA_FORCE	, 	volume_set_ea_force	},
+	{	MS_FILTER_SET_SAMPLE_RATE,	volume_set_sample_rate	},
+	{	MS_VOLUME_ENABLE_AGC	,	volume_set_agc		},
 	{	0			,	NULL			}
 };
 
 #ifndef _MSC_VER
 MSFilterDesc ms_volume_desc={
 	.name="MSVolume",
-	.text=N_("A filter to make level measurements on 16 bits pcm audio stream"),
+	.text=N_("A filter that controls and measure sound volume"),
 	.id=MS_VOLUME_ID,
 	.category=MS_FILTER_OTHER,
 	.ninputs=1,
 	.noutputs=1,
 	.init=volume_init,
 	.uninit=volume_uninit,
+	.preprocess=volume_preprocess,
 	.process=volume_process,
 	.methods=methods
 };
@@ -219,7 +327,7 @@ MSFilterDesc ms_volume_desc={
 MSFilterDesc ms_volume_desc={
 	MS_VOLUME_ID,
 	"MSVolume",
-	N_("A filter to make level measurements on 16 bits pcm audio stream"),
+	N_("A filter that controls and measure sound volume"),
 	MS_FILTER_OTHER,
 	NULL,
 	1,

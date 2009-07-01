@@ -65,7 +65,7 @@ static mblk_t *jpeg2yuv(uint8_t *jpgbuf, int bufsize, MSVideoSize *reqsize){
 	ret->b_wptr=ret->b_datap->db_lim;
 	avpicture_fill(&dest,ret->b_rptr,PIX_FMT_YUV420P,reqsize->width,reqsize->height);
 	
-	sws_ctx=sws_getContext(av_context.width,av_context.height,PIX_FMT_YUV420P,
+	sws_ctx=sws_getContext(av_context.width,av_context.height,av_context.pix_fmt,
 		reqsize->width,reqsize->height,PIX_FMT_YUV420P,SWS_FAST_BILINEAR,
                 NULL, NULL, NULL);
 	if (sws_scale(sws_ctx,orig.data,orig.linesize,0,av_context.height,dest.data,dest.linesize)<0){

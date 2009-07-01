@@ -107,6 +107,7 @@ typedef struct sound_config
 	char *remote_ring;
 	bool_t ec;
 	bool_t ea;
+	bool_t agc;
 } sound_config_t;
 
 typedef struct codecs_config
@@ -712,6 +713,9 @@ bool_t linphone_core_echo_cancelation_enabled(LinphoneCore *lc);
 
 void linphone_core_enable_echo_limiter(LinphoneCore *lc, bool_t val);
 bool_t linphone_core_echo_limiter_enabled(const LinphoneCore *lc);
+
+void linphone_core_enable_agc(LinphoneCore *lc, bool_t val);
+bool_t linphone_core_agc_enabled(const LinphoneCore *lc);
 
 void linphone_core_set_presence_info(LinphoneCore *lc,int minutes_away,const char *contact,LinphoneOnlineStatus os);
 

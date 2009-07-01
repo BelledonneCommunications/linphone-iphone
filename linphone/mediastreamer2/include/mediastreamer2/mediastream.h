@@ -53,6 +53,7 @@ struct _AudioStream
 	EchoLimiterType el_type; /*use echo limiter: two MSVolume, measured input level controlling local output level*/
 	bool_t play_dtmfs;
 	bool_t use_gc;
+	bool_t use_agc;
 };
 
 #ifdef __cplusplus
@@ -104,6 +105,9 @@ void audio_stream_enable_echo_limiter(AudioStream *stream, EchoLimiterType type)
 
 /*enable gain control, to be done before start() */
 void audio_stream_enable_gain_control(AudioStream *stream, bool_t val);
+
+/*enable automatic gain control, to be done before start() */
+void audio_stream_enable_automatic_gain_control(AudioStream *stream, bool_t val);
 
 void audio_stream_set_mic_gain(AudioStream *stream, float gain);
 

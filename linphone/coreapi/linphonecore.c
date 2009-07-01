@@ -411,6 +411,8 @@ void sound_config_read(LinphoneCore *lc)
 
 	linphone_core_enable_echo_limiter(lc,
 		lp_config_get_int(lc->config,"sound","echolimiter",0));
+	linphone_core_enable_agc(lc,
+		lp_config_get_int(lc->config,"sound","agc",0));
 }
 
 void sip_config_read(LinphoneCore *lc)
@@ -1435,6 +1437,7 @@ void linphone_core_init_media_streams(LinphoneCore *lc){
 		}
 		
 	}
+	audio_stream_enable_automatic_gain_control(lc->audiostream,linphone_core_agc_enabled(lc));
 #ifdef VIDEO_ENABLED
 	if (lc->video_conf.display || lc->video_conf.capture)
 		lc->videostream=video_stream_new(linphone_core_get_video_port(lc),linphone_core_ipv6_enabled(lc));
@@ -1949,6 +1952,14 @@ void linphone_core_enable_echo_limiter(LinphoneCore *lc, bool_t val){
 
 bool_t linphone_core_echo_limiter_enabled(const LinphoneCore *lc){
 	return lc->sound_conf.ea;
+}
+
+void linphone_core_enable_agc(LinphoneCore *lc, bool_t val){
+	lc->sound_conf.agc=val;
+}
+
+bool_t linphone_core_agc_enabled(const LinphoneCore *lc){
+	return lc->sound_conf.agc;
 }
 
 
