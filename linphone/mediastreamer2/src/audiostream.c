@@ -220,6 +220,7 @@ int audio_stream_start_full(AudioStream *stream, RtpProfile *profile, const char
 	if (captcard!=NULL) stream->soundread=ms_snd_card_create_reader(captcard);
 	else {
 		stream->soundread=ms_filter_new(MS_FILE_PLAYER_ID);
+		stream->resampler=ms_filter_new(MS_RESAMPLE_ID);
 		if (infile!=NULL) audio_stream_play(stream,infile);
 	}
 	if (playcard!=NULL) stream->soundwrite=ms_snd_card_create_writer(playcard);
@@ -288,6 +289,8 @@ int audio_stream_start_full(AudioStream *stream, RtpProfile *profile, const char
 	/*sending graph*/
 	ms_connection_helper_start(&h);
 	ms_connection_helper_link(&h,stream->soundread,-1,0);
+	if (stream->resampler)
+		ms_connection_helper_link(&h,stream->resampler,0,0);
 	if (stream->ec)
 		ms_connection_helper_link(&h,stream->ec,1,1);
 	if (stream->volsend)
@@ -362,9 +365,16 @@ void audio_stream_set_rtcp_information(AudioStream *st, const char *cname, const
 
 void audio_stream_play(AudioStream *st, const char *name){
 	if (ms_filter_get_id(st->soundread)==MS_FILE_PLAYER_ID){
+		int from_rate=0, to_rate=0;
 		ms_filter_call_method_noarg(st->soundread,MS_FILE_PLAYER_CLOSE);
 		ms_filter_call_method(st->soundread,MS_FILE_PLAYER_OPEN,(void*)name);
 		ms_filter_call_method_noarg(st->soundread,MS_FILE_PLAYER_START);
+		ms_filter_call_method(st->soundread,MS_FILTER_GET_SAMPLE_RATE,&from_rate);
+		ms_filter_call_method(st->rtpsend,MS_FILTER_GET_SAMPLE_RATE,&to_rate);
+		if (st->resampler){
+			ms_filter_call_method(st->resampler,MS_FILTER_SET_SAMPLE_RATE,&from_rate);
+			ms_filter_call_method(st->resampler,MS_FILTER_SET_OUTPUT_SAMPLE_RATE,&to_rate);
+		}
 	}else{
 		ms_error("Cannot play file: the stream hasn't been started with"
 		" audio_stream_start_with_files");
@@ -437,6 +447,8 @@ void audio_stream_stop(AudioStream * stream)
 		/*dismantle the outgoing graph*/
 		ms_connection_helper_start(&h);
 		ms_connection_helper_unlink(&h,stream->soundread,-1,0);
+		if (stream->resampler!=NULL)
+			ms_connection_helper_unlink(&h,stream->resampler,0,0);
 		if (stream->ec!=NULL)
 			ms_connection_helper_unlink(&h,stream->ec,1,1);
 		if (stream->volsend!=NULL)

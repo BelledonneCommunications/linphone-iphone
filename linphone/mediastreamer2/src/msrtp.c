@@ -119,6 +119,12 @@ static int sender_set_relay_session_id(MSFilter *f, void*arg){
 	return 0;
 }
 
+static int sender_get_sr(MSFilter *f, void *arg){
+	SenderData *d = (SenderData *) f->data;
+	*(int*)arg=d->rate;
+	return 0;
+}
+
 /* the goal of that function is to return a absolute timestamp closest to real time, with respect of given packet_ts, which is a relative to an undefined origin*/
 static uint32_t get_cur_timestamp(MSFilter * f, uint32_t packet_ts)
 {
@@ -215,6 +221,7 @@ static MSFilterMethod sender_methods[] = {
 	{MS_RTP_SEND_SET_SESSION, sender_set_session},
 	{MS_RTP_SEND_SEND_DTMF, sender_send_dtmf},
 	{MS_RTP_SEND_SET_RELAY_SESSION_ID, sender_set_relay_session_id},
+	{MS_FILTER_GET_SAMPLE_RATE, sender_get_sr },
 	{0, NULL}
 };
 

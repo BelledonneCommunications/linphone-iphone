@@ -35,7 +35,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define MS_RTP_SEND_UNMUTE_MIC		MS_FILTER_METHOD_NO_ARG(MS_RTP_SEND_ID,4)
 
-#define MS_RTP_SEND_SET_RELAY_SESSION_ID	MS_FILTER_METHOD(MS_RTP_RECV_ID,5,const char *)
+#define MS_RTP_SEND_SET_RELAY_SESSION_ID	MS_FILTER_METHOD(MS_RTP_SEND_ID,5,const char *)
 
 
 extern MSFilterDesc ms_rtp_send_desc;

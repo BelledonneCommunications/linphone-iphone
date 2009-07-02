@@ -33,6 +33,10 @@
 #include <linphonecore.h>
 #include "linphonec.h"
 
+#ifndef WIN32
+#include <sys/wait.h>
+#endif
+
 /***************************************************************************
  *
  *  Forward declarations 
@@ -64,6 +68,7 @@ static int lpc_cmd_unregister(LinphoneCore *, char *);
 static int lpc_cmd_duration(LinphoneCore *lc, char *args);
 static int lpc_cmd_status(LinphoneCore *lc, char *args);
 static int lpc_cmd_ports(LinphoneCore *lc, char *args);
+static int lpc_cmd_speak(LinphoneCore *lc, char *args);
 
 /* Command handler helpers */
 static void linphonec_proxy_add(LinphoneCore *lc);
@@ -181,6 +186,11 @@ LPC_COMMAND commands[] = {
 	{ "ports", lpc_cmd_ports, "Network ports configuration", 
 			"'ports'  \t: prints current used ports.\n"
 			"'ports sip <port number>'\t: Sets the sip port.\n" },
+	{ "speak", lpc_cmd_speak, "Speak a sentence using espeak TTS engine",
+			"This feature is available only in file mode. (see 'help soundcard')\n"
+			"'speak <voice name> <sentence>'	: speak a text using the specified espeak voice.\n"
+			"Example for english voice: 'speak default Hello my friend !'"
+	},
 	{ (char *)NULL, (lpc_cmd_handler)NULL, (char *)NULL, (char *)NULL }
 };
 
@@ -1452,6 +1462,30 @@ static int lpc_cmd_ports(LinphoneCore *lc, char *args)
 		linphone_core_set_sip_port(lc,port);
 	}else return 0;
 
+	return 1;
+}
+
+static int lpc_cmd_speak(LinphoneCore *lc, char *args){
+#ifndef WIN32
+	char voice[64];
+	char *sentence;
+	char cl[128];
+	char *wavfile;
+	int status;
+	memset(voice,0,sizeof(voice));
+	sscanf(args,"%s63",voice);
+	sentence=args+strlen(voice);
+	wavfile=tempnam("/tmp/","linphonec-espeak-");
+	snprintf(cl,sizeof(cl),"espeak -v %s -w %s \"%s\"",voice,wavfile,sentence);
+	status=system(cl);
+	if (WEXITSTATUS(status)==0){
+		linphone_core_set_play_file(lc,wavfile);
+	}else{
+		linphonec_out("espeak command failed.");
+	}
+#else
+	linphonec_out("Sorry, this command is not implemented in windows version.");
+#endif
 	return 1;
 }
 

@@ -157,13 +157,13 @@ int ms_filter_call_method(MSFilter *f, unsigned int id, void *arg){
 	int i;
 	unsigned int magic=MS_FILTER_METHOD_GET_FID(id);
 	if (magic!=MS_FILTER_BASE_ID && magic!=f->desc->id) {
-		ms_fatal("Bad method definition in filter %s",f->desc->name);
+		ms_fatal("Method type checking failed when calling %u on filter %s",id,f->desc->name);
 		return -1;
 	}
 	for(i=0;methods!=NULL && methods[i].method!=NULL; i++){
 		unsigned int mm=MS_FILTER_METHOD_GET_FID(methods[i].id);
 		if (mm!=f->desc->id && mm!=MS_FILTER_BASE_ID) {
-			ms_fatal("MSFilter method mismatch: bad call.");
+			ms_fatal("Bad method definition on filter %s. fid=%u , mm=%u",f->desc->name,f->desc->id,mm);
 			return -1;
 		}
 		if (methods[i].id==id){
