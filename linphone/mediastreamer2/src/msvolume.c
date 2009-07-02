@@ -268,7 +268,7 @@ static void volume_process(MSFilter *f){
 			om=allocb(nbytes,0);
 			ms_bufferizer_read(v->buffer,om->b_wptr,nbytes);
 			om->b_wptr+=nbytes;
-			en=update_energy((int16_t*)om->b_rptr,om->b_wptr-om->b_rptr,en);
+			en=update_energy((int16_t*)om->b_rptr,v->nsamples,en);
 			volume_agc_process(v,om);
 	
 			if (v->peer){
@@ -282,7 +282,7 @@ static void volume_process(MSFilter *f){
 	}else{
 		/*light processing: no agc. Work in place in the input buffer*/
 		while((m=ms_queue_get(f->inputs[0]))!=NULL){
-			en=update_energy((int16_t*)m->b_rptr,m->b_wptr-m->b_rptr,en);
+			en=update_energy((int16_t*)m->b_rptr,(m->b_wptr-m->b_rptr)/2,en);
 			if (v->peer){
 				volume_echo_avoider_process(v);	
 			}
