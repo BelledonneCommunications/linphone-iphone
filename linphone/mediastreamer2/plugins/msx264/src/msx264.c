@@ -80,7 +80,7 @@ static void enc_preprocess(MSFilter *f){
 	params.i_fps_den=1;
 #ifdef HACKED_X264
 	ms_message("Lucky guy, you have a hacked x264 lib that allows multislicing !");
-	params.slice_size_threshold=ms_get_payload_max_size()-100; /*-100 security margin*/
+	params.i_max_nalu_size=ms_get_payload_max_size()-100; /*-100 security margin*/
 #endif
 	/*params.i_level_idc=30;*/
 	params.rc.i_rc_method = X264_RC_ABR;

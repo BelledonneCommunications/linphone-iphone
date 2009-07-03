@@ -2,16 +2,20 @@ msx264 - a GPL plugin to bring video H264 encoding/decoding capabilities to medi
 It is based on ffmpeg for decoding and x264 for encoding.
 
 It works with any version of x264. However if you want better performance and interroperability, it is 
-highly recommended to use a modified x264 version patched with the patch mentionned here:
-http://mailman.videolan.org/pipermail/x264-devel/2008-April/004427.html
-
-Unfortunately for bad reasons this patch hasn't been merged by x264 developpers, and no more applies with
-recent versions.
-
+highly recommended to use the modified multiscling-enabled x264 available from linphone.org.
 This patch enables multi-slicing, ie smaller video packets that fit into the network mtu.
-It enable RFC3984 packetization-mode=0 to work.
-A x264 version modified by this patch can be found here:
-http://download.savannah.gnu.org/releases/linphone/plugins/sources/x264-snapshot-20080421-2245+multislicing-patch.tar.gz
+It enables RFC3984 packetization-mode=0 to work.
+You can download this special x264 here:
+http://download.savannah.gnu.org/releases/linphone/plugins/sources/x264-snapshot-20090704-linphone-org.tar.gz
 
-So compile x264-snapshot-20080421-2245+multislicing-patch.tar.gz with ./configure && make && make install
-Then compile msx264 with ./configure --enable-hacked-x264 && make && make install
+So:
+* compile x264-snapshot-20090704-linphone-org.tar.gz with ./configure && make && make install
+* compile msx264 with ./configure --enable-hacked-x264 && make && make install
+
+
+A bit of history
+****************
+
+The multislicing feature of x264 is something that has been contributed several time, but never merged (why ?).
+The linphone.org version of x264 was inspired by a patch submitted on x264-devel mailing list:
+http://mailman.videolan.org/pipermail/x264-devel/2008-April/004427.html
