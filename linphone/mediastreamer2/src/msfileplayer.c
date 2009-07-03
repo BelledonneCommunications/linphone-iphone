@@ -57,69 +57,66 @@ static void player_init(MSFilter *f){
 }
 
 static int read_wav_header(PlayerData *d){
-
-  char header1[sizeof(riff_t)];
-  char header2[sizeof(format_t)];
-  char header3[sizeof(data_t)];
-  int count;
-
-  riff_t *riff_chunk=(riff_t*)header1;
-  format_t *format_chunk=(format_t*)header2;
-  data_t *data_chunk=(data_t*)header3;
-  
-  unsigned long len=0;
-    
-  len = read(d->fd, header1, sizeof(header1)) ;
-  if (len != sizeof(header1)){
-    ms_warning("Wrong wav header: cannot read file");
-    return -1;
-  }
-  
-  if (0!=strncmp(riff_chunk->riff, "RIFF", 4) || 0!=strncmp(riff_chunk->wave, "WAVE", 4)){	
-    ms_warning("Wrong wav header (not RIFF/WAV)");
-    return -1;
-  }
-  
-  len = read(d->fd, header2, sizeof(header2)) ;            
-  if (len != sizeof(header2)){
-    ms_warning("Wrong wav header: cannot read file");
-    return -1;
-  }
-  
-  d->rate=le_uint32(format_chunk->rate);
-  d->nchannels=le_uint16(format_chunk->channel);
-  
-  if (format_chunk->len-0x10>0)
-    {
-      lseek(d->fd,(format_chunk->len-0x10),SEEK_CUR);
-    }
-  
-  d->hsize=sizeof(wave_header_t)-0x10+format_chunk->len;
-  
-  len = read(d->fd, header3, sizeof(header3)) ;
-  if (len != sizeof(header3)){
-    ms_warning("Wrong wav header: cannot read file");
-    return -1;
-  }
-  count=0;
-  while (strncmp(data_chunk->data, "data", 4)!=0 && count<30)
-    {
-      ms_warning("skipping chunk=%s len=%i", data_chunk->data, data_chunk->len);
-      lseek(d->fd,data_chunk->len,SEEK_CUR);
-      count++;
-      d->hsize=d->hsize+len+data_chunk->len;
-      
-      len = read(d->fd, header3, sizeof(header3)) ;
-      if (len != sizeof(header3)){
-	ms_warning("Wrong wav header: cannot read file");
-	return -1;
-      }
-    }
-#ifdef WORDS_BIGENDIAN
-  if (le_uint16(format_chunk->blockalign)==le_uint16(format_chunk->channel) * 2)
-    d->swap=TRUE;
-#endif
-  return 0;
+	char header1[sizeof(riff_t)];
+	char header2[sizeof(format_t)];
+	char header3[sizeof(data_t)];
+	int count;
+	
+	riff_t *riff_chunk=(riff_t*)header1;
+	format_t *format_chunk=(format_t*)header2;
+	data_t *data_chunk=(data_t*)header3;
+	
+	unsigned long len=0;
+	
+	len = read(d->fd, header1, sizeof(header1)) ;
+	if (len != sizeof(header1)){
+		return -1;
+	}
+	
+	if (0!=strncmp(riff_chunk->riff, "RIFF", 4) || 0!=strncmp(riff_chunk->wave, "WAVE", 4)){	
+		return -1;
+	}
+	
+	len = read(d->fd, header2, sizeof(header2)) ;            
+	if (len != sizeof(header2)){
+		ms_warning("Wrong wav header: cannot read file");
+		return -1;
+	}
+	
+	d->rate=le_uint32(format_chunk->rate);
+	d->nchannels=le_uint16(format_chunk->channel);
+	
+	if (format_chunk->len-0x10>0)
+	{
+		lseek(d->fd,(format_chunk->len-0x10),SEEK_CUR);
+	}
+	
+	d->hsize=sizeof(wave_header_t)-0x10+format_chunk->len;
+	
+	len = read(d->fd, header3, sizeof(header3)) ;
+	if (len != sizeof(header3)){
+		ms_warning("Wrong wav header: cannot read file");
+		return -1;
+	}
+	count=0;
+	while (strncmp(data_chunk->data, "data", 4)!=0 && count<30)
+	{
+		ms_warning("skipping chunk=%s len=%i", data_chunk->data, data_chunk->len);
+		lseek(d->fd,data_chunk->len,SEEK_CUR);
+		count++;
+		d->hsize=d->hsize+len+data_chunk->len;
+	
+		len = read(d->fd, header3, sizeof(header3)) ;
+		if (len != sizeof(header3)){
+			ms_warning("Wrong wav header: cannot read file");
+			return -1;
+		}
+	}
+	#ifdef WORDS_BIGENDIAN
+	if (le_uint16(format_chunk->blockalign)==le_uint16(format_chunk->channel) * 2)
+		d->swap=TRUE;
+	#endif
+	return 0;
 }
 
 static int player_open(MSFilter *f, void *arg){
@@ -136,7 +133,9 @@ static int player_open(MSFilter *f, void *arg){
 	}
 	d->state=STOPPED;
 	d->fd=fd;
-	if (strstr(file,".wav")!=NULL) read_wav_header(d);
+	if (read_wav_header(d)!=0 && strstr(file,".wav")){
+		ms_warning("File %s has .wav extension but wav header could be found.",file);
+	}
 	ms_message("%s opened: rate=%i,channel=%i",file,d->rate,d->nchannels);
 	return 0;
 }
