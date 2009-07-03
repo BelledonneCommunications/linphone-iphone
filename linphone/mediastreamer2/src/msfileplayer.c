@@ -70,17 +70,17 @@ static int read_wav_header(PlayerData *d){
 	
 	len = read(d->fd, header1, sizeof(header1)) ;
 	if (len != sizeof(header1)){
-		return -1;
+		goto not_a_wav;
 	}
 	
 	if (0!=strncmp(riff_chunk->riff, "RIFF", 4) || 0!=strncmp(riff_chunk->wave, "WAVE", 4)){	
-		return -1;
+		goto not_a_wav;
 	}
 	
 	len = read(d->fd, header2, sizeof(header2)) ;            
 	if (len != sizeof(header2)){
 		ms_warning("Wrong wav header: cannot read file");
-		return -1;
+		goto not_a_wav;
 	}
 	
 	d->rate=le_uint32(format_chunk->rate);
@@ -96,7 +96,7 @@ static int read_wav_header(PlayerData *d){
 	len = read(d->fd, header3, sizeof(header3)) ;
 	if (len != sizeof(header3)){
 		ms_warning("Wrong wav header: cannot read file");
-		return -1;
+		goto not_a_wav;
 	}
 	count=0;
 	while (strncmp(data_chunk->data, "data", 4)!=0 && count<30)
@@ -109,7 +109,7 @@ static int read_wav_header(PlayerData *d){
 		len = read(d->fd, header3, sizeof(header3)) ;
 		if (len != sizeof(header3)){
 			ms_warning("Wrong wav header: cannot read file");
-			return -1;
+			goto not_a_wav;
 		}
 	}
 	#ifdef WORDS_BIGENDIAN
@@ -117,6 +117,11 @@ static int read_wav_header(PlayerData *d){
 		d->swap=TRUE;
 	#endif
 	return 0;
+
+	not_a_wav:
+		/*rewind*/
+		lseek(d->fd,0,SEEK_SET);
+		return -1;
 }
 
 static int player_open(MSFilter *f, void *arg){
