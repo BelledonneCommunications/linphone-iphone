@@ -98,14 +98,13 @@ static void speex_ec_process(MSFilter *f){
 	mblk_t *md;	
 
 	if (s->size_delay<s->playback_delay){
-		while((m=ms_queue_get(f->inputs[0]))!=NULL
-        && s->size_delay<s->playback_delay){
+		while((m=ms_queue_get(f->inputs[0]))!=NULL && s->size_delay<s->playback_delay){
 			// Duplicate queue : one to write to the output speaker, the other will be delayed for AEC
 			int size=msgdsize(m);
-    	  	md = copyb(m);
-	      	s->size_delay = s->size_delay + size;
+			md = copyb(m);
+			s->size_delay = s->size_delay + size;
 			ms_bufferizer_put(&s->speak_delay,md);
-    	  	ms_bufferizer_put(&s->in[0],m);
+			ms_bufferizer_put(&s->in[0],m);
 		}
 
 		if (s->size_delay<s->playback_delay)
@@ -126,12 +125,12 @@ static void speex_ec_process(MSFilter *f){
 				om0=allocb(nbytes,0);
 				ms_bufferizer_read(&s->in[1],(uint8_t*)om0->b_wptr,nbytes);
 				om0->b_wptr+=nbytes;
-    			ms_queue_put(f->outputs[1],om0);
+    				ms_queue_put(f->outputs[1],om0);
 			}
 			/* we are now equal and speaker is delayed */
 			return;
 		}
-    }
+	}
 
 	ms_bufferizer_put_from_queue(&s->in[1],f->inputs[1]);
 
@@ -185,18 +184,18 @@ static void speex_ec_process(MSFilter *f){
 	}
 
 	if (ms_bufferizer_get_avail(&s->speak_delay)> 5*320*(s->samplerate/8000)) /* above 4*20ms -> useless */
-	  {
-	    /* reset evrything */
-	    ms_warning("speexec: -reset of echo canceller- in0=%i, in1=%i",ms_bufferizer_get_avail(&s->in[0]),ms_bufferizer_get_avail(&s->in[1]));
-	    flushq(&s->in[1].q,0);
-	    flushq(&s->in[0].q,0);
-      flushq(&s->speak_delay.q,0);
-	    ms_bufferizer_init(&s->in[0]);
-	    ms_bufferizer_init(&s->in[1]);
-	    ms_bufferizer_init(&s->speak_delay);
-      s->size_delay=0;
-	    speex_echo_state_reset(s->ecstate);
-	  }
+	{
+		/* reset evrything */
+		ms_warning("speexec: -reset of echo canceller- in0=%i, in1=%i",ms_bufferizer_get_avail(&s->in[0]),ms_bufferizer_get_avail(&s->in[1]));
+		flushq(&s->in[1].q,0);
+		flushq(&s->in[0].q,0);
+		flushq(&s->speak_delay.q,0);
+		ms_bufferizer_init(&s->in[0]);
+		ms_bufferizer_init(&s->in[1]);
+		ms_bufferizer_init(&s->speak_delay);
+		s->size_delay=0;
+		speex_echo_state_reset(s->ecstate);
+	}
 
 	while (ms_bufferizer_get_avail(&s->in[1])> 5*320*(s->samplerate/8000)){
 		om1=allocb(nbytes,0);
@@ -298,7 +297,7 @@ static MSFilterMethod speex_ec_methods[]={
 	{	MS_FILTER_SET_SAMPLE_RATE, speex_ec_set_sr },
 	{	MS_FILTER_SET_FRAMESIZE, speex_ec_set_framesize },
 	{	MS_FILTER_SET_FILTERLENGTH, speex_ec_set_filterlength },
-  {	MS_FILTER_SET_PLAYBACKDELAY, speex_ec_set_playbackdelay },
+	{	MS_FILTER_SET_PLAYBACKDELAY, speex_ec_set_playbackdelay },
 	{	0			, NULL}
 };
 
