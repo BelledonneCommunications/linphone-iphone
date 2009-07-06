@@ -262,7 +262,7 @@ static void ca_set_source(MSSndCard *card, MSSndCardCapture source)
 
 static void ca_init(MSSndCard *card){
 	ms_debug("ca_init");
-	OSStatus err;
+	OSStatus result;
 	UInt32 param;
 	AudioDeviceID fInputDeviceID;
 	CAData *d=ms_new(CAData,1);
@@ -279,8 +279,8 @@ static void ca_init(MSSndCard *card){
 	Component comp = FindNextComponent(NULL, &desc);
 		if (comp == NULL) return;
 
-	err = OpenAComponent(comp, &d->caOutAudioUnit);
-	if(err != noErr) return;
+	result = OpenAComponent(comp, &d->caOutAudioUnit);
+	if(result != noErr) return;
 
 	// Get Default Input audio unit
 	desc.componentType = kAudioUnitType_Output;
@@ -292,8 +292,8 @@ static void ca_init(MSSndCard *card){
 	comp = FindNextComponent(NULL, &desc);
 		if (comp == NULL) return;
 
-	err = OpenAComponent(comp, &d->caInAudioUnit);
-	if(err != noErr) return;
+	result = OpenAComponent(comp, &d->caInAudioUnit);
+	if(result != noErr) return;
 
 	AudioUnitInitialize(d->caOutAudioUnit);
 	AudioUnitInitialize(d->caInAudioUnit);
@@ -303,19 +303,20 @@ static void ca_init(MSSndCard *card){
 	memset((char *)&d->caInASBD, 0, asbdsize);
 
 	// Setup Output audio unit
-	OSStatus result = AudioUnitGetProperty (d->caOutAudioUnit,
+	result = AudioUnitGetProperty (d->caOutAudioUnit,
 							kAudioUnitProperty_StreamFormat,
 							kAudioUnitScope_Output,
 							0,
 							&d->caOutASBD,
 							&asbdsize);
-
+	ms_message("AudioUnitGetProperty %i %x", result, result);
 	result = AudioUnitSetProperty (d->caOutAudioUnit,
 							kAudioUnitProperty_StreamFormat,
 							kAudioUnitScope_Input,
 							0,
 							&d->caOutASBD,
 							asbdsize);
+	ms_message("AudioUnitSetProperty %i %x", result, result);
 
 	// Setup Input audio unit
 	// Enable input on the AUHAL
@@ -326,13 +327,15 @@ static void ca_init(MSSndCard *card){
 							1,
 							&param,
 							sizeof(UInt32));
-
+	ms_message("AudioUnitSetProperty %i %x", result, result);
+	
 // Select the default input device
 	param = sizeof(AudioDeviceID);
 	result = AudioHardwareGetProperty(kAudioHardwarePropertyDefaultInputDevice,
 							&param,
 							&fInputDeviceID);
-
+	ms_message("AudioHardwareGetProperty %i %x", result, result);
+	
 	// Set the current device to the default input unit.
 	result = AudioUnitSetProperty(d->caInAudioUnit,
 							kAudioOutputUnitProperty_CurrentDevice,
@@ -340,7 +343,8 @@ static void ca_init(MSSndCard *card){
 							0,
 							&fInputDeviceID,
 							sizeof(AudioDeviceID));
-
+	ms_message("AudioUnitSetProperty %i %x", result, result);
+	
 	AudioStreamBasicDescription tmpASBD;
 	result = AudioUnitGetProperty (d->caInAudioUnit,
 							kAudioUnitProperty_StreamFormat,
@@ -348,6 +352,7 @@ static void ca_init(MSSndCard *card){
 							0,
 							&tmpASBD,
 							&asbdsize);
+	ms_message("AudioUnitGetProperty %i %x", result, result);
 	
 	int fAudioChannels = 1;
 	d->caInASBD.mChannelsPerFrame = fAudioChannels;
@@ -365,13 +370,14 @@ static void ca_init(MSSndCard *card){
 	d->caInASBD.mFramesPerPacket = 1;
 	d->caInASBD.mBytesPerPacket = d->caInASBD.mBytesPerFrame;
 
-	err = AudioUnitSetProperty(d->caInAudioUnit,
+	result = AudioUnitSetProperty(d->caInAudioUnit,
 							kAudioUnitProperty_StreamFormat,
 							kAudioUnitScope_Output,
 							1,
 							&d->caInASBD,
 							sizeof(AudioStreamBasicDescription));
-
+	ms_message("AudioUnitGetProperty %i %x", result, result);
+	
 	d->caSourceBuffer=NULL;
 
 	// Get the number of frames in the IO buffer(s)
@@ -383,7 +389,7 @@ static void ca_init(MSSndCard *card){
 							0,
 							&fAudioSamples,
 							&param);
-	if(err != noErr)
+	if(result != noErr)
 	{
 		fprintf(stderr, "failed to get audio sample size\n");
 		return;

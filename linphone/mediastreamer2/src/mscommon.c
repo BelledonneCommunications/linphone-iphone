@@ -485,6 +485,10 @@ extern MSWebCamDesc ms_directx_cam_desc;
 extern MSWebCamDesc ms_dshow_cam_desc;
 #endif
 
+#ifdef __APPLE__
+extern MSWebCamDesc ms_v4m_cam_desc;
+#endif
+
 extern MSWebCamDesc static_image_desc;
 extern MSWebCamDesc mire_desc;
 
@@ -504,6 +508,10 @@ static MSWebCamDesc * ms_web_cam_descs[]={
 #ifdef __MINGW32__
 	&ms_dshow_cam_desc,
 #endif
+#ifdef __APPLE__
+	&ms_v4m_cam_desc,
+#endif
+
 	&mire_desc,
 	&static_image_desc,
 	NULL
