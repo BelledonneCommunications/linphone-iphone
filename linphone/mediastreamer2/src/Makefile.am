@@ -132,7 +132,9 @@ libmediastreamer_la_LIBADD=	$(ORTP_LIBS) \
 				$(ALSA_LIBS) \
 				$(ARTS_LIBS) \
 				$(SPEEX_LIBS) \
-				$(GSM_LIBS) 
+				$(GSM_LIBS) \
+				$(LIBV4L1_LIBS) \
+				$(LIBV4L2_LIBS)
 if !BUILD_WIN32
 libmediastreamer_la_LDFLAGS=-rdynamic
 else
