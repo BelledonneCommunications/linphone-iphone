@@ -1472,12 +1472,19 @@ static int lpc_cmd_speak(LinphoneCore *lc, char *args){
 	char cl[128];
 	char *wavfile;
 	int status;
+	FILE *file;
 	memset(voice,0,sizeof(voice));
 	sscanf(args,"%s63",voice);
 	sentence=args+strlen(voice);
 	wavfile=tempnam("/tmp/","linphonec-espeak-");
-	snprintf(cl,sizeof(cl),"espeak -v %s -w %s \"%s\"",voice,wavfile,sentence);
-	status=system(cl);
+	snprintf(cl,sizeof(cl),"espeak -v %s -s 100 -w %s --stdin",voice,wavfile);
+	file=popen(cl,"w");
+	if (file==NULL){
+		ms_error("Could not open pipe to espeak !");
+		return 1;
+	}
+	fprintf(file,"%s",sentence);
+	status=pclose(file);
 	if (WEXITSTATUS(status)==0){
 		linphone_core_set_play_file(lc,wavfile);
 	}else{
