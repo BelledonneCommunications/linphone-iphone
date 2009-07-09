@@ -38,6 +38,7 @@ struct _PlayerData{
 	int hsize;
 	int loop_after;
 	int pause_time;
+	int count;
 	bool_t swap;
 };
 
@@ -53,6 +54,7 @@ static void player_init(MSFilter *f){
 	d->hsize=0;
 	d->loop_after=-1; /*by default, don't loop*/
 	d->pause_time=0;
+	d->count=0;
 	f->data=d;	
 }
 
@@ -121,6 +123,7 @@ static int read_wav_header(PlayerData *d){
 	not_a_wav:
 		/*rewind*/
 		lseek(d->fd,0,SEEK_SET);
+		d->hsize=0;
 		return -1;
 }
 
@@ -190,7 +193,19 @@ static void swap_bytes(unsigned char *bytes, int len){
 
 static void player_process(MSFilter *f){
 	PlayerData *d=(PlayerData*)f->data;
-	int bytes=2*(f->ticker->interval*d->rate*d->nchannels)/1000;
+	int nsamples=(f->ticker->interval*d->rate*d->nchannels)/1000;
+	int bytes;
+	/*send an even number of samples each tick. At 22050Hz the number of samples per 10 ms chunk is odd.
+	Odd size buffer of samples cause troubles to alsa. Fixing in alsa is difficult, so workaround here.
+	*/
+	if (nsamples & 0x1 ) { //odd number of samples
+		if (d->count & 0x1 )
+			nsamples++;
+		else
+			nsamples--;
+	}
+	bytes=2*nsamples;
+	d->count++;
 	ms_filter_lock(f);
 	if (d->state==STARTED){
 		int err;
