@@ -187,6 +187,7 @@ static void resample_process_ms2(MSFilter *obj){
 		mblk_set_timestamp_info(om,dt->ts);
 		dt->ts+=outlen;
 		ms_queue_put(obj->outputs[0],om);
+		freemsg(m);
 	}
 }
 
