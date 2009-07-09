@@ -964,9 +964,6 @@ int main(int argc, char *argv[]){
 	
 	add_pixmap_directory("pixmaps");
 	add_pixmap_directory(PACKAGE_DATA_DIR "/pixmaps/linphone");
-#ifdef WIN32
-	add_pixmap_directory("linphone");
-#endif
 
 	the_ui=linphone_gtk_create_window("main");
 	
