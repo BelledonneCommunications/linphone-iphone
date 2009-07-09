@@ -368,13 +368,13 @@ void audio_stream_play(AudioStream *st, const char *name){
 		int from_rate=0, to_rate=0;
 		ms_filter_call_method_noarg(st->soundread,MS_FILE_PLAYER_CLOSE);
 		ms_filter_call_method(st->soundread,MS_FILE_PLAYER_OPEN,(void*)name);
-		ms_filter_call_method_noarg(st->soundread,MS_FILE_PLAYER_START);
 		ms_filter_call_method(st->soundread,MS_FILTER_GET_SAMPLE_RATE,&from_rate);
 		ms_filter_call_method(st->rtpsend,MS_FILTER_GET_SAMPLE_RATE,&to_rate);
 		if (st->resampler){
 			ms_filter_call_method(st->resampler,MS_FILTER_SET_SAMPLE_RATE,&from_rate);
 			ms_filter_call_method(st->resampler,MS_FILTER_SET_OUTPUT_SAMPLE_RATE,&to_rate);
 		}
+		ms_filter_call_method_noarg(st->soundread,MS_FILE_PLAYER_START);
 	}else{
 		ms_error("Cannot play file: the stream hasn't been started with"
 		" audio_stream_start_with_files");

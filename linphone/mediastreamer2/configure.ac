@@ -38,6 +38,8 @@ AC_DEFINE_UNQUOTED(MEDIASTREAMER_MINOR_VERSION,$MEDIASTREAMER_MINOR_VERSION, [mi
 AC_DEFINE_UNQUOTED(MEDIASTREAMER_MICRO_VERSION,$MEDIASTREAMER_MICRO_VERSION, [micro version])
 AC_DEFINE_UNQUOTED(MEDIASTREAMER_VERSION,"$MEDIASTREAMER_VERSION",[MEDIASTREAMER version number])
 
+MS_PUBLIC_CFLAGS=
+
 AC_SUBST([mkdir_p])
 
 AC_MSG_CHECKING([warning make an error on compilation])
@@ -152,6 +154,19 @@ if test "$mingw_found" = "yes" ; then
 	sed -e 's/\*\" \$a_deplib \"\*/\*/' < ./libtool > libtool.tmp
 	cp -f ./libtool.tmp ./libtool
 	rm -f ./libtool.tmp
+fi
+
+
+dnl prefer fixed point computations
+AC_ARG_ENABLE(fixed_point,
+      [  --enable-fixed-point    Turn on ipv6 support],
+      [case "${enableval}" in
+        yes)  fixed_point=true;;
+        no)   fixed_point=false;;
+        *) AC_MSG_ERROR(bad value ${enableval} for --enable-fixed-point) ;;
+      esac],[fixed_point=no])
+if test x$fixed_point = xtrue ; then
+	MS_PUBLIC_CFLAGS="$MS_PUBLIC_CFLAGS -DMS_FIXED_POINT"
 fi
 
 
@@ -572,6 +587,10 @@ AC_SUBST(VENDOR)
 RELEASE=1
 AC_SUBST(RELEASE)
 
+CFLAGS="$CFLAGS $MS_PUBLIC_CFLAGS"
+CXXFLAGS="$CXXFLAGS $MS_PUBLIC_CFLAGS"
+dnl: these ones gets exported in pkgconfig file.
+AC_SUBST(MS_PUBLIC_CFLAGS)
 
 AC_OUTPUT(
 Makefile
