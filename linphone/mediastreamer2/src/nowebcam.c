@@ -68,8 +68,18 @@ static mblk_t *jpeg2yuv(uint8_t *jpgbuf, int bufsize, MSVideoSize *reqsize){
 	sws_ctx=sws_getContext(av_context.width,av_context.height,av_context.pix_fmt,
 		reqsize->width,reqsize->height,PIX_FMT_YUV420P,SWS_FAST_BILINEAR,
                 NULL, NULL, NULL);
+	if (sws_ctx==NULL) {
+		ms_error("jpeg2yuv: sws_getContext() failed.");
+		avcodec_close(&av_context);
+		freemsg(ret);
+		return NULL;
+	}
 	if (sws_scale(sws_ctx,orig.data,orig.linesize,0,av_context.height,dest.data,dest.linesize)<0){
 		ms_error("jpeg2yuv: sws_scale() failed.");
+		sws_freeContext(sws_ctx);
+		avcodec_close(&av_context);
+		freemsg(ret);
+		return NULL;
 	}
 	sws_freeContext(sws_ctx);
 	avcodec_close(&av_context);
@@ -1616,6 +1626,17 @@ mblk_t *ms_load_jpeg_as_yuv(const char *jpgpath, MSVideoSize *reqsize){
 #endif
 		m=jpeg2yuv(jpgbuf,statbuf.st_size,reqsize);
 		ms_free(jpgbuf);
+		if (m==NULL)
+		{
+#if !defined(_MSC_VER)
+			close(fd);
+#else
+			_close(fd);
+#endif
+			ms_error("Cannot load image from buffer for %s",jpgpath);
+			m=ms_load_generate_yuv(reqsize);
+			return m;
+		}
 	}else{
 		m=ms_load_generate_yuv(reqsize);
 		ms_error("Cannot load %s",jpgpath);
