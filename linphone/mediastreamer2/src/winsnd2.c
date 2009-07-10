@@ -1411,7 +1411,7 @@ MSFilterDesc winsnd_read_desc={
 
 MSFilterDesc winsnd_write_desc={
 	MS_WINSND_WRITE_ID,
-	"MMERead",
+	"MMEWrite",
 	"MME playback filter for Windows",
 	MS_FILTER_OTHER,
 	NULL,
