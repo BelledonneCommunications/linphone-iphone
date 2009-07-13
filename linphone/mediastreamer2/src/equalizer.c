@@ -18,6 +18,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include <mediastreamer2/msfilter.h>
+#include <mediastreamer2/dsptools.h>
+
+#define GAIN_ZERODB 22000
 
 
 typedef struct _EqualizerState{
@@ -28,11 +31,19 @@ typedef struct _EqualizerState{
 	int16_t *fir;
 } EqualizerState;
 
-static EqualizerState * equalizer_state_new(){
+static void equalizer_flatten(EqualizerState *s){
+	int i;
+	for(i=0;i<s->nfft;i+=2)
+		s->fft_cpx[i]=GAIN_ZERODB;
+}
+
+static EqualizerState * equalizer_state_new(int nfft){
 	EqualizerState *s=ms_new0(EqualizerState,1);
+	int i;
 	s->rate=8000;
-	s->nfft=128;
+	s->nfft=nfft;
 	s->fft_cpx=ms_new0(int16_t,s->nfft);
+	equalizer_flatten(s);
 	s->fir_len=s->nfft;
 	s->fir=ms_new(int16_t,s->fir_len);
 }
@@ -83,3 +94,27 @@ static int16_t equalizer_set(EqualizerState *s, int freqhz, float gain){
 		s->fft_cpx[i*2]=gain_int16(gain);
 	}
 }
+
+static void dump_table(int16_t *t, int len){
+	int i;
+	for(i=0;i<len;i++)
+		ms_message("[%i]\t%i",i,t[i]);
+}
+
+static void apodize(int16_t *s, int len){
+	int i;
+	float x;
+	for(i=0;i<len;++i){
+		x=(float)i/
+		s[i]=cos
+	}	
+}
+
+static void equalizer_compute_impulse_response(EqualizerState *s){
+	void *fft_handle=ms_fft_init(s->nfft);
+	ms_ifft(fft_handle,s->fft_cpx,s->fir);
+	ms_message("Inverse fft result:");
+	dump_table(s->fir,s->fir_len);
+	apodize(s->fir,s->fir_len);
+}
+
