@@ -35,7 +35,8 @@ libmediastreamer_la_SOURCES=	mscommon.c     \
 				_kiss_fft_guts.h \
 				kiss_fft.h \
 				kiss_fftr.c \
-				kiss_fftr.h
+				kiss_fftr.h \
+				equalizer.c
 
 #dummy c++ file to force libtool to use c++ linking (because of msdscap-mingw.cc)
 nodist_EXTRA_libmediastreamer_la_SOURCES = dummy.cxx

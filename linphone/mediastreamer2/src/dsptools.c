@@ -229,7 +229,7 @@ void ms_fir_mem16(const ms_word16_t *x, const ms_coef_t *num, ms_word16_t *y, in
    for (i=0;i<N;i++)
    {
       xi=x[i];
-      yi = EXTRACT16(SATURATE(ADD32(EXTEND32(x[i]),PSHR32(mem[0],LPC_SHIFT)),32767));
+      yi = EXTRACT16(SATURATE(ADD32(EXTEND32(xi),PSHR32(mem[0],LPC_SHIFT)),32767));
       for (j=0;j<ord-1;j++)
       {
          mem[j] = MAC16_16(mem[j+1], num[j],xi);
