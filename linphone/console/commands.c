@@ -333,6 +333,7 @@ lpc_cmd_help(LinphoneCore *lc, char *arg)
 }
 
 static char callee_name[256]={0};
+static char caller_name[256]={0};
 
 static int
 lpc_cmd_call(LinphoneCore *lc, char *args)
@@ -360,8 +361,16 @@ lpc_cmd_call(LinphoneCore *lc, char *args)
 	return 1;
 }
 
-static const char *linphonec_get_callee(){
+const char *linphonec_get_callee(){
 	return callee_name;
+}
+
+const char *linphonec_get_caller(){
+	return caller_name;
+}
+
+void linphonec_set_caller(const char *caller){
+	snprintf(caller_name,sizeof(caller_name)-1,"%s",caller);
 }
 
 static int
@@ -1437,6 +1446,10 @@ static int lpc_cmd_status(LinphoneCore *lc, char *args)
 			case GSTATE_CALL_IN_CONNECTED:
 				linphonec_out("hook=answered duration=%i\n" ,
 					linphone_core_get_current_call_duration(lc));
+				break;
+			case GSTATE_CALL_IN_INVITE:
+				linphonec_out("Incoming call from %s\n",linphonec_get_caller());
+				break;
 			default:
 				break;
 		}

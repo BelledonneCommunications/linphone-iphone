@@ -216,6 +216,7 @@ linphonec_display_url (LinphoneCore * lc, const char *something, const char *url
 static void
 linphonec_call_received(LinphoneCore *lc, const char *from)
 {
+	linphonec_set_caller(from);
 	if ( auto_answer)  {
 		answer_call=TRUE;
 	}

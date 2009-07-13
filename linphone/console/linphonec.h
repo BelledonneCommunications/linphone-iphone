@@ -110,7 +110,7 @@ extern char *linphonec_readline(char *prompt);
 void linphonec_set_autoanswer(bool_t enabled);
 bool_t linphonec_get_autoanswer();
 void linphonec_command_finished(void);
-
+void linphonec_set_caller(const char *caller);
 
 #endif /* def LINPHONEC_H */
 
