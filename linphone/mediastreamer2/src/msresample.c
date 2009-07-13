@@ -224,7 +224,9 @@ MSFilterDesc ms_resample_desc={
 	1,
 	1,
 	resample_init,
+	NULL,
 	resample_process_ms2,
+	NULL,
 	resample_uninit,
 	enc_methods
 };
