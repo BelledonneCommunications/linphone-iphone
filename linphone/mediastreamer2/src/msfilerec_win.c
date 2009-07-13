@@ -122,6 +122,9 @@ static void write_wav_header(int rate,int size, char *filename){
 }
 
 static int rec_open(MSFilter *f, void *arg){
+	wave_header_t header;
+	DWORD bytes_written=0;
+
 	RecState *s=(RecState*)f->data;
 	const char *filename=(const char*)arg;
 	ms_mutex_lock(&f->lock);
@@ -139,6 +142,12 @@ static int rec_open(MSFilter *f, void *arg){
 #endif
 		ms_mutex_unlock(&f->lock);
 		return -1;
+	}
+
+	memset(&header ,0,sizeof(header));
+	WriteFile(s->fd,&header,sizeof(header), &bytes_written, NULL);
+	if (bytes_written!=sizeof(header)){
+		ms_warning("Fail to write wav header.");
 	}
 
 	s->state=Stopped;
