@@ -58,6 +58,7 @@ void audio_stream_free(AudioStream *stream)
 	if (stream->ec!=NULL)	ms_filter_destroy(stream->ec);
 	if (stream->volrecv!=NULL) ms_filter_destroy(stream->volrecv);
 	if (stream->volsend!=NULL) ms_filter_destroy(stream->volsend);
+	if (stream->equalizer!=NULL) ms_filter_destroy(stream->equalizer);
 	if (stream->ticker!=NULL) ms_ticker_destroy(stream->ticker);
 	ms_free(stream);
 }

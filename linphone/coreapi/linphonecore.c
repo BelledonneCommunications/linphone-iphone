@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "private.h"
 #include "mediastreamer2/mediastream.h"
 #include "mediastreamer2/msvolume.h"
+#include "mediastreamer2/msequalizer.h"
 #include <eXosip2/eXosip.h>
 #include "sdphandler.h"
 
@@ -1452,6 +1453,30 @@ static void linphone_core_dtmf_received(RtpSession* s, int dtmf, void* user_data
 		lc->vtable.dtmf_received(lc, dtmf);
 }
 
+static void parametrize_equalizer(LinphoneCore *lc, AudioStream *st){
+	if (st->equalizer){
+		MSFilter *f=st->equalizer;
+		int enabled=lp_config_get_int(lc->config,"sound","eq_active",0);
+		float width=lp_config_get_float(lc->config,"sound","eq_width_factor",-1);
+		const char *gains=lp_config_get_string(lc->config,"sound","eq_gains",NULL);
+		ms_filter_call_method(f,MS_EQUALIZER_SET_ACTIVE,&enabled);
+		if (enabled){
+			if (width!=-1) ms_filter_call_method(f,MS_EQUALIZER_SET_ACTIVE,&width);
+			if (gains){
+				do{
+					int bytes;
+					MSEqualizerGain g;
+					if (sscanf(gains,"%f:%f %n",&g.frequency,&g.gain,&bytes)==2){
+						ms_message("Read equalizer gains: %f --> %f",g.frequency,g.gain);
+						ms_filter_call_method(f,MS_EQUALIZER_SET_GAIN,&g);
+						gains+=bytes;
+					}else break;
+				}while(1);
+			}
+		}
+	}
+}
+
 static void post_configure_audio_streams(LinphoneCore *lc){
 	AudioStream *st=lc->audiostream;
 	if (st->volrecv && st->volsend){
@@ -1482,6 +1507,7 @@ static void post_configure_audio_streams(LinphoneCore *lc){
 		if (gain!=-1)
 			audio_stream_set_mic_gain(st,gain);
 	}
+	parametrize_equalizer(lc,st);
 	if (lc->vtable.dtmf_received!=NULL){
 		/* replace by our default action*/
 		audio_stream_play_received_dtmfs(lc->audiostream,FALSE);
