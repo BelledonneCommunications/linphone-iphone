@@ -125,7 +125,7 @@ const char *usage="mediastream --local <port> --remote <ip:port> --payload <payl
 								"[ --bitrate <bits per seconds>]\n"
 								"[ --ec (enable echo canceller)]\n"
 								"[ --agc (enable automatic gain control)]\n";
-static void run_media_streams(int localport, const char *remote_ip, int remoteport, int payload, const char *fmtp, int jitter, bool_t ec, int bitrate, MSVideoSize vs, bool_t agc);
+static void run_media_streams(int localport, const char *remote_ip, int remoteport, int payload, const char *fmtp, int jitter, bool_t ec, int bitrate, MSVideoSize vs, bool_t agc, bool_t eq);
 
 
 int main(int argc, char * argv[])
@@ -139,6 +139,7 @@ int main(int argc, char * argv[])
 	MSVideoSize vs;
 	bool_t ec=FALSE;
 	bool_t agc=FALSE;
+	bool_t eq=FALSE;
 	/*create the rtp session */
 	ortp_init();
 	ortp_set_log_level_mask(ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
@@ -193,14 +194,16 @@ int main(int argc, char * argv[])
 			ec=TRUE;
 		}else if (strcmp(argv[i],"--agc")==0){
 			agc=TRUE;
+		}else if (strcmp(argv[i],"--eq")==0){
+			eq=TRUE;
 		}
 	}
 
-	run_media_streams(localport,ip,remoteport,payload,fmtp,jitter,ec,bitrate,vs, agc);
+	run_media_streams(localport,ip,remoteport,payload,fmtp,jitter,ec,bitrate,vs, agc,eq);
 	return 0;
 }
 
-void run_media_streams(int localport,  const char *remote_ip, int remoteport, int payload, const char *fmtp, int jitter, bool_t ec, int bitrate, MSVideoSize vs, bool_t agc)
+void run_media_streams(int localport,  const char *remote_ip, int remoteport, int payload, const char *fmtp, int jitter, bool_t ec, int bitrate, MSVideoSize vs, bool_t agc, bool_t eq)
 {
 	AudioStream *audio=NULL;
 #ifdef VIDEO_ENABLED
@@ -233,6 +236,10 @@ void run_media_streams(int localport,  const char *remote_ip, int remoteport, in
 		if (audio) session=audio->session;
 	}else{
 #ifdef VIDEO_ENABLED
+		if (eq){
+			ms_fatal("Cannot put an audio equalizer in a video stream !");
+			exit(-1);
+		}
 		printf("Starting video stream.\n");
 		video=video_stream_new(localport, ms_is_ipv6(remote_ip));
 		video_stream_set_sent_video_size(video,vs);
@@ -247,34 +254,53 @@ void run_media_streams(int localport,  const char *remote_ip, int remoteport, in
 		printf("Error: video support not compiled.\n");
 #endif
 	}
-	rtp_session_register_event_queue(session,q);
-	while(cond)
-	{
-		int n;
-        	for(n=0;n<100;++n){
-#ifdef WIN32
-			MSG msg;
-			Sleep(10);
-			while (PeekMessage(&msg, NULL, 0, 0,1)){
-        			TranslateMessage(&msg);
-        			DispatchMessage(&msg);
+	if (!eq){
+		rtp_session_register_event_queue(session,q);
+		while(cond)
+		{
+			int n;
+			for(n=0;n<100;++n){
+	#ifdef WIN32
+				MSG msg;
+				Sleep(10);
+				while (PeekMessage(&msg, NULL, 0, 0,1)){
+					TranslateMessage(&msg);
+					DispatchMessage(&msg);
+				}
+	#else
+				struct timespec ts;
+				ts.tv_sec=0;
+				ts.tv_nsec=10000000;
+				nanosleep(&ts,NULL);
+	#endif
+	#if defined(VIDEO_ENABLED)
+				if (video) video_stream_iterate(video);
+	#endif
 			}
-#else
-			struct timespec ts;
-			ts.tv_sec=0;
-			ts.tv_nsec=10000000;
-			nanosleep(&ts,NULL);
-#endif
-#if defined(VIDEO_ENABLED)
-			if (video) video_stream_iterate(video);
-#endif
+			ortp_global_stats_display();
+			if (session){
+				printf("Bandwidth usage: download=%f kbits/sec, upload=%f kbits/sec\n",
+					rtp_session_compute_recv_bandwidth(session)*1e-3,
+					rtp_session_compute_send_bandwidth(session)*1e-3);
+				parse_events(q);
+			}
 		}
-		ortp_global_stats_display();
-		if (session){
-			printf("Bandwidth usage: download=%f kbits/sec, upload=%f kbits/sec\n",
-				rtp_session_compute_recv_bandwidth(session)*1e-3,
-				rtp_session_compute_send_bandwidth(session)*1e-3);
-			parse_events(q);
+	}else{/*read from stdin equalizer commands */
+		char commands[128];
+		commands[127]='\0';
+		printf("Please enter equalizer requests, such as 'eq active 1', 'eq active 0', 'eq 1200 0.1'\n");
+		while(fgets(commands,sizeof(commands)-1,stdin)!=NULL){
+			int active,freq;
+			float gain;
+			if (sscanf(commands,"eq active %i",&active)==1){
+				audio_stream_enable_equalizer(audio,active);
+				printf("OK\n");
+			}else if (sscanf(commands,"eq %i %f",&freq,&gain)==2){
+				audio_stream_equalizer_set_gain(audio,freq,gain);
+				printf("OK\n");
+			}else if (strstr(commands,"quit")){
+				break;
+			}else printf("Cannot understand this.\n");
 		}
 	}
 	

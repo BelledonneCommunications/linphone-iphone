@@ -49,7 +49,7 @@ struct kiss_fft_state{
  * */
 #ifdef MS_FIXED_POINT
 # define FRACBITS 15
-# define SAMPPROD spx_int32_t 
+# define SAMPPROD ms_int32_t 
 #define SAMP_MAX 32767
 
 #define SAMP_MIN -SAMP_MAX
@@ -158,15 +158,15 @@ struct kiss_fft_state{
 #define L3 8277
 #define L4 -626
 
-static inline spx_word16_t _spx_cos_pi_2(spx_word16_t x)
+static inline ms_word16_t _ms_cos_pi_2(ms_word16_t x)
 {
-   spx_word16_t x2;
+   ms_word16_t x2;
    
    x2 = MULT16_16_P15(x,x);
    return ADD16(1,MIN16(32766,ADD32(SUB16(L1,x2), MULT16_16_P15(x2, ADD32(L2, MULT16_16_P15(x2, ADD32(L3, MULT16_16_P15(L4, x2))))))));
 }
 
-static inline spx_word16_t spx_cos_norm(spx_word32_t x)
+static inline ms_word16_t ms_cos_norm(ms_word32_t x)
 {
    x = x&0x0001ffff;
    if (x>SHL32(EXTEND32(1), 16))
@@ -175,9 +175,9 @@ static inline spx_word16_t spx_cos_norm(spx_word32_t x)
    {
       if (x<SHL32(EXTEND32(1), 15))
       {
-         return _spx_cos_pi_2(EXTRACT16(x));
+         return _ms_cos_pi_2(EXTRACT16(x));
       } else {
-         return NEG32(_spx_cos_pi_2(EXTRACT16(65536-x)));
+         return NEG32(_ms_cos_pi_2(EXTRACT16(65536-x)));
       }
    } else {
       if (x&0x0000ffff)
@@ -190,13 +190,13 @@ static inline spx_word16_t spx_cos_norm(spx_word32_t x)
 }
 
 #else
-#define spx_cos_norm(x) (cos((.5f*M_PI)*(x)))
+#define ms_cos_norm(x) (cos((.5f*M_PI)*(x)))
 #endif
 
 #define  kf_cexp2(x,phase) \
                do{ \
-               (x)->r = spx_cos_norm((phase));\
-               (x)->i = spx_cos_norm((phase)-32768);\
+               (x)->r = ms_cos_norm((phase));\
+               (x)->i = ms_cos_norm((phase)-32768);\
 }while(0)
 
 

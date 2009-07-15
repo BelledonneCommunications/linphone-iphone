@@ -49,12 +49,14 @@ struct _AudioStream
 	MSFilter *ec;/*echo canceler*/
 	MSFilter *volsend,*volrecv; /*MSVolumes*/
 	MSFilter *resampler;
+	MSFilter *equalizer;
 	uint64_t last_packet_count;
 	time_t last_packet_time;
 	EchoLimiterType el_type; /*use echo limiter: two MSVolume, measured input level controlling local output level*/
 	bool_t play_dtmfs;
 	bool_t use_gc;
 	bool_t use_agc;
+	bool_t eq_active;
 };
 
 #ifdef __cplusplus
@@ -111,6 +113,11 @@ void audio_stream_enable_gain_control(AudioStream *stream, bool_t val);
 void audio_stream_enable_automatic_gain_control(AudioStream *stream, bool_t val);
 
 void audio_stream_set_mic_gain(AudioStream *stream, float gain);
+
+/*enable parametric equalizer in the stream that goes to the speaker*/
+void audio_stream_enable_equalizer(AudioStream *stream, bool_t enabled);
+
+void audio_stream_equalizer_set_gain(AudioStream *stream, int frequency, float gain);
 
 /* stop the audio streaming thread and free everything*/
 void audio_stream_stop (AudioStream * stream);

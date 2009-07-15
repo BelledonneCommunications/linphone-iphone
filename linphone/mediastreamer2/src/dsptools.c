@@ -62,7 +62,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define ALLOC(var,size,type) var = alloca(sizeof(type)*(size))
 
-#ifdef ARCH_BFIN
+#if 0
+//#ifdef ARCH_BFIN
 
 static void filter_mem16(const ms_word16_t *_x, const ms_coef_t *num, const ms_coef_t *den, ms_word16_t *_y, int N, int ord, ms_mem_t *mem)
 {
@@ -220,7 +221,8 @@ void ms_fir_mem16(const ms_word16_t *x, const ms_coef_t *num, ms_word16_t *y, in
 
 
 #else
-
+#if 0
+/* this one comes from speex but unfortunately does not make the expected result, maybe it is mis-used.*/
 void ms_fir_mem16(const ms_word16_t *x, const ms_coef_t *num, ms_word16_t *y, int N, int ord, ms_mem_t *mem)
 {
    int i,j;
@@ -238,8 +240,89 @@ void ms_fir_mem16(const ms_word16_t *x, const ms_coef_t *num, ms_word16_t *y, in
       y[i] = yi;
    }
 }
+#else
+
+#ifndef MS_FIXED_POINT
+
+void ms_fir_mem16(const ms_word16_t *x, const ms_coef_t *num, ms_word16_t *y, int N, int ord, ms_mem_t *mem){
+	int i,j;
+	ms_word16_t xi;
+	ms_word32_t acc;
+	for(i=0;i<N;++i){
+		xi=x[i];
+		mem[0]=xi;
+		/* accumulate and shift within the same loop*/
+		acc=mem[ord-1]*num[ord-1];
+		for(j=ord-2;j>=0;--j){
+			acc+=num[j]*mem[j];
+			mem[j+1]=mem[j];
+		}
+		y[i]=acc;
+	}
+}
+
+#else
+
+void ms_fir_mem16(const ms_word16_t *x, const ms_coef_t *num, ms_word16_t *y, int N, int ord, ms_mem_t *mem){
+	int i,j;
+	ms_word16_t xi;
+	ms_word32_t acc;
+	int shift=0; /* REVISIT: empiric value...*/
+
+	for(i=0;i<N;++i){
+		xi=x[i];
+		mem[0]=xi;
+		/* accumulate and shift memories within the same loop*/
+		acc=(mem[ord-1]*(ms_word32_t)num[ord-1])>>shift;
+		for(j=ord-2;j>=0;--j){
+			acc+=(((ms_word32_t)num[j])*mem[j])>>shift;
+			mem[j+1]=mem[j];
+		}
+		y[i]=(ms_word16_t)SATURATE16(acc>>14,32767);
+	}
+}
+
+
 #endif
 
+#endif
+
+#endif
+
+#ifdef MS_FIXED_POINT
+static int maximize_range(ms_word16_t *in, ms_word16_t *out, ms_word16_t bound, int len)
+{
+   int i, shift;
+   ms_word16_t max_val = 0;
+   for (i=0;i<len;i++)
+   {
+      if (in[i]>max_val)
+         max_val = in[i];
+      if (-in[i]>max_val)
+         max_val = -in[i];
+   }
+   shift=0;
+   while (max_val <= (bound>>1) && max_val != 0)
+   {
+      max_val <<= 1;
+      shift++;
+   }
+   for (i=0;i<len;i++)
+   {
+      out[i] = SHL16(in[i], shift);
+   }   
+   return shift;
+}
+
+static void renorm_range(ms_word16_t *in, ms_word16_t *out, int shift, int len)
+{
+   int i;
+   for (i=0;i<len;i++)
+   {
+      out[i] = PSHR16(in[i], shift);
+   }
+}
+#endif
 
 #include "kiss_fftr.h"
 #include "kiss_fft.h"

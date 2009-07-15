@@ -30,6 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/msfileplayer.h"
 #include "mediastreamer2/msfilerec.h"
 #include "mediastreamer2/msvolume.h"
+#include "mediastreamer2/msequalizer.h"
 
 #ifdef INET6
 	#include <sys/types.h>
@@ -283,6 +284,11 @@ int audio_stream_start_full(AudioStream *stream, RtpProfile *profile, const char
 	if (pt->send_fmtp!=NULL) ms_filter_call_method(stream->encoder,MS_FILTER_ADD_FMTP, (void*)pt->send_fmtp);
 	if (pt->recv_fmtp!=NULL) ms_filter_call_method(stream->decoder,MS_FILTER_ADD_FMTP,(void*)pt->recv_fmtp);
 	
+	/*create the equalizer*/
+	stream->equalizer=ms_filter_new(MS_EQUALIZER_ID);
+	tmp=stream->eq_active;
+	ms_filter_call_method(stream->equalizer,MS_EQUALIZER_SET_ACTIVE,&tmp);
+
 	/* and then connect all */
 	/* tip: draw yourself the picture if you don't understand */
 	
@@ -303,6 +309,8 @@ int audio_stream_start_full(AudioStream *stream, RtpProfile *profile, const char
 	ms_connection_helper_link(&h,stream->rtprecv,-1,0);
 	ms_connection_helper_link(&h,stream->decoder,0,0);
 	ms_connection_helper_link(&h,stream->dtmfgen,0,0);
+	if (stream->equalizer)
+		ms_connection_helper_link(&h,stream->equalizer,0,0);
 	if (stream->volrecv)
 		ms_connection_helper_link(&h,stream->volrecv,0,0);
 	if (stream->ec)
@@ -435,6 +443,23 @@ void audio_stream_set_mic_gain(AudioStream *stream, float gain){
 			"Use audio_stream_enable_gain_control() before starting the stream.");
 }
 
+void audio_stream_enable_equalizer(AudioStream *stream, bool_t enabled){
+	stream->eq_active=enabled;
+	if (stream->equalizer){
+		int tmp=enabled;
+		ms_filter_call_method(stream->equalizer,MS_EQUALIZER_SET_ACTIVE,&tmp);
+	}
+}
+
+void audio_stream_equalizer_set_gain(AudioStream *stream, int frequency, float gain){
+	if (stream->equalizer){
+		MSEqualizerGain d;
+		d.frequency=frequency;
+		d.gain=gain;
+		ms_filter_call_method(stream->equalizer,MS_EQUALIZER_SET_GAIN,&d);
+	}
+}
+
 void audio_stream_stop(AudioStream * stream)
 {
 	if (stream->ticker){
@@ -461,6 +486,8 @@ void audio_stream_stop(AudioStream * stream)
 		ms_connection_helper_unlink(&h,stream->rtprecv,-1,0);
 		ms_connection_helper_unlink(&h,stream->decoder,0,0);
 		ms_connection_helper_unlink(&h,stream->dtmfgen,0,0);
+		if (stream->equalizer)
+			ms_connection_helper_unlink(&h,stream->equalizer,0,0);
 		if (stream->volrecv!=NULL)
 			ms_connection_helper_unlink(&h,stream->volrecv,0,0);
 		if (stream->ec!=NULL)

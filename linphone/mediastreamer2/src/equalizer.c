@@ -22,7 +22,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <math.h>
 
-#define GAIN_ZERODB 22000
+#define ABS_GAIN_ZERODB 22000
+
+#ifdef MS_FIXED_POINT
+#define GAIN_ZERODB ABS_GAIN_ZERODB
+#else
+#define GAIN_ZERODB (((float)ABS_GAIN_ZERODB)/32767.0)
+#endif
+	
+
 
 
 typedef struct _EqualizerState{
@@ -32,13 +40,17 @@ typedef struct _EqualizerState{
 	int fir_len;
 	ms_word16_t *fir;
 	ms_mem_t *mem; /*memories for filtering computations*/
+	float width_coef;
 	bool_t needs_update;
+	bool_t active;
 } EqualizerState;
 
 static void equalizer_state_flatten(EqualizerState *s){
 	int i;
-	for(i=0;i<s->nfft;i+=2)
-		s->fft_cpx[i]=GAIN_ZERODB;
+	ms_word16_t val=GAIN_ZERODB/s->nfft;
+	s->fft_cpx[0]=val;
+	for(i=1;i<s->nfft;i+=2)
+		s->fft_cpx[i]=val;
 }
 
 static EqualizerState * equalizer_state_new(int nfft){
@@ -50,7 +62,9 @@ static EqualizerState * equalizer_state_new(int nfft){
 	s->fir_len=s->nfft;
 	s->fir=ms_new(ms_word16_t,s->fir_len);
 	s->mem=ms_new0(ms_mem_t,s->fir_len);
+	s->width_coef=0.4; /*  when setting a gain at 1000hz, we will affect 800-1200 frequency band*/
 	s->needs_update=TRUE;
+	s->active=TRUE;
 	return s;
 }
 
@@ -70,30 +84,31 @@ static int equalizer_state_hz_to_index(EqualizerState *s, int hz){
 	if (hz>(s->rate/2)){
 		hz=(s->rate/2);
 	}
-	ret=hz*s->nfft/s->rate;
-	if (ret==s->nfft/2) ret--;
+	/*round to nearest integer*/
+	ret=((hz*s->nfft)+(hz/2))/s->rate;
+	if (ret==s->nfft/2) ret=(s->nfft/2)-1;
 	return ret;
 }
 
 static float gain_float(ms_word16_t val){
-	return (float)val/22000.0;
+	return (float)val/GAIN_ZERODB;
 }
 
 static ms_word16_t gain_int16(float val){
-	int ret=(int)(val*22000.0);
+	ms_word16_t ret=(val*GAIN_ZERODB);
 	if (ret>=32767) ret=32767;
 	return (ms_word16_t)ret;
 }
 
 static float equalizer_state_get(EqualizerState *s, int freqhz){
 	int idx=equalizer_state_hz_to_index(s,freqhz);
-	if (idx>=0) return gain_float(s->fft_cpx[idx*2]);
+	if (idx>=0) return gain_float(s->fft_cpx[idx*2])*s->nfft;
 	return 0;
 }
 
 /* return the frequency band width we want to control around hz*/
 static void equalizer_state_get_band(EqualizerState *s, int hz, int *low_index, int *high_index){
-	int half_band=(int)((float)hz*0.1);
+	int half_band=(int)((float)hz*s->width_coef*0.5);
 	*low_index=equalizer_state_hz_to_index(s,hz-half_band);
 	*high_index=equalizer_state_hz_to_index(s,hz+half_band);
 }
@@ -104,7 +119,7 @@ static void equalizer_state_set(EqualizerState *s, int freqhz, float gain){
 	equalizer_state_get_band(s,freqhz,&low,&high);
 	for(i=low;i<=high;++i){
 		ms_message("Setting gain %f for freq_index %i (freqhz=%i)",gain,i,freqhz);
-		s->fft_cpx[i*2]=gain_int16(gain);
+		s->fft_cpx[1+(i*2)]=gain_int16(gain)/s->nfft;
 	}
 	s->needs_update=TRUE;
 }
@@ -119,6 +134,17 @@ static void dump_table(ms_word16_t *t, int len){
 #endif
 }
 
+static void time_shift(ms_word16_t *s, int len){
+	int i;
+	int half=len/2;
+	ms_word16_t tmp;
+	for (i=0;i<half;++i){
+		tmp=s[i];
+		s[i]=s[i+half];
+		s[i+half]=tmp;
+	}
+}
+
 /*
  *hamming:
  * 0.54 - 0.46*cos(2*M_PI*t/T)
@@ -127,7 +153,7 @@ static void dump_table(ms_word16_t *t, int len){
  * 0.42 - 0.5*cos(2*M_PI*t/T) + 0.08*cos(4*M_PI*t/T)
 */
 
-static void apodize(ms_word16_t *s, int len){
+static void norm_and_apodize(ms_word16_t *s, int len){
 	int i;
 	float x;
 	float w;
@@ -140,10 +166,16 @@ static void apodize(ms_word16_t *s, int len){
 
 static void equalizer_state_compute_impulse_response(EqualizerState *s){
 	void *fft_handle=ms_fft_init(s->nfft);
+	ms_message("Spectral domain:");
+	dump_table(s->fft_cpx,s->nfft);
 	ms_ifft(fft_handle,s->fft_cpx,s->fir);
+	ms_fft_destroy(fft_handle);
 	ms_message("Inverse fft result:");
 	dump_table(s->fir,s->fir_len);
-	apodize(s->fir,s->fir_len);
+	time_shift(s->fir,s->fir_len);
+	ms_message("Time shifted:");
+	dump_table(s->fir,s->fir_len);
+	norm_and_apodize(s->fir,s->fir_len);
 	ms_message("Apodized impulse response:");
 	dump_table(s->fir,s->fir_len);
 	s->needs_update=FALSE;
@@ -195,7 +227,9 @@ void equalizer_process(MSFilter *f){
 	mblk_t *m;
 	EqualizerState *s=(EqualizerState*)f->data;
 	while((m=ms_queue_get(f->inputs[0]))!=NULL){
-		equalizer_state_run(s,(int16_t*)m->b_rptr,(m->b_wptr-m->b_rptr)/2);
+		if (s->active){
+			equalizer_state_run(s,(int16_t*)m->b_rptr,(m->b_wptr-m->b_rptr)/2);
+		}
 		ms_queue_put(f->outputs[0],m);
 	}
 }
@@ -220,10 +254,24 @@ int equalizer_set_rate(MSFilter *f, void *data){
 	return 0;
 }
 
+int equalizer_set_active(MSFilter *f, void *data){
+	EqualizerState *s=(EqualizerState*)f->data;
+	s->active=*(int*)data;
+	return 0;
+}
+
+int equalizer_set_freq_width_coef(MSFilter *f, void *data){
+	EqualizerState *s=(EqualizerState*)f->data;
+	s->width_coef=*(float*)data;
+	return 0;
+}
+
 static MSFilterMethod equalizer_methods[]={
 	{	MS_EQUALIZER_SET_GAIN		,	equalizer_set_gain	},
 	{	MS_EQUALIZER_GET_GAIN		,	equalizer_get_gain	},
+	{	MS_EQUALIZER_SET_ACTIVE		,	equalizer_set_active	},
 	{	MS_FILTER_SET_SAMPLE_RATE	,	equalizer_set_rate	},
+	{	MS_EQUALIZER_SET_FREQ_WIDTH_COEF,	equalizer_set_freq_width_coef},
 	{	0				,	NULL			}
 };
 
