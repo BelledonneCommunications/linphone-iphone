@@ -22,12 +22,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <math.h>
 
-#define ABS_GAIN_ZERODB 22000
 
 #ifdef MS_FIXED_POINT
-#define GAIN_ZERODB ABS_GAIN_ZERODB
+#define GAIN_ZERODB 20000
 #else
-#define GAIN_ZERODB (((float)ABS_GAIN_ZERODB)/32767.0)
+#define GAIN_ZERODB 1.0
 #endif
 	
 
