@@ -235,7 +235,6 @@ static int v4l2_do_mmap(V4l2State *s){
 		s->frames[i]=msg;
 	}
 	s->frame_max=req.count;
-	/*
 	for (i = 0; i < s->frame_max; ++i) {
 		struct v4l2_buffer buf;
 
@@ -245,9 +244,11 @@ static int v4l2_do_mmap(V4l2State *s){
 		buf.index       = i;
 		if (-1==ioctl (s->fd, VIDIOC_QBUF, &buf)){
 			ms_error("VIDIOC_QBUF failed: %s",strerror(errno));
+		}else {
+			s->frames[i]->b_datap->db_ref++;
+			s->queued++;
 		}
 	}
-	*/
 	/*start capture immediately*/
 	type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	if (-1 ==ioctl (s->fd, VIDIOC_STREAMON, &type)){
