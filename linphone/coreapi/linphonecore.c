@@ -484,6 +484,8 @@ void sip_config_read(LinphoneCore *lc)
 	/*for test*/
 	lc->sip_conf.sdp_200_ack=lp_config_get_int(lc->config,"sip","sdp_200_ack",0);
 	lc->sip_conf.only_one_codec=lp_config_get_int(lc->config,"sip","only_one_codec",0);
+	lc->sip_conf.register_only_when_network_is_up=
+		lp_config_get_int(lc->config,"sip","register_only_when_network_is_up",0);
 }
 
 void rtp_config_read(LinphoneCore *lc)
@@ -1006,6 +1008,27 @@ static void linphone_core_disconnected(LinphoneCore *lc){
 	linphone_core_terminate_call(lc,NULL);
 }
 
+static void proxy_update(LinphoneCore *lc, time_t curtime){
+	bool_t doit=FALSE;
+	static time_t last_check=0;
+	static bool_t last_status=FALSE;
+	if (lc->sip_conf.register_only_when_network_is_up){
+		char result[LINPHONE_IPADDR_SIZE];
+		/* only do the network up checking every five seconds */
+		if (last_check==0 || (curtime-last_check)>=5){
+			if (eXosip_guess_localip(lc->sip_conf.ipv6_enabled ? AF_INET6 : AF_INET,result,LINPHONE_IPADDR_SIZE)==0){
+				if (strcmp(result,"::1")!=0 && strcmp(result,"127.0.0.1")!=0){
+					last_status=TRUE;
+					ms_message("Network is up, registering now (%s)",result);
+				}else last_status=FALSE;
+			}
+			last_check=curtime;
+		}
+		doit=last_status;
+	}else doit=TRUE;
+	if (doit) ms_list_for_each(lc->sip_conf.proxies,(void (*)(void*))&linphone_proxy_config_update);
+}
+
 void linphone_core_iterate(LinphoneCore *lc)
 {
 	eXosip_event_t *ev;
@@ -1038,7 +1061,7 @@ void linphone_core_iterate(LinphoneCore *lc)
 		}
 	}
 
-	ms_list_for_each(lc->sip_conf.proxies,(void (*)(void*))&linphone_proxy_config_update);
+	proxy_update(lc,curtime);
 
 	if (lc->call!=NULL){
 		LinphoneCall *call=lc->call;
@@ -2416,6 +2439,7 @@ void sip_config_uninit(LinphoneCore *lc)
 	lp_config_set_int(lc->config,"sip","inc_timeout",config->inc_timeout);
 	lp_config_set_int(lc->config,"sip","use_info",config->use_info);
 	lp_config_set_int(lc->config,"sip","use_ipv6",config->ipv6_enabled);
+	lp_config_set_int(lc->config,"sip","register_only_when_network_is_up",config->register_only_when_network_is_up);
 	for(elem=config->proxies,i=0;elem!=NULL;elem=ms_list_next(elem),i++){
 		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)(elem->data);
 		linphone_proxy_config_write_to_config_file(lc->config,cfg,i);
