@@ -159,12 +159,31 @@ fi
 
 dnl prefer fixed point computations
 AC_ARG_ENABLE(fixed_point,
-      [  --enable-fixed-point    Turn on ipv6 support],
+      [  --enable-fixed-point    Turn on fixed point computations (default: guess)],
       [case "${enableval}" in
         yes)  fixed_point=true;;
         no)   fixed_point=false;;
+	guess) fixed_point=guess;;
         *) AC_MSG_ERROR(bad value ${enableval} for --enable-fixed-point) ;;
-      esac],[fixed_point=no])
+      esac],[fixed_point=guess])
+
+if test "$fixed_point" = "guess" ; then
+	AC_MSG_CHECKING([whether fixed point arithmetic is preferred])
+	case ${target_cpu}${host_cpu} in
+		*bfin*)
+			fixed_point=true
+		;;
+		*arm*)
+			fixed_point=true
+		;;
+		*)
+			fixed_point=false
+		;;
+	esac
+	AC_MSG_RESULT([$fixed_point])
+fi
+  
+
 if test x$fixed_point = xtrue ; then
 	MS_PUBLIC_CFLAGS="$MS_PUBLIC_CFLAGS -DMS_FIXED_POINT"
 fi
