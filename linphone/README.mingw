@@ -3,7 +3,11 @@ Software to install
 
 * mingw32
 * msys
-* automake*/autoconf*/libtool , uncompress in /
+
+run msys as Administrator
+
+* automake*/autoconf*/libtool/perl from msys suplementary tools, uncompress in /
+* intltool (quicklink: http://ftp.acc.umu.se/pub/GNOME/binaries/win32/intltool/0.40/intltool_0.40.4-1_win32.zip) uncompress in  /usr/local
 * gcc-part-core-4.3 gcc-part-c++-4.3, uncompress in /mingw
 * download unzip from mingw downloads, uncompress in /mingw
 * install zip from http://www.info-zip.org/Zip.html#Downloads
@@ -19,6 +23,14 @@ Software to install
 * download lastest linphone-deps from linphone downloads, misc directory:
     http://download.savannah.gnu.org/releases-noredirect/linphone/misc/)
     uncompress in /usr/local
+
+
+Get Linphone source code
+************************
+
+Install msys-git from (http://code.google.com/p/msysgit/)
+
+git clone git://git.savannah.nongnu.org/linphone.git
 
 
 Building
