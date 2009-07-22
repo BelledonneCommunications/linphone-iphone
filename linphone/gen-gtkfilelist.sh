@@ -4,7 +4,7 @@
 # It must be run within a gtk+ binary bundle tree, such as in the zip bundle
 # downloadable from www.gtk.org
 echo bin
-echo bin/libglade-2.0.0.dll
+echo bin/libglade-2.0-0.dll
 find bin -name *.dll
 find lib/gtk-2.0
 find etc
