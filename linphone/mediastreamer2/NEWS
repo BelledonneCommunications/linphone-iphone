@@ -1,3 +1,8 @@
+mediastreamer-?.?.?:
+	* integrate directshow capture filter for mingw (was a plugin before)
+	* builds on windows with mingw/msys using ./configure && make
+	* add a parametric equalizer (to modify gains per frequency bands)
+
 mediastreamer-2.2.4: May 4, 2009
 	* fix crash during video window resizing on windows
 	* improve documentation

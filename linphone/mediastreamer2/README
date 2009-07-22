@@ -40,20 +40,22 @@ Here is a complete list of built-in filters.
  *    arts API (linux)
  *    portaudio API (macosx and other)
  *  macsnd API (native macosx API -please do more testing...-)
+ *  aq (audio queue, macos API too)
  *  several audio encoder/decoder: PCMU, PCMA, speex, gsm
  *  wav file reader.
  *  wav file recorder.
  *  resampler.
  *  conference bridge.
- *  volume analyser.
+ *  volume analyser, gain control, and automatic gain control.
  *  acoustic echo canceller.
  *  dtmf generation filter.
+ *  parametric equalizer, can be used to compensate the spectral response of a bad quality speaker or microphone
 
  Video Filters:
  *  video capture
- *    v4w API (windows)
+ *    v4w API (windows, deprecated)
  *    directshow API (windows)
- *    video4linux API (linux)
+ *    video4linux and video4linux2 APIs (linux)
  *  video display
  *    v4w API (windows)
  *    SDL API (linux, macosx...)
@@ -63,6 +65,8 @@ Here is a complete list of built-in filters.
 
  Plugin Filters:
  * iLBC decoder/encoder.
+ * H264 codec, based on x264
+
 
 Note that, you can build your own components/filters to do your
 own processing or support other codecs.
