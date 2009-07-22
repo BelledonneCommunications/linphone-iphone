@@ -1,10 +1,10 @@
 Software to install
 *******************
 
-* mingw32
+* mingw32 (choose candidate to have lastest binaries)
 * msys
 
-run msys as Administrator
+run msys as Administrator (right click on the icon, and click 'run as administrator'.
 
 * automake*/autoconf*/libtool/perl from msys suplementary tools, uncompress in /
 * intltool (quicklink: http://ftp.acc.umu.se/pub/GNOME/binaries/win32/intltool/0.40/intltool_0.40.4-1_win32.zip) uncompress in  /usr/local
@@ -95,12 +95,30 @@ libsoup (compiled)
 
 - building ffmpeg 
   ./configure --enable-shared --disable-static --enable-memalign-hack --extra-cflags="-fno-common" --enable-gpl && make
-  make install DESTDIR=/c/output/
-  Copy to linphone-deps/
+  make install DESTDIR=~/ffmpeg-install
+  Copy to ~/ffmpeg-install/usr/local/* to linphone-deps/.
   Copy also all *.dll.a files from the build tree to lib/ directort of linphone-deps. These are the implibs necessary to link a program against the dlls.
 
 - building libxml2: the binaries found on the internet are generated with MSVC++, and for obscure reason they are not suitable for building libsoup 
   (that requires libxml2).
-  ./configure --enable-shared --disable-static && make && make install DESTDIR=/c/output
+  ./configure --enable-shared --disable-static && make && make install DESTDIR=~/libxml2-install
+  copy ~/libxml2-install/usr/local/* into linphone-deps/.
 
+- building x264:
+  
+  * Download lastest snapshot the linphone fork of x264 from
+  http://download.savannah.gnu.org/releases/linphone/plugins/sources/
+  This fork just brings the H264 Nalu size control feature, necessary to make video packet that fits into the network mtu.
+  It will be no longer necessary as soon as x264 official project will accept this patch or a similar one.
+
+  * download yasm normal version windows executable from yasm project page:
+  http://www.tortall.net/projects/yasm/wiki/Download
+  copy it as /usr/local/bin/yasm.exe
+
+  uncompress the x264 tarball
+  cd into x264/ dir then run:
+  ./configure --enable-pic
+  make
+  make install DESTDIR=~/x264-install
+  then copy the content of ~/x264-install/usr/local/ into linphone-deps/.
 
