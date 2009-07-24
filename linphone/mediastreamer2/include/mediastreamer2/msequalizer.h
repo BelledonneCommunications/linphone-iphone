@@ -25,17 +25,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 typedef struct _MSEqualizerGain{
 	float frequency; ///< In hz
 	float gain; ///< between 0-1.2
+	float width; ///< frequency band width around mid frequency for which the gain is applied, in Hz. Use 0 for the lowest frequency resolution.
 }MSEqualizerGain;
 
 #define MS_EQUALIZER_SET_GAIN	MS_FILTER_METHOD(MS_EQUALIZER_ID,0,MSEqualizerGain)
 #define MS_EQUALIZER_GET_GAIN	MS_FILTER_METHOD(MS_EQUALIZER_ID,1,MSEqualizerGain)
 #define MS_EQUALIZER_SET_ACTIVE	MS_FILTER_METHOD(MS_EQUALIZER_ID,2,int)
-/**
- * Sets the coeficient for computing how large is the frequency band around a gain setting.
- * For example, setting this value to 0.4 will result in a frequency range of 800-1200 when setting
- * a gain for frequency 1000 Hz.
-**/
-#define MS_EQUALIZER_SET_FREQ_WIDTH_COEF MS_FILTER_METHOD(MS_EQUALIZER_ID,3,float)
 
 #endif
 
