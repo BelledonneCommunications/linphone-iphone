@@ -39,7 +39,6 @@ typedef struct _EqualizerState{
 	int fir_len;
 	ms_word16_t *fir;
 	ms_mem_t *mem; /*memories for filtering computations*/
-	float width_coef;
 	bool_t needs_update;
 	bool_t active;
 } EqualizerState;
@@ -61,7 +60,6 @@ static EqualizerState * equalizer_state_new(int nfft){
 	s->fir_len=s->nfft;
 	s->fir=ms_new(ms_word16_t,s->fir_len);
 	s->mem=ms_new0(ms_mem_t,s->fir_len);
-	s->width_coef=0.4; /*  when setting a gain at 1000hz, we will affect 800-1200 frequency band*/
 	s->needs_update=TRUE;
 	s->active=TRUE;
 	return s;
