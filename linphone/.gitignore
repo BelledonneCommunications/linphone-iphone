@@ -22,3 +22,4 @@ mkinstalldirs
 speex
 stamp-h1
 linphone.spec
+linphone.iss
