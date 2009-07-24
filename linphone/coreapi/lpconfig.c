@@ -185,7 +185,7 @@ void lp_config_parse(LpConfig *lpconfig){
 					
 					pos1++;
 					pos2=strchr(pos1,'\n');
-					if (pos2==NULL) pos2=pos1+strlen(pos2);
+					if (pos2==NULL) pos2=pos1+strlen(pos1);
 					else {
 						*pos2='\0'; /*replace the '\n' */
 						pos2--;
