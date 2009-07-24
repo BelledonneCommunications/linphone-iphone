@@ -1487,7 +1487,7 @@ static void parametrize_equalizer(LinphoneCore *lc, AudioStream *st){
 				do{
 					int bytes;
 					MSEqualizerGain g;
-					if (sscanf(gains,"%f:%f:%f %n",&g.frequency,&g.gain,&g.width,&bytes)==2){
+					if (sscanf(gains,"%f:%f:%f %n",&g.frequency,&g.gain,&g.width,&bytes)==3){
 						ms_message("Read equalizer gains: %f(~%f) --> %f",g.frequency,g.width,g.gain);
 						ms_filter_call_method(f,MS_EQUALIZER_SET_GAIN,&g);
 						gains+=bytes;
