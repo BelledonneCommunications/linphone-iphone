@@ -172,6 +172,7 @@ VideoStream *video_stream_new(int locport, bool_t use_ipv6){
 }
 
 void video_stream_set_sent_video_size(VideoStream *stream, MSVideoSize vsize){
+  ms_message("Setting vidoe size %dx%d", vsize.width, vsize.height);
 	stream->sent_vsize=vsize;
 }
 
@@ -201,6 +202,8 @@ int video_stream_start (VideoStream *stream, RtpProfile *profile, const char *re
 	int tmp;
 	JBParameters jbp;
 	const int socket_buf_size=2000000;
+
+	ms_message("%s entry", __FUNCTION__);
 
 	pt=rtp_profile_get_payload(profile,payload);
 	if (pt==NULL){
@@ -413,7 +416,7 @@ int video_stream_send_only_start(VideoStream* stream, RtpProfile *profile, const
 	MSVideoSize vsize;
 	RtpSession *rtps=stream->session;
 	float fps=15;
-	
+
 	vsize.width=MS_VIDEO_SIZE_CIF_W;
 	vsize.height=MS_VIDEO_SIZE_CIF_H;
 
@@ -449,9 +452,16 @@ int video_stream_send_only_start(VideoStream* stream, RtpProfile *profile, const
 	/* configure the filters */
 	if (pt->send_fmtp)
 		ms_filter_call_method(stream->encoder,MS_FILTER_ADD_FMTP,pt->send_fmtp);
-	ms_filter_call_method(stream->encoder,MS_FILTER_SET_BITRATE,&pt->normal_bitrate);
+
+	if (pt->normal_bitrate>0){
+		ms_message("Limiting bitrate of video encoder to %i bits/s",pt->normal_bitrate);
+		ms_filter_call_method(stream->encoder,MS_FILTER_SET_BITRATE,&pt->normal_bitrate);
+	}
+
 	ms_filter_call_method(stream->encoder,MS_FILTER_GET_FPS,&fps);
 	ms_filter_call_method(stream->encoder,MS_FILTER_GET_VIDEO_SIZE,&vsize);
+	vsize=ms_video_size_min(vsize,stream->sent_vsize);
+	ms_filter_call_method(stream->encoder,MS_FILTER_SET_VIDEO_SIZE,&vsize);
 
 	ms_filter_call_method(stream->source,MS_FILTER_SET_FPS,&fps);
 	ms_filter_call_method(stream->source,MS_FILTER_SET_VIDEO_SIZE,&vsize);
