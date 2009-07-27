@@ -93,7 +93,7 @@ static float gain_float(ms_word16_t val){
 }
 
 static ms_word16_t gain_int16(float val){
-	ms_word16_t ret=(val*GAIN_ZERODB);
+	ms_word32_t ret=(val*GAIN_ZERODB);
 	if (ret>=32767) ret=32767;
 	return (ms_word16_t)ret;
 }
