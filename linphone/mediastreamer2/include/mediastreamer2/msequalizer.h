@@ -28,9 +28,17 @@ typedef struct _MSEqualizerGain{
 	float width; ///< frequency band width around mid frequency for which the gain is applied, in Hz. Use 0 for the lowest frequency resolution.
 }MSEqualizerGain;
 
-#define MS_EQUALIZER_SET_GAIN	MS_FILTER_METHOD(MS_EQUALIZER_ID,0,MSEqualizerGain)
-#define MS_EQUALIZER_GET_GAIN	MS_FILTER_METHOD(MS_EQUALIZER_ID,1,MSEqualizerGain)
-#define MS_EQUALIZER_SET_ACTIVE	MS_FILTER_METHOD(MS_EQUALIZER_ID,2,int)
+#define MS_EQUALIZER_SET_GAIN		MS_FILTER_METHOD(MS_EQUALIZER_ID,0,MSEqualizerGain)
+#define MS_EQUALIZER_GET_GAIN		MS_FILTER_METHOD(MS_EQUALIZER_ID,1,MSEqualizerGain)
+#define MS_EQUALIZER_SET_ACTIVE		MS_FILTER_METHOD(MS_EQUALIZER_ID,2,int)
+/**dump the spectral response into a table of float. The table must be sized according to the value returned by
+ * MS_EQUALIZER_GET_NUM_FREQUENCIES 
+**/
+#define MS_EQUALIZER_DUMP_STATE		MS_FILTER_METHOD(MS_EQUALIZER_ID,3,float)
+
+/**returns the number of frequencies*/
+#define MS_EQUALIZER_GET_NUM_FREQUENCIES	MS_FILTER_METHOD(MS_EQUALIZER_ID,4,int)
+
 
 #endif
 

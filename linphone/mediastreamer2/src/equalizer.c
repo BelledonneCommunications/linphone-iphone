@@ -217,15 +217,15 @@ static void equalizer_state_run(EqualizerState *s, int16_t *samples, int nsample
 }
 
 
-void equalizer_init(MSFilter *f){
+static void equalizer_init(MSFilter *f){
 	f->data=equalizer_state_new(128);
 }
 
-void equalizer_uninit(MSFilter *f){
+static void equalizer_uninit(MSFilter *f){
 	equalizer_state_destroy((EqualizerState*)f->data);
 }
 
-void equalizer_process(MSFilter *f){
+static void equalizer_process(MSFilter *f){
 	mblk_t *m;
 	EqualizerState *s=(EqualizerState*)f->data;
 	while((m=ms_queue_get(f->inputs[0]))!=NULL){
@@ -236,14 +236,14 @@ void equalizer_process(MSFilter *f){
 	}
 }
 
-int equalizer_set_gain(MSFilter *f, void *data){
+static int equalizer_set_gain(MSFilter *f, void *data){
 	EqualizerState *s=(EqualizerState*)f->data;
 	MSEqualizerGain *d=(MSEqualizerGain*)data;
 	equalizer_state_set(s,d->frequency,d->gain,d->width);
 	return 0;
 }
 
-int equalizer_get_gain(MSFilter *f, void *data){
+static int equalizer_get_gain(MSFilter *f, void *data){
 	EqualizerState *s=(EqualizerState*)f->data;
 	MSEqualizerGain *d=(MSEqualizerGain*)data;
 	d->gain=equalizer_state_get(s,d->frequency);
@@ -251,15 +251,34 @@ int equalizer_get_gain(MSFilter *f, void *data){
 	return 0;
 }
 
-int equalizer_set_rate(MSFilter *f, void *data){
+static int equalizer_set_rate(MSFilter *f, void *data){
 	EqualizerState *s=(EqualizerState*)f->data;
 	s->rate=*(int*)data;
 	return 0;
 }
 
-int equalizer_set_active(MSFilter *f, void *data){
+static int equalizer_set_active(MSFilter *f, void *data){
 	EqualizerState *s=(EqualizerState*)f->data;
 	s->active=*(int*)data;
+	return 0;
+}
+
+static int equalizer_dump(MSFilter *f, void *data){
+	EqualizerState *s=(EqualizerState*)f->data;
+	float *t=(float*)data;
+	int i;
+	*t=s->fft_cpx[0];
+	t++;
+	for (i=1;i<s->nfft;i+=2){
+		*t=((float)s->fft_cpx[i]*(float)s->nfft)/(float)GAIN_ZERODB;
+		t++;
+	}
+	return 0;
+}
+
+static int equalizer_get_nfreqs(MSFilter *f, void *data){
+	EqualizerState *s=(EqualizerState*)f->data;
+	*(int*)data=s->nfft/2;
 	return 0;
 }
 
@@ -268,6 +287,8 @@ static MSFilterMethod equalizer_methods[]={
 	{	MS_EQUALIZER_GET_GAIN		,	equalizer_get_gain	},
 	{	MS_EQUALIZER_SET_ACTIVE		,	equalizer_set_active	},
 	{	MS_FILTER_SET_SAMPLE_RATE	,	equalizer_set_rate	},
+	{	MS_EQUALIZER_DUMP_STATE		,	equalizer_dump		},
+	{	MS_EQUALIZER_GET_NUM_FREQUENCIES,	equalizer_get_nfreqs	},
 	{	0				,	NULL			}
 };
 

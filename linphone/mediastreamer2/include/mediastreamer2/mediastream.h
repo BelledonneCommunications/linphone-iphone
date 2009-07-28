@@ -117,7 +117,7 @@ void audio_stream_set_mic_gain(AudioStream *stream, float gain);
 /*enable parametric equalizer in the stream that goes to the speaker*/
 void audio_stream_enable_equalizer(AudioStream *stream, bool_t enabled);
 
-void audio_stream_equalizer_set_gain(AudioStream *stream, int frequency, float gain);
+void audio_stream_equalizer_set_gain(AudioStream *stream, int frequency, float gain, int freq_width);
 
 /* stop the audio streaming thread and free everything*/
 void audio_stream_stop (AudioStream * stream);

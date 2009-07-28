@@ -21,7 +21,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer-config.h"
 #endif
 
+#include <math.h>
+
 #include "mediastreamer2/mediastream.h"
+#include "mediastreamer2/msequalizer.h"
 #ifdef VIDEO_ENABLED
 #include "mediastreamer2/msv4l.h"
 #endif
@@ -290,14 +293,29 @@ void run_media_streams(int localport,  const char *remote_ip, int remoteport, in
 		commands[127]='\0';
 		printf("Please enter equalizer requests, such as 'eq active 1', 'eq active 0', 'eq 1200 0.1'\n");
 		while(fgets(commands,sizeof(commands)-1,stdin)!=NULL){
-			int active,freq;
+			int active,freq,freq_width;
 			float gain;
 			if (sscanf(commands,"eq active %i",&active)==1){
 				audio_stream_enable_equalizer(audio,active);
 				printf("OK\n");
-			}else if (sscanf(commands,"eq %i %f",&freq,&gain)==2){
-				audio_stream_equalizer_set_gain(audio,freq,gain);
+			}else if (sscanf(commands,"eq %i:%f:%i",&freq,&gain,&freq_width)==3){
+				audio_stream_equalizer_set_gain(audio,freq,gain,freq_width);
 				printf("OK\n");
+			}else if (sscanf(commands,"eq %i:%f",&freq,&gain)==2){
+				audio_stream_equalizer_set_gain(audio,freq,gain,0);
+				printf("OK\n");
+			}else if (strstr(commands,"dump")){
+				int n=0,i;
+				float *t;
+				ms_filter_call_method(audio->equalizer,MS_EQUALIZER_GET_NUM_FREQUENCIES,&n);
+				t=(float*)alloca(sizeof(float)*n);
+				ms_filter_call_method(audio->equalizer,MS_EQUALIZER_DUMP_STATE,t);
+				for(i=0;i<n;++i){
+					if (fabs(t[i]-1)>0.01){
+						printf("%i:%f:0 ",(i*pt->clock_rate)/(2*n),t[i]);
+					}
+				}
+				printf("\nOK\n");
 			}else if (strstr(commands,"quit")){
 				break;
 			}else printf("Cannot understand this.\n");

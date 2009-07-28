@@ -452,12 +452,12 @@ void audio_stream_enable_equalizer(AudioStream *stream, bool_t enabled){
 	}
 }
 
-void audio_stream_equalizer_set_gain(AudioStream *stream, int frequency, float gain){
+void audio_stream_equalizer_set_gain(AudioStream *stream, int frequency, float gain, int freq_width){
 	if (stream->equalizer){
 		MSEqualizerGain d;
 		d.frequency=frequency;
 		d.gain=gain;
-		d.width=0.4*(float)frequency;
+		d.width=freq_width;
 		ms_filter_call_method(stream->equalizer,MS_EQUALIZER_SET_GAIN,&d);
 	}
 }
