@@ -715,9 +715,9 @@ int linphone_core_wake_up_possible_already_running_instance(const char *config_f
 							break;
 						}
 #ifdef WIN32
-						Sleep(10);
+						Sleep(100);
 #else
-						usleep(10000);
+						usleep(100000);
 #endif
 					}
 				}else ms_message("sendto() of WAKEUP request failed, nobody to wakeup.");

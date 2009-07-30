@@ -124,6 +124,18 @@ const char *linphone_gtk_get_lang(const char *config_file){
 	return linphone_lang;
 }
 
+void linphone_gtk_set_lang(const char *code){
+	LpConfig *cfg=linphone_core_get_config(linphone_gtk_get_core());
+	lp_config_set_string(cfg,"GtkUi","lang",code);
+#ifdef WIN32
+	char tmp[128];
+	snprintf(tmp,sizeof(tmp),"LANG=%s",code);
+	_putenv(tmp);
+#else
+	setenv("LANG",code,1);
+#endif
+}
+
 const gchar *linphone_gtk_get_ui_config(const char *key, const char *def){
 	LinphoneCore *lc=linphone_gtk_get_core();
 	if (lc){

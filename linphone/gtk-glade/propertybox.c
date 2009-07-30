@@ -611,6 +611,92 @@ void linphone_gtk_edit_proxy(GtkButton *button){
 	}
 }
 
+typedef struct _LangCodes{
+	const char *code;
+	const char *name;
+}LangCodes;
+
+static LangCodes supported_langs[]={
+	{	"C"	,	N_("English")	},
+	{	"fr"	,	N_("French")	},
+	{	"sv"	,	N_("Swedish")	},
+	{	"it"	,	N_("Italian")	},
+	{	"es"	,	N_("Spanish")	},
+	{	"pt_BR"	,	N_("Bresilian")	},
+	{	"pl"	,	N_("Polish")	},
+	{	"de"	,	N_("German")	},
+	{	"ru"	,	N_("Russian")	},
+	{	"ja"	,	N_("Japanese")	},
+	{	"nl"	,	N_("Dutch")	},
+	{	"hu"	,	N_("Hungarian")	},
+	{	"cs"	,	N_("Czech")	},
+	{	NULL	,	NULL		}
+};
+
+static const char *lang_get_name(const char *code){
+	LangCodes *p=supported_langs;
+	while(p->code!=NULL){
+		if (strcmp(p->code,code)==0) return p->name;
+		p++;
+	}
+	return NULL;
+}
+
+static gboolean lang_equals(const char *l1, const char *l2){
+	return ((strncmp(l1,l2,5)==0 || strncmp(l1,l2,2)==0));
+}
+
+static void linphone_gtk_fill_langs(GtkWidget *pb){
+	GtkWidget *combo=linphone_gtk_get_widget(pb,"lang_combo");
+	char code[10];
+	const char *all_langs="C " LINPHONE_ALL_LANGS;
+	const char *name;
+	int i=0,index=0;
+	int adv;
+	const char *cur_lang=getenv("LANG");
+	int cur_lang_index=-1;
+	char text[256]={0};
+	if (cur_lang==NULL) cur_lang="C";
+	/* glade creates a combo box without list model and text renderer,
+	unless we fill it with a dummy text.
+	This dummy text needs to be removed first*/
+	gtk_combo_box_remove_text(GTK_COMBO_BOX(combo),0);
+	while(sscanf(all_langs+i,"%s %n",code,&adv)>=1){
+		i+=adv;
+		name=lang_get_name(code);
+		snprintf(text,sizeof(text)-1,"%s : %s",code,name!=NULL ? _(name) : code);
+		gtk_combo_box_append_text(GTK_COMBO_BOX(combo),text);
+		if (cur_lang_index==-1 && lang_equals(cur_lang,code)) 
+			cur_lang_index=index;
+		index++;
+	}
+	gtk_combo_box_set_active(GTK_COMBO_BOX(combo),cur_lang_index);
+}
+
+void linphone_gtk_lang_changed(GtkComboBox *combo){
+	const char *selected=gtk_combo_box_get_active_text(combo);
+	char code[10];
+	const char *cur_lang=getenv("LANG");
+	if (selected!=NULL){
+		sscanf(selected,"%s",code);
+		if (cur_lang==NULL) cur_lang="C";
+		if (!lang_equals(cur_lang,code)){
+			GtkWidget *dialog = gtk_message_dialog_new (GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(combo))),
+				GTK_DIALOG_DESTROY_WITH_PARENT,
+				GTK_MESSAGE_INFO,
+				GTK_BUTTONS_CLOSE,
+				"%s",
+				(const gchar*)_("You need to restart linphone for the new language selection to take effect."));
+				/* Destroy the dialog when the user responds to it (e.g. clicks a button) */
+			g_signal_connect_swapped (G_OBJECT (dialog), "response",
+					G_CALLBACK (gtk_widget_destroy),
+					G_OBJECT (dialog));
+			gtk_widget_show(dialog);
+			linphone_gtk_set_lang(code);
+		}
+	}
+}
+
 void linphone_gtk_show_parameters(void){
 	GtkWidget *pb=linphone_gtk_create_window("parameters");
 	LinphoneCore *lc=linphone_gtk_get_core();
@@ -688,5 +774,7 @@ void linphone_gtk_show_parameters(void){
 				linphone_core_get_download_bandwidth(lc));
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb,"upload_bw")),
 				linphone_core_get_upload_bandwidth(lc));
+
+	linphone_gtk_fill_langs(pb);
 	gtk_widget_show(pb);
 }

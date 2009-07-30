@@ -67,6 +67,7 @@ dnl Add the languages which your application supports here.
 PKG_PROG_PKG_CONFIG
 ALL_LINGUAS="fr it de ja es pl cs nl sv pt_BR hu ru"
 AC_SUBST(ALL_LINGUAS)
+AC_DEFINE_UNQUOTED(LINPHONE_ALL_LANGS, "$ALL_LINGUAS", [All supported languages])
 
 if test "$mingw_found" != "yes" ; then
 dnl gettext macro does not work properly under mingw.
