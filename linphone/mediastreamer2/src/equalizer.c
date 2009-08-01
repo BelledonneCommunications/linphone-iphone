@@ -28,9 +28,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #else
 #define GAIN_ZERODB 1.0
 #endif
-	
 
-
+#define TAPS 128
 
 typedef struct _EqualizerState{
 	int rate;
@@ -74,7 +73,6 @@ static void equalizer_state_destroy(EqualizerState *s){
 
 static int equalizer_state_hz_to_index(EqualizerState *s, int hz){
 	int ret;
-	int bandres=s->rate/s->nfft;
 	if (hz<0){
 		ms_error("Bad frequency value %i",hz);
 		return -1;
@@ -83,19 +81,17 @@ static int equalizer_state_hz_to_index(EqualizerState *s, int hz){
 		hz=(s->rate/2);
 	}
 	/*round to nearest integer*/
-	ret=((hz+(bandres/2))*s->nfft)/s->rate;
+	ret=((hz*s->nfft)+(s->rate/2))/s->rate;
 	if (ret==s->nfft/2) ret=(s->nfft/2)-1;
 	return ret;
 }
 
-static float gain_float(ms_word16_t val){
-	return (float)val/GAIN_ZERODB;
+static int equalizer_state_index2hz(EqualizerState *s, int index){
+	return (index * s->rate + s->nfft/2) / s->nfft;
 }
 
-static ms_word16_t gain_int16(float val){
-	ms_word32_t ret=(val*GAIN_ZERODB);
-	if (ret>=32767) ret=32767;
-	return (ms_word16_t)ret;
+static float gain_float(ms_word16_t val){
+	return (float)val/GAIN_ZERODB;
 }
 
 static float equalizer_state_get(EqualizerState *s, int freqhz){
@@ -104,21 +100,52 @@ static float equalizer_state_get(EqualizerState *s, int freqhz){
 	return 0;
 }
 
-/* return the frequency band width we want to control around hz*/
-static void equalizer_state_get_band(EqualizerState *s, int hz, int freq_width,int *low_index, int *high_index){
-	int half_band=freq_width/2;
-	*low_index=equalizer_state_hz_to_index(s,hz-half_band);
-	*high_index=equalizer_state_hz_to_index(s,hz+half_band);
+/* The natural peaking equalizer amplitude transfer function is multiplied to the discrete f-points.
+ * Note that for PEQ no sqrt is needed for the overall calculation, applying it to gain yields the
+ * same response.
+ */
+static float equalizer_compute_gainpoint(int f, int freq_0, float sqrt_gain, int freq_bw)
+{
+	float k1, k2;
+	k1 = ((float)(f*f)-(float)(freq_0*freq_0));
+	k1*= k1;
+	k2 = (float)(f*freq_bw);
+	k2*= k2;
+	return (k1+k2*sqrt_gain)/(k1+k2/sqrt_gain);
 }
 
-static void equalizer_state_set(EqualizerState *s, int freqhz, float gain, int freq_width){
-	int low,high;
-	int i;
-	equalizer_state_get_band(s,freqhz,freq_width,&low,&high);
-	for(i=low;i<=high;++i){
-		ms_message("Setting gain %f for freq_index %i (freqhz=%i)",gain,i,freqhz);
-		s->fft_cpx[1+((i-1)*2)]=gain_int16(gain)/s->nfft;
+static void equalizer_point_set(EqualizerState *s, int i, int f, float gain){
+	ms_message("Setting gain %f for freq_index %i (%i Hz)\n",gain,i,f);
+	s->fft_cpx[1+((i-1)*2)] = (s->fft_cpx[1+((i-1)*2)]*(int)(gain*32768))/32768;
+}
+
+static void equalizer_state_set(EqualizerState *s, int freq_0, float gain, int freq_bw){
+	//int low,high;
+	int i, f;
+	int delta_f = equalizer_state_index2hz(s, 1);
+	float sqrt_gain = sqrt(gain);
+	int mid = equalizer_state_hz_to_index(s, freq_0);
+	freq_bw-= delta_f/2;   /* subtract a constant - compensates for limited fft steepness at low f */
+	if (freq_bw < delta_f/2)
+		freq_bw = delta_f/2;
+	i = mid;
+	f = equalizer_state_index2hz(s, i);
+	equalizer_point_set(s, i, f, gain);   /* gain according to argument */
+	do {	/* note: to better accomodate limited fft steepness, -delta is applied in f-calc ... */
+		i++;
+		f = equalizer_state_index2hz(s, i);
+		gain = equalizer_compute_gainpoint(f-delta_f, freq_0, sqrt_gain, freq_bw);
+		equalizer_point_set(s, i, f, gain);
 	}
+	while (i<TAPS && (gain>1.1 || gain<0.9));
+	i = mid;
+	do {	/* ... and here +delta, as to  */
+		i--;
+		f = equalizer_state_index2hz(s, i);
+		gain = equalizer_compute_gainpoint(f+delta_f, freq_0, sqrt_gain, freq_bw);
+		equalizer_point_set(s, i, f, gain);
+	}
+	while (i>=0 && (gain>1.1 || gain<0.9));
 	s->needs_update=TRUE;
 }
 
@@ -157,7 +184,8 @@ static void norm_and_apodize(ms_word16_t *s, int len){
 	float w;
 	for(i=0;i<len;++i){
 		x=(float)i*2*M_PI/(float)len;
-		w=0.42 - (0.5*cos(x)) + (0.08*cos(2*x));
+		w=0.54 - (0.46*cos(x));
+		//w=0.42 - (0.5*cos(x)) + (0.08*cos(2*x));
 		s[i]=w*(float)s[i];
 	}	
 }
@@ -218,7 +246,7 @@ static void equalizer_state_run(EqualizerState *s, int16_t *samples, int nsample
 
 
 static void equalizer_init(MSFilter *f){
-	f->data=equalizer_state_new(128);
+	f->data=equalizer_state_new(TAPS);
 }
 
 static void equalizer_uninit(MSFilter *f){
