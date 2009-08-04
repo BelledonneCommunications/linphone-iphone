@@ -86,6 +86,36 @@ create_pixbuf                          (const gchar     *filename)
   return pixbuf;
 }
 
+/* This is an internally used function to create animations */
+GdkPixbufAnimation *
+create_pixbuf_animation(const gchar     *filename)
+{
+	gchar *pathname = NULL;
+	GdkPixbufAnimation *pixbuf;
+	GError *error = NULL;
+	
+	if (!filename || !filename[0])
+		return NULL;
+	
+	pathname = find_pixmap_file (filename);
+	
+	if (!pathname){
+		g_warning (_("Couldn't find pixmap file: %s"), filename);
+		return NULL;
+	}
+	
+	pixbuf = gdk_pixbuf_animation_new_from_file (pathname, &error);
+	if (!pixbuf){
+		fprintf (stderr, "Failed to load pixbuf file: %s: %s\n",
+			pathname, error->message);
+		g_error_free (error);
+	}
+	g_free (pathname);
+	return pixbuf;
+}
+
+
+
 /* This is used to set ATK action descriptions. */
 void
 glade_set_atk_action_description       (AtkAction       *action,
@@ -126,6 +156,12 @@ const char *linphone_gtk_get_lang(const char *config_file){
 
 void linphone_gtk_set_lang(const char *code){
 	LpConfig *cfg=linphone_core_get_config(linphone_gtk_get_core());
+	const char *curlang;
+	curlang=getenv("LANG");
+	if (curlang!=NULL && strncmp(curlang,code,2)==0) {
+		/* do not loose the _territory@encoding part*/
+		return;
+	}
 	lp_config_set_string(cfg,"GtkUi","lang",code);
 #ifdef WIN32
 	char tmp[128];

@@ -34,6 +34,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 GdkPixbuf * create_pixbuf(const gchar *filename);
+GdkPixbufAnimation *create_pixbuf_animation(const gchar *filename);
 void add_pixmap_directory(const gchar *directory);
 GtkWidget *linphone_gtk_create_window(const char *window_name);
 GtkWidget *linphone_gtk_get_widget(GtkWidget *window, const char *name);
@@ -41,6 +42,7 @@ LinphoneCore *linphone_gtk_get_core(void);
 GtkWidget *linphone_gtk_get_main_window();
 void linphone_gtk_display_something(GtkMessageType type,const gchar *message);
 void linphone_gtk_start_call(GtkWidget *button);
+void linphone_gtk_call_terminated();
 void linphone_gtk_show_friends(void);
 void linphone_gtk_show_contact(LinphoneFriend *lf);
 void linphone_gtk_set_my_presence(LinphoneOnlineStatus ss);
@@ -63,3 +65,12 @@ void linphone_gtk_set_lang(const char *code);
 SipSetupContext* linphone_gtk_get_default_sip_setup_context(void);
 void linphone_gtk_show_buddy_lookup_window(SipSetupContext *ctx);
 void * linphone_gtk_wait(LinphoneCore *lc, void *ctx, LinphoneWaitingState ws, const char *purpose, float progress);
+gchar *linphone_gtk_get_display_name(const char *sip_uri);
+
+/*functions controlling the in-call view*/
+void linphone_gtk_show_in_call_view(void);
+void linphone_gtk_show_idle_view(void);
+void linphone_gtk_in_call_view_set_calling(const char *uri);
+void linphone_gtk_in_call_view_set_in_call(const char *uri);
+void linphone_gtk_in_call_view_update_duration(int duration);
+void linphone_gtk_in_call_view_terminate(const char *error_msg);

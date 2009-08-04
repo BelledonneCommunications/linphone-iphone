@@ -1,4 +1,10 @@
-linphone-3.1.2 --
+linphone-3.2.0 -- 
+	* new in-call layout
+	* new idle view with two buttons
+	* ability to dial the number from dialpad
+
+
+linphone-3.1.2 -- May 5, 2009
 	* make it work with lastest ffmpeg swscale
 	* improve theora packer
 	* update theora default settings to match performance of 1.0 release.

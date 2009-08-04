@@ -35,6 +35,7 @@ linphone_3_SOURCES=	main.c \
 			buddylookup.c \
 			utils.c \
 			setupwizard.c\
+			incall_view.c \
 			linphone.h
 
 linphone_3_LDADD=$(top_builddir)/oRTP/src/libortp.la \

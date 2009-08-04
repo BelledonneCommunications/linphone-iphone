@@ -304,8 +304,17 @@ static void set_video_window_decorations(GdkWindow *w){
 	const char *icon_path=linphone_gtk_get_ui_config("icon","linphone2.png");
 	char video_title[256];
 	GdkPixbuf *pbuf=create_pixbuf(icon_path);
-	snprintf(video_title,sizeof(video_title),"%s video",title);
+	if (!linphone_core_in_call(linphone_gtk_get_core())){
+		snprintf(video_title,sizeof(video_title),"%s video",title);	
+	}else{
+		const char *uri=linphone_core_get_remote_uri(linphone_gtk_get_core());
+		gchar *display_name=linphone_gtk_get_display_name(uri);
+		snprintf(video_title,sizeof(video_title),"Call with %s",display_name);
+		g_free(display_name);
+	}
 	gdk_window_set_title(w,video_title);
+	/*gdk_window_set_urgency_hint(w,TRUE);*/
+	gdk_window_raise(w);
 	if (pbuf){
 		GList *l=NULL;
 		l=g_list_append(l,pbuf);
@@ -315,6 +324,11 @@ static void set_video_window_decorations(GdkWindow *w){
 	}
 }
 
+static gboolean video_needs_update=FALSE;
+
+static void update_video_title(){
+	video_needs_update=TRUE;
+}
 
 static gboolean linphone_gtk_iterate(LinphoneCore *lc){
 	unsigned long id;
@@ -326,11 +340,11 @@ static gboolean linphone_gtk_iterate(LinphoneCore *lc){
 	in_iterate=TRUE;
 	linphone_core_iterate(lc);
 	id=linphone_core_get_native_video_window_id(lc);
-	if (id!=previd){
-		ms_message("Updating window decorations");
+	if (id!=previd || video_needs_update){
 		GdkWindow *w;
 		previd=id;
 		if (id!=0){
+			ms_message("Updating window decorations");
 #ifndef WIN32
 			w=gdk_window_foreign_new(id);
 #else
@@ -341,6 +355,7 @@ static gboolean linphone_gtk_iterate(LinphoneCore *lc){
 				g_object_unref(G_OBJECT(w));
 			}
 			else ms_error("gdk_window_foreign_new() failed");
+			if (video_needs_update) video_needs_update=FALSE;
 		}
 	}
 	in_iterate=FALSE;
@@ -419,37 +434,56 @@ static void completion_add_text(GtkEntry *entry, const char *text){
 	save_uri_history();
 }
 
-static void linphone_gtk_call_terminated(GtkWidget *mw){
+void linphone_gtk_call_terminated(const char *error){
+	GtkWidget *mw=linphone_gtk_get_main_window();
 	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"terminate_call"),FALSE);
 	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"start_call"),TRUE);
+	gtk_widget_hide(linphone_gtk_get_widget(mw,"go_to_call_view"));
+	linphone_gtk_in_call_view_terminate(error);
+	update_video_title();
 	g_object_set_data(G_OBJECT(mw),"incoming_call",NULL);
+	
 }
 
-gboolean check_call_active(){
-	if (!linphone_core_in_call(linphone_gtk_get_core())){
-		linphone_gtk_call_terminated(linphone_gtk_get_main_window());
-		return FALSE;
+static gboolean in_call_timer(){
+	if (linphone_core_in_call(linphone_gtk_get_core())){
+		linphone_gtk_in_call_view_update_duration(
+			linphone_core_get_current_call_duration(linphone_gtk_get_core()));
+		return TRUE;
 	}
-	return TRUE;
+	return FALSE;
 }
 
 static void linphone_gtk_call_started(GtkWidget *mw){
 	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"start_call"),FALSE);
 	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"terminate_call"),TRUE);
-	g_timeout_add(250,(GSourceFunc)check_call_active,NULL);
+	gtk_widget_show(linphone_gtk_get_widget(mw,"go_to_call_view"));
+	update_video_title();
+	g_timeout_add(250,(GSourceFunc)in_call_timer,NULL);
+}
+
+static gboolean linphone_gtk_start_call_do(GtkWidget *uri_bar){
+	const char *entered=gtk_entry_get_text(GTK_ENTRY(uri_bar));
+	if (linphone_core_invite(linphone_gtk_get_core(),entered)==0) {
+		completion_add_text(GTK_ENTRY(uri_bar),entered);
+	}else{
+	}
+	return FALSE;
 }
 
 void linphone_gtk_start_call(GtkWidget *w){
 	LinphoneCore *lc=linphone_gtk_get_core();
-	if (linphone_core_inc_invite_pending(lc)){
+	if (linphone_core_inc_invite_pending(lc) || linphone_core_in_call(lc)) {
 		/*already in call */
 	}else{
-		GtkWidget *uri_bar=linphone_gtk_get_widget(gtk_widget_get_toplevel(w),"uribar");
+		/*change into in-call mode, then do the work later as it might block a bit */
+		GtkWidget *mw=gtk_widget_get_toplevel(w);
+		GtkWidget *uri_bar=linphone_gtk_get_widget(mw,"uribar");
 		const char *entered=gtk_entry_get_text(GTK_ENTRY(uri_bar));
-		if (linphone_core_invite(lc,entered)==0) {
-			linphone_gtk_call_started(linphone_gtk_get_main_window());
-			completion_add_text(GTK_ENTRY(uri_bar),entered);
-		}
+		linphone_gtk_call_started(mw);
+		linphone_gtk_in_call_view_set_calling(entered);
+		linphone_gtk_show_in_call_view();
+		g_timeout_add(100,(GSourceFunc)linphone_gtk_start_call_do,uri_bar);
 	}
 }
 
@@ -460,20 +494,21 @@ void linphone_gtk_uri_bar_activate(GtkWidget *w){
 
 void linphone_gtk_terminate_call(GtkWidget *button){
 	linphone_core_terminate_call(linphone_gtk_get_core(),NULL);
-	linphone_gtk_call_terminated(gtk_widget_get_toplevel(button));
 }
 
 void linphone_gtk_decline_call(GtkWidget *button){
 	linphone_core_terminate_call(linphone_gtk_get_core(),NULL);
-	linphone_gtk_call_terminated(linphone_gtk_get_main_window());
 	gtk_widget_destroy(gtk_widget_get_toplevel(button));
 }
 
 void linphone_gtk_accept_call(GtkWidget *button){
-	linphone_core_accept_call(linphone_gtk_get_core(),NULL);
+	LinphoneCore *lc=linphone_gtk_get_core();
+	linphone_core_accept_call(lc,NULL);
 	g_object_set_data(G_OBJECT(linphone_gtk_get_main_window()),"incoming_call",NULL);
 	gtk_widget_destroy(gtk_widget_get_toplevel(button));
 	linphone_gtk_call_started(linphone_gtk_get_main_window());
+	linphone_gtk_in_call_view_set_in_call(linphone_core_get_remote_uri(lc));
+	linphone_gtk_show_in_call_view();
 }
 
 void linphone_gtk_set_audio_video(){
@@ -535,7 +570,6 @@ static void linphone_gtk_bye_recv(LinphoneCore *lc, const char *from){
 	if (icw!=NULL){
 		gtk_widget_destroy(icw);
 	}
-	linphone_gtk_call_terminated(linphone_gtk_get_main_window());
 }
 
 static void linphone_gtk_notify_recv(LinphoneCore *lc, LinphoneFriend * fid, const char *url, const char *status, const char *img){
@@ -667,6 +701,20 @@ static void linphone_gtk_call_log_updated(LinphoneCore *lc, LinphoneCallLog *cl)
 }
 
 static void linphone_gtk_general_state(LinphoneCore *lc, LinphoneGeneralState *gstate){
+	switch(gstate->new_state){
+		case GSTATE_CALL_OUT_CONNECTED:
+		case GSTATE_CALL_IN_CONNECTED:
+			linphone_gtk_in_call_view_set_in_call(linphone_core_get_remote_uri(lc));
+		break;
+		case GSTATE_CALL_ERROR:
+			linphone_gtk_call_terminated(gstate->message);
+		break;
+		case GSTATE_CALL_END:
+			linphone_gtk_call_terminated(NULL);
+		break;
+		default:
+		break;
+	}
 }
 
 static void icon_popup_menu(GtkStatusIcon *status_icon, guint button, guint activate_time, gpointer user_data){
@@ -769,7 +817,13 @@ void linphone_gtk_load_identities(void){
 
 static void linphone_gtk_dtmf_clicked(GtkButton *button){
 	const char *label=gtk_button_get_label(button);
-	linphone_core_send_dtmf(linphone_gtk_get_core(),label[0]);
+	if (linphone_core_in_call(linphone_gtk_get_core())){
+		linphone_core_send_dtmf(linphone_gtk_get_core(),label[0]);
+	}else{
+		GtkWidget *uri_bar=linphone_gtk_get_widget(gtk_widget_get_toplevel(GTK_WIDGET(button)),"uribar");
+		int pos=-1;
+		gtk_editable_insert_text(GTK_EDITABLE(uri_bar),label,1,&pos);
+	}
 }
 
 static void linphone_gtk_connect_digits(void){
@@ -863,7 +917,7 @@ void linphone_gtk_close(){
 	/*shutdown call if any*/
 	if (linphone_core_in_call(lc)){
 		linphone_core_terminate_call(lc,NULL);
-		linphone_gtk_call_terminated(the_ui);
+		linphone_gtk_call_terminated(NULL);
 	}
 	linphone_core_enable_video_preview(lc,FALSE);
 }

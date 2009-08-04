@@ -79,6 +79,7 @@ int lc_callback_obj_invoke(LCCallbackObj *obj, LinphoneCore *lc){
 static void  linphone_call_init_common(LinphoneCall *call, char *from, char *to){
 	call->state=LCStateInit;
 	call->start_time=time(NULL);
+	call->media_start_time=0;
 	call->log=linphone_call_log_new(call, from, to);
 	linphone_core_notify_all_friends(call->core,LINPHONE_STATUS_ONTHEPHONE);
 	if (linphone_core_get_firewall_policy(call->core)==LINPHONE_POLICY_USE_STUN) 
@@ -251,7 +252,14 @@ void linphone_call_log_destroy(LinphoneCallLog *cl){
 int linphone_core_get_current_call_duration(const LinphoneCore *lc){
 	LinphoneCall *call=lc->call;
 	if (call==NULL) return 0;
-	return time(NULL)-call->start_time;
+	if (call->media_start_time==0) return 0;
+	return time(NULL)-call->media_start_time;
+}
+
+const char *linphone_core_get_remote_uri(LinphoneCore *lc){
+	LinphoneCall *call=lc->call;
+	if (call==NULL) return 0;
+	return call->dir==LinphoneCallIncoming ? call->log->from : call->log->to;
 }
 
 void _osip_trace_func(char *fi, int li, osip_trace_level_t level, char *chfr, va_list ap){
@@ -1541,6 +1549,9 @@ void linphone_core_start_media_streams(LinphoneCore *lc, LinphoneCall *call){
 	const char *tool="linphone-" LINPHONE_VERSION;
 	/* adjust rtp jitter compensation. It must be at least the latency of the sound card */
 	int jitt_comp=MAX(lc->sound_conf.latency,lc->rtp_conf.audio_jitt_comp);
+
+	if (call->media_start_time==0) call->media_start_time=time(NULL);
+
 	char *cname=ortp_strdup_printf("%s@%s",me->url->username,me->url->host);
 	{
 		StreamParams *audio_params=&call->audio_params;

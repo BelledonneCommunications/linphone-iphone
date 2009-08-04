@@ -186,7 +186,8 @@ typedef struct _LinphoneCall
 	int did; /*dialog id */
 	int tid; /*last transaction id*/
 	struct _sdp_context *sdpctx;
-	time_t start_time;
+	time_t start_time; /*time at which the call was initiated*/
+	time_t media_start_time; /*time at which it was accepted, media streams established*/
 	LCState	state;
 	bool_t auth_pending;	
 } LinphoneCall;
@@ -771,6 +772,7 @@ void linphone_core_set_record_file(LinphoneCore *lc, const char *file);
 
 gstate_t linphone_core_get_state(const LinphoneCore *lc, gstate_group_t group);
 int linphone_core_get_current_call_duration(const LinphoneCore *lc);
+const char *linphone_core_get_remote_uri(LinphoneCore *lc);
 
 int linphone_core_get_mtu(const LinphoneCore *lc);
 void linphone_core_set_mtu(LinphoneCore *lc, int mtu);

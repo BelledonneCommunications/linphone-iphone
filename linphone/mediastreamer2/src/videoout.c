@@ -100,6 +100,7 @@ static long sdl_get_native_window_id(){
 static void sdl_display_uninit(MSDisplay *obj);
 
 static SDL_Overlay * sdl_create_window(int w, int h){
+	static bool_t once=TRUE;
 	SDL_Overlay *lay;
 	sdl_screen = SDL_SetVideoMode(w,h, 0,SDL_SWSURFACE|SDL_RESIZABLE);
 	if (sdl_screen == NULL ) {
@@ -108,7 +109,10 @@ static SDL_Overlay * sdl_create_window(int w, int h){
 		return NULL;
 	}
 	if (sdl_screen->flags & SDL_HWSURFACE) ms_message("SDL surface created in hardware");
-	SDL_WM_SetCaption("Video window", NULL);
+	if (once) {
+		SDL_WM_SetCaption("Video window", NULL);
+		once=FALSE;
+	}
 	ms_message("Using yuv overlay.");
 	lay=SDL_CreateYUVOverlay(w , h ,SDL_YV12_OVERLAY,sdl_screen);
 	if (lay==NULL){
