@@ -287,6 +287,8 @@ static int alsa_can_read(snd_pcm_t *dev)
 	int err;
 
 	avail = snd_pcm_avail_update(dev);
+	/* A buggy driver does not return an error while being in Xrun */
+	if (avail >= 0 && snd_pcm_state(dev) == SND_PCM_STATE_XRUN) avail=-EPIPE;
 	if (avail < 0) {
 		ms_error("snd_pcm_avail_update: %s", snd_strerror(avail));	// most probably -EPIPE
 		/* overrun occured, snd_pcm_state() would return SND_PCM_STATE_XRUN
