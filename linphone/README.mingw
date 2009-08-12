@@ -9,7 +9,7 @@ run msys as Administrator (right click on the icon, and click 'run as administra
 
 * Download the following tar.gz or zips:
 	- perl (from "msys supplementary tools")
-	- crypt (from "msys supplementary tools")
+	- crypt and libcrypt (from "msys supplementary tools")
 	- automake1.10 (from "mingw automake")
 	- automake-3-1 (from "mingw automake/wrapper")
 	- autoconf2.5 (from "autoconf-2.5)
