@@ -257,87 +257,78 @@ MSList *ms_list_copy(const MSList *list){
 typedef void (*init_func_t)(void);
 
 int ms_load_plugins(const char *dir){
-    int num=0;
+	int num=0;
 #if defined(WIN32) && !defined(_WIN32_WCE)
-    WIN32_FIND_DATA FileData; 
-    HANDLE hSearch; 
-    char szDirPath[1024]; 
-    char szPluginFile[1024]; 
-    BOOL fFinished = FALSE;
-    
+	WIN32_FIND_DATA FileData; 
+	HANDLE hSearch; 
+	char szDirPath[1024]; 
+	char szPluginFile[1024]; 
+	BOOL fFinished = FALSE;
+
 	snprintf(szDirPath, sizeof(szDirPath), "%s", dir);
-    // Create a new directory.    
-#if 0
-    if (!CreateDirectory(szDirPath, NULL))
-    {
-        ms_message("plugins directory already exist (%s).", szDirPath);
-    }
-#endif
-    
-    // Start searching for .TXT files in the current directory.
-    
+
+	// Start searching for .dll files in the current directory.
+
 	snprintf(szDirPath, sizeof(szDirPath), "%s\\*.dll", dir);
-    hSearch = FindFirstFile(szDirPath, &FileData);
-    if (hSearch == INVALID_HANDLE_VALUE)
-    {
-        ms_message("no plugin (*.dll) found in %s.", szDirPath);
+	hSearch = FindFirstFile(szDirPath, &FileData);
+	if (hSearch == INVALID_HANDLE_VALUE)
+	{
+		ms_message("no plugin (*.dll) found in %s.", szDirPath);
 		return 0;
-    }
+	}
 	snprintf(szDirPath, sizeof(szDirPath), "%s", dir);
 
-    while (!fFinished) 
-    {
-        /* load library */
-        HINSTANCE os_handle;
-        UINT em;
-        em = SetErrorMode (SEM_FAILCRITICALERRORS);
-
-        snprintf(szPluginFile, sizeof(szPluginFile), "%s\\%s", szDirPath, FileData.cFileName);
-        os_handle = LoadLibraryEx (szPluginFile, NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
-        if (os_handle==NULL)
-        {
+	while (!fFinished) 
+	{
+		/* load library */
+		HINSTANCE os_handle;
+		UINT em;
+		em = SetErrorMode (SEM_FAILCRITICALERRORS);
+		
+		snprintf(szPluginFile, sizeof(szPluginFile), "%s\\%s", szDirPath, FileData.cFileName);
+		os_handle = LoadLibraryEx (szPluginFile, NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
+		if (os_handle==NULL)
+		{
 			ms_warning("Fail to load plugin %s: error %i",szPluginFile,GetLastError());
-            os_handle = LoadLibraryEx (szPluginFile, NULL, 0);
-        }
-        SetErrorMode (em);
-        if (os_handle==NULL)
-            ms_warning("Fail to load plugin %s", szPluginFile); 
-        else
-        {
-            init_func_t initroutine;
-            char szPluginName[256]; 
-            char szMethodName[256]; 
-            snprintf(szPluginName, 256, "%s", FileData.cFileName);
-            szPluginName[strlen(szPluginName)-4]='\0';
-            snprintf(szMethodName, 256, "%s_init", szPluginName);
-            initroutine = (init_func_t) GetProcAddress (os_handle, szMethodName);
-			if (initroutine!=NULL){
-				initroutine();
-				ms_message("Plugin loaded (%s)", szPluginFile);
-				num++;
-			}else{
-				ms_warning("Could not locate init routine of plugin %s", szPluginFile);
-			}
-        }
-
-
-        if (!FindNextFile(hSearch, &FileData)) 
-        {
-            if (GetLastError() == ERROR_NO_MORE_FILES) 
-            { 
-                fFinished = TRUE; 
-            } 
-            else 
-            { 
-                ms_error("couldn't find next plugin dll."); 
-                fFinished = TRUE; 
-            } 
-        }
-    } 
-     
-    // Close the search handle. 
-     
-    FindClose(hSearch);
+			os_handle = LoadLibraryEx (szPluginFile, NULL, 0);
+		}
+		SetErrorMode (em);
+		if (os_handle==NULL)
+			ms_warning("Fail to load plugin %s", szPluginFile); 
+		else{
+			init_func_t initroutine;
+			char szPluginName[256]; 
+			char szMethodName[256];
+			char *minus;
+			snprintf(szPluginName, 256, "%s", FileData.cFileName);
+			/*on mingw, dll names might be libsomething-3.dll. We must skip the -X.dll stuff*/
+			minus=strchr(szPluginName,'-');
+			if (minus) *minus='\0';
+			else szPluginName[strlen(szPluginName)-4]='\0'; /*remove .dll*/
+			snprintf(szMethodName, 256, "%s_init", szPluginName);
+			initroutine = (init_func_t) GetProcAddress (os_handle, szMethodName);
+				if (initroutine!=NULL){
+					initroutine();
+					ms_message("Plugin loaded (%s)", szPluginFile);
+					num++;
+				}else{
+					ms_warning("Could not locate init routine of plugin %s. Should be %s",
+					szPluginFile, szMethodName);
+				}
+		}
+		if (!FindNextFile(hSearch, &FileData)) {
+			if (GetLastError() == ERROR_NO_MORE_FILES){ 
+				fFinished = TRUE; 
+			} 
+			else 
+			{ 
+				ms_error("couldn't find next plugin dll."); 
+				fFinished = TRUE; 
+			} 
+		}
+	} 
+	/* Close the search handle. */
+	FindClose(hSearch);
 
 #elif HAVE_DLOPEN
 	DIR *ds;
@@ -363,22 +354,21 @@ int ms_load_plugins(const char *dir){
 				void *initroutine=NULL;
 				strcpy(initroutine_name,de->d_name);
 				p=strstr(initroutine_name,PLUGINS_EXT);
-				if (p!=NULL)
-				  {
-				    strcpy(p,"_init");
-				    initroutine=dlsym(handle,initroutine_name);
-				  }
+				if (p!=NULL){
+					strcpy(p,"_init");
+					initroutine=dlsym(handle,initroutine_name);
+				}
 
 #ifdef __APPLE__
 				if (initroutine==NULL){
-				  /* on macosx: library name are libxxxx.1.2.3.dylib */
-				  /* -> MUST remove the .1.2.3 */
-				  p=strstr(initroutine_name,".");
-				  if (p!=NULL)
-				    {
-				      strcpy(p,"_init");
-				      initroutine=dlsym(handle,initroutine_name);
-				    }
+					/* on macosx: library name are libxxxx.1.2.3.dylib */
+					/* -> MUST remove the .1.2.3 */
+					p=strstr(initroutine_name,".");
+					if (p!=NULL)
+					{
+						strcpy(p,"_init");
+						initroutine=dlsym(handle,initroutine_name);
+					}
 				}
 #endif
 
