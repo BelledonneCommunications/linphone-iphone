@@ -775,8 +775,7 @@ static void deactivate_removed_cards(MSSndCardManager *m){
 	const MSList *elem=ms_snd_card_manager_get_list(m);
 	for(;elem!=NULL;elem=elem->next){
 		card=(MSSndCard*)elem->data;
-		if (strcmp(card->desc->driver_type, winsnd_card_desc.driver_type)==0
-			&& strcmp(card->name,name)==0){
+		if (strcmp(card->desc->driver_type, winsnd_card_desc.driver_type)==0){
 			/*mark all cards as potentially removed, detect will check them immediately after */
 			WinSndCard *d=(WinSndCard*)card->data;
 			if (d->removed)	card->capabilities=0;
@@ -789,8 +788,7 @@ static void mark_as_removed(MSSndCardManager *m){
 	const MSList *elem=ms_snd_card_manager_get_list(m);
 	for(;elem!=NULL;elem=elem->next){
 		card=(MSSndCard*)elem->data;
-		if (strcmp(card->desc->driver_type, winsnd_card_desc.driver_type)==0
-			&& strcmp(card->name,name)==0){
+		if (strcmp(card->desc->driver_type, winsnd_card_desc.driver_type)==0){
 			/*mark all cards as potentially removed, detect will check them immediately after */
 			WinSndCard *d=(WinSndCard*)card->data;
 			d->removed=1;
@@ -805,7 +803,7 @@ static void * new_device_polling_thread(void *ignore){
 	MSSndCardManager *m;
 	/*check for new devices every 2 seconds*/
 	while(poller_running){
-		ms_sleep(2000);
+		ms_sleep(2);
 		if (poller_running){
 			m=ms_snd_card_manager_get();
 			if(!m) break;
@@ -818,8 +816,8 @@ static void * new_device_polling_thread(void *ignore){
 }
 
 static void stop_poller(){
-	poller_running=false;
-	ms_thread_join(poller_thread);
+	poller_running=FALSE;
+	ms_thread_join(poller_thread,NULL);
 }
 
 static void winsndcard_detect(MSSndCardManager *m){
