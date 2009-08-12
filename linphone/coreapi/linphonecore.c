@@ -343,16 +343,28 @@ net_config_read (LinphoneCore *lc)
 	linphone_core_set_mtu(lc,tmp);
 }
 
+static void build_sound_devices_table(LinphoneCore *lc){
+	const char **devices;
+	const char **old;
+	int ndev;
+	int i;
+	const MSList *elem=ms_snd_card_manager_get_list(ms_snd_card_manager_get());
+	ndev=ms_list_size(elem);
+	devices=ms_malloc((ndev+1)*sizeof(const char *));
+	for (i=0;elem!=NULL;elem=elem->next,i++){
+		devices[i]=ms_snd_card_get_string_id((MSSndCard *)elem->data);
+	}
+	devices[ndev]=NULL;
+	old=lc->sound_conf.cards;
+	lc->sound_conf.cards=devices;
+	if (old!=NULL) ms_free(old);
+}
 
 void sound_config_read(LinphoneCore *lc)
 {
 	/*int tmp;*/
 	const char *tmpbuf;
 	const char *devid;
-	const MSList *elem;
-	const char **devices;
-	int ndev;
-	int i;
 #ifndef WIN32
 	/*alsadev let the user use custom alsa device within linphone*/
 	devid=lp_config_get_string(lc->config,"sound","alsadev",NULL);
@@ -362,14 +374,8 @@ void sound_config_read(LinphoneCore *lc)
 	}
 #endif
 	/* retrieve all sound devices */
-	elem=ms_snd_card_manager_get_list(ms_snd_card_manager_get());
-	ndev=ms_list_size(elem);
-	devices=ms_malloc((ndev+1)*sizeof(const char *));
-	for (i=0;elem!=NULL;elem=elem->next,i++){
-		devices[i]=ms_snd_card_get_string_id((MSSndCard *)elem->data);
-	}
-	devices[ndev]=NULL;
-	lc->sound_conf.cards=devices;
+	build_sound_devices_table(lc);
+
 	devid=lp_config_get_string(lc->config,"sound","playback_dev_id",NULL);
 	linphone_core_set_playback_device(lc,devid);
 	
@@ -1922,6 +1928,7 @@ const char * linphone_core_get_capture_device(LinphoneCore *lc)
 
 /* returns a static array of string describing the sound devices */ 
 const char**  linphone_core_get_sound_devices(LinphoneCore *lc){
+	build_sound_devices_table(lc);
 	return lc->sound_conf.cards;
 }
 
