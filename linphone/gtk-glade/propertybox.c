@@ -652,7 +652,6 @@ static void linphone_gtk_fill_langs(GtkWidget *pb){
 	const char *all_langs="C " LINPHONE_ALL_LANGS;
 	const char *name;
 	int i=0,index=0;
-	int adv;
 	const char *cur_lang=getenv("LANG");
 	int cur_lang_index=-1;
 	char text[256]={0};
@@ -661,8 +660,9 @@ static void linphone_gtk_fill_langs(GtkWidget *pb){
 	unless we fill it with a dummy text.
 	This dummy text needs to be removed first*/
 	gtk_combo_box_remove_text(GTK_COMBO_BOX(combo),0);
-	while(sscanf(all_langs+i,"%s %n",code,&adv)>=1){
-		i+=adv;
+	while(sscanf(all_langs+i,"%s",code)==1){
+		i+=strlen(code);
+		while(all_langs[i]==' ') ++i;
 		name=lang_get_name(code);
 		snprintf(text,sizeof(text)-1,"%s : %s",code,name!=NULL ? _(name) : code);
 		gtk_combo_box_append_text(GTK_COMBO_BOX(combo),text);
