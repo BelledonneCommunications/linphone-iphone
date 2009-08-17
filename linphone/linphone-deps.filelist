@@ -3,7 +3,6 @@
 ./bin/avutil-50.dll
 ./bin/exosip2.dll
 ./bin/libogg-0.dll
-./bin/libsoup-2.4-1.dll
 ./bin/libtheora-0.dll
 ./bin/libxml2-2.dll
 ./bin/osip2.dll
