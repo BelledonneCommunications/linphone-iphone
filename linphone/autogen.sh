@@ -14,7 +14,7 @@ echo "Generating build scripts in linphone..."
 set -x
 libtoolize --copy --force
 
-intltoolize -c --force --automake
+/usr/bin/intltoolize -c --force --automake
 autoheader
 $ACLOCAL -I m4
 $AUTOMAKE --force-missing --add-missing --copy

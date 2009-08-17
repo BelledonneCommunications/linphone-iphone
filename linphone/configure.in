@@ -56,12 +56,12 @@ AC_ENABLE_SHARED(yes)
 AC_ENABLE_STATIC(no)
 
 
-if test "$mingw_found" = "yes" ; then
-	AC_MSG_NOTICE([Hacking libtool to work with mingw...])
-	sed -e 's/\*\" \$a_deplib \"\*/\*/' < ./libtool > libtool.tmp
-	cp -f ./libtool.tmp ./libtool
-	rm -f ./libtool.tmp
-fi
+dnl if test "$mingw_found" = "yes" ; then
+dnl	AC_MSG_NOTICE([Hacking libtool to work with mingw...])
+dnl	sed -e 's/\*\" \$a_deplib \"\*/\*/' < ./libtool > libtool.tmp
+dnl	cp -f ./libtool.tmp ./libtool
+dnl	rm -f ./libtool.tmp
+dnl fi
 
 dnl Add the languages which your application supports here.
 PKG_PROG_PKG_CONFIG

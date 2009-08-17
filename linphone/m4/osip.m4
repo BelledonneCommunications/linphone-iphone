@@ -40,8 +40,17 @@ dnl check for osip2 libs
 	LDFLAGS_save=$LDFLAGS
 	LDFLAGS=$OSIP_LIBS
 	LIBS_save=$LIBS
-	AC_CHECK_LIB(osip2${osip_legacy_version},osip_init, , AC_MSG_ERROR([Could not find osip2 library !]),[-losipparser2${osip_legacy_version} -lpthread])
-	AC_CHECK_LIB(osipparser2${osip_legacy_version},osip_message_init, , AC_MSG_ERROR([Could not find osipparser2 library !]),[-lpthread])
+	case "$target_os" in
+		*mingw*)
+			osip_aux_libs=
+			;;
+		*)
+			osip_aux_libs=-lpthread
+			;;
+	esac
+	OSIP_LIBS="$OSIP_LIBS $osip_aux_libs"
+	AC_CHECK_LIB(osip2${osip_legacy_version},osip_init, , AC_MSG_ERROR([Could not find osip2 library !]),[-losipparser2${osip_legacy_version} $osip_aux_libs ])
+	AC_CHECK_LIB(osipparser2${osip_legacy_version},osip_message_init, , AC_MSG_ERROR([Could not find osipparser2 library !]),[$osip_aux_libs])
 	LDFLAGS=$LDFLAGS_save
 	LIBS=$LIBS_save
 fi

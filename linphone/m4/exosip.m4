@@ -19,15 +19,15 @@ LIBS_save=$LIBS
 AC_CHECK_LIB([eXosip2],[eXosip_subscribe_remove],
 	[],
 	[AC_MSG_ERROR([Could not find eXosip2 library with version >= 3.0.2 !])],
-	[-losipparser2 -losip2 -lpthread])
+	[-losipparser2 -losip2 ])
 AC_CHECK_LIB([eXosip2],[eXosip_get_version],
 	[AC_DEFINE([HAVE_EXOSIP_GET_VERSION],[1],[Defined when eXosip_get_version is available])],
 	[],
-	[-losipparser2 -losip2 -lpthread])
+	[-losipparser2 -losip2 ])
 dnl AC_CHECK_LIB([eXosip2],[eXosip_get_naptr],
 dnl	[AC_DEFINE([HAVE_EXOSIP_NAPTR_SUPPORT],[1],[Defined when eXosip_get_naptr is available])],
 dnl	[],
-dnl	[-losipparser2 -losip2 -lpthread])
+dnl	[-losipparser2 -losip2 ])
 LIBS=$LIBS_save
 LDFLAGS=$LDFLAGS_save
 
