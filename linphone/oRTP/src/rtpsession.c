@@ -685,8 +685,8 @@ static void rtp_header_init_from_session(rtp_header_t *rtp, RtpSession *session)
 
 /**
  *	Allocates a new rtp packet. In the header, ssrc and payload_type according to the session's
- *	context. Timestamp and seq number are not set, there will be set when the packet is going to be
- *	sent with rtp_session_sendm_with_ts().
+ *	context. Timestamp is not set, it will be set when the packet is going to be
+ *	sent with rtp_session_sendm_with_ts(). Sequence number is initalized to previous sequence number sent + 1
  *	If payload_size is zero, thus an empty packet (just a RTP header) is returned.
  *
  *@param session a rtp session.

@@ -6,35 +6,52 @@ Software to install
 
 run msys as Administrator (right click on the icon, and click 'run as administrator')
 
+Download zip and unzip (download setup.exe and run) from http://gnuwin32.sourceforge.net
+	- add them to your path in msys terminal:
+		export PATH=$PATH:/c/Program\ Files/GnuWin32/bin
 
-* Download the following tar.gz or zips:
-	- perl (from "msys supplementary tools")
-	- crypt and libcrypt (from "msys supplementary tools")
-	- automake1.10 (from "mingw automake")
-	- automake-3-1 (from "mingw automake/wrapper")
-	- autoconf2.5 (from "autoconf-2.5)
-	- autoconf-6 (from "autoconf-2.5/wrapper)
-  Uncompress all of them in /
-  note: lzma files must uncompressed using tar --lzma -xvf <file>
+Download from mingw download page (http://www.mingw.org, click download):
+	- MSYS automake-1.11 
+	- MSYS autoconf-2.63
+	- MSYS libtool>=2.2.7 
+	- GNU binutils-2.19
+	- MSYS libcrypt*-bin
+	- MSYS perl
+	===> Uncompress all these packages in /
+	- from gcc-4.4 directory
+		Download: 
+			- gcc-core*-bin
+			- gcc-core-*-dll
+			- gcc-c++*-bin
+			- gcc-c++*-dll
+			- gmp*-dll
+			- mpfr*-dll
+	- w32api-dev
+	- mingwrt-dev and mingwrt-dll (mingw run time)
+	===> Uncompress all these packages in /mingw
 
-* Download intltool (quicklink: http://ftp.acc.umu.se/pub/GNOME/binaries/win32/intltool/0.40/intltool_0.40.4-1_win32.zip)
-  uncompress in  /usr/local
+note: lzma files can be uncompressed using tar --lzma -xvf <file>
 
-* Download gcc-part-core-4.3 gcc-part-c++-4.3, uncompress in /mingw (note: gcc-4.4 is not supported yet)
-* Download unzip from mingw downloads, uncompress in /mingw
-* Download install zip from http://www.info-zip.org/Zip.html#Downloads
-	(quicklink: ftp://ftp.dante.de/tex-archive/tools/zip/info-zip/WIN32/zip232xN.zip), and extract zip.exe to c:\msys\1.0\usr\local\bin
+* Move out libstdc++.la in order to workaround a gcc-4.4.0 bug (or packaging bug):
+	mv /mingw/lib/gcc/4.4.0/libstdc++.la /mingw/lib/gcc/4.4.0/libstdc++.la.bak
 
+* Download intltool (quicklink: 
+	http://ftp.acc.umu.se/pub/GNOME/binaries/win32/intltool/0.40/intltool_0.40.4-1_win32.zip
+	note: -dev package is not needed.)
+  uncompress in  / with 'unzip' command.
 
-* Download lastest gtk+bundle from http://www.gtk.org , uncompress in /usr/local
+* Download lastest gtk+bundle from http://www.gtk.org , uncompress in /
 * Download libglade and libglade-dev >=2.6.3 from gnome ftp:
-    http://ftp.gnome.org/pub/GNOME/binaries/win32/libglade/2.6/libglade-dev_2.6.3-1_win32.zip
-    http://ftp.gnome.org/pub/GNOME/binaries/win32/libglade/2.6/libglade_2.6.3-1_win32.zip
-    uncompress in /usr/local
-* Download ActiveState perl and run the installer with default options.
+    http://ftp.gnome.org/pub/GNOME/binaries/win32/libglade/2.6/libglade-dev_2.6.4-1_win32.zip
+    http://ftp.gnome.org/pub/GNOME/binaries/win32/libglade/2.6/libglade_2.6.4-1_win32.zip
+    uncompress in /
+* Download ActiveState perl and run the installer with default options (http://www.activestate.com , developer tools)
+	Yes it is required despite MSYS perl is already installed.
+
 * Download lastest linphone-deps from linphone downloads, misc directory:
     http://download.savannah.gnu.org/releases-noredirect/linphone/misc/)
-    uncompress in /usr/local
+    uncompress in /
+* Download and install Inno Setup Compiler in its default path (required only if you run 'make setup.exe').
 
 
 Get Linphone source code
@@ -42,6 +59,10 @@ Get Linphone source code
 
 Install msys-git from (http://code.google.com/p/msysgit/)
 
+It is recommended that you create a directory somewhere with a path without any spaces or ~ characters, for example
+c:\sources\
+Within msys-git bash, do
+cd /c/sources
 git clone git://git.savannah.nongnu.org/linphone.git
 
 
@@ -52,14 +73,22 @@ WARNING: During the build, windows might slow down suddenly. Using ctl+alt+del t
  you might see a process 'LVpSRV.exe' or something like this that eats 90% of cpu.
 Kill it. Don't know what it is, but once killed, windows runs normally.
 
+The following variables must be exported:
+
 #use ActiveState perl instead of mingw perl
 export PERL="/c/Perl/bin/perl"
 export INTLTOOL_PERL="/c/Perl/bin/perl"
-#run autogen.sh after a git/svn checkout or update
+#add gnuwin32 tools to your path:
+export PATH=$PATH:/c/Program\ Files/Gnuwin32/bin
+
+for convenience the 'mingw-envsetup.sh' script in linphone sources does this, so you can just source it:
+. ./mingw-envsetup.sh
+
+#run autogen.sh after a git checkout or update
 ./autogen.sh
-./configure --prefix=/opt/linphone --enable-shared --disable-static --with-osip=/usr/local --with-gsm=/usr/local
+./configure --prefix=/opt/linphone --enable-shared --disable-static
 make
-#will install to /opt/linphone, useful for compilation of plugins.
+#will install to /opt/linphone, required for compilation of plugins.
 make install
 #make a binary zip of linphone
 make zip
@@ -73,7 +102,10 @@ PKG_CONFIG_PATH=/opt/linphone/lib/pkgconfig ./configure --prefix=/opt/linphone -
 make
 #make a binary zip of this plugin
 make zip
+#or make an installer
+make setup.exe
 
+#the buddylookup plugin enables lookup of buddies in a remote database using xml-rpc over http/https.
 cd coreapi/plugins/buddylookup
 ./autogen.sh
 PKG_CONFIG_PATH=/opt/linphone/lib/pkgconfig ./configure --prefix=/opt/linphone --enable-shared --disable-static 
@@ -104,16 +136,19 @@ libgsm (from the web)
 libxml2 (compiled)
 libsoup (compiled)
 
+Remarks:
+For every package compiled that goes into linphone-deps, .la files (libtool files) must be removed to avoid libtool errors.
+When running "make install DESTDIR=<somepath>", somepath must be absolute and should not contain any ~ or space.
 
 - building ffmpeg 
   ./configure --enable-shared --disable-static --enable-memalign-hack --extra-cflags="-fno-common" --enable-gpl && make
-  make install DESTDIR=~/ffmpeg-install
+  make install DESTDIR=/home/<myuser>/ffmpeg-install
   Copy to ~/ffmpeg-install/usr/local/* to linphone-deps/.
   Copy also all *.dll.a files from the build tree to lib/ directort of linphone-deps. These are the implibs necessary to link a program against the dlls.
 
 - building libxml2: the binaries found on the internet are generated with MSVC++, and for obscure reason they are not suitable for building libsoup 
   (that requires libxml2).
-  ./configure --enable-shared --disable-static && make && make install DESTDIR=~/libxml2-install
+  ./configure --enable-shared --disable-static && make && make install DESTDIR=/home/<myuser>/libxml2-install
   copy ~/libxml2-install/usr/local/* into linphone-deps/.
 
 - building x264:
@@ -131,6 +166,29 @@ libsoup (compiled)
   cd into x264/ dir then run:
   ./configure --enable-pic
   make
-  make install DESTDIR=~/x264-install
+  make install DESTDIR=/home/<myuser>/x264-install
   then copy the content of ~/x264-install/usr/local/ into linphone-deps/.
 
+- libgnutls (required for libsoup https support)
+	- download binary zip from http://josefsson.org/gnutls4win.org
+	- add to linphone-deps
+
+- building libsoup (only required for buddylookup plugin)
+	- download source from gnome ftp (warning: at the time of the writing only version 2.26.x can compile with the 
+		glib version supplied in the gtk-bundle, 2.27 requires a new version of glib)
+	- uncompress libgnutls zip in /
+	- make sure you have libxml2 installed in /
+	- apply a bugfix patch (fix gnutls support on windows, completely broken otherwise). The patch
+		is in linphone-deps/src, apply it this way:
+		cd libsoup-2.26.*
+		cd libsoup
+		patch -p0 < libsoup-gnutls-bugfix.patch
+	- run:
+		./configure --prefix=/usr --enable-shared --disable-static
+		make
+		make install
+		make install DESTDIR=/home/<myuser>/libsoup-install
+	- copy ~/libsoup-install/usr/* into linphone-deps/
+
+Once you have everything in linphone-deps, remove .la files from lib:
+	cd lib && rm -f *.la
