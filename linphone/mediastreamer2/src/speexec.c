@@ -107,7 +107,7 @@ static void speex_ec_process(MSFilter *f){
 			ms_bufferizer_put(&s->in[0],m);
 		}
 
-		if (s->size_delay<s->playback_delay)
+		if (s->size_delay<=s->playback_delay)
 		{
 			/* make sure we always send block with same size */
 			while (ms_bufferizer_get_avail(&s->speak_delay)>=nbytes)
