@@ -56,12 +56,14 @@ AC_ENABLE_SHARED(yes)
 AC_ENABLE_STATIC(no)
 
 
-dnl if test "$mingw_found" = "yes" ; then
-dnl	AC_MSG_NOTICE([Hacking libtool to work with mingw...])
-dnl	sed -e 's/\*\" \$a_deplib \"\*/\*/' < ./libtool > libtool.tmp
-dnl	cp -f ./libtool.tmp ./libtool
-dnl	rm -f ./libtool.tmp
-dnl fi
+AC_CONFIG_COMMANDS([libtool-hacking],[
+if test "$mingw_found" = "yes" ; then
+	echo "Hacking libtool to work with mingw..."
+	sed -e 's/\*\" \$a_deplib \"\*/\*/' < ./libtool > libtool.tmp
+	cp -f ./libtool.tmp ./libtool
+	rm -f ./libtool.tmp
+fi
+],[mingw_found=$mingw_found])
 
 dnl Add the languages which your application supports here.
 PKG_PROG_PKG_CONFIG
@@ -75,7 +77,7 @@ AM_GNU_GETTEXT([external])
 else
 AC_DEFINE(ENABLE_NLS,1,[Tells whether localisation is possible])
 AC_DEFINE(HAVE_GETTEXT,1,[Tells wheter localisation is possible])
-LIBS="$LIBS -L/usr/local/lib -lintl"
+LIBS="$LIBS -L/usr/lib -lintl"
 fi
 
 GETTEXT_PACKAGE=linphone
