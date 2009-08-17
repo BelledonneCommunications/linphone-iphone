@@ -1,2 +1,5 @@
 linphone-3
+.libs
+.deps
+linphone.res
 

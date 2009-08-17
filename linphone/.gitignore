@@ -23,3 +23,12 @@ speex
 stamp-h1
 linphone.spec
 linphone.iss
+msx264.iss
+*.o
+*.exe
+*.zip
+*~
+linphone-install
+buddylookup-install
+msx264-install
+
