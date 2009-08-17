@@ -201,7 +201,7 @@ static void prepare(EncState *s){
 	avcodec_get_context_defaults(c);
 	/* put codec parameters */
 	c->bit_rate=(float)s->maxbr*0.7;
-	c->bit_rate_tolerance=(float)c->bit_rate/(s->fps-1);
+	c->bit_rate_tolerance=s->fps!=1?(float)c->bit_rate/(s->fps-1):c->bit_rate;
 
 	if (s->codec!=CODEC_ID_SNOW && s->maxbr<256000){
 		/*snow does not like 1st pass rate control*/
