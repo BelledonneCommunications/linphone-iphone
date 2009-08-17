@@ -12,9 +12,14 @@ LicenseFile=COPYING
 OutputBaseFilename=setup
 Compression=lzma
 SolidCompression=yes
+ShowLanguageDialog=yes
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
+Name: "italian"; MessagesFile: "compiler:Languages\Italian.isl";
+Name: "french";  MessagesFile: "compiler:Languages\French.isl"
+Name; "czech";   MessagesFile: "compiler:Languages\czech.isl"
+
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
