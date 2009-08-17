@@ -29,12 +29,15 @@ esac
 
 AM_CONDITIONAL(BUILD_WIN32, test x$mingw_found = xyes)
 
+AC_CONFIG_COMMANDS([libtool-hacking],[
 if test "$mingw_found" = "yes" ; then
 	AC_MSG_NOTICE([Hacking libtool to work with mingw...])
 	sed -e 's/\*\" \$a_deplib \"\*/\*/' < ./libtool > libtool.tmp
 	cp -f ./libtool.tmp ./libtool
 	rm -f ./libtool.tmp
 fi
+],[mingw_found=$mingw_found])
+
 
 CFLAGS="$CFLAGS -Wall"
 
@@ -157,4 +160,5 @@ AC_SUBST(RELEASE)
 AC_OUTPUT(
 Makefile
 src/Makefile
+msx264.iss
 )

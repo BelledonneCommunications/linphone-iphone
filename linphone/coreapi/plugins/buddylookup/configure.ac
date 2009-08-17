@@ -31,6 +31,16 @@ AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
 
 
+
+AC_CONFIG_COMMANDS([libtool-hacking],[
+	if test "$mingw_found" = "yes" ; then
+	        echo "Hacking libtool to work with mingw..."
+		sed -e 's/\*\" \$a_deplib \"\*/\*/' < ./libtool > libtool.tmp
+		cp -f ./libtool.tmp ./libtool
+		rm -f ./libtool.tmp
+	fi
+],[mingw_found=$mingw_found])
+
 # Checks for libraries.
 
 PKG_CHECK_MODULES(LIBSOUP, libsoup-2.4 >= 2.4.0)

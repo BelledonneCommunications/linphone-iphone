@@ -18,4 +18,4 @@ zip:
 
 clean-local:
 	rm -rf $(PACKAGE)-install
-	rm $(PACKAGE)-win32-$(VERSION).zip
+	rm -f $(PACKAGE)-win32-$(VERSION).zip

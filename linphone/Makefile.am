@@ -23,9 +23,12 @@ ZIPFILE=$(shell cd $(top_builddir) && pwd)/$(PACKAGE)-win32-$(VERSION).zip
 ZIP_EXCLUDED=include lib \
 		share/sounds/linphone/rings/synth.wav \
 		share/sounds/linphone/rings/tapping.wav \
-		share/sounds/linphone/rings/orig.wav 
+		share/sounds/linphone/rings/orig.wav \
+		share/sounds/linphone/rings/sweet.wav \
+		share/sounds/linphone/rings/rock.wav
 
-GTK_PREFIX=/usr/local
+
+GTK_PREFIX=/usr
 GTK_FILELIST=gtk+-2.16.2.filelist
 GTK_FILELIST_PATH=$(shell cd $(top_srcdir) && pwd)/$(GTK_FILELIST)
 LINPHONEDEPS_FILELIST=linphone-deps.filelist
@@ -78,7 +81,9 @@ other-cherrypick:
 		else \
 			cp $$file $(INSTALLDIR_WITH_PREFIX)/$$file ;\
 		fi \
-	done 
+	done
+	cp /mingw/bin/libgcc_s*.dll $(INSTALLDIR_WITH_PREFIX)/bin/.
+
 
 gtk-cherrypick:
 	cd $(GTK_PREFIX) && \

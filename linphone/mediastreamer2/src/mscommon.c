@@ -264,7 +264,8 @@ int ms_load_plugins(const char *dir){
 	char szDirPath[1024]; 
 	char szPluginFile[1024]; 
 	BOOL fFinished = FALSE;
-
+	const char *tmp=getenv("DEBUG");
+	BOOL debug=(tmp!=NULL && atoi(tmp)==1);
 	snprintf(szDirPath, sizeof(szDirPath), "%s", dir);
 
 	// Start searching for .dll files in the current directory.
@@ -283,7 +284,7 @@ int ms_load_plugins(const char *dir){
 		/* load library */
 		HINSTANCE os_handle;
 		UINT em;
-		em = SetErrorMode (SEM_FAILCRITICALERRORS);
+		if (!debug) em = SetErrorMode (SEM_FAILCRITICALERRORS);
 		
 		snprintf(szPluginFile, sizeof(szPluginFile), "%s\\%s", szDirPath, FileData.cFileName);
 		os_handle = LoadLibraryEx (szPluginFile, NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
@@ -292,7 +293,7 @@ int ms_load_plugins(const char *dir){
 			ms_warning("Fail to load plugin %s: error %i",szPluginFile,GetLastError());
 			os_handle = LoadLibraryEx (szPluginFile, NULL, 0);
 		}
-		SetErrorMode (em);
+		if (!debug) SetErrorMode (em);
 		if (os_handle==NULL)
 			ms_warning("Fail to load plugin %s", szPluginFile); 
 		else{
