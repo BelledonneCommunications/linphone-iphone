@@ -111,7 +111,7 @@ zip:
 	cp -f $(top_srcdir)/COPYING $(INSTALLDIR_WITH_PREFIX)/.
 	cd $(INSTALLDIR_WITH_PREFIX) && zip -r $(ZIPFILE) *
 
-setup.exe: zip
+filelist: zip
 	cd $(INSTALLDIR_WITH_PREFIX) && \
 	rm -f $(PACKAGE_WIN32_FILELIST) && \
 	for file in `find` ; do \
@@ -120,6 +120,8 @@ setup.exe: zip
 			>> $(PACKAGE_WIN32_FILELIST) ;\
 		fi \
 	done
+
+setup.exe: filelist
 	cp $(ISS_SCRIPT) $(INSTALLDIR_WITH_PREFIX)/.
 	cd $(INSTALLDIR_WITH_PREFIX) && \
 	$(ISCC) $(ISS_SCRIPT) 

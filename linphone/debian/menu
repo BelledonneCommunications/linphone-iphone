@@ -1,3 +1,0 @@
-?package(linphone):needs=X11 section=Apps/Net \
-  title="Linphone" command="/usr/bin/linphone" hints="Telephony"\
-  icon="/usr/share/pixmaps/linphone/linphone2.xpm"
