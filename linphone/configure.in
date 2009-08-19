@@ -366,8 +366,6 @@ Makefile
 m4/Makefile
 po/Makefile.in 
 pixmaps/Makefile
-ipkg/Makefile
-ipkg/linphone.control
 coreapi/Makefile
 gtk-glade/Makefile
 console/Makefile
@@ -378,6 +376,7 @@ share/it/Makefile
 share/ja/Makefile
 share/cs/Makefile
 share/linphone.pc
+scripts/Makefile
 linphone.spec
 linphone.iss
 ])

@@ -9,8 +9,8 @@ else
 ORTP_DIR = oRTP
 endif
 
-SUBDIRS = m4 pixmaps po ipkg $(ORTP_DIR) mediastreamer2\
-		coreapi console gtk-glade share
+SUBDIRS = m4 pixmaps po $(ORTP_DIR) mediastreamer2\
+		coreapi console gtk-glade share scripts
 
 
 
