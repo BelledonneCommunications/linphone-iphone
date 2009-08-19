@@ -298,7 +298,8 @@ linphonec_text_received(LinphoneCore *lc, LinphoneChatRoom *cr,
 
 
 static void linphonec_dtmf_received(LinphoneCore *lc, int dtmf){
-	printf("Receiving tone %c\n",dtmf);
+	fprintf(stdout,"Receiving tone %c\n",dtmf);
+	fflush(stdout);
 }
 
 static void 
