@@ -60,6 +60,7 @@ typedef struct WinSndDsCard{
 	int out_devid;
 	GUID in_guid;
 	GUID out_guid;
+	int removed;
 }WinSndDsCard;
 
 static void winsnddscard_set_level(MSSndCard *card, MSSndCardMixerElem e, int percent){
@@ -246,6 +247,7 @@ static void winsnddscard_set_source(MSSndCard *card, MSSndCardCapture source){
 
 static void winsnddscard_init(MSSndCard *card){
 	WinSndDsCard *c=(WinSndDsCard *)ms_new(WinSndDsCard,1);
+	c->removed=0;
 	card->data=c;
 }
 
@@ -334,6 +336,7 @@ static void add_or_update_card(MSSndCardManager *m, const char *name, LPGUID lpg
 			}
 			if (d->in_devid!=-1 && d->out_devid!=-1)
 				ms_message("DS: new full duplex card %s", name);
+			d->removed=0;
 			return;
 		}
 	}
@@ -405,7 +408,7 @@ static BOOL CALLBACK enumerate_playback_devices_callback(LPGUID lpGUID,
 	return true;
 }
 
-static void winsnddscard_detect(MSSndCardManager *m){
+static void _winsnddscard_detect(MSSndCardManager *m){
 	MMRESULT mr = NOERROR;
 
 	if (ms_lib_instance==NULL)
@@ -453,6 +456,62 @@ static void winsnddscard_detect(MSSndCardManager *m){
 
 	ms_DirectSoundCaptureEnumerate( (LPDSENUMCALLBACK)enumerate_capture_devices_callback, (void *)m );
 	ms_DirectSoundEnumerate( (LPDSENUMCALLBACK)enumerate_playback_devices_callback, (void *)m );
+}
+
+static void deactivate_removed_cards(MSSndCardManager *m){
+	MSSndCard *card;
+	const MSList *elem=ms_snd_card_manager_get_list(m);
+	for(;elem!=NULL;elem=elem->next){
+		card=(MSSndCard*)elem->data;
+		if (strcmp(card->desc->driver_type, winsndds_card_desc.driver_type)==0){
+			/*mark all cards as potentially removed, detect will check them immediately after */
+			WinSndDsCard *d=(WinSndDsCard*)card->data;
+			if (d->removed)	card->capabilities=0;
+		}
+	}
+}
+
+static void mark_as_removed(MSSndCardManager *m){
+	MSSndCard *card;
+	const MSList *elem=ms_snd_card_manager_get_list(m);
+	for(;elem!=NULL;elem=elem->next){
+		card=(MSSndCard*)elem->data;
+		if (strcmp(card->desc->driver_type, winsndds_card_desc.driver_type)==0){
+			/*mark all cards as potentially removed, detect will check them immediately after */
+			WinSndDsCard *d=(WinSndDsCard*)card->data;
+			d->removed=1;
+		}
+	}
+}
+
+static ms_thread_t poller_thread;
+static bool_t poller_running=TRUE;
+
+static void * new_device_polling_thread(void *ignore){
+	MSSndCardManager *m;
+	/*check for new devices every 2 seconds*/
+	while(poller_running){
+		ms_sleep(5);
+		if (poller_running){
+			m=ms_snd_card_manager_get();
+			if(!m) break;
+			mark_as_removed(m);
+			_winsnddscard_detect(m);
+			deactivate_removed_cards(m);
+		}
+	}
+	return NULL;
+}
+
+static void stop_poller(){
+	poller_running=FALSE;
+	ms_thread_join(poller_thread,NULL);
+}
+
+static void winsnddscard_detect(MSSndCardManager *m){
+	_winsnddscard_detect(m);
+	ms_thread_create(&poller_thread,NULL,new_device_polling_thread,NULL);
+	atexit(&stop_poller);
 }
 
 typedef struct WinSndDs{
