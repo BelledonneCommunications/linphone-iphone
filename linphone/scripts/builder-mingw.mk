@@ -27,7 +27,7 @@ $(LINPHONE_SRC_DIR)/configure:
 
 $(LINPHONE_SRC_DIR)/Makefile: $(LINPHONE_SRC_DIR)/configure
 	cd $(LINPHONE_SRC_DIR) && \
-	./configure --prefix=$(prefix) --enable-shared --disable-static
+	./configure --prefix=$(prefix) --enable-shared --disable-static $(LINPHONE_CONFIGURE_EXTRA_OPTIONS)
 
 build-linphone:	$(LINPHONE_SRC_DIR)/Makefile
 	cd $(LINPHONE_SRC_DIR) && make && make install

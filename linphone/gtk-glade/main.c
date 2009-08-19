@@ -82,7 +82,14 @@ static GOptionEntry linphone_options[2]={
 
 #define INSTALLED_XML_DIR PACKAGE_DATA_DIR "/linphone"
 #define BUILD_TREE_XML_DIR "gtk-glade"
+
+#ifndef WIN32
 #define CONFIG_FILE ".linphonerc"
+#else
+#define CONFIG_FILE "linphonerc"
+#endif
+
+
 
 static char _config_file[1024];
 
@@ -94,9 +101,9 @@ const char *linphone_gtk_get_config_file(){
 #ifdef WIN32
 		const char *appdata=getenv("APPDATA");
 		if (appdata){
-			snprintf(_config_file,sizeof(_config_file),"%s\\%s",appdata,"Linphone\\");
+			snprintf(_config_file,sizeof(_config_file),"%s\\%s",appdata,LINPHONE_CONFIG_DIR);
 			CreateDirectory(_config_file,NULL);
-			snprintf(_config_file,sizeof(_config_file),"%s\\%s",appdata,"Linphone\\linphonerc");
+			snprintf(_config_file,sizeof(_config_file),"%s\\%s",appdata,LINPHONE_CONFIG_DIR "\\" CONFIG_FILE);
 		}
 #else
 		const char *home=getenv("HOME");

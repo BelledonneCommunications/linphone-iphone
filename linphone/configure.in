@@ -132,11 +132,11 @@ case "$host_cpu" in
 		;;
 esac
 
-AC_ARG_WITH( realprefix,
-      [  --with-realprefix      Set the real installation prefix. This option has to be used for cross-compilation only. (ex:/usr or /usr/local)[default=none] ],
-      [ realprefix=${withval}],[ realprefix="none" ])
+AC_ARG_WITH( configdir,
+      [  --with-configdir      Set a APPDATA subdir where linphone is supposed to find its config (windows only) ],
+      [ configdir=${withval}],[ configdir="Linphone" ])
 
-
+AC_DEFINE_UNQUOTED(LINPHONE_CONFIG_DIR,"$configdir",[Windows appdata subdir where linphonerc can be found])
 
 AC_ARG_ENABLE(manual,
       [  --disable-manual    Do not attempt to build html linphone's user documentation],
