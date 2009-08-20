@@ -801,9 +801,9 @@ static bool_t poller_running=TRUE;
 
 static void * new_device_polling_thread(void *ignore){
 	MSSndCardManager *m;
-	/*check for new devices every 2 seconds*/
+	/*check for new devices every 5 seconds*/
 	while(poller_running){
-		ms_sleep(2);
+		ms_sleep(5);
 		if (poller_running){
 			m=ms_snd_card_manager_get();
 			if(!m) break;
@@ -818,12 +818,18 @@ static void * new_device_polling_thread(void *ignore){
 static void stop_poller(){
 	poller_running=FALSE;
 	ms_thread_join(poller_thread,NULL);
+	poller_thread=NULL;
 }
 
 static void winsndcard_detect(MSSndCardManager *m){
+	static int doitonce = 0;
 	_winsndcard_detect(m);
-	ms_thread_create(&poller_thread,NULL,new_device_polling_thread,NULL);
-	atexit(&stop_poller);
+	if (doitonce==0)
+	{
+		doitonce++;
+		ms_thread_create(&poller_thread,NULL,new_device_polling_thread,NULL);
+		atexit(&stop_poller);
+	}
 }
 
 typedef struct WinSnd{
