@@ -766,6 +766,7 @@ static void winsnddscard_uninit(MSSndCard *card){
 
 static void winsnddscard_detect(MSSndCardManager *m);
 static  MSSndCard *winsnddscard_dup(MSSndCard *obj);
+static void winsnddscard_unload(MSSndCardManager *m);
 
 MSSndCardDesc winsndds_card_desc={
 	"DirectSound",
@@ -779,7 +780,8 @@ MSSndCardDesc winsndds_card_desc={
 	ms_winsndds_read_new,
 	ms_winsndds_write_new,
 	winsnddscard_uninit,
-	winsnddscard_dup
+	winsnddscard_dup,
+	winsnddscard_unload
 };
 
 static  MSSndCard *winsnddscard_dup(MSSndCard *obj){
@@ -991,7 +993,7 @@ static void mark_as_removed(MSSndCardManager *m){
 	}
 }
 
-static ms_thread_t poller_thread;
+static ms_thread_t poller_thread=NULL;
 static bool_t poller_running=TRUE;
 
 static void * new_device_polling_thread(void *ignore){
@@ -1016,15 +1018,13 @@ static void stop_poller(){
 	poller_thread=NULL;
 }
 
+static void winsnddscard_unload(MSSndCardManager *m){
+	stop_poller();
+}
+
 static void winsnddscard_detect(MSSndCardManager *m){
-	static int doitonce = 0;
 	_winsnddscard_detect(m);
-	if (doitonce==0)
-	{
-		doitonce++;
-		ms_thread_create(&poller_thread,NULL,new_device_polling_thread,NULL);
-		atexit(&stop_poller);
-	}
+	ms_thread_create(&poller_thread,NULL,new_device_polling_thread,NULL);
 }
 
 typedef struct WinSndDs{

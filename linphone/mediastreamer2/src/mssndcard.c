@@ -33,6 +33,12 @@ static MSSndCardManager * create_manager(){
 
 void ms_snd_card_manager_destroy(void){
 	if (scm!=NULL){
+		MSList *elem;
+		for(elem=scm->descs;elem!=NULL;elem=elem->next){
+			MSSndCardDesc *desc = (MSSndCardDesc*)elem->data;
+			if (desc->unload!=NULL)
+				desc->unload(scm);
+		}
 		ms_list_for_each(scm->cards,(void (*)(void*))ms_snd_card_destroy);
 		ms_list_free(scm->cards);
 		ms_list_free(scm->descs);

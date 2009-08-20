@@ -669,6 +669,7 @@ static void winsndcard_uninit(MSSndCard *card){
 
 static void winsndcard_detect(MSSndCardManager *m);
 static  MSSndCard *winsndcard_dup(MSSndCard *obj);
+static void winsndcard_unload(MSSndCardManager *m);
 
 MSSndCardDesc winsnd_card_desc={
 	"MME",
@@ -682,7 +683,8 @@ MSSndCardDesc winsnd_card_desc={
 	ms_winsnd_read_new,
 	ms_winsnd_write_new,
 	winsndcard_uninit,
-	winsndcard_dup
+	winsndcard_dup,
+	winsndcard_unload
 };
 
 static  MSSndCard *winsndcard_dup(MSSndCard *obj){
@@ -796,7 +798,7 @@ static void mark_as_removed(MSSndCardManager *m){
 	}
 }
 
-static ms_thread_t poller_thread;
+static ms_thread_t poller_thread=NULL;
 static bool_t poller_running=TRUE;
 
 static void * new_device_polling_thread(void *ignore){
@@ -821,15 +823,13 @@ static void stop_poller(){
 	poller_thread=NULL;
 }
 
+static void winsndcard_unload(MSSndCardManager *m){
+	stop_poller();
+}
+
 static void winsndcard_detect(MSSndCardManager *m){
-	static int doitonce = 0;
 	_winsndcard_detect(m);
-	if (doitonce==0)
-	{
-		doitonce++;
-		ms_thread_create(&poller_thread,NULL,new_device_polling_thread,NULL);
-		atexit(&stop_poller);
-	}
+	ms_thread_create(&poller_thread,NULL,new_device_polling_thread,NULL);
 }
 
 typedef struct WinSnd{

@@ -96,6 +96,7 @@ typedef int (*MSSndCardGetControlFunc)(struct _MSSndCard *obj, MSSndCardControlE
 typedef struct _MSFilter * (*MSSndCardCreateReaderFunc)(struct _MSSndCard *obj);
 typedef struct _MSFilter * (*MSSndCardCreateWriterFunc)(struct _MSSndCard *obj);
 typedef struct _MSSndCard * (*MSSndCardDuplicateFunc)(struct _MSSndCard *obj);
+typedef void (*MSSndCardUnloadFunc)(MSSndCardManager *obj);
 
 struct _MSSndCardDesc{
 	const char *driver_type;
@@ -110,6 +111,7 @@ struct _MSSndCardDesc{
 	MSSndCardCreateWriterFunc create_writer;
 	MSSndCardUninitFunc uninit;
 	MSSndCardDuplicateFunc duplicate;
+	MSSndCardUnloadFunc unload;
 
 };
 
