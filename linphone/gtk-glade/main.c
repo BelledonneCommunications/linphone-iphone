@@ -870,7 +870,7 @@ static void linphone_gtk_configure_main_window(){
 	static const char *stop_call_icon;
 	GtkWidget *w=linphone_gtk_get_main_window();
 	if (!config_loaded){
-		title=linphone_gtk_get_ui_config("title",NULL);
+		title=linphone_gtk_get_ui_config("title","Linphone");
 		home=linphone_gtk_get_ui_config("home","http://www.linphone.org");
 		start_call_icon=linphone_gtk_get_ui_config("start_call_icon","green.png");
 		stop_call_icon=linphone_gtk_get_ui_config("stop_call_icon","red.png");
