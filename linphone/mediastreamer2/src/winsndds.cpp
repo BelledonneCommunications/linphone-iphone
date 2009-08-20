@@ -32,9 +32,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <msacm.h>
 
 #include <dsound.h>
+#include <dsconf.h>
 
 const GUID GUID_DSCFX_MS_AEC = {0xcdebb919, 0x379a, 0x488a, {0x87, 0x65, 0xf5, 0x3c, 0xfd, 0x36, 0xde, 0x40}};
 const GUID GUID_DSCFX_CLASS_AEC = {0xBF963D80L, 0xC559, 0x11D0, {0x8A, 0x2B, 0x00, 0xA0, 0xC9, 0x25, 0x5A, 0xC1}}; 
+
+const GUID CLSID_DirectSoundPrivate= { 0x11ab3ec0, 0x25ec, 0x11d1, {0xa4, 0xd8, 0x0, 0xc0, 0x4f, 0xc2, 0x8a, 0xca}};
+const GUID DSPROPSETID_DirectSoundDevice = {0x84624f82, 0x25ec, 0x11d1, {0xa4, 0xd8, 0x0, 0xc0, 0x4f, 0xc2, 0x8a, 0xca}};
 
 #define WINSNDDS_MINIMUMBUFFER 5
 
@@ -63,173 +67,473 @@ typedef struct WinSndDsCard{
 	int removed;
 }WinSndDsCard;
 
+static BOOL GetWaveIdFromDSoundGUID( GUID i_sGUID, DWORD *dwWaveID)
+{ 
+    LPKSPROPERTYSET         pKsPropertySet = NULL; 
+    LPCLASSFACTORY          pClassFactory  = NULL; 
+    HRESULT                 hr;
+	BOOL					retval = FALSE;
+
+	PDSPROPERTY_DIRECTSOUNDDEVICE_DESCRIPTION_DATA psDirectSoundDeviceDescription = NULL; 
+	DSPROPERTY_DIRECTSOUNDDEVICE_DESCRIPTION_DATA sDirectSoundDeviceDescription;
+
+	memset(&sDirectSoundDeviceDescription,0,sizeof(sDirectSoundDeviceDescription)); 
+
+    hr = ms_DllGetClassObject (CLSID_DirectSoundPrivate, IID_IClassFactory, (LPVOID *)&pClassFactory );
+
+    if(SUCCEEDED(hr)) 
+    { 
+        hr = pClassFactory->CreateInstance ( NULL, IID_IKsPropertySet, (LPVOID *)&pKsPropertySet ); 
+    } 
+
+    // Release the class factory 
+    if(pClassFactory) 
+    { 
+        pClassFactory->Release(); 
+    }
+
+    if(SUCCEEDED(hr)) 
+	{ 
+		ULONG ulBytesReturned = 0;
+		sDirectSoundDeviceDescription.DeviceId = i_sGUID; 
+
+		// On the first call the final size is unknown so pass the size of the struct in order to receive
+		// "Type" and "DataFlow" values, ulBytesReturned will be populated with bytes required for struct+strings.
+        hr = pKsPropertySet->Get(DSPROPSETID_DirectSoundDevice, 
+                DSPROPERTY_DIRECTSOUNDDEVICE_DESCRIPTION, 
+                NULL, 
+                0, 
+                &sDirectSoundDeviceDescription, 
+                sizeof(sDirectSoundDeviceDescription), 
+                &ulBytesReturned
+            ); 
+
+		if (ulBytesReturned)
+		{
+			// On the first call it notifies us of the required amount of memory in order to receive the strings.
+			// Allocate the required memory, the strings will be pointed to the memory space directly after the struct.
+			psDirectSoundDeviceDescription = (PDSPROPERTY_DIRECTSOUNDDEVICE_DESCRIPTION_DATA)new BYTE[ulBytesReturned];
+			*psDirectSoundDeviceDescription = sDirectSoundDeviceDescription;
+
+			hr = pKsPropertySet->Get(DSPROPSETID_DirectSoundDevice, 
+					DSPROPERTY_DIRECTSOUNDDEVICE_DESCRIPTION, 
+					NULL, 
+					0, 
+					psDirectSoundDeviceDescription, 
+					ulBytesReturned, 
+					&ulBytesReturned
+				); 
+
+			*dwWaveID  = psDirectSoundDeviceDescription->WaveDeviceId;
+			delete [] psDirectSoundDeviceDescription;
+			retval = TRUE;
+		}
+
+		pKsPropertySet->Release(); 
+	} 
+
+	return retval; 
+} 
+
 static void winsnddscard_set_level(MSSndCard *card, MSSndCardMixerElem e, int percent){
-	MMRESULT mr = MMSYSERR_NOERROR;
 	WinSndDsCard *d=(WinSndDsCard*)card->data;
-	LONG dWvolume = 10000-percent*(-DSBVOLUME_MIN)/100;
-	DSBUFFERDESC bufferDesc;
-	DSCBUFFERDESC captureDesc;
-	WAVEFORMATEX wfx;
-	HRESULT hr;
-	LPDIRECTSOUND slDirectSound;
-	LPDIRECTSOUNDBUFFER  slDirectSoundOutputBuffer;
+	DWORD waveout_devid = WAVE_MAPPER;
+	DWORD wavein_devid = WAVE_MAPPER;
 
-	LPDIRECTSOUNDCAPTURE slDirectSoundCapture;
-	LPDIRECTSOUNDCAPTUREBUFFER slDirectSoundInputBuffer;
+	UINT uMixerID;
+	DWORD dwMixerHandle;
+	MIXERLINE MixerLine;
+	MIXERLINE Line;
+	UINT uLineIndex;
 
-	wfx.wFormatTag = WAVE_FORMAT_PCM;
-	wfx.cbSize = 0;
-	wfx.nAvgBytesPerSec = 16000;
-	wfx.nBlockAlign = 2;
-	wfx.nChannels = 1;
-	wfx.nSamplesPerSec = 8000;
-	wfx.wBitsPerSample = 16;
+	MMRESULT mr = MMSYSERR_NOERROR;
+	DWORD dwVolume = ((0xFFFF) * percent) / 100;
+	
+	WORD wLeftVol, wRightVol;
+	DWORD dwNewVol;
+	wLeftVol = LOWORD(dwVolume); // get higher WORD
+	wRightVol = LOWORD(dwVolume); // get lower WORD
+
+	dwNewVol = MAKELONG(wLeftVol, wRightVol);
+
+	GetWaveIdFromDSoundGUID(d->in_guid, &wavein_devid);
+	GetWaveIdFromDSoundGUID(d->out_guid, &waveout_devid);
 
 	switch(e){
 		case MS_SND_CARD_PLAYBACK:
-
-			ms_DirectSoundCreate( &d->out_guid, &slDirectSound, NULL );
-
-			ZeroMemory(&bufferDesc, sizeof(DSBUFFERDESC));
-			bufferDesc.dwSize = sizeof(DSBUFFERDESC);
-			bufferDesc.dwFlags = DSBCAPS_PRIMARYBUFFER | DSBCAPS_GETCURRENTPOSITION2 | DSBCAPS_CTRLVOLUME;
-			bufferDesc.dwBufferBytes = 0;
-			bufferDesc.lpwfxFormat = NULL;
-			if ((hr = IDirectSound_CreateSoundBuffer( slDirectSound,
-				&bufferDesc, &slDirectSoundOutputBuffer, NULL)) != DS_OK)
-			{
-				IDirectSound_Release( slDirectSound );
-				slDirectSound=NULL;
-				slDirectSoundOutputBuffer=NULL;
-				return ;
-			}
-
-			if ((hr = IDirectSoundBuffer_SetVolume(slDirectSoundOutputBuffer, -dWvolume)) != DS_OK)
-			{
-				ms_warning("winsnddscard_set_level: No playback volume control.");
-			}
-
-			IDirectSoundBuffer_Release( slDirectSoundOutputBuffer );
-			slDirectSoundOutputBuffer=NULL;
-			IDirectSound_Release( slDirectSound );
-			slDirectSound=NULL;
-			break;
 		case MS_SND_CARD_MASTER:
-			ms_warning("winsnddscard_set_level: No master volume control.");
+			{
+				MIXERLINECONTROLS mlc = {0};
+				MIXERCONTROL mc = {0};
+				MIXERCONTROLDETAILS mcd = {0};
+				MIXERCONTROLDETAILS_UNSIGNED mcdu = {0};
+
+				mr = mixerGetID( (HMIXEROBJ)waveout_devid, &uMixerID, MIXER_OBJECTF_WAVEOUT );
+				if ( mr != MMSYSERR_NOERROR )
+				{
+					ms_error("winsndcard_set_level: mixerGetID failed. (0x%x)", mr);
+					return;
+				}
+				mr = mixerOpen( (LPHMIXER)&dwMixerHandle, uMixerID, 0L, 0L, 0L );
+				if ( mr != MMSYSERR_NOERROR )
+				{
+					mixerClose( (HMIXER)dwMixerHandle );
+					ms_error("winsndcard_set_level: mixerOpen failed. (0x%x)", mr);
+					return;
+				}
+				memset( &MixerLine, 0, sizeof(MIXERLINE) );
+				MixerLine.cbStruct = sizeof(MIXERLINE);
+				if (MS_SND_CARD_MASTER==e)
+					MixerLine.dwComponentType = MIXERLINE_COMPONENTTYPE_DST_SPEAKERS;
+				else
+					MixerLine.dwComponentType = MIXERLINE_COMPONENTTYPE_SRC_WAVEOUT;
+				mr = mixerGetLineInfo( (HMIXEROBJ)dwMixerHandle, &MixerLine, MIXER_GETLINEINFOF_COMPONENTTYPE );
+				if ( mr != MMSYSERR_NOERROR )
+				{
+					mixerClose( (HMIXER)dwMixerHandle );
+					ms_error("winsndcard_set_level: mixerGetLineInfo failed. (0x%x)", mr);
+					return;
+				}
+
+				/* ms_message("Name: %s\n", MixerLine.szName); */
+				/* ms_message("Source Line: %d\n", MixerLine.dwSource); */
+				/* ms_message("ComponentType: %d\n", MixerLine.dwComponentType); */
+
+				mlc.cbStruct = sizeof(MIXERLINECONTROLS);
+				mlc.dwLineID = MixerLine.dwLineID;
+				mlc.dwControlType = MIXERCONTROL_CONTROLTYPE_VOLUME;
+				mlc.cControls = 1;
+				mlc.pamxctrl = &mc;
+				mlc.cbmxctrl = sizeof(MIXERCONTROL);
+				mr = mixerGetLineControls((HMIXEROBJ)dwMixerHandle, 
+					&mlc, MIXER_GETLINECONTROLSF_ONEBYTYPE);
+
+
+				mcdu.dwValue = 65535*percent/100; /* the volume is a number between 0 and 65535 */
+
+				mcd.cbStruct = sizeof(MIXERCONTROLDETAILS);
+				mcd.hwndOwner = 0;
+				mcd.dwControlID = mc.dwControlID;
+				mcd.paDetails = &mcdu;
+				mcd.cbDetails = sizeof(MIXERCONTROLDETAILS_UNSIGNED);
+				mcd.cChannels = 1;
+				mr = mixerSetControlDetails((HMIXEROBJ)dwMixerHandle, 
+					&mcd, MIXER_SETCONTROLDETAILSF_VALUE);
+
+				if (mr != MMSYSERR_NOERROR)
+				{
+					ms_error("winsndcard_set_level: mixerSetControlDetails failed. (0x%x)", mr);
+					return;
+				}
+			}
 			break;
 		case MS_SND_CARD_CAPTURE:
-
-			ms_DirectSoundCaptureCreate( &d->in_guid, &slDirectSoundCapture, NULL );
-
-			ZeroMemory(&captureDesc, sizeof(DSCBUFFERDESC));
-			captureDesc.dwSize = sizeof(DSCBUFFERDESC);
-			captureDesc.dwFlags = DSBCAPS_CTRLVOLUME;
-			captureDesc.dwBufferBytes = wfx.nAvgBytesPerSec/4;
-			captureDesc.lpwfxFormat = &wfx;
-
-			if ((hr = IDirectSoundCapture_CreateCaptureBuffer( slDirectSoundCapture,
-				&captureDesc, &slDirectSoundInputBuffer, NULL)) != DS_OK)
+			mr = mixerGetID( (HMIXEROBJ)wavein_devid, &uMixerID, MIXER_OBJECTF_WAVEIN );
+			if ( mr != MMSYSERR_NOERROR )
 			{
-				IDirectSoundCapture_Release( slDirectSoundCapture );
+				ms_error("winsndcard_set_level: mixerGetID failed. (0x%x)", mr);
 				return;
 			}
-
-			//if ((hr = IDirectSoundCaptureBuffer_SetVolume(slDirectSoundInputBuffer, -dWvolume)) != DS_OK)
+			mr = mixerOpen( (LPHMIXER)&dwMixerHandle, uMixerID, 0L, 0L, 0L );
+			if ( mr != MMSYSERR_NOERROR )
 			{
-				ms_warning("winsnddscard_set_level: No mic volume control.");
+				mixerClose( (HMIXER)dwMixerHandle );
+				ms_error("winsndcard_set_level: mixerGetLineInfo failed. (0x%x)", mr);
+				return;
 			}
+			memset( &MixerLine, 0, sizeof(MIXERLINE) );
+			MixerLine.cbStruct = sizeof(MIXERLINE);
+			MixerLine.dwComponentType = MIXERLINE_COMPONENTTYPE_DST_WAVEIN;
+			mr = mixerGetLineInfo( (HMIXEROBJ)dwMixerHandle, &MixerLine, MIXER_GETLINEINFOF_COMPONENTTYPE );
+			if ( mr != MMSYSERR_NOERROR )
+			{
+				mixerClose( (HMIXER)dwMixerHandle );
+				ms_error("winsndcard_set_level: mixerGetLineInfo failed. (0x%x)", mr);
+				return;
+			}
+			/* ms_message("Name: %s\n", MixerLine.szName); */
+			/* ms_message("Source Line: %d\n", MixerLine.dwSource); */
+			/* ms_message("ComponentType: %d\n", MixerLine.dwComponentType); */
 
-			IDirectSoundCaptureBuffer_Release( slDirectSoundInputBuffer );
-			slDirectSoundInputBuffer=NULL;
-			IDirectSoundCapture_Release( slDirectSoundCapture );
-			slDirectSoundCapture=NULL;
+			for (uLineIndex = 0; uLineIndex < MixerLine.cConnections; uLineIndex++)
+			{
+				memset( &Line, 0, sizeof(MIXERLINE) );
+				Line.cbStruct = sizeof(MIXERLINE);
+				Line.dwDestination = MixerLine.dwDestination;
+				Line.dwSource = uLineIndex;
+				mr = mixerGetLineInfo( (HMIXEROBJ)dwMixerHandle, &Line, MIXER_GETLINEINFOF_LINEID);
+				if ( mr != MMSYSERR_NOERROR )
+				{
+					mixerClose( (HMIXER)dwMixerHandle );
+					ms_error("winsndcard_set_level: mixerGetLineInfo failed. (0x%x)", mr);
+					return;
+				}
+
+				/* ms_message("Name: %s\n", MixerLine.szName); */
+				/* ms_message("Source Line: %d\n", MixerLine.dwSource); */
+				/* ms_message("LineID: %d\n", MixerLine.dwLineID); */
+				/* ms_message("ComponentType: %d\n", MixerLine.dwComponentType); */
+
+				memset( &Line, 0, sizeof(MIXERLINE) );
+				Line.cbStruct = sizeof(MIXERLINE);
+				Line.dwDestination = MixerLine.dwDestination;
+				Line.dwSource = uLineIndex;
+				mr = mixerGetLineInfo( (HMIXEROBJ)dwMixerHandle, &Line, MIXER_GETLINEINFOF_SOURCE);
+				if ( mr != MMSYSERR_NOERROR )
+				{
+					mixerClose( (HMIXER)dwMixerHandle );
+					ms_error("winsndcard_set_level: mixerGetLineInfo failed. (0x%x)", mr);
+					return;
+				}
+
+				/* ms_message("Name: %s\n", MixerLine.szName); */
+				/* ms_message("Source Line: %d\n", MixerLine.dwSource); */
+				/* ms_message("LineID: %d\n", MixerLine.dwLineID); */
+				/* ms_message("ComponentType: %d\n", MixerLine.dwComponentType); */
+
+				if (MIXERLINE_COMPONENTTYPE_SRC_MICROPHONE == Line.dwComponentType)  
+				{
+					LPMIXERCONTROL pmxctrl = (LPMIXERCONTROL)malloc(sizeof(MIXERCONTROL));
+					MIXERLINECONTROLS mxlctrl = {sizeof(mxlctrl), Line.dwLineID, MIXERCONTROL_CONTROLTYPE_VOLUME, 1, sizeof(MIXERCONTROL), pmxctrl};  
+					if(!mixerGetLineControls((HMIXEROBJ)dwMixerHandle, &mxlctrl,  
+						MIXER_GETLINECONTROLSF_ONEBYTYPE)){  
+							DWORD cChannels = Line.cChannels;
+							LPMIXERCONTROLDETAILS_UNSIGNED pUnsigned;
+							MIXERCONTROLDETAILS mxcd;
+							if (MIXERCONTROL_CONTROLF_UNIFORM & pmxctrl->fdwControl)  
+								cChannels = 1;  
+							pUnsigned =  
+								(LPMIXERCONTROLDETAILS_UNSIGNED)  
+								malloc(cChannels * sizeof(MIXERCONTROLDETAILS_UNSIGNED));
+
+							mxcd.cbStruct = sizeof(mxcd);
+							mxcd.dwControlID = pmxctrl->dwControlID;
+							mxcd.cChannels = cChannels;
+							mxcd.hwndOwner = (HWND)0;
+							mxcd.cbDetails = sizeof(MIXERCONTROLDETAILS_UNSIGNED);
+							mxcd.paDetails = (LPVOID) pUnsigned;
+
+							mixerGetControlDetails((HMIXEROBJ)dwMixerHandle, &mxcd,  
+								MIXER_SETCONTROLDETAILSF_VALUE);  
+							pUnsigned[0].dwValue = pUnsigned[cChannels - 1].dwValue
+								=  pmxctrl->Bounds.dwMaximum*percent/100;
+							mixerSetControlDetails((HMIXEROBJ)dwMixerHandle, &mxcd,  
+								MIXER_SETCONTROLDETAILSF_VALUE);  
+							free(pmxctrl);  
+							free(pUnsigned);  
+					}  
+					else  
+						free(pmxctrl);  
+				}
+			}
+			mixerClose( (HMIXER)dwMixerHandle );
+			if (mr != MMSYSERR_NOERROR)
+			{
+				ms_error("winsndcard_set_level: mixerClose failed. (0x%x)", mr);
+				return;
+			}
 			break;
 		default:
-			ms_warning("winsnddscard_set_level: unsupported command.");
+			ms_warning("winsnd_card_set_level: unsupported command.");
 	}
 }
 
 static int winsnddscard_get_level(MSSndCard *card, MSSndCardMixerElem e){
 	WinSndDsCard *d=(WinSndDsCard*)card->data;
-	LONG dWvolume = 10000;
-	DSBUFFERDESC primaryDesc;
-	DSCBUFFERDESC captureDesc;
-	WAVEFORMATEX wfx;
-	HRESULT hr;
-	LPDIRECTSOUND slDirectSound;
-	LPDIRECTSOUNDBUFFER  slDirectSoundOutputBuffer;
+	DWORD waveout_devid = WAVE_MAPPER;
+	DWORD wavein_devid = WAVE_MAPPER;
 
-	LPDIRECTSOUNDCAPTURE slDirectSoundCapture;
-	LPDIRECTSOUNDCAPTUREBUFFER slDirectSoundInputBuffer;
+	UINT uMixerID;
+	DWORD dwMixerHandle;
+	MIXERLINE MixerLine;
+	MIXERLINE Line;
+	UINT uLineIndex;
 
-	wfx.wFormatTag = WAVE_FORMAT_PCM;
-	wfx.cbSize = 0;
-	wfx.nAvgBytesPerSec = 16000;
-	wfx.nBlockAlign = 2;
-	wfx.nChannels = 1;
-	wfx.nSamplesPerSec = 8000;
-	wfx.wBitsPerSample = 16;
+	MMRESULT mr = MMSYSERR_NOERROR;
+	int percent;
+
+	GetWaveIdFromDSoundGUID(d->in_guid, &wavein_devid);
+	GetWaveIdFromDSoundGUID(d->out_guid, &waveout_devid);
 
 	switch(e){
-		case MS_SND_CARD_PLAYBACK:
-
-			ms_DirectSoundCreate( &d->out_guid, &slDirectSound, NULL );
-
-			ZeroMemory(&primaryDesc, sizeof(DSBUFFERDESC));
-			primaryDesc.dwSize = sizeof(DSBUFFERDESC);
-			primaryDesc.dwFlags =  DSBCAPS_PRIMARYBUFFER | DSBCAPS_GETCURRENTPOSITION2 | DSBCAPS_CTRLVOLUME;
-			primaryDesc.dwBufferBytes = 0;
-			primaryDesc.lpwfxFormat = NULL;
-			if ((hr = IDirectSound_CreateSoundBuffer( slDirectSound,
-				&primaryDesc, &slDirectSoundOutputBuffer, NULL)) != DS_OK)
-			{
-				IDirectSound_Release( slDirectSound );
-				return -1;
-			}
-
-			if ((hr = IDirectSoundBuffer_GetVolume(slDirectSoundOutputBuffer, &dWvolume)) != DS_OK)
-			{
-				ms_warning("winsnddscard_get_level: No playback volume control.");
-			}
-
-			IDirectSoundBuffer_Release( slDirectSoundOutputBuffer );
-			slDirectSoundOutputBuffer=NULL;
-			IDirectSound_Release( slDirectSound );
-			slDirectSound=NULL;
-
-			return 100-dWvolume *100/(-DSBVOLUME_MIN);
 		case MS_SND_CARD_MASTER:
-			ms_warning("winsnddscard_get_level: No master volume control.");
+		case MS_SND_CARD_PLAYBACK:
+			{
+				MIXERLINECONTROLS mlc = {0};
+				MIXERCONTROL mc = {0};
+				MIXERCONTROLDETAILS mcd = {0};
+				MIXERCONTROLDETAILS_UNSIGNED mcdu = {0};
+
+				mr = mixerGetID( (HMIXEROBJ)waveout_devid, &uMixerID, MIXER_OBJECTF_WAVEOUT );
+				if ( mr != MMSYSERR_NOERROR )
+				{
+					ms_error("winsndcard_get_level: mixerGetID failed. (0x%x)", mr);
+					return -1;
+				}
+				mr = mixerOpen( (LPHMIXER)&dwMixerHandle, uMixerID, 0L, 0L, 0L );
+				if ( mr != MMSYSERR_NOERROR )
+				{
+					mixerClose( (HMIXER)dwMixerHandle );
+					ms_error("winsndcard_get_level: mixerOpen failed. (0x%x)", mr);
+					return -1;
+				}
+				memset( &MixerLine, 0, sizeof(MIXERLINE) );
+				MixerLine.cbStruct = sizeof(MIXERLINE);
+				if (MS_SND_CARD_MASTER==e)
+					MixerLine.dwComponentType = MIXERLINE_COMPONENTTYPE_DST_SPEAKERS;
+				else
+					MixerLine.dwComponentType = MIXERLINE_COMPONENTTYPE_SRC_WAVEOUT;
+				mr = mixerGetLineInfo( (HMIXEROBJ)dwMixerHandle, &MixerLine, MIXER_GETLINEINFOF_COMPONENTTYPE );
+				if ( mr != MMSYSERR_NOERROR )
+				{
+					mixerClose( (HMIXER)dwMixerHandle );
+					ms_error("winsndcard_get_level: mixerGetLineInfo failed. (0x%x)", mr);
+					return -1;
+				}
+
+				/* ms_message("Name: %s\n", MixerLine.szName); */
+				/* ms_message("Source Line: %d\n", MixerLine.dwSource); */
+				/* ms_message("ComponentType: %d\n", MixerLine.dwComponentType); */
+
+				mlc.cbStruct = sizeof(MIXERLINECONTROLS);
+				mlc.dwLineID = MixerLine.dwLineID;
+				mlc.dwControlType = MIXERCONTROL_CONTROLTYPE_VOLUME;
+				mlc.cControls = 1;
+				mlc.pamxctrl = &mc;
+				mlc.cbmxctrl = sizeof(MIXERCONTROL);
+				mr = mixerGetLineControls((HMIXEROBJ)dwMixerHandle, 
+					&mlc, MIXER_GETLINECONTROLSF_ONEBYTYPE);
+				if (mr != MMSYSERR_NOERROR)
+				{
+					ms_error("winsndcard_get_level: mixerGetLineControls failed. (0x%x)", mr);
+					return -1;
+				}
+
+				mcd.cbStruct = sizeof(MIXERCONTROLDETAILS);
+				mcd.hwndOwner = 0;
+				mcd.dwControlID = mc.dwControlID;
+				mcd.paDetails = &mcdu;
+				mcd.cbDetails = sizeof(MIXERCONTROLDETAILS_UNSIGNED);
+				mcd.cChannels = 1;
+				mr = mixerGetControlDetails((HMIXEROBJ)dwMixerHandle, &mcd,  
+					MIXER_SETCONTROLDETAILSF_VALUE);  
+				percent = (mcdu.dwValue *100) / (mc.Bounds.dwMaximum);
+
+				if (mr != MMSYSERR_NOERROR)
+				{
+					ms_error("winsndcard_get_level: mixerGetControlDetails failed. (0x%x)", mr);
+					return -1;
+				}
+				return percent;
+			}
 			break;
 		case MS_SND_CARD_CAPTURE:
-			ms_DirectSoundCaptureCreate( &d->in_guid, &slDirectSoundCapture, NULL );
-
-			ZeroMemory(&captureDesc, sizeof(DSCBUFFERDESC));
-			captureDesc.dwSize = sizeof(DSCBUFFERDESC);
-			captureDesc.dwFlags = DSBCAPS_CTRLVOLUME;
-			captureDesc.dwBufferBytes = wfx.nAvgBytesPerSec/4;
-			captureDesc.lpwfxFormat = &wfx;
-
-			if ((hr = IDirectSoundCapture_CreateCaptureBuffer( slDirectSoundCapture,
-				&captureDesc, &slDirectSoundInputBuffer, NULL)) != DS_OK)
+			mr = mixerGetID( (HMIXEROBJ)wavein_devid, &uMixerID, MIXER_OBJECTF_WAVEIN );
+			if ( mr != MMSYSERR_NOERROR )
 			{
-				ms_error("winsnddscard_get_level: No mic volume control.");
-				IDirectSoundCapture_Release( slDirectSoundCapture );
+				ms_error("winsndcard_get_level: mixerGetID failed. (0x%x)", mr);
+				return -1;
+			}
+			mr = mixerOpen( (LPHMIXER)&dwMixerHandle, uMixerID, 0L, 0L, 0L );
+			if ( mr != MMSYSERR_NOERROR )
+			{
+				mixerClose( (HMIXER)dwMixerHandle );
+				ms_error("winsndcard_get_level: mixerOpen failed. (0x%x)", mr);
+				return -1;
+			}
+			memset( &MixerLine, 0, sizeof(MIXERLINE) );
+			MixerLine.cbStruct = sizeof(MIXERLINE);
+			MixerLine.dwComponentType = MIXERLINE_COMPONENTTYPE_DST_WAVEIN;
+			mr = mixerGetLineInfo( (HMIXEROBJ)dwMixerHandle, &MixerLine, MIXER_GETLINEINFOF_COMPONENTTYPE );
+			if ( mr != MMSYSERR_NOERROR )
+			{
+				mixerClose( (HMIXER)dwMixerHandle );
+				ms_error("winsndcard_get_level: mixerGetLineInfo failed. (0x%x)", mr);
 				return -1;
 			}
 
-			//if ((hr = IDirectSoundCaptureBuffer_GetVolume(slDirectSoundInputBuffer, &dWvolume)) != DS_OK)
-			{
-				ms_error("winsnddscard_get_level: No mic volume control.");
-			}
+			/* ms_message("Name: %s\n", MixerLine.szName); */
+			/* ms_message("Source Line: %d\n", MixerLine.dwSource); */
+			/* ms_message("ComponentType: %d\n", MixerLine.dwComponentType); */
 
-			IDirectSoundCaptureBuffer_Release( slDirectSoundInputBuffer );
-			slDirectSoundInputBuffer=NULL;
-			IDirectSoundCapture_Release( slDirectSoundCapture );
-			slDirectSoundCapture=NULL;
-			return 100-dWvolume *100/(-DSBVOLUME_MIN);
+			for (uLineIndex = 0; uLineIndex < MixerLine.cConnections; uLineIndex++)
+			{
+				memset( &Line, 0, sizeof(MIXERLINE) );
+				Line.cbStruct = sizeof(MIXERLINE);
+				Line.dwDestination = MixerLine.dwDestination;
+				Line.dwSource = uLineIndex;
+				mr = mixerGetLineInfo( (HMIXEROBJ)dwMixerHandle, &Line, MIXER_GETLINEINFOF_LINEID);
+				if ( mr != MMSYSERR_NOERROR )
+				{
+					mixerClose( (HMIXER)dwMixerHandle );
+					ms_error("winsndcard_get_level: mixerGetLineInfo failed. (0x%x)", mr);
+					return -1;
+				}
+
+				/* ms_message("Name: %s\n", MixerLine.szName); */
+				/* ms_message("Source Line: %d\n", MixerLine.dwSource); */
+				/* ms_message("LineID: %d\n", MixerLine.dwLineID); */
+				/* ms_message("ComponentType: %d\n", MixerLine.dwComponentType); */
+
+				memset( &Line, 0, sizeof(MIXERLINE) );
+				Line.cbStruct = sizeof(MIXERLINE);
+				Line.dwDestination = MixerLine.dwDestination;
+				Line.dwSource = uLineIndex;
+				mr = mixerGetLineInfo( (HMIXEROBJ)dwMixerHandle, &Line, MIXER_GETLINEINFOF_SOURCE);
+				if ( mr != MMSYSERR_NOERROR )
+				{
+					mixerClose( (HMIXER)dwMixerHandle );
+					ms_error("winsndcard_get_level: mixerGetLineInfo failed. (0x%x)", mr);
+					return -1;
+				}
+
+				/* ms_message("Name: %s\n", MixerLine.szName); */
+				/* ms_message("Source Line: %d\n", MixerLine.dwSource); */
+				/* ms_message("LineID: %d\n", MixerLine.dwLineID); */
+				/* ms_message("ComponentType: %d\n", MixerLine.dwComponentType); */
+
+				if (MIXERLINE_COMPONENTTYPE_SRC_MICROPHONE == Line.dwComponentType)  
+				{
+					LPMIXERCONTROL pmxctrl = (LPMIXERCONTROL)malloc(sizeof(MIXERCONTROL));
+					MIXERLINECONTROLS mxlctrl = {sizeof(mxlctrl), Line.dwLineID, MIXERCONTROL_CONTROLTYPE_VOLUME, 1, sizeof(MIXERCONTROL), pmxctrl};  
+					if(!mixerGetLineControls((HMIXEROBJ)dwMixerHandle, &mxlctrl,  
+						MIXER_GETLINECONTROLSF_ONEBYTYPE)){  
+							DWORD cChannels = Line.cChannels;
+							LPMIXERCONTROLDETAILS_UNSIGNED pUnsigned;
+							MIXERCONTROLDETAILS mxcd;
+							if (MIXERCONTROL_CONTROLF_UNIFORM & pmxctrl->fdwControl)  
+								cChannels = 1;  
+							pUnsigned =  
+								(LPMIXERCONTROLDETAILS_UNSIGNED)  
+								malloc(cChannels * sizeof(MIXERCONTROLDETAILS_UNSIGNED));
+
+							mxcd.cbStruct = sizeof(mxcd);
+							mxcd.dwControlID = pmxctrl->dwControlID;
+							mxcd.cChannels = cChannels;
+							mxcd.hwndOwner = (HWND)0;
+							mxcd.cbDetails = sizeof(MIXERCONTROLDETAILS_UNSIGNED);
+							mxcd.paDetails = (LPVOID) pUnsigned;
+
+							mixerGetControlDetails((HMIXEROBJ)dwMixerHandle, &mxcd,  
+								MIXER_SETCONTROLDETAILSF_VALUE);  
+							percent = (pUnsigned[0].dwValue *100) / (pmxctrl->Bounds.dwMaximum);
+							free(pmxctrl);
+							free(pUnsigned);
+					}  
+					else  
+						free(pmxctrl);  
+				}
+			}
+			mixerClose( (HMIXER)dwMixerHandle );
+			if (mr != MMSYSERR_NOERROR)
+			{
+				ms_error("winsndcard_get_level: mixerClose failed. (0x%x)", mr);
+				return -1;
+			}
+			return percent;
+			break;
 		default:
-			ms_warning("winsnddscard_get_level: unsupported command.");
+			ms_warning("winsndcard_get_level: unsupported command.");
 			return -1;
 	}
 	return -1;
@@ -243,6 +547,211 @@ static void winsnddscard_set_source(MSSndCard *card, MSSndCardCapture source){
 		case MS_SND_CARD_LINE:
 			break;
 	}	
+}
+
+static int winsnddscard_set_control(MSSndCard *card, MSSndCardControlElem e, int val){
+	WinSndDsCard *d=(WinSndDsCard*)card->data;
+	DWORD waveout_devid = WAVE_MAPPER;
+	DWORD wavein_devid = WAVE_MAPPER;
+
+	UINT uMixerID;
+	DWORD dwMixerHandle;
+	MIXERLINE MixerLine;
+	MIXERLINE Line;
+	UINT uLineIndex;
+
+	MMRESULT mr = MMSYSERR_NOERROR;
+
+	GetWaveIdFromDSoundGUID(d->in_guid, &wavein_devid);
+	GetWaveIdFromDSoundGUID(d->out_guid, &waveout_devid);
+
+	switch(e){
+		case MS_SND_CARD_CAPTURE_MUTE:
+
+			mr = mixerGetID( (HMIXEROBJ)wavein_devid, &uMixerID, MIXER_OBJECTF_WAVEIN );
+			if ( mr != MMSYSERR_NOERROR )
+			{
+				ms_error("winsndcard_set_control: mixerGetID failed. (0x%x)", mr);
+				return -1;
+			}
+			mr = mixerOpen( (LPHMIXER)&dwMixerHandle, uMixerID, 0L, 0L, 0L );
+			if ( mr != MMSYSERR_NOERROR )
+			{
+				mixerClose( (HMIXER)dwMixerHandle );
+				ms_error("winsndcard_set_control: mixerOpen failed. (0x%x)", mr);
+				return -1;
+			}
+			memset( &MixerLine, 0, sizeof(MIXERLINE) );
+			MixerLine.cbStruct = sizeof(MIXERLINE);
+			MixerLine.dwComponentType = MIXERLINE_COMPONENTTYPE_DST_WAVEIN;
+			mr = mixerGetLineInfo( (HMIXEROBJ)dwMixerHandle, &MixerLine, MIXER_GETLINEINFOF_COMPONENTTYPE );
+			if ( mr != MMSYSERR_NOERROR )
+			{
+				mixerClose( (HMIXER)dwMixerHandle );
+				ms_error("winsndcard_set_control: mixerGetLineInfo failed. (0x%x)", mr);
+				return -1;
+			}
+			/* ms_message("Name: %s\n", MixerLine.szName); */
+			/* ms_message("Source Line: %d\n", MixerLine.dwSource); */
+			/* ms_message("ComponentType: %d\n", MixerLine.dwComponentType); */
+
+			for (uLineIndex = 0; uLineIndex < MixerLine.cConnections; uLineIndex++)
+			{
+				memset( &Line, 0, sizeof(MIXERLINE) );
+				Line.cbStruct = sizeof(MIXERLINE);
+				Line.dwDestination = MixerLine.dwDestination;
+				Line.dwSource = uLineIndex;
+				mr = mixerGetLineInfo( (HMIXEROBJ)dwMixerHandle, &Line, MIXER_GETLINEINFOF_LINEID);
+				if ( mr != MMSYSERR_NOERROR )
+				{
+					mixerClose( (HMIXER)dwMixerHandle );
+					ms_error("winsndcard_set_control: mixerGetLineInfo failed. (0x%x)", mr);
+					return -1;
+				}
+				
+				/* ms_message("Name: %s\n", MixerLine.szName); */
+				/* ms_message("Source Line: %d\n", MixerLine.dwSource); */
+				/* ms_message("LineID: %d\n", MixerLine.dwLineID); */
+				/* ms_message("ComponentType: %d\n", MixerLine.dwComponentType); */
+
+				memset( &Line, 0, sizeof(MIXERLINE) );
+				Line.cbStruct = sizeof(MIXERLINE);
+				Line.dwDestination = MixerLine.dwDestination;
+				Line.dwSource = uLineIndex;
+				mr = mixerGetLineInfo( (HMIXEROBJ)dwMixerHandle, &Line, MIXER_GETLINEINFOF_SOURCE);
+				if ( mr != MMSYSERR_NOERROR )
+				{
+					mixerClose( (HMIXER)dwMixerHandle );
+					ms_error("winsndcard_set_control: mixerGetLineInfo failed. (0x%x)", mr);
+					return -1;
+				}
+
+				/* ms_message("Name: %s\n", MixerLine.szName); */
+				/* ms_message("Source Line: %d\n", MixerLine.dwSource); */
+				/* ms_message("LineID: %d\n", MixerLine.dwLineID); */
+				/* ms_message("ComponentType: %d\n", MixerLine.dwComponentType); */
+
+				if (MIXERLINE_COMPONENTTYPE_SRC_MICROPHONE == Line.dwComponentType)  
+				{
+					/* unmute */
+					/* Find a mute control, if any, of the microphone line  */
+
+					LPMIXERCONTROL pmxctrl = (LPMIXERCONTROL)malloc(sizeof(MIXERCONTROL));
+					MIXERLINECONTROLS mxlctrl = {sizeof(mxlctrl), Line.dwLineID, MIXERCONTROL_CONTROLTYPE_MUTE, 1, sizeof(MIXERCONTROL), pmxctrl};  
+					if(!mixerGetLineControls((HMIXEROBJ)dwMixerHandle, &mxlctrl, MIXER_GETLINECONTROLSF_ONEBYTYPE)){  
+						DWORD cChannels = Line.cChannels;
+						LPMIXERCONTROLDETAILS_BOOLEAN pbool;
+						MIXERCONTROLDETAILS mxcd;
+
+						if (MIXERCONTROL_CONTROLF_UNIFORM & pmxctrl->fdwControl)  
+							cChannels = 1;  
+						pbool = (LPMIXERCONTROLDETAILS_BOOLEAN) malloc(cChannels * sizeof(
+							MIXERCONTROLDETAILS_BOOLEAN));
+
+						mxcd.cbStruct = sizeof(mxcd);
+						mxcd.dwControlID = pmxctrl->dwControlID;
+						mxcd.cChannels = cChannels;
+						mxcd.hwndOwner = (HWND)0;
+						mxcd.cbDetails = sizeof(MIXERCONTROLDETAILS_BOOLEAN);
+						mxcd.paDetails = (LPVOID) pbool;
+
+						mixerGetControlDetails((HMIXEROBJ)dwMixerHandle, &mxcd,  
+							MIXER_SETCONTROLDETAILSF_VALUE);  
+						/* Unmute the microphone line (for both channels) */
+						pbool[0].fValue = pbool[cChannels - 1].fValue = val; /* 0 -> unmute; */
+						mixerSetControlDetails((HMIXEROBJ)dwMixerHandle, &mxcd,  
+							MIXER_SETCONTROLDETAILSF_VALUE);  
+						free(pmxctrl);  
+						free(pbool);  
+					}  
+					else  
+						free(pmxctrl);  
+				}
+			}
+			mixerClose( (HMIXER)dwMixerHandle );
+			if (mr != MMSYSERR_NOERROR)
+			{
+				ms_error("winsndcard_set_control: mixerClose failed. (0x%x)", mr);
+				return -1;
+			}
+			return 0;
+
+		case MS_SND_CARD_MASTER_MUTE:
+		case MS_SND_CARD_PLAYBACK_MUTE:
+			{
+				MIXERLINECONTROLS mlc = {0};
+				MIXERCONTROL mc = {0};
+				MIXERCONTROLDETAILS mcd = {0};
+				MIXERCONTROLDETAILS_BOOLEAN bMute;
+
+				bMute.fValue = (val>0);
+
+				mr = mixerGetID( (HMIXEROBJ)waveout_devid, &uMixerID, MIXER_OBJECTF_WAVEOUT );
+				if ( mr != MMSYSERR_NOERROR )
+				{
+					ms_error("winsndcard_set_control: mixerGetID failed. (0x%x)", mr);
+					return -1;
+				}
+				mr = mixerOpen( (LPHMIXER)&dwMixerHandle, uMixerID, 0L, 0L, 0L );
+				if ( mr != MMSYSERR_NOERROR )
+				{
+					mixerClose( (HMIXER)dwMixerHandle );
+					ms_error("winsndcard_set_control: mixerOpen failed. (0x%x)", mr);
+					return -1;
+				}
+				memset( &MixerLine, 0, sizeof(MIXERLINE) );
+				MixerLine.cbStruct = sizeof(MIXERLINE);
+				if (MS_SND_CARD_MASTER_MUTE==e)
+					MixerLine.dwComponentType = MIXERLINE_COMPONENTTYPE_DST_SPEAKERS;
+				else
+					MixerLine.dwComponentType = MIXERLINE_COMPONENTTYPE_SRC_WAVEOUT;
+				mr = mixerGetLineInfo( (HMIXEROBJ)dwMixerHandle, &MixerLine, MIXER_GETLINEINFOF_COMPONENTTYPE );
+				if ( mr != MMSYSERR_NOERROR )
+				{
+					mixerClose( (HMIXER)dwMixerHandle );
+					ms_error("winsndcard_set_control: mixerSetControlDetails failed. (0x%x)", mr);
+					return -1;
+				}
+
+				/* ms_message("Name: %s\n", MixerLine.szName); */
+				/* ms_message("Source Line: %d\n", MixerLine.dwSource); */
+				/* ms_message("ComponentType: %d\n", MixerLine.dwComponentType); */
+
+				mlc.cbStruct = sizeof(MIXERLINECONTROLS);
+				mlc.dwLineID = MixerLine.dwLineID;
+				mlc.dwControlType = MIXERCONTROL_CONTROLTYPE_MUTE; //MIXERCONTROL_CONTROLTYPE_VOLUME;
+				mlc.cControls = 1;
+				mlc.pamxctrl = &mc;
+				mlc.cbmxctrl = sizeof(MIXERCONTROL);
+				mr = mixerGetLineControls((HMIXEROBJ)dwMixerHandle, 
+					&mlc, MIXER_GETLINECONTROLSF_ONEBYTYPE);
+
+				mcd.cbStruct = sizeof(MIXERCONTROLDETAILS);
+				mcd.hwndOwner = 0;
+				mcd.dwControlID = mc.dwControlID;
+				mcd.paDetails = &bMute;
+				mcd.cbDetails = sizeof(MIXERCONTROLDETAILS_BOOLEAN);
+				mcd.cChannels = 1;
+				mr = mixerSetControlDetails((HMIXEROBJ)dwMixerHandle, 
+					&mcd, MIXER_SETCONTROLDETAILSF_VALUE);
+
+				if (mr != MMSYSERR_NOERROR)
+				{
+					ms_error("winsndcard_set_control: mixerSetControlDetails failed. (0x%x)", mr);
+					return -1;
+				}
+				return 0;
+			}
+			break;
+		default:
+			ms_warning("winsndcard_set_control: unsupported command.");
+	}
+	return -1;
+}
+
+static int winsnddscard_get_control(MSSndCard *card, MSSndCardControlElem e){
+	WinSndDsCard *d=(WinSndDsCard*)card->data;
+	return -1;
 }
 
 static void winsnddscard_init(MSSndCard *card){
@@ -288,19 +797,17 @@ static MSSndCard *winsnddscard_new(const char *name, LPGUID lpguid, int in_dev, 
 	d->in_devid=in_dev;
 	d->out_devid=out_dev;
 	card->capabilities=cap;
+	memset(&d->out_guid, 0, sizeof(GUID));
+	memset(&d->in_guid, 0, sizeof(GUID));
 	if (out_dev!=-1)
 	{
 		if (lpguid!=NULL)
 			memcpy(&d->out_guid, lpguid, sizeof(GUID));
-		else
-			memset(&d->out_guid, 0, sizeof(GUID));
 	}
 	else
 	{
 		if (lpguid!=NULL)
 			memcpy(&d->in_guid, lpguid, sizeof(GUID));
-		else
-			memset(&d->in_guid, 0, sizeof(GUID));
 	}
 	return card;
 }
@@ -506,12 +1013,18 @@ static void * new_device_polling_thread(void *ignore){
 static void stop_poller(){
 	poller_running=FALSE;
 	ms_thread_join(poller_thread,NULL);
+	poller_thread=NULL;
 }
 
 static void winsnddscard_detect(MSSndCardManager *m){
+	static int doitonce = 0;
 	_winsnddscard_detect(m);
-	ms_thread_create(&poller_thread,NULL,new_device_polling_thread,NULL);
-	atexit(&stop_poller);
+	if (doitonce==0)
+	{
+		doitonce++;
+		ms_thread_create(&poller_thread,NULL,new_device_polling_thread,NULL);
+		atexit(&stop_poller);
+	}
 }
 
 typedef struct WinSndDs{
