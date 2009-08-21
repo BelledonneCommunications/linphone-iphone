@@ -18,7 +18,9 @@ ShowLanguageDialog=yes
 Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "italian"; MessagesFile: "compiler:Languages\Italian.isl";
 Name: "french";  MessagesFile: "compiler:Languages\French.isl"
-Name: "czech";   MessagesFile: "compiler:Languages\czech.isl"
+Name: "czech";   MessagesFile: "compiler:Languages\Czech.isl"
+Name: "german";  MessagesFile: "compiler:Languages\German.isl"
+Name: "spanish"; MessagesFile: "compiler:Languages\Spanish.isl"
 
 
 [Tasks]
