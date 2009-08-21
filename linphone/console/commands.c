@@ -1428,11 +1428,13 @@ static int lpc_cmd_status(LinphoneCore *lc, char *args)
 	else if (strstr(args,"hook"))
 	{
 		gstate_t call_state=linphone_core_get_state(lc,GSTATE_GROUP_CALL);
+/*
 		if (!cfg || !linphone_proxy_config_is_registered(cfg)){
 			linphonec_out("unregistered\n");
 			return 1;
 		}
-		switch(call_state){
+ */
+ 		switch(call_state){
 			case GSTATE_CALL_OUT_INVITE:
 				linphonec_out("hook=dialing\n");
 			break;

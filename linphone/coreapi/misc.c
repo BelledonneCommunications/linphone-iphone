@@ -679,7 +679,10 @@ static int extract_sip_port(const char *config){
 	return ret;
 }
 
-int linphone_core_wake_up_possible_already_running_instance(const char *config_file){
+/* zsd added "addr_to_call" to this function. */
+int linphone_core_wake_up_possible_already_running_instance(
+    const char * config_file, const char * addr_to_call)
+{
 	int port=extract_sip_port(config_file);
 	const char *wakeup="WAKEUP sip:127.0.0.1 SIP/2.0\r\n"
 		"Via: SIP/2.0/UDP 127.0.0.1:%i;rport;branch=z9hG4bK%u\r\n"
@@ -688,6 +691,19 @@ int linphone_core_wake_up_possible_already_running_instance(const char *config_f
 		"CSeq: 1 WAKEUP\r\n"
 		"Call-ID: %u@onsantape\r\n"
 		"Content-length: 0\r\n\r\n";
+	/*
+	 * zsd: is this the worst kludge ever?
+	 * Q: How do you extract the body of the message at the other end??
+	 * (Use "...Content-length: %d\r\n\r\n%s\r\n", strlen(a_to_c)+2, a_to_c
+	 * to put stuff in the body, assuming content length includes the \r\n.)
+	 */
+	const char * call = "CALL%s sip:127.0.0.1 SIP/2.0\r\n"
+            "Via: SIP/2.0/UDP 127.0.0.1:%i;rport;branch=z9hG4bK%u\r\n"
+            "From: <sip:another_linphone@127.0.0.1>;tag=%u\r\n"
+            "To:   <sip:you@127.0.0.1>\r\n"
+            "CSeq: 1 CALL\r\n"
+            "Call-ID: %u@onsantape\r\n" "Content-length: 0\r\n\r\n";
+
 	/*make sure ortp is initialized (it initializes win32 socket api)*/
 	ortp_init();
 	if (port>0){
@@ -701,7 +717,15 @@ int linphone_core_wake_up_possible_already_running_instance(const char *config_f
 			if (sock<0) sock=create_socket(++locport);
 			if (sock>=0){
 				char req[512];
-				snprintf(req,sizeof(req),wakeup,locport,random(),random(),random());
+		/* zsd */
+		if (addr_to_call != NULL)
+		    snprintf(req, sizeof(req), call, addr_to_call, locport,
+			     random(), random(), random());
+		else
+		    snprintf(req, sizeof(req), wakeup, locport,
+			     random(), random(), random());
+//fprintf(stderr, "linphone_core_wake_up_... MAY send\n|%s|\n", req); /* zsd */
+//original line of code:	snprintf(req,sizeof(req),wakeup,locport,random(),random(),random());
 				if (connect(sock,(struct sockaddr*)&ss,sslen)<0){
 					fprintf(stderr,"connect failed: %s\n",getSocketError());
 				}else if (send(sock,req,strlen(req),0)>0){
@@ -710,8 +734,11 @@ int linphone_core_wake_up_possible_already_running_instance(const char *config_f
 					for(i=0;i<10;++i){
 						if (recv(sock,req,sizeof(req),0)>0){
 							close_socket(sock);
+//fprintf(stderr, "GOT A RESPONSE to the wake-up message\n");   /* zsd */
 							return 0;
 						}else if (getSocketErrorCode()!=EWOULDBLOCK){
+			    /* zsd */
+//		    fprintf(stderr, "l_c_w_u_p_a_r_i: WOULDN'T BLOCK!\n");
 							break;
 						}
 #ifdef WIN32
@@ -720,10 +747,21 @@ int linphone_core_wake_up_possible_already_running_instance(const char *config_f
 						usleep(100000);
 #endif
 					}
-				}else ms_message("sendto() of WAKEUP request failed, nobody to wakeup.");
+				}else
+				{
+				    /* zsd fprintf() */
+				    // fprintf(stderr, "sendto() of WAKEUP request failed\n");
+				    ms_message("sendto() of WAKEUP request failed, nobody to wakeup.");
+				}
+				    
 			}
+//			else /* zsd */
+//			    fprintf(stderr, "l_c_w_u_p_a_r_i: unable to create socket\n");
 			close_socket(sock);
 		}
 	}
+    /* zsd */
+//	else
+//	    fprintf(stderr, "l_c_w_u_p_a_r_i: port <= 0 !!!!!!!\n");
 	return -1;
 }

@@ -25,6 +25,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <osipparser2/osip_message.h>
 #include <osipparser2/osip_parser.h>
 
+
+/* zsd: only want to do something here if the GUI is active */
+void linphone_call_started_remotely(const char * URL);
+
 static int linphone_answer_sdp(LinphoneCore *lc, eXosip_event_t *ev, sdp_message_t *sdp);
 
 static bool_t linphone_call_matches_event(LinphoneCall *call, eXosip_event_t *ev){
@@ -333,19 +337,28 @@ int linphone_inc_new_call(LinphoneCore *lc, eXosip_event_t *ev)
 		barmesg=ortp_strdup_printf("%s %s",tmp,_("is contacting you."));
 		lc->vtable.show(lc);
 		lc->vtable.display_status(lc,barmesg);
-		lc->vtable.inv_recv(lc,tmp);
-		ms_free(barmesg);
-		osip_free(tmp);
-		
-		linphone_call_set_state(lc->call,LCStateRinging);
-		eXosip_lock();
-		eXosip_call_send_answer(ev->tid,180,NULL);
-		eXosip_unlock();
+
 		/* play the ring */
+		/*
+		 * zsd moved this statement and the next four from the bottom of
+		 * this block so that the gui inv_recv function could automatically
+		 * answer.
+		 * With this below, the ringing didn't start until after the
+		 * auto-answer, which caused the ring to time out and terminate the
+		 * call.
+		 */
 		if (lc->sound_conf.ring_sndcard!=NULL){
 			ms_message("Starting local ring...");
 			lc->ringstream=ring_start(lc->sound_conf.local_ring,2000,lc->sound_conf.ring_sndcard);
 		}
+		linphone_call_set_state(lc->call,LCStateRinging);
+		eXosip_lock();
+		eXosip_call_send_answer(ev->tid,180,NULL);
+		eXosip_unlock();
+
+		lc->vtable.inv_recv(lc,tmp);
+		ms_free(barmesg);
+		osip_free(tmp);		
 	}else{
 		ms_error("Error during sdp negociation. ");
 		eXosip_lock();
@@ -1016,7 +1029,64 @@ static void linphone_other_request(LinphoneCore *lc, eXosip_event_t *ev){
 		ms_message("Receiving WAKEUP request !");
 		if (lc->vtable.show)
 			lc->vtable.show(lc);
-	}else {
+	}
+    /* zsd addition: allow a "remote" call request */
+    /*
+     * The current implementation of the feature is a horrible kludge:
+     * rather than extracting the URL from the body, get it from the SIP
+     * method... it is all the chars after "CALL".
+     */
+	else if (strncmp(ev->request->sip_method, "CALL", 4) == 0
+		 && comes_from_local_if(ev->request))
+	{
+	    char * sip_method = ev->request->sip_method;
+	
+	    eXosip_message_send_answer(ev->tid, 200, NULL);
+	    ms_message("Received CALL request.");
+	
+	    /*
+	      fprintf(stderr, "Received CALL request!\n");
+	      fprintf(stderr, "addr to call is |%s|\n", &ev->request->sip_method[4]);
+	      fprintf(stderr, "addr to call is |%s|\n", &sip_method[4]);
+	    */
+	    /*
+	     * The following two lines of code should probably be wrapped into
+	     * something and then put in a new slot in the vtable.
+	     */
+	    linphone_core_invite(lc, &sip_method[4]);
+	    linphone_call_started_remotely(&sip_method[4]);
+
+#if 0
+	    fprintf(stderr, "textinfo is |%s|\n", ev->textinfo);
+	    fprintf(stderr, "request content_length is |%s|\n",
+		    ev->request->content_length->value);
+	    /*
+	     * The following code (in the braces) was snarfled off the web, as
+	     * an example of how to get at the body content.
+	     * It didn't work for me.
+	     */
+	    {
+		int pos = 0;
+		while (!osip_list_eol (&ev->request->bodies, pos))
+		{
+		    osip_body_t * oldbody;
+
+		    oldbody = (osip_body_t *)osip_list_get(&ev->request->bodies,
+							   pos);
+		    pos++;
+
+		    /* !!!! -> body is here: "oldbody->body" */
+		    fprintf(stderr, "oldbody->length = %d\n", oldbody->length);
+		    fprintf(stderr, "oldbody->body = %s\n", oldbody->body);
+		}
+	    }
+	    fprintf(stderr, "request is |%s|\n", ev->request->message);
+#endif
+
+	    if (lc->vtable.show)
+		lc->vtable.show(lc);
+	}
+    	else {
 		char *tmp=NULL;
 		size_t msglen=0;
 		osip_message_to_str(ev->request,&tmp,&msglen);

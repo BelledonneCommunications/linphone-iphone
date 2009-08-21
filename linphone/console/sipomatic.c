@@ -22,6 +22,11 @@ call.
 #include <eXosip2/eXosip.h>
 
 
+/* zsd: called from exevents, only interesting to gui */
+void linphone_call_started_remotely(const char * url)
+{
+}
+
 int run_cond=1;
 
 Sipomatic sipomatic;

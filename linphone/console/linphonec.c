@@ -164,6 +164,13 @@ LinphoneCoreVTable linphonec_vtable = {
 	.dtmf_received=linphonec_dtmf_received
 };
 
+
+/* zsd: called from exevents, only interesting to gui */
+void linphone_call_started_remotely(const char * url)
+{
+}
+
+
 /***************************************************************************
  *
  * Linphone core callbacks
