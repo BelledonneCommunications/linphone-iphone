@@ -833,47 +833,41 @@ Online users</property>
                         <property name="position">0</property>
                       </packing>
                     </child>
+                  </widget>
+                  <packing>
+                    <property name="position">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkHButtonBox" id="go_to_call_view_box">
                     <child>
-                      <widget class="GtkVBox" id="vbox1">
-                        <property name="visible">True</property>
-                        <property name="orientation">vertical</property>
+                      <widget class="GtkButton" id="go_to_call_view">
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <signal name="clicked" handler="linphone_gtk_show_in_call_view"/>
                         <child>
-                          <widget class="GtkButton" id="go_to_call_view">
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">True</property>
-                            <signal name="clicked" handler="linphone_gtk_show_in_call_view"/>
+                          <widget class="GtkHBox" id="hbox10">
+                            <property name="visible">True</property>
                             <child>
-                              <widget class="GtkHBox" id="hbox10">
+                              <widget class="GtkImage" id="image7">
                                 <property name="visible">True</property>
-                                <child>
-                                  <widget class="GtkImage" id="image7">
-                                    <property name="visible">True</property>
-                                    <property name="stock">gtk-jump-to</property>
-                                    <property name="icon-size">1</property>
-                                  </widget>
-                                  <packing>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkLabel" id="label5">
-                                    <property name="visible">True</property>
-                                    <property name="label" translatable="yes">Show current call</property>
-                                  </widget>
-                                  <packing>
-                                    <property name="position">1</property>
-                                  </packing>
-                                </child>
+                                <property name="stock">gtk-go-forward</property>
+                                <property name="icon-size">4</property>
                               </widget>
+                              <packing>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkLabel" id="label5">
+                                <property name="visible">True</property>
+                                <property name="label" translatable="yes">Show current call</property>
+                              </widget>
+                              <packing>
+                                <property name="position">1</property>
+                              </packing>
                             </child>
                           </widget>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">False</property>
-                            <property name="padding">8</property>
-                            <property name="pack_type">end</property>
-                            <property name="position">0</property>
-                          </packing>
                         </child>
                       </widget>
                       <packing>
@@ -881,12 +875,12 @@ Online users</property>
                         <property name="fill">False</property>
                         <property name="padding">8</property>
                         <property name="pack_type">end</property>
-                        <property name="position">1</property>
+                        <property name="position">0</property>
                       </packing>
                     </child>
                   </widget>
                   <packing>
-                    <property name="position">2</property>
+                    <property name="position">3</property>
                   </packing>
                 </child>
               </widget>

@@ -51,6 +51,8 @@ static void linphone_gtk_display_url(LinphoneCore *lc, const char *msg, const ch
 static void linphone_gtk_display_question(LinphoneCore *lc, const char *question);
 static void linphone_gtk_call_log_updated(LinphoneCore *lc, LinphoneCallLog *cl);
 static void linphone_gtk_general_state(LinphoneCore *lc, LinphoneGeneralState *gstate);
+static void linphone_gtk_refer_received(LinphoneCore *lc, const char *refer_to);
+static gboolean linphone_gtk_auto_answer(GtkWidget *incall_window);
 
 static LinphoneCoreVTable vtable={
 	.show=linphone_gtk_show,
@@ -66,33 +68,34 @@ static LinphoneCoreVTable vtable={
 	.display_question=linphone_gtk_display_question,
 	.call_log_updated=linphone_gtk_call_log_updated,
 	.text_received=linphone_gtk_text_received,
-	.general_state=linphone_gtk_general_state
+	.general_state=linphone_gtk_general_state,
+	.refer_received=linphone_gtk_refer_received
 };
 
 static gboolean verbose=0;
-static gboolean auto_answer = 0;	/* zsd */
-static gchar * addr_to_call = NULL;	/* zsd: FIXME: is this correct??? */
-static GOptionEntry linphone_options[]={ /* zsd deleted array size 2 */
+static gboolean auto_answer = 0;
+static gchar * addr_to_call = NULL;
+static GOptionEntry linphone_options[]={
 	{
 		.long_name="verbose",
 		.short_name= '\0',
 		.arg=G_OPTION_ARG_NONE,
 		.arg_data= (gpointer)&verbose,
-		.description="log to stdout some debug information while running."
+		.description=N_("log to stdout some debug information while running.")
 	},
 	{				/* zsd addition */
 	    .long_name = "call",
 	    .short_name = 'c',
 	    .arg = G_OPTION_ARG_STRING,
-	    .arg_data = &addr_to_call,	  /* zsd: FIXME: is this correct??? */
-	    .description = "address to call right now"
+	    .arg_data = &addr_to_call,
+	    .description = N_("address to call right now")
 	},
 	{				/* zsd addition */
 	    .long_name = "auto-answer",
 	    .short_name = 'a',
 	    .arg = G_OPTION_ARG_NONE,
 	    .arg_data = (gpointer) & auto_answer,
-	    .description = "if set, automatically answer incoming calls"
+	    .description = N_("if set,b automatically answer incoming calls")
 	},
 	{0}
 };
@@ -319,7 +322,8 @@ void linphone_gtk_show_about(){
 		g_free(license);
 	}
 	gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(about),LINPHONE_VERSION);
-
+	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(about),linphone_gtk_get_ui_config("title","Linphone"));
+	gtk_about_dialog_set_website(GTK_ABOUT_DIALOG(about),linphone_gtk_get_ui_config("home","http://www.linphone.org"));
 	gtk_widget_show(about);
 }
 
@@ -381,6 +385,12 @@ static gboolean linphone_gtk_iterate(LinphoneCore *lc){
 			else ms_error("gdk_window_foreign_new() failed");
 			if (video_needs_update) video_needs_update=FALSE;
 		}
+	}
+	if (addr_to_call!=NULL){
+		GtkWidget *uri_bar=linphone_gtk_get_widget(linphone_gtk_get_main_window(),"uribar");
+		gtk_entry_set_text(GTK_ENTRY(uri_bar),addr_to_call);
+		addr_to_call=NULL;
+		linphone_gtk_start_call(uri_bar);	
 	}
 	in_iterate=FALSE;
 	return TRUE;
@@ -462,7 +472,7 @@ void linphone_gtk_call_terminated(const char *error){
 	GtkWidget *mw=linphone_gtk_get_main_window();
 	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"terminate_call"),FALSE);
 	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"start_call"),TRUE);
-	gtk_widget_hide(linphone_gtk_get_widget(mw,"go_to_call_view"));
+	gtk_widget_hide(linphone_gtk_get_widget(mw,"go_to_call_view_box"));
 	linphone_gtk_in_call_view_terminate(error);
 	update_video_title();
 	g_object_set_data(G_OBJECT(mw),"incoming_call",NULL);
@@ -481,7 +491,7 @@ static gboolean in_call_timer(){
 static void linphone_gtk_call_started(GtkWidget *mw){
 	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"start_call"),FALSE);
 	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"terminate_call"),TRUE);
-	gtk_widget_show(linphone_gtk_get_widget(mw,"go_to_call_view"));
+	gtk_widget_show(linphone_gtk_get_widget(mw,"go_to_call_view_box"));
 	update_video_title();
 	g_timeout_add(250,(GSourceFunc)in_call_timer,NULL);
 }
@@ -538,6 +548,11 @@ void linphone_gtk_accept_call(GtkWidget *button){
 	linphone_gtk_show_in_call_view();
 }
 
+static gboolean linphone_gtk_auto_answer(GtkWidget *incall_window){
+	linphone_gtk_accept_call(linphone_gtk_get_widget(incall_window,"accept_call"));
+	return FALSE;
+}
+
 void linphone_gtk_set_audio_video(){
 	linphone_core_enable_video(linphone_gtk_get_core(),TRUE,TRUE);
 	linphone_core_enable_video_preview(linphone_gtk_get_core(),TRUE);
@@ -577,20 +592,8 @@ static void linphone_gtk_inv_recv(LinphoneCore *lc, const char *from){
 	GtkWidget *label;
 	gchar *msg;
 
-	if (auto_answer)		// zsd addition
-	{
-	    /*
-	     * Let the phone ring a bit before the auto-answer so that the
-	     * local user knows something is happening.
-	     */
-//fflush(stdout);fprintf(stderr, "******************** sleep(2)\n");
-	    sleep(2);
-//fflush(stdout);fprintf(stderr, "******************** calling linphone_core_accept_call()\n");
-	    linphone_core_accept_call(linphone_gtk_get_core(), NULL);
-//fflush(stdout);fprintf(stderr, "******************** calling linphone_gtk_call_started()\n");
-	    linphone_gtk_call_started(linphone_gtk_get_main_window());
-
-	    return;
+	if (auto_answer){
+		g_timeout_add(2000,(GSourceFunc)linphone_gtk_auto_answer,w);
 	}
 
 	gtk_window_set_transient_for(GTK_WINDOW(w),GTK_WINDOW(linphone_gtk_get_main_window()));
@@ -1006,17 +1009,12 @@ void linphone_gtk_log_handler(OrtpLogLevel lev, const char *fmt, va_list args){
 }
 
 
-
-
-/* zsd added this */
-void linphone_call_started_remotely(const char * url)
-{
-    GtkEntry * uri_bar =
-            GTK_ENTRY(linphone_gtk_get_widget
-                      (linphone_gtk_get_main_window(), "uribar"));
-
-    gtk_entry_set_text(uri_bar, url);
-    linphone_gtk_call_started(linphone_gtk_get_main_window());
+static void linphone_gtk_refer_received(LinphoneCore *lc, const char *refer_to){
+    GtkEntry * uri_bar =GTK_ENTRY(linphone_gtk_get_widget(
+		linphone_gtk_get_main_window(), "uribar"));
+	linphone_gtk_show_main_window();
+	gtk_entry_set_text(uri_bar, refer_to);
+	linphone_gtk_start_call(linphone_gtk_get_main_window());
 }
 
 
@@ -1026,42 +1024,11 @@ int main(int argc, char *argv[]){
 #endif
 	const char *config_file;
 	const char *lang;
-	int i;			    // zsd
 
 	g_thread_init(NULL);
 	gdk_threads_init();
 	
 	config_file=linphone_gtk_get_config_file();
-
-	/*
-	 * zsd addition:
-	 * Did the user ask for an-already running instance to make a call?
-	 * Look thru the args the old-fashioned way.
-	 */
-	for (i = 1; i < argc; i++)
-	{
-	    if (strcmp(argv[i], "-c") == 0 || strcmp(argv[i], "-call") == 0)
-	    {
-		if (i + 1 < argc)
-		    addr_to_call = argv[i + 1];
-		i = argc + 1;
-	    }
-	}
-	// fprintf(stderr, "addr_to_call is |%s|\n", addr_to_call);
-
-// zsd replaced this line
-//	if (linphone_core_wake_up_possible_already_running_instance(config_file)==0){
-	if (linphone_core_wake_up_possible_already_running_instance(
-		config_file, addr_to_call) == 0)
-	{
-// and zsd added this if stmt and the braces
-	    if (addr_to_call == NULL)
-	    {
-		g_warning("Another running instance of linphone has been detected. It has been woken-up.");
-		g_warning("This instance is going to exit now.");
-	    }
-	    return 0;
-	}
 
 #ifdef WIN32
 	/*workaround for windows: sometimes LANG is defined to an integer value, not understood by gtk */
@@ -1095,21 +1062,21 @@ int main(int argc, char *argv[]){
 #ifdef WIN32
 	gtk_rc_add_default_file("./gtkrc");
 #endif
-	// fprintf(stderr, "about to call gdk_threads_enter()\n"); //zsd
 	gdk_threads_enter();
-	// fprintf(stderr, "AFTER call gdk_threads_enter()\n");
-	// fprintf(stderr, "b4 !gtk_init_with_args() addr_to_call is |%s|\n",
-	//	    addr_to_call);      /* zsd */
+	
 	if (!gtk_init_with_args(&argc,&argv,_("A free SIP video-phone"),
 				linphone_options,NULL,NULL)){
-	    fprintf(stderr, "IN !gtk_init_with_args() if clause\n"); /* zsd */
 		gdk_threads_leave();
 		return -1;
 	}
-	
-	/* zsd: we don't get here if the args were not OK */
-	// fprintf(stderr, "AFTER !gtk_init_with_args() addr_to_call is |%s|\n",
-	//	    addr_to_call);      /* zsd */
+	if (linphone_core_wake_up_possible_already_running_instance(
+		config_file, addr_to_call) == 0){
+		g_message("addr_to_call=%s",addr_to_call);
+		g_warning("Another running instance of linphone has been detected. It has been woken-up.");
+		g_warning("This instance is going to exit now.");
+		gdk_threads_leave();
+		return 0;
+	}
 
 	add_pixmap_directory("pixmaps");
 	add_pixmap_directory(PACKAGE_DATA_DIR "/pixmaps/linphone");
@@ -1128,29 +1095,6 @@ int main(int argc, char *argv[]){
 	linphone_gtk_show_main_window();
 	linphone_gtk_check_for_new_version();
 
-	/* zsd additions for calling a URL given as an argument */
-	/*
-	 * Comment from linphone 3.0.0:
-	 * With this here, the video window never shows up, altho the
-	 * main window does.  Why is that?
-	 if (addr_to_call != NULL)
-	 {
-	 linphone_core_invite(linphone_gtk_get_core(), addr_to_call);
-	 linphone_call_started_remotely(addr_to_call);
-	 }
-	*/
-	/* Horrible, horrible kludge since the above doesn't work: */
-	if (addr_to_call != NULL)
-	{
-	    char buf[512];
-
-	    snprintf(buf, sizeof(buf),
-		     "(sleep 2; %s -c %s)&", argv[0], addr_to_call);
-	    if (system(buf))
-		linphone_gtk_display_warning(linphone_gtk_get_core(),
-					     "Unable to perform remote call!");
-	}
-    
 	gtk_main();
 	gdk_threads_leave();
 	linphone_gtk_destroy_log_window();

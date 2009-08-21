@@ -440,6 +440,7 @@ typedef void (*CallLogUpdated)(struct _LinphoneCore *lc, struct _LinphoneCallLog
 typedef void (*TextMessageReceived)(struct _LinphoneCore *lc, LinphoneChatRoom *room, const char *from, const char *message);
 typedef void (*GeneralStateChange)(struct _LinphoneCore *lc, LinphoneGeneralState *gstate);
 typedef void (*DtmfReceived)(struct _LinphoneCore* lc, int dtmf);
+typedef void (*ReferReceived)(struct _LinphoneCore *lc, const char *refer_to);
 
 typedef struct _LinphoneVTable
 {
@@ -462,6 +463,7 @@ typedef struct _LinphoneVTable
 	TextMessageReceived text_received;
 	GeneralStateChange general_state;
 	DtmfReceived dtmf_received;
+	ReferReceived refer_received;
 } LinphoneCoreVTable;
 
 typedef struct _LCCallbackObj
@@ -787,12 +789,9 @@ struct _LpConfig *linphone_core_get_config(LinphoneCore *lc);
 
 /* attempts to wake up another linphone engine already running.
 The "show" callback is called for the other linphone, causing gui to show up.
+call_addr is an optional sip-uri to call immediately after waking up.
 The method returns 0 if an already running linphone was found*/
-/* zsd: old code was
-int linphone_core_wake_up_possible_already_running_instance(const char *config_file);
- * new code: If the second arg is non-null, pass the call addr to the
- * already-running instance.
- */
+
 int linphone_core_wake_up_possible_already_running_instance(
     const char * config_file, const char * call_addr);
 

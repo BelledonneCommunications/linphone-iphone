@@ -160,15 +160,10 @@ LinphoneCoreVTable linphonec_vtable = {
 	.display_url=linphonec_display_url,
 	.display_question=(DisplayQuestionCb)stub,
 	.text_received=linphonec_text_received,
-        .general_state=linphonec_general_state,
+	.general_state=linphonec_general_state,
 	.dtmf_received=linphonec_dtmf_received
 };
 
-
-/* zsd: called from exevents, only interesting to gui */
-void linphone_call_started_remotely(const char * url)
-{
-}
 
 
 /***************************************************************************
