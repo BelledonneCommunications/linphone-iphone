@@ -497,12 +497,12 @@ msgstr "Mostra lo stato di presenza del contatto"
 #: ../gtk-glade/contact.glade.h:6 ../gtk-glade/password.glade.h:5
 #: ../gtk-glade/sip_account.glade.h:9
 msgid "gtk-cancel"
-msgstr "gtk-elimina"
+msgstr ""
 
 #: ../gtk-glade/contact.glade.h:7 ../gtk-glade/password.glade.h:6
 #: ../gtk-glade/sip_account.glade.h:10
 msgid "gtk-ok"
-msgstr "gtk-ok"
+msgstr ""
 
 #: ../gtk-glade/log.glade.h:1
 msgid "Linphone debug window"
@@ -511,7 +511,7 @@ msgstr "Linphone debug window"
 #: ../gtk-glade/log.glade.h:2 ../gtk-glade/call_logs.glade.h:2
 #: ../gtk-glade/chatroom.glade.h:2
 msgid "gtk-close"
-msgstr "gtk-chiudi"
+msgstr ""
 
 #: ../gtk-glade/password.glade.h:1
 msgid "Linphone - Authentication required"
@@ -829,15 +829,15 @@ msgstr "default scheda audio\n"
 
 #: ../gtk-glade/parameters.glade.h:63
 msgid "gtk-go-down"
-msgstr "gtk-giù"
+msgstr ""
 
 #: ../gtk-glade/parameters.glade.h:64
 msgid "gtk-go-up"
-msgstr "gtk-su"
+msgstr ""
 
 #: ../gtk-glade/parameters.glade.h:65
 msgid "gtk-media-play"
-msgstr "gtk-media-suona"
+msgstr ""
 
 #: ../gtk-glade/buddylookup.glade.h:1
 msgid "<b>Search somebody</b>"

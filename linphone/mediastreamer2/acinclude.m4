@@ -19,9 +19,23 @@ AC_DEFUN([MS_CHECK_DEP],[
 	CPPFLAGS_save=$CPPFLAGS
 	LDFLAGS_save=$LDFLAGS
 	LIBS_save=$LIBS
-	CPPFLAGS=`echo "-I$dep_headersdir"|sed -e "s:-I/usr/include[\ ]*$::"`
+
+	case "$target_os" in
+		*mingw*)
+			ms_check_dep_mingw_found=yes
+		;;
+	esac
+	if test "$ms_check_dep_mingw_found" != "yes" ; then
+		CPPFLAGS=`echo "-I$dep_headersdir"|sed -e "s:-I/usr/include[\ ]*$::"`
+		LDFLAGS=`echo "-L$dep_libsdir"|sed -e "s:-L/usr/lib\(64\)*[\ ]*::"`
+	else
+		CPPFLAGS="-I$dep_headersdir"	
+		LDFLAGS="-L$dep_libsdir"
+	fi
+
+
 	LIBS="-l$dep_lib"
-	LDFLAGS=`echo "-L$dep_libsdir"|sed -e "s:-L/usr/lib\(64\)*[\ ]*::"`
+
 	
 	$2_CFLAGS="$CPPFLAGS"
 	$2_LIBS="$LDFLAGS $LIBS"
