@@ -19,9 +19,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define USE_LIBGLADE 1
 
+#include "linphone.h"
 #include "lpconfig.h"
 
-#include "linphone.h"
+
 
 #ifdef USE_LIBGLADE
 #include <glade/glade.h>
@@ -95,7 +96,7 @@ static GOptionEntry linphone_options[]={
 	    .short_name = 'a',
 	    .arg = G_OPTION_ARG_NONE,
 	    .arg_data = (gpointer) & auto_answer,
-	    .description = N_("if set,b automatically answer incoming calls")
+	    .description = N_("if set automatically answer incoming calls")
 	},
 	{0}
 };
@@ -301,12 +302,18 @@ void linphone_gtk_about_response(GtkDialog *dialog, gint id){
 	}
 }
 
+static void about_url_clicked(GtkAboutDialog *dialog, const char *url, gpointer data){
+	g_message("About url clicked");
+	linphone_gtk_open_browser(url);
+}
+
 void linphone_gtk_show_about(){
 	struct stat filestat;
-	const char *license_file=PACKAGE_DATA_DIR "/doc/COPYING";
+	const char *license_file=PACKAGE_DATA_DIR "/linphone/COPYING";
 	GtkWidget *about;
-
+	
 	about=linphone_gtk_create_window("about");
+	gtk_about_dialog_set_url_hook(about_url_clicked,NULL,NULL);
 	memset(&filestat,0,sizeof(filestat));
 	if (stat(license_file,&filestat)!=0){
 		license_file="COPYING";
@@ -770,12 +777,15 @@ static void icon_popup_menu(GtkStatusIcon *status_icon, guint button, guint acti
 }
 
 void linphone_gtk_open_browser(const char *url){
+	gtk_show_uri(NULL,url,GDK_CURRENT_TIME,NULL);
+#if 0
 #ifdef WIN32
 	ShellExecute(0,"open",url,NULL,NULL,1);
 #else
 	char cl[255];
 	snprintf(cl,sizeof(cl),"/usr/bin/x-www-browser %s",url);
 	g_spawn_command_line_async(cl,NULL);
+#endif
 #endif
 }
 

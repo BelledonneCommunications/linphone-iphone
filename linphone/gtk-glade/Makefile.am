@@ -22,9 +22,12 @@ EXTRA_DIST=	$(PIXMAPS) \
 
 if BUILD_GLADE_UI
 
+BUILT_SOURCES=version_date.h
+
 bin_PROGRAMS=linphone-3
 
-linphone_3_SOURCES=	main.c \
+linphone_3_SOURCES=	\
+			main.c \
 			propertybox.c \
 			friendlist.c \
 			support.c \
@@ -36,7 +39,7 @@ linphone_3_SOURCES=	main.c \
 			utils.c \
 			setupwizard.c\
 			incall_view.c \
-			linphone.h
+			linphone.h 
 
 linphone_3_LDADD=$(top_builddir)/oRTP/src/libortp.la \
 		$(top_builddir)/mediastreamer2/src/libmediastreamer.la \
@@ -57,7 +60,7 @@ linphone_3_LDFLAGS=-export-dynamic
 endif
 
 gladedir=$(datadir)/linphone
-glade_DATA=$(GLADE_FILES) $(PIXMAPS)
+glade_DATA=$(GLADE_FILES) $(PIXMAPS) $(top_srcdir)/COPYING
 
 #all-local:	gtk-linphone.ui	
 
@@ -72,4 +75,12 @@ AM_CFLAGS= -DIN_LINPHONE -I$(top_srcdir)/coreapi/ \
 		$(LIBGLADE_CFLAGS) $(STRICT_OPTIONS) $(LIBGTK_CFLAGS) $(IPV6_CFLAGS) \
 		$(ORTP_CFLAGS) $(OSIP_CFLAGS) 
 
+
+version_date.h: $(top_srcdir)/configure.in
+	echo "#define LINPHONE_VERSION_DATE \"$(VERSION)-`date +%y%m%d`\"" > $@
+
+newdate:
+	rm -f version_date.h
+
+CLEANFILES=version_date.h
 

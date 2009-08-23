@@ -33,6 +33,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define _(String) gettext (String)
 #endif
 
+#ifdef USE_BUILDDATE_VERSION
+#include "version_date.h"
+#undef LINPHONE_VERSION
+#define LINPHONE_VERSION LINPHONE_VERSION_DATE
+#endif
+
 GdkPixbuf * create_pixbuf(const gchar *filename);
 GdkPixbufAnimation *create_pixbuf_animation(const gchar *filename);
 void add_pixmap_directory(const gchar *directory);

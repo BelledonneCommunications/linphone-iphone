@@ -56,7 +56,8 @@ DISTCLEANFILES= intltool-extract intltool-merge intltool-update po/stamp-it po/.
 
 # `make rpm'
 
-all-local: linphone.spec linphone.iss
+all-local: linphone.spec linphone.iss builddate.h
+
 linphone.spec: linphone.spec.in
 
 .phony: rpm
@@ -129,6 +130,9 @@ setup.exe: filelist
 	rm -rf $(INSTALLDIR_WITH_PREFIX)/Output
 	rm -f $(INSTALLDIR_WITH_PREFIX)/$(PACKAGE_WIN32_FILELIST)
 	rm -f $(INSTALLDIR_WITH_PREFIX)/$(ISS_SCRIPT)
+
+newdate:
+	cd gtk-glade && $(MAKE) newdate
 
 
 
