@@ -2,9 +2,11 @@ prefix=/opt/linphone
 
 
 MSX264_SRC_DIR=$(LINPHONE_SRC_DIR)/mediastreamer2/plugins/msx264
+BUDDYLOOKUP_SRC_DIR=$(LINPHONE_SRC_DIR)/coreapi/plugins/buddylookup
 LOCALDIR=$(shell pwd)
 WORKDIR=$(LOCALDIR)/build
 LINPHONE_ZIP=$(WORKDIR)/linphone.zip
+BUDDYLOOKUP_ZIP=$(WORKDIR)/buddylookup.zip
 MSX264_ZIP=$(WORKDIR)/msx264.zip
 INSTALL_ROOT=$(WORKDIR)/root
 FILELIST=$(WORKDIR)/linphone-bundle.filelist
@@ -30,9 +32,9 @@ $(LINPHONE_SRC_DIR)/Makefile: $(LINPHONE_SRC_DIR)/configure
 	./configure --prefix=$(prefix) --enable-shared --disable-static $(LINPHONE_CONFIGURE_EXTRA_OPTIONS)
 
 build-linphone:	$(LINPHONE_SRC_DIR)/Makefile
-	cd $(LINPHONE_SRC_DIR) && make && make install
+	cd $(LINPHONE_SRC_DIR) && make newdate && make && make install
 
-$(LINPHONE_ZIP):	build-linphone
+$(LINPHONE_ZIP):	build-linphone $(WORKDIR)
 	cd $(LINPHONE_SRC_DIR) && make zip ZIPFILE=$(LINPHONE_ZIP)
 
 install-linphone: $(LINPHONE_ZIP) $(INSTALL_ROOT)
@@ -71,6 +73,34 @@ clean-msx264:
 veryclean-msx264:
 	- cd $(MSX264_SRC_DIR) && make distclean
 	- cd $(MSX264_SRC_DIR) && rm configure
+
+###### buddylookup rules
+
+$(BUDDYLOOKUP_SRC_DIR)/configure:
+	cd $(BUDDYLOOKUP_SRC_DIR) && ./autogen.sh
+
+
+$(BUDDYLOOKUP_SRC_DIR)/Makefile:	$(BUDDYLOOKUP_SRC_DIR)/configure
+	cd $(BUDDYLOOKUP_SRC_DIR) && \
+	PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig ./configure --prefix=$(prefix) --enable-shared --disable-static
+
+
+build-buddylookup:	build-linphone $(BUDDYLOOKUP_SRC_DIR)/Makefile
+	cd $(BUDDYLOOKUP_SRC_DIR) && PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig make
+
+$(BUDDYLOOKUP_ZIP):	build-buddylookup
+	cd $(BUDDYLOOKUP_SRC_DIR) && make zip ZIPFILE=$(BUDDYLOOKUP_ZIP)
+
+install-buddylookup:	$(BUDDYLOOKUP_ZIP) $(INSTALL_ROOT)
+	cd $(INSTALL_ROOT) && unzip -o $(BUDDYLOOKUP_ZIP)
+
+clean-buddylookup:
+	- cd  $(BUDDYLOOKUP_SRC_DIR) && make clean
+
+veryclean-buddylookup:
+	- cd $(BUDDYLOOKUP_SRC_DIR) && make distclean
+	- cd $(BUDDYLOOKUP_SRC_DIR) && rm configure
+
 
 $(FILELIST): 
 	cd $(INSTALL_ROOT) && \

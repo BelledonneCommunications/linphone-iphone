@@ -56,7 +56,7 @@ DISTCLEANFILES= intltool-extract intltool-merge intltool-update po/stamp-it po/.
 
 # `make rpm'
 
-all-local: linphone.spec linphone.iss builddate.h
+all-local: linphone.spec linphone.iss
 
 linphone.spec: linphone.spec.in
 
