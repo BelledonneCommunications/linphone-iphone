@@ -62,6 +62,11 @@ static void winsndcard_set_level(MSSndCard *card, MSSndCardMixerElem e, int perc
 	MIXERLINE Line;
 	UINT uLineIndex;
 
+	MIXERLINECONTROLS mlc = {0};
+	MIXERCONTROL mc = {0};
+	MIXERCONTROLDETAILS mcd = {0};
+	MIXERCONTROLDETAILS_UNSIGNED mcdu = {0};
+
 	MMRESULT mr = MMSYSERR_NOERROR;
 	DWORD dwVolume = ((0xFFFF) * percent) / 100;
 	
@@ -76,11 +81,6 @@ static void winsndcard_set_level(MSSndCard *card, MSSndCardMixerElem e, int perc
 		case MS_SND_CARD_PLAYBACK:
 		case MS_SND_CARD_MASTER:
 			{
-				MIXERLINECONTROLS mlc = {0};
-				MIXERCONTROL mc = {0};
-				MIXERCONTROLDETAILS mcd = {0};
-				MIXERCONTROLDETAILS_UNSIGNED mcdu = {0};
-
 				mr = mixerGetID( (HMIXEROBJ)d->out_devid, &uMixerID, MIXER_OBJECTF_WAVEOUT );
 				if ( mr != MMSYSERR_NOERROR )
 				{
@@ -167,6 +167,43 @@ static void winsndcard_set_level(MSSndCard *card, MSSndCardMixerElem e, int perc
 			/* ms_message("Name: %s\n", MixerLine.szName); */
 			/* ms_message("Source Line: %d\n", MixerLine.dwSource); */
 			/* ms_message("ComponentType: %d\n", MixerLine.dwComponentType); */
+
+			mlc.cbStruct = sizeof(MIXERLINECONTROLS);
+			mlc.dwLineID = MixerLine.dwLineID;
+			mlc.dwControlType = MIXERCONTROL_CONTROLTYPE_VOLUME;
+			mlc.cControls = 1;
+			mlc.pamxctrl = &mc;
+			mlc.cbmxctrl = sizeof(MIXERCONTROL);
+			mr = mixerGetLineControls((HMIXEROBJ)dwMixerHandle, 
+				&mlc, MIXER_GETLINECONTROLSF_ONEBYTYPE);
+
+			if (mr == MMSYSERR_NOERROR)
+			{
+				mcdu.dwValue = 65535*percent/100; /* the volume is a number between 0 and 65535 */
+
+				mcd.cbStruct = sizeof(MIXERCONTROLDETAILS);
+				mcd.hwndOwner = 0;
+				mcd.dwControlID = mc.dwControlID;
+				mcd.paDetails = &mcdu;
+				mcd.cbDetails = sizeof(MIXERCONTROLDETAILS_UNSIGNED);
+				mcd.cChannels = 1;
+				mr = mixerSetControlDetails((HMIXEROBJ)dwMixerHandle, 
+					&mcd, MIXER_SETCONTROLDETAILSF_VALUE);
+
+				if (mr == MMSYSERR_NOERROR)
+				{
+					return;
+				}
+				ms_error("winsndcard_set_level: mixerSetControlDetails failed. (0x%x)", mr);
+				ms_warning("winsndcard_set_level: control the SRC_MICROPHONE instead");
+			}
+			else
+			{
+				ms_error("winsndcard_set_level: mixerGetLineControls failed. (0x%x)", mr);
+				ms_warning("winsndcard_set_level: control the SRC_MICROPHONE instead");
+			}
+
+			/* In case capture doesn't work: use the SRC_MICROPHONE volume */
 
 			for (uLineIndex = 0; uLineIndex < MixerLine.cConnections; uLineIndex++)
 			{
@@ -260,6 +297,11 @@ static int winsndcard_get_level(MSSndCard *card, MSSndCardMixerElem e){
 	MIXERLINE Line;
 	UINT uLineIndex;
 
+	MIXERLINECONTROLS mlc = {0};
+	MIXERCONTROL mc = {0};
+	MIXERCONTROLDETAILS mcd = {0};
+	MIXERCONTROLDETAILS_UNSIGNED mcdu = {0};
+
 	MMRESULT mr = MMSYSERR_NOERROR;
 	int percent;
 
@@ -267,11 +309,6 @@ static int winsndcard_get_level(MSSndCard *card, MSSndCardMixerElem e){
 		case MS_SND_CARD_MASTER:
 		case MS_SND_CARD_PLAYBACK:
 			{
-				MIXERLINECONTROLS mlc = {0};
-				MIXERCONTROL mc = {0};
-				MIXERCONTROLDETAILS mcd = {0};
-				MIXERCONTROLDETAILS_UNSIGNED mcdu = {0};
-
 				mr = mixerGetID( (HMIXEROBJ)d->out_devid, &uMixerID, MIXER_OBJECTF_WAVEOUT );
 				if ( mr != MMSYSERR_NOERROR )
 				{
@@ -360,6 +397,39 @@ static int winsndcard_get_level(MSSndCard *card, MSSndCardMixerElem e){
 				return -1;
 			}
 
+			mlc.cbStruct = sizeof(MIXERLINECONTROLS);
+			mlc.dwLineID = MixerLine.dwLineID;
+			mlc.dwControlType = MIXERCONTROL_CONTROLTYPE_VOLUME;
+			mlc.cControls = 1;
+			mlc.pamxctrl = &mc;
+			mlc.cbmxctrl = sizeof(MIXERCONTROL);
+			mr = mixerGetLineControls((HMIXEROBJ)dwMixerHandle, 
+				&mlc, MIXER_GETLINECONTROLSF_ONEBYTYPE);
+			if (mr == MMSYSERR_NOERROR)
+			{
+				mcd.cbStruct = sizeof(MIXERCONTROLDETAILS);
+				mcd.hwndOwner = 0;
+				mcd.dwControlID = mc.dwControlID;
+				mcd.paDetails = &mcdu;
+				mcd.cbDetails = sizeof(MIXERCONTROLDETAILS_UNSIGNED);
+				mcd.cChannels = 1;
+				mr = mixerGetControlDetails((HMIXEROBJ)dwMixerHandle, &mcd,  
+					MIXER_SETCONTROLDETAILSF_VALUE);  
+				percent = (mcdu.dwValue *100) / (mc.Bounds.dwMaximum);
+
+				if (mr == MMSYSERR_NOERROR)
+				{
+					return percent;
+				}
+				ms_error("winsndcard_get_level: mixerGetControlDetails failed. (0x%x)", mr);
+				ms_warning("winsndcard_get_level: control the SRC_MICROPHONE instead");
+			}
+			else
+			{
+				ms_error("winsndcard_get_level: mixerGetLineControls failed. (0x%x)", mr);
+				ms_warning("winsndcard_get_level: control the SRC_MICROPHONE instead");
+			}
+	
 			/* ms_message("Name: %s\n", MixerLine.szName); */
 			/* ms_message("Source Line: %d\n", MixerLine.dwSource); */
 			/* ms_message("ComponentType: %d\n", MixerLine.dwComponentType); */
@@ -466,10 +536,17 @@ static int winsndcard_set_control(MSSndCard *card, MSSndCardControlElem e, int v
 	MIXERLINE Line;
 	UINT uLineIndex;
 
+	MIXERLINECONTROLS mlc = {0};
+	MIXERCONTROL mc = {0};
+	MIXERCONTROLDETAILS mcd = {0};
+	MIXERCONTROLDETAILS_BOOLEAN bMute;
+
 	MMRESULT mr = MMSYSERR_NOERROR;
 
 	switch(e){
 		case MS_SND_CARD_CAPTURE_MUTE:
+
+			bMute.fValue = (val>0);
 
 			mr = mixerGetID( (HMIXEROBJ)d->in_devid, &uMixerID, MIXER_OBJECTF_WAVEIN );
 			if ( mr != MMSYSERR_NOERROR )
@@ -582,11 +659,6 @@ static int winsndcard_set_control(MSSndCard *card, MSSndCardControlElem e, int v
 		case MS_SND_CARD_MASTER_MUTE:
 		case MS_SND_CARD_PLAYBACK_MUTE:
 			{
-				MIXERLINECONTROLS mlc = {0};
-				MIXERCONTROL mc = {0};
-				MIXERCONTROLDETAILS mcd = {0};
-				MIXERCONTROLDETAILS_BOOLEAN bMute;
-
 				bMute.fValue = (val>0);
 
 				mr = mixerGetID( (HMIXEROBJ)d->out_devid, &uMixerID, MIXER_OBJECTF_WAVEOUT );
