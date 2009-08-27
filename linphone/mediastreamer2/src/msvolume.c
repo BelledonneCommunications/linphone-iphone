@@ -52,6 +52,7 @@ typedef struct Volume{
 	int nsamples;
 	int ng_cut_time; /*noise gate cut time, after last speech detected*/
 	int ng_noise_dur;
+	float ng_threshold;
 	MSBufferizer *buffer;
 	bool_t ea_active;
 	bool_t agc_enabled;
@@ -75,6 +76,7 @@ static void volume_init(MSFilter *f){
 	v->noise_gate_enabled=FALSE;
 	v->ng_cut_time=100;/*milliseconds*/
 	v->ng_noise_dur=0;
+	v->ng_threshold=noise_thres;
 #ifdef HAVE_SPEEXDSP
 	v->speex_pp=NULL;
 #endif
@@ -155,7 +157,7 @@ static void volume_echo_avoider_process(Volume *v){
 
 static void volume_noise_gate_process(Volume *v , float energy, mblk_t *om){
 	int nsamples=((om->b_wptr-om->b_rptr)/2);
-	if ((energy/max_e)<v->thres){
+	if ((energy/max_e)<v->ng_threshold){
 		v->ng_noise_dur+=(nsamples*1000)/v->sample_rate;
 		if (v->ng_noise_dur>v->ng_cut_time){
 			v->target_gain=0;
@@ -226,6 +228,12 @@ static int volume_set_ea_force(MSFilter *f, void*arg){
 static int volume_enable_noise_gate(MSFilter *f, void *arg){
 	Volume *v=(Volume*)f->data;
 	v->noise_gate_enabled=*(int*)arg;
+	return 0;
+}
+
+static int volume_set_noise_gate_threshold(MSFilter *f, void *arg){
+	Volume *v=(Volume*)f->data;
+	v->ng_threshold=*(float*)arg;
 	return 0;
 }
 
@@ -337,6 +345,7 @@ static MSFilterMethod methods[]={
 	{	MS_FILTER_SET_SAMPLE_RATE,	volume_set_sample_rate	},
 	{	MS_VOLUME_ENABLE_AGC	,	volume_set_agc		},
 	{	MS_VOLUME_ENABLE_NOISE_GATE,	volume_enable_noise_gate},
+	{	MS_VOLUME_SET_NOISE_GATE_THRESHOLD,	volume_set_noise_gate_threshold},
 	{	0			,	NULL			}
 };
 
