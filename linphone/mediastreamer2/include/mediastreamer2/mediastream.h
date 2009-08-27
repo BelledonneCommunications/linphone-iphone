@@ -57,6 +57,7 @@ struct _AudioStream
 	bool_t use_gc;
 	bool_t use_agc;
 	bool_t eq_active;
+	bool_t use_ng;/*noise gate*/
 };
 
 #ifdef __cplusplus
@@ -113,6 +114,9 @@ void audio_stream_enable_gain_control(AudioStream *stream, bool_t val);
 void audio_stream_enable_automatic_gain_control(AudioStream *stream, bool_t val);
 
 void audio_stream_set_mic_gain(AudioStream *stream, float gain);
+
+/*enable noise gate, must be done before start()*/
+void audio_stream_enable_noise_gate(AudioStream *stream, bool_t val);
 
 /*enable parametric equalizer in the stream that goes to the speaker*/
 void audio_stream_enable_equalizer(AudioStream *stream, bool_t enabled);

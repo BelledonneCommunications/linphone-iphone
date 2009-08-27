@@ -250,13 +250,17 @@ int audio_stream_start_full(AudioStream *stream, RtpProfile *profile, const char
 		ms_filter_call_method(stream->ec,MS_FILTER_SET_SAMPLE_RATE,&pt->clock_rate);
 	}
 
-	if (stream->el_type!=ELInactive || stream->use_gc){
+	if (stream->el_type!=ELInactive || stream->use_gc || stream->use_ng){
 		stream->volsend=ms_filter_new(MS_VOLUME_ID);
 		stream->volrecv=ms_filter_new(MS_VOLUME_ID);
 		if (stream->el_type!=ELInactive){
 			if (stream->el_type==ELControlSpeaker)
 				ms_filter_call_method(stream->volrecv,MS_VOLUME_SET_PEER,stream->volsend);
 			else ms_filter_call_method(stream->volsend,MS_VOLUME_SET_PEER,stream->volrecv);
+		}
+		if (stream->use_ng){
+			int tmp=1;
+			ms_filter_call_method(stream->volsend,MS_VOLUME_ENABLE_NOISE_GATE,&tmp);
 		}
 	}
 
@@ -409,6 +413,7 @@ AudioStream *audio_stream_new(int locport, bool_t ipv6){
 	stream->play_dtmfs=TRUE;
 	stream->use_gc=FALSE;
 	stream->use_agc=FALSE;
+	stream->use_ng=FALSE;
 	return stream;
 }
 
@@ -435,6 +440,10 @@ void audio_stream_enable_gain_control(AudioStream *stream, bool_t val){
 
 void audio_stream_enable_automatic_gain_control(AudioStream *stream, bool_t val){
 	stream->use_agc=val;
+}
+
+void audio_stream_enable_noise_gate(AudioStream *stream, bool_t val){
+	stream->use_ng=val;
 }
 
 void audio_stream_set_mic_gain(AudioStream *stream, float gain){

@@ -38,20 +38,24 @@ static const float noise_thres=0.1;
 typedef struct Volume{
 	float energy;
 	float norm_en;
-	float gain;
-	float static_gain;
+	float gain; /*the one really applied, smoothed by noise gate and echo limiter*/
+	float static_gain; /*the one fixed by the user*/
 	float gain_k;
 	float thres;
 	float force;
+	float target_gain; /*the target gain choosed by echo limiter and noise gate*/
 	MSFilter *peer;
 #ifdef HAVE_SPEEXDSP
 	SpeexPreprocessState *speex_pp;
 #endif
 	int sample_rate;
 	int nsamples;
+	int ng_cut_time; /*noise gate cut time, after last speech detected*/
+	int ng_noise_dur;
 	MSBufferizer *buffer;
 	bool_t ea_active;
 	bool_t agc_enabled;
+	bool_t noise_gate_enabled;
 }Volume;
 
 static void volume_init(MSFilter *f){
@@ -68,6 +72,9 @@ static void volume_init(MSFilter *f){
 	v->buffer=ms_bufferizer_new();
 	v->sample_rate=8000;
 	v->nsamples=80;
+	v->noise_gate_enabled=FALSE;
+	v->ng_cut_time=100;/*milliseconds*/
+	v->ng_noise_dur=0;
 #ifdef HAVE_SPEEXDSP
 	v->speex_pp=NULL;
 #endif
@@ -130,7 +137,6 @@ static void volume_echo_avoider_process(Volume *v){
 			gain=v->static_gain;
 			v->ea_active=FALSE;
 		}
-		v->gain=(v->gain*(1-v->gain_k)) + (v->gain_k*gain);
 	}else{
 		int peer_active=FALSE;
 		ms_filter_call_method(v->peer,MS_VOLUME_GET_EA_STATE,&peer_active);
@@ -141,17 +147,29 @@ static void volume_echo_avoider_process(Volume *v){
 			v->gain=gain;
 		}else {
 			gain=v->static_gain;
-			v->gain=(v->gain*(1-v->gain_k)) + (v->gain_k*gain);
 		}
 	}
-	
+	v->target_gain=gain;
 	ms_message("ea_active=%i, peer_e=%f gain=%f gain_k=%f force=%f",v->ea_active,peer_e,v->gain, v->gain_k,v->force);
+}
+
+static void volume_noise_gate_process(Volume *v , float energy, mblk_t *om){
+	int nsamples=((om->b_wptr-om->b_rptr)/2);
+	if ((energy/max_e)<v->thres){
+		v->ng_noise_dur+=(nsamples*1000)/v->sample_rate;
+		if (v->ng_noise_dur>v->ng_cut_time){
+			v->target_gain=0;
+		}
+	}else{
+		v->ng_noise_dur=0;
+		/*let the target gain unchanged, ie let the echo-limiter choose the gain*/
+	}
 }
 
 static int volume_set_gain(MSFilter *f, void *arg){
 	float *farg=(float*)arg;
 	Volume *v=(Volume*)f->data;
-	v->gain=v->static_gain=*farg;
+	v->gain=v->static_gain=v->target_gain=*farg;
 	return 0;
 }
 
@@ -205,6 +223,12 @@ static int volume_set_ea_force(MSFilter *f, void*arg){
 	return 0;
 }
 
+static int volume_enable_noise_gate(MSFilter *f, void *arg){
+	Volume *v=(Volume*)f->data;
+	v->noise_gate_enabled=*(int*)arg;
+	return 0;
+}
+
 static inline int16_t saturate(float val){
 	return (val>32767) ? 32767 : ( (val<-32767) ? -32767 : val);
 }
@@ -219,13 +243,17 @@ static float update_energy(int16_t *signal, int numsamples, float last_energy_va
 	return en;
 }
 
-static void apply_gain(mblk_t *m, float gain){
+static void apply_gain(Volume *v, mblk_t *m){
 	int16_t *sample;
+	float gain=v->target_gain;
+
+	if (gain==1 && v->gain==1) return;
+	v->gain=(v->gain*(1-v->gain_k)) + (v->gain_k*gain);
 	for (	sample=(int16_t*)m->b_rptr;
 				sample<(int16_t*)m->b_wptr;
 				++sample){
 		float s=*sample;
-		*sample=saturate(s*gain);
+		*sample=saturate(s*v->gain);
 	}
 }
 
@@ -273,10 +301,11 @@ static void volume_process(MSFilter *f){
 	
 			if (v->peer){
 				volume_echo_avoider_process(v);	
-			}
-			if (v->gain!=1){
-				apply_gain(om,v->gain);
-			}
+			}else v->target_gain=v->static_gain;
+
+			if (v->noise_gate_enabled)
+				volume_noise_gate_process(v,en,om);
+			apply_gain(v,om);
 			ms_queue_put(f->outputs[0],om);
 		}
 	}else{
@@ -285,10 +314,11 @@ static void volume_process(MSFilter *f){
 			en=update_energy((int16_t*)m->b_rptr,(m->b_wptr-m->b_rptr)/2,en);
 			if (v->peer){
 				volume_echo_avoider_process(v);	
-			}
-			if (v->gain!=1){
-				apply_gain(m,v->gain);
-			}
+			}else v->target_gain=v->static_gain;
+
+			if (v->noise_gate_enabled)
+				volume_noise_gate_process(v,en,m);
+			apply_gain(v,m);
 			ms_queue_put(f->outputs[0],m);
 		}
 	}
@@ -306,6 +336,7 @@ static MSFilterMethod methods[]={
 	{	MS_VOLUME_SET_EA_FORCE	, 	volume_set_ea_force	},
 	{	MS_FILTER_SET_SAMPLE_RATE,	volume_set_sample_rate	},
 	{	MS_VOLUME_ENABLE_AGC	,	volume_set_agc		},
+	{	MS_VOLUME_ENABLE_NOISE_GATE,	volume_enable_noise_gate},
 	{	0			,	NULL			}
 };
 

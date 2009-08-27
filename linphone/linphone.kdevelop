@@ -387,6 +387,7 @@
       <path>win32acm/wine/winuser.h</path>
       <path>win32acm/wineacm.h</path>
       <path>win32acm/wrapper.h</path>
+      <path>builddate.h</path>
     </blacklist>
     <build>
       <buildtool>make</buildtool>

@@ -50,6 +50,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define MS_VOLUME_ENABLE_AGC		MS_FILTER_METHOD(MS_VOLUME_ID,8,int)
 
+#define MS_VOLUME_ENABLE_NOISE_GATE	MS_FILTER_METHOD(MS_VOLUME_ID,9,int)
+
 extern MSFilterDesc ms_volume_desc;
 
 #endif
