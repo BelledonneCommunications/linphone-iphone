@@ -290,6 +290,7 @@ static int equalizer_get_gain(MSFilter *f, void *data){
 static int equalizer_set_rate(MSFilter *f, void *data){
 	EqualizerState *s=(EqualizerState*)f->data;
 	s->rate=*(int*)data;
+	s->needs_update=TRUE;
 	return 0;
 }
 
