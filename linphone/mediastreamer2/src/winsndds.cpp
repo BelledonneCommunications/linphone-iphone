@@ -966,8 +966,8 @@ static void add_or_update_card(MSSndCardManager *m, const char *name, LPGUID lpg
 				else
 					memset(&d->in_guid, 0, sizeof(GUID));
 			}
-			if (d->in_devid!=-1 && d->out_devid!=-1)
-				ms_message("DS: new full duplex card %s", name);
+			/* if (d->in_devid!=-1 && d->out_devid!=-1) */
+			/*	ms_message("DS: new full duplex card %s", name); */
 			d->removed=0;
 			return;
 		}
