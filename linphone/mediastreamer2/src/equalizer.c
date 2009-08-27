@@ -22,6 +22,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <math.h>
 
+#ifdef _MSC_VER
+#include <malloc.h>
+#define alloca _alloca
+#endif
+
+#ifndef M_PI
+#define M_PI       3.14159265358979323846
+#endif
 
 #ifdef MS_FIXED_POINT
 #define GAIN_ZERODB 20000
@@ -51,14 +59,14 @@ static void equalizer_state_flatten(EqualizerState *s){
 }
 
 static EqualizerState * equalizer_state_new(int nfft){
-	EqualizerState *s=ms_new0(EqualizerState,1);
+	EqualizerState *s=(EqualizerState *)ms_new0(EqualizerState,1);
 	s->rate=8000;
 	s->nfft=nfft;
-	s->fft_cpx=ms_new0(ms_word16_t,s->nfft);
+	s->fft_cpx=(ms_word16_t*)ms_new0(ms_word16_t,s->nfft);
 	equalizer_state_flatten(s);
 	s->fir_len=s->nfft;
-	s->fir=ms_new(ms_word16_t,s->fir_len);
-	s->mem=ms_new0(ms_mem_t,s->fir_len);
+	s->fir=(ms_word16_t*)ms_new(ms_word16_t,s->fir_len);
+	s->mem=(ms_mem_t*)ms_new0(ms_mem_t,s->fir_len);
 	s->needs_update=TRUE;
 	s->active=TRUE;
 	return s;
@@ -320,6 +328,26 @@ static MSFilterMethod equalizer_methods[]={
 	{	0				,	NULL			}
 };
 
+#ifdef _MSC_VER
+
+MSFilterDesc ms_equalizer_desc={
+	MS_EQUALIZER_ID,
+	"MSEqualizer",
+	N_("Parametric sound equalizer."),
+	MS_FILTER_OTHER,
+	NULL,
+	1,
+	1,
+	equalizer_init,
+	NULL,
+	equalizer_process,
+	NULL,
+	equalizer_uninit,
+	equalizer_methods
+};
+
+#else
+
 MSFilterDesc ms_equalizer_desc={
 	.id= MS_EQUALIZER_ID,
 	.name="MSEqualizer",
@@ -332,5 +360,7 @@ MSFilterDesc ms_equalizer_desc={
 	.uninit=equalizer_uninit,
 	.methods=equalizer_methods
 };
+
+#endif
 
 MS_FILTER_DESC_EXPORT(ms_equalizer_desc)
