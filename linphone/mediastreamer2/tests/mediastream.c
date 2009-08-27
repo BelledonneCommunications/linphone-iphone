@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "mediastreamer2/mediastream.h"
 #include "mediastreamer2/msequalizer.h"
+#include "mediastreamer2/msvolume.h"
 #ifdef VIDEO_ENABLED
 #include "mediastreamer2/msv4l.h"
 #endif
@@ -41,6 +42,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 static int cond=1;
 
 static const char * capture_card=NULL;
+static float ng_threshold=-1;
 static bool_t use_ng=FALSE;
 
 static void stop_handler(int signum)
@@ -132,6 +134,7 @@ const char *usage="mediastream --local <port> --remote <ip:port> --payload <payl
 								"[ --ec (enable echo canceller)]\n"
 								"[ --agc (enable automatic gain control)]\n"
 								"[ --ng (enable noise gate)]\n"
+								"[ --ng-threshold <(float) [0-1]> (noise gate threshold)]\n"
 								"[ --capture-card <index>] \n";
 static void run_media_streams(int localport, const char *remote_ip, int remoteport, int payload, const char *fmtp, int jitter, bool_t ec, int bitrate, MSVideoSize vs, bool_t agc, bool_t eq);
 
@@ -209,6 +212,9 @@ int main(int argc, char * argv[])
 			eq=TRUE;
 		}else if (strcmp(argv[i],"--ng")==0){
 			use_ng=1;
+		}else if (strcmp(argv[i],"--ng-threshold")==0){
+			i++;
+			ng_threshold=atof(argv[i]);
 		}
 	}
 
@@ -249,7 +255,11 @@ void run_media_streams(int localport,  const char *remote_ip, int remoteport, in
 			ms_snd_card_manager_get_default_playback_card(manager),
 			capt,
 			 ec);
-		if (audio) session=audio->session;
+		if (audio) {
+			if (use_ng && ng_threshold!=-1)
+				ms_filter_call_method(audio->volsend,MS_VOLUME_SET_NOISE_GATE_THRESHOLD,&ng_threshold);
+			session=audio->session;
+		}
 	}else{
 #ifdef VIDEO_ENABLED
 		if (eq){
