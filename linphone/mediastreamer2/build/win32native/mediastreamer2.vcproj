@@ -202,6 +202,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\dsptools.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\dtmfgen.c"
 				>
 			</File>
@@ -210,11 +214,23 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\equalizer.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\gsm.c"
 				>
 			</File>
 			<File
 				RelativePath="..\..\src\ice.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\kiss_fft.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\kiss_fftr.c"
 				>
 			</File>
 			<File
@@ -360,6 +376,10 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath="..\..\src\_kiss_fft_guts.h"
+				>
+			</File>
+			<File
 				RelativePath=".\alldescs.h"
 				>
 			</File>
@@ -385,6 +405,14 @@
 			</File>
 			<File
 				RelativePath="..\..\include\mediastreamer2\ice.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\kiss_fft.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\kiss_fftr.h"
 				>
 			</File>
 			<File
