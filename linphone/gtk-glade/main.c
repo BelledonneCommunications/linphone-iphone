@@ -479,7 +479,7 @@ void linphone_gtk_call_terminated(const char *error){
 	GtkWidget *mw=linphone_gtk_get_main_window();
 	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"terminate_call"),FALSE);
 	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"start_call"),TRUE);
-	gtk_widget_hide(linphone_gtk_get_widget(mw,"go_to_call_view_box"));
+	gtk_widget_hide_all(linphone_gtk_get_widget(mw,"go_to_call_view_box"));
 	linphone_gtk_in_call_view_terminate(error);
 	update_video_title();
 	g_object_set_data(G_OBJECT(mw),"incoming_call",NULL);
@@ -498,7 +498,7 @@ static gboolean in_call_timer(){
 static void linphone_gtk_call_started(GtkWidget *mw){
 	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"start_call"),FALSE);
 	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"terminate_call"),TRUE);
-	gtk_widget_show(linphone_gtk_get_widget(mw,"go_to_call_view_box"));
+	gtk_widget_show_all(linphone_gtk_get_widget(mw,"go_to_call_view_box"));
 	update_video_title();
 	g_timeout_add(250,(GSourceFunc)in_call_timer,NULL);
 }
@@ -941,6 +941,7 @@ static void linphone_gtk_configure_main_window(){
 	if (stop_call_icon){
 		GdkPixbuf *pbuf=create_pixbuf(stop_call_icon);
 		gtk_image_set_from_pixbuf(GTK_IMAGE(linphone_gtk_get_widget(w,"terminate_call_icon")),pbuf);
+		gtk_image_set_from_pixbuf(GTK_IMAGE(linphone_gtk_get_widget(w,"in_call_terminate_icon")),pbuf);
 		g_object_unref(G_OBJECT(pbuf));
 	}
 	if (home){
