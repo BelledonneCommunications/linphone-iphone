@@ -1475,6 +1475,13 @@ void linphone_core_init_media_streams(LinphoneCore *lc){
 		}
 		
 	}
+	if (linphone_core_echo_cancelation_enabled(lc)){
+		int len,delay,framesize;
+		len=lp_config_get_int(lc->config,"sound","ec_tail_len",0);
+		delay=lp_config_get_int(lc->config,"sound","ec_delay",0);
+		framesize=lp_config_get_int(lc->config,"sound","ec_framesize",0);
+		audio_stream_set_echo_canceler_params(lc->audiostream,len,delay,framesize);
+	}
 	audio_stream_enable_automatic_gain_control(lc->audiostream,linphone_core_agc_enabled(lc));
 #ifdef VIDEO_ENABLED
 	if (lc->video_conf.display || lc->video_conf.capture)

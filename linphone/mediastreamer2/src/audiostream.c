@@ -31,6 +31,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/msfilerec.h"
 #include "mediastreamer2/msvolume.h"
 #include "mediastreamer2/msequalizer.h"
+#include "mediastreamer2/msspeexec.h"
 
 #ifdef INET6
 	#include <sys/types.h>
@@ -248,6 +249,12 @@ int audio_stream_start_full(AudioStream *stream, RtpProfile *profile, const char
 	if (use_ec) {
 		stream->ec=ms_filter_new(MS_SPEEX_EC_ID);
 		ms_filter_call_method(stream->ec,MS_FILTER_SET_SAMPLE_RATE,&pt->clock_rate);
+		if (stream->ec_tail_len!=0)
+			ms_filter_call_method(stream->ec,MS_SPEEX_EC_SET_TAIL_LENGTH,&stream->ec_tail_len);
+		if (stream->ec_delay!=0)
+			ms_filter_call_method(stream->ec,MS_SPEEX_EC_SET_DELAY,&stream->ec_delay);
+		if (stream->ec_framesize!=0)
+			ms_filter_call_method(stream->ec,MS_SPEEX_EC_SET_FRAME_SIZE,&stream->ec_framesize);
 	}
 
 	if (stream->el_type!=ELInactive || stream->use_gc || stream->use_ng){
@@ -428,6 +435,12 @@ int audio_stream_start_now(AudioStream *stream, RtpProfile * prof,  const char *
 
 void audio_stream_set_relay_session_id(AudioStream *stream, const char *id){
 	ms_filter_call_method(stream->rtpsend, MS_RTP_SEND_SET_RELAY_SESSION_ID,(void*)id);
+}
+
+void audio_stream_set_echo_canceler_params(AudioStream *st, int tail_len_ms, int delay_ms, int framesize){
+	st->ec_tail_len=tail_len_ms;
+	st->ec_delay=delay_ms;
+	st->ec_framesize=framesize;
 }
 
 void audio_stream_enable_echo_limiter(AudioStream *stream, EchoLimiterType type){

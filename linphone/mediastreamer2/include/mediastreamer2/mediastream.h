@@ -116,6 +116,9 @@ void audio_stream_enable_gain_control(AudioStream *stream, bool_t val);
 /*enable automatic gain control, to be done before start() */
 void audio_stream_enable_automatic_gain_control(AudioStream *stream, bool_t val);
 
+/*to be done before start */
+void audio_stream_set_echo_canceler_params(AudioStream *st, int tail_len_ms, int delay_ms, int framesize);
+
 void audio_stream_set_mic_gain(AudioStream *stream, float gain);
 
 /*enable noise gate, must be done before start()*/
