@@ -96,7 +96,8 @@ static void speex_ec_preprocess(MSFilter *f){
 		s->filterlength=(s->tail_length_ms*s->samplerate)/1000;
 	if (s->delay_ms!=0)
 		s->playback_delay=s->delay_ms*s->samplerate/1000;
-
+	ms_message("Initializing speex echo canceler with framesize=%i, filterlength=%i, playback_delay=%i",
+		s->framesize,s->filterlength,s->playback_delay);
 	s->ecstate=speex_echo_state_init(s->framesize,s->filterlength);
 	s->den = speex_preprocess_state_init(s->framesize, s->samplerate);
 	speex_echo_ctl(s->ecstate, SPEEX_ECHO_SET_SAMPLING_RATE, &s->samplerate);
