@@ -10,10 +10,20 @@ else
 	AUTOMAKE=automake-${AM_VERSION}
 fi
 
+if test -f /opt/local/bin/glibtoolize ; then
+	# darwin
+	LIBTOOLIZE=/opt/local/bin/glibtoolize
+else
+	LIBTOOLIZE=libtoolize
+fi
+if test -d /opt/local/share/aclocal ; then
+	ACLOCAL_ARGS="-I /opt/local/share/aclocal"
+fi
+
 echo "Generating build scripts in mediastreamer..."
 set -x
-libtoolize --copy --force
+$LIBTOOLIZE --copy --force
 autoheader
-$ACLOCAL 
+$ACLOCAL  $ACLOCAL_ARGS
 $AUTOMAKE --force-missing --add-missing --copy
 autoconf

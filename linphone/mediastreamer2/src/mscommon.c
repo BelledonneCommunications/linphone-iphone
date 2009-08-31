@@ -48,9 +48,9 @@ extern void __register_ffmpeg_encoders_if_possible(void);
 #include <dlfcn.h>
 #endif
 
-#ifdef __APPLE__
+#if defined(__APPLE__) && !defined(__GNUC__)
 #import <Cocoa/Cocoa.h>
-#include <Foundation/Foundation.h>
+#include <Foundation/Foundation.h> 
 #endif
 
 MSList *ms_list_new(void *data){

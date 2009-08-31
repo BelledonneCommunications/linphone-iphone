@@ -57,7 +57,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifdef HAVE_ALLOCA_H
 #include <alloca.h>
 #else
+#if !defined(__APPLE__)
 #include <malloc.h>
+#endif
 #endif
 
 #define ALLOC(var,size,type) var = alloca(sizeof(type)*(size))
