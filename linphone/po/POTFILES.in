@@ -46,7 +46,7 @@ mediastreamer2/src/msspeex.c
 mediastreamer2/src/msvolume.c
 mediastreamer2/src/msv4l.c
 mediastreamer2/src/msv4l2.c
-mediastreamer2/src/msv4m.c
+mediastreamer2/src/msv4m.m
 mediastreamer2/src/nowebcam.c
 mediastreamer2/src/oss.c
 mediastreamer2/src/pixconv.c

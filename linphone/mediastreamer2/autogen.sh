@@ -1,8 +1,8 @@
 #!/bin/sh
 
-AM_VERSION="1.9"
+AM_VERSION="1.10"
 if ! type aclocal-$AM_VERSION 1>/dev/null 2>&1; then
-	# automake-1.9 (recommended) is not available on Fedora 8
+	# automake-1.10 (recommended) is not available on Fedora 8
 	AUTOMAKE=automake
 	ACLOCAL=aclocal
 else
