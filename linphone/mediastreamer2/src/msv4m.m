@@ -32,7 +32,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/msvideo.h"
 #include "mediastreamer2/msticker.h"
 #include "mediastreamer2/msv4l.h"
-//#include "nowebcam.h"
+#include "nowebcam.h"
 #include "mediastreamer2/mswebcam.h"
 
 // build for carbon
@@ -41,11 +41,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #if __APPLE_CC__
   #include <Carbon/Carbon.h>
   #include <QuicKTime/QuickTime.h>
+  #include <AppKit/AppKit.h>
 #else
   #include <ConditionalMacros.h>
   #include <QuickTimeComponents.h>
   #include <TextUtils.h>
-
+  #include <AppKit/AppKit.h>
   #include <stdio.h>
 #endif
 
@@ -215,7 +216,7 @@ static int v4m_close(v4mState *s)
   s->seqgrab=NULL;
   if (s->decomseq)
     CDSequenceEnd(s->decomseq);
-  s->decomseq=NULL;
+  s->decomseq=0;
   if (s->pgworld!=NULL)
     DisposeGWorld(s->pgworld);
   s->pgworld=NULL;
@@ -227,7 +228,7 @@ unsigned char *stdToPascalString(char *buffer, char * str) {
 
 		memcpy(buffer + 1, str, strlen(str));
 
-		return buffer;
+		return (unsigned char*)buffer;
 	} else {
 		return NULL;
 	}
@@ -601,8 +602,8 @@ MSWebCamDesc ms_v4m_cam_desc={
 
 char * genDeviceName(unsigned char * device,short inputIndex, unsigned char * input) 
 {
-	char buffer[32];
-	sprintf(buffer, "%s:%d:%s", device,inputIndex,input);
+	static char buffer[32];
+	snprintf(buffer,sizeof(buffer), "%s:%d:%s", device,inputIndex,input);
         return buffer;
 }
 
@@ -613,7 +614,7 @@ static char* pas2cstr(const char *pstr)
 {
     char *cstr = ms_malloc(pstr[0] + 1);
     memcpy(cstr, pstr+1, pstr[0]);
-    cstr[pstr[0]] = 0;
+    cstr[(int)pstr[0]] = 0;
     
     return cstr;
     
@@ -627,6 +628,7 @@ static void ms_v4m_detect(MSWebCamManager *obj){
         SGChannel _SGChanVideo;
 
         SeqGrabComponent _seqGrab;
+	NSApplicationLoad();
         
         if (_SGChanVideo) {
 		SGDisposeChannel(_seqGrab, _SGChanVideo);

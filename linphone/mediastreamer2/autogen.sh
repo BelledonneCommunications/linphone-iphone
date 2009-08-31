@@ -23,7 +23,8 @@ fi
 echo "Generating build scripts in mediastreamer..."
 set -x
 $LIBTOOLIZE --copy --force
-autoheader
 $ACLOCAL  $ACLOCAL_ARGS
+autoheader
 $AUTOMAKE --force-missing --add-missing --copy
 autoconf
+

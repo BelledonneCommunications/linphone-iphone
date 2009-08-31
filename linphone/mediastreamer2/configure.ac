@@ -83,6 +83,7 @@ AC_ARG_ENABLE(debug,
 dnl Checks for programs.
 AC_PROG_CC
 AC_PROG_CXX
+AC_PROG_OBJC
 AC_LIBTOOL_WIN32_DLL
 AC_PROG_LIBTOOL
 AC_ENABLE_SHARED(yes)
@@ -342,7 +343,7 @@ AC_ARG_ENABLE(macaqsnd,
         yes) macaqsnd=true ;;
         no)  macaqsnd=false ;;
         *) AC_MSG_ERROR(bad value ${enableval} for --enable-macaqsnd) ;;
-      esac],[macaqsnd=yes])
+      esac],[macaqsnd=true])
 
 if test "$macosx_found" != "yes" ; then
 	macaqsnd=false

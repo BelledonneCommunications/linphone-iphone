@@ -256,7 +256,7 @@ static int ice_sound_send_stun_request(RtpSession *session, struct IceCheckList 
 			}
 			else if (cand_pair!=NULL)
 			{
-				struct CandidatePair *cand_pair2;
+				struct CandidatePair *cand_pair2=NULL;
 				int pos2;
 				for (pos2=0;pos2<pos && remote_candidates[pos2].remote_candidate.conn_addr[0]!='\0';pos2++)
 				{

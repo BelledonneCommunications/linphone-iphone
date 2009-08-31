@@ -92,7 +92,7 @@ endif
 if BUILD_VIDEO
 
 if BUILD_MACOSX
-libmediastreamer_la_SOURCES+=msv4m.c
+libmediastreamer_la_SOURCES+=msv4m.m
 endif
 
 if BUILD_V4L
@@ -177,6 +177,8 @@ AM_CXXFLAGS= 	-I$(top_srcdir)  \
 if BUILD_VIDEO
 AM_CFLAGS+=$(VIDEO_CFLAGS)
 endif
+
+AM_OBJCFLAGS=$(AM_CFLAGS)
 
 imgdir=$(datadir)/images/
 

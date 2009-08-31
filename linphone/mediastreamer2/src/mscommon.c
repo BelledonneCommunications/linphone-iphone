@@ -513,9 +513,6 @@ static MSWebCamDesc * ms_web_cam_descs[]={
 void ms_init(){
 	int i;
 	MSSndCardManager *cm;
-#ifdef __APPLE__
-	NSApplicationLoad();
-#endif
 
 #if !defined(_WIN32_WCE)
 	if (getenv("MEDIASTREAMER_DEBUG")!=NULL){

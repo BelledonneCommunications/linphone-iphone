@@ -240,18 +240,15 @@ void setupRead(MSSndCard *card) {
 
 static void aq_set_level(MSSndCard *card, MSSndCardMixerElem e, int percent)
 {
-	AQData *d=(AQData*)card->data;
 }
 
 static int aq_get_level(MSSndCard *card, MSSndCardMixerElem e)
 {
-	AQData *d=(AQData*)card->data;
 	return 0;
 }
 
 static void aq_set_source(MSSndCard *card, MSSndCardCapture source)
 {
-	AQData *d=(AQData*)card->data;
 }
 
 static void aq_init(MSSndCard *card){
@@ -298,8 +295,6 @@ MSSndCardDesc aq_card_desc={
 
 static MSSndCard *aq_duplicate(MSSndCard *obj){
 	MSSndCard *card=ms_snd_card_new(&aq_card_desc);
-	AQData *dcard=(AQData*)card->data;
-	AQData *dobj=(AQData*)obj->data;
 	card->name=ms_strdup(obj->name);
 	return card;
 }
@@ -450,7 +445,6 @@ static void aq_stop_r(MSSndCard *card){
 static void aq_start_w(MSSndCard *card){
 	ms_debug("aq_start_w");
 	AQData *d=(AQData*)card->data;
-	int i;
 	if(d->write_started == FALSE) {
 		OSStatus aqresult;
 		d->writeBufferByteSize = kSecondsPerBuffer * d->rate * (d->bits / 8);		
@@ -582,7 +576,7 @@ static int set_rate(MSFilter *f, void *arg){
 	d->rate=*((int*)arg);
 	return 0;
 }
-
+/*
 static int set_nchannels(MSFilter *f, void *arg){
 	ms_debug("set_nchannels %d", *((int*)arg));
 	MSSndCard *card=(MSSndCard*)f->data;
@@ -590,7 +584,7 @@ static int set_nchannels(MSFilter *f, void *arg){
 	d->stereo=(*((int*)arg)==2);
 	return 0;
 }
-
+*/
 static MSFilterMethod aq_methods[]={
 	{	MS_FILTER_SET_SAMPLE_RATE	, set_rate	},
 /* not support yet
