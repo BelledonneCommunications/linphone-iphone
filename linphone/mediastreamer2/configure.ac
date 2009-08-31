@@ -321,7 +321,7 @@ AC_SUBST(PORTAUDIO_LIBS)
 AM_CONDITIONAL(BUILD_PORTAUDIO, test x$portaudio_enabled = xtrue)
 
 AC_ARG_ENABLE(macsnd,
-      [  --enable-macsnd    Turn on native macosx sound support],
+      [  --enable-macsnd    Turn on native macosx sound support (default=no)],
       [case "${enableval}" in
         yes) macsnd=true ;;
         no)  macsnd=false ;;
@@ -337,20 +337,23 @@ fi
 AM_CONDITIONAL(BUILD_MACSND, test x$macsnd_enabled = xtrue)
 
 AC_ARG_ENABLE(macaqsnd,
-      [  --enable-macaqsnd    Turn on native macosx Audio Queue sound support],
+      [  --enable-macaqsnd    Turn on native macosx Audio Queue sound support (default=yes)],
       [case "${enableval}" in
         yes) macaqsnd=true ;;
         no)  macaqsnd=false ;;
         *) AC_MSG_ERROR(bad value ${enableval} for --enable-macaqsnd) ;;
-      esac],[macaqsnd=false])
+      esac],[macaqsnd=yes])
+
+if test "$macosx_found" != "yes" ; then
+	macaqsnd=false
+fi
 
 if test "$macaqsnd" = "true"; then
 	AC_DEFINE(__MAC_AQ_ENABLED__,1,[defined if native macosx AQ sound support is available])
-	macaqsnd_enabled=true
 	found_sound=yes
 fi
 
-AM_CONDITIONAL(BUILD_MACAQSND, test x$macaqsnd_enabled = xtrue)
+AM_CONDITIONAL(BUILD_MACAQSND, test x$macaqsnd = xtrue)
 
 AC_ARG_ENABLE(jack,
       [  --disable-jack    Disable jack support],
