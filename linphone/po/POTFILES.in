@@ -9,6 +9,7 @@ gtk-glade/propertybox.c
 gtk-glade/update.c
 gtk-glade/buddylookup.c
 gtk-glade/setupwizard.c
+gtk-glade/incall_view.c
 gtk-glade/main.glade
 gtk-glade/about.glade
 gtk-glade/contact.glade
