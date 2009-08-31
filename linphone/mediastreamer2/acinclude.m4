@@ -73,10 +73,6 @@ AC_DEFUN([MS_CHECK_VIDEO],[
 		  [  --with-ffmpeg		Sets the installation prefix of ffmpeg, needed for video support. [default=/usr] ],
 		  [ ffmpegdir=${withval}],[ ffmpegdir=/usr ])
 	
-	AC_ARG_WITH( sdl,
-		  [  --with-sdl		Sets the installation prefix of libSDL, needed for video support. [default=/usr] ],
-		  [ libsdldir=${withval}],[ libsdldir=/usr ])
-	
 	if test "$video" = "true"; then
 		
 		dnl test for ffmpeg presence
@@ -114,11 +110,10 @@ AC_DEFUN([MS_CHECK_VIDEO],[
 		AC_CHECK_HEADERS(libswscale/swscale.h)
 		CPPFLAGS=$CPPFLAGS_save
 
-		if test "$libsdldir" != "none" ; then
-			MS_CHECK_DEP([SDL],[SDL],[${libsdldir}/include],[${libsdldir}/lib],[SDL/SDL.h],[SDL],[SDL_Init])
-			if test "$SDL_found" = "no" && test "$mingw_found" != "yes" ; then
-				AC_MSG_ERROR([Could not find libsdl headers and library. This is mandatory for video support])
-			fi
+		PKG_CHECK_MODULES(SDL, [sdl >= 1.2.0 ],sdl_found=yes , sdl_found=no)
+
+		if test "$sdl_found" = "no" && test "$mingw_found" != "yes"; then
+			AC_MSG_ERROR([Could not find libsdl headers and library. This is mandatory for video support])
 		fi
 
 		AC_ARG_ENABLE(theora,
@@ -149,7 +144,7 @@ AC_DEFUN([MS_CHECK_VIDEO],[
 		VIDEO_CFLAGS=" $FFMPEG_CFLAGS -DVIDEO_ENABLED"
 		VIDEO_LIBS=" $FFMPEG_LIBS $SWSCALE_LIBS"
 
-		if test "$SDL_found" = "yes" ; then
+		if test "sdl_found" = "yes" ; then
 			VIDEO_CFLAGS="$VIDEO_CFLAGS $SDL_CFLAGS -DHAVE_SDL"
 			VIDEO_LIBS="$VIDEO_LIBS $SDL_LIBS"
 		fi
