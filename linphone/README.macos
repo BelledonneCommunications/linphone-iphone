@@ -5,7 +5,7 @@ It was tested on macos X (leopard) on september 2009.
 
 Requirements:
 * xcode (for gcc)
-* the 'port' command to install various dependencies
+* macport (GNU porting project)
 * svn or git checkout'd linphone tree.
 
 Steps:
@@ -13,9 +13,14 @@ Steps:
 	- automake
 	- autoconf
 	- libtool
+	- gettext
 	- intltool
 	- gtk2
+	- libglade2
 	- speex-dev
+	- osip2
+	- eXosip2
+	
 * add /opt/local/bin to your PATH by editing (or creating) ~/.profile, logout and login again for changes to take effect
 
 * within linphone source directory, run ./autogen.sh

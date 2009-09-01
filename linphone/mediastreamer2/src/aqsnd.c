@@ -463,8 +463,8 @@ static void aq_start_w(MSSndCard *card){
 							 &d->writeAudioFormat,
 							 writeCallback,
 							 d, 
-							 CFRunLoopGetCurrent (),
-							 kCFRunLoopCommonModes,
+							 NULL,/*CFRunLoopGetCurrent ()*/
+							 NULL,/*kCFRunLoopCommonModes*/
 							 0,								// run loop flags
 							 &d->writeQueue
 							 );
