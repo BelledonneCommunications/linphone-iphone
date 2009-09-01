@@ -365,7 +365,7 @@ void sound_config_read(LinphoneCore *lc)
 	/*int tmp;*/
 	const char *tmpbuf;
 	const char *devid;
-#ifndef WIN32
+#ifdef __linux
 	/*alsadev let the user use custom alsa device within linphone*/
 	devid=lp_config_get_string(lc->config,"sound","alsadev",NULL);
 	if (devid){

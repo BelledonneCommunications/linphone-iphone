@@ -20,15 +20,22 @@ if test -d /opt/local/share/aclocal ; then
         ACLOCAL_ARGS="-I /opt/local/share/aclocal"
 fi
 
+if test -f /opt/local/bin/intltoolize ; then
+	#darwin
+	INTLTOOLIZE=/opt/local/bin/intltoolize
+else
+	#on mingw, it is important to invoke intltoolize with an absolute path to avoid a bug
+	INTLTOOLIZE=/usr/bin/intltoolize
+fi
 
 echo "Generating build scripts in linphone..."
 set -x
 $LIBTOOLIZE --copy --force
 
-/usr/bin/intltoolize -c --force --automake
+$INTLTOOLIZE -c --force --automake
 $ACLOCAL -I m4 $ACLOCAL_ARGS
-$AUTOMAKE --force-missing --add-missing --copy
 autoheader
+$AUTOMAKE --force-missing --add-missing --copy
 autoconf
 
 echo "Generating build scripts in oRTP..."
