@@ -32,10 +32,6 @@
 #include "config.h"
 #endif
 
-#ifndef LINPHONE_VERSION
-#define LINPHONE_VERSION "3.1.2"
-#endif
-
 #ifndef LIBLINPHONE_VERSION 
 #define LIBLINPHONE_VERSION LINPHONE_VERSION
 #endif
@@ -112,7 +108,7 @@ static inline void set_string(char **dest, const char *src){
 }
 
 #define PAYLOAD_TYPE_ENABLED	PAYLOAD_TYPE_USER_FLAG_0
-void linphone_proxy_config_register_again_with_updated_contact(LinphoneProxyConfig *obj, osip_message_t *orig_request, osip_message_t *last_answer);
+bool_t linphone_proxy_config_register_again_with_updated_contact(LinphoneProxyConfig *obj, osip_message_t *orig_request, osip_message_t *last_answer);
 void linphone_process_authentication(LinphoneCore* lc, eXosip_event_t *ev);
 void linphone_authentication_ok(LinphoneCore *lc, eXosip_event_t *ev);
 void linphone_subscription_new(LinphoneCore *lc, eXosip_event_t *ev);

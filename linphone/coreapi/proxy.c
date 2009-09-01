@@ -60,25 +60,25 @@ bool_t linphone_proxy_config_is_registered(const LinphoneProxyConfig *obj){
 	return obj->registered;
 }
 
-void linphone_proxy_config_register_again_with_updated_contact(LinphoneProxyConfig *obj, osip_message_t *orig_request, osip_message_t *last_answer){
+bool_t linphone_proxy_config_register_again_with_updated_contact(LinphoneProxyConfig *obj, osip_message_t *orig_request, osip_message_t *last_answer){
 	osip_message_t *msg;
 	const char *rport,*received;
 	osip_via_t *via=NULL;
 	osip_generic_param_t *param=NULL;
 	osip_contact_t *ctt=NULL;
 	osip_message_get_via(last_answer,0,&via);
-	if (!via) return;
+	if (!via) return FALSE;
 	osip_via_param_get_byname(via,"rport",&param);
 	if (param) rport=param->gvalue;
-	else return;
+	else return FALSE;
 	param=NULL;
 	osip_via_param_get_byname(via,"received",&param);
 	if (param) received=param->gvalue;
-	else return;
+	else return FALSE;
 	osip_message_get_contact(orig_request,0,&ctt);
 	if (strcmp(ctt->url->host,received)==0 && (ctt->url->port!=0 && strcmp(ctt->url->port,rport)==0)){
 		ms_message("Register has up to date contact, doing nothing.");
-		return;
+		return FALSE;
 	}
 	eXosip_lock();
 	msg=NULL;
@@ -95,6 +95,7 @@ void linphone_proxy_config_register_again_with_updated_contact(LinphoneProxyConf
 	eXosip_register_send_register(obj->rid,msg);
 	eXosip_unlock();
 	ms_message("Resending new register with updated contact %s:%s",received,rport);
+	return TRUE;
 }
 
 int linphone_proxy_config_set_server_addr(LinphoneProxyConfig *obj, const char *server_addr){
