@@ -1,0 +1,29 @@
+Compiling linphone on macos X
+
+This procedure works for audio, video still not fully supported.
+It was tested on macos X (leopard) on september 2009.
+
+Requirements:
+* xcode (for gcc)
+* the 'port' command to install various dependencies
+* svn or git checkout'd linphone tree.
+
+Steps:
+* install with the 'port install' command the following dependencies
+	- automake
+	- autoconf
+	- libtool
+	- intltool
+	- gtk2
+	- speex-dev
+* add /opt/local/bin to your PATH by editing (or creating) ~/.profile, logout and login again for changes to take effect
+
+* within linphone source directory, run ./autogen.sh
+* run 
+	./configure --prefix=/opt/local --disable-video --with-readline=none && make
+	(note: we disable readline for linphonec because it appears to hang at this time)
+* install to /opt/local
+	sudo make install 
+
+
+
