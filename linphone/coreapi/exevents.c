@@ -943,15 +943,13 @@ void linphone_registration_faillure(LinphoneCore *lc, eXosip_event_t *ev){
 		case 407:
 			linphone_process_authentication(lc,ev);
 			break;
-		case 403:
+		default:
 			cfg=linphone_core_get_proxy_config_from_rid(lc,ev->rid);
 			/* if contact is up to date, process the failure, otherwise resend a new register with
 				updated contact first, just in case the faillure is due to incorrect contact */
-			if (!linphone_proxy_config_register_again_with_updated_contact(cfg,ev->request,ev->response)){
-				linphone_proxy_config_process_authentication_failure(lc,ev);
-				return;
-			}
-		default:
+			if (linphone_proxy_config_register_again_with_updated_contact(cfg,ev->request,ev->response))
+				return; /*we are retrying with an updated contact*/
+			if (status_code==403) linphone_proxy_config_process_authentication_failure(lc,ev);
 			osip_uri_to_str(requri,&ru);
 			msg=ortp_strdup_printf(_("Registration on %s failed: %s"),ru,(reason!=NULL) ? reason : _("no response timeout"));
 			lc->vtable.display_status(lc,msg);
