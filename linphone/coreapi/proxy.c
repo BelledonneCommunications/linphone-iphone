@@ -76,13 +76,27 @@ bool_t linphone_proxy_config_register_again_with_updated_contact(LinphoneProxyCo
 	if (param) received=param->gvalue;
 	else return FALSE;
 	osip_message_get_contact(orig_request,0,&ctt);
-	if (strcmp(ctt->url->host,received)==0 && (ctt->url->port!=0 && strcmp(ctt->url->port,rport)==0)){
-		ms_message("Register has up to date contact, doing nothing.");
-		return FALSE;
+	if (strcmp(ctt->url->host,received)==0){
+		/*ip address matches, check ports*/
+		const char *contact_port=ctt->url->port;
+		const char *via_rport=rport;
+		if (via_rport==NULL || strlen(via_rport)>0)
+			via_rport="5060";
+		if (contact_port==NULL || strlen(contact_port)>0)
+			contact_port="5060";
+		if (strcmp(contact_port,via_rport)==0){
+			ms_message("Register has up to date contact, doing nothing.");
+			return FALSE;
+		}else ms_message("ports do not match, need to update the register (%s <> %s)", contact_port,via_rport);
 	}
 	eXosip_lock();
 	msg=NULL;
 	eXosip_register_build_register(obj->rid,obj->expires,&msg);
+	if (msg==NULL){
+		eXosip_unlock();
+		ms_warning("Fail to create a contact updated register.");
+		return FALSE;
+	}
 	osip_message_get_contact(msg,0,&ctt);
 	if (ctt->url->host!=NULL){
 		osip_free(ctt->url->host);
