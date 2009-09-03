@@ -1,7 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 
 # let make re-run automake upon need
-ACLOCAL_AMFLAGS = -I m4 -I/opt/local/share/aclocal
+ACLOCAL_AMFLAGS = -I m4 $(ACLOCAL_MACOS_FLAGS)
 
 if EXTERNAL_ORTP
 ORTP_DIR =
