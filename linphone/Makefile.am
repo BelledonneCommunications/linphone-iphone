@@ -54,6 +54,8 @@ EXTRA_DIST = config.rpath  BUGS linphone.kdevelop  \
 
 DISTCLEANFILES= intltool-extract intltool-merge intltool-update po/stamp-it po/.intltool-merge-cache $(ISS_SCRIPT) $(PACKAGE_WIN32_FILELIST)
 
+CLEANFILES=PortFile
+
 # `make rpm'
 
 all-local: linphone.spec linphone.iss
@@ -134,6 +136,10 @@ setup.exe: filelist
 newdate:
 	cd gtk-glade && $(MAKE) newdate
 
+
+PortFile:	$(top_srcdir)/scripts/PortFile.tmpl dist
+	sed -e 's/\@VERSION\@/$(LINPHONE_VERSION)/g' \
+	  -e 's/\@LINPHONE_MD5\@/$(shell md5sum linphone-$(VERSION).tar.gz)/' < $< > PortFile
 
 
 

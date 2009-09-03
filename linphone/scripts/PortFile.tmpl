@@ -4,18 +4,17 @@
 PortSystem          1.0
 
 name                linphone
-version             3.1.99.1
+version             @VERSION@
 categories          net
 maintainers         simon.morlat@linphone.org
 description         voice over IP sip phone
 long_description     With linphone you can communicate freely with people over the internet, with voice and text instant messaging.
 homepage            http://www.linphone.org/index.php
 platforms           darwin
-master_sites        file://localhost/Users/jehanmonnier/workspace/linphone-private/linphone/
-#master_sites        http://download.savannah.gnu.org/releases-noredirect/linphone/unstable/source
+master_sites        http://download.savannah.gnu.org/releases-noredirect/linphone/unstable/source/linphone-@VERSION@.tar.gz
 			
 
-checksums           md5 14d172d62dda308f657a8f1178c8a500
+checksums           md5 @LINPHONE_MD5@
 
 depends_lib         port:libglade2 \
                     port:speex-devel \

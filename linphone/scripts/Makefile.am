@@ -1,1 +1,2 @@
-EXTRA_DIST=builder-mingw.mk
+EXTRA_DIST=builder-mingw.mk PortFile.tmpl
+
