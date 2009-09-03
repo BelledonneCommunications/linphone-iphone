@@ -752,11 +752,8 @@ int linphone_core_get_local_ip_for(const char *dest, char *result){
 	struct addrinfo *res=NULL;
 	struct sockaddr_storage addr;
 	ortp_socket_t sock;
-#ifdef __APPLE_CC__
-	int s;
-#else
 	socklen_t s;
-#endif
+
 	memset(&hints,0,sizeof(hints));
 	hints.ai_family=PF_UNSPEC;
 	hints.ai_socktype=SOCK_DGRAM;
