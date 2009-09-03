@@ -39,7 +39,7 @@ ISS_SCRIPT_PATH=$(shell cd $(top_srcdir) && pwd)/$(ISS_SCRIPT)
 ISCC=/c/Program\ Files/Inno\ Setup\ 5/ISCC.exe
 PACKAGE_WIN32_FILELIST=$(PACKAGE)-win32.filelist
 
-EXTRA_DIST = config.rpath  BUGS linphone.kdevelop  linphone.kdevelop.filelist\
+EXTRA_DIST = config.rpath  BUGS linphone.kdevelop  \
 				intltool-extract.in	\
 				intltool-merge.in	\
 				intltool-update.in \

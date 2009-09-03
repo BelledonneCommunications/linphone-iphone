@@ -7,7 +7,8 @@ linphone_include_HEADERS=linphonecore.h ../config.h lpconfig.h sipsetup.h
 
 INCLUDES = \
 	-I$(top_srcdir)\
-	-I$(top_srcdir)/mediastreamer2/include
+	-I$(top_srcdir)/mediastreamer2/include \
+	$(ORTP_LIBS)
 
 
 lib_LTLIBRARIES=liblinphone.la
