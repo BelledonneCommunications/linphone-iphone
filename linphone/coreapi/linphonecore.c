@@ -108,19 +108,18 @@ static void discover_mtu(LinphoneCore *lc, const char *remote){
 LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, const osip_from_t *from, const osip_to_t *to)
 {
 	LinphoneCall *call=ms_new0(LinphoneCall,1);
-	char localip[LINPHONE_IPADDR_SIZE];
 	char *fromstr=NULL,*tostr=NULL;
 	call->dir=LinphoneCallOutgoing;
 	call->cid=-1;
 	call->did=-1;
 	call->tid=-1;
 	call->core=lc;
-	linphone_core_get_local_ip(lc,to->url->host,localip);
+	linphone_core_get_local_ip(lc,to->url->host,call->localip);
 	osip_from_to_str(from,&fromstr);
 	osip_to_to_str(to,&tostr);
 	linphone_call_init_common(call,fromstr,tostr);
 	call->sdpctx=sdp_handler_create_context(&linphone_sdphandler,
-		call->audio_params.natd_port>0 ? call->audio_params.natd_addr : localip,
+		call->audio_params.natd_port>0 ? call->audio_params.natd_addr : call->localip,
 		from->url->username,NULL);
 	sdp_context_set_user_pointer(call->sdpctx,(void*)call);
 	discover_mtu(lc,to->url->host);
@@ -128,9 +127,7 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, const osip_f
 }
 
 
-LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, const char *from, const char *to, int cid, int did, int tid)
-{
-	char localip[LINPHONE_IPADDR_SIZE];
+LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, const char *from, const char *to, int cid, int did, int tid){
 	LinphoneCall *call=ms_new0(LinphoneCall,1);
 	osip_from_t *me= linphone_core_get_primary_contact_parsed(lc);
 	osip_from_t *from_url=NULL;
@@ -141,10 +138,10 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, const char *from, co
 	call->core=lc;
 	osip_from_init(&from_url);
 	osip_from_parse(from_url, from);
-	linphone_core_get_local_ip(lc,from_url->url->host,localip);
+	linphone_core_get_local_ip(lc,from_url->url->host,call->localip);
 	linphone_call_init_common(call, osip_strdup(from), osip_strdup(to));
 	call->sdpctx=sdp_handler_create_context(&linphone_sdphandler,
-		call->audio_params.natd_port>0 ? call->audio_params.natd_addr : localip,
+		call->audio_params.natd_port>0 ? call->audio_params.natd_addr : call->localip,
 		me->url->username,NULL);
 	sdp_context_set_user_pointer(call->sdpctx,(void*)call);
 	discover_mtu(lc,from_url->url->host);
@@ -1277,6 +1274,34 @@ void linphone_set_sdp(osip_message_t *sip, const char *sdpmesg){
 	osip_message_set_content_length(sip,clen);
 }
 
+LinphoneProxyConfig * linphone_core_goes_through_known_proxy(LinphoneCore *lc, const char *uri){
+	const MSList *elem;
+	LinphoneProxyConfig *found_cfg=NULL;
+	osip_from_t *parsed_uri;
+	osip_from_init(&parsed_uri);
+	osip_from_parse(parsed_uri,uri);
+	for (elem=linphone_core_get_proxy_config_list(lc);elem!=NULL;elem=elem->next){
+		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
+		const char *domain=linphone_proxy_config_get_domain(cfg);
+		if (domain!=NULL && strcmp(domain,parsed_uri->url->host)==0){
+			found_cfg=cfg;
+			break;
+		}
+	}
+	osip_from_free(parsed_uri);
+	return found_cfg;
+}
+
+static void fix_contact(osip_message_t *msg, const char *localip){
+	osip_contact_t *ctt=NULL;
+
+	osip_message_get_contact(msg,0,&ctt);
+	if (ctt!=NULL){
+		osip_free(ctt->url->host);
+		ctt->url->host=osip_strdup(localip);
+	}
+}
+
 int linphone_core_invite(LinphoneCore *lc, const char *url)
 {
 	char *barmsg;
@@ -1324,6 +1349,11 @@ int linphone_core_invite(LinphoneCore *lc, const char *url)
 	osip_from_parse(parsed_url2,from);
 	
 	lc->call=linphone_call_new_outgoing(lc,parsed_url2,real_parsed_url);
+	/*try to be best-effort in giving real local or routable contact address,
+	except when the user choosed to override the ipaddress */
+	if (linphone_core_get_firewall_policy(lc)!=LINPHONE_POLICY_USE_NAT_ADDRESS)
+		fix_contact(invite,lc->call->localip);
+
 	barmsg=ortp_strdup_printf("%s %s", _("Contacting"), real_url);
 	lc->vtable.display_status(lc,barmsg);
 	ms_free(barmsg);
