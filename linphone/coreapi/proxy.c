@@ -54,10 +54,30 @@ void linphone_proxy_config_destroy(LinphoneProxyConfig *obj){
 	if (obj->ssctx!=NULL) sip_setup_context_free(obj->ssctx);
 	if (obj->realm!=NULL) ms_free(obj->realm);
 	if (obj->type!=NULL) ms_free(obj->type);
+	if (obj->contact_addr!=NULL) ms_free(obj->contact_addr);
 }
 
 bool_t linphone_proxy_config_is_registered(const LinphoneProxyConfig *obj){
 	return obj->registered;
+}
+
+void linphone_proxy_config_get_contact(LinphoneProxyConfig *cfg, const char **ip, int *port){
+	if (cfg->registered){
+		*ip=cfg->contact_addr;
+		*port=cfg->contact_port;
+	}else{
+		*ip=NULL;
+		*port=0;
+	}
+}
+
+static void update_contact(LinphoneProxyConfig *cfg, const char *ip, const char *port){
+	if (cfg->contact_addr){
+		ms_free(cfg->contact_addr);
+	}
+	cfg->contact_addr=ms_strdup(ip);
+	cfg->contact_port=atoi(port);
+	if (cfg->contact_port==0) cfg->contact_port=5060;
 }
 
 bool_t linphone_proxy_config_register_again_with_updated_contact(LinphoneProxyConfig *obj, osip_message_t *orig_request, osip_message_t *last_answer){
@@ -108,6 +128,7 @@ bool_t linphone_proxy_config_register_again_with_updated_contact(LinphoneProxyCo
 	ctt->url->port=osip_strdup(rport);
 	eXosip_register_send_register(obj->rid,msg);
 	eXosip_unlock();
+	update_contact(obj,received,rport);
 	ms_message("Resending new register with updated contact %s:%s",received,rport);
 	return TRUE;
 }

@@ -185,11 +185,12 @@ typedef struct _LinphoneCall
 	int cid; /*call id */
 	int did; /*dialog id */
 	int tid; /*last transaction id*/
+	char localip[LINPHONE_IPADDR_SIZE]; /* our best guess for local ipaddress for this call */
 	struct _sdp_context *sdpctx;
 	time_t start_time; /*time at which the call was initiated*/
 	time_t media_start_time; /*time at which it was accepted, media streams established*/
 	LCState	state;
-	bool_t auth_pending;	
+	bool_t auth_pending;
 } LinphoneCall;
 
 LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, const osip_from_t *from, const osip_to_t *to);
@@ -298,6 +299,8 @@ typedef struct _LinphoneProxyConfig
 	char *type;
 	struct _SipSetupContext *ssctx;
 	int auth_failures;
+	char *contact_addr; /* our IP address as seen by the proxy, read from via 's received= parameter*/
+	int contact_port; /*our IP port as seen by the proxy, read from via's rport= parameter */
 	bool_t commit;
 	bool_t reg_sendregister;
 	bool_t registered;
