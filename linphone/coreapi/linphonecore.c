@@ -776,32 +776,14 @@ void linphone_core_get_local_ip(LinphoneCore *lc, const char *dest, char *result
 		strncpy(result,linphone_core_get_nat_address(lc),LINPHONE_IPADDR_SIZE);
 		return;
 	}
-	if (linphone_core_get_firewall_policy(lc)==LINPHONE_POLICY_USE_STUN) {
-		if (lc->sip_conf.ipv6_enabled){
-			ms_warning("stun support is not implemented for ipv6");
-		}else{
-			/* we no more use stun for sip socket*/
-#if 0
-			int mport=0;
-			ms_message("doing stun lookup for local address...");
-			if (stun_get_localip(lc,sock,linphone_core_get_sip_port(lc),result,&mport)){
-				if (!lc->net_conf.nat_sdp_only)
-					eXosip_masquerade_contact(result,mport);
-				return;
-			}
-			ms_warning("stun lookup failed, falling back to a local interface...");
-#endif
-		}
-		
-	}
+	if (linphone_core_get_local_ip_for(dest,result)==0)
+		return;
+	/*else fallback to exosip routine that will attempt to find the most realistic interface */
 	if (eXosip_guess_localip(lc->sip_conf.ipv6_enabled ? AF_INET6 : AF_INET,result,LINPHONE_IPADDR_SIZE)<0){
 		/*default to something */
 		strncpy(result,lc->sip_conf.ipv6_enabled ? "::1" : "127.0.0.1",LINPHONE_IPADDR_SIZE);
 		ms_error("Could not find default routable ip address !"); 
-	}	
-	/*
-	eXosip_masquerade_contact(NULL,0);
-	*/
+	}
 }
 
 const char *linphone_core_get_primary_contact(LinphoneCore *lc)
@@ -1274,7 +1256,7 @@ void linphone_set_sdp(osip_message_t *sip, const char *sdpmesg){
 	osip_message_set_content_length(sip,clen);
 }
 
-LinphoneProxyConfig * linphone_core_goes_through_known_proxy(LinphoneCore *lc, const char *uri){
+LinphoneProxyConfig * linphone_core_lookup_known_proxy(LinphoneCore *lc, const char *uri){
 	const MSList *elem;
 	LinphoneProxyConfig *found_cfg=NULL;
 	osip_from_t *parsed_uri;
@@ -1292,13 +1274,36 @@ LinphoneProxyConfig * linphone_core_goes_through_known_proxy(LinphoneCore *lc, c
 	return found_cfg;
 }
 
-static void fix_contact(osip_message_t *msg, const char *localip){
+static void fix_contact(osip_message_t *msg, const char *localip, LinphoneProxyConfig *dest_proxy){
 	osip_contact_t *ctt=NULL;
+	const char *ip=NULL;
+	int port=5060;
 
 	osip_message_get_contact(msg,0,&ctt);
 	if (ctt!=NULL){
-		osip_free(ctt->url->host);
-		ctt->url->host=osip_strdup(localip);
+		if (dest_proxy!=NULL){
+			/* if we know the request will go to a known proxy for which we are registered,
+			we can use the same contact address as in the register */
+			linphone_proxy_config_get_contact(dest_proxy,&ip,&port);
+		}else{
+			ip=localip;
+			port=linphone_core_get_sip_port(dest_proxy->lc);
+		}
+		if (ip!=NULL){
+			osip_free(ctt->url->host);
+			ctt->url->host=osip_strdup(ip);
+		}
+		if (port!=0){
+			char tmp[10]={0};
+			char *str;
+			snprintf(tmp,sizeof(tmp)-1,"%i",port);
+			if (ctt->url->port!=NULL)
+				osip_free(ctt->url->port);
+			ctt->url->port=osip_strdup(tmp);
+			osip_contact_to_str(ctt,&str);
+			ms_message("Contact has been fixed to %s",str);
+			osip_free(str);
+		}
 	}
 }
 
@@ -1315,6 +1320,7 @@ int linphone_core_invite(LinphoneCore *lc, const char *url)
 	osip_from_t *parsed_url2=NULL;
 	osip_to_t *real_parsed_url=NULL;
 	char *real_url=NULL;
+	LinphoneProxyConfig *dest_proxy=NULL;
 	
 	if (lc->call!=NULL){
 		lc->vtable.display_warning(lc,_("Sorry, having multiple simultaneous calls is not supported yet !"));
@@ -1328,16 +1334,23 @@ int linphone_core_invite(LinphoneCore *lc, const char *url)
 		gstate_new_state(lc, GSTATE_CALL_ERROR, NULL);
 		return -1;
 	}
-	if (proxy!=NULL) {
-		from=linphone_proxy_config_get_identity(proxy);
-		
+	dest_proxy=linphone_core_lookup_known_proxy(lc,real_url);
+
+	if (proxy!=dest_proxy && dest_proxy!=NULL) {
+		ms_message("Overriding default proxy setting for this call:");
+		ms_message("The used identity will be %s",linphone_proxy_config_get_identity(dest_proxy));
 	}
+
+	if (dest_proxy!=NULL) 
+		from=linphone_proxy_config_get_identity(dest_proxy);
+	else if (proxy!=NULL)
+		from=linphone_proxy_config_get_identity(proxy);
+
 	/* if no proxy or no identity defined for this proxy, default to primary contact*/
 	if (from==NULL) from=linphone_core_get_primary_contact(lc);
 
 	err=eXosip_call_build_initial_invite(&invite,real_url,from,
 						route,"Phone call");
-
 	if (err<0){
 		ms_warning("Could not build initial invite");
 		goto end;
@@ -1352,7 +1365,7 @@ int linphone_core_invite(LinphoneCore *lc, const char *url)
 	/*try to be best-effort in giving real local or routable contact address,
 	except when the user choosed to override the ipaddress */
 	if (linphone_core_get_firewall_policy(lc)!=LINPHONE_POLICY_USE_NAT_ADDRESS)
-		fix_contact(invite,lc->call->localip);
+		fix_contact(invite,lc->call->localip,dest_proxy);
 
 	barmsg=ortp_strdup_printf("%s %s", _("Contacting"), real_url);
 	lc->vtable.display_status(lc,barmsg);
@@ -1731,6 +1744,10 @@ int linphone_core_accept_call(LinphoneCore *lc, const char *url)
 		ms_error("Fail to build answer for call: err=%i",err);
 		return -1;
 	}
+	/*try to be best-effort in giving real local or routable contact address,
+	except when the user choosed to override the ipaddress */
+	if (linphone_core_get_firewall_policy(lc)!=LINPHONE_POLICY_USE_NAT_ADDRESS)
+		fix_contact(msg,call->localip,NULL);
 	/*if a sdp answer is computed, send it, else send an offer */
 	sdpmesg=call->sdpctx->answerstr;
 	if (sdpmesg==NULL){

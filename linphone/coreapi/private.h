@@ -134,6 +134,7 @@ void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call);
 void linphone_core_write_friends_config(LinphoneCore* lc);
 void linphone_proxy_config_update(LinphoneProxyConfig *cfg);
 void linphone_proxy_config_get_contact(LinphoneProxyConfig *cfg, const char **ip, int *port);
-
+LinphoneProxyConfig * linphone_core_lookup_known_proxy(LinphoneCore *lc, const char *uri);
+int linphone_core_get_local_ip_for(const char *dest, char *result);
 
 #endif /* _PRIVATE_H */

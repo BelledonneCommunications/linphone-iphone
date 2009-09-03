@@ -745,3 +745,58 @@ int linphone_core_wake_up_possible_already_running_instance(
 	}
 	return -1;
 }
+
+int linphone_core_get_local_ip_for(const char *dest, char *result){
+	int err,tmp;
+	struct addrinfo hints;
+	struct addrinfo *res=NULL;
+	struct sockaddr_storage addr;
+	ortp_socket_t sock;
+#ifdef __APPLE_CC__
+	int s;
+#else
+	socklen_t s;
+#endif
+	memset(&hints,0,sizeof(hints));
+	hints.ai_family=PF_UNSPEC;
+	hints.ai_socktype=SOCK_DGRAM;
+	/*hints.ai_flags=AI_NUMERICHOST|AI_CANONNAME;*/
+	err=getaddrinfo(dest,"5060",&hints,&res);
+	if (err!=0){
+		ms_error("getaddrinfo() error: %s",gai_strerror(err));
+		return -1;
+	}
+	if (res==NULL){
+		ms_error("bug: getaddrinfo returned nothing.");
+		return -1;
+	}
+	sock=socket(res->ai_family,SOCK_DGRAM,0);
+	tmp=1;
+	err=setsockopt(sock,SOL_SOCKET,SO_REUSEADDR,&tmp,sizeof(int));
+	if (err<0){
+		ms_warning("Error in setsockopt: %s",strerror(errno));
+	}
+	err=connect(sock,res->ai_addr,res->ai_addrlen);
+	if (err<0) {
+		ms_error("Error in connect: %s",strerror(errno));
+ 		freeaddrinfo(res);
+ 		close(sock);
+		return -1;
+	}
+	freeaddrinfo(res);
+	res=NULL;
+	s=sizeof(addr);
+	err=getsockname(sock,(struct sockaddr*)&addr,&s);
+	if (err!=0) {
+		ms_error("Error in getsockname: %s",strerror(errno));
+		close(sock);
+		return -1;
+	}
+	err=getnameinfo((struct sockaddr *)&addr,s,result,LINPHONE_IPADDR_SIZE,NULL,0,NI_NUMERICHOST);
+	if (err!=0){
+		ms_error("getnameinfo error: %s",strerror(errno));
+	}
+	close(sock);
+	ms_message("Local interface to reach %s is %s.",dest,result);
+	return 0;
+}
