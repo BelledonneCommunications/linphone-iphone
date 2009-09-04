@@ -63,7 +63,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Ws2_32.lib Winmm.lib ortp.lib libspeexd.lib libspeexdspd.lib libcmtd.lib"
+				AdditionalDependencies="strmiids.lib Ws2_32.lib Winmm.lib ortp.lib libspeexd.lib libspeexdspd.lib libcmtd.lib"
 				OutputFile="$(IntDir)/mediastreamer2.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;..\..\..\oRTP\build\win32native\debug&quot;,..\..\..\codecs\speex\lib"
@@ -146,7 +146,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Ws2_32.lib Winmm.lib ortp.lib libspeex.lib libspeexdsp.lib libcmt.lib"
+				AdditionalDependencies="strmiids.lib Ws2_32.lib Winmm.lib ortp.lib libspeex.lib libspeexdsp.lib libcmt.lib"
 				OutputFile="$(IntDir)/mediastreamer2.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;..\..\..\oRTP\build\win32native\release&quot;,..\..\..\codecs\speex\lib"
