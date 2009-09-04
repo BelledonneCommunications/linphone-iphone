@@ -139,7 +139,7 @@ newdate:
 
 PortFile:	$(top_srcdir)/scripts/PortFile.tmpl dist
 	sed -e 's/\@VERSION\@/$(LINPHONE_VERSION)/g' \
-	  -e 's/\@LINPHONE_MD5\@/$(shell md5sum linphone-$(VERSION).tar.gz)/' < $< > PortFile
+	  -e 's/\@LINPHONE_MD5\@/$(shell md5 linphone-$(VERSION).tar.gz | awk {'print $$4'})/' < $< > PortFile
 
 
 
