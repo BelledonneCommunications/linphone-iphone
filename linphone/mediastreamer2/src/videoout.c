@@ -664,6 +664,10 @@ static void video_out_uninit(MSFilter *f){
 static void video_out_prepare(MSFilter *f){
 	VideoOut *obj=(VideoOut*)f->data;
 	if (obj->display==NULL){
+		if (default_display_desc==NULL){
+			ms_error("No default display built in !");
+			return;
+		}
 		obj->display=ms_display_new(default_display_desc);
 		obj->own_display=TRUE;
 	}

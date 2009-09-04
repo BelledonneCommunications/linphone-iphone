@@ -1,13 +1,13 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.4.5 on Mon Mar  9 15:48:11 2009 -->
+<?xml version="1.0"?>
 <glade-interface>
+  <!-- interface-requires gtk+ 2.16 -->
+  <!-- interface-naming-policy toplevel-contextual -->
   <widget class="GtkDialog" id="buddylookup">
     <property name="border_width">5</property>
     <property name="title" translatable="yes">Search contacts in directory</property>
-    <property name="window_position">GTK_WIN_POS_CENTER_ON_PARENT</property>
+    <property name="window_position">center-on-parent</property>
     <property name="icon">linphone2.png</property>
-    <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
+    <property name="type_hint">dialog</property>
     <property name="has_separator">False</property>
     <signal name="response" handler="gtk_widget_destroy"/>
     <child internal-child="vbox">
@@ -35,21 +35,23 @@
                       </widget>
                       <packing>
                         <property name="expand">False</property>
+                        <property name="position">0</property>
                       </packing>
                     </child>
                     <child>
                       <widget class="GtkScrolledWindow" id="scrolledwindow1">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-                        <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-                        <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
+                        <property name="hscrollbar_policy">automatic</property>
+                        <property name="vscrollbar_policy">automatic</property>
+                        <property name="shadow_type">etched-in</property>
                         <child>
                           <widget class="GtkTreeView" id="search_results">
                             <property name="width_request">512</property>
                             <property name="height_request">140</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
+                            <signal name="row_activated" handler="linphone_gtk_buddy_lookup_contact_activated"/>
                           </widget>
                         </child>
                       </widget>
@@ -63,7 +65,6 @@
                         <property name="visible">True</property>
                         <property name="activity_mode">True</property>
                         <property name="show_text">True</property>
-                        <property name="text" translatable="yes"></property>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -79,7 +80,6 @@
                             <property name="sensitive">False</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <property name="response_id">0</property>
                             <signal name="clicked" handler="linphone_gtk_add_buddy_from_database"/>
                             <child>
                               <widget class="GtkHBox" id="hbox1">
@@ -92,6 +92,7 @@
                                   <packing>
                                     <property name="expand">False</property>
                                     <property name="fill">False</property>
+                                    <property name="position">0</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -110,6 +111,7 @@
                             <property name="expand">False</property>
                             <property name="fill">False</property>
                             <property name="padding">5</property>
+                            <property name="position">0</property>
                           </packing>
                         </child>
                       </widget>
@@ -139,7 +141,7 @@
         <child internal-child="action_area">
           <widget class="GtkHButtonBox" id="dialog-action_area1">
             <property name="visible">True</property>
-            <property name="layout_style">GTK_BUTTONBOX_END</property>
+            <property name="layout_style">end</property>
             <child>
               <placeholder/>
             </child>
@@ -149,7 +151,8 @@
           </widget>
           <packing>
             <property name="expand">False</property>
-            <property name="pack_type">GTK_PACK_END</property>
+            <property name="pack_type">end</property>
+            <property name="position">0</property>
           </packing>
         </child>
       </widget>

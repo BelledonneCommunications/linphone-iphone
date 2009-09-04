@@ -366,6 +366,7 @@ static void update_video_title(){
 }
 
 static gboolean linphone_gtk_iterate(LinphoneCore *lc){
+	static gboolean first_time=TRUE;
 	unsigned long id;
 	static unsigned long previd=0;
 	static gboolean in_iterate=FALSE;
@@ -374,6 +375,12 @@ static gboolean linphone_gtk_iterate(LinphoneCore *lc){
 	if (in_iterate) return TRUE;
 	in_iterate=TRUE;
 	linphone_core_iterate(lc);
+	if (first_time){
+		/*after the first call to iterate, SipSetupContexts should be ready, so take actions:*/
+		linphone_gtk_show_directory_search();
+		first_time=FALSE;
+	}
+
 	id=linphone_core_get_native_video_window_id(lc);
 	if (id!=previd || video_needs_update){
 		GdkWindow *w;
@@ -578,8 +585,10 @@ void linphone_gtk_enable_self_view(GtkWidget *w){
 void linphone_gtk_used_identity_changed(GtkWidget *w){
 	int active=gtk_combo_box_get_active(GTK_COMBO_BOX(w));
 	char *sel=gtk_combo_box_get_active_text(GTK_COMBO_BOX(w));
-	if (sel && strlen(sel)>0) //avoid a dummy "changed" at gui startup
+	if (sel && strlen(sel)>0){ //avoid a dummy "changed" at gui startup
 		linphone_core_set_default_proxy_index(linphone_gtk_get_core(),(active==0) ? -1 : (active-1));
+		linphone_gtk_show_directory_search();
+	}
 }
 
 static void linphone_gtk_show_main_window(){

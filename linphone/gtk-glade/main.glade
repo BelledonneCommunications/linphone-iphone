@@ -440,6 +440,46 @@ Online users</property>
                                     <property name="position">1</property>
                                   </packing>
                                 </child>
+                                <child>
+                                  <widget class="GtkHBox" id="directory_search_box">
+                                    <child>
+                                      <widget class="GtkEntry" id="directory_search_entry">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="invisible_char">&#x25CF;</property>
+                                        <property name="secondary_icon_stock">gtk-find</property>
+                                        <property name="secondary_icon_activatable">True</property>
+                                        <property name="secondary_icon_sensitive">True</property>
+                                        <signal name="focus_in_event" handler="linphone_gtk_directory_search_focus_in"/>
+                                        <signal name="activate" handler="linphone_gtk_directory_search_activate"/>
+                                        <signal name="icon_press" handler="linphone_gtk_directory_search_activate"/>
+                                        <signal name="focus_out_event" handler="linphone_gtk_directory_search_focus_out"/>
+                                      </widget>
+                                      <packing>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <widget class="GtkButton" id="directory_search_button">
+                                        <property name="label" translatable="yes">gtk-find</property>
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="receives_default">True</property>
+                                        <property name="use_stock">True</property>
+                                        <signal name="clicked" handler="linphone_gtk_directory_search_button_clicked"/>
+                                      </widget>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="position">1</property>
+                                      </packing>
+                                    </child>
+                                  </widget>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">False</property>
+                                    <property name="position">2</property>
+                                  </packing>
+                                </child>
                               </widget>
                             </child>
                           </widget>

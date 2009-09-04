@@ -69,9 +69,12 @@ void linphone_gtk_check_for_new_version(void);
 const char *linphone_gtk_get_lang(const char *config_file);
 void linphone_gtk_set_lang(const char *code);
 SipSetupContext* linphone_gtk_get_default_sip_setup_context(void);
-void linphone_gtk_show_buddy_lookup_window(SipSetupContext *ctx);
+GtkWidget * linphone_gtk_show_buddy_lookup_window(SipSetupContext *ctx);
+void linphone_gtk_buddy_lookup_set_keyword(GtkWidget *w, const char *kw);
 void * linphone_gtk_wait(LinphoneCore *lc, void *ctx, LinphoneWaitingState ws, const char *purpose, float progress);
 gchar *linphone_gtk_get_display_name(const char *sip_uri);
+
+void linphone_gtk_show_directory_search(void);
 
 /*functions controlling the in-call view*/
 void linphone_gtk_show_in_call_view(void);

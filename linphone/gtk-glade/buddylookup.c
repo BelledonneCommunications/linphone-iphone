@@ -40,7 +40,15 @@ void linphone_gtk_buddy_lookup_window_destroyed(GtkWidget *w){
 	}
 }
 
-void linphone_gtk_show_buddy_lookup_window(SipSetupContext *ctx){
+static void enable_add_buddy_button(GtkWidget *w){
+	gtk_widget_set_sensitive(linphone_gtk_get_widget(w,"add_buddy"),TRUE);
+}
+
+static void disable_add_buddy_button(GtkWidget *w){
+	gtk_widget_set_sensitive(linphone_gtk_get_widget(w,"add_buddy"),FALSE);
+}
+
+GtkWidget * linphone_gtk_show_buddy_lookup_window(SipSetupContext *ctx){
 	GtkListStore *store;
 	GtkCellRenderer *renderer;
 	GtkTreeViewColumn *column;
@@ -71,6 +79,7 @@ void linphone_gtk_show_buddy_lookup_window(SipSetupContext *ctx){
 	
 	select = gtk_tree_view_get_selection (GTK_TREE_VIEW (results));
 	gtk_tree_selection_set_mode (select, GTK_SELECTION_SINGLE);
+	g_signal_connect_swapped(G_OBJECT(select),"changed",(GCallback)enable_add_buddy_button,w);
 #if GTK_CHECK_VERSION(2,12,0)
 	gtk_tree_view_set_tooltip_column(GTK_TREE_VIEW(results),LOOKUP_RESULT_ADDRESS);
 #endif
@@ -81,11 +90,14 @@ void linphone_gtk_show_buddy_lookup_window(SipSetupContext *ctx){
 	gtk_progress_bar_set_text(pb,NULL);
 	gtk_dialog_add_button(GTK_DIALOG(w),GTK_STOCK_CLOSE,GTK_RESPONSE_CLOSE);
 	g_object_set_data(G_OBJECT(w),"last_state",GINT_TO_POINTER(-1));
+
 	gtk_widget_show(w);
+	return w;
 }
 
-static void enable_add_buddy_button(GtkWidget *w, gboolean val){
-	gtk_widget_set_sensitive(linphone_gtk_get_widget(w,"add_buddy"),val);
+
+void linphone_gtk_buddy_lookup_set_keyword(GtkWidget *w, const char *kw){
+	gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(w,"keyword")),kw);
 }
 
 static gboolean linphone_gtk_process_buddy_lookup(GtkWidget *w){
@@ -134,7 +146,6 @@ static gboolean linphone_gtk_process_buddy_lookup(GtkWidget *w){
 			if (results) sip_setup_context_free_results(results);
 			break;
 	}
-	enable_add_buddy_button(w,bls==BuddyLookupDone);
 	g_object_set_data(G_OBJECT(w),"last_state",GINT_TO_POINTER(bls));
 	return TRUE;
 }
@@ -176,6 +187,7 @@ static void linphone_gtk_display_lookup_results(GtkWidget *w, const MSList *resu
 	const MSList *elem;
 	store=GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(w)));
 	gtk_list_store_clear(store);
+	disable_add_buddy_button(gtk_widget_get_toplevel(w));
 	for(elem=results;elem!=NULL;elem=elem->next){
 		BuddyInfo *bi=(BuddyInfo*)elem->data;
 		gtk_list_store_append(store,&iter);
@@ -204,11 +216,16 @@ void linphone_gtk_add_buddy_from_database(GtkWidget *button){
 		gtk_tree_model_get (model, &iter,LOOKUP_RESULT_SIP_URI , &uri,LOOKUP_RESULT_NAME, &name, -1);
 		addr=g_strdup_printf("%s <%s>",name,uri);
 		lf=linphone_friend_new_with_addr(addr);
+		linphone_core_add_friend(linphone_gtk_get_core(),lf);
+		linphone_gtk_show_friends();
 		g_free(addr);
 		g_free(uri);
 		g_free(name);
-		linphone_gtk_show_contact(lf);
 	}
 }
 
-
+/*called when double clicking on a contact */
+void linphone_gtk_buddy_lookup_contact_activated(GtkWidget *treeview){
+	linphone_gtk_add_buddy_from_database(treeview);
+	gtk_widget_destroy(gtk_widget_get_toplevel(treeview));
+}

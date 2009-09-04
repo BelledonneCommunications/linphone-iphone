@@ -110,7 +110,7 @@ AC_DEFUN([MS_CHECK_VIDEO],[
 		AC_CHECK_HEADERS(libswscale/swscale.h)
 		CPPFLAGS=$CPPFLAGS_save
 
-		PKG_CHECK_MODULES(SDL, [sdl >= 1.2.0 ],sdl_found=yes , sdl_found=no)
+		PKG_CHECK_MODULES(SDL, [sdl >= 1.2.0 ],sdl_found=yes,sdl_found=no)
 
 		if test "$sdl_found" = "no" && test "$mingw_found" != "yes"; then
 			AC_MSG_ERROR([Could not find libsdl headers and library. This is mandatory for video support])
@@ -144,7 +144,7 @@ AC_DEFUN([MS_CHECK_VIDEO],[
 		VIDEO_CFLAGS=" $FFMPEG_CFLAGS -DVIDEO_ENABLED"
 		VIDEO_LIBS=" $FFMPEG_LIBS $SWSCALE_LIBS"
 
-		if test "sdl_found" = "yes" ; then
+		if test "$sdl_found" = "yes" ; then
 			VIDEO_CFLAGS="$VIDEO_CFLAGS $SDL_CFLAGS -DHAVE_SDL"
 			VIDEO_LIBS="$VIDEO_LIBS $SDL_LIBS"
 		fi

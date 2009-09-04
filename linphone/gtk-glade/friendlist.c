@@ -226,6 +226,58 @@ static void linphone_gtk_friend_list_init(GtkWidget *friendlist)
 					gtk_widget_get_toplevel(friendlist),"show_category")),0);
 }
 
+void linphone_gtk_show_directory_search(void){
+	LinphoneProxyConfig *cfg=NULL;
+	SipSetupContext * ssc=NULL;
+	GtkWidget *mw=linphone_gtk_get_main_window();
+	GtkWidget *search_box=linphone_gtk_get_widget(mw,"directory_search_box");
+
+	linphone_core_get_default_proxy(linphone_gtk_get_core(),&cfg);
+	if (cfg){
+		ssc=linphone_proxy_config_get_sip_setup_context(cfg);
+		if (ssc!=NULL && sip_setup_context_get_capabilities(ssc) & SIP_SETUP_CAP_BUDDY_LOOKUP){
+			GtkWidget *entry=linphone_gtk_get_widget(mw,"directory_search_entry");
+			gchar  *tooltip;
+			GdkColor grey={0,40000,40000,40000};
+			gtk_widget_show(search_box);
+			tooltip=g_strdup_printf(_("Search in %s directory"),linphone_proxy_config_get_domain(cfg));
+			gtk_widget_modify_text(entry,GTK_STATE_NORMAL,&grey);
+			gtk_entry_set_text(GTK_ENTRY(entry),tooltip);
+			g_object_set_data(G_OBJECT(entry),"active",GINT_TO_POINTER(0));
+			g_free(tooltip);
+			return;
+		}
+	}
+	gtk_widget_hide(search_box);
+}
+
+gboolean linphone_gtk_directory_search_focus_out(GtkWidget *entry){
+	if (gtk_entry_get_text_length(GTK_ENTRY(entry))==0)
+		linphone_gtk_show_directory_search();
+	return FALSE;
+}
+
+gboolean linphone_gtk_directory_search_focus_in(GtkWidget *entry){
+	if (GPOINTER_TO_INT(g_object_get_data(G_OBJECT(entry),"active"))==0){
+		gtk_entry_set_text(GTK_ENTRY(entry),"");
+		gtk_widget_modify_text(entry,GTK_STATE_NORMAL,NULL);
+		g_object_set_data(G_OBJECT(entry),"active",GINT_TO_POINTER(1));
+	}
+	return FALSE;
+}
+
+void linphone_gtk_directory_search_activate(GtkWidget *entry){
+	LinphoneProxyConfig *cfg;
+	linphone_core_get_default_proxy(linphone_gtk_get_core(),&cfg);
+	GtkWidget *w=linphone_gtk_show_buddy_lookup_window(linphone_proxy_config_get_sip_setup_context(cfg));
+	linphone_gtk_buddy_lookup_set_keyword(w,gtk_entry_get_text(GTK_ENTRY(entry)));
+}
+
+void linphone_gtk_directory_search_button_clicked(GtkWidget *button){
+	linphone_gtk_directory_search_activate(
+		linphone_gtk_get_widget(gtk_widget_get_toplevel(button),"directory_search_entry"));
+}
+
 void linphone_gtk_show_friends(void){
 	GtkWidget *mw=linphone_gtk_get_main_window();
 	GtkWidget *friendlist=linphone_gtk_get_widget(mw,"contact_list");
@@ -237,6 +289,8 @@ void linphone_gtk_show_friends(void){
 	LinphoneCore *core=linphone_gtk_get_core();
 	const gchar *search=NULL;
 	gboolean online_only=FALSE,lookup=FALSE;
+	
+	linphone_gtk_show_directory_search();
 
 	if (gtk_tree_view_get_model(GTK_TREE_VIEW(friendlist))==NULL){
 		linphone_gtk_friend_list_init(friendlist);

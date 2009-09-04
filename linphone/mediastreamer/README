@@ -1,3 +1,0 @@
-Mediastreamer is the library that handle all media operations: rtp streaming
-from file, from soundcard, with codec transcoding, and vice-versa;-).
-And also video streaming in the future.
