@@ -1275,7 +1275,7 @@ LinphoneProxyConfig * linphone_core_lookup_known_proxy(LinphoneCore *lc, const c
 	return found_cfg;
 }
 
-static void fix_contact(osip_message_t *msg, const char *localip, LinphoneProxyConfig *dest_proxy){
+static void fix_contact(LinphoneCore *lc, osip_message_t *msg, const char *localip, LinphoneProxyConfig *dest_proxy){
 	osip_contact_t *ctt=NULL;
 	const char *ip=NULL;
 	int port=5060;
@@ -1288,7 +1288,7 @@ static void fix_contact(osip_message_t *msg, const char *localip, LinphoneProxyC
 			linphone_proxy_config_get_contact(dest_proxy,&ip,&port);
 		}else{
 			ip=localip;
-			port=linphone_core_get_sip_port(dest_proxy->lc);
+			port=linphone_core_get_sip_port(lc);
 		}
 		if (ip!=NULL){
 			osip_free(ctt->url->host);
@@ -1366,7 +1366,7 @@ int linphone_core_invite(LinphoneCore *lc, const char *url)
 	/*try to be best-effort in giving real local or routable contact address,
 	except when the user choosed to override the ipaddress */
 	if (linphone_core_get_firewall_policy(lc)!=LINPHONE_POLICY_USE_NAT_ADDRESS)
-		fix_contact(invite,lc->call->localip,dest_proxy);
+		fix_contact(lc,invite,lc->call->localip,dest_proxy);
 
 	barmsg=ortp_strdup_printf("%s %s", _("Contacting"), real_url);
 	lc->vtable.display_status(lc,barmsg);
@@ -1748,7 +1748,7 @@ int linphone_core_accept_call(LinphoneCore *lc, const char *url)
 	/*try to be best-effort in giving real local or routable contact address,
 	except when the user choosed to override the ipaddress */
 	if (linphone_core_get_firewall_policy(lc)!=LINPHONE_POLICY_USE_NAT_ADDRESS)
-		fix_contact(msg,call->localip,NULL);
+		fix_contact(lc,msg,call->localip,NULL);
 	/*if a sdp answer is computed, send it, else send an offer */
 	sdpmesg=call->sdpctx->answerstr;
 	if (sdpmesg==NULL){

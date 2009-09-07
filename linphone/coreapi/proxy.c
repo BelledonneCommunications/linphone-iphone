@@ -76,8 +76,9 @@ static void update_contact(LinphoneProxyConfig *cfg, const char *ip, const char 
 		ms_free(cfg->contact_addr);
 	}
 	cfg->contact_addr=ms_strdup(ip);
-	cfg->contact_port=atoi(port);
-	if (cfg->contact_port==0) cfg->contact_port=5060;
+	if (port!=NULL)
+		cfg->contact_port=atoi(port);
+	else cfg->contact_port=5060;
 }
 
 bool_t linphone_proxy_config_register_again_with_updated_contact(LinphoneProxyConfig *obj, osip_message_t *orig_request, osip_message_t *last_answer){
