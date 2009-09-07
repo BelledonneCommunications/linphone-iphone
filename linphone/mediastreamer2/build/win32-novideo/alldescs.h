@@ -30,6 +30,7 @@ extern MSFilterDesc ms_join_desc;
 extern MSFilterDesc ms_resample_desc;
 extern MSFilterDesc ms_volume_desc;
 extern MSFilterDesc ms_ice_desc;
+extern MSFilterDesc ms_equalizer_desc;
 MSFilterDesc * ms_filter_descs[]={
 &ms_alaw_dec_desc,
 &ms_alaw_enc_desc,
@@ -63,6 +64,7 @@ MSFilterDesc * ms_filter_descs[]={
 #endif
 &ms_volume_desc,
 &ms_ice_desc,
+&ms_equalizer_desc,
 NULL
 };
 
