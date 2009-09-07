@@ -220,9 +220,9 @@ static void player_process(MSFilter *f){
 		}
 		if (err>=0){
 			if (err!=0){
-				om->b_wptr+=bytes;
 				if (err<bytes)
  					memset(om->b_wptr+err,0,bytes-err);
+				om->b_wptr+=bytes;
 				ms_queue_put(f->outputs[0],om);
 			}else freemsg(om);
 			if (err<bytes){
