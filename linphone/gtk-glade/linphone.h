@@ -76,10 +76,11 @@ gchar *linphone_gtk_get_display_name(const char *sip_uri);
 
 void linphone_gtk_show_directory_search(void);
 
-/*functions controlling the in-call view*/
+/*functions controlling the different views*/
 void linphone_gtk_show_in_call_view(void);
 void linphone_gtk_show_idle_view(void);
 void linphone_gtk_in_call_view_set_calling(const char *uri);
 void linphone_gtk_in_call_view_set_in_call(const char *uri);
 void linphone_gtk_in_call_view_update_duration(int duration);
 void linphone_gtk_in_call_view_terminate(const char *error_msg);
+void linphone_gtk_show_login_frame(LinphoneProxyConfig *cfg);

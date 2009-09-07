@@ -776,6 +776,7 @@ void linphone_core_get_local_ip(LinphoneCore *lc, const char *dest, char *result
 		strncpy(result,linphone_core_get_nat_address(lc),LINPHONE_IPADDR_SIZE);
 		return;
 	}
+	if (dest==NULL) dest="87.98.157.38"; /*a public IP address*/
 	if (linphone_core_get_local_ip_for(dest,result)==0)
 		return;
 	/*else fallback to exosip routine that will attempt to find the most realistic interface */

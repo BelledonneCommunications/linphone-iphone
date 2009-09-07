@@ -648,6 +648,14 @@ static void linphone_proxy_config_activate_sip_setup(LinphoneProxyConfig *cfg){
 	
 }
 
+SipSetup *linphone_proxy_config_get_sip_setup(LinphoneProxyConfig *cfg){
+	if (cfg->ssctx!=NULL) return cfg->ssctx->funcs;
+	if (cfg->type!=NULL){
+		return sip_setup_lookup(cfg->type);
+	}
+	return NULL;
+}
+
 void linphone_proxy_config_update(LinphoneProxyConfig *cfg){
 	if (cfg->commit){
 		if (cfg->type && cfg->ssctx==NULL){

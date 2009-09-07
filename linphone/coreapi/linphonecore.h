@@ -332,6 +332,7 @@ LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(struct _LpConfig
 void linphone_proxy_config_write_to_config_file(struct _LpConfig* config,LinphoneProxyConfig *obj, int index);
 void linphone_proxy_config_set_sip_setup(LinphoneProxyConfig *cfg, const char *type);
 SipSetupContext *linphone_proxy_config_get_sip_setup_context(LinphoneProxyConfig *cfg);
+SipSetup *linphone_proxy_config_get_sip_setup(LinphoneProxyConfig *cfg);
 
 typedef struct _LinphoneAccountCreator{
 	struct _LinphoneCore *lc;

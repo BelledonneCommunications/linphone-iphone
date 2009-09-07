@@ -1,6 +1,6 @@
 /*
 linphone
-Copyright (C) 2000  Simon MORLAT (simon.morlat@linphone.org)
+Copyright (C) 2009  Simon MORLAT (simon.morlat@linphone.org)
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -23,7 +23,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "linphonecore.h"
 
+extern SipSetup linphone_sip_login;
+
 static SipSetup *all_sip_setups[]={
+	&linphone_sip_login,
 	NULL
 };
 
@@ -38,6 +41,7 @@ void sip_setup_register_all(void){
 	ms_load_plugins(LINPHONE_PLUGINS_DIR);
 	while(*p!=NULL){
 		sip_setup_register(*p);
+		p++;
 	}
 }
 

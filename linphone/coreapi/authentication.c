@@ -2,7 +2,7 @@
  *            authentication.c
  *
  *  Fri Jul 16 12:08:34 2004
- *  Copyright  2004  Simon MORLAT
+ *  Copyright  2004-2009  Simon MORLAT
  *  simon.morlat@linphone.org
  ****************************************************************************/
 

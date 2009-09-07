@@ -17,8 +17,7 @@ PIXMAPS=	linphone2.png \
 
 EXTRA_DIST=	$(PIXMAPS) \
 		$(GLADE_FILES) \
-		linphone.iss \
-		linphone.dev
+		linphone.iss 
 
 if BUILD_GLADE_UI
 
@@ -39,6 +38,7 @@ linphone_3_SOURCES=	\
 			utils.c \
 			setupwizard.c\
 			incall_view.c \
+			loginframe.c \
 			linphone.h 
 
 linphone_3_LDADD=$(top_builddir)/oRTP/src/libortp.la \

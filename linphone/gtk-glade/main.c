@@ -963,6 +963,18 @@ static void linphone_gtk_configure_main_window(){
 		gtk_widget_hide(linphone_gtk_get_widget(w,"run_assistant"));
 }
 
+void linphone_gtk_manage_login(void){
+	LinphoneCore *lc=linphone_gtk_get_core();
+	LinphoneProxyConfig *cfg=NULL;
+	linphone_core_get_default_proxy(lc,&cfg);
+	if (cfg){
+		SipSetup *ss=linphone_proxy_config_get_sip_setup(cfg);
+		if (ss && (sip_setup_get_capabilities(ss) & SIP_SETUP_CAP_LOGIN)){
+			linphone_gtk_show_login_frame(cfg);
+		}
+	}
+}
+
 static void linphone_gtk_init_main_window(){
 	linphone_gtk_configure_main_window();
 	load_uri_history();
