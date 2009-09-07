@@ -1,7 +1,19 @@
-linphone-3.2.0 -- 
+linphone-3.2.0 -- September 7, 2009
 	* new in-call layout
 	* new idle view with two buttons
 	* ability to dial the number from dialpad
+	* improve local IP address detection when having multiple networks (ex: VPNs)
+	* use proxy's received and rport params from via in Contact header when possible
+	* port to mac os X leopard (using gtk/x11), audio only for now
+	* DevC++ support now deprecated, use msys/mingw (see README.mingw for details)
+	* add an option to ask linphone to place a call, whenever an instance is already running or not:
+		should be useful for starting calls from a web browser recognizing the 'sip:' uri scheme.
+	* french and italian translation updated
+	* don't show ffmpeg codecs when encoder are disabled in ffmpeg library.
+	* bugfixes in:
+		- video4linux2 support
+		- alsa support
+		- socket leak in mtu discovery
 
 
 linphone-3.1.2 -- May 5, 2009

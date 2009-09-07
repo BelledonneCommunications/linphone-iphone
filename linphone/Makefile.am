@@ -45,6 +45,7 @@ EXTRA_DIST = config.rpath  BUGS linphone.kdevelop  \
 				intltool-update.in \
 				README.arm \
 				README.mingw \
+				README.macos \
 				autogen.sh \
 				linphone.spec.in \
 				$(GTK_FILELIST) \

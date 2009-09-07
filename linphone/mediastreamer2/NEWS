@@ -1,7 +1,9 @@
-mediastreamer-?.?.?:
+mediastreamer-2.3.0: September 7, 2009
 	* integrate directshow capture filter for mingw (was a plugin before)
-	* builds on windows with mingw/msys using ./configure && make
-	* add a parametric equalizer (to modify gains per frequency bands)
+	* builds on windows with mingw/msys using ./configure && make (see linphone's README.mingw)
+	* new parametric equalizer filter (to modify gains per frequency bands), working with natural curves
+	* new noise-gate feature added to MSVolume
+	* list of soundcard dynamically updates on windows upon device plugs/unplugs
 
 mediastreamer-2.2.4: May 4, 2009
 	* fix crash during video window resizing on windows

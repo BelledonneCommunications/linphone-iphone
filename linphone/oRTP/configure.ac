@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT([ortp],[0.16.0])
+AC_INIT([ortp],[0.16.1])
 AC_CANONICAL_SYSTEM
 
 dnl Source packaging numbers

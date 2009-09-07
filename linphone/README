@@ -1,28 +1,28 @@
 This is Linphone, a free (GPL) video softphone based on the SIP protocol.
 
 
-******************Building linphone on linux ***********************************
+******************Building linphone ***********************************
 - you need at least:
 		- libosip2>=3.0.3
 		- libeXosip2>=3.0.3
 		- speex>=1.1.6
 		- libreadline
 	+ gsm codec (gsm source package or libgsm-dev or gsm-devel) (optional)
-	+ if you want to gtk interface:
-		- gtk>=2.4.0
+	+ if you want to gtk/glade interface:
+		- gtk>=2.16.0
+		- libglade>=2.2
 	+ if you want video support:
 		- SDL>=1.2.10
-		- libavcodec (ffmpeg) from a year 2007 or later cvs
+		- libavcodec (ffmpeg) from a year 2007 or later cvs/svn
+		- libswscale (part of ffmpeg too) for better scaling performance
 
 with their corresponding -dev or -devel package if you don't use source packages.
 
+For windows compilation see README.mingw.
+For macOS X, see README.macos
 
 
-************************************** user documentation *********************
-go to linphone's web site: http://www.linphone.org
-
-
-******************************** DEVELOPER documentation ********************
+******************************** notes for developers: *****************************
 
 Here is a short description of the content of the source tree.
 
@@ -35,22 +35,15 @@ Here is a short description of the content of the source tree.
 	It contains also codec objects to compress audio and video streams.
   The mediastream.h files contain routines to easyly setup audio streams.
 
-- mediastreamer/ is deprecated.
-
-- media_api/ is going to be an easy to use library to handle audio and video session. It uses 
-	the mediastreamer at the backend to do the processing. It is going to be the only interface
-	between the core application and the mediastreamer. At the moment this library is still in
-	early stages of development and is unused by the core application.
-
 - coreapi/ is the central point of linphone, which handles relationship between sip signalisation and media
   streaming. It contains an easy to use api to create a sip phone.
 
-- gtk/	is the directory that contains the gui frontend of linphone. It uses all libraries descibed above.
+- gtk-glade/	is the directory that contains the gui frontend of linphone. It uses all libraries descibed above.
 
 - console/
 	* linphonec.c is the main file for the console version of linphone.
-	* sipomatic.c / sipomatic.h contains the code for sipomatic, the test program that auto-answer to linphone calls. If you want to understand
-		how linphone runs, this is a good start example.
+	* sipomatic.c / sipomatic.h contains the code for sipomatic, the test program that auto-answer to linphone calls.
+	* shell.c (program name: linphonecsh) is a small utilities to send interactive commands to a running linphonec daemon.
 		
 - share/ contains translation, documentation, rings and hello sound files.
 
