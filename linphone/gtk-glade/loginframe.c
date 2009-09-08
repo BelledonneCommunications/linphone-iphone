@@ -22,20 +22,34 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 void linphone_gtk_show_login_frame(LinphoneProxyConfig *cfg){
 	GtkWidget *mw=linphone_gtk_get_main_window();
 	GtkWidget *label=linphone_gtk_get_widget(mw,"login_label");
+	LinphoneAuthInfo *ai;
 	gchar *str;
-	gtk_widget_hide(linphone_gtk_get_widget(mw,"idle_view"));
+	osip_from_t *from;
+
+	gtk_widget_hide(linphone_gtk_get_widget(mw,"idle_frame"));
 	gtk_widget_show(linphone_gtk_get_widget(mw,"login_frame"));
 	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"main_menu"),FALSE);
 	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"modes"),FALSE);
 	str=g_strdup_printf(_("Please enter login information for %s"),linphone_proxy_config_get_domain(cfg));
 	gtk_label_set_text(GTK_LABEL(label),str);
+	g_object_set_data(G_OBJECT(mw),"login_proxy_config",cfg);
 	g_free(str);
+
+	osip_from_init(&from);
+	osip_from_parse(from,linphone_proxy_config_get_identity(cfg));
 	
+	ai=linphone_core_find_auth_info(linphone_gtk_get_core(),linphone_proxy_config_get_domain(cfg),from->url->username);
+	/*display the last entered username*/
+	gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(mw,"login_username")),
+		from->url->username);
+	gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(mw,"login_password")),
+		ai!=NULL ? ai->passwd : "");
+	osip_from_free(from);
 }
 
 void linphone_gtk_exit_login_frame(void){
 	GtkWidget *mw=linphone_gtk_get_main_window();
-	gtk_widget_show(linphone_gtk_get_widget(mw,"idle_view"));
+	gtk_widget_show(linphone_gtk_get_widget(mw,"idle_frame"));
 	gtk_widget_hide(linphone_gtk_get_widget(mw,"login_frame"));
 	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"main_menu"),TRUE);
 	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"modes"),TRUE);
@@ -50,8 +64,12 @@ void linphone_gtk_login_frame_connect_clicked(GtkWidget *button){
 	GtkWidget *mw=gtk_widget_get_toplevel(button);
 	const char *username;
 	const char *password;
+	char *identity;
 	int netkind_id;
 	LinphoneCore *lc=linphone_gtk_get_core();
+	LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)g_object_get_data(G_OBJECT(mw),"login_proxy_config");
+	SipSetupContext *ssctx=linphone_proxy_config_get_sip_setup_context(cfg);
+	osip_from_t *from;
 
 	username=gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(mw,"login_username")));
 	password=gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(mw,"login_password")));
@@ -64,5 +82,14 @@ void linphone_gtk_login_frame_connect_clicked(GtkWidget *button){
 		/*infinite*/
 		linphone_core_set_upload_bandwidth(lc,0);
 		linphone_core_set_download_bandwidth(lc,0);
+	}
+	osip_from_init(&from);
+	osip_from_parse(from,linphone_proxy_config_get_identity(cfg));
+	osip_free(from->url->username);
+	from->url->username=osip_strdup(username);
+	osip_from_to_str(from,&identity);
+	osip_from_free(from);
+	if (sip_setup_context_login_account(ssctx,identity,password)==0){
+		linphone_gtk_exit_login_frame();
 	}
 }

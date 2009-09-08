@@ -319,6 +319,7 @@ int linphone_proxy_config_done(LinphoneProxyConfig *obj);
 void linphone_proxy_config_enable_publish(LinphoneProxyConfig *obj, bool_t val);
 bool_t linphone_proxy_config_is_registered(const LinphoneProxyConfig *obj);
 const char *linphone_proxy_config_get_domain(const LinphoneProxyConfig *cfg);
+
 #define linphone_proxy_config_get_route(obj)  ((obj)->reg_route)
 #define linphone_proxy_config_get_identity(obj)	((obj)->reg_identity)
 #define linphone_proxy_config_publish_enabled(obj) ((obj)->publish)

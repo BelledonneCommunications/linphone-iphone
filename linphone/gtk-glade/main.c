@@ -786,15 +786,14 @@ static void icon_popup_menu(GtkStatusIcon *status_icon, guint button, guint acti
 }
 
 void linphone_gtk_open_browser(const char *url){
-	gtk_show_uri(NULL,url,GDK_CURRENT_TIME,NULL);
-#if 0
+	/*in gtk 2.16, gtk_show_uri does not work...*/
+	/*gtk_show_uri(NULL,url,GDK_CURRENT_TIME,NULL);*/
 #ifdef WIN32
 	ShellExecute(0,"open",url,NULL,NULL,1);
 #else
 	char cl[255];
 	snprintf(cl,sizeof(cl),"/usr/bin/x-www-browser %s",url);
 	g_spawn_command_line_async(cl,NULL);
-#endif
 #endif
 }
 
@@ -977,6 +976,7 @@ void linphone_gtk_manage_login(void){
 
 static void linphone_gtk_init_main_window(){
 	linphone_gtk_configure_main_window();
+	linphone_gtk_manage_login();
 	load_uri_history();
 	linphone_gtk_load_identities();
 	linphone_gtk_set_my_presence(linphone_core_get_presence_info(linphone_gtk_get_core()));

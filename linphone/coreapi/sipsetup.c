@@ -55,7 +55,7 @@ SipSetup *sip_setup_lookup(const char *type_name){
 		SipSetup *ss=(SipSetup*)elem->data;
 		if ( strcasecmp(ss->name,type_name)==0){
 			if (!ss->initialized){
-				ss->init();
+				if (ss->init!=NULL) ss->init();
 				ss->initialized=TRUE;
 				if (ss->capabilities==0){
 					ms_error("%s SipSetup isn't capable of anything ?",ss->name);
