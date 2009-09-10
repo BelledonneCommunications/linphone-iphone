@@ -19,12 +19,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "linphone.h"
 
+enum {
+	NetworkKindAdsl,
+	NetworkKindOpticalFiber
+};
+
 void linphone_gtk_show_login_frame(LinphoneProxyConfig *cfg){
 	GtkWidget *mw=linphone_gtk_get_main_window();
 	GtkWidget *label=linphone_gtk_get_widget(mw,"login_label");
 	LinphoneAuthInfo *ai;
 	gchar *str;
 	osip_from_t *from;
+	LinphoneCore *lc=linphone_gtk_get_core();
+	int nettype;
 
 	gtk_widget_hide(linphone_gtk_get_widget(mw,"idle_frame"));
 	gtk_widget_show(linphone_gtk_get_widget(mw,"login_frame"));
@@ -38,12 +45,17 @@ void linphone_gtk_show_login_frame(LinphoneProxyConfig *cfg){
 	osip_from_init(&from);
 	osip_from_parse(from,linphone_proxy_config_get_identity(cfg));
 	
-	ai=linphone_core_find_auth_info(linphone_gtk_get_core(),linphone_proxy_config_get_domain(cfg),from->url->username);
+	ai=linphone_core_find_auth_info(lc,linphone_proxy_config_get_domain(cfg),from->url->username);
 	/*display the last entered username*/
 	gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(mw,"login_username")),
 		from->url->username);
 	gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(mw,"login_password")),
 		ai!=NULL ? ai->passwd : "");
+	if (linphone_core_get_download_bandwidth(lc)==0 &&
+		linphone_core_get_upload_bandwidth(lc)==0)
+		nettype=NetworkKindOpticalFiber;
+	else nettype=NetworkKindAdsl;
+	gtk_combo_box_set_active(GTK_COMBO_BOX(linphone_gtk_get_widget(mw,"login_internet_kind")),nettype);
 	osip_from_free(from);
 }
 
@@ -55,10 +67,13 @@ void linphone_gtk_exit_login_frame(void){
 	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"modes"),TRUE);
 }
 
-enum {
-	NetworkKindAdsl,
-	NetworkKindOpticalFiber
-};
+gboolean check_login_ok(LinphoneProxyConfig *cfg){
+	if (linphone_proxy_config_is_registered(cfg)){
+		linphone_gtk_exit_login_frame();
+		return FALSE;	
+	}
+	return TRUE;
+}
 
 void linphone_gtk_login_frame_connect_clicked(GtkWidget *button){
 	GtkWidget *mw=gtk_widget_get_toplevel(button);
@@ -73,6 +88,7 @@ void linphone_gtk_login_frame_connect_clicked(GtkWidget *button){
 
 	username=gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(mw,"login_username")));
 	password=gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(mw,"login_password")));
+
 	netkind_id=gtk_combo_box_get_active(GTK_COMBO_BOX(linphone_gtk_get_widget(mw,"login_internet_kind")));
 
 	if (netkind_id==NetworkKindAdsl){
@@ -90,6 +106,9 @@ void linphone_gtk_login_frame_connect_clicked(GtkWidget *button){
 	osip_from_to_str(from,&identity);
 	osip_from_free(from);
 	if (sip_setup_context_login_account(ssctx,identity,password)==0){
-		linphone_gtk_exit_login_frame();
+		guint t=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(mw),"login_tout"));
+		if (t!=0) g_source_remove(t);
+		t=g_timeout_add(50000,(GSourceFunc)check_login_ok,cfg);
+		g_object_set_data(G_OBJECT(mw),"login_tout",GINT_TO_POINTER(t));
 	}
 }

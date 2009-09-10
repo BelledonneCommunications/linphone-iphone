@@ -33,7 +33,7 @@ static void sip_login_init_instance(SipSetupContext *ctx){
 static int sip_login_do_login(SipSetupContext * ctx, const char *uri, const char *passwd){
 	LinphoneProxyConfig *cfg=sip_setup_context_get_proxy_config(ctx);
 	LinphoneCore *lc=linphone_proxy_config_get_core(cfg);
-	LinphoneAuthInfo *auth=linphone_auth_info_new(ctx->username,NULL,passwd,NULL,NULL);
+	LinphoneAuthInfo *auth=linphone_auth_info_new(ctx->username,NULL,passwd,NULL,ctx->domain);
 	linphone_proxy_config_set_identity(cfg,uri);
 	linphone_core_add_auth_info(lc,auth);
 	linphone_proxy_config_enable_register(cfg,TRUE);
