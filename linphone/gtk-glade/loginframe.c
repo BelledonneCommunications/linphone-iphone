@@ -112,4 +112,6 @@ void linphone_gtk_login_frame_connect_clicked(GtkWidget *button){
 		t=g_timeout_add(50,(GSourceFunc)check_login_ok,cfg);
 		g_object_set_data(G_OBJECT(mw),"login_tout",GINT_TO_POINTER(t));
 	}
+	/*we need to refresh the identities since the proxy config may have changed.*/
+	linphone_gtk_load_identities();
 }

@@ -146,40 +146,44 @@ static int realm_match(const char *realm1, const char *realm2){
 	return FALSE;
 }
 
-static int auth_info_compare(const void *pinfo,const void *pref){
-	LinphoneAuthInfo *info=(LinphoneAuthInfo*)pinfo;
-	LinphoneAuthInfo *ref=(LinphoneAuthInfo*)pref;
-	if (realm_match(info->realm,ref->realm) && key_match(info->username,ref->username)) return 0;
-	return -1;
-}
-
-static int auth_info_compare_only_realm(const void *pinfo,const void *pref){
-	LinphoneAuthInfo *info=(LinphoneAuthInfo*)pinfo;
-	LinphoneAuthInfo *ref=(LinphoneAuthInfo*)pref;
-	if (realm_match(info->realm,ref->realm) ) return 0;
-	return -1;
-}
-
 
 LinphoneAuthInfo *linphone_core_find_auth_info(LinphoneCore *lc, const char *realm, const char *username)
 {
-	LinphoneAuthInfo ref;
 	MSList *elem;
-	ref.realm=(char*)realm;
-	ref.username=(char*)username;
-	elem=ms_list_find_custom(lc->auth_info,auth_info_compare,(void*)&ref);
-	if (elem==NULL) {
-		elem=ms_list_find_custom(lc->auth_info,auth_info_compare_only_realm,(void*)&ref);
-		if (elem==NULL) return NULL;
+	LinphoneAuthInfo *ret=NULL,*candidate=NULL;
+	for (elem=lc->auth_info;elem!=NULL;elem=elem->next){
+		LinphoneAuthInfo *pinfo=(LinphoneAuthInfo*)elem->data;
+		if (realm==NULL){
+			/*return the authinfo for any realm provided that there is only one for that username*/
+			if (key_match(pinfo->username,username)){
+				if (ret!=NULL){
+					ms_warning("There are several auth info for username '%s'",username);
+					return NULL;
+				}
+				ret=pinfo;
+			}
+		}else{
+			/*return the exact authinfo, or an authinfo for which realm was not supplied yet*/
+			if (pinfo->realm!=NULL){
+				if (realm_match(pinfo->realm,realm) 
+					&& key_match(pinfo->username,username))
+					ret=pinfo;
+			}else{
+				if (key_match(pinfo->username,username))
+					candidate=pinfo;
+			}
+		}
 	}
-	return (LinphoneAuthInfo*)elem->data;
+	if (ret==NULL && candidate!=NULL)
+		ret=candidate;
+	return ret;
 }
 
 void linphone_core_add_auth_info(LinphoneCore *lc, LinphoneAuthInfo *info)
 {
-	int n;
 	MSList *elem;
 	char *userid;
+	LinphoneAuthInfo *ai;
 	if (info->userid==NULL || info->userid[0]=='\0') userid=info->username;
 	else userid=info->userid;
 	eXosip_lock();
@@ -189,14 +193,17 @@ void linphone_core_add_auth_info(LinphoneCore *lc, LinphoneAuthInfo *info)
 	/* if the user was prompted, re-allow automatic_action */
 	if (lc->automatic_action>0) lc->automatic_action--;
 	/* find if we are attempting to modify an existing auth info */
-	elem=ms_list_find_custom(lc->auth_info,auth_info_compare,info);
-	if (elem!=NULL){
+	ai=linphone_core_find_auth_info(lc,info->realm,info->username);
+	if (ai!=NULL){
+		elem=ms_list_find(lc->auth_info,ai);
+		if (elem==NULL){
+			ms_error("AuthInfo list corruption ?");
+			return;
+		}
 		linphone_auth_info_destroy((LinphoneAuthInfo*)elem->data);
 		elem->data=(void *)info;
-		n=ms_list_position(lc->auth_info,elem);
 	}else {
 		lc->auth_info=ms_list_append(lc->auth_info,(void *)info);
-		n=ms_list_size(lc->auth_info)-1;
 	}
 }
 

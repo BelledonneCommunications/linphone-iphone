@@ -401,10 +401,15 @@ static gboolean linphone_gtk_iterate(LinphoneCore *lc){
 		}
 	}
 	if (addr_to_call!=NULL){
-		GtkWidget *uri_bar=linphone_gtk_get_widget(linphone_gtk_get_main_window(),"uribar");
-		gtk_entry_set_text(GTK_ENTRY(uri_bar),addr_to_call);
-		addr_to_call=NULL;
-		linphone_gtk_start_call(uri_bar);	
+		/*make sure we are not showing the login screen*/
+		GtkWidget *mw=linphone_gtk_get_main_window();
+		GtkWidget *login_frame=linphone_gtk_get_widget(mw,"login_frame");
+		if (!GTK_WIDGET_VISIBLE(login_frame)){
+			GtkWidget *uri_bar=linphone_gtk_get_widget(mw,"uribar");
+			gtk_entry_set_text(GTK_ENTRY(uri_bar),addr_to_call);
+			addr_to_call=NULL;
+			linphone_gtk_start_call(uri_bar);
+		}
 	}
 	in_iterate=FALSE;
 	return TRUE;
@@ -558,7 +563,7 @@ void linphone_gtk_accept_call(GtkWidget *button){
 	g_object_set_data(G_OBJECT(linphone_gtk_get_main_window()),"incoming_call",NULL);
 	gtk_widget_destroy(gtk_widget_get_toplevel(button));
 	linphone_gtk_call_started(linphone_gtk_get_main_window());
-	linphone_gtk_in_call_view_set_in_call(linphone_core_get_remote_uri(lc));
+	linphone_gtk_in_call_view_set_in_call();
 	linphone_gtk_show_in_call_view();
 }
 
@@ -767,7 +772,7 @@ static void linphone_gtk_general_state(LinphoneCore *lc, LinphoneGeneralState *g
 	switch(gstate->new_state){
 		case GSTATE_CALL_OUT_CONNECTED:
 		case GSTATE_CALL_IN_CONNECTED:
-			linphone_gtk_in_call_view_set_in_call(linphone_core_get_remote_uri(lc));
+			linphone_gtk_in_call_view_set_in_call();
 		break;
 		case GSTATE_CALL_ERROR:
 			linphone_gtk_call_terminated(gstate->message);

@@ -958,6 +958,7 @@ Online users</property>
                               <widget class="GtkLabel" id="in_call_uri">
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">label</property>
+                                <property name="justify">center</property>
                               </widget>
                             </child>
                             <child>

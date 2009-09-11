@@ -1513,8 +1513,8 @@ void linphone_core_init_media_streams(LinphoneCore *lc){
 			audio_stream_enable_echo_limiter(lc->audiostream,ELControlMic);
 		else if (strcasecmp(type,"speaker")==0)
 			audio_stream_enable_echo_limiter(lc->audiostream,ELControlSpeaker);
-		audio_stream_enable_gain_control(lc->audiostream,TRUE);
 	}
+	audio_stream_enable_gain_control(lc->audiostream,TRUE);
 	if (linphone_core_echo_cancelation_enabled(lc)){
 		int len,delay,framesize;
 		len=lp_config_get_int(lc->config,"sound","ec_tail_len",0);
@@ -1576,9 +1576,6 @@ static void post_configure_audio_streams(LinphoneCore *lc){
 			f=st->volrecv;
 			if (speed==-1) speed=0.02;
 			if (force==-1) force=5;
-		}else {
-			ms_fatal("Should not happen");
-			return;
 		}
 		if (speed!=-1)
 			ms_filter_call_method(f,MS_VOLUME_SET_EA_SPEED,&speed);
