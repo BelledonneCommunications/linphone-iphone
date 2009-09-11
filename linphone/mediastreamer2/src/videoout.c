@@ -226,9 +226,11 @@ static void sdl_display_uninit(MSDisplay *obj){
 		SDL_FreeSurface(sdl_screen);
 		sdl_screen=NULL;
 	}
+#ifdef __linux
 	/*purge the event queue before leaving*/
 	for(i=0;SDL_PollEvent(&event) && i<100;++i){
 	}
+#endif
 	sdl_show_window(FALSE);
 }
 
