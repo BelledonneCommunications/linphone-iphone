@@ -46,9 +46,10 @@ void linphone_gtk_show_login_frame(LinphoneProxyConfig *cfg){
 	osip_from_parse(from,linphone_proxy_config_get_identity(cfg));
 	
 	ai=linphone_core_find_auth_info(lc,linphone_proxy_config_get_domain(cfg),from->url->username);
-	/*display the last entered username*/
-	gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(mw,"login_username")),
-		from->url->username);
+	/*display the last entered username, if not '?????'*/
+	if (from->url->username[0]!='?')
+		gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(mw,"login_username")),
+			from->url->username);
 	gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(mw,"login_password")),
 		ai!=NULL ? ai->passwd : "");
 	if (linphone_core_get_download_bandwidth(lc)==0 &&
