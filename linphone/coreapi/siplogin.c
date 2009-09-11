@@ -37,6 +37,8 @@ static int sip_login_do_login(SipSetupContext * ctx, const char *uri, const char
 	linphone_proxy_config_set_identity(cfg,uri);
 	linphone_core_add_auth_info(lc,auth);
 	linphone_proxy_config_enable_register(cfg,TRUE);
+	linphone_proxy_config_done(cfg);
+	ms_message("SipLogin: done");
 	return 0;
 }
 

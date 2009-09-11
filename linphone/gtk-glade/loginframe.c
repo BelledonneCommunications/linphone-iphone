@@ -109,7 +109,7 @@ void linphone_gtk_login_frame_connect_clicked(GtkWidget *button){
 	if (sip_setup_context_login_account(ssctx,identity,password)==0){
 		guint t=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(mw),"login_tout"));
 		if (t!=0) g_source_remove(t);
-		t=g_timeout_add(50000,(GSourceFunc)check_login_ok,cfg);
+		t=g_timeout_add(50,(GSourceFunc)check_login_ok,cfg);
 		g_object_set_data(G_OBJECT(mw),"login_tout",GINT_TO_POINTER(t));
 	}
 }

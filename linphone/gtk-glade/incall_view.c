@@ -110,7 +110,7 @@ void linphone_gtk_in_call_view_terminate(const char *error_msg){
 	g_timeout_add_seconds(2,(GSourceFunc)in_call_view_terminated,NULL);
 }
 
-void linphone_gtk_incall_mute_toggled(GtkToggleButton *button){
+void linphone_gtk_mute_toggled(GtkToggleButton *button){
 	linphone_core_mute_mic(linphone_gtk_get_core(),
 		gtk_toggle_button_get_active(button));
 }
