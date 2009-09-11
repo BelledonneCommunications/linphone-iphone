@@ -979,14 +979,39 @@ Online users</property>
                             <property name="visible">True</property>
                             <property name="label_xalign">0</property>
                             <child>
-                              <widget class="GtkLabel" id="in_call_duration">
+                              <widget class="GtkVBox" id="vbox4">
                                 <property name="visible">True</property>
-                                <property name="label" translatable="yes">Duration</property>
-                                <property name="justify">center</property>
+                                <property name="orientation">vertical</property>
+                                <child>
+                                  <widget class="GtkLabel" id="in_call_duration">
+                                    <property name="visible">True</property>
+                                    <property name="label" translatable="yes">Duration</property>
+                                    <property name="justify">center</property>
+                                  </widget>
+                                  <packing>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="GtkCheckButton" id="incall_mute">
+                                    <property name="label" translatable="yes">Mute</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">False</property>
+                                    <property name="draw_indicator">True</property>
+                                    <signal name="toggled" handler="linphone_gtk_mute_toggled"/>
+                                  </widget>
+                                  <packing>
+                                    <property name="position">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <placeholder/>
+                                </child>
                               </widget>
                             </child>
                             <child>
-                              <widget class="GtkLabel" id="duration_frame">
+                              <widget class="GtkLabel" id="call_label">
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">Duration:</property>
                                 <property name="use_markup">True</property>
