@@ -769,7 +769,7 @@ int linphone_core_get_local_ip_for(const char *dest, char *result){
 	}
 	sock=socket(res->ai_family,SOCK_DGRAM,0);
 	tmp=1;
-	err=setsockopt(sock,SOL_SOCKET,SO_REUSEADDR,&tmp,sizeof(int));
+	err=setsockopt(sock,SOL_SOCKET,SO_REUSEADDR,(SOCKET_OPTION_VALUE)&tmp,sizeof(int));
 	if (err<0){
 		ms_warning("Error in setsockopt: %s",strerror(errno));
 	}

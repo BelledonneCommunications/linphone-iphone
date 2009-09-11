@@ -1509,15 +1509,11 @@ void linphone_core_init_media_streams(LinphoneCore *lc){
 	lc->audiostream=audio_stream_new(linphone_core_get_audio_port(lc),linphone_core_ipv6_enabled(lc));
 	if (linphone_core_echo_limiter_enabled(lc)){
 		const char *type=lp_config_get_string(lc->config,"sound","el_type","mic");
-		float gain=lp_config_get_float(lc->config,"sound","mic_gain",-1);
 		if (strcasecmp(type,"mic")==0)
 			audio_stream_enable_echo_limiter(lc->audiostream,ELControlMic);
 		else if (strcasecmp(type,"speaker")==0)
 			audio_stream_enable_echo_limiter(lc->audiostream,ELControlSpeaker);
-		if (gain!=-1){
-			audio_stream_enable_gain_control(lc->audiostream,TRUE);
-		}
-		
+		audio_stream_enable_gain_control(lc->audiostream,TRUE);
 	}
 	if (linphone_core_echo_cancelation_enabled(lc)){
 		int len,delay,framesize;
@@ -2072,6 +2068,13 @@ void linphone_core_enable_echo_limiter(LinphoneCore *lc, bool_t val){
 
 bool_t linphone_core_echo_limiter_enabled(const LinphoneCore *lc){
 	return lc->sound_conf.ea;
+}
+
+void linphone_core_mute_mic(LinphoneCore *lc, bool_t val){
+	if (lc->audiostream!=NULL){
+		 audio_stream_set_mic_gain(lc->audiostream,
+			(val==TRUE) ? 0 : 1.0);
+	}
 }
 
 void linphone_core_enable_agc(LinphoneCore *lc, bool_t val){

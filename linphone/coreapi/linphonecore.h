@@ -726,6 +726,8 @@ bool_t linphone_core_echo_limiter_enabled(const LinphoneCore *lc);
 void linphone_core_enable_agc(LinphoneCore *lc, bool_t val);
 bool_t linphone_core_agc_enabled(const LinphoneCore *lc);
 
+void linphone_core_mute_mic(LinphoneCore *lc, bool_t muted);
+
 void linphone_core_set_presence_info(LinphoneCore *lc,int minutes_away,const char *contact,LinphoneOnlineStatus os);
 
 LinphoneOnlineStatus linphone_core_get_presence_info(const LinphoneCore *lc);
