@@ -72,8 +72,10 @@ void linphone_gtk_in_call_view_set_in_call(){
 	
 	if (from->displayname!=NULL && strlen(from->displayname)>0)
 		displayname=osip_strdup(from->displayname);
-	if (from->displayname!=NULL) osip_free(from->displayname)
-	from->displayname=NULL;
+	if (from->displayname!=NULL){
+		osip_free(from->displayname);
+		from->displayname=NULL;
+	}
 	osip_from_to_str(from,&id);
 	osip_from_free(from);
 	if (displayname!=NULL)
