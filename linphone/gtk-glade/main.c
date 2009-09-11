@@ -76,6 +76,8 @@ static LinphoneCoreVTable vtable={
 static gboolean verbose=0;
 static gboolean auto_answer = 0;
 static gchar * addr_to_call = NULL;
+static gboolean iconified=FALSE;
+
 static GOptionEntry linphone_options[]={
 	{
 		.long_name="verbose",
@@ -83,6 +85,13 @@ static GOptionEntry linphone_options[]={
 		.arg=G_OPTION_ARG_NONE,
 		.arg_data= (gpointer)&verbose,
 		.description=N_("log to stdout some debug information while running.")
+	},
+	{
+		.long_name="iconified",
+		.short_name= '\0',
+		.arg=G_OPTION_ARG_NONE,
+		.arg_data= (gpointer)&iconified,
+		.description=N_("Start only in the system tray, do not show the main interface.")
 	},
 	{				/* zsd addition */
 	    .long_name = "call",
@@ -1129,7 +1138,8 @@ int main(int argc, char *argv[]){
 	gtk_timeout_add(30,(GtkFunction)linphone_gtk_check_logs,(gpointer)NULL);
 	linphone_gtk_init_main_window();
 	linphone_gtk_init_status_icon();
-	linphone_gtk_show_main_window();
+	if (!iconified)
+		linphone_gtk_show_main_window();
 	linphone_gtk_check_for_new_version();
 
 	gtk_main();
