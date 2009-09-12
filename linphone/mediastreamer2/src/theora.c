@@ -352,6 +352,7 @@ static void enc_process(MSFilter *f){
 			}
 		}
 		freemsg(im);
+		s->nframes++;
 	}
 }
 
