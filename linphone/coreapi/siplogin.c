@@ -37,9 +37,10 @@ static void guess_display_name(osip_from_t *from){
 	bool_t begin=TRUE;
 	bool_t surname=0;
 	for(it=from->url->username;*it!='\0';++it){
-		if (begin)
+		if (begin){
 			*wptr=toupper(*it);
-		else if (*it=='.'){
+			begin=FALSE;
+		}else if (*it=='.'){
 			if (surname) break;
 			*wptr=' ';
 			begin=TRUE;
