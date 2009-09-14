@@ -167,6 +167,12 @@ AC_DEFUN([MS_CHECK_VIDEO],[
 		if test "$mingw_found" = "yes" ; then
 			VIDEO_LIBS="$VIDEO_LIBS -lvfw32"
 		fi
+
+		case $target_os in
+  			*darwin*)
+				LIBS="$LIBS -framework QuickTime"
+			;;
+		esac
 	fi
 	
 	AC_SUBST(VIDEO_CFLAGS)
