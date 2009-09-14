@@ -625,7 +625,7 @@ msgstr "Prego inserire la password di dominio"
 
 #: ../gtk-glade/call_logs.glade.h:1
 msgid "Call history"
-msgstr "Storico chiamate"
+msgstr "Cronologia"
 
 #: ../gtk-glade/sip_account.glade.h:1
 msgid "Configure a SIP account"
@@ -1044,7 +1044,7 @@ msgstr "Connessione"
 
 #: ../coreapi/linphonecore.c:1793
 msgid "Call ended"
-msgstr "Chimata terminata"
+msgstr "Chiamata terminata"
 
 #: ../coreapi/linphonecore.c:2155
 msgid "No nat/firewall address supplied !"

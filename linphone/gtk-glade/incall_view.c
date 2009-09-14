@@ -28,6 +28,34 @@ void linphone_gtk_show_idle_view(void){
 	gtk_widget_hide(in_call_frame);
 }
 
+void display_peer_name_in_label(GtkWidget *label, const char *uri){
+	osip_from_t *from;
+	char *displayname=NULL,*id=NULL;
+	char *uri_label;
+
+	osip_from_init(&from);
+	if (osip_from_parse(from,uri)==0){
+		
+		if (from->displayname!=NULL && strlen(from->displayname)>0)
+			displayname=osip_strdup(from->displayname);
+		if (from->displayname!=NULL){
+			osip_free(from->displayname);
+			from->displayname=NULL;
+		}
+		osip_from_to_str(from,&id);
+	}else id=osip_strdup(uri);
+	osip_from_free(from);
+	if (displayname!=NULL)
+		uri_label=g_markup_printf_escaped("<span size=\"large\">%s</span>\n<i>%s</i>", 
+			displayname,id);
+	else
+		uri_label=g_markup_printf_escaped("<span size=\"large\"><i>%s</i></span>\n",id);
+	gtk_label_set_markup(GTK_LABEL(label),uri_label);
+	if (displayname!=NULL) osip_free(displayname);
+	osip_free(id);
+	g_free(uri_label);
+}
+
 void linphone_gtk_in_call_view_set_calling(const char *uri){
 	GtkWidget *main_window=linphone_gtk_get_main_window();
 	GtkWidget *status=linphone_gtk_get_widget(main_window,"in_call_status");
@@ -36,13 +64,11 @@ void linphone_gtk_in_call_view_set_calling(const char *uri){
 	GtkWidget *animation=linphone_gtk_get_widget(main_window,"in_call_animation");
 	GdkPixbufAnimation *pbuf=create_pixbuf_animation("calling_anim.gif");
 	GtkWidget *terminate_button=linphone_gtk_get_widget(main_window,"in_call_terminate");
-	char *uri_label;
 
 	gtk_widget_set_sensitive(terminate_button,TRUE);
 	gtk_label_set_markup(GTK_LABEL(status),_("<b>Calling...</b>"));
-	uri_label=g_markup_printf_escaped("<span size=\"large\"><i>%s</i></span>", uri);
-	gtk_label_set_markup(GTK_LABEL(callee),uri_label);
-	g_free(uri_label);
+	display_peer_name_in_label(callee,uri);
+	
 	gtk_label_set_text(GTK_LABEL(duration),"00:00:00");
 	if (pbuf!=NULL){
 		gtk_image_set_from_animation(GTK_IMAGE(animation),pbuf);
@@ -56,35 +82,16 @@ void linphone_gtk_in_call_view_set_in_call(){
 	GtkWidget *status=linphone_gtk_get_widget(main_window,"in_call_status");
 	GtkWidget *callee=linphone_gtk_get_widget(main_window,"in_call_uri");
 	GtkWidget *duration=linphone_gtk_get_widget(main_window,"in_call_duration");
-	char *uri_label;
 	GtkWidget *animation=linphone_gtk_get_widget(main_window,"in_call_animation");
 	GdkPixbufAnimation *pbuf=create_pixbuf_animation("incall_anim.gif");
 	GtkWidget *terminate_button=linphone_gtk_get_widget(main_window,"in_call_terminate");
 	const char *uri=linphone_core_get_remote_uri(lc);
-	osip_from_t *from;
-	char *displayname=NULL,*id=NULL;
+
+	display_peer_name_in_label(callee,uri);
 
 	gtk_widget_set_sensitive(terminate_button,TRUE);
 	gtk_label_set_markup(GTK_LABEL(status),_("<b>In call with</b>"));
 
-	osip_from_init(&from);
-	osip_from_parse(from,uri);
-	
-	if (from->displayname!=NULL && strlen(from->displayname)>0)
-		displayname=osip_strdup(from->displayname);
-	if (from->displayname!=NULL){
-		osip_free(from->displayname);
-		from->displayname=NULL;
-	}
-	osip_from_to_str(from,&id);
-	osip_from_free(from);
-	if (displayname!=NULL)
-		uri_label=g_markup_printf_escaped("<span size=\"large\">%s</span>\n<i>%s</i>", 
-			displayname,id);
-	else
-		uri_label=g_markup_printf_escaped("<span size=\"large\"<i>%s</i></span>\n",id);
-	gtk_label_set_markup(GTK_LABEL(callee),uri_label);
-	g_free(uri_label);
 	gtk_label_set_text(GTK_LABEL(duration),_("00::00::00"));
 	if (pbuf!=NULL){
 		gtk_image_set_from_animation(GTK_IMAGE(animation),pbuf);

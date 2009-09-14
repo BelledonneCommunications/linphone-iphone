@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 #include "linphonecore.h"
-
+#include <ctype.h>
 
 static void sip_login_init_instance(SipSetupContext *ctx){
 	LinphoneProxyConfig *cfg=sip_setup_context_get_proxy_config(ctx);
@@ -30,14 +30,47 @@ static void sip_login_init_instance(SipSetupContext *ctx){
 	linphone_proxy_config_enable_register(cfg,FALSE);
 }
 
+static void guess_display_name(osip_from_t *from){
+	char *dn=(char*)osip_malloc(strlen(from->url->username)+3);
+	char *it=from->url->username;
+	char *wptr=dn;
+	bool_t begin=TRUE;
+	bool_t surname=0;
+	for(it=from->url->username;*it!='\0';++it){
+		if (begin)
+			*wptr=toupper(*it);
+		else if (*it=='.'){
+			if (surname) break;
+			*wptr=' ';
+			begin=TRUE;
+			surname=TRUE;
+		}else *wptr=*it;
+		wptr++;
+	}
+	if (from->displayname!=NULL) osip_free(from->displayname);
+	from->displayname=dn;
+}
+
 static int sip_login_do_login(SipSetupContext * ctx, const char *uri, const char *passwd){
 	LinphoneProxyConfig *cfg=sip_setup_context_get_proxy_config(ctx);
 	LinphoneCore *lc=linphone_proxy_config_get_core(cfg);
-	LinphoneAuthInfo *auth=linphone_auth_info_new(ctx->username,NULL,passwd,NULL,NULL);
-	linphone_proxy_config_set_identity(cfg,uri);
+	LinphoneAuthInfo *auth;
+	osip_from_t *parsed_uri;
+	char *tmp;
+
+	osip_from_init(&parsed_uri);
+	osip_from_parse(parsed_uri,uri);
+	if (parsed_uri->displayname==NULL || strlen(parsed_uri->displayname)==0){
+		guess_display_name(parsed_uri);
+	}
+	osip_from_to_str(parsed_uri,&tmp);
+	linphone_proxy_config_set_identity(cfg,tmp);
+	auth=linphone_auth_info_new(parsed_uri->url->username,NULL,passwd,NULL,NULL);
 	linphone_core_add_auth_info(lc,auth);
 	linphone_proxy_config_enable_register(cfg,TRUE);
 	linphone_proxy_config_done(cfg);
+	osip_free(tmp);
+	osip_from_free(parsed_uri);
 	ms_message("SipLogin: done");
 	return 0;
 }
