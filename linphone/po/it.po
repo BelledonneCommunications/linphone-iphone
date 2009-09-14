@@ -494,7 +494,7 @@ msgstr "Vista principale"
 
 #: ../gtk-glade/main.glade.h:38
 msgid "Mute"
-msgstr ""
+msgstr "Chiudi microfono"
 
 #: ../gtk-glade/main.glade.h:39
 msgid "My current identity:"
