@@ -77,6 +77,9 @@ static gboolean verbose=0;
 static gboolean auto_answer = 0;
 static gchar * addr_to_call = NULL;
 static gboolean iconified=FALSE;
+#ifdef WIN32
+static gchar *workingdir=NULL;
+#endif
 
 static GOptionEntry linphone_options[]={
 	{
@@ -93,20 +96,29 @@ static GOptionEntry linphone_options[]={
 		.arg_data= (gpointer)&iconified,
 		.description=N_("Start only in the system tray, do not show the main interface.")
 	},
-	{				/* zsd addition */
+	{
 	    .long_name = "call",
 	    .short_name = 'c',
 	    .arg = G_OPTION_ARG_STRING,
 	    .arg_data = &addr_to_call,
 	    .description = N_("address to call right now")
 	},
-	{				/* zsd addition */
+	{
 	    .long_name = "auto-answer",
 	    .short_name = 'a',
 	    .arg = G_OPTION_ARG_NONE,
 	    .arg_data = (gpointer) & auto_answer,
 	    .description = N_("if set automatically answer incoming calls")
 	},
+#ifdef WIN32
+	{				/* zsd addition */
+	    .long_name = "workdir",
+	    .short_name = '\0',
+	    .arg = G_OPTION_ARG_STRING,
+	    .arg_data = (gpointer) & workingdir,
+	    .description = N_("Specifiy a working directory (should be the base of the installation, eg: c:\\Program Files\\Linphone)")
+	},
+#endif
 	{0}
 };
 
@@ -1063,7 +1075,6 @@ static void linphone_gtk_refer_received(LinphoneCore *lc, const char *refer_to){
 	linphone_gtk_start_call(linphone_gtk_get_main_window());
 }
 
-
 int main(int argc, char *argv[]){
 #ifdef ENABLE_NLS
 	void *p;
@@ -1077,6 +1088,9 @@ int main(int argc, char *argv[]){
 	config_file=linphone_gtk_get_config_file();
 
 #ifdef WIN32
+	if (workingdir!=NULL)
+		_chdir(workingdir);
+
 	/*workaround for windows: sometimes LANG is defined to an integer value, not understood by gtk */
 	if ((lang=getenv("LANG"))!=NULL){
 		if (atoi(lang)!=0){
