@@ -342,7 +342,7 @@ msgstr "<b>Chiamata terminata.</b>"
 #: ../gtk-glade/loginframe.c:40
 #, c-format
 msgid "Please enter login information for %s"
-msgstr "Prego inserire le proprie credenziali di accesso para %s"
+msgstr "Prego inserire le proprie credenziali di accesso per %s"
 
 #: ../gtk-glade/main.glade.h:1
 msgid "#"
