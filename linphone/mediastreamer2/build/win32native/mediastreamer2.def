@@ -67,6 +67,7 @@ EXPORTS
 
 	ms_display_new
 	ms_display_set_window_id
+	ms_display_desc_set_default
 	ms_display_destroy
 
 	video_preview_stop
