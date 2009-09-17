@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 #include "mediastreamer2/msvolume.h"
+#include "mediastreamer2/msticker.h"
 #include <math.h>
 
 #ifdef HAVE_SPEEXDSP
@@ -44,6 +45,9 @@ typedef struct Volume{
 	float thres;
 	float force;
 	float target_gain; /*the target gain choosed by echo limiter and noise gate*/
+	float last_peer_en;
+	int sustain_time; /* time in ms for which echo limiter remains active after resuming from speech to silence.*/
+	uint64_t sustain_start;
 	MSFilter *peer;
 #ifdef HAVE_SPEEXDSP
 	SpeexPreprocessState *speex_pp;
@@ -69,6 +73,9 @@ static void volume_init(MSFilter *f){
 	v->thres=noise_thres;
 	v->force=en_weight;
 	v->peer=NULL;
+	v->last_peer_en=0;
+	v->sustain_time=200;
+	v->sustain_start=0;
 	v->agc_enabled=FALSE;
 	v->buffer=ms_bufferizer_new();
 	v->sample_rate=8000;
@@ -126,7 +133,15 @@ static inline float compute_gain(float static_gain, float energy, float weight){
 	return ret;
 }
 
-static void volume_echo_avoider_process(Volume *v){
+/*
+The principle of this algorithm is that we apply a gain to the input signal which is opposite to the 
+energy measured by the peer MSVolume.
+For example if some noise is played by the speaker, then the signal captured by the microphone will be lowered.
+The gain changes smoothly when the peer energy is decreasing, but is immediately changed when the peer energy is 
+increasing.
+*/
+
+static void volume_echo_avoider_process(Volume *v, uint64_t curtime){
 	float peer_e;
 	float gain;
 	ms_filter_call_method(v->peer,MS_VOLUME_GET_LINEAR,&peer_e);
@@ -135,9 +150,12 @@ static void volume_echo_avoider_process(Volume *v){
 		if (peer_e>v->thres){
 			/*lower our output*/
 			gain=compute_gain(v->static_gain,peer_e,v->force);
+			if (peer_e>v->last_peer_en)
+				v->gain=gain;
 		}else {
-			gain=v->static_gain;
+			v->sustain_start=curtime;
 			v->ea_active=FALSE;
+			gain=v->gain;
 		}
 	}else{
 		int peer_active=FALSE;
@@ -148,9 +166,15 @@ static void volume_echo_avoider_process(Volume *v){
 			v->ea_active=TRUE;
 			v->gain=gain;
 		}else {
-			gain=v->static_gain;
+			if (curtime!=0 && (curtime-v->sustain_start)<v->sustain_time){
+				gain=v->gain;
+			}else{/*restore normal gain*/
+				gain=v->static_gain;
+				v->sustain_start=0;
+			}
 		}
 	}
+	v->last_peer_en=peer_e;
 	v->target_gain=gain;
 	ms_message("ea_active=%i, peer_e=%f gain=%f gain_k=%f force=%f",v->ea_active,peer_e,v->gain, v->gain_k,v->force);
 }
@@ -222,6 +246,12 @@ static int volume_set_ea_force(MSFilter *f, void*arg){
 	Volume *v=(Volume*)f->data;
 	float val=*(float*)arg;
 	v->force=val;
+	return 0;
+}
+
+static int volume_set_ea_sustain(MSFilter *f, void *arg){
+	Volume *v=(Volume*)f->data;
+	v->sustain_time=*(int*)arg;
 	return 0;
 }
 
@@ -308,7 +338,7 @@ static void volume_process(MSFilter *f){
 			volume_agc_process(v,om);
 	
 			if (v->peer){
-				volume_echo_avoider_process(v);	
+				volume_echo_avoider_process(v,f->ticker->time);
 			}else v->target_gain=v->static_gain;
 
 			if (v->noise_gate_enabled)
@@ -321,7 +351,7 @@ static void volume_process(MSFilter *f){
 		while((m=ms_queue_get(f->inputs[0]))!=NULL){
 			en=update_energy((int16_t*)m->b_rptr,(m->b_wptr-m->b_rptr)/2,en);
 			if (v->peer){
-				volume_echo_avoider_process(v);	
+				volume_echo_avoider_process(v,f->ticker->time);	
 			}else v->target_gain=v->static_gain;
 
 			if (v->noise_gate_enabled)
@@ -342,6 +372,7 @@ static MSFilterMethod methods[]={
 	{	MS_VOLUME_SET_EA_THRESHOLD , 	volume_set_ea_threshold	},
 	{	MS_VOLUME_SET_EA_SPEED	,	volume_set_ea_speed	},
 	{	MS_VOLUME_SET_EA_FORCE	, 	volume_set_ea_force	},
+	{	MS_VOLUME_SET_EA_SUSTAIN,	volume_set_ea_sustain	},
 	{	MS_FILTER_SET_SAMPLE_RATE,	volume_set_sample_rate	},
 	{	MS_VOLUME_ENABLE_AGC	,	volume_set_agc		},
 	{	MS_VOLUME_ENABLE_NOISE_GATE,	volume_enable_noise_gate},

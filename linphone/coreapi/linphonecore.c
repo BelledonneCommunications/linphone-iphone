@@ -1565,6 +1565,7 @@ static void post_configure_audio_streams(LinphoneCore *lc){
 		float speed=lp_config_get_float(lc->config,"sound","el_speed",-1);
 		float thres=lp_config_get_float(lc->config,"sound","el_thres",-1);
 		float force=lp_config_get_float(lc->config,"sound","el_force",-1);
+		int sustain=lp_config_get_int(lc->config,"sound","el_sustain",-1);
 		float gain=lp_config_get_float(lc->config,"sound","mic_gain",-1);
 		MSFilter *f=NULL;
 		if (st->el_type==ELControlMic){
@@ -1583,6 +1584,8 @@ static void post_configure_audio_streams(LinphoneCore *lc){
 			ms_filter_call_method(f,MS_VOLUME_SET_EA_THRESHOLD,&thres);
 		if (force!=-1)
 			ms_filter_call_method(f,MS_VOLUME_SET_EA_FORCE,&force);
+		if (sustain!=-1)
+			ms_filter_call_method(f,MS_VOLUME_SET_EA_SUSTAIN,&sustain);
 		if (gain!=-1)
 			audio_stream_set_mic_gain(st,gain);
 	}
