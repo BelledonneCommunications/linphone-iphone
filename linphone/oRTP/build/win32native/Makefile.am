@@ -1,2 +1,2 @@
-EXTRA_DIST=oRTP.vcproj ortp.def ortp-dll.dev
+EXTRA_DIST=oRTP.vcproj ortp.def
 
