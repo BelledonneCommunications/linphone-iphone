@@ -736,8 +736,8 @@ void linphone_gtk_password_ok(GtkWidget *w){
 	g_object_weak_unref(G_OBJECT(window),(GWeakNotify)linphone_auth_info_destroy,info);
 	entry=linphone_gtk_get_widget(window,"password_entry");
 	linphone_auth_info_set_passwd(info,gtk_entry_get_text(GTK_ENTRY(entry)));
-	linphone_auth_info_set_username(info,
-		gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(window,"username_entry"))));
+	linphone_auth_info_set_userid(info,
+		gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(window,"userid_entry"))));
 	linphone_core_add_auth_info(linphone_gtk_get_core(),info);
 	gtk_widget_destroy(window);
 }
@@ -747,10 +747,11 @@ static void linphone_gtk_auth_info_requested(LinphoneCore *lc, const char *realm
 	GtkWidget *label=linphone_gtk_get_widget(w,"message");
 	LinphoneAuthInfo *info;
 	gchar *msg;
-	msg=g_strdup_printf(_("Please enter your password for domain %s:"),realm);
-	gtk_label_set_text(GTK_LABEL(label),msg);
+	msg=g_strdup_printf(_("Please enter your password for username <i>%s</i>\n at domain <i>%s</i>:"),
+		username,realm);
+	gtk_label_set_markup(GTK_LABEL(label),msg);
 	g_free(msg);
-	gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(w,"username_entry")),username);
+	gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(w,"userid_entry")),username);
 	info=linphone_auth_info_new(username, NULL, NULL, NULL,realm);
 	g_object_set_data(G_OBJECT(w),"auth_info",info);
 	g_object_weak_ref(G_OBJECT(w),(GWeakNotify)linphone_auth_info_destroy,info);

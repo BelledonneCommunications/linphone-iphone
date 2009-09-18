@@ -60,6 +60,14 @@ void linphone_auth_info_set_username(LinphoneAuthInfo *info, const char *usernam
 	if (username && strlen(username)>0) info->username=ms_strdup(username);
 }
 
+void linphone_auth_info_set_userid(LinphoneAuthInfo *info, const char *userid){
+	if (info->userid){
+		ms_free(info->userid);
+		info->userid=NULL;
+	}
+	if (userid && strlen(userid)>0) info->userid=ms_strdup(userid);
+}
+
 void linphone_auth_info_destroy(LinphoneAuthInfo *obj){
 	if (obj->username!=NULL) ms_free(obj->username);
 	if (obj->userid!=NULL) ms_free(obj->userid);

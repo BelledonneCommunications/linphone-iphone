@@ -1,13 +1,12 @@
 #!/bin/sh
 
-#AM_VERSION=1.10
-#1.9 was the recommended version
-if test -n "$AM_VERSION" ; then
+AM_VERSION=1.10
+if ! type aclocal-$AM_VERSION 1>/dev/null 2>&1; then
+	ACLOCAL=aclocal
+        AUTOMAKE=automake
+else
 	ACLOCAL=aclocal-${AM_VERSION}
 	AUTOMAKE=automake-${AM_VERSION}
-else
-	ACLOCAL=aclocal
-	AUTOMAKE=automake
 fi
 
 echo "Generating build scripts in this mediastreamer plugin"
@@ -16,5 +15,5 @@ libtoolize --copy --force
 $ACLOCAL
 $AUTOMAKE --force-missing --add-missing --copy
 autoconf
-rm -rf config.cache
+
 

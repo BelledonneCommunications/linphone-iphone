@@ -370,6 +370,7 @@ LinphoneAuthInfo *linphone_auth_info_new(const char *username, const char *useri
 		const char *passwd, const char *ha1,const char *realm);
 void linphone_auth_info_set_passwd(LinphoneAuthInfo *info, const char *passwd);
 void linphone_auth_info_set_username(LinphoneAuthInfo *info, const char *username);
+void linphone_auth_info_set_userid(LinphoneAuthInfo *info, const char *userid);
 /* you don't need those function*/
 void linphone_auth_info_destroy(LinphoneAuthInfo *info);
 LinphoneAuthInfo * linphone_auth_info_new_from_config_file(struct _LpConfig *config, int pos);
