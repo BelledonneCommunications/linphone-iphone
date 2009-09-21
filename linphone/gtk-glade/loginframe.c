@@ -61,6 +61,14 @@ void linphone_gtk_show_login_frame(LinphoneProxyConfig *cfg){
 	LinphoneCore *lc=linphone_gtk_get_core();
 	int nettype;
 
+
+	if (linphone_core_get_download_bandwidth(lc)==0 &&
+		linphone_core_get_upload_bandwidth(lc)==0)
+		nettype=NetworkKindOpticalFiber;
+	else nettype=NetworkKindAdsl;
+	gtk_combo_box_set_active(GTK_COMBO_BOX(linphone_gtk_get_widget(mw,"login_internet_kind")),nettype);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(linphone_gtk_get_widget(mw,"internet_kind")),nettype);
+
 	if (linphone_gtk_get_ui_config_int("automatic_login",0) ){
 		g_timeout_add(250,(GSourceFunc)do_login_noprompt,cfg);
 		return;
@@ -86,11 +94,7 @@ void linphone_gtk_show_login_frame(LinphoneProxyConfig *cfg){
 			from->url->username);
 	gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(mw,"login_password")),
 		ai!=NULL ? ai->passwd : "");
-	if (linphone_core_get_download_bandwidth(lc)==0 &&
-		linphone_core_get_upload_bandwidth(lc)==0)
-		nettype=NetworkKindOpticalFiber;
-	else nettype=NetworkKindAdsl;
-	gtk_combo_box_set_active(GTK_COMBO_BOX(linphone_gtk_get_widget(mw,"login_internet_kind")),nettype);
+	
 	osip_from_free(from);
 }
 
