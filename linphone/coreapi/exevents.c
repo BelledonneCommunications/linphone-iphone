@@ -316,7 +316,8 @@ int linphone_inc_new_call(LinphoneCore *lc, eXosip_event_t *ev)
 		eXosip_unlock();
 		goto end;
 	}
-	lc->call=linphone_call_new_incoming(lc,from,to,ev->cid,ev->did,ev->tid);
+	lc->call=linphone_call_new_incoming(lc,from,to,ev);
+	
 	sdp=eXosip_get_sdp_info(ev->request);
 	if (sdp==NULL){
 		ms_message("No sdp body in invite, 200-ack scheme");
@@ -1003,6 +1004,16 @@ static bool_t comes_from_local_if(osip_message_t *msg){
 	return FALSE;
 }
 
+static void linphone_inc_update(LinphoneCore *lc, eXosip_event_t *ev){
+	osip_message_t *msg=NULL;
+	ms_message("Processing incoming UPDATE");
+	eXosip_lock();
+	eXosip_message_build_answer(ev->tid,200,&msg);
+	if (msg!=NULL)
+		eXosip_message_send_answer(ev->tid,200,msg);
+	eXosip_unlock();
+}
+
 static void linphone_other_request(LinphoneCore *lc, eXosip_event_t *ev){
 	ms_message("in linphone_other_request");
 	if (ev->request==NULL) return;
@@ -1033,8 +1044,9 @@ static void linphone_other_request(LinphoneCore *lc, eXosip_event_t *ev){
 			}
 			
 		}else ms_warning("Ignored REFER not coming from this local loopback interface.");
-	}
-    	else {
+	}else if (strncmp(ev->request->sip_method, "UPDATE", 6) == 0){
+		linphone_inc_update(lc,ev);
+    	}else {
 		char *tmp=NULL;
 		size_t msglen=0;
 		osip_message_to_str(ev->request,&tmp,&msglen);

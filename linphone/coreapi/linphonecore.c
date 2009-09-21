@@ -127,14 +127,16 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, const osip_f
 }
 
 
-LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, const char *from, const char *to, int cid, int did, int tid){
+LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, const char *from, const char *to, eXosip_event_t *ev){
 	LinphoneCall *call=ms_new0(LinphoneCall,1);
 	osip_from_t *me= linphone_core_get_primary_contact_parsed(lc);
 	osip_from_t *from_url=NULL;
+	osip_header_t *h=NULL;
+
 	call->dir=LinphoneCallIncoming;
-	call->cid=cid;
-	call->did=did;
-	call->tid=tid;
+	call->cid=ev->cid;
+	call->did=ev->did;
+	call->tid=ev->tid;
 	call->core=lc;
 	osip_from_init(&from_url);
 	osip_from_parse(from_url, from);
@@ -147,6 +149,8 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, const char *from, co
 	discover_mtu(lc,from_url->url->host);
 	osip_from_free(me);
 	osip_from_free(from_url);
+	osip_message_header_get_byname(ev->request,"Session-expires",0,&h);
+	if (h) call->supports_session_timers=TRUE;
 	return call;
 }
 
@@ -1356,7 +1360,8 @@ int linphone_core_invite(LinphoneCore *lc, const char *url)
 		ms_warning("Could not build initial invite");
 		goto end;
 	}
-	
+	osip_message_set_header(invite, "Session-expires", "200");
+	osip_message_set_supported(invite, "timer");
 	/* make sdp message */
 	
 	osip_from_init(&parsed_url2);
@@ -1742,6 +1747,8 @@ int linphone_core_accept_call(LinphoneCore *lc, const char *url)
 		ms_error("Fail to build answer for call: err=%i",err);
 		return -1;
 	}
+
+	if (call->supports_session_timers) osip_message_set_supported(msg, "timer");
 	/*try to be best-effort in giving real local or routable contact address,
 	except when the user choosed to override the ipaddress */
 	if (linphone_core_get_firewall_policy(lc)!=LINPHONE_POLICY_USE_NAT_ADDRESS)

@@ -58,6 +58,59 @@
 #endif
 #endif
 
+	
+typedef struct _StreamParams
+{
+	int initialized;
+	int line;
+	int localport;
+	int remoteport;
+	int remotertcpport;
+	int pt;
+	char *relay_session_id;
+	int natd_port;
+	char remoteaddr[LINPHONE_HOSTNAME_SIZE];
+	char natd_addr[LINPHONE_HOSTNAME_SIZE];
+} StreamParams;
+
+typedef enum _LCState{
+	LCStateInit,
+	LCStateRinging,
+	LCStateAVRunning
+}LCState;
+
+
+typedef struct _LinphoneCall
+{
+	struct _LinphoneCore *core;
+	StreamParams audio_params;
+	StreamParams video_params;
+	LinphoneCallDir dir;
+	struct _RtpProfile *profile;	/*points to the local_profile or to the remote "guessed" profile*/
+	struct _LinphoneCallLog *log;
+	int cid; /*call id */
+	int did; /*dialog id */
+	int tid; /*last transaction id*/
+	char localip[LINPHONE_IPADDR_SIZE]; /* our best guess for local ipaddress for this call */
+	struct _sdp_context *sdpctx;
+	time_t start_time; /*time at which the call was initiated*/
+	time_t media_start_time; /*time at which it was accepted, media streams established*/
+	LCState	state;
+	bool_t auth_pending;
+	bool_t supports_session_timers;
+} LinphoneCall;
+
+LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, const osip_from_t *from, const osip_to_t *to);
+LinphoneCall * linphone_call_new_incoming(struct _LinphoneCore *lc, const char *from, const char *to, eXosip_event_t *ev);
+#define linphone_call_set_state(lcall,st)	(lcall)->state=(st)
+void linphone_call_destroy(struct _LinphoneCall *obj);
+
+/* private: */
+LinphoneCallLog * linphone_call_log_new(LinphoneCall *call, char *local, char * remote);
+void linphone_call_log_completed(LinphoneCallLog *calllog, LinphoneCall *call);
+void linphone_call_log_destroy(LinphoneCallLog *cl);
+
+
 void linphone_core_init_media_streams(LinphoneCore *lc);
 
 void linphone_auth_info_write_config(struct _LpConfig *config, LinphoneAuthInfo *obj, int pos);
