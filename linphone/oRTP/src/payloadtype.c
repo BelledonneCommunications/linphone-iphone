@@ -141,6 +141,7 @@ void payload_type_destroy(PayloadType *pt)
 **/ 
 bool_t fmtp_get_value(const char *fmtp, const char *param_name, char *result, size_t result_len){
 	const char *pos=strstr(fmtp,param_name);
+	memset(result, '\0', result_len);
 	if (pos){
 		const char *equal=strchr(pos,'=');
 		if (equal){
