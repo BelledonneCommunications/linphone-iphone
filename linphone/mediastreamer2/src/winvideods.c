@@ -165,7 +165,7 @@ HRESULT GetPinCategory(IPin *pPin, GUID *pPinCategory)
 	return hr;
 }
 
-int try_format(V4wState *s, int format, GUID *pPinCategory)
+int try_format(IBaseFilter *m_pDeviceFilter, int format, GUID *pPinCategory)
 {
 	HRESULT hr=S_OK;
 	IEnumPins *pEnum=0;
@@ -177,7 +177,7 @@ int try_format(V4wState *s, int format, GUID *pPinCategory)
 	DWORD biBitCount;
 
 	// Verify input
-	if (!s->m_pDeviceFilter)
+	if (!m_pDeviceFilter)
 		return -1;
 
 	if (format == MS_YUV420P)
@@ -214,7 +214,7 @@ int try_format(V4wState *s, int format, GUID *pPinCategory)
 		biBitCount = 16;
 
 	// Get pin enumerator
-	hr = s->m_pDeviceFilter->EnumPins(&pEnum);
+	hr = m_pDeviceFilter->EnumPins(&pEnum);
 	if(FAILED(hr)) 
 		return -1;
 
@@ -506,17 +506,17 @@ static int v4w_configure_videodevice(V4wState *s)
 
 	GUID pPinCategory;
 
-	if (try_format(s, s->pix_fmt, &pPinCategory)==0)
+	if (try_format(s->m_pDeviceFilter, s->pix_fmt, &pPinCategory)==0)
 		s->pix_fmt = s->pix_fmt;
-	else if (try_format(s,MS_YUV420P, &pPinCategory)==0)
+	else if (try_format(s->m_pDeviceFilter,MS_YUV420P, &pPinCategory)==0)
 		s->pix_fmt = MS_YUV420P;
-	else if (try_format(s,MS_YUY2, &pPinCategory)==0)
+	else if (try_format(s->m_pDeviceFilter,MS_YUY2, &pPinCategory)==0)
 		s->pix_fmt = MS_YUY2;
-	else if (try_format(s,MS_YUYV, &pPinCategory)==0)
+	else if (try_format(s->m_pDeviceFilter,MS_YUYV, &pPinCategory)==0)
 		s->pix_fmt = MS_YUYV;
-	else if (try_format(s,MS_UYVY, &pPinCategory)==0)
+	else if (try_format(s->m_pDeviceFilter,MS_UYVY, &pPinCategory)==0)
 		s->pix_fmt = MS_UYVY;
-	else if (try_format(s,MS_RGB24, &pPinCategory)==0)
+	else if (try_format(s->m_pDeviceFilter,MS_RGB24, &pPinCategory)==0)
 		s->pix_fmt = MS_RGB24;
 	else
 	{
@@ -681,17 +681,17 @@ static int v4w_open_videodevice(V4wState *s)
 
 	GUID pPinCategory;
 
-	if (try_format(s, s->pix_fmt, &pPinCategory)==0)
+	if (try_format(s->m_pDeviceFilter, s->pix_fmt, &pPinCategory)==0)
 		s->pix_fmt = s->pix_fmt;
-	else if (try_format(s,MS_YUV420P, &pPinCategory)==0)
+	else if (try_format(s->m_pDeviceFilter,MS_YUV420P, &pPinCategory)==0)
 		s->pix_fmt = MS_YUV420P;
-	else if (try_format(s,MS_YUY2, &pPinCategory)==0)
+	else if (try_format(s->m_pDeviceFilter,MS_YUY2, &pPinCategory)==0)
 		s->pix_fmt = MS_YUY2;
-	else if (try_format(s,MS_YUYV, &pPinCategory)==0)
+	else if (try_format(s->m_pDeviceFilter,MS_YUYV, &pPinCategory)==0)
 		s->pix_fmt = MS_YUYV;
-	else if (try_format(s,MS_UYVY, &pPinCategory)==0)
+	else if (try_format(s->m_pDeviceFilter,MS_UYVY, &pPinCategory)==0)
 		s->pix_fmt = MS_UYVY;
-	else if (try_format(s,MS_RGB24, &pPinCategory)==0)
+	else if (try_format(s->m_pDeviceFilter,MS_RGB24, &pPinCategory)==0)
 		s->pix_fmt = MS_RGB24;
 	else
 	{
@@ -1407,9 +1407,39 @@ static void vfw_detect(MSWebCamManager *obj){
 		WideCharToMultiByte(CP_UTF8,0,var.bstrVal,-1,szName,256,0,0);
 		VariantClear(&var); 
 
-		MSWebCam *cam=ms_web_cam_new(&ms_directx_cam_desc);
-		cam->name=ms_strdup(szName);
-		ms_web_cam_manager_add_cam(obj,cam);
+		IBaseFilter *m_pDeviceFilter;
+		hr = pMoniker->BindToObject(0, 0, IID_IBaseFilter, (void**)&m_pDeviceFilter );
+		if(SUCCEEDED(hr))
+		{
+			GUID pPinCategory;
+			int fmt_supported = 0;
+
+			//basic testing for the device.
+			if (try_format(m_pDeviceFilter,MS_YUV420P, &pPinCategory)==0)
+				fmt_supported = 1;
+			else if (try_format(m_pDeviceFilter,MS_YUY2, &pPinCategory)==0)
+				fmt_supported = 1;
+			else if (try_format(m_pDeviceFilter,MS_YUYV, &pPinCategory)==0)
+				fmt_supported = 1;
+			else if (try_format(m_pDeviceFilter,MS_UYVY, &pPinCategory)==0)
+				fmt_supported = 1;
+			else if (try_format(m_pDeviceFilter,MS_RGB24, &pPinCategory)==0)
+				fmt_supported = 1;
+			else
+			{
+				ms_warning("Unsupported video pixel format/refuse camera (%s).", szName);
+			}
+
+			if (fmt_supported==1)
+			{
+				MSWebCam *cam=ms_web_cam_new(&ms_directx_cam_desc);
+				cam->name=ms_strdup(szName);
+				ms_web_cam_manager_add_cam(obj,cam);
+			}
+			m_pDeviceFilter->Release();
+			m_pDeviceFilter=NULL;
+		}
+
 
 		pMoniker->Release();
 		pBag->Release();
