@@ -66,13 +66,22 @@ static int sip_login_do_login(SipSetupContext * ctx, const char *uri, const char
 	}
 	osip_from_to_str(parsed_uri,&tmp);
 	linphone_proxy_config_set_identity(cfg,tmp);
-	auth=linphone_auth_info_new(parsed_uri->url->username,NULL,passwd,NULL,NULL);
-	linphone_core_add_auth_info(lc,auth);
+	if (passwd ) {
+		auth=linphone_auth_info_new(parsed_uri->url->username,NULL,passwd,NULL,NULL);
+		linphone_core_add_auth_info(lc,auth);
+	}
 	linphone_proxy_config_enable_register(cfg,TRUE);
 	linphone_proxy_config_done(cfg);
 	osip_free(tmp);
 	osip_from_free(parsed_uri);
 	ms_message("SipLogin: done");
+	return 0;
+}
+
+static int sip_login_do_logout(SipSetupContext * ctx){
+	LinphoneProxyConfig *cfg=sip_setup_context_get_proxy_config(ctx);
+	linphone_proxy_config_enable_register(cfg,FALSE);
+	linphone_proxy_config_done(cfg);
 	return 0;
 }
 
@@ -82,5 +91,6 @@ SipSetup linphone_sip_login={
 	.capabilities=SIP_SETUP_CAP_LOGIN,
 	.init_instance=sip_login_init_instance,
 	.login_account=sip_login_do_login,
+	.logout_account=sip_login_do_logout
 };
 

@@ -188,4 +188,9 @@ int linphone_gtk_get_ui_config_int(const char *key, int def){
 	return lp_config_get_int(cfg,"GtkUi",key,def);
 }
 
+void linphone_gtk_set_ui_config_int(const char *key , int val){
+	LpConfig *cfg=linphone_core_get_config(linphone_gtk_get_core());
+	lp_config_set_int(cfg,"GtkUi",key,val);
+}
+
 

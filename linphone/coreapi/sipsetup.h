@@ -90,6 +90,7 @@ struct _SipSetup{
 	int (*get_buddy_lookup_results)(SipSetupContext *ctx, MSList **results);
 	const char * (*get_notice)(SipSetupContext *ctx);
 	const char ** (*get_domains)(SipSetupContext *ctx);
+	int (*logout_account)(SipSetupContext *ctx);
 };
 
 typedef struct _SipSetup SipSetup;
@@ -121,6 +122,8 @@ const char ** sip_setup_context_get_domains(SipSetupContext *ctx);
 
 void sip_setup_context_free_results(MSList *results);
 void sip_setup_context_free(SipSetupContext *ctx);
+
+int sip_setup_context_logout(SipSetupContext *ctx);
 
 /*internal methods*/
 struct _LinphoneProxyConfig *sip_setup_context_get_proxy_config(const SipSetupContext *ctx);

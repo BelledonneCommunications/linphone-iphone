@@ -12,6 +12,12 @@
 
 #include "linphone.h"
 
+gboolean linphone_gtk_use_in_call_view(){
+	static int val=-1;
+	if (val==-1) val=linphone_gtk_get_ui_config_int("use_incall_view",1);
+	return val;
+}
+
 void linphone_gtk_show_in_call_view(void){
 	GtkWidget *main_window=linphone_gtk_get_main_window();
 	GtkWidget *idle_frame=linphone_gtk_get_widget(main_window,"idle_frame");
@@ -32,6 +38,11 @@ void display_peer_name_in_label(GtkWidget *label, const char *uri){
 	osip_from_t *from;
 	char *displayname=NULL,*id=NULL;
 	char *uri_label;
+
+	if (uri==NULL) {
+		ms_error("Strange: in call with nobody ?");
+		return;
+	}
 
 	osip_from_init(&from);
 	if (osip_from_parse(from,uri)==0){

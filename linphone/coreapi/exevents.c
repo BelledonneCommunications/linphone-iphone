@@ -965,19 +965,23 @@ void linphone_registration_success(LinphoneCore *lc,eXosip_event_t *ev){
 	char *msg;
 	char *ru;
 	osip_header_t *h=NULL;
-	osip_uri_to_str(requri,&ru);
-	msg=ms_strdup_printf(_("Registration on %s successful."),ru);
-	lc->vtable.display_status(lc,msg);
-	ms_free(msg);
-	osip_free(ru);
+
 	cfg=linphone_core_get_proxy_config_from_rid(lc,ev->rid);
 	ms_return_if_fail(cfg!=NULL);
+
 	gstate_new_state(lc, GSTATE_REG_OK, NULL);
 	osip_message_get_expires(ev->request,0,&h);
 	if (h!=NULL && atoi(h->hvalue)!=0){
 		cfg->registered=TRUE;
 		linphone_proxy_config_register_again_with_updated_contact(cfg,ev->request,ev->response);
 	}else cfg->registered=FALSE;
+	
+	osip_uri_to_str(requri,&ru);
+	if (cfg->registered) msg=ms_strdup_printf(_("Registration on %s successful."),ru);
+	else msg=ms_strdup_printf(_("Unregistration on %s done."),ru);
+	lc->vtable.display_status(lc,msg);
+	ms_free(msg);
+	osip_free(ru);
 }
 
 static bool_t comes_from_local_if(osip_message_t *msg){

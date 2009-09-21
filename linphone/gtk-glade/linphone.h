@@ -64,6 +64,8 @@ void linphone_gtk_destroy_log_window(void);
 gboolean linphone_gtk_check_logs();
 const gchar *linphone_gtk_get_ui_config(const char *key, const char *def);
 int linphone_gtk_get_ui_config_int(const char *key, int def);
+void linphone_gtk_set_ui_config_int(const char *key , int val);
+
 void linphone_gtk_open_browser(const char *url);
 void linphone_gtk_check_for_new_version(void);
 const char *linphone_gtk_get_lang(const char *config_file);
@@ -77,6 +79,7 @@ gchar *linphone_gtk_get_display_name(const char *sip_uri);
 void linphone_gtk_show_directory_search(void);
 
 /*functions controlling the different views*/
+gboolean linphone_gtk_use_in_call_view();
 void linphone_gtk_show_in_call_view(void);
 void linphone_gtk_show_idle_view(void);
 void linphone_gtk_in_call_view_set_calling(const char *uri);

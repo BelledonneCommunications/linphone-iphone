@@ -180,6 +180,13 @@ void sip_setup_context_free_results(MSList *results){
 	ms_list_free(results);
 }
 
+int sip_setup_context_logout(SipSetupContext *ctx){
+	if (ctx->funcs->logout_account){
+		return ctx->funcs->logout_account(ctx);
+	}
+	return -1;
+}
+
 void sip_setup_context_free(SipSetupContext *ctx){
 	if (ctx->funcs->uninit_instance){
 		ctx->funcs->uninit_instance(ctx);
