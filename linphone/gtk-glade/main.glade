@@ -549,6 +549,7 @@ Fiber Channel</property>
                             </child>
                           </widget>
                           <packing>
+                            <property name="fill">False</property>
                             <property name="position">2</property>
                           </packing>
                         </child>
