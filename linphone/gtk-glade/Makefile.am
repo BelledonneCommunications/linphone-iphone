@@ -15,9 +15,15 @@ PIXMAPS=	linphone2.png \
 		linphone.png \
 		stock_people.png 
 
+LINPHONE_ICO_RC_FILE=linphone.rc
+LINPHONE_ICO_FILE=linphone.ico
+
 EXTRA_DIST=	$(PIXMAPS) \
 		$(GLADE_FILES) \
-		linphone.iss 
+		linphone.iss \
+		$(LINPHONE_ICO_RC_FILE) \
+		$(LINPHONE_ICO_FILE)
+
 
 if BUILD_GLADE_UI
 
@@ -50,8 +56,8 @@ linphone_3_LDADD=$(top_builddir)/oRTP/src/libortp.la \
 
 if BUILD_WIN32
 
-linphone.res:	linphone.rc linphone.ico
-	windres linphone.rc -O coff -o linphone.res
+linphone.res:	$(LINPHONE_ICO_RC_FILE) $(LINPHONE_ICO_FILE)
+	windres $(LINPHONE_ICO_RC_FILE) -O coff -o linphone.res
 
 linphone_3_LDADD+=linphone.res -lwininet
 linphone_3_LDFLAGS=-Wl,--export-all-symbols -mwindows

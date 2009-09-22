@@ -32,10 +32,10 @@ $(LINPHONE_SRC_DIR)/Makefile: $(LINPHONE_SRC_DIR)/configure
 	./configure --prefix=$(prefix) --enable-shared --disable-static $(LINPHONE_CONFIGURE_EXTRA_OPTIONS)
 
 build-linphone:	$(LINPHONE_SRC_DIR)/Makefile
-	cd $(LINPHONE_SRC_DIR) && make newdate && make && make install
+	cd $(LINPHONE_SRC_DIR) && make newdate && make $(LINPHONE_MAKE_OPTS) && make install $(LINPHONE_MAKE_OPTS)
 
 $(LINPHONE_ZIP):	build-linphone $(WORKDIR)
-	cd $(LINPHONE_SRC_DIR) && make zip ZIPFILE=$(LINPHONE_ZIP)
+	cd $(LINPHONE_SRC_DIR) && make zip ZIPFILE=$(LINPHONE_ZIP) $(LINPHONE_MAKE_OPTS)
 
 install-linphone: $(LINPHONE_ZIP) $(INSTALL_ROOT)
 	cd $(INSTALL_ROOT) && unzip -o $(LINPHONE_ZIP)

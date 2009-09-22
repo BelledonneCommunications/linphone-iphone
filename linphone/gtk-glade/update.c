@@ -108,7 +108,6 @@ static int version_compare(const char *v1, const char *v2){
 	v1+=copytilldot(n1,v1);
 	v2+=copytilldot(n2,v2);
 	ms_message("Comparing %s <> %s",n1,n2);
-	fflush(stdout);
 	ret=strcmp(n1,n2);
 	if (ret==0) return version_compare(v1,v2);
 	else return ret;
