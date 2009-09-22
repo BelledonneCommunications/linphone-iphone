@@ -517,14 +517,18 @@ static void completion_add_text(GtkEntry *entry, const char *text){
 
 void linphone_gtk_call_terminated(const char *error){
 	GtkWidget *mw=linphone_gtk_get_main_window();
+	GtkWidget *icw;
 	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"terminate_call"),FALSE);
 	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"start_call"),TRUE);
 	gtk_widget_hide_all(linphone_gtk_get_widget(mw,"go_to_call_view_box"));
 	if (linphone_gtk_use_in_call_view())
 		linphone_gtk_in_call_view_terminate(error);
 	update_video_title();
-	g_object_set_data(G_OBJECT(mw),"incoming_call",NULL);
-	
+	icw=GTK_WIDGET(g_object_get_data(G_OBJECT(mw),"incoming_call"));
+	if (icw!=NULL){
+		g_object_set_data(G_OBJECT(mw),"incoming_call",NULL);
+		gtk_widget_destroy(icw);
+	}
 }
 
 static gboolean in_call_timer(){
@@ -668,10 +672,7 @@ static void linphone_gtk_inv_recv(LinphoneCore *lc, const char *from){
 }
 
 static void linphone_gtk_bye_recv(LinphoneCore *lc, const char *from){
-	GtkWidget *icw=GTK_WIDGET(g_object_get_data(G_OBJECT(linphone_gtk_get_main_window()),"incoming_call"));
-	if (icw!=NULL){
-		gtk_widget_destroy(icw);
-	}
+	
 }
 
 static void linphone_gtk_notify_recv(LinphoneCore *lc, LinphoneFriend * fid, const char *url, const char *status, const char *img){

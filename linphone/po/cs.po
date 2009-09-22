@@ -8,10 +8,10 @@
 # catalogue.
 msgid ""
 msgstr ""
-"Project-Id-Version: linphone-3.1.0-r348\n"
+"Project-Id-Version: linphone-3.2.0-r659\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-09-11 14:50+0200\n"
-"PO-Revision-Date: 2009-03-17 10:22+0100\n"
+"PO-Revision-Date: 2009-09-21 21:44+0200\n"
 "Last-Translator: Petr Pisar <petr.pisar@atlas.cz>\n"
 "Language-Team: Czech <translation-team-cs@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -32,15 +32,15 @@ msgstr "Diskuze s %s"
 
 #: ../gtk-glade/main.c:85
 msgid "log to stdout some debug information while running."
-msgstr ""
+msgstr "za běhu vypisovat některé ladicí informace na standardní výstup."
 
 #: ../gtk-glade/main.c:92
 msgid "address to call right now"
-msgstr ""
+msgstr "zavolat právě teď na tuto adresu"
 
 #: ../gtk-glade/main.c:99
 msgid "if set automatically answer incoming calls"
-msgstr ""
+msgstr "je-li nastaveno, automaticky zvedne příchozí hovor"
 
 #: ../gtk-glade/main.c:619
 #, c-format
@@ -88,9 +88,9 @@ msgid "Presence status"
 msgstr "Stav"
 
 #: ../gtk-glade/friendlist.c:243
-#, fuzzy, c-format
+#, c-format
 msgid "Search in %s directory"
-msgstr "Hledat kontakty v adresáři"
+msgstr "Hledat v adresáři %s"
 
 #: ../gtk-glade/friendlist.c:432
 msgid "Invalid sip contact !"
@@ -151,60 +151,60 @@ msgstr "Účet"
 
 #: ../gtk-glade/propertybox.c:620
 msgid "English"
-msgstr ""
+msgstr "angličtina"
 
 #: ../gtk-glade/propertybox.c:621
 msgid "French"
-msgstr ""
+msgstr "francouzština"
 
 #: ../gtk-glade/propertybox.c:622
 msgid "Swedish"
-msgstr ""
+msgstr "švédština"
 
 #: ../gtk-glade/propertybox.c:623
 msgid "Italian"
-msgstr ""
+msgstr "italština"
 
 #: ../gtk-glade/propertybox.c:624
 msgid "Spanish"
-msgstr ""
+msgstr "španělština"
 
 #: ../gtk-glade/propertybox.c:625
 msgid "Bresilian"
-msgstr ""
+msgstr "brazilská portugalština"
 
 #: ../gtk-glade/propertybox.c:626
 msgid "Polish"
-msgstr ""
+msgstr "polština"
 
 #: ../gtk-glade/propertybox.c:627
 msgid "German"
-msgstr ""
+msgstr "němčina"
 
 #: ../gtk-glade/propertybox.c:628
 msgid "Russian"
-msgstr ""
+msgstr "ruština"
 
 #: ../gtk-glade/propertybox.c:629
 msgid "Japanese"
-msgstr ""
+msgstr "japonština"
 
 #: ../gtk-glade/propertybox.c:630
 msgid "Dutch"
-msgstr ""
+msgstr "dánština"
 
 #: ../gtk-glade/propertybox.c:631
 msgid "Hungarian"
-msgstr ""
+msgstr "maďarština"
 
 #: ../gtk-glade/propertybox.c:632
 msgid "Czech"
-msgstr ""
+msgstr "čeština"
 
 #: ../gtk-glade/propertybox.c:689
 msgid ""
 "You need to restart linphone for the new language selection to take effect."
-msgstr ""
+msgstr "Aby se projevil výběr nového jazyka, je nutné znovu spustit linphone."
 
 #: ../gtk-glade/update.c:80
 #, c-format
@@ -252,18 +252,20 @@ msgid ""
 "Welcome !\n"
 "This assistant will help you to use a SIP account for your calls."
 msgstr ""
+"Vítejte!\n"
+"Tento průvodce vám pomůže používat sipový účet při vašich hovorech."
 
 #: ../gtk-glade/setupwizard.c:34
 msgid "Create an account by choosing a username"
-msgstr ""
+msgstr "Vytvořit účet vybráním uživatelského jména"
 
 #: ../gtk-glade/setupwizard.c:35
 msgid "I have already an account and just want to use it"
-msgstr ""
+msgstr "Účet již mám a chci jej použít"
 
 #: ../gtk-glade/setupwizard.c:53
 msgid "Please choose a username:"
-msgstr ""
+msgstr "Prosím, vyberte si uživatelské jméno:"
 
 #: ../gtk-glade/setupwizard.c:54 ../gtk-glade/password.glade.h:4
 msgid "Username:"
@@ -272,86 +274,81 @@ msgstr "Uživatelské jméno:"
 #: ../gtk-glade/setupwizard.c:92
 #, c-format
 msgid "Checking if '%s' is available..."
-msgstr ""
+msgstr "Zjišťuji, zda-li je „%s“ přípustné…"
 
 #: ../gtk-glade/setupwizard.c:97 ../gtk-glade/setupwizard.c:164
 msgid "Please wait..."
-msgstr ""
+msgstr "Prosím, čekejte…"
 
 #: ../gtk-glade/setupwizard.c:101
 msgid "Sorry this username already exists. Please try a new one."
-msgstr ""
+msgstr "Je nám líto, ale toto jméno již existuje. Prosím, zvolte jiné."
 
 #: ../gtk-glade/setupwizard.c:103 ../gtk-glade/setupwizard.c:168
 msgid "Ok !"
-msgstr ""
+msgstr "V pořádku!"
 
 #: ../gtk-glade/setupwizard.c:106 ../gtk-glade/setupwizard.c:171
 msgid "Communication problem, please try again later."
-msgstr ""
+msgstr "Chyba při komunikaci. Prosím, zkuste to později."
 
 #: ../gtk-glade/setupwizard.c:134
 msgid "Thank you. Your account is now configured and ready for use."
-msgstr ""
+msgstr "Děkujeme vám. Váš účet je nyní nastaven a připraven k použití."
 
 #: ../gtk-glade/setupwizard.c:228
 msgid "Welcome to the account setup assistant"
-msgstr ""
+msgstr "Vítejte v průvodci nastavení účtu"
 
 #: ../gtk-glade/setupwizard.c:232
 msgid "Account setup assistant"
-msgstr ""
+msgstr "Průvodce nastavením účtu"
 
 #: ../gtk-glade/setupwizard.c:236
-#, fuzzy
 msgid "Choosing a username"
-msgstr "Vaše uživatelské jméno:"
+msgstr "Výběr uživatelského jména"
 
 #: ../gtk-glade/setupwizard.c:240
 msgid "Verifying"
-msgstr ""
+msgstr "Ověřování"
 
 #: ../gtk-glade/setupwizard.c:244
-#, fuzzy
 msgid "Confirmation"
-msgstr "Informace"
+msgstr "Potvrzení"
 
 #: ../gtk-glade/setupwizard.c:249
 msgid "Creating your account"
-msgstr ""
+msgstr "Vytváření účtu"
 
 #: ../gtk-glade/setupwizard.c:253
 msgid "Now ready !"
-msgstr ""
+msgstr "Připraveno!"
 
 #: ../gtk-glade/incall_view.c:42
-#, fuzzy
 msgid "<b>Calling...</b>"
-msgstr "<b>Použití IPv6</b>"
+msgstr "<b>Volá se…</b>"
 
 #: ../gtk-glade/incall_view.c:64
-#, fuzzy
 msgid "<b>In call with</b>"
-msgstr "Ukončit hovor"
+msgstr "<b>Hovor s</b>"
 
 #: ../gtk-glade/incall_view.c:68
 msgid "00::00::00"
-msgstr ""
+msgstr "00:00:00"
 
 #: ../gtk-glade/incall_view.c:82
 #, c-format
 msgid "%02i::%02i::%02i"
-msgstr ""
+msgstr "%02i:%02i:%02i"
 
 #: ../gtk-glade/incall_view.c:100
-#, fuzzy
 msgid "<b>Call ended.</b>"
-msgstr "Hovor skončil."
+msgstr "<b>Hovor skončil.</b>"
 
 #: ../gtk-glade/loginframe.c:40
-#, fuzzy, c-format
+#, c-format
 msgid "Please enter login information for %s"
-msgstr "Prosím, zadejte svoje heslo pro doménu %s:"
+msgstr "Prosím, zadejte své přihlašovací jméno pro %s:"
 
 #: ../gtk-glade/main.glade.h:1
 msgid "#"
@@ -406,14 +403,12 @@ msgid "<b>Contact list</b>"
 msgstr "<b>Seznam kontaktů</b>"
 
 #: ../gtk-glade/main.glade.h:14
-#, fuzzy
 msgid "<b>Terminate call</b>"
-msgstr "Ukončit hovor"
+msgstr "<b>Ukončit hovor</b>"
 
 #: ../gtk-glade/main.glade.h:15
-#, fuzzy
 msgid "<b>Welcome !</b>"
-msgstr "<b>Obraz</b>"
+msgstr "<b>Vítejte!</b>"
 
 #: ../gtk-glade/main.glade.h:16
 msgid "A"
@@ -424,6 +419,8 @@ msgid ""
 "ADSL\n"
 "Fiber Channel"
 msgstr ""
+"ADSL\n"
+"Fiber Channel"
 
 #: ../gtk-glade/main.glade.h:19
 msgid ""
@@ -435,7 +432,7 @@ msgstr ""
 
 #: ../gtk-glade/main.glade.h:21
 msgid "Assistant"
-msgstr ""
+msgstr "Průvodce"
 
 #: ../gtk-glade/main.glade.h:22
 msgid "Audio & Video"
@@ -466,14 +463,12 @@ msgid "Digits"
 msgstr "Číslice"
 
 #: ../gtk-glade/main.glade.h:29
-#, fuzzy
 msgid "Duration"
-msgstr "Informace"
+msgstr "Délka"
 
 #: ../gtk-glade/main.glade.h:30
-#, fuzzy
 msgid "Duration:"
-msgstr "Informace"
+msgstr "Délka:"
 
 #: ../gtk-glade/main.glade.h:31
 msgid "Enable self-view"
@@ -481,21 +476,19 @@ msgstr "Zobrazovat sám sebe"
 
 #: ../gtk-glade/main.glade.h:32
 msgid "Enter username, phone number, or full sip address"
-msgstr ""
+msgstr "Zadejte uživatelské jméno, telefonní číslo nebo plnou sipovou adresu"
 
 #: ../gtk-glade/main.glade.h:33
-#, fuzzy
 msgid "In call"
-msgstr "Příchozí hovor"
+msgstr "Telefonuje se"
 
 #: ../gtk-glade/main.glade.h:34
 msgid "Internet connection:"
-msgstr ""
+msgstr "Připojení k Internetu:"
 
 #: ../gtk-glade/main.glade.h:35
-#, fuzzy
 msgid "Login information"
-msgstr "Informace o kontaktu"
+msgstr "Informace o přihlášení"
 
 #: ../gtk-glade/main.glade.h:36
 msgid "Lookup:"
@@ -503,30 +496,27 @@ msgstr "Hledat:"
 
 #: ../gtk-glade/main.glade.h:37
 msgid "Main view"
-msgstr ""
+msgstr "Hlavní zobrazení"
 
 #: ../gtk-glade/main.glade.h:38
 msgid "Mute"
-msgstr ""
+msgstr "Ztlumit"
 
 #: ../gtk-glade/main.glade.h:39
 msgid "My current identity:"
 msgstr "Moje současná totožnost:"
 
 #: ../gtk-glade/main.glade.h:40
-#, fuzzy
 msgid "Password"
-msgstr "Heslo:"
+msgstr "Heslo"
 
 #: ../gtk-glade/main.glade.h:41
-#, fuzzy
 msgid "SIP address or phone number:"
-msgstr "Zde zadejte SIP adresu nebo telefonní číslo"
+msgstr "SIP adresa nebo telefonní číslo:"
 
 #: ../gtk-glade/main.glade.h:42
-#, fuzzy
 msgid "Show current call"
-msgstr "Současný hovor"
+msgstr "Zobrazit současný hovor"
 
 #: ../gtk-glade/main.glade.h:43
 msgid "Start call"
@@ -537,23 +527,20 @@ msgid "Terminate call"
 msgstr "Ukončit hovor"
 
 #: ../gtk-glade/main.glade.h:45
-#, fuzzy
 msgid "Username"
-msgstr "Uživatelské jméno:"
+msgstr "Uživatelské jméno"
 
 #: ../gtk-glade/main.glade.h:46
-#, fuzzy
 msgid "_Linphone"
-msgstr "Linphone"
+msgstr "_Linphone"
 
 #: ../gtk-glade/main.glade.h:47
 msgid "_Modes"
 msgstr "Reži_my"
 
 #: ../gtk-glade/main.glade.h:48
-#, fuzzy
 msgid "gtk-connect"
-msgstr "Připojeno"
+msgstr ""
 
 #: ../gtk-glade/main.glade.h:49
 msgid "gtk-find"
@@ -563,6 +550,7 @@ msgstr ""
 msgid "in"
 msgstr "ve"
 
+# XXX: Dummy string. Make it not translatable or use real message
 #: ../gtk-glade/main.glade.h:51
 msgid "label"
 msgstr ""
@@ -738,9 +726,8 @@ msgid "<b>Default identity</b>"
 msgstr "<b>Implicitní totožnost</b>"
 
 #: ../gtk-glade/parameters.glade.h:6
-#, fuzzy
 msgid "<b>Language</b>"
-msgstr "<b>Použití IPv6</b>"
+msgstr "<b>Jazyk</b>"
 
 #: ../gtk-glade/parameters.glade.h:7
 msgid "<b>NAT and Firewall</b>"
@@ -815,9 +802,8 @@ msgid "Disable"
 msgstr "Zakázat"
 
 #: ../gtk-glade/parameters.glade.h:26
-#, fuzzy
 msgid "Done"
-msgstr "Pryč"
+msgstr "Hotovo"
 
 #: ../gtk-glade/parameters.glade.h:27
 msgid "Download speed limit in Kbit/sec:"
@@ -897,7 +883,7 @@ msgstr "Nastavit MTU (největší přenositelná zpráva):"
 
 #: ../gtk-glade/parameters.glade.h:46
 msgid "Settings"
-msgstr ""
+msgstr "Nastavení"
 
 #: ../gtk-glade/parameters.glade.h:47
 msgid "Stun server:"
@@ -916,9 +902,8 @@ msgid "Use IPv6 instead of IPv4"
 msgstr "Používat IPv6 místo IPv4"
 
 #: ../gtk-glade/parameters.glade.h:51
-#, fuzzy
 msgid "User interface"
-msgstr "Uživatelské jméno:"
+msgstr "Uživatelské rozhraní"
 
 #: ../gtk-glade/parameters.glade.h:52
 msgid "Video RTP/UDP:"
@@ -986,7 +971,7 @@ msgstr "Linphone"
 
 #: ../gtk-glade/waiting.glade.h:2
 msgid "Please wait"
-msgstr ""
+msgstr "Prosím, čekejte"
 
 #: ../coreapi/linphonecore.c:194
 #, c-format
@@ -1021,7 +1006,7 @@ msgstr ""
 "Od: %s\n"
 "Pro: %s\n"
 "Stav: %s\n"
-"Trvání: %i min %i s\n"
+"Délka: %i min %i s\n"
 
 #: ../coreapi/linphonecore.c:234
 msgid "Outgoing call"
@@ -1294,9 +1279,9 @@ msgstr ""
 "Měla by mít tvar sip:uživatel@proxydoména, například sip:alice@example.net"
 
 #: ../coreapi/proxy.c:634
-#, fuzzy, c-format
+#, c-format
 msgid "Could not login as %s"
-msgstr "Nelze najít soubor s obrázkem: %s"
+msgstr "Nelze se přihlásit jako %s"
 
 #: ../mediastreamer2/src/alaw.c:144 ../mediastreamer2/src/alaw.c:162
 msgid "ITU-G.711 alaw encoder"
@@ -1381,7 +1366,7 @@ msgstr "Svobodný a úžasný kodek speex"
 
 #: ../mediastreamer2/src/msvolume.c:355 ../mediastreamer2/src/msvolume.c:370
 msgid "A filter that controls and measure sound volume"
-msgstr ""
+msgstr "Filtr, který měří a řídí hlasitost zvuku"
 
 #: ../mediastreamer2/src/msv4l.c:1009
 msgid "A video4linux compatible source filter to stream pictures."
@@ -1490,7 +1475,6 @@ msgstr ""
 "RFC 2190."
 
 #: ../mediastreamer2/src/videoenc.c:718
-#, fuzzy
 msgid ""
 "The snow codec is royalty-free and is open-source. \n"
 "It uses innovative techniques that makes it one of most promising video "
@@ -1499,9 +1483,10 @@ msgid ""
 "versions cannot be guaranteed."
 msgstr ""
 "Kodek snow není zatížen poplatky a má otevřený zdrojový kód.\n"
-"Využívá průkopnické techniky, které jej činí jedním z nejlepších video "
+"Využívá průkopnické techniky, které jej činí jedním z nejslibnějších video "
 "kodeků. Je implementován v projektu ffmpeg.\n"
-"Avšak se stále vyvíjí a kompatibilita s ostatními verzemi není zaručena."
+"Avšak stále se vyvíjí, je trochu nestabilní a kompatibilita s ostatními "
+"verzemi není zaručena."
 
 #: ../mediastreamer2/src/videoout.c:904 ../mediastreamer2/src/videoout.c:922
 msgid "A generic video display"
@@ -1527,14 +1512,15 @@ msgstr "Filtr ICE"
 #: ../mediastreamer2/src/void.c:35 ../mediastreamer2/src/void.c:52
 msgid "A filter that trashes its input (useful for terminating some graphs)."
 msgstr ""
+"Filtr, který zahazuje svůj vstup (užitečné na zakončení některých grafů)."
 
 #: ../mediastreamer2/src/equalizer.c:337 ../mediastreamer2/src/equalizer.c:355
 msgid "Parametric sound equalizer."
-msgstr ""
+msgstr "Parametrický ekvalizér zvuku."
 
 #: ../mediastreamer2/src/msdscap-mingw.cc:1003
 msgid "A webcam grabber based on directshow."
-msgstr ""
+msgstr "Snímač kamer postavený na directshow."
 
 #~ msgid "Homepage"
 #~ msgstr "Domovská stránka"
