@@ -92,6 +92,10 @@ static void volume_init(MSFilter *f){
 
 static void volume_uninit(MSFilter *f){
 	Volume *v=(Volume*)f->data;
+#ifdef HAVE_SPEEXDSP
+	if (v->speex_pp)
+		speex_preprocess_state_destroy(v->speex_pp);
+#endif
 	ms_bufferizer_destroy(v->buffer);
 	ms_free(f->data);
 }
@@ -404,7 +408,7 @@ MSFilterDesc ms_volume_desc={
 	1,
 	1,
 	volume_init,
-	NULL,
+	volume_preprocess,
 	volume_process,
 	NULL,
 	volume_uninit,

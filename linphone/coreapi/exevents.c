@@ -195,6 +195,10 @@ int linphone_call_failure(LinphoneCore *lc, eXosip_event_t *ev)
 		case 415:
 			lc->vtable.display_status(lc,_("Remote user cannot support any of proposed codecs."));
 		break;
+		case 422:
+			/*ignore: eXosip_automatic_action will do the job of retrying with a greater Session-Expires*/
+			return 0;
+		break;
 		case 480:
 			tmpmsg=msg480;
 		case 486:

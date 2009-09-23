@@ -88,5 +88,5 @@ version_date.h: $(top_srcdir)/configure.in
 newdate:
 	rm -f version_date.h
 
-CLEANFILES=version_date.h
+CLEANFILES=version_date.h linphone.res
 
