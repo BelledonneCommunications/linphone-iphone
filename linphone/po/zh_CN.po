@@ -1,0 +1,1532 @@
+# SIP Telephony Application.
+# Copyright (C) 2001, 2002 Free Software Foundation, Inc.
+# Simon Morlat <linphone@free.fr>, 2001.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: linphone 0.7.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-09-11 14:50+0200\n"
+"PO-Revision-Date: 2009-09-24 18:39+0300\n"
+"Last-Translator: Jiang Honglei<jhonglei@gmail.com>\n"
+"Language-Team: Jiang Honglei<jhonglei@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../gtk-glade/support.c:50 ../gtk-glade/support.c:74
+#: ../gtk-glade/support.c:103
+#, c-format
+msgid "Couldn't find pixmap file: %s"
+msgstr "无法打开图像文件: %s"
+
+#: ../gtk-glade/chat.c:27
+#, c-format
+msgid "Chat with %s"
+msgstr "与 %s 聊天"
+
+#: ../gtk-glade/main.c:85
+msgid "log to stdout some debug information while running."
+msgstr ""
+
+#: ../gtk-glade/main.c:92
+msgid "address to call right now"
+msgstr ""
+
+#: ../gtk-glade/main.c:99
+msgid "if set automatically answer incoming calls"
+msgstr "是否设置呼叫自动应答"
+
+#: ../gtk-glade/main.c:619
+#, c-format
+msgid "Incoming call from %s"
+msgstr "来自 %s 的呼叫"
+
+#: ../gtk-glade/main.c:654
+#, c-format
+msgid ""
+"%s would like to add you to his contact list.\n"
+"Would you allow him to see your presence status or add him to your contact "
+"list ?\n"
+"If you answer no, this person will be temporarily blacklisted."
+msgstr ""
+"%s 想加你为好友。\n"
+"你是否允许他看到你的在线状态或者将它加为你的好友"
+"允许?\n"
+"如果你回答否，则会将该人临时性的放入黑名单"
+
+#: ../gtk-glade/main.c:724
+#, c-format
+msgid "Please enter your password for domain %s:"
+msgstr "请输入你的密码 %s:"
+
+#: ../gtk-glade/main.c:849
+msgid "Linphone - a video internet phone"
+msgstr "Linphone - 互联网视频电话"
+
+#: ../gtk-glade/main.c:868
+#, c-format
+msgid "%s (Default)"
+msgstr "%s (缺省)"
+
+#: ../gtk-glade/main.c:1099
+msgid "A free SIP video-phone"
+msgstr "免费的 SIP 视频电话"
+
+#: ../gtk-glade/friendlist.c:205 ../gtk-glade/propertybox.c:245
+#: ../gtk-glade/contact.glade.h:3
+msgid "Name"
+msgstr "名字"
+
+#: ../gtk-glade/friendlist.c:212
+msgid "Presence status"
+msgstr "在线状态"
+
+#: ../gtk-glade/friendlist.c:243
+#, c-format
+msgid "Search in %s directory"
+msgstr "在 %s 目录中查找 "
+
+#: ../gtk-glade/friendlist.c:432
+msgid "Invalid sip contact !"
+msgstr "无效的SIP contact"
+
+#: ../gtk-glade/friendlist.c:474
+#, c-format
+msgid "Call %s"
+msgstr "呼叫 %s"
+
+#: ../gtk-glade/friendlist.c:475
+#, c-format
+msgid "Send text to %s"
+msgstr "发送消息给 %s"
+
+#: ../gtk-glade/friendlist.c:476
+#, c-format
+msgid "Edit contact '%s'"
+msgstr "编辑好友 '%s'"
+
+#: ../gtk-glade/friendlist.c:477
+#, c-format
+msgid "Delete contact '%s'"
+msgstr "删除好友 '%s'"
+
+#: ../gtk-glade/friendlist.c:519
+#, c-format
+msgid "Add new contact from %s directory"
+msgstr "从 %s 目录增加好友 "
+
+#: ../gtk-glade/propertybox.c:251
+msgid "Rate (Hz)"
+msgstr "采样率 (Hz)"
+
+#: ../gtk-glade/propertybox.c:257
+msgid "Status"
+msgstr "状态"
+
+#: ../gtk-glade/propertybox.c:263
+msgid "Min bitrate (kbit/s)"
+msgstr "最小速率 (kbit/s)"
+
+#: ../gtk-glade/propertybox.c:269
+msgid "Parameters"
+msgstr "参数设置"
+
+#: ../gtk-glade/propertybox.c:296 ../gtk-glade/propertybox.c:435
+msgid "Enabled"
+msgstr "启用"
+
+#: ../gtk-glade/propertybox.c:297 ../gtk-glade/propertybox.c:435
+msgid "Disabled"
+msgstr "禁用"
+
+#: ../gtk-glade/propertybox.c:480
+msgid "Account"
+msgstr "账号"
+
+#: ../gtk-glade/propertybox.c:620
+msgid "English"
+msgstr ""
+
+#: ../gtk-glade/propertybox.c:621
+msgid "French"
+msgstr ""
+
+#: ../gtk-glade/propertybox.c:622
+msgid "Swedish"
+msgstr ""
+
+#: ../gtk-glade/propertybox.c:623
+msgid "Italian"
+msgstr ""
+
+#: ../gtk-glade/propertybox.c:624
+msgid "Spanish"
+msgstr ""
+
+#: ../gtk-glade/propertybox.c:625
+msgid "Bresilian"
+msgstr ""
+
+#: ../gtk-glade/propertybox.c:626
+msgid "Polish"
+msgstr ""
+
+#: ../gtk-glade/propertybox.c:627
+msgid "German"
+msgstr ""
+
+#: ../gtk-glade/propertybox.c:628
+msgid "Russian"
+msgstr ""
+
+#: ../gtk-glade/propertybox.c:629
+msgid "Japanese"
+msgstr ""
+
+#: ../gtk-glade/propertybox.c:630
+msgid "Dutch"
+msgstr ""
+
+#: ../gtk-glade/propertybox.c:631
+msgid "Hungarian"
+msgstr ""
+
+#: ../gtk-glade/propertybox.c:632
+msgid "Simple Chinese"
+msgstr "简体中文"
+
+#: ../gtk-glade/propertybox.c:689
+msgid ""
+"You need to restart linphone for the new language selection to take effect."
+msgstr ""
+"你需要重新启动linphone以使你的语言选择生效"
+
+#: ../gtk-glade/update.c:80
+#, c-format
+msgid ""
+"A more recent version is availalble from %s.\n"
+"Would you like to open a browser to download it ?"
+msgstr ""
+
+#: ../gtk-glade/buddylookup.c:66
+msgid "Firstname, Lastname"
+msgstr "姓 ，名"
+
+#: ../gtk-glade/buddylookup.c:73
+#, fuzzy
+msgid "SIP address"
+msgstr "SIP 地址"
+
+#: ../gtk-glade/buddylookup.c:121
+msgid "Error communicating with server."
+msgstr "与服务器通讯失败"
+
+#: ../gtk-glade/buddylookup.c:125
+msgid "Connecting..."
+msgstr "正在连接..."
+
+#: ../gtk-glade/buddylookup.c:129
+msgid "Connected"
+msgstr "已连接"
+
+#: ../gtk-glade/buddylookup.c:133
+msgid "Receiving data..."
+msgstr "正在接收数据..."
+
+#: ../gtk-glade/buddylookup.c:141
+#, c-format
+msgid "Found %i contact"
+msgid_plural "Found %i contacts"
+msgstr[0] "找到 %i 联系方式"
+msgstr[1] "找到 %i 联系方式(多个)"
+
+#: ../gtk-glade/setupwizard.c:25
+msgid ""
+"Welcome !\n"
+"This assistant will help you to use a SIP account for your calls."
+msgstr ""
+"欢迎使用linphone!\n"
+"该设置向导用于帮助你配置打网络电话的SIP账号"
+
+#: ../gtk-glade/setupwizard.c:34
+msgid "Create an account by choosing a username"
+msgstr "通过选择一个用户名创建一个新的账户"
+
+#: ../gtk-glade/setupwizard.c:35
+msgid "I have already an account and just want to use it"
+msgstr "我已经有一个账号，并想使用原来的账号"
+
+#: ../gtk-glade/setupwizard.c:53
+msgid "Please choose a username:"
+msgstr "请选择用户名："
+
+#: ../gtk-glade/setupwizard.c:54 ../gtk-glade/password.glade.h:4
+msgid "Username:"
+msgstr "用户名:"
+
+#: ../gtk-glade/setupwizard.c:92
+#, c-format
+msgid "Checking if '%s' is available..."
+msgstr "检查'%s'是否可用"
+
+#: ../gtk-glade/setupwizard.c:97 ../gtk-glade/setupwizard.c:164
+msgid "Please wait..."
+msgstr "请等待..."
+
+#: ../gtk-glade/setupwizard.c:101
+msgid "Sorry this username already exists. Please try a new one."
+msgstr "对不起，该用户已经存在"
+
+#: ../gtk-glade/setupwizard.c:103 ../gtk-glade/setupwizard.c:168
+msgid "Ok !"
+msgstr "成功！"
+
+#: ../gtk-glade/setupwizard.c:106 ../gtk-glade/setupwizard.c:171
+msgid "Communication problem, please try again later."
+msgstr "连接错误，请稍后重试。"
+
+#: ../gtk-glade/setupwizard.c:134
+msgid "Thank you. Your account is now configured and ready for use."
+msgstr "Thank you.你的账号已经可以使用"
+
+#: ../gtk-glade/setupwizard.c:228
+msgid "Welcome to the account setup assistant"
+msgstr "欢迎使用账号设置向导"
+
+#: ../gtk-glade/setupwizard.c:232
+msgid "Account setup assistant"
+msgstr "账号设置向导"
+
+#: ../gtk-glade/setupwizard.c:236
+#, fuzzy
+msgid "Choosing a username"
+msgstr "选择用户名:"
+
+#: ../gtk-glade/setupwizard.c:240
+msgid "Verifying"
+msgstr "验证中"
+
+#: ../gtk-glade/setupwizard.c:244
+#, fuzzy
+msgid "Confirmation"
+msgstr "确认"
+
+#: ../gtk-glade/setupwizard.c:249
+msgid "Creating your account"
+msgstr "正在创建您的账号"
+
+#: ../gtk-glade/setupwizard.c:253
+msgid "Now ready !"
+msgstr "就绪！"
+
+#: ../gtk-glade/incall_view.c:42
+#, fuzzy
+msgid "<b>Calling...</b>"
+msgstr "<b>正在呼叫...</b>"
+
+#: ../gtk-glade/incall_view.c:64
+#, fuzzy
+msgid "<b>In call with</b>"
+msgstr "<b>呼入</b>"
+
+#: ../gtk-glade/incall_view.c:68
+msgid "00::00::00"
+msgstr ""
+
+#: ../gtk-glade/incall_view.c:82
+#, c-format
+msgid "%02i::%02i::%02i"
+msgstr ""
+
+#: ../gtk-glade/incall_view.c:100
+#, fuzzy
+msgid "<b>Call ended.</b>"
+msgstr "<b>通话结束</b>"
+
+#: ../gtk-glade/loginframe.c:40
+#, fuzzy, c-format
+msgid "Please enter login information for %s"
+msgstr "请输入 %s 的登录信息:"
+
+#: ../gtk-glade/main.glade.h:1
+msgid "#"
+msgstr "#"
+
+#: ../gtk-glade/main.glade.h:2
+msgid "*"
+msgstr "*"
+
+#: ../gtk-glade/main.glade.h:3
+msgid "0"
+msgstr "0"
+
+#: ../gtk-glade/main.glade.h:4
+msgid "1"
+msgstr "1"
+
+#: ../gtk-glade/main.glade.h:5
+msgid "2"
+msgstr "2"
+
+#: ../gtk-glade/main.glade.h:6
+msgid "3"
+msgstr "3"
+
+#: ../gtk-glade/main.glade.h:7
+msgid "4"
+msgstr "4"
+
+#: ../gtk-glade/main.glade.h:8
+msgid "5"
+msgstr "5"
+
+#: ../gtk-glade/main.glade.h:9
+msgid "6"
+msgstr "6"
+
+#: ../gtk-glade/main.glade.h:10
+msgid "7"
+msgstr "7"
+
+#: ../gtk-glade/main.glade.h:11
+msgid "8"
+msgstr "8"
+
+#: ../gtk-glade/main.glade.h:12
+msgid "9"
+msgstr "9"
+
+#: ../gtk-glade/main.glade.h:13
+msgid "<b>Contact list</b>"
+msgstr "<b>好友列表</b>"
+
+#: ../gtk-glade/main.glade.h:14
+msgid "<b>Terminate call</b>"
+msgstr "挂断电话"
+
+#: ../gtk-glade/main.glade.h:15
+#, fuzzy
+msgid "<b>Welcome !</b>"
+msgstr "<b>欢迎 ！</b>"
+
+#: ../gtk-glade/main.glade.h:16
+msgid "A"
+msgstr ""
+
+#: ../gtk-glade/main.glade.h:17
+msgid ""
+"ADSL\n"
+"Fiber Channel"
+msgstr ""
+
+#: ../gtk-glade/main.glade.h:19
+msgid ""
+"All users\n"
+"Online users"
+msgstr ""
+
+#: ../gtk-glade/main.glade.h:21
+msgid "Assistant"
+msgstr "配置向导"
+
+#: ../gtk-glade/main.glade.h:22
+msgid "Audio & Video"
+msgstr "音频 & 视频"
+
+#: ../gtk-glade/main.glade.h:23
+msgid "Audio only"
+msgstr "音频"
+
+#: ../gtk-glade/main.glade.h:24
+msgid "B"
+msgstr ""
+
+#: ../gtk-glade/main.glade.h:25 ../gtk-glade/parameters.glade.h:20
+msgid "C"
+msgstr ""
+
+#: ../gtk-glade/main.glade.h:26
+msgid "D"
+msgstr ""
+
+#: ../gtk-glade/main.glade.h:27
+msgid "Default"
+msgstr "缺省"
+
+#: ../gtk-glade/main.glade.h:28
+msgid "Digits"
+msgstr ""
+
+#: ../gtk-glade/main.glade.h:29
+msgid "Duration"
+msgstr "通话时间"
+
+#: ../gtk-glade/main.glade.h:30
+msgid "Duration:"
+msgstr "通话计时："
+
+#: ../gtk-glade/main.glade.h:31
+msgid "Enable self-view"
+msgstr "启用self-view"
+
+#: ../gtk-glade/main.glade.h:32
+msgid "Enter username, phone number, or full sip address"
+msgstr ""
+"请输入用户名、电话号码或者SIP地址"
+
+#: ../gtk-glade/main.glade.h:33
+msgid "In call"
+msgstr "呼入"
+
+#: ../gtk-glade/main.glade.h:34
+msgid "Internet connection:"
+msgstr "网络连接："
+
+#: ../gtk-glade/main.glade.h:35
+#, fuzzy
+msgid "Login information"
+msgstr "登陆信息"
+
+#: ../gtk-glade/main.glade.h:36
+msgid "Lookup:"
+msgstr "查找："
+
+#: ../gtk-glade/main.glade.h:37
+msgid "Main view"
+msgstr ""
+
+#: ../gtk-glade/main.glade.h:38
+msgid "Mute"
+msgstr "静音"
+
+#: ../gtk-glade/main.glade.h:39
+#, fuzzy
+msgid "My current identity:"
+msgstr "我的当前ID:"
+
+#: ../gtk-glade/main.glade.h:40
+#, fuzzy
+msgid "Password"
+msgstr "密码"
+
+#: ../gtk-glade/main.glade.h:41
+#, fuzzy
+msgid "SIP address or phone number:"
+msgstr "SIP地址或电话号码"
+
+#: ../gtk-glade/main.glade.h:42
+#, fuzzy
+msgid "Show current call"
+msgstr ""
+
+#: ../gtk-glade/main.glade.h:43
+msgid "Start call"
+msgstr "开始呼叫"
+
+#: ../gtk-glade/main.glade.h:44
+msgid "Terminate call"
+msgstr "终止呼叫"
+
+#: ../gtk-glade/main.glade.h:45
+#, fuzzy
+msgid "Username"
+msgstr "用户名:"
+
+#: ../gtk-glade/main.glade.h:46
+#, fuzzy
+msgid "_Linphone"
+msgstr "_Linphone"
+
+#: ../gtk-glade/main.glade.h:47
+msgid "_Modes"
+msgstr "_模式"
+
+#: ../gtk-glade/main.glade.h:48
+#, fuzzy
+msgid "gtk-connect"
+msgstr "连接"
+
+#: ../gtk-glade/main.glade.h:49
+msgid "gtk-find"
+msgstr ""
+
+#: ../gtk-glade/main.glade.h:50
+msgid "in"
+msgstr ""
+
+#: ../gtk-glade/main.glade.h:51
+#, fuzzy
+msgid "label"
+msgstr "label"
+
+#: ../gtk-glade/about.glade.h:1
+msgid "About linphone"
+msgstr "关于 linphone"
+
+#: ../gtk-glade/about.glade.h:2
+msgid "An internet video phone using the standart SIP (rfc3261) protocol."
+msgstr "一个采用标准 SIP (rfc3261) 协议的互联网视频电话."
+
+#: ../gtk-glade/about.glade.h:3
+msgid "Created by Simon Morlat\n"
+msgstr "由Simon Morlat创建\n"
+
+#: ../gtk-glade/about.glade.h:5
+msgid ""
+"fr: Simon Morlat\n"
+"en: Simon Morlat and Delphine Perreau\n"
+"it: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>\n"
+"de: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>\n"
+"sv: Daniel Nylander <po@danielnylander.se>\n"
+"es: Jesus Benitez <gnelson at inMail dot sk>\n"
+"ja: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\n"
+"pt_BR: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\n"
+"pl: Robert Nasiadek <darkone@darkone.pl>\n"
+"cs: Petr Pisar <petr.pisar@atlas.cz>\n"
+"hu: anonymous\n"
+msgstr ""
+"fr: Simon Morlat\n"
+"en: Simon Morlat and Delphine Perreau\n"
+"it: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>\n"
+"de: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>\n"
+"sv: Daniel Nylander <po@danielnylander.se>\n"
+"es: Jesus Benitez <gnelson at inMail dot sk>\n"
+"ja: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\n"
+"pt_BR: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\n"
+"pl: Robert Nasiadek <darkone@darkone.pl>\n"
+"cs: Petr Pisar <petr.pisar@atlas.cz>\n"
+"hu: anonymous\n"
+"zh_CN: Jiang Honglei <hongleij@126.com>\n"
+
+#: ../gtk-glade/contact.glade.h:1
+msgid "Allow this contact to see my presence status"
+msgstr "允许此人看到我的在线状态"
+
+#: ../gtk-glade/contact.glade.h:2
+msgid "Contact information"
+msgstr "好友信息"
+
+#: ../gtk-glade/contact.glade.h:4
+msgid "SIP Address"
+msgstr "SIP 地址"
+
+#: ../gtk-glade/contact.glade.h:5
+msgid "Show this contact presence status"
+msgstr "显示该好友的在线状态"
+
+#: ../gtk-glade/contact.glade.h:6 ../gtk-glade/password.glade.h:5
+#: ../gtk-glade/sip_account.glade.h:9
+msgid "gtk-cancel"
+msgstr ""
+
+#: ../gtk-glade/contact.glade.h:7 ../gtk-glade/password.glade.h:6
+#: ../gtk-glade/sip_account.glade.h:10
+msgid "gtk-ok"
+msgstr ""
+
+#: ../gtk-glade/log.glade.h:1
+msgid "Linphone debug window"
+msgstr "Linphone 调试窗口"
+
+#: ../gtk-glade/log.glade.h:2 ../gtk-glade/call_logs.glade.h:2
+#: ../gtk-glade/chatroom.glade.h:2
+msgid "gtk-close"
+msgstr ""
+
+#: ../gtk-glade/password.glade.h:1
+msgid "Linphone - Authentication required"
+msgstr "Linphone - 需要认证"
+
+#: ../gtk-glade/password.glade.h:2
+msgid "Password:"
+msgstr "密码："
+
+#: ../gtk-glade/password.glade.h:3
+#, fuzzy
+msgid "Please enter the domain password"
+msgstr "请输入密码..."
+
+#: ../gtk-glade/call_logs.glade.h:1
+msgid "Call history"
+msgstr "呼叫历史"
+
+#: ../gtk-glade/sip_account.glade.h:1
+msgid "Configure a SIP account"
+msgstr "配置 SIP 账户"
+
+#: ../gtk-glade/sip_account.glade.h:2
+msgid "Linphone - Configure a SIP account"
+msgstr "Linphone - 配置 SIP 账户"
+
+#: ../gtk-glade/sip_account.glade.h:3
+msgid "Publish presence information"
+msgstr "发布自己的在线状态"
+
+#: ../gtk-glade/sip_account.glade.h:4
+msgid "Register at startup"
+msgstr "在启动时注册"
+
+#: ../gtk-glade/sip_account.glade.h:5
+msgid "Registration duration (sec):"
+msgstr "注册间隔(秒):"
+
+#: ../gtk-glade/sip_account.glade.h:6
+msgid "Route (optional):"
+msgstr "路由 (可选项):"
+
+#: ../gtk-glade/sip_account.glade.h:7
+msgid "SIP Proxy address:"
+msgstr "SIP Proxy地址:"
+
+#: ../gtk-glade/sip_account.glade.h:8
+msgid "Your SIP identity:"
+msgstr "你的 SIP 账号:"
+
+#: ../gtk-glade/sip_account.glade.h:11
+msgid "sip:"
+msgstr "sip:"
+
+#: ../gtk-glade/chatroom.glade.h:1
+msgid "Send"
+msgstr "发送"
+
+#: ../gtk-glade/incoming_call.glade.h:1
+msgid "Accept"
+msgstr "接受"
+
+#: ../gtk-glade/incoming_call.glade.h:2
+msgid "Decline"
+msgstr "拒绝"
+
+#: ../gtk-glade/incoming_call.glade.h:3 ../coreapi/linphonecore.c:234
+msgid "Incoming call"
+msgstr "呼入"
+
+#: ../gtk-glade/incoming_call.glade.h:4
+msgid "Incoming call from"
+msgstr "来自"
+
+#: ../gtk-glade/incoming_call.glade.h:5
+msgid "Linphone - Incoming call"
+msgstr "Linphone - 呼入"
+
+#: ../gtk-glade/parameters.glade.h:1
+msgid "0 stands for \"unlimited\""
+msgstr "0 表示 \"没有限制\""
+
+#: ../gtk-glade/parameters.glade.h:2
+#, fuzzy
+msgid "<b>Audio</b>"
+msgstr "<b>音频</b>"
+
+#: ../gtk-glade/parameters.glade.h:3
+#, fuzzy
+msgid "<b>Bandwidth control</b>"
+msgstr "<b>带宽控制</b>"
+
+#: ../gtk-glade/parameters.glade.h:4
+msgid "<b>Codecs</b>"
+msgstr "<b>编码</b>"
+
+#: ../gtk-glade/parameters.glade.h:5
+msgid "<b>Default identity</b>"
+msgstr "<b>缺省账户</b>"
+
+#: ../gtk-glade/parameters.glade.h:6
+#, fuzzy
+msgid "<b>Language</b>"
+msgstr "<b>语言设置</b>"
+
+#: ../gtk-glade/parameters.glade.h:7
+#, fuzzy
+msgid "<b>NAT and Firewall</b>"
+msgstr "<b>NAT及防火墙</b>"
+
+#: ../gtk-glade/parameters.glade.h:8
+msgid "<b>Ports</b>"
+msgstr "<b>端口</b>"
+
+#: ../gtk-glade/parameters.glade.h:9
+msgid "<b>Privacy</b>"
+msgstr "<b>隐私</b>"
+
+#: ../gtk-glade/parameters.glade.h:10
+msgid "<b>Proxy accounts</b>"
+msgstr "<b>Proxy 账户</b>"
+
+#: ../gtk-glade/parameters.glade.h:11
+#, fuzzy
+msgid "<b>Transport</b>"
+msgstr "<b>传输协议</b>"
+
+#: ../gtk-glade/parameters.glade.h:12
+msgid "<b>Video</b>"
+msgstr "<b>视频</b>"
+
+#: ../gtk-glade/parameters.glade.h:13
+#, fuzzy
+msgid "ALSA special device (optional):"
+msgstr ""
+
+#: ../gtk-glade/parameters.glade.h:14
+msgid "Add"
+msgstr "添加"
+
+#: ../gtk-glade/parameters.glade.h:15
+#, fuzzy
+msgid "Audio RTP/UDP:"
+msgstr "音频 RTP/UDP"
+
+#: ../gtk-glade/parameters.glade.h:16
+msgid ""
+"Audio codecs\n"
+"Video codecs"
+msgstr ""
+"音频编码\n"
+"视频编码"
+
+#: ../gtk-glade/parameters.glade.h:18
+msgid "Behind NAT / Firewall (specify gateway IP below)"
+msgstr "位于NAT或防火墙之后（请填写防火墙地址）"
+
+#: ../gtk-glade/parameters.glade.h:19
+msgid "Behind NAT / Firewall (use STUN to resolve)"
+msgstr "STUN服务器地址"
+
+#: ../gtk-glade/parameters.glade.h:21
+msgid "CIF"
+msgstr ""
+
+#: ../gtk-glade/parameters.glade.h:22
+#, fuzzy
+msgid "Capture device:"
+msgstr "录音设备"
+
+#: ../gtk-glade/parameters.glade.h:23
+msgid "Codecs"
+msgstr "编码"
+
+#: ../gtk-glade/parameters.glade.h:24
+msgid "Direct connection to the Internet"
+msgstr "直连"
+
+#: ../gtk-glade/parameters.glade.h:25
+msgid "Disable"
+msgstr "禁用"
+
+#: ../gtk-glade/parameters.glade.h:26
+msgid "Done"
+msgstr "确认"
+
+#: ../gtk-glade/parameters.glade.h:27
+#, fuzzy
+msgid "Download speed limit in Kbit/sec:"
+msgstr "下传速率限制 kbit/sec"
+
+#: ../gtk-glade/parameters.glade.h:28
+msgid "Edit"
+msgstr "编辑"
+
+#: ../gtk-glade/parameters.glade.h:29
+msgid "Enable"
+msgstr "启用"
+
+#: ../gtk-glade/parameters.glade.h:30
+msgid "Enable echo cancellation"
+msgstr "启用回声抑制"
+
+#: ../gtk-glade/parameters.glade.h:31
+msgid "Erase all passwords"
+msgstr "删除所有编码"
+
+#: ../gtk-glade/parameters.glade.h:32
+msgid "Manage SIP Accounts"
+msgstr "SIP账户管理"
+
+#: ../gtk-glade/parameters.glade.h:33
+msgid "Multimedia settings"
+msgstr "音视频设置"
+
+#: ../gtk-glade/parameters.glade.h:34
+msgid "Network settings"
+msgstr "网络设置"
+
+#: ../gtk-glade/parameters.glade.h:35
+msgid "Playback device:"
+msgstr "回放设备"
+
+#: ../gtk-glade/parameters.glade.h:36
+msgid "Prefered video resolution:"
+msgstr "视频分辨率"
+
+#: ../gtk-glade/parameters.glade.h:37
+msgid "Public IP address:"
+msgstr "公网 IP 地址"
+
+#: ../gtk-glade/parameters.glade.h:38
+msgid ""
+"Register to FONICS\n"
+"virtual network !"
+msgstr ""
+"注册到 FONICS\n"
+"虚拟网络!"
+
+#: ../gtk-glade/parameters.glade.h:40
+msgid "Remove"
+msgstr "移除"
+
+#: ../gtk-glade/parameters.glade.h:41
+msgid "Ring device:"
+msgstr "响铃设备"
+
+#: ../gtk-glade/parameters.glade.h:42
+msgid "Ring sound:"
+msgstr "铃声："
+
+#: ../gtk-glade/parameters.glade.h:43
+msgid "SIP (UDP):"
+msgstr "SIP (UDP)"
+
+#: ../gtk-glade/parameters.glade.h:44
+msgid "Send DTMFs as SIP info"
+msgstr ""
+
+#: ../gtk-glade/parameters.glade.h:45
+msgid "Set Maximum Transmission Unit:"
+msgstr "设置Maximum Transmission Unit(MTU):"
+
+#: ../gtk-glade/parameters.glade.h:46
+msgid "Settings"
+msgstr "设置"
+
+#: ../gtk-glade/parameters.glade.h:47
+#, fuzzy
+msgid "Stun server:"
+msgstr "Stun 服务器地址："
+
+#: ../gtk-glade/parameters.glade.h:48
+msgid "This section defines your SIP address when not using a SIP account"
+msgstr "该段在你不使用SIP账号时的SIP地址"
+
+#: ../gtk-glade/parameters.glade.h:49
+#, fuzzy
+msgid "Upload speed limit in Kbit/sec:"
+msgstr "上传速率限制 kbit/sec"
+
+#: ../gtk-glade/parameters.glade.h:50
+msgid "Use IPv6 instead of IPv4"
+msgstr "使用 IPv6"
+
+#: ../gtk-glade/parameters.glade.h:51
+#, fuzzy
+msgid "User interface"
+msgstr "界面设置:"
+
+#: ../gtk-glade/parameters.glade.h:52
+#, fuzzy
+msgid "Video RTP/UDP:"
+msgstr "视频 RTP/UDP"
+
+#: ../gtk-glade/parameters.glade.h:53
+#, fuzzy
+msgid "Video input device:"
+msgstr "视频输入设备"
+
+#: ../gtk-glade/parameters.glade.h:54
+msgid "Your display name (eg: John Doe):"
+msgstr "你的显示名 (如：张三):"
+
+#: ../gtk-glade/parameters.glade.h:55
+msgid "Your resulting SIP address:"
+msgstr "你的SIP地址结果:"
+
+#: ../gtk-glade/parameters.glade.h:56
+msgid "Your username:"
+msgstr "你的用户名:"
+
+#: ../gtk-glade/parameters.glade.h:57
+msgid "a sound card\n"
+msgstr "声卡\n"
+
+#: ../gtk-glade/parameters.glade.h:59
+msgid "default camera"
+msgstr "缺省摄像头"
+
+#: ../gtk-glade/parameters.glade.h:60
+msgid "default soundcard"
+msgstr "缺省声卡"
+
+#: ../gtk-glade/parameters.glade.h:61
+msgid "default soundcard\n"
+msgstr "缺省声卡\n"
+
+#: ../gtk-glade/parameters.glade.h:63
+msgid "gtk-go-down"
+msgstr ""
+
+#: ../gtk-glade/parameters.glade.h:64
+msgid "gtk-go-up"
+msgstr ""
+
+#: ../gtk-glade/parameters.glade.h:65
+msgid "gtk-media-play"
+msgstr ""
+
+#: ../gtk-glade/buddylookup.glade.h:1
+msgid "<b>Search somebody</b>"
+msgstr "<b>查找用户</b>"
+
+#: ../gtk-glade/buddylookup.glade.h:2
+msgid "Add to my list"
+msgstr "添加为好友"
+
+#: ../gtk-glade/buddylookup.glade.h:3
+msgid "Search contacts in directory"
+msgstr "查找好友"
+
+#: ../gtk-glade/waiting.glade.h:1
+msgid "Linphone"
+msgstr "Linphone"
+
+#: ../gtk-glade/waiting.glade.h:2
+msgid "Please wait"
+msgstr "请等待"
+
+#: ../coreapi/linphonecore.c:194
+#, fuzzy, c-format
+msgid "You have missed %i call."
+msgid_plural "You have missed %i calls."
+msgstr[0] "你丢失 %i 呼叫."
+msgstr[1] "你共丢失 %i 次呼叫."
+
+#: ../coreapi/linphonecore.c:222
+msgid "aborted"
+msgstr "中断"
+
+#: ../coreapi/linphonecore.c:225
+msgid "completed"
+msgstr "完成"
+
+#: ../coreapi/linphonecore.c:228
+msgid "missed"
+msgstr "丢失"
+
+#: ../coreapi/linphonecore.c:233
+#, c-format
+msgid ""
+"%s at %s\n"
+"From: %s\n"
+"To: %s\n"
+"Status: %s\n"
+"Duration: %i mn %i sec\n"
+msgstr ""
+"%s at %s\n"
+"From: %s\n"
+"To: %s\n"
+"Status: %s\n"
+"Status: %i min %i sec\n"
+
+#: ../coreapi/linphonecore.c:234
+msgid "Outgoing call"
+msgstr "呼出"
+
+#: ../coreapi/linphonecore.c:444
+msgid ""
+"Your machine appears to be connected to an IPv6 network. By default linphone "
+"always uses IPv4. Please update your configuration if you want to use IPv6"
+msgstr ""
+"你的机器缺省配置为IPv6. Linphone 缺省使用"
+"IPv4. 请修改配置如果你想使用IPv6. "
+
+#: ../coreapi/linphonecore.c:726
+msgid "Ready"
+msgstr "就绪"
+
+#: ../coreapi/linphonecore.c:1001
+msgid "Remote end seems to have disconnected, the call is going to be closed."
+msgstr "对方断开连接, 通话终止."
+
+#: ../coreapi/linphonecore.c:1159
+msgid "Looking for telephone number destination..."
+msgstr "查询对方电话号码.."
+
+#: ../coreapi/linphonecore.c:1161
+msgid "Could not resolve this number."
+msgstr "该号码无法解析."
+
+#: ../coreapi/linphonecore.c:1226
+msgid ""
+"Could not parse given sip address. A sip url usually looks like sip:"
+"user@domain"
+msgstr ""
+"无法解析给定的SIP地址. SIP url 应有如下格式: <sip:"
+"username@domainname>"
+
+#: ../coreapi/linphonecore.c:1327
+msgid "Sorry, having multiple simultaneous calls is not supported yet !"
+msgstr "抱歉, 还不支持并发多路呼叫!"
+
+#: ../coreapi/linphonecore.c:1371
+msgid "Contacting"
+msgstr "联系中"
+
+#: ../coreapi/linphonecore.c:1386
+msgid "could not call"
+msgstr "无法呼叫"
+
+#: ../coreapi/linphonecore.c:1767 ../coreapi/exevents.c:49
+msgid "Connected."
+msgstr "连接建立."
+
+#: ../coreapi/linphonecore.c:1793
+msgid "Call ended"
+msgstr "呼叫结束"
+
+#: ../coreapi/linphonecore.c:2155
+msgid "No nat/firewall address supplied !"
+msgstr "没有提供NAT/firewall地址!"
+
+#: ../coreapi/linphonecore.c:2167 ../coreapi/linphonecore.c:2179
+#, c-format
+msgid "Invalid nat address '%s' : %s"
+msgstr "无效NAT地址 '%s' : '%s'"
+
+#: ../coreapi/misc.c:132
+msgid ""
+"Your computer appears to be using ALSA sound drivers.\n"
+"This is the best choice. However the pcm oss emulation module\n"
+"is missing and linphone needs it. Please execute\n"
+"'modprobe snd-pcm-oss' as root to load it."
+msgstr ""
+"Your computer appears to be using ALSA sound drivers.\n"
+"This is the best choice. However the pcm oss emulation module\n"
+"is missing and linphone needs it. Please execute\n"
+"'modprobe snd-pcm-oss' as root to load it."
+
+#: ../coreapi/misc.c:135
+msgid ""
+"Your computer appears to be using ALSA sound drivers.\n"
+"This is the best choice. However the mixer oss emulation module\n"
+"is missing and linphone needs it. Please execute\n"
+" 'modprobe snd-mixer-oss' as root to load it."
+msgstr ""
+"Your computer appears to be using ALSA sound drivers.\n"
+"This is the best choice. However the mixer oss emulation module\n"
+"is missing and linphone needs it. Please execute\n"
+" 'modprobe snd-mixer-oss' as root to load it."
+
+#: ../coreapi/misc.c:594
+msgid "Stun lookup in progress..."
+msgstr "正在进行Stun查找..."
+
+#: ../coreapi/exevents.c:126
+msgid "Call terminated."
+msgstr "通话结束."
+
+#: ../coreapi/exevents.c:148
+msgid "Could not reach destination."
+msgstr "目标不可达."
+
+#: ../coreapi/exevents.c:157
+msgid "User is busy."
+msgstr "被叫忙."
+
+#: ../coreapi/exevents.c:158
+msgid "User is temporarily unavailable."
+msgstr "你呼叫的用户无法接通."
+
+#: ../coreapi/exevents.c:159
+msgid "Request Cancelled."
+msgstr "取消请求."
+
+#. char *retrymsg=_("%s. Retry after %i minute(s).");
+#: ../coreapi/exevents.c:161
+msgid "User does not want to be disturbed."
+msgstr "用户开启免打扰功能."
+
+#: ../coreapi/exevents.c:162
+msgid "Call declined."
+msgstr "呼叫被拒绝."
+
+#: ../coreapi/exevents.c:190
+msgid "Bad request"
+msgstr "错误请求"
+
+#: ../coreapi/exevents.c:193
+msgid "User cannot be found at given address."
+msgstr "用给定地址无法找到该用户."
+
+#: ../coreapi/exevents.c:196
+msgid "Remote user cannot support any of proposed codecs."
+msgstr ""
+"对方不支持相关编码."
+
+#. time out, call leg is lost
+#: ../coreapi/exevents.c:222
+msgid "Timeout."
+msgstr "超时."
+
+#: ../coreapi/exevents.c:225
+msgid "Remote host was found but refused connection."
+msgstr "找到该用户，但是连接被拒绝."
+
+#: ../coreapi/exevents.c:333
+msgid "is contacting you."
+msgstr "真正联系你."
+
+#: ../coreapi/exevents.c:418
+#, c-format
+msgid "Redirected to %s..."
+msgstr "重定向到 %s..."
+
+#: ../coreapi/exevents.c:434
+msgid ""
+"User is not reachable at the moment but he invites you\n"
+"to contact him using the following alternate resource:"
+msgstr ""
+"用户当前不可达，但是他向你发出呼叫请求\n"
+" 要联系该用户，请使用如下地址:"
+
+#: ../coreapi/exevents.c:855
+msgid "Early media."
+msgstr ""
+
+#: ../coreapi/exevents.c:954
+#, c-format
+msgid "Registration on %s failed: %s"
+msgstr "注册到 %s 失败: %s"
+
+#: ../coreapi/exevents.c:954
+msgid "no response timeout"
+msgstr "没有响应，超时"
+
+#: ../coreapi/exevents.c:969
+#, c-format
+msgid "Registration on %s successful."
+msgstr "成功注册到 %s "
+
+#. people for which we don't have yet an answer should appear as offline
+#: ../coreapi/presence.c:112 ../coreapi/presence.c:164 ../coreapi/friend.c:147
+msgid "Gone"
+msgstr "离开"
+
+#: ../coreapi/presence.c:129
+msgid "Waiting for Approval"
+msgstr "等待批准"
+
+#: ../coreapi/presence.c:133 ../coreapi/friend.c:38
+msgid "Online"
+msgstr "在线"
+
+#: ../coreapi/presence.c:137 ../coreapi/friend.c:41
+msgid "Busy"
+msgstr "用户忙"
+
+#: ../coreapi/presence.c:142
+msgid "Be Right Back"
+msgstr "马上回来"
+
+#: ../coreapi/presence.c:146 ../coreapi/friend.c:47
+msgid "Away"
+msgstr "离开"
+
+#: ../coreapi/presence.c:151
+msgid "On The Phone"
+msgstr "通话中"
+
+#: ../coreapi/presence.c:156
+msgid "Out To Lunch"
+msgstr "外出就餐"
+
+#: ../coreapi/presence.c:160 ../coreapi/friend.c:71
+msgid "Closed"
+msgstr "离线"
+
+#: ../coreapi/friend.c:35
+msgid "未知"
+msgstr ""
+
+#: ../coreapi/friend.c:44
+#, fuzzy
+msgid "Be right back"
+msgstr "离开"
+
+#: ../coreapi/friend.c:50
+#, fuzzy
+msgid "On the phone"
+msgstr "通话中"
+
+#: ../coreapi/friend.c:53
+#, fuzzy
+msgid "Out to lunch"
+msgstr "外出吃饭中.."
+
+#: ../coreapi/friend.c:56
+msgid "Do not disturb"
+msgstr "请勿打扰"
+
+#: ../coreapi/friend.c:59
+msgid "Moved"
+msgstr ""
+
+#: ../coreapi/friend.c:62
+msgid "Using another messaging service"
+msgstr ""
+
+#: ../coreapi/friend.c:65
+#, fuzzy
+msgid "Offline"
+msgstr "离线"
+
+#: ../coreapi/friend.c:68
+msgid "Pending"
+msgstr "挂起"
+
+#: ../coreapi/friend.c:74
+msgid "Unknown-bug"
+msgstr "未知错误"
+
+#: ../coreapi/proxy.c:221
+msgid ""
+"The sip proxy address you entered is invalid, it must start with \"sip:\" "
+"followed by a hostname."
+msgstr ""
+
+#: ../coreapi/proxy.c:227
+msgid ""
+"The sip identity you entered is invalid.\n"
+"It should look like sip:username@proxydomain, such as sip:alice@example.net"
+msgstr ""
+
+#: ../coreapi/proxy.c:634
+#, fuzzy, c-format
+msgid "Could not login as %s"
+msgstr "无法登陆: %s"
+
+#: ../mediastreamer2/src/alaw.c:144 ../mediastreamer2/src/alaw.c:162
+msgid "ITU-G.711 alaw encoder"
+msgstr ""
+
+#: ../mediastreamer2/src/alaw.c:194 ../mediastreamer2/src/alaw.c:211
+msgid "ITU-G.711 alaw decoder"
+msgstr ""
+
+#: ../mediastreamer2/src/alsa.c:923
+#, fuzzy
+msgid "Alsa sound source"
+msgstr "ALSA音频源"
+
+#: ../mediastreamer2/src/alsa.c:1027
+msgid "Alsa sound output"
+msgstr "ALSA音频输出"
+
+#: ../mediastreamer2/src/aqsnd.c:599
+msgid "Sound capture filter for MacOS X Audio Queue Service"
+msgstr ""
+
+#: ../mediastreamer2/src/aqsnd.c:613
+msgid "Sound playback filter for MacOS X Audio Queue Service"
+msgstr ""
+
+#: ../mediastreamer2/src/dtmfgen.c:173 ../mediastreamer2/src/dtmfgen.c:191
+msgid "DTMF generator"
+msgstr ""
+
+#: ../mediastreamer2/src/gsm.c:70 ../mediastreamer2/src/gsm.c:88
+msgid "The GSM full-rate codec"
+msgstr ""
+
+#: ../mediastreamer2/src/gsm.c:134 ../mediastreamer2/src/gsm.c:152
+msgid "The GSM codec"
+msgstr ""
+
+#: ../mediastreamer2/src/macsnd.c:670
+msgid "Sound capture filter for MacOS X Core Audio drivers"
+msgstr ""
+
+#: ../mediastreamer2/src/macsnd.c:684
+msgid "Sound playback filter for MacOS X Core Audio drivers"
+msgstr ""
+
+#: ../mediastreamer2/src/msconf.c:787 ../mediastreamer2/src/msconf.c:805
+msgid "A filter to make conferencing"
+msgstr ""
+
+#: ../mediastreamer2/src/msfileplayer.c:295
+#: ../mediastreamer2/src/msfileplayer.c:313
+msgid "Raw files and wav reader"
+msgstr ""
+
+#: ../mediastreamer2/src/msfilerec.c:170 ../mediastreamer2/src/msfilerec.c:188
+#: ../mediastreamer2/src/msfilerec_win.c:216
+#: ../mediastreamer2/src/msfilerec_win.c:234
+msgid "Wav file recorder"
+msgstr ""
+
+#: ../mediastreamer2/src/msjoin.c:45 ../mediastreamer2/src/msjoin.c:63
+msgid "A filter that send several inputs to one output."
+msgstr ""
+
+#: ../mediastreamer2/src/msresample.c:221
+#: ../mediastreamer2/src/msresample.c:239
+msgid "frequency resampler"
+msgstr ""
+
+#: ../mediastreamer2/src/msrtp.c:233 ../mediastreamer2/src/msrtp.c:251
+msgid "RTP output filter"
+msgstr ""
+
+#: ../mediastreamer2/src/msrtp.c:348 ../mediastreamer2/src/msrtp.c:366
+msgid "RTP input filter"
+msgstr ""
+
+#: ../mediastreamer2/src/msspeex.c:358 ../mediastreamer2/src/msspeex.c:376
+#: ../mediastreamer2/src/msspeex.c:503 ../mediastreamer2/src/msspeex.c:521
+msgid "The free and wonderful speex codec"
+msgstr ""
+
+#: ../mediastreamer2/src/msvolume.c:355 ../mediastreamer2/src/msvolume.c:370
+msgid "A filter that controls and measure sound volume"
+msgstr ""
+
+#: ../mediastreamer2/src/msv4l.c:1009
+msgid "A video4linux compatible source filter to stream pictures."
+msgstr ""
+
+#: ../mediastreamer2/src/msv4l2.c:458
+msgid "A filter to grab pictures from Video4Linux2-powered cameras"
+msgstr ""
+
+#: ../mediastreamer2/src/nowebcam.c:1780
+msgid "A filter that outputs a static image."
+msgstr ""
+
+#: ../mediastreamer2/src/oss.c:567
+msgid "Sound capture filter for OSS drivers"
+msgstr ""
+
+#: ../mediastreamer2/src/oss.c:581
+msgid "Sound playback filter for OSS drivers"
+msgstr ""
+
+#: ../mediastreamer2/src/pixconv.c:173 ../mediastreamer2/src/pixconv.c:191
+msgid "A pixel format converter"
+msgstr ""
+
+#: ../mediastreamer2/src/sizeconv.c:204
+msgid "A video size converter"
+msgstr ""
+
+#: ../mediastreamer2/src/sizeconv.c:222
+msgid "a small video size converter"
+msgstr ""
+
+#: ../mediastreamer2/src/speexec.c:349 ../mediastreamer2/src/speexec.c:367
+msgid "Echo canceler using speex library"
+msgstr ""
+
+#: ../mediastreamer2/src/tee.c:80 ../mediastreamer2/src/tee.c:98
+msgid "A filter that reads from input and copy to its multiple outputs."
+msgstr ""
+
+#: ../mediastreamer2/src/theora.c:374
+msgid "The theora video encoder from xiph.org"
+msgstr ""
+
+#: ../mediastreamer2/src/theora.c:392
+msgid "The open-source and royalty-free 'theora' video codec from xiph.org"
+msgstr ""
+
+#: ../mediastreamer2/src/theora.c:560 ../mediastreamer2/src/theora.c:578
+msgid "The theora video decoder from xiph.org"
+msgstr ""
+
+#: ../mediastreamer2/src/ulaw.c:146 ../mediastreamer2/src/ulaw.c:164
+msgid "ITU-G.711 ulaw encoder"
+msgstr ""
+
+#: ../mediastreamer2/src/ulaw.c:196 ../mediastreamer2/src/ulaw.c:214
+msgid "ITU-G.711 ulaw decoder"
+msgstr ""
+
+#: ../mediastreamer2/src/videodec.c:302 ../mediastreamer2/src/videodec.c:318
+#: ../mediastreamer2/src/videodec.c:385 ../mediastreamer2/src/videodec.c:401
+msgid "A H.263 decoder using ffmpeg library"
+msgstr ""
+
+#: ../mediastreamer2/src/videodec.c:335
+msgid "A MPEG4 decoder using ffmpeg library"
+msgstr ""
+
+#: ../mediastreamer2/src/videodec.c:351
+msgid "A MJPEG decoder using ffmpeg library"
+msgstr ""
+
+#: ../mediastreamer2/src/videodec.c:367
+msgid "A snow decoder using ffmpeg library"
+msgstr ""
+
+#: ../mediastreamer2/src/videoenc.c:604 ../mediastreamer2/src/videoenc.c:670
+msgid "A video H.263 encoder using ffmpeg library."
+msgstr ""
+
+#: ../mediastreamer2/src/videoenc.c:620
+msgid ""
+"A video H.263 encoder using ffmpeg library. It is compliant with old RFC2190 "
+"spec."
+msgstr ""
+
+#: ../mediastreamer2/src/videoenc.c:636 ../mediastreamer2/src/videoenc.c:702
+msgid "A video MPEG4 encoder using ffmpeg library."
+msgstr ""
+
+#: ../mediastreamer2/src/videoenc.c:652
+msgid "A video snow encoder using ffmpeg library."
+msgstr ""
+
+#: ../mediastreamer2/src/videoenc.c:686
+msgid ""
+"A video H.263 encoder using ffmpeg library, compliant with old RFC2190 spec."
+msgstr ""
+
+#: ../mediastreamer2/src/videoenc.c:718
+msgid ""
+"The snow codec is royalty-free and is open-source. \n"
+"It uses innovative techniques that makes it one of most promising video "
+"codec. It is implemented within the ffmpeg project.\n"
+"However it is under development, quite unstable and compatibility with other "
+"versions cannot be guaranteed."
+msgstr ""
+
+#: ../mediastreamer2/src/videoout.c:904 ../mediastreamer2/src/videoout.c:922
+msgid "A generic video display"
+msgstr ""
+
+#: ../mediastreamer2/src/wincevideods.c:966
+#: ../mediastreamer2/src/wincevideods.c:984
+#: ../mediastreamer2/src/winvideo.c:596 ../mediastreamer2/src/winvideo.c:614
+#: ../mediastreamer2/src/winvideods.c:1286
+#: ../mediastreamer2/src/winvideods.c:1304
+msgid "A video4windows compatible source filter to stream pictures."
+msgstr ""
+
+#: ../mediastreamer2/src/winvideo2.c:436 ../mediastreamer2/src/winvideo2.c:454
+msgid "A video for windows (vfw.h) based source filter to grab pictures."
+msgstr ""
+
+#: ../mediastreamer2/src/ice.c:1353 ../mediastreamer2/src/ice.c:1371
+msgid "ICE filter"
+msgstr ""
+
+#: ../mediastreamer2/src/void.c:35 ../mediastreamer2/src/void.c:52
+msgid "A filter that trashes its input (useful for terminating some graphs)."
+msgstr ""
+
+#: ../mediastreamer2/src/equalizer.c:337 ../mediastreamer2/src/equalizer.c:355
+msgid "Parametric sound equalizer."
+msgstr ""
+
+#: ../mediastreamer2/src/msdscap-mingw.cc:1003
+msgid "A webcam grabber based on directshow."
+msgstr ""

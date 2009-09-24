@@ -630,6 +630,7 @@ static LangCodes supported_langs[]={
 	{	"nl"	,	N_("Dutch")	},
 	{	"hu"	,	N_("Hungarian")	},
 	{	"cs"	,	N_("Czech")	},
+	{	"zh_CN" ,	N_("Chineese")	},
 	{	NULL	,	NULL		}
 };
 
