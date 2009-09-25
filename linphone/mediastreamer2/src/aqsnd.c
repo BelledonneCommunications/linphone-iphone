@@ -53,7 +53,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
 #include <AudioToolbox/AudioToolbox.h>
-#if !defined(__AudioHardware_h__)
+#if (!defined(__AudioHardware_h__) & !defined(__IPHONE_3_0))
 #include "AudioHardware.h"
 #endif
 

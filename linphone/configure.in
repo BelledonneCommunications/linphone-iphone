@@ -423,7 +423,6 @@ dnl ##################################################
 AC_PATH_PROG(DOXYGEN,doxygen,false)
 AM_CONDITIONAL(HAVE_DOXYGEN, test $DOXYGEN != false)
 
-
 AC_OUTPUT([ 
 Makefile 
 m4/Makefile

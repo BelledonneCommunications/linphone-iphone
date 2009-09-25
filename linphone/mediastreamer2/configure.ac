@@ -134,7 +134,7 @@ case $target_os in
 		MSPLUGINS_CFLAGS=""
 		MSPLUGINS_LIBS="-dynamiclib"
 		macosx_found=yes
-		LIBS="$LIBS -framework CoreFoundation -framework Cocoa"
+		LIBS="$LIBS -framework CoreFoundation -framework AudioToolbox -framework CoreAudio"
 	;;
   	*mingw32ce)
 		CFLAGS="$CFLAGS -DINET6 -DORTP_INET6 -D_WIN32_WINNT=0x0501  -D_WIN32_WCE  -DORTP_STATIC"

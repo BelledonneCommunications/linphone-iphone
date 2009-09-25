@@ -146,4 +146,3 @@ Portfile-devel:	$(top_srcdir)/scripts/Portfile-devel.tmpl dist
 	sed -e 's/\@VERSION\@/$(LINPHONE_VERSION)/g' \
 	  -e 's/\@LINPHONE_MD5\@/$(shell md5sum linphone-$(VERSION).tar.gz | awk {'print $$1'})/' < $< > $@
 
-
