@@ -33,7 +33,8 @@ static bool_t linphone_call_matches_event(LinphoneCall *call, eXosip_event_t *ev
 
 static void linphone_call_proceeding(LinphoneCore *lc, eXosip_event_t *ev){
 	if (lc->call==NULL || (lc->call->cid!=-1 && !linphone_call_matches_event(lc->call,ev)) ) {
-		ms_warning("This call has been canceled.");
+		ms_warning("This call has been canceled: call=%p, call->cid=%i, ev->cid=%i",
+			lc->call,lc->call->cid,ev->cid);
 		eXosip_lock();
 		eXosip_call_terminate(ev->cid,ev->did);
 		eXosip_unlock();

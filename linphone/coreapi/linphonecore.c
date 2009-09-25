@@ -1360,8 +1360,10 @@ int linphone_core_invite(LinphoneCore *lc, const char *url)
 		ms_warning("Could not build initial invite");
 		goto end;
 	}
-	osip_message_set_header(invite, "Session-expires", "200");
-	osip_message_set_supported(invite, "timer");
+	if (lp_config_get_int(lc->config,"sip","use_session_timers",0)==1){
+		osip_message_set_header(invite, "Session-expires", "200");
+		osip_message_set_supported(invite, "timer");
+	}
 	/* make sdp message */
 	
 	osip_from_init(&parsed_url2);
@@ -1747,8 +1749,9 @@ int linphone_core_accept_call(LinphoneCore *lc, const char *url)
 		ms_error("Fail to build answer for call: err=%i",err);
 		return -1;
 	}
-
-	if (call->supports_session_timers) osip_message_set_supported(msg, "timer");
+	if (lp_config_get_int(lc->config,"sip","use_session_timers",0)==1){
+		if (call->supports_session_timers) osip_message_set_supported(msg, "timer");
+	}
 	/*try to be best-effort in giving real local or routable contact address,
 	except when the user choosed to override the ipaddress */
 	if (linphone_core_get_firewall_policy(lc)!=LINPHONE_POLICY_USE_NAT_ADDRESS)
