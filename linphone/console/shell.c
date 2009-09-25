@@ -174,11 +174,11 @@ static void spawn_linphonec(int argc, char *argv[]){
 	PROCESS_INFORMATION pinfo;
 	STARTUPINFO si;
 	ZeroMemory( &si, sizeof(si) );
-    si.cb = sizeof(si);
-    ZeroMemory( &pinfo, sizeof(pinfo) );
+	si.cb = sizeof(si);
+	ZeroMemory( &pinfo, sizeof(pinfo) );
 
 
-	BOOL ret=CreateProcess(NULL,"linphonec.exe --pipe -c NUL",
+	BOOL ret=CreateProcess(NULL,"linphoned.exe --pipe -c NUL",
 		NULL,
 		NULL,
 		FALSE,
