@@ -37,10 +37,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 #endif
 
-#ifdef WIN32
-#define HAVE_EXOSIP_GET_VERSION 1
-#endif
-
+#define UNSTANDART_GSM_11K 1
 
 static const char *liblinphone_version=LIBLINPHONE_VERSION;
 
@@ -666,6 +663,10 @@ static PayloadType * linphone_mp4v_es=NULL;
 static PayloadType * linphone_h263_old=NULL;
 #endif
 
+#ifdef UNSTANDART_GSM_11K
+static PayloadType *gsm_11k=NULL;
+#endif
+
 void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vtable, const char *config_path, void * userdata)
 {
 	memset (lc, 0, sizeof (LinphoneCore));
@@ -703,6 +704,12 @@ void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vtable, co
 	payload_type_set_recv_fmtp(payload_type_h264_packetization_mode_1,"packetization-mode=1");
 	rtp_profile_set_payload(&av_profile,103,payload_type_h264_packetization_mode_1);
 	rtp_profile_set_payload(&av_profile,102,&payload_type_h264);
+#endif
+
+#ifdef UNSTANDART_GSM_11K
+	gsm_11k=payload_type_clone(&payload_type_gsm);
+	gsm_11k->clock_rate=11025;
+	rtp_profile_set_payload(&av_profile,96,gsm_11k);
 #endif
 
 	ms_init();
