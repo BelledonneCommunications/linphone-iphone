@@ -519,6 +519,7 @@ Online users</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
                             <property name="draw_indicator">True</property>
+                            <signal name="toggled" handler="linphone_gtk_mute_toggled"/>
                           </widget>
                           <packing>
                             <property name="position">1</property>
