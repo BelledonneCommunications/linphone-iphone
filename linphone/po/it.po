@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Linphone 3.2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-09-11 14:50+0200\n"
+"POT-Creation-Date: 2009-09-28 15:30+0200\n"
 "PO-Revision-Date: 2002-10-15 HO:MI+ZONE\n"
 "Last-Translator: Matteo Piazza <matteo.piazza@trentinonetwork.it>\n"
 "Language-Team: it <it@li.org>\n"
@@ -25,24 +25,34 @@ msgstr ""
 msgid "Chat with %s"
 msgstr "Chat con %s"
 
-#: ../gtk-glade/main.c:85
+#: ../gtk-glade/main.c:90
 msgid "log to stdout some debug information while running."
 msgstr ""
 
-#: ../gtk-glade/main.c:92
+#: ../gtk-glade/main.c:97
+msgid "Start only in the system tray, do not show the main interface."
+msgstr ""
+
+#: ../gtk-glade/main.c:104
 msgid "address to call right now"
 msgstr ""
 
-#: ../gtk-glade/main.c:99
+#: ../gtk-glade/main.c:111
 msgid "if set automatically answer incoming calls"
 msgstr ""
 
-#: ../gtk-glade/main.c:619
+#: ../gtk-glade/main.c:119
+msgid ""
+"Specifiy a working directory (should be the base of the installation, eg: c:"
+"\\Program Files\\Linphone)"
+msgstr ""
+
+#: ../gtk-glade/main.c:662
 #, c-format
 msgid "Incoming call from %s"
 msgstr "Chiamata proveniente da %s"
 
-#: ../gtk-glade/main.c:654
+#: ../gtk-glade/main.c:694
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
@@ -54,21 +64,27 @@ msgstr ""
 "veda il tuo stato o aggiungerlo alla tua lista dei contatti Se rispondi no "
 "questo utente sarà momentaneamente bloccato."
 
-#: ../gtk-glade/main.c:724
-#, c-format
-msgid "Please enter your password for domain %s:"
+#: ../gtk-glade/main.c:764
+#, fuzzy, c-format
+msgid ""
+"Please enter your password for username <i>%s</i>\n"
+" at domain <i>%s</i>:"
 msgstr "Prego inserire la password per il dominio %s"
 
-#: ../gtk-glade/main.c:849
+#: ../gtk-glade/main.c:855
+msgid "Website link"
+msgstr ""
+
+#: ../gtk-glade/main.c:891
 msgid "Linphone - a video internet phone"
 msgstr ""
 
-#: ../gtk-glade/main.c:868
+#: ../gtk-glade/main.c:910
 #, c-format
 msgid "%s (Default)"
 msgstr "%s (Default)"
 
-#: ../gtk-glade/main.c:1099
+#: ../gtk-glade/main.c:1143
 msgid "A free SIP video-phone"
 msgstr ""
 
@@ -195,7 +211,11 @@ msgstr "Ungherese"
 msgid "Czech"
 msgstr "Ceco"
 
-#: ../gtk-glade/propertybox.c:689
+#: ../gtk-glade/propertybox.c:633
+msgid "Chineese"
+msgstr ""
+
+#: ../gtk-glade/propertybox.c:690
 msgid ""
 "You need to restart linphone for the new language selection to take effect."
 msgstr "Riavviare il software per utilizzare la nuova lingua selezionata"
@@ -260,7 +280,7 @@ msgstr "Ho gia un account e voglio usarlo"
 msgid "Please choose a username:"
 msgstr "Prego scegliere un username"
 
-#: ../gtk-glade/setupwizard.c:54 ../gtk-glade/password.glade.h:4
+#: ../gtk-glade/setupwizard.c:54
 msgid "Username:"
 msgstr "Manuale utente"
 
@@ -317,29 +337,29 @@ msgstr "Creazione account"
 msgid "Now ready !"
 msgstr "Pronto !"
 
-#: ../gtk-glade/incall_view.c:42
+#: ../gtk-glade/incall_view.c:97
 #, fuzzy
 msgid "<b>Calling...</b>"
 msgstr "<b>Linguaggio</b>"
 
-#: ../gtk-glade/incall_view.c:64
+#: ../gtk-glade/incall_view.c:121
 msgid "<b>In call with</b>"
 msgstr "<b>In chiamata con</b>"
 
-#: ../gtk-glade/incall_view.c:68
+#: ../gtk-glade/incall_view.c:123
 msgid "00::00::00"
 msgstr ""
 
-#: ../gtk-glade/incall_view.c:82
+#: ../gtk-glade/incall_view.c:137
 #, c-format
 msgid "%02i::%02i::%02i"
 msgstr ""
 
-#: ../gtk-glade/incall_view.c:100
+#: ../gtk-glade/incall_view.c:155
 msgid "<b>Call ended.</b>"
 msgstr "<b>Chiamata terminata.</b>"
 
-#: ../gtk-glade/loginframe.c:40
+#: ../gtk-glade/loginframe.c:82
 #, c-format
 msgid "Please enter login information for %s"
 msgstr "Prego inserire le proprie credenziali di accesso per %s"
@@ -437,115 +457,119 @@ msgid "Audio only"
 msgstr "Solo Audio"
 
 #: ../gtk-glade/main.glade.h:24
+msgid "Automatically log me in"
+msgstr ""
+
+#: ../gtk-glade/main.glade.h:25
 msgid "B"
 msgstr "B"
 
-#: ../gtk-glade/main.glade.h:25 ../gtk-glade/parameters.glade.h:20
+#: ../gtk-glade/main.glade.h:26 ../gtk-glade/parameters.glade.h:20
 msgid "C"
 msgstr "C"
 
-#: ../gtk-glade/main.glade.h:26
+#: ../gtk-glade/main.glade.h:27
 msgid "D"
 msgstr "D"
 
-#: ../gtk-glade/main.glade.h:27
+#: ../gtk-glade/main.glade.h:28
 msgid "Default"
 msgstr "Default"
 
-#: ../gtk-glade/main.glade.h:28
+#: ../gtk-glade/main.glade.h:29
 msgid "Digits"
 msgstr "Caratteri"
 
-#: ../gtk-glade/main.glade.h:29
+#: ../gtk-glade/main.glade.h:30
 msgid "Duration"
 msgstr "Durata"
 
-#: ../gtk-glade/main.glade.h:30
+#: ../gtk-glade/main.glade.h:31
 msgid "Duration:"
 msgstr "Durata:"
 
-#: ../gtk-glade/main.glade.h:31
+#: ../gtk-glade/main.glade.h:32
 msgid "Enable self-view"
 msgstr "Self-view abilitato"
 
-#: ../gtk-glade/main.glade.h:32
+#: ../gtk-glade/main.glade.h:33
 msgid "Enter username, phone number, or full sip address"
 msgstr "Inserisci username, numero o indirizzo sip"
 
-#: ../gtk-glade/main.glade.h:33
+#: ../gtk-glade/main.glade.h:34
 msgid "In call"
 msgstr "In chiamata"
 
-#: ../gtk-glade/main.glade.h:34
+#: ../gtk-glade/main.glade.h:35
 msgid "Internet connection:"
 msgstr "Connessione Internet:"
 
-#: ../gtk-glade/main.glade.h:35
+#: ../gtk-glade/main.glade.h:36
 msgid "Login information"
 msgstr "Credenziali di accesso"
 
-#: ../gtk-glade/main.glade.h:36
+#: ../gtk-glade/main.glade.h:37
 msgid "Lookup:"
 msgstr ""
 
-#: ../gtk-glade/main.glade.h:37
+#: ../gtk-glade/main.glade.h:38
 msgid "Main view"
 msgstr "Vista principale"
 
-#: ../gtk-glade/main.glade.h:38
+#: ../gtk-glade/main.glade.h:39
 msgid "Mute"
 msgstr "Chiudi microfono"
 
-#: ../gtk-glade/main.glade.h:39
+#: ../gtk-glade/main.glade.h:40
 msgid "My current identity:"
 msgstr "Identità corrente"
 
-#: ../gtk-glade/main.glade.h:40
+#: ../gtk-glade/main.glade.h:41
 msgid "Password"
 msgstr "Password"
 
-#: ../gtk-glade/main.glade.h:41
+#: ../gtk-glade/main.glade.h:42
 msgid "SIP address or phone number:"
 msgstr "Indirizzo sip o numero."
 
-#: ../gtk-glade/main.glade.h:42
+#: ../gtk-glade/main.glade.h:43
 msgid "Show current call"
 msgstr "Mostra chiamata corrente"
 
-#: ../gtk-glade/main.glade.h:43
+#: ../gtk-glade/main.glade.h:44
 msgid "Start call"
 msgstr "Inizia chiamata"
 
-#: ../gtk-glade/main.glade.h:44
+#: ../gtk-glade/main.glade.h:45
 msgid "Terminate call"
 msgstr "Termina chiamata"
 
-#: ../gtk-glade/main.glade.h:45
+#: ../gtk-glade/main.glade.h:46
 #, fuzzy
 msgid "Username"
 msgstr "Manuale utente"
 
-#: ../gtk-glade/main.glade.h:46
+#: ../gtk-glade/main.glade.h:47
 msgid "_Linphone"
 msgstr "_Linphone"
 
-#: ../gtk-glade/main.glade.h:47
+#: ../gtk-glade/main.glade.h:48
 msgid "_Modes"
 msgstr "_Modi"
 
-#: ../gtk-glade/main.glade.h:48
+#: ../gtk-glade/main.glade.h:49
 msgid "gtk-connect"
 msgstr ""
 
-#: ../gtk-glade/main.glade.h:49
+#: ../gtk-glade/main.glade.h:50
 msgid "gtk-find"
 msgstr ""
 
-#: ../gtk-glade/main.glade.h:50
+#: ../gtk-glade/main.glade.h:51
 msgid "in"
 msgstr "in"
 
-#: ../gtk-glade/main.glade.h:51
+#: ../gtk-glade/main.glade.h:52
 msgid "label"
 msgstr "etichetta"
 
@@ -623,6 +647,10 @@ msgstr "Password:"
 msgid "Please enter the domain password"
 msgstr "Prego inserire la password di dominio"
 
+#: ../gtk-glade/password.glade.h:4
+msgid "UserID"
+msgstr ""
+
 #: ../gtk-glade/call_logs.glade.h:1
 msgid "Call history"
 msgstr "Cronologia"
@@ -675,7 +703,7 @@ msgstr "Accetta"
 msgid "Decline"
 msgstr "Rifiuta"
 
-#: ../gtk-glade/incoming_call.glade.h:3 ../coreapi/linphonecore.c:234
+#: ../gtk-glade/incoming_call.glade.h:3 ../coreapi/linphonecore.c:235
 msgid "Incoming call"
 msgstr "Chimata in entrata"
 
@@ -956,26 +984,26 @@ msgstr "Linphone"
 msgid "Please wait"
 msgstr "Prego attendere"
 
-#: ../coreapi/linphonecore.c:194
+#: ../coreapi/linphonecore.c:195
 #, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../coreapi/linphonecore.c:222
+#: ../coreapi/linphonecore.c:223
 msgid "aborted"
 msgstr "annullato"
 
-#: ../coreapi/linphonecore.c:225
+#: ../coreapi/linphonecore.c:226
 msgid "completed"
 msgstr "comletato"
 
-#: ../coreapi/linphonecore.c:228
+#: ../coreapi/linphonecore.c:229
 msgid "missed"
 msgstr "mancante"
 
-#: ../coreapi/linphonecore.c:233
+#: ../coreapi/linphonecore.c:234
 #, c-format
 msgid ""
 "%s at %s\n"
@@ -990,11 +1018,11 @@ msgstr ""
 "Stato: %s\n"
 "Durata: %i mn %i sec\n"
 
-#: ../coreapi/linphonecore.c:234
+#: ../coreapi/linphonecore.c:235
 msgid "Outgoing call"
 msgstr "Chiamata in uscita"
 
-#: ../coreapi/linphonecore.c:444
+#: ../coreapi/linphonecore.c:445
 msgid ""
 "Your machine appears to be connected to an IPv6 network. By default linphone "
 "always uses IPv4. Please update your configuration if you want to use IPv6"
@@ -1002,23 +1030,23 @@ msgstr ""
 "La tua macchina sembra connessa ad una rete IPv6. Di default linphone "
 "utilizza IPv4. Prego aggiorna la tua configurazione se vuoi usare IPv6"
 
-#: ../coreapi/linphonecore.c:726
+#: ../coreapi/linphonecore.c:737
 msgid "Ready"
 msgstr "Pronto"
 
-#: ../coreapi/linphonecore.c:1001
+#: ../coreapi/linphonecore.c:1012
 msgid "Remote end seems to have disconnected, the call is going to be closed."
 msgstr "L'utente remoto sembra disconesso, la chiamata verrà terminata"
 
-#: ../coreapi/linphonecore.c:1159
+#: ../coreapi/linphonecore.c:1170
 msgid "Looking for telephone number destination..."
 msgstr "Ricerca numero destinazione..."
 
-#: ../coreapi/linphonecore.c:1161
+#: ../coreapi/linphonecore.c:1172
 msgid "Could not resolve this number."
 msgstr "Impossibile risolvere il numero."
 
-#: ../coreapi/linphonecore.c:1226
+#: ../coreapi/linphonecore.c:1237
 msgid ""
 "Could not parse given sip address. A sip url usually looks like sip:"
 "user@domain"
@@ -1026,31 +1054,31 @@ msgstr ""
 "Errore nel formato del contatto sip. Usualmente un indirizzo appare sip:"
 "user@domain"
 
-#: ../coreapi/linphonecore.c:1327
+#: ../coreapi/linphonecore.c:1338
 msgid "Sorry, having multiple simultaneous calls is not supported yet !"
 msgstr "Spiacenti, le chiamate multiple non sono supportate"
 
-#: ../coreapi/linphonecore.c:1371
+#: ../coreapi/linphonecore.c:1385
 msgid "Contacting"
 msgstr "In connessione"
 
-#: ../coreapi/linphonecore.c:1386
+#: ../coreapi/linphonecore.c:1400
 msgid "could not call"
 msgstr "chiamata fallita"
 
-#: ../coreapi/linphonecore.c:1767 ../coreapi/exevents.c:49
+#: ../coreapi/linphonecore.c:1785 ../coreapi/exevents.c:50
 msgid "Connected."
 msgstr "Connessione"
 
-#: ../coreapi/linphonecore.c:1793
+#: ../coreapi/linphonecore.c:1811
 msgid "Call ended"
 msgstr "Chiamata terminata"
 
-#: ../coreapi/linphonecore.c:2155
+#: ../coreapi/linphonecore.c:2173
 msgid "No nat/firewall address supplied !"
 msgstr "Non è stato fornito un indirizzo nat/firewall!"
 
-#: ../coreapi/linphonecore.c:2167 ../coreapi/linphonecore.c:2179
+#: ../coreapi/linphonecore.c:2185 ../coreapi/linphonecore.c:2197
 #, c-format
 msgid "Invalid nat address '%s' : %s"
 msgstr "Indirizzo NAT invalido '%s' : %s"
@@ -1083,66 +1111,66 @@ msgstr ""
 msgid "Stun lookup in progress..."
 msgstr "Ricerca Stun in progresso ..."
 
-#: ../coreapi/exevents.c:126
+#: ../coreapi/exevents.c:127
 msgid "Call terminated."
 msgstr "Chiamata terminata."
 
-#: ../coreapi/exevents.c:148
+#: ../coreapi/exevents.c:149
 msgid "Could not reach destination."
 msgstr "Non posso raggiungere la destinazione"
 
-#: ../coreapi/exevents.c:157
+#: ../coreapi/exevents.c:158
 msgid "User is busy."
 msgstr "Utente occupato"
 
-#: ../coreapi/exevents.c:158
+#: ../coreapi/exevents.c:159
 msgid "User is temporarily unavailable."
 msgstr "Utente non disponibile"
 
-#: ../coreapi/exevents.c:159
+#: ../coreapi/exevents.c:160
 msgid "Request Cancelled."
 msgstr "Richiesta cancellata"
 
 #. char *retrymsg=_("%s. Retry after %i minute(s).");
-#: ../coreapi/exevents.c:161
+#: ../coreapi/exevents.c:162
 msgid "User does not want to be disturbed."
 msgstr "L'utente non vuole essere disturbato"
 
-#: ../coreapi/exevents.c:162
+#: ../coreapi/exevents.c:163
 msgid "Call declined."
 msgstr "Chiamata rifiutata"
 
-#: ../coreapi/exevents.c:190
+#: ../coreapi/exevents.c:191
 msgid "Bad request"
 msgstr "Richiesta errata"
 
-#: ../coreapi/exevents.c:193
+#: ../coreapi/exevents.c:194
 msgid "User cannot be found at given address."
 msgstr "L'utente non trovato."
 
-#: ../coreapi/exevents.c:196
+#: ../coreapi/exevents.c:197
 msgid "Remote user cannot support any of proposed codecs."
 msgstr "L'utente remoto non supporta alcun code proposto."
 
 #. time out, call leg is lost
-#: ../coreapi/exevents.c:222
+#: ../coreapi/exevents.c:227
 msgid "Timeout."
 msgstr "Timeout."
 
-#: ../coreapi/exevents.c:225
+#: ../coreapi/exevents.c:230
 msgid "Remote host was found but refused connection."
 msgstr "Utente remoto trovato ma ha rifiutato la connessione."
 
-#: ../coreapi/exevents.c:333
+#: ../coreapi/exevents.c:339
 msgid "is contacting you."
 msgstr "ti sta conttatando."
 
-#: ../coreapi/exevents.c:418
+#: ../coreapi/exevents.c:424
 #, c-format
 msgid "Redirected to %s..."
 msgstr "Rediretto verso %s..."
 
-#: ../coreapi/exevents.c:434
+#: ../coreapi/exevents.c:440
 msgid ""
 "User is not reachable at the moment but he invites you\n"
 "to contact him using the following alternate resource:"
@@ -1150,22 +1178,27 @@ msgstr ""
 "L'utente non è raggiungibile ma ti ha invitato\n"
 "per contattarlo usare l'indirizzo alternativo:"
 
-#: ../coreapi/exevents.c:855
+#: ../coreapi/exevents.c:861
 msgid "Early media."
 msgstr ""
 
-#: ../coreapi/exevents.c:954
+#: ../coreapi/exevents.c:960
 #, c-format
 msgid "Registration on %s failed: %s"
 msgstr "Registrazione su %s fallita: %s"
 
-#: ../coreapi/exevents.c:954
+#: ../coreapi/exevents.c:960
 msgid "no response timeout"
 msgstr "timeout no risposta"
 
-#: ../coreapi/exevents.c:969
+#: ../coreapi/exevents.c:986
 #, c-format
 msgid "Registration on %s successful."
+msgstr "Registrazione su %s attiva"
+
+#: ../coreapi/exevents.c:987
+#, fuzzy, c-format
+msgid "Unregistration on %s done."
 msgstr "Registrazione su %s attiva"
 
 #. people for which we don't have yet an answer should appear as offline
@@ -1347,7 +1380,7 @@ msgstr "RTP imput filter"
 msgid "The free and wonderful speex codec"
 msgstr "The free and wonderful speex codec"
 
-#: ../mediastreamer2/src/msvolume.c:355 ../mediastreamer2/src/msvolume.c:370
+#: ../mediastreamer2/src/msvolume.c:390 ../mediastreamer2/src/msvolume.c:405
 msgid "A filter that controls and measure sound volume"
 msgstr "Un filtro che controlla e misura il volume"
 
@@ -1391,15 +1424,15 @@ msgstr "Cancellazione eco utilizzando la libreria speex"
 msgid "A filter that reads from input and copy to its multiple outputs."
 msgstr "Un filtro che legge gli inout e copia su multipli output."
 
-#: ../mediastreamer2/src/theora.c:374
+#: ../mediastreamer2/src/theora.c:375
 msgid "The theora video encoder from xiph.org"
 msgstr "Theora video encoder da xiph.org"
 
-#: ../mediastreamer2/src/theora.c:392
+#: ../mediastreamer2/src/theora.c:393
 msgid "The open-source and royalty-free 'theora' video codec from xiph.org"
 msgstr "Open-source and royalty-free 'theora' video codec da xiph.org"
 
-#: ../mediastreamer2/src/theora.c:560 ../mediastreamer2/src/theora.c:578
+#: ../mediastreamer2/src/theora.c:561 ../mediastreamer2/src/theora.c:579
 msgid "The theora video decoder from xiph.org"
 msgstr "Theora video decoder from xiph.org"
 
@@ -1464,15 +1497,15 @@ msgid ""
 "versions cannot be guaranteed."
 msgstr ""
 
-#: ../mediastreamer2/src/videoout.c:904 ../mediastreamer2/src/videoout.c:922
+#: ../mediastreamer2/src/videoout.c:905 ../mediastreamer2/src/videoout.c:923
 msgid "A generic video display"
 msgstr "Un generico video display"
 
 #: ../mediastreamer2/src/wincevideods.c:966
 #: ../mediastreamer2/src/wincevideods.c:984
 #: ../mediastreamer2/src/winvideo.c:596 ../mediastreamer2/src/winvideo.c:614
-#: ../mediastreamer2/src/winvideods.c:1286
-#: ../mediastreamer2/src/winvideods.c:1304
+#: ../mediastreamer2/src/winvideods.c:1306
+#: ../mediastreamer2/src/winvideods.c:1324
 msgid "A video4windows compatible source filter to stream pictures."
 msgstr "Un filtro video4windows per lo streaming delle immagini."
 

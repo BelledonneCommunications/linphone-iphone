@@ -852,7 +852,7 @@ static GtkWidget *create_icon_menu(){
 	const gchar *homesite;
 	
 	homesite=linphone_gtk_get_ui_config("home","http://www.linphone.org");
-	menu_item=gtk_image_menu_item_new_with_label(homesite);
+	menu_item=gtk_image_menu_item_new_with_label(_("Website link"));
 	tmp=g_strdup(homesite);
 	g_object_set_data(G_OBJECT(menu_item),"home",tmp);
 	g_object_weak_ref(G_OBJECT(menu_item),(GWeakNotify)g_free,tmp);

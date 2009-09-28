@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-09-11 14:50+0200\n"
+"POT-Creation-Date: 2009-09-28 15:30+0200\n"
 "PO-Revision-Date: 2009-02-17 15:22+0100\n"
 "Last-Translator: Emmanuel Frécon <emmanuel.frecon@myjoice.com>\n"
 "Language-Team: SWEDISH <SE@li.org>\n"
@@ -26,24 +26,34 @@ msgstr "Kunde inte hitta pixmap filen: %s"
 msgid "Chat with %s"
 msgstr "Chatta med %s"
 
-#: ../gtk-glade/main.c:85
+#: ../gtk-glade/main.c:90
 msgid "log to stdout some debug information while running."
-msgstr ""
+msgstr "skriv loggning information under körning"
 
-#: ../gtk-glade/main.c:92
+#: ../gtk-glade/main.c:97
+msgid "Start only in the system tray, do not show the main interface."
+msgstr "Starta ikonifierat, visa inte huvudfönstret"
+
+#: ../gtk-glade/main.c:104
 msgid "address to call right now"
-msgstr ""
+msgstr "Samtalsmottagare"
 
-#: ../gtk-glade/main.c:99
+#: ../gtk-glade/main.c:111
 msgid "if set automatically answer incoming calls"
+msgstr "Om på, besvara automatisk alla inkommande samtal"
+
+#: ../gtk-glade/main.c:119
+msgid ""
+"Specifiy a working directory (should be the base of the installation, eg: c:"
+"\\Program Files\\Linphone)"
 msgstr ""
 
-#: ../gtk-glade/main.c:619
+#: ../gtk-glade/main.c:662
 #, c-format
 msgid "Incoming call from %s"
 msgstr "Inkommande samtal från %s"
 
-#: ../gtk-glade/main.c:654
+#: ../gtk-glade/main.c:694
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
@@ -56,21 +66,27 @@ msgstr ""
 "henne till din kontaktlista?\n"
 "Om du svarar nej, personen kommer att vara bannlyst."
 
-#: ../gtk-glade/main.c:724
+#: ../gtk-glade/main.c:764
 #, c-format
-msgid "Please enter your password for domain %s:"
-msgstr "Mata in ditt lösenord för domänen %s:"
+msgid ""
+"Please enter your password for username <i>%s</i>\n"
+" at domain <i>%s</i>:"
+msgstr "Mata in ditt lösenord för användaren <i>%s</i>\nvid domänen <i>%s</i>:"
 
-#: ../gtk-glade/main.c:849
+#: ../gtk-glade/main.c:855
+msgid "Website link"
+msgstr "Webbsajt"
+
+#: ../gtk-glade/main.c:891
 msgid "Linphone - a video internet phone"
 msgstr "Linphone - en video Internet telefon"
 
-#: ../gtk-glade/main.c:868
+#: ../gtk-glade/main.c:910
 #, c-format
 msgid "%s (Default)"
 msgstr "%s (Default)"
 
-#: ../gtk-glade/main.c:1099
+#: ../gtk-glade/main.c:1143
 msgid "A free SIP video-phone"
 msgstr "En gratis SIP video-telefon"
 
@@ -86,7 +102,7 @@ msgstr "Närvarostatus"
 #: ../gtk-glade/friendlist.c:243
 #, c-format
 msgid "Search in %s directory"
-msgstr ""
+msgstr "Sök i %s katalogen"
 
 #: ../gtk-glade/friendlist.c:432
 msgid "Invalid sip contact !"
@@ -105,17 +121,17 @@ msgstr "Skicka text till %s"
 #: ../gtk-glade/friendlist.c:476
 #, c-format
 msgid "Edit contact '%s'"
-msgstr ""
+msgstr "Ändra kontakt '%s'"
 
 #: ../gtk-glade/friendlist.c:477
 #, c-format
 msgid "Delete contact '%s'"
-msgstr ""
+msgstr "Ta bort kontakt '%s'"
 
 #: ../gtk-glade/friendlist.c:519
 #, c-format
 msgid "Add new contact from %s directory"
-msgstr ""
+msgstr "Lägg till kontakt ifrån %s katalogen"
 
 #: ../gtk-glade/propertybox.c:251
 msgid "Rate (Hz)"
@@ -147,60 +163,64 @@ msgstr "Konto"
 
 #: ../gtk-glade/propertybox.c:620
 msgid "English"
-msgstr ""
+msgstr "Engelska"
 
 #: ../gtk-glade/propertybox.c:621
 msgid "French"
-msgstr ""
+msgstr "Fransk"
 
 #: ../gtk-glade/propertybox.c:622
 msgid "Swedish"
-msgstr ""
+msgstr "Svenska"
 
 #: ../gtk-glade/propertybox.c:623
 msgid "Italian"
-msgstr ""
+msgstr "Italiensk"
 
 #: ../gtk-glade/propertybox.c:624
 msgid "Spanish"
-msgstr ""
+msgstr "Spansk"
 
 #: ../gtk-glade/propertybox.c:625
 msgid "Bresilian"
-msgstr ""
+msgstr "Brasiliansk"
 
 #: ../gtk-glade/propertybox.c:626
 msgid "Polish"
-msgstr ""
+msgstr "Polska"
 
 #: ../gtk-glade/propertybox.c:627
 msgid "German"
-msgstr ""
+msgstr "Tyska"
 
 #: ../gtk-glade/propertybox.c:628
 msgid "Russian"
-msgstr ""
+msgstr "Ryska"
 
 #: ../gtk-glade/propertybox.c:629
 msgid "Japanese"
-msgstr ""
+msgstr "Japanska"
 
 #: ../gtk-glade/propertybox.c:630
 msgid "Dutch"
-msgstr ""
+msgstr "Nederländksa"
 
 #: ../gtk-glade/propertybox.c:631
 msgid "Hungarian"
-msgstr ""
+msgstr "Hungerska"
 
 #: ../gtk-glade/propertybox.c:632
 msgid "Czech"
-msgstr ""
+msgstr "Tjekiska"
 
-#: ../gtk-glade/propertybox.c:689
+#: ../gtk-glade/propertybox.c:633
+msgid "Chineese"
+msgstr "Kinesiska"
+
+#: ../gtk-glade/propertybox.c:690
 msgid ""
 "You need to restart linphone for the new language selection to take effect."
-msgstr ""
+msgstr "Du behöver starta om programmet för att det nya språket ska synas."
 
 #: ../gtk-glade/update.c:80
 #, c-format
@@ -213,37 +233,34 @@ msgstr ""
 
 #: ../gtk-glade/buddylookup.c:66
 msgid "Firstname, Lastname"
-msgstr ""
+msgstr "Förnamn, Efternamn"
 
 #: ../gtk-glade/buddylookup.c:73
-#, fuzzy
 msgid "SIP address"
 msgstr "SIP Adress"
 
 #: ../gtk-glade/buddylookup.c:121
 msgid "Error communicating with server."
-msgstr ""
+msgstr "Error med förbindelsen till servern."
 
 #: ../gtk-glade/buddylookup.c:125
-#, fuzzy
 msgid "Connecting..."
 msgstr "Kontaktar"
 
 #: ../gtk-glade/buddylookup.c:129
-#, fuzzy
 msgid "Connected"
 msgstr "Kopplad"
 
 #: ../gtk-glade/buddylookup.c:133
 msgid "Receiving data..."
-msgstr ""
+msgstr "Tar emot data..."
 
 #: ../gtk-glade/buddylookup.c:141
-#, fuzzy, c-format
+#, c-format
 msgid "Found %i contact"
 msgid_plural "Found %i contacts"
-msgstr[0] "ogiltig SIP kontakt!"
-msgstr[1] "ogiltig SIP kontakt!"
+msgstr[0] "Hittat kontakt %i"
+msgstr[1] "Hittat kontakt %i"
 
 #: ../gtk-glade/setupwizard.c:25
 msgid ""
@@ -263,7 +280,7 @@ msgstr ""
 msgid "Please choose a username:"
 msgstr ""
 
-#: ../gtk-glade/setupwizard.c:54 ../gtk-glade/password.glade.h:4
+#: ../gtk-glade/setupwizard.c:54
 msgid "Username:"
 msgstr "Användarnamn:"
 
@@ -301,9 +318,8 @@ msgid "Account setup assistant"
 msgstr ""
 
 #: ../gtk-glade/setupwizard.c:236
-#, fuzzy
 msgid "Choosing a username"
-msgstr "Ditt användarnamn:"
+msgstr "Välj ditt användarnamn:"
 
 #: ../gtk-glade/setupwizard.c:240
 msgid "Verifying"
@@ -322,32 +338,29 @@ msgstr ""
 msgid "Now ready !"
 msgstr ""
 
-#: ../gtk-glade/incall_view.c:42
-#, fuzzy
+#: ../gtk-glade/incall_view.c:97
 msgid "<b>Calling...</b>"
-msgstr "<b>Kontaktlista</b>"
+msgstr "<b>Kontaktar...</b>"
 
-#: ../gtk-glade/incall_view.c:64
-#, fuzzy
+#: ../gtk-glade/incall_view.c:121
 msgid "<b>In call with</b>"
-msgstr "Lägg på"
+msgstr "<b>I samtal med</b>"
 
-#: ../gtk-glade/incall_view.c:68
+#: ../gtk-glade/incall_view.c:123
 msgid "00::00::00"
-msgstr ""
+msgstr "00:00:00"
 
-#: ../gtk-glade/incall_view.c:82
+#: ../gtk-glade/incall_view.c:137
 #, c-format
 msgid "%02i::%02i::%02i"
-msgstr ""
+msgstr "%02i:%02i:%02i"
 
-#: ../gtk-glade/incall_view.c:100
-#, fuzzy
+#: ../gtk-glade/incall_view.c:155
 msgid "<b>Call ended.</b>"
-msgstr "Samtalet slut"
+msgstr "<b>Samtalet slut</b>"
 
-#: ../gtk-glade/loginframe.c:40
-#, fuzzy, c-format
+#: ../gtk-glade/loginframe.c:82
+#, c-format
 msgid "Please enter login information for %s"
 msgstr "Mata in ditt lösenord för domänen %s:"
 
@@ -404,14 +417,12 @@ msgid "<b>Contact list</b>"
 msgstr "<b>Kontaktlista</b>"
 
 #: ../gtk-glade/main.glade.h:14
-#, fuzzy
 msgid "<b>Terminate call</b>"
-msgstr "Lägg på"
+msgstr "<b>Lägg på</b>"
 
 #: ../gtk-glade/main.glade.h:15
-#, fuzzy
 msgid "<b>Welcome !</b>"
-msgstr "<b>Video</b>"
+msgstr "<b>Välkommen!</b>"
 
 #: ../gtk-glade/main.glade.h:16
 msgid "A"
@@ -421,7 +432,7 @@ msgstr ""
 msgid ""
 "ADSL\n"
 "Fiber Channel"
-msgstr ""
+msgstr "ADSL\nFiber"
 
 #: ../gtk-glade/main.glade.h:19
 msgid ""
@@ -444,121 +455,120 @@ msgid "Audio only"
 msgstr "Enbart audio"
 
 #: ../gtk-glade/main.glade.h:24
+msgid "Automatically log me in"
+msgstr "Logga mig automatiskt"
+
+#: ../gtk-glade/main.glade.h:25
 msgid "B"
 msgstr ""
 
-#: ../gtk-glade/main.glade.h:25 ../gtk-glade/parameters.glade.h:20
+#: ../gtk-glade/main.glade.h:26 ../gtk-glade/parameters.glade.h:20
 msgid "C"
 msgstr ""
 
-#: ../gtk-glade/main.glade.h:26
+#: ../gtk-glade/main.glade.h:27
 msgid "D"
 msgstr ""
 
-#: ../gtk-glade/main.glade.h:27
+#: ../gtk-glade/main.glade.h:28
 msgid "Default"
 msgstr ""
 
-#: ../gtk-glade/main.glade.h:28
+#: ../gtk-glade/main.glade.h:29
 msgid "Digits"
 msgstr "Tangenter"
 
-#: ../gtk-glade/main.glade.h:29
-msgid "Duration"
-msgstr ""
-
 #: ../gtk-glade/main.glade.h:30
-msgid "Duration:"
-msgstr ""
+msgid "Duration"
+msgstr "Förlopp"
 
 #: ../gtk-glade/main.glade.h:31
+msgid "Duration:"
+msgstr "Förlopp:"
+
+#: ../gtk-glade/main.glade.h:32
 msgid "Enable self-view"
 msgstr "Själv bild"
 
-#: ../gtk-glade/main.glade.h:32
-msgid "Enter username, phone number, or full sip address"
-msgstr ""
-
 #: ../gtk-glade/main.glade.h:33
-#, fuzzy
-msgid "In call"
-msgstr "Inkommande samtal"
+msgid "Enter username, phone number, or full sip address"
+msgstr "Mata in användarnamn, telefonnummer eller SIP adress"
 
 #: ../gtk-glade/main.glade.h:34
-msgid "Internet connection:"
-msgstr ""
+msgid "In call"
+msgstr "I samtal"
 
 #: ../gtk-glade/main.glade.h:35
-#, fuzzy
-msgid "Login information"
-msgstr "Kontakt information"
+msgid "Internet connection:"
+msgstr "Internet förbindelse:"
 
 #: ../gtk-glade/main.glade.h:36
+msgid "Login information"
+msgstr "Login information"
+
+#: ../gtk-glade/main.glade.h:37
 msgid "Lookup:"
 msgstr "Sök:"
 
-#: ../gtk-glade/main.glade.h:37
-msgid "Main view"
-msgstr ""
-
 #: ../gtk-glade/main.glade.h:38
-msgid "Mute"
-msgstr ""
+msgid "Main view"
+msgstr "Huvud vy"
 
 #: ../gtk-glade/main.glade.h:39
+msgid "Mute"
+msgstr "Tyst"
+
+#: ../gtk-glade/main.glade.h:40
 msgid "My current identity:"
 msgstr "Min nuvarande identitet"
 
-#: ../gtk-glade/main.glade.h:40
-#, fuzzy
-msgid "Password"
-msgstr "Lösenord:"
-
 #: ../gtk-glade/main.glade.h:41
-msgid "SIP address or phone number:"
-msgstr ""
+msgid "Password"
+msgstr "Lösenord"
 
 #: ../gtk-glade/main.glade.h:42
-#, fuzzy
+msgid "SIP address or phone number:"
+msgstr "Användarnamn"
+
+#: ../gtk-glade/main.glade.h:43
 msgid "Show current call"
 msgstr "Nuvarande samtal"
 
-#: ../gtk-glade/main.glade.h:43
+#: ../gtk-glade/main.glade.h:44
 msgid "Start call"
 msgstr "Ring"
 
-#: ../gtk-glade/main.glade.h:44
+#: ../gtk-glade/main.glade.h:45
 msgid "Terminate call"
 msgstr "Lägg på"
 
-#: ../gtk-glade/main.glade.h:45
-#, fuzzy
+#: ../gtk-glade/main.glade.h:46
 msgid "Username"
 msgstr "Användarnamn:"
 
-#: ../gtk-glade/main.glade.h:46
+#: ../gtk-glade/main.glade.h:47
 #, fuzzy
 msgid "_Linphone"
 msgstr "Apropå linphone"
 
-#: ../gtk-glade/main.glade.h:47
+#: ../gtk-glade/main.glade.h:48
 msgid "_Modes"
 msgstr "_Media"
 
-#: ../gtk-glade/main.glade.h:48
+#: ../gtk-glade/main.glade.h:49
 #, fuzzy
 msgid "gtk-connect"
 msgstr "Kopplad"
 
-#: ../gtk-glade/main.glade.h:49
+#: ../gtk-glade/main.glade.h:50
 msgid "gtk-find"
 msgstr ""
 
-#: ../gtk-glade/main.glade.h:50
+#: ../gtk-glade/main.glade.h:51
 msgid "in"
 msgstr "i"
 
-#: ../gtk-glade/main.glade.h:51
+#: ../gtk-glade/main.glade.h:52
 msgid "label"
 msgstr ""
 
@@ -636,6 +646,10 @@ msgstr "Lösenord:"
 msgid "Please enter the domain password"
 msgstr "Mata in lösenordet för domänen"
 
+#: ../gtk-glade/password.glade.h:4
+msgid "UserID"
+msgstr ""
+
 #: ../gtk-glade/call_logs.glade.h:1
 msgid "Call history"
 msgstr "Samtalshistorik"
@@ -688,7 +702,7 @@ msgstr "Godkänn"
 msgid "Decline"
 msgstr "Avböj"
 
-#: ../gtk-glade/incoming_call.glade.h:3 ../coreapi/linphonecore.c:234
+#: ../gtk-glade/incoming_call.glade.h:3 ../coreapi/linphonecore.c:235
 msgid "Incoming call"
 msgstr "Inkommande samtal"
 
@@ -722,7 +736,7 @@ msgstr "<b>Default identitet</b>"
 
 #: ../gtk-glade/parameters.glade.h:6
 msgid "<b>Language</b>"
-msgstr ""
+msgstr "<b>Språk</b>"
 
 #: ../gtk-glade/parameters.glade.h:7
 msgid "<b>NAT and Firewall</b>"
@@ -797,9 +811,8 @@ msgid "Disable"
 msgstr "Inaktivera"
 
 #: ../gtk-glade/parameters.glade.h:26
-#, fuzzy
 msgid "Done"
-msgstr "Har gått"
+msgstr "Klar"
 
 #: ../gtk-glade/parameters.glade.h:27
 msgid "Download speed limit in Kbit/sec:"
@@ -879,7 +892,7 @@ msgstr "Välj MTU (Maximum Transmission Unit):"
 
 #: ../gtk-glade/parameters.glade.h:46
 msgid "Settings"
-msgstr ""
+msgstr "Inställningar"
 
 #: ../gtk-glade/parameters.glade.h:47
 msgid "Stun server:"
@@ -899,9 +912,8 @@ msgid "Use IPv6 instead of IPv4"
 msgstr "Använd IPv6 istället av IPv4"
 
 #: ../gtk-glade/parameters.glade.h:51
-#, fuzzy
 msgid "User interface"
-msgstr "Användarnamn:"
+msgstr "Användarinterface:"
 
 #: ../gtk-glade/parameters.glade.h:52
 msgid "Video RTP/UDP:"
@@ -957,41 +969,40 @@ msgstr ""
 
 #: ../gtk-glade/buddylookup.glade.h:2
 msgid "Add to my list"
-msgstr ""
+msgstr "Lägg till till min lista"
 
 #: ../gtk-glade/buddylookup.glade.h:3
 msgid "Search contacts in directory"
-msgstr ""
+msgstr "Sök för kontakter i katalogen"
 
 #: ../gtk-glade/waiting.glade.h:1
-#, fuzzy
 msgid "Linphone"
 msgstr "Apropå linphone"
 
 #: ../gtk-glade/waiting.glade.h:2
 msgid "Please wait"
-msgstr ""
+msgstr "Vänta"
 
-#: ../coreapi/linphonecore.c:194
-#, fuzzy, c-format
+#: ../coreapi/linphonecore.c:195
+#, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."
-msgstr[0] "Du har %i missade samtal"
+msgstr[0] "Du har %i missat samtal"
 msgstr[1] "Du har %i missade samtal"
 
-#: ../coreapi/linphonecore.c:222
+#: ../coreapi/linphonecore.c:223
 msgid "aborted"
 msgstr "avbrytade"
 
-#: ../coreapi/linphonecore.c:225
+#: ../coreapi/linphonecore.c:226
 msgid "completed"
 msgstr "avslutade"
 
-#: ../coreapi/linphonecore.c:228
+#: ../coreapi/linphonecore.c:229
 msgid "missed"
 msgstr "missade"
 
-#: ../coreapi/linphonecore.c:233
+#: ../coreapi/linphonecore.c:234
 #, c-format
 msgid ""
 "%s at %s\n"
@@ -1006,11 +1017,11 @@ msgstr ""
 "Status: %s\n"
 "Längd: %i min %i sek\n"
 
-#: ../coreapi/linphonecore.c:234
+#: ../coreapi/linphonecore.c:235
 msgid "Outgoing call"
 msgstr "Utgående samtal"
 
-#: ../coreapi/linphonecore.c:444
+#: ../coreapi/linphonecore.c:445
 msgid ""
 "Your machine appears to be connected to an IPv6 network. By default linphone "
 "always uses IPv4. Please update your configuration if you want to use IPv6"
@@ -1018,23 +1029,23 @@ msgstr ""
 "Din dator verkar vara kopplad till ett IPv6 nätverk. Default, använder "
 "linphone IPv4. Uppdatera din konfiguration om du vill använda IPv6."
 
-#: ../coreapi/linphonecore.c:726
+#: ../coreapi/linphonecore.c:737
 msgid "Ready"
 msgstr "Redo"
 
-#: ../coreapi/linphonecore.c:1001
+#: ../coreapi/linphonecore.c:1012
 msgid "Remote end seems to have disconnected, the call is going to be closed."
 msgstr "Motparten verkar ha avbrutit samtalet, samtalet kommer att avslutas."
 
-#: ../coreapi/linphonecore.c:1159
+#: ../coreapi/linphonecore.c:1170
 msgid "Looking for telephone number destination..."
 msgstr "Leta efter telefonnummer för destinationen..."
 
-#: ../coreapi/linphonecore.c:1161
+#: ../coreapi/linphonecore.c:1172
 msgid "Could not resolve this number."
 msgstr "Kan inte nå dett nummer."
 
-#: ../coreapi/linphonecore.c:1226
+#: ../coreapi/linphonecore.c:1237
 msgid ""
 "Could not parse given sip address. A sip url usually looks like sip:"
 "user@domain"
@@ -1042,31 +1053,31 @@ msgstr ""
 "Kan inte förstå angiven SIP adress. En SIP adress vanligen ser ut som sip:"
 "användare@domänen"
 
-#: ../coreapi/linphonecore.c:1327
+#: ../coreapi/linphonecore.c:1338
 msgid "Sorry, having multiple simultaneous calls is not supported yet !"
 msgstr "Förlåt, men linphone stödjer inte flera samtliga samtal än!"
 
-#: ../coreapi/linphonecore.c:1371
+#: ../coreapi/linphonecore.c:1385
 msgid "Contacting"
 msgstr "Kontaktar"
 
-#: ../coreapi/linphonecore.c:1386
+#: ../coreapi/linphonecore.c:1400
 msgid "could not call"
 msgstr "Kunde inte ringa"
 
-#: ../coreapi/linphonecore.c:1767 ../coreapi/exevents.c:49
+#: ../coreapi/linphonecore.c:1785 ../coreapi/exevents.c:50
 msgid "Connected."
 msgstr "Kopplad"
 
-#: ../coreapi/linphonecore.c:1793
+#: ../coreapi/linphonecore.c:1811
 msgid "Call ended"
 msgstr "Samtalet slut"
 
-#: ../coreapi/linphonecore.c:2155
+#: ../coreapi/linphonecore.c:2173
 msgid "No nat/firewall address supplied !"
 msgstr "Ingen NAT / brandväggs adress angiven!"
 
-#: ../coreapi/linphonecore.c:2167 ../coreapi/linphonecore.c:2179
+#: ../coreapi/linphonecore.c:2185 ../coreapi/linphonecore.c:2197
 #, c-format
 msgid "Invalid nat address '%s' : %s"
 msgstr "Fel NAT adress '%s': %s"
@@ -1099,66 +1110,66 @@ msgstr ""
 msgid "Stun lookup in progress..."
 msgstr "STUN uppslagning pågår..."
 
-#: ../coreapi/exevents.c:126
+#: ../coreapi/exevents.c:127
 msgid "Call terminated."
 msgstr "Samtalet slut."
 
-#: ../coreapi/exevents.c:148
+#: ../coreapi/exevents.c:149
 msgid "Could not reach destination."
 msgstr "Kunde inte nå motparten."
 
-#: ../coreapi/exevents.c:157
+#: ../coreapi/exevents.c:158
 msgid "User is busy."
 msgstr "Användare upptagen."
 
-#: ../coreapi/exevents.c:158
+#: ../coreapi/exevents.c:159
 msgid "User is temporarily unavailable."
 msgstr "Användaren temporärt inte tillgänglig."
 
-#: ../coreapi/exevents.c:159
+#: ../coreapi/exevents.c:160
 msgid "Request Cancelled."
 msgstr "Förfrågan avbruten."
 
 #. char *retrymsg=_("%s. Retry after %i minute(s).");
-#: ../coreapi/exevents.c:161
+#: ../coreapi/exevents.c:162
 msgid "User does not want to be disturbed."
 msgstr "Användaren vill inte bli störd."
 
-#: ../coreapi/exevents.c:162
+#: ../coreapi/exevents.c:163
 msgid "Call declined."
 msgstr "Samtalet avböjdes."
 
-#: ../coreapi/exevents.c:190
+#: ../coreapi/exevents.c:191
 msgid "Bad request"
 msgstr "Fel förfråga."
 
-#: ../coreapi/exevents.c:193
+#: ../coreapi/exevents.c:194
 msgid "User cannot be found at given address."
-msgstr "Användaren kan inte hinna vid den angivna adress."
+msgstr "Användaren kan inte hittas vid den angivna adressen."
 
-#: ../coreapi/exevents.c:196
+#: ../coreapi/exevents.c:197
 msgid "Remote user cannot support any of proposed codecs."
 msgstr "Motparten stödjer ingen av de föreslagna codecs."
 
 #. time out, call leg is lost
-#: ../coreapi/exevents.c:222
+#: ../coreapi/exevents.c:227
 msgid "Timeout."
 msgstr "time out."
 
-#: ../coreapi/exevents.c:225
+#: ../coreapi/exevents.c:230
 msgid "Remote host was found but refused connection."
 msgstr "Motparten hittades men ville inte ta emot samtalet."
 
-#: ../coreapi/exevents.c:333
+#: ../coreapi/exevents.c:339
 msgid "is contacting you."
 msgstr "kontaktar dig."
 
-#: ../coreapi/exevents.c:418
+#: ../coreapi/exevents.c:424
 #, c-format
 msgid "Redirected to %s..."
 msgstr "Omdirigerat till %s..."
 
-#: ../coreapi/exevents.c:434
+#: ../coreapi/exevents.c:440
 msgid ""
 "User is not reachable at the moment but he invites you\n"
 "to contact him using the following alternate resource:"
@@ -1166,23 +1177,28 @@ msgstr ""
 "Användaren kan inte nås för tillfället men han/hon ber dig\att kontakta "
 "honom/henna vid följande resurs:"
 
-#: ../coreapi/exevents.c:855
+#: ../coreapi/exevents.c:861
 msgid "Early media."
 msgstr "Tidig media"
 
-#: ../coreapi/exevents.c:954
+#: ../coreapi/exevents.c:960
 #, c-format
 msgid "Registration on %s failed: %s"
 msgstr "Registrering hos %s mislyckades: %s"
 
-#: ../coreapi/exevents.c:954
+#: ../coreapi/exevents.c:960
 msgid "no response timeout"
 msgstr "Inget svar inom angiven tid"
 
-#: ../coreapi/exevents.c:969
+#: ../coreapi/exevents.c:986
 #, c-format
 msgid "Registration on %s successful."
 msgstr "Registrering hos %s lyckades."
+
+#: ../coreapi/exevents.c:987
+#, c-format
+msgid "Unregistration on %s done."
+msgstr "Avregistrering hos %s lyckades."
 
 #. people for which we don't have yet an answer should appear as offline
 #: ../coreapi/presence.c:112 ../coreapi/presence.c:164 ../coreapi/friend.c:147
@@ -1268,18 +1284,18 @@ msgstr ""
 msgid ""
 "The sip proxy address you entered is invalid, it must start with \"sip:\" "
 "followed by a hostname."
-msgstr ""
+msgstr "SIP proxy adressen som du matade in är inte rätt, adressen måste starta med \"sip:\", följd av ett hostnamn"
 
 #: ../coreapi/proxy.c:227
 msgid ""
 "The sip identity you entered is invalid.\n"
 "It should look like sip:username@proxydomain, such as sip:alice@example.net"
-msgstr ""
+msgstr "SIP adressen som du matade in är inte rätt. Adressen borde se ut som sip:namn@domän, såsom sip:peter@exempel.se"
 
 #: ../coreapi/proxy.c:634
-#, fuzzy, c-format
+#, c-format
 msgid "Could not login as %s"
-msgstr "Kunde inte hitta pixmap filen: %s"
+msgstr "Kunde inte logga in som %s"
 
 #: ../mediastreamer2/src/alaw.c:144 ../mediastreamer2/src/alaw.c:162
 msgid "ITU-G.711 alaw encoder"
@@ -1327,7 +1343,7 @@ msgstr ""
 
 #: ../mediastreamer2/src/msconf.c:787 ../mediastreamer2/src/msconf.c:805
 msgid "A filter to make conferencing"
-msgstr ""
+msgstr "Ett filter för konferens"
 
 #: ../mediastreamer2/src/msfileplayer.c:295
 #: ../mediastreamer2/src/msfileplayer.c:313
@@ -1362,9 +1378,9 @@ msgstr ""
 msgid "The free and wonderful speex codec"
 msgstr "Den fria speex codec"
 
-#: ../mediastreamer2/src/msvolume.c:355 ../mediastreamer2/src/msvolume.c:370
+#: ../mediastreamer2/src/msvolume.c:390 ../mediastreamer2/src/msvolume.c:405
 msgid "A filter that controls and measure sound volume"
-msgstr ""
+msgstr "Ett filter som kontrollerar och mäter ljudvolym"
 
 #: ../mediastreamer2/src/msv4l.c:1009
 msgid "A video4linux compatible source filter to stream pictures."
@@ -1407,15 +1423,15 @@ msgid "A filter that reads from input and copy to its multiple outputs."
 msgstr ""
 "En filter som läser från sin ingång och kopierar till multipla utgångar"
 
-#: ../mediastreamer2/src/theora.c:374
+#: ../mediastreamer2/src/theora.c:375
 msgid "The theora video encoder from xiph.org"
 msgstr "Theora video encoder från xiph.org"
 
-#: ../mediastreamer2/src/theora.c:392
+#: ../mediastreamer2/src/theora.c:393
 msgid "The open-source and royalty-free 'theora' video codec from xiph.org"
 msgstr "Theora video codec från xiph.org, öppen källkod och utan royalties"
 
-#: ../mediastreamer2/src/theora.c:560 ../mediastreamer2/src/theora.c:578
+#: ../mediastreamer2/src/theora.c:561 ../mediastreamer2/src/theora.c:579
 msgid "The theora video decoder from xiph.org"
 msgstr "Theora video decoder från xiph.org"
 
@@ -1472,7 +1488,6 @@ msgstr ""
 "specifikationen."
 
 #: ../mediastreamer2/src/videoenc.c:718
-#, fuzzy
 msgid ""
 "The snow codec is royalty-free and is open-source. \n"
 "It uses innovative techniques that makes it one of most promising video "
@@ -1486,15 +1501,15 @@ msgstr ""
 "Dock, den är under utveckling och kompatibiliteten mellan versioner kan inte "
 "garanteras."
 
-#: ../mediastreamer2/src/videoout.c:904 ../mediastreamer2/src/videoout.c:922
+#: ../mediastreamer2/src/videoout.c:905 ../mediastreamer2/src/videoout.c:923
 msgid "A generic video display"
 msgstr "En generisk video utgång"
 
 #: ../mediastreamer2/src/wincevideods.c:966
 #: ../mediastreamer2/src/wincevideods.c:984
 #: ../mediastreamer2/src/winvideo.c:596 ../mediastreamer2/src/winvideo.c:614
-#: ../mediastreamer2/src/winvideods.c:1286
-#: ../mediastreamer2/src/winvideods.c:1304
+#: ../mediastreamer2/src/winvideods.c:1306
+#: ../mediastreamer2/src/winvideods.c:1324
 msgid "A video4windows compatible source filter to stream pictures."
 msgstr "En video4windows kompatibel ingångsfilter för att strömma bilder."
 
