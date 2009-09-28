@@ -103,6 +103,7 @@ EXPORTS
 	ms_discover_mtu
 	ms_set_mtu
 	
+	ms_web_cam_new
 	ms_web_cam_manager_reload
 	ms_web_cam_manager_get_default_cam
 	ms_web_cam_manager_get
