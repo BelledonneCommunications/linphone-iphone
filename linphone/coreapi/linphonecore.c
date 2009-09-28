@@ -37,7 +37,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 #endif
 
-#define UNSTANDART_GSM_11K 1
+/*#define UNSTANDART_GSM_11K 1*/
 
 static const char *liblinphone_version=LIBLINPHONE_VERSION;
 
