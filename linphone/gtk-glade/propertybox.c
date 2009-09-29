@@ -622,7 +622,7 @@ static LangCodes supported_langs[]={
 	{	"sv"	,	N_("Swedish")	},
 	{	"it"	,	N_("Italian")	},
 	{	"es"	,	N_("Spanish")	},
-	{	"pt_BR"	,	N_("Bresilian")	},
+	{	"pt_BR"	,	N_("Brazilian Portugese")	},
 	{	"pl"	,	N_("Polish")	},
 	{	"de"	,	N_("German")	},
 	{	"ru"	,	N_("Russian")	},
@@ -630,7 +630,7 @@ static LangCodes supported_langs[]={
 	{	"nl"	,	N_("Dutch")	},
 	{	"hu"	,	N_("Hungarian")	},
 	{	"cs"	,	N_("Czech")	},
-	{	"zh_CN" ,	N_("Chineese")	},
+	{	"zh_CN" ,	N_("Chinese")	},
 	{	NULL	,	NULL		}
 };
 

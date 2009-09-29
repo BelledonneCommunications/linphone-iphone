@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-3.2.0-r659\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-09-28 15:30+0200\n"
+"POT-Creation-Date: 2009-09-29 11:24+0200\n"
 "PO-Revision-Date: 2009-09-21 21:44+0200\n"
 "Last-Translator: Petr Pisar <petr.pisar@atlas.cz>\n"
 "Language-Team: Czech <translation-team-cs@lists.sourceforge.net>\n"
@@ -186,8 +186,8 @@ msgid "Spanish"
 msgstr "španělština"
 
 #: ../gtk-glade/propertybox.c:625
-msgid "Bresilian"
-msgstr "brazilská portugalština"
+msgid "Brasilian Portugese"
+msgstr ""
 
 #: ../gtk-glade/propertybox.c:626
 msgid "Polish"
@@ -218,7 +218,7 @@ msgid "Czech"
 msgstr "čeština"
 
 #: ../gtk-glade/propertybox.c:633
-msgid "Chineese"
+msgid "Chinese"
 msgstr ""
 
 #: ../gtk-glade/propertybox.c:690
@@ -1555,6 +1555,9 @@ msgstr "Parametrický ekvalizér zvuku."
 #: ../mediastreamer2/src/msdscap-mingw.cc:1003
 msgid "A webcam grabber based on directshow."
 msgstr "Snímač kamer postavený na directshow."
+
+#~ msgid "Bresilian"
+#~ msgstr "brazilská portugalština"
 
 #~ msgid "Homepage"
 #~ msgstr "Domovská stránka"

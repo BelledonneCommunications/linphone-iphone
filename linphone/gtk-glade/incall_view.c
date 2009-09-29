@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "linphone.h"
 
+
 gboolean linphone_gtk_use_in_call_view(){
 	static int val=-1;
 	if (val==-1) val=linphone_gtk_get_ui_config_int("use_incall_view",1);
@@ -125,6 +126,8 @@ void linphone_gtk_in_call_view_set_in_call(){
 		gtk_image_set_from_animation(GTK_IMAGE(animation),pbuf);
 		g_object_unref(G_OBJECT(pbuf));
 	}else gtk_image_set_from_stock(GTK_IMAGE(animation),GTK_STOCK_INFO,GTK_ICON_SIZE_DIALOG);
+	linphone_gtk_enable_mute_button(
+		GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(main_window,"incall_mute")),TRUE);
 }
 
 void linphone_gtk_in_call_view_update_duration(int duration){
@@ -162,10 +165,30 @@ void linphone_gtk_in_call_view_terminate(const char *error_msg){
 		gtk_image_set_from_pixbuf(GTK_IMAGE(animation),pbuf);
 		g_object_unref(G_OBJECT(pbuf));
 	}
+	linphone_gtk_enable_mute_button(
+		GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(main_window,"incall_mute")),FALSE);
 	g_timeout_add_seconds(2,(GSourceFunc)in_call_view_terminated,NULL);
 }
 
+void linphone_gtk_draw_mute_button(GtkToggleButton *button, gboolean active){
+	if (active){
+		GtkWidget *image=create_pixmap("mic_muted.png");
+		gtk_button_set_label(GTK_BUTTON(button),_("Unmute"));
+		if (image!=NULL) gtk_button_set_image(GTK_BUTTON(button),image);
+	}else{
+		GtkWidget *image=create_pixmap("mic_active.png");
+		gtk_button_set_label(GTK_BUTTON(button),_("Mute"));
+		if (image!=NULL) gtk_button_set_image(GTK_BUTTON(button),image);
+	}
+}
+
 void linphone_gtk_mute_toggled(GtkToggleButton *button){
-	linphone_core_mute_mic(linphone_gtk_get_core(),
-		gtk_toggle_button_get_active(button));
+	gboolean active=gtk_toggle_button_get_active(button);
+	linphone_core_mute_mic(linphone_gtk_get_core(),active);
+	linphone_gtk_draw_mute_button(button,active);
+}
+
+void linphone_gtk_enable_mute_button(GtkToggleButton *button, gboolean sensitive){
+	gtk_widget_set_sensitive(GTK_WIDGET(button),sensitive);
+	linphone_gtk_draw_mute_button(button,FALSE);
 }

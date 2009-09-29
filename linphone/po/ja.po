@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone 0.10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-09-28 15:30+0200\n"
+"POT-Creation-Date: 2009-09-29 11:24+0200\n"
 "PO-Revision-Date: 2003-01-21 00:05+9000\n"
 "Last-Translator: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\n"
 "Language-Team: <ja@li.org>\n"
@@ -165,7 +165,7 @@ msgstr ""
 
 #: ../gtk-glade/propertybox.c:621
 msgid "French"
-msgstr ""
+msgstr "Français"
 
 #: ../gtk-glade/propertybox.c:622
 msgid "Swedish"
@@ -180,7 +180,7 @@ msgid "Spanish"
 msgstr ""
 
 #: ../gtk-glade/propertybox.c:625
-msgid "Bresilian"
+msgid "Brasilian Portugese"
 msgstr ""
 
 #: ../gtk-glade/propertybox.c:626
@@ -197,7 +197,7 @@ msgstr ""
 
 #: ../gtk-glade/propertybox.c:629
 msgid "Japanese"
-msgstr ""
+msgstr "日本語"
 
 #: ../gtk-glade/propertybox.c:630
 msgid "Dutch"
@@ -205,15 +205,15 @@ msgstr ""
 
 #: ../gtk-glade/propertybox.c:631
 msgid "Hungarian"
-msgstr ""
+msgstr "Magyar"
 
 #: ../gtk-glade/propertybox.c:632
 msgid "Czech"
-msgstr ""
+msgstr "čeština"
 
 #: ../gtk-glade/propertybox.c:633
-msgid "Chineese"
-msgstr ""
+msgid "Chinese"
+msgstr "简体中文"
 
 #: ../gtk-glade/propertybox.c:690
 msgid ""

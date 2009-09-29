@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-09-28 15:30+0200\n"
+"POT-Creation-Date: 2009-09-29 11:24+0200\n"
 "PO-Revision-Date: 2009-02-17 15:22+0100\n"
 "Last-Translator: Emmanuel Frécon <emmanuel.frecon@myjoice.com>\n"
 "Language-Team: SWEDISH <SE@li.org>\n"
@@ -71,7 +71,9 @@ msgstr ""
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
 " at domain <i>%s</i>:"
-msgstr "Mata in ditt lösenord för användaren <i>%s</i>\nvid domänen <i>%s</i>:"
+msgstr ""
+"Mata in ditt lösenord för användaren <i>%s</i>\n"
+"vid domänen <i>%s</i>:"
 
 #: ../gtk-glade/main.c:855
 msgid "Website link"
@@ -182,8 +184,8 @@ msgid "Spanish"
 msgstr "Spansk"
 
 #: ../gtk-glade/propertybox.c:625
-msgid "Bresilian"
-msgstr "Brasiliansk"
+msgid "Brasilian Portugese"
+msgstr ""
 
 #: ../gtk-glade/propertybox.c:626
 msgid "Polish"
@@ -214,7 +216,8 @@ msgid "Czech"
 msgstr "Tjekiska"
 
 #: ../gtk-glade/propertybox.c:633
-msgid "Chineese"
+#, fuzzy
+msgid "Chinese"
 msgstr "Kinesiska"
 
 #: ../gtk-glade/propertybox.c:690
@@ -432,7 +435,9 @@ msgstr ""
 msgid ""
 "ADSL\n"
 "Fiber Channel"
-msgstr "ADSL\nFiber"
+msgstr ""
+"ADSL\n"
+"Fiber"
 
 #: ../gtk-glade/main.glade.h:19
 msgid ""
@@ -1284,13 +1289,17 @@ msgstr ""
 msgid ""
 "The sip proxy address you entered is invalid, it must start with \"sip:\" "
 "followed by a hostname."
-msgstr "SIP proxy adressen som du matade in är inte rätt, adressen måste starta med \"sip:\", följd av ett hostnamn"
+msgstr ""
+"SIP proxy adressen som du matade in är inte rätt, adressen måste starta med "
+"\"sip:\", följd av ett hostnamn"
 
 #: ../coreapi/proxy.c:227
 msgid ""
 "The sip identity you entered is invalid.\n"
 "It should look like sip:username@proxydomain, such as sip:alice@example.net"
-msgstr "SIP adressen som du matade in är inte rätt. Adressen borde se ut som sip:namn@domän, såsom sip:peter@exempel.se"
+msgstr ""
+"SIP adressen som du matade in är inte rätt. Adressen borde se ut som sip:"
+"namn@domän, såsom sip:peter@exempel.se"
 
 #: ../coreapi/proxy.c:634
 #, c-format
@@ -1532,6 +1541,9 @@ msgstr ""
 #: ../mediastreamer2/src/msdscap-mingw.cc:1003
 msgid "A webcam grabber based on directshow."
 msgstr ""
+
+#~ msgid "Bresilian"
+#~ msgstr "Brasiliansk"
 
 #~ msgid "Homepage"
 #~ msgstr "Hemsidan"

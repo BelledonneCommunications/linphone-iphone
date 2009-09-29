@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone 0.7.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-09-28 15:30+0200\n"
+"POT-Creation-Date: 2009-09-29 11:24+0200\n"
 "PO-Revision-Date: 2008-11-25 18:39+0300\n"
 "Last-Translator: Grigory Fateyev <greg@dial.com.ru>\n"
 "Language-Team: Russian <greg@dial.com.ru>\n"
@@ -181,7 +181,7 @@ msgid "Spanish"
 msgstr ""
 
 #: ../gtk-glade/propertybox.c:625
-msgid "Bresilian"
+msgid "Brasilian Portugese"
 msgstr ""
 
 #: ../gtk-glade/propertybox.c:626
@@ -213,7 +213,7 @@ msgid "Czech"
 msgstr ""
 
 #: ../gtk-glade/propertybox.c:633
-msgid "Chineese"
+msgid "Chinese"
 msgstr ""
 
 #: ../gtk-glade/propertybox.c:690

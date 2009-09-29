@@ -514,14 +514,24 @@ Online users</property>
                           </packing>
                         </child>
                         <child>
-                          <widget class="GtkCheckButton" id="main_mute">
-                            <property name="label" translatable="yes">Mute</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">False</property>
-                            <property name="draw_indicator">True</property>
-                            <signal name="toggled" handler="linphone_gtk_mute_toggled"/>
+                          <widget class="GtkHBox" id="hbox7">
+                            <property name="visible">True</property>
+                            <child>
+                              <widget class="GtkToggleButton" id="main_mute">
+                                <property name="label" translatable="yes">Mute</property>
+                                <property name="sensitive">False</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">True</property>
+                              </widget>
+                              <packing>
+                                <property name="fill">False</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
                           </widget>
                           <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">False</property>
                             <property name="position">1</property>
                           </packing>
                         </child>
@@ -1052,22 +1062,6 @@ Fiber Channel</property>
                                     <property name="position">0</property>
                                   </packing>
                                 </child>
-                                <child>
-                                  <widget class="GtkCheckButton" id="incall_mute">
-                                    <property name="label" translatable="yes">Mute</property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="draw_indicator">True</property>
-                                    <signal name="toggled" handler="linphone_gtk_mute_toggled"/>
-                                  </widget>
-                                  <packing>
-                                    <property name="position">1</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <placeholder/>
-                                </child>
                               </widget>
                             </child>
                             <child>
@@ -1084,6 +1078,30 @@ Fiber Channel</property>
                           <packing>
                             <property name="expand">False</property>
                             <property name="position">2</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkHButtonBox" id="hbuttonbox4">
+                            <property name="visible">True</property>
+                            <child>
+                              <widget class="GtkToggleButton" id="incall_mute">
+                                <property name="label" translatable="yes">Mute</property>
+                                <property name="visible">True</property>
+                                <property name="sensitive">False</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">True</property>
+                              </widget>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">False</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                          </widget>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">False</property>
+                            <property name="position">3</property>
                           </packing>
                         </child>
                         <child>
@@ -1131,7 +1149,7 @@ Fiber Channel</property>
                           </widget>
                           <packing>
                             <property name="padding">8</property>
-                            <property name="position">3</property>
+                            <property name="position">4</property>
                           </packing>
                         </child>
                         <child>
@@ -1180,7 +1198,7 @@ Fiber Channel</property>
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">False</property>
-                            <property name="position">4</property>
+                            <property name="position">5</property>
                           </packing>
                         </child>
                       </widget>

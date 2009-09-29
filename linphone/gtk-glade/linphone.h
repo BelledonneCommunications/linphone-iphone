@@ -42,6 +42,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 GdkPixbuf * create_pixbuf(const gchar *filename);
 GdkPixbufAnimation *create_pixbuf_animation(const gchar *filename);
 void add_pixmap_directory(const gchar *directory);
+GtkWidget*create_pixmap(const gchar     *filename);
 GtkWidget *linphone_gtk_create_window(const char *window_name);
 GtkWidget *linphone_gtk_get_widget(GtkWidget *window, const char *name);
 LinphoneCore *linphone_gtk_get_core(void);
@@ -86,4 +87,7 @@ void linphone_gtk_in_call_view_set_calling(const char *uri);
 void linphone_gtk_in_call_view_set_in_call(void);
 void linphone_gtk_in_call_view_update_duration(int duration);
 void linphone_gtk_in_call_view_terminate(const char *error_msg);
+void linphone_gtk_enable_mute_button(GtkToggleButton *button, gboolean sensitive);
+
 void linphone_gtk_show_login_frame(LinphoneProxyConfig *cfg);
+

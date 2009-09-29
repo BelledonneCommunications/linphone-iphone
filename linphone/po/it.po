@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Linphone 3.2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-09-28 15:30+0200\n"
+"POT-Creation-Date: 2009-09-29 11:24+0200\n"
 "PO-Revision-Date: 2002-10-15 HO:MI+ZONE\n"
 "Last-Translator: Matteo Piazza <matteo.piazza@trentinonetwork.it>\n"
 "Language-Team: it <it@li.org>\n"
@@ -180,8 +180,8 @@ msgid "Spanish"
 msgstr "Spagnolo"
 
 #: ../gtk-glade/propertybox.c:625
-msgid "Bresilian"
-msgstr "Brasiliano"
+msgid "Brasilian Portugese"
+msgstr ""
 
 #: ../gtk-glade/propertybox.c:626
 msgid "Polish"
@@ -212,7 +212,7 @@ msgid "Czech"
 msgstr "Ceco"
 
 #: ../gtk-glade/propertybox.c:633
-msgid "Chineese"
+msgid "Chinese"
 msgstr ""
 
 #: ../gtk-glade/propertybox.c:690
@@ -1528,3 +1528,6 @@ msgstr "Equalizzatore di suono."
 #: ../mediastreamer2/src/msdscap-mingw.cc:1003
 msgid "A webcam grabber based on directshow."
 msgstr "Un webcam grabber basato su directshow."
+
+#~ msgid "Bresilian"
+#~ msgstr "Brasiliano"
