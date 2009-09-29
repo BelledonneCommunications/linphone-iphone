@@ -420,8 +420,8 @@ static bool_t check_sps_pps_change(DecData *d, mblk_t *sps, mblk_t *pps){
 	return ret1 || ret2;
 }
 
-static void enlarge_bitstream(DecData *d){
-	d->bitstream_size*=2;
+static void enlarge_bitstream(DecData *d, int new_size){
+	d->bitstream_size=new_size;
 	d->bitstream=ms_realloc(d->bitstream,d->bitstream_size);
 }
 
@@ -438,7 +438,7 @@ static int nalusToFrame(DecData *d, MSQueue *naluq, bool_t *new_sps_pps){
 		nal_len=im->b_wptr-src;
 		if (dst+nal_len+100>end){
 			int pos=dst-d->bitstream;
-			enlarge_bitstream(d);
+			enlarge_bitstream(d, d->bitstream_size+nal_len+100);
 			dst=d->bitstream+pos;
 			end=d->bitstream+d->bitstream_size;
 		}
