@@ -7,6 +7,7 @@ sip-away.png      sip-bifm.png       \
 sip-busy.png      sip-closed.png     \
 sip-online.png    sip-otl.png        \
 sip-otp.png       sip-wfa.png \
-green.png red.png
+green.png red.png \
+mic_muted.png mic_active.png
 
 EXTRA_DIST=$(pixmap_DATA)

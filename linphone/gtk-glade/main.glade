@@ -522,6 +522,7 @@ Online users</property>
                                 <property name="sensitive">False</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
+                                <signal name="toggled" handler="linphone_gtk_mute_toggled"/>
                               </widget>
                               <packing>
                                 <property name="fill">False</property>
@@ -1090,6 +1091,7 @@ Fiber Channel</property>
                                 <property name="sensitive">False</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
+                                <signal name="toggled" handler="linphone_gtk_mute_toggled"/>
                               </widget>
                               <packing>
                                 <property name="expand">False</property>
