@@ -1,10 +1,10 @@
 ./bin/avcodec-52.dll
 ./bin/avformat-52.dll
 ./bin/avutil-50.dll
-./bin/exosip2.dll
+./bin/libeXosip2-4.dll
 ./bin/libogg-0.dll
 ./bin/libtheora-0.dll
 ./bin/libxml2-2.dll
-./bin/osip2.dll
-./bin/osipparser2.dll
+./bin/libosip2-4.dll
+./bin/libosipparser2-4.dll
 ./bin/swscale-0.dll
