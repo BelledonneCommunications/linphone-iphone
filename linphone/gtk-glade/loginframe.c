@@ -157,8 +157,7 @@ void linphone_gtk_internet_kind_changed(GtkWidget *combo){
 		linphone_core_set_upload_bandwidth(lc,256);
 		linphone_core_set_download_bandwidth(lc,512);
 	}else if (netkind_id==NetworkKindOpticalFiber){
-		/*infinite*/
-		linphone_core_set_upload_bandwidth(lc,0);
-		linphone_core_set_download_bandwidth(lc,0);
+		linphone_core_set_upload_bandwidth(lc,512);
+		linphone_core_set_download_bandwidth(lc,512);
 	}
 }

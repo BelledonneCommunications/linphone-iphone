@@ -458,7 +458,7 @@ msgstr "Solo Audio"
 
 #: ../gtk-glade/main.glade.h:24
 msgid "Automatically log me in"
-msgstr ""
+msgstr "Login Automatico"
 
 #: ../gtk-glade/main.glade.h:25
 msgid "B"
