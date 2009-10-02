@@ -520,13 +520,13 @@ static void win_display_update(MSDisplay *obj){
 			&bi,wd->black,
 			0,0,bi.biWidth,bi.biHeight,0);
 
-		ret=DrawDibDraw(wd->ddh,hdc,0,rect.bottom-(rect.bottom-h)/2,
-			rect.right,(rect.bottom-h)/2,
+		ret=DrawDibDraw(wd->ddh,hdc,0,(rect.bottom)-((rect.bottom-h+1)&~0x1)/2,
+			rect.right,((rect.bottom-h+1)&~0x1)/2,
 			&bi,wd->black,
 			0,0,bi.biWidth,bi.biHeight,0);
 
-		ret=DrawDibDraw(wd->ddh,hdc,rect.right-(rect.right-w)/2,0,
-			(rect.right-w)/2,rect.bottom,
+		ret=DrawDibDraw(wd->ddh,hdc,(rect.right)-((rect.right-w+1)&~0x1)/2,0,
+			((rect.right-w+1)&~0x1)/2,rect.bottom,
 			&bi,wd->black,
 			0,0,bi.biWidth,bi.biHeight,0);
 
