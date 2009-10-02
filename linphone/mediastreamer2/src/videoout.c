@@ -269,6 +269,8 @@ static LRESULT CALLBACK window_proc(
     LPARAM lParam)    // second message parameter
 {
 	switch(uMsg){
+		case WM_PAINT:
+		break;
 		case WM_DESTROY:
 		break;
 		case WM_SIZE:
@@ -463,6 +465,11 @@ static void win_display_update(MSDisplay *obj){
 	BITMAPINFOHEADER bi;
 	RECT rect;
 	bool_t ret;
+	int ratiow;
+	int ratioh;
+	int w;
+	int h;
+
 	if (wd->window==NULL) return;
 	hdc=GetDC(wd->window);
 	if (hdc==NULL) {
@@ -481,21 +488,11 @@ static void win_display_update(MSDisplay *obj){
 	bi.biCompression=BI_RGB;
 	bi.biSizeImage=wd->rgb_len;
 
-	if (wd->last_rect_w!=rect.right || wd->last_rect_h!=rect.bottom)
-	{
-		ret=DrawDibDraw(wd->ddh,hdc,00,00,
-			rect.right,rect.bottom,
-			&bi,wd->black,
-			0,0,bi.biWidth,bi.biHeight,0);
-		wd->last_rect_w=rect.right;
-		wd->last_rect_h=rect.bottom;
-	}
-
-	int ratiow=wd->fb.w;
-	int ratioh=wd->fb.h;
+	ratiow=wd->fb.w;
+	ratioh=wd->fb.h;
 	reduce(&ratiow, &ratioh);
-	int w = rect.right/ratiow*ratiow;
-	int h = rect.bottom/ratioh*ratioh;
+	w = rect.right/ratiow*ratiow;
+	h = rect.bottom/ratioh*ratioh;
 
 	if (h*ratiow>w*ratioh)
 	{
@@ -511,9 +508,35 @@ static void win_display_update(MSDisplay *obj){
 	if (h*wd->fb.w!=w*wd->fb.h)
 		ms_error("wrong ratio");
 
+	//if (wd->last_rect_w!=rect.right || wd->last_rect_h!=rect.bottom)
+	{
+		ret=DrawDibDraw(wd->ddh,hdc,0,0,
+			(rect.right-w)/2,rect.bottom,
+			&bi,wd->black,
+			0,0,bi.biWidth,bi.biHeight,0);
+
+		ret=DrawDibDraw(wd->ddh,hdc,0,0,
+			rect.right,(rect.bottom-h)/2,
+			&bi,wd->black,
+			0,0,bi.biWidth,bi.biHeight,0);
+
+		ret=DrawDibDraw(wd->ddh,hdc,0,rect.bottom-(rect.bottom-h)/2,
+			rect.right,(rect.bottom-h)/2,
+			&bi,wd->black,
+			0,0,bi.biWidth,bi.biHeight,0);
+
+		ret=DrawDibDraw(wd->ddh,hdc,rect.right-(rect.right-w)/2,0,
+			(rect.right-w)/2,rect.bottom,
+			&bi,wd->black,
+			0,0,bi.biWidth,bi.biHeight,0);
+
+		wd->last_rect_w=rect.right;
+		wd->last_rect_h=rect.bottom;
+	}
+
 	ret=DrawDibDraw(wd->ddh,hdc,
-		rect.right/2-(w/2),
-		rect.bottom/2-(h/2),
+		(rect.right-w)/2,
+		(rect.bottom-h)/2,
 		w,
 		h,
 		&bi,wd->rgb,
