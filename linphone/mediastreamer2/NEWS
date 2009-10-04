@@ -1,3 +1,6 @@
+mediastreamer-2.3.1: October 5, 2009
+	* preserve ratio in windows video display (not yet implemented for linux/SDL)
+
 mediastreamer-2.3.0: September 17, 2009
 	* integrate directshow capture filter for mingw (was a plugin before)
 	* builds on windows with mingw/msys using ./configure && make (see linphone's README.mingw)

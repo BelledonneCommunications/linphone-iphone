@@ -428,7 +428,7 @@ typedef struct yuv{
 
 
 
-void yuv420p_to_rgb(WinDisplay *wd, MSPicture *src, uint8_t *rgb){
+static void yuv420p_to_rgb(WinDisplay *wd, MSPicture *src, uint8_t *rgb){
 	int rgb_stride=-src->w*3;
 	uint8_t *p;
 
@@ -444,7 +444,7 @@ void yuv420p_to_rgb(WinDisplay *wd, MSPicture *src, uint8_t *rgb){
 	}
 }
 
-int gcd(int m, int n)
+static int gcd(int m, int n)
 {
    if(n == 0)
      return m;
@@ -452,7 +452,7 @@ int gcd(int m, int n)
      return gcd(n, m % n);
 }
    
-void reduce(int *num, int *denom)
+static void reduce(int *num, int *denom)
 {
    int divisor = gcd(*num, *denom);
    *num /= divisor;
