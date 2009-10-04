@@ -7,13 +7,11 @@
     <property name="border_width">5</property>
     <property name="type">popup</property>
     <property name="title" translatable="yes">Linphone - Incoming call</property>
-    <property name="modal">True</property>
     <property name="window_position">center-on-parent</property>
     <property name="icon">linphone2.png</property>
     <property name="type_hint">notification</property>
     <property name="urgency_hint">True</property>
     <property name="deletable">False</property>
-    <property name="has_separator">False</property>
     <child internal-child="vbox">
       <widget class="GtkVBox" id="dialog-vbox8">
         <property name="visible">True</property>
