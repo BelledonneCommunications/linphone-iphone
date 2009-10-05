@@ -269,8 +269,6 @@ static LRESULT CALLBACK window_proc(
     LPARAM lParam)    // second message parameter
 {
 	switch(uMsg){
-		case WM_PAINT:
-		break;
 		case WM_DESTROY:
 		break;
 		case WM_SIZE:
