@@ -63,8 +63,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 MSFilter *ms_aq_read_new(MSSndCard *card);
 MSFilter *ms_aq_write_new(MSSndCard *card);
 
-#define kSecondsPerBuffer		0.04
-#define kNumberAudioDataBuffers	5
+#define kSecondsPerBuffer		0.02
+#define kNumberAudioDataBuffers	4
 
 typedef struct AQData{
 	int								rate;
@@ -519,7 +519,7 @@ static void aq_put(MSSndCard *card, mblk_t *m){
 			++d->curWriteBuffer;
 		}
 	}
-	if(d->write_started == FALSE && d->curWriteBuffer == kNumberAudioDataBuffers) {
+	if(d->write_started == FALSE && d->curWriteBuffer == kNumberAudioDataBuffers-1) {
 		OSStatus err;
 		err = AudioQueueStart (
 					 d->writeQueue,
