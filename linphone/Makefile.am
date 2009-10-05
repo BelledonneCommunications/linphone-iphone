@@ -138,9 +138,12 @@ newdate:
 	cd gtk-glade && $(MAKE) newdate
 
 
-PortFile:	$(top_srcdir)/scripts/PortFile.tmpl dist
+Portfile:	$(top_srcdir)/scripts/Portfile.tmpl dist
 	sed -e 's/\@VERSION\@/$(LINPHONE_VERSION)/g' \
-	  -e 's/\@LINPHONE_MD5\@/$(shell md5sum linphone-$(VERSION).tar.gz | awk {'print $$1'})/' < $< > PortFile
+	  -e 's/\@LINPHONE_MD5\@/$(shell md5sum linphone-$(VERSION).tar.gz | awk {'print $$1'})/' < $< > $@
 
+Portfile-devel:	$(top_srcdir)/scripts/Portfile-devel.tmpl dist
+	sed -e 's/\@VERSION\@/$(LINPHONE_VERSION)/g' \
+	  -e 's/\@LINPHONE_MD5\@/$(shell md5sum linphone-$(VERSION).tar.gz | awk {'print $$1'})/' < $< > $@
 
 

@@ -559,9 +559,32 @@ static gboolean linphone_gtk_start_call_do(GtkWidget *uri_bar){
 	return FALSE;
 }
 
+static void _linphone_gtk_accept_call(){
+	LinphoneCore *lc=linphone_gtk_get_core();
+	GtkWidget *mw=linphone_gtk_get_main_window();
+	GtkWidget *icw=GTK_WIDGET(g_object_get_data(G_OBJECT(mw),"incoming_call"));
+	if (icw!=NULL){
+		g_object_set_data(G_OBJECT(mw),"incoming_call",NULL);
+		gtk_widget_destroy(icw);
+	}
+
+	linphone_core_accept_call(lc,NULL);
+	linphone_gtk_call_started(linphone_gtk_get_main_window());
+	if (linphone_gtk_use_in_call_view()){
+		linphone_gtk_in_call_view_set_in_call();
+		linphone_gtk_show_in_call_view();
+	}
+	linphone_gtk_enable_mute_button(
+		GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(linphone_gtk_get_main_window(),"main_mute"))
+		,TRUE);
+}
+
 void linphone_gtk_start_call(GtkWidget *w){
 	LinphoneCore *lc=linphone_gtk_get_core();
-	if (linphone_core_inc_invite_pending(lc) || linphone_core_in_call(lc)) {
+	if (linphone_core_inc_invite_pending(lc)){
+		/*accept the call*/
+		_linphone_gtk_accept_call();
+	}else if (linphone_core_in_call(lc)) {
 		/*already in call */
 	}else{
 		/*change into in-call mode, then do the work later as it might block a bit */
@@ -595,18 +618,7 @@ void linphone_gtk_decline_call(GtkWidget *button){
 }
 
 void linphone_gtk_accept_call(GtkWidget *button){
-	LinphoneCore *lc=linphone_gtk_get_core();
-	linphone_core_accept_call(lc,NULL);
-	g_object_set_data(G_OBJECT(linphone_gtk_get_main_window()),"incoming_call",NULL);
-	gtk_widget_destroy(gtk_widget_get_toplevel(button));
-	linphone_gtk_call_started(linphone_gtk_get_main_window());
-	if (linphone_gtk_use_in_call_view()){
-		linphone_gtk_in_call_view_set_in_call();
-		linphone_gtk_show_in_call_view();
-	}
-	linphone_gtk_enable_mute_button(
-		GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(linphone_gtk_get_main_window(),"main_mute"))
-		,TRUE);
+	_linphone_gtk_accept_call();
 }
 
 static gboolean linphone_gtk_auto_answer(GtkWidget *incall_window){
