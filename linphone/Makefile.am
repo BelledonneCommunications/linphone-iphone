@@ -55,7 +55,7 @@ EXTRA_DIST = config.rpath  BUGS linphone.kdevelop  \
 
 DISTCLEANFILES= intltool-extract intltool-merge intltool-update po/stamp-it po/.intltool-merge-cache $(ISS_SCRIPT) $(PACKAGE_WIN32_FILELIST)
 
-CLEANFILES=PortFile
+CLEANFILES=Portfile Portfile-devel
 
 # `make rpm'
 

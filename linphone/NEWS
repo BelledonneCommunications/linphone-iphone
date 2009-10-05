@@ -4,7 +4,6 @@ linphone-3.2.1 -- October 5, 2009
 	* windows installer installs reg keys to indicate windows to start linphone clicking of sip uris
 	* workaround a bug Gtk-macos X with modal popup windows, preventing to answer calls
 
-
 linphone-3.2.0 -- September 17, 2009
 	* new in-call layout
 	* new idle view with two buttons

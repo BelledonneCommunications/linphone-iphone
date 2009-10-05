@@ -61,7 +61,7 @@ static void speex_ec_init(MSFilter *f){
 	s->size_delay=0;
 	s->delay_ms=0;
 	s->playback_delay=0;
-	s->tail_length_ms=0;
+	s->tail_length_ms=250;
 
 	ms_bufferizer_init(&s->in[0]);
 	ms_bufferizer_init(&s->in[1]);
@@ -289,7 +289,7 @@ static int speex_ec_set_framesize(MSFilter *f, void *arg){
 static int speex_ec_set_filterlength(MSFilter *f, void *arg){
 	SpeexECState *s=(SpeexECState*)f->data;
 	s->filterlength = (*(int*)arg)*(s->samplerate/8000);
-
+	s->tail_length_ms=0;/*trust the length in sample, not the length in milliseconds*/
 	if (s->ecstate!=NULL)
 		speex_echo_state_destroy(s->ecstate);
 	if (s->den!=NULL)
