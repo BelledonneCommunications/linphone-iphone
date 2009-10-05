@@ -61,7 +61,7 @@ static void speex_ec_init(MSFilter *f){
 	s->size_delay=0;
 	s->delay_ms=0;
 	s->playback_delay=0;
-	s->tail_length_ms=250;
+	s->tail_length_ms=0;
 
 	ms_bufferizer_init(&s->in[0]);
 	ms_bufferizer_init(&s->in[1]);
