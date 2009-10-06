@@ -478,6 +478,18 @@ PayloadType payload_type_x_snow={
 	CHANNELS(0)
 };
 
+PayloadType payload_type_jpeg={
+	TYPE( PAYLOAD_VIDEO),
+	CLOCK_RATE(90000),
+	BITS_PER_SAMPLE(0),
+	ZERO_PATTERN(NULL),
+	PATTERN_LENGTH(0),
+	NORMAL_BITRATE(256000),
+	MIME_TYPE ("JPEG"),
+	CHANNELS(0)
+};
+
+
 PayloadType	payload_type_t140={
 	PAYLOAD_AUDIO_PACKETIZED, /*type */
 	1000,
