@@ -350,7 +350,7 @@ MSFilterDesc ms_mjpeg_dec_desc={
 	"MSMJpegDec",
 	N_("A MJPEG decoder using ffmpeg library"),
 	MS_FILTER_DECODER,
-	"MJPEG",
+	"JPEG",
 	1,
 	1,
 	dec_mjpeg_init,
