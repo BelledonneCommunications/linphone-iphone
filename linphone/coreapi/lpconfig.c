@@ -97,6 +97,7 @@ struct _LpConfig{
 	char *filename;
 	MSList *sections;
 	int modified;
+	int readonly;
 };
 
 LpItem * lp_item_new(const char *key, const char *value){
@@ -339,13 +340,15 @@ void lp_section_write(LpSection *sec, FILE *file){
 int lp_config_sync(LpConfig *lpconfig){
 	FILE *file;
 	if (lpconfig->filename==NULL) return -1;
+	if (lpconfig->readonly) return 0;
 #ifndef WIN32
 	/* don't create group/world-accessible files */
 	(void) umask(S_IRWXG | S_IRWXO);
 #endif
 	file=fopen(lpconfig->filename,"w");
 	if (file==NULL){
-		ms_warning("Could not write %s !",lpconfig->filename);
+		ms_warning("Could not write %s ! Maybe it is read-only. Configuration will not be saved.",lpconfig->filename);
+		lpconfig->readonly=1;
 		return -1;
 	}
 	ms_list_for_each2(lpconfig->sections,(void (*)(void *,void*))lp_section_write,(void *)file);

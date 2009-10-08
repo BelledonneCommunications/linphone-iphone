@@ -655,17 +655,21 @@ const char * linphone_core_get_version(void){
 	return liblinphone_version;
 }
 
-#ifdef VIDEO_ENABLED
 
-static PayloadType * payload_type_h264_packetization_mode_1=NULL;
-static PayloadType * linphone_h263_1998=NULL;
-static PayloadType * linphone_mp4v_es=NULL;
-static PayloadType * linphone_h263_old=NULL;
-#endif
+static MSList *linphone_payload_types=NULL;
 
-#ifdef UNSTANDART_GSM_11K
-static PayloadType *gsm_11k=NULL;
-#endif
+static void linphone_core_assign_payload_type(PayloadType *const_pt, int number, const char *recv_fmtp){
+	PayloadType *pt;
+	pt=payload_type_clone(const_pt);
+	if (recv_fmtp!=NULL) payload_type_set_recv_fmtp(pt,recv_fmtp);
+	rtp_profile_set_payload(&av_profile,number,pt);
+}
+
+static void linphone_core_free_payload_types(void){
+	ms_list_for_each(linphone_payload_types,(void (*)(void*))payload_type_destroy);
+	ms_list_free(linphone_payload_types);
+	linphone_payload_types=NULL;
+}
 
 void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vtable, const char *config_path, void * userdata)
 {
@@ -678,38 +682,30 @@ void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vtable, co
 	gstate_new_state(lc, GSTATE_POWER_STARTUP, NULL);
 	
 	ortp_init();
-	rtp_profile_set_payload(&av_profile,115,&payload_type_lpc1015);
-	rtp_profile_set_payload(&av_profile,110,&payload_type_speex_nb);
-	rtp_profile_set_payload(&av_profile,111,&payload_type_speex_wb);
-	rtp_profile_set_payload(&av_profile,112,&payload_type_ilbc);
-	rtp_profile_set_payload(&av_profile,116,&payload_type_truespeech);
-	rtp_profile_set_payload(&av_profile,101,&payload_type_telephone_event);
-	
-#ifdef VIDEO_ENABLED
-	rtp_profile_set_payload(&av_profile,97,&payload_type_theora);
+	linphone_core_assign_payload_type(&payload_type_lpc1015,115,NULL);
+	linphone_core_assign_payload_type(&payload_type_speex_nb,110,"vbr=on");
+	linphone_core_assign_payload_type(&payload_type_speex_wb,111,"vbr=on");
+	linphone_core_assign_payload_type(&payload_type_speex_uwb,112,"vbr=on");
+	linphone_core_assign_payload_type(&payload_type_telephone_event,101,NULL);
+	linphone_core_assign_payload_type(&payload_type_ilbc,113,NULL);
 
-	linphone_h263_1998=payload_type_clone(&payload_type_h263_1998);
-	payload_type_set_recv_fmtp(linphone_h263_1998,"CIF=1;QCIF=1");
-	rtp_profile_set_payload(&av_profile,98,linphone_h263_1998);
-
-	linphone_h263_old=payload_type_clone(&payload_type_h263);
-	payload_type_set_recv_fmtp(linphone_h263_old,"QCIF=2");
- 	rtp_profile_set_payload(&av_profile,34,linphone_h263_old);
-
-	linphone_mp4v_es=payload_type_clone(&payload_type_mp4v);
-	payload_type_set_recv_fmtp(linphone_mp4v_es,"profile-level-id=3");
-	rtp_profile_set_payload(&av_profile,99,linphone_mp4v_es);
-	rtp_profile_set_payload(&av_profile,100,&payload_type_x_snow);
-	payload_type_h264_packetization_mode_1=payload_type_clone(&payload_type_h264);
-	payload_type_set_recv_fmtp(payload_type_h264_packetization_mode_1,"packetization-mode=1");
-	rtp_profile_set_payload(&av_profile,103,payload_type_h264_packetization_mode_1);
-	rtp_profile_set_payload(&av_profile,102,&payload_type_h264);
+#ifdef ENABLE_NONSTANDARD_GSM
+	{
+		PayloadType *pt;
+		pt=payload_type_clone(&payload_type_gsm);
+		pt->clock_rate=11025;
+		rtp_profile_set_payload(&av_profile,114,pt);
+	}
 #endif
 
-#ifdef UNSTANDART_GSM_11K
-	gsm_11k=payload_type_clone(&payload_type_gsm);
-	gsm_11k->clock_rate=11025;
-	rtp_profile_set_payload(&av_profile,96,gsm_11k);
+#ifdef VIDEO_ENABLED
+	linphone_core_assign_payload_type(&payload_type_h263,34,NULL);
+	linphone_core_assign_payload_type(&payload_type_theora,97,NULL);
+	linphone_core_assign_payload_type(&payload_type_h263_1998,98,"CIF=1;QCIF=1");
+	linphone_core_assign_payload_type(&payload_type_mp4v,99,"profile-level-id=3");
+	linphone_core_assign_payload_type(&payload_type_x_snow,100,NULL);
+	linphone_core_assign_payload_type(&payload_type_h264,102,NULL);
+	linphone_core_assign_payload_type(&payload_type_h264,103,"packetization-mode=1");
 #endif
 
 	ms_init();
@@ -2666,10 +2662,8 @@ void linphone_core_uninit(LinphoneCore *lc)
 	if (lp_config_needs_commit(lc->config)) lp_config_sync(lc->config);
 	lp_config_destroy(lc->config);
 	sip_setup_unregister_all();
-#ifdef VIDEO_ENABLED
-	if (payload_type_h264_packetization_mode_1!=NULL)
-		payload_type_destroy(payload_type_h264_packetization_mode_1);
-#endif
+
+	linphone_core_free_payload_types();
 	
 	ortp_exit();
 	eXosip_quit();

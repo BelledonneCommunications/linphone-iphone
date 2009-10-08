@@ -196,7 +196,15 @@ fi
 AC_SUBST(TRUESPEECH_CFLAGS)
 AM_CONDITIONAL([BUILD_TRUESPEECH], [test x$truespeech = xtrue])
 
-
+AC_ARG_ENABLE(nonstandard-gsm,
+      [  --enable-nonstandard-gsm    Enable GSM codec at nonstandard rates (11025hz, 16000hz)],
+      [case "${enableval}" in
+        yes) exotic_gsm=yes
+	AC_DEFINE(ENABLE_NONSTANDARD_GSM,1,[Defined when using gsm at nonstandard rates])
+	 ;;
+        no)  exotic_gsm=no ;;
+        *) AC_MSG_ERROR(bad value ${enableval} for --enable-nonstandard-gsm) ;;
+      esac],[exotic_gsm=no])
 
 
 dnl support for RSVP (by Vincent Maury)

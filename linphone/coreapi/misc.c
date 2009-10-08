@@ -27,6 +27,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <strings.h>
+
 
 #undef snprintf
 #include <ortp/stun.h>
@@ -187,17 +189,31 @@ int payload_type_get_rate(PayloadType *pt){
 	return pt->clock_rate;
 }
 
-static double get_audio_payload_bandwidth(const PayloadType *pt){
+/*this function makes a special case for speex/8000.
+This codec is variable bitrate. The 8kbit/s mode is interesting when having a low upload bandwidth, but its quality
+is not very good. We 'd better use its 15kbt/s mode when we have enough bandwidth*/
+static int get_codec_bitrate(LinphoneCore *lc, const PayloadType *pt){
+	int upload_bw=linphone_core_get_upload_bandwidth(lc);
+	if (upload_bw>128 || (upload_bw>32 && !linphone_core_video_enabled(lc)) ) {
+		if (strcmp(pt->mime_type,"speex")==0 && pt->clock_rate==8000){
+			ms_message("Let's use speex at 15kbit/s");
+			return 15000;
+		}
+	}
+	return pt->normal_bitrate;
+}
+
+static double get_audio_payload_bandwidth(LinphoneCore *lc, const PayloadType *pt){
 	double npacket=50;
 	double packet_size;
 	int bitrate;
-	bitrate=pt->normal_bitrate;
-	packet_size=(double)(bitrate/(50*8))+UDP_HDR_SZ+RTP_HDR_SZ+IP4_HDR_SZ;
+	bitrate=get_codec_bitrate(lc,pt);
+	packet_size= (((double)bitrate)/(50*8))+UDP_HDR_SZ+RTP_HDR_SZ+IP4_HDR_SZ;
 	return packet_size*8.0*npacket;
 }
 
 void linphone_core_update_allocated_audio_bandwidth_in_call(LinphoneCore *lc, const PayloadType *pt){
-	lc->audio_bw=(int)(get_audio_payload_bandwidth(pt)/1000.0);
+	lc->audio_bw=(int)(get_audio_payload_bandwidth(lc,pt)/1000.0);
 	/*update*/
 	linphone_core_set_download_bandwidth(lc,lc->net_conf.download_bw);
 	linphone_core_set_upload_bandwidth(lc,lc->net_conf.upload_bw);
@@ -209,8 +225,9 @@ void linphone_core_update_allocated_audio_bandwidth(LinphoneCore *lc){
 	for(elem=linphone_core_get_audio_codecs(lc);elem!=NULL;elem=elem->next){
 		PayloadType *pt=(PayloadType*)elem->data;
 		if (payload_type_enabled(pt)){
+			int pt_bitrate=get_codec_bitrate(lc,pt);
 			if (max==NULL) max=pt;
-			else if (max->normal_bitrate<pt->normal_bitrate){
+			else if (max->normal_bitrate<pt_bitrate){
 				max=pt;
 			}
 		}
@@ -241,7 +258,7 @@ bool_t linphone_core_check_payload_type_usability(LinphoneCore *lc, PayloadType 
 	switch (pt->type){
 		case PAYLOAD_AUDIO_CONTINUOUS:
 		case PAYLOAD_AUDIO_PACKETIZED:
-			codec_band=get_audio_payload_bandwidth(pt);
+			codec_band=get_audio_payload_bandwidth(lc,pt);
 			ret=bandwidth_is_greater(min_audio_bw*1000,codec_band);
 			//ms_message("Payload %s: %g",pt->mime_type,codec_band);
 			break;
