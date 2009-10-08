@@ -194,9 +194,8 @@ This codec is variable bitrate. The 8kbit/s mode is interesting when having a lo
 is not very good. We 'd better use its 15kbt/s mode when we have enough bandwidth*/
 static int get_codec_bitrate(LinphoneCore *lc, const PayloadType *pt){
 	int upload_bw=linphone_core_get_upload_bandwidth(lc);
-	if (upload_bw>128 || (upload_bw>32 && !linphone_core_video_enabled(lc)) ) {
+	if (bandwidth_is_greater(upload_bw,129) || (bandwidth_is_greater(upload_bw,33) && !linphone_core_video_enabled(lc)) ) {
 		if (strcmp(pt->mime_type,"speex")==0 && pt->clock_rate==8000){
-			ms_message("Let's use speex at 15kbit/s");
 			return 15000;
 		}
 	}
