@@ -1,3 +1,9 @@
+linphone-3.2.2 -- ?????????
+	* improve bitrate usage of speex codec
+	* allow speex to run with vbr (variable bit rate) mode
+	* add speex/32000 (ultra wide band speex codec)
+	* answer empty SIP INFO requests
+
 linphone-3.2.1 -- October 5, 2009
 	* improve graphics and behaviour of mute button
 	* updated translations

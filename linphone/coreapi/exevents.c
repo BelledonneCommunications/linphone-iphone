@@ -917,6 +917,7 @@ static void linphone_process_dtmf_relay(LinphoneCore *lc, eXosip_event_t *ev){
 }
 
 void linphone_call_message_new(LinphoneCore *lc, eXosip_event_t *ev){
+	osip_message_t *ans=NULL;
 	if (ev->request){
 		if (MSG_IS_INFO(ev->request)){
 			osip_content_type_t *ct;
@@ -926,7 +927,18 @@ void linphone_call_message_new(LinphoneCore *lc, eXosip_event_t *ev){
 					linphone_process_media_control_xml(lc,ev);
 				else if (strcmp(ct->subtype,"dtmf-relay")==0)
 					linphone_process_dtmf_relay(lc,ev);
-				else ms_message("Unhandled SIP INFO.");
+				else {
+					ms_message("Unhandled SIP INFO.");
+					/*send an "Not implemented" answer*/
+					eXosip_call_build_answer(ev->tid,501,&ans);
+					if (ans)
+						eXosip_call_send_answer(ev->tid,501,ans);
+				}
+			}else{
+				/*empty SIP INFO, probably to test we are alive. Send an empty answer*/
+				eXosip_call_build_answer(ev->tid,200,&ans);
+					if (ans)
+						eXosip_call_send_answer(ev->tid,200,ans);
 			}
 		}
 	}else ms_warning("linphone_call_message_new: No request ?");
