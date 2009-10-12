@@ -1044,7 +1044,7 @@ MSFilterDesc ms_snow_enc_desc={
 };
 
 MSFilterDesc ms_mjpeg_enc_desc={
-	.id=MS_MJPEG_ENC_ID,
+	.id=MS_JPEG_ENC_ID,
 	.name="MSMJpegEnc",
 	.text=N_("A MJPEG encoder using ffmpeg library."),
 	.category=MS_FILTER_ENCODER,
