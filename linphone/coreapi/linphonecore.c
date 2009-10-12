@@ -663,6 +663,7 @@ static void linphone_core_assign_payload_type(PayloadType *const_pt, int number,
 	pt=payload_type_clone(const_pt);
 	if (recv_fmtp!=NULL) payload_type_set_recv_fmtp(pt,recv_fmtp);
 	rtp_profile_set_payload(&av_profile,number,pt);
+	linphone_payload_types=ms_list_append(linphone_payload_types,pt);
 }
 
 static void linphone_core_free_payload_types(void){
@@ -695,6 +696,11 @@ void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vtable, co
 		pt=payload_type_clone(&payload_type_gsm);
 		pt->clock_rate=11025;
 		rtp_profile_set_payload(&av_profile,114,pt);
+		linphone_payload_types=ms_list_append(linphone_payload_types,pt);
+		pt=payload_type_clone(&payload_type_gsm);
+		pt->clock_rate=22050;
+		rtp_profile_set_payload(&av_profile,115,pt);
+		linphone_payload_types=ms_list_append(linphone_payload_types,pt);
 	}
 #endif
 
