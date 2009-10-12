@@ -235,19 +235,19 @@ struct jpeghdr_qtable {
 };
 
 
-u_char lum_dc_codelens[] = {
+static u_char lum_dc_codelens[] = {
         0, 1, 5, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0,
 };
 
-u_char lum_dc_symbols[] = {
+static u_char lum_dc_symbols[] = {
         0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
 };
 
-u_char lum_ac_codelens[] = {
+static u_char lum_ac_codelens[] = {
         0, 2, 1, 3, 3, 2, 4, 3, 5, 5, 4, 4, 0, 0, 1, 0x7d,
 };
 
-u_char lum_ac_symbols[] = {
+static u_char lum_ac_symbols[] = {
         0x01, 0x02, 0x03, 0x00, 0x04, 0x11, 0x05, 0x12,
         0x21, 0x31, 0x41, 0x06, 0x13, 0x51, 0x61, 0x07,
         0x22, 0x71, 0x14, 0x32, 0x81, 0x91, 0xa1, 0x08,
@@ -271,19 +271,19 @@ u_char lum_ac_symbols[] = {
         0xf9, 0xfa,
 };
 
-u_char chm_dc_codelens[] = {
+static u_char chm_dc_codelens[] = {
         0, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0,
 };
 
-u_char chm_dc_symbols[] = {
+static u_char chm_dc_symbols[] = {
         0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
 };
 
-u_char chm_ac_codelens[] = {
+static u_char chm_ac_codelens[] = {
         0, 2, 1, 2, 4, 4, 3, 4, 7, 5, 4, 4, 0, 1, 2, 0x77,
 };
 
-u_char chm_ac_symbols[] = {
+static u_char chm_ac_symbols[] = {
         0x00, 0x01, 0x02, 0x03, 0x11, 0x04, 0x05, 0x21,
         0x31, 0x06, 0x12, 0x41, 0x51, 0x07, 0x61, 0x71,
         0x13, 0x22, 0x32, 0x81, 0x08, 0x14, 0x42, 0x91,
@@ -307,7 +307,7 @@ u_char chm_ac_symbols[] = {
         0xf9, 0xfa,
 };
 
-u_char *
+static u_char *
 MakeQuantHeader(u_char *p, u_char *qt, int tableNo, int table_len)
 {
         *p++ = 0xff;
@@ -319,7 +319,7 @@ MakeQuantHeader(u_char *p, u_char *qt, int tableNo, int table_len)
         return (p + table_len);
 }
 
-u_char *
+static u_char *
 MakeHuffmanHeader(u_char *p, u_char *codelens, int ncodes,
                   u_char *symbols, int nsymbols, int tableNo,
                   int tableClass)
@@ -336,7 +336,7 @@ MakeHuffmanHeader(u_char *p, u_char *codelens, int ncodes,
         return (p);
 }
 
-u_char *
+static u_char *
 MakeDRIHeader(u_char *p, u_short dri) {
         *p++ = 0xff;
         *p++ = 0xdd;            /* DRI */
@@ -365,7 +365,7 @@ MakeDRIHeader(u_char *p, u_short dri) {
  *    interchange format (except for possible trailing garbage and
  *    absence of an EOI marker to terminate the scan).
  */
-int MakeHeaders(u_char *p, int type, int w, int h, u_char *lqt,
+static int MakeHeaders(u_char *p, int type, int w, int h, u_char *lqt,
                 u_char *cqt, unsigned table_len, u_short dri)
 {
         u_char *start = p;
@@ -447,9 +447,66 @@ int MakeHeaders(u_char *p, int type, int w, int h, u_char *lqt,
         return (p - start);
 };
 
-void MakeTables(int q, u_char *lqt, u_char *cqt);
 
-mblk_t *
+/*
+ * Table K.1 from JPEG spec.
+ */
+static const int jpeg_luma_quantizer[64] = {
+	16, 11, 10, 16, 24, 40, 51, 61,
+	12, 12, 14, 19, 26, 58, 60, 55,
+	14, 13, 16, 24, 40, 57, 69, 56,
+	14, 17, 22, 29, 51, 87, 80, 62,
+	18, 22, 37, 56, 68, 109, 103, 77,
+	24, 35, 55, 64, 81, 104, 113, 92,
+	49, 64, 78, 87, 103, 121, 120, 101,
+	72, 92, 95, 98, 112, 100, 103, 99
+};
+
+/*
+ * Table K.2 from JPEG spec.
+ */
+static const int jpeg_chroma_quantizer[64] = {
+	17, 18, 24, 47, 99, 99, 99, 99,
+	18, 21, 26, 66, 99, 99, 99, 99,
+	24, 26, 56, 99, 99, 99, 99, 99,
+	47, 66, 99, 99, 99, 99, 99, 99,
+	99, 99, 99, 99, 99, 99, 99, 99,
+	99, 99, 99, 99, 99, 99, 99, 99,
+	99, 99, 99, 99, 99, 99, 99, 99,
+	99, 99, 99, 99, 99, 99, 99, 99
+};
+
+/*
+ * Call MakeTables with the Q factor and two u_char[64] return arrays
+ */
+static void MakeTables(int q, u_char *lqt, u_char *cqt)
+{
+	int i;
+	int factor = q;
+
+	if (q < 1) factor = 1;
+	if (q > 99) factor = 99;
+	if (q < 50)
+		q = 5000 / factor;
+	else
+		q = 200 - factor*2;
+
+	for (i=0; i < 64; i++) {
+		int lq = (jpeg_luma_quantizer[i] * q + 50) / 100;
+		int cq = (jpeg_chroma_quantizer[i] * q + 50) / 100;
+
+		/* Limit the quantizers to 1 <= q <= 255 */
+		if (lq < 1) lq = 1;
+		else if (lq > 255) lq = 255;
+		lqt[i] = lq;
+
+		if (cq < 1) cq = 1;
+		else if (cq > 255) cq = 255;
+		cqt[i] = cq;
+	}
+}
+
+static mblk_t *
 read_rfc2435_header(DecState *s,mblk_t *inm)
 {
 	if (msgdsize(inm) >= sizeof(struct jpeghdr)) {
