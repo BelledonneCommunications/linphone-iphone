@@ -86,7 +86,9 @@ typedef enum MSFilterId{
 	MS_DSCAP_ID,
 	MS_AQ_READ_ID,
 	MS_AQ_WRITE_ID,
-	MS_EQUALIZER_ID
+	MS_EQUALIZER_ID,
+	MS_JPEG_DEC_ID,
+	MS_JPEG_ENC_ID,
 } MSFilterId;
 
 

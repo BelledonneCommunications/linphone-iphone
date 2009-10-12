@@ -196,9 +196,26 @@ static void enc_snow_init(MSFilter *f){
 	enc_init(f,CODEC_ID_SNOW);
 }
 
+static void enc_mjpeg_init(MSFilter *f){
+	enc_init(f,CODEC_ID_MJPEG);
+}
+
 static void prepare(EncState *s){
 	AVCodecContext *c=&s->av_context;
 	avcodec_get_context_defaults(c);
+	if (s->codec==CODEC_ID_MJPEG)
+	{
+		ms_message("Codec bitrate set to %i",c->bit_rate);
+		c->width = s->vsize.width;  
+		c->height = s->vsize.height;
+		c->time_base.num = 1;
+		c->time_base.den = (int)s->fps;
+		c->gop_size=(int)s->fps*5; /*emit I frame every 5 seconds*/
+		c->pix_fmt=PIX_FMT_YUVJ420P;
+		s->comp_buf=allocb(c->bit_rate*2,0);
+		return;
+	}
+
 	/* put codec parameters */
 	c->bit_rate=(float)s->maxbr*0.7;
 	c->bit_rate_tolerance=s->fps!=1?(float)c->bit_rate/(s->fps-1):c->bit_rate;
@@ -285,6 +302,8 @@ static void enc_preprocess(MSFilter *f){
 	else if (s->codec==CODEC_ID_MPEG4)
 		prepare_mpeg4(s);
 	else if (s->codec==CODEC_ID_SNOW){
+		/**/
+	}else if (s->codec==CODEC_ID_MJPEG){
 		/**/
 	}else {
 		ms_error("Unsupported codec id %i",s->codec);
@@ -440,6 +459,268 @@ static uint8_t *get_psc(uint8_t *begin,uint8_t *end, int packet_size){
 	return ret;
 }
 
+/*
+ * Table K.1 from JPEG spec.
+ */
+static const int jpeg_luma_quantizer[64] = {
+	16, 11, 10, 16, 24, 40, 51, 61,
+	12, 12, 14, 19, 26, 58, 60, 55,
+	14, 13, 16, 24, 40, 57, 69, 56,
+	14, 17, 22, 29, 51, 87, 80, 62,
+	18, 22, 37, 56, 68, 109, 103, 77,
+	24, 35, 55, 64, 81, 104, 113, 92,
+	49, 64, 78, 87, 103, 121, 120, 101,
+	72, 92, 95, 98, 112, 100, 103, 99
+};
+
+/*
+ * Table K.2 from JPEG spec.
+ */
+static const int jpeg_chroma_quantizer[64] = {
+	17, 18, 24, 47, 99, 99, 99, 99,
+	18, 21, 26, 66, 99, 99, 99, 99,
+	24, 26, 56, 99, 99, 99, 99, 99,
+	47, 66, 99, 99, 99, 99, 99, 99,
+	99, 99, 99, 99, 99, 99, 99, 99,
+	99, 99, 99, 99, 99, 99, 99, 99,
+	99, 99, 99, 99, 99, 99, 99, 99,
+	99, 99, 99, 99, 99, 99, 99, 99
+};
+
+/*
+ * Call MakeTables with the Q factor and two u_char[64] return arrays
+ */
+void
+MakeTables(int q, u_char *lqt, u_char *cqt)
+{
+	int i;
+	int factor = q;
+
+	if (q < 1) factor = 1;
+	if (q > 99) factor = 99;
+	if (q < 50)
+		q = 5000 / factor;
+	else
+		q = 200 - factor*2;
+
+	for (i=0; i < 64; i++) {
+		int lq = (jpeg_luma_quantizer[i] * q + 50) / 100;
+		int cq = (jpeg_chroma_quantizer[i] * q + 50) / 100;
+
+		/* Limit the quantizers to 1 <= q <= 255 */
+		if (lq < 1) lq = 1;
+		else if (lq > 255) lq = 255;
+		lqt[i] = lq;
+
+		if (cq < 1) cq = 1;
+		else if (cq > 255) cq = 255;
+		cqt[i] = cq;
+	}
+}
+
+
+struct jpeghdr {
+	//unsigned int tspec:8;   /* type-specific field */
+	unsigned int off:32;    /* fragment byte offset */
+	uint8_t type;            /* id of jpeg decoder params */
+	uint8_t q;               /* quantization factor (or table id) */
+	uint8_t width;           /* frame width in 8 pixel blocks */
+	uint8_t height;          /* frame height in 8 pixel blocks */
+};
+
+struct jpeghdr_rst {
+	uint16_t dri;
+	unsigned int f:1;
+	unsigned int l:1;
+	unsigned int count:14;
+};
+
+struct jpeghdr_qtable {
+	uint8_t  mbz;
+	uint8_t  precision;
+	uint16_t length;
+};
+
+#define RTP_JPEG_RESTART           0x40
+
+/* Procedure SendFrame:
+ *
+ *  Arguments:
+ *    start_seq: The sequence number for the first packet of the current
+ *               frame.
+ *    ts: RTP timestamp for the current frame
+ *    ssrc: RTP SSRC value
+ *    jpeg_data: Huffman encoded JPEG scan data
+ *    len: Length of the JPEG scan data
+ *    type: The value the RTP/JPEG type field should be set to
+ *    typespec: The value the RTP/JPEG type-specific field should be set
+ *              to
+ *    width: The width in pixels of the JPEG image
+ *    height: The height in pixels of the JPEG image
+ *    dri: The number of MCUs between restart markers (or 0 if there
+ *         are no restart markers in the data
+ *    q: The Q factor of the data, to be specified using the Independent
+ *       JPEG group's algorithm if 1 <= q <= 99, specified explicitly
+ *       with lqt and cqt if q >= 128, or undefined otherwise.
+ *    lqt: The quantization table for the luminance channel if q >= 128
+ *    cqt: The quantization table for the chrominance channels if
+ *         q >= 128
+ *
+ *  Return value:
+ *    the sequence number to be sent for the first packet of the next
+ *    frame.
+ *
+ * The following are assumed to be defined:
+ *
+ * PACKET_SIZE                         - The size of the outgoing packet
+ * send_packet(u_int8 *data, int len)  - Sends the packet to the network
+ */
+
+void mjpeg_fragment_and_send(MSFilter *f,EncState *s,mblk_t *frame, uint32_t timestamp,
+							 uint8_t type,	uint8_t typespec, int dri,
+							 uint8_t q, mblk_t *lqt, mblk_t *cqt) {
+	struct jpeghdr jpghdr;
+	struct jpeghdr_rst rsthdr;
+	struct jpeghdr_qtable qtblhdr;
+	int bytes_left = msgdsize(frame);
+	int data_len;
+	
+	mblk_t *packet;
+	
+	/* Initialize JPEG header
+	 */
+	//jpghdr.tspec = typespec;
+	jpghdr.off = 0;
+	jpghdr.type = type | ((dri != 0) ? RTP_JPEG_RESTART : 0);
+	jpghdr.q = q;
+	jpghdr.width = s->vsize.width / 8;
+	jpghdr.height = s->vsize.height / 8;
+
+	/* Initialize DRI header
+	 */
+	if (dri != 0) {
+		rsthdr.dri = htons(dri);
+		rsthdr.f = 1;        /* This code does not align RIs */
+		rsthdr.l = 1;
+		rsthdr.count = 0x3fff;
+	}
+
+	/* Initialize quantization table header
+	 */
+	if (q >= 128) {
+		qtblhdr.mbz = 0;
+		qtblhdr.precision = 0; /* This code uses 8 bit tables only */
+		qtblhdr.length = htons(msgdsize(lqt)+msgdsize(cqt));  /* 2 64-byte tables */
+	}
+
+	while (bytes_left > 0) {
+		packet = allocb(s->mtu, 0);
+
+		jpghdr.off = htonl(jpghdr.off);
+		memcpy(packet->b_wptr, &jpghdr, sizeof(jpghdr));
+		jpghdr.off = ntohl(jpghdr.off);
+		packet->b_wptr += sizeof(jpghdr);
+
+		if (dri != 0) {
+			memcpy(packet->b_wptr, &rsthdr, sizeof(rsthdr));
+			packet->b_wptr += sizeof(rsthdr);
+		}
+
+		if (q >= 128 && jpghdr.off == 0) {
+			memcpy(packet->b_wptr, &qtblhdr, sizeof(qtblhdr));
+			packet->b_wptr += sizeof(qtblhdr);
+			if (msgdsize(lqt)){
+				memcpy(packet->b_wptr, lqt->b_rptr, msgdsize(lqt));
+				packet->b_wptr += msgdsize(lqt);
+			}
+			if (msgdsize(cqt)){
+				memcpy(packet->b_wptr, cqt->b_rptr, msgdsize(cqt));
+				packet->b_wptr += msgdsize(cqt);
+			}
+		}
+
+		data_len = s->mtu - (packet->b_wptr - packet->b_rptr);
+		if (data_len >= bytes_left) {
+			data_len = bytes_left;
+			mblk_set_marker_info(packet,TRUE);
+		}
+
+		memcpy(packet->b_wptr, frame->b_rptr + jpghdr.off, data_len);	
+		packet->b_wptr=packet->b_wptr + data_len;
+				
+		mblk_set_timestamp_info(packet,timestamp);
+		ms_queue_put(f->outputs[0],packet);
+
+		jpghdr.off += data_len;
+		bytes_left -= data_len;
+	}
+}
+
+static int find_marker(uint8_t **pbuf_ptr, uint8_t *buf_end){
+
+	uint8_t *buf_ptr;
+	unsigned int v, v2;
+	int val;
+
+	buf_ptr = *pbuf_ptr;
+	while (buf_ptr < buf_end) {
+		v = *buf_ptr++;
+		v2 = *buf_ptr;
+		if ((v == 0xff) && (v2 >= 0xc0) && (v2 <= 0xfe) && buf_ptr < buf_end) {
+			val = *buf_ptr++;
+			*pbuf_ptr = buf_ptr;
+			return val;
+		}
+	}
+	val = -1;
+	return val;
+}
+
+mblk_t *skip_jpeg_headers(mblk_t *full_frame, mblk_t **lqt, mblk_t **cqt){
+	int err;
+	uint8_t *pbuf_ptr=full_frame->b_rptr;
+	uint8_t *buf_end=full_frame->b_wptr;	
+
+	ms_message("image size: %i)", buf_end-pbuf_ptr);
+
+	*lqt=NULL;
+	*cqt=NULL;
+
+	err = find_marker(&pbuf_ptr, buf_end);
+	while (err!=-1)
+	{
+		ms_message("marker found: %x (offset from beginning%i)", err, pbuf_ptr-full_frame->b_rptr);
+		if (err==0xdb)
+		{
+			/* copy DQT table */
+			int len = ntohs(*(uint16_t*)(pbuf_ptr));
+			if (*lqt==NULL)
+			{
+				mblk_t *_lqt = allocb(len-3, 0);
+				memcpy(_lqt->b_rptr, pbuf_ptr+3, len-3);
+				_lqt->b_wptr += len-3;
+				*lqt = _lqt;
+				//*cqt = dupb(*lqt);
+			}
+			else
+			{
+				mblk_t *_cqt = allocb(len-3, 0);
+				memcpy(_cqt->b_rptr, pbuf_ptr+3, len-3);
+				_cqt->b_wptr += len-3;
+				*cqt = _cqt;
+			}
+		}
+		if (err==0xda)
+		{
+			uint16_t *bistream=(uint16_t *)pbuf_ptr;
+			uint16_t len = ntohs(*bistream);
+			full_frame->b_rptr = pbuf_ptr+len;
+		}
+		err = find_marker(&pbuf_ptr, buf_end);
+	}
+	return full_frame;
+}
+
 static void split_and_send(MSFilter *f, EncState *s, mblk_t *frame){
 	uint8_t *lastpsc;
 	uint8_t *psc;
@@ -448,6 +729,20 @@ static void split_and_send(MSFilter *f, EncState *s, mblk_t *frame){
 	if (s->codec==CODEC_ID_MPEG4 || s->codec==CODEC_ID_SNOW)
 	{
 		mpeg4_fragment_and_send(f,s,frame,timestamp);
+		return;
+	}
+	else if (s->codec==CODEC_ID_MJPEG)
+	{
+		mblk_t *lqt=NULL;
+		mblk_t *cqt=NULL;
+		skip_jpeg_headers(frame, &lqt, &cqt);
+		mjpeg_fragment_and_send(f,s,frame,timestamp,
+								1, /* 420? */
+								0,
+								0, /* dri ?*/
+								255, /* q */
+								lqt,
+								cqt);
 		return;
 	}
 
@@ -662,6 +957,22 @@ MSFilterDesc ms_snow_enc_desc={
 	methods
 };
 
+MSFilterDesc ms_mjpeg_enc_desc={
+	MS_JPEG_ENC_ID,
+	"MSJpegEnc",
+	N_("A RTP/MJPEG encoder using ffmpeg library."),
+	MS_FILTER_ENCODER,
+	"JPEG",
+	1, /*MS_YUV420P is assumed on this input */
+	1,
+	enc_mjpeg_init,
+	enc_preprocess,
+	enc_process,
+	enc_postprocess,
+	enc_uninit,
+	methods
+};
+
 #else
 
 MSFilterDesc ms_h263_enc_desc={
@@ -732,6 +1043,22 @@ MSFilterDesc ms_snow_enc_desc={
 	.methods=methods
 };
 
+MSFilterDesc ms_mjpeg_enc_desc={
+	.id=MS_MJPEG_ENC_ID,
+	.name="MSMJpegEnc",
+	.text=N_("A MJPEG encoder using ffmpeg library."),
+	.category=MS_FILTER_ENCODER,
+	.enc_fmt="JPEG",
+	.ninputs=1, /*MS_YUV420P is assumed on this input */
+	.noutputs=1,
+	.init=enc_mjpeg_init,
+	.preprocess=enc_preprocess,
+	.process=enc_process,
+	.postprocess=enc_postprocess,
+	.uninit=enc_uninit,
+	.methods=methods
+};
+
 #endif
 
 void __register_ffmpeg_encoders_if_possible(void){
@@ -744,5 +1071,9 @@ void __register_ffmpeg_encoders_if_possible(void){
 	}
 	if (avcodec_find_encoder(CODEC_ID_SNOW))
 		ms_filter_register(&ms_snow_enc_desc);
+	if (avcodec_find_encoder(CODEC_ID_MJPEG))
+	{
+		ms_filter_register(&ms_mjpeg_enc_desc);
+	}
 }
 

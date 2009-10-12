@@ -29,6 +29,8 @@ extern MSFilterDesc ms_snow_enc_desc;
 extern MSFilterDesc ms_snow_dec_desc;
 extern MSFilterDesc ms_theora_enc_desc;
 extern MSFilterDesc ms_theora_dec_desc;
+extern MSFilterDesc ms_mjpeg_enc_desc;
+extern MSFilterDesc ms_mjpeg_dec_desc;
 extern MSFilterDesc ms_size_conv_desc;
 extern MSFilterDesc ms_pix_conv_desc;
 extern MSFilterDesc ms_join_desc;
@@ -69,6 +71,8 @@ MSFilterDesc * ms_filter_descs[]={
 &ms_snow_dec_desc,
 &ms_theora_enc_desc,
 &ms_theora_dec_desc,
+&ms_mjpeg_enc_desc,
+&ms_mjpeg_dec_desc,
 &ms_size_conv_desc,
 &ms_pix_conv_desc,
 &ms_join_desc,
