@@ -67,6 +67,11 @@ MSFilter *ms_aq_write_new(MSSndCard * card);
 #define kNumberAudioOutDataBuffers	4
 #define kNumberAudioInDataBuffers	4
 
+float gain_volume_in=1.0;
+float gain_volume_out=1.0;
+bool gain_changed_in = true;
+bool gain_changed_out = true;
+
 typedef struct AQData {
 	CFStringRef uidname;
 	AudioStreamBasicDescription devicereadFormat;
@@ -111,11 +116,35 @@ typedef struct AqSndDsCard {
 static void aqcard_set_level(MSSndCard * card, MSSndCardMixerElem e,
 							 int percent)
 {
+	switch(e){
+		case MS_SND_CARD_PLAYBACK:
+		case MS_SND_CARD_MASTER:
+			gain_volume_out =((float)percent)/100.0f;
+			gain_changed_out = true;
+			return;
+		case MS_SND_CARD_CAPTURE:
+			gain_volume_in =((float)percent)/100.0f;
+			gain_changed_in = true;
+			return;
+		default:
+			ms_warning("aqcard_set_level: unsupported command.");
+	}
 }
 
 static int aqcard_get_level(MSSndCard * card, MSSndCardMixerElem e)
 {
-	return 0;
+	switch(e){
+		case MS_SND_CARD_PLAYBACK:
+		case MS_SND_CARD_MASTER:
+			{
+			}
+		  return (int)(gain_volume_out*100.0f);
+		case MS_SND_CARD_CAPTURE:
+		  return (int)(gain_volume_in*100.0f);
+		default:
+			ms_warning("aqcard_get_level: unsupported command.");
+	}
+	return -1;
 }
 
 static void aqcard_set_source(MSSndCard * card, MSSndCardCapture source)
@@ -397,8 +426,17 @@ static void readCallback(void *aqData,
 				   d->devicereadFormat.mChannelsPerFrame);
 		freeb(rm);
 	} else {
-		rm->b_wptr += len;
-		putq(&d->rq, rm);
+
+	  rm->b_wptr += len;
+	  if (gain_volume_in != 1.0f)
+	    {
+	      int16_t *ptr=(int16_t *)rm->b_rptr;
+	      for (;ptr<(int16_t *)rm->b_wptr;ptr++)
+		{
+		  *ptr=(int16_t)(((float)(*ptr))*gain_volume_in);
+		}
+	    }
+	  putq(&d->rq, rm);
 	}
 
 	err = AudioQueueEnqueueBuffer(d->readQueue, inBuffer, 0, NULL);
@@ -419,7 +457,7 @@ static void writeCallback(void *aqData,
 	OSStatus err;
 
 	int len =
-		(d->writeBufferByteSize * d->writeAudioFormat.mSampleRate / 2) /
+		(d->writeBufferByteSize * d->writeAudioFormat.mSampleRate / 1) /
 		d->devicewriteFormat.mSampleRate /
 		d->devicewriteFormat.mChannelsPerFrame;
 
@@ -449,6 +487,15 @@ static void writeCallback(void *aqData,
 		memset(inBuffer->mAudioData, 0, d->writeBufferByteSize);
 	}
 	inBuffer->mAudioDataByteSize = d->writeBufferByteSize;
+
+	if (gain_changed_out == true)
+	  {
+	    AudioQueueSetParameter (d->writeQueue,
+				    kAudioQueueParam_Volume,
+				    gain_volume_out);
+	    gain_changed_out = false;
+	  }
+
 	err = AudioQueueEnqueueBuffer(d->writeQueue, inBuffer, 0, NULL);
 	if (err != noErr) {
 		ms_error("AudioQueueEnqueueBuffer %d", err);
@@ -644,6 +691,10 @@ static void aq_start_w(MSFilter * f)
 		if (aqresult != noErr) {
 			ms_error("AudioQueueNewOutput = %d", aqresult);
 		}
+
+		AudioQueueSetParameter (d->writeQueue,
+					kAudioQueueParam_Volume,
+					gain_volume_out);
 
 		char uidname[256];
 		CFStringGetCString(d->uidname, uidname, 256,
