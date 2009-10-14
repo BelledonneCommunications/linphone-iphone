@@ -213,6 +213,12 @@ mblk_t *rtp_getq_permissive(queue_t *q,uint32_t timestamp, int *rejected)
 void
 rtp_session_init (RtpSession * session, int mode)
 {
+	if (session == NULL) 
+	{
+	    ortp_debug("rtp_session_init: Invalid paramter (session=NULL)");
+	    return;
+	}
+	
 	JBParameters jbp;
 	memset (session, 0, sizeof (RtpSession));
 	session->mode = (RtpSessionMode) mode;
@@ -293,7 +299,12 @@ rtp_session_new (int mode)
 {
 	RtpSession *session;
 	session = (RtpSession *) ortp_malloc (sizeof (RtpSession));
-	rtp_session_init (session, mode);
+	if (session == NULL)
+	{
+	    ortp_error("rtp_session_new: Memory allocation failed");
+	    return NULL;
+	}
+      rtp_session_init (session, mode);
 	return session;
 }
 
