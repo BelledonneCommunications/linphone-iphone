@@ -231,6 +231,7 @@ char *ortp_strdup_printf(const char *fmt,...);
 char *ortp_strdup_vprintf(const char *fmt, va_list ap);
 
 /* portable named pipes */
+#if !defined(_WIN32_WCE)
 #ifdef WIN32
 typedef HANDLE ortp_pipe_t;
 #define ORTP_PIPE_INVALID INVALID_HANDLE_VALUE
@@ -254,7 +255,7 @@ int ortp_client_pipe_close(ortp_pipe_t sock);
 
 int ortp_pipe_read(ortp_pipe_t p, uint8_t *buf, int len);
 int ortp_pipe_write(ortp_pipe_t p, const uint8_t *buf, int len);
-
+#endif
 
 #ifdef __cplusplus
 }

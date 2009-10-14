@@ -405,7 +405,7 @@ int ortp_client_pipe_close(ortp_socket_t sock){
 	return close(sock);
 }
 
-#else
+#elif defined(WIN32) && !defined(_WIN32_WCE)
 
 static char *make_pipe_name(const char *name){
 	return ortp_strdup_printf("\\\\.\\pipe\\%s",name);
