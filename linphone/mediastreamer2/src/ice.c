@@ -1332,11 +1332,7 @@ static void ice_process(MSFilter * f)
 		}
 	}
 
-#if !defined(_WIN32_WCE)
 	ice_sound_send_stun_request(d->session, d->check_lists, f->ticker->time);
-#else
-	ice_sound_send_stun_request(d->session, d->check_lists, f->ticker->time));
-#endif
 }
 
 static MSFilterMethod ice_methods[] = {

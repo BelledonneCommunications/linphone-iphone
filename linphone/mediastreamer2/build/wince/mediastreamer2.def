@@ -4,7 +4,6 @@ EXPORTS
 
 	ms_init
 	ms_exit
-	ms_reload_snd_card
 	
 	ms_filter_new
 	ms_filter_new_from_desc
@@ -17,21 +16,36 @@ EXPORTS
 	ms_filter_unlink
 	ms_filter_preprocess
 	ms_filter_postprocess
-	ms_filter_register
 	ms_filter_codec_supported
+	ms_filter_register
+	ms_filter_new_from_name
+	ms_filter_set_notify_callback
 	
+	ms_snd_card_new
+	ms_snd_card_manager_destroy
+	ms_snd_card_manager_reload
+	ms_snd_card_manager_add_card
+	ms_snd_card_manager_register_desc
 	ms_snd_card_create_reader
 	ms_snd_card_create_writer
 	ms_snd_card_get_name
 	ms_snd_card_get_string_id
 	ms_snd_card_manager_get
 	ms_snd_card_manager_get_default_card
+	ms_snd_card_manager_get_default_capture_card
+	ms_snd_card_manager_get_default_playback_card
 	ms_snd_card_manager_get_card
 	ms_snd_card_manager_get_list
 	ms_snd_card_dup
 	ms_snd_card_destroy
+	ms_snd_card_set_level
+	ms_snd_card_get_level
+	ms_snd_card_set_capture
+	ms_snd_card_set_control
+	ms_snd_card_get_control
 
 	ms_ticker_new
+	ms_ticker_set_name
 	ms_ticker_destroy
 	ms_ticker_attach
 	ms_ticker_detach
