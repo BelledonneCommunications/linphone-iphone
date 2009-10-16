@@ -191,6 +191,13 @@
                         </child>
                       </widget>
                     </child>
+                    <child>
+                      <widget class="GtkMenuItem" id="versioncheck">
+                        <property name="label" translatable="yes">Check for updates</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="linphone_gtk_check_for_updates"/>
+                      </widget>
+                    </child>
                   </widget>
                 </child>
               </widget>

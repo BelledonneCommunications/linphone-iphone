@@ -611,9 +611,6 @@ void linphone_gtk_terminate_call(GtkWidget *button){
 
 void linphone_gtk_decline_call(GtkWidget *button){
 	linphone_core_terminate_call(linphone_gtk_get_core(),NULL);
-	/* zsd note: there was a big here in 3.0.0 which caused an abort if
-	 * someone clicked "decline"... the following line of code looks
-	 * like a fix for that. */
 	gtk_widget_destroy(gtk_widget_get_toplevel(button));
 }
 
@@ -987,12 +984,14 @@ static void linphone_gtk_configure_main_window(){
 	static const char *home;
 	static const char *start_call_icon;
 	static const char *stop_call_icon;
+	static gboolean update_check_menu;
 	GtkWidget *w=linphone_gtk_get_main_window();
 	if (!config_loaded){
 		title=linphone_gtk_get_ui_config("title","Linphone");
 		home=linphone_gtk_get_ui_config("home","http://www.linphone.org");
 		start_call_icon=linphone_gtk_get_ui_config("start_call_icon","green.png");
 		stop_call_icon=linphone_gtk_get_ui_config("stop_call_icon","red.png");
+		update_check_menu=linphone_gtk_get_ui_config_int("update_check_menu",0);
 		config_loaded=TRUE;
 	}
 	linphone_gtk_configure_window(w,"main_window");
@@ -1021,6 +1020,9 @@ static void linphone_gtk_configure_main_window(){
 	}
 	if (!linphone_gtk_can_manage_accounts())
 		gtk_widget_hide(linphone_gtk_get_widget(w,"run_assistant"));
+	if (update_check_menu){
+		gtk_widget_show(linphone_gtk_get_widget(w,"checkversion"));
+	}
 }
 
 void linphone_gtk_manage_login(void){

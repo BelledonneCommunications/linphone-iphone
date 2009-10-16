@@ -87,6 +87,11 @@ static gboolean popup_new_version(const char *download_site){
 	return FALSE;
 }
 
+static gboolean popup_version_ok(){
+	linphone_gtk_display_something(GTK_MESSAGE_INFO,_("You are running the lastest version."));
+	return FALSE;
+}
+
 static int copytilldot(char *n, const char *v){
 	int ret=0;
 	while(*v!='\0' && *v!='.' && *v!='-' && *v!='\n' && *v!='\r' && *v!='\t'){
@@ -124,6 +129,12 @@ static void *check_for_new_version(void *d){
 				g_idle_add((GSourceFunc)popup_new_version,(gpointer)download_site);
 				gdk_threads_leave();
 			}
+		}else{
+			if (linphone_gtk_get_ui_config_int("update_check_menu",0)){
+				gdk_threads_enter();
+				g_idle_add((GSourceFunc)popup_version_ok,NULL);
+				gdk_threads_leave();
+			}
 		}
 	}
 	return NULL;
@@ -138,4 +149,9 @@ void linphone_gtk_check_for_new_version(void){
 	version_url=linphone_gtk_get_ui_config("last_version_url",NULL);
 	if (version_url==NULL) return ;
 	ortp_thread_create(&thread,NULL,check_for_new_version,(void*)version_url);
+}
+
+/*called when the user clicks on the "Check for updates" menu item */
+void linphone_gtk_check_for_updates(void){
+	linphone_gtk_check_for_new_version();
 }
