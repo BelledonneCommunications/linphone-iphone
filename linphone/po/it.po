@@ -65,11 +65,11 @@ msgstr ""
 "questo utente sarà momentaneamente bloccato."
 
 #: ../gtk-glade/main.c:777
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
 " at domain <i>%s</i>:"
-msgstr "Prego inserire la password per il dominio %s"
+msgstr "Prego inserire la password per username <i>%s</i> e dominio <i>%s<i>"
 
 #: ../gtk-glade/main.c:871
 msgid "Website link"
@@ -98,9 +98,9 @@ msgid "Presence status"
 msgstr "Presenza"
 
 #: ../gtk-glade/friendlist.c:243
-#, fuzzy, c-format
+#, c-format
 msgid "Search in %s directory"
-msgstr "Cerca contatti nella directory"
+msgstr "Cerca contatti nella directory %s"
 
 #: ../gtk-glade/friendlist.c:432
 msgid "Invalid sip contact !"
@@ -364,9 +364,8 @@ msgid "<b>Call ended.</b>"
 msgstr "<b>Chiamata terminata.</b>"
 
 #: ../gtk-glade/incall_view.c:176
-#, fuzzy
 msgid "Unmute"
-msgstr "Chiudi microfono"
+msgstr "Attiva microfono"
 
 #: ../gtk-glade/incall_view.c:180 ../gtk-glade/main.glade.h:40
 msgid "Mute"
@@ -558,9 +557,8 @@ msgid "Terminate call"
 msgstr "Termina chiamata"
 
 #: ../gtk-glade/main.glade.h:47
-#, fuzzy
 msgid "Username"
-msgstr "Manuale utente"
+msgstr "Username"
 
 #: ../gtk-glade/main.glade.h:48
 msgid "_Linphone"
@@ -614,9 +612,8 @@ msgid ""
 msgstr ""
 
 #: ../gtk-glade/contact.glade.h:1
-#, fuzzy
 msgid "<b>Contact information</b>"
-msgstr "Informazioni"
+msgstr "<b>Contact informazioni</b>"
 
 #: ../gtk-glade/contact.glade.h:2
 msgid "Allow this contact to see my presence status"
@@ -1211,9 +1208,9 @@ msgid "Registration on %s successful."
 msgstr "Registrazione su %s attiva"
 
 #: ../coreapi/exevents.c:999
-#, fuzzy, c-format
+#, c-format
 msgid "Unregistration on %s done."
-msgstr "Registrazione su %s attiva"
+msgstr "Unregistrazione su %s"
 
 #. people for which we don't have yet an answer should appear as offline
 #: ../coreapi/presence.c:112 ../coreapi/presence.c:164 ../coreapi/friend.c:147
@@ -1468,9 +1465,8 @@ msgid "A MPEG4 decoder using ffmpeg library"
 msgstr "Un MPEG4 decoder che utilizza le librerie ffmpeg"
 
 #: ../mediastreamer2/src/videodec.c:704
-#, fuzzy
 msgid "A RTP/JPEG decoder using ffmpeg library"
-msgstr "Un MJPEG decoder che utilizza le librerie ffmpeg"
+msgstr "Un RTP/JPEG decoder che utilizza le librerie ffmpeg"
 
 #: ../mediastreamer2/src/videodec.c:720
 msgid "A MJPEG decoder using ffmpeg library"
@@ -1501,9 +1497,8 @@ msgid "A video snow encoder using ffmpeg library."
 msgstr "Un snow encoder che utilizza le librerie ffmpeg"
 
 #: ../mediastreamer2/src/videoenc.c:904
-#, fuzzy
 msgid "A RTP/MJPEG encoder using ffmpeg library."
-msgstr "Un MJPEG decoder che utilizza le librerie ffmpeg"
+msgstr "Un RTP/JPEG decoder che utilizza le librerie ffmpeg"
 
 #: ../mediastreamer2/src/videoenc.c:938
 msgid ""
@@ -1522,9 +1517,8 @@ msgid ""
 msgstr ""
 
 #: ../mediastreamer2/src/videoenc.c:990
-#, fuzzy
 msgid "A MJPEG encoder using ffmpeg library."
-msgstr "Un MJPEG decoder che utilizza le librerie ffmpeg"
+msgstr "Un MJPEG encoder che utilizza le librerie ffmpeg"
 
 #: ../mediastreamer2/src/videoout.c:974 ../mediastreamer2/src/videoout.c:992
 msgid "A generic video display"
