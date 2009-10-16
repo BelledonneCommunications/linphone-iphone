@@ -195,6 +195,7 @@
                       <widget class="GtkImageMenuItem" id="versioncheck">
                         <property name="label" translatable="yes">Check for updates</property>
                         <property name="use_stock">False</property>
+                        <signal name="activate" handler="linphone_gtk_check_for_updates"/>
                         <child internal-child="image">
                           <widget class="GtkImage" id="image5">
                             <property name="visible">True</property>
