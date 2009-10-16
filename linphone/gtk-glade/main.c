@@ -1195,7 +1195,8 @@ int main(int argc, char *argv[]){
 	linphone_gtk_init_status_icon();
 	if (!iconified)
 		linphone_gtk_show_main_window();
-	linphone_gtk_check_for_new_version();
+	if (linphone_gtk_get_ui_config_int("update_check_menu",0)==0)
+		linphone_gtk_check_for_new_version();
 
 	gtk_main();
 	gdk_threads_leave();

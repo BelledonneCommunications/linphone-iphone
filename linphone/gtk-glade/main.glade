@@ -192,10 +192,16 @@
                       </widget>
                     </child>
                     <child>
-                      <widget class="GtkMenuItem" id="versioncheck">
+                      <widget class="GtkImageMenuItem" id="versioncheck">
                         <property name="label" translatable="yes">Check for updates</property>
-                        <property name="use_underline">True</property>
-                        <signal name="activate" handler="linphone_gtk_check_for_updates"/>
+                        <property name="use_stock">False</property>
+                        <child internal-child="image">
+                          <widget class="GtkImage" id="image5">
+                            <property name="visible">True</property>
+                            <property name="stock">gtk-info</property>
+                            <property name="icon-size">1</property>
+                          </widget>
+                        </child>
                       </widget>
                     </child>
                   </widget>

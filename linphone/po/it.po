@@ -365,11 +365,11 @@ msgstr "<b>Chiamata terminata.</b>"
 
 #: ../gtk-glade/incall_view.c:176
 msgid "Unmute"
-msgstr "Attiva microfono"
+msgstr "Attiva\nmicrofono"
 
 #: ../gtk-glade/incall_view.c:180 ../gtk-glade/main.glade.h:40
 msgid "Mute"
-msgstr "Chiudi microfono"
+msgstr "Chiudi\nmicrofono"
 
 #: ../gtk-glade/loginframe.c:82
 #, c-format
