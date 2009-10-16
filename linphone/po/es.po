@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Linphone 0.9.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-09-29 11:24+0200\n"
+"POT-Creation-Date: 2009-10-16 15:24+0200\n"
 "PO-Revision-Date: 2002-10-15 HO:MI+ZONE\n"
 "Last-Translator: Nelson Benitez <gnelson@inMail.sk>\n"
 "Language-Team: es <es@li.org>\n"
@@ -15,8 +15,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../gtk-glade/support.c:50 ../gtk-glade/support.c:74
-#: ../gtk-glade/support.c:103
+#: ../gtk-glade/support.c:49 ../gtk-glade/support.c:73
+#: ../gtk-glade/support.c:102
 #, c-format
 msgid "Couldn't find pixmap file: %s"
 msgstr "No se pudo encontrar el archivo pixmap: %s"
@@ -48,12 +48,12 @@ msgid ""
 "\\Program Files\\Linphone)"
 msgstr ""
 
-#: ../gtk-glade/main.c:662
+#: ../gtk-glade/main.c:675
 #, c-format
 msgid "Incoming call from %s"
 msgstr ""
 
-#: ../gtk-glade/main.c:694
+#: ../gtk-glade/main.c:707
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
@@ -62,27 +62,27 @@ msgid ""
 "If you answer no, this person will be temporarily blacklisted."
 msgstr ""
 
-#: ../gtk-glade/main.c:764
+#: ../gtk-glade/main.c:777
 #, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
 " at domain <i>%s</i>:"
 msgstr ""
 
-#: ../gtk-glade/main.c:855
+#: ../gtk-glade/main.c:871
 msgid "Website link"
 msgstr ""
 
-#: ../gtk-glade/main.c:891
+#: ../gtk-glade/main.c:907
 msgid "Linphone - a video internet phone"
 msgstr ""
 
-#: ../gtk-glade/main.c:910
+#: ../gtk-glade/main.c:926
 #, c-format
 msgid "%s (Default)"
 msgstr ""
 
-#: ../gtk-glade/main.c:1143
+#: ../gtk-glade/main.c:1168
 msgid "A free SIP video-phone"
 msgstr ""
 
@@ -179,7 +179,7 @@ msgid "Spanish"
 msgstr ""
 
 #: ../gtk-glade/propertybox.c:625
-msgid "Brasilian Portugese"
+msgid "Brazilian Portugese"
 msgstr ""
 
 #: ../gtk-glade/propertybox.c:626
@@ -224,6 +224,10 @@ msgstr ""
 msgid ""
 "A more recent version is availalble from %s.\n"
 "Would you like to open a browser to download it ?"
+msgstr ""
+
+#: ../gtk-glade/update.c:91
+msgid "You are running the lastest version."
 msgstr ""
 
 #: ../gtk-glade/buddylookup.c:66
@@ -337,29 +341,37 @@ msgstr ""
 msgid "Now ready !"
 msgstr ""
 
-#: ../gtk-glade/incall_view.c:97
+#: ../gtk-glade/incall_view.c:98
 #, fuzzy
 msgid "<b>Calling...</b>"
 msgstr "Contactando "
 
-#: ../gtk-glade/incall_view.c:121
+#: ../gtk-glade/incall_view.c:122
 #, fuzzy
 msgid "<b>In call with</b>"
 msgstr "Contactando "
 
-#: ../gtk-glade/incall_view.c:123
+#: ../gtk-glade/incall_view.c:124
 msgid "00::00::00"
 msgstr ""
 
-#: ../gtk-glade/incall_view.c:137
+#: ../gtk-glade/incall_view.c:140
 #, c-format
 msgid "%02i::%02i::%02i"
 msgstr ""
 
-#: ../gtk-glade/incall_view.c:155
+#: ../gtk-glade/incall_view.c:158
 #, fuzzy
 msgid "<b>Call ended.</b>"
 msgstr "Llamada cancelada."
+
+#: ../gtk-glade/incall_view.c:176
+msgid "Unmute"
+msgstr ""
+
+#: ../gtk-glade/incall_view.c:180 ../gtk-glade/main.glade.h:40
+msgid "Mute"
+msgstr ""
 
 #: ../gtk-glade/loginframe.c:82
 #, c-format
@@ -472,117 +484,117 @@ msgid "C"
 msgstr ""
 
 #: ../gtk-glade/main.glade.h:27
-msgid "D"
+msgid "Check for updates"
 msgstr ""
 
 #: ../gtk-glade/main.glade.h:28
-msgid "Default"
+msgid "D"
 msgstr ""
 
 #: ../gtk-glade/main.glade.h:29
-msgid "Digits"
+msgid "Default"
 msgstr ""
 
 #: ../gtk-glade/main.glade.h:30
+msgid "Digits"
+msgstr ""
+
+#: ../gtk-glade/main.glade.h:31
 #, fuzzy
 msgid "Duration"
 msgstr "Informacion"
 
-#: ../gtk-glade/main.glade.h:31
+#: ../gtk-glade/main.glade.h:32
 #, fuzzy
 msgid "Duration:"
 msgstr "Informacion"
 
-#: ../gtk-glade/main.glade.h:32
+#: ../gtk-glade/main.glade.h:33
 #, fuzzy
 msgid "Enable self-view"
 msgstr "Activado"
 
-#: ../gtk-glade/main.glade.h:33
+#: ../gtk-glade/main.glade.h:34
 msgid "Enter username, phone number, or full sip address"
 msgstr ""
 
-#: ../gtk-glade/main.glade.h:34
+#: ../gtk-glade/main.glade.h:35
 msgid "In call"
 msgstr ""
 
-#: ../gtk-glade/main.glade.h:35
+#: ../gtk-glade/main.glade.h:36
 msgid "Internet connection:"
 msgstr ""
 
-#: ../gtk-glade/main.glade.h:36
+#: ../gtk-glade/main.glade.h:37
 #, fuzzy
 msgid "Login information"
 msgstr "Informacion de codec"
 
-#: ../gtk-glade/main.glade.h:37
+#: ../gtk-glade/main.glade.h:38
 msgid "Lookup:"
 msgstr ""
 
-#: ../gtk-glade/main.glade.h:38
+#: ../gtk-glade/main.glade.h:39
 msgid "Main view"
 msgstr ""
 
-#: ../gtk-glade/main.glade.h:39
-msgid "Mute"
-msgstr ""
-
-#: ../gtk-glade/main.glade.h:40
+#: ../gtk-glade/main.glade.h:41
 #, fuzzy
 msgid "My current identity:"
 msgstr "Identidad"
 
-#: ../gtk-glade/main.glade.h:41
+#: ../gtk-glade/main.glade.h:42
 #, fuzzy
 msgid "Password"
 msgstr "Tu Contraseña:"
 
-#: ../gtk-glade/main.glade.h:42
+#: ../gtk-glade/main.glade.h:43
 #, fuzzy
 msgid "SIP address or phone number:"
 msgstr "La direccion SIP del servidor de registro."
 
-#: ../gtk-glade/main.glade.h:43
+#: ../gtk-glade/main.glade.h:44
 msgid "Show current call"
 msgstr ""
 
-#: ../gtk-glade/main.glade.h:44
+#: ../gtk-glade/main.glade.h:45
 msgid "Start call"
 msgstr ""
 
-#: ../gtk-glade/main.glade.h:45
+#: ../gtk-glade/main.glade.h:46
 msgid "Terminate call"
 msgstr ""
 
-#: ../gtk-glade/main.glade.h:46
+#: ../gtk-glade/main.glade.h:47
 #, fuzzy
 msgid "Username"
 msgstr "Manual de Usuario"
 
-#: ../gtk-glade/main.glade.h:47
+#: ../gtk-glade/main.glade.h:48
 #, fuzzy
 msgid "_Linphone"
 msgstr "linphone"
 
-#: ../gtk-glade/main.glade.h:48
+#: ../gtk-glade/main.glade.h:49
 #, fuzzy
 msgid "_Modes"
 msgstr "Codecs"
 
-#: ../gtk-glade/main.glade.h:49
+#: ../gtk-glade/main.glade.h:50
 #, fuzzy
 msgid "gtk-connect"
 msgstr "Conectado."
 
-#: ../gtk-glade/main.glade.h:50
+#: ../gtk-glade/main.glade.h:51
 msgid "gtk-find"
 msgstr ""
 
-#: ../gtk-glade/main.glade.h:51
+#: ../gtk-glade/main.glade.h:52
 msgid "in"
 msgstr ""
 
-#: ../gtk-glade/main.glade.h:52
+#: ../gtk-glade/main.glade.h:53
 msgid "label"
 msgstr ""
 
@@ -615,13 +627,13 @@ msgid ""
 msgstr ""
 
 #: ../gtk-glade/contact.glade.h:1
-msgid "Allow this contact to see my presence status"
-msgstr ""
+#, fuzzy
+msgid "<b>Contact information</b>"
+msgstr "Informacion de codec"
 
 #: ../gtk-glade/contact.glade.h:2
-#, fuzzy
-msgid "Contact information"
-msgstr "Informacion de codec"
+msgid "Allow this contact to see my presence status"
+msgstr ""
 
 #: ../gtk-glade/contact.glade.h:4
 #, fuzzy
@@ -1061,24 +1073,24 @@ msgid ""
 "always uses IPv4. Please update your configuration if you want to use IPv6"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:737
+#: ../coreapi/linphonecore.c:739
 #, fuzzy
 msgid "Ready"
 msgstr "Preparado."
 
-#: ../coreapi/linphonecore.c:1012
+#: ../coreapi/linphonecore.c:1014
 msgid "Remote end seems to have disconnected, the call is going to be closed."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:1170
+#: ../coreapi/linphonecore.c:1172
 msgid "Looking for telephone number destination..."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:1172
+#: ../coreapi/linphonecore.c:1174
 msgid "Could not resolve this number."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:1237
+#: ../coreapi/linphonecore.c:1239
 #, fuzzy
 msgid ""
 "Could not parse given sip address. A sip url usually looks like sip:"
@@ -1086,38 +1098,38 @@ msgid ""
 msgstr ""
 "Direccion SIP mal escrita. Una direccion SIP es <sip:username@domainname>"
 
-#: ../coreapi/linphonecore.c:1338
+#: ../coreapi/linphonecore.c:1340
 msgid "Sorry, having multiple simultaneous calls is not supported yet !"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:1385
+#: ../coreapi/linphonecore.c:1387
 #, fuzzy
 msgid "Contacting"
 msgstr "Contactando "
 
-#: ../coreapi/linphonecore.c:1400
+#: ../coreapi/linphonecore.c:1402
 msgid "could not call"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:1785 ../coreapi/exevents.c:50
+#: ../coreapi/linphonecore.c:1787 ../coreapi/exevents.c:50
 msgid "Connected."
 msgstr "Conectado."
 
-#: ../coreapi/linphonecore.c:1811
+#: ../coreapi/linphonecore.c:1813
 #, fuzzy
 msgid "Call ended"
 msgstr "Llamada cancelada."
 
-#: ../coreapi/linphonecore.c:2173
+#: ../coreapi/linphonecore.c:2175
 msgid "No nat/firewall address supplied !"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:2185 ../coreapi/linphonecore.c:2197
+#: ../coreapi/linphonecore.c:2187 ../coreapi/linphonecore.c:2199
 #, c-format
 msgid "Invalid nat address '%s' : %s"
 msgstr ""
 
-#: ../coreapi/misc.c:132
+#: ../coreapi/misc.c:134
 msgid ""
 "Your computer appears to be using ALSA sound drivers.\n"
 "This is the best choice. However the pcm oss emulation module\n"
@@ -1129,7 +1141,7 @@ msgstr ""
 "no se encuentra y linphone lo necesita. Por favor ejecute\n"
 "'modprobe snd-pcm-oss' como root para cargarlo."
 
-#: ../coreapi/misc.c:135
+#: ../coreapi/misc.c:137
 msgid ""
 "Your computer appears to be using ALSA sound drivers.\n"
 "This is the best choice. However the mixer oss emulation module\n"
@@ -1141,7 +1153,7 @@ msgstr ""
 "no se encuentra y linphone lo necesita. Por favor ejecute\n"
 " 'modprobe snd-mixer-oss' como root para cargarlo."
 
-#: ../coreapi/misc.c:594
+#: ../coreapi/misc.c:610
 msgid "Stun lookup in progress..."
 msgstr ""
 
@@ -1219,21 +1231,21 @@ msgstr ""
 msgid "Early media."
 msgstr ""
 
-#: ../coreapi/exevents.c:960
+#: ../coreapi/exevents.c:972
 #, fuzzy, c-format
 msgid "Registration on %s failed: %s"
 msgstr "Se ha registrado con exito."
 
-#: ../coreapi/exevents.c:960
+#: ../coreapi/exevents.c:972
 msgid "no response timeout"
 msgstr ""
 
-#: ../coreapi/exevents.c:986
+#: ../coreapi/exevents.c:998
 #, fuzzy, c-format
 msgid "Registration on %s successful."
 msgstr "Se ha registrado con exito."
 
-#: ../coreapi/exevents.c:987
+#: ../coreapi/exevents.c:999
 #, fuzzy, c-format
 msgid "Unregistration on %s done."
 msgstr "Se ha registrado con exito."
@@ -1353,11 +1365,11 @@ msgstr ""
 msgid "Alsa sound output"
 msgstr ""
 
-#: ../mediastreamer2/src/aqsnd.c:599
+#: ../mediastreamer2/src/aqsnd.c:891
 msgid "Sound capture filter for MacOS X Audio Queue Service"
 msgstr ""
 
-#: ../mediastreamer2/src/aqsnd.c:613
+#: ../mediastreamer2/src/aqsnd.c:915
 msgid "Sound playback filter for MacOS X Audio Queue Service"
 msgstr ""
 
@@ -1413,8 +1425,8 @@ msgstr ""
 msgid "RTP input filter"
 msgstr ""
 
-#: ../mediastreamer2/src/msspeex.c:358 ../mediastreamer2/src/msspeex.c:376
-#: ../mediastreamer2/src/msspeex.c:503 ../mediastreamer2/src/msspeex.c:521
+#: ../mediastreamer2/src/msspeex.c:359 ../mediastreamer2/src/msspeex.c:377
+#: ../mediastreamer2/src/msspeex.c:504 ../mediastreamer2/src/msspeex.c:522
 msgid "The free and wonderful speex codec"
 msgstr ""
 
@@ -1482,47 +1494,55 @@ msgstr ""
 msgid "ITU-G.711 ulaw decoder"
 msgstr ""
 
-#: ../mediastreamer2/src/videodec.c:302 ../mediastreamer2/src/videodec.c:318
-#: ../mediastreamer2/src/videodec.c:385 ../mediastreamer2/src/videodec.c:401
+#: ../mediastreamer2/src/videodec.c:655 ../mediastreamer2/src/videodec.c:671
+#: ../mediastreamer2/src/videodec.c:754 ../mediastreamer2/src/videodec.c:770
 msgid "A H.263 decoder using ffmpeg library"
 msgstr ""
 
-#: ../mediastreamer2/src/videodec.c:335
+#: ../mediastreamer2/src/videodec.c:688
 msgid "A MPEG4 decoder using ffmpeg library"
 msgstr ""
 
-#: ../mediastreamer2/src/videodec.c:351
+#: ../mediastreamer2/src/videodec.c:704
+msgid "A RTP/JPEG decoder using ffmpeg library"
+msgstr ""
+
+#: ../mediastreamer2/src/videodec.c:720
 msgid "A MJPEG decoder using ffmpeg library"
 msgstr ""
 
-#: ../mediastreamer2/src/videodec.c:367
+#: ../mediastreamer2/src/videodec.c:736
 msgid "A snow decoder using ffmpeg library"
 msgstr ""
 
-#: ../mediastreamer2/src/videoenc.c:604 ../mediastreamer2/src/videoenc.c:670
+#: ../mediastreamer2/src/videoenc.c:840 ../mediastreamer2/src/videoenc.c:922
 msgid "A video H.263 encoder using ffmpeg library."
 msgstr ""
 
-#: ../mediastreamer2/src/videoenc.c:620
+#: ../mediastreamer2/src/videoenc.c:856
 msgid ""
 "A video H.263 encoder using ffmpeg library. It is compliant with old RFC2190 "
 "spec."
 msgstr ""
 
-#: ../mediastreamer2/src/videoenc.c:636 ../mediastreamer2/src/videoenc.c:702
+#: ../mediastreamer2/src/videoenc.c:872 ../mediastreamer2/src/videoenc.c:954
 msgid "A video MPEG4 encoder using ffmpeg library."
 msgstr ""
 
-#: ../mediastreamer2/src/videoenc.c:652
+#: ../mediastreamer2/src/videoenc.c:888
 msgid "A video snow encoder using ffmpeg library."
 msgstr ""
 
-#: ../mediastreamer2/src/videoenc.c:686
+#: ../mediastreamer2/src/videoenc.c:904
+msgid "A RTP/MJPEG encoder using ffmpeg library."
+msgstr ""
+
+#: ../mediastreamer2/src/videoenc.c:938
 msgid ""
 "A video H.263 encoder using ffmpeg library, compliant with old RFC2190 spec."
 msgstr ""
 
-#: ../mediastreamer2/src/videoenc.c:718
+#: ../mediastreamer2/src/videoenc.c:970
 msgid ""
 "The snow codec is royalty-free and is open-source. \n"
 "It uses innovative techniques that makes it one of most promising video "
@@ -1531,7 +1551,11 @@ msgid ""
 "versions cannot be guaranteed."
 msgstr ""
 
-#: ../mediastreamer2/src/videoout.c:905 ../mediastreamer2/src/videoout.c:923
+#: ../mediastreamer2/src/videoenc.c:990
+msgid "A MJPEG encoder using ffmpeg library."
+msgstr ""
+
+#: ../mediastreamer2/src/videoout.c:974 ../mediastreamer2/src/videoout.c:992
 msgid "A generic video display"
 msgstr ""
 
@@ -1547,7 +1571,7 @@ msgstr ""
 msgid "A video for windows (vfw.h) based source filter to grab pictures."
 msgstr ""
 
-#: ../mediastreamer2/src/ice.c:1353 ../mediastreamer2/src/ice.c:1371
+#: ../mediastreamer2/src/ice.c:1349 ../mediastreamer2/src/ice.c:1367
 msgid "ICE filter"
 msgstr ""
 

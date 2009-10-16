@@ -1021,7 +1021,7 @@ static void linphone_gtk_configure_main_window(){
 	if (!linphone_gtk_can_manage_accounts())
 		gtk_widget_hide(linphone_gtk_get_widget(w,"run_assistant"));
 	if (update_check_menu){
-		gtk_widget_show(linphone_gtk_get_widget(w,"checkversion"));
+		gtk_widget_show(linphone_gtk_get_widget(w,"versioncheck"));
 	}
 }
 
