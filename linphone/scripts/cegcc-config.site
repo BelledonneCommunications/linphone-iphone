@@ -1,0 +1,14 @@
+# -*- shell-script -*-
+
+
+ARCH=arm4l
+SDK_BIN_PATH=/opt/mingw32ce/bin     
+SYSROOT_PATH=/opt/mingw32ce
+
+CC="${SDK_BIN_PATH}/arm-mingw32ce-gcc -std=c99  -isysroot=${SYSROOT_PATH}"
+LD="${SDK_BIN_PATH}/arm-mingw32ce-ld "
+AR=${SDK_BIN_PATH}/arm-mingw32ce-ar
+RANLIB=${SDK_BIN_PATH}/arm-mingw32ce-ranlib
+
+CPPFLAGS="-Dasm=__asm"
+#LDFLAGS="-Wl,-syslibroot ${SYSROOT_PATH}" 

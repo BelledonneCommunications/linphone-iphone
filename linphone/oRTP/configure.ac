@@ -98,6 +98,8 @@ case "$target_os" in
 		AC_DEFINE(NOCONNECT,1,[Defined if we should not use connect() on udp sockets])
 		PTHREAD_LDFLAGS="-pthread"
 		;;
+	*mingw32ce)
+		CFLAGS="$CFLAGS -D_WIN32_WCE";;
 	*mingw*)
 		CFLAGS="$CFLAGS -D_WIN32_WINNT=0x0501 -DORTP_STATIC"
 		LIBS="$LIBS -lws2_32 -liphlpapi -lwinmm"

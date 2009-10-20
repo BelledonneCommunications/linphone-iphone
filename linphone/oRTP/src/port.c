@@ -225,7 +225,7 @@ int WIN_thread_create(ortp_thread_t *th, void *attr, void * (*func)(void *), voi
     thread_param_t *params=ortp_new(thread_param_t,1);
     params->func=func;
     params->arg=data;
-	*th=(HANDLE)_beginthreadex( NULL, 0, thread_starter, params, 0, NULL);
+	*th=(HANDLE)_beginthreadex( NULL, 0, (LPTHREAD_START_ROUTINE)thread_starter, params, 0, NULL);
 	return 0;
 }
 
