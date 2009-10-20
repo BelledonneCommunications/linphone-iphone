@@ -556,7 +556,7 @@ static void conf_process(MSFilter *f){
 				if (i>0 && chan->is_used==FALSE)
 				{
 					chan->is_used=TRUE;
-					ms_message("msconf: new contributing stream", ms_bufferizer_get_avail(&chan->buff));
+					ms_message("msconf: new contributing stream (chan=%i) %i", ms_bufferizer_get_avail(&chan->buff), i);
 				}
 			}
 		}
