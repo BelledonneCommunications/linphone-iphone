@@ -1,0 +1,6 @@
+install arm-mingw32ce from 0.55 from http://cegcc.sourceforge.net/
+
+
+for ortp:
+cd oRTP
+./configure --host=arm-mingw32ce --enable-strict=no --enable-ipv6=no

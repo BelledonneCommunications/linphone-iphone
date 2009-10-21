@@ -99,7 +99,8 @@ case "$target_os" in
 		PTHREAD_LDFLAGS="-pthread"
 		;;
 	*mingw32ce)
-		CFLAGS="$CFLAGS -D_WIN32_WCE";;
+		CFLAGS="$CFLAGS -D_WIN32_WCE"
+		LIBS="$LIBS -lws2 -liphlpapi";;
 	*mingw*)
 		CFLAGS="$CFLAGS -D_WIN32_WINNT=0x0501 -DORTP_STATIC"
 		LIBS="$LIBS -lws2_32 -liphlpapi -lwinmm"

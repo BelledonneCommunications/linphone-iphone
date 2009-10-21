@@ -12,3 +12,4 @@ RANLIB=${SDK_BIN_PATH}/arm-mingw32ce-ranlib
 
 CPPFLAGS="-Dasm=__asm"
 #LDFLAGS="-Wl,-syslibroot ${SYSROOT_PATH}" 
+LDFLAGS="-L${SYSROOT_PATH}/arm-mingw32ce/lib"
