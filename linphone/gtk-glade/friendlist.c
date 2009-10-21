@@ -28,6 +28,7 @@ enum{
 	FRIEND_PRESENCE_STATUS,
 	FRIEND_ID,
 	FRIEND_SIP_ADDRESS,
+	FRIEND_ICON,
 	FRIEND_LIST_NCOL
 };
 
@@ -185,28 +186,23 @@ static void linphone_gtk_friend_list_init(GtkWidget *friendlist)
 	
 	
 	store = gtk_list_store_new(FRIEND_LIST_NCOL, GDK_TYPE_PIXBUF, G_TYPE_STRING, G_TYPE_STRING,  G_TYPE_POINTER,
-					G_TYPE_STRING);
-	/* need to add friends to the store here ...*/
-	
+					G_TYPE_STRING, GDK_TYPE_PIXBUF);
+
 	gtk_tree_view_set_model(GTK_TREE_VIEW(friendlist),GTK_TREE_MODEL(store));
 	g_object_unref(G_OBJECT(store));
 
-	renderer = gtk_cell_renderer_pixbuf_new();
-	column = gtk_tree_view_column_new_with_attributes (NULL,
-                                                   renderer,
-                                                   "pixbuf", FRIEND_PRESENCE_IMG,
-                                                   NULL);
-	gtk_tree_view_column_set_min_width (column, 29);
-	gtk_tree_view_append_column (GTK_TREE_VIEW (friendlist), column);
-
-	gtk_tree_view_column_set_visible(column,linphone_gtk_get_ui_config_int("friendlist_icon",1));
-
-	renderer = gtk_cell_renderer_text_new ();
+	renderer = gtk_cell_renderer_pixbuf_new ();
 	column = gtk_tree_view_column_new_with_attributes (_("Name"),
                                                    renderer,
-                                                   "text", FRIEND_NAME,
+                                                   "pixbuf", FRIEND_ICON,
                                                    NULL);
 	g_object_set (G_OBJECT(column), "resizable", TRUE, NULL);
+	renderer = gtk_cell_renderer_text_new ();
+	gtk_tree_view_column_pack_start(column,renderer,FALSE);
+	gtk_tree_view_column_add_attribute  (column,renderer,
+                                                         "text",
+                                                         FRIEND_NAME);
+	
 	gtk_tree_view_append_column (GTK_TREE_VIEW (friendlist), column);
 
 	column = gtk_tree_view_column_new_with_attributes (_("Presence status"),
@@ -214,9 +210,15 @@ static void linphone_gtk_friend_list_init(GtkWidget *friendlist)
                                                    "text", FRIEND_PRESENCE_STATUS,
                                                    NULL);
 	g_object_set (G_OBJECT(column), "resizable", TRUE, NULL);
-	gtk_tree_view_append_column (GTK_TREE_VIEW (friendlist), column);
 	gtk_tree_view_column_set_visible(column,linphone_gtk_get_ui_config_int("friendlist_status",1));
 	
+	renderer = gtk_cell_renderer_pixbuf_new();
+	gtk_tree_view_column_pack_start(column,renderer,FALSE);
+	gtk_tree_view_column_add_attribute  (column,renderer,
+                                                         "pixbuf",
+                                                         FRIEND_PRESENCE_IMG);
+	gtk_tree_view_append_column (GTK_TREE_VIEW (friendlist), column);
+
 	select = gtk_tree_view_get_selection (GTK_TREE_VIEW (friendlist));
 	gtk_tree_selection_set_mode (select, GTK_SELECTION_SINGLE);
 #if GTK_CHECK_VERSION(2,12,0)
@@ -320,6 +322,7 @@ void linphone_gtk_show_friends(void){
 			}
 		}
 		if (!online_only || (linphone_friend_get_status(lf)!=LINPHONE_STATUS_OFFLINE)){
+			BuddyInfo *bi;
 			if (name==NULL || name[0]=='\0') display=addr;
 			gtk_list_store_append(store,&iter);
 			gtk_list_store_set(store,&iter,FRIEND_NAME, display,
@@ -331,6 +334,15 @@ void linphone_gtk_show_friends(void){
 			escaped=g_markup_escape_text(uri,-1);
 			gtk_list_store_set(store,&iter,FRIEND_SIP_ADDRESS,escaped,-1);
 			g_free(escaped);
+			bi=linphone_friend_get_info(lf);
+			if (bi!=NULL && bi->image_data!=NULL){
+				GdkPixbuf *pbuf=
+					_gdk_pixbuf_new_from_memory_at_scale(bi->image_data,bi->image_length,-1,40,TRUE);
+				if (pbuf) {
+					gtk_list_store_set(store,&iter,FRIEND_ICON,pbuf,-1);
+					g_object_unref(G_OBJECT(pbuf));
+				}
+			}
 		}
 		ms_free(uri);
 		if (name) ms_free(name);

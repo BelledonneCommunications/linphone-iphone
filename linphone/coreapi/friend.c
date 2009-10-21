@@ -2,7 +2,7 @@
  *            friend.c
  *
  *  Sat May 15 15:25:16 2004
- *  Copyright  2004  Simon Morlat
+ *  Copyright  2004-2009  Simon Morlat
  *  Email
  ****************************************************************************/
 
@@ -561,6 +561,7 @@ void linphone_friend_destroy(LinphoneFriend *lf){
 	linphone_friend_notify(lf,EXOSIP_SUBCRSTATE_TERMINATED,LINPHONE_STATUS_CLOSED);
 	linphone_friend_unsubscribe(lf);
 	if (lf->url!=NULL) osip_from_free(lf->url);
+	if (lf->info!=NULL) buddy_info_free(lf->info);
 	ms_free(lf);
 }
 
@@ -606,6 +607,9 @@ LinphoneOnlineStatus linphone_friend_get_status(const LinphoneFriend *lf){
 	return lf->status;
 }
 
+BuddyInfo * linphone_friend_get_info(const LinphoneFriend *lf){
+	return lf->info;
+}
 
 void linphone_friend_apply(LinphoneFriend *fr, LinphoneCore *lc){
 	if (fr->url==NULL) {
@@ -638,6 +642,7 @@ void linphone_friend_apply(LinphoneFriend *fr, LinphoneCore *lc){
 		__linphone_friend_do_subscribe(fr);
 	}
 	ms_message("linphone_friend_apply() done.");
+	lc->bl_refresh=TRUE;
 }
 
 void linphone_friend_edit(LinphoneFriend *fr){
@@ -665,6 +670,31 @@ void linphone_core_remove_friend(LinphoneCore *lc, LinphoneFriend* fl){
 		linphone_friend_destroy((LinphoneFriend*)el->data);
 		linphone_core_write_friends_config(lc);
 	}
+}
+
+static bool_t username_match(const char *u1, const char *u2){
+	if (u1==NULL && u2==NULL) return TRUE;
+	if (u1 && u2 && strcasecmp(u1,u2)==0) return TRUE;
+	return FALSE;
+}
+
+LinphoneFriend *linphone_core_get_friend_by_uri(const LinphoneCore *lc, const char *uri){
+	osip_from_t *from;
+	osip_from_init(&from);
+	const MSList *elem;
+	if (osip_from_parse(from,uri)!=0){
+		osip_from_free(from);
+		return NULL;
+	}
+	for(elem=lc->friends;elem!=NULL;elem=ms_list_next(elem)){
+		LinphoneFriend *lf=(LinphoneFriend*)elem->data;
+		const char *it_username=lf->url->url->username;
+		const char *it_host=lf->url->url->host;
+		if (strcasecmp(from->url->host,it_host)==0 && username_match(from->url->username,it_username)){
+			return lf;
+		}
+	}
+	return NULL;
 }
 
 #define key_compare(key, word) strncasecmp((key),(word),strlen(key))

@@ -212,6 +212,7 @@ typedef struct _LinphoneFriend{
 	LinphoneOnlineStatus status;
 	struct _LinphoneProxyConfig *proxy;
 	struct _LinphoneCore *lc;
+	BuddyInfo *info;
 	bool_t subscribe;
 	bool_t inc_subscribe_pending;
 }LinphoneFriend;	
@@ -233,6 +234,7 @@ char *linphone_friend_get_url(LinphoneFriend *lf);	/* name <sip address> */
 bool_t linphone_friend_get_send_subscribe(const LinphoneFriend *lf);
 LinphoneSubscribePolicy linphone_friend_get_inc_subscribe_policy(const LinphoneFriend *lf);
 LinphoneOnlineStatus linphone_friend_get_status(const LinphoneFriend *lf);
+BuddyInfo * linphone_friend_get_info(const LinphoneFriend *lf);
 #define linphone_friend_in_list(lf)	((lf)->lc!=NULL)
 
 #define linphone_friend_url(lf) ((lf)->url)
@@ -477,6 +479,7 @@ typedef struct _LinphoneCore
 	struct _VideoStream *videostream;
 	struct _VideoStream *previewstream;
 	struct _RtpProfile *local_profile;
+	MSList *bl_reqs;
 	MSList *subscribers;	/* unknown subscribers */
 	int minutes_away;
 	LinphoneOnlineStatus presence_mode;
@@ -501,6 +504,7 @@ typedef struct _LinphoneCore
 	bool_t use_files;
 	bool_t apply_nat_settings;
 	bool_t ready;
+	bool_t bl_refresh;
 #ifdef VINCENT_MAURY_RSVP
 	/* QoS parameters*/
 	int rsvp_enable;
@@ -695,6 +699,7 @@ void linphone_core_reject_subscriber(LinphoneCore *lc, LinphoneFriend *lf);
 const MSList * linphone_core_get_friend_list(LinphoneCore *lc);
 /* notify all friends that have subscribed */
 void linphone_core_notify_all_friends(LinphoneCore *lc, LinphoneOnlineStatus os);
+LinphoneFriend *linphone_core_get_friend_by_uri(const LinphoneCore *lc, const char *uri);
 
 /* returns a list of LinphoneCallLog */
 MSList * linphone_core_get_call_logs(LinphoneCore *lc);

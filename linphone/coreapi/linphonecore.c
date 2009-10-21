@@ -1036,6 +1036,77 @@ static void proxy_update(LinphoneCore *lc, time_t curtime){
 	if (doit) ms_list_for_each(lc->sip_conf.proxies,(void (*)(void*))&linphone_proxy_config_update);
 }
 
+static void assign_buddy_info(LinphoneCore *lc, BuddyInfo *info){
+	LinphoneFriend *lf=linphone_core_get_friend_by_uri(lc,info->sip_uri);
+	if (lf!=NULL){
+		lf->info=info;
+		ms_message("%s has a BuddyInfo assigned.",info->sip_uri);
+	}else{
+		ms_warning("Could not any friend with uri %s",info->sip_uri);
+	}
+}
+
+static void analyze_buddy_lookup_results(LinphoneCore *lc, LinphoneProxyConfig *cfg){
+	MSList *elem;
+	SipSetupContext *ctx=linphone_proxy_config_get_sip_setup_context(cfg);
+	for (elem=lc->bl_reqs;elem!=NULL;elem=ms_list_next(elem)){
+		BuddyLookupRequest *req=(BuddyLookupRequest *)elem->data;
+		if (req->status==BuddyLookupDone || req->status==BuddyLookupFailure){
+			if (req->results!=NULL){
+				BuddyInfo *i=(BuddyInfo*)req->results->data;
+				ms_list_free(req->results);
+				req->results=NULL;
+				assign_buddy_info(lc,i);
+			}
+			sip_setup_context_buddy_lookup_free(ctx,req);
+			elem->data=NULL;
+		}
+	}
+	/*purge completed requests */
+	while((elem=ms_list_find(lc->bl_reqs,NULL))!=NULL){
+		lc->bl_reqs=ms_list_remove_link(lc->bl_reqs,elem);
+	}
+}
+
+static void linphone_core_grab_buddy_infos(LinphoneCore *lc, LinphoneProxyConfig *cfg){
+	const MSList *elem;
+	SipSetupContext *ctx=linphone_proxy_config_get_sip_setup_context(cfg);
+	for(elem=linphone_core_get_friend_list(lc);elem!=NULL;elem=elem->next){
+		LinphoneFriend *lf=(LinphoneFriend*)elem->data;
+		if (lf->info==NULL){
+			char *url=linphone_friend_get_url(lf);
+			if (linphone_core_lookup_known_proxy(lc,url)==cfg){
+				char *name=linphone_friend_get_name(lf);
+				if (name!=NULL && strlen(name)>0){
+					BuddyLookupRequest *req;
+					req=sip_setup_context_create_buddy_lookup_request(ctx);
+					buddy_lookup_request_set_key(req,name);
+					buddy_lookup_request_set_max_results(req,1);
+					sip_setup_context_buddy_lookup_submit(ctx,req);
+					lc->bl_reqs=ms_list_append(lc->bl_reqs,req);
+				}
+				ms_free(name);
+			}
+			ms_free(url);
+		}
+	}
+}
+
+static void linphone_core_do_plugin_tasks(LinphoneCore *lc){
+	LinphoneProxyConfig *cfg=NULL;
+	linphone_core_get_default_proxy(lc,&cfg);
+	if (cfg){
+		if (lc->bl_refresh){
+			SipSetupContext *ctx=linphone_proxy_config_get_sip_setup_context(cfg);
+			if (ctx && (sip_setup_context_get_capabilities(ctx) & SIP_SETUP_CAP_BUDDY_LOOKUP)){
+				linphone_core_grab_buddy_infos(lc,cfg);
+				lc->bl_refresh=FALSE;
+			}
+		}
+		if (lc->bl_reqs) analyze_buddy_lookup_results(lc,cfg);
+	}
+}
+
 void linphone_core_iterate(LinphoneCore *lc)
 {
 	eXosip_event_t *ev;
@@ -1109,6 +1180,9 @@ void linphone_core_iterate(LinphoneCore *lc)
 	}
 	if (disconnected)
 		linphone_core_disconnected(lc);
+
+	linphone_core_do_plugin_tasks(lc);
+
 	if (one_second_elapsed && lp_config_needs_commit(lc->config)){
 		lp_config_sync(lc->config);
 	}
@@ -1197,7 +1271,10 @@ bool_t linphone_core_interpret_url(LinphoneCore *lc, const char *url, char **rea
 				osip_from_free(uri);
 				return FALSE;
 			}
-			sipaddr=ortp_strdup_printf("sip:%s@%s",url,uri->url->host);
+			if (uri->url->port!=NULL && uri->url->port[0]!='\0')
+				sipaddr=ortp_strdup_printf("sip:%s@%s:%s",url,uri->url->host,uri->url->port);
+			else
+				sipaddr=ortp_strdup_printf("sip:%s@%s",url,uri->url->host);
 			if (real_parsed_url!=NULL) *real_parsed_url=osip_to_create(sipaddr);
 			if (real_url!=NULL) *real_url=sipaddr;
 			else ms_free(sipaddr);

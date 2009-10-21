@@ -73,6 +73,20 @@ typedef struct _BuddyInfo{
 	int image_length;
 }BuddyInfo;
 
+typedef struct _BuddyLookupRequest {
+	char *key;
+	int max_results;
+	BuddyLookupStatus status;
+	MSList *results; /*of BuddyInfo */
+}BuddyLookupRequest;
+
+
+typedef struct _BuddyLookupFuncs{
+	BuddyLookupRequest * (*request_create)(SipSetupContext *ctx);
+	int (*request_submit)(SipSetupContext *ctx, BuddyLookupRequest *req);
+	int (*request_free)(SipSetupContext *ctx, BuddyLookupRequest *req);
+}BuddyLookupFuncs;
+
 
 struct _SipSetup{
 	char *name;
@@ -88,15 +102,14 @@ struct _SipSetup{
 	int (*get_proxy)(SipSetupContext *ctx, const char *domain, char *proxy, size_t sz);
 	int (*get_stun_servers)(SipSetupContext *ctx, char *stun1, char *stun2, size_t size);
 	int (*get_relay)(SipSetupContext *ctx, char *relay, size_t size);
-	int (*lookup_buddy)(SipSetupContext *ctx, const char *key);
-	BuddyLookupStatus (*get_buddy_lookup_status)(SipSetupContext *ctx);
-	int (*get_buddy_lookup_results)(SipSetupContext *ctx, MSList **results);
 	const char * (*get_notice)(SipSetupContext *ctx);
 	const char ** (*get_domains)(SipSetupContext *ctx);
 	int (*logout_account)(SipSetupContext *ctx);
+	BuddyLookupFuncs *buddy_lookup_funcs;
 };
 
 typedef struct _SipSetup SipSetup;
+
 
 
 #ifdef __cplusplus
@@ -105,6 +118,9 @@ extern "C"{
 
 BuddyInfo *buddy_info_new();
 void buddy_info_free(BuddyInfo *info);
+
+void buddy_lookup_request_set_key(BuddyLookupRequest *req, const char *key);
+void buddy_lookup_request_set_max_results(BuddyLookupRequest *req, int ncount);
 
 
 void sip_setup_register(SipSetup *ss);
@@ -121,20 +137,21 @@ int sip_setup_context_login_account(SipSetupContext * ctx, const char *uri, cons
 int sip_setup_context_get_proxy(SipSetupContext *ctx, const char *domain, char *proxy, size_t sz);
 int sip_setup_context_get_stun_servers(SipSetupContext *ctx, char *stun1, char *stun2, size_t size);
 int sip_setup_context_get_relay(SipSetupContext *ctx, char *relay, size_t size);
-int sip_setup_context_lookup_buddy(SipSetupContext *ctx, const char *key);
-BuddyLookupStatus sip_setup_context_get_buddy_lookup_status(SipSetupContext *ctx);
-int sip_setup_context_get_buddy_lookup_results(SipSetupContext *ctx, MSList **results /*of BuddyInfo */);
+
+BuddyLookupRequest *sip_setup_context_create_buddy_lookup_request(SipSetupContext *ctx);
+int sip_setup_context_buddy_lookup_submit(SipSetupContext *ctx , BuddyLookupRequest *req);
+int sip_setup_context_buddy_lookup_free(SipSetupContext *ctx , BuddyLookupRequest *req);
+
 const char * sip_setup_context_get_notice(SipSetupContext *ctx);
 const char ** sip_setup_context_get_domains(SipSetupContext *ctx);
 
-void sip_setup_context_free_results(MSList *results);
 void sip_setup_context_free(SipSetupContext *ctx);
 
 int sip_setup_context_logout(SipSetupContext *ctx);
 
-/*internal methods*/
+/*internal methods for use WITHIN plugins: do not use elsewhere*/
 struct _LinphoneProxyConfig *sip_setup_context_get_proxy_config(const SipSetupContext *ctx);
-
+void buddy_lookup_request_free(BuddyLookupRequest *req);
 
 #ifdef __cplusplus
 }

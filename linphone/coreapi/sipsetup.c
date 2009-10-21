@@ -79,6 +79,27 @@ void sip_setup_unregister_all(void){
 	}
 }
 
+void buddy_lookup_request_set_key(BuddyLookupRequest *req, const char *key){
+	if (req->key!=NULL) {
+		ms_free(req->key);
+		req->key=NULL;
+	}
+	if (key) req->key=ms_strdup(key);
+}
+
+void buddy_lookup_request_set_max_results(BuddyLookupRequest *req, int ncount){
+	req->max_results=ncount;
+}
+
+void buddy_lookup_request_free(BuddyLookupRequest *req){
+	if (req->key) ms_free(req->key);
+	if (req->results){
+		ms_list_for_each(req->results,(void (*)(void*))buddy_info_free);
+		ms_list_free(req->results);
+	}
+	ms_free(req);
+}
+
 LinphoneProxyConfig *sip_setup_context_get_proxy_config(const SipSetupContext *ctx){
 	return ctx->cfg;
 }
@@ -144,21 +165,21 @@ int sip_setup_context_get_relay(SipSetupContext *ctx,char *relay, size_t size){
 	return -1;
 }
 
-int sip_setup_context_lookup_buddy(SipSetupContext *ctx, const char *key){
-	if (ctx->funcs->lookup_buddy)
-		return ctx->funcs->lookup_buddy(ctx,key);
+BuddyLookupRequest *sip_setup_context_create_buddy_lookup_request(SipSetupContext *ctx){
+	if (ctx->funcs->buddy_lookup_funcs)
+		return ctx->funcs->buddy_lookup_funcs->request_create(ctx);
+	return NULL;
+}
+
+int sip_setup_context_buddy_lookup_submit(SipSetupContext *ctx , BuddyLookupRequest *req){
+	if (ctx->funcs->buddy_lookup_funcs)
+		return ctx->funcs->buddy_lookup_funcs->request_submit(ctx,req);
 	return -1;
 }
 
-BuddyLookupStatus sip_setup_context_get_buddy_lookup_status(SipSetupContext *ctx){
-	if (ctx->funcs->get_buddy_lookup_status)
-		return ctx->funcs->get_buddy_lookup_status(ctx);
-	return BuddyLookupFailure;
-}
-
-int sip_setup_context_get_buddy_lookup_results(SipSetupContext *ctx, MSList **results /*of BuddyInfo */){
-	if (ctx->funcs->get_buddy_lookup_results)
-		return ctx->funcs->get_buddy_lookup_results(ctx,results);
+int sip_setup_context_buddy_lookup_free(SipSetupContext *ctx , BuddyLookupRequest *req){
+	if (ctx->funcs->buddy_lookup_funcs)
+		return ctx->funcs->buddy_lookup_funcs->request_free(ctx,req);
 	return -1;
 }
 
@@ -174,11 +195,6 @@ const char ** sip_setup_context_get_domains(SipSetupContext *ctx){
 	return NULL;
 }
 
-
-void sip_setup_context_free_results(MSList *results){
-	ms_list_for_each(results,(void (*)(void*))&buddy_info_free);
-	ms_list_free(results);
-}
 
 int sip_setup_context_logout(SipSetupContext *ctx){
 	if (ctx->funcs->logout_account){

@@ -138,9 +138,13 @@ static gboolean linphone_gtk_process_buddy_lookup(GtkWidget *w){
 	gchar *tmp;
 	MSList *results=NULL;
 	GtkProgressBar *pb=GTK_PROGRESS_BAR(linphone_gtk_get_widget(w,"progressbar"));
-	ctx=(SipSetupContext*)g_object_get_data(G_OBJECT(w),"SipSetupContext");
+	BuddyLookupRequest *req=(BuddyLookupRequest*)g_object_get_data(G_OBJECT(w),"buddylookup_request");
+
+	ctx=(SipSetupContext*)g_object_get_data(G_OBJECT(w),"SipSetupContext");	
 	last_state=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(w),"last_state"));
-	bls=sip_setup_context_get_buddy_lookup_status(ctx);
+
+	if (req==NULL) return FALSE;
+	bls=req->status;
 	if (last_state==bls) return TRUE;
 	switch(bls){
 		case BuddyLookupNone:
@@ -164,7 +168,7 @@ static gboolean linphone_gtk_process_buddy_lookup(GtkWidget *w){
 			gtk_progress_bar_set_text(pb,_("Receiving data..."));
 			break;
 		case BuddyLookupDone:
-			sip_setup_context_get_buddy_lookup_results(ctx,&results);
+			results=req->results;
 			linphone_gtk_display_lookup_results(
 					linphone_gtk_get_widget(w,"search_results"),
 					results);
@@ -174,7 +178,8 @@ static gboolean linphone_gtk_process_buddy_lookup(GtkWidget *w){
                     ms_list_size(results));
 			gtk_progress_bar_set_text(pb,tmp);
 			g_free(tmp);
-			if (results) sip_setup_context_free_results(results);
+			sip_setup_context_buddy_lookup_free(ctx,req);
+			g_object_set_data(G_OBJECT(w),"buddylookup_request",NULL);
 			break;
 	}
 	g_object_set_data(G_OBJECT(w),"last_state",GINT_TO_POINTER(bls));
@@ -190,9 +195,17 @@ static gboolean keyword_typing_finished(GtkWidget *w){
 	}
 	keyword=gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(w,"keyword")));
 	if (strlen(keyword)>=1){
+		BuddyLookupRequest *req;
 		guint tid2;
 		ctx=(SipSetupContext*)g_object_get_data(G_OBJECT(w),"SipSetupContext");
-		sip_setup_context_lookup_buddy(ctx,keyword);
+		req=(BuddyLookupRequest*)g_object_get_data(G_OBJECT(w),"buddylookup_request");
+		if (req!=NULL){
+			sip_setup_context_buddy_lookup_free(ctx,req);
+		}
+		req=sip_setup_context_create_buddy_lookup_request(ctx);
+		buddy_lookup_request_set_key(req,keyword);
+		sip_setup_context_buddy_lookup_submit(ctx,req);
+		g_object_set_data(G_OBJECT(w),"buddylookup_request",req);
 		if (g_object_get_data(G_OBJECT(w),"buddylookup_processing")==NULL){
 			tid2=g_timeout_add(20,(GSourceFunc)linphone_gtk_process_buddy_lookup,w);
 			g_object_set_data(G_OBJECT(w),"buddylookup_processing",GINT_TO_POINTER(tid2));
