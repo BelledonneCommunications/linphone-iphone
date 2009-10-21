@@ -68,6 +68,9 @@ typedef struct _BuddyInfo{
 	char sip_uri[128];
 	char email[128];
 	BuddyAddress address;
+	char image_type[32];
+	uint8_t *image_data;
+	int image_length;
 }BuddyInfo;
 
 
@@ -99,6 +102,10 @@ typedef struct _SipSetup SipSetup;
 #ifdef __cplusplus
 extern "C"{
 #endif
+
+BuddyInfo *buddy_info_new();
+void buddy_info_free(BuddyInfo *info);
+
 
 void sip_setup_register(SipSetup *ss);
 void sip_setup_register_all(void);

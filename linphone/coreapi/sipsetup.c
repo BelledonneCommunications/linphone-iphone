@@ -176,7 +176,7 @@ const char ** sip_setup_context_get_domains(SipSetupContext *ctx){
 
 
 void sip_setup_context_free_results(MSList *results){
-	ms_list_for_each(results,(void (*)(void*))&ms_free);
+	ms_list_for_each(results,(void (*)(void*))&buddy_info_free);
 	ms_list_free(results);
 }
 
@@ -192,4 +192,15 @@ void sip_setup_context_free(SipSetupContext *ctx){
 		ctx->funcs->uninit_instance(ctx);
 	}
 	ms_free(ctx);
+}
+
+
+BuddyInfo *buddy_info_new(){
+	return ms_new0(BuddyInfo,1);
+}
+
+void buddy_info_free(BuddyInfo *info){
+	if (info->image_data!=NULL)
+		ms_free(info->image_data);
+	ms_free(info);
 }

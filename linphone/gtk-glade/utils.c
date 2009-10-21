@@ -92,3 +92,24 @@ gchar *linphone_gtk_get_display_name(const char *sip_uri){
 	return ret;
 }
 
+GdkPixbuf *_gdk_pixbuf_new_from_memory_at_scale(const void *data, gint len, gint w, gint h, gboolean preserve_ratio){
+	GInputStream *stream=g_memory_input_stream_new_from_data (data,len,NULL);
+	GError *error=NULL;
+	
+	GdkPixbuf *pbuf=gdk_pixbuf_new_from_stream_at_scale (stream,w,h,preserve_ratio,NULL,&error);
+	g_input_stream_close(stream,NULL,NULL);
+	g_object_unref(G_OBJECT(stream));
+	if (pbuf==NULL){
+		g_warning("Could not open image from memory");
+	}
+	return pbuf;
+}
+
+GtkWidget * _gtk_image_new_from_memory_at_scale(const void *data, gint len, gint w, gint h, gboolean preserve_ratio){
+	GtkWidget *image;
+	GdkPixbuf *pbuf=_gdk_pixbuf_new_from_memory_at_scale(data,len,w,h,preserve_ratio);
+	if (pbuf==NULL) return NULL;
+	image=gtk_image_new_from_pixbuf(pbuf);
+	g_object_unref(G_OBJECT(pbuf));
+	return image;
+}

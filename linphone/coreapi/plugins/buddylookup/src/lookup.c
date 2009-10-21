@@ -81,8 +81,8 @@ static void fill_item(GHashTable *ht , const char *name, char *dest, size_t dest
 	}else ms_warning("no field named '%s'", name);
 }
 
-static void fill_buddy_info(BuddyInfo *bi, GHashTable *ht){
-	char tmp[128];
+static void fill_buddy_info(BuddyLookupState *s, BuddyInfo *bi, GHashTable *ht){
+	char tmp[256];
 	fill_item(ht,"first_name",bi->firstname,sizeof(bi->firstname));
 	fill_item(ht,"last_name",bi->lastname,sizeof(bi->lastname));
 	fill_item(ht,"display_name",bi->displayname,sizeof(bi->displayname));
@@ -98,9 +98,28 @@ static void fill_buddy_info(BuddyInfo *bi, GHashTable *ht){
 	fill_item(ht,"city",bi->address.town,sizeof(bi->address.town));
 	fill_item(ht,"country",bi->address.country,sizeof(bi->address.country));
 	fill_item(ht,"email",bi->email,sizeof(bi->email));
+	tmp[0]='\0';
+	fill_item(ht,"image",tmp,sizeof(tmp));
+	if (tmp[0]!='\0'){
+		SoupMessage *msg;
+		guint status;
+		ms_message("This buddy has an image, let's download it: %s",tmp);
+		msg=soup_message_new("GET",tmp);
+		if ((status=soup_session_send_message(s->session,msg))==200){
+			SoupMessageBody *body=msg->response_body;
+			ms_message("Received %i bytes",body->length);
+			strncpy(bi->image_type,"png",sizeof(bi->image_type));
+			bi->image_length=body->length;
+			bi->image_data=ms_malloc(body->length+4); /*add padding bytes*/
+			memcpy(bi->image_data,body->data,bi->image_length);
+		}else{
+			ms_error("Fail to fetch the image %i",status);
+		}
+	}
+	
 }
 
-static MSList * make_buddy_list(GValue *retval){
+static MSList * make_buddy_list(BuddyLookupState *s, GValue *retval){
 	MSList *ret=NULL;
 	if (G_VALUE_TYPE(retval)==G_TYPE_VALUE_ARRAY){
 		GValueArray *array=(GValueArray*)g_value_get_boxed(retval);
@@ -110,8 +129,8 @@ static MSList * make_buddy_list(GValue *retval){
 			gelem=g_value_array_get_nth(array,i);
 			if (G_VALUE_TYPE(gelem)==G_TYPE_HASH_TABLE){
 				GHashTable *ht=(GHashTable*)g_value_get_boxed(gelem);
-				BuddyInfo *bi=ms_new0(BuddyInfo,1);
-				fill_buddy_info(bi,ht);
+				BuddyInfo *bi=buddy_info_new();
+				fill_buddy_info(s,bi,ht);
 				ret=ms_list_append(ret,bi);
 			}else{
 				ms_error("Element is not a hash table");
@@ -139,7 +158,7 @@ static int xml_rpc_parse_response(SipSetupContext *ctx, SoupMessage *sm){
 		s->status=BuddyLookupFailure;
 	}else{
 		ms_message("Extracting values from return type...");
-		s->results=make_buddy_list(&retval);
+		s->results=make_buddy_list(s,&retval);
 		g_value_unset(&retval);
 		s->status=BuddyLookupDone;
 	}
