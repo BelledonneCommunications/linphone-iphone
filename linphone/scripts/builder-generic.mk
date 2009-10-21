@@ -1,7 +1,7 @@
 host?=armv6-apple-darwin
 config_site?=iphone-config.site
 library_mode?= --disable-shared 
-libosip2_version=3.3.0
+libosip2_version?=3.3.0
 libeXosip2_version=3.3.0
 libspeex_version=1.2rc1
 libgsm_version=1.0.13
@@ -60,6 +60,9 @@ get_dependencies: get_osip2_src get_eXosip2_src get_speex_src get_libgsm_src
 
 #osip2
 
+get_osip2_svn: 
+	 cd $(LINPHONE_SRC_DIR)/ \
+	&& svn co svn://svn.sv.gnu.org/osip/trunk/osip libosip2-$(libosip2_version)
 get_osip2_src: 
 	 cd $(LINPHONE_SRC_DIR)/ \
 	&& rm -f libosip2-$(libosip2_version).tar.gz \
@@ -75,7 +78,7 @@ $(LINPHONE_SRC_DIR)/libosip2-$(libosip2_version)/configure:
 $(LINPHONE_SRC_DIR)/libosip2-$(libosip2_version)/Makefile: $(LINPHONE_SRC_DIR)/libosip2-$(libosip2_version)/configure
 	 cd $(LINPHONE_SRC_DIR)/libosip2-$(libosip2_version)/ \
 	&& CONFIG_SITE=$(LINPHONE_SRC_DIR)/scripts/$(config_site) \
-	./configure -prefix=$(prefix) --host=$(host) ${library_mode}  --enable-pthread=yes
+	./configure -prefix=$(prefix) --host=$(host) ${library_mode}  
 
 build-osip2: $(LINPHONE_SRC_DIR)/libosip2-$(libosip2_version)/Makefile
 	 cd $(LINPHONE_SRC_DIR)/libosip2-$(libosip2_version) && make && make install
