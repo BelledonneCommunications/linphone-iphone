@@ -5,12 +5,13 @@ ARCH=arm4l
 SDK_BIN_PATH=/opt/mingw32ce/bin     
 SYSROOT_PATH=/opt/mingw32ce
 
-CC="${SDK_BIN_PATH}/arm-mingw32ce-gcc -std=c99  -isysroot=${SYSROOT_PATH}"
+CC="${SDK_BIN_PATH}/arm-mingw32ce-gcc -isysroot=${SYSROOT_PATH}"
+CXX="${SDK_BIN_PATH}/arm-mingw32ce-g++ -isysroot=${SYSROOT_PATH}"
 LD="${SDK_BIN_PATH}/arm-mingw32ce-ld "
 AR=${SDK_BIN_PATH}/arm-mingw32ce-ar
 RANLIB=${SDK_BIN_PATH}/arm-mingw32ce-ranlib
 
-CPPFLAGS="-Dasm=__asm -D_WIN32_WCE"
-CFLAGS="-D_WIN32_WCE"
+CPPFLAGS="-D_WIN32_WCE -DUNICODE -Drewind="
+#CFLAGS="-D_WIN32_WCE"
 #LDFLAGS="-Wl,-syslibroot ${SYSROOT_PATH}" 
 LDFLAGS="-Wl,-L${SYSROOT_PATH}/arm-mingw32ce/lib -lws2"

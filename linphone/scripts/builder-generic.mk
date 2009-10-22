@@ -2,11 +2,19 @@ host?=armv6-apple-darwin
 config_site?=iphone-config.site
 library_mode?= --disable-shared 
 libosip2_version?=3.3.0
-libeXosip2_version=3.3.0
+libeXosip2_version?=3.3.0
 libspeex_version=1.2rc1
 libgsm_version=1.0.13
-ifeq ($(target_arch),armv6) 
-	SPEEX_CONFIGURE_OPTION := --enable-fixed-point
+linphone_configure_controls?= 	--disable-video \ 
+								--with-readline=none  \
+								--enable-gtk_ui=no \
+								--enable-ssl-hmac=no \
+								--enable-nonstandard-gsm \
+								--with-gsm=$(prefix) \
+								SPEEX_CFLAGS="-I$(prefix)/include" \
+        						SPEEX_LIBS="-L$(prefix)/lib -lspeex "
+ifneq (,$(findstring arm,$(host)))
+	SPEEX_CONFIGURE_OPTION := --enable-fixed-point --disable-float-api
 	#SPEEX_CONFIGURE_OPTION := --enable-arm5e-asm --enable-fixed-point
 endif
 
@@ -35,29 +43,18 @@ $(LINPHONE_SRC_DIR)/configure:
 
 $(LINPHONE_SRC_DIR)/Makefile: $(LINPHONE_SRC_DIR)/configure
 	 cd $(LINPHONE_SRC_DIR) && \
-	 PKG_CONFIG_PATH=$(prefix)/ CONFIG_SITE=$(LINPHONE_SRC_DIR)/scripts/$(config_site) \
+	 PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig CONFIG_SITE=$(LINPHONE_SRC_DIR)/scripts/$(config_site) \
 	./configure -prefix=$(prefix) --host=$(host) ${library_mode} \
-	--disable-video --with-readline=none  --enable-gtk_ui=no --enable-ssl-hmac=no --with-osip=$(prefix) \
-	--enable-nonstandard-gsm --with-gsm=$(prefix) \
-	SPEEX_CFLAGS="-I$(prefix)/include" \
-        SPEEX_LIBS="-L$(prefix)/lib -lspeex "
-
-build-linphone:	build-osip2 build-eXosip2 build-speex build-libgsm $(LINPHONE_SRC_DIR)/Makefile 
-	 cd $(LINPHONE_SRC_DIR) && make newdate && make  && make install 
-
-clean-linphone: clean-osip2 clean-eXosip2 clean-speex clean-libgsm clean-libgsm
-	 cd  $(LINPHONE_SRC_DIR) && make clean
-
-veryclean-linphone: clean-linphone veryclean-osip2 veryclean-eXosip2 veryclean-speex veryclean-libgsm
-	 cd $(LINPHONE_SRC_DIR) && make distclean
-	 cd $(LINPHONE_SRC_DIR) && rm configure
-
-clean-makefile-linphone: clean-makefile-osip2 clean-makefile-eXosip2 clean-makefile-speex 
-	 cd $(LINPHONE_SRC_DIR) && rm Makefile && rm oRTP/Makefile && rm mediastreamer2/Makefile
+	${linphone_configure_controls}
 	
 
-get_dependencies: get_osip2_src get_eXosip2_src get_speex_src get_libgsm_src
+#libphone only (asume dependencies are met)
+build-liblinphone:	$(LINPHONE_SRC_DIR)/Makefile 
+	 cd $(LINPHONE_SRC_DIR) && make newdate && make  && make install 
 
+clean-makefile-liblinphone:   
+	 cd $(LINPHONE_SRC_DIR) && rm Makefile && rm oRTP/Makefile && rm mediastreamer2/Makefile	 
+	 
 #osip2
 
 get_osip2_svn: 
@@ -93,7 +90,11 @@ veryclean-osip2:
 clean-makefile-osip2:
 	 cd $(LINPHONE_SRC_DIR)/libosip2-$(libosip2_version) && rm Makefile
 #eXosip
-	
+
+get_eXosip2_svn: 
+	 cd $(LINPHONE_SRC_DIR)/ \
+	&& svn co svn://svn.sv.gnu.org/exosip/trunk/exosip libeXosip2-$(libeXosip2_version)
+		
 get_eXosip2_src:
 	 cd $(LINPHONE_SRC_DIR)/ \
 	&& rm -f libeXosip2-$(libeXosip2_version).tar.gz \
@@ -101,10 +102,13 @@ get_eXosip2_src:
 	&& tar xvzf libeXosip2-$(libeXosip2_version).tar.gz \
 	&& rm -rf libeXosip2-$(libeXosip2_version).tar.gz
 
-$(LINPHONE_SRC_DIR)/libeXosip2-$(libeXosip2_version)/Makefile: 
+$(LINPHONE_SRC_DIR)/libeXosip2-$(libeXosip2_version)/configure:
+	 cd $(LINPHONE_SRC_DIR)/libeXosip2-$(libeXosip2_version) && ./autogen.sh
+	 
+$(LINPHONE_SRC_DIR)/libeXosip2-$(libeXosip2_version)/Makefile: $(LINPHONE_SRC_DIR)/libeXosip2-$(libeXosip2_version)/configure
 	 cd $(LINPHONE_SRC_DIR)/libeXosip2-$(libeXosip2_version)/\
-	&& CONFIG_SITE=$(LINPHONE_SRC_DIR)/scripts/$(config_site) \
-	./configure -prefix=$(prefix) --host=$(host) ${library_mode} --enable-pthread
+	&& PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig  CONFIG_SITE=$(LINPHONE_SRC_DIR)/scripts/$(config_site) \
+	./configure -prefix=$(prefix) --host=$(host) ${library_mode} --disable-tools 
 
 build-eXosip2: $(LINPHONE_SRC_DIR)/libeXosip2-$(libeXosip2_version)/Makefile
 	 cd $(LINPHONE_SRC_DIR)/libeXosip2-$(libeXosip2_version)  && make  && make install

@@ -134,7 +134,14 @@ case $target_os in
 		macosx_found=yes
 		LIBS="$LIBS -framework CoreFoundation -framework Cocoa"
 	;;
-  	*mingw*)
+  	*mingw32ce)
+		CFLAGS="$CFLAGS -DINET6 -DORTP_INET6 -D_WIN32_WINNT=0x0501  -D_WIN32_WCE  -DORTP_STATIC"
+		CXXFLAGS="$CXXFLAGS -DINET6 -DORTP_INET6 -D_WIN32_WINNT=0x0501 -DORTP_STATIC  -D_WIN32_WCE"
+dnl ORTP_STATIC to tell ortp not to export its variable with dllexport, as if we were building statically, or dynamically on linux
+                LIBS="$LIBS -lws2"
+		mingw_found=yes
+                ;;
+	*mingw*)
 		CFLAGS="$CFLAGS -DINET6 -DORTP_INET6 -D_WIN32_WINNT=0x0501 -DORTP_STATIC"
 		CXXFLAGS="$CXXFLAGS -DINET6 -DORTP_INET6 -D_WIN32_WINNT=0x0501 -DORTP_STATIC"
 dnl ORTP_STATIC to tell ortp not to export its variable with dllexport, as if we were building statically, or dynamically on linux

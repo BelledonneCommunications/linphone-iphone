@@ -99,14 +99,26 @@ case "$target_os" in
 		PTHREAD_LDFLAGS="-pthread"
 		;;
 	*mingw32ce)
-		CFLAGS="$CFLAGS -D_WIN32_WCE"
-		LIBS="$LIBS -lws2 -liphlpapi";;
+		CFLAGS="$CFLAGS -D_WIN32_WCE -D_WIN32_WINNT=0x0501 -DORTP_STATIC"
+		LIBS="$LIBS -lws2 -liphlpapi"
+		build_tests=no
+		mingw_found=yes
+		;;
 	*mingw*)
 		CFLAGS="$CFLAGS -D_WIN32_WINNT=0x0501 -DORTP_STATIC"
 		LIBS="$LIBS -lws2_32 -liphlpapi -lwinmm"
 		build_tests=no
 		;;
 esac
+
+AC_CONFIG_COMMANDS([libtool-hacking],[
+if test "$mingw_found" = "yes" ; then
+        echo "Hacking libtool to work with mingw..."
+        sed -e 's/\*\" \$a_deplib \"\*/\*/' < ./libtool > libtool.tmp
+        cp -f ./libtool.tmp ./libtool
+        rm -f ./libtool.tmp
+fi
+],[mingw_found=$mingw_found])
 
 dnl Checks for programs.
 AC_PROG_CC
