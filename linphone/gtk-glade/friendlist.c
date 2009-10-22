@@ -571,3 +571,9 @@ gboolean linphone_gtk_contact_list_button_pressed(GtkWidget *widget, GdkEventBut
 	return FALSE;
 }
 
+void linphone_gtk_buddy_info_updated(LinphoneCore *lc, LinphoneFriend *lf){
+	/*refresh the entire list*/
+	linphone_gtk_show_friends();
+}
+
+

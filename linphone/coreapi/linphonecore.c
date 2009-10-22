@@ -1040,7 +1040,9 @@ static void assign_buddy_info(LinphoneCore *lc, BuddyInfo *info){
 	LinphoneFriend *lf=linphone_core_get_friend_by_uri(lc,info->sip_uri);
 	if (lf!=NULL){
 		lf->info=info;
-		ms_message("%s has a BuddyInfo assigned.",info->sip_uri);
+		ms_message("%s has a BuddyInfo assigned with image %p",info->sip_uri, info->image_data);
+		if (lc->vtable.buddy_info_updated)
+			lc->vtable.buddy_info_updated(lc,lf);
 	}else{
 		ms_warning("Could not any friend with uri %s",info->sip_uri);
 	}
@@ -1076,16 +1078,14 @@ static void linphone_core_grab_buddy_infos(LinphoneCore *lc, LinphoneProxyConfig
 		if (lf->info==NULL){
 			char *url=linphone_friend_get_url(lf);
 			if (linphone_core_lookup_known_proxy(lc,url)==cfg){
-				char *name=linphone_friend_get_name(lf);
-				if (name!=NULL && strlen(name)>0){
+				if (lf->url->url->username!=NULL && lf->url->url->username[0]!='0'){
 					BuddyLookupRequest *req;
 					req=sip_setup_context_create_buddy_lookup_request(ctx);
-					buddy_lookup_request_set_key(req,name);
+					buddy_lookup_request_set_key(req,lf->url->url->username);
 					buddy_lookup_request_set_max_results(req,1);
 					sip_setup_context_buddy_lookup_submit(ctx,req);
 					lc->bl_reqs=ms_list_append(lc->bl_reqs,req);
 				}
-				ms_free(name);
 			}
 			ms_free(url);
 		}

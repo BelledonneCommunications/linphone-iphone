@@ -70,7 +70,8 @@ static LinphoneCoreVTable vtable={
 	.call_log_updated=linphone_gtk_call_log_updated,
 	.text_received=linphone_gtk_text_received,
 	.general_state=linphone_gtk_general_state,
-	.refer_received=linphone_gtk_refer_received
+	.refer_received=linphone_gtk_refer_received,
+	.buddy_info_updated=linphone_gtk_buddy_info_updated
 };
 
 static gboolean verbose=0;

@@ -403,6 +403,7 @@ typedef void (*TextMessageReceived)(struct _LinphoneCore *lc, LinphoneChatRoom *
 typedef void (*GeneralStateChange)(struct _LinphoneCore *lc, LinphoneGeneralState *gstate);
 typedef void (*DtmfReceived)(struct _LinphoneCore* lc, int dtmf);
 typedef void (*ReferReceived)(struct _LinphoneCore *lc, const char *refer_to);
+typedef void (*BuddyInfoUpdated)(struct _LinphoneCore *lc, LinphoneFriend *lf);
 
 typedef struct _LinphoneVTable
 {
@@ -426,6 +427,7 @@ typedef struct _LinphoneVTable
 	GeneralStateChange general_state;
 	DtmfReceived dtmf_received;
 	ReferReceived refer_received;
+	BuddyInfoUpdated buddy_info_updated;
 } LinphoneCoreVTable;
 
 typedef struct _LCCallbackObj
