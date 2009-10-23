@@ -1,3 +1,25 @@
+############################################################################
+# builder-generic.mk 
+# Copyright (C) 2009  Belledonne Communications,Grenoble France
+#
+############################################################################
+ #
+ # This program is free software; you can redistribute it and/or
+ # modify it under the terms of the GNU General Public License
+ # as published by the Free Software Foundation; either version 2
+ # of the License, or (at your option) any later version.
+ #
+ # This program is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with this program; if not, write to the Free Software
+ # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ #
+############################################################################
+ 
 host?=armv6-apple-darwin
 config_site?=iphone-config.site
 library_mode?= --disable-shared 
@@ -55,11 +77,15 @@ build-liblinphone:	$(LINPHONE_SRC_DIR)/Makefile
 clean-makefile-liblinphone:   
 	 cd $(LINPHONE_SRC_DIR) && rm Makefile && rm oRTP/Makefile && rm mediastreamer2/Makefile	 
 	 
+clean-liblinphone: 
+	 cd  $(LINPHONE_SRC_DIR) && make clean
 #osip2
 
 get_osip2_svn: 
 	 cd $(LINPHONE_SRC_DIR)/ \
-	&& svn co svn://svn.sv.gnu.org/osip/trunk/osip libosip2-$(libosip2_version)
+	&& svn co -r ${libosip2_version} svn://svn.sv.gnu.org/osip/trunk/osip libosip2-$(libosip2_version) \
+	&& cd  libosip2-$(libosip2_version) \
+	&& patch -p0 < $(LINPHONE_SRC_DIR)/patches/libosip2-wince.patch
 get_osip2_src: 
 	 cd $(LINPHONE_SRC_DIR)/ \
 	&& rm -f libosip2-$(libosip2_version).tar.gz \
@@ -93,7 +119,9 @@ clean-makefile-osip2:
 
 get_eXosip2_svn: 
 	 cd $(LINPHONE_SRC_DIR)/ \
-	&& svn co svn://svn.sv.gnu.org/exosip/trunk/exosip libeXosip2-$(libeXosip2_version)
+	&& svn co -r ${libeXosip2_version} svn://svn.sv.gnu.org/exosip/trunk/exosip libeXosip2-$(libeXosip2_version)\
+	&& cd  libeXosip2-$(libeXosip2_version) \
+	&& patch -p0 < $(LINPHONE_SRC_DIR)/patches/libeXosip2-wince.patch
 		
 get_eXosip2_src:
 	 cd $(LINPHONE_SRC_DIR)/ \

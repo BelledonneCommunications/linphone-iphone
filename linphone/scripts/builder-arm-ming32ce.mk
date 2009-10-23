@@ -1,11 +1,33 @@
+############################################################################
+#  builder-arm-mingw32ce.mk
+#  Copyright (C) 2009  Belledonne Communications,Grenoble France
+#
+############################################################################
+ #
+ # This program is free software; you can redistribute it and/or
+ # modify it under the terms of the GNU General Public License
+ # as published by the Free Software Foundation; either version 2
+ # of the License, or (at your option) any later version.
+ #
+ # This program is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with this program; if not, write to the Free Software
+ # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ #
+############################################################################
 host:=armv4-mingw32ce
-config_site:=cegcc-config.site
-library_mode:=""
-libosip2_version:=svn
-libeXosip2_version:=svn
+config_site:=mingw32ce-config.site
+library_mode:= --disable-shared --enable-static
+libosip2_version:=797
+libeXosip2_version:=1047
 linphone_configure_controls?= 	--disable-video \
 								--with-readline=none  \
 								--enable-gtk_ui=no \
+								--enable-console_ui=no \
 								--enable-ssl-hmac=no \
 								SPEEX_CFLAGS="-I$(prefix)/include" \
         						SPEEX_LIBS="-L$(prefix)/lib -lspeex " 

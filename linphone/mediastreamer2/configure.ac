@@ -138,9 +138,10 @@ case $target_os in
 		CFLAGS="$CFLAGS -DINET6 -DORTP_INET6 -D_WIN32_WINNT=0x0501  -D_WIN32_WCE  -DORTP_STATIC"
 		CXXFLAGS="$CXXFLAGS -DINET6 -DORTP_INET6 -D_WIN32_WINNT=0x0501 -DORTP_STATIC  -D_WIN32_WCE"
 dnl ORTP_STATIC to tell ortp not to export its variable with dllexport, as if we were building statically, or dynamically on linux
-                LIBS="$LIBS -lws2"
+        LIBS="$LIBS -lws2"
 		mingw_found=yes
-                ;;
+		build_tests=no
+    ;;
 	*mingw*)
 		CFLAGS="$CFLAGS -DINET6 -DORTP_INET6 -D_WIN32_WINNT=0x0501 -DORTP_STATIC"
 		CXXFLAGS="$CXXFLAGS -DINET6 -DORTP_INET6 -D_WIN32_WINNT=0x0501 -DORTP_STATIC"
@@ -157,6 +158,8 @@ dnl ORTP_STATIC to tell ortp not to export its variable with dllexport, as if we
 esac
 
 AM_CONDITIONAL(BUILD_MACOSX, test x$macosx_found = xyes)
+
+AM_CONDITIONAL(BUILD_TESTS,test x$build_tests != xno)
 
 AC_CONFIG_COMMANDS([libtool-hacking],[
 if test "$mingw_found" = "yes" ; then

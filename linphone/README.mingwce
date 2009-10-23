@@ -1,6 +1,25 @@
-install arm-mingw32ce from 0.55 from http://cegcc.sourceforge.net/
+install arm-mingw32ce 0.55 from  from http://cegcc.sourceforge.net/
+
+Modify the file errno.h found in
+"/mingw/opt/mingw32ce/arm-wince-mingw32ce/include/errno.h"
+
+Remove lines 11-14:
+
+#ifdef __COREDLL__
+# include_next <errno.h>
+#else /* __COREDLL__ */
+
+and lines 106-107:
+
+#endif /* Not __COREDLL__ */
 
 
-for ortp:
-cd oRTP
-./configure --host=arm-mingw32ce --enable-strict=no --enable-ipv6=no
+
+get dependencies:
+	cd scripts
+	make -f builder-arm-ming32ce.mk get_dependencies
+
+build:
+from scripts:
+	make -f builder-arm-ming32ce.mk build-linphone
+

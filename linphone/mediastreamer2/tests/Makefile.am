@@ -1,3 +1,5 @@
+if BUILD_TESTS
+
 noinst_PROGRAMS=echo ring mtudiscover bench
 
 if BUILD_VIDEO
@@ -31,3 +33,5 @@ INCLUDES=-I$(top_srcdir)/include/
 
 AM_CFLAGS=-I$(top_srcdir) $(ORTP_CFLAGS) $(STRICT_OPTIONS) $(VIDEO_CFLAGS)
 AM_LDFLAGS=-rdynamic
+
+endif 

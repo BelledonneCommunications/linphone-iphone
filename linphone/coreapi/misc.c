@@ -22,18 +22,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/mediastream.h"
 #include <stdlib.h>
 #include <stdio.h>
+#ifdef HAVE_SIGHANDLER_T
 #include <signal.h>
+#endif /*HAVE_SIGHANDLER_T*/
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <strings.h>
-
+#include <errno.h>
 
 #undef snprintf
 #include <ortp/stun.h>
 
-#ifndef WIN32
+
+#if !defined(WIN32)
 
 static char lock_name[80];
 static char lock_set=0;
@@ -41,7 +44,7 @@ static char lock_set=0;
 int set_lock_file()
 {
 	FILE *lockfile;
-	
+
 	snprintf(lock_name,80,"/tmp/linphone.%i",getuid());
 	lockfile=fopen(lock_name,"w");
 	if (lockfile==NULL)
@@ -60,7 +63,7 @@ int get_lock_file()
 {
 	int pid;
 	FILE *lockfile;
-	
+
 	snprintf(lock_name,80,"/tmp/linphone.%i",getuid());
 	lockfile=fopen(lock_name,"r");
 	if (lockfile==NULL)
@@ -104,7 +107,7 @@ void check_sound_device(LinphoneCore *lc)
 	char *snd_pcm_oss=NULL;
 	char *snd_mixer_oss=NULL;
 	char *snd_pcm=NULL;
-	
+
 	fd=open("/proc/modules",O_RDONLY);
 	if (fd>0){
 		/* read the entire /proc/modules file and check if sound conf seems correct */
@@ -144,7 +147,7 @@ void check_sound_device(LinphoneCore *lc)
 	}
 	/* now check general volume. Some user forget to rise it and then complain that linphone is
 	not working */
-	/* but some other users complain that linphone should not change levels... 
+	/* but some other users complain that linphone should not change levels...
 	if (lc->sound_conf.sndcard!=NULL){
 		a=snd_card_get_level(lc->sound_conf.sndcard,SND_CARD_LEVEL_GENERAL);
 		if (a<50){
@@ -164,12 +167,12 @@ void check_sound_device(LinphoneCore *lc)
 
 const char *payload_type_get_description(PayloadType *pt){
 	return _((const char *)pt->user_data);
-}	
+}
 
-void payload_type_set_enable(PayloadType *pt,int value) 
+void payload_type_set_enable(PayloadType *pt,int value)
 {
 	if ((value)!=0) payload_type_set_flag(pt,PAYLOAD_TYPE_ENABLED); \
-	else payload_type_unset_flag(pt,PAYLOAD_TYPE_ENABLED); 
+	else payload_type_unset_flag(pt,PAYLOAD_TYPE_ENABLED);
 }
 
 
@@ -266,7 +269,7 @@ bool_t linphone_core_check_payload_type_usability(LinphoneCore *lc, PayloadType 
 				/*let the video use all the bandwidth minus the maximum bandwidth used by audio */
 				if (min_video_bw>0)
 					pt->normal_bitrate=min_video_bw*1000;
-				else 
+				else
 					pt->normal_bitrate=1500000; /*around 1.5 Mbit/s*/
 				ret=TRUE;
 			}
@@ -274,7 +277,7 @@ bool_t linphone_core_check_payload_type_usability(LinphoneCore *lc, PayloadType 
 			break;
 	}
 	/*if (!ret) ms_warning("Payload %s is not usable with your internet connection.",pt->mime_type);*/
-	
+
 	return ret;
 }
 
@@ -284,7 +287,7 @@ static PayloadType * find_payload(RtpProfile *prof, PayloadType *pt /*from confi
 	PayloadType *it;
 	for(i=0;i<127;++i){
 		it=rtp_profile_get_payload(prof,i);
-		if (it!=NULL && strcasecmp(pt->mime_type,it->mime_type)==0 
+		if (it!=NULL && strcasecmp(pt->mime_type,it->mime_type)==0
 			&& (pt->clock_rate==it->clock_rate || pt->clock_rate<=0)
 			&& payload_type_get_user_data(it)==NULL ){
 			if ( (pt->recv_fmtp && it->recv_fmtp && strcasecmp(pt->recv_fmtp,it->recv_fmtp)==0) ||
@@ -316,7 +319,7 @@ static MSList *fix_codec_list(RtpProfile *prof, MSList *conflist)
 	MSList *elem;
 	MSList *newlist=NULL;
 	PayloadType *payload,*confpayload;
-	
+
 	for (elem=conflist;elem!=NULL;elem=ms_list_next(elem))
 	{
 		confpayload=(PayloadType*)elem->data;
@@ -350,12 +353,12 @@ void linphone_core_setup_local_rtp_profile(LinphoneCore *lc)
 	PayloadType *payload;
 	bool_t prepend;
 	lc->local_profile=rtp_profile_clone_full(&av_profile);
-	
-	/* first look at the list given by configuration file to see if 
+
+	/* first look at the list given by configuration file to see if
 	it is correct */
 	audiopt=fix_codec_list(lc->local_profile,lc->codecs_conf.audio_codecs);
 	videopt=fix_codec_list(lc->local_profile,lc->codecs_conf.video_codecs);
-	
+
 	/* now find and add payloads that are not listed in the configuration
 	codec list */
 	for (i=0;i<127;i++)
@@ -384,7 +387,7 @@ void linphone_core_setup_local_rtp_profile(LinphoneCore *lc)
 					case PAYLOAD_AUDIO_CONTINUOUS:
 					case PAYLOAD_AUDIO_PACKETIZED:
 							if (prepend)
-								audiopt=ms_list_prepend(audiopt,(void *)payload);	
+								audiopt=ms_list_prepend(audiopt,(void *)payload);
 							else
 								audiopt=ms_list_append(audiopt,(void *)payload);
 						break;
@@ -427,6 +430,7 @@ int from_2char_without_params(osip_from_t *from,char **str)
 }
 
 bool_t lp_spawn_command_line_sync(const char *command, char **result,int *command_ret){
+#if !defined(_WIN32_WCE)
 	FILE *f=popen(command,"r");
 	if (f!=NULL){
 		int err;
@@ -442,6 +446,7 @@ bool_t lp_spawn_command_line_sync(const char *command, char **result,int *comman
 		if (command_ret!=NULL) *command_ret=err;
 		return TRUE;
 	}
+#endif /*_WIN32_WCE*/
 	return FALSE;
 }
 
@@ -454,12 +459,12 @@ bool_t host_has_ipv6_network()
 	struct ifaddrs *ifp;
 	struct ifaddrs *ifpstart;
 	bool_t ipv6_present=FALSE;
-	
+
 	if (getifaddrs (&ifpstart) < 0)
 	{
 		return FALSE;
 	}
-	
+
 	for (ifp=ifpstart; ifp != NULL; ifp = ifp->ifa_next)
 	{
 		if (!ifp->ifa_addr)
@@ -467,7 +472,7 @@ bool_t host_has_ipv6_network()
 
 		switch (ifp->ifa_addr->sa_family) {
 		case AF_INET:
-		        
+
 			break;
 		case AF_INET6:
 		    ipv6_present=TRUE;
@@ -608,7 +613,7 @@ void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 		}
 		if (lc->vtable.display_status!=NULL)
 			lc->vtable.display_status(lc,_("Stun lookup in progress..."));
-		
+
 		/*create the two audio and video RTP sockets, and send STUN message to our stun server */
 		sock1=create_socket(linphone_core_get_audio_port(lc));
 		if (sock1<0) return;
