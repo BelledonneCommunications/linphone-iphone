@@ -1616,6 +1616,9 @@ void linphone_core_init_media_streams(LinphoneCore *lc){
 		audio_stream_set_echo_canceler_params(lc->audiostream,len,delay,framesize);
 	}
 	audio_stream_enable_automatic_gain_control(lc->audiostream,linphone_core_agc_enabled(lc));
+	if (lc->a_rtp)
+		rtp_session_set_transports(lc->audiostream->session,lc->a_rtp,lc->a_rtcp);
+
 #ifdef VIDEO_ENABLED
 	if (lc->video_conf.display || lc->video_conf.capture)
 		lc->videostream=video_stream_new(linphone_core_get_video_port(lc),linphone_core_ipv6_enabled(lc));
@@ -2582,6 +2585,11 @@ void linphone_core_stop_waiting(LinphoneCore *lc){
 	if (lc->wait_cb){
 		lc->wait_ctx=lc->wait_cb(lc,lc->wait_ctx,LinphoneWaitingFinished,NULL,0);
 	}
+}
+
+void linphone_core_set_audio_transports(LinphoneCore *lc, RtpTransport *rtp, RtpTransport *rtcp){
+	lc->a_rtp=rtp;
+	lc->a_rtcp=rtcp;
 }
 
 void net_config_uninit(LinphoneCore *lc)
