@@ -1266,10 +1266,7 @@ void rtp_session_release_sockets(RtpSession *session){
 	if (session->rtcp.socket>=0) close_socket (session->rtcp.socket);
 	session->rtp.socket=-1;
 	session->rtcp.socket=-1;
-	if (session->rtp.tr!=NULL)
-	  ortp_free(session->rtp.tr);
-	if (session->rtcp.tr!=NULL)
-	  ortp_free(session->rtcp.tr);
+	
 	session->rtp.tr = 0;
 	session->rtcp.tr = 0;
 
