@@ -28,6 +28,9 @@ extern MSFilterDesc ms_v4w_desc;
 //extern MSFilterDesc ms_h263_enc_desc;
 //extern MSFilterDesc ms_h263_dec_desc;
 extern MSFilterDesc ms_join_desc;
+extern MSFilterDesc ms_resample_desc;
+extern MSFilterDesc ms_ice_desc;
+extern MSFilterDesc ms_void_sink_desc;
 MSFilterDesc * ms_filter_descs[]={
 &ms_alaw_dec_desc,
 &ms_alaw_enc_desc,
@@ -57,6 +60,9 @@ MSFilterDesc * ms_filter_descs[]={
 //&ms_h263_enc_desc,
 //&ms_h263_dec_desc,
 &ms_join_desc,
+&ms_resample_desc,
+&ms_ice_desc,
+&ms_void_sink_desc,
 NULL
 };
 

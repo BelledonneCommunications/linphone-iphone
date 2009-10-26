@@ -98,7 +98,7 @@
 			/>
 			<DeploymentTool
 				ForceDirty="-1"
-				RemoteDirectory="%CSIDL_PROGRAM_FILES%\vbamsipua"
+				RemoteDirectory="%CSIDL_PROGRAM_FILES%\amsipua"
 				RegisterOutput="0"
 				AdditionalFiles=""
 			/>
@@ -181,7 +181,7 @@
 			/>
 			<DeploymentTool
 				ForceDirty="-1"
-				RemoteDirectory="%CSIDL_PROGRAM_FILES%\vbamsipua"
+				RemoteDirectory="%CSIDL_PROGRAM_FILES%\amsipua"
 				RegisterOutput="0"
 				AdditionalFiles=""
 			/>
@@ -350,7 +350,7 @@
 			/>
 			<DeploymentTool
 				ForceDirty="-1"
-				RemoteDirectory="\amsip"
+				RemoteDirectory="%CSIDL_PROGRAM_FILES%\amsipua"
 				RegisterOutput="0"
 				AdditionalFiles=""
 			/>
@@ -431,7 +431,7 @@
 			/>
 			<DeploymentTool
 				ForceDirty="-1"
-				RemoteDirectory="%CSIDL_PROGRAM_FILES%\vbamsipua"
+				RemoteDirectory="%CSIDL_PROGRAM_FILES%\amsipua"
 				RegisterOutput="0"
 				AdditionalFiles=""
 			/>
@@ -579,6 +579,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\msresample.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\msrtp.c"
 				>
 			</File>
@@ -608,6 +612,10 @@
 			</File>
 			<File
 				RelativePath="..\..\src\ulaw.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\void.c"
 				>
 			</File>
 			<File
