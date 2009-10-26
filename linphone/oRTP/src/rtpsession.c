@@ -213,13 +213,13 @@ mblk_t *rtp_getq_permissive(queue_t *q,uint32_t timestamp, int *rejected)
 void
 rtp_session_init (RtpSession * session, int mode)
 {
+	JBParameters jbp;
 	if (session == NULL) 
 	{
 	    ortp_debug("rtp_session_init: Invalid paramter (session=NULL)");
 	    return;
 	}
 	
-	JBParameters jbp;
 	memset (session, 0, sizeof (RtpSession));
 	session->mode = (RtpSessionMode) mode;
 	if ((mode == RTP_SESSION_RECVONLY) || (mode == RTP_SESSION_SENDRECV))
