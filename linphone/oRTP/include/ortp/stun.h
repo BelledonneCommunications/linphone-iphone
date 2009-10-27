@@ -94,7 +94,11 @@ extern "C"
 /* define some basic types */
 typedef unsigned char  UInt8;
 typedef unsigned short UInt16;
-typedef unsigned int   UInt32;
+#if __LP64__
+	typedef unsigned int   UInt32;
+#else
+	typedef unsigned long   UInt32;
+#endif
 #if	defined(WIN32) || defined(_WIN32_WCE)
 typedef unsigned __int64 UInt64;
 #else
