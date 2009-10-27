@@ -135,8 +135,8 @@ stunParseAtrAddress( char* body, unsigned int hdrLen,  StunAtrAddress4 *result )
    result->family = *body++;
    if (result->family == IPv4Family)
    {
-      UInt16 nport;
-      UInt32 naddr;
+      uint16_t nport;
+      uint32_t naddr;
       memcpy(&nport, body, 2); body+=2;
       result->ipv4.port = ntohs(nport);
 
@@ -324,17 +324,17 @@ turnParseAtrRequestedTransport( char* body, unsigned int hdrLen,  TurnAtrRequest
 #define htonq(n) n
 #define ntohq(n) n
 #else /* little endian */
-static inline UInt64
-htonq (UInt64 v)
+static inline uint64_t
+htonq (uint64_t v)
 {
-  return htonl ((UInt32) (v >> 32))
-    | (UInt64) htonl ((UInt32) v) << 32;
+  return htonl ((uint32_t) (v >> 32))
+    | (uint64_t) htonl ((uint32_t) v) << 32;
 }
-static inline UInt64
-ntohq (UInt64 v)
+static inline uint64_t
+ntohq (uint64_t v)
 {
-  return ntohl ((UInt32) (v >> 32))
-    | (UInt64) ntohl ((UInt32) v) << 32;
+  return ntohl ((uint32_t) (v >> 32))
+    | (uint64_t) ntohl ((uint32_t) v) << 32;
 }
 #endif /* little endian */
 
@@ -788,27 +788,27 @@ stunParseMessage( char* buf, unsigned int bufLen, StunMessage *msg)
 
 
 static char* 
-encode16(char* buf, UInt16 data)
+encode16(char* buf, uint16_t data)
 {
-   UInt16 ndata = htons(data);
-   memcpy(buf, &ndata, sizeof(UInt16));
-   return buf + sizeof(UInt16);
+   uint16_t ndata = htons(data);
+   memcpy(buf, &ndata, sizeof(uint16_t));
+   return buf + sizeof(uint16_t);
 }
 
 static char* 
-encode32(char* buf, UInt32 data)
+encode32(char* buf, uint32_t data)
 {
-   UInt32 ndata = htonl(data);
-   memcpy(buf, &ndata, sizeof(UInt32));
-   return buf + sizeof(UInt32);
+   uint32_t ndata = htonl(data);
+   memcpy(buf, &ndata, sizeof(uint32_t));
+   return buf + sizeof(uint32_t);
 }
 
 static char* 
-encode64(char* buf, UInt64 data)
+encode64(char* buf, uint64_t data)
 {
-   UInt64 ndata = htonq(data);
-   memcpy(buf, &ndata, sizeof(UInt64));
-   return buf + sizeof(UInt64);
+   uint64_t ndata = htonq(data);
+   memcpy(buf, &ndata, sizeof(uint64_t));
+   return buf + sizeof(uint64_t);
 }
 
 static char* 
@@ -820,7 +820,7 @@ encode(char* buf, const char* data, unsigned int length)
 
 
 static char* 
-encodeAtrAddress4(char* ptr, UInt16 type, const StunAtrAddress4 *atr)
+encodeAtrAddress4(char* ptr, uint16_t type, const StunAtrAddress4 *atr)
 {
    ptr = encode16(ptr, type);
    ptr = encode16(ptr, 8);
@@ -880,7 +880,7 @@ encodeAtrUnknown(char* ptr, const StunAtrUnknown *atr)
 }
 
 static char* 
-encodeAtrString(char* ptr, UInt16 type, const StunAtrString *atr)
+encodeAtrString(char* ptr, uint16_t type, const StunAtrString *atr)
 {
    int padding;
    int i;
@@ -913,7 +913,7 @@ encodeAtrIntegrity(char* ptr, const StunAtrIntegrity *atr)
 static char*
 encodeAtrFingerprint(char* ptr, const StunAtrFingerprint *atr)
 {
-	UInt32 val;
+	uint32_t val;
 	ptr = encode16(ptr, SA_FINGERPRINT);
 	ptr = encode16(ptr, 4);
 
@@ -970,7 +970,7 @@ encodeAtrPriority(char* ptr, const IceAtrPriority *atr)
 }
 
 static char* 
-encodeAtrIceControll(char* ptr, UInt16 type, const IceAtrIceControll *atr)
+encodeAtrIceControll(char* ptr, uint16_t type, const IceAtrIceControll *atr)
 {
    ptr = encode16(ptr, type);
    ptr = encode16(ptr, 8);
@@ -1115,7 +1115,7 @@ stunEncodeMessage( const StunMessage *msg,
       StunAtrIntegrity integrity;
       //ortp_debug("stun: HMAC with password: %s\n", password->value );
 
-      encode16(lengthp, (UInt16)(ptr - buf - sizeof(StunMsgHdr)+24));
+      encode16(lengthp, (uint16_t)(ptr - buf - sizeof(StunMsgHdr)+24));
       stunCalculateIntegrity_longterm(integrity.hash, buf, (int)(ptr-buf) ,
         msg->username.value, msg->realmName.value, password->value);
       ptr = encodeAtrIntegrity(ptr, &integrity);
@@ -1127,7 +1127,7 @@ stunEncodeMessage( const StunMessage *msg,
       StunAtrIntegrity integrity;
       //ortp_debug("stun: HMAC with password: %s\n", password->value );
 
-      encode16(lengthp, (UInt16)(ptr - buf - sizeof(StunMsgHdr)+24));
+      encode16(lengthp, (uint16_t)(ptr - buf - sizeof(StunMsgHdr)+24));
       stunCalculateIntegrity_shortterm(integrity.hash, buf, (int)(ptr-buf) ,
         password->value);
       ptr = encodeAtrIntegrity(ptr, &integrity);
@@ -1138,11 +1138,11 @@ stunEncodeMessage( const StunMessage *msg,
       StunAtrFingerprint fingerprint;
       //ortp_debug("stun: HMAC with password: %s\n", password->value );
 
-      encode16(lengthp, (UInt16)(ptr - buf - sizeof(StunMsgHdr)+8));
+      encode16(lengthp, (uint16_t)(ptr - buf - sizeof(StunMsgHdr)+8));
       fingerprint.fingerprint = stunCalculateFingerprint(buf, (int)(ptr-buf));
       ptr = encodeAtrFingerprint(ptr, &fingerprint);
    }
-   encode16(lengthp, (UInt16)(ptr - buf - sizeof(StunMsgHdr)));
+   encode16(lengthp, (uint16_t)(ptr - buf - sizeof(StunMsgHdr)));
    return (int)(ptr - buf);
 }
 
@@ -1154,7 +1154,7 @@ stunRand(void)
    static bool_t init=FALSE;
    if ( !init )
    { 
-      UInt64 tick;
+      uint64_t tick;
       int seed;
       init = TRUE;
 
@@ -1303,14 +1303,14 @@ stunCalculateIntegrity_shortterm(char* hmac, const char* input, int length, cons
 
 #endif
 
-UInt32
+uint32_t
 stunCalculateFingerprint(const char* input, int length)
 {
 	/*-
 	2  *  COPYRIGHT (C) 1986 Gary S. Brown.  You may use this program, or
 	3  *  code or tables extracted from it, as desired without restriction.
 	4  */
-	static UInt32 crc32_tab[] = {
+	static uint32_t crc32_tab[] = {
 		0x00000000, 0x77073096, 0xee0e612c, 0x990951ba, 0x076dc419, 0x706af48f,
 		0xe963a535, 0x9e6495a3, 0x0edb8832, 0x79dcb8a4, 0xe0d5e91e, 0x97d2d988,
 		0x09b64c2b, 0x7eb17cbd, 0xe7b82d07, 0x90bf1d91, 0x1db71064, 0x6ab020f2,
@@ -1364,10 +1364,10 @@ stunCalculateFingerprint(const char* input, int length)
 	return crc ^ ~0U;
 }
 
-UInt64
+uint64_t
 stunGetSystemTimeSecs(void)
 {
-   UInt64 time=0;
+   uint64_t time=0;
 #if	defined(_WIN32) || defined(_WIN32_WCE)
    SYSTEMTIME t;
    /*  CJ TODO - this probably has bug on wrap around every 24 hours */
@@ -1386,9 +1386,9 @@ stunGetSystemTimeSecs(void)
 /* returns TRUE if it scucceeded */
 bool_t 
 stunParseHostName( const char* peerName,
-                   UInt32* ip,
-                   UInt16* portVal,
-                   UInt16 defaultPort )
+                   uint32_t* ip,
+                   uint16_t* portVal,
+                   uint16_t defaultPort )
 {
    struct in_addr sin_addr;
     
@@ -1562,7 +1562,7 @@ stunServerProcessMsg( char* buf,
    StunMessage req;
    StunAddress4 mapped;
    StunAddress4 respondTo;
-   UInt32 flags;
+   uint32_t flags;
    bool_t ok;
    /* set up information for default response */
 	
@@ -1691,7 +1691,7 @@ stunServerProcessMsg( char* buf,
 		
          if (1) /* do xorMapped address or not */
          {
-            UInt32 cookie = 0x2112A442;
+            uint32_t cookie = 0x2112A442;
             resp->hasXorMappedAddress = TRUE;
             resp->xorMappedAddress.ipv4.port = mapped.port^(cookie>>16);
             resp->xorMappedAddress.ipv4.addr = mapped.addr^cookie;
@@ -1738,8 +1738,8 @@ stunServerProcessMsg( char* buf,
 
          if (req.hasUsername && (req.username.sizeValue > 64 ) )
          {
-            UInt32 source;
-            /* assert( sizeof(int) == sizeof(UInt32) ); */
+            uint32_t source;
+            /* assert( sizeof(int) == sizeof(uint32_t) ); */
 					
             sscanf(req.username.value, "%x", &source);
             resp->hasReflectedFrom = TRUE;
@@ -1866,7 +1866,7 @@ stunStopServer(StunServerInfo *info)
 }
 
 int 
-stunFindLocalInterfaces(UInt32* addresses,int maxRet)
+stunFindLocalInterfaces(uint32_t* addresses,int maxRet)
 {
 #if defined(WIN32) || defined(_WIN32_WCE) || defined(__sparc__)
    return 0;
@@ -1896,7 +1896,7 @@ stunFindLocalInterfaces(UInt32* addresses,int maxRet)
       struct sockaddr a;
       struct sockaddr_in* addr;
    
-      UInt32 ai;
+      uint32_t ai;
       int si = sizeof(ifr->ifr_name) + sizeof(struct sockaddr);
       tl -= si;
       ptr += si;
@@ -2062,7 +2062,7 @@ stunTest( StunAddress4 *dest, int testNum, StunAddress4* sAddr , StunAddress4 *s
    /* assert( dest.port != 0 ); */
 	
    int port = randomPort();
-   UInt32 interfaceIp=0;
+   uint32_t interfaceIp=0;
    Socket myFd;
    StunAtrString username;
    StunAtrString password;
@@ -2147,7 +2147,7 @@ stunNatType( StunAddress4 *dest,
 { 
    /* assert( dest.addr != 0 ); */
    /* assert( dest.port != 0 ); */
-   UInt32 interfaceIp=0;
+   uint32_t interfaceIp=0;
    Socket myFd1;
    Socket myFd2;
 
@@ -2166,8 +2166,8 @@ stunNatType( StunAddress4 *dest,
    StunAtrString username;
    StunAtrString password;
    int count=0;
-   UInt64 second_started;
-   UInt64 second_elapsed;
+   uint64_t second_started;
+   uint64_t second_elapsed;
    Socket s;
 
    if ( hairpin ) 
@@ -2537,8 +2537,8 @@ stunOpenSocket( StunAddress4 *dest, StunAddress4* mapAddr,
 
    if (resp.hasXorMappedAddress==TRUE)
    {
-      UInt32 cookie = 0x2112A442;
-      UInt16 cookie16 = 0x2112A442 >> 16;
+      uint32_t cookie = 0x2112A442;
+      uint16_t cookie16 = 0x2112A442 >> 16;
       mappedAddr.port = resp.xorMappedAddress.ipv4.port^cookie16;
       mappedAddr.addr = resp.xorMappedAddress.ipv4.addr^cookie;
    }
@@ -2647,8 +2647,8 @@ stunOpenSocketPair(StunAddress4 *dest,
 	  
       if (resp.hasXorMappedAddress==TRUE)
       {
-        UInt32 cookie = 0x2112A442;
-        UInt16 cookie16 = 0x2112A442 >> 16;
+        uint32_t cookie = 0x2112A442;
+        uint16_t cookie16 = 0x2112A442 >> 16;
         mappedAddr[i].port = resp.xorMappedAddress.ipv4.port^cookie16;
         mappedAddr[i].addr = resp.xorMappedAddress.ipv4.addr^cookie;
       }
@@ -2839,8 +2839,8 @@ turnAllocateSocketPair(StunAddress4 *dest,
       {
         if (resp.hasXorRelayedAddress==TRUE)
         {
-          UInt32 cookie = 0x2112A442;
-          UInt16 cookie16 = 0x2112A442 >> 16;
+          uint32_t cookie = 0x2112A442;
+          uint16_t cookie16 = 0x2112A442 >> 16;
           mappedAddr[i].port = resp.xorRelayedAddress.ipv4.port^cookie16;
           mappedAddr[i].addr = resp.xorRelayedAddress.ipv4.addr^cookie;
         }

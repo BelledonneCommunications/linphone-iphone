@@ -76,6 +76,9 @@
 #include <ortp/port.h>
 #include <ortp/stun_udp.h>
 
+#ifdef __APPLE__
+   #include "TargetConditionals.h"
+#endif
 
 #ifdef __cplusplus
 extern "C"
@@ -92,17 +95,16 @@ extern "C"
 #define STUN_PORT 3478
 
 /* define some basic types */
-typedef unsigned char  UInt8;
-typedef unsigned short UInt16;
-#if __LP64__
-	typedef unsigned int   UInt32;
-#else
-	typedef unsigned long   UInt32;
-#endif
+#if 0
+typedef unsigned char  uint8_t;
+typedef unsigned short uint16_t;
+typedef unsigned int   uint32_t;
+
 #if	defined(WIN32) || defined(_WIN32_WCE)
-typedef unsigned __int64 UInt64;
+typedef unsigned __int64 uint64_t;
 #else
-typedef unsigned long long UInt64;
+typedef unsigned long long uint64_t;
+#endif
 #endif
 typedef struct { unsigned char octet[12]; }  UInt96;
 
@@ -184,102 +186,102 @@ typedef struct { unsigned char octet[12]; }  UInt96;
 
 typedef struct 
 {
-      UInt16 msgType;
-      UInt16 msgLength;
-      UInt32 magic_cookie;
+      uint16_t msgType;
+      uint16_t msgLength;
+      uint32_t magic_cookie;
       UInt96 tr_id;
 } StunMsgHdr;
 
 
 typedef struct
 {
-      UInt16 type;
-      UInt16 length;
+      uint16_t type;
+      uint16_t length;
 } StunAtrHdr;
 
 typedef struct
 {
-      UInt16 port;
-      UInt32 addr;
+      uint16_t port;
+      uint32_t addr;
 } StunAddress4;
 
 typedef struct
 {
-      UInt8 pad;
-      UInt8 family;
+      uint8_t pad;
+      uint8_t family;
       StunAddress4 ipv4;
 } StunAtrAddress4;
 
 typedef struct
 {
-      UInt32 value;
+      uint32_t value;
 } StunAtrChangeRequest;
 
 typedef struct
 {
-      UInt16 pad; /* all 0 */
-      UInt8 errorClass;
-      UInt8 number;
+      uint16_t pad; /* all 0 */
+      uint8_t errorClass;
+      uint8_t number;
       char reason[STUN_MAX_STRING];
-      UInt16 sizeReason;
+      uint16_t sizeReason;
 } StunAtrError;
 
 typedef struct
 {
-      UInt16 attrType[STUN_MAX_UNKNOWN_ATTRIBUTES];
-      UInt16 numAttributes;
+      uint16_t attrType[STUN_MAX_UNKNOWN_ATTRIBUTES];
+      uint16_t numAttributes;
 } StunAtrUnknown;
 
 typedef struct
 {
-      UInt16 channelNumber;
-      UInt16 rffu; /* Reserved For Future Use */
+      uint16_t channelNumber;
+      uint16_t rffu; /* Reserved For Future Use */
 } TurnAtrChannelNumber;
 
 typedef struct
 {
-      UInt32 lifetime;
+      uint32_t lifetime;
 } TurnAtrLifetime;
 
 typedef struct
 {
       char value[1500];      
-      UInt16 sizeValue;
+      uint16_t sizeValue;
 } TurnAtrData;
 
 typedef struct
 {
-      UInt8 proto;
-      UInt8 pad1;
-      UInt8 pad2;
-      UInt8 pad3;
+      uint8_t proto;
+      uint8_t pad1;
+      uint8_t pad2;
+      uint8_t pad3;
 } TurnAtrRequestedTransport;
 
 typedef struct
 {
-      UInt64 value;
+      uint64_t value;
 } TurnAtrReservationToken;
 
 typedef struct
 {
-      UInt32 fingerprint;
+      uint32_t fingerprint;
 } StunAtrFingerprint;
 
 
 typedef struct
 {
       char value[STUN_MAX_STRING];      
-      UInt16 sizeValue;
+      uint16_t sizeValue;
 } StunAtrString;
 
 typedef struct
 {
-      UInt32 priority;
+      uint32_t priority;
 } IceAtrPriority;
 
 typedef struct
 {
-      UInt64 value;
+      uint64_t value;
 } IceAtrIceControll;
 
 typedef struct
@@ -299,8 +301,8 @@ typedef enum
 
 typedef struct
 {
-      UInt16 attrType[STUN_MAX_UNKNOWN_ATTRIBUTES];
-      UInt16 numAttributes;
+      uint16_t attrType[STUN_MAX_UNKNOWN_ATTRIBUTES];
+      uint16_t numAttributes;
 } TurnAtrUnknown;
 
 typedef struct
@@ -436,7 +438,7 @@ stunCalculateIntegrity_longterm(char* hmac, const char* input, int length,
                      const char *username, const char *realm, const char *password);
 void
 stunCalculateIntegrity_shortterm(char* hmac, const char* input, int length, const char* key);
-UInt32
+uint32_t
 stunCalculateFingerprint(const char* input, int length);
 
 bool_t
@@ -469,7 +471,7 @@ stunCreatePassword(const StunAtrString *username, StunAtrString* password);
 int 
 stunRand(void);
 
-UInt64
+uint64_t
 stunGetSystemTimeSecs(void);
 
 /* find the IP address of a the specified stun server - return false is fails parse  */
@@ -478,9 +480,9 @@ stunParseServerName( const char* serverName, StunAddress4 *stunServerAddr);
 
 bool_t 
 stunParseHostName( const char* peerName,
-                   UInt32 *ip,
-                   UInt16 *portVal,
-                   UInt16 defaultPort );
+                   uint32_t *ip,
+                   uint16_t *portVal,
+                   uint16_t defaultPort );
 
 /* return true if all is OK 
    Create a media relay and do the STERN thing if startMediaPort is non-zero */
@@ -495,7 +497,7 @@ stunStopServer(StunServerInfo *info);
 
 /* returns number of address found - take array or addres */
 int 
-stunFindLocalInterfaces(UInt32* addresses, int maxSize );
+stunFindLocalInterfaces(uint32_t* addresses, int maxSize );
 
 int 
 stunTest( StunAddress4 *dest, int testNum, StunAddress4* srcAddr, StunAddress4 *sMappedAddr, StunAddress4* sChangedAddr);
