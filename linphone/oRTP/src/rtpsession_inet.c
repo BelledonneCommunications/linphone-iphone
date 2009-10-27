@@ -925,11 +925,11 @@ rtp_session_rtp_recv (RtpSession * session, uint32_t user_ts)
 		else
 		{
 		 	int errnum=getSocketErrorCode();
-
-			if (error == 0)
-			{
-				ortp_warning
-					("rtp_recv: strange... recv() returned zero.");
+			if (error == 0){
+				/*0 can be returned by RtpTransport functions in case of EWOULDBLOCK*/
+				/*we ignore it*/
+				/*ortp_warning
+					("rtp_recv: strange... recv() returned zero.");*/
 			}
 			else if (!is_would_block_error(errnum))
 			{
