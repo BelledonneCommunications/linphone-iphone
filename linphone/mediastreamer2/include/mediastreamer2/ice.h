@@ -76,7 +76,7 @@ struct IceCheckList {
     char rem_ice_pwd[256];
 
     int rem_controlling;
-    UInt64 tiebreak_value;
+    uint64_t tiebreak_value;
 
 #define ICE_CL_RUNNING 0
 #define ICE_CL_COMPLETED 1

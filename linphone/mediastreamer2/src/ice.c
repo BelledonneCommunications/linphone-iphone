@@ -382,12 +382,12 @@ static int ice_sound_send_stun_request(RtpSession *session, struct IceCheckList 
 		snprintf(username.value, sizeof(username.value), "%s:%s",
 			checklist->rem_ice_ufrag,
 			checklist->loc_ice_ufrag);
-		username.sizeValue = (UInt16)strlen(username.value);
+		username.sizeValue = (uint16_t)strlen(username.value);
 
 
 		snprintf(password.value, sizeof(password.value), "%s",
 			checklist->rem_ice_pwd);
-		password.sizeValue = (UInt16)strlen(password.value);
+		password.sizeValue = (uint16_t)strlen(password.value);
 
 
 		res = stunParseServerName(cand_pair->remote_candidate.conn_addr,
@@ -616,9 +616,9 @@ static int ice_process_stun_message(RtpSession *session, struct IceCheckList *ch
 			/* remove length of fingerprint if present */
 			if (msg.hasFingerprint==TRUE)
 			{
-				char *lenpos = (char *)mp->b_rptr + sizeof(UInt16);
-				UInt16 newlen = htons(msg.msgHdr.msgLength-8); /* remove fingerprint size */
-				memcpy(lenpos, &newlen, sizeof(UInt16));
+				char *lenpos = (char *)mp->b_rptr + sizeof(uint16_t);
+				uint16_t newlen = htons(msg.msgHdr.msgLength-8); /* remove fingerprint size */
+				memcpy(lenpos, &newlen, sizeof(uint16_t));
 				stunCalculateIntegrity_shortterm(hmac, (char*)mp->b_rptr, mp->b_wptr-mp->b_rptr-24-8, checklist->loc_ice_pwd);
 			}
 			else
@@ -636,9 +636,9 @@ static int ice_process_stun_message(RtpSession *session, struct IceCheckList *ch
 			}
 			if (msg.hasFingerprint==TRUE)
 			{
-				char *lenpos = (char *)mp->b_rptr + sizeof(UInt16);
-				UInt16 newlen = htons(msg.msgHdr.msgLength); /* add back fingerprint size */
-				memcpy(lenpos, &newlen, sizeof(UInt16));
+				char *lenpos = (char *)mp->b_rptr + sizeof(uint16_t);
+				uint16_t newlen = htons(msg.msgHdr.msgLength); /* add back fingerprint size */
+				memcpy(lenpos, &newlen, sizeof(uint16_t));
 			}
 		}
 
@@ -885,7 +885,7 @@ static int ice_process_stun_message(RtpSession *session, struct IceCheckList *ch
 		}
 
 		{
-			UInt32 cookie = 0x2112A442;
+			uint32_t cookie = 0x2112A442;
 			resp.hasXorMappedAddress = TRUE;
 			resp.xorMappedAddress.ipv4.port = remote_addr.port^(cookie>>16);
 			resp.xorMappedAddress.ipv4.addr = remote_addr.addr^cookie;
@@ -938,8 +938,8 @@ static int ice_process_stun_message(RtpSession *session, struct IceCheckList *ch
 		}
 
 		{
-			UInt32 cookie = 0x2112A442;
-			UInt16 cookie16 = 0x2112A442 >> 16;
+			uint32_t cookie = 0x2112A442;
+			uint16_t cookie16 = 0x2112A442 >> 16;
 			mappedAddr.port = resp.xorMappedAddress.ipv4.port^cookie16;
 			mappedAddr.addr = resp.xorMappedAddress.ipv4.addr^cookie;
 		}
@@ -1332,7 +1332,11 @@ static void ice_process(MSFilter * f)
 		}
 	}
 
+#if !defined(_WIN32_WCE)
 	ice_sound_send_stun_request(d->session, d->check_lists, f->ticker->time);
+#else
+	ice_sound_send_stun_request(d->session, d->check_lists, f->ticker->time));
+#endif
 }
 
 static MSFilterMethod ice_methods[] = {
