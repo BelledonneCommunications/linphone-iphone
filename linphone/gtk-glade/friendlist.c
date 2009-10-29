@@ -352,6 +352,11 @@ void linphone_gtk_show_friends(void){
 
 void linphone_gtk_add_contact(void){
 	GtkWidget *w=linphone_gtk_create_window("contact");
+	int presence_enabled=linphone_gtk_get_ui_config_int("use_subscribe_notify",1);
+	
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"show_presence")),presence_enabled);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"allow_presence")),
+					presence_enabled);
 	gtk_widget_show(w);
 }
 
@@ -430,10 +435,16 @@ void linphone_gtk_contact_ok(GtkWidget *button){
 	GtkWidget *w=gtk_widget_get_toplevel(button);
 	LinphoneFriend *lf=(LinphoneFriend*)g_object_get_data(G_OBJECT(w),"friend_ref");
 	char *fixed_uri=NULL;
-	gboolean show_presence,allow_presence;
+	gboolean show_presence=FALSE,allow_presence=FALSE;
 	const gchar *name,*uri;
 	if (lf==NULL){
 		lf=linphone_friend_new();
+		if (linphone_gtk_get_ui_config_int("use_subscribe_notify",1)==1){
+			show_presence=FALSE;
+			allow_presence=FALSE;
+		}
+		linphone_friend_set_inc_subscribe_policy(lf,allow_presence ? LinphoneSPAccept : LinphoneSPDeny);
+		linphone_friend_send_subscribe(lf,show_presence);
 	}
 	name=gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(w,"name")));
 	uri=gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(w,"sip_address")));
