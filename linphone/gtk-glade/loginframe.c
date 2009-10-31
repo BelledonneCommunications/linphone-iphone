@@ -62,8 +62,8 @@ void linphone_gtk_show_login_frame(LinphoneProxyConfig *cfg){
 	int nettype;
 
 
-	if (linphone_core_get_download_bandwidth(lc)==0 &&
-		linphone_core_get_upload_bandwidth(lc)==0)
+	if (linphone_core_get_download_bandwidth(lc)==512 &&
+		linphone_core_get_upload_bandwidth(lc)==512)
 		nettype=NetworkKindOpticalFiber;
 	else nettype=NetworkKindAdsl;
 	gtk_combo_box_set_active(GTK_COMBO_BOX(linphone_gtk_get_widget(mw,"login_internet_kind")),nettype);
