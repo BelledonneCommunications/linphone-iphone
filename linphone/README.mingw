@@ -16,6 +16,7 @@ Download from mingw download page (http://www.mingw.org, click download):
 	- MSYS libtool>=2.2.7 
 	- MSYS libcrypt*-bin
 	- MSYS perl
+	- MSYS gettext-*bin* and gettext-*dev*
 	===> Uncompress all these packages in /
 	- from gcc-4.4 directory
 		Download: 
@@ -25,15 +26,12 @@ Download from mingw download page (http://www.mingw.org, click download):
 			- gcc-c++*-dll
 			- gmp*-dll
 			- mpfr*-dll
-	- w32api-dev
+	- w32api*-dev
 	- mingwrt-dev and mingwrt-dll (mingw run time)
 	- gnu binutils 2.19
 	===> Uncompress all these packages in /mingw
 
 note: lzma files can be uncompressed using tar --lzma -xvf <file>
-
-* Move out libstdc++.la in order to workaround a gcc-4.4.0 bug (or packaging bug):
-	mv /mingw/lib/gcc/mingw32/4.4.0/libstdc++.la /mingw/lib/gcc/mingw32/4.4.0/libstdc++.la.bak
 
 * Download intltool (quicklink: 
 	http://ftp.acc.umu.se/pub/GNOME/binaries/win32/intltool/0.40/intltool_0.40.4-1_win32.zip
@@ -52,8 +50,12 @@ note: lzma files can be uncompressed using tar --lzma -xvf <file>
     http://download.savannah.gnu.org/releases-noredirect/linphone/misc/)
     uncompress in /
 * Download and install Inno Setup Compiler in its default path (required only if you run 'make setup.exe').
-* HACK: move out /lib/libintl.la : it confuses libtool
-	mv /lib/libintl.la /lib/libintl.la.bak
+
+* HACKS:
+	Move out /lib/libintl.la : it confuses libtool
+		mv /lib/libintl.la /lib/libintl.la.bak
+	Move out libstdc++.la in order to workaround a gcc-4.4.0 bug (or packaging bug):
+		mv /mingw/lib/gcc/mingw32/4.4.0/libstdc++.la /mingw/lib/gcc/mingw32/4.4.0/libstdc++.la.bak
 
 Get Linphone source code
 ************************
