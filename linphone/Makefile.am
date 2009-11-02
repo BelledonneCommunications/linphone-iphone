@@ -29,7 +29,7 @@ ZIP_EXCLUDED=include lib \
 
 
 GTK_PREFIX=/usr
-GTK_FILELIST=gtk+-2.16.2.filelist
+GTK_FILELIST=gtk+-2.16.6.filelist
 GTK_FILELIST_PATH=$(shell cd $(top_srcdir) && pwd)/$(GTK_FILELIST)
 LINPHONEDEPS_FILELIST=linphone-deps.filelist
 WINBINDIST_FILES=$(shell cat $(top_srcdir)/$(LINPHONEDEPS_FILELIST))
