@@ -33,6 +33,7 @@
 #include <linphonecore.h>
 #include "linphonec.h"
 #include "private.h"
+#include "lpconfig.h"
 
 #ifndef WIN32
 #include <sys/wait.h>
@@ -71,6 +72,7 @@ static int lpc_cmd_status(LinphoneCore *lc, char *args);
 static int lpc_cmd_ports(LinphoneCore *lc, char *args);
 static int lpc_cmd_speak(LinphoneCore *lc, char *args);
 static int lpc_cmd_codec(LinphoneCore *lc, char *args);
+static int lpc_cmd_echocancellation(LinphoneCore *lc, char *args);
 
 /* Command handler helpers */
 static void linphonec_proxy_add(LinphoneCore *lc);
@@ -201,7 +203,10 @@ LPC_COMMAND commands[] = {
             "'codec list' : list codecs\n"  
             "'codec enable <index>' : enable available codec\n"  
             "'codec disable <index>' : disable codecs" }, 
-
+    { "ec", lpc_cmd_echocancellation, "Echo cancellation",
+            "'ec on [<delay>] [<tail>] [<framesize>]' : turn EC on with given delay, tail length and framesize\n"
+            "'ec off' : turn echo cancellation (EC) off\n"
+            "'ec show' : show EC status" },
 	{ (char *)NULL, (lpc_cmd_handler)NULL, (char *)NULL, (char *)NULL }
 };
 
@@ -1608,6 +1613,62 @@ static void linphonec_codec_disable(LinphoneCore *lc, int sel_index){
         }
 		index++;
 	}
+}
+
+static int lpc_cmd_echocancellation(LinphoneCore *lc, char *args){
+	char *arg1 = args;
+	char *arg2 = NULL;
+	char *ptr = args;
+
+	if (!args) return 0;
+
+	/* Isolate first and second arg */
+	while(*ptr && !isspace(*ptr)) ++ptr;
+	if ( *ptr )
+	{
+		*ptr='\0';
+		arg2=ptr+1;
+		while(*arg2 && isspace(*arg2)) ++arg2;
+	}
+
+	if (strcmp(arg1,"on")==0){
+        int delay, tail_len, frame_size;
+        int n;
+
+        linphone_core_enable_echo_cancelation(lc,1);
+
+        if (arg2 != 0) {
+            n = sscanf(arg2, "%d %d %d", &delay, &tail_len, &frame_size);
+
+            if (n == 1) {   
+                lp_config_set_int(lc->config,"sound","ec_delay",delay);
+            }
+            else if (n == 2) {
+                lp_config_set_int(lc->config,"sound","ec_delay",delay);
+                lp_config_set_int(lc->config,"sound","ec_tail_len",tail_len);
+            }
+            else if (n == 3) {
+                lp_config_set_int(lc->config,"sound","ec_delay",delay);
+                lp_config_set_int(lc->config,"sound","ec_tail_len",tail_len);
+                lp_config_set_int(lc->config,"sound","ec_framesize",frame_size);
+            }
+        }
+    }
+    else if (strcmp(arg1,"off")==0){
+        linphone_core_enable_echo_cancelation(lc,0);
+    }
+    else if (strcmp(arg1,"show")==0){
+        linphonec_out("echo cancellation is %s; delay %d, tail length %d, frame size %d\n", 
+            linphone_core_echo_cancelation_enabled(lc) ? "on" : "off",
+            lp_config_get_int(lc->config,"sound","ec_delay",0),
+            lp_config_get_int(lc->config,"sound","ec_tail_len",0),
+            lp_config_get_int(lc->config,"sound","ec_framesize",0));        
+    }
+    else {
+        return 0;
+    }
+
+    return 1;
 }
 
 /***************************************************************************
