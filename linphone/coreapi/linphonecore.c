@@ -438,6 +438,9 @@ void sip_config_read(LinphoneCore *lc)
 	port=lp_config_get_int(lc->config,"sip","use_info",0);
 	linphone_core_set_use_info_for_dtmf(lc,port);
 
+	port=lp_config_get_int(lc->config,"sip","use_rfc2833",0);
+	linphone_core_set_use_rfc2833_for_dtmf(lc,port);
+
 	ipv6=lp_config_get_int(lc->config,"sip","use_ipv6",-1);
 	if (ipv6==-1){
 		ipv6=0;
@@ -929,6 +932,16 @@ void linphone_core_set_use_info_for_dtmf(LinphoneCore *lc,bool_t use_info)
 	lc->sip_conf.use_info=use_info;
 }
 
+bool_t linphone_core_get_use_rfc2833_for_dtmf(LinphoneCore *lc)
+{
+	return lc->sip_conf.use_rfc2833;
+}
+
+void linphone_core_set_use_rfc2833_for_dtmf(LinphoneCore *lc,bool_t use_rfc2833)
+{
+	lc->sip_conf.use_rfc2833=use_rfc2833;
+}
+
 int linphone_core_get_sip_port(LinphoneCore *lc)
 {
 	return lc->sip_conf.sip_port;
@@ -1275,6 +1288,7 @@ bool_t linphone_core_interpret_url(LinphoneCore *lc, const char *url, char **rea
 				sipaddr=ortp_strdup_printf("sip:%s@%s:%s",url,uri->url->host,uri->url->port);
 			else
 				sipaddr=ortp_strdup_printf("sip:%s@%s",url,uri->url->host);
+			osip_from_free(uri);
 			if (real_parsed_url!=NULL) *real_parsed_url=osip_to_create(sipaddr);
 			if (real_url!=NULL) *real_url=sipaddr;
 			else ms_free(sipaddr);
@@ -2188,12 +2202,20 @@ bool_t linphone_core_agc_enabled(const LinphoneCore *lc){
 
 void linphone_core_send_dtmf(LinphoneCore *lc,char dtmf)
 {
-	if (linphone_core_get_use_info_for_dtmf(lc)==0){
+	/*By default we send DTMF RFC2833 if we do not have enabled SIP_INFO but we can also send RFC2833 and SIP_INFO*/
+	if (linphone_core_get_use_rfc2833_for_dtmf(lc)!=0 || linphone_core_get_use_info_for_dtmf(lc)==0)
+	{
 		/* In Band DTMF */
 		if (lc->audiostream!=NULL){
 			audio_stream_send_dtmf(lc->audiostream,dtmf);
 		}
-	}else{
+		else
+		{
+			ms_error("we cannot send RFC2833 dtmf when we are not in communication");
+		}
+	}
+	if (linphone_core_get_use_info_for_dtmf(lc)!=0)
+	{
 		char dtmf_body[1000];
 		char clen[10];
 		osip_message_t *msg=NULL;
@@ -2604,6 +2626,8 @@ void net_config_uninit(LinphoneCore *lc)
 		lp_config_set_string(lc->config,"net","nat_address",config->nat_address);
 	lp_config_set_int(lc->config,"net","firewall_policy",config->firewall_policy);
 	lp_config_set_int(lc->config,"net","mtu",config->mtu);
+	if (lc->net_conf.stun_server!=NULL)
+		ms_free(lc->net_conf.stun_server);
 }
 
 
@@ -2617,6 +2641,7 @@ void sip_config_uninit(LinphoneCore *lc)
 	lp_config_set_string(lc->config,"sip","contact",config->contact);
 	lp_config_set_int(lc->config,"sip","inc_timeout",config->inc_timeout);
 	lp_config_set_int(lc->config,"sip","use_info",config->use_info);
+	lp_config_set_int(lc->config,"sip","use_rfc2833",config->use_rfc2833);
 	lp_config_set_int(lc->config,"sip","use_ipv6",config->ipv6_enabled);
 	lp_config_set_int(lc->config,"sip","register_only_when_network_is_up",config->register_only_when_network_is_up);
 	for(elem=config->proxies,i=0;elem!=NULL;elem=ms_list_next(elem),i++){
@@ -2704,6 +2729,10 @@ void codecs_config_uninit(LinphoneCore *lc)
 		lp_config_set_int(lc->config,key,"enabled",payload_type_enabled(pt));
 		lp_config_set_string(lc->config,key,"recv_fmtp",pt->recv_fmtp);
 		index++;
+	}
+	if (lc->local_profile){
+		rtp_profile_destroy(lc->local_profile);
+		lc->local_profile=NULL;
 	}
 }
 

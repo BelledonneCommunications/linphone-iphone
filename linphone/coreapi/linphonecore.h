@@ -61,6 +61,7 @@ typedef struct sip_config
 	MSList *deleted_proxies;
 	int inc_timeout;	/*timeout after an un-answered incoming call is rejected*/
 	bool_t use_info;
+	bool_t use_rfc2833;	/*force RFC2833 to be sent*/
 	bool_t guess_hostname;
 	bool_t loopback_only;
 	bool_t ipv6_enabled;
@@ -630,6 +631,10 @@ void linphone_core_set_nortp_timeout(LinphoneCore *lc, int port);
 void linphone_core_set_use_info_for_dtmf(LinphoneCore *lc, bool_t use_info);
 
 bool_t linphone_core_get_use_info_for_dtmf(LinphoneCore *lc);
+
+void linphone_core_set_use_rfc2833_for_dtmf(LinphoneCore *lc,bool_t use_rfc2833);
+
+bool_t linphone_core_get_use_rfc2833_for_dtmf(LinphoneCore *lc);
 
 int linphone_core_get_sip_port(LinphoneCore *lc);
 
