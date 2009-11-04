@@ -1696,7 +1696,9 @@ void static_image_init(MSFilter *f){
 }
 
 void static_image_uninit(MSFilter *f){
-	ms_free(f->data);
+	SIData *d=(SIData*)f->data;
+	ms_free(d->nowebcamimage);
+	ms_free(d);
 }
 
 void static_image_preprocess(MSFilter *f){

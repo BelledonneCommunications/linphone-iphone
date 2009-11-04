@@ -646,6 +646,7 @@ void linphone_gtk_used_identity_changed(GtkWidget *w){
 		linphone_core_set_default_proxy_index(linphone_gtk_get_core(),(active==0) ? -1 : (active-1));
 		linphone_gtk_show_directory_search();
 	}
+	if (sel) g_free(sel);
 }
 
 static void linphone_gtk_show_main_window(){
