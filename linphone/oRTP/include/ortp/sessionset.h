@@ -130,7 +130,7 @@ void session_set_destroy(SessionSet *set);
 
 	
 int session_set_select(SessionSet *recvs, SessionSet *sends, SessionSet *errors);
-
+int session_set_timedselect(SessionSet *recvs, SessionSet *sends, SessionSet *errors,  struct timeval *timeout);
 
 #ifdef __cplusplus
 }

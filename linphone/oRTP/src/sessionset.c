@@ -146,3 +146,59 @@ int session_set_select(SessionSet *recvs, SessionSet *sends, SessionSet *errors)
 	return -1;
 }
 
+int session_set_timedselect(SessionSet *recvs, SessionSet *sends, SessionSet *errors,  struct timeval *timeout)
+{
+	int ret=0,bits;
+	int remainingTime; // duration in ms
+	SessionSet temp;
+	RtpScheduler *sched;
+	if (timeout==NULL)
+		return session_set_select(recvs, sends, errors);
+	sched=ortp_get_scheduler();
+	remainingTime = timeout->tv_usec/1000 + timeout->tv_sec*1000;
+
+	/*lock the scheduler to not read the masks while they are being modified by the scheduler*/
+	rtp_scheduler_lock(sched);
+
+	do {
+		/* computes the SessionSet intersection (in the other words mask intersection) between
+		the mask given by the user and scheduler masks */
+		if (recvs!=NULL){
+			session_set_init(&temp);
+			bits=session_set_and(&sched->r_sessions,sched->all_max,recvs,&temp);
+			ret+=bits;
+			/* copy the result set in the given user set (might be empty) */
+			if (ret>0) session_set_copy(recvs,&temp);
+		}
+		if (sends!=NULL){
+			session_set_init(&temp);
+			bits=session_set_and(&sched->w_sessions,sched->all_max,sends,&temp);
+			ret+=bits;
+			if (ret>0){
+				/* copy the result set in the given user set (might be empty)*/
+				session_set_copy(sends,&temp);
+			}
+		}
+		if (errors!=NULL){
+			session_set_init(&temp);
+			bits=session_set_and(&sched->e_sessions,sched->all_max,errors,&temp);
+			ret+=bits;
+			if (ret>0){
+				/* copy the result set in the given user set */
+				session_set_copy(errors,&temp);
+			}
+		}
+		if (ret>0){
+			/* there are set file descriptors, return immediately */
+			//printf("There are %i sessions set, returning.\n",ret);
+			rtp_scheduler_unlock(sched);
+			return ret;
+		}
+		//printf("There are %i sessions set.\n",ret);
+		/* else we wait until the next loop of the scheduler*/
+		ortp_cond_wait(&sched->unblock_select_cond,&sched->lock);
+		remainingTime -= sched->timer_inc;
+	} while (remainingTime>0);
+
+	return -1;
+}
