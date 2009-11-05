@@ -1131,9 +1131,6 @@ int main(int argc, char *argv[]){
 	config_file=linphone_gtk_get_config_file();
 
 #ifdef WIN32
-	if (workingdir!=NULL)
-		_chdir(workingdir);
-
 	/*workaround for windows: sometimes LANG is defined to an integer value, not understood by gtk */
 	if ((lang=getenv("LANG"))!=NULL){
 		if (atoi(lang)!=0){
@@ -1143,7 +1140,7 @@ int main(int argc, char *argv[]){
 		}
 	}
 #endif
-	
+
 	if ((lang=linphone_gtk_get_lang(config_file))!=NULL && lang[0]!='\0'){
 #ifdef WIN32
 		char tmp[128];
@@ -1172,6 +1169,11 @@ int main(int argc, char *argv[]){
 		gdk_threads_leave();
 		return -1;
 	}
+#ifdef WIN32
+	if (workingdir!=NULL)
+		_chdir(workingdir);
+#endif
+
 	if (linphone_core_wake_up_possible_already_running_instance(
 		config_file, addr_to_call) == 0){
 		g_message("addr_to_call=%s",addr_to_call);
