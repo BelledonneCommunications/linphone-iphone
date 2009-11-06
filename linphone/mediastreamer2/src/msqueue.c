@@ -103,6 +103,7 @@ int ms_bufferizer_read(MSBufferizer *obj, uint8_t *data, int datalen){
 }
 
 void ms_bufferizer_flush(MSBufferizer *obj){
+	obj->size=0;
 	flushq(&obj->q,0);
 }
 
