@@ -1147,7 +1147,8 @@ static void winsnddscard_unload(MSSndCardManager *m){
 
 static void winsnddscard_detect(MSSndCardManager *m){
 	_winsnddscard_detect(m);
-	ms_thread_create(&poller_thread,NULL,new_device_polling_thread,NULL);
+	if (poller_thread==NULL)
+		ms_thread_create(&poller_thread,NULL,new_device_polling_thread,NULL);
 }
 
 typedef struct WinSndDs{
@@ -1350,7 +1351,9 @@ static void winsndds_read_preprocess(MSFilter *f){
 
 	hr = IDirectSoundCaptureBuffer_Start( d->lpDirectSoundInputBuffer, DSCBSTART_LOOPING );
 
+	ms_mutex_lock(&f->ticker->lock);
 	ms_ticker_set_time_func(f->ticker,winsndds_get_cur_time,d);
+	ms_mutex_unlock(&f->ticker->lock);
 
 	d->thread_running=TRUE;
 	ms_thread_create(&d->thread,NULL,winsndds_read_thread,d);
@@ -1370,7 +1373,9 @@ static void winsndds_read_postprocess(MSFilter *f){
 	ms_mutex_unlock(&d->thread_lock);
 	ms_thread_join(d->thread,NULL);
 
+	ms_mutex_lock(&f->ticker->lock);
 	ms_ticker_set_time_func(f->ticker,NULL,NULL);
+	ms_mutex_unlock(&f->ticker->lock);
 
 	if( d->lpDirectSoundInputBuffer )
 	{
@@ -1519,7 +1524,9 @@ static void winsndds_write_preprocess(MSFilter *f){
 
 		hr = IDirectSoundCaptureBuffer_Start( d_capture_filter->lpDirectSoundInputBuffer, DSCBSTART_LOOPING );
 
+		ms_mutex_lock(&f->ticker->lock);
 		ms_ticker_set_time_func(f_capture_filter->ticker,winsndds_get_cur_time,d_capture_filter);
+		ms_mutex_unlock(&f->ticker->lock);
 
 		d_capture_filter->thread_running=TRUE;
 		ms_thread_create(&d_capture_filter->thread,NULL,winsndds_read_thread,d_capture_filter);
