@@ -835,6 +835,7 @@ void linphone_call_ringing(LinphoneCore *lc, eXosip_event_t *ev){
 	sdp_message_t *sdp=eXosip_get_sdp_info(ev->response);
 	LinphoneCall *call=lc->call;
 	
+	lc->vtable.display_status(lc,_("Remote ringing."));
 	linphone_call_proceeding(lc,ev);
 	if (call==NULL) return;
 	if (sdp==NULL){

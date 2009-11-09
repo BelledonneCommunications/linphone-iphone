@@ -419,8 +419,10 @@ void sound_config_read(LinphoneCore *lc)
 	check_sound_device(lc);
 	lc->sound_conf.latency=0;
 
-	linphone_core_enable_echo_cancelation(lc,
-		lp_config_get_int(lc->config,"sound","echocancelation",0));
+	linphone_core_enable_echo_cancellation(lc,
+	    lp_config_get_int(lc->config,"sound","echocancelation",0) |
+	    lp_config_get_int(lc->config,"sound","echocancellation",0)
+		);
 
 	linphone_core_enable_echo_limiter(lc,
 		lp_config_get_int(lc->config,"sound","echolimiter",0));
@@ -1622,14 +1624,18 @@ void linphone_core_init_media_streams(LinphoneCore *lc){
 			audio_stream_enable_echo_limiter(lc->audiostream,ELControlSpeaker);
 	}
 	audio_stream_enable_gain_control(lc->audiostream,TRUE);
-	if (linphone_core_echo_cancelation_enabled(lc)){
+	if (linphone_core_echo_cancellation_enabled(lc)){
 		int len,delay,framesize;
 		len=lp_config_get_int(lc->config,"sound","ec_tail_len",0);
 		delay=lp_config_get_int(lc->config,"sound","ec_delay",0);
 		framesize=lp_config_get_int(lc->config,"sound","ec_framesize",0);
-		audio_stream_set_echo_canceler_params(lc->audiostream,len,delay,framesize);
+		audio_stream_set_echo_canceller_params(lc->audiostream,len,delay,framesize);
 	}
 	audio_stream_enable_automatic_gain_control(lc->audiostream,linphone_core_agc_enabled(lc));
+	{
+		int enabled=lp_config_get_int(lc->config,"sound","noisegate",0);
+		audio_stream_enable_noise_gate(lc->audiostream,enabled);
+	}
 	if (lc->a_rtp)
 		rtp_session_set_transports(lc->audiostream->session,lc->a_rtp,lc->a_rtcp);
 
@@ -1700,6 +1706,12 @@ static void post_configure_audio_streams(LinphoneCore *lc){
 			ms_filter_call_method(f,MS_VOLUME_SET_EA_SUSTAIN,&sustain);
 		
 	}
+	if (st->volsend){
+		float ng_thres=lp_config_get_float(lc->config,"sound","ng_thres",0.05);
+		float ng_floorgain=lp_config_get_float(lc->config,"sound","ng_floorgain",0);
+		ms_filter_call_method(st->volsend,MS_VOLUME_SET_NOISE_GATE_THRESHOLD,&ng_thres);
+		ms_filter_call_method(st->volsend,MS_VOLUME_SET_NOISE_GATE_FLOORGAIN,&ng_floorgain);
+	}
 	parametrize_equalizer(lc,st);
 	if (lc->vtable.dtmf_received!=NULL){
 		/* replace by our default action*/
@@ -1742,7 +1754,7 @@ void linphone_core_start_media_streams(LinphoneCore *lc, LinphoneCall *call){
 				jitt_comp,
 				playcard,
 				captcard,
-				linphone_core_echo_cancelation_enabled(lc));
+				linphone_core_echo_cancellation_enabled(lc));
 		}else{
 			audio_stream_start_with_files(
 				lc->audiostream,
@@ -2166,13 +2178,13 @@ const char * linphone_core_get_ringback(const LinphoneCore *lc){
 	return lc->sound_conf.remote_ring;
 }
 
-void linphone_core_enable_echo_cancelation(LinphoneCore *lc, bool_t val){
+void linphone_core_enable_echo_cancellation(LinphoneCore *lc, bool_t val){
 	lc->sound_conf.ec=val;
 	if (lc->ready)
-		lp_config_set_int(lc->config,"sound","echocancelation",val);
+		lp_config_set_int(lc->config,"sound","echocancellation",val);
 }
 
-bool_t linphone_core_echo_cancelation_enabled(LinphoneCore *lc){
+bool_t linphone_core_echo_cancellation_enabled(LinphoneCore *lc){
 	return lc->sound_conf.ec;
 }
 

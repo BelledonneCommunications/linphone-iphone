@@ -209,7 +209,7 @@ void linphone_gtk_play_ring_file(GtkWidget *w){
 }
 
 void linphone_gtk_echo_cancelation_toggled(GtkWidget *w){
-	linphone_core_enable_echo_cancelation(linphone_gtk_get_core(),
+	linphone_core_enable_echo_cancellation(linphone_gtk_get_core(),
 		gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w)));
 }
 
@@ -755,7 +755,7 @@ void linphone_gtk_show_parameters(void){
 					linphone_core_get_video_device(lc),CAP_IGNORE);
 	linphone_gtk_fill_video_sizes(linphone_gtk_get_widget(pb,"video_size"));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb,"echo_cancelation")),
-					linphone_core_echo_cancelation_enabled(lc));
+					linphone_core_echo_cancellation_enabled(lc));
 
 	gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(linphone_gtk_get_widget(pb,"ring_chooser")),
 					linphone_core_get_ring(lc));

@@ -105,10 +105,9 @@ static void speex_ec_preprocess(MSFilter *f){
 }
 
 /*	inputs[0]= reference signal (sent to soundcard)
-	inputs[1]= echo signal	(read from soundcard)
+ *	inputs[1]= near speech & echo signal	(read from soundcard)
+ *	outputs[1]=  near end speech, echo removed - towards far end
 */
-
-
 static void speex_ec_process(MSFilter *f){
 	SpeexECState *s=(SpeexECState*)f->data;
 	int nbytes=s->framesize*2;
@@ -120,6 +119,7 @@ static void speex_ec_process(MSFilter *f){
 	mblk_t *m;
 	mblk_t *md;	
 
+	/* first fill delayed buffer until playback delay is reached (only in first n calls) */
 	if (s->size_delay<s->playback_delay){
 		while((m=ms_queue_get(f->inputs[0]))!=NULL && s->size_delay<s->playback_delay){
 			// Duplicate queue : one to write to the output speaker, the other will be delayed for AEC
@@ -187,7 +187,7 @@ static void speex_ec_process(MSFilter *f){
 		ms_bufferizer_read(&s->in[1],in1,nbytes);
 		/* we have echo signal */
 		om1=allocb(nbytes,0);
-		speex_echo_cancel(s->ecstate,(short*)in1,(short*)om0->b_rptr,(short*)om1->b_wptr,NULL);
+		speex_echo_cancellation(s->ecstate,(short*)in1,(short*)om0->b_rptr,(short*)om1->b_wptr);
 		speex_preprocess_run(s->den, (short*)om1->b_wptr);
 		ms_filter_notify(f, MS_SPEEX_EC_ECHO_STATE, (void*)s->ecstate);
 		ms_filter_notify(f, MS_SPEEX_EC_PREPROCESS_MIC, (void*)s->den);
@@ -346,7 +346,7 @@ static MSFilterMethod speex_ec_methods[]={
 MSFilterDesc ms_speex_ec_desc={
 	MS_SPEEX_EC_ID,
 	"MSSpeexEC",
-	N_("Echo canceler using speex library"),
+	N_("Echo canceller using speex library"),
 	MS_FILTER_OTHER,
 	NULL,
 	2,
@@ -364,7 +364,7 @@ MSFilterDesc ms_speex_ec_desc={
 MSFilterDesc ms_speex_ec_desc={
 	.id=MS_SPEEX_EC_ID,
 	.name="MSSpeexEC",
-	.text=N_("Echo canceler using speex library"),
+	.text=N_("Echo canceller using speex library"),
 	.category=MS_FILTER_OTHER,
 	.ninputs=2,
 	.noutputs=2,

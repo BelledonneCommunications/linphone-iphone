@@ -45,6 +45,10 @@ static const char * capture_card=NULL;
 static float ng_threshold=-1;
 static bool_t use_ng=FALSE;
 
+/* starting values echo canceller */
+static int ec_len_ms=0, ec_delay_ms=250, ec_framesize;
+
+
 static void stop_handler(int signum)
 {
 	cond--;
@@ -136,8 +140,9 @@ const char *usage="mediastream --local <port> --remote <ip:port> --payload <payl
 								"[ --ng (enable noise gate)]\n"
 								"[ --ng-threshold <(float) [0-1]> (noise gate threshold)]\n"
 								"[ --capture-card <index>] \n";
-static void run_media_streams(int localport, const char *remote_ip, int remoteport, int payload, const char *fmtp, int jitter, bool_t ec, int bitrate, MSVideoSize vs, bool_t agc, bool_t eq);
 
+static void run_media_streams(int localport, const char *remote_ip, int remoteport, int payload, const char *fmtp,
+          int jitter, int bitrate, MSVideoSize vs, bool_t ec, bool_t agc, bool_t eq);
 
 int main(int argc, char * argv[])
 {
@@ -219,11 +224,12 @@ int main(int argc, char * argv[])
 		}
 	}
 
-	run_media_streams(localport,ip,remoteport,payload,fmtp,jitter,ec,bitrate,vs, agc,eq);
+	run_media_streams(localport,ip,remoteport,payload,fmtp,jitter,bitrate,vs,ec,agc,eq);
 	return 0;
 }
 
-void run_media_streams(int localport,  const char *remote_ip, int remoteport, int payload, const char *fmtp, int jitter, bool_t ec, int bitrate, MSVideoSize vs, bool_t agc, bool_t eq)
+static void run_media_streams(int localport, const char *remote_ip, int remoteport, int payload, const char *fmtp,
+          int jitter, int bitrate, MSVideoSize vs, bool_t ec, bool_t agc, bool_t eq)
 {
 	AudioStream *audio=NULL;
 #ifdef VIDEO_ENABLED
@@ -245,13 +251,14 @@ void run_media_streams(int localport,  const char *remote_ip, int remoteport, in
 	if (bitrate>0) pt->normal_bitrate=bitrate;
 
 	if (pt->type!=PAYLOAD_VIDEO){
-		printf("Starting audio stream.\n");
 		MSSndCardManager *manager=ms_snd_card_manager_get();
 		MSSndCard *capt= capture_card==NULL ? ms_snd_card_manager_get_default_capture_card(manager) :
 				ms_snd_card_manager_get_card(manager,capture_card);
 		audio=audio_stream_new(localport,ms_is_ipv6(remote_ip));
 		audio_stream_enable_automatic_gain_control(audio,agc);
 		audio_stream_enable_noise_gate(audio,use_ng);
+    audio_stream_set_echo_canceller_params(audio,ec_len_ms,ec_delay_ms,ec_framesize);
+    printf("Starting audio stream.\n");
 		audio_stream_start_now(audio,profile,remote_ip,remoteport,remoteport+1,payload,jitter,
 			ms_snd_card_manager_get_default_playback_card(manager),
 			capt,
@@ -281,7 +288,56 @@ void run_media_streams(int localport,  const char *remote_ip, int remoteport, in
 		printf("Error: video support not compiled.\n");
 #endif
 	}
-	if (!eq){
+  if (eq || ec){ /*read from stdin interactive commands */
+    char commands[128];
+    commands[127]='\0';
+    ms_sleep(1);  /* ensure following text be printed after ortp messages */
+    if (eq)
+      printf("\nPlease enter equalizer requests, such as 'eq active 1', 'eq active 0', 'eq 1200 0.1 200'\n");
+    if (ec)
+      printf("\nPlease enter echo canceller requests: ec reset; ec <delay ms> <tail_length ms'\n");
+    while(fgets(commands,sizeof(commands)-1,stdin)!=NULL){
+      int active,freq,freq_width;
+      int delay_ms, tail_ms;
+      float gain;
+      if (sscanf(commands,"eq active %i",&active)==1){
+        audio_stream_enable_equalizer(audio,active);
+        printf("OK\n");
+      }else if (sscanf(commands,"eq %i %f %i",&freq,&gain,&freq_width)==3){
+        audio_stream_equalizer_set_gain(audio,freq,gain,freq_width);
+        printf("OK\n");
+      }else if (sscanf(commands,"eq %i %f",&freq,&gain)==2){
+        audio_stream_equalizer_set_gain(audio,freq,gain,0);
+        printf("OK\n");
+      }else if (strstr(commands,"dump")){
+        int n=0,i;
+        float *t;
+        ms_filter_call_method(audio->equalizer,MS_EQUALIZER_GET_NUM_FREQUENCIES,&n);
+        t=(float*)alloca(sizeof(float)*n);
+        ms_filter_call_method(audio->equalizer,MS_EQUALIZER_DUMP_STATE,t);
+        for(i=0;i<n;++i){
+          if (fabs(t[i]-1)>0.01){
+            printf("%i:%f:0 ",(i*pt->clock_rate)/(2*n),t[i]);
+          }
+        }
+        printf("\nOK\n");
+      }else if (sscanf(commands,"ec reset %i",&active)==1){
+          //audio_stream_enable_equalizer(audio,active);
+          //printf("OK\n");
+      }else if (sscanf(commands,"ec active %i",&active)==1){
+          //audio_stream_enable_equalizer(audio,active);
+          //printf("OK\n");
+      }else if (sscanf(commands,"ec %i %i",&delay_ms,&tail_ms)==2){
+        audio_stream_set_echo_canceller_params(audio,tail_ms,delay_ms,128);
+        // revisit: workaround with old method call to force echo reset
+        delay_ms*=8;
+        ms_filter_call_method(audio->ec,MS_FILTER_SET_PLAYBACKDELAY,&delay_ms);
+        printf("OK\n");
+      }else if (strstr(commands,"quit")){
+        break;
+      }else printf("Cannot understand this.\n");
+    }
+	}else{  /* no interactive stuff - continuous debug output */
 		rtp_session_register_event_queue(session,q);
 		while(cond)
 		{
@@ -312,41 +368,9 @@ void run_media_streams(int localport,  const char *remote_ip, int remoteport, in
 				parse_events(q);
 			}
 		}
-	}else{/*read from stdin equalizer commands */
-		char commands[128];
-		commands[127]='\0';
-		printf("Please enter equalizer requests, such as 'eq active 1', 'eq active 0', 'eq 1200 0.1'\n");
-		while(fgets(commands,sizeof(commands)-1,stdin)!=NULL){
-			int active,freq,freq_width;
-			float gain;
-			if (sscanf(commands,"eq active %i",&active)==1){
-				audio_stream_enable_equalizer(audio,active);
-				printf("OK\n");
-			}else if (sscanf(commands,"eq %i:%f:%i",&freq,&gain,&freq_width)==3){
-				audio_stream_equalizer_set_gain(audio,freq,gain,freq_width);
-				printf("OK\n");
-			}else if (sscanf(commands,"eq %i:%f",&freq,&gain)==2){
-				audio_stream_equalizer_set_gain(audio,freq,gain,0);
-				printf("OK\n");
-			}else if (strstr(commands,"dump")){
-				int n=0,i;
-				float *t;
-				ms_filter_call_method(audio->equalizer,MS_EQUALIZER_GET_NUM_FREQUENCIES,&n);
-				t=(float*)alloca(sizeof(float)*n);
-				ms_filter_call_method(audio->equalizer,MS_EQUALIZER_DUMP_STATE,t);
-				for(i=0;i<n;++i){
-					if (fabs(t[i]-1)>0.01){
-						printf("%i:%f:0 ",(i*pt->clock_rate)/(2*n),t[i]);
 					}
-				}
-				printf("\nOK\n");
-			}else if (strstr(commands,"quit")){
-				break;
-			}else printf("Cannot understand this.\n");
-		}
-	}
 	
-	printf("stoping all...\n");
+	printf("stopping all...\n");
 	
 	if (audio) audio_stream_stop(audio);
 #ifdef VIDEO_ENABLED

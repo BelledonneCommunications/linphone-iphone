@@ -437,7 +437,7 @@ void audio_stream_set_relay_session_id(AudioStream *stream, const char *id){
 	ms_filter_call_method(stream->rtpsend, MS_RTP_SEND_SET_RELAY_SESSION_ID,(void*)id);
 }
 
-void audio_stream_set_echo_canceler_params(AudioStream *st, int tail_len_ms, int delay_ms, int framesize){
+void audio_stream_set_echo_canceller_params(AudioStream *st, int tail_len_ms, int delay_ms, int framesize){
 	st->ec_tail_len=tail_len_ms;
 	st->ec_delay=delay_ms;
 	st->ec_framesize=framesize;

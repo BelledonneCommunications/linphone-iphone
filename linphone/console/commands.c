@@ -1635,7 +1635,7 @@ static int lpc_cmd_echocancellation(LinphoneCore *lc, char *args){
         int delay, tail_len, frame_size;
         int n;
 
-        linphone_core_enable_echo_cancelation(lc,1);
+        linphone_core_enable_echo_cancellation(lc,1);
 
         if (arg2 != 0) {
             n = sscanf(arg2, "%d %d %d", &delay, &tail_len, &frame_size);
@@ -1655,11 +1655,11 @@ static int lpc_cmd_echocancellation(LinphoneCore *lc, char *args){
         }
     }
     else if (strcmp(arg1,"off")==0){
-        linphone_core_enable_echo_cancelation(lc,0);
+        linphone_core_enable_echo_cancellation(lc,0);
     }
     else if (strcmp(arg1,"show")==0){
         linphonec_out("echo cancellation is %s; delay %d, tail length %d, frame size %d\n", 
-            linphone_core_echo_cancelation_enabled(lc) ? "on" : "off",
+            linphone_core_echo_cancellation_enabled(lc) ? "on" : "off",
             lp_config_get_int(lc->config,"sound","ec_delay",0),
             lp_config_get_int(lc->config,"sound","ec_tail_len",0),
             lp_config_get_int(lc->config,"sound","ec_framesize",0));        
