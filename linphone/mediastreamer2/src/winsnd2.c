@@ -914,7 +914,7 @@ typedef struct WinSnd{
 	WAVEHDR hdrs_write[WINSND_OUT_NBUFS];
 	queue_t rq;
 	ms_mutex_t mutex;
-	unsigned int bytes_read;
+	uint64_t bytes_read;
 	unsigned int nbufs_playing;
 	bool_t running;
 
@@ -943,7 +943,7 @@ static void winsnd_apply_settings(WinSnd *d){
 #ifndef _TRUE_TIME
 static uint64_t winsnd_get_cur_time( void *data){
 	WinSnd *d=(WinSnd*)data;
-	uint64_t curtime=((uint64_t)d->bytes_read*1000)/(uint64_t)d->wfx.nAvgBytesPerSec;
+	uint64_t curtime=(d->bytes_read*1000)/(uint64_t)d->wfx.nAvgBytesPerSec;
 	/* ms_debug("winsnd_get_cur_time: bytes_read=%u return %lu\n",d->bytes_read,(unsigned long)curtime); */
 	return curtime;
 }

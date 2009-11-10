@@ -1177,7 +1177,7 @@ typedef struct WinSndDs{
 	WAVEFORMATEX wfx;
 	queue_t rq;
 	ms_mutex_t mutex;
-	unsigned int bytes_read;
+	uint64_t bytes_read;
 	unsigned int nbufs_playing;
 
 	int32_t stat_input;
@@ -1276,7 +1276,7 @@ static void winsndds_apply_settings(WinSndDs *d){
 
 static uint64_t winsndds_get_cur_time( void *data){
 	WinSndDs *d=(WinSndDs*)data;
-	uint64_t curtime=((uint64_t)d->bytes_read*1000)/(uint64_t)d->wfx.nAvgBytesPerSec;
+	uint64_t curtime=(d->bytes_read*1000)/(uint64_t)d->wfx.nAvgBytesPerSec;
 	return curtime;
 }
 
