@@ -152,12 +152,25 @@ static int xml_rpc_parse_response(BLReq *blreq, SoupMessage *sm){
 	return blreq->base.status==BuddyLookupDone ? 0 : -1;
 }
 
+#ifdef WIN32
+/*on windows libsoup support for threads with gnutls is not yet functionnal (only in git)
+This will come in next release of libsoup, probably. 
+In the meantime, we are forced to serialize all soup https processing with a big
+ugly global mutex...*/
+
+static GStaticMutex big_mutex = G_STATIC_MUTEX_INIT;
+
+#endif
+
 static void * process_xml_rpc_request(void *up){
 	BLReq *blreq=(BLReq*)up;
 	SoupMessage *sm=blreq->msg;
 	int code;
 	g_signal_connect_swapped(G_OBJECT(sm),"got-headers",(GCallback)got_headers,blreq);
 	blreq->base.status=BuddyLookupConnecting;
+#ifdef WIN32
+	g_static_mutex_lock(&big_mutex);
+#endif
 	code=soup_session_send_message(blreq->session,sm);
 	if (code==200){
 		ms_message("Got a response from server, yeah !");
@@ -166,6 +179,9 @@ static void * process_xml_rpc_request(void *up){
 		ms_error("request failed, error-code=%i (%s)",code,soup_status_get_phrase(code));
 		blreq->base.status=BuddyLookupFailure;
 	}
+#ifdef WIN32
+	g_static_mutex_unlock(&big_mutex);
+#endif
 	return NULL;
 }
 
