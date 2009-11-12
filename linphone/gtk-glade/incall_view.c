@@ -71,7 +71,10 @@ void display_peer_name_in_label(GtkWidget *label, const char *uri){
 			osip_free(from->displayname);
 			from->displayname=NULL;
 		}
+		osip_uri_param_freelist(&from->url->url_params);
+		osip_uri_header_freelist(&from->url->url_params);
 		osip_from_to_str(from,&id);
+
 	}else id=osip_strdup(uri);
 	osip_from_free(from);
 	if (displayname!=NULL)
