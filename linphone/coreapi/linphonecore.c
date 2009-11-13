@@ -1095,8 +1095,10 @@ static void linphone_core_grab_buddy_infos(LinphoneCore *lc, LinphoneProxyConfig
 			if (linphone_core_lookup_known_proxy(lc,url)==cfg){
 				if (lf->url->url->username!=NULL && lf->url->url->username[0]!='0'){
 					BuddyLookupRequest *req;
+					char tmp[255];
+					snprintf(tmp,sizeof(tmp),"sip:%s@%s",lf->url->url->username,lf->url->url->host);
 					req=sip_setup_context_create_buddy_lookup_request(ctx);
-					buddy_lookup_request_set_key(req,lf->url->url->username);
+					buddy_lookup_request_set_key(req,tmp);
 					buddy_lookup_request_set_max_results(req,1);
 					sip_setup_context_buddy_lookup_submit(ctx,req);
 					lc->bl_reqs=ms_list_append(lc->bl_reqs,req);

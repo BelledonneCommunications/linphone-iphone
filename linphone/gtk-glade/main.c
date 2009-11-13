@@ -706,6 +706,12 @@ static void linphone_gtk_new_subscriber_response(GtkWidget *dialog, guint respon
 
 static void linphone_gtk_new_unknown_subscriber(LinphoneCore *lc, LinphoneFriend *lf, const char *url){
 	GtkWidget *dialog;
+
+	if (linphone_gtk_get_ui_config_int("subscribe_deny_all",0)){
+		linphone_core_reject_subscriber(linphone_gtk_get_core(),lf);
+		return;
+	}
+
 	gchar *message=g_strdup_printf(_("%s would like to add you to his contact list.\nWould you allow him to see your presence status or add him to your contact list ?\nIf you answer no, this person will be temporarily blacklisted."),url);
 	dialog = gtk_message_dialog_new (
 				GTK_WINDOW(linphone_gtk_get_main_window()),

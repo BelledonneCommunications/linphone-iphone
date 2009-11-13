@@ -143,9 +143,13 @@ static gboolean linphone_gtk_process_buddy_lookup(GtkWidget *w){
 	ctx=(SipSetupContext*)g_object_get_data(G_OBJECT(w),"SipSetupContext");	
 	last_state=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(w),"last_state"));
 
-	if (req==NULL) return FALSE;
+	if (req==NULL) {
+		g_object_set_data(G_OBJECT(w),"buddylookup_processing",GINT_TO_POINTER(0));
+		return FALSE;
+	}
 	bls=req->status;
 	if (last_state==bls) return TRUE;
+	
 	switch(bls){
 		case BuddyLookupNone:
 			gtk_progress_bar_set_fraction(pb,0);
