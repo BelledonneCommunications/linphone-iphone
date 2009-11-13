@@ -1093,7 +1093,7 @@ static void linphone_core_grab_buddy_infos(LinphoneCore *lc, LinphoneProxyConfig
 		if (lf->info==NULL){
 			char *url=linphone_friend_get_url(lf);
 			if (linphone_core_lookup_known_proxy(lc,url)==cfg){
-				if (lf->url->url->username!=NULL && lf->url->url->username[0]!='0'){
+				if (lf->url->url->username!=NULL && lf->url->url->username[0]!='\0'){
 					BuddyLookupRequest *req;
 					char tmp[255];
 					snprintf(tmp,sizeof(tmp),"sip:%s@%s",lf->url->url->username,lf->url->url->host);
