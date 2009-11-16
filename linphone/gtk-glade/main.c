@@ -782,6 +782,14 @@ static void linphone_gtk_auth_info_requested(LinphoneCore *lc, const char *realm
 	GtkWidget *label=linphone_gtk_get_widget(w,"message");
 	LinphoneAuthInfo *info;
 	gchar *msg;
+	GtkWidget *mw=linphone_gtk_get_main_window();
+	
+	if (mw && GTK_WIDGET_VISIBLE(linphone_gtk_get_widget(mw,"login_frame"))){
+		/*don't prompt for authentication when login frame is visible*/
+		linphone_core_abort_authentication(lc,NULL);
+		return;
+	}
+
 	msg=g_strdup_printf(_("Please enter your password for username <i>%s</i>\n at domain <i>%s</i>:"),
 		username,realm);
 	gtk_label_set_markup(GTK_LABEL(label),msg);

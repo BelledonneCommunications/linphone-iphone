@@ -187,19 +187,26 @@ LinphoneAuthInfo *linphone_core_find_auth_info(LinphoneCore *lc, const char *rea
 	return ret;
 }
 
+static void refresh_exosip_auth_info(LinphoneCore *lc){
+	MSList *elem;
+	eXosip_lock();
+	eXosip_clear_authentication_info();
+	for (elem=lc->auth_info;elem!=NULL;elem=ms_list_next(elem)){
+		LinphoneAuthInfo *info=(LinphoneAuthInfo*)elem->data;
+		char *userid;
+		if (info->userid==NULL || info->userid[0]=='\0') userid=info->username;
+		else userid=info->userid;
+		eXosip_add_authentication_info(info->username,userid,
+				info->passwd,info->ha1,info->realm);
+	}
+	eXosip_unlock();
+}
+
 void linphone_core_add_auth_info(LinphoneCore *lc, LinphoneAuthInfo *info)
 {
 	MSList *elem;
-	char *userid;
 	LinphoneAuthInfo *ai;
-	if (info->userid==NULL || info->userid[0]=='\0') userid=info->username;
-	else userid=info->userid;
-	eXosip_lock();
-	eXosip_add_authentication_info(info->username,userid,
-				info->passwd,info->ha1,info->realm);
-	eXosip_unlock();
-	/* if the user was prompted, re-allow automatic_action */
-	if (lc->automatic_action>0) lc->automatic_action--;
+	
 	/* find if we are attempting to modify an existing auth info */
 	ai=linphone_core_find_auth_info(lc,info->realm,info->username);
 	if (ai!=NULL){
@@ -213,6 +220,9 @@ void linphone_core_add_auth_info(LinphoneCore *lc, LinphoneAuthInfo *info)
 	}else {
 		lc->auth_info=ms_list_append(lc->auth_info,(void *)info);
 	}
+	refresh_exosip_auth_info(lc);
+	/* if the user was prompted, re-allow automatic_action */
+	if (lc->automatic_action>0) lc->automatic_action--;
 }
 
 void linphone_core_abort_authentication(LinphoneCore *lc,  LinphoneAuthInfo *info){
@@ -234,6 +244,7 @@ void linphone_core_remove_auth_info(LinphoneCore *lc, LinphoneAuthInfo *info){
 	for (elem=lc->auth_info,i=0;elem!=NULL;elem=ms_list_next(elem),i++){
 		linphone_auth_info_write_config(lc->config,(LinphoneAuthInfo*)elem->data,i);
 	}
+	refresh_exosip_auth_info(lc);
 	
 }
 

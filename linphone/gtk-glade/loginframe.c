@@ -136,6 +136,9 @@ void linphone_gtk_login_frame_connect_clicked(GtkWidget *button){
 	username=gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(mw,"login_username")));
 	password=gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(mw,"login_password")));
 
+	if (username==NULL || username[0]=='\0')
+		return;
+
 	autologin=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(mw,"automatic_login")));
 	linphone_gtk_set_ui_config_int("automatic_login",autologin);
 

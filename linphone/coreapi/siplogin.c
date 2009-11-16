@@ -60,7 +60,10 @@ static int sip_login_do_login(SipSetupContext * ctx, const char *uri, const char
 	char *tmp;
 
 	osip_from_init(&parsed_uri);
-	osip_from_parse(parsed_uri,uri);
+	if (osip_from_parse(parsed_uri,uri)==-1){
+		osip_from_free(parsed_uri);
+		return -1;
+	}
 	if (parsed_uri->displayname==NULL || strlen(parsed_uri->displayname)==0){
 		guess_display_name(parsed_uri);
 	}
