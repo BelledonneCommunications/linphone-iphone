@@ -68,6 +68,15 @@ int yuv_buf_init_from_mblk(YuvBuf *buf, mblk_t *m){
 	}else if (size==(MS_VIDEO_SIZE_800X600_W*MS_VIDEO_SIZE_800X600_H*3)/2){
 		w=MS_VIDEO_SIZE_800X600_W;
 		h=MS_VIDEO_SIZE_800X600_H;
+	}else if (size==(MS_VIDEO_SIZE_QSIF_W*MS_VIDEO_SIZE_QSIF_H*3)/2){
+		w=MS_VIDEO_SIZE_QSIF_W;
+		h=MS_VIDEO_SIZE_QSIF_H;
+	}else if (size==(MS_VIDEO_SIZE_SIF_W*MS_VIDEO_SIZE_SIF_H*3)/2){
+		w=MS_VIDEO_SIZE_SIF_W;
+		h=MS_VIDEO_SIZE_SIF_H;
+	}else if (size==(MS_VIDEO_SIZE_4SIF_W*MS_VIDEO_SIZE_4SIF_H*3)/2){
+		w=MS_VIDEO_SIZE_4SIF_W;
+		h=MS_VIDEO_SIZE_4SIF_H;
 	}else if (size==(160*112*3)/2){/*format used by econf*/
 		w=160;
 		h=112;
