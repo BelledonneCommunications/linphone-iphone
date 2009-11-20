@@ -76,7 +76,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions=" /SUBSYSTEM:WINDOWSCE,5.01 /MACHINE:THUMB"
-				AdditionalDependencies=" ws2.lib iphlpapi.lib mmtimer.lib libcmtd.lib dmoguids.lib strmiids.lib strmbase.lib atlsd.lib d3dmx.lib"
+				AdditionalDependencies=" ws2.lib iphlpapi.lib mmtimer.lib libcmtd.lib "
 				IgnoreAllDefaultLibraries="true"
 				ModuleDefinitionFile="mediastreamer2.def"
 				GenerateDebugInformation="true"
@@ -329,7 +329,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions=" /SUBSYSTEM:WINDOWSCE,5.01 /MACHINE:THUMB"
-				AdditionalDependencies="ws2.lib iphlpapi.lib mmtimer.lib libcmt.lib dmoguids.lib strmiids.lib strmbase.lib atls.lib"
+				AdditionalDependencies="ws2.lib iphlpapi.lib mmtimer.lib libcmt.lib"
 				IgnoreAllDefaultLibraries="true"
 				ModuleDefinitionFile="mediastreamer2.def"
 			/>

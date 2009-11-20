@@ -23,7 +23,9 @@ extern MSFilterDesc ms_conf_desc;
 //extern MSFilterDesc ms_arts_read_desc;
 //extern MSFilterDesc ms_arts_write_desc;
 //extern MSFilterDesc ms_v4l_desc;
+#ifndef __VIDEO_DISABLED__
 extern MSFilterDesc ms_v4w_desc;
+#endif
 //extern MSFilterDesc ms_sdl_out_desc;
 //extern MSFilterDesc ms_h263_enc_desc;
 //extern MSFilterDesc ms_h263_dec_desc;
@@ -55,7 +57,9 @@ MSFilterDesc * ms_filter_descs[]={
 //&ms_arts_read_desc,
 //&ms_arts_write_desc,
 //&ms_v4l_desc,
+#ifndef __VIDEO_DISABLED__
 &ms_v4w_desc,
+#endif
 //&ms_sdl_out_desc,
 //&ms_h263_enc_desc,
 //&ms_h263_dec_desc,

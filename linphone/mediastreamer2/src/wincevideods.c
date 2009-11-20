@@ -17,7 +17,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-//#define AYMERIC_TEST
+#ifndef __VIDEO_DISABLED__
+
+/* need to link with "dmoguids.lib strmiids.lib strmbase.lib atls.lib" */
+
 #define _CE_ALLOW_SINGLE_THREADED_OBJECTS_IN_MTA
 
 #include "mediastreamer2/msvideo.h"
@@ -996,3 +999,5 @@ MSFilterDesc ms_v4w_desc={
 #endif
 
 MS_FILTER_DESC_EXPORT(ms_v4w_desc)
+
+#endif
