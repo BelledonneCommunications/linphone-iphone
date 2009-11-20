@@ -543,20 +543,40 @@ static int v4w_configure_videodevice(V4wState *s)
 		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_CIF_W, MS_VIDEO_SIZE_CIF_H);
 	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_4CIF_W, MS_VIDEO_SIZE_4CIF_H, &pPinCategory)==0)
 		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_4CIF_W, MS_VIDEO_SIZE_4CIF_H);
-	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_VGA_W, MS_VIDEO_SIZE_VGA_H, &pPinCategory)==0)
-		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_VGA_W, MS_VIDEO_SIZE_VGA_H);
 	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_QVGA_W, MS_VIDEO_SIZE_QVGA_H, &pPinCategory)==0)
 		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_QVGA_W, MS_VIDEO_SIZE_QVGA_H);
 	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_QQVGA_W, MS_VIDEO_SIZE_QQVGA_H, &pPinCategory)==0)
 		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_QQVGA_W, MS_VIDEO_SIZE_QQVGA_H);
 	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_NS1_W, MS_VIDEO_SIZE_NS1_H, &pPinCategory)==0)
 		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_NS1_W, MS_VIDEO_SIZE_NS1_H);
+	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_QSIF_W, MS_VIDEO_SIZE_QSIF_H, &pPinCategory)==0)
+		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_QSIF_W, MS_VIDEO_SIZE_QSIF_H);
+	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_SIF_W, MS_VIDEO_SIZE_SIF_H, &pPinCategory)==0)
+		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_SIF_W, MS_VIDEO_SIZE_SIF_H);
+	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_VGA_W, MS_VIDEO_SIZE_VGA_H, &pPinCategory)==0)
+		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_VGA_W, MS_VIDEO_SIZE_VGA_H);
+	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_SDTV_W, MS_VIDEO_SIZE_SDTV_H, &pPinCategory)==0)
+		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_SDTV_W, MS_VIDEO_SIZE_SDTV_H);
+	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_288P_W, MS_VIDEO_SIZE_288P_H, &pPinCategory)==0)
+		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_288P_W, MS_VIDEO_SIZE_288P_H);
+	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_448P_W, MS_VIDEO_SIZE_448P_H, &pPinCategory)==0)
+		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_448P_W, MS_VIDEO_SIZE_448P_H);
+	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_576P_W, MS_VIDEO_SIZE_576P_H, &pPinCategory)==0)
+		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_576P_W, MS_VIDEO_SIZE_576P_H);
 	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_720P_W, MS_VIDEO_SIZE_720P_H, &pPinCategory)==0)
 		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_720P_W, MS_VIDEO_SIZE_720P_H);
-	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_800X600_W, MS_VIDEO_SIZE_800X600_H, &pPinCategory)==0)
-		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_800X600_W, MS_VIDEO_SIZE_800X600_H);
-	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_1024_W, MS_VIDEO_SIZE_1024_H, &pPinCategory)==0)
-		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_1024_W, MS_VIDEO_SIZE_1024_H);
+	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_1080P_W, MS_VIDEO_SIZE_1080P_H, &pPinCategory)==0)
+		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_1080P_W, MS_VIDEO_SIZE_1080P_H);
+	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_4SIF_W, MS_VIDEO_SIZE_4SIF_H, &pPinCategory)==0)
+		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_4SIF_W, MS_VIDEO_SIZE_4SIF_H);
+	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_SVGA_W, MS_VIDEO_SIZE_SVGA_H, &pPinCategory)==0)
+		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_SVGA_W, MS_VIDEO_SIZE_SVGA_H);
+	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_XGA_W, MS_VIDEO_SIZE_XGA_H, &pPinCategory)==0)
+		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_XGA_W, MS_VIDEO_SIZE_XGA_H);
+	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_WXGA_W, MS_VIDEO_SIZE_WXGA_H, &pPinCategory)==0)
+		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_WXGA_W, MS_VIDEO_SIZE_WXGA_H);
+	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_HDTVP_W, MS_VIDEO_SIZE_HDTVP_H, &pPinCategory)==0)
+		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_HDTVP_W, MS_VIDEO_SIZE_HDTVP_H);
 	else
 	{
 		ms_error("No supported size found for format.");
@@ -718,20 +738,40 @@ static int v4w_open_videodevice(V4wState *s)
 		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_CIF_W, MS_VIDEO_SIZE_CIF_H);
 	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_4CIF_W, MS_VIDEO_SIZE_4CIF_H, &pPinCategory)==0)
 		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_4CIF_W, MS_VIDEO_SIZE_4CIF_H);
-	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_VGA_W, MS_VIDEO_SIZE_VGA_H, &pPinCategory)==0)
-		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_VGA_W, MS_VIDEO_SIZE_VGA_H);
 	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_QVGA_W, MS_VIDEO_SIZE_QVGA_H, &pPinCategory)==0)
 		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_QVGA_W, MS_VIDEO_SIZE_QVGA_H);
 	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_QQVGA_W, MS_VIDEO_SIZE_QQVGA_H, &pPinCategory)==0)
 		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_QQVGA_W, MS_VIDEO_SIZE_QQVGA_H);
 	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_NS1_W, MS_VIDEO_SIZE_NS1_H, &pPinCategory)==0)
 		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_NS1_W, MS_VIDEO_SIZE_NS1_H);
+	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_QSIF_W, MS_VIDEO_SIZE_QSIF_H, &pPinCategory)==0)
+		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_QSIF_W, MS_VIDEO_SIZE_QSIF_H);
+	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_SIF_W, MS_VIDEO_SIZE_SIF_H, &pPinCategory)==0)
+		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_SIF_W, MS_VIDEO_SIZE_SIF_H);
+	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_VGA_W, MS_VIDEO_SIZE_VGA_H, &pPinCategory)==0)
+		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_VGA_W, MS_VIDEO_SIZE_VGA_H);
+	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_SDTV_W, MS_VIDEO_SIZE_SDTV_H, &pPinCategory)==0)
+		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_SDTV_W, MS_VIDEO_SIZE_SDTV_H);
+	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_288P_W, MS_VIDEO_SIZE_288P_H, &pPinCategory)==0)
+		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_288P_W, MS_VIDEO_SIZE_288P_H);
+	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_448P_W, MS_VIDEO_SIZE_448P_H, &pPinCategory)==0)
+		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_448P_W, MS_VIDEO_SIZE_448P_H);
+	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_576P_W, MS_VIDEO_SIZE_576P_H, &pPinCategory)==0)
+		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_576P_W, MS_VIDEO_SIZE_576P_H);
 	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_720P_W, MS_VIDEO_SIZE_720P_H, &pPinCategory)==0)
 		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_720P_W, MS_VIDEO_SIZE_720P_H);
-	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_800X600_W, MS_VIDEO_SIZE_800X600_H, &pPinCategory)==0)
-		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_800X600_W, MS_VIDEO_SIZE_800X600_H);
-	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_1024_W, MS_VIDEO_SIZE_1024_H, &pPinCategory)==0)
-		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_1024_W, MS_VIDEO_SIZE_1024_H);
+	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_1080P_W, MS_VIDEO_SIZE_1080P_H, &pPinCategory)==0)
+		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_1080P_W, MS_VIDEO_SIZE_1080P_H);
+	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_4SIF_W, MS_VIDEO_SIZE_4SIF_H, &pPinCategory)==0)
+		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_4SIF_W, MS_VIDEO_SIZE_4SIF_H);
+	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_SVGA_W, MS_VIDEO_SIZE_SVGA_H, &pPinCategory)==0)
+		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_SVGA_W, MS_VIDEO_SIZE_SVGA_H);
+	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_XGA_W, MS_VIDEO_SIZE_XGA_H, &pPinCategory)==0)
+		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_XGA_W, MS_VIDEO_SIZE_XGA_H);
+	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_WXGA_W, MS_VIDEO_SIZE_WXGA_H, &pPinCategory)==0)
+		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_WXGA_W, MS_VIDEO_SIZE_WXGA_H);
+	else if (try_format_size(s, s->pix_fmt, MS_VIDEO_SIZE_HDTVP_W, MS_VIDEO_SIZE_HDTVP_H, &pPinCategory)==0)
+		ms_message("Selected Size: %ix%i.", MS_VIDEO_SIZE_HDTVP_W, MS_VIDEO_SIZE_HDTVP_H);
 	else
 	{
 		ms_error("No supported size found for format.");
