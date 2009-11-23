@@ -41,7 +41,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 typedef struct _EqualizerState{
 	int rate;
-	int nfft; //number of fft points in time
+	int nfft; /*number of fft points in time*/
 	ms_word16_t *fft_cpx;
 	int fir_len;
 	ms_word16_t *fir;
@@ -58,6 +58,7 @@ static void equalizer_state_flatten(EqualizerState *s){
 		s->fft_cpx[i]=val;
 }
 
+/* TODO: rate also beyond 8000 */
 static EqualizerState * equalizer_state_new(int nfft){
 	EqualizerState *s=(EqualizerState *)ms_new0(EqualizerState,1);
 	s->rate=8000;
@@ -145,7 +146,7 @@ static void equalizer_state_set(EqualizerState *s, int freq_0, float gain, int f
 		gain = equalizer_compute_gainpoint(f-delta_f, freq_0, sqrt_gain, freq_bw);
 		equalizer_point_set(s, i, f, gain);
 	}
-	while (i<TAPS && (gain>1.1 || gain<0.9));
+	while (i < s->nfft/2 && (gain>1.1 || gain<0.9));
 	i = mid;
 	do {	/* ... and here +delta, as to  */
 		i--;
