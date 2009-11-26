@@ -40,6 +40,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/msticker.h"
 #include "mediastreamer2/mswebcam.h"
 
+#ifdef HAVE_LIBV4L2
+#include <libv4l2.h>
+#else
+
+#define v4l2_open open
+#define v4l2_close close
+#define v4l2_mmap mmap
+#define v4l2_munmap munmap
+#define v4l2_ioctl ioctl
+
+#endif
+
 typedef struct V4l2State{
 	int fd;
 	char *dev;
@@ -60,8 +72,8 @@ typedef struct V4l2State{
 	bool_t configured;
 }V4l2State;
 
-static int v4l2_open(V4l2State *s){
-	int fd=open(s->dev,O_RDWR|O_NONBLOCK);
+static int msv4l2_open(V4l2State *s){
+	int fd=v4l2_open(s->dev,O_RDWR|O_NONBLOCK);
 	if (fd==-1){
 		ms_error("Could not open %s: %s",s->dev,strerror(errno));
 		return -1;
@@ -70,9 +82,9 @@ static int v4l2_open(V4l2State *s){
 	return 0;
 }
 
-static int v4l2_close(V4l2State *s){
+static int msv4l2_close(V4l2State *s){
 	if (s->fd!=-1){
-		close(s->fd);
+		v4l2_close(s->fd);
 		s->fd=-1;
 		s->configured=FALSE;
 	}
@@ -85,11 +97,11 @@ static bool_t v4lv2_try_format( V4l2State *s, struct v4l2_format *fmt, int fmtid
 	fmt->fmt.pix.pixelformat = fmtid;
 	fmt->fmt.pix.field = V4L2_FIELD_ANY;
 
-        if (ioctl (s->fd, VIDIOC_TRY_FMT, fmt)<0){
+        if (v4l2_ioctl (s->fd, VIDIOC_TRY_FMT, fmt)<0){
 		ms_message("VIDIOC_TRY_FMT: %s",strerror(errno));
 		return FALSE;
 	}
-	if (ioctl (s->fd, VIDIOC_S_FMT, fmt)<0){
+	if (v4l2_ioctl (s->fd, VIDIOC_S_FMT, fmt)<0){
 		ms_message("VIDIOC_S_FMT: %s",strerror(errno));
 		return FALSE;
 	}
@@ -113,12 +125,12 @@ static int get_picture_buffer_size(MSPixFmt pix_fmt, int w, int h){
 	return 0;
 }
 
-static int v4l2_configure(V4l2State *s){
+static int msv4l2_configure(V4l2State *s){
 	struct v4l2_capability cap;
 	struct v4l2_format fmt;
 	MSVideoSize vsize;
 
-        if (ioctl (s->fd, VIDIOC_QUERYCAP, &cap)<0) {
+        if (v4l2_ioctl (s->fd, VIDIOC_QUERYCAP, &cap)<0) {
 		ms_message("Not a v4lv2 driver.");
 		return -1;
         }
@@ -137,7 +149,7 @@ static int v4l2_configure(V4l2State *s){
 	memset(&fmt,0,sizeof(fmt));
 
 	fmt.type                = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-	if (ioctl (s->fd, VIDIOC_G_FMT, &fmt)<0){
+	if (v4l2_ioctl (s->fd, VIDIOC_G_FMT, &fmt)<0){
 		ms_error("VIDIOC_G_FMT failed: %s",strerror(errno));
 	}
 	vsize=s->vsize;
@@ -178,7 +190,7 @@ static int v4l2_configure(V4l2State *s){
 
 	fmt.type                = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 
-        if (ioctl (s->fd, VIDIOC_G_FMT, &fmt)<0){
+        if (v4l2_ioctl (s->fd, VIDIOC_G_FMT, &fmt)<0){
 		ms_error("VIDIOC_G_FMT failed: %s",strerror(errno));
 	}else{
 		ms_message("Size of webcam delivered pictures is %ix%i",fmt.fmt.pix.width,fmt.fmt.pix.height);
@@ -190,7 +202,7 @@ static int v4l2_configure(V4l2State *s){
 	return 0;
 }
 
-static int v4l2_do_mmap(V4l2State *s){
+static int msv4l2_do_mmap(V4l2State *s){
 	struct v4l2_requestbuffers req;
 	int i;
 	enum v4l2_buf_type type;
@@ -201,7 +213,7 @@ static int v4l2_do_mmap(V4l2State *s){
 	req.type                = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	req.memory              = V4L2_MEMORY_MMAP;
 	
-	if (ioctl (s->fd, VIDIOC_REQBUFS, &req)<0) {
+	if (v4l2_ioctl (s->fd, VIDIOC_REQBUFS, &req)<0) {
 		ms_error("Error requesting info on mmap'd buffers: %s",strerror(errno));
 		return -1;
 	}
@@ -216,19 +228,19 @@ static int v4l2_do_mmap(V4l2State *s){
 		buf.memory=V4L2_MEMORY_MMAP;
 		buf.index=i;
 	
-		if (ioctl (s->fd, VIDIOC_QUERYBUF, &buf)<0){
+		if (v4l2_ioctl (s->fd, VIDIOC_QUERYBUF, &buf)<0){
 			ms_error("Could not VIDIOC_QUERYBUF : %s",strerror(errno));
 			return -1;
 		}
 		
-		start=mmap (NULL /* start anywhere */,
+		start=v4l2_mmap (NULL /* start anywhere */,
 			buf.length,
 			PROT_READ | PROT_WRITE /* required */,
 			MAP_SHARED /* recommended */,
 			s->fd, buf.m.offset);
 	
 		if (start==NULL){
-			ms_error("Could not mmap: %s",strerror(errno));
+			ms_error("Could not v4l2_mmap: %s",strerror(errno));
 		}
 		msg=esballoc(start,buf.length,0,NULL);
 		msg->b_wptr+=buf.length;
@@ -242,7 +254,7 @@ static int v4l2_do_mmap(V4l2State *s){
 		buf.type        = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 		buf.memory      = V4L2_MEMORY_MMAP;
 		buf.index       = i;
-		if (-1==ioctl (s->fd, VIDIOC_QBUF, &buf)){
+		if (-1==v4l2_ioctl (s->fd, VIDIOC_QBUF, &buf)){
 			ms_error("VIDIOC_QBUF failed: %s",strerror(errno));
 		}else {
 			s->frames[i]->b_datap->db_ref++;
@@ -251,7 +263,7 @@ static int v4l2_do_mmap(V4l2State *s){
 	}
 	/*start capture immediately*/
 	type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-	if (-1 ==ioctl (s->fd, VIDIOC_STREAMON, &type)){
+	if (-1 ==v4l2_ioctl (s->fd, VIDIOC_STREAMON, &type)){
 		ms_error("VIDIOC_STREAMON failed: %s",strerror(errno));
 		return -1;
 	}
@@ -272,7 +284,7 @@ static mblk_t * v4lv2_grab_image(V4l2State *s){
 	for(k=0;k<s->frame_max;++k){
 		if (s->frames[k]->b_datap->db_ref==1){
 			buf.index=k;
-			if (-1==ioctl (s->fd, VIDIOC_QBUF, &buf))
+			if (-1==v4l2_ioctl (s->fd, VIDIOC_QBUF, &buf))
 				ms_warning("VIDIOC_QBUF %i failed: %s",k,  strerror(errno));
 			else {
 				ms_debug("v4l2: queue buf %i",k);
@@ -290,7 +302,7 @@ static mblk_t * v4lv2_grab_image(V4l2State *s){
 		fds.fd=s->fd;
 		/*check with poll if there is something to read */
 		if (poll(&fds,1,0)==1 && fds.revents==POLLIN){
-			if (ioctl(s->fd, VIDIOC_DQBUF, &buf)<0) {
+			if (v4l2_ioctl(s->fd, VIDIOC_DQBUF, &buf)<0) {
 				switch (errno) {
 				case EAGAIN:
 				case EIO:
@@ -324,19 +336,19 @@ static mblk_t * v4lv2_grab_image(V4l2State *s){
 	return ret;
 }
 
-static void v4l2_do_munmap(V4l2State *s){
+static void msv4l2_do_munmap(V4l2State *s){
 	int i;
 	enum v4l2_buf_type type;
 	/*stop capture immediately*/
 	type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-	if (-1 ==ioctl (s->fd, VIDIOC_STREAMOFF, &type)){
+	if (-1 ==v4l2_ioctl (s->fd, VIDIOC_STREAMOFF, &type)){
 		ms_error("VIDIOC_STREAMOFF failed: %s",strerror(errno));
 	}
 
 	for(i=0;i<s->frame_max;++i){
 		mblk_t *msg=s->frames[i];
 		int len=msg->b_datap->db_lim-msg->b_datap->db_base;
-		if (munmap(msg->b_datap->db_base,len)<0){
+		if (v4l2_munmap(msg->b_datap->db_base,len)<0){
 			ms_warning("MSV4l2: Fail to unmap: %s",strerror(errno));
 		}
 		freemsg(s->frames[i]);
@@ -346,7 +358,7 @@ static void v4l2_do_munmap(V4l2State *s){
 
 
 
-static void v4l2_init(MSFilter *f){
+static void msv4l2_init(MSFilter *f){
 	V4l2State *s=ms_new0(V4l2State,1);
 	s->dev=ms_strdup("/dev/video0");
 	s->fd=-1;
@@ -356,29 +368,29 @@ static void v4l2_init(MSFilter *f){
 	f->data=s;
 }
 
-static void v4l2_uninit(MSFilter *f){
+static void msv4l2_uninit(MSFilter *f){
 	V4l2State *s=(V4l2State*)f->data;
 	ms_free(s->dev);
 	ms_free(s);
 }
 
-static void v4l2_preprocess(MSFilter *f){
+static void msv4l2_preprocess(MSFilter *f){
 	V4l2State *s=(V4l2State*)f->data;
-	if (s->fd==-1 && v4l2_open(s)!=0) {
+	if (s->fd==-1 && msv4l2_open(s)!=0) {
 		return;
 	}
-	if (!s->configured && v4l2_configure(s)!=0){
+	if (!s->configured && msv4l2_configure(s)!=0){
 		return;
 	}
-	if (v4l2_do_mmap(s)==0){
+	if (msv4l2_do_mmap(s)==0){
 		ms_message("V4L2 video capture started.");
 	}else{
-		v4l2_close(s);
+		msv4l2_close(s);
 	}
 	s->start_time=f->ticker->time;
 }
 
-static void v4l2_process(MSFilter *f){
+static void msv4l2_process(MSFilter *f){
 	V4l2State *s=(V4l2State*)f->data;
 	uint32_t elapsed;
 	
@@ -398,37 +410,37 @@ static void v4l2_process(MSFilter *f){
 	}
 }
 
-static void v4l2_postprocess(MSFilter *f){
+static void msv4l2_postprocess(MSFilter *f){
 	V4l2State *s=(V4l2State*)f->data;
 	if (s->fd!=-1){
-		v4l2_do_munmap(s);
-		v4l2_close(s);
+		msv4l2_do_munmap(s);
+		msv4l2_close(s);
 	}
 }
 
-static int v4l2_set_fps(MSFilter *f, void *arg){
+static int msv4l2_set_fps(MSFilter *f, void *arg){
 	V4l2State *s=(V4l2State*)f->data;
 	s->fps=*(float*)arg;
 	return 0;
 }
 
-static int v4l2_set_vsize(MSFilter *f, void *arg){
+static int msv4l2_set_vsize(MSFilter *f, void *arg){
 	V4l2State *s=(V4l2State*)f->data;
 	s->vsize=*(MSVideoSize*)arg;
 	return 0;
 }
 
-static int v4l2_get_vsize(MSFilter *f, void *arg){
+static int msv4l2_get_vsize(MSFilter *f, void *arg){
 	V4l2State *s=(V4l2State*)f->data;
 	*(MSVideoSize*)arg=s->vsize;
 	return 0;
 }
 
-static int v4l2_get_pixfmt(MSFilter *f, void *arg){
+static int msv4l2_get_pixfmt(MSFilter *f, void *arg){
 	V4l2State *s=(V4l2State*)f->data;
 	if (s->fd==-1){
-		if (v4l2_open(s)==0){
-			v4l2_configure(s);
+		if (msv4l2_open(s)==0){
+			msv4l2_configure(s);
 			*(MSPixFmt*)arg=s->pix_fmt;
 			return 0;
 		}else return -1;
@@ -437,18 +449,18 @@ static int v4l2_get_pixfmt(MSFilter *f, void *arg){
 	return 0;
 }
 
-static int v4l2_set_devfile(MSFilter *f, void *arg){
+static int msv4l2_set_devfile(MSFilter *f, void *arg){
 	V4l2State *s=(V4l2State*)f->data;
 	if (s->dev) ms_free(s->dev);
 	s->dev=ms_strdup((char*)arg);
 	return 0;
 }
 
-static MSFilterMethod v4l2_methods[]={
-	{	MS_FILTER_SET_FPS	,	v4l2_set_fps	},
-	{	MS_FILTER_SET_VIDEO_SIZE,	v4l2_set_vsize	},
-	{	MS_FILTER_GET_VIDEO_SIZE,	v4l2_get_vsize	},
-	{	MS_FILTER_GET_PIX_FMT	,	v4l2_get_pixfmt	},
+static MSFilterMethod msv4l2_methods[]={
+	{	MS_FILTER_SET_FPS	,	msv4l2_set_fps	},
+	{	MS_FILTER_SET_VIDEO_SIZE,	msv4l2_set_vsize	},
+	{	MS_FILTER_GET_VIDEO_SIZE,	msv4l2_get_vsize	},
+	{	MS_FILTER_GET_PIX_FMT	,	msv4l2_get_pixfmt	},
 	{	0			,	NULL		}
 };
 
@@ -459,36 +471,36 @@ MSFilterDesc ms_v4l2_desc={
 	.category=MS_FILTER_OTHER,
 	.ninputs=0,
 	.noutputs=1,
-	.init=v4l2_init,
-	.preprocess=v4l2_preprocess,
-	.process=v4l2_process,
-	.postprocess=v4l2_postprocess,
-	.uninit=v4l2_uninit,
-	.methods=v4l2_methods
+	.init=msv4l2_init,
+	.preprocess=msv4l2_preprocess,
+	.process=msv4l2_process,
+	.postprocess=msv4l2_postprocess,
+	.uninit=msv4l2_uninit,
+	.methods=msv4l2_methods
 };
 
 MS_FILTER_DESC_EXPORT(ms_v4l2_desc)
 
-static MSFilter *v4l2_create_reader(MSWebCam *obj){
+static MSFilter *msv4l2_create_reader(MSWebCam *obj){
 	MSFilter *f=ms_filter_new(MS_V4L2_CAPTURE_ID);
-	v4l2_set_devfile(f,obj->name);
+	msv4l2_set_devfile(f,obj->name);
 	return f;
 }
 
-static void v4l2_detect(MSWebCamManager *obj);
+static void msv4l2_detect(MSWebCamManager *obj);
 
-static void v4l2_cam_init(MSWebCam *cam){
+static void msv4l2_cam_init(MSWebCam *cam){
 }
 
-MSWebCamDesc v4l2_desc={
+MSWebCamDesc v4l2_card_desc={
 	"V4L2",
-	&v4l2_detect,
-	&v4l2_cam_init,
-	&v4l2_create_reader,
+	&msv4l2_detect,
+	&msv4l2_cam_init,
+	&msv4l2_create_reader,
 	NULL
 };
 
-static void v4l2_detect(MSWebCamManager *obj){
+static void msv4l2_detect(MSWebCamManager *obj){
 	struct v4l2_capability cap;
 	char devname[32];
 	int i;
@@ -497,9 +509,9 @@ static void v4l2_detect(MSWebCamManager *obj){
 		snprintf(devname,sizeof(devname),"/dev/video%i",i);
 		fd=open(devname,O_RDWR);
 		if (fd!=-1){
-			if (ioctl (fd, VIDIOC_QUERYCAP, &cap)==0) {
+			if (v4l2_ioctl (fd, VIDIOC_QUERYCAP, &cap)==0) {
 				/* is a V4LV2 */
-				MSWebCam *cam=ms_web_cam_new(&v4l2_desc);
+				MSWebCam *cam=ms_web_cam_new(&v4l2_card_desc);
 				cam->name=ms_strdup(devname);
 				ms_web_cam_manager_add_cam(obj,cam);
 			}
