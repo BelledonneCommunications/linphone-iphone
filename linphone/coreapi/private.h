@@ -100,13 +100,13 @@ typedef struct _LinphoneCall
 	bool_t supports_session_timers;
 } LinphoneCall;
 
-LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneUri *from, LinphoneUri *to);
-LinphoneCall * linphone_call_new_incoming(struct _LinphoneCore *lc, LinphoneUri *from, LinphoneUri *to, eXosip_event_t *ev);
+LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to);
+LinphoneCall * linphone_call_new_incoming(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, eXosip_event_t *ev);
 #define linphone_call_set_state(lcall,st)	(lcall)->state=(st)
 void linphone_call_destroy(struct _LinphoneCall *obj);
 
 /* private: */
-LinphoneCallLog * linphone_call_log_new(LinphoneCall *call, LinphoneUri *local, LinphoneUri * remote);
+LinphoneCallLog * linphone_call_log_new(LinphoneCall *call, LinphoneAddress *local, LinphoneAddress * remote);
 void linphone_call_log_completed(LinphoneCallLog *calllog, LinphoneCall *call);
 void linphone_call_log_destroy(LinphoneCallLog *cl);
 
@@ -176,7 +176,7 @@ void linphone_call_init_media_params(LinphoneCall *call);
 
 void linphone_set_sdp(osip_message_t *sip, const char *sdp);
 
-MSList *linphone_find_friend(MSList *fl, const LinphoneUri *fri, LinphoneFriend **lf);
+MSList *linphone_find_friend(MSList *fl, const LinphoneAddress *fri, LinphoneFriend **lf);
 LinphoneFriend *linphone_find_friend_by_nid(MSList *l, int nid);
 LinphoneFriend *linphone_find_friend_by_sid(MSList *l, int sid);
 
@@ -187,7 +187,7 @@ void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call);
 void linphone_core_write_friends_config(LinphoneCore* lc);
 void linphone_proxy_config_update(LinphoneProxyConfig *cfg);
 void linphone_proxy_config_get_contact(LinphoneProxyConfig *cfg, const char **ip, int *port);
-LinphoneProxyConfig * linphone_core_lookup_known_proxy(LinphoneCore *lc, const LinphoneUri *uri);
+LinphoneProxyConfig * linphone_core_lookup_known_proxy(LinphoneCore *lc, const LinphoneAddress *uri);
 int linphone_core_get_local_ip_for(const char *dest, char *result);
 
 #endif /* _PRIVATE_H */

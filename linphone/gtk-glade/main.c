@@ -371,12 +371,12 @@ static void set_video_window_decorations(GdkWindow *w){
 	if (!linphone_core_in_call(linphone_gtk_get_core())){
 		snprintf(video_title,sizeof(video_title),"%s video",title);	
 	}else{
-		const LinphoneUri *uri=linphone_core_get_remote_uri(linphone_gtk_get_core());
+		const LinphoneAddress *uri=linphone_core_get_remote_uri(linphone_gtk_get_core());
 		char *display_name;
-		if (linphone_uri_get_display_name(uri)!=NULL)
-			display_name=ms_strdup(linphone_uri_get_display_name(uri));
+		if (linphone_address_get_display_name(uri)!=NULL)
+			display_name=ms_strdup(linphone_address_get_display_name(uri));
 		else{
-			display_name=linphone_uri_as_string(uri);
+			display_name=linphone_address_as_string(uri);
 		}
 		snprintf(video_title,sizeof(video_title),_("Call with %s"),display_name);
 		ms_free(display_name);

@@ -77,19 +77,19 @@ const char *linphone_online_status_to_string(LinphoneOnlineStatus ss){
 }
 
 static int friend_data_compare(const void * a, const void * b, void * data){
-	LinphoneUri *fa=((LinphoneFriend*)a)->uri;
-	LinphoneUri *fb=((LinphoneFriend*)b)->uri;
+	LinphoneAddress *fa=((LinphoneFriend*)a)->uri;
+	LinphoneAddress *fb=((LinphoneFriend*)b)->uri;
 	const char *ua,*ub;
-	ua=linphone_uri_get_username(fa);
-	ub=linphone_uri_get_username(fb);
+	ua=linphone_address_get_username(fa);
+	ub=linphone_address_get_username(fb);
 	if (ua!=NULL && ub!=NULL) {
 		//printf("Comparing usernames %s,%s\n",ua,ub);
 		return strcasecmp(ua,ub);
 	}
 	else {
 		/* compare hosts*/
-		ua=linphone_uri_get_domain(fa);
-		ub=linphone_uri_get_domain(fb);
+		ua=linphone_address_get_domain(fa);
+		ub=linphone_address_get_domain(fb);
 		if (ua!=NULL && ub!=NULL){
 			int ret=strcasecmp(ua,ub);
 			//printf("Comparing hostnames %s,%s,res=%i\n",ua,ub,ret);
@@ -104,11 +104,11 @@ static int friend_compare(const void * a, const void * b){
 }
 
 
-MSList *linphone_find_friend(MSList *fl, const LinphoneUri *friend, LinphoneFriend **lf){
+MSList *linphone_find_friend(MSList *fl, const LinphoneAddress *friend, LinphoneFriend **lf){
 	MSList *res=NULL;
 	LinphoneFriend dummy;
 	if (lf!=NULL) *lf=NULL;
-	dummy.uri=(LinphoneUri*)friend;
+	dummy.uri=(LinphoneAddress*)friend;
 	res=ms_list_find_custom(fl,friend_compare,&dummy);
 	if (lf!=NULL && res!=NULL) *lf=(LinphoneFriend*)res->data;
 	return res;
@@ -137,7 +137,7 @@ void __linphone_friend_do_subscribe(LinphoneFriend *fr){
 	const char *route=NULL;
 	const char *from=NULL;
 	osip_message_t *msg=NULL;
-	friend=linphone_uri_as_string(fr->uri);
+	friend=linphone_address_as_string(fr->uri);
 	if (fr->proxy!=NULL){
 		route=fr->proxy->reg_route;
 		from=fr->proxy->reg_identity;
@@ -176,26 +176,26 @@ LinphoneFriend *linphone_friend_new_with_addr(const char *addr){
 }
 
 void linphone_core_interpret_friend_uri(LinphoneCore *lc, const char *uri, char **result){
-	LinphoneUri *fr=NULL;
+	LinphoneAddress *fr=NULL;
 	*result=NULL;
-	fr=linphone_uri_new(uri);
+	fr=linphone_address_new(uri);
 	if (fr==NULL){
 		char *tmp=NULL;
 		if (strchr(uri,'@')!=NULL){
-			LinphoneUri *u;
+			LinphoneAddress *u;
 			/*try adding sip:*/
 			tmp=ms_strdup_printf("sip:%s",uri);
-			u=linphone_uri_new(tmp);
+			u=linphone_address_new(tmp);
 			if (u!=NULL){
 				*result=tmp;
 			}
 		}else if (lc->default_proxy!=NULL){
 			/*try adding domain part from default current proxy*/
-			LinphoneUri * id=linphone_uri_new(linphone_core_get_identity(lc));
+			LinphoneAddress * id=linphone_address_new(linphone_core_get_identity(lc));
 			if (id!=NULL){
-				linphone_uri_set_username(id,uri);
-				*result=linphone_uri_as_string(id);
-				linphone_uri_destroy(id);
+				linphone_address_set_username(id,uri);
+				*result=linphone_address_as_string(id);
+				linphone_address_destroy(id);
 			}
 		}
 		if (*result){
@@ -204,28 +204,28 @@ void linphone_core_interpret_friend_uri(LinphoneCore *lc, const char *uri, char 
 		}else{
 			ms_warning("Fail to interpret friend uri %s",uri);
 		}
-	}else *result=linphone_uri_as_string(fr);
-	linphone_uri_destroy(fr);
+	}else *result=linphone_address_as_string(fr);
+	linphone_address_destroy(fr);
 }
 
 int linphone_friend_set_sip_addr(LinphoneFriend *lf, const char *addr){
-	LinphoneUri *fr=linphone_uri_new(addr);
+	LinphoneAddress *fr=linphone_address_new(addr);
 	if (fr==NULL) {
 		ms_warning("Invalid friend sip uri: %s",addr);
 		return -1;
 	}
-	if (lf->uri!=NULL) linphone_uri_destroy(lf->uri);	
+	if (lf->uri!=NULL) linphone_address_destroy(lf->uri);	
 	lf->uri=fr;
 	return 0;
 }
 
 int linphone_friend_set_name(LinphoneFriend *lf, const char *name){
-	LinphoneUri *fr=lf->uri;
+	LinphoneAddress *fr=lf->uri;
 	if (fr==NULL){
 		ms_error("linphone_friend_set_sip_addr() must be called before linphone_friend_set_name().");
 		return -1;
 	}
-	linphone_uri_set_display_name(fr,name);
+	linphone_address_set_display_name(fr,name);
 	return 0;
 }
 
@@ -553,7 +553,7 @@ static void linphone_friend_unsubscribe(LinphoneFriend *lf){
 void linphone_friend_destroy(LinphoneFriend *lf){
 	linphone_friend_notify(lf,EXOSIP_SUBCRSTATE_TERMINATED,LINPHONE_STATUS_CLOSED);
 	linphone_friend_unsubscribe(lf);
-	if (lf->uri!=NULL) linphone_uri_destroy(lf->uri);
+	if (lf->uri!=NULL) linphone_address_destroy(lf->uri);
 	if (lf->info!=NULL) buddy_info_free(lf->info);
 	ms_free(lf);
 }
@@ -564,7 +564,7 @@ void linphone_friend_check_for_removed_proxy(LinphoneFriend *lf, LinphoneProxyCo
 	}
 }
 
-const LinphoneUri *linphone_friend_get_uri(const LinphoneFriend *lf){
+const LinphoneAddress *linphone_friend_get_uri(const LinphoneFriend *lf){
 	return lf->uri;
 }
 
@@ -653,10 +653,10 @@ static bool_t username_match(const char *u1, const char *u2){
 }
 
 LinphoneFriend *linphone_core_get_friend_by_uri(const LinphoneCore *lc, const char *uri){
-	LinphoneUri *puri=linphone_uri_new(uri);
+	LinphoneAddress *puri=linphone_address_new(uri);
 	const MSList *elem;
-	const char *username=linphone_uri_get_username(puri);
-	const char *domain=linphone_uri_get_domain(puri);
+	const char *username=linphone_address_get_username(puri);
+	const char *domain=linphone_address_get_domain(puri);
 	LinphoneFriend *lf=NULL;
 		
 	if (puri==NULL){
@@ -664,14 +664,14 @@ LinphoneFriend *linphone_core_get_friend_by_uri(const LinphoneCore *lc, const ch
 	}
 	for(elem=lc->friends;elem!=NULL;elem=ms_list_next(elem)){
 		lf=(LinphoneFriend*)elem->data;
-		const char *it_username=linphone_uri_get_username(lf->uri);
-		const char *it_host=linphone_uri_get_domain(lf->uri);;
+		const char *it_username=linphone_address_get_username(lf->uri);
+		const char *it_host=linphone_address_get_domain(lf->uri);;
 		if (strcasecmp(domain,it_host)==0 && username_match(username,it_username)){
 			break;
 		}
 		lf=NULL;
 	}
-	linphone_uri_destroy(puri);
+	linphone_address_destroy(puri);
 	return lf;
 }
 
@@ -760,7 +760,7 @@ void linphone_friend_write_to_config_file(LpConfig *config, LinphoneFriend *lf, 
 		return;
 	}
 	if (lf->uri!=NULL){
-		tmp=linphone_uri_as_string(lf->uri);
+		tmp=linphone_address_as_string(lf->uri);
 		if (tmp==NULL) {
 			return;
 		}

@@ -71,19 +71,19 @@ void linphone_gtk_update_my_contact(GtkWidget *w){
 	const char *username=gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(pb,"username")));
 	const char *displayname=gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(pb,"displayname")));
 	int port=linphone_core_get_sip_port(linphone_gtk_get_core());
-	LinphoneUri *parsed=linphone_core_get_primary_contact_parsed(linphone_gtk_get_core());
+	LinphoneAddress *parsed=linphone_core_get_primary_contact_parsed(linphone_gtk_get_core());
 	char *contact;
 	g_return_if_fail(parsed!=NULL);
 	if (username[0]=='\0') return;
 
-	linphone_uri_set_display_name(parsed,displayname);
-	linphone_uri_set_username(parsed,username);
-	linphone_uri_set_port_int(parsed,port);
-	contact=linphone_uri_as_string(parsed);
+	linphone_address_set_display_name(parsed,displayname);
+	linphone_address_set_username(parsed,username);
+	linphone_address_set_port_int(parsed,port);
+	contact=linphone_address_as_string(parsed);
 	gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(pb,"sip_address")),contact);
 	linphone_core_set_primary_contact(linphone_gtk_get_core(),contact);
 	ms_free(contact);
-	linphone_uri_destroy(parsed);
+	linphone_address_destroy(parsed);
 	linphone_gtk_load_identities();
 }
 
@@ -705,7 +705,7 @@ void linphone_gtk_show_parameters(void){
 	LinphoneCore *lc=linphone_gtk_get_core();
 	const char **sound_devices=linphone_core_get_sound_devices(lc);
 	const char *tmp;
-	LinphoneUri *contact;
+	LinphoneAddress *contact;
 	LinphoneFirewallPolicy pol;
 	GtkWidget *codec_list=linphone_gtk_get_widget(pb,"codec_list");
 	int mtu;
@@ -764,12 +764,12 @@ void linphone_gtk_show_parameters(void){
 	/* SIP CONFIG */
 	contact=linphone_core_get_primary_contact_parsed(lc);
 	if (contact){
-		if (linphone_uri_get_display_name(contact)) 
-			gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(pb,"displayname")),linphone_uri_get_display_name(contact));
-		if (linphone_uri_get_username(contact))
-			gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(pb,"username")),linphone_uri_get_username(contact));
+		if (linphone_address_get_display_name(contact)) 
+			gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(pb,"displayname")),linphone_address_get_display_name(contact));
+		if (linphone_address_get_username(contact))
+			gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(pb,"username")),linphone_address_get_username(contact));
 	}
-	linphone_uri_destroy(contact);
+	linphone_address_destroy(contact);
 	linphone_gtk_show_sip_accounts(pb);
 	/* CODECS CONFIG */
 	linphone_gtk_init_codec_list(GTK_TREE_VIEW(codec_list));

@@ -27,12 +27,12 @@
  #include <eXosip2/eXosip.h>
  
  LinphoneChatRoom * linphone_core_create_chat_room(LinphoneCore *lc, const char *to){
-	LinphoneUri *parsed_url=NULL;
+	LinphoneAddress *parsed_url=NULL;
 	char *route;
 	if (linphone_core_interpret_url(lc,to,&parsed_url,&route)){
 		LinphoneChatRoom *cr=ms_new0(LinphoneChatRoom,1);
 		cr->lc=lc;
-		cr->peer=linphone_uri_as_string(parsed_url);
+		cr->peer=linphone_address_as_string(parsed_url);
 		cr->peer_url=parsed_url;
 		cr->route=route;
 		lc->chatrooms=ms_list_append(lc->chatrooms,(void *)cr);
@@ -45,7 +45,7 @@
  void linphone_chat_room_destroy(LinphoneChatRoom *cr){
 	LinphoneCore *lc=cr->lc;
 	lc->chatrooms=ms_list_remove(lc->chatrooms,(void *) cr);
-	linphone_uri_destroy(cr->peer_url);
+	linphone_address_destroy(cr->peer_url);
 	ms_free(cr->peer);
 	ms_free(cr->route);
  }
@@ -59,9 +59,9 @@ void linphone_chat_room_send_message(LinphoneChatRoom *cr, const char *msg){
 	eXosip_message_send_request(sip);
 }
 
-bool_t linphone_chat_room_matches(LinphoneChatRoom *cr, const LinphoneUri *from){
-	if (linphone_uri_get_username(cr->peer_url) && linphone_uri_get_username(from) && 
-		strcmp(linphone_uri_get_username(cr->peer_url),linphone_uri_get_username(from))==0) return TRUE;
+bool_t linphone_chat_room_matches(LinphoneChatRoom *cr, const LinphoneAddress *from){
+	if (linphone_address_get_username(cr->peer_url) && linphone_address_get_username(from) && 
+		strcmp(linphone_address_get_username(cr->peer_url),linphone_address_get_username(from))==0) return TRUE;
 	return FALSE;
 }
 
@@ -76,7 +76,7 @@ void linphone_core_text_received(LinphoneCore *lc, eXosip_event_t *ev){
 	char *from;
 	osip_from_t *from_url=ev->request->from;
 	osip_body_t *body=NULL;
-	LinphoneUri *uri;
+	LinphoneAddress *uri;
 
 	osip_message_get_body(ev->request,0,&body);
 	if (body==NULL){
@@ -85,9 +85,9 @@ void linphone_core_text_received(LinphoneCore *lc, eXosip_event_t *ev){
 	}
 	msg=body->body;
 	osip_from_to_str(from_url,&from);
-	uri=linphone_uri_new(from);
+	uri=linphone_address_new(from);
 	osip_free(from);
-	linphone_uri_clean(uri);
+	linphone_address_clean(uri);
 	for(elem=lc->chatrooms;elem!=NULL;elem=ms_list_next(elem)){
 		cr=(LinphoneChatRoom*)elem->data;
 		if (linphone_chat_room_matches(cr,uri)){
@@ -95,12 +95,12 @@ void linphone_core_text_received(LinphoneCore *lc, eXosip_event_t *ev){
 		}
 		cr=NULL;
 	}
-	from=linphone_uri_as_string(uri);
+	from=linphone_address_as_string(uri);
 	if (cr==NULL){
 		/* create a new chat room */
 		cr=linphone_core_create_chat_room(lc,from);
 	}
-	linphone_uri_destroy(uri);
+	linphone_address_destroy(uri);
 	linphone_chat_room_text_received(cr,lc,from,msg);
 	ms_free(from);
 }

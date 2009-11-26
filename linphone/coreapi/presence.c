@@ -35,7 +35,7 @@ void linphone_core_add_subscriber(LinphoneCore *lc, const char *subscriber, int 
 	fl->inc_subscribe_pending=TRUE;
 	lc->subscribers=ms_list_append(lc->subscribers,(void *)fl);
 	if (lc->vtable.new_unknown_subscriber!=NULL) {
-		char *subscriber=linphone_uri_as_string(fl->uri);
+		char *subscriber=linphone_address_as_string(fl->uri);
 		lc->vtable.new_unknown_subscriber(lc,fl,subscriber);
 		ms_free(subscriber);
 	}
@@ -74,9 +74,9 @@ void linphone_subscription_new(LinphoneCore *lc, eXosip_event_t *ev){
 	osip_from_t *from=ev->request->from;
 	char *tmp;
 	osip_message_t *msg=NULL;
-	LinphoneUri *uri;
+	LinphoneAddress *uri;
 	osip_from_to_str(ev->request->from,&tmp);
-	uri=linphone_uri_new(tmp);
+	uri=linphone_address_new(tmp);
 	ms_message("Receiving new subscription from %s.",tmp);
 	/* check if we answer to this subscription */
 	if (linphone_find_friend(lc->friends,uri,&lf)!=NULL){
@@ -112,7 +112,7 @@ void linphone_notify_recv(LinphoneCore *lc, eXosip_event_t *ev)
 	const char *img="sip-closed.png";
 	char *tmp;
 	LinphoneFriend *lf;
-	LinphoneUri *friend=NULL;
+	LinphoneAddress *friend=NULL;
 	osip_from_t *from=NULL;
 	osip_body_t *body=NULL;
 	LinphoneOnlineStatus estatus=LINPHONE_STATUS_UNKNOWN;
@@ -169,7 +169,7 @@ void linphone_notify_recv(LinphoneCore *lc, eXosip_event_t *ev)
 	lf=linphone_find_friend_by_sid(lc->friends,ev->sid);
 	if (lf!=NULL){
 		friend=lf->uri;
-		tmp=linphone_uri_as_string(friend);
+		tmp=linphone_address_as_string(friend);
 		lf->status=estatus;
 		lc->vtable.notify_recv(lc,(LinphoneFriend*)lf,tmp,status,img);
 		ms_free(tmp);
@@ -188,7 +188,7 @@ void linphone_subscription_answered(LinphoneCore *lc, eXosip_event_t *ev){
 	osip_from_t *from=ev->response->to;
 	char *tmp;
 	osip_from_to_str(from,&tmp);
-	LinphoneUri *uri=linphone_uri_new(tmp);
+	LinphoneAddress *uri=linphone_address_new(tmp);
 	linphone_find_friend(lc->friends,uri,&lf);
 	if (lf!=NULL){
 		lf->out_did=ev->did;

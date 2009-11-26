@@ -53,7 +53,7 @@ void linphone_gtk_show_idle_view(void){
 }
 
 void display_peer_name_in_label(GtkWidget *label, const char *uri){
-	LinphoneUri *from;
+	LinphoneAddress *from;
 	const char *displayname=NULL;
 	char *id=NULL;
 	char *uri_label;
@@ -63,13 +63,13 @@ void display_peer_name_in_label(GtkWidget *label, const char *uri){
 		return;
 	}
 
-	from=linphone_uri_new(uri);
+	from=linphone_address_new(uri);
 	if (from!=NULL){
 		
-		if (linphone_uri_get_display_name(from))
-			displayname=linphone_uri_get_display_name(from);
+		if (linphone_address_get_display_name(from))
+			displayname=linphone_address_get_display_name(from);
 
-		id=linphone_uri_as_string_without_display_name(from);
+		id=linphone_address_as_string_uri_only(from);
 
 	}else id=ms_strdup(uri);
 
@@ -81,7 +81,7 @@ void display_peer_name_in_label(GtkWidget *label, const char *uri){
 	gtk_label_set_markup(GTK_LABEL(label),uri_label);
 	ms_free(id);
 	g_free(uri_label);
-	if (from!=NULL) linphone_uri_destroy(from);
+	if (from!=NULL) linphone_address_destroy(from);
 }
 
 void linphone_gtk_in_call_view_set_calling(const char *uri){
@@ -113,8 +113,8 @@ void linphone_gtk_in_call_view_set_in_call(){
 	GtkWidget *animation=linphone_gtk_get_widget(main_window,"in_call_animation");
 	GdkPixbufAnimation *pbuf=create_pixbuf_animation("incall_anim.gif");
 	GtkWidget *terminate_button=linphone_gtk_get_widget(main_window,"in_call_terminate");
-	const LinphoneUri *uri=linphone_core_get_remote_uri(lc);
-	char *tmp=linphone_uri_as_string(uri);
+	const LinphoneAddress *uri=linphone_core_get_remote_uri(lc);
+	char *tmp=linphone_address_as_string(uri);
 	display_peer_name_in_label(callee,tmp);
 	ms_free(tmp);
 

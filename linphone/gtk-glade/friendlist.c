@@ -104,7 +104,7 @@ static void linphone_gtk_set_selection_to_uri_bar(GtkTreeView *treeview){
 	if (gtk_tree_selection_get_selected (select, &model, &iter))
 	{
 		gtk_tree_model_get (model, &iter,FRIEND_ID , &lf, -1);
-		friend=linphone_uri_as_string(linphone_friend_get_uri(lf));
+		friend=linphone_address_as_string(linphone_friend_get_uri(lf));
 		gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(linphone_gtk_get_main_window(),"uribar")),friend);
 		ms_free(friend);
 	}
@@ -309,9 +309,9 @@ void linphone_gtk_show_friends(void){
 
 	for(itf=linphone_core_get_friend_list(core);itf!=NULL;itf=ms_list_next(itf)){
 		LinphoneFriend *lf=(LinphoneFriend*)itf->data;
-		const LinphoneUri *f_uri=linphone_friend_get_uri(lf);
-		char *uri=linphone_uri_as_string(f_uri);
-		const char *name=linphone_uri_get_display_name(f_uri);
+		const LinphoneAddress *f_uri=linphone_friend_get_uri(lf);
+		char *uri=linphone_address_as_string(f_uri);
+		const char *name=linphone_address_get_display_name(f_uri);
 		const char *display=name;
 		char *escaped=NULL;
 		if (lookup){
@@ -376,9 +376,9 @@ void linphone_gtk_show_contact(LinphoneFriend *lf){
 	GtkWidget *w=linphone_gtk_create_window("contact");
 	char *uri;
 	const char *name;
-	const LinphoneUri *f_uri=linphone_friend_get_uri(lf);
-	uri=linphone_uri_as_string_without_display_name(f_uri);
-	name=linphone_uri_get_display_name(f_uri);
+	const LinphoneAddress *f_uri=linphone_friend_get_uri(lf);
+	uri=linphone_address_as_string_uri_only(f_uri);
+	name=linphone_address_get_display_name(f_uri);
 	if (uri) {
 		gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(w,"sip_address")),uri);
 		ms_free(uri);
@@ -419,7 +419,7 @@ void linphone_gtk_chat_selected(GtkWidget *item){
 	{
 		char *uri;
 		gtk_tree_model_get (model, &iter,FRIEND_ID , &lf, -1);
-		uri=linphone_uri_as_string(linphone_friend_get_uri(lf));
+		uri=linphone_address_as_string(linphone_friend_get_uri(lf));
 		linphone_gtk_create_chatroom(uri);
 		ms_free(uri);
 	}
