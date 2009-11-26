@@ -24,6 +24,7 @@ AC_MSG_NOTICE([$PACKAGE_NAME-$PACKAGE_VERSION		A full featured audio/video sip p
 AC_MSG_NOTICE([licensed under the terms of the General Public License (GPL)])
 
 AM_INIT_AUTOMAKE([tar-ustar])
+m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])],)
 AC_CONFIG_HEADER(config.h)
 AC_CONFIG_MACRO_DIR([m4])
 AC_SUBST([mkdir_p])
