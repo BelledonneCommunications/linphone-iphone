@@ -57,7 +57,7 @@ void linphone_gtk_show_login_frame(LinphoneProxyConfig *cfg){
 	GtkWidget *label=linphone_gtk_get_widget(mw,"login_label");
 	LinphoneAuthInfo *ai;
 	gchar *str;
-	osip_from_t *from;
+	LinphoneUri *from;
 	LinphoneCore *lc=linphone_gtk_get_core();
 	int nettype;
 
@@ -84,18 +84,17 @@ void linphone_gtk_show_login_frame(LinphoneProxyConfig *cfg){
 	g_object_set_data(G_OBJECT(mw),"login_proxy_config",cfg);
 	g_free(str);
 
-	osip_from_init(&from);
-	osip_from_parse(from,linphone_proxy_config_get_identity(cfg));
+	from=linphone_uri_new(linphone_proxy_config_get_identity(cfg));
 	
-	ai=linphone_core_find_auth_info(lc,linphone_proxy_config_get_domain(cfg),from->url->username);
+	ai=linphone_core_find_auth_info(lc,linphone_proxy_config_get_domain(cfg),linphone_uri_get_username(from));
 	/*display the last entered username, if not '?????'*/
-	if (from->url->username[0]!='?')
+	if (linphone_uri_get_username(from)[0]!='?')
 		gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(mw,"login_username")),
-			from->url->username);
+			linphone_uri_get_username(from));
 	gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(mw,"login_password")),
 		ai!=NULL ? ai->passwd : "");
 	
-	osip_from_free(from);
+	linphone_uri_destroy(from);
 }
 
 void linphone_gtk_exit_login_frame(void){
@@ -130,7 +129,7 @@ void linphone_gtk_login_frame_connect_clicked(GtkWidget *button){
 	char *identity;
 	gboolean autologin;
 	LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)g_object_get_data(G_OBJECT(mw),"login_proxy_config");
-	osip_from_t *from;
+	LinphoneUri *from;
 	SipSetupContext *ssctx=linphone_proxy_config_get_sip_setup_context(cfg);
 
 	username=gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(mw,"login_username")));
@@ -142,12 +141,9 @@ void linphone_gtk_login_frame_connect_clicked(GtkWidget *button){
 	autologin=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(mw,"automatic_login")));
 	linphone_gtk_set_ui_config_int("automatic_login",autologin);
 
-	osip_from_init(&from);
-	osip_from_parse(from,linphone_proxy_config_get_identity(cfg));
-	osip_free(from->url->username);
-	from->url->username=osip_strdup(username);
-	osip_from_to_str(from,&identity);
-	osip_from_free(from);
+	from=linphone_uri_new(linphone_proxy_config_get_identity(cfg));
+	linphone_uri_set_username(from,username);
+	identity=linphone_uri_as_string(from);
 	do_login(ssctx,identity,password);
 	/*we need to refresh the identities since the proxy config may have changed.*/
 	linphone_gtk_load_identities();

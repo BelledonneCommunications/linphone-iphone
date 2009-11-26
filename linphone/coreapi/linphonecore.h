@@ -19,8 +19,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef LINPHONECORE_H
 #define LINPHONECORE_H
 
-
-#include <osipparser2/osip_message.h>
 #include "ortp/ortp.h"
 #include "ortp/payloadtype.h"
 #include "mediastreamer2/mscommon.h"
@@ -147,6 +145,26 @@ typedef struct autoreplier_config
 	const char *message;		/* the path of the file to be played */
 }autoreplier_config_t;
 
+struct osip_from;
+
+typedef struct osip_from LinphoneUri;
+
+LinphoneUri * linphone_uri_new(const char *uri);
+LinphoneUri * linphone_uri_clone(const LinphoneUri *uri);
+const char *linphone_uri_get_scheme(const LinphoneUri *u);
+const char *linphone_uri_get_display_name(const LinphoneUri* u);
+const char *linphone_uri_get_username(const LinphoneUri *u);
+const char *linphone_uri_get_domain(const LinphoneUri *u);
+void linphone_uri_set_display_name(LinphoneUri *u, const char *display_name);
+void linphone_uri_set_username(LinphoneUri *uri, const char *username);
+void linphone_uri_set_domain(LinphoneUri *uri, const char *host);
+void linphone_uri_set_port(LinphoneUri *uri, const char *port);
+void linphone_uri_set_port_int(LinphoneUri *uri, int port);
+/*remove tags, params etc... so that it is displayable to the user*/
+void linphone_uri_clean(LinphoneUri *uri);
+char *linphone_uri_as_string(const LinphoneUri *u);
+char *linphone_uri_as_string_without_display_name(const LinphoneUri *u);
+void linphone_uri_destroy(LinphoneUri *u);
 
 struct _LinphoneCore;
 struct _sdp_context;
@@ -166,11 +184,10 @@ typedef enum _LinphoneCallStatus {
 typedef struct _LinphoneCallLog{
 	LinphoneCallDir dir;
 	LinphoneCallStatus status;
-	char *from;
-	char *to;
+	LinphoneUri *from;
+	LinphoneUri *to;
 	char start_date[128];
 	int duration;
-	
 } LinphoneCallLog;
 
 
@@ -204,7 +221,7 @@ typedef enum _LinphoneOnlineStatus{
 const char *linphone_online_status_to_string(LinphoneOnlineStatus ss);
 
 typedef struct _LinphoneFriend{
-	osip_from_t *url;
+	LinphoneUri *uri;
 	int in_did;
 	int out_did;
 	int sid;
@@ -228,10 +245,7 @@ int linphone_friend_set_proxy(LinphoneFriend *fr, struct _LinphoneProxyConfig *c
 void linphone_friend_edit(LinphoneFriend *fr);
 void linphone_friend_done(LinphoneFriend *fr);
 void linphone_friend_destroy(LinphoneFriend *lf);
-/* memory returned by those 3 functions must be freed */
-char *linphone_friend_get_name(LinphoneFriend *lf);
-char *linphone_friend_get_addr(LinphoneFriend *lf);
-char *linphone_friend_get_url(LinphoneFriend *lf);	/* name <sip address> */
+const LinphoneUri *linphone_friend_get_uri(const LinphoneFriend *lf);
 bool_t linphone_friend_get_send_subscribe(const LinphoneFriend *lf);
 LinphoneSubscribePolicy linphone_friend_get_inc_subscribe_policy(const LinphoneFriend *lf);
 LinphoneOnlineStatus linphone_friend_get_status(const LinphoneFriend *lf);
@@ -336,7 +350,7 @@ struct _LinphoneChatRoom{
 	struct _LinphoneCore *lc;
 	char  *peer;
 	char *route;
-	osip_from_t *peer_url;
+	LinphoneUri *peer_url;
 	void * user_data;
 };
 typedef struct _LinphoneChatRoom LinphoneChatRoom;
@@ -560,7 +574,7 @@ bool_t linphone_core_get_guess_hostname(LinphoneCore *lc);
 bool_t linphone_core_ipv6_enabled(LinphoneCore *lc);
 void linphone_core_enable_ipv6(LinphoneCore *lc, bool_t val);
 
-osip_from_t *linphone_core_get_primary_contact_parsed(LinphoneCore *lc);
+LinphoneUri *linphone_core_get_primary_contact_parsed(LinphoneCore *lc);
 
 /*0= no bandwidth limit*/
 void linphone_core_set_download_bandwidth(LinphoneCore *lc, int bw);
@@ -749,7 +763,7 @@ void linphone_core_set_record_file(LinphoneCore *lc, const char *file);
 
 gstate_t linphone_core_get_state(const LinphoneCore *lc, gstate_group_t group);
 int linphone_core_get_current_call_duration(const LinphoneCore *lc);
-const char *linphone_core_get_remote_uri(LinphoneCore *lc);
+const LinphoneUri *linphone_core_get_remote_uri(LinphoneCore *lc);
 
 int linphone_core_get_mtu(const LinphoneCore *lc);
 void linphone_core_set_mtu(LinphoneCore *lc, int mtu);
@@ -791,7 +805,7 @@ void linphone_core_start_media_streams(LinphoneCore *lc, struct _LinphoneCall *c
 void linphone_core_stop_media_streams(LinphoneCore *lc);
 const char * linphone_core_get_identity(LinphoneCore *lc);
 const char * linphone_core_get_route(LinphoneCore *lc);
-bool_t linphone_core_interpret_url(LinphoneCore *lc, const char *url, char **real_url, osip_to_t **real_parsed_url, char **route);
+bool_t linphone_core_interpret_url(LinphoneCore *lc, const char *url, LinphoneUri **real_parsed_url, char **route);
 void linphone_core_start_waiting(LinphoneCore *lc, const char *purpose);
 void linphone_core_update_progress(LinphoneCore *lc, const char *purpose, float progresses);
 void linphone_core_stop_waiting(LinphoneCore *lc);

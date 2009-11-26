@@ -321,7 +321,7 @@ int linphone_inc_new_call(LinphoneCore *lc, eXosip_event_t *ev)
 		eXosip_unlock();
 		goto end;
 	}
-	lc->call=linphone_call_new_incoming(lc,from,to,ev);
+	lc->call=linphone_call_new_incoming(lc,linphone_uri_new(from),linphone_uri_new(to),ev);
 	
 	sdp=eXosip_get_sdp_info(ev->request);
 	if (sdp==NULL){

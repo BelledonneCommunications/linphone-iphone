@@ -104,7 +104,7 @@ static void linphone_gtk_set_selection_to_uri_bar(GtkTreeView *treeview){
 	if (gtk_tree_selection_get_selected (select, &model, &iter))
 	{
 		gtk_tree_model_get (model, &iter,FRIEND_ID , &lf, -1);
-		friend=linphone_friend_get_url(lf);
+		friend=linphone_uri_as_string(linphone_friend_get_uri(lf));
 		gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(linphone_gtk_get_main_window(),"uribar")),friend);
 		ms_free(friend);
 	}
@@ -309,22 +309,20 @@ void linphone_gtk_show_friends(void){
 
 	for(itf=linphone_core_get_friend_list(core);itf!=NULL;itf=ms_list_next(itf)){
 		LinphoneFriend *lf=(LinphoneFriend*)itf->data;
-		char *uri=linphone_friend_get_url(lf);
-		char *name=linphone_friend_get_name(lf);
-		char *addr=linphone_friend_get_addr(lf);
-		char *display=name;
+		const LinphoneUri *f_uri=linphone_friend_get_uri(lf);
+		char *uri=linphone_uri_as_string(f_uri);
+		const char *name=linphone_uri_get_display_name(f_uri);
+		const char *display=name;
 		char *escaped=NULL;
 		if (lookup){
 			if (strstr(uri,search)==NULL){
 				ms_free(uri);
-				if (name) ms_free(name);
-				if (addr) ms_free(addr);
 				continue;
 			}
 		}
 		if (!online_only || (linphone_friend_get_status(lf)!=LINPHONE_STATUS_OFFLINE)){
 			BuddyInfo *bi;
-			if (name==NULL || name[0]=='\0') display=addr;
+			if (name==NULL || name[0]=='\0') display=uri;
 			gtk_list_store_append(store,&iter);
 			gtk_list_store_set(store,&iter,FRIEND_NAME, display,
 					FRIEND_PRESENCE_STATUS, linphone_online_status_to_string(linphone_friend_get_status(lf)),
@@ -346,8 +344,6 @@ void linphone_gtk_show_friends(void){
 			}
 		}
 		ms_free(uri);
-		if (name) ms_free(name);
-		if (addr) ms_free(addr);
 	}
 }
 
@@ -378,16 +374,17 @@ void linphone_gtk_remove_contact(GtkWidget *button){
 
 void linphone_gtk_show_contact(LinphoneFriend *lf){
 	GtkWidget *w=linphone_gtk_create_window("contact");
-	char *uri,*name;
-	uri=linphone_friend_get_addr(lf);
-	name=linphone_friend_get_name(lf);
+	char *uri;
+	const char *name;
+	const LinphoneUri *f_uri=linphone_friend_get_uri(lf);
+	uri=linphone_uri_as_string_without_display_name(f_uri);
+	name=linphone_uri_get_display_name(f_uri);
 	if (uri) {
 		gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(w,"sip_address")),uri);
 		ms_free(uri);
 	}
 	if (name){
 		gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(w,"name")),name);
-		ms_free(name);
 	}
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"show_presence")),
 					linphone_friend_get_send_subscribe(lf));
@@ -422,7 +419,7 @@ void linphone_gtk_chat_selected(GtkWidget *item){
 	{
 		char *uri;
 		gtk_tree_model_get (model, &iter,FRIEND_ID , &lf, -1);
-		uri=linphone_friend_get_url(lf);
+		uri=linphone_uri_as_string(linphone_friend_get_uri(lf));
 		linphone_gtk_create_chatroom(uri);
 		ms_free(uri);
 	}

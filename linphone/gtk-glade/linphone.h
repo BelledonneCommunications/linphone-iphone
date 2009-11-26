@@ -79,7 +79,6 @@ SipSetupContext* linphone_gtk_get_default_sip_setup_context(void);
 GtkWidget * linphone_gtk_show_buddy_lookup_window(SipSetupContext *ctx);
 void linphone_gtk_buddy_lookup_set_keyword(GtkWidget *w, const char *kw);
 void * linphone_gtk_wait(LinphoneCore *lc, void *ctx, LinphoneWaitingState ws, const char *purpose, float progress);
-gchar *linphone_gtk_get_display_name(const char *sip_uri);
 
 void linphone_gtk_show_directory_search(void);
 

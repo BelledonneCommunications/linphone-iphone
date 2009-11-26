@@ -136,12 +136,14 @@ int sip_setup_context_account_exists(SipSetupContext *ctx, const char *uri){
 }
 
 int sip_setup_context_login_account(SipSetupContext * ctx, const char *uri, const char *passwd){
-	osip_from_t *from;
-	osip_from_init(&from);
-	osip_from_parse(from,uri);
-	strncpy(ctx->domain,from->url->host,sizeof(ctx->domain));
-	strncpy(ctx->username,from->url->username,sizeof(ctx->username));
-	osip_from_free(from);
+	LinphoneUri *from=linphone_uri_new(uri);
+	if (from==NULL) {
+		ms_warning("Fail to parse %s",uri);
+		return -1;
+	}
+	strncpy(ctx->domain,linphone_uri_get_domain(from),sizeof(ctx->domain));
+	strncpy(ctx->username,linphone_uri_get_username(from),sizeof(ctx->username));
+	linphone_uri_destroy(from);
 	if (ctx->funcs->login_account)
 		return ctx->funcs->login_account(ctx,uri,passwd);
 	return -1;

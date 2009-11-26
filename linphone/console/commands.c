@@ -1249,12 +1249,13 @@ linphonec_proxy_use(LinphoneCore *lc, int index)
 static void
 linphonec_friend_display(LinphoneFriend *fr)
 {
-	char *name = linphone_friend_get_name(fr);
-	char *addr = linphone_friend_get_addr(fr);
-	//char *url = linphone_friend_get_url(fr);
-
-	linphonec_out("name: %s\n", name);
-	linphonec_out("address: %s\n", addr);
+	LinphoneUri *uri=linphone_uri_clone(linphone_friend_get_uri(fr));
+	char *str;
+	
+	linphonec_out("name: %s\n", linphone_uri_get_display_name(uri));
+	linphone_uri_set_display_name(uri,NULL);
+	str=linphone_uri_as_string(uri);
+	linphonec_out("address: %s\n", str);
 }
 
 static int
@@ -1272,8 +1273,9 @@ linphonec_friend_list(LinphoneCore *lc, char *pat)
 	for(n=0; friend!=NULL; friend=ms_list_next(friend), ++n )
 	{
 		if ( pat ) {
-			char *name = linphone_friend_get_name(friend->data);
-			if ( ! strstr(name, pat) ) continue;
+			const char *name = linphone_uri_get_display_name(
+			    linphone_friend_get_uri((LinphoneFriend*)friend->data));
+			if (name && ! strstr(name, pat) ) continue;
 		}
 		linphonec_out("****** Friend %i *******\n",n);
 		linphonec_friend_display((LinphoneFriend*)friend->data);
@@ -1293,8 +1295,11 @@ linphonec_friend_call(LinphoneCore *lc, unsigned int num)
 	{
 		if ( n == num )
 		{
-			addr = linphone_friend_get_addr(friend->data);
-			return lpc_cmd_call(lc, addr);
+			int ret;
+			addr = linphone_uri_as_string(linphone_friend_get_uri((LinphoneFriend*)friend->data));
+			ret=lpc_cmd_call(lc, addr);
+			ms_free(addr);
+			return ret;
 		}
 	}
 	linphonec_out("No such friend %u\n", num);
