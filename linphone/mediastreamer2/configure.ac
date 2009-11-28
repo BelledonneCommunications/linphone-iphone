@@ -547,11 +547,11 @@ AM_CONDITIONAL(BUILD_V4L, test x$found_v4l = xyes )
 
 PKG_CHECK_MODULES(LIBV4L2, libv4l2,
 	[AC_DEFINE(HAVE_LIBV4L2,1,[Defined if we have libv4l2])]
-	,
+	,[echo "No libv4l2 found."]
 )
 PKG_CHECK_MODULES(LIBV4L1, libv4l1,
 	[AC_DEFINE(HAVE_LIBV4L1,1,[Defined if we have libv4l1])]
-	,
+	,[echo "No libv4l1 found."]
 )
 
 dnl ##################################################
