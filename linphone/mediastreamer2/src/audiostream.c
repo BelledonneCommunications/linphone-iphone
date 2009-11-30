@@ -111,6 +111,14 @@ bool_t ms_is_ipv6(const char *remote){
 	return ret;
 }
 
+static void audio_stream_configure_resampler(AudioStream *st,MSFilter *from,MSFilter *to) {
+	int from_rate=0, to_rate=0;
+	ms_filter_call_method(from,MS_FILTER_GET_SAMPLE_RATE,&from_rate);
+	ms_filter_call_method(to,MS_FILTER_GET_SAMPLE_RATE,&to_rate);
+	ms_filter_call_method(st->read_resampler,MS_FILTER_SET_SAMPLE_RATE,&from_rate);
+	ms_filter_call_method(st->read_resampler,MS_FILTER_SET_OUTPUT_SAMPLE_RATE,&to_rate);
+}
+
 RtpSession * create_duplex_rtpsession( int locport, bool_t ipv6){
 	RtpSession *rtpr;
 	rtpr=rtp_session_new(RTP_SESSION_SENDRECV);
@@ -223,7 +231,7 @@ int audio_stream_start_full(AudioStream *stream, RtpProfile *profile, const char
 	if (captcard!=NULL) stream->soundread=ms_snd_card_create_reader(captcard);
 	else {
 		stream->soundread=ms_filter_new(MS_FILE_PLAYER_ID);
-		stream->resampler=ms_filter_new(MS_RESAMPLE_ID);
+		stream->read_resampler=ms_filter_new(MS_RESAMPLE_ID);
 		if (infile!=NULL) audio_stream_play(stream,infile);
 	}
 	if (playcard!=NULL) stream->soundwrite=ms_snd_card_create_writer(playcard);
@@ -279,8 +287,17 @@ int audio_stream_start_full(AudioStream *stream, RtpProfile *profile, const char
 	}
 
 	/* give the sound filters some properties */
-	ms_filter_call_method(stream->soundread,MS_FILTER_SET_SAMPLE_RATE,&pt->clock_rate);
-	ms_filter_call_method(stream->soundwrite,MS_FILTER_SET_SAMPLE_RATE,&pt->clock_rate);
+	if (ms_filter_call_method(stream->soundread,MS_FILTER_SET_SAMPLE_RATE,&pt->clock_rate) != 0) {
+		/* need to add resampler*/
+		if (stream->read_resampler == NULL) stream->read_resampler=ms_filter_new(MS_RESAMPLE_ID);
+	}
+
+	if (ms_filter_call_method(stream->soundwrite,MS_FILTER_SET_SAMPLE_RATE,&pt->clock_rate) != 0) {
+		/* need to add resampler*/
+		if (stream->write_resampler == NULL) stream->write_resampler=ms_filter_new(MS_RESAMPLE_ID);
+	}
+
+
 	tmp=1;
 	ms_filter_call_method(stream->soundwrite,MS_FILTER_SET_NCHANNELS, &tmp);
 
@@ -300,15 +317,22 @@ int audio_stream_start_full(AudioStream *stream, RtpProfile *profile, const char
 	stream->equalizer=ms_filter_new(MS_EQUALIZER_ID);
 	tmp=stream->eq_active;
 	ms_filter_call_method(stream->equalizer,MS_EQUALIZER_SET_ACTIVE,&tmp);
+	/*configure resampler if needed*/
+	if (stream->read_resampler){
+		audio_stream_configure_resampler(stream,stream->soundread,stream->rtpsend);
+	}
 
+	if (stream->write_resampler){
+		audio_stream_configure_resampler(stream,stream->rtprecv,stream->soundwrite);
+	}
 	/* and then connect all */
 	/* tip: draw yourself the picture if you don't understand */
 
 	/*sending graph*/
 	ms_connection_helper_start(&h);
 	ms_connection_helper_link(&h,stream->soundread,-1,0);
-	if (stream->resampler)
-		ms_connection_helper_link(&h,stream->resampler,0,0);
+	if (stream->read_resampler)
+		ms_connection_helper_link(&h,stream->read_resampler,0,0);
 	if (stream->ec)
 		ms_connection_helper_link(&h,stream->ec,1,1);
 	if (stream->volsend)
@@ -327,6 +351,8 @@ int audio_stream_start_full(AudioStream *stream, RtpProfile *profile, const char
 		ms_connection_helper_link(&h,stream->volrecv,0,0);
 	if (stream->ec)
 		ms_connection_helper_link(&h,stream->ec,0,0);
+	if (stream->write_resampler)
+		ms_connection_helper_link(&h,stream->write_resampler,0,0);
 	ms_connection_helper_link(&h,stream->soundwrite,0,-1);
 
 	/* create ticker */
@@ -385,14 +411,10 @@ void audio_stream_set_rtcp_information(AudioStream *st, const char *cname, const
 
 void audio_stream_play(AudioStream *st, const char *name){
 	if (ms_filter_get_id(st->soundread)==MS_FILE_PLAYER_ID){
-		int from_rate=0, to_rate=0;
 		ms_filter_call_method_noarg(st->soundread,MS_FILE_PLAYER_CLOSE);
 		ms_filter_call_method(st->soundread,MS_FILE_PLAYER_OPEN,(void*)name);
-		ms_filter_call_method(st->soundread,MS_FILTER_GET_SAMPLE_RATE,&from_rate);
-		ms_filter_call_method(st->rtpsend,MS_FILTER_GET_SAMPLE_RATE,&to_rate);
-		if (st->resampler){
-			ms_filter_call_method(st->resampler,MS_FILTER_SET_SAMPLE_RATE,&from_rate);
-			ms_filter_call_method(st->resampler,MS_FILTER_SET_OUTPUT_SAMPLE_RATE,&to_rate);
+		if (st->read_resampler){
+			audio_stream_configure_resampler(st,st->soundread,st->rtpsend);
 		}
 		ms_filter_call_method_noarg(st->soundread,MS_FILE_PLAYER_START);
 	}else{
@@ -496,8 +518,8 @@ void audio_stream_stop(AudioStream * stream)
 		/*dismantle the outgoing graph*/
 		ms_connection_helper_start(&h);
 		ms_connection_helper_unlink(&h,stream->soundread,-1,0);
-		if (stream->resampler!=NULL)
-			ms_connection_helper_unlink(&h,stream->resampler,0,0);
+		if (stream->read_resampler!=NULL)
+			ms_connection_helper_unlink(&h,stream->read_resampler,0,0);
 		if (stream->ec!=NULL)
 			ms_connection_helper_unlink(&h,stream->ec,1,1);
 		if (stream->volsend!=NULL)
