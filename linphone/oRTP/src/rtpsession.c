@@ -595,8 +595,8 @@ rtp_session_set_ssrc (RtpSession * session, uint32_t ssrc)
 void rtp_session_update_payload_type(RtpSession *session, int paytype){
 	/* check if we support this payload type */
 	PayloadType *pt=rtp_profile_get_payload(session->rcv.profile,paytype);
-	session->hw_recv_pt=paytype;
 	if (pt!=0){
+		session->hw_recv_pt=paytype;
 		ortp_message ("payload type changed to %i(%s) !",
 				 paytype,pt->mime_type);
 		payload_type_changed(session,pt);
@@ -921,8 +921,11 @@ extern void rtcp_parse(RtpSession *session, mblk_t *mp);
 
 
 static void payload_type_changed_notify(RtpSession *session, int paytype){
-	session->rcv.pt = paytype;
-	rtp_signal_table_emit (&session->on_payload_type_changed);	
+	PayloadType *pt = rtp_profile_get_payload(session->rcv.profile,paytype);
+	if (pt) {
+		session->rcv.pt = paytype;
+		rtp_signal_table_emit (&session->on_payload_type_changed);
+	}
 }
 
 
