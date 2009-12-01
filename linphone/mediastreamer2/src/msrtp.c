@@ -303,6 +303,24 @@ static int receiver_set_session(MSFilter * f, void *arg)
 	return 0;
 }
 
+static int receiver_get_sr(MSFilter *f, void *arg){
+	ReceiverData *d = (ReceiverData *) f->data;
+	PayloadType *pt;
+	if (d->session==NULL) {
+		ms_warning("Could not obtain sample rate, session is not set.");
+		return -1;
+	}
+	pt=rtp_profile_get_payload(rtp_session_get_profile(d->session),
+									rtp_session_get_recv_payload_type(d->session));
+	if (pt != NULL) {
+		*(int*)arg=pt->clock_rate;
+	}else{
+		ms_warning("Could not obtain sample rate, payload type is unknown.");
+		return -1;
+	}
+	return 0;
+}
+
 static void receiver_preprocess(MSFilter * f){
 	ReceiverData *d = (ReceiverData *) f->data;
 	if (d->session){
@@ -336,8 +354,9 @@ static void receiver_process(MSFilter * f)
 }
 
 static MSFilterMethod receiver_methods[] = {
-	{MS_RTP_RECV_SET_SESSION, receiver_set_session},
-	{0, NULL}
+	{	MS_RTP_RECV_SET_SESSION	, receiver_set_session	},
+	{	MS_FILTER_GET_SAMPLE_RATE	, receiver_get_sr		},
+	{	0, NULL}
 };
 
 #ifdef _MSC_VER
