@@ -61,6 +61,8 @@ void audio_stream_free(AudioStream *stream)
 	if (stream->volsend!=NULL) ms_filter_destroy(stream->volsend);
 	if (stream->equalizer!=NULL) ms_filter_destroy(stream->equalizer);
 	if (stream->ticker!=NULL) ms_ticker_destroy(stream->ticker);
+	if (stream->read_resampler!=NULL) ms_filter_destroy(stream->read_resampler);
+	if (stream->write_resampler!=NULL) ms_filter_destroy(stream->write_resampler);
 	ms_free(stream);
 }
 
@@ -111,12 +113,13 @@ bool_t ms_is_ipv6(const char *remote){
 	return ret;
 }
 
-static void audio_stream_configure_resampler(AudioStream *st,MSFilter *from,MSFilter *to) {
+static void audio_stream_configure_resampler(MSFilter *resampler,MSFilter *from,MSFilter *to) {
 	int from_rate=0, to_rate=0;
 	ms_filter_call_method(from,MS_FILTER_GET_SAMPLE_RATE,&from_rate);
 	ms_filter_call_method(to,MS_FILTER_GET_SAMPLE_RATE,&to_rate);
-	ms_filter_call_method(st->read_resampler,MS_FILTER_SET_SAMPLE_RATE,&from_rate);
-	ms_filter_call_method(st->read_resampler,MS_FILTER_SET_OUTPUT_SAMPLE_RATE,&to_rate);
+	ms_filter_call_method(resampler,MS_FILTER_SET_SAMPLE_RATE,&from_rate);
+	ms_filter_call_method(resampler,MS_FILTER_SET_OUTPUT_SAMPLE_RATE,&to_rate);
+	ms_debug("configuring from rate[%i] to rate [%i]",from_rate,to_rate);
 }
 
 RtpSession * create_duplex_rtpsession( int locport, bool_t ipv6){
@@ -319,11 +322,11 @@ int audio_stream_start_full(AudioStream *stream, RtpProfile *profile, const char
 	ms_filter_call_method(stream->equalizer,MS_EQUALIZER_SET_ACTIVE,&tmp);
 	/*configure resampler if needed*/
 	if (stream->read_resampler){
-		audio_stream_configure_resampler(stream,stream->soundread,stream->rtpsend);
+		audio_stream_configure_resampler(stream->read_resampler,stream->soundread,stream->rtpsend);
 	}
 
 	if (stream->write_resampler){
-		audio_stream_configure_resampler(stream,stream->rtprecv,stream->soundwrite);
+		audio_stream_configure_resampler(stream->write_resampler,stream->rtprecv,stream->soundwrite);
 	}
 	/* and then connect all */
 	/* tip: draw yourself the picture if you don't understand */
@@ -538,6 +541,8 @@ void audio_stream_stop(AudioStream * stream)
 			ms_connection_helper_unlink(&h,stream->volrecv,0,0);
 		if (stream->ec!=NULL)
 			ms_connection_helper_unlink(&h,stream->ec,0,0);
+		if (stream->write_resampler!=NULL)
+			ms_connection_helper_unlink(&h,stream->write_resampler,0,0);
 		ms_connection_helper_unlink(&h,stream->soundwrite,0,-1);
 
 	}
