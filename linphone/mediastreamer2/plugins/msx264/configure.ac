@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT([msx264],[1.2.0])
+AC_INIT([msx264],[1.3.0])
 
 AM_INIT_AUTOMAKE([tar-ustar])
 
@@ -60,13 +60,8 @@ fi
 
 PKG_CHECK_MODULES(MEDIASTREAMER, mediastreamer >= 2.1.0)
 
-PKG_CHECK_MODULES(X264, x264 >= 0.58.0)
+PKG_CHECK_MODULES(X264, x264 >= 0.67.0)
 
-AC_ARG_ENABLE(hacked-x264,
-[  --enable-hacked-x264       Turn on compilation over a patched x264 that allows multislicing [default=no]],
-[hacked_x264=$enableval],
-[hacked_x264=no]
-)
 
 dnl test for ffmpeg presence
 PKG_CHECK_MODULES(LIBAVCODEC, [libavcodec >= 50.0.0 ],ffmpeg_found=yes , ffmpeg_found=no)

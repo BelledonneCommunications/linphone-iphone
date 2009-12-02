@@ -1,16 +1,10 @@
 msx264 - a GPL plugin to bring video H264 encoding/decoding capabilities to mediastreamer2 applications.
 It is based on ffmpeg for decoding and x264 for encoding.
 
-It works with any version of x264. However if you want better performance and interroperability, it is 
-highly recommended to use the modified multiscling-enabled x264 available from linphone.org.
-This patch enables multi-slicing, ie smaller video packets that fit into the network mtu.
-It enables RFC3984 packetization-mode=0 to work.
-You can download this special x264 here:
-http://download.savannah.gnu.org/releases/linphone/plugins/sources/x264-snapshot-20090704-linphone-org.tar.gz
-
+It works with x264 version later to september 2009. 
 So:
-* compile x264-snapshot-20090704-linphone-org.tar.gz with ./configure && make && make install
-* compile msx264 with ./configure --enable-hacked-x264 && make && make install
+
+* compile msx264 with ./configure && make && make install
 
 
 A bit of history
@@ -19,3 +13,6 @@ A bit of history
 The multislicing feature of x264 is something that has been contributed several time, but never merged (why ?).
 The linphone.org version of x264 was inspired by a patch submitted on x264-devel mailing list:
 http://mailman.videolan.org/pipermail/x264-devel/2008-April/004427.html
+http://download.savannah.gnu.org/releases/linphone/plugins/sources/x264-snapshot-20090704-linphone-org.tar.gz
+This version is no more required since in august 2009, x264 team introduces new parameters
+controlling slicing.

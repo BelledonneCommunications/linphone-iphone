@@ -70,25 +70,28 @@ static void enc_uninit(MSFilter *f){
 static void enc_preprocess(MSFilter *f){
 	EncData *d=(EncData*)f->data;
 	x264_param_t params;
+	
 	rfc3984_init(&d->packer);
 	rfc3984_set_mode(&d->packer,d->mode);
 	rfc3984_enable_stap_a(&d->packer,FALSE);
+	
 	x264_param_default(&params);
+	params.i_threads=1;
+	params.i_sync_lookahead=0;
 	params.i_width=d->vsize.width;
 	params.i_height=d->vsize.height;
 	params.i_fps_num=(int)d->fps;
 	params.i_fps_den=1;
-#ifdef HACKED_X264
-	ms_message("Lucky guy, you have a hacked x264 lib that allows multislicing !");
-	params.i_max_nalu_size=ms_get_payload_max_size()-100; /*-100 security margin*/
-#endif
+	params.i_slice_max_size=ms_get_payload_max_size()-100; /*-100 security margin*/
 	/*params.i_level_idc=30;*/
+	
 	params.rc.i_rc_method = X264_RC_ABR;
 	params.rc.i_bitrate=(int)( ( ((float)d->bitrate)*0.8)/1000.0);
 	params.rc.f_rate_tolerance=0.1;
 	params.rc.i_vbv_max_bitrate=(int) (((float)d->bitrate)*0.9/1000.0);
 	params.rc.i_vbv_buffer_size=params.rc.i_vbv_max_bitrate;
 	params.rc.f_vbv_buffer_init=0.5;
+	params.rc.i_lookahead=0;
 	/*enable this by config ?*/
 	/*
 	params.i_keyint_max = (int)d->fps*d->keyframe_int;
@@ -108,14 +111,9 @@ static void x264_nals_to_msgb(x264_nal_t *xnals, int num_nals, MSQueue * nalus){
 	/*int bytes;*/
 	for (i=0;i<num_nals;++i){
 		m=allocb(xnals[i].i_payload+10,0);
-		/*
-		x264_nal_encode(m->b_wptr, &bytes, 0, &xnals[i] );
-		m->b_wptr+=bytes;
-		*/
-		*m->b_wptr=( 0x00 << 7 ) | ( xnals[i].i_ref_idc << 5 ) | xnals[i].i_type;
-		m->b_wptr++;
-		memcpy(m->b_wptr,xnals[i].p_payload,xnals[i].i_payload);
-		m->b_wptr+=xnals[i].i_payload;
+		
+		memcpy(m->b_wptr,xnals[i].p_payload+4,xnals[i].i_payload-4);
+		m->b_wptr+=xnals[i].i_payload-4;
 		if (xnals[i].i_type==7) {
 			ms_message("A SPS is being sent.");
 		}else if (xnals[i].i_type==8) {
@@ -149,6 +147,7 @@ static void enc_process(MSFilter *f){
 			}else xpic.i_type=X264_TYPE_AUTO;
 			xpic.i_qpplus1=0;
 			xpic.i_pts=d->framenum;
+			xpic.param=NULL;
 			xpic.img.i_csp=X264_CSP_I420;
 			xpic.img.i_plane=3;
 			xpic.img.i_stride[0]=pic.strides[0];
@@ -159,7 +158,7 @@ static void enc_process(MSFilter *f){
 			xpic.img.plane[1]=pic.planes[1];
 			xpic.img.plane[2]=pic.planes[2];
 			xpic.img.plane[3]=0;
-			if (x264_encoder_encode(d->enc,&xnals,&num_nals,&xpic,&oxpic)==0){
+			if (x264_encoder_encode(d->enc,&xnals,&num_nals,&xpic,&oxpic)>=0){
 				x264_nals_to_msgb(xnals,num_nals,&nalus);
 				rfc3984_pack(&d->packer,&nalus,f->outputs[0],ts);
 				d->framenum++;
@@ -269,11 +268,7 @@ static MSFilterMethod enc_methods[]={
 static MSFilterDesc x264_enc_desc={
 	.id=MS_FILTER_PLUGIN_ID,
 	.name="MSX264Enc",
-#ifdef HACKED_X264
 	.text="A H264 encoder based on x264 project (with multislicing enabled)",
-#else
-	.text="A H264 encoder based on x264 project.",
-#endif
 	.category=MS_FILTER_ENCODER,
 	.enc_fmt="H264",
 	.ninputs=1,

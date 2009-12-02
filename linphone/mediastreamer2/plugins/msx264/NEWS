@@ -1,3 +1,6 @@
+Wednesday December 2, 2009: msx264-1.3.0
+	- use new official x264 support of multislicing (forked version no more required)
+
 Friday July 4, 2009 : msx264-1.2.0
 	- modified to compile against new multisliced version of x264 to allow packetization-mode=0
 
