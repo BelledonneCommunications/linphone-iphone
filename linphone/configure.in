@@ -36,7 +36,7 @@ AM_PROG_CC_C_O
 
 case $target_os in
 	*mingw32ce)
-       	CFLAGS="$CFLAGS -D_WIN32_WCE -DORTP_STATIC -D_WIN32_WINNT=0x0501 -Dstrerror="
+       	CFLAGS="$CFLAGS -D_WIN32_WCE -DORTP_STATIC -D_WIN32_WINNT=0x0501"
        	CXXFLAGS="$CXXFLAGS -DORTP_STATIC -D_WIN32_WINNT=0x0501"
        	LIBS="$LIBS -lws2 -liphlpapi"
 		mingw_found=yes

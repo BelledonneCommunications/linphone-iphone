@@ -125,6 +125,7 @@ if test $GCC = yes && test $wall_werror = yes;  then
 fi
 
 macosx_found=no
+mingw32ce_found=no
 
 dnl add thread flags
 case $target_os in
@@ -138,8 +139,9 @@ case $target_os in
 		CFLAGS="$CFLAGS -DINET6 -DORTP_INET6 -D_WIN32_WINNT=0x0501  -D_WIN32_WCE  -DORTP_STATIC"
 		CXXFLAGS="$CXXFLAGS -DINET6 -DORTP_INET6 -D_WIN32_WINNT=0x0501 -DORTP_STATIC  -D_WIN32_WCE"
 dnl ORTP_STATIC to tell ortp not to export its variable with dllexport, as if we were building statically, or dynamically on linux
-        LIBS="$LIBS -lws2"
+        	LIBS="$LIBS -lws2"
 		mingw_found=yes
+		mingw32ce_found=yes
 		build_tests=no
     ;;
 	*mingw*)
@@ -480,6 +482,7 @@ MS_CHECK_VIDEO
 AM_CONDITIONAL(BUILD_VIDEO, test "$video" = "true")
 AM_CONDITIONAL(BUILD_THEORA, test "$have_theora" = "yes")
 AM_CONDITIONAL(BUILD_WIN32, test "$mingw_found" = "yes")
+AM_CONDITIONAL(BUILD_WIN32_WCE, test "$mingw32ce_found" = "yes")
 
 dnl	*********************************************
 dnl	setup oRTP dependency

@@ -95,7 +95,7 @@ bool_t ms_is_ipv6(const char *remote){
 	bool_t ret=FALSE;
 #ifdef INET6
 	struct addrinfo hints, *res0;
-	
+
 	int err;
 	memset(&hints, 0, sizeof(hints));
 	hints.ai_family = PF_UNSPEC;
@@ -105,7 +105,7 @@ bool_t ms_is_ipv6(const char *remote){
 		ms_warning ("get_local_addr_for: %s", gai_strerror(err));
 		return FALSE;
 	}
-	ret=(res0->ai_addr->sa_family==AF_INET6); 
+	ret=(res0->ai_addr->sa_family==AF_INET6);
 	freeaddrinfo(res0);
 #endif
 	return ret;
@@ -127,7 +127,7 @@ RtpSession * create_duplex_rtpsession( int locport, bool_t ipv6){
 
 #if defined(_WIN32_WCE)
 time_t
-time (time_t *t)
+ms_time (time_t *t)
 {
     DWORD timemillis = GetTickCount();
 	if (timemillis>0)
@@ -179,7 +179,7 @@ void audio_stream_change_decoder(AudioStream *stream, int payload){
 			ms_filter_link (stream->rtprecv, 0, stream->decoder, 0);
 			ms_filter_link (stream->decoder,0 , stream->dtmfgen, 0);
 			ms_filter_preprocess(stream->decoder,stream->ticker);
-			
+
 		}else{
 			ms_warning("No decoder found for %s",pt->mime_type);
 		}
@@ -208,17 +208,17 @@ int audio_stream_start_full(AudioStream *stream, RtpProfile *profile, const char
 	if (remport>0) rtp_session_set_remote_addr_full(rtps,remip,remport,rem_rtcp_port);
 	rtp_session_set_payload_type(rtps,payload);
 	rtp_session_set_jitter_compensation(rtps,jitt_comp);
-	
+
 	if (remport>0)
 		ms_filter_call_method(stream->rtpsend,MS_RTP_SEND_SET_SESSION,rtps);
 	stream->rtprecv=ms_filter_new(MS_RTP_RECV_ID);
 	ms_filter_call_method(stream->rtprecv,MS_RTP_RECV_SET_SESSION,rtps);
 	stream->session=rtps;
-	
+
 	stream->dtmfgen=ms_filter_new(MS_DTMF_GEN_ID);
 	rtp_session_signal_connect(rtps,"telephone-event",(RtpCallback)on_dtmf_received,(unsigned long)stream);
 	rtp_session_signal_connect(rtps,"payload_type_changed",(RtpCallback)payload_type_changed,(unsigned long)stream);
-	
+
 	/* creates the local part */
 	if (captcard!=NULL) stream->soundread=ms_snd_card_create_reader(captcard);
 	else {
@@ -231,7 +231,7 @@ int audio_stream_start_full(AudioStream *stream, RtpProfile *profile, const char
 		stream->soundwrite=ms_filter_new(MS_FILE_REC_ID);
 		if (outfile!=NULL) audio_stream_record(stream,outfile);
 	}
-	
+
 	/* creates the couple of encoder/decoder */
 	pt=rtp_profile_get_payload(profile,payload);
 	if (pt==NULL){
@@ -245,7 +245,7 @@ int audio_stream_start_full(AudioStream *stream, RtpProfile *profile, const char
 		ms_error("mediastream.c: No decoder available for payload %i.",payload);
 		return -1;
 	}
-	
+
 	if (use_ec) {
 		stream->ec=ms_filter_new(MS_SPEEX_EC_ID);
 		ms_filter_call_method(stream->ec,MS_FILTER_SET_SAMPLE_RATE,&pt->clock_rate);
@@ -283,7 +283,7 @@ int audio_stream_start_full(AudioStream *stream, RtpProfile *profile, const char
 	ms_filter_call_method(stream->soundwrite,MS_FILTER_SET_SAMPLE_RATE,&pt->clock_rate);
 	tmp=1;
 	ms_filter_call_method(stream->soundwrite,MS_FILTER_SET_NCHANNELS, &tmp);
-	
+
 	/* give the encoder/decoder some parameters*/
 	ms_filter_call_method(stream->encoder,MS_FILTER_SET_SAMPLE_RATE,&pt->clock_rate);
 	ms_message("Payload's bitrate is %i",pt->normal_bitrate);
@@ -292,10 +292,10 @@ int audio_stream_start_full(AudioStream *stream, RtpProfile *profile, const char
 		ms_filter_call_method(stream->encoder,MS_FILTER_SET_BITRATE,&pt->normal_bitrate);
 	}
 	ms_filter_call_method(stream->decoder,MS_FILTER_SET_SAMPLE_RATE,&pt->clock_rate);
-	
+
 	if (pt->send_fmtp!=NULL) ms_filter_call_method(stream->encoder,MS_FILTER_ADD_FMTP, (void*)pt->send_fmtp);
 	if (pt->recv_fmtp!=NULL) ms_filter_call_method(stream->decoder,MS_FILTER_ADD_FMTP,(void*)pt->recv_fmtp);
-	
+
 	/*create the equalizer*/
 	stream->equalizer=ms_filter_new(MS_EQUALIZER_ID);
 	tmp=stream->eq_active;
@@ -303,7 +303,7 @@ int audio_stream_start_full(AudioStream *stream, RtpProfile *profile, const char
 
 	/* and then connect all */
 	/* tip: draw yourself the picture if you don't understand */
-	
+
 	/*sending graph*/
 	ms_connection_helper_start(&h);
 	ms_connection_helper_link(&h,stream->soundread,-1,0);
@@ -328,13 +328,13 @@ int audio_stream_start_full(AudioStream *stream, RtpProfile *profile, const char
 	if (stream->ec)
 		ms_connection_helper_link(&h,stream->ec,0,0);
 	ms_connection_helper_link(&h,stream->soundwrite,0,-1);
-	
+
 	/* create ticker */
 	stream->ticker=ms_ticker_new();
 	ms_ticker_set_name(stream->ticker,"Audio MSTicker");
 	ms_ticker_attach(stream->ticker,stream->soundread);
 	ms_ticker_attach(stream->ticker,stream->rtprecv);
-	
+
 	return 0;
 }
 
@@ -490,9 +490,9 @@ void audio_stream_stop(AudioStream * stream)
 		MSConnectionHelper h;
 		ms_ticker_detach(stream->ticker,stream->soundread);
 		ms_ticker_detach(stream->ticker,stream->rtprecv);
-		
+
 		rtp_stats_display(rtp_session_get_stats(stream->session),"Audio session's RTP statistics");
-		
+
 		/*dismantle the outgoing graph*/
 		ms_connection_helper_start(&h);
 		ms_connection_helper_unlink(&h,stream->soundread,-1,0);

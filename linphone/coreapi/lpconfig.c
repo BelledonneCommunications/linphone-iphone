@@ -30,7 +30,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#if !defined(_WIN32_WCE)
 #include <errno.h>
+#endif /*_WIN32_WCE*/
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -76,8 +78,8 @@ void list_node_foreach(ListNode *head, ListNodeForEachFunc func){
 
 
 #define LIST_PREPEND(e1,e2) (  (e2)->_prev=NULL,(e2)->_next=(e1),(e1)->_prev=(e2),(e2) )
-#define LIST_APPEND(head,elem) ((head)==0 ? (elem) : (list_node_append((ListNode*)(head),(ListNode*)(elem)), (head)) ) 
-#define LIST_REMOVE(head,elem) 
+#define LIST_APPEND(head,elem) ((head)==0 ? (elem) : (list_node_append((ListNode*)(head),(ListNode*)(elem)), (head)) )
+#define LIST_REMOVE(head,elem)
 
 /* returns void */
 #define LIST_FOREACH(head) list_node_foreach((ListNode*)head)
@@ -102,14 +104,14 @@ struct _LpConfig{
 
 LpItem * lp_item_new(const char *key, const char *value){
 	LpItem *item=lp_new0(LpItem,1);
-	item->key=strdup(key);
-	item->value=strdup(value);
+	item->key=ortp_strdup(key);
+	item->value=ortp_strdup(value);
 	return item;
 }
 
 LpSection *lp_section_new(const char *name){
 	LpSection *sec=lp_new0(LpSection,1);
-	sec->name=strdup(name);
+	sec->name=ortp_strdup(name);
 	return sec;
 }
 
@@ -151,9 +153,9 @@ static bool_t is_first_char(const char *start, const char *pos){
 void lp_config_parse(LpConfig *lpconfig){
 	char tmp[MAX_LEN];
 	LpSection *cur=NULL;
-	
+
 	if (lpconfig->file==NULL) return;
-	
+
 	while(fgets(tmp,MAX_LEN,lpconfig->file)!=NULL){
 		char *pos1,*pos2;
 		pos1=strchr(tmp,'[');
@@ -180,10 +182,10 @@ void lp_config_parse(LpConfig *lpconfig){
 			if (pos1!=NULL){
 				char key[MAX_LEN];
 				key[0]='\0';
-				
+
 				*pos1='\0';
 				if (sscanf(tmp,"%s",key)>0){
-					
+
 					pos1++;
 					pos2=strchr(pos1,'\n');
 					if (pos2==NULL) pos2=pos1+strlen(pos1);
@@ -211,16 +213,18 @@ void lp_config_parse(LpConfig *lpconfig){
 LpConfig * lp_config_new(const char *filename){
 	LpConfig *lpconfig=lp_new0(LpConfig,1);
 	if (filename!=NULL){
-		lpconfig->filename=strdup(filename);
+		lpconfig->filename=ortp_strdup(filename);
 		lpconfig->file=fopen(filename,"rw");
 		if (lpconfig->file!=NULL){
 			lp_config_parse(lpconfig);
 			fclose(lpconfig->file);
+#if !defined(_WIN32_WCE)
 			/* make existing configuration files non-group/world-accessible */
 			if (chmod(filename, S_IRUSR | S_IWUSR) == -1)
 				ms_warning("unable to correct permissions on "
 				  	  "configuration file: %s",
 					   strerror(errno));
+#endif /*_WIN32_WCE*/
 			lpconfig->file=NULL;
 			lpconfig->modified=0;
 		}
@@ -230,7 +234,7 @@ LpConfig * lp_config_new(const char *filename){
 
 void lp_item_set_value(LpItem *item, const char *value){
 	free(item->value);
-	item->value=strdup(value);
+	item->value=ortp_strdup(value);
 }
 
 

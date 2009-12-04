@@ -163,7 +163,12 @@ void linphone_call_destroy(LinphoneCall *obj)
 
 /*prevent a gcc bug with %c*/
 static size_t my_strftime(char *s, size_t max, const char  *fmt,  const struct tm *tm){
+#if !defined(_WIN32_WCE)
 	return strftime(s, max, fmt, tm);
+#else
+	return 0;
+	/*FIXME*/
+#endif /*_WIN32_WCE*/
 }
 
 LinphoneCallLog * linphone_call_log_new(LinphoneCall *call, char *from, char *to){
@@ -171,7 +176,10 @@ LinphoneCallLog * linphone_call_log_new(LinphoneCall *call, char *from, char *to
 	struct tm loctime;
 	cl->dir=call->dir;
 #ifdef WIN32
+#if !defined(_WIN32_WCE)
 	loctime=*localtime(&call->start_time);
+	/*FIXME*/
+#endif /*_WIN32_WCE*/
 #else
 	localtime_r(&call->start_time,&loctime);
 #endif
@@ -396,7 +404,7 @@ void sound_config_read(LinphoneCore *lc)
 
 	tmpbuf=PACKAGE_SOUND_DIR "/" LOCAL_RING;
 	tmpbuf=lp_config_get_string(lc->config,"sound","local_ring",tmpbuf);
-	if (access(tmpbuf,F_OK)==-1) {
+	if (ortp_file_exist(tmpbuf)==-1) {
 		tmpbuf=PACKAGE_SOUND_DIR "/" LOCAL_RING;
 	}
 	if (strstr(tmpbuf,".wav")==NULL){
@@ -408,7 +416,7 @@ void sound_config_read(LinphoneCore *lc)
 
 	tmpbuf=PACKAGE_SOUND_DIR "/" REMOTE_RING;
 	tmpbuf=lp_config_get_string(lc->config,"sound","remote_ring",tmpbuf);
-	if (access(tmpbuf,F_OK)==-1){
+	if (ortp_file_exist(tmpbuf)==-1){
 		tmpbuf=PACKAGE_SOUND_DIR "/" REMOTE_RING;
 	}
 	if (strstr(tmpbuf,".wav")==NULL){

@@ -174,7 +174,7 @@ sdp_context_generate_template (sdp_context_t * ctx)
 }
 
 static void add_relay_info(sdp_message_t *sdp, int mline, const char *relay, const char *relay_session_id){
-	
+
 	if (relay) sdp_message_a_attribute_add(sdp, mline,
 				     osip_strdup ("relay-addr"),osip_strdup(relay));
 	if (relay_session_id) sdp_message_a_attribute_add(sdp, mline,
@@ -191,7 +191,12 @@ sdp_context_add_payload (sdp_context_t * ctx, sdp_payload_t * payload, char *med
 	{
 		eXosip_trace (OSIP_ERROR,
 			    ("You must not call sdp_context_add_*_payload outside the write_offer callback\n"));
-		abort ();
+#if !defined(_WIN32_WCE)
+				abort();
+#else
+				exit(-1);
+#endif /*_WIN32_WCE*/
+
 	}
 	if (payload->proto == NULL)
 		payload->proto = "RTP/AVP";
@@ -225,7 +230,7 @@ sdp_context_add_payload (sdp_context_t * ctx, sdp_payload_t * payload, char *med
 				     attr_field);
 	}
 	if (payload->b_as_bandwidth != 0)
-	{	
+	{
 		if (sdp_message_bandwidth_get(offer,payload->line,0)==NULL){
 			attr_field =
 			sstrdup_sprintf ("%i", payload->b_as_bandwidth);
@@ -326,7 +331,7 @@ sdp_context_get_answer ( sdp_context_t *ctx,sdp_message_t *remote)
 	else eXosip_trace(OSIP_INFO1,("Using firewall address in sdp."));
 
 	answer = sdp_context_generate_template (ctx);
-	
+
 	/* for each m= line */
 	for (i = 0; !sdp_message_endof_media (remote, i); i++){
 		sdp_payload_init(&init_payload);
@@ -373,7 +378,7 @@ sdp_context_get_answer ( sdp_context_t *ctx,sdp_message_t *remote)
 						sdp_message_a_attr_value_get_with_pt
 						(remote, i, payload.pt,
 						 "fmtp");
-					
+
 					/* ask the application if this codec is supported */
 					err = sdph->accept_audio_codecs (ctx,
 									 &payload);
@@ -447,7 +452,7 @@ sdp_context_get_answer ( sdp_context_t *ctx,sdp_message_t *remote)
 				{
 					/* refuse the line */
 					refuse_mline(answer,mtype,proto,i);
-					
+
 				}
 				else
 					m_lines_accepted++;

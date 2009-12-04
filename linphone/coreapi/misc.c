@@ -30,7 +30,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <unistd.h>
 #include <fcntl.h>
 #include <strings.h>
+#if !defined(_WIN32_WCE)
 #include <errno.h>
+#endif /*_WIN32_WCE*/
 
 #undef snprintf
 #include <ortp/stun.h>
@@ -100,15 +102,17 @@ char *int2str(int number)
 
 void check_sound_device(LinphoneCore *lc)
 {
-	int fd,len;
+	int fd=0;
+	int len;
 	int a;
 	char *file=NULL;
 	char *i810_audio=NULL;
 	char *snd_pcm_oss=NULL;
 	char *snd_mixer_oss=NULL;
 	char *snd_pcm=NULL;
-
+#if !defined(_WIN32_WCE)
 	fd=open("/proc/modules",O_RDONLY);
+#endif /*_WIN32_WCE*/
 	if (fd>0){
 		/* read the entire /proc/modules file and check if sound conf seems correct */
 		/*a=fstat(fd,&statbuf);
@@ -158,7 +162,9 @@ void check_sound_device(LinphoneCore *lc)
 	*/
 	end:
 	if (file!=NULL) ms_free(file);
+#if !defined(_WIN32_WCE)
 	if (fd>0) close(fd);
+#endif /*_WIN32_WCE*/
 }
 
 #define UDP_HDR_SZ 8
@@ -353,12 +359,10 @@ void linphone_core_setup_local_rtp_profile(LinphoneCore *lc)
 	PayloadType *payload;
 	bool_t prepend;
 	lc->local_profile=rtp_profile_clone_full(&av_profile);
-
 	/* first look at the list given by configuration file to see if
 	it is correct */
 	audiopt=fix_codec_list(lc->local_profile,lc->codecs_conf.audio_codecs);
 	videopt=fix_codec_list(lc->local_profile,lc->codecs_conf.video_codecs);
-
 	/* now find and add payloads that are not listed in the configuration
 	codec list */
 	for (i=0;i<127;i++)
@@ -798,7 +802,7 @@ int linphone_core_get_local_ip_for(const char *dest, char *result){
 	if (err<0) {
 		ms_error("Error in connect: %s",strerror(errno));
  		freeaddrinfo(res);
- 		close(sock);
+ 		close_socket(sock);
 		return -1;
 	}
 	freeaddrinfo(res);
@@ -807,14 +811,14 @@ int linphone_core_get_local_ip_for(const char *dest, char *result){
 	err=getsockname(sock,(struct sockaddr*)&addr,&s);
 	if (err!=0) {
 		ms_error("Error in getsockname: %s",strerror(errno));
-		close(sock);
+		close_socket(sock);
 		return -1;
 	}
 	err=getnameinfo((struct sockaddr *)&addr,s,result,LINPHONE_IPADDR_SIZE,NULL,0,NI_NUMERICHOST);
 	if (err!=0){
 		ms_error("getnameinfo error: %s",strerror(errno));
 	}
-	close(sock);
+	close_socket(sock);
 	ms_message("Local interface to reach %s is %s.",dest,result);
 	return 0;
 }
