@@ -99,9 +99,9 @@
 			/>
 			<DeploymentTool
 				ForceDirty="-1"
-				RemoteDirectory=""
+				RemoteDirectory="%CSIDL_PROGRAM_FILES%\linphone"
 				RegisterOutput="0"
-				AdditionalFiles=""
+				AdditionalFiles="..\..\..\oRTP\build\wince\$(PlatformName)\$(ConfigurationName)\oRTP.dll;..\..\..\mediastreamer2\build\wince\$(PlatformName)\$(ConfigurationName)\mediastreamer2.dll"
 			/>
 			<DebuggerTool
 			/>
