@@ -1629,12 +1629,13 @@ static void post_configure_audio_streams(LinphoneCore *lc){
 void linphone_core_start_media_streams(LinphoneCore *lc, LinphoneCall *call){
 	osip_from_t *me=linphone_core_get_primary_contact_parsed(lc);
 	const char *tool="linphone-" LINPHONE_VERSION;
+	char *cname;
 	/* adjust rtp jitter compensation. It must be at least the latency of the sound card */
 	int jitt_comp=MAX(lc->sound_conf.latency,lc->rtp_conf.audio_jitt_comp);
 
 	if (call->media_start_time==0) call->media_start_time=time(NULL);
 
-	char *cname=ortp_strdup_printf("%s@%s",me->url->username,me->url->host);
+	cname=ortp_strdup_printf("%s@%s",me->url->username,me->url->host);
 	{
 		StreamParams *audio_params=&call->audio_params;
 		if (!lc->use_files){
@@ -2377,12 +2378,12 @@ unsigned long linphone_core_get_native_video_window_id(const LinphoneCore *lc){
 }
 
 static MSVideoSizeDef supported_resolutions[]={
-	{	MS_VIDEO_SIZE_SVGA	,	"svga"	},
-	{	MS_VIDEO_SIZE_4CIF	,	"4cif"	},
-	{	MS_VIDEO_SIZE_VGA	,	"vga"	},
-	{	MS_VIDEO_SIZE_CIF	,	"cif"	},
-	{	MS_VIDEO_SIZE_QVGA	,	"qvga"	},
-	{	MS_VIDEO_SIZE_QCIF	,	"qcif"	},
+	{	{MS_VIDEO_SIZE_SVGA_W,MS_VIDEO_SIZE_SVGA_H}	,	"svga"	},
+	{	{MS_VIDEO_SIZE_4CIF_W,MS_VIDEO_SIZE_4CIF_H}	,	"4cif"	},
+	{	{MS_VIDEO_SIZE_VGA_W,MS_VIDEO_SIZE_VGA_H}	,	"vga"	},
+	{	{MS_VIDEO_SIZE_CIF_W,MS_VIDEO_SIZE_CIF_H}	,	"cif"	},
+	{	{MS_VIDEO_SIZE_QVGA_W,MS_VIDEO_SIZE_QVGA_H}	,	"qvga"	},
+	{	{MS_VIDEO_SIZE_QCIF_W,MS_VIDEO_SIZE_QVGA_H}	,	"qcif"	},
 	{	{0,0}			,	NULL	}
 };
 
@@ -2392,13 +2393,14 @@ const MSVideoSizeDef *linphone_core_get_supported_video_sizes(LinphoneCore *lc){
 
 static MSVideoSize video_size_get_by_name(const char *name){
 	MSVideoSizeDef *pdef=supported_resolutions;
+	MSVideoSize null_vsize={0,0};
 	for(;pdef->name!=NULL;pdef++){
 		if (strcasecmp(name,pdef->name)==0){
 			return pdef->vsize;
 		}
 	}
 	ms_warning("Video resolution %s is not supported in linphone.",name);
-	return (MSVideoSize){0,0};
+	return null_vsize;
 }
 
 const char *video_size_get_name(MSVideoSize vsize){
@@ -2433,8 +2435,9 @@ void linphone_core_set_preferred_video_size(LinphoneCore *lc, MSVideoSize vsize)
 
 void linphone_core_set_preferred_video_size_by_name(LinphoneCore *lc, const char *name){
 	MSVideoSize vsize=video_size_get_by_name(name);
+	MSVideoSize default_vsize={MS_VIDEO_SIZE_CIF_W,MS_VIDEO_SIZE_CIF_H};
 	if (vsize.width!=0)	linphone_core_set_preferred_video_size(lc,vsize);
-	else linphone_core_set_preferred_video_size(lc,MS_VIDEO_SIZE_CIF);
+	else linphone_core_set_preferred_video_size(lc,default_vsize);
 }
 
 MSVideoSize linphone_core_get_preferred_video_size(LinphoneCore *lc){

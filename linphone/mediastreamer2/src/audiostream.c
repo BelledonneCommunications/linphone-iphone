@@ -145,9 +145,9 @@ bool_t audio_stream_alive(AudioStream * stream, int timeout){
 	if (stats->recv!=0){
 		if (stats->recv!=stream->last_packet_count){
 			stream->last_packet_count=stats->recv;
-			stream->last_packet_time=time(NULL);
+			stream->last_packet_time=ms_time(NULL);
 		}else{
-			if (time(NULL)-stream->last_packet_time>timeout){
+			if (ms_time(NULL)-stream->last_packet_time>timeout){
 				/* more than timeout seconds of inactivity*/
 				return FALSE;
 			}

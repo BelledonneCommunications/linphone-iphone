@@ -79,9 +79,14 @@ EXPORTS
 	rtp_profile_clone_full
 	rtp_profile_destroy
 	rtp_profile_get_payload_from_rtpmap
+	rtp_profile_get_payload_number_from_rtpmap
+	rtp_profile_get_payload_number_from_mime
 	
+	payload_type_new
 	payload_type_set_send_fmtp
+	payload_type_append_send_fmtp
 	payload_type_clone
+	payload_type_destroy
 	fmtp_get_value
 	
 	ortp_free
@@ -144,6 +149,12 @@ EXPORTS
     stunCalculateFingerprint
     
     getWinSocketError
+    close_socket
+    set_non_blocking_socket
+    ortp_strerror
+    gettimeofday
+    ortp_file_exist
+    
 
 
 	rtp_session_set_dscp

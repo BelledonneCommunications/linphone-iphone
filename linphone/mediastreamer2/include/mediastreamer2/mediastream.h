@@ -31,9 +31,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <time.h>
 
 #if defined(_WIN32_WCE)
-#define time ms_time
 time_t ms_time (time_t *t);
-#endif /*_WIN32_WCE*/
+#else
+#define ms_time time
+#endif
 
 typedef enum EchoLimiterType{
 	ELInactive,

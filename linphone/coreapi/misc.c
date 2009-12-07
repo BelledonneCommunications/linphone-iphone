@@ -25,13 +25,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifdef HAVE_SIGHANDLER_T
 #include <signal.h>
 #endif /*HAVE_SIGHANDLER_T*/
+
+#include <string.h>
+#if !defined(_WIN32_WCE)
+#include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <strings.h>
-#if !defined(_WIN32_WCE)
-#include <errno.h>
 #endif /*_WIN32_WCE*/
 
 #undef snprintf
@@ -102,6 +103,7 @@ char *int2str(int number)
 
 void check_sound_device(LinphoneCore *lc)
 {
+#ifdef _linux
 	int fd=0;
 	int len;
 	int a;
@@ -110,9 +112,8 @@ void check_sound_device(LinphoneCore *lc)
 	char *snd_pcm_oss=NULL;
 	char *snd_mixer_oss=NULL;
 	char *snd_pcm=NULL;
-#if !defined(_WIN32_WCE)
 	fd=open("/proc/modules",O_RDONLY);
-#endif /*_WIN32_WCE*/
+
 	if (fd>0){
 		/* read the entire /proc/modules file and check if sound conf seems correct */
 		/*a=fstat(fd,&statbuf);
@@ -145,9 +146,8 @@ void check_sound_device(LinphoneCore *lc)
 			}
 		}
 	}else {
-#ifdef __linux
+
 		ms_warning("Could not open /proc/modules.");
-#endif
 	}
 	/* now check general volume. Some user forget to rise it and then complain that linphone is
 	not working */
@@ -162,9 +162,8 @@ void check_sound_device(LinphoneCore *lc)
 	*/
 	end:
 	if (file!=NULL) ms_free(file);
-#if !defined(_WIN32_WCE)
 	if (fd>0) close(fd);
-#endif /*_WIN32_WCE*/
+#endif
 }
 
 #define UDP_HDR_SZ 8

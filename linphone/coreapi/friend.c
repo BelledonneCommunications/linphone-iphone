@@ -667,7 +667,7 @@ void linphone_core_remove_friend(LinphoneCore *lc, LinphoneFriend* fl){
 	}
 }
 
-#define key_compare(key, word) strncasecmp((key),(word),strlen(key))
+#define key_compare(key, word) strcasecmp((key),(word))
 
 LinphoneSubscribePolicy __policy_str_to_enum(const char* pol){
 	if (key_compare("accept",pol)==0){

@@ -327,7 +327,7 @@
 				Optimization="2"
 				FavorSizeOrSpeed="1"
 				AdditionalIncludeDirectories=".;&quot;..\..\..\..\..\linphone-builder\speex\include&quot;;..\..;..\..\include;..\..\..\oRTP\include;..\..\..\codecs\speex\include"
-				PreprocessorDefinitions="__VIDEO_DISABLED__;AMD_HACK;HAVE_SPEEX_NOISE;ORTP_INET6;MEDIASTREAMER2_EXPORT;_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);_DEBUG;_USRDLL;$(ARCHFAM);$(_ARCHFAM_);POCKETPC2003_UI_MODEL;POCKETPC2003_UI_MODEL"
+				PreprocessorDefinitions="__VIDEO_DISABLED__;AMD_HACK;HAVE_SPEEX_NOISE;ORTP_INET6;MEDIASTREAMER2_EXPORT;_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);_DEBUG;_USRDLL;$(ARCHFAM);$(_ARCHFAM_);POCKETPC2003_UI_MODEL"
 				RuntimeLibrary="3"
 				TreatWChar_tAsBuiltInType="false"
 				UsePrecompiledHeader="0"
@@ -809,6 +809,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\mswebcam.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\mtu.c"
 				>
 			</File>
@@ -860,6 +864,10 @@
 			</File>
 			<File
 				RelativePath="..\..\include\mediastreamer2\ice.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\mediastreamer2\mediastream.h"
 				>
 			</File>
 			<File

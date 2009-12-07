@@ -32,9 +32,11 @@
 #include <assert.h>
 #if !defined(_WIN32_WCE)
 #include <errno.h>
-#endif /*_WIN32_WCE*/
 #include <sys/types.h>
 #include <sys/stat.h>
+#endif /*_WIN32_WCE*/
+
+
 
 #define lp_new0(type,n)	(type*)calloc(sizeof(type),n)
 
