@@ -177,7 +177,7 @@
 			Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
 			OutputDirectory="Windows Mobile 6 Professional SDK (ARMV4I)\$(ConfigurationName)"
 			IntermediateDirectory="Windows Mobile 6 Professional SDK (ARMV4I)\$(ConfigurationName)"
-			ConfigurationType="2"
+			ConfigurationType="4"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -217,13 +217,8 @@
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="ws2.lib osip2.lib osipparser2.lib eXosip2.lib mediastreamer2.lib ortp.lib iphlpapi.lib"
-				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;..\..\..\..\linphone-builder\osip\platform\wince\$(PlatformName)\$(ConfigurationName)&quot;;&quot;..\..\..\..\linphone-builder\eXosip\platform\wince\$(PlatformName)\$(ConfigurationName)&quot;;&quot;..\..\mediastreamer2\build\wince\$(PlatformName)\$(ConfigurationName)&quot;;&quot;..\..\oRTP\build\wince\$(PlatformName)\$(ConfigurationName)&quot;"
-				GenerateDebugInformation="true"
-				SubSystem="2"
-				TargetMachine="0"
+				Name="VCLibrarianTool"
+				AdditionalOptions=""
 			/>
 			<Tool
 				Name="VCALinkTool"

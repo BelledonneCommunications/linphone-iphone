@@ -94,9 +94,9 @@ EXPORTS
 	ortp_strdup
 	ortp_realloc
 	ortp_malloc0
+	
 	freemsg
 	dupmsg
-
     allocb
     getq
     putq
@@ -122,6 +122,8 @@ EXPORTS
 	WIN_cond_signal
 	
 	__ortp_log_mask
+	ortp_strdup_printf
+	ortp_strdup_vprintf
 
 	rtp_session_register_event_queue
 	rtp_session_unregister_event_queue

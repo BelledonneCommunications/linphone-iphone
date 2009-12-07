@@ -108,5 +108,6 @@ EXPORTS
 	
 	ms_time
 	ms_get_payload_max_size
+	ms_sleep
 	
 	
