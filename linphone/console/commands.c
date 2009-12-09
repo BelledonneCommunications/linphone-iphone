@@ -764,7 +764,7 @@ lpc_cmd_proxy(LinphoneCore *lc, char *args)
 static int
 lpc_cmd_call_logs(LinphoneCore *lc, char *args)
 {
-	MSList *elem=linphone_core_get_call_logs(lc);
+	const MSList *elem=linphone_core_get_call_logs(lc);
 	for (;elem!=NULL;elem=ms_list_next(elem))
 	{
 		LinphoneCallLog *cl=(LinphoneCallLog*)elem->data;

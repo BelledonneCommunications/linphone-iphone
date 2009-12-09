@@ -101,8 +101,7 @@ make setup.exe
 #build plugins
 cd mediastreamer2/plugins/msx264
 ./autogen.sh
-PKG_CONFIG_PATH=/opt/linphone/lib/pkgconfig ./configure --prefix=/opt/linphone --enable-shared --disable-static --enable-hacked-x264
-make
+PKG_CONFIG_PATH=/opt/linphone/lib/pkgconfig ./configure --prefix=/opt/linphone --enable-shared --disable-static
 #make a binary zip of this plugin
 make zip
 #or make an installer
@@ -155,17 +154,11 @@ When running "make install DESTDIR=<somepath>", somepath must be absolute and sh
   copy ~/libxml2-install/usr/local/* into linphone-deps/.
 
 - building x264:
-  
-  * Download lastest snapshot the linphone fork of x264 from
-  http://download.savannah.gnu.org/releases/linphone/plugins/sources/
-  This fork just brings the H264 Nalu size control feature, necessary to make video packet that fits into the network mtu.
-  It will be no longer necessary as soon as x264 official project will accept this patch or a similar one.
-
+ 
   * download yasm normal version windows executable from yasm project page:
   http://www.tortall.net/projects/yasm/wiki/Download
   copy it as /usr/local/bin/yasm.exe
 
-  uncompress the x264 tarball
   cd into x264/ dir then run:
   ./configure --enable-pic
   make

@@ -243,6 +243,14 @@ char * linphone_call_log_to_str(LinphoneCallLog *cl){
 	return tmp;
 }
 
+void linphone_call_log_set_user_pointer(LinphoneCallLog *cl, void *up){
+	cl->user_pointer=up;
+}
+
+void *linphone_call_log_get_user_pointer(const LinphoneCallLog *cl){
+	return cl->user_pointer;
+}
+
 void linphone_call_log_destroy(LinphoneCallLog *cl){
 	if (cl->from!=NULL) osip_free(cl->from);
 	if (cl->to!=NULL) osip_free(cl->to);
@@ -2339,7 +2347,7 @@ LinphoneFirewallPolicy linphone_core_get_firewall_policy(const LinphoneCore *lc)
 	return lc->net_conf.firewall_policy;
 }
 
-MSList * linphone_core_get_call_logs(LinphoneCore *lc){
+const MSList * linphone_core_get_call_logs(LinphoneCore *lc){
 	lc->missed_calls=0;
 	return lc->call_logs;
 }

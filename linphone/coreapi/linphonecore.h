@@ -188,11 +188,14 @@ typedef struct _LinphoneCallLog{
 	LinphoneAddress *to;
 	char start_date[128];
 	int duration;
+	void *user_pointer;
 } LinphoneCallLog;
 
 
 
 /*public: */
+void linphone_call_log_set_user_pointer(LinphoneCallLog *cl, void *up);
+void *linphone_call_log_get_user_pointer(const LinphoneCallLog *cl);
 char * linphone_call_log_to_str(LinphoneCallLog *cl);
 
 typedef enum{
@@ -724,7 +727,7 @@ void linphone_core_notify_all_friends(LinphoneCore *lc, LinphoneOnlineStatus os)
 LinphoneFriend *linphone_core_get_friend_by_uri(const LinphoneCore *lc, const char *uri);
 
 /* returns a list of LinphoneCallLog */
-MSList * linphone_core_get_call_logs(LinphoneCore *lc);
+const MSList * linphone_core_get_call_logs(LinphoneCore *lc);
 
 /* video support */
 void linphone_core_enable_video(LinphoneCore *lc, bool_t vcap_enabled, bool_t display_enabled);

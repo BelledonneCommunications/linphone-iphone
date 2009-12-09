@@ -25,7 +25,7 @@ void linphone_gtk_call_log_update(GtkWidget *w){
 	GtkTextIter iter,begin;
 	int off;
 	char *logmsg;
-	MSList *logs;
+	const MSList *logs;
 	for (logs=linphone_core_get_call_logs(linphone_gtk_get_core());logs!=NULL;logs=logs->next){
 		LinphoneCallLog *cl=(LinphoneCallLog*)logs->data;
 		logmsg=linphone_call_log_to_str(cl);
