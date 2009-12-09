@@ -61,10 +61,6 @@
 #if !defined(strdup)
 #define strdup _strdup
 #endif /*strdup*/
-/*
-#if !defined(access)
-#define access _access
-#endif*/ /*access*/
 
 #endif /*_WIN32_WCE*/
 
@@ -75,6 +71,10 @@
 #endif
 #else
 #define _(something)	(something)
+#endif
+
+#ifndef PACKAGE_DIR
+#define PACKAGE_DIR ""
 #endif
 
 /***************************************************************************
@@ -568,9 +568,22 @@ bool_t linphonec_get_autoanswer(){
  *	- char *histfile_name
  *	- FILE *mylogfile
  */
-#if  defined (_MSC_VER)
-int _tmain(int argc, _TCHAR* argv[]) {
-	trace_level=1;
+#if defined (_WIN32_WCE)
+
+char **convert_args_to_ascii(int argc, _TCHAR **wargv){
+	int i;
+	char **result=malloc(argc*sizeof(char*));
+	char argtmp[128];
+	for(i=0;i<argc;++i){
+		wcstombs(argtmp,wargv[i],sizeof(argtmp));
+		result[i]=strdup(argtmp);
+	}
+	return result;
+}
+
+int _tmain(int argc, _TCHAR* wargv[]) {
+	char **argv=convert_args_to_ascii(argc,wargv);
+	trace_level=6;
 	linphonec_vtable.show =(ShowInterfaceCb) stub;
 	linphonec_vtable.inv_recv = linphonec_call_received;
 	linphonec_vtable.bye_recv = linphonec_bye_received;
@@ -596,8 +609,6 @@ main (int argc, char *argv[]) {
 #endif
 
 
-
-
 	if (! linphonec_init(argc, argv) ) exit(EXIT_FAILURE);
 
 	linphonec_main_loop (&linphonec, sipAddr);
@@ -620,14 +631,19 @@ linphonec_init(int argc, char **argv)
 	 * Set initial values for global variables
 	 */
 	mylogfile = NULL;
-
+	
+	
+#ifndef _WIN32
 	snprintf(configfile_name, PATH_MAX, "%s/.linphonerc",
-#if !defined(_WIN32_WCE)
 			getenv("HOME"));
+#elif defined(_WIN32_WCE)
+	strncpy(configfile_name,PACKAGE_DIR "\\linphonerc",PATH_MAX);
+	mylogfile=fopen(PACKAGE_DIR "\\" "linphonec.log","w");
+	printf("Logs are redirected in" PACKAGE_DIR "\\linphonec.log");
 #else
-			".");
-#endif /*_WIN32_WCE*/
-
+	snprintf(configfile_name, PATH_MAX, "%s/Linphone/linphonerc",
+			getenv("APPDATA"));
+#endif
 	/* Handle configuration filename changes */
 	switch (handle_configfile_migration())
 	{

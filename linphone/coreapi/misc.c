@@ -775,6 +775,7 @@ int linphone_core_get_local_ip_for(const char *dest, char *result){
 	struct addrinfo hints;
 	struct addrinfo *res=NULL;
 	struct sockaddr_storage addr;
+	struct sockaddr *p_addr=(struct sockaddr*)&addr;
 	ortp_socket_t sock;
 	socklen_t s;
 
@@ -812,6 +813,13 @@ int linphone_core_get_local_ip_for(const char *dest, char *result){
 		ms_error("Error in getsockname: %s",strerror(errno));
 		close_socket(sock);
 		return -1;
+	}
+	if (p_addr->sa_family==AF_INET){
+		struct sockaddr_in *p_sin=(struct sockaddr_in*)p_addr;
+		if (p_sin->sin_addr.s_addr==0){
+			close_socket(sock);
+			return -1;
+		}
 	}
 	err=getnameinfo((struct sockaddr *)&addr,s,result,LINPHONE_IPADDR_SIZE,NULL,0,NI_NUMERICHOST);
 	if (err!=0){

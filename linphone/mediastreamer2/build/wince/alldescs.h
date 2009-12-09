@@ -28,6 +28,9 @@ extern MSFilterDesc ms_v4w_desc;
 //extern MSFilterDesc ms_h263_enc_desc;
 //extern MSFilterDesc ms_h263_dec_desc;
 extern MSFilterDesc ms_join_desc;
+extern MSFilterDesc ms_equalizer_desc;
+extern MSFilterDesc ms_volume_desc;
+
 MSFilterDesc * ms_filter_descs[]={
 &ms_alaw_dec_desc,
 &ms_alaw_enc_desc,
@@ -57,6 +60,8 @@ MSFilterDesc * ms_filter_descs[]={
 //&ms_h263_enc_desc,
 //&ms_h263_dec_desc,
 &ms_join_desc,
+&ms_equalizer_desc,
+&ms_volume_desc,
 NULL
 };
 

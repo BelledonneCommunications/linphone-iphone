@@ -4,9 +4,6 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "liblinphone", "liblinphone.vcproj", "{290078F0-3B63-47BF-A2A9-E1AF5411F5E7}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "linphonec", "linphonec\linphonec.vcproj", "{92574924-BF59-4DAA-994B-9978B80E5797}"
-	ProjectSection(ProjectDependencies) = postProject
-		{290078F0-3B63-47BF-A2A9-E1AF5411F5E7} = {290078F0-3B63-47BF-A2A9-E1AF5411F5E7}
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
