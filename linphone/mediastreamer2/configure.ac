@@ -408,7 +408,7 @@ AC_SUBST(JACK_LIBS)
 fi
 
 if test "$found_sound" = "no"; then
-	AC_MSG_ERROR([Could not find a support sound driver API])
+	AC_MSG_WARN([Could not find a support sound driver API])
 fi
 
 
