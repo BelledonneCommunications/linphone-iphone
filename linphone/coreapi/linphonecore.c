@@ -1411,11 +1411,8 @@ int linphone_core_invite(LinphoneCore *lc, const char *url)
 		return -1;
 	}
 
-	gstate_new_state(lc, GSTATE_CALL_OUT_INVITE, url);
 	linphone_core_get_default_proxy(lc,&proxy);
 	if (!linphone_core_interpret_url(lc,url,&real_parsed_url,&route)){
-		/* bad url */
-		gstate_new_state(lc, GSTATE_CALL_ERROR, NULL);
 		return -1;
 	}
 	real_url=linphone_address_as_string(real_parsed_url);
@@ -1467,19 +1464,18 @@ int linphone_core_invite(LinphoneCore *lc, const char *url)
 	err=eXosip_call_send_initial_invite(invite);
 	lc->call->cid=err;
 	eXosip_unlock();
+	
 	if (err<0){
 		ms_warning("Could not initiate call.");
 		lc->vtable.display_status(lc,_("could not call"));
 		linphone_call_destroy(lc->call);
 		lc->call=NULL;
 		linphone_core_stop_media_streams(lc);
-	}
+	}else gstate_new_state(lc, GSTATE_CALL_OUT_INVITE, url);
 	
 	goto end;
 	end:
 		if (real_url!=NULL) ms_free(real_url);
-		if (err<0)
-			gstate_new_state(lc, GSTATE_CALL_ERROR, NULL);
 		if (route!=NULL) ms_free(route);
 	return (err<0) ? -1 : 0;
 }
