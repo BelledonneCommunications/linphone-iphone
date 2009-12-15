@@ -115,7 +115,7 @@ static void print_prompt(LinphoneCore *opm);
  *
  ***************************************************************************/
 
-LinphoneCore linphonec;
+LinphoneCore *linphonec;
 FILE *mylogfile;
 #ifdef HAVE_READLINE
 static char *histfile_name=NULL;
@@ -536,7 +536,7 @@ main (int argc, char *argv[])
 
 	if (! linphonec_init(argc, argv) ) exit(EXIT_FAILURE);
 
-	linphonec_main_loop (&linphonec, sipAddr);
+	linphonec_main_loop (linphonec, sipAddr);
 
 	linphonec_finish(EXIT_SUCCESS);
 
@@ -612,10 +612,10 @@ linphonec_init(int argc, char **argv)
 	/*
 	 * Initialize linphone core
 	 */
-	linphone_core_init (&linphonec, &linphonec_vtable, configfile_name,
+	linphonec=linphone_core_new (&linphonec_vtable, configfile_name,
 			    NULL);
-	linphone_core_enable_video(&linphonec,vcap_enabled,display_enabled);
-	linphone_core_enable_video_preview(&linphonec,preview_enabled);
+	linphone_core_enable_video(linphonec,vcap_enabled,display_enabled);
+	linphone_core_enable_video_preview(linphonec,preview_enabled);
 	if (!(vcap_enabled || display_enabled)) printf("Warning: video is disabled in linphonec, use -V or -C or -D to enable.\n");
 #ifdef HAVE_READLINE
 	/*
@@ -647,7 +647,7 @@ linphonec_finish(int exit_status)
 	printf("Terminating...\n");
 	
 	/* Terminate any pending call */
-   	linphonec_parse_command_line(&linphonec, "terminate");
+   	linphonec_parse_command_line(linphonec, "terminate");
    	linphonec_command_finished();
 #ifdef HAVE_READLINE
 	linphonec_finish_readline();
@@ -656,7 +656,7 @@ linphonec_finish(int exit_status)
 		stop_pipe_reader();
 
 
-	linphone_core_uninit (&linphonec);
+	linphone_core_destroy (linphonec);
 
 	if (mylogfile != NULL && mylogfile != stdout)
 	{
@@ -788,7 +788,7 @@ usage: linphonec [-c file] [-s sipaddr] [-a] [-V] [-d level ] [-l logfile]\n\
 static int
 linphonec_idle_call ()
 {
-	LinphoneCore *opm=&linphonec;
+	LinphoneCore *opm=linphonec;
 
 	/* Uncomment the following to verify being called */
 	/* printf(".\n"); */
@@ -895,7 +895,7 @@ linphonec_main_loop (LinphoneCore * opm, char * sipAddr)
 	if (sipAddr != NULL )
 	{
 		snprintf (buf, sizeof(buf),"call %s", sipAddr);
-		linphonec_parse_command_line(&linphonec, buf);
+		linphonec_parse_command_line(linphonec, buf);
 	}
 
 	while (linphonec_running && (input=linphonec_readline(prompt)))
@@ -933,7 +933,7 @@ linphonec_main_loop (LinphoneCore * opm, char * sipAddr)
 		}
 #endif
 
-		linphonec_parse_command_line(&linphonec, iptr);
+		linphonec_parse_command_line(linphonec, iptr);
 		linphonec_command_finished();
 		free(input);
 	}
