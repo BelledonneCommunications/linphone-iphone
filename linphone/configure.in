@@ -390,12 +390,23 @@ changequote([, ])dnl
 AC_SUBST([ORTP_VERSION])
 AC_SUBST([MS2_VERSION])
 
+dnl ##################################################
+dnl # Check for doxygen
+dnl ##################################################
+
+AC_PATH_PROG(DOXYGEN,doxygen,false)
+AM_CONDITIONAL(HAVE_DOXYGEN, test $DOXYGEN != false)
+
+
 AC_OUTPUT([ 
 Makefile 
 m4/Makefile
 po/Makefile.in 
 pixmaps/Makefile
 coreapi/Makefile
+coreapi/help/Makefile
+coreapi/help/Doxyfile
+coreapi/help/doxygen.dox
 gtk-glade/Makefile
 console/Makefile
 share/Makefile

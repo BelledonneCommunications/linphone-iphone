@@ -885,7 +885,7 @@ int linphone_core_set_video_codecs(LinphoneCore *lc, MSList *codecs)
 	return 0;
 }
 
-const MSList * linphone_core_get_friend_list(LinphoneCore *lc)
+const MSList * linphone_core_get_friend_list(const LinphoneCore *lc)
 {
 	return lc->friends;
 }

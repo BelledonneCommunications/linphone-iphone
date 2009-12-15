@@ -1,0 +1,37 @@
+/**
+ * @mainpage
+ * Project Website: http://savannah.gnu.org/projects/linphone
+ *
+ * @verbinclude README
+ *
+ */
+
+/** 
+ * @defgroup liblinphone liblinphone library - high level library for building SIP applications
+ * @brief liblinphone Version @LINPHONE_VERSION@
+ *
+ * @see http://savannah.gnu.org/projects/linphone
+ *
+ * @section what_is_it What is liblinphone
+ *
+ * Liblinphone is a high level library for bringing SIP video call functionnality
+ * into an application. It aims at making easy the integration of the SIP
+ * video calls into any applications. All variants of linphone are directly based
+ * on it:
+ * 	- linphone (gtk interface)
+ *  - linphonec (console interface)
+ * Liblinphone is GPL (see COPYING file). Please understand the licencing details
+ * before using it!
+ * 
+ * For any use of this library beyond the rights granted to you by the
+ * GPL license, please contact Belledonne Communications 
+ * (contact@belledonne-communications.com)
+ * 
+ * 
+
+/**
+ * @page liblinphone_license COPYING 
+ * @verbinclude COPYING
+ */
+
+

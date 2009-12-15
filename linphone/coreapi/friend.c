@@ -646,6 +646,21 @@ void linphone_core_remove_friend(LinphoneCore *lc, LinphoneFriend* fl){
 	}
 }
 
+void linphone_friend_set_ref_key(LinphoneFriend *lf, const char *key){
+	if (lf->refkey!=NULL){
+		ms_free(lf->refkey);
+		lf->refkey=NULL;
+	}
+	if (key)
+		lf->refkey=ms_strdup(key);
+	if (lf->lc)
+		linphone_core_write_friends_config(lf->lc);
+}
+
+const char *linphone_friend_get_ref_key(const LinphoneFriend *lf){
+	return lf->refkey;
+}
+
 static bool_t username_match(const char *u1, const char *u2){
 	if (u1==NULL && u2==NULL) return TRUE;
 	if (u1 && u2 && strcasecmp(u1,u2)==0) return TRUE;
@@ -673,6 +688,18 @@ LinphoneFriend *linphone_core_get_friend_by_uri(const LinphoneCore *lc, const ch
 	}
 	linphone_address_destroy(puri);
 	return lf;
+}
+
+LinphoneFriend *linphone_core_get_friend_by_ref_key(const LinphoneCore *lc, const char *key){
+	const MSList *elem;
+	if (key==NULL) return NULL;
+	for(elem=linphone_core_get_friend_list(lc);elem!=NULL;elem=elem->next){
+		LinphoneFriend *lf=(LinphoneFriend*)elem->data;
+		if (lf->refkey!=NULL && strcmp(lf->refkey,key)==0){
+			return lf;
+		}
+	}
+	return NULL;
 }
 
 #define key_compare(key, word) strncasecmp((key),(word),strlen(key))
@@ -729,6 +756,7 @@ LinphoneFriend * linphone_friend_new_from_config_file(LinphoneCore *lc, int inde
 	if (a!=-1) {
 		linphone_friend_set_proxy(lf,__index_to_proxy(lc,a));
 	}
+	linphone_friend_set_ref_key(lf,lp_config_get_string(config,item,"refkey",NULL));
 	return lf;
 }
 
@@ -752,6 +780,7 @@ void linphone_friend_write_to_config_file(LpConfig *config, LinphoneFriend *lf, 
 	char key[50];
 	char *tmp;
 	int a;
+	const char *refkey;
 	
 	sprintf(key,"friend_%i",index);
 	
@@ -773,6 +802,11 @@ void linphone_friend_write_to_config_file(LpConfig *config, LinphoneFriend *lf, 
 		a=ms_list_index(lf->lc->sip_conf.proxies,lf->proxy);
 		lp_config_set_int(config,key,"proxy",a);
 	}else lp_config_set_int(config,key,"proxy",-1);
+
+	refkey=linphone_friend_get_ref_key(lf);
+	if (refkey){
+		lp_config_set_string(config,key,"refkey",refkey);
+	}
 }
 
 void linphone_core_write_friends_config(LinphoneCore* lc)

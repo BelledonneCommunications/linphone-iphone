@@ -1,4 +1,5 @@
 
+SUBDIRS=help
 
 ## Process this file with automake to produce Makefile.in
 linphone_includedir=$(includedir)/linphone
