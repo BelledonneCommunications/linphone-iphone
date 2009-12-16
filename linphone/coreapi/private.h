@@ -185,9 +185,15 @@ void linphone_core_update_allocated_audio_bandwidth_in_call(LinphoneCore *lc, co
 void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call);
 
 void linphone_core_write_friends_config(LinphoneCore* lc);
+void linphone_friend_write_to_config_file(struct _LpConfig *config, LinphoneFriend *lf, int index);
+LinphoneFriend * linphone_friend_new_from_config_file(struct _LinphoneCore *lc, int index);
+
 void linphone_proxy_config_update(LinphoneProxyConfig *cfg);
 void linphone_proxy_config_get_contact(LinphoneProxyConfig *cfg, const char **ip, int *port);
 LinphoneProxyConfig * linphone_core_lookup_known_proxy(LinphoneCore *lc, const LinphoneAddress *uri);
 int linphone_core_get_local_ip_for(const char *dest, char *result);
+
+LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(struct _LpConfig *config, int index);
+void linphone_proxy_config_write_to_config_file(struct _LpConfig* config,LinphoneProxyConfig *obj, int index);
 
 #endif /* _PRIVATE_H */

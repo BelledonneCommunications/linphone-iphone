@@ -40,6 +40,14 @@ void linphone_proxy_config_init(LinphoneProxyConfig *obj){
 	obj->expires=3600;
 }
 
+/**
+ * @addtogroup proxies
+ * @{
+**/
+
+/**
+ * Creates an empty proxy config.
+**/
 LinphoneProxyConfig *linphone_proxy_config_new(){
 	LinphoneProxyConfig *obj=NULL;
 	obj=ms_new(LinphoneProxyConfig,1);
@@ -47,6 +55,12 @@ LinphoneProxyConfig *linphone_proxy_config_new(){
 	return obj;
 }
 
+/**
+ * Destroys a proxy config.
+ * 
+ * @note: LinphoneProxyConfig that have been removed from LinphoneCore with
+ * linphone_core_remove_proxy_config() must not be freed.
+**/
 void linphone_proxy_config_destroy(LinphoneProxyConfig *obj){
 	if (obj->reg_proxy!=NULL) ms_free(obj->reg_proxy);
 	if (obj->reg_identity!=NULL) ms_free(obj->reg_identity);
@@ -57,6 +71,9 @@ void linphone_proxy_config_destroy(LinphoneProxyConfig *obj){
 	if (obj->contact_addr!=NULL) ms_free(obj->contact_addr);
 }
 
+/**
+ * Returns a boolean indicating that the user is sucessfully registered on the proxy.
+**/
 bool_t linphone_proxy_config_is_registered(const LinphoneProxyConfig *obj){
 	return obj->registered;
 }
@@ -134,6 +151,14 @@ bool_t linphone_proxy_config_register_again_with_updated_contact(LinphoneProxyCo
 	return TRUE;
 }
 
+/**
+ * Sets the proxy address
+ *
+ * Examples of valid sip proxy address are:
+ * - IP address: sip:87.98.157.38
+ * - IP address with port: sip:87.98.157.38:5062
+ * - hostnames : sip:sip.example.net
+**/
 int linphone_proxy_config_set_server_addr(LinphoneProxyConfig *obj, const char *server_addr){
 	int err;
 	osip_from_t *url;
@@ -152,6 +177,15 @@ int linphone_proxy_config_set_server_addr(LinphoneProxyConfig *obj, const char *
 	return 0;
 }
 
+/**
+ * Sets the user identity as a SIP address.
+ *
+ * This identity is normally formed with display name, username and domain, such 
+ * as:
+ * Alice <sip:alice@example.net>
+ * The REGISTER messages will have from and to set to this identity.
+ *
+**/
 void linphone_proxy_config_set_identity(LinphoneProxyConfig *obj, const char *identity){
 	int err=0;
 	osip_from_t *url=NULL;
@@ -182,6 +216,11 @@ const char *linphone_proxy_config_get_domain(const LinphoneProxyConfig *cfg){
 	return cfg->realm;
 }
 
+/**
+ * Sets a SIP route.
+ * When a route is set, all outgoing calls will go to the route's destination if this proxy
+ * is the default one (see linphone_core_set_default_proxy() ).
+**/
 void linphone_proxy_config_set_route(LinphoneProxyConfig *obj, const char *route)
 {
 	int err;
@@ -231,10 +270,16 @@ bool_t linphone_proxy_config_check(LinphoneCore *lc, LinphoneProxyConfig *obj){
 	return TRUE;
 }
 
+/**
+ * Indicates whether a REGISTER request must be sent to the proxy.
+**/
 void linphone_proxy_config_enableregister(LinphoneProxyConfig *obj, bool_t val){
 	obj->reg_sendregister=val;
 }
 
+/**
+ * Sets the registration expiration time in seconds.
+**/
 void linphone_proxy_config_expires(LinphoneProxyConfig *obj, int val){
 	if (val<=0) val=600;
 	obj->expires=val;
@@ -244,6 +289,15 @@ void linphone_proxy_config_enable_publish(LinphoneProxyConfig *obj, bool_t val){
 	obj->publish=val;
 }
 
+/**
+ * Starts editing a proxy configuration.
+ *
+ * Because proxy configuration must be consistent, applications MUST
+ * call linphone_proxy_config_edit() before doing any attempts to modify
+ * proxy configuration (such as identity, proxy address and so on).
+ * Once the modifications are done, then the application must call
+ * linphone_proxy_config_done() to commit the changes.
+**/
 void linphone_proxy_config_edit(LinphoneProxyConfig *obj){
 	obj->auth_failures=0;
 	if (obj->reg_sendregister){
@@ -280,6 +334,9 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
 	}
 }
 
+/**
+ * Commits modification made to the proxy configuration.
+**/
 int linphone_proxy_config_done(LinphoneProxyConfig *obj)
 {
 	if (!linphone_proxy_config_check(obj->lc,obj)) return -1;
@@ -464,6 +521,11 @@ entity=\"%s\">\n%s",
   return 0;
 }
 
+
+/**
+ * Add a proxy configuration.
+ * This will start registration on the proxy, if registration is enabled.
+**/
 int linphone_core_add_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *cfg){
 	if (!linphone_proxy_config_check(lc,cfg)) return -1;
 	lc->sip_conf.proxies=ms_list_append(lc->sip_conf.proxies,(void *)cfg);
@@ -473,6 +535,12 @@ int linphone_core_add_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *cfg){
 
 extern void linphone_friend_check_for_removed_proxy(LinphoneFriend *lf, LinphoneProxyConfig *cfg);
 
+/**
+ * Removes a proxy configuration.
+ *
+ * LinphoneCore will then automatically unregister and place the proxy configuration
+ * on a deleted list. For that reason, a removed proxy does NOT need to be freed.
+**/
 void linphone_core_remove_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *cfg){
 	MSList *elem;
 	lc->sip_conf.proxies=ms_list_remove(lc->sip_conf.proxies,(void *)cfg);
@@ -490,6 +558,13 @@ void linphone_core_remove_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *cf
 	
 }
 
+/**
+ * Sets the default proxy.
+ *
+ * This default proxy must be part of the list of already entered LinphoneProxyConfig.
+ * Toggling it as default will make LinphoneCore use the identity associated with
+ * the proxy configuration in all incoming and outgoing calls.
+**/
 void linphone_core_set_default_proxy(LinphoneCore *lc, LinphoneProxyConfig *config){
 	/* check if this proxy is in our list */
 	if (config!=NULL){
@@ -508,6 +583,9 @@ void linphone_core_set_default_proxy_index(LinphoneCore *lc, int index){
 	else linphone_core_set_default_proxy(lc,ms_list_nth_data(lc->sip_conf.proxies,index));
 }
 
+/**
+ * Returns the default proxy configuration, that is the one used to determine the current identity.
+**/
 int linphone_core_get_default_proxy(LinphoneCore *lc, LinphoneProxyConfig **config){
 	int pos=-1;
 	if (config!=NULL) *config=lc->default_proxy;
@@ -534,6 +612,9 @@ LinphoneProxyConfig *linphone_core_get_proxy_config_from_rid(LinphoneCore *lc, i
 	else return (LinphoneProxyConfig*)elem->data;
 }
 
+/**
+ * Returns an unmodifiable list of entered proxy configurations.
+**/
 const MSList *linphone_core_get_proxy_config_list(const LinphoneCore *lc){
 	return lc->sip_conf.proxies;
 }
@@ -680,6 +761,10 @@ void linphone_proxy_config_set_sip_setup(LinphoneProxyConfig *cfg, const char *t
 SipSetupContext *linphone_proxy_config_get_sip_setup_context(LinphoneProxyConfig *cfg){
 	return cfg->ssctx;
 }
+
+/**
+ * @}
+**/
 
 LinphoneAccountCreator *linphone_account_creator_new(struct _LinphoneCore *core, const char *type){
 	LinphoneAccountCreator *obj;

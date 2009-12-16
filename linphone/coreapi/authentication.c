@@ -30,6 +30,17 @@
 
 extern LinphoneProxyConfig *linphone_core_get_proxy_config_from_rid(LinphoneCore *lc, int rid);
 
+/**
+ * @addtogroup authentication
+ * @{
+**/
+
+/**
+ * Create a LinphoneAuthInfo object with supplied information.
+ *
+ * The object can be created empty, that is with all arguments set to NULL.
+ * Username, userid, password and realm can be set later using specific methods.
+**/
 LinphoneAuthInfo *linphone_auth_info_new(const char *username, const char *userid,
 				   										const char *passwd, const char *ha1,const char *realm)
 {
@@ -44,6 +55,9 @@ LinphoneAuthInfo *linphone_auth_info_new(const char *username, const char *useri
 	return obj;
 }
 
+/**
+ * Sets the password.
+**/
 void linphone_auth_info_set_passwd(LinphoneAuthInfo *info, const char *passwd){
 	if (info->passwd!=NULL) {
 		ms_free(info->passwd);
@@ -52,6 +66,9 @@ void linphone_auth_info_set_passwd(LinphoneAuthInfo *info, const char *passwd){
 	if (passwd!=NULL && (strlen(passwd)>0)) info->passwd=ms_strdup(passwd);
 }
 
+/**
+ * Sets the username.
+**/
 void linphone_auth_info_set_username(LinphoneAuthInfo *info, const char *username){
 	if (info->username){
 		ms_free(info->username);
@@ -60,6 +77,9 @@ void linphone_auth_info_set_username(LinphoneAuthInfo *info, const char *usernam
 	if (username && strlen(username)>0) info->username=ms_strdup(username);
 }
 
+/**
+ * Sets userid.
+**/
 void linphone_auth_info_set_userid(LinphoneAuthInfo *info, const char *userid){
 	if (info->userid){
 		ms_free(info->userid);
@@ -68,6 +88,9 @@ void linphone_auth_info_set_userid(LinphoneAuthInfo *info, const char *userid){
 	if (userid && strlen(userid)>0) info->userid=ms_strdup(userid);
 }
 
+/**
+ * Destroys a LinphoneAuthInfo object.
+**/
 void linphone_auth_info_destroy(LinphoneAuthInfo *obj){
 	if (obj->username!=NULL) ms_free(obj->username);
 	if (obj->userid!=NULL) ms_free(obj->userid);
@@ -154,7 +177,9 @@ static int realm_match(const char *realm1, const char *realm2){
 	return FALSE;
 }
 
-
+/**
+ * Retrieves a LinphoneAuthInfo previously entered into the LinphoneCore.
+**/
 LinphoneAuthInfo *linphone_core_find_auth_info(LinphoneCore *lc, const char *realm, const char *username)
 {
 	MSList *elem;
@@ -202,6 +227,11 @@ static void refresh_exosip_auth_info(LinphoneCore *lc){
 	eXosip_unlock();
 }
 
+/**
+ * Adds authentication information to the LinphoneCore.
+ * 
+ * This information will be used during all SIP transacations that require authentication.
+**/
 void linphone_core_add_auth_info(LinphoneCore *lc, LinphoneAuthInfo *info)
 {
 	MSList *elem;
@@ -225,10 +255,18 @@ void linphone_core_add_auth_info(LinphoneCore *lc, LinphoneAuthInfo *info)
 	if (lc->automatic_action>0) lc->automatic_action--;
 }
 
+
+/**
+ * This method is used to abort a user authentication request initiated by LinphoneCore
+ * from the auth_info_requested callback of LinphoneCoreVTable.
+**/
 void linphone_core_abort_authentication(LinphoneCore *lc,  LinphoneAuthInfo *info){
 	if (lc->automatic_action>0) lc->automatic_action--;
 }
 
+/**
+ * Removes an authentication information object.
+**/
 void linphone_core_remove_auth_info(LinphoneCore *lc, LinphoneAuthInfo *info){
 	int len=ms_list_size(lc->auth_info);
 	int newlen;
@@ -248,10 +286,16 @@ void linphone_core_remove_auth_info(LinphoneCore *lc, LinphoneAuthInfo *info){
 	
 }
 
+/**
+ * Returns an unmodifiable list of currently entered LinphoneAuthInfo.
+**/
 const MSList *linphone_core_get_auth_info_list(const LinphoneCore *lc){
 	return lc->auth_info;
 }
 
+/**
+ * Clear all authentication information.
+**/
 void linphone_core_clear_all_auth_info(LinphoneCore *lc){
 	MSList *elem;
 	int i;
@@ -342,3 +386,7 @@ void linphone_process_authentication(LinphoneCore *lc, eXosip_event_t *ev)
 		linphone_core_find_or_ask_for_auth_info(lc,username,www_realm,ev->tid);
 }
 
+
+/**
+ * @}
+**/

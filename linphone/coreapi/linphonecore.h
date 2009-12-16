@@ -147,6 +147,20 @@ typedef struct autoreplier_config
 
 struct osip_from;
 
+/**
+ * Object that represents a SIP address.
+ *
+ * The LinphoneAddress is an opaque object to represents SIP addresses, ie
+ * the content of SIP's 'from' and 'to' headers.
+ * A SIP address is made of display name, username, domain name, port, and various
+ * uri headers (such as tags). It looks like 'Alice <sip:alice@example.net>'.
+ * The LinphoneAddress has methods to extract and manipulate all parts of the address.
+ * When some part of the address (for example the username) is empty, the accessor methods
+ * return NULL.
+ * 
+ * @ingroup linphone_address
+ * @var LinphoneAddress
+ */
 typedef struct osip_from LinphoneAddress;
 
 LinphoneAddress * linphone_address_new(const char *uri);
@@ -171,23 +185,44 @@ struct _sdp_context;
 struct _SipSetupContext;
 struct _LinphoneCall;
 
+/**
+ * Enum representing the direction of a call.
+ * @ingroup call_logs
+**/
+enum _LinphoneCallDir {
+	LinphoneCallOutgoing, /**< outgoing calls*/
+	LinphoneCallIncoming  /**< incoming calls*/
+};
 
-typedef enum _LinphoneCallDir {LinphoneCallOutgoing, LinphoneCallIncoming} LinphoneCallDir;
+/**
+ * Typedef for enum
+ * @ingroup call_logs
+**/
+typedef enum _LinphoneCallDir LinphoneCallDir;
 
-
+/**
+ * Enum representing the status of a call
+ * @ingroup call_logs
+**/
 typedef enum _LinphoneCallStatus { 
-	LinphoneCallSuccess,
-	LinphoneCallAborted,
-	LinphoneCallMissed
+	LinphoneCallSuccess, /**< The call was sucessful*/
+	LinphoneCallAborted, /**< The call was aborted */
+	LinphoneCallMissed /**< The call was missed (unanswered)*/
 } LinphoneCallStatus;
 
+/**
+ * Structure representing a call log.
+ *
+ * @ingroup call_logs
+ * 
+**/
 typedef struct _LinphoneCallLog{
-	LinphoneCallDir dir;
-	LinphoneCallStatus status;
-	LinphoneAddress *from;
-	LinphoneAddress *to;
-	char start_date[128];
-	int duration;
+	LinphoneCallDir dir; /**< The direction of the call*/
+	LinphoneCallStatus status; /**< The status of the call*/
+	LinphoneAddress *from; /**<Originator of the call as a LinphoneAddress object*/
+	LinphoneAddress *to; /**<Destination of the call as a LinphoneAddress object*/
+	char start_date[128]; /**<Human readable string containg the start date*/
+	int duration; /**<Duration of the call in seconds*/
 	char *refkey;
 	void *user_pointer;
 	struct _LinphoneCore *lc;
@@ -264,9 +299,26 @@ const char *linphone_friend_get_ref_key(const LinphoneFriend *lf);
 
 #define linphone_friend_url(lf) ((lf)->url)
 
-void linphone_friend_write_to_config_file(struct _LpConfig *config, LinphoneFriend *lf, int index);
-LinphoneFriend * linphone_friend_new_from_config_file(struct _LinphoneCore *lc, int index);
-
+/**
+ * @addtogroup proxies
+ * @{
+**/
+/**
+ * The LinphoneProxyConfig object represents a proxy configuration to be used
+ * by the LinphoneCore object.
+ * Its fields must not be used directly in favour of the accessors methods.
+ * Once created and filled properly the LinphoneProxyConfig can be given to
+ * LinphoneCore with linphone_core_add_proxy_config().
+ * This will automatically triggers the registration, if enabled.
+ *
+ * The proxy configuration are persistent to restarts because they are saved
+ * in the configuration file. As a consequence, after linphone_core_new() there
+ * might already be a list of configured proxy that can be examined with
+ * linphone_core_get_proxy_config_list().
+ *
+ * The default proxy (see linphone_core_set_default_proxy() ) is the one of the list
+ * that is used by default for calls.
+**/
 typedef struct _LinphoneProxyConfig
 {
 	struct _LinphoneCore *lc;
@@ -301,20 +353,27 @@ void linphone_proxy_config_enable_publish(LinphoneProxyConfig *obj, bool_t val);
 bool_t linphone_proxy_config_is_registered(const LinphoneProxyConfig *obj);
 const char *linphone_proxy_config_get_domain(const LinphoneProxyConfig *cfg);
 
+/** Returns the proxy configured identity as a const char * */
 #define linphone_proxy_config_get_route(obj)  ((obj)->reg_route)
+/** Returns the proxy configured identity as a const char * */
 #define linphone_proxy_config_get_identity(obj)	((obj)->reg_identity)
 #define linphone_proxy_config_publish_enabled(obj) ((obj)->publish)
+/** Returns the proxy sip address as const char * */
 #define linphone_proxy_config_get_addr(obj) ((obj)->reg_proxy)
+/** Returns the 'expire' time of the registration */
 #define linphone_proxy_config_get_expires(obj)	((obj)->expires)
+/** Returns TRUE if registration is enabled, FALSE otherwise */
 #define linphone_proxy_config_register_enabled(obj) ((obj)->reg_sendregister)
 #define linphone_proxy_config_get_core(obj) ((obj)->lc)
 /* destruction is called automatically when removing the proxy config */
 void linphone_proxy_config_destroy(LinphoneProxyConfig *cfg);
-LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(struct _LpConfig *config, int index);
-void linphone_proxy_config_write_to_config_file(struct _LpConfig* config,LinphoneProxyConfig *obj, int index);
 void linphone_proxy_config_set_sip_setup(LinphoneProxyConfig *cfg, const char *type);
 SipSetupContext *linphone_proxy_config_get_sip_setup_context(LinphoneProxyConfig *cfg);
 SipSetup *linphone_proxy_config_get_sip_setup(LinphoneProxyConfig *cfg);
+
+/**
+ * @}
+**/
 
 typedef struct _LinphoneAccountCreator{
 	struct _LinphoneCore *lc;
@@ -335,7 +394,30 @@ int linphone_account_creator_test_existence(LinphoneAccountCreator *obj);
 LinphoneProxyConfig * linphone_account_creator_validate(LinphoneAccountCreator *obj);
 void linphone_account_creator_destroy(LinphoneAccountCreator *obj);
 
-
+/**
+ * @ingroup authentication
+ * Object holding authentication information.
+ *
+ * @note The object's fields should not be accessed directly. Prefer using
+ * the accessor methods.
+ *
+ * In most case, authentication information consists of a username and password.
+ * Sometimes, a userid is required by proxy, and realm can be useful to discriminate
+ * different SIP domains.
+ *
+ * Once created and filled, a LinphoneAuthInfo must be added to the LinphoneCore in
+ * order to become known and used automatically when needed. 
+ * Use linphone_core_add_auth_info() for that purpose.
+ *
+ * The LinphoneCore object can take the initiative to request authentication information
+ * when needed to the application through the auth_info_requested callback of the
+ * LinphoneCoreVTable structure.
+ *
+ * The application can respond to this information request later using 
+ * linphone_core_add_auth_info(). This will unblock all pending authentication 
+ * transactions and retry them with authentication headers.
+ *
+**/
 typedef struct _LinphoneAuthInfo
 {
 	char *username;
@@ -412,48 +494,78 @@ void gstate_new_state(struct _LinphoneCore *lc, gstate_t new_state, const char *
 /*private*/
 void gstate_initialize(struct _LinphoneCore *lc) ;
 
+/**
+ * @addtogroup initializing
+ * @{
+**/
+
+/** Callback prototype */
 typedef void (*ShowInterfaceCb)(struct _LinphoneCore *lc);
+/** Callback prototype */
 typedef void (*InviteReceivedCb)(struct _LinphoneCore *lc, const char *from);
+/** Callback prototype */
 typedef void (*ByeReceivedCb)(struct _LinphoneCore *lc, const char *from);
+/** Callback prototype */
 typedef void (*DisplayStatusCb)(struct _LinphoneCore *lc, const char *message);
+/** Callback prototype */
 typedef void (*DisplayMessageCb)(struct _LinphoneCore *lc, const char *message);
+/** Callback prototype */
 typedef void (*DisplayUrlCb)(struct _LinphoneCore *lc, const char *message, const char *url);
+/** Callback prototype */
 typedef void (*DisplayQuestionCb)(struct _LinphoneCore *lc, const char *message);
+/** Callback prototype */
 typedef void (*LinphoneCoreCbFunc)(struct _LinphoneCore *lc,void * user_data);
+/** Callback prototype */
 typedef void (*NotifyReceivedCb)(struct _LinphoneCore *lc, LinphoneFriend * fid, const char *url, const char *status, const char *img);
+/** Callback prototype */
 typedef void (*NewUnknownSubscriberCb)(struct _LinphoneCore *lc, LinphoneFriend *lf, const char *url);
+/** Callback prototype */
 typedef void (*AuthInfoRequested)(struct _LinphoneCore *lc, const char *realm, const char *username);
+/** Callback prototype */
 typedef void (*CallLogUpdated)(struct _LinphoneCore *lc, struct _LinphoneCallLog *newcl);
+/** Callback prototype */
 typedef void (*TextMessageReceived)(struct _LinphoneCore *lc, LinphoneChatRoom *room, const char *from, const char *message);
+/** Callback prototype */
 typedef void (*GeneralStateChange)(struct _LinphoneCore *lc, LinphoneGeneralState *gstate);
+/** Callback prototype */
 typedef void (*DtmfReceived)(struct _LinphoneCore* lc, int dtmf);
+/** Callback prototype */
 typedef void (*ReferReceived)(struct _LinphoneCore *lc, const char *refer_to);
+/** Callback prototype */
 typedef void (*BuddyInfoUpdated)(struct _LinphoneCore *lc, LinphoneFriend *lf);
 
+/**
+ * This structure holds all callbacks that the application should implement.
+ * 
+**/
 typedef struct _LinphoneVTable
 {
-	ShowInterfaceCb show;
-	InviteReceivedCb inv_recv;
-	ByeReceivedCb bye_recv;
-	NotifyReceivedCb notify_recv;
-	NewUnknownSubscriberCb new_unknown_subscriber;
-	AuthInfoRequested auth_info_requested;
-	DisplayStatusCb display_status;
-	DisplayMessageCb display_message;
+	ShowInterfaceCb show; /**< Notifies the application that it should show up*/
+	InviteReceivedCb inv_recv; /**< Notifies incoming calls */
+	ByeReceivedCb bye_recv; /**< Notify calls terminated by far end*/
+	NotifyReceivedCb notify_recv; /**< Notify received presence events*/
+	NewUnknownSubscriberCb new_unknown_subscriber; /**< Notify about unknown subscriber */
+	AuthInfoRequested auth_info_requested; /**< Ask the application some authentication information */
+	DisplayStatusCb display_status; /**< Callback that notifies various events with human readable text.*/
+	DisplayMessageCb display_message;/**< Callback to display a message to the user */
 #ifdef VINCENT_MAURY_RSVP
 	/* the yes/no dialog box */
 	DisplayMessageCb display_yes_no;
 #endif
-	DisplayMessageCb display_warning;
+	DisplayMessageCb display_warning;/** Callback to display a warning to the user */
 	DisplayUrlCb display_url;
 	DisplayQuestionCb display_question;
-	CallLogUpdated call_log_updated;
-	TextMessageReceived text_received;
-	GeneralStateChange general_state;
-	DtmfReceived dtmf_received;
-	ReferReceived refer_received;
-	BuddyInfoUpdated buddy_info_updated;
+	CallLogUpdated call_log_updated; /**< Notifies that call log list has been updated */
+	TextMessageReceived text_received; /**< A text message has been received */
+	GeneralStateChange general_state; /**< State notification callback */
+	DtmfReceived dtmf_received; /**< A dtmf has been received received */
+	ReferReceived refer_received; /**< A refer was received */
+	BuddyInfoUpdated buddy_info_updated; /**< a LinphoneFriend's BuddyInfo has changed*/
 } LinphoneCoreVTable;
+
+/**
+ * @}
+**/
 
 typedef struct _LCCallbackObj
 {

@@ -1,7 +1,7 @@
 
 EXTRA_DIST = Doxyfile.in doxygen.dox.in
 
-SOURCES=$(top_srcdir)/coreapi/*.h 
+SOURCES=$(top_srcdir)/coreapi/*.h $(top_srcdir)/coreapi/*.c
 
 
 #html doc
