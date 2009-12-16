@@ -612,7 +612,7 @@ linphonec_init(int argc, char **argv)
 	/*
 	 * Initialize linphone core
 	 */
-	linphonec=linphone_core_new (&linphonec_vtable, configfile_name,
+	linphonec=linphone_core_new (&linphonec_vtable, configfile_name, NULL,
 			    NULL);
 	linphone_core_enable_video(linphonec,vcap_enabled,display_enabled);
 	linphone_core_enable_video_preview(linphonec,preview_enabled);

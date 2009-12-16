@@ -3,6 +3,7 @@ EXTRA_DIST = Doxyfile.in doxygen.dox.in
 
 SOURCES=$(top_srcdir)/coreapi/*.h 
 
+
 #html doc
 if HAVE_DOXYGEN
 

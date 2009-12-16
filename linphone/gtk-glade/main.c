@@ -160,7 +160,7 @@ const char *linphone_gtk_get_config_file(){
 
 static void linphone_gtk_init_liblinphone(const char *file){
 	linphone_core_set_user_agent("Linphone", LINPHONE_VERSION);
-	the_core=linphone_core_new(&vtable,file,NULL);
+	the_core=linphone_core_new(&vtable,file,NULL,NULL);
 	linphone_core_set_waiting_callback(the_core,linphone_gtk_wait,NULL);
 }
 

@@ -190,8 +190,4 @@ void linphone_proxy_config_get_contact(LinphoneProxyConfig *cfg, const char **ip
 LinphoneProxyConfig * linphone_core_lookup_known_proxy(LinphoneCore *lc, const LinphoneAddress *uri);
 int linphone_core_get_local_ip_for(const char *dest, char *result);
 
-void linphone_core_init(LinphoneCore *lc, const LinphoneCoreVTable *vtable,
-						const char *config_path, void * userdata);
-void linphone_core_uninit(LinphoneCore *lc);
-
 #endif /* _PRIVATE_H */

@@ -162,6 +162,10 @@ static size_t my_strftime(char *s, size_t max, const char  *fmt,  const struct t
 	return strftime(s, max, fmt, tm);
 }
 
+static void set_call_log_date(LinphoneCallLog *cl, const struct tm *loctime){
+	my_strftime(cl->start_date,sizeof(cl->start_date),"%c",loctime);
+}
+
 LinphoneCallLog * linphone_call_log_new(LinphoneCall *call, LinphoneAddress *from, LinphoneAddress *to){
 	LinphoneCallLog *cl=ms_new0(LinphoneCallLog,1);
 	struct tm loctime;
@@ -171,13 +175,71 @@ LinphoneCallLog * linphone_call_log_new(LinphoneCall *call, LinphoneAddress *fro
 #else
 	localtime_r(&call->start_time,&loctime);
 #endif
-	my_strftime(cl->start_date,sizeof(cl->start_date),"%c",&loctime);
+	set_call_log_date(cl,&loctime);
 	cl->from=from;
 	cl->to=to;
 	return cl;
 }
+
+static void call_logs_write_to_config_file(LinphoneCore *lc){
+	MSList *elem;
+	char logsection[32];
+	int i;
+	char *tmp;
+	LpConfig *cfg=lc->config;
+
+	if (!lc->ready) return;
+	
+	for(i=0,elem=lc->call_logs;elem!=NULL;elem=elem->next,++i){
+		LinphoneCallLog *cl=(LinphoneCallLog*)elem->data;
+		snprintf(logsection,sizeof(logsection),"call_log_%i",i);
+		lp_config_set_int(cfg,logsection,"dir",cl->dir);
+		lp_config_set_int(cfg,logsection,"status",cl->status);
+		tmp=linphone_address_as_string(cl->from);
+		lp_config_set_string(cfg,logsection,"from",tmp);
+		ms_free(tmp);
+		tmp=linphone_address_as_string(cl->to);
+		lp_config_set_string(cfg,logsection,"to",tmp);
+		ms_free(tmp);
+		lp_config_set_string(cfg,logsection,"start_date",cl->start_date);
+		lp_config_set_int(cfg,logsection,"duration",cl->duration);
+		if (cl->refkey) lp_config_set_string(cfg,logsection,"refkey",cl->refkey);
+	}
+	for(;i<lc->max_call_logs;++i){
+		snprintf(logsection,sizeof(logsection),"call_log_%i",i);
+		lp_config_clean_section(cfg,logsection);
+	}
+}
+
+static void call_logs_read_from_config_file(LinphoneCore *lc){
+	char logsection[32];
+	int i;
+	const char *tmp;
+	LpConfig *cfg=lc->config;
+	for(i=0;;++i){
+		snprintf(logsection,sizeof(logsection),"call_log_%i",i);
+		if (lp_config_has_section(cfg,logsection)){
+			LinphoneCallLog *cl=ms_new0(LinphoneCallLog,1);
+			cl->dir=lp_config_get_int(cfg,logsection,"dir",0);
+			cl->status=lp_config_get_int(cfg,logsection,"status",0);
+			tmp=lp_config_get_string(cfg,logsection,"from",NULL);
+			if (tmp) cl->from=linphone_address_new(tmp);
+			tmp=lp_config_get_string(cfg,logsection,"to",NULL);
+			if (tmp) cl->to=linphone_address_new(tmp);
+			tmp=lp_config_get_string(cfg,logsection,"start_date",NULL);
+			if (tmp) strncpy(cl->start_date,tmp,sizeof(cl->start_date));
+			cl->duration=lp_config_get_int(cfg,logsection,"duration",0);
+			tmp=lp_config_get_string(cfg,logsection,"refkey",NULL);
+			if (tmp) cl->refkey=ms_strdup(tmp);
+			lc->call_logs=ms_list_append(lc->call_logs,cl);
+		}else break;	
+	}
+}
+
+
 void linphone_call_log_completed(LinphoneCallLog *calllog, LinphoneCall *call){
 	LinphoneCore *lc=call->core;
+	
 	calllog->duration=time(NULL)-call->start_time;
 	switch(call->state){
 		case LCStateInit:
@@ -210,6 +272,7 @@ void linphone_call_log_completed(LinphoneCallLog *calllog, LinphoneCall *call){
 	if (lc->vtable.call_log_updated!=NULL){
 		lc->vtable.call_log_updated(lc,calllog);
 	}
+	call_logs_write_to_config_file(lc);
 }
 
 char * linphone_call_log_to_str(LinphoneCallLog *cl){
@@ -251,9 +314,37 @@ void *linphone_call_log_get_user_pointer(const LinphoneCallLog *cl){
 	return cl->user_pointer;
 }
 
+/**
+ * Associate a persistent reference key to the call log.
+ *
+ * The reference key can be for example an id to an external database.
+ * It is stored in the config file, thus can survive to process exits/restarts.
+ *
+**/
+void linphone_call_log_set_ref_key(LinphoneCallLog *cl, const char *refkey){
+	if (cl->refkey!=NULL){
+		ms_free(cl->refkey);
+		cl->refkey=NULL;
+	}
+	if (refkey) cl->refkey=ms_strdup(refkey);
+	call_logs_write_to_config_file(cl->lc);
+}
+
+/**
+ * Get the persistent reference key associated to the call log.
+ *
+ * The reference key can be for example an id to an external database.
+ * It is stored in the config file, thus can survive to process exits/restarts.
+ *
+**/
+const char *linphone_call_log_get_ref_key(const LinphoneCallLog *cl){
+	return cl->refkey;
+}
+
 void linphone_call_log_destroy(LinphoneCallLog *cl){
-	if (cl->from!=NULL) osip_free(cl->from);
-	if (cl->to!=NULL) osip_free(cl->to);
+	if (cl->from!=NULL) linphone_address_destroy(cl->from);
+	if (cl->to!=NULL) linphone_address_destroy(cl->to);
+	if (cl->refkey!=NULL) ms_free(cl->refkey);
 	ms_free(cl);
 }
 
@@ -307,7 +398,14 @@ void _osip_trace_func(char *fi, int li, osip_trace_level_t level, char *chfr, va
 	}
 }
 
-
+/**
+ * Enable logs in supplied FILE*.
+ *
+ * @ingroup misc
+ *
+ * @param file a C FILE* where to fprintf logs. If null stdout is used.
+ * 
+**/
 void linphone_core_enable_logs(FILE *file){
 	if (file==NULL) file=stdout;
 	ortp_set_log_file(file);
@@ -315,12 +413,26 @@ void linphone_core_enable_logs(FILE *file){
 	osip_trace_initialize_func (OSIP_INFO4,&_osip_trace_func);
 }
 
+/**
+ * Enable logs through the user's supplied log callback.
+ *
+ * @ingroup misc
+ *
+ * @param logfunc The address of a OrtpLogFunc callback whose protoype is
+ *            	  typedef void (*OrtpLogFunc)(OrtpLogLevel lev, const char *fmt, va_list args);
+ * 
+**/
 void linphone_core_enable_logs_with_cb(OrtpLogFunc logfunc){
 	ortp_set_log_level_mask(ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
 	osip_trace_initialize_func (OSIP_INFO4,&_osip_trace_func);
 	ortp_set_log_handler(logfunc);
 }
 
+/**
+ * Entirely disable logging.
+ *
+ * @ingroup misc
+**/
 void linphone_core_disable_logs(){
 	int tl;
 	for (tl=0;tl<=OSIP_INFO4;tl++) osip_trace_disable_level(tl);
@@ -328,7 +440,7 @@ void linphone_core_disable_logs(){
 }
 
 
-void
+static void
 net_config_read (LinphoneCore *lc)
 {
 	int tmp;
@@ -368,7 +480,7 @@ static void build_sound_devices_table(LinphoneCore *lc){
 	if (old!=NULL) ms_free(old);
 }
 
-void sound_config_read(LinphoneCore *lc)
+static void sound_config_read(LinphoneCore *lc)
 {
 	/*int tmp;*/
 	const char *tmpbuf;
@@ -440,7 +552,7 @@ void sound_config_read(LinphoneCore *lc)
 		lp_config_get_int(lc->config,"sound","agc",0));
 }
 
-void sip_config_read(LinphoneCore *lc)
+static void sip_config_read(LinphoneCore *lc)
 {
 	char *contact;
 	const char *tmpstr;
@@ -515,7 +627,7 @@ void sip_config_read(LinphoneCore *lc)
 		lp_config_get_int(lc->config,"sip","register_only_when_network_is_up",0);
 }
 
-void rtp_config_read(LinphoneCore *lc)
+static void rtp_config_read(LinphoneCore *lc)
 {
 	int port;
 	int jitt_comp;
@@ -535,7 +647,7 @@ void rtp_config_read(LinphoneCore *lc)
 }
 
 
-PayloadType * get_codec(LpConfig *config, char* type,int index){
+static PayloadType * get_codec(LpConfig *config, char* type,int index){
 	char codeckey[50];
 	const char *mime,*fmtp;
 	int rate,enabled;
@@ -558,7 +670,7 @@ PayloadType * get_codec(LpConfig *config, char* type,int index){
 	return pt;
 }
 
-void codecs_config_read(LinphoneCore *lc)
+static void codecs_config_read(LinphoneCore *lc)
 {
 	int i;
 	PayloadType *pt;
@@ -579,7 +691,7 @@ void codecs_config_read(LinphoneCore *lc)
 	linphone_core_setup_local_rtp_profile(lc);
 }
 
-void video_config_read(LinphoneCore *lc)
+static void video_config_read(LinphoneCore *lc)
 {
 	int capture, display;
 	int enabled;
@@ -615,17 +727,18 @@ void video_config_read(LinphoneCore *lc)
 #endif
 }
 
-void ui_config_read(LinphoneCore *lc)
+static void ui_config_read(LinphoneCore *lc)
 {
 	LinphoneFriend *lf;
 	int i;
 	for (i=0;(lf=linphone_friend_new_from_config_file(lc,i))!=NULL;i++){
 		linphone_core_add_friend(lc,lf);
 	}
-	
+	call_logs_read_from_config_file(lc);
 }
 
-void autoreplier_config_init(LinphoneCore *lc)
+/*
+static void autoreplier_config_init(LinphoneCore *lc)
 {
 	autoreplier_config_t *config=&lc->autoreplier_conf;
 	config->enabled=lp_config_get_int(lc->config,"autoreplier","enabled",0);
@@ -635,7 +748,22 @@ void autoreplier_config_init(LinphoneCore *lc)
 	config->max_rec_msg=lp_config_get_int(lc->config,"autoreplier","max_rec_msg",10);
 	config->message=lp_config_get_string(lc->config,"autoreplier","message",NULL);
 }
+*/
 
+/**
+ * Sets maximum available download bandwidth
+ *
+ * @ingroup media_parameters
+ *
+ * This is IP bandwidth, in kbit/s.
+ * This information is used signaled to other parties during
+ * calls (within SDP messages) so that the remote end can have
+ * sufficient knowledge to properly configure its audio & video
+ * codec output bitrate to not overflow available bandwidth.
+ *
+ * @param lc the LinphoneCore object
+ * @param bw the bandwidth in kbits/s, 0 for infinite
+ */
 void linphone_core_set_download_bandwidth(LinphoneCore *lc, int bw){
 	lc->net_conf.download_bw=bw;
 	if (bw==0){ /*infinite*/
@@ -647,6 +775,19 @@ void linphone_core_set_download_bandwidth(LinphoneCore *lc, int bw){
 	}
 }
 
+/**
+ * Sets maximum available upload bandwidth
+ *
+ * @ingroup media_parameters
+ *
+ * This is IP bandwidth, in kbit/s.
+ * This information is used by liblinphone together with remote
+ * side available bandwidth signaled in SDP messages to properly
+ * configure audio & video codec's output bitrate.
+ *
+ * @param lc the LinphoneCore object
+ * @param bw the bandwidth in kbits/s, 0 for infinite
+ */
 void linphone_core_set_upload_bandwidth(LinphoneCore *lc, int bw){
 	lc->net_conf.upload_bw=bw;
 	if (bw==0){ /*infinite*/
@@ -658,14 +799,36 @@ void linphone_core_set_upload_bandwidth(LinphoneCore *lc, int bw){
 	}
 }
 
+/**
+ * Retrieve the maximum available download bandwidth.
+ *
+ * @ingroup media_parameters
+ *
+ * This value was set by linphone_core_set_download_bandwidth().
+ *
+**/
 int linphone_core_get_download_bandwidth(const LinphoneCore *lc){
 	return lc->net_conf.download_bw;
 }
 
+/**
+ * Retrieve the maximum available upload bandwidth.
+ *
+ * @ingroup media_parameters
+ *
+ * This value was set by linphone_core_set_upload_bandwidth().
+ *
+**/
 int linphone_core_get_upload_bandwidth(const LinphoneCore *lc){
 	return lc->net_conf.upload_bw;
 }
 
+/**
+ * Returns liblinphone's version as a string.
+ *
+ * @ingroup misc
+ *
+**/
 const char * linphone_core_get_version(void){
 	return liblinphone_version;
 }
@@ -687,7 +850,8 @@ static void linphone_core_free_payload_types(void){
 	linphone_payload_types=NULL;
 }
 
-void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vtable, const char *config_path, void * userdata)
+static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vtable, const char *config_path, 
+    const char *factory_config_path, void * userdata)
 {
 	memset (lc, 0, sizeof (LinphoneCore));
 	lc->data=userdata;
@@ -732,6 +896,8 @@ void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vtable, co
 	ms_init();
 	
 	lc->config=lp_config_new(config_path);
+	if (factory_config_path)
+		lp_config_read_file(lc->config,factory_config_path);
   
 #ifdef VINCENT_MAURY_RSVP
 	/* default qos parameters : rsvp on, rpc off */
@@ -756,19 +922,52 @@ void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vtable, co
 	lc->ready=TRUE;
 }
 
+/**
+ * Instanciates a LinphoneCore object.
+ * @ingroup initializing
+ * 
+ * The LinphoneCore object is the primary handle for doing all phone actions.
+ * It should be unique within your application.
+ * @param vtable a LinphoneCoreVTable structure holding your application callbacks
+ * @param config_path a path to a config file. If it does not exists it will be created.
+ *        The config file is used to store all user settings, call logs, friends, proxies...
+ * @param factory_config_path a path to a read-only config file that can be used to 
+ *        to store hard-coded preference such as proxy settings or internal preferences.
+ *        The settings in this factory file always override the one in the normal config file.
+ *        It is OPTIONAL, use NULL if unneeded.
+ * @param userdata an opaque user pointer that can be retrieved at any time (for example in
+ *        callbacks) using linphone_core_get_user_data().
+ * 
+**/
 LinphoneCore *linphone_core_new(const LinphoneCoreVTable *vtable,
-						const char *config_path, void * userdata)
+						const char *config_path, const char *factory_config_path, void * userdata)
 {
 	LinphoneCore *core=ms_new(LinphoneCore,1);
-	linphone_core_init(core,vtable,config_path,userdata);
+	linphone_core_init(core,vtable,config_path, factory_config_path, userdata);
 	return core;
 }
 
+/**
+ * Returns the list of available audio codecs.
+ *
+ * This list is unmodifiable. The ->data field of the MSList points a PayloadType
+ * structure holding the codec information.
+ * It is possible to make copy of the list with ms_list_copy() in order to modify it
+ * (such as the order of codecs).
+**/
 const MSList *linphone_core_get_audio_codecs(const LinphoneCore *lc)
 {
 	return lc->codecs_conf.audio_codecs;
 }
 
+/**
+ * Returns the list of available video codecs.
+ *
+ * This list is unmodifiable. The ->data field of the MSList points a PayloadType
+ * structure holding the codec information.
+ * It is possible to make copy of the list with ms_list_copy() in order to modify it
+ * (such as the order of codecs).
+**/
 const MSList *linphone_core_get_video_codecs(const LinphoneCore *lc)
 {
 	return lc->codecs_conf.video_codecs;
@@ -1274,6 +1473,7 @@ bool_t linphone_core_interpret_url(LinphoneCore *lc, const char *url, LinphoneAd
 			if (uri==NULL){
 				return FALSE;
 			}
+			linphone_address_set_display_name(uri,NULL);
 			linphone_address_set_username(uri,url);
 			if (real_parsed_url!=NULL) *real_parsed_url=uri;
 #if 0
@@ -2348,6 +2548,12 @@ const MSList * linphone_core_get_call_logs(LinphoneCore *lc){
 	return lc->call_logs;
 }
 
+void linphone_core_clear_call_logs(LinphoneCore *lc){
+	lc->missed_calls=0;
+	ms_list_for_each(lc->call_logs,(void (*)(void*))linphone_call_log_destroy);
+	lc->call_logs=ms_list_free(lc->call_logs);
+}
+
 static void toggle_video_preview(LinphoneCore *lc, bool_t val){
 #ifdef VIDEO_ENABLED
 	if (lc->videostream==NULL){
@@ -2734,7 +2940,7 @@ LpConfig *linphone_core_get_config(LinphoneCore *lc){
 	return lc->config;
 }
 
-void linphone_core_uninit(LinphoneCore *lc)
+static void linphone_core_uninit(LinphoneCore *lc)
 {
 	if (lc->call){
 		int i;

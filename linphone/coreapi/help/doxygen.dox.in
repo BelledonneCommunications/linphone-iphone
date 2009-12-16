@@ -1,16 +1,7 @@
 /**
  * @mainpage
- * Project Website: http://savannah.gnu.org/projects/linphone
  *
- * @verbinclude README
- *
- */
-
-/** 
- * @defgroup liblinphone liblinphone library - high level library for building SIP applications
- * @brief liblinphone Version @LINPHONE_VERSION@
- *
- * @see http://savannah.gnu.org/projects/linphone
+ * @see http://www.linphone.org
  *
  * @section what_is_it What is liblinphone
  *
@@ -27,7 +18,8 @@
  * GPL license, please contact Belledonne Communications 
  * (contact@belledonne-communications.com)
  * 
- * 
+ *
+**/
 
 /**
  * @page liblinphone_license COPYING 
@@ -35,3 +27,15 @@
  */
 
 
+/** 
+ * @defgroup initializing Initialization and destruction
+ *
+**/
+
+/**
+ * @defgroup media_parameters Controlling media parameters
+**/
+
+/**
+ * @defgroup misc Miscenalleous: logs, version strings
+**/

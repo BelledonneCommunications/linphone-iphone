@@ -188,7 +188,9 @@ typedef struct _LinphoneCallLog{
 	LinphoneAddress *to;
 	char start_date[128];
 	int duration;
+	char *refkey;
 	void *user_pointer;
+	struct _LinphoneCore *lc;
 } LinphoneCallLog;
 
 
@@ -196,6 +198,8 @@ typedef struct _LinphoneCallLog{
 /*public: */
 void linphone_call_log_set_user_pointer(LinphoneCallLog *cl, void *up);
 void *linphone_call_log_get_user_pointer(const LinphoneCallLog *cl);
+void linphone_call_log_set_ref_key(LinphoneCallLog *cl, const char *refkey);
+const char *linphone_call_log_get_ref_key(const LinphoneCallLog *cl);
 char * linphone_call_log_to_str(LinphoneCallLog *cl);
 
 typedef enum{
@@ -548,7 +552,7 @@ void linphone_core_set_user_agent(const char *ua_name, const char *version);
 const char *linphone_core_get_version(void);
 
 LinphoneCore *linphone_core_new(const LinphoneCoreVTable *vtable,
-						const char *config_path, void* userdata);
+						const char *config_path, const char *factory_config, void* userdata);
 
 /* function to be periodically called in a main loop */
 void linphone_core_iterate(LinphoneCore *lc);
@@ -729,6 +733,7 @@ LinphoneFriend *linphone_core_get_friend_by_ref_key(const LinphoneCore *lc, cons
 
 /* returns a list of LinphoneCallLog */
 const MSList * linphone_core_get_call_logs(LinphoneCore *lc);
+void linphone_core_clear_call_logs(LinphoneCore *lc);
 
 /* video support */
 void linphone_core_enable_video(LinphoneCore *lc, bool_t vcap_enabled, bool_t display_enabled);

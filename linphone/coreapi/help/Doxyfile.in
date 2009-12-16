@@ -85,7 +85,7 @@ INPUT                  = . ../
 FILE_PATTERNS          = *.h \
                          *.c \
                          *.dox
-RECURSIVE              = YES
+RECURSIVE              = NO
 EXCLUDE                = 
 EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       = 
