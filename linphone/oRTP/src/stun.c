@@ -320,7 +320,8 @@ turnParseAtrRequestedTransport( char* body, unsigned int hdrLen,  TurnAtrRequest
    return TRUE;
 }
 
-#ifdef ORTP_BIGENDIAN
+#if defined(htonq)
+#elif defined(ORTP_BIGENDIAN)
 #define htonq(n) n
 #define ntohq(n) n
 #else /* little endian */
