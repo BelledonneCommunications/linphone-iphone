@@ -33,11 +33,27 @@
 **/
 
 /**
+ * @defgroup call_control Call control
+ *
+ * The application can initiate outgoing calls with linphone_core_invite().
+ * It is notified of incoming call thanks to the inv_recv callback of the LinphoneCoreVTable
+ * structure that is passed at creation of the LinphoneCore object.
+ * It can then answer calls with linphone_core_accept_call().
+ * Calls can be terminated or declined with linphone_core_terminate_call().
+ * The application is notified when the remote party hangups thanks to 
+ * bye_recv callback of the #LinphoneCoreVTable.
+**/
+
+/**
  * @defgroup media_parameters Controlling media parameters
 **/
 
 /**
  * @defgroup proxies Managing proxies
+**/
+
+/**
+ * @defgroup network_parameters Controlling network parameters (ports, mtu...)
 **/
 
 /**

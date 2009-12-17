@@ -987,6 +987,13 @@ const MSList *linphone_core_get_video_codecs(const LinphoneCore *lc)
 	return lc->codecs_conf.video_codecs;
 }
 
+/**
+ * Sets the local "from" identity.
+ *
+ * @ingroup proxies
+ * This data is used in absence of any proxy configuration or when no
+ * default proxy configuration is set. See LinphoneProxyConfig
+**/
 int linphone_core_set_primary_contact(LinphoneCore *lc, const char *contact)
 {
 	osip_from_t *ctt=NULL;
@@ -1028,6 +1035,11 @@ void linphone_core_get_local_ip(LinphoneCore *lc, const char *dest, char *result
 	}
 }
 
+/**
+ * Returns the default identity when no proxy configuration is used.
+ *
+ * @ingroup proxies
+**/
 const char *linphone_core_get_primary_contact(LinphoneCore *lc)
 {
 	char *identity;
@@ -1072,18 +1084,41 @@ const char *linphone_core_get_primary_contact(LinphoneCore *lc)
 	return identity;
 }
 
+/**
+ * Tells LinphoneCore to guess local hostname automatically in primary contact.
+ *
+ * @ingroup proxies
+**/
 void linphone_core_set_guess_hostname(LinphoneCore *lc, bool_t val){
 	lc->sip_conf.guess_hostname=val;
 }
-	
+
+/**
+ * Returns TRUE if hostname part of primary contact is guessed automatically.
+ *
+ * @ingroup proxies
+**/
 bool_t linphone_core_get_guess_hostname(LinphoneCore *lc){
 	return lc->sip_conf.guess_hostname;
 }
 
+/**
+ * Same as linphone_core_get_primary_contact() but the result is a LinphoneAddress object
+ * instead of const char*
+ *
+ * @ingroup proxies
+**/
 LinphoneAddress *linphone_core_get_primary_contact_parsed(LinphoneCore *lc){
 	return linphone_address_new(linphone_core_get_primary_contact(lc));
 }
 
+/**
+ * Sets the list of audio codecs.
+ *
+ * @ingroup media_parameters
+ * The list is taken by the LinphoneCore thus the application should not free it.
+ * This list is made of struct PayloadType describing the codec parameters.
+**/
 int linphone_core_set_audio_codecs(LinphoneCore *lc, MSList *codecs)
 {
 	if (lc->codecs_conf.audio_codecs!=NULL) ms_list_free(lc->codecs_conf.audio_codecs);
@@ -1091,6 +1126,13 @@ int linphone_core_set_audio_codecs(LinphoneCore *lc, MSList *codecs)
 	return 0;
 }
 
+/**
+ * Sets the list of video codecs.
+ *
+ * @ingroup media_parameters
+ * The list is taken by the LinphoneCore thus the application should not free it.
+ * This list is made of struct PayloadType describing the codec parameters.
+**/
 int linphone_core_set_video_codecs(LinphoneCore *lc, MSList *codecs)
 {
 	if (lc->codecs_conf.video_codecs!=NULL) ms_list_free(lc->codecs_conf.video_codecs);
@@ -1103,62 +1145,133 @@ const MSList * linphone_core_get_friend_list(const LinphoneCore *lc)
 	return lc->friends;
 }
 
+/**
+ * Returns the nominal jitter buffer size in milliseconds.
+ *
+ * @ingroup media_parameters
+**/
 int linphone_core_get_audio_jittcomp(LinphoneCore *lc)
 {
 	return lc->rtp_conf.audio_jitt_comp;
 }
 
+/**
+ * Returns the UDP port used for audio streaming.
+ *
+ * @ingroup network_parameters
+**/
 int linphone_core_get_audio_port(const LinphoneCore *lc)
 {
 	return lc->rtp_conf.audio_rtp_port;
 }
 
+/**
+ * Returns the UDP port used for video streaming.
+ *
+ * @ingroup network_parameters
+**/
 int linphone_core_get_video_port(const LinphoneCore *lc){
 	return lc->rtp_conf.video_rtp_port;
 }
 
+
+/**
+ * Returns the value in seconds of the no-rtp timeout.
+ *
+ * @ingroup media_parameters
+ * When no RTP or RTCP packets have been received for a while
+ * LinphoneCore will consider the call is broken (remote end crashed or
+ * disconnected from the network), and thus will terminate the call.
+ * The no-rtp timeout is the duration above which the call is considered broken.
+**/
 int linphone_core_get_nortp_timeout(const LinphoneCore *lc){
 	return lc->rtp_conf.nortp_timeout;
 }
 
+/**
+ * Sets the nominal audio jitter buffer size in milliseconds.
+ *
+ * @ingroup media_parameters
+**/
 void linphone_core_set_audio_jittcomp(LinphoneCore *lc, int value)
 {
 	lc->rtp_conf.audio_jitt_comp=value;
 }
 
+/**
+ * Sets the UDP port used for audio streaming.
+ *
+ * @ingroup network_parameters
+**/
 void linphone_core_set_audio_port(LinphoneCore *lc, int port)
 {
 	lc->rtp_conf.audio_rtp_port=port;
 }
 
+/**
+ * Sets the UDP port used for video streaming.
+ *
+ * @ingroup network_parameters
+**/
 void linphone_core_set_video_port(LinphoneCore *lc, int port){
 	lc->rtp_conf.video_rtp_port=port;
 }
 
+/**
+ * Sets the no-rtp timeout value in seconds.
+ * 
+ * @ingroup media_parameters
+ * See linphone_core_get_nortp_timeout() for details.
+**/
 void linphone_core_set_nortp_timeout(LinphoneCore *lc, int nortp_timeout){
 	lc->rtp_conf.nortp_timeout=nortp_timeout;
 }
 
+/**
+ * Indicates whether SIP INFO is used for sending digits.
+ *
+ * @ingroup media_parameters
+**/
 bool_t linphone_core_get_use_info_for_dtmf(LinphoneCore *lc)
 {
 	return lc->sip_conf.use_info;
 }
 
+/**
+ * Sets whether SIP INFO is to be used for sending digits.
+ *
+ * @ingroup media_parameters
+**/
 void linphone_core_set_use_info_for_dtmf(LinphoneCore *lc,bool_t use_info)
 {
 	lc->sip_conf.use_info=use_info;
 }
 
+/**
+ * Indicates whether RFC2833 is used for sending digits.
+ *
+ * @ingroup media_parameters
+**/
 bool_t linphone_core_get_use_rfc2833_for_dtmf(LinphoneCore *lc)
 {
 	return lc->sip_conf.use_rfc2833;
 }
 
+/**
+ * Sets whether RFC2833 is to be used for sending digits.
+ *
+ * @ingroup media_parameters
+**/
 void linphone_core_set_use_rfc2833_for_dtmf(LinphoneCore *lc,bool_t use_rfc2833)
 {
 	lc->sip_conf.use_rfc2833=use_rfc2833;
 }
 
+/**
+ * Returns the UDP port used by SIP.
+ *
+ * @ingroup network_parameters
+**/
 int linphone_core_get_sip_port(LinphoneCore *lc)
 {
 	return lc->sip_conf.sip_port;
@@ -1180,11 +1293,21 @@ static void apply_user_agent(void){
 	eXosip_set_user_agent(ua_string);
 }
 
+/**
+ * Sets the user agent string used in SIP messages.
+ *
+ * @ingroup misc
+**/
 void linphone_core_set_user_agent(const char *name, const char *ver){
 	strncpy(_ua_name,name,sizeof(_ua_name)-1);
 	strncpy(_ua_version,ver,sizeof(_ua_version));
 }
 
+/**
+ * Sets the UDP port to be used by SIP.
+ *
+ * @ingroup network_parameters
+**/
 void linphone_core_set_sip_port(LinphoneCore *lc,int port)
 {
 	const char *anyaddr;
@@ -1219,9 +1342,25 @@ void linphone_core_set_sip_port(LinphoneCore *lc,int port)
 	exosip_running=TRUE;
 }
 
+/**
+ * Returns TRUE if IPv6 is enabled.
+ *
+ * @ingroup network_parameters
+ * See linphone_core_enable_ipv6() for more details on how IPv6 is supported in liblinphone.
+**/
 bool_t linphone_core_ipv6_enabled(LinphoneCore *lc){
 	return lc->sip_conf.ipv6_enabled;
 }
+
+/**
+ * Turns IPv6 support on or off.
+ *
+ * @ingroup network_parameters
+ *
+ * @note IPv6 support is exclusive with IPv4 in liblinphone:
+ * when IPv6 is turned on, IPv4 calls won't be possible anymore.
+ * By default IPv6 support is off.
+**/
 void linphone_core_enable_ipv6(LinphoneCore *lc, bool_t val){
 	if (lc->sip_conf.ipv6_enabled!=val){
 		lc->sip_conf.ipv6_enabled=val;
@@ -1337,6 +1476,20 @@ static void linphone_core_do_plugin_tasks(LinphoneCore *lc){
 	}
 }
 
+/**
+ * Main loop function. It is crucial that your application call it periodically.
+ *
+ * @ingroup initializing
+ * linphone_core_iterate() performs various backgrounds tasks:
+ * - receiving of SIP messages
+ * - handles timers and timeout
+ * - performs registration to proxies
+ * - authentication retries
+ * The application MUST call this function from periodically, in its main loop.
+ * Be careful that this function must be call from the same thread as
+ * other liblinphone methods. In not the case make sure all liblinphone calls are 
+ * serialized with a mutex.
+**/
 void linphone_core_iterate(LinphoneCore *lc)
 {
 	eXosip_event_t *ev;
@@ -1529,6 +1682,16 @@ bool_t linphone_core_interpret_url(LinphoneCore *lc, const char *url, LinphoneAd
 	return FALSE;
 }
 
+/**
+ * Returns the default identity SIP address.
+ *
+ * @ingroup proxies
+ * This is an helper function:
+ *
+ * If no default proxy is set, this will return the primary contact (
+ * see linphone_core_get_primary_contact() ). If a default proxy is set
+ * it returns the registered identity on the proxy.
+**/
 const char * linphone_core_get_identity(LinphoneCore *lc){
 	LinphoneProxyConfig *proxy=NULL;
 	const char *from;
@@ -1605,6 +1768,13 @@ static void fix_contact(LinphoneCore *lc, osip_message_t *msg, const char *local
 	}
 }
 
+/**
+ * Initiates an outgoing call
+ *
+ * @ingroup call_control
+ * @param lc the LinphoneCore object
+ * @param url the destination of the call (sip address).
+**/
 int linphone_core_invite(LinphoneCore *lc, const char *url)
 {
 	char *barmsg;
@@ -1721,6 +1891,11 @@ int linphone_core_refer(LinphoneCore *lc, const char *url)
 	return 0;
 }
 
+/**
+ * Returns true if in incoming call is pending, ie waiting for being answered or declined.
+ *
+ * @ingroup call_control
+**/
 bool_t linphone_core_inc_invite_pending(LinphoneCore*lc){
 	if (lc->call!=NULL && lc->call->dir==LinphoneCallIncoming){
 		return TRUE;
@@ -2021,6 +2196,20 @@ void linphone_core_stop_media_streams(LinphoneCore *lc){
 #endif
 }
 
+/**
+ * Accept an incoming call.
+ *
+ * @ingroup call_control
+ * Basically the application is notified of incoming calls within the
+ * invite_recv callback of the #LinphoneCoreVTable structure.
+ * The application can later respond positively to the call using
+ * this method.
+ * @param lc the LinphoneCore object
+ * @param url the SIP address of the originator of the call, or NULL.
+ *            This argument is useful for managing multiple calls simulatenously,
+ *            however this feature is not supported yet.
+ *            Using NULL will accept the unique incoming call in progress.
+**/
 int linphone_core_accept_call(LinphoneCore *lc, const char *url)
 {
 	char *sdpmesg;
@@ -2085,6 +2274,14 @@ int linphone_core_accept_call(LinphoneCore *lc, const char *url)
 	return 0;
 }
 
+/**
+ * Terminates a call.
+ *
+ * @ingroup call_control
+ * @param lc The LinphoneCore
+ * @param url the destination of the call to be terminated, use NULL if there is
+ *            only one call (which is case in this version of liblinphone).
+**/
 int linphone_core_terminate_call(LinphoneCore *lc, const char *url)
 {
 	LinphoneCall *call=lc->call;
@@ -2109,6 +2306,11 @@ int linphone_core_terminate_call(LinphoneCore *lc, const char *url)
 	return 0;
 }
 
+/**
+ * Returns TRUE if there is a call running or pending.
+ *
+ * @ingroup call_control
+**/
 bool_t linphone_core_in_call(const LinphoneCore *lc){
 	return lc->call!=NULL;
 }
@@ -2124,10 +2326,23 @@ int linphone_core_send_publish(LinphoneCore *lc,
 	return 0;
 }
 
+/**
+ * Set the incoming call timeout in seconds.
+ *
+ * @ingroup call_control
+ * If an incoming call isn't answered for this timeout period, it is 
+ * automatically declined.
+**/
 void linphone_core_set_inc_timeout(LinphoneCore *lc, int seconds){
 	lc->sip_conf.inc_timeout=seconds;
 }
 
+/**
+ * Returns the incoming call timeout
+ *
+ * @ingroup call_control
+ * See linphone_core_set_inc_timeout() for details.
+**/
 int linphone_core_get_inc_timeout(LinphoneCore *lc){
 	return lc->sip_conf.inc_timeout;
 }
@@ -2170,18 +2385,40 @@ LinphoneOnlineStatus linphone_core_get_presence_info(const LinphoneCore *lc){
 	return lc->presence_mode;
 }
 
-/* sound functions */
+/**
+ * Get playback sound level in 0-100 scale.
+ *
+ * @ingroup media_parameters
+**/
 int linphone_core_get_play_level(LinphoneCore *lc)
 {
 	return lc->sound_conf.play_lev;
 }
+
+/**
+ * Get ring sound level in 0-100 scale
+ *
+ * @ingroup media_parameters
+**/
 int linphone_core_get_ring_level(LinphoneCore *lc)
 {
 	return lc->sound_conf.ring_lev;
 }
+
+/**
+ * Get sound capture level in 0-100 scale
+ *
+ * @ingroup media_parameters
+**/
 int linphone_core_get_rec_level(LinphoneCore *lc){
 	return lc->sound_conf.rec_lev;
 }
+
+/**
+ * Set sound ring level in 0-100 scale
+ *
+ * @ingroup media_parameters
+**/
 void linphone_core_set_ring_level(LinphoneCore *lc, int level){
 	MSSndCard *sndcard;
 	lc->sound_conf.ring_lev=level;
@@ -2189,6 +2426,11 @@ void linphone_core_set_ring_level(LinphoneCore *lc, int level){
 	if (sndcard) ms_snd_card_set_level(sndcard,MS_SND_CARD_PLAYBACK,level);
 }
 
+/**
+ * Set sound playback level in 0-100 scale
+ *
+ * @ingroup media_parameters
+**/
 void linphone_core_set_play_level(LinphoneCore *lc, int level){
 	MSSndCard *sndcard;
 	lc->sound_conf.play_lev=level;
@@ -2196,6 +2438,11 @@ void linphone_core_set_play_level(LinphoneCore *lc, int level){
 	if (sndcard) ms_snd_card_set_level(sndcard,MS_SND_CARD_PLAYBACK,level);
 }
 
+/**
+ * Set sound capture level in 0-100 scale
+ *
+ * @ingroup media_parameters
+**/
 void linphone_core_set_rec_level(LinphoneCore *lc, int level)
 {
 	MSSndCard *sndcard;
@@ -2236,6 +2483,12 @@ static MSSndCard *get_card_from_string_id(const char *devid, unsigned int cap){
 	return sndcard;
 }
 
+/**
+ * Returns true if the specified sound device can capture sound.
+ *
+ * @ingroup media_parameters
+ * @param devid the device name as returned by linphone_core_get_sound_devices()
+**/
 bool_t linphone_core_sound_device_can_capture(LinphoneCore *lc, const char *devid){
 	MSSndCard *sndcard;
 	sndcard=ms_snd_card_manager_get_card(ms_snd_card_manager_get(),devid);
@@ -2243,6 +2496,12 @@ bool_t linphone_core_sound_device_can_capture(LinphoneCore *lc, const char *devi
 	return FALSE;
 }
 
+/**
+ * Returns true if the specified sound device can play sound.
+ *
+ * @ingroup media_parameters
+ * @param devid the device name as returned by linphone_core_get_sound_devices()
+**/
 bool_t linphone_core_sound_device_can_playback(LinphoneCore *lc, const char *devid){
 	MSSndCard *sndcard;
 	sndcard=ms_snd_card_manager_get_card(ms_snd_card_manager_get(),devid);
@@ -2250,6 +2509,12 @@ bool_t linphone_core_sound_device_can_playback(LinphoneCore *lc, const char *dev
 	return FALSE;
 }
 
+/**
+ * Sets the sound device used for ringing.
+ *
+ * @ingroup media_parameters
+ * @param devid the device name as returned by linphone_core_get_sound_devices()
+**/
 int linphone_core_set_ringer_device(LinphoneCore *lc, const char * devid){
 	MSSndCard *card=get_card_from_string_id(devid,MS_SND_CARD_CAP_PLAYBACK);
 	lc->sound_conf.ring_sndcard=card;
@@ -2258,6 +2523,12 @@ int linphone_core_set_ringer_device(LinphoneCore *lc, const char * devid){
 	return 0;
 }
 
+/**
+ * Sets the sound device used for playback.
+ *
+ * @ingroup media_parameters
+ * @param devid the device name as returned by linphone_core_get_sound_devices()
+**/
 int linphone_core_set_playback_device(LinphoneCore *lc, const char * devid){
 	MSSndCard *card=get_card_from_string_id(devid,MS_SND_CARD_CAP_PLAYBACK);
 	lc->sound_conf.play_sndcard=card;
@@ -2266,6 +2537,12 @@ int linphone_core_set_playback_device(LinphoneCore *lc, const char * devid){
 	return 0;
 }
 
+/**
+ * Sets the sound device used for capture.
+ *
+ * @ingroup media_parameters
+ * @param devid the device name as returned by linphone_core_get_sound_devices()
+**/
 int linphone_core_set_capture_device(LinphoneCore *lc, const char * devid){
 	MSSndCard *card=get_card_from_string_id(devid,MS_SND_CARD_CAP_CAPTURE);
 	lc->sound_conf.capt_sndcard=card;
@@ -2274,28 +2551,54 @@ int linphone_core_set_capture_device(LinphoneCore *lc, const char * devid){
 	return 0;
 }
 
+/**
+ * Returns the name of the currently assigned sound device for ringing.
+ *
+ * @ingroup media_parameters
+**/
 const char * linphone_core_get_ringer_device(LinphoneCore *lc)
 {
 	if (lc->sound_conf.ring_sndcard) return ms_snd_card_get_string_id(lc->sound_conf.ring_sndcard);
 	return NULL;
 }
 
+/**
+ * Returns the name of the currently assigned sound device for playback.
+ *
+ * @ingroup media_parameters
+**/
 const char * linphone_core_get_playback_device(LinphoneCore *lc)
 {
 	return lc->sound_conf.play_sndcard ? ms_snd_card_get_string_id(lc->sound_conf.play_sndcard) : NULL;
 }
 
+/**
+ * Returns the name of the currently assigned sound device for capture.
+ *
+ * @ingroup media_parameters
+**/
 const char * linphone_core_get_capture_device(LinphoneCore *lc)
 {
 	return lc->sound_conf.capt_sndcard ? ms_snd_card_get_string_id(lc->sound_conf.capt_sndcard) : NULL;
 }
 
-/* returns a static array of string describing the sound devices */ 
+/**
+ * Returns an unmodifiable array of available sound devices.
+ *
+ * @ingroup media_parameters
+ * The array is NULL terminated.
+**/
 const char**  linphone_core_get_sound_devices(LinphoneCore *lc){
 	build_sound_devices_table(lc);
 	return lc->sound_conf.cards;
 }
 
+/**
+ * Returns an unmodifiable array of available video capture devices.
+ *
+ * @ingroup media_parameters
+ * The array is NULL terminated.
+**/
 const char**  linphone_core_get_video_devices(const LinphoneCore *lc){
 	return lc->video_conf.cams;
 }
@@ -2321,6 +2624,14 @@ void linphone_core_set_sound_source(LinphoneCore *lc, char source)
 	
 }
 
+
+/**
+ * Sets the path to a wav file used for ringing.
+ *
+ * The file must be a wav 16bit linear.
+ *
+ * @ingroup media_parameters
+**/
 void linphone_core_set_ring(LinphoneCore *lc,const char *path){
 	if (lc->sound_conf.local_ring!=0){
 		ms_free(lc->sound_conf.local_ring);
@@ -2330,6 +2641,11 @@ void linphone_core_set_ring(LinphoneCore *lc,const char *path){
 		lp_config_set_string(lc->config,"sound","local_ring",lc->sound_conf.local_ring);
 }
 
+/**
+ * Returns the path to the wav file used for ringing.
+ *
+ * @ingroup media_parameters
+**/
 const char *linphone_core_get_ring(const LinphoneCore *lc){
 	return lc->sound_conf.local_ring;
 }
@@ -2353,7 +2669,14 @@ int linphone_core_preview_ring(LinphoneCore *lc, const char *ring,LinphoneCoreCb
 	return 0;
 }
 
-
+/**
+ * Sets the path to a wav file used for ringing back.
+ *
+ * Ringback means the ring that is heard when it's ringing at the remote party.
+ * The file must be a wav 16bit linear.
+ *
+ * @ingroup media_parameters
+**/
 void linphone_core_set_ringback(LinphoneCore *lc, const char *path){
 	if (lc->sound_conf.remote_ring!=0){
 		ms_free(lc->sound_conf.remote_ring);
@@ -2361,16 +2684,31 @@ void linphone_core_set_ringback(LinphoneCore *lc, const char *path){
 	lc->sound_conf.remote_ring=ms_strdup(path);
 }
 
+/**
+ * Returns the path to the wav file used for ringing back.
+ *
+ * @ingroup media_parameters
+**/
 const char * linphone_core_get_ringback(const LinphoneCore *lc){
 	return lc->sound_conf.remote_ring;
 }
 
+/**
+ * Enables or disable echo cancellation.
+ *
+ * @ingroup media_parameters
+**/
 void linphone_core_enable_echo_cancellation(LinphoneCore *lc, bool_t val){
 	lc->sound_conf.ec=val;
 	if (lc->ready)
 		lp_config_set_int(lc->config,"sound","echocancellation",val);
 }
 
+/**
+ * Returns TRUE if echo cancellation is enabled.
+ *
+ * @ingroup media_parameters
+**/
 bool_t linphone_core_echo_cancellation_enabled(LinphoneCore *lc){
 	return lc->sound_conf.ec;
 }
@@ -2383,6 +2721,11 @@ bool_t linphone_core_echo_limiter_enabled(const LinphoneCore *lc){
 	return lc->sound_conf.ea;
 }
 
+/**
+ * Mutes or unmutes the local microphone.
+ *
+ * @ingroup media_parameters
+**/
 void linphone_core_mute_mic(LinphoneCore *lc, bool_t val){
 	if (lc->audiostream!=NULL){
 		 audio_stream_set_mic_gain(lc->audiostream,
@@ -2398,7 +2741,15 @@ bool_t linphone_core_agc_enabled(const LinphoneCore *lc){
 	return lc->sound_conf.agc;
 }
 
-
+/**
+ * Send the specified dtmf.
+ *
+ * @ingroup media_parameters
+ * This function only works during calls. The dtmf is automatically played to the user.
+ * @param lc The LinphoneCore object
+ * @param dtmf The dtmf name specified as a char, such as '0', '#' etc...
+ *
+**/
 void linphone_core_send_dtmf(LinphoneCore *lc,char dtmf)
 {
 	/*By default we send DTMF RFC2833 if we do not have enabled SIP_INFO but we can also send RFC2833 and SIP_INFO*/
