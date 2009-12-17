@@ -624,6 +624,9 @@ void linphone_proxy_config_process_authentication_failure(LinphoneCore *lc, eXos
 	LinphoneProxyConfig *cfg=linphone_core_get_proxy_config_from_rid(lc, ev->rid);
 	if (cfg){
 		cfg->auth_failures++;
+		if (strcmp(ev->request->sip_method,"REGISTER")==0) {
+			gstate_new_state(lc, GSTATE_REG_FAILED, "Authentication failed.");
+		}
 		/*restart a new register so that the user gets a chance to be prompted for a password*/
 		if (cfg->auth_failures==1){
 			linphone_proxy_config_register(cfg);

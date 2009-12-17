@@ -362,10 +362,12 @@ void linphone_process_authentication(LinphoneCore *lc, eXosip_event_t *ev)
 	osip_www_authenticate_t *www_auth;
 	osip_message_t *resp=ev->response;
 	char *username;
-	
+
+	/*
 	if (strcmp(ev->request->sip_method,"REGISTER")==0) {
 		gstate_new_state(lc, GSTATE_REG_FAILED, "Authentication required");
 	}
+	*/
 
 	username=osip_uri_get_username(resp->from->url);
 	prx_auth=(osip_proxy_authenticate_t*)osip_list_get(&resp->proxy_authenticates,0);
