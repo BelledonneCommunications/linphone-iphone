@@ -2927,6 +2927,7 @@ void linphone_core_clear_call_logs(LinphoneCore *lc){
 	lc->missed_calls=0;
 	ms_list_for_each(lc->call_logs,(void (*)(void*))linphone_call_log_destroy);
 	lc->call_logs=ms_list_free(lc->call_logs);
+	call_logs_write_to_config_file(lc);
 }
 
 static void toggle_video_preview(LinphoneCore *lc, bool_t val){

@@ -361,7 +361,7 @@ static void winsnd_read_preprocess(MSFilter *f){
 	{
 	    ms_error("Failed to prepare windows sound device. (waveInOpen:0x%i)", mr);
 		mr = waveInOpen (&d->indev, WAVE_MAPPER, &d->wfx,
-					(DWORD) read_callback, (DWORD)d, CALLBACK_FUNCTION);
+					(DWORD) read_callback, (DWORD)f, CALLBACK_FUNCTION);
 		if (mr != MMSYSERR_NOERROR)
 		{
 			d->indev=NULL;
