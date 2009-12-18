@@ -195,24 +195,23 @@ static int lookup_buddy(SipSetupContext *ctx, BLReq *req){
 	const char *url=lp_config_get_string(config,"BuddyLookup","url",NULL);
 	LinphoneAuthInfo *aa;
 	SoupMessage *sm;
-
+	LinphoneAddress *from;
+	
 	if (url==NULL){
 		ms_error("No url defined for BuddyLookup in config file, aborting search.");
 		return -1;
 	}
 
-	osip_from_t *from;
-	osip_from_init(&from);
-	if (osip_from_parse(from,identity)!=0){
-		osip_from_free(from);
+	from=linphone_address_new(identity);
+	if (from==NULL){
 		ms_error("Could not parse identity %s",identity);
 		return -1;
 	}
-	aa=linphone_core_find_auth_info(lc,from->url->host,from->url->username);
+	aa=linphone_core_find_auth_info(lc,linphone_address_get_domain(from),linphone_address_get_username(from));
 	if (aa) ms_message("There is a password: %s",aa->passwd);
-	else ms_message("No password for %s on %s",from->url->username,from->url->host);
-	sm=build_xmlrpc_request(identity, aa ? aa->passwd : NULL, req->base.key, from->url->host, url, req->base.max_results);
-	osip_from_free(from);
+	else ms_message("No password for %s on %s",linphone_address_get_username(from),linphone_address_get_domain(from));
+	sm=build_xmlrpc_request(identity, aa ? aa->passwd : NULL, req->base.key, linphone_address_get_domain(from), url, req->base.max_results);
+	linphone_address_destroy(from);
 	req->msg=sm;
 	ortp_thread_create(&req->th,NULL,process_xml_rpc_request,req);
 	if (!sm) return -1;
