@@ -505,7 +505,7 @@ entity=\"%s\">\n%s",
 <status>\n\
 <basic>closed</basic>\n\
 <es:activities>\n\
-  <es:activity>permanent-absence</e:activity>\n\
+  <es:activity>permanent-absence</es:activity>\n\
 </es:activities>\n\
 </status>\n\
 </tuple>\n\
