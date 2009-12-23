@@ -17,6 +17,9 @@
 		<Platform
 			Name="Windows Mobile 6 Standard SDK (ARMV4I)"
 		/>
+		<Platform
+			Name="MP100_2P21 (ARMV4I)"
+		/>
 	</Platforms>
 	<ToolFiles>
 	</ToolFiles>
@@ -270,6 +273,91 @@
 			/>
 		</Configuration>
 		<Configuration
+			Name="Debug|MP100_2P21 (ARMV4I)"
+			OutputDirectory="MP100_2P21 (ARMV4I)\$(ConfigurationName)"
+			IntermediateDirectory="MP100_2P21 (ARMV4I)\$(ConfigurationName)"
+			ConfigurationType="2"
+			UseOfMFC="0"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG"
+				MkTypLibCompatible="false"
+				TargetEnvironment="1"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				ExecutionBucket="7"
+				Optimization="0"
+				FavorSizeOrSpeed="0"
+				AdditionalIncludeDirectories="..\..\include;..\..\..\osip\include"
+				PreprocessorDefinitions="ORTP_INET6;ORTP_EXPORT;AMD_HACK;_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);_DEBUG;_USRDLL;$(ARCHFAM);$(_ARCHFAM_);POCKETPC2003_UI_MODEL;POCKETPC2003_UI_MODEL"
+				RuntimeLibrary="3"
+				TreatWChar_tAsBuiltInType="true"
+				UsePrecompiledHeader="0"
+				ProgramDataBaseFileName="$(IntDir)/oRTP.pdb"
+				WarningLevel="3"
+				DebugInformationFormat="0"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG;_UNICODE;UNICODE;_WIN32_WCE;UNDER_CE"
+				Culture="1033"
+				AdditionalIncludeDirectories="$(IntDir)"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalOptions=" /SUBSYSTEM:$(CESubsystem) /MACHINE:THUMB"
+				AdditionalDependencies="ws2.lib iphlpapi.lib mmtimer.lib libcmtd.lib"
+				IgnoreAllDefaultLibraries="true"
+				ModuleDefinitionFile="oRTP.def"
+				GenerateDebugInformation="true"
+				TargetMachine="0"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCCodeSignTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+			<DeploymentTool
+				ForceDirty="-1"
+				RemoteDirectory="%CSIDL_PROGRAM_FILES%\amsipua"
+				RegisterOutput="0"
+				AdditionalFiles=""
+			/>
+			<DebuggerTool
+			/>
+		</Configuration>
+		<Configuration
 			Name="Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)"
 			OutputDirectory="$(PlatformName)\Release"
 			IntermediateDirectory="$(PlatformName)\Release"
@@ -482,6 +570,90 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions=" /SUBSYSTEM:WINDOWSCE,5.01 /MACHINE:THUMB"
+				AdditionalDependencies="ws2.lib iphlpapi.lib mmtimer.lib libcmt.lib"
+				IgnoreAllDefaultLibraries="true"
+				ModuleDefinitionFile="oRTP.def"
+				TargetMachine="0"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCCodeSignTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+			<DeploymentTool
+				ForceDirty="-1"
+				RemoteDirectory="%CSIDL_PROGRAM_FILES%\amsipua"
+				RegisterOutput="0"
+				AdditionalFiles=""
+			/>
+			<DebuggerTool
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release|MP100_2P21 (ARMV4I)"
+			OutputDirectory="MP100_2P21 (ARMV4I)\$(ConfigurationName)"
+			IntermediateDirectory="MP100_2P21 (ARMV4I)\$(ConfigurationName)"
+			ConfigurationType="2"
+			UseOfMFC="0"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="false"
+				TargetEnvironment="1"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				ExecutionBucket="7"
+				Optimization="3"
+				FavorSizeOrSpeed="1"
+				AdditionalIncludeDirectories="..\..\include;..\..\..\osip\include"
+				PreprocessorDefinitions="ORTP_INET6;ORTP_EXPORT;AMD_HACK;_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);NDEBUG;_USRDLL;$(ARCHFAM);$(_ARCHFAM_);POCKETPC2003_UI_MODEL;POCKETPC2003_UI_MODEL"
+				RuntimeLibrary="2"
+				TreatWChar_tAsBuiltInType="true"
+				UsePrecompiledHeader="0"
+				ProgramDataBaseFileName="$(IntDir)/oRTP.pdb"
+				WarningLevel="3"
+				DebugInformationFormat="0"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG;_UNICODE;UNICODE;_WIN32_WCE;UNDER_CE"
+				Culture="1033"
+				AdditionalIncludeDirectories="$(IntDir)"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalOptions=" /SUBSYSTEM:$(CESubsystem) /MACHINE:THUMB"
 				AdditionalDependencies="ws2.lib iphlpapi.lib mmtimer.lib libcmt.lib"
 				IgnoreAllDefaultLibraries="true"
 				ModuleDefinitionFile="oRTP.def"
