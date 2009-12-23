@@ -480,8 +480,10 @@ extern MSWebCamDesc ms_dshow_cam_desc;
 extern MSWebCamDesc ms_v4m_cam_desc;
 #endif
 
+#if !defined(NO_FFMPEG)
 extern MSWebCamDesc static_image_desc;
 extern MSWebCamDesc mire_desc;
+#endif
 
 static MSWebCamDesc * ms_web_cam_descs[]={
 #ifdef HAVE_LINUX_VIDEODEV2_H
@@ -503,8 +505,10 @@ static MSWebCamDesc * ms_web_cam_descs[]={
 	&ms_v4m_cam_desc,
 #endif
 
+#if !defined(NO_FFMPEG)
 	&mire_desc,
 	&static_image_desc,
+#endif
 	NULL
 };
 
@@ -539,7 +543,9 @@ void ms_init(){
 			ms_web_cam_manager_register_desc(wm,ms_web_cam_descs[i]);
 		}
 	}
+#if !defined(NO_FFMPEG)
 	__register_ffmpeg_encoders_if_possible();
+#endif
 #endif
 	ms_message("Loading plugins");
 	ms_load_plugins(PACKAGE_PLUGINS_DIR);

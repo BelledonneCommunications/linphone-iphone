@@ -62,5 +62,28 @@ EXPORTS
 	ms_load_plugins
 
 	audio_stream_start
+	
+	ms_queue_init
+	ms_queue_flush
+	
+	rfc3984_init
+	rfc3984_uninit
+	rfc3984_pack
+	rfc3984_unpack
+	rfc3984_set_mode
+	
 	ms_discover_mtu
 	ms_set_mtu
+
+	ms_web_cam_new
+	ms_web_cam_manager_reload
+	ms_web_cam_manager_get_default_cam
+	ms_web_cam_manager_get
+	ms_web_cam_manager_get_list
+	ms_web_cam_manager_get_cam
+	ms_web_cam_manager_add_cam
+	ms_web_cam_manager_register_desc
+	ms_web_cam_create_reader
+	ms_web_cam_get_driver_type
+	ms_web_cam_get_name
+	ms_web_cam_get_string_id
