@@ -105,7 +105,11 @@ static void volume_uninit(MSFilter *f){
 static int volume_get(MSFilter *f, void *arg){
 	float *farg=(float*)arg;
 	Volume *v=(Volume*)f->data;
+#ifndef _WIN32_WCE
 	*farg=10*log10f((v->energy+1)/max_e);
+#else
+	*farg=(float)(10*log10((v->energy+1)/max_e));
+#endif
 	return 0;
 }
 

@@ -1448,6 +1448,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\msvolume.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\mswebcam.c"
 				>
 			</File>
