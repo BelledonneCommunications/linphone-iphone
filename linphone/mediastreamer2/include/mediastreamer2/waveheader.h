@@ -27,17 +27,23 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef waveheader_h
 #define waveheader_h
 
+#ifdef swap16
+#else
 /* all integer in wav header must be read in least endian order */
 static inline uint16_t swap16(uint16_t a)
 {
 	return ((a & 0xFF) << 8) | ((a & 0xFF00) >> 8);
 }
+#endif
 
+#ifdef swap32
+#else
 static inline uint32_t swap32(uint32_t a)
 {
 	return ((a & 0xFF) << 24) | ((a & 0xFF00) << 8) | 
 		((a & 0xFF0000) >> 8) | ((a & 0xFF000000) >> 24);
 }
+#endif
 
 #ifdef WORDS_BIGENDIAN
 #define le_uint32(a) (swap32((a)))
