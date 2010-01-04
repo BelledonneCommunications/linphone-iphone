@@ -180,7 +180,7 @@ static void player_uninit(MSFilter *f){
 
 static void player_process(MSFilter *f){
 	PlayerData *d=(PlayerData*)f->data;
-	int bytes =d->big_buffer * 2*(f->ticker->interval*d->rate*d->nchannels)/1000;;
+	int bytes =d->big_buffer * 2*(f->ticker->interval*d->rate*d->nchannels)/1000;
 
 	if (d->big_buffer>1)
 	{
