@@ -563,10 +563,11 @@ void linphone_core_remove_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *cf
  * @ingroup proxy
 **/
 void linphone_core_clear_proxy_config(LinphoneCore *lc){
-	const MSList* list=linphone_core_get_proxy_config_list((const LinphoneCore*)lc);
+	MSList* list=ms_list_copy(linphone_core_get_proxy_config_list((const LinphoneCore*)lc));
 	for(;list!=NULL;list=list->next){
-                linphone_core_remove_proxy_config(lc,(LinphoneProxyConfig *)list->data);
-        }
+		linphone_core_remove_proxy_config(lc,(LinphoneProxyConfig *)list->data);
+	}
+	ms_list_free(list);
 }
 /**
  * Sets the default proxy.
