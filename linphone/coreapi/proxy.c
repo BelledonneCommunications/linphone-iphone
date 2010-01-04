@@ -557,7 +557,17 @@ void linphone_core_remove_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *cf
 	}
 	
 }
-
+/**
+ * Erase all proxies from config.
+ *
+ * @ingroup proxy
+**/
+void linphone_core_clear_proxy_config(LinphoneCore *lc){
+	const MSList* list=linphone_core_get_proxy_config_list((const LinphoneCore*)lc);
+	for(;list!=NULL;list=list->next){
+                linphone_core_remove_proxy_config(lc,(LinphoneProxyConfig *)list->data);
+        }
+}
 /**
  * Sets the default proxy.
  *

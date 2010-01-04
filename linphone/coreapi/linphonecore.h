@@ -352,7 +352,6 @@ int linphone_proxy_config_done(LinphoneProxyConfig *obj);
 void linphone_proxy_config_enable_publish(LinphoneProxyConfig *obj, bool_t val);
 bool_t linphone_proxy_config_is_registered(const LinphoneProxyConfig *obj);
 const char *linphone_proxy_config_get_domain(const LinphoneProxyConfig *cfg);
-
 /** Returns the proxy configured identity as a const char * */
 #define linphone_proxy_config_get_route(obj)  ((obj)->reg_route)
 /** Returns the proxy configured identity as a const char * */
@@ -722,6 +721,8 @@ int linphone_core_set_video_codecs(LinphoneCore *lc, MSList *codecs);
 bool_t linphone_core_check_payload_type_usability(LinphoneCore *lc, PayloadType *pt);
 
 int linphone_core_add_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *config);
+
+void linphone_core_clear_proxy_config(LinphoneCore *lc);
 
 void linphone_core_remove_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *config);
 
