@@ -116,7 +116,7 @@ int linphone_call_terminated(LinphoneCore *lc, eXosip_event_t *ev)
 			return 0;
 		}
 	}
-	
+
 	ms_message("Current call terminated...");
 	if (lc->ringstream!=NULL) {
 		ring_stop(lc->ringstream);
@@ -143,7 +143,7 @@ int linphone_call_terminated(LinphoneCore *lc, eXosip_event_t *ev)
 int linphone_call_released(LinphoneCore *lc, int cid){
 	LinphoneCall *call=lc->call;
 	if (call!=NULL && call->cid==cid){
-		
+
 		linphone_call_destroy(lc->call);
 		lc->call=NULL;
 		lc->vtable.display_status(lc,_("Could not reach destination."));
@@ -178,7 +178,7 @@ int linphone_call_failure(LinphoneCore *lc, eXosip_event_t *ev)
 		reason=osip_message_get_reason_phrase(ev->response);
 	}else code=-110;
 	lc->vtable.show(lc);
-	
+
 	switch(code)
 	{
 		case 401:
@@ -211,12 +211,12 @@ int linphone_call_failure(LinphoneCore *lc, eXosip_event_t *ev)
 				sprintf(umsg,retrymsg,tmpmsg,atoi(retry->hvalue)/60);
 				lc->vtable.display_message(lc,umsg);
 				ms_free(umsg);
-			}*/		
+			}*/
 			lc->vtable.display_message(lc,tmpmsg);
 		break;
 		case 487:
 			lc->vtable.display_status(lc,msg487);
-		break;	
+		break;
 		case 600:
 			lc->vtable.display_message(lc,msg600);
 		break;
@@ -229,13 +229,13 @@ int linphone_call_failure(LinphoneCore *lc, eXosip_event_t *ev)
 		case -111:
 			lc->vtable.display_status(lc,_("Remote host was found but refused connection."));
 		break;
-		
+
 		default:
 			if (code>0)
 			{
 				lc->vtable.display_status(lc,reason);
 			}
-			else ms_warning("failure_cb unknown code=%i\n",code);	
+			else ms_warning("failure_cb unknown code=%i\n",code);
 	}
 	if (lc->ringstream!=NULL) {
 		ring_stop(lc->ringstream);
@@ -255,7 +255,7 @@ extern sdp_handler_t linphone_sdphandler;
 static int linphone_answer_sdp(LinphoneCore *lc, eXosip_event_t *ev, sdp_message_t *sdp){
 	int status=200;
 	sdp_context_t *ctx=NULL;
-	
+
 	ctx=lc->call->sdpctx;
 	/* get the result of the negociation */
 	sdp_context_get_answer(ctx,sdp);
@@ -280,8 +280,8 @@ int linphone_inc_new_call(LinphoneCore *lc, eXosip_event_t *ev)
 	int err;
 
 	osip_from_to_str(ev->request->from,&from);
-	osip_to_to_str(ev->request->to,&to);	
-	
+	osip_to_to_str(ev->request->to,&to);
+
 	/* first check if we can answer successfully to this invite */
 	if (lc->presence_mode!=LINPHONE_STATUS_ONLINE){
 		ms_message("Not present !! presence mode : %d\n",lc->presence_mode);
@@ -322,7 +322,7 @@ int linphone_inc_new_call(LinphoneCore *lc, eXosip_event_t *ev)
 		goto end;
 	}
 	lc->call=linphone_call_new_incoming(lc,linphone_address_new(from),linphone_address_new(to),ev);
-	
+
 	sdp=eXosip_get_sdp_info(ev->request);
 	if (sdp==NULL){
 		ms_message("No sdp body in invite, 200-ack scheme");
@@ -352,7 +352,7 @@ int linphone_inc_new_call(LinphoneCore *lc, eXosip_event_t *ev)
 
 		lc->vtable.inv_recv(lc,tmp);
 		ms_free(barmesg);
-		osip_free(tmp);		
+		osip_free(tmp);
 	}else{
 		ms_error("Error during sdp negociation. ");
 		eXosip_lock();
@@ -459,8 +459,8 @@ int linphone_set_audio_offer(sdp_context_t *ctx)
 	PayloadType *codec;
 	MSList *elem;
 	sdp_payload_t payload;
-	
-	
+
+
 	elem=lc->codecs_conf.audio_codecs;
 	while(elem!=NULL){
 		codec=(PayloadType*) elem->data;
@@ -468,7 +468,7 @@ int linphone_set_audio_offer(sdp_context_t *ctx)
 			sdp_payload_init(&payload);
 			payload.a_rtpmap=ortp_strdup_printf("%s/%i/1",codec->mime_type,codec->clock_rate);
 			payload.pt=rtp_profile_get_payload_number_from_rtpmap(lc->local_profile,payload.a_rtpmap);
-			payload.localport=call->audio_params.natd_port > 0 ? 
+			payload.localport=call->audio_params.natd_port > 0 ?
 						call->audio_params.natd_port : lc->rtp_conf.audio_rtp_port;
 			if (strcasecmp(codec->mime_type,"iLBC")==0){
 				/* prefer the 30 ms mode */
@@ -494,7 +494,7 @@ static int find_payload_type_number(RtpProfile *prof, PayloadType *pt){
 	PayloadType *it;
 	for(i=0;i<127;++i){
 		it=rtp_profile_get_payload(prof,i);
-		if (it!=NULL && strcasecmp(pt->mime_type,it->mime_type)==0 
+		if (it!=NULL && strcasecmp(pt->mime_type,it->mime_type)==0
 			&& (pt->clock_rate==it->clock_rate || pt->clock_rate<=0) ){
 			if ( (pt->recv_fmtp && it->recv_fmtp && strcasecmp(pt->recv_fmtp,it->recv_fmtp)==0) ||
 				(pt->recv_fmtp==NULL && it->recv_fmtp==NULL) ){
@@ -533,7 +533,7 @@ int linphone_set_video_offer(sdp_context_t *ctx)
 	LinphoneCore *lc=call->core;
 	PayloadType *codec;
 	MSList *elem;
-	bool_t firsttime=TRUE;	
+	bool_t firsttime=TRUE;
 
 	if (!linphone_core_video_enabled(lc)) return -1;
 
@@ -544,7 +544,7 @@ int linphone_set_video_offer(sdp_context_t *ctx)
 			sdp_payload_init(&payload);
 			payload.line=1;
 			payload.a_rtpmap=ortp_strdup_printf("%s/%i",codec->mime_type,codec->clock_rate);
-			payload.localport=call->video_params.natd_port>0 ? 
+			payload.localport=call->video_params.natd_port>0 ?
 					call->video_params.natd_port : lc->rtp_conf.video_rtp_port;
 			payload.pt=find_payload_type_number(lc->local_profile,codec);
 			payload.a_fmtp=codec->recv_fmtp;
@@ -576,7 +576,7 @@ SupportLevel linphone_payload_is_supported(LinphoneCore *lc, sdp_payload_t *payl
 		localpt=payload->pt;
 		ms_warning("payload has no rtpmap.");
 	}
-	
+
 	if (localpt>=0 && localpt <128 ){
 		/* this payload is understood, but does the user want to use it ?? */
 		PayloadType *rtppayload;
@@ -610,7 +610,7 @@ SupportLevel linphone_payload_is_supported(LinphoneCore *lc, sdp_payload_t *payl
 			if (rtppayload->type==PAYLOAD_VIDEO){
 				dbw=lc->dw_video_bw;
 				ubw=lc->up_video_bw;
-			}else{ 
+			}else{
 				dbw=lc->dw_audio_bw;
 				ubw=lc->up_audio_bw;
 			}
@@ -665,11 +665,11 @@ int linphone_accept_audio_offer(sdp_context_t *ctx,sdp_payload_t *payload)
 		ms_message("Only one codec has to be accepted.");
 		return -1;
 	}
-	if (supported==SupportedAndValid) {		
+	if (supported==SupportedAndValid) {
 		if (params->initialized==0){
 			/* this is the first codec we accept, it is going to be used*/
 			params->localport=lc->rtp_conf.audio_rtp_port;
-			payload->localport=params->natd_port>0 ? 
+			payload->localport=params->natd_port>0 ?
 				params->natd_port : lc->rtp_conf.audio_rtp_port;
 			params->line=payload->line;
 			params->pt=payload->pt; /* remember the first payload accepted */
@@ -692,7 +692,9 @@ int linphone_accept_audio_offer(sdp_context_t *ctx,sdp_payload_t *payload)
 			/* refuse all other audio lines*/
 			if(params->line!=payload->line) {
 				ms_message("Only one audio line can be accepted.");
+#if !defined(_WIN32_WCE)
 				abort();
+#endif /*_WIN32_WCE*/
 				return -1;
 			}
 		}
@@ -761,7 +763,7 @@ int linphone_read_audio_answer(sdp_context_t *ctx,sdp_payload_t *payload)
 	StreamParams *params;
 	SupportLevel supported;
 	PayloadType *lpt=NULL;
-	
+
 	/* paranoid check: see if this codec is supported in our local rtp profile*/
 	supported=linphone_payload_is_supported(lc, payload,lc->local_profile,call->profile,FALSE,&lpt);
 	if (supported==Unsupported) {
@@ -801,7 +803,7 @@ int linphone_read_video_answer(sdp_context_t *ctx,sdp_payload_t *payload)
 	StreamParams *params;
 	SupportLevel supported;
 	PayloadType *lpt=NULL;
-	
+
 	/* paranoid check: see if this codec is supported in our local rtp profile*/
 	supported=linphone_payload_is_supported(lc, payload,lc->local_profile,call->profile,FALSE,&lpt);
 	if (supported==Unsupported) {
@@ -834,7 +836,7 @@ int linphone_read_video_answer(sdp_context_t *ctx,sdp_payload_t *payload)
 void linphone_call_ringing(LinphoneCore *lc, eXosip_event_t *ev){
 	sdp_message_t *sdp=eXosip_get_sdp_info(ev->response);
 	LinphoneCall *call=lc->call;
-	
+
 	lc->vtable.display_status(lc,_("Remote ringing."));
 	linphone_call_proceeding(lc,ev);
 	if (call==NULL) return;
@@ -910,7 +912,7 @@ static void linphone_process_dtmf_relay(LinphoneCore *lc, eXosip_event_t *ev){
 					lc->vtable.dtmf_received(lc, tmp[0]);
 			}
 		}
-		
+
 		eXosip_call_build_answer(ev->tid,200,&ans);
 		if (ans)
 			eXosip_call_send_answer(ev->tid,200,ans);
@@ -952,7 +954,7 @@ void linphone_registration_faillure(LinphoneCore *lc, eXosip_event_t *ev){
 	osip_uri_t *requri=osip_message_get_uri(ev->request);
 	char *ru;
 	LinphoneProxyConfig *cfg;
-	
+
 	if (ev->response){
 		status_code=osip_message_get_status_code(ev->response);
 		reason=osip_message_get_reason_phrase(ev->response);
@@ -994,7 +996,7 @@ void linphone_registration_success(LinphoneCore *lc,eXosip_event_t *ev){
 		cfg->registered=TRUE;
 		linphone_proxy_config_register_again_with_updated_contact(cfg,ev->request,ev->response);
 	}else cfg->registered=FALSE;
-	
+
 	osip_uri_to_str(requri,&ru);
 	if (cfg->registered) msg=ms_strdup_printf(_("Registration on %s successful."),ru);
 	else msg=ms_strdup_printf(_("Unregistration on %s done."),ru);
@@ -1013,7 +1015,7 @@ static bool_t comes_from_local_if(osip_message_t *msg){
 			osip_generic_param_t *param=NULL;
 			osip_via_param_get_byname(via,"received",&param);
 			if (param==NULL) return TRUE;
-			if (param->gvalue && 
+			if (param->gvalue &&
 				(strcmp(param->gvalue,"127.0.0.1")==0 || strcmp(param->gvalue,"::1")==0)){
 				return TRUE;
 			}
@@ -1057,10 +1059,10 @@ static void linphone_other_request(LinphoneCore *lc, eXosip_event_t *ev){
 			osip_message_header_get_byname(ev->request,"Refer-To",0,&h);
 			eXosip_message_send_answer(ev->tid,200,NULL);
 			if (h){
-				if (lc->vtable.refer_received) 
+				if (lc->vtable.refer_received)
 					lc->vtable.refer_received(lc,h->hvalue);
 			}
-			
+
 		}else ms_warning("Ignored REFER not coming from this local loopback interface.");
 	}else if (strncmp(ev->request->sip_method, "UPDATE", 6) == 0){
 		linphone_inc_update(lc,ev);
@@ -1103,7 +1105,7 @@ void linphone_core_process_event(LinphoneCore *lc,eXosip_event_t *ev)
 			break;
 		case EXOSIP_CALL_INVITE:
 			ms_message("CALL_NEW\n");
-			/* CALL_NEW is used twice in qos mode : 
+			/* CALL_NEW is used twice in qos mode :
 			 * when you receive invite (textinfo = "With QoS" or "Without QoS")
 			 * and when you receive update (textinfo = "New Call") */
 			linphone_inc_new_call(lc,ev);
@@ -1132,7 +1134,7 @@ void linphone_core_process_event(LinphoneCore *lc,eXosip_event_t *ev)
 			linphone_call_message_new(lc,ev);
 			break;
 		case EXOSIP_CALL_MESSAGE_REQUESTFAILURE:
-			if (ev->did<0 && ev->response && 
+			if (ev->did<0 && ev->response &&
 				(ev->response->status_code==407 || ev->response->status_code==401)){
 				 eXosip_default_action(ev);
 			}

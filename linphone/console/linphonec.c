@@ -23,24 +23,28 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
  ****************************************************************************/
-
-#include <errno.h>
+#include <string.h>
+#ifndef _WIN32_WCE
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <string.h>
+#include <errno.h>
 #include <signal.h>
+#include "private.h" /*coreapi/private.h, needed for LINPHONE_VERSION */
+#endif /*_WIN32_WCE*/
 #include <limits.h>
 #include <ctype.h>
 
 #include <linphonecore.h>
-#include "private.h" /*coreapi/private.h, needed for LINPHONE_VERSION */
+
 #include "linphonec.h"
 
 #ifdef WIN32
 #include <ws2tcpip.h>
 #include <ctype.h>
+#ifndef _WIN32_WCE
 #include <conio.h>
+#endif /*_WIN32_WCE*/
 #else
 #include <sys/socket.h>
 #include <netdb.h>
@@ -48,6 +52,21 @@
 #include <sys/stat.h>
 #endif
 
+#if defined(_WIN32_WCE)
+
+#if !defined(PATH_MAX)
+#define PATH_MAX 256
+#endif /*PATH_MAX*/
+
+#if !defined(strdup)
+#define strdup _strdup
+#endif /*strdup*/
+/*
+#if !defined(access)
+#define access _access
+#endif*/ /*access*/
+
+#endif /*_WIN32_WCE*/
 
 #ifdef HAVE_GETTEXT
 #include <libintl.h>
@@ -71,14 +90,16 @@ typedef struct {
 
 /***************************************************************************
  *
- *  Forward declarations 
+ *  Forward declarations
  *
  ***************************************************************************/
 
 char *lpc_strip_blanks(char *input);
 
 static int handle_configfile_migration(void);
+#if !defined(_WIN32_WCE)
 static int copy_file(const char *from, const char *to);
+#endif /*_WIN32_WCE*/
 static int linphonec_parse_cmdline(int argc, char **argv);
 static int linphonec_init(int argc, char **argv);
 static int linphonec_main_loop (LinphoneCore * opm, char * sipAddr);
@@ -111,7 +132,7 @@ static void linphonec_dtmf_received(LinphoneCore *lc, int dtmf);
 static void print_prompt(LinphoneCore *opm);
 /***************************************************************************
  *
- * Global variables 
+ * Global variables
  *
  ***************************************************************************/
 
@@ -135,18 +156,25 @@ static int trace_level = 0;
 static char *logfile_name = NULL;
 static char configfile_name[PATH_MAX];
 static char *sipAddr = NULL; /* for autocall */
+#if !defined(_WIN32_WCE)
 static ortp_pipe_t client_sock=ORTP_PIPE_INVALID;
+#endif /*_WIN32_WCE*/
 char prompt[PROMPT_MAX_LEN];
-
+#if !defined(_WIN32_WCE)
 static ortp_thread_t pipe_reader_th;
 static bool_t pipe_reader_run=FALSE;
+#endif /*_WIN32_WCE*/
+#if !defined(_WIN32_WCE)
 static ortp_pipe_t server_sock;
+#endif /*_WIN32_WCE*/
 
 
-LinphoneCoreVTable linphonec_vtable = {
+LinphoneCoreVTable linphonec_vtable
+#if !defined (_MSC_VER)
+= {
 	.show =(ShowInterfaceCb) stub,
 	.inv_recv = linphonec_call_received,
-	.bye_recv = linphonec_bye_received, 
+	.bye_recv = linphonec_bye_received,
 	.notify_recv = linphonec_notify_received,
 	.new_unknown_subscriber = linphonec_new_unknown_subscriber,
 	.auth_info_requested = linphonec_prompt_for_auth,
@@ -162,7 +190,9 @@ LinphoneCoreVTable linphonec_vtable = {
 	.text_received=linphonec_text_received,
 	.general_state=linphonec_general_state,
 	.dtmf_received=linphonec_dtmf_received
-};
+}
+#endif /*_WIN32_WCE*/
+;
 
 
 
@@ -173,7 +203,7 @@ LinphoneCoreVTable linphonec_vtable = {
  ***************************************************************************/
 
 /*
- * Linphone core callback 
+ * Linphone core callback
  */
 static void
 linphonec_display_something (LinphoneCore * lc, const char *something)
@@ -183,7 +213,7 @@ linphonec_display_something (LinphoneCore * lc, const char *something)
 }
 
 /*
- * Linphone core callback 
+ * Linphone core callback
  */
 static void
 linphonec_display_status (LinphoneCore * lc, const char *something)
@@ -193,7 +223,7 @@ linphonec_display_status (LinphoneCore * lc, const char *something)
 }
 
 /*
- * Linphone core callback 
+ * Linphone core callback
  */
 static void
 linphonec_display_warning (LinphoneCore * lc, const char *something)
@@ -203,7 +233,7 @@ linphonec_display_warning (LinphoneCore * lc, const char *something)
 }
 
 /*
- * Linphone core callback 
+ * Linphone core callback
  */
 static void
 linphonec_display_url (LinphoneCore * lc, const char *something, const char *url)
@@ -213,7 +243,7 @@ linphonec_display_url (LinphoneCore * lc, const char *something, const char *url
 
 
 /*
- * Linphone core callback 
+ * Linphone core callback
  */
 static void
 linphonec_call_received(LinphoneCore *lc, const char *from)
@@ -225,7 +255,7 @@ linphonec_call_received(LinphoneCore *lc, const char *from)
 }
 
 /*
- * Linphone core callback 
+ * Linphone core callback
  */
 static void
 linphonec_prompt_for_auth(LinphoneCore *lc, const char *realm, const char *username)
@@ -235,15 +265,15 @@ linphonec_prompt_for_auth(LinphoneCore *lc, const char *realm, const char *usern
 		linphone_core_abort_authentication(lc,NULL);
 	}else{
 		LinphoneAuthInfo *pending_auth;
-	
+
 		if ( auth_stack.nitems+1 > MAX_PENDING_AUTH )
 		{
 			fprintf(stderr,
 				"Can't accept another authentication request.\n"
 				"Consider incrementing MAX_PENDING_AUTH macro.\n");
 			return;
-		} 
-	
+		}
+
 		pending_auth=linphone_auth_info_new(username,NULL,NULL,NULL,realm);
 		auth_stack.elem[auth_stack.nitems++]=pending_auth;
 	}
@@ -268,8 +298,8 @@ linphonec_new_unknown_subscriber(LinphoneCore *lc, LinphoneFriend *lf,
 		const char *url)
 {
 	printf("Friend %s requested subscription "
-		"(accept/deny is not implemented yet)\n", url); 
-	// This means that this person wishes to be notified 
+		"(accept/deny is not implemented yet)\n", url);
+	// This means that this person wishes to be notified
 	// of your presence information (online, busy, away...).
 
 }
@@ -304,7 +334,7 @@ static void linphonec_dtmf_received(LinphoneCore *lc, int dtmf){
 	fflush(stdout);
 }
 
-static void 
+static void
 linphonec_general_state (LinphoneCore * lc, LinphoneGeneralState *gstate)
 {
         if (show_general_state) {
@@ -352,11 +382,11 @@ linphonec_general_state (LinphoneCore * lc, LinphoneGeneralState *gstate)
              printf("GSTATE_CALL_ERROR");
              break;
            default:
-              printf("GSTATE_UNKNOWN_%d",gstate->new_state);   
+              printf("GSTATE_UNKNOWN_%d",gstate->new_state);
           }
           if (gstate->message) printf(" %s", gstate->message);
           printf("\n");
-        }  
+        }
 }
 
 static char received_prompt[PROMPT_MAX_LEN];
@@ -380,14 +410,14 @@ static void start_prompt_reader(void){
 	ms_mutex_init(&prompt_mutex,NULL);
 	ortp_thread_create(&th,NULL,prompt_reader_thread,NULL);
 }
-
+#if !defined(_WIN32_WCE)
 static ortp_pipe_t create_server_socket(void){
 	char path[128];
 #ifndef WIN32
 	snprintf(path,sizeof(path)-1,"linphonec-%i",getuid());
 #else
 	{
-		char username[128];
+		TCHAR username[128];
 		DWORD size=sizeof(username)-1;
 		GetUserName(username,&size);
 		snprintf(path,sizeof(path)-1,"linphonec-%s",username);
@@ -395,6 +425,7 @@ static ortp_pipe_t create_server_socket(void){
 #endif
 	return ortp_server_pipe_create(path);
 }
+
 
 static void *pipe_thread(void*p){
 	char tmp[250];
@@ -424,7 +455,7 @@ static void *pipe_thread(void*p){
 				ortp_server_pipe_close_client(client_sock);
 				client_sock=ORTP_PIPE_INVALID;
 			}
-			
+
 		}else{
 			if (pipe_reader_run) fprintf(stderr,"accept() failed: %s\n",strerror(errno));
 		}
@@ -446,6 +477,7 @@ static void stop_pipe_reader(void){
 	ortp_server_pipe_close(server_sock);
 	ortp_thread_join(pipe_reader_th,NULL);
 }
+#endif /*_WIN32_WCE*/
 
 #ifdef HAVE_READLINE
 #define BOOL_HAVE_READLINE 1
@@ -462,8 +494,10 @@ char *linphonec_readline(char *prompt){
 			prompt_reader_started=TRUE;
 		}
 		if (unix_socket && !pipe_reader_started){
+#if !defined(_WIN32_WCE)
 			start_pipe_reader();
 			pipe_reader_started=TRUE;
+#endif /*_WIN32_WCE*/
 		}
 		fprintf(stdout,"%s",prompt);
 		fflush(stdout);
@@ -498,19 +532,23 @@ void linphonec_out(const char *fmt,...){
 	va_end (args);
 	printf("%s",res);
 	fflush(stdout);
+#if !defined(_WIN32_WCE)
 	if (client_sock!=ORTP_PIPE_INVALID){
 		if (ortp_pipe_write(client_sock,(uint8_t*)res,strlen(res))==-1){
 			fprintf(stderr,"Fail to send output via pipe: %s",strerror(errno));
 		}
 	}
+#endif /*_WIN32_WCE*/
 	ortp_free(res);
 }
 
 void linphonec_command_finished(void){
+#if !defined(_WIN32_WCE)
 	if (client_sock!=ORTP_PIPE_INVALID){
 		ortp_server_pipe_close_client(client_sock);
 		client_sock=ORTP_PIPE_INVALID;
 	}
+#endif /*_WIN32_WCE*/
 }
 
 void linphonec_set_autoanswer(bool_t enabled){
@@ -530,9 +568,35 @@ bool_t linphonec_get_autoanswer(){
  *	- char *histfile_name
  *	- FILE *mylogfile
  */
+#if  defined (_MSC_VER)
+int _tmain(int argc, _TCHAR* argv[]) {
+	trace_level=1;
+	linphonec_vtable.show =(ShowInterfaceCb) stub;
+	linphonec_vtable.inv_recv = linphonec_call_received;
+	linphonec_vtable.bye_recv = linphonec_bye_received;
+	linphonec_vtable.notify_recv = linphonec_notify_received;
+	linphonec_vtable.new_unknown_subscriber = linphonec_new_unknown_subscriber;
+	linphonec_vtable.auth_info_requested = linphonec_prompt_for_auth;
+	linphonec_vtable.display_status = linphonec_display_status;
+	linphonec_vtable.display_message=linphonec_display_something;
+#ifdef VINCENT_MAURY_RSVP
+	/* the yes/no dialog box */
+	linphonec_vtable.display_yes_no= (DisplayMessageCb) stub;
+#endif
+	linphonec_vtable.display_warning=linphonec_display_warning;
+	linphonec_vtable.display_url=linphonec_display_url;
+	linphonec_vtable.display_question=(DisplayQuestionCb)stub;
+	linphonec_vtable.text_received=linphonec_text_received;
+	linphonec_vtable.general_state=linphonec_general_state;
+	linphonec_vtable.dtmf_received=linphonec_dtmf_received;
+
+#else
 int
-main (int argc, char *argv[])
-{
+main (int argc, char *argv[]) {
+#endif
+
+
+
 
 	if (! linphonec_init(argc, argv) ) exit(EXIT_FAILURE);
 
@@ -556,9 +620,13 @@ linphonec_init(int argc, char **argv)
 	 * Set initial values for global variables
 	 */
 	mylogfile = NULL;
-	snprintf(configfile_name, PATH_MAX, "%s/.linphonerc",
-		getenv("HOME"));
 
+	snprintf(configfile_name, PATH_MAX, "%s/.linphonerc",
+#if !defined(_WIN32_WCE)
+			getenv("HOME"));
+#else
+			".");
+#endif /*_WIN32_WCE*/
 
 	/* Handle configuration filename changes */
 	switch (handle_configfile_migration())
@@ -623,12 +691,13 @@ linphonec_init(int argc, char **argv)
 	 */
 	linphonec_initialize_readline();
 #endif
+#if !defined(_WIN32_WCE)
 	/*
 	 * Initialize signal handlers
 	 */
-	signal(SIGTERM, linphonec_finish); 
-	signal(SIGINT, linphonec_finish); 
-
+	signal(SIGTERM, linphonec_finish);
+	signal(SIGINT, linphonec_finish);
+#endif /*_WIN32_WCE*/
 	return 1;
 }
 
@@ -645,16 +714,17 @@ void
 linphonec_finish(int exit_status)
 {
 	printf("Terminating...\n");
-	
+
 	/* Terminate any pending call */
    	linphonec_parse_command_line(linphonec, "terminate");
    	linphonec_command_finished();
 #ifdef HAVE_READLINE
 	linphonec_finish_readline();
 #endif
+#if !defined(_WIN32_WCE)
 	if (pipe_reader_run)
 		stop_pipe_reader();
-
+#endif /*_WIN32_WCE*/
 
 	linphone_core_destroy (linphonec);
 
@@ -672,7 +742,7 @@ linphonec_finish(int exit_status)
  * pending_auth != NULL.
  *
  * It prompts user for a password.
- * Hitting ^D (EOF) would make this function 
+ * Hitting ^D (EOF) would make this function
  * return 0 (Cancel).
  * Any other input would try to set linphone core
  * auth_password for the pending_auth, add the auth_info
@@ -715,7 +785,7 @@ linphonec_prompt_for_auth_final(LinphoneCore *lc)
 		 */
 		if ( ! input )
 		{
-			printf("Cancel requested, but not implemented.\n"); 
+			printf("Cancel requested, but not implemented.\n");
 			continue;
 		}
 
@@ -834,7 +904,7 @@ linphonec_initialize_readline()
 	rl_readline_name = "linphonec";
 
 	/* Call idle_call() every second */
-	rl_set_keyboard_input_timeout(LPC_READLINE_TIMEOUT); 
+	rl_set_keyboard_input_timeout(LPC_READLINE_TIMEOUT);
 	rl_event_hook=linphonec_idle_call;
 
 	/* Set history file and read it */
@@ -849,7 +919,7 @@ linphonec_initialize_readline()
 	rl_attempted_completion_function = linephonec_readline_completion;
 
 	/* printf("Readline initialized.\n"); */
-        setlinebuf(stdout); 
+        setlinebuf(stdout);
 	return 0;
 }
 
@@ -976,7 +1046,7 @@ linphonec_parse_cmdline(int argc, char **argv)
 		else if (strncmp ("-c", argv[arg_num], 2) == 0)
 		{
 			if ( ++arg_num >= argc ) print_usage(EXIT_FAILURE);
-
+#if !defined(_WIN32_WCE)
 			if (access(argv[arg_num],F_OK)!=0 )
 			{
 				fprintf (stderr,
@@ -984,6 +1054,7 @@ linphonec_parse_cmdline(int argc, char **argv)
 					 argv[arg_num]);
 				exit(EXIT_FAILURE);
 			}
+#endif /*_WIN32_WCE*/
 			snprintf(configfile_name, PATH_MAX, "%s", argv[arg_num]);
 		}
 		else if (strncmp ("-s", argv[arg_num], 2) == 0)
@@ -1016,7 +1087,9 @@ linphonec_parse_cmdline(int argc, char **argv)
 			  ("--version", argv[arg_num],
 			   strlen ("--version")) == 0))
 		{
+#if !defined(_WIN32_WCE)
 			printf ("version: " LINPHONE_VERSION "\n");
+#endif
 			exit (EXIT_SUCCESS);
 		}
 		else if (strncmp ("-S", argv[arg_num], 2) == 0)
@@ -1053,16 +1126,20 @@ linphonec_parse_cmdline(int argc, char **argv)
  * Returns:
  *	 0 if it did nothing
  *	 1 if it migrated successfully
- *	-1 on error 
+ *	-1 on error
  */
 static int
 handle_configfile_migration()
 {
+#if !defined(_WIN32_WCE)
 	char *old_cfg_gui;
-	char *old_cfg_cli; 
+	char *old_cfg_cli;
 	char *new_cfg;
+#if !defined(_WIN32_WCE)
 	const char *home = getenv("HOME");
-
+#else
+	const char *home = ".";
+#endif /*_WIN32_WCE*/
 	new_cfg = ms_strdup_printf("%s/.linphonerc", home);
 
 	/*
@@ -1119,9 +1196,10 @@ handle_configfile_migration()
 
 	free(old_cfg_gui);
 	free(new_cfg);
+#endif /*_WIN32_WCE*/
 	return 0;
 }
-
+#if !defined(_WIN32_WCE)
 /*
  * Copy file "from" to file "to".
  * Destination file is truncated if existing.
@@ -1162,13 +1240,14 @@ copy_file(const char *from, const char *to)
 		{
 			return 0;
 		}
-	} 
+	}
 
 	fclose(in);
 	fclose(out);
 
 	return 1;
 }
+#endif /*_WIN32_WCE*/
 
 #ifdef HAVE_READLINE
 static char **
@@ -1332,3 +1411,4 @@ lpc_strip_blanks(char *input)
  *
  *
  ****************************************************************************/
+

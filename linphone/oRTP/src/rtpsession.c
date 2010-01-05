@@ -219,7 +219,6 @@ rtp_session_init (RtpSession * session, int mode)
 	    ortp_debug("rtp_session_init: Invalid paramter (session=NULL)");
 	    return;
 	}
-	
 	memset (session, 0, sizeof (RtpSession));
 	session->mode = (RtpSessionMode) mode;
 	if ((mode == RTP_SESSION_RECVONLY) || (mode == RTP_SESSION_SENDRECV))

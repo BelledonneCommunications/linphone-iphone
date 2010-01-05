@@ -106,6 +106,9 @@ int __ortp_thread_create(pthread_t *thread, pthread_attr_t *attr, void * (*routi
 #define getSocketError() strerror(errno)
 #define getSocketErrorCode() (errno)
 
+#define ortp_log10f(x)	log10f(x)
+
+
 #else
 /*********************************/
 /* definitions for WIN32 flavour */
@@ -147,7 +150,7 @@ typedef HANDLE ortp_thread_t;
 
 #define ortp_thread_create	WIN_thread_create
 #define ortp_thread_join	WIN_thread_join
-#define ortp_thread_exit(arg)		
+#define ortp_thread_exit(arg)
 #define ortp_mutex_init		WIN_mutex_init
 #define ortp_mutex_lock		WIN_mutex_lock
 #define ortp_mutex_unlock	WIN_mutex_unlock
@@ -163,12 +166,12 @@ typedef HANDLE ortp_thread_t;
 extern "C"
 {
 #endif
-	
+
 int WIN_mutex_init(ortp_mutex_t *m, void *attr_unused);
 int WIN_mutex_lock(ortp_mutex_t *mutex);
 int WIN_mutex_unlock(ortp_mutex_t *mutex);
 int WIN_mutex_destroy(ortp_mutex_t *mutex);
-int WIN_thread_create(ortp_thread_t *t, void *attr_unused, void *(*func)(void*), void *arg); 
+int WIN_thread_create(ortp_thread_t *t, void *attr_unused, void *(*func)(void*), void *arg);
 int WIN_thread_join(ortp_thread_t thread, void **unused);
 int WIN_cond_init(ortp_cond_t *cond, void *attr_unused);
 int WIN_cond_wait(ortp_cond_t * cond, ortp_mutex_t * mutex);
@@ -182,6 +185,32 @@ int WIN_cond_destroy(ortp_cond_t * cond);
 
 #define SOCKET_OPTION_VALUE	char *
 #define inline			__inline
+
+#if defined(_WIN32_WCE)
+
+#define ortp_log10f(x)		(float)log10 ((double)x)
+
+#ifdef assert
+	#undef assert
+#endif /*assert*/
+#define assert(exp)	((void)0)
+
+#ifdef errno
+	#undef errno
+#endif /*errno*/
+#define  errno GetLastError()
+#ifdef strerror
+		#undef strerror
+#endif /*strerror*/
+const char * ortp_strerror(DWORD value);
+#define strerror ortp_strerror
+
+
+#else /*_WIN32_WCE*/
+
+#define ortp_log10f(x)	log10f(x)
+
+#endif
 
 const char *getWinSocketError(int error);
 #define getSocketErrorCode() WSAGetLastError()
@@ -240,6 +269,8 @@ char *ortp_strndup(const char *str,int n);
 char *ortp_strdup_printf(const char *fmt,...);
 char *ortp_strdup_vprintf(const char *fmt, va_list ap);
 
+int ortp_file_exist(const char *pathname);
+
 /* portable named pipes */
 #if !defined(_WIN32_WCE)
 #ifdef WIN32
@@ -269,6 +300,7 @@ int ortp_pipe_write(ortp_pipe_t p, const uint8_t *buf, int len);
 
 #ifdef __cplusplus
 }
+
 #endif
 
 

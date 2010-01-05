@@ -28,6 +28,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/msvideo.h"
 #include "ortp/ortp.h"
 #include "ortp/event.h"
+#include <time.h>
+
+#if defined(_WIN32_WCE)
+time_t ms_time (time_t *t);
+#else
+#define ms_time time
+#endif
 
 typedef enum EchoLimiterType{
 	ELInactive,
@@ -99,7 +106,7 @@ void audio_stream_set_rtcp_information(AudioStream *st, const char *cname, const
 void audio_stream_play_received_dtmfs(AudioStream *st, bool_t yesno);
 
 /* those two function do the same as audio_stream_start() but in two steps
-this is useful to make sure that sockets are open before sending an invite; 
+this is useful to make sure that sockets are open before sending an invite;
 or to start to stream only after receiving an ack.*/
 AudioStream *audio_stream_new(int locport, bool_t ipv6);
 int audio_stream_start_now(AudioStream * stream, RtpProfile * prof,  const char *remip, int remport, int rem_rtcp_port, int payload_type, int jitt_comp,MSSndCard *playcard, MSSndCard *captcard, bool_t echo_cancel);

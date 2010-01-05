@@ -36,8 +36,15 @@ AC_HEADER_STDC
 AM_PROG_CC_C_O
 
 case $target_os in
+	*mingw32ce)
+       	CFLAGS="$CFLAGS -D_WIN32_WCE -DORTP_STATIC -D_WIN32_WINNT=0x0501"
+       	CXXFLAGS="$CXXFLAGS -DORTP_STATIC -D_WIN32_WINNT=0x0501"
+       	LIBS="$LIBS -lws2 -liphlpapi"
+		mingw_found=yes
+		mingwce_found=yes
+		;;
 	*mingw*)
-		CFLAGS="$CFLAGS -DORTP_STATIC -D_WIN32_WINNT=0x0501"
+		CFLAGS="$CFLAGS -DORTP_STATIC -D_WIN32_WINNT=0x0501 "
 		CXXFLAGS="$CXXFLAGS -DORTP_STATIC -D_WIN32_WINNT=0x0501"
 		LIBS="$LIBS -lws2_32"
 		GUI_FLAGS="-mwindows"
@@ -84,9 +91,15 @@ dnl gettext macro does not work properly under mingw.
 AM_GNU_GETTEXT([external])
 LIBS="$LIBS $LIBINTL"
 else
-AC_DEFINE(ENABLE_NLS,1,[Tells whether localisation is possible])
-AC_DEFINE(HAVE_GETTEXT,1,[Tells wheter localisation is possible])
-LIBS="$LIBS -L/usr/lib -lintl"
+	if test "$mingwce_found" != "yes" ; then 
+		AC_DEFINE(ENABLE_NLS,1,[Tells whether localisation is possible])
+		AC_DEFINE(HAVE_GETTEXT,1,[Tells wheter localisation is possible])
+		LIBS="$LIBS -L/usr/lib -lintl"
+	else
+		dnl gettext macro does not work properly under mingw.
+		AM_GNU_GETTEXT([external])
+		LIBS="$LIBS $LIBINTL"
+	fi
 fi
 
 GETTEXT_PACKAGE=linphone
@@ -314,6 +327,19 @@ AM_CONDITIONAL(ARMBUILD, test x$use_arm_toolchain = xyes)
 dnl compilation of gtk-glade user interface
 AM_CONDITIONAL(BUILD_GLADE_UI, [test x$gtk_ui = xtrue ] )
 AM_CONDITIONAL(BUILD_WIN32, test x$mingw_found = xyes )
+
+dnl check getenv
+AH_TEMPLATE([HAVE_GETENV])
+AC_CHECK_FUNC([getenv], AC_DEFINE([HAVE_GETENV], [1], [If present, the getenv function allows fim to read environment variables.]))
+
+dnl
+AC_MSG_CHECKING([for sighandler_t])
+AC_TRY_COMPILE([#include <signal.h>],[sighandler_t *f;],
+has_sighandler_t=yes,has_sighandler_t=no)
+AC_MSG_RESULT($has_sighandler_t)
+if test "$has_sighandler_t" = "yes" ; then
+    AC_DEFINE( HAVE_SIGHANDLER_T, 1, [Define if sighandler_t available] )
+fi
 
 ##################################################
 # Stricter build options (after external packages)

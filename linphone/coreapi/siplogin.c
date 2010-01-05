@@ -88,6 +88,9 @@ static int sip_login_do_logout(SipSetupContext * ctx){
 }
 
 /* a simple SipSetup built-in plugin to allow specify the user/password for proxy config at runtime*/
+
+#ifndef _MSC_VER
+
 SipSetup linphone_sip_login={
 	.name="SipLogin",
 	.capabilities=SIP_SETUP_CAP_LOGIN,
@@ -96,3 +99,29 @@ SipSetup linphone_sip_login={
 	.logout_account=sip_login_do_logout
 };
 
+#else
+SipSetup linphone_sip_login={
+	"SipLogin",
+	SIP_SETUP_CAP_LOGIN,
+	0,
+	NULL,
+	NULL,
+	sip_login_init_instance,
+	NULL,
+	NULL,
+	NULL,
+	sip_login_do_login,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	sip_login_do_logout
+};
+
+
+
+#endif

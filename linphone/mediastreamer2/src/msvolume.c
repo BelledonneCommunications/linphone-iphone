@@ -105,11 +105,8 @@ static void volume_uninit(MSFilter *f){
 static int volume_get(MSFilter *f, void *arg){
 	float *farg=(float*)arg;
 	Volume *v=(Volume*)f->data;
-#ifndef _WIN32_WCE
-	*farg=10*log10f((v->energy+1)/max_e);
-#else
-	*farg=(float)(10*log10((v->energy+1)/max_e));
-#endif
+	*farg=10*ortp_log10f((v->energy+1)/max_e);
+
 	return 0;
 }
 
@@ -144,10 +141,10 @@ static inline float compute_gain(float static_gain, float energy, float weight){
 }
 
 /*
-The principle of this algorithm is that we apply a gain to the input signal which is opposite to the 
+The principle of this algorithm is that we apply a gain to the input signal which is opposite to the
 energy measured by the peer MSVolume.
 For example if some noise is played by the speaker, then the signal captured by the microphone will be lowered.
-The gain changes smoothly when the peer energy is decreasing, but is immediately changed when the peer energy is 
+The gain changes smoothly when the peer energy is decreasing, but is immediately changed when the peer energy is
 increasing.
 */
 
@@ -352,7 +349,7 @@ static void volume_process(MSFilter *f){
 			om->b_wptr+=nbytes;
 			en=update_energy((int16_t*)om->b_rptr,v->nsamples,en);
 			volume_agc_process(v,om);
-	
+
 			if (v->peer){
 				volume_echo_avoider_process(v,f->ticker->time);
 			}else v->target_gain=v->static_gain;
@@ -367,7 +364,7 @@ static void volume_process(MSFilter *f){
 		while((m=ms_queue_get(f->inputs[0]))!=NULL){
 			en=update_energy((int16_t*)m->b_rptr,(m->b_wptr-m->b_rptr)/2,en);
 			if (v->peer){
-				volume_echo_avoider_process(v,f->ticker->time);	
+				volume_echo_avoider_process(v,f->ticker->time);
 			}else v->target_gain=v->static_gain;
 
 			if (v->noise_gate_enabled)

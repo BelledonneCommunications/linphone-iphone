@@ -344,7 +344,7 @@ LinphoneProxyConfig *linphone_proxy_config_new(void);
 int linphone_proxy_config_set_server_addr(LinphoneProxyConfig *obj, const char *server_addr);
 void linphone_proxy_config_set_identity(LinphoneProxyConfig *obj, const char *identity);
 void linphone_proxy_config_set_route(LinphoneProxyConfig *obj, const char *route);
-void linphone_proxy_config_expires(LinphoneProxyConfig *obj, const int expires);
+void linphone_proxy_config_expires(LinphoneProxyConfig *obj, int expires);
 void linphone_proxy_config_enable_register(LinphoneProxyConfig *obj, bool_t val);
 #define linphone_proxy_config_enableregister linphone_proxy_config_enable_register
 void linphone_proxy_config_edit(LinphoneProxyConfig *obj);

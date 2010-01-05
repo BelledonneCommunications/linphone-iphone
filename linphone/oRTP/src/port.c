@@ -100,7 +100,7 @@ char * ortp_strdup(const char *tmp){
  */
 int set_non_blocking_socket (ortp_socket_t sock)
 {
-	
+
 
 #if	!defined(_WIN32) && !defined(_WIN32_WCE)
 	return fcntl (sock, F_SETFL, O_NONBLOCK);
@@ -124,7 +124,23 @@ int close_socket(ortp_socket_t sock){
 #endif
 }
 
-
+#if defined (_WIN32_WCE)
+int ortp_file_exist(const char *pathname) {
+	FILE* fd;
+	if (pathname==NULL) return -1;
+	fd=fopen(pathname,"r");
+	if (fd==NULL) {
+		return -1;
+	} else {
+		fclose(fd);
+		return 0;
+	}
+}
+#else
+int ortp_file_exist(const char *pathname) {
+	return access(pathname,F_OK);
+}
+#endif /*_WIN32_WCE*/
 
 #if	!defined(_WIN32) && !defined(_WIN32_WCE)
 	/* Use UNIX inet_aton method */
@@ -132,10 +148,10 @@ int close_socket(ortp_socket_t sock){
 	int inet_aton (const char * cp, struct in_addr * addr)
 	{
 		unsigned long retval;
-		
+
 		retval = inet_addr (cp);
 
-		if (retval == INADDR_NONE) 
+		if (retval == INADDR_NONE)
 		{
 			return -1;
 		}
@@ -180,7 +196,7 @@ int __ortp_thread_create(pthread_t *thread, pthread_attr_t *attr, void * (*routi
 #if	defined(_WIN32) || defined(_WIN32_WCE)
 
 int WIN_mutex_init(ortp_mutex_t *mutex, void *attr)
-{	
+{
 	*mutex=CreateMutex(NULL, FALSE, NULL);
 	return 0;
 }
@@ -225,7 +241,7 @@ int WIN_thread_create(ortp_thread_t *th, void *attr, void * (*func)(void *), voi
     thread_param_t *params=ortp_new(thread_param_t,1);
     params->func=func;
     params->arg=data;
-	*th=(HANDLE)_beginthreadex( NULL, 0, thread_starter, params, 0, NULL);
+	*th=(HANDLE)_beginthreadex( NULL, 0, (LPTHREAD_START_ROUTINE)thread_starter, params, 0, NULL);
 	return 0;
 }
 
@@ -248,7 +264,7 @@ int WIN_cond_init(ortp_cond_t *cond, void *attr)
 int WIN_cond_wait(ortp_cond_t* hCond, ortp_mutex_t * hMutex)
 {
 	//gulp: this is not very atomic ! bug here ?
-	WIN_mutex_unlock(hMutex);	
+	WIN_mutex_unlock(hMutex);
 	WaitForSingleObject(*hCond, INFINITE);
 	WIN_mutex_lock(hMutex);
 	return 0;
@@ -276,6 +292,21 @@ int WIN_cond_destroy(ortp_cond_t * hCond)
 #if defined(_WIN32_WCE)
 #include <time.h>
 
+const char * ortp_strerror(DWORD value) {
+	static TCHAR msgBuf[256];
+	FormatMessage(
+			FORMAT_MESSAGE_FROM_SYSTEM |
+			FORMAT_MESSAGE_IGNORE_INSERTS,
+			NULL,
+			value,
+			0, // Default language
+			(LPTSTR) &msgBuf,
+			0,
+			NULL
+	);
+	return (const char *)msgBuf;
+}
+
 int
 gettimeofday (struct timeval *tv, void *tz)
 {
@@ -287,19 +318,19 @@ gettimeofday (struct timeval *tv, void *tz)
 
 #else
 
-int gettimeofday (struct timeval *tv, void* tz) 
-{ 
-	union 
-	{ 
-		__int64 ns100; /*time since 1 Jan 1601 in 100ns units */ 
-		FILETIME fileTime; 
-	} now; 
+int gettimeofday (struct timeval *tv, void* tz)
+{
+	union
+	{
+		__int64 ns100; /*time since 1 Jan 1601 in 100ns units */
+		FILETIME fileTime;
+	} now;
 
-	GetSystemTimeAsFileTime (&now.fileTime); 
-	tv->tv_usec = (long) ((now.ns100 / 10LL) % 1000000LL); 
-	tv->tv_sec = (long) ((now.ns100 - 116444736000000000LL) / 10000000LL); 
-	return (0); 
-} 
+	GetSystemTimeAsFileTime (&now.fileTime);
+	tv->tv_usec = (long) ((now.ns100 / 10LL) % 1000000LL);
+	tv->tv_sec = (long) ((now.ns100 - 116444736000000000LL) / 10000000LL);
+	return (0);
+}
 
 #endif
 
@@ -405,6 +436,7 @@ int ortp_client_pipe_close(ortp_socket_t sock){
 	return close(sock);
 }
 
+
 #elif defined(WIN32) && !defined(_WIN32_WCE)
 
 static char *make_pipe_name(const char *name){
@@ -462,15 +494,15 @@ int ortp_server_pipe_close(ortp_pipe_t spipe){
 
 ortp_pipe_t ortp_client_pipe_connect(const char *name){
 	char *pipename=make_pipe_name(name);
-	ortp_pipe_t hpipe = CreateFile( 
-         pipename,   // pipe name 
-         GENERIC_READ |  // read and write access 
-         GENERIC_WRITE, 
-         0,              // no sharing 
+	ortp_pipe_t hpipe = CreateFile(
+         pipename,   // pipe name
+         GENERIC_READ |  // read and write access
+         GENERIC_WRITE,
+         0,              // no sharing
          NULL,           // default security attributes
-         OPEN_EXISTING,  // opens existing pipe 
-         0,              // default attributes 
-         NULL);          // no template file 
+         OPEN_EXISTING,  // opens existing pipe
+         0,              // default attributes
+         NULL);          // no template file
 	ortp_free(pipename);
 	return hpipe;
 }
@@ -495,5 +527,6 @@ int ortp_pipe_write(ortp_pipe_t p, const uint8_t *buf, int len){
 int ortp_client_pipe_close(ortp_pipe_t sock){
 	return CloseHandle(sock);
 }
+
 
 #endif

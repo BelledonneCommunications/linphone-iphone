@@ -40,10 +40,6 @@
 #define PACKAGE_SOUND_DIR "."
 #endif
 
-#ifdef WIN32
-#include <io.h> /* for access() */
-#endif
-
 #ifdef HAVE_GETTEXT
 #include <libintl.h>
 #ifndef _

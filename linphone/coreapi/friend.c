@@ -702,7 +702,7 @@ LinphoneFriend *linphone_core_get_friend_by_ref_key(const LinphoneCore *lc, cons
 	return NULL;
 }
 
-#define key_compare(key, word) strncasecmp((key),(word),strlen(key))
+#define key_compare(s1,s2)	strcmp(s1,s2)
 
 LinphoneSubscribePolicy __policy_str_to_enum(const char* pol){
 	if (key_compare("accept",pol)==0){

@@ -26,10 +26,12 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#ifndef _WIN32_WCE
 #include <errno.h>
+#include <unistd.h>
+#endif /*_WIN32_WCE*/
 #include <limits.h>
 #include <ctype.h>
-#include <unistd.h>
 #include <linphonecore.h>
 #include "linphonec.h"
 #include "private.h"
@@ -298,7 +300,7 @@ linphonec_command_generator(const char *text, int state)
 
 		if (strncmp(name, text, len) == 0)
 		{
-			return strdup(name);
+			return ortp_strdup(name);
 		}
 	}
 
@@ -593,10 +595,12 @@ lpc_cmd_friend(LinphoneCore *lc, char *args)
 		args+=4;
 		if ( ! *args ) return 0;
 		friend_num = strtol(args, NULL, 10);
+#ifndef _WIN32_WCE		
 		if ( errno == ERANGE ) {
 			linphonec_out("Invalid friend number\n");
 			return 0;
 		}
+#endif /*_WIN32_WCE*/
 		linphonec_friend_call(lc, friend_num);
 		return 1;
 	}
@@ -613,10 +617,12 @@ lpc_cmd_friend(LinphoneCore *lc, char *args)
 		else
 		{
 			friend_num = strtol(args, NULL, 10);
+#ifndef _WIN32_WCE		
 			if ( errno == ERANGE ) {
 				linphonec_out("Invalid friend number\n");
 				return 0;
 			}
+#endif /*_WIN32_WCE*/
 		}
 		linphonec_friend_delete(lc, friend_num);
 		return 1;
@@ -1423,9 +1429,9 @@ static int lpc_cmd_duration(LinphoneCore *lc, char *args){
 
 static int lpc_cmd_status(LinphoneCore *lc, char *args)
 {
-	if ( ! args ) return 0;
-
 	LinphoneProxyConfig *cfg;
+	
+	if ( ! args ) return 0;
 	linphone_core_get_default_proxy(lc,&cfg);
 	if (strstr(args,"register"))
 	{

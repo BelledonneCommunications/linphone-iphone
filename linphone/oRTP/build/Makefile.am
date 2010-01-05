@@ -1,1 +1,1 @@
-SUBDIRS= win32native wince
+SUBDIRS= win32native wince winmob

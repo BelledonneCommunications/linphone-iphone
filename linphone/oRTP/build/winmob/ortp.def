@@ -1,0 +1,207 @@
+LIBRARY ortp
+
+EXPORTS
+
+	ortp_init
+	ortp_scheduler_init
+	ortp_exit
+
+	ortp_get_scheduler
+	ortp_set_log_file
+	ortp_set_log_level_mask
+	ortp_logv_out
+	ortp_set_log_handler
+	ortp_strdup_printf
+	ortp_logv
+	
+	ortp_get_global_stats
+	ortp_global_stats_display
+	
+	session_set_new
+	session_set_select
+	session_set_destroy
+	
+	rtp_stats_display
+	rtp_session_get_stats
+	
+	rtp_session_init
+	rtp_session_new
+	
+	rtp_session_set_scheduling_mode
+	rtp_session_set_blocking_mode
+	rtp_session_set_profile
+	rtp_session_get_profile
+	rtp_session_set_data
+
+	rtp_session_signal_connect
+	rtp_session_signal_disconnect_by_callback
+	rtp_session_set_ssrc
+	rtp_session_set_seq_number
+	rtp_session_get_seq_number
+	rtp_session_set_jitter_compensation
+	rtp_session_set_local_addr
+	rtp_session_set_remote_addr
+	rtp_session_enable_adaptive_jitter_compensation
+	rtp_session_set_recv_buf_size
+
+	rtp_session_send_with_ts
+	rtp_session_sendm_with_ts
+
+	rtp_session_set_sockets
+	rtp_session_get_rtp_socket
+	rtp_session_get_rtcp_socket
+
+	rtp_session_set_payload_type
+	rtp_session_set_send_payload_type
+	rtp_session_get_send_payload_type
+	rtp_session_set_recv_payload_type
+	rtp_session_get_recv_payload_type
+
+	rtp_session_recv_with_ts
+	rtp_session_recvm_with_ts
+	rtp_session_create_packet
+	
+	rtp_session_get_current_send_ts
+	rtp_session_get_current_recv_ts
+	rtp_session_reset
+	rtp_session_uninit
+	rtp_session_destroy
+
+	rtp_add_csrc
+
+	rtp_session_send_dtmf
+	
+	rtp_session_set_source_description
+	rtp_session_set_symmetric_rtp
+	
+	rtp_profile_new
+	rtp_profile_set_payload
+	rtp_profile_clone_full
+	rtp_profile_destroy
+	rtp_profile_get_payload_from_rtpmap
+	rtp_profile_get_payload_number_from_rtpmap
+	rtp_profile_get_payload_number_from_mime
+	
+	payload_type_new
+	payload_type_set_send_fmtp
+	payload_type_append_send_fmtp
+	payload_type_clone
+	payload_type_destroy
+	fmtp_get_value
+	
+	ortp_free
+	ortp_malloc
+	ortp_strdup
+	ortp_realloc
+	ortp_malloc0
+	
+	freemsg
+	dupmsg
+    allocb
+    getq
+    putq
+    msgpullup
+    qinit
+    flushq
+    msgdsize
+    peekq
+    freeb
+    dupb
+    concatb
+    esballoc
+    
+	WIN_thread_create
+	WIN_thread_join
+	WIN_cond_init
+	WIN_mutex_init
+	WIN_mutex_unlock
+	WIN_cond_wait
+	WIN_mutex_lock
+	WIN_cond_destroy
+	WIN_mutex_destroy
+	WIN_cond_signal
+	
+	__ortp_log_mask
+	ortp_strdup_printf
+	ortp_strdup_vprintf
+
+	rtp_session_register_event_queue
+	rtp_session_unregister_event_queue
+	ortp_ev_queue_new
+	ortp_ev_queue_flush
+	ortp_ev_queue_get
+	ortp_ev_queue_destroy
+    ortp_event_get_type
+    ortp_event_get_data
+    ortp_event_destroy
+    
+    stunParseHostName
+    stunParseServerName
+    sendMessage
+    stunEncodeMessage
+    stunBuildReqSimple
+    stunParseMessage
+    stunServerProcessMsg
+    stunNatType
+    stunTest
+    stunOpenSocket
+    stunOpenSocketPair
+    stunCalculateIntegrity_shortterm
+    stunCalculateIntegrity_longterm
+    stunCalculateFingerprint
+    
+    getWinSocketError
+    close_socket
+    set_non_blocking_socket
+    ortp_strerror
+    gettimeofday
+    ortp_file_exist
+    
+
+
+	rtp_session_set_dscp
+	rtp_session_compute_recv_bandwidth
+	rtp_session_compute_send_bandwidth
+    rtcp_next_packet
+    rtcp_is_SDES
+    rtcp_sdes_parse
+    rtcp_is_SR
+    rtcp_SR_get_ssrc
+    rtcp_SR_get_report_block
+    rtcp_SR_get_sender_info
+    rtcp_is_RR
+    rtcp_RR_get_ssrc
+    rtcp_RR_get_report_block
+    rtcp_is_BYE
+    rtcp_BYE_get_ssrc
+    rtcp_BYE_get_reason
+    rtcp_is_APP
+    rtcp_APP_get_subtype
+    rtcp_APP_get_ssrc
+    rtcp_APP_get_name
+    rtcp_APP_get_data
+    rtp_session_flush_sockets
+    rtp_session_resync
+    rtp_session_set_remote_addr_and_port
+    rtp_session_set_time_jump_limit
+
+    copymsg
+	rtp_session_enable_jitter_buffer
+
+	rtp_session_set_rtp_socket_recv_buffer_size
+	rtp_session_set_rtp_socket_send_buffer_size
+	rtp_session_set_jitter_buffer_params
+
+	rtp_get_payload
+
+	rtp_session_set_remote_addr_full
+	rtp_session_send_rtcp_APP
+	b64_decode
+	b64_encode
+	
+	payload_type_set_recv_fmtp
+	rtp_session_get_local_port
+	rtp_session_get_jitter_buffer_params
+
+	copyb
+	turnAllocateSocketPair

@@ -162,7 +162,9 @@ libmediastreamer_la_LIBADD+=	-lole32 \
 endif
 
 endif
-
+if BUILD_WIN32_WCE
+libmediastreamer_la_LIBADD+=	-lmmtimer
+endif
 
 AM_CFLAGS=	-I$(top_srcdir)  \
                 $(ORTP_CFLAGS)   \

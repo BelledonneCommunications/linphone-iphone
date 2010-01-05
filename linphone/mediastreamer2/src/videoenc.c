@@ -348,6 +348,7 @@ static void add_rfc2190_header(mblk_t **packet, AVCodecContext *context){
 	*packet = header;
 }
 
+#if 0
 static int get_gbsc(uint8_t *psc, uint8_t *end)
 {
 	int len = end-psc;
@@ -370,13 +371,33 @@ static int get_gbsc(uint8_t *psc, uint8_t *end)
 	}
 	return k;
 }
+#else
+static int get_gbsc_bytealigned(uint8_t *begin, uint8_t *end){
+	int i;
+	int len = end - begin;
+	for (i = len - 2;  /*len + length of scan window*/
+	   i > 2 + 2; /*length of scan window + 2 avoidance of 1st gob or psc*/
+	   i--){
+		if(*(begin + i) == 0 &&
+		   *(begin + i+1) == 0 &&
+		   (*(begin + i+2) & 0x80) == 0x80){
+		  /*ms_message("JV psc/gob found! %2x %2x %2x", *(begin + i), *(begin + i+1), *(begin + i + 2));*/
+		  return i;
+		}
+	}
+	/*ms_message("JV no psc or gob found!");*/
+	return len;
+}
+#endif
 
 static void rfc2190_generate_packets(MSFilter *f, EncState *s, mblk_t *frame, uint32_t timestamp){
 	mblk_t *packet=NULL;
 	
 	while (frame->b_rptr<frame->b_wptr){
 		packet=dupb(frame);
-		frame->b_rptr=packet->b_wptr=packet->b_rptr+get_gbsc(packet->b_rptr, MIN(packet->b_rptr+s->mtu,frame->b_wptr));
+		/*frame->b_rptr=packet->b_wptr=packet->b_rptr+get_gbsc(packet->b_rptr, MIN(packet->b_rptr+s->mtu,frame->b_wptr));*/
+		frame->b_rptr = packet->b_wptr =
+			packet->b_rptr + get_gbsc_bytealigned(packet->b_rptr, MIN(packet->b_rptr+s->mtu,frame->b_wptr));
 		add_rfc2190_header(&packet, &s->av_context);
 		mblk_set_timestamp_info(packet,timestamp);
 		ms_queue_put(f->outputs[0],packet);

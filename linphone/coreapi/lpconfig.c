@@ -30,9 +30,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#if !defined(_WIN32_WCE)
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#endif /*_WIN32_WCE*/
+
+
 
 #define lp_new0(type,n)	(type*)calloc(sizeof(type),n)
 
@@ -59,14 +63,14 @@ struct _LpConfig{
 
 LpItem * lp_item_new(const char *key, const char *value){
 	LpItem *item=lp_new0(LpItem,1);
-	item->key=strdup(key);
-	item->value=strdup(value);
+	item->key=ortp_strdup(key);
+	item->value=ortp_strdup(value);
 	return item;
 }
 
 LpSection *lp_section_new(const char *name){
 	LpSection *sec=lp_new0(LpSection,1);
-	sec->name=strdup(name);
+	sec->name=ortp_strdup(name);
 	return sec;
 }
 
@@ -136,9 +140,9 @@ LpItem *lp_section_find_item(LpSection *sec, const char *name){
 void lp_config_parse(LpConfig *lpconfig, FILE *file){
 	char tmp[MAX_LEN];
 	LpSection *cur=NULL;
-	
+
 	if (file==NULL) return;
-	
+
 	while(fgets(tmp,MAX_LEN,file)!=NULL){
 		char *pos1,*pos2;
 		pos1=strchr(tmp,'[');
@@ -168,10 +172,10 @@ void lp_config_parse(LpConfig *lpconfig, FILE *file){
 			if (pos1!=NULL){
 				char key[MAX_LEN];
 				key[0]='\0';
-				
+
 				*pos1='\0';
 				if (sscanf(tmp,"%s",key)>0){
-					
+
 					pos1++;
 					pos2=strchr(pos1,'\n');
 					if (pos2==NULL) pos2=pos1+strlen(pos1);
@@ -205,16 +209,18 @@ void lp_config_parse(LpConfig *lpconfig, FILE *file){
 LpConfig * lp_config_new(const char *filename){
 	LpConfig *lpconfig=lp_new0(LpConfig,1);
 	if (filename!=NULL){
-		lpconfig->filename=strdup(filename);
+		lpconfig->filename=ortp_strdup(filename);
 		lpconfig->file=fopen(filename,"rw");
 		if (lpconfig->file!=NULL){
 			lp_config_parse(lpconfig,lpconfig->file);
 			fclose(lpconfig->file);			
+#if !defined(_WIN32_WCE)
 			/* make existing configuration files non-group/world-accessible */
 			if (chmod(filename, S_IRUSR | S_IWUSR) == -1)
 				ms_warning("unable to correct permissions on "
 				  	  "configuration file: %s",
 					   strerror(errno));
+#endif /*_WIN32_WCE*/
 			lpconfig->file=NULL;
 			lpconfig->modified=0;
 		}
@@ -235,7 +241,7 @@ int lp_config_read_file(LpConfig *lpconfig, const char *filename){
 
 void lp_item_set_value(LpItem *item, const char *value){
 	free(item->value);
-	item->value=strdup(value);
+	item->value=ortp_strdup(value);
 }
 
 
