@@ -296,7 +296,7 @@ static int set_high_prio(void){
 	int policy=SCHED_OTHER;
 #endif
 	param.sched_priority=sched_get_priority_max(policy);
-	if(result=pthread_setschedparam(pthread_self(),policy, &param)) {
+	if((result=pthread_setschedparam(pthread_self(),policy, &param))) {
 		ms_warning("Set sched param failed with error code(%i)\n",result);
 	} else {
 		ms_message("MS ticker priority set to max");
