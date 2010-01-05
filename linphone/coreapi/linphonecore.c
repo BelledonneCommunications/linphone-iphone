@@ -3115,7 +3115,7 @@ static MSVideoSizeDef supported_resolutions[]={
 	{	{MS_VIDEO_SIZE_VGA_W,MS_VIDEO_SIZE_VGA_H}	,	"vga"	},
 	{	{MS_VIDEO_SIZE_CIF_W,MS_VIDEO_SIZE_CIF_H}	,	"cif"	},
 	{	{MS_VIDEO_SIZE_QVGA_W,MS_VIDEO_SIZE_QVGA_H}	,	"qvga"	},
-	{	{MS_VIDEO_SIZE_QCIF_W,MS_VIDEO_SIZE_QVGA_H}	,	"qcif"	},
+	{	{MS_VIDEO_SIZE_QCIF_W,MS_VIDEO_SIZE_QCIF_H}	,	"qcif"	},
 	{	{0,0}			,	NULL	}
 };
 
