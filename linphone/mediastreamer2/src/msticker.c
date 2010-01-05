@@ -265,6 +265,8 @@ static void sleepMs(int ms){
 
 static int set_high_prio(void){
 	int precision=2;
+	int result=0;
+	struct sched_param param;
 #ifdef WIN32
 	MMRESULT mm;
 	TIMECAPS ptc;
@@ -285,6 +287,19 @@ static int set_high_prio(void){
 
 	if(!SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST)){
 		ms_warning("SetThreadPriority() failed (%d)\n", GetLastError());
+	}
+#else
+	memset(&param,0,sizeof(param));
+#ifdef TARGET_OS_MAC
+	int policy=SCHED_RR;
+#else
+	int policy=SCHED_OTHER;
+#endif
+	param.sched_priority=sched_get_priority_max(policy);
+	if(result=pthread_setschedparam(pthread_self(),policy, &param)) {
+		ms_warning("Set sched param failed with error code(%i)\n",result);
+	} else {
+		ms_message("MS ticker priority set to max");
 	}
 #endif
 	return precision;
