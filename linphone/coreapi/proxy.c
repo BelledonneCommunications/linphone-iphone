@@ -25,6 +25,10 @@ Copyright (C) 2000  Simon MORLAT (simon.morlat@linphone.org)
 #include "lpconfig.h"
 #include "private.h"
 
+
+#include <ctype.h>
+
+
 void linphone_proxy_config_write_all_to_config_file(LinphoneCore *lc){
 	MSList *elem;
 	int i;
@@ -69,6 +73,7 @@ void linphone_proxy_config_destroy(LinphoneProxyConfig *obj){
 	if (obj->realm!=NULL) ms_free(obj->realm);
 	if (obj->type!=NULL) ms_free(obj->type);
 	if (obj->contact_addr!=NULL) ms_free(obj->contact_addr);
+	if (obj->dial_prefix!=NULL) ms_free(obj->dial_prefix);
 }
 
 /**
@@ -332,6 +337,130 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
 		eXosip_unlock();
 		if (ct!=NULL) osip_free(ct);
 	}
+}
+
+
+/**
+ * Sets a dialing prefix to be automatically prepended when inviting a number with 
+ * #linphone_core_invite.
+ *
+**/
+void linphone_proxy_config_set_dial_prefix(LinphoneProxyConfig *cfg, const char *prefix){
+	if (cfg->dial_prefix!=NULL){
+		ms_free(cfg->dial_prefix);
+		cfg->dial_prefix=NULL;
+	}
+	if (prefix) cfg->dial_prefix=ms_strdup(prefix);
+}
+
+/**
+ * Returns dialing prefix.
+ *
+ * 
+**/
+const char *linphone_proxy_config_get_dial_prefix(const LinphoneProxyConfig *cfg){
+	return cfg->dial_prefix;
+}
+
+/**
+ * Sets whether liblinphone should replace "+" by "00" in dialed numbers (passed to
+ * #linphone_core_invite ).
+ *
+**/
+void linphone_proxy_config_set_dial_escape_plus(LinphoneProxyConfig *cfg, bool_t val){
+	cfg->dial_escape_plus=val;
+}
+
+/**
+ * Returns whether liblinphone should replace "+" by "00" in dialed numbers (passed to
+ * #linphone_core_invite ).
+ *
+**/
+bool_t linphone_proxy_config_get_dial_escape_plus(const LinphoneProxyConfig *cfg){
+	return cfg->dial_escape_plus;
+}
+
+
+static bool_t is_a_phone_number(const char *username){
+	const char *p;
+	for(p=username;*p!='\0';++p){
+		if (isdigit(*p) || 
+		    *p==' ' ||
+		    *p=='-' ||
+		    *p==')' ||
+			*p=='(' ||
+			*p=='/' ||
+			*p=='+') continue;
+		else return FALSE;
+	}
+	return TRUE;
+}
+
+static char *flatten_number(const char *number){
+	char *result=ms_malloc0(strlen(number)+1);
+	char *w=result;
+	const char *r;
+	for(r=number;*r!='\0';++r){
+		if (*r=='+' || isdigit(*r)){
+			*w++=*r;
+		}
+	}
+	*w++='\0';
+	return result;
+}
+
+static void copy_result(const char *src, char *dest, size_t destlen, bool_t escape_plus){
+	int i=0;
+	
+	if (escape_plus && src[0]=='+' && destlen>2){
+		dest[0]='0';
+		dest[1]='0';
+		src++;
+		i=2;
+	}
+	
+	for(;i<destlen-1;++i){
+		dest[i]=*src;
+		src++;
+	}
+	dest[i]='\0';
+}
+
+
+static char *append_prefix(const char *number, const char *prefix){
+	char *res=ms_malloc(strlen(number)+strlen(prefix)+1);
+	strcpy(res,prefix);
+	return strcat(res,number);
+}
+
+int linphone_proxy_config_normalize_number(LinphoneProxyConfig *proxy, const char *username, char *result, size_t result_len){
+	char *flatten;
+	int numlen;
+	if (is_a_phone_number(username)){
+		flatten=flatten_number(username);
+		ms_message("Flattened number is '%s'",flatten);
+		numlen=strlen(flatten);
+		if (numlen>10 || flatten[0]=='+' || proxy->dial_prefix==NULL){
+			ms_message("No need to add a prefix");
+			/* prefix is already there */
+			copy_result(flatten,result,result_len,proxy->dial_escape_plus);
+			ms_free(flatten);
+			return 0;
+		}else if (proxy->dial_prefix){
+			char *prefixed;
+			int skipped=0;
+			ms_message("Need to prefix with %s",proxy->dial_prefix);
+			if (numlen==10){
+				/*remove initial number before prepending prefix*/
+				skipped=1;
+			}
+			prefixed=append_prefix(flatten+skipped,proxy->dial_prefix);
+			ms_free(flatten);
+			copy_result(prefixed,result,result_len,proxy->dial_escape_plus);
+			ms_free(prefixed);
+		}
+	}else strncpy(result,username,result_len);
+	return 0;
 }
 
 /**
@@ -669,6 +798,8 @@ void linphone_proxy_config_write_to_config_file(LpConfig *config, LinphoneProxyC
 	lp_config_set_int(config,key,"reg_expires",obj->expires);
 	lp_config_set_int(config,key,"reg_sendregister",obj->reg_sendregister);
 	lp_config_set_int(config,key,"publish",obj->publish);
+	lp_config_set_int(config,key,"dial_escape_plus",obj->dial_escape_plus);
+	lp_config_set_string(config,key,"dial_prefix",obj->dial_prefix);
 }
 
 
@@ -702,6 +833,9 @@ LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LpConfig *config
 	linphone_proxy_config_enableregister(cfg,lp_config_get_int(config,key,"reg_sendregister",0));
 	
 	linphone_proxy_config_enable_publish(cfg,lp_config_get_int(config,key,"publish",0));
+
+	linphone_proxy_config_set_dial_escape_plus(cfg,lp_config_get_int(config,key,"dial_escape_plus",0));
+	linphone_proxy_config_set_dial_prefix(cfg,lp_config_get_string(config,key,"dial_prefix",NULL));
 	
 	tmp=lp_config_get_string(config,key,"type",NULL);
 	if (tmp!=NULL && strlen(tmp)>0) 

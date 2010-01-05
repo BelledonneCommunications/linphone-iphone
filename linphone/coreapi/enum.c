@@ -1,6 +1,6 @@
 /*
 linphone
-Copyright (C) 2000  Simon MORLAT (simon.morlat@linphone.org)
+Copyright (C) 2000-2009  Simon MORLAT (simon.morlat@linphone.org)
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -30,7 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define DNS_ANSWER_MAX_SIZE 2048
 
 
-char *create_enum_domain(const char *number){
+static char *create_enum_domain(const char *number){
 	int len=strlen(number);
 	char *domain=ms_malloc((len*2)+10);
 	int i,j;
@@ -47,7 +47,7 @@ char *create_enum_domain(const char *number){
 }
 
 
-bool_t is_a_number(const char *str){
+static bool_t is_a_number(const char *str){
 	char *p=(char *)str;
 	bool_t res=FALSE;
 	bool_t space_found=FALSE;

@@ -334,10 +334,12 @@ typedef struct _LinphoneProxyConfig
 	int auth_failures;
 	char *contact_addr; /* our IP address as seen by the proxy, read from via 's received= parameter*/
 	int contact_port; /*our IP port as seen by the proxy, read from via's rport= parameter */
+	char *dial_prefix;
 	bool_t commit;
 	bool_t reg_sendregister;
 	bool_t registered;
 	bool_t publish;
+	bool_t dial_escape_plus;
 } LinphoneProxyConfig;
 
 LinphoneProxyConfig *linphone_proxy_config_new(void);

@@ -17,6 +17,7 @@ liblinphone_la_SOURCES=\
 	linphonecore.c linphonecore.h private.h\
 	exevents.c exevents.h \
 	misc.c  \
+	address.c \
 	enum.c enum.h \
 	sdphandler.c sdphandler.h \
 	presence.c \

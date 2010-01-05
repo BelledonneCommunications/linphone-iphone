@@ -646,6 +646,7 @@ static void sip_config_read(LinphoneCore *lc)
 			break;
 		}
 	}
+	
 	/*for test*/
 	lc->sip_conf.sdp_200_ack=lp_config_get_int(lc->config,"sip","sdp_200_ack",0);
 	lc->sip_conf.only_one_codec=lp_config_get_int(lc->config,"sip","only_one_codec",0);
@@ -1648,12 +1649,16 @@ bool_t linphone_core_interpret_url(LinphoneCore *lc, const char *url, LinphoneAd
 			/* append the proxy domain suffix */
 			LinphoneAddress *uri;
 			const char *identity=linphone_proxy_config_get_identity(proxy);
+			char normalized_username[128];
 			uri=linphone_address_new(identity);
 			if (uri==NULL){
 				return FALSE;
 			}
 			linphone_address_set_display_name(uri,NULL);
-			linphone_address_set_username(uri,url);
+			linphone_proxy_config_normalize_number(proxy,url,normalized_username,
+			    					sizeof(normalized_username));
+			linphone_address_set_username(uri,normalized_username);
+										
 			if (real_parsed_url!=NULL) *real_parsed_url=uri;
 #if 0
 			/*if the prompted uri was auto-suffixed with proxy domain,
@@ -3477,162 +3482,3 @@ void linphone_core_destroy(LinphoneCore *lc){
 	ms_free(lc);
 }
 
-/**
- * @addtogroup linphone_address
- * @{
-**/
-
-/**
- * Constructs a LinphoneAddress object by parsing the user supplied address,
- * given as a string.
-**/
-LinphoneAddress * linphone_address_new(const char *uri){
-	osip_from_t *from;
-	osip_from_init(&from);
-	if (osip_from_parse(from,uri)!=0){
-		osip_from_free(from);
-		return NULL;
-	}
-	return from;
-}
-
-/**
- * Clones a LinphoneAddress object.
-**/
-LinphoneAddress * linphone_address_clone(const LinphoneAddress *uri){
-	osip_from_t *ret=NULL;
-	osip_from_clone(uri,&ret);
-	return ret;
-}
-
-#define null_if_empty(s) (((s)!=NULL && (s)[0]!='\0') ? (s) : NULL )
-
-/**
- * Returns the address scheme, normally "sip".
-**/
-const char *linphone_address_get_scheme(const LinphoneAddress *u){
-	return null_if_empty(u->url->scheme);
-}
-
-/**
- * Returns the display name.
-**/
-const char *linphone_address_get_display_name(const LinphoneAddress* u){
-	return null_if_empty(u->displayname);
-}
-
-/**
- * Returns the username.
-**/
-const char *linphone_address_get_username(const LinphoneAddress *u){
-	return null_if_empty(u->url->username);
-}
-
-/**
- * Returns the domain name.
-**/
-const char *linphone_address_get_domain(const LinphoneAddress *u){
-	return null_if_empty(u->url->host);
-}
-
-/**
- * Sets the display name.
-**/
-void linphone_address_set_display_name(LinphoneAddress *u, const char *display_name){
-	if (u->displayname!=NULL){
-		osip_free(u->displayname);
-		u->displayname=NULL;
-	}
-	if (display_name!=NULL)
-		u->displayname=osip_strdup(display_name);
-}
-
-/**
- * Sets the username.
-**/
-void linphone_address_set_username(LinphoneAddress *uri, const char *username){
-	if (uri->url->username!=NULL){
-		osip_free(uri->url->username);
-		uri->url->username=NULL;
-	}
-	if (username)
-		uri->url->username=osip_strdup(username);
-}
-
-/**
- * Sets the domain.
-**/
-void linphone_address_set_domain(LinphoneAddress *uri, const char *host){
-	if (uri->url->host!=NULL){
-		osip_free(uri->url->host);
-		uri->url->host=NULL;
-	}
-	if (host)
-		uri->url->host=osip_strdup(host);
-}
-
-/**
- * Sets the port number.
-**/
-void linphone_address_set_port(LinphoneAddress *uri, const char *port){
-	if (uri->url->port!=NULL){
-		osip_free(uri->url->port);
-		uri->url->port=NULL;
-	}
-	if (port)
-		uri->url->port=osip_strdup(port);
-}
-
-/**
- * Sets the port number.
-**/
-void linphone_address_set_port_int(LinphoneAddress *uri, int port){
-	char tmp[12];
-	if (port==5060){
-		/*this is the default, special case to leave the port field blank*/
-		linphone_address_set_port(uri,NULL);
-		return;
-	}
-	snprintf(tmp,sizeof(tmp),"%i",port);
-	linphone_address_set_port(uri,tmp);
-}
-
-/**
- * Removes address's tags and uri headers so that it is displayable to the user.
-**/
-void linphone_address_clean(LinphoneAddress *uri){
-	osip_generic_param_freelist(&uri->gen_params);
-}
-
-/**
- * Returns the address as a string.
- * The returned char * must be freed by the application. Use ms_free().
-**/
-char *linphone_address_as_string(const LinphoneAddress *u){
-	char *tmp,*ret;
-	osip_from_to_str(u,&tmp);
-	ret=ms_strdup(tmp);
-	osip_free(tmp);
-	return ret;
-}
-
-/**
- * Returns the SIP uri only as a string, that is display name is removed.
- * The returned char * must be freed by the application. Use ms_free().
-**/
-char *linphone_address_as_string_uri_only(const LinphoneAddress *u){
-	char *tmp=NULL,*ret;
-	osip_uri_to_str(u->url,&tmp);
-	ret=ms_strdup(tmp);
-	osip_free(tmp);
-	return ret;
-}
-
-/**
- * Destroys a LinphoneAddress object.
-**/
-void linphone_address_destroy(LinphoneAddress *u){
-	osip_from_free(u);
-}
-
-/** @} */
