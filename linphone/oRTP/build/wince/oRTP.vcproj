@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="8,00"
 	Name="oRTP"
 	ProjectGUID="{9FEA0683-C391-4C74-BCF6-2F9E4DE1B541}"
 	RootNamespace="oRTP"
 	Keyword="MFCDLLProj"
-	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -19,7 +18,7 @@
 			Name="Windows Mobile 6 Standard SDK (ARMV4I)"
 		/>
 		<Platform
-			Name="Windows Mobile 6 Professional SDK (ARMV4I)"
+			Name="MP100_2P21 (ARMV4I)"
 		/>
 	</Platforms>
 	<ToolFiles>
@@ -83,8 +82,6 @@
 				IgnoreAllDefaultLibraries="true"
 				ModuleDefinitionFile="oRTP.def"
 				GenerateDebugInformation="true"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -96,9 +93,6 @@
 				Name="VCBscMakeTool"
 			/>
 			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
 				Name="VCCodeSignTool"
 			/>
 			<Tool
@@ -106,7 +100,7 @@
 			/>
 			<DeploymentTool
 				ForceDirty="-1"
-				RemoteDirectory="%CSIDL_PROGRAM_FILES%\vbamsipua"
+				RemoteDirectory="%CSIDL_PROGRAM_FILES%\amsipua"
 				RegisterOutput="0"
 				AdditionalFiles=""
 			/>
@@ -168,8 +162,6 @@
 				AdditionalDependencies="ws2.lib iphlpapi.lib mmtimer.lib libcmtd.lib"
 				IgnoreAllDefaultLibraries="true"
 				ModuleDefinitionFile="oRTP.def"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -181,9 +173,6 @@
 				Name="VCBscMakeTool"
 			/>
 			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
 				Name="VCCodeSignTool"
 			/>
 			<Tool
@@ -191,7 +180,7 @@
 			/>
 			<DeploymentTool
 				ForceDirty="-1"
-				RemoteDirectory="%CSIDL_PROGRAM_FILES%\vbamsipua"
+				RemoteDirectory="%CSIDL_PROGRAM_FILES%\amsipua"
 				RegisterOutput="0"
 				AdditionalFiles=""
 			/>
@@ -257,8 +246,6 @@
 				IgnoreAllDefaultLibraries="true"
 				ModuleDefinitionFile="oRTP.def"
 				GenerateDebugInformation="true"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 				TargetMachine="0"
 			/>
 			<Tool
@@ -271,7 +258,89 @@
 				Name="VCBscMakeTool"
 			/>
 			<Tool
-				Name="VCFxCopTool"
+				Name="VCCodeSignTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+			<DeploymentTool
+				ForceDirty="-1"
+				RemoteDirectory="%CSIDL_PROGRAM_FILES%\amsipua"
+				RegisterOutput="0"
+				AdditionalFiles=""
+			/>
+			<DebuggerTool
+			/>
+		</Configuration>
+		<Configuration
+			Name="Debug|MP100_2P21 (ARMV4I)"
+			OutputDirectory="MP100_2P21 (ARMV4I)\$(ConfigurationName)"
+			IntermediateDirectory="MP100_2P21 (ARMV4I)\$(ConfigurationName)"
+			ConfigurationType="2"
+			UseOfMFC="0"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG"
+				MkTypLibCompatible="false"
+				TargetEnvironment="1"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				ExecutionBucket="7"
+				Optimization="0"
+				FavorSizeOrSpeed="0"
+				AdditionalIncludeDirectories="..\..\include;..\..\..\osip\include"
+				PreprocessorDefinitions="ORTP_INET6;ORTP_EXPORT;AMD_HACK;_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);_DEBUG;_USRDLL;$(ARCHFAM);$(_ARCHFAM_);POCKETPC2003_UI_MODEL;POCKETPC2003_UI_MODEL"
+				RuntimeLibrary="3"
+				TreatWChar_tAsBuiltInType="true"
+				UsePrecompiledHeader="0"
+				ProgramDataBaseFileName="$(IntDir)/oRTP.pdb"
+				WarningLevel="3"
+				DebugInformationFormat="0"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG;_UNICODE;UNICODE;_WIN32_WCE;UNDER_CE"
+				Culture="1033"
+				AdditionalIncludeDirectories="$(IntDir)"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalOptions=" /SUBSYSTEM:$(CESubsystem) /MACHINE:THUMB"
+				AdditionalDependencies="ws2.lib iphlpapi.lib mmtimer.lib libcmtd.lib"
+				IgnoreAllDefaultLibraries="true"
+				ModuleDefinitionFile="oRTP.def"
+				GenerateDebugInformation="true"
+				TargetMachine="0"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
 			/>
 			<Tool
 				Name="VCCodeSignTool"
@@ -323,7 +392,7 @@
 				UsePrecompiledHeader="0"
 				ProgramDataBaseFileName="$(IntDir)/oRTP.pdb"
 				WarningLevel="3"
-				DebugInformationFormat="3"
+				DebugInformationFormat="0"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -343,8 +412,6 @@
 				AdditionalDependencies="ws2.lib iphlpapi.lib mmtimer.lib libcmt.lib"
 				IgnoreAllDefaultLibraries="true"
 				ModuleDefinitionFile="oRTP.def"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -356,9 +423,6 @@
 				Name="VCBscMakeTool"
 			/>
 			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
 				Name="VCCodeSignTool"
 			/>
 			<Tool
@@ -366,7 +430,7 @@
 			/>
 			<DeploymentTool
 				ForceDirty="-1"
-				RemoteDirectory="\amsip"
+				RemoteDirectory="%CSIDL_PROGRAM_FILES%\amsipua"
 				RegisterOutput="0"
 				AdditionalFiles=""
 			/>
@@ -408,7 +472,7 @@
 				UsePrecompiledHeader="0"
 				ProgramDataBaseFileName="$(IntDir)/oRTP.pdb"
 				WarningLevel="3"
-				DebugInformationFormat="3"
+				DebugInformationFormat="0"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -428,8 +492,6 @@
 				AdditionalDependencies="ws2.lib iphlpapi.lib mmtimer.lib libcmt.lib"
 				IgnoreAllDefaultLibraries="true"
 				ModuleDefinitionFile="oRTP.def"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -441,9 +503,6 @@
 				Name="VCBscMakeTool"
 			/>
 			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
 				Name="VCCodeSignTool"
 			/>
 			<Tool
@@ -451,7 +510,7 @@
 			/>
 			<DeploymentTool
 				ForceDirty="-1"
-				RemoteDirectory="%CSIDL_PROGRAM_FILES%\vbamsipua"
+				RemoteDirectory="%CSIDL_PROGRAM_FILES%\amsipua"
 				RegisterOutput="0"
 				AdditionalFiles=""
 			/>
@@ -494,7 +553,7 @@
 				UsePrecompiledHeader="0"
 				ProgramDataBaseFileName="$(IntDir)/oRTP.pdb"
 				WarningLevel="3"
-				DebugInformationFormat="3"
+				DebugInformationFormat="0"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -514,8 +573,6 @@
 				AdditionalDependencies="ws2.lib iphlpapi.lib mmtimer.lib libcmt.lib"
 				IgnoreAllDefaultLibraries="true"
 				ModuleDefinitionFile="oRTP.def"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 				TargetMachine="0"
 			/>
 			<Tool
@@ -526,9 +583,6 @@
 			/>
 			<Tool
 				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
 			/>
 			<Tool
 				Name="VCCodeSignTool"
@@ -546,98 +600,9 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
-			OutputDirectory="Windows Mobile 6 Professional SDK (ARMV4I)\$(ConfigurationName)"
-			IntermediateDirectory="Windows Mobile 6 Professional SDK (ARMV4I)\$(ConfigurationName)"
-			ConfigurationType="2"
-			UseOfMFC="0"
-			CharacterSet="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG"
-				MkTypLibCompatible="false"
-				TargetEnvironment="1"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="2"
-				FavorSizeOrSpeed="1"
-				AdditionalIncludeDirectories="..\..\include;..\..\..\osip\include"
-				PreprocessorDefinitions="ORTP_INET6;ORTP_EXPORT;AMD_HACK;_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);_DEBUG;_USRDLL;$(ARCHFAM);$(_ARCHFAM_);POCKETPC2003_UI_MODEL"
-				RuntimeLibrary="3"
-				TreatWChar_tAsBuiltInType="true"
-				UsePrecompiledHeader="0"
-				ProgramDataBaseFileName="$(IntDir)/oRTP.pdb"
-				WarningLevel="3"
-				DebugInformationFormat="3"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;_UNICODE;UNICODE;_WIN32_WCE;UNDER_CE"
-				Culture="1033"
-				AdditionalIncludeDirectories="$(IntDir)"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				AdditionalOptions=" /SUBSYSTEM:WINDOWSCE,5.01 /MACHINE:THUMB"
-				AdditionalDependencies="ws2.lib iphlpapi.lib mmtimer.lib libcmtd.lib"
-				IgnoreAllDefaultLibraries="true"
-				ModuleDefinitionFile="oRTP.def"
-				GenerateDebugInformation="true"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
-				TargetMachine="0"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCCodeSignTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-			<DeploymentTool
-				ForceDirty="-1"
-				RemoteDirectory=""
-				RegisterOutput="0"
-				AdditionalFiles=""
-			/>
-			<DebuggerTool
-			/>
-		</Configuration>
-		<Configuration
-			Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
-			OutputDirectory="Windows Mobile 6 Professional SDK (ARMV4I)\$(ConfigurationName)"
-			IntermediateDirectory="Windows Mobile 6 Professional SDK (ARMV4I)\$(ConfigurationName)"
+			Name="Release|MP100_2P21 (ARMV4I)"
+			OutputDirectory="MP100_2P21 (ARMV4I)\$(ConfigurationName)"
+			IntermediateDirectory="MP100_2P21 (ARMV4I)\$(ConfigurationName)"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			CharacterSet="1"
@@ -663,6 +628,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
+				Optimization="3"
+				FavorSizeOrSpeed="1"
 				AdditionalIncludeDirectories="..\..\include;..\..\..\osip\include"
 				PreprocessorDefinitions="ORTP_INET6;ORTP_EXPORT;AMD_HACK;_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);NDEBUG;_USRDLL;$(ARCHFAM);$(_ARCHFAM_);POCKETPC2003_UI_MODEL;POCKETPC2003_UI_MODEL"
 				RuntimeLibrary="2"
@@ -670,7 +637,7 @@
 				UsePrecompiledHeader="0"
 				ProgramDataBaseFileName="$(IntDir)/oRTP.pdb"
 				WarningLevel="3"
-				DebugInformationFormat="3"
+				DebugInformationFormat="0"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -686,12 +653,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions=" /SUBSYSTEM:WINDOWSCE,5.01 /MACHINE:THUMB"
+				AdditionalOptions=" /SUBSYSTEM:$(CESubsystem) /MACHINE:THUMB"
 				AdditionalDependencies="ws2.lib iphlpapi.lib mmtimer.lib libcmt.lib"
 				IgnoreAllDefaultLibraries="true"
 				ModuleDefinitionFile="oRTP.def"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 				TargetMachine="0"
 			/>
 			<Tool
@@ -704,9 +669,6 @@
 				Name="VCBscMakeTool"
 			/>
 			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
 				Name="VCCodeSignTool"
 			/>
 			<Tool
@@ -714,7 +676,7 @@
 			/>
 			<DeploymentTool
 				ForceDirty="-1"
-				RemoteDirectory=""
+				RemoteDirectory="%CSIDL_PROGRAM_FILES%\amsipua"
 				RegisterOutput="0"
 				AdditionalFiles=""
 			/>
