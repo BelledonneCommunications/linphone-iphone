@@ -1,0 +1,129 @@
+LIBRARY mediastreamer2
+
+EXPORTS
+
+	ms_init
+	ms_exit
+	
+	ms_filter_new
+	ms_filter_new_from_desc
+	ms_filter_destroy
+	ms_filter_create_encoder
+	ms_filter_create_decoder
+	ms_filter_call_method
+	ms_filter_call_method_noarg
+	ms_filter_link
+	ms_filter_unlink
+	ms_filter_preprocess
+	ms_filter_postprocess
+	ms_filter_codec_supported
+	ms_filter_register
+	ms_filter_new_from_name
+	ms_filter_set_notify_callback
+	ms_filter_get_encoder
+	
+	ms_snd_card_new
+	ms_snd_card_manager_destroy
+	ms_snd_card_manager_reload
+	ms_snd_card_manager_add_card
+	ms_snd_card_manager_register_desc
+	ms_snd_card_create_reader
+	ms_snd_card_create_writer
+	ms_snd_card_get_name
+	ms_snd_card_get_string_id
+	ms_snd_card_manager_get
+	ms_snd_card_manager_get_default_card
+	ms_snd_card_manager_get_default_capture_card
+	ms_snd_card_manager_get_default_playback_card
+	ms_snd_card_manager_get_card
+	ms_snd_card_manager_get_list
+	ms_snd_card_dup
+	ms_snd_card_destroy
+	ms_snd_card_set_level
+	ms_snd_card_get_level
+	ms_snd_card_set_capture
+	ms_snd_card_set_control
+	ms_snd_card_get_control
+	
+	ms_web_cam_new
+	ms_web_cam_manager_reload
+	ms_web_cam_manager_get_default_cam
+	ms_web_cam_manager_get
+	ms_web_cam_manager_get_list
+	ms_web_cam_manager_get_cam
+	ms_web_cam_manager_add_cam
+	ms_web_cam_manager_register_desc
+	ms_web_cam_create_reader
+	ms_web_cam_get_driver_type
+	ms_web_cam_get_name
+	ms_web_cam_get_string_id
+	
+	ms_ticker_new
+	ms_ticker_set_name
+	ms_ticker_destroy
+	ms_ticker_attach
+	ms_ticker_detach
+	ms_ticker_set_time_func
+	ms_ticker_print_graphs
+
+
+	ms_bufferizer_init
+	ms_bufferizer_uninit
+	ms_bufferizer_read
+	ms_bufferizer_put
+	ms_bufferizer_put_from_queue
+
+	ms_queue_init
+	ms_queue_flush
+	
+	rfc3984_init
+	rfc3984_uninit
+	rfc3984_pack
+	rfc3984_unpack
+	rfc3984_set_mode
+	
+	ms_load_plugins
+
+	audio_stream_start
+	audio_stream_alive
+	audio_stream_enable_automatic_gain_control
+	audio_stream_set_echo_canceler_params
+	audio_stream_enable_gain_control
+	audio_stream_enable_echo_limiter
+	audio_stream_new
+	audio_stream_set_rtcp_information
+	audio_stream_start_with_files
+	audio_stream_start_now
+	audio_stream_set_relay_session_id
+	audio_stream_play_received_dtmfs
+	audio_stream_set_mic_gain
+	audio_stream_stop
+	audio_stream_play
+	audio_stream_record
+	ms_snd_card_get_capabilities
+	ring_start_with_cb
+	ring_start
+	ring_stop
+	audio_stream_send_dtmf
+	ms_discover_mtu
+	ms_set_mtu
+
+	ms_list_append
+	ms_list_remove
+	ms_list_free
+	ms_list_for_each
+	ms_list_find
+	ms_list_for_each2
+	ms_list_find_custom
+	ms_list_size
+	ms_list_nth_data
+	ms_list_remove_link
+	ms_list_index
+	ms_list_prepend
+	ms_list_position
+	
+	ms_time
+	ms_get_payload_max_size
+	ms_sleep
+	
+	

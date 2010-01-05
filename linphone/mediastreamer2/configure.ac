@@ -650,6 +650,7 @@ build/Makefile
 build/win32native/Makefile
 build/win32-novideo/Makefile
 build/wince/Makefile
+build/winmob/Makefile
 mediastreamer.pc
 mediastreamer2.spec
 help/Makefile

@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="8,00"
 	Name="mediastreamer2"
 	ProjectGUID="{177F5AE2-A40C-4412-8F26-7F85FA32464E}"
 	RootNamespace="mediastreamer2"
 	Keyword="MFCDLLProj"
-	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -19,7 +18,7 @@
 			Name="Windows Mobile 6 Standard SDK (ARMV4I)"
 		/>
 		<Platform
-			Name="Windows Mobile 6 Professional SDK (ARMV4I)"
+			Name="MP100_2P21 (ARMV4I)"
 		/>
 	</Platforms>
 	<ToolFiles>
@@ -80,12 +79,10 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions=" /SUBSYSTEM:WINDOWSCE,5.01 /MACHINE:THUMB"
-				AdditionalDependencies=" ws2.lib iphlpapi.lib mmtimer.lib libcmtd.lib dmoguids.lib strmiids.lib strmbase.lib atlsd.lib d3dmx.lib"
+				AdditionalDependencies=" ws2.lib iphlpapi.lib mmtimer.lib libcmtd.lib "
 				IgnoreAllDefaultLibraries="true"
 				ModuleDefinitionFile="mediastreamer2.def"
 				GenerateDebugInformation="true"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -97,9 +94,6 @@
 				Name="VCBscMakeTool"
 			/>
 			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
 				Name="VCCodeSignTool"
 			/>
 			<Tool
@@ -107,7 +101,7 @@
 			/>
 			<DeploymentTool
 				ForceDirty="-1"
-				RemoteDirectory="%CSIDL_PROGRAM_FILES%\vbamsipua"
+				RemoteDirectory="%CSIDL_PROGRAM_FILES%\amsipua"
 				RegisterOutput="0"
 				AdditionalFiles=""
 			/>
@@ -172,8 +166,6 @@
 				IgnoreAllDefaultLibraries="true"
 				ModuleDefinitionFile="mediastreamer2.def"
 				GenerateDebugInformation="true"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -185,9 +177,6 @@
 				Name="VCBscMakeTool"
 			/>
 			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
 				Name="VCCodeSignTool"
 			/>
 			<Tool
@@ -195,7 +184,7 @@
 			/>
 			<DeploymentTool
 				ForceDirty="-1"
-				RemoteDirectory="%CSIDL_PROGRAM_FILES%\vbamsipua"
+				RemoteDirectory="%CSIDL_PROGRAM_FILES%\amsipua"
 				RegisterOutput="0"
 				AdditionalFiles=""
 			/>
@@ -264,8 +253,6 @@
 				IgnoreAllDefaultLibraries="true"
 				ModuleDefinitionFile="mediastreamer2.def"
 				GenerateDebugInformation="true"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 				TargetMachine="0"
 			/>
 			<Tool
@@ -276,9 +263,6 @@
 			/>
 			<Tool
 				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
 			/>
 			<Tool
 				Name="VCCodeSignTool"
@@ -296,9 +280,9 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
-			OutputDirectory="Windows Mobile 6 Professional SDK (ARMV4I)\$(ConfigurationName)"
-			IntermediateDirectory="Windows Mobile 6 Professional SDK (ARMV4I)\$(ConfigurationName)"
+			Name="Debug|MP100_2P21 (ARMV4I)"
+			OutputDirectory="MP100_2P21 (ARMV4I)\$(ConfigurationName)"
+			IntermediateDirectory="MP100_2P21 (ARMV4I)\$(ConfigurationName)"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			CharacterSet="1"
@@ -324,10 +308,10 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
-				Optimization="2"
-				FavorSizeOrSpeed="1"
-				AdditionalIncludeDirectories=".;&quot;..\..\..\..\..\linphone-builder\speex\include&quot;;..\..;..\..\include;..\..\..\oRTP\include;..\..\..\codecs\speex\include"
-				PreprocessorDefinitions="__VIDEO_DISABLED__;AMD_HACK;HAVE_SPEEX_NOISE;ORTP_INET6;MEDIASTREAMER2_EXPORT;_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);_DEBUG;_USRDLL;$(ARCHFAM);$(_ARCHFAM_);POCKETPC2003_UI_MODEL"
+				Optimization="0"
+				FavorSizeOrSpeed="0"
+				AdditionalIncludeDirectories=".;..\..\include;..\..\..\oRTP\include;..\..\..\codecs\speex\include"
+				PreprocessorDefinitions="NO_FFMPEG;VIDEO_ENABLED;AMD_HACK;HAVE_SPEEX_NOISE;ORTP_INET6;MEDIASTREAMER2_EXPORT;_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);_DEBUG;_USRDLL;$(ARCHFAM);$(_ARCHFAM_);POCKETPC2003_UI_MODEL;POCKETPC2003_UI_MODEL"
 				RuntimeLibrary="3"
 				TreatWChar_tAsBuiltInType="false"
 				UsePrecompiledHeader="0"
@@ -350,14 +334,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions=" /SUBSYSTEM:WINDOWSCE,5.01 /MACHINE:THUMB"
-				AdditionalDependencies="ws2.lib iphlpapi.lib mmtimer.lib libcmtd.lib dmoguids.lib strmiids.lib strmbase.lib atlsd.lib d3dmx.lib ortp.lib libspeex.lib libspeexdsp.lib"
-				AdditionalLibraryDirectories="&quot;..\..\..\..\..\linphone-builder\speex\lib&quot;;&quot;..\..\..\oRTP\build\wince\$(PlatformName)\$(ConfigurationName)&quot;;&quot;..\..\..\..\..\linphone-builder\speex\win32\VS2008\libspeex\$(PlatformName)\Debug_RTL_dll&quot;"
+				AdditionalOptions=" /SUBSYSTEM:$(CESubsystem) /MACHINE:THUMB"
+				AdditionalDependencies=" ws2.lib iphlpapi.lib mmtimer.lib libcmtd.lib "
 				IgnoreAllDefaultLibraries="true"
 				ModuleDefinitionFile="mediastreamer2.def"
 				GenerateDebugInformation="true"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 				TargetMachine="0"
 			/>
 			<Tool
@@ -370,9 +351,6 @@
 				Name="VCBscMakeTool"
 			/>
 			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
 				Name="VCCodeSignTool"
 			/>
 			<Tool
@@ -380,7 +358,7 @@
 			/>
 			<DeploymentTool
 				ForceDirty="-1"
-				RemoteDirectory=""
+				RemoteDirectory="%CSIDL_PROGRAM_FILES%\amsipua"
 				RegisterOutput="0"
 				AdditionalFiles=""
 			/>
@@ -422,7 +400,7 @@
 				UsePrecompiledHeader="0"
 				ProgramDataBaseFileName="$(IntDir)/mediastreamer2.pdb"
 				WarningLevel="3"
-				DebugInformationFormat="3"
+				DebugInformationFormat="0"
 				CompileAs="2"
 			/>
 			<Tool
@@ -440,11 +418,9 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions=" /SUBSYSTEM:WINDOWSCE,5.01 /MACHINE:THUMB"
-				AdditionalDependencies="ws2.lib iphlpapi.lib mmtimer.lib libcmt.lib dmoguids.lib strmiids.lib strmbase.lib atls.lib"
+				AdditionalDependencies="ws2.lib iphlpapi.lib mmtimer.lib libcmt.lib"
 				IgnoreAllDefaultLibraries="true"
 				ModuleDefinitionFile="mediastreamer2.def"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -456,9 +432,6 @@
 				Name="VCBscMakeTool"
 			/>
 			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
 				Name="VCCodeSignTool"
 			/>
 			<Tool
@@ -466,7 +439,7 @@
 			/>
 			<DeploymentTool
 				ForceDirty="-1"
-				RemoteDirectory="\amsip"
+				RemoteDirectory="%CSIDL_PROGRAM_FILES%\amsipua"
 				RegisterOutput="0"
 				AdditionalFiles=""
 			/>
@@ -508,7 +481,7 @@
 				UsePrecompiledHeader="0"
 				ProgramDataBaseFileName="$(IntDir)/mediastreamer2.pdb"
 				WarningLevel="3"
-				DebugInformationFormat="3"
+				DebugInformationFormat="0"
 				CompileAs="2"
 			/>
 			<Tool
@@ -529,8 +502,6 @@
 				AdditionalDependencies="ws2.lib iphlpapi.lib mmtimer.lib libcmt.lib dmoguids.lib strmiids.lib strmbase.lib atls.lib"
 				IgnoreAllDefaultLibraries="true"
 				ModuleDefinitionFile="mediastreamer2.def"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -542,9 +513,6 @@
 				Name="VCBscMakeTool"
 			/>
 			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
 				Name="VCCodeSignTool"
 			/>
 			<Tool
@@ -552,7 +520,7 @@
 			/>
 			<DeploymentTool
 				ForceDirty="-1"
-				RemoteDirectory="%CSIDL_PROGRAM_FILES%\vbamsipua"
+				RemoteDirectory="%CSIDL_PROGRAM_FILES%\amsipua"
 				RegisterOutput="0"
 				AdditionalFiles=""
 			/>
@@ -595,7 +563,7 @@
 				UsePrecompiledHeader="0"
 				ProgramDataBaseFileName="$(IntDir)/mediastreamer2.pdb"
 				WarningLevel="3"
-				DebugInformationFormat="3"
+				DebugInformationFormat="0"
 				CompileAs="2"
 			/>
 			<Tool
@@ -616,8 +584,6 @@
 				AdditionalDependencies="atls.lib strmiids.lib dmoguids.lib strmbase.lib ws2.lib iphlpapi.lib mmtimer.lib libcmt.lib"
 				IgnoreAllDefaultLibraries="true"
 				ModuleDefinitionFile="mediastreamer2.def"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 				TargetMachine="0"
 			/>
 			<Tool
@@ -628,9 +594,6 @@
 			/>
 			<Tool
 				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
 			/>
 			<Tool
 				Name="VCCodeSignTool"
@@ -648,9 +611,439 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
-			OutputDirectory="Windows Mobile 6 Professional SDK (ARMV4I)\$(ConfigurationName)"
-			IntermediateDirectory="Windows Mobile 6 Professional SDK (ARMV4I)\$(ConfigurationName)"
+			Name="Release|MP100_2P21 (ARMV4I)"
+			OutputDirectory="MP100_2P21 (ARMV4I)\$(ConfigurationName)"
+			IntermediateDirectory="MP100_2P21 (ARMV4I)\$(ConfigurationName)"
+			ConfigurationType="2"
+			UseOfMFC="0"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="false"
+				TargetEnvironment="1"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				ExecutionBucket="7"
+				Optimization="3"
+				FavorSizeOrSpeed="1"
+				AdditionalIncludeDirectories=".;..\..\include;..\..\..\oRTP\include;..\..\..\codecs\speex\include"
+				PreprocessorDefinitions="NO_FFMPEG;VIDEO_ENABLED;AMD_HACK;HAVE_SPEEX_NOISE;ORTP_INET6;MEDIASTREAMER2_EXPORT;_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);NDEBUG;_USRDLL;$(ARCHFAM);$(_ARCHFAM_);POCKETPC2003_UI_MODEL;POCKETPC2003_UI_MODEL"
+				RuntimeLibrary="2"
+				TreatWChar_tAsBuiltInType="false"
+				UsePrecompiledHeader="0"
+				ProgramDataBaseFileName="$(IntDir)/mediastreamer2.pdb"
+				WarningLevel="3"
+				DebugInformationFormat="0"
+				CompileAs="2"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG;_UNICODE;UNICODE;_WIN32_WCE;UNDER_CE"
+				Culture="1033"
+				AdditionalIncludeDirectories="$(IntDir)"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalOptions=" /SUBSYSTEM:$(CESubsystem) /MACHINE:THUMB"
+				AdditionalDependencies="ws2.lib iphlpapi.lib mmtimer.lib libcmt.lib"
+				IgnoreAllDefaultLibraries="true"
+				ModuleDefinitionFile="mediastreamer2.def"
+				TargetMachine="0"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCCodeSignTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+			<DeploymentTool
+				ForceDirty="-1"
+				RemoteDirectory="%CSIDL_PROGRAM_FILES%\amsipua"
+				RegisterOutput="0"
+				AdditionalFiles=""
+			/>
+			<DebuggerTool
+			/>
+		</Configuration>
+		<Configuration
+			Name="DebugVideo|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)"
+			OutputDirectory="Windows Mobile 5.0 Pocket PC SDK (ARMV4I)\$(ConfigurationName)"
+			IntermediateDirectory="Windows Mobile 5.0 Pocket PC SDK (ARMV4I)\$(ConfigurationName)"
+			ConfigurationType="2"
+			UseOfMFC="0"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG"
+				MkTypLibCompatible="false"
+				TargetEnvironment="1"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				ExecutionBucket="7"
+				Optimization="2"
+				FavorSizeOrSpeed="1"
+				AdditionalIncludeDirectories=".;..\..\include;..\..\..\oRTP\include;..\..\..\codecs\speex\include"
+				PreprocessorDefinitions="VIDEO_ENABLED;AMD_HACK;HAVE_SPEEX_NOISE;ORTP_INET6;MEDIASTREAMER2_EXPORT;_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);_DEBUG;_USRDLL;$(ARCHFAM);$(_ARCHFAM_);POCKETPC2003_UI_MODEL;POCKETPC2003_UI_MODEL"
+				RuntimeLibrary="3"
+				TreatWChar_tAsBuiltInType="false"
+				UsePrecompiledHeader="0"
+				ProgramDataBaseFileName="$(IntDir)/mediastreamer2.pdb"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+				CompileAs="2"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG;_UNICODE;UNICODE;_WIN32_WCE;UNDER_CE"
+				Culture="1033"
+				AdditionalIncludeDirectories="$(IntDir)"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalOptions=" /SUBSYSTEM:WINDOWSCE,5.01 /MACHINE:THUMB"
+				AdditionalDependencies=" ws2.lib iphlpapi.lib mmtimer.lib libcmtd.lib "
+				IgnoreAllDefaultLibraries="true"
+				ModuleDefinitionFile="mediastreamer2-video.def"
+				GenerateDebugInformation="true"
+				TargetMachine="0"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCCodeSignTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+			<DeploymentTool
+				ForceDirty="-1"
+				RemoteDirectory=""
+				RegisterOutput="0"
+				AdditionalFiles=""
+			/>
+			<DebuggerTool
+			/>
+		</Configuration>
+		<Configuration
+			Name="DebugVideo|Windows Mobile 5.0 Smartphone SDK (ARMV4I)"
+			OutputDirectory="Windows Mobile 5.0 Smartphone SDK (ARMV4I)\$(ConfigurationName)"
+			IntermediateDirectory="Windows Mobile 5.0 Smartphone SDK (ARMV4I)\$(ConfigurationName)"
+			ConfigurationType="2"
+			UseOfMFC="0"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG"
+				MkTypLibCompatible="false"
+				TargetEnvironment="1"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				ExecutionBucket="7"
+				Optimization="0"
+				AdditionalIncludeDirectories=".;..\..\include;..\..\..\oRTP\include;..\..\..\codecs\speex\include"
+				PreprocessorDefinitions="__VIDEO_DISABLED__;ORTP_INET6;MEDIASTREAMER2_EXPORT;AMD_HACK;_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);_DEBUG;_USRDLL;$(ARCHFAM);$(_ARCHFAM_);SMARTPHONE2003_UI_MODEL;SMARTPHONE2003_UI_MODEL"
+				RuntimeLibrary="3"
+				TreatWChar_tAsBuiltInType="false"
+				UsePrecompiledHeader="0"
+				ProgramDataBaseFileName="$(IntDir)/mediastreamer2.pdb"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+				CompileAs="2"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG;_UNICODE;UNICODE;_WIN32_WCE;UNDER_CE"
+				Culture="1033"
+				AdditionalIncludeDirectories="$(IntDir)"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalOptions=" /SUBSYSTEM:WINDOWSCE,5.01 /MACHINE:THUMB"
+				AdditionalDependencies=" ws2.lib iphlpapi.lib mmtimer.lib libcmtd.lib dmoguids.lib strmiids.lib strmbase.lib atlsd.lib d3dmx.lib"
+				IgnoreAllDefaultLibraries="true"
+				ModuleDefinitionFile="mediastreamer2.def"
+				GenerateDebugInformation="true"
+				TargetMachine="0"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCCodeSignTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+			<DeploymentTool
+				ForceDirty="-1"
+				RemoteDirectory=""
+				RegisterOutput="0"
+				AdditionalFiles=""
+			/>
+			<DebuggerTool
+			/>
+		</Configuration>
+		<Configuration
+			Name="DebugVideo|Windows Mobile 6 Standard SDK (ARMV4I)"
+			OutputDirectory="Windows Mobile 6 Standard SDK (ARMV4I)\$(ConfigurationName)"
+			IntermediateDirectory="Windows Mobile 6 Standard SDK (ARMV4I)\$(ConfigurationName)"
+			ConfigurationType="2"
+			UseOfMFC="0"
+			UseOfATL="0"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG"
+				MkTypLibCompatible="false"
+				TargetEnvironment="1"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				ExecutionBucket="7"
+				Optimization="2"
+				FavorSizeOrSpeed="1"
+				AdditionalIncludeDirectories=".;..\..\include;..\..\..\oRTP\include;..\..\..\codecs\speex\include"
+				PreprocessorDefinitions="__VIDEO_DISABLED__;AMD_HACK;HAVE_SPEEX_NOISE;ORTP_INET6;MEDIASTREAMER2_EXPORT;_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);_DEBUG;_USRDLL;$(ARCHFAM);$(_ARCHFAM_)"
+				ExceptionHandling="1"
+				RuntimeLibrary="3"
+				TreatWChar_tAsBuiltInType="false"
+				UsePrecompiledHeader="0"
+				ProgramDataBaseFileName="$(IntDir)/mediastreamer2.pdb"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+				CompileAs="2"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG;_UNICODE;UNICODE;_WIN32_WCE;UNDER_CE"
+				Culture="1033"
+				AdditionalIncludeDirectories="$(IntDir)"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalOptions=" /SUBSYSTEM:WINDOWSCE,5.01 /MACHINE:THUMB"
+				AdditionalDependencies="atlsd.lib strmiids.lib dmoguids.lib strmbase.lib ws2.lib iphlpapi.lib mmtimer.lib libcmtd.lib"
+				IgnoreAllDefaultLibraries="true"
+				ModuleDefinitionFile="mediastreamer2.def"
+				GenerateDebugInformation="true"
+				TargetMachine="0"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCCodeSignTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+			<DeploymentTool
+				ForceDirty="-1"
+				RemoteDirectory=""
+				RegisterOutput="0"
+				AdditionalFiles=""
+			/>
+			<DebuggerTool
+			/>
+		</Configuration>
+		<Configuration
+			Name="DebugVideo|MP100_2P21 (ARMV4I)"
+			OutputDirectory="MP100_2P21 (ARMV4I)\$(ConfigurationName)"
+			IntermediateDirectory="MP100_2P21 (ARMV4I)\$(ConfigurationName)"
+			ConfigurationType="2"
+			UseOfMFC="0"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG"
+				MkTypLibCompatible="false"
+				TargetEnvironment="1"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				ExecutionBucket="7"
+				Optimization="0"
+				FavorSizeOrSpeed="0"
+				AdditionalIncludeDirectories=".;..\..\include;..\..\..\oRTP\include;..\..\..\codecs\speex\include"
+				PreprocessorDefinitions="NO_FFMPEG;VIDEO_ENABLED;AMD_HACK;HAVE_SPEEX_NOISE;ORTP_INET6;MEDIASTREAMER2_EXPORT;_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);_DEBUG;_USRDLL;$(ARCHFAM);$(_ARCHFAM_);POCKETPC2003_UI_MODEL;POCKETPC2003_UI_MODEL"
+				RuntimeLibrary="3"
+				TreatWChar_tAsBuiltInType="false"
+				UsePrecompiledHeader="0"
+				ProgramDataBaseFileName="$(IntDir)/mediastreamer2.pdb"
+				WarningLevel="3"
+				DebugInformationFormat="0"
+				CompileAs="2"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG;_UNICODE;UNICODE;_WIN32_WCE;UNDER_CE"
+				Culture="1033"
+				AdditionalIncludeDirectories="$(IntDir)"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalOptions=" /SUBSYSTEM:$(CESubsystem) /MACHINE:THUMB"
+				AdditionalDependencies=" ws2.lib iphlpapi.lib mmtimer.lib libcmtd.lib "
+				IgnoreAllDefaultLibraries="true"
+				ModuleDefinitionFile="mediastreamer2-video.def"
+				GenerateDebugInformation="true"
+				TargetMachine="0"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCCodeSignTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+			<DeploymentTool
+				ForceDirty="-1"
+				RemoteDirectory="%CSIDL_PROGRAM_FILES%\amsipua"
+				RegisterOutput="0"
+				AdditionalFiles=""
+			/>
+			<DebuggerTool
+			/>
+		</Configuration>
+		<Configuration
+			Name="ReleaseVideo|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)"
+			OutputDirectory="Windows Mobile 5.0 Pocket PC SDK (ARMV4I)\$(ConfigurationName)"
+			IntermediateDirectory="Windows Mobile 5.0 Pocket PC SDK (ARMV4I)\$(ConfigurationName)"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			CharacterSet="1"
@@ -677,13 +1070,96 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				AdditionalIncludeDirectories=".;..\..\include;..\..\..\oRTP\include;..\..\..\codecs\speex\include"
-				PreprocessorDefinitions="__VIDEO_DISABLED__;AMD_HACK;HAVE_SPEEX_NOISE;ORTP_INET6;MEDIASTREAMER2_EXPORT;_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);NDEBUG;_USRDLL;$(ARCHFAM);$(_ARCHFAM_);POCKETPC2003_UI_MODEL;POCKETPC2003_UI_MODEL"
+				PreprocessorDefinitions="NO_FFMPEG;VIDEO_ENABLED;AMD_HACK;HAVE_SPEEX_NOISE;ORTP_INET6;MEDIASTREAMER2_EXPORT;_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);NDEBUG;_USRDLL;$(ARCHFAM);$(_ARCHFAM_);POCKETPC2003_UI_MODEL;POCKETPC2003_UI_MODEL"
 				RuntimeLibrary="2"
 				TreatWChar_tAsBuiltInType="false"
 				UsePrecompiledHeader="0"
 				ProgramDataBaseFileName="$(IntDir)/mediastreamer2.pdb"
 				WarningLevel="3"
-				DebugInformationFormat="3"
+				DebugInformationFormat="0"
+				CompileAs="2"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG;_UNICODE;UNICODE;_WIN32_WCE;UNDER_CE"
+				Culture="1033"
+				AdditionalIncludeDirectories="$(IntDir)"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalOptions=" /SUBSYSTEM:WINDOWSCE,5.01 /MACHINE:THUMB"
+				AdditionalDependencies="dmoguids.lib strmiids.lib strmbase.lib atls.lib ws2.lib iphlpapi.lib mmtimer.lib libcmt.lib"
+				IgnoreAllDefaultLibraries="true"
+				ModuleDefinitionFile="mediastreamer2-video.def"
+				TargetMachine="0"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCCodeSignTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+			<DeploymentTool
+				ForceDirty="-1"
+				RemoteDirectory=""
+				RegisterOutput="0"
+				AdditionalFiles=""
+			/>
+			<DebuggerTool
+			/>
+		</Configuration>
+		<Configuration
+			Name="ReleaseVideo|Windows Mobile 5.0 Smartphone SDK (ARMV4I)"
+			OutputDirectory="Windows Mobile 5.0 Smartphone SDK (ARMV4I)\$(ConfigurationName)"
+			IntermediateDirectory="Windows Mobile 5.0 Smartphone SDK (ARMV4I)\$(ConfigurationName)"
+			ConfigurationType="2"
+			UseOfMFC="0"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="false"
+				TargetEnvironment="1"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				ExecutionBucket="7"
+				AdditionalIncludeDirectories=".;..\..\include;..\..\..\oRTP\include;..\..\..\codecs\speex\include"
+				PreprocessorDefinitions="__VIDEO_DISABLED__;ORTP_INET6;MEDIASTREAMER2_EXPORT;AMD_HACK;_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);NDEBUG;_USRDLL;$(ARCHFAM);$(_ARCHFAM_);SMARTPHONE2003_UI_MODEL;SMARTPHONE2003_UI_MODEL"
+				RuntimeLibrary="2"
+				TreatWChar_tAsBuiltInType="false"
+				UsePrecompiledHeader="0"
+				ProgramDataBaseFileName="$(IntDir)/mediastreamer2.pdb"
+				WarningLevel="3"
+				DebugInformationFormat="0"
 				CompileAs="2"
 			/>
 			<Tool
@@ -704,8 +1180,6 @@
 				AdditionalDependencies="ws2.lib iphlpapi.lib mmtimer.lib libcmt.lib dmoguids.lib strmiids.lib strmbase.lib atls.lib"
 				IgnoreAllDefaultLibraries="true"
 				ModuleDefinitionFile="mediastreamer2.def"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 				TargetMachine="0"
 			/>
 			<Tool
@@ -718,7 +1192,87 @@
 				Name="VCBscMakeTool"
 			/>
 			<Tool
-				Name="VCFxCopTool"
+				Name="VCCodeSignTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+			<DeploymentTool
+				ForceDirty="-1"
+				RemoteDirectory=""
+				RegisterOutput="0"
+				AdditionalFiles=""
+			/>
+			<DebuggerTool
+			/>
+		</Configuration>
+		<Configuration
+			Name="ReleaseVideo|Windows Mobile 6 Standard SDK (ARMV4I)"
+			OutputDirectory="Windows Mobile 6 Standard SDK (ARMV4I)\$(ConfigurationName)"
+			IntermediateDirectory="Windows Mobile 6 Standard SDK (ARMV4I)\$(ConfigurationName)"
+			ConfigurationType="2"
+			UseOfMFC="0"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="false"
+				TargetEnvironment="1"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				ExecutionBucket="7"
+				AdditionalIncludeDirectories=".;..\..\include;..\..\..\oRTP\include;..\..\..\codecs\speex\include"
+				PreprocessorDefinitions="__VIDEO_DISABLED__;AMD_HACK;HAVE_SPEEX_NOISE;ORTP_INET6;MEDIASTREAMER2_EXPORT;_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);NDEBUG;_USRDLL;$(ARCHFAM);$(_ARCHFAM_)"
+				RuntimeLibrary="2"
+				TreatWChar_tAsBuiltInType="false"
+				UsePrecompiledHeader="0"
+				ProgramDataBaseFileName="$(IntDir)/mediastreamer2.pdb"
+				WarningLevel="3"
+				DebugInformationFormat="0"
+				CompileAs="2"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG;_UNICODE;UNICODE;_WIN32_WCE;UNDER_CE"
+				Culture="1033"
+				AdditionalIncludeDirectories="$(IntDir)"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalOptions=" /SUBSYSTEM:WINDOWSCE,5.01 /MACHINE:THUMB"
+				AdditionalDependencies="atls.lib strmiids.lib dmoguids.lib strmbase.lib ws2.lib iphlpapi.lib mmtimer.lib libcmt.lib"
+				IgnoreAllDefaultLibraries="true"
+				ModuleDefinitionFile="mediastreamer2.def"
+				TargetMachine="0"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
 			/>
 			<Tool
 				Name="VCCodeSignTool"
@@ -729,6 +1283,91 @@
 			<DeploymentTool
 				ForceDirty="-1"
 				RemoteDirectory=""
+				RegisterOutput="0"
+				AdditionalFiles=""
+			/>
+			<DebuggerTool
+			/>
+		</Configuration>
+		<Configuration
+			Name="ReleaseVideo|MP100_2P21 (ARMV4I)"
+			OutputDirectory="MP100_2P21 (ARMV4I)\$(ConfigurationName)"
+			IntermediateDirectory="MP100_2P21 (ARMV4I)\$(ConfigurationName)"
+			ConfigurationType="2"
+			UseOfMFC="0"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="false"
+				TargetEnvironment="1"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				ExecutionBucket="7"
+				Optimization="3"
+				FavorSizeOrSpeed="1"
+				AdditionalIncludeDirectories=".;..\..\include;..\..\..\oRTP\include;..\..\..\codecs\speex\include"
+				PreprocessorDefinitions="NO_FFMPEG;VIDEO_ENABLED;AMD_HACK;HAVE_SPEEX_NOISE;ORTP_INET6;MEDIASTREAMER2_EXPORT;_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);NDEBUG;_USRDLL;$(ARCHFAM);$(_ARCHFAM_);POCKETPC2003_UI_MODEL;POCKETPC2003_UI_MODEL"
+				RuntimeLibrary="2"
+				TreatWChar_tAsBuiltInType="false"
+				UsePrecompiledHeader="0"
+				ProgramDataBaseFileName="$(IntDir)/mediastreamer2.pdb"
+				WarningLevel="3"
+				DebugInformationFormat="0"
+				CompileAs="2"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG;_UNICODE;UNICODE;_WIN32_WCE;UNDER_CE"
+				Culture="1033"
+				AdditionalIncludeDirectories="$(IntDir)"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalOptions=" /SUBSYSTEM:$(CESubsystem) /MACHINE:THUMB"
+				AdditionalDependencies="atls.lib ws2.lib iphlpapi.lib mmtimer.lib libcmt.lib"
+				IgnoreAllDefaultLibraries="true"
+				ModuleDefinitionFile="mediastreamer2-video.def"
+				TargetMachine="0"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCCodeSignTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+			<DeploymentTool
+				ForceDirty="-1"
+				RemoteDirectory="%CSIDL_PROGRAM_FILES%\amsipua"
 				RegisterOutput="0"
 				AdditionalFiles=""
 			/>
@@ -754,10 +1393,6 @@
 			</File>
 			<File
 				RelativePath="..\..\src\dtmfgen.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\dxfilter.cpp"
 				>
 			</File>
 			<File
@@ -793,6 +1428,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\msresample.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\msrtp.c"
 				>
 			</File>
@@ -809,11 +1448,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\msvolume.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\mswebcam.c"
 				>
 			</File>
 			<File
 				RelativePath="..\..\src\mtu.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\rfc3984.c"
 				>
 			</File>
 			<File
@@ -829,7 +1476,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\wincevideods.c"
+				RelativePath="..\..\src\void.c"
 				>
 			</File>
 			<File
@@ -867,10 +1514,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\mediastreamer2\mediastream.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\include\mediastreamer2\mscommon.h"
 				>
 			</File>
@@ -903,10 +1546,22 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\include\mediastreamer2\mswebcam.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\mediastreamer2\rfc3984.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\include\mediastreamer2\waveheader.h"
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath=".\mediastreamer2.def"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>
