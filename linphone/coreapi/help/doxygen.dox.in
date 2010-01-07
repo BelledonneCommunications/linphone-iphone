@@ -9,8 +9,10 @@
  * into an application. It aims at making easy the integration of the SIP
  * video calls into any applications. All variants of linphone are directly based
  * on it:
- * 	- linphone (gtk interface)
- *  - linphonec (console interface)
+ * - linphone (gtk interface)
+ *
+ * - linphonec (console interface)
+ *
  * Liblinphone is GPL (see COPYING file). Please understand the licencing details
  * before using it!
  * 
