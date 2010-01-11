@@ -16,6 +16,9 @@ lib_LTLIBRARIES=liblinphone.la
 liblinphone_la_SOURCES=\
 	linphonecore.c linphonecore.h private.h\
 	exevents.c exevents.h \
+	offeranswer.c offeranswer.h\
+	sal_eXosip2.c sal.h \
+	sal_eXosip2_sdp.c \
 	misc.c  \
 	address.c \
 	enum.c enum.h \
