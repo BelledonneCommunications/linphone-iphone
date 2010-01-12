@@ -327,7 +327,7 @@
 				Optimization="2"
 				FavorSizeOrSpeed="1"
 				AdditionalIncludeDirectories=".;&quot;..\..\..\..\..\linphone-builder\speex\include&quot;;..\..;..\..\include;..\..\..\oRTP\include;..\..\..\codecs\speex\include"
-				PreprocessorDefinitions="__VIDEO_DISABLED__;AMD_HACK;HAVE_SPEEX_NOISE;ORTP_INET6;MEDIASTREAMER2_EXPORT;_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);_DEBUG;_USRDLL;$(ARCHFAM);$(_ARCHFAM_);POCKETPC2003_UI_MODEL"
+				PreprocessorDefinitions="__VIDEO_DISABLED__;HAVE_SPEEX_NOISE;ORTP_INET6;MEDIASTREAMER2_EXPORT;_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);_DEBUG;_USRDLL;$(ARCHFAM);$(_ARCHFAM_)"
 				RuntimeLibrary="3"
 				TreatWChar_tAsBuiltInType="false"
 				UsePrecompiledHeader="0"
@@ -753,6 +753,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\dsptools.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\dtmfgen.c"
 				>
 			</File>
@@ -761,7 +765,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\equalizer.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\ice.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\kiss_fft.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\kiss_fftr.c"
 				>
 			</File>
 			<File
@@ -809,6 +825,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\msvolume.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\mswebcam.c"
 				>
 			</File>
@@ -833,7 +853,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\winsnd.c"
+				RelativePath="..\..\src\winsnd3.c"
 				>
 			</File>
 		</Filter>
