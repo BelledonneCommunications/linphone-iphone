@@ -127,21 +127,26 @@ static int read_wav_header(PlayerData *d){
 static int player_open(MSFilter *f, void *arg){
 	PlayerData *d=(PlayerData*)f->data;
 	HANDLE fd;
-	const char *file=(const char*)arg;
-#if defined(_WIN32_WCE)
-    fd = CreateFile((LPCWSTR)file, GENERIC_READ, FILE_SHARE_READ, NULL,
-        OPEN_EXISTING, 0, NULL);
+	const char *afile=(const char*)arg;
+	LPCTSTR file;
+#ifdef _UNICODE
+	wchar_t wfile[MAX_PATH];
+	mbstowcs(wfile,afile,MAX_PATH);
+	file=wfile;
 #else
-	fd = CreateFile(file, GENERIC_READ, FILE_SHARE_READ, NULL,
-        OPEN_EXISTING, 0, NULL);
+	file=afile;
 #endif
+
+    fd = CreateFile(file, GENERIC_READ, FILE_SHARE_READ, NULL,
+        OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+
 	if (fd==INVALID_HANDLE_VALUE){
-		ms_warning("Failed to open %s",file);
+		ms_warning("Failed to open %s: error %i",afile,GetLastError());
 		return -1;
 	}
 	d->state=STOPPED;
 	d->fd=fd;
-	if (strstr(file,".wav")!=NULL) read_wav_header(d);
+	if (strstr(afile,".wav")!=NULL) read_wav_header(d);
 	return 0;
 }
 

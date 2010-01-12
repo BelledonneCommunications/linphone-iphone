@@ -22,7 +22,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/mssndcard.h"
 #include "mediastreamer2/msticker.h"
 
+#ifndef _WIN32_WCE
 #include <signal.h>
+#elif defined(_MSC_VER)
+#define main _tmain
+#endif
 
 static int run=1;
 
@@ -37,11 +41,14 @@ int main(int argc, char *argv[]){
 	MSTicker *ticker;
 	char *card_id=NULL;
 	int rate = 16000;
+
 	ortp_init();
 	ortp_set_log_level_mask(ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
 	ms_init();
-	
+
+#ifndef _WIN32_WCE
 	signal(SIGINT,stop);
+#endif
 
 	if (argc>1)
 		card_id=argv[1];
@@ -77,8 +84,12 @@ int main(int argc, char *argv[]){
 	ticker=ms_ticker_new();
 	ms_filter_link(f1,0,f2,0);
 	ms_ticker_attach(ticker,f1);
+#ifndef _WIN32_WCE
 	while(run)
 		ms_sleep(1);
+#else
+	ms_sleep(5);
+#endif
 	ms_ticker_detach(ticker,f1);
 	ms_ticker_destroy(ticker);
 	ms_filter_unlink(f1,0,f2,0);

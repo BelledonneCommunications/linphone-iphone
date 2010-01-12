@@ -178,6 +178,7 @@
 			OutputDirectory="Windows Mobile 6 Professional SDK (ARMV4I)\$(ConfigurationName)"
 			IntermediateDirectory="Windows Mobile 6 Professional SDK (ARMV4I)\$(ConfigurationName)"
 			ConfigurationType="4"
+			CharacterSet="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -199,9 +200,9 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				AdditionalOptions="&#x0D;&#x0A;"
-				Optimization="0"
+				Optimization="2"
 				AdditionalIncludeDirectories="..\..\oRTP\include;..\..\mediastreamer2\include;&quot;..\..\..\..\linphone-builder\speex\include&quot;;&quot;..\..\..\..\linphone-builder\eXosip\include&quot;;&quot;..\..\..\..\linphone-builder\osip\include&quot;"
-				PreprocessorDefinitions="ORTP_INET6;ORTP_EXPORT;_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);_DEBUG;_USRDLL;$(ARCHFAM);$(_ARCHFAM_);LIBLINPHONE_EXPORTS;OSIP_MT;ENABLE_TRACE;LOG_DOMAIN=\&quot;LinphoneCore\&quot;;IN_LINPHONE;LINPHONE_PLUGINS_DIR=\&quot;\&quot;;LINPHONE_VERSION=\&quot;3.1.2\&quot;;_UNICODE;UNICODE"
+				PreprocessorDefinitions="ORTP_INET6;ORTP_EXPORT;_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);_DEBUG;_USRDLL;$(ARCHFAM);$(_ARCHFAM_);LIBLINPHONE_EXPORTS;OSIP_MT;ENABLE_TRACE;LOG_DOMAIN=\&quot;LinphoneCore\&quot;;IN_LINPHONE;LINPHONE_PLUGINS_DIR=\&quot;\&quot;;LINPHONE_VERSION=\&quot;3.1.2\&quot;;_UNICODE;UNICODE;PACKAGE_SOUND_DIR=\&quot;\\Program Files\\Linphone\&quot;"
 				MinimalRebuild="true"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
