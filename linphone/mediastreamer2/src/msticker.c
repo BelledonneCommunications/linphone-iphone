@@ -266,7 +266,6 @@ static void sleepMs(int ms){
 static int set_high_prio(void){
 	int precision=2;
 	int result=0;
-	struct sched_param param;
 #ifdef WIN32
 	MMRESULT mm;
 	TIMECAPS ptc;
@@ -289,6 +288,7 @@ static int set_high_prio(void){
 		ms_warning("SetThreadPriority() failed (%d)\n", GetLastError());
 	}
 #else
+	struct sched_param param;
 	memset(&param,0,sizeof(param));
 #ifdef TARGET_OS_MAC
 	int policy=SCHED_RR;
