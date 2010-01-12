@@ -17,10 +17,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#define UNICODE
+
 #include "mediastreamer2/msfileplayer.h"
 #include "mediastreamer2/waveheader.h"
 #include "mediastreamer2/msticker.h"
-
 
 typedef enum {
 	CLOSED,
@@ -127,26 +128,18 @@ static int read_wav_header(PlayerData *d){
 static int player_open(MSFilter *f, void *arg){
 	PlayerData *d=(PlayerData*)f->data;
 	HANDLE fd;
-	const char *afile=(const char*)arg;
-	LPCTSTR file;
-#ifdef _UNICODE
-	wchar_t wfile[MAX_PATH];
-	mbstowcs(wfile,afile,MAX_PATH);
-	file=wfile;
-#else
-	file=afile;
-#endif
-
-    fd = CreateFile(file, GENERIC_READ, FILE_SHARE_READ, NULL,
-        OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-
+	const char *file=(const char*)arg;
+	WCHAR wUnicode[1024];
+	MultiByteToWideChar(CP_UTF8, 0, file, -1, wUnicode, 1024);
+    fd = CreateFile(wUnicode, GENERIC_READ, FILE_SHARE_READ, NULL,
+        OPEN_EXISTING, 0, NULL);
 	if (fd==INVALID_HANDLE_VALUE){
-		ms_warning("Failed to open %s: error %i",afile,GetLastError());
+		ms_warning("Failed to open %s",file);
 		return -1;
 	}
 	d->state=STOPPED;
 	d->fd=fd;
-	if (strstr(afile,".wav")!=NULL) read_wav_header(d);
+	if (strstr(file,".wav")!=NULL) read_wav_header(d);
 	return 0;
 }
 

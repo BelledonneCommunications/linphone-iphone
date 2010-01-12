@@ -17,6 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#define UNICODE
+
 #include "mediastreamer2/msfilerec.h"
 #include "mediastreamer2/waveheader.h"
 
@@ -84,6 +86,9 @@ static void write_wav_header(int rate,int size, char *filename){
 	wave_header_t header;
 	DWORD bytes_written=0;
 	HANDLE fd;
+	WCHAR wUnicode[1024];
+	MultiByteToWideChar(CP_UTF8, 0, filename, -1, wUnicode, 1024);
+
 	memcpy(&header.riff_chunk.riff,"RIFF",4);
 	header.riff_chunk.len=le_uint32(size+32);
 	memcpy(&header.riff_chunk.wave,"WAVE",4);
@@ -101,11 +106,7 @@ static void write_wav_header(int rate,int size, char *filename){
 	header.data_chunk.len=le_uint32(size);
 
 	/* TODO: replace with "lseek" equivalent for windows */
-#if defined(_WIN32_WCE)
-	fd=CreateFile((LPCWSTR)filename, GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
-#else
-	fd=CreateFile(filename, GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
-#endif
+	fd=CreateFile(wUnicode, GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
 	if (fd==INVALID_HANDLE_VALUE){
 #if !defined(_WIN32_WCE)
 		ms_warning("Cannot open %s: %s",filename,strerror(errno));
@@ -127,13 +128,12 @@ static int rec_open(MSFilter *f, void *arg){
 
 	RecState *s=(RecState*)f->data;
 	const char *filename=(const char*)arg;
+	WCHAR wUnicode[1024];
+	MultiByteToWideChar(CP_UTF8, 0, filename, -1, wUnicode, 1024);
+
 	ms_mutex_lock(&f->lock);
 	snprintf(s->filename, sizeof(s->filename), "%s", filename);
-#if defined(_WIN32_WCE)
-	s->fd=CreateFile((LPCWSTR)filename, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, 0, NULL);
-#else
-	s->fd=CreateFile(filename, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, 0, NULL);
-#endif
+	s->fd=CreateFile(wUnicode, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, 0, NULL);
 	if (s->fd==INVALID_HANDLE_VALUE){
 #if !defined(_WIN32_WCE)
 		ms_warning("Cannot open %s: %s",filename,strerror(errno));
