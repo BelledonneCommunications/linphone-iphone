@@ -55,7 +55,7 @@ static void sender_init(MSFilter * f)
 	d->rate = 8000;
 	d->dtmf = 0;
 	d->dtmf_start = FALSE;
-	d->dtmf_duration = 1600; //480;
+	d->dtmf_duration = 800;
 	d->mute_mic=FALSE;
 	d->relay_session_id_size=0;
 	d->last_rsi_time=0;
