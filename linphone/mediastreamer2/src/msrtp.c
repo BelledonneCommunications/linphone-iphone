@@ -33,6 +33,8 @@ struct SenderData {
 	uint32_t skip_until;
 	int rate;
 	char dtmf;
+	bool_t dtmf_start;
+	int dtmf_duration;
 	char relay_session_id[64];
 	int relay_session_id_size;
 	uint64_t last_rsi_time;
@@ -52,6 +54,8 @@ static void sender_init(MSFilter * f)
 	d->skip = FALSE;
 	d->rate = 8000;
 	d->dtmf = 0;
+	d->dtmf_start = FALSE;
+	d->dtmf_duration = 1600; //480;
 	d->mute_mic=FALSE;
 	d->relay_session_id_size=0;
 	d->last_rsi_time=0;
@@ -71,8 +75,20 @@ static int sender_send_dtmf(MSFilter * f, void *arg)
 	SenderData *d = (SenderData *) f->data;
 
 	ms_filter_lock(f);
+	if (d->skip==TRUE)
+	{
+		ms_filter_unlock(f);
+		return -1;
+	}
 	d->dtmf = dtmf[0];
 	ms_filter_unlock(f);
+	return 0;
+}
+
+static int sender_set_dtmf_duration(MSFilter * f, void *arg)
+{
+	SenderData *d = (SenderData *) f->data;
+	d->dtmf_duration = *((int*)arg);
 	return 0;
 }
 
@@ -159,6 +175,109 @@ static uint32_t get_cur_timestamp(MSFilter * f, uint32_t packet_ts)
 	return netts;
 }
 
+static int send_dtmf(MSFilter * f, uint32_t timestamp_start, uint32_t current_timestamp)
+{
+	SenderData *d = (SenderData *) f->data;
+	mblk_t *m1;
+	int tev_type;
+
+	/* create the first telephony event packet */
+	switch (d->dtmf){
+		case '1':
+			tev_type=TEV_DTMF_1;
+		break;
+		case '2':
+			tev_type=TEV_DTMF_2;
+		break;
+		case '3':
+			tev_type=TEV_DTMF_3;
+		break;
+		case '4':
+			tev_type=TEV_DTMF_4;
+		break;
+		case '5':
+			tev_type=TEV_DTMF_5;
+		break;
+		case '6':
+			tev_type=TEV_DTMF_6;
+		break;
+		case '7':
+			tev_type=TEV_DTMF_7;
+		break;
+		case '8':
+			tev_type=TEV_DTMF_8;
+		break;
+		case '9':
+			tev_type=TEV_DTMF_9;
+		break;
+		case '*':
+			tev_type=TEV_DTMF_STAR;
+		break;
+		case '0':
+			tev_type=TEV_DTMF_0;
+		break;
+		case '#':
+			tev_type=TEV_DTMF_POUND;
+		break;
+
+		case 'A':
+		case 'a':
+		  tev_type=TEV_DTMF_A;
+		  break;
+
+
+		case 'B':
+		case 'b':
+		  tev_type=TEV_DTMF_B;
+		  break;
+
+		case 'C':
+		case 'c':
+		  tev_type=TEV_DTMF_C;
+		  break;
+
+		case 'D':
+		case 'd':
+		  tev_type=TEV_DTMF_D;
+		  break;
+
+		case '!':
+		  tev_type=TEV_FLASH;
+		  break;
+
+
+		default:
+		ms_warning("Bad dtmf: %c.",d->dtmf);
+		return -1;
+	}
+
+
+	if (d->dtmf_start == TRUE)
+		m1=rtp_session_create_telephone_event_packet(d->session,1);
+	else
+		m1=rtp_session_create_telephone_event_packet(d->session,0);
+	if (m1==NULL) return -1;
+
+
+	if (RTP_TIMESTAMP_IS_NEWER_THAN(current_timestamp, d->skip_until)) {
+		//retransmit end of rtp dtmf event
+		mblk_t *tmp;
+		rtp_session_add_telephone_event(d->session,m1,tev_type,1,10, (current_timestamp-timestamp_start));
+		tmp=copymsg(m1);
+		rtp_session_sendm_with_ts(d->session,tmp,timestamp_start);
+		d->session->rtp.snd_seq--;
+		tmp=copymsg(m1);
+		rtp_session_sendm_with_ts(d->session,tmp,timestamp_start);
+		d->session->rtp.snd_seq--;
+		rtp_session_sendm_with_ts(d->session,m1,timestamp_start);
+	}
+	else {
+		rtp_session_add_telephone_event(d->session,m1,tev_type,0,10, (current_timestamp-timestamp_start));
+		rtp_session_sendm_with_ts(d->session,m1,timestamp_start);
+	}
+	return 0;
+}
+
 static void sender_process(MSFilter * f)
 {
 	SenderData *d = (SenderData *) f->data;
@@ -184,32 +303,37 @@ static void sender_process(MSFilter * f)
 
 		timestamp = get_cur_timestamp(f, mblk_get_timestamp_info(im));
 		ms_filter_lock(f);
-		if (d->dtmf != 0) {
-			rtp_session_send_dtmf(s, d->dtmf, timestamp);
-			ms_debug("RFC2833 dtmf sent.");
-			d->dtmf = 0;
-			d->skip_until = timestamp + (3 * 160);
-			d->skip = TRUE;
-			freemsg(im);
-		}else if (d->skip) {
+		if (d->skip) {
 			ms_debug("skipping..");
-			if (RTP_TIMESTAMP_IS_NEWER_THAN(timestamp, d->skip_until)) {
-				d->skip = FALSE;
-			}
-			freemsg(im);
-		}else{
-			if (d->mute_mic==FALSE){
-				int pt = mblk_get_payload_type(im);
-				header = rtp_session_create_packet(s, 12, NULL, 0);
-				if (pt>0)
-					rtp_set_payload_type(header, pt);
-				rtp_set_markbit(header, mblk_get_marker_info(im));
-				header->b_cont = im;
-				rtp_session_sendm_with_ts(s, header, timestamp);
-			}
-			else{
+			send_dtmf(f, d->skip_until-d->dtmf_duration, timestamp);
+			d->dtmf_start = FALSE;
+			if (!RTP_TIMESTAMP_IS_NEWER_THAN(timestamp, d->skip_until)) {
 				freemsg(im);
+				ms_filter_unlock(f);
+				continue;
 			}
+			d->skip = FALSE;
+			d->dtmf = 0;
+		}
+
+		if (d->skip == FALSE && d->mute_mic==FALSE){
+			int pt = mblk_get_payload_type(im);
+			header = rtp_session_create_packet(s, 12, NULL, 0);
+			if (pt>0)
+				rtp_set_payload_type(header, pt);
+			rtp_set_markbit(header, mblk_get_marker_info(im));
+			header->b_cont = im;
+			rtp_session_sendm_with_ts(s, header, timestamp);
+		}
+		else{
+			freemsg(im);
+		}
+
+		if (d->dtmf != 0) {
+			ms_debug("prepare to send RFC2833 dtmf.");
+			d->skip_until = timestamp + d->dtmf_duration;
+			d->skip = TRUE;
+			d->dtmf_start = TRUE;
 		}
 		ms_filter_unlock(f);
 	}
@@ -222,6 +346,7 @@ static MSFilterMethod sender_methods[] = {
 	{MS_RTP_SEND_SEND_DTMF, sender_send_dtmf},
 	{MS_RTP_SEND_SET_RELAY_SESSION_ID, sender_set_relay_session_id},
 	{MS_FILTER_GET_SAMPLE_RATE, sender_get_sr },
+	{MS_RTP_SEND_SET_DTMF_DURATION, sender_set_dtmf_duration },
 	{0, NULL}
 };
 

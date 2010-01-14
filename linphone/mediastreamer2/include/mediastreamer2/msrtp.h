@@ -37,6 +37,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define MS_RTP_SEND_SET_RELAY_SESSION_ID	MS_FILTER_METHOD(MS_RTP_SEND_ID,5,const char *)
 
+#define MS_RTP_SEND_SET_DTMF_DURATION	MS_FILTER_METHOD(MS_RTP_SEND_ID,1,int)
 
 extern MSFilterDesc ms_rtp_send_desc;
 extern MSFilterDesc ms_rtp_recv_desc;
