@@ -269,10 +269,24 @@ if test $GCC = yes && test $wall_werror = yes;  then
 	CFLAGS="$CFLAGS -Werror "
 fi
 
-AC_CHECK_HEADERS(openssl/hmac.h openssl/md5.h)
+AC_ARG_ENABLE(ssl-hmac,
+				[  --enable-ssl-hmac=[yes/no]   enables use of ssl/hmac for stun],
+				[case "${enableval}" in
+					yes) ssl_hmac_enabled=yes;;
+					no) ssl_hmac_enabled=no;;
+					*) AC_MSG_ERROR("Bad value for --enable-ssl-hmac");;
+				esac],
+				[ssl_hmac_enabled=yes])
+				
+if test "$ssl_hmac_enabled" = "yes" ; then
+	AC_CHECK_HEADERS(openssl/hmac.h openssl/md5.h)
+	AC_CHECK_LIB(ssl,SSL_CTX_new,[SSL_LIBS="-lssl"])
+	AC_CHECK_LIB(crypto,MD5,[SSL_LIBS="$SSL_LIBS -lcrypto"])
+fi
 
-AC_CHECK_LIB(ssl,SSL_CTX_new,[SSL_LIBS="-lssl"])
-AC_CHECK_LIB(crypto,MD5,[SSL_LIBS="$SSL_LIBS -lcrypto"])
+
+
+
 
 AC_SUBST(SSL_LIBS)
 
