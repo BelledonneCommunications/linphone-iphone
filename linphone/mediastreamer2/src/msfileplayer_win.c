@@ -17,10 +17,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#define UNICODE
+
 #include "mediastreamer2/msfileplayer.h"
 #include "mediastreamer2/waveheader.h"
 #include "mediastreamer2/msticker.h"
-
 
 typedef enum {
 	CLOSED,
@@ -128,13 +129,10 @@ static int player_open(MSFilter *f, void *arg){
 	PlayerData *d=(PlayerData*)f->data;
 	HANDLE fd;
 	const char *file=(const char*)arg;
-#if defined(_WIN32_WCE)
-    fd = CreateFile((LPCWSTR)file, GENERIC_READ, FILE_SHARE_READ, NULL,
+	WCHAR wUnicode[1024];
+	MultiByteToWideChar(CP_UTF8, 0, file, -1, wUnicode, 1024);
+    fd = CreateFile(wUnicode, GENERIC_READ, FILE_SHARE_READ, NULL,
         OPEN_EXISTING, 0, NULL);
-#else
-	fd = CreateFile(file, GENERIC_READ, FILE_SHARE_READ, NULL,
-        OPEN_EXISTING, 0, NULL);
-#endif
 	if (fd==INVALID_HANDLE_VALUE){
 		ms_warning("Failed to open %s",file);
 		return -1;

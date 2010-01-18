@@ -256,7 +256,7 @@ static void __ortp_logv_out(OrtpLogLevel lev, const char *fmt, va_list args){
 			ortp_fatal("Bad level !");
 	}
 	msg=ortp_strdup_vprintf(fmt,args);
-#ifdef _MSC_VER
+#if defined(_MSC_VER) && !defined(_WIN32_WCE)
  	OutputDebugString(msg);
   	OutputDebugString("\r\n");
 #else

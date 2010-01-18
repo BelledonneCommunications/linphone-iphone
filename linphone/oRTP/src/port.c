@@ -124,7 +124,7 @@ int close_socket(ortp_socket_t sock){
 #endif
 }
 
-#if defined (_WIN32_WCE)
+#if defined (_WIN32_WCE) || defined(_MSC_VER)
 int ortp_file_exist(const char *pathname) {
 	FILE* fd;
 	if (pathname==NULL) return -1;

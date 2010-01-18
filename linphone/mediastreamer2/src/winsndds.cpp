@@ -19,11 +19,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #ifdef __DIRECTSOUND_ENABLED__
 
+#define UNICODE
+
 #include "mediastreamer2/mssndcard.h"
 #include "mediastreamer2/msfilter.h"
 #include "mediastreamer2/msticker.h"
-
-#define UNICODE
 
 #include <mmsystem.h>
 #ifdef _MSC_VER
@@ -1045,7 +1045,7 @@ static void _winsnddscard_detect(MSSndCardManager *m){
 
 	if (ms_lib_instance==NULL)
 	{
-		ms_lib_instance = LoadLibrary("dsound.dll");
+		ms_lib_instance = LoadLibrary(L"dsound.dll");
 		if( ms_lib_instance == NULL )
 		{
 			/* error */

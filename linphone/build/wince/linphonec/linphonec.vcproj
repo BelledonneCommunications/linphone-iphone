@@ -21,6 +21,7 @@
 			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
 			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="1"
+			UseOfMFC="0"
 			CharacterSet="1"
 			>
 			<Tool
@@ -43,9 +44,9 @@
 				ExecutionBucket="7"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;..\..\..\..\..\linphone-builder\osip\include&quot;;..\..\..\mediastreamer2\include;..\..\..\oRTP\include;..\..\..\coreapi"
-				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;DEBUG;_CONSOLE;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;IN_LINPHONE"
+				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;DEBUG;_CONSOLE;$(ARCHFAM);$(_ARCHFAM_);IN_LINPHONE;PACKAGE_DIR=\&quot;\\Program Files\\Linphone\&quot;"
 				MinimalRebuild="true"
-				RuntimeLibrary="1"
+				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="3"
@@ -101,7 +102,7 @@
 				ForceDirty="-1"
 				RemoteDirectory="%CSIDL_PROGRAM_FILES%\linphone"
 				RegisterOutput="0"
-				AdditionalFiles="..\..\..\oRTP\build\wince\$(PlatformName)\$(ConfigurationName)\oRTP.dll;..\..\..\mediastreamer2\build\wince\$(PlatformName)\$(ConfigurationName)\mediastreamer2.dll"
+				AdditionalFiles=""
 			/>
 			<DebuggerTool
 			/>

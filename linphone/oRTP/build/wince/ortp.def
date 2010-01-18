@@ -70,6 +70,8 @@ EXPORTS
 	rtp_add_csrc
 
 	rtp_session_send_dtmf
+	rtp_session_add_telephone_event
+	rtp_session_create_telephone_event_packet
 	
 	rtp_session_set_source_description
 	rtp_session_set_symmetric_rtp
