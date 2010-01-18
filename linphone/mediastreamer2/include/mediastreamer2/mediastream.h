@@ -55,7 +55,8 @@ struct _AudioStream
 	MSFilter *dtmfgen;
 	MSFilter *ec;/*echo canceler*/
 	MSFilter *volsend,*volrecv; /*MSVolumes*/
-	MSFilter *resampler;
+	MSFilter *read_resampler;
+	MSFilter *write_resampler;
 	MSFilter *equalizer;
 	uint64_t last_packet_count;
 	time_t last_packet_time;
