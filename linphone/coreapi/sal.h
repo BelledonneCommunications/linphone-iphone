@@ -50,19 +50,29 @@ typedef enum {
 	SAL_OTHER
 } SalStreamType;
 
+typedef enum{
+	SAL_PROTO_UNKNOWN,
+	SAL_PROTO_RTP_AVP,
+	SAL_PROTO_RTP_SAVP
+}SalMediaProto;
+
 typedef struct SalStreamDescription{
+	SalMediaProto proto;
 	SalStreamType type;
+	char addr[64];
 	int port;
 	MSList *payloads; //<list of PayloadType
 	int bandwidth;
 	int ptime;
 } SalStreamDescription;
 
+#define SAL_MEDIA_DESCRIPTION_MAX_STREAMS 4
+
 typedef struct SalMediaDescription{
 	char addr[64];
 	char username[64];
 	int nstreams;
-	SalStreamDescription streams[2];
+	SalStreamDescription streams[SAL_MEDIA_DESCRIPTION_MAX_STREAMS];
 } SalMediaDescription;
 
 void sal_media_description_free(SalMediaDescription *md);

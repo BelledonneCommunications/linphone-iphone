@@ -48,14 +48,14 @@ static void add_relay_info(sdp_message_t *sdp, int mline, const char *relay, con
 
 #endif
 
-char * int_2char(int a){
+static char * int_2char(int a){
 	char *p=osip_malloc(16);
 	snprintf(p,16,"%i",a);
 	return p;
 }
 
 /* return the value of attr "field" for payload pt at line pos (field=rtpmap,fmtp...)*/
-char *sdp_message_a_attr_value_get_with_pt(sdp_message_t *sdp,int pos,int pt,const char *field)
+static const char *sdp_message_a_attr_value_get_with_pt(sdp_message_t *sdp,int pos,int pt,const char *field)
 {
 	int i,tmppt=0,scanned=0;
 	char *tmp;
@@ -76,8 +76,9 @@ char *sdp_message_a_attr_value_get_with_pt(sdp_message_t *sdp,int pos,int pt,con
 	return NULL;
 }
 
+#ifdef FOR_LATER
 /* return the value of attr "field" */
-char *sdp_message_a_attr_value_get(sdp_message_t *sdp,int pos,const char *field)
+static const char *sdp_message_a_attr_value_get(sdp_message_t *sdp,int pos,const char *field)
 {
 	int i;
 	sdp_attribute_t *attr;
@@ -88,6 +89,7 @@ char *sdp_message_a_attr_value_get(sdp_message_t *sdp,int pos,const char *field)
 	}
 	return NULL;
 }
+#endif
 
 static int _sdp_message_get_a_ptime(sdp_message_t *sdp, int mline){
 	int i,ret;
@@ -128,11 +130,16 @@ static sdp_message_t *create_generic_sdp(const SalMediaDescription *desc)
 
 
 
-void add_payload(sdp_message_t *msg, int line, const PayloadType *pt)
+static void add_payload(sdp_message_t *msg, int line, const PayloadType *pt)
 {
 	char attr[256];
 	sdp_message_m_payload_add (msg,line, int_2char (payload_type_get_number(pt)));
-	snprintf (attr,sizeof(attr),"%i %s", payload_type_get_number(pt), pt->mime_type);
+	if (pt->type==PAYLOAD_AUDIO_CONTINUOUS || pt->type==PAYLOAD_AUDIO_PACKETIZED)
+		snprintf (attr,sizeof(attr),"%i %s/%i/%i", payload_type_get_number(pt), 
+		    	pt->mime_type, pt->clock_rate,pt->channels);
+	else
+		snprintf (attr,sizeof(attr),"%i %s/%i", payload_type_get_number(pt), 
+		    	pt->mime_type, pt->clock_rate);
 	sdp_message_a_attribute_add (msg, line,
 				     osip_strdup ("rtpmap"), osip_strdup(attr));
 
@@ -167,4 +174,95 @@ char *media_description_to_sdp(const SalMediaDescription *desc){
 	}
 	sdp_message_to_str(msg,&tmp);
 	return tmp;
+}
+
+static int payload_type_fill_from_rtpmap(PayloadType *pt, const char *rtpmap){
+	if (rtpmap==NULL){
+		PayloadType *refpt=rtp_profile_get_payload(&av_profile,payload_type_get_number(pt));
+		if (refpt){
+			pt->mime_type=ms_strdup(refpt->mime_type);
+			pt->clock_rate=refpt->clock_rate;
+		}else{
+			ms_error("payload number %i has no rtpmap and is unknown in AV Profile, ignored.",
+			    payload_type_get_number(pt));
+			return -1;
+		}
+	}else{
+		char *mime=ms_strdup(rtpmap);
+		char *p=strchr(mime,'/');
+		if (p){
+			char *chans;
+			*p='\0';
+			p++;
+			chans=strchr(p,'/');
+			if (chans){
+				*chans='\0';
+				chans++;
+				pt->channels=atoi(chans);
+			}else pt->channels=1;
+			pt->clock_rate=atoi(p);
+		}
+		pt->mime_type=mime;
+	}
+	return 0;
+}
+
+int sdp_to_media_description(const char *sdp, SalMediaDescription *desc){
+	int i,j;
+	const char *mtype,*proto,*port,*addr,*number;
+	sdp_message_t *msg;
+	sdp_bandwidth_t *sbw=NULL;
+	sdp_message_init(&msg);
+	if (sdp_message_parse(msg,sdp)!=0){
+		ms_error("Fail to parse sdp message !");
+		sdp_message_free(msg);
+		return -1;
+	}
+	addr=sdp_message_c_addr_get (msg, -1, 0);
+	if (addr)
+		strncpy(desc->addr,addr,sizeof(desc->addr));
+	/* for each m= line */
+	for (i=0; !sdp_message_endof_media (msg, i) && i<SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++)
+	{
+		SalStreamDescription *stream=&desc->streams[i];
+		
+		memset(stream,0,sizeof(*stream));
+		mtype = sdp_message_m_media_get(msg, i);
+		proto = sdp_message_m_proto_get (msg, i);
+		port = sdp_message_m_port_get(msg, i);
+		stream->proto=SAL_PROTO_UNKNOWN;
+		if (proto){
+			if (strcasecmp(proto,"RTP/AVP")==0)
+				stream->proto=SAL_PROTO_RTP_AVP;
+			else if (strcasecmp(proto,"RTP/SAVP")==0){
+				stream->proto=SAL_PROTO_RTP_SAVP;
+			}
+		}
+		addr = sdp_message_c_addr_get (msg, i, 0);
+		if (addr != NULL)
+			strncpy(stream->addr,addr,sizeof(stream->addr));
+		stream->ptime=_sdp_message_get_a_ptime(msg,i);
+		if (strcasecmp("audio", mtype) == 0){
+			stream->type=SAL_AUDIO;
+		}else if (strcasecmp("video", mtype) == 0){
+			stream->type=SAL_VIDEO;
+		}else stream->type=SAL_OTHER;
+		for(j=0;(sbw=sdp_message_bandwidth_get(msg,i,j))!=NULL;++j){
+			if (strcasecmp(sbw->b_bwtype,"AS")==0) stream->bandwidth=atoi(sbw->b_bandwidth);
+		}
+		/* for each payload type */
+		for (j=0;((number=sdp_message_m_payload_get (msg, i,j)) != NULL); j++){
+			const char *rtpmap,*fmtp;
+			int ptn=atoi(number);
+			PayloadType *pt=payload_type_new();
+			payload_type_set_number(pt,ptn);
+			/* get the rtpmap associated to this codec, if any */
+			rtpmap=sdp_message_a_attr_value_get_with_pt(msg, i,ptn,"rtpmap");
+			payload_type_fill_from_rtpmap(pt,rtpmap);
+			/* get the fmtp, if any */
+			fmtp=sdp_message_a_attr_value_get_with_pt(msg, i, ptn,"fmtp");
+			payload_type_set_send_fmtp(pt,fmtp);
+		}
+	}
+	return 0;
 }
