@@ -1,0 +1,3 @@
+[submodule "linphone/oRTP"]
+	path = linphone/oRTP
+	url = git://git.linphone.org/ortp.git
