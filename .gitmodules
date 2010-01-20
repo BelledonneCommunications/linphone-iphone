@@ -1,6 +1,6 @@
 [submodule "linphone/oRTP"]
-	path = oRTP
+	path = linphone/oRTP
 	url = git://git.linphone.org/ortp.git
 [submodule "linphone/mediastreamer2"]
-	path = mediastreamer2
+	path = linphone/mediastreamer2
 	url = git://git.linphone.org/mediastreamer2.git
