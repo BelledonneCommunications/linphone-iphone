@@ -1,8 +1,0 @@
-Makefile.in
-Makefile
-.libs
-.deps
-*.la
-*.lo
-alldescs.h
-filterdescs.txt
