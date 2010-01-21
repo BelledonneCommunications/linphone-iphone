@@ -352,6 +352,9 @@ void linphone_proxy_config_enable_register(LinphoneProxyConfig *obj, bool_t val)
 void linphone_proxy_config_edit(LinphoneProxyConfig *obj);
 int linphone_proxy_config_done(LinphoneProxyConfig *obj);
 void linphone_proxy_config_enable_publish(LinphoneProxyConfig *obj, bool_t val);
+void linphone_proxy_config_set_dial_escape_plus(LinphoneProxyConfig *cfg, bool_t val);
+void linphone_proxy_config_set_dial_prefix(LinphoneProxyConfig *cfg, const char *prefix);
+
 bool_t linphone_proxy_config_is_registered(const LinphoneProxyConfig *obj);
 const char *linphone_proxy_config_get_domain(const LinphoneProxyConfig *cfg);
 /** Returns the proxy configured identity as a const char * */
@@ -366,6 +369,9 @@ const char *linphone_proxy_config_get_domain(const LinphoneProxyConfig *cfg);
 /** Returns TRUE if registration is enabled, FALSE otherwise */
 #define linphone_proxy_config_register_enabled(obj) ((obj)->reg_sendregister)
 #define linphone_proxy_config_get_core(obj) ((obj)->lc)
+bool_t linphone_proxy_config_get_dial_escape_plus(const LinphoneProxyConfig *cfg);
+const char * linphone_proxy_config_get_dial_prefix(const LinphoneProxyConfig *cfg);
+
 /* destruction is called automatically when removing the proxy config */
 void linphone_proxy_config_destroy(LinphoneProxyConfig *cfg);
 void linphone_proxy_config_set_sip_setup(LinphoneProxyConfig *cfg, const char *type);
