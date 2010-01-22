@@ -17,21 +17,60 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */                                                                           
 
+
 #import <UIKit/UIKit.h>
+#import <AddressBookUI/ABPeoplePickerNavigationController.h>
+#include"linphonecore.h"
 
-@class linphone;
 
+@protocol LinphoneTabManagerDelegate
 
+-(void)selectDialerTab;
+
+@end
+
+@class ContactPickerDelegate;
+@class IncallViewController;
 @class PhoneViewController;
+@class CallHistoryTableViewController;
+@class FavoriteTableViewController;
 
-@interface linphoneAppDelegate : NSObject <UIApplicationDelegate> {
+@interface linphoneAppDelegate : NSObject <UIApplicationDelegate,LinphoneTabManagerDelegate,UIActionSheetDelegate> {
     UIWindow *window;
-	PhoneViewController *myViewController;
+	IBOutlet UITabBarController*  myTabBarController;
+	IBOutlet ABPeoplePickerNavigationController* myPeoplePickerController;
+	IBOutlet PhoneViewController* myPhoneViewController;
+	CallHistoryTableViewController* myCallHistoryTableViewController;
+	FavoriteTableViewController* myFavoriteTableViewController;
+	
+	ContactPickerDelegate* myContactPickerDelegate;
+	
+	int traceLevel;
+	LinphoneCore* myLinphoneCore;
+	
 	
 }
+/**********************************
+ * liblinphone initialization method
+ **********************************/
+-(void) startlibLinphone;
+
+/*
+ * liblinphone scheduling method;
+ */
+-(void) iterate;
+
+-(void) newIncomingCall:(NSString*) from;
+
+
+-(PayloadType*) findPayload:(NSString*)type withRate:(int)rate from:(const MSList*)list;
+
 
 @property (nonatomic, retain) IBOutlet UIWindow *window;
-@property (nonatomic, retain) IBOutlet PhoneViewController *myViewController;
+@property (nonatomic, retain) IBOutlet UITabBarController*  myTabBarController;
+@property (nonatomic, retain) ABPeoplePickerNavigationController* myPeoplePickerController;
+@property (nonatomic, retain) IBOutlet PhoneViewController* myPhoneViewController;
+
 
 @end
 
