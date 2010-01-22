@@ -17,7 +17,8 @@ liblinphone_la_SOURCES=\
 	linphonecore.c linphonecore.h private.h\
 	exevents.c exevents.h \
 	offeranswer.c offeranswer.h\
-	sal_eXosip2.c sal.h \
+	sal.c sal.h \
+	sal_eXosip2.c \
 	sal_eXosip2_sdp.c \
 	misc.c  \
 	address.c \
@@ -29,7 +30,7 @@ liblinphone_la_SOURCES=\
 	authentication.c \
 	lpconfig.c lpconfig.h \
 	chat.c \
-        general_state.c \
+	general_state.c \
 	sipsetup.c sipsetup.h \
 	siplogin.c
 

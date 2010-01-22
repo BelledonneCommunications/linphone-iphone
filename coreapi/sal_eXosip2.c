@@ -23,26 +23,29 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 extern char *media_description_to_sdp(const SalMediaDescription *sal);
 
 struct Sal{
+	SalCallbacks callbacks;
 	int running;
 	int session_expires;
 };
 
 struct SalOp{
+	SalOpBase base;
 	int cid;
 	int did;
 	int tid;
-	osip_message_t *request;
+	bool_t supports_session_timers;
 };
 
-static SalOp * sal_op_new(){
+SalOp * sal_op_new(Sal *sal){
 	SalOp *op=ms_new(SalOp,1);
+	__sal_op_init(op,sal);
 	op->cid=op->did=op->tid=-1;
-	op->request=NULL;
+	op->supports_session_timers=FALSE;
 	return op;
 }
 
 void sal_op_release(SalOp *op){
-	ms_free(op);
+	__sal_op_free(op);
 }
 
 Sal * sal_init(){
@@ -87,27 +90,6 @@ void sal_use_session_timers(Sal *ctx, int expires){
 	ctx->session_expires=expires;
 }
 
-SalOp * sal_call_create(Sal *sal, const char *from, const char *to, const char *route, const char *contact){
-	int err;
-	SalOp *op;
-	osip_message_t *invite=NULL;
-	err=eXosip_call_build_initial_invite(&invite,to,from,
-						route,"Phone call");
-	if (err!=0){
-		ms_error("Could not create call.");
-		return NULL;
-	}
-	if (contact)
-		osip_message_set_contact(invite,contact);
-	if (sal->session_expires!=0){
-		osip_message_set_header(invite, "Session-expires", "200");
-		osip_message_set_supported(invite, "timer");
-	}
-	op=sal_op_new();
-	op->request=invite;
-	return op;
-}
-
 static void set_sdp(osip_message_t *sip, const SalMediaDescription *desc){
 	int sdplen;
 	char clen[10];
@@ -125,15 +107,30 @@ static void set_sdp(osip_message_t *sip, const SalMediaDescription *desc){
 	osip_free(sdp);
 }
 
-int sal_call_set_local_media_description(SalOp *h, const SalMediaDescription *desc){
-	set_sdp(h->request,desc);
+int sal_call_set_local_media_description(SalOp *h, SalMediaDescription *desc){
+	h->base.local_media=desc;
 	return 0;
 }
 
-int sal_call(SalOp *h){
+int sal_call(SalOp *h, const char *from, const char *to){
 	int err;
+	osip_message_t *invite=NULL;
+	sal_op_set_from(h,from);
+	sal_op_set_to(h,to);
+	err=eXosip_call_build_initial_invite(&invite,to,from,h->base.route,"Phone call");
+	if (err!=0){
+		ms_error("Could not create call.");
+		return -1;
+	}
+	if (h->base.contact)
+		osip_message_set_contact(invite,h->base.contact);
+	if (h->base.root->session_expires!=0){
+		osip_message_set_header(invite, "Session-expires", "200");
+		osip_message_set_supported(invite, "timer");
+	}
+	if (h->base.local_media) set_sdp(invite,h->base.local_media);
 	eXosip_lock();
-	err=eXosip_call_send_initial_invite(h->request);
+	err=eXosip_call_send_initial_invite(invite);
 	eXosip_unlock();
 	h->cid=err;
 	if (err<0){
@@ -143,11 +140,31 @@ int sal_call(SalOp *h){
 	return 0;
 }
 
-int sal_call_accept(SalOp*h);
-int sal_call_get_final_media_description(SalOp *h, SalMediaDescription *result);
-int sal_call_terminate(SalOp *h);
+int sal_call_accept(SalOp * h){
+	osip_message_t *msg;
+	/* sends a 200 OK */
+	int err=eXosip_call_build_answer(h->tid,200,&msg);
+	if (err<0 || msg==NULL){
+		ms_error("Fail to build answer for call: err=%i",err);
+		return -1;
+	}
+	if (h->base.root->session_expires!=0){
+		if (h->supports_session_timers) osip_message_set_supported(msg, "timer");
+	}
+	return 0;
+}
+
+const SalMediaDescription * sal_call_get_final_media_description(SalOp *h){
+	return NULL;
+}
+
+int sal_call_terminate(SalOp *h){
+	eXosip_lock();
+	eXosip_call_terminate(h->cid,h->did);
+	eXosip_unlock();
+	return 0;
+}
 
 int sal_iterate(Sal *sal);
 
-SalOp *sal_register_create(Sal *ctx, const char *from, const char *contact, int expires);
-int sal_register(SalOp *h);
+int sal_register(SalOp *h, const char *from, const char *contact, int expires);

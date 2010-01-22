@@ -36,6 +36,7 @@ struct SalOp;
 
 typedef struct SalOp SalOp;
 
+
 Sal * sal_init();
 void sal_uninit(Sal* sal);
 
@@ -75,7 +76,20 @@ typedef struct SalMediaDescription{
 	SalStreamDescription streams[SAL_MEDIA_DESCRIPTION_MAX_STREAMS];
 } SalMediaDescription;
 
-void sal_media_description_free(SalMediaDescription *md);
+SalMediaDescription *sal_media_description_new();
+void sal_media_description_destroy(SalMediaDescription *md);
+
+/*this structure must be at the first byte of the SalOp structure defined by implementors*/
+typedef struct SalOpBase{
+	Sal *root;
+	char *route;
+	char *contact;
+	char *from;
+	char *to;
+	SalMediaDescription *local_media;
+	SalMediaDescription *remote_media;
+} SalOpBase;
+
 
 typedef enum SalError{
 	SalErrorNetwork,
@@ -90,25 +104,47 @@ typedef void (*SalOnCallAccepted)(SalOp *op);
 typedef void (*SalOnCallTerminated)(SalOp *op);
 typedef void (*SalOnCallFailure)(SalOp *op, SalError error, const char *details);
 
+typedef struct SalCallbacks{
+	SalOnCallReceived call_received;
+	SalOnCallRinging call_ringing;
+	SalOnCallAccepted call_accepted;
+	SalOnCallTerminated call_terminated;
+	SalOnCallFailure call_failure;
+}SalCallbacks;
+
+void sal_set_callbacks(Sal *ctx, const SalCallbacks *cbs);
 int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int is_secure);
 void sal_set_user_agent(Sal *ctx, const char *user_agent);
 void sal_use_session_timers(Sal *ctx, int expires);
-
-SalOp * sal_call_create(Sal *sal, const char *from, const char *to, const char *route, const char *contact);
-int sal_call_set_local_media_description(SalOp *h, const SalMediaDescription *desc);
-int sal_call(SalOp *h);
-int sal_call_accept(SalOp*h);
-int sal_call_get_final_media_description(SalOp *h, SalMediaDescription *result);
-int sal_call_terminate(SalOp *h);
-
 int sal_iterate(Sal *sal);
 
-SalOp *sal_register_create(Sal *ctx, const char *from, const char *contact, int expires);
-int sal_register(SalOp *h);
+/*create an operation */
+SalOp * sal_op_new(Sal *sal);
 
+/*generic SalOp API, working for all operations */
+void sal_op_set_contact(SalOp *op, const char *contact);
+void sal_op_set_route(SalOp *op, const char *route);
+void sal_op_set_from(SalOp *op, const char *from);
+void sal_op_set_to(SalOp *op, const char *to);
 void sal_op_release(SalOp *h);
+
+/*Call API*/
+int sal_call_set_local_media_description(SalOp *h, SalMediaDescription *desc);
+int sal_call(SalOp *h, const char *from, const char *to);
+int sal_call_accept(SalOp*h);
+const SalMediaDescription * sal_call_get_final_media_description(SalOp *h);
+int sal_call_terminate(SalOp *h);
+
+int sal_register(SalOp *op, const char *from, const char *contact, int expires);
+
 
 #define payload_type_set_number(pt,n)	(pt)->user_data=(void*)((long)n);
 #define payload_type_get_number(pt)		((int)(long)(pt)->user_data)
+
+
+/*internal API */
+void __sal_op_init(SalOp *b, Sal *sal);
+void __sal_op_free(SalOp *b);
+
 
 #endif
