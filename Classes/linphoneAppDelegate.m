@@ -182,7 +182,7 @@ LinphoneCoreVTable linphonec_vtable = {
 	 * Initialize linphone core
 	 */
 	
-	myLinphoneCore = linphone_core_new (&linphonec_vtable, [defaultConfigFile cStringUsingEncoding:[NSString defaultCStringEncoding]],self);
+	myLinphoneCore = linphone_core_new (&linphonec_vtable, [defaultConfigFile cStringUsingEncoding:[NSString defaultCStringEncoding]],nil,self);
 	
 	// Set audio assets
 	const char*  lRing = [[myBundle pathForResource:@"oldphone-mono"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
