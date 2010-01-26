@@ -99,9 +99,9 @@ static void initiate_incoming(const SalStreamDescription *local_cap,
     					SalStreamDescription *result){
 	result->payloads=match_payloads(local_cap->payloads,remote_offer->payloads);
 	if (result->payloads && !only_telephone_event(result->payloads)){
-		result->port=remote_offer->port;
-		result->bandwidth=remote_offer->bandwidth;
-		result->ptime=remote_offer->ptime;
+		result->port=local_cap->port;
+		result->bandwidth=local_cap->bandwidth;
+		result->ptime=local_cap->ptime;
 	}else{
 		result->port=0;
 	}
@@ -136,7 +136,7 @@ int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities
     	initiate_incoming(&local_capabilities->streams[i],&remote_offer->streams[i],&result->streams[i]);
     }
 	result->nstreams=local_capabilities->nstreams;
-	strcpy(result->addr,remote_offer->addr);
+	strcpy(result->addr,local_capabilities->addr);
 	return 0;
 }
     					

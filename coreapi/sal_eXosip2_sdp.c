@@ -165,15 +165,14 @@ static void add_line(sdp_message_t *msg, int lineno, const SalStreamDescription 
 	}
 }
 
-char *media_description_to_sdp(const SalMediaDescription *desc){
+sdp_message_t *media_description_to_sdp(const SalMediaDescription *desc){
 	int i;
 	char *tmp;
 	sdp_message_t *msg=create_generic_sdp(desc);
 	for(i=0;i<desc->nstreams;++i){
 		add_line(msg,i,&desc->streams[i]);
 	}
-	sdp_message_to_str(msg,&tmp);
-	return tmp;
+	return msg;
 }
 
 static int payload_type_fill_from_rtpmap(PayloadType *pt, const char *rtpmap){
@@ -207,17 +206,11 @@ static int payload_type_fill_from_rtpmap(PayloadType *pt, const char *rtpmap){
 	return 0;
 }
 
-int sdp_to_media_description(const char *sdp, SalMediaDescription *desc){
+int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 	int i,j;
 	const char *mtype,*proto,*port,*addr,*number;
-	sdp_message_t *msg;
 	sdp_bandwidth_t *sbw=NULL;
-	sdp_message_init(&msg);
-	if (sdp_message_parse(msg,sdp)!=0){
-		ms_error("Fail to parse sdp message !");
-		sdp_message_free(msg);
-		return -1;
-	}
+	
 	addr=sdp_message_c_addr_get (msg, -1, 0);
 	if (addr)
 		strncpy(desc->addr,addr,sizeof(desc->addr));
