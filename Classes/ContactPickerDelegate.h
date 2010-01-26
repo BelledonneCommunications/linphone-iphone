@@ -24,10 +24,10 @@
 
 @interface ContactPickerDelegate : NSObject<ABPeoplePickerNavigationControllerDelegate> {
 	id<PhoneViewControllerDelegate> phoneControllerDelegate;
-	id<LinphoneTabManagerDelegate> linphoneDelegate;
+	id<LinphoneManagerDelegate> linphoneDelegate;
 }
 
 @property (nonatomic, retain) id<PhoneViewControllerDelegate> phoneControllerDelegate;
-@property (nonatomic, retain) id<LinphoneTabManagerDelegate> linphoneDelegate;
+@property (nonatomic, retain) id<LinphoneManagerDelegate> linphoneDelegate;
 
 @end

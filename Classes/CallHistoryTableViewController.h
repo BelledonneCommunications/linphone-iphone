@@ -21,7 +21,9 @@
 
 
 @interface CallHistoryTableViewController : GenericTabViewController {
-	
+	UIButton* clear;
 }
+-(void) doAction:(id) sender;
 
+@property (nonatomic, retain) IBOutlet UIButton* clear;
 @end

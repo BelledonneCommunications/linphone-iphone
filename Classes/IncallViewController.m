@@ -27,12 +27,14 @@
 
 @synthesize controlSubView;
 @synthesize padSubView;
+@synthesize dimmer;
 
 @synthesize peerName;
 @synthesize peerNumber;
 @synthesize callDuration;
 @synthesize status;
-@synthesize end;
+@synthesize endCtrl;
+@synthesize endPad;
 @synthesize close;
 @synthesize mute;
 @synthesize dialer;
@@ -68,8 +70,16 @@
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
     [super viewDidLoad];
-	isMuted = false;
-	isSpeaker = false;
+	UIDevice *device = [UIDevice currentDevice];  
+	[device setProximityMonitoringEnabled:true];  
+	
+	if(device.proximityMonitoringEnabled == YES) {  
+		[[NSNotificationCenter defaultCenter]  
+		 addObserver:self selector:@selector(proximityStatusChange:) name:@"UIDeviceProximityStateDidChangeNotification" object:device];  
+	}  
+	else{  
+		NSLog(@"No proximity sensors on your device");  
+	}  
 	
 }
 
@@ -82,6 +92,13 @@
  }
  */
 
+- (void)viewDidAppear:(BOOL)animated {
+	[[UIApplication sharedApplication] setIdleTimerDisabled:true];
+}
+- (void)viewDidDisappear:(BOOL)animated {
+	[[UIApplication sharedApplication] setIdleTimerDisabled:false];
+}
+
 - (void)didReceiveMemoryWarning {
 	// Releases the view if it doesn't have a superview.
     [super didReceiveMemoryWarning];
@@ -89,14 +106,88 @@
 	// Release any cached data, images, etc that aren't in use.
 }
 
+- (void)proximityStatusChange:(NSNotification *) notification {  
+	UIDevice *device = [notification object];  
+	if (device.proximityState) {
+		[dimmer setHidden:true];
+	} else {
+		[dimmer setHidden:false];
+	}
+}  
+
+
+-(void) resetView {
+	
+	[self mute:false];
+	[self speaker:false];
+	
+	if (durationRefreasher != nil) {
+		[ durationRefreasher invalidate];
+		durationRefreasher=nil;
+	}
+	[peerNumber setText:@""];
+	[callDuration setText:@""];
+	
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+	const LinphoneAddress* address = linphone_core_get_remote_uri(myLinphoneCore);
+	const char* displayName =  linphone_address_get_display_name(address)?linphone_address_get_display_name(address):"";
+	[peerName setText:[NSString stringWithCString:displayName length:strlen(displayName)]];
+	
+	const char* username = linphone_address_get_username(address)!=0?linphone_address_get_username(address):"";
+	[peerNumber setText:[NSString stringWithCString:username length:strlen(username)]];
+	
+	[ [UIDevice currentDevice] setProximityMonitoringEnabled:true];
+}
+
+
+- (void)viewWillDisappear:(BOOL)animated {
+
+	[ [UIDevice currentDevice] setProximityMonitoringEnabled:false];  
+
+}
+
+
+/*
 - (void)viewDidUnload {
 	// Release any retained subviews of the main view.
 	// e.g. self.myOutlet = nil;
-	if (durationRefreasher != nil) {
-		[ durationRefreasher invalidate];
-	}
 	
 }
+*/
+
+-(void) mute:(bool) value {
+	linphone_core_mute_mic(myLinphoneCore,value);
+	if (value) {
+		[mute setImage:[UIImage imageNamed:@"icono_silencio_2.png"] forState:UIControlStateNormal];
+	} else {
+		[mute setImage:[UIImage imageNamed:@"icono_silencio_1.png"] forState:UIControlStateNormal];
+	}
+	isMuted=value;
+	// swithc buttun state
+};
+
+-(void) speaker:(bool) value {
+	if (value) {
+		//redirect audio to speaker
+		UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;  
+		AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute
+								 , sizeof (audioRouteOverride)
+								 , &audioRouteOverride);
+		[speaker setImage:[UIImage imageNamed:@"icono_altavoz_2.png"] forState:UIControlStateNormal];
+	} else {
+		//Cancel audio route redirection
+		UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_None;  
+		AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute
+								 , sizeof (audioRouteOverride)
+								 , &audioRouteOverride);
+		[speaker setImage:[UIImage imageNamed:@"icono_altavoz_1.png"] forState:UIControlStateNormal];
+	}
+	isSpeaker=value;
+	
+};
+
 
 -(void) setLinphoneCore:(LinphoneCore*) lc {
 	myLinphoneCore = lc;
@@ -107,12 +198,7 @@
 }
 
 -(void) startCall {
-	const LinphoneAddress* address = linphone_core_get_remote_uri(myLinphoneCore);
-	const char* displayName =  linphone_address_get_display_name(address)?linphone_address_get_display_name(address):"";
-	[peerName setText:[NSString stringWithCString:displayName length:strlen(displayName)]];
-	
-	const char* username = linphone_address_get_username(address)!=0?linphone_address_get_username(address):"";
-	[peerNumber setText:[NSString stringWithCString:username length:strlen(username)]];
+	[status setText:@""];
 	// start scheduler
 	durationRefreasher = [NSTimer scheduledTimerWithTimeInterval:1 
 									 target:self 
@@ -125,9 +211,9 @@
 -(void)updateCallDuration {
 	int lDuration = linphone_core_get_current_call_duration(myLinphoneCore); 
 	if (lDuration < 60) {
-		[callDuration setText:[NSString stringWithFormat: @"%i s", lDuration]];
+		[callDuration setText:[NSString stringWithFormat: @"%02i s", lDuration]];
 	} else {
-		[callDuration setText:[NSString stringWithFormat: @"%i:%i", lDuration/60,lDuration - 60 *(lDuration/60)]];
+		[callDuration setText:[NSString stringWithFormat: @"%02i:%02i", lDuration/60,lDuration - 60 *(lDuration/60)]];
 	}
 }
 
@@ -163,7 +249,7 @@
 	}
 	
 	
-	if (sender == end) {
+	if (sender == endCtrl || sender == endPad) {
 		linphone_core_terminate_call(myLinphoneCore,NULL);
 	} else if (sender == dialer) {
 		[controlSubView setHidden:true];
@@ -179,33 +265,10 @@
 		[controlSubView setHidden:false];
 		[padSubView setHidden:true];
 	} else if (sender == mute) {
-		isMuted = isMuted?false:true;
-		linphone_core_mute_mic(myLinphoneCore,isMuted);
-		// swithc buttun state
-		UIImage * tmpImage = [mute backgroundImageForState: UIControlStateNormal];
-		[mute setBackgroundImage:[mute backgroundImageForState: UIControlStateHighlighted] forState:UIControlStateNormal];
-		[mute setBackgroundImage:tmpImage forState:UIControlStateHighlighted];
+		[self mute:!isMuted]; 
 		
 	} else if (sender == speaker) {
-		isSpeaker = isSpeaker?false:true;
-		if (isSpeaker) {
-			//redirect audio to speaker
-			UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;  
-			AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute
-									 , sizeof (audioRouteOverride)
-									 , &audioRouteOverride);
-		} else {
-			//Cancel audio route redirection
-			UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_None;  
-			AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute
-									 , sizeof (audioRouteOverride)
-									 , &audioRouteOverride);
-		}
-		// switch button state
-		UIImage * tmpImage = [speaker backgroundImageForState: UIControlStateNormal];
-		[speaker setBackgroundImage:[speaker backgroundImageForState: UIControlStateHighlighted] forState:UIControlStateNormal];
-		[speaker setBackgroundImage:tmpImage forState:UIControlStateHighlighted];
-		
+		[self speaker:!isSpeaker];		
 	}else  {
 		NSLog(@"unknown event from incall view");	
 	}

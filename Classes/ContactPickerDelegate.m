@@ -38,7 +38,7 @@
 	CFTypeRef multiValue = ABRecordCopyValue(person, property);
 	CFIndex valueIdx = ABMultiValueGetIndexForIdentifier(multiValue,identifier);
 	NSString *phoneNumber = (NSString *)ABMultiValueCopyValueAtIndex(multiValue, valueIdx);
-	[phoneControllerDelegate setPhoneNumber:phoneNumber];
+	[phoneControllerDelegate setPhoneNumber:phoneNumber withDisplayName:ABRecordCopyCompositeName(person)];
 	
 	[linphoneDelegate selectDialerTab];
 	return false;

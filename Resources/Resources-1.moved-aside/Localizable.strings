@@ -1,0 +1,67 @@
+﻿
+/* No comment provided by engineer. */
+"%@ está llamando" = "%@ está llamando";
+
+/* No comment provided by engineer. */
+"Aceptar" = "Aceptar";
+file://localhost/Users/jehanmonnier/workspaces/workspace-corusquante/linphone-private/linphone/xcode/linphone/Resources/en.lproj
+/* No comment provided by engineer. */
+"Auroc cannot be activated, go to the settings to configure" = "Error en la activación de AXTEL Key, revisa tu configuración.";
+
+/* No comment provided by engineer. */
+"Aviso" = "Aviso";
+
+/* No comment provided by engineer. */
+"Connection interumpida" = "Conexión interrumpida";
+
+/* No comment provided by engineer. */
+"Continue" =  "Continuar";
+
+/* No comment provided by engineer. */
+"Enter your domain" = "Ingresa tu dominio";
+
+/* No comment provided by engineer. */
+"Enter your password" = "Ingresa tu contraseña";
+
+/* No comment provided by engineer. */
+"Enter your username" = "Ingresa tu usuario";
+
+/* No comment provided by engineer. */
+"Error" = "Error";
+
+/* No comment provided by engineer. */
+"Esto borrara sus configuraciones actuales, seguro que desea continuar?" = "Esto borrará tu configuración actual. ¿Seguro que deseas continuar?";
+
+/* No comment provided by engineer. */
+"Favor de conectarse a una red inalambrica" = "No se detectó una red inalámbrica.";;
+
+/* No comment provided by engineer. */
+"Llamando..." = "Llamando...";
+
+/* No comment provided by engineer. */
+"No" = "No";
+
+/* No comment provided by engineer. */
+"Ok" = "Ok";
+
+/* No comment provided by engineer. */
+"Rechazar" = "Rechazar";
+
+/* No comment provided by engineer. */
+"Si" = "Si";
+
+/* No comment provided by engineer. */
+"Wrong axtel number or pin, disabling tunnel" = "AXTEL Key incorrecto. Revisa tu configuración";
+
+/* No comment provided by engineer. */
+"Wrong domain or network unreachable" =  "Dominio incorrecto o servidor no disponible";
+
+/* No comment provided by engineer. */
+"Wrong user name or password, go to the settings menu" = "Usuario o contraseña incorrectos, revisa tu configuración";
+
+/* No comment provided by engineer. */
+"Your phone is no longuer connected, check your connection settings" = "Error en el registro, revisa tu configuración";
+
+/* No comment provided by engineer. */
+"Alert" = "Aviso"
+

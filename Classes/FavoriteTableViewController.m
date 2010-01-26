@@ -18,7 +18,7 @@
  */     
 
 #import "FavoriteTableViewController.h"
-
+#import "AddressBook/AddressBook.h"
 
 
 @implementation FavoriteTableViewController
@@ -33,14 +33,15 @@
 }
 */
 
-/*
+
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
+    [self.tableView setAllowsSelectionDuringEditing:true];
+	// Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
-*/
+
 
 /*
 - (void)viewWillAppear:(BOOL)animated {
@@ -87,7 +88,7 @@
 - (IBAction)doAddFavorite:(id)sender {
 	ABPeoplePickerNavigationController* peoplePickerController = [[[ABPeoplePickerNavigationController alloc] init] autorelease];
 	[peoplePickerController setPeoplePickerDelegate:self];
-	
+	[peoplePickerController setDisplayedProperties:[NSArray arrayWithObject:[NSNumber numberWithInt:kABPersonPhoneProperty]]];
 	[self presentModalViewController: peoplePickerController animated:true];
 }
 - (IBAction)doEditFavorite:(id)sender {
@@ -96,13 +97,17 @@
 	}
 	if (self.tableView.editing) {
 		[self.tableView setEditing:false animated:true];
-		[self.edit setTitle:@"Edit" forState: UIControlStateNormal];
+		[self.edit setImage:[UIImage imageNamed:@"boton_editar_1.png"] forState:UIControlStateNormal];
+		[self.edit setImage:[UIImage imageNamed:@"boton_editar_2.png"] forState:UIControlStateHighlighted];
 	} else {
 		[self.tableView setEditing:true animated:true];
-		[self.edit setTitle:@"Ok" forState: UIControlStateNormal];
+		[self.edit setImage:[UIImage imageNamed:@"bot_ok1.png"] forState:UIControlStateNormal];
+		[self.edit setImage:[UIImage imageNamed:@"bot_ok2.png"] forState:UIControlStateHighlighted];
+
 	}
 }
 #pragma mark Table view methods
+
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 1;
@@ -123,12 +128,18 @@
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
+        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] autorelease];
     }
     LinphoneFriend* friend = ms_list_nth_data(linphone_core_get_friend_list(myLinphoneCore), indexPath.row);
     const char* name = linphone_address_get_username(linphone_friend_get_uri(friend));
+	const char* displayName = linphone_address_get_display_name(linphone_friend_get_uri(friend));
 	
-	[cell.textLabel setText:[[NSString alloc] initWithCString:name encoding:[NSString defaultCStringEncoding]]];
+	if (displayName) {
+		[cell.textLabel setText:[[NSString alloc] initWithCString:displayName encoding:[NSString defaultCStringEncoding]]];
+		[cell.detailTextLabel setText:[NSString stringWithFormat:@"%s",name]];
+	} else {
+		[cell.textLabel setText:[NSString stringWithFormat:@"%s",name]];
+	}
 	cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
 	
     return cell;
@@ -147,11 +158,29 @@
 	// AnotherViewController *anotherViewController = [[AnotherViewController alloc] initWithNibName:@"AnotherView" bundle:nil];
 	// [self.navigationController pushViewController:anotherViewController];
 	// [anotherViewController release];
-    LinphoneFriend* friend = ms_list_nth_data(linphone_core_get_friend_list(myLinphoneCore), indexPath.row);
+	LinphoneFriend* friend = ms_list_nth_data(linphone_core_get_friend_list(myLinphoneCore), indexPath.row);
     const char* name = linphone_address_get_username(linphone_friend_get_uri(friend));
-	[phoneControllerDelegate setPhoneNumber:[[NSString alloc] initWithCString:name encoding:[NSString defaultCStringEncoding]]];
-	[linphoneDelegate selectDialerTab];
+	const char* displayName = linphone_address_get_display_name(linphone_friend_get_uri(friend))!=0
+											?linphone_address_get_display_name(linphone_friend_get_uri(friend))
+											:"";
+	NSString* phoneNumer = [[NSString alloc] initWithCString:name encoding:[NSString defaultCStringEncoding]];
+	NSString* displayNameAsString = [[NSString alloc] initWithCString:displayName encoding:[NSString defaultCStringEncoding]];
+    if (self.tableView.editing)  {
+		// editing mode
+		FavoriteEditViewController* editController = [[[FavoriteEditViewController alloc] initWithNibName:@"FavoriteEditViewController" bundle:nil] autorelease];
+		[editController setInitialPhoneNumber:phoneNumer];
+		[editController setLinphoneCore:myLinphoneCore];
+		[editController setFavoriteIndex:indexPath.row];
+		[editController setInitialName:displayNameAsString];
+		[self presentModalViewController:editController animated:true];
+		
+	} else {
 	
+	[phoneControllerDelegate 
+							setPhoneNumber:phoneNumer 
+							withDisplayName:displayNameAsString];
+	[linphoneDelegate selectDialerTab];
+	}
 	
 }
 
@@ -221,9 +250,8 @@
 	
 	LinphoneFriend * newFriend = linphone_friend_new_with_addr([phoneUri cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 	
-	linphone_friend_set_name(newFriend,[compositeName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+	linphone_address_set_display_name(linphone_friend_get_uri(newFriend),[compositeName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 	linphone_friend_send_subscribe(newFriend, false);
-	//linphone_friend_set_sip_addr(newFriend, const char *uri);
 	linphone_core_add_friend(myLinphoneCore, newFriend);
 	[self dismissModalViewControllerAnimated:true];
 	return false;

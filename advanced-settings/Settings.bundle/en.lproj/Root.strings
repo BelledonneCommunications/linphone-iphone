@@ -1,0 +1,14 @@
+﻿/* A single strings file, whose title is specified in your preferences schema. The strings files provide the localized content to display to the user for each of your preferences. */
+
+"SIP Account" = "SIP Account";
+"User*" = "User*";
+"Pass*" = "Pass*";
+"Domain*" = "Domain*";
+"Proxy" = "Proxy";
+
+"Codecs" = "Codecs";
+
+"Auroc Core" = "Auroc Core";
+"enable Auroc" = "enable Auroc";
+
+"Axtel PIN" = "Axtel PIN";

@@ -28,8 +28,10 @@
 @implementation PhoneViewController
 @synthesize  address ;
 @synthesize  call;
-@synthesize status;
+@synthesize  gsmCall;
 
+@synthesize pad;
+@synthesize endPhoneNumEditing;
 @synthesize one;
 @synthesize two;
 @synthesize three;
@@ -42,11 +44,24 @@
 @synthesize star;
 @synthesize zero;
 @synthesize hash;
-
+@synthesize tun;
 @synthesize back;
+@synthesize linphoneDelegate;
 
 -(void)setPhoneNumber:(NSString*)number {
 	[address setText:number];
+	if (displayName) {
+		[displayName release];
+		displayName=nil;
+	}
+}
+-(void)setPhoneNumber:(NSString*)number withDisplayName:(NSString*) name {
+	[self setPhoneNumber:number];
+	displayName = name;
+}
+
+-(void) callLogUpdated:(LinphoneCallLog*) log {
+	//nop
 }
 
 -(void)dismissIncallView {
@@ -55,25 +70,65 @@
 
 //implements call/cancel button behavior 
 -(IBAction) doAction:(id)sender {
+	//1 normalize phone number
 	
-	if (sender == call) {
-		if (!linphone_core_in_call(mCore)) {
-			const char* lCallee = [[address text]  cStringUsingEncoding:[NSString defaultCStringEncoding]];
-			linphone_core_invite(mCore,lCallee) ;		
+	if (sender == gsmCall || sender == call) {
+		char normalizedUserName[256];
+		LinphoneProxyConfig* proxyCfg;	
+		//get default proxy
+		linphone_core_get_default_proxy(mCore,&proxyCfg);
+		NSString* toUserName = [NSString stringWithString:[address text]];
+		linphone_proxy_config_normalize_number(proxyCfg,[toUserName cStringUsingEncoding:[NSString defaultCStringEncoding]],normalizedUserName,sizeof(normalizedUserName));
+		
+		if (sender == call) {
+			// check if ready to place a call
+			
+			if (!linphone_proxy_config_is_registered(proxyCfg)) {
+#ifdef LINPHONE_WIFI_ONLY	
+				if (!linphone_proxy_config_register_enabled(proxyCfg)) {
+					UIAlertView* error = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"Connection interumpida",nil)
+																	message:NSLocalizedString(@"Favor de conectarse a una red inalambrica",nil) 
+																   delegate:nil 
+														  cancelButtonTitle:NSLocalizedString(@"Ok",nil) 
+														  otherButtonTitles:nil];
+					[error show];
+					
+				} else {
+					[self displayNetworkErrorAlert];
+				}
+#else
+				[self displayNetworkErrorAlert];
+#endif /*LINPHONE_WIFI_ONLY*/
+				return;
+			}
+			
+			if (!linphone_core_in_call(mCore)) {
+				LinphoneAddress* tmpAddress = linphone_address_new(linphone_core_get_identity(mCore));
+				linphone_address_set_username(tmpAddress,normalizedUserName);
+				linphone_address_set_display_name(tmpAddress,displayName?[displayName cStringUsingEncoding:[NSString defaultCStringEncoding]]:nil);
+				linphone_core_invite(mCore,linphone_address_as_string(tmpAddress)) ;
+				linphone_address_destroy(tmpAddress);
+			} 
+			if (linphone_core_inc_invite_pending(mCore)) {
+				linphone_core_accept_call(mCore,NULL);	
+			}
+			//Cancel audio route redirection
+			UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_None;  
+			
+			AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute
+									 , sizeof (audioRouteOverride)
+									 , &audioRouteOverride);
+		} else if (sender == gsmCall) {
+			NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"tel:%s", normalizedUserName]];
+			[[UIApplication sharedApplication] openURL:url];
 		} 
-		if (linphone_core_inc_invite_pending(mCore)) {
-			linphone_core_accept_call(mCore,NULL);	
-		}
-		//Cancel audio route redirection
-		UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_None;  
 		
-		AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute
-					, sizeof (audioRouteOverride)
-					, &audioRouteOverride);
-		
+	} else if (sender == endPhoneNumEditing) {
+		[address  resignFirstResponder];
+	} else if (sender == tun) {
+		[self setTunnelState: [linphoneDelegate toggleTunnel]];
+	}
 	
-	} 
-
 }
 
 //implements keypad behavior 
@@ -114,6 +169,10 @@
 		} else if (sender == back) {
 			if ([address.text length] >0) {
 				newAddress = [address.text substringToIndex: [address.text length]-1];
+				//start timer for back
+				[self performSelector:@selector(doBackspaceLongPress) withObject:nil afterDelay:0.5];
+				//erase displayname is case of number correction
+				displayName=@"";
 			} 
 		} else  {
 			NSLog(@"unknown event from diad pad");
@@ -132,7 +191,13 @@
 		[NSObject cancelPreviousPerformRequestsWithTarget:self 
 												 selector:@selector(doKeyZeroLongPress)
 												   object:nil];
-	} else  {
+	} if (sender == back) {
+		//cancel timer for back
+		[NSObject cancelPreviousPerformRequestsWithTarget:self 
+												 selector:@selector(doBackspaceLongPress)
+												   object:nil];
+		
+	}else  {
 		NSLog(@"unknown up event from dial pad");	
 	}
 }
@@ -143,17 +208,37 @@
 
 }
 
+-(void)doBackspaceLongPress {
+	[address setText:@""];
+}
+
 -(void) setLinphoneCore:(LinphoneCore*) lc {
 	mCore = lc;
 	[myIncallViewController setLinphoneCore:mCore];
+	
 }
 -(void)displayStatus:(NSString*) message {
-	[status setText:message];
-	if (myIncallViewController != nil) {
-		[myIncallViewController displayStatus:message];
-	}
 }
 
+-(void) enableCall:(bool) enable{
+	if (enable) {
+		[call setImage:[UIImage imageNamed:@"boton_AXTEL_2.png"] forState:UIControlStateNormal];
+		[call setImage:[UIImage imageNamed:@"boton_AXTEL_1.png"] forState:UIControlStateHighlighted];
+	} else {
+		[call setImage:[UIImage imageNamed:@"boton_AXTEL_1.png"] forState:UIControlStateNormal];
+		[call setImage:[UIImage imageNamed:@"boton_AXTEL_2.png"] forState:UIControlStateHighlighted];
+	}
+}
+-(void) displayNetworkErrorAlert {
+	
+	UIAlertView* error = [[UIAlertView alloc]		initWithTitle:NSLocalizedString(@"Connection interumpida",nil)
+													message:NSLocalizedString(@"Your phone is no longuer connected, check your connection settings",nil) 
+													delegate:nil 
+													cancelButtonTitle:NSLocalizedString(@"Ok",nil) 
+													otherButtonTitles:nil];
+	[error show];
+	
+}
 /*
  // The designated initializer.  Override if you create the controller programmatically and want to perform customization that is not appropriate for viewDidLoad.
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -164,7 +249,6 @@
 }
 */
 
-
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -173,11 +257,26 @@
 		[myIncallViewController setPhoneviewDelegate:self];
 		
 	}
+	[[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(keyboardWasShown:)
+												 name:UIKeyboardDidShowNotification object:nil];
+	
+    [[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(keyboardWillHide:)
+												 name:UIKeyboardWillHideNotification object:nil];
 	
 	
 	
 }
 
+-(void) keyboardWasShown:(NSNotification*)aNotification {
+	[pad setHidden:true];
+	[back setHidden:true];
+}
+-(void) keyboardWillHide:(NSNotification*)aNotification {
+	[pad setHidden:false];
+	[back setHidden:false];
+}
 
 /*
 // Override to allow orientations other than the default portrait orientation.
@@ -200,15 +299,6 @@
 }
 
 
-- (BOOL)textFieldShouldReturn:(UITextField *)theTextField {
-    if (theTextField == address) {
-        [address resignFirstResponder];
-    }
-    return YES;
-}
-
-
-
 -(void) dismissAlertDialog:(UIAlertView*) alertView{
 	[alertView dismissWithClickedButtonIndex:0 animated:TRUE];
 }
@@ -216,8 +306,15 @@
 - (void)dealloc {
     [address dealloc];
 	[call dealloc];
-	[status dealloc];
 	[super dealloc];
+}
+
+-(void)setTunnelState:(bool) state {
+	if (state) {
+		[tun setImage:[UIImage imageNamed:@"auroc-On.png"] forState:UIControlStateNormal];
+	} else {
+		[tun setImage:[UIImage imageNamed:@"auroc-Off.png"] forState:UIControlStateNormal];
+	}
 }
 
 -(void) callStateChange:(LinphoneGeneralState*) state {
@@ -240,16 +337,33 @@
 	//	GSTATE_CALL_ERROR,
 	//	GSTATE_INVALID
 	switch (state->new_state) {
+		case GSTATE_REG_FAILED: {
+			[self enableCall:false];
+			break;
+		}
+		case GSTATE_REG_OK: {
+			LinphoneProxyConfig* proxyCfg;	
+			//get default proxy
+			
+			if ((linphone_core_get_default_proxy(mCore,&proxyCfg)==0) && linphone_proxy_config_is_registered(proxyCfg)) {
+				[self enableCall:true];
+			} else {
+				[self enableCall:false];
+			}
+			break;
+		}
 		case GSTATE_CALL_IN_INVITE:
 		case GSTATE_CALL_OUT_INVITE: {
-			//[myIncallViewController startCall];
+			[myIncallViewController resetView];
 			[self presentModalViewController: myIncallViewController animated:true];
+			[myIncallViewController displayStatus:NSLocalizedString(@"Llamando...",nil)];
+			
 			break;
 		}
 			
 		case GSTATE_CALL_ERROR: {
-			NSString* lTitle= state->message!=nil?[NSString stringWithCString:state->message length:strlen(state->message)]: @"Error";
-			NSString* lMessage=lTitle;
+			NSString* lTitle= @"Error";
+			NSString* lMessage=state->message!=nil?[NSString stringWithCString:state->message length:strlen(state->message)]: @"";
 			
 			
 			UIAlertView* error = [[UIAlertView alloc] initWithTitle:lTitle
@@ -272,6 +386,7 @@
 		case GSTATE_CALL_END: {
 			//end off call, just dismiss Incall view
 			[self dismissIncallView];
+			displayName=@"";
 			break;
 		}
 		default:

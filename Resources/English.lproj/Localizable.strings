@@ -1,0 +1,75 @@
+﻿/* 
+   Localizable.strings
+   linphone
+
+   Created by jehan on 25/01/10.
+   Copyright 2010 __MyCompanyName__. All rights reserved.
+ */
+
+
+/* No comment provided by engineer. */
+"%@ está llamando" = "%@ is calling";
+
+/* No comment provided by engineer. */
+"Aceptar" = "Accept";
+
+/* No comment provided by engineer. */
+"Auroc cannot be activated, go to the settings to configure" = "Error en la activación de AXTEL Key, revisa tu configuración.";
+
+/* No comment provided by engineer. */
+"Aviso" = "Alert";
+
+/* No comment provided by engineer. */
+"Connection interumpida" = "Conexión interrumpida";
+
+/* No comment provided by engineer. */
+"Continue" =  "Continue";
+
+/* No comment provided by engineer. */
+"Enter your domain" = "Enter your domain";
+
+/* No comment provided by engineer. */
+"Enter your password" = "Enter your password";
+
+/* No comment provided by engineer. */
+"Enter your username" = "Enter your username";
+
+/* No comment provided by engineer. */
+"Error" = "Error";
+
+/* No comment provided by engineer. */
+"Esto borrara sus configuraciones actuales, seguro que desea continuar?" = "Configuration reset, are you sure ?";
+
+/* No comment provided by engineer. */
+"Favor de conectarse a una red inalambrica" = "try to connect to wifi first";
+
+/* No comment provided by engineer. */
+"Llamando..." = "Calling...";
+
+/* No comment provided by engineer. */
+"No" = "No";
+
+/* No comment provided by engineer. */
+"Ok" = "Ok";
+
+/* No comment provided by engineer. */
+"Rechazar" = "reject";
+
+/* No comment provided by engineer. */
+"Si" = "Yes";
+
+/* No comment provided by engineer. */
+"Wrong axtel number or pin, disabling tunnel" = "Wrong axtel number or pin, disabling tunnel";
+
+/* No comment provided by engineer. */
+"Wrong domain or network unreachable" =  "Wrong domain or network unreachable";
+
+/* No comment provided by engineer. */
+"Wrong user name or password, go to the settings menu" = "Wrong user name or password, go to the settings menu";
+
+/* No comment provided by engineer. */
+"Your phone is no longuer connected, check your connection settings" = "Error en el registro, revisa tu configuración";
+
+/* No comment provided by engineer. */
+"Alert" = "Alert";
+

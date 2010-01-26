@@ -20,12 +20,26 @@
 
 #import <UIKit/UIKit.h>
 #import <AddressBookUI/ABPeoplePickerNavigationController.h>
-#include"linphonecore.h"
+#import <SystemConfiguration/SCNetworkReachability.h>
+#import "linphonecore.h"
 
 
-@protocol LinphoneTabManagerDelegate
+@protocol LinphoneManagerDelegate
 
 -(void)selectDialerTab;
+-(void)launchMainUi;
+/*
+ * return true if register is activated
+ */
+-(bool)initProxySettings;
+/* return new tunnel state*/
+-(bool) toggleTunnel;
+-(bool) isTunnel;
+-(void) resetConfig;
+
+
+-(LinphoneCore*) getLinphoneCore; 
+
 
 @end
 
@@ -34,8 +48,9 @@
 @class PhoneViewController;
 @class CallHistoryTableViewController;
 @class FavoriteTableViewController;
+@class FirstLoginViewController;
 
-@interface linphoneAppDelegate : NSObject <UIApplicationDelegate,LinphoneTabManagerDelegate,UIActionSheetDelegate> {
+@interface linphoneAppDelegate : NSObject <UIApplicationDelegate,LinphoneManagerDelegate,UIActionSheetDelegate> {
     UIWindow *window;
 	IBOutlet UITabBarController*  myTabBarController;
 	IBOutlet ABPeoplePickerNavigationController* myPeoplePickerController;
@@ -44,9 +59,14 @@
 	FavoriteTableViewController* myFavoriteTableViewController;
 	
 	ContactPickerDelegate* myContactPickerDelegate;
+	FirstLoginViewController* myFirstLoginViewController;
 	
-	int traceLevel;
+	bool isTunnelConfigured;
+	bool isTunnel;
+	bool isDebug;
 	LinphoneCore* myLinphoneCore;
+	SCNetworkReachabilityContext proxyReachabilityContext;
+	SCNetworkReachabilityRef proxyReachability;
 	
 	
 }
@@ -54,6 +74,10 @@
  * liblinphone initialization method
  **********************************/
 -(void) startlibLinphone;
+/**
+ * return true if register is activated
+ */
+bool networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void * info);
 
 /*
  * liblinphone scheduling method;
@@ -62,6 +86,10 @@
 
 -(void) newIncomingCall:(NSString*) from;
 
+-(void) enableTunnel;
+-(void) disableTunnel;
+-(void) doRegister;
+-(void) doUnRegister;
 
 -(PayloadType*) findPayload:(NSString*)type withRate:(int)rate from:(const MSList*)list;
 
@@ -70,7 +98,7 @@
 @property (nonatomic, retain) IBOutlet UITabBarController*  myTabBarController;
 @property (nonatomic, retain) ABPeoplePickerNavigationController* myPeoplePickerController;
 @property (nonatomic, retain) IBOutlet PhoneViewController* myPhoneViewController;
-
+@property (nonatomic, readonly)  FirstLoginViewController* myFirstLoginViewController;
 
 @end
 

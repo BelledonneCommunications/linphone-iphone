@@ -25,12 +25,12 @@
 @interface GenericTabViewController : UITableViewController {
 	LinphoneCore* myLinphoneCore;
 	id<PhoneViewControllerDelegate> phoneControllerDelegate;
-	id<LinphoneTabManagerDelegate> linphoneDelegate;
+	id<LinphoneManagerDelegate> linphoneDelegate;
 	IBOutlet UIView* header; 
 }
 -(void) setLinphoneCore:(LinphoneCore*) lc;
 @property (nonatomic, retain) id<PhoneViewControllerDelegate> phoneControllerDelegate;
-@property (nonatomic, retain) id<LinphoneTabManagerDelegate> linphoneDelegate;
+@property (nonatomic, retain) id<LinphoneManagerDelegate> linphoneDelegate;
 @property (nonatomic, retain) IBOutlet UIView* header;
 @end
 

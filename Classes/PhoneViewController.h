@@ -19,25 +19,31 @@
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
 #import "linphonecore.h"
+#import "linphoneAppDelegate.h"
 
 @protocol PhoneViewControllerDelegate
 
 -(void)setPhoneNumber:(NSString*)number;
+-(void)setPhoneNumber:(NSString*)number withDisplayName:(NSString*) name;
 -(void)dismissIncallView;
 -(void)displayStatus:(NSString*) message;
+-(void)setTunnelState:(bool) state;
 @end
 @class IncallViewController;
+
 
 @interface PhoneViewController : UIViewController <UITextFieldDelegate,PhoneViewControllerDelegate> {
 
 @private
 	//UI definition
-	UITextField* address;
 	UIButton* call;
+	UIButton* gsmCall;
+	
+	UIButton* endPhoneNumEditing;
 
-	UILabel* status;
-
+	
 	//key pad
+	UIView* pad;
 	UIButton* one;
 	UIButton* two;
 	UIButton* three;
@@ -50,19 +56,28 @@
 	UIButton* star;
 	UIButton* zero;
 	UIButton* hash;
+	UIButton* tun;
 
 	UIButton* back;
 	/*
 	 * lib linphone main context
 	 */
 	LinphoneCore* mCore;
+	// to params, might be put in a separated object
+	UITextField* address;
+	NSString* displayName;
+	id<LinphoneManagerDelegate> linphoneDelegate;
+	
 	IncallViewController *myIncallViewController;
+	
 	
 }
 @property (nonatomic, retain) IBOutlet UITextField* address;
 @property (nonatomic, retain) IBOutlet UIButton* call;
-@property (nonatomic, retain) IBOutlet UILabel* status;
+@property (nonatomic, retain) IBOutlet UIButton* gsmCall;
 
+@property (nonatomic, retain) IBOutlet UIView* pad;
+@property (nonatomic, retain) IBOutlet UIButton* endPhoneNumEditing;
 @property (nonatomic, retain) IBOutlet UIButton* one;
 @property (nonatomic, retain) IBOutlet UIButton* two;
 @property (nonatomic, retain) IBOutlet UIButton* three;
@@ -75,17 +90,23 @@
 @property (nonatomic, retain) IBOutlet UIButton* star;
 @property (nonatomic, retain) IBOutlet UIButton* zero;
 @property (nonatomic, retain) IBOutlet UIButton* hash;
-
+@property (nonatomic, retain) IBOutlet UIButton* tun;
 @property (nonatomic, retain) IBOutlet UIButton* back;
 
+@property (nonatomic, retain) id<LinphoneManagerDelegate> linphoneDelegate;
 
 
 /*
  * Handle call state change from linphone
  */
 -(void) callStateChange:(LinphoneGeneralState*) state;
+-(void) callLogUpdated:(LinphoneCallLog*) log;
 
--(void) setLinphoneCore:(LinphoneCore*) lc;
+//-(void) setLinphoneCore:(LinphoneCore*) lc;
+-(void) enableCall:(bool) value;
+-(void) keyboardWasShown:(NSNotification*)aNotification;
+-(void) keyboardWillHide:(NSNotification*)aNotification;
+
 
 /********************
  * UI method handlers
@@ -100,7 +121,9 @@
 
 - (IBAction)doKeyPadUp:(id)sender;
 
+
 -(void) dismissAlertDialog:(UIAlertView*)alertView;
 
 
+-(void) displayNetworkErrorAlert; 
 @end

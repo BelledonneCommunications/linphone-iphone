@@ -12,7 +12,7 @@ inc_timeout=15
 use_info=0
 use_ipv6=0
 register_only_when_network_is_up=0
-default_proxy=-1
+default_proxy=0
 
 [rtp]
 audio_rtp_port=7076

@@ -20,6 +20,7 @@
 
 #import <UIKit/UIKit.h>
 #import "GenericTabViewController.h"
+#import "FavoriteEditViewController.h"
 
 @interface FavoriteTableViewController : GenericTabViewController<ABPeoplePickerNavigationControllerDelegate> {
 	UIButton* add;
@@ -32,5 +33,6 @@
 
 @property (nonatomic, retain) IBOutlet UIButton* add;
 @property (nonatomic, retain) IBOutlet UIButton* edit;
+
 @end
 
