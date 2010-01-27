@@ -267,33 +267,6 @@ LinphoneCoreVTable linphone_iphone_vtable = {
 										[factoryConfigFile cStringUsingEncoding:[NSString defaultCStringEncoding]],
 										self);
 
-	//tunneling config
-	isTunnelConfigured = [[NSUserDefaults standardUserDefaults] boolForKey:@"tunnelenable_preference"]; 
-	NSString* username = [[NSUserDefaults standardUserDefaults] stringForKey:@"username_preference"];
-	NSString* axtelPin = [[NSUserDefaults standardUserDefaults] stringForKey:@"axtelpin_preference"];
-	
-	if (isTunnelConfigured) {
-		const char* tunnelIp=axtunnel_get_ip_from_key([username cStringUsingEncoding:[NSString defaultCStringEncoding]] 
-													  ,[axtelPin cStringUsingEncoding:[NSString defaultCStringEncoding]] );
-		if(!tunnelIp) {
-			UIAlertView* alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Alert",nil)
-															message:NSLocalizedString(@"Wrong axtel number or pin, disabling tunnel",nil) 
-															delegate:nil 
-															cancelButtonTitle:NSLocalizedString(@"Continue",nil) 
-															otherButtonTitles:nil];
-			[alert show];
-			isTunnelConfigured=false;
-			isTunnel=false;
-			
-		} else {
-			linphone_iphone_tunneling_init(tunnelIp,443,isDebug);
-			isTunnel=true;
-		}
-	}
-
-	if (isTunnel) {
-		linphone_iphone_enable_tunneling(myLinphoneCore); 
-	}
 	
 	// Set audio assets
 	const char*  lRing = [[myBundle pathForResource:@"oldphone-mono"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
@@ -304,7 +277,7 @@ LinphoneCoreVTable linphone_iphone_vtable = {
 	//init proxy config if not first login
 	bool isFirstLoginDone = [[NSUserDefaults standardUserDefaults] boolForKey:@"firstlogindone_preference"]; 
 	if (isFirstLoginDone) {
-		[self initProxySettings];
+		[self initProxyAndTunnelSettings];
 	}
 	//Configure Codecs
 	
@@ -363,11 +336,40 @@ LinphoneCoreVTable linphone_iphone_vtable = {
 									repeats:YES];
 	
 }
--(bool)initProxySettings {
+-(bool)initProxyAndTunnelSettings {
+	//tunneling config
+	isTunnelConfigured = [[NSUserDefaults standardUserDefaults] boolForKey:@"tunnelenable_preference"]; 
+	NSString* username = [[NSUserDefaults standardUserDefaults] stringForKey:@"username_preference"];
+	NSString* axtelPin = [[NSUserDefaults standardUserDefaults] stringForKey:@"axtelpin_preference"];
+	
+	if (isTunnelConfigured) {
+		const char* tunnelIp=axtunnel_get_ip_from_key([username cStringUsingEncoding:[NSString defaultCStringEncoding]] 
+													  ,[axtelPin cStringUsingEncoding:[NSString defaultCStringEncoding]] );
+		if(!tunnelIp) {
+			UIAlertView* alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Alert",nil)
+															message:NSLocalizedString(@"Wrong axtel number or pin, disabling tunnel",nil) 
+														   delegate:nil 
+												  cancelButtonTitle:NSLocalizedString(@"Continue",nil) 
+												  otherButtonTitles:nil];
+			[alert show];
+			isTunnelConfigured=false;
+			isTunnel=false;
+			
+		} else {
+			linphone_iphone_tunneling_init(tunnelIp,443,isDebug);
+			isTunnel=true;
+		}
+	}
+	
+	if (isTunnel) {
+		linphone_iphone_enable_tunneling(myLinphoneCore); 
+	}
+	
+	[myPhoneViewController setTunnelState:isTunnel];
+	
 	//configure sip account
 	//get data from Settings bundle
 	NSString* accountNameUri = [[NSUserDefaults standardUserDefaults] stringForKey:@"account_preference"];
-	NSString* username = [[NSUserDefaults standardUserDefaults] stringForKey:@"username_preference"];
 	NSString* domain = [[NSUserDefaults standardUserDefaults] stringForKey:@"domain_preference"];
 	if (!accountNameUri) {
 		accountNameUri = [NSString stringWithFormat:@"sip:%@@%@",username,domain];

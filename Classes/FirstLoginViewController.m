@@ -129,7 +129,7 @@ end:
 		[error show];
 	} else {
 		//[self.view removeFromSuperview:self];
-		if ([mainDelegate initProxySettings]) {
+		if ([mainDelegate initProxyAndTunnelSettings]) {
 			[self.activityIndicator setHidden:false];
 		} else {
 			error = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error",nil)

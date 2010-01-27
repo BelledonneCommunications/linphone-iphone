@@ -298,7 +298,11 @@
 	// e.g. self.myOutlet = nil;
 }
 
-
+/*
+- (void)viewWillAppear:(BOOL)animated {
+	[self setTunnelState:[linphoneDelegate isTunnel]];
+}
+*/
 -(void) dismissAlertDialog:(UIAlertView*) alertView{
 	[alertView dismissWithClickedButtonIndex:0 animated:TRUE];
 }

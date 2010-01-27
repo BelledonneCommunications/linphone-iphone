@@ -31,7 +31,7 @@
 /*
  * return true if register is activated
  */
--(bool)initProxySettings;
+-(bool)initProxyAndTunnelSettings;
 /* return new tunnel state*/
 -(bool) toggleTunnel;
 -(bool) isTunnel;
@@ -89,7 +89,6 @@ bool networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 -(void) enableTunnel;
 -(void) disableTunnel;
 -(void) doRegister;
--(void) doUnRegister;
 
 -(PayloadType*) findPayload:(NSString*)type withRate:(int)rate from:(const MSList*)list;
 
