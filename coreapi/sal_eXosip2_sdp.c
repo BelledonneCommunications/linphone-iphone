@@ -167,7 +167,6 @@ static void add_line(sdp_message_t *msg, int lineno, const SalStreamDescription 
 
 sdp_message_t *media_description_to_sdp(const SalMediaDescription *desc){
 	int i;
-	char *tmp;
 	sdp_message_t *msg=create_generic_sdp(desc);
 	for(i=0;i<desc->nstreams;++i){
 		add_line(msg,i,&desc->streams[i]);

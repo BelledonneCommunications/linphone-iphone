@@ -17,40 +17,41 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "sal.h"
-#include <eXosip2/eXosip.h>
+#include "sal_eXosip2.h"
 
 #include "offeranswer.h"
 
-extern sdp_message_t *media_description_to_sdp(const SalMediaDescription *sal);
-extern int sdp_to_media_description(sdp_message_t *sdp, SalMediaDescription *desc);
 
-struct Sal{
-	SalCallbacks callbacks;
-	int running;
-	int session_expires;
-	int automatic_action;
-};
+static SalOp * sal_find_register(Sal *sal, int rid){
+	const MSList *elem;
+	SalOp *op;
+	for(elem=sal->registers;elem!=NULL;elem=elem->next){
+		op=(SalOp*)elem->data;
+		if (op->rid==rid) return op;
+	}
+	return NULL;
+}
 
-struct SalOp{
-	SalOpBase base;
-	int cid;
-	int did;
-	int tid;
-	int rid;
-	int expires;
-	SalMediaDescription *result;
-	sdp_message_t *sdp_answer;
-	eXosip_event_t *pending_auth;
-	bool_t supports_session_timers;
-	bool_t sdp_offering;
-	bool_t reinvite;
-};
+static void sal_add_register(Sal *sal, SalOp *op){
+	sal->registers=ms_list_append(sal->registers,op);
+}
+
+static void sal_remove_register(Sal *sal, int rid){
+	MSList *elem;
+	SalOp *op;
+	for(elem=sal->registers;elem!=NULL;elem=elem->next){
+		op=(SalOp*)elem->data;
+		if (op->rid==rid) {
+			sal->registers=ms_list_remove_link(sal->registers,elem);
+			return;
+		}
+	}
+}
 
 SalOp * sal_op_new(Sal *sal){
 	SalOp *op=ms_new(SalOp,1);
 	__sal_op_init(op,sal);
-	op->cid=op->did=op->tid=-1;
+	op->cid=op->did=op->tid=op->rid=op->nid=op->sid-1;
 	op->supports_session_timers=FALSE;
 	op->sdp_offering=TRUE;
 	op->pending_auth=NULL;
@@ -64,6 +65,9 @@ void sal_op_release(SalOp *op){
 		sdp_message_free(op->sdp_answer);
 	if (op->pending_auth)
 		eXosip_event_free(op->pending_auth);
+	if( op->rid!=-1){
+		sal_remove_register(op->base.root,op->rid);
+	}
 	__sal_op_free(op);
 }
 
@@ -107,6 +111,10 @@ void sal_set_callbacks(Sal *ctx, const SalCallbacks *cbs){
 		ctx->callbacks.dtmf_received=(SalOnDtmfReceived)unimplemented_stub;
 	if (ctx->callbacks.presence_changed==NULL)
 		ctx->callbacks.presence_changed=(SalOnPresenceChanged)unimplemented_stub;
+	if (ctx->callbacks.subscribe_received==NULL)
+		ctx->callbacks.subscribe_received=(SalOnSubscribeReceived)unimplemented_stub;
+	if (ctx->callbacks.text_received==NULL)
+		ctx->callbacks.text_received=(SalOnTextReceived)unimplemented_stub;
 	if (ctx->callbacks.internal_message==NULL)
 		ctx->callbacks.internal_message=(SalOnInternalMsg)unimplemented_stub;
 }
@@ -805,7 +813,7 @@ static bool_t register_again_with_updated_contact(SalOp *op, osip_message_t *ori
 }
 
 static void registration_success(Sal *sal, eXosip_event_t *ev){
-	SalOp *op=(SalOp*)ev->external_reference;
+	SalOp *op=sal_find_register(sal,ev->rid);
 	osip_header_t *h=NULL;
 	bool_t registered;
 	if (op==NULL){
@@ -824,7 +832,7 @@ static void registration_success(Sal *sal, eXosip_event_t *ev){
 static bool_t registration_failure(Sal *sal, eXosip_event_t *ev){
 	int status_code=0;
 	const char *reason=NULL;
-	SalOp *op=(SalOp*)ev->external_reference;
+	SalOp *op=sal_find_register(sal,ev->rid);
 	SalReason sr=SalReasonUnknown;
 	SalError se=SalErrorUnknown;
 	
@@ -914,22 +922,23 @@ static bool_t process_event(Sal *sal, eXosip_event_t *ev){
 			}
 			break;
 		case EXOSIP_IN_SUBSCRIPTION_NEW:
-			ms_message("CALL_SUBSCRIPTION_NEW or UPDATE");
-			linphone_subscription_new(lc,ev);
+			ms_message("CALL_SUBSCRIPTION_NEW ");
+			sal_exosip_subscription_recv(sal,ev);
 			break;
 		case EXOSIP_SUBSCRIPTION_UPDATE:
+			ms_message("CALL_SUBSCRIPTION_UPDATE");
 			break;
 		case EXOSIP_SUBSCRIPTION_NOTIFY:
 			ms_message("CALL_SUBSCRIPTION_NOTIFY");
-			linphone_notify_recv(lc,ev);
+			sal_exosip_notify_recv(sal,ev);
 			break;
 		case EXOSIP_SUBSCRIPTION_ANSWERED:
 			ms_message("EXOSIP_SUBSCRIPTION_ANSWERED, ev->sid=%i\n",ev->sid);
-			linphone_subscription_answered(lc,ev);
+			sal_exosip_subscription_answered(sal,ev);
 			break;
 		case EXOSIP_SUBSCRIPTION_CLOSED:
 			ms_message("EXOSIP_SUBSCRIPTION_CLOSED\n");
-			linphone_subscription_closed(lc,ev);
+			sal_exosip_subscription_closed(sal,ev);
 			break;
 		case EXOSIP_CALL_RELEASED:
 			ms_message("CALL_RELEASED\n");
@@ -971,20 +980,22 @@ int sal_iterate(Sal *sal){
 			eXosip_unlock();
 		}
 	}
+	return 0;
 }
 
 int sal_register(SalOp *h, const char *proxy, const char *from, int expires){
 	osip_message_t *msg;
 	if (h->rid==-1){
 		eXosip_lock();
-		h->rid=eXosip_register_build_initial_register(from,proxy,sal_op_get_contact(op),expires,&msg);
+		h->rid=eXosip_register_build_initial_register(from,proxy,sal_op_get_contact(h),expires,&msg);
+		sal_add_register(h->base.root,h);
 	}else{
 		eXosip_lock();
 		eXosip_register_build_register(h->rid,expires,&msg);	
 	}
 	eXosip_register_send_register(h->rid,msg);
 	eXosip_unlock();
-	op->expires=expires;
+	h->expires=expires;
 	return 0;
 }
 

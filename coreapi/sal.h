@@ -111,6 +111,7 @@ typedef struct SalOpBase{
 	char *to;
 	SalMediaDescription *local_media;
 	SalMediaDescription *remote_media;
+	void *user_pointer;
 } SalOpBase;
 
 
@@ -160,7 +161,8 @@ typedef void (*SalOnVfuRequest)(SalOp *op);
 typedef void (*SalOnDtmfReceived)(SalOp *op, char dtmf);
 typedef void (*SalOnRefer)(Sal *sal, SalOp *op, const char *referto);
 typedef void (*SalOnTextReceived)(Sal *sal, const char *from, const char *msg);
-typedef void (*SalOnPresenceChanged)(Sal *sal, const char *from, SalPresenceStatus status);
+typedef void (*SalOnPresenceChanged)(SalOp *op, SalPresenceStatus status, const char *msg);
+typedef void (*SalOnSubscribeReceived)(SalOp *sal, const char *from);
 typedef void (*SalOnInternalMsg)(Sal *sal, const char *msg);
 
 typedef struct SalCallbacks{
@@ -180,6 +182,7 @@ typedef struct SalCallbacks{
 	SalOnRefer refer_received;
 	SalOnTextReceived text_received;
 	SalOnPresenceChanged presence_changed;
+	SalOnSubscribeReceived subscribe_received;
 	SalOnInternalMsg internal_message;
 }SalCallbacks;
 
@@ -206,10 +209,12 @@ void sal_op_set_from(SalOp *op, const char *from);
 void sal_op_set_to(SalOp *op, const char *to);
 void sal_op_release(SalOp *h);
 void sal_op_authenticate(SalOp *h, const SalAuthInfo *info);
-
+void sal_op_set_user_pointer(SalOp *h, void *up);
 const char *sal_op_get_from(const SalOp *op);
 const char *sal_op_get_to(const SalOp *op);
 const char *sal_op_get_contact(const SalOp *op);
+const char *sal_op_get_route(const SalOp *op);
+void *sal_op_get_user_pointer(const SalOp *op);
 
 /*Call API*/
 int sal_call_set_local_media_description(SalOp *h, SalMediaDescription *desc);
@@ -219,7 +224,17 @@ int sal_call_decline(SalOp *h, SalReason reason, const char *redirection /*optio
 const SalMediaDescription * sal_call_get_final_media_description(SalOp *h);
 int sal_call_terminate(SalOp *h);
 
+/*Registration*/
 int sal_register(SalOp *op, const char *proxy, const char *from, int expires);
+
+/*Messaging */
+int sal_text_send(SalOp *op, const char *from, const char *to, const char *text);
+
+/*presence Subscribe/notify*/
+int sal_subscribe_presence(SalOp *op, const char *from, const char *to);
+int sal_subscribe_accept(SalOp *op);
+int sal_subscribe_decline(SalOp *op);
+int sal_notify_presence(SalOp *op, SalPresenceStatus status, const char *status_message);
 
 
 #define payload_type_set_number(pt,n)	(pt)->user_data=(void*)((long)n);
