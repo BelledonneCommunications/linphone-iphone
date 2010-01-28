@@ -572,7 +572,7 @@ static bool_t call_failure(Sal *sal, eXosip_event_t *ev){
 				sr=SalReasonUnknown;
 			}else error=SalErrorNoResponse;
 	}
-	sal->callbacks.call_failure(op,error,sr,reason);
+	if (code!=487) sal->callbacks.call_failure(op,error,sr,reason);
 	return TRUE;
 }
 
