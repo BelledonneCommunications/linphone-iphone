@@ -40,14 +40,6 @@ extern "C" {
 struct _MSSndCard;
 struct _LinphoneCore;
 
-bool_t payload_type_enabled(struct _PayloadType *pt);
-void payload_type_set_enable(struct _PayloadType *pt,int value);
-const char *payload_type_get_description(struct _PayloadType *pt);
-int payload_type_get_bitrate(PayloadType *pt);
-const char *payload_type_get_mime(PayloadType *pt);
-int payload_type_get_rate(PayloadType *pt);
-
-
 struct _LpConfig;
 
 typedef struct sip_config
@@ -725,6 +717,12 @@ int linphone_core_set_audio_codecs(LinphoneCore *lc, MSList *codecs);
 const MSList *linphone_core_get_video_codecs(const LinphoneCore *lc);
 
 int linphone_core_set_video_codecs(LinphoneCore *lc, MSList *codecs);
+
+bool_t linphone_core_payload_type_enabled(LinphoneCore *lc, PayloadType *pt);
+
+int linphone_core_enable_payload_type(LinphoneCore *lc, PayloadType *pt, bool_t enable);
+
+const char *linphone_core_get_payload_type_description(LinphoneCore *lc, PayloadType *pt);
 
 bool_t linphone_core_check_payload_type_usability(LinphoneCore *lc, PayloadType *pt);
 

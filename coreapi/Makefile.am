@@ -15,16 +15,16 @@ lib_LTLIBRARIES=liblinphone.la
 
 liblinphone_la_SOURCES=\
 	linphonecore.c linphonecore.h private.h\
-	exevents.c exevents.h \
 	offeranswer.c offeranswer.h\
 	sal.c sal.h \
 	sal_eXosip2.c sal_eXosip2.h\
 	sal_eXosip2_sdp.c \
 	sal_eXosip2_presence.c \
+	callbacks.c \
+	exevents.c sdphandler.c\
 	misc.c  \
 	address.c \
 	enum.c enum.h \
-	sdphandler.c sdphandler.h \
 	presence.c \
 	proxy.c \
 	friend.c \

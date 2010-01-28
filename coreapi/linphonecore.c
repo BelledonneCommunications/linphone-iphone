@@ -3390,7 +3390,7 @@ void codecs_config_uninit(LinphoneCore *lc)
 		sprintf(key,"audio_codec_%i",index);
 		lp_config_set_string(lc->config,key,"mime",pt->mime_type);
 		lp_config_set_int(lc->config,key,"rate",pt->clock_rate);
-		lp_config_set_int(lc->config,key,"enabled",payload_type_enabled(pt));
+		lp_config_set_int(lc->config,key,"enabled",linphone_core_payload_type_enabled(lc,pt));
 		index++;
 	}
 	index=0;
@@ -3399,7 +3399,7 @@ void codecs_config_uninit(LinphoneCore *lc)
 		sprintf(key,"video_codec_%i",index);
 		lp_config_set_string(lc->config,key,"mime",pt->mime_type);
 		lp_config_set_int(lc->config,key,"rate",pt->clock_rate);
-		lp_config_set_int(lc->config,key,"enabled",payload_type_enabled(pt));
+		lp_config_set_int(lc->config,key,"enabled",linphone_core_payload_type_enabled(lc,pt));
 		lp_config_set_string(lc->config,key,"recv_fmtp",pt->recv_fmtp);
 		index++;
 	}

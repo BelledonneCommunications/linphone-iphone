@@ -170,32 +170,41 @@ void check_sound_device(LinphoneCore *lc)
 #define RTP_HDR_SZ 12
 #define IP4_HDR_SZ 20   /*20 is the minimum, but there may be some options*/
 
-const char *payload_type_get_description(PayloadType *pt){
-	return _((const char *)pt->user_data);
-}
-
-void payload_type_set_enable(PayloadType *pt,int value)
+static void payload_type_set_enable(PayloadType *pt,int value)
 {
 	if ((value)!=0) payload_type_set_flag(pt,PAYLOAD_TYPE_ENABLED); \
 	else payload_type_unset_flag(pt,PAYLOAD_TYPE_ENABLED);
 }
 
-
-bool_t payload_type_enabled(PayloadType *pt) {
+static bool_t payload_type_enabled(PayloadType *pt) {
 	return (((pt)->flags & PAYLOAD_TYPE_ENABLED)!=0);
 }
 
-int payload_type_get_bitrate(PayloadType *pt)
-{
-	return pt->normal_bitrate;
-}
-const char *payload_type_get_mime(PayloadType *pt){
-	return pt->mime_type;
+bool_t linphone_core_payload_type_enabled(LinphoneCore *lc, PayloadType *pt){
+	if (ms_list_find(lc->codecs_conf.audio_codecs,pt) || ms_list_find(lc->codecs_conf.video_codecs,pt)){
+		return payload_type_enabled(pt);
+	}
+	ms_error("Getting enablement status of codec not in audio or video list of PayloadType !");
+	return FALSE;
 }
 
-int payload_type_get_rate(PayloadType *pt){
-	return pt->clock_rate;
+int linphone_core_enable_payload_type(LinphoneCore *lc, PayloadType *pt, bool_t enabled){
+	if (ms_list_find(lc->codecs_conf.audio_codecs,pt) || ms_list_find(lc->codecs_conf.video_codecs,pt)){
+		payload_type_set_enable(pt,enabled);
+		return 0;
+	}
+	ms_error("Enabling codec not in audio or video list of PayloadType !");
+	return -1;
 }
+
+const char *linphone_core_get_payload_type_description(LinphoneCore *lc, PayloadType *pt){
+	if (ms_filter_codec_supported(pt->mime_type)){
+		MSFilterDesc *desc=ms_filter_get_encoder(pt->mime_type);
+		return desc->text;
+	}
+	return NULL;
+}
+
 
 /*this function makes a special case for speex/8000.
 This codec is variable bitrate. The 8kbit/s mode is interesting when having a low upload bandwidth, but its quality

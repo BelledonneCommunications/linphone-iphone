@@ -1591,7 +1591,8 @@ static void linphonec_codec_list(LinphoneCore *lc){
 	MSList *node;
 	for(node=config->audio_codecs;node!=NULL;node=ms_list_next(node)){
 		pt=(PayloadType*)(node->data);
-        linphonec_out("%2d: %s (%d) %s\n", index, pt->mime_type, pt->clock_rate, payload_type_enabled(pt) ? "enabled" : "disabled");
+        linphonec_out("%2d: %s (%d) %s\n", index, pt->mime_type, pt->clock_rate, 
+		    linphone_core_payload_type_enabled(lc,pt) ? "enabled" : "disabled");
 		index++;
 	}
 }
