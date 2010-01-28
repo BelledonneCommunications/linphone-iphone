@@ -34,7 +34,7 @@ static bool_t linphone_call_matches_event(LinphoneCall *call, eXosip_event_t *ev
 static void linphone_call_proceeding(LinphoneCore *lc, eXosip_event_t *ev){
 	if (lc->call==NULL || (lc->call->cid!=-1 && !linphone_call_matches_event(lc->call,ev)) ) {
 		ms_warning("This call has been canceled: call=%p, call->cid=%i, ev->cid=%i",
-			lc->call,lc->call->cid,ev->cid);
+				   lc->call,lc->call?lc->call->cid:-1,ev->cid);
 		eXosip_lock();
 		eXosip_call_terminate(ev->cid,ev->did);
 		eXosip_unlock();
@@ -214,7 +214,7 @@ int linphone_call_failure(LinphoneCore *lc, eXosip_event_t *ev)
 			}*/
 			lc->vtable.display_message(lc,tmpmsg);
 		break;
-		case 487:
+		case 487: /*request terminated*/
 			lc->vtable.display_status(lc,msg487);
 		break;
 		case 600:
@@ -244,7 +244,7 @@ int linphone_call_failure(LinphoneCore *lc, eXosip_event_t *ev)
 	linphone_core_stop_media_streams(lc);
 	if (call!=NULL) {
 		linphone_call_destroy(call);
-		gstate_new_state(lc, GSTATE_CALL_ERROR, NULL);
+		if (code!=487) gstate_new_state(lc, GSTATE_CALL_ERROR, NULL);
 		lc->call=NULL;
 	}
 	return 0;
@@ -470,10 +470,6 @@ int linphone_set_audio_offer(sdp_context_t *ctx)
 			payload.pt=rtp_profile_get_payload_number_from_rtpmap(lc->local_profile,payload.a_rtpmap);
 			payload.localport=call->audio_params.natd_port > 0 ?
 						call->audio_params.natd_port : lc->rtp_conf.audio_rtp_port;
-			if (strcasecmp(codec->mime_type,"iLBC")==0){
-				/* prefer the 30 ms mode */
-				payload.a_fmtp="ptime=30";
-			}
 			sdp_context_add_audio_payload(ctx,&payload);
 			ms_free(payload.a_rtpmap);
 		}
