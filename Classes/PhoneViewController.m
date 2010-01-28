@@ -71,8 +71,10 @@
 //implements call/cancel button behavior 
 -(IBAction) doAction:(id)sender {
 	//1 normalize phone number
+	if ([address.text length] == 0) return; //just return
 	
 	if (sender == gsmCall || sender == call) {
+		
 		char normalizedUserName[256];
 		LinphoneProxyConfig* proxyCfg;	
 		//get default proxy
@@ -82,7 +84,6 @@
 		
 		if (sender == call) {
 			// check if ready to place a call
-			
 			if (!linphone_proxy_config_is_registered(proxyCfg)) {
 #ifdef LINPHONE_WIFI_ONLY	
 				if (!linphone_proxy_config_register_enabled(proxyCfg)) {
