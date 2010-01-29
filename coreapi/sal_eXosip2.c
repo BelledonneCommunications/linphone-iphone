@@ -21,6 +21,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "offeranswer.h"
 
+void sal_get_default_local_ip(Sal *sal, int address_family,char *ip, size_t iplen){
+	if (eXosip_guess_localip(address_family,ip,iplen)<0){
+		/*default to something */
+		strncpy(ip,address_family==AF_INET6 ? "::1" : "127.0.0.1",iplen);
+		ms_error("Could not find default routable ip address !");
+	}
+}
 
 static SalOp * sal_find_register(Sal *sal, int rid){
 	const MSList *elem;
@@ -65,13 +72,59 @@ void sal_op_release(SalOp *op){
 		sdp_message_free(op->sdp_answer);
 	if (op->pending_auth)
 		eXosip_event_free(op->pending_auth);
-	if( op->rid!=-1){
+	if (op->rid!=-1){
 		sal_remove_register(op->base.root,op->rid);
+	}
+	if (op->cid!=-1){
+		eXosip_call_set_reference(op->cid,NULL);
 	}
 	__sal_op_free(op);
 }
 
+static void _osip_trace_func(char *fi, int li, osip_trace_level_t level, char *chfr, va_list ap){
+	int ortp_level=ORTP_DEBUG;
+	switch(level){
+		case OSIP_INFO1:
+		case OSIP_INFO2:
+		case OSIP_INFO3:
+		case OSIP_INFO4:
+			ortp_level=ORTP_MESSAGE;
+			break;
+		case OSIP_WARNING:
+			ortp_level=ORTP_WARNING;
+			break;
+		case OSIP_ERROR:
+		case OSIP_BUG:
+			ortp_level=ORTP_ERROR;
+			break;
+		case OSIP_FATAL:
+			ortp_level=ORTP_FATAL;
+			break;
+		case END_TRACE_LEVEL:
+			break;
+	}
+	if (ortp_log_level_enabled(level)){
+		int len=strlen(chfr);
+		char *chfrdup=ortp_strdup(chfr);
+		/*need to remove endline*/
+		if (len>1){
+			if (chfrdup[len-1]=='\n')
+				chfrdup[len-1]='\0';
+			if (chfrdup[len-2]=='\r')
+				chfrdup[len-2]='\0';
+		}
+		ortp_logv(ortp_level,chfrdup,ap);
+		ortp_free(chfrdup);
+	}
+}
+
+
 Sal * sal_init(){
+	static bool_t firsttime=TRUE;
+	if (firsttime){
+		osip_trace_initialize_func (OSIP_INFO4,&_osip_trace_func);
+		firsttime=FALSE;
+	}
 	eXosip_init();
 	return ms_new0(Sal,1);
 }
@@ -133,7 +186,7 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 	ipv6=strchr(addr,':')!=NULL;
 	eXosip_enable_ipv6(ipv6);
 
-	if (tr!=SAL_TRANSPORT_DATAGRAM || is_secure){
+	if (tr!=SalTransportDatagram || is_secure){
 		ms_fatal("SIP over TCP or TLS or DTLS is not supported yet.");
 		return -1;
 	}
@@ -176,7 +229,7 @@ static void set_sdp_from_desc(osip_message_t *sip, const SalMediaDescription *de
 
 static void sdp_process(SalOp *h){
 	if (h->result){
-		sal_media_description_destroy(h->result);
+		sal_media_description_unref(h->result);
 	}
 	h->result=sal_media_description_new();
 	if (h->sdp_offering){	
@@ -199,6 +252,10 @@ static void sdp_process(SalOp *h){
 }
 
 int sal_call_set_local_media_description(SalOp *h, SalMediaDescription *desc){
+	if (desc)
+		sal_media_description_ref(desc);
+	if (h->base.local_media)
+		sal_media_description_unref(h->base.local_media);
 	h->base.local_media=desc;
 	return 0;
 }
@@ -334,7 +391,7 @@ static void handle_reinvite(Sal *sal,  eXosip_event_t *ev){
 	op->tid=ev->tid;
 	sdp=eXosip_get_sdp_info(ev->request);
 	if (op->base.remote_media){
-		sal_media_description_destroy(op->base.remote_media);
+		sal_media_description_unref(op->base.remote_media);
 		op->base.remote_media=NULL;
 	}
 	eXosip_lock();

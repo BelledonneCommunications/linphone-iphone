@@ -24,11 +24,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/mediastream.h"
 #include "mediastreamer2/msvolume.h"
 #include "mediastreamer2/msequalizer.h"
-#include <eXosip2/eXosip.h>
-#include "sdphandler.h"
 
 #include <ortp/telephonyevents.h>
-#include "exevents.h"
 
 
 #ifdef INET6
@@ -52,16 +49,6 @@ static void toggle_video_preview(LinphoneCore *lc, bool_t val);
 /* same for remote ring (ringback)*/
 #define REMOTE_RING "ringback.wav"
 
-
-sdp_handler_t linphone_sdphandler={
-	linphone_accept_audio_offer,   /*from remote sdp */
-	linphone_accept_video_offer,   /*from remote sdp */
-	linphone_set_audio_offer,	/*to local sdp */
-	linphone_set_video_offer,	/*to local sdp */
-	linphone_read_audio_answer,	/*from incoming answer  */
-	linphone_read_video_answer	/*from incoming answer  */
-};
-
 void lc_callback_obj_init(LCCallbackObj *obj,LinphoneCoreCbFunc func,void* ud)
 {
   obj->_func=func;
@@ -73,7 +60,54 @@ int lc_callback_obj_invoke(LCCallbackObj *obj, LinphoneCore *lc){
 	return 0;
 }
 
-static void  linphone_call_init_common(LinphoneCall *call, LinphoneAddress *from, LinphoneAddress *to){
+
+static MSList *make_codec_list(const MSList *codecs){
+	MSList *l=NULL;
+	const MSList *it;
+	for(it=codecs;it!=NULL;it=it->next){
+		PayloadType *pt=(PayloadType*)it->data;
+		if (pt->flags & PAYLOAD_TYPE_ENABLED){
+			l=ms_list_append(l,payload_type_clone(pt));
+		}
+	}
+	return l;
+}
+
+static SalMediaDescription *create_local_media_description(LinphoneCore *lc, 
+    		const char *localip, const char *username){
+	MSList *l;
+	PayloadType *pt;
+	SalMediaDescription *md=sal_media_description_new();
+	md->nstreams=1;
+	strncpy(md->addr,localip,sizeof(md->addr));
+	strncpy(md->username,username,sizeof(md->username));
+	/*set audio capabilities */
+	strncpy(md->streams[0].addr,localip,sizeof(md->streams[0].addr));
+	md->streams[0].port=linphone_core_get_audio_port(lc);
+	md->streams[0].proto=SalProtoRtpAvp;
+	md->streams[0].type=SalAudio;
+	l=make_codec_list(lc->codecs_conf.audio_codecs);
+	pt=payload_type_clone(rtp_profile_get_payload_from_mime(&av_profile,"telephone-event"));
+	l=ms_list_append(l,pt);
+	md->streams[0].payloads=l;
+	
+	if (lc->dw_audio_bw>0)
+		md->streams[0].bandwidth=lc->dw_audio_bw;
+
+	if (linphone_core_video_enabled (lc)){
+		md->nstreams++;
+		md->streams[1].port=linphone_core_get_video_port(lc);
+		md->streams[1].proto=SalProtoRtpAvp;
+		md->streams[1].type=SalVideo;
+		l=make_codec_list(lc->codecs_conf.video_codecs);
+		md->streams[1].payloads=l;
+		if (lc->dw_video_bw)
+			md->streams[1].bandwidth=lc->dw_video_bw;
+	}
+	return md;
+}
+
+static void linphone_call_init_common(LinphoneCall *call, LinphoneAddress *from, LinphoneAddress *to){
 	call->state=LCStateInit;
 	call->start_time=time(NULL);
 	call->media_start_time=0;
@@ -82,11 +116,6 @@ static void  linphone_call_init_common(LinphoneCall *call, LinphoneAddress *from
 	if (linphone_core_get_firewall_policy(call->core)==LINPHONE_POLICY_USE_STUN)
 		linphone_core_run_stun_tests(call->core,call);
 	call->profile=rtp_profile_new("Call RTP profile");
-}
-
-void linphone_call_init_media_params(LinphoneCall *call){
-	memset(&call->audio_params,0,sizeof(call->audio_params));
-	memset(&call->video_params,0,sizeof(call->video_params));
 }
 
 static void discover_mtu(LinphoneCore *lc, const char *remote){
@@ -106,44 +135,31 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 {
 	LinphoneCall *call=ms_new0(LinphoneCall,1);
 	call->dir=LinphoneCallOutgoing;
-	call->cid=-1;
-	call->did=-1;
-	call->tid=-1;
+	call->op=sal_op_new(lc->sal);
 	call->core=lc;
 	linphone_core_get_local_ip(lc,linphone_address_get_domain(to),call->localip);
+	call->localdesc=create_local_media_description (lc,call->localip,
+		linphone_address_get_username(from));
 	linphone_call_init_common(call,from,to);
-	call->sdpctx=sdp_handler_create_context(&linphone_sdphandler,
-		call->audio_params.natd_port>0 ? call->audio_params.natd_addr : call->localip,
-		linphone_address_get_username (from),NULL);
-	sdp_context_set_user_pointer(call->sdpctx,(void*)call);
 	discover_mtu(lc,linphone_address_get_domain (to));
 	return call;
 }
 
-
-LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, eXosip_event_t *ev){
+LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, SalOp *op){
 	LinphoneCall *call=ms_new0(LinphoneCall,1);
 	LinphoneAddress *me=linphone_core_get_primary_contact_parsed(lc);
-	osip_header_t *h=NULL;
 
 	call->dir=LinphoneCallIncoming;
-	call->cid=ev->cid;
-	call->did=ev->did;
-	call->tid=ev->tid;
+	call->op=op;
 	call->core=lc;
 	
 	linphone_address_clean(from);
-	
 	linphone_core_get_local_ip(lc,linphone_address_get_domain(from),call->localip);
+	call->localdesc=create_local_media_description (lc,call->localip,
+	    linphone_address_get_username(me));
 	linphone_call_init_common(call, from, to);
-	call->sdpctx=sdp_handler_create_context(&linphone_sdphandler,
-		call->audio_params.natd_port>0 ? call->audio_params.natd_addr : call->localip,
-		linphone_address_get_username (me),NULL);
-	sdp_context_set_user_pointer(call->sdpctx,(void*)call);
 	discover_mtu(lc,linphone_address_get_domain(from));
 	linphone_address_destroy(me);
-	osip_message_header_get_byname(ev->request,"Session-expires",0,&h);
-	if (h) call->supports_session_timers=TRUE;
 	return call;
 }
 
@@ -153,7 +169,9 @@ void linphone_call_destroy(LinphoneCall *obj)
 	linphone_call_log_completed(obj->log,obj);
 	linphone_core_update_allocated_audio_bandwidth(obj->core);
 	if (obj->profile!=NULL) rtp_profile_destroy(obj->profile);
-	if (obj->sdpctx!=NULL) sdp_context_free(obj->sdpctx);
+	if (obj->op!=NULL) sal_op_release(obj->op);
+	if (obj->resultdesc!=NULL) sal_media_description_unref(obj->resultdesc);
+	if (obj->localdesc!=NULL) sal_media_description_unref(obj->localdesc);
 	ms_free(obj);
 }
 
@@ -383,43 +401,6 @@ const LinphoneAddress *linphone_core_get_remote_uri(LinphoneCore *lc){
 	return call->dir==LinphoneCallIncoming ? call->log->from : call->log->to;
 }
 
-void _osip_trace_func(char *fi, int li, osip_trace_level_t level, char *chfr, va_list ap){
-	int ortp_level=ORTP_DEBUG;
-	switch(level){
-		case OSIP_INFO1:
-		case OSIP_INFO2:
-		case OSIP_INFO3:
-		case OSIP_INFO4:
-			ortp_level=ORTP_MESSAGE;
-			break;
-		case OSIP_WARNING:
-			ortp_level=ORTP_WARNING;
-			break;
-		case OSIP_ERROR:
-		case OSIP_BUG:
-			ortp_level=ORTP_ERROR;
-			break;
-		case OSIP_FATAL:
-			ortp_level=ORTP_FATAL;
-			break;
-		case END_TRACE_LEVEL:
-			break;
-	}
-	if (ortp_log_level_enabled(level)){
-		int len=strlen(chfr);
-		char *chfrdup=ortp_strdup(chfr);
-		/*need to remove endline*/
-		if (len>1){
-			if (chfrdup[len-1]=='\n')
-				chfrdup[len-1]='\0';
-			if (chfrdup[len-2]=='\r')
-				chfrdup[len-2]='\0';
-		}
-		ortp_logv(ortp_level,chfrdup,ap);
-		ortp_free(chfrdup);
-	}
-}
-
 /**
  * Enable logs in supplied FILE*.
  *
@@ -432,7 +413,6 @@ void linphone_core_enable_logs(FILE *file){
 	if (file==NULL) file=stdout;
 	ortp_set_log_file(file);
 	ortp_set_log_level_mask(ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
-	osip_trace_initialize_func (OSIP_INFO4,&_osip_trace_func);
 }
 
 /**
@@ -446,7 +426,6 @@ void linphone_core_enable_logs(FILE *file){
 **/
 void linphone_core_enable_logs_with_cb(OrtpLogFunc logfunc){
 	ortp_set_log_level_mask(ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
-	osip_trace_initialize_func (OSIP_INFO4,&_osip_trace_func);
 	ortp_set_log_handler(logfunc);
 }
 
@@ -456,8 +435,6 @@ void linphone_core_enable_logs_with_cb(OrtpLogFunc logfunc){
  * @ingroup misc
 **/
 void linphone_core_disable_logs(){
-	int tl;
-	for (tl=0;tl<=OSIP_INFO4;tl++) osip_trace_disable_level(tl);
 	ortp_set_log_level_mask(ORTP_ERROR|ORTP_FATAL);
 }
 
@@ -866,6 +843,7 @@ static MSList *linphone_payload_types=NULL;
 static void linphone_core_assign_payload_type(PayloadType *const_pt, int number, const char *recv_fmtp){
 	PayloadType *pt;
 	pt=payload_type_clone(const_pt);
+	payload_type_set_number(pt,number);
 	if (recv_fmtp!=NULL) payload_type_set_recv_fmtp(pt,recv_fmtp);
 	rtp_profile_set_payload(&av_profile,number,pt);
 	linphone_payload_types=ms_list_append(linphone_payload_types,pt);
@@ -931,6 +909,10 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	lc->rsvp_enable = 1;
 	lc->rpc_enable = 0;
 #endif
+	lc->sal=sal_init();
+	if (lp_config_get_int(lc->config,"sip","use_session_timers",0)==1){
+		sal_use_session_timers(lc->sal,200);
+	}
 	sip_setup_register_all();
 	sound_config_read(lc);
 	net_config_read(lc);
@@ -943,7 +925,6 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	lc->presence_mode=LINPHONE_STATUS_ONLINE;
 	lc->max_call_logs=15;
 	ui_config_read(lc);
-	ms_mutex_init(&lc->lock,NULL);
 	lc->vtable.display_status(lc,_("Ready"));
         gstate_new_state(lc, GSTATE_POWER_ON, NULL);
 	lc->ready=TRUE;
@@ -1009,11 +990,11 @@ const MSList *linphone_core_get_video_codecs(const LinphoneCore *lc)
 **/
 int linphone_core_set_primary_contact(LinphoneCore *lc, const char *contact)
 {
-	osip_from_t *ctt=NULL;
-	osip_from_init(&ctt);
-	if (osip_from_parse(ctt,contact)!=0){
+	LinphoneAddress *ctt;
+
+	if ((ctt=linphone_address_new(contact))!=0) {
 		ms_error("Bad contact url: %s",contact);
-		osip_from_free(ctt);
+		linphone_address_destroy(ctt);
 		return -1;
 	}
 	if (lc->sip_conf.contact!=NULL) ms_free(lc->sip_conf.contact);
@@ -1022,7 +1003,7 @@ int linphone_core_set_primary_contact(LinphoneCore *lc, const char *contact)
 		ms_free(lc->sip_conf.guessed_contact);
 		lc->sip_conf.guessed_contact=NULL;
 	}
-	osip_from_free(ctt);
+	linphone_address_destroy(ctt);
 	return 0;
 }
 
@@ -1040,12 +1021,8 @@ void linphone_core_get_local_ip(LinphoneCore *lc, const char *dest, char *result
 	if (dest==NULL) dest="87.98.157.38"; /*a public IP address*/
 	if (linphone_core_get_local_ip_for(dest,result)==0)
 		return;
-	/*else fallback to exosip routine that will attempt to find the most realistic interface */
-	if (eXosip_guess_localip(lc->sip_conf.ipv6_enabled ? AF_INET6 : AF_INET,result,LINPHONE_IPADDR_SIZE)<0){
-		/*default to something */
-		strncpy(result,lc->sip_conf.ipv6_enabled ? "::1" : "127.0.0.1",LINPHONE_IPADDR_SIZE);
-		ms_error("Could not find default routable ip address !");
-	}
+	/*else fallback to SAL routine that will attempt to find the most realistic interface */
+	sal_get_default_local_ip(lc->sal,lc->sip_conf.ipv6_enabled ? AF_INET6 : AF_INET,result,LINPHONE_IPADDR_SIZE);
 }
 
 /**
@@ -1053,42 +1030,32 @@ void linphone_core_get_local_ip(LinphoneCore *lc, const char *dest, char *result
  *
  * @ingroup proxies
 **/
-const char *linphone_core_get_primary_contact(LinphoneCore *lc)
-{
+const char *linphone_core_get_primary_contact(LinphoneCore *lc){
 	char *identity;
 	char tmp[LINPHONE_IPADDR_SIZE];
+	
 	if (lc->sip_conf.guess_hostname){
 		if (lc->sip_conf.guessed_contact==NULL || lc->sip_conf.loopback_only){
 			char *guessed=NULL;
-			osip_from_t *url;
+			LinphoneAddress *url;
 			if (lc->sip_conf.guessed_contact!=NULL){
 				ms_free(lc->sip_conf.guessed_contact);
 				lc->sip_conf.guessed_contact=NULL;
 			}
-
-			osip_from_init(&url);
-			if (osip_from_parse(url,lc->sip_conf.contact)==0){
-
+			url=linphone_address_new(lc->sip_conf.contact);
+			if (!url){
+				url=linphone_address_new("sip:unknown@unkwownhost");
 			}else ms_error("Could not parse identity contact !");
 			linphone_core_get_local_ip(lc, NULL, tmp);
 			if (strcmp(tmp,"127.0.0.1")==0 || strcmp(tmp,"::1")==0 ){
 				ms_warning("Local loopback network only !");
 				lc->sip_conf.loopback_only=TRUE;
 			}else lc->sip_conf.loopback_only=FALSE;
-			osip_free(url->url->host);
-			url->url->host=osip_strdup(tmp);
-			if (url->url->port!=NULL){
-				osip_free(url->url->port);
-				url->url->port=NULL;
-			}
-			if (lc->sip_conf.sip_port!=5060){
-				url->url->port=ortp_strdup_printf("%i",lc->sip_conf.sip_port);
-			}
-			osip_from_to_str(url,&guessed);
+			linphone_address_set_domain(url,tmp);
+			linphone_address_set_port_int(url,lc->sip_conf.sip_port);
+			guessed=linphone_address_as_string(url);
 			lc->sip_conf.guessed_contact=guessed;
-
-			osip_from_free(url);
-
+			linphone_address_destroy(url);
 		}
 		identity=lc->sip_conf.guessed_contact;
 	}else{
@@ -1294,7 +1261,11 @@ static bool_t exosip_running=FALSE;
 static char _ua_name[64]="Linphone";
 static char _ua_version[64]=LINPHONE_VERSION;
 
-static void apply_user_agent(void){
+#ifdef HAVE_EXOSIP_GET_VERSION
+extern const char *eXosip_get_version();
+#endif
+
+static void apply_user_agent(LinphoneCore *lc){
 	char ua_string[256];
 	snprintf(ua_string,sizeof(ua_string),"%s/%s (eXosip2/%s)",_ua_name,_ua_version,
 #ifdef HAVE_EXOSIP_GET_VERSION
@@ -1303,7 +1274,7 @@ static void apply_user_agent(void){
 		 "unknown"
 #endif
 	);
-	eXosip_set_user_agent(ua_string);
+	if (lc->sal) sal_set_user_agent(lc->sal,ua_string);
 }
 
 /**
@@ -1327,18 +1298,14 @@ void linphone_core_set_sip_port(LinphoneCore *lc,int port)
 	int err=0;
 	if (port==lc->sip_conf.sip_port) return;
 	lc->sip_conf.sip_port=port;
-	if (exosip_running) eXosip_quit();
-	eXosip_init();
-	err=0;
-	eXosip_set_option(13,&err); /*13=EXOSIP_OPT_SRV_WITH_NAPTR, as it is an enum value, we can't use it unless we are sure of the
-					version of eXosip, which is not the case*/
-	eXosip_enable_ipv6(lc->sip_conf.ipv6_enabled);
+
+	if (lc->sal==NULL) return;
+	
 	if (lc->sip_conf.ipv6_enabled)
 		anyaddr="::0";
 	else
 		anyaddr="0.0.0.0";
-	err=eXosip_listen_addr (IPPROTO_UDP, anyaddr, port,
-		lc->sip_conf.ipv6_enabled ?  PF_INET6 : PF_INET, 0);
+	err=sal_listen_port (lc->sal,anyaddr,port, SalTransportDatagram,FALSE);
 	if (err<0){
 		char *msg=ortp_strdup_printf("UDP port %i seems already in use ! Cannot initialize.",port);
 		ms_warning(msg);
@@ -1346,13 +1313,7 @@ void linphone_core_set_sip_port(LinphoneCore *lc,int port)
 		ms_free(msg);
 		return;
 	}
-#ifdef VINCENT_MAURY_RSVP
-	/* tell exosip the qos settings according to default linphone parameters */
-	eXosip_set_rsvp_mode (lc->rsvp_enable);
-	eXosip_set_rpc_mode (lc->rpc_enable);
-#endif
-	apply_user_agent();
-	exosip_running=TRUE;
+	apply_user_agent(lc->sal);
 }
 
 /**
@@ -1377,7 +1338,7 @@ bool_t linphone_core_ipv6_enabled(LinphoneCore *lc){
 void linphone_core_enable_ipv6(LinphoneCore *lc, bool_t val){
 	if (lc->sip_conf.ipv6_enabled!=val){
 		lc->sip_conf.ipv6_enabled=val;
-		if (exosip_running){
+		if (lc->sal){
 			/* we need to restart eXosip */
 			linphone_core_set_sip_port(lc, lc->sip_conf.sip_port);
 		}
@@ -1405,12 +1366,13 @@ static void proxy_update(LinphoneCore *lc, time_t curtime){
 		char result[LINPHONE_IPADDR_SIZE];
 		/* only do the network up checking every five seconds */
 		if (last_check==0 || (curtime-last_check)>=5){
-			if (eXosip_guess_localip(lc->sip_conf.ipv6_enabled ? AF_INET6 : AF_INET,result,LINPHONE_IPADDR_SIZE)==0){
-				if (strcmp(result,"::1")!=0 && strcmp(result,"127.0.0.1")!=0){
-					last_status=TRUE;
-					ms_message("Network is up, registering now (%s)",result);
-				}else last_status=FALSE;
-			}
+			sal_get_default_local_ip(lc->sal,
+			    lc->sip_conf.ipv6_enabled ? AF_INET6 : AF_INET,
+			    ,result,LINPHONE_IPADDR_SIZE);
+			if (strcmp(result,"::1")!=0 && strcmp(result,"127.0.0.1")!=0){
+				last_status=TRUE;
+				ms_message("Network is up, registering now (%s)",result);
+			}else last_status=FALSE;
 			last_check=curtime;
 		}
 		doit=last_status;
@@ -1524,17 +1486,7 @@ void linphone_core_iterate(LinphoneCore *lc)
 		lc_callback_obj_invoke(&lc->preview_finished_cb,lc);
 	}
 
-	if (exosip_running){
-		while((ev=eXosip_event_wait(0,0))!=NULL){
-			linphone_core_process_event(lc,ev);
-		}
-		if (lc->automatic_action==0) {
-			eXosip_lock();
-			eXosip_automatic_action();
-			eXosip_unlock();
-		}
-	}
-
+	sal_iterate(lc->sal);
 	proxy_update(lc,curtime);
 
 	if (lc->call!=NULL){
@@ -1585,37 +1537,6 @@ void linphone_core_iterate(LinphoneCore *lc)
 }
 
 
-bool_t linphone_core_is_in_main_thread(LinphoneCore *lc){
-	return TRUE;
-}
-
-static char *guess_route_if_any(LinphoneCore *lc, osip_to_t *parsed_url){
-	const MSList *elem=linphone_core_get_proxy_config_list(lc);
-	for(;elem!=NULL;elem=elem->next){
-		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
-		char prx[256];
-		if (cfg->ssctx && sip_setup_context_get_proxy(cfg->ssctx,parsed_url->url->host,prx,sizeof(prx))==0){
-			ms_message("We have a proxy for domain %s",parsed_url->url->host);
-			if (strcmp(parsed_url->url->host,prx)!=0){
-				char *route=NULL;
-				osip_route_t *rt;
-				osip_route_init(&rt);
-				if (osip_route_parse(rt,prx)==0){
-					char *rtstr;
-					osip_uri_uparam_add(rt->url,osip_strdup("lr"),NULL);
-					osip_route_to_str(rt,&rtstr);
-					route=ms_strdup(rtstr);
-					osip_free(rtstr);
-				}
-				osip_route_free(rt);
-				ms_message("Adding a route: %s",route);
-				return route;
-			}
-		}
-	}
-	return NULL;
-}
-
 bool_t linphone_core_interpret_url(LinphoneCore *lc, const char *url, LinphoneAddress **real_parsed_url, char **route){
 	enum_lookup_res_t *enumres=NULL;
 	osip_to_t *parsed_url=NULL;
@@ -1660,27 +1581,7 @@ bool_t linphone_core_interpret_url(LinphoneCore *lc, const char *url, LinphoneAd
 			linphone_address_set_username(uri,normalized_username);
 										
 			if (real_parsed_url!=NULL) *real_parsed_url=uri;
-#if 0
-			/*if the prompted uri was auto-suffixed with proxy domain,
-			then automatically set a route so that the request goes
-			through the proxy*/
-			if (tmproute==NULL){
-				osip_route_t *rt=NULL;
-				char *rtstr=NULL;
-				osip_route_init(&rt);
-				if (osip_route_parse(rt,linphone_proxy_config_get_addr(proxy))==0){
-					osip_uri_uparam_add(rt->url,osip_strdup("lr"),NULL);
-					osip_route_to_str(rt,&rtstr);
-					*route=ms_strdup(rtstr);
-					osip_free(rtstr);
-				}
-				ms_message("setting automatically a route to %s",*route);
-			}
-			else *route=ms_strdup(tmproute);
-#else
-			if (tmproute==NULL) *route=guess_route_if_any(lc,*real_parsed_url);
 			if (tmproute) *route=ms_strdup(tmproute);
-#endif
 			return TRUE;
 		}
 	}
@@ -1729,15 +1630,6 @@ const char * linphone_core_get_route(LinphoneCore *lc){
 	return route;
 }
 
-void linphone_set_sdp(osip_message_t *sip, const char *sdpmesg){
-	int sdplen=strlen(sdpmesg);
-	char clen[10];
-	snprintf(clen,sizeof(clen),"%i",sdplen);
-	osip_message_set_body(sip,sdpmesg,sdplen);
-	osip_message_set_content_type(sip,"application/sdp");
-	osip_message_set_content_length(sip,clen);
-}
-
 LinphoneProxyConfig * linphone_core_lookup_known_proxy(LinphoneCore *lc, const LinphoneAddress *uri){
 	const MSList *elem;
 	LinphoneProxyConfig *found_cfg=NULL;
@@ -1752,37 +1644,29 @@ LinphoneProxyConfig * linphone_core_lookup_known_proxy(LinphoneCore *lc, const L
 	return found_cfg;
 }
 
-static void fix_contact(LinphoneCore *lc, osip_message_t *msg, const char *localip, LinphoneProxyConfig *dest_proxy){
-	osip_contact_t *ctt=NULL;
-	const char *ip=NULL;
-	int port=5060;
+static char *get_fixed_contact(LinphoneCore *lc, const char *localip, LinphoneProxyConfig *dest_proxy){
+	LinphoneAddress *ctt;
 
-	osip_message_get_contact(msg,0,&ctt);
-	if (ctt!=NULL){
-		if (dest_proxy!=NULL){
-			/* if we know the request will go to a known proxy for which we are registered,
-			we can use the same contact address as in the register */
-			linphone_proxy_config_get_contact(dest_proxy,&ip,&port);
-		}else{
-			ip=localip;
-			port=linphone_core_get_sip_port(lc);
-		}
-		if (ip!=NULL){
-			osip_free(ctt->url->host);
-			ctt->url->host=osip_strdup(ip);
-		}
-		if (port!=0){
-			char tmp[10]={0};
-			char *str;
-			snprintf(tmp,sizeof(tmp)-1,"%i",port);
-			if (ctt->url->port!=NULL)
-				osip_free(ctt->url->port);
-			ctt->url->port=osip_strdup(tmp);
-			osip_contact_to_str(ctt,&str);
-			ms_message("Contact has been fixed to %s",str);
-			osip_free(str);
+	if (dest_proxy){
+		const char *fixed_contact=sal_op_get_contact(dest_proxy->op);
+		if (fixed_contact) {
+			ms_message("Contact has been fixed using proxy to %s",fixed_contact);
+			return ms_strdup(fixed_contact);
 		}
 	}
+	ctt=linphone_core_get_primary_contact_parsed(lc);
+	
+	if (ctt!=NULL){
+		char *ret;
+		/*otherwise use supllied localip*/
+		linphone_address_set_domain(ctt,localip);
+		linphone_address_set_port_int(ctt,linphone_core_get_sip_port(lc));
+		ret=linphone_address_as_string_uri_only(ctt);
+		linphone_address_destroy(ctt);
+		ms_message("Contact has been fixed using local ip to %s",ret);
+		return ret;
+	}
+	return NULL;
 }
 
 /**
@@ -1796,17 +1680,16 @@ int linphone_core_invite(LinphoneCore *lc, const char *url)
 {
 	char *barmsg;
 	int err=0;
-	char *sdpmesg=NULL;
 	char *route=NULL;
 	const char *from=NULL;
-	osip_message_t *invite=NULL;
-	sdp_context_t *ctx=NULL;
+	const char *contact=NULL;
 	LinphoneProxyConfig *proxy=NULL;
 	LinphoneAddress *parsed_url2=NULL;
 	LinphoneAddress *real_parsed_url=NULL;
 	char *real_url=NULL;
 	LinphoneProxyConfig *dest_proxy=NULL;
-
+	LinphoneCall *call;
+	
 	if (lc->call!=NULL){
 		lc->vtable.display_warning(lc,_("Sorry, having multiple simultaneous calls is not supported yet !"));
 		return -1;
@@ -1832,44 +1715,34 @@ int linphone_core_invite(LinphoneCore *lc, const char *url)
 	/* if no proxy or no identity defined for this proxy, default to primary contact*/
 	if (from==NULL) from=linphone_core_get_primary_contact(lc);
 
-	err=eXosip_call_build_initial_invite(&invite,real_url,from,
-						route,"Phone call");
-	if (err<0){
-		ms_warning("Could not build initial invite");
-		goto end;
-	}
-	if (lp_config_get_int(lc->config,"sip","use_session_timers",0)==1){
-		osip_message_set_header(invite, "Session-expires", "200");
-		osip_message_set_supported(invite, "timer");
-	}
-	/* make sdp message */
-
 	parsed_url2=linphone_address_new(from);
 
-	lc->call=linphone_call_new_outgoing(lc,parsed_url2,real_parsed_url);
+	call=linphone_call_new_outgoing(lc,parsed_url2,real_parsed_url);
+	sal_op_set_route(call->op,route);
+
 	/*try to be best-effort in giving real local or routable contact address,
 	except when the user choosed to override the ipaddress */
 	if (linphone_core_get_firewall_policy(lc)!=LINPHONE_POLICY_USE_NAT_ADDRESS)
-		fix_contact(lc,invite,lc->call->localip,dest_proxy);
+		contact=get_fixed_contact(lc,call->localip,dest_proxy);
+	if (contact)
+		sal_op_set_contact(call->op, contact);
+
+	lc->call=call;
+
+	linphone_core_init_media_streams(lc,lc->call);
+	if (!lc->sip_conf.sdp_200_ack){	
+		sal_call_set_local_media_description(call->op,call->localdesc);
+	}
+	err=sal_call(call->op,from,real_url);
 
 	barmsg=ortp_strdup_printf("%s %s", _("Contacting"), real_url);
 	lc->vtable.display_status(lc,barmsg);
 	ms_free(barmsg);
-	if (!lc->sip_conf.sdp_200_ack){
-		ctx=lc->call->sdpctx;
-		sdpmesg=sdp_context_get_offer(ctx);
-		linphone_set_sdp(invite,sdpmesg);
-		linphone_core_init_media_streams(lc);
-	}
-	eXosip_lock();
-	err=eXosip_call_send_initial_invite(invite);
-	lc->call->cid=err;
-	eXosip_unlock();
 	
 	if (err<0){
 		ms_warning("Could not initiate call.");
 		lc->vtable.display_status(lc,_("could not call"));
-		linphone_call_destroy(lc->call);
+		linphone_call_destroy(call);
 		lc->call=NULL;
 		linphone_core_stop_media_streams(lc);
 	}else gstate_new_state(lc, GSTATE_CALL_OUT_INVITE, url);
@@ -1993,8 +1866,9 @@ int linphone_core_change_qos(LinphoneCore *lc, int answer)
 }
 #endif
 
-void linphone_core_init_media_streams(LinphoneCore *lc){
-	lc->audiostream=audio_stream_new(linphone_core_get_audio_port(lc),linphone_core_ipv6_enabled(lc));
+void linphone_core_init_media_streams(LinphoneCore *lc, LinphoneCall *call){
+	SalMediaDescription *md=call->localdesc;
+	lc->audiostream=audio_stream_new(md->streams[0].port,linphone_core_ipv6_enabled(lc));
 	if (linphone_core_echo_limiter_enabled(lc)){
 		const char *type=lp_config_get_string(lc->config,"sound","el_type","mic");
 		if (strcasecmp(type,"mic")==0)
@@ -2019,8 +1893,8 @@ void linphone_core_init_media_streams(LinphoneCore *lc){
 		rtp_session_set_transports(lc->audiostream->session,lc->a_rtp,lc->a_rtcp);
 
 #ifdef VIDEO_ENABLED
-	if (lc->video_conf.display || lc->video_conf.capture)
-		lc->videostream=video_stream_new(linphone_core_get_video_port(lc),linphone_core_ipv6_enabled(lc));
+	if (lc->video_conf.display || lc->video_conf.capture && md->streams[1].port>0)
+		lc->videostream=video_stream_new(md->streams[1].port,linphone_core_ipv6_enabled(lc));
 #else
 	lc->videostream=NULL;
 #endif

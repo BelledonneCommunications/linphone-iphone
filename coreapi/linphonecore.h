@@ -39,105 +39,10 @@ extern "C" {
 
 struct _MSSndCard;
 struct _LinphoneCore;
+struct SalOp;
 
 struct _LpConfig;
 
-typedef struct sip_config
-{
-	char *contact;
-	char *guessed_contact;
-	int sip_port;
-	MSList *proxies;
-	MSList *deleted_proxies;
-	int inc_timeout;	/*timeout after an un-answered incoming call is rejected*/
-	bool_t use_info;
-	bool_t use_rfc2833;	/*force RFC2833 to be sent*/
-	bool_t guess_hostname;
-	bool_t loopback_only;
-	bool_t ipv6_enabled;
-	bool_t sdp_200_ack;
-	bool_t only_one_codec; /*in SDP answers*/
-	bool_t register_only_when_network_is_up;
-} sip_config_t;
-
-typedef struct rtp_config
-{
-	int audio_rtp_port;
-	int video_rtp_port;
-	int audio_jitt_comp;  /*jitter compensation*/
-	int video_jitt_comp;  /*jitter compensation*/
-	int nortp_timeout;
-}rtp_config_t;
-
-
-
-typedef struct net_config
-{
-	char *nat_address;
-	char *stun_server;
-	char *relay;
-	int download_bw;
-	int upload_bw;
-	int firewall_policy;
-	int mtu;
-	bool_t nat_sdp_only;
-}net_config_t;
-
-
-typedef struct sound_config
-{
-	struct _MSSndCard * ring_sndcard;	/* the playback sndcard currently used */
-	struct _MSSndCard * play_sndcard;	/* the playback sndcard currently used */
-	struct _MSSndCard * capt_sndcard; /* the capture sndcard currently used */
-	const char **cards;
-	int latency;	/* latency in samples of the current used sound device */
-	char rec_lev;
-	char play_lev;
-	char ring_lev;
-	char source;
-	char *local_ring;
-	char *remote_ring;
-	bool_t ec;
-	bool_t ea;
-	bool_t agc;
-} sound_config_t;
-
-typedef struct codecs_config
-{
-	MSList *audio_codecs;  /* list of audio codecs in order of preference*/
-	MSList *video_codecs;	/* for later use*/
-}codecs_config_t;
-
-typedef struct video_config{
-	struct _MSWebCam *device;
-	const char **cams;
-	MSVideoSize vsize;
-	bool_t capture;
-	bool_t show_local;
-	bool_t display;
-	bool_t selfview; /*during calls*/
-}video_config_t;
-
-typedef struct ui_config
-{
-	int is_daemon;
-	int is_applet;
-	unsigned int timer_id;  /* the timer id for registration */
-}ui_config_t;
-
-
-
-typedef struct autoreplier_config
-{
-	int enabled;
-	int after_seconds;		/* accept the call after x seconds*/
-	int max_users;			/* maximum number of user that can call simultaneously */
-	int max_rec_time;  	/* the max time of incoming voice recorded */
-	int max_rec_msg;		/* maximum number of recorded messages */
-	const char *message;		/* the path of the file to be played */
-}autoreplier_config_t;
-
-struct osip_from;
 
 /**
  * Object that represents a SIP address.
@@ -153,7 +58,7 @@ struct osip_from;
  * @ingroup linphone_address
  * @var LinphoneAddress
  */
-typedef struct osip_from LinphoneAddress;
+typedef struct SalAddress LinphoneAddress;
 
 LinphoneAddress * linphone_address_new(const char *uri);
 LinphoneAddress * linphone_address_clone(const LinphoneAddress *uri);
@@ -172,8 +77,6 @@ char *linphone_address_as_string(const LinphoneAddress *u);
 char *linphone_address_as_string_uri_only(const LinphoneAddress *u);
 void linphone_address_destroy(LinphoneAddress *u);
 
-struct _LinphoneCore;
-struct _sdp_context;
 struct _SipSetupContext;
 struct _LinphoneCall;
 
@@ -254,21 +157,9 @@ typedef enum _LinphoneOnlineStatus{
 
 const char *linphone_online_status_to_string(LinphoneOnlineStatus ss);
 
-typedef struct _LinphoneFriend{
-	LinphoneAddress *uri;
-	int in_did;
-	int out_did;
-	int sid;
-	int nid;
-	LinphoneSubscribePolicy pol;
-	LinphoneOnlineStatus status;
-	struct _LinphoneProxyConfig *proxy;
-	struct _LinphoneCore *lc;
-	BuddyInfo *info;
-	char *refkey;
-	bool_t subscribe;
-	bool_t inc_subscribe_pending;
-}LinphoneFriend;	
+struct _LinphoneFriend;
+
+typedef struct _LinphoneFriend LinphoneFriend;
 
 LinphoneFriend * linphone_friend_new();
 LinphoneFriend *linphone_friend_new_with_addr(const char *addr);
@@ -291,6 +182,8 @@ const char *linphone_friend_get_ref_key(const LinphoneFriend *lf);
 
 #define linphone_friend_url(lf) ((lf)->url)
 
+struct LinphoneProxyConfig;
+
 /**
  * @addtogroup proxies
  * @{
@@ -311,28 +204,7 @@ const char *linphone_friend_get_ref_key(const LinphoneFriend *lf);
  * The default proxy (see linphone_core_set_default_proxy() ) is the one of the list
  * that is used by default for calls.
 **/
-typedef struct _LinphoneProxyConfig
-{
-	struct _LinphoneCore *lc;
-	char *reg_proxy;
-	char *reg_identity;
-	char *reg_route;
-	char *realm;
-	int expires;
-	int reg_time;
-	int rid;
-	char *type;
-	struct _SipSetupContext *ssctx;
-	int auth_failures;
-	char *contact_addr; /* our IP address as seen by the proxy, read from via 's received= parameter*/
-	int contact_port; /*our IP port as seen by the proxy, read from via's rport= parameter */
-	char *dial_prefix;
-	bool_t commit;
-	bool_t reg_sendregister;
-	bool_t registered;
-	bool_t publish;
-	bool_t dial_escape_plus;
-} LinphoneProxyConfig;
+typedef struct _LinphoneProxyConfig LinphoneProxyConfig;
 
 LinphoneProxyConfig *linphone_proxy_config_new(void);
 int linphone_proxy_config_set_server_addr(LinphoneProxyConfig *obj, const char *server_addr);
@@ -393,6 +265,8 @@ int linphone_account_creator_test_existence(LinphoneAccountCreator *obj);
 LinphoneProxyConfig * linphone_account_creator_validate(LinphoneAccountCreator *obj);
 void linphone_account_creator_destroy(LinphoneAccountCreator *obj);
 
+struct _LinphoneAuthInfo;
+
 /**
  * @ingroup authentication
  * Object holding authentication information.
@@ -417,16 +291,7 @@ void linphone_account_creator_destroy(LinphoneAccountCreator *obj);
  * transactions and retry them with authentication headers.
  *
 **/
-typedef struct _LinphoneAuthInfo
-{
-	char *username;
-	char *realm;
-	char *userid;
-	char *passwd;
-	char *ha1;
-	bool_t works;
-	bool_t first_time;
-}LinphoneAuthInfo;
+typedef struct _LinphoneAuthInfo LinphoneAuthInfo;
 
 LinphoneAuthInfo *linphone_auth_info_new(const char *username, const char *userid,
 		const char *passwd, const char *ha1,const char *realm);
@@ -437,13 +302,7 @@ void linphone_auth_info_set_userid(LinphoneAuthInfo *info, const char *userid);
 void linphone_auth_info_destroy(LinphoneAuthInfo *info);
 LinphoneAuthInfo * linphone_auth_info_new_from_config_file(struct _LpConfig *config, int pos);
 
-struct _LinphoneChatRoom{
-	struct _LinphoneCore *lc;
-	char  *peer;
-	char *route;
-	LinphoneAddress *peer_url;
-	void * user_data;
-};
+struct _LinphoneChatRoom;
 typedef struct _LinphoneChatRoom LinphoneChatRoom;
 
 LinphoneChatRoom * linphone_core_create_chat_room(struct _LinphoneCore *lc, const char *to);
@@ -547,10 +406,6 @@ typedef struct _LinphoneVTable
 	AuthInfoRequested auth_info_requested; /**< Ask the application some authentication information */
 	DisplayStatusCb display_status; /**< Callback that notifies various events with human readable text.*/
 	DisplayMessageCb display_message;/**< Callback to display a message to the user */
-#ifdef VINCENT_MAURY_RSVP
-	/* the yes/no dialog box */
-	DisplayMessageCb display_yes_no;
-#endif
 	DisplayMessageCb display_warning;/** Callback to display a warning to the user */
 	DisplayUrlCb display_url;
 	DisplayQuestionCb display_question;
@@ -587,71 +442,7 @@ typedef enum _LinphoneWaitingState{
 } LinphoneWaitingState;
 typedef void * (*LinphoneWaitingCallback)(struct _LinphoneCore *lc, void *context, LinphoneWaitingState ws, const char *purpose, float progress);
 
-
-typedef struct _LinphoneCore
-{
-	LinphoneCoreVTable vtable;
-	struct _LpConfig *config;
-	net_config_t net_conf;
-	sip_config_t sip_conf;
-	rtp_config_t rtp_conf;
-	sound_config_t sound_conf;
-	video_config_t video_conf;
-	codecs_config_t codecs_conf;
-	ui_config_t ui_conf;
-	autoreplier_config_t autoreplier_conf;
-	LinphoneProxyConfig *default_proxy;
-	MSList *friends;
-	MSList *auth_info;
-	struct _RingStream *ringstream;
-	LCCallbackObj preview_finished_cb;
-	bool_t preview_finished;
-	struct _LinphoneCall *call;   /* the current call, in the future it will be a list of calls (conferencing)*/
-	int rid; /*registration id*/
-	MSList *queued_calls;	/* used by the autoreplier */
-	MSList *call_logs;
-	MSList *chatrooms;
-	int max_call_logs;
-	int missed_calls;
-	struct _AudioStream *audiostream;  /**/
-	struct _VideoStream *videostream;
-	struct _VideoStream *previewstream;
-	RtpTransport *a_rtp,*a_rtcp;
-	struct _RtpProfile *local_profile;
-	MSList *bl_reqs;
-	MSList *subscribers;	/* unknown subscribers */
-	int minutes_away;
-	LinphoneOnlineStatus presence_mode;
-	LinphoneOnlineStatus prev_mode;
-	char *alt_contact;
-	void *data;
-	ms_mutex_t lock;
-	char *play_file;
-	char *rec_file;
-	time_t prevtime;
-	int dw_audio_bw;
-	int up_audio_bw;
-	int dw_video_bw;
-	int up_video_bw;
-	int audio_bw;
-	int automatic_action;
-	gstate_t gstate_power;
-	gstate_t gstate_reg;
-	gstate_t gstate_call;
-	LinphoneWaitingCallback wait_cb;
-	void *wait_ctx;
-	bool_t use_files;
-	bool_t apply_nat_settings;
-	bool_t ready;
-	bool_t bl_refresh;
-#ifdef VINCENT_MAURY_RSVP
-	/* QoS parameters*/
-	int rsvp_enable;
-	int rpc_enable;
-#endif
-} LinphoneCore;
-
-
+typedef struct _LinphoneCore LinphoneCore;
 
 /* THE main API */
 
@@ -896,8 +687,6 @@ const LinphoneAddress *linphone_core_get_remote_uri(LinphoneCore *lc);
 int linphone_core_get_mtu(const LinphoneCore *lc);
 void linphone_core_set_mtu(LinphoneCore *lc, int mtu);
 
-bool_t linphone_core_is_in_main_thread(LinphoneCore *lc);
-
 void *linphone_core_get_user_data(LinphoneCore *lc);
 
 /* returns LpConfig object to read/write to the config file: usefull if you wish to extend
@@ -922,21 +711,6 @@ void linphone_core_destroy(LinphoneCore *lc);
 
 /*for advanced users:*/
 void linphone_core_set_audio_transports(LinphoneCore *lc, RtpTransport *rtp, RtpTransport *rtcp);
-
-/* end of lecacy api */
-
-/*internal use only */
-#define linphone_core_lock(lc)	ms_mutex_lock(&(lc)->lock)
-#define linphone_core_unlock(lc)	ms_mutex_unlock((&lc)->lock)
-void linphone_core_start_media_streams(LinphoneCore *lc, struct _LinphoneCall *call);
-void linphone_core_stop_media_streams(LinphoneCore *lc);
-const char * linphone_core_get_identity(LinphoneCore *lc);
-const char * linphone_core_get_route(LinphoneCore *lc);
-bool_t linphone_core_interpret_url(LinphoneCore *lc, const char *url, LinphoneAddress **real_parsed_url, char **route);
-void linphone_core_start_waiting(LinphoneCore *lc, const char *purpose);
-void linphone_core_update_progress(LinphoneCore *lc, const char *purpose, float progresses);
-void linphone_core_stop_waiting(LinphoneCore *lc);
-
 
 #ifdef __cplusplus
 }

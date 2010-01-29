@@ -26,10 +26,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "sal.h"
 
 SalMediaDescription *sal_media_description_new(){
-	return ms_new0(SalMediaDescription,1);
+	SalMediaDescription *md=ms_new0(SalMediaDescription,1);
+	md->refcount=1;
 }
 
-void sal_media_description_destroy(SalMediaDescription *md){
+static void sal_media_description_destroy(SalMediaDescription *md){
 	int i;
 	for(i=0;i<SAL_MEDIA_DESCRIPTION_MAX_STREAMS;i++){
 		ms_list_for_each(md->streams[i].payloads,(void (*)(void *))payload_type_destroy);
@@ -37,6 +38,28 @@ void sal_media_description_destroy(SalMediaDescription *md){
 	}
 	ms_free(md);
 }
+
+void sal_media_description_ref(SalMediaDescription *md){
+	md->refcount++;
+}
+
+void sal_media_description_unref(SalMediaDescription *md){
+	md->refcount--;
+	if (md->refcount==0){
+		sal_media_description_destroy (md);
+	}
+}
+
+SalStreamDescription *sal_media_description_find_stream(SalMediaDescription *md,
+    SalMediaProto proto, SalStreamType type){
+	int i;
+	for(i=0;i<md->nstreams;++i){
+		SalStreamDescription *ss=&md->streams[i];
+		if (ss->proto==proto && ss->type==type) return ss;
+	}
+	return NULL;
+}
+
 
 static void assign_string(char **str, const char *arg){
 	if (*str){
@@ -111,8 +134,8 @@ void __sal_op_free(SalOp *op){
 		b->contact=NULL;
 	}
 	if (b->local_media)
-		sal_media_description_destroy(b->local_media);
+		sal_media_description_unref(b->local_media);
 	if (b->remote_media)
-		sal_media_description_destroy(b->remote_media);
+		sal_media_description_unref(b->remote_media);
 	ms_free(op);
 }

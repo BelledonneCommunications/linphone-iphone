@@ -64,20 +64,20 @@ Sal * sal_init();
 void sal_uninit(Sal* sal);
 
 typedef enum {
-	SAL_TRANSPORT_DATAGRAM,
-	SAL_TRANSPORT_STREAM
+	SalTransportDatagram,
+	SalTransportStream
 }SalTransport;
 
 typedef enum {
-	SAL_AUDIO,
-	SAL_VIDEO,
-	SAL_OTHER
+	SalAudio,
+	SalVideo,
+	SalOther
 } SalStreamType;
 
 typedef enum{
-	SAL_PROTO_UNKNOWN,
-	SAL_PROTO_RTP_AVP,
-	SAL_PROTO_RTP_SAVP
+	SalProtoUnknown,
+	SalProtoRtpAvp,
+	SalProtoRtpSavp
 }SalMediaProto;
 
 typedef struct SalStreamDescription{
@@ -93,6 +93,7 @@ typedef struct SalStreamDescription{
 #define SAL_MEDIA_DESCRIPTION_MAX_STREAMS 4
 
 typedef struct SalMediaDescription{
+	int refcount;
 	char addr[64];
 	char username[64];
 	int nstreams;
@@ -100,7 +101,10 @@ typedef struct SalMediaDescription{
 } SalMediaDescription;
 
 SalMediaDescription *sal_media_description_new();
-void sal_media_description_destroy(SalMediaDescription *md);
+void sal_media_description_ref(SalMediaDescription *md);
+void sal_media_description_unref(SalMediaDescription *md);
+SalStreamDescription *sal_media_description_find_stream(SalMediaDescription *md,
+    SalMediaProto proto, SalStreamType type);
 
 /*this structure must be at the first byte of the SalOp structure defined by implementors*/
 typedef struct SalOpBase{
@@ -239,6 +243,9 @@ int sal_notify_presence(SalOp *op, SalPresenceStatus status, const char *status_
 
 #define payload_type_set_number(pt,n)	(pt)->user_data=(void*)((long)n);
 #define payload_type_get_number(pt)		((int)(long)(pt)->user_data)
+
+/*misc*/
+void sal_get_default_local_ip(Sal *sal, int address_family, char *ip, size_t iplen);
 
 
 /*internal API */
