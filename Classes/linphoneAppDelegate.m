@@ -550,6 +550,7 @@ bool networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 
 -(void) doRegister {
 	SCNetworkReachabilityFlags reachabilityFlags;
+	SCNetworkReachabilityGetFlags (proxyReachability,&reachabilityFlags);
 	networkReachabilityCallBack(proxyReachability,reachabilityFlags,myLinphoneCore); 
 }
 -(LinphoneCore*) getLinphoneCore {

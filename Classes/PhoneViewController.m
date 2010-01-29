@@ -71,10 +71,10 @@
 //implements call/cancel button behavior 
 -(IBAction) doAction:(id)sender {
 	//1 normalize phone number
-	if ([address.text length] == 0) return; //just return
 	
 	if (sender == gsmCall || sender == call) {
-		
+
+		if ([address.text length] == 0) return; //just return
 		char normalizedUserName[256];
 		LinphoneProxyConfig* proxyCfg;	
 		//get default proxy
@@ -342,10 +342,7 @@
 	//	GSTATE_CALL_ERROR,
 	//	GSTATE_INVALID
 	switch (state->new_state) {
-		case GSTATE_REG_FAILED: {
-			[self enableCall:false];
-			break;
-		}
+		case GSTATE_REG_FAILED: 
 		case GSTATE_REG_OK: {
 			LinphoneProxyConfig* proxyCfg;	
 			//get default proxy
@@ -391,6 +388,7 @@
 		case GSTATE_CALL_END: {
 			//end off call, just dismiss Incall view
 			[self dismissIncallView];
+			[myIncallViewController resetView];
 			displayName=@"";
 			break;
 		}

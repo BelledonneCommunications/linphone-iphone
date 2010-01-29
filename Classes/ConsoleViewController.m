@@ -34,10 +34,11 @@ NSMutableString* MoreViewController_logs;
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
     [super viewDidLoad];
-	UIBarButtonItem* clear = [[UIBarButtonItem alloc] initWithCustomView: [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"bot_borrar1.png"]]];
-	[clear setTarget:self];
-	[clear setAction:@selector(doAction)];
-	[self.navigationItem setRightBarButtonItem:clear];
+	UIBarButtonItem* clear = [[UIBarButtonItem alloc] 
+							  initWithBarButtonSystemItem:UIBarButtonSystemItemTrash 
+							  target:self 
+							  action:@selector(doAction)]; 
+		[self.navigationItem setRightBarButtonItem:clear];
 }
 
 

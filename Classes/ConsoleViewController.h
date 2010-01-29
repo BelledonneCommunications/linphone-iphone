@@ -26,7 +26,6 @@
 }
 -(void) doAction;
 @property (nonatomic, retain) IBOutlet UITextView* logs;
-@property (nonatomic, retain) IBOutlet UIButton* clear;
 @property (nonatomic, retain) IBOutlet UIView*	logsView;
 
 
