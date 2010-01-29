@@ -94,7 +94,27 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
-			<string>GSM</string>
+			<string>GSM 22Khz</string>
+			<key>Key</key>
+			<string>gsm_22k_preference</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>GSM 11Khz</string>
+			<key>Key</key>
+			<string>gsm_11k_preference</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>GSM 8Khz</string>
 			<key>Key</key>
 			<string>gsm_8k_preference</string>
 			<key>DefaultValue</key>
