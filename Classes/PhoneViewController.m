@@ -128,6 +128,7 @@
 		[address  resignFirstResponder];
 	} else if (sender == tun) {
 		[self setTunnelState: [linphoneDelegate toggleTunnel]];
+		[self refreshCallState];
 	}
 	
 }
@@ -344,14 +345,7 @@
 	switch (state->new_state) {
 		case GSTATE_REG_FAILED: 
 		case GSTATE_REG_OK: {
-			LinphoneProxyConfig* proxyCfg;	
-			//get default proxy
-			
-			if ((linphone_core_get_default_proxy(mCore,&proxyCfg)==0) && linphone_proxy_config_is_registered(proxyCfg)) {
-				[self enableCall:true];
-			} else {
-				[self enableCall:false];
-			}
+			[self refreshCallState];
 			break;
 		}
 		case GSTATE_CALL_IN_INVITE:
@@ -397,6 +391,15 @@
 	}
 	
 }
-
+-(void)refreshCallState {
+	LinphoneProxyConfig* proxyCfg;	
+	//get default proxy
+	int result = linphone_core_get_default_proxy(mCore,&proxyCfg);
+	if ((result==0) && linphone_proxy_config_is_registered(proxyCfg)) {
+		[self enableCall:true];
+	} else {
+		[self enableCall:false];
+	}
+}	
 
 @end
