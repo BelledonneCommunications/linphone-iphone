@@ -163,7 +163,7 @@ void linphone_authentication_ok(LinphoneCore *lc, eXosip_event_t *ev);
 void linphone_subscription_new(LinphoneCore *lc, eXosip_event_t *ev);
 void linphone_notify_recv(LinphoneCore *lc,eXosip_event_t *ev);
 LinphoneProxyConfig *linphone_core_get_proxy_config_from_rid(LinphoneCore *lc, int rid);
-void linphone_proxy_config_process_authentication_failure(LinphoneCore *lc, eXosip_event_t *ev);
+void linphone_proxy_config_process_authentication_failure(LinphoneCore *lc, int code, eXosip_event_t *ev);
 
 void linphone_subscription_answered(LinphoneCore *lc, eXosip_event_t *ev);
 void linphone_subscription_closed(LinphoneCore *lc, eXosip_event_t *ev);
