@@ -470,10 +470,6 @@ int linphone_set_audio_offer(sdp_context_t *ctx)
 			payload.pt=rtp_profile_get_payload_number_from_rtpmap(lc->local_profile,payload.a_rtpmap);
 			payload.localport=call->audio_params.natd_port > 0 ?
 						call->audio_params.natd_port : lc->rtp_conf.audio_rtp_port;
-			if (strcasecmp(codec->mime_type,"iLBC")==0){
-				/* prefer the 30 ms mode */
-				payload.a_fmtp="ptime=30";
-			}
 			sdp_context_add_audio_payload(ctx,&payload);
 			ms_free(payload.a_rtpmap);
 		}
