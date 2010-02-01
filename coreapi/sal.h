@@ -62,6 +62,8 @@ void sal_address_destroy(SalAddress *u);
 
 Sal * sal_init();
 void sal_uninit(Sal* sal);
+void sal_set_user_pointer(Sal *sal, void *user_data);
+void *sal_get_user_pointer(const Sal *sal);
 
 typedef enum {
 	SalTransportDatagram,
@@ -103,6 +105,7 @@ typedef struct SalMediaDescription{
 SalMediaDescription *sal_media_description_new();
 void sal_media_description_ref(SalMediaDescription *md);
 void sal_media_description_unref(SalMediaDescription *md);
+bool_t sal_media_description_empty(SalMediaDescription *md);
 SalStreamDescription *sal_media_description_find_stream(SalMediaDescription *md,
     SalMediaProto proto, SalStreamType type);
 
@@ -121,7 +124,7 @@ typedef struct SalOpBase{
 
 typedef enum SalError{
 	SalErrorNoResponse,
-	SalErrorMedia,
+	SalErrorProtocol,
 	SalErrorFailure, /* see SalReason for more details */
 	SalErrorUnknown
 } SalError;
@@ -133,6 +136,7 @@ typedef enum SalReason{
 	SalReasonTemporarilyUnavailable,
 	SalReasonNotFound,
 	SalReasonDoNotDisturb,
+	SalReasonMedia,
 	SalReasonForbidden,
 	SalReasonUnknown
 }SalReason;
@@ -155,7 +159,7 @@ typedef void (*SalOnCallRinging)(SalOp *op);
 typedef void (*SalOnCallAccepted)(SalOp *op);
 typedef void (*SalOnCallAck)(SalOp *op);
 typedef void (*SalOnCallUpdated)(SalOp *op);
-typedef void (*SalOnCallTerminated)(SalOp *op);
+typedef void (*SalOnCallTerminated)(SalOp *op, const char *from);
 typedef void (*SalOnCallFailure)(SalOp *op, SalError error, SalReason reason, const char *details);
 typedef void (*SalOnAuthRequested)(SalOp *op, const char *realm, const char *username);
 typedef void (*SalOnAuthSuccess)(SalOp *op, const char *realm, const char *username);
@@ -200,6 +204,7 @@ typedef struct SalAuthInfo{
 void sal_set_callbacks(Sal *ctx, const SalCallbacks *cbs);
 int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int is_secure);
 void sal_set_user_agent(Sal *ctx, const char *user_agent);
+void sal_masquerade(Sal *ctx, const char *ip);
 void sal_use_session_timers(Sal *ctx, int expires);
 int sal_iterate(Sal *sal);
 
@@ -223,9 +228,12 @@ void *sal_op_get_user_pointer(const SalOp *op);
 /*Call API*/
 int sal_call_set_local_media_description(SalOp *h, SalMediaDescription *desc);
 int sal_call(SalOp *h, const char *from, const char *to);
+int sal_call_notify_ringing(SalOp *h);
 int sal_call_accept(SalOp*h);
 int sal_call_decline(SalOp *h, SalReason reason, const char *redirection /*optional*/);
-const SalMediaDescription * sal_call_get_final_media_description(SalOp *h);
+SalMediaDescription * sal_call_get_final_media_description(SalOp *h);
+int sal_refer(SalOp *h, const char *refer_to);
+int sal_call_send_dtmf(SalOp *h, char dtmf);
 int sal_call_terminate(SalOp *h);
 
 /*Registration*/

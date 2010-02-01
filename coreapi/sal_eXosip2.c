@@ -134,6 +134,18 @@ void sal_uninit(Sal* sal){
 	ms_free(sal);
 }
 
+void sal_set_user_pointer(Sal *sal, void *user_data){
+	sal->up=user_data;
+}
+
+void *sal_get_user_pointer(const Sal *sal){
+	return sal->up;
+}
+
+void sal_masquerade(Sal *ctx, const char *ip){
+	eXosip_set_option(EXOSIP_OPT_SET_IPV4_FOR_GATEWAY,ip);
+}
+
 static void unimplemented_stub(){
 	ms_warning("Unimplemented SAL callback");
 }
@@ -293,8 +305,16 @@ int sal_call(SalOp *h, const char *from, const char *to){
 	return 0;
 }
 
+int sal_call_notify_ringing(SalOp *h){
+	eXosip_lock();
+	eXosip_call_send_answer(h->tid,180,NULL);
+	eXosip_unlock();
+	return 0;
+}
+
 int sal_call_accept(SalOp * h){
 	osip_message_t *msg;
+	const char *contact=sal_op_get_contact(h);
 	/* sends a 200 OK */
 	int err=eXosip_call_build_answer(h->tid,200,&msg);
 	if (err<0 || msg==NULL){
@@ -304,6 +324,8 @@ int sal_call_accept(SalOp * h){
 	if (h->base.root->session_expires!=0){
 		if (h->supports_session_timers) osip_message_set_supported(msg, "timer");
 	}
+
+	if (contact) osip_message_set_contact(msg,contact);
 	
 	if (h->base.local_media){
 		/*this is the case where we received an invite without SDP*/
@@ -320,18 +342,80 @@ int sal_call_accept(SalOp * h){
 	return 0;
 }
 
-const SalMediaDescription * sal_call_get_final_media_description(SalOp *h){
+int sal_call_decline(SalOp *h, SalReason reason, const char *redirect){
+	if (reason==SalReasonBusy){
+		eXosip_lock();
+		eXosip_call_send_answer(h->tid,486,NULL);
+		eXosip_unlock();
+	}
+	else if (reason==SalReasonTemporarilyUnavailable){
+		eXosip_lock();
+		eXosip_call_send_answer(h->tid,480,NULL);
+		eXosip_unlock();
+	}else if (reason==SalReasonDoNotDisturb){
+		eXosip_lock();
+		eXosip_call_send_answer(h->tid,600,NULL);
+		eXosip_unlock();
+	}else if (reason==SalReasonMedia){
+		eXosip_lock();
+		eXosip_call_send_answer(h->tid,415,NULL);
+		eXosip_unlock();
+	}else if (redirect!=NULL && reason==SalReasonRedirect){
+		osip_message_t *msg;
+		int code;
+		if (strstr(redirect,"sip:")!=0) code=302;
+		else code=380;
+		eXosip_lock();
+		eXosip_call_build_answer(h->tid,code,&msg);
+		osip_message_set_contact(msg,redirect);
+		eXosip_call_send_answer(h->tid,code,msg);
+		eXosip_unlock();
+	}else sal_call_terminate(h);
+	return 0;
+}
+
+SalMediaDescription * sal_call_get_final_media_description(SalOp *h){
 	if (h->base.local_media && h->base.remote_media && !h->result){
 		sdp_process(h);
 	}
 	return h->result;
 }
 
+int sal_refer(SalOp *h, const char *refer_to){
+	osip_message_t *msg=NULL;
+	int err=0;
+	eXosip_lock();
+	eXosip_call_build_refer(h->did,refer_to, &msg);
+	if (msg) err=eXosip_call_send_request(h->did, msg);
+	else err=-1;
+	eXosip_unlock();
+	return err;
+}
+
+int sal_call_send_dtmf(SalOp *h, char dtmf){
+	osip_message_t *msg=NULL;
+	char dtmf_body[128];
+	char clen[10];
+
+	eXosip_lock();
+	eXosip_call_build_info(h->did,&msg);
+	if (msg){
+		snprintf(dtmf_body, sizeof(dtmf_body), "Signal=%c\r\nDuration=250\r\n", dtmf);
+		osip_message_set_body(msg,dtmf_body,strlen(dtmf_body));
+		osip_message_set_content_type(msg,"application/dtmf-relay");
+		snprintf(clen,sizeof(clen),"%lu",(unsigned long)strlen(dtmf_body));
+		osip_message_set_content_length(msg,clen);		
+		eXosip_call_send_request(h->did,msg);
+	}
+	eXosip_unlock();
+	return 0;
+}
+
 int sal_call_terminate(SalOp *h){
 	eXosip_lock();
 	eXosip_call_terminate(h->cid,h->did);
-	eXosip_unlock();
 	eXosip_call_set_reference(h->cid,NULL);
+	eXosip_unlock();
 	return 0;
 }
 
@@ -494,13 +578,17 @@ static void call_accepted(Sal *sal, eXosip_event_t *ev){
 
 static void call_terminated(Sal *sal, eXosip_event_t *ev){
 	SalOp *op;
+	char *from;
 	op=(SalOp*)ev->external_reference;
 	if (op==NULL){
 		ms_warning("Call terminated for already closed call ?");
 		return;
 	}
+	osip_from_to_str(ev->request->from,&from);
 	eXosip_call_set_reference(ev->cid,NULL);
-	sal->callbacks.call_terminated(op);
+	op->cid=-1;
+	sal->callbacks.call_terminated(op,from);
+	osip_free(from);
 }
 
 static void call_released(Sal *sal, eXosip_event_t *ev){
@@ -510,7 +598,7 @@ static void call_released(Sal *sal, eXosip_event_t *ev){
 		return;
 	}
 	eXosip_call_set_reference(ev->cid,NULL);
-	sal->callbacks.call_terminated(op);
+	/*sal->callbacks.call_terminated(op);*/
 }
 
 static int get_auth_data(eXosip_event_t *ev, const char **realm, const char **username){
@@ -600,7 +688,8 @@ static bool_t call_failure(Sal *sal, eXosip_event_t *ev){
 			sr=SalReasonNotFound;
 		break;
 		case 415:
-			error=SalErrorMedia;
+			error=SalErrorFailure;
+			sr=SalReasonMedia;
 		break;
 		case 422:
 			eXosip_default_action(ev);
@@ -1031,11 +1120,9 @@ int sal_iterate(Sal *sal){
 			if (process_event(sal,ev))
 				eXosip_event_free(ev);
 		}
-		if (sal->automatic_action==0) {
-			eXosip_lock();
-			eXosip_automatic_refresh();
-			eXosip_unlock();
-		}
+		eXosip_lock();
+		eXosip_automatic_refresh();
+		eXosip_unlock();
 	}
 	return 0;
 }

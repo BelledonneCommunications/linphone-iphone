@@ -67,7 +67,8 @@ typedef struct _LinphoneCall
 	SalMediaDescription *localdesc;
 	SalMediaDescription *resultdesc;
 	LinphoneCallDir dir;
-	struct _RtpProfile *profile;	/*points to the local_profile or to the remote "guessed" profile*/
+	struct _RtpProfile *audio_profile;
+	struct _RtpProfile *video_profile;
 	struct _LinphoneCallLog *log;
 	SalOp *op;
 	char localip[LINPHONE_IPADDR_SIZE]; /* our best guess for local ipaddress for this call */
@@ -87,7 +88,7 @@ void linphone_call_log_completed(LinphoneCallLog *calllog, LinphoneCall *call);
 void linphone_call_log_destroy(LinphoneCallLog *cl);
 
 
-void linphone_core_init_media_streams(LinphoneCore *lc);
+void linphone_core_init_media_streams(LinphoneCore *lc, LinphoneCall *call);
 
 void linphone_auth_info_write_config(struct _LpConfig *config, LinphoneAuthInfo *obj, int pos);
 
@@ -112,8 +113,8 @@ bool_t host_has_ipv6_network();
 bool_t lp_spawn_command_line_sync(const char *command, char **result,int *command_ret);
 
 static inline int get_min_bandwidth(int dbw, int ubw){
-	if (dbw<0) return ubw;
-	if (ubw<0) return dbw;
+	if (dbw<=0) return ubw;
+	if (ubw<=0) return dbw;
 	return MIN(dbw,ubw);
 }
 
@@ -165,7 +166,7 @@ int linphone_proxy_config_normalize_number(LinphoneProxyConfig *cfg, const char 
 
 /*internal use only */
 void linphone_core_start_media_streams(LinphoneCore *lc, struct _LinphoneCall *call);
-void linphone_core_stop_media_streams(LinphoneCore *lc);
+void linphone_core_stop_media_streams(LinphoneCore *lc, struct _LinphoneCall *call);
 const char * linphone_core_get_identity(LinphoneCore *lc);
 const char * linphone_core_get_route(LinphoneCore *lc);
 bool_t linphone_core_interpret_url(LinphoneCore *lc, const char *url, LinphoneAddress **real_parsed_url, char **route);

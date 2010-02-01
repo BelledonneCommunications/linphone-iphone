@@ -28,6 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 SalMediaDescription *sal_media_description_new(){
 	SalMediaDescription *md=ms_new0(SalMediaDescription,1);
 	md->refcount=1;
+	return md;
 }
 
 static void sal_media_description_destroy(SalMediaDescription *md){
@@ -60,6 +61,14 @@ SalStreamDescription *sal_media_description_find_stream(SalMediaDescription *md,
 	return NULL;
 }
 
+bool_t sal_media_description_empty(SalMediaDescription *md){
+	int i;
+	for(i=0;i<md->nstreams;++i){
+		SalStreamDescription *ss=&md->streams[i];
+		if (ss->port!=0) return FALSE;
+	}
+	return TRUE;
+}
 
 static void assign_string(char **str, const char *arg){
 	if (*str){

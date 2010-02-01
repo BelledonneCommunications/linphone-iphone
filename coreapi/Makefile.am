@@ -21,7 +21,6 @@ liblinphone_la_SOURCES=\
 	sal_eXosip2_sdp.c \
 	sal_eXosip2_presence.c \
 	callbacks.c \
-	exevents.c sdphandler.c\
 	misc.c  \
 	address.c \
 	enum.c enum.h \

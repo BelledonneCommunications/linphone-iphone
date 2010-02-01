@@ -35,7 +35,7 @@ struct Sal{
 	MSList *in_subscribes;/*MSList of SalOp */
 	int running;
 	int session_expires;
-	int automatic_action;
+	void *up;
 };
 
 struct SalOp{
