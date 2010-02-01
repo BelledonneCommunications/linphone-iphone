@@ -117,6 +117,8 @@
 		2274550810700509006EC466 /* linphonerc in Resources */ = {isa = PBXBuildFile; fileRef = 2274550710700509006EC466 /* linphonerc */; };
 		227BCDC210D4004600FBFD76 /* CallHistoryTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 227BCDC010D4004600FBFD76 /* CallHistoryTableViewController.m */; };
 		227BCDC310D4004600FBFD76 /* CallHistoryTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 227BCDC110D4004600FBFD76 /* CallHistoryTableViewController.xib */; };
+		2287846811146CF600FDA691 /* icono_gris.png in Resources */ = {isa = PBXBuildFile; fileRef = 2287846711146CF600FDA691 /* icono_gris.png */; };
+		2287846911146CF600FDA691 /* icono_gris.png in Resources */ = {isa = PBXBuildFile; fileRef = 2287846711146CF600FDA691 /* icono_gris.png */; };
 		229240E510F1FFFE008A8A37 /* boton_1-2.png in Resources */ = {isa = PBXBuildFile; fileRef = 229240E410F1FFFE008A8A37 /* boton_1-2.png */; };
 		229240FA10F2020E008A8A37 /* linphonerc in Resources */ = {isa = PBXBuildFile; fileRef = 2274550710700509006EC466 /* linphonerc */; };
 		229240FB10F2020E008A8A37 /* PhoneViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22F2508D107141E100AC9B3F /* PhoneViewController.xib */; };
@@ -567,6 +569,7 @@
 		227BCDBF10D4004600FBFD76 /* CallHistoryTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallHistoryTableViewController.h; sourceTree = "<group>"; };
 		227BCDC010D4004600FBFD76 /* CallHistoryTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallHistoryTableViewController.m; sourceTree = "<group>"; };
 		227BCDC110D4004600FBFD76 /* CallHistoryTableViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CallHistoryTableViewController.xib; sourceTree = "<group>"; };
+		2287846711146CF600FDA691 /* icono_gris.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icono_gris.png; sourceTree = "<group>"; };
 		228B040410DB95BD0061FE68 /* client.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = client.hh; sourceTree = "<group>"; };
 		228B040510DB95BD0061FE68 /* common.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = common.hh; sourceTree = "<group>"; };
 		229240E410F1FFFE008A8A37 /* boton_1-2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "boton_1-2.png"; sourceTree = "<group>"; };
@@ -1098,6 +1101,7 @@
 		22B4506810F5D66A005A07E6 /* elementos_separados_llamada_activa */ = {
 			isa = PBXGroup;
 			children = (
+				2287846711146CF600FDA691 /* icono_gris.png */,
 				22B4506910F5D66A005A07E6 /* boton_colgar.png */,
 				22B4506A10F5D66A005A07E6 /* corner_der.png */,
 				22B4506B10F5D66A005A07E6 /* corner_izq.png */,
@@ -1470,6 +1474,7 @@
 				229C9F9F11098DEC001BB43E /* auroc-Off.png in Resources */,
 				229C9FA011098DEC001BB43E /* auroc-On.png in Resources */,
 				229C9FFB110D83E8001BB43E /* Localizable.strings in Resources */,
+				2287846911146CF600FDA691 /* icono_gris.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1599,6 +1604,7 @@
 				229C9F9D11098DEC001BB43E /* auroc-Off.png in Resources */,
 				229C9F9E11098DEC001BB43E /* auroc-On.png in Resources */,
 				229C9FFC110D83E8001BB43E /* Localizable.strings in Resources */,
+				2287846811146CF600FDA691 /* icono_gris.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

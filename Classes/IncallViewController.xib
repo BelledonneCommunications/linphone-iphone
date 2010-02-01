@@ -8,7 +8,7 @@
 		<string key="IBDocument.HIToolboxVersion">353.00</string>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="9"/>
+			<integer value="2"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -255,6 +255,7 @@
 									<reference key="NSSuperview" ref="585669622"/>
 									<bool key="IBUIOpaque">NO</bool>
 									<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
+									<bool key="IBUIEnabled">NO</bool>
 									<int key="IBUIContentHorizontalAlignment">0</int>
 									<int key="IBUIContentVerticalAlignment">0</int>
 									<reference key="IBUIFont" ref="755582794"/>
@@ -268,10 +269,11 @@
 										<string key="NSClassName">NSImage</string>
 										<string key="NSResourceName">icono_teclado_2.png</string>
 									</object>
-									<object class="NSCustomResource" key="IBUINormalImage">
+									<object class="NSCustomResource" key="IBUIDisabledImage" id="711285967">
 										<string key="NSClassName">NSImage</string>
-										<string key="NSResourceName">icono_teclado_1.png</string>
+										<string key="NSResourceName">icono_gris.png</string>
 									</object>
+									<reference key="IBUINormalImage" ref="711285967"/>
 								</object>
 								<object class="IBUIButton" id="406189871">
 									<reference key="NSNextResponder" ref="585669622"/>
