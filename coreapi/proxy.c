@@ -760,17 +760,43 @@ const MSList *linphone_core_get_proxy_config_list(const LinphoneCore *lc){
 }
 
 
-void linphone_proxy_config_process_authentication_failure(LinphoneCore *lc, eXosip_event_t *ev){
-	LinphoneProxyConfig *cfg=linphone_core_get_proxy_config_from_rid(lc, ev->rid);
-	if (cfg){
-		cfg->auth_failures++;
-		if (strcmp(ev->request->sip_method,"REGISTER")==0) {
-			gstate_new_state(lc, GSTATE_REG_FAILED, "Authentication failed.");
+void linphone_proxy_config_process_authentication_failure(LinphoneCore *lc, int code, eXosip_event_t *ev){
+	if (code==403) {
+		LinphoneProxyConfig *cfg=linphone_core_get_proxy_config_from_rid(lc, ev->rid);
+		if (cfg){
+			cfg->auth_failures++;
+			/*restart a new register so that the user gets a chance to be prompted for a password*/
+			if (cfg->auth_failures==1){
+				linphone_proxy_config_register(cfg);
+			}
 		}
-		/*restart a new register so that the user gets a chance to be prompted for a password*/
-		if (cfg->auth_failures==1){
-			linphone_proxy_config_register(cfg);
+	} else {
+		//unknown error (possibly timeout)
+		char *prx_realm=NULL,*www_realm=NULL;
+		osip_proxy_authenticate_t *prx_auth;
+		osip_www_authenticate_t *www_auth;
+		osip_message_t *req=ev->request;
+		char *username;
+		username=osip_uri_get_username(req->from->url);
+		prx_auth=(osip_proxy_authenticate_t*)osip_list_get(&req->proxy_authenticates,0);
+		www_auth=(osip_proxy_authenticate_t*)osip_list_get(&req->www_authenticates,0);
+		if (prx_auth!=NULL)
+			prx_realm=osip_proxy_authenticate_get_realm(prx_auth);
+		if (www_auth!=NULL)
+			www_realm=osip_www_authenticate_get_realm(www_auth);
+
+		if (prx_realm==NULL && www_realm==NULL){
+			ms_warning("No realm in the client request.");
+			return;
 		}
+		LinphoneAuthInfo *as=NULL;
+		/* see if we already have this auth information , not to ask it everytime to the user */
+		if (prx_realm!=NULL)
+			as=linphone_core_find_auth_info(lc,prx_realm,username);
+		if (www_realm!=NULL)
+			as=linphone_core_find_auth_info(lc,www_realm,username);
+
+		if (as) as->first_time=TRUE;
 	}
 }
 

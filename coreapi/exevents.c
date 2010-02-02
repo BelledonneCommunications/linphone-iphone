@@ -968,7 +968,7 @@ void linphone_registration_faillure(LinphoneCore *lc, eXosip_event_t *ev){
 				updated contact first, just in case the faillure is due to incorrect contact */
 			if (linphone_proxy_config_register_again_with_updated_contact(cfg,ev->request,ev->response))
 				return; /*we are retrying with an updated contact*/
-			if (status_code==403) linphone_proxy_config_process_authentication_failure(lc,ev);
+			linphone_proxy_config_process_authentication_failure(lc,status_code,ev);
 			osip_uri_to_str(requri,&ru);
 			msg=ortp_strdup_printf(_("Registration on %s failed: %s"),ru,(reason!=NULL) ? reason : _("no response timeout"));
 			lc->vtable.display_status(lc,msg);
@@ -988,12 +988,13 @@ void linphone_registration_success(LinphoneCore *lc,eXosip_event_t *ev){
 	cfg=linphone_core_get_proxy_config_from_rid(lc,ev->rid);
 	ms_return_if_fail(cfg!=NULL);
 
-	gstate_new_state(lc, GSTATE_REG_OK, NULL);
 	osip_message_get_expires(ev->request,0,&h);
 	if (h!=NULL && atoi(h->hvalue)!=0){
 		cfg->registered=TRUE;
 		linphone_proxy_config_register_again_with_updated_contact(cfg,ev->request,ev->response);
 	}else cfg->registered=FALSE;
+	
+	gstate_new_state(lc, GSTATE_REG_OK, NULL);
 
 	osip_uri_to_str(requri,&ru);
 	if (cfg->registered) msg=ms_strdup_printf(_("Registration on %s successful."),ru);
