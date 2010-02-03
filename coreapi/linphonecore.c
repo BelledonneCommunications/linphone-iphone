@@ -3131,7 +3131,7 @@ void rtp_config_uninit(LinphoneCore *lc)
 	lp_config_set_int(lc->config,"rtp","audio_rtp_port",config->audio_rtp_port);
 	lp_config_set_int(lc->config,"rtp","video_rtp_port",config->video_rtp_port);
 	lp_config_set_int(lc->config,"rtp","audio_jitt_comp",config->audio_jitt_comp);
-	lp_config_set_int(lc->config,"rtp","video_jitt_comp",config->audio_jitt_comp);
+	lp_config_set_int(lc->config,"rtp","video_jitt_comp",config->video_jitt_comp);
 	lp_config_set_int(lc->config,"rtp","nortp_timeout",config->nortp_timeout);
 }
 
