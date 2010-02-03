@@ -720,7 +720,7 @@ static void codecs_config_read(LinphoneCore *lc)
 
 static void video_config_read(LinphoneCore *lc)
 {
-	int capture, display;
+	int capture, display, self_view;
 	int enabled;
 	const char *str;
 	int ndev;
@@ -748,9 +748,10 @@ static void video_config_read(LinphoneCore *lc)
 	enabled=lp_config_get_int(lc->config,"video","enabled",1);
 	capture=lp_config_get_int(lc->config,"video","capture",enabled);
 	display=lp_config_get_int(lc->config,"video","display",enabled);
+	self_view=lp_config_get_int(lc->config,"video","self_view",enabled);
 #ifdef VIDEO_ENABLED
 	linphone_core_enable_video(lc,capture,display);
-	linphone_core_enable_self_view(lc,TRUE);
+	linphone_core_enable_self_view(lc,self_view);
 #endif
 }
 
@@ -2986,11 +2987,6 @@ void linphone_core_enable_video(LinphoneCore *lc, bool_t vcap_enabled, bool_t di
 	lc->video_conf.capture=vcap_enabled;
 	lc->video_conf.display=display_enabled;
 
-	if (lc->ready){
-		lp_config_set_int(lc->config,"video","display",display_enabled);
-		lp_config_set_int(lc->config,"video","capture",vcap_enabled);
-	}
-
 	/* need to re-apply network bandwidth settings*/
 	linphone_core_set_download_bandwidth(lc,
 		linphone_core_get_download_bandwidth(lc));
@@ -3015,7 +3011,6 @@ bool_t linphone_core_video_enabled(LinphoneCore *lc){
 **/
 void linphone_core_enable_video_preview(LinphoneCore *lc, bool_t val){
 	lc->video_conf.show_local=val;
-	if (lc->ready) lp_config_set_int(lc->config,"video","show_local",val);
 }
 
 /**
@@ -3356,7 +3351,7 @@ void rtp_config_uninit(LinphoneCore *lc)
 	lp_config_set_int(lc->config,"rtp","audio_rtp_port",config->audio_rtp_port);
 	lp_config_set_int(lc->config,"rtp","video_rtp_port",config->video_rtp_port);
 	lp_config_set_int(lc->config,"rtp","audio_jitt_comp",config->audio_jitt_comp);
-	lp_config_set_int(lc->config,"rtp","video_jitt_comp",config->audio_jitt_comp);
+	lp_config_set_int(lc->config,"rtp","video_jitt_comp",config->video_jitt_comp);
 	lp_config_set_int(lc->config,"rtp","nortp_timeout",config->nortp_timeout);
 }
 
@@ -3374,7 +3369,12 @@ void sound_config_uninit(LinphoneCore *lc)
 
 void video_config_uninit(LinphoneCore *lc)
 {
-
+	lp_config_set_int(lc->config,"video","enabled",linphone_core_video_enabled(lc));
+	lp_config_set_string(lc->config,"video","size",video_size_get_name(linphone_core_get_preferred_video_size(lc)));
+	lp_config_set_int(lc->config,"video","display",lc->video_conf.display);
+	lp_config_set_int(lc->config,"video","capture",lc->video_conf.capture);
+	lp_config_set_int(lc->config,"video","show_local",linphone_core_video_preview_enabled(lc));
+	lp_config_set_int(lc->config,"video","self_view",linphone_core_self_view_enabled(lc));
 }
 
 void codecs_config_uninit(LinphoneCore *lc)
