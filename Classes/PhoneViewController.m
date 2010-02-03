@@ -28,6 +28,7 @@
 @implementation PhoneViewController
 @synthesize  address ;
 @synthesize  call;
+@synthesize  hangup;
 @synthesize status;
 
 @synthesize one;
@@ -72,8 +73,9 @@
 					, &audioRouteOverride);
 		
 	
-	} 
-
+	} else if (sender == hangup) {
+			linphone_core_terminate_call(mCore,NULL);
+		} 
 }
 
 //implements keypad behavior 
@@ -85,6 +87,7 @@
 			[address setText:@""];
 		}
 		NSString* newAddress = nil;
+		
 		if (sender == one) {
 			newAddress = [address.text stringByAppendingString:@"1"];
 		} else if (sender == two) {
@@ -122,7 +125,36 @@
 		if (newAddress != nil) {
 			[address setText:newAddress];	
 		}
-	}
+	} else {
+			//incall behavior
+			if (sender == one) {
+				linphone_core_send_dtmf(mCore,'1');	
+			} else if (sender == two) {
+				linphone_core_send_dtmf(mCore,'2');	
+			} else if (sender == three) {
+				linphone_core_send_dtmf(mCore,'3');	
+			} else if (sender == four) {
+				linphone_core_send_dtmf(mCore,'4');	
+			} else if (sender == five) {
+				linphone_core_send_dtmf(mCore,'5');	
+			} else if (sender == six) {
+				linphone_core_send_dtmf(mCore,'6');	
+			} else if (sender == seven) {
+				linphone_core_send_dtmf(mCore,'7');	
+			} else if (sender == eight) {
+				linphone_core_send_dtmf(mCore,'8');	
+			} else if (sender == nine) {
+				linphone_core_send_dtmf(mCore,'9');	
+			} else if (sender == star) {
+				linphone_core_send_dtmf(mCore,'*');	
+			} else if (sender == zero) {
+				linphone_core_send_dtmf(mCore,'0');	
+			} else if (sender == hash) {
+				linphone_core_send_dtmf(mCore,'#');	
+			} else if (sender == hangup) {
+				linphone_core_terminate_call(mCore,NULL);
+			}
+	}		
 }
 
 //implements keypad up  
@@ -242,8 +274,6 @@
 	switch (state->new_state) {
 		case GSTATE_CALL_IN_INVITE:
 		case GSTATE_CALL_OUT_INVITE: {
-			//[myIncallViewController startCall];
-			[self presentModalViewController: myIncallViewController animated:true];
 			break;
 		}
 			
@@ -265,13 +295,10 @@
 			break;
 		case GSTATE_CALL_IN_CONNECTED:
 		case GSTATE_CALL_OUT_CONNECTED: {
-			[myIncallViewController startCall];
 			break;
 		}
 			
 		case GSTATE_CALL_END: {
-			//end off call, just dismiss Incall view
-			[self dismissIncallView];
 			break;
 		}
 		default:

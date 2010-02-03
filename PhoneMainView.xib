@@ -63,15 +63,6 @@
 				</object>
 				<object class="NSMutableArray" key="IBUIViewControllers">
 					<bool key="EncodedWithXMLCoder">YES</bool>
-					<object class="IBUIViewController" id="947197904">
-						<object class="IBUITabBarItem" key="IBUITabBarItem" id="654208500">
-							<string key="IBUITitle">Favorites</string>
-							<reference key="IBUITabBar"/>
-						</object>
-						<reference key="IBUIParentViewController" ref="952473143"/>
-						<string key="IBUINibName">FavoriteTableViewController</string>
-						<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics"/>
-					</object>
 					<object class="IBUIViewController" id="156830991">
 						<string key="IBUITitle">History</string>
 						<object class="IBUITabBarItem" key="IBUITabBarItem" id="1041279701">
@@ -180,7 +171,6 @@
 							<reference ref="995238651"/>
 							<reference ref="383050823"/>
 							<reference ref="555899988"/>
-							<reference ref="947197904"/>
 							<reference ref="156830991"/>
 							<reference ref="258574391"/>
 						</object>
@@ -251,20 +241,6 @@
 						<reference key="object" ref="534357631"/>
 						<reference key="parent" ref="555899988"/>
 					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">46</int>
-						<reference key="object" ref="947197904"/>
-						<object class="NSMutableArray" key="children">
-							<bool key="EncodedWithXMLCoder">YES</bool>
-							<reference ref="654208500"/>
-						</object>
-						<reference key="parent" ref="952473143"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">47</int>
-						<reference key="object" ref="654208500"/>
-						<reference key="parent" ref="947197904"/>
-					</object>
 				</object>
 			</object>
 			<object class="NSMutableDictionary" key="flattenedProperties">
@@ -287,8 +263,6 @@
 					<string>41.CustomClassName</string>
 					<string>41.IBPluginDependency</string>
 					<string>43.IBPluginDependency</string>
-					<string>46.CustomClassName</string>
-					<string>46.IBPluginDependency</string>
 					<string>8.IBEditorWindowLastContentRect</string>
 					<string>8.IBPluginDependency</string>
 					<string>9.IBPluginDependency</string>
@@ -318,8 +292,6 @@
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>CallHistoryTableViewController</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-					<string>FavoriteTableViewController</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>{{11, 205}, {320, 480}}</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -357,31 +329,6 @@
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">Classes/CallHistoryTableViewController.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">FavoriteTableViewController</string>
-					<string key="superclassName">GenericTabViewController</string>
-					<object class="NSMutableDictionary" key="actions">
-						<bool key="EncodedWithXMLCoder">YES</bool>
-						<object class="NSMutableArray" key="dict.sortedKeys">
-							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>doAddFavorite:</string>
-							<string>doEditFavorite:</string>
-						</object>
-						<object class="NSMutableArray" key="dict.values">
-							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>id</string>
-							<string>id</string>
-						</object>
-					</object>
-					<object class="NSMutableDictionary" key="outlets">
-						<string key="NS.key.0">add</string>
-						<string key="NS.object.0">UIButton</string>
-					</object>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">Classes/FavoriteTableViewController.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
@@ -432,10 +379,10 @@
 							<string>address</string>
 							<string>back</string>
 							<string>call</string>
-							<string>cancel</string>
 							<string>eight</string>
 							<string>five</string>
 							<string>four</string>
+							<string>hangup</string>
 							<string>hash</string>
 							<string>nine</string>
 							<string>one</string>

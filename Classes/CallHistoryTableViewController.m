@@ -22,7 +22,7 @@
 
 @implementation CallHistoryTableViewController
 
-
+@synthesize clear;
 
 /*
 - (id)initWithStyle:(UITableViewStyle)style {
@@ -86,6 +86,12 @@
 }
 
 
+-(void) doAction:(id)sender {
+	if (sender==clear) {
+		linphone_core_clear_call_logs(myLinphoneCore);
+		[self.tableView reloadData];
+	}
+}
 
 #pragma mark Table view methods
 
@@ -108,29 +114,40 @@
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
+        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] autorelease];
 		
     }
     
     // Set up the cell...
-	LinphoneCallLog*  callLogs = ms_list_nth_data(linphone_core_get_call_logs(myLinphoneCore), indexPath.row) ;
-	const char* username = linphone_address_get_username(callLogs->to)!=0?linphone_address_get_username(callLogs->to):"";
-	
-	[cell.textLabel setText:[[NSString alloc] initWithCString:username encoding:[NSString defaultCStringEncoding]]];
+	LinphoneAddress* partyToDisplay; 
+	const MSList * logs = linphone_core_get_call_logs(myLinphoneCore);
+	LinphoneCallLog*  callLogs = ms_list_nth_data(logs,  ms_list_size(logs)-indexPath.row-1) ;
 
-	
 	NSString *path;
-	
 	if (callLogs->dir == LinphoneCallIncoming) {
 		path = [[NSBundle mainBundle] pathForResource:@"in_call" ofType:@"png"];
-	
+		partyToDisplay=callLogs->from;
+		
 	} else {
 		path = [[NSBundle mainBundle] pathForResource:@"out_call" ofType:@"png"];
-		 
+		partyToDisplay=callLogs->to;
+		
 	}
 	UIImage *image = [UIImage imageWithContentsOfFile:path];
 	cell.imageView.image = image;
 	cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
+	
+	const char* username = linphone_address_get_username(partyToDisplay)!=0?linphone_address_get_username(partyToDisplay):"";
+	const char* displayName = linphone_address_get_display_name(partyToDisplay);
+	if (displayName) {
+		[cell.textLabel setText:[[NSString alloc] initWithCString:displayName encoding:[NSString defaultCStringEncoding]]];
+		[cell.detailTextLabel setText:[NSString stringWithFormat:@"%s"/* [%s]"*/,username/*,callLogs->start_date*/]];
+	} else {
+		[cell.textLabel setText:[[NSString alloc] initWithCString:username encoding:[NSString defaultCStringEncoding]]];
+	}
+	
+
+	
     return cell;
 }
 
@@ -142,9 +159,22 @@
 	// [anotherViewController release];
 	[tableView deselectRowAtIndexPath:indexPath animated:NO];
 	
-	LinphoneCallLog*  callLogs = ms_list_nth_data(linphone_core_get_call_logs(myLinphoneCore), indexPath.row) ;
-	const char* username = linphone_address_get_username(callLogs->to)!=0?linphone_address_get_username(callLogs->to):"";
-	[self.phoneControllerDelegate setPhoneNumber:[[NSString alloc] initWithCString:username encoding:[NSString defaultCStringEncoding]]];
+	const MSList * logs = linphone_core_get_call_logs(myLinphoneCore);
+	LinphoneCallLog*  callLogs = ms_list_nth_data(logs,  ms_list_size(logs)-indexPath.row-1) ;
+	LinphoneAddress* partyToCall; 
+	if (callLogs->dir == LinphoneCallIncoming) {
+		partyToCall=callLogs->from;
+		
+	} else {
+		partyToCall=callLogs->to;
+		
+	}
+	const char* username = linphone_address_get_username(partyToCall)!=0?linphone_address_get_username(partyToCall):"";
+	const char* displayName = linphone_address_get_display_name(partyToCall)!=0?linphone_address_get_display_name(partyToCall):"";
+	[self.phoneControllerDelegate 
+									setPhoneNumber:[[NSString alloc] initWithCString:username encoding:[NSString defaultCStringEncoding]] 
+									withDisplayName:[[NSString alloc] initWithCString:displayName encoding:[NSString defaultCStringEncoding]]];
+	
 	[self.linphoneDelegate selectDialerTab];
 }
 

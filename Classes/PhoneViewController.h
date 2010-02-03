@@ -34,6 +34,7 @@
 	//UI definition
 	UITextField* address;
 	UIButton* call;
+	UIButton* hangup;
 
 	UILabel* status;
 
@@ -61,6 +62,7 @@
 }
 @property (nonatomic, retain) IBOutlet UITextField* address;
 @property (nonatomic, retain) IBOutlet UIButton* call;
+@property (nonatomic, retain) IBOutlet UIButton* hangup;
 @property (nonatomic, retain) IBOutlet UILabel* status;
 
 @property (nonatomic, retain) IBOutlet UIButton* one;

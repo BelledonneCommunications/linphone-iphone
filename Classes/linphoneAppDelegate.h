@@ -33,7 +33,6 @@
 @class IncallViewController;
 @class PhoneViewController;
 @class CallHistoryTableViewController;
-@class FavoriteTableViewController;
 
 @interface linphoneAppDelegate : NSObject <UIApplicationDelegate,LinphoneTabManagerDelegate,UIActionSheetDelegate> {
     UIWindow *window;
@@ -41,11 +40,10 @@
 	IBOutlet ABPeoplePickerNavigationController* myPeoplePickerController;
 	IBOutlet PhoneViewController* myPhoneViewController;
 	CallHistoryTableViewController* myCallHistoryTableViewController;
-	FavoriteTableViewController* myFavoriteTableViewController;
 	
 	ContactPickerDelegate* myContactPickerDelegate;
 	
-	int traceLevel;
+	bool isDebug;
 	LinphoneCore* myLinphoneCore;
 	
 	

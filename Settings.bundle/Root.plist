@@ -16,11 +16,11 @@
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 			<key>Title</key>
-			<string>sip identity</string>
+			<string>User name</string>
 			<key>Key</key>
-			<string>account_preference</string>
+			<string>username_preference</string>
 			<key>DefaultValue</key>
-			<string>sip:</string>
+			<string></string>
 			<key>IsSecure</key>
 			<false/>
 			<key>KeyboardType</key>
@@ -52,15 +52,15 @@
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 			<key>Title</key>
-			<string>proxy</string>
+			<string>Domain</string>
 			<key>Key</key>
-			<string>proxy_preference</string>
+			<string>domain_preference</string>
 			<key>DefaultValue</key>
-			<string>sip:</string>
+			<string></string>
 			<key>IsSecure</key>
 			<false/>
 			<key>KeyboardType</key>
-			<string>Alphabet</string>
+			<string>URL</string>
 			<key>AutocapitalizationType</key>
 			<string>None</string>
 			<key>AutocorrectionType</key>
@@ -70,15 +70,15 @@
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 			<key>Title</key>
-			<string>route</string>
+			<string>Proxy</string>
 			<key>Key</key>
-			<string>route_preference</string>
+			<string>proxy_preference</string>
 			<key>DefaultValue</key>
-			<string>sip:</string>
+			<string></string>
 			<key>IsSecure</key>
 			<false/>
 			<key>KeyboardType</key>
-			<string>Alphabet</string>
+			<string>URL</string>
 			<key>AutocapitalizationType</key>
 			<string>None</string>
 			<key>AutocorrectionType</key>
@@ -91,16 +91,17 @@
 			<string>Codecs</string>
 		</dict>
 		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Speex 32Khz</string>
-			<key>Key</key>
-			<string>speex_32k_preference</string>
-			<key>DefaultValue</key>
-			<false/>
-		</dict>
-		<dict>
+			<key>TrueValue</key>
+			<dict>
+				<key>Type</key>
+				<string>PSToggleSwitchSpecifier</string>
+				<key>Title</key>
+				<string>Speex 8Khz</string>
+				<key>Key</key>
+				<string>speex_8k_preference</string>
+				<key>DefaultValue</key>
+				<true/>
+			</dict>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
@@ -111,6 +112,17 @@
 			<true/>
 		</dict>
 		<dict>
+			<key>TrueValue</key>
+			<dict>
+				<key>Type</key>
+				<string>PSToggleSwitchSpecifier</string>
+				<key>Title</key>
+				<string>Speex 8Khz</string>
+				<key>Key</key>
+				<string>speex_8k_preference</string>
+				<key>DefaultValue</key>
+				<true/>
+			</dict>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
@@ -124,27 +136,7 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
-			<string>GSM 22Khz</string>
-			<key>Key</key>
-			<string>gsm_22k_preference</string>
-			<key>DefaultValue</key>
-			<false/>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>GSM 11Khz</string>
-			<key>Key</key>
-			<string>gsm_11k_preference</string>
-			<key>DefaultValue</key>
-			<false/>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>GSM 8Khz</string>
+			<string>GSM</string>
 			<key>Key</key>
 			<string>gsm_8k_preference</string>
 			<key>DefaultValue</key>
@@ -158,7 +150,7 @@
 			<key>Key</key>
 			<string>pcmu_preference</string>
 			<key>DefaultValue</key>
-			<false/>
+			<true/>
 		</dict>
 		<dict>
 			<key>Type</key>
@@ -168,7 +160,41 @@
 			<key>Key</key>
 			<string>pcma_preference</string>
 			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>Advanced</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Debug</string>
+			<key>Key</key>
+			<string>debugenable_preference</string>
+			<key>DefaultValue</key>
 			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>Title</key>
+			<string>Prefix</string>
+			<key>Key</key>
+			<string>prefix_preference</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>IsSecure</key>
+			<false/>
+			<key>KeyboardType</key>
+			<string>NumberPad</string>
+			<key>AutocapitalizationType</key>
+			<string>None</string>
+			<key>AutocorrectionType</key>
+			<string>No</string>
 		</dict>
 	</array>
 </dict>

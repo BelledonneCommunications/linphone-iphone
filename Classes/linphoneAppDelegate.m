@@ -89,11 +89,10 @@ LinphoneCoreVTable linphonec_vtable = {
 - (void)applicationDidFinishLaunching:(UIApplication *)application {    
 	
 	//as defined in PhoneMainView.xib		
-#define DIALER_TAB_INDEX 2
-#define CONTACTS_TAB_INDEX 3
-#define HISTORY_TAB_INDEX 1
-#define FAVORITE_TAB_INDEX 0	
-#define MORE_TAB_INDEX 4
+#define DIALER_TAB_INDEX 1
+#define CONTACTS_TAB_INDEX 2
+#define HISTORY_TAB_INDEX 0
+#define MORE_TAB_INDEX 3
 	
 	
 	myPhoneViewController = (PhoneViewController*) [myTabBarController.viewControllers objectAtIndex: DIALER_TAB_INDEX];
@@ -102,9 +101,6 @@ LinphoneCoreVTable linphonec_vtable = {
 	[myCallHistoryTableViewController setPhoneControllerDelegate:myPhoneViewController];
 	[myCallHistoryTableViewController setLinphoneDelegate:self];
 	
-	myFavoriteTableViewController = (FavoriteTableViewController*)[myTabBarController.viewControllers objectAtIndex: FAVORITE_TAB_INDEX];
-	[myFavoriteTableViewController setPhoneControllerDelegate:myPhoneViewController];
-	[myFavoriteTableViewController setLinphoneDelegate:self];
 
 	//people picker delegates
 	myContactPickerDelegate = [[ContactPickerDelegate alloc] init];
@@ -130,7 +126,7 @@ LinphoneCoreVTable linphonec_vtable = {
 	[self	startlibLinphone];
 	
 	[myCallHistoryTableViewController setLinphoneCore: myLinphoneCore];
-	[myFavoriteTableViewController setLinphoneCore: myLinphoneCore];
+
 	[myPhoneViewController setLinphoneCore: myLinphoneCore];
 	
 	
@@ -160,14 +156,13 @@ LinphoneCoreVTable linphonec_vtable = {
 	
 	//get default config from bundle
 	NSBundle* myBundle = [NSBundle mainBundle];
-	NSString* defaultConfigFile = [myBundle pathForResource:@"linphonerc"ofType:nil] ;
-#if TARGET_IPHONE_SIMULATOR
-	NSDictionary *dictionary = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:NSFileImmutable];
-	[[NSFileManager defaultManager] setAttributes:dictionary ofItemAtPath:defaultConfigFile error:nil];
-#endif
+	NSString* factoryConfig = [myBundle pathForResource:@"linphonerc"ofType:nil] ;
+	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+	NSString *confiFileName = [[paths objectAtIndex:0] stringByAppendingString:@"/.linphonerc"];
+	;
 	//log management	
-	traceLevel = 9;	 
-	if (traceLevel > 0) {
+	isDebug = [[NSUserDefaults standardUserDefaults] boolForKey:@"debugenable_preference"];  
+	if (isDebug) {
 		//redirect all traces to the iphone log framework
 		linphone_core_enable_logs_with_cb(linphone_iphone_log_handler);
 	}
@@ -182,7 +177,10 @@ LinphoneCoreVTable linphonec_vtable = {
 	 * Initialize linphone core
 	 */
 	
-	myLinphoneCore = linphone_core_new (&linphonec_vtable, [defaultConfigFile cStringUsingEncoding:[NSString defaultCStringEncoding]],nil,self);
+	myLinphoneCore = linphone_core_new (&linphonec_vtable
+										, [confiFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]
+										, [factoryConfig cStringUsingEncoding:[NSString defaultCStringEncoding]]
+										,self);
 	
 	// Set audio assets
 	const char*  lRing = [[myBundle pathForResource:@"oldphone-mono"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
@@ -192,34 +190,36 @@ LinphoneCoreVTable linphonec_vtable = {
 	
 	
 	//configure sip account
-	//get data from Settings bundle
-	NSString* accountNameUri = [[NSUserDefaults standardUserDefaults] stringForKey:@"account_preference"];
-	const char* identity = [accountNameUri cStringUsingEncoding:[NSString defaultCStringEncoding]];
+
+	//madatory parameters
 	
+	NSString* username = [[NSUserDefaults standardUserDefaults] stringForKey:@"username_preference"];
+	NSString* domain = [[NSUserDefaults standardUserDefaults] stringForKey:@"domain_preference"];
 	NSString* accountPassword = [[NSUserDefaults standardUserDefaults] stringForKey:@"password_preference"];
-	const char* password = [accountPassword cStringUsingEncoding:[NSString defaultCStringEncoding]];
 	
-	NSString* proxyUri = [[NSUserDefaults standardUserDefaults] stringForKey:@"proxy_preference"];
-	const char* proxy = [proxyUri cStringUsingEncoding:[NSString defaultCStringEncoding]];
-	
-	NSString* routeUri = [[NSUserDefaults standardUserDefaults] stringForKey:@"route_preference"];
-	const char* route = [routeUri cStringUsingEncoding:[NSString defaultCStringEncoding]];
-	
-	if (([accountNameUri length] + [proxyUri length]) >8 ) {
+	if (username && [username length] >0 && domain && [domain length]>0) {
+		
+		
+		const char* identity = [[NSString stringWithFormat:@"sip:%@@%@",username,domain] cStringUsingEncoding:[NSString defaultCStringEncoding]];
+		const char* password = [accountPassword cStringUsingEncoding:[NSString defaultCStringEncoding]];
+		
+		NSString* proxyAddress = [[NSUserDefaults standardUserDefaults] stringForKey:@"proxy_preference"];
+		if ((!proxyAddress | [proxyAddress length] <1 ) && domain) {
+			proxyAddress = [NSString stringWithFormat:@"sip:%@",domain] ;
+		} else {
+			proxyAddress = [NSString stringWithFormat:@"sip:%@",proxyAddress] ;
+		}
+		
+		const char* proxy = [proxyAddress cStringUsingEncoding:[NSString defaultCStringEncoding]];
+		
+		NSString* prefix = [[NSUserDefaults standardUserDefaults] stringForKey:@"prefix_preference"];
 		//possible valid config detected
 		LinphoneProxyConfig* proxyCfg;	
 		//clear auth info list
 		linphone_core_clear_all_auth_info(myLinphoneCore);
-		//get default proxy
-		linphone_core_get_default_proxy(myLinphoneCore,&proxyCfg);
-		boolean_t addProxy=false;
-		if (proxyCfg == NULL) {
-			//create new proxy	
-			proxyCfg = linphone_proxy_config_new();
-			addProxy = true;
-		} else {
-			linphone_proxy_config_edit(proxyCfg);
-		}
+		//clear existing proxy config
+		linphone_core_clear_proxy_config(myLinphoneCore);
+		proxyCfg = linphone_proxy_config_new();
 		
 		// add username password
 		osip_from_t *from;
@@ -234,20 +234,17 @@ LinphoneCoreVTable linphonec_vtable = {
 		// configure proxy entries
 		linphone_proxy_config_set_identity(proxyCfg,identity);
 		linphone_proxy_config_set_server_addr(proxyCfg,proxy);
-		if ([routeUri length] > 4) {
-			linphone_proxy_config_set_route(proxyCfg,route);
+
+		if ([prefix length]>0) {
+			linphone_proxy_config_set_dial_prefix(proxyCfg, [prefix cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 		}
-		linphone_proxy_config_enable_register(proxyCfg,TRUE);
-		if (addProxy) {
-			linphone_core_add_proxy_config(myLinphoneCore,proxyCfg);
-			//set to default proxy
-			linphone_core_set_default_proxy(myLinphoneCore,proxyCfg);
-		} else {
-			linphone_proxy_config_done(proxyCfg);
-		}
+		linphone_proxy_config_set_dial_escape_plus(proxyCfg,TRUE);
 		
+		linphone_proxy_config_enable_register(proxyCfg, TRUE);
+		linphone_core_add_proxy_config(myLinphoneCore,proxyCfg);
+		//set to default proxy
+		linphone_core_set_default_proxy(myLinphoneCore,proxyCfg);
 	}
-	
 	//Configure Codecs
 	
 	PayloadType *pt;
