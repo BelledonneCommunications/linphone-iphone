@@ -369,21 +369,37 @@ static void set_video_window_decorations(GdkWindow *w){
 	char video_title[256];
 	GdkPixbuf *pbuf=create_pixbuf(icon_path);
 	if (!linphone_core_in_call(linphone_gtk_get_core())){
-		snprintf(video_title,sizeof(video_title),"%s video",title);	
+		snprintf(video_title,sizeof(video_title),"%s video",title);
+		/* When not in call, treat the video as a normal window */
+		gdk_window_set_keep_above(w, FALSE);
 	}else{
-		const LinphoneAddress *uri=linphone_core_get_remote_uri(linphone_gtk_get_core());
+		LinphoneAddress *uri =
+			linphone_address_clone(linphone_core_get_remote_uri(linphone_gtk_get_core()));
 		char *display_name;
-		if (linphone_address_get_display_name(uri)!=NULL)
+
+		linphone_address_clean(uri);
+		if (linphone_address_get_display_name(uri)!=NULL){
 			display_name=ms_strdup(linphone_address_get_display_name(uri));
-		else{
+		}else{
 			display_name=linphone_address_as_string(uri);
 		}
 		snprintf(video_title,sizeof(video_title),_("Call with %s"),display_name);
+		linphone_address_destroy(uri);
 		ms_free(display_name);
+
+		/* During calls, bring up the video window, arrange so that
+		it is above all the other windows */
+		gdk_window_deiconify(w);
+		gdk_window_set_keep_above(w,TRUE);
+		/* Maybe we should have the following, but then we want to
+		have a timer that turns it off after a little while. */
+		/* gdk_window_set_urgency_hint(w,TRUE); */
 	}
 	gdk_window_set_title(w,video_title);
-	/*gdk_window_set_urgency_hint(w,TRUE);*/
-	gdk_window_raise(w);
+	/* Refrain the video window to be closed at all times. */
+	gdk_window_set_functions(w,
+				 GDK_FUNC_RESIZE|GDK_FUNC_MOVE|
+				 GDK_FUNC_MINIMIZE|GDK_FUNC_MAXIMIZE);
 	if (pbuf){
 		GList *l=NULL;
 		l=g_list_append(l,pbuf);
