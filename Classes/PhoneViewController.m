@@ -31,6 +31,12 @@
 @synthesize  hangup;
 @synthesize status;
 
+@synthesize incallView;
+@synthesize callDuration;
+@synthesize mute;
+@synthesize speaker;	
+@synthesize peerLabel;
+
 @synthesize one;
 @synthesize two;
 @synthesize three;
@@ -48,6 +54,14 @@
 
 -(void)setPhoneNumber:(NSString*)number {
 	[address setText:number];
+	if (displayName) {
+		[displayName release];
+		displayName=nil;
+	}
+}
+-(void)setPhoneNumber:(NSString*)number withDisplayName:(NSString*) name {
+	[self setPhoneNumber:number];
+	displayName = name;
 }
 
 -(void)dismissIncallView {
@@ -59,25 +73,42 @@
 	
 	if (sender == call) {
 		if (!linphone_core_in_call(mCore)) {
-			const char* lCallee = [[address text]  cStringUsingEncoding:[NSString defaultCStringEncoding]];
-			linphone_core_invite(mCore,lCallee) ;		
-		} 
-		if (linphone_core_inc_invite_pending(mCore)) {
-			linphone_core_accept_call(mCore,NULL);	
+			if ([address.text length] == 0) return; //just return
+			if ([address.text hasPrefix:@"sip:"]) {
+				linphone_core_invite(mCore, [address.text cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+			} else {
+				char normalizedUserName[256];
+				LinphoneProxyConfig* proxyCfg;	
+				//get default proxy
+				linphone_core_get_default_proxy(mCore,&proxyCfg);
+				NSString* toUserName = [NSString stringWithString:[address text]];
+				linphone_proxy_config_normalize_number(proxyCfg,[toUserName cStringUsingEncoding:[NSString defaultCStringEncoding]],normalizedUserName,sizeof(normalizedUserName));
+				LinphoneAddress* tmpAddress = linphone_address_new(linphone_core_get_identity(mCore));
+				linphone_address_set_username(tmpAddress,normalizedUserName);
+				linphone_address_set_display_name(tmpAddress,displayName?[displayName cStringUsingEncoding:[NSString defaultCStringEncoding]]:nil);
+				linphone_core_invite(mCore,linphone_address_as_string(tmpAddress)) ;
+				linphone_address_destroy(tmpAddress);
+			}
+		} else if (linphone_core_inc_invite_pending(mCore)) {
+			linphone_core_accept_call(mCore,NULL);
+			UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_None;  
+			AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute
+									 , sizeof (audioRouteOverride)
+									 , &audioRouteOverride);
+			
 		}
 		//Cancel audio route redirection
-		UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_None;  
 		
-		AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute
-					, sizeof (audioRouteOverride)
-					, &audioRouteOverride);
-		
-	
 	} else if (sender == hangup) {
-			linphone_core_terminate_call(mCore,NULL);
-		} 
+		linphone_core_terminate_call(mCore,NULL);
+	} else if (sender == mute) {
+		[self muteAction:!isMuted]; 
+		
+	} else if (sender == speaker) {
+		[self speakerAction:!isSpeaker];		
+	}
 }
-
+				
 //implements keypad behavior 
 -(IBAction) doKeyPad:(id)sender {
 	if (!linphone_core_in_call(mCore)) {
@@ -200,14 +231,6 @@
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
     [super viewDidLoad];
-	if (myIncallViewController == nil) {
-		myIncallViewController = [[IncallViewController alloc] initWithNibName:@"IncallViewController" bundle:[NSBundle mainBundle]];
-		[myIncallViewController setPhoneviewDelegate:self];
-		
-	}
-	
-	
-	
 }
 
 
@@ -244,6 +267,17 @@
 -(void) dismissAlertDialog:(UIAlertView*) alertView{
 	[alertView dismissWithClickedButtonIndex:0 animated:TRUE];
 }
+
+
+-(void)updateCallDuration {
+	int lDuration = linphone_core_get_current_call_duration(mCore); 
+	if (lDuration < 60) {
+		[callDuration setText:[NSString stringWithFormat: @"%i s", lDuration]];
+	} else {
+		[callDuration setText:[NSString stringWithFormat: @"%i:%i", lDuration/60,lDuration - 60 *(lDuration/60)]];
+	}
+}
+
 
 - (void)dealloc {
     [address dealloc];
@@ -295,10 +329,43 @@
 			break;
 		case GSTATE_CALL_IN_CONNECTED:
 		case GSTATE_CALL_OUT_CONNECTED: {
+			[self muteAction:false];
+			[self speakerAction:false];
+			
+			const LinphoneAddress* callAddress = linphone_core_get_remote_uri(mCore);
+			const char* callDisplayName =  linphone_address_get_display_name(callAddress)?linphone_address_get_display_name(callAddress):"";
+			if (callDisplayName && callDisplayName[0] != '\000') {
+				
+			[peerLabel setText:[NSString stringWithCString:callDisplayName length:strlen(callDisplayName)]];
+			} else {
+				const char* username = linphone_address_get_username(callAddress)!=0?linphone_address_get_username(callAddress):"";
+				[peerLabel setText:[NSString stringWithCString:username length:strlen(username)]];
+			}
+			// start scheduler
+			durationRefreasher = [NSTimer scheduledTimerWithTimeInterval:1 
+																  target:self 
+																selector:@selector(updateCallDuration) 
+																userInfo:nil 
+																 repeats:YES];
+			[address setHidden:true];
+			[incallView setHidden:false];
+			[call setEnabled:false];
+			
 			break;
 		}
 			
 		case GSTATE_CALL_END: {
+			[address setHidden:false];
+			[incallView setHidden:true];
+			[call setEnabled:true];
+			
+			if (durationRefreasher != nil) {
+				[ durationRefreasher invalidate];
+				durationRefreasher=nil;
+			}
+			[peerLabel setText:@""];
+			[callDuration setText:@""];
+
 			break;
 		}
 		default:
@@ -307,5 +374,35 @@
 	
 }
 
+-(void) muteAction:(bool) value {
+	linphone_core_mute_mic(mCore,value);
+	if (value) {
+		[mute setImage:[UIImage imageNamed:@"mic_muted.png"] forState:UIControlStateNormal];
+	} else {
+		[mute setImage:[UIImage imageNamed:@"mic_active.png"] forState:UIControlStateNormal];
+	}
+	isMuted=value;
+	// swithc buttun state
+};
+
+-(void) speakerAction:(bool) value {
+	if (value) {
+		//redirect audio to speaker
+		UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;  
+		AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute
+								 , sizeof (audioRouteOverride)
+								 , &audioRouteOverride);
+		[speaker setImage:[UIImage imageNamed:@"Speaker-32-on.png"] forState:UIControlStateNormal];
+	} else {
+		//Cancel audio route redirection
+		UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_None;  
+		AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute
+								 , sizeof (audioRouteOverride)
+								 , &audioRouteOverride);
+		[speaker setImage:[UIImage imageNamed:@"Speaker-32-off.png"] forState:UIControlStateNormal];
+	}
+	isSpeaker=value;
+	
+};
 
 @end

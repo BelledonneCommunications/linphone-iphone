@@ -48,32 +48,28 @@
 			<object class="IBUITabBarController" id="952473143">
 				<object class="IBUISimulatedTabBarMetrics" key="IBUISimulatedBottomBarMetrics"/>
 				<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics"/>
-				<object class="IBUIViewController" key="IBUISelectedViewController" id="258574391">
-					<object class="IBUITabBarItem" key="IBUITabBarItem" id="64474689">
-						<string key="IBUITitle">Dialer</string>
-						<object class="NSCustomResource" key="IBUIImage">
-							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">linphone2.png</string>
-						</object>
+				<object class="IBUIViewController" key="IBUISelectedViewController" id="156830991">
+					<string key="IBUITitle">History</string>
+					<object class="IBUITabBarItem" key="IBUITabBarItem" id="1041279701">
+						<string key="IBUITitle">History</string>
 						<reference key="IBUITabBar"/>
 					</object>
 					<reference key="IBUIParentViewController" ref="952473143"/>
-					<string key="IBUINibName">PhoneViewController</string>
+					<string key="IBUINibName">CallHistoryTableViewController</string>
 					<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics"/>
 				</object>
 				<object class="NSMutableArray" key="IBUIViewControllers">
 					<bool key="EncodedWithXMLCoder">YES</bool>
-					<object class="IBUIViewController" id="156830991">
-						<string key="IBUITitle">History</string>
-						<object class="IBUITabBarItem" key="IBUITabBarItem" id="1041279701">
-							<string key="IBUITitle">history</string>
+					<reference ref="156830991"/>
+					<object class="IBUIViewController" id="258574391">
+						<object class="IBUITabBarItem" key="IBUITabBarItem" id="64474689">
+							<string key="IBUITitle">Dialer</string>
 							<reference key="IBUITabBar"/>
 						</object>
 						<reference key="IBUIParentViewController" ref="952473143"/>
-						<string key="IBUINibName">CallHistoryTableViewController</string>
+						<string key="IBUINibName">PhoneViewController</string>
 						<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics"/>
 					</object>
-					<reference ref="258574391"/>
 					<object class="IBUIViewController" id="383050823">
 						<object class="IBUITabBarItem" key="IBUITabBarItem" id="672878446">
 							<reference key="IBUITabBar"/>
@@ -83,8 +79,8 @@
 					</object>
 					<object class="IBUIViewController" id="555899988">
 						<object class="IBUITabBarItem" key="IBUITabBarItem" id="534357631">
+							<string key="IBUITitle">About</string>
 							<reference key="IBUITabBar"/>
-							<int key="IBUISystemItemIdentifier">0</int>
 						</object>
 						<reference key="IBUIParentViewController" ref="952473143"/>
 						<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics"/>
@@ -326,6 +322,14 @@
 				<object class="IBPartialClassDescription">
 					<string key="className">CallHistoryTableViewController</string>
 					<string key="superclassName">GenericTabViewController</string>
+					<object class="NSMutableDictionary" key="actions">
+						<string key="NS.key.0">doAction:</string>
+						<string key="NS.object.0">id</string>
+					</object>
+					<object class="NSMutableDictionary" key="outlets">
+						<string key="NS.key.0">clear</string>
+						<string key="NS.object.0">UIButton</string>
+					</object>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">Classes/CallHistoryTableViewController.h</string>
@@ -379,15 +383,20 @@
 							<string>address</string>
 							<string>back</string>
 							<string>call</string>
+							<string>callDuration</string>
 							<string>eight</string>
 							<string>five</string>
 							<string>four</string>
 							<string>hangup</string>
 							<string>hash</string>
+							<string>incallView</string>
+							<string>mute</string>
 							<string>nine</string>
 							<string>one</string>
+							<string>peerLabel</string>
 							<string>seven</string>
 							<string>six</string>
+							<string>speaker</string>
 							<string>star</string>
 							<string>status</string>
 							<string>three</string>
@@ -399,12 +408,17 @@
 							<string>UITextField</string>
 							<string>UIButton</string>
 							<string>UIButton</string>
+							<string>UILabel</string>
 							<string>UIButton</string>
 							<string>UIButton</string>
 							<string>UIButton</string>
 							<string>UIButton</string>
 							<string>UIButton</string>
+							<string>UIView</string>
 							<string>UIButton</string>
+							<string>UIButton</string>
+							<string>UIButton</string>
+							<string>UILabel</string>
 							<string>UIButton</string>
 							<string>UIButton</string>
 							<string>UIButton</string>

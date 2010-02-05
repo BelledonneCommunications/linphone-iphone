@@ -23,6 +23,7 @@
 @protocol PhoneViewControllerDelegate
 
 -(void)setPhoneNumber:(NSString*)number;
+-(void)setPhoneNumber:(NSString*)number withDisplayName:(NSString*) name;
 -(void)dismissIncallView;
 -(void)displayStatus:(NSString*) message;
 @end
@@ -33,6 +34,15 @@
 @private
 	//UI definition
 	UITextField* address;
+	NSString* displayName;
+	
+	UIView* incallView;
+	UILabel* callDuration;
+	UIButton* mute;
+	UIButton* speaker;	
+	UILabel* peerLabel;
+	NSTimer *durationRefreasher;	
+	
 	UIButton* call;
 	UIButton* hangup;
 
@@ -53,6 +63,10 @@
 	UIButton* hash;
 
 	UIButton* back;
+	
+	bool isMuted;
+	bool isSpeaker;
+
 	/*
 	 * lib linphone main context
 	 */
@@ -64,6 +78,13 @@
 @property (nonatomic, retain) IBOutlet UIButton* call;
 @property (nonatomic, retain) IBOutlet UIButton* hangup;
 @property (nonatomic, retain) IBOutlet UILabel* status;
+
+@property (nonatomic, retain) IBOutlet UIView* incallView;
+@property (nonatomic, retain) IBOutlet UILabel* callDuration;
+@property (nonatomic, retain) IBOutlet UIButton* mute;
+@property (nonatomic, retain) IBOutlet UIButton* speaker;	
+@property (nonatomic, retain) IBOutlet UILabel* peerLabel;
+
 
 @property (nonatomic, retain) IBOutlet UIButton* one;
 @property (nonatomic, retain) IBOutlet UIButton* two;
@@ -102,7 +123,11 @@
 
 - (IBAction)doKeyPadUp:(id)sender;
 
+-(void) muteAction:(bool) value;
+-(void) speakerAction:(bool) value;
+
 -(void) dismissAlertDialog:(UIAlertView*)alertView;
+
 
 
 @end

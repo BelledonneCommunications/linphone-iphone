@@ -20,12 +20,10 @@
 #import "PhoneViewController.h"
 #import "linphoneAppDelegate.h"
 #import "ContactPickerDelegate.h"
-#import "IncallViewController.h"
 #import "AddressBook/ABPerson.h"
 #import <AVFoundation/AVAudioSession.h>
 #import <AudioToolbox/AudioToolbox.h>
 #import "osip2/osip.h"
-#import "FavoriteTableViewController.h"
 extern void ms_au_register_card();
 //generic log handler for debug version
 void linphone_iphone_log_handler(OrtpLogLevel lev, const char *fmt, va_list args){
@@ -48,8 +46,9 @@ void linphone_iphone_show(struct _LinphoneCore * lc) {
 	//nop
 }
 void linphone_iphone_call_received(LinphoneCore *lc, const char *from){
-	[((linphoneAppDelegate*) linphone_core_get_user_data(lc)) newIncomingCall:[[NSString alloc] initWithCString:from encoding:[NSString defaultCStringEncoding]]];
-
+	LinphoneAddress* fromAddr = linphone_address_new(from);
+	[((linphoneAppDelegate*) linphone_core_get_user_data(lc)) newIncomingCall:[[NSString alloc] initWithCString:linphone_address_get_username(fromAddr) encoding:[NSString defaultCStringEncoding]]];
+	linphone_address_destroy(fromAddr);
 	
 };
 void linphone_iphone_general_state(LinphoneCore *lc, LinphoneGeneralState *gstate) {
