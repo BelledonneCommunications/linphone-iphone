@@ -24,18 +24,27 @@
 #import <AVFoundation/AVAudioSession.h>
 #import <AudioToolbox/AudioToolbox.h>
 #import "osip2/osip.h"
+#import "ConsoleViewController.h"
+#import "MoreViewController.h"
+
 extern void ms_au_register_card();
 //generic log handler for debug version
-void linphone_iphone_log_handler(OrtpLogLevel lev, const char *fmt, va_list args){
+void linphone_iphone_log_handler(int lev, const char *fmt, va_list args){
 	NSString* format = [[NSString alloc] initWithCString:fmt encoding:[NSString defaultCStringEncoding]];
 	NSLogv(format,args);
+	NSString* formatedString = [[NSString alloc] initWithFormat:format arguments:args];
+	[ConsoleViewController addLog:formatedString];
 	[format release];
+	[formatedString release];
 }
 
 //Error/warning log handler 
 void linphone_iphone_log(struct _LinphoneCore * lc, const char * message) {
-	NSLog([NSString stringWithCString:message length:strlen(message)]);
+	NSString* log = [NSString stringWithCString:message length:strlen(message)]; 
+	NSLog(log);
+	[ConsoleViewController addLog:log];
 }
+
 //status 
 void linphone_iphone_display_status(struct _LinphoneCore * lc, const char * message) {
 	PhoneViewController* lPhone = ((linphoneAppDelegate*) linphone_core_get_user_data(lc)).myPhoneViewController;
@@ -96,7 +105,10 @@ LinphoneCoreVTable linphonec_vtable = {
 	
 	myPhoneViewController = (PhoneViewController*) [myTabBarController.viewControllers objectAtIndex: DIALER_TAB_INDEX];
 	
-	myCallHistoryTableViewController = (CallHistoryTableViewController*)[myTabBarController.viewControllers objectAtIndex: HISTORY_TAB_INDEX];
+	//Call history
+	myCallHistoryTableViewController = [[CallHistoryTableViewController alloc]  initWithNibName:@"CallHistoryTableViewController" bundle:[NSBundle mainBundle]];
+	UINavigationController *aCallHistNavigationController = [[UINavigationController alloc] initWithRootViewController:myCallHistoryTableViewController];
+	aCallHistNavigationController.tabBarItem = [(UIViewController*)[myTabBarController.viewControllers objectAtIndex:HISTORY_TAB_INDEX] tabBarItem];
 	[myCallHistoryTableViewController setPhoneControllerDelegate:myPhoneViewController];
 	[myCallHistoryTableViewController setLinphoneDelegate:self];
 	
@@ -111,9 +123,20 @@ LinphoneCoreVTable linphonec_vtable = {
 	[myPeoplePickerController setPeoplePickerDelegate:myContactPickerDelegate];
 	//copy tab bar item
 	myPeoplePickerController.tabBarItem = [(UIViewController*)[myTabBarController.viewControllers objectAtIndex:CONTACTS_TAB_INDEX] tabBarItem]; 
+	
+	//more tab 
+	MoreViewController *moreViewController = [[MoreViewController alloc] initWithNibName:@"MoreViewController" bundle:[NSBundle mainBundle]];
+	UINavigationController *aNavigationController = [[UINavigationController alloc] initWithRootViewController:moreViewController];
+	//copy tab bar item
+	aNavigationController.tabBarItem = [(UIViewController*)[myTabBarController.viewControllers objectAtIndex:MORE_TAB_INDEX] tabBarItem]; 
+	
+
+	
 	//insert contact controller
 	NSMutableArray* newArray = [NSMutableArray arrayWithArray:self.myTabBarController.viewControllers];
 	[newArray replaceObjectAtIndex:CONTACTS_TAB_INDEX withObject:myPeoplePickerController];
+	[newArray replaceObjectAtIndex:MORE_TAB_INDEX withObject:aNavigationController];
+	[newArray replaceObjectAtIndex:HISTORY_TAB_INDEX withObject:aCallHistNavigationController];
 	
 	[myTabBarController setSelectedIndex:DIALER_TAB_INDEX];
 	[myTabBarController setViewControllers:newArray animated:NO];

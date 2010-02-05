@@ -43,6 +43,10 @@
 		22B5F03510CE6B2F00777D97 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22B5F03410CE6B2F00777D97 /* AddressBook.framework */; };
 		22E0A785111C1BA800B04932 /* Speaker-32-on.png in Resources */ = {isa = PBXBuildFile; fileRef = 22E0A783111C1BA800B04932 /* Speaker-32-on.png */; };
 		22E0A786111C1BA800B04932 /* Speaker-32-off.png in Resources */ = {isa = PBXBuildFile; fileRef = 22E0A784111C1BA800B04932 /* Speaker-32-off.png */; };
+		22E0A821111C44E100B04932 /* MoreViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22E0A81B111C44E100B04932 /* MoreViewController.xib */; };
+		22E0A822111C44E100B04932 /* MoreViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E0A81C111C44E100B04932 /* MoreViewController.m */; };
+		22E0A823111C44E100B04932 /* ConsoleViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22E0A81E111C44E100B04932 /* ConsoleViewController.xib */; };
+		22E0A824111C44E100B04932 /* ConsoleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E0A81F111C44E100B04932 /* ConsoleViewController.m */; };
 		22F2508E107141E100AC9B3F /* PhoneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22F2508C107141E100AC9B3F /* PhoneViewController.m */; };
 		22F2508F107141E100AC9B3F /* PhoneViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22F2508D107141E100AC9B3F /* PhoneViewController.xib */; };
 		22F254811073D99800AC9B3F /* ringback.wav in Resources */ = {isa = PBXBuildFile; fileRef = 22F254801073D99800AC9B3F /* ringback.wav */; };
@@ -212,6 +216,12 @@
 		22B5F03410CE6B2F00777D97 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		22E0A783111C1BA800B04932 /* Speaker-32-on.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Speaker-32-on.png"; path = "Resources/Speaker-32-on.png"; sourceTree = "<group>"; };
 		22E0A784111C1BA800B04932 /* Speaker-32-off.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Speaker-32-off.png"; path = "Resources/Speaker-32-off.png"; sourceTree = "<group>"; };
+		22E0A81B111C44E100B04932 /* MoreViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MoreViewController.xib; sourceTree = "<group>"; };
+		22E0A81C111C44E100B04932 /* MoreViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoreViewController.m; sourceTree = "<group>"; };
+		22E0A81D111C44E100B04932 /* MoreViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoreViewController.h; sourceTree = "<group>"; };
+		22E0A81E111C44E100B04932 /* ConsoleViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ConsoleViewController.xib; sourceTree = "<group>"; };
+		22E0A81F111C44E100B04932 /* ConsoleViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConsoleViewController.m; sourceTree = "<group>"; };
+		22E0A820111C44E100B04932 /* ConsoleViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConsoleViewController.h; sourceTree = "<group>"; };
 		22F2508B107141E100AC9B3F /* PhoneViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoneViewController.h; sourceTree = "<group>"; };
 		22F2508C107141E100AC9B3F /* PhoneViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneViewController.m; sourceTree = "<group>"; };
 		22F2508D107141E100AC9B3F /* PhoneViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PhoneViewController.xib; sourceTree = "<group>"; };
@@ -257,6 +267,12 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				22E0A81B111C44E100B04932 /* MoreViewController.xib */,
+				22E0A81C111C44E100B04932 /* MoreViewController.m */,
+				22E0A81D111C44E100B04932 /* MoreViewController.h */,
+				22E0A81E111C44E100B04932 /* ConsoleViewController.xib */,
+				22E0A81F111C44E100B04932 /* ConsoleViewController.m */,
+				22E0A820111C44E100B04932 /* ConsoleViewController.h */,
 				1D3623240D0F684500981E51 /* linphoneAppDelegate.h */,
 				1D3623250D0F684500981E51 /* linphoneAppDelegate.m */,
 				22F2508B107141E100AC9B3F /* PhoneViewController.h */,
@@ -622,6 +638,8 @@
 				2242D91B10D66C2100E9963F /* mic_muted.png in Resources */,
 				22E0A785111C1BA800B04932 /* Speaker-32-on.png in Resources */,
 				22E0A786111C1BA800B04932 /* Speaker-32-off.png in Resources */,
+				22E0A821111C44E100B04932 /* MoreViewController.xib in Resources */,
+				22E0A823111C44E100B04932 /* ConsoleViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -638,6 +656,8 @@
 				22B5EFE510CE5E5800777D97 /* ContactPickerDelegate.m in Sources */,
 				227BCDC210D4004600FBFD76 /* CallHistoryTableViewController.m in Sources */,
 				2242D9C910D691F900E9963F /* GenericTabViewController.m in Sources */,
+				22E0A822111C44E100B04932 /* MoreViewController.m in Sources */,
+				22E0A824111C44E100B04932 /* ConsoleViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -8,7 +8,7 @@
 		<string key="IBDocument.HIToolboxVersion">353.00</string>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="1"/>
+			<integer value="80"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -411,6 +411,7 @@
 							<reference key="NSSuperview" ref="191373211"/>
 							<bool key="IBUIOpaque">NO</bool>
 							<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
+							<bool key="IBUIEnabled">NO</bool>
 							<int key="IBUIContentHorizontalAlignment">0</int>
 							<int key="IBUIContentVerticalAlignment">0</int>
 							<reference key="IBUIFont" ref="551268947"/>
@@ -446,12 +447,15 @@
 							</object>
 							<object class="NSFont" key="IBUIFont">
 								<string key="NSName">Helvetica</string>
-								<double key="NSSize">1.800000e+01</double>
+								<double key="NSSize">2.400000e+01</double>
 								<int key="NSfFlags">16</int>
 							</object>
 							<bool key="IBUIAdjustsFontSizeToFit">YES</bool>
 							<float key="IBUIMinimumFontSize">1.700000e+01</float>
-							<object class="IBUITextInputTraits" key="IBUITextInputTraits"/>
+							<object class="IBUITextInputTraits" key="IBUITextInputTraits">
+								<int key="IBUIAutocorrectionType">1</int>
+								<int key="IBUIKeyboardType">3</int>
+							</object>
 							<int key="IBUIClearButtonMode">3</int>
 						</object>
 					</object>

@@ -33,15 +33,16 @@
 }
 */
 
-/*
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-	
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+	UIBarButtonItem* clear = [[UIBarButtonItem alloc] 
+							  initWithBarButtonSystemItem:UIBarButtonSystemItemTrash 
+							  target:self 
+							  action:@selector(doAction:)]; 
+	[self.navigationItem setRightBarButtonItem:clear];
 }
-*/
 
 /*
 - (void)viewWillAppear:(BOOL)animated {
@@ -87,10 +88,8 @@
 
 
 -(void) doAction:(id)sender {
-	if (sender==clear) {
-		linphone_core_clear_call_logs(myLinphoneCore);
-		[self.tableView reloadData];
-	}
+	linphone_core_clear_call_logs(myLinphoneCore);
+	[self.tableView reloadData];
 }
 
 #pragma mark Table view methods

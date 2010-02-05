@@ -308,6 +308,7 @@
 	switch (state->new_state) {
 		case GSTATE_CALL_IN_INVITE:
 		case GSTATE_CALL_OUT_INVITE: {
+			[hangup setEnabled:true];
 			break;
 		}
 			
@@ -358,6 +359,7 @@
 			[address setHidden:false];
 			[incallView setHidden:true];
 			[call setEnabled:true];
+			[hangup setEnabled:false];
 			
 			if (durationRefreasher != nil) {
 				[ durationRefreasher invalidate];
