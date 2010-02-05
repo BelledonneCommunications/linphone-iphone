@@ -97,6 +97,7 @@ int sal_subscribe_presence(SalOp *op, const char *from, const char *to){
 		sal_op_set_from(op,from);
 	if (to)
 		sal_op_set_to(op,to);
+	sal_exosip_fix_route(op);
 	eXosip_lock();
 	eXosip_subscribe_build_initial_request(&msg,sal_op_get_to(op),sal_op_get_from(op),
 	    	sal_op_get_route(op),"presence",600);
@@ -140,31 +141,6 @@ int sal_subscribe_decline(SalOp *op){
 	eXosip_insubscription_send_answer(op->tid,401,NULL);
 	eXosip_unlock();
 	return 0;
-}
-
-static eXosip_ss_status_t sal_presence_to_exosip(SalPresenceStatus s){
-	switch(s){
-		case SalPresenceOffline:
-			return EXOSIP_NOTIFY_CLOSED;
-		case SalPresenceOnline:
-			return EXOSIP_NOTIFY_ONLINE;
-		case SalPresenceBusy:
-			return EXOSIP_NOTIFY_BUSY;
-		case SalPresenceBerightback:
-			return EXOSIP_NOTIFY_BERIGHTBACK;
-		case SalPresenceAway:
-			return EXOSIP_NOTIFY_AWAY;
-		case SalPresenceOnthephone:
-			return EXOSIP_NOTIFY_ONTHEPHONE;
-		case SalPresenceOuttolunch:
-			return EXOSIP_NOTIFY_OUTTOLUNCH;
-		case SalPresenceDonotdisturb:
-			return EXOSIP_NOTIFY_BUSY;
-		case SalPresenceMoved:
-		case SalPresenceAltService:
-		default:
-			return EXOSIP_NOTIFY_AWAY;
-	}
 }
 
 static void add_presence_body(osip_message_t *notify, SalPresenceStatus online_status)
@@ -435,14 +411,14 @@ entity=\"%s\">\n%s",
 
 int sal_notify_presence(SalOp *op, SalPresenceStatus status, const char *status_message){
 	osip_message_t *msg;
-	eXosip_ss_status_t ss;
+	eXosip_ss_t ss=EXOSIP_SUBCRSTATE_ACTIVE;
 	if (op->nid==-1){
 		ms_warning("Cannot notify, subscription was closed.");
 		return -1;
 	}
-	ss=sal_presence_to_exosip(status);
+	
 	eXosip_lock();
-	eXosip_insubscription_build_notify(op->did,ss,0,&msg);
+	eXosip_insubscription_build_notify(op->did,ss,DEACTIVATED,&msg);
 	if (msg!=NULL){
 		const char *identity=sal_op_get_contact(op);
 		if (identity==NULL) identity=sal_op_get_to(op);
@@ -451,6 +427,172 @@ int sal_notify_presence(SalOp *op, SalPresenceStatus status, const char *status_
 		eXosip_insubscription_send_request(op->did,msg);
 	}else ms_error("could not create notify for incoming subscription.");
 	eXosip_unlock();
+	return 0;
+}
+
+int sal_notify_close(SalOp *op){
+	osip_message_t *msg;
+	eXosip_lock();
+	eXosip_insubscription_build_notify(op->did,EXOSIP_SUBCRSTATE_TERMINATED,DEACTIVATED,&msg);
+	if (msg!=NULL){
+		const char *identity=sal_op_get_contact(op);
+		if (identity==NULL) identity=sal_op_get_to(op);
+		osip_message_set_contact(msg,identity);
+		eXosip_insubscription_send_request(op->did,msg);
+	}else ms_error("could not create notify for incoming subscription.");
+	eXosip_unlock();
+	return 0;
+}
+
+int sal_publish(SalOp *op, const char *from, const char *to, SalPresenceStatus presence_mode){
+	osip_message_t *pub;
+	int i;
+	char buf[1024];
+
+	if (presence_mode==SalPresenceOnline)
+	{
+	  snprintf(buf, sizeof(buf), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
+	<presence xmlns=\"urn:ietf:params:xml:ns:pidf\"\n\
+		  entity=\"%s\">\n\
+	<tuple id=\"sg89ae\">\n\
+	<status>\n\
+	<basic>open</basic>\n\
+	</status>\n\
+	<contact priority=\"0.8\">%s</contact>\n\
+	<note>online</note>\n\
+	</tuple>\n\
+	</presence>",
+		   from, from);
+	}
+	else if (presence_mode==SalPresenceBusy
+	   ||presence_mode==SalPresenceDonotdisturb)
+	{
+	  snprintf(buf, sizeof(buf), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
+	<presence xmlns=\"urn:ietf:params:xml:ns:pidf\"\n\
+		  xmlns:es=\"urn:ietf:params:xml:ns:pidf:status:rpid-status\"\n\
+		  entity=\"%s\">\n\
+	<tuple id=\"sg89ae\">\n\
+	<status>\n\
+	<basic>open</basic>\n\
+	<es:activities>\n\
+	<es:activity>busy</es:activity>\n\
+	</es:activities>\n\
+	</status>\n\
+	<contact priority=\"0.8\">%s</contact>\n\
+	<note>busy</note>\n\
+	</tuple>\n\
+	</presence>",
+		  from, from);
+	}
+	else if (presence_mode==SalPresenceBerightback)
+	{
+		snprintf(buf, sizeof(buf), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
+	<presence xmlns=\"urn:ietf:params:xml:ns:pidf\"\n\
+		  xmlns:es=\"urn:ietf:params:xml:ns:pidf:status:rpid-status\"\n\
+		  entity=\"%s\">\n\
+	<tuple id=\"sg89ae\">\n\
+	<status>\n\
+	<basic>open</basic>\n\
+	<es:activities>\n\
+	<es:activity>in-transit</es:activity>\n\
+	</es:activities>\n\
+	</status>\n\
+	<contact priority=\"0.8\">%s</contact>\n\
+	<note>be right back</note>\n\
+	</tuple>\n\
+	</presence>",
+		  from,from);
+	}
+	else if (presence_mode==SalPresenceAway
+	   ||presence_mode==SalPresenceMoved)
+	{
+		snprintf(buf, sizeof(buf), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
+	<presence xmlns=\"urn:ietf:params:xml:ns:pidf\"\n\
+		  xmlns:es=\"urn:ietf:params:xml:ns:pidf:status:rpid-status\"\n\
+		  entity=\"%s\">\n\
+	<tuple id=\"sg89ae\">\n\
+	<status>\n\
+	<basic>open</basic>\n\
+	<es:activities>\n\
+	<es:activity>away</es:activity>\n\
+	</es:activities>\n\
+	</status>\n\
+	<contact priority=\"0.8\">%s</contact>\n\
+	<note>away</note>\n\
+	</tuple>\n\
+	</presence>",
+		  from, from);
+	}
+	else if (presence_mode==SalPresenceOnthephone)
+	{
+	  snprintf(buf, sizeof(buf), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
+	<presence xmlns=\"urn:ietf:params:xml:ns:pidf\"\n\
+		  xmlns:es=\"urn:ietf:params:xml:ns:pidf:status:rpid-status\"\n\
+		  entity=\"%s\">\n\
+	<tuple id=\"sg89ae\">\n\
+	<status>\n\
+	<basic>open</basic>\n\
+	<es:activities>\n\
+	<es:activity>on-the-phone</es:activity>\n\
+	</es:activities>\n\
+	</status>\n\
+	<contact priority=\"0.8\">%s</contact>\n\
+	<note>on the phone</note>\n\
+	</tuple>\n\
+	</presence>",
+		  from, from);
+	}
+	else if (presence_mode==SalPresenceOuttolunch)
+	{
+	  snprintf(buf, sizeof(buf), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
+	<presence xmlns=\"urn:ietf:params:xml:ns:pidf\"\n\
+		  xmlns:es=\"urn:ietf:params:xml:ns:pidf:status:rpid-status\"\n\
+		  entity=\"%s\">\n\
+	<tuple id=\"sg89ae\">\n\
+	<status>\n\
+	<basic>open</basic>\n\
+	<es:activities>\n\
+	<es:activity>meal</es:activity>\n\
+	</es:activities>\n\
+	</status>\n\
+	<contact priority=\"0.8\">%s</contact>\n\
+	<note>out to lunch</note>\n\
+	</tuple>\n\
+	</presence>",
+		  from, from);
+	}
+	else{ 
+	  /* offline */
+	  snprintf(buf, sizeof(buf), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
+	<presence xmlns=\"urn:ietf:params:xml:ns:pidf\"\n\
+	xmlns:es=\"urn:ietf:params:xml:ns:pidf:status:rpid-status\"\n\
+	entity=\"%s\">\n%s",
+		  from,
+	"<tuple id=\"sg89ae\">\n\
+	<status>\n\
+	<basic>closed</basic>\n\
+	<es:activities>\n\
+	<es:activity>permanent-absence</e:activity>\n\
+	</es:activities>\n\
+	</status>\n\
+	</tuple>\n\
+	\n</presence>\n");
+	}
+
+	i = eXosip_build_publish(&pub,from, to, NULL, "presence", "1800", "application/pidf+xml", buf);
+	if (i<0){
+		ms_warning("Failed to build publish request.");
+		return -1;
+	}
+
+	eXosip_lock();
+	i = eXosip_publish(pub, to); /* should update the sip-if-match parameter
+				    from sip-etag  from last 200ok of PUBLISH */
+	eXosip_unlock();
+	if (i<0){
+	  ms_message("Failed to send publish request.");
+	  return -1;
+	}
 	return 0;
 }
 
@@ -521,7 +663,7 @@ void sal_exosip_notify_recv(Sal *sal, eXosip_event_t *ev){
 		op->did=-1;
 		ms_message("And outgoing subscription terminated by remote.");
 	}
-	sal->callbacks.presence_changed(op,estatus,NULL);
+	sal->callbacks.notify(op,op->sid!=-1 ? SalSubscribeActive : SalSubscribeTerminated, estatus,NULL);
 	osip_free(tmp);
 }
 
@@ -544,4 +686,5 @@ void sal_exosip_subscription_closed(Sal *sal,eXosip_event_t *ev){
 	op->nid=-1;
 	op->did=0;
 }
+
 

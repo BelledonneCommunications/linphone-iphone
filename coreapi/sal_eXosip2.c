@@ -55,6 +55,39 @@ static void sal_remove_register(Sal *sal, int rid){
 	}
 }
 
+static void sal_add_pending_auth(Sal *sal, SalOp *op){
+	sal->pending_auths=ms_list_append(sal->pending_auths,op);
+}
+
+
+static void sal_remove_pending_auth(Sal *sal, SalOp *op){
+	sal->pending_auths=ms_list_remove(sal->pending_auths,op);
+}
+
+void sal_exosip_fix_route(SalOp *op){
+	if (sal_op_get_route(op)!=NULL){
+		osip_route_t *rt=NULL;
+		osip_uri_param_t *lr_param=NULL;
+		
+		osip_route_init(&rt);
+		if (osip_route_parse(rt,sal_op_get_route(op))<0){
+			ms_warning("Bad route  %s!",sal_op_get_route(op));
+			sal_op_set_route(op,NULL);
+		}else{
+			/* check if the lr parameter is set , if not add it */
+			osip_uri_uparam_get_byname(rt->url, "lr", &lr_param);
+		  	if (lr_param==NULL){
+				char *tmproute;
+				osip_uri_uparam_add(rt->url,osip_strdup("lr"),NULL);
+				osip_route_to_str(rt,&tmproute);
+				sal_op_set_route(op,tmproute);
+				osip_free(tmproute);
+			}
+		}
+		osip_route_free(rt);
+	}
+}
+
 SalOp * sal_op_new(Sal *sal){
 	SalOp *op=ms_new(SalOp,1);
 	__sal_op_init(op,sal);
@@ -77,6 +110,9 @@ void sal_op_release(SalOp *op){
 	}
 	if (op->cid!=-1){
 		eXosip_call_set_reference(op->cid,NULL);
+	}
+	if (op->pending_auth){
+		sal_remove_pending_auth(op->base.root,op);
 	}
 	__sal_op_free(op);
 }
@@ -174,8 +210,8 @@ void sal_set_callbacks(Sal *ctx, const SalCallbacks *cbs){
 		ctx->callbacks.register_failure=(SalOnRegisterFailure)unimplemented_stub;
 	if (ctx->callbacks.dtmf_received==NULL) 
 		ctx->callbacks.dtmf_received=(SalOnDtmfReceived)unimplemented_stub;
-	if (ctx->callbacks.presence_changed==NULL)
-		ctx->callbacks.presence_changed=(SalOnPresenceChanged)unimplemented_stub;
+	if (ctx->callbacks.notify==NULL)
+		ctx->callbacks.notify=(SalOnNotify)unimplemented_stub;
 	if (ctx->callbacks.subscribe_received==NULL)
 		ctx->callbacks.subscribe_received=(SalOnSubscribeReceived)unimplemented_stub;
 	if (ctx->callbacks.text_received==NULL)
@@ -213,6 +249,10 @@ void sal_set_user_agent(Sal *ctx, const char *user_agent){
 
 void sal_use_session_timers(Sal *ctx, int expires){
 	ctx->session_expires=expires;
+}
+
+MSList *sal_get_pending_auths(Sal *sal){
+	return ms_list_copy(sal->pending_auths);
 }
 
 
@@ -277,7 +317,8 @@ int sal_call(SalOp *h, const char *from, const char *to){
 	osip_message_t *invite=NULL;
 	sal_op_set_from(h,from);
 	sal_op_set_to(h,to);
-	err=eXosip_call_build_initial_invite(&invite,to,from,h->base.route,"Phone call");
+	sal_exosip_fix_route(h);
+	err=eXosip_call_build_initial_invite(&invite,to,from,sal_op_get_route(h),"Phone call");
 	if (err!=0){
 		ms_error("Could not create call.");
 		return -1;
@@ -625,6 +666,13 @@ static int get_auth_data(eXosip_event_t *ev, const char **realm, const char **us
 	return 0;
 }
 
+int sal_op_get_auth_requested(SalOp *op, const char **realm, const char **username){
+	if (op->pending_auth){
+		return get_auth_data(op->pending_auth,realm,username);
+	}
+	return -1;
+}
+
 static bool_t process_authentication(Sal *sal, eXosip_event_t *ev){
 	SalOp *op;
 	const char *username,*realm;
@@ -637,6 +685,7 @@ static bool_t process_authentication(Sal *sal, eXosip_event_t *ev){
 		if (op->pending_auth!=NULL)
 			eXosip_event_free(op->pending_auth);
 		op->pending_auth=ev;
+		sal_add_pending_auth (sal,op);
 		sal->callbacks.auth_requested(op,realm,username);
 		return FALSE;
 	}
@@ -1129,6 +1178,8 @@ int sal_iterate(Sal *sal){
 
 int sal_register(SalOp *h, const char *proxy, const char *from, int expires){
 	osip_message_t *msg;
+	sal_op_set_route(h,proxy);
+	sal_exosip_fix_route(h);
 	if (h->rid==-1){
 		eXosip_lock();
 		h->rid=eXosip_register_build_initial_register(from,proxy,sal_op_get_contact(h),expires,&msg);
@@ -1140,6 +1191,16 @@ int sal_register(SalOp *h, const char *proxy, const char *from, int expires){
 	eXosip_register_send_register(h->rid,msg);
 	eXosip_unlock();
 	h->expires=expires;
+	return 0;
+}
+
+int sal_unregister(SalOp *h){
+	osip_message_t *msg=NULL;
+	eXosip_lock();
+	eXosip_register_build_register(h->rid,0,&msg);
+	if (msg) eXosip_register_send_register(h->rid,msg);
+	else ms_warning("Could not build unREGISTER !");
+	eXosip_unlock();
 	return 0;
 }
 

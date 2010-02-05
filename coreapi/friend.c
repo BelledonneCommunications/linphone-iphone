@@ -31,9 +31,6 @@
 const char *linphone_online_status_to_string(LinphoneOnlineStatus ss){
 	const char *str=NULL;
 	switch(ss){
-		case LINPHONE_STATUS_UNKNOWN:
-		str=_("Unknown");
-		break;
 		case LINPHONE_STATUS_ONLINE:
 		str=_("Online");
 		break;
@@ -66,9 +63,6 @@ const char *linphone_online_status_to_string(LinphoneOnlineStatus ss){
 		break;
 		case LINPHONE_STATUS_PENDING:
 		str=_("Pending");
-		break;
-		case LINPHONE_STATUS_CLOSED:
-		str=_("Closed");
 		break;
 		default:
 		str=_("Unknown-bug");
@@ -114,20 +108,20 @@ MSList *linphone_find_friend(MSList *fl, const LinphoneAddress *friend, Linphone
 	return res;
 }
 
-LinphoneFriend *linphone_find_friend_by_nid(MSList *l, int nid){
+LinphoneFriend *linphone_find_friend_by_inc_subscribe(MSList *l, SalOp *op){
 	MSList *elem;
 	for (elem=l;elem!=NULL;elem=elem->next){
 		LinphoneFriend *lf=(LinphoneFriend*)elem->data;
-		if (lf->nid==nid) return lf;
+		if (lf->insub==op) return lf;
 	}
 	return NULL;
 }
 
-LinphoneFriend *linphone_find_friend_by_sid(MSList *l, int sid){
+LinphoneFriend *linphone_find_friend_by_out_subscribe(MSList *l, SalOp *op){
 	MSList *elem;
 	for (elem=l;elem!=NULL;elem=elem->next){
 		LinphoneFriend *lf=(LinphoneFriend*)elem->data;
-		if (lf->sid==sid) return lf;
+		if (lf->outsub==op) return lf;
 	}
 	return NULL;
 }
@@ -136,30 +130,30 @@ void __linphone_friend_do_subscribe(LinphoneFriend *fr){
 	char *friend=NULL;
 	const char *route=NULL;
 	const char *from=NULL;
-	osip_message_t *msg=NULL;
+	LinphoneProxyConfig *cfg;
+	
 	friend=linphone_address_as_string(fr->uri);
-	if (fr->proxy!=NULL){
-		route=fr->proxy->reg_route;
-		from=fr->proxy->reg_identity;
+	cfg=linphone_core_lookup_known_proxy(fr->lc,linphone_friend_get_address(fr));
+	if (cfg!=NULL){
+		route=linphone_proxy_config_get_route(cfg);
+		from=linphone_proxy_config_get_identity(cfg);
 	}else from=linphone_core_get_primary_contact(fr->lc);
-	if (fr->sid<0){
+	if (fr->outsub==NULL){
 		/* people for which we don't have yet an answer should appear as offline */
-		fr->lc->vtable.notify_recv(fr->lc,(LinphoneFriend*)fr,friend,_("Gone"),"sip-closed.png");
+		if (fr->lc->vtable.notify_recv)
+			fr->lc->vtable.notify_recv(fr->lc,(LinphoneFriend*)fr,friend,_("Gone"),"sip-closed.png");
+	}else{
+		sal_op_release(fr->outsub);
+		fr->outsub=NULL;
 	}
-	eXosip_lock();
-	eXosip_subscribe_build_initial_request(&msg,friend,from,route,"presence",600);
-	eXosip_subscribe_send_initial_request(msg);
-	eXosip_unlock();
+	fr->outsub=sal_op_new(fr->lc->sal);
+	sal_op_set_route(fr->outsub,route);
+	sal_subscribe_presence(fr->outsub,from,friend);
 	ms_free(friend);
 }
 
-
 LinphoneFriend * linphone_friend_new(){
 	LinphoneFriend *obj=ms_new0(LinphoneFriend,1);
-	obj->out_did=-1;
-	obj->in_did=-1;
-	obj->nid=-1;
-	obj->sid=-1;
 	obj->pol=LinphoneSPAccept;
 	obj->status=LINPHONE_STATUS_OFFLINE;
 	obj->subscribe=TRUE;
@@ -214,6 +208,7 @@ int linphone_friend_set_sip_addr(LinphoneFriend *lf, const char *addr){
 		ms_warning("Invalid friend sip uri: %s",addr);
 		return -1;
 	}
+	linphone_address_clean(fr);
 	if (lf->uri!=NULL) linphone_address_destroy(lf->uri);	
 	lf->uri=fr;
 	return 0;
@@ -240,334 +235,78 @@ int linphone_friend_set_inc_subscribe_policy(LinphoneFriend *fr, LinphoneSubscri
 	return 0;
 }
 
-int linphone_friend_set_proxy(LinphoneFriend *fr, struct _LinphoneProxyConfig *cfg){
-	fr->proxy=cfg;
-	return 0;
+SalPresenceStatus linphone_online_status_to_sal(LinphoneOnlineStatus os){
+	switch(os){
+		case LINPHONE_STATUS_OFFLINE:
+			return SalPresenceOffline;
+		break;
+		case LINPHONE_STATUS_ONLINE:
+			return SalPresenceOnline;
+		break;
+		case LINPHONE_STATUS_BUSY:
+			return SalPresenceBusy;
+		break;
+		case LINPHONE_STATUS_BERIGHTBACK:
+			return SalPresenceBerightback;
+		break;
+		case LINPHONE_STATUS_AWAY:
+			return SalPresenceAway;
+		break;
+		case LINPHONE_STATUS_ONTHEPHONE:
+			return SalPresenceOnthephone;
+		break;
+		case LINPHONE_STATUS_OUTTOLUNCH:
+			return SalPresenceOuttolunch;
+		break;
+		case LINPHONE_STATUS_NOT_DISTURB:
+			return SalPresenceDonotdisturb;
+		break;
+		case LINPHONE_STATUS_MOVED:
+			return SalPresenceMoved;
+		break;
+		case LINPHONE_STATUS_ALT_SERVICE:
+			return SalPresenceAltService;
+		break;
+		case LINPHONE_STATUS_PENDING:
+			return SalPresenceOffline;
+		break;
+		default:
+			return SalPresenceOffline;
+		break;
+	}
+	return SalPresenceOffline;
 }
 
-void linphone_friend_set_sid(LinphoneFriend *lf, int sid){
-	lf->sid=sid;
-}
-void linphone_friend_set_nid(LinphoneFriend *lf, int nid){
-	lf->nid=nid;
-	lf->inc_subscribe_pending=TRUE;
-}
-
-void add_presence_body(osip_message_t *notify, LinphoneOnlineStatus online_status)
-{
-	char buf[1000];
-#ifdef SUPPORT_MSN
-	int atom_id = 1000;
-#endif
-	char *contact_info;
-
-	osip_contact_t *ct=NULL;
-	osip_message_get_contact(notify,0,&ct);
-	osip_contact_to_str(ct,&contact_info);
-
-#ifdef SUPPORT_MSN
-
-  if (online_status==LINPHONE_STATUS_ONLINE)
-    {
-      sprintf(buf, "<?xml version=\"1.0\"?>\n\
-<!DOCTYPE presence\n\
-PUBLIC \"-//IETF//DTD RFCxxxx XPIDF 1.0//EN\" \"xpidf.dtd\">\n\
-<presence>\n\
-<presentity uri=\"%s;method=SUBSCRIBE\" />\n\
-<atom id=\"%i\">\n\
-<address uri=\"%s;user=ip\" priority=\"0.800000\">\n\
-<status status=\"open\" />\n\
-<msnsubstatus substatus=\"online\" />\n\
-</address>\n\
-</atom>\n\
-</presence>", contact_info, atom_id, contact_info);
-
-    }
-  else if (online_status==LINPHONE_STATUS_BUSY)
-    {
-      sprintf(buf, "<?xml version=\"1.0\"?>\n\
-<!DOCTYPE presence\n\
-PUBLIC \"-//IETF//DTD RFCxxxx XPIDF 1.0//EN\" \"xpidf.dtd\">\n\
-<presence>\n\
-<presentity uri=\"%s;method=SUBSCRIBE\" />\n\
-<atom id=\"%i\">\n\
-<address uri=\"%s;user=ip\" priority=\"0.800000\">\n\
-<status status=\"inuse\" />\n\
-<msnsubstatus substatus=\"busy\" />\n\
-</address>\n\
-</atom>\n\
-</presence>", contact_info, atom_id, contact_info);
-
-    }
-  else if (online_status==LINPHONE_STATUS_BERIGHTBACK)
-    {
-      sprintf(buf, "<?xml version=\"1.0\"?>\n\
-<!DOCTYPE presence\n\
-PUBLIC \"-//IETF//DTD RFCxxxx XPIDF 1.0//EN\" \"xpidf.dtd\">\n\
-<presence>\n\
-<presentity uri=\"%s;method=SUBSCRIBE\" />\n\
-<atom id=\"%i\">\n\
-<address uri=\"%s;user=ip\" priority=\"0.800000\">\n\
-<status status=\"inactive\" />\n\
-<msnsubstatus substatus=\"berightback\" />\n\
-</address>\n\
-</atom>\n\
-</presence>", contact_info, atom_id, contact_info);
-
-    }
-  else if (online_status==LINPHONE_STATUS_AWAY)
-    {
-      sprintf(buf, "<?xml version=\"1.0\"?>\n\
-<!DOCTYPE presence\n\
-PUBLIC \"-//IETF//DTD RFCxxxx XPIDF 1.0//EN\" \"xpidf.dtd\">\n\
-<presence>\n\
-<presentity uri=\"%s;method=SUBSCRIBE\" />\n\
-<atom id=\"%i\">\n\
-<address uri=\"%s;user=ip\" priority=\"0.800000\">\n\
-<status status=\"inactive\" />\n\
-<msnsubstatus substatus=\"away\" />\n\
-</address>\n\
-</atom>\n\
-</presence>", contact_info, atom_id, contact_info);
-
-    }
-  else if (online_status==LINPHONE_STATUS_ONTHEPHONE)
-    {
-      sprintf(buf, "<?xml version=\"1.0\"?>\n\
-<!DOCTYPE presence\n\
-PUBLIC \"-//IETF//DTD RFCxxxx XPIDF 1.0//EN\" \"xpidf.dtd\">\n\
-<presence>\n\
-<presentity uri=\"%s;method=SUBSCRIBE\" />\n\
-<atom id=\"%i\">\n\
-<address uri=\"%s;user=ip\" priority=\"0.800000\">\n\
-<status status=\"inuse\" />\n\
-<msnsubstatus substatus=\"onthephone\" />\n\
-</address>\n\
-</atom>\n\
-</presence>", contact_info, atom_id, contact_info);
-
-    }
-  else if (online_status==LINPHONE_STATUS_OUTTOLUNCH)
-    {
-      sprintf(buf, "<?xml version=\"1.0\"?>\n\
-<!DOCTYPE presence\n\
-PUBLIC \"-//IETF//DTD RFCxxxx XPIDF 1.0//EN\" \"xpidf.dtd\">\n\
-<presence>\n\
-<presentity uri=\"%s;method=SUBSCRIBE\" />\n\
-<atom id=\"%i\">\n\
-<address uri=\"%s;user=ip\" priority=\"0.800000\">\n\
-<status status=\"inactive\" />\n\
-<msnsubstatus substatus=\"outtolunch\" />\n\
-</address>\n\
-</atom>\n\
-</presence>", contact_info, atom_id, contact_info);
-
-    }
-  else
-    {
-      sprintf(buf, "<?xml version=\"1.0\"?>\n\
-<!DOCTYPE presence\n\
-PUBLIC \"-//IETF//DTD RFCxxxx XPIDF 1.0//EN\" \"xpidf.dtd\">\n\
-<presence>\n\
-<presentity uri=\"%s;method=SUBSCRIBE\" />\n\
-<atom id=\"%i\">\n\
-<address uri=\"%s;user=ip\" priority=\"0.800000\">\n\
-<status status=\"inactive\" />\n\
-<msnsubstatus substatus=\"away\" />\n\
-</address>\n\
-</atom>\n\
-</presence>", contact_info, atom_id, contact_info);
-    }
-
-  osip_message_set_body(notify, buf, strlen(buf));
-  osip_message_set_content_type(notify, "application/xpidf+xml");
-#else
-
-  if (online_status==LINPHONE_STATUS_ONLINE)
-    {
-      sprintf(buf, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
-<presence xmlns=\"urn:ietf:params:xml:ns:pidf\"\n\
-          entity=\"%s\">\n\
-<tuple id=\"sg89ae\">\n\
-<status>\n\
-<basic>open</basic>\n\
-</status>\n\
-<contact priority=\"0.8\">%s</contact>\n\
-<note>online</note>\n\
-</tuple>\n\
-</presence>",
-	      contact_info, contact_info);
-    }
-  else if (online_status==LINPHONE_STATUS_BUSY)
-    {
-      sprintf(buf, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
-<presence xmlns=\"urn:ietf:params:xml:ns:pidf\"\n\
-          xmlns:es=\"urn:ietf:params:xml:ns:pidf:status:rpid-status\"\n\
-          entity=\"%s\">\n\
-<tuple id=\"sg89ae\">\n\
-<status>\n\
-<basic>open</basic>\n\
-<es:activities>\n\
-  <es:activity>busy</es:activity>\n\
-</es:activities>\n\
-</status>\n\
-<contact priority=\"0.8\">%s</contact>\n\
-<note>busy</note>\n\
-</tuple>\n\
-</presence>",
-	      contact_info, contact_info);
-    }
-  else if (online_status==LINPHONE_STATUS_BERIGHTBACK)
-    {
-      sprintf(buf, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
-<presence xmlns=\"urn:ietf:params:xml:ns:pidf\"\n\
-          xmlns:es=\"urn:ietf:params:xml:ns:pidf:status:rpid-status\"\n\
-          entity=\"%s\">\n\
-<tuple id=\"sg89ae\">\n\
-<status>\n\
-<basic>open</basic>\n\
-<es:activities>\n\
-  <es:activity>in-transit</es:activity>\n\
-</es:activities>\n\
-</status>\n\
-<contact priority=\"0.8\">%s</contact>\n\
-<note>be right back</note>\n\
-</tuple>\n\
-</presence>",
-	      contact_info, contact_info);
-    }
-  else if (online_status==LINPHONE_STATUS_AWAY)
-    {
-      sprintf(buf, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
-<presence xmlns=\"urn:ietf:params:xml:ns:pidf\"\n\
-          xmlns:es=\"urn:ietf:params:xml:ns:pidf:status:rpid-status\"\n\
-          entity=\"%s\">\n\
-<tuple id=\"sg89ae\">\n\
-<status>\n\
-<basic>open</basic>\n\
-<es:activities>\n\
-  <es:activity>away</es:activity>\n\
-</es:activities>\n\
-</status>\n\
-<contact priority=\"0.8\">%s</contact>\n\
-<note>away</note>\n\
-</tuple>\n\
-</presence>",
-	      contact_info, contact_info);
-    }
-  else if (online_status==LINPHONE_STATUS_ONTHEPHONE)
-    {
-      sprintf(buf, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
-<presence xmlns=\"urn:ietf:params:xml:ns:pidf\"\n\
-          xmlns:es=\"urn:ietf:params:xml:ns:pidf:status:rpid-status\"\n\
-          entity=\"%s\">\n\
-<tuple id=\"sg89ae\">\n\
-<status>\n\
-<basic>open</basic>\n\
-<es:activities>\n\
-  <es:activity>on-the-phone</es:activity>\n\
-</es:activities>\n\
-</status>\n\
-<contact priority=\"0.8\">%s</contact>\n\
-<note>on the phone</note>\n\
-</tuple>\n\
-</presence>",
-	      contact_info, contact_info);
-    }
-  else if (online_status==LINPHONE_STATUS_OUTTOLUNCH)
-    {
-      sprintf(buf, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
-<presence xmlns=\"urn:ietf:params:xml:ns:pidf\"\n\
-          xmlns:es=\"urn:ietf:params:xml:ns:pidf:status:rpid-status\"\n\
-          entity=\"%s\">\n\
-<tuple id=\"sg89ae\">\n\
-<status>\n\
-<basic>open</basic>\n\
-<es:activities>\n\
-  <es:activity>meal</es:activity>\n\
-</es:activities>\n\
-</status>\n\
-<contact priority=\"0.8\">%s</contact>\n\
-<note>out to lunch</note>\n\
-</tuple>\n\
-</presence>",
-	      contact_info, contact_info);
-    }
-  else
-    {
-      /* */
-      sprintf(buf, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
-<presence xmlns=\"urn:ietf:params:xml:ns:pidf\"\n\
-xmlns:es=\"urn:ietf:params:xml:ns:pidf:status:rpid-status\"\n\
-entity=\"%s\">\n%s",
-	      contact_info,
-"<tuple id=\"sg89ae\">\n\
-<status>\n\
-<basic>closed</basic>\n\
-<es:activities>\n\
-  <es:activity>permanent-absence</es:activity>\n\
-</es:activities>\n\
-</status>\n\
-</tuple>\n\
-\n</presence>\n");
-    }
-  osip_message_set_body(notify, buf, strlen(buf));
-  osip_message_set_content_type(notify, "application/pidf+xml");
-
-#endif
-	osip_free(contact_info);
-}
-
-
-void linphone_friend_notify(LinphoneFriend *lf, int ss, LinphoneOnlineStatus os){
+void linphone_friend_notify(LinphoneFriend *lf, LinphoneOnlineStatus os){
 	//printf("Wish to notify %p, lf->nid=%i\n",lf,lf->nid);
-	if (lf->in_did!=-1){
-		osip_message_t *msg=NULL;
-		const char *identity;
-		if (lf->proxy!=NULL) identity=lf->proxy->reg_identity;
-		else identity=linphone_core_get_primary_contact(lf->lc);
-		eXosip_lock();
-		eXosip_insubscription_build_notify(lf->in_did,ss,0,&msg);
-		if (msg!=NULL){
-			osip_message_set_contact(msg,identity);
-			add_presence_body(msg,os);
-			eXosip_insubscription_send_request(lf->in_did,msg);
-		}else ms_error("could not create notify for incoming subscription.");
-		eXosip_unlock();
+	if (lf->insub!=NULL){
+		sal_notify_presence(lf->insub,linphone_online_status_to_sal(os),NULL);
 	}
 }
 
 static void linphone_friend_unsubscribe(LinphoneFriend *lf){
-	if (lf->out_did!=-1) {
-		osip_message_t *msg=NULL;
-		eXosip_lock();
-		eXosip_subscribe_build_refresh_request(lf->out_did,&msg);
-		if (msg){
-			osip_message_set_expires(msg,"0");
-			eXosip_subscribe_send_refresh_request(lf->out_did,msg);
-		}else ms_error("Could not build subscribe refresh request !");
-		eXosip_unlock();
+	if (lf->outsub!=NULL) {
+		sal_unsubscribe(lf->outsub);
+		sal_op_release(lf->outsub);
+		lf->outsub=NULL;
 	}
 }
 
 void linphone_friend_destroy(LinphoneFriend *lf){
-	linphone_friend_notify(lf,EXOSIP_SUBCRSTATE_TERMINATED,LINPHONE_STATUS_CLOSED);
+	linphone_friend_notify(lf,LINPHONE_STATUS_OFFLINE);
 	linphone_friend_unsubscribe(lf);
+	if (lf->insub){
+		sal_notify_close(lf->insub);
+		sal_op_release(lf->insub);
+	}
 	if (lf->uri!=NULL) linphone_address_destroy(lf->uri);
 	if (lf->info!=NULL) buddy_info_free(lf->info);
 	ms_free(lf);
 }
 
-void linphone_friend_check_for_removed_proxy(LinphoneFriend *lf, LinphoneProxyConfig *cfg){
-	if (lf->proxy==cfg){
-		lf->proxy=NULL;
-	}
-}
-
 const LinphoneAddress *linphone_friend_get_uri(const LinphoneFriend *lf){
 	return lf->uri;
 }
-
 
 bool_t linphone_friend_get_send_subscribe(const LinphoneFriend *lf){
 	return lf->subscribe;
@@ -597,21 +336,21 @@ void linphone_friend_apply(LinphoneFriend *fr, LinphoneCore *lc){
 	if (fr->inc_subscribe_pending){
 		switch(fr->pol){
 			case LinphoneSPWait:
-				linphone_friend_notify(fr,EXOSIP_SUBCRSTATE_PENDING,LINPHONE_STATUS_PENDING);
+				linphone_friend_notify(fr,LINPHONE_STATUS_PENDING);
 				break;
 			case LinphoneSPAccept:
 				if (fr->lc!=NULL)
 				  {
-					linphone_friend_notify(fr,EXOSIP_SUBCRSTATE_ACTIVE,fr->lc->presence_mode);
+					linphone_friend_notify(fr,fr->lc->presence_mode);
 				  }
 				break;
 			case LinphoneSPDeny:
-				linphone_friend_notify(fr,EXOSIP_SUBCRSTATE_TERMINATED,LINPHONE_STATUS_CLOSED);
+				linphone_friend_notify(fr,LINPHONE_STATUS_OFFLINE);
 				break;
 		}
 		fr->inc_subscribe_pending=FALSE;
 	}
-	if (fr->subscribe && fr->out_did==-1){
+	if (fr->subscribe && fr->outsub==NULL){
 		
 		__linphone_friend_do_subscribe(fr);
 	}
@@ -632,6 +371,14 @@ void linphone_core_add_friend(LinphoneCore *lc, LinphoneFriend *lf)
 {
 	ms_return_if_fail(lf->lc==NULL);
 	ms_return_if_fail(lf->uri!=NULL);
+	if (ms_list_find(lc->friends,lf)!=NULL){
+		char *tmp=NULL;
+		const LinphoneAddress *addr=linphone_friend_get_address(lf);
+		if (addr) tmp=linphone_address_as_string(addr);
+		ms_warning("Friend %s already in list, ignored.", tmp ? tmp : "unknown");
+		if (tmp) ms_free(tmp);
+		return ;
+	}
 	lc->friends=ms_list_append(lc->friends,lf);
 	linphone_friend_apply(lf,lc);
 	return ;
@@ -667,7 +414,7 @@ static bool_t username_match(const char *u1, const char *u2){
 	return FALSE;
 }
 
-LinphoneFriend *linphone_core_get_friend_by_uri(const LinphoneCore *lc, const char *uri){
+LinphoneFriend *linphone_core_get_friend_by_address(const LinphoneCore *lc, const char *uri){
 	LinphoneAddress *puri=linphone_address_new(uri);
 	const MSList *elem;
 	const char *username=linphone_address_get_username(puri);
@@ -752,10 +499,6 @@ LinphoneFriend * linphone_friend_new_from_config_file(LinphoneCore *lc, int inde
 	a=lp_config_get_int(config,item,"subscribe",0);
 	linphone_friend_send_subscribe(lf,a);
 		
-	a=lp_config_get_int(config,item,"proxy",-1);
-	if (a!=-1) {
-		linphone_friend_set_proxy(lf,__index_to_proxy(lc,a));
-	}
 	linphone_friend_set_ref_key(lf,lp_config_get_string(config,item,"refkey",NULL));
 	return lf;
 }
@@ -779,7 +522,6 @@ const char *__policy_enum_to_str(LinphoneSubscribePolicy pol){
 void linphone_friend_write_to_config_file(LpConfig *config, LinphoneFriend *lf, int index){
 	char key[50];
 	char *tmp;
-	int a;
 	const char *refkey;
 	
 	sprintf(key,"friend_%i",index);
@@ -798,10 +540,6 @@ void linphone_friend_write_to_config_file(LpConfig *config, LinphoneFriend *lf, 
 	}
 	lp_config_set_string(config,key,"pol",__policy_enum_to_str(lf->pol));
 	lp_config_set_int(config,key,"subscribe",lf->subscribe);
-	if (lf->proxy!=NULL){
-		a=ms_list_index(lf->lc->sip_conf.proxies,lf->proxy);
-		lp_config_set_int(config,key,"proxy",a);
-	}else lp_config_set_int(config,key,"proxy",-1);
 
 	refkey=linphone_friend_get_ref_key(lf);
 	if (refkey){

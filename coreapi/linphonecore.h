@@ -139,7 +139,7 @@ typedef enum{
 }LinphoneSubscribePolicy;
 
 typedef enum _LinphoneOnlineStatus{
-	LINPHONE_STATUS_UNKNOWN,
+	LINPHONE_STATUS_OFFLINE,
 	LINPHONE_STATUS_ONLINE,
 	LINPHONE_STATUS_BUSY,
 	LINPHONE_STATUS_BERIGHTBACK,
@@ -149,9 +149,7 @@ typedef enum _LinphoneOnlineStatus{
 	LINPHONE_STATUS_NOT_DISTURB,
 	LINPHONE_STATUS_MOVED,
 	LINPHONE_STATUS_ALT_SERVICE,
-	LINPHONE_STATUS_OFFLINE,
 	LINPHONE_STATUS_PENDING,
-	LINPHONE_STATUS_CLOSED,
 	LINPHONE_STATUS_END
 }LinphoneOnlineStatus;
 
@@ -167,11 +165,10 @@ int linphone_friend_set_sip_addr(LinphoneFriend *fr, const char *uri);
 int linphone_friend_set_name(LinphoneFriend *fr, const char *name);
 int linphone_friend_send_subscribe(LinphoneFriend *fr, bool_t val);
 int linphone_friend_set_inc_subscribe_policy(LinphoneFriend *fr, LinphoneSubscribePolicy pol);
-int linphone_friend_set_proxy(LinphoneFriend *fr, struct _LinphoneProxyConfig *cfg);
 void linphone_friend_edit(LinphoneFriend *fr);
 void linphone_friend_done(LinphoneFriend *fr);
 void linphone_friend_destroy(LinphoneFriend *lf);
-const LinphoneAddress *linphone_friend_get_uri(const LinphoneFriend *lf);
+const LinphoneAddress *linphone_friend_get_address(const LinphoneFriend *lf);
 bool_t linphone_friend_get_send_subscribe(const LinphoneFriend *lf);
 LinphoneSubscribePolicy linphone_friend_get_inc_subscribe_policy(const LinphoneFriend *lf);
 LinphoneOnlineStatus linphone_friend_get_status(const LinphoneFriend *lf);
@@ -208,8 +205,8 @@ typedef struct _LinphoneProxyConfig LinphoneProxyConfig;
 
 LinphoneProxyConfig *linphone_proxy_config_new(void);
 int linphone_proxy_config_set_server_addr(LinphoneProxyConfig *obj, const char *server_addr);
-void linphone_proxy_config_set_identity(LinphoneProxyConfig *obj, const char *identity);
-void linphone_proxy_config_set_route(LinphoneProxyConfig *obj, const char *route);
+int linphone_proxy_config_set_identity(LinphoneProxyConfig *obj, const char *identity);
+int linphone_proxy_config_set_route(LinphoneProxyConfig *obj, const char *route);
 void linphone_proxy_config_expires(LinphoneProxyConfig *obj, int expires);
 void linphone_proxy_config_enable_register(LinphoneProxyConfig *obj, bool_t val);
 #define linphone_proxy_config_enableregister linphone_proxy_config_enable_register
@@ -638,7 +635,7 @@ void linphone_core_reject_subscriber(LinphoneCore *lc, LinphoneFriend *lf);
 const MSList * linphone_core_get_friend_list(const LinphoneCore *lc);
 /* notify all friends that have subscribed */
 void linphone_core_notify_all_friends(LinphoneCore *lc, LinphoneOnlineStatus os);
-LinphoneFriend *linphone_core_get_friend_by_uri(const LinphoneCore *lc, const char *uri);
+LinphoneFriend *linphone_core_get_friend_by_address(const LinphoneCore *lc, const char *addr);
 LinphoneFriend *linphone_core_get_friend_by_ref_key(const LinphoneCore *lc, const char *key);
 
 /* returns a list of LinphoneCallLog */

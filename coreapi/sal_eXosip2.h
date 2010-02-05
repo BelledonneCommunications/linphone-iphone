@@ -33,6 +33,7 @@ struct Sal{
 	MSList *registers;/*MSList of SalOp */
 	MSList *out_subscribes;/*MSList of SalOp */
 	MSList *in_subscribes;/*MSList of SalOp */
+	MSList *pending_auths;/*MSList of SalOp */
 	int running;
 	int session_expires;
 	void *up;
@@ -59,6 +60,8 @@ void sal_exosip_subscription_recv(Sal *sal, eXosip_event_t *ev);
 void sal_exosip_subscription_answered(Sal *sal,eXosip_event_t *ev);
 void sal_exosip_notify_recv(Sal *sal,eXosip_event_t *ev);
 void sal_exosip_subscription_closed(Sal *sal,eXosip_event_t *ev);
+
+void sal_exosip_fix_route(SalOp *op);
 
 
 #endif

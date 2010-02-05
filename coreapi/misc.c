@@ -295,152 +295,6 @@ bool_t linphone_core_check_payload_type_usability(LinphoneCore *lc, PayloadType 
 	return ret;
 }
 
-static PayloadType * find_payload(RtpProfile *prof, PayloadType *pt /*from config*/){
-	PayloadType *candidate=NULL;
-	int i;
-	PayloadType *it;
-	for(i=0;i<127;++i){
-		it=rtp_profile_get_payload(prof,i);
-		if (it!=NULL && strcasecmp(pt->mime_type,it->mime_type)==0
-			&& (pt->clock_rate==it->clock_rate || pt->clock_rate<=0)
-			&& payload_type_get_user_data(it)==NULL ){
-			if ( (pt->recv_fmtp && it->recv_fmtp && strcasecmp(pt->recv_fmtp,it->recv_fmtp)==0) ||
-				(pt->recv_fmtp==NULL && it->recv_fmtp==NULL) ){
-				/*exact match*/
-				return it;
-			}else candidate=it;
-		}
-	}
-	return candidate;
-}
-
-static bool_t check_h264_packmode(PayloadType *payload, MSFilterDesc *desc){
-	if (payload->recv_fmtp==NULL || strstr(payload->recv_fmtp,"packetization-mode")==0){
-		/*this is packetization-mode=0 H264, we only support it with a multislicing
-		enabled version of x264*/
-		if (strstr(desc->text,"x264") && strstr(desc->text,"multislicing")==0){
-			/*this is x264 without multisclicing*/
-			ms_message("Disabling packetization-mode=0 H264 codec because "
-			"of lack of multislicing support");
-			return FALSE;
-		}
-	}
-	return TRUE;
-}
-
-static MSList *fix_codec_list(RtpProfile *prof, MSList *conflist)
-{
-	MSList *elem;
-	MSList *newlist=NULL;
-	PayloadType *payload,*confpayload;
-
-	for (elem=conflist;elem!=NULL;elem=ms_list_next(elem))
-	{
-		confpayload=(PayloadType*)elem->data;
-		payload=find_payload(prof,confpayload);
-		if (payload!=NULL){
-			if (ms_filter_codec_supported(confpayload->mime_type)){
-				MSFilterDesc *desc=ms_filter_get_encoder(confpayload->mime_type);
-				if (strcasecmp(confpayload->mime_type,"H264")==0){
-					if (!check_h264_packmode(confpayload,desc)){
-						continue;
-					}
-				}
-				payload_type_set_user_data(payload,(void*)desc->text);
-				payload_type_set_enable(payload,payload_type_enabled(confpayload));
-				newlist=ms_list_append(newlist,payload);
-			}
-		}
-		else{
-			ms_warning("Cannot support %s/%i: does not exist.",confpayload->mime_type,
-								confpayload->clock_rate);
-		}
-	}
-	return newlist;
-}
-
-
-void linphone_core_setup_local_rtp_profile(LinphoneCore *lc)
-{
-	int i;
-	MSList *audiopt,*videopt;
-	PayloadType *payload;
-	bool_t prepend;
-	lc->local_profile=rtp_profile_clone_full(&av_profile);
-	/* first look at the list given by configuration file to see if
-	it is correct */
-	audiopt=fix_codec_list(lc->local_profile,lc->codecs_conf.audio_codecs);
-	videopt=fix_codec_list(lc->local_profile,lc->codecs_conf.video_codecs);
-	/* now find and add payloads that are not listed in the configuration
-	codec list */
-	for (i=0;i<127;i++)
-	{
-		payload=rtp_profile_get_payload(lc->local_profile,i);
-		if (payload!=NULL){
-			if (payload_type_get_user_data(payload)!=NULL) continue;
-			/* find a mediastreamer codec for this payload type */
-			if (ms_filter_codec_supported(payload->mime_type)){
-				MSFilterDesc *desc=ms_filter_get_encoder(payload->mime_type);
-				ms_message("Adding new codec %s/%i",payload->mime_type,payload->clock_rate);
-				payload_type_set_enable(payload,1);
-				payload_type_set_user_data(payload,(void *)desc->text);
-				prepend=FALSE;
-				/* by default, put speex, mpeg4, or h264 on top of list*/
-				if (strcmp(payload->mime_type,"speex")==0)
-					prepend=TRUE;
-				else if (strcmp(payload->mime_type,"MP4V-ES")==0)
-					prepend=TRUE;
-				else if (strcasecmp(payload->mime_type,"H264")==0){
-					if (check_h264_packmode(payload,desc))
-						prepend=TRUE;
-					else continue;
-				}
-				switch (payload->type){
-					case PAYLOAD_AUDIO_CONTINUOUS:
-					case PAYLOAD_AUDIO_PACKETIZED:
-							if (prepend)
-								audiopt=ms_list_prepend(audiopt,(void *)payload);
-							else
-								audiopt=ms_list_append(audiopt,(void *)payload);
-						break;
-					case PAYLOAD_VIDEO:
-							if (prepend)
-								videopt=ms_list_prepend(videopt,(void *)payload);
-							else
-								videopt=ms_list_append(videopt,(void *)payload);
-						break;
-					default:
-						ms_error("Unsupported rtp media type.");
-				}
-			}
-		}
-	}
-	ms_list_for_each(lc->codecs_conf.audio_codecs,(void (*)(void*))payload_type_destroy);
-	ms_list_for_each(lc->codecs_conf.video_codecs,(void (*)(void *))payload_type_destroy);
-	ms_list_free(lc->codecs_conf.audio_codecs);
-	ms_list_free(lc->codecs_conf.video_codecs);
-	/* set the fixed lists instead:*/
-	lc->codecs_conf.audio_codecs=audiopt;
-	lc->codecs_conf.video_codecs=videopt;
-	linphone_core_update_allocated_audio_bandwidth(lc);
-}
-
-int from_2char_without_params(osip_from_t *from,char **str)
-{
-	osip_from_t *tmpfrom=NULL;
-	osip_from_clone(from,&tmpfrom);
-	if (tmpfrom!=NULL){
-		while(!osip_list_eol(&tmpfrom->gen_params,0)){
-			osip_generic_param_t *param=(osip_generic_param_t*)osip_list_get(&tmpfrom->gen_params,0);
-			osip_generic_param_free(param);
-			osip_list_remove(&tmpfrom->gen_params,0);
-		}
-	}else return -1;
-	osip_from_to_str(tmpfrom,str);
-	osip_from_free(tmpfrom);
-	return 0;
-}
-
 bool_t lp_spawn_command_line_sync(const char *command, char **result,int *command_ret){
 #if !defined(_WIN32_WCE)
 	FILE *f=popen(command,"r");
@@ -619,6 +473,11 @@ void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 		bool_t got_audio,got_video;
 		bool_t cone_audio=FALSE,cone_video=FALSE;
 		struct timeval init,cur;
+		SalEndpointCandidate *ac,*vc;
+		
+		ac=&call->localdesc->streams[0].candidates[0];
+		vc=&call->localdesc->streams[1].candidates[0];
+		
 		if (parse_stun_server_addr(server,&ss,&ss_len)<0){
 			ms_error("Fail to parser stun server address: %s",server);
 			return;
@@ -651,20 +510,20 @@ void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 			usleep(10000);
 #endif
 
-			if (recvStunResponse(sock1,call->audio_params.natd_addr,
-						&call->audio_params.natd_port,&id)>0){
+			if (recvStunResponse(sock1,ac->addr,
+						&ac->port,&id)>0){
 				ms_message("STUN test result: local audio port maps to %s:%i",
-						call->audio_params.natd_addr,
-						call->audio_params.natd_port);
+						ac->addr,
+						ac->port);
 				if (id==11)
 					cone_audio=TRUE;
 				got_audio=TRUE;
 			}
-			if (recvStunResponse(sock2,call->video_params.natd_addr,
-							&call->video_params.natd_port,&id)>0){
+			if (recvStunResponse(sock2,vc->addr,
+							&vc->port,&id)>0){
 				ms_message("STUN test result: local video port maps to %s:%i",
-					call->video_params.natd_addr,
-					call->video_params.natd_port);
+					vc->addr,
+					vc->port);
 				if (id==22)
 					cone_video=TRUE;
 				got_video=TRUE;
@@ -678,7 +537,8 @@ void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 		}else{
 			if (!cone_audio) {
 				ms_warning("NAT is symmetric for audio port");
-				call->audio_params.natd_port=0;
+				ac->addr[0]='\0';
+				ac->port=0;
 			}
 		}
 		if (sock2>=0){
@@ -687,7 +547,8 @@ void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 			}else{
 				if (!cone_video) {
 					ms_warning("NAT is symmetric for video port.");
-					call->video_params.natd_port=0;
+					vc->addr[0]='\0';
+					vc->port=0;
 				}
 			}
 		}

@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "linphonecore.h"
 #include "private.h"
+#include "mediastreamer2/mediastream.h"
 
 static void linphone_connect_incoming(LinphoneCore *lc, LinphoneCall *call){
 	if (lc->vtable.show)
@@ -37,9 +38,8 @@ static void linphone_connect_incoming(LinphoneCore *lc, LinphoneCall *call){
 }
 
 static void call_received(SalOp *h){
-	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_root(h));
+	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(h));
 	char *barmesg;
-	int err;
 	LinphoneCall *call;
 	const char *from,*to;
 	char *tmp;
@@ -62,34 +62,34 @@ static void call_received(SalOp *h){
 			sal_call_decline(h,SalReasonRedirect,lc->alt_contact);
 		else
 			sal_call_decline(h,SalReasonBusy,NULL);
-		sal_op_release(op);
+		sal_op_release(h);
 		return;
 	}
 	if (lc->call!=NULL){/*busy*/
 		sal_call_decline(h,SalReasonBusy,NULL);
-		sal_op_release(op);
+		sal_op_release(h);
 		return;
 	}
-	from=sal_op_get_from(op);
-	to=sal_op_get_to(op);
+	from=sal_op_get_from(h);
+	to=sal_op_get_to(h);
 	
-	call=linphone_call_new_incoming(lc,linphone_address_new(from),linphone_address_new(to),op);
+	call=linphone_call_new_incoming(lc,linphone_address_new(from),linphone_address_new(to),h);
 	lc->call=call;
-	sal_call_set_local_media_description(op,call->localdesc);
-	call->resultdesc=sal_call_get_final_media_description(op);
-	if (call->resultdesc && sal_media_description_empty(call->resultdesc){
-		sal_call_decline(op,SalReasonMedia,NULL);
+	sal_call_set_local_media_description(h,call->localdesc);
+	call->resultdesc=sal_call_get_final_media_description(h);
+	if (call->resultdesc && sal_media_description_empty(call->resultdesc)){
+		sal_call_decline(h,SalReasonMedia,NULL);
 		linphone_call_destroy(call);
 		lc->call=NULL;
 		return;
 	}
 	
-	from_parsed=linphone_address_new(sal_op_get_from(op));
+	from_parsed=linphone_address_new(sal_op_get_from(h));
 	linphone_address_clean(from_parsed);
 	tmp=linphone_address_as_string(from_parsed);
 	linphone_address_destroy(from_parsed);
 	gstate_new_state(lc, GSTATE_CALL_IN_INVITE, tmp);
-	barmesg=ortp_strdup_printf("%s %s",tmp,_("is contacting you."));
+	barmesg=ortp_strdup_printf(_("%s is contacting you"),tmp);
 	if (lc->vtable.show) lc->vtable.show(lc);
 	if (lc->vtable.display_status) 
 	    lc->vtable.display_status(lc,barmesg);
@@ -100,7 +100,7 @@ static void call_received(SalOp *h){
 		lc->ringstream=ring_start(lc->sound_conf.local_ring,2000,lc->sound_conf.ring_sndcard);
 	}
 	linphone_call_set_state(call,LCStateRinging);
-	sal_call_notify_ringing(op);
+	sal_call_notify_ringing(h);
 
 	if (lc->vtable.inv_recv) lc->vtable.inv_recv(lc,tmp);
 	ms_free(barmesg);
@@ -108,7 +108,7 @@ static void call_received(SalOp *h){
 }
 
 static void call_ringing(SalOp *h){
-	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_root(h));
+	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(h));
 	LinphoneCall *call=lc->call;
 	SalMediaDescription *md;
 	if (call==NULL) return;
@@ -145,18 +145,18 @@ static void call_ringing(SalOp *h){
 }
 
 static void call_accepted(SalOp *op){
-	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_root(h));
+	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneCall *call=lc->call;
 	if (call==NULL){
 		ms_warning("No call to accept.");
-		return 0;
+		return ;
 	}
 	if (sal_op_get_user_pointer(op)!=lc->call){
 		ms_warning("call_accepted: ignoring.");
 		return;
 	}
 	if (call->state==LCStateAVRunning){
-		return 0; /*already accepted*/
+		return ; /*already accepted*/
 	}
 	if (lc->audiostream->ticker!=NULL){
 		/*case where we accepted early media */
@@ -176,8 +176,8 @@ static void call_accepted(SalOp *op){
 	}
 }
 
-static void call_ack(SalOp *h){
-	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_root(h));
+static void call_ack(SalOp *op){
+	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneCall *call=lc->call;
 	if (call==NULL){
 		ms_warning("No call to be ACK'd");
@@ -205,8 +205,9 @@ static void call_ack(SalOp *h){
 	}
 }
 
-static void call_updated(SalOp *){
-	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_root(h));
+static void call_updated(SalOp *op){
+	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
+	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
 	linphone_core_stop_media_streams(lc,call);
 	linphone_core_init_media_streams(lc,call);
 	if (call->resultdesc)
@@ -217,8 +218,8 @@ static void call_updated(SalOp *){
 	}
 }
 
-static void call_terminated(SalOp *h, const char *from){
-	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_root(h));
+static void call_terminated(SalOp *op, const char *from){
+	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	if (sal_op_get_user_pointer(op)!=lc->call){
 		ms_warning("call_terminated: ignoring.");
 		return;
@@ -236,7 +237,7 @@ static void call_terminated(SalOp *h, const char *from){
 		LinphoneAddress *addr=linphone_address_new(from);
 		char *tmp;
 		linphone_address_clean(addr);
-		tmp=linphone_address_as_string(from);
+		tmp=linphone_address_as_string(addr);
 		lc->vtable.bye_recv(lc,tmp);
 		ms_free(tmp);
 		linphone_address_destroy(addr);
@@ -246,16 +247,14 @@ static void call_terminated(SalOp *h, const char *from){
 }
 
 static void call_failure(SalOp *op, SalError error, SalReason sr, const char *details){
-	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_root(h));
-	const char *reason="";
+	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	char *msg486=_("User is busy.");
 	char *msg480=_("User is temporarily unavailable.");
 	/*char *retrymsg=_("%s. Retry after %i minute(s).");*/
 	char *msg600=_("User does not want to be disturbed.");
 	char *msg603=_("Call declined.");
-	char* tmpmsg=msg486;
-	int code;
 	LinphoneCall *call=lc->call;
+
 	if (sal_op_get_user_pointer(op)!=lc->call){
 		ms_warning("call_failure: ignoring.");
 		return;
@@ -263,10 +262,10 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 	if (lc->vtable.show) lc->vtable.show(lc);
 
 	if (error==SalErrorNoResponse){
-		if (lc->vtale.display_status)
+		if (lc->vtable.display_status)
 			lc->vtable.display_status(lc,_("No response."));
 	}else if (error==SalErrorProtocol){
-		if (lc->vtale.display_status)
+		if (lc->vtable.display_status)
 			lc->vtable.display_status(lc, details ? details : _("Error."));
 	}else if (error==SalErrorFailure){
 		switch(sr){
@@ -288,7 +287,7 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 			break;
 			case SalReasonNotFound:
 				if (lc->vtable.display_status)
-					lc->vtable.display_status(lc,msg404);
+					lc->vtable.display_status(lc,_("Not found"));
 			break;
 			case SalReasonDoNotDisturb:
 				if (lc->vtable.display_status)
@@ -307,7 +306,7 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 		ring_stop(lc->ringstream);
 		lc->ringstream=NULL;
 	}
-	linphone_core_stop_media_streams(lc);
+	linphone_core_stop_media_streams(lc,call);
 	if (call!=NULL) {
 		linphone_call_destroy(call);
 		gstate_new_state(lc, GSTATE_CALL_ERROR, NULL);
@@ -316,41 +315,94 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 }
 
 static void auth_requested(SalOp *h, const char *realm, const char *username){
-	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_root(h));
-	LinphoneAuthInfo *ai=linphone_core_find_auth_info(lc);
+	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(h));
+	LinphoneAuthInfo *ai=linphone_core_find_auth_info(lc,realm,username);
+	if (ai && (ai->works || ai->usecount<3)){
+		SalAuthInfo sai;
+		sai.username=ai->username;
+		sai.userid=ai->userid;
+		sai.realm=ai->realm;
+		sai.password=ai->passwd;
+		sal_op_authenticate(h,&sai);
+		ai->usecount++;
+	}else{
+		if (lc->vtable.auth_info_requested)
+			lc->vtable.auth_info_requested(lc,realm,username);
+	}
 }
 
 static void auth_success(SalOp *h, const char *realm, const char *username){
+	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(h));
+	LinphoneAuthInfo *ai=linphone_core_find_auth_info(lc,realm,username);
+	if (ai)
+		ai->works=TRUE;
 }
 
 static void register_success(SalOp *op, bool_t registered){
+	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
+	LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)sal_op_get_user_pointer(op);
+	char *msg;
+	gstate_new_state(lc, GSTATE_REG_OK, NULL);
+	if (cfg->registered) msg=ms_strdup_printf(_("Registration on %s successful."),sal_op_get_proxy(op));
+	else msg=ms_strdup_printf(_("Unregistration on %s done."),sal_op_get_proxy(op));
+	if (lc->vtable.display_status) 
+		lc->vtable.display_status(lc,msg);
+	ms_free(msg);
 }
 
 static void register_failure(SalOp *op, SalError error, SalReason reason, const char *details){
+	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
+	char *msg=ortp_strdup_printf(_("Registration on %s failed: %s"),sal_op_get_proxy(op),(details!=NULL) ? details : _("no response timeout"));
+	if (lc->vtable.display_status) lc->vtable.display_status(lc,msg);
+	gstate_new_state(lc, GSTATE_REG_FAILED, msg);
+	ms_free(msg);
 }
 
 static void vfu_request(SalOp *op){
+	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
+#ifdef VIDEO_ENABLED
+	if (lc->videostream)
+		video_stream_send_vfu(lc->videostream);
+#endif
 }
 
 static void dtmf_received(SalOp *op, char dtmf){
+	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
+	if (lc->vtable.dtmf_received != NULL)
+		lc->vtable.dtmf_received(lc, dtmf);
 }
 
-static void refer_received(SalOp *op, SalOp *op, const char *referto){
+static void refer_received(Sal *sal, SalOp *op, const char *referto){
+	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal);
+	if (lc->vtable.refer_received)
+		lc->vtable.refer_received(lc,referto);
 }
 
 static void text_received(Sal *sal, const char *from, const char *msg){
+	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal);
+	linphone_core_text_received(lc,from,msg);
 }
 
-static void presence_changed(SalOp *op, SalPresenceStatus status, const char *msg){
+static void notify(SalOp *op, SalSubscribeState ss, SalPresenceStatus status, const char *msg){
+	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
+	linphone_notify_recv(lc,op,ss,status);
 }
 
 static void subscribe_received(SalOp *op, const char *from){
+	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
+	linphone_subscription_new(lc,op,from);
 }
 
-static void internal_message(SalOp *op, const char *msg){
+static void subscribe_closed(SalOp *op, const char *from){
+	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
+	linphone_subscription_closed(lc,op);
 }
 
-
+static void internal_message(Sal *sal, const char *msg){
+	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal);
+	if (lc->vtable.show)
+		lc->vtable.show(lc);
+}
 
 SalCallbacks linphone_sal_callbacks={
 	call_received,
@@ -368,8 +420,9 @@ SalCallbacks linphone_sal_callbacks={
 	dtmf_received,
 	refer_received,
 	text_received,
-	presence_changed,
+	notify,
 	subscribe_received,
+	subscribe_closed,
 	internal_message
 };
 

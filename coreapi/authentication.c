@@ -51,7 +51,6 @@ LinphoneAuthInfo *linphone_auth_info_new(const char *username, const char *useri
 	if (ha1!=NULL && (strlen(ha1)>0)) obj->ha1=ms_strdup(ha1);
 	if (realm!=NULL && (strlen(realm)>0)) obj->realm=ms_strdup(realm);
 	obj->works=FALSE;
-	obj->first_time=TRUE;
 	return obj;
 }
 
@@ -252,7 +251,6 @@ void linphone_core_add_auth_info(LinphoneCore *lc, LinphoneAuthInfo *info)
 	}
 	refresh_exosip_auth_info(lc);
 	/* if the user was prompted, re-allow automatic_action */
-	if (lc->automatic_action>0) lc->automatic_action--;
 }
 
 

@@ -99,7 +99,10 @@ int linphone_proxy_config_send_publish(LinphoneProxyConfig *cfg, LinphoneOnlineS
 
 int linphone_online_status_to_eXosip(LinphoneOnlineStatus os);
 
-void linphone_friend_notify(LinphoneFriend *lf, int ss, LinphoneOnlineStatus os);
+void linphone_friend_notify(LinphoneFriend *lf, LinphoneOnlineStatus os);
+LinphoneFriend *linphone_find_friend_by_inc_subscribe(MSList *l, SalOp *op);
+LinphoneFriend *linphone_find_friend_by_out_subscribe(MSList *l, SalOp *op);
+
 
 int set_lock_file();
 int get_lock_file();
@@ -107,7 +110,7 @@ int remove_lock_file();
 int do_registration(LinphoneCore *lc, bool_t doit);
 void check_for_registration(LinphoneCore *lc);
 void check_sound_device(LinphoneCore *lc);
-void linphone_core_setup_local_rtp_profile(LinphoneCore *lc);
+void linphone_core_verify_codecs(LinphoneCore *lc);
 void linphone_core_get_local_ip(LinphoneCore *lc, const char *to, char *result);
 bool_t host_has_ipv6_network();
 bool_t lp_spawn_command_line_sync(const char *command, char **result,int *command_ret);
@@ -135,10 +138,11 @@ static inline void set_string(char **dest, const char *src){
 
 #define PAYLOAD_TYPE_ENABLED	PAYLOAD_TYPE_USER_FLAG_0
 
+SalPresenceStatus linphone_online_status_to_sal(LinphoneOnlineStatus os);
 void linphone_process_authentication(LinphoneCore* lc, SalOp *op);
 void linphone_authentication_ok(LinphoneCore *lc, SalOp *op);
-void linphone_subscription_new(LinphoneCore *lc, SalOp *op);
-void linphone_notify_recv(LinphoneCore *lc, SalOp *op);
+void linphone_subscription_new(LinphoneCore *lc, SalOp *op, const char *from);
+void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeState ss, SalPresenceStatus status);
 void linphone_proxy_config_process_authentication_failure(LinphoneCore *lc, SalOp *op);
 
 void linphone_subscription_answered(LinphoneCore *lc, SalOp *op);
@@ -164,7 +168,8 @@ void linphone_proxy_config_write_to_config_file(struct _LpConfig* config,Linphon
 
 int linphone_proxy_config_normalize_number(LinphoneProxyConfig *cfg, const char *username, char *result, size_t result_len);
 
-/*internal use only */
+void linphone_core_text_received(LinphoneCore *lc, const char *from, const char *msg);
+
 void linphone_core_start_media_streams(LinphoneCore *lc, struct _LinphoneCall *call);
 void linphone_core_stop_media_streams(LinphoneCore *lc, struct _LinphoneCall *call);
 const char * linphone_core_get_identity(LinphoneCore *lc);
@@ -206,8 +211,8 @@ struct _LinphoneAuthInfo
 	char *userid;
 	char *passwd;
 	char *ha1;
+	int usecount;
 	bool_t works;
-	bool_t first_time;
 };
 
 struct _LinphoneChatRoom{
@@ -224,7 +229,6 @@ struct _LinphoneFriend{
 	SalOp *outsub;
 	LinphoneSubscribePolicy pol;
 	LinphoneOnlineStatus status;
-	struct _LinphoneProxyConfig *proxy;
 	struct _LinphoneCore *lc;
 	BuddyInfo *info;
 	char *refkey;
@@ -356,7 +360,6 @@ struct _LinphoneCore
 	struct _VideoStream *videostream;
 	struct _VideoStream *previewstream;
 	RtpTransport *a_rtp,*a_rtcp;
-	struct _RtpProfile *local_profile;
 	MSList *bl_reqs;
 	MSList *subscribers;	/* unknown subscribers */
 	int minutes_away;

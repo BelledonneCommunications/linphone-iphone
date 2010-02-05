@@ -99,6 +99,10 @@ void sal_op_set_user_pointer(SalOp *op, void *up){
 	((SalOpBase*)op)->user_pointer=up;
 }
 
+Sal *sal_op_get_sal(const SalOp *op){
+	return ((SalOpBase*)op)->root;
+}
+
 const char *sal_op_get_from(const SalOp *op){
 	return ((SalOpBase*)op)->from;
 }
@@ -117,6 +121,10 @@ const char *sal_op_get_route(const SalOp *op){
 
 void *sal_op_get_user_pointer(const SalOp *op){
 	return ((SalOpBase*)op)->user_pointer;
+}
+
+const char *sal_op_get_proxy(const SalOp *op){
+	return ((SalOpBase*)op)->route;
 }
 
 void __sal_op_init(SalOp *b, Sal *sal){

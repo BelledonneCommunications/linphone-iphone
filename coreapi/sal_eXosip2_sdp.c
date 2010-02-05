@@ -153,10 +153,29 @@ static void add_payload(sdp_message_t *msg, int line, const PayloadType *pt)
 
 
 static void add_line(sdp_message_t *msg, int lineno, const SalStreamDescription *desc){
-	const char *mt=desc->type==SAL_AUDIO ? "audio" : "video";
+	const char *mt=desc->type==SalAudio ? "audio" : "video";
 	const MSList *elem;
+	const char *addr;
+	int port;
+	if (desc->candidates[0].addr[0]!='\0'){
+		addr=desc->candidates[0].addr;
+		port=desc->candidates[0].port;
+	}else{
+		addr=desc->addr;
+		port=desc->port;
+	}
+	/*only add a c= line within the stream description if address are differents*/
+	if (strcmp(addr,sdp_message_c_addr_get(msg, -1, 0))!=0){
+		bool_t inet6;
+		if (strchr(addr,':')!=NULL){
+			inet6=TRUE;
+		}else inet6=FALSE;
+		sdp_message_c_connection_add (msg, lineno,
+			      osip_strdup ("IN"), inet6 ? osip_strdup ("IP6") : osip_strdup ("IP4"),
+			      osip_strdup (addr), NULL, NULL);
+	}
 	sdp_message_m_media_add (msg, osip_strdup (mt),
-				 int_2char (desc->port), NULL,
+				 int_2char (port), NULL,
 				 osip_strdup ("RTP/AVP"));
 	sdp_message_b_bandwidth_add (msg, lineno, osip_strdup ("AS"),
 				     int_2char(desc->bandwidth));
@@ -222,12 +241,12 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 		mtype = sdp_message_m_media_get(msg, i);
 		proto = sdp_message_m_proto_get (msg, i);
 		port = sdp_message_m_port_get(msg, i);
-		stream->proto=SAL_PROTO_UNKNOWN;
+		stream->proto=SalProtoUnknown;
 		if (proto){
 			if (strcasecmp(proto,"RTP/AVP")==0)
-				stream->proto=SAL_PROTO_RTP_AVP;
+				stream->proto=SalProtoRtpAvp;
 			else if (strcasecmp(proto,"RTP/SAVP")==0){
-				stream->proto=SAL_PROTO_RTP_SAVP;
+				stream->proto=SalProtoRtpSavp;
 			}
 		}
 		addr = sdp_message_c_addr_get (msg, i, 0);
@@ -235,10 +254,10 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 			strncpy(stream->addr,addr,sizeof(stream->addr));
 		stream->ptime=_sdp_message_get_a_ptime(msg,i);
 		if (strcasecmp("audio", mtype) == 0){
-			stream->type=SAL_AUDIO;
+			stream->type=SalAudio;
 		}else if (strcasecmp("video", mtype) == 0){
-			stream->type=SAL_VIDEO;
-		}else stream->type=SAL_OTHER;
+			stream->type=SalVideo;
+		}else stream->type=SalOther;
 		for(j=0;(sbw=sdp_message_bandwidth_get(msg,i,j))!=NULL;++j){
 			if (strcasecmp(sbw->b_bwtype,"AS")==0) stream->bandwidth=atoi(sbw->b_bandwidth);
 		}

@@ -650,28 +650,72 @@ static void rtp_config_read(LinphoneCore *lc)
 	linphone_core_set_nortp_timeout(lc,nortp_timeout);
 }
 
+static PayloadType * find_payload(RtpProfile *prof, const char *mime_type, int clock_rate, const char *recv_fmtp){
+	PayloadType *candidate=NULL;
+	int i;
+	PayloadType *it;
+	for(i=0;i<127;++i){
+		it=rtp_profile_get_payload(prof,i);
+		if (it!=NULL && strcasecmp(mime_type,it->mime_type)==0
+			&& (clock_rate==it->clock_rate || clock_rate<=0) ){
+			if ( (recv_fmtp && it->recv_fmtp && strcasecmp(recv_fmtp,it->recv_fmtp)==0) ||
+				(recv_fmtp==NULL && it->recv_fmtp==NULL) ){
+				/*exact match*/
+				return it;
+			}else candidate=it;
+		}
+	}
+	return candidate;
+}
 
-static PayloadType * get_codec(LpConfig *config, char* type,int index){
+static bool_t get_codec(LpConfig *config, char* type, int index, PayloadType **ret){
 	char codeckey[50];
 	const char *mime,*fmtp;
 	int rate,enabled;
 	PayloadType *pt;
 
+	*ret=NULL;
 	snprintf(codeckey,50,"%s_%i",type,index);
 	mime=lp_config_get_string(config,codeckey,"mime",NULL);
-	if (mime==NULL || strlen(mime)==0 ) return NULL;
-
-	pt=payload_type_new();
-	pt->mime_type=ms_strdup(mime);
+	if (mime==NULL || strlen(mime)==0 ) return FALSE;
 
 	rate=lp_config_get_int(config,codeckey,"rate",8000);
-	pt->clock_rate=rate;
 	fmtp=lp_config_get_string(config,codeckey,"recv_fmtp",NULL);
-	if (fmtp) pt->recv_fmtp=ms_strdup(fmtp);
 	enabled=lp_config_get_int(config,codeckey,"enabled",1);
-	if (enabled ) pt->flags|=PAYLOAD_TYPE_ENABLED;
+	pt=find_payload(&av_profile,mime,rate,fmtp);
+	if (pt && enabled ) pt->flags|=PAYLOAD_TYPE_ENABLED;
 	//ms_message("Found codec %s/%i",pt->mime_type,pt->clock_rate);
-	return pt;
+	if (pt==NULL) ms_warning("Ignoring codec config %s/%i with fmtp=%s because unsupported",
+	    		mime,rate,fmtp ? fmtp : "");
+	*ret=pt;
+	return TRUE;
+}
+
+static MSList *add_missing_codecs(SalStreamType mtype, MSList *l){
+	int i;
+	for(i=0;i<127;++i){
+		PayloadType *pt=rtp_profile_get_payload(&av_profile,i);
+		if (pt){
+			if (mtype==SalVideo && pt->type!=PAYLOAD_VIDEO)
+				pt=NULL;
+			else if (mtype==SalAudio && (pt->type!=PAYLOAD_AUDIO_PACKETIZED 
+			    && pt->type!=PAYLOAD_AUDIO_CONTINUOUS)){
+				pt=NULL;
+			}
+			if (pt && ms_filter_codec_supported(pt->mime_type)){
+				if (ms_list_find(l,pt)==NULL){
+					ms_message("Adding new codec %s/%i with fmtp %s",
+					    pt->mime_type,pt->clock_rate,pt->recv_fmtp ? pt->recv_fmtp : "");
+					if (strcasecmp(pt->mime_type,"speex")==0 ||
+					    strcasecmp(pt->mime_type,"MP4V-ES")==0 ||
+					    strcasecmp(pt->mime_type,"H264")==0)
+						l=ms_list_prepend(l,pt);
+					else l=ms_list_append(l,pt);
+				}
+			}
+		}
+	}
+	return l;
 }
 
 static void codecs_config_read(LinphoneCore *lc)
@@ -680,23 +724,28 @@ static void codecs_config_read(LinphoneCore *lc)
 	PayloadType *pt;
 	MSList *audio_codecs=NULL;
 	MSList *video_codecs=NULL;
-	for (i=0;;i++){
-		pt=get_codec(lc->config,"audio_codec",i);
-		if (pt==NULL) break;
-		audio_codecs=ms_list_append(audio_codecs,(void *)pt);
+	for (i=0;get_codec(lc->config,"audio_codec",i,&pt);i++){
+		if (pt){
+			if (!ms_filter_codec_supported(pt->mime_type)){
+				ms_warning("Codec %s is not supported by mediastreamer2, removed.",pt->mime_type);
+			}else audio_codecs=ms_list_append(audio_codecs,pt);
+		}
 	}
-	for (i=0;;i++){
-		pt=get_codec(lc->config,"video_codec",i);
-		if (pt==NULL) break;
-		video_codecs=ms_list_append(video_codecs,(void *)pt);
+	audio_codecs=add_missing_codecs(SalAudio,audio_codecs);
+	for (i=0;get_codec(lc->config,"video_codec",i,&pt);i++){
+		if (pt){
+			if (!ms_filter_codec_supported(pt->mime_type)){
+				ms_warning("Codec %s is not supported by mediastreamer2, removed.",pt->mime_type);
+			}else video_codecs=ms_list_append(video_codecs,(void *)pt);
+		}
 	}
+	video_codecs=add_missing_codecs(SalVideo,video_codecs);
 	linphone_core_set_audio_codecs(lc,audio_codecs);
 	linphone_core_set_video_codecs(lc,video_codecs);
-	linphone_core_setup_local_rtp_profile(lc);
+	linphone_core_update_allocated_audio_bandwidth(lc);
 }
 
-static void video_config_read(LinphoneCore *lc)
-{
+static void video_config_read(LinphoneCore *lc){
 	int capture, display, self_view;
 	int enabled;
 	const char *str;
@@ -868,6 +917,9 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	gstate_new_state(lc, GSTATE_POWER_STARTUP, NULL);
 
 	ortp_init();
+	linphone_core_assign_payload_type(&payload_type_pcmu8000,0,NULL);
+	linphone_core_assign_payload_type(&payload_type_gsm,3,NULL);
+	linphone_core_assign_payload_type(&payload_type_pcma8000,8,NULL);
 	linphone_core_assign_payload_type(&payload_type_lpc1015,115,NULL);
 	linphone_core_assign_payload_type(&payload_type_speex_nb,110,"vbr=on");
 	linphone_core_assign_payload_type(&payload_type_speex_wb,111,"vbr=on");
@@ -1383,7 +1435,7 @@ static void proxy_update(LinphoneCore *lc, time_t curtime){
 }
 
 static void assign_buddy_info(LinphoneCore *lc, BuddyInfo *info){
-	LinphoneFriend *lf=linphone_core_get_friend_by_uri(lc,info->sip_uri);
+	LinphoneFriend *lf=linphone_core_get_friend_by_address(lc,info->sip_uri);
 	if (lf!=NULL){
 		lf->info=info;
 		ms_message("%s has a BuddyInfo assigned with image %p",info->sip_uri, info->image_data);
@@ -1647,7 +1699,7 @@ LinphoneProxyConfig * linphone_core_lookup_known_proxy(LinphoneCore *lc, const L
 static char *get_fixed_contact(LinphoneCore *lc, const char *localip, LinphoneProxyConfig *dest_proxy){
 	LinphoneAddress *ctt;
 
-	if (dest_proxy){
+	if (dest_proxy && dest_proxy->op){
 		const char *fixed_contact=sal_op_get_contact(dest_proxy->op);
 		if (fixed_contact) {
 			ms_message("Contact has been fixed using proxy to %s",fixed_contact);
@@ -3177,10 +3229,6 @@ void codecs_config_uninit(LinphoneCore *lc)
 		lp_config_set_int(lc->config,key,"enabled",linphone_core_payload_type_enabled(lc,pt));
 		lp_config_set_string(lc->config,key,"recv_fmtp",pt->recv_fmtp);
 		index++;
-	}
-	if (lc->local_profile){
-		rtp_profile_destroy(lc->local_profile);
-		lc->local_profile=NULL;
 	}
 }
 

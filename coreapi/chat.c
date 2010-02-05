@@ -24,7 +24,6 @@
  
  #include "linphonecore.h"
  #include "private.h"
- #include <eXosip2/eXosip.h>
  
  LinphoneChatRoom * linphone_core_create_chat_room(LinphoneCore *lc, const char *to){
 	LinphoneAddress *parsed_url=NULL;
@@ -52,11 +51,10 @@
  
 void linphone_chat_room_send_message(LinphoneChatRoom *cr, const char *msg){
 	const char *identity=linphone_core_get_identity(cr->lc);
-	osip_message_t *sip=NULL;
-	eXosip_message_build_request(&sip,"MESSAGE",cr->peer,identity,cr->route);
-	osip_message_set_content_type(sip,"text/plain");
-	osip_message_set_body(sip,msg,strlen(msg));
-	eXosip_message_send_request(sip);
+	SalOp *op=sal_op_new(cr->lc->sal);
+
+	sal_op_set_route(op,cr->route);
+	sal_text_send(op,identity,cr->peer,msg);
 }
 
 bool_t linphone_chat_room_matches(LinphoneChatRoom *cr, const LinphoneAddress *from){
@@ -69,40 +67,29 @@ void linphone_chat_room_text_received(LinphoneChatRoom *cr, LinphoneCore *lc, co
 	if (lc->vtable.text_received!=NULL) lc->vtable.text_received(lc, cr, from, msg);
 }
 
-void linphone_core_text_received(LinphoneCore *lc, eXosip_event_t *ev){
+void linphone_core_text_received(LinphoneCore *lc, const char *from, const char *msg){
 	MSList *elem;
-	const char *msg;
 	LinphoneChatRoom *cr=NULL;
-	char *from;
-	osip_from_t *from_url=ev->request->from;
-	osip_body_t *body=NULL;
-	LinphoneAddress *uri;
+	LinphoneAddress *addr;
+	char *cleanfrom;
 
-	osip_message_get_body(ev->request,0,&body);
-	if (body==NULL){
-		ms_error("Could not get text message from SIP body");
-		return;
-	}
-	msg=body->body;
-	osip_from_to_str(from_url,&from);
-	uri=linphone_address_new(from);
-	osip_free(from);
-	linphone_address_clean(uri);
+	addr=linphone_address_new(from);
+	linphone_address_clean(addr);
 	for(elem=lc->chatrooms;elem!=NULL;elem=ms_list_next(elem)){
 		cr=(LinphoneChatRoom*)elem->data;
-		if (linphone_chat_room_matches(cr,uri)){
+		if (linphone_chat_room_matches(cr,addr)){
 			break;
 		}
 		cr=NULL;
 	}
-	from=linphone_address_as_string(uri);
+	cleanfrom=linphone_address_as_string(addr);
 	if (cr==NULL){
 		/* create a new chat room */
-		cr=linphone_core_create_chat_room(lc,from);
+		cr=linphone_core_create_chat_room(lc,cleanfrom);
 	}
-	linphone_address_destroy(uri);
-	linphone_chat_room_text_received(cr,lc,from,msg);
-	ms_free(from);
+	linphone_address_destroy(addr);
+	linphone_chat_room_text_received(cr,lc,cleanfrom,msg);
+	ms_free(cleanfrom);
 }
 
 

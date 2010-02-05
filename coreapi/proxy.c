@@ -20,8 +20,6 @@ Copyright (C) 2000  Simon MORLAT (simon.morlat@linphone.org)
  
 #include "linphonecore.h"
 #include "sipsetup.h"
-#include <eXosip2/eXosip.h>
-#include <osipparser2/osip_message.h>
 #include "lpconfig.h"
 #include "private.h"
 
@@ -40,7 +38,6 @@ void linphone_proxy_config_write_all_to_config_file(LinphoneCore *lc){
 
 void linphone_proxy_config_init(LinphoneProxyConfig *obj){
 	memset(obj,0,sizeof(LinphoneProxyConfig));
-	obj->rid=-1;
 	obj->expires=3600;
 }
 
@@ -72,8 +69,8 @@ void linphone_proxy_config_destroy(LinphoneProxyConfig *obj){
 	if (obj->ssctx!=NULL) sip_setup_context_free(obj->ssctx);
 	if (obj->realm!=NULL) ms_free(obj->realm);
 	if (obj->type!=NULL) ms_free(obj->type);
-	if (obj->contact_addr!=NULL) ms_free(obj->contact_addr);
 	if (obj->dial_prefix!=NULL) ms_free(obj->dial_prefix);
+	if (obj->op) sal_op_release(obj->op);
 }
 
 /**
@@ -81,79 +78,6 @@ void linphone_proxy_config_destroy(LinphoneProxyConfig *obj){
 **/
 bool_t linphone_proxy_config_is_registered(const LinphoneProxyConfig *obj){
 	return obj->registered;
-}
-
-void linphone_proxy_config_get_contact(LinphoneProxyConfig *cfg, const char **ip, int *port){
-	if (cfg->registered){
-		*ip=cfg->contact_addr;
-		*port=cfg->contact_port;
-	}else{
-		*ip=NULL;
-		*port=0;
-	}
-}
-
-static void update_contact(LinphoneProxyConfig *cfg, const char *ip, const char *port){
-	if (cfg->contact_addr){
-		ms_free(cfg->contact_addr);
-	}
-	cfg->contact_addr=ms_strdup(ip);
-	if (port!=NULL)
-		cfg->contact_port=atoi(port);
-	else cfg->contact_port=5060;
-}
-
-bool_t linphone_proxy_config_register_again_with_updated_contact(LinphoneProxyConfig *obj, osip_message_t *orig_request, osip_message_t *last_answer){
-	osip_message_t *msg;
-	const char *rport,*received;
-	osip_via_t *via=NULL;
-	osip_generic_param_t *param=NULL;
-	osip_contact_t *ctt=NULL;
-	osip_message_get_via(last_answer,0,&via);
-	if (!via) return FALSE;
-	osip_via_param_get_byname(via,"rport",&param);
-	if (param) rport=param->gvalue;
-	else return FALSE;
-	param=NULL;
-	osip_via_param_get_byname(via,"received",&param);
-	if (param) received=param->gvalue;
-	else return FALSE;
-	osip_message_get_contact(orig_request,0,&ctt);
-	if (strcmp(ctt->url->host,received)==0){
-		/*ip address matches, check ports*/
-		const char *contact_port=ctt->url->port;
-		const char *via_rport=rport;
-		if (via_rport==NULL || strlen(via_rport)>0)
-			via_rport="5060";
-		if (contact_port==NULL || strlen(contact_port)>0)
-			contact_port="5060";
-		if (strcmp(contact_port,via_rport)==0){
-			ms_message("Register has up to date contact, doing nothing.");
-			return FALSE;
-		}else ms_message("ports do not match, need to update the register (%s <> %s)", contact_port,via_rport);
-	}
-	eXosip_lock();
-	msg=NULL;
-	eXosip_register_build_register(obj->rid,obj->expires,&msg);
-	if (msg==NULL){
-		eXosip_unlock();
-		ms_warning("Fail to create a contact updated register.");
-		return FALSE;
-	}
-	osip_message_get_contact(msg,0,&ctt);
-	if (ctt->url->host!=NULL){
-		osip_free(ctt->url->host);
-	}
-	ctt->url->host=osip_strdup(received);
-	if (ctt->url->port!=NULL){
-		osip_free(ctt->url->port);
-	}
-	ctt->url->port=osip_strdup(rport);
-	eXosip_register_send_register(obj->rid,msg);
-	eXosip_unlock();
-	update_contact(obj,received,rport);
-	ms_message("Resending new register with updated contact %s:%s",received,rport);
-	return TRUE;
 }
 
 /**
@@ -165,19 +89,18 @@ bool_t linphone_proxy_config_register_again_with_updated_contact(LinphoneProxyCo
  * - hostnames : sip:sip.example.net
 **/
 int linphone_proxy_config_set_server_addr(LinphoneProxyConfig *obj, const char *server_addr){
-	int err;
-	osip_from_t *url;
+	LinphoneAddress *addr;
 	if (obj->reg_proxy!=NULL) ms_free(obj->reg_proxy);
 	obj->reg_proxy=NULL;
 	if (server_addr!=NULL && strlen(server_addr)>0){
-		osip_from_init(&url);
-		err=osip_from_parse(url,server_addr);
-		if (err==0 && url->url->host!=NULL){
+		addr=linphone_address_new(server_addr);
+		if (addr){
 			obj->reg_proxy=ms_strdup(server_addr);
+			linphone_address_destroy(addr);
 		}else{
 			ms_warning("Could not parse %s",server_addr);
+			return -1;
 		}
-		osip_from_free(url);
 	}
 	return 0;
 }
@@ -191,30 +114,30 @@ int linphone_proxy_config_set_server_addr(LinphoneProxyConfig *obj, const char *
  * The REGISTER messages will have from and to set to this identity.
  *
 **/
-void linphone_proxy_config_set_identity(LinphoneProxyConfig *obj, const char *identity){
-	int err=0;
-	osip_from_t *url=NULL;
+int linphone_proxy_config_set_identity(LinphoneProxyConfig *obj, const char *identity){
+	LinphoneAddress *addr;
 	if (identity!=NULL && strlen(identity)>0){
-		osip_from_init(&url);
-		err=osip_from_parse(url,identity);
-		if (err<0 || url->url->host==NULL || url->url->username==NULL){
-			ms_warning("Could not parse %s",identity);
-			osip_from_free(url);
-			return;
+		addr=linphone_address_new(identity);
+		if (!addr || linphone_address_get_username(addr)==NULL){
+			ms_warning("Invalid sip identity: %s",identity);
+			if (addr)
+				linphone_address_destroy(addr);
+			return -1;
+		}else{
+			if (obj->reg_identity!=NULL) {
+				ms_free(obj->reg_identity);
+				obj->reg_identity=NULL;
+			}
+			obj->reg_identity=ms_strdup(identity);
+			if (obj->realm){
+				ms_free(obj->realm);
+			}
+			obj->realm=ms_strdup(linphone_address_get_domain(addr));
+			linphone_address_destroy(addr);
+			return 0;
 		}
-	} else err=-2;
-	if (obj->reg_identity!=NULL) {
-		ms_free(obj->reg_identity);
-		obj->reg_identity=NULL;
 	}
-	if (err==-2) obj->reg_identity=NULL;
-	else {
-		obj->reg_identity=ms_strdup(identity);
-		if (obj->realm)
-			ms_free(obj->realm);
-		obj->realm=ms_strdup(url->url->host);
-	}
-	if (url) osip_from_free(url);
+	return -1;
 }
 
 const char *linphone_proxy_config_get_domain(const LinphoneProxyConfig *cfg){
@@ -226,37 +149,14 @@ const char *linphone_proxy_config_get_domain(const LinphoneProxyConfig *cfg){
  * When a route is set, all outgoing calls will go to the route's destination if this proxy
  * is the default one (see linphone_core_set_default_proxy() ).
 **/
-void linphone_proxy_config_set_route(LinphoneProxyConfig *obj, const char *route)
+int linphone_proxy_config_set_route(LinphoneProxyConfig *obj, const char *route)
 {
-	int err;
-	osip_uri_param_t *lr_param=NULL;
-	osip_route_t *rt=NULL;
-	char *tmproute=NULL;
-	if (route!=NULL && strlen(route)>0){
-		osip_route_init(&rt);
-		err=osip_route_parse(rt,route);
-		if (err<0){
-			ms_warning("Could not parse %s",route);
-			osip_route_free(rt);
-			return ;
-		}
-		if (obj->reg_route!=NULL) {
-			ms_free(obj->reg_route);
-			obj->reg_route=NULL;
-		}
-			
-		/* check if the lr parameter is set , if not add it */
-		osip_uri_uparam_get_byname(rt->url, "lr", &lr_param);
-	  	if (lr_param==NULL){
-			osip_uri_uparam_add(rt->url,osip_strdup("lr"),NULL);
-			osip_route_to_str(rt,&tmproute);
-			obj->reg_route=ms_strdup(tmproute);
-			osip_free(tmproute);
-		}else obj->reg_route=ms_strdup(route);
-	}else{
-		if (obj->reg_route!=NULL) ms_free(obj->reg_route);
+	if (obj->reg_route!=NULL){
+		ms_free(obj->reg_route);
 		obj->reg_route=NULL;
 	}
+	obj->reg_route=ms_strdup(route);
+	return 0;
 }
 
 bool_t linphone_proxy_config_check(LinphoneCore *lc, LinphoneProxyConfig *obj){
@@ -304,15 +204,10 @@ void linphone_proxy_config_enable_publish(LinphoneProxyConfig *obj, bool_t val){
  * linphone_proxy_config_done() to commit the changes.
 **/
 void linphone_proxy_config_edit(LinphoneProxyConfig *obj){
-	obj->auth_failures=0;
 	if (obj->reg_sendregister){
 		/* unregister */
 		if (obj->registered) {
-			osip_message_t *msg;
-			eXosip_lock();
-			eXosip_register_build_register(obj->rid,0,&msg);
-			eXosip_register_send_register(obj->rid,msg);
-			eXosip_unlock();
+			sal_unregister(obj->op);
 			obj->registered=FALSE;
 		}
 	}
@@ -329,13 +224,10 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
 	if (obj->reg_identity!=NULL) id_str=obj->reg_identity;
 	else id_str=linphone_core_get_primary_contact(obj->lc);
 	if (obj->reg_sendregister){
-		char *ct=NULL;
-		osip_message_t *msg=NULL;
-		eXosip_lock();
-		obj->rid=eXosip_register_build_initial_register(id_str,obj->reg_proxy,NULL,obj->expires,&msg);
-		eXosip_register_send_register(obj->rid,msg);
-		eXosip_unlock();
-		if (ct!=NULL) osip_free(ct);
+		if (obj->op)
+			sal_op_release(obj->op);
+		obj->op=sal_op_new(obj->lc->sal);
+		sal_register(obj->op,obj->reg_proxy,obj->reg_identity,obj->expires);
 	}
 }
 
@@ -484,170 +376,13 @@ void linphone_proxy_config_set_realm(LinphoneProxyConfig *cfg, const char *realm
 }
 
 int linphone_proxy_config_send_publish(LinphoneProxyConfig *proxy,
-			       LinphoneOnlineStatus presence_mode)
-{
-  osip_message_t *pub;
-  int i;
-  const char *from=NULL;
-  char buf[5000];
-
-  if (proxy->publish==FALSE) return 0;
-	
-  if (proxy!=NULL) {
-    from=linphone_proxy_config_get_identity(proxy);
-  }
-  if (from==NULL) from=linphone_core_get_primary_contact(proxy->lc);
-
-  if (presence_mode==LINPHONE_STATUS_ONLINE)
-    {
-      snprintf(buf, 5000, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
-<presence xmlns=\"urn:ietf:params:xml:ns:pidf\"\n\
-          entity=\"%s\">\n\
-<tuple id=\"sg89ae\">\n\
-<status>\n\
-<basic>open</basic>\n\
-</status>\n\
-<contact priority=\"0.8\">%s</contact>\n\
-<note>online</note>\n\
-</tuple>\n\
-</presence>",
-	       from, from);
-    }
-  else if (presence_mode==LINPHONE_STATUS_BUSY
-	   ||presence_mode==LINPHONE_STATUS_NOT_DISTURB)
-    {
-      snprintf(buf, 5000, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
-<presence xmlns=\"urn:ietf:params:xml:ns:pidf\"\n\
-          xmlns:es=\"urn:ietf:params:xml:ns:pidf:status:rpid-status\"\n\
-          entity=\"%s\">\n\
-<tuple id=\"sg89ae\">\n\
-<status>\n\
-<basic>open</basic>\n\
-<es:activities>\n\
-  <es:activity>busy</es:activity>\n\
-</es:activities>\n\
-</status>\n\
-<contact priority=\"0.8\">%s</contact>\n\
-<note>busy</note>\n\
-</tuple>\n\
-</presence>",
-	      from, from);
-    }
-  else if (presence_mode==LINPHONE_STATUS_BERIGHTBACK)
-    {
-      snprintf(buf, 5000, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
-<presence xmlns=\"urn:ietf:params:xml:ns:pidf\"\n\
-          xmlns:es=\"urn:ietf:params:xml:ns:pidf:status:rpid-status\"\n\
-          entity=\"%s\">\n\
-<tuple id=\"sg89ae\">\n\
-<status>\n\
-<basic>open</basic>\n\
-<es:activities>\n\
-  <es:activity>in-transit</es:activity>\n\
-</es:activities>\n\
-</status>\n\
-<contact priority=\"0.8\">%s</contact>\n\
-<note>be right back</note>\n\
-</tuple>\n\
-</presence>",
-	      from,from);
-    }
-  else if (presence_mode==LINPHONE_STATUS_AWAY
-	   ||presence_mode==LINPHONE_STATUS_MOVED
-	   ||presence_mode==LINPHONE_STATUS_ALT_SERVICE)
-    {
-      snprintf(buf, 5000, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
-<presence xmlns=\"urn:ietf:params:xml:ns:pidf\"\n\
-          xmlns:es=\"urn:ietf:params:xml:ns:pidf:status:rpid-status\"\n\
-          entity=\"%s\">\n\
-<tuple id=\"sg89ae\">\n\
-<status>\n\
-<basic>open</basic>\n\
-<es:activities>\n\
-  <es:activity>away</es:activity>\n\
-</es:activities>\n\
-</status>\n\
-<contact priority=\"0.8\">%s</contact>\n\
-<note>away</note>\n\
-</tuple>\n\
-</presence>",
-	      from, from);
-    }
-  else if (presence_mode==LINPHONE_STATUS_ONTHEPHONE)
-    {
-      snprintf(buf, 5000, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
-<presence xmlns=\"urn:ietf:params:xml:ns:pidf\"\n\
-          xmlns:es=\"urn:ietf:params:xml:ns:pidf:status:rpid-status\"\n\
-          entity=\"%s\">\n\
-<tuple id=\"sg89ae\">\n\
-<status>\n\
-<basic>open</basic>\n\
-<es:activities>\n\
-  <es:activity>on-the-phone</es:activity>\n\
-</es:activities>\n\
-</status>\n\
-<contact priority=\"0.8\">%s</contact>\n\
-<note>on the phone</note>\n\
-</tuple>\n\
-</presence>",
-	      from, from);
-    }
-  else if (presence_mode==LINPHONE_STATUS_OUTTOLUNCH)
-    {
-      snprintf(buf, 5000, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
-<presence xmlns=\"urn:ietf:params:xml:ns:pidf\"\n\
-          xmlns:es=\"urn:ietf:params:xml:ns:pidf:status:rpid-status\"\n\
-          entity=\"%s\">\n\
-<tuple id=\"sg89ae\">\n\
-<status>\n\
-<basic>open</basic>\n\
-<es:activities>\n\
-  <es:activity>meal</es:activity>\n\
-</es:activities>\n\
-</status>\n\
-<contact priority=\"0.8\">%s</contact>\n\
-<note>out to lunch</note>\n\
-</tuple>\n\
-</presence>",
-	      from, from);
-    }
-  else if (presence_mode==LINPHONE_STATUS_OFFLINE)
-    {
-      /* */
-      snprintf(buf, 5000, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
-<presence xmlns=\"urn:ietf:params:xml:ns:pidf\"\n\
-xmlns:es=\"urn:ietf:params:xml:ns:pidf:status:rpid-status\"\n\
-entity=\"%s\">\n%s",
-	      from,
-"<tuple id=\"sg89ae\">\n\
-<status>\n\
-<basic>closed</basic>\n\
-<es:activities>\n\
-  <es:activity>permanent-absence</e:activity>\n\
-</es:activities>\n\
-</status>\n\
-</tuple>\n\
-\n</presence>\n");
-    }
-
-  i = eXosip_build_publish(&pub, (char *)from, (char *)from, NULL, "presence", "1800", "application/pidf+xml", buf);
-
-  if (i<0)
-    {
-      ms_message("Failed to build publish request.");
-      return -1;
-    }
-
-  eXosip_lock();
-  i = eXosip_publish(pub, from); /* should update the sip-if-match parameter
-				    from sip-etag  from last 200ok of PUBLISH */
-  eXosip_unlock();
-  if (i<0)
-    {
-      ms_message("Failed to send publish request.");
-      return -1;
-    }
-  return 0;
+			       LinphoneOnlineStatus presence_mode){
+	int err;
+	SalOp *op=sal_op_new(proxy->lc->sal);
+	err=sal_publish(op,linphone_proxy_config_get_identity(proxy),
+	    linphone_proxy_config_get_identity(proxy),linphone_online_status_to_sal(presence_mode));
+	sal_op_release(op);
+	return err;
 }
 
 
@@ -657,12 +392,14 @@ entity=\"%s\">\n%s",
 **/
 int linphone_core_add_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *cfg){
 	if (!linphone_proxy_config_check(lc,cfg)) return -1;
+	if (ms_list_find(lc->sip_conf.proxies,cfg)!=NULL){
+		ms_warning("ProxyConfig already entered, ignored.");
+		return 0;
+	}
 	lc->sip_conf.proxies=ms_list_append(lc->sip_conf.proxies,(void *)cfg);
 	linphone_proxy_config_apply(cfg,lc);
 	return 0;
 }
-
-extern void linphone_friend_check_for_removed_proxy(LinphoneFriend *lf, LinphoneProxyConfig *cfg);
 
 /**
  * Removes a proxy configuration.
@@ -671,7 +408,6 @@ extern void linphone_friend_check_for_removed_proxy(LinphoneFriend *lf, Linphone
  * on a deleted list. For that reason, a removed proxy does NOT need to be freed.
 **/
 void linphone_core_remove_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *cfg){
-	MSList *elem;
 	lc->sip_conf.proxies=ms_list_remove(lc->sip_conf.proxies,(void *)cfg);
 	/* add to the list of destroyed proxies, so that the possible unREGISTER request can succeed authentication */
 	lc->sip_conf.deleted_proxies=ms_list_append(lc->sip_conf.deleted_proxies,(void *)cfg);
@@ -680,11 +416,6 @@ void linphone_core_remove_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *cf
 	if (lc->default_proxy==cfg){
 		lc->default_proxy=NULL;
 	}
-	/* invalidate all references to this proxy in our friend list */
-	for (elem=lc->friends;elem!=NULL;elem=ms_list_next(elem)){
-		linphone_friend_check_for_removed_proxy((LinphoneFriend*)elem->data,cfg);
-	}
-	
 }
 /**
  * Erase all proxies from config.
@@ -735,69 +466,11 @@ int linphone_core_get_default_proxy(LinphoneCore *lc, LinphoneProxyConfig **conf
 	return pos;
 }
 
-static int rid_compare(const void *pcfg,const void *prid){
-	const LinphoneProxyConfig *cfg=(const LinphoneProxyConfig*)pcfg;
-	const int *rid=(const int*)prid;
-	ms_message("cfg= %s, cfg->rid=%i, rid=%i",cfg->reg_proxy, cfg->rid, *rid);
-	return cfg->rid-(*rid);
-}
-
-LinphoneProxyConfig *linphone_core_get_proxy_config_from_rid(LinphoneCore *lc, int rid){
-	MSList *elem=ms_list_find_custom(lc->sip_conf.proxies,rid_compare, &rid);
-	if (elem==NULL){
-		ms_message("linphone_core_get_proxy_config_from_rid: searching in deleted proxies...");
-		elem=ms_list_find_custom(lc->sip_conf.deleted_proxies,rid_compare, &rid);
-	}
-	if (elem==NULL) return NULL;
-	else return (LinphoneProxyConfig*)elem->data;
-}
-
 /**
  * Returns an unmodifiable list of entered proxy configurations.
 **/
 const MSList *linphone_core_get_proxy_config_list(const LinphoneCore *lc){
 	return lc->sip_conf.proxies;
-}
-
-
-void linphone_proxy_config_process_authentication_failure(LinphoneCore *lc, int code, eXosip_event_t *ev){
-	if (code==403) {
-		LinphoneProxyConfig *cfg=linphone_core_get_proxy_config_from_rid(lc, ev->rid);
-		if (cfg){
-			cfg->auth_failures++;
-			/*restart a new register so that the user gets a chance to be prompted for a password*/
-			if (cfg->auth_failures==1){
-				linphone_proxy_config_register(cfg);
-			}
-		}
-	} else {
-		//unknown error (possibly timeout)
-		char *prx_realm=NULL,*www_realm=NULL;
-		osip_proxy_authenticate_t *prx_auth;
-		osip_www_authenticate_t *www_auth;
-		osip_message_t *req=ev->request;
-		char *username;
-		username=osip_uri_get_username(req->from->url);
-		prx_auth=(osip_proxy_authenticate_t*)osip_list_get(&req->proxy_authenticates,0);
-		www_auth=(osip_proxy_authenticate_t*)osip_list_get(&req->www_authenticates,0);
-		if (prx_auth!=NULL)
-			prx_realm=osip_proxy_authenticate_get_realm(prx_auth);
-		if (www_auth!=NULL)
-			www_realm=osip_www_authenticate_get_realm(www_auth);
-
-		if (prx_realm==NULL && www_realm==NULL){
-			ms_warning("No realm in the client request.");
-			return;
-		}
-		LinphoneAuthInfo *as=NULL;
-		/* see if we already have this auth information , not to ask it everytime to the user */
-		if (prx_realm!=NULL)
-			as=linphone_core_find_auth_info(lc,prx_realm,username);
-		if (www_realm!=NULL)
-			as=linphone_core_find_auth_info(lc,www_realm,username);
-
-		if (as) as->first_time=TRUE;
-	}
 }
 
 void linphone_proxy_config_write_to_config_file(LpConfig *config, LinphoneProxyConfig *obj, int index)
