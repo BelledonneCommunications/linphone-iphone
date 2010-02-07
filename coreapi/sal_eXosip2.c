@@ -465,11 +465,12 @@ void sal_op_authenticate(SalOp *h, const SalAuthInfo *info){
 		const char *userid;
 		if (info->userid==NULL || info->userid[0]=='\0') userid=info->username;
 		else userid=info->userid;
-		eXosip_lock();
 		eXosip_add_authentication_info (info->username,userid,
                                       info->password, NULL,info->realm);
+		eXosip_lock();
 		eXosip_default_action(h->pending_auth);
 		eXosip_unlock();
+		eXosip_clear_authentication_info();
 		eXosip_event_free(h->pending_auth);
 		h->pending_auth=NULL;
 	}
