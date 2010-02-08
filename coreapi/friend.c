@@ -140,8 +140,9 @@ void __linphone_friend_do_subscribe(LinphoneFriend *fr){
 	}else from=linphone_core_get_primary_contact(fr->lc);
 	if (fr->outsub==NULL){
 		/* people for which we don't have yet an answer should appear as offline */
+		fr->status=LINPHONE_STATUS_OFFLINE;
 		if (fr->lc->vtable.notify_recv)
-			fr->lc->vtable.notify_recv(fr->lc,(LinphoneFriend*)fr,friend,_("Gone"),"sip-closed.png");
+			fr->lc->vtable.notify_recv(fr->lc,(LinphoneFriend*)fr);
 	}else{
 		sal_op_release(fr->outsub);
 		fr->outsub=NULL;
@@ -167,6 +168,10 @@ LinphoneFriend *linphone_friend_new_with_addr(const char *addr){
 		return NULL;
 	}
 	return fr;
+}
+
+bool_t linphone_friend_in_list(const LinphoneFriend *lf){
+	return lf->lc!=NULL;
 }
 
 void linphone_core_interpret_friend_uri(LinphoneCore *lc, const char *uri, char **result){
@@ -304,7 +309,7 @@ void linphone_friend_destroy(LinphoneFriend *lf){
 	ms_free(lf);
 }
 
-const LinphoneAddress *linphone_friend_get_uri(const LinphoneFriend *lf){
+const LinphoneAddress *linphone_friend_get_address(const LinphoneFriend *lf){
 	return lf->uri;
 }
 

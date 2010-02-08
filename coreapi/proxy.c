@@ -385,6 +385,53 @@ int linphone_proxy_config_send_publish(LinphoneProxyConfig *proxy,
 	return err;
 }
 
+/**
+ * Returns the route set for this proxy configuration.
+**/
+const char *linphone_proxy_config_get_route(const LinphoneProxyConfig *obj){
+	return obj->reg_route;
+}
+
+/**
+ * Returns the SIP identity that belongs to this proxy configuration.
+ *
+ * The SIP identity is a SIP address (Display Name <sip:username@domain> )
+**/
+const char *linphone_proxy_config_get_identity(const LinphoneProxyConfig *obj){
+	return obj->reg_identity;
+}
+
+/**
+ * Returns TRUE if PUBLISH request is enabled for this proxy.
+**/
+bool_t linphone_proxy_config_publish_enabled(const LinphoneProxyConfig *obj){
+	return obj->publish;
+}
+
+/**
+ * Returns the proxy's SIP address.
+**/
+const char *linphone_proxy_config_get_addr(const LinphoneProxyConfig *obj){
+	return obj->reg_proxy;
+}
+
+/**
+ * Returns the duration of registration.
+**/
+int linphone_proxy_config_get_expires(const LinphoneProxyConfig *obj){
+	return obj->expires;
+}
+
+/**
+ * Returns TRUE if registration to the proxy is enabled.
+**/
+bool_t linphone_proxy_config_register_enabled(const LinphoneProxyConfig *obj){
+	return obj->reg_sendregister;
+}
+
+struct _LinphoneCore * linphone_proxy_config_get_core(const LinphoneProxyConfig *obj){
+	return obj->lc;
+}
 
 /**
  * Add a proxy configuration.

@@ -175,7 +175,7 @@ LinphoneOnlineStatus linphone_friend_get_status(const LinphoneFriend *lf);
 BuddyInfo * linphone_friend_get_info(const LinphoneFriend *lf);
 void linphone_friend_set_ref_key(LinphoneFriend *lf, const char *key);
 const char *linphone_friend_get_ref_key(const LinphoneFriend *lf);
-#define linphone_friend_in_list(lf)	((lf)->lc!=NULL)
+bool_t linphone_friend_in_list(const LinphoneFriend *lf);
 
 #define linphone_friend_url(lf) ((lf)->url)
 
@@ -218,18 +218,15 @@ void linphone_proxy_config_set_dial_prefix(LinphoneProxyConfig *cfg, const char 
 
 bool_t linphone_proxy_config_is_registered(const LinphoneProxyConfig *obj);
 const char *linphone_proxy_config_get_domain(const LinphoneProxyConfig *cfg);
-/** Returns the proxy configured identity as a const char * */
-#define linphone_proxy_config_get_route(obj)  ((obj)->reg_route)
-/** Returns the proxy configured identity as a const char * */
-#define linphone_proxy_config_get_identity(obj)	((obj)->reg_identity)
-#define linphone_proxy_config_publish_enabled(obj) ((obj)->publish)
-/** Returns the proxy sip address as const char * */
-#define linphone_proxy_config_get_addr(obj) ((obj)->reg_proxy)
-/** Returns the 'expire' time of the registration */
-#define linphone_proxy_config_get_expires(obj)	((obj)->expires)
-/** Returns TRUE if registration is enabled, FALSE otherwise */
-#define linphone_proxy_config_register_enabled(obj) ((obj)->reg_sendregister)
-#define linphone_proxy_config_get_core(obj) ((obj)->lc)
+
+const char *linphone_proxy_config_get_route(const LinphoneProxyConfig *obj);
+const char *linphone_proxy_config_get_identity(const LinphoneProxyConfig *obj);
+bool_t linphone_proxy_config_publish_enabled(const LinphoneProxyConfig *obj);
+const char *linphone_proxy_config_get_addr(const LinphoneProxyConfig *obj);
+int linphone_proxy_config_get_expires(const LinphoneProxyConfig *obj);
+bool_t linphone_proxy_config_register_enabled(const LinphoneProxyConfig *obj);
+struct _LinphoneCore * linphone_proxy_config_get_core(const LinphoneProxyConfig *obj);
+
 bool_t linphone_proxy_config_get_dial_escape_plus(const LinphoneProxyConfig *cfg);
 const char * linphone_proxy_config_get_dial_prefix(const LinphoneProxyConfig *cfg);
 
@@ -295,6 +292,11 @@ LinphoneAuthInfo *linphone_auth_info_new(const char *username, const char *useri
 void linphone_auth_info_set_passwd(LinphoneAuthInfo *info, const char *passwd);
 void linphone_auth_info_set_username(LinphoneAuthInfo *info, const char *username);
 void linphone_auth_info_set_userid(LinphoneAuthInfo *info, const char *userid);
+
+const char *linphone_auth_info_get_username(const LinphoneAuthInfo *i);
+const char *linphone_auth_info_get_passwd(const LinphoneAuthInfo *i);
+const char *linphone_auth_info_get_userid(const LinphoneAuthInfo *i);
+
 /* you don't need those function*/
 void linphone_auth_info_destroy(LinphoneAuthInfo *info);
 LinphoneAuthInfo * linphone_auth_info_new_from_config_file(struct _LpConfig *config, int pos);
@@ -371,7 +373,7 @@ typedef void (*DisplayQuestionCb)(struct _LinphoneCore *lc, const char *message)
 /** Callback prototype */
 typedef void (*LinphoneCoreCbFunc)(struct _LinphoneCore *lc,void * user_data);
 /** Callback prototype */
-typedef void (*NotifyReceivedCb)(struct _LinphoneCore *lc, LinphoneFriend * fid, const char *url, const char *status, const char *img);
+typedef void (*NotifyReceivedCb)(struct _LinphoneCore *lc, LinphoneFriend * fid);
 /** Callback prototype */
 typedef void (*NewUnknownSubscriberCb)(struct _LinphoneCore *lc, LinphoneFriend *lf, const char *url);
 /** Callback prototype */

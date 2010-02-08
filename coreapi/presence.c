@@ -88,8 +88,6 @@ void linphone_subscription_new(LinphoneCore *lc, SalOp *op, const char *from){
 }
 
 void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeState ss, SalPresenceStatus sal_status){
-	const char *status=_("Gone");
-	const char *img="sip-closed.png";
 	char *tmp;
 	LinphoneFriend *lf;
 	LinphoneAddress *friend=NULL;
@@ -97,49 +95,31 @@ void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeState ss, Sal
 	
 	switch(sal_status){
 		case SalPresenceOffline:
-			status=_("Gone");
-			img="sip-closed.png";
 			estatus=LINPHONE_STATUS_OFFLINE;
 		break;
 		case SalPresenceOnline:
-			status=_("Online");
-			img="sip-online.png";
 			estatus=LINPHONE_STATUS_ONLINE;
 		break;
 		case SalPresenceBusy:
-			status=_("Busy");
-			img="sip-busy.png";
 			estatus=LINPHONE_STATUS_BUSY;
 		break;
 		case SalPresenceBerightback:
-			status=_("Away");
-			img="sip-away.png";
 			estatus=LINPHONE_STATUS_AWAY;
 		break;
 		case SalPresenceAway:
-			status=_("Away");
-			img="sip-away.png";
 			estatus=LINPHONE_STATUS_AWAY;
 		break;
 		case SalPresenceOnthephone:
-			status=_("On The Phone");
-			img="sip-otp.png";
 			estatus=LINPHONE_STATUS_ONTHEPHONE;
 		break;
 		case SalPresenceOuttolunch:
-			status=_("Out To Lunch");
-			img="sip-otl.png";
 			estatus=LINPHONE_STATUS_OUTTOLUNCH;
 		break;
 		case SalPresenceDonotdisturb:
-			status=_("Busy");
-			img="sip-busy.png";
 			estatus=LINPHONE_STATUS_BUSY;
 		break;
 		case SalPresenceMoved:
 		case SalPresenceAltService:
-			status=_("Away");
-			img="sip-away.png";
 			estatus=LINPHONE_STATUS_AWAY;
 		break;
 	}
@@ -148,7 +128,7 @@ void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeState ss, Sal
 		friend=lf->uri;
 		tmp=linphone_address_as_string(friend);
 		lf->status=estatus;
-		lc->vtable.notify_recv(lc,(LinphoneFriend*)lf,tmp,status,img);
+		lc->vtable.notify_recv(lc,(LinphoneFriend*)lf);
 		ms_free(tmp);
 	}else{
 		ms_message("But this person is not part of our friend list, so we don't care.");

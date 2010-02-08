@@ -119,8 +119,7 @@ static void linphonec_display_something (LinphoneCore * lc, const char *somethin
 static void linphonec_display_url (LinphoneCore * lc, const char *something, const char *url);
 static void linphonec_display_warning (LinphoneCore * lc, const char *something);
 static void stub () {}
-static void linphonec_notify_received(LinphoneCore *lc,LinphoneFriend *fid,
-		const char *from, const char *status, const char *img);
+static void linphonec_notify_received(LinphoneCore *lc,LinphoneFriend *fid);
 static void linphonec_new_unknown_subscriber(LinphoneCore *lc,
 		LinphoneFriend *lf, const char *url);
 static void linphonec_bye_received(LinphoneCore *lc, const char *from);
@@ -283,10 +282,11 @@ linphonec_prompt_for_auth(LinphoneCore *lc, const char *realm, const char *usern
  * Linphone core callback
  */
 static void
-linphonec_notify_received(LinphoneCore *lc,LinphoneFriend *fid,
-		const char *from, const char *status, const char *img)
+linphonec_notify_received(LinphoneCore *lc,LinphoneFriend *fid)
 {
-	printf("Friend %s is %s\n", from, status);
+	char *tmp=linphone_address_as_string(linphone_friend_get_address(fid));
+	printf("Friend %s is %s\n", tmp, linphone_online_status_to_string(linphone_friend_get_status(fid)));
+	ms_free(tmp);
 	// todo: update Friend list state (unimplemented)
 }
 

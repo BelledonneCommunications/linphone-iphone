@@ -42,7 +42,7 @@ static GtkWidget *the_ui=NULL;
 static void linphone_gtk_show(LinphoneCore *lc);
 static void linphone_gtk_inv_recv(LinphoneCore *lc, const char *from);
 static void linphone_gtk_bye_recv(LinphoneCore *lc, const char *from);
-static void linphone_gtk_notify_recv(LinphoneCore *lc, LinphoneFriend * fid, const char *url, const char *status, const char *img);
+static void linphone_gtk_notify_recv(LinphoneCore *lc, LinphoneFriend * fid);
 static void linphone_gtk_new_unknown_subscriber(LinphoneCore *lc, LinphoneFriend *lf, const char *url);
 static void linphone_gtk_auth_info_requested(LinphoneCore *lc, const char *realm, const char *username);
 static void linphone_gtk_display_status(LinphoneCore *lc, const char *status);
@@ -711,7 +711,7 @@ static void linphone_gtk_bye_recv(LinphoneCore *lc, const char *from){
 	
 }
 
-static void linphone_gtk_notify_recv(LinphoneCore *lc, LinphoneFriend * fid, const char *url, const char *status, const char *img){
+static void linphone_gtk_notify_recv(LinphoneCore *lc, LinphoneFriend * fid){
 }
 
 static void linphone_gtk_new_subscriber_response(GtkWidget *dialog, guint response_id, LinphoneFriend *lf){

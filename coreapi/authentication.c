@@ -51,6 +51,24 @@ LinphoneAuthInfo *linphone_auth_info_new(const char *username, const char *useri
 }
 
 /**
+ * Returns username.
+**/
+const char *linphone_auth_info_get_username(const LinphoneAuthInfo *i){
+	return i->username;
+}
+
+/**
+ * Returns password.
+**/
+const char *linphone_auth_info_get_passwd(const LinphoneAuthInfo *i){
+	return i->passwd;
+}
+
+const char *linphone_auth_info_get_userid(const LinphoneAuthInfo *i){
+	return i->userid;
+}
+
+/**
  * Sets the password.
 **/
 void linphone_auth_info_set_passwd(LinphoneAuthInfo *info, const char *passwd){
