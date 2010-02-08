@@ -275,6 +275,7 @@ LinphoneCoreVTable linphonec_vtable = {
 		SCNetworkReachabilityFlags reachabilityFlags;
 		result=SCNetworkReachabilityGetFlags (proxyReachability,&reachabilityFlags);
 		SCNetworkReachabilityScheduleWithRunLoop(proxyReachability, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+		networkReachabilityCallBack(proxyReachability,reachabilityFlags,myLinphoneCore); 
 		
 	}
 	//Configure Codecs
