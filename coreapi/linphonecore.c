@@ -49,6 +49,8 @@ static void toggle_video_preview(LinphoneCore *lc, bool_t val);
 /* same for remote ring (ringback)*/
 #define REMOTE_RING "ringback.wav"
 
+extern SalCallbacks linphone_sal_callbacks;
+
 void lc_callback_obj_init(LCCallbackObj *obj,LinphoneCoreCbFunc func,void* ud)
 {
   obj->_func=func;
@@ -704,6 +706,7 @@ static MSList *add_missing_codecs(SalStreamType mtype, MSList *l){
 			}
 			if (pt && ms_filter_codec_supported(pt->mime_type)){
 				if (ms_list_find(l,pt)==NULL){
+					payload_type_set_flag(pt,PAYLOAD_TYPE_ENABLED);
 					ms_message("Adding new codec %s/%i with fmtp %s",
 					    pt->mime_type,pt->clock_rate,pt->recv_fmtp ? pt->recv_fmtp : "");
 					if (strcasecmp(pt->mime_type,"speex")==0 ||
@@ -957,13 +960,9 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	if (factory_config_path)
 		lp_config_read_file(lc->config,factory_config_path);
 
-#ifdef VINCENT_MAURY_RSVP
-	/* default qos parameters : rsvp on, rpc off */
-	lc->rsvp_enable = 1;
-	lc->rpc_enable = 0;
-#endif
 	lc->sal=sal_init();
 	sal_set_user_pointer(lc->sal,lc);
+	sal_set_callbacks(lc->sal,&linphone_sal_callbacks);
 	if (lp_config_get_int(lc->config,"sip","use_session_timers",0)==1){
 		sal_use_session_timers(lc->sal,200);
 	}
@@ -1046,9 +1045,8 @@ int linphone_core_set_primary_contact(LinphoneCore *lc, const char *contact)
 {
 	LinphoneAddress *ctt;
 
-	if ((ctt=linphone_address_new(contact))!=0) {
+	if ((ctt=linphone_address_new(contact))==0) {
 		ms_error("Bad contact url: %s",contact);
-		linphone_address_destroy(ctt);
 		return -1;
 	}
 	if (lc->sip_conf.contact!=NULL) ms_free(lc->sip_conf.contact);
@@ -1098,8 +1096,9 @@ const char *linphone_core_get_primary_contact(LinphoneCore *lc){
 			}
 			url=linphone_address_new(lc->sip_conf.contact);
 			if (!url){
+				ms_error("Could not parse identity contact !");
 				url=linphone_address_new("sip:unknown@unkwownhost");
-			}else ms_error("Could not parse identity contact !");
+			}
 			linphone_core_get_local_ip(lc, NULL, tmp);
 			if (strcmp(tmp,"127.0.0.1")==0 || strcmp(tmp,"::1")==0 ){
 				ms_warning("Local loopback network only !");

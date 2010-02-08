@@ -91,7 +91,7 @@ void sal_exosip_fix_route(SalOp *op){
 SalOp * sal_op_new(Sal *sal){
 	SalOp *op=ms_new(SalOp,1);
 	__sal_op_init(op,sal);
-	op->cid=op->did=op->tid=op->rid=op->nid=op->sid-1;
+	op->cid=op->did=op->tid=op->rid=op->nid=op->sid=-1;
 	op->supports_session_timers=FALSE;
 	op->sdp_offering=TRUE;
 	op->pending_auth=NULL;
@@ -674,10 +674,19 @@ int sal_op_get_auth_requested(SalOp *op, const char **realm, const char **userna
 	return -1;
 }
 
+static SalOp *find_op(Sal *sal, eXosip_event_t *ev){
+	if (ev->external_reference)
+		return (SalOp*)ev->external_reference;
+	if (ev->rid>0){
+		return sal_find_register(sal,ev->rid);
+	}
+	return NULL;
+}
+
 static bool_t process_authentication(Sal *sal, eXosip_event_t *ev){
 	SalOp *op;
 	const char *username,*realm;
-	op=(SalOp*)ev->external_reference;
+	op=find_op(sal,ev);
 	if (op==NULL){
 		ms_warning("No operation associated with this authentication !");
 		return TRUE;
@@ -696,7 +705,7 @@ static bool_t process_authentication(Sal *sal, eXosip_event_t *ev){
 static void authentication_ok(Sal *sal, eXosip_event_t *ev){
 	SalOp *op;
 	const char *username,*realm;
-	op=(SalOp*)ev->external_reference;
+	op=find_op(sal,ev);
 	if (op==NULL){
 		ms_warning("No operation associated with this authentication_ok!");
 		return ;
@@ -945,22 +954,14 @@ static void other_request(Sal *sal, eXosip_event_t *ev){
 	}
 }
 
-static void update_contact(SalOp *op, const char *received, const char *rport){
-	SalAddress *addr=sal_address_new(sal_op_get_contact(op));
-	char *tmp;
-	sal_address_set_domain(addr,received);
-	sal_address_set_port(addr,rport);
-	tmp=sal_address_as_string(addr);
-	sal_op_set_contact(op,tmp);
-	ms_free(tmp);
-}
-
 static bool_t register_again_with_updated_contact(SalOp *op, osip_message_t *orig_request, osip_message_t *last_answer){
 	osip_message_t *msg;
 	const char *rport,*received;
 	osip_via_t *via=NULL;
 	osip_generic_param_t *param=NULL;
 	osip_contact_t *ctt=NULL;
+	char *tmp;
+	
 	osip_message_get_via(last_answer,0,&via);
 	if (!via) return FALSE;
 	osip_via_param_get_byname(via,"rport",&param);
@@ -1003,8 +1004,10 @@ static bool_t register_again_with_updated_contact(SalOp *op, osip_message_t *ori
 	ctt->url->port=osip_strdup(rport);
 	eXosip_register_send_register(op->rid,msg);
 	eXosip_unlock();
-	update_contact(op,received,rport);
-	ms_message("Resending new register with updated contact %s:%s",received,rport);
+	osip_contact_to_str(ctt,&tmp);
+	sal_op_set_contact(op,tmp);
+	ms_message("Resending new register with updated contact %s",tmp);
+	ms_free(tmp);
 	return TRUE;
 }
 
@@ -1165,22 +1168,19 @@ static bool_t process_event(Sal *sal, eXosip_event_t *ev){
 
 int sal_iterate(Sal *sal){
 	eXosip_event_t *ev;
-	if (sal->running){
-		while((ev=eXosip_event_wait(0,0))!=NULL){
-			if (process_event(sal,ev))
-				eXosip_event_free(ev);
-		}
-		eXosip_lock();
-		eXosip_automatic_refresh();
-		eXosip_unlock();
+	while((ev=eXosip_event_wait(0,0))!=NULL){
+		if (process_event(sal,ev))
+			eXosip_event_free(ev);
 	}
+	eXosip_lock();
+	eXosip_automatic_refresh();
+	eXosip_unlock();
 	return 0;
 }
 
 int sal_register(SalOp *h, const char *proxy, const char *from, int expires){
 	osip_message_t *msg;
 	sal_op_set_route(h,proxy);
-	sal_exosip_fix_route(h);
 	if (h->rid==-1){
 		eXosip_lock();
 		h->rid=eXosip_register_build_initial_register(from,proxy,sal_op_get_contact(h),expires,&msg);
