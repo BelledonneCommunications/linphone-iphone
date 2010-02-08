@@ -43,10 +43,6 @@ struct _LinphoneCore;
 bool_t payload_type_enabled(struct _PayloadType *pt);
 void payload_type_set_enable(struct _PayloadType *pt,int value);
 const char *payload_type_get_description(struct _PayloadType *pt);
-int payload_type_get_bitrate(PayloadType *pt);
-const char *payload_type_get_mime(PayloadType *pt);
-int payload_type_get_rate(PayloadType *pt);
-
 
 struct _LpConfig;
 

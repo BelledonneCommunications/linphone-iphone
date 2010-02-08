@@ -185,18 +185,6 @@ bool_t payload_type_enabled(PayloadType *pt) {
 	return (((pt)->flags & PAYLOAD_TYPE_ENABLED)!=0);
 }
 
-int payload_type_get_bitrate(PayloadType *pt)
-{
-	return pt->normal_bitrate;
-}
-const char *payload_type_get_mime(PayloadType *pt){
-	return pt->mime_type;
-}
-
-int payload_type_get_rate(PayloadType *pt){
-	return pt->clock_rate;
-}
-
 /*this function makes a special case for speex/8000.
 This codec is variable bitrate. The 8kbit/s mode is interesting when having a low upload bandwidth, but its quality
 is not very good. We 'd better use its 15kbt/s mode when we have enough bandwidth*/
