@@ -177,7 +177,7 @@ static void add_line(sdp_message_t *msg, int lineno, const SalStreamDescription 
 	sdp_message_m_media_add (msg, osip_strdup (mt),
 				 int_2char (port), NULL,
 				 osip_strdup ("RTP/AVP"));
-	sdp_message_b_bandwidth_add (msg, lineno, osip_strdup ("AS"),
+	if (desc->bandwidth>0) sdp_message_b_bandwidth_add (msg, lineno, osip_strdup ("AS"),
 				     int_2char(desc->bandwidth));
 	for(elem=desc->payloads;elem!=NULL;elem=elem->next){
 		add_payload(msg, lineno, (PayloadType*)elem->data);
