@@ -4,6 +4,8 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
+	<key>UIRequiresPersistentWiFi</key>
+	<true/>
 	<key>CFBundleDisplayName</key>
 	<string>${PRODUCT_NAME}</string>
 	<key>CFBundleExecutable</key>
@@ -24,8 +26,6 @@
 	<string>1.0</string>
 	<key>CFBundleShortVersionString</key>
 	<string>3.1.2</string>
-	<key>LSRequiresIPhoneOS</key>
-	<true/>
 	<key>NSMainNibFile</key>
 	<string>PhoneMainView</string>
 </dict>

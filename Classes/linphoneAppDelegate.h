@@ -20,6 +20,7 @@
 
 #import <UIKit/UIKit.h>
 #import <AddressBookUI/ABPeoplePickerNavigationController.h>
+#import <SystemConfiguration/SCNetworkReachability.h>
 #include"linphonecore.h"
 
 
@@ -45,7 +46,9 @@
 	
 	bool isDebug;
 	LinphoneCore* myLinphoneCore;
-	
+	SCNetworkReachabilityContext proxyReachabilityContext;
+	SCNetworkReachabilityRef proxyReachability;
+
 	
 }
 /**********************************
@@ -63,6 +66,10 @@
 
 -(PayloadType*) findPayload:(NSString*)type withRate:(int)rate from:(const MSList*)list;
 
+/**
+ * return true if register is activated
+ */
+bool networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void * info);
 
 @property (nonatomic, retain) IBOutlet UIWindow *window;
 @property (nonatomic, retain) IBOutlet UITabBarController*  myTabBarController;

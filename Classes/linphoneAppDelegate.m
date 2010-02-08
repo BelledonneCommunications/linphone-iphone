@@ -151,6 +151,8 @@ LinphoneCoreVTable linphonec_vtable = {
 
 	[myPhoneViewController setLinphoneCore: myLinphoneCore];
 	
+	[ [UIDevice currentDevice] setProximityMonitoringEnabled:true];
+	
 	
 }
 -(void)selectDialerTab {
@@ -262,10 +264,18 @@ LinphoneCoreVTable linphonec_vtable = {
 		}
 		linphone_proxy_config_set_dial_escape_plus(proxyCfg,TRUE);
 		
-		linphone_proxy_config_enable_register(proxyCfg, TRUE);
 		linphone_core_add_proxy_config(myLinphoneCore,proxyCfg);
 		//set to default proxy
 		linphone_core_set_default_proxy(myLinphoneCore,proxyCfg);
+		
+		LinphoneAddress* addr=linphone_address_new(linphone_proxy_config_get_addr(proxyCfg));
+		proxyReachability=SCNetworkReachabilityCreateWithName(nil, linphone_address_get_domain(addr));
+		proxyReachabilityContext.info=myLinphoneCore;
+		bool result=SCNetworkReachabilitySetCallback(proxyReachability, networkReachabilityCallBack,&proxyReachabilityContext);
+		SCNetworkReachabilityFlags reachabilityFlags;
+		result=SCNetworkReachabilityGetFlags (proxyReachability,&reachabilityFlags);
+		SCNetworkReachabilityScheduleWithRunLoop(proxyReachability, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+		
 	}
 	//Configure Codecs
 	
@@ -314,6 +324,7 @@ LinphoneCoreVTable linphonec_vtable = {
 			payload_type_set_enable(pt,TRUE);
 		}
 	}
+	
 	
 	
 	// start scheduler
@@ -366,5 +377,21 @@ LinphoneCoreVTable linphonec_vtable = {
 	
 }
 
+bool networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void * info) {
+	LinphoneProxyConfig* proxyCfg;
+	linphone_core_get_default_proxy((LinphoneCore*)info,&proxyCfg);
+	linphone_proxy_config_edit(proxyCfg);
+	bool result = false;
+	if (flags) {
+		// register whatever connection type
+		linphone_proxy_config_enable_register(proxyCfg,TRUE);
+		result = true;
+	} else {
+		linphone_proxy_config_enable_register(proxyCfg,false);
+		result = false;
+	}
+	linphone_proxy_config_done(proxyCfg);
+	return result;
+}
 
 @end

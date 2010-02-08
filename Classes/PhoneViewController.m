@@ -226,6 +226,12 @@
 	return self;
 }
 */
+- (void)viewDidAppear:(BOOL)animated {
+	[[UIApplication sharedApplication] setIdleTimerDisabled:true];
+}
+- (void)viewDidDisappear:(BOOL)animated {
+	[[UIApplication sharedApplication] setIdleTimerDisabled:false];
+}
 
 
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
@@ -331,7 +337,8 @@
 		case GSTATE_CALL_IN_CONNECTED:
 		case GSTATE_CALL_OUT_CONNECTED: {
 			[self muteAction:false];
-			[self speakerAction:false];
+			// test if speaker must be unactivated after ring tone
+			if (!isSpeaker) [self speakerAction:false];
 			
 			const LinphoneAddress* callAddress = linphone_core_get_remote_uri(mCore);
 			const char* callDisplayName =  linphone_address_get_display_name(callAddress)?linphone_address_get_display_name(callAddress):"";
@@ -344,10 +351,10 @@
 			}
 			// start scheduler
 			durationRefreasher = [NSTimer scheduledTimerWithTimeInterval:1 
-																  target:self 
-																selector:@selector(updateCallDuration) 
-																userInfo:nil 
-																 repeats:YES];
+																	target:self 
+																	selector:@selector(updateCallDuration) 
+																	userInfo:nil 
+																	repeats:YES];
 			[address setHidden:true];
 			[incallView setHidden:false];
 			[call setEnabled:false];
