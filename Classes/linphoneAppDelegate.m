@@ -29,10 +29,18 @@
 #import "MoreViewController.h"
 #import "ConsoleViewController.h"
 #import "FirstLoginViewController.h"
+#import "codechecker.hh"
+
+
 
 
 extern void ms_au_register_card();
-extern void linphone_iphone_tunneling_init(const char* ip,unsigned int port,bool isDebug);
+extern void linphone_iphone_tunneling_init(const char* ip1
+										   ,const char* ip2
+										   ,unsigned int port
+										   ,bool isDebug
+										   ,void (*cb)(bool connected, void *data)
+										   ,void* userdata);
 extern void linphone_iphone_enable_tunneling(LinphoneCore* lc);
 extern void linphone_iphone_disable_tunneling(LinphoneCore* lc);
 extern int linphone_iphone_tunneling_isready();
@@ -225,6 +233,24 @@ LinphoneCoreVTable linphone_iphone_vtable = {
 	
 }
 
+-(void) kickOffNetworkConnection {
+	CFWriteStreamRef writeStream;
+	CFStreamCreatePairWithSocketToHost(NULL, (CFStringRef)@"208.109.100.191", 15000, nil, &writeStream);
+	Boolean status = CFWriteStreamOpen (writeStream);
+	const char* buff="yop";
+	int written = CFWriteStreamWrite (writeStream,(const UInt8*)buff,strlen(buff));
+	NSLog(@"activating network interface status [%i], [%i] byte sent",status,written);
+	CFWriteStreamClose (writeStream);
+	
+}
+- (void)applicationDidBecomeActive:(UIApplication *)application {
+	if (isStarted) {
+			NSLog(@"becomming active, make sure we are registered");
+		[self doRegister];
+	} else {
+		isStarted=true;
+	}
+}
 - (void)dealloc {
 	[window release];
 	[myPeoplePickerController release];
@@ -343,9 +369,14 @@ LinphoneCoreVTable linphone_iphone_vtable = {
 	NSString* axtelPin = [[NSUserDefaults standardUserDefaults] stringForKey:@"axtelpin_preference"];
 	
 	if (isTunnelConfigured) {
-		const char* tunnelIp=axtunnel_get_ip_from_key([username cStringUsingEncoding:[NSString defaultCStringEncoding]] 
-													  ,[axtelPin cStringUsingEncoding:[NSString defaultCStringEncoding]] );
-		if(!tunnelIp) {
+		char ip1[32];
+		char ip2[32];
+		 int status = axkeydec_get_ip_from_key([username cStringUsingEncoding:[NSString defaultCStringEncoding]]
+												, [axtelPin cStringUsingEncoding:[NSString defaultCStringEncoding]]
+												, ip1
+												, ip2
+												, sizeof(ip1));
+		if(status) {
 			UIAlertView* alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Alert",nil)
 															message:NSLocalizedString(@"Wrong axtel number or pin, disabling tunnel",nil) 
 														   delegate:nil 
@@ -356,7 +387,7 @@ LinphoneCoreVTable linphone_iphone_vtable = {
 			isTunnel=false;
 			
 		} else {
-			linphone_iphone_tunneling_init(tunnelIp,443,isDebug);
+			linphone_iphone_tunneling_init((const char*)ip1,(const char*)ip2,443,isDebug,tunnel_state_cb,self);
 			isTunnel=true;
 		}
 	}
@@ -420,7 +451,7 @@ LinphoneCoreVTable linphone_iphone_vtable = {
 		}
 		LinphoneAddress* addr=linphone_address_new(linphone_proxy_config_get_addr(proxyCfg));
 		proxyReachability=SCNetworkReachabilityCreateWithName(nil, linphone_address_get_domain(addr));
-		proxyReachabilityContext.info=myLinphoneCore;
+		proxyReachabilityContext.info=self;
 		bool result=SCNetworkReachabilitySetCallback(proxyReachability, networkReachabilityCallBack,&proxyReachabilityContext);
 		SCNetworkReachabilityFlags reachabilityFlags;
 		result=SCNetworkReachabilityGetFlags (proxyReachability,&reachabilityFlags);
@@ -434,7 +465,7 @@ LinphoneCoreVTable linphone_iphone_vtable = {
 		linphone_core_add_proxy_config(myLinphoneCore,proxyCfg);
 		//set to default proxy
 		linphone_core_set_default_proxy(myLinphoneCore,proxyCfg);
-		networkReachabilityCallBack(proxyReachability,reachabilityFlags,myLinphoneCore); 
+		networkReachabilityCallBack(proxyReachability,reachabilityFlags,self); 
 	}
 }
 
@@ -493,7 +524,11 @@ LinphoneCoreVTable linphone_iphone_vtable = {
 }
 bool networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void * info) {
 	LinphoneProxyConfig* proxyCfg;
-	linphone_core_get_default_proxy((LinphoneCore*)info,&proxyCfg);
+	id<LinphoneManagerDelegate> linphoneDelegate=info;
+	if (linphone_core_get_default_proxy([linphoneDelegate getLinphoneCore],&proxyCfg)) {
+		//glob, no default proxy
+		return false;
+	}
 	linphone_proxy_config_edit(proxyCfg);
 	bool result = false;
 #ifdef LINPHONE_WIFI_ONLY
@@ -505,6 +540,9 @@ bool networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		result = false;
 	}
 #else
+	if ((flags == 0) | (flags & (kSCNetworkReachabilityFlagsConnectionRequired |kSCNetworkReachabilityFlagsConnectionOnTraffic))) {
+		[linphoneDelegate kickOffNetworkConnection];
+	}
 	if (flags) {
 		// register whatever connection type
 		linphone_proxy_config_enable_register(proxyCfg,TRUE);
@@ -517,15 +555,29 @@ bool networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	linphone_proxy_config_done(proxyCfg);
 	return result;
 }
-
+void tunnel_state_cb(bool connected, void *data) {
+	id <LinphoneManagerDelegate> linphoneApp = (id <LinphoneManagerDelegate>)data;
+	if ([linphoneApp isTunnel] && connected) {
+		NSLog(@"Tunnel connected");
+		[linphoneApp doRegister];
+	} else if ([linphoneApp isTunnel] && !connected) {
+		NSLog(@"Tunnel connection failure detected");
+		LinphoneProxyConfig* proxyCfg;
+		linphone_core_get_default_proxy([linphoneApp getLinphoneCore],&proxyCfg);
+		linphone_proxy_config_edit(proxyCfg);
+		linphone_proxy_config_enable_register(proxyCfg,false);
+		linphone_proxy_config_done(proxyCfg);
+	}
+}
 -(bool) toggleTunnel {
 	if (isTunnelConfigured) {
-		if (isTunnel) {
-			[self disableTunnel];
-		} else {
-			[self enableTunnel];
-		}
 		isTunnel=!isTunnel;
+		if (isTunnel) {
+			[self enableTunnel];
+		} else {
+			[self disableTunnel];
+		}
+		
 	} else {
 		UIAlertView* alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Alert",nil)
 														message:NSLocalizedString(@"Auroc cannot be activated, go to the settings to configure",nil) 
@@ -540,7 +592,7 @@ bool networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 
 -(void) enableTunnel {
 	linphone_iphone_enable_tunneling(myLinphoneCore);
-	[self doRegister];
+	if (linphone_iphone_tunneling_isready()) [self doRegister];
 
 }
 -(void) disableTunnel {
@@ -551,7 +603,7 @@ bool networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 -(void) doRegister {
 	SCNetworkReachabilityFlags reachabilityFlags;
 	SCNetworkReachabilityGetFlags (proxyReachability,&reachabilityFlags);
-	networkReachabilityCallBack(proxyReachability,reachabilityFlags,myLinphoneCore); 
+	networkReachabilityCallBack(proxyReachability,reachabilityFlags,self); 
 }
 -(LinphoneCore*) getLinphoneCore {
 	return myLinphoneCore;

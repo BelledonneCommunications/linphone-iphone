@@ -111,6 +111,8 @@
 		224567C2107B968500F10948 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 224567C1107B968500F10948 /* AVFoundation.framework */; };
 		22527EF410DBB82C00E9915B /* FirstLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22527EF210DBB82C00E9915B /* FirstLoginViewController.m */; };
 		22527EF510DBB82C00E9915B /* FirstLoginViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22527EF310DBB82C00E9915B /* FirstLoginViewController.xib */; };
+		225BCDD61122F043009EE0C0 /* libaxkeydec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 225BCDD51122F043009EE0C0 /* libaxkeydec.a */; };
+		225BCDD71122F043009EE0C0 /* libaxkeydec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 225BCDD51122F043009EE0C0 /* libaxkeydec.a */; };
 		2273785E10A3703300526073 /* libmsiounit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2273785D10A3703300526073 /* libmsiounit.a */; };
 		2274401A106F31BD006EC466 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22744019106F31BD006EC466 /* CoreAudio.framework */; };
 		2274402F106F335E006EC466 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2274402E106F335E006EC466 /* AudioToolbox.framework */; };
@@ -324,20 +326,13 @@
 		22F255151073EEE600AC9B3F /* green.png in Resources */ = {isa = PBXBuildFile; fileRef = 22F255131073EEE600AC9B3F /* green.png */; };
 		22F255161073EEE600AC9B3F /* red.png in Resources */ = {isa = PBXBuildFile; fileRef = 22F255141073EEE600AC9B3F /* red.png */; };
 		22F51EF6107FA66500F98953 /* untitled.plist in Resources */ = {isa = PBXBuildFile; fileRef = 22F51EF5107FA66500F98953 /* untitled.plist */; };
-		22FAD379110E065100E2BA6A /* decodetable.cc in Sources */ = {isa = PBXBuildFile; fileRef = 22B44F8A10F4E519005A07E6 /* decodetable.cc */; };
-		22FAD37A110E065100E2BA6A /* codechecker.hh in Headers */ = {isa = PBXBuildFile; fileRef = 22B44F8C10F4E519005A07E6 /* codechecker.hh */; };
-		22FAD37B110E065100E2BA6A /* codechecker.cc in Sources */ = {isa = PBXBuildFile; fileRef = 22B44F8D10F4E519005A07E6 /* codechecker.cc */; };
-		22FAD37C110E065100E2BA6A /* bitlib.hh in Headers */ = {isa = PBXBuildFile; fileRef = 22B44F8E10F4E519005A07E6 /* bitlib.hh */; };
-		22FAD37D110E065100E2BA6A /* bitlib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 22B44F8F10F4E519005A07E6 /* bitlib.cc */; };
-		22FAD393110E06D800E2BA6A /* libkeydecoder.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22FAD370110E05FC00E2BA6A /* libkeydecoder.a */; };
-		22FAD394110E06E500E2BA6A /* libkeydecoder.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22FAD370110E05FC00E2BA6A /* libkeydecoder.a */; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D3623240D0F684500981E51 /* linphoneAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linphoneAppDelegate.h; sourceTree = "<group>"; };
-		1D3623250D0F684500981E51 /* linphoneAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = linphoneAppDelegate.m; sourceTree = "<group>"; };
+		1D3623250D0F684500981E51 /* linphoneAppDelegate.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = linphoneAppDelegate.m; sourceTree = "<group>"; };
 		1D6058910D05DD3D006BFB54 /* axphone.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = axphone.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		220646AA10D7B90300632606 /* tunnel.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = tunnel.cc; path = Classes/tunnel.cc; sourceTree = "<group>"; };
@@ -560,6 +555,8 @@
 		22527EF110DBB82C00E9915B /* FirstLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FirstLoginViewController.h; sourceTree = "<group>"; };
 		22527EF210DBB82C00E9915B /* FirstLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FirstLoginViewController.m; sourceTree = "<group>"; };
 		22527EF310DBB82C00E9915B /* FirstLoginViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FirstLoginViewController.xib; sourceTree = "<group>"; };
+		225BCDD51122F043009EE0C0 /* libaxkeydec.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libaxkeydec.a; path = "../liblinphone-sdk/armv6-apple-darwin/lib/libaxkeydec.a"; sourceTree = SOURCE_ROOT; };
+		225BCDE81122F094009EE0C0 /* codechecker.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = codechecker.hh; sourceTree = "<group>"; };
 		2273785D10A3703300526073 /* libmsiounit.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmsiounit.a; path = "../liblinphone-sdk/armv6-apple-darwin/lib/mediastreamer/plugins/libmsiounit.a"; sourceTree = SOURCE_ROOT; };
 		22744019106F31BD006EC466 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		2274402E106F335E006EC466 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
@@ -593,11 +590,6 @@
 		22B44E6610F4AB5A005A07E6 /* FavoriteEditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FavoriteEditViewController.h; sourceTree = "<group>"; };
 		22B44E6710F4AB5A005A07E6 /* FavoriteEditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FavoriteEditViewController.m; sourceTree = "<group>"; };
 		22B44E6B10F4AEE0005A07E6 /* FavoriteEditViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FavoriteEditViewController.xib; sourceTree = "<group>"; };
-		22B44F8A10F4E519005A07E6 /* decodetable.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = decodetable.cc; sourceTree = "<group>"; };
-		22B44F8C10F4E519005A07E6 /* codechecker.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = codechecker.hh; sourceTree = "<group>"; };
-		22B44F8D10F4E519005A07E6 /* codechecker.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = codechecker.cc; sourceTree = "<group>"; };
-		22B44F8E10F4E519005A07E6 /* bitlib.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = bitlib.hh; sourceTree = "<group>"; };
-		22B44F8F10F4E519005A07E6 /* bitlib.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = bitlib.cc; sourceTree = "<group>"; };
 		22B4506510F5D391005A07E6 /* about.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = about.jpg; sourceTree = "<group>"; };
 		22B4506910F5D66A005A07E6 /* boton_colgar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = boton_colgar.png; sourceTree = "<group>"; };
 		22B4506A10F5D66A005A07E6 /* corner_der.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = corner_der.png; sourceTree = "<group>"; };
@@ -636,7 +628,6 @@
 		22F255131073EEE600AC9B3F /* green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = green.png; path = ../linphone/pixmaps/green.png; sourceTree = SOURCE_ROOT; };
 		22F255141073EEE600AC9B3F /* red.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = red.png; path = ../linphone/pixmaps/red.png; sourceTree = SOURCE_ROOT; };
 		22F51EF5107FA66500F98953 /* untitled.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = untitled.plist; sourceTree = "<group>"; };
-		22FAD370110E05FC00E2BA6A /* libkeydecoder.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libkeydecoder.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* linphone_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linphone_Prefix.pch; sourceTree = "<group>"; };
@@ -670,7 +661,7 @@
 				220646F310D7C62600632606 /* libssl.a in Frameworks */,
 				220646F410D7C62600632606 /* libcrypto.a in Frameworks */,
 				229242BC10F2298C008A8A37 /* SystemConfiguration.framework in Frameworks */,
-				22FAD394110E06E500E2BA6A /* libkeydecoder.a in Frameworks */,
+				225BCDD71122F043009EE0C0 /* libaxkeydec.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -700,14 +691,7 @@
 				2292419110F2020E008A8A37 /* libssl.a in Frameworks */,
 				2292419210F2020E008A8A37 /* libcrypto.a in Frameworks */,
 				229242C010F229AD008A8A37 /* SystemConfiguration.framework in Frameworks */,
-				22FAD393110E06D800E2BA6A /* libkeydecoder.a in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		22FAD36E110E05FC00E2BA6A /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
+				225BCDD61122F043009EE0C0 /* libaxkeydec.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -717,11 +701,6 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				22B44F8A10F4E519005A07E6 /* decodetable.cc */,
-				22B44F8C10F4E519005A07E6 /* codechecker.hh */,
-				22B44F8D10F4E519005A07E6 /* codechecker.cc */,
-				22B44F8E10F4E519005A07E6 /* bitlib.hh */,
-				22B44F8F10F4E519005A07E6 /* bitlib.cc */,
 				1D3623240D0F684500981E51 /* linphoneAppDelegate.h */,
 				1D3623250D0F684500981E51 /* linphoneAppDelegate.m */,
 				22F2508B107141E100AC9B3F /* PhoneViewController.h */,
@@ -764,7 +743,6 @@
 			children = (
 				1D6058910D05DD3D006BFB54 /* axphone.app */,
 				2292419710F2020E008A8A37 /* axphone.app */,
-				22FAD370110E05FC00E2BA6A /* libkeydecoder.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -888,6 +866,7 @@
 		220FAC77107654FC0068D98F /* include */ = {
 			isa = PBXGroup;
 			children = (
+				225BCDE71122F094009EE0C0 /* axkeydec */,
 				228B040310DB95BD0061FE68 /* axtunnel */,
 				220FAC78107654FC0068D98F /* eXosip2 */,
 				220FAC82107654FC0068D98F /* gsm */,
@@ -1073,6 +1052,14 @@
 			path = speex;
 			sourceTree = "<group>";
 		};
+		225BCDE71122F094009EE0C0 /* axkeydec */ = {
+			isa = PBXGroup;
+			children = (
+				225BCDE81122F094009EE0C0 /* codechecker.hh */,
+			);
+			path = axkeydec;
+			sourceTree = "<group>";
+		};
 		228B040310DB95BD0061FE68 /* axtunnel */ = {
 			isa = PBXGroup;
 			children = (
@@ -1184,6 +1171,7 @@
 				220FACFD107657EC0068D98F /* libosipparser2.a */,
 				220FACFE107657EC0068D98F /* libspeex.a */,
 				220FACFF107657EC0068D98F /* libspeexdsp.a */,
+				225BCDD51122F043009EE0C0 /* libaxkeydec.a */,
 				220FAC77107654FC0068D98F /* include */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
@@ -1255,18 +1243,6 @@
 		};
 /* End PBXGroup section */
 
-/* Begin PBXHeadersBuildPhase section */
-		22FAD36C110E05FC00E2BA6A /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				22FAD37A110E065100E2BA6A /* codechecker.hh in Headers */,
-				22FAD37C110E065100E2BA6A /* bitlib.hh in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXHeadersBuildPhase section */
-
 /* Begin PBXNativeTarget section */
 		1D6058900D05DD3D006BFB54 /* axphone */ = {
 			isa = PBXNativeTarget;
@@ -1302,23 +1278,6 @@
 			productReference = 2292419710F2020E008A8A37 /* axphone.app */;
 			productType = "com.apple.product-type.application";
 		};
-		22FAD36F110E05FC00E2BA6A /* keydecoder */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 22FAD37F110E068F00E2BA6A /* Build configuration list for PBXNativeTarget "keydecoder" */;
-			buildPhases = (
-				22FAD36C110E05FC00E2BA6A /* Headers */,
-				22FAD36D110E05FC00E2BA6A /* Sources */,
-				22FAD36E110E05FC00E2BA6A /* Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = keydecoder;
-			productName = keydecoder;
-			productReference = 22FAD370110E05FC00E2BA6A /* libkeydecoder.a */;
-			productType = "com.apple.product-type.library.static";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -1342,7 +1301,6 @@
 			targets = (
 				1D6058900D05DD3D006BFB54 /* axphone */,
 				229240F810F2020E008A8A37 /* axphone-advanced */,
-				22FAD36F110E05FC00E2BA6A /* keydecoder */,
 			);
 		};
 /* End PBXProject section */
@@ -1653,16 +1611,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		22FAD36D110E05FC00E2BA6A /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				22FAD379110E065100E2BA6A /* decodetable.cc in Sources */,
-				22FAD37B110E065100E2BA6A /* codechecker.cc in Sources */,
-				22FAD37D110E065100E2BA6A /* bitlib.cc in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
@@ -1692,7 +1640,10 @@
 				"HEADER_SEARCH_PATHS[sdk=iphoneos*][arch=*]" = "\"$(SRCROOT)/../liblinphone-sdk/armv6-apple-darwin/include\"";
 				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*]" = "\"$(SRCROOT)/../liblinphone-sdk/i386-apple-darwin/include\"";
 				INFOPLIST_FILE = "linphone-Info.plist";
-				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../liblinphone-sdk/armv6-apple-darwin/lib\"",
+				);
 				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*][arch=*]" = "\"$(SRCROOT)/../liblinphone-sdk/armv6-apple-darwin/lib\"/**";
 				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*][arch=*]" = "\"$(SRCROOT)/../liblinphone-sdk/i386-apple-darwin/lib\"/**";
 				PRODUCT_NAME = axphone;
@@ -1712,7 +1663,10 @@
 				"HEADER_SEARCH_PATHS[sdk=iphoneos*][arch=*]" = "\"$(SRCROOT)/../liblinphone-sdk/armv6-apple-darwin/include\"";
 				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*]" = "\"$(SRCROOT)/../liblinphone-sdk/i386-apple-darwin/include\"";
 				INFOPLIST_FILE = "linphone-Info.plist";
-				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../liblinphone-sdk/armv6-apple-darwin/lib\"",
+				);
 				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*][arch=*]" = "\"$(SRCROOT)/../liblinphone-sdk/armv6-apple-darwin/lib\"/**";
 				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*][arch=*]" = "\"$(SRCROOT)/../liblinphone-sdk/i386-apple-darwin/lib\"/**";
 				PRODUCT_NAME = axphone;
@@ -1733,7 +1687,10 @@
 				"HEADER_SEARCH_PATHS[sdk=iphoneos*][arch=*]" = "\"$(SRCROOT)/../liblinphone-sdk/armv6-apple-darwin/include\"";
 				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*]" = "\"$(SRCROOT)/../liblinphone-sdk/i386-apple-darwin/include\"";
 				INFOPLIST_FILE = "linphone-advanced-Info.plist";
-				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../liblinphone-sdk/armv6-apple-darwin/lib\"",
+				);
 				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*][arch=*]" = "\"$(SRCROOT)/../liblinphone-sdk/armv6-apple-darwin/lib\"/**";
 				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*][arch=*]" = (
 					"\"$(SRCROOT)/../liblinphone-sdk/i386-apple-darwin/lib/mediastreamer2/plugins\"",
@@ -1761,7 +1718,10 @@
 				"HEADER_SEARCH_PATHS[sdk=iphoneos*][arch=*]" = "\"$(SRCROOT)/../liblinphone-sdk/armv6-apple-darwin/include\"";
 				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*]" = "\"$(SRCROOT)/../liblinphone-sdk/i386-apple-darwin/include\"";
 				INFOPLIST_FILE = "linphone-advanced-Info.plist";
-				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../liblinphone-sdk/armv6-apple-darwin/lib\"",
+				);
 				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*][arch=*]" = "\"$(SRCROOT)/../liblinphone-sdk/armv6-apple-darwin/lib\"/**";
 				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*][arch=*]" = (
 					"\"$(SRCROOT)/../liblinphone-sdk/i386-apple-darwin/lib/mediastreamer2/plugins\"",
@@ -1785,7 +1745,10 @@
 				"HEADER_SEARCH_PATHS[sdk=iphoneos*][arch=*]" = "\"$(SRCROOT)/../liblinphone-sdk/armv6-apple-darwin/include\"";
 				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*]" = "\"$(SRCROOT)/../liblinphone-sdk/i386-apple-darwin/include\"";
 				INFOPLIST_FILE = "linphone-advanced-Info.plist";
-				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../liblinphone-sdk/armv6-apple-darwin/lib\"",
+				);
 				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*][arch=*]" = "\"$(SRCROOT)/../liblinphone-sdk/armv6-apple-darwin/lib\"/**";
 				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*][arch=*]" = (
 					"\"$(SRCROOT)/../liblinphone-sdk/i386-apple-darwin/lib/mediastreamer2/plugins\"",
@@ -1830,7 +1793,10 @@
 				"HEADER_SEARCH_PATHS[sdk=iphoneos*][arch=*]" = "\"$(SRCROOT)/../liblinphone-sdk/armv6-apple-darwin/include\"";
 				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*]" = "\"$(SRCROOT)/../liblinphone-sdk/i386-apple-darwin/include\"";
 				INFOPLIST_FILE = "linphone-Info.plist";
-				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../liblinphone-sdk/armv6-apple-darwin/lib\"",
+				);
 				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*][arch=*]" = "\"$(SRCROOT)/../liblinphone-sdk/armv6-apple-darwin/lib\"/**";
 				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*][arch=*]" = "\"$(SRCROOT)/../liblinphone-sdk/i386-apple-darwin/lib\"/**";
 				PRODUCT_NAME = axphone;
@@ -1839,40 +1805,6 @@
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
 			};
 			name = Distribution;
-		};
-		22FAD371110E05FD00E2BA6A /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				PREBINDING = NO;
-				PRODUCT_NAME = keydecoder;
-			};
-			name = Debug;
-		};
-		22FAD372110E05FD00E2BA6A /* Distribution */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				PREBINDING = NO;
-				PRODUCT_NAME = keydecoder;
-			};
-			name = Distribution;
-		};
-		22FAD373110E05FD00E2BA6A /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				COPY_PHASE_STRIP = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				PREBINDING = NO;
-				PRODUCT_NAME = keydecoder;
-				ZERO_LINK = NO;
-			};
-			name = Release;
 		};
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -1922,16 +1854,6 @@
 				2292419410F2020E008A8A37 /* Debug */,
 				2292419510F2020E008A8A37 /* Distribution */,
 				2292419610F2020E008A8A37 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		22FAD37F110E068F00E2BA6A /* Build configuration list for PBXNativeTarget "keydecoder" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				22FAD371110E05FD00E2BA6A /* Debug */,
-				22FAD372110E05FD00E2BA6A /* Distribution */,
-				22FAD373110E05FD00E2BA6A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

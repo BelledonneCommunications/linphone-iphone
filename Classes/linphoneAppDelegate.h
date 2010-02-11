@@ -36,6 +36,8 @@
 -(bool) toggleTunnel;
 -(bool) isTunnel;
 -(void) resetConfig;
+-(void) doRegister;
+-(void) kickOffNetworkConnection;
 
 
 -(LinphoneCore*) getLinphoneCore; 
@@ -51,7 +53,8 @@
 @class FirstLoginViewController;
 
 @interface linphoneAppDelegate : NSObject <UIApplicationDelegate,LinphoneManagerDelegate,UIActionSheetDelegate> {
-    UIWindow *window;
+    
+	UIWindow *window;
 	IBOutlet UITabBarController*  myTabBarController;
 	IBOutlet ABPeoplePickerNavigationController* myPeoplePickerController;
 	IBOutlet PhoneViewController* myPhoneViewController;
@@ -64,12 +67,15 @@
 	bool isTunnelConfigured;
 	bool isTunnel;
 	bool isDebug;
+	bool isStarted;
 	LinphoneCore* myLinphoneCore;
 	SCNetworkReachabilityContext proxyReachabilityContext;
 	SCNetworkReachabilityRef proxyReachability;
 	
 	
 }
+
+void tunnel_state_cb(bool connected, void *data);
 /**********************************
  * liblinphone initialization method
  **********************************/
