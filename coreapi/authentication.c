@@ -55,6 +55,18 @@ LinphoneAuthInfo *linphone_auth_info_new(const char *username, const char *useri
 	return obj;
 }
 
+static LinphoneAuthInfo *linphone_auth_info_clone(const LinphoneAuthInfo *ai){
+	LinphoneAuthInfo *obj=ms_new0(LinphoneAuthInfo,1);
+	if (ai->username) obj->username=ms_strdup(ai->username);
+	if (ai->userid) obj->userid=ms_strdup(ai->userid);
+	if (ai->passwd) obj->passwd=ms_strdup(ai->passwd);
+	if (ai->ha1)	obj->ha1=ms_strdup(ai->ha1);
+	if (ai->realm)	obj->realm=ms_strdup(ai->realm);
+	obj->works=FALSE;
+	obj->first_time=TRUE;
+	return obj;
+}
+
 /**
  * Sets the password.
 **/
@@ -180,7 +192,7 @@ static int realm_match(const char *realm1, const char *realm2){
 /**
  * Retrieves a LinphoneAuthInfo previously entered into the LinphoneCore.
 **/
-LinphoneAuthInfo *linphone_core_find_auth_info(LinphoneCore *lc, const char *realm, const char *username)
+const LinphoneAuthInfo *linphone_core_find_auth_info(LinphoneCore *lc, const char *realm, const char *username)
 {
 	MSList *elem;
 	LinphoneAuthInfo *ret=NULL,*candidate=NULL;
@@ -232,24 +244,18 @@ static void refresh_exosip_auth_info(LinphoneCore *lc){
  * 
  * This information will be used during all SIP transacations that require authentication.
 **/
-void linphone_core_add_auth_info(LinphoneCore *lc, LinphoneAuthInfo *info)
+void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info)
 {
-	MSList *elem;
 	LinphoneAuthInfo *ai;
 	
 	/* find if we are attempting to modify an existing auth info */
-	ai=linphone_core_find_auth_info(lc,info->realm,info->username);
+	ai=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,info->realm,info->username);
 	if (ai!=NULL){
-		elem=ms_list_find(lc->auth_info,ai);
-		if (elem==NULL){
-			ms_error("AuthInfo list corruption ?");
-			return;
-		}
-		linphone_auth_info_destroy((LinphoneAuthInfo*)elem->data);
-		elem->data=(void *)info;
-	}else {
-		lc->auth_info=ms_list_append(lc->auth_info,(void *)info);
+		lc->auth_info=ms_list_remove(lc->auth_info,ai);
+		linphone_auth_info_destroy(ai);
 	}
+	lc->auth_info=ms_list_append(lc->auth_info,linphone_auth_info_clone(info));
+
 	refresh_exosip_auth_info(lc);
 	/* if the user was prompted, re-allow automatic_action */
 	if (lc->automatic_action>0) lc->automatic_action--;
@@ -267,23 +273,21 @@ void linphone_core_abort_authentication(LinphoneCore *lc,  LinphoneAuthInfo *inf
 /**
  * Removes an authentication information object.
 **/
-void linphone_core_remove_auth_info(LinphoneCore *lc, LinphoneAuthInfo *info){
-	int len=ms_list_size(lc->auth_info);
-	int newlen;
+void linphone_core_remove_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info){
 	int i;
 	MSList *elem;
-	lc->auth_info=ms_list_remove(lc->auth_info,info);
-	newlen=ms_list_size(lc->auth_info);
-	/*printf("len=%i newlen=%i\n",len,newlen);*/
-	linphone_auth_info_destroy(info);
-	for (i=0;i<len;i++){
+	LinphoneAuthInfo *r;
+	r=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,info->realm,info->username);
+	if (r){
+		lc->auth_info=ms_list_remove(lc->auth_info,r);
+		/*printf("len=%i newlen=%i\n",len,newlen);*/
+		linphone_auth_info_destroy(r);
+		for (elem=lc->auth_info,i=0;elem!=NULL;elem=ms_list_next(elem),i++){
+			linphone_auth_info_write_config(lc->config,(LinphoneAuthInfo*)elem->data,i);
+		}
 		linphone_auth_info_write_config(lc->config,NULL,i);
+		refresh_exosip_auth_info(lc);
 	}
-	for (elem=lc->auth_info,i=0;elem!=NULL;elem=ms_list_next(elem),i++){
-		linphone_auth_info_write_config(lc->config,(LinphoneAuthInfo*)elem->data,i);
-	}
-	refresh_exosip_auth_info(lc);
-	
 }
 
 /**
@@ -333,9 +337,9 @@ void linphone_authentication_ok(LinphoneCore *lc, eXosip_event_t *ev){
 	}
 	/* see if we already have this auth information , not to ask it everytime to the user */
 	if (prx_realm!=NULL)
-		as=linphone_core_find_auth_info(lc,prx_realm,username);
+		as=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,prx_realm,username);
 	if (www_realm!=NULL) 
-		as=linphone_core_find_auth_info(lc,www_realm,username);
+		as=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,www_realm,username);
 	if (as){
 		ms_message("Authentication for user=%s realm=%s is working.",username,prx_realm ? prx_realm : www_realm);
 		as->works=TRUE;
@@ -345,7 +349,7 @@ void linphone_authentication_ok(LinphoneCore *lc, eXosip_event_t *ev){
 
 void linphone_core_find_or_ask_for_auth_info(LinphoneCore *lc,const char *username,const char* realm, int tid)
 {
-	LinphoneAuthInfo *as=linphone_core_find_auth_info(lc,realm,username);
+	LinphoneAuthInfo *as=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,realm,username);
 	if ( as==NULL || (as!=NULL && as->works==FALSE && as->first_time==FALSE)){
 		if (lc->vtable.auth_info_requested!=NULL){
 			lc->vtable.auth_info_requested(lc,realm,username);

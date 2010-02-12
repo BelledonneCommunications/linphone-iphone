@@ -55,7 +55,7 @@ static gboolean do_login_noprompt(LinphoneProxyConfig *cfg){
 void linphone_gtk_show_login_frame(LinphoneProxyConfig *cfg){
 	GtkWidget *mw=linphone_gtk_get_main_window();
 	GtkWidget *label=linphone_gtk_get_widget(mw,"login_label");
-	LinphoneAuthInfo *ai;
+	const LinphoneAuthInfo *ai;
 	gchar *str;
 	LinphoneAddress *from;
 	LinphoneCore *lc=linphone_gtk_get_core();
