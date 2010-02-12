@@ -50,6 +50,18 @@ LinphoneAuthInfo *linphone_auth_info_new(const char *username, const char *useri
 	return obj;
 }
 
+static LinphoneAuthInfo *linphone_auth_info_clone(const LinphoneAuthInfo *ai){
+	LinphoneAuthInfo *obj=ms_new0(LinphoneAuthInfo,1);
+	if (ai->username) obj->username=ms_strdup(ai->username);
+	if (ai->userid) obj->userid=ms_strdup(ai->userid);
+	if (ai->passwd) obj->passwd=ms_strdup(ai->passwd);
+	if (ai->ha1)	obj->ha1=ms_strdup(ai->ha1);
+	if (ai->realm)	obj->realm=ms_strdup(ai->realm);
+	obj->works=FALSE;
+	obj->usecount=0;
+	return obj;
+}
+
 /**
  * Returns username.
 **/
@@ -193,7 +205,7 @@ static int realm_match(const char *realm1, const char *realm2){
 /**
  * Retrieves a LinphoneAuthInfo previously entered into the LinphoneCore.
 **/
-LinphoneAuthInfo *linphone_core_find_auth_info(LinphoneCore *lc, const char *realm, const char *username)
+const LinphoneAuthInfo *linphone_core_find_auth_info(LinphoneCore *lc, const char *realm, const char *username)
 {
 	MSList *elem;
 	LinphoneAuthInfo *ret=NULL,*candidate=NULL;
@@ -230,31 +242,25 @@ LinphoneAuthInfo *linphone_core_find_auth_info(LinphoneCore *lc, const char *rea
  * 
  * This information will be used during all SIP transacations that require authentication.
 **/
-void linphone_core_add_auth_info(LinphoneCore *lc, LinphoneAuthInfo *info)
+void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info)
 {
-	MSList *elem;
 	LinphoneAuthInfo *ai;
+	MSList *elem;
 	
 	/* find if we are attempting to modify an existing auth info */
-	ai=linphone_core_find_auth_info(lc,info->realm,info->username);
+	ai=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,info->realm,info->username);
 	if (ai!=NULL){
-		elem=ms_list_find(lc->auth_info,ai);
-		if (elem==NULL){
-			ms_error("AuthInfo list corruption ?");
-			return;
-		}
-		linphone_auth_info_destroy((LinphoneAuthInfo*)elem->data);
-		elem->data=(void *)info;
-	}else {
-		lc->auth_info=ms_list_append(lc->auth_info,(void *)info);
+		lc->auth_info=ms_list_remove(lc->auth_info,ai);
+		linphone_auth_info_destroy(ai);
 	}
+	lc->auth_info=ms_list_append(lc->auth_info,linphone_auth_info_clone(info));
 	/* retry pending authentication operations */
 	for(elem=sal_get_pending_auths(lc->sal);elem!=NULL;elem=elem->next){
 		const char *username,*realm;
 		SalOp *op=(SalOp*)elem->data;
 		LinphoneAuthInfo *ai;
 		sal_op_get_auth_requested(op,&realm,&username);
-		ai=linphone_core_find_auth_info(lc,realm,username);
+		ai=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,realm,username);
 		if (ai){
 			SalAuthInfo sai;
 			sai.username=ai->username;
@@ -278,20 +284,19 @@ void linphone_core_abort_authentication(LinphoneCore *lc,  LinphoneAuthInfo *inf
 /**
  * Removes an authentication information object.
 **/
-void linphone_core_remove_auth_info(LinphoneCore *lc, LinphoneAuthInfo *info){
-	int len=ms_list_size(lc->auth_info);
-	int newlen;
+void linphone_core_remove_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info){
 	int i;
 	MSList *elem;
-	lc->auth_info=ms_list_remove(lc->auth_info,info);
-	newlen=ms_list_size(lc->auth_info);
-	/*printf("len=%i newlen=%i\n",len,newlen);*/
-	linphone_auth_info_destroy(info);
-	for (i=0;i<len;i++){
+	LinphoneAuthInfo *r;
+	r=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,info->realm,info->username);
+	if (r){
+		lc->auth_info=ms_list_remove(lc->auth_info,r);
+		/*printf("len=%i newlen=%i\n",len,newlen);*/
+		linphone_auth_info_destroy(r);
+		for (elem=lc->auth_info,i=0;elem!=NULL;elem=ms_list_next(elem),i++){
+			linphone_auth_info_write_config(lc->config,(LinphoneAuthInfo*)elem->data,i);
+		}
 		linphone_auth_info_write_config(lc->config,NULL,i);
-	}
-	for (elem=lc->auth_info,i=0;elem!=NULL;elem=ms_list_next(elem),i++){
-		linphone_auth_info_write_config(lc->config,(LinphoneAuthInfo*)elem->data,i);
 	}
 }
 

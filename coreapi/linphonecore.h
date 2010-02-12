@@ -530,13 +530,13 @@ void linphone_core_set_default_proxy_index(LinphoneCore *lc, int index);
 
 int linphone_core_get_default_proxy(LinphoneCore *lc, LinphoneProxyConfig **config);
 
-void linphone_core_add_auth_info(LinphoneCore *lc, LinphoneAuthInfo *info);
+void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info);
 
-void linphone_core_remove_auth_info(LinphoneCore *lc, LinphoneAuthInfo *info);
+void linphone_core_remove_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info);
 
 const MSList *linphone_core_get_auth_info_list(const LinphoneCore *lc);
 
-LinphoneAuthInfo *linphone_core_find_auth_info(LinphoneCore *lc, const char *realm, const char *username);
+const LinphoneAuthInfo *linphone_core_find_auth_info(LinphoneCore *lc, const char *realm, const char *username);
 
 void linphone_core_abort_authentication(LinphoneCore *lc,  LinphoneAuthInfo *info);
 

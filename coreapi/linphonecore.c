@@ -3321,6 +3321,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	ui_config_uninit(lc);
 	if (lp_config_needs_commit(lc->config)) lp_config_sync(lc->config);
 	lp_config_destroy(lc->config);
+	lc->config = NULL; /* Mark the config as NULL to block further calls */
 	sip_setup_unregister_all();
 
 	linphone_core_free_payload_types();
