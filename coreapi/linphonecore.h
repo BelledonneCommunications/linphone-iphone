@@ -43,10 +43,6 @@ struct _LinphoneCore;
 bool_t payload_type_enabled(struct _PayloadType *pt);
 void payload_type_set_enable(struct _PayloadType *pt,int value);
 const char *payload_type_get_description(struct _PayloadType *pt);
-int payload_type_get_bitrate(PayloadType *pt);
-const char *payload_type_get_mime(PayloadType *pt);
-int payload_type_get_rate(PayloadType *pt);
-
 
 struct _LpConfig;
 
@@ -746,13 +742,13 @@ void linphone_core_set_default_proxy_index(LinphoneCore *lc, int index);
 
 int linphone_core_get_default_proxy(LinphoneCore *lc, LinphoneProxyConfig **config);
 
-void linphone_core_add_auth_info(LinphoneCore *lc, LinphoneAuthInfo *info);
+void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info);
 
-void linphone_core_remove_auth_info(LinphoneCore *lc, LinphoneAuthInfo *info);
+void linphone_core_remove_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info);
 
 const MSList *linphone_core_get_auth_info_list(const LinphoneCore *lc);
 
-LinphoneAuthInfo *linphone_core_find_auth_info(LinphoneCore *lc, const char *realm, const char *username);
+const LinphoneAuthInfo *linphone_core_find_auth_info(LinphoneCore *lc, const char *realm, const char *username);
 
 void linphone_core_abort_authentication(LinphoneCore *lc,  LinphoneAuthInfo *info);
 

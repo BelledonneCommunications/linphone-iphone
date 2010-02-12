@@ -792,9 +792,9 @@ void linphone_proxy_config_process_authentication_failure(LinphoneCore *lc, int 
 		LinphoneAuthInfo *as=NULL;
 		/* see if we already have this auth information , not to ask it everytime to the user */
 		if (prx_realm!=NULL)
-			as=linphone_core_find_auth_info(lc,prx_realm,username);
+			as=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,prx_realm,username);
 		if (www_realm!=NULL)
-			as=linphone_core_find_auth_info(lc,www_realm,username);
+			as=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,www_realm,username);
 
 		if (as) as->first_time=TRUE;
 	}
