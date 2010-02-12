@@ -213,12 +213,29 @@ static void linphone_gtk_log_file(OrtpLogLevel lev, const char *msg)
 	}
 }
 
+
+
+static gboolean delete_event_cb (GtkWidget *widget, GdkEvent *event, gpointer data)
+{
+	gtk_widget_hide (widget);
+	return TRUE;
+}
+
+void linphone_gtk_log_hide(){
+	if (log_window)
+		gtk_widget_hide(log_window);
+}
+
 void linphone_gtk_create_log_window(void){
 	GtkTextBuffer *b;
 	log_window=linphone_gtk_create_window("log");
 	b=gtk_text_view_get_buffer(GTK_TEXT_VIEW(linphone_gtk_get_widget(log_window,"textview")));
 	gtk_text_buffer_create_tag(b,"red","foreground","red",NULL);
 	gtk_text_buffer_create_tag(b,"orange","foreground","orange",NULL);
+	/*prevent the log window from being destroyed*/
+	g_signal_connect (G_OBJECT (log_window), "delete-event",
+		G_CALLBACK (delete_event_cb), NULL);
+
 }
 
 void linphone_gtk_destroy_log_window(void){
