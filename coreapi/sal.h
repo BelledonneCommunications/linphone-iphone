@@ -114,7 +114,7 @@ SalMediaDescription *sal_media_description_new();
 void sal_media_description_ref(SalMediaDescription *md);
 void sal_media_description_unref(SalMediaDescription *md);
 bool_t sal_media_description_empty(SalMediaDescription *md);
-SalStreamDescription *sal_media_description_find_stream(SalMediaDescription *md,
+const SalStreamDescription *sal_media_description_find_stream(const SalMediaDescription *md,
     SalMediaProto proto, SalStreamType type);
 
 /*this structure must be at the first byte of the SalOp structure defined by implementors*/

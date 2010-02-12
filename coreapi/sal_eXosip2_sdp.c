@@ -252,6 +252,9 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 		addr = sdp_message_c_addr_get (msg, i, 0);
 		if (addr != NULL)
 			strncpy(stream->addr,addr,sizeof(stream->addr));
+		if (port)
+			stream->port=atoi(port);
+		
 		stream->ptime=_sdp_message_get_a_ptime(msg,i);
 		if (strcasecmp("audio", mtype) == 0){
 			stream->type=SalAudio;
@@ -273,7 +276,11 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 			/* get the fmtp, if any */
 			fmtp=sdp_message_a_attr_value_get_with_pt(msg, i, ptn,"fmtp");
 			payload_type_set_send_fmtp(pt,fmtp);
+			stream->payloads=ms_list_append(stream->payloads,pt);
+			ms_message("Found payload %s/%i fmtp=%s",pt->mime_type,pt->clock_rate,
+			    pt->send_fmtp ? pt->send_fmtp : "");
 		}
 	}
+	desc->nstreams=i;
 	return 0;
 }

@@ -92,6 +92,7 @@ SalOp * sal_op_new(Sal *sal){
 	SalOp *op=ms_new(SalOp,1);
 	__sal_op_init(op,sal);
 	op->cid=op->did=op->tid=op->rid=op->nid=op->sid=-1;
+	op->result=NULL;
 	op->supports_session_timers=FALSE;
 	op->sdp_offering=TRUE;
 	op->pending_auth=NULL;
@@ -109,11 +110,14 @@ void sal_op_release(SalOp *op){
 		sal_remove_register(op->base.root,op->rid);
 	}
 	if (op->cid!=-1){
+		ms_message("Cleaning cid %i",op->cid);
 		eXosip_call_set_reference(op->cid,NULL);
 	}
 	if (op->pending_auth){
 		sal_remove_pending_auth(op->base.root,op);
 	}
+	if (op->result)
+		sal_media_description_unref(op->result);
 	__sal_op_free(op);
 }
 
@@ -280,6 +284,7 @@ static void set_sdp_from_desc(osip_message_t *sip, const SalMediaDescription *de
 }
 
 static void sdp_process(SalOp *h){
+	ms_message("Doing SDP offer/answer process");
 	if (h->result){
 		sal_media_description_unref(h->result);
 	}
@@ -323,8 +328,10 @@ int sal_call(SalOp *h, const char *from, const char *to){
 		ms_error("Could not create call.");
 		return -1;
 	}
-	if (h->base.contact)
+	if (h->base.contact){
+		osip_list_special_free(&invite->contacts,(void (*)(void*))osip_contact_free);
 		osip_message_set_contact(invite,h->base.contact);
+	}
 	if (h->base.root->session_expires!=0){
 		osip_message_set_header(invite, "Session-expires", "200");
 		osip_message_set_supported(invite, "timer");
@@ -472,6 +479,7 @@ void sal_op_authenticate(SalOp *h, const SalAuthInfo *info){
 		eXosip_unlock();
 		eXosip_clear_authentication_info();
 		eXosip_event_free(h->pending_auth);
+		sal_remove_pending_auth(sal_op_get_sal(h),h);
 		h->pending_auth=NULL;
 	}
 }
@@ -482,6 +490,7 @@ static void inc_new_call(Sal *sal, eXosip_event_t *ev){
 	char *tmp;
 	sdp_message_t *sdp=eXosip_get_sdp_info(ev->request);
 	if (sdp){
+		op->sdp_offering=FALSE;
 		op->base.remote_media=sal_media_description_new();
 		sdp_to_media_description(sdp,op->base.remote_media);
 		sdp_message_free(sdp);
@@ -635,12 +644,14 @@ static void call_terminated(Sal *sal, eXosip_event_t *ev){
 
 static void call_released(Sal *sal, eXosip_event_t *ev){
 	SalOp *op;
+	char *from;
 	op=(SalOp*)ev->external_reference;
 	if (op==NULL){
 		return;
 	}
-	eXosip_call_set_reference(ev->cid,NULL);
-	/*sal->callbacks.call_terminated(op);*/
+	op->cid=-1;
+	if (op->did==-1) 
+		sal->callbacks.call_failure(op,SalErrorNoResponse,SalReasonUnknown,NULL);
 }
 
 static int get_auth_data(eXosip_event_t *ev, const char **realm, const char **username){
@@ -1160,7 +1171,7 @@ static bool_t process_event(Sal *sal, eXosip_event_t *ev){
 			}
 			break;
 		default:
-			ms_message("Unhandled exosip event !");
+			ms_message("Unhandled exosip event ! %i");
 			break;
 	}
 	return TRUE;

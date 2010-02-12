@@ -77,6 +77,8 @@ static void call_received(SalOp *h){
 	lc->call=call;
 	sal_call_set_local_media_description(h,call->localdesc);
 	call->resultdesc=sal_call_get_final_media_description(h);
+	if (call->resultdesc)
+		sal_media_description_ref(call->resultdesc);
 	if (call->resultdesc && sal_media_description_empty(call->resultdesc)){
 		sal_call_decline(h,SalReasonMedia,NULL);
 		linphone_call_destroy(call);
@@ -101,7 +103,7 @@ static void call_received(SalOp *h){
 	}
 	linphone_call_set_state(call,LCStateRinging);
 	sal_call_notify_ringing(h);
-
+	linphone_core_init_media_streams(lc,lc->call);
 	if (lc->vtable.inv_recv) lc->vtable.inv_recv(lc,tmp);
 	ms_free(barmesg);
 	ms_free(tmp);
@@ -140,6 +142,7 @@ static void call_ringing(SalOp *h){
 		}
 		ms_message("Doing early media...");
 		linphone_core_start_media_streams(lc,call);
+		call->media_pending=TRUE;
 	}
 	call->state=LCStateRinging;
 }
@@ -166,6 +169,10 @@ static void call_accepted(SalOp *op){
 	if (call->resultdesc)
 		sal_media_description_unref(call->resultdesc);
 	call->resultdesc=sal_call_get_final_media_description(op);
+	if (call->resultdesc){
+		sal_media_description_ref(call->resultdesc);
+		call->media_pending=FALSE;
+	}
 	if (call->resultdesc && !sal_media_description_empty(call->resultdesc)){
 		gstate_new_state(lc, GSTATE_CALL_OUT_CONNECTED, NULL);
 		linphone_connect_incoming(lc,call);
@@ -187,21 +194,26 @@ static void call_ack(SalOp *op){
 		ms_warning("call_ack: ignoring.");
 		return;
 	}
-	if (lc->audiostream->ticker!=NULL){
-		/*case where we accepted early media */
-		linphone_core_stop_media_streams(lc,call);
-		linphone_core_init_media_streams(lc,call);
-	}
-	if (call->resultdesc)
-		sal_media_description_unref(call->resultdesc);
-	call->resultdesc=sal_call_get_final_media_description(op);
-	if (call->resultdesc && !sal_media_description_empty(call->resultdesc)){
-		gstate_new_state(lc, GSTATE_CALL_IN_CONNECTED, NULL);
-		linphone_connect_incoming(lc,call);
-	}else{
-		/*send a bye*/
-		ms_error("Incompatible SDP response received in ACK, need to abort the call");
-		linphone_core_terminate_call(lc,NULL);
+	if (call->media_pending){
+		if (lc->audiostream->ticker!=NULL){
+			/*case where we accepted early media */
+			linphone_core_stop_media_streams(lc,call);
+			linphone_core_init_media_streams(lc,call);
+		}
+		if (call->resultdesc)
+			sal_media_description_unref(call->resultdesc);
+		call->resultdesc=sal_call_get_final_media_description(op);
+		if (call->resultdesc)
+			sal_media_description_ref(call->resultdesc);
+		if (call->resultdesc && !sal_media_description_empty(call->resultdesc)){
+			gstate_new_state(lc, GSTATE_CALL_IN_CONNECTED, NULL);
+			linphone_connect_incoming(lc,call);
+		}else{
+			/*send a bye*/
+			ms_error("Incompatible SDP response received in ACK, need to abort the call");
+			linphone_core_terminate_call(lc,NULL);
+		}
+		call->media_pending=FALSE;
 	}
 }
 

@@ -71,11 +71,9 @@ static MSList *match_payloads(const MSList *local, const MSList *remote){
 }
 
 static bool_t only_telephone_event(const MSList *l){
-	for(;l!=NULL;l=l->next){
-		PayloadType *p=(PayloadType*)l->data;
-		if (strcasecmp(p->mime_type,"telephone-event")!=0){
-			return FALSE;
-		}
+	PayloadType *p=(PayloadType*)l->data;
+	if (strcasecmp(p->mime_type,"telephone-event")!=0){
+		return FALSE;
 	}
 	return TRUE;
 }
@@ -83,11 +81,15 @@ static bool_t only_telephone_event(const MSList *l){
 static void initiate_outgoing(const SalStreamDescription *local_offer,
     					const SalStreamDescription *remote_answer,
     					SalStreamDescription *result){
-	result->payloads=match_payloads(local_offer->payloads,remote_answer->payloads);
+	if (remote_answer->port!=0)
+		result->payloads=match_payloads(local_offer->payloads,remote_answer->payloads);
 	if (result->payloads && !only_telephone_event(result->payloads)){
+		strcpy(result->addr,remote_answer->addr);
 		result->port=remote_answer->port;
 		result->bandwidth=remote_answer->bandwidth;
 		result->ptime=remote_answer->ptime;
+		result->proto=local_offer->proto;
+		result->type=local_offer->type;
 	}else{
 		result->port=0;
 	}
@@ -99,9 +101,12 @@ static void initiate_incoming(const SalStreamDescription *local_cap,
     					SalStreamDescription *result){
 	result->payloads=match_payloads(local_cap->payloads,remote_offer->payloads);
 	if (result->payloads && !only_telephone_event(result->payloads)){
+		strcpy(result->addr,local_cap->addr);
 		result->port=local_cap->port;
 		result->bandwidth=local_cap->bandwidth;
 		result->ptime=local_cap->ptime;
+		result->proto=local_cap->proto;
+		result->type=local_cap->type;
 	}else{
 		result->port=0;
 	}
@@ -114,11 +119,19 @@ static void initiate_incoming(const SalStreamDescription *local_cap,
 int offer_answer_initiate_outgoing(const SalMediaDescription *local_offer,
 									const SalMediaDescription *remote_answer,
     							SalMediaDescription *result){
-    int i;
-    for(i=0;i<local_offer->nstreams;++i){
-    	initiate_outgoing(&local_offer->streams[i],&remote_answer->streams[i],&result->streams[i]);
+    int i,j;
+	const SalStreamDescription *ls,*rs;
+    for(i=0,j=0;i<local_offer->nstreams;++i){
+		ms_message("Processing for stream %i",i);
+		ls=&local_offer->streams[i];
+		rs=sal_media_description_find_stream(remote_answer,ls->proto,ls->type);
+    	if (rs) {
+			initiate_outgoing(ls,rs,&result->streams[j]);
+			++j;
+		}
+		else ms_warning("No matching stream for %i",i);
     }
-	result->nstreams=local_offer->nstreams;
+	result->nstreams=j;
 	strcpy(result->addr,remote_answer->addr);
 	return 0;
 }
@@ -131,11 +144,19 @@ int offer_answer_initiate_outgoing(const SalMediaDescription *local_offer,
 int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities,
 						const SalMediaDescription *remote_offer,
     					SalMediaDescription *result){
-    int i;
-    for(i=0;i<local_capabilities->nstreams;++i){
-    	initiate_incoming(&local_capabilities->streams[i],&remote_offer->streams[i],&result->streams[i]);
+    int i,j;
+	const SalStreamDescription *ls,*rs;
+							
+    for(i=0,j=0;i<remote_offer->nstreams;++i){
+		rs=&remote_offer->streams[i];
+		ms_message("Processing for stream %i",i);
+		ls=sal_media_description_find_stream(local_capabilities,rs->proto,rs->type);
+		if (ls){
+    		initiate_incoming(ls,rs,&result->streams[j]);
+			++j;
+		}
     }
-	result->nstreams=local_capabilities->nstreams;
+	result->nstreams=j;
 	strcpy(result->addr,local_capabilities->addr);
 	return 0;
 }

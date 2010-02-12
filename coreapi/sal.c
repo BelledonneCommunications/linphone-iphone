@@ -36,6 +36,7 @@ static void sal_media_description_destroy(SalMediaDescription *md){
 	for(i=0;i<SAL_MEDIA_DESCRIPTION_MAX_STREAMS;i++){
 		ms_list_for_each(md->streams[i].payloads,(void (*)(void *))payload_type_destroy);
 		ms_list_free(md->streams[i].payloads);
+		md->streams[i].payloads=NULL;
 	}
 	ms_free(md);
 }
@@ -51,11 +52,11 @@ void sal_media_description_unref(SalMediaDescription *md){
 	}
 }
 
-SalStreamDescription *sal_media_description_find_stream(SalMediaDescription *md,
+const SalStreamDescription *sal_media_description_find_stream(const SalMediaDescription *md,
     SalMediaProto proto, SalStreamType type){
 	int i;
 	for(i=0;i<md->nstreams;++i){
-		SalStreamDescription *ss=&md->streams[i];
+		const SalStreamDescription *ss=&md->streams[i];
 		if (ss->proto==proto && ss->type==type) return ss;
 	}
 	return NULL;

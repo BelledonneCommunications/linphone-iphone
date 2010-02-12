@@ -137,7 +137,7 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 	LinphoneCall *call=ms_new0(LinphoneCall,1);
 	call->dir=LinphoneCallOutgoing;
 	call->op=sal_op_new(lc->sal);
-	sal_op_set_user_pointer(call->op,lc->call);
+	sal_op_set_user_pointer(call->op,call);
 	call->core=lc;
 	linphone_core_get_local_ip(lc,linphone_address_get_domain(to),call->localip);
 	call->localdesc=create_local_media_description (lc,call->localip,
@@ -693,6 +693,37 @@ static bool_t get_codec(LpConfig *config, char* type, int index, PayloadType **r
 	return TRUE;
 }
 
+static const char *codec_pref_order[]={
+	"speex",
+	"gsm",
+	"pcmu",
+	"pcma",
+	"H264",
+	"MP4V-ES",
+	"theora",
+	"H263-1998",
+	"H263",
+	NULL,
+};
+
+static int find_codec_rank(const char *mime){
+	int i;
+	for(i=0;codec_pref_order[i]!=NULL;++i){
+		if (strcasecmp(codec_pref_order[i],mime)==0)
+			break;
+	}
+	return i;
+}
+
+static int codec_compare(const PayloadType *a, const PayloadType *b){
+	int ra,rb;
+	ra=find_codec_rank(a->mime_type);
+	rb=find_codec_rank(b->mime_type);
+	if (ra==rb) return 0;
+	if (ra>rb) return 1;
+	if (ra<rb) return -1;
+}
+
 static MSList *add_missing_codecs(SalStreamType mtype, MSList *l){
 	int i;
 	for(i=0;i<127;++i){
@@ -709,11 +740,7 @@ static MSList *add_missing_codecs(SalStreamType mtype, MSList *l){
 					payload_type_set_flag(pt,PAYLOAD_TYPE_ENABLED);
 					ms_message("Adding new codec %s/%i with fmtp %s",
 					    pt->mime_type,pt->clock_rate,pt->recv_fmtp ? pt->recv_fmtp : "");
-					if (strcasecmp(pt->mime_type,"speex")==0 ||
-					    strcasecmp(pt->mime_type,"MP4V-ES")==0 ||
-					    strcasecmp(pt->mime_type,"H264")==0)
-						l=ms_list_prepend(l,pt);
-					else l=ms_list_append(l,pt);
+					l=ms_list_insert_sorted(l,pt,(int (*)(const void *, const void *))codec_compare);
 				}
 			}
 		}
@@ -1733,7 +1760,7 @@ int linphone_core_invite(LinphoneCore *lc, const char *url)
 	int err=0;
 	char *route=NULL;
 	const char *from=NULL;
-	const char *contact=NULL;
+	char *contact=NULL;
 	LinphoneProxyConfig *proxy=NULL;
 	LinphoneAddress *parsed_url2=NULL;
 	LinphoneAddress *real_parsed_url=NULL;
@@ -1775,13 +1802,16 @@ int linphone_core_invite(LinphoneCore *lc, const char *url)
 	except when the user choosed to override the ipaddress */
 	if (linphone_core_get_firewall_policy(lc)!=LINPHONE_POLICY_USE_NAT_ADDRESS)
 		contact=get_fixed_contact(lc,call->localip,dest_proxy);
-	if (contact)
+	if (contact){
 		sal_op_set_contact(call->op, contact);
+		ms_free(contact);
+	}
 
 	lc->call=call;
 
 	linphone_core_init_media_streams(lc,lc->call);
 	if (!lc->sip_conf.sdp_200_ack){	
+		call->media_pending=TRUE;
 		sal_call_set_local_media_description(call->op,call->localdesc);
 	}
 	err=sal_call(call->op,from,real_url);
@@ -1798,10 +1828,8 @@ int linphone_core_invite(LinphoneCore *lc, const char *url)
 		lc->call=NULL;
 	}else gstate_new_state(lc, GSTATE_CALL_OUT_INVITE, url);
 
-	goto end;
-	end:
-		if (real_url!=NULL) ms_free(real_url);
-		if (route!=NULL) ms_free(route);
+	if (real_url!=NULL) ms_free(real_url);
+	if (route!=NULL) ms_free(route);
 	return (err<0) ? -1 : 0;
 }
 
@@ -1947,9 +1975,9 @@ static void post_configure_audio_streams(LinphoneCore *lc){
 	}
 }
 
-static RtpProfile *make_profile(LinphoneCore *lc, SalStreamDescription *desc, int *used_pt){
+static RtpProfile *make_profile(LinphoneCore *lc, const SalStreamDescription *desc, int *used_pt){
 	int bw;
-	MSList *elem;
+	const MSList *elem;
 	RtpProfile *prof=rtp_profile_new("Call profile");
 	bool_t first=TRUE;
 	if (desc->type==SalAudio){
@@ -1988,7 +2016,7 @@ void linphone_core_start_media_streams(LinphoneCore *lc, LinphoneCall *call){
 
 	cname=linphone_address_as_string_uri_only(me);
 	{
-		SalStreamDescription *stream=sal_media_description_find_stream(call->resultdesc,
+		const SalStreamDescription *stream=sal_media_description_find_stream(call->resultdesc,
 		    					SalProtoRtpAvp,SalAudio);
 		if (stream){
 			call->audio_profile=make_profile(lc,stream,&used_pt);
@@ -2032,7 +2060,7 @@ void linphone_core_start_media_streams(LinphoneCore *lc, LinphoneCall *call){
 	}
 #ifdef VIDEO_ENABLED
 	{
-		SalStreamDescription *stream=sal_media_description_find_stream(call->resultdesc,
+		const SalStreamDescription *stream=sal_media_description_find_stream(call->resultdesc,
 		    					SalProtoRtpAvp,SalVideo);
 		/* shutdown preview */
 		if (lc->previewstream!=NULL) {
@@ -2091,10 +2119,12 @@ void linphone_core_stop_media_streams(LinphoneCore *lc, LinphoneCall *call){
 	}
 #endif
 	if (call->audio_profile){
+		rtp_profile_clear_all(call->audio_profile);
 		rtp_profile_destroy(call->audio_profile);
 		call->audio_profile=NULL;
 	}
 	if (call->video_profile){
+		rtp_profile_clear_all(call->video_profile);
 		rtp_profile_destroy(call->video_profile);
 		call->video_profile=NULL;
 	}
@@ -2150,7 +2180,7 @@ int linphone_core_accept_call(LinphoneCore *lc, const char *url)
 	if (call->resultdesc){
 		sal_media_description_ref(call->resultdesc);
 		linphone_core_start_media_streams(lc, call);
-	}
+	}else call->media_pending=TRUE;
 	ms_message("call answered.");
 	return 0;
 }
@@ -3160,6 +3190,10 @@ void sip_config_uninit(LinphoneCore *lc)
 		}
 	}
 
+	ms_list_for_each(config->proxies,(void (*)(void*)) linphone_proxy_config_destroy);
+	ms_list_free(config->proxies);
+	config->proxies=NULL;
+	
 	linphone_proxy_config_write_to_config_file(lc->config,NULL,i);	/*mark the end */
 
 	for(elem=lc->auth_info,i=0;elem!=NULL;elem=ms_list_next(elem),i++){
@@ -3167,6 +3201,9 @@ void sip_config_uninit(LinphoneCore *lc)
 		linphone_auth_info_write_config(lc->config,ai,i);
 	}
 	linphone_auth_info_write_config(lc->config,NULL,i); /* mark the end */
+	ms_list_for_each(lc->auth_info,(void (*)(void*))linphone_auth_info_destroy);
+	ms_list_free(lc->auth_info);
+	lc->auth_info=NULL;
 	sal_uninit(lc->sal);
 	lc->sal=NULL;
 }
