@@ -1384,6 +1384,7 @@ static int lpc_cmd_register(LinphoneCore *lc, char *args){
 			info=linphone_auth_info_new(linphone_address_get_username(from),NULL,passwd,NULL,NULL);
 			linphone_core_add_auth_info(lc,info);
 			linphone_address_destroy(from);
+			linphone_auth_info_destroy(info);
 		}
 	}
 	elem=linphone_core_get_proxy_config_list(lc);
