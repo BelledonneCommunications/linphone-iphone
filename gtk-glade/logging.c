@@ -72,14 +72,14 @@ static FILE *linphone_gtk_log_init()
 	static gboolean _log_init = FALSE;
 	const char *dst_fname;
 
-	dst_fname = linphone_gtk_get_ui_config("logfile",NULL);
-	/* For anything to happen, we need a logfile configuration variable,
-	 this is our trigger */
-	if (dst_fname) {
-		/* If we haven't initialised yet, arrange for _logdir to contain a
-		 directory that has been created and _logfname to contain the
-		 path to a file to which we will log */
-		if (!_log_init) {
+	if (!_log_init) {
+		dst_fname = linphone_gtk_get_ui_config("logfile",NULL);
+		/* For anything to happen, we need a logfile configuration variable,
+		 this is our trigger */
+		if (dst_fname) {
+			/* arrange for _logdir to contain a
+			 directory that has been created and _logfname to contain the
+			 path to a file to which we will log */
 #ifdef WIN32
 			const char *appdata=getenv("LOCALAPPDATA");
 			if (appdata) {
@@ -103,7 +103,7 @@ static FILE *linphone_gtk_log_init()
 			 open the file so that we will be appending to it. */
 			if (_logdir[0] != '\0') {
 				snprintf(_logfname, sizeof(_logfname), "%s%c%s",
-				    _logdir, PATH_SEPARATOR, dst_fname);
+					_logdir, PATH_SEPARATOR, dst_fname);
 				/* If the constant LOGFILE_ROTATION is greater than zero, then
 				 we kick away a simple rotation that will ensure that there
 				 are never more than LOGFILE_ROTATION+1 old copies of the
@@ -122,9 +122,9 @@ static FILE *linphone_gtk_log_init()
 					 have to loop in reverse here. */
 					for (i=LOGFILE_ROTATION-1;i>=0;i--) {
 						snprintf(old_fname, sizeof(old_fname), "%s%c%s.%d",
-						    _logdir, PATH_SEPARATOR, dst_fname, i);
+							_logdir, PATH_SEPARATOR, dst_fname, i);
 						snprintf(new_fname, sizeof(new_fname), "%s%c%s.%d",
-						    _logdir, PATH_SEPARATOR, dst_fname, i+1);
+							_logdir, PATH_SEPARATOR, dst_fname, i+1);
 						if (ortp_file_exist(old_fname)==0) {
 							if (ortp_file_exist(new_fname)==0)
 								unlink(new_fname);
@@ -135,7 +135,7 @@ static FILE *linphone_gtk_log_init()
 					 sure to remove the old .0 also, since otherwise rename()
 					 would not work as expected. */
 					snprintf(new_fname, sizeof(new_fname), "%s%c%s.%d",
-					    _logdir, PATH_SEPARATOR, dst_fname, 0);
+						_logdir, PATH_SEPARATOR, dst_fname, 0);
 					if (ortp_file_exist(new_fname)==0)
 						unlink(new_fname);
 					rename(_logfname, new_fname);
@@ -143,11 +143,10 @@ static FILE *linphone_gtk_log_init()
 				/* Start a new log file and mark that we have now initialised */
 				_logfile = fopen(_logfname, "w");
 				fprintf(_logfile, "%s\n", LOGFILE_MARKER_START);
-				_log_init = TRUE;
 			}
 		}
+		_log_init = TRUE;
 	}
-
 	return _logfile;
 }
 
