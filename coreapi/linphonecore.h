@@ -373,6 +373,10 @@ void linphone_proxy_config_destroy(LinphoneProxyConfig *cfg);
 void linphone_proxy_config_set_sip_setup(LinphoneProxyConfig *cfg, const char *type);
 SipSetupContext *linphone_proxy_config_get_sip_setup_context(LinphoneProxyConfig *cfg);
 SipSetup *linphone_proxy_config_get_sip_setup(LinphoneProxyConfig *cfg);
+/**
+ * normalize a human readable phone number into a basic string. 888-444-222 becomes 888444222
+ */
+int linphone_proxy_config_normalize_number(LinphoneProxyConfig *proxy, const char *username, char *result, size_t result_len);
 
 /**
  * @}
