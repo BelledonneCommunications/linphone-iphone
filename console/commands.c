@@ -1384,6 +1384,7 @@ static int lpc_cmd_register(LinphoneCore *lc, char *args){
 			snprintf(realm,sizeof(realm)-1,"\"%s\"",from->url->host);
 			info=linphone_auth_info_new(from->url->username,NULL,passwd,NULL,NULL);
 			linphone_core_add_auth_info(lc,info);
+			linphone_auth_info_destroy(info);
 		}
 		osip_from_free(from);
 	}

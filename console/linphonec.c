@@ -827,6 +827,8 @@ linphonec_prompt_for_auth_final(LinphoneCore *lc)
 	 */
 	linphone_auth_info_set_passwd(pending_auth, input);
 	linphone_core_add_auth_info(lc, pending_auth);
+	linphone_auth_info_destroy(pending_auth);
+	auth_stack.elem[auth_stack.nitems-1]=0;
 	--(auth_stack.nitems);
 #ifdef HAVE_READLINE
 	/*
