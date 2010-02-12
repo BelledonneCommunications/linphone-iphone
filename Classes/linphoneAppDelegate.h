@@ -27,7 +27,8 @@
 @protocol LinphoneTabManagerDelegate
 
 -(void)selectDialerTab;
-
+-(void) kickOffNetworkConnection;
+-(LinphoneCore*) getLinphoneCore; 
 @end
 
 @class ContactPickerDelegate;
@@ -45,6 +46,7 @@
 	ContactPickerDelegate* myContactPickerDelegate;
 	
 	bool isDebug;
+	bool isStarted;
 	LinphoneCore* myLinphoneCore;
 	SCNetworkReachabilityContext proxyReachabilityContext;
 	SCNetworkReachabilityRef proxyReachability;
@@ -70,6 +72,9 @@
  * return true if register is activated
  */
 bool networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void * info);
+
+-(void) doRegister;
+
 
 @property (nonatomic, retain) IBOutlet UIWindow *window;
 @property (nonatomic, retain) IBOutlet UITabBarController*  myTabBarController;

@@ -155,6 +155,24 @@ LinphoneCoreVTable linphonec_vtable = {
 	
 	
 }
+-(void) kickOffNetworkConnection {
+	CFWriteStreamRef writeStream;
+	CFStreamCreatePairWithSocketToHost(NULL, (CFStringRef)@"linphone.org", 15000, nil, &writeStream);
+	CFWriteStreamOpen (writeStream);
+	const char* buff="hello";
+	CFWriteStreamWrite (writeStream,(const UInt8*)buff,strlen(buff));
+	CFWriteStreamClose (writeStream);
+	
+}
+- (void)applicationDidBecomeActive:(UIApplication *)application {
+	if (isStarted) {
+		NSLog(@"becomming active, make sure we are registered");
+		[self doRegister];
+	} else {
+		isStarted=true;
+	}
+}
+
 -(void)selectDialerTab {
 	[myTabBarController setSelectedIndex:DIALER_TAB_INDEX];
 }
@@ -188,7 +206,7 @@ LinphoneCoreVTable linphonec_vtable = {
 	isDebug = [[NSUserDefaults standardUserDefaults] boolForKey:@"debugenable_preference"];  
 	if (isDebug) {
 		//redirect all traces to the iphone log framework
-		linphone_core_enable_logs_with_cb(linphone_iphone_log_handler);
+		linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
 	}
 	else {
 		linphone_core_disable_logs();
@@ -270,13 +288,10 @@ LinphoneCoreVTable linphonec_vtable = {
 		
 		LinphoneAddress* addr=linphone_address_new(linphone_proxy_config_get_addr(proxyCfg));
 		proxyReachability=SCNetworkReachabilityCreateWithName(nil, linphone_address_get_domain(addr));
-		proxyReachabilityContext.info=myLinphoneCore;
-		bool result=SCNetworkReachabilitySetCallback(proxyReachability, networkReachabilityCallBack,&proxyReachabilityContext);
-		SCNetworkReachabilityFlags reachabilityFlags;
-		result=SCNetworkReachabilityGetFlags (proxyReachability,&reachabilityFlags);
+		proxyReachabilityContext.info=self;
+		bool result=SCNetworkReachabilitySetCallback(proxyReachability, (SCNetworkReachabilityCallBack)networkReachabilityCallBack,&proxyReachabilityContext);
 		SCNetworkReachabilityScheduleWithRunLoop(proxyReachability, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
-		networkReachabilityCallBack(proxyReachability,reachabilityFlags,myLinphoneCore); 
-		
+		[self doRegister];
 	}
 	//Configure Codecs
 	
@@ -380,9 +395,16 @@ LinphoneCoreVTable linphonec_vtable = {
 
 bool networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void * info) {
 	LinphoneProxyConfig* proxyCfg;
-	linphone_core_get_default_proxy((LinphoneCore*)info,&proxyCfg);
+	id<LinphoneTabManagerDelegate> linphoneDelegate=info;
+	if (linphone_core_get_default_proxy([linphoneDelegate getLinphoneCore],&proxyCfg)) {
+		//glob, no default proxy
+		return false;
+	}
 	linphone_proxy_config_edit(proxyCfg);
 	bool result = false;
+	if ((flags == 0) | (flags & (kSCNetworkReachabilityFlagsConnectionRequired |kSCNetworkReachabilityFlagsConnectionOnTraffic))) {
+		[linphoneDelegate kickOffNetworkConnection];
+	}
 	if (flags) {
 		// register whatever connection type
 		linphone_proxy_config_enable_register(proxyCfg,TRUE);
@@ -394,5 +416,12 @@ bool networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	linphone_proxy_config_done(proxyCfg);
 	return result;
 }
-
+-(LinphoneCore*) getLinphoneCore {
+	return myLinphoneCore;
+}
+-(void) doRegister {
+	SCNetworkReachabilityFlags reachabilityFlags;
+	SCNetworkReachabilityGetFlags (proxyReachability,&reachabilityFlags);
+	networkReachabilityCallBack(proxyReachability,reachabilityFlags,self); 
+}
 @end
