@@ -264,6 +264,27 @@ extern "C" jstring Java_org_linphone_core_LinphoneProxyConfigImpl_normalizePhone
 	env->ReleaseStringUTFChars(jnumber, number);
 	return normalizedNumber;
 }
+extern "C" jstring Java_org_linphone_core_LinphoneProxyConfigImpl_getDomain(JNIEnv* env
+																			,jobject thiz
+																			,jlong proxyCfg) {
+	const char* domain = linphone_proxy_config_get_domain((LinphoneProxyConfig*)proxyCfg);
+	if (domain) {
+		return env->NewStringUTF(domain);
+	} else {
+		return NULL;
+	}
+}
+
+
+void Java_org_linphone_core_LinphoneProxyConfigImpl_setPrefix(JNIEnv* env
+																	,jobject thiz
+																	,jlong proxyCfg
+																	,jstring jprefix) {
+	const char* prefix = env->GetStringUTFChars(jprefix, NULL);
+	linphone_proxy_config_set_dial_prefix((LinphoneProxyConfig*)proxyCfg,prefix);
+	env->ReleaseStringUTFChars(jprefix, prefix);
+}
+
 //Auth Info
 
 extern "C" jlong Java_org_linphone_core_LinphoneAuthInfoImpl_newLinphoneAuthInfo(JNIEnv* env
@@ -341,4 +362,13 @@ extern "C" jstring Java_org_linphone_core_LinphoneAddressImpl_getDomain(JNIEnv* 
 	} else {
 		return 0;
 	}
+}
+
+extern "C" jstring Java_org_linphone_core_LinphoneAddressImpl_toUri(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	char* uri = linphone_address_as_string((LinphoneAddress*)ptr);
+	jstring juri =env->NewStringUTF(uri);
+	ms_free(uri);
+	return juri;
 }
