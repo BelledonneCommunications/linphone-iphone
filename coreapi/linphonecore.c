@@ -1836,7 +1836,7 @@ int linphone_core_invite(LinphoneCore *lc, const char *url)
 	err=eXosip_call_build_initial_invite(&invite,real_url,from,
 						route,"Phone call");
 	if (err<0){
-		ms_warning("Could not build initial invite");
+		ms_warning("Could not build initial invite cause [%i]",err);
 		goto end;
 	}
 	if (lp_config_get_int(lc->config,"sip","use_session_timers",0)==1){

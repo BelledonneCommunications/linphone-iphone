@@ -36,6 +36,7 @@ LinphoneAddress * linphone_address_new(const char *uri){
 	osip_from_init(&from);
 	if (osip_from_parse(from,uri)!=0){
 		osip_from_free(from);
+		ms_error("Cannot create LinphoneAddress, bad uri [%s]",uri);
 		return NULL;
 	}
 	return from;

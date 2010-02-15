@@ -222,9 +222,24 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_getRemoteAddress(	JNIEn
 		,jlong lc) {
 	return (jlong)linphone_core_get_remote_uri((LinphoneCore*)lc);
 }
+extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isInCall(	JNIEnv*  env
+		,jobject  thiz
+		,jlong lc) {
 
+	return linphone_core_in_call((LinphoneCore*)lc);
+}
+extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isInComingInvitePending(	JNIEnv*  env
+		,jobject  thiz
+		,jlong lc) {
 
+	return linphone_core_inc_invite_pending((LinphoneCore*)lc);
+}
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_acceptCall(	JNIEnv*  env
+		,jobject  thiz
+		,jlong lc) {
 
+	linphone_core_accept_call((LinphoneCore*)lc,NULL);
+}
 //ProxyConfig
 
 extern "C" jlong Java_org_linphone_core_LinphoneProxyConfigImpl_newLinphoneProxyConfig(JNIEnv*  env,jobject  thiz) {
@@ -256,9 +271,12 @@ extern "C" void Java_org_linphone_core_LinphoneProxyConfigImpl_done(JNIEnv* env,
 	linphone_proxy_config_done((LinphoneProxyConfig*)proxyCfg);
 }
 extern "C" jstring Java_org_linphone_core_LinphoneProxyConfigImpl_normalizePhoneNumber(JNIEnv* env,jobject thiz,jlong proxyCfg,jstring jnumber) {
+	if (jnumber == 0) {
+		ms_error("cannot normalized null number");
+	}
 	const char* number = env->GetStringUTFChars(jnumber, NULL);
 	int len = env->GetStringLength(jnumber);
-	char targetBuff[len];
+	char targetBuff[2*len];// returned number can be greater than origin (specially in case of prefix insertion
 	linphone_proxy_config_normalize_number((LinphoneProxyConfig*)proxyCfg,number,targetBuff,sizeof(targetBuff));
 	jstring normalizedNumber = env->NewStringUTF(targetBuff);
 	env->ReleaseStringUTFChars(jnumber, number);
@@ -274,9 +292,11 @@ extern "C" jstring Java_org_linphone_core_LinphoneProxyConfigImpl_getDomain(JNIE
 		return NULL;
 	}
 }
+extern "C" void Java_org_linphone_core_LinphoneProxyConfigImpl_setDialEscapePlus(JNIEnv* env,jobject thiz,jlong proxyCfg,jboolean value) {
+	linphone_proxy_config_set_dial_escape_plus((LinphoneProxyConfig*)proxyCfg,value);
+}
 
-
-void Java_org_linphone_core_LinphoneProxyConfigImpl_setPrefix(JNIEnv* env
+extern "C" void Java_org_linphone_core_LinphoneProxyConfigImpl_setDialPrefix(JNIEnv* env
 																	,jobject thiz
 																	,jlong proxyCfg
 																	,jstring jprefix) {
@@ -318,7 +338,7 @@ extern "C" jlong Java_org_linphone_core_LinphoneAddressImpl_newLinphoneAddressIm
 																					,jstring jdisplayName) {
 	const char* uri = env->GetStringUTFChars(juri, NULL);
 	LinphoneAddress* address = linphone_address_new(uri);
-	if (jdisplayName) {
+	if (jdisplayName && address) {
 		const char* displayName = env->GetStringUTFChars(jdisplayName, NULL);
 		linphone_address_set_display_name(address,displayName);
 		env->ReleaseStringUTFChars(jdisplayName, displayName);
