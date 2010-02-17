@@ -3156,7 +3156,7 @@ static bool_t video_size_supported(MSVideoSize vsize){
  *
  * @ingroup media_parameters
  * This applies only to the stream that is captured and sent to the remote party,
- * since we accept all standart video size on the receive path.
+ * since we accept all standard video size on the receive path.
 **/
 void linphone_core_set_preferred_video_size(LinphoneCore *lc, MSVideoSize vsize){
 	if (video_size_supported(vsize)){
