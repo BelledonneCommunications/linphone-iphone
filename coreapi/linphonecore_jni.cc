@@ -276,6 +276,10 @@ extern "C" jstring Java_org_linphone_core_LinphoneProxyConfigImpl_normalizePhone
 	}
 	const char* number = env->GetStringUTFChars(jnumber, NULL);
 	int len = env->GetStringLength(jnumber);
+	if (len == 0) {
+		ms_warning("cannot normalize empty number");
+		return jnumber;
+	}
 	char targetBuff[2*len];// returned number can be greater than origin (specially in case of prefix insertion
 	linphone_proxy_config_normalize_number((LinphoneProxyConfig*)proxyCfg,number,targetBuff,sizeof(targetBuff));
 	jstring normalizedNumber = env->NewStringUTF(targetBuff);
