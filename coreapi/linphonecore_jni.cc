@@ -217,6 +217,7 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_terminateCall(	JNIEnv*  
 		,jlong lc) {
 	linphone_core_terminate_call((LinphoneCore*)lc,NULL);
 }
+
 extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_getRemoteAddress(	JNIEnv*  env
 		,jobject  thiz
 		,jlong lc) {
@@ -240,6 +241,20 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_acceptCall(	JNIEnv*  env
 
 	linphone_core_accept_call((LinphoneCore*)lc,NULL);
 }
+
+extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_getCallLog(	JNIEnv*  env
+		,jobject  thiz
+		,jlong lc
+		,jint position) {
+		return (jlong)ms_list_nth_data(linphone_core_get_call_logs((LinphoneCore*)lc),position);
+}
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getNumberOfCallLogs(	JNIEnv*  env
+		,jobject  thiz
+		,jlong lc) {
+		return ms_list_size(linphone_core_get_call_logs((LinphoneCore*)lc));
+}
+
+
 //ProxyConfig
 
 extern "C" jlong Java_org_linphone_core_LinphoneProxyConfigImpl_newLinphoneProxyConfig(JNIEnv*  env,jobject  thiz) {
@@ -395,4 +410,21 @@ extern "C" jstring Java_org_linphone_core_LinphoneAddressImpl_toUri(JNIEnv*  env
 	jstring juri =env->NewStringUTF(uri);
 	ms_free(uri);
 	return juri;
+}
+
+//CallLog
+extern "C" jlong Java_org_linphone_core_LinphoneCallLogImpl_getFrom(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	return (jlong)((LinphoneCallLog*)ptr)->from;
+}
+extern "C" jlong Java_org_linphone_core_LinphoneCallLogImpl_getTo(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	return (jlong)((LinphoneCallLog*)ptr)->to;
+}
+extern "C" jboolean Java_org_linphone_core_LinphoneCallLogImpl_isIncoming(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	return ((LinphoneCallLog*)ptr)->dir==LinphoneCallIncoming?JNI_TRUE:JNI_FALSE;
 }
