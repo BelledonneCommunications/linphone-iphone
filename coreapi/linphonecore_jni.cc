@@ -163,6 +163,14 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_newLinphoneCore(JNIEnv*
 	env->ReleaseStringUTFChars(jfactoryConfig, factoryConfig);
 	return nativePtr;
 }
+extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_delete(JNIEnv*  env
+		,jobject  thiz
+		,jlong lc) {
+	LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_get_user_data((LinphoneCore*)lc);
+	linphone_core_destroy((LinphoneCore*)lc);
+	delete lcData;
+}
+
 extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_clearProxyConfigs(JNIEnv* env, jobject thiz,jlong lc) {
 	linphone_core_clear_proxy_config((LinphoneCore*)lc);
 }
