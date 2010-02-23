@@ -1836,7 +1836,7 @@ int linphone_core_invite(LinphoneCore *lc, const char *url)
 	err=eXosip_call_build_initial_invite(&invite,real_url,from,
 						route,"Phone call");
 	if (err<0){
-		ms_warning("Could not build initial invite");
+		ms_warning("Could not build initial invite cause [%i]",err);
 		goto end;
 	}
 	if (lp_config_get_int(lc->config,"sip","use_session_timers",0)==1){
@@ -3156,7 +3156,7 @@ static bool_t video_size_supported(MSVideoSize vsize){
  *
  * @ingroup media_parameters
  * This applies only to the stream that is captured and sent to the remote party,
- * since we accept all standart video size on the receive path.
+ * since we accept all standard video size on the receive path.
 **/
 void linphone_core_set_preferred_video_size(LinphoneCore *lc, MSVideoSize vsize){
 	if (video_size_supported(vsize)){

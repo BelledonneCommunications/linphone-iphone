@@ -20,7 +20,7 @@
 
 #include "media_api.h"
 
-/* non-standart payload types for oRTP */
+/* non-standard payload types for oRTP */
 PayloadType lpc1015={
     PAYLOAD_AUDIO_PACKETIZED,
     8000,
