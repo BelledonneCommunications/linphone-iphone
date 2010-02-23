@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "linphone.h"
 
+
 void linphone_gtk_call_log_update(GtkWidget *w){
 	GtkTextView *v=GTK_TEXT_VIEW(linphone_gtk_get_widget(w,"logtextview"));
 	GtkTextBuffer *b=gtk_text_view_get_buffer(v);

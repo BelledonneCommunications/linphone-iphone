@@ -81,6 +81,7 @@ static gboolean iconified=FALSE;
 #ifdef WIN32
 static gchar *workingdir=NULL;
 #endif
+static char *progpath=NULL;
 
 static GOptionEntry linphone_options[]={
 	{
@@ -158,9 +159,58 @@ const char *linphone_gtk_get_config_file(){
 	return _config_file;
 }
 
-static void linphone_gtk_init_liblinphone(const char *file){
+
+#define FACTORY_CONFIG_FILE "linphonerc.factory"
+static char _factory_config_file[1024];
+static const char *linphone_gtk_get_factory_config_file(){
+	/*try accessing a local file first if exists*/
+	if (access(FACTORY_CONFIG_FILE,F_OK)==0){
+		snprintf(_factory_config_file,sizeof(_factory_config_file),
+						 "%s",FACTORY_CONFIG_FILE);
+	} else {
+		char *progdir;
+		
+		if (progpath != NULL) {
+			char *basename;
+			progdir = strdup(progpath);
+#ifdef WIN32
+			basename = strrchr(progdir, '\\');
+			if (basename != NULL) {
+				basename ++;
+				*basename = '\0';
+				snprintf(_factory_config_file, sizeof(_factory_config_file),
+								 "%s\\..\\%s", progdir, FACTORY_CONFIG_FILE);
+			} else {
+				if (workingdir!=NULL) {
+					snprintf(_factory_config_file, sizeof(_factory_config_file),
+									 "%s\\%s", workingdir, FACTORY_CONFIG_FILE);
+				} else {
+					free(progdir);
+					return NULL;
+				}
+			}
+#else
+			basename = strrchr(progdir, '/');
+			if (basename != NULL) {
+				basename ++;
+				*basename = '\0';
+				snprintf(_factory_config_file, sizeof(_factory_config_file),
+								 "%s/../share/Linphone/%s", progdir, FACTORY_CONFIG_FILE);
+			} else {
+				free(progdir);
+				return NULL;
+			}
+#endif
+			free(progdir);
+		}
+	}
+	return _factory_config_file;
+}
+
+static void linphone_gtk_init_liblinphone(const char *config_file,
+																					const char *factory_config_file) {
 	linphone_core_set_user_agent("Linphone", LINPHONE_VERSION);
-	the_core=linphone_core_new(&vtable,file,NULL,NULL);
+	the_core=linphone_core_new(&vtable,config_file,factory_config_file,NULL);
 	linphone_core_set_waiting_callback(the_core,linphone_gtk_wait,NULL);
 }
 
@@ -1161,10 +1211,12 @@ int main(int argc, char *argv[]){
 	void *p;
 #endif
 	const char *config_file;
+	const char *factory_config_file;
 	const char *lang;
 
 	g_thread_init(NULL);
 	gdk_threads_init();
+	progpath = strdup(argv[0]);
 	
 	config_file=linphone_gtk_get_config_file();
 
@@ -1211,6 +1263,10 @@ int main(int argc, char *argv[]){
 	if (workingdir!=NULL)
 		_chdir(workingdir);
 #endif
+	/* Now, look for the factory configuration file, we do it this late
+		 since we want to have had time to change directory and to parse
+		 the options, in case we needed to access the working directory */
+	factory_config_file = linphone_gtk_get_factory_config_file();
 
 	if (linphone_core_wake_up_possible_already_running_instance(
 		config_file, addr_to_call) == 0){
@@ -1229,7 +1285,7 @@ int main(int argc, char *argv[]){
 	linphone_gtk_create_log_window();
 	linphone_core_enable_logs_with_cb(linphone_gtk_log_handler);
 
-	linphone_gtk_init_liblinphone(config_file);
+	linphone_gtk_init_liblinphone(config_file, factory_config_file);
 	/* do not lower timeouts under 30 ms because it exhibits a bug on gtk+/win32, with cpu running 20% all the time...*/
 	gtk_timeout_add(30,(GtkFunction)linphone_gtk_iterate,(gpointer)linphone_gtk_get_core());
 	gtk_timeout_add(30,(GtkFunction)linphone_gtk_check_logs,(gpointer)NULL);
@@ -1246,5 +1302,6 @@ int main(int argc, char *argv[]){
 	linphone_core_destroy(the_core);
 	/*workaround a bug on win32 that makes status icon still present in the systray even after program exit.*/
 	gtk_status_icon_set_visible(icon,FALSE);
+	free(progpath);
 	return 0;
 }
