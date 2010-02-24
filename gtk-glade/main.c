@@ -627,6 +627,7 @@ static gboolean linphone_gtk_start_call_do(GtkWidget *uri_bar){
 	if (linphone_core_invite(linphone_gtk_get_core(),entered)==0) {
 		completion_add_text(GTK_ENTRY(uri_bar),entered);
 	}else{
+		linphone_gtk_call_terminated(NULL);
 	}
 	return FALSE;
 }

@@ -270,10 +270,14 @@ void linphone_call_log_completed(LinphoneCallLog *calllog, LinphoneCall *call){
 			calllog->status=LinphoneCallSuccess;
 			break;
 	}
-	lc->call_logs=ms_list_append(lc->call_logs,(void *)calllog);
+	lc->call_logs=ms_list_prepend(lc->call_logs,(void *)calllog);
 	if (ms_list_size(lc->call_logs)>lc->max_call_logs){
-		MSList *elem;
-		elem=lc->call_logs;
+		MSList *elem,*prevelem=NULL;
+		/*find the last element*/
+		for(elem=lc->call_logs;elem!=NULL;elem=elem->next){
+			prevelem=elem;
+		}
+		elem=prevelem;
 		linphone_call_log_destroy((LinphoneCallLog*)elem->data);
 		lc->call_logs=ms_list_remove_link(lc->call_logs,elem);
 	}
@@ -1621,9 +1625,11 @@ bool_t linphone_core_interpret_url(LinphoneCore *lc, const char *url, LinphoneAd
 	enum_lookup_res_t *enumres=NULL;
 	osip_to_t *parsed_url=NULL;
 	char *enum_domain=NULL;
-	LinphoneProxyConfig *proxy;
+	LinphoneProxyConfig *proxy=lc->default_proxy;;
 	char *tmpurl;
 	const char *tmproute;
+	LinphoneAddress *uri;
+	
 	if (real_parsed_url!=NULL) *real_parsed_url=NULL;
 	*route=NULL;
 	tmproute=linphone_core_get_route(lc);
@@ -1645,10 +1651,19 @@ bool_t linphone_core_interpret_url(LinphoneCore *lc, const char *url, LinphoneAd
 	/* check if we have a "sip:" */
 	if (strstr(url,"sip:")==NULL){
 		/* this doesn't look like a true sip uri */
-		proxy=lc->default_proxy;
+		if (strchr(url,'@')!=NULL){
+			/* seems like sip: is missing !*/
+			tmpurl=ms_strdup_printf("sip:%s",url);
+			uri=linphone_address_new(tmpurl);
+			ms_free(tmpurl);
+			if (uri){
+				if (real_parsed_url!=NULL) *real_parsed_url=uri;
+				return TRUE;
+			}
+		}
+		
 		if (proxy!=NULL){
 			/* append the proxy domain suffix */
-			LinphoneAddress *uri;
 			const char *identity=linphone_proxy_config_get_identity(proxy);
 			char normalized_username[128];
 			uri=linphone_address_new(identity);
@@ -1683,7 +1698,7 @@ bool_t linphone_core_interpret_url(LinphoneCore *lc, const char *url, LinphoneAd
 			if (tmproute) *route=ms_strdup(tmproute);
 #endif
 			return TRUE;
-		}
+		}else return FALSE;
 	}
 	parsed_url=linphone_address_new(url);
 	if (parsed_url!=NULL){
@@ -1703,7 +1718,7 @@ bool_t linphone_core_interpret_url(LinphoneCore *lc, const char *url, LinphoneAd
 /**
  * Returns the default identity SIP address.
  *
- * @ingroup proxies
+ * @ingroup proxiesb
  * This is an helper function:
  *
  * If no default proxy is set, this will return the primary contact (
