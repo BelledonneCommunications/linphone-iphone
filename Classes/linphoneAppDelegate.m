@@ -190,12 +190,12 @@ LinphoneCoreVTable linphone_iphone_vtable = {
 	myPeoplePickerController.tabBarItem = [(UIViewController*)[myTabBarController.viewControllers objectAtIndex:CONTACTS_TAB_INDEX] tabBarItem]; 
 	
 	//more tab 
-	MoreViewController *moreViewController = [[MoreViewController alloc] initWithNibName:@"MoreViewController" bundle:[NSBundle mainBundle]];
+	myMoreViewController = [[MoreViewController alloc] initWithNibName:@"MoreViewController" bundle:[NSBundle mainBundle]];
 	if (isDebug) {
-		[moreViewController  enableLogView];
+		[myMoreViewController  enableLogView];
 	}
-	[moreViewController setLinphoneDelegate:self];
-	UINavigationController *aNavigationController = [[UINavigationController alloc] initWithRootViewController:moreViewController];
+	[myMoreViewController setLinphoneDelegate:self];
+	UINavigationController *aNavigationController = [[UINavigationController alloc] initWithRootViewController:myMoreViewController];
 	[aNavigationController.navigationBar setTintColor:[UIColor lightGrayColor]];
 	//copy tab bar item
 	aNavigationController.tabBarItem = [(UIViewController*)[myTabBarController.viewControllers objectAtIndex:MORE_TAB_INDEX] tabBarItem]; 
@@ -257,6 +257,18 @@ LinphoneCoreVTable linphone_iphone_vtable = {
 	[super dealloc];
 }
 
+-(void) enableDebug:(bool) value {
+	isDebug = value;
+	if (isDebug) {
+		//redirect all traces to the iphone log framework
+		linphone_core_enable_logs_with_cb(linphone_iphone_log_handler);
+	}
+	else {
+		linphone_core_disable_logs();
+	}
+	linphone_iphone_tunneling_enable_logs (isDebug);
+	[myMoreViewController enableLogView];
+}
 /*************
  *lib linphone init method
  */

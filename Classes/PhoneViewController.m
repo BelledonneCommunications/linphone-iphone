@@ -168,6 +168,11 @@
 			[self performSelector:@selector(doKeyZeroLongPress) withObject:nil afterDelay:0.5];
 		} else if (sender == hash) {
 			newAddress = [address.text stringByAppendingString:@"#"];
+			if ([newAddress isEqualToString:@"#1234#"]) {
+				//enable debug mode
+				[self.linphoneDelegate enableDebug:true];
+			}
+			
 		} else if (sender == back) {
 			if ([address.text length] >0) {
 				newAddress = [address.text substringToIndex: [address.text length]-1];

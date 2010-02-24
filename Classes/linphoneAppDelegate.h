@@ -38,6 +38,7 @@
 -(void) resetConfig;
 -(void) doRegister;
 -(void) kickOffNetworkConnection;
+-(void) enableDebug:(bool) value;
 
 
 -(LinphoneCore*) getLinphoneCore; 
@@ -51,6 +52,7 @@
 @class CallHistoryTableViewController;
 @class FavoriteTableViewController;
 @class FirstLoginViewController;
+@class MoreViewController;
 
 @interface linphoneAppDelegate : NSObject <UIApplicationDelegate,LinphoneManagerDelegate,UIActionSheetDelegate> {
     
@@ -60,6 +62,7 @@
 	IBOutlet PhoneViewController* myPhoneViewController;
 	CallHistoryTableViewController* myCallHistoryTableViewController;
 	FavoriteTableViewController* myFavoriteTableViewController;
+	MoreViewController* myMoreViewController;
 	
 	ContactPickerDelegate* myContactPickerDelegate;
 	FirstLoginViewController* myFirstLoginViewController;

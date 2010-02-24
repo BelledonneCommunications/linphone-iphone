@@ -105,6 +105,15 @@ static RtpTransport audio_transport={
 	audio_recvfrom
 };
 
+extern "C" void linphone_iphone_tunneling_enable_logs(bool value) {
+	if (value) {
+		SetLogHandler(&linphone_iphone_log_handler);
+		SetLogLevel(AXTUNNEL_ERROR|AXTUNNEL_WARN);
+	} else {
+		SetLogLevel(0);
+	}
+	
+}
 
 extern "C" void linphone_iphone_tunneling_init(const char* ip1
 											   ,const char* ip2
@@ -112,12 +121,9 @@ extern "C" void linphone_iphone_tunneling_init(const char* ip1
 											   ,bool isDebug
 											   ,void (*cb)(bool connected, void *data)
 											   ,void* userdata) {
-	if (isDebug) {
-		SetLogHandler(&linphone_iphone_log_handler);
-		SetLogLevel(AXTUNNEL_ERROR|AXTUNNEL_WARN);
-	} else {
-		SetLogLevel(0);
-	}
+	
+	linphone_iphone_tunneling_enable_logs (isDebug);
+	
 	linphone_iphone_tun = new TunnelClient();
 	linphone_iphone_tun->addServer(ip1, port);
 	linphone_iphone_tun->addServer(ip2, port);
