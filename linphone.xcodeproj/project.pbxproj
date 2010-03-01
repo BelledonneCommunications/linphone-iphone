@@ -1659,7 +1659,7 @@
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = linphone_Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = LINPHONE_WIFI_ONLY;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
 				"HEADER_SEARCH_PATHS[sdk=iphoneos*][arch=*]" = "\"$(SRCROOT)/../liblinphone-sdk/armv6-apple-darwin/include\"";
 				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*]" = "\"$(SRCROOT)/../liblinphone-sdk/i386-apple-darwin/include\"";
 				INFOPLIST_FILE = "linphone-Info.plist";
@@ -1788,7 +1788,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = linphone_Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = LINPHONE_WIFI_ONLY;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
 				HEADER_SEARCH_PATHS = "";
 				"HEADER_SEARCH_PATHS[sdk=iphoneos*][arch=*]" = "\"$(SRCROOT)/../liblinphone-sdk/armv6-apple-darwin/include\"";
 				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*]" = "\"$(SRCROOT)/../liblinphone-sdk/i386-apple-darwin/include\"";

@@ -54,7 +54,7 @@ enabled=0
 [audio_codec_5]
 mime=GSM
 rate=8000
-enabled=0
+enabled=1
 
 [audio_codec_6]
 mime=PCMU
