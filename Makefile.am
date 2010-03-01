@@ -66,6 +66,8 @@ linphone.spec: linphone.spec.in
 .phony: rpm
 rpm:
 	$(MAKE) dist
+	cd oRTP && $(MAKE) dist && mv -f ortp*.tar.gz ../
+	cd mediastreamer2 && $(MAKE) dist && mv -f mediastreamer*.tar.gz ../
 # Create "Specfile" at the same level as the tarball content
 	-rm -f $(PACKAGE)-$(VERSION).tar
 	gunzip $(PACKAGE)-$(VERSION).tar.gz

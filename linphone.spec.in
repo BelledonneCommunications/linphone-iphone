@@ -4,7 +4,6 @@
 
 # default is to build with video support & without truespeech support
 %define		video		%{?_without_video:0}%{!?_without_video:1}
-%define		truespeech	%{?_with_truespeech:1}%{!?_with_truespeech:0}
 
 # Linphone requires an old osip version, sometimes (e.g. fc6)
 # delivered as "compat-"
@@ -33,20 +32,8 @@ BuildRequires:	ffmpeg-devel SDL-devel
 %endif
 
 %description
-Linphone is mostly sip compliant. It works successfully with these
-implementations:
-    * eStara softphone (commercial software for windows)
-    * Pingtel phones (with DNS enabled and VLAN QOS support disabled).
-    * Hotsip, a free of charge phone for Windows.
-    * Vocal, an open source SIP stack from Vovida that includes a SIP proxy
-        that works with linphone since version 0.7.1.
-    * Siproxd is a free sip proxy being developped by Thomas Ries because he
-        would like to have linphone working behind his firewall. Siproxd is
-        simple to setup and works perfectly with linphone.
-    * Partysip aims at being a generic and fully functionnal SIP proxy. Visit
-        the web page for more details on its functionalities.
-
-Linphone may work also with other sip phones, but this has not been tested yet.
+Linphone is a SIP compliant audio & video phone. It can be used to run calls 
+over the internet. It has a gtk+ and console interface.
 
 %package devel
 Summary:        Development libraries for linphone
@@ -121,10 +108,6 @@ develop programs using the mediastreamer2 library.
 	--with-ffmpeg=/usr \
 	--with-sdl=/usr \
 %endif
-%if %{truespeech}
-	--enable-truespeech \
-%endif
-%{?_without_old_osip: --with-osip-version=2.2.2} \
 	--enable-ipv6
 %__make %{?_smp_mflags}
 
@@ -202,15 +185,12 @@ rm -rf $RPM_BUILD_ROOT
 %doc mediastreamer2/AUTHORS mediastreamer2/ChangeLog mediastreamer2/COPYING
 %doc mediastreamer2/NEWS mediastreamer2/README
 %{_libdir}/libmediastreamer.so.*
-%{_libdir}/libquickstream.so.*
 
 %files -n mediastreamer2-devel
 %{_includedir}/mediastreamer2
 %{_libdir}/pkgconfig/mediastreamer.pc
 %{_libdir}/libmediastreamer.so
 %{_libdir}/libmediastreamer.*a
-%{_libdir}/libquickstream.so
-%{_libdir}/libquickstream.*a
 
 %changelog
 * Wed Sep 28 2005 Francois-Xavier 'FiX' KOWALSKI <francois-xavier.kowalski@hp.com> - 1.2.0pre3
