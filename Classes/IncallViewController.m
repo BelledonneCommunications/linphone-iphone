@@ -78,7 +78,7 @@
 		 addObserver:self selector:@selector(proximityStatusChange:) name:@"UIDeviceProximityStateDidChangeNotification" object:device];  
 	}  
 	else{  
-		NSLog(@"No proximity sensors on your device");  
+		ms_message(@"No proximity sensors on your device");  
 	}  
 	
 }
@@ -270,7 +270,7 @@
 	} else if (sender == speaker) {
 		[self speaker:!isSpeaker];		
 	}else  {
-		NSLog(@"unknown event from incall view");	
+		ms_message(@"unknown event from incall view");	
 	}
 	
 }

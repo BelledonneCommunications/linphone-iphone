@@ -239,13 +239,13 @@ LinphoneCoreVTable linphone_iphone_vtable = {
 	Boolean status = CFWriteStreamOpen (writeStream);
 	const char* buff="yop";
 	int written = CFWriteStreamWrite (writeStream,(const UInt8*)buff,strlen(buff));
-	NSLog(@"activating network interface status [%i], [%i] byte sent",status,written);
+	ms_message(@"activating network interface status [%i], [%i] byte sent",status,written);
 	CFWriteStreamClose (writeStream);
 	
 }
 - (void)applicationDidBecomeActive:(UIApplication *)application {
 	if (isStarted) {
-			NSLog(@"becomming active, make sure we are registered");
+			ms_message(@"becomming active, make sure we are registered");
 		[self doRegister];
 	} else {
 		isStarted=true;
@@ -570,10 +570,10 @@ bool networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 void tunnel_state_cb(bool connected, void *data) {
 	id <LinphoneManagerDelegate> linphoneApp = (id <LinphoneManagerDelegate>)data;
 	if ([linphoneApp isTunnel] && connected) {
-		NSLog(@"Tunnel connected");
+		ms_message(@"Tunnel connected");
 		[linphoneApp doRegister];
 	} else if ([linphoneApp isTunnel] && !connected) {
-		NSLog(@"Tunnel connection failure detected");
+		ms_message(@"Tunnel connection failure detected");
 		LinphoneProxyConfig* proxyCfg;
 		linphone_core_get_default_proxy([linphoneApp getLinphoneCore],&proxyCfg);
 		linphone_proxy_config_edit(proxyCfg);

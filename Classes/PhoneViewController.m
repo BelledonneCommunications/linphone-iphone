@@ -182,7 +182,7 @@
 				displayName=@"";
 			} 
 		} else  {
-			NSLog(@"unknown event from diad pad");
+			ms_message(@"unknown event from diad pad");
 			return;
 		}
 		if (newAddress != nil) {
@@ -205,7 +205,7 @@
 												   object:nil];
 		
 	}else  {
-		NSLog(@"unknown up event from dial pad");	
+		ms_message(@"unknown up event from dial pad");	
 	}
 }
 
