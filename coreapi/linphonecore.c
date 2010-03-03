@@ -634,7 +634,7 @@ static void sip_config_read(LinphoneCore *lc)
 	lc->sip_conf.sdp_200_ack=lp_config_get_int(lc->config,"sip","sdp_200_ack",0);
 	lc->sip_conf.only_one_codec=lp_config_get_int(lc->config,"sip","only_one_codec",0);
 	lc->sip_conf.register_only_when_network_is_up=
-		lp_config_get_int(lc->config,"sip","register_only_when_network_is_up",0);
+		lp_config_get_int(lc->config,"sip","register_only_when_network_is_up",1);
 }
 
 static void rtp_config_read(LinphoneCore *lc)
@@ -1011,7 +1011,8 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	ui_config_read(lc);
 	lc->vtable.display_status(lc,_("Ready"));
         gstate_new_state(lc, GSTATE_POWER_ON, NULL);
-	lc->ready=TRUE;
+	lc->auto_net_state_mon=TRUE;
+    lc->ready=TRUE;
 }
 
 /**
@@ -1443,7 +1444,7 @@ static void linphone_core_disconnected(LinphoneCore *lc){
 }
 
 static void proxy_update(LinphoneCore *lc, time_t curtime){
-	bool_t doit=FALSE;
+
 	static time_t last_check=0;
 	static bool_t last_status=FALSE;
 	if (lc->sip_conf.register_only_when_network_is_up){
@@ -1459,9 +1460,10 @@ static void proxy_update(LinphoneCore *lc, time_t curtime){
 			}else last_status=FALSE;
 			last_check=curtime;
 		}
-		doit=last_status;
-	}else doit=TRUE;
-	if (doit) ms_list_for_each(lc->sip_conf.proxies,(void (*)(void*))&linphone_proxy_config_update);
+		linphone_core_set_network_reachable(lc,last_status);
+	}else {
+		ms_list_for_each(lc->sip_conf.proxies,(void (*)(void*))&linphone_proxy_config_update);
+	}
 }
 
 static void assign_buddy_info(LinphoneCore *lc, BuddyInfo *info){
@@ -3348,6 +3350,29 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	gstate_new_state(lc, GSTATE_POWER_OFF, NULL);
 }
 
+void linphone_core_set_network_reachable(LinphoneCore* lc,bool_t isReachable) {
+	//first disable automatic mode
+	if (lc->auto_net_state_mon) {
+		ms_message("Disabling automatic network state monitoring");
+		lc->auto_net_state_mon=FALSE;
+	}
+	ms_message("Network state is now [%s]",isReachable?"UP":"DOWN");
+	// second get the list of available proxies
+	const MSList *elem=linphone_core_get_proxy_config_list(lc);
+	for(;elem!=NULL;elem=elem->next){
+		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
+		if (linphone_proxy_config_register_enabled(cfg) ) {
+			if (!isReachable) {
+				cfg->registered=0;
+				cfg->commit=TRUE;
+			} else {
+				linphone_proxy_config_update(cfg);
+			}
+		}
+
+	}
+
+}
 /**
  * Destroys a LinphoneCore
  *

@@ -386,6 +386,7 @@ struct _LinphoneCore
 	bool_t ready;
 	bool_t bl_refresh;
 	bool_t preview_finished;
+	bool_t auto_net_state_mon;
 };
 
 #endif /* _PRIVATE_H */
