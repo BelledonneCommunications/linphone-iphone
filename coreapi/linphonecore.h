@@ -657,7 +657,7 @@ typedef struct _LinphoneCore
 	int rsvp_enable;
 	int rpc_enable;
 #endif
-	/*set this field to false if application manage the network connection state
+	/*set this field to false if application manage  network connection state
 	 * In case of false, network state must be communicate to linphone core with method linphone_core_
 	 */
 	bool_t auto_net_state_mon;
@@ -901,14 +901,12 @@ const LinphoneAddress *linphone_core_get_remote_uri(LinphoneCore *lc);
 
 int linphone_core_get_mtu(const LinphoneCore *lc);
 void linphone_core_set_mtu(LinphoneCore *lc, int mtu);
-/**
- * Calling this method with false disable automatiic
- */
-void linphone_core_enable_auto_net_stat_mon(LinphoneCore* lc,bool_t value);
+
 /**
  * This method is called by the application to notify the linphone core library when network is reachable.
  * Calling this method with true trigger linphone to initiate a registration process for all proxy
- * configuration with parameter register set to enable
+ * configuration with parameter register set to enable.
+ * This method disable the automatic registration mode. It means you must call this method after each network state changes
  *
  */
 void linphone_core_set_network_reachable(LinphoneCore* lc,bool_t value);

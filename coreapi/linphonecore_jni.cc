@@ -261,6 +261,12 @@ extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getNumberOfCallLogs(	JNI
 		,jlong lc) {
 		return ms_list_size(linphone_core_get_call_logs((LinphoneCore*)lc));
 }
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setNetworkStateReachable(	JNIEnv*  env
+		,jobject  thiz
+		,jlong lc
+		,jboolean isReachable) {
+		linphone_core_set_network_reachable((LinphoneCore*)lc,isReachable);
+}
 
 
 //ProxyConfig

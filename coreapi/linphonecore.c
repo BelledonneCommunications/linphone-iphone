@@ -951,7 +951,8 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	ms_mutex_init(&lc->lock,NULL);
 	lc->vtable.display_status(lc,_("Ready"));
         gstate_new_state(lc, GSTATE_POWER_ON, NULL);
-	lc->ready=TRUE;
+	lc->auto_net_state_mon=TRUE;
+    lc->ready=TRUE;
 }
 
 /**
@@ -3490,7 +3491,13 @@ static void linphone_core_uninit(LinphoneCore *lc)
 }
 
 void linphone_core_set_network_reachable(LinphoneCore* lc,bool_t isReachable) {
-	// first get the list of available proxies
+	//first disable automatic mode
+	if (lc->auto_net_state_mon) {
+		ms_message("Disabling automatic network state monitoring");
+		lc->auto_net_state_mon=FALSE;
+	}
+	ms_message("Network state is now [%s]",isReachable?"UP":"DOWN");
+	// second get the list of available proxies
 	const MSList *elem=linphone_core_get_proxy_config_list(lc);
 	for(;elem!=NULL;elem=elem->next){
 		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
