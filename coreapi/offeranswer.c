@@ -83,13 +83,13 @@ static void initiate_outgoing(const SalStreamDescription *local_offer,
     					SalStreamDescription *result){
 	if (remote_answer->port!=0)
 		result->payloads=match_payloads(local_offer->payloads,remote_answer->payloads);
+	result->proto=local_offer->proto;
+	result->type=local_offer->type;
 	if (result->payloads && !only_telephone_event(result->payloads)){
 		strcpy(result->addr,remote_answer->addr);
 		result->port=remote_answer->port;
 		result->bandwidth=remote_answer->bandwidth;
 		result->ptime=remote_answer->ptime;
-		result->proto=local_offer->proto;
-		result->type=local_offer->type;
 	}else{
 		result->port=0;
 	}
@@ -100,13 +100,13 @@ static void initiate_incoming(const SalStreamDescription *local_cap,
     					const SalStreamDescription *remote_offer,
     					SalStreamDescription *result){
 	result->payloads=match_payloads(local_cap->payloads,remote_offer->payloads);
+	result->proto=local_cap->proto;
+	result->type=local_cap->type;
 	if (result->payloads && !only_telephone_event(result->payloads)){
 		strcpy(result->addr,local_cap->addr);
 		result->port=local_cap->port;
 		result->bandwidth=local_cap->bandwidth;
-		result->ptime=local_cap->ptime;
-		result->proto=local_cap->proto;
-		result->type=local_cap->type;
+		result->ptime=local_cap->ptime;		
 	}else{
 		result->port=0;
 	}
@@ -157,6 +157,7 @@ int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities
 		}
     }
 	result->nstreams=j;
+	strcpy(result->username, local_capabilities->username);
 	strcpy(result->addr,local_capabilities->addr);
 	return 0;
 }

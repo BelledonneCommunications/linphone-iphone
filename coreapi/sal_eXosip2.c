@@ -373,7 +373,10 @@ int sal_call_accept(SalOp * h){
 		if (h->supports_session_timers) osip_message_set_supported(msg, "timer");
 	}
 
-	if (contact) osip_message_set_contact(msg,contact);
+	if (contact) {
+		osip_list_special_free(&msg->contacts,(void (*)(void*))osip_contact_free);
+		osip_message_set_contact(msg,contact);
+	}
 	
 	if (h->base.local_media){
 		/*this is the case where we received an invite without SDP*/
@@ -536,6 +539,10 @@ static void handle_reinvite(Sal *sal,  eXosip_event_t *ev){
 	if (op->base.root->session_expires!=0){
 		if (op->supports_session_timers) osip_message_set_supported(msg, "timer");
 	}
+	if (op->base.contact){
+		osip_list_special_free(&msg->contacts,(void (*)(void*))osip_contact_free);
+		osip_message_set_contact(msg,op->base.contact);
+	}
 	if (sdp){
 		op->sdp_offering=FALSE;
 		op->base.remote_media=sal_media_description_new();
@@ -644,7 +651,6 @@ static void call_terminated(Sal *sal, eXosip_event_t *ev){
 
 static void call_released(Sal *sal, eXosip_event_t *ev){
 	SalOp *op;
-	char *from;
 	op=(SalOp*)ev->external_reference;
 	if (op==NULL){
 		return;

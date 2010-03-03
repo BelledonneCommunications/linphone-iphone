@@ -134,7 +134,7 @@ static void add_payload(sdp_message_t *msg, int line, const PayloadType *pt)
 {
 	char attr[256];
 	sdp_message_m_payload_add (msg,line, int_2char (payload_type_get_number(pt)));
-	if (pt->type==PAYLOAD_AUDIO_CONTINUOUS || pt->type==PAYLOAD_AUDIO_PACKETIZED)
+	if (pt->channels>0)
 		snprintf (attr,sizeof(attr),"%i %s/%i/%i", payload_type_get_number(pt), 
 		    	pt->mime_type, pt->clock_rate,pt->channels);
 	else

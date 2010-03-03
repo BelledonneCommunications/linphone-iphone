@@ -719,9 +719,9 @@ static int codec_compare(const PayloadType *a, const PayloadType *b){
 	int ra,rb;
 	ra=find_codec_rank(a->mime_type);
 	rb=find_codec_rank(b->mime_type);
-	if (ra==rb) return 0;
 	if (ra>rb) return 1;
 	if (ra<rb) return -1;
+	return 0;
 }
 
 static MSList *add_missing_codecs(SalStreamType mtype, MSList *l){
@@ -954,7 +954,7 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	linphone_core_assign_payload_type(&payload_type_speex_nb,110,"vbr=on");
 	linphone_core_assign_payload_type(&payload_type_speex_wb,111,"vbr=on");
 	linphone_core_assign_payload_type(&payload_type_speex_uwb,112,"vbr=on");
-	linphone_core_assign_payload_type(&payload_type_telephone_event,101,NULL);
+	linphone_core_assign_payload_type(&payload_type_telephone_event,101,"0-11");
 	linphone_core_assign_payload_type(&payload_type_ilbc,113,"mode=30");
 
 #ifdef ENABLE_NONSTANDARD_GSM
