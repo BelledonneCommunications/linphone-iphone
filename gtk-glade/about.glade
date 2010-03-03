@@ -15,7 +15,7 @@
     <property name="version">undef</property>
     <property name="copyright" translatable="yes">Created by Simon Morlat
 </property>
-    <property name="comments" translatable="yes">An internet video phone using the standart SIP (rfc3261) protocol.</property>
+    <property name="comments" translatable="yes">An internet video phone using the standard SIP (rfc3261) protocol.</property>
     <property name="website">http://www.linphone.org</property>
     <property name="license">GPL</property>
     <property name="authors">Simon Morlat</property>

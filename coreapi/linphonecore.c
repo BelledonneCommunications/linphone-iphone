@@ -290,10 +290,14 @@ void linphone_call_log_completed(LinphoneCallLog *calllog, LinphoneCall *call){
 			calllog->status=LinphoneCallSuccess;
 			break;
 	}
-	lc->call_logs=ms_list_append(lc->call_logs,(void *)calllog);
+	lc->call_logs=ms_list_prepend(lc->call_logs,(void *)calllog);
 	if (ms_list_size(lc->call_logs)>lc->max_call_logs){
-		MSList *elem;
-		elem=lc->call_logs;
+		MSList *elem,*prevelem=NULL;
+		/*find the last element*/
+		for(elem=lc->call_logs;elem!=NULL;elem=elem->next){
+			prevelem=elem;
+		}
+		elem=prevelem;
 		linphone_call_log_destroy((LinphoneCallLog*)elem->data);
 		lc->call_logs=ms_list_remove_link(lc->call_logs,elem);
 	}
@@ -1619,9 +1623,11 @@ bool_t linphone_core_interpret_url(LinphoneCore *lc, const char *url, LinphoneAd
 	enum_lookup_res_t *enumres=NULL;
 	LinphoneAddress *parsed_url=NULL;	
 	char *enum_domain=NULL;
-	LinphoneProxyConfig *proxy;
+	LinphoneProxyConfig *proxy=lc->default_proxy;;
 	char *tmpurl;
 	const char *tmproute;
+	LinphoneAddress *uri;
+	
 	if (real_parsed_url!=NULL) *real_parsed_url=NULL;
 	*route=NULL;
 	tmproute=linphone_core_get_route(lc);
@@ -1643,10 +1649,19 @@ bool_t linphone_core_interpret_url(LinphoneCore *lc, const char *url, LinphoneAd
 	/* check if we have a "sip:" */
 	if (strstr(url,"sip:")==NULL){
 		/* this doesn't look like a true sip uri */
-		proxy=lc->default_proxy;
+		if (strchr(url,'@')!=NULL){
+			/* seems like sip: is missing !*/
+			tmpurl=ms_strdup_printf("sip:%s",url);
+			uri=linphone_address_new(tmpurl);
+			ms_free(tmpurl);
+			if (uri){
+				if (real_parsed_url!=NULL) *real_parsed_url=uri;
+				return TRUE;
+			}
+		}
+		
 		if (proxy!=NULL){
 			/* append the proxy domain suffix */
-			LinphoneAddress *uri;
 			const char *identity=linphone_proxy_config_get_identity(proxy);
 			char normalized_username[128];
 			uri=linphone_address_new(identity);
@@ -1661,7 +1676,7 @@ bool_t linphone_core_interpret_url(LinphoneCore *lc, const char *url, LinphoneAd
 			if (real_parsed_url!=NULL) *real_parsed_url=uri;
 			if (tmproute) *route=ms_strdup(tmproute);
 			return TRUE;
-		}
+		}else return FALSE;
 	}
 	parsed_url=linphone_address_new(url);
 	if (parsed_url!=NULL){
@@ -1681,7 +1696,7 @@ bool_t linphone_core_interpret_url(LinphoneCore *lc, const char *url, LinphoneAd
 /**
  * Returns the default identity SIP address.
  *
- * @ingroup proxies
+ * @ingroup proxiesb
  * This is an helper function:
  *
  * If no default proxy is set, this will return the primary contact (
@@ -3016,7 +3031,7 @@ static bool_t video_size_supported(MSVideoSize vsize){
  *
  * @ingroup media_parameters
  * This applies only to the stream that is captured and sent to the remote party,
- * since we accept all standart video size on the receive path.
+ * since we accept all standard video size on the receive path.
 **/
 void linphone_core_set_preferred_video_size(LinphoneCore *lc, MSVideoSize vsize){
 	if (video_size_supported(vsize)){
@@ -3172,6 +3187,9 @@ void sip_config_uninit(LinphoneCore *lc)
 	lp_config_set_int(lc->config,"sip","use_rfc2833",config->use_rfc2833);
 	lp_config_set_int(lc->config,"sip","use_ipv6",config->ipv6_enabled);
 	lp_config_set_int(lc->config,"sip","register_only_when_network_is_up",config->register_only_when_network_is_up);
+
+	lp_config_set_int(lc->config,"sip","default_proxy",linphone_core_get_default_proxy(lc,NULL));
+	
 	for(elem=config->proxies,i=0;elem!=NULL;elem=ms_list_next(elem),i++){
 		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)(elem->data);
 		linphone_proxy_config_write_to_config_file(lc->config,cfg,i);
@@ -3313,7 +3331,6 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	/* save all config */
 	net_config_uninit(lc);
 	sip_config_uninit(lc);
-	lp_config_set_int(lc->config,"sip","default_proxy",linphone_core_get_default_proxy(lc,NULL));
 	rtp_config_uninit(lc);
 	sound_config_uninit(lc);
 	video_config_uninit(lc);

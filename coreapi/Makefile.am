@@ -1,6 +1,8 @@
 
 SUBDIRS=help
 
+EXTRA_DIST=linphonecore_jni.cc
+
 ## Process this file with automake to produce Makefile.in
 linphone_includedir=$(includedir)/linphone
 

@@ -78,8 +78,9 @@ endif
 
 AM_CFLAGS= -DIN_LINPHONE -I$(top_srcdir)/coreapi/ \
 		-I$(top_srcdir)/mediastreamer2/include/ \
+		$(ORTP_CFLAGS) \
 		$(LIBGLADE_CFLAGS) $(STRICT_OPTIONS) $(LIBGTK_CFLAGS) $(IPV6_CFLAGS) \
-		$(ORTP_CFLAGS) $(OSIP_CFLAGS) 
+		$(OSIP_CFLAGS) 
 
 
 version_date.h: $(top_srcdir)/configure.in
