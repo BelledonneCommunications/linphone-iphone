@@ -73,14 +73,15 @@
 	
 	if (sender == call) {
 		if (!linphone_core_in_call(mCore)) {
+			LinphoneProxyConfig* proxyCfg;	
+			//get default proxy
+			linphone_core_get_default_proxy(mCore,&proxyCfg);
+			
 			if ([address.text length] == 0) return; //just return
-			if ([address.text hasPrefix:@"sip:"]) {
+			if ([address.text hasPrefix:@"sip:"] | proxyCfg==nil) {
 				linphone_core_invite(mCore, [address.text cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 			} else {
 				char normalizedUserName[256];
-				LinphoneProxyConfig* proxyCfg;	
-				//get default proxy
-				linphone_core_get_default_proxy(mCore,&proxyCfg);
 				NSString* toUserName = [NSString stringWithString:[address text]];
 				linphone_proxy_config_normalize_number(proxyCfg,[toUserName cStringUsingEncoding:[NSString defaultCStringEncoding]],normalizedUserName,sizeof(normalizedUserName));
 				LinphoneAddress* tmpAddress = linphone_address_new(linphone_core_get_identity(mCore));
@@ -113,10 +114,6 @@
 -(IBAction) doKeyPad:(id)sender {
 	if (!linphone_core_in_call(mCore)) {
 		//outcall behavior	
-		//remove sip: if first digits
-		if ([address.text isEqualToString:@"sip:"]) {
-			[address setText:@""];
-		}
 		NSString* newAddress = nil;
 		
 		if (sender == one) {
@@ -150,7 +147,7 @@
 				newAddress = [address.text substringToIndex: [address.text length]-1];
 			} 
 		} else  {
-			NSLog(@"unknown event from diad pad");
+			ms_message(@"unknown event from diad pad");
 			return;
 		}
 		if (newAddress != nil) {
@@ -196,7 +193,7 @@
 												 selector:@selector(doKeyZeroLongPress)
 												   object:nil];
 	} else  {
-		NSLog(@"unknown up event from dial pad");	
+		ms_message(@"unknown up event from dial pad");	
 	}
 }
 
@@ -374,7 +371,7 @@
 			}
 			[peerLabel setText:@""];
 			[callDuration setText:@""];
-
+			
 			break;
 		}
 		default:

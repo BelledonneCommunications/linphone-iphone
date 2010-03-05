@@ -143,6 +143,7 @@
 		[cell.detailTextLabel setText:[NSString stringWithFormat:@"%s"/* [%s]"*/,username/*,callLogs->start_date*/]];
 	} else {
 		[cell.textLabel setText:[[NSString alloc] initWithCString:username encoding:[NSString defaultCStringEncoding]]];
+		[cell.detailTextLabel setText:nil];
 	}
 	
 
@@ -170,8 +171,20 @@
 	}
 	const char* username = linphone_address_get_username(partyToCall)!=0?linphone_address_get_username(partyToCall):"";
 	const char* displayName = linphone_address_get_display_name(partyToCall)!=0?linphone_address_get_display_name(partyToCall):"";
+	const char* domain = linphone_address_get_domain(partyToCall);
+	
+	LinphoneProxyConfig* proxyCfg;
+	linphone_core_get_default_proxy(myLinphoneCore,&proxyCfg);
+	
+	NSString* phoneNumber;
+	
+	if (proxyCfg && (strcmp(domain, linphone_proxy_config_get_domain(proxyCfg)) == 0)) {
+		phoneNumber = [[NSString alloc] initWithCString:username encoding:[NSString defaultCStringEncoding]];
+	} else {
+		phoneNumber = [[NSString alloc] initWithCString:linphone_address_as_string_uri_only(partyToCall) encoding:[NSString defaultCStringEncoding]];
+	}
 	[self.phoneControllerDelegate 
-									setPhoneNumber:[[NSString alloc] initWithCString:username encoding:[NSString defaultCStringEncoding]] 
+									setPhoneNumber: phoneNumber
 									withDisplayName:[[NSString alloc] initWithCString:displayName encoding:[NSString defaultCStringEncoding]]];
 	
 	[self.linphoneDelegate selectDialerTab];

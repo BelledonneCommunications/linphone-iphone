@@ -10,8 +10,8 @@
 			<bool key="EncodedWithXMLCoder">YES</bool>
 			<integer value="38"/>
 			<integer value="4"/>
+			<integer value="43"/>
 			<integer value="25"/>
-			<integer value="42"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -163,7 +163,7 @@
 							<object class="IBUIImageView" id="457821340">
 								<reference key="NSNextResponder" ref="869038871"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{23, 7}, {263, 154}}</string>
+								<string key="NSFrame">{{23, 11}, {263, 154}}</string>
 								<reference key="NSSuperview" ref="869038871"/>
 								<bool key="IBUIOpaque">NO</bool>
 								<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
@@ -171,7 +171,7 @@
 								<bool key="IBUIUserInteractionEnabled">NO</bool>
 								<object class="NSCustomResource" key="IBUIImage">
 									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">linphone.png</string>
+									<string key="NSResourceName">linphone-3-250x130.png</string>
 								</object>
 							</object>
 							<object class="IBUITextView" id="432332592">

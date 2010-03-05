@@ -166,7 +166,7 @@ LinphoneCoreVTable linphonec_vtable = {
 }
 - (void)applicationDidBecomeActive:(UIApplication *)application {
 	if (isStarted) {
-		NSLog(@"becomming active, make sure we are registered");
+		ms_message(@"becomming active, make sure we are registered");
 		[self doRegister];
 	} else {
 		isStarted=true;
@@ -238,6 +238,11 @@ LinphoneCoreVTable linphonec_vtable = {
 	NSString* username = [[NSUserDefaults standardUserDefaults] stringForKey:@"username_preference"];
 	NSString* domain = [[NSUserDefaults standardUserDefaults] stringForKey:@"domain_preference"];
 	NSString* accountPassword = [[NSUserDefaults standardUserDefaults] stringForKey:@"password_preference"];
+
+	//clear auth info list
+	linphone_core_clear_all_auth_info(myLinphoneCore);
+	//clear existing proxy config
+	linphone_core_clear_proxy_config(myLinphoneCore);
 	
 	if (username && [username length] >0 && domain && [domain length]>0) {
 		
@@ -257,10 +262,6 @@ LinphoneCoreVTable linphonec_vtable = {
 		NSString* prefix = [[NSUserDefaults standardUserDefaults] stringForKey:@"prefix_preference"];
 		//possible valid config detected
 		LinphoneProxyConfig* proxyCfg;	
-		//clear auth info list
-		linphone_core_clear_all_auth_info(myLinphoneCore);
-		//clear existing proxy config
-		linphone_core_clear_proxy_config(myLinphoneCore);
 		proxyCfg = linphone_proxy_config_new();
 		
 		// add username password
