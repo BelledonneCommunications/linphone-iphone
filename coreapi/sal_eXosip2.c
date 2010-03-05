@@ -475,11 +475,13 @@ void sal_op_authenticate(SalOp *h, const SalAuthInfo *info){
 		const char *userid;
 		if (info->userid==NULL || info->userid[0]=='\0') userid=info->username;
 		else userid=info->userid;
+		ms_message("Authentication info for %s %s added to eXosip", info->username,info->realm);
 		eXosip_add_authentication_info (info->username,userid,
                                       info->password, NULL,info->realm);
 		eXosip_lock();
 		eXosip_default_action(h->pending_auth);
 		eXosip_unlock();
+		ms_message("eXosip_default_action() done");
 		eXosip_clear_authentication_info();
 		eXosip_event_free(h->pending_auth);
 		sal_remove_pending_auth(sal_op_get_sal(h),h);
@@ -660,11 +662,10 @@ static void call_released(Sal *sal, eXosip_event_t *ev){
 		sal->callbacks.call_failure(op,SalErrorNoResponse,SalReasonUnknown,NULL);
 }
 
-static int get_auth_data(eXosip_event_t *ev, const char **realm, const char **username){
+static int get_auth_data_from_response(osip_message_t *resp, const char **realm, const char **username){
 	const char *prx_realm=NULL,*www_realm=NULL;
 	osip_proxy_authenticate_t *prx_auth;
 	osip_www_authenticate_t *www_auth;
-	osip_message_t *resp=ev->response;
 	
 	*username=osip_uri_get_username(resp->from->url);
 	prx_auth=(osip_proxy_authenticate_t*)osip_list_get(&resp->proxy_authenticates,0);
@@ -682,6 +683,30 @@ static int get_auth_data(eXosip_event_t *ev, const char **realm, const char **us
 		return -1;
 	}
 	return 0;
+}
+
+static int get_auth_data_from_request(osip_message_t *msg, const char **realm, const char **username){
+	osip_authorization_t *auth=NULL;
+	osip_proxy_authorization_t *prx_auth=NULL;
+	
+	*username=osip_uri_get_username(msg->from->url);
+	osip_message_get_authorization(msg, 0, &auth);
+	if (auth){
+		*realm=osip_authorization_get_realm(auth);
+		return 0;
+	}
+	osip_message_get_proxy_authorization(msg,0,&prx_auth);
+	if (prx_auth){
+		*realm=osip_proxy_authorization_get_realm(prx_auth);
+		return 0;
+	}
+	return -1;
+}
+
+static int get_auth_data(eXosip_event_t *ev, const char **realm, const char **username){
+	if (ev->response && get_auth_data_from_response(ev->response,realm,username)==0) return 0;
+	if (ev->request && get_auth_data_from_request(ev->request,realm,username)==0) return 0;
+	return -1;
 }
 
 int sal_op_get_auth_requested(SalOp *op, const char **realm, const char **username){

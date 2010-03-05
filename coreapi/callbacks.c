@@ -329,12 +329,14 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 static void auth_requested(SalOp *h, const char *realm, const char *username){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(h));
 	LinphoneAuthInfo *ai=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,realm,username);
+	ms_message("auth_requested() for realm=%s, username=%s",realm,username);
 	if (ai && (ai->works || ai->usecount<3)){
 		SalAuthInfo sai;
 		sai.username=ai->username;
 		sai.userid=ai->userid;
 		sai.realm=ai->realm;
 		sai.password=ai->passwd;
+		ms_message("auth_requested(): authenticating realm=%s, username=%s",realm,username);
 		sal_op_authenticate(h,&sai);
 		ai->usecount++;
 	}else{
@@ -346,8 +348,10 @@ static void auth_requested(SalOp *h, const char *realm, const char *username){
 static void auth_success(SalOp *h, const char *realm, const char *username){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(h));
 	LinphoneAuthInfo *ai=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,realm,username);
-	if (ai)
+	if (ai){
+		ms_message("%s/%s authentication works.",realm,username);
 		ai->works=TRUE;
+	}
 }
 
 static void register_success(SalOp *op, bool_t registered){

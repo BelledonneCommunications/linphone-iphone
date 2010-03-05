@@ -1833,6 +1833,10 @@ int linphone_core_invite(LinphoneCore *lc, const char *url)
 	}
 	err=sal_call(call->op,from,real_url);
 
+	if (lc->sip_conf.sdp_200_ack){
+		call->media_pending=TRUE;
+		sal_call_set_local_media_description(call->op,call->localdesc);
+	}
 	barmsg=ortp_strdup_printf("%s %s", _("Contacting"), real_url);
 	lc->vtable.display_status(lc,barmsg);
 	ms_free(barmsg);
@@ -1919,10 +1923,16 @@ void linphone_core_init_media_streams(LinphoneCore *lc, LinphoneCall *call){
 #endif
 }
 
+static int dtmf_tab[16]={'0','1','2','3','4','5','6','7','8','9','*','#','A','B','C','D'};
+
 static void linphone_core_dtmf_received(RtpSession* s, int dtmf, void* user_data){
 	LinphoneCore* lc = (LinphoneCore*)user_data;
+	if (dtmf<0 || dtmf>15){
+		ms_warning("Bad dtmf value %i",dtmf);
+		return;
+	}
 	if (lc->vtable.dtmf_received != NULL)
-		lc->vtable.dtmf_received(lc, dtmf);
+		lc->vtable.dtmf_received(lc, dtmf_tab[dtmf]);
 }
 
 static void parametrize_equalizer(LinphoneCore *lc, AudioStream *st){
