@@ -21,6 +21,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "offeranswer.h"
 
+
+static void _osip_list_set_empty(osip_list_t *l, void (*freefunc)(void*)){
+	void *data;
+	while((data=osip_list_get(l,0))!=NULL){
+		osip_list_remove(l,0);
+		freefunc(data);
+	}
+}
+
 void sal_get_default_local_ip(Sal *sal, int address_family,char *ip, size_t iplen){
 	if (eXosip_guess_localip(address_family,ip,iplen)<0){
 		/*default to something */
@@ -349,7 +358,7 @@ int sal_call(SalOp *h, const char *from, const char *to){
 		return -1;
 	}
 	if (h->base.contact){
-		osip_list_special_free(&invite->contacts,(void (*)(void*))osip_contact_free);
+		_osip_list_set_empty(&invite->contacts,(void (*)(void*))osip_contact_free);
 		osip_message_set_contact(invite,h->base.contact);
 	}
 	if (h->base.root->session_expires!=0){
@@ -394,7 +403,7 @@ int sal_call_accept(SalOp * h){
 	}
 
 	if (contact) {
-		osip_list_special_free(&msg->contacts,(void (*)(void*))osip_contact_free);
+		_osip_list_set_empty(&msg->contacts,(void (*)(void*))osip_contact_free);
 		osip_message_set_contact(msg,contact);
 	}
 	
@@ -562,7 +571,7 @@ static void handle_reinvite(Sal *sal,  eXosip_event_t *ev){
 		if (op->supports_session_timers) osip_message_set_supported(msg, "timer");
 	}
 	if (op->base.contact){
-		osip_list_special_free(&msg->contacts,(void (*)(void*))osip_contact_free);
+		_osip_list_set_empty(&msg->contacts,(void (*)(void*))osip_contact_free);
 		osip_message_set_contact(msg,op->base.contact);
 	}
 	if (sdp){
