@@ -179,7 +179,6 @@ bool_t linphone_friend_in_list(const LinphoneFriend *lf);
 
 #define linphone_friend_url(lf) ((lf)->url)
 
-struct LinphoneProxyConfig;
 
 /**
  * @addtogroup proxies
