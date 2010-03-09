@@ -41,7 +41,6 @@ static const char *liblinphone_version=LIBLINPHONE_VERSION;
 #include "enum.h"
 
 void linphone_core_get_local_ip(LinphoneCore *lc, const char *dest, char *result);
-static void apply_nat_settings(LinphoneCore *lc);
 static void toggle_video_preview(LinphoneCore *lc, bool_t val);
 
 /* relative path where is stored local ring*/
@@ -1094,10 +1093,6 @@ int linphone_core_set_primary_contact(LinphoneCore *lc, const char *contact)
 
 /*result must be an array of chars at least LINPHONE_IPADDR_SIZE */
 void linphone_core_get_local_ip(LinphoneCore *lc, const char *dest, char *result){
-	if (lc->apply_nat_settings){
-		apply_nat_settings(lc);
-		lc->apply_nat_settings=FALSE;
-	}
 	if (linphone_core_get_firewall_policy(lc)==LINPHONE_POLICY_USE_NAT_ADDRESS){
 		strncpy(result,linphone_core_get_nat_address(lc),LINPHONE_IPADDR_SIZE);
 		return;
@@ -1109,6 +1104,32 @@ void linphone_core_get_local_ip(LinphoneCore *lc, const char *dest, char *result
 	sal_get_default_local_ip(lc->sal,lc->sip_conf.ipv6_enabled ? AF_INET6 : AF_INET,result,LINPHONE_IPADDR_SIZE);
 }
 
+static void update_primary_contact(LinphoneCore *lc){
+	char *guessed=NULL;
+	char tmp[LINPHONE_IPADDR_SIZE];
+
+	LinphoneAddress *url;
+	if (lc->sip_conf.guessed_contact!=NULL){
+		ms_free(lc->sip_conf.guessed_contact);
+		lc->sip_conf.guessed_contact=NULL;
+	}
+	url=linphone_address_new(lc->sip_conf.contact);
+	if (!url){
+		ms_error("Could not parse identity contact !");
+		url=linphone_address_new("sip:unknown@unkwownhost");
+	}
+	linphone_core_get_local_ip(lc, NULL, tmp);
+	if (strcmp(tmp,"127.0.0.1")==0 || strcmp(tmp,"::1")==0 ){
+		ms_warning("Local loopback network only !");
+		lc->sip_conf.loopback_only=TRUE;
+	}else lc->sip_conf.loopback_only=FALSE;
+	linphone_address_set_domain(url,tmp);
+	linphone_address_set_port_int(url,lc->sip_conf.sip_port);
+	guessed=linphone_address_as_string(url);
+	lc->sip_conf.guessed_contact=guessed;
+	linphone_address_destroy(url);
+}
+
 /**
  * Returns the default identity when no proxy configuration is used.
  *
@@ -1116,31 +1137,10 @@ void linphone_core_get_local_ip(LinphoneCore *lc, const char *dest, char *result
 **/
 const char *linphone_core_get_primary_contact(LinphoneCore *lc){
 	char *identity;
-	char tmp[LINPHONE_IPADDR_SIZE];
 	
 	if (lc->sip_conf.guess_hostname){
 		if (lc->sip_conf.guessed_contact==NULL || lc->sip_conf.loopback_only){
-			char *guessed=NULL;
-			LinphoneAddress *url;
-			if (lc->sip_conf.guessed_contact!=NULL){
-				ms_free(lc->sip_conf.guessed_contact);
-				lc->sip_conf.guessed_contact=NULL;
-			}
-			url=linphone_address_new(lc->sip_conf.contact);
-			if (!url){
-				ms_error("Could not parse identity contact !");
-				url=linphone_address_new("sip:unknown@unkwownhost");
-			}
-			linphone_core_get_local_ip(lc, NULL, tmp);
-			if (strcmp(tmp,"127.0.0.1")==0 || strcmp(tmp,"::1")==0 ){
-				ms_warning("Local loopback network only !");
-				lc->sip_conf.loopback_only=TRUE;
-			}else lc->sip_conf.loopback_only=FALSE;
-			linphone_address_set_domain(url,tmp);
-			linphone_address_set_port_int(url,lc->sip_conf.sip_port);
-			guessed=linphone_address_as_string(url);
-			lc->sip_conf.guessed_contact=guessed;
-			linphone_address_destroy(url);
+			update_primary_contact(lc);
 		}
 		identity=lc->sip_conf.guessed_contact;
 	}else{
@@ -1739,9 +1739,20 @@ LinphoneProxyConfig * linphone_core_lookup_known_proxy(LinphoneCore *lc, const L
 	return found_cfg;
 }
 
-static char *get_fixed_contact(LinphoneCore *lc, const char *localip, LinphoneProxyConfig *dest_proxy){
+static char *get_fixed_contact(LinphoneCore *lc, LinphoneCall *call , LinphoneProxyConfig *dest_proxy){
 	LinphoneAddress *ctt;
+	const char *localip=call->localip;
 
+	if (linphone_core_get_firewall_policy(lc)==LINPHONE_POLICY_USE_NAT_ADDRESS){
+		ctt=linphone_core_get_primary_contact_parsed(lc);
+		return ms_strdup_printf("sip:%s@%s",linphone_address_get_username(ctt),
+		    	linphone_core_get_nat_address(lc));
+	}
+	
+	if (call->op && sal_op_get_contact(call->op)!=NULL){
+		return NULL;
+	}
+	
 	if (dest_proxy && dest_proxy->op){
 		const char *fixed_contact=sal_op_get_contact(dest_proxy->op);
 		if (fixed_contact) {
@@ -1815,10 +1826,8 @@ int linphone_core_invite(LinphoneCore *lc, const char *url)
 	call=linphone_call_new_outgoing(lc,parsed_url2,real_parsed_url);
 	sal_op_set_route(call->op,route);
 
-	/*try to be best-effort in giving real local or routable contact address,
-	except when the user choosed to override the ipaddress */
-	if (linphone_core_get_firewall_policy(lc)!=LINPHONE_POLICY_USE_NAT_ADDRESS)
-		contact=get_fixed_contact(lc,call->localip,dest_proxy);
+	/*try to be best-effort in giving real local or routable contact address */
+	contact=get_fixed_contact(lc,call,dest_proxy);
 	if (contact){
 		sal_op_set_contact(call->op, contact);
 		ms_free(contact);
@@ -2193,10 +2202,8 @@ int linphone_core_accept_call(LinphoneCore *lc, const char *url)
 		lc->ringstream=NULL;
 	}
 	
-	/*try to be best-effort in giving real local or routable contact address,
-	except when the user choosed to override the ipaddress */
-	if (linphone_core_get_firewall_policy(lc)!=LINPHONE_POLICY_USE_NAT_ADDRESS)
-		contact=get_fixed_contact(lc,call->localip,NULL);
+	/*try to be best-effort in giving real local or routable contact address*/
+	contact=get_fixed_contact(lc,call,NULL);
 	if (contact)
 		sal_op_set_contact(call->op,contact);
 	
@@ -2705,7 +2712,6 @@ void linphone_core_set_stun_server(LinphoneCore *lc, const char *server){
 	if (server)
 		lc->net_conf.stun_server=ms_strdup(server);
 	else lc->net_conf.stun_server=NULL;
-	lc->apply_nat_settings=TRUE;
 }
 
 const char * linphone_core_get_stun_server(const LinphoneCore *lc){
@@ -2727,69 +2733,6 @@ int linphone_core_set_relay_addr(LinphoneCore *lc, const char *addr){
 	return 0;
 }
 
-static void apply_nat_settings(LinphoneCore *lc){
-	char *wmsg;
-	char *tmp=NULL;
-	int err;
-	struct addrinfo hints,*res;
-	const char *addr=lc->net_conf.nat_address;
-
-	if (lc->net_conf.firewall_policy==LINPHONE_POLICY_USE_NAT_ADDRESS){
-		if (addr==NULL || strlen(addr)==0){
-			lc->vtable.display_warning(lc,_("No nat/firewall address supplied !"));
-			linphone_core_set_firewall_policy(lc,LINPHONE_POLICY_NO_FIREWALL);
-		}
-		/*check the ip address given */
-		memset(&hints,0,sizeof(struct addrinfo));
-		if (lc->sip_conf.ipv6_enabled)
-			hints.ai_family=AF_INET6;
-		else
-			hints.ai_family=AF_INET;
-		hints.ai_socktype = SOCK_DGRAM;
-		err=getaddrinfo(addr,NULL,&hints,&res);
-		if (err!=0){
-			wmsg=ortp_strdup_printf(_("Invalid nat address '%s' : %s"),
-				addr, gai_strerror(err));
-			ms_warning(wmsg); // what is this for ?
-			lc->vtable.display_warning(lc, wmsg);
-			ms_free(wmsg);
-			linphone_core_set_firewall_policy(lc,LINPHONE_POLICY_NO_FIREWALL);
-			return;
-		}
-		/*now get it as an numeric ip address */
-		tmp=ms_malloc0(50);
-		err=getnameinfo(res->ai_addr,res->ai_addrlen,tmp,50,NULL,0,NI_NUMERICHOST);
-		if (err!=0){
-			wmsg=ortp_strdup_printf(_("Invalid nat address '%s' : %s"),
-				addr, gai_strerror(err));
-			ms_warning("%s",wmsg); // what is this for ?
-			lc->vtable.display_warning(lc, wmsg);
-			ms_free(wmsg);
-			ms_free(tmp);
-			freeaddrinfo(res);
-			linphone_core_set_firewall_policy(lc,LINPHONE_POLICY_NO_FIREWALL);
-			return;
-		}
-		freeaddrinfo(res);
-	}
-
-	if (lc->net_conf.firewall_policy==LINPHONE_POLICY_USE_NAT_ADDRESS){
-		if (tmp!=NULL){
-			if (!lc->net_conf.nat_sdp_only){
-				sal_masquerade(lc->sal,tmp);
-			}
-			ms_free(tmp);
-		}
-		else{
-			sal_masquerade(lc->sal,NULL);
-		}
-	}
-	else {
-		sal_masquerade(lc->sal,NULL);
-	}
-}
-
-
 void linphone_core_set_nat_address(LinphoneCore *lc, const char *addr)
 {
 	if (lc->net_conf.nat_address!=NULL){
@@ -2797,7 +2740,7 @@ void linphone_core_set_nat_address(LinphoneCore *lc, const char *addr)
 	}
 	if (addr!=NULL) lc->net_conf.nat_address=ms_strdup(addr);
 	else lc->net_conf.nat_address=NULL;
-	lc->apply_nat_settings=TRUE;
+	update_primary_contact(lc);
 }
 
 const char *linphone_core_get_nat_address(const LinphoneCore *lc)
@@ -2807,7 +2750,7 @@ const char *linphone_core_get_nat_address(const LinphoneCore *lc)
 
 void linphone_core_set_firewall_policy(LinphoneCore *lc, LinphoneFirewallPolicy pol){
 	lc->net_conf.firewall_policy=pol;
-	lc->apply_nat_settings=TRUE;
+	update_primary_contact(lc);
 }
 
 LinphoneFirewallPolicy linphone_core_get_firewall_policy(const LinphoneCore *lc){
