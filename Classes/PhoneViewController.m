@@ -78,8 +78,16 @@
 			linphone_core_get_default_proxy(mCore,&proxyCfg);
 			
 			if ([address.text length] == 0) return; //just return
-			if ([address.text hasPrefix:@"sip:"] | proxyCfg==nil) {
+			if ([address.text hasPrefix:@"sip:"]) {
 				linphone_core_invite(mCore, [address.text cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+			} else if ( proxyCfg==nil){
+				UIAlertView* error = [[UIAlertView alloc] initWithTitle:@"Invalid sip address"
+																message:@"Either configure a SIP proxy server from settings prior to place a call or use a valid sip address (I.E sip:john@example.net)" 
+															   delegate:nil 
+													  cancelButtonTitle:@"Continue" 
+													  otherButtonTitles:nil];
+				[error show];
+				
 			} else {
 				char normalizedUserName[256];
 				NSString* toUserName = [NSString stringWithString:[address text]];

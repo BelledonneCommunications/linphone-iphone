@@ -169,16 +169,6 @@
 		220FACE9107654FC0068D98F /* speex_resampler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = speex_resampler.h; sourceTree = "<group>"; };
 		220FACEA107654FC0068D98F /* speex_stereo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = speex_stereo.h; sourceTree = "<group>"; };
 		220FACEB107654FC0068D98F /* speex_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = speex_types.h; sourceTree = "<group>"; };
-		220FACF7107657EC0068D98F /* libeXosip2.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; name = libeXosip2.a; path = "../liblinphone-sdk/apple-darwin/lib/libeXosip2.a"; sourceTree = "<group>"; };
-		220FACF8107657EC0068D98F /* libgsm.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgsm.a; path = "../liblinphone-sdk/apple-darwin/lib/libgsm.a"; sourceTree = SOURCE_ROOT; };
-		220FACF9107657EC0068D98F /* liblinphone.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblinphone.a; path = "../liblinphone-sdk/apple-darwin/lib/liblinphone.a"; sourceTree = SOURCE_ROOT; };
-		220FACFA107657EC0068D98F /* libmediastreamer.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmediastreamer.a; path = "../liblinphone-sdk/apple-darwin/lib/libmediastreamer.a"; sourceTree = SOURCE_ROOT; };
-		220FACFB107657EC0068D98F /* libortp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libortp.a; path = "../liblinphone-sdk/apple-darwin/lib/libortp.a"; sourceTree = SOURCE_ROOT; };
-		220FACFC107657EC0068D98F /* libosip2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libosip2.a; path = "../liblinphone-sdk/apple-darwin/lib/libosip2.a"; sourceTree = SOURCE_ROOT; };
-		220FACFD107657EC0068D98F /* libosipparser2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libosipparser2.a; path = "../liblinphone-sdk/apple-darwin/lib/libosipparser2.a"; sourceTree = SOURCE_ROOT; };
-		220FACFE107657EC0068D98F /* libspeex.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libspeex.a; path = "../liblinphone-sdk/apple-darwin/lib/libspeex.a"; sourceTree = SOURCE_ROOT; };
-		220FACFF107657EC0068D98F /* libspeexdsp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libspeexdsp.a; path = "../liblinphone-sdk/apple-darwin/lib/libspeexdsp.a"; sourceTree = SOURCE_ROOT; };
-		220FAD17107659840068D98F /* liblinphone.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblinphone.a; path = "../liblinphone-sdk/apple-darwin/lib/liblinphone.a"; sourceTree = SOURCE_ROOT; };
 		220FAD2810765B400068D98F /* libeXosip2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libeXosip2.a; path = "../liblinphone-sdk/apple-darwin/lib/libeXosip2.a"; sourceTree = SOURCE_ROOT; };
 		220FAD2910765B400068D98F /* libgsm.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgsm.a; path = "../liblinphone-sdk/apple-darwin/lib/libgsm.a"; sourceTree = SOURCE_ROOT; };
 		220FAD2A10765B400068D98F /* liblinphone.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblinphone.a; path = "../liblinphone-sdk/apple-darwin/lib/liblinphone.a"; sourceTree = SOURCE_ROOT; };
@@ -499,16 +489,6 @@
 				220FAD2E10765B400068D98F /* libosipparser2.a */,
 				220FAD2F10765B400068D98F /* libspeex.a */,
 				220FAD3010765B400068D98F /* libspeexdsp.a */,
-				220FAD17107659840068D98F /* liblinphone.a */,
-				220FACF7107657EC0068D98F /* libeXosip2.a */,
-				220FACF8107657EC0068D98F /* libgsm.a */,
-				220FACF9107657EC0068D98F /* liblinphone.a */,
-				220FACFA107657EC0068D98F /* libmediastreamer.a */,
-				220FACFB107657EC0068D98F /* libortp.a */,
-				220FACFC107657EC0068D98F /* libosip2.a */,
-				220FACFD107657EC0068D98F /* libosipparser2.a */,
-				220FACFE107657EC0068D98F /* libspeex.a */,
-				220FACFF107657EC0068D98F /* libspeexdsp.a */,
 				220FAC77107654FC0068D98F /* include */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
