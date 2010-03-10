@@ -661,6 +661,7 @@ typedef struct _LinphoneCore
 	 * In case of false, network state must be communicate to linphone core with method linphone_core_
 	 */
 	bool_t auto_net_state_mon;
+	bool_t network_reachable;
 } LinphoneCore;
 
 
