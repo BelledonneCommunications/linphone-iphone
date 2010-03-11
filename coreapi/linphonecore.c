@@ -487,6 +487,9 @@ net_config_read (LinphoneCore *lc)
 	lc->net_conf.nat_sdp_only=tmp;
 	tmp=lp_config_get_int(lc->config,"net","mtu",0);
 	linphone_core_set_mtu(lc,tmp);
+	tmp=lp_config_get_int(lc->config,"net","download_ptime",0);
+	linphone_core_set_download_ptime(lc,tmp);
+
 }
 
 static void build_sound_devices_table(LinphoneCore *lc){
@@ -854,6 +857,18 @@ int linphone_core_get_download_bandwidth(const LinphoneCore *lc){
 int linphone_core_get_upload_bandwidth(const LinphoneCore *lc){
 	return lc->net_conf.upload_bw;
 }
+/**
+ * set audio packetization time linphone expect to received from peer
+ */
+void linphone_core_set_download_ptime(LinphoneCore *lc, int ptime);
+
+void linphone_core_set_download_ptime(LinphoneCore *lc, int ptime) {
+	lc->down_ptime=ptime;
+}
+int  linphone_core_get_download_ptime(LinphoneCore *lc) {
+	return lc->down_ptime;
+}
+
 
 /**
  * Returns liblinphone's version as a string.
@@ -952,6 +967,7 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	lc->vtable.display_status(lc,_("Ready"));
         gstate_new_state(lc, GSTATE_POWER_ON, NULL);
 	lc->auto_net_state_mon=TRUE;
+
     lc->ready=TRUE;
 }
 

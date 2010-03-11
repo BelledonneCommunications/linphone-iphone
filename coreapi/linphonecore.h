@@ -661,6 +661,7 @@ typedef struct _LinphoneCore
 	 * In case of false, network state must be communicate to linphone core with method linphone_core_
 	 */
 	bool_t auto_net_state_mon;
+	int down_ptime;
 } LinphoneCore;
 
 
@@ -712,7 +713,17 @@ void linphone_core_set_upload_bandwidth(LinphoneCore *lc, int bw);
 
 int linphone_core_get_download_bandwidth(const LinphoneCore *lc);
 int linphone_core_get_upload_bandwidth(const LinphoneCore *lc);
-
+/**
+ * set audio packetization time linphone expect to received from peer
+ * @ingroup media_parameters
+ *
+ */
+void linphone_core_set_download_ptime(LinphoneCore *lc, int ptime);
+/**
+ * get audio packetization time linphone expect to received from peer, 0 means unspecified
+ * @ingroup media_parameters
+ */
+int  linphone_core_get_download_ptime(LinphoneCore *lc);
 
 #ifdef VINCENT_MAURY_RSVP
 /* QoS functions */

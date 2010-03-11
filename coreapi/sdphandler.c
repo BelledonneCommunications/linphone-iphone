@@ -238,6 +238,11 @@ sdp_context_add_payload (sdp_context_t * ctx, sdp_payload_t * payload, char *med
 				     attr_field);
 		}
 	}
+	if (payload->a_ptime !=0) {
+		attr_field = sstrdup_sprintf ("%i", payload->a_ptime);
+		sdp_message_a_attribute_add(offer, payload->line,osip_strdup ("ptime"),attr_field);
+		ms_message("adding ptime [%s]",attr_field);
+	}
 }
 
 void
