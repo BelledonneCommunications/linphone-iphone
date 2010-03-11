@@ -667,6 +667,7 @@ static void call_accepted(Sal *sal, eXosip_event_t *ev){
 	sdp_message_t *sdp;
 	osip_message_t *msg=NULL;
 	SalOp *op;
+	const char *contact;
 	op=(SalOp*)ev->external_reference;
 	if (op==NULL){
 		ms_error("A closed call is accepted ?");
@@ -680,6 +681,11 @@ static void call_accepted(Sal *sal, eXosip_event_t *ev){
 		if (op->base.local_media) sdp_process(op);
 	}
 	eXosip_call_build_ack(ev->did,&msg);
+	contact=sal_op_get_contact(op);
+	if (contact) {
+		_osip_list_set_empty(&msg->contacts,(void (*)(void*))osip_contact_free);
+		osip_message_set_contact(msg,contact);
+	}
 	if (op->sdp_answer)
 			set_sdp(msg,op->sdp_answer);
 	eXosip_call_send_ack(ev->did,msg);
