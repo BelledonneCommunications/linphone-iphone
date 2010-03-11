@@ -37,6 +37,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 /*#define UNSTANDART_GSM_11K 1*/
 
 static const char *liblinphone_version=LIBLINPHONE_VERSION;
+static void set_network_reachable(LinphoneCore* lc,bool_t isReachable);
 
 #include "enum.h"
 
@@ -1443,27 +1444,30 @@ static void linphone_core_disconnected(LinphoneCore *lc){
 	linphone_core_terminate_call(lc,NULL);
 }
 
-static void proxy_update(LinphoneCore *lc, time_t curtime){
-
+static void monitor_network_state(LinphoneCore *lc, time_t curtime){
 	static time_t last_check=0;
 	static bool_t last_status=FALSE;
-	if (lc->sip_conf.register_only_when_network_is_up){
-		char result[LINPHONE_IPADDR_SIZE];
-		/* only do the network up checking every five seconds */
-		if (last_check==0 || (curtime-last_check)>=5){
-			sal_get_default_local_ip(lc->sal,
-			    lc->sip_conf.ipv6_enabled ? AF_INET6 : AF_INET,
-			    result,LINPHONE_IPADDR_SIZE);
-			if (strcmp(result,"::1")!=0 && strcmp(result,"127.0.0.1")!=0){
-				last_status=TRUE;
-				ms_message("Network is up, registering now (%s)",result);
-			}else last_status=FALSE;
-			last_check=curtime;
+	char result[LINPHONE_IPADDR_SIZE];
+	bool_t new_status;
+
+	/* only do the network up checking every five seconds */
+	if (last_check==0 || (curtime-last_check)>=5){
+		sal_get_default_local_ip(lc->sal,
+		    lc->sip_conf.ipv6_enabled ? AF_INET6 : AF_INET,
+		    result,LINPHONE_IPADDR_SIZE);
+		if (strcmp(result,"::1")!=0 && strcmp(result,"127.0.0.1")!=0){
+			new_status=TRUE;
+		}else new_status=FALSE;
+		last_check=curtime;
+		if (new_status!=last_status) {
+			set_network_reachable(lc,new_status);
+			last_status=new_status;
 		}
-		linphone_core_set_network_reachable(lc,last_status);
-	}else {
-		ms_list_for_each(lc->sip_conf.proxies,(void (*)(void*))&linphone_proxy_config_update);
 	}
+}
+
+static void proxy_update(LinphoneCore *lc){
+	ms_list_for_each(lc->sip_conf.proxies,(void (*)(void*))&linphone_proxy_config_update);
 }
 
 static void assign_buddy_info(LinphoneCore *lc, BuddyInfo *info){
@@ -1571,7 +1575,9 @@ void linphone_core_iterate(LinphoneCore *lc){
 	}
 
 	sal_iterate(lc->sal);
-	proxy_update(lc,curtime);
+	if (lc->auto_net_state_mon) monitor_network_state(lc,curtime);
+
+	proxy_update(lc);
 
 	if (lc->call!=NULL){
 		LinphoneCall *call=lc->call;
@@ -2740,7 +2746,7 @@ void linphone_core_set_nat_address(LinphoneCore *lc, const char *addr)
 	}
 	if (addr!=NULL) lc->net_conf.nat_address=ms_strdup(addr);
 	else lc->net_conf.nat_address=NULL;
-	update_primary_contact(lc);
+	if (lc->sip_conf.contact) update_primary_contact(lc);
 }
 
 const char *linphone_core_get_nat_address(const LinphoneCore *lc)
@@ -2750,7 +2756,7 @@ const char *linphone_core_get_nat_address(const LinphoneCore *lc)
 
 void linphone_core_set_firewall_policy(LinphoneCore *lc, LinphoneFirewallPolicy pol){
 	lc->net_conf.firewall_policy=pol;
-	update_primary_contact(lc);
+	if (lc->sip_conf.contact) update_primary_contact(lc);
 }
 
 LinphoneFirewallPolicy linphone_core_get_firewall_policy(const LinphoneCore *lc){
@@ -3303,12 +3309,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	gstate_new_state(lc, GSTATE_POWER_OFF, NULL);
 }
 
-void linphone_core_set_network_reachable(LinphoneCore* lc,bool_t isReachable) {
-	//first disable automatic mode
-	if (lc->auto_net_state_mon) {
-		ms_message("Disabling automatic network state monitoring");
-		lc->auto_net_state_mon=FALSE;
-	}
+static void set_network_reachable(LinphoneCore* lc,bool_t isReachable){
 	ms_message("Network state is now [%s]",isReachable?"UP":"DOWN");
 	// second get the list of available proxies
 	const MSList *elem=linphone_core_get_proxy_config_list(lc);
@@ -3317,14 +3318,21 @@ void linphone_core_set_network_reachable(LinphoneCore* lc,bool_t isReachable) {
 		if (linphone_proxy_config_register_enabled(cfg) ) {
 			if (!isReachable) {
 				cfg->registered=0;
+			}else{
 				cfg->commit=TRUE;
-			} else {
-				linphone_proxy_config_update(cfg);
 			}
 		}
-
 	}
+	lc->network_reachable=isReachable;
+}
 
+void linphone_core_set_network_reachable(LinphoneCore* lc,bool_t isReachable) {
+	//first disable automatic mode
+	if (lc->auto_net_state_mon) {
+		ms_message("Disabling automatic network state monitoring");
+		lc->auto_net_state_mon=FALSE;
+	}
+	set_network_reachable(lc,isReachable);
 }
 /**
  * Destroys a LinphoneCore

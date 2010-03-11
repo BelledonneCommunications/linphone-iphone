@@ -193,3 +193,43 @@ void linphone_gtk_set_ui_config_int(const char *key , int val){
 }
 
 
+static void parse_item(const char *item, const char *window_name, GtkWidget *w,  gboolean show){
+	char tmp[64];
+	char *dot;
+	strcpy(tmp,item);
+	dot=strchr(tmp,'.');
+	if (dot){
+		*dot='\0';
+		dot++;
+		if (strcmp(window_name,tmp)==0){
+			GtkWidget *wd=linphone_gtk_get_widget(w,dot);
+			if (wd) {
+				if (!show) gtk_widget_hide(wd);
+				else gtk_widget_show(wd);
+			}
+		}
+	}
+}
+
+void linphone_gtk_visibility_set(const char *hiddens, const char *window_name, GtkWidget *w, gboolean show){
+	char item[64];
+	const char *i;
+	const char *b;
+	int len;
+	for(b=i=hiddens;*i!='\0';++i){
+		if (*i==' '){
+			len=MIN(i-b,sizeof(item)-1);
+			strncpy(item,b,len);
+			item[len]='\0';
+			b=i+1;
+			parse_item(item,window_name,w,show);
+		}
+	}
+	len=MIN(i-b,sizeof(item)-1);
+	if (len>0){
+		strncpy(item,b,len);
+		item[len]='\0';
+		parse_item(item,window_name,w,show);
+	}
+}
+

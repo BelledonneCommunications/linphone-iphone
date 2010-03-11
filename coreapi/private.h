@@ -387,6 +387,7 @@ struct _LinphoneCore
 	bool_t bl_refresh;
 	bool_t preview_finished;
 	bool_t auto_net_state_mon;
+	bool_t network_reachable;
 };
 
 #endif /* _PRIVATE_H */

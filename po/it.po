@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Linphone 3.2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-03-02 10:42+0100\n"
+"POT-Creation-Date: 2010-03-10 14:21+0100\n"
 "PO-Revision-Date: 2002-10-15 HO:MI+ZONE\n"
 "Last-Translator: Matteo Piazza <matteo.piazza@trentinonetwork.it>\n"
 "Language-Team: it <it@li.org>\n"
@@ -47,17 +47,17 @@ msgid ""
 "\\Program Files\\Linphone)"
 msgstr ""
 
-#: ../gtk-glade/main.c:436
+#: ../gtk-glade/main.c:396
 #, fuzzy, c-format
 msgid "Call with %s"
 msgstr "Chat con %s"
 
-#: ../gtk-glade/main.c:749
+#: ../gtk-glade/main.c:709
 #, c-format
 msgid "Incoming call from %s"
 msgstr "Chiamata proveniente da %s"
 
-#: ../gtk-glade/main.c:787
+#: ../gtk-glade/main.c:747
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
@@ -69,27 +69,27 @@ msgstr ""
 "veda il tuo stato o aggiungerlo alla tua lista dei contatti Se rispondi no "
 "questo utente sarà momentaneamente bloccato."
 
-#: ../gtk-glade/main.c:865
+#: ../gtk-glade/main.c:825
 #, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
 " at domain <i>%s</i>:"
 msgstr "Prego inserire la password per username <i>%s</i> e dominio <i>%s<i>"
 
-#: ../gtk-glade/main.c:962
+#: ../gtk-glade/main.c:922
 msgid "Website link"
 msgstr ""
 
-#: ../gtk-glade/main.c:998
+#: ../gtk-glade/main.c:958
 msgid "Linphone - a video internet phone"
 msgstr ""
 
-#: ../gtk-glade/main.c:1017
+#: ../gtk-glade/main.c:977
 #, c-format
 msgid "%s (Default)"
 msgstr "%s (Default)"
 
-#: ../gtk-glade/main.c:1258
+#: ../gtk-glade/main.c:1225
 msgid "A free SIP video-phone"
 msgstr ""
 
@@ -370,7 +370,7 @@ msgstr ""
 "Attiva\n"
 "microfono"
 
-#: ../gtk-glade/incall_view.c:180 ../gtk-glade/main.glade.h:40
+#: ../gtk-glade/incall_view.c:180 ../gtk-glade/main.glade.h:43
 msgid "Mute"
 msgstr ""
 "Chiudi\n"
@@ -430,22 +430,27 @@ msgid "9"
 msgstr "9"
 
 #: ../gtk-glade/main.glade.h:13
+#, fuzzy
+msgid "<b>Add contacts from directory</b>"
+msgstr "Aggiungi nuovo contatto dalla directory %s"
+
+#: ../gtk-glade/main.glade.h:14
 msgid "<b>Contact list</b>"
 msgstr "<b>Lista contatti</b>"
 
-#: ../gtk-glade/main.glade.h:14
+#: ../gtk-glade/main.glade.h:15
 msgid "<b>Terminate call</b>"
 msgstr "<b>Termina chiamata</b>"
 
-#: ../gtk-glade/main.glade.h:15
+#: ../gtk-glade/main.glade.h:16
 msgid "<b>Welcome !</b>"
 msgstr "<b>Benvenuto !</b>"
 
-#: ../gtk-glade/main.glade.h:16
+#: ../gtk-glade/main.glade.h:17
 msgid "A"
 msgstr "A"
 
-#: ../gtk-glade/main.glade.h:17
+#: ../gtk-glade/main.glade.h:18
 msgid ""
 "ADSL\n"
 "Fiber Channel"
@@ -453,7 +458,7 @@ msgstr ""
 "ADSL\n"
 "Fibra Ottica"
 
-#: ../gtk-glade/main.glade.h:19
+#: ../gtk-glade/main.glade.h:20
 msgid ""
 "All users\n"
 "Online users"
@@ -461,131 +466,139 @@ msgstr ""
 "Tutti gli utenti\n"
 "Utenti Online"
 
-#: ../gtk-glade/main.glade.h:21
+#: ../gtk-glade/main.glade.h:22
 msgid "Assistant"
 msgstr "Configuratore"
 
-#: ../gtk-glade/main.glade.h:22
+#: ../gtk-glade/main.glade.h:23
 msgid "Audio & Video"
 msgstr "Audio & Video"
 
-#: ../gtk-glade/main.glade.h:23
+#: ../gtk-glade/main.glade.h:24
 msgid "Audio only"
 msgstr "Solo Audio"
 
-#: ../gtk-glade/main.glade.h:24
+#: ../gtk-glade/main.glade.h:25
 msgid "Automatically log me in"
 msgstr "Login Automatico"
 
-#: ../gtk-glade/main.glade.h:25
+#: ../gtk-glade/main.glade.h:26
 msgid "B"
 msgstr "B"
 
-#: ../gtk-glade/main.glade.h:26 ../gtk-glade/parameters.glade.h:20
+#: ../gtk-glade/main.glade.h:27 ../gtk-glade/parameters.glade.h:21
 msgid "C"
 msgstr "C"
 
-#: ../gtk-glade/main.glade.h:27
+#: ../gtk-glade/main.glade.h:28 ../gtk-glade/call_logs.glade.h:1
+msgid "Call history"
+msgstr "Cronologia"
+
+#: ../gtk-glade/main.glade.h:29
 msgid "Check for updates"
 msgstr ""
 
-#: ../gtk-glade/main.glade.h:28
+#: ../gtk-glade/main.glade.h:30
 msgid "D"
 msgstr "D"
 
-#: ../gtk-glade/main.glade.h:29
+#: ../gtk-glade/main.glade.h:31
 msgid "Default"
 msgstr "Default"
 
-#: ../gtk-glade/main.glade.h:30
+#: ../gtk-glade/main.glade.h:32
 msgid "Digits"
 msgstr "Caratteri"
 
-#: ../gtk-glade/main.glade.h:31
+#: ../gtk-glade/main.glade.h:33
 msgid "Duration"
 msgstr "Durata"
 
-#: ../gtk-glade/main.glade.h:32
+#: ../gtk-glade/main.glade.h:34
 msgid "Duration:"
 msgstr "Durata:"
 
-#: ../gtk-glade/main.glade.h:33
+#: ../gtk-glade/main.glade.h:35
 msgid "Enable self-view"
 msgstr "Self-view abilitato"
 
-#: ../gtk-glade/main.glade.h:34
+#: ../gtk-glade/main.glade.h:36
 msgid "Enter username, phone number, or full sip address"
 msgstr "Inserisci username, numero o indirizzo sip"
 
-#: ../gtk-glade/main.glade.h:35
+#: ../gtk-glade/main.glade.h:37
+msgid "Homepage"
+msgstr ""
+
+#: ../gtk-glade/main.glade.h:38
 msgid "In call"
 msgstr "In chiamata"
 
-#: ../gtk-glade/main.glade.h:36
+#: ../gtk-glade/main.glade.h:39
 msgid "Internet connection:"
 msgstr "Connessione Internet:"
 
-#: ../gtk-glade/main.glade.h:37
+#: ../gtk-glade/main.glade.h:40
 msgid "Login information"
 msgstr "Credenziali di accesso"
 
-#: ../gtk-glade/main.glade.h:38
+#: ../gtk-glade/main.glade.h:41
 msgid "Lookup:"
 msgstr ""
 
-#: ../gtk-glade/main.glade.h:39
+#: ../gtk-glade/main.glade.h:42
 msgid "Main view"
 msgstr "Vista principale"
 
-#: ../gtk-glade/main.glade.h:41
+#: ../gtk-glade/main.glade.h:44
 msgid "My current identity:"
 msgstr "Identità corrente"
 
-#: ../gtk-glade/main.glade.h:42
+#: ../gtk-glade/main.glade.h:45
 msgid "Password"
 msgstr "Password"
 
-#: ../gtk-glade/main.glade.h:43
+#: ../gtk-glade/main.glade.h:46
 msgid "SIP address or phone number:"
 msgstr "Indirizzo sip o numero."
 
-#: ../gtk-glade/main.glade.h:44
+#: ../gtk-glade/main.glade.h:47
+msgid "Search"
+msgstr ""
+
+#: ../gtk-glade/main.glade.h:48
 msgid "Show current call"
 msgstr "Mostra chiamata corrente"
 
-#: ../gtk-glade/main.glade.h:45
+#: ../gtk-glade/main.glade.h:49
+msgid "Show debug messages"
+msgstr ""
+
+#: ../gtk-glade/main.glade.h:50
 msgid "Start call"
 msgstr "Inizia chiamata"
 
-#: ../gtk-glade/main.glade.h:46
+#: ../gtk-glade/main.glade.h:51
 msgid "Terminate call"
 msgstr "Termina chiamata"
 
-#: ../gtk-glade/main.glade.h:47
+#: ../gtk-glade/main.glade.h:52
 msgid "Username"
 msgstr "Username"
 
-#: ../gtk-glade/main.glade.h:48
+#: ../gtk-glade/main.glade.h:53
 msgid "_Linphone"
 msgstr "_Linphone"
 
-#: ../gtk-glade/main.glade.h:49
+#: ../gtk-glade/main.glade.h:54
 msgid "_Modes"
 msgstr "_Modi"
 
-#: ../gtk-glade/main.glade.h:50
-msgid "gtk-connect"
-msgstr ""
-
-#: ../gtk-glade/main.glade.h:51
-msgid "gtk-find"
-msgstr ""
-
-#: ../gtk-glade/main.glade.h:52
+#: ../gtk-glade/main.glade.h:55
 msgid "in"
 msgstr "in"
 
-#: ../gtk-glade/main.glade.h:53
+#: ../gtk-glade/main.glade.h:56
 msgid "label"
 msgstr "etichetta"
 
@@ -667,10 +680,6 @@ msgstr "Prego inserire la password di dominio"
 #: ../gtk-glade/password.glade.h:4
 msgid "UserID"
 msgstr ""
-
-#: ../gtk-glade/call_logs.glade.h:1
-msgid "Call history"
-msgstr "Cronologia"
 
 #: ../gtk-glade/sip_account.glade.h:1
 msgid "Configure a SIP account"
@@ -757,42 +766,47 @@ msgid "<b>Language</b>"
 msgstr "<b>Linguaggio</b>"
 
 #: ../gtk-glade/parameters.glade.h:7
+#, fuzzy
+msgid "<b>Level</b>"
+msgstr "<b>Linguaggio</b>"
+
+#: ../gtk-glade/parameters.glade.h:8
 msgid "<b>NAT and Firewall</b>"
 msgstr "<b>NAT and Firewall</b>"
 
-#: ../gtk-glade/parameters.glade.h:8
+#: ../gtk-glade/parameters.glade.h:9
 msgid "<b>Ports</b>"
 msgstr "<b>Porte</b>"
 
-#: ../gtk-glade/parameters.glade.h:9
+#: ../gtk-glade/parameters.glade.h:10
 msgid "<b>Privacy</b>"
 msgstr "<b>Privacy</b>"
 
-#: ../gtk-glade/parameters.glade.h:10
+#: ../gtk-glade/parameters.glade.h:11
 msgid "<b>Proxy accounts</b>"
 msgstr "<b>Account proxy</b>"
 
-#: ../gtk-glade/parameters.glade.h:11
+#: ../gtk-glade/parameters.glade.h:12
 msgid "<b>Transport</b>"
 msgstr "<b>Transporto</b>"
 
-#: ../gtk-glade/parameters.glade.h:12
+#: ../gtk-glade/parameters.glade.h:13
 msgid "<b>Video</b>"
 msgstr "<b>Video</b>"
 
-#: ../gtk-glade/parameters.glade.h:13
+#: ../gtk-glade/parameters.glade.h:14
 msgid "ALSA special device (optional):"
 msgstr "Dispositivo ALSA (optional):"
 
-#: ../gtk-glade/parameters.glade.h:14
+#: ../gtk-glade/parameters.glade.h:15
 msgid "Add"
 msgstr "Aggiungi"
 
-#: ../gtk-glade/parameters.glade.h:15
+#: ../gtk-glade/parameters.glade.h:16
 msgid "Audio RTP/UDP:"
 msgstr "Audio RTP/UDP:"
 
-#: ../gtk-glade/parameters.glade.h:16
+#: ../gtk-glade/parameters.glade.h:17
 msgid ""
 "Audio codecs\n"
 "Video codecs"
@@ -800,83 +814,83 @@ msgstr ""
 "Audio codecs\n"
 "Video codecs"
 
-#: ../gtk-glade/parameters.glade.h:18
+#: ../gtk-glade/parameters.glade.h:19
 msgid "Behind NAT / Firewall (specify gateway IP below)"
 msgstr "Dietro NAT / Firewall (IP del gateway)"
 
-#: ../gtk-glade/parameters.glade.h:19
+#: ../gtk-glade/parameters.glade.h:20
 msgid "Behind NAT / Firewall (use STUN to resolve)"
 msgstr "Dietro NAT / Firewall (utilizza STUN)"
 
-#: ../gtk-glade/parameters.glade.h:21
+#: ../gtk-glade/parameters.glade.h:22
 msgid "CIF"
 msgstr "CIF"
 
-#: ../gtk-glade/parameters.glade.h:22
+#: ../gtk-glade/parameters.glade.h:23
 msgid "Capture device:"
 msgstr "Dispositivo microfono:"
 
-#: ../gtk-glade/parameters.glade.h:23
+#: ../gtk-glade/parameters.glade.h:24
 msgid "Codecs"
 msgstr "Codec"
 
-#: ../gtk-glade/parameters.glade.h:24
+#: ../gtk-glade/parameters.glade.h:25
 msgid "Direct connection to the Internet"
 msgstr "Connessione diretta a internet"
 
-#: ../gtk-glade/parameters.glade.h:25
+#: ../gtk-glade/parameters.glade.h:26
 msgid "Disable"
 msgstr "Disattivato"
 
-#: ../gtk-glade/parameters.glade.h:26
+#: ../gtk-glade/parameters.glade.h:27
 msgid "Done"
 msgstr "Fatto"
 
-#: ../gtk-glade/parameters.glade.h:27
+#: ../gtk-glade/parameters.glade.h:28
 msgid "Download speed limit in Kbit/sec:"
 msgstr "Velocita massima in Dowload Kbit/sec"
 
-#: ../gtk-glade/parameters.glade.h:28
+#: ../gtk-glade/parameters.glade.h:29
 msgid "Edit"
 msgstr "Edita"
 
-#: ../gtk-glade/parameters.glade.h:29
+#: ../gtk-glade/parameters.glade.h:30
 msgid "Enable"
 msgstr "Attivato"
 
-#: ../gtk-glade/parameters.glade.h:30
+#: ../gtk-glade/parameters.glade.h:31
 msgid "Enable echo cancellation"
 msgstr "Attiva cancellazione eco"
 
-#: ../gtk-glade/parameters.glade.h:31
+#: ../gtk-glade/parameters.glade.h:32
 msgid "Erase all passwords"
 msgstr "Cancella tutte le password"
 
-#: ../gtk-glade/parameters.glade.h:32
+#: ../gtk-glade/parameters.glade.h:33
 msgid "Manage SIP Accounts"
 msgstr "Gestici SIP Account"
 
-#: ../gtk-glade/parameters.glade.h:33
+#: ../gtk-glade/parameters.glade.h:34
 msgid "Multimedia settings"
 msgstr "Impostazioni multimediali"
 
-#: ../gtk-glade/parameters.glade.h:34
+#: ../gtk-glade/parameters.glade.h:35
 msgid "Network settings"
 msgstr "Impostazioni di rete"
 
-#: ../gtk-glade/parameters.glade.h:35
+#: ../gtk-glade/parameters.glade.h:36
 msgid "Playback device:"
 msgstr "Dispositivo uscita audio:"
 
-#: ../gtk-glade/parameters.glade.h:36
+#: ../gtk-glade/parameters.glade.h:37
 msgid "Prefered video resolution:"
 msgstr "Risoluzione video preferita"
 
-#: ../gtk-glade/parameters.glade.h:37
+#: ../gtk-glade/parameters.glade.h:38
 msgid "Public IP address:"
 msgstr "Indirizzo ip pubblico:"
 
-#: ../gtk-glade/parameters.glade.h:38
+#: ../gtk-glade/parameters.glade.h:39
 msgid ""
 "Register to FONICS\n"
 "virtual network !"
@@ -884,100 +898,104 @@ msgstr ""
 "Registrati a  FONICS\n"
 "virtual network !"
 
-#: ../gtk-glade/parameters.glade.h:40
+#: ../gtk-glade/parameters.glade.h:41
 msgid "Remove"
 msgstr "Rimuovi"
 
-#: ../gtk-glade/parameters.glade.h:41
+#: ../gtk-glade/parameters.glade.h:42
 msgid "Ring device:"
 msgstr "Dispositivo squillo:"
 
-#: ../gtk-glade/parameters.glade.h:42
+#: ../gtk-glade/parameters.glade.h:43
 msgid "Ring sound:"
 msgstr "Suoneria:"
 
-#: ../gtk-glade/parameters.glade.h:43
+#: ../gtk-glade/parameters.glade.h:44
 msgid "SIP (UDP):"
 msgstr "SIP (UDP)"
 
-#: ../gtk-glade/parameters.glade.h:44
+#: ../gtk-glade/parameters.glade.h:45
 msgid "Send DTMFs as SIP info"
 msgstr "Invia DTMF come SIP info"
 
-#: ../gtk-glade/parameters.glade.h:45
+#: ../gtk-glade/parameters.glade.h:46
 msgid "Set Maximum Transmission Unit:"
 msgstr "Imposta Maximum Transmission Unit:"
 
-#: ../gtk-glade/parameters.glade.h:46
+#: ../gtk-glade/parameters.glade.h:47
 msgid "Settings"
 msgstr "Preferenze"
 
-#: ../gtk-glade/parameters.glade.h:47
+#: ../gtk-glade/parameters.glade.h:48
+msgid "Show advanced settings"
+msgstr ""
+
+#: ../gtk-glade/parameters.glade.h:49
 msgid "Stun server:"
 msgstr "Stun server:"
 
-#: ../gtk-glade/parameters.glade.h:48
+#: ../gtk-glade/parameters.glade.h:50
 msgid "This section defines your SIP address when not using a SIP account"
 msgstr ""
 "questa sezione definisce il tuo indirizzo SIP se non hai account attivi"
 
-#: ../gtk-glade/parameters.glade.h:49
+#: ../gtk-glade/parameters.glade.h:51
 msgid "Upload speed limit in Kbit/sec:"
 msgstr "Velocità massima in upload Kbit/sec:"
 
-#: ../gtk-glade/parameters.glade.h:50
+#: ../gtk-glade/parameters.glade.h:52
 msgid "Use IPv6 instead of IPv4"
 msgstr "Usa IPv6 invece che IPv4"
 
-#: ../gtk-glade/parameters.glade.h:51
+#: ../gtk-glade/parameters.glade.h:53
 msgid "User interface"
 msgstr "Interfaccia utente"
 
-#: ../gtk-glade/parameters.glade.h:52
+#: ../gtk-glade/parameters.glade.h:54
 msgid "Video RTP/UDP:"
 msgstr "Video RTP/UDP"
 
-#: ../gtk-glade/parameters.glade.h:53
+#: ../gtk-glade/parameters.glade.h:55
 msgid "Video input device:"
 msgstr "Dispositivo Video:"
 
-#: ../gtk-glade/parameters.glade.h:54
+#: ../gtk-glade/parameters.glade.h:56
 msgid "Your display name (eg: John Doe):"
 msgstr "Nome visualizzato (es: Mario Rossi):"
 
-#: ../gtk-glade/parameters.glade.h:55
+#: ../gtk-glade/parameters.glade.h:57
 msgid "Your resulting SIP address:"
 msgstr "Il tuo indirizzo sip:"
 
-#: ../gtk-glade/parameters.glade.h:56
+#: ../gtk-glade/parameters.glade.h:58
 msgid "Your username:"
 msgstr "Username"
 
-#: ../gtk-glade/parameters.glade.h:57
+#: ../gtk-glade/parameters.glade.h:59
 msgid "a sound card\n"
 msgstr "una scheda audio\n"
 
-#: ../gtk-glade/parameters.glade.h:59
+#: ../gtk-glade/parameters.glade.h:61
 msgid "default camera"
 msgstr "default videocamera"
 
-#: ../gtk-glade/parameters.glade.h:60
+#: ../gtk-glade/parameters.glade.h:62
 msgid "default soundcard"
 msgstr "default scheda audio"
 
-#: ../gtk-glade/parameters.glade.h:61
+#: ../gtk-glade/parameters.glade.h:63
 msgid "default soundcard\n"
 msgstr "default scheda audio\n"
 
-#: ../gtk-glade/parameters.glade.h:63
+#: ../gtk-glade/parameters.glade.h:65
 msgid "gtk-go-down"
 msgstr ""
 
-#: ../gtk-glade/parameters.glade.h:64
+#: ../gtk-glade/parameters.glade.h:66
 msgid "gtk-go-up"
 msgstr ""
 
-#: ../gtk-glade/parameters.glade.h:65
+#: ../gtk-glade/parameters.glade.h:67
 msgid "gtk-media-play"
 msgstr ""
 
@@ -1051,19 +1069,19 @@ msgstr ""
 msgid "Ready"
 msgstr "Pronto"
 
-#: ../coreapi/linphonecore.c:1401
+#: ../coreapi/linphonecore.c:1402
 msgid "Remote end seems to have disconnected, the call is going to be closed."
 msgstr "L'utente remoto sembra disconesso, la chiamata verrà terminata"
 
-#: ../coreapi/linphonecore.c:1638
+#: ../coreapi/linphonecore.c:1640
 msgid "Looking for telephone number destination..."
 msgstr "Ricerca numero destinazione..."
 
-#: ../coreapi/linphonecore.c:1640
+#: ../coreapi/linphonecore.c:1642
 msgid "Could not resolve this number."
 msgstr "Impossibile risolvere il numero."
 
-#: ../coreapi/linphonecore.c:1713
+#: ../coreapi/linphonecore.c:1715
 msgid ""
 "Could not parse given sip address. A sip url usually looks like sip:"
 "user@domain"
@@ -1071,31 +1089,31 @@ msgstr ""
 "Errore nel formato del contatto sip. Usualmente un indirizzo appare sip:"
 "user@domain"
 
-#: ../coreapi/linphonecore.c:1827
+#: ../coreapi/linphonecore.c:1829
 msgid "Sorry, having multiple simultaneous calls is not supported yet !"
 msgstr "Spiacenti, le chiamate multiple non sono supportate"
 
-#: ../coreapi/linphonecore.c:1871
+#: ../coreapi/linphonecore.c:1873
 msgid "Contacting"
 msgstr "In connessione"
 
-#: ../coreapi/linphonecore.c:1887
+#: ../coreapi/linphonecore.c:1889
 msgid "could not call"
 msgstr "chiamata fallita"
 
-#: ../coreapi/linphonecore.c:2303 ../coreapi/exevents.c:50
+#: ../coreapi/linphonecore.c:2305 ../coreapi/exevents.c:50
 msgid "Connected."
 msgstr "Connessione"
 
-#: ../coreapi/linphonecore.c:2337
+#: ../coreapi/linphonecore.c:2339
 msgid "Call ended"
 msgstr "Chiamata terminata"
 
-#: ../coreapi/linphonecore.c:2861
+#: ../coreapi/linphonecore.c:2863
 msgid "No nat/firewall address supplied !"
 msgstr "Non è stato fornito un indirizzo nat/firewall!"
 
-#: ../coreapi/linphonecore.c:2873 ../coreapi/linphonecore.c:2885
+#: ../coreapi/linphonecore.c:2875 ../coreapi/linphonecore.c:2887
 #, c-format
 msgid "Invalid nat address '%s' : %s"
 msgstr "Indirizzo NAT invalido '%s' : %s"
@@ -1392,7 +1410,7 @@ msgstr "campionatore di frequenza"
 msgid "RTP output filter"
 msgstr "RTP output filter"
 
-#: ../mediastreamer2/src/msrtp.c:492 ../mediastreamer2/src/msrtp.c:510
+#: ../mediastreamer2/src/msrtp.c:493 ../mediastreamer2/src/msrtp.c:511
 msgid "RTP input filter"
 msgstr "RTP imput filter"
 
@@ -1531,7 +1549,7 @@ msgstr ""
 msgid "A MJPEG encoder using ffmpeg library."
 msgstr "Un MJPEG encoder che utilizza le librerie ffmpeg"
 
-#: ../mediastreamer2/src/videoout.c:1323 ../mediastreamer2/src/videoout.c:1341
+#: ../mediastreamer2/src/videoout.c:1807 ../mediastreamer2/src/videoout.c:1825
 msgid "A generic video display"
 msgstr "Un generico video display"
 
