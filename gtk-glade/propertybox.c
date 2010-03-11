@@ -700,6 +700,28 @@ void linphone_gtk_lang_changed(GtkComboBox *combo){
 	}
 }
 
+static void linphone_gtk_ui_level_adapt(GtkWidget *top) {
+	gboolean ui_advanced;
+	const char *simple_ui = linphone_gtk_get_ui_config("simple_ui", "parameters.codec_tab parameters.transport_frame parameters.ports_frame");
+
+	ui_advanced = linphone_gtk_get_ui_config_int("advanced_ui", TRUE);
+	if (ui_advanced) {
+		linphone_gtk_visibility_set(simple_ui, "parameters", top, TRUE);
+	} else {
+		linphone_gtk_visibility_set(simple_ui, "parameters", top, FALSE);
+	}
+}
+
+void linphone_gtk_ui_level_toggled(GtkWidget *w) {
+	gint ui_advanced;
+	GtkWidget *top;
+
+	top = gtk_widget_get_toplevel(w);
+	ui_advanced = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w));
+	linphone_gtk_set_ui_config_int("advanced_ui", ui_advanced);
+	linphone_gtk_ui_level_adapt(top);
+}
+
 void linphone_gtk_show_parameters(void){
 	GtkWidget *pb=linphone_gtk_create_window("parameters");
 	LinphoneCore *lc=linphone_gtk_get_core();
@@ -709,6 +731,8 @@ void linphone_gtk_show_parameters(void){
 	LinphoneFirewallPolicy pol;
 	GtkWidget *codec_list=linphone_gtk_get_widget(pb,"codec_list");
 	int mtu;
+	int ui_advanced;
+
 	/* NETWORK CONFIG */
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb,"ipv6_enabled")),
 				linphone_core_ipv6_enabled(lc));
@@ -779,6 +803,13 @@ void linphone_gtk_show_parameters(void){
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb,"upload_bw")),
 				linphone_core_get_upload_bandwidth(lc));
 
+	/* UI CONFIG */
 	linphone_gtk_fill_langs(pb);
+	ui_advanced = linphone_gtk_get_ui_config_int("advanced_ui", 1);
+	linphone_gtk_set_ui_config_int("advanced_ui", ui_advanced);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb,"ui_level")),
+				ui_advanced);
+	linphone_gtk_ui_level_adapt(pb);
+
 	gtk_widget_show(pb);
 }

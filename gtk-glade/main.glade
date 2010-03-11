@@ -50,7 +50,7 @@
                     </child>
                     <child>
                       <widget class="GtkImageMenuItem" id="menuitem1">
-                        <property name="label">Call history</property>
+                        <property name="label" translatable="yes">Call history</property>
                         <property name="visible">True</property>
                         <property name="use_stock">False</property>
                         <signal name="activate" handler="linphone_gtk_show_call_logs"/>
@@ -153,7 +153,7 @@
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                     <child>
                       <widget class="GtkImageMenuItem" id="show_logs">
-                        <property name="label">Show debug messages</property>
+                        <property name="label" translatable="yes">Show debug messages</property>
                         <property name="visible">True</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                         <property name="use_stock">False</property>
@@ -178,7 +178,7 @@
                     </child>
                     <child>
                       <widget class="GtkImageMenuItem" id="home_item">
-                        <property name="label">Homepage</property>
+                        <property name="label" translatable="yes">Homepage</property>
                         <property name="visible">True</property>
                         <property name="use_stock">False</property>
                         <signal name="activate" handler="linphone_gtk_link_to_website"/>
@@ -234,7 +234,7 @@
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                         <property name="has_tooltip">True</property>
                         <property name="tooltip" translatable="yes">Start call</property>
-                        <property name="relief">half</property>
+                        <property name="relief">none</property>
                         <signal name="clicked" handler="linphone_gtk_start_call"/>
                         <child>
                           <widget class="GtkHBox" id="hbox4">
@@ -275,6 +275,8 @@
                           <widget class="GtkAlignment" id="alignment4">
                             <property name="visible">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                            <property name="left_padding">5</property>
+                            <property name="right_padding">5</property>
                             <child>
                               <widget class="GtkHBox" id="hbox3">
                                 <property name="visible">True</property>
@@ -320,7 +322,7 @@
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                         <property name="has_tooltip">True</property>
                         <property name="tooltip" translatable="yes">Terminate call</property>
-                        <property name="relief">half</property>
+                        <property name="relief">none</property>
                         <signal name="clicked" handler="linphone_gtk_terminate_call"/>
                         <child>
                           <widget class="GtkHBox" id="hbox21">
@@ -380,6 +382,7 @@
                                 <property name="visible">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <property name="left_padding">12</property>
+                                <property name="right_padding">12</property>
                                 <child>
                                   <widget class="GtkVBox" id="vbox7">
                                     <property name="visible">True</property>
@@ -467,42 +470,80 @@ Online users</property>
                                       </packing>
                                     </child>
                                     <child>
-                                      <widget class="GtkHBox" id="directory_search_box">
+                                      <widget class="GtkFrame" id="directory_search_box">
+                                        <property name="visible">True</property>
+                                        <property name="label_xalign">0</property>
+                                        <property name="shadow_type">none</property>
                                         <child>
-                                          <widget class="GtkEntry" id="directory_search_entry">
+                                          <widget class="GtkHBox" id="directory_search_vbox">
                                             <property name="visible">True</property>
-                                            <property name="can_focus">True</property>
-                                            <property name="invisible_char">&#x25CF;</property>
-                                            <property name="secondary_icon_stock">gtk-find</property>
-                                            <property name="secondary_icon_activatable">True</property>
-                                            <property name="secondary_icon_sensitive">True</property>
-                                            <signal name="focus_in_event" handler="linphone_gtk_directory_search_focus_in"/>
-                                            <signal name="activate" handler="linphone_gtk_directory_search_activate"/>
-                                            <signal name="icon_press" handler="linphone_gtk_directory_search_activate"/>
-                                            <signal name="focus_out_event" handler="linphone_gtk_directory_search_focus_out"/>
+                                            <child>
+                                              <widget class="GtkEntry" id="directory_search_entry">
+                                                <property name="visible">True</property>
+                                                <property name="can_focus">True</property>
+                                                <property name="invisible_char">&#x25CF;</property>
+                                                <signal name="focus_in_event" handler="linphone_gtk_directory_search_focus_in"/>
+                                                <signal name="activate" handler="linphone_gtk_directory_search_activate"/>
+                                                <signal name="icon_press" handler="linphone_gtk_directory_search_activate"/>
+                                                <signal name="focus_out_event" handler="linphone_gtk_directory_search_focus_out"/>
+                                              </widget>
+                                              <packing>
+                                                <property name="position">0</property>
+                                              </packing>
+                                            </child>
+                                            <child>
+                                              <widget class="GtkButton" id="directory_search_button">
+                                                <property name="visible">True</property>
+                                                <property name="can_focus">True</property>
+                                                <property name="receives_default">True</property>
+                                                <property name="relief">none</property>
+                                                <signal name="clicked" handler="linphone_gtk_directory_search_button_clicked"/>
+                                                <child>
+                                                  <widget class="GtkHBox" id="hbox12">
+                                                    <property name="visible">True</property>
+                                                    <child>
+                                                      <widget class="GtkImage" id="directory_search_button_icon">
+                                                        <property name="visible">True</property>
+                                                        <property name="stock">gtk-find</property>
+                                                      </widget>
+                                                      <packing>
+                                                        <property name="position">0</property>
+                                                      </packing>
+                                                    </child>
+                                                    <child>
+                                                      <widget class="GtkLabel" id="directory_search_button_label">
+                                                        <property name="visible">True</property>
+                                                        <property name="label" translatable="yes">Search</property>
+                                                      </widget>
+                                                      <packing>
+                                                        <property name="position">1</property>
+                                                      </packing>
+                                                    </child>
+                                                  </widget>
+                                                </child>
+                                              </widget>
+                                              <packing>
+                                                <property name="expand">False</property>
+                                                <property name="position">1</property>
+                                              </packing>
+                                            </child>
                                           </widget>
-                                          <packing>
-                                            <property name="position">0</property>
-                                          </packing>
                                         </child>
                                         <child>
-                                          <widget class="GtkButton" id="directory_search_button">
-                                            <property name="label" translatable="yes">gtk-find</property>
+                                          <widget class="GtkLabel" id="label14">
                                             <property name="visible">True</property>
-                                            <property name="can_focus">True</property>
-                                            <property name="receives_default">True</property>
-                                            <property name="use_stock">True</property>
-                                            <signal name="clicked" handler="linphone_gtk_directory_search_button_clicked"/>
+                                            <property name="label" translatable="yes">&lt;b&gt;Add contacts from directory&lt;/b&gt;</property>
+                                            <property name="use_markup">True</property>
                                           </widget>
                                           <packing>
-                                            <property name="expand">False</property>
-                                            <property name="position">1</property>
+                                            <property name="type">label_item</property>
                                           </packing>
                                         </child>
                                       </widget>
                                       <packing>
                                         <property name="expand">False</property>
                                         <property name="fill">False</property>
+                                        <property name="padding">5</property>
                                         <property name="position">2</property>
                                       </packing>
                                     </child>
@@ -977,7 +1018,6 @@ Fiber Channel</property>
                               <widget class="GtkImage" id="image7">
                                 <property name="visible">True</property>
                                 <property name="stock">gtk-go-forward</property>
-                                <property name="icon-size">4</property>
                               </widget>
                               <packing>
                                 <property name="position">0</property>
@@ -1020,6 +1060,7 @@ Fiber Channel</property>
                   <widget class="GtkAlignment" id="alignment1">
                     <property name="visible">True</property>
                     <property name="left_padding">12</property>
+                    <property name="right_padding">12</property>
                     <child>
                       <widget class="GtkVBox" id="vbox3">
                         <property name="visible">True</property>
@@ -1256,6 +1297,7 @@ Fiber Channel</property>
                               <widget class="GtkAlignment" id="alignment3">
                                 <property name="visible">True</property>
                                 <property name="left_padding">12</property>
+                                <property name="right_padding">12</property>
                                 <child>
                                   <widget class="GtkTable" id="table1">
                                     <property name="visible">True</property>
@@ -1369,7 +1411,7 @@ Fiber Channel</property>
                             <property name="visible">True</property>
                             <child>
                               <widget class="GtkButton" id="login_connect">
-                                <property name="label" translatable="yes">gtk-connect</property>
+                                <property name="label">gtk-connect</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>

@@ -193,7 +193,7 @@ static int lookup_buddy(SipSetupContext *ctx, BLReq *req){
 	LpConfig *config=linphone_core_get_config(lc);
 	const char *identity=linphone_proxy_config_get_identity(cfg);
 	const char *url=lp_config_get_string(config,"BuddyLookup","url",NULL);
-	LinphoneAuthInfo *aa;
+	const LinphoneAuthInfo *aa;
 	SoupMessage *sm;
 	LinphoneAddress *from;
 	
