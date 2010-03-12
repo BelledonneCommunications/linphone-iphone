@@ -21,6 +21,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "offeranswer.h"
 
+
+static void _osip_list_set_empty(osip_list_t *l, void (*freefunc)(void*)){
+	void *data;
+	while((data=osip_list_get(l,0))!=NULL){
+		osip_list_remove(l,0);
+		freefunc(data);
+	}
+}
+
 void sal_get_default_local_ip(Sal *sal, int address_family,char *ip, size_t iplen){
 	if (eXosip_guess_localip(address_family,ip,iplen)<0){
 		/*default to something */
@@ -183,6 +192,7 @@ void *sal_get_user_pointer(const Sal *sal){
 }
 
 void sal_masquerade(Sal *ctx, const char *ip){
+	ms_message("Masquerading SIP with %s",ip);
 	eXosip_set_option(EXOSIP_OPT_SET_IPV4_FOR_GATEWAY,ip);
 }
 
@@ -259,6 +269,25 @@ MSList *sal_get_pending_auths(Sal *sal){
 	return ms_list_copy(sal->pending_auths);
 }
 
+static int extract_received_rport(osip_message_t *msg, const char **received, int *rportval){
+	osip_via_t *via=NULL;
+	osip_generic_param_t *param=NULL;
+	const char *rport;
+	
+	osip_message_get_via(msg,0,&via);
+	if (!via) return -1;
+	osip_via_param_get_byname(via,"rport",&param);
+	if (param) {
+		rport=param->gvalue;
+		if (rport && rport[0]!='\0') *rportval=atoi(rport);
+		else *rportval=5060;
+	}
+	param=NULL;
+	osip_via_param_get_byname(via,"received",&param);
+	if (param) *received=param->gvalue;
+	else return -1;
+	return 0;
+}
 
 static void set_sdp(osip_message_t *sip,sdp_message_t *msg){
 	int sdplen;
@@ -329,7 +358,7 @@ int sal_call(SalOp *h, const char *from, const char *to){
 		return -1;
 	}
 	if (h->base.contact){
-		osip_list_special_free(&invite->contacts,(void (*)(void*))osip_contact_free);
+		_osip_list_set_empty(&invite->contacts,(void (*)(void*))osip_contact_free);
 		osip_message_set_contact(invite,h->base.contact);
 	}
 	if (h->base.root->session_expires!=0){
@@ -374,7 +403,7 @@ int sal_call_accept(SalOp * h){
 	}
 
 	if (contact) {
-		osip_list_special_free(&msg->contacts,(void (*)(void*))osip_contact_free);
+		_osip_list_set_empty(&msg->contacts,(void (*)(void*))osip_contact_free);
 		osip_message_set_contact(msg,contact);
 	}
 	
@@ -542,7 +571,7 @@ static void handle_reinvite(Sal *sal,  eXosip_event_t *ev){
 		if (op->supports_session_timers) osip_message_set_supported(msg, "timer");
 	}
 	if (op->base.contact){
-		osip_list_special_free(&msg->contacts,(void (*)(void*))osip_contact_free);
+		_osip_list_set_empty(&msg->contacts,(void (*)(void*))osip_contact_free);
 		osip_message_set_contact(msg,op->base.contact);
 	}
 	if (sdp){
@@ -586,6 +615,9 @@ static void handle_ack(Sal *sal,  eXosip_event_t *ev){
 
 static int call_proceeding(Sal *sal, eXosip_event_t *ev){
 	SalOp *op=(SalOp*)ev->external_reference;
+	const char *received;
+	int rport;
+	
 	if (op==NULL) {
 		ms_warning("This call has been canceled.");
 		eXosip_lock();
@@ -595,6 +627,24 @@ static int call_proceeding(Sal *sal, eXosip_event_t *ev){
 	}
 	op->did=ev->did;
 	op->tid=ev->tid;
+	/* update contact if received and rport are set by the server */
+	if (extract_received_rport(ev->response,&received,&rport)==0){
+		const char *contact=sal_op_get_contact(op);
+		if (!contact){
+			/*no contact given yet, use from instead*/
+			contact=sal_op_get_from(op);
+		}
+		if (contact){
+			SalAddress *addr=sal_address_new(contact);
+			char *tmp;
+			sal_address_set_domain(addr,received);
+			sal_address_set_port_int(addr,rport);
+			tmp=sal_address_as_string(addr);
+			ms_message("Contact address automatically updated to %s for this call",tmp);
+			sal_op_set_contact(op,tmp);
+			ms_free(tmp);
+		}
+	}
 	return 0;
 }
 
@@ -617,6 +667,7 @@ static void call_accepted(Sal *sal, eXosip_event_t *ev){
 	sdp_message_t *sdp;
 	osip_message_t *msg=NULL;
 	SalOp *op;
+	const char *contact;
 	op=(SalOp*)ev->external_reference;
 	if (op==NULL){
 		ms_error("A closed call is accepted ?");
@@ -630,6 +681,11 @@ static void call_accepted(Sal *sal, eXosip_event_t *ev){
 		if (op->base.local_media) sdp_process(op);
 	}
 	eXosip_call_build_ack(ev->did,&msg);
+	contact=sal_op_get_contact(op);
+	if (contact) {
+		_osip_list_set_empty(&msg->contacts,(void (*)(void*))osip_contact_free);
+		osip_message_set_contact(msg,contact);
+	}
 	if (op->sdp_answer)
 			set_sdp(msg,op->sdp_answer);
 	eXosip_call_send_ack(ev->did,msg);
@@ -998,34 +1054,23 @@ static void other_request(Sal *sal, eXosip_event_t *ev){
 
 static bool_t register_again_with_updated_contact(SalOp *op, osip_message_t *orig_request, osip_message_t *last_answer){
 	osip_message_t *msg;
-	const char *rport,*received;
-	osip_via_t *via=NULL;
-	osip_generic_param_t *param=NULL;
+	const char *received;
+	int rport;
 	osip_contact_t *ctt=NULL;
 	char *tmp;
+	char port[20];
 	
-	osip_message_get_via(last_answer,0,&via);
-	if (!via) return FALSE;
-	osip_via_param_get_byname(via,"rport",&param);
-	if (param) rport=param->gvalue;
-	else return FALSE;
-	param=NULL;
-	osip_via_param_get_byname(via,"received",&param);
-	if (param) received=param->gvalue;
-	else return FALSE;
+	if (extract_received_rport(last_answer,&received,&rport)==-1) return FALSE;
 	osip_message_get_contact(orig_request,0,&ctt);
 	if (strcmp(ctt->url->host,received)==0){
 		/*ip address matches, check ports*/
 		const char *contact_port=ctt->url->port;
-		const char *via_rport=rport;
-		if (via_rport==NULL || strlen(via_rport)>0)
-			via_rport="5060";
-		if (contact_port==NULL || strlen(contact_port)>0)
+		if (contact_port==NULL || contact_port[0]=='\0')
 			contact_port="5060";
-		if (strcmp(contact_port,via_rport)==0){
+		if (atoi(contact_port)==rport){
 			ms_message("Register has up to date contact, doing nothing.");
 			return FALSE;
-		}else ms_message("ports do not match, need to update the register (%s <> %s)", contact_port,via_rport);
+		}else ms_message("ports do not match, need to update the register (%s <> %i)", contact_port,rport);
 	}
 	eXosip_lock();
 	msg=NULL;
@@ -1043,7 +1088,8 @@ static bool_t register_again_with_updated_contact(SalOp *op, osip_message_t *ori
 	if (ctt->url->port!=NULL){
 		osip_free(ctt->url->port);
 	}
-	ctt->url->port=osip_strdup(rport);
+	snprintf(port,sizeof(port),"%i",rport);
+	ctt->url->port=osip_strdup(port);
 	eXosip_register_send_register(op->rid,msg);
 	eXosip_unlock();
 	osip_contact_to_str(ctt,&tmp);

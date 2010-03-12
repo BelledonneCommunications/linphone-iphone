@@ -4,6 +4,7 @@ SUBDIRS=C fr it ja cs
 LINPHONE_SOUNDS=ringback.wav hello8000.wav hello16000.wav
 LINPHONE_RINGS=rings/orig.wav \
 				rings/oldphone.wav \
+				rings/oldphone-mono.wav \
 				rings/rock.wav \
 				rings/bigben.wav \
 				rings/toy.wav \

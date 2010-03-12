@@ -634,11 +634,13 @@ SipSetup *linphone_proxy_config_get_sip_setup(LinphoneProxyConfig *cfg){
 }
 
 void linphone_proxy_config_update(LinphoneProxyConfig *cfg){
+	LinphoneCore *lc=cfg->lc;
 	if (cfg->commit){
 		if (cfg->type && cfg->ssctx==NULL){
 			linphone_proxy_config_activate_sip_setup(cfg);
 		}
-		linphone_proxy_config_register(cfg);
+		if (lc->sip_conf.register_only_when_network_is_up || lc->network_reachable)
+			linphone_proxy_config_register(cfg);
 		cfg->commit=FALSE;
 	}
 }
