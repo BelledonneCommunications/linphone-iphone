@@ -518,6 +518,7 @@ static void sound_config_read(LinphoneCore *lc)
 	/*int tmp;*/
 	const char *tmpbuf;
 	const char *devid;
+	float gain=0;
 #ifdef __linux
 	/*alsadev let the user use custom alsa device within linphone*/
 	devid=lp_config_get_string(lc->config,"sound","alsadev",NULL);
@@ -583,6 +584,9 @@ static void sound_config_read(LinphoneCore *lc)
 		lp_config_get_int(lc->config,"sound","echolimiter",0));
 	linphone_core_enable_agc(lc,
 		lp_config_get_int(lc->config,"sound","agc",0));
+
+	gain=lp_config_get_float(lc->config,"sound","soft_play_lev",0);
+		linphone_core_set_soft_play_level(lc,gain);
 }
 
 static void sip_config_read(LinphoneCore *lc)
@@ -2039,6 +2043,10 @@ static void post_configure_audio_streams(LinphoneCore *lc){
 	float gain=lp_config_get_float(lc->config,"sound","mic_gain",-1);
 	if (gain!=-1)
 		audio_stream_set_mic_gain(st,gain);
+	float recv_gain = lc->sound_conf.soft_play_lev;
+	if (recv_gain != 0) {
+		linphone_core_set_soft_play_level(lc,recv_gain);
+	}
 	if (linphone_core_echo_limiter_enabled(lc)){
 		float speed=lp_config_get_float(lc->config,"sound","el_speed",-1);
 		float thres=lp_config_get_float(lc->config,"sound","el_thres",-1);
@@ -2424,6 +2432,27 @@ void linphone_core_set_ring_level(LinphoneCore *lc, int level){
 	lc->sound_conf.ring_lev=level;
 	sndcard=lc->sound_conf.ring_sndcard;
 	if (sndcard) ms_snd_card_set_level(sndcard,MS_SND_CARD_PLAYBACK,level);
+}
+
+
+void linphone_core_set_soft_play_level(LinphoneCore *lc, float level){
+	float gain=level;
+	lc->sound_conf.soft_play_lev=level;
+	AudioStream *st=lc->audiostream;
+	if (!st) return; /*just return*/
+
+	if (st->volrecv){
+		ms_filter_call_method(st->volrecv,MS_VOLUME_SET_DB_GAIN,&gain);
+	}else ms_warning("Could not apply gain: gain control wasn't activated.");
+}
+float linphone_core_get_soft_play_level(LinphoneCore *lc) {
+	float gain=0;
+	AudioStream *st=lc->audiostream;
+	if (st->volrecv){
+		ms_filter_call_method(st->volrecv,MS_VOLUME_GET,&gain);
+	}else ms_warning("Could not get gain: gain control wasn't activated.");
+
+	return gain;
 }
 
 /**
