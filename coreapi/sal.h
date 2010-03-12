@@ -124,6 +124,7 @@ typedef struct SalOpBase{
 	char *contact;
 	char *from;
 	char *to;
+	char *origin;
 	SalMediaDescription *local_media;
 	SalMediaDescription *remote_media;
 	void *user_pointer;
@@ -186,6 +187,7 @@ typedef void (*SalOnNotify)(SalOp *op, SalSubscribeState ss, SalPresenceStatus s
 typedef void (*SalOnSubscribeReceived)(SalOp *salop, const char *from);
 typedef void (*SalOnSubscribeClosed)(SalOp *salop, const char *from);
 typedef void (*SalOnInternalMsg)(Sal *sal, const char *msg);
+typedef void (*SalOnPingReply)(SalOp *salop);
 
 typedef struct SalCallbacks{
 	SalOnCallReceived call_received;
@@ -207,6 +209,7 @@ typedef struct SalCallbacks{
 	SalOnSubscribeReceived subscribe_received;
 	SalOnSubscribeClosed subscribe_closed;
 	SalOnInternalMsg internal_message;
+	SalOnPingReply ping_reply;
 }SalCallbacks;
 
 typedef struct SalAuthInfo{
@@ -219,7 +222,6 @@ typedef struct SalAuthInfo{
 void sal_set_callbacks(Sal *ctx, const SalCallbacks *cbs);
 int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int is_secure);
 void sal_set_user_agent(Sal *ctx, const char *user_agent);
-void sal_masquerade(Sal *ctx, const char *ip);
 void sal_use_session_timers(Sal *ctx, int expires);
 int sal_iterate(Sal *sal);
 MSList * sal_get_pending_auths(Sal *sal);
@@ -242,6 +244,8 @@ const char *sal_op_get_to(const SalOp *op);
 const char *sal_op_get_contact(const SalOp *op);
 const char *sal_op_get_route(const SalOp *op);
 const char *sal_op_get_proxy(const SalOp *op);
+/*for incoming requests, returns the origin of the packet as a sip uri*/
+const char *sal_op_get_network_origin(const SalOp *op);
 void *sal_op_get_user_pointer(const SalOp *op);
 
 /*Call API*/
@@ -273,6 +277,10 @@ int sal_notify_close(SalOp *op);
 /*presence publish */
 int sal_publish(SalOp *op, const char *from, const char *to, SalPresenceStatus status);
 
+
+/*ping: main purpose is to obtain its own contact address behind firewalls*/
+int sal_ping(SalOp *op, const char *from, const char *to);
+
 #define payload_type_set_number(pt,n)	(pt)->user_data=(void*)((long)n);
 #define payload_type_get_number(pt)		((int)(long)(pt)->user_data)
 
@@ -282,6 +290,7 @@ void sal_get_default_local_ip(Sal *sal, int address_family, char *ip, size_t ipl
 
 /*internal API */
 void __sal_op_init(SalOp *b, Sal *sal);
+void __sal_op_set_network_origin(SalOp *op, const char *origin /*a sip uri*/);
 void __sal_op_free(SalOp *b);
 
 

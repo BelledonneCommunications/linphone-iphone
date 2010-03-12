@@ -64,6 +64,36 @@ static void sal_remove_register(Sal *sal, int rid){
 	}
 }
 
+static SalOp * sal_find_other(Sal *sal, osip_message_t *response){
+	const MSList *elem;
+	SalOp *op;
+	osip_call_id_t *callid=osip_message_get_call_id(response);
+	if (callid==NULL) {
+		ms_error("There is no call-id in this response !");
+		return NULL;
+	}
+	for(elem=sal->other_transactions;elem!=NULL;elem=elem->next){
+		op=(SalOp*)elem->data;
+		if (osip_call_id_match(callid,op->call_id)==0) return op;
+	}
+	return NULL;
+}
+
+static void sal_add_other(Sal *sal, SalOp *op, osip_message_t *request){
+	osip_call_id_t *callid=osip_message_get_call_id(request);
+	if (callid==NULL) {
+		ms_error("There is no call id in the request !");
+		return;
+	}
+	osip_call_id_clone(callid,&op->call_id);
+	sal->other_transactions=ms_list_append(sal->other_transactions,op);
+}
+
+static void sal_remove_other(Sal *sal, SalOp *op){
+	sal->other_transactions=ms_list_remove(sal->other_transactions,op);
+}
+
+
 static void sal_add_pending_auth(Sal *sal, SalOp *op){
 	sal->pending_auths=ms_list_append(sal->pending_auths,op);
 }
@@ -107,6 +137,7 @@ SalOp * sal_op_new(Sal *sal){
 	op->pending_auth=NULL;
 	op->sdp_answer=NULL;
 	op->reinvite=FALSE;
+	op->call_id=NULL;
 	return op;
 }
 
@@ -127,6 +158,10 @@ void sal_op_release(SalOp *op){
 	}
 	if (op->result)
 		sal_media_description_unref(op->result);
+	if (op->call_id){
+		sal_remove_other(op->base.root,op);
+		osip_call_id_free(op->call_id);
+	}
 	__sal_op_free(op);
 }
 
@@ -191,11 +226,6 @@ void *sal_get_user_pointer(const Sal *sal){
 	return sal->up;
 }
 
-void sal_masquerade(Sal *ctx, const char *ip){
-	ms_message("Masquerading SIP with %s",ip);
-	eXosip_set_option(EXOSIP_OPT_SET_IPV4_FOR_GATEWAY,ip);
-}
-
 static void unimplemented_stub(){
 	ms_warning("Unimplemented SAL callback");
 }
@@ -232,6 +262,8 @@ void sal_set_callbacks(Sal *ctx, const SalCallbacks *cbs){
 		ctx->callbacks.text_received=(SalOnTextReceived)unimplemented_stub;
 	if (ctx->callbacks.internal_message==NULL)
 		ctx->callbacks.internal_message=(SalOnInternalMsg)unimplemented_stub;
+	if (ctx->callbacks.ping_reply==NULL)
+		ctx->callbacks.ping_reply=(SalOnPingReply)unimplemented_stub;
 }
 
 int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int is_secure){
@@ -461,6 +493,24 @@ SalMediaDescription * sal_call_get_final_media_description(SalOp *h){
 	return h->result;
 }
 
+int sal_ping(SalOp *op, const char *from, const char *to){
+	osip_message_t *options=NULL;
+	
+	sal_op_set_from(op,from);
+	sal_op_set_to(op,to);
+	eXosip_options_build_request (&options, sal_op_get_to(op),
+			sal_op_get_from(op),sal_op_get_route(op));
+	if (options){
+		if (op->base.root->session_expires!=0){
+			osip_message_set_header(options, "Session-expires", "200");
+			osip_message_set_supported(options, "timer");
+		}
+		sal_add_other(sal_op_get_sal(op),op,options);
+		return eXosip_options_send_request(options);
+	}
+	return -1;
+}
+
 int sal_refer(SalOp *h, const char *refer_to){
 	osip_message_t *msg=NULL;
 	int err=0;
@@ -518,11 +568,30 @@ void sal_op_authenticate(SalOp *h, const SalAuthInfo *info){
 	}
 }
 
+static void set_network_origin(SalOp *op, osip_message_t *req){
+	const char *received=NULL;
+	int rport=5060;
+	char origin[64];
+	if (extract_received_rport(req,&received,&rport)!=0){
+		osip_via_t *via=NULL;
+		char *tmp;
+		osip_message_get_via(req,0,&via);
+		received=osip_via_get_host(via);
+		tmp=osip_via_get_port(via);
+		if (tmp) rport=atoi(tmp);
+	}
+	snprintf(origin,sizeof(origin)-1,"sip:%s:%i",received,rport);
+	__sal_op_set_network_origin(op,origin);
+}
+
 static void inc_new_call(Sal *sal, eXosip_event_t *ev){
 	SalOp *op=sal_op_new(sal);
 	osip_from_t *from,*to;
 	char *tmp;
 	sdp_message_t *sdp=eXosip_get_sdp_info(ev->request);
+
+	set_network_origin(op,ev->request);
+	
 	if (sdp){
 		op->sdp_offering=FALSE;
 		op->base.remote_media=sal_media_description_new();
@@ -613,22 +682,10 @@ static void handle_ack(Sal *sal,  eXosip_event_t *ev){
 	}
 }
 
-static int call_proceeding(Sal *sal, eXosip_event_t *ev){
-	SalOp *op=(SalOp*)ev->external_reference;
+static void update_contact_from_response(SalOp *op, osip_message_t *response){
 	const char *received;
 	int rport;
-	
-	if (op==NULL) {
-		ms_warning("This call has been canceled.");
-		eXosip_lock();
-		eXosip_call_terminate(ev->cid,ev->did);
-		eXosip_unlock();
-		return -1;
-	}
-	op->did=ev->did;
-	op->tid=ev->tid;
-	/* update contact if received and rport are set by the server */
-	if (extract_received_rport(ev->response,&received,&rport)==0){
+	if (extract_received_rport(response,&received,&rport)==0){
 		const char *contact=sal_op_get_contact(op);
 		if (!contact){
 			/*no contact given yet, use from instead*/
@@ -640,11 +697,29 @@ static int call_proceeding(Sal *sal, eXosip_event_t *ev){
 			sal_address_set_domain(addr,received);
 			sal_address_set_port_int(addr,rport);
 			tmp=sal_address_as_string(addr);
-			ms_message("Contact address automatically updated to %s for this call",tmp);
+			ms_message("Contact address updated to %s for this dialog",tmp);
 			sal_op_set_contact(op,tmp);
 			ms_free(tmp);
 		}
 	}
+}
+
+static int call_proceeding(Sal *sal, eXosip_event_t *ev){
+	SalOp *op=(SalOp*)ev->external_reference;
+	
+	if (op==NULL) {
+		ms_warning("This call has been canceled.");
+		eXosip_lock();
+		eXosip_call_terminate(ev->cid,ev->did);
+		eXosip_unlock();
+		return -1;
+	}
+	op->did=ev->did;
+	op->tid=ev->tid;
+	
+	/* update contact if received and rport are set by the server
+	 note: will only be used by remote for next INVITE, if any...*/
+	update_contact_from_response(op,ev->response);
 	return 0;
 }
 
@@ -668,6 +743,7 @@ static void call_accepted(Sal *sal, eXosip_event_t *ev){
 	osip_message_t *msg=NULL;
 	SalOp *op;
 	const char *contact;
+	
 	op=(SalOp*)ev->external_reference;
 	if (op==NULL){
 		ms_error("A closed call is accepted ?");
@@ -778,6 +854,7 @@ static SalOp *find_op(Sal *sal, eXosip_event_t *ev){
 	if (ev->rid>0){
 		return sal_find_register(sal,ev->rid);
 	}
+	if (ev->response) return sal_find_other(sal,ev->response);
 	return NULL;
 }
 
@@ -1152,6 +1229,19 @@ static bool_t registration_failure(Sal *sal, eXosip_event_t *ev){
 	return TRUE;
 }
 
+static void other_request_reply(Sal *sal,eXosip_event_t *ev){
+	SalOp *op=find_op(sal,ev);
+
+	if (op==NULL){
+		ms_warning("other_request_reply(): Receiving response to unknown request.");
+		return;
+	}
+	if (ev->response){
+		update_contact_from_response(op,ev->response);
+		sal->callbacks.ping_reply(op);
+	}
+}
+
 static bool_t process_event(Sal *sal, eXosip_event_t *ev){
 	switch(ev->type){
 		case EXOSIP_CALL_ANSWERED:
@@ -1241,6 +1331,13 @@ static bool_t process_event(Sal *sal, eXosip_event_t *ev){
 			break;
 		case EXOSIP_MESSAGE_NEW:
 			other_request(sal,ev);
+			break;
+		case EXOSIP_MESSAGE_PROCEEDING:
+		case EXOSIP_MESSAGE_ANSWERED:
+		case EXOSIP_MESSAGE_REDIRECTED:
+		case EXOSIP_MESSAGE_SERVERFAILURE:
+		case EXOSIP_MESSAGE_GLOBALFAILURE:
+			other_request_reply(sal,ev);
 			break;
 		case EXOSIP_MESSAGE_REQUESTFAILURE:
 			if (ev->response && (ev->response->status_code == 407 || ev->response->status_code == 401)){

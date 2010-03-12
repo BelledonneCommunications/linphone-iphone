@@ -128,10 +128,19 @@ const char *sal_op_get_proxy(const SalOp *op){
 	return ((SalOpBase*)op)->route;
 }
 
+const char *sal_op_get_network_origin(const SalOp *op){
+	return ((SalOpBase*)op)->origin;
+}
+
 void __sal_op_init(SalOp *b, Sal *sal){
 	memset(b,0,sizeof(SalOpBase));
 	((SalOpBase*)b)->root=sal;
 }
+
+void __sal_op_set_network_origin(SalOp *op, const char *origin){
+	assign_string(&((SalOpBase*)op)->origin,origin);
+}
+
 
 void __sal_op_free(SalOp *op){
 	SalOpBase *b=(SalOpBase *)op;
@@ -150,6 +159,10 @@ void __sal_op_free(SalOp *op){
 	if (b->contact) {
 		ms_free(b->contact);
 		b->contact=NULL;
+	}
+	if (b->origin){
+		ms_free(b->origin);
+		b->origin=NULL;
 	}
 	if (b->local_media)
 		sal_media_description_unref(b->local_media);
