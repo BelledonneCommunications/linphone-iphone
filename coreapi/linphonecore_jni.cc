@@ -268,6 +268,18 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setNetworkStateReachable
 		linphone_core_set_network_reachable((LinphoneCore*)lc,isReachable);
 }
 
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setSoftPlayLevel(	JNIEnv*  env
+		,jobject  thiz
+		,jlong lc
+		,jfloat gain) {
+		linphone_core_set_soft_play_level((LinphoneCore*)lc,gain);
+}
+
+extern "C" float Java_org_linphone_core_LinphoneCoreImpl_getSoftPlayLevel(	JNIEnv*  env
+		,jobject  thiz
+		,jlong lc) {
+		return linphone_core_get_soft_play_level((LinphoneCore*)lc);
+}
 
 //ProxyConfig
 

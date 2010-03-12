@@ -289,6 +289,7 @@ typedef struct sound_config
 	char rec_lev;
 	char play_lev;
 	char ring_lev;
+	char soft_play_lev;
 	char source;
 	char *local_ring;
 	char *remote_ring;

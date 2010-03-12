@@ -125,7 +125,7 @@ static void call_ringing(SalOp *h){
 		}
 	}else{
 		/*accept early media */
-		if (lc->audiostream->ticker!=NULL){
+		if (lc->audiostream && lc->audiostream->ticker!=NULL){
 			/*streams already started */
 			ms_message("Early media already started.");
 			return;
