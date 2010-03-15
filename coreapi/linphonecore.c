@@ -3133,7 +3133,7 @@ void linphone_core_set_play_file(LinphoneCore *lc, const char *file){
 	}
 	if (file!=NULL) {
 		lc->play_file=ms_strdup(file);
-		if (lc->audiostream)
+		if (lc->audiostream->ticker)
 			audio_stream_play(lc->audiostream,file);
 	}
 }
