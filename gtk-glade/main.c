@@ -552,7 +552,6 @@ void linphone_gtk_call_terminated(const char *error){
 	GtkWidget *icw;
 	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"terminate_call"),FALSE);
 	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"start_call"),TRUE);
-	gtk_widget_hide_all(linphone_gtk_get_widget(mw,"go_to_call_view_box"));
 	linphone_gtk_enable_mute_button(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(mw,"main_mute")),FALSE);
 	if (linphone_gtk_use_in_call_view())
 		linphone_gtk_in_call_view_terminate(error);
@@ -576,7 +575,6 @@ static gboolean in_call_timer(){
 static void linphone_gtk_call_started(GtkWidget *mw){
 	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"start_call"),FALSE);
 	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"terminate_call"),TRUE);
-	gtk_widget_show_all(linphone_gtk_get_widget(mw,"go_to_call_view_box"));
 	update_video_title();
 	if (linphone_gtk_use_in_call_view())
 		g_timeout_add(250,(GSourceFunc)in_call_timer,NULL);
@@ -1062,7 +1060,6 @@ static void linphone_gtk_configure_main_window(){
 	if (stop_call_icon){
 		GdkPixbuf *pbuf=create_pixbuf(stop_call_icon);
 		gtk_image_set_from_pixbuf(GTK_IMAGE(linphone_gtk_get_widget(w,"terminate_call_icon")),pbuf);
-		gtk_image_set_from_pixbuf(GTK_IMAGE(linphone_gtk_get_widget(w,"in_call_terminate_icon")),pbuf);
 		g_object_unref(G_OBJECT(pbuf));
 	}
 	if (search_icon){
@@ -1096,6 +1093,8 @@ void linphone_gtk_manage_login(void){
 }
 
 static void linphone_gtk_init_main_window(){
+	GtkWidget *main_window;
+
 	linphone_gtk_configure_main_window();
 	linphone_gtk_manage_login();
 	load_uri_history();
@@ -1104,10 +1103,14 @@ static void linphone_gtk_init_main_window(){
 	linphone_gtk_show_friends();
 	linphone_gtk_connect_digits();
 	linphone_gtk_check_menu_items();
-	linphone_gtk_enable_mute_button(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(linphone_gtk_get_main_window(),
+	main_window=linphone_gtk_get_main_window();
+	linphone_gtk_enable_mute_button(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(main_window,
 					"main_mute")),FALSE);
-	linphone_gtk_enable_mute_button(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(linphone_gtk_get_main_window(),
+	linphone_gtk_enable_mute_button(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(main_window,
 					"incall_mute")),FALSE);
+	if (!linphone_gtk_use_in_call_view()) {
+		gtk_widget_show(linphone_gtk_get_widget(main_window, "main_mute"));
+	}
 	if (linphone_core_in_call(linphone_gtk_get_core())) linphone_gtk_call_started(
 		linphone_gtk_get_main_window());/*hide the call button, show terminate button*/
 }
