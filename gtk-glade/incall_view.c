@@ -38,18 +38,36 @@ gboolean linphone_gtk_use_in_call_view(){
 
 void linphone_gtk_show_in_call_view(void){
 	GtkWidget *main_window=linphone_gtk_get_main_window();
-	GtkWidget *idle_frame=linphone_gtk_get_widget(main_window,"idle_frame");
+	GtkNotebook *notebook=(GtkNotebook *)linphone_gtk_get_widget(main_window,"viewswitch");
 	GtkWidget *in_call_frame=linphone_gtk_get_widget(main_window,"in_call_frame");
-	gtk_widget_hide(idle_frame);
+	gint idx;
+	
+	/* Make the in call frame visible and arrange for the notebook to
+		 show that page */
 	gtk_widget_show(in_call_frame);
+	idx = gtk_notebook_page_num(notebook, in_call_frame);
+	if (idx >= 0) {
+		gtk_notebook_set_current_page(notebook, idx);
+	}
 }
 
 void linphone_gtk_show_idle_view(void){
 	GtkWidget *main_window=linphone_gtk_get_main_window();
+	GtkNotebook *notebook=(GtkNotebook *)linphone_gtk_get_widget(main_window,"viewswitch");
 	GtkWidget *idle_frame=linphone_gtk_get_widget(main_window,"idle_frame");
 	GtkWidget *in_call_frame=linphone_gtk_get_widget(main_window,"in_call_frame");
-	gtk_widget_show(idle_frame);
-	gtk_widget_hide(in_call_frame);
+	gint idx;
+
+	/* Switch back to the idle frame page, maybe we should have
+		 remembered where we were in gtk_show_in_call_view() to switch
+		 back to that page of the notebook, but this should do in most
+		 cases. */
+	gtk_widget_show(idle_frame); /* Make sure it is visible... */
+	idx = gtk_notebook_page_num(notebook, idle_frame);
+	if (idx >= 0) {
+		gtk_notebook_set_current_page(notebook, idx);
+		gtk_widget_hide(in_call_frame);
+	}
 }
 
 void display_peer_name_in_label(GtkWidget *label, const char *uri){
@@ -91,13 +109,11 @@ void linphone_gtk_in_call_view_set_calling(const char *uri){
 	GtkWidget *duration=linphone_gtk_get_widget(main_window,"in_call_duration");
 	GtkWidget *animation=linphone_gtk_get_widget(main_window,"in_call_animation");
 	GdkPixbufAnimation *pbuf=create_pixbuf_animation("calling_anim.gif");
-	GtkWidget *terminate_button=linphone_gtk_get_widget(main_window,"in_call_terminate");
 
-	gtk_widget_set_sensitive(terminate_button,TRUE);
 	gtk_label_set_markup(GTK_LABEL(status),_("<b>Calling...</b>"));
 	display_peer_name_in_label(callee,uri);
 	
-	gtk_label_set_text(GTK_LABEL(duration),"00:00:00");
+	gtk_label_set_text(GTK_LABEL(duration),_("00::00::00"));
 	if (pbuf!=NULL){
 		gtk_image_set_from_animation(GTK_IMAGE(animation),pbuf);
 		g_object_unref(G_OBJECT(pbuf));
@@ -112,13 +128,11 @@ void linphone_gtk_in_call_view_set_in_call(){
 	GtkWidget *duration=linphone_gtk_get_widget(main_window,"in_call_duration");
 	GtkWidget *animation=linphone_gtk_get_widget(main_window,"in_call_animation");
 	GdkPixbufAnimation *pbuf=create_pixbuf_animation("incall_anim.gif");
-	GtkWidget *terminate_button=linphone_gtk_get_widget(main_window,"in_call_terminate");
 	const LinphoneAddress *uri=linphone_core_get_remote_uri(lc);
 	char *tmp=linphone_address_as_string(uri);
 	display_peer_name_in_label(callee,tmp);
 	ms_free(tmp);
 
-	gtk_widget_set_sensitive(terminate_button,TRUE);
 	gtk_label_set_markup(GTK_LABEL(status),_("<b>In call with</b>"));
 
 	gtk_label_set_text(GTK_LABEL(duration),_("00::00::00"));
@@ -150,10 +164,8 @@ void linphone_gtk_in_call_view_terminate(const char *error_msg){
 	GtkWidget *main_window=linphone_gtk_get_main_window();
 	GtkWidget *status=linphone_gtk_get_widget(main_window,"in_call_status");
 	GtkWidget *animation=linphone_gtk_get_widget(main_window,"in_call_animation");
-	GtkWidget *terminate_button=linphone_gtk_get_widget(main_window,"in_call_terminate");
 	GdkPixbuf *pbuf=create_pixbuf(linphone_gtk_get_ui_config("stop_call_icon","red.png"));
 
-	gtk_widget_set_sensitive(terminate_button,FALSE);
 	if (error_msg==NULL)
 		gtk_label_set_markup(GTK_LABEL(status),_("<b>Call ended.</b>"));
 	else{
@@ -174,11 +186,17 @@ void linphone_gtk_draw_mute_button(GtkToggleButton *button, gboolean active){
 	if (active){
 		GtkWidget *image=create_pixmap("mic_muted.png");
 		gtk_button_set_label(GTK_BUTTON(button),_("Unmute"));
-		if (image!=NULL) gtk_button_set_image(GTK_BUTTON(button),image);
+		if (image!=NULL) {
+			gtk_button_set_image(GTK_BUTTON(button),image);
+			gtk_widget_show(image);
+		}
 	}else{
 		GtkWidget *image=create_pixmap("mic_active.png");
 		gtk_button_set_label(GTK_BUTTON(button),_("Mute"));
-		if (image!=NULL) gtk_button_set_image(GTK_BUTTON(button),image);
+		if (image!=NULL) {
+			gtk_button_set_image(GTK_BUTTON(button),image);
+			gtk_widget_show(image);
+		}
 	}
 }
 
@@ -190,5 +208,6 @@ void linphone_gtk_mute_toggled(GtkToggleButton *button){
 
 void linphone_gtk_enable_mute_button(GtkToggleButton *button, gboolean sensitive){
 	gtk_widget_set_sensitive(GTK_WIDGET(button),sensitive);
+	gtk_object_set(GTK_OBJECT(button),"gtk-button-images",TRUE,NULL);
 	linphone_gtk_draw_mute_button(button,FALSE);
 }

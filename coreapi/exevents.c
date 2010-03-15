@@ -482,6 +482,10 @@ int linphone_set_audio_offer(sdp_context_t *ctx)
 	payload.a_rtpmap="telephone-event/8000";
 	payload.a_fmtp="0-11";
 	if (lc->dw_audio_bw>0) payload.b_as_bandwidth=lc->dw_audio_bw;
+	if (lc->down_ptime>0) {
+		payload.a_ptime=lc->down_ptime;
+		ms_message("ptime [%i]",payload.a_ptime);
+	}
 	sdp_context_add_audio_payload(ctx,&payload);
 	return 0;
 }
