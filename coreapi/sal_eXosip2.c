@@ -1305,7 +1305,7 @@ static bool_t process_event(Sal *sal, eXosip_event_t *ev){
 			}
 			break;
 		case EXOSIP_IN_SUBSCRIPTION_NEW:
-			ms_message("CALL_SUBSCRIPTION_NEW ");
+			ms_message("CALL_IN_SUBSCRIPTION_NEW ");
 			sal_exosip_subscription_recv(sal,ev);
 			break;
 		case EXOSIP_IN_SUBSCRIPTION_RELEASED:

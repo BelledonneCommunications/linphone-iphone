@@ -152,6 +152,7 @@ void __linphone_friend_do_subscribe(LinphoneFriend *fr){
 	fr->outsub=sal_op_new(fr->lc->sal);
 	sal_op_set_route(fr->outsub,route);
 	sal_subscribe_presence(fr->outsub,from,friend);
+	fr->subscribe_active=TRUE;
 	ms_free(friend);
 }
 
@@ -364,7 +365,7 @@ void linphone_friend_apply(LinphoneFriend *fr, LinphoneCore *lc){
 		fr->inc_subscribe_pending=FALSE;
 	}
 	if (fr->subscribe && fr->subscribe_active==FALSE){
-		
+		ms_message("Sending a new SUBSCRIBE");
 		__linphone_friend_do_subscribe(fr);
 	}
 	ms_message("linphone_friend_apply() done.");

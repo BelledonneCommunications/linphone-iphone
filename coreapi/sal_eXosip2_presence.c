@@ -416,7 +416,7 @@ int sal_notify_presence(SalOp *op, SalPresenceStatus status, const char *status_
 }
 
 int sal_notify_close(SalOp *op){
-	osip_message_t *msg;
+	osip_message_t *msg=NULL;
 	eXosip_lock();
 	eXosip_insubscription_build_notify(op->did,EXOSIP_SUBCRSTATE_TERMINATED,DEACTIVATED,&msg);
 	if (msg!=NULL){
@@ -424,7 +424,8 @@ int sal_notify_close(SalOp *op){
 		if (identity==NULL) identity=sal_op_get_to(op);
 		osip_message_set_contact(msg,identity);
 		eXosip_insubscription_send_request(op->did,msg);
-	}else ms_error("sal_notify_close(): could not create notify for incoming subscription.");
+	}else ms_error("sal_notify_close(): could not create notify for incoming subscription"
+	    " did=%i, nid=%i",op->did,op->nid);
 	eXosip_unlock();
 	return 0;
 }
@@ -668,15 +669,16 @@ void sal_exosip_in_subscription_closed(Sal *sal, eXosip_event_t *ev){
 		ms_error("Incoming subscription closed but no associated op !");
 		return;
 	}
+	
+	
+	sal_remove_in_subscribe(sal,op);
+	op->nid=-1;
+	op->did=-1;
 	if (ev->request){
 		osip_from_to_str(ev->request->from,&tmp);
 		sal->callbacks.subscribe_closed(op,tmp);
 		osip_free(tmp);
 	}
-	
-	sal_remove_in_subscribe(sal,op);
-	op->nid=-1;
-	op->did=-1;
 }
 
 void sal_exosip_subscription_closed(Sal *sal,eXosip_event_t *ev){
@@ -688,6 +690,7 @@ void sal_exosip_subscription_closed(Sal *sal,eXosip_event_t *ev){
 	sal_remove_out_subscribe(sal,op);
 	op->sid=-1;
 	op->did=-1;
+	sal->callbacks.notify(op,SalSubscribeTerminated, SalPresenceOffline,NULL);
 }
 
 
