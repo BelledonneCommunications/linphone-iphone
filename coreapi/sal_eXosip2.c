@@ -1310,7 +1310,7 @@ static bool_t process_event(Sal *sal, eXosip_event_t *ev){
 			sal_exosip_notify_recv(sal,ev);
 			break;
 		case EXOSIP_SUBSCRIPTION_ANSWERED:
-			ms_message("EXOSIP_SUBSCRIPTION_ANSWERED, ev->sid=%i\n",ev->sid);
+			ms_message("EXOSIP_SUBSCRIPTION_ANSWERED, ev->sid=%i, ev->did=%i\n",ev->sid,ev->did);
 			sal_exosip_subscription_answered(sal,ev);
 			break;
 		case EXOSIP_SUBSCRIPTION_CLOSED:

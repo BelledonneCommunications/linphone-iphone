@@ -122,7 +122,8 @@ int sal_unsubscribe(SalOp *op){
 	if (msg){
 		osip_message_set_expires(msg,"0");
 		eXosip_subscribe_send_refresh_request(op->did,msg);
-	}else ms_error("Could not build subscribe refresh request !");
+	}else ms_error("Could not build subscribe refresh request ! op->sid=%i, op->did=%i",
+	    	op->sid,op->did);
 	eXosip_unlock();
 	return 0;
 }
@@ -130,8 +131,8 @@ int sal_unsubscribe(SalOp *op){
 int sal_subscribe_accept(SalOp *op){
 	osip_message_t *msg;
 	eXosip_lock();
-	eXosip_insubscription_build_answer(op->tid,202,&msg);
-	eXosip_insubscription_send_answer(op->tid,202,msg);
+	eXosip_insubscription_build_answer(op->tid,200,&msg);
+	eXosip_insubscription_send_answer(op->tid,200,msg);
 	eXosip_unlock();
 	return 0;
 }
@@ -636,8 +637,6 @@ void sal_exosip_notify_recv(Sal *sal, eXosip_event_t *ev){
 	osip_from_to_str(from,&tmp);
 	if (strstr(body->body,"pending")!=NULL){
 		estatus=SalPresenceOffline;
-	}else if ((strstr(body->body,"online")!=NULL) || (strstr(body->body,"open")!=NULL)) {
-		estatus=SalPresenceOnline;
 	}else if (strstr(body->body,"busy")!=NULL){
 		estatus=SalPresenceBusy;
 	}else if (strstr(body->body,"berightback")!=NULL
@@ -653,6 +652,8 @@ void sal_exosip_notify_recv(Sal *sal, eXosip_event_t *ev){
 		estatus=SalPresenceOuttolunch;
 	}else if (strstr(body->body,"closed")!=NULL){
 		estatus=SalPresenceOffline;
+	}else if ((strstr(body->body,"online")!=NULL) || (strstr(body->body,"open")!=NULL)) {
+		estatus=SalPresenceOnline;
 	}else{
 		estatus=SalPresenceOffline;
 	}

@@ -141,8 +141,10 @@ void __linphone_friend_do_subscribe(LinphoneFriend *fr){
 	if (fr->outsub==NULL){
 		/* people for which we don't have yet an answer should appear as offline */
 		fr->status=LINPHONE_STATUS_OFFLINE;
+		/*
 		if (fr->lc->vtable.notify_recv)
 			fr->lc->vtable.notify_recv(fr->lc,(LinphoneFriend*)fr);
+		 */
 	}else{
 		sal_op_release(fr->outsub);
 		fr->outsub=NULL;
