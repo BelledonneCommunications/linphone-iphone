@@ -27,13 +27,13 @@
  
  LinphoneChatRoom * linphone_core_create_chat_room(LinphoneCore *lc, const char *to){
 	LinphoneAddress *parsed_url=NULL;
-	char *route;
-	if (linphone_core_interpret_url(lc,to,&parsed_url,&route)){
+
+	if ((parsed_url=linphone_core_interpret_url(lc,to))!=NULL){
 		LinphoneChatRoom *cr=ms_new0(LinphoneChatRoom,1);
 		cr->lc=lc;
 		cr->peer=linphone_address_as_string(parsed_url);
 		cr->peer_url=parsed_url;
-		cr->route=route;
+		cr->route=ms_strdup(linphone_core_get_route(lc));
 		lc->chatrooms=ms_list_append(lc->chatrooms,(void *)cr);
 		return cr;
 	}

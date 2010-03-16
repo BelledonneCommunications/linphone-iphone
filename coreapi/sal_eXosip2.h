@@ -34,6 +34,7 @@ struct Sal{
 	MSList *out_subscribes;/*MSList of SalOp */
 	MSList *in_subscribes;/*MSList of SalOp */
 	MSList *pending_auths;/*MSList of SalOp */
+	MSList *other_transactions; /*MSList of SalOp */
 	int running;
 	int session_expires;
 	void *up;
@@ -51,10 +52,15 @@ struct SalOp{
 	SalMediaDescription *result;
 	sdp_message_t *sdp_answer;
 	eXosip_event_t *pending_auth;
+	osip_call_id_t *call_id; /*used for out of calls transaction in order
+	 			to retrieve the operation when receiving a response*/
 	bool_t supports_session_timers;
 	bool_t sdp_offering;
 	bool_t reinvite;
 };
+
+void sal_remove_out_subscribe(Sal *sal, SalOp *op);
+void sal_remove_in_subscribe(Sal *sal, SalOp *op);
 
 void sal_exosip_subscription_recv(Sal *sal, eXosip_event_t *ev);
 void sal_exosip_subscription_answered(Sal *sal,eXosip_event_t *ev);

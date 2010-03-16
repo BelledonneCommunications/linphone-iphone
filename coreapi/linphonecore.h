@@ -458,6 +458,7 @@ typedef struct _LinphoneCore LinphoneCore;
 	 */
 	bool_t auto_net_state_mon;
 	bool_t network_reachable;
+	int down_ptime;
 
 /* THE main API */
 
@@ -474,7 +475,11 @@ LinphoneCore *linphone_core_new(const LinphoneCoreVTable *vtable,
 /* function to be periodically called in a main loop */
 void linphone_core_iterate(LinphoneCore *lc);
 
+LinphoneAddress * linphone_core_interpret_url(LinphoneCore *lc, const char *url);
+
 int linphone_core_invite(LinphoneCore *lc, const char *url);
+
+int linphone_core_invite_address(LinphoneCore *lc, const LinphoneAddress *addr);
 
 int linphone_core_refer(LinphoneCore *lc, const char *url);
 
@@ -506,7 +511,17 @@ void linphone_core_set_upload_bandwidth(LinphoneCore *lc, int bw);
 
 int linphone_core_get_download_bandwidth(const LinphoneCore *lc);
 int linphone_core_get_upload_bandwidth(const LinphoneCore *lc);
-
+/**
+ * set audio packetization time linphone expect to received from peer
+ * @ingroup media_parameters
+ *
+ */
+void linphone_core_set_download_ptime(LinphoneCore *lc, int ptime);
+/**
+ * get audio packetization time linphone expect to received from peer, 0 means unspecified
+ * @ingroup media_parameters
+ */
+int  linphone_core_get_download_ptime(LinphoneCore *lc);
 
 #ifdef VINCENT_MAURY_RSVP
 /* QoS functions */

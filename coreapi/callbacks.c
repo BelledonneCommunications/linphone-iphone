@@ -421,6 +421,16 @@ static void internal_message(Sal *sal, const char *msg){
 		lc->vtable.show(lc);
 }
 
+static void ping_reply(SalOp *op){
+	LinphoneCall *call=(LinphoneCall*) sal_op_get_user_pointer(op);
+	ms_message("ping reply !");
+	if (call){
+		if (call->state==LCStatePreEstablishing){
+			linphone_core_start_invite(call->core,call,NULL);
+		}
+	}
+}
+
 SalCallbacks linphone_sal_callbacks={
 	call_received,
 	call_ringing,
@@ -440,7 +450,8 @@ SalCallbacks linphone_sal_callbacks={
 	notify,
 	subscribe_received,
 	subscribe_closed,
-	internal_message
+	internal_message,
+	ping_reply
 };
 
 

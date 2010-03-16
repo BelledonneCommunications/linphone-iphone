@@ -56,6 +56,7 @@
 
 typedef enum _LCState{
 	LCStateInit,
+	LCStatePreEstablishing,
 	LCStateRinging,
 	LCStateAVRunning
 }LCState;
@@ -71,6 +72,7 @@ typedef struct _LinphoneCall
 	struct _RtpProfile *video_profile;
 	struct _LinphoneCallLog *log;
 	SalOp *op;
+	SalOp *ping_op;
 	char localip[LINPHONE_IPADDR_SIZE]; /* our best guess for local ipaddress for this call */
 	time_t start_time; /*time at which the call was initiated*/
 	time_t media_start_time; /*time at which it was accepted, media streams established*/
@@ -99,7 +101,7 @@ void linphone_core_refresh_subscribes(LinphoneCore *lc);
 int linphone_proxy_config_send_publish(LinphoneProxyConfig *cfg, LinphoneOnlineStatus os);
 
 int linphone_online_status_to_eXosip(LinphoneOnlineStatus os);
-
+void linphone_friend_close_subscriptions(LinphoneFriend *lf);
 void linphone_friend_notify(LinphoneFriend *lf, LinphoneOnlineStatus os);
 LinphoneFriend *linphone_find_friend_by_inc_subscribe(MSList *l, SalOp *op);
 LinphoneFriend *linphone_find_friend_by_out_subscribe(MSList *l, SalOp *op);
@@ -175,11 +177,11 @@ void linphone_core_start_media_streams(LinphoneCore *lc, struct _LinphoneCall *c
 void linphone_core_stop_media_streams(LinphoneCore *lc, struct _LinphoneCall *call);
 const char * linphone_core_get_identity(LinphoneCore *lc);
 const char * linphone_core_get_route(LinphoneCore *lc);
-bool_t linphone_core_interpret_url(LinphoneCore *lc, const char *url, LinphoneAddress **real_parsed_url, char **route);
 void linphone_core_start_waiting(LinphoneCore *lc, const char *purpose);
 void linphone_core_update_progress(LinphoneCore *lc, const char *purpose, float progresses);
 void linphone_core_stop_waiting(LinphoneCore *lc);
 
+int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, LinphoneProxyConfig *dest_proxy);
 
 extern SalCallbacks linphone_sal_callbacks;
 
@@ -254,6 +256,7 @@ typedef struct sip_config
 	bool_t sdp_200_ack;
 	bool_t only_one_codec; /*in SDP answers*/
 	bool_t register_only_when_network_is_up;
+	bool_t ping_with_options;
 } sip_config_t;
 
 typedef struct rtp_config
@@ -276,6 +279,7 @@ typedef struct net_config
 	int upload_bw;
 	int firewall_policy;
 	int mtu;
+	int down_ptime;
 	bool_t nat_sdp_only;
 }net_config_t;
 
