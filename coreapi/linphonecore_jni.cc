@@ -223,6 +223,12 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_invite(	JNIEnv*  env
 	linphone_core_invite((LinphoneCore*)lc,uri);
 	env->ReleaseStringUTFChars(juri, uri);
 }
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_inviteAddress(	JNIEnv*  env
+		,jobject  thiz
+		,jlong lc
+		,jlong to) {
+	linphone_core_invite_address((LinphoneCore*)lc,(LinphoneAddress*)to);
+}
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_terminateCall(	JNIEnv*  env
 		,jobject  thiz
@@ -291,6 +297,17 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_muteMic(	JNIEnv*  env
 		,jboolean isMuted) {
 		linphone_core_mute_mic((LinphoneCore*)lc,isMuted);
 }
+
+extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_interpretUrl(	JNIEnv*  env
+		,jobject  thiz
+		,jlong lc
+		,jstring jurl) {
+	const char* url = env->GetStringUTFChars(jurl, NULL);
+	jlong result = (jlong)linphone_core_interpret_url((LinphoneCore*)lc,url);
+	env->ReleaseStringUTFChars(jurl, url);
+	return result;
+}
+
 //ProxyConfig
 
 extern "C" jlong Java_org_linphone_core_LinphoneProxyConfigImpl_newLinphoneProxyConfig(JNIEnv*  env,jobject  thiz) {
@@ -449,6 +466,15 @@ extern "C" jstring Java_org_linphone_core_LinphoneAddressImpl_toUri(JNIEnv*  env
 	ms_free(uri);
 	return juri;
 }
+extern "C" void Java_org_linphone_core_LinphoneAddressImpl_setDisplayName(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong address
+																		,jstring jdisplayName) {
+	const char* displayName = env->GetStringUTFChars(jdisplayName, NULL);
+	linphone_address_set_display_name((LinphoneAddress*)address,displayName);
+	env->ReleaseStringUTFChars(jdisplayName, displayName);
+}
+
 
 //CallLog
 extern "C" jlong Java_org_linphone_core_LinphoneCallLogImpl_getFrom(JNIEnv*  env
