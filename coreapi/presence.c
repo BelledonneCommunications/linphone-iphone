@@ -128,6 +128,7 @@ void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeState ss, Sal
 		friend=lf->uri;
 		tmp=linphone_address_as_string(friend);
 		lf->status=estatus;
+		lf->subscribe_active=TRUE;
 		lc->vtable.notify_recv(lc,(LinphoneFriend*)lf);
 		ms_free(tmp);
 	}else{
@@ -135,8 +136,10 @@ void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeState ss, Sal
 	}
 	if (ss==SalSubscribeTerminated){
 		sal_op_release(op);
-		if (lf)
+		if (lf){
 			lf->outsub=NULL;
+			lf->subscribe_active=FALSE;
+		}
 	}
 }
 

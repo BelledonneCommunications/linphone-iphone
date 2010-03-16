@@ -661,14 +661,32 @@ void sal_exosip_subscription_answered(Sal *sal,eXosip_event_t *ev){
 	op->did=ev->did;
 }
 
+void sal_exosip_in_subscription_closed(Sal *sal, eXosip_event_t *ev){
+	SalOp *op=sal_find_in_subscribe(sal,ev->nid);
+	char *tmp;
+	if (op==NULL){
+		ms_error("Incoming subscription closed but no associated op !");
+		return;
+	}
+	if (ev->request){
+		osip_from_to_str(ev->request->from,&tmp);
+		sal->callbacks.subscribe_closed(op,tmp);
+		osip_free(tmp);
+	}
+	
+	sal_remove_in_subscribe(sal,op);
+	op->nid=-1;
+	op->did=-1;
+}
+
 void sal_exosip_subscription_closed(Sal *sal,eXosip_event_t *ev){
-	SalOp *op=sal_find_in_subscribe(sal,ev->sid);
+	SalOp *op=sal_find_out_subscribe(sal,ev->sid);
 	if (op==NULL){
 		ms_error("Subscription closed but no associated op !");
 		return;
 	}
-	sal_remove_in_subscribe(sal,op);
-	op->nid=-1;
+	sal_remove_out_subscribe(sal,op);
+	op->sid=-1;
 	op->did=-1;
 }
 

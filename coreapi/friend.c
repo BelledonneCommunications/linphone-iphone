@@ -296,6 +296,7 @@ static void linphone_friend_unsubscribe(LinphoneFriend *lf){
 		sal_unsubscribe(lf->outsub);
 		sal_op_release(lf->outsub);
 		lf->outsub=NULL;
+		lf->subscribe_active=FALSE;
 	}
 }
 
@@ -362,7 +363,7 @@ void linphone_friend_apply(LinphoneFriend *fr, LinphoneCore *lc){
 		}
 		fr->inc_subscribe_pending=FALSE;
 	}
-	if (fr->subscribe && fr->outsub==NULL){
+	if (fr->subscribe && fr->subscribe_active==FALSE){
 		
 		__linphone_friend_do_subscribe(fr);
 	}
