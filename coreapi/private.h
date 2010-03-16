@@ -237,6 +237,7 @@ struct _LinphoneFriend{
 	BuddyInfo *info;
 	char *refkey;
 	bool_t subscribe;
+	bool_t subscribe_active;
 	bool_t inc_subscribe_pending;
 };	
 

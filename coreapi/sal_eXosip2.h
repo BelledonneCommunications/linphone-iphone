@@ -67,6 +67,8 @@ void sal_exosip_subscription_answered(Sal *sal,eXosip_event_t *ev);
 void sal_exosip_notify_recv(Sal *sal,eXosip_event_t *ev);
 void sal_exosip_subscription_closed(Sal *sal,eXosip_event_t *ev);
 
+void sal_exosip_in_subscription_closed(Sal *sal, eXosip_event_t *ev);
+
 void sal_exosip_fix_route(SalOp *op);
 
 

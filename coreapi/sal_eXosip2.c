@@ -1305,8 +1305,12 @@ static bool_t process_event(Sal *sal, eXosip_event_t *ev){
 			}
 			break;
 		case EXOSIP_IN_SUBSCRIPTION_NEW:
-			ms_message("CALL_SUBSCRIPTION_NEW ");
+			ms_message("CALL_IN_SUBSCRIPTION_NEW ");
 			sal_exosip_subscription_recv(sal,ev);
+			break;
+		case EXOSIP_IN_SUBSCRIPTION_RELEASED:
+			ms_message("CALL_SUBSCRIPTION_NEW ");
+			sal_exosip_in_subscription_closed(sal,ev);
 			break;
 		case EXOSIP_SUBSCRIPTION_UPDATE:
 			ms_message("CALL_SUBSCRIPTION_UPDATE");
@@ -1321,6 +1325,14 @@ static bool_t process_event(Sal *sal, eXosip_event_t *ev){
 			break;
 		case EXOSIP_SUBSCRIPTION_CLOSED:
 			ms_message("EXOSIP_SUBSCRIPTION_CLOSED\n");
+			sal_exosip_subscription_closed(sal,ev);
+			break;
+		case EXOSIP_SUBSCRIPTION_REQUESTFAILURE:   /**< announce a request failure      */
+			if (ev->response && (ev->response->status_code == 407 || ev->response->status_code == 401)){
+				return process_authentication(sal,ev);
+			}
+    	case EXOSIP_SUBSCRIPTION_SERVERFAILURE:
+   		case EXOSIP_SUBSCRIPTION_GLOBALFAILURE:
 			sal_exosip_subscription_closed(sal,ev);
 			break;
 		case EXOSIP_CALL_RELEASED:
@@ -1351,7 +1363,7 @@ static bool_t process_event(Sal *sal, eXosip_event_t *ev){
 			}
 			break;
 		default:
-			ms_message("Unhandled exosip event ! %i");
+			ms_message("Unhandled exosip event ! %i",ev->type);
 			break;
 	}
 	return TRUE;
