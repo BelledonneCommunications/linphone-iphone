@@ -1392,7 +1392,6 @@ int linphone_core_get_sip_port(LinphoneCore *lc)
 	return lc->sip_conf.sip_port;
 }
 
-static bool_t exosip_running=FALSE;
 static char _ua_name[64]="Linphone";
 static char _ua_version[64]=LINPHONE_VERSION;
 
@@ -3389,6 +3388,8 @@ static void linphone_core_uninit(LinphoneCore *lc)
 			linphone_core_iterate(lc);
 		}
 	}
+	if (lc->friends)
+		ms_list_for_each(lc->friends,(void (*)(void *))linphone_friend_close_subscriptions);
 	gstate_new_state(lc, GSTATE_POWER_SHUTDOWN, NULL);
 #ifdef VIDEO_ENABLED
 	if (lc->previewstream!=NULL){
@@ -3412,7 +3413,6 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	linphone_core_free_payload_types();
 
 	ortp_exit();
-	exosip_running=FALSE;
 	gstate_new_state(lc, GSTATE_POWER_OFF, NULL);
 }
 

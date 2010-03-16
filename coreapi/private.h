@@ -101,7 +101,7 @@ void linphone_core_refresh_subscribes(LinphoneCore *lc);
 int linphone_proxy_config_send_publish(LinphoneProxyConfig *cfg, LinphoneOnlineStatus os);
 
 int linphone_online_status_to_eXosip(LinphoneOnlineStatus os);
-
+void linphone_friend_close_subscriptions(LinphoneFriend *lf);
 void linphone_friend_notify(LinphoneFriend *lf, LinphoneOnlineStatus os);
 LinphoneFriend *linphone_find_friend_by_inc_subscribe(MSList *l, SalOp *op);
 LinphoneFriend *linphone_find_friend_by_out_subscribe(MSList *l, SalOp *op);

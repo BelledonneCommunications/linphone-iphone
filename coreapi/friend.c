@@ -299,13 +299,18 @@ static void linphone_friend_unsubscribe(LinphoneFriend *lf){
 	}
 }
 
-void linphone_friend_destroy(LinphoneFriend *lf){
+void linphone_friend_close_subscriptions(LinphoneFriend *lf){
 	linphone_friend_notify(lf,LINPHONE_STATUS_OFFLINE);
 	linphone_friend_unsubscribe(lf);
 	if (lf->insub){
 		sal_notify_close(lf->insub);
 		sal_op_release(lf->insub);
+		lf->insub=NULL;
 	}
+}
+
+void linphone_friend_destroy(LinphoneFriend *lf){
+	
 	if (lf->uri!=NULL) linphone_address_destroy(lf->uri);
 	if (lf->info!=NULL) buddy_info_free(lf->info);
 	ms_free(lf);

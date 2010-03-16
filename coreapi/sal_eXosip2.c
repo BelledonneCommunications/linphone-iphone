@@ -153,6 +153,12 @@ void sal_op_release(SalOp *op){
 		ms_message("Cleaning cid %i",op->cid);
 		eXosip_call_set_reference(op->cid,NULL);
 	}
+	if (op->sid!=-1){
+		sal_remove_out_subscribe(op->base.root,op);
+	}
+	if (op->nid!=-1){
+		sal_remove_in_subscribe(op->base.root,op);
+	}
 	if (op->pending_auth){
 		sal_remove_pending_auth(op->base.root,op);
 	}

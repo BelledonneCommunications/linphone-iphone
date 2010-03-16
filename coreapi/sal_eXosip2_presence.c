@@ -35,16 +35,8 @@ static void sal_add_out_subscribe(Sal *sal, SalOp *op){
 	sal->out_subscribes=ms_list_append(sal->out_subscribes,op);
 }
 
-static void sal_remove_out_subscribe(Sal *sal, int sid){
-	MSList *elem;
-	SalOp *op;
-	for(elem=sal->out_subscribes;elem!=NULL;elem=elem->next){
-		op=(SalOp*)elem->data;
-		if (op->sid==sid) {
-			sal->out_subscribes=ms_list_remove_link(sal->out_subscribes,elem);
-			return;
-		}
-	}
+void sal_remove_out_subscribe(Sal *sal, SalOp *op){
+	sal->out_subscribes=ms_list_remove(sal->out_subscribes,op);
 }
 
 static SalOp * sal_find_in_subscribe(Sal *sal, int nid){
@@ -61,16 +53,8 @@ static void sal_add_in_subscribe(Sal *sal, SalOp *op){
 	sal->in_subscribes=ms_list_append(sal->in_subscribes,op);
 }
 
-static void sal_remove_in_subscribe(Sal *sal, int nid){
-	MSList *elem;
-	SalOp *op;
-	for(elem=sal->in_subscribes;elem!=NULL;elem=elem->next){
-		op=(SalOp*)elem->data;
-		if (op->nid==nid) {
-			sal->in_subscribes=ms_list_remove_link(sal->in_subscribes,elem);
-			return;
-		}
-	}
+void sal_remove_in_subscribe(Sal *sal, SalOp *op){
+	sal->in_subscribes=ms_list_remove(sal->in_subscribes,op);
 }
 
 int sal_text_send(SalOp *op, const char *from, const char *to, const char *msg){
@@ -659,7 +643,7 @@ void sal_exosip_notify_recv(Sal *sal, eXosip_event_t *ev){
 	}
 	ms_message("We are notified that %s has online status %i",tmp,estatus);
 	if (ev->ss_status==EXOSIP_SUBCRSTATE_TERMINATED) {
-		sal_remove_out_subscribe(sal,op->sid);
+		sal_remove_out_subscribe(sal,op);
 		op->sid=-1;
 		op->did=-1;
 		ms_message("And outgoing subscription terminated by remote.");
@@ -683,9 +667,9 @@ void sal_exosip_subscription_closed(Sal *sal,eXosip_event_t *ev){
 		ms_error("Subscription closed but no associated op !");
 		return;
 	}
-	sal_remove_in_subscribe(sal,op->nid);
+	sal_remove_in_subscribe(sal,op);
 	op->nid=-1;
-	op->did=0;
+	op->did=-1;
 }
 
 
