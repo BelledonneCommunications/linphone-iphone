@@ -737,5 +737,13 @@ void linphone_account_creator_destroy(LinphoneAccountCreator *obj){
 	}
 }
 
+void linphone_proxy_config_set_user_data(LinphoneProxyConfig *cr, void * ud) {
+	cr->user_data=ud;
+}
+
+void * linphone_proxy_config_get_user_data(LinphoneProxyConfig *cr) {
+	return cr->user_data;
+}
+
 
 

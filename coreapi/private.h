@@ -203,6 +203,7 @@ struct _LinphoneProxyConfig
 	bool_t registered;
 	bool_t publish;
 	bool_t dial_escape_plus;
+	void* user_data;
 };
 
 struct _LinphoneAuthInfo 

@@ -193,6 +193,10 @@ extern "C" int Java_org_linphone_core_LinphoneCoreImpl_addProxyConfig(	JNIEnv*  
 		,jobject  thiz
 		,jlong lc
 		,jlong pc) {
+	LinphoneProxyConfig* proxy = (LinphoneProxyConfig*)pc;
+	linphone_proxy_config_set_user_data(proxy
+										,env->NewGlobalRef((jobject)linphone_proxy_config_get_user_data(proxy)));
+
 	return linphone_core_add_proxy_config((LinphoneCore*)lc,(LinphoneProxyConfig*)pc);
 }
 
@@ -281,10 +285,18 @@ extern "C" float Java_org_linphone_core_LinphoneCoreImpl_getSoftPlayLevel(	JNIEn
 		return linphone_core_get_soft_play_level((LinphoneCore*)lc);
 }
 
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_muteMic(	JNIEnv*  env
+		,jobject  thiz
+		,jlong lc
+		,jboolean isMuted) {
+		linphone_core_mute_mic((LinphoneCore*)lc,isMuted);
+}
 //ProxyConfig
 
 extern "C" jlong Java_org_linphone_core_LinphoneProxyConfigImpl_newLinphoneProxyConfig(JNIEnv*  env,jobject  thiz) {
-	return  (jlong) linphone_proxy_config_new();
+	LinphoneProxyConfig* proxy = linphone_proxy_config_new();
+	linphone_proxy_config_set_user_data(proxy,thiz);
+	return  (jlong) proxy;
 }
 
 extern "C" void Java_org_linphone_core_LinphoneProxyConfigImpl_delete(JNIEnv*  env,jobject  thiz,jlong ptr) {
