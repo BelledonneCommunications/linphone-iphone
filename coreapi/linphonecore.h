@@ -467,7 +467,11 @@ LinphoneCore *linphone_core_new(const LinphoneCoreVTable *vtable,
 /* function to be periodically called in a main loop */
 void linphone_core_iterate(LinphoneCore *lc);
 
+LinphoneAddress * linphone_core_interpret_url(LinphoneCore *lc, const char *url);
+
 int linphone_core_invite(LinphoneCore *lc, const char *url);
+
+int linphone_core_invite_address(LinphoneCore *lc, const LinphoneAddress *addr);
 
 int linphone_core_refer(LinphoneCore *lc, const char *url);
 

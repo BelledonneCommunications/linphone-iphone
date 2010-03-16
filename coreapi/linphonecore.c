@@ -1678,32 +1678,25 @@ void linphone_core_iterate(LinphoneCore *lc){
 }
 
 
-bool_t linphone_core_interpret_url(LinphoneCore *lc, const char *url, LinphoneAddress **real_parsed_url, char **route){
+LinphoneAddress * linphone_core_interpret_url(LinphoneCore *lc, const char *url){
 	enum_lookup_res_t *enumres=NULL;
-	LinphoneAddress *parsed_url=NULL;	
 	char *enum_domain=NULL;
 	LinphoneProxyConfig *proxy=lc->default_proxy;;
 	char *tmpurl;
-	const char *tmproute;
 	LinphoneAddress *uri;
 	
-	if (real_parsed_url!=NULL) *real_parsed_url=NULL;
-	*route=NULL;
-	tmproute=linphone_core_get_route(lc);
-
 	if (is_enum(url,&enum_domain)){
 		lc->vtable.display_status(lc,_("Looking for telephone number destination..."));
 		if (enum_lookup(enum_domain,&enumres)<0){
 			lc->vtable.display_status(lc,_("Could not resolve this number."));
 			ms_free(enum_domain);
-			return FALSE;
+			return NULL;
 		}
 		ms_free(enum_domain);
 		tmpurl=enumres->sip_address[0];
-		if (real_parsed_url!=NULL) *real_parsed_url=linphone_address_new(tmpurl);
+		uri=linphone_address_new(tmpurl);
 		enum_lookup_res_free(enumres);
-		if (tmproute) *route=ms_strdup(tmproute);
-		return TRUE;
+		return uri;
 	}
 	/* check if we have a "sip:" */
 	if (strstr(url,"sip:")==NULL){
@@ -1714,8 +1707,7 @@ bool_t linphone_core_interpret_url(LinphoneCore *lc, const char *url, LinphoneAd
 			uri=linphone_address_new(tmpurl);
 			ms_free(tmpurl);
 			if (uri){
-				if (real_parsed_url!=NULL) *real_parsed_url=uri;
-				return TRUE;
+				return uri;
 			}
 		}
 		
@@ -1725,31 +1717,24 @@ bool_t linphone_core_interpret_url(LinphoneCore *lc, const char *url, LinphoneAd
 			char normalized_username[128];
 			uri=linphone_address_new(identity);
 			if (uri==NULL){
-				return FALSE;
+				return NULL;
 			}
 			linphone_address_set_display_name(uri,NULL);
 			linphone_proxy_config_normalize_number(proxy,url,normalized_username,
 			    					sizeof(normalized_username));
 			linphone_address_set_username(uri,normalized_username);
-										
-			if (real_parsed_url!=NULL) *real_parsed_url=uri;
-			if (tmproute) *route=ms_strdup(tmproute);
-			return TRUE;
-		}else return FALSE;
+			return uri;
+		}else return NULL;
 	}
-	parsed_url=linphone_address_new(url);
-	if (parsed_url!=NULL){
-		if (real_parsed_url!=NULL) *real_parsed_url=parsed_url;
-		else linphone_address_destroy(parsed_url);
-		if (tmproute) *route=ms_strdup(tmproute);
-		
-		return TRUE;
+	uri=linphone_address_new(url);
+	if (uri!=NULL){
+		return uri;
 	}
 	/* else we could not do anything with url given by user, so display an error */
 	if (lc->vtable.display_warning!=NULL){
 		lc->vtable.display_warning(lc,_("Could not parse given sip address. A sip url usually looks like sip:user@domain"));
 	}
-	return FALSE;
+	return NULL;
 }
 
 /**
@@ -1890,16 +1875,32 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, LinphonePro
  *
  * @ingroup call_control
  * @param lc the LinphoneCore object
+ * @param url the destination of the call (sip address, or phone number).
+**/
+int linphone_core_invite(LinphoneCore *lc, const char *url){
+	LinphoneAddress *addr=linphone_core_interpret_url(lc,url);
+	if (addr){
+		int err=linphone_core_invite_address(lc,addr);
+		linphone_address_destroy(addr);
+		return err;
+	}
+	return -1;
+}
+
+/**
+ * Initiates an outgoing call given a destination LinphoneAddress
+ *
+ * @ingroup call_control
+ * @param lc the LinphoneCore object
  * @param url the destination of the call (sip address).
 **/
-int linphone_core_invite(LinphoneCore *lc, const char *url)
+int linphone_core_invite_address(LinphoneCore *lc, const LinphoneAddress *real_parsed_url)
 {
 	int err=0;
-	char *route=NULL;
+	const char *route=NULL;
 	const char *from=NULL;
 	LinphoneProxyConfig *proxy=NULL;
 	LinphoneAddress *parsed_url2=NULL;
-	LinphoneAddress *real_parsed_url=NULL;
 	char *real_url=NULL;
 	LinphoneProxyConfig *dest_proxy=NULL;
 	LinphoneCall *call;
@@ -1910,9 +1911,8 @@ int linphone_core_invite(LinphoneCore *lc, const char *url)
 	}
 
 	linphone_core_get_default_proxy(lc,&proxy);
-	if (!linphone_core_interpret_url(lc,url,&real_parsed_url,&route)){
-		return -1;
-	}
+	route=linphone_core_get_route(lc);
+	
 	real_url=linphone_address_as_string(real_parsed_url);
 	dest_proxy=linphone_core_lookup_known_proxy(lc,real_parsed_url);
 
@@ -1931,7 +1931,7 @@ int linphone_core_invite(LinphoneCore *lc, const char *url)
 
 	parsed_url2=linphone_address_new(from);
 
-	call=linphone_call_new_outgoing(lc,parsed_url2,real_parsed_url);
+	call=linphone_call_new_outgoing(lc,parsed_url2,linphone_address_clone(real_parsed_url));
 	sal_op_set_route(call->op,route);
 	
 	lc->call=call;
@@ -1946,21 +1946,19 @@ int linphone_core_invite(LinphoneCore *lc, const char *url)
 	}
 	
 	if (real_url!=NULL) ms_free(real_url);
-	if (route!=NULL) ms_free(route);
 	return err;
 }
 
 int linphone_core_refer(LinphoneCore *lc, const char *url)
 {
 	char *real_url=NULL;
-	LinphoneAddress *real_parsed_url=NULL;
+	LinphoneAddress *real_parsed_url=linphone_core_interpret_url(lc,url);
 	LinphoneCall *call;
-	char *route;
-	if (!linphone_core_interpret_url(lc,url,&real_parsed_url, &route)){
+
+	if (!real_parsed_url){
 		/* bad url */
 		return -1;
 	}
-	if (route!=NULL) ms_free(route);
 	call=lc->call;
 	if (call==NULL){
 		ms_warning("No established call to refer.");

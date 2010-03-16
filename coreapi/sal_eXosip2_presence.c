@@ -424,7 +424,7 @@ int sal_notify_close(SalOp *op){
 		if (identity==NULL) identity=sal_op_get_to(op);
 		osip_message_set_contact(msg,identity);
 		eXosip_insubscription_send_request(op->did,msg);
-	}else ms_error("could not create notify for incoming subscription.");
+	}else ms_error("sal_notify_close(): could not create notify for incoming subscription.");
 	eXosip_unlock();
 	return 0;
 }
