@@ -2105,19 +2105,23 @@ static RtpProfile *make_profile(LinphoneCore *lc, const SalStreamDescription *de
 	const MSList *elem;
 	RtpProfile *prof=rtp_profile_new("Call profile");
 	bool_t first=TRUE;
-	if (desc->type==SalAudio){
-		bw=get_min_bandwidth(lc->up_audio_bw,desc->bandwidth);
-	}
-	else bw=get_min_bandwidth(lc->up_video_bw,desc->bandwidth);
+	
 	for(elem=desc->payloads;elem!=NULL;elem=elem->next){
 		PayloadType *pt=(PayloadType*)elem->data;
+	
+		if (first) {
+			if (desc->type==SalAudio){
+				linphone_core_update_allocated_audio_bandwidth_in_call(lc,pt);
+			}
+			*used_pt=payload_type_get_number(pt);
+			first=FALSE;
+		}
+		if (desc->type==SalAudio){			
+				bw=get_min_bandwidth(lc->up_audio_bw,desc->bandwidth);
+		}else bw=get_min_bandwidth(lc->up_video_bw,desc->bandwidth);
 		if (bw>0) pt->normal_bitrate=bw*1000;
 		else if (desc->type==SalAudio){
 			pt->normal_bitrate=-1;
-		}
-		if (first) {
-			*used_pt=payload_type_get_number(pt);
-			first=FALSE;
 		}
 		if (desc->ptime>0){
 			char tmp[40];

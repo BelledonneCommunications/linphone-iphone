@@ -127,8 +127,8 @@ int sal_unsubscribe(SalOp *op){
 int sal_subscribe_accept(SalOp *op){
 	osip_message_t *msg;
 	eXosip_lock();
-	eXosip_insubscription_build_answer(op->tid,200,&msg);
-	eXosip_insubscription_send_answer(op->tid,200,msg);
+	eXosip_insubscription_build_answer(op->tid,202,&msg);
+	eXosip_insubscription_send_answer(op->tid,202,msg);
 	eXosip_unlock();
 	return 0;
 }
@@ -623,7 +623,14 @@ void sal_exosip_subscription_recv(Sal *sal, eXosip_event_t *ev){
 			ev->did=op->did;
 			ev->nid=op->nid;
 			sal_exosip_subscription_closed(sal,ev);
-		}else ms_warning("Probably a refresh subscribe");
+		}else {
+			osip_message_t *msg=NULL;
+			ms_warning("Probably a refresh subscribe");
+			eXosip_lock();
+			eXosip_insubscription_build_answer(ev->tid,202,&msg);
+			eXosip_insubscription_send_answer(ev->tid,202,msg);
+			eXosip_unlock();
+		}
 	}else _sal_exosip_subscription_recv(sal,ev);
 }
 
