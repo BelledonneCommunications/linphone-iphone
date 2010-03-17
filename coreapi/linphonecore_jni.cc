@@ -193,6 +193,10 @@ extern "C" int Java_org_linphone_core_LinphoneCoreImpl_addProxyConfig(	JNIEnv*  
 		,jobject  thiz
 		,jlong lc
 		,jlong pc) {
+	LinphoneProxyConfig* proxy = (LinphoneProxyConfig*)pc;
+	linphone_proxy_config_set_user_data(proxy
+										,env->NewGlobalRef((jobject)linphone_proxy_config_get_user_data(proxy)));
+
 	return linphone_core_add_proxy_config((LinphoneCore*)lc,(LinphoneProxyConfig*)pc);
 }
 
@@ -218,6 +222,12 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_invite(	JNIEnv*  env
 	const char* uri = env->GetStringUTFChars(juri, NULL);
 	linphone_core_invite((LinphoneCore*)lc,uri);
 	env->ReleaseStringUTFChars(juri, uri);
+}
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_inviteAddress(	JNIEnv*  env
+		,jobject  thiz
+		,jlong lc
+		,jlong to) {
+	linphone_core_invite_address((LinphoneCore*)lc,(LinphoneAddress*)to);
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_terminateCall(	JNIEnv*  env
@@ -281,10 +291,29 @@ extern "C" float Java_org_linphone_core_LinphoneCoreImpl_getSoftPlayLevel(	JNIEn
 		return linphone_core_get_soft_play_level((LinphoneCore*)lc);
 }
 
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_muteMic(	JNIEnv*  env
+		,jobject  thiz
+		,jlong lc
+		,jboolean isMuted) {
+		linphone_core_mute_mic((LinphoneCore*)lc,isMuted);
+}
+
+extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_interpretUrl(	JNIEnv*  env
+		,jobject  thiz
+		,jlong lc
+		,jstring jurl) {
+	const char* url = env->GetStringUTFChars(jurl, NULL);
+	jlong result = (jlong)linphone_core_interpret_url((LinphoneCore*)lc,url);
+	env->ReleaseStringUTFChars(jurl, url);
+	return result;
+}
+
 //ProxyConfig
 
 extern "C" jlong Java_org_linphone_core_LinphoneProxyConfigImpl_newLinphoneProxyConfig(JNIEnv*  env,jobject  thiz) {
-	return  (jlong) linphone_proxy_config_new();
+	LinphoneProxyConfig* proxy = linphone_proxy_config_new();
+	linphone_proxy_config_set_user_data(proxy,thiz);
+	return  (jlong) proxy;
 }
 
 extern "C" void Java_org_linphone_core_LinphoneProxyConfigImpl_delete(JNIEnv*  env,jobject  thiz,jlong ptr) {
@@ -437,6 +466,15 @@ extern "C" jstring Java_org_linphone_core_LinphoneAddressImpl_toUri(JNIEnv*  env
 	ms_free(uri);
 	return juri;
 }
+extern "C" void Java_org_linphone_core_LinphoneAddressImpl_setDisplayName(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong address
+																		,jstring jdisplayName) {
+	const char* displayName = env->GetStringUTFChars(jdisplayName, NULL);
+	linphone_address_set_display_name((LinphoneAddress*)address,displayName);
+	env->ReleaseStringUTFChars(jdisplayName, displayName);
+}
+
 
 //CallLog
 extern "C" jlong Java_org_linphone_core_LinphoneCallLogImpl_getFrom(JNIEnv*  env

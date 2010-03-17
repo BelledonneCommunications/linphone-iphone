@@ -238,6 +238,14 @@ SipSetup *linphone_proxy_config_get_sip_setup(LinphoneProxyConfig *cfg);
  * normalize a human readable phone number into a basic string. 888-444-222 becomes 888444222
  */
 int linphone_proxy_config_normalize_number(LinphoneProxyConfig *proxy, const char *username, char *result, size_t result_len);
+/*
+ *  attached a user data to a proxy config
+ */
+void linphone_proxy_config_set_user_data(LinphoneProxyConfig *cr, void * ud);
+/*
+ *  get user data to a proxy config. return null if any
+ */
+void * linphone_proxy_config_get_user_data(LinphoneProxyConfig *cr);
 
 /**
  * @}
