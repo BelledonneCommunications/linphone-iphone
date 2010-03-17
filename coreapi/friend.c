@@ -302,7 +302,6 @@ static void linphone_friend_unsubscribe(LinphoneFriend *lf){
 }
 
 void linphone_friend_close_subscriptions(LinphoneFriend *lf){
-	linphone_friend_notify(lf,LINPHONE_STATUS_OFFLINE);
 	linphone_friend_unsubscribe(lf);
 	if (lf->insub){
 		sal_notify_close(lf->insub);

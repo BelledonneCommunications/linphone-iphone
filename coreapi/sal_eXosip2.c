@@ -158,6 +158,9 @@ void sal_op_release(SalOp *op){
 	}
 	if (op->nid!=-1){
 		sal_remove_in_subscribe(op->base.root,op);
+		if (op->call_id)
+			osip_call_id_free(op->call_id);
+		op->call_id=NULL;
 	}
 	if (op->pending_auth){
 		sal_remove_pending_auth(op->base.root,op);
@@ -1135,6 +1138,17 @@ static void other_request(Sal *sal, eXosip_event_t *ev){
 	}
 }
 
+static void masquerade_via(osip_message_t *msg, const char *ip, const char *port){
+	osip_via_t *via=NULL;
+	osip_message_get_via(msg,0,&via);
+	if (via){
+		osip_free(via->port);
+		via->port=osip_strdup(port);
+		osip_free(via->host);
+		via->host=osip_strdup(ip);
+	}
+}
+
 static bool_t register_again_with_updated_contact(SalOp *op, osip_message_t *orig_request, osip_message_t *last_answer){
 	osip_message_t *msg;
 	const char *received;
@@ -1173,6 +1187,7 @@ static bool_t register_again_with_updated_contact(SalOp *op, osip_message_t *ori
 	}
 	snprintf(port,sizeof(port),"%i",rport);
 	ctt->url->port=osip_strdup(port);
+	masquerade_via(msg,received,port);
 	eXosip_register_send_register(op->rid,msg);
 	eXosip_unlock();
 	osip_contact_to_str(ctt,&tmp);

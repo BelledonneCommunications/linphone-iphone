@@ -1401,7 +1401,7 @@ extern const char *eXosip_get_version();
 
 static void apply_user_agent(LinphoneCore *lc){
 	char ua_string[256];
-	snprintf(ua_string,sizeof(ua_string),"%s/%s (eXosip2/%s)",_ua_name,_ua_version,
+	snprintf(ua_string,sizeof(ua_string)-1,"%s/%s (eXosip2/%s)",_ua_name,_ua_version,
 #ifdef HAVE_EXOSIP_GET_VERSION
 		 eXosip_get_version()
 #else

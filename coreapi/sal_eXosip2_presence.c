@@ -49,7 +49,19 @@ static SalOp * sal_find_in_subscribe(Sal *sal, int nid){
 	return NULL;
 }
 
-static void sal_add_in_subscribe(Sal *sal, SalOp *op){
+static SalOp * sal_find_in_subscribe_by_call_id(Sal *sal, osip_call_id_t *call_id){
+	const MSList *elem;
+	SalOp *op;
+	for(elem=sal->in_subscribes;elem!=NULL;elem=elem->next){
+		op=(SalOp*)elem->data;
+		if (op->call_id && osip_call_id_match(op->call_id,call_id)==0)
+			return op;
+	}
+	return NULL;
+}
+
+static void sal_add_in_subscribe(Sal *sal, SalOp *op, osip_message_t *subs){
+	osip_call_id_clone(subs->call_id,&op->call_id);
 	sal->in_subscribes=ms_list_append(sal->in_subscribes,op);
 }
 
@@ -423,6 +435,7 @@ int sal_notify_close(SalOp *op){
 		const char *identity=sal_op_get_contact(op);
 		if (identity==NULL) identity=sal_op_get_to(op);
 		osip_message_set_contact(msg,identity);
+		add_presence_body(msg,SalPresenceOffline);
 		eXosip_insubscription_send_request(op->did,msg);
 	}else ms_error("sal_notify_close(): could not create notify for incoming subscription"
 	    " did=%i, nid=%i",op->did,op->nid);
@@ -582,7 +595,7 @@ int sal_publish(SalOp *op, const char *from, const char *to, SalPresenceStatus p
 	return 0;
 }
 
-void sal_exosip_subscription_recv(Sal *sal, eXosip_event_t *ev){
+static void _sal_exosip_subscription_recv(Sal *sal, eXosip_event_t *ev){	
 	SalOp *op=sal_op_new(sal);
 	char *tmp;
 	op->did=ev->did;
@@ -594,8 +607,24 @@ void sal_exosip_subscription_recv(Sal *sal, eXosip_event_t *ev){
 	osip_from_to_str(ev->request->to,&tmp);
 	sal_op_set_to(op,tmp);
 	ms_free(tmp);
-	sal_add_in_subscribe(sal,op);
+	sal_add_in_subscribe(sal,op,ev->request);
 	sal->callbacks.subscribe_received(op,sal_op_get_from(op));
+}
+
+void sal_exosip_subscription_recv(Sal *sal, eXosip_event_t *ev){	
+	/*workaround a bug in eXosip: incoming SUBSCRIBES within dialog with expires: 0 are
+	 recognized as new incoming subscribes*/
+	SalOp *op=sal_find_in_subscribe_by_call_id(sal,ev->request->call_id);
+	if (op){
+		osip_header_t *h;
+		osip_message_header_get_byname(ev->request,"expires",0,&h);
+		if (h && h->hvalue && atoi(h->hvalue)==0){
+			ms_warning("This susbscribe is not a new one but terminates an old one.");
+			ev->did=op->did;
+			ev->nid=op->nid;
+			sal_exosip_subscription_closed(sal,ev);
+		}else ms_warning("Probably a refresh subscribe");
+	}else _sal_exosip_subscription_recv(sal,ev);
 }
 
 void sal_exosip_notify_recv(Sal *sal, eXosip_event_t *ev){
