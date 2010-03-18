@@ -63,12 +63,12 @@ int lc_callback_obj_invoke(LCCallbackObj *obj, LinphoneCore *lc){
 }
 
 
-static MSList *make_codec_list(const MSList *codecs, bool_t only_one_codec){
+static MSList *make_codec_list(LinphoneCore *lc, const MSList *codecs, bool_t only_one_codec){
 	MSList *l=NULL;
 	const MSList *it;
 	for(it=codecs;it!=NULL;it=it->next){
 		PayloadType *pt=(PayloadType*)it->data;
-		if (pt->flags & PAYLOAD_TYPE_ENABLED){
+		if ((pt->flags & PAYLOAD_TYPE_ENABLED) && linphone_core_check_payload_type_usability(lc,pt)){
 			l=ms_list_append(l,payload_type_clone(pt));
 			if (only_one_codec) break;
 		}
@@ -90,7 +90,7 @@ static SalMediaDescription *create_local_media_description(LinphoneCore *lc,
 	md->streams[0].proto=SalProtoRtpAvp;
 	md->streams[0].type=SalAudio;
 	md->streams[0].ptime=lc->net_conf.down_ptime;
-	l=make_codec_list(lc->codecs_conf.audio_codecs,only_one_codec);
+	l=make_codec_list(lc,lc->codecs_conf.audio_codecs,only_one_codec);
 	pt=payload_type_clone(rtp_profile_get_payload_from_mime(&av_profile,"telephone-event"));
 	l=ms_list_append(l,pt);
 	md->streams[0].payloads=l;
@@ -103,7 +103,7 @@ static SalMediaDescription *create_local_media_description(LinphoneCore *lc,
 		md->streams[1].port=linphone_core_get_video_port(lc);
 		md->streams[1].proto=SalProtoRtpAvp;
 		md->streams[1].type=SalVideo;
-		l=make_codec_list(lc->codecs_conf.video_codecs,only_one_codec);
+		l=make_codec_list(lc,lc->codecs_conf.video_codecs,only_one_codec);
 		md->streams[1].payloads=l;
 		if (lc->dw_video_bw)
 			md->streams[1].bandwidth=lc->dw_video_bw;

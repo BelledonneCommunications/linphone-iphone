@@ -593,6 +593,16 @@ static void set_network_origin(SalOp *op, osip_message_t *req){
 	__sal_op_set_network_origin(op,origin);
 }
 
+static SalOp *find_op(Sal *sal, eXosip_event_t *ev){
+	if (ev->cid>0)
+		return (SalOp*)eXosip_call_get_reference(ev->cid);;
+	if (ev->rid>0){
+		return sal_find_register(sal,ev->rid);
+	}
+	if (ev->response) return sal_find_other(sal,ev->response);
+	return NULL;
+}
+
 static void inc_new_call(Sal *sal, eXosip_event_t *ev){
 	SalOp *op=sal_op_new(sal);
 	osip_from_t *from,*to;
@@ -626,7 +636,7 @@ static void inc_new_call(Sal *sal, eXosip_event_t *ev){
 }
 
 static void handle_reinvite(Sal *sal,  eXosip_event_t *ev){
-	SalOp *op=(SalOp*)ev->external_reference;
+	SalOp *op=find_op(sal,ev);
 	sdp_message_t *sdp;
 	osip_message_t *msg=NULL;
 
@@ -669,7 +679,7 @@ static void handle_reinvite(Sal *sal,  eXosip_event_t *ev){
 }
 
 static void handle_ack(Sal *sal,  eXosip_event_t *ev){
-	SalOp *op=(SalOp*)ev->external_reference;
+	SalOp *op=find_op(sal,ev);
 	sdp_message_t *sdp;
 
 	if (op==NULL) {
@@ -714,7 +724,7 @@ static void update_contact_from_response(SalOp *op, osip_message_t *response){
 }
 
 static int call_proceeding(Sal *sal, eXosip_event_t *ev){
-	SalOp *op=(SalOp*)ev->external_reference;
+	SalOp *op=find_op(sal,ev);
 	
 	if (op==NULL) {
 		ms_warning("This call has been canceled.");
@@ -750,10 +760,9 @@ static void call_ringing(Sal *sal, eXosip_event_t *ev){
 static void call_accepted(Sal *sal, eXosip_event_t *ev){
 	sdp_message_t *sdp;
 	osip_message_t *msg=NULL;
-	SalOp *op;
+	SalOp *op=find_op(sal,ev);
 	const char *contact;
 	
-	op=(SalOp*)ev->external_reference;
 	if (op==NULL){
 		ms_error("A closed call is accepted ?");
 		return;
@@ -778,9 +787,8 @@ static void call_accepted(Sal *sal, eXosip_event_t *ev){
 }
 
 static void call_terminated(Sal *sal, eXosip_event_t *ev){
-	SalOp *op;
 	char *from;
-	op=(SalOp*)ev->external_reference;
+	SalOp *op=find_op(sal,ev);
 	if (op==NULL){
 		ms_warning("Call terminated for already closed call ?");
 		return;
@@ -793,8 +801,7 @@ static void call_terminated(Sal *sal, eXosip_event_t *ev){
 }
 
 static void call_released(Sal *sal, eXosip_event_t *ev){
-	SalOp *op;
-	op=(SalOp*)ev->external_reference;
+	SalOp *op=find_op(sal,ev);
 	if (op==NULL){
 		return;
 	}
@@ -855,16 +862,6 @@ int sal_op_get_auth_requested(SalOp *op, const char **realm, const char **userna
 		return get_auth_data(op->pending_auth,realm,username);
 	}
 	return -1;
-}
-
-static SalOp *find_op(Sal *sal, eXosip_event_t *ev){
-	if (ev->external_reference)
-		return (SalOp*)ev->external_reference;
-	if (ev->rid>0){
-		return sal_find_register(sal,ev->rid);
-	}
-	if (ev->response) return sal_find_other(sal,ev->response);
-	return NULL;
 }
 
 static bool_t process_authentication(Sal *sal, eXosip_event_t *ev){
