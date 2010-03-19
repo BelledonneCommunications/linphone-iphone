@@ -150,6 +150,9 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_newLinphoneCore(JNIEnv*
 	const char* userConfig = env->GetStringUTFChars(juserConfig, NULL);
 	const char* factoryConfig = env->GetStringUTFChars(jfactoryConfig, NULL);
 	LinphoneCoreData* ldata = new LinphoneCoreData(env,thiz,jlistener,juserdata);
+#ifdef ANDROID
+	ms_andsnd_register_card(jvm);
+#endif /*ANDROID*/
 	jlong nativePtr = (jlong)linphone_core_new(	&ldata->vTable
 			,userConfig
 			,factoryConfig
@@ -307,6 +310,18 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_interpretUrl(	JNIEnv*  
 	env->ReleaseStringUTFChars(jurl, url);
 	return result;
 }
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_sendDtmf(	JNIEnv*  env
+		,jobject  thiz
+		,jlong lc
+		,jchar dtmf) {
+	linphone_core_send_dtmf((LinphoneCore*)lc,dtmf);
+}
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_clearCallLogs(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong lc) {
+	linphone_core_clear_call_logs((LinphoneCore*)lc);
+}
+
 
 //ProxyConfig
 
@@ -458,10 +473,18 @@ extern "C" jstring Java_org_linphone_core_LinphoneAddressImpl_getDomain(JNIEnv* 
 	}
 }
 
-extern "C" jstring Java_org_linphone_core_LinphoneAddressImpl_toUri(JNIEnv*  env
+extern "C" jstring Java_org_linphone_core_LinphoneAddressImpl_toString(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr) {
 	char* uri = linphone_address_as_string((LinphoneAddress*)ptr);
+	jstring juri =env->NewStringUTF(uri);
+	ms_free(uri);
+	return juri;
+}
+extern "C" jstring Java_org_linphone_core_LinphoneAddressImpl_toUri(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	char* uri = linphone_address_as_string_uri_only((LinphoneAddress*)ptr);
 	jstring juri =env->NewStringUTF(uri);
 	ms_free(uri);
 	return juri;

@@ -672,6 +672,7 @@ static void sip_config_read(LinphoneCore *lc)
 	lc->sip_conf.register_only_when_network_is_up=
 		lp_config_get_int(lc->config,"sip","register_only_when_network_is_up",1);
 	lc->sip_conf.ping_with_options=lp_config_get_int(lc->config,"sip","ping_with_options",1);
+	lc->sip_conf.auto_net_state_mon=lp_config_get_int(lc->config,"sip","auto_net_state_mon",1);
 }
 
 static void rtp_config_read(LinphoneCore *lc)
@@ -1059,7 +1060,7 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	ui_config_read(lc);
 	lc->vtable.display_status(lc,_("Ready"));
         gstate_new_state(lc, GSTATE_POWER_ON, NULL);
-	lc->auto_net_state_mon=TRUE;
+	lc->auto_net_state_mon=lc->sip_conf.auto_net_state_mon;
 
     lc->ready=TRUE;
 }
