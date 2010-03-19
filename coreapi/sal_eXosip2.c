@@ -138,6 +138,7 @@ SalOp * sal_op_new(Sal *sal){
 	op->sdp_answer=NULL;
 	op->reinvite=FALSE;
 	op->call_id=NULL;
+	op->masquerade_via=FALSE;
 	return op;
 }
 
@@ -1153,6 +1154,7 @@ static bool_t register_again_with_updated_contact(SalOp *op, osip_message_t *ori
 	osip_contact_t *ctt=NULL;
 	char *tmp;
 	char port[20];
+	SalAddress *addr;
 	
 	if (extract_received_rport(last_answer,&received,&rport)==-1) return FALSE;
 	osip_message_get_contact(orig_request,0,&ctt);
@@ -1184,10 +1186,14 @@ static bool_t register_again_with_updated_contact(SalOp *op, osip_message_t *ori
 	}
 	snprintf(port,sizeof(port),"%i",rport);
 	ctt->url->port=osip_strdup(port);
-	masquerade_via(msg,received,port);
+	if (op->masquerade_via) masquerade_via(msg,received,port);
 	eXosip_register_send_register(op->rid,msg);
 	eXosip_unlock();
 	osip_contact_to_str(ctt,&tmp);
+	addr=sal_address_new(tmp);
+	osip_free(tmp);
+	sal_address_clean(addr);
+	tmp=sal_address_as_string(addr);
 	sal_op_set_contact(op,tmp);
 	ms_message("Resending new register with updated contact %s",tmp);
 	ms_free(tmp);
@@ -1231,6 +1237,11 @@ static bool_t registration_failure(Sal *sal, eXosip_event_t *ev){
 		case 407:
 			return process_authentication(sal,ev);
 			break;
+		case 606: /*Not acceptable, workaround for proxies that don't like private addresses
+				 in vias, such as ekiga.net 
+				 On the opposite, freephonie.net bugs when via are masqueraded.
+				 */
+			op->masquerade_via=TRUE;
 		default:
 			/* if contact is up to date, process the failure, otherwise resend a new register with
 				updated contact first, just in case the faillure is due to incorrect contact */
@@ -1513,6 +1524,7 @@ void sal_address_set_port_int(SalAddress *uri, int port){
 
 void sal_address_clean(SalAddress *addr){
 	osip_generic_param_freelist(& ((osip_from_t*)addr)->gen_params);
+	osip_uri_param_freelist(& ((osip_from_t*)addr)->url->url_params);
 }
 
 char *sal_address_as_string(const SalAddress *u){
