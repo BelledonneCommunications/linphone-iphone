@@ -42,8 +42,7 @@ static void linphone_android_log_handler(OrtpLogLevel lev, const char *fmt, va_l
 
 JNIEXPORT jint JNICALL  JNI_OnLoad(JavaVM *ajvm, void *reserved)
 {
-	#ifdef ANDROID
-	linphone_core_enable_logs_with_cb(linphone_android_log_handler);
+#ifdef ANDROID
 	ms_andsnd_register_card(ajvm);
 #endif /*ANDROID*/
 	jvm=ajvm;
@@ -51,7 +50,16 @@ JNIEXPORT jint JNICALL  JNI_OnLoad(JavaVM *ajvm, void *reserved)
 }
 
 
-
+//LinphoneFactory
+extern "C" void Java_org_linphone_core_LinphoneCoreFactory_setDebugMode(JNIEnv*  env
+		,jobject  thiz
+		,jboolean isDebug) {
+	if (isDebug) {
+		linphone_core_enable_logs_with_cb(linphone_android_log_handler);
+	} else {
+		linphone_core_disable_logs();
+	}
+}
 // LinphoneCore
 
 class LinphoneCoreData {
@@ -194,11 +202,11 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_getDefaultProxyConfig(	
 
 extern "C" int Java_org_linphone_core_LinphoneCoreImpl_addProxyConfig(	JNIEnv*  env
 		,jobject  thiz
+		,jobject jproxyCfg
 		,jlong lc
 		,jlong pc) {
 	LinphoneProxyConfig* proxy = (LinphoneProxyConfig*)pc;
-	linphone_proxy_config_set_user_data(proxy
-										,env->NewGlobalRef((jobject)linphone_proxy_config_get_user_data(proxy)));
+	linphone_proxy_config_set_user_data(proxy, env->NewGlobalRef(jproxyCfg));
 
 	return linphone_core_add_proxy_config((LinphoneCore*)lc,(LinphoneProxyConfig*)pc);
 }
@@ -327,7 +335,6 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_clearCallLogs(JNIEnv*  e
 
 extern "C" jlong Java_org_linphone_core_LinphoneProxyConfigImpl_newLinphoneProxyConfig(JNIEnv*  env,jobject  thiz) {
 	LinphoneProxyConfig* proxy = linphone_proxy_config_new();
-	linphone_proxy_config_set_user_data(proxy,thiz);
 	return  (jlong) proxy;
 }
 
