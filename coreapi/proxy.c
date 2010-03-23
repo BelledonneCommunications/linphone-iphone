@@ -106,7 +106,7 @@ int linphone_proxy_config_set_server_addr(LinphoneProxyConfig *obj, const char *
 			}
 		}
 		if (addr){
-			obj->reg_proxy=linphone_address_as_string(addr);
+			obj->reg_proxy=linphone_address_as_string_uri_only(addr);
 			linphone_address_destroy(addr);
 		}else{
 			ms_warning("Could not parse %s",server_addr);
