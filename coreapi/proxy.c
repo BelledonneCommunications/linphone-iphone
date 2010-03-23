@@ -90,10 +90,20 @@ bool_t linphone_proxy_config_is_registered(const LinphoneProxyConfig *obj){
 **/
 int linphone_proxy_config_set_server_addr(LinphoneProxyConfig *obj, const char *server_addr){
 	LinphoneAddress *addr;
+	
 	if (obj->reg_proxy!=NULL) ms_free(obj->reg_proxy);
 	obj->reg_proxy=NULL;
+	
 	if (server_addr!=NULL && strlen(server_addr)>0){
 		addr=linphone_address_new(server_addr);
+		if (!addr){
+			/*try to prepend 'sip:' */
+			if (strstr(server_addr,"sip:")==NULL){
+				char *try=ms_strdup_printf("sip:%s",server_addr);
+				addr=linphone_address_new(try);
+				ms_free(try);
+			}
+		}
 		if (addr){
 			obj->reg_proxy=ms_strdup(server_addr);
 			linphone_address_destroy(addr);
@@ -243,7 +253,7 @@ void linphone_proxy_config_set_dial_prefix(LinphoneProxyConfig *cfg, const char 
 		ms_free(cfg->dial_prefix);
 		cfg->dial_prefix=NULL;
 	}
-	if (prefix) cfg->dial_prefix=ms_strdup(prefix);
+	if (prefix && prefix[0]!='\0') cfg->dial_prefix=ms_strdup(prefix);
 }
 
 /**
