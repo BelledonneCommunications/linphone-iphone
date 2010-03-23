@@ -258,6 +258,7 @@ typedef struct sip_config
 	bool_t only_one_codec; /*in SDP answers*/
 	bool_t register_only_when_network_is_up;
 	bool_t ping_with_options;
+	bool_t auto_net_state_mon;
 } sip_config_t;
 
 typedef struct rtp_config
