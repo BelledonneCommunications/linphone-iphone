@@ -90,6 +90,7 @@ bool_t linphone_proxy_config_is_registered(const LinphoneProxyConfig *obj){
 **/
 int linphone_proxy_config_set_server_addr(LinphoneProxyConfig *obj, const char *server_addr){
 	LinphoneAddress *addr;
+	char *try=NULL;
 	
 	if (obj->reg_proxy!=NULL) ms_free(obj->reg_proxy);
 	obj->reg_proxy=NULL;
@@ -99,13 +100,13 @@ int linphone_proxy_config_set_server_addr(LinphoneProxyConfig *obj, const char *
 		if (!addr){
 			/*try to prepend 'sip:' */
 			if (strstr(server_addr,"sip:")==NULL){
-				char *try=ms_strdup_printf("sip:%s",server_addr);
+				try=ms_strdup_printf("sip:%s",server_addr);
 				addr=linphone_address_new(try);
 				ms_free(try);
 			}
 		}
 		if (addr){
-			obj->reg_proxy=ms_strdup(server_addr);
+			obj->reg_proxy=linphone_address_as_string_uri_only(addr);
 			linphone_address_destroy(addr);
 		}else{
 			ms_warning("Could not parse %s",server_addr);

@@ -16,11 +16,15 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include "sal_eXosip2.h"
 
 #include "offeranswer.h"
-
+/*this function is not declared in some versions of eXosip*/
+extern void *eXosip_call_get_reference(int cid);
 
 static void _osip_list_set_empty(osip_list_t *l, void (*freefunc)(void*)){
 	void *data;
@@ -595,8 +599,13 @@ static void set_network_origin(SalOp *op, osip_message_t *req){
 }
 
 static SalOp *find_op(Sal *sal, eXosip_event_t *ev){
-	if (ev->cid>0)
-		return (SalOp*)eXosip_call_get_reference(ev->cid);;
+	if (ev->cid>0){
+#ifdef HAVE_EXOSIP_GET_REF
+		return (SalOp*)eXosip_call_get_ref(ev->cid);
+#else
+		return (SalOp*)eXosip_call_get_reference(ev->cid);
+#endif
+	}
 	if (ev->rid>0){
 		return sal_find_register(sal,ev->rid);
 	}
