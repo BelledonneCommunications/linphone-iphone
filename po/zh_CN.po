@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone 0.7.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-03-10 14:21+0100\n"
+"POT-Creation-Date: 2010-03-25 22:11+0100\n"
 "PO-Revision-Date: 2009-09-24 18:39+0300\n"
 "Last-Translator: Jiang Honglei<jhonglei@gmail.com>\n"
 "Language-Team: Jiang Honglei<jhonglei@gmail.com>\n"
@@ -52,12 +52,12 @@ msgstr ""
 msgid "Call with %s"
 msgstr "与 %s 聊天"
 
-#: ../gtk-glade/main.c:709
+#: ../gtk-glade/main.c:707
 #, c-format
 msgid "Incoming call from %s"
 msgstr "来自 %s 的呼叫"
 
-#: ../gtk-glade/main.c:747
+#: ../gtk-glade/main.c:746
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
@@ -69,69 +69,69 @@ msgstr ""
 "你是否允许他看到你的在线状态或者将它加为你的好友允许?\n"
 "如果你回答否，则会将该人临时性的放入黑名单"
 
-#: ../gtk-glade/main.c:825
+#: ../gtk-glade/main.c:824
 #, fuzzy, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
 " at domain <i>%s</i>:"
 msgstr "请输入你的密码 %s:"
 
-#: ../gtk-glade/main.c:922
+#: ../gtk-glade/main.c:921
 msgid "Website link"
 msgstr ""
 
-#: ../gtk-glade/main.c:958
+#: ../gtk-glade/main.c:957
 msgid "Linphone - a video internet phone"
 msgstr "Linphone - 互联网视频电话"
 
-#: ../gtk-glade/main.c:977
+#: ../gtk-glade/main.c:976
 #, c-format
 msgid "%s (Default)"
 msgstr "%s (缺省)"
 
-#: ../gtk-glade/main.c:1225
+#: ../gtk-glade/main.c:1229
 msgid "A free SIP video-phone"
 msgstr "免费的 SIP 视频电话"
 
-#: ../gtk-glade/friendlist.c:195 ../gtk-glade/propertybox.c:247
+#: ../gtk-glade/friendlist.c:192 ../gtk-glade/propertybox.c:247
 #: ../gtk-glade/contact.glade.h:3
 msgid "Name"
 msgstr "名字"
 
-#: ../gtk-glade/friendlist.c:208
+#: ../gtk-glade/friendlist.c:205
 msgid "Presence status"
 msgstr "在线状态"
 
-#: ../gtk-glade/friendlist.c:245
+#: ../gtk-glade/friendlist.c:242
 #, c-format
 msgid "Search in %s directory"
 msgstr "在 %s 目录中查找 "
 
-#: ../gtk-glade/friendlist.c:453
+#: ../gtk-glade/friendlist.c:450
 msgid "Invalid sip contact !"
 msgstr "无效的SIP contact"
 
-#: ../gtk-glade/friendlist.c:495
+#: ../gtk-glade/friendlist.c:492
 #, c-format
 msgid "Call %s"
 msgstr "呼叫 %s"
 
-#: ../gtk-glade/friendlist.c:496
+#: ../gtk-glade/friendlist.c:493
 #, c-format
 msgid "Send text to %s"
 msgstr "发送消息给 %s"
 
-#: ../gtk-glade/friendlist.c:497
+#: ../gtk-glade/friendlist.c:494
 #, c-format
 msgid "Edit contact '%s'"
 msgstr "编辑好友 '%s'"
 
-#: ../gtk-glade/friendlist.c:498
+#: ../gtk-glade/friendlist.c:495
 #, c-format
 msgid "Delete contact '%s'"
 msgstr "删除好友 '%s'"
 
-#: ../gtk-glade/friendlist.c:540
+#: ../gtk-glade/friendlist.c:537
 #, c-format
 msgid "Add new contact from %s directory"
 msgstr "从 %s 目录增加好友 "
@@ -342,40 +342,40 @@ msgstr "正在创建您的账号"
 msgid "Now ready !"
 msgstr "就绪！"
 
-#: ../gtk-glade/incall_view.c:97
+#: ../gtk-glade/incall_view.c:113
 #, fuzzy
 msgid "<b>Calling...</b>"
 msgstr "<b>正在呼叫...</b>"
 
-#: ../gtk-glade/incall_view.c:122
+#: ../gtk-glade/incall_view.c:116 ../gtk-glade/incall_view.c:138
+msgid "00::00::00"
+msgstr ""
+
+#: ../gtk-glade/incall_view.c:136
 #, fuzzy
 msgid "<b>In call with</b>"
 msgstr "<b>呼入</b>"
 
-#: ../gtk-glade/incall_view.c:124
-msgid "00::00::00"
-msgstr ""
-
-#: ../gtk-glade/incall_view.c:140
+#: ../gtk-glade/incall_view.c:154
 #, c-format
 msgid "%02i::%02i::%02i"
 msgstr ""
 
-#: ../gtk-glade/incall_view.c:158
+#: ../gtk-glade/incall_view.c:170
 #, fuzzy
 msgid "<b>Call ended.</b>"
 msgstr "<b>通话结束</b>"
 
-#: ../gtk-glade/incall_view.c:176
+#: ../gtk-glade/incall_view.c:188
 #, fuzzy
 msgid "Unmute"
 msgstr "静音"
 
-#: ../gtk-glade/incall_view.c:180 ../gtk-glade/main.glade.h:43
+#: ../gtk-glade/incall_view.c:195 ../gtk-glade/main.glade.h:43
 msgid "Mute"
 msgstr "静音"
 
-#: ../gtk-glade/loginframe.c:82
+#: ../gtk-glade/loginframe.c:83
 #, fuzzy, c-format
 msgid "Please enter login information for %s"
 msgstr "请输入 %s 的登录信息:"
@@ -438,53 +438,54 @@ msgid "<b>Contact list</b>"
 msgstr "<b>好友列表</b>"
 
 #: ../gtk-glade/main.glade.h:15
-msgid "<b>Terminate call</b>"
-msgstr "挂断电话"
-
-#: ../gtk-glade/main.glade.h:16
 #, fuzzy
 msgid "<b>Welcome !</b>"
 msgstr "<b>欢迎 ！</b>"
 
-#: ../gtk-glade/main.glade.h:17
+#: ../gtk-glade/main.glade.h:16
 msgid "A"
 msgstr ""
 
-#: ../gtk-glade/main.glade.h:18
+#: ../gtk-glade/main.glade.h:17
 msgid ""
 "ADSL\n"
 "Fiber Channel"
 msgstr ""
 
-#: ../gtk-glade/main.glade.h:20
+#: ../gtk-glade/main.glade.h:19
 msgid ""
 "All users\n"
 "Online users"
 msgstr ""
 
-#: ../gtk-glade/main.glade.h:22
+#: ../gtk-glade/main.glade.h:21
 msgid "Assistant"
 msgstr "配置向导"
 
-#: ../gtk-glade/main.glade.h:23
+#: ../gtk-glade/main.glade.h:22
 msgid "Audio & Video"
 msgstr "音频 & 视频"
 
-#: ../gtk-glade/main.glade.h:24
+#: ../gtk-glade/main.glade.h:23
 msgid "Audio only"
 msgstr "音频"
 
-#: ../gtk-glade/main.glade.h:25
+#: ../gtk-glade/main.glade.h:24
 msgid "Automatically log me in"
 msgstr ""
 
-#: ../gtk-glade/main.glade.h:26
+#: ../gtk-glade/main.glade.h:25
 msgid "B"
 msgstr ""
 
-#: ../gtk-glade/main.glade.h:27 ../gtk-glade/parameters.glade.h:21
+#: ../gtk-glade/main.glade.h:26 ../gtk-glade/parameters.glade.h:21
 msgid "C"
 msgstr ""
+
+#: ../gtk-glade/main.glade.h:27
+#, fuzzy
+msgid "Call Details"
+msgstr "呼叫 %s"
 
 #: ../gtk-glade/main.glade.h:28 ../gtk-glade/call_logs.glade.h:1
 msgid "Call history"
@@ -495,16 +496,17 @@ msgid "Check for updates"
 msgstr ""
 
 #: ../gtk-glade/main.glade.h:30
+#, fuzzy
+msgid "Contacts"
+msgstr "联系中"
+
+#: ../gtk-glade/main.glade.h:31
 msgid "D"
 msgstr ""
 
-#: ../gtk-glade/main.glade.h:31
+#: ../gtk-glade/main.glade.h:32
 msgid "Default"
 msgstr "缺省"
-
-#: ../gtk-glade/main.glade.h:32
-msgid "Digits"
-msgstr ""
 
 #: ../gtk-glade/main.glade.h:33
 msgid "Duration"
@@ -535,17 +537,17 @@ msgid "Internet connection:"
 msgstr "网络连接："
 
 #: ../gtk-glade/main.glade.h:40
+msgid "Keypad"
+msgstr ""
+
+#: ../gtk-glade/main.glade.h:41
 #, fuzzy
 msgid "Login information"
 msgstr "登陆信息"
 
-#: ../gtk-glade/main.glade.h:41
+#: ../gtk-glade/main.glade.h:42
 msgid "Lookup:"
 msgstr "查找："
-
-#: ../gtk-glade/main.glade.h:42
-msgid "Main view"
-msgstr ""
 
 #: ../gtk-glade/main.glade.h:44
 #, fuzzy
@@ -567,40 +569,36 @@ msgid "Search"
 msgstr ""
 
 #: ../gtk-glade/main.glade.h:48
-msgid "Show current call"
-msgstr ""
-
-#: ../gtk-glade/main.glade.h:49
 msgid "Show debug messages"
 msgstr ""
 
-#: ../gtk-glade/main.glade.h:50
+#: ../gtk-glade/main.glade.h:49
 msgid "Start call"
 msgstr "开始呼叫"
 
-#: ../gtk-glade/main.glade.h:51
+#: ../gtk-glade/main.glade.h:50
 msgid "Terminate call"
 msgstr "终止呼叫"
 
-#: ../gtk-glade/main.glade.h:52
+#: ../gtk-glade/main.glade.h:51
 #, fuzzy
 msgid "Username"
 msgstr "用户名:"
 
-#: ../gtk-glade/main.glade.h:53
+#: ../gtk-glade/main.glade.h:52
 #, fuzzy
 msgid "_Linphone"
 msgstr "_Linphone"
 
-#: ../gtk-glade/main.glade.h:54
+#: ../gtk-glade/main.glade.h:53
 msgid "_Modes"
 msgstr "_模式"
 
-#: ../gtk-glade/main.glade.h:55
+#: ../gtk-glade/main.glade.h:54
 msgid "in"
 msgstr ""
 
-#: ../gtk-glade/main.glade.h:56
+#: ../gtk-glade/main.glade.h:55
 #, fuzzy
 msgid "label"
 msgstr "label"
@@ -746,7 +744,7 @@ msgstr "接受"
 msgid "Decline"
 msgstr "拒绝"
 
-#: ../gtk-glade/incoming_call.glade.h:3 ../coreapi/linphonecore.c:319
+#: ../gtk-glade/incoming_call.glade.h:3 ../coreapi/linphonecore.c:368
 msgid "Incoming call"
 msgstr "呼入"
 
@@ -1048,26 +1046,26 @@ msgstr "Linphone"
 msgid "Please wait"
 msgstr "请等待"
 
-#: ../coreapi/linphonecore.c:261
+#: ../coreapi/linphonecore.c:310
 #, fuzzy, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."
 msgstr[0] "你丢失 %i 呼叫."
 msgstr[1] "你共丢失 %i 次呼叫."
 
-#: ../coreapi/linphonecore.c:307
+#: ../coreapi/linphonecore.c:356
 msgid "aborted"
 msgstr "中断"
 
-#: ../coreapi/linphonecore.c:310
+#: ../coreapi/linphonecore.c:359
 msgid "completed"
 msgstr "完成"
 
-#: ../coreapi/linphonecore.c:313
+#: ../coreapi/linphonecore.c:362
 msgid "missed"
 msgstr "丢失"
 
-#: ../coreapi/linphonecore.c:318
+#: ../coreapi/linphonecore.c:367
 #, c-format
 msgid ""
 "%s at %s\n"
@@ -1082,67 +1080,58 @@ msgstr ""
 "Status: %s\n"
 "Status: %i min %i sec\n"
 
-#: ../coreapi/linphonecore.c:319
+#: ../coreapi/linphonecore.c:368
 msgid "Outgoing call"
 msgstr "呼出"
 
-#: ../coreapi/linphonecore.c:598
+#: ../coreapi/linphonecore.c:613
 msgid ""
 "Your machine appears to be connected to an IPv6 network. By default linphone "
 "always uses IPv4. Please update your configuration if you want to use IPv6"
 msgstr ""
 "你的机器缺省配置为IPv6. Linphone 缺省使用IPv4. 请修改配置如果你想使用IPv6. "
 
-#: ../coreapi/linphonecore.c:952
+#: ../coreapi/linphonecore.c:1062
 msgid "Ready"
 msgstr "就绪"
 
-#: ../coreapi/linphonecore.c:1402
+#: ../coreapi/linphonecore.c:1493
 msgid "Remote end seems to have disconnected, the call is going to be closed."
 msgstr "对方断开连接, 通话终止."
 
-#: ../coreapi/linphonecore.c:1640
+#: ../coreapi/linphonecore.c:1691
 msgid "Looking for telephone number destination..."
 msgstr "查询对方电话号码.."
 
-#: ../coreapi/linphonecore.c:1642
+#: ../coreapi/linphonecore.c:1693
 msgid "Could not resolve this number."
 msgstr "该号码无法解析."
 
-#: ../coreapi/linphonecore.c:1715
+#: ../coreapi/linphonecore.c:1737
 msgid ""
 "Could not parse given sip address. A sip url usually looks like sip:"
 "user@domain"
 msgstr "无法解析给定的SIP地址. SIP url 应有如下格式: <sip:username@domainname>"
 
-#: ../coreapi/linphonecore.c:1829
-msgid "Sorry, having multiple simultaneous calls is not supported yet !"
-msgstr "抱歉, 还不支持并发多路呼叫!"
-
-#: ../coreapi/linphonecore.c:1873
+#: ../coreapi/linphonecore.c:1859
 msgid "Contacting"
 msgstr "联系中"
 
-#: ../coreapi/linphonecore.c:1889
+#: ../coreapi/linphonecore.c:1865
 msgid "could not call"
 msgstr "无法呼叫"
 
-#: ../coreapi/linphonecore.c:2305 ../coreapi/exevents.c:50
+#: ../coreapi/linphonecore.c:1911
+msgid "Sorry, having multiple simultaneous calls is not supported yet !"
+msgstr "抱歉, 还不支持并发多路呼叫!"
+
+#: ../coreapi/linphonecore.c:2306 ../coreapi/exevents.c:50
 msgid "Connected."
 msgstr "连接建立."
 
-#: ../coreapi/linphonecore.c:2339
+#: ../coreapi/linphonecore.c:2340
 msgid "Call ended"
 msgstr "呼叫结束"
-
-#: ../coreapi/linphonecore.c:2863
-msgid "No nat/firewall address supplied !"
-msgstr "没有提供NAT/firewall地址!"
-
-#: ../coreapi/linphonecore.c:2875 ../coreapi/linphonecore.c:2887
-#, c-format
-msgid "Invalid nat address '%s' : %s"
-msgstr "无效NAT地址 '%s' : '%s'"
 
 #: ../coreapi/misc.c:142
 msgid ""
@@ -1168,7 +1157,7 @@ msgstr ""
 "is missing and linphone needs it. Please execute\n"
 " 'modprobe snd-mixer-oss' as root to load it."
 
-#: ../coreapi/misc.c:606
+#: ../coreapi/misc.c:492
 msgid "Stun lookup in progress..."
 msgstr "正在进行Stun查找..."
 
@@ -1239,128 +1228,98 @@ msgstr ""
 "用户当前不可达，但是他向你发出呼叫请求\n"
 " 要联系该用户，请使用如下地址:"
 
-#: ../coreapi/exevents.c:836
+#: ../coreapi/exevents.c:842
 msgid "Remote ringing."
 msgstr ""
 
-#: ../coreapi/exevents.c:860
+#: ../coreapi/exevents.c:866
 msgid "Early media."
 msgstr ""
 
-#: ../coreapi/exevents.c:971
+#: ../coreapi/exevents.c:977
 #, c-format
 msgid "Registration on %s failed: %s"
 msgstr "注册到 %s 失败: %s"
 
-#: ../coreapi/exevents.c:971
+#: ../coreapi/exevents.c:977
 msgid "no response timeout"
 msgstr "没有响应，超时"
 
-#: ../coreapi/exevents.c:998
+#: ../coreapi/exevents.c:1004
 #, c-format
 msgid "Registration on %s successful."
 msgstr "成功注册到 %s "
 
-#: ../coreapi/exevents.c:999
+#: ../coreapi/exevents.c:1005
 #, fuzzy, c-format
 msgid "Unregistration on %s done."
 msgstr "成功注册到 %s "
 
-#. people for which we don't have yet an answer should appear as offline
-#: ../coreapi/presence.c:111 ../coreapi/presence.c:163 ../coreapi/friend.c:147
-msgid "Gone"
-msgstr "离开"
-
-#: ../coreapi/presence.c:128
-msgid "Waiting for Approval"
-msgstr "等待批准"
-
-#: ../coreapi/presence.c:132 ../coreapi/friend.c:38
+#: ../coreapi/friend.c:35
 msgid "Online"
 msgstr "在线"
 
-#: ../coreapi/presence.c:136 ../coreapi/friend.c:41
+#: ../coreapi/friend.c:38
 msgid "Busy"
 msgstr "用户忙"
 
-#: ../coreapi/presence.c:141
-msgid "Be Right Back"
-msgstr "马上回来"
-
-#: ../coreapi/presence.c:145 ../coreapi/friend.c:47
-msgid "Away"
-msgstr "离开"
-
-#: ../coreapi/presence.c:150
-msgid "On The Phone"
-msgstr "通话中"
-
-#: ../coreapi/presence.c:155
-msgid "Out To Lunch"
-msgstr "外出就餐"
-
-#: ../coreapi/presence.c:159 ../coreapi/friend.c:71
-msgid "Closed"
-msgstr "离线"
-
-#: ../coreapi/friend.c:35
-#, fuzzy
-msgid "Unknown"
-msgstr "未知错误"
-
-#: ../coreapi/friend.c:44
+#: ../coreapi/friend.c:41
 #, fuzzy
 msgid "Be right back"
 msgstr "离开"
 
-#: ../coreapi/friend.c:50
+#: ../coreapi/friend.c:44
+msgid "Away"
+msgstr "离开"
+
+#: ../coreapi/friend.c:47
 #, fuzzy
 msgid "On the phone"
 msgstr "通话中"
 
-#: ../coreapi/friend.c:53
+#: ../coreapi/friend.c:50
 #, fuzzy
 msgid "Out to lunch"
 msgstr "外出吃饭中.."
 
-#: ../coreapi/friend.c:56
+#: ../coreapi/friend.c:53
 msgid "Do not disturb"
 msgstr "请勿打扰"
 
-#: ../coreapi/friend.c:59
+#: ../coreapi/friend.c:56
 msgid "Moved"
 msgstr ""
 
-#: ../coreapi/friend.c:62
+#: ../coreapi/friend.c:59
 msgid "Using another messaging service"
 msgstr ""
 
-#: ../coreapi/friend.c:65
+#: ../coreapi/friend.c:62
 #, fuzzy
 msgid "Offline"
 msgstr "离线"
 
-#: ../coreapi/friend.c:68
+#: ../coreapi/friend.c:65
 msgid "Pending"
 msgstr "挂起"
 
-#: ../coreapi/friend.c:74
+#: ../coreapi/friend.c:68
 msgid "Unknown-bug"
 msgstr "未知错误"
 
-#: ../coreapi/proxy.c:265
+#: ../coreapi/proxy.c:176
 msgid ""
 "The sip proxy address you entered is invalid, it must start with \"sip:\" "
 "followed by a hostname."
 msgstr ""
 
-#: ../coreapi/proxy.c:271
+#: ../coreapi/proxy.c:182
 msgid ""
 "The sip identity you entered is invalid.\n"
 "It should look like sip:username@proxydomain, such as sip:alice@example.net"
 msgstr ""
 
-#: ../coreapi/proxy.c:889
+#: ../coreapi/proxy.c:621
 #, fuzzy, c-format
 msgid "Could not login as %s"
 msgstr "无法登陆: %s"
@@ -1373,20 +1332,20 @@ msgstr ""
 msgid "ITU-G.711 alaw decoder"
 msgstr ""
 
-#: ../mediastreamer2/src/alsa.c:923
+#: ../mediastreamer2/src/alsa.c:935
 #, fuzzy
 msgid "Alsa sound source"
 msgstr "ALSA音频源"
 
-#: ../mediastreamer2/src/alsa.c:1027
+#: ../mediastreamer2/src/alsa.c:1039
 msgid "Alsa sound output"
 msgstr "ALSA音频输出"
 
-#: ../mediastreamer2/src/aqsnd.c:891
+#: ../mediastreamer2/src/aqsnd.c:1005
 msgid "Sound capture filter for MacOS X Audio Queue Service"
 msgstr ""
 
-#: ../mediastreamer2/src/aqsnd.c:915
+#: ../mediastreamer2/src/aqsnd.c:1029
 msgid "Sound playback filter for MacOS X Audio Queue Service"
 msgstr ""
 
@@ -1394,11 +1353,11 @@ msgstr ""
 msgid "DTMF generator"
 msgstr ""
 
-#: ../mediastreamer2/src/gsm.c:70 ../mediastreamer2/src/gsm.c:88
+#: ../mediastreamer2/src/gsm.c:111 ../mediastreamer2/src/gsm.c:129
 msgid "The GSM full-rate codec"
 msgstr ""
 
-#: ../mediastreamer2/src/gsm.c:134 ../mediastreamer2/src/gsm.c:152
+#: ../mediastreamer2/src/gsm.c:178 ../mediastreamer2/src/gsm.c:196
 msgid "The GSM codec"
 msgstr ""
 
@@ -1447,7 +1406,7 @@ msgstr ""
 msgid "The free and wonderful speex codec"
 msgstr ""
 
-#: ../mediastreamer2/src/msvolume.c:400 ../mediastreamer2/src/msvolume.c:415
+#: ../mediastreamer2/src/msvolume.c:415 ../mediastreamer2/src/msvolume.c:430
 msgid "A filter that controls and measure sound volume"
 msgstr ""
 
@@ -1459,7 +1418,7 @@ msgstr ""
 msgid "A filter to grab pictures from Video4Linux2-powered cameras"
 msgstr ""
 
-#: ../mediastreamer2/src/nowebcam.c:1786
+#: ../mediastreamer2/src/nowebcam.c:1824
 msgid "A filter that outputs a static image."
 msgstr ""
 
@@ -1471,7 +1430,7 @@ msgstr ""
 msgid "Sound playback filter for OSS drivers"
 msgstr ""
 
-#: ../mediastreamer2/src/pixconv.c:173 ../mediastreamer2/src/pixconv.c:191
+#: ../mediastreamer2/src/pixconv.c:177 ../mediastreamer2/src/pixconv.c:195
 msgid "A pixel format converter"
 msgstr ""
 
@@ -1579,8 +1538,8 @@ msgstr ""
 #: ../mediastreamer2/src/wincevideods.c:969
 #: ../mediastreamer2/src/wincevideods.c:987
 #: ../mediastreamer2/src/winvideo.c:596 ../mediastreamer2/src/winvideo.c:614
-#: ../mediastreamer2/src/winvideods.c:1314
-#: ../mediastreamer2/src/winvideods.c:1332
+#: ../mediastreamer2/src/winvideods.c:1385
+#: ../mediastreamer2/src/winvideods.c:1403
 msgid "A video4windows compatible source filter to stream pictures."
 msgstr ""
 
@@ -1603,6 +1562,37 @@ msgstr ""
 #: ../mediastreamer2/src/msdscap-mingw.cc:1003
 msgid "A webcam grabber based on directshow."
 msgstr ""
+
+#~ msgid "<b>Terminate call</b>"
+#~ msgstr "挂断电话"
+
+#~ msgid "No nat/firewall address supplied !"
+#~ msgstr "没有提供NAT/firewall地址!"
+
+#~ msgid "Invalid nat address '%s' : %s"
+#~ msgstr "无效NAT地址 '%s' : '%s'"
+
+#~ msgid "Gone"
+#~ msgstr "离开"
+
+#~ msgid "Waiting for Approval"
+#~ msgstr "等待批准"
+
+#~ msgid "Be Right Back"
+#~ msgstr "马上回来"
+
+#~ msgid "On The Phone"
+#~ msgstr "通话中"
+
+#~ msgid "Out To Lunch"
+#~ msgstr "外出就餐"
+
+#~ msgid "Closed"
+#~ msgstr "离线"
+
+#, fuzzy
+#~ msgid "Unknown"
+#~ msgstr "未知错误"
 
 #, fuzzy
 #~ msgid "gtk-connect"

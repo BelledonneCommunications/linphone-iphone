@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-1.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-03-10 14:21+0100\n"
+"POT-Creation-Date: 2010-03-25 22:11+0100\n"
 "PO-Revision-Date: 2006-07-11 23:30+0200\n"
 "Last-Translator: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\n"
 "Language-Team: pt_BR <pt_BR@li.org>\n"
@@ -54,12 +54,12 @@ msgstr ""
 msgid "Call with %s"
 msgstr "Bate-papo com %s"
 
-#: ../gtk-glade/main.c:709
+#: ../gtk-glade/main.c:707
 #, fuzzy, c-format
 msgid "Incoming call from %s"
 msgstr "Camadas recebidas"
 
-#: ../gtk-glade/main.c:747
+#: ../gtk-glade/main.c:746
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
@@ -68,69 +68,69 @@ msgid ""
 "If you answer no, this person will be temporarily blacklisted."
 msgstr ""
 
-#: ../gtk-glade/main.c:825
+#: ../gtk-glade/main.c:824
 #, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
 " at domain <i>%s</i>:"
 msgstr ""
 
-#: ../gtk-glade/main.c:922
+#: ../gtk-glade/main.c:921
 msgid "Website link"
 msgstr ""
 
-#: ../gtk-glade/main.c:958
+#: ../gtk-glade/main.c:957
 msgid "Linphone - a video internet phone"
 msgstr ""
 
-#: ../gtk-glade/main.c:977
+#: ../gtk-glade/main.c:976
 #, c-format
 msgid "%s (Default)"
 msgstr ""
 
-#: ../gtk-glade/main.c:1225
+#: ../gtk-glade/main.c:1229
 msgid "A free SIP video-phone"
 msgstr ""
 
-#: ../gtk-glade/friendlist.c:195 ../gtk-glade/propertybox.c:247
+#: ../gtk-glade/friendlist.c:192 ../gtk-glade/propertybox.c:247
 #: ../gtk-glade/contact.glade.h:3
 msgid "Name"
 msgstr "Nome"
 
-#: ../gtk-glade/friendlist.c:208
+#: ../gtk-glade/friendlist.c:205
 msgid "Presence status"
 msgstr "Status de presença"
 
-#: ../gtk-glade/friendlist.c:245
+#: ../gtk-glade/friendlist.c:242
 #, c-format
 msgid "Search in %s directory"
 msgstr ""
 
-#: ../gtk-glade/friendlist.c:453
+#: ../gtk-glade/friendlist.c:450
 msgid "Invalid sip contact !"
 msgstr ""
 
-#: ../gtk-glade/friendlist.c:495
+#: ../gtk-glade/friendlist.c:492
 #, fuzzy, c-format
 msgid "Call %s"
 msgstr "Histórico de chamadas"
 
-#: ../gtk-glade/friendlist.c:496
+#: ../gtk-glade/friendlist.c:493
 #, c-format
 msgid "Send text to %s"
 msgstr ""
 
-#: ../gtk-glade/friendlist.c:497
+#: ../gtk-glade/friendlist.c:494
 #, fuzzy, c-format
 msgid "Edit contact '%s'"
 msgstr "Edicar informação de contato"
 
-#: ../gtk-glade/friendlist.c:498
+#: ../gtk-glade/friendlist.c:495
 #, c-format
 msgid "Delete contact '%s'"
 msgstr ""
 
-#: ../gtk-glade/friendlist.c:540
+#: ../gtk-glade/friendlist.c:537
 #, c-format
 msgid "Add new contact from %s directory"
 msgstr ""
@@ -343,39 +343,39 @@ msgstr ""
 msgid "Now ready !"
 msgstr ""
 
-#: ../gtk-glade/incall_view.c:97
+#: ../gtk-glade/incall_view.c:113
 #, fuzzy
 msgid "<b>Calling...</b>"
 msgstr "Contatando "
 
-#: ../gtk-glade/incall_view.c:122
+#: ../gtk-glade/incall_view.c:116 ../gtk-glade/incall_view.c:138
+msgid "00::00::00"
+msgstr ""
+
+#: ../gtk-glade/incall_view.c:136
 #, fuzzy
 msgid "<b>In call with</b>"
 msgstr "Contatando "
 
-#: ../gtk-glade/incall_view.c:124
-msgid "00::00::00"
-msgstr ""
-
-#: ../gtk-glade/incall_view.c:140
+#: ../gtk-glade/incall_view.c:154
 #, c-format
 msgid "%02i::%02i::%02i"
 msgstr ""
 
-#: ../gtk-glade/incall_view.c:158
+#: ../gtk-glade/incall_view.c:170
 #, fuzzy
 msgid "<b>Call ended.</b>"
 msgstr "Chamada cancelada."
 
-#: ../gtk-glade/incall_view.c:176
+#: ../gtk-glade/incall_view.c:188
 msgid "Unmute"
 msgstr ""
 
-#: ../gtk-glade/incall_view.c:180 ../gtk-glade/main.glade.h:43
+#: ../gtk-glade/incall_view.c:195 ../gtk-glade/main.glade.h:43
 msgid "Mute"
 msgstr ""
 
-#: ../gtk-glade/loginframe.c:82
+#: ../gtk-glade/loginframe.c:83
 #, c-format
 msgid "Please enter login information for %s"
 msgstr ""
@@ -440,56 +440,56 @@ msgstr "Contatando "
 
 #: ../gtk-glade/main.glade.h:15
 #, fuzzy
-msgid "<b>Terminate call</b>"
-msgstr "Contatando "
-
-#: ../gtk-glade/main.glade.h:16
-#, fuzzy
 msgid "<b>Welcome !</b>"
 msgstr "Contatando "
 
-#: ../gtk-glade/main.glade.h:17
+#: ../gtk-glade/main.glade.h:16
 msgid "A"
 msgstr ""
 
-#: ../gtk-glade/main.glade.h:18
+#: ../gtk-glade/main.glade.h:17
 msgid ""
 "ADSL\n"
 "Fiber Channel"
 msgstr ""
 
-#: ../gtk-glade/main.glade.h:20
+#: ../gtk-glade/main.glade.h:19
 msgid ""
 "All users\n"
 "Online users"
 msgstr ""
 
-#: ../gtk-glade/main.glade.h:22
+#: ../gtk-glade/main.glade.h:21
 msgid "Assistant"
 msgstr ""
 
-#: ../gtk-glade/main.glade.h:23
+#: ../gtk-glade/main.glade.h:22
 #, fuzzy
 msgid "Audio & Video"
 msgstr "Codec's de áudio"
 
-#: ../gtk-glade/main.glade.h:24
+#: ../gtk-glade/main.glade.h:23
 #, fuzzy
 msgid "Audio only"
 msgstr "Codec's de áudio"
 
-#: ../gtk-glade/main.glade.h:25
+#: ../gtk-glade/main.glade.h:24
 #, fuzzy
 msgid "Automatically log me in"
 msgstr "Adquirir automaticamente um nome de servidor válido."
 
-#: ../gtk-glade/main.glade.h:26
+#: ../gtk-glade/main.glade.h:25
 msgid "B"
 msgstr ""
 
-#: ../gtk-glade/main.glade.h:27 ../gtk-glade/parameters.glade.h:21
+#: ../gtk-glade/main.glade.h:26 ../gtk-glade/parameters.glade.h:21
 msgid "C"
 msgstr ""
+
+#: ../gtk-glade/main.glade.h:27
+#, fuzzy
+msgid "Call Details"
+msgstr "Histórico de chamadas"
 
 #: ../gtk-glade/main.glade.h:28 ../gtk-glade/call_logs.glade.h:1
 #, fuzzy
@@ -501,15 +501,16 @@ msgid "Check for updates"
 msgstr ""
 
 #: ../gtk-glade/main.glade.h:30
+#, fuzzy
+msgid "Contacts"
+msgstr "Contatando "
+
+#: ../gtk-glade/main.glade.h:31
 msgid "D"
 msgstr ""
 
-#: ../gtk-glade/main.glade.h:31
-msgid "Default"
-msgstr ""
-
 #: ../gtk-glade/main.glade.h:32
-msgid "Digits"
+msgid "Default"
 msgstr ""
 
 #: ../gtk-glade/main.glade.h:33
@@ -545,16 +546,16 @@ msgid "Internet connection:"
 msgstr ""
 
 #: ../gtk-glade/main.glade.h:40
+msgid "Keypad"
+msgstr ""
+
+#: ../gtk-glade/main.glade.h:41
 #, fuzzy
 msgid "Login information"
 msgstr "Informação de contato"
 
-#: ../gtk-glade/main.glade.h:41
-msgid "Lookup:"
-msgstr ""
-
 #: ../gtk-glade/main.glade.h:42
-msgid "Main view"
+msgid "Lookup:"
 msgstr ""
 
 #: ../gtk-glade/main.glade.h:44
@@ -576,39 +577,35 @@ msgid "Search"
 msgstr ""
 
 #: ../gtk-glade/main.glade.h:48
-msgid "Show current call"
-msgstr ""
-
-#: ../gtk-glade/main.glade.h:49
 msgid "Show debug messages"
 msgstr ""
 
-#: ../gtk-glade/main.glade.h:50
+#: ../gtk-glade/main.glade.h:49
 msgid "Start call"
 msgstr ""
 
-#: ../gtk-glade/main.glade.h:51
+#: ../gtk-glade/main.glade.h:50
 msgid "Terminate call"
 msgstr ""
 
-#: ../gtk-glade/main.glade.h:52
+#: ../gtk-glade/main.glade.h:51
 #, fuzzy
 msgid "Username"
 msgstr "Usuário"
 
-#: ../gtk-glade/main.glade.h:53
+#: ../gtk-glade/main.glade.h:52
 msgid "_Linphone"
 msgstr ""
 
-#: ../gtk-glade/main.glade.h:54
+#: ../gtk-glade/main.glade.h:53
 msgid "_Modes"
 msgstr ""
 
-#: ../gtk-glade/main.glade.h:55
+#: ../gtk-glade/main.glade.h:54
 msgid "in"
 msgstr ""
 
-#: ../gtk-glade/main.glade.h:56
+#: ../gtk-glade/main.glade.h:55
 msgid "label"
 msgstr ""
 
@@ -748,7 +745,7 @@ msgstr "Aceitar"
 msgid "Decline"
 msgstr "linha"
 
-#: ../gtk-glade/incoming_call.glade.h:3 ../coreapi/linphonecore.c:319
+#: ../gtk-glade/incoming_call.glade.h:3 ../coreapi/linphonecore.c:368
 msgid "Incoming call"
 msgstr "Camadas recebidas"
 
@@ -1055,26 +1052,26 @@ msgstr ""
 msgid "Please wait"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:261
+#: ../coreapi/linphonecore.c:310
 #, fuzzy, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."
 msgstr[0] "Você perdeu %i ligação(ões)."
 msgstr[1] "Você perdeu %i ligação(ões)."
 
-#: ../coreapi/linphonecore.c:307
+#: ../coreapi/linphonecore.c:356
 msgid "aborted"
 msgstr "Abortado"
 
-#: ../coreapi/linphonecore.c:310
+#: ../coreapi/linphonecore.c:359
 msgid "completed"
 msgstr "Competado"
 
-#: ../coreapi/linphonecore.c:313
+#: ../coreapi/linphonecore.c:362
 msgid "missed"
 msgstr "Perdido"
 
-#: ../coreapi/linphonecore.c:318
+#: ../coreapi/linphonecore.c:367
 #, fuzzy, c-format
 msgid ""
 "%s at %s\n"
@@ -1088,11 +1085,11 @@ msgstr ""
 "Status: %s\n"
 "Duração: %i min %i seg\n"
 
-#: ../coreapi/linphonecore.c:319
+#: ../coreapi/linphonecore.c:368
 msgid "Outgoing call"
 msgstr "Chamadas efetuadas"
 
-#: ../coreapi/linphonecore.c:598
+#: ../coreapi/linphonecore.c:613
 msgid ""
 "Your machine appears to be connected to an IPv6 network. By default linphone "
 "always uses IPv4. Please update your configuration if you want to use IPv6"
@@ -1101,59 +1098,50 @@ msgstr ""
 "linphone sempre usa IPv4. Por favor atualize sua configuração se deseja usar "
 "IPv6"
 
-#: ../coreapi/linphonecore.c:952
+#: ../coreapi/linphonecore.c:1062
 #, fuzzy
 msgid "Ready"
 msgstr "Pronto."
 
-#: ../coreapi/linphonecore.c:1402
+#: ../coreapi/linphonecore.c:1493
 msgid "Remote end seems to have disconnected, the call is going to be closed."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:1640
+#: ../coreapi/linphonecore.c:1691
 msgid "Looking for telephone number destination..."
 msgstr "Procurando por telefone de destino..."
 
-#: ../coreapi/linphonecore.c:1642
+#: ../coreapi/linphonecore.c:1693
 msgid "Could not resolve this number."
 msgstr "Não foi possível encontrar este número."
 
-#: ../coreapi/linphonecore.c:1715
+#: ../coreapi/linphonecore.c:1737
 msgid ""
 "Could not parse given sip address. A sip url usually looks like sip:"
 "user@domain"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:1829
-msgid "Sorry, having multiple simultaneous calls is not supported yet !"
-msgstr ""
-
-#: ../coreapi/linphonecore.c:1873
+#: ../coreapi/linphonecore.c:1859
 #, fuzzy
 msgid "Contacting"
 msgstr "Contatando "
 
-#: ../coreapi/linphonecore.c:1889
+#: ../coreapi/linphonecore.c:1865
 msgid "could not call"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:2305 ../coreapi/exevents.c:50
+#: ../coreapi/linphonecore.c:1911
+msgid "Sorry, having multiple simultaneous calls is not supported yet !"
+msgstr ""
+
+#: ../coreapi/linphonecore.c:2306 ../coreapi/exevents.c:50
 msgid "Connected."
 msgstr "Conectado."
 
-#: ../coreapi/linphonecore.c:2339
+#: ../coreapi/linphonecore.c:2340
 #, fuzzy
 msgid "Call ended"
 msgstr "Chamada cancelada."
-
-#: ../coreapi/linphonecore.c:2863
-msgid "No nat/firewall address supplied !"
-msgstr ""
-
-#: ../coreapi/linphonecore.c:2875 ../coreapi/linphonecore.c:2887
-#, c-format
-msgid "Invalid nat address '%s' : %s"
-msgstr ""
 
 #: ../coreapi/misc.c:142
 msgid ""
@@ -1171,7 +1159,7 @@ msgid ""
 " 'modprobe snd-mixer-oss' as root to load it."
 msgstr ""
 
-#: ../coreapi/misc.c:606
+#: ../coreapi/misc.c:492
 msgid "Stun lookup in progress..."
 msgstr ""
 
@@ -1241,127 +1229,97 @@ msgid ""
 "to contact him using the following alternate resource:"
 msgstr ""
 
-#: ../coreapi/exevents.c:836
+#: ../coreapi/exevents.c:842
 #, fuzzy
 msgid "Remote ringing."
 msgstr "Serviços remotos"
 
-#: ../coreapi/exevents.c:860
+#: ../coreapi/exevents.c:866
 msgid "Early media."
 msgstr ""
 
-#: ../coreapi/exevents.c:971
+#: ../coreapi/exevents.c:977
 #, fuzzy, c-format
 msgid "Registration on %s failed: %s"
 msgstr "Registro falhou (tempo esgotado)."
 
-#: ../coreapi/exevents.c:971
+#: ../coreapi/exevents.c:977
 msgid "no response timeout"
 msgstr ""
 
-#: ../coreapi/exevents.c:998
+#: ../coreapi/exevents.c:1004
 #, fuzzy, c-format
 msgid "Registration on %s successful."
 msgstr "Registro em %s efetuado."
 
-#: ../coreapi/exevents.c:999
+#: ../coreapi/exevents.c:1005
 #, fuzzy, c-format
 msgid "Unregistration on %s done."
 msgstr "Registro em %s efetuado."
 
-#. people for which we don't have yet an answer should appear as offline
-#: ../coreapi/presence.c:111 ../coreapi/presence.c:163 ../coreapi/friend.c:147
-#, fuzzy
-msgid "Gone"
-msgstr "Nenhum"
-
-#: ../coreapi/presence.c:128
-msgid "Waiting for Approval"
-msgstr ""
-
-#: ../coreapi/presence.c:132 ../coreapi/friend.c:38
+#: ../coreapi/friend.c:35
 #, fuzzy
 msgid "Online"
 msgstr "linha"
 
-#: ../coreapi/presence.c:136 ../coreapi/friend.c:41
+#: ../coreapi/friend.c:38
 msgid "Busy"
 msgstr ""
 
-#: ../coreapi/presence.c:141
-msgid "Be Right Back"
-msgstr ""
-
-#: ../coreapi/presence.c:145 ../coreapi/friend.c:47
-msgid "Away"
-msgstr "Ocupado"
-
-#: ../coreapi/presence.c:150
-msgid "On The Phone"
-msgstr ""
-
-#: ../coreapi/presence.c:155
-msgid "Out To Lunch"
-msgstr ""
-
-#: ../coreapi/presence.c:159 ../coreapi/friend.c:71
-msgid "Closed"
-msgstr ""
-
-#: ../coreapi/friend.c:35
-msgid "Unknown"
-msgstr ""
-
-#: ../coreapi/friend.c:44
+#: ../coreapi/friend.c:41
 msgid "Be right back"
 msgstr ""
 
-#: ../coreapi/friend.c:50
+#: ../coreapi/friend.c:44
+msgid "Away"
+msgstr "Ocupado"
+
+#: ../coreapi/friend.c:47
 msgid "On the phone"
 msgstr ""
 
-#: ../coreapi/friend.c:53
+#: ../coreapi/friend.c:50
 msgid "Out to lunch"
 msgstr ""
 
-#: ../coreapi/friend.c:56
+#: ../coreapi/friend.c:53
 msgid "Do not disturb"
 msgstr "Não perturbe"
 
-#: ../coreapi/friend.c:59
+#: ../coreapi/friend.c:56
 msgid "Moved"
 msgstr ""
 
-#: ../coreapi/friend.c:62
+#: ../coreapi/friend.c:59
 msgid "Using another messaging service"
 msgstr ""
 
-#: ../coreapi/friend.c:65
+#: ../coreapi/friend.c:62
 #, fuzzy
 msgid "Offline"
 msgstr "linha"
 
-#: ../coreapi/friend.c:68
+#: ../coreapi/friend.c:65
 msgid "Pending"
 msgstr ""
 
-#: ../coreapi/friend.c:74
+#: ../coreapi/friend.c:68
 msgid "Unknown-bug"
 msgstr ""
 
-#: ../coreapi/proxy.c:265
+#: ../coreapi/proxy.c:176
 msgid ""
 "The sip proxy address you entered is invalid, it must start with \"sip:\" "
 "followed by a hostname."
 msgstr ""
 
-#: ../coreapi/proxy.c:271
+#: ../coreapi/proxy.c:182
 msgid ""
 "The sip identity you entered is invalid.\n"
 "It should look like sip:username@proxydomain, such as sip:alice@example.net"
 msgstr ""
 
-#: ../coreapi/proxy.c:889
+#: ../coreapi/proxy.c:621
 #, fuzzy, c-format
 msgid "Could not login as %s"
 msgstr "Não é possível achar arquivo pixmap: %s"
@@ -1374,19 +1332,19 @@ msgstr ""
 msgid "ITU-G.711 alaw decoder"
 msgstr ""
 
-#: ../mediastreamer2/src/alsa.c:923
+#: ../mediastreamer2/src/alsa.c:935
 msgid "Alsa sound source"
 msgstr ""
 
-#: ../mediastreamer2/src/alsa.c:1027
+#: ../mediastreamer2/src/alsa.c:1039
 msgid "Alsa sound output"
 msgstr ""
 
-#: ../mediastreamer2/src/aqsnd.c:891
+#: ../mediastreamer2/src/aqsnd.c:1005
 msgid "Sound capture filter for MacOS X Audio Queue Service"
 msgstr ""
 
-#: ../mediastreamer2/src/aqsnd.c:915
+#: ../mediastreamer2/src/aqsnd.c:1029
 msgid "Sound playback filter for MacOS X Audio Queue Service"
 msgstr ""
 
@@ -1394,11 +1352,11 @@ msgstr ""
 msgid "DTMF generator"
 msgstr ""
 
-#: ../mediastreamer2/src/gsm.c:70 ../mediastreamer2/src/gsm.c:88
+#: ../mediastreamer2/src/gsm.c:111 ../mediastreamer2/src/gsm.c:129
 msgid "The GSM full-rate codec"
 msgstr ""
 
-#: ../mediastreamer2/src/gsm.c:134 ../mediastreamer2/src/gsm.c:152
+#: ../mediastreamer2/src/gsm.c:178 ../mediastreamer2/src/gsm.c:196
 msgid "The GSM codec"
 msgstr ""
 
@@ -1447,7 +1405,7 @@ msgstr ""
 msgid "The free and wonderful speex codec"
 msgstr ""
 
-#: ../mediastreamer2/src/msvolume.c:400 ../mediastreamer2/src/msvolume.c:415
+#: ../mediastreamer2/src/msvolume.c:415 ../mediastreamer2/src/msvolume.c:430
 msgid "A filter that controls and measure sound volume"
 msgstr ""
 
@@ -1459,7 +1417,7 @@ msgstr ""
 msgid "A filter to grab pictures from Video4Linux2-powered cameras"
 msgstr ""
 
-#: ../mediastreamer2/src/nowebcam.c:1786
+#: ../mediastreamer2/src/nowebcam.c:1824
 msgid "A filter that outputs a static image."
 msgstr ""
 
@@ -1471,7 +1429,7 @@ msgstr ""
 msgid "Sound playback filter for OSS drivers"
 msgstr ""
 
-#: ../mediastreamer2/src/pixconv.c:173 ../mediastreamer2/src/pixconv.c:191
+#: ../mediastreamer2/src/pixconv.c:177 ../mediastreamer2/src/pixconv.c:195
 msgid "A pixel format converter"
 msgstr ""
 
@@ -1579,8 +1537,8 @@ msgstr ""
 #: ../mediastreamer2/src/wincevideods.c:969
 #: ../mediastreamer2/src/wincevideods.c:987
 #: ../mediastreamer2/src/winvideo.c:596 ../mediastreamer2/src/winvideo.c:614
-#: ../mediastreamer2/src/winvideods.c:1314
-#: ../mediastreamer2/src/winvideods.c:1332
+#: ../mediastreamer2/src/winvideods.c:1385
+#: ../mediastreamer2/src/winvideods.c:1403
 msgid "A video4windows compatible source filter to stream pictures."
 msgstr ""
 
@@ -1603,6 +1561,14 @@ msgstr ""
 #: ../mediastreamer2/src/msdscap-mingw.cc:1003
 msgid "A webcam grabber based on directshow."
 msgstr ""
+
+#, fuzzy
+#~ msgid "<b>Terminate call</b>"
+#~ msgstr "Contatando "
+
+#, fuzzy
+#~ msgid "Gone"
+#~ msgstr "Nenhum"
 
 #, fuzzy
 #~ msgid "gtk-connect"

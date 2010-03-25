@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-3.2.0-r659\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-03-10 14:21+0100\n"
+"POT-Creation-Date: 2010-03-25 22:11+0100\n"
 "PO-Revision-Date: 2009-09-21 21:44+0200\n"
 "Last-Translator: Petr Pisar <petr.pisar@atlas.cz>\n"
 "Language-Team: Czech <translation-team-cs@lists.sourceforge.net>\n"
@@ -57,12 +57,12 @@ msgstr ""
 msgid "Call with %s"
 msgstr "Diskuze s %s"
 
-#: ../gtk-glade/main.c:709
+#: ../gtk-glade/main.c:707
 #, c-format
 msgid "Incoming call from %s"
 msgstr "Příchozí hovor od %s"
 
-#: ../gtk-glade/main.c:747
+#: ../gtk-glade/main.c:746
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
@@ -75,69 +75,69 @@ msgstr ""
 "do svého adresáře?\n"
 "Odpovíte-li ne, tato osobo bude dočasně blokována."
 
-#: ../gtk-glade/main.c:825
+#: ../gtk-glade/main.c:824
 #, fuzzy, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
 " at domain <i>%s</i>:"
 msgstr "Prosím, zadejte svoje heslo pro doménu %s:"
 
-#: ../gtk-glade/main.c:922
+#: ../gtk-glade/main.c:921
 msgid "Website link"
 msgstr ""
 
-#: ../gtk-glade/main.c:958
+#: ../gtk-glade/main.c:957
 msgid "Linphone - a video internet phone"
 msgstr "Lipnhone – internetový videofon"
 
-#: ../gtk-glade/main.c:977
+#: ../gtk-glade/main.c:976
 #, c-format
 msgid "%s (Default)"
 msgstr "%s (Výchozí)"
 
-#: ../gtk-glade/main.c:1225
+#: ../gtk-glade/main.c:1229
 msgid "A free SIP video-phone"
 msgstr "Volný SIP videofon"
 
-#: ../gtk-glade/friendlist.c:195 ../gtk-glade/propertybox.c:247
+#: ../gtk-glade/friendlist.c:192 ../gtk-glade/propertybox.c:247
 #: ../gtk-glade/contact.glade.h:3
 msgid "Name"
 msgstr "Jméno"
 
-#: ../gtk-glade/friendlist.c:208
+#: ../gtk-glade/friendlist.c:205
 msgid "Presence status"
 msgstr "Stav"
 
-#: ../gtk-glade/friendlist.c:245
+#: ../gtk-glade/friendlist.c:242
 #, c-format
 msgid "Search in %s directory"
 msgstr "Hledat v adresáři %s"
 
-#: ../gtk-glade/friendlist.c:453
+#: ../gtk-glade/friendlist.c:450
 msgid "Invalid sip contact !"
 msgstr "Neplatný sipový kontakt!"
 
-#: ../gtk-glade/friendlist.c:495
+#: ../gtk-glade/friendlist.c:492
 #, c-format
 msgid "Call %s"
 msgstr "Volat komu: %s"
 
-#: ../gtk-glade/friendlist.c:496
+#: ../gtk-glade/friendlist.c:493
 #, c-format
 msgid "Send text to %s"
 msgstr "Poslat text komu: %s"
 
-#: ../gtk-glade/friendlist.c:497
+#: ../gtk-glade/friendlist.c:494
 #, c-format
 msgid "Edit contact '%s'"
 msgstr "Upravit kontakt „%s“"
 
-#: ../gtk-glade/friendlist.c:498
+#: ../gtk-glade/friendlist.c:495
 #, c-format
 msgid "Delete contact '%s'"
 msgstr "Odstranit kontakt „%s“"
 
-#: ../gtk-glade/friendlist.c:540
+#: ../gtk-glade/friendlist.c:537
 #, c-format
 msgid "Add new contact from %s directory"
 msgstr "Přidat nový kontakt z adresáře %s"
@@ -349,37 +349,37 @@ msgstr "Vytváření účtu"
 msgid "Now ready !"
 msgstr "Připraveno!"
 
-#: ../gtk-glade/incall_view.c:97
+#: ../gtk-glade/incall_view.c:113
 msgid "<b>Calling...</b>"
 msgstr "<b>Volá se…</b>"
 
-#: ../gtk-glade/incall_view.c:122
-msgid "<b>In call with</b>"
-msgstr "<b>Hovor s</b>"
-
-#: ../gtk-glade/incall_view.c:124
+#: ../gtk-glade/incall_view.c:116 ../gtk-glade/incall_view.c:138
 msgid "00::00::00"
 msgstr "00:00:00"
 
-#: ../gtk-glade/incall_view.c:140
+#: ../gtk-glade/incall_view.c:136
+msgid "<b>In call with</b>"
+msgstr "<b>Hovor s</b>"
+
+#: ../gtk-glade/incall_view.c:154
 #, c-format
 msgid "%02i::%02i::%02i"
 msgstr "%02i:%02i:%02i"
 
-#: ../gtk-glade/incall_view.c:158
+#: ../gtk-glade/incall_view.c:170
 msgid "<b>Call ended.</b>"
 msgstr "<b>Hovor skončil.</b>"
 
-#: ../gtk-glade/incall_view.c:176
+#: ../gtk-glade/incall_view.c:188
 #, fuzzy
 msgid "Unmute"
 msgstr "Neomezená"
 
-#: ../gtk-glade/incall_view.c:180 ../gtk-glade/main.glade.h:43
+#: ../gtk-glade/incall_view.c:195 ../gtk-glade/main.glade.h:43
 msgid "Mute"
 msgstr "Ztlumit"
 
-#: ../gtk-glade/loginframe.c:82
+#: ../gtk-glade/loginframe.c:83
 #, c-format
 msgid "Please enter login information for %s"
 msgstr "Prosím, zadejte své přihlašovací jméno pro %s:"
@@ -442,18 +442,14 @@ msgid "<b>Contact list</b>"
 msgstr "<b>Seznam kontaktů</b>"
 
 #: ../gtk-glade/main.glade.h:15
-msgid "<b>Terminate call</b>"
-msgstr "<b>Ukončit hovor</b>"
-
-#: ../gtk-glade/main.glade.h:16
 msgid "<b>Welcome !</b>"
 msgstr "<b>Vítejte!</b>"
 
-#: ../gtk-glade/main.glade.h:17
+#: ../gtk-glade/main.glade.h:16
 msgid "A"
 msgstr "A"
 
-#: ../gtk-glade/main.glade.h:18
+#: ../gtk-glade/main.glade.h:17
 msgid ""
 "ADSL\n"
 "Fiber Channel"
@@ -461,7 +457,7 @@ msgstr ""
 "ADSL\n"
 "Fiber Channel"
 
-#: ../gtk-glade/main.glade.h:20
+#: ../gtk-glade/main.glade.h:19
 msgid ""
 "All users\n"
 "Online users"
@@ -469,30 +465,35 @@ msgstr ""
 "všech uživatelích\n"
 "připojených uživatelích"
 
-#: ../gtk-glade/main.glade.h:22
+#: ../gtk-glade/main.glade.h:21
 msgid "Assistant"
 msgstr "Průvodce"
 
-#: ../gtk-glade/main.glade.h:23
+#: ../gtk-glade/main.glade.h:22
 msgid "Audio & Video"
 msgstr "Zvuk i obraz"
 
-#: ../gtk-glade/main.glade.h:24
+#: ../gtk-glade/main.glade.h:23
 msgid "Audio only"
 msgstr "Pouze zvuk"
 
-#: ../gtk-glade/main.glade.h:25
+#: ../gtk-glade/main.glade.h:24
 #, fuzzy
 msgid "Automatically log me in"
 msgstr "Automaticky uhodnout platné jméno"
 
-#: ../gtk-glade/main.glade.h:26
+#: ../gtk-glade/main.glade.h:25
 msgid "B"
 msgstr "B"
 
-#: ../gtk-glade/main.glade.h:27 ../gtk-glade/parameters.glade.h:21
+#: ../gtk-glade/main.glade.h:26 ../gtk-glade/parameters.glade.h:21
 msgid "C"
 msgstr "C"
+
+#: ../gtk-glade/main.glade.h:27
+#, fuzzy
+msgid "Call Details"
+msgstr "Volat komu: %s"
 
 #: ../gtk-glade/main.glade.h:28 ../gtk-glade/call_logs.glade.h:1
 msgid "Call history"
@@ -503,16 +504,17 @@ msgid "Check for updates"
 msgstr ""
 
 #: ../gtk-glade/main.glade.h:30
+#, fuzzy
+msgid "Contacts"
+msgstr "Kontaktuji"
+
+#: ../gtk-glade/main.glade.h:31
 msgid "D"
 msgstr "D"
 
-#: ../gtk-glade/main.glade.h:31
+#: ../gtk-glade/main.glade.h:32
 msgid "Default"
 msgstr "Výchozí"
-
-#: ../gtk-glade/main.glade.h:32
-msgid "Digits"
-msgstr "Číslice"
 
 #: ../gtk-glade/main.glade.h:33
 msgid "Duration"
@@ -543,16 +545,16 @@ msgid "Internet connection:"
 msgstr "Připojení k Internetu:"
 
 #: ../gtk-glade/main.glade.h:40
+msgid "Keypad"
+msgstr ""
+
+#: ../gtk-glade/main.glade.h:41
 msgid "Login information"
 msgstr "Informace o přihlášení"
 
-#: ../gtk-glade/main.glade.h:41
+#: ../gtk-glade/main.glade.h:42
 msgid "Lookup:"
 msgstr "Hledat:"
-
-#: ../gtk-glade/main.glade.h:42
-msgid "Main view"
-msgstr "Hlavní zobrazení"
 
 #: ../gtk-glade/main.glade.h:44
 msgid "My current identity:"
@@ -572,40 +574,36 @@ msgid "Search"
 msgstr "Hledat:"
 
 #: ../gtk-glade/main.glade.h:48
-msgid "Show current call"
-msgstr "Zobrazit současný hovor"
-
-#: ../gtk-glade/main.glade.h:49
 #, fuzzy
 msgid "Show debug messages"
 msgstr "Zobrazit ladicí okno"
 
-#: ../gtk-glade/main.glade.h:50
+#: ../gtk-glade/main.glade.h:49
 msgid "Start call"
 msgstr "Zahájit hovor"
 
-#: ../gtk-glade/main.glade.h:51
+#: ../gtk-glade/main.glade.h:50
 msgid "Terminate call"
 msgstr "Ukončit hovor"
 
-#: ../gtk-glade/main.glade.h:52
+#: ../gtk-glade/main.glade.h:51
 msgid "Username"
 msgstr "Uživatelské jméno"
 
-#: ../gtk-glade/main.glade.h:53
+#: ../gtk-glade/main.glade.h:52
 msgid "_Linphone"
 msgstr "_Linphone"
 
-#: ../gtk-glade/main.glade.h:54
+#: ../gtk-glade/main.glade.h:53
 msgid "_Modes"
 msgstr "Reži_my"
 
-#: ../gtk-glade/main.glade.h:55
+#: ../gtk-glade/main.glade.h:54
 msgid "in"
 msgstr "ve"
 
 # XXX: Dummy string. Make it not translatable or use real message
-#: ../gtk-glade/main.glade.h:56
+#: ../gtk-glade/main.glade.h:55
 msgid "label"
 msgstr ""
 
@@ -749,7 +747,7 @@ msgstr "Přijmout"
 msgid "Decline"
 msgstr "Odmítnout"
 
-#: ../gtk-glade/incoming_call.glade.h:3 ../coreapi/linphonecore.c:319
+#: ../gtk-glade/incoming_call.glade.h:3 ../coreapi/linphonecore.c:368
 msgid "Incoming call"
 msgstr "Příchozí hovor"
 
@@ -1038,7 +1036,7 @@ msgstr "Linphone"
 msgid "Please wait"
 msgstr "Prosím, čekejte"
 
-#: ../coreapi/linphonecore.c:261
+#: ../coreapi/linphonecore.c:310
 #, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."
@@ -1046,19 +1044,19 @@ msgstr[0] "Máte %i zmeškaný hovor."
 msgstr[1] "Máte %i zmeškané hovory."
 msgstr[2] "Máte %i zmeškaných hovorů."
 
-#: ../coreapi/linphonecore.c:307
+#: ../coreapi/linphonecore.c:356
 msgid "aborted"
 msgstr "přerušen"
 
-#: ../coreapi/linphonecore.c:310
+#: ../coreapi/linphonecore.c:359
 msgid "completed"
 msgstr "dokončen"
 
-#: ../coreapi/linphonecore.c:313
+#: ../coreapi/linphonecore.c:362
 msgid "missed"
 msgstr "promeškán"
 
-#: ../coreapi/linphonecore.c:318
+#: ../coreapi/linphonecore.c:367
 #, c-format
 msgid ""
 "%s at %s\n"
@@ -1073,11 +1071,11 @@ msgstr ""
 "Stav: %s\n"
 "Délka: %i min %i s\n"
 
-#: ../coreapi/linphonecore.c:319
+#: ../coreapi/linphonecore.c:368
 msgid "Outgoing call"
 msgstr "Odchozí hovor"
 
-#: ../coreapi/linphonecore.c:598
+#: ../coreapi/linphonecore.c:613
 msgid ""
 "Your machine appears to be connected to an IPv6 network. By default linphone "
 "always uses IPv4. Please update your configuration if you want to use IPv6"
@@ -1085,57 +1083,48 @@ msgstr ""
 "Zdá se, že váš počítač je připojen do IPv6 sítě. Standardně linphone používá "
 "pouze IPv4. Prosím, změňte nastavení programu, pokud chcete používat IPv6."
 
-#: ../coreapi/linphonecore.c:952
+#: ../coreapi/linphonecore.c:1062
 msgid "Ready"
 msgstr "Připraven."
 
-#: ../coreapi/linphonecore.c:1402
+#: ../coreapi/linphonecore.c:1493
 msgid "Remote end seems to have disconnected, the call is going to be closed."
 msgstr "Vzdálený konec se asi odpojil, hovor bude ukončen."
 
-#: ../coreapi/linphonecore.c:1640
+#: ../coreapi/linphonecore.c:1691
 msgid "Looking for telephone number destination..."
 msgstr "Vyhledává se umístění čísla…"
 
-#: ../coreapi/linphonecore.c:1642
+#: ../coreapi/linphonecore.c:1693
 msgid "Could not resolve this number."
 msgstr "Toto číslo nelze vyhledat."
 
-#: ../coreapi/linphonecore.c:1715
+#: ../coreapi/linphonecore.c:1737
 msgid ""
 "Could not parse given sip address. A sip url usually looks like sip:"
 "user@domain"
 msgstr ""
 "Špatně zadaná SIP adresa. Adresa má mít tento formát <sip:uživatel@doména>"
 
-#: ../coreapi/linphonecore.c:1829
-msgid "Sorry, having multiple simultaneous calls is not supported yet !"
-msgstr "Promiňte, vedení více současných hovorů není podporováno!"
-
-#: ../coreapi/linphonecore.c:1873
+#: ../coreapi/linphonecore.c:1859
 msgid "Contacting"
 msgstr "Kontaktuji"
 
-#: ../coreapi/linphonecore.c:1889
+#: ../coreapi/linphonecore.c:1865
 msgid "could not call"
 msgstr "Nelze volat."
 
-#: ../coreapi/linphonecore.c:2305 ../coreapi/exevents.c:50
+#: ../coreapi/linphonecore.c:1911
+msgid "Sorry, having multiple simultaneous calls is not supported yet !"
+msgstr "Promiňte, vedení více současných hovorů není podporováno!"
+
+#: ../coreapi/linphonecore.c:2306 ../coreapi/exevents.c:50
 msgid "Connected."
 msgstr "Připojeno."
 
-#: ../coreapi/linphonecore.c:2339
+#: ../coreapi/linphonecore.c:2340
 msgid "Call ended"
 msgstr "Hovor skončil."
-
-#: ../coreapi/linphonecore.c:2863
-msgid "No nat/firewall address supplied !"
-msgstr "Žádná adresa NATu/firewallu nebyla zadána!"
-
-#: ../coreapi/linphonecore.c:2875 ../coreapi/linphonecore.c:2887
-#, c-format
-msgid "Invalid nat address '%s' : %s"
-msgstr "Neplatná adresa NATu '%s': '%s"
 
 #: ../coreapi/misc.c:142
 msgid ""
@@ -1161,7 +1150,7 @@ msgstr ""
 "oss, který chybí. Prosím zadejte jako uživatel root příkaz\n"
 "'modprobe snd-mixer-oss', kterým modul zavede."
 
-#: ../coreapi/misc.c:606
+#: ../coreapi/misc.c:492
 msgid "Stun lookup in progress..."
 msgstr "Hledá se adresa pomocí STUN…"
 
@@ -1232,112 +1221,83 @@ msgstr ""
 "Uživatel je nedostupný, ale navrhuje tyto alternativní\n"
 "setkání:"
 
-#: ../coreapi/exevents.c:836
+#: ../coreapi/exevents.c:842
 #, fuzzy
 msgid "Remote ringing."
 msgstr "Vzdálené služby"
 
-#: ../coreapi/exevents.c:860
+#: ../coreapi/exevents.c:866
 msgid "Early media."
 msgstr "Časná média."
 
-#: ../coreapi/exevents.c:971
+#: ../coreapi/exevents.c:977
 #, c-format
 msgid "Registration on %s failed: %s"
 msgstr "Registrace na %s selhala: %s"
 
-#: ../coreapi/exevents.c:971
+#: ../coreapi/exevents.c:977
 msgid "no response timeout"
 msgstr "odpověď nedorazila včas"
 
-#: ../coreapi/exevents.c:998
+#: ../coreapi/exevents.c:1004
 #, c-format
 msgid "Registration on %s successful."
 msgstr "Registrace na %s byla úspěšná."
 
-#: ../coreapi/exevents.c:999
+#: ../coreapi/exevents.c:1005
 #, fuzzy, c-format
 msgid "Unregistration on %s done."
 msgstr "Registrace na %s byla úspěšná."
 
-#. people for which we don't have yet an answer should appear as offline
-#: ../coreapi/presence.c:111 ../coreapi/presence.c:163 ../coreapi/friend.c:147
-msgid "Gone"
-msgstr "Pryč"
-
-#: ../coreapi/presence.c:128
-msgid "Waiting for Approval"
-msgstr "Čekám na schválení"
-
-#: ../coreapi/presence.c:132 ../coreapi/friend.c:38
+#: ../coreapi/friend.c:35
 msgid "Online"
 msgstr "Připojeno"
 
-#: ../coreapi/presence.c:136 ../coreapi/friend.c:41
+#: ../coreapi/friend.c:38
 msgid "Busy"
 msgstr "Zaneprázdněn"
 
-#: ../coreapi/presence.c:141
-msgid "Be Right Back"
-msgstr "Na chvíli pryč"
-
-#: ../coreapi/presence.c:145 ../coreapi/friend.c:47
-msgid "Away"
-msgstr "Pryč"
-
-#: ../coreapi/presence.c:150
-msgid "On The Phone"
-msgstr "Na příjmu"
-
-#: ../coreapi/presence.c:155
-msgid "Out To Lunch"
-msgstr "Na obědě"
-
-#: ../coreapi/presence.c:159 ../coreapi/friend.c:71
-msgid "Closed"
-msgstr "Zavřeno"
-
-#: ../coreapi/friend.c:35
-msgid "Unknown"
-msgstr "Stav není znám"
-
-#: ../coreapi/friend.c:44
+#: ../coreapi/friend.c:41
 msgid "Be right back"
 msgstr "Za chvíli se vrátím"
 
-#: ../coreapi/friend.c:50
+#: ../coreapi/friend.c:44
+msgid "Away"
+msgstr "Pryč"
+
+#: ../coreapi/friend.c:47
 msgid "On the phone"
 msgstr "U telefonu"
 
-#: ../coreapi/friend.c:53
+#: ../coreapi/friend.c:50
 msgid "Out to lunch"
 msgstr "Na obědě"
 
-#: ../coreapi/friend.c:56
+#: ../coreapi/friend.c:53
 msgid "Do not disturb"
 msgstr "Nerušit"
 
-#: ../coreapi/friend.c:59
+#: ../coreapi/friend.c:56
 msgid "Moved"
 msgstr "Přestěhoval se"
 
-#: ../coreapi/friend.c:62
+#: ../coreapi/friend.c:59
 msgid "Using another messaging service"
 msgstr "Používá jinou službu přenosu zpráv"
 
-#: ../coreapi/friend.c:65
+#: ../coreapi/friend.c:62
 msgid "Offline"
 msgstr "Odpojeno"
 
-#: ../coreapi/friend.c:68
+#: ../coreapi/friend.c:65
 msgid "Pending"
 msgstr "Čeká"
 
-#: ../coreapi/friend.c:74
+#: ../coreapi/friend.c:68
 msgid "Unknown-bug"
 msgstr "Neznámá chyba"
 
-#: ../coreapi/proxy.c:265
+#: ../coreapi/proxy.c:176
 msgid ""
 "The sip proxy address you entered is invalid, it must start with \"sip:\" "
 "followed by a hostname."
@@ -1345,7 +1305,7 @@ msgstr ""
 "Adresa SIP proxy, kterou jste zadali, není platná. Musí začínat na „sip:“ a "
 "pak musí následovat jméno stroje."
 
-#: ../coreapi/proxy.c:271
+#: ../coreapi/proxy.c:182
 msgid ""
 "The sip identity you entered is invalid.\n"
 "It should look like sip:username@proxydomain, such as sip:alice@example.net"
@@ -1353,7 +1313,7 @@ msgstr ""
 "SIP identita, kterou jste zadali, není platná.\n"
 "Měla by mít tvar sip:uživatel@proxydoména, například sip:alice@example.net"
 
-#: ../coreapi/proxy.c:889
+#: ../coreapi/proxy.c:621
 #, c-format
 msgid "Could not login as %s"
 msgstr "Nelze se přihlásit jako %s"
@@ -1366,19 +1326,19 @@ msgstr "Kodér a-law ITU-G.711"
 msgid "ITU-G.711 alaw decoder"
 msgstr "Dekodér a-law ITU-G.711"
 
-#: ../mediastreamer2/src/alsa.c:923
+#: ../mediastreamer2/src/alsa.c:935
 msgid "Alsa sound source"
 msgstr "Zdroj zvuku ALSA"
 
-#: ../mediastreamer2/src/alsa.c:1027
+#: ../mediastreamer2/src/alsa.c:1039
 msgid "Alsa sound output"
 msgstr "Zvukový výstup ALSA"
 
-#: ../mediastreamer2/src/aqsnd.c:891
+#: ../mediastreamer2/src/aqsnd.c:1005
 msgid "Sound capture filter for MacOS X Audio Queue Service"
 msgstr "Filtr zachytávání zvuku přes MacOS X službu zvukové fronty"
 
-#: ../mediastreamer2/src/aqsnd.c:915
+#: ../mediastreamer2/src/aqsnd.c:1029
 msgid "Sound playback filter for MacOS X Audio Queue Service"
 msgstr "Filtr přehrávání zvuku přes MacOS X službu zvukové fronty"
 
@@ -1386,11 +1346,11 @@ msgstr "Filtr přehrávání zvuku přes MacOS X službu zvukové fronty"
 msgid "DTMF generator"
 msgstr "Generátor DTMF"
 
-#: ../mediastreamer2/src/gsm.c:70 ../mediastreamer2/src/gsm.c:88
+#: ../mediastreamer2/src/gsm.c:111 ../mediastreamer2/src/gsm.c:129
 msgid "The GSM full-rate codec"
 msgstr "Kodek plnopásmového GSM"
 
-#: ../mediastreamer2/src/gsm.c:134 ../mediastreamer2/src/gsm.c:152
+#: ../mediastreamer2/src/gsm.c:178 ../mediastreamer2/src/gsm.c:196
 msgid "The GSM codec"
 msgstr "GSM kodek"
 
@@ -1439,7 +1399,7 @@ msgstr "Filtr RTP vstupu"
 msgid "The free and wonderful speex codec"
 msgstr "Svobodný a úžasný kodek speex"
 
-#: ../mediastreamer2/src/msvolume.c:400 ../mediastreamer2/src/msvolume.c:415
+#: ../mediastreamer2/src/msvolume.c:415 ../mediastreamer2/src/msvolume.c:430
 msgid "A filter that controls and measure sound volume"
 msgstr "Filtr, který měří a řídí hlasitost zvuku"
 
@@ -1451,7 +1411,7 @@ msgstr "Zdrojový filtr kompatibilní s Video4Linux proudující obrázky."
 msgid "A filter to grab pictures from Video4Linux2-powered cameras"
 msgstr "Filtr zachytávající obrázky z Video4Linux2 kamer"
 
-#: ../mediastreamer2/src/nowebcam.c:1786
+#: ../mediastreamer2/src/nowebcam.c:1824
 msgid "A filter that outputs a static image."
 msgstr "Filtr, který vydává nehybný obrázek."
 
@@ -1463,7 +1423,7 @@ msgstr "Zvukový zachytávací filtr pro ovladače OSS"
 msgid "Sound playback filter for OSS drivers"
 msgstr "Zvukový přehrávací filtr pro ovladače OSS"
 
-#: ../mediastreamer2/src/pixconv.c:173 ../mediastreamer2/src/pixconv.c:191
+#: ../mediastreamer2/src/pixconv.c:177 ../mediastreamer2/src/pixconv.c:195
 msgid "A pixel format converter"
 msgstr "Převodník formátu pixelů"
 
@@ -1586,8 +1546,8 @@ msgstr "Obecné zobrazování videa"
 #: ../mediastreamer2/src/wincevideods.c:969
 #: ../mediastreamer2/src/wincevideods.c:987
 #: ../mediastreamer2/src/winvideo.c:596 ../mediastreamer2/src/winvideo.c:614
-#: ../mediastreamer2/src/winvideods.c:1314
-#: ../mediastreamer2/src/winvideods.c:1332
+#: ../mediastreamer2/src/winvideods.c:1385
+#: ../mediastreamer2/src/winvideods.c:1403
 msgid "A video4windows compatible source filter to stream pictures."
 msgstr "Zdrojový filtr kompatibilní s video4windows proudující obrázky."
 
@@ -1612,6 +1572,45 @@ msgstr "Parametrický ekvalizér zvuku."
 #: ../mediastreamer2/src/msdscap-mingw.cc:1003
 msgid "A webcam grabber based on directshow."
 msgstr "Snímač kamer postavený na directshow."
+
+#~ msgid "<b>Terminate call</b>"
+#~ msgstr "<b>Ukončit hovor</b>"
+
+#~ msgid "Digits"
+#~ msgstr "Číslice"
+
+#~ msgid "Main view"
+#~ msgstr "Hlavní zobrazení"
+
+#~ msgid "Show current call"
+#~ msgstr "Zobrazit současný hovor"
+
+#~ msgid "No nat/firewall address supplied !"
+#~ msgstr "Žádná adresa NATu/firewallu nebyla zadána!"
+
+#~ msgid "Invalid nat address '%s' : %s"
+#~ msgstr "Neplatná adresa NATu '%s': '%s"
+
+#~ msgid "Gone"
+#~ msgstr "Pryč"
+
+#~ msgid "Waiting for Approval"
+#~ msgstr "Čekám na schválení"
+
+#~ msgid "Be Right Back"
+#~ msgstr "Na chvíli pryč"
+
+#~ msgid "On The Phone"
+#~ msgstr "Na příjmu"
+
+#~ msgid "Out To Lunch"
+#~ msgstr "Na obědě"
+
+#~ msgid "Closed"
+#~ msgstr "Zavřeno"
+
+#~ msgid "Unknown"
+#~ msgstr "Stav není znám"
 
 #~ msgid "SIP address"
 #~ msgstr "SIP adresa"
