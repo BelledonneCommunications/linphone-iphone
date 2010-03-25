@@ -2780,6 +2780,15 @@ void linphone_core_mute_mic(LinphoneCore *lc, bool_t val){
 	}
 }
 
+bool_t linphone_core_is_mic_muted(LinphoneCore *lc) {
+	float gain=1.0;
+	if (lc->audiostream && lc->audiostream->volsend){
+			ms_filter_call_method(lc->audiostream->volsend,MS_VOLUME_GET_GAIN,&gain);
+	}else ms_warning("Could not get gain: gain control wasn't activated. ");
+
+	return gain==0;
+}
+
 void linphone_core_enable_agc(LinphoneCore *lc, bool_t val){
 	lc->sound_conf.agc=val;
 }

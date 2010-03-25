@@ -667,6 +667,12 @@ void linphone_core_enable_agc(LinphoneCore *lc, bool_t val);
 bool_t linphone_core_agc_enabled(const LinphoneCore *lc);
 
 void linphone_core_mute_mic(LinphoneCore *lc, bool_t muted);
+/**
+ * return mic state.
+ *
+ * @ingroup media_parameters
+**/
+bool_t linphone_core_is_mic_muted(LinphoneCore *lc);
 
 void linphone_core_set_presence_info(LinphoneCore *lc,int minutes_away,const char *contact,LinphoneOnlineStatus os);
 

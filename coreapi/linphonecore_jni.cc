@@ -329,6 +329,12 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_clearCallLogs(JNIEnv*  e
 																		,jlong lc) {
 	linphone_core_clear_call_logs((LinphoneCore*)lc);
 }
+extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isMicMuted(	JNIEnv*  env
+		,jobject  thiz
+		,jlong lc) {
+	return linphone_core_is_mic_muted((LinphoneCore*)lc);
+}
+
 
 
 //ProxyConfig
