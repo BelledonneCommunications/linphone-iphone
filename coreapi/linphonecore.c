@@ -661,6 +661,7 @@ static void sip_config_read(LinphoneCore *lc)
 		LinphoneAuthInfo *ai=linphone_auth_info_new_from_config_file(lc->config,i);
 		if (ai!=NULL){
 			linphone_core_add_auth_info(lc,ai);
+			linphone_auth_info_destroy(ai);
 		}else{
 			break;
 		}
@@ -3242,14 +3243,16 @@ void net_config_uninit(LinphoneCore *lc)
 	lp_config_set_int(lc->config,"net","download_bw",config->download_bw);
 	lp_config_set_int(lc->config,"net","upload_bw",config->upload_bw);
 
-	if (config->stun_server!=NULL)
+	if (config->stun_server!=NULL){
 		lp_config_set_string(lc->config,"net","stun_server",config->stun_server);
-	if (config->nat_address!=NULL)
-		lp_config_set_string(lc->config,"net","nat_address",config->nat_address);
-	lp_config_set_int(lc->config,"net","firewall_policy",config->firewall_policy);
-	lp_config_set_int(lc->config,"net","mtu",config->mtu);
-	if (lc->net_conf.stun_server!=NULL)
 		ms_free(lc->net_conf.stun_server);
+	}
+	if (config->nat_address!=NULL){
+		lp_config_set_string(lc->config,"net","nat_address",config->nat_address);
+		ms_free(lc->net_conf.nat_address);
+	}
+	lp_config_set_int(lc->config,"net","firewall_policy",config->firewall_policy);
+	lp_config_set_int(lc->config,"net","mtu",config->mtu);	
 }
 
 
@@ -3301,8 +3304,15 @@ void sip_config_uninit(LinphoneCore *lc)
 	ms_list_for_each(lc->auth_info,(void (*)(void*))linphone_auth_info_destroy);
 	ms_list_free(lc->auth_info);
 	lc->auth_info=NULL;
+	
 	sal_uninit(lc->sal);
 	lc->sal=NULL;
+
+	if (lc->sip_conf.guessed_contact)
+		ms_free(lc->sip_conf.guessed_contact);
+	if (config->contact)
+		ms_free(config->contact);
+	
 }
 
 void rtp_config_uninit(LinphoneCore *lc)
@@ -3335,6 +3345,8 @@ void video_config_uninit(LinphoneCore *lc)
 	lp_config_set_int(lc->config,"video","capture",lc->video_conf.capture);
 	lp_config_set_int(lc->config,"video","show_local",linphone_core_video_preview_enabled(lc));
 	lp_config_set_int(lc->config,"video","self_view",linphone_core_self_view_enabled(lc));
+	if (lc->video_conf.cams)
+		ms_free(lc->video_conf.cams);
 }
 
 void codecs_config_uninit(LinphoneCore *lc)
@@ -3363,6 +3375,8 @@ void codecs_config_uninit(LinphoneCore *lc)
 		lp_config_set_string(lc->config,key,"recv_fmtp",pt->recv_fmtp);
 		index++;
 	}
+	ms_list_free(lc->codecs_conf.audio_codecs);
+	ms_list_free(lc->codecs_conf.video_codecs);
 }
 
 void ui_config_uninit(LinphoneCore* lc)
@@ -3421,6 +3435,9 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	lp_config_destroy(lc->config);
 	lc->config = NULL; /* Mark the config as NULL to block further calls */
 	sip_setup_unregister_all();
+
+	ms_list_for_each(lc->call_logs,(void (*)(void*))linphone_call_log_destroy);
+	lc->call_logs=ms_list_free(lc->call_logs);
 
 	linphone_core_free_payload_types();
 

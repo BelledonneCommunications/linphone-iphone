@@ -1204,6 +1204,7 @@ static bool_t register_again_with_updated_contact(SalOp *op, osip_message_t *ori
 	sal_address_clean(addr);
 	tmp=sal_address_as_string(addr);
 	sal_op_set_contact(op,tmp);
+	sal_address_destroy(addr);
 	ms_message("Resending new register with updated contact %s",tmp);
 	ms_free(tmp);
 	return TRUE;
