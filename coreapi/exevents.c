@@ -244,7 +244,7 @@ int linphone_call_failure(LinphoneCore *lc, eXosip_event_t *ev)
 	linphone_core_stop_media_streams(lc);
 	if (call!=NULL) {
 		linphone_call_destroy(call);
-		if (code!=487) gstate_new_state(lc, GSTATE_CALL_ERROR, NULL);
+		gstate_new_state(lc, GSTATE_CALL_ERROR, NULL);
 		lc->call=NULL;
 	}
 	return 0;

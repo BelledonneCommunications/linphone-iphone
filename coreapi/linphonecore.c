@@ -1424,7 +1424,7 @@ static void monitor_network_state(LinphoneCore *lc, time_t curtime){
 	static time_t last_check=0;
 	static bool_t last_status=FALSE;
 	char result[LINPHONE_IPADDR_SIZE];
-	bool_t new_status;
+	bool_t new_status=last_status;
 
 	/* only do the network up checking every five seconds */
 	if (last_check==0 || (curtime-last_check)>=5){
