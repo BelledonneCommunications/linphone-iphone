@@ -65,6 +65,8 @@ static int lpc_cmd_stun(LinphoneCore *, char *);
 static int lpc_cmd_firewall(LinphoneCore *, char *);
 static int lpc_cmd_friend(LinphoneCore *, char*);
 static int lpc_cmd_soundcard(LinphoneCore *, char *);
+static int lpc_cmd_webcam(LinphoneCore *, char *);
+static int lpc_cmd_staticpic(LinphoneCore *, char *);
 static int lpc_cmd_play(LinphoneCore *, char *);
 static int lpc_cmd_record(LinphoneCore *, char *);
 static int lpc_cmd_register(LinphoneCore *, char *);
@@ -143,6 +145,13 @@ LPC_COMMAND commands[] = {
 		"'soundcard show' : show current sound devices configuration.\n"
 		"'soundcard use <index>' : select a sound device.\n"
 		"'soundcard use files' : use .wav files instead of soundcard\n"
+	},
+	{ "webcam", lpc_cmd_webcam, "Manage webcams",
+		"'webcam list' : list all known devices.\n"
+		"'webcam use <index>' : select a video device.\n"
+	},
+	{ "staticpic", lpc_cmd_staticpic, "Manage static pictures when nowebcam",
+		"'staticpic set' : Set path to picture that should be used.\n"
 	},
 	{ "ipv6", lpc_cmd_ipv6, "Use IPV6",
 		"'ipv6 status' : show ipv6 usage status.\n"
@@ -947,6 +956,79 @@ static int lpc_cmd_soundcard(LinphoneCore *lc, char *args)
 	}
 	return 0; /* syntax error */
 }
+
+static int lpc_cmd_webcam(LinphoneCore *lc, char *args)
+{
+	int i, index;
+	const char **dev;
+	char *arg1 = args;
+	char *arg2 = NULL;
+	char *ptr = args;
+
+	if (!args) return 0; /* syntax error */
+
+	/* Isolate first and second arg */
+	while(*ptr && !isspace(*ptr)) ++ptr;
+	if ( *ptr )
+	{
+		*ptr='\0';
+		arg2=ptr+1;
+		while(*arg2 && isspace(*arg2)) ++arg2;
+	}
+
+	if (strcmp(arg1, "list")==0)
+	{
+		dev=linphone_core_get_video_devices(lc);
+		for(i=0; dev[i]!=NULL; ++i){
+			linphonec_out("%i: %s\n",i,dev[i]);
+		}
+		return 1;
+	}
+
+	if (strcmp(arg1, "use")==0 && arg2)
+	{
+		dev=linphone_core_get_video_devices(lc);
+		index=atoi(arg2); /* FIXME: handle not-a-number */
+		for(i=0;dev[i]!=NULL;i++)
+		{
+			if (i!=index) continue;
+
+			linphone_core_set_video_device(lc, dev[i]);
+			linphonec_out("Using video device %s\n",dev[i]);
+			return 1;
+		}
+		linphonec_out("No such video device\n");
+		return 1;
+	}
+	return 0; /* syntax error */
+}
+
+static int
+lpc_cmd_staticpic(LinphoneCore *lc, char *args)
+{
+	char *arg1 = args;
+	char *arg2 = NULL;
+	char *ptr = args;
+
+	if (!args) return 0;  /* Syntax error */
+
+	/* Isolate first and second arg */
+	while(*ptr && !isspace(*ptr)) ++ptr;
+	if ( *ptr )
+	{
+		*ptr='\0';
+		arg2=ptr+1;
+		while(*arg2 && isspace(*arg2)) ++arg2;
+	}
+
+	if (strcmp(arg1, "set")==0 && arg2) {
+		return linphone_core_set_static_picture(lc, arg2);
+	}
+
+	return 0; /* Syntax error */
+}
+
+
 
 /***************************************************************************
  *

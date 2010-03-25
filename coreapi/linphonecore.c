@@ -3128,6 +3128,35 @@ const char *linphone_core_get_video_device(const LinphoneCore *lc){
 	return NULL;
 }
 
+int linphone_core_set_static_picture(LinphoneCore *lc, const char *path) {
+	struct _VideoStream *vs = NULL;
+
+	/* Select the video stream from the call in the first place */
+	if (lc && lc->videostream) {
+		vs = lc->videostream;
+	}
+	/* If not in call, select the video stream from the preview */
+	if (vs == NULL && lc && lc->previewstream) {
+		vs = lc->previewstream;
+	}
+	
+	/* If we have a video stream (either preview, either from call), we
+		 have a source and it is using the static picture filter, then
+		 force the filter to use that picture. */
+	if (vs && vs->source) {
+		if (ms_filter_get_id(vs->source) == MS_STATIC_IMAGE_ID) {
+			ms_filter_call_method(vs->source, MS_FILTER_SET_IMAGE,
+														(void *)path);
+		}
+	}
+
+	/* Tell the static image filter to use that image from now on so
+		 that the image will be used next time it has to be read */
+	ms_static_image_set_default_image(path);
+
+	return 1;
+}
+
 /**
  * Returns the native window handle of the video window, casted as an unsigned long.
  *

@@ -898,6 +898,9 @@ const char**  linphone_core_get_video_devices(const LinphoneCore *lc);
 int linphone_core_set_video_device(LinphoneCore *lc, const char *id);
 const char *linphone_core_get_video_device(const LinphoneCore *lc);
 
+/* Set static picture to be used when "Static picture" is the video device */
+int linphone_core_set_static_picture(LinphoneCore *lc, const char *path);
+
 /*function to be used for eventually setting window decorations (icons, title...)*/
 unsigned long linphone_core_get_native_video_window_id(const LinphoneCore *lc);
 

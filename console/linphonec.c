@@ -513,6 +513,15 @@ char *linphonec_readline(char *prompt){
 			linphonec_idle_call();
 #ifdef WIN32
 			Sleep(20);
+			/* Following is to get the video window going as it
+				 should. Maybe should we only have this on when the option -V
+				 or -D is on? */
+			MSG msg;
+	
+			if (PeekMessage(&msg, NULL, 0, 0,1)) {
+				TranslateMessage(&msg);
+				DispatchMessage(&msg);
+			}
 #else
 			usleep(20000);
 #endif
