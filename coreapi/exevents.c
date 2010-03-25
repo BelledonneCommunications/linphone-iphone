@@ -464,7 +464,8 @@ int linphone_set_audio_offer(sdp_context_t *ctx)
 	elem=lc->codecs_conf.audio_codecs;
 	while(elem!=NULL){
 		codec=(PayloadType*) elem->data;
-		if (linphone_core_check_payload_type_usability(lc,codec) && payload_type_enabled(codec)){
+		if (linphone_core_check_payload_type_usability(lc,codec) && 
+		    linphone_core_payload_type_enabled(lc,codec)){
 			sdp_payload_init(&payload);
 			payload.a_rtpmap=ortp_strdup_printf("%s/%i/1",codec->mime_type,codec->clock_rate);
 			payload.pt=rtp_profile_get_payload_number_from_rtpmap(lc->local_profile,payload.a_rtpmap);
@@ -539,7 +540,8 @@ int linphone_set_video_offer(sdp_context_t *ctx)
 
 	for(elem=lc->codecs_conf.video_codecs;elem!=NULL;elem=ms_list_next(elem)){
 		codec=(PayloadType*) elem->data;
-		if (linphone_core_check_payload_type_usability(lc,codec) && payload_type_enabled(codec)){
+		if (linphone_core_check_payload_type_usability(lc,codec) && 
+		    linphone_core_payload_type_enabled(lc,codec)){
 			sdp_payload_t payload;
 			sdp_payload_init(&payload);
 			payload.line=1;
@@ -591,7 +593,7 @@ SupportLevel linphone_payload_is_supported(LinphoneCore *lc, sdp_payload_t *payl
 				ms_warning("payload %s is not usable",rtppayload->mime_type);
 				return Unsupported;
 			}
-			if ( !payload_type_enabled(rtppayload)) {
+			if ( !linphone_core_payload_type_enabled(lc,rtppayload)) {
 				ms_warning("payload %s is not enabled.",rtppayload->mime_type);
 				return Unsupported;
 			}

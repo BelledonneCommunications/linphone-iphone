@@ -24,11 +24,7 @@
  
 #include "linphonecore.h"
 #include "private.h"
-#include <eXosip2/eXosip.h>
-#include <osipparser2/osip_message.h>
 #include "lpconfig.h"
-
-extern LinphoneProxyConfig *linphone_core_get_proxy_config_from_rid(LinphoneCore *lc, int rid);
 
 /**
  * @addtogroup authentication
@@ -51,7 +47,6 @@ LinphoneAuthInfo *linphone_auth_info_new(const char *username, const char *useri
 	if (ha1!=NULL && (strlen(ha1)>0)) obj->ha1=ms_strdup(ha1);
 	if (realm!=NULL && (strlen(realm)>0)) obj->realm=ms_strdup(realm);
 	obj->works=FALSE;
-	obj->first_time=TRUE;
 	return obj;
 }
 
@@ -63,8 +58,26 @@ static LinphoneAuthInfo *linphone_auth_info_clone(const LinphoneAuthInfo *ai){
 	if (ai->ha1)	obj->ha1=ms_strdup(ai->ha1);
 	if (ai->realm)	obj->realm=ms_strdup(ai->realm);
 	obj->works=FALSE;
-	obj->first_time=TRUE;
+	obj->usecount=0;
 	return obj;
+}
+
+/**
+ * Returns username.
+**/
+const char *linphone_auth_info_get_username(const LinphoneAuthInfo *i){
+	return i->username;
+}
+
+/**
+ * Returns password.
+**/
+const char *linphone_auth_info_get_passwd(const LinphoneAuthInfo *i){
+	return i->passwd;
+}
+
+const char *linphone_auth_info_get_userid(const LinphoneAuthInfo *i){
+	return i->userid;
 }
 
 /**
@@ -224,21 +237,6 @@ const LinphoneAuthInfo *linphone_core_find_auth_info(LinphoneCore *lc, const cha
 	return ret;
 }
 
-static void refresh_exosip_auth_info(LinphoneCore *lc){
-	MSList *elem;
-	eXosip_lock();
-	eXosip_clear_authentication_info();
-	for (elem=lc->auth_info;elem!=NULL;elem=ms_list_next(elem)){
-		LinphoneAuthInfo *info=(LinphoneAuthInfo*)elem->data;
-		char *userid;
-		if (info->userid==NULL || info->userid[0]=='\0') userid=info->username;
-		else userid=info->userid;
-		eXosip_add_authentication_info(info->username,userid,
-				info->passwd,info->ha1,info->realm);
-	}
-	eXosip_unlock();
-}
-
 /**
  * Adds authentication information to the LinphoneCore.
  * 
@@ -247,6 +245,7 @@ static void refresh_exosip_auth_info(LinphoneCore *lc){
 void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info)
 {
 	LinphoneAuthInfo *ai;
+	MSList *elem;
 	
 	/* find if we are attempting to modify an existing auth info */
 	ai=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,info->realm,info->username);
@@ -255,10 +254,23 @@ void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info)
 		linphone_auth_info_destroy(ai);
 	}
 	lc->auth_info=ms_list_append(lc->auth_info,linphone_auth_info_clone(info));
-
-	refresh_exosip_auth_info(lc);
-	/* if the user was prompted, re-allow automatic_action */
-	if (lc->automatic_action>0) lc->automatic_action--;
+	/* retry pending authentication operations */
+	for(elem=sal_get_pending_auths(lc->sal);elem!=NULL;elem=elem->next){
+		const char *username,*realm;
+		SalOp *op=(SalOp*)elem->data;
+		LinphoneAuthInfo *ai;
+		sal_op_get_auth_requested(op,&realm,&username);
+		ai=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,realm,username);
+		if (ai){
+			SalAuthInfo sai;
+			sai.username=ai->username;
+			sai.userid=ai->userid;
+			sai.realm=ai->realm;
+			sai.password=ai->passwd;
+			sal_op_authenticate(op,&sai);
+			ai->usecount++;
+		}
+	}
 }
 
 
@@ -267,7 +279,6 @@ void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info)
  * from the auth_info_requested callback of LinphoneCoreVTable.
 **/
 void linphone_core_abort_authentication(LinphoneCore *lc,  LinphoneAuthInfo *info){
-	if (lc->automatic_action>0) lc->automatic_action--;
 }
 
 /**
@@ -286,7 +297,6 @@ void linphone_core_remove_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *in
 			linphone_auth_info_write_config(lc->config,(LinphoneAuthInfo*)elem->data,i);
 		}
 		linphone_auth_info_write_config(lc->config,NULL,i);
-		refresh_exosip_auth_info(lc);
 	}
 }
 
@@ -303,9 +313,6 @@ const MSList *linphone_core_get_auth_info_list(const LinphoneCore *lc){
 void linphone_core_clear_all_auth_info(LinphoneCore *lc){
 	MSList *elem;
 	int i;
-	eXosip_lock();
-	eXosip_clear_authentication_info();
-	eXosip_unlock();
 	for(i=0,elem=lc->auth_info;elem!=NULL;elem=ms_list_next(elem),i++){
 		LinphoneAuthInfo *info=(LinphoneAuthInfo*)elem->data;
 		linphone_auth_info_destroy(info);
@@ -314,84 +321,6 @@ void linphone_core_clear_all_auth_info(LinphoneCore *lc){
 	ms_list_free(lc->auth_info);
 	lc->auth_info=NULL;
 }
-
-void linphone_authentication_ok(LinphoneCore *lc, eXosip_event_t *ev){
-	char *prx_realm=NULL,*www_realm=NULL;
-	osip_proxy_authorization_t *prx_auth;
-	osip_authorization_t *www_auth;
-	osip_message_t *msg=ev->request;
-	char *username;
-	LinphoneAuthInfo *as=NULL;
-
-	username=osip_uri_get_username(msg->from->url);
-	osip_message_get_proxy_authorization(msg,0,&prx_auth);
-	osip_message_get_authorization(msg,0,&www_auth);
-	if (prx_auth!=NULL)
-		prx_realm=osip_proxy_authorization_get_realm(prx_auth);
-	if (www_auth!=NULL)
-		www_realm=osip_authorization_get_realm(www_auth);
-	
-	if (prx_realm==NULL && www_realm==NULL){
-		ms_message("No authentication info in the request, ignoring");
-		return;
-	}
-	/* see if we already have this auth information , not to ask it everytime to the user */
-	if (prx_realm!=NULL)
-		as=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,prx_realm,username);
-	if (www_realm!=NULL) 
-		as=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,www_realm,username);
-	if (as){
-		ms_message("Authentication for user=%s realm=%s is working.",username,prx_realm ? prx_realm : www_realm);
-		as->works=TRUE;
-	}
-}
-
-
-void linphone_core_find_or_ask_for_auth_info(LinphoneCore *lc,const char *username,const char* realm, int tid)
-{
-	LinphoneAuthInfo *as=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,realm,username);
-	if ( as==NULL || (as!=NULL && as->works==FALSE && as->first_time==FALSE)){
-		if (lc->vtable.auth_info_requested!=NULL){
-			lc->vtable.auth_info_requested(lc,realm,username);
-			lc->automatic_action++;/*suspends eXosip_automatic_action until the user supplies a password */
-		}
-	}
-	if (as) as->first_time=FALSE;
-}
-
-void linphone_process_authentication(LinphoneCore *lc, eXosip_event_t *ev)
-{
-	char *prx_realm=NULL,*www_realm=NULL;
-	osip_proxy_authenticate_t *prx_auth;
-	osip_www_authenticate_t *www_auth;
-	osip_message_t *resp=ev->response;
-	char *username;
-
-	/*
-	if (strcmp(ev->request->sip_method,"REGISTER")==0) {
-		gstate_new_state(lc, GSTATE_REG_FAILED, "Authentication required");
-	}
-	*/
-
-	username=osip_uri_get_username(resp->from->url);
-	prx_auth=(osip_proxy_authenticate_t*)osip_list_get(&resp->proxy_authenticates,0);
-	www_auth=(osip_proxy_authenticate_t*)osip_list_get(&resp->www_authenticates,0);
-	if (prx_auth!=NULL)
-		prx_realm=osip_proxy_authenticate_get_realm(prx_auth);
-	if (www_auth!=NULL)
-		www_realm=osip_www_authenticate_get_realm(www_auth);
-	
-	if (prx_realm==NULL && www_realm==NULL){
-		ms_warning("No realm in the server response.");
-		return;
-	}
-	/* see if we already have this auth information , not to ask it everytime to the user */
-	if (prx_realm!=NULL) 
-		linphone_core_find_or_ask_for_auth_info(lc,username,prx_realm,ev->tid);
-	if (www_realm!=NULL) 
-		linphone_core_find_or_ask_for_auth_info(lc,username,www_realm,ev->tid);
-}
-
 
 /**
  * @}

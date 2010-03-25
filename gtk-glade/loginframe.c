@@ -60,6 +60,7 @@ void linphone_gtk_show_login_frame(LinphoneProxyConfig *cfg){
 	LinphoneAddress *from;
 	LinphoneCore *lc=linphone_gtk_get_core();
 	int nettype;
+	const char *passwd=NULL;
 
 
 	if (linphone_core_get_download_bandwidth(lc)==512 &&
@@ -91,8 +92,9 @@ void linphone_gtk_show_login_frame(LinphoneProxyConfig *cfg){
 	if (linphone_address_get_username(from)[0]!='?')
 		gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(mw,"login_username")),
 			linphone_address_get_username(from));
+	if (ai) passwd=linphone_auth_info_get_passwd(ai);
 	gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(mw,"login_password")),
-		ai!=NULL ? ai->passwd : "");
+		passwd!=NULL ? passwd : "");
 	
 	linphone_address_destroy(from);
 }

@@ -24,7 +24,7 @@
 
 
 #include "linphonecore.h"
-
+#include "private.h"
 #if 0
 static const char *_gstates_text[] = {
   "GSTATE_POWER_OFF",         /* 0 */

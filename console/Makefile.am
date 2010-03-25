@@ -13,7 +13,7 @@ INCLUDES = \
 
 
 
-bin_PROGRAMS =  linphonec sipomatic linphonecsh
+bin_PROGRAMS =  linphonec linphonecsh
 
 if BUILD_WIN32
 bin_PROGRAMS += linphoned

@@ -1337,7 +1337,7 @@ linphonec_proxy_use(LinphoneCore *lc, int index)
 static void
 linphonec_friend_display(LinphoneFriend *fr)
 {
-	LinphoneAddress *uri=linphone_address_clone(linphone_friend_get_uri(fr));
+	LinphoneAddress *uri=linphone_address_clone(linphone_friend_get_address(fr));
 	char *str;
 	
 	linphonec_out("name: %s\n", linphone_address_get_display_name(uri));
@@ -1362,7 +1362,7 @@ linphonec_friend_list(LinphoneCore *lc, char *pat)
 	{
 		if ( pat ) {
 			const char *name = linphone_address_get_display_name(
-			    linphone_friend_get_uri((LinphoneFriend*)friend->data));
+			    linphone_friend_get_address((LinphoneFriend*)friend->data));
 			if (name && ! strstr(name, pat) ) continue;
 		}
 		linphonec_out("****** Friend %i *******\n",n);
@@ -1384,7 +1384,7 @@ linphonec_friend_call(LinphoneCore *lc, unsigned int num)
 		if ( n == num )
 		{
 			int ret;
-			addr = linphone_address_as_string(linphone_friend_get_uri((LinphoneFriend*)friend->data));
+			addr = linphone_address_as_string(linphone_friend_get_address((LinphoneFriend*)friend->data));
 			ret=lpc_cmd_call(lc, addr);
 			ms_free(addr);
 			return ret;
@@ -1458,17 +1458,16 @@ static int lpc_cmd_register(LinphoneCore *lc, char *args){
 		return 1;
 	}
 	if (passwd[0]!='\0'){
-		osip_from_t *from;
+		LinphoneAddress *from;
 		LinphoneAuthInfo *info;
-		osip_from_init(&from);
-		if (osip_from_parse(from,identity)==0){
+		if ((from=linphone_address_new(identity))!=NULL){
 			char realm[128];
-			snprintf(realm,sizeof(realm)-1,"\"%s\"",from->url->host);
-			info=linphone_auth_info_new(from->url->username,NULL,passwd,NULL,NULL);
+			snprintf(realm,sizeof(realm)-1,"\"%s\"",linphone_address_get_domain(from));
+			info=linphone_auth_info_new(linphone_address_get_username(from),NULL,passwd,NULL,NULL);
 			linphone_core_add_auth_info(lc,info);
+			linphone_address_destroy(from);
 			linphone_auth_info_destroy(info);
 		}
-		osip_from_free(from);
 	}
 	elem=linphone_core_get_proxy_config_list(lc);
 	if (elem) {
@@ -1674,7 +1673,8 @@ static void linphonec_codec_list(LinphoneCore *lc){
 	MSList *node;
 	for(node=config->audio_codecs;node!=NULL;node=ms_list_next(node)){
 		pt=(PayloadType*)(node->data);
-        linphonec_out("%2d: %s (%d) %s\n", index, pt->mime_type, pt->clock_rate, payload_type_enabled(pt) ? "enabled" : "disabled");
+        linphonec_out("%2d: %s (%d) %s\n", index, pt->mime_type, pt->clock_rate, 
+		    linphone_core_payload_type_enabled(lc,pt) ? "enabled" : "disabled");
 		index++;
 	}
 }

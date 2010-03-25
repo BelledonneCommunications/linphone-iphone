@@ -163,7 +163,7 @@ static void linphone_gtk_log_file(OrtpLogLevel lev, const char *msg)
 
 	/* lc->config will turn NULL at exit, close the file to flush and
 	 return to stop logging */
-	if (lc->config == NULL) {
+	if (linphone_core_get_config(lc) == NULL) {
 		linphone_gtk_log_uninit();
 		return;
 	}

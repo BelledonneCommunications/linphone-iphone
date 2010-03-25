@@ -39,7 +39,6 @@ typedef struct _status_picture_tab_t{
 } status_picture_tab_t;
 
 status_picture_tab_t status_picture_tab[]={
-	{	LINPHONE_STATUS_UNKNOWN,	"sip-closed.png"	},
 	{	LINPHONE_STATUS_ONLINE,		"sip-online.png"	},
 	{	LINPHONE_STATUS_BUSY,		"sip-busy.png"		},
 	{	LINPHONE_STATUS_BERIGHTBACK,	"sip-bifm.png"		},
@@ -51,7 +50,6 @@ status_picture_tab_t status_picture_tab[]={
 	{	LINPHONE_STATUS_ALT_SERVICE,	"sip-closed.png"	},
 	{	LINPHONE_STATUS_OFFLINE,	"sip-away.png"		},
 	{	LINPHONE_STATUS_PENDING,	"sip-wfa.png"		},
-	{	LINPHONE_STATUS_CLOSED,		"sip-closed.png"	},
 	{	LINPHONE_STATUS_END,		NULL			},
 };
 
@@ -104,7 +102,7 @@ static void linphone_gtk_set_selection_to_uri_bar(GtkTreeView *treeview){
 	if (gtk_tree_selection_get_selected (select, &model, &iter))
 	{
 		gtk_tree_model_get (model, &iter,FRIEND_ID , &lf, -1);
-		friend=linphone_address_as_string(linphone_friend_get_uri(lf));
+		friend=linphone_address_as_string(linphone_friend_get_address(lf));
 		gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(linphone_gtk_get_main_window(),"uribar")),friend);
 		ms_free(friend);
 	}
@@ -134,8 +132,7 @@ static GtkWidget * create_presence_menu(){
 	GdkPixbuf *pbuf;
 	status_picture_tab_t *t;
 	for(t=status_picture_tab;t->img!=NULL;++t){
-		if (t->status==LINPHONE_STATUS_UNKNOWN ||
-			t->status==LINPHONE_STATUS_PENDING){
+		if (t->status==LINPHONE_STATUS_PENDING){
 			continue;
 		}
 		menu_item=gtk_image_menu_item_new_with_label(linphone_online_status_to_string(t->status));
@@ -309,7 +306,7 @@ void linphone_gtk_show_friends(void){
 
 	for(itf=linphone_core_get_friend_list(core);itf!=NULL;itf=ms_list_next(itf)){
 		LinphoneFriend *lf=(LinphoneFriend*)itf->data;
-		const LinphoneAddress *f_uri=linphone_friend_get_uri(lf);
+		const LinphoneAddress *f_uri=linphone_friend_get_address(lf);
 		char *uri=linphone_address_as_string(f_uri);
 		const char *name=linphone_address_get_display_name(f_uri);
 		const char *display=name;
@@ -376,7 +373,7 @@ void linphone_gtk_show_contact(LinphoneFriend *lf){
 	GtkWidget *w=linphone_gtk_create_window("contact");
 	char *uri;
 	const char *name;
-	const LinphoneAddress *f_uri=linphone_friend_get_uri(lf);
+	const LinphoneAddress *f_uri=linphone_friend_get_address(lf);
 	uri=linphone_address_as_string_uri_only(f_uri);
 	name=linphone_address_get_display_name(f_uri);
 	if (uri) {
@@ -419,7 +416,7 @@ void linphone_gtk_chat_selected(GtkWidget *item){
 	{
 		char *uri;
 		gtk_tree_model_get (model, &iter,FRIEND_ID , &lf, -1);
-		uri=linphone_address_as_string(linphone_friend_get_uri(lf));
+		uri=linphone_address_as_string(linphone_friend_get_address(lf));
 		linphone_gtk_create_chatroom(uri);
 		ms_free(uri);
 	}

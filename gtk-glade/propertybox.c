@@ -295,7 +295,7 @@ static void linphone_gtk_show_codecs(GtkTreeView *listview, const MSList *codecl
 		gchar *color;
 		const char *params="";
 		struct _PayloadType *pt=(struct _PayloadType *)elem->data;
-		if (payload_type_enabled(pt)) status=_("Enabled");
+		if (linphone_core_payload_type_enabled(linphone_gtk_get_core(),pt)) status=_("Enabled");
 		else status=_("Disabled");
 		if (linphone_core_check_payload_type_usability(linphone_gtk_get_core(),pt)) color="blue";
 		else color="red";
@@ -311,7 +311,7 @@ static void linphone_gtk_show_codecs(GtkTreeView *listview, const MSList *codecl
 					CODEC_PARAMS,params,
 					CODEC_PRIVDATA,(gpointer)pt,
 					CODEC_COLOR,(gpointer)color,
-					CODEC_INFO,(gpointer)payload_type_get_description(pt),
+					CODEC_INFO,(gpointer)linphone_core_get_payload_type_description(linphone_gtk_get_core(),pt),
 					-1);
 	}
 	
@@ -433,7 +433,7 @@ static void linphone_gtk_codec_set_enable(GtkWidget *button, gboolean enabled){
 	if (gtk_tree_selection_get_selected(sel,&mod,&iter)){
 		store=GTK_LIST_STORE(mod);
 		gtk_tree_model_get(mod,&iter,CODEC_PRIVDATA,&pt,-1);
-		payload_type_set_enable(pt,enabled);
+		linphone_core_enable_payload_type(linphone_gtk_get_core(),pt,enabled);
 		gtk_list_store_set(store,&iter,CODEC_STATUS, enabled ? _("Enabled") : _("Disabled"), -1);
 	}
 }
