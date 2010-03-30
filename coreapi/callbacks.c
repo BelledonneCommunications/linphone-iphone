@@ -91,7 +91,8 @@ static void call_received(SalOp *h){
 	tmp=linphone_address_as_string(from_parsed);
 	linphone_address_destroy(from_parsed);
 	gstate_new_state(lc, GSTATE_CALL_IN_INVITE, tmp);
-	barmesg=ortp_strdup_printf(_("%s is contacting you"),tmp);
+	barmesg=ortp_strdup_printf("%s %s%s",tmp,_("is contacting you"),
+	    (sal_call_autoanswer_asked(h)) ?_(" and asked autoanswer."):_("."));
 	if (lc->vtable.show) lc->vtable.show(lc);
 	if (lc->vtable.display_status) 
 	    lc->vtable.display_status(lc,barmesg);

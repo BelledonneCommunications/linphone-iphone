@@ -258,6 +258,7 @@ SalMediaDescription * sal_call_get_final_media_description(SalOp *h);
 int sal_refer(SalOp *h, const char *refer_to);
 int sal_call_send_dtmf(SalOp *h, char dtmf);
 int sal_call_terminate(SalOp *h);
+bool_t sal_call_autoanswer_asked(SalOp *op);
 
 /*Registration*/
 int sal_register(SalOp *op, const char *proxy, const char *from, int expires);

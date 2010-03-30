@@ -143,7 +143,13 @@ SalOp * sal_op_new(Sal *sal){
 	op->reinvite=FALSE;
 	op->call_id=NULL;
 	op->masquerade_via=FALSE;
+	op->auto_answer_asked=FALSE;
 	return op;
+}
+
+bool_t sal_call_autoanswer_asked(SalOp *op)
+{
+	return op->auto_answer_asked;
 }
 
 void sal_op_release(SalOp *op){
@@ -616,6 +622,7 @@ static SalOp *find_op(Sal *sal, eXosip_event_t *ev){
 static void inc_new_call(Sal *sal, eXosip_event_t *ev){
 	SalOp *op=sal_op_new(sal);
 	osip_from_t *from,*to;
+	osip_call_info_t *call_info;
 	char *tmp;
 	sdp_message_t *sdp=eXosip_get_sdp_info(ev->request);
 
@@ -636,7 +643,19 @@ static void inc_new_call(Sal *sal, eXosip_event_t *ev){
 	osip_from_to_str(to,&tmp);
 	sal_op_set_to(op,tmp);
 	osip_free(tmp);
-	
+
+	osip_message_get_call_info(ev->request,0,&call_info);
+	if(call_info)
+	{
+		osip_call_info_to_str(call_info,&tmp);
+		if( strstr(tmp,"answer-after=") != NULL)
+		{
+			op->auto_answer_asked=TRUE;
+			ms_message("The caller asked to automatically answer the call(Emergency?)\n");
+		}
+		osip_free(tmp);
+	}
+
 	op->tid=ev->tid;
 	op->cid=ev->cid;
 	op->did=ev->did;
