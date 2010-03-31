@@ -24,8 +24,6 @@
 
 #include "linphonecore.h"
 #include "private.h"
-#include <eXosip2/eXosip.h>
-#include <osipparser2/osip_message.h>
 #include "lpconfig.h"
 
 const char *linphone_online_status_to_string(LinphoneOnlineStatus ss){
@@ -549,7 +547,7 @@ void linphone_friend_write_to_config_file(LpConfig *config, LinphoneFriend *lf, 
 			return;
 		}
 		lp_config_set_string(config,key,"url",tmp);
-		osip_free(tmp);
+		ms_free(tmp);
 	}
 	lp_config_set_string(config,key,"pol",__policy_enum_to_str(lf->pol));
 	lp_config_set_int(config,key,"subscribe",lf->subscribe);
