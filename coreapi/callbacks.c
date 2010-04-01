@@ -378,8 +378,8 @@ static void register_failure(SalOp *op, SalError error, SalReason reason, const 
 }
 
 static void vfu_request(SalOp *op){
-	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 #ifdef VIDEO_ENABLED
+	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	if (lc->videostream)
 		video_stream_send_vfu(lc->videostream);
 #endif

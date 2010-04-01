@@ -1056,7 +1056,11 @@ lpc_cmd_staticpic(LinphoneCore *lc, char *args)
 	}
 
 	if (strcmp(arg1, "set")==0 && arg2) {
+#ifdef VIDEO_ENABLED
 		return linphone_core_set_static_picture(lc, arg2);
+#else
+		linphonec_out("Sorry, linphonec was compiled without video capabilities.\n");
+#endif
 	}
 
 	return 0; /* Syntax error */
@@ -1632,6 +1636,7 @@ static int lpc_cmd_speak(LinphoneCore *lc, char *args){
 	char *wavfile;
 	int status;
 	FILE *file;
+	
     if (!args) return 0;
 	memset(voice,0,sizeof(voice));
 	sscanf(args,"%s63",voice);
