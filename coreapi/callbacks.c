@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "linphonecore.h"
 #include "private.h"
 #include "mediastreamer2/mediastream.h"
+#include "sal_eXosip2.h"
 
 static void linphone_connect_incoming(LinphoneCore *lc, LinphoneCall *call){
 	if (lc->vtable.show)
@@ -391,7 +392,19 @@ static void dtmf_received(SalOp *op, char dtmf){
 }
 
 static void refer_received(Sal *sal, SalOp *op, const char *referto){
+	osip_message_t *msg;
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal);
+	if(op != NULL)
+	{
+		eXosip_call_build_notify(op->tid,EXOSIP_SUBCRSTATE_ACTIVE,&msg);
+		if(msg != NULL)
+		{
+			osip_message_set_header(msg,(const char *)"event","refer");
+			osip_message_set_content_type(msg,"message/sipfrag");
+			osip_message_set_body(msg,"SIP/2.0 100 Trying",sizeof("SIP/2.0 100 Trying"));
+			eXosip_call_send_request(op->tid,msg);
+		}
+	}
 	if (lc->vtable.refer_received)
 		lc->vtable.refer_received(lc,referto);
 }

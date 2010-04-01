@@ -53,6 +53,7 @@ extern char *lpc_strip_blanks(char *input);
 static int lpc_cmd_help(LinphoneCore *, char *);
 static int lpc_cmd_proxy(LinphoneCore *, char *);
 static int lpc_cmd_call(LinphoneCore *, char *);
+static int lpc_cmd_chat(LinphoneCore *, char *);
 static int lpc_cmd_answer(LinphoneCore *, char *);
 static int lpc_cmd_autoanswer(LinphoneCore *, char *);
 static int lpc_cmd_terminate(LinphoneCore *, char *);
@@ -121,6 +122,10 @@ LPC_COMMAND commands[] = {
 	{ "call", lpc_cmd_call, "Call a SIP uri",
 		"'call <sip-url>' "
 		": initiate a call to the specified destination."
+		},
+	{ "chat", lpc_cmd_chat, "Chat with a SIP uri",
+		"'chat <sip-url> \"message\"' "
+		": send a chat message \"message\" to the specified destination."
 		},
 	{ "terminate", lpc_cmd_terminate, "Terminate the current call",
 		NULL },
@@ -385,6 +390,35 @@ lpc_cmd_call(LinphoneCore *lc, char *args)
 			snprintf(callee_name,sizeof(callee_name),"%s",args);
 		}
 	}
+	return 1;
+}
+
+static int
+lpc_cmd_chat(LinphoneCore *lc, char *args)
+{
+	char *arg1 = args;
+	char *arg2 = NULL;
+	char *ptr = args;
+
+	if (!args) return 0;
+
+	/* Isolate first and second arg */
+	while(*ptr && !isspace(*ptr)) ++ptr;
+	if ( *ptr )
+	{
+		*ptr='\0';
+		arg2=ptr+1;
+		while(*arg2 && isspace(*arg2)) ++arg2;
+	}
+	else
+	{
+		/* missing one parameter */
+		return 0;
+	}
+	LinphoneChatRoom *cr = linphone_core_create_chat_room(lc,arg1);
+	linphone_chat_room_send_message(cr,arg2);
+	linphone_chat_room_destroy(cr);
+
 	return 1;
 }
 

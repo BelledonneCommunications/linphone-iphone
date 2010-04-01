@@ -115,6 +115,7 @@ static char **linephonec_readline_completion(const char *text,
 static void linphonec_call_received(LinphoneCore *lc, const char *from);
 static void linphonec_prompt_for_auth(LinphoneCore *lc, const char *realm,
 	const char *username);
+static void linphonec_display_refer (LinphoneCore * lc,const char *refer_to);
 static void linphonec_display_something (LinphoneCore * lc, const char *something);
 static void linphonec_display_url (LinphoneCore * lc, const char *something, const char *url);
 static void linphonec_display_warning (LinphoneCore * lc, const char *something);
@@ -188,7 +189,8 @@ LinphoneCoreVTable linphonec_vtable
 	.display_question=(DisplayQuestionCb)stub,
 	.text_received=linphonec_text_received,
 	.general_state=linphonec_general_state,
-	.dtmf_received=linphonec_dtmf_received
+	.dtmf_received=linphonec_dtmf_received,
+	.refer_received=linphonec_display_refer
 }
 #endif /*_WIN32_WCE*/
 ;
@@ -200,6 +202,16 @@ LinphoneCoreVTable linphonec_vtable
  * Linphone core callbacks
  *
  ***************************************************************************/
+
+/*
+ * Linphone core callback
+ */
+static void
+linphonec_display_refer (LinphoneCore * lc,const char *refer_to)
+{
+	fprintf (stdout, "The distant end point asked to transfer the call to %s,don't forget to terminate the call\n%s", refer_to,prompt);
+	fflush(stdout);
+}
 
 /*
  * Linphone core callback

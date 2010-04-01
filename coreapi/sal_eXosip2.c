@@ -26,6 +26,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 /*this function is not declared in some versions of eXosip*/
 extern void *eXosip_call_get_reference(int cid);
 
+static void text_received(Sal *sal, eXosip_event_t *ev);
+
 static void _osip_list_set_empty(osip_list_t *l, void (*freefunc)(void*)){
 	void *data;
 	while((data=osip_list_get(l,0))!=NULL){
@@ -1075,6 +1077,45 @@ static void call_message_new(Sal *sal, eXosip_event_t *ev){
 				eXosip_unlock();
 			}
 		}
+		if(MSG_IS_MESSAGE(ev->request)){
+			/* SIP messages could be received into call */
+			text_received(sal, ev);
+			eXosip_lock();
+			eXosip_call_build_answer(ev->tid,200,&ans);
+			if (ans)
+				eXosip_call_send_answer(ev->tid,200,ans);
+			eXosip_unlock();
+		}
+		if(MSG_IS_REFER(ev->request)){
+			osip_header_t *h=NULL;
+			ms_message("Receiving REFER request !");
+			osip_message_header_get_byname(ev->request,"Refer-To",0,&h);
+			eXosip_lock();
+			eXosip_call_build_answer(ev->tid,202,&ans);
+			if (ans)
+				eXosip_call_send_answer(ev->tid,202,ans);
+			eXosip_unlock();
+			if (h){
+				SalOp *op=(SalOp*)ev->external_reference;
+				sal->callbacks.refer_received(sal,op,h->hvalue);
+			}
+		}
+		if(MSG_IS_NOTIFY(ev->request)){
+			osip_header_t *h=NULL;
+			ms_message("Receiving NOTIFY request !");
+			osip_message_header_get_byname(ev->request,"Event",0,&h);
+			if (h){
+				if(!strcmp(h->hvalue,"refer"))
+				{
+					ms_message("get the notify of the Refer sent");
+				}
+			}
+			eXosip_lock();
+			eXosip_call_build_answer(ev->tid,200,&ans);
+			if (ans)
+				eXosip_call_send_answer(ev->tid,200,ans);
+			eXosip_unlock();
+		}
 	}else ms_warning("call_message_new: No request ?");
 }
 
@@ -1146,7 +1187,8 @@ static void other_request(Sal *sal, eXosip_event_t *ev){
 			osip_message_header_get_byname(ev->request,"Refer-To",0,&h);
 			eXosip_message_send_answer(ev->tid,200,NULL);
 			if (h){
-				sal->callbacks.refer_received(sal,NULL,h->hvalue);
+				SalOp *op=(SalOp*)ev->external_reference;
+				sal->callbacks.refer_received(sal,op,h->hvalue);
 			}
 		}else ms_warning("Ignored REFER not coming from this local loopback interface.");
 	}else if (strncmp(ev->request->sip_method, "UPDATE", 6) == 0){

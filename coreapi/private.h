@@ -177,6 +177,7 @@ void linphone_core_start_media_streams(LinphoneCore *lc, struct _LinphoneCall *c
 void linphone_core_stop_media_streams(LinphoneCore *lc, struct _LinphoneCall *call);
 const char * linphone_core_get_identity(LinphoneCore *lc);
 const char * linphone_core_get_route(LinphoneCore *lc);
+bool_t linphone_core_is_in_communication_with(LinphoneCore *lc, const char *to);
 void linphone_core_start_waiting(LinphoneCore *lc, const char *purpose);
 void linphone_core_update_progress(LinphoneCore *lc, const char *purpose, float progresses);
 void linphone_core_stop_waiting(LinphoneCore *lc);

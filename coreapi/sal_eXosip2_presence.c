@@ -71,18 +71,44 @@ void sal_remove_in_subscribe(Sal *sal, SalOp *op){
 
 int sal_text_send(SalOp *op, const char *from, const char *to, const char *msg){
 	osip_message_t *sip=NULL;
-	if (from)
-		sal_op_set_from(op,from);
-	if (to)
-		sal_op_set_to(op,to);
 
-	eXosip_lock();
-	eXosip_message_build_request(&sip,"MESSAGE",sal_op_get_to(op),
-	    sal_op_get_from(op),sal_op_get_route(op));
-	osip_message_set_content_type(sip,"text/plain");
-	osip_message_set_body(sip,msg,strlen(msg));
-	eXosip_message_send_request(sip);
-	eXosip_unlock();
+	if(op->cid == -1)
+	{
+		/* we are not currently in communication with the destination */
+		if (from)
+			sal_op_set_from(op,from);
+		if (to)
+			sal_op_set_to(op,to);
+
+		eXosip_lock();
+		eXosip_message_build_request(&sip,"MESSAGE",sal_op_get_to(op),
+			sal_op_get_from(op),sal_op_get_route(op));
+		osip_message_set_content_type(sip,"text/plain");
+		osip_message_set_body(sip,msg,strlen(msg));
+		eXosip_message_send_request(sip);
+		eXosip_unlock();
+	}
+	else
+	{
+		/* we are currently in communication with the destination */
+		eXosip_lock();
+		//First we generate an INFO message to get the current call_id and a good cseq
+		eXosip_call_build_info(op->did,&sip);
+		if(sip == NULL)
+		{
+			ms_warning("could not get a build info to send MESSAGE, maybe no previous call established ?");
+			osip_message_free(sip);
+			eXosip_unlock();
+			return -1;
+		}
+		osip_free(sip->sip_method);
+		//change the sip_message to be a MESSAGE ...
+		osip_message_set_method(sip,osip_strdup("MESSAGE"));
+		osip_message_set_content_type(sip,"text/plain");
+		osip_message_set_body(sip,msg,strlen(msg));
+		eXosip_message_send_request(sip);
+		eXosip_unlock();
+	}
 	return 0;
 }
 

@@ -1769,6 +1769,25 @@ const char * linphone_core_get_route(LinphoneCore *lc){
 	return route;
 }
 
+bool_t linphone_core_is_in_communication_with(LinphoneCore *lc, const char *to)
+{
+	char *tmp;
+	bool_t returned;
+	const LinphoneAddress *la=linphone_core_get_remote_uri(lc);
+	if(la == NULL)
+	{
+		return FALSE;
+	}
+	tmp = linphone_address_as_string(la);
+	if(!strcmp(tmp,to))
+		returned = TRUE;
+	else
+		returned = FALSE;
+	if(tmp)
+		ms_free(tmp);
+	return returned;
+}
+
 LinphoneProxyConfig * linphone_core_lookup_known_proxy(LinphoneCore *lc, const LinphoneAddress *uri){
 	const MSList *elem;
 	LinphoneProxyConfig *found_cfg=NULL;

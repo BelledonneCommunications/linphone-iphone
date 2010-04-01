@@ -51,9 +51,17 @@
  
 void linphone_chat_room_send_message(LinphoneChatRoom *cr, const char *msg){
 	const char *identity=linphone_core_get_identity(cr->lc);
-	SalOp *op=sal_op_new(cr->lc->sal);
-
-	sal_op_set_route(op,cr->route);
+	SalOp *op;
+	if(linphone_core_is_in_communication_with(cr->lc,cr->peer))
+	{
+		ms_message("send SIP message into the call\n");
+		op = cr->lc->call->op;
+	}
+	else
+	{
+		op = sal_op_new(cr->lc->sal);
+		sal_op_set_route(op,cr->route);
+	}
 	sal_text_send(op,identity,cr->peer,msg);
 }
 
