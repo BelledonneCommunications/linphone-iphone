@@ -3089,8 +3089,8 @@ const char *linphone_core_get_video_device(const LinphoneCore *lc){
 }
 
 int linphone_core_set_static_picture(LinphoneCore *lc, const char *path) {
+#ifdef VIDEO_ENABLED
 	VideoStream *vs = NULL;
-
 	/* Select the video stream from the call in the first place */
 	if (lc && lc->videostream) {
 		vs = lc->videostream;
@@ -3113,7 +3113,9 @@ int linphone_core_set_static_picture(LinphoneCore *lc, const char *path) {
 	/* Tell the static image filter to use that image from now on so
 		 that the image will be used next time it has to be read */
 	ms_static_image_set_default_image(path);
-
+#else
+	ms_warning("Video support not compiled.");
+#endif
 	return 0;
 }
 

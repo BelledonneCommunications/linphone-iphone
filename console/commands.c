@@ -1056,11 +1056,8 @@ lpc_cmd_staticpic(LinphoneCore *lc, char *args)
 	}
 
 	if (strcmp(arg1, "set")==0 && arg2) {
-#ifdef VIDEO_ENABLED
-		return linphone_core_set_static_picture(lc, arg2);
-#else
-		linphonec_out("Sorry, linphonec was compiled without video capabilities.\n");
-#endif
+		linphone_core_set_static_picture(lc, arg2);
+		return 1;
 	}
 
 	return 0; /* Syntax error */
