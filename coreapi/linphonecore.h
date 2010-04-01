@@ -78,8 +78,15 @@ char *linphone_address_as_string_uri_only(const LinphoneAddress *u);
 void linphone_address_destroy(LinphoneAddress *u);
 
 struct _SipSetupContext;
-struct _LinphoneCall;
 
+/**
+ * The LinphoneCall object represents a call issued or received by the LinphoneCore
+**/
+struct _LinphoneCall;
+typedef struct _LinphoneCall LinphoneCall;
+
+bool_t linphone_call_asked_to_autoanswer(struct _LinphoneCall *call);
+	
 /**
  * Enum representing the direction of a call.
  * @ingroup call_logs
@@ -453,12 +460,6 @@ typedef enum _LinphoneWaitingState{
 typedef void * (*LinphoneWaitingCallback)(struct _LinphoneCore *lc, void *context, LinphoneWaitingState ws, const char *purpose, float progress);
 
 typedef struct _LinphoneCore LinphoneCore;
-	/*set this field to false if application manage  network connection state
-	 * In case of false, network state must be communicate to linphone core with method linphone_core_
-	 */
-	bool_t auto_net_state_mon;
-	bool_t network_reachable;
-	int down_ptime;
 
 /* THE main API */
 
@@ -486,6 +487,8 @@ int linphone_core_refer(LinphoneCore *lc, const char *url);
 bool_t linphone_core_inc_invite_pending(LinphoneCore*lc);
 
 bool_t linphone_core_in_call(const LinphoneCore *lc);
+
+LinphoneCall *linphone_core_get_current_call(LinphoneCore *lc);
 
 int linphone_core_accept_call(LinphoneCore *lc, const char *url);
 

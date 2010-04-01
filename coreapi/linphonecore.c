@@ -423,6 +423,18 @@ void linphone_call_log_destroy(LinphoneCallLog *cl){
 	ms_free(cl);
 }
 
+/**
+ * Returns TRUE if the LinphoneCall asked to autoanswer
+ *
+**/
+bool_t linphone_call_asked_to_autoanswer(LinphoneCall *call){
+	//return TRUE if the unique(for the moment) incoming call asked to be autoanswered
+	if(call)
+		return sal_call_autoanswer_asked(call->op);
+	else
+		return FALSE;
+}
+
 int linphone_core_get_current_call_duration(const LinphoneCore *lc){
 	LinphoneCall *call=lc->call;
 	if (call==NULL) return 0;
@@ -2369,6 +2381,19 @@ int linphone_core_terminate_call(LinphoneCore *lc, const char *url)
 **/
 bool_t linphone_core_in_call(const LinphoneCore *lc){
 	return lc->call!=NULL;
+}
+
+/**
+ * Returns The _LinphoneCall struct of the current call if one is in call
+ *
+ * @ingroup call_control
+**/
+struct _LinphoneCall *linphone_core_get_current_call(LinphoneCore *lc)
+{
+	if(linphone_core_in_call(lc))
+		return lc->call;
+	else
+		return NULL;
 }
 
 int linphone_core_send_publish(LinphoneCore *lc,

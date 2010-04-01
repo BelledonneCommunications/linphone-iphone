@@ -62,7 +62,7 @@ typedef enum _LCState{
 }LCState;
 
 
-typedef struct _LinphoneCall
+struct _LinphoneCall
 {
 	struct _LinphoneCore *core;
 	SalMediaDescription *localdesc;
@@ -78,7 +78,7 @@ typedef struct _LinphoneCall
 	time_t media_start_time; /*time at which it was accepted, media streams established*/
 	LCState	state;
 	bool_t media_pending;
-} LinphoneCall;
+};
 
 LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to);
 LinphoneCall * linphone_call_new_incoming(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, SalOp *op);
