@@ -48,9 +48,8 @@ msgid ""
 msgstr ""
 
 #: ../gtk-glade/main.c:396
-#, fuzzy, c-format
 msgid "Call with %s"
-msgstr "Chat avec %s"
+msgstr "Appel avec %s"
 
 #: ../gtk-glade/main.c:707
 #, c-format
@@ -67,15 +66,15 @@ msgid ""
 msgstr ""
 
 #: ../gtk-glade/main.c:824
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
 " at domain <i>%s</i>:"
-msgstr "Entrez votre mot de passe pour le domaine %s"
+msgstr "Entrez le mot de passe pour <i>%s</i>\n sur le domaine <i>%s</i>:"
 
 #: ../gtk-glade/main.c:921
 msgid "Website link"
-msgstr ""
+msgstr "Lien site web"
 
 #: ../gtk-glade/main.c:957
 msgid "Linphone - a video internet phone"
@@ -100,9 +99,9 @@ msgid "Presence status"
 msgstr "Info de présence"
 
 #: ../gtk-glade/friendlist.c:242
-#, fuzzy, c-format
+#, c-format
 msgid "Search in %s directory"
-msgstr "Rechercher dans l'annuaire"
+msgstr "Rechercher dans l'annuaire de %s"
 
 #: ../gtk-glade/friendlist.c:450
 msgid "Invalid sip contact !"
@@ -425,18 +424,16 @@ msgid "9"
 msgstr ""
 
 #: ../gtk-glade/main.glade.h:13
-#, fuzzy
 msgid "<b>Add contacts from directory</b>"
-msgstr "Ajouter un contact depuis l'annuaire %s"
+msgstr "<b>Ajouter un contact depuis l'annuaire</b>"
 
 #: ../gtk-glade/main.glade.h:14
 msgid "<b>Contact list</b>"
 msgstr "<b>List de contacts</b>"
 
 #: ../gtk-glade/main.glade.h:15
-#, fuzzy
 msgid "<b>Welcome !</b>"
-msgstr "<b>Rechercher une personne</b>"
+msgstr "<b>Bienvenue !</b>"
 
 #: ../gtk-glade/main.glade.h:16
 msgid "A"
@@ -481,9 +478,8 @@ msgid "C"
 msgstr ""
 
 #: ../gtk-glade/main.glade.h:27
-#, fuzzy
 msgid "Call Details"
-msgstr "Appeler %s"
+msgstr "Appel en cours"
 
 #: ../gtk-glade/main.glade.h:28 ../gtk-glade/call_logs.glade.h:1
 msgid "Call history"
@@ -494,9 +490,8 @@ msgid "Check for updates"
 msgstr ""
 
 #: ../gtk-glade/main.glade.h:30
-#, fuzzy
 msgid "Contacts"
-msgstr "Appel de"
+msgstr "Contacts"
 
 #: ../gtk-glade/main.glade.h:31
 msgid "D"
@@ -540,9 +535,8 @@ msgid "Keypad"
 msgstr ""
 
 #: ../gtk-glade/main.glade.h:41
-#, fuzzy
 msgid "Login information"
-msgstr "Information sur le contact"
+msgstr "Info de login"
 
 #: ../gtk-glade/main.glade.h:42
 msgid "Lookup:"
@@ -553,9 +547,8 @@ msgid "My current identity:"
 msgstr "Mon identité sip :"
 
 #: ../gtk-glade/main.glade.h:45
-#, fuzzy
 msgid "Password"
-msgstr "Mot de passe:"
+msgstr "Mot de passe"
 
 #: ../gtk-glade/main.glade.h:46
 msgid "SIP address or phone number:"
@@ -563,11 +556,11 @@ msgstr "Addresse SIP ou numéro"
 
 #: ../gtk-glade/main.glade.h:47
 msgid "Search"
-msgstr ""
+msgstr "Rechercher"
 
 #: ../gtk-glade/main.glade.h:48
 msgid "Show debug messages"
-msgstr ""
+msgstr "Montrer les messages de debug"
 
 #: ../gtk-glade/main.glade.h:49
 msgid "Start call"
@@ -578,9 +571,8 @@ msgid "Terminate call"
 msgstr "Raccrocher"
 
 #: ../gtk-glade/main.glade.h:51
-#, fuzzy
 msgid "Username"
-msgstr "Nom d'utilisateur:"
+msgstr "Nom d'utilisateur"
 
 #: ../gtk-glade/main.glade.h:52
 msgid "_Linphone"
@@ -603,7 +595,6 @@ msgid "About linphone"
 msgstr "A propos de linphone"
 
 #: ../gtk-glade/about.glade.h:2
-#, fuzzy
 msgid "An internet video phone using the standard SIP (rfc3261) protocol."
 msgstr "Un visiophone pour l'internet, compatible SIP (rfc3261)"
 
@@ -627,9 +618,8 @@ msgid ""
 msgstr ""
 
 #: ../gtk-glade/contact.glade.h:1
-#, fuzzy
 msgid "<b>Contact information</b>"
-msgstr "Information sur le contact"
+msgstr "<b>Information sur le contact</b>"
 
 #: ../gtk-glade/contact.glade.h:2
 msgid "Allow this contact to see my presence status"
@@ -759,14 +749,12 @@ msgid "<b>Default identity</b>"
 msgstr "<b>Identité par défaut</b>"
 
 #: ../gtk-glade/parameters.glade.h:6
-#, fuzzy
 msgid "<b>Language</b>"
-msgstr "<b>Usage de l'IPv6</b>"
+msgstr "<b>Langue</b>"
 
 #: ../gtk-glade/parameters.glade.h:7
-#, fuzzy
 msgid "<b>Level</b>"
-msgstr "<b>Usage de l'IPv6</b>"
+msgstr "<b>Niveau</b>"
 
 #: ../gtk-glade/parameters.glade.h:8
 msgid "<b>NAT and Firewall</b>"
@@ -920,11 +908,11 @@ msgstr "Spécifier la Maximum Transmission Unit"
 
 #: ../gtk-glade/parameters.glade.h:47
 msgid "Settings"
-msgstr ""
+msgstr "Réglages"
 
 #: ../gtk-glade/parameters.glade.h:48
 msgid "Show advanced settings"
-msgstr ""
+msgstr "Montrer les réglages avancés"
 
 #: ../gtk-glade/parameters.glade.h:49
 msgid "Stun server:"
@@ -958,7 +946,7 @@ msgstr "Périphérique d'entrée video"
 
 #: ../gtk-glade/parameters.glade.h:56
 msgid "Your display name (eg: John Doe):"
-msgstr "Votre nom d'affichage (ex: James Bond)"
+msgstr "Votre nom d'affichage (ex: John Doe)"
 
 #: ../gtk-glade/parameters.glade.h:57
 msgid "Your resulting SIP address:"
@@ -966,7 +954,7 @@ msgstr "Votre addresse SIP:"
 
 #: ../gtk-glade/parameters.glade.h:58
 msgid "Your username:"
-msgstr "Votre nom d'utilisateur"
+msgstr "Votre nom d'utilisateur:"
 
 #: ../gtk-glade/parameters.glade.h:59
 msgid "a sound card\n"
@@ -1161,11 +1149,11 @@ msgstr "A table"
 
 #: ../coreapi/friend.c:51
 msgid "Do not disturb"
-msgstr ""
+msgstr "Ne pas déranger"
 
 #: ../coreapi/friend.c:54
 msgid "Moved"
-msgstr ""
+msgstr "Parti"
 
 #: ../coreapi/friend.c:57
 msgid "Using another messaging service"
@@ -1187,27 +1175,29 @@ msgstr "Bug inconnu"
 msgid ""
 "The sip proxy address you entered is invalid, it must start with \"sip:\" "
 "followed by a hostname."
-msgstr ""
+msgstr "L'addresse SIP du proxy est invalide. Elle doit commencer par \"sip:\" "
+"suivie par un nom de domaine."
 
 #: ../coreapi/proxy.c:182
 msgid ""
 "The sip identity you entered is invalid.\n"
 "It should look like sip:username@proxydomain, such as sip:alice@example.net"
 msgstr ""
+"L'identité SIP que vous avez fourni est invalide.\n"
+"Elle doit être de la forme sip:username@domain, comme par example sip:alice@example.net"
 
 #: ../coreapi/proxy.c:621
-#, fuzzy, c-format
+#, c-format
 msgid "Could not login as %s"
-msgstr "Icone non trouvée: %s"
+msgstr "Echec de la connexion en tant que %s"
 
 #: ../coreapi/callbacks.c:95
-#, fuzzy
 msgid "is contacting you"
-msgstr "vous appelle."
+msgstr "vous appelle"
 
 #: ../coreapi/callbacks.c:96
 msgid " and asked autoanswer."
-msgstr ""
+msgstr "et sollicite un décrochage automatique."
 
 #: ../coreapi/callbacks.c:96
 msgid "."
@@ -1215,7 +1205,7 @@ msgstr ""
 
 #: ../coreapi/callbacks.c:120
 msgid "Remote ringing."
-msgstr ""
+msgstr "Sonnerie distante."
 
 #: ../coreapi/callbacks.c:139
 msgid "Early media."
@@ -1243,31 +1233,28 @@ msgid "Call declined."
 msgstr "Appel décliné."
 
 #: ../coreapi/callbacks.c:280
-#, fuzzy
 msgid "No response."
 msgstr "Pas de réponse."
 
 #: ../coreapi/callbacks.c:283
 msgid "Error."
-msgstr ""
+msgstr "Erreur."
 
 #: ../coreapi/callbacks.c:296
-#, fuzzy
 msgid "Redirected"
-msgstr "Redirigé vers %s ..."
+msgstr "Redirection"
 
 #: ../coreapi/callbacks.c:304
 msgid "Not found"
-msgstr ""
+msgstr "Non trouvé"
 
 #: ../coreapi/callbacks.c:312
 msgid "No common codecs"
-msgstr ""
+msgstr "Pas de codecs commun"
 
 #: ../coreapi/callbacks.c:316
-#, fuzzy
 msgid "Call failed."
-msgstr "Appel décliné."
+msgstr "L'appel a échoué."
 
 #: ../coreapi/callbacks.c:365
 #, c-format
@@ -1275,9 +1262,9 @@ msgid "Registration on %s successful."
 msgstr "Enregistrement sur %s effectué."
 
 #: ../coreapi/callbacks.c:366
-#, fuzzy, c-format
+#, c-format
 msgid "Unregistration on %s done."
-msgstr "Enregistrement sur %s effectué."
+msgstr "Désenregistrement sur %s effectué."
 
 #: ../coreapi/callbacks.c:374
 #, c-format
@@ -1286,7 +1273,7 @@ msgstr "Echec de l'enregistrement sur %s: %s"
 
 #: ../coreapi/callbacks.c:374
 msgid "no response timeout"
-msgstr "Pas de réponse."
+msgstr "Pas de réponse"
 
 #: ../mediastreamer2/src/alaw.c:144 ../mediastreamer2/src/alaw.c:162
 msgid "ITU-G.711 alaw encoder"
@@ -1322,7 +1309,7 @@ msgstr "Le codec GSM full-rate"
 
 #: ../mediastreamer2/src/gsm.c:178 ../mediastreamer2/src/gsm.c:196
 msgid "The GSM codec"
-msgstr ""
+msgstr "Le codec GSM"
 
 #: ../mediastreamer2/src/macsnd.c:670
 msgid "Sound capture filter for MacOS X Core Audio drivers"
@@ -1367,7 +1354,7 @@ msgstr ""
 #: ../mediastreamer2/src/msspeex.c:359 ../mediastreamer2/src/msspeex.c:377
 #: ../mediastreamer2/src/msspeex.c:504 ../mediastreamer2/src/msspeex.c:522
 msgid "The free and wonderful speex codec"
-msgstr ""
+msgstr "Le codec speex, libre et performant"
 
 #: ../mediastreamer2/src/msvolume.c:415 ../mediastreamer2/src/msvolume.c:430
 msgid "A filter that controls and measure sound volume"
@@ -1526,71 +1513,3 @@ msgstr ""
 msgid "A webcam grabber based on directshow."
 msgstr ""
 
-#~ msgid "Could not reach destination."
-#~ msgstr "Impossible de joindre votre correspondant."
-
-#~ msgid "Request Cancelled."
-#~ msgstr "Requête annulée."
-
-#~ msgid "Bad request"
-#~ msgstr "Requete erronée"
-
-#~ msgid "User cannot be found at given address."
-#~ msgstr "L'utilisateur n'a pu être trouvé à l'addresse spécifiée"
-
-#~ msgid "Remote user cannot support any of proposed codecs."
-#~ msgstr "Votre correspondant ne supporte aucun des codecs proposés."
-
-#~ msgid "Timeout."
-#~ msgstr "Temps d'attente dépassé..."
-
-#~ msgid "Remote host was found but refused connection."
-#~ msgstr "La machine distante a été trouvée mais a refusé la connexion."
-
-#~ msgid ""
-#~ "User is not reachable at the moment but he invites you\n"
-#~ "to contact him using the following alternate resource:"
-#~ msgstr ""
-#~ "Votre correspondant n'est pas joignable actuellement mais il vous "
-#~ "propose\n"
-#~ "de le contacter en utilisant le moyen alternatif suivant:"
-
-#~ msgid "<b>Terminate call</b>"
-#~ msgstr "Raccrocher"
-
-#~ msgid "Main view"
-#~ msgstr "Vue principale"
-
-#~ msgid "Show current call"
-#~ msgstr "Voir l'appel en cours"
-
-#~ msgid "No nat/firewall address supplied !"
-#~ msgstr "Pas d'addresse NAT fournie"
-
-#~ msgid "Invalid nat address '%s' : %s"
-#~ msgstr "Adresse nat invalide '%s' : %s"
-
-#~ msgid "Gone"
-#~ msgstr "Parti"
-
-#~ msgid "Waiting for Approval"
-#~ msgstr "En attente"
-
-#~ msgid "Be Right Back"
-#~ msgstr "De retour"
-
-#~ msgid "On The Phone"
-#~ msgstr "Au téléphone"
-
-#~ msgid "Out To Lunch"
-#~ msgstr "A table"
-
-#~ msgid "Closed"
-#~ msgstr "Eteint"
-
-#, fuzzy
-#~ msgid "gtk-connect"
-#~ msgstr "Connecté"
-
-#~ msgid "SIP address"
-#~ msgstr "Adresse SIP"
