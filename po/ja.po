@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone 0.10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-03-25 22:11+0100\n"
+"POT-Creation-Date: 2010-04-02 10:28+0200\n"
 "PO-Revision-Date: 2003-01-21 00:05+9000\n"
 "Last-Translator: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\n"
 "Language-Team: <ja@li.org>\n"
@@ -1080,30 +1080,30 @@ msgstr ""
 msgid "Outgoing call"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:613
+#: ../coreapi/linphonecore.c:625
 msgid ""
 "Your machine appears to be connected to an IPv6 network. By default linphone "
 "always uses IPv4. Please update your configuration if you want to use IPv6"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:1062
+#: ../coreapi/linphonecore.c:1074
 #, fuzzy
 msgid "Ready"
 msgstr "準備完了。"
 
-#: ../coreapi/linphonecore.c:1493
+#: ../coreapi/linphonecore.c:1505
 msgid "Remote end seems to have disconnected, the call is going to be closed."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:1691
+#: ../coreapi/linphonecore.c:1703
 msgid "Looking for telephone number destination..."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:1693
+#: ../coreapi/linphonecore.c:1705
 msgid "Could not resolve this number."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:1737
+#: ../coreapi/linphonecore.c:1749
 #, fuzzy
 msgid ""
 "Could not parse given sip address. A sip url usually looks like sip:"
@@ -1112,24 +1112,24 @@ msgstr ""
 "SIPアドレスの形式エラーです。SIPアドレスは、<sip:username@domainname>のような"
 "形式です。"
 
-#: ../coreapi/linphonecore.c:1859
+#: ../coreapi/linphonecore.c:1890
 #, fuzzy
 msgid "Contacting"
 msgstr "接続中"
 
-#: ../coreapi/linphonecore.c:1865
+#: ../coreapi/linphonecore.c:1896
 msgid "could not call"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:1911
+#: ../coreapi/linphonecore.c:1942
 msgid "Sorry, having multiple simultaneous calls is not supported yet !"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:2306 ../coreapi/exevents.c:50
+#: ../coreapi/linphonecore.c:2337 ../coreapi/callbacks.c:32
 msgid "Connected."
 msgstr "接続しました。"
 
-#: ../coreapi/linphonecore.c:2340
+#: ../coreapi/linphonecore.c:2371
 #, fuzzy
 msgid "Call ended"
 msgstr "通話は拒否されました。"
@@ -1162,154 +1162,55 @@ msgstr ""
 msgid "Stun lookup in progress..."
 msgstr ""
 
-#: ../coreapi/exevents.c:127
-#, fuzzy
-msgid "Call terminated."
-msgstr "通話は拒否されました。"
-
-#: ../coreapi/exevents.c:149
-msgid "Could not reach destination."
-msgstr ""
-
-#: ../coreapi/exevents.c:158
-msgid "User is busy."
-msgstr "ユーザーはビジーです"
-
-#: ../coreapi/exevents.c:159
-msgid "User is temporarily unavailable."
-msgstr "ユーザーは、今出られません。"
-
-#: ../coreapi/exevents.c:160
-#, fuzzy
-msgid "Request Cancelled."
-msgstr "通話はキャンセルされました。"
-
-#. char *retrymsg=_("%s. Retry after %i minute(s).");
-#: ../coreapi/exevents.c:162
-msgid "User does not want to be disturbed."
-msgstr "ユーザーは手が離せないようです。"
-
-#: ../coreapi/exevents.c:163
-msgid "Call declined."
-msgstr "通話は拒否されました。"
-
-#: ../coreapi/exevents.c:191
-msgid "Bad request"
-msgstr ""
-
-#: ../coreapi/exevents.c:194
-msgid "User cannot be found at given address."
-msgstr "ユーザーが見つかりません。"
-
-#: ../coreapi/exevents.c:197
-msgid "Remote user cannot support any of proposed codecs."
-msgstr "相手側では、提案したコーデックを一つもサポートしていません。"
-
-#. time out, call leg is lost
-#: ../coreapi/exevents.c:227
-msgid "Timeout."
-msgstr "時間切れです。"
-
-#: ../coreapi/exevents.c:230
-msgid "Remote host was found but refused connection."
-msgstr "リモートホストが見つかりましたが、接続を拒否されました。"
-
-#: ../coreapi/exevents.c:339
-#, fuzzy
-msgid "is contacting you."
-msgstr "から電話です。"
-
-#: ../coreapi/exevents.c:424
-#, c-format
-msgid "Redirected to %s..."
-msgstr ""
-
-#: ../coreapi/exevents.c:440
-msgid ""
-"User is not reachable at the moment but he invites you\n"
-"to contact him using the following alternate resource:"
-msgstr ""
-"ユーザーに接続することができませんが、ユーザーは代わりの手段に招待していま"
-"す。\n"
-"他の手段で連絡をとってください。"
-
-#: ../coreapi/exevents.c:842
-#, fuzzy
-msgid "Remote ringing."
-msgstr "登録中……"
-
-#: ../coreapi/exevents.c:866
-msgid "Early media."
-msgstr ""
-
-#: ../coreapi/exevents.c:977
-#, fuzzy, c-format
-msgid "Registration on %s failed: %s"
-msgstr "登録しました。"
-
-#: ../coreapi/exevents.c:977
-msgid "no response timeout"
-msgstr ""
-
-#: ../coreapi/exevents.c:1004
-#, fuzzy, c-format
-msgid "Registration on %s successful."
-msgstr "登録しました。"
-
-#: ../coreapi/exevents.c:1005
-#, fuzzy, c-format
-msgid "Unregistration on %s done."
-msgstr "登録しました。"
-
-#: ../coreapi/friend.c:35
+#: ../coreapi/friend.c:33
 #, fuzzy
 msgid "Online"
 msgstr "ライン入力"
 
-#: ../coreapi/friend.c:38
+#: ../coreapi/friend.c:36
 msgid "Busy"
 msgstr ""
 
-#: ../coreapi/friend.c:41
+#: ../coreapi/friend.c:39
 msgid "Be right back"
 msgstr ""
 
-#: ../coreapi/friend.c:44
+#: ../coreapi/friend.c:42
 msgid "Away"
 msgstr "退席中"
 
-#: ../coreapi/friend.c:47
+#: ../coreapi/friend.c:45
 #, fuzzy
 msgid "On the phone"
 msgstr "Linphone"
 
-#: ../coreapi/friend.c:50
+#: ../coreapi/friend.c:48
 msgid "Out to lunch"
 msgstr ""
 
-#: ../coreapi/friend.c:53
+#: ../coreapi/friend.c:51
 msgid "Do not disturb"
 msgstr "手が離せません"
 
-#: ../coreapi/friend.c:56
+#: ../coreapi/friend.c:54
 #, fuzzy
 msgid "Moved"
 msgstr "コーデック"
 
-#: ../coreapi/friend.c:59
+#: ../coreapi/friend.c:57
 msgid "Using another messaging service"
 msgstr ""
 
-#: ../coreapi/friend.c:62
+#: ../coreapi/friend.c:60
 #, fuzzy
 msgid "Offline"
 msgstr "ライン入力"
 
-#: ../coreapi/friend.c:65
+#: ../coreapi/friend.c:63
 msgid "Pending"
 msgstr ""
 
-#: ../coreapi/friend.c:68
+#: ../coreapi/friend.c:66
 msgid "Unknown-bug"
 msgstr ""
 
@@ -1329,6 +1230,94 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Could not login as %s"
 msgstr "pixmapファイルが見つかりません %s"
+
+#: ../coreapi/callbacks.c:95
+#, fuzzy
+msgid "is contacting you"
+msgstr "から電話です。"
+
+#: ../coreapi/callbacks.c:96
+msgid " and asked autoanswer."
+msgstr ""
+
+#: ../coreapi/callbacks.c:96
+msgid "."
+msgstr ""
+
+#: ../coreapi/callbacks.c:120
+#, fuzzy
+msgid "Remote ringing."
+msgstr "登録中……"
+
+#: ../coreapi/callbacks.c:139
+msgid "Early media."
+msgstr ""
+
+#: ../coreapi/callbacks.c:248
+#, fuzzy
+msgid "Call terminated."
+msgstr "通話は拒否されました。"
+
+#: ../coreapi/callbacks.c:265
+msgid "User is busy."
+msgstr "ユーザーはビジーです"
+
+#: ../coreapi/callbacks.c:266
+msgid "User is temporarily unavailable."
+msgstr "ユーザーは、今出られません。"
+
+#. char *retrymsg=_("%s. Retry after %i minute(s).");
+#: ../coreapi/callbacks.c:268
+msgid "User does not want to be disturbed."
+msgstr "ユーザーは手が離せないようです。"
+
+#: ../coreapi/callbacks.c:269
+msgid "Call declined."
+msgstr "通話は拒否されました。"
+
+#: ../coreapi/callbacks.c:280
+msgid "No response."
+msgstr ""
+
+#: ../coreapi/callbacks.c:283
+msgid "Error."
+msgstr ""
+
+#: ../coreapi/callbacks.c:296
+msgid "Redirected"
+msgstr ""
+
+#: ../coreapi/callbacks.c:304
+msgid "Not found"
+msgstr ""
+
+#: ../coreapi/callbacks.c:312
+msgid "No common codecs"
+msgstr ""
+
+#: ../coreapi/callbacks.c:316
+#, fuzzy
+msgid "Call failed."
+msgstr "通話はキャンセルされました。"
+
+#: ../coreapi/callbacks.c:365
+#, fuzzy, c-format
+msgid "Registration on %s successful."
+msgstr "登録しました。"
+
+#: ../coreapi/callbacks.c:366
+#, fuzzy, c-format
+msgid "Unregistration on %s done."
+msgstr "登録しました。"
+
+#: ../coreapi/callbacks.c:374
+#, fuzzy, c-format
+msgid "Registration on %s failed: %s"
+msgstr "登録しました。"
+
+#: ../coreapi/callbacks.c:374
+msgid "no response timeout"
+msgstr ""
 
 #: ../mediastreamer2/src/alaw.c:144 ../mediastreamer2/src/alaw.c:162
 msgid "ITU-G.711 alaw encoder"
@@ -1423,7 +1412,7 @@ msgstr ""
 msgid "A filter to grab pictures from Video4Linux2-powered cameras"
 msgstr ""
 
-#: ../mediastreamer2/src/nowebcam.c:1824
+#: ../mediastreamer2/src/nowebcam.c:1836
 msgid "A filter that outputs a static image."
 msgstr ""
 
@@ -1536,7 +1525,7 @@ msgstr ""
 msgid "A MJPEG encoder using ffmpeg library."
 msgstr ""
 
-#: ../mediastreamer2/src/videoout.c:1807 ../mediastreamer2/src/videoout.c:1825
+#: ../mediastreamer2/src/videoout.c:1812 ../mediastreamer2/src/videoout.c:1830
 msgid "A generic video display"
 msgstr ""
 
@@ -1567,6 +1556,30 @@ msgstr ""
 #: ../mediastreamer2/src/msdscap-mingw.cc:1003
 msgid "A webcam grabber based on directshow."
 msgstr ""
+
+#, fuzzy
+#~ msgid "Request Cancelled."
+#~ msgstr "通話はキャンセルされました。"
+
+#~ msgid "User cannot be found at given address."
+#~ msgstr "ユーザーが見つかりません。"
+
+#~ msgid "Remote user cannot support any of proposed codecs."
+#~ msgstr "相手側では、提案したコーデックを一つもサポートしていません。"
+
+#~ msgid "Timeout."
+#~ msgstr "時間切れです。"
+
+#~ msgid "Remote host was found but refused connection."
+#~ msgstr "リモートホストが見つかりましたが、接続を拒否されました。"
+
+#~ msgid ""
+#~ "User is not reachable at the moment but he invites you\n"
+#~ "to contact him using the following alternate resource:"
+#~ msgstr ""
+#~ "ユーザーに接続することができませんが、ユーザーは代わりの手段に招待していま"
+#~ "す。\n"
+#~ "他の手段で連絡をとってください。"
 
 #, fuzzy
 #~ msgid "<b>Terminate call</b>"
@@ -1771,9 +1784,6 @@ msgstr ""
 
 #~ msgid "Communication ended."
 #~ msgstr "会話は終了しました。"
-
-#~ msgid "Call cancelled."
-#~ msgstr "通話はキャンセルされました。"
 
 #, fuzzy
 #~ msgid "Server address"

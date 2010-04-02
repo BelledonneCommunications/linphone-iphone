@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone 0.7.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-03-25 22:11+0100\n"
+"POT-Creation-Date: 2010-04-02 10:28+0200\n"
 "PO-Revision-Date: 2009-09-24 18:39+0300\n"
 "Last-Translator: Jiang Honglei<jhonglei@gmail.com>\n"
 "Language-Team: Jiang Honglei<jhonglei@gmail.com>\n"
@@ -1084,52 +1084,52 @@ msgstr ""
 msgid "Outgoing call"
 msgstr "呼出"
 
-#: ../coreapi/linphonecore.c:613
+#: ../coreapi/linphonecore.c:625
 msgid ""
 "Your machine appears to be connected to an IPv6 network. By default linphone "
 "always uses IPv4. Please update your configuration if you want to use IPv6"
 msgstr ""
 "你的机器缺省配置为IPv6. Linphone 缺省使用IPv4. 请修改配置如果你想使用IPv6. "
 
-#: ../coreapi/linphonecore.c:1062
+#: ../coreapi/linphonecore.c:1074
 msgid "Ready"
 msgstr "就绪"
 
-#: ../coreapi/linphonecore.c:1493
+#: ../coreapi/linphonecore.c:1505
 msgid "Remote end seems to have disconnected, the call is going to be closed."
 msgstr "对方断开连接, 通话终止."
 
-#: ../coreapi/linphonecore.c:1691
+#: ../coreapi/linphonecore.c:1703
 msgid "Looking for telephone number destination..."
 msgstr "查询对方电话号码.."
 
-#: ../coreapi/linphonecore.c:1693
+#: ../coreapi/linphonecore.c:1705
 msgid "Could not resolve this number."
 msgstr "该号码无法解析."
 
-#: ../coreapi/linphonecore.c:1737
+#: ../coreapi/linphonecore.c:1749
 msgid ""
 "Could not parse given sip address. A sip url usually looks like sip:"
 "user@domain"
 msgstr "无法解析给定的SIP地址. SIP url 应有如下格式: <sip:username@domainname>"
 
-#: ../coreapi/linphonecore.c:1859
+#: ../coreapi/linphonecore.c:1890
 msgid "Contacting"
 msgstr "联系中"
 
-#: ../coreapi/linphonecore.c:1865
+#: ../coreapi/linphonecore.c:1896
 msgid "could not call"
 msgstr "无法呼叫"
 
-#: ../coreapi/linphonecore.c:1911
+#: ../coreapi/linphonecore.c:1942
 msgid "Sorry, having multiple simultaneous calls is not supported yet !"
 msgstr "抱歉, 还不支持并发多路呼叫!"
 
-#: ../coreapi/linphonecore.c:2306 ../coreapi/exevents.c:50
+#: ../coreapi/linphonecore.c:2337 ../coreapi/callbacks.c:32
 msgid "Connected."
 msgstr "连接建立."
 
-#: ../coreapi/linphonecore.c:2340
+#: ../coreapi/linphonecore.c:2371
 msgid "Call ended"
 msgstr "呼叫结束"
 
@@ -1161,149 +1161,55 @@ msgstr ""
 msgid "Stun lookup in progress..."
 msgstr "正在进行Stun查找..."
 
-#: ../coreapi/exevents.c:127
-msgid "Call terminated."
-msgstr "通话结束."
-
-#: ../coreapi/exevents.c:149
-msgid "Could not reach destination."
-msgstr "目标不可达."
-
-#: ../coreapi/exevents.c:158
-msgid "User is busy."
-msgstr "被叫忙."
-
-#: ../coreapi/exevents.c:159
-msgid "User is temporarily unavailable."
-msgstr "你呼叫的用户无法接通."
-
-#: ../coreapi/exevents.c:160
-msgid "Request Cancelled."
-msgstr "取消请求."
-
-#. char *retrymsg=_("%s. Retry after %i minute(s).");
-#: ../coreapi/exevents.c:162
-msgid "User does not want to be disturbed."
-msgstr "用户开启免打扰功能."
-
-#: ../coreapi/exevents.c:163
-msgid "Call declined."
-msgstr "呼叫被拒绝."
-
-#: ../coreapi/exevents.c:191
-msgid "Bad request"
-msgstr "错误请求"
-
-#: ../coreapi/exevents.c:194
-msgid "User cannot be found at given address."
-msgstr "用给定地址无法找到该用户."
-
-#: ../coreapi/exevents.c:197
-msgid "Remote user cannot support any of proposed codecs."
-msgstr "对方不支持相关编码."
-
-#. time out, call leg is lost
-#: ../coreapi/exevents.c:227
-msgid "Timeout."
-msgstr "超时."
-
-#: ../coreapi/exevents.c:230
-msgid "Remote host was found but refused connection."
-msgstr "找到该用户，但是连接被拒绝."
-
-#: ../coreapi/exevents.c:339
-msgid "is contacting you."
-msgstr "真正联系你."
-
-#: ../coreapi/exevents.c:424
-#, c-format
-msgid "Redirected to %s..."
-msgstr "重定向到 %s..."
-
-#: ../coreapi/exevents.c:440
-msgid ""
-"User is not reachable at the moment but he invites you\n"
-"to contact him using the following alternate resource:"
-msgstr ""
-"用户当前不可达，但是他向你发出呼叫请求\n"
-" 要联系该用户，请使用如下地址:"
-
-#: ../coreapi/exevents.c:842
-msgid "Remote ringing."
-msgstr ""
-
-#: ../coreapi/exevents.c:866
-msgid "Early media."
-msgstr ""
-
-#: ../coreapi/exevents.c:977
-#, c-format
-msgid "Registration on %s failed: %s"
-msgstr "注册到 %s 失败: %s"
-
-#: ../coreapi/exevents.c:977
-msgid "no response timeout"
-msgstr "没有响应，超时"
-
-#: ../coreapi/exevents.c:1004
-#, c-format
-msgid "Registration on %s successful."
-msgstr "成功注册到 %s "
-
-#: ../coreapi/exevents.c:1005
-#, fuzzy, c-format
-msgid "Unregistration on %s done."
-msgstr "成功注册到 %s "
-
-#: ../coreapi/friend.c:35
+#: ../coreapi/friend.c:33
 msgid "Online"
 msgstr "在线"
 
-#: ../coreapi/friend.c:38
+#: ../coreapi/friend.c:36
 msgid "Busy"
 msgstr "用户忙"
 
-#: ../coreapi/friend.c:41
+#: ../coreapi/friend.c:39
 #, fuzzy
 msgid "Be right back"
 msgstr "离开"
 
-#: ../coreapi/friend.c:44
+#: ../coreapi/friend.c:42
 msgid "Away"
 msgstr "离开"
 
-#: ../coreapi/friend.c:47
+#: ../coreapi/friend.c:45
 #, fuzzy
 msgid "On the phone"
 msgstr "通话中"
 
-#: ../coreapi/friend.c:50
+#: ../coreapi/friend.c:48
 #, fuzzy
 msgid "Out to lunch"
 msgstr "外出吃饭中.."
 
-#: ../coreapi/friend.c:53
+#: ../coreapi/friend.c:51
 msgid "Do not disturb"
 msgstr "请勿打扰"
 
-#: ../coreapi/friend.c:56
+#: ../coreapi/friend.c:54
 msgid "Moved"
 msgstr ""
 
-#: ../coreapi/friend.c:59
+#: ../coreapi/friend.c:57
 msgid "Using another messaging service"
 msgstr ""
 
-#: ../coreapi/friend.c:62
+#: ../coreapi/friend.c:60
 #, fuzzy
 msgid "Offline"
 msgstr "离线"
 
-#: ../coreapi/friend.c:65
+#: ../coreapi/friend.c:63
 msgid "Pending"
 msgstr "挂起"
 
-#: ../coreapi/friend.c:68
+#: ../coreapi/friend.c:66
 msgid "Unknown-bug"
 msgstr "未知错误"
 
@@ -1323,6 +1229,94 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Could not login as %s"
 msgstr "无法登陆: %s"
+
+#: ../coreapi/callbacks.c:95
+#, fuzzy
+msgid "is contacting you"
+msgstr "真正联系你."
+
+#: ../coreapi/callbacks.c:96
+msgid " and asked autoanswer."
+msgstr ""
+
+#: ../coreapi/callbacks.c:96
+msgid "."
+msgstr ""
+
+#: ../coreapi/callbacks.c:120
+msgid "Remote ringing."
+msgstr ""
+
+#: ../coreapi/callbacks.c:139
+msgid "Early media."
+msgstr ""
+
+#: ../coreapi/callbacks.c:248
+msgid "Call terminated."
+msgstr "通话结束."
+
+#: ../coreapi/callbacks.c:265
+msgid "User is busy."
+msgstr "被叫忙."
+
+#: ../coreapi/callbacks.c:266
+msgid "User is temporarily unavailable."
+msgstr "你呼叫的用户无法接通."
+
+#. char *retrymsg=_("%s. Retry after %i minute(s).");
+#: ../coreapi/callbacks.c:268
+msgid "User does not want to be disturbed."
+msgstr "用户开启免打扰功能."
+
+#: ../coreapi/callbacks.c:269
+msgid "Call declined."
+msgstr "呼叫被拒绝."
+
+#: ../coreapi/callbacks.c:280
+#, fuzzy
+msgid "No response."
+msgstr "没有响应，超时"
+
+#: ../coreapi/callbacks.c:283
+msgid "Error."
+msgstr ""
+
+#: ../coreapi/callbacks.c:296
+#, fuzzy
+msgid "Redirected"
+msgstr "重定向到 %s..."
+
+#: ../coreapi/callbacks.c:304
+msgid "Not found"
+msgstr ""
+
+#: ../coreapi/callbacks.c:312
+msgid "No common codecs"
+msgstr ""
+
+#: ../coreapi/callbacks.c:316
+#, fuzzy
+msgid "Call failed."
+msgstr "呼叫被拒绝."
+
+#: ../coreapi/callbacks.c:365
+#, c-format
+msgid "Registration on %s successful."
+msgstr "成功注册到 %s "
+
+#: ../coreapi/callbacks.c:366
+#, fuzzy, c-format
+msgid "Unregistration on %s done."
+msgstr "成功注册到 %s "
+
+#: ../coreapi/callbacks.c:374
+#, c-format
+msgid "Registration on %s failed: %s"
+msgstr "注册到 %s 失败: %s"
+
+#: ../coreapi/callbacks.c:374
+msgid "no response timeout"
+msgstr "没有响应，超时"
 
 #: ../mediastreamer2/src/alaw.c:144 ../mediastreamer2/src/alaw.c:162
 msgid "ITU-G.711 alaw encoder"
@@ -1418,7 +1412,7 @@ msgstr ""
 msgid "A filter to grab pictures from Video4Linux2-powered cameras"
 msgstr ""
 
-#: ../mediastreamer2/src/nowebcam.c:1824
+#: ../mediastreamer2/src/nowebcam.c:1836
 msgid "A filter that outputs a static image."
 msgstr ""
 
@@ -1531,7 +1525,7 @@ msgstr ""
 msgid "A MJPEG encoder using ffmpeg library."
 msgstr ""
 
-#: ../mediastreamer2/src/videoout.c:1807 ../mediastreamer2/src/videoout.c:1825
+#: ../mediastreamer2/src/videoout.c:1812 ../mediastreamer2/src/videoout.c:1830
 msgid "A generic video display"
 msgstr ""
 
@@ -1562,6 +1556,34 @@ msgstr ""
 #: ../mediastreamer2/src/msdscap-mingw.cc:1003
 msgid "A webcam grabber based on directshow."
 msgstr ""
+
+#~ msgid "Could not reach destination."
+#~ msgstr "目标不可达."
+
+#~ msgid "Request Cancelled."
+#~ msgstr "取消请求."
+
+#~ msgid "Bad request"
+#~ msgstr "错误请求"
+
+#~ msgid "User cannot be found at given address."
+#~ msgstr "用给定地址无法找到该用户."
+
+#~ msgid "Remote user cannot support any of proposed codecs."
+#~ msgstr "对方不支持相关编码."
+
+#~ msgid "Timeout."
+#~ msgstr "超时."
+
+#~ msgid "Remote host was found but refused connection."
+#~ msgstr "找到该用户，但是连接被拒绝."
+
+#~ msgid ""
+#~ "User is not reachable at the moment but he invites you\n"
+#~ "to contact him using the following alternate resource:"
+#~ msgstr ""
+#~ "用户当前不可达，但是他向你发出呼叫请求\n"
+#~ " 要联系该用户，请使用如下地址:"
 
 #~ msgid "<b>Terminate call</b>"
 #~ msgstr "挂断电话"

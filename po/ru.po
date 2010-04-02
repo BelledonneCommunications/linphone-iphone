@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone 0.7.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-03-25 22:11+0100\n"
+"POT-Creation-Date: 2010-04-02 10:28+0200\n"
 "PO-Revision-Date: 2010-01-22 18:43+0300\n"
 "Last-Translator: Maxim Prokopyev <jazzelastic@gmail.com>\n"
 "Language-Team: Russian <greg@dial.com.ru>\n"
@@ -1074,7 +1074,7 @@ msgstr ""
 msgid "Outgoing call"
 msgstr "Исходящий звонок"
 
-#: ../coreapi/linphonecore.c:613
+#: ../coreapi/linphonecore.c:625
 msgid ""
 "Your machine appears to be connected to an IPv6 network. By default linphone "
 "always uses IPv4. Please update your configuration if you want to use IPv6"
@@ -1082,23 +1082,23 @@ msgstr ""
 "Ваш компьютер подключен по IPv6. Linphone по умолчанию использует IPv4. "
 "Пожалуйста, обновите настройки если хотите использовать IPv6."
 
-#: ../coreapi/linphonecore.c:1062
+#: ../coreapi/linphonecore.c:1074
 msgid "Ready"
 msgstr "Готов"
 
-#: ../coreapi/linphonecore.c:1493
+#: ../coreapi/linphonecore.c:1505
 msgid "Remote end seems to have disconnected, the call is going to be closed."
 msgstr "Удалённый узел отключился, звонок завершён."
 
-#: ../coreapi/linphonecore.c:1691
+#: ../coreapi/linphonecore.c:1703
 msgid "Looking for telephone number destination..."
 msgstr "Поиск назначения для телефонного номера.."
 
-#: ../coreapi/linphonecore.c:1693
+#: ../coreapi/linphonecore.c:1705
 msgid "Could not resolve this number."
 msgstr "Не может принять решение по этому номеру."
 
-#: ../coreapi/linphonecore.c:1737
+#: ../coreapi/linphonecore.c:1749
 msgid ""
 "Could not parse given sip address. A sip url usually looks like sip:"
 "user@domain"
@@ -1106,23 +1106,23 @@ msgstr ""
 "Не могу опознать sip адрес. SIP url обычно выглядит как: <sip:"
 "username@domainname>"
 
-#: ../coreapi/linphonecore.c:1859
+#: ../coreapi/linphonecore.c:1890
 msgid "Contacting"
 msgstr "Соединение"
 
-#: ../coreapi/linphonecore.c:1865
+#: ../coreapi/linphonecore.c:1896
 msgid "could not call"
 msgstr "невозможно позвонить"
 
-#: ../coreapi/linphonecore.c:1911
+#: ../coreapi/linphonecore.c:1942
 msgid "Sorry, having multiple simultaneous calls is not supported yet !"
 msgstr "Одновременные вызовы пока не поддерживается!"
 
-#: ../coreapi/linphonecore.c:2306 ../coreapi/exevents.c:50
+#: ../coreapi/linphonecore.c:2337 ../coreapi/callbacks.c:32
 msgid "Connected."
 msgstr "Соединён."
 
-#: ../coreapi/linphonecore.c:2340
+#: ../coreapi/linphonecore.c:2371
 msgid "Call ended"
 msgstr "Разговор окончен"
 
@@ -1156,147 +1156,51 @@ msgstr ""
 msgid "Stun lookup in progress..."
 msgstr "Идет поиск Stun..."
 
-#: ../coreapi/exevents.c:127
-msgid "Call terminated."
-msgstr "Звонок прерван."
-
-#: ../coreapi/exevents.c:149
-msgid "Could not reach destination."
-msgstr "Невозможно соединиться."
-
-#: ../coreapi/exevents.c:158
-msgid "User is busy."
-msgstr "Пользователь занят."
-
-#: ../coreapi/exevents.c:159
-msgid "User is temporarily unavailable."
-msgstr "Пользователь временно недоступен."
-
-#: ../coreapi/exevents.c:160
-msgid "Request Cancelled."
-msgstr "Запрос отменён."
-
-#. char *retrymsg=_("%s. Retry after %i minute(s).");
-#: ../coreapi/exevents.c:162
-msgid "User does not want to be disturbed."
-msgstr "Пользователь не хочет чтоб его беспокоили."
-
-#: ../coreapi/exevents.c:163
-msgid "Call declined."
-msgstr "Звонок отклонён."
-
-#: ../coreapi/exevents.c:191
-msgid "Bad request"
-msgstr "Неверный запрос"
-
-#: ../coreapi/exevents.c:194
-msgid "User cannot be found at given address."
-msgstr "Пользователь не может быть найден."
-
-#: ../coreapi/exevents.c:197
-msgid "Remote user cannot support any of proposed codecs."
-msgstr ""
-"Удалённый пользователь не поддерживает ни одного из предложенных кодеков."
-
-#. time out, call leg is lost
-#: ../coreapi/exevents.c:227
-msgid "Timeout."
-msgstr "Таймаут."
-
-#: ../coreapi/exevents.c:230
-msgid "Remote host was found but refused connection."
-msgstr "Удалённый узел был найден, но отказал в соединении."
-
-#: ../coreapi/exevents.c:339
-msgid "is contacting you."
-msgstr "контактирует с вами."
-
-#: ../coreapi/exevents.c:424
-#, c-format
-msgid "Redirected to %s..."
-msgstr "Переадресован на %s..."
-
-#: ../coreapi/exevents.c:440
-msgid ""
-"User is not reachable at the moment but he invites you\n"
-"to contact him using the following alternate resource:"
-msgstr ""
-"Пользователь не доступен в данный момент, но\n"
-"приглашает Вас пообщаться на альтернативном ресурсе:"
-
-#: ../coreapi/exevents.c:842
-#, fuzzy
-msgid "Remote ringing."
-msgstr "Registrierung"
-
-#: ../coreapi/exevents.c:866
-msgid "Early media."
-msgstr "Early media"
-
-#: ../coreapi/exevents.c:977
-#, c-format
-msgid "Registration on %s failed: %s"
-msgstr "Регистрация на %s не удалась: %s"
-
-#: ../coreapi/exevents.c:977
-msgid "no response timeout"
-msgstr "время ожидания истекло"
-
-#: ../coreapi/exevents.c:1004
-#, c-format
-msgid "Registration on %s successful."
-msgstr "Регистрация на %s прошла успешно."
-
-#: ../coreapi/exevents.c:1005
-#, c-format
-msgid "Unregistration on %s done."
-msgstr "Отмена регистрации на %s завершена."
-
-#: ../coreapi/friend.c:35
+#: ../coreapi/friend.c:33
 msgid "Online"
 msgstr "В сети"
 
-#: ../coreapi/friend.c:38
+#: ../coreapi/friend.c:36
 msgid "Busy"
 msgstr "Занят"
 
-#: ../coreapi/friend.c:41
+#: ../coreapi/friend.c:39
 msgid "Be right back"
 msgstr "Скоро вернусь"
 
-#: ../coreapi/friend.c:44
+#: ../coreapi/friend.c:42
 msgid "Away"
 msgstr "Нет на месте"
 
-#: ../coreapi/friend.c:47
+#: ../coreapi/friend.c:45
 msgid "On the phone"
 msgstr "На телефоне"
 
-#: ../coreapi/friend.c:50
+#: ../coreapi/friend.c:48
 msgid "Out to lunch"
 msgstr "На обеде"
 
-#: ../coreapi/friend.c:53
+#: ../coreapi/friend.c:51
 msgid "Do not disturb"
 msgstr "Не беспокоить"
 
-#: ../coreapi/friend.c:56
+#: ../coreapi/friend.c:54
 msgid "Moved"
 msgstr "Отошел"
 
-#: ../coreapi/friend.c:59
+#: ../coreapi/friend.c:57
 msgid "Using another messaging service"
 msgstr "Разговариваю"
 
-#: ../coreapi/friend.c:62
+#: ../coreapi/friend.c:60
 msgid "Offline"
 msgstr "Не в сети"
 
-#: ../coreapi/friend.c:65
+#: ../coreapi/friend.c:63
 msgid "Pending"
 msgstr "В ожидании"
 
-#: ../coreapi/friend.c:68
+#: ../coreapi/friend.c:66
 msgid "Unknown-bug"
 msgstr "Неизвестная ошибка"
 
@@ -1320,6 +1224,95 @@ msgstr ""
 #, c-format
 msgid "Could not login as %s"
 msgstr "Невозможно зайти как: %s"
+
+#: ../coreapi/callbacks.c:95
+#, fuzzy
+msgid "is contacting you"
+msgstr "контактирует с вами."
+
+#: ../coreapi/callbacks.c:96
+msgid " and asked autoanswer."
+msgstr ""
+
+#: ../coreapi/callbacks.c:96
+msgid "."
+msgstr ""
+
+#: ../coreapi/callbacks.c:120
+#, fuzzy
+msgid "Remote ringing."
+msgstr "Registrierung"
+
+#: ../coreapi/callbacks.c:139
+msgid "Early media."
+msgstr "Early media"
+
+#: ../coreapi/callbacks.c:248
+msgid "Call terminated."
+msgstr "Звонок прерван."
+
+#: ../coreapi/callbacks.c:265
+msgid "User is busy."
+msgstr "Пользователь занят."
+
+#: ../coreapi/callbacks.c:266
+msgid "User is temporarily unavailable."
+msgstr "Пользователь временно недоступен."
+
+#. char *retrymsg=_("%s. Retry after %i minute(s).");
+#: ../coreapi/callbacks.c:268
+msgid "User does not want to be disturbed."
+msgstr "Пользователь не хочет чтоб его беспокоили."
+
+#: ../coreapi/callbacks.c:269
+msgid "Call declined."
+msgstr "Звонок отклонён."
+
+#: ../coreapi/callbacks.c:280
+#, fuzzy
+msgid "No response."
+msgstr "время ожидания истекло"
+
+#: ../coreapi/callbacks.c:283
+msgid "Error."
+msgstr ""
+
+#: ../coreapi/callbacks.c:296
+#, fuzzy
+msgid "Redirected"
+msgstr "Переадресован на %s..."
+
+#: ../coreapi/callbacks.c:304
+msgid "Not found"
+msgstr ""
+
+#: ../coreapi/callbacks.c:312
+msgid "No common codecs"
+msgstr ""
+
+#: ../coreapi/callbacks.c:316
+#, fuzzy
+msgid "Call failed."
+msgstr "Anruf annulliert"
+
+#: ../coreapi/callbacks.c:365
+#, c-format
+msgid "Registration on %s successful."
+msgstr "Регистрация на %s прошла успешно."
+
+#: ../coreapi/callbacks.c:366
+#, c-format
+msgid "Unregistration on %s done."
+msgstr "Отмена регистрации на %s завершена."
+
+#: ../coreapi/callbacks.c:374
+#, c-format
+msgid "Registration on %s failed: %s"
+msgstr "Регистрация на %s не удалась: %s"
+
+#: ../coreapi/callbacks.c:374
+msgid "no response timeout"
+msgstr "время ожидания истекло"
 
 #: ../mediastreamer2/src/alaw.c:144 ../mediastreamer2/src/alaw.c:162
 msgid "ITU-G.711 alaw encoder"
@@ -1414,7 +1407,7 @@ msgstr ""
 msgid "A filter to grab pictures from Video4Linux2-powered cameras"
 msgstr ""
 
-#: ../mediastreamer2/src/nowebcam.c:1824
+#: ../mediastreamer2/src/nowebcam.c:1836
 msgid "A filter that outputs a static image."
 msgstr ""
 
@@ -1531,7 +1524,7 @@ msgstr ""
 msgid "A MJPEG encoder using ffmpeg library."
 msgstr "MJPEG декодер ( использует ffmpeg )"
 
-#: ../mediastreamer2/src/videoout.c:1807 ../mediastreamer2/src/videoout.c:1825
+#: ../mediastreamer2/src/videoout.c:1812 ../mediastreamer2/src/videoout.c:1830
 msgid "A generic video display"
 msgstr ""
 
@@ -1562,6 +1555,35 @@ msgstr ""
 #: ../mediastreamer2/src/msdscap-mingw.cc:1003
 msgid "A webcam grabber based on directshow."
 msgstr ""
+
+#~ msgid "Could not reach destination."
+#~ msgstr "Невозможно соединиться."
+
+#~ msgid "Request Cancelled."
+#~ msgstr "Запрос отменён."
+
+#~ msgid "Bad request"
+#~ msgstr "Неверный запрос"
+
+#~ msgid "User cannot be found at given address."
+#~ msgstr "Пользователь не может быть найден."
+
+#~ msgid "Remote user cannot support any of proposed codecs."
+#~ msgstr ""
+#~ "Удалённый пользователь не поддерживает ни одного из предложенных кодеков."
+
+#~ msgid "Timeout."
+#~ msgstr "Таймаут."
+
+#~ msgid "Remote host was found but refused connection."
+#~ msgstr "Удалённый узел был найден, но отказал в соединении."
+
+#~ msgid ""
+#~ "User is not reachable at the moment but he invites you\n"
+#~ "to contact him using the following alternate resource:"
+#~ msgstr ""
+#~ "Пользователь не доступен в данный момент, но\n"
+#~ "приглашает Вас пообщаться на альтернативном ресурсе:"
 
 #~ msgid "<b>Terminate call</b>"
 #~ msgstr "<b>Завершить вызов</b>"
@@ -2035,9 +2057,6 @@ msgstr ""
 
 #~ msgid "Communication ended."
 #~ msgstr "Kommunikation beendet."
-
-#~ msgid "Call cancelled."
-#~ msgstr "Anruf annulliert"
 
 #, fuzzy
 #~ msgid "Firewall 's external ip address (in dot notations):"

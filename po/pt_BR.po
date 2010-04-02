@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-1.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-03-25 22:11+0100\n"
+"POT-Creation-Date: 2010-04-02 10:28+0200\n"
 "PO-Revision-Date: 2006-07-11 23:30+0200\n"
 "Last-Translator: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\n"
 "Language-Team: pt_BR <pt_BR@li.org>\n"
@@ -1089,7 +1089,7 @@ msgstr ""
 msgid "Outgoing call"
 msgstr "Chamadas efetuadas"
 
-#: ../coreapi/linphonecore.c:613
+#: ../coreapi/linphonecore.c:625
 msgid ""
 "Your machine appears to be connected to an IPv6 network. By default linphone "
 "always uses IPv4. Please update your configuration if you want to use IPv6"
@@ -1098,47 +1098,47 @@ msgstr ""
 "linphone sempre usa IPv4. Por favor atualize sua configuração se deseja usar "
 "IPv6"
 
-#: ../coreapi/linphonecore.c:1062
+#: ../coreapi/linphonecore.c:1074
 #, fuzzy
 msgid "Ready"
 msgstr "Pronto."
 
-#: ../coreapi/linphonecore.c:1493
+#: ../coreapi/linphonecore.c:1505
 msgid "Remote end seems to have disconnected, the call is going to be closed."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:1691
+#: ../coreapi/linphonecore.c:1703
 msgid "Looking for telephone number destination..."
 msgstr "Procurando por telefone de destino..."
 
-#: ../coreapi/linphonecore.c:1693
+#: ../coreapi/linphonecore.c:1705
 msgid "Could not resolve this number."
 msgstr "Não foi possível encontrar este número."
 
-#: ../coreapi/linphonecore.c:1737
+#: ../coreapi/linphonecore.c:1749
 msgid ""
 "Could not parse given sip address. A sip url usually looks like sip:"
 "user@domain"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:1859
+#: ../coreapi/linphonecore.c:1890
 #, fuzzy
 msgid "Contacting"
 msgstr "Contatando "
 
-#: ../coreapi/linphonecore.c:1865
+#: ../coreapi/linphonecore.c:1896
 msgid "could not call"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:1911
+#: ../coreapi/linphonecore.c:1942
 msgid "Sorry, having multiple simultaneous calls is not supported yet !"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:2306 ../coreapi/exevents.c:50
+#: ../coreapi/linphonecore.c:2337 ../coreapi/callbacks.c:32
 msgid "Connected."
 msgstr "Conectado."
 
-#: ../coreapi/linphonecore.c:2340
+#: ../coreapi/linphonecore.c:2371
 #, fuzzy
 msgid "Call ended"
 msgstr "Chamada cancelada."
@@ -1163,147 +1163,53 @@ msgstr ""
 msgid "Stun lookup in progress..."
 msgstr ""
 
-#: ../coreapi/exevents.c:127
-msgid "Call terminated."
-msgstr ""
-
-#: ../coreapi/exevents.c:149
-msgid "Could not reach destination."
-msgstr "Não foi possível alcançar o detino."
-
-#: ../coreapi/exevents.c:158
-msgid "User is busy."
-msgstr "Usuário está ocupado."
-
-#: ../coreapi/exevents.c:159
-msgid "User is temporarily unavailable."
-msgstr "Usuário está temporáriamente indisponível."
-
-#: ../coreapi/exevents.c:160
-msgid "Request Cancelled."
-msgstr "Pedido cancelado."
-
-#. char *retrymsg=_("%s. Retry after %i minute(s).");
-#: ../coreapi/exevents.c:162
-msgid "User does not want to be disturbed."
-msgstr ""
-
-#: ../coreapi/exevents.c:163
-msgid "Call declined."
-msgstr ""
-
-#: ../coreapi/exevents.c:191
-msgid "Bad request"
-msgstr ""
-
-#: ../coreapi/exevents.c:194
-msgid "User cannot be found at given address."
-msgstr "Usuário não pode ser encontrado no endereço especificado."
-
-#: ../coreapi/exevents.c:197
-msgid "Remote user cannot support any of proposed codecs."
-msgstr ""
-
-#. time out, call leg is lost
-#: ../coreapi/exevents.c:227
-msgid "Timeout."
-msgstr "Tempo esgotado."
-
-#: ../coreapi/exevents.c:230
-msgid "Remote host was found but refused connection."
-msgstr "Servidor de destino encontrado, porém recusou a conexão."
-
-#: ../coreapi/exevents.c:339
-#, fuzzy
-msgid "is contacting you."
-msgstr "está chamado você."
-
-#: ../coreapi/exevents.c:424
-#, c-format
-msgid "Redirected to %s..."
-msgstr "Redirecionado para %s..."
-
-#: ../coreapi/exevents.c:440
-msgid ""
-"User is not reachable at the moment but he invites you\n"
-"to contact him using the following alternate resource:"
-msgstr ""
-
-#: ../coreapi/exevents.c:842
-#, fuzzy
-msgid "Remote ringing."
-msgstr "Serviços remotos"
-
-#: ../coreapi/exevents.c:866
-msgid "Early media."
-msgstr ""
-
-#: ../coreapi/exevents.c:977
-#, fuzzy, c-format
-msgid "Registration on %s failed: %s"
-msgstr "Registro falhou (tempo esgotado)."
-
-#: ../coreapi/exevents.c:977
-msgid "no response timeout"
-msgstr ""
-
-#: ../coreapi/exevents.c:1004
-#, fuzzy, c-format
-msgid "Registration on %s successful."
-msgstr "Registro em %s efetuado."
-
-#: ../coreapi/exevents.c:1005
-#, fuzzy, c-format
-msgid "Unregistration on %s done."
-msgstr "Registro em %s efetuado."
-
-#: ../coreapi/friend.c:35
+#: ../coreapi/friend.c:33
 #, fuzzy
 msgid "Online"
 msgstr "linha"
 
-#: ../coreapi/friend.c:38
+#: ../coreapi/friend.c:36
 msgid "Busy"
 msgstr ""
 
-#: ../coreapi/friend.c:41
+#: ../coreapi/friend.c:39
 msgid "Be right back"
 msgstr ""
 
-#: ../coreapi/friend.c:44
+#: ../coreapi/friend.c:42
 msgid "Away"
 msgstr "Ocupado"
 
-#: ../coreapi/friend.c:47
+#: ../coreapi/friend.c:45
 msgid "On the phone"
 msgstr ""
 
-#: ../coreapi/friend.c:50
+#: ../coreapi/friend.c:48
 msgid "Out to lunch"
 msgstr ""
 
-#: ../coreapi/friend.c:53
+#: ../coreapi/friend.c:51
 msgid "Do not disturb"
 msgstr "Não perturbe"
 
-#: ../coreapi/friend.c:56
+#: ../coreapi/friend.c:54
 msgid "Moved"
 msgstr ""
 
-#: ../coreapi/friend.c:59
+#: ../coreapi/friend.c:57
 msgid "Using another messaging service"
 msgstr ""
 
-#: ../coreapi/friend.c:62
+#: ../coreapi/friend.c:60
 #, fuzzy
 msgid "Offline"
 msgstr "linha"
 
-#: ../coreapi/friend.c:65
+#: ../coreapi/friend.c:63
 msgid "Pending"
 msgstr ""
 
-#: ../coreapi/friend.c:68
+#: ../coreapi/friend.c:66
 msgid "Unknown-bug"
 msgstr ""
 
@@ -1323,6 +1229,94 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Could not login as %s"
 msgstr "Não é possível achar arquivo pixmap: %s"
+
+#: ../coreapi/callbacks.c:95
+#, fuzzy
+msgid "is contacting you"
+msgstr "está chamado você."
+
+#: ../coreapi/callbacks.c:96
+msgid " and asked autoanswer."
+msgstr ""
+
+#: ../coreapi/callbacks.c:96
+msgid "."
+msgstr ""
+
+#: ../coreapi/callbacks.c:120
+#, fuzzy
+msgid "Remote ringing."
+msgstr "Serviços remotos"
+
+#: ../coreapi/callbacks.c:139
+msgid "Early media."
+msgstr ""
+
+#: ../coreapi/callbacks.c:248
+msgid "Call terminated."
+msgstr ""
+
+#: ../coreapi/callbacks.c:265
+msgid "User is busy."
+msgstr "Usuário está ocupado."
+
+#: ../coreapi/callbacks.c:266
+msgid "User is temporarily unavailable."
+msgstr "Usuário está temporáriamente indisponível."
+
+#. char *retrymsg=_("%s. Retry after %i minute(s).");
+#: ../coreapi/callbacks.c:268
+msgid "User does not want to be disturbed."
+msgstr ""
+
+#: ../coreapi/callbacks.c:269
+msgid "Call declined."
+msgstr ""
+
+#: ../coreapi/callbacks.c:280
+msgid "No response."
+msgstr ""
+
+#: ../coreapi/callbacks.c:283
+msgid "Error."
+msgstr ""
+
+#: ../coreapi/callbacks.c:296
+#, fuzzy
+msgid "Redirected"
+msgstr "Redirecionado para %s..."
+
+#: ../coreapi/callbacks.c:304
+msgid "Not found"
+msgstr ""
+
+#: ../coreapi/callbacks.c:312
+msgid "No common codecs"
+msgstr ""
+
+#: ../coreapi/callbacks.c:316
+#, fuzzy
+msgid "Call failed."
+msgstr "Histórico de chamadas"
+
+#: ../coreapi/callbacks.c:365
+#, fuzzy, c-format
+msgid "Registration on %s successful."
+msgstr "Registro em %s efetuado."
+
+#: ../coreapi/callbacks.c:366
+#, fuzzy, c-format
+msgid "Unregistration on %s done."
+msgstr "Registro em %s efetuado."
+
+#: ../coreapi/callbacks.c:374
+#, fuzzy, c-format
+msgid "Registration on %s failed: %s"
+msgstr "Registro falhou (tempo esgotado)."
+
+#: ../coreapi/callbacks.c:374
+msgid "no response timeout"
+msgstr ""
 
 #: ../mediastreamer2/src/alaw.c:144 ../mediastreamer2/src/alaw.c:162
 msgid "ITU-G.711 alaw encoder"
@@ -1417,7 +1411,7 @@ msgstr ""
 msgid "A filter to grab pictures from Video4Linux2-powered cameras"
 msgstr ""
 
-#: ../mediastreamer2/src/nowebcam.c:1824
+#: ../mediastreamer2/src/nowebcam.c:1836
 msgid "A filter that outputs a static image."
 msgstr ""
 
@@ -1530,7 +1524,7 @@ msgstr ""
 msgid "A MJPEG encoder using ffmpeg library."
 msgstr ""
 
-#: ../mediastreamer2/src/videoout.c:1807 ../mediastreamer2/src/videoout.c:1825
+#: ../mediastreamer2/src/videoout.c:1812 ../mediastreamer2/src/videoout.c:1830
 msgid "A generic video display"
 msgstr ""
 
@@ -1561,6 +1555,21 @@ msgstr ""
 #: ../mediastreamer2/src/msdscap-mingw.cc:1003
 msgid "A webcam grabber based on directshow."
 msgstr ""
+
+#~ msgid "Could not reach destination."
+#~ msgstr "Não foi possível alcançar o detino."
+
+#~ msgid "Request Cancelled."
+#~ msgstr "Pedido cancelado."
+
+#~ msgid "User cannot be found at given address."
+#~ msgstr "Usuário não pode ser encontrado no endereço especificado."
+
+#~ msgid "Timeout."
+#~ msgstr "Tempo esgotado."
+
+#~ msgid "Remote host was found but refused connection."
+#~ msgstr "Servidor de destino encontrado, porém recusou a conexão."
 
 #, fuzzy
 #~ msgid "<b>Terminate call</b>"
