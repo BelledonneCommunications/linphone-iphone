@@ -65,8 +65,8 @@ LOCAL_C_INCLUDES += \
 	$(LOCAL_PATH)/include \
 	$(LOCAL_PATH)/../oRTP/include \
 	$(LOCAL_PATH)/../mediastreamer2/include \
-	$(LOCAL_PATH)/../../../eXosip/include \
-	$(LOCAL_PATH)/../../../osip/include 
+	$(LOCAL_PATH)/../../externals/exosip/include \
+	$(LOCAL_PATH)/../../externals/osip/include 
 
 LOCAL_LDLIBS += -llog
 
