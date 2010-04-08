@@ -1913,7 +1913,8 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, LinphonePro
 int linphone_core_invite(LinphoneCore *lc, const char *url){
 	LinphoneAddress *addr=linphone_core_interpret_url(lc,url);
 	if (addr){
-		int err=linphone_core_invite_address(lc,addr);
+		int err;
+		err=linphone_core_invite_address(lc,addr);
 		linphone_address_destroy(addr);
 		return err;
 	}

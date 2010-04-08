@@ -323,7 +323,7 @@ static void copy_result(const char *src, char *dest, size_t destlen, bool_t esca
 		i=2;
 	}
 	
-	for(;i<destlen-1;++i){
+	for(;(i<destlen-1) && *src!='\0';++i){
 		dest[i]=*src;
 		src++;
 	}
@@ -344,13 +344,13 @@ int linphone_proxy_config_normalize_number(LinphoneProxyConfig *proxy, const cha
 		flatten=flatten_number(username);
 		ms_message("Flattened number is '%s'",flatten);
 		numlen=strlen(flatten);
-		if (numlen>10 || flatten[0]=='+' || proxy->dial_prefix==NULL){
+		if (numlen>10 || flatten[0]=='+' || proxy->dial_prefix==NULL || proxy->dial_prefix[0]=='\0'){
 			ms_message("No need to add a prefix");
 			/* prefix is already there */
 			copy_result(flatten,result,result_len,proxy->dial_escape_plus);
 			ms_free(flatten);
 			return 0;
-		}else if (proxy->dial_prefix){
+		}else if (proxy->dial_prefix && proxy->dial_prefix[0]!='\0'){
 			char *prefixed;
 			int skipped=0;
 			ms_message("Need to prefix with %s",proxy->dial_prefix);
