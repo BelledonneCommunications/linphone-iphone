@@ -1485,7 +1485,26 @@ static int lpc_cmd_register(LinphoneCore *lc, char *args){
 	char passwd[512];
 	LinphoneProxyConfig *cfg;
 	const MSList *elem;
-    if (!args) return 0;
+    
+	if (!args)
+    	{
+    		/* it means that you want to register the default proxy */
+    		LinphoneProxyConfig *cfg=NULL;
+    		linphone_core_get_default_proxy(lc,&cfg);
+    		if (cfg)
+    		{
+    			if(!linphone_proxy_config_is_registered(cfg)) {
+				linphone_proxy_config_enable_register(cfg,TRUE);
+				linphone_proxy_config_done(cfg);
+			}else{
+				linphonec_out("default proxy already registered\n");
+			}
+    		}else{
+    			linphonec_out("we do not have a default proxy\n");
+    			return 0;
+    		}
+    		return 1;
+    	}
 	passwd[0]=proxy[0]=identity[0]='\0';
 	sscanf(args,"%s %s %s",identity,proxy,passwd);
 	if (proxy[0]=='\0' || identity[0]=='\0'){
