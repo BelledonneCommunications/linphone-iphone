@@ -278,6 +278,8 @@ void sal_set_callbacks(Sal *ctx, const SalCallbacks *cbs){
 		ctx->callbacks.dtmf_received=(SalOnDtmfReceived)unimplemented_stub;
 	if (ctx->callbacks.notify==NULL)
 		ctx->callbacks.notify=(SalOnNotify)unimplemented_stub;
+	if (ctx->callbacks.notify_presence==NULL)
+		ctx->callbacks.notify_presence=(SalOnNotifyPresence)unimplemented_stub;
 	if (ctx->callbacks.subscribe_received==NULL)
 		ctx->callbacks.subscribe_received=(SalOnSubscribeReceived)unimplemented_stub;
 	if (ctx->callbacks.text_received==NULL)
@@ -531,6 +533,26 @@ int sal_ping(SalOp *op, const char *from, const char *to){
 		return eXosip_options_send_request(options);
 	}
 	return -1;
+}
+
+int sal_refer_accept(SalOp *op){
+	osip_message_t *msg=NULL;
+	int err=0;
+	eXosip_lock();
+	err = eXosip_call_build_notify(op->did,EXOSIP_SUBCRSTATE_ACTIVE,&msg);
+	if(msg != NULL)
+	{
+		osip_message_set_header(msg,(const char *)"event","refer");
+		osip_message_set_content_type(msg,"message/sipfrag");
+		osip_message_set_body(msg,"SIP/2.0 100 Trying",sizeof("SIP/2.0 100 Trying"));
+		eXosip_call_send_request(op->did,msg);
+	}
+	else
+	{
+		ms_error("could not get a notify built\n");
+	}
+	eXosip_unlock();
+	return err;
 }
 
 int sal_refer(SalOp *h, const char *refer_to){
@@ -934,7 +956,7 @@ static bool_t call_failure(Sal *sal, eXosip_event_t *ev){
 	SalError error=SalErrorUnknown;
 	SalReason sr=SalReasonUnknown;
 	
-	op=(SalOp*)ev->external_reference;
+	op=(SalOp*)find_op(sal,ev);
 
 	if (op==NULL) {
 		ms_warning("Call failure reported for a closed call, ignored.");
@@ -995,7 +1017,7 @@ static bool_t call_failure(Sal *sal, eXosip_event_t *ev){
 
 
 static void process_media_control_xml(Sal *sal, eXosip_event_t *ev){
-	SalOp *op=(SalOp*)ev->external_reference;
+	SalOp *op=find_op(sal,ev);
 	osip_body_t *body=NULL;
 
 	if (op==NULL){
@@ -1018,7 +1040,7 @@ static void process_media_control_xml(Sal *sal, eXosip_event_t *ev){
 }
 
 static void process_dtmf_relay(Sal *sal, eXosip_event_t *ev){
-	SalOp *op=(SalOp*)ev->external_reference;
+	SalOp *op=find_op(sal,ev);
 	osip_body_t *body=NULL;
 
 	if (op==NULL){
@@ -1088,6 +1110,8 @@ static void call_message_new(Sal *sal, eXosip_event_t *ev){
 		}
 		if(MSG_IS_REFER(ev->request)){
 			osip_header_t *h=NULL;
+			SalOp *op=find_op(sal,ev);
+			
 			ms_message("Receiving REFER request !");
 			osip_message_header_get_byname(ev->request,"Refer-To",0,&h);
 			eXosip_lock();
@@ -1096,25 +1120,30 @@ static void call_message_new(Sal *sal, eXosip_event_t *ev){
 				eXosip_call_send_answer(ev->tid,202,ans);
 			eXosip_unlock();
 			if (h){
-				SalOp *op=(SalOp*)ev->external_reference;
 				sal->callbacks.refer_received(sal,op,h->hvalue);
+			}
+			else
+			{
+				ms_warning("cannot do anything with the refer without destination\n");
 			}
 		}
 		if(MSG_IS_NOTIFY(ev->request)){
 			osip_header_t *h=NULL;
+			char *from=NULL;
+			SalOp *op=find_op(sal,ev);
+
 			ms_message("Receiving NOTIFY request !");
+			osip_from_to_str(ev->request->from,&from);
 			osip_message_header_get_byname(ev->request,"Event",0,&h);
-			if (h){
-				if(!strcmp(h->hvalue,"refer"))
-				{
-					ms_message("get the notify of the Refer sent");
-				}
-			}
+			if(h)
+				sal->callbacks.notify(op,from,h->hvalue);
+			/*answer that we received the notify*/
 			eXosip_lock();
 			eXosip_call_build_answer(ev->tid,200,&ans);
 			if (ans)
 				eXosip_call_send_answer(ev->tid,200,ans);
 			eXosip_unlock();
+			osip_free(from);
 		}
 	}else ms_warning("call_message_new: No request ?");
 }
@@ -1187,8 +1216,7 @@ static void other_request(Sal *sal, eXosip_event_t *ev){
 			osip_message_header_get_byname(ev->request,"Refer-To",0,&h);
 			eXosip_message_send_answer(ev->tid,200,NULL);
 			if (h){
-				SalOp *op=(SalOp*)ev->external_reference;
-				sal->callbacks.refer_received(sal,op,h->hvalue);
+				sal->callbacks.refer_received(sal,NULL,h->hvalue);
 			}
 		}else ms_warning("Ignored REFER not coming from this local loopback interface.");
 	}else if (strncmp(ev->request->sip_method, "UPDATE", 6) == 0){
@@ -1343,6 +1371,7 @@ static void other_request_reply(Sal *sal,eXosip_event_t *ev){
 }
 
 static bool_t process_event(Sal *sal, eXosip_event_t *ev){
+	ms_message("linphone process event get a message %d\n",ev->type);
 	switch(ev->type){
 		case EXOSIP_CALL_ANSWERED:
 			ms_message("CALL_ANSWERED\n");

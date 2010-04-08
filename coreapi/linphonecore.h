@@ -391,7 +391,9 @@ typedef void (*DisplayQuestionCb)(struct _LinphoneCore *lc, const char *message)
 /** Callback prototype */
 typedef void (*LinphoneCoreCbFunc)(struct _LinphoneCore *lc,void * user_data);
 /** Callback prototype */
-typedef void (*NotifyReceivedCb)(struct _LinphoneCore *lc, LinphoneFriend * fid);
+typedef void (*NotifyReceivedCb)(struct _LinphoneCore *lc, const char *from, const char *msg);
+/** Callback prototype */
+typedef void (*NotifyPresenceReceivedCb)(struct _LinphoneCore *lc, LinphoneFriend * fid);
 /** Callback prototype */
 typedef void (*NewUnknownSubscriberCb)(struct _LinphoneCore *lc, LinphoneFriend *lf, const char *url);
 /** Callback prototype */
@@ -418,7 +420,7 @@ typedef struct _LinphoneVTable
 	ShowInterfaceCb show; /**< Notifies the application that it should show up*/
 	InviteReceivedCb inv_recv; /**< Notifies incoming calls */
 	ByeReceivedCb bye_recv; /**< Notify calls terminated by far end*/
-	NotifyReceivedCb notify_recv; /**< Notify received presence events*/
+	NotifyPresenceReceivedCb notify_presence_recv; /**< Notify received presence events*/
 	NewUnknownSubscriberCb new_unknown_subscriber; /**< Notify about unknown subscriber */
 	AuthInfoRequested auth_info_requested; /**< Ask the application some authentication information */
 	DisplayStatusCb display_status; /**< Callback that notifies various events with human readable text.*/
@@ -432,6 +434,7 @@ typedef struct _LinphoneVTable
 	DtmfReceived dtmf_received; /**< A dtmf has been received received */
 	ReferReceived refer_received; /**< A refer was received */
 	BuddyInfoUpdated buddy_info_updated; /**< a LinphoneFriend's BuddyInfo has changed*/
+	NotifyReceivedCb notify_recv; /**< Other notifications*/
 } LinphoneCoreVTable;
 
 /**

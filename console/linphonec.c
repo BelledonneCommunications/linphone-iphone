@@ -120,7 +120,8 @@ static void linphonec_display_something (LinphoneCore * lc, const char *somethin
 static void linphonec_display_url (LinphoneCore * lc, const char *something, const char *url);
 static void linphonec_display_warning (LinphoneCore * lc, const char *something);
 static void stub () {}
-static void linphonec_notify_received(LinphoneCore *lc,LinphoneFriend *fid);
+static void linphonec_notify_received(LinphoneCore *lc,const char *from,const char *msg);
+static void linphonec_notify_presence_received(LinphoneCore *lc,LinphoneFriend *fid);
 static void linphonec_new_unknown_subscriber(LinphoneCore *lc,
 		LinphoneFriend *lf, const char *url);
 static void linphonec_bye_received(LinphoneCore *lc, const char *from);
@@ -176,6 +177,7 @@ LinphoneCoreVTable linphonec_vtable
 	.inv_recv = linphonec_call_received,
 	.bye_recv = linphonec_bye_received,
 	.notify_recv = linphonec_notify_received,
+	.notify_presence_recv = linphonec_notify_presence_received,
 	.new_unknown_subscriber = linphonec_new_unknown_subscriber,
 	.auth_info_requested = linphonec_prompt_for_auth,
 	.display_status = linphonec_display_status,
@@ -209,7 +211,7 @@ LinphoneCoreVTable linphonec_vtable
 static void
 linphonec_display_refer (LinphoneCore * lc,const char *refer_to)
 {
-	fprintf (stdout, "The distant end point asked to transfer the call to %s,don't forget to terminate the call\n%s", refer_to,prompt);
+	fprintf (stdout, "The distant end point asked to transfer the call to %s,don't forget to terminate the call if not\n%s", refer_to,prompt);
 	fflush(stdout);
 }
 
@@ -294,7 +296,21 @@ linphonec_prompt_for_auth(LinphoneCore *lc, const char *realm, const char *usern
  * Linphone core callback
  */
 static void
-linphonec_notify_received(LinphoneCore *lc,LinphoneFriend *fid)
+linphonec_notify_received(LinphoneCore *lc,const char *from,const char *msg)
+{
+	printf("Notify type %s from %s\n", msg, from);
+	if(!strcmp(msg,"refer"))
+	{
+		printf("The distant SIP end point get the refer we can close the call\n");
+		linphonec_parse_command_line(linphonec, "terminate");
+	}
+}
+
+/*
+ * Linphone core callback
+ */
+static void
+linphonec_notify_presence_received(LinphoneCore *lc,LinphoneFriend *fid)
 {
 	char *tmp=linphone_address_as_string(linphone_friend_get_address(fid));
 	printf("Friend %s is %s\n", tmp, linphone_online_status_to_string(linphone_friend_get_status(fid)));
@@ -608,7 +624,7 @@ int _tmain(int argc, _TCHAR* wargv[]) {
 	linphonec_vtable.show =(ShowInterfaceCb) stub;
 	linphonec_vtable.inv_recv = linphonec_call_received;
 	linphonec_vtable.bye_recv = linphonec_bye_received;
-	linphonec_vtable.notify_recv = linphonec_notify_received;
+	linphonec_vtable.notify_presence_recv = linphonec_notify_received;
 	linphonec_vtable.new_unknown_subscriber = linphonec_new_unknown_subscriber;
 	linphonec_vtable.auth_info_requested = linphonec_prompt_for_auth;
 	linphonec_vtable.display_status = linphonec_display_status;

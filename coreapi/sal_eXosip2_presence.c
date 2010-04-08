@@ -711,7 +711,7 @@ void sal_exosip_notify_recv(Sal *sal, eXosip_event_t *ev){
 		op->did=-1;
 		ms_message("And outgoing subscription terminated by remote.");
 	}
-	sal->callbacks.notify(op,op->sid!=-1 ? SalSubscribeActive : SalSubscribeTerminated, estatus,NULL);
+	sal->callbacks.notify_presence(op,op->sid!=-1 ? SalSubscribeActive : SalSubscribeTerminated, estatus,NULL);
 	osip_free(tmp);
 }
 
@@ -752,7 +752,7 @@ void sal_exosip_subscription_closed(Sal *sal,eXosip_event_t *ev){
 	sal_remove_out_subscribe(sal,op);
 	op->sid=-1;
 	op->did=-1;
-	sal->callbacks.notify(op,SalSubscribeTerminated, SalPresenceOffline,NULL);
+	sal->callbacks.notify_presence(op,SalSubscribeTerminated, SalPresenceOffline,NULL);
 }
 
 

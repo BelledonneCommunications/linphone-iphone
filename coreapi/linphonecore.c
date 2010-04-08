@@ -1997,7 +1997,7 @@ int linphone_core_refer(LinphoneCore *lc, const char *url)
 		ms_warning("No established call to refer.");
 		return -1;
 	}
-	lc->call=NULL;
+	//lc->call=NULL; //Do not do that you will lose the call afterward . . .
 	real_url=linphone_address_as_string (real_parsed_url);
 	sal_refer(call->op,real_url);
 	ms_free(real_url);

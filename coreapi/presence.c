@@ -130,7 +130,7 @@ void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeState ss, Sal
 		tmp=linphone_address_as_string(friend);
 		lf->status=estatus;
 		lf->subscribe_active=TRUE;
-		lc->vtable.notify_recv(lc,(LinphoneFriend*)lf);
+		lc->vtable.notify_presence_recv(lc,(LinphoneFriend*)lf);
 		ms_free(tmp);
 	}else{
 		ms_message("But this person is not part of our friend list, so we don't care.");

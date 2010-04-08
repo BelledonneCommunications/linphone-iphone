@@ -392,21 +392,11 @@ static void dtmf_received(SalOp *op, char dtmf){
 }
 
 static void refer_received(Sal *sal, SalOp *op, const char *referto){
-	osip_message_t *msg;
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal);
-	if(op != NULL)
-	{
-		eXosip_call_build_notify(op->tid,EXOSIP_SUBCRSTATE_ACTIVE,&msg);
-		if(msg != NULL)
-		{
-			osip_message_set_header(msg,(const char *)"event","refer");
-			osip_message_set_content_type(msg,"message/sipfrag");
-			osip_message_set_body(msg,"SIP/2.0 100 Trying",sizeof("SIP/2.0 100 Trying"));
-			eXosip_call_send_request(op->tid,msg);
-		}
-	}
-	if (lc->vtable.refer_received)
+	if (lc->vtable.refer_received){
 		lc->vtable.refer_received(lc,referto);
+		if (op) sal_refer_accept(op);
+	}
 }
 
 static void text_received(Sal *sal, const char *from, const char *msg){
@@ -414,7 +404,15 @@ static void text_received(Sal *sal, const char *from, const char *msg){
 	linphone_core_text_received(lc,from,msg);
 }
 
-static void notify(SalOp *op, SalSubscribeState ss, SalPresenceStatus status, const char *msg){
+static void notify(SalOp *op, const char *from, const char *msg){
+	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
+
+	ms_message("get a %s notify from %s",msg,from);
+	if(lc->vtable.notify_recv)
+		lc->vtable.notify_recv(lc,from,msg);
+}
+
+static void notify_presence(SalOp *op, SalSubscribeState ss, SalPresenceStatus status, const char *msg){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	linphone_notify_recv(lc,op,ss,status);
 }
@@ -462,6 +460,7 @@ SalCallbacks linphone_sal_callbacks={
 	refer_received,
 	text_received,
 	notify,
+	notify_presence,
 	subscribe_received,
 	subscribe_closed,
 	internal_message,
