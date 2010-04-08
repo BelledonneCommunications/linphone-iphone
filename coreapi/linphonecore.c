@@ -1691,6 +1691,19 @@ void linphone_core_iterate(LinphoneCore *lc){
 	}
 }
 
+/**
+ * Interpret a call destination as supplied by the user, and returns a fully qualified
+ * LinphoneAddress.
+ *
+ * A sip address should look like DisplayName <sip:username@domain:port> .
+ * Basically this function performs the following tasks
+ * - if a phone number is entered, prepend country prefix of the default proxy
+ *   configuration, eventually escape the '+' by 00.
+ * - if no domain part is supplied, append the domain name of the default proxy
+ * - if no sip: is present, prepend it
+ * 
+ * The result is a syntaxically correct SIP address.
+**/
 
 LinphoneAddress * linphone_core_interpret_url(LinphoneCore *lc, const char *url){
 	enum_lookup_res_t *enumres=NULL;
