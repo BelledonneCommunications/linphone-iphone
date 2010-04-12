@@ -129,7 +129,7 @@
                       </widget>
                     </child>
                     <child>
-                      <widget class="GtkCheckMenuItem" id="menuitem3">
+                      <widget class="GtkCheckMenuItem" id="selfview_item">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Enable self-view</property>
                         <property name="use_underline">True</property>

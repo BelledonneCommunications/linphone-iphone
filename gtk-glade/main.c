@@ -19,6 +19,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define USE_LIBGLADE 1
 
+#define VIDEOSELFVIEW_DEFAULT 1
+
 #include "linphone.h"
 #include "lpconfig.h"
 
@@ -656,7 +658,6 @@ static gboolean linphone_gtk_auto_answer(GtkWidget *incall_window){
 
 void linphone_gtk_set_audio_video(){
 	linphone_core_enable_video(linphone_gtk_get_core(),TRUE,TRUE);
-	linphone_core_enable_video_preview(linphone_gtk_get_core(),TRUE);
 }
 
 void linphone_gtk_set_audio_only(){
@@ -665,8 +666,11 @@ void linphone_gtk_set_audio_only(){
 }
 
 void linphone_gtk_enable_self_view(GtkWidget *w){
-	linphone_core_enable_self_view(linphone_gtk_get_core(),
-		gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)));
+	gboolean val=gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w));
+	LinphoneCore *lc=linphone_gtk_get_core();
+	linphone_core_enable_video_preview(lc,val);
+	linphone_core_enable_self_view(lc,val);
+	linphone_gtk_set_ui_config_int("videoselfview",val);
 }
 
 void linphone_gtk_used_identity_changed(GtkWidget *w){
@@ -682,7 +686,8 @@ void linphone_gtk_used_identity_changed(GtkWidget *w){
 static void linphone_gtk_show_main_window(){
 	GtkWidget *w=linphone_gtk_get_main_window();
 	LinphoneCore *lc=linphone_gtk_get_core();
-	linphone_core_enable_video_preview(lc,linphone_core_video_enabled(lc));
+	linphone_core_enable_video_preview(lc,linphone_gtk_get_ui_config_int("videoselfview",
+	    VIDEOSELFVIEW_DEFAULT));
 	gtk_widget_show(w);
 	gtk_window_present(GTK_WINDOW(w));
 }
@@ -1011,9 +1016,13 @@ static void linphone_gtk_connect_digits(void){
 
 static void linphone_gtk_check_menu_items(void){
 	bool_t audio_only=!linphone_core_video_enabled(linphone_gtk_get_core());
+	bool_t selfview=linphone_gtk_get_ui_config_int("videoselfview",VIDEOSELFVIEW_DEFAULT);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(linphone_gtk_get_widget(
 					linphone_gtk_get_main_window(),
 					audio_only ? "audio_only_item" : "video_item")), TRUE);
+	g_message("Selfview enabled: %i",selfview);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(linphone_gtk_get_widget(
+					linphone_gtk_get_main_window(),"selfview_item")),selfview);
 }
 
 static gboolean linphone_gtk_can_manage_accounts(){
@@ -1178,6 +1187,15 @@ static void linphone_gtk_refer_received(LinphoneCore *lc, const char *refer_to){
 	linphone_gtk_start_call(linphone_gtk_get_main_window());
 }
 
+static void linphone_gtk_check_soundcards(){
+	const char **devices=linphone_core_get_sound_devices(linphone_gtk_get_core());
+	if (devices==NULL || devices[0]==NULL){
+		linphone_gtk_display_something(GTK_MESSAGE_WARNING,
+		    _("No sound cards have been detected on this computer.\n"
+			    "You won't be able to send or receive audio calls."));
+	}
+}
+
 int main(int argc, char *argv[]){
 #ifdef ENABLE_NLS
 	void *p;
@@ -1263,8 +1281,10 @@ int main(int argc, char *argv[]){
 	gtk_timeout_add(30,(GtkFunction)linphone_gtk_check_logs,(gpointer)NULL);
 	linphone_gtk_init_main_window();
 	linphone_gtk_init_status_icon();
-	if (!iconified)
+	if (!iconified){
 		linphone_gtk_show_main_window();
+		linphone_gtk_check_soundcards();
+	}
 	if (linphone_gtk_get_ui_config_int("update_check_menu",0)==0)
 		linphone_gtk_check_for_new_version();
 

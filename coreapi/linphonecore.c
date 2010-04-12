@@ -2582,8 +2582,8 @@ static MSSndCard *get_card_from_string_id(const char *devid, unsigned int cap){
 		}
 		if (sndcard==NULL){/*looks like a bug! take the first one !*/
 			const MSList *elem=ms_snd_card_manager_get_list(ms_snd_card_manager_get());
-			sndcard=(MSSndCard*)elem->data;
-        	}
+			if (elem) sndcard=(MSSndCard*)elem->data;
+        }
 	}
 	if (sndcard==NULL) ms_error("Could not find a suitable soundcard !");
 	return sndcard;
