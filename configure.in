@@ -442,6 +442,7 @@ share/it/Makefile
 share/ja/Makefile
 share/cs/Makefile
 share/linphone.pc
+share/linphone.desktop
 scripts/Makefile
 linphone.spec
 linphone.iss

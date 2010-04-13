@@ -30,8 +30,6 @@ pkgconfig_DATA=linphone.pc
 
 EXTRA_DIST = 					$(LINPHONE_SOUNDS) \
 								$(LINPHONE_RINGS) \
-						        linphone.gnorba     \
-						        linphone.desktop   \
-						        linphone_applet.desktop \
+						        linphone.desktop.in   \
 								linphone.pc.in \
 								Makefile.inc

@@ -11,8 +11,7 @@ GLADE_FILES=	about.glade \
 		buddylookup.glade \
 		waiting.glade
 
-PIXMAPS=	linphone2.png \
-		linphone.png \
+PIXMAPS=	\
 		stock_people.png 
 
 LINPHONE_ICO_RC_FILE=linphone.rc

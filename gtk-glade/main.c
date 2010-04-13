@@ -34,7 +34,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <sys/stat.h>
 #include <unistd.h>
 
-#define LINPHONE_ICON "linphone2.png"
+#define LINPHONE_ICON "linphone.png"
 
 const char *this_program_ident_string="linphone_ident_string=" LINPHONE_VERSION;
 
@@ -235,7 +235,7 @@ static void linphone_gtk_configure_window(GtkWidget *w, const char *window_name)
 	if (config_loaded==FALSE){
 		hiddens=linphone_gtk_get_ui_config("hidden_widgets",NULL);
 		shown=linphone_gtk_get_ui_config("shown_widgets",NULL);
-		icon_path=linphone_gtk_get_ui_config("icon",NULL);
+		icon_path=linphone_gtk_get_ui_config("icon",LINPHONE_ICON);
 		config_loaded=TRUE;
 	}
 	if (hiddens)
@@ -352,6 +352,8 @@ void linphone_gtk_show_about(){
 	struct stat filestat;
 	const char *license_file=PACKAGE_DATA_DIR "/linphone/COPYING";
 	GtkWidget *about;
+	GdkPixbuf *logo=create_pixbuf(
+	    linphone_gtk_get_ui_config("logo","linphone-banner.png"));
 	
 	about=linphone_gtk_create_window("about");
 	gtk_about_dialog_set_url_hook(about_url_clicked,NULL,NULL);
@@ -372,12 +374,14 @@ void linphone_gtk_show_about(){
 	gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(about),LINPHONE_VERSION);
 	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(about),linphone_gtk_get_ui_config("title","Linphone"));
 	gtk_about_dialog_set_website(GTK_ABOUT_DIALOG(about),linphone_gtk_get_ui_config("home","http://www.linphone.org"));
+	if (logo)	gtk_about_dialog_set_logo(GTK_ABOUT_DIALOG(about),logo);
+	    
 	gtk_widget_show(about);
 }
 
 static void set_video_window_decorations(GdkWindow *w){
 	const char *title=linphone_gtk_get_ui_config("title","Linphone");
-	const char *icon_path=linphone_gtk_get_ui_config("icon","linphone2.png");
+	const char *icon_path=linphone_gtk_get_ui_config("icon",LINPHONE_ICON);
 	char video_title[256];
 	GdkPixbuf *pbuf=create_pixbuf(icon_path);
 	if (!linphone_core_in_call(linphone_gtk_get_core())){

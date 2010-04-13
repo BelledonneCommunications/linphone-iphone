@@ -5,6 +5,6 @@ Comment[fr]=Linphone est un web-phone.
 Comment[de]=Linphone ist ein web-phone.
 Type=Application
 Exec=linphone-3
-Icon=linphone/linphone2.png
+Icon=@prefix@/share/pixmaps/linphone/linphone.png
 Terminal=false
 Categories=Application;Network;
