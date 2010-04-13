@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "linphonecore.h"
 #include "private.h"
 #include "mediastreamer2/mediastream.h"
-#include "sal_eXosip2.h"
+
 
 static void linphone_connect_incoming(LinphoneCore *lc, LinphoneCall *call){
 	if (lc->vtable.show)
