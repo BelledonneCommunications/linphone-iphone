@@ -1024,7 +1024,6 @@ static void linphone_gtk_check_menu_items(void){
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(linphone_gtk_get_widget(
 					linphone_gtk_get_main_window(),
 					audio_only ? "audio_only_item" : "video_item")), TRUE);
-	g_message("Selfview enabled: %i",selfview);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(linphone_gtk_get_widget(
 					linphone_gtk_get_main_window(),"selfview_item")),selfview);
 }
