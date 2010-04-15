@@ -1048,14 +1048,16 @@ static void linphone_gtk_configure_main_window(){
 	static const char *stop_call_icon;
 	static const char *search_icon;
 	static gboolean update_check_menu;
+	static gboolean buttons_have_borders;
 	GtkWidget *w=linphone_gtk_get_main_window();
 	if (!config_loaded){
 		title=linphone_gtk_get_ui_config("title","Linphone");
 		home=linphone_gtk_get_ui_config("home","http://www.linphone.org");
-		start_call_icon=linphone_gtk_get_ui_config("start_call_icon","green.png");
-		stop_call_icon=linphone_gtk_get_ui_config("stop_call_icon","red.png");
+		start_call_icon=linphone_gtk_get_ui_config("start_call_icon","startcall-green.png");
+		stop_call_icon=linphone_gtk_get_ui_config("stop_call_icon","stopcall-red.png");
 		search_icon=linphone_gtk_get_ui_config("directory_search_icon",NULL);
 		update_check_menu=linphone_gtk_get_ui_config_int("update_check_menu",0);
+		buttons_have_borders=linphone_gtk_get_ui_config_int("buttons_border",1);
 		config_loaded=TRUE;
 	}
 	linphone_gtk_configure_window(w,"main_window");
@@ -1068,11 +1070,15 @@ static void linphone_gtk_configure_main_window(){
 	if (start_call_icon){
 		GdkPixbuf *pbuf=create_pixbuf(start_call_icon);
 		gtk_image_set_from_pixbuf(GTK_IMAGE(linphone_gtk_get_widget(w,"start_call_icon")),pbuf);
+		if (buttons_have_borders)
+			gtk_button_set_relief(GTK_BUTTON(linphone_gtk_get_widget(w,"start_call")),GTK_RELIEF_NORMAL);
 		g_object_unref(G_OBJECT(pbuf));
 	}
 	if (stop_call_icon){
 		GdkPixbuf *pbuf=create_pixbuf(stop_call_icon);
 		gtk_image_set_from_pixbuf(GTK_IMAGE(linphone_gtk_get_widget(w,"terminate_call_icon")),pbuf);
+		if (buttons_have_borders)
+			gtk_button_set_relief(GTK_BUTTON(linphone_gtk_get_widget(w,"terminate_call")),GTK_RELIEF_NORMAL);
 		g_object_unref(G_OBJECT(pbuf));
 	}
 	if (search_icon){
@@ -1085,6 +1091,20 @@ static void linphone_gtk_configure_main_window(){
 		GtkWidget *menu_item=linphone_gtk_get_widget(w,"home_item");
 		tmp=g_strdup(home);
 		g_object_set_data(G_OBJECT(menu_item),"home",tmp);
+	}
+	{
+		GdkPixbuf *pbuf=create_pixbuf("contact-orange.png");
+		if (pbuf) {
+			gtk_image_set_from_pixbuf(GTK_IMAGE(linphone_gtk_get_widget(w,"contact_tab_icon")),pbuf);
+			g_object_unref(G_OBJECT(pbuf));
+		}
+	}
+	{
+		GdkPixbuf *pbuf=create_pixbuf("dialer-orange.png");
+		if (pbuf) {
+			gtk_image_set_from_pixbuf(GTK_IMAGE(linphone_gtk_get_widget(w,"keypad_tab_icon")),pbuf);
+			g_object_unref(G_OBJECT(pbuf));
+		}
 	}
 	if (!linphone_gtk_can_manage_accounts())
 		gtk_widget_hide(linphone_gtk_get_widget(w,"run_assistant"));
