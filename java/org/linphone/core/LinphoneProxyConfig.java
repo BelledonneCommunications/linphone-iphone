@@ -68,4 +68,8 @@ public interface LinphoneProxyConfig {
 	 * @return may be null
 	 */
 	public String getDomain();
+	public String getIdentity();
+	public String getProxy();
+	public boolean registerEnabled();
+	public boolean isRegistered();
 }
