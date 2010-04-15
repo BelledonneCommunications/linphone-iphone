@@ -238,8 +238,9 @@ LinphoneCoreVTable linphonec_vtable = {
 	NSString* username = [[NSUserDefaults standardUserDefaults] stringForKey:@"username_preference"];
 	NSString* domain = [[NSUserDefaults standardUserDefaults] stringForKey:@"domain_preference"];
 	NSString* accountPassword = [[NSUserDefaults standardUserDefaults] stringForKey:@"password_preference"];
-
-	//clear auth info list
+	bool configCheckDisable = [[NSUserDefaults standardUserDefaults] boolForKey:@"check_config_disable_preference"];  
+	
+		//clear auth info list
 	linphone_core_clear_all_auth_info(myLinphoneCore);
 	//clear existing proxy config
 	linphone_core_clear_proxy_config(myLinphoneCore);
@@ -293,7 +294,14 @@ LinphoneCoreVTable linphonec_vtable = {
 		bool result=SCNetworkReachabilitySetCallback(proxyReachability, (SCNetworkReachabilityCallBack)networkReachabilityCallBack,&proxyReachabilityContext);
 		SCNetworkReachabilityScheduleWithRunLoop(proxyReachability, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
 		[self doRegister];
-	}
+	} else if (configCheckDisable == false) { 		
+		UIAlertView* error = [[UIAlertView alloc]	initWithTitle:@"Warning"
+													message:@"It seems you have not configured any proxy server from settings" 
+													delegate:self 
+													cancelButtonTitle:@"Continue" 
+													otherButtonTitles:@"Never remind",nil];
+		[error show];
+	}		
 	//Configure Codecs
 	
 	PayloadType *pt;
@@ -352,6 +360,13 @@ LinphoneCoreVTable linphonec_vtable = {
 									repeats:YES];
 	
 }
+// no proxy configured alert 
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (buttonIndex == 1) {
+		[[NSUserDefaults standardUserDefaults] setBool:true forKey:@"check_config_disable_preference"];  
+	}
+}
+
 
 -(void) newIncomingCall:(NSString*) from {
 		//redirect audio to speaker

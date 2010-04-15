@@ -51,8 +51,8 @@
 				<object class="IBUIViewController" key="IBUISelectedViewController" id="156830991">
 					<string key="IBUITitle">History</string>
 					<object class="IBUITabBarItem" key="IBUITabBarItem" id="1041279701">
+						<string key="IBUITitle">History</string>
 						<reference key="IBUITabBar"/>
-						<int key="IBUISystemItemIdentifier">6</int>
 					</object>
 					<reference key="IBUIParentViewController" ref="952473143"/>
 					<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics"/>

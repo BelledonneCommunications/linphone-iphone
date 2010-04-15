@@ -36,7 +36,7 @@
 @class PhoneViewController;
 @class CallHistoryTableViewController;
 
-@interface linphoneAppDelegate : NSObject <UIApplicationDelegate,LinphoneTabManagerDelegate,UIActionSheetDelegate> {
+@interface linphoneAppDelegate : NSObject <UIApplicationDelegate,LinphoneTabManagerDelegate,UIActionSheetDelegate,UIAlertViewDelegate> {
     UIWindow *window;
 	IBOutlet UITabBarController*  myTabBarController;
 	IBOutlet ABPeoplePickerNavigationController* myPeoplePickerController;

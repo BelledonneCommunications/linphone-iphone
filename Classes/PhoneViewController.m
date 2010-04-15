@@ -324,18 +324,29 @@
 		}
 			
 		case GSTATE_CALL_ERROR: {
+			/*
 			NSString* lTitle= state->message!=nil?[NSString stringWithCString:state->message length:strlen(state->message)]: @"Error";
 			NSString* lMessage=lTitle;
+			*/
+			NSString* lMessage;
+			NSString* lTitle;
+			const char *errormsg=state->message;
 			
+			lMessage=@"Please make sure your device is connected to the internet and double check your SIP account configuration in the settings.";
+
+			if (errormsg!=nil){
+				lMessage=[NSString stringWithFormat : @"%@\nReason was: %s",lMessage, errormsg];
+			}
+			lTitle=@"Call failed";
 			
 			UIAlertView* error = [[UIAlertView alloc] initWithTitle:lTitle
 															message:lMessage 
 														   delegate:nil 
-												  cancelButtonTitle:nil 
+												  cancelButtonTitle:@"Dismiss" 
 												  otherButtonTitles:nil];
 			[error show];
-			[self performSelector:@selector(dismissAlertDialog:) withObject:error afterDelay:1];
-			[self performSelector:@selector(dismissIncallView) withObject:nil afterDelay:1];
+			//[self performSelector:@selector(dismissAlertDialog:) withObject:error afterDelay:2];
+			//[self performSelector:@selector(dismissIncallView) withObject:nil afterDelay:2];
 			
 		}
 			break;

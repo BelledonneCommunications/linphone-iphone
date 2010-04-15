@@ -7,11 +7,11 @@
 	<key>UIRequiresPersistentWiFi</key>
 	<true/>
 	<key>CFBundleDisplayName</key>
-	<string>${PRODUCT_NAME}</string>
+	<string>Linphone</string>
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleIconFile</key>
-	<string>linphone2-57x57.png</string>
+	<string>icone-linphone-57.png</string>
 	<key>CFBundleIdentifier</key>
 	<string>org.linphone.phone</string>
 	<key>CFBundleInfoDictionaryVersion</key>
