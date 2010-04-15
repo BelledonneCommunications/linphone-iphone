@@ -1226,6 +1226,7 @@ int main(int argc, char *argv[]){
 	const char *config_file;
 	const char *factory_config_file;
 	const char *lang;
+	GtkSettings *settings;
 
 	g_thread_init(NULL);
 	gdk_threads_init();
@@ -1272,6 +1273,9 @@ int main(int argc, char *argv[]){
 		gdk_threads_leave();
 		return -1;
 	}
+	settings=gtk_settings_get_default();
+	g_object_set(settings, "gtk-menu-images", TRUE, NULL);
+	g_object_set(settings, "gtk-button-images", TRUE, NULL);
 #ifdef WIN32
 	if (workingdir!=NULL)
 		_chdir(workingdir);

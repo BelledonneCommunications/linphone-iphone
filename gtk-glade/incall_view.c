@@ -208,6 +208,5 @@ void linphone_gtk_mute_toggled(GtkToggleButton *button){
 
 void linphone_gtk_enable_mute_button(GtkToggleButton *button, gboolean sensitive){
 	gtk_widget_set_sensitive(GTK_WIDGET(button),sensitive);
-	gtk_object_set(GTK_OBJECT(button),"gtk-button-images",TRUE,NULL);
 	linphone_gtk_draw_mute_button(button,FALSE);
 }
