@@ -120,7 +120,7 @@
     // Set up the cell...
 	LinphoneAddress* partyToDisplay; 
 	const MSList * logs = linphone_core_get_call_logs(myLinphoneCore);
-	LinphoneCallLog*  callLogs = ms_list_nth_data(logs,  ms_list_size(logs)-indexPath.row-1) ;
+	LinphoneCallLog*  callLogs = ms_list_nth_data(logs,  indexPath.row) ;
 
 	NSString *path;
 	if (callLogs->dir == LinphoneCallIncoming) {
@@ -160,7 +160,7 @@
 	[tableView deselectRowAtIndexPath:indexPath animated:NO];
 	
 	const MSList * logs = linphone_core_get_call_logs(myLinphoneCore);
-	LinphoneCallLog*  callLogs = ms_list_nth_data(logs,  ms_list_size(logs)-indexPath.row-1) ;
+	LinphoneCallLog*  callLogs = ms_list_nth_data(logs,  indexPath.row) ;
 	LinphoneAddress* partyToCall; 
 	if (callLogs->dir == LinphoneCallIncoming) {
 		partyToCall=callLogs->from;

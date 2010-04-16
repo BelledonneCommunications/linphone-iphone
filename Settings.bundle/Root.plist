@@ -91,17 +91,6 @@
 			<string>Codecs</string>
 		</dict>
 		<dict>
-			<key>TrueValue</key>
-			<dict>
-				<key>Type</key>
-				<string>PSToggleSwitchSpecifier</string>
-				<key>Title</key>
-				<string>Speex 8Khz</string>
-				<key>Key</key>
-				<string>speex_8k_preference</string>
-				<key>DefaultValue</key>
-				<true/>
-			</dict>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
@@ -112,17 +101,6 @@
 			<true/>
 		</dict>
 		<dict>
-			<key>TrueValue</key>
-			<dict>
-				<key>Type</key>
-				<string>PSToggleSwitchSpecifier</string>
-				<key>Title</key>
-				<string>Speex 8Khz</string>
-				<key>Key</key>
-				<string>speex_8k_preference</string>
-				<key>DefaultValue</key>
-				<true/>
-			</dict>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
@@ -139,6 +117,16 @@
 			<string>GSM</string>
 			<key>Key</key>
 			<string>gsm_8k_preference</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>ILBC</string>
+			<key>Key</key>
+			<string>ilbc_preference</string>
 			<key>DefaultValue</key>
 			<true/>
 		</dict>

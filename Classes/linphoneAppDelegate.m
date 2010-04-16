@@ -187,6 +187,8 @@ LinphoneCoreVTable linphonec_vtable = {
 	[super dealloc];
 }
 
+extern void libmsilbc_init();
+
 /*************
  *lib linphone init method
  */
@@ -226,6 +228,7 @@ LinphoneCoreVTable linphonec_vtable = {
 	
 	//register audio queue sound card
 	ms_au_register_card();
+	libmsilbc_init();
 	
 	/*
 	 * Initialize linphone core
@@ -319,8 +322,14 @@ LinphoneCoreVTable linphonec_vtable = {
 	PayloadType *pt;
 	//get codecs from linphonerc	
 	const MSList *audioCodecs=linphone_core_get_audio_codecs(myLinphoneCore);
+	const MSList *elem;
+	//disable all codecs
+	for (elem=audioCodecs;elem!=NULL;elem=elem->next){
+		pt=(PayloadType*)elem->data;
+		linphone_core_enable_payload_type(myLinphoneCore,pt,FALSE);
+	}
 	
-	//read from setting  bundle
+	//read codecs from setting  bundle and enable them one by one
 	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"speex_32k_preference"]) { 		
 		if(pt = [self findPayload:@"speex"withRate:32000 from:audioCodecs]) {
 			linphone_core_enable_payload_type(myLinphoneCore,pt, TRUE);
@@ -348,6 +357,11 @@ LinphoneCoreVTable linphonec_vtable = {
 	}
 	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"gsm_8k_preference"]) {
 		if(pt = [self findPayload:@"GSM"withRate:8000 from:audioCodecs]) {
+			linphone_core_enable_payload_type(myLinphoneCore,pt, TRUE);
+		}
+	}
+	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"ilbc_preference"]) {
+		if(pt = [self findPayload:@"iLBC"withRate:8000 from:audioCodecs]) {
 			linphone_core_enable_payload_type(myLinphoneCore,pt, TRUE);
 		}
 	}
