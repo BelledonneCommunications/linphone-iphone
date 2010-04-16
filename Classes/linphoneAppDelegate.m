@@ -166,7 +166,7 @@ LinphoneCoreVTable linphonec_vtable = {
 }
 - (void)applicationDidBecomeActive:(UIApplication *)application {
 	if (isStarted) {
-		ms_message(@"becomming active, make sure we are registered");
+		ms_message("becomming active, make sure we are registered");
 		[self doRegister];
 	} else {
 		isStarted=true;
@@ -194,7 +194,19 @@ LinphoneCoreVTable linphonec_vtable = {
 	
 	//init audio session
 	NSError *setError = nil;
-	[[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayAndRecord error: &setError]; //must be call before linphone_core_init
+	AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+	BOOL bAudioInputAvailable= [audioSession inputIsAvailable];
+	
+	if(!bAudioInputAvailable){
+		UIAlertView* error = [[UIAlertView alloc]	initWithTitle:@"No microphone"
+														message:@"You need to plug a microphone to your device to use this application." 
+													   delegate:self 
+											  cancelButtonTitle:@"Ok" 
+											  otherButtonTitles:nil ,nil];
+		[error show];
+	}else{
+		[audioSession setCategory: AVAudioSessionCategoryPlayAndRecord error: &setError]; //must be call before linphone_core_init
+	}
 	
 	//get default config from bundle
 	NSBundle* myBundle = [NSBundle mainBundle];
@@ -311,42 +323,42 @@ LinphoneCoreVTable linphonec_vtable = {
 	//read from setting  bundle
 	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"speex_32k_preference"]) { 		
 		if(pt = [self findPayload:@"speex"withRate:32000 from:audioCodecs]) {
-			payload_type_set_enable(pt,TRUE);
+			linphone_core_enable_payload_type(myLinphoneCore,pt, TRUE);
 		}
 	} 
 	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"speex_16k_preference"]) { 		
 		if(pt = [self findPayload:@"speex"withRate:16000 from:audioCodecs]) {
-			payload_type_set_enable(pt,TRUE);
+			linphone_core_enable_payload_type(myLinphoneCore,pt, TRUE);
 		}
 	} 
 	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"speex_8k_preference"]) { 
 		if(pt = [self findPayload:@"speex"withRate:8000 from:audioCodecs]) {
-			payload_type_set_enable(pt,TRUE);
+			linphone_core_enable_payload_type(myLinphoneCore,pt, TRUE);
 		}
 	}
 	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"gsm_22k_preference"]) { 
 		if(pt = [self findPayload:@"GSM"withRate:22050 from:audioCodecs]) {
-			payload_type_set_enable(pt,TRUE);
+			linphone_core_enable_payload_type(myLinphoneCore,pt, TRUE);
 		}
 	}
 	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"gsm_11k_preference"]) { 
 		if(pt = [self findPayload:@"GSM"withRate:11025 from:audioCodecs]) {
-			payload_type_set_enable(pt,TRUE);
+			linphone_core_enable_payload_type(myLinphoneCore,pt, TRUE);
 		}
 	}
 	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"gsm_8k_preference"]) {
 		if(pt = [self findPayload:@"GSM"withRate:8000 from:audioCodecs]) {
-			payload_type_set_enable(pt,TRUE);
+			linphone_core_enable_payload_type(myLinphoneCore,pt, TRUE);
 		}
 	}
 	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"pcmu_preference"]) {
 		if(pt = [self findPayload:@"PCMU"withRate:8000 from:audioCodecs]) {
-			payload_type_set_enable(pt,TRUE);
+			linphone_core_enable_payload_type(myLinphoneCore,pt, TRUE);
 		}
 	}
 	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"pcma_preference"]) {
 		if(pt = [self findPayload:@"PCMA"withRate:8000 from:audioCodecs]) {
-			payload_type_set_enable(pt,TRUE);
+			linphone_core_enable_payload_type(myLinphoneCore,pt, TRUE);
 		}
 	}
 	
