@@ -607,6 +607,8 @@ int linphone_core_get_sip_port(LinphoneCore *lc);
 
 void linphone_core_set_sip_port(LinphoneCore *lc,int port);
 
+ortp_socket_t linphone_core_get_sip_socket(LinphoneCore *lc);
+
 void linphone_core_set_inc_timeout(LinphoneCore *lc, int seconds);
 
 int linphone_core_get_inc_timeout(LinphoneCore *lc);

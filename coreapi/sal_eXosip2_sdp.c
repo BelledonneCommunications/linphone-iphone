@@ -125,6 +125,8 @@ static sdp_message_t *create_generic_sdp(const SalMediaDescription *desc)
 			      osip_strdup ("IN"), inet6 ? osip_strdup ("IP6") : osip_strdup ("IP4"),
 			      osip_strdup (desc->addr), NULL, NULL);
 	sdp_message_t_time_descr_add (local, osip_strdup ("0"), osip_strdup ("0"));
+	if (desc->bandwidth>0) sdp_message_b_bandwidth_add (local, -1, osip_strdup ("AS"),
+				     int_2char(desc->bandwidth));
 	return local;
 }
 
@@ -234,6 +236,10 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 	addr=sdp_message_c_addr_get (msg, -1, 0);
 	if (addr)
 		strncpy(desc->addr,addr,sizeof(desc->addr));
+	for(j=0;(sbw=sdp_message_bandwidth_get(msg,-1,j))!=NULL;++j){
+		if (strcasecmp(sbw->b_bwtype,"AS")==0) desc->bandwidth=atoi(sbw->b_bandwidth);
+	}
+	
 	/* for each m= line */
 	for (i=0; !sdp_message_endof_media (msg, i) && i<SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++)
 	{

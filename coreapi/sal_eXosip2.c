@@ -227,12 +227,15 @@ static void _osip_trace_func(char *fi, int li, osip_trace_level_t level, char *c
 
 Sal * sal_init(){
 	static bool_t firsttime=TRUE;
+	Sal *sal;
 	if (firsttime){
 		osip_trace_initialize_func (OSIP_INFO4,&_osip_trace_func);
 		firsttime=FALSE;
 	}
 	eXosip_init();
-	return ms_new0(Sal,1);
+	sal=ms_new0(Sal,1);
+	sal->sock=-1;
+	return sal;
 }
 
 void sal_uninit(Sal* sal){
@@ -290,13 +293,58 @@ void sal_set_callbacks(Sal *ctx, const SalCallbacks *cbs){
 		ctx->callbacks.ping_reply=(SalOnPingReply)unimplemented_stub;
 }
 
+
+static ortp_socket_t create_socket(int pf, int proto, const char *addr, int local_port){
+	struct addrinfo hints;
+	struct addrinfo *res=NULL;
+	ortp_socket_t sock;
+	int optval;
+	char tmp[20];
+	int err;
+	
+	sock=socket(pf,(proto==IPPROTO_UDP) ? SOCK_DGRAM : SOCK_STREAM,0);
+	if (sock<0) {
+		ms_error("Fail to create socket");
+		return -1;
+	}
+	snprintf(tmp,sizeof(tmp)-1,"%i",local_port);
+	memset (&hints,0,sizeof(hints));
+	hints.ai_family=(pf==PF_INET) ? AF_INET : AF_INET6;
+	hints.ai_socktype=(proto==IPPROTO_UDP) ? SOCK_DGRAM : SOCK_STREAM;
+	
+	if ((err=getaddrinfo(addr,
+	    	tmp,
+	    	&hints,&res))<0) {
+		ms_error("create_socket: getaddrinfo() failed: %s",gai_strerror(err));
+		close_socket(sock);
+		return -1;
+	}
+	if (bind(sock,(struct sockaddr*)res->ai_addr,res->ai_addrlen)<0){
+		ms_error("Bind socket to localhost:%i failed: %s",local_port,getSocketError());
+		freeaddrinfo(res);
+		close_socket(sock);
+		return -1;
+	}
+	freeaddrinfo(res);
+	optval=1;
+	if (setsockopt (sock, SOL_SOCKET, SO_REUSEADDR,
+				(SOCKET_OPTION_VALUE)&optval, sizeof (optval))<0){
+		ms_warning("Fail to set SO_REUSEADDR");
+	}
+	/*set_non_blocking_socket(sock);*/
+	return sock;
+}
+
+
 int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int is_secure){
 	int err;
 	bool_t ipv6;
 	int proto=IPPROTO_UDP;
 	
-	if (ctx->running) eXosip_quit();
-	eXosip_init();
+	if (ctx->running){
+		eXosip_quit();
+		eXosip_init();
+	}
 	err=0;
 	eXosip_set_option(13,&err); /*13=EXOSIP_OPT_SRV_WITH_NAPTR, as it is an enum value, we can't use it unless we are sure of the
 					version of eXosip, which is not the case*/
@@ -308,9 +356,19 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 		ms_fatal("SIP over TCP or TLS or DTLS is not supported yet.");
 		return -1;
 	}
-	
+	ctx->sock=create_socket(ipv6 ?  PF_INET6 : PF_INET, proto, addr, port);
+	if (ctx->sock==-1) return -1;
+	ms_message("Exosip is given socket %i",ctx->sock);
+	eXosip_set_socket(proto,ctx->sock,port);
+	/*
 	err=eXosip_listen_addr(proto, addr, port, ipv6 ?  PF_INET6 : PF_INET, 0);
+	*/
+	ctx->running=TRUE;
 	return err;
+}
+
+ortp_socket_t sal_get_socket(Sal *ctx){
+	return ctx->sock;
 }
 
 void sal_set_user_agent(Sal *ctx, const char *user_agent){
@@ -381,6 +439,7 @@ static void sdp_process(SalOp *h){
 		offer_answer_initiate_incoming(h->base.local_media,h->base.remote_media,h->result);
 		h->sdp_answer=media_description_to_sdp(h->result);
 		strcpy(h->result->addr,h->base.remote_media->addr);
+		h->result->bandwidth=h->base.remote_media->bandwidth;
 		for(i=0;i<h->result->nstreams;++i){
 			if (h->result->streams[i].port>0){
 				strcpy(h->result->streams[i].addr,h->base.remote_media->streams[i].addr);

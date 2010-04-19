@@ -84,6 +84,7 @@ static SalMediaDescription *create_local_media_description(LinphoneCore *lc,
 	md->nstreams=1;
 	strncpy(md->addr,localip,sizeof(md->addr));
 	strncpy(md->username,username,sizeof(md->username));
+	md->bandwidth=linphone_core_get_download_bandwidth(lc);
 	/*set audio capabilities */
 	strncpy(md->streams[0].addr,localip,sizeof(md->streams[0].addr));
 	md->streams[0].port=linphone_core_get_audio_port(lc);
@@ -2147,11 +2148,12 @@ static void post_configure_audio_streams(LinphoneCore *lc){
 	}
 }
 
-static RtpProfile *make_profile(LinphoneCore *lc, const SalStreamDescription *desc, int *used_pt){
+static RtpProfile *make_profile(LinphoneCore *lc, const SalMediaDescription *md, const SalStreamDescription *desc, int *used_pt){
 	int bw;
 	const MSList *elem;
 	RtpProfile *prof=rtp_profile_new("Call profile");
 	bool_t first=TRUE;
+	int remote_bw=0;
 	
 	for(elem=desc->payloads;elem!=NULL;elem=elem->next){
 		PayloadType *pt=(PayloadType*)elem->data;
@@ -2163,9 +2165,18 @@ static RtpProfile *make_profile(LinphoneCore *lc, const SalStreamDescription *de
 			*used_pt=payload_type_get_number(pt);
 			first=FALSE;
 		}
+		if (desc->bandwidth>0) remote_bw=desc->bandwidth;
+		else if (md->bandwidth>0) {
+			/*case where b=AS is given globally, not per stream*/
+			remote_bw=md->bandwidth;
+			if (desc->type==SalVideo){
+				remote_bw-=lc->audio_bw;
+			}
+		}
+		
 		if (desc->type==SalAudio){			
-				bw=get_min_bandwidth(lc->up_audio_bw,desc->bandwidth);
-		}else bw=get_min_bandwidth(lc->up_video_bw,desc->bandwidth);
+				bw=get_min_bandwidth(lc->up_audio_bw,remote_bw);
+		}else bw=get_min_bandwidth(lc->up_video_bw,remote_bw);
 		if (bw>0) pt->normal_bitrate=bw*1000;
 		else if (desc->type==SalAudio){
 			pt->normal_bitrate=-1;
@@ -2195,7 +2206,7 @@ void linphone_core_start_media_streams(LinphoneCore *lc, LinphoneCall *call){
 		const SalStreamDescription *stream=sal_media_description_find_stream(call->resultdesc,
 		    					SalProtoRtpAvp,SalAudio);
 		if (stream){
-			call->audio_profile=make_profile(lc,stream,&used_pt);
+			call->audio_profile=make_profile(lc,call->resultdesc,stream,&used_pt);
 			if (!lc->use_files){
 				MSSndCard *playcard=lc->sound_conf.play_sndcard;
 				MSSndCard *captcard=lc->sound_conf.capt_sndcard;
@@ -2245,7 +2256,7 @@ void linphone_core_start_media_streams(LinphoneCore *lc, LinphoneCall *call){
 		}
 		if (stream && (lc->video_conf.display || lc->video_conf.capture)) {
 			const char *addr=stream->addr[0]!='\0' ? stream->addr : call->resultdesc->addr;
-			call->video_profile=make_profile(lc,stream,&used_pt);
+			call->video_profile=make_profile(lc,call->resultdesc,stream,&used_pt);
 			video_stream_set_sent_video_size(lc->videostream,linphone_core_get_preferred_video_size(lc));
 			video_stream_enable_self_view(lc->videostream,lc->video_conf.selfview);
 			if (lc->video_conf.display && lc->video_conf.capture)
@@ -3558,6 +3569,10 @@ void linphone_core_set_network_reachable(LinphoneCore* lc,bool_t isReachable) {
 		lc->auto_net_state_mon=FALSE;
 	}
 	set_network_reachable(lc,isReachable);
+}
+
+ortp_socket_t linphone_core_get_sip_socket(LinphoneCore *lc){
+	return sal_get_socket(lc->sal);
 }
 /**
  * Destroys a LinphoneCore

@@ -662,6 +662,8 @@ static gboolean linphone_gtk_auto_answer(GtkWidget *incall_window){
 
 void linphone_gtk_set_audio_video(){
 	linphone_core_enable_video(linphone_gtk_get_core(),TRUE,TRUE);
+	linphone_core_enable_video_preview(linphone_gtk_get_core(),
+	    linphone_gtk_get_ui_config_int("videoselfview",VIDEOSELFVIEW_DEFAULT));
 }
 
 void linphone_gtk_set_audio_only(){
@@ -690,8 +692,10 @@ void linphone_gtk_used_identity_changed(GtkWidget *w){
 static void linphone_gtk_show_main_window(){
 	GtkWidget *w=linphone_gtk_get_main_window();
 	LinphoneCore *lc=linphone_gtk_get_core();
-	linphone_core_enable_video_preview(lc,linphone_gtk_get_ui_config_int("videoselfview",
-	    VIDEOSELFVIEW_DEFAULT));
+	if (linphone_core_video_enabled(lc)){
+		linphone_core_enable_video_preview(lc,linphone_gtk_get_ui_config_int("videoselfview",
+	    	VIDEOSELFVIEW_DEFAULT));
+	}
 	gtk_widget_show(w);
 	gtk_window_present(GTK_WINDOW(w));
 }
