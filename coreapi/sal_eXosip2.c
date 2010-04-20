@@ -666,6 +666,7 @@ int sal_call_terminate(SalOp *h){
 	eXosip_call_terminate(h->cid,h->did);
 	eXosip_unlock();
 	sal_remove_call(h->base.root,h);
+	h->cid=-1;
 	return 0;
 }
 
