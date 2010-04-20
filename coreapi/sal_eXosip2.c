@@ -869,9 +869,9 @@ static int call_proceeding(Sal *sal, eXosip_event_t *ev){
 
 static void call_ringing(Sal *sal, eXosip_event_t *ev){
 	sdp_message_t *sdp;
-	SalOp *op;
+	SalOp *op=find_op(sal,ev);
 	if (call_proceeding(sal, ev)==-1) return;
-	op=(SalOp*)ev->external_reference;
+	
 	sdp=eXosip_get_sdp_info(ev->response);
 	if (sdp){
 		op->base.remote_media=sal_media_description_new();
