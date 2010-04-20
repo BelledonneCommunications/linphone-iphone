@@ -750,6 +750,7 @@ int linphone_core_get_local_ip_for(int type, const char *dest, char *result){
 			dest="87.98.157.38"; /*a public IP address*/
 		else dest="2a00:1450:8002::68";
 	}
+	strcpy(result,type==AF_INET ? "127.0.0.1" : "::1");
 #ifdef HAVE_GETIFADDRS
 	{
 		int found_ifs;
@@ -759,7 +760,6 @@ int linphone_core_get_local_ip_for(int type, const char *dest, char *result){
 			return 0;
 		}else if (found_ifs<=0){
 			/*absolutely no network on this machine */
-			strcpy(result,type==AF_INET ? "127.0.0.1" : "::1");
 			return -1;
 		}
 	}
