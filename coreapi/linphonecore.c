@@ -1162,8 +1162,7 @@ void linphone_core_get_local_ip(LinphoneCore *lc, const char *dest, char *result
 		strncpy(result,linphone_core_get_nat_address(lc),LINPHONE_IPADDR_SIZE);
 		return;
 	}
-	if (dest==NULL) dest="87.98.157.38"; /*a public IP address*/
-	if (linphone_core_get_local_ip_for(dest,result)==0)
+	if (linphone_core_get_local_ip_for(lc->sip_conf.ipv6_enabled ? AF_INET6 : AF_INET,dest,result)==0)
 		return;
 	/*else fallback to SAL routine that will attempt to find the most realistic interface */
 	sal_get_default_local_ip(lc->sal,lc->sip_conf.ipv6_enabled ? AF_INET6 : AF_INET,result,LINPHONE_IPADDR_SIZE);
@@ -1515,14 +1514,15 @@ static void monitor_network_state(LinphoneCore *lc, time_t curtime){
 
 	/* only do the network up checking every five seconds */
 	if (last_check==0 || (curtime-last_check)>=5){
-		sal_get_default_local_ip(lc->sal,
-		    lc->sip_conf.ipv6_enabled ? AF_INET6 : AF_INET,
-		    result,LINPHONE_IPADDR_SIZE);
+		linphone_core_get_local_ip_for(lc->sip_conf.ipv6_enabled ? AF_INET6 : AF_INET,NULL,result);
 		if (strcmp(result,"::1")!=0 && strcmp(result,"127.0.0.1")!=0){
 			new_status=TRUE;
 		}else new_status=FALSE;
 		last_check=curtime;
 		if (new_status!=last_status) {
+			if (new_status){
+				ms_message("New local ip address is %s",result);
+			}
 			set_network_reachable(lc,new_status);
 			last_status=new_status;
 		}

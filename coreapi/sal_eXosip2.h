@@ -30,6 +30,7 @@ int sdp_to_media_description(sdp_message_t *sdp, SalMediaDescription *desc);
 
 struct Sal{
 	SalCallbacks callbacks;
+	MSList *calls; /*MSList of SalOp */
 	MSList *registers;/*MSList of SalOp */
 	MSList *out_subscribes;/*MSList of SalOp */
 	MSList *in_subscribes;/*MSList of SalOp */

@@ -23,8 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "sal_eXosip2.h"
 
 #include "offeranswer.h"
-/*this function is not declared in some versions of eXosip*/
-extern void *eXosip_call_get_reference(int cid);
 
 static void text_received(Sal *sal, eXosip_event_t *ev);
 
@@ -42,6 +40,25 @@ void sal_get_default_local_ip(Sal *sal, int address_family,char *ip, size_t iple
 		strncpy(ip,address_family==AF_INET6 ? "::1" : "127.0.0.1",iplen);
 		ms_error("Could not find default routable ip address !");
 	}
+}
+
+
+static SalOp * sal_find_call(Sal *sal, int cid){
+	const MSList *elem;
+	SalOp *op;
+	for(elem=sal->calls;elem!=NULL;elem=elem->next){
+		op=(SalOp*)elem->data;
+		if (op->cid==cid) return op;
+	}
+	return NULL;
+}
+
+static void sal_add_call(Sal *sal, SalOp *op){
+	sal->calls=ms_list_append(sal->calls,op);
+}
+
+static void sal_remove_call(Sal *sal, SalOp *op){
+	sal->calls=ms_list_remove(sal->calls, op);
 }
 
 static SalOp * sal_find_register(Sal *sal, int rid){
@@ -164,7 +181,7 @@ void sal_op_release(SalOp *op){
 	}
 	if (op->cid!=-1){
 		ms_message("Cleaning cid %i",op->cid);
-		eXosip_call_set_reference(op->cid,NULL);
+		sal_remove_call(op->base.root,op);
 	}
 	if (op->sid!=-1){
 		sal_remove_out_subscribe(op->base.root,op);
@@ -492,7 +509,7 @@ int sal_call(SalOp *h, const char *from, const char *to){
 		ms_error("Fail to send invite !");
 		return -1;
 	}else{
-		eXosip_call_set_reference(h->cid,h);
+		sal_add_call(h->base.root,h);
 	}
 	return 0;
 }
@@ -647,8 +664,8 @@ int sal_call_send_dtmf(SalOp *h, char dtmf){
 int sal_call_terminate(SalOp *h){
 	eXosip_lock();
 	eXosip_call_terminate(h->cid,h->did);
-	eXosip_call_set_reference(h->cid,NULL);
 	eXosip_unlock();
+	sal_remove_call(h->base.root,h);
 	return 0;
 }
 
@@ -689,11 +706,7 @@ static void set_network_origin(SalOp *op, osip_message_t *req){
 
 static SalOp *find_op(Sal *sal, eXosip_event_t *ev){
 	if (ev->cid>0){
-#ifdef HAVE_EXOSIP_GET_REF
-		return (SalOp*)eXosip_call_get_ref(ev->cid);
-#else
-		return (SalOp*)eXosip_call_get_reference(ev->cid);
-#endif
+		return sal_find_call(sal,ev->cid);
 	}
 	if (ev->rid>0){
 		return sal_find_register(sal,ev->rid);
@@ -743,7 +756,7 @@ static void inc_new_call(Sal *sal, eXosip_event_t *ev){
 	op->cid=ev->cid;
 	op->did=ev->did;
 	
-	eXosip_call_set_reference(op->cid,op);
+	sal_add_call(op->base.root,op);
 	sal->callbacks.call_received(op);
 }
 
@@ -906,7 +919,7 @@ static void call_terminated(Sal *sal, eXosip_event_t *ev){
 		return;
 	}
 	osip_from_to_str(ev->request->from,&from);
-	eXosip_call_set_reference(ev->cid,NULL);
+	sal_remove_call(sal,op);
 	op->cid=-1;
 	sal->callbacks.call_terminated(op,from);
 	osip_free(from);
@@ -915,6 +928,7 @@ static void call_terminated(Sal *sal, eXosip_event_t *ev){
 static void call_released(Sal *sal, eXosip_event_t *ev){
 	SalOp *op=find_op(sal,ev);
 	if (op==NULL){
+		ms_warning("No op associated to this call_released()");
 		return;
 	}
 	op->cid=-1;
@@ -1453,6 +1467,10 @@ static bool_t process_event(Sal *sal, eXosip_event_t *ev){
 			ms_message("CALL_REQUESTFAILURE or GLOBALFAILURE or SERVERFAILURE\n");
 			return call_failure(sal,ev);
 			break;
+		case EXOSIP_CALL_RELEASED:
+			ms_message("CALL_RELEASED\n");
+			call_released(sal, ev);
+			break;
 		case EXOSIP_CALL_INVITE:
 			ms_message("CALL_NEW\n");
 			inc_new_call(sal,ev);
@@ -1516,10 +1534,6 @@ static bool_t process_event(Sal *sal, eXosip_event_t *ev){
     	case EXOSIP_SUBSCRIPTION_SERVERFAILURE:
    		case EXOSIP_SUBSCRIPTION_GLOBALFAILURE:
 			sal_exosip_subscription_closed(sal,ev);
-			break;
-		case EXOSIP_CALL_RELEASED:
-			ms_message("CALL_RELEASED\n");
-			call_released(sal, ev);
 			break;
 		case EXOSIP_REGISTRATION_FAILURE:
 			ms_message("REGISTRATION_FAILURE\n");
