@@ -716,12 +716,20 @@ static PayloadType * find_payload(RtpProfile *prof, const char *mime_type, int c
 		it=rtp_profile_get_payload(prof,i);
 		if (it!=NULL && strcasecmp(mime_type,it->mime_type)==0
 			&& (clock_rate==it->clock_rate || clock_rate<=0) ){
-			if ( (recv_fmtp && it->recv_fmtp && strcasecmp(recv_fmtp,it->recv_fmtp)==0) ||
+			if ( (recv_fmtp && it->recv_fmtp && strstr(recv_fmtp,it->recv_fmtp)!=NULL) ||
 				(recv_fmtp==NULL && it->recv_fmtp==NULL) ){
 				/*exact match*/
+				if (recv_fmtp) payload_type_set_recv_fmtp(it,recv_fmtp);
 				return it;
-			}else candidate=it;
+			}else {
+				if (candidate){
+					if (it->recv_fmtp==NULL) candidate=it;
+				}else candidate=it;
+			}
 		}
+	}
+	if (candidate && recv_fmtp){
+		payload_type_set_recv_fmtp(candidate,recv_fmtp);
 	}
 	return candidate;
 }

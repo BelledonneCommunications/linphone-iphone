@@ -10,6 +10,7 @@
       <widget class="GtkVBox" id="vbox1">
         <property name="visible">True</property>
         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+        <property name="orientation">vertical</property>
         <child>
           <widget class="GtkNotebook" id="notebook1">
             <property name="visible">True</property>
@@ -19,6 +20,7 @@
               <widget class="GtkVBox" id="network_tab">
                 <property name="visible">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                <property name="orientation">vertical</property>
                 <child>
                   <widget class="GtkFrame" id="transport_frame">
                     <property name="visible">True</property>
@@ -32,6 +34,7 @@
                         <child>
                           <widget class="GtkVBox" id="vbox3">
                             <property name="visible">True</property>
+                            <property name="orientation">vertical</property>
                             <child>
                               <widget class="GtkHBox" id="hbox2">
                                 <property name="visible">True</property>
@@ -232,6 +235,7 @@
                     <child>
                       <widget class="GtkVButtonBox" id="vbuttonbox3">
                         <property name="visible">True</property>
+                        <property name="orientation">vertical</property>
                         <child>
                           <widget class="GtkRadioButton" id="no_nat">
                             <property name="label" translatable="yes">Direct connection to the Internet</property>
@@ -251,6 +255,7 @@
                         <child>
                           <widget class="GtkVBox" id="vbox4">
                             <property name="visible">True</property>
+                            <property name="orientation">vertical</property>
                             <child>
                               <widget class="GtkRadioButton" id="use_nat_address">
                                 <property name="label" translatable="yes">Behind NAT / Firewall (specify gateway IP below)</property>
@@ -307,6 +312,7 @@
                         <child>
                           <widget class="GtkVBox" id="vbox5">
                             <property name="visible">True</property>
+                            <property name="orientation">vertical</property>
                             <child>
                               <widget class="GtkRadioButton" id="use_stun">
                                 <property name="label" translatable="yes">Behind NAT / Firewall (use STUN to resolve)</property>
@@ -415,6 +421,7 @@
               <widget class="GtkVBox" id="multimedia_tab">
                 <property name="visible">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                <property name="orientation">vertical</property>
                 <child>
                   <widget class="GtkFrame" id="frame14">
                     <property name="visible">True</property>
@@ -447,7 +454,7 @@
                                 </child>
                                 <child>
                                   <widget class="GtkButton" id="play_ring">
-                                    <property name="label" translatable="yes">gtk-media-play</property>
+                                    <property name="label">gtk-media-play</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
@@ -749,6 +756,7 @@
               <widget class="GtkVBox" id="sip_tab">
                 <property name="visible">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                <property name="orientation">vertical</property>
                 <child>
                   <widget class="GtkFrame" id="frame11">
                     <property name="visible">True</property>
@@ -892,6 +900,7 @@
                               <widget class="GtkVButtonBox" id="vbuttonbox2">
                                 <property name="visible">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                <property name="orientation">vertical</property>
                                 <child>
                                   <widget class="GtkButton" id="add_proxy">
                                     <property name="visible">True</property>
@@ -1189,6 +1198,7 @@ virtual network !</property>
               <widget class="GtkVBox" id="codec_tab">
                 <property name="visible">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                <property name="orientation">vertical</property>
                 <child>
                   <widget class="GtkFrame" id="frame9">
                     <property name="visible">True</property>
@@ -1203,6 +1213,7 @@ virtual network !</property>
                           <widget class="GtkVBox" id="vbox8">
                             <property name="visible">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                            <property name="orientation">vertical</property>
                             <child>
                               <widget class="GtkComboBox" id="codec_view">
                                 <property name="visible">True</property>
@@ -1246,9 +1257,10 @@ Video codecs</property>
                                   <widget class="GtkVButtonBox" id="vbuttonbox1">
                                     <property name="visible">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                    <property name="orientation">vertical</property>
                                     <child>
                                       <widget class="GtkButton" id="button4">
-                                        <property name="label" translatable="yes">gtk-go-up</property>
+                                        <property name="label">gtk-go-up</property>
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">True</property>
@@ -1264,7 +1276,7 @@ Video codecs</property>
                                     </child>
                                     <child>
                                       <widget class="GtkButton" id="up_codec">
-                                        <property name="label" translatable="yes">gtk-go-down</property>
+                                        <property name="label">gtk-go-down</property>
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">True</property>
@@ -1642,7 +1654,6 @@ Video codecs</property>
                       <widget class="GtkImage" id="image12">
                         <property name="visible">True</property>
                         <property name="stock">gtk-apply</property>
-                        <property name="icon-size">4</property>
                       </widget>
                       <packing>
                         <property name="position">0</property>
