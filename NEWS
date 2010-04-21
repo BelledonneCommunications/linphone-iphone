@@ -3,8 +3,10 @@ linphone-3.3.0 -- ?????????
 	* Internal refactoring of liblinphone (code factorisation, encapsulation
 		of signaling)
 	* enhancements made to presence support (SIP/SIMPLE)
-
-linphone-3.2.2 -- ?????????
+	* new icons
+	* new tabbed ui
+	* be nat friendly using OPTIONS request and using received,rport from
+		responses.
 	* improve bitrate usage of speex codec
 	* allow speex to run with vbr (variable bit rate) mode
 	* add speex/32000 (ultra wide band speex codec)
