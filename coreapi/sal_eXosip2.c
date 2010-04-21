@@ -377,6 +377,9 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 	if (ctx->sock==-1) return -1;
 	ms_message("Exosip is given socket %i",ctx->sock);
 	eXosip_set_socket(proto,ctx->sock,port);
+	/* this is to properly initialize the udp transport layer of eXosip, as we don't use eXosip_listen_addr() */
+	/* otherwise we have a bug with improper contacts in registers: <sip:user@host:;line=jIjijde68>*/
+	eXosip_masquerade_contact(NULL,0);
 	/*
 	err=eXosip_listen_addr(proto, addr, port, ipv6 ?  PF_INET6 : PF_INET, 0);
 	*/
