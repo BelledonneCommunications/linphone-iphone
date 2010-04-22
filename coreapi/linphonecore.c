@@ -1851,14 +1851,7 @@ static char *get_fixed_contact(LinphoneCore *lc, LinphoneCall *call , LinphonePr
 	if (call->op && sal_op_get_contact(call->op)!=NULL){
 		return NULL;
 	}
-	/*if using a proxy, use the contact address as guessed with the REGISTERs*/
-	if (dest_proxy && dest_proxy->op){
-		const char *fixed_contact=sal_op_get_contact(dest_proxy->op);
-		if (fixed_contact) {
-			ms_message("Contact has been fixed using proxy to %s",fixed_contact);
-			return ms_strdup(fixed_contact);
-		}
-	}
+	
 	/* if the ping OPTIONS request succeeded use the contact guessed from the
 	 received, rport*/
 	if (call->ping_op){
@@ -1866,6 +1859,15 @@ static char *get_fixed_contact(LinphoneCore *lc, LinphoneCall *call , LinphonePr
 		if (guessed){
 			ms_message("Contact has been fixed using OPTIONS to %s",guessed);
 			return ms_strdup(guessed);
+		}
+	}
+
+	/*if using a proxy, use the contact address as guessed with the REGISTERs*/
+	if (dest_proxy && dest_proxy->op){
+		const char *fixed_contact=sal_op_get_contact(dest_proxy->op);
+		if (fixed_contact) {
+			ms_message("Contact has been fixed using proxy to %s",fixed_contact);
+			return ms_strdup(fixed_contact);
 		}
 	}
 	
@@ -2342,6 +2344,7 @@ void linphone_core_stop_media_streams(LinphoneCore *lc, LinphoneCall *call){
 int linphone_core_accept_call(LinphoneCore *lc, const char *url)
 {
 	LinphoneCall *call=lc->call;
+	LinphoneProxyConfig *cfg=NULL;
 	const char *contact=NULL;
 	
 	if (call==NULL){
@@ -2360,9 +2363,10 @@ int linphone_core_accept_call(LinphoneCore *lc, const char *url)
 		ms_message("ring stopped");
 		lc->ringstream=NULL;
 	}
-	
+
+	linphone_core_get_default_proxy(lc,&cfg);
 	/*try to be best-effort in giving real local or routable contact address*/
-	contact=get_fixed_contact(lc,call,NULL);
+	contact=get_fixed_contact(lc,call,cfg);
 	if (contact)
 		sal_op_set_contact(call->op,contact);
 	

@@ -872,17 +872,19 @@ static void call_accepted(Sal *sal, eXosip_event_t *ev){
 }
 
 static void call_terminated(Sal *sal, eXosip_event_t *ev){
-	char *from;
+	char *from=NULL;
 	SalOp *op=find_op(sal,ev);
 	if (op==NULL){
 		ms_warning("Call terminated for already closed call ?");
 		return;
 	}
-	osip_from_to_str(ev->request->from,&from);
+	if (ev->request){
+		osip_from_to_str(ev->request->from,&from);
+	}
 	sal_remove_call(sal,op);
 	op->cid=-1;
-	sal->callbacks.call_terminated(op,from);
-	osip_free(from);
+	sal->callbacks.call_terminated(op,from!=NULL ? from : sal_op_get_from(op));
+	if (from) osip_free(from);
 }
 
 static void call_released(Sal *sal, eXosip_event_t *ev){
@@ -1399,7 +1401,8 @@ static void other_request_reply(Sal *sal,eXosip_event_t *ev){
 	}
 	if (ev->response){
 		update_contact_from_response(op,ev->response);
-		sal->callbacks.ping_reply(op);
+		if (ev->request && strcmp(osip_message_get_method(ev->request),"OPTIONS")==0)
+			sal->callbacks.ping_reply(op);
 	}
 }
 
@@ -1517,6 +1520,7 @@ static bool_t process_event(Sal *sal, eXosip_event_t *ev){
 			if (ev->response && (ev->response->status_code == 407 || ev->response->status_code == 401)){
 				return process_authentication(sal,ev);
 			}
+			other_request_reply(sal,ev);
 			break;
 		default:
 			ms_message("Unhandled exosip event ! %i",ev->type);
