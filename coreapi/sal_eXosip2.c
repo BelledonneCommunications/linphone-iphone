@@ -447,6 +447,7 @@ int sal_call(SalOp *h, const char *from, const char *to){
 		ms_error("Could not create call.");
 		return -1;
 	}
+	osip_message_set_allow(invite, "INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, NOTIFY, MESSAGE, SUBSCRIBE, INFO");
 	if (h->base.contact){
 		_osip_list_set_empty(&invite->contacts,(void (*)(void*))osip_contact_free);
 		osip_message_set_contact(invite,h->base.contact);
