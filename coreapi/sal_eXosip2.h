@@ -38,7 +38,6 @@ struct Sal{
 	MSList *other_transactions; /*MSList of SalOp */
 	int running;
 	int session_expires;
-	ortp_socket_t sock;
 	void *up;
 };
 

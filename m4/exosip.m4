@@ -24,9 +24,9 @@ AC_CHECK_LIB([eXosip2],[eXosip_get_version],
 	[AC_DEFINE([HAVE_EXOSIP_GET_VERSION],[1],[Defined when eXosip_get_version is available])],
 	[],
 	[-losipparser2 -losip2 ])
-AC_CHECK_LIB([eXosip2],[eXosip_call_get_reference],
-	[],
-	[AC_MSG_ERROR([Could not find eXosip_call_get_reference() in eXosip2 !])],
+AC_CHECK_LIB([eXosip2],[eXosip_get_socket],
+	[AC_DEFINE([HAVE_EXOSIP_GET_SOCKET],[1],[Defined when eXosip_get_socket is available])],
+	[AC_MSG_WARN([Could not find eXosip_get_socket in eXosip2 !])],
 	[-losipparser2 -losip2 ])
 dnl AC_CHECK_LIB([eXosip2],[eXosip_get_naptr],
 dnl	[AC_DEFINE([HAVE_EXOSIP_NAPTR_SUPPORT],[1],[Defined when eXosip_get_naptr is available])],

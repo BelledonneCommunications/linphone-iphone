@@ -251,7 +251,6 @@ Sal * sal_init(){
 	}
 	eXosip_init();
 	sal=ms_new0(Sal,1);
-	sal->sock=-1;
 	return sal;
 }
 
@@ -310,49 +309,6 @@ void sal_set_callbacks(Sal *ctx, const SalCallbacks *cbs){
 		ctx->callbacks.ping_reply=(SalOnPingReply)unimplemented_stub;
 }
 
-
-static ortp_socket_t create_socket(int pf, int proto, const char *addr, int local_port){
-	struct addrinfo hints;
-	struct addrinfo *res=NULL;
-	ortp_socket_t sock;
-	int optval;
-	char tmp[20];
-	int err;
-	
-	sock=socket(pf,(proto==IPPROTO_UDP) ? SOCK_DGRAM : SOCK_STREAM,0);
-	if (sock<0) {
-		ms_error("Fail to create socket");
-		return -1;
-	}
-	snprintf(tmp,sizeof(tmp)-1,"%i",local_port);
-	memset (&hints,0,sizeof(hints));
-	hints.ai_family=(pf==PF_INET) ? AF_INET : AF_INET6;
-	hints.ai_socktype=(proto==IPPROTO_UDP) ? SOCK_DGRAM : SOCK_STREAM;
-	
-	if ((err=getaddrinfo(addr,
-	    	tmp,
-	    	&hints,&res))<0) {
-		ms_error("create_socket: getaddrinfo() failed: %s",gai_strerror(err));
-		close_socket(sock);
-		return -1;
-	}
-	if (bind(sock,(struct sockaddr*)res->ai_addr,res->ai_addrlen)<0){
-		ms_error("Bind socket to localhost:%i failed: %s",local_port,getSocketError());
-		freeaddrinfo(res);
-		close_socket(sock);
-		return -1;
-	}
-	freeaddrinfo(res);
-	optval=1;
-	if (setsockopt (sock, SOL_SOCKET, SO_REUSEADDR,
-				(SOCKET_OPTION_VALUE)&optval, sizeof (optval))<0){
-		ms_warning("Fail to set SO_REUSEADDR");
-	}
-	/*set_non_blocking_socket(sock);*/
-	return sock;
-}
-
-
 int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int is_secure){
 	int err;
 	bool_t ipv6;
@@ -373,22 +329,21 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 		ms_fatal("SIP over TCP or TLS or DTLS is not supported yet.");
 		return -1;
 	}
-	ctx->sock=create_socket(ipv6 ?  PF_INET6 : PF_INET, proto, addr, port);
-	if (ctx->sock==-1) return -1;
-	ms_message("Exosip is given socket %i",ctx->sock);
-	eXosip_set_socket(proto,ctx->sock,port);
-	/* this is to properly initialize the udp transport layer of eXosip, as we don't use eXosip_listen_addr() */
-	/* otherwise we have a bug with improper contacts in registers: <sip:user@host:;line=jIjijde68>*/
-	eXosip_masquerade_contact(NULL,0);
-	/*
 	err=eXosip_listen_addr(proto, addr, port, ipv6 ?  PF_INET6 : PF_INET, 0);
-	*/
+#ifdef HAVE_EXOSIP_GET_SOCKET
+	ms_message("Exosip has socket number %i",eXosip_get_socket(proto));
+#endif
 	ctx->running=TRUE;
 	return err;
 }
 
 ortp_socket_t sal_get_socket(Sal *ctx){
-	return ctx->sock;
+#ifdef HAVE_EXOSIP_GET_SOCKET
+	return eXosip_get_socket(IPPROTO_UDP);
+#else
+	ms_warning("Sorry, eXosip does not have eXosip_get_socket() method");
+	return -1;
+#endif
 }
 
 void sal_set_user_agent(Sal *ctx, const char *user_agent){
