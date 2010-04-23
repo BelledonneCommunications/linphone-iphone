@@ -22,6 +22,11 @@
 		220FAD3810765B400068D98F /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD2F10765B400068D98F /* libspeex.a */; };
 		220FAD3910765B400068D98F /* libspeexdsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD3010765B400068D98F /* libspeexdsp.a */; };
 		220FAE4B10767A6A0068D98F /* PhoneMainView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 220FAE4A10767A6A0068D98F /* PhoneMainView.xib */; };
+		22226C12118197C0000CA27B /* startcall-green.png in Resources */ = {isa = PBXBuildFile; fileRef = 22226C11118197C0000CA27B /* startcall-green.png */; };
+		22226C14118197EC000CA27B /* stopcall-red.png in Resources */ = {isa = PBXBuildFile; fileRef = 22226C13118197EC000CA27B /* stopcall-red.png */; };
+		22226C181181986A000CA27B /* contact-orange.png in Resources */ = {isa = PBXBuildFile; fileRef = 22226C161181986A000CA27B /* contact-orange.png */; };
+		22226C191181986A000CA27B /* dialer-orange.png in Resources */ = {isa = PBXBuildFile; fileRef = 22226C171181986A000CA27B /* dialer-orange.png */; };
+		22226C1D11819B34000CA27B /* history-orange.png in Resources */ = {isa = PBXBuildFile; fileRef = 22226C1C11819B34000CA27B /* history-orange.png */; };
 		223148E41178A08200637D6A /* libilbc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 223148E31178A08200637D6A /* libilbc.a */; };
 		223148E61178A09900637D6A /* libmsilbc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 223148E51178A09900637D6A /* libmsilbc.a */; };
 		2237D4091084D7A9001383EE /* oldphone-mono.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2237D4081084D7A9001383EE /* oldphone-mono.wav */; };
@@ -52,8 +57,6 @@
 		22F2508E107141E100AC9B3F /* PhoneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22F2508C107141E100AC9B3F /* PhoneViewController.m */; };
 		22F2508F107141E100AC9B3F /* PhoneViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22F2508D107141E100AC9B3F /* PhoneViewController.xib */; };
 		22F254811073D99800AC9B3F /* ringback.wav in Resources */ = {isa = PBXBuildFile; fileRef = 22F254801073D99800AC9B3F /* ringback.wav */; };
-		22F255151073EEE600AC9B3F /* green.png in Resources */ = {isa = PBXBuildFile; fileRef = 22F255131073EEE600AC9B3F /* green.png */; };
-		22F255161073EEE600AC9B3F /* red.png in Resources */ = {isa = PBXBuildFile; fileRef = 22F255141073EEE600AC9B3F /* red.png */; };
 		22F51EF6107FA66500F98953 /* untitled.plist in Resources */ = {isa = PBXBuildFile; fileRef = 22F51EF5107FA66500F98953 /* untitled.plist */; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
 /* End PBXBuildFile section */
@@ -182,6 +185,11 @@
 		220FAD2F10765B400068D98F /* libspeex.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libspeex.a; path = "../liblinphone-sdk/apple-darwin/lib/libspeex.a"; sourceTree = SOURCE_ROOT; };
 		220FAD3010765B400068D98F /* libspeexdsp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libspeexdsp.a; path = "../liblinphone-sdk/apple-darwin/lib/libspeexdsp.a"; sourceTree = SOURCE_ROOT; };
 		220FAE4A10767A6A0068D98F /* PhoneMainView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PhoneMainView.xib; sourceTree = "<group>"; };
+		22226C11118197C0000CA27B /* startcall-green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "startcall-green.png"; path = "../../workspace-android/android-ndk-1.6_r1/apps/linphone-android/submodules/linphone/pixmaps/startcall-green.png"; sourceTree = SOURCE_ROOT; };
+		22226C13118197EC000CA27B /* stopcall-red.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "stopcall-red.png"; path = "../../workspace-android/android-ndk-1.6_r1/apps/linphone-android/submodules/linphone/pixmaps/stopcall-red.png"; sourceTree = SOURCE_ROOT; };
+		22226C161181986A000CA27B /* contact-orange.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "contact-orange.png"; path = "../../workspace-android/android-ndk-1.6_r1/apps/linphone-android/submodules/linphone/pixmaps/contact-orange.png"; sourceTree = SOURCE_ROOT; };
+		22226C171181986A000CA27B /* dialer-orange.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "dialer-orange.png"; path = "../../workspace-android/android-ndk-1.6_r1/apps/linphone-android/submodules/linphone/pixmaps/dialer-orange.png"; sourceTree = SOURCE_ROOT; };
+		22226C1C11819B34000CA27B /* history-orange.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "history-orange.png"; path = "../../workspace-android/android-ndk-1.6_r1/apps/linphone-android/submodules/linphone/pixmaps/history-orange.png"; sourceTree = SOURCE_ROOT; };
 		223148E31178A08200637D6A /* libilbc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libilbc.a; path = "../liblinphone-sdk/apple-darwin/lib/libilbc.a"; sourceTree = SOURCE_ROOT; };
 		223148E51178A09900637D6A /* libmsilbc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmsilbc.a; path = "../liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmsilbc.a"; sourceTree = SOURCE_ROOT; };
 		2237D4081084D7A9001383EE /* oldphone-mono.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = "oldphone-mono.wav"; path = "../liblinphone-sdk/apple-darwin/share/sounds/linphone/rings/oldphone-mono.wav"; sourceTree = "<group>"; };
@@ -221,8 +229,6 @@
 		22F2508C107141E100AC9B3F /* PhoneViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneViewController.m; sourceTree = "<group>"; };
 		22F2508D107141E100AC9B3F /* PhoneViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PhoneViewController.xib; sourceTree = "<group>"; };
 		22F254801073D99800AC9B3F /* ringback.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = ringback.wav; path = "../liblinphone-sdk/apple-darwin/share/sounds/linphone/ringback.wav"; sourceTree = SOURCE_ROOT; };
-		22F255131073EEE600AC9B3F /* green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = green.png; path = "../liblinphone-sdk/apple-darwin/share/pixmaps/linphone/green.png"; sourceTree = SOURCE_ROOT; };
-		22F255141073EEE600AC9B3F /* red.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = red.png; path = "../liblinphone-sdk/apple-darwin/share/pixmaps/linphone/red.png"; sourceTree = SOURCE_ROOT; };
 		22F51EF5107FA66500F98953 /* untitled.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = untitled.plist; sourceTree = "<group>"; };
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -530,6 +536,11 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				22226C1C11819B34000CA27B /* history-orange.png */,
+				22226C161181986A000CA27B /* contact-orange.png */,
+				22226C171181986A000CA27B /* dialer-orange.png */,
+				22226C13118197EC000CA27B /* stopcall-red.png */,
+				22226C11118197C0000CA27B /* startcall-green.png */,
 				22058C70116E305000B08DDD /* icone-linphone-57.png */,
 				2237D4081084D7A9001383EE /* oldphone-mono.wav */,
 				225862E11140F5D700C5A737 /* linphone-3-250x130.png */,
@@ -539,8 +550,6 @@
 				2242D91910D66C2100E9963F /* mic_muted.png */,
 				2242D91410D66BF300E9963F /* in_call.png */,
 				2242D91510D66BF300E9963F /* out_call.png */,
-				22F255131073EEE600AC9B3F /* green.png */,
-				22F255141073EEE600AC9B3F /* red.png */,
 				22F254801073D99800AC9B3F /* ringback.wav */,
 				8D1107310486CEB800E47090 /* linphone-Info.plist */,
 				2274550710700509006EC466 /* linphonerc */,
@@ -604,8 +613,6 @@
 				2274550810700509006EC466 /* linphonerc in Resources */,
 				22F2508F107141E100AC9B3F /* PhoneViewController.xib in Resources */,
 				22F254811073D99800AC9B3F /* ringback.wav in Resources */,
-				22F255151073EEE600AC9B3F /* green.png in Resources */,
-				22F255161073EEE600AC9B3F /* red.png in Resources */,
 				220FAE4B10767A6A0068D98F /* PhoneMainView.xib in Resources */,
 				2245671D107699F700F10948 /* Settings.bundle in Resources */,
 				22F51EF6107FA66500F98953 /* untitled.plist in Resources */,
@@ -621,6 +628,11 @@
 				22E0A823111C44E100B04932 /* ConsoleViewController.xib in Resources */,
 				225862E21140F5D700C5A737 /* linphone-3-250x130.png in Resources */,
 				22058C71116E305000B08DDD /* icone-linphone-57.png in Resources */,
+				22226C12118197C0000CA27B /* startcall-green.png in Resources */,
+				22226C14118197EC000CA27B /* stopcall-red.png in Resources */,
+				22226C181181986A000CA27B /* contact-orange.png in Resources */,
+				22226C191181986A000CA27B /* dialer-orange.png in Resources */,
+				22226C1D11819B34000CA27B /* history-orange.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

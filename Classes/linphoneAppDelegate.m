@@ -253,7 +253,9 @@ extern void libmsilbc_init();
 	NSString* username = [[NSUserDefaults standardUserDefaults] stringForKey:@"username_preference"];
 	NSString* domain = [[NSUserDefaults standardUserDefaults] stringForKey:@"domain_preference"];
 	NSString* accountPassword = [[NSUserDefaults standardUserDefaults] stringForKey:@"password_preference"];
-	bool configCheckDisable = [[NSUserDefaults standardUserDefaults] boolForKey:@"check_config_disable_preference"];  
+	bool configCheckDisable = [[NSUserDefaults standardUserDefaults] boolForKey:@"check_config_disable_preference"];
+	bool isOutboundProxy= [[NSUserDefaults standardUserDefaults] boolForKey:@"outbound_proxy_preference"];
+
 	
 		//clear auth info list
 	linphone_core_clear_all_auth_info(myLinphoneCore);
@@ -293,6 +295,9 @@ extern void libmsilbc_init();
 		// configure proxy entries
 		linphone_proxy_config_set_identity(proxyCfg,identity);
 		linphone_proxy_config_set_server_addr(proxyCfg,proxy);
+		
+		if (isOutboundProxy)
+			linphone_proxy_config_set_route(proxyCfg,proxy);
 
 		if ([prefix length]>0) {
 			linphone_proxy_config_set_dial_prefix(proxyCfg, [prefix cStringUsingEncoding:[NSString defaultCStringEncoding]]);
