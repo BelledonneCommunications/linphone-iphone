@@ -684,7 +684,7 @@ static int get_local_ip_with_getifaddrs(int type, char *address, int size)
 #endif
 
 
-static int get_local_ip_for_with_connect(const char *dest, char *result){
+static int get_local_ip_for_with_connect(int type, const char *dest, char *result){
 	int err,tmp;
 	struct addrinfo hints;
 	struct addrinfo *res=NULL;
@@ -694,7 +694,7 @@ static int get_local_ip_for_with_connect(const char *dest, char *result){
 	socklen_t s;
 
 	memset(&hints,0,sizeof(hints));
-	hints.ai_family=PF_UNSPEC;
+	hints.ai_family=(type==AF_INET6) ? PF_INET6 : PF_INET;
 	hints.ai_socktype=SOCK_DGRAM;
 	/*hints.ai_flags=AI_NUMERICHOST|AI_CANONNAME;*/
 	err=getaddrinfo(dest,"5060",&hints,&res);
@@ -765,5 +765,5 @@ int linphone_core_get_local_ip_for(int type, const char *dest, char *result){
 	}
 #endif
 	/*else use connect to find the best local ip address */
-	return get_local_ip_for_with_connect(dest,result);
+	return get_local_ip_for_with_connect(type,dest,result);
 }
