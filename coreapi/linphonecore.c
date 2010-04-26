@@ -3583,6 +3583,9 @@ void linphone_core_set_network_reachable(LinphoneCore* lc,bool_t isReachable) {
 	set_network_reachable(lc,isReachable);
 }
 
+bool_t linphone_core_is_network_reachabled(LinphoneCore* lc) {
+	return lc->network_reachable;
+}
 ortp_socket_t linphone_core_get_sip_socket(LinphoneCore *lc){
 	return sal_get_socket(lc->sal);
 }

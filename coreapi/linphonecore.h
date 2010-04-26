@@ -754,6 +754,10 @@ void linphone_core_set_mtu(LinphoneCore *lc, int mtu);
  *
  */
 void linphone_core_set_network_reachable(LinphoneCore* lc,bool_t value);
+/**
+ * return network state either as positioned by the application or by linphone
+ */
+bool_t linphone_core_is_network_reachabled(LinphoneCore* lc);
 
 
 void *linphone_core_get_user_data(LinphoneCore *lc);
