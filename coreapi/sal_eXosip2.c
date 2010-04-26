@@ -370,6 +370,7 @@ static int extract_received_rport(osip_message_t *msg, const char **received, in
 		rport=param->gvalue;
 		if (rport && rport[0]!='\0') *rportval=atoi(rport);
 		else *rportval=5060;
+		*received=via->host;
 	}
 	param=NULL;
 	osip_via_param_get_byname(via,"received",&param);
