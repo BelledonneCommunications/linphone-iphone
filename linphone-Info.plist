@@ -28,5 +28,10 @@
 	<string>3.1.2</string>
 	<key>NSMainNibFile</key>
 	<string>PhoneMainView</string>
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>wifi</string>
+		<string>microphone</string>
+	</array>
 </dict>
 </plist>

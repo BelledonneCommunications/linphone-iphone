@@ -23,7 +23,6 @@
 #import "AddressBook/ABPerson.h"
 #import <AVFoundation/AVAudioSession.h>
 #import <AudioToolbox/AudioToolbox.h>
-#import "osip2/osip.h"
 #import "ConsoleViewController.h"
 #import "MoreViewController.h"
 
@@ -239,6 +238,9 @@ extern void libmsilbc_init();
 										, [factoryConfig cStringUsingEncoding:[NSString defaultCStringEncoding]]
 										,self);
 	
+	//initial state is network off
+	linphone_core_set_network_reachable(myLinphoneCore,false);
+	
 	// Set audio assets
 	const char*  lRing = [[myBundle pathForResource:@"oldphone-mono"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
 	linphone_core_set_ring(myLinphoneCore, lRing );
@@ -283,18 +285,18 @@ extern void libmsilbc_init();
 		proxyCfg = linphone_proxy_config_new();
 		
 		// add username password
-		osip_from_t *from;
+		LinphoneAddress *from = linphone_address_new(identity);
 		LinphoneAuthInfo *info;
-		osip_from_init(&from);
-		if (osip_from_parse(from,identity)==0){
-			info=linphone_auth_info_new(from->url->username,NULL,password,NULL,NULL);
+		if (from !=0){
+			info=linphone_auth_info_new(linphone_address_get_username(from),NULL,password,NULL,NULL);
 			linphone_core_add_auth_info(myLinphoneCore,info);
 		}
-		osip_from_free(from);
+		linphone_address_destroy(from);
 		
 		// configure proxy entries
 		linphone_proxy_config_set_identity(proxyCfg,identity);
 		linphone_proxy_config_set_server_addr(proxyCfg,proxy);
+		linphone_proxy_config_enable_register(proxyCfg,true);
 		
 		if (isOutboundProxy)
 			linphone_proxy_config_set_route(proxyCfg,proxy);
@@ -311,8 +313,7 @@ extern void libmsilbc_init();
 		LinphoneAddress* addr=linphone_address_new(linphone_proxy_config_get_addr(proxyCfg));
 		proxyReachability=SCNetworkReachabilityCreateWithName(nil, linphone_address_get_domain(addr));
 		proxyReachabilityContext.info=self;
-		bool result=SCNetworkReachabilitySetCallback(proxyReachability, (SCNetworkReachabilityCallBack)networkReachabilityCallBack,&proxyReachabilityContext);
-		SCNetworkReachabilityScheduleWithRunLoop(proxyReachability, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+		
 		[self doRegister];
 	} else if (configCheckDisable == false) { 		
 		UIAlertView* error = [[UIAlertView alloc]	initWithTitle:@"Warning"
@@ -321,7 +322,13 @@ extern void libmsilbc_init();
 													cancelButtonTitle:@"Continue" 
 													otherButtonTitles:@"Never remind",nil];
 		[error show];
+		proxyReachability=SCNetworkReachabilityCreateWithName(nil, @"linphone.org");
+
 	}		
+
+	SCNetworkReachabilitySetCallback(proxyReachability, (SCNetworkReachabilityCallBack)networkReachabilityCallBack,&proxyReachabilityContext);
+	SCNetworkReachabilityScheduleWithRunLoop(proxyReachability, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+
 	//Configure Codecs
 	
 	PayloadType *pt;
@@ -441,26 +448,22 @@ extern void libmsilbc_init();
 }
 
 bool networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void * info) {
-	LinphoneProxyConfig* proxyCfg;
 	id<LinphoneTabManagerDelegate> linphoneDelegate=info;
-	if (linphone_core_get_default_proxy([linphoneDelegate getLinphoneCore],&proxyCfg)) {
-		//glob, no default proxy
-		return false;
-	}
-	linphone_proxy_config_edit(proxyCfg);
+	LinphoneCore* lc = [linphoneDelegate getLinphoneCore];  
 	bool result = false;
-	if ((flags == 0) | (flags & (kSCNetworkReachabilityFlagsConnectionRequired |kSCNetworkReachabilityFlagsConnectionOnTraffic))) {
-		[linphoneDelegate kickOffNetworkConnection];
+	
+	if (lc != nil) {
+		if ((flags == 0) | (flags & (kSCNetworkReachabilityFlagsConnectionRequired |kSCNetworkReachabilityFlagsConnectionOnTraffic))) {
+			[linphoneDelegate kickOffNetworkConnection];
+		}
+		if (flags) {
+			linphone_core_set_network_reachable(lc,true);
+			result = true;
+		} else {
+			linphone_core_set_network_reachable(lc,false);
+			result = false;
+		}
 	}
-	if (flags) {
-		// register whatever connection type
-		linphone_proxy_config_enable_register(proxyCfg,TRUE);
-		result = true;
-	} else {
-		linphone_proxy_config_enable_register(proxyCfg,false);
-		result = false;
-	}
-	linphone_proxy_config_done(proxyCfg);
 	return result;
 }
 -(LinphoneCore*) getLinphoneCore {

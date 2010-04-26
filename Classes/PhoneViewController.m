@@ -72,6 +72,15 @@
 -(IBAction) doAction:(id)sender {
 	
 	if (sender == call) {
+		if (!linphone_core_is_network_reachabled(mCore)) {
+			UIAlertView* error = [[UIAlertView alloc] initWithTitle:@"Network Error"
+															message:@"There is no network connection available, enable WIFI or WWAN prior to place a call" 
+															delegate:nil 
+															cancelButtonTitle:@"Continue" 
+															otherButtonTitles:nil];
+			[error show];
+			return;
+		}
 		if (!linphone_core_in_call(mCore)) {
 			LinphoneProxyConfig* proxyCfg;	
 			//get default proxy
@@ -83,9 +92,9 @@
 			} else if ( proxyCfg==nil){
 				UIAlertView* error = [[UIAlertView alloc] initWithTitle:@"Invalid sip address"
 																message:@"Either configure a SIP proxy server from settings prior to place a call or use a valid sip address (I.E sip:john@example.net)" 
-															   delegate:nil 
-													  cancelButtonTitle:@"Continue" 
-													  otherButtonTitles:nil];
+																delegate:nil 
+																cancelButtonTitle:@"Continue" 
+																otherButtonTitles:nil];
 				[error show];
 				
 			} else {
