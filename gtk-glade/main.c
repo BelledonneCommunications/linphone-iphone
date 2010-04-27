@@ -42,8 +42,8 @@ static LinphoneCore *the_core=NULL;
 static GtkWidget *the_ui=NULL;
 
 static void linphone_gtk_show(LinphoneCore *lc);
-static void linphone_gtk_inv_recv(LinphoneCore *lc, const char *from);
-static void linphone_gtk_bye_recv(LinphoneCore *lc, const char *from);
+static void linphone_gtk_inv_recv(LinphoneCore *lc, LinphoneCall *call);
+static void linphone_gtk_bye_recv(LinphoneCore *lc, LinphoneCall *call);
 static void linphone_gtk_notify_recv(LinphoneCore *lc, LinphoneFriend * fid);
 static void linphone_gtk_new_unknown_subscriber(LinphoneCore *lc, LinphoneFriend *lf, const char *url);
 static void linphone_gtk_auth_info_requested(LinphoneCore *lc, const char *realm, const char *username);
@@ -390,7 +390,7 @@ static void set_video_window_decorations(GdkWindow *w){
 		gdk_window_set_keep_above(w, FALSE);
 	}else{
 		LinphoneAddress *uri =
-			linphone_address_clone(linphone_core_get_remote_uri(linphone_gtk_get_core()));
+			linphone_address_clone(linphone_core_get_remote_address(linphone_gtk_get_core()));
 		char *display_name;
 
 		linphone_address_clean(uri);
@@ -704,10 +704,11 @@ static void linphone_gtk_show(LinphoneCore *lc){
 	linphone_gtk_show_main_window();
 }
 
-static void linphone_gtk_inv_recv(LinphoneCore *lc, const char *from){
+static void linphone_gtk_inv_recv(LinphoneCore *lc, LinphoneCall *call){
 	GtkWidget *w=linphone_gtk_create_window("incoming_call");
 	GtkWidget *label;
 	gchar *msg;
+	char *from=linphone_call_get_remote_address_as_string(call);
 
 	if (auto_answer){
 		g_timeout_add(2000,(GSourceFunc)linphone_gtk_auto_answer,w);
@@ -727,9 +728,10 @@ static void linphone_gtk_inv_recv(LinphoneCore *lc, const char *from){
 	g_object_set_data(G_OBJECT(linphone_gtk_get_main_window()),"incoming_call",w);
 	gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(linphone_gtk_get_main_window(),"uribar")),
 			from);
+	ms_free(from);
 }
 
-static void linphone_gtk_bye_recv(LinphoneCore *lc, const char *from){
+static void linphone_gtk_bye_recv(LinphoneCore *lc, LinphoneCall *call){
 	
 }
 

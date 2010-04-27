@@ -112,7 +112,7 @@ static char **linephonec_readline_completion(const char *text,
 #endif
 
 /* These are callback for linphone core */
-static void linphonec_call_received(LinphoneCore *lc, const char *from);
+static void linphonec_call_received(LinphoneCore *lc, LinphoneCall *call);
 static void linphonec_prompt_for_auth(LinphoneCore *lc, const char *realm,
 	const char *username);
 static void linphonec_display_refer (LinphoneCore * lc,const char *refer_to);
@@ -124,7 +124,7 @@ static void linphonec_notify_received(LinphoneCore *lc,const char *from,const ch
 static void linphonec_notify_presence_received(LinphoneCore *lc,LinphoneFriend *fid);
 static void linphonec_new_unknown_subscriber(LinphoneCore *lc,
 		LinphoneFriend *lf, const char *url);
-static void linphonec_bye_received(LinphoneCore *lc, const char *from);
+static void linphonec_bye_received(LinphoneCore *lc, LinphoneCall *call);
 static void linphonec_text_received(LinphoneCore *lc, LinphoneChatRoom *cr,
 		const char *from, const char *msg);
 static void linphonec_display_status (LinphoneCore * lc, const char *something);
@@ -259,9 +259,11 @@ linphonec_display_url (LinphoneCore * lc, const char *something, const char *url
  * Linphone core callback
  */
 static void
-linphonec_call_received(LinphoneCore *lc, const char *from)
+linphonec_call_received(LinphoneCore *lc, LinphoneCall *call)
 {
+	char *from=linphone_call_get_remote_address_as_string(call);
 	linphonec_set_caller(from);
+	ms_free(from);
 	if ( auto_answer)  {
 		answer_call=TRUE;
 	}
@@ -336,7 +338,7 @@ linphonec_new_unknown_subscriber(LinphoneCore *lc, LinphoneFriend *lf,
  * Linphone core callback
  */
 static void
-linphonec_bye_received(LinphoneCore *lc, const char *from)
+linphonec_bye_received(LinphoneCore *lc, LinphoneCall *call)
 {
 	// Should change prompt back to original maybe
 

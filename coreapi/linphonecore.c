@@ -62,150 +62,6 @@ int lc_callback_obj_invoke(LCCallbackObj *obj, LinphoneCore *lc){
 	return 0;
 }
 
-
-static MSList *make_codec_list(LinphoneCore *lc, const MSList *codecs, bool_t only_one_codec){
-	MSList *l=NULL;
-	const MSList *it;
-	for(it=codecs;it!=NULL;it=it->next){
-		PayloadType *pt=(PayloadType*)it->data;
-		if ((pt->flags & PAYLOAD_TYPE_ENABLED) && linphone_core_check_payload_type_usability(lc,pt)){
-			l=ms_list_append(l,payload_type_clone(pt));
-			if (only_one_codec) break;
-		}
-	}
-	return l;
-}
-
-static SalMediaDescription *create_local_media_description(LinphoneCore *lc, 
-    		const char *localip, const char *username, bool_t only_one_codec){
-	MSList *l;
-	PayloadType *pt;
-	SalMediaDescription *md=sal_media_description_new();
-	md->nstreams=1;
-	strncpy(md->addr,localip,sizeof(md->addr));
-	strncpy(md->username,username,sizeof(md->username));
-	md->bandwidth=linphone_core_get_download_bandwidth(lc);
-	/*set audio capabilities */
-	strncpy(md->streams[0].addr,localip,sizeof(md->streams[0].addr));
-	md->streams[0].port=linphone_core_get_audio_port(lc);
-	md->streams[0].proto=SalProtoRtpAvp;
-	md->streams[0].type=SalAudio;
-	md->streams[0].ptime=lc->net_conf.down_ptime;
-	l=make_codec_list(lc,lc->codecs_conf.audio_codecs,only_one_codec);
-	pt=payload_type_clone(rtp_profile_get_payload_from_mime(&av_profile,"telephone-event"));
-	l=ms_list_append(l,pt);
-	md->streams[0].payloads=l;
-	
-	if (lc->dw_audio_bw>0)
-		md->streams[0].bandwidth=lc->dw_audio_bw;
-
-	if (linphone_core_video_enabled (lc)){
-		md->nstreams++;
-		md->streams[1].port=linphone_core_get_video_port(lc);
-		md->streams[1].proto=SalProtoRtpAvp;
-		md->streams[1].type=SalVideo;
-		l=make_codec_list(lc,lc->codecs_conf.video_codecs,only_one_codec);
-		md->streams[1].payloads=l;
-		if (lc->dw_video_bw)
-			md->streams[1].bandwidth=lc->dw_video_bw;
-	}
-	return md;
-}
-
-static void linphone_call_init_common(LinphoneCall *call, LinphoneAddress *from, LinphoneAddress *to){
-	call->state=LCStateInit;
-	call->start_time=time(NULL);
-	call->media_start_time=0;
-	call->log=linphone_call_log_new(call, from, to);
-	linphone_core_notify_all_friends(call->core,LINPHONE_STATUS_ONTHEPHONE);
-	if (linphone_core_get_firewall_policy(call->core)==LINPHONE_POLICY_USE_STUN)
-		linphone_core_run_stun_tests(call->core,call);
-}
-
-static void discover_mtu(LinphoneCore *lc, const char *remote){
-	int mtu;
-	if (lc->net_conf.mtu==0	){
-		/*attempt to discover mtu*/
-		mtu=ms_discover_mtu(remote);
-		if (mtu>0){
-			ms_set_mtu(mtu);
-			ms_message("Discovered mtu is %i, RTP payload max size is %i",
-				mtu, ms_get_payload_max_size());
-		}
-	}
-}
-
-LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to)
-{
-	LinphoneCall *call=ms_new0(LinphoneCall,1);
-	call->dir=LinphoneCallOutgoing;
-	call->op=sal_op_new(lc->sal);
-	sal_op_set_user_pointer(call->op,call);
-	call->core=lc;
-	linphone_core_get_local_ip(lc,linphone_address_get_domain(to),call->localip);
-	call->localdesc=create_local_media_description (lc,call->localip,
-		linphone_address_get_username(from),FALSE);
-	linphone_call_init_common(call,from,to);
-	discover_mtu(lc,linphone_address_get_domain (to));
-	return call;
-}
-
-LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, SalOp *op){
-	LinphoneCall *call=ms_new0(LinphoneCall,1);
-	LinphoneAddress *me=linphone_core_get_primary_contact_parsed(lc);
-	char *to_str;
-	char *from_str;
-
-	call->dir=LinphoneCallIncoming;
-	sal_op_set_user_pointer(op,call);
-	call->op=op;
-	call->core=lc;
-
-	if (lc->sip_conf.ping_with_options){
-		/*the following sends an option request back to the caller so that
-		 we get a chance to discover our nat'd address before answering.*/
-		call->ping_op=sal_op_new(lc->sal);
-		to_str=linphone_address_as_string(to);
-		from_str=linphone_address_as_string(from);
-		sal_op_set_route(call->ping_op,sal_op_get_network_origin(call->op));
-		sal_ping(call->ping_op,to_str,from_str);
-		ms_free(to_str);
-		ms_free(from_str);
-	}
-	
-	linphone_address_clean(from);
-	linphone_core_get_local_ip(lc,linphone_address_get_domain(from),call->localip);
-	call->localdesc=create_local_media_description (lc,call->localip,
-	    linphone_address_get_username(me),lc->sip_conf.only_one_codec);
-	linphone_call_init_common(call, from, to);
-	discover_mtu(lc,linphone_address_get_domain(from));
-	linphone_address_destroy(me);
-	return call;
-}
-
-void linphone_call_destroy(LinphoneCall *obj)
-{
-	linphone_core_notify_all_friends(obj->core,obj->core->prev_mode);
-	linphone_call_log_completed(obj->log,obj);
-	linphone_core_update_allocated_audio_bandwidth(obj->core);
-	if (obj->op!=NULL) {
-		sal_op_release(obj->op);
-		obj->op=NULL;
-	}
-	if (obj->resultdesc!=NULL) {
-		sal_media_description_unref(obj->resultdesc);
-		obj->resultdesc=NULL;
-	}
-	if (obj->localdesc!=NULL) {
-		sal_media_description_unref(obj->localdesc);
-		obj->localdesc=NULL;
-	}
-	if (obj->ping_op) {
-		sal_op_release(obj->ping_op);
-	}
-	ms_free(obj);
-}
-
 /*prevent a gcc bug with %c*/
 static size_t my_strftime(char *s, size_t max, const char  *fmt,  const struct tm *tm){
 #if !defined(_WIN32_WCE)
@@ -294,32 +150,20 @@ static void call_logs_read_from_config_file(LinphoneCore *lc){
 }
 
 
-void linphone_call_log_completed(LinphoneCallLog *calllog, LinphoneCall *call){
+void linphone_call_log_completed(LinphoneCallLog *calllog, LinphoneCall *call, LinphoneCallStatus status){
 	LinphoneCore *lc=call->core;
 	
 	calllog->duration=time(NULL)-call->start_time;
-	switch(call->state){
-		case LCStateInit:
-		case LCStatePreEstablishing:
-			calllog->status=LinphoneCallAborted;
-			break;
-		case LCStateRinging:
-			if (calllog->dir==LinphoneCallIncoming){
-				char *info;
-				calllog->status=LinphoneCallMissed;
-				lc->missed_calls++;
-				info=ortp_strdup_printf(ngettext("You have missed %i call.",
-                            "You have missed %i calls.", lc->missed_calls),
-                        lc->missed_calls);
-				lc->vtable.display_status(lc,info);
-				ms_free(info);
-			}
-			else calllog->status=LinphoneCallAborted;
-			break;
-		case LCStateAVRunning:
-			calllog->status=LinphoneCallSuccess;
-			break;
-	}
+	
+	if (status==LinphoneCallMissed){
+		char *info;
+		lc->missed_calls++;
+		info=ortp_strdup_printf(ngettext("You have missed %i call.",
+                    "You have missed %i calls.", lc->missed_calls),
+                lc->missed_calls);
+		lc->vtable.display_status(lc,info);
+		ms_free(info);
+	}else calllog->status=status;
 	lc->call_logs=ms_list_prepend(lc->call_logs,(void *)calllog);
 	if (ms_list_size(lc->call_logs)>lc->max_call_logs){
 		MSList *elem,*prevelem=NULL;
@@ -443,10 +287,10 @@ int linphone_core_get_current_call_duration(const LinphoneCore *lc){
 	return time(NULL)-call->media_start_time;
 }
 
-const LinphoneAddress *linphone_core_get_remote_uri(LinphoneCore *lc){
+const LinphoneAddress *linphone_core_get_remote_address(LinphoneCore *lc){
 	LinphoneCall *call=lc->call;
 	if (call==NULL) return 0;
-	return call->dir==LinphoneCallIncoming ? call->log->from : call->log->to;
+	return linphone_call_get_remote_address(call);
 }
 
 /**
@@ -1652,17 +1496,18 @@ void linphone_core_iterate(LinphoneCore *lc){
 
 	if (lc->call!=NULL){
 		LinphoneCall *call=lc->call;
-		if (call->state==LCStatePreEstablishing && (curtime-call->start_time>=2)){
+		if (call->state==LinphoneCallPreEstablishing && (curtime-call->start_time>=2)){
 			/*start the call even if the OPTIONS reply did not arrive*/
 			linphone_core_start_invite(lc,call,NULL);
 		}
-		if (call->dir==LinphoneCallIncoming && call->state==LCStateRinging){
+		if (call->dir==LinphoneCallIncoming && call->state==LinphoneCallRinging){
 			elapsed=curtime-call->start_time;
 			ms_message("incoming call ringing for %i seconds",elapsed);
 			if (elapsed>lc->sip_conf.inc_timeout){
+				call->log->status=LinphoneCallMissed;
 				linphone_core_terminate_call(lc,NULL);
 			}
-		}else if (call->state==LCStateAVRunning){
+		}else if (call->state==LinphoneCallAVRunning){
 			if (one_second_elapsed){
 				RtpSession *as=NULL,*vs=NULL;
 				lc->prevtime=curtime;
@@ -1807,7 +1652,7 @@ bool_t linphone_core_is_in_communication_with(LinphoneCore *lc, const char *to)
 {
 	char *tmp;
 	bool_t returned;
-	const LinphoneAddress *la=linphone_core_get_remote_uri(lc);
+	const LinphoneAddress *la=linphone_core_get_remote_address(lc);
 	if(la == NULL)
 	{
 		return FALSE;
@@ -1897,7 +1742,7 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, LinphonePro
 		sal_op_set_contact(call->op, contact);
 		ms_free(contact);
 	}
-	call->state=LCStateInit;
+	call->state=LinphoneCallInit;
 	linphone_core_init_media_streams(lc,lc->call);
 	if (!lc->sip_conf.sdp_200_ack){	
 		call->media_pending=TRUE;
@@ -1919,7 +1764,7 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, LinphonePro
 		ms_warning("Could not initiate call.");
 		lc->vtable.display_status(lc,_("could not call"));
 		linphone_core_stop_media_streams(lc,call);
-		linphone_call_destroy(call);
+		linphone_call_unref(call);
 		lc->call=NULL;
 	}else gstate_new_state(lc, GSTATE_CALL_OUT_INVITE, real_url);
 	ms_free(real_url);
@@ -1934,15 +1779,15 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, LinphonePro
  * @param lc the LinphoneCore object
  * @param url the destination of the call (sip address, or phone number).
 **/
-int linphone_core_invite(LinphoneCore *lc, const char *url){
+LinphoneCall * linphone_core_invite(LinphoneCore *lc, const char *url){
 	LinphoneAddress *addr=linphone_core_interpret_url(lc,url);
 	if (addr){
-		int err;
-		err=linphone_core_invite_address(lc,addr);
+		LinphoneCall *call;
+		call=linphone_core_invite_address(lc,addr);
 		linphone_address_destroy(addr);
-		return err;
+		return call;
 	}
-	return -1;
+	return NULL;
 }
 
 /**
@@ -1952,7 +1797,7 @@ int linphone_core_invite(LinphoneCore *lc, const char *url){
  * @param lc the LinphoneCore object
  * @param url the destination of the call (sip address).
 **/
-int linphone_core_invite_address(LinphoneCore *lc, const LinphoneAddress *real_parsed_url)
+LinphoneCall * linphone_core_invite_address(LinphoneCore *lc, const LinphoneAddress *real_parsed_url)
 {
 	int err=0;
 	const char *route=NULL;
@@ -1965,7 +1810,7 @@ int linphone_core_invite_address(LinphoneCore *lc, const LinphoneAddress *real_p
 	
 	if (lc->call!=NULL){
 		lc->vtable.display_warning(lc,_("Sorry, having multiple simultaneous calls is not supported yet !"));
-		return -1;
+		return NULL;
 	}
 
 	linphone_core_get_default_proxy(lc,&proxy);
@@ -1997,27 +1842,25 @@ int linphone_core_invite_address(LinphoneCore *lc, const LinphoneAddress *real_p
 		err=linphone_core_start_invite(lc,call,dest_proxy);
 	}else{
 		/*defer the start of the call after the OPTIONS ping*/
-		call->state=LCStatePreEstablishing;
+		call->state=LinphoneCallPreEstablishing;
 		call->ping_op=sal_op_new(lc->sal);
 		sal_ping(call->ping_op,from,real_url);
 		call->start_time=time(NULL);
 	}
 	
 	if (real_url!=NULL) ms_free(real_url);
-	return err;
+	return call;
 }
 
-int linphone_core_refer(LinphoneCore *lc, const char *url)
+int linphone_core_refer(LinphoneCore *lc, LinphoneCall *call, const char *url)
 {
 	char *real_url=NULL;
 	LinphoneAddress *real_parsed_url=linphone_core_interpret_url(lc,url);
-	LinphoneCall *call;
 
 	if (!real_parsed_url){
 		/* bad url */
 		return -1;
 	}
-	call=lc->call;
 	if (call==NULL){
 		ms_warning("No established call to refer.");
 		return -1;
@@ -2291,7 +2134,7 @@ void linphone_core_start_media_streams(LinphoneCore *lc, LinphoneCall *call){
 	end:
 		ms_free(cname);
 		linphone_address_destroy(me);
-		lc->call->state=LCStateAVRunning;
+		lc->call->state=LinphoneCallAVRunning;
 }
 
 void linphone_core_stop_media_streams(LinphoneCore *lc, LinphoneCall *call){
@@ -2341,9 +2184,8 @@ void linphone_core_stop_media_streams(LinphoneCore *lc, LinphoneCall *call){
  *            however this feature is not supported yet.
  *            Using NULL will accept the unique incoming call in progress.
 **/
-int linphone_core_accept_call(LinphoneCore *lc, const char *url)
+int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call)
 {
-	LinphoneCall *call=lc->call;
 	LinphoneProxyConfig *cfg=NULL;
 	const char *contact=NULL;
 	
@@ -2351,7 +2193,7 @@ int linphone_core_accept_call(LinphoneCore *lc, const char *url)
 		return -1;
 	}
 
-	if (call->state==LCStateAVRunning){
+	if (call->state==LinphoneCallAVRunning){
 		/*call already accepted*/
 		return -1;
 	}
@@ -2390,9 +2232,8 @@ int linphone_core_accept_call(LinphoneCore *lc, const char *url)
  * @param url the destination of the call to be terminated, use NULL if there is
  *            only one call (which is case in this version of liblinphone).
 **/
-int linphone_core_terminate_call(LinphoneCore *lc, const char *url)
+int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *call)
 {
-	LinphoneCall *call=lc->call;
 	if (call==NULL){
 		return -1;
 	}
@@ -2407,8 +2248,15 @@ int linphone_core_terminate_call(LinphoneCore *lc, const char *url)
 	linphone_core_stop_media_streams(lc,call);
 	lc->vtable.display_status(lc,_("Call ended") );
 	gstate_new_state(lc, GSTATE_CALL_END, NULL);
-	linphone_call_destroy(call);
+	linphone_call_set_terminated(call);
+	linphone_call_unref(call);
 	return 0;
+}
+
+
+int linphone_core_terminate_all_calls(LinphoneCore *lc){
+	/* TODO */
+	return -1;
 }
 
 /**
@@ -2431,6 +2279,21 @@ struct _LinphoneCall *linphone_core_get_current_call(LinphoneCore *lc)
 		return lc->call;
 	else
 		return NULL;
+}
+
+int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call){
+	/* TODO */
+	return -1;
+}
+
+int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *call){
+	/* TODO */
+	return -1;
+}
+
+LinphoneCall *linphone_core_get_call_by_remote_address(LinphoneCore *lc){
+	/* TODO */
+	return NULL;
 }
 
 int linphone_core_send_publish(LinphoneCore *lc,

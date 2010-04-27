@@ -85,8 +85,24 @@ struct _SipSetupContext;
 struct _LinphoneCall;
 typedef struct _LinphoneCall LinphoneCall;
 
-bool_t linphone_call_asked_to_autoanswer(struct _LinphoneCall *call);
-	
+typedef enum _LinphoneCallState{
+	LinphoneCallInit,
+	LinphoneCallPreEstablishing,
+	LinphoneCallRinging,
+	LinphoneCallAVRunning,
+	LinphoneCallPaused,
+	LinphoneCallTerminated
+}LinphoneCallState;
+
+LinphoneCallState linphone_call_get_state(const LinphoneCall *call);
+bool_t linphone_call_asked_to_autoanswer(LinphoneCall *call);
+bool_t linphone_call_paused(LinphoneCall *call);
+const LinphoneAddress * linphone_call_get_remote_address(const LinphoneCall *call);
+char *linphone_call_get_remote_address_as_string(const LinphoneCall *call);
+void linphone_call_ref(LinphoneCall *call);
+void linphone_call_unref(LinphoneCall *call);
+
+
 /**
  * Enum representing the direction of a call.
  * @ingroup call_logs
@@ -377,9 +393,9 @@ void gstate_initialize(struct _LinphoneCore *lc) ;
 /** Callback prototype */
 typedef void (*ShowInterfaceCb)(struct _LinphoneCore *lc);
 /** Callback prototype */
-typedef void (*InviteReceivedCb)(struct _LinphoneCore *lc, const char *from);
+typedef void (*InviteReceivedCb)(struct _LinphoneCore *lc, LinphoneCall *call);
 /** Callback prototype */
-typedef void (*ByeReceivedCb)(struct _LinphoneCore *lc, const char *from);
+typedef void (*ByeReceivedCb)(struct _LinphoneCore *lc, LinphoneCall *call);
 /** Callback prototype */
 typedef void (*DisplayStatusCb)(struct _LinphoneCore *lc, const char *message);
 /** Callback prototype */
@@ -481,11 +497,11 @@ void linphone_core_iterate(LinphoneCore *lc);
 
 LinphoneAddress * linphone_core_interpret_url(LinphoneCore *lc, const char *url);
 
-int linphone_core_invite(LinphoneCore *lc, const char *url);
+LinphoneCall * linphone_core_invite(LinphoneCore *lc, const char *url);
 
-int linphone_core_invite_address(LinphoneCore *lc, const LinphoneAddress *addr);
+LinphoneCall * linphone_core_invite_address(LinphoneCore *lc, const LinphoneAddress *addr);
 
-int linphone_core_refer(LinphoneCore *lc, const char *url);
+int linphone_core_refer(LinphoneCore *lc, LinphoneCall *call, const char *url);
 
 bool_t linphone_core_inc_invite_pending(LinphoneCore*lc);
 
@@ -493,9 +509,17 @@ bool_t linphone_core_in_call(const LinphoneCore *lc);
 
 LinphoneCall *linphone_core_get_current_call(LinphoneCore *lc);
 
-int linphone_core_accept_call(LinphoneCore *lc, const char *url);
+int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call);
 
-int linphone_core_terminate_call(LinphoneCore *lc, const char *url);
+int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *call);
+
+int linphone_core_terminate_all_calls(LinphoneCore *lc);
+
+int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call);
+
+int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *call);
+
+LinphoneCall *linphone_core_get_call_by_remote_address(LinphoneCore *lc);
 
 void linphone_core_send_dtmf(LinphoneCore *lc,char dtmf);
 
@@ -741,7 +765,7 @@ void linphone_core_set_record_file(LinphoneCore *lc, const char *file);
 
 gstate_t linphone_core_get_state(const LinphoneCore *lc, gstate_group_t group);
 int linphone_core_get_current_call_duration(const LinphoneCore *lc);
-const LinphoneAddress *linphone_core_get_remote_uri(LinphoneCore *lc);
+const LinphoneAddress *linphone_core_get_remote_address(LinphoneCore *lc);
 
 int linphone_core_get_mtu(const LinphoneCore *lc);
 void linphone_core_set_mtu(LinphoneCore *lc, int mtu);

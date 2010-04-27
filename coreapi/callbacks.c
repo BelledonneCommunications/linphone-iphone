@@ -30,7 +30,7 @@ static void linphone_connect_incoming(LinphoneCore *lc, LinphoneCall *call){
 		lc->vtable.show(lc);
 	if (lc->vtable.display_status)
 		lc->vtable.display_status(lc,_("Connected."));
-	call->state=LCStateAVRunning;
+	call->state=LinphoneCallAVRunning;
 	if (lc->ringstream!=NULL){
 		ring_stop(lc->ringstream);
 		lc->ringstream=NULL;
@@ -82,7 +82,7 @@ static void call_received(SalOp *h){
 		sal_media_description_ref(call->resultdesc);
 	if (call->resultdesc && sal_media_description_empty(call->resultdesc)){
 		sal_call_decline(h,SalReasonMedia,NULL);
-		linphone_call_destroy(call);
+		linphone_call_unref(call);
 		lc->call=NULL;
 		return;
 	}
@@ -103,10 +103,10 @@ static void call_received(SalOp *h){
 		ms_message("Starting local ring...");
 		lc->ringstream=ring_start(lc->sound_conf.local_ring,2000,lc->sound_conf.ring_sndcard);
 	}
-	linphone_call_set_state(call,LCStateRinging);
+	call->state=LinphoneCallRinging;
 	sal_call_notify_ringing(h);
 	linphone_core_init_media_streams(lc,lc->call);
-	if (lc->vtable.inv_recv) lc->vtable.inv_recv(lc,tmp);
+	if (lc->vtable.inv_recv) lc->vtable.inv_recv(lc,call);
 	ms_free(barmesg);
 	ms_free(tmp);
 }
@@ -146,7 +146,7 @@ static void call_ringing(SalOp *h){
 		linphone_core_start_media_streams(lc,call);
 		call->media_pending=TRUE;
 	}
-	call->state=LCStateRinging;
+	call->state=LinphoneCallRinging;
 }
 
 static void call_accepted(SalOp *op){
@@ -160,7 +160,7 @@ static void call_accepted(SalOp *op){
 		ms_warning("call_accepted: ignoring.");
 		return;
 	}
-	if (call->state==LCStateAVRunning){
+	if (call->state==LinphoneCallAVRunning){
 		return ; /*already accepted*/
 	}
 	if (lc->audiostream->ticker!=NULL){
@@ -234,7 +234,8 @@ static void call_updated(SalOp *op){
 
 static void call_terminated(SalOp *op, const char *from){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
-	if (sal_op_get_user_pointer(op)!=lc->call){
+	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
+	if (linphone_call_get_state(call)==LinphoneCallTerminated){
 		ms_warning("call_terminated: ignoring.");
 		return;
 	}
@@ -246,17 +247,18 @@ static void call_terminated(SalOp *op, const char *from){
 	linphone_core_stop_media_streams(lc,lc->call);
 	lc->vtable.show(lc);
 	lc->vtable.display_status(lc,_("Call terminated."));
+	linphone_call_set_terminated(call);
 	gstate_new_state(lc, GSTATE_CALL_END, NULL);
 	if (lc->vtable.bye_recv!=NULL){
 		LinphoneAddress *addr=linphone_address_new(from);
 		char *tmp;
 		linphone_address_clean(addr);
 		tmp=linphone_address_as_string(addr);
-		lc->vtable.bye_recv(lc,tmp);
+		lc->vtable.bye_recv(lc,call);
 		ms_free(tmp);
 		linphone_address_destroy(addr);
 	}
-	linphone_call_destroy(lc->call);
+	linphone_call_unref(call);
 	lc->call=NULL;
 }
 
@@ -330,7 +332,7 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 	}
 	linphone_core_stop_media_streams(lc,call);
 	if (call!=NULL) {
-		linphone_call_destroy(call);
+		linphone_call_set_terminated(call);
 		if (sr!=SalReasonDeclined) gstate_new_state(lc, GSTATE_CALL_ERROR, msg);
 		else gstate_new_state(lc, GSTATE_CALL_END, NULL);
 		lc->call=NULL;
@@ -446,7 +448,7 @@ static void ping_reply(SalOp *op){
 	LinphoneCall *call=(LinphoneCall*) sal_op_get_user_pointer(op);
 	ms_message("ping reply !");
 	if (call){
-		if (call->state==LCStatePreEstablishing){
+		if (call->state==LinphoneCallPreEstablishing){
 			linphone_core_start_invite(call->core,call,NULL);
 		}
 	}

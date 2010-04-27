@@ -128,7 +128,7 @@ void linphone_gtk_in_call_view_set_in_call(){
 	GtkWidget *duration=linphone_gtk_get_widget(main_window,"in_call_duration");
 	GtkWidget *animation=linphone_gtk_get_widget(main_window,"in_call_animation");
 	GdkPixbufAnimation *pbuf=create_pixbuf_animation("incall_anim.gif");
-	const LinphoneAddress *uri=linphone_core_get_remote_uri(lc);
+	const LinphoneAddress *uri=linphone_core_get_remote_address(lc);
 	char *tmp=linphone_address_as_string(uri);
 	display_peer_name_in_label(callee,tmp);
 	ms_free(tmp);

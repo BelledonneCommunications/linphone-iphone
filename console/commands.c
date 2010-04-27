@@ -381,7 +381,7 @@ lpc_cmd_call(LinphoneCore *lc, char *args)
 	}
 	else
 	{
-		if ( -1 == linphone_core_invite(lc, args) )
+		if ( NULL == linphone_core_invite(lc, args) )
 		{
 			linphonec_out("Error from linphone_core_invite.\n");
 		}
@@ -438,7 +438,7 @@ static int
 lpc_cmd_refer(LinphoneCore *lc, char *args)
 {
 	if (args)
-		linphone_core_refer(lc, args);
+		linphone_core_refer(lc, linphone_core_get_current_call(lc), args);
 	else{
 		linphonec_out("refer needs an argument\n");
 	}

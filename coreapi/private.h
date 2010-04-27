@@ -54,12 +54,7 @@
 #endif
 #endif
 
-typedef enum _LCState{
-	LCStateInit,
-	LCStatePreEstablishing,
-	LCStateRinging,
-	LCStateAVRunning
-}LCState;
+
 
 
 struct _LinphoneCall
@@ -76,18 +71,18 @@ struct _LinphoneCall
 	char localip[LINPHONE_IPADDR_SIZE]; /* our best guess for local ipaddress for this call */
 	time_t start_time; /*time at which the call was initiated*/
 	time_t media_start_time; /*time at which it was accepted, media streams established*/
-	LCState	state;
+	LinphoneCallState	state;
+	int refcnt;
 	bool_t media_pending;
 };
 
 LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to);
 LinphoneCall * linphone_call_new_incoming(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, SalOp *op);
-#define linphone_call_set_state(lcall,st)	(lcall)->state=(st)
-void linphone_call_destroy(struct _LinphoneCall *obj);
+void linphone_call_set_terminated(LinphoneCall *call);
 
 /* private: */
 LinphoneCallLog * linphone_call_log_new(LinphoneCall *call, LinphoneAddress *local, LinphoneAddress * remote);
-void linphone_call_log_completed(LinphoneCallLog *calllog, LinphoneCall *call);
+void linphone_call_log_completed(LinphoneCallLog *calllog, LinphoneCall *call, LinphoneCallStatus status);
 void linphone_call_log_destroy(LinphoneCallLog *cl);
 
 
