@@ -101,9 +101,11 @@ int sal_text_send(SalOp *op, const char *from, const char *to, const char *msg){
 			eXosip_unlock();
 			return -1;
 		}
-		osip_free(sip->sip_method);
 		//change the sip_message to be a MESSAGE ...
+		osip_free(osip_message_get_method(sip));
 		osip_message_set_method(sip,osip_strdup("MESSAGE"));
+		osip_free(osip_cseq_get_method(osip_message_get_cseq(sip)));
+		osip_cseq_set_method(osip_message_get_cseq(sip),osip_strdup("MESSAGE"));
 		osip_message_set_content_type(sip,"text/plain");
 		osip_message_set_body(sip,msg,strlen(msg));
 		eXosip_message_send_request(sip);

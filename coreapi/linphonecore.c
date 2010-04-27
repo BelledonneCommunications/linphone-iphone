@@ -84,6 +84,7 @@ static SalMediaDescription *create_local_media_description(LinphoneCore *lc,
 	md->nstreams=1;
 	strncpy(md->addr,localip,sizeof(md->addr));
 	strncpy(md->username,username,sizeof(md->username));
+	md->bandwidth=linphone_core_get_download_bandwidth(lc);
 	/*set audio capabilities */
 	strncpy(md->streams[0].addr,localip,sizeof(md->streams[0].addr));
 	md->streams[0].port=linphone_core_get_audio_port(lc);
@@ -715,12 +716,20 @@ static PayloadType * find_payload(RtpProfile *prof, const char *mime_type, int c
 		it=rtp_profile_get_payload(prof,i);
 		if (it!=NULL && strcasecmp(mime_type,it->mime_type)==0
 			&& (clock_rate==it->clock_rate || clock_rate<=0) ){
-			if ( (recv_fmtp && it->recv_fmtp && strcasecmp(recv_fmtp,it->recv_fmtp)==0) ||
+			if ( (recv_fmtp && it->recv_fmtp && strstr(recv_fmtp,it->recv_fmtp)!=NULL) ||
 				(recv_fmtp==NULL && it->recv_fmtp==NULL) ){
 				/*exact match*/
+				if (recv_fmtp) payload_type_set_recv_fmtp(it,recv_fmtp);
 				return it;
-			}else candidate=it;
+			}else {
+				if (candidate){
+					if (it->recv_fmtp==NULL) candidate=it;
+				}else candidate=it;
+			}
 		}
+	}
+	if (candidate && recv_fmtp){
+		payload_type_set_recv_fmtp(candidate,recv_fmtp);
 	}
 	return candidate;
 }
@@ -1161,8 +1170,7 @@ void linphone_core_get_local_ip(LinphoneCore *lc, const char *dest, char *result
 		strncpy(result,linphone_core_get_nat_address(lc),LINPHONE_IPADDR_SIZE);
 		return;
 	}
-	if (dest==NULL) dest="87.98.157.38"; /*a public IP address*/
-	if (linphone_core_get_local_ip_for(dest,result)==0)
+	if (linphone_core_get_local_ip_for(lc->sip_conf.ipv6_enabled ? AF_INET6 : AF_INET,dest,result)==0)
 		return;
 	/*else fallback to SAL routine that will attempt to find the most realistic interface */
 	sal_get_default_local_ip(lc->sal,lc->sip_conf.ipv6_enabled ? AF_INET6 : AF_INET,result,LINPHONE_IPADDR_SIZE);
@@ -1514,14 +1522,15 @@ static void monitor_network_state(LinphoneCore *lc, time_t curtime){
 
 	/* only do the network up checking every five seconds */
 	if (last_check==0 || (curtime-last_check)>=5){
-		sal_get_default_local_ip(lc->sal,
-		    lc->sip_conf.ipv6_enabled ? AF_INET6 : AF_INET,
-		    result,LINPHONE_IPADDR_SIZE);
+		linphone_core_get_local_ip_for(lc->sip_conf.ipv6_enabled ? AF_INET6 : AF_INET,NULL,result);
 		if (strcmp(result,"::1")!=0 && strcmp(result,"127.0.0.1")!=0){
 			new_status=TRUE;
 		}else new_status=FALSE;
 		last_check=curtime;
 		if (new_status!=last_status) {
+			if (new_status){
+				ms_message("New local ip address is %s",result);
+			}
 			set_network_reachable(lc,new_status);
 			last_status=new_status;
 		}
@@ -1842,14 +1851,7 @@ static char *get_fixed_contact(LinphoneCore *lc, LinphoneCall *call , LinphonePr
 	if (call->op && sal_op_get_contact(call->op)!=NULL){
 		return NULL;
 	}
-	/*if using a proxy, use the contact address as guessed with the REGISTERs*/
-	if (dest_proxy && dest_proxy->op){
-		const char *fixed_contact=sal_op_get_contact(dest_proxy->op);
-		if (fixed_contact) {
-			ms_message("Contact has been fixed using proxy to %s",fixed_contact);
-			return ms_strdup(fixed_contact);
-		}
-	}
+	
 	/* if the ping OPTIONS request succeeded use the contact guessed from the
 	 received, rport*/
 	if (call->ping_op){
@@ -1857,6 +1859,15 @@ static char *get_fixed_contact(LinphoneCore *lc, LinphoneCall *call , LinphonePr
 		if (guessed){
 			ms_message("Contact has been fixed using OPTIONS to %s",guessed);
 			return ms_strdup(guessed);
+		}
+	}
+
+	/*if using a proxy, use the contact address as guessed with the REGISTERs*/
+	if (dest_proxy && dest_proxy->op){
+		const char *fixed_contact=sal_op_get_contact(dest_proxy->op);
+		if (fixed_contact) {
+			ms_message("Contact has been fixed using proxy to %s",fixed_contact);
+			return ms_strdup(fixed_contact);
 		}
 	}
 	
@@ -2147,11 +2158,12 @@ static void post_configure_audio_streams(LinphoneCore *lc){
 	}
 }
 
-static RtpProfile *make_profile(LinphoneCore *lc, const SalStreamDescription *desc, int *used_pt){
+static RtpProfile *make_profile(LinphoneCore *lc, const SalMediaDescription *md, const SalStreamDescription *desc, int *used_pt){
 	int bw;
 	const MSList *elem;
 	RtpProfile *prof=rtp_profile_new("Call profile");
 	bool_t first=TRUE;
+	int remote_bw=0;
 	
 	for(elem=desc->payloads;elem!=NULL;elem=elem->next){
 		PayloadType *pt=(PayloadType*)elem->data;
@@ -2163,9 +2175,18 @@ static RtpProfile *make_profile(LinphoneCore *lc, const SalStreamDescription *de
 			*used_pt=payload_type_get_number(pt);
 			first=FALSE;
 		}
+		if (desc->bandwidth>0) remote_bw=desc->bandwidth;
+		else if (md->bandwidth>0) {
+			/*case where b=AS is given globally, not per stream*/
+			remote_bw=md->bandwidth;
+			if (desc->type==SalVideo){
+				remote_bw-=lc->audio_bw;
+			}
+		}
+		
 		if (desc->type==SalAudio){			
-				bw=get_min_bandwidth(lc->up_audio_bw,desc->bandwidth);
-		}else bw=get_min_bandwidth(lc->up_video_bw,desc->bandwidth);
+				bw=get_min_bandwidth(lc->up_audio_bw,remote_bw);
+		}else bw=get_min_bandwidth(lc->up_video_bw,remote_bw);
 		if (bw>0) pt->normal_bitrate=bw*1000;
 		else if (desc->type==SalAudio){
 			pt->normal_bitrate=-1;
@@ -2195,7 +2216,7 @@ void linphone_core_start_media_streams(LinphoneCore *lc, LinphoneCall *call){
 		const SalStreamDescription *stream=sal_media_description_find_stream(call->resultdesc,
 		    					SalProtoRtpAvp,SalAudio);
 		if (stream){
-			call->audio_profile=make_profile(lc,stream,&used_pt);
+			call->audio_profile=make_profile(lc,call->resultdesc,stream,&used_pt);
 			if (!lc->use_files){
 				MSSndCard *playcard=lc->sound_conf.play_sndcard;
 				MSSndCard *captcard=lc->sound_conf.capt_sndcard;
@@ -2245,7 +2266,7 @@ void linphone_core_start_media_streams(LinphoneCore *lc, LinphoneCall *call){
 		}
 		if (stream && (lc->video_conf.display || lc->video_conf.capture)) {
 			const char *addr=stream->addr[0]!='\0' ? stream->addr : call->resultdesc->addr;
-			call->video_profile=make_profile(lc,stream,&used_pt);
+			call->video_profile=make_profile(lc,call->resultdesc,stream,&used_pt);
 			video_stream_set_sent_video_size(lc->videostream,linphone_core_get_preferred_video_size(lc));
 			video_stream_enable_self_view(lc->videostream,lc->video_conf.selfview);
 			if (lc->video_conf.display && lc->video_conf.capture)
@@ -2323,6 +2344,7 @@ void linphone_core_stop_media_streams(LinphoneCore *lc, LinphoneCall *call){
 int linphone_core_accept_call(LinphoneCore *lc, const char *url)
 {
 	LinphoneCall *call=lc->call;
+	LinphoneProxyConfig *cfg=NULL;
 	const char *contact=NULL;
 	
 	if (call==NULL){
@@ -2341,9 +2363,10 @@ int linphone_core_accept_call(LinphoneCore *lc, const char *url)
 		ms_message("ring stopped");
 		lc->ringstream=NULL;
 	}
-	
+
+	linphone_core_get_default_proxy(lc,&cfg);
 	/*try to be best-effort in giving real local or routable contact address*/
-	contact=get_fixed_contact(lc,call,NULL);
+	contact=get_fixed_contact(lc,call,cfg);
 	if (contact)
 		sal_op_set_contact(call->op,contact);
 	
@@ -3558,6 +3581,13 @@ void linphone_core_set_network_reachable(LinphoneCore* lc,bool_t isReachable) {
 		lc->auto_net_state_mon=FALSE;
 	}
 	set_network_reachable(lc,isReachable);
+}
+
+bool_t linphone_core_is_network_reachabled(LinphoneCore* lc) {
+	return lc->network_reachable;
+}
+ortp_socket_t linphone_core_get_sip_socket(LinphoneCore *lc){
+	return sal_get_socket(lc->sal);
 }
 /**
  * Destroys a LinphoneCore

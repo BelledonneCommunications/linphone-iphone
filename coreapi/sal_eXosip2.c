@@ -23,8 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "sal_eXosip2.h"
 
 #include "offeranswer.h"
-/*this function is not declared in some versions of eXosip*/
-extern void *eXosip_call_get_reference(int cid);
 
 static void text_received(Sal *sal, eXosip_event_t *ev);
 
@@ -42,6 +40,25 @@ void sal_get_default_local_ip(Sal *sal, int address_family,char *ip, size_t iple
 		strncpy(ip,address_family==AF_INET6 ? "::1" : "127.0.0.1",iplen);
 		ms_error("Could not find default routable ip address !");
 	}
+}
+
+
+static SalOp * sal_find_call(Sal *sal, int cid){
+	const MSList *elem;
+	SalOp *op;
+	for(elem=sal->calls;elem!=NULL;elem=elem->next){
+		op=(SalOp*)elem->data;
+		if (op->cid==cid) return op;
+	}
+	return NULL;
+}
+
+static void sal_add_call(Sal *sal, SalOp *op){
+	sal->calls=ms_list_append(sal->calls,op);
+}
+
+static void sal_remove_call(Sal *sal, SalOp *op){
+	sal->calls=ms_list_remove(sal->calls, op);
 }
 
 static SalOp * sal_find_register(Sal *sal, int rid){
@@ -164,7 +181,7 @@ void sal_op_release(SalOp *op){
 	}
 	if (op->cid!=-1){
 		ms_message("Cleaning cid %i",op->cid);
-		eXosip_call_set_reference(op->cid,NULL);
+		sal_remove_call(op->base.root,op);
 	}
 	if (op->sid!=-1){
 		sal_remove_out_subscribe(op->base.root,op);
@@ -227,12 +244,14 @@ static void _osip_trace_func(char *fi, int li, osip_trace_level_t level, char *c
 
 Sal * sal_init(){
 	static bool_t firsttime=TRUE;
+	Sal *sal;
 	if (firsttime){
 		osip_trace_initialize_func (OSIP_INFO4,&_osip_trace_func);
 		firsttime=FALSE;
 	}
 	eXosip_init();
-	return ms_new0(Sal,1);
+	sal=ms_new0(Sal,1);
+	return sal;
 }
 
 void sal_uninit(Sal* sal){
@@ -295,8 +314,10 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 	bool_t ipv6;
 	int proto=IPPROTO_UDP;
 	
-	if (ctx->running) eXosip_quit();
-	eXosip_init();
+	if (ctx->running){
+		eXosip_quit();
+		eXosip_init();
+	}
 	err=0;
 	eXosip_set_option(13,&err); /*13=EXOSIP_OPT_SRV_WITH_NAPTR, as it is an enum value, we can't use it unless we are sure of the
 					version of eXosip, which is not the case*/
@@ -308,9 +329,21 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 		ms_fatal("SIP over TCP or TLS or DTLS is not supported yet.");
 		return -1;
 	}
-	
 	err=eXosip_listen_addr(proto, addr, port, ipv6 ?  PF_INET6 : PF_INET, 0);
+#ifdef HAVE_EXOSIP_GET_SOCKET
+	ms_message("Exosip has socket number %i",eXosip_get_socket(proto));
+#endif
+	ctx->running=TRUE;
 	return err;
+}
+
+ortp_socket_t sal_get_socket(Sal *ctx){
+#ifdef HAVE_EXOSIP_GET_SOCKET
+	return eXosip_get_socket(IPPROTO_UDP);
+#else
+	ms_warning("Sorry, eXosip does not have eXosip_get_socket() method");
+	return -1;
+#endif
 }
 
 void sal_set_user_agent(Sal *ctx, const char *user_agent){
@@ -337,6 +370,7 @@ static int extract_received_rport(osip_message_t *msg, const char **received, in
 		rport=param->gvalue;
 		if (rport && rport[0]!='\0') *rportval=atoi(rport);
 		else *rportval=5060;
+		*received=via->host;
 	}
 	param=NULL;
 	osip_via_param_get_byname(via,"received",&param);
@@ -381,6 +415,7 @@ static void sdp_process(SalOp *h){
 		offer_answer_initiate_incoming(h->base.local_media,h->base.remote_media,h->result);
 		h->sdp_answer=media_description_to_sdp(h->result);
 		strcpy(h->result->addr,h->base.remote_media->addr);
+		h->result->bandwidth=h->base.remote_media->bandwidth;
 		for(i=0;i<h->result->nstreams;++i){
 			if (h->result->streams[i].port>0){
 				strcpy(h->result->streams[i].addr,h->base.remote_media->streams[i].addr);
@@ -413,6 +448,7 @@ int sal_call(SalOp *h, const char *from, const char *to){
 		ms_error("Could not create call.");
 		return -1;
 	}
+	osip_message_set_allow(invite, "INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, NOTIFY, MESSAGE, SUBSCRIBE, INFO");
 	if (h->base.contact){
 		_osip_list_set_empty(&invite->contacts,(void (*)(void*))osip_contact_free);
 		osip_message_set_contact(invite,h->base.contact);
@@ -433,7 +469,7 @@ int sal_call(SalOp *h, const char *from, const char *to){
 		ms_error("Fail to send invite !");
 		return -1;
 	}else{
-		eXosip_call_set_reference(h->cid,h);
+		sal_add_call(h->base.root,h);
 	}
 	return 0;
 }
@@ -588,8 +624,9 @@ int sal_call_send_dtmf(SalOp *h, char dtmf){
 int sal_call_terminate(SalOp *h){
 	eXosip_lock();
 	eXosip_call_terminate(h->cid,h->did);
-	eXosip_call_set_reference(h->cid,NULL);
 	eXosip_unlock();
+	sal_remove_call(h->base.root,h);
+	h->cid=-1;
 	return 0;
 }
 
@@ -630,11 +667,7 @@ static void set_network_origin(SalOp *op, osip_message_t *req){
 
 static SalOp *find_op(Sal *sal, eXosip_event_t *ev){
 	if (ev->cid>0){
-#ifdef HAVE_EXOSIP_GET_REF
-		return (SalOp*)eXosip_call_get_ref(ev->cid);
-#else
-		return (SalOp*)eXosip_call_get_reference(ev->cid);
-#endif
+		return sal_find_call(sal,ev->cid);
 	}
 	if (ev->rid>0){
 		return sal_find_register(sal,ev->rid);
@@ -684,7 +717,7 @@ static void inc_new_call(Sal *sal, eXosip_event_t *ev){
 	op->cid=ev->cid;
 	op->did=ev->did;
 	
-	eXosip_call_set_reference(op->cid,op);
+	sal_add_call(op->base.root,op);
 	sal->callbacks.call_received(op);
 }
 
@@ -797,9 +830,9 @@ static int call_proceeding(Sal *sal, eXosip_event_t *ev){
 
 static void call_ringing(Sal *sal, eXosip_event_t *ev){
 	sdp_message_t *sdp;
-	SalOp *op;
+	SalOp *op=find_op(sal,ev);
 	if (call_proceeding(sal, ev)==-1) return;
-	op=(SalOp*)ev->external_reference;
+	
 	sdp=eXosip_get_sdp_info(ev->response);
 	if (sdp){
 		op->base.remote_media=sal_media_description_new();
@@ -840,22 +873,25 @@ static void call_accepted(Sal *sal, eXosip_event_t *ev){
 }
 
 static void call_terminated(Sal *sal, eXosip_event_t *ev){
-	char *from;
+	char *from=NULL;
 	SalOp *op=find_op(sal,ev);
 	if (op==NULL){
 		ms_warning("Call terminated for already closed call ?");
 		return;
 	}
-	osip_from_to_str(ev->request->from,&from);
-	eXosip_call_set_reference(ev->cid,NULL);
+	if (ev->request){
+		osip_from_to_str(ev->request->from,&from);
+	}
+	sal_remove_call(sal,op);
 	op->cid=-1;
-	sal->callbacks.call_terminated(op,from);
-	osip_free(from);
+	sal->callbacks.call_terminated(op,from!=NULL ? from : sal_op_get_from(op));
+	if (from) osip_free(from);
 }
 
 static void call_released(Sal *sal, eXosip_event_t *ev){
 	SalOp *op=find_op(sal,ev);
 	if (op==NULL){
+		ms_warning("No op associated to this call_released()");
 		return;
 	}
 	op->cid=-1;
@@ -1366,7 +1402,8 @@ static void other_request_reply(Sal *sal,eXosip_event_t *ev){
 	}
 	if (ev->response){
 		update_contact_from_response(op,ev->response);
-		sal->callbacks.ping_reply(op);
+		if (ev->request && strcmp(osip_message_get_method(ev->request),"OPTIONS")==0)
+			sal->callbacks.ping_reply(op);
 	}
 }
 
@@ -1393,6 +1430,10 @@ static bool_t process_event(Sal *sal, eXosip_event_t *ev){
 		case EXOSIP_CALL_SERVERFAILURE:
 			ms_message("CALL_REQUESTFAILURE or GLOBALFAILURE or SERVERFAILURE\n");
 			return call_failure(sal,ev);
+			break;
+		case EXOSIP_CALL_RELEASED:
+			ms_message("CALL_RELEASED\n");
+			call_released(sal, ev);
 			break;
 		case EXOSIP_CALL_INVITE:
 			ms_message("CALL_NEW\n");
@@ -1458,10 +1499,6 @@ static bool_t process_event(Sal *sal, eXosip_event_t *ev){
    		case EXOSIP_SUBSCRIPTION_GLOBALFAILURE:
 			sal_exosip_subscription_closed(sal,ev);
 			break;
-		case EXOSIP_CALL_RELEASED:
-			ms_message("CALL_RELEASED\n");
-			call_released(sal, ev);
-			break;
 		case EXOSIP_REGISTRATION_FAILURE:
 			ms_message("REGISTRATION_FAILURE\n");
 			return registration_failure(sal,ev);
@@ -1484,6 +1521,7 @@ static bool_t process_event(Sal *sal, eXosip_event_t *ev){
 			if (ev->response && (ev->response->status_code == 407 || ev->response->status_code == 401)){
 				return process_authentication(sal,ev);
 			}
+			other_request_reply(sal,ev);
 			break;
 		default:
 			ms_message("Unhandled exosip event ! %i",ev->type);

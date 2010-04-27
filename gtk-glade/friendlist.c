@@ -39,17 +39,17 @@ typedef struct _status_picture_tab_t{
 } status_picture_tab_t;
 
 status_picture_tab_t status_picture_tab[]={
-	{	LINPHONE_STATUS_ONLINE,		"sip-online.png"	},
-	{	LINPHONE_STATUS_BUSY,		"sip-busy.png"		},
-	{	LINPHONE_STATUS_BERIGHTBACK,	"sip-bifm.png"		},
-	{	LINPHONE_STATUS_AWAY,		"sip-away.png"		},
-	{	LINPHONE_STATUS_ONTHEPHONE,	"sip-otp.png"		},
-	{	LINPHONE_STATUS_OUTTOLUNCH,	"sip-otl.png"		},
-	{	LINPHONE_STATUS_NOT_DISTURB,	"sip-closed.png"	},
-	{	LINPHONE_STATUS_MOVED,		"sip-closed.png"	},
-	{	LINPHONE_STATUS_ALT_SERVICE,	"sip-closed.png"	},
-	{	LINPHONE_STATUS_OFFLINE,	"sip-away.png"		},
-	{	LINPHONE_STATUS_PENDING,	"sip-wfa.png"		},
+	{	LINPHONE_STATUS_ONLINE,		"status-green.png"	},
+	{	LINPHONE_STATUS_BUSY,		"status-orange.png"		},
+	{	LINPHONE_STATUS_BERIGHTBACK,	"status-orange.png"		},
+	{	LINPHONE_STATUS_AWAY,		"status-orange.png"		},
+	{	LINPHONE_STATUS_ONTHEPHONE,	"status-orange.png"		},
+	{	LINPHONE_STATUS_OUTTOLUNCH,	"status-orange.png"		},
+	{	LINPHONE_STATUS_NOT_DISTURB,	"status-red.png"	},
+	{	LINPHONE_STATUS_MOVED,		"status-orange.png"	},
+	{	LINPHONE_STATUS_ALT_SERVICE,	"status-orange.png"	},
+	{	LINPHONE_STATUS_OFFLINE,	"status-offline.png"		},
+	{	LINPHONE_STATUS_PENDING,	"status-offline.png"		},
 	{	LINPHONE_STATUS_END,		NULL			},
 };
 
@@ -153,7 +153,7 @@ void linphone_gtk_set_my_presence(LinphoneOnlineStatus ss){
 	GtkWidget *image=gtk_image_new_from_pixbuf(pbuf);
 	GtkWidget *menu;
 	g_object_unref(G_OBJECT(pbuf));
-	gtk_button_set_label(GTK_BUTTON(button),linphone_online_status_to_string(ss));
+	gtk_widget_set_tooltip_text(button,linphone_online_status_to_string(ss));
 	gtk_button_set_image(GTK_BUTTON(button),image);
 	/*prepare menu*/
 	menu=(GtkWidget*)g_object_get_data(G_OBJECT(button),"presence_menu");

@@ -164,7 +164,7 @@ LinphoneFriend * linphone_friend_new_from_config_file(struct _LinphoneCore *lc, 
 void linphone_proxy_config_update(LinphoneProxyConfig *cfg);
 void linphone_proxy_config_get_contact(LinphoneProxyConfig *cfg, const char **ip, int *port);
 LinphoneProxyConfig * linphone_core_lookup_known_proxy(LinphoneCore *lc, const LinphoneAddress *uri);
-int linphone_core_get_local_ip_for(const char *dest, char *result);
+int linphone_core_get_local_ip_for(int type, const char *dest, char *result);
 
 LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(struct _LpConfig *config, int index);
 void linphone_proxy_config_write_to_config_file(struct _LpConfig* config,LinphoneProxyConfig *obj, int index);

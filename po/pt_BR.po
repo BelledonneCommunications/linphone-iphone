@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-1.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-02 10:28+0200\n"
+"POT-Creation-Date: 2010-04-22 17:16+0200\n"
 "PO-Revision-Date: 2006-07-11 23:30+0200\n"
 "Last-Translator: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\n"
 "Language-Team: pt_BR <pt_BR@li.org>\n"
@@ -27,39 +27,39 @@ msgstr "Não é possível achar arquivo pixmap: %s"
 msgid "Chat with %s"
 msgstr "Bate-papo com %s"
 
-#: ../gtk-glade/main.c:92
+#: ../gtk-glade/main.c:94
 msgid "log to stdout some debug information while running."
 msgstr ""
 
-#: ../gtk-glade/main.c:99
+#: ../gtk-glade/main.c:101
 msgid "Start only in the system tray, do not show the main interface."
 msgstr ""
 
-#: ../gtk-glade/main.c:106
+#: ../gtk-glade/main.c:108
 msgid "address to call right now"
 msgstr ""
 
-#: ../gtk-glade/main.c:113
+#: ../gtk-glade/main.c:115
 msgid "if set automatically answer incoming calls"
 msgstr ""
 
-#: ../gtk-glade/main.c:121
+#: ../gtk-glade/main.c:123
 msgid ""
 "Specifiy a working directory (should be the base of the installation, eg: c:"
 "\\Program Files\\Linphone)"
 msgstr ""
 
-#: ../gtk-glade/main.c:396
+#: ../gtk-glade/main.c:402
 #, fuzzy, c-format
 msgid "Call with %s"
 msgstr "Bate-papo com %s"
 
-#: ../gtk-glade/main.c:707
+#: ../gtk-glade/main.c:720
 #, fuzzy, c-format
 msgid "Incoming call from %s"
 msgstr "Camadas recebidas"
 
-#: ../gtk-glade/main.c:746
+#: ../gtk-glade/main.c:759
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
@@ -68,31 +68,37 @@ msgid ""
 "If you answer no, this person will be temporarily blacklisted."
 msgstr ""
 
-#: ../gtk-glade/main.c:824
+#: ../gtk-glade/main.c:837
 #, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
 " at domain <i>%s</i>:"
 msgstr ""
 
-#: ../gtk-glade/main.c:921
+#: ../gtk-glade/main.c:934
 msgid "Website link"
 msgstr ""
 
-#: ../gtk-glade/main.c:957
+#: ../gtk-glade/main.c:970
 msgid "Linphone - a video internet phone"
 msgstr ""
 
-#: ../gtk-glade/main.c:976
+#: ../gtk-glade/main.c:989
 #, c-format
 msgid "%s (Default)"
 msgstr ""
 
-#: ../gtk-glade/main.c:1229
+#: ../gtk-glade/main.c:1221
+msgid ""
+"No sound cards have been detected on this computer.\n"
+"You won't be able to send or receive audio calls."
+msgstr ""
+
+#: ../gtk-glade/main.c:1275
 msgid "A free SIP video-phone"
 msgstr ""
 
-#: ../gtk-glade/friendlist.c:192 ../gtk-glade/propertybox.c:247
+#: ../gtk-glade/friendlist.c:192 ../gtk-glade/propertybox.c:258
 #: ../gtk-glade/contact.glade.h:3
 msgid "Name"
 msgstr "Nome"
@@ -135,92 +141,92 @@ msgstr ""
 msgid "Add new contact from %s directory"
 msgstr ""
 
-#: ../gtk-glade/propertybox.c:253
+#: ../gtk-glade/propertybox.c:264
 msgid "Rate (Hz)"
 msgstr "Taxa (Hz)"
 
-#: ../gtk-glade/propertybox.c:259
+#: ../gtk-glade/propertybox.c:270
 msgid "Status"
 msgstr ""
 
-#: ../gtk-glade/propertybox.c:265
+#: ../gtk-glade/propertybox.c:276
 msgid "Min bitrate (kbit/s)"
 msgstr "Bitrate mínimo (kbits/s)"
 
-#: ../gtk-glade/propertybox.c:271
+#: ../gtk-glade/propertybox.c:283
 msgid "Parameters"
 msgstr "Parâmetros"
 
-#: ../gtk-glade/propertybox.c:298 ../gtk-glade/propertybox.c:437
+#: ../gtk-glade/propertybox.c:312 ../gtk-glade/propertybox.c:451
 msgid "Enabled"
 msgstr "Ativado"
 
-#: ../gtk-glade/propertybox.c:299 ../gtk-glade/propertybox.c:437
+#: ../gtk-glade/propertybox.c:313 ../gtk-glade/propertybox.c:451
 msgid "Disabled"
 msgstr "Desativado"
 
-#: ../gtk-glade/propertybox.c:482
+#: ../gtk-glade/propertybox.c:496
 #, fuzzy
 msgid "Account"
 msgstr "Aceitar"
 
-#: ../gtk-glade/propertybox.c:622
+#: ../gtk-glade/propertybox.c:636
 msgid "English"
 msgstr ""
 
-#: ../gtk-glade/propertybox.c:623
+#: ../gtk-glade/propertybox.c:637
 msgid "French"
 msgstr ""
 
-#: ../gtk-glade/propertybox.c:624
+#: ../gtk-glade/propertybox.c:638
 msgid "Swedish"
 msgstr ""
 
-#: ../gtk-glade/propertybox.c:625
+#: ../gtk-glade/propertybox.c:639
 msgid "Italian"
 msgstr ""
 
-#: ../gtk-glade/propertybox.c:626
+#: ../gtk-glade/propertybox.c:640
 msgid "Spanish"
 msgstr ""
 
-#: ../gtk-glade/propertybox.c:627
+#: ../gtk-glade/propertybox.c:641
 msgid "Brazilian Portugese"
 msgstr ""
 
-#: ../gtk-glade/propertybox.c:628
+#: ../gtk-glade/propertybox.c:642
 msgid "Polish"
 msgstr ""
 
-#: ../gtk-glade/propertybox.c:629
+#: ../gtk-glade/propertybox.c:643
 msgid "German"
 msgstr ""
 
-#: ../gtk-glade/propertybox.c:630
+#: ../gtk-glade/propertybox.c:644
 msgid "Russian"
 msgstr ""
 
-#: ../gtk-glade/propertybox.c:631
+#: ../gtk-glade/propertybox.c:645
 msgid "Japanese"
 msgstr ""
 
-#: ../gtk-glade/propertybox.c:632
+#: ../gtk-glade/propertybox.c:646
 msgid "Dutch"
 msgstr ""
 
-#: ../gtk-glade/propertybox.c:633
+#: ../gtk-glade/propertybox.c:647
 msgid "Hungarian"
 msgstr ""
 
-#: ../gtk-glade/propertybox.c:634
+#: ../gtk-glade/propertybox.c:648
 msgid "Czech"
 msgstr ""
 
-#: ../gtk-glade/propertybox.c:635
+#: ../gtk-glade/propertybox.c:649
 msgid "Chinese"
 msgstr ""
 
-#: ../gtk-glade/propertybox.c:692
+#: ../gtk-glade/propertybox.c:706
 msgid ""
 "You need to restart linphone for the new language selection to take effect."
 msgstr ""
@@ -745,7 +751,7 @@ msgstr "Aceitar"
 msgid "Decline"
 msgstr "linha"
 
-#: ../gtk-glade/incoming_call.glade.h:3 ../coreapi/linphonecore.c:368
+#: ../gtk-glade/incoming_call.glade.h:3 ../coreapi/linphonecore.c:369
 msgid "Incoming call"
 msgstr "Camadas recebidas"
 
@@ -1020,18 +1026,6 @@ msgstr ""
 msgid "default soundcard\n"
 msgstr ""
 
-#: ../gtk-glade/parameters.glade.h:65
-msgid "gtk-go-down"
-msgstr ""
-
-#: ../gtk-glade/parameters.glade.h:66
-msgid "gtk-go-up"
-msgstr ""
-
-#: ../gtk-glade/parameters.glade.h:67
-msgid "gtk-media-play"
-msgstr ""
-
 #: ../gtk-glade/buddylookup.glade.h:1
 msgid "<b>Search somebody</b>"
 msgstr ""
@@ -1052,26 +1046,26 @@ msgstr ""
 msgid "Please wait"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:310
+#: ../coreapi/linphonecore.c:311
 #, fuzzy, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."
 msgstr[0] "Você perdeu %i ligação(ões)."
 msgstr[1] "Você perdeu %i ligação(ões)."
 
-#: ../coreapi/linphonecore.c:356
+#: ../coreapi/linphonecore.c:357
 msgid "aborted"
 msgstr "Abortado"
 
-#: ../coreapi/linphonecore.c:359
+#: ../coreapi/linphonecore.c:360
 msgid "completed"
 msgstr "Competado"
 
-#: ../coreapi/linphonecore.c:362
+#: ../coreapi/linphonecore.c:363
 msgid "missed"
 msgstr "Perdido"
 
-#: ../coreapi/linphonecore.c:367
+#: ../coreapi/linphonecore.c:368
 #, fuzzy, c-format
 msgid ""
 "%s at %s\n"
@@ -1085,11 +1079,11 @@ msgstr ""
 "Status: %s\n"
 "Duração: %i min %i seg\n"
 
-#: ../coreapi/linphonecore.c:368
+#: ../coreapi/linphonecore.c:369
 msgid "Outgoing call"
 msgstr "Chamadas efetuadas"
 
-#: ../coreapi/linphonecore.c:625
+#: ../coreapi/linphonecore.c:626
 msgid ""
 "Your machine appears to be connected to an IPv6 network. By default linphone "
 "always uses IPv4. Please update your configuration if you want to use IPv6"
@@ -1098,52 +1092,52 @@ msgstr ""
 "linphone sempre usa IPv4. Por favor atualize sua configuração se deseja usar "
 "IPv6"
 
-#: ../coreapi/linphonecore.c:1074
+#: ../coreapi/linphonecore.c:1083
 #, fuzzy
 msgid "Ready"
 msgstr "Pronto."
 
-#: ../coreapi/linphonecore.c:1505
+#: ../coreapi/linphonecore.c:1513
 msgid "Remote end seems to have disconnected, the call is going to be closed."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:1703
+#: ../coreapi/linphonecore.c:1725
 msgid "Looking for telephone number destination..."
 msgstr "Procurando por telefone de destino..."
 
-#: ../coreapi/linphonecore.c:1705
+#: ../coreapi/linphonecore.c:1727
 msgid "Could not resolve this number."
 msgstr "Não foi possível encontrar este número."
 
-#: ../coreapi/linphonecore.c:1749
+#: ../coreapi/linphonecore.c:1771
 msgid ""
 "Could not parse given sip address. A sip url usually looks like sip:"
 "user@domain"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:1890
+#: ../coreapi/linphonecore.c:1912
 #, fuzzy
 msgid "Contacting"
 msgstr "Contatando "
 
-#: ../coreapi/linphonecore.c:1896
+#: ../coreapi/linphonecore.c:1918
 msgid "could not call"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:1942
+#: ../coreapi/linphonecore.c:1965
 msgid "Sorry, having multiple simultaneous calls is not supported yet !"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:2337 ../coreapi/callbacks.c:32
+#: ../coreapi/linphonecore.c:2370 ../coreapi/callbacks.c:32
 msgid "Connected."
 msgstr "Conectado."
 
-#: ../coreapi/linphonecore.c:2371
+#: ../coreapi/linphonecore.c:2404
 #, fuzzy
 msgid "Call ended"
 msgstr "Chamada cancelada."
 
-#: ../coreapi/misc.c:142
+#: ../coreapi/misc.c:147
 msgid ""
 "Your computer appears to be using ALSA sound drivers.\n"
 "This is the best choice. However the pcm oss emulation module\n"
@@ -1151,7 +1145,7 @@ msgid ""
 "'modprobe snd-pcm-oss' as root to load it."
 msgstr ""
 
-#: ../coreapi/misc.c:145
+#: ../coreapi/misc.c:150
 msgid ""
 "Your computer appears to be using ALSA sound drivers.\n"
 "This is the best choice. However the mixer oss emulation module\n"
@@ -1159,7 +1153,7 @@ msgid ""
 " 'modprobe snd-mixer-oss' as root to load it."
 msgstr ""
 
-#: ../coreapi/misc.c:492
+#: ../coreapi/misc.c:497
 msgid "Stun lookup in progress..."
 msgstr ""
 
@@ -1273,48 +1267,48 @@ msgstr ""
 msgid "Call declined."
 msgstr ""
 
-#: ../coreapi/callbacks.c:280
+#: ../coreapi/callbacks.c:281
 msgid "No response."
 msgstr ""
 
-#: ../coreapi/callbacks.c:283
-msgid "Error."
+#: ../coreapi/callbacks.c:284
+msgid "Protocol error."
 msgstr ""
 
-#: ../coreapi/callbacks.c:296
+#: ../coreapi/callbacks.c:298
 #, fuzzy
 msgid "Redirected"
 msgstr "Redirecionado para %s..."
 
-#: ../coreapi/callbacks.c:304
+#: ../coreapi/callbacks.c:308
 msgid "Not found"
 msgstr ""
 
-#: ../coreapi/callbacks.c:312
+#: ../coreapi/callbacks.c:318
 msgid "No common codecs"
 msgstr ""
 
-#: ../coreapi/callbacks.c:316
+#: ../coreapi/callbacks.c:324
 #, fuzzy
 msgid "Call failed."
 msgstr "Histórico de chamadas"
 
-#: ../coreapi/callbacks.c:365
+#: ../coreapi/callbacks.c:374
 #, fuzzy, c-format
 msgid "Registration on %s successful."
 msgstr "Registro em %s efetuado."
 
-#: ../coreapi/callbacks.c:366
+#: ../coreapi/callbacks.c:375
 #, fuzzy, c-format
 msgid "Unregistration on %s done."
 msgstr "Registro em %s efetuado."
 
-#: ../coreapi/callbacks.c:374
+#: ../coreapi/callbacks.c:383
 #, fuzzy, c-format
 msgid "Registration on %s failed: %s"
 msgstr "Registro falhou (tempo esgotado)."
 
-#: ../coreapi/callbacks.c:374
+#: ../coreapi/callbacks.c:383
 msgid "no response timeout"
 msgstr ""
 
@@ -1334,11 +1328,11 @@ msgstr ""
 msgid "Alsa sound output"
 msgstr ""
 
-#: ../mediastreamer2/src/aqsnd.c:1005
+#: ../mediastreamer2/src/aqsnd.c:1008
 msgid "Sound capture filter for MacOS X Audio Queue Service"
 msgstr ""
 
-#: ../mediastreamer2/src/aqsnd.c:1029
+#: ../mediastreamer2/src/aqsnd.c:1032
 msgid "Sound playback filter for MacOS X Audio Queue Service"
 msgstr ""
 
@@ -1354,11 +1348,11 @@ msgstr ""
 msgid "The GSM codec"
 msgstr ""
 
-#: ../mediastreamer2/src/macsnd.c:670
+#: ../mediastreamer2/src/macsnd.c:1083
 msgid "Sound capture filter for MacOS X Core Audio drivers"
 msgstr ""
 
-#: ../mediastreamer2/src/macsnd.c:684
+#: ../mediastreamer2/src/macsnd.c:1098
 msgid "Sound playback filter for MacOS X Core Audio drivers"
 msgstr ""
 
@@ -1403,7 +1397,7 @@ msgstr ""
 msgid "A filter that controls and measure sound volume"
 msgstr ""
 
-#: ../mediastreamer2/src/msv4l.c:1009
+#: ../mediastreamer2/src/msv4l.c:1011
 msgid "A video4linux compatible source filter to stream pictures."
 msgstr ""
 

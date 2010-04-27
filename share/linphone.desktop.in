@@ -7,4 +7,4 @@ Type=Application
 Exec=linphone-3
 Icon=@prefix@/share/pixmaps/linphone/linphone.png
 Terminal=false
-Categories=Application;Network;
+Categories=Network;Telephony;

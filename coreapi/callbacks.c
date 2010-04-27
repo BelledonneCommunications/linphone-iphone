@@ -267,6 +267,7 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 	/*char *retrymsg=_("%s. Retry after %i minute(s).");*/
 	char *msg600=_("User does not want to be disturbed.");
 	char *msg603=_("Call declined.");
+	char *msg=NULL;
 	LinphoneCall *call=lc->call;
 
 	if (sal_op_get_user_pointer(op)!=lc->call){
@@ -280,36 +281,43 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 			lc->vtable.display_status(lc,_("No response."));
 	}else if (error==SalErrorProtocol){
 		if (lc->vtable.display_status)
-			lc->vtable.display_status(lc, details ? details : _("Error."));
+			lc->vtable.display_status(lc, details ? details : _("Protocol error."));
 	}else if (error==SalErrorFailure){
 		switch(sr){
 			case SalReasonDeclined:
+				msg=msg603;
 				if (lc->vtable.display_status)
 					lc->vtable.display_status(lc,msg603);
 			break;
 			case SalReasonBusy:
+				msg=msg486;
 				if (lc->vtable.display_status)
 					lc->vtable.display_status(lc,msg486);
 			break;
 			case SalReasonRedirect:
+				msg=_("Redirected");
 				if (lc->vtable.display_status)
-					lc->vtable.display_status(lc,_("Redirected"));
+					lc->vtable.display_status(lc,msg);
 			break;
 			case SalReasonTemporarilyUnavailable:
+				msg=msg480;
 				if (lc->vtable.display_status)
 					lc->vtable.display_status(lc,msg480);
 			break;
 			case SalReasonNotFound:
+				msg=_("Not found");
 				if (lc->vtable.display_status)
-					lc->vtable.display_status(lc,_("Not found"));
+					lc->vtable.display_status(lc,msg);
 			break;
 			case SalReasonDoNotDisturb:
+				msg=msg600;
 				if (lc->vtable.display_status)
 					lc->vtable.display_status(lc,msg600);
 			break;
 			case SalReasonMedia:
+				msg=_("No common codecs");
 				if (lc->vtable.display_status)
-					lc->vtable.display_status(lc,_("No common codecs"));
+					lc->vtable.display_status(lc,msg);
 			break;
 			default:
 				if (lc->vtable.display_status)
@@ -323,7 +331,8 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 	linphone_core_stop_media_streams(lc,call);
 	if (call!=NULL) {
 		linphone_call_destroy(call);
-		gstate_new_state(lc, GSTATE_CALL_ERROR, NULL);
+		if (sr!=SalReasonDeclined) gstate_new_state(lc, GSTATE_CALL_ERROR, msg);
+		else gstate_new_state(lc, GSTATE_CALL_END, NULL);
 		lc->call=NULL;
 	}
 }

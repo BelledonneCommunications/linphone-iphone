@@ -38,6 +38,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #undef snprintf
 #include <ortp/stun.h>
 
+#ifdef HAVE_GETIFADDRS
+#include <net/if.h>
+#include <ifaddrs.h>
+#endif
+
 
 #if !defined(WIN32)
 
@@ -646,7 +651,40 @@ int linphone_core_wake_up_possible_already_running_instance(
 	return -1;
 }
 
-int linphone_core_get_local_ip_for(const char *dest, char *result){
+#ifdef HAVE_GETIFADDRS
+
+#include <ifaddrs.h>
+static int get_local_ip_with_getifaddrs(int type, char *address, int size)
+{
+	struct ifaddrs *ifp;
+	struct ifaddrs *ifpstart;
+	int ret = 0;
+
+	if (getifaddrs(&ifpstart) < 0) {
+		return -1;
+	}
+
+	for (ifp = ifpstart; ifp != NULL; ifp = ifp->ifa_next) {
+		if (ifp->ifa_addr && ifp->ifa_addr->sa_family == type
+			&& (ifp->ifa_flags & IFF_RUNNING) && !(ifp->ifa_flags & IFF_LOOPBACK))
+		{
+			getnameinfo(ifp->ifa_addr,
+						(type == AF_INET6) ?
+						sizeof(struct sockaddr_in6) : sizeof(struct sockaddr_in),
+						address, size, NULL, 0, NI_NUMERICHOST);
+			if (strchr(address, '%') == NULL) {	/*avoid ipv6 link-local addresses */
+				/*ms_message("getifaddrs() found %s",address);*/
+				ret++;
+			}
+		}
+	}
+	freeifaddrs(ifpstart);
+	return ret;
+}
+#endif
+
+
+static int get_local_ip_for_with_connect(int type, const char *dest, char *result){
 	int err,tmp;
 	struct addrinfo hints;
 	struct addrinfo *res=NULL;
@@ -656,7 +694,7 @@ int linphone_core_get_local_ip_for(const char *dest, char *result){
 	socklen_t s;
 
 	memset(&hints,0,sizeof(hints));
-	hints.ai_family=PF_UNSPEC;
+	hints.ai_family=(type==AF_INET6) ? PF_INET6 : PF_INET;
 	hints.ai_socktype=SOCK_DGRAM;
 	/*hints.ai_flags=AI_NUMERICHOST|AI_CANONNAME;*/
 	err=getaddrinfo(dest,"5060",&hints,&res);
@@ -704,4 +742,28 @@ int linphone_core_get_local_ip_for(const char *dest, char *result){
 	close_socket(sock);
 	ms_message("Local interface to reach %s is %s.",dest,result);
 	return 0;
+}
+
+int linphone_core_get_local_ip_for(int type, const char *dest, char *result){
+	if (dest==NULL) {
+		if (type==AF_INET)
+			dest="87.98.157.38"; /*a public IP address*/
+		else dest="2a00:1450:8002::68";
+	}
+	strcpy(result,type==AF_INET ? "127.0.0.1" : "::1");
+#ifdef HAVE_GETIFADDRS
+	{
+		int found_ifs;
+	
+		found_ifs=get_local_ip_with_getifaddrs(type,result,LINPHONE_IPADDR_SIZE);
+		if (found_ifs==1){
+			return 0;
+		}else if (found_ifs<=0){
+			/*absolutely no network on this machine */
+			return -1;
+		}
+	}
+#endif
+	/*else use connect to find the best local ip address */
+	return get_local_ip_for_with_connect(type,dest,result);
 }

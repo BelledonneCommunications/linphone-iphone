@@ -164,7 +164,7 @@ void linphone_gtk_in_call_view_terminate(const char *error_msg){
 	GtkWidget *main_window=linphone_gtk_get_main_window();
 	GtkWidget *status=linphone_gtk_get_widget(main_window,"in_call_status");
 	GtkWidget *animation=linphone_gtk_get_widget(main_window,"in_call_animation");
-	GdkPixbuf *pbuf=create_pixbuf(linphone_gtk_get_ui_config("stop_call_icon","red.png"));
+	GdkPixbuf *pbuf=create_pixbuf(linphone_gtk_get_ui_config("stop_call_icon","stopcall-red.png"));
 
 	if (error_msg==NULL)
 		gtk_label_set_markup(GTK_LABEL(status),_("<b>Call ended.</b>"));
@@ -208,6 +208,5 @@ void linphone_gtk_mute_toggled(GtkToggleButton *button){
 
 void linphone_gtk_enable_mute_button(GtkToggleButton *button, gboolean sensitive){
 	gtk_widget_set_sensitive(GTK_WIDGET(button),sensitive);
-	gtk_object_set(GTK_OBJECT(button),"gtk-button-images",TRUE,NULL);
 	linphone_gtk_draw_mute_button(button,FALSE);
 }
