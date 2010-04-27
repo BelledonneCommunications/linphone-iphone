@@ -60,14 +60,6 @@ public interface LinphoneCore {
 
 	
 	/**
-	 * @param identity sip uri sip:jehan@linphone.org
-	 * @param proxy  sip uri (sip:linphone.org)
-	 * @param route optionnal sip usi (sip:linphone.org)
-	 * @param register should be initiated
-	 * @return
-	 */
-	public LinphoneProxyConfig createProxyConfig(String identity,String proxy,String route,boolean enableRegister) throws LinphoneCoreException;
-	/**
 	 * clear all added proxy config
 	 */
 	public void clearProxyConfigs();
@@ -123,7 +115,7 @@ public interface LinphoneCore {
 	/**
 	 * @return a list of LinphoneCallLog 
 	 */
-	public List<LinphoneCallLog> getCallLogs();
+	public List getCallLogs();
 	
 	/**
 	 * This method is called by the application to notify the Linphone core library when network is reachable.

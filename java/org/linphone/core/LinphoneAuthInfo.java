@@ -19,7 +19,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 package org.linphone.core;
 
 public interface LinphoneAuthInfo {
-
+	String getUsername();
+	String getPassword();
+	String getRealm();
+	void setUsername(String username);
+	void setPassword(String password);
+	void setRealm(String realm);
 }
 
 
