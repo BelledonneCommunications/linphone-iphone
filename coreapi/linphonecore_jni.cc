@@ -51,7 +51,7 @@ JNIEXPORT jint JNICALL  JNI_OnLoad(JavaVM *ajvm, void *reserved)
 
 
 //LinphoneFactory
-extern "C" void Java_org_linphone_core_LinphoneCoreFactory_setDebugMode(JNIEnv*  env
+extern "C" void Java_org_linphone_core_LinphoneCoreFactoryImpl_setDebugMode(JNIEnv*  env
 		,jobject  thiz
 		,jboolean isDebug) {
 	if (isDebug) {

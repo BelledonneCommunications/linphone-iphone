@@ -34,13 +34,30 @@ public interface LinphoneAddress {
 	 * @return null if not set
 	 */
 	public String getDomain();
+	public String getPort();
+	public int getPortInt();
 	/**
 	 * set display name 
 	 * @param name
 	 */
 	public void setDisplayName(String name);
+	public void setUserName(String username);
+	public void setDomain(String domain);
+	public void setPort(String port);
+	public void setPortInt(int port);
+	public void clean();
+	
 	/**
-	 * @return an URI version of the address that can be used to place a call using {@link LinphoneCore#invite(String)}
+	 * 
+	 * @return the address as a string.
 	 */
-	public String toUri();
+	public String asString();
+	/**
+	 * 
+	 * @return the address without display name as a string.
+	 */
+	public String asStringUriOnly();
+	
+	/*must return the same thing as asString()*/
+	public String toString();
 }
