@@ -80,7 +80,19 @@ public interface LinphoneCore {
 	
 	void addAuthInfo(LinphoneAuthInfo info);
 	
-	public void invite(String uri);
+	/**
+	 * Build an address according to the current proxy config. In case destination is not a sip address, the default proxy domain is automatically appended
+	 * @param destination
+	 * @return
+	 * @throws If no LinphoneAddress can be built from destination
+	 */
+	public LinphoneAddress interpretUrl(String destination) throws LinphoneCoreException;
+	
+	/**
+	 * Starts a call given a destination. Internally calls interpretUrl() then invite(LinphoneAddress).
+	 * @param uri
+	 */
+	public void invite(String destination)throws LinphoneCoreException;
 	
 	public void invite(LinphoneAddress to);
 	
@@ -150,13 +162,7 @@ public interface LinphoneCore {
 	 * @return true is mic is muted
 	 */
 	public boolean isMicMuted();
-	/**
-	 * Build an address according to the current proxy config. In case destination is not a sip uri, the default proxy domain is automatically appended
-	 * @param destination
-	 * @return
-	 * @throws If no LinphonrAddress can be built from destination
-	 */
-	public LinphoneAddress interpretUrl(String destination) throws LinphoneCoreException;
+	
 	/**
 	 * Initiate a dtmf signal if in call
 	 * @param number

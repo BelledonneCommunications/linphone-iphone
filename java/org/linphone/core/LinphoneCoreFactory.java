@@ -54,6 +54,8 @@ abstract public class LinphoneCoreFactory {
 	
 	abstract public LinphoneAddress createLinphoneAddress(String username,String domain,String displayName);
 	
+	abstract public LinphoneAddress createLinphoneAddress(String address);
+	
 	abstract public  LinphoneProxyConfig createProxyConfig(String identity, String proxy,String route,boolean enableRegister) throws LinphoneCoreException;
 	/**
 	 * Enable verbose traces
