@@ -22,14 +22,19 @@ package org.linphone.core;
 public class LinphoneCoreException extends Exception {
 
 	public LinphoneCoreException() {
-		// TODO Auto-generated constructor stub
 	}
 
 	public LinphoneCoreException(String detailMessage) {
 		super(detailMessage);
-		// TODO Auto-generated constructor stub
 	}
 
+	public LinphoneCoreException(Throwable e) {
+		super(e.getMessage());
+	}
+
+	public LinphoneCoreException(String detailMessage,Throwable e) {
+		super(detailMessage +" reason ["+e.getMessage()+"]");
+	}
 	
 
 }
