@@ -18,36 +18,47 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package org.linphone.core;
 
-import java.io.File;
+
 import java.io.IOException;
 
-public class LinphoneCoreFactory {
+
+abstract public class LinphoneCoreFactory {
 	
-	static {
-		System.loadLibrary("linphone");
+	private static String defaulfFactory = "org.linphone.core.LinphoneCoreFactoryImpl";
+	
+	static LinphoneCoreFactory theLinphoneCoreFactory; 
+	/**
+	 * Indicate the name of the class used by this factory
+	 * @param pathName
+	 */
+	static void setFactoryClassName (String className) {
+		defaulfFactory = className;
 	}
-	static LinphoneCoreFactory theLinphoneCoreFactory = new LinphoneCoreFactory();
 	
 	public static LinphoneCoreFactory instance() {
-	
+		try {
+		if (theLinphoneCoreFactory == null) {
+			Class lFactoryClass = Class.forName(defaulfFactory);
+			theLinphoneCoreFactory = (LinphoneCoreFactory) lFactoryClass.newInstance();
+		}
+		} catch (Exception e) {
+			System.err.println("cannot instanciate factory ["+defaulfFactory+"]");
+		}
 		return theLinphoneCoreFactory;
 	}
-	public LinphoneAuthInfo createAuthInfo(String username,String password) {
-		return new LinphoneAuthInfoImpl(username,password) ;
-	}
+	abstract public LinphoneAuthInfo createAuthInfo(String username,String password);
 	
-	public LinphoneCore createLinphoneCore(LinphoneCoreListener listener, File userConfig,File factoryConfig,Object  userdata) throws IOException {
-		return new LinphoneCoreImpl(listener,userConfig,factoryConfig,userdata);
-	}
+	abstract public LinphoneCore createLinphoneCore(LinphoneCoreListener listener, String userConfig,String factoryConfig,Object  userdata) throws IOException;
 	
-	public LinphoneAddress createLinphoneAddress(String username,String domain,String displayName) {
-		return new LinphoneAddressImpl(username,domain,displayName);
-	}
+	abstract public LinphoneAddress createLinphoneAddress(String username,String domain,String displayName);
 	
+	abstract public LinphoneAddress createLinphoneAddress(String address);
+	
+	abstract public  LinphoneProxyConfig createProxyConfig(String identity, String proxy,String route,boolean enableRegister) throws LinphoneCoreException;
 	/**
 	 * Enable verbose traces
-	 * @param enable
+	 * @param enable 
 	 */
-	public  native void setDebugMode(boolean enable);
+	abstract public  void setDebugMode(boolean enable);
 
 }
