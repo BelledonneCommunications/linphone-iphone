@@ -567,6 +567,9 @@ void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 				}
 			}
 		}
+		if (ac->addr[0]!='\0' && vc->addr[0]!='\0' && strcmp(ac->addr,vc->addr)==0){
+			strcpy(call->localdesc->addr,ac->addr);
+		}
 		close_socket(sock1);
 		if (sock2>=0) close_socket(sock2);
 	}
