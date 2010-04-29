@@ -548,8 +548,10 @@ void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 		}else{
 			if (!cone_audio) {
 				ms_warning("NAT is symmetric for audio port");
+				/*
 				ac->addr[0]='\0';
 				ac->port=0;
+				*/
 			}
 		}
 		if (sock2>=0){
@@ -558,8 +560,10 @@ void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 			}else{
 				if (!cone_video) {
 					ms_warning("NAT is symmetric for video port.");
+					/*
 					vc->addr[0]='\0';
 					vc->port=0;
+					*/
 				}
 			}
 		}
