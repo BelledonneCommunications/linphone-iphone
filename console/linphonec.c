@@ -344,7 +344,9 @@ linphonec_bye_received(LinphoneCore *lc, LinphoneCall *call)
 
 	// printing this is unneeded as we'd get a "Communication ended"
 	// message trough display_status callback anyway
-	//printf("Bye received from %s\n", from);
+	char *from=linphone_call_get_remote_address_as_string(call);
+	printf("Bye received from %s\n", from);
+	ms_free(from);
 }
 
 /*

@@ -355,7 +355,8 @@ struct _LinphoneCore
 	MSList *auth_info;
 	struct _RingStream *ringstream;
 	LCCallbackObj preview_finished_cb;
-	struct _LinphoneCall *call;   /* the current call, in the future it will be a list of calls (conferencing)*/
+	LinphoneCall *current_call;   /* the current call */
+	MSList *calls;				/* all the processed calls */
 	MSList *queued_calls;	/* used by the autoreplier */
 	MSList *call_logs;
 	MSList *chatrooms;
@@ -393,5 +394,19 @@ struct _LinphoneCore
 	bool_t auto_net_state_mon;
 	bool_t network_reachable;
 };
+
+bool_t linphone_core_can_we_add_call(LinphoneCore *lc);
+int linphone_core_add_call( LinphoneCore *lc, LinphoneCall *call);
+int linphone_core_del_call( LinphoneCore *lc, LinphoneCall *call);
+int linphone_core_set_as_current_call(LinphoneCore *lc, LinphoneCall *call);
+int linphone_core_unset_the_current_call(LinphoneCore *lc);
+int linphone_core_get_calls_nb(const LinphoneCore *lc);
+
+#define HOLD_OFF	(0)
+#define HOLD_ON		(1)
+
+#ifndef NB_MAX_CALLS
+#define NB_MAX_CALLS	(10)
+#endif
 
 #endif /* _PRIVATE_H */

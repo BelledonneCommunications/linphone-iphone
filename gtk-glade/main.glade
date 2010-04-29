@@ -1190,6 +1190,7 @@ Fiber Channel</property>
                                 <child>
                                   <widget class="GtkHButtonBox" id="hbuttonbox4">
                                     <property name="visible">True</property>
+                                    <property name="layout_style">spread</property>
                                     <child>
                                       <widget class="GtkToggleButton" id="incall_mute">
                                         <property name="label" translatable="yes">Mute</property>
@@ -1203,6 +1204,21 @@ Fiber Channel</property>
                                         <property name="expand">False</property>
                                         <property name="fill">False</property>
                                         <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <widget class="GtkToggleButton" id="hold_call">
+                                        <property name="label" translatable="yes">HoldOn</property>
+                                        <property name="visible">True</property>
+                                        <property name="sensitive">False</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="receives_default">True</property>
+                                        <signal name="toggled" handler="linphone_gtk_hold_toggled"/>
+                                      </widget>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">False</property>
+                                        <property name="position">1</property>
                                       </packing>
                                     </child>
                                   </widget>

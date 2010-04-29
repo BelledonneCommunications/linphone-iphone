@@ -78,6 +78,8 @@ static int lpc_cmd_ports(LinphoneCore *lc, char *args);
 static int lpc_cmd_speak(LinphoneCore *lc, char *args);
 static int lpc_cmd_codec(LinphoneCore *lc, char *args);
 static int lpc_cmd_echocancellation(LinphoneCore *lc, char *args);
+static int lpc_cmd_pause(LinphoneCore *lc, char *args);
+static int lpc_cmd_resume(LinphoneCore *lc, char *args);
 
 /* Command handler helpers */
 static void linphonec_proxy_add(LinphoneCore *lc);
@@ -120,17 +122,21 @@ void linphonec_out(const char *fmt,...);
 LPC_COMMAND commands[] = {
 	{ "help", lpc_cmd_help, "Print commands help", NULL },
 	{ "call", lpc_cmd_call, "Call a SIP uri",
-		"'call <sip-url>' "
-		": initiate a call to the specified destination."
+		"'call <sip-url>' \t: initiate a call to the specified destination.\n"
+		"'call show' \t: show all the current calls status.\n"
 		},
 	{ "chat", lpc_cmd_chat, "Chat with a SIP uri",
 		"'chat <sip-url> \"message\"' "
 		": send a chat message \"message\" to the specified destination."
 		},
-	{ "terminate", lpc_cmd_terminate, "Terminate the current call",
-		NULL },
+	{ "terminate", lpc_cmd_terminate, "Terminate a call",
+		"'terminate' : Terminate the current call\n"
+		"'terminate <sip:XXX@XXX.XXX.XXX.XXX>' : Terminate the call with remote address\n"
+		"'terminate <all>' : Terminate all the current calls\n"
+		},
 	{ "answer", lpc_cmd_answer, "Answer a call",
-		"Accept an incoming call."
+		"'answer' : Answer the current incoming call\n"
+		"'answer <sip:XXX@XXX.XXX.XXX.XXX>' : Answer the call with remote address\n"
 	},
 	{ "autoanswer", lpc_cmd_autoanswer, "Show/set auto-answer mode",
 		"'autoanswer'       \t: show current autoanswer mode\n"
@@ -223,7 +229,12 @@ LPC_COMMAND commands[] = {
             "'ec on [<delay>] [<tail>] [<framesize>]' : turn EC on with given delay, tail length and framesize\n"
             "'ec off' : turn echo cancellation (EC) off\n"
             "'ec show' : show EC status" },
-	{ (char *)NULL, (lpc_cmd_handler)NULL, (char *)NULL, (char *)NULL }
+    { "pause", lpc_cmd_pause, "pause a call",
+    		"'pause' : pause the current call\n"},
+    { "resume", lpc_cmd_resume, "resume a call",
+    		"'resume' : resume the unique call\n"
+    		"'resume <sip:XXX@XXX.XXX.XXX.XXX>' : hold off the call with cid <cid>\n"},
+    { (char *)NULL, (lpc_cmd_handler)NULL, (char *)NULL, (char *)NULL }
 };
 
 /***************************************************************************
@@ -374,13 +385,34 @@ lpc_cmd_call(LinphoneCore *lc, char *args)
 	{
 		return 0;
 	}
-
-	if ( lc->call != NULL )
+	if(!strcmp(args,"show"))
 	{
-		linphonec_out("Terminate current call first.\n");
+		MSList *calls = linphone_core_get_calls(lc);
+		if(calls)
+		{
+			MSList *p_calls = calls;
+			linphonec_out("<remote>\t\t\t\t<status>\r\n");
+			while(p_calls != NULL)			
+			{
+				linphonec_out("%s\t\t\t%s\r\n",
+						linphone_call_get_remote_address_as_string(p_calls->data),
+						(((LinphoneCall *)p_calls->data)==linphone_core_get_current_call(lc))?"yes":"no");
+				p_calls = p_calls->next;
+			}
+			ms_list_free(calls);
+		}
+		else
+		{
+			linphonec_out("No active call.\n");
+		}
 	}
 	else
 	{
+		if ( linphone_core_in_call(lc) )
+		{
+			linphonec_out("Terminate or hold on the current call first.\n");
+			return 1;
+		}
 		if ( NULL == linphone_core_invite(lc, args) )
 		{
 			linphonec_out("Error from linphone_core_invite.\n");
@@ -448,21 +480,98 @@ lpc_cmd_refer(LinphoneCore *lc, char *args)
 static int
 lpc_cmd_terminate(LinphoneCore *lc, char *args)
 {
-	if ( -1 == linphone_core_terminate_call(lc, NULL) )
+	char *arg1 = args;
+	char *arg2 = NULL;
+	char *ptr = args;
+
+	if (!args)
 	{
-		linphonec_out("No active call.\n");
+		if(linphone_core_in_call(lc))
+		{
+			if ( -1 == linphone_core_terminate_call(lc, linphone_core_get_current_call(lc)) )
+			{
+				linphonec_out("Could not stop the active call.\n");
+			}
+		}
+		else
+		{
+			linphonec_out("No active call.\n");
+		}
+		return 1;
 	}
-	return 1;
+	
+	/* Isolate first and second arg */
+	while(*ptr && !isspace(*ptr)) ++ptr;
+	if ( *ptr )
+	{
+		*ptr='\0';
+		arg2=ptr+1;
+		while(*arg2 && isspace(*arg2)) ++arg2;
+	}
+	if (arg1 != 0)
+	{
+		if(strcmp(arg1,"all")==0)
+		{
+			linphonec_out("We are going to stop all the calls.\n");
+			return (linphone_core_terminate_all_calls(lc)==0)?1:0;
+		}
+		else
+		{
+			char the_remote_address[255];
+			int n = sscanf(arg1, "%s", the_remote_address);
+			if (n == 1)
+			{
+				if ( -1 == linphone_core_terminate_call(lc,linphone_core_get_call_by_remote_address(lc,the_remote_address)))
+				{
+					linphonec_out("Cannot stop the call with %s.\n",the_remote_address);
+				}
+				return 1;
+			}
+		}
+	}
+	return 0;
+	
 }
 
 static int
 lpc_cmd_answer(LinphoneCore *lc, char *args)
 {
-	if ( -1 == linphone_core_accept_call(lc, NULL) )
+	char *arg1 = args;
+	char *arg2 = NULL;
+	char *ptr = args;
+
+	if (!args)
 	{
-		linphonec_out("No incoming call.\n");
+		//TODO if just one call is present answer the only one ...
+		if ( -1 == linphone_core_accept_call(lc, linphone_core_get_current_call(lc)) )//TODO is there any current call here=> nope 
+		{
+			linphonec_out("No incoming call.\n");
+		}
+		return 1;
 	}
-	return 1;
+
+	// Isolate first and second arg
+	while(*ptr && !isspace(*ptr)) ++ptr;
+	if ( *ptr )
+	{
+		*ptr='\0';
+		arg2=ptr+1;
+		while(*arg2 && isspace(*arg2)) ++arg2;
+	}
+	if (arg1 != 0)
+	{
+		char the_remote_address[256];
+		int n = sscanf(arg1, "%s", the_remote_address);
+		if (n == 1)
+		{
+			if ( -1 == linphone_core_accept_call(lc, linphone_core_get_call_by_remote_address(lc,the_remote_address)) )
+			{
+				linphonec_out("Cannot answer the call from %s.\n",the_remote_address);
+			}
+			return 1;
+		}
+	}
+	return 0;
 }
 
 static int
@@ -1063,7 +1172,62 @@ lpc_cmd_staticpic(LinphoneCore *lc, char *args)
 	return 0; /* Syntax error */
 }
 
+static int lpc_cmd_pause(LinphoneCore *lc, char *args){
 
+	if(linphone_core_in_call(lc))
+	{
+		linphone_core_pause_call(lc,linphone_core_get_current_call(lc));
+		return 1;
+	}
+	linphonec_out("you can only pause when a call is in process\n");
+    return 0;
+}
+
+static int lpc_cmd_resume(LinphoneCore *lc, char *args){
+	
+	if(linphone_core_in_call(lc))
+	{
+		linphonec_out("There is already a call in process pause or stop it first");
+	}
+	if (args)
+	{
+		char the_remote_address[255];
+		int n = sscanf(args, "%s", the_remote_address);
+		if (n == 1)
+		{
+			if(linphone_core_resume_call(lc,linphone_core_get_call_by_remote_address(lc,the_remote_address)) < 0)
+			{
+				linphonec_out("There was a problem to resume the call check the remote address you gave %s\n",args);
+				return 0;
+			}
+			else
+			{
+				return 1;
+			}
+		}
+	}
+	else
+	{
+		int returned = 0;
+		MSList *calls = linphone_core_get_calls(lc);
+		if(ms_list_size(calls) == 1)
+		{
+			if(linphone_core_resume_call(lc,calls->data) < 0)
+			{
+				linphonec_out("There was a problem to resume the unique call \n");
+				returned = 0;
+			}
+			else
+			{
+				returned = 1;
+			}
+			ms_list_free(calls);
+			return returned;
+		}
+	}
+	return 0;
+    
+}
 
 /***************************************************************************
  *

@@ -121,12 +121,21 @@ static sdp_message_t *create_generic_sdp(const SalMediaDescription *desc)
 			  osip_strdup ("IN"), inet6 ? osip_strdup("IP6") : osip_strdup ("IP4"),
 			  osip_strdup (desc->addr));
 	sdp_message_s_name_set (local, osip_strdup ("A conversation"));
-	sdp_message_c_connection_add (local, -1,
-			      osip_strdup ("IN"), inet6 ? osip_strdup ("IP6") : osip_strdup ("IP4"),
-			      osip_strdup (desc->addr), NULL, NULL);
+	if(!desc->notsending)
+	{
+		sdp_message_c_connection_add (local, -1,
+				osip_strdup ("IN"), inet6 ? osip_strdup ("IP6") : osip_strdup ("IP4"),
+						osip_strdup (desc->addr), NULL, NULL);
+	}
+	else
+	{
+		sdp_message_c_connection_add (local, -1,
+				osip_strdup ("IN"), inet6 ? osip_strdup ("IP6") : osip_strdup ("IP4"),
+						inet6 ? osip_strdup ("0.0.0.0.0.0") : osip_strdup ("0.0.0.0"), NULL, NULL);
+	}		
 	sdp_message_t_time_descr_add (local, osip_strdup ("0"), osip_strdup ("0"));
 	if (desc->bandwidth>0) sdp_message_b_bandwidth_add (local, -1, osip_strdup ("AS"),
-				     int_2char(desc->bandwidth));
+			int_2char(desc->bandwidth));
 	return local;
 }
 
@@ -186,6 +195,10 @@ static void add_line(sdp_message_t *msg, int lineno, const SalStreamDescription 
 	for(elem=desc->payloads;elem!=NULL;elem=elem->next){
 		add_payload(msg, lineno, (PayloadType*)elem->data);
 	}
+	if(desc->notsending)//to hold the distant SIP endpoint
+		sdp_message_a_attribute_add (msg, lineno, osip_strdup ("sendonly"),NULL);
+	else
+		sdp_message_a_attribute_add (msg, lineno, osip_strdup ("sendrecv"),NULL);
 }
 
 sdp_message_t *media_description_to_sdp(const SalMediaDescription *desc){

@@ -177,6 +177,15 @@ static void linphone_call_destroy(LinphoneCall *obj)
 	if (obj->ping_op) {
 		sal_op_release(obj->ping_op);
 	}
+	if(linphone_core_del_call(obj->core,obj) != 0)
+	{
+		ms_error("could not remove the call from the list !!!");
+	}
+	if(obj == linphone_core_get_current_call(obj->core))
+	{
+		ms_message("destroying the current call\n");
+		linphone_core_unset_the_current_call(obj->core);
+	}
 	ms_free(obj);
 }
 

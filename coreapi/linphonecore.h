@@ -97,6 +97,7 @@ typedef enum _LinphoneCallState{
 LinphoneCallState linphone_call_get_state(const LinphoneCall *call);
 bool_t linphone_call_asked_to_autoanswer(LinphoneCall *call);
 bool_t linphone_call_paused(LinphoneCall *call);
+const LinphoneAddress * linphone_core_get_current_call_remote_address(struct _LinphoneCore *lc);
 const LinphoneAddress * linphone_call_get_remote_address(const LinphoneCall *call);
 char *linphone_call_get_remote_address_as_string(const LinphoneCall *call);
 void linphone_call_ref(LinphoneCall *call);
@@ -519,7 +520,7 @@ int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call);
 
 int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *call);
 
-LinphoneCall *linphone_core_get_call_by_remote_address(LinphoneCore *lc);
+LinphoneCall *linphone_core_get_call_by_remote_address(LinphoneCore *lc, const char *remote_address);
 
 void linphone_core_send_dtmf(LinphoneCore *lc,char dtmf);
 
@@ -812,5 +813,5 @@ void linphone_core_set_audio_transports(LinphoneCore *lc, RtpTransport *rtp, Rtp
 #ifdef __cplusplus
 }
 #endif
-
+MSList *linphone_core_get_calls(LinphoneCore *lc);
 #endif

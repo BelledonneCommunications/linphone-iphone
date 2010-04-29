@@ -98,6 +98,7 @@ typedef struct SalStreamDescription{
 	int bandwidth;
 	int ptime;
 	SalEndpointCandidate candidates[SAL_ENDPOINT_CANDIDATE_MAX];
+	bool_t notsending;
 } SalStreamDescription;
 
 #define SAL_MEDIA_DESCRIPTION_MAX_STREAMS 4
@@ -109,6 +110,7 @@ typedef struct SalMediaDescription{
 	int nstreams;
 	int bandwidth;
 	SalStreamDescription streams[SAL_MEDIA_DESCRIPTION_MAX_STREAMS];
+	bool_t notsending;
 } SalMediaDescription;
 
 SalMediaDescription *sal_media_description_new();
@@ -258,6 +260,7 @@ int sal_call(SalOp *h, const char *from, const char *to);
 int sal_call_notify_ringing(SalOp *h);
 int sal_call_accept(SalOp*h);
 int sal_call_decline(SalOp *h, SalReason reason, const char *redirection /*optional*/);
+int sal_call_hold(SalOp *h, bool_t holdon);
 SalMediaDescription * sal_call_get_final_media_description(SalOp *h);
 int sal_refer(SalOp *h, const char *refer_to);
 int sal_refer_accept(SalOp *h);
@@ -298,6 +301,5 @@ void sal_get_default_local_ip(Sal *sal, int address_family, char *ip, size_t ipl
 void __sal_op_init(SalOp *b, Sal *sal);
 void __sal_op_set_network_origin(SalOp *op, const char *origin /*a sip uri*/);
 void __sal_op_free(SalOp *b);
-
 
 #endif

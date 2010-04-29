@@ -398,6 +398,19 @@ static void set_sdp(osip_message_t *sip,sdp_message_t *msg){
 	osip_free(sdp);
 }
 
+static void set_hold_status_to_desc(SalMediaDescription *desc, bool_t holdon)
+{
+	int i;
+	if(desc == NULL)
+		return;
+	desc->notsending = holdon;
+	for(i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++)
+	{
+		if(desc->streams != NULL)
+			desc->streams[i].notsending = holdon;//Audio
+	}
+}
+
 static void set_sdp_from_desc(osip_message_t *sip, const SalMediaDescription *desc){
 	sdp_message_t *msg=media_description_to_sdp(desc);
 	if (msg==NULL) {
@@ -1689,5 +1702,37 @@ char *sal_address_as_string_uri_only(const SalAddress *u){
 
 void sal_address_destroy(SalAddress *u){
 	osip_from_free((osip_from_t*)u);
+}
+
+/**
+ * Send a re-Invite used to hold the current call
+ *
+ * @ingroup call_control
+ * @param lc the LinphoneCore object
+ * @param url the destination of the call (sip address).
+**/
+int sal_call_hold(SalOp *h, bool_t holdon)
+{
+	int err=0;
+
+	osip_message_t *reinvite;
+	eXosip_call_build_request(h->did,"INVITE",&reinvite);
+	osip_message_set_subject(reinvite,osip_strdup("Phone Call Hold"));
+	osip_message_set_allow(reinvite, "INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, NOTIFY, MESSAGE, SUBSCRIBE, INFO");
+	if (h->base.root->session_expires!=0){
+		osip_message_set_header(reinvite, "Session-expires", "200");
+		osip_message_set_supported(reinvite, "timer");
+	}
+	//add something to say that the distant sip phone will be in sendonly/sendrecv mode
+	if (h->base.local_media){
+		h->sdp_offering=TRUE;
+		set_hold_status_to_desc(h->base.local_media,holdon);
+		set_sdp_from_desc(reinvite,h->base.local_media);
+	}else h->sdp_offering=FALSE;
+	eXosip_lock();
+	err = eXosip_call_send_request(h->did, reinvite);
+	eXosip_unlock();
+	
+	return err;
 }
 

@@ -280,15 +280,19 @@ bool_t linphone_call_asked_to_autoanswer(LinphoneCall *call){
 		return FALSE;
 }
 
-int linphone_core_get_current_call_duration(const LinphoneCore *lc){
-	LinphoneCall *call=lc->call;
+int linphone_core_get_call_duration(LinphoneCall *call){
 	if (call==NULL) return 0;
 	if (call->media_start_time==0) return 0;
 	return time(NULL)-call->media_start_time;
 }
 
-const LinphoneAddress *linphone_core_get_remote_address(LinphoneCore *lc){
-	LinphoneCall *call=lc->call;
+int linphone_core_get_current_call_duration(const LinphoneCore *lc){
+	LinphoneCall *call=linphone_core_get_current_call((LinphoneCore *)lc);
+	return linphone_core_get_call_duration(call);
+}
+
+const LinphoneAddress *linphone_core_get_current_call_remote_address(struct _LinphoneCore *lc){
+	LinphoneCall *call=linphone_core_get_current_call(lc);
 	if (call==NULL) return 0;
 	return linphone_call_get_remote_address(call);
 }
@@ -1493,9 +1497,8 @@ void linphone_core_iterate(LinphoneCore *lc){
 	if (lc->auto_net_state_mon) monitor_network_state(lc,curtime);
 
 	proxy_update(lc);
-
-	if (lc->call!=NULL){
-		LinphoneCall *call=lc->call;
+	LinphoneCall *call = linphone_core_get_current_call(lc);
+	if(call){
 		if (call->state==LinphoneCallPreEstablishing && (curtime-call->start_time>=2)){
 			/*start the call even if the OPTIONS reply did not arrive*/
 			linphone_core_start_invite(lc,call,NULL);
@@ -1652,7 +1655,7 @@ bool_t linphone_core_is_in_communication_with(LinphoneCore *lc, const char *to)
 {
 	char *tmp;
 	bool_t returned;
-	const LinphoneAddress *la=linphone_core_get_remote_address(lc);
+	const LinphoneAddress *la=linphone_core_get_current_call_remote_address(lc);
 	if(la == NULL)
 	{
 		return FALSE;
@@ -1696,7 +1699,6 @@ static char *get_fixed_contact(LinphoneCore *lc, LinphoneCall *call , LinphonePr
 	if (call->op && sal_op_get_contact(call->op)!=NULL){
 		return NULL;
 	}
-	
 	/* if the ping OPTIONS request succeeded use the contact guessed from the
 	 received, rport*/
 	if (call->ping_op){
@@ -1743,7 +1745,7 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, LinphonePro
 		ms_free(contact);
 	}
 	call->state=LinphoneCallInit;
-	linphone_core_init_media_streams(lc,lc->call);
+	linphone_core_init_media_streams(lc,call);
 	if (!lc->sip_conf.sdp_200_ack){	
 		call->media_pending=TRUE;
 		sal_call_set_local_media_description(call->op,call->localdesc);
@@ -1763,9 +1765,9 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, LinphonePro
 	if (err<0){
 		ms_warning("Could not initiate call.");
 		lc->vtable.display_status(lc,_("could not call"));
-		linphone_core_stop_media_streams(lc,call);
+		if(call == linphone_core_get_current_call(lc))
+			linphone_core_stop_media_streams(lc,call);
 		linphone_call_unref(call);
-		lc->call=NULL;
 	}else gstate_new_state(lc, GSTATE_CALL_OUT_INVITE, real_url);
 	ms_free(real_url);
 	ms_free(from);
@@ -1808,11 +1810,14 @@ LinphoneCall * linphone_core_invite_address(LinphoneCore *lc, const LinphoneAddr
 	LinphoneProxyConfig *dest_proxy=NULL;
 	LinphoneCall *call;
 	
-	if (lc->call!=NULL){
-		lc->vtable.display_warning(lc,_("Sorry, having multiple simultaneous calls is not supported yet !"));
+	if (linphone_core_in_call(lc)){
+		lc->vtable.display_warning(lc,_("Sorry, you have to pause or stop the current call first !"));
 		return NULL;
 	}
-
+	if(!linphone_core_can_we_add_call(lc)){
+		lc->vtable.display_warning(lc,_("Sorry, we have reached the maximum number of simultaneous calls"));
+		return NULL;
+	}
 	linphone_core_get_default_proxy(lc,&proxy);
 	route=linphone_core_get_route(lc);
 	
@@ -1837,7 +1842,13 @@ LinphoneCall * linphone_core_invite_address(LinphoneCore *lc, const LinphoneAddr
 	call=linphone_call_new_outgoing(lc,parsed_url2,linphone_address_clone(real_parsed_url));
 	sal_op_set_route(call->op,route);
 	
-	lc->call=call;
+	if(linphone_core_add_call(lc,call)!= 0)
+	{
+		ms_warning("we had a problem in adding the call into the invite ... weird\n");
+		linphone_call_unref(call);
+		return NULL;
+	}
+	linphone_core_set_as_current_call(lc,call);
 	if (dest_proxy!=NULL || lc->sip_conf.ping_with_options==FALSE){
 		err=linphone_core_start_invite(lc,call,dest_proxy);
 	}else{
@@ -1873,13 +1884,16 @@ int linphone_core_refer(LinphoneCore *lc, LinphoneCall *call, const char *url)
 }
 
 /**
- * Returns true if in incoming call is pending, ie waiting for being answered or declined.
+ * Returns true if an incoming call is pending, ie waiting for being answered or declined.
  *
  * @ingroup call_control
 **/
 bool_t linphone_core_inc_invite_pending(LinphoneCore*lc){
-	if (lc->call!=NULL && lc->call->dir==LinphoneCallIncoming){
-		return TRUE;
+	LinphoneCall *call = linphone_core_get_current_call(lc);
+	if(call != NULL)
+	{
+		if(call->dir==LinphoneCallIncoming)
+			return TRUE;
 	}
 	return FALSE;
 }
@@ -2134,7 +2148,7 @@ void linphone_core_start_media_streams(LinphoneCore *lc, LinphoneCall *call){
 	end:
 		ms_free(cname);
 		linphone_address_destroy(me);
-		lc->call->state=LinphoneCallAVRunning;
+		call->state=LinphoneCallAVRunning;
 }
 
 void linphone_core_stop_media_streams(LinphoneCore *lc, LinphoneCall *call){
@@ -2205,7 +2219,11 @@ int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call)
 		ms_message("ring stopped");
 		lc->ringstream=NULL;
 	}
-
+	if(linphone_core_set_as_current_call(lc,call)!=0)
+	{
+		ms_message("another call is already in process\n");
+	}
+	
 	linphone_core_get_default_proxy(lc,&cfg);
 	/*try to be best-effort in giving real local or routable contact address*/
 	contact=get_fixed_contact(lc,call,cfg);
@@ -2218,7 +2236,8 @@ int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call)
 	call->resultdesc=sal_call_get_final_media_description(call->op);
 	if (call->resultdesc){
 		sal_media_description_ref(call->resultdesc);
-		linphone_core_start_media_streams(lc, call);
+		if(call == linphone_core_get_current_call(lc))
+			linphone_core_start_media_streams(lc, call);
 	}else call->media_pending=TRUE;
 	ms_message("call answered.");
 	return 0;
@@ -2232,12 +2251,20 @@ int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call)
  * @param url the destination of the call to be terminated, use NULL if there is
  *            only one call (which is case in this version of liblinphone).
 **/
-int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *call)
+int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *the_call)
 {
-	if (call==NULL){
-		return -1;
+	LinphoneCall *call;
+	if (the_call == NULL){
+		call = linphone_core_get_current_call(lc);
+		if(call == NULL)
+		{
+			return -1;
+		}
 	}
-	lc->call=NULL;
+	else
+	{
+		call = the_call;
+	}
 	sal_call_terminate(call->op);
 
 	/*stop ringing*/
@@ -2245,7 +2272,8 @@ int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *call)
 		ring_stop(lc->ringstream);
 		lc->ringstream=NULL;
 	}
-	linphone_core_stop_media_streams(lc,call);
+	if(call == linphone_core_get_current_call(lc))
+		linphone_core_stop_media_streams(lc,call);
 	lc->vtable.display_status(lc,_("Call ended") );
 	gstate_new_state(lc, GSTATE_CALL_END, NULL);
 	linphone_call_set_terminated(call);
@@ -2253,10 +2281,33 @@ int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *call)
 	return 0;
 }
 
-
+/**
+ * Terminates all the calls.
+ *
+ * @ingroup call_control
+ * @param lc The LinphoneCore
+**/
 int linphone_core_terminate_all_calls(LinphoneCore *lc){
-	/* TODO */
+	MSList *calls;
+
+	calls = lc->calls;
+	while(calls->next != NULL)
+	{
+		linphone_core_terminate_call(lc,(LinphoneCall *)calls->data);
+		calls = calls->next;
+	}
+	ms_list_free(lc->calls);
 	return -1;
+}
+
+/**
+ * Returns the calls MSList
+ *
+ * @ingroup call_control
+**/
+MSList *linphone_core_get_calls(LinphoneCore *lc)
+{
+	return ms_list_copy(lc->calls);
 }
 
 /**
@@ -2265,7 +2316,7 @@ int linphone_core_terminate_all_calls(LinphoneCore *lc){
  * @ingroup call_control
 **/
 bool_t linphone_core_in_call(const LinphoneCore *lc){
-	return lc->call!=NULL;
+	return linphone_core_get_current_call((LinphoneCore *)lc)!=NULL;
 }
 
 /**
@@ -2273,26 +2324,133 @@ bool_t linphone_core_in_call(const LinphoneCore *lc){
  *
  * @ingroup call_control
 **/
-struct _LinphoneCall *linphone_core_get_current_call(LinphoneCore *lc)
+LinphoneCall *linphone_core_get_current_call(LinphoneCore *lc)
 {
-	if(linphone_core_in_call(lc))
-		return lc->call;
-	else
-		return NULL;
+	if(lc->current_call != NULL)
+		return lc->current_call;
+	return NULL;
 }
 
-int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call){
-	/* TODO */
-	return -1;
+/**
+ * Permits to pause the call
+ *
+ * @ingroup call_control
+**/
+int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *the_call)
+{
+	LinphoneCall *call = the_call;
+	if(lc == NULL)
+	{
+		ms_error("LinphoneCore was null\n");
+		return -1;
+	}
+	if(call == NULL)
+	{
+		if(linphone_core_in_call(lc))
+		{
+			call = linphone_core_get_current_call(lc);
+		}
+		else
+		{
+			ms_error("LinphoneCall was null\n");
+			return -2;
+		}
+	}
+	if(linphone_core_get_current_call(lc) != call)
+	{
+		ms_error("The call asked to be paused was not the current on\n");
+		return -3;
+	}
+	sal_call_hold(call->op,TRUE);
+	call->state = LinphoneCallPaused;
+	linphone_core_unset_the_current_call(lc);
+	linphone_core_stop_media_streams(lc,call);
+	lc->vtable.display_status(lc,_("Pause the current call"));
+	return 0;
 }
 
-int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *call){
-	/* TODO */
-	return -1;
+/**
+ * Permits to resume the call
+ *
+ * @ingroup call_control
+**/
+int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *the_call)
+{
+	char temp[255];
+	LinphoneCall *call = the_call;
+	if(lc == NULL)
+	{
+		ms_error("LinphoneCore was null\n");
+		return -1;
+	}
+	if(call == NULL)
+	{
+		MSList *calls = linphone_core_get_calls(lc);
+		if(ms_list_size(calls) == 1)
+		{
+			call = ((LinphoneCall *)calls->data);
+			ms_list_free(calls);
+		}
+		else
+		{
+			ms_error("LinphoneCall was null\n");
+			ms_list_free(calls);
+			return -2;
+		}
+	}
+	if(linphone_core_get_current_call(lc) != NULL)
+	{
+		ms_error("There is already a call in process pause or stop it first\n");
+		return -3;
+	}
+	linphone_core_init_media_streams(lc,call);
+	sal_call_hold(call->op,FALSE);
+	call->state = LinphoneCallAVRunning;
+	linphone_core_set_as_current_call(lc,call);
+	linphone_core_start_media_streams(lc,call);
+	snprintf(temp,sizeof(temp),"Resume the call with %s",linphone_call_get_remote_address_as_string(call));
+	lc->vtable.display_status(lc,temp);
+	
+	return 0;
 }
 
-LinphoneCall *linphone_core_get_call_by_remote_address(LinphoneCore *lc){
-	/* TODO */
+/**
+ * Compare the remote address with the one in call
+ * 
+ * @param a the call
+ * @param b the remote address to compare with
+ * @return 0 if it's the good call else 1
+ */
+static int linphone_call_remote_address_compare(const void * a, const void * b)
+{
+	if(b == NULL || a ==NULL)
+		return 1;
+	char *the_remote_address = ((char *)b);
+	LinphoneCall *call = ((LinphoneCall *)a);
+#ifdef DEBUG 
+	ms_message("the remote address:%s\n",the_remote_address);
+	ms_message("the call:%p => %s\n",call,linphone_call_get_remote_address_as_string(call));
+#endif
+	if(!strcmp(linphone_call_get_remote_address_as_string(call),the_remote_address))
+	{
+		return 0;
+	}
+	return 1;
+}
+
+/**
+ * Get the call with the remote_address specified
+ * @param lc
+ * @param remote_address
+ * @return the LinphoneCall of the call if found
+ */
+LinphoneCall *linphone_core_get_call_by_remote_address(LinphoneCore *lc, const char *remote_address){
+
+	MSList *the_call = ms_list_find_custom(lc->calls,linphone_call_remote_address_compare,(void *)remote_address);
+	if(the_call != NULL)
+	{
+		return ((LinphoneCall *)the_call->data);
+	}
 	return NULL;
 }
 
@@ -2767,7 +2925,7 @@ void linphone_core_send_dtmf(LinphoneCore *lc, char dtmf)
 	}
 	if (linphone_core_get_use_info_for_dtmf(lc)!=0){
 		/* Out of Band DTMF (use INFO method) */
-		LinphoneCall *call=lc->call;
+		LinphoneCall *call=linphone_core_get_current_call(lc);
 		if (call==NULL){
 			return;
 		}
@@ -3377,9 +3535,9 @@ LpConfig *linphone_core_get_config(LinphoneCore *lc){
 
 static void linphone_core_uninit(LinphoneCore *lc)
 {
-	if (lc->call){
+	if(linphone_core_get_calls_nb(lc)){
 		int i;
-		linphone_core_terminate_call(lc,NULL);
+		linphone_core_terminate_all_calls(lc);
 		for(i=0;i<10;++i){
 #ifndef WIN32
 			usleep(50000);
@@ -3461,4 +3619,105 @@ void linphone_core_destroy(LinphoneCore *lc){
 	linphone_core_uninit(lc);
 	ms_free(lc);
 }
+/**
+ * Get the number of Call
+ *
+ * @ingroup call_control
+**/
+int linphone_core_get_calls_nb(const LinphoneCore *lc)
+{
+	int returned;
+	if(lc->calls == NULL)
+	{
+		returned = 0;
+	}
+	else
+	{
+		returned = ms_list_size(lc->calls);
+	}
+	return returned;
+}
 
+/**
+ * Check if we do not have exceed the number of simultaneous call
+ *
+ * @ingroup call_control
+**/
+bool_t linphone_core_can_we_add_call(LinphoneCore *lc)
+{
+	if(linphone_core_get_calls_nb(lc) < NB_MAX_CALLS)
+		return TRUE;
+	return FALSE;
+}
+
+/**
+ * Unset the current call
+ *
+ * @ingroup call_control
+**/
+int linphone_core_unset_the_current_call(LinphoneCore *lc)
+{
+	if(lc->current_call == NULL)
+		return -1;
+	lc->current_call = NULL;
+	ms_message("Current call unset\n");
+	return 0;
+}
+
+/**
+ * Set the call in parameter as the new current call
+ *
+ * @ingroup call_control
+**/
+int linphone_core_set_as_current_call(LinphoneCore *lc, LinphoneCall *call)
+{
+	if(lc->current_call != NULL)
+		return -1;
+	lc->current_call = call;
+	return 0;
+}
+
+/**
+ * Add the call in the LinphoneCall list
+ *
+ * @ingroup call_control
+**/
+int linphone_core_add_call( LinphoneCore *lc, LinphoneCall *call)
+{
+	if(linphone_core_can_we_add_call(lc))
+	{
+		MSList *the_calls = lc->calls;
+		the_calls = ms_list_append(the_calls,(void *)call);
+		lc->calls = the_calls;
+		return 0;
+	}
+	return -1;
+}
+
+/**
+ * Add the call in the LinphoneCall list
+ *
+ * @ingroup call_control
+**/
+int linphone_core_del_call( LinphoneCore *lc, LinphoneCall *call)
+{
+	MSList *it;
+
+	MSList *the_calls = lc->calls;
+	if(call == linphone_core_get_current_call(lc))
+	{
+		linphone_core_unset_the_current_call(lc);
+	}	
+	it=ms_list_find(the_calls,call);
+	if (it) 
+	{
+		the_calls = ms_list_remove_link(the_calls,it);
+	}
+	else
+	{
+		ms_warning("could not find the call into the list\n");
+		return -1;
+	}
+	lc->calls = the_calls;
+	return 0;
+}

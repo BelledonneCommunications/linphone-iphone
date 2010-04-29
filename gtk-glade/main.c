@@ -390,7 +390,7 @@ static void set_video_window_decorations(GdkWindow *w){
 		gdk_window_set_keep_above(w, FALSE);
 	}else{
 		LinphoneAddress *uri =
-			linphone_address_clone(linphone_core_get_remote_address(linphone_gtk_get_core()));
+			linphone_address_clone(linphone_core_get_current_call_remote_address(linphone_gtk_get_core()));
 		char *display_name;
 
 		linphone_address_clean(uri);
@@ -588,7 +588,7 @@ static void linphone_gtk_call_started(GtkWidget *mw){
 
 static gboolean linphone_gtk_start_call_do(GtkWidget *uri_bar){
 	const char *entered=gtk_entry_get_text(GTK_ENTRY(uri_bar));
-	if (linphone_core_invite(linphone_gtk_get_core(),entered)==0) {
+	if (linphone_core_invite(linphone_gtk_get_core(),entered)!=NULL) {
 		completion_add_text(GTK_ENTRY(uri_bar),entered);
 	}else{
 		linphone_gtk_call_terminated(NULL);
@@ -1147,6 +1147,8 @@ static void linphone_gtk_init_main_window(){
 					"main_mute")),FALSE);
 	linphone_gtk_enable_mute_button(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(main_window,
 					"incall_mute")),FALSE);
+	linphone_gtk_enable_hold_button(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(main_window,
+					"hold_call")),FALSE);
 	if (!linphone_gtk_use_in_call_view()) {
 		gtk_widget_show(linphone_gtk_get_widget(main_window, "main_mute"));
 	}
