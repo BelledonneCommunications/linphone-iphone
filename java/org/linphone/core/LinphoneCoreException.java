@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package org.linphone.core;
 
-@SuppressWarnings("serial")
+
 public class LinphoneCoreException extends Exception {
 
 	public LinphoneCoreException() {
@@ -30,14 +30,6 @@ public class LinphoneCoreException extends Exception {
 		// TODO Auto-generated constructor stub
 	}
 
-	public LinphoneCoreException(Throwable throwable) {
-		super(throwable);
-		// TODO Auto-generated constructor stub
-	}
-
-	public LinphoneCoreException(String detailMessage, Throwable throwable) {
-		super(detailMessage, throwable);
-		// TODO Auto-generated constructor stub
-	}
+	
 
 }

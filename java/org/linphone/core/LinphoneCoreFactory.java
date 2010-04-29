@@ -18,16 +18,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package org.linphone.core;
 
-import java.io.File;
+
 import java.io.IOException;
 
 
 abstract public class LinphoneCoreFactory {
 	
 	private static String defaulfFactory = "org.linphone.core.LinphoneCoreFactoryImpl";
-	static {
-		System.loadLibrary("linphone");
-	}
+	
 	static LinphoneCoreFactory theLinphoneCoreFactory; 
 	/**
 	 * Indicate the name of the class used by this factory
@@ -50,7 +48,7 @@ abstract public class LinphoneCoreFactory {
 	}
 	abstract public LinphoneAuthInfo createAuthInfo(String username,String password);
 	
-	abstract public LinphoneCore createLinphoneCore(LinphoneCoreListener listener, File userConfig,File factoryConfig,Object  userdata) throws IOException;
+	abstract public LinphoneCore createLinphoneCore(LinphoneCoreListener listener, String userConfig,String factoryConfig,Object  userdata) throws IOException;
 	
 	abstract public LinphoneAddress createLinphoneAddress(String username,String domain,String displayName);
 	

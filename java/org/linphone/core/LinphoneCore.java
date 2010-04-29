@@ -18,7 +18,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package org.linphone.core;
 
-import java.util.List;
+
+import java.util.Vector;
 
 
 	
@@ -26,32 +27,36 @@ public interface LinphoneCore {
 	/*
 	 * linphone core states
 	 */
-	public enum 	GeneralState {
+	static public class 	GeneralState {
 		  /* states for GSTATE_GROUP_POWER */
-	GSTATE_POWER_OFF(0),        /* initial state */
-	GSTATE_POWER_STARTUP(1),
-	GSTATE_POWER_ON(2),
-	GSTATE_POWER_SHUTDOWN(3),
+	static GeneralState GSTATE_POWER_OFF = new GeneralState(0);        /* initial state */
+	static GeneralState GSTATE_POWER_STARTUP = new GeneralState(1);
+	static GeneralState GSTATE_POWER_ON = new GeneralState(2);
+	static GeneralState GSTATE_POWER_SHUTDOWN = new GeneralState(3);
 		  /* states for GSTATE_GROUP_REG */
-	GSTATE_REG_NONE(10),       /* initial state */
-	GSTATE_REG_OK(11),
-	GSTATE_REG_FAILED(12),
+	static GeneralState GSTATE_REG_NONE = new GeneralState(10);       /* initial state */
+	static GeneralState GSTATE_REG_OK  = new GeneralState(11);
+	static GeneralState GSTATE_REG_FAILED = new GeneralState(12);
 		  /* states for GSTATE_GROUP_CALL */
-	GSTATE_CALL_IDLE(20),      /* initial state */
-	GSTATE_CALL_OUT_INVITE(21),
-	GSTATE_CALL_OUT_CONNECTED(22),
-	GSTATE_CALL_IN_INVITE(23),
-	GSTATE_CALL_IN_CONNECTED(24),
-	GSTATE_CALL_END(25),
-	GSTATE_CALL_ERROR(26),
-	GSTATE_INVALID(27);
+	static GeneralState GSTATE_CALL_IDLE = new GeneralState(20);      /* initial state */
+	static GeneralState GSTATE_CALL_OUT_INVITE = new GeneralState(21);
+	static GeneralState GSTATE_CALL_OUT_CONNECTED = new GeneralState(22);
+	static GeneralState GSTATE_CALL_IN_INVITE = new GeneralState(23);
+	static GeneralState GSTATE_CALL_IN_CONNECTED = new GeneralState(24);
+	static GeneralState GSTATE_CALL_END = new GeneralState(25);
+	static GeneralState GSTATE_CALL_ERROR = new GeneralState(26);
+	static GeneralState GSTATE_INVALID = new GeneralState(27);
 	private final int mValue;
+	static private Vector values = new Vector();
 	
-	GeneralState(int value) {
+	private GeneralState(int value) {
 		mValue = value;
+		values.addElement(this);
 	}
 	public static GeneralState fromInt(int value) {
-		for (GeneralState state: GeneralState.values()) {
+		
+		for (int i=0; i<values.size();i++) {
+			GeneralState state = (GeneralState) values.elementAt(i);
 			if (state.mValue == value) return state;
 		}
 		throw new RuntimeException("sate not found ["+value+"]");
@@ -127,7 +132,7 @@ public interface LinphoneCore {
 	/**
 	 * @return a list of LinphoneCallLog 
 	 */
-	public List getCallLogs();
+	public Vector getCallLogs();
 	
 	/**
 	 * This method is called by the application to notify the Linphone core library when network is reachable.
