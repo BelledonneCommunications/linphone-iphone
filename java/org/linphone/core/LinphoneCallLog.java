@@ -19,13 +19,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 package org.linphone.core;
 
 public interface LinphoneCallLog {
-	public enum CallDirection {
-		CallOutgoing,Callincoming
-	}
+
 	
 	public LinphoneAddress getFrom();
 	
 	public LinphoneAddress getTo ();
 	
-	public LinphoneCallLog.CallDirection getDirection();
+	public CallDirection getDirection();
 }
