@@ -361,10 +361,15 @@ MSList *sal_get_pending_auths(Sal *sal){
 static int extract_received_rport(osip_message_t *msg, const char **received, int *rportval){
 	osip_via_t *via=NULL;
 	osip_generic_param_t *param=NULL;
-	const char *rport;
-	
+	const char *rport=NULL;
+
+	*rportval=5060;
+	*received=NULL;
 	osip_message_get_via(msg,0,&via);
 	if (!via) return -1;
+	if (via->port && via->port[0]!='\0')
+		*rportval=atoi(via->port);
+	
 	osip_via_param_get_byname(via,"rport",&param);
 	if (param) {
 		rport=param->gvalue;
@@ -375,7 +380,8 @@ static int extract_received_rport(osip_message_t *msg, const char **received, in
 	param=NULL;
 	osip_via_param_get_byname(via,"received",&param);
 	if (param) *received=param->gvalue;
-	else return -1;
+
+	if (rport==NULL && *received==NULL) return -1;
 	return 0;
 }
 
