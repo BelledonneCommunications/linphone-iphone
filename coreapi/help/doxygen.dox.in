@@ -28,6 +28,49 @@
  * @verbinclude COPYING
  */
 
+/**
+ * @defgroup tutorial_liblinphone Tutorial: Placing and receiving calls with liblinphone
+ * 
+
+<H1>Initialize liblinphone</H1>
+
+The first thing to do is to initialize the library passing it a set of callbacks functions to receive
+various notifications: incoming calls, progress of calls etc...
+These callbacks are all grouped in the LinphoneCoreVTable structure.
+All are optionnals (use NULL if you don't need them).
+The following code shows how initialize liblinphone:
+
+<PRE>
+	##include <linphonecore.h>
+
+	//callback function for notification of incoming calls
+	static void on_invite_recv(LinphoneCore *lc, const char *from){
+		printf("Receiving a call from %s\n",from);
+	}
+
+	//callback function for notification end of calls (by remote)
+	static void on_bye_recv(LinphoneCore *lc, const char *from){
+		printf("Remote end hangup\n");
+	}
+
+	/
+	static void on_display_status(LinphoneCore *lc, const char *msg){
+		printf("%s",msg);
+	}
+
+	int main(int argc, char *argv[]){
+		LinphoneCoreVTable vtable;
+		
+		memset(&vtable,0,sizeof(vtable));
+		vtable.inv_recv=&on_invite_recv;
+		vtable.bye_recv=&on_bye_recv;
+		vtable.display_status=&on_display_status;
+		
+	}
+
+</PRE>
+
+
 
 /** 
  * @defgroup initializing Initialization and destruction
