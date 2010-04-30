@@ -7,6 +7,7 @@ linphone-3.3.0 -- ?????????
 	* new tabbed ui
 	* be nat friendly using OPTIONS request and using received,rport from
 		responses.
+	* use stun guessed ports even if symmetric is detected (works with freeboxes)
 	* improve bitrate usage of speex codec
 	* allow speex to run with vbr (variable bit rate) mode
 	* add speex/32000 (ultra wide band speex codec)
