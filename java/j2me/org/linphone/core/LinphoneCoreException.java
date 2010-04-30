@@ -20,20 +20,27 @@ package org.linphone.core;
 
 
 public class LinphoneCoreException extends Exception {
-
+	Throwable mE;
 	public LinphoneCoreException() {
+		super();
 	}
 
 	public LinphoneCoreException(String detailMessage) {
 		super(detailMessage);
-	}
 
+	}
 	public LinphoneCoreException(Throwable e) {
-		super(e.getMessage());
+		mE = e;
 	}
 
 	public LinphoneCoreException(String detailMessage,Throwable e) {
-		super(detailMessage +" reason ["+e.getMessage()+"]");
+		super(detailMessage);
+		mE = e;
+	}
+
+	public void printStackTrace() {
+		super.printStackTrace();
+		mE.printStackTrace();
 	}
 	
 

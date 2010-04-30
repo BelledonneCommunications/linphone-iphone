@@ -29,23 +29,23 @@ public interface LinphoneCore {
 	 */
 	static public class 	GeneralState {
 		  /* states for GSTATE_GROUP_POWER */
-	static GeneralState GSTATE_POWER_OFF = new GeneralState(0);        /* initial state */
-	static GeneralState GSTATE_POWER_STARTUP = new GeneralState(1);
-	static GeneralState GSTATE_POWER_ON = new GeneralState(2);
-	static GeneralState GSTATE_POWER_SHUTDOWN = new GeneralState(3);
+	static public GeneralState GSTATE_POWER_OFF = new GeneralState(0);        /* initial state */
+	static public GeneralState GSTATE_POWER_STARTUP = new GeneralState(1);
+	static public GeneralState GSTATE_POWER_ON = new GeneralState(2);
+	static public GeneralState GSTATE_POWER_SHUTDOWN = new GeneralState(3);
 		  /* states for GSTATE_GROUP_REG */
-	static GeneralState GSTATE_REG_NONE = new GeneralState(10);       /* initial state */
-	static GeneralState GSTATE_REG_OK  = new GeneralState(11);
-	static GeneralState GSTATE_REG_FAILED = new GeneralState(12);
+	static public GeneralState GSTATE_REG_NONE = new GeneralState(10);       /* initial state */
+	static public GeneralState GSTATE_REG_OK  = new GeneralState(11);
+	static public GeneralState GSTATE_REG_FAILED = new GeneralState(12);
 		  /* states for GSTATE_GROUP_CALL */
-	static GeneralState GSTATE_CALL_IDLE = new GeneralState(20);      /* initial state */
-	static GeneralState GSTATE_CALL_OUT_INVITE = new GeneralState(21);
-	static GeneralState GSTATE_CALL_OUT_CONNECTED = new GeneralState(22);
-	static GeneralState GSTATE_CALL_IN_INVITE = new GeneralState(23);
-	static GeneralState GSTATE_CALL_IN_CONNECTED = new GeneralState(24);
-	static GeneralState GSTATE_CALL_END = new GeneralState(25);
-	static GeneralState GSTATE_CALL_ERROR = new GeneralState(26);
-	static GeneralState GSTATE_INVALID = new GeneralState(27);
+	static public GeneralState GSTATE_CALL_IDLE = new GeneralState(20);      /* initial state */
+	static public GeneralState GSTATE_CALL_OUT_INVITE = new GeneralState(21);
+	static public GeneralState GSTATE_CALL_OUT_CONNECTED = new GeneralState(22);
+	static public GeneralState GSTATE_CALL_IN_INVITE = new GeneralState(23);
+	static public GeneralState GSTATE_CALL_IN_CONNECTED = new GeneralState(24);
+	static public GeneralState GSTATE_CALL_END = new GeneralState(25);
+	static public GeneralState GSTATE_CALL_ERROR = new GeneralState(26);
+	static public GeneralState GSTATE_INVALID = new GeneralState(27);
 	private final int mValue;
 	static private Vector values = new Vector();
 	
