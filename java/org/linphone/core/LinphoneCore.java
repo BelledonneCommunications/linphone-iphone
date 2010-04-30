@@ -99,7 +99,7 @@ public interface LinphoneCore {
 	 */
 	public void invite(String destination)throws LinphoneCoreException;
 	
-	public void invite(LinphoneAddress to);
+	public void invite(LinphoneAddress to)throws LinphoneCoreException;
 	
 	public void terminateCall();
 	/**
