@@ -28,39 +28,44 @@ public interface LinphoneCore {
 	 * linphone core states
 	 */
 	static public class 	GeneralState {
-		  /* states for GSTATE_GROUP_POWER */
-	static public GeneralState GSTATE_POWER_OFF = new GeneralState(0);        /* initial state */
-	static public GeneralState GSTATE_POWER_STARTUP = new GeneralState(1);
-	static public GeneralState GSTATE_POWER_ON = new GeneralState(2);
-	static public GeneralState GSTATE_POWER_SHUTDOWN = new GeneralState(3);
-		  /* states for GSTATE_GROUP_REG */
-	static public GeneralState GSTATE_REG_NONE = new GeneralState(10);       /* initial state */
-	static public GeneralState GSTATE_REG_OK  = new GeneralState(11);
-	static public GeneralState GSTATE_REG_FAILED = new GeneralState(12);
-		  /* states for GSTATE_GROUP_CALL */
-	static public GeneralState GSTATE_CALL_IDLE = new GeneralState(20);      /* initial state */
-	static public GeneralState GSTATE_CALL_OUT_INVITE = new GeneralState(21);
-	static public GeneralState GSTATE_CALL_OUT_CONNECTED = new GeneralState(22);
-	static public GeneralState GSTATE_CALL_IN_INVITE = new GeneralState(23);
-	static public GeneralState GSTATE_CALL_IN_CONNECTED = new GeneralState(24);
-	static public GeneralState GSTATE_CALL_END = new GeneralState(25);
-	static public GeneralState GSTATE_CALL_ERROR = new GeneralState(26);
-	static public GeneralState GSTATE_INVALID = new GeneralState(27);
-	private final int mValue;
-	static private Vector values = new Vector();
-	
-	private GeneralState(int value) {
-		mValue = value;
-		values.addElement(this);
-	}
-	public static GeneralState fromInt(int value) {
-		
-		for (int i=0; i<values.size();i++) {
-			GeneralState state = (GeneralState) values.elementAt(i);
-			if (state.mValue == value) return state;
+		static private Vector values = new Vector();
+		/* states for GSTATE_GROUP_POWER */
+		static public GeneralState GSTATE_POWER_OFF = new GeneralState(0,"GSTATE_POWER_OFF");        /* initial state */
+		static public GeneralState GSTATE_POWER_STARTUP = new GeneralState(1,"GSTATE_POWER_STARTUP");
+		static public GeneralState GSTATE_POWER_ON = new GeneralState(2,"GSTATE_POWER_ON");
+		static public GeneralState GSTATE_POWER_SHUTDOWN = new GeneralState(3,"GSTATE_POWER_SHUTDOWN");
+		/* states for GSTATE_GROUP_REG */
+		static public GeneralState GSTATE_REG_NONE = new GeneralState(10,"GSTATE_REG_NONE");       /* initial state */
+		static public GeneralState GSTATE_REG_OK  = new GeneralState(11,"GSTATE_REG_OK");
+		static public GeneralState GSTATE_REG_FAILED = new GeneralState(12,"GSTATE_REG_FAILED");
+		/* states for GSTATE_GROUP_CALL */
+		static public GeneralState GSTATE_CALL_IDLE = new GeneralState(20,"GSTATE_CALL_IDLE");      /* initial state */
+		static public GeneralState GSTATE_CALL_OUT_INVITE = new GeneralState(21,"GSTATE_CALL_OUT_INVITE");
+		static public GeneralState GSTATE_CALL_OUT_CONNECTED = new GeneralState(22,"GSTATE_CALL_OUT_CONNECTED");
+		static public GeneralState GSTATE_CALL_IN_INVITE = new GeneralState(23,"GSTATE_CALL_IN_INVITE");
+		static public GeneralState GSTATE_CALL_IN_CONNECTED = new GeneralState(24,"GSTATE_CALL_IN_CONNECTED");
+		static public GeneralState GSTATE_CALL_END = new GeneralState(25,"GSTATE_CALL_END");
+		static public GeneralState GSTATE_CALL_ERROR = new GeneralState(26,"GSTATE_CALL_ERROR");
+		static public GeneralState GSTATE_INVALID = new GeneralState(27,"GSTATE_INVALID");
+		private final int mValue;
+		private final String mStringValue;
+
+		private GeneralState(int value,String stringValue) {
+			mValue = value;
+			values.addElement(this);
+			mStringValue=stringValue;
 		}
-		throw new RuntimeException("sate not found ["+value+"]");
-	}
+		public static GeneralState fromInt(int value) {
+
+			for (int i=0; i<values.size();i++) {
+				GeneralState state = (GeneralState) values.elementAt(i);
+				if (state.mValue == value) return state;
+			}
+			throw new RuntimeException("state not found ["+value+"]");
+		}
+		public String toString() {
+			return mStringValue;
+		}
 	}
 
 	
