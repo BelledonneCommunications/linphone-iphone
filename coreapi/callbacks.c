@@ -369,8 +369,8 @@ static void register_success(SalOp *op, bool_t registered){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)sal_op_get_user_pointer(op);
 	char *msg;
-	gstate_new_state(lc, GSTATE_REG_OK, NULL);
 	cfg->registered=registered;
+	gstate_new_state(lc, GSTATE_REG_OK, NULL);
 	if (cfg->registered) msg=ms_strdup_printf(_("Registration on %s successful."),sal_op_get_proxy(op));
 	else msg=ms_strdup_printf(_("Unregistration on %s done."),sal_op_get_proxy(op));
 	if (lc->vtable.display_status) 

@@ -46,7 +46,7 @@ abstract public class LinphoneCoreFactory {
 		}
 		return theLinphoneCoreFactory;
 	}
-	abstract public LinphoneAuthInfo createAuthInfo(String username,String password);
+	abstract public LinphoneAuthInfo createAuthInfo(String username,String password, String realm);
 	
 	abstract public LinphoneCore createLinphoneCore(LinphoneCoreListener listener, String userConfig,String factoryConfig,Object  userdata) throws LinphoneCoreException;
 	
