@@ -74,6 +74,7 @@ struct _LinphoneCall
 	LinphoneCallState	state;
 	int refcnt;
 	bool_t media_pending;
+	void * user_pointer;
 };
 
 LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to);

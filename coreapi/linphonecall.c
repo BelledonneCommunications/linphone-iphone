@@ -215,3 +215,26 @@ LinphoneCallState linphone_call_get_state(const LinphoneCall *call){
 	return call->state;
 }
 
+/**
+ * Get the user_pointer in the LinphoneCall
+ *
+ * @ingroup call_control
+ *
+ * return user_pointer an opaque user pointer that can be retrieved at any time
+**/
+void *linphone_call_get_user_pointer(LinphoneCall *call)
+{
+	return call->user_pointer;
+}
+
+/**
+ * Set the user_pointer in the LinphoneCall
+ *
+ * @ingroup call_control
+ *
+ * the user_pointer is an opaque user pointer that can be retrieved at any time in the LinphoneCall
+**/
+void linphone_call_set_user_pointer(LinphoneCall *call, void *user_pointer)
+{
+	call->user_pointer = user_pointer;
+}

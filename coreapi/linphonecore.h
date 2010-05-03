@@ -814,4 +814,7 @@ void linphone_core_set_audio_transports(LinphoneCore *lc, RtpTransport *rtp, Rtp
 }
 #endif
 MSList *linphone_core_get_calls(LinphoneCore *lc);
+void *linphone_call_get_user_pointer(LinphoneCall *call);
+void linphone_call_set_user_pointer(LinphoneCall *call, void *user_pointer);
+
 #endif
