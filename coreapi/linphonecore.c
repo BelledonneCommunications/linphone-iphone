@@ -1031,6 +1031,7 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	linphone_core_assign_payload_type(&payload_type_speex_uwb,112,"vbr=on");
 	linphone_core_assign_payload_type(&payload_type_telephone_event,101,"0-11");
 	linphone_core_assign_payload_type(&payload_type_ilbc,113,"mode=30");
+	linphone_core_assign_payload_type(&payload_type_amr,114,"octet-align=1");
 
 #ifdef ENABLE_NONSTANDARD_GSM
 	{
