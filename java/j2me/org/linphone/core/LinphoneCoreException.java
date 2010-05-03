@@ -20,16 +20,28 @@ package org.linphone.core;
 
 
 public class LinphoneCoreException extends Exception {
-
+	Throwable mE;
 	public LinphoneCoreException() {
-		// TODO Auto-generated constructor stub
+		super();
 	}
 
 	public LinphoneCoreException(String detailMessage) {
 		super(detailMessage);
-		// TODO Auto-generated constructor stub
+
+	}
+	public LinphoneCoreException(Throwable e) {
+		mE = e;
 	}
 
+	public LinphoneCoreException(String detailMessage,Throwable e) {
+		super(detailMessage);
+		mE = e;
+	}
+
+	public void printStackTrace() {
+		super.printStackTrace();
+		mE.printStackTrace();
+	}
 	
 
 }

@@ -19,36 +19,36 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 package org.linphone.core;
 
 
-import java.io.IOException;
 
 
 abstract public class LinphoneCoreFactory {
 	
-	private static String defaulfFactory = "org.linphone.core.LinphoneCoreFactoryImpl";
+	private static String factoryName = "org.linphone.core.LinphoneCoreFactoryImpl";
+	
 	
 	static LinphoneCoreFactory theLinphoneCoreFactory; 
 	/**
 	 * Indicate the name of the class used by this factory
 	 * @param pathName
 	 */
-	static void setFactoryClassName (String className) {
-		defaulfFactory = className;
+	public static void setFactoryClassName (String className) {
+		factoryName = className;
 	}
 	
 	public static LinphoneCoreFactory instance() {
 		try {
 		if (theLinphoneCoreFactory == null) {
-			Class lFactoryClass = Class.forName(defaulfFactory);
+			Class lFactoryClass = Class.forName(factoryName);
 			theLinphoneCoreFactory = (LinphoneCoreFactory) lFactoryClass.newInstance();
 		}
 		} catch (Exception e) {
-			System.err.println("cannot instanciate factory ["+defaulfFactory+"]");
+			System.err.println("cannot instanciate factory ["+factoryName+"]");
 		}
 		return theLinphoneCoreFactory;
 	}
-	abstract public LinphoneAuthInfo createAuthInfo(String username,String password);
+	abstract public LinphoneAuthInfo createAuthInfo(String username,String password, String realm);
 	
-	abstract public LinphoneCore createLinphoneCore(LinphoneCoreListener listener, String userConfig,String factoryConfig,Object  userdata) throws IOException;
+	abstract public LinphoneCore createLinphoneCore(LinphoneCoreListener listener, String userConfig,String factoryConfig,Object  userdata) throws LinphoneCoreException;
 	
 	abstract public LinphoneAddress createLinphoneAddress(String username,String domain,String displayName);
 	
