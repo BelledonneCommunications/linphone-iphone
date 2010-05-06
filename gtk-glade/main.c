@@ -1231,9 +1231,11 @@ int main(int argc, char *argv[]){
 	const char *factory_config_file;
 	const char *lang;
 	GtkSettings *settings;
+	GdkPixbuf *pbuf;
 
 	g_thread_init(NULL);
 	gdk_threads_init();
+	
 	progpath = strdup(argv[0]);
 	
 	config_file=linphone_gtk_get_config_file();
@@ -1247,6 +1249,9 @@ int main(int argc, char *argv[]){
 			_putenv(tmp);
 		}
 	}
+#else
+	/*for pulseaudio:*/
+	g_setenv("PULSE_PROP_media.role", "phone", TRUE);
 #endif
 
 	if ((lang=linphone_gtk_get_lang(config_file))!=NULL && lang[0]!='\0'){
@@ -1277,6 +1282,7 @@ int main(int argc, char *argv[]){
 		gdk_threads_leave();
 		return -1;
 	}
+	
 	settings=gtk_settings_get_default();
 	g_object_set(settings, "gtk-menu-images", TRUE, NULL);
 	g_object_set(settings, "gtk-button-images", TRUE, NULL);
@@ -1301,6 +1307,11 @@ int main(int argc, char *argv[]){
 	add_pixmap_directory("pixmaps");
 	add_pixmap_directory(PACKAGE_DATA_DIR "/pixmaps/linphone");
 
+	
+	g_set_application_name("Linphone");
+	pbuf=create_pixbuf(linphone_gtk_get_ui_config("icon",LINPHONE_ICON));
+	if (pbuf!=NULL) gtk_window_set_default_icon(pbuf);
+	
 	the_ui=linphone_gtk_create_window("main");
 	
 	linphone_gtk_create_log_window();
