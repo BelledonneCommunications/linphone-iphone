@@ -398,6 +398,16 @@ typedef void (*InviteReceivedCb)(struct _LinphoneCore *lc, LinphoneCall *call);
 /** Callback prototype */
 typedef void (*ByeReceivedCb)(struct _LinphoneCore *lc, LinphoneCall *call);
 /** Callback prototype */
+typedef void (*RingingReceivedCb)(struct _LinphoneCore *lc, LinphoneCall *call);
+/** Callback prototype */
+typedef void (*ConnectedReceivedCb)(struct _LinphoneCore *lc, LinphoneCall *call);
+/** Callback prototype */
+typedef void (*FailureReceivedCb)(struct _LinphoneCore *lc, LinphoneCall *call, int error_code);
+/** Callback prototype */
+typedef void (*PausedReceivedCb)(struct _LinphoneCore *lc, LinphoneCall *call);
+/** Callback prototype */
+typedef void (*ResumedReceivedCb)(struct _LinphoneCore *lc, LinphoneCall *call);
+/** Callback prototype */
 typedef void (*DisplayStatusCb)(struct _LinphoneCore *lc, const char *message);
 /** Callback prototype */
 typedef void (*DisplayMessageCb)(struct _LinphoneCore *lc, const char *message);
@@ -424,7 +434,7 @@ typedef void (*GeneralStateChange)(struct _LinphoneCore *lc, LinphoneGeneralStat
 /** Callback prototype */
 typedef void (*DtmfReceived)(struct _LinphoneCore* lc, int dtmf);
 /** Callback prototype */
-typedef void (*ReferReceived)(struct _LinphoneCore *lc, const char *refer_to);
+typedef void (*ReferReceived)(struct _LinphoneCore *lc, LinphoneCall *call, const char *refer_to);
 /** Callback prototype */
 typedef void (*BuddyInfoUpdated)(struct _LinphoneCore *lc, LinphoneFriend *lf);
 
@@ -437,6 +447,11 @@ typedef struct _LinphoneVTable
 	ShowInterfaceCb show; /**< Notifies the application that it should show up*/
 	InviteReceivedCb inv_recv; /**< Notifies incoming calls */
 	ByeReceivedCb bye_recv; /**< Notify calls terminated by far end*/
+	RingingReceivedCb ringing_recv; /**< Notify that the distant phone is ringing*/
+	ConnectedReceivedCb connected_recv; /**< Notify that the distant phone answered the call*/
+	FailureReceivedCb failure_recv; /**< Notify that the call failed*/
+	PausedReceivedCb paused_recv; /**< Notify that the call failed*/
+	ResumedReceivedCb resumed_recv; /**< Notify that the call failed*/
 	NotifyPresenceReceivedCb notify_presence_recv; /**< Notify received presence events*/
 	NewUnknownSubscriberCb new_unknown_subscriber; /**< Notify about unknown subscriber */
 	AuthInfoRequested auth_info_requested; /**< Ask the application some authentication information */

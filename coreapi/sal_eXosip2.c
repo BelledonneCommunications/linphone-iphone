@@ -915,7 +915,7 @@ static void call_released(Sal *sal, eXosip_event_t *ev){
 	}
 	op->cid=-1;
 	if (op->did==-1) 
-		sal->callbacks.call_failure(op,SalErrorNoResponse,SalReasonUnknown,NULL);
+		sal->callbacks.call_failure(op,SalErrorNoResponse,SalReasonUnknown,NULL, 487);
 }
 
 static int get_auth_data_from_response(osip_message_t *resp, const char **realm, const char **username){
@@ -1066,7 +1066,7 @@ static bool_t call_failure(Sal *sal, eXosip_event_t *ev){
 				sr=SalReasonUnknown;
 			}else error=SalErrorNoResponse;
 	}
-	sal->callbacks.call_failure(op,error,sr,reason);
+	sal->callbacks.call_failure(op,error,sr,reason,code);
 	return TRUE;
 }
 

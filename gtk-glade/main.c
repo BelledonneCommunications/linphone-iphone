@@ -54,7 +54,7 @@ static void linphone_gtk_display_url(LinphoneCore *lc, const char *msg, const ch
 static void linphone_gtk_display_question(LinphoneCore *lc, const char *question);
 static void linphone_gtk_call_log_updated(LinphoneCore *lc, LinphoneCallLog *cl);
 static void linphone_gtk_general_state(LinphoneCore *lc, LinphoneGeneralState *gstate);
-static void linphone_gtk_refer_received(LinphoneCore *lc, const char *refer_to);
+static void linphone_gtk_refer_received(LinphoneCore *lc, LinphoneCall *call, const char  *refer_to);
 static gboolean linphone_gtk_auto_answer(GtkWidget *incall_window);
 
 static LinphoneCoreVTable vtable={
@@ -1210,7 +1210,7 @@ void linphone_gtk_log_handler(OrtpLogLevel lev, const char *fmt, va_list args){
 }
 
 
-static void linphone_gtk_refer_received(LinphoneCore *lc, const char *refer_to){
+static void linphone_gtk_refer_received(LinphoneCore *lc, LinphoneCall *call, const char *refer_to){
     GtkEntry * uri_bar =GTK_ENTRY(linphone_gtk_get_widget(
 		linphone_gtk_get_main_window(), "uribar"));
 	linphone_gtk_show_main_window();

@@ -30,6 +30,8 @@ static void linphone_connect_incoming(LinphoneCore *lc, LinphoneCall *call){
 		lc->vtable.show(lc);
 	if (lc->vtable.display_status)
 		lc->vtable.display_status(lc,_("Connected."));
+	if (lc->vtable.connected_recv)
+		lc->vtable.connected_recv(lc,call);
 	call->state=LinphoneCallAVRunning;
 	if (lc->ringstream!=NULL){
 		ring_stop(lc->ringstream);
@@ -130,6 +132,8 @@ static void call_ringing(SalOp *h){
 	if (call==NULL) return;
 	if (lc->vtable.display_status)
 		lc->vtable.display_status(lc,_("Remote ringing."));
+	if (lc->vtable.ringing_recv)
+		lc->vtable.ringing_recv(lc,call);
 	md=sal_call_get_final_media_description(h);
 	if (md==NULL){
 		if (lc->ringstream!=NULL) return;	/*already ringing !*/
@@ -233,16 +237,40 @@ static void call_ack(SalOp *op){
 static void call_updated(SalOp *op){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
-	if(call == linphone_core_get_current_call(lc))
-	{
-		linphone_core_stop_media_streams(lc,call);
-		linphone_core_init_media_streams(lc,call);
-	}
 	if (call->resultdesc)
 		sal_media_description_unref(call->resultdesc);
 	call->resultdesc=sal_call_get_final_media_description(op);
-	if (call->resultdesc && !sal_media_description_empty(call->resultdesc)){
-		linphone_connect_incoming(lc,call);
+	if (call->resultdesc && !sal_media_description_empty(call->resultdesc))
+	{
+		if( (call->state == LinphoneCallPaused) && strcmp(call->resultdesc->addr,"0.0.0.0"))
+		{
+			if(lc->vtable.display_status)
+				lc->vtable.display_status(lc,"we have been resumed...");
+			call->state = LinphoneCallAVRunning;
+			lc->vtable.resumed_recv(lc,call);
+			linphone_core_start_media_streams(lc,call);
+		}
+		else if( (call->state != LinphoneCallPaused) && !strcmp(call->resultdesc->addr,"0.0.0.0"))
+		{
+			if(lc->vtable.display_status)
+				lc->vtable.display_status(lc,"we have been paused...");
+			call->state = LinphoneCallPaused;
+			lc->vtable.paused_recv(lc,call);
+			if(call == linphone_core_get_current_call(lc))
+			{
+				linphone_core_stop_media_streams(lc,call);
+				linphone_core_init_media_streams(lc,call);
+			}
+		}
+		else
+		{
+			if(call == linphone_core_get_current_call(lc))
+			{
+				linphone_core_stop_media_streams(lc,call);
+				linphone_core_init_media_streams(lc,call);
+			}
+			linphone_connect_incoming(lc,call);
+		}
 	}
 }
 
@@ -276,7 +304,7 @@ static void call_terminated(SalOp *op, const char *from){
 	linphone_call_unref(call);
 }
 
-static void call_failure(SalOp *op, SalError error, SalReason sr, const char *details){
+static void call_failure(SalOp *op, SalError error, SalReason sr, const char *details, int code){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	char *msg486=_("User is busy.");
 	char *msg480=_("User is temporarily unavailable.");
@@ -336,6 +364,8 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 					lc->vtable.display_status(lc,_("Call failed."));
 		}
 	}
+	if (lc->vtable.failure_recv)
+		lc->vtable.failure_recv(lc,call,code);
 	if (lc->ringstream!=NULL) {
 		ring_stop(lc->ringstream);
 		lc->ringstream=NULL;
@@ -415,8 +445,9 @@ static void dtmf_received(SalOp *op, char dtmf){
 
 static void refer_received(Sal *sal, SalOp *op, const char *referto){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal);
+	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
 	if (lc->vtable.refer_received){
-		lc->vtable.refer_received(lc,referto);
+		lc->vtable.refer_received(lc,call,referto);
 		if (op) sal_refer_accept(op);
 	}
 }

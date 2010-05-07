@@ -542,8 +542,8 @@ lpc_cmd_answer(LinphoneCore *lc, char *args)
 
 	if (!args)
 	{
-		//TODO if just one call is present answer the only one ...
-		if ( -1 == linphone_core_accept_call(lc, linphone_core_get_current_call(lc)) )//TODO is there any current call here=> nope 
+		//if just one call is present answer the only one in passing NULL to the linphone_core_accept_call ...
+		if ( -1 == linphone_core_accept_call(lc, NULL) )
 		{
 			linphonec_out("No incoming call.\n");
 		}

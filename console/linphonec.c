@@ -113,9 +113,11 @@ static char **linephonec_readline_completion(const char *text,
 
 /* These are callback for linphone core */
 static void linphonec_call_received(LinphoneCore *lc, LinphoneCall *call);
+static void linphonec_paused_received(LinphoneCore *lc, LinphoneCall *call);
+static void linphonec_resumed_received(LinphoneCore *lc, LinphoneCall *call);
 static void linphonec_prompt_for_auth(LinphoneCore *lc, const char *realm,
 	const char *username);
-static void linphonec_display_refer (LinphoneCore * lc,const char *refer_to);
+static void linphonec_display_refer (LinphoneCore * lc,LinphoneCall *call, const char *refer_to);
 static void linphonec_display_something (LinphoneCore * lc, const char *something);
 static void linphonec_display_url (LinphoneCore * lc, const char *something, const char *url);
 static void linphonec_display_warning (LinphoneCore * lc, const char *something);
@@ -131,6 +133,7 @@ static void linphonec_display_status (LinphoneCore * lc, const char *something);
 static void linphonec_general_state (LinphoneCore * lc, LinphoneGeneralState *gstate);
 static void linphonec_dtmf_received(LinphoneCore *lc, int dtmf);
 static void print_prompt(LinphoneCore *opm);
+void linphonec_out(const char *fmt,...);
 /***************************************************************************
  *
  * Global variables
@@ -176,6 +179,11 @@ LinphoneCoreVTable linphonec_vtable
 	.show =(ShowInterfaceCb) stub,
 	.inv_recv = linphonec_call_received,
 	.bye_recv = linphonec_bye_received,
+	.ringing_recv = (RingingReceivedCb) stub,
+	.connected_recv = (ConnectedReceivedCb) stub,
+	.failure_recv = (FailureReceivedCb) stub,
+	.paused_recv = linphonec_paused_received,
+	.resumed_recv = linphonec_resumed_received,
 	.notify_recv = linphonec_notify_received,
 	.notify_presence_recv = linphonec_notify_presence_received,
 	.new_unknown_subscriber = linphonec_new_unknown_subscriber,
@@ -209,7 +217,7 @@ LinphoneCoreVTable linphonec_vtable
  * Linphone core callback
  */
 static void
-linphonec_display_refer (LinphoneCore * lc,const char *refer_to)
+linphonec_display_refer (LinphoneCore * lc,LinphoneCall *call, const char *refer_to)
 {
 	fprintf (stdout, "The distant end point asked to transfer the call to %s,don't forget to terminate the call if not\n%s", refer_to,prompt);
 	fflush(stdout);
@@ -268,6 +276,34 @@ linphonec_call_received(LinphoneCore *lc, LinphoneCall *call)
 		answer_call=TRUE;
 	}
 }
+/*
+ * Linphone core callback
+ */
+static void
+linphonec_paused_received(LinphoneCore *lc, LinphoneCall *call)
+{
+	char *from=linphone_call_get_remote_address_as_string(call);
+	if(from)
+	{
+		linphonec_out("the call from %s have been paused\n",from);
+		ms_free(from);
+	}
+}
+/*
+ * Linphone core callback
+ */
+static void
+linphonec_resumed_received(LinphoneCore *lc, LinphoneCall *call)
+{
+	char *from=linphone_call_get_remote_address_as_string(call);
+	if(from)
+	{
+		linphonec_out("the call from %s have been resumed\n",from);
+		ms_free(from);
+	}
+}
+
+
 
 /*
  * Linphone core callback

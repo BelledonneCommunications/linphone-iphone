@@ -1574,6 +1574,8 @@ LinphoneAddress * linphone_core_interpret_url(LinphoneCore *lc, const char *url)
 		lc->vtable.display_status(lc,_("Looking for telephone number destination..."));
 		if (enum_lookup(enum_domain,&enumres)<0){
 			lc->vtable.display_status(lc,_("Could not resolve this number."));
+			if(lc->vtable.failure_recv)
+				lc->vtable.failure_recv(lc,NULL,400);
 			ms_free(enum_domain);
 			return NULL;
 		}
@@ -2205,7 +2207,11 @@ int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call)
 	const char *contact=NULL;
 	
 	if (call==NULL){
-		return -1;
+		//if just one call is present answer the only one ...
+		if(ms_list_size(linphone_core_get_calls(lc)) != 1)
+			return -1;
+		else
+			call = linphone_core_get_calls(lc)->data;
 	}
 
 	if (call->state==LinphoneCallAVRunning){
