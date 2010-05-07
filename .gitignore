@@ -31,4 +31,15 @@ msx264.iss
 linphone-install
 buddylookup-install
 msx264-install
+*.tar.gz
+intltool-extract.in
+intltool-merge.in
+intltool-update.in
+INSTALL
+Specfile
+.anjuta/
+.anjuta_sym_db.db
+coreapi/help/doxygen.dox
+gtk-glade/version_date.h
+share/linphone.desktop
 
