@@ -248,7 +248,8 @@ static void call_updated(SalOp *op){
 				lc->vtable.display_status(lc,"we have been resumed...");
 			call->state = LinphoneCallAVRunning;
 			lc->vtable.resumed_recv(lc,call);
-			linphone_core_start_media_streams(lc,call);
+			//we have to keep sending when holded
+			//linphone_core_start_media_streams(lc,call);
 		}
 		else if( (call->state != LinphoneCallPaused) && !strcmp(call->resultdesc->addr,"0.0.0.0"))
 		{
@@ -256,11 +257,14 @@ static void call_updated(SalOp *op){
 				lc->vtable.display_status(lc,"we have been paused...");
 			call->state = LinphoneCallPaused;
 			lc->vtable.paused_recv(lc,call);
+			//we have to keep sending when holded
+			/*
 			if(call == linphone_core_get_current_call(lc))
 			{
 				linphone_core_stop_media_streams(lc,call);
 				linphone_core_init_media_streams(lc,call);
 			}
+			*/
 		}
 		else
 		{
