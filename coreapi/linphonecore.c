@@ -1860,6 +1860,7 @@ LinphoneCall * linphone_core_invite_address(LinphoneCore *lc, const LinphoneAddr
 		call->state=LinphoneCallPreEstablishing;
 		call->ping_op=sal_op_new(lc->sal);
 		sal_ping(call->ping_op,from,real_url);
+		sal_op_set_user_pointer(call->ping_op,call);
 		call->start_time=time(NULL);
 	}
 	
