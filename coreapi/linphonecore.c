@@ -62,6 +62,7 @@ int lc_callback_obj_invoke(LCCallbackObj *obj, LinphoneCore *lc){
 	return 0;
 }
 
+		
 /*prevent a gcc bug with %c*/
 static size_t my_strftime(char *s, size_t max, const char  *fmt,  const struct tm *tm){
 #if !defined(_WIN32_WCE)

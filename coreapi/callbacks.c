@@ -240,6 +240,9 @@ static void call_updated(SalOp *op){
 	if (call->resultdesc)
 		sal_media_description_unref(call->resultdesc);
 	call->resultdesc=sal_call_get_final_media_description(op);
+	if (call->resultdesc)
+		sal_media_description_ref(call->resultdesc);
+
 	if (call->resultdesc && !sal_media_description_empty(call->resultdesc))
 	{
 		if( (call->state == LinphoneCallPaused) && strcmp(call->resultdesc->addr,"0.0.0.0"))
