@@ -312,7 +312,7 @@ extern void libmsilbc_init();
 		
 		LinphoneAddress* addr=linphone_address_new(linphone_proxy_config_get_addr(proxyCfg));
 		proxyReachability=SCNetworkReachabilityCreateWithName(nil, linphone_address_get_domain(addr));
-		proxyReachabilityContext.info=self;
+		
 		
 		[self doRegister];
 	} else if (configCheckDisable == false) { 		
@@ -322,10 +322,11 @@ extern void libmsilbc_init();
 													cancelButtonTitle:@"Continue" 
 													otherButtonTitles:@"Never remind",nil];
 		[error show];
-		proxyReachability=SCNetworkReachabilityCreateWithName(nil, @"linphone.org");
+		proxyReachability=SCNetworkReachabilityCreateWithName(nil, "linphone.org");
 
 	}		
 
+	proxyReachabilityContext.info=self;
 	SCNetworkReachabilitySetCallback(proxyReachability, (SCNetworkReachabilityCallBack)networkReachabilityCallBack,&proxyReachabilityContext);
 	SCNetworkReachabilityScheduleWithRunLoop(proxyReachability, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
 
