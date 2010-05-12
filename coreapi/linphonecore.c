@@ -168,6 +168,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 		to_str=linphone_address_as_string(to);
 		from_str=linphone_address_as_string(from);
 		sal_op_set_route(call->ping_op,sal_op_get_network_origin(call->op));
+		sal_op_set_user_pointer(call->ping_op,call);
 		sal_ping(call->ping_op,to_str,from_str);
 		ms_free(to_str);
 		ms_free(from_str);
