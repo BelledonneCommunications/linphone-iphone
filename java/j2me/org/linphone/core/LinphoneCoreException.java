@@ -30,6 +30,7 @@ public class LinphoneCoreException extends Exception {
 
 	}
 	public LinphoneCoreException(Throwable e) {
+		this(e.getClass().getName()+" "+ e.getMessage());
 		mE = e;
 	}
 
@@ -40,7 +41,7 @@ public class LinphoneCoreException extends Exception {
 
 	public void printStackTrace() {
 		super.printStackTrace();
-		mE.printStackTrace();
+		if (mE!=null) mE.printStackTrace();
 	}
 	
 
