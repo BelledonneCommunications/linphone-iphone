@@ -3480,6 +3480,9 @@ void codecs_config_uninit(LinphoneCore *lc)
 		lp_config_set_int(lc->config,key,"enabled",linphone_core_payload_type_enabled(lc,pt));
 		index++;
 	}
+	sprintf(key,"audio_codec_%i",index);
+	lp_config_clean_section (lc->config,key);
+	
 	index=0;
 	for(node=config->video_codecs;node!=NULL;node=ms_list_next(node)){
 		pt=(PayloadType*)(node->data);
@@ -3490,6 +3493,9 @@ void codecs_config_uninit(LinphoneCore *lc)
 		lp_config_set_string(lc->config,key,"recv_fmtp",pt->recv_fmtp);
 		index++;
 	}
+	sprintf(key,"video_codec_%i",index);
+	lp_config_clean_section (lc->config,key);
+	
 	ms_list_free(lc->codecs_conf.audio_codecs);
 	ms_list_free(lc->codecs_conf.video_codecs);
 }
