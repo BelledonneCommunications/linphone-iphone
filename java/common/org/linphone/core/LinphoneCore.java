@@ -130,8 +130,9 @@ public interface LinphoneCore {
 	 * {@link LinphoneCoreListener#inviteReceived(LinphoneCore, String)} listener.
 	 * The application can later respond positively to the call using
 	 * this method.
+	 * @throws LinphoneCoreException 
 	 */
-	public void acceptCall();
+	public void acceptCall() throws LinphoneCoreException;
 	
 	
 	/**
