@@ -260,6 +260,7 @@ typedef struct sip_config
 	bool_t register_only_when_network_is_up;
 	bool_t ping_with_options;
 	bool_t auto_net_state_mon;
+	unsigned int keepalive_period; /* interval in ms between keep alive messages sent to the proxy server*/
 } sip_config_t;
 
 typedef struct rtp_config

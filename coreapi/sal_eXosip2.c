@@ -1690,4 +1690,7 @@ char *sal_address_as_string_uri_only(const SalAddress *u){
 void sal_address_destroy(SalAddress *u){
 	osip_from_free((osip_from_t*)u);
 }
+void sal_set_keepalive_period(Sal *ctx,unsigned int value) {
+	eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE, &value);
+}
 
