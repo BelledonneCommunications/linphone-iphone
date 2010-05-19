@@ -60,5 +60,6 @@ abstract public class LinphoneCoreFactory {
 	 * @param enable 
 	 */
 	abstract public  void setDebugMode(boolean enable);
-
+	
+	abstract public void setLogHandler(LinphoneLogHandler handler);
 }

@@ -226,6 +226,8 @@ void sal_set_callbacks(Sal *ctx, const SalCallbacks *cbs);
 int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int is_secure);
 ortp_socket_t sal_get_socket(Sal *ctx);
 void sal_set_user_agent(Sal *ctx, const char *user_agent);
+/*keepalive period in ms*/
+void sal_set_keepalive_period(Sal *ctx,unsigned int value);
 void sal_use_session_timers(Sal *ctx, int expires);
 int sal_iterate(Sal *sal);
 MSList * sal_get_pending_auths(Sal *sal);

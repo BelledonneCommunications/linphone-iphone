@@ -688,6 +688,8 @@ static void sip_config_read(LinphoneCore *lc)
 		lp_config_get_int(lc->config,"sip","register_only_when_network_is_up",1);
 	lc->sip_conf.ping_with_options=lp_config_get_int(lc->config,"sip","ping_with_options",1);
 	lc->sip_conf.auto_net_state_mon=lp_config_get_int(lc->config,"sip","auto_net_state_mon",1);
+	lc->sip_conf.keepalive_period=lp_config_get_int(lc->config,"sip","keepalive_period",10000);
+	sal_set_keepalive_period(lc->sal,lc->sip_conf.keepalive_period);
 }
 
 static void rtp_config_read(LinphoneCore *lc)
@@ -3384,6 +3386,7 @@ void sip_config_uninit(LinphoneCore *lc)
 	lp_config_set_int(lc->config,"sip","use_rfc2833",config->use_rfc2833);
 	lp_config_set_int(lc->config,"sip","use_ipv6",config->ipv6_enabled);
 	lp_config_set_int(lc->config,"sip","register_only_when_network_is_up",config->register_only_when_network_is_up);
+
 
 	lp_config_set_int(lc->config,"sip","default_proxy",linphone_core_get_default_proxy(lc,NULL));
 	
