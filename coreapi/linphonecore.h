@@ -127,6 +127,8 @@ typedef struct _LinphoneCallLog{
 	int duration; /**<Duration of the call in seconds*/
 	char *refkey;
 	void *user_pointer;
+	rtp_stats_t local_stats;
+	rtp_stats_t remote_stats;
 	struct _LinphoneCore *lc;
 } LinphoneCallLog;
 
@@ -137,6 +139,8 @@ void linphone_call_log_set_user_pointer(LinphoneCallLog *cl, void *up);
 void *linphone_call_log_get_user_pointer(const LinphoneCallLog *cl);
 void linphone_call_log_set_ref_key(LinphoneCallLog *cl, const char *refkey);
 const char *linphone_call_log_get_ref_key(const LinphoneCallLog *cl);
+const rtp_stats_t *linphone_call_log_get_local_stats(const LinphoneCallLog *cl);
+const rtp_stats_t *linphone_call_log_get_remote_stats(const LinphoneCallLog *cl);
 char * linphone_call_log_to_str(LinphoneCallLog *cl);
 
 typedef enum{
@@ -784,6 +788,8 @@ void linphone_core_destroy(LinphoneCore *lc);
 
 /*for advanced users:*/
 void linphone_core_set_audio_transports(LinphoneCore *lc, RtpTransport *rtp, RtpTransport *rtcp);
+
+int linphone_core_get_current_call_stats(LinphoneCore *lc, rtp_stats_t *local, rtp_stats_t *remote);
 
 #ifdef __cplusplus
 }
