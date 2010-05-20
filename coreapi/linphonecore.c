@@ -2316,8 +2316,13 @@ void linphone_core_start_media_streams(LinphoneCore *lc, LinphoneCall *call){
 		lc->call->state=LCStateAVRunning;
 }
 
+static void linphone_call_log_fill_stats(LinphoneCallLog *log, AudioStream *st){
+	audio_stream_get_local_rtp_stats (st,&log->local_stats);
+}
+
 void linphone_core_stop_media_streams(LinphoneCore *lc, LinphoneCall *call){
 	if (lc->audiostream!=NULL) {
+		linphone_call_log_fill_stats (call->log,lc->audiostream);
 		audio_stream_stop(lc->audiostream);
 		lc->audiostream=NULL;
 	}
