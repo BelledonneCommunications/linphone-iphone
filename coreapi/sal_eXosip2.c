@@ -1591,7 +1591,17 @@ int sal_unregister(SalOp *h){
 	return 0;
 }
 
-
+static void sal_address_quote_displayname(SalAddress *addr){
+	osip_from_t *u=(osip_from_t*)addr;
+	if (u->displayname!=NULL && u->displayname[0]!='\0' 
+	    	&& u->displayname[0]!='"'){
+		int len=strlen(u->displayname)+1+2;
+		char *quoted=osip_malloc(len);
+		snprintf(quoted,len,"\"%s\"",u->displayname);
+		osip_free(u->displayname);
+		u->displayname=quoted;
+	}
+}
 
 SalAddress * sal_address_new(const char *uri){
 	osip_from_t *from;
@@ -1600,6 +1610,7 @@ SalAddress * sal_address_new(const char *uri){
 		osip_from_free(from);
 		return NULL;
 	}
+	sal_address_quote_displayname ((SalAddress*)from);
 	return (SalAddress*)from;
 }
 
@@ -1621,6 +1632,18 @@ const char *sal_address_get_display_name(const SalAddress* addr){
 	return null_if_empty(u->displayname);
 }
 
+char *sal_address_get_display_name_unquoted(const SalAddress *addr){
+	const osip_from_t *u=(const osip_from_t*)addr;
+	const char *dn=null_if_empty(u->displayname);
+	char *ret=NULL;
+	if (dn!=NULL) {
+		char *tmp=osip_strdup_without_quote(dn);
+		ret=ms_strdup(tmp);
+		osip_free(tmp);
+	}
+	return ret;
+}
+
 const char *sal_address_get_username(const SalAddress *addr){
 	const osip_from_t *u=(const osip_from_t*)addr;
 	return null_if_empty(u->url->username);
@@ -1637,8 +1660,10 @@ void sal_address_set_display_name(SalAddress *addr, const char *display_name){
 		osip_free(u->displayname);
 		u->displayname=NULL;
 	}
-	if (display_name!=NULL)
+	if (display_name!=NULL && display_name[0]!='\0'){
 		u->displayname=osip_strdup(display_name);
+		sal_address_quote_displayname(addr);
+	}
 }
 
 void sal_address_set_username(SalAddress *addr, const char *username){
@@ -1705,6 +1730,9 @@ char *sal_address_as_string_uri_only(const SalAddress *u){
 
 void sal_address_destroy(SalAddress *u){
 	osip_from_free((osip_from_t*)u);
+}
+void sal_set_keepalive_period(Sal *ctx,unsigned int value) {
+	eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE, &value);
 }
 
 /**

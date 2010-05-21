@@ -67,5 +67,6 @@ mediastreamer2/src/ice.c
 mediastreamer2/src/void.c
 mediastreamer2/src/equalizer.c
 mediastreamer2/src/msdscap-mingw.cc
+mediastreamer2/src/drawdib-display.c
 
 

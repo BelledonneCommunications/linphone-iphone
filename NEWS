@@ -1,4 +1,4 @@
-linphone-3.3.0 -- May 10, 2010
+linphone-3.3.0 -- May 19, 2010
 	* liblinphone is ported to iphoneOS and Google Android
 	* Internal refactoring of liblinphone (code factorisation, encapsulation
 		of signaling)

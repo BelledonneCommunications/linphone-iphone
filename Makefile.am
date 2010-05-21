@@ -16,16 +16,29 @@ SUBDIRS = m4 pixmaps po $(ORTP_DIR) mediastreamer2\
 
 ACLOCAL_FLAGS=-I$(top_srcdir)/m4
 
-
-INSTALLDIR=$(shell cd $(top_builddir) && pwd)/linphone-install
-INSTALLDIR_WITH_PREFIX=$(INSTALLDIR)/$(prefix)
-ZIPFILE=$(shell cd $(top_builddir) && pwd)/$(PACKAGE)-win32-$(VERSION).zip
-ZIP_EXCLUDED=include lib \
+OPTIONAL_SOUNDS=\
 		share/sounds/linphone/rings/synth.wav \
 		share/sounds/linphone/rings/tapping.wav \
 		share/sounds/linphone/rings/orig.wav \
 		share/sounds/linphone/rings/sweet.wav \
 		share/sounds/linphone/rings/rock.wav
+
+
+INSTALLDIR=$(shell cd $(top_builddir) && pwd)/linphone-install
+INSTALLDIR_WITH_PREFIX=$(INSTALLDIR)/$(prefix)
+ZIPFILE=$(shell cd $(top_builddir) && pwd)/$(PACKAGE)-win32-$(VERSION).zip
+ZIP_EXCLUDED=include lib \
+		$(OPTIONAL_SOUNDS)
+
+SDK_ZIPFILE=$(shell cd $(top_builddir) && pwd)/lib$(PACKAGE)-win32-$(VERSION).zip
+SDK_EXCLUDED= \
+	bin/linphone-3.exe \
+	lib/*.la \
+	share/linphone \
+	share/pixmaps \
+	share/locale \
+	share/gnome \
+	$(OPTIONAL_SOUNDS)
 
 
 GTK_PREFIX=/usr
@@ -116,6 +129,18 @@ zip:
 	cp -f $(top_srcdir)/README $(INSTALLDIR_WITH_PREFIX)/.
 	cp -f $(top_srcdir)/COPYING $(INSTALLDIR_WITH_PREFIX)/.
 	cd $(INSTALLDIR_WITH_PREFIX) && zip -r $(ZIPFILE) *
+
+sdk:
+	rm -f $(SDK_ZIPFILE)
+	rm -rf $(INSTALLDIR)
+	mkdir -p $(INSTALLDIR)
+	make install DESTDIR=$(INSTALLDIR)
+# remove unwanted stuff (gtk interface)
+	cd $(INSTALLDIR_WITH_PREFIX) && rm -rf $(SDK_EXCLUDED)
+	make other-cherrypick
+	cp -f $(top_srcdir)/README $(INSTALLDIR_WITH_PREFIX)/.
+	cp -f $(top_srcdir)/COPYING $(INSTALLDIR_WITH_PREFIX)/.
+	cd $(INSTALLDIR_WITH_PREFIX) && zip -r $(SDK_ZIPFILE) *
 
 filelist: zip
 	cd $(INSTALLDIR_WITH_PREFIX) && \

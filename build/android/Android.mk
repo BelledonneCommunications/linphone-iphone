@@ -78,7 +78,7 @@ LOCAL_STATIC_LIBRARIES := \
 	libeXosip2 \
 	libosip2 \
 	libgsm
-
+#	libmsilbc \
 LOCAL_MODULE_CLASS = SHARED_LIBRARIES
 
 include $(BUILD_SHARED_LIBRARY)

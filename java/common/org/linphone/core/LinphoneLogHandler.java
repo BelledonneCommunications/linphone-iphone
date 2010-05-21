@@ -1,5 +1,5 @@
 /*
-LinphoneCoreException.java
+LinphoneLogHandler.java
 Copyright (C) 2010  Belledonne Communications, Grenoble, France
 
 This program is free software; you can redistribute it and/or
@@ -18,31 +18,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package org.linphone.core;
 
-
-public class LinphoneCoreException extends Exception {
-	Throwable mE;
-	public LinphoneCoreException() {
-		super();
-	}
-
-	public LinphoneCoreException(String detailMessage) {
-		super(detailMessage);
-
-	}
-	public LinphoneCoreException(Throwable e) {
-		this(e.getClass().getName()+" "+ e.getMessage());
-		mE = e;
-	}
-
-	public LinphoneCoreException(String detailMessage,Throwable e) {
-		super(detailMessage + "caused by ["+e.getClass().getName()+" "+ e.getMessage()+"]");
-		mE = e;
-	}
-
-	public void printStackTrace() {
-		super.printStackTrace();
-		if (mE!=null) mE.printStackTrace();
-	}
+public interface LinphoneLogHandler {
+	public static final int Fatal=1<<4;
+	public static final int Error=1<<3|Fatal;
+	public static final int Warn=1<<2|Error;
+	public static final int Info=1<<1|Warn;
+	public static final int Debug=1|Info;
 	
-
+	public void log(String loggerName, int level, String levelString, String msg, Throwable e);
 }

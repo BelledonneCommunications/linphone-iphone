@@ -223,6 +223,23 @@ char * linphone_call_log_to_str(LinphoneCallLog *cl){
 	return tmp;
 }
 
+/**
+ * Returns RTP statistics computed locally regarding the call.
+ * 
+**/
+const rtp_stats_t *linphone_call_log_get_local_stats(const LinphoneCallLog *cl){
+	return &cl->local_stats;
+}
+
+/**
+ * Returns RTP statistics computed by remote end and sent back via RTCP.
+ *
+ * @note Not implemented yet.
+**/
+const rtp_stats_t *linphone_call_log_get_remote_stats(const LinphoneCallLog *cl){
+	return &cl->remote_stats;
+}
+
 void linphone_call_log_set_user_pointer(LinphoneCallLog *cl, void *up){
 	cl->user_pointer=up;
 }
@@ -536,6 +553,8 @@ static void sip_config_read(LinphoneCore *lc)
 		lp_config_get_int(lc->config,"sip","register_only_when_network_is_up",1);
 	lc->sip_conf.ping_with_options=lp_config_get_int(lc->config,"sip","ping_with_options",1);
 	lc->sip_conf.auto_net_state_mon=lp_config_get_int(lc->config,"sip","auto_net_state_mon",1);
+	lc->sip_conf.keepalive_period=lp_config_get_int(lc->config,"sip","keepalive_period",10000);
+	sal_set_keepalive_period(lc->sal,lc->sip_conf.keepalive_period);
 }
 
 static void rtp_config_read(LinphoneCore *lc)
@@ -2201,11 +2220,16 @@ void linphone_core_start_media_streams(LinphoneCore *lc, LinphoneCall *call){
 		call->state=LinphoneCallAVRunning;
 }
 
+static void linphone_call_log_fill_stats(LinphoneCallLog *log, AudioStream *st){
+	audio_stream_get_local_rtp_stats (st,&log->local_stats);
+}
+
 void linphone_core_stop_media_streams(LinphoneCore *lc, LinphoneCall *call){
 #ifdef PRINTF_DEBUG
 	printf("%s(%d)\n",__FUNCTION__,__LINE__);
 #endif
 	if (lc->audiostream!=NULL) {
+		linphone_call_log_fill_stats (call->log,lc->audiostream);
 		audio_stream_stop(lc->audiostream);
 		lc->audiostream=NULL;
 	}
@@ -3437,6 +3461,28 @@ void linphone_core_set_audio_transports(LinphoneCore *lc, RtpTransport *rtp, Rtp
 	lc->a_rtcp=rtcp;
 }
 
+/**
+ * Retrieve RTP statistics regarding current call.
+ * @param local RTP statistics computed locally.
+ * @param remote RTP statistics computed by far end (obtained via RTCP feedback).
+ *
+ * @note Remote RTP statistics is not implemented yet.
+ *
+ * @returns 0 or -1 if no call is running.
+**/
+ 
+int linphone_core_get_current_call_stats(LinphoneCore *lc, rtp_stats_t *local, rtp_stats_t *remote){
+	LinphoneCall *call=linphone_core_get_current_call (lc);
+	if (call!=NULL){
+		if (lc->audiostream!=NULL){
+			memset(remote,0,sizeof(*remote));
+			audio_stream_get_local_rtp_stats (lc->audiostream,local);
+			return 0;
+		}
+	}
+	return -1;
+}
+
 void net_config_uninit(LinphoneCore *lc)
 {
 	net_config_t *config=&lc->net_conf;
@@ -3469,6 +3515,7 @@ void sip_config_uninit(LinphoneCore *lc)
 	lp_config_set_int(lc->config,"sip","use_rfc2833",config->use_rfc2833);
 	lp_config_set_int(lc->config,"sip","use_ipv6",config->ipv6_enabled);
 	lp_config_set_int(lc->config,"sip","register_only_when_network_is_up",config->register_only_when_network_is_up);
+
 
 	lp_config_set_int(lc->config,"sip","default_proxy",linphone_core_get_default_proxy(lc,NULL));
 	
@@ -3565,6 +3612,9 @@ void codecs_config_uninit(LinphoneCore *lc)
 		lp_config_set_int(lc->config,key,"enabled",linphone_core_payload_type_enabled(lc,pt));
 		index++;
 	}
+	sprintf(key,"audio_codec_%i",index);
+	lp_config_clean_section (lc->config,key);
+	
 	index=0;
 	for(node=config->video_codecs;node!=NULL;node=ms_list_next(node)){
 		pt=(PayloadType*)(node->data);
@@ -3575,6 +3625,9 @@ void codecs_config_uninit(LinphoneCore *lc)
 		lp_config_set_string(lc->config,key,"recv_fmtp",pt->recv_fmtp);
 		index++;
 	}
+	sprintf(key,"video_codec_%i",index);
+	lp_config_clean_section (lc->config,key);
+	
 	ms_list_free(lc->codecs_conf.audio_codecs);
 	ms_list_free(lc->codecs_conf.video_codecs);
 }
