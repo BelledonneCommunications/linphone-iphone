@@ -27,6 +27,10 @@
 #import "MoreViewController.h"
 
 extern void ms_au_register_card();
+void linphone_iphone_keepAliveHandler () { 
+	ms_message("keepalive handler invoked");
+};
+
 //generic log handler for debug version
 void linphone_iphone_log_handler(int lev, const char *fmt, va_list args){
 	NSString* format = [[NSString alloc] initWithCString:fmt encoding:[NSString defaultCStringEncoding]];
@@ -91,6 +95,20 @@ LinphoneCoreVTable linphonec_vtable = {
 @synthesize myPeoplePickerController;
 @synthesize myPhoneViewController;
 
+- (void)applicationDidEnterBackground:(UIApplication *)application {
+	
+	
+	if (backgroundSupported) {
+		if ([[UIApplication sharedApplication] setKeepAliveTimeout:(NSTimeInterval)300 
+														   handler:^{ms_warning("Handler invoked");}]) {
+			ms_warning("keepalive handler succesfully registered");
+		} else {
+			ms_warning("keepalive handler cannot be registered");
+		}
+		
+	}		
+	
+}
 
 
 - (void)applicationDidFinishLaunching:(UIApplication *)application {    
@@ -101,6 +119,10 @@ LinphoneCoreVTable linphonec_vtable = {
 #define HISTORY_TAB_INDEX 0
 #define MORE_TAB_INDEX 3
 	
+	UIDevice* device = [UIDevice currentDevice];
+	backgroundSupported = false;
+	if ([device respondsToSelector:@selector(isMultitaskingSupported)])
+		backgroundSupported = device.multitaskingSupported;
 	
 	myPhoneViewController = (PhoneViewController*) [myTabBarController.viewControllers objectAtIndex: DIALER_TAB_INDEX];
 	
@@ -313,6 +335,7 @@ extern void libmsilbc_init();
 		LinphoneAddress* addr=linphone_address_new(linphone_proxy_config_get_addr(proxyCfg));
 		proxyReachability=SCNetworkReachabilityCreateWithName(nil, linphone_address_get_domain(addr));
 		
+
 		
 		[self doRegister];
 	} else if (configCheckDisable == false) { 		
@@ -475,4 +498,5 @@ bool networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	SCNetworkReachabilityGetFlags (proxyReachability,&reachabilityFlags);
 	networkReachabilityCallBack(proxyReachability,reachabilityFlags,self); 
 }
+
 @end

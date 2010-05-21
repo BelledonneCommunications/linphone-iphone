@@ -33,5 +33,10 @@
 		<string>wifi</string>
 		<string>microphone</string>
 	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+		<string>voip</string>
+	</array>
 </dict>
 </plist>

@@ -712,7 +712,7 @@
 				LINK_WITH_STANDARD_LIBRARIES = YES;
 				PREBINDING = NO;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "09801E17-63DB-47FD-A203-166EDD1E55A1";
-				SDKROOT = iphoneos3.1;
+				SDKROOT = iphoneos3.2;
 			};
 			name = Distribution;
 		};
@@ -753,7 +753,7 @@
 				LIBRARY_SEARCH_PATHS = "";
 				LINK_WITH_STANDARD_LIBRARIES = YES;
 				PREBINDING = NO;
-				SDKROOT = iphoneos3.1;
+				SDKROOT = iphoneos3.2;
 			};
 			name = Debug;
 		};
@@ -766,7 +766,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				PREBINDING = NO;
-				SDKROOT = iphoneos3.1;
+				SDKROOT = iphoneos3.2;
 			};
 			name = Release;
 		};
