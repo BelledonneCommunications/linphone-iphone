@@ -72,7 +72,7 @@ void linphone_gtk_show_idle_view(void){
 
 void display_peer_name_in_label(GtkWidget *label, const char *uri){
 	LinphoneAddress *from;
-	const char *displayname=NULL;
+	char *displayname=NULL;
 	char *id=NULL;
 	char *uri_label;
 
@@ -83,18 +83,15 @@ void display_peer_name_in_label(GtkWidget *label, const char *uri){
 
 	from=linphone_address_new(uri);
 	if (from!=NULL){
-		
-		if (linphone_address_get_display_name(from))
-			displayname=linphone_address_get_display_name(from);
-
+		displayname=linphone_address_get_display_name_unquoted (from);
 		id=linphone_address_as_string_uri_only(from);
-
 	}else id=ms_strdup(uri);
 
-	if (displayname!=NULL)
+	if (displayname!=NULL){
 		uri_label=g_markup_printf_escaped("<span size=\"large\">%s</span>\n<i>%s</i>", 
 			displayname,id);
-	else
+		ms_free(displayname);
+	}else
 		uri_label=g_markup_printf_escaped("<span size=\"large\"><i>%s</i></span>\n",id);
 	gtk_label_set_markup(GTK_LABEL(label),uri_label);
 	ms_free(id);

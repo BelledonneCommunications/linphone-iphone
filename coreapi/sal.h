@@ -45,6 +45,7 @@ SalAddress * sal_address_new(const char *uri);
 SalAddress * sal_address_clone(const SalAddress *addr);
 const char *sal_address_get_scheme(const SalAddress *addr);
 const char *sal_address_get_display_name(const SalAddress* addr);
+char *sal_address_get_display_name_unquoted(const SalAddress *addr);
 const char *sal_address_get_username(const SalAddress *addr);
 const char *sal_address_get_domain(const SalAddress *addr);
 void sal_address_set_display_name(SalAddress *addr, const char *display_name);
