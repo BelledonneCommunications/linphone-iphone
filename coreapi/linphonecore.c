@@ -1359,9 +1359,22 @@ static void display_bandwidth(RtpSession *as, RtpSession *vs){
 	(vs!=NULL) ? (rtp_session_compute_send_bandwidth(vs)*1e-3) : 0);
 }
 
-static void linphone_core_disconnected(LinphoneCore *lc){
-	lc->vtable.display_warning(lc,_("Remote end seems to have disconnected, the call is going to be closed."));
-	linphone_core_terminate_call(lc,NULL);
+static void linphone_core_disconnected(LinphoneCore *lc, LinphoneCall *call){
+	char temp[256];
+	char *from;
+	if(call)
+		from = linphone_call_get_remote_address_as_string(call);
+	if(from)
+	{
+		snprintf(temp,sizeof(temp),"Remote end %s seems to have disconnected, the call is going to be closed.",from);
+		free(from);
+	}		
+	else
+	{
+		snprintf(temp,sizeof(temp),"Remote end seems to have disconnected, the call is going to be closed.");
+	}
+	lc->vtable.display_warning(lc,temp);
+	linphone_core_terminate_call(lc,call);//TODO failure ??
 }
 
 static void monitor_network_state(LinphoneCore *lc, time_t curtime){
@@ -1477,6 +1490,8 @@ static void linphone_core_do_plugin_tasks(LinphoneCore *lc){
  * serialized with a mutex.
 **/
 void linphone_core_iterate(LinphoneCore *lc){
+	MSList *the_call;
+	LinphoneCall *call;
 	int disconnect_timeout = linphone_core_get_nortp_timeout(lc);
 	time_t curtime=time(NULL);
 	int elapsed;
@@ -1499,21 +1514,35 @@ void linphone_core_iterate(LinphoneCore *lc){
 	if (lc->auto_net_state_mon) monitor_network_state(lc,curtime);
 
 	proxy_update(lc);
-	LinphoneCall *call = linphone_core_get_current_call(lc);
-	if(call){
+
+	//we have to iterate for each call
+	the_call = lc->calls;
+	while(the_call != NULL)
+	{
+		call = (LinphoneCall *)the_call->data;
 		if (call->state==LinphoneCallPreEstablishing && (curtime-call->start_time>=2)){
-			/*start the call even if the OPTIONS reply did not arrive*/
-			linphone_core_start_invite(lc,call,NULL);
-		}
-		if (call->dir==LinphoneCallIncoming && call->state==LinphoneCallRinging){
-			elapsed=curtime-call->start_time;
-			ms_message("incoming call ringing for %i seconds",elapsed);
-			if (elapsed>lc->sip_conf.inc_timeout){
-				call->log->status=LinphoneCallMissed;
-				linphone_core_terminate_call(lc,NULL);
+				/*start the call even if the OPTIONS reply did not arrive*/
+				linphone_core_start_invite(lc,call,NULL);
 			}
-		}else if (call->state==LinphoneCallAVRunning){
-			if (one_second_elapsed){
+			if (call->dir==LinphoneCallIncoming && call->state==LinphoneCallRinging){
+				elapsed=curtime-call->start_time;
+				ms_message("incoming call ringing for %i seconds",elapsed);
+				if (elapsed>lc->sip_conf.inc_timeout){
+					call->log->status=LinphoneCallMissed;
+					linphone_core_terminate_call(lc,call);
+				}
+			}
+
+		the_call = the_call->next;
+	}//end while
+	//and consider the current call
+	call = linphone_core_get_current_call(lc);
+	if(call)
+	{
+		if (call->state==LinphoneCallAVRunning)
+		{
+			if (one_second_elapsed)
+			{
 				RtpSession *as=NULL,*vs=NULL;
 				lc->prevtime=curtime;
 				if (lc->audiostream!=NULL)
@@ -1541,7 +1570,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 			toggle_video_preview(lc,FALSE);
 	}
 	if (disconnected)
-		linphone_core_disconnected(lc);
+		linphone_core_disconnected(lc,call);
 
 	linphone_core_do_plugin_tasks(lc);
 
@@ -1749,7 +1778,9 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, LinphonePro
 		ms_free(contact);
 	}
 	call->state=LinphoneCallInit;
-	linphone_core_init_media_streams(lc,call);
+	//TODO : should probably not be done here
+	if(!	linphone_core_in_call(lc) )
+		linphone_core_init_media_streams(lc,call);
 	if (!lc->sip_conf.sdp_200_ack){	
 		call->media_pending=TRUE;
 		sal_call_set_local_media_description(call->op,call->localdesc);
@@ -1852,7 +1883,6 @@ LinphoneCall * linphone_core_invite_address(LinphoneCore *lc, const LinphoneAddr
 		linphone_call_unref(call);
 		return NULL;
 	}
-	linphone_core_set_as_current_call(lc,call);
 	if (dest_proxy!=NULL || lc->sip_conf.ping_with_options==FALSE){
 		err=linphone_core_start_invite(lc,call,dest_proxy);
 	}else{
@@ -1904,6 +1934,9 @@ bool_t linphone_core_inc_invite_pending(LinphoneCore*lc){
 }
 
 void linphone_core_init_media_streams(LinphoneCore *lc, LinphoneCall *call){
+#ifdef PRINTF_DEBUG
+	printf("%s(%d)\n",__FUNCTION__,__LINE__);
+#endif
 	SalMediaDescription *md=call->localdesc;
 	lc->audiostream=audio_stream_new(md->streams[0].port,linphone_core_ipv6_enabled(lc));
 	if (linphone_core_echo_limiter_enabled(lc)){
@@ -2064,10 +2097,22 @@ static RtpProfile *make_profile(LinphoneCore *lc, const SalMediaDescription *md,
 }
 
 void linphone_core_start_media_streams(LinphoneCore *lc, LinphoneCall *call){
+#ifdef PRINTF_DEBUG
+	printf("%s(%d)\n",__FUNCTION__,__LINE__);
+#endif
 	LinphoneAddress *me=linphone_core_get_primary_contact_parsed(lc);
 	const char *tool="linphone-" LINPHONE_VERSION;
 	char *cname;
 	int used_pt=-1;
+	if(lc->audiostream == NULL)
+	{
+		ms_warning("init media stream is needed before starting");
+		linphone_core_init_media_streams(lc,call);
+		/*
+		 * example of problem :
+		 * 2 incomings calls, you answer and pause one, afterward if you try to answer the other call you will get SEGFAULT
+		 */
+	}
 	/* adjust rtp jitter compensation. It must be at least the latency of the sound card */
 	int jitt_comp=MAX(lc->sound_conf.latency,lc->rtp_conf.audio_jitt_comp);
 
@@ -2157,6 +2202,9 @@ void linphone_core_start_media_streams(LinphoneCore *lc, LinphoneCall *call){
 }
 
 void linphone_core_stop_media_streams(LinphoneCore *lc, LinphoneCall *call){
+#ifdef PRINTF_DEBUG
+	printf("%s(%d)\n",__FUNCTION__,__LINE__);
+#endif
 	if (lc->audiostream!=NULL) {
 		audio_stream_stop(lc->audiostream);
 		lc->audiostream=NULL;
@@ -2297,13 +2345,10 @@ int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *the_call)
  * @param lc The LinphoneCore
 **/
 int linphone_core_terminate_all_calls(LinphoneCore *lc){
-	MSList *calls;
-
-	calls = lc->calls;
-	while(calls->next != NULL)
+	while(lc->calls)
 	{
-		linphone_core_terminate_call(lc,(LinphoneCall *)calls->data);
-		calls = calls->next;
+		LinphoneCall *the_call = lc->calls->data;
+		linphone_core_terminate_call(lc,the_call);
 	}
 	ms_list_free(lc->calls);
 	return -1;
@@ -2370,10 +2415,15 @@ int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *the_call)
 		ms_error("The call asked to be paused was not the current on\n");
 		return -3;
 	}
-	sal_call_hold(call->op,TRUE);
+	if(sal_call_hold(call->op,TRUE) != 0)
+	{
+		lc->vtable.display_warning(lc,_("Could not pause the call"));
+	}
 	call->state = LinphoneCallPaused;
 	linphone_core_unset_the_current_call(lc);
 	linphone_core_stop_media_streams(lc,call);
+	//have to be done ... because if another call is incoming before this pause, you will get sound on the end point paused
+	linphone_core_init_media_streams(lc,call);
 	lc->vtable.display_status(lc,_("Pause the current call"));
 	return 0;
 }
@@ -2407,13 +2457,21 @@ int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *the_call)
 			return -2;
 		}
 	}
+	if(call->state ==  LinphoneCallInit || call->state ==  LinphoneCallPreEstablishing || call->state ==  LinphoneCallRinging )
+	{
+		ms_warning("we cannot resume a call when the communication is not established");
+		return -3;
+	}
 	if(linphone_core_get_current_call(lc) != NULL)
 	{
 		ms_error("There is already a call in process pause or stop it first\n");
-		return -3;
+		return -4;
 	}
 	linphone_core_init_media_streams(lc,call);
-	sal_call_hold(call->op,FALSE);
+	if(sal_call_hold(call->op,FALSE) != 0)
+	{
+		lc->vtable.display_warning(lc,_("Could not resume the call"));
+	}
 	call->state = LinphoneCallAVRunning;
 	linphone_core_set_as_current_call(lc,call);
 	linphone_core_start_media_streams(lc,call);
@@ -3544,18 +3602,18 @@ LpConfig *linphone_core_get_config(LinphoneCore *lc){
 
 static void linphone_core_uninit(LinphoneCore *lc)
 {
-	if(linphone_core_get_calls_nb(lc)){
-		int i;
-		linphone_core_terminate_all_calls(lc);
-		for(i=0;i<10;++i){
-#ifndef WIN32
-			usleep(50000);
+	while(lc->calls)
+	{
+		LinphoneCall *the_call = lc->calls->data;
+		linphone_core_terminate_call(lc,the_call);
+		linphone_core_iterate(lc);
+#ifdef WIN32
+		Sleep(50000);
 #else
-			Sleep(50);
+		usleep(50000);
 #endif
-			linphone_core_iterate(lc);
-		}
 	}
+
 	if (lc->friends)
 		ms_list_for_each(lc->friends,(void (*)(void *))linphone_friend_close_subscriptions);
 	gstate_new_state(lc, GSTATE_POWER_SHUTDOWN, NULL);

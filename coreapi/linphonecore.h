@@ -408,6 +408,10 @@ typedef void (*PausedReceivedCb)(struct _LinphoneCore *lc, LinphoneCall *call);
 /** Callback prototype */
 typedef void (*ResumedReceivedCb)(struct _LinphoneCore *lc, LinphoneCall *call);
 /** Callback prototype */
+typedef void (*AckPausedReceivedCb)(struct _LinphoneCore *lc, LinphoneCall *call);
+/** Callback prototype */
+typedef void (*AckResumedReceivedCb)(struct _LinphoneCore *lc, LinphoneCall *call);
+/** Callback prototype */
 typedef void (*DisplayStatusCb)(struct _LinphoneCore *lc, const char *message);
 /** Callback prototype */
 typedef void (*DisplayMessageCb)(struct _LinphoneCore *lc, const char *message);
@@ -450,8 +454,10 @@ typedef struct _LinphoneVTable
 	RingingReceivedCb ringing_recv; /**< Notify that the distant phone is ringing*/
 	ConnectedReceivedCb connected_recv; /**< Notify that the distant phone answered the call*/
 	FailureReceivedCb failure_recv; /**< Notify that the call failed*/
-	PausedReceivedCb paused_recv; /**< Notify that the call failed*/
-	ResumedReceivedCb resumed_recv; /**< Notify that the call failed*/
+	PausedReceivedCb paused_recv; /**< Notify that the call has been paused*/
+	ResumedReceivedCb resumed_recv; /**< Notify that the call has been resumed*/
+	AckPausedReceivedCb ack_paused_recv;/**< Notify that the previous command pause sent to the call has been acknowledge*/
+	AckResumedReceivedCb ack_resumed_recv;/**< Notify that the previous command resumed sent to the call has been acknowledge*/	
 	NotifyPresenceReceivedCb notify_presence_recv; /**< Notify received presence events*/
 	NewUnknownSubscriberCb new_unknown_subscriber; /**< Notify about unknown subscriber */
 	AuthInfoRequested auth_info_requested; /**< Ask the application some authentication information */

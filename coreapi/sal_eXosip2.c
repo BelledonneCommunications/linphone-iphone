@@ -1427,6 +1427,9 @@ static void other_request_reply(Sal *sal,eXosip_event_t *ev){
 }
 
 static bool_t process_event(Sal *sal, eXosip_event_t *ev){
+#ifdef PRINTF_DEBUG
+	printf("EVENT (%d)\n",ev->type);
+#endif
 	ms_message("linphone process event get a message %d\n",ev->type);
 	switch(ev->type){
 		case EXOSIP_CALL_ANSWERED:
@@ -1716,7 +1719,10 @@ int sal_call_hold(SalOp *h, bool_t holdon)
 	int err=0;
 
 	osip_message_t *reinvite;
-	eXosip_call_build_request(h->did,"INVITE",&reinvite);
+	if(eXosip_call_build_request(h->did,"INVITE",&reinvite) != OSIP_SUCCESS)
+		return -1;
+	if(reinvite==NULL)
+		return -2;
 	osip_message_set_subject(reinvite,osip_strdup("Phone Call Hold"));
 	osip_message_set_allow(reinvite, "INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, NOTIFY, MESSAGE, SUBSCRIBE, INFO");
 	if (h->base.root->session_expires!=0){

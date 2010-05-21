@@ -123,6 +123,8 @@ static void linphonec_display_url (LinphoneCore * lc, const char *something, con
 static void linphonec_display_warning (LinphoneCore * lc, const char *something);
 static void stub () {}
 static void linphonec_notify_received(LinphoneCore *lc,const char *from,const char *msg);
+static void linphonec_ack_paused_received(LinphoneCore *lc, LinphoneCall *call);
+static void linphonec_ack_resumed_received(LinphoneCore *lc, LinphoneCall *call);
 static void linphonec_notify_presence_received(LinphoneCore *lc,LinphoneFriend *fid);
 static void linphonec_new_unknown_subscriber(LinphoneCore *lc,
 		LinphoneFriend *lf, const char *url);
@@ -185,6 +187,8 @@ LinphoneCoreVTable linphonec_vtable
 	.paused_recv = linphonec_paused_received,
 	.resumed_recv = linphonec_resumed_received,
 	.notify_recv = linphonec_notify_received,
+	.ack_paused_recv = linphonec_ack_paused_received,
+	.ack_resumed_recv = linphonec_ack_resumed_received,
 	.notify_presence_recv = linphonec_notify_presence_received,
 	.new_unknown_subscriber = linphonec_new_unknown_subscriber,
 	.auth_info_requested = linphonec_prompt_for_auth,
@@ -341,6 +345,34 @@ linphonec_notify_received(LinphoneCore *lc,const char *from,const char *msg)
 	{
 		printf("The distant SIP end point get the refer we can close the call\n");
 		linphonec_parse_command_line(linphonec, "terminate");
+	}
+}
+
+/*
+ * Linphone core callback
+ */
+static void
+linphonec_ack_paused_received(LinphoneCore *lc, LinphoneCall *call)
+{
+	char *from=linphone_call_get_remote_address_as_string(call);
+	if(from)
+	{
+		linphonec_out("the previous pause sent to %s has been acknowledged\n",from);
+		ms_free(from);
+	}
+}
+
+/*
+ * Linphone core callback
+ */
+static void
+linphonec_ack_resumed_received(LinphoneCore *lc, LinphoneCall *call)
+{
+	char *from=linphone_call_get_remote_address_as_string(call);
+	if(from)
+	{
+		linphonec_out("the previous resume sent to %s has been acknowledged\n",from);
+		ms_free(from);
 	}
 }
 

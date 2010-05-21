@@ -37,6 +37,10 @@ static void linphone_connect_incoming(LinphoneCore *lc, LinphoneCall *call){
 		ring_stop(lc->ringstream);
 		lc->ringstream=NULL;
 	}
+	if(!linphone_core_in_call(lc))
+	{
+		linphone_core_set_as_current_call(lc,call);
+	}
 	if(call == linphone_core_get_current_call(lc))
 		linphone_core_start_media_streams(lc,call);
 }
@@ -114,8 +118,15 @@ static void call_received(SalOp *h){
 
 	/* play the ring */
 	if (lc->sound_conf.ring_sndcard!=NULL && !linphone_core_in_call(lc)){
-		ms_message("Starting local ring...");
-		lc->ringstream=ring_start(lc->sound_conf.local_ring,2000,lc->sound_conf.ring_sndcard);
+		if(lc->ringstream==NULL)
+		{
+			ms_message("Starting local ring...");
+			lc->ringstream=ring_start(lc->sound_conf.local_ring,2000,lc->sound_conf.ring_sndcard);
+		}
+		else
+		{
+			ms_message("the local ring is already started");
+		}
 	}
 	call->state=LinphoneCallRinging;
 	sal_call_notify_ringing(h);
@@ -166,6 +177,11 @@ static void call_ringing(SalOp *h){
 	call->state=LinphoneCallRinging;
 }
 
+/*
+ * could be reach :
+ *  - when the call is accepted
+ *  - when a request is accepted (pause, resume)
+ */
 static void call_accepted(SalOp *op){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
@@ -174,7 +190,10 @@ static void call_accepted(SalOp *op){
 		return ;
 	}
 	if (call->state==LinphoneCallAVRunning){
-		return ; /*already accepted*/
+		ms_message("GET ACK of resume\n");
+		if(lc->vtable.ack_resumed_recv)
+			lc->vtable.ack_resumed_recv(lc,call);
+		return ; //already accepted
 	}
 	if ((lc->audiostream!=NULL) && (lc->audiostream->ticker!=NULL)){
 		/*case where we accepted early media */
@@ -192,8 +211,18 @@ static void call_accepted(SalOp *op){
 		call->media_pending=FALSE;
 	}
 	if (call->resultdesc && !sal_media_description_empty(call->resultdesc)){
-		gstate_new_state(lc, GSTATE_CALL_OUT_CONNECTED, NULL);
-		linphone_connect_incoming(lc,call);
+		//if we initiate a pause
+		if(call->state == LinphoneCallPaused)
+		{
+			ms_message("GET ACK of pause\n");
+			if(lc->vtable.ack_paused_recv)
+				lc->vtable.ack_paused_recv(lc,call);
+		}//if there is an accepted incoming call
+		else
+		{
+			gstate_new_state(lc, GSTATE_CALL_OUT_CONNECTED, NULL);
+			linphone_connect_incoming(lc,call);
+		}		
 	}else{
 		/*send a bye*/
 		ms_error("Incompatible SDP offer received in 200Ok, need to abort the call");
@@ -289,7 +318,8 @@ static void call_terminated(SalOp *op, const char *from){
 		return;
 	}
 	ms_message("Current call terminated...");
-	if (lc->ringstream!=NULL) {
+	//we stop the call only if we have this current call or if we are in call
+	if (lc->ringstream!=NULL && ( (ms_list_size(lc->calls)  == 1) || linphone_core_in_call(lc) )) {
 		ring_stop(lc->ringstream);
 		lc->ringstream=NULL;
 	}
@@ -500,6 +530,10 @@ static void ping_reply(SalOp *op){
 		if (call->state==LinphoneCallPreEstablishing){
 			linphone_core_start_invite(call->core,call,NULL);
 		}
+	}
+	else
+	{
+		ms_warning("ping reply without call attached...");
 	}
 }
 
