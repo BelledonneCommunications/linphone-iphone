@@ -124,6 +124,7 @@ static void call_ringing(SalOp *h){
 		if (lc->sound_conf.play_sndcard!=NULL){
 			ms_message("Remote ringing...");
 			lc->ringstream=ring_start(lc->sound_conf.remote_ring,2000,lc->sound_conf.play_sndcard);
+			gstate_new_state(lc, GSTATE_CALL_OUT_RINGING, NULL);
 		}
 	}else{
 		/*accept early media */
@@ -137,7 +138,7 @@ static void call_ringing(SalOp *h){
 		if (lc->vtable.show) lc->vtable.show(lc);
 		if (lc->vtable.display_status) 
 			lc->vtable.display_status(lc,_("Early media."));
-		gstate_new_state(lc, GSTATE_CALL_OUT_CONNECTED, NULL);
+		gstate_new_state(lc, GSTATE_CALL_OUT_RINGING, NULL);
 		if (lc->ringstream!=NULL){
 			ring_stop(lc->ringstream);
 			lc->ringstream=NULL;
@@ -270,7 +271,7 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 	/*char *retrymsg=_("%s. Retry after %i minute(s).");*/
 	char *msg600=_("User does not want to be disturbed.");
 	char *msg603=_("Call declined.");
-	char *msg=NULL;
+	char *msg=(char*)details;
 	LinphoneCall *call=lc->call;
 
 	if (sal_op_get_user_pointer(op)!=lc->call){
