@@ -379,6 +379,23 @@ char * linphone_call_log_to_str(LinphoneCallLog *cl){
 	return tmp;
 }
 
+/**
+ * Returns RTP statistics computed locally regarding the call.
+ * 
+**/
+const rtp_stats_t *linphone_call_log_get_local_stats(const LinphoneCallLog *cl){
+	return &cl->local_stats;
+}
+
+/**
+ * Returns RTP statistics computed by remote end and sent back via RTCP.
+ *
+ * @note Not implemented yet.
+**/
+const rtp_stats_t *linphone_call_log_get_remote_stats(const LinphoneCallLog *cl){
+	return &cl->remote_stats;
+}
+
 void linphone_call_log_set_user_pointer(LinphoneCallLog *cl, void *up){
 	cl->user_pointer=up;
 }
@@ -2299,8 +2316,13 @@ void linphone_core_start_media_streams(LinphoneCore *lc, LinphoneCall *call){
 		lc->call->state=LCStateAVRunning;
 }
 
+static void linphone_call_log_fill_stats(LinphoneCallLog *log, AudioStream *st){
+	audio_stream_get_local_rtp_stats (st,&log->local_stats);
+}
+
 void linphone_core_stop_media_streams(LinphoneCore *lc, LinphoneCall *call){
 	if (lc->audiostream!=NULL) {
+		linphone_call_log_fill_stats (call->log,lc->audiostream);
 		audio_stream_stop(lc->audiostream);
 		lc->audiostream=NULL;
 	}
@@ -3352,6 +3374,28 @@ void linphone_core_stop_waiting(LinphoneCore *lc){
 void linphone_core_set_audio_transports(LinphoneCore *lc, RtpTransport *rtp, RtpTransport *rtcp){
 	lc->a_rtp=rtp;
 	lc->a_rtcp=rtcp;
+}
+
+/**
+ * Retrieve RTP statistics regarding current call.
+ * @param local RTP statistics computed locally.
+ * @param remote RTP statistics computed by far end (obtained via RTCP feedback).
+ *
+ * @note Remote RTP statistics is not implemented yet.
+ *
+ * @returns 0 or -1 if no call is running.
+**/
+ 
+int linphone_core_get_current_call_stats(LinphoneCore *lc, rtp_stats_t *local, rtp_stats_t *remote){
+	LinphoneCall *call=linphone_core_get_current_call (lc);
+	if (call!=NULL){
+		if (lc->audiostream!=NULL){
+			memset(remote,0,sizeof(*remote));
+			audio_stream_get_local_rtp_stats (lc->audiostream,local);
+			return 0;
+		}
+	}
+	return -1;
 }
 
 void net_config_uninit(LinphoneCore *lc)
