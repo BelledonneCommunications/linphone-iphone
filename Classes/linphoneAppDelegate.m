@@ -97,7 +97,9 @@ LinphoneCoreVTable linphonec_vtable = {
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
 	
-	
+#if __IPHONE_OS_VERSION_MIN_REQUIRED > 40000
+	<#statements#>
+
 	if (backgroundSupported) {
 		if ([[UIApplication sharedApplication] setKeepAliveTimeout:(NSTimeInterval)300 
 														   handler:^{ms_warning("Handler invoked");}]) {
@@ -106,7 +108,8 @@ LinphoneCoreVTable linphonec_vtable = {
 			ms_warning("keepalive handler cannot be registered");
 		}
 		
-	}		
+	}	
+#endif
 	
 }
 
@@ -122,7 +125,7 @@ LinphoneCoreVTable linphonec_vtable = {
 	UIDevice* device = [UIDevice currentDevice];
 	backgroundSupported = false;
 	if ([device respondsToSelector:@selector(isMultitaskingSupported)])
-		backgroundSupported = device.multitaskingSupported;
+		backgroundSupported = [device isMultitaskingSupported];
 	
 	myPhoneViewController = (PhoneViewController*) [myTabBarController.viewControllers objectAtIndex: DIALER_TAB_INDEX];
 	

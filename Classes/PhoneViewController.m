@@ -52,12 +52,16 @@
 
 @synthesize back;
 
--(void)setPhoneNumber:(NSString*)number {
-	[address setText:number];
+-(void) erasedisplayName {
 	if (displayName) {
 		[displayName release];
 		displayName=nil;
 	}
+}
+
+-(void)setPhoneNumber:(NSString*)number {
+	[address setText:number];
+	[self erasedisplayName];
 }
 -(void)setPhoneNumber:(NSString*)number withDisplayName:(NSString*) name {
 	[self setPhoneNumber:number];
@@ -278,6 +282,8 @@
 - (BOOL)textFieldShouldReturn:(UITextField *)theTextField {
     if (theTextField == address) {
         [address resignFirstResponder];
+		[self erasedisplayName]; //display name only relefvant 
+		
     }
     return YES;
 }

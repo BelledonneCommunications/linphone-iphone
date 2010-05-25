@@ -38,6 +38,10 @@
 		2245671D107699F700F10948 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2245671C107699F700F10948 /* Settings.bundle */; };
 		224567C2107B968500F10948 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 224567C1107B968500F10948 /* AVFoundation.framework */; };
 		225862E21140F5D700C5A737 /* linphone-3-250x130.png in Resources */ = {isa = PBXBuildFile; fileRef = 225862E11140F5D700C5A737 /* linphone-3-250x130.png */; };
+		225CB2EA11ABB51000628906 /* clavier-01-106px.png in Resources */ = {isa = PBXBuildFile; fileRef = 225CB2E811ABB51000628906 /* clavier-01-106px.png */; };
+		225CB2EB11ABB51000628906 /* clavier-01-108px.png in Resources */ = {isa = PBXBuildFile; fileRef = 225CB2E911ABB51000628906 /* clavier-01-108px.png */; };
+		225CB2EE11ABB65D00628906 /* clavier-01-160px.png in Resources */ = {isa = PBXBuildFile; fileRef = 225CB2ED11ABB65D00628906 /* clavier-01-160px.png */; };
+		225CB2FA11ABB76400628906 /* linphone-banner.png in Resources */ = {isa = PBXBuildFile; fileRef = 225CB2F911ABB76400628906 /* linphone-banner.png */; };
 		2264B6D211200342002C2C53 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2264B6D111200342002C2C53 /* SystemConfiguration.framework */; };
 		2273785E10A3703300526073 /* libmsiounit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2273785D10A3703300526073 /* libmsiounit.a */; };
 		2274401A106F31BD006EC466 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22744019106F31BD006EC466 /* CoreAudio.framework */; };
@@ -203,6 +207,10 @@
 		224567C1107B968500F10948 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		225862E11140F5D700C5A737 /* linphone-3-250x130.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "linphone-3-250x130.png"; path = "../liblinphone-sdk/apple-darwin/share/pixmaps/linphone/linphone-3-250x130.png"; sourceTree = SOURCE_ROOT; };
 		2258633C11410BAC00C5A737 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
+		225CB2E811ABB51000628906 /* clavier-01-106px.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "clavier-01-106px.png"; path = "Resources/clavier-01-106px.png"; sourceTree = "<group>"; };
+		225CB2E911ABB51000628906 /* clavier-01-108px.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "clavier-01-108px.png"; path = "Resources/clavier-01-108px.png"; sourceTree = "<group>"; };
+		225CB2ED11ABB65D00628906 /* clavier-01-160px.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "clavier-01-160px.png"; path = "Resources/clavier-01-160px.png"; sourceTree = "<group>"; };
+		225CB2F911ABB76400628906 /* linphone-banner.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "linphone-banner.png"; path = "../liblinphone-sdk/apple-darwin/share/pixmaps/linphone/linphone-banner.png"; sourceTree = SOURCE_ROOT; };
 		2264B6D111200342002C2C53 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		2273785D10A3703300526073 /* libmsiounit.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmsiounit.a; path = "../liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmsiounit.a"; sourceTree = SOURCE_ROOT; };
 		22744019106F31BD006EC466 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
@@ -536,6 +544,10 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				225CB2F911ABB76400628906 /* linphone-banner.png */,
+				225CB2ED11ABB65D00628906 /* clavier-01-160px.png */,
+				225CB2E811ABB51000628906 /* clavier-01-106px.png */,
+				225CB2E911ABB51000628906 /* clavier-01-108px.png */,
 				22226C1C11819B34000CA27B /* history-orange.png */,
 				22226C161181986A000CA27B /* contact-orange.png */,
 				22226C171181986A000CA27B /* dialer-orange.png */,
@@ -633,6 +645,10 @@
 				22226C181181986A000CA27B /* contact-orange.png in Resources */,
 				22226C191181986A000CA27B /* dialer-orange.png in Resources */,
 				22226C1D11819B34000CA27B /* history-orange.png in Resources */,
+				225CB2EA11ABB51000628906 /* clavier-01-106px.png in Resources */,
+				225CB2EB11ABB51000628906 /* clavier-01-108px.png in Resources */,
+				225CB2EE11ABB65D00628906 /* clavier-01-160px.png in Resources */,
+				225CB2FA11ABB76400628906 /* linphone-banner.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

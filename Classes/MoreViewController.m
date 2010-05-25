@@ -32,7 +32,7 @@
 //Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
     [super viewDidLoad];
-	[creditText setText: [NSString stringWithFormat:creditText.text,@"3.1.2"]];
+	[creditText setText: [NSString stringWithFormat:creditText.text,[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]]];
 	consoleViewController = [[ConsoleViewController alloc] initWithNibName:@"ConsoleViewController" bundle:[NSBundle mainBundle]];
 	isDebug =  [[NSUserDefaults standardUserDefaults] boolForKey:@"debugenable_preference"];  
 
