@@ -239,7 +239,11 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
 			sal_op_release(obj->op);
 		obj->op=sal_op_new(obj->lc->sal);
 		sal_op_set_user_pointer(obj->op,obj);
-		sal_register(obj->op,obj->reg_proxy,obj->reg_identity,obj->expires);
+		if (!sal_register(obj->op,obj->reg_proxy,obj->reg_identity,obj->expires)) {
+			gstate_new_state(obj->lc,GSTATE_REG_PENDING,NULL);
+		} else {
+			gstate_new_state(obj->lc,GSTATE_REG_FAILED,NULL);
+		}
 	}
 }
 

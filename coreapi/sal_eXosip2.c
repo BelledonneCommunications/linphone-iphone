@@ -994,10 +994,12 @@ static void authentication_ok(Sal *sal, eXosip_event_t *ev){
 static bool_t call_failure(Sal *sal, eXosip_event_t *ev){
 	SalOp *op;
 	int code=0;
+	char* computedReason=NULL;
 	const char *reason=NULL;
 	SalError error=SalErrorUnknown;
 	SalReason sr=SalReasonUnknown;
 	
+
 	op=(SalOp*)find_op(sal,ev);
 
 	if (op==NULL) {
@@ -1008,6 +1010,15 @@ static bool_t call_failure(Sal *sal, eXosip_event_t *ev){
 	if (ev->response){
 		code=osip_message_get_status_code(ev->response);
 		reason=osip_message_get_reason_phrase(ev->response);
+		osip_header_t *h=NULL;
+		if (!osip_message_header_get_byname(	ev->response
+											,"Reason"
+											,0
+											,&h)) {
+			computedReason = ms_strdup_printf("%s %s",reason,osip_header_get_value(h));
+			reason = computedReason;
+
+		}
 	}
 	switch(code)
 	{
@@ -1054,6 +1065,9 @@ static bool_t call_failure(Sal *sal, eXosip_event_t *ev){
 			}else error=SalErrorNoResponse;
 	}
 	sal->callbacks.call_failure(op,error,sr,reason);
+	if (computedReason != NULL){
+		ms_free(computedReason);
+	}
 	return TRUE;
 }
 

@@ -350,6 +350,7 @@ typedef enum _gstate {
   GSTATE_REG_NONE = 10,       /* initial state */
   GSTATE_REG_OK,
   GSTATE_REG_FAILED,
+  GSTATE_REG_PENDING, /* a registration request is ongoing*/
   /* states for GSTATE_GROUP_CALL */
   GSTATE_CALL_IDLE = 20,      /* initial state */
   GSTATE_CALL_OUT_INVITE,
@@ -358,7 +359,8 @@ typedef enum _gstate {
   GSTATE_CALL_IN_CONNECTED,
   GSTATE_CALL_END,
   GSTATE_CALL_ERROR,
-  GSTATE_INVALID
+  GSTATE_INVALID,
+  GSTATE_CALL_OUT_RINGING /*remote ringing*/
 } gstate_t;
 
 struct _LinphoneGeneralState {
