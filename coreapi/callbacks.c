@@ -229,7 +229,7 @@ static void call_updated(SalOp *op){
 	call->resultdesc=sal_call_get_final_media_description(op);
 	if (call->resultdesc){
 		sal_media_description_ref(call->resultdesc);
-		if (sal_media_description_empty(call->resultdesc)){
+		if (!sal_media_description_empty(call->resultdesc)){
 			linphone_connect_incoming(lc,call);
 		}
 	}
