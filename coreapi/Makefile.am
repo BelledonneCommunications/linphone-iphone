@@ -34,7 +34,8 @@ liblinphone_la_SOURCES=\
 	chat.c \
 	general_state.c \
 	sipsetup.c sipsetup.h \
-	siplogin.c
+	siplogin.c \
+	lsd.c linphonecore_utils.h
 
 
 liblinphone_la_LDFLAGS= -version-info $(LIBLINPHONE_SO_VERSION) -no-undefined

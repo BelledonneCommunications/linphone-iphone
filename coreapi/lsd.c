@@ -24,7 +24,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "linphonecore_utils.h"
 #include "mediastreamer2/mssndcard.h"
-#include "mediastreamer2/msvolume.h"
+#include "mediastreamer2/msaudiomixer.h"
+#include "mediastreamer2/mschanadapter.h"
+#include "mediastreamer2/msfileplayer.h"
+
 
 
 #define MAX_BRANCHES 10
@@ -35,10 +38,9 @@ struct _LsdPlayer{
 	MSFilter *player;
 	MSFilter *rateconv;
 	MSFilter *chanadapter;
-	MSFilter *volumectl;
 	LsdEndOfPlayCallback eop_cb;
+	int mixer_pin;
 	void *user_data;
-	bool_t loopmode;
 };
 
 struct _LinphoneSoundDaemon {
@@ -49,7 +51,6 @@ struct _LinphoneSoundDaemon {
 	LsdPlayer branches[MAX_BRANCHES];
 };
 
-
 LsdPlayer *linphone_sound_daemon_get_player(LinphoneSoundDaemon *obj){
 	int i;
 	for(i=0;i<MAX_BRANCHES;++i){
@@ -58,6 +59,7 @@ LsdPlayer *linphone_sound_daemon_get_player(LinphoneSoundDaemon *obj){
 		int state;
 		ms_filter_call_method(p,MS_PLAYER_GET_STATE,&state);
 		if (state==MSPlayerClosed){
+			lsd_player_set_gain(b,1);
 			return b;
 		}
 	}
@@ -67,12 +69,10 @@ LsdPlayer *linphone_sound_daemon_get_player(LinphoneSoundDaemon *obj){
 
 void linphone_sound_daemon_release_player(LinphoneSoundDaemon *obj, LsdPlayer * player){
 	int state;
-	float gain=1;
 	ms_filter_call_method(player->player,MS_PLAYER_GET_STATE,&state);
 	if (state!=MSPlayerClosed){
 		ms_filter_call_method(player->player,MS_PLAYER_CLOSE,&state);
 	}
-	ms_filter_call_method(player->volumectl,MS_VOLUME_SET_GAIN,&gain);
 }
 
 int lsd_player_stop(LsdPlayer *p){
@@ -87,15 +87,14 @@ static void lsd_player_init(LsdPlayer *p, MSConnectionPoint mixer, MSFilterId pl
 	MSConnectionHelper h;
 	p->player=ms_filter_new(playerid);
 	p->rateconv=ms_filter_new(MS_RESAMPLE_ID);
-	p->chanadapter=NULL;
-	p->volumectl=ms_filter_new(MS_VOLUME_ID);
-
+	p->chanadapter=ms_filter_new(MS_CHANNEL_ADAPTER_ID);
+	
 	ms_connection_helper_start(&h);
 	ms_connection_helper_link(&h,p->player,-1,0);
 	ms_connection_helper_link(&h,p->rateconv,0,0);
 	ms_connection_helper_link(&h,p->chanadapter,0,0);
-	ms_connection_helper_link(&h,p->volumectl,0,0);
 	ms_connection_helper_link(&h,mixer.filter,mixer.pin,-1);
+	p->mixer_pin=mixer.pin;
 	p->lsd=lsd;
 }
 
@@ -106,13 +105,11 @@ static void lsd_player_uninit(LsdPlayer *p, MSConnectionPoint mixer){
 	ms_connection_helper_unlink (&h,p->player,-1,0);
 	ms_connection_helper_unlink(&h,p->rateconv,0,0);
 	ms_connection_helper_unlink(&h,p->chanadapter,0,0);
-	ms_connection_helper_unlink(&h,p->volumectl,0,0);
 	ms_connection_helper_unlink(&h,mixer.filter,mixer.pin,-1);
 
 	ms_filter_destroy(p->player);
 	ms_filter_destroy(p->rateconv);
 	ms_filter_destroy(p->chanadapter);
-	ms_filter_destroy(p->volumectl);
 }
 
 void lsd_player_set_callback(LsdPlayer *p, LsdEndOfPlayCallback cb){
@@ -152,12 +149,25 @@ int lsd_player_play(LsdPlayer *b, const char *filename ){
 	ms_filter_call_method(b->rateconv,MS_FILTER_SET_OUTPUT_SAMPLE_RATE,&lsd->out_rate);
 
 	ms_filter_call_method(b->chanadapter,MS_FILTER_SET_NCHANNELS,&chans);
-	ms_filter_call_method(b->chanadapter,MS_FILTER_SET_OUTPUT_NCHANNELS,&lsd->out_nchans);
+	ms_filter_call_method(b->chanadapter,MS_CHANNEL_ADAPTER_SET_OUTPUT_NCHANNELS,&lsd->out_nchans);
 	return 0;
 }
 
 int lsd_player_stop(LsdPlayer *p);
-void lsd_player_enable_loop(LsdPlayer *p, bool_t loopmode);
+
+void lsd_player_enable_loop(LsdPlayer *p, bool_t loopmode){
+	if (ms_filter_get_id(p->player)==MS_FILE_PLAYER_ID){
+		int arg=loopmode ? 0 : -1;
+		ms_filter_call_method(p->player,MS_FILE_PLAYER_LOOP,&arg);
+	}
+}
+
+void lsd_player_set_gain(LsdPlayer *p, float gain){
+	MSAudioMixerCtl gainctl;
+	gainctl.pin=p->mixer_pin;
+	gainctl.gain=gain;
+	ms_filter_call_method(p->lsd->mixer,MS_AUDIO_MIXER_SET_INPUT_GAIN,&gainctl);
+}
 
 LinphoneSoundDaemon * linphone_sound_daemon_new(const char *cardname){
 	int i;
@@ -182,17 +192,15 @@ LinphoneSoundDaemon * linphone_sound_daemon_new(const char *cardname){
 	ms_filter_call_method(lsd->soundout,MS_FILTER_SET_SAMPLE_RATE,&lsd->out_rate);
 	ms_filter_call_method(lsd->soundout,MS_FILTER_SET_NCHANNELS,&lsd->out_nchans);
 
-	mp.filter=lsd->filter;
+	mp.filter=lsd->mixer;
 	mp.pin=0;
 
 	lsd_player_init(&lsd->branches[0],mp,MS_ITC_SINK_ID,lsd);
 	for(i=1;i<MAX_BRANCHES;++i){
 		mp.pin=i;
-		lsd_player_init(&lsd->branches[i],mp,MS_FILE_PLAYER_ID);
+		lsd_player_init(&lsd->branches[i],mp,MS_FILE_PLAYER_ID,lsd);
 	}
 	
 	return lsd;
 }
 
-
-#endif

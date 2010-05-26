@@ -46,5 +46,6 @@ void *lsd_player_get_user_pointer(LsdPlayer *p);
 int lsd_player_play(LsdPlayer *p, const char *filename);
 int lsd_player_stop(LsdPlayer *p);
 void lsd_player_enable_loop(LsdPlayer *p, bool_t loopmode);
+void lsd_player_set_gain(LsdPlayer *p, float gain);
 
 #endif
