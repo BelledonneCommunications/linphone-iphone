@@ -49,6 +49,7 @@
 		2274550810700509006EC466 /* linphonerc in Resources */ = {isa = PBXBuildFile; fileRef = 2274550710700509006EC466 /* linphonerc */; };
 		227BCDC210D4004600FBFD76 /* CallHistoryTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 227BCDC010D4004600FBFD76 /* CallHistoryTableViewController.m */; };
 		227BCDC310D4004600FBFD76 /* CallHistoryTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 227BCDC110D4004600FBFD76 /* CallHistoryTableViewController.xib */; };
+		228697C411AC29B800E9E0CA /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 228697C311AC29B800E9E0CA /* CFNetwork.framework */; };
 		22B5EFA310CE50BD00777D97 /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22B5EFA210CE50BD00777D97 /* AddressBookUI.framework */; };
 		22B5EFE510CE5E5800777D97 /* ContactPickerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 22B5EFE410CE5E5800777D97 /* ContactPickerDelegate.m */; };
 		22B5F03510CE6B2F00777D97 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22B5F03410CE6B2F00777D97 /* AddressBook.framework */; };
@@ -221,6 +222,7 @@
 		227BCDBF10D4004600FBFD76 /* CallHistoryTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallHistoryTableViewController.h; sourceTree = "<group>"; };
 		227BCDC010D4004600FBFD76 /* CallHistoryTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallHistoryTableViewController.m; sourceTree = "<group>"; };
 		227BCDC110D4004600FBFD76 /* CallHistoryTableViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CallHistoryTableViewController.xib; sourceTree = "<group>"; };
+		228697C311AC29B800E9E0CA /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		22B5EFA210CE50BD00777D97 /* AddressBookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBookUI.framework; path = System/Library/Frameworks/AddressBookUI.framework; sourceTree = SDKROOT; };
 		22B5EFE310CE5E5800777D97 /* ContactPickerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactPickerDelegate.h; sourceTree = "<group>"; };
 		22B5EFE410CE5E5800777D97 /* ContactPickerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactPickerDelegate.m; sourceTree = "<group>"; };
@@ -270,6 +272,7 @@
 				2264B6D211200342002C2C53 /* SystemConfiguration.framework in Frameworks */,
 				223148E41178A08200637D6A /* libilbc.a in Frameworks */,
 				223148E61178A09900637D6A /* libmsilbc.a in Frameworks */,
+				228697C411AC29B800E9E0CA /* CFNetwork.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -528,6 +531,7 @@
 				22B5F03410CE6B2F00777D97 /* AddressBook.framework */,
 				2264B6D111200342002C2C53 /* SystemConfiguration.framework */,
 				2258633C11410BAC00C5A737 /* README */,
+				228697C311AC29B800E9E0CA /* CFNetwork.framework */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -692,7 +696,7 @@
 				);
 				PRODUCT_NAME = linphone;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphoneos3.0;
+				SDKROOT = iphoneos4.0;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
 			};
 			name = Debug;
@@ -712,6 +716,7 @@
 					"\"$(SRCROOT)/../liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
 				);
 				PRODUCT_NAME = linphone;
+				SDKROOT = iphoneos4.0;
 			};
 			name = Release;
 		};
@@ -752,7 +757,7 @@
 				);
 				PRODUCT_NAME = linphone;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphoneos3.0;
+				SDKROOT = iphoneos4.0;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
 			};
 			name = Distribution;

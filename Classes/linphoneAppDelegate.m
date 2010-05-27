@@ -97,16 +97,27 @@ LinphoneCoreVTable linphonec_vtable = {
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
 	
-#if __IPHONE_OS_VERSION_MIN_REQUIRED > 40000
-	<#statements#>
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 40000
 
-	if (backgroundSupported) {
-		if ([[UIApplication sharedApplication] setKeepAliveTimeout:(NSTimeInterval)300 
-														   handler:^{ms_warning("Handler invoked");}]) {
+	LinphoneProxyConfig* proxyCfg = linphone_core_get_default_proxy(myLinphoneCore, &proxyCfg);	
+	if (backgroundSupported && proxyCfg) {
+		if ([[UIApplication sharedApplication] setKeepAliveTimeout:(NSTimeInterval)linphone_proxy_config_get_expires(proxyCfg) 
+											   handler:^{
+												   ms_warning("keepalive handler");
+												   linphone_core_set_network_reachable(myLinphoneCore,false);
+												   linphone_core_iterate(myLinphoneCore);
+												   linphone_core_set_network_reachable(myLinphoneCore,true);
+												   linphone_core_iterate(myLinphoneCore);
+											   }
+												]) {
+		
+			 
 			ms_warning("keepalive handler succesfully registered");
 		} else {
 			ms_warning("keepalive handler cannot be registered");
 		}
+		
+		
 		
 	}	
 #endif
@@ -189,6 +200,7 @@ LinphoneCoreVTable linphonec_vtable = {
 	
 }
 - (void)applicationDidBecomeActive:(UIApplication *)application {
+	
 	if (isStarted) {
 		ms_message("becomming active, make sure we are registered");
 		[self doRegister];
@@ -414,8 +426,21 @@ extern void libmsilbc_init();
 			linphone_core_enable_payload_type(myLinphoneCore,pt, TRUE);
 		}
 	}
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 40000	
+	int sipsock = linphone_core_get_sip_socket(myLinphoneCore);
 	
+	CFReadStreamRef readStream;
+	CFWriteStreamRef writeStream;
 	
+	CFStreamCreatePairWithSocket(NULL, (CFSocketNativeHandle)sipsock, &readStream, &writeStream);
+	
+	if (!CFReadStreamSetProperty(readStream, kCFStreamNetworkServiceType, kCFStreamNetworkServiceTypeVoIP)) {
+		ms_error("cannot set service type to voip for read stream");
+	}
+	if (!CFWriteStreamSetProperty(writeStream, kCFStreamNetworkServiceType, kCFStreamNetworkServiceTypeVoIP)) {
+		ms_error("cannot set service type to voip for write stream");
+	}
+#endif	
 	
 	// start scheduler
 	[NSTimer scheduledTimerWithTimeInterval:0.1 
@@ -441,11 +466,28 @@ extern void libmsilbc_init();
 								 , sizeof (audioRouteOverride)
 								 , &audioRouteOverride);
     
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 40000
+	if ([UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground) {
+		// Create a new notification
+		UILocalNotification* notif = [[[UILocalNotification alloc] init] autorelease];
+		if (notif)
+		{
+			notif.repeatInterval = 0;
+			notif.alertBody =[NSString  stringWithFormat:@" %@ is calling you",from];
+			
+			[[UIApplication sharedApplication]  presentLocalNotificationNow:notif];
+		}
+	}
+#endif
+	
+	
+	
 	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:[NSString  stringWithFormat:@" %@ is calling you",from]
 															 delegate:self cancelButtonTitle:@"Decline" destructiveButtonTitle:@"Answer" otherButtonTitles:nil];
     actionSheet.actionSheetStyle = UIActionSheetStyleDefault;
     [actionSheet showFromTabBar:myTabBarController.tabBar];
     [actionSheet release];
+
 		
 }
 
