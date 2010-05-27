@@ -1596,7 +1596,7 @@ SalAddress * sal_address_new(const char *uri){
 		osip_from_free(from);
 		return NULL;
 	}
-	if (from->displayname!=NULL && from->displayname[0]!='"'){
+	if (from->displayname!=NULL && from->displayname[0]=='"'){
 		char *unquoted=osip_strdup_without_quote(from->displayname);
 		osip_free(from->displayname);
 		from->displayname=unquoted;
