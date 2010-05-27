@@ -23,10 +23,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "linphonecore_utils.h"
+#include "mediastreamer2/msticker.h"
 #include "mediastreamer2/mssndcard.h"
 #include "mediastreamer2/msaudiomixer.h"
 #include "mediastreamer2/mschanadapter.h"
 #include "mediastreamer2/msfileplayer.h"
+#include "mediastreamer2/msitc.h"
 
 
 
@@ -48,7 +50,29 @@ struct _LinphoneSoundDaemon {
 	int out_nchans;
 	MSFilter *mixer;
 	MSFilter *soundout;
+	MSFilter *itcsink;
+	MSTicker *ticker;
+	MSSndCard *proxycard;
 	LsdPlayer branches[MAX_BRANCHES];
+};
+
+static MSFilter *create_writer(MSSndCard *c){
+	LinphoneSoundDaemon *lsd=(LinphoneSoundDaemon*)c->data;
+	return lsd->itcsink;
+}
+
+static MSSndCardDesc proxycard={
+	"Linphone Sound Daemon",
+	/*detect*/ NULL,
+	/*init*/ NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	/*create_reader*/ NULL,
+	create_writer,
+	/*uninit,*/
 };
 
 LsdPlayer *linphone_sound_daemon_get_player(LinphoneSoundDaemon *obj){
@@ -79,9 +103,6 @@ int lsd_player_stop(LsdPlayer *p){
 	ms_filter_call_method_noarg(p->player,MS_PLAYER_PAUSE);
 	return 0;
 }
-
-MSFilter *linphone_sound_daemon_get_proxy(LinphoneSoundDaemon *obj);
-void linphone_sound_daemon_destroy(LinphoneSoundDaemon *obj);
 
 static void lsd_player_init(LsdPlayer *p, MSConnectionPoint mixer, MSFilterId playerid, LinphoneSoundDaemon *lsd){
 	MSConnectionHelper h;
@@ -187,10 +208,14 @@ LinphoneSoundDaemon * linphone_sound_daemon_new(const char *cardname){
 	
 	lsd=ms_new0(LinphoneSoundDaemon,1);
 	lsd->soundout=ms_snd_card_create_writer(card);
+	lsd->mixer=ms_filter_new(MS_AUDIO_MIXER_ID);
+	lsd->itcsink=ms_filter_new(MS_ITC_SINK_ID);
 	lsd->out_rate=44100;
 	lsd->out_nchans=2;
 	ms_filter_call_method(lsd->soundout,MS_FILTER_SET_SAMPLE_RATE,&lsd->out_rate);
 	ms_filter_call_method(lsd->soundout,MS_FILTER_SET_NCHANNELS,&lsd->out_nchans);
+	ms_filter_call_method(lsd->mixer,MS_FILTER_SET_SAMPLE_RATE,&lsd->out_rate);
+	ms_filter_call_method(lsd->mixer,MS_FILTER_SET_NCHANNELS,&lsd->out_nchans);
 
 	mp.filter=lsd->mixer;
 	mp.pin=0;
@@ -200,7 +225,35 @@ LinphoneSoundDaemon * linphone_sound_daemon_new(const char *cardname){
 		mp.pin=i;
 		lsd_player_init(&lsd->branches[i],mp,MS_FILE_PLAYER_ID,lsd);
 	}
+	ms_filter_link(lsd->mixer,0,lsd->soundout,0);
+	lsd->ticker=ms_ticker_new();
+	ms_ticker_attach(lsd->ticker,lsd->soundout);
+
+	lsd->proxycard=ms_snd_card_new(&proxycard);
+	lsd->proxycard->data=lsd;
+
+	ms_filter_call_method(lsd->itcsink,MS_ITC_SINK_CONNECT,lsd->branches[0].player);
 	
 	return lsd;
 }
 
+void linphone_sound_daemon_destroy(LinphoneSoundDaemon *obj){
+	int i;
+	MSConnectionPoint mp;
+	ms_ticker_detach(obj->ticker,obj->soundout);
+	mp.filter=obj->mixer;
+	for(i=0;i<MAX_BRANCHES;++i){
+		mp.pin=i;
+		lsd_player_uninit (&obj->branches[i],mp);
+	}
+	ms_ticker_destroy(obj->ticker);
+	ms_filter_destroy(obj->soundout);
+	ms_filter_destroy(obj->mixer);
+	ms_filter_destroy(obj->itcsink);
+}
+
+
+
+MSSndCard *linphone_sound_daemon_get_proxy_card(LinphoneSoundDaemon *lsd){
+	return lsd->proxycard;
+}

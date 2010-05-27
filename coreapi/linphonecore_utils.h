@@ -36,7 +36,7 @@ LinphoneSoundDaemon * linphone_sound_daemon_new(const char *cardname);
 LsdPlayer * linphone_sound_daemon_get_player(LinphoneSoundDaemon *lsd);
 void linphone_sound_daemon_release_player(LinphoneSoundDaemon *lsd, LsdPlayer *lsdplayer);
 
-MSFilter *linphone_sound_daemon_get_proxy(LinphoneSoundDaemon *obj);
+struct _MSSndCard *linphone_sound_daemon_get_proxy_card(LinphoneSoundDaemon *obj);
 
 void linphone_sound_daemon_destroy(LinphoneSoundDaemon *obj);
 
