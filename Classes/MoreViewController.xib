@@ -12,10 +12,10 @@
 		</object>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="25"/>
 			<integer value="4"/>
 			<integer value="38"/>
-			<integer value="43"/>
+			<integer value="42"/>
+			<integer value="25"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -140,7 +140,7 @@
 								<bool key="IBUIUserInteractionEnabled">NO</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<string key="IBUIText">Console</string>
-								<object class="NSColor" key="IBUITextColor">
+								<object class="NSColor" key="IBUITextColor" id="84851821">
 									<int key="NSColorSpace">1</int>
 									<bytes key="NSRGB">MCAwIDAAA</bytes>
 								</object>
@@ -181,7 +181,7 @@
 							<object class="IBUIImageView" id="457821340">
 								<reference key="NSNextResponder" ref="869038871"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{23, 11}, {263, 154}}</string>
+								<string key="NSFrame">{{28, -14}, {263, 154}}</string>
 								<reference key="NSSuperview" ref="869038871"/>
 								<bool key="IBUIOpaque">NO</bool>
 								<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
@@ -196,7 +196,7 @@
 							<object class="IBUITextView" id="432332592">
 								<reference key="NSNextResponder" ref="869038871"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{34, 175}, {240, 106}}</string>
+								<string key="NSFrame">{{9, 109}, {301, 89}}</string>
 								<reference key="NSSuperview" ref="869038871"/>
 								<bool key="IBUIOpaque">NO</bool>
 								<bool key="IBUIClipsSubviews">YES</bool>
@@ -206,12 +206,29 @@
 								<bool key="IBUIDelaysContentTouches">NO</bool>
 								<bool key="IBUICanCancelContentTouches">NO</bool>
 								<bool key="IBUIBouncesZoom">NO</bool>
-								<string key="IBUIText">Linphone %@  SIP (rfc3261) compatible  Internet phone   </string>
+								<string key="IBUIText">Linphone %@ SIP (rfc3261) compatible phone under GNU General Public License V2 </string>
 								<int key="IBUITextAlignment">1</int>
 								<object class="IBUITextInputTraits" key="IBUITextInputTraits">
 									<int key="IBUIAutocapitalizationType">2</int>
 									<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								</object>
+							</object>
+							<object class="IBUILabel" id="389892446">
+								<reference key="NSNextResponder" ref="869038871"/>
+								<int key="NSvFlags">292</int>
+								<string key="NSFrame">{{28, 198}, {263, 21}}</string>
+								<reference key="NSSuperview" ref="869038871"/>
+								<bool key="IBUIOpaque">NO</bool>
+								<bool key="IBUIClipsSubviews">YES</bool>
+								<int key="IBUIContentMode">7</int>
+								<bool key="IBUIUserInteractionEnabled">NO</bool>
+								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+								<string key="IBUIText">© 2010 Belledonne Communications </string>
+								<reference key="IBUITextColor" ref="84851821"/>
+								<nil key="IBUIHighlightedColor"/>
+								<int key="IBUIBaselineAdjustment">1</int>
+								<float key="IBUIMinimumFontSize">10</float>
+								<int key="IBUITextAlignment">1</int>
 							</object>
 						</object>
 						<string key="NSFrameSize">{322, 230}</string>
@@ -344,6 +361,7 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<reference ref="457821340"/>
 							<reference ref="432332592"/>
+							<reference ref="389892446"/>
 						</object>
 						<reference key="parent" ref="0"/>
 						<string key="objectName">about</string>
@@ -362,6 +380,11 @@
 						<int key="objectID">18</int>
 						<reference key="object" ref="1023241257"/>
 						<reference key="parent" ref="404009698"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">49</int>
+						<reference key="object" ref="389892446"/>
+						<reference key="parent" ref="345316828"/>
 					</object>
 				</object>
 			</object>
@@ -385,6 +408,7 @@
 					<string>42.IBPluginDependency</string>
 					<string>43.IBPluginDependency</string>
 					<string>45.IBPluginDependency</string>
+					<string>49.IBPluginDependency</string>
 				</object>
 				<object class="NSMutableArray" key="dict.values">
 					<bool key="EncodedWithXMLCoder">YES</bool>
@@ -400,7 +424,8 @@
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>{{79, 106}, {320, 480}}</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-					<string>{{295, 709}, {322, 230}}</string>
+					<string>{{100, 713}, {322, 230}}</string>
+					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -422,7 +447,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">48</int>
+			<int key="maxID">49</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">

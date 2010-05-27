@@ -34,7 +34,7 @@
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 			<key>Title</key>
-			<string>password</string>
+			<string>Password</string>
 			<key>Key</key>
 			<string>password_preference</string>
 			<key>DefaultValue</key>

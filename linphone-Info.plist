@@ -25,7 +25,7 @@
 	<key>CFBundleVersion</key>
 	<string>1.0.2</string>
 	<key>CFBundleShortVersionString</key>
-	<string>3.1.4</string>
+	<string>3.3.0</string>
 	<key>NSMainNibFile</key>
 	<string>PhoneMainView</string>
 	<key>UIRequiredDeviceCapabilities</key>
