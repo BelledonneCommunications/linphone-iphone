@@ -64,7 +64,6 @@ LinphoneAddress * linphone_address_new(const char *uri);
 LinphoneAddress * linphone_address_clone(const LinphoneAddress *uri);
 const char *linphone_address_get_scheme(const LinphoneAddress *u);
 const char *linphone_address_get_display_name(const LinphoneAddress* u);
-char *linphone_address_get_display_name_unquoted(const LinphoneAddress *u);
 const char *linphone_address_get_username(const LinphoneAddress *u);
 const char *linphone_address_get_domain(const LinphoneAddress *u);
 void linphone_address_set_display_name(LinphoneAddress *u, const char *display_name);

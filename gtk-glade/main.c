@@ -395,7 +395,7 @@ static void set_video_window_decorations(GdkWindow *w){
 
 		linphone_address_clean(uri);
 		if (linphone_address_get_display_name(uri)!=NULL){
-			display_name=linphone_address_get_display_name_unquoted (uri);
+			display_name=ms_strdup(linphone_address_get_display_name(uri));
 		}else{
 			display_name=linphone_address_as_string(uri);
 		}

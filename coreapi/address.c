@@ -58,14 +58,6 @@ const char *linphone_address_get_display_name(const LinphoneAddress* u){
 }
 
 /**
- * Returns the display name without quotes.
- * @note WARNING: the returned string must be freed by user.
-**/
-char *linphone_address_get_display_name_unquoted(const LinphoneAddress *addr){
-	return sal_address_get_display_name_unquoted(addr);
-}
-
-/**
  * Returns the username.
 **/
 const char *linphone_address_get_username(const LinphoneAddress *u){

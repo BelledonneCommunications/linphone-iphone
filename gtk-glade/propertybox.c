@@ -803,9 +803,8 @@ void linphone_gtk_show_parameters(void){
 	contact=linphone_core_get_primary_contact_parsed(lc);
 	if (contact){
 		if (linphone_address_get_display_name(contact)) {
-			char *dn=linphone_address_get_display_name_unquoted (contact);
+			const char *dn=linphone_address_get_display_name(contact);
 			gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(pb,"displayname")),dn);
-			ms_free(dn);
 		}
 		if (linphone_address_get_username(contact))
 			gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(pb,"username")),linphone_address_get_username(contact));
