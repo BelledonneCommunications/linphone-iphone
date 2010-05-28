@@ -510,8 +510,11 @@ int sal_call_accept(SalOp * h){
 		if (h->sdp_offering) {
 			set_sdp_from_desc(msg,h->base.local_media);
 		}else{
-			if (h->sdp_answer)
+			if (h->sdp_answer){
 				set_sdp(msg,h->sdp_answer);
+				sdp_message_free(h->sdp_answer);
+				h->sdp_answer=NULL;
+			}
 		}
 	}else{
 		ms_error("You are accepting a call but not defined any media capabilities !");
@@ -760,7 +763,11 @@ static void handle_reinvite(Sal *sal,  eXosip_event_t *ev){
 		sdp_to_media_description(sdp,op->base.remote_media);
 		sdp_message_free(sdp);
 		sdp_process(op);
-		set_sdp(msg,op->sdp_answer);
+		if (op->sdp_answer!=NULL){
+			set_sdp(msg,op->sdp_answer);
+			sdp_message_free(op->sdp_answer);
+			op->sdp_answer=NULL;
+		}
 	}else {
 		op->sdp_offering=TRUE;
 		set_sdp_from_desc(msg,op->base.local_media);
@@ -872,8 +879,11 @@ static void call_accepted(Sal *sal, eXosip_event_t *ev){
 		_osip_list_set_empty(&msg->contacts,(void (*)(void*))osip_contact_free);
 		osip_message_set_contact(msg,contact);
 	}
-	if (op->sdp_answer)
-			set_sdp(msg,op->sdp_answer);
+	if (op->sdp_answer){
+		set_sdp(msg,op->sdp_answer);
+		sdp_message_free(op->sdp_answer);
+		op->sdp_answer=NULL;
+	}
 	eXosip_call_send_ack(ev->did,msg);
 	sal->callbacks.call_accepted(op);
 }
