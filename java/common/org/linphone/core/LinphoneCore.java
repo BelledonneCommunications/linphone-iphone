@@ -38,6 +38,7 @@ public interface LinphoneCore {
 		static public GeneralState GSTATE_REG_NONE = new GeneralState(10,"GSTATE_REG_NONE");       /* initial state */
 		static public GeneralState GSTATE_REG_OK  = new GeneralState(11,"GSTATE_REG_OK");
 		static public GeneralState GSTATE_REG_FAILED = new GeneralState(12,"GSTATE_REG_FAILED");
+		static public GeneralState GSTATE_REG_PENDING = new GeneralState(13,"GSTATE_REG_PENDING");
 		/* states for GSTATE_GROUP_CALL */
 		static public GeneralState GSTATE_CALL_IDLE = new GeneralState(20,"GSTATE_CALL_IDLE");      /* initial state */
 		static public GeneralState GSTATE_CALL_OUT_INVITE = new GeneralState(21,"GSTATE_CALL_OUT_INVITE");
@@ -47,6 +48,7 @@ public interface LinphoneCore {
 		static public GeneralState GSTATE_CALL_END = new GeneralState(25,"GSTATE_CALL_END");
 		static public GeneralState GSTATE_CALL_ERROR = new GeneralState(26,"GSTATE_CALL_ERROR");
 		static public GeneralState GSTATE_INVALID = new GeneralState(27,"GSTATE_INVALID");
+		static public GeneralState GSTATE_CALL_OUT_RINGING = new GeneralState(28,"GSTATE_CALL_OUT_RINGING");
 		private final int mValue;
 		private final String mStringValue;
 
