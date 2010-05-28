@@ -31,15 +31,6 @@ typedef struct _LinphoneSoundDaemon LinphoneSoundDaemon;
 
 typedef void (*LsdEndOfPlayCallback)(LsdPlayer *p);
 
-LinphoneSoundDaemon * linphone_sound_daemon_new(const char *cardname);
-
-LsdPlayer * linphone_sound_daemon_get_player(LinphoneSoundDaemon *lsd);
-void linphone_sound_daemon_release_player(LinphoneSoundDaemon *lsd, LsdPlayer *lsdplayer);
-
-struct _MSSndCard *linphone_sound_daemon_get_proxy_card(LinphoneSoundDaemon *obj);
-
-void linphone_sound_daemon_destroy(LinphoneSoundDaemon *obj);
-
 void lsd_player_set_callback(LsdPlayer *p, LsdEndOfPlayCallback cb);
 void lsd_player_set_user_pointer(LsdPlayer *p, void *up);
 void *lsd_player_get_user_pointer(LsdPlayer *p);
@@ -47,5 +38,11 @@ int lsd_player_play(LsdPlayer *p, const char *filename);
 int lsd_player_stop(LsdPlayer *p);
 void lsd_player_enable_loop(LsdPlayer *p, bool_t loopmode);
 void lsd_player_set_gain(LsdPlayer *p, float gain);
+
+LinphoneSoundDaemon * linphone_sound_daemon_new(const char *cardname);
+LsdPlayer * linphone_sound_daemon_get_player(LinphoneSoundDaemon *lsd);
+void linphone_sound_daemon_release_player(LinphoneSoundDaemon *lsd, LsdPlayer *lsdplayer);
+void linphone_core_use_sound_daemon(LinphoneCore *lc, LinphoneSoundDaemon *lsd);
+void linphone_sound_daemon_destroy(LinphoneSoundDaemon *obj);
 
 #endif

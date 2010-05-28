@@ -621,7 +621,7 @@ static void sound_config_read(LinphoneCore *lc)
 		lp_config_get_int(lc->config,"sound","agc",0));
 
 	gain=lp_config_get_float(lc->config,"sound","soft_play_lev",0);
-		linphone_core_set_soft_play_level(lc,gain);
+	linphone_core_set_soft_play_level(lc,gain);
 }
 
 static void sip_config_read(LinphoneCore *lc)
@@ -2240,7 +2240,8 @@ void linphone_core_start_media_streams(LinphoneCore *lc, LinphoneCall *call){
 		if (stream){
 			call->audio_profile=make_profile(lc,call->resultdesc,stream,&used_pt);
 			if (!lc->use_files){
-				MSSndCard *playcard=lc->sound_conf.play_sndcard;
+				MSSndCard *playcard=lc->sound_conf.lsd_card ? 
+					lc->sound_conf.lsd_card : lc->sound_conf.play_sndcard;
 				MSSndCard *captcard=lc->sound_conf.capt_sndcard;
 				if (playcard==NULL) {
 					ms_warning("No card defined for playback !");
@@ -2820,7 +2821,8 @@ int linphone_core_preview_ring(LinphoneCore *lc, const char *ring,LinphoneCoreCb
 	lc_callback_obj_init(&lc->preview_finished_cb,func,userdata);
 	lc->preview_finished=0;
 	if (lc->sound_conf.ring_sndcard!=NULL){
-		lc->ringstream=ring_start_with_cb(ring,2000,lc->sound_conf.ring_sndcard,notify_end_of_ring,(void *)lc);
+		MSSndCard *ringcard=lc->sound_conf.lsd_card ? lc->sound_conf.lsd_card : lc->sound_conf.ring_sndcard;
+		lc->ringstream=ring_start_with_cb(ring,2000,ringcard,notify_end_of_ring,(void *)lc);
 	}
 	return 0;
 }

@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "linphonecore_utils.h"
+#include "private.h"
 #include "mediastreamer2/msticker.h"
 #include "mediastreamer2/mssndcard.h"
 #include "mediastreamer2/msaudiomixer.h"
@@ -31,6 +32,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/msitc.h"
 
 
+static struct _MSSndCard *linphone_sound_daemon_get_proxy_card(LinphoneSoundDaemon *obj);
 
 #define MAX_BRANCHES 10
 
@@ -77,7 +79,7 @@ static MSSndCardDesc proxycard={
 
 LsdPlayer *linphone_sound_daemon_get_player(LinphoneSoundDaemon *obj){
 	int i;
-	for(i=0;i<MAX_BRANCHES;++i){
+	for(i=1;i<MAX_BRANCHES;++i){
 		LsdPlayer *b=&obj->branches[i];
 		MSFilter *p=b->player;
 		int state;
@@ -174,8 +176,6 @@ int lsd_player_play(LsdPlayer *b, const char *filename ){
 	return 0;
 }
 
-int lsd_player_stop(LsdPlayer *p);
-
 void lsd_player_enable_loop(LsdPlayer *p, bool_t loopmode){
 	if (ms_filter_get_id(p->player)==MS_FILE_PLAYER_ID){
 		int arg=loopmode ? 0 : -1;
@@ -252,8 +252,10 @@ void linphone_sound_daemon_destroy(LinphoneSoundDaemon *obj){
 	ms_filter_destroy(obj->itcsink);
 }
 
-
-
 MSSndCard *linphone_sound_daemon_get_proxy_card(LinphoneSoundDaemon *lsd){
 	return lsd->proxycard;
+}
+
+void linphone_core_use_sound_daemon(LinphoneCore *lc, LinphoneSoundDaemon *lsd){
+	lc->sound_conf.lsd_card=linphone_sound_daemon_get_proxy_card (lsd);
 }

@@ -100,8 +100,9 @@ static void call_received(SalOp *h){
 
 	/* play the ring */
 	if (lc->sound_conf.ring_sndcard!=NULL){
+		MSSndCard *ringcard=lc->sound_conf.lsd_card ? lc->sound_conf.lsd_card : lc->sound_conf.ring_sndcard;
 		ms_message("Starting local ring...");
-		lc->ringstream=ring_start(lc->sound_conf.local_ring,2000,lc->sound_conf.ring_sndcard);
+		lc->ringstream=ring_start(lc->sound_conf.local_ring,2000,ringcard);
 	}
 	linphone_call_set_state(call,LCStateRinging);
 	sal_call_notify_ringing(h);
@@ -122,8 +123,9 @@ static void call_ringing(SalOp *h){
 	if (md==NULL){
 		if (lc->ringstream!=NULL) return;	/*already ringing !*/
 		if (lc->sound_conf.play_sndcard!=NULL){
+			MSSndCard *ringcard=lc->sound_conf.lsd_card ? lc->sound_conf.lsd_card : lc->sound_conf.play_sndcard;
 			ms_message("Remote ringing...");
-			lc->ringstream=ring_start(lc->sound_conf.remote_ring,2000,lc->sound_conf.play_sndcard);
+			lc->ringstream=ring_start(lc->sound_conf.remote_ring,2000,ringcard);
 		}
 	}else{
 		/*accept early media */
