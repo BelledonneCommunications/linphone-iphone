@@ -33,11 +33,13 @@ typedef void (*LsdEndOfPlayCallback)(LsdPlayer *p);
 
 void lsd_player_set_callback(LsdPlayer *p, LsdEndOfPlayCallback cb);
 void lsd_player_set_user_pointer(LsdPlayer *p, void *up);
-void *lsd_player_get_user_pointer(LsdPlayer *p);
+void *lsd_player_get_user_pointer(const LsdPlayer *p);
 int lsd_player_play(LsdPlayer *p, const char *filename);
 int lsd_player_stop(LsdPlayer *p);
 void lsd_player_enable_loop(LsdPlayer *p, bool_t loopmode);
+bool_t lsd_player_loop_enabled(const LsdPlayer *p);
 void lsd_player_set_gain(LsdPlayer *p, float gain);
+LinphoneSoundDaemon lsd_player_get_daemon(const LsdPlayer *p);
 
 LinphoneSoundDaemon * linphone_sound_daemon_new(const char *cardname);
 LsdPlayer * linphone_sound_daemon_get_player(LinphoneSoundDaemon *lsd);

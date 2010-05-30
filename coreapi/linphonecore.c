@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/mediastream.h"
 #include "mediastreamer2/msvolume.h"
 #include "mediastreamer2/msequalizer.h"
+#include "mediastreamer2/mseventqueue.h"
 
 #include <ortp/telephonyevents.h>
 
@@ -631,6 +632,11 @@ static void sip_config_read(LinphoneCore *lc)
 	int port;
 	int i,tmp;
 	int ipv6;
+
+	if (lp_config_get_int(lc->config,"sip","use_session_timers",0)==1){
+		sal_use_session_timers(lc->sal,200);
+	}
+	
 	port=lp_config_get_int(lc->config,"sip","use_info",0);
 	linphone_core_set_use_info_for_dtmf(lc,port);
 
@@ -641,7 +647,8 @@ static void sip_config_read(LinphoneCore *lc)
 	if (ipv6==-1){
 		ipv6=0;
 		if (host_has_ipv6_network()){
-			lc->vtable.display_message(lc,_("Your machine appears to be connected to an IPv6 network. By default linphone always uses IPv4. Please update your configuration if you want to use IPv6"));
+			if (lc->vtable.display_message)
+				lc->vtable.display_message(lc,_("Your machine appears to be connected to an IPv6 network. By default linphone always uses IPv4. Please update your configuration if you want to use IPv6"));
 		}
 	}
 	linphone_core_enable_ipv6(lc,ipv6);
@@ -1078,6 +1085,10 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 #endif
 
 	ms_init();
+	/* create a mediastreamer2 event queue and set it as global */
+	/* This allows to run event's callback in linphone_core_iterate() */
+	lc->msevq=ms_event_queue_new();
+	ms_set_global_event_queue(lc->msevq);
 
 	lc->config=lp_config_new(config_path);
 	if (factory_config_path)
@@ -1086,9 +1097,7 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	lc->sal=sal_init();
 	sal_set_user_pointer(lc->sal,lc);
 	sal_set_callbacks(lc->sal,&linphone_sal_callbacks);
-	if (lp_config_get_int(lc->config,"sip","use_session_timers",0)==1){
-		sal_use_session_timers(lc->sal,200);
-	}
+	
 	sip_setup_register_all();
 	sound_config_read(lc);
 	net_config_read(lc);
@@ -1101,8 +1110,9 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	lc->presence_mode=LINPHONE_STATUS_ONLINE;
 	lc->max_call_logs=15;
 	ui_config_read(lc);
-	lc->vtable.display_status(lc,_("Ready"));
-        gstate_new_state(lc, GSTATE_POWER_ON, NULL);
+	if (lc->vtable.display_status)
+		lc->vtable.display_status(lc,_("Ready"));
+	gstate_new_state(lc, GSTATE_POWER_ON, NULL);
 	lc->auto_net_state_mon=lc->sip_conf.auto_net_state_mon;
 
     lc->ready=TRUE;
@@ -1667,6 +1677,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 	}
 
 	sal_iterate(lc->sal);
+	ms_event_queue_pump(lc->msevq);
 	if (lc->auto_net_state_mon) monitor_network_state(lc,curtime);
 
 	proxy_update(lc);
@@ -3593,6 +3604,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 		lc->previewstream=NULL;
 	}
 #endif
+	ms_event_queue_destroy(lc->msevq);
 	/* save all config */
 	net_config_uninit(lc);
 	sip_config_uninit(lc);

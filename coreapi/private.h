@@ -371,6 +371,7 @@ struct _LinphoneCore
 	struct _AudioStream *audiostream;  /**/
 	struct _VideoStream *videostream;
 	struct _VideoStream *previewstream;
+	struct _MSEventQueue *msevq;
 	RtpTransport *a_rtp,*a_rtcp;
 	MSList *bl_reqs;
 	MSList *subscribers;	/* unknown subscribers */
