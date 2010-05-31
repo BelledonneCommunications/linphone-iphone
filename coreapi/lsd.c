@@ -62,6 +62,8 @@ struct _LinphoneSoundDaemon {
 
 static MSFilter *create_writer(MSSndCard *c){
 	LinphoneSoundDaemon *lsd=(LinphoneSoundDaemon*)c->data;
+	lsd->itcsink=ms_filter_new(MS_ITC_SINK_ID);
+	ms_filter_call_method(lsd->itcsink,MS_ITC_SINK_CONNECT,lsd->branches[0].player);
 	return lsd->itcsink;
 }
 
@@ -102,6 +104,10 @@ void linphone_sound_daemon_release_player(LinphoneSoundDaemon *obj, LsdPlayer * 
 	if (state!=MSPlayerClosed){
 		ms_filter_call_method(player->player,MS_PLAYER_CLOSE,&state);
 	}
+}
+
+LinphoneSoundDaemon *lsd_player_get_daemon(const LsdPlayer *p){
+	return p->lsd;
 }
 
 int lsd_player_stop(LsdPlayer *p){
@@ -245,8 +251,6 @@ LinphoneSoundDaemon * linphone_sound_daemon_new(const char *cardname){
 
 	lsd->proxycard=ms_snd_card_new(&proxycard);
 	lsd->proxycard->data=lsd;
-
-	ms_filter_call_method(lsd->itcsink,MS_ITC_SINK_CONNECT,lsd->branches[0].player);
 	
 	return lsd;
 }

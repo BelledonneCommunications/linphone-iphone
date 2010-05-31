@@ -610,7 +610,7 @@ bool_t linphone_core_get_use_rfc2833_for_dtmf(LinphoneCore *lc);
 
 int linphone_core_get_sip_port(LinphoneCore *lc);
 
-void linphone_core_set_sip_port(LinphoneCore *lc,int port);
+int linphone_core_set_sip_port(LinphoneCore *lc,int port);
 
 ortp_socket_t linphone_core_get_sip_socket(LinphoneCore *lc);
 

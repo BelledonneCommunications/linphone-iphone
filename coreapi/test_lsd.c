@@ -30,7 +30,7 @@ static void play_finished(LsdPlayer *p){
 	const char *filename=(const char *)lsd_player_get_user_pointer (p);
 	ms_message("Playing of %s is finished.",filename);
 	if (!lsd_player_loop_enabled (p)){
-		linphone_sound_daemon_release_player (lsd_player_get_daemon(p));
+		linphone_sound_daemon_release_player (lsd_player_get_daemon(p),p);
 	}
 }
 

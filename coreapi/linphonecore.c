@@ -313,7 +313,8 @@ void linphone_call_log_completed(LinphoneCallLog *calllog, LinphoneCall *call){
 				info=ortp_strdup_printf(ngettext("You have missed %i call.",
                             "You have missed %i calls.", lc->missed_calls),
                         lc->missed_calls);
-				lc->vtable.display_status(lc,info);
+				if (lc->vtable.display_status!=NULL)
+					lc->vtable.display_status(lc,info);
 				ms_free(info);
 			}
 			else calllog->status=LinphoneCallAborted;
@@ -1479,14 +1480,14 @@ void linphone_core_set_user_agent(const char *name, const char *ver){
  *
  * @ingroup network_parameters
 **/
-void linphone_core_set_sip_port(LinphoneCore *lc,int port)
+int linphone_core_set_sip_port(LinphoneCore *lc,int port)
 {
 	const char *anyaddr;
 	int err=0;
-	if (port==lc->sip_conf.sip_port) return;
+	if (port==lc->sip_conf.sip_port) return 0;
 	lc->sip_conf.sip_port=port;
 
-	if (lc->sal==NULL) return;
+	if (lc->sal==NULL) return -1;
 	
 	if (lc->sip_conf.ipv6_enabled)
 		anyaddr="::0";
@@ -1496,11 +1497,13 @@ void linphone_core_set_sip_port(LinphoneCore *lc,int port)
 	if (err<0){
 		char *msg=ortp_strdup_printf("UDP port %i seems already in use ! Cannot initialize.",port);
 		ms_warning(msg);
-		lc->vtable.display_warning(lc,msg);
+		if (lc->vtable.display_warning)
+			lc->vtable.display_warning(lc,msg);
 		ms_free(msg);
-		return;
+		return -1;
 	}
 	apply_user_agent(lc);
+	return 0;
 }
 
 /**
@@ -1541,7 +1544,8 @@ static void display_bandwidth(RtpSession *as, RtpSession *vs){
 }
 
 static void linphone_core_disconnected(LinphoneCore *lc){
-	lc->vtable.display_warning(lc,_("Remote end seems to have disconnected, the call is going to be closed."));
+	if (lc->vtable.display_warning!=NULL)
+		lc->vtable.display_warning(lc,_("Remote end seems to have disconnected, the call is going to be closed."));
 	linphone_core_terminate_call(lc,NULL);
 }
 
@@ -1754,9 +1758,11 @@ LinphoneAddress * linphone_core_interpret_url(LinphoneCore *lc, const char *url)
 	LinphoneAddress *uri;
 	
 	if (is_enum(url,&enum_domain)){
-		lc->vtable.display_status(lc,_("Looking for telephone number destination..."));
+		if (lc->vtable.display_status!=NULL)
+			lc->vtable.display_status(lc,_("Looking for telephone number destination..."));
 		if (enum_lookup(enum_domain,&enumres)<0){
-			lc->vtable.display_status(lc,_("Could not resolve this number."));
+			if (lc->vtable.display_status!=NULL)
+				lc->vtable.display_status(lc,_("Could not resolve this number."));
 			ms_free(enum_domain);
 			return NULL;
 		}
@@ -1944,12 +1950,14 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, LinphonePro
 		sal_call_set_local_media_description(call->op,call->localdesc);
 	}
 	barmsg=ortp_strdup_printf("%s %s", _("Contacting"), real_url);
-	lc->vtable.display_status(lc,barmsg);
+	if (lc->vtable.display_status!=NULL)
+		lc->vtable.display_status(lc,barmsg);
 	ms_free(barmsg);
 	
 	if (err<0){
 		ms_warning("Could not initiate call.");
-		lc->vtable.display_status(lc,_("could not call"));
+		if (lc->vtable.display_status!=NULL)
+			lc->vtable.display_status(lc,_("could not call"));
 		linphone_core_stop_media_streams(lc,call);
 		linphone_call_destroy(call);
 		lc->call=NULL;
@@ -2410,7 +2418,8 @@ int linphone_core_accept_call(LinphoneCore *lc, const char *url)
 		sal_op_set_contact(call->op,contact);
 	
 	sal_call_accept(call->op);
-	lc->vtable.display_status(lc,_("Connected."));
+	if (lc->vtable.display_status!=NULL)
+		lc->vtable.display_status(lc,_("Connected."));
 	gstate_new_state(lc, GSTATE_CALL_IN_CONNECTED, NULL);
 	call->resultdesc=sal_call_get_final_media_description(call->op);
 	if (call->resultdesc){
@@ -2444,7 +2453,8 @@ int linphone_core_terminate_call(LinphoneCore *lc, const char *url)
 		lc->ringstream=NULL;
 	}
 	linphone_core_stop_media_streams(lc,call);
-	lc->vtable.display_status(lc,_("Call ended") );
+	if (lc->vtable.display_status!=NULL)
+		lc->vtable.display_status(lc,_("Call ended") );
 	gstate_new_state(lc, GSTATE_CALL_END, NULL);
 	linphone_call_destroy(call);
 	return 0;

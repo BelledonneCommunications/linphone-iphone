@@ -249,8 +249,10 @@ static void call_terminated(SalOp *op, const char *from){
 		lc->ringstream=NULL;
 	}
 	linphone_core_stop_media_streams(lc,lc->call);
-	lc->vtable.show(lc);
-	lc->vtable.display_status(lc,_("Call terminated."));
+	if (lc->vtable.show!=NULL)
+		lc->vtable.show(lc);
+	if (lc->vtable.display_status!=NULL)
+		lc->vtable.display_status(lc,_("Call terminated."));
 	gstate_new_state(lc, GSTATE_CALL_END, NULL);
 	if (lc->vtable.bye_recv!=NULL){
 		LinphoneAddress *addr=linphone_address_new(from);
