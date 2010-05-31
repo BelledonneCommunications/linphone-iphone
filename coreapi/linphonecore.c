@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/mediastream.h"
 #include "mediastreamer2/msvolume.h"
 #include "mediastreamer2/msequalizer.h"
+#include "mediastreamer2/mseventqueue.h"
 
 #include <ortp/telephonyevents.h>
 
@@ -162,7 +163,8 @@ void linphone_call_log_completed(LinphoneCallLog *calllog, LinphoneCall *call, L
 		info=ortp_strdup_printf(ngettext("You have missed %i call.",
                     "You have missed %i calls.", lc->missed_calls),
                 lc->missed_calls);
-		lc->vtable.display_status(lc,info);
+				if (lc->vtable.display_status!=NULL)
+					lc->vtable.display_status(lc,info);
 		ms_free(info);
 	}else calllog->status=status;
 	lc->call_logs=ms_list_prepend(lc->call_logs,(void *)calllog);
@@ -469,7 +471,7 @@ static void sound_config_read(LinphoneCore *lc)
 		lp_config_get_int(lc->config,"sound","agc",0));
 
 	gain=lp_config_get_float(lc->config,"sound","soft_play_lev",0);
-		linphone_core_set_soft_play_level(lc,gain);
+	linphone_core_set_soft_play_level(lc,gain);
 }
 
 static void sip_config_read(LinphoneCore *lc)
@@ -479,6 +481,11 @@ static void sip_config_read(LinphoneCore *lc)
 	int port;
 	int i,tmp;
 	int ipv6;
+
+	if (lp_config_get_int(lc->config,"sip","use_session_timers",0)==1){
+		sal_use_session_timers(lc->sal,200);
+	}
+	
 	port=lp_config_get_int(lc->config,"sip","use_info",0);
 	linphone_core_set_use_info_for_dtmf(lc,port);
 
@@ -489,7 +496,8 @@ static void sip_config_read(LinphoneCore *lc)
 	if (ipv6==-1){
 		ipv6=0;
 		if (host_has_ipv6_network()){
-			lc->vtable.display_message(lc,_("Your machine appears to be connected to an IPv6 network. By default linphone always uses IPv4. Please update your configuration if you want to use IPv6"));
+			if (lc->vtable.display_message)
+				lc->vtable.display_message(lc,_("Your machine appears to be connected to an IPv6 network. By default linphone always uses IPv4. Please update your configuration if you want to use IPv6"));
 		}
 	}
 	linphone_core_enable_ipv6(lc,ipv6);
@@ -926,6 +934,10 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 #endif
 
 	ms_init();
+	/* create a mediastreamer2 event queue and set it as global */
+	/* This allows to run event's callback in linphone_core_iterate() */
+	lc->msevq=ms_event_queue_new();
+	ms_set_global_event_queue(lc->msevq);
 
 	lc->config=lp_config_new(config_path);
 	if (factory_config_path)
@@ -934,9 +946,7 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	lc->sal=sal_init();
 	sal_set_user_pointer(lc->sal,lc);
 	sal_set_callbacks(lc->sal,&linphone_sal_callbacks);
-	if (lp_config_get_int(lc->config,"sip","use_session_timers",0)==1){
-		sal_use_session_timers(lc->sal,200);
-	}
+	
 	sip_setup_register_all();
 	sound_config_read(lc);
 	net_config_read(lc);
@@ -949,8 +959,9 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	lc->presence_mode=LINPHONE_STATUS_ONLINE;
 	lc->max_call_logs=15;
 	ui_config_read(lc);
-	lc->vtable.display_status(lc,_("Ready"));
-        gstate_new_state(lc, GSTATE_POWER_ON, NULL);
+	if (lc->vtable.display_status)
+		lc->vtable.display_status(lc,_("Ready"));
+	gstate_new_state(lc, GSTATE_POWER_ON, NULL);
 	lc->auto_net_state_mon=lc->sip_conf.auto_net_state_mon;
 
     lc->ready=TRUE;
@@ -1317,14 +1328,14 @@ void linphone_core_set_user_agent(const char *name, const char *ver){
  *
  * @ingroup network_parameters
 **/
-void linphone_core_set_sip_port(LinphoneCore *lc,int port)
+int linphone_core_set_sip_port(LinphoneCore *lc,int port)
 {
 	const char *anyaddr;
 	int err=0;
-	if (port==lc->sip_conf.sip_port) return;
+	if (port==lc->sip_conf.sip_port) return 0;
 	lc->sip_conf.sip_port=port;
 
-	if (lc->sal==NULL) return;
+	if (lc->sal==NULL) return -1;
 	
 	if (lc->sip_conf.ipv6_enabled)
 		anyaddr="::0";
@@ -1334,11 +1345,13 @@ void linphone_core_set_sip_port(LinphoneCore *lc,int port)
 	if (err<0){
 		char *msg=ortp_strdup_printf("UDP port %i seems already in use ! Cannot initialize.",port);
 		ms_warning(msg);
-		lc->vtable.display_warning(lc,msg);
+		if (lc->vtable.display_warning)
+			lc->vtable.display_warning(lc,msg);
 		ms_free(msg);
-		return;
+		return -1;
 	}
 	apply_user_agent(lc);
+	return 0;
 }
 
 /**
@@ -1392,6 +1405,7 @@ static void linphone_core_disconnected(LinphoneCore *lc, LinphoneCall *call){
 	{
 		snprintf(temp,sizeof(temp),"Remote end seems to have disconnected, the call is going to be closed.");
 	}
+	if (lc->vtable.display_warning!=NULL)
 	lc->vtable.display_warning(lc,temp);
 	linphone_core_terminate_call(lc,call);//TODO failure ??
 }
@@ -1530,6 +1544,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 	}
 
 	sal_iterate(lc->sal);
+	ms_event_queue_pump(lc->msevq);
 	if (lc->auto_net_state_mon) monitor_network_state(lc,curtime);
 
 	proxy_update(lc);
@@ -1620,9 +1635,11 @@ LinphoneAddress * linphone_core_interpret_url(LinphoneCore *lc, const char *url)
 	LinphoneAddress *uri;
 	
 	if (is_enum(url,&enum_domain)){
-		lc->vtable.display_status(lc,_("Looking for telephone number destination..."));
+		if (lc->vtable.display_status!=NULL)
+			lc->vtable.display_status(lc,_("Looking for telephone number destination..."));
 		if (enum_lookup(enum_domain,&enumres)<0){
-			lc->vtable.display_status(lc,_("Could not resolve this number."));
+			if (lc->vtable.display_status!=NULL)
+				lc->vtable.display_status(lc,_("Could not resolve this number."));
 			if(lc->vtable.failure_recv)
 				lc->vtable.failure_recv(lc,NULL,400);
 			ms_free(enum_domain);
@@ -1813,12 +1830,14 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, LinphonePro
 		sal_call_set_local_media_description(call->op,call->localdesc);
 	}
 	barmsg=ortp_strdup_printf("%s %s", _("Contacting"), real_url);
-	lc->vtable.display_status(lc,barmsg);
+	if (lc->vtable.display_status!=NULL)
+		lc->vtable.display_status(lc,barmsg);
 	ms_free(barmsg);
 	
 	if (err<0){
 		ms_warning("Could not initiate call.");
-		lc->vtable.display_status(lc,_("could not call"));
+		if (lc->vtable.display_status!=NULL)
+			lc->vtable.display_status(lc,_("could not call"));
 		if(call == linphone_core_get_current_call(lc))
 			linphone_core_stop_media_streams(lc,call);
 		linphone_call_unref(call);
@@ -2144,7 +2163,8 @@ void linphone_core_start_media_streams(LinphoneCore *lc, LinphoneCall *call){
 		if (stream){
 			call->audio_profile=make_profile(lc,call->resultdesc,stream,&used_pt);
 			if (!lc->use_files){
-				MSSndCard *playcard=lc->sound_conf.play_sndcard;
+				MSSndCard *playcard=lc->sound_conf.lsd_card ? 
+					lc->sound_conf.lsd_card : lc->sound_conf.play_sndcard;
 				MSSndCard *captcard=lc->sound_conf.capt_sndcard;
 				if (playcard==NULL) {
 					ms_warning("No card defined for playback !");
@@ -2312,7 +2332,8 @@ int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call)
 		sal_op_set_contact(call->op,contact);
 	
 	sal_call_accept(call->op);
-	lc->vtable.display_status(lc,_("Connected."));
+	if (lc->vtable.display_status!=NULL)
+		lc->vtable.display_status(lc,_("Connected."));
 	gstate_new_state(lc, GSTATE_CALL_IN_CONNECTED, NULL);
 	call->resultdesc=sal_call_get_final_media_description(call->op);
 	if (call->resultdesc){
@@ -2355,7 +2376,8 @@ int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *the_call)
 	}
 	if(call == linphone_core_get_current_call(lc))
 		linphone_core_stop_media_streams(lc,call);
-	lc->vtable.display_status(lc,_("Call ended") );
+	if (lc->vtable.display_status!=NULL)
+		lc->vtable.display_status(lc,_("Call ended") );
 	gstate_new_state(lc, GSTATE_CALL_END, NULL);
 	linphone_call_set_terminated(call);
 	linphone_call_unref(call);
@@ -2905,7 +2927,8 @@ int linphone_core_preview_ring(LinphoneCore *lc, const char *ring,LinphoneCoreCb
 	lc_callback_obj_init(&lc->preview_finished_cb,func,userdata);
 	lc->preview_finished=0;
 	if (lc->sound_conf.ring_sndcard!=NULL){
-		lc->ringstream=ring_start_with_cb(ring,2000,lc->sound_conf.ring_sndcard,notify_end_of_ring,(void *)lc);
+		MSSndCard *ringcard=lc->sound_conf.lsd_card ? lc->sound_conf.lsd_card : lc->sound_conf.ring_sndcard;
+		lc->ringstream=ring_start_with_cb(ring,2000,ringcard,notify_end_of_ring,(void *)lc);
 	}
 	return 0;
 }
@@ -3676,6 +3699,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 		lc->previewstream=NULL;
 	}
 #endif
+	ms_event_queue_destroy(lc->msevq);
 	/* save all config */
 	net_config_uninit(lc);
 	sip_config_uninit(lc);

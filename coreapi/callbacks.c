@@ -118,10 +118,10 @@ static void call_received(SalOp *h){
 
 	/* play the ring */
 	if (lc->sound_conf.ring_sndcard!=NULL && !linphone_core_in_call(lc)){
-		if(lc->ringstream==NULL)
-		{
+		if(lc->ringstream==NULL){
+			MSSndCard *ringcard=lc->sound_conf.lsd_card ?lc->sound_conf.lsd_card : lc->sound_conf.ring_sndcard;
 			ms_message("Starting local ring...");
-			lc->ringstream=ring_start(lc->sound_conf.local_ring,2000,lc->sound_conf.ring_sndcard);
+			lc->ringstream=ring_start(lc->sound_conf.local_ring,2000,ringcard);
 		}
 		else
 		{
@@ -149,8 +149,9 @@ static void call_ringing(SalOp *h){
 	if (md==NULL){
 		if (lc->ringstream!=NULL) return;	/*already ringing !*/
 		if (lc->sound_conf.play_sndcard!=NULL){
+			MSSndCard *ringcard=lc->sound_conf.lsd_card ? lc->sound_conf.lsd_card : lc->sound_conf.play_sndcard;
 			ms_message("Remote ringing...");
-			lc->ringstream=ring_start(lc->sound_conf.remote_ring,2000,lc->sound_conf.play_sndcard);
+			lc->ringstream=ring_start(lc->sound_conf.remote_ring,2000,ringcard);
 		}
 	}else{
 		/*accept early media */
@@ -325,8 +326,10 @@ static void call_terminated(SalOp *op, const char *from){
 	}
 	if(call == linphone_core_get_current_call(lc))
 		linphone_core_stop_media_streams(lc,call);
-	lc->vtable.show(lc);
-	lc->vtable.display_status(lc,_("Call terminated."));
+	if (lc->vtable.show!=NULL)
+		lc->vtable.show(lc);
+	if (lc->vtable.display_status!=NULL)
+		lc->vtable.display_status(lc,_("Call terminated."));
 	linphone_call_set_terminated(call);
 	gstate_new_state(lc, GSTATE_CALL_END, NULL);
 	if (lc->vtable.bye_recv!=NULL){

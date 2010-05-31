@@ -35,7 +35,8 @@ liblinphone_la_SOURCES=\
 	general_state.c \
 	linphonecall.c \
 	sipsetup.c sipsetup.h \
-	siplogin.c
+	siplogin.c \
+	lsd.c linphonecore_utils.h
 
 
 liblinphone_la_LDFLAGS= -version-info $(LIBLINPHONE_SO_VERSION) -no-undefined
@@ -49,6 +50,11 @@ if BUILD_WIN32
 liblinphone_la_LIBADD+=$(top_builddir)/oRTP/src/libortp.la
 endif
 
+noinst_PROGRAMS=test_lsd
+
+test_lsd_SOURCES=test_lsd.c
+
+test_lsd_LDADD=liblinphone.la
 
 AM_CFLAGS=$(STRICT_OPTIONS)  -DIN_LINPHONE \
 	$(ORTP_CFLAGS) \
