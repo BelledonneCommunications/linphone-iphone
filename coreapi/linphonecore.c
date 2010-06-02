@@ -2186,6 +2186,7 @@ static RtpProfile *make_profile(LinphoneCore *lc, const SalMediaDescription *md,
 	RtpProfile *prof=rtp_profile_new("Call profile");
 	bool_t first=TRUE;
 	int remote_bw=0;
+	*used_pt=-1;
 	
 	for(elem=desc->payloads;elem!=NULL;elem=elem->next){
 		PayloadType *pt=(PayloadType*)elem->data;
@@ -2237,7 +2238,7 @@ void linphone_core_start_media_streams(LinphoneCore *lc, LinphoneCall *call){
 	{
 		const SalStreamDescription *stream=sal_media_description_find_stream(call->resultdesc,
 		    					SalProtoRtpAvp,SalAudio);
-		if (stream){
+		if (stream && stream->port!=0){
 			call->audio_profile=make_profile(lc,call->resultdesc,stream,&used_pt);
 			if (!lc->use_files){
 				MSSndCard *playcard=lc->sound_conf.play_sndcard;
@@ -2286,7 +2287,7 @@ void linphone_core_start_media_streams(LinphoneCore *lc, LinphoneCall *call){
 			video_preview_stop(lc->previewstream);
 			lc->previewstream=NULL;
 		}
-		if (stream && (lc->video_conf.display || lc->video_conf.capture)) {
+		if (stream && stream->port!=0 && (lc->video_conf.display || lc->video_conf.capture)) {
 			const char *addr=stream->addr[0]!='\0' ? stream->addr : call->resultdesc->addr;
 			call->video_profile=make_profile(lc,call->resultdesc,stream,&used_pt);
 			video_stream_set_sent_video_size(lc->videostream,linphone_core_get_preferred_video_size(lc));
@@ -2306,6 +2307,8 @@ void linphone_core_start_media_streams(LinphoneCore *lc, LinphoneCall *call){
 				stream->port+1,
 				used_pt, jitt_comp, lc->video_conf.device);
 			video_stream_set_rtcp_information(lc->videostream, cname,tool);
+		}else{
+			ms_warning("No valid video stream defined.");
 		}
 	}
 #endif
