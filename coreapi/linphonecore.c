@@ -1523,7 +1523,7 @@ static void linphone_core_do_plugin_tasks(LinphoneCore *lc){
  * serialized with a mutex.
 **/
 void linphone_core_iterate(LinphoneCore *lc){
-	MSList *the_call;
+	MSList *calls;
 	LinphoneCall *call;
 	int disconnect_timeout = linphone_core_get_nortp_timeout(lc);
 	time_t curtime=time(NULL);
@@ -1550,10 +1550,13 @@ void linphone_core_iterate(LinphoneCore *lc){
 	proxy_update(lc);
 
 	//we have to iterate for each call
-	the_call = lc->calls;
-	while(the_call != NULL)
-	{
-		call = (LinphoneCall *)the_call->data;
+	calls= lc->calls;
+	while(calls!= NULL){
+		call = (LinphoneCall *)calls->data;
+		 /* get immediately a reference to next one in case the one
+		 we are going to examine is destroy and removed during
+		 linphone_core_start_invite() */
+		calls=calls->next;
 		if (call->state==LinphoneCallPreEstablishing && (curtime-call->start_time>=2)){
 				/*start the call even if the OPTIONS reply did not arrive*/
 				linphone_core_start_invite(lc,call,NULL);
@@ -1566,10 +1569,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 					linphone_core_terminate_call(lc,call);
 				}
 			}
-
-		the_call = the_call->next;
-	}//end while
-	//and consider the current call
+	}
 	call = linphone_core_get_current_call(lc);
 	if(call)
 	{
@@ -1840,7 +1840,7 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, LinphonePro
 			lc->vtable.display_status(lc,_("could not call"));
 		if(call == linphone_core_get_current_call(lc))
 			linphone_core_stop_media_streams(lc,call);
-		linphone_call_unref(call);
+		linphone_call_set_terminated (call);
 	}else gstate_new_state(lc, GSTATE_CALL_OUT_INVITE, real_url);
 	ms_free(real_url);
 	ms_free(from);
@@ -2377,7 +2377,6 @@ int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *the_call)
 		lc->vtable.display_status(lc,_("Call ended") );
 	gstate_new_state(lc, GSTATE_CALL_END, NULL);
 	linphone_call_set_terminated(call);
-	linphone_call_unref(call);
 	return 0;
 }
 
@@ -3788,6 +3787,7 @@ bool_t linphone_core_can_we_add_call(LinphoneCore *lc)
 {
 	if(linphone_core_get_calls_nb(lc) < NB_MAX_CALLS)
 		return TRUE;
+	ms_error("Maximum amount of simultaneous calls reached !");
 	return FALSE;
 }
 
@@ -3828,7 +3828,7 @@ int linphone_core_add_call( LinphoneCore *lc, LinphoneCall *call)
 	if(linphone_core_can_we_add_call(lc))
 	{
 		MSList *the_calls = lc->calls;
-		the_calls = ms_list_append(the_calls,(void *)call);
+		the_calls = ms_list_append(the_calls,call);
 		lc->calls = the_calls;
 		return 0;
 	}

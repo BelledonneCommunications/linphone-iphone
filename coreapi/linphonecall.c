@@ -151,20 +151,45 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	return call;
 }
 
+/* this function is called internally to get rid of a call.
+ It performs the following tasks:
+ - remove the call from the internal list of calls
+ - unref the LinphoneCall object
+ - update the call logs accordingly
+*/
+
 void linphone_call_set_terminated(LinphoneCall *call){
 	LinphoneCallStatus status=LinphoneCallAborted;
+	LinphoneCore *lc=call->core;
+
+	if (ms_list_size(lc->calls)==0)
+		linphone_core_notify_all_friends(lc,lc->prev_mode);
+	
+	linphone_core_update_allocated_audio_bandwidth(lc);
 	if (call->state==LinphoneCallAVRunning){
 		status=LinphoneCallSuccess;
+		
 	}
 	linphone_call_log_completed(call->log,call, status);
 	call->state=LinphoneCallTerminated;
+	if (linphone_core_del_call(lc,call) != 0){
+		ms_error("could not remove the call from the list !!!");
+	}
+	if (call == linphone_core_get_current_call(lc)){
+		ms_message("destroying the current call\n");
+		linphone_core_unset_the_current_call(lc);
+	}
+	if (call->op!=NULL) {
+		/* so that we cannot have anymore upcalls for SAL
+		 concerning this call*/
+		sal_op_release(call->op);
+		call->op=NULL;
+	}
+	linphone_call_unref(call);
 }
 
 static void linphone_call_destroy(LinphoneCall *obj)
 {
-	linphone_core_notify_all_friends(obj->core,obj->core->prev_mode);
-	
-	linphone_core_update_allocated_audio_bandwidth(obj->core);
 	if (obj->op!=NULL) {
 		sal_op_release(obj->op);
 		obj->op=NULL;
@@ -180,40 +205,62 @@ static void linphone_call_destroy(LinphoneCall *obj)
 	if (obj->ping_op) {
 		sal_op_release(obj->ping_op);
 	}
-	if(linphone_core_del_call(obj->core,obj) != 0)
-	{
-		ms_error("could not remove the call from the list !!!");
-	}
-	if(obj == linphone_core_get_current_call(obj->core))
-	{
-		ms_message("destroying the current call\n");
-		linphone_core_unset_the_current_call(obj->core);
-	}
 	ms_free(obj);
 }
 
+/**
+ * @addtogroup calls
+ * @{
+**/
+
+/**
+ * Increments the call 's reference count.
+ * An application that wishes to retain a pointer to call object
+ * must use this function to unsure the pointer remains
+ * valid. Once the application no more needs this pointer,
+ * it must call linphone_call_unref().
+**/
 void linphone_call_ref(LinphoneCall *obj){
 	obj->refcnt++;
 }
 
+/**
+ * Decrements the call object reference count.
+ * See linphone_call_ref().
+**/
 void linphone_call_unref(LinphoneCall *obj){
 	obj->refcnt--;
 	if (obj->refcnt==0)
 		linphone_call_destroy(obj);
 }
 
+/**
+ * Returns true if the call is paused.
+**/
 bool_t linphone_call_paused(LinphoneCall *call){
 	return call->state==LinphoneCallPaused;
 }
 
+/**
+ * Returns the remote address associated to this call
+ *
+**/
 const LinphoneAddress * linphone_call_get_remote_address(const LinphoneCall *call){
 	return call->dir==LinphoneCallIncoming ? call->log->from : call->log->to;
 }
 
+/**
+ * Returns the remote address associated to this call as a string.
+ *
+ * The result string must be freed by user using ms_free().
+**/
 char *linphone_call_get_remote_address_as_string(const LinphoneCall *call){
 	return linphone_address_as_string(linphone_call_get_remote_address(call));
 }
 
+/**
+ * Retrieves the call's current state.
+**/
 LinphoneCallState linphone_call_get_state(const LinphoneCall *call){
 	return call->state;
 }
@@ -241,3 +288,8 @@ void linphone_call_set_user_pointer(LinphoneCall *call, void *user_pointer)
 {
 	call->user_pointer = user_pointer;
 }
+
+/**
+ * @}
+**/
+

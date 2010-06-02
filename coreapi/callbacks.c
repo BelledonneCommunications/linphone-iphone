@@ -82,17 +82,11 @@ static void call_received(SalOp *h){
 	to=sal_op_get_to(h);
 	
 	call=linphone_call_new_incoming(lc,linphone_address_new(from),linphone_address_new(to),h);
-	if(linphone_core_add_call(lc,call)!= 0)
-	{
-		ms_warning("we cannot have more calls\n");
-		sal_call_decline(h,SalReasonMedia,NULL);
-		linphone_call_unref(call);
-		return;
-	}
+	
 	if(linphone_core_get_current_call(lc)!=NULL) //we are already in call just inform that an incoming call is going on
 	{
 		char temp[256];
-		snprintf(temp,sizeof(temp),"A new incoming call from %s during call",from);
+		snprintf(temp,sizeof(temp)-1,"A new incoming call from %s during call",from);
 		lc->vtable.display_status(lc,temp);
 	}
 	sal_call_set_local_media_description(h,call->localdesc);
@@ -104,6 +98,8 @@ static void call_received(SalOp *h){
 		linphone_call_unref(call);
 		return;
 	}
+	/* the call is acceptable so we can now add it to our list */
+	linphone_core_add_call(lc,call);
 	
 	from_parsed=linphone_address_new(sal_op_get_from(h));
 	linphone_address_clean(from_parsed);
@@ -330,18 +326,19 @@ static void call_terminated(SalOp *op, const char *from){
 		lc->vtable.show(lc);
 	if (lc->vtable.display_status!=NULL)
 		lc->vtable.display_status(lc,_("Call terminated."));
-	linphone_call_set_terminated(call);
+	call->state=LinphoneCallTerminated;
 	gstate_new_state(lc, GSTATE_CALL_END, NULL);
 	if (lc->vtable.bye_recv!=NULL){
 		LinphoneAddress *addr=linphone_address_new(from);
 		char *tmp;
 		linphone_address_clean(addr);
 		tmp=linphone_address_as_string(addr);
-		lc->vtable.bye_recv(lc,call);
+		if (lc->vtable.bye_recv!=NULL)
+			lc->vtable.bye_recv(lc,call);
 		ms_free(tmp);
 		linphone_address_destroy(addr);
 	}
-	linphone_call_unref(call);
+	linphone_call_set_terminated(call);
 }
 
 static void call_failure(SalOp *op, SalError error, SalReason sr, const char *details, int code){
@@ -413,10 +410,9 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 	if(call == linphone_core_get_current_call(lc))
 		linphone_core_stop_media_streams(lc,call);
 	if (call!=NULL) {
-		linphone_call_set_terminated(call);
-		linphone_call_unref(call);//TODO not an unref here ???//AUREL
 		if (sr!=SalReasonDeclined) gstate_new_state(lc, GSTATE_CALL_ERROR, msg);
 		else gstate_new_state(lc, GSTATE_CALL_END, NULL);
+		linphone_call_set_terminated(call);
 	}
 }
 
