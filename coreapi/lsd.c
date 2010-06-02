@@ -54,7 +54,6 @@ struct _LinphoneSoundDaemon {
 	int out_nchans;
 	MSFilter *mixer;
 	MSFilter *soundout;
-	MSFilter *itcsink;
 	MSTicker *ticker;
 	MSSndCard *proxycard;
 	LsdPlayer branches[MAX_BRANCHES];
@@ -62,9 +61,9 @@ struct _LinphoneSoundDaemon {
 
 static MSFilter *create_writer(MSSndCard *c){
 	LinphoneSoundDaemon *lsd=(LinphoneSoundDaemon*)c->data;
-	lsd->itcsink=ms_filter_new(MS_ITC_SINK_ID);
-	ms_filter_call_method(lsd->itcsink,MS_ITC_SINK_CONNECT,lsd->branches[0].player);
-	return lsd->itcsink;
+	MSFilter *itcsink=ms_filter_new(MS_ITC_SINK_ID);
+	ms_filter_call_method(itcsink,MS_ITC_SINK_CONNECT,lsd->branches[0].player);
+	return itcsink;
 }
 
 static MSSndCardDesc proxycard={
@@ -163,10 +162,28 @@ static void lsd_player_on_eop(void * userdata, unsigned int id, void *arg){
 		p->eop_cb(p);
 }
 
-int lsd_player_play(LsdPlayer *b, const char *filename ){
+static void lsd_player_configure(LsdPlayer *b){
 	int rate,chans;
-	int state;
 	LinphoneSoundDaemon *lsd=b->lsd;
+
+	if (ms_filter_get_id(b->player)==MS_ITC_SOURCE_ID)
+		ms_message("Configuring branch coming from audio call...");
+	
+	ms_filter_call_method(b->player,MS_FILTER_GET_SAMPLE_RATE,&rate);
+	ms_filter_call_method(b->player,MS_FILTER_GET_NCHANNELS,&chans);
+	
+	
+	ms_filter_call_method(b->rateconv,MS_FILTER_SET_SAMPLE_RATE,&rate);
+	ms_filter_call_method(b->rateconv,MS_FILTER_SET_NCHANNELS,&chans);
+	ms_filter_call_method(b->rateconv,MS_FILTER_SET_OUTPUT_SAMPLE_RATE,&lsd->out_rate);
+
+	ms_filter_call_method(b->chanadapter,MS_FILTER_SET_NCHANNELS,&chans);
+	ms_filter_call_method(b->chanadapter,MS_CHANNEL_ADAPTER_SET_OUTPUT_NCHANNELS,&lsd->out_nchans);
+	ms_message("player configured for rate=%i, channels=%i",rate,chans);
+}
+
+int lsd_player_play(LsdPlayer *b, const char *filename ){
+	int state;
 	
 	ms_filter_call_method(b->player,MS_PLAYER_GET_STATE,&state);
 	if (state!=MSPlayerClosed){
@@ -177,16 +194,8 @@ int lsd_player_play(LsdPlayer *b, const char *filename ){
 		ms_warning("Could not play %s",filename);
 		return -1;
 	}
-	ms_filter_call_method(b->player,MS_FILTER_GET_SAMPLE_RATE,&rate);
-	ms_filter_call_method(b->player,MS_FILTER_GET_NCHANNELS,&chans);
 	ms_filter_set_notify_callback (b->player,lsd_player_on_eop,b);
-	
-	ms_filter_call_method(b->rateconv,MS_FILTER_SET_SAMPLE_RATE,&rate);
-	ms_filter_call_method(b->rateconv,MS_FILTER_SET_NCHANNELS,&chans);
-	ms_filter_call_method(b->rateconv,MS_FILTER_SET_OUTPUT_SAMPLE_RATE,&lsd->out_rate);
-
-	ms_filter_call_method(b->chanadapter,MS_FILTER_SET_NCHANNELS,&chans);
-	ms_filter_call_method(b->chanadapter,MS_CHANNEL_ADAPTER_SET_OUTPUT_NCHANNELS,&lsd->out_nchans);
+	lsd_player_configure(b);
 	ms_filter_call_method_noarg (b->player,MS_PLAYER_START);
 	return 0;
 }
@@ -229,7 +238,6 @@ LinphoneSoundDaemon * linphone_sound_daemon_new(const char *cardname){
 	lsd=ms_new0(LinphoneSoundDaemon,1);
 	lsd->soundout=ms_snd_card_create_writer(card);
 	lsd->mixer=ms_filter_new(MS_AUDIO_MIXER_ID);
-	lsd->itcsink=ms_filter_new(MS_ITC_SINK_ID);
 	lsd->out_rate=44100;
 	lsd->out_nchans=2;
 	ms_filter_call_method(lsd->soundout,MS_FILTER_SET_SAMPLE_RATE,&lsd->out_rate);
@@ -241,6 +249,8 @@ LinphoneSoundDaemon * linphone_sound_daemon_new(const char *cardname){
 	mp.pin=0;
 
 	lsd_player_init(&lsd->branches[0],mp,MS_ITC_SOURCE_ID,lsd);
+	ms_filter_set_notify_callback(lsd->branches[0].player,(MSFilterNotifyFunc)lsd_player_configure,&lsd->branches[0]);
+	ms_filter_enable_synchronous_notifcations (lsd->branches[0].player,TRUE);
 	for(i=1;i<MAX_BRANCHES;++i){
 		mp.pin=i;
 		lsd_player_init(&lsd->branches[i],mp,MS_FILE_PLAYER_ID,lsd);
@@ -268,7 +278,6 @@ void linphone_sound_daemon_destroy(LinphoneSoundDaemon *obj){
 	ms_ticker_destroy(obj->ticker);
 	ms_filter_destroy(obj->soundout);
 	ms_filter_destroy(obj->mixer);
-	ms_filter_destroy(obj->itcsink);
 }
 
 MSSndCard *linphone_sound_daemon_get_proxy_card(LinphoneSoundDaemon *lsd){

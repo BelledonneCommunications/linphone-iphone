@@ -2135,9 +2135,6 @@ static RtpProfile *make_profile(LinphoneCore *lc, const SalMediaDescription *md,
 }
 
 void linphone_core_start_media_streams(LinphoneCore *lc, LinphoneCall *call){
-#ifdef PRINTF_DEBUG
-	printf("%s(%d)\n",__FUNCTION__,__LINE__);
-#endif
 	LinphoneAddress *me=linphone_core_get_primary_contact_parsed(lc);
 	const char *tool="linphone-" LINPHONE_VERSION;
 	char *cname;
