@@ -218,6 +218,7 @@ static void call_accepted(SalOp *op){
 		}//if there is an accepted incoming call
 		else
 		{
+			linphone_core_set_as_current_call (lc,call);
 			gstate_new_state(lc, GSTATE_CALL_OUT_CONNECTED, NULL);
 			linphone_connect_incoming(lc,call);
 		}		

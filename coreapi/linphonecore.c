@@ -313,7 +313,7 @@ int linphone_core_get_current_call_duration(const LinphoneCore *lc){
 
 const LinphoneAddress *linphone_core_get_current_call_remote_address(struct _LinphoneCore *lc){
 	LinphoneCall *call=linphone_core_get_current_call(lc);
-	if (call==NULL) return 0;
+	if (call==NULL) return NULL;
 	return linphone_call_get_remote_address(call);
 }
 
