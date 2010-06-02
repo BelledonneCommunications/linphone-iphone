@@ -1017,10 +1017,12 @@ static void authentication_ok(Sal *sal, eXosip_event_t *ev){
 static bool_t call_failure(Sal *sal, eXosip_event_t *ev){
 	SalOp *op;
 	int code=0;
+	char* computedReason=NULL;
 	const char *reason=NULL;
 	SalError error=SalErrorUnknown;
 	SalReason sr=SalReasonUnknown;
 	
+
 	op=(SalOp*)find_op(sal,ev);
 
 	if (op==NULL) {
@@ -1031,6 +1033,15 @@ static bool_t call_failure(Sal *sal, eXosip_event_t *ev){
 	if (ev->response){
 		code=osip_message_get_status_code(ev->response);
 		reason=osip_message_get_reason_phrase(ev->response);
+		osip_header_t *h=NULL;
+		if (!osip_message_header_get_byname(	ev->response
+											,"Reason"
+											,0
+											,&h)) {
+			computedReason = ms_strdup_printf("%s %s",reason,osip_header_get_value(h));
+			reason = computedReason;
+
+		}
 	}
 	switch(code)
 	{
@@ -1077,6 +1088,9 @@ static bool_t call_failure(Sal *sal, eXosip_event_t *ev){
 			}else error=SalErrorNoResponse;
 	}
 	sal->callbacks.call_failure(op,error,sr,reason,code);
+	if (computedReason != NULL){
+		ms_free(computedReason);
+	}
 	return TRUE;
 }
 
@@ -1601,18 +1615,6 @@ int sal_unregister(SalOp *h){
 	return 0;
 }
 
-static void sal_address_quote_displayname(SalAddress *addr){
-	osip_from_t *u=(osip_from_t*)addr;
-	if (u->displayname!=NULL && u->displayname[0]!='\0' 
-	    	&& u->displayname[0]!='"'){
-		int len=strlen(u->displayname)+1+2;
-		char *quoted=osip_malloc(len);
-		snprintf(quoted,len,"\"%s\"",u->displayname);
-		osip_free(u->displayname);
-		u->displayname=quoted;
-	}
-}
-
 SalAddress * sal_address_new(const char *uri){
 	osip_from_t *from;
 	osip_from_init(&from);
@@ -1620,7 +1622,11 @@ SalAddress * sal_address_new(const char *uri){
 		osip_from_free(from);
 		return NULL;
 	}
-	sal_address_quote_displayname ((SalAddress*)from);
+	if (from->displayname!=NULL && from->displayname[0]=='"'){
+		char *unquoted=osip_strdup_without_quote(from->displayname);
+		osip_free(from->displayname);
+		from->displayname=unquoted;
+	}
 	return (SalAddress*)from;
 }
 
@@ -1642,18 +1648,6 @@ const char *sal_address_get_display_name(const SalAddress* addr){
 	return null_if_empty(u->displayname);
 }
 
-char *sal_address_get_display_name_unquoted(const SalAddress *addr){
-	const osip_from_t *u=(const osip_from_t*)addr;
-	const char *dn=null_if_empty(u->displayname);
-	char *ret=NULL;
-	if (dn!=NULL) {
-		char *tmp=osip_strdup_without_quote(dn);
-		ret=ms_strdup(tmp);
-		osip_free(tmp);
-	}
-	return ret;
-}
-
 const char *sal_address_get_username(const SalAddress *addr){
 	const osip_from_t *u=(const osip_from_t*)addr;
 	return null_if_empty(u->url->username);
@@ -1672,7 +1666,6 @@ void sal_address_set_display_name(SalAddress *addr, const char *display_name){
 	}
 	if (display_name!=NULL && display_name[0]!='\0'){
 		u->displayname=osip_strdup(display_name);
-		sal_address_quote_displayname(addr);
 	}
 }
 
@@ -1724,7 +1717,19 @@ void sal_address_clean(SalAddress *addr){
 
 char *sal_address_as_string(const SalAddress *u){
 	char *tmp,*ret;
-	osip_from_to_str((osip_from_t*)u,&tmp);
+	osip_from_t *from=(osip_from_t *)u;
+	char *old_displayname=NULL;
+	/* hack to force use of quotes around the displayname*/
+	if (from->displayname!=NULL
+	    && from->displayname[0]!='"'){
+		old_displayname=from->displayname;
+		from->displayname=osip_enquote(from->displayname);
+	}
+	osip_from_to_str(from,&tmp);
+	if (old_displayname!=NULL){
+		ms_free(from->displayname);
+		from->displayname=old_displayname;
+	}
 	ret=ms_strdup(tmp);
 	osip_free(tmp);
 	return ret;
@@ -1741,6 +1746,7 @@ char *sal_address_as_string_uri_only(const SalAddress *u){
 void sal_address_destroy(SalAddress *u){
 	osip_from_free((osip_from_t*)u);
 }
+
 void sal_set_keepalive_period(Sal *ctx,unsigned int value) {
 	eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE, &value);
 }

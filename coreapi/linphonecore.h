@@ -64,7 +64,6 @@ LinphoneAddress * linphone_address_new(const char *uri);
 LinphoneAddress * linphone_address_clone(const LinphoneAddress *uri);
 const char *linphone_address_get_scheme(const LinphoneAddress *u);
 const char *linphone_address_get_display_name(const LinphoneAddress* u);
-char *linphone_address_get_display_name_unquoted(const LinphoneAddress *u);
 const char *linphone_address_get_username(const LinphoneAddress *u);
 const char *linphone_address_get_domain(const LinphoneAddress *u);
 void linphone_address_set_display_name(LinphoneAddress *u, const char *display_name);
@@ -367,6 +366,7 @@ typedef enum _gstate {
   GSTATE_REG_NONE = 10,       /* initial state */
   GSTATE_REG_OK,
   GSTATE_REG_FAILED,
+  GSTATE_REG_PENDING, /* a registration request is ongoing*/
   /* states for GSTATE_GROUP_CALL */
   GSTATE_CALL_IDLE = 20,      /* initial state */
   GSTATE_CALL_OUT_INVITE,
@@ -375,7 +375,8 @@ typedef enum _gstate {
   GSTATE_CALL_IN_CONNECTED,
   GSTATE_CALL_END,
   GSTATE_CALL_ERROR,
-  GSTATE_INVALID
+  GSTATE_INVALID,
+  GSTATE_CALL_OUT_RINGING /*remote ringing*/
 } gstate_t;
 
 struct _LinphoneGeneralState {
