@@ -78,6 +78,9 @@ static int lpc_cmd_ports(LinphoneCore *lc, char *args);
 static int lpc_cmd_speak(LinphoneCore *lc, char *args);
 static int lpc_cmd_codec(LinphoneCore *lc, char *args);
 static int lpc_cmd_echocancellation(LinphoneCore *lc, char *args);
+static int lpc_cmd_mute_mic(LinphoneCore *lc, char *args);
+static int lpc_cmd_unmute_mic(LinphoneCore *lc, char *args);
+static int lpc_cmd_rtp_no_xmit_on_audio_mute(LinphoneCore *lc, char *args);
 
 /* Command handler helpers */
 static void linphonec_proxy_add(LinphoneCore *lc);
@@ -223,6 +226,14 @@ LPC_COMMAND commands[] = {
             "'ec on [<delay>] [<tail>] [<framesize>]' : turn EC on with given delay, tail length and framesize\n"
             "'ec off' : turn echo cancellation (EC) off\n"
             "'ec show' : show EC status" },
+	{ "mute", lpc_cmd_mute_mic, 
+	  "Mute microphone and suspend voice transmission."},
+	{ "unmute", lpc_cmd_unmute_mic, 
+	  "Unmute microphone and resume voice transmission."},
+	{ "nortp-on-audio-mute", lpc_cmd_rtp_no_xmit_on_audio_mute,
+	  "Set the rtp_no_xmit_on_audio_mute configuration parameter",
+	  "   If set to 1 then rtp transmission will be muted when\n"
+	  "   audio is muted , otherwise rtp is always sent."}, 
 	{ (char *)NULL, (lpc_cmd_handler)NULL, (char *)NULL, (char *)NULL }
 };
 
@@ -1606,9 +1617,11 @@ static int lpc_cmd_status(LinphoneCore *lc, char *args)
 				linphonec_out("hook=offhook\n");
 			break;
 			case GSTATE_CALL_OUT_CONNECTED:
-				linphonec_out("Call out, hook=%s duration=%i\n", linphonec_get_callee(),
-					linphone_core_get_current_call_duration(lc));
-			break;
+				linphonec_out("Call out, hook=%s duration=%i, muted=%s rtp-xmit-muted=%s\n", linphonec_get_callee(),
+					      linphone_core_get_current_call_duration(lc),
+					      lc->audio_muted ? "yes" : "no",
+					      linphone_core_is_rtp_muted(lc) ? "yes"  : "no");
+ 			break;
 			case GSTATE_CALL_IN_CONNECTED:
 				linphonec_out("hook=answered duration=%i\n" ,
 					linphone_core_get_current_call_duration(lc));
@@ -1819,6 +1832,41 @@ static int lpc_cmd_echocancellation(LinphoneCore *lc, char *args){
 
     return 1;
 }
+
+static int lpc_cmd_mute_mic(LinphoneCore *lc, char *args)
+{
+  if ( lc->call != NULL )
+    linphone_core_mute_mic(lc, 1);
+  return 1;
+}
+
+static int lpc_cmd_unmute_mic(LinphoneCore *lc, char *args)
+{
+  if ( lc->call != NULL )
+    linphone_core_mute_mic(lc, 0);
+  return 1;
+}
+
+static int lpc_cmd_rtp_no_xmit_on_audio_mute(LinphoneCore *lc, char *args)
+{
+  bool_t rtp_xmit_off=FALSE;
+  char *status;
+  gstate_t call_state=linphone_core_get_state(lc,GSTATE_GROUP_CALL);
+
+  if(args){
+    if(strstr(args,"1"))rtp_xmit_off=TRUE;
+    if(call_state == GSTATE_CALL_IDLE)
+      linphone_core_set_rtp_no_xmit_on_audio_mute(lc,rtp_xmit_off);
+    else 
+      linphonec_out("nortp-on-audio-mute: call in progress - cannot change state\n");
+  }
+  rtp_xmit_off=linphone_core_get_rtp_no_xmit_on_audio_mute(lc);
+  if(rtp_xmit_off)status="off";
+  else status="on";
+  linphonec_out("rtp transmit %s when audio muted\n",status);
+  return 1;
+}
+
 
 /***************************************************************************
  *

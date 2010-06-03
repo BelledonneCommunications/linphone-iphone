@@ -730,6 +730,8 @@ static void rtp_config_read(LinphoneCore *lc)
 	int port;
 	int jitt_comp;
 	int nortp_timeout;
+	bool_t rtp_no_xmit_on_audio_mute;
+
 	port=lp_config_get_int(lc->config,"rtp","audio_rtp_port",7078);
 	linphone_core_set_audio_port(lc,port);
 
@@ -742,6 +744,8 @@ static void rtp_config_read(LinphoneCore *lc)
 	jitt_comp=lp_config_get_int(lc->config,"rtp","video_jitt_comp",60);
 	nortp_timeout=lp_config_get_int(lc->config,"rtp","nortp_timeout",30);
 	linphone_core_set_nortp_timeout(lc,nortp_timeout);
+	rtp_no_xmit_on_audio_mute=lp_config_get_int(lc->config,"rtp","rtp_no_xmit_on_audio_mute",FALSE);
+	linphone_core_set_rtp_no_xmit_on_audio_mute(lc,rtp_no_xmit_on_audio_mute);	
 }
 
 static PayloadType * find_payload(RtpProfile *prof, const char *mime_type, int clock_rate, const char *recv_fmtp){
@@ -1362,6 +1366,10 @@ int linphone_core_get_nortp_timeout(const LinphoneCore *lc){
 	return lc->rtp_conf.nortp_timeout;
 }
 
+bool_t linphone_core_get_rtp_no_xmit_on_audio_mute(const LinphoneCore *lc){
+	return lc->rtp_conf.rtp_no_xmit_on_audio_mute;
+}
+
 /**
  * Sets the nominal audio jitter buffer size in milliseconds.
  *
@@ -1370,6 +1378,10 @@ int linphone_core_get_nortp_timeout(const LinphoneCore *lc){
 void linphone_core_set_audio_jittcomp(LinphoneCore *lc, int value)
 {
 	lc->rtp_conf.audio_jitt_comp=value;
+}
+
+void linphone_core_set_rtp_no_xmit_on_audio_mute(LinphoneCore *lc,bool_t rtp_no_xmit_on_audio_mute){
+	lc->rtp_conf.rtp_no_xmit_on_audio_mute=rtp_no_xmit_on_audio_mute;
 }
 
 /**
@@ -2154,6 +2166,7 @@ static void post_configure_audio_streams(LinphoneCore *lc){
 	float gain=lp_config_get_float(lc->config,"sound","mic_gain",-1);
 	if (gain!=-1)
 		audio_stream_set_mic_gain(st,gain);
+	lc->audio_muted=FALSE;
 	float recv_gain = lc->sound_conf.soft_play_lev;
 	if (recv_gain != 0) {
 		linphone_core_set_soft_play_level(lc,recv_gain);
@@ -2907,6 +2920,10 @@ void linphone_core_mute_mic(LinphoneCore *lc, bool_t val){
 	if (lc->audiostream!=NULL){
 		 audio_stream_set_mic_gain(lc->audiostream,
 			(val==TRUE) ? 0 : 1.0);
+		 if ( linphone_core_get_rtp_no_xmit_on_audio_mute(lc) ){
+		   audio_stream_mute_rtp(lc->audiostream,val);
+		 }
+                 lc->audio_muted=val;
 	}
 }
 
@@ -2917,6 +2934,24 @@ bool_t linphone_core_is_mic_muted(LinphoneCore *lc) {
 	}else ms_warning("Could not get gain: gain control wasn't activated. ");
 
 	return gain==0;
+}
+
+// returns audio mute status for active stream
+bool_t linphone_core_is_audio_muted(LinphoneCore *lc){
+        if( lc->audiostream != NULL )
+	  return (lc->audio_muted);
+        return FALSE;
+}
+
+// returns rtp transmission status for an active stream
+// if audio is muted and config parameter rtp_no_xmit_on_audio_mute 
+// was set on then rtp transmission is also muted
+bool_t linphone_core_is_rtp_muted(LinphoneCore *lc){
+        if( (lc->audiostream != NULL) &&  
+	    linphone_core_get_rtp_no_xmit_on_audio_mute(lc)){
+	  return lc->audio_muted;
+	}
+	return FALSE;
 }
 
 void linphone_core_enable_agc(LinphoneCore *lc, bool_t val){

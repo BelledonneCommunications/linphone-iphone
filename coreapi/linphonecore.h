@@ -688,6 +688,12 @@ void linphone_core_mute_mic(LinphoneCore *lc, bool_t muted);
 **/
 bool_t linphone_core_is_mic_muted(LinphoneCore *lc);
 
+bool_t linphone_core_is_audio_muted(LinphoneCore *lc);
+bool_t linphone_core_is_rtp_muted(LinphoneCore *lc);
+
+bool_t linphone_core_get_rtp_no_xmit_on_audio_mute(const LinphoneCore *lc);
+void linphone_core_set_rtp_no_xmit_on_audio_mute(LinphoneCore *lc, bool_t val);
+
 void linphone_core_set_presence_info(LinphoneCore *lc,int minutes_away,const char *contact,LinphoneOnlineStatus os);
 
 LinphoneOnlineStatus linphone_core_get_presence_info(const LinphoneCore *lc);
