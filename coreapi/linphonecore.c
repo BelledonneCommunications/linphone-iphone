@@ -646,7 +646,18 @@ static void sip_config_read(LinphoneCore *lc)
 	}
 	linphone_core_enable_ipv6(lc,ipv6);
 	port=lp_config_get_int(lc->config,"sip","sip_port",5060);
-	linphone_core_set_sip_port(lc,port);
+
+	tmpstr=lp_config_get_string(lc->config,"sip","transport","udp");
+	if (strcmp("udp",tmpstr) == 0 ) {
+		lc->sip_conf.transport=SalTransportDatagram;
+	} else if (strcmp("tcp",tmpstr) == 0) {
+		lc->sip_conf.transport=SalTransportStream;
+	} else {
+		lc->sip_conf.transport=SalTransportDatagram;
+		ms_warning("unsupported transport, using udp");
+	}
+	/*start listening on port*/
+ 	linphone_core_set_sip_port(lc,port);
 
 	tmpstr=lp_config_get_string(lc->config,"sip","contact",NULL);
 	if (tmpstr==NULL || linphone_core_set_primary_contact(lc,tmpstr)==-1) {
@@ -697,6 +708,11 @@ static void sip_config_read(LinphoneCore *lc)
 			break;
 		}
 	}
+
+
+
+
+	lc->sip_conf.sdp_200_ack=lp_config_get_int(lc->config,"sip","sdp_200_ack",0);
 	
 	/*for tuning or test*/
 	lc->sip_conf.sdp_200_ack=lp_config_get_int(lc->config,"sip","sdp_200_ack",0);
@@ -1482,9 +1498,11 @@ void linphone_core_set_sip_port(LinphoneCore *lc,int port)
 		anyaddr="::0";
 	else
 		anyaddr="0.0.0.0";
-	err=sal_listen_port (lc->sal,anyaddr,port, SalTransportDatagram,FALSE);
+
+
+	err=sal_listen_port (lc->sal,anyaddr,port, lc->sip_conf.transport,FALSE);
 	if (err<0){
-		char *msg=ortp_strdup_printf("UDP port %i seems already in use ! Cannot initialize.",port);
+		char *msg=ortp_strdup_printf("Port %i seems already in use ! Cannot initialize.",port);
 		ms_warning(msg);
 		lc->vtable.display_warning(lc,msg);
 		ms_free(msg);

@@ -242,6 +242,7 @@ struct _LinphoneFriend{
 	bool_t inc_subscribe_pending;
 };	
 
+
 typedef struct sip_config
 {
 	char *contact;
@@ -261,6 +262,8 @@ typedef struct sip_config
 	bool_t ping_with_options;
 	bool_t auto_net_state_mon;
 	unsigned int keepalive_period; /* interval in ms between keep alive messages sent to the proxy server*/
+	SalTransport transport;
+
 } sip_config_t;
 
 typedef struct rtp_config

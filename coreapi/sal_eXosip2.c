@@ -314,6 +314,17 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 	bool_t ipv6;
 	int proto=IPPROTO_UDP;
 	
+	switch (tr) {
+	case SalTransportDatagram:
+		proto=IPPROTO_UDP;
+		break;
+	case SalTransportStream:
+		proto= IPPROTO_TCP;
+		break;
+	default:
+		ms_warning("unexpected proto, using datagram");
+	}
+
 	if (ctx->running){
 		eXosip_quit();
 		eXosip_init();
@@ -325,8 +336,8 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 	ipv6=strchr(addr,':')!=NULL;
 	eXosip_enable_ipv6(ipv6);
 
-	if (tr!=SalTransportDatagram || is_secure){
-		ms_fatal("SIP over TCP or TLS or DTLS is not supported yet.");
+	if (is_secure){
+		ms_fatal("SIP over TLS or DTLS is not supported yet.");
 		return -1;
 	}
 	err=eXosip_listen_addr(proto, addr, port, ipv6 ?  PF_INET6 : PF_INET, 0);
