@@ -378,6 +378,12 @@ static int extract_received_rport(osip_message_t *msg, const char **received, in
 	*received=NULL;
 	osip_message_get_via(msg,0,&via);
 	if (!via) return -1;
+
+	/* it is useless to do that with tcp since client socket might have a different port
+		than the server socket.
+	*/
+	if (strcasecmp(via->protocol,"tcp")==0) return -1;
+	
 	if (via->port && via->port[0]!='\0')
 		*rportval=atoi(via->port);
 	
