@@ -628,14 +628,14 @@ static void sip_config_read(LinphoneCore *lc)
 {
 	char *contact;
 	const char *tmpstr;
-	int port;
+	LCSipTransports tr;
 	int i,tmp;
 	int ipv6;
-	port=lp_config_get_int(lc->config,"sip","use_info",0);
-	linphone_core_set_use_info_for_dtmf(lc,port);
+	tmp=lp_config_get_int(lc->config,"sip","use_info",0);
+	linphone_core_set_use_info_for_dtmf(lc,tmp);
 
-	port=lp_config_get_int(lc->config,"sip","use_rfc2833",0);
-	linphone_core_set_use_rfc2833_for_dtmf(lc,port);
+	tmp=lp_config_get_int(lc->config,"sip","use_rfc2833",0);
+	linphone_core_set_use_rfc2833_for_dtmf(lc,tmp);
 
 	ipv6=lp_config_get_int(lc->config,"sip","use_ipv6",-1);
 	if (ipv6==-1){
@@ -645,19 +645,12 @@ static void sip_config_read(LinphoneCore *lc)
 		}
 	}
 	linphone_core_enable_ipv6(lc,ipv6);
-	port=lp_config_get_int(lc->config,"sip","sip_port",5060);
+	memset(&tr,0,sizeof(tr));
+	tr.udp_port=lp_config_get_int(lc->config,"sip","sip_port",5060);
+	tr.tcp_port=lp_config_get_int(lc->config,"sip","sip_tcp_port",0);
 
-	tmpstr=lp_config_get_string(lc->config,"sip","transport","udp");
-	if (strcmp("udp",tmpstr) == 0 ) {
-		lc->sip_conf.transport=SalTransportDatagram;
-	} else if (strcmp("tcp",tmpstr) == 0) {
-		lc->sip_conf.transport=SalTransportStream;
-	} else {
-		lc->sip_conf.transport=SalTransportDatagram;
-		ms_warning("unsupported transport, using udp");
-	}
-	/*start listening on port*/
- 	linphone_core_set_sip_port(lc,port);
+	/*start listening on ports*/
+ 	linphone_core_set_sip_transports(lc,&tr);
 
 	tmpstr=lp_config_get_string(lc->config,"sip","contact",NULL);
 	if (tmpstr==NULL || linphone_core_set_primary_contact(lc,tmpstr)==-1) {
@@ -1237,7 +1230,7 @@ static void update_primary_contact(LinphoneCore *lc){
 		lc->sip_conf.loopback_only=TRUE;
 	}else lc->sip_conf.loopback_only=FALSE;
 	linphone_address_set_domain(url,tmp);
-	linphone_address_set_port_int(url,lc->sip_conf.sip_port);
+	linphone_address_set_port_int(url,linphone_core_get_sip_port (lc));
 	guessed=linphone_address_as_string(url);
 	lc->sip_conf.guessed_contact=guessed;
 	linphone_address_destroy(url);
@@ -1456,11 +1449,13 @@ void linphone_core_set_use_rfc2833_for_dtmf(LinphoneCore *lc,bool_t use_rfc2833)
 /**
  * Returns the UDP port used by SIP.
  *
+ * Deprecated: use linphone_core_get_sip_transports() instead.
  * @ingroup network_parameters
 **/
 int linphone_core_get_sip_port(LinphoneCore *lc)
 {
-	return lc->sip_conf.sip_port;
+	LCSipTransports *tr=&lc->sip_conf.transports;
+	return tr->udp_port>0 ? tr->udp_port : tr->tcp_port;
 }
 
 static char _ua_name[64]="Linphone";
@@ -1492,35 +1487,89 @@ void linphone_core_set_user_agent(const char *name, const char *ver){
 	strncpy(_ua_version,ver,sizeof(_ua_version));
 }
 
-/**
- * Sets the UDP port to be used by SIP.
- *
- * @ingroup network_parameters
-**/
-void linphone_core_set_sip_port(LinphoneCore *lc,int port)
-{
-	const char *anyaddr;
-	int err=0;
-	if (port==lc->sip_conf.sip_port) return;
-	lc->sip_conf.sip_port=port;
+static void transport_error(LinphoneCore *lc, const char* transport, int port){
+	char *msg=ortp_strdup_printf("Could not start %s transport on port %i, maybe this port is already used.",transport,port);
+	ms_warning(msg);
+	if (lc->vtable.display_warning)
+		lc->vtable.display_warning(lc,msg);
+	ms_free(msg);
+}
 
-	if (lc->sal==NULL) return;
-	
+static bool_t transports_unchanged(const LCSipTransports * tr1, const LCSipTransports * tr2){
+	return
+		tr2->udp_port==tr1->udp_port &&
+		tr2->tcp_port==tr1->tcp_port &&
+		tr2->dtls_port==tr1->dtls_port &&
+		tr2->tls_port==tr1->tls_port;
+}
+
+static int apply_transports(LinphoneCore *lc){
+	Sal *sal=lc->sal;
+	const char *anyaddr;
+	LCSipTransports *tr=&lc->sip_conf.transports;
+
 	if (lc->sip_conf.ipv6_enabled)
 		anyaddr="::0";
 	else
 		anyaddr="0.0.0.0";
 
-
-	err=sal_listen_port (lc->sal,anyaddr,port, lc->sip_conf.transport,FALSE);
-	if (err<0){
-		char *msg=ortp_strdup_printf("Port %i seems already in use ! Cannot initialize.",port);
-		ms_warning(msg);
-		lc->vtable.display_warning(lc,msg);
-		ms_free(msg);
-		return;
+	sal_unlisten_ports (sal);
+	if (tr->udp_port>0){
+		if (sal_listen_port (sal,anyaddr,tr->udp_port,SalTransportDatagram,FALSE)!=0){
+			transport_error(lc,"UDP",tr->udp_port);
+			return -1;
+		}
+	}
+	if (tr->tcp_port>0){
+		if (sal_listen_port (sal,anyaddr,tr->tcp_port,SalTransportStream,FALSE)!=0){
+			transport_error(lc,"TCP",tr->tcp_port);
+		}
 	}
 	apply_user_agent(lc);
+	return 0;
+}
+
+/**
+ * Sets the ports to be used for each of transport (UDP or TCP)
+ *
+ * A zero value port for a given transport means the transport
+ * is not used.
+ *
+ * @ingroup network_parameters
+**/
+int linphone_core_set_sip_transports(LinphoneCore *lc, const LCSipTransports * tr){
+	
+	if (transports_unchanged(tr,&lc->sip_conf.transports))
+		return 0;
+	memcpy(&lc->sip_conf.transports,tr,sizeof(*tr));
+	
+	if (lc->sal==NULL) return 0;
+	return apply_transports(lc);
+}
+
+/**
+ * Retrieves the ports used for each transport (udp, tcp).
+ * A zero value port for a given transport means the transport
+ * is not used.
+ * @ingroup network_parameters
+**/
+int linphone_core_get_sip_transport(LinphoneCore *lc, LCSipTransports *tr){
+	memcpy(tr,&lc->sip_conf.transports,sizeof(*tr));
+	return 0;
+}
+
+/**
+ * Sets the UDP port to be used by SIP.
+ *
+ * Deprecated: use linphone_core_set_sip_transports() instead.
+ * @ingroup network_parameters
+**/
+void linphone_core_set_sip_port(LinphoneCore *lc,int port)
+{
+	LCSipTransports tr;
+	memset(&tr,0,sizeof(tr));
+	tr.udp_port=port;
+	linphone_core_set_sip_transports (lc,&tr);
 }
 
 /**
@@ -1547,7 +1596,7 @@ void linphone_core_enable_ipv6(LinphoneCore *lc, bool_t val){
 		lc->sip_conf.ipv6_enabled=val;
 		if (lc->sal){
 			/* we need to restart eXosip */
-			linphone_core_set_sip_port(lc, lc->sip_conf.sip_port);
+			apply_transports(lc);
 		}
 	}
 }
@@ -3478,7 +3527,7 @@ void sip_config_uninit(LinphoneCore *lc)
 	MSList *elem;
 	int i;
 	sip_config_t *config=&lc->sip_conf;
-	lp_config_set_int(lc->config,"sip","sip_port",config->sip_port);
+	lp_config_set_int(lc->config,"sip","sip_port",config->transports.udp_port);
 	lp_config_set_int(lc->config,"sip","guess_hostname",config->guess_hostname);
 	lp_config_set_string(lc->config,"sip","contact",config->contact);
 	lp_config_set_int(lc->config,"sip","inc_timeout",config->inc_timeout);

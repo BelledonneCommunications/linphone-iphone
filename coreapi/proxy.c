@@ -230,14 +230,39 @@ void linphone_proxy_config_apply(LinphoneProxyConfig *obj,LinphoneCore *lc)
 	linphone_proxy_config_done(obj);
 }
 
+static char *guess_contact_for_register(LinphoneProxyConfig *obj){
+	LinphoneAddress *proxy=linphone_address_new(obj->reg_proxy);
+	char *ret=NULL;
+	const char *host;
+	if (proxy==NULL) return NULL;
+	host=linphone_address_get_domain (proxy);
+	if (host!=NULL){
+		LinphoneAddress *contact;
+		char localip[LINPHONE_IPADDR_SIZE];
+		
+		linphone_core_get_local_ip(obj->lc,host,localip);
+		contact=linphone_address_new(obj->reg_identity);
+		linphone_address_set_domain (contact,localip);
+		linphone_address_set_port_int(contact,linphone_core_get_sip_port(obj->lc));
+		ret=linphone_address_as_string_uri_only (contact);
+		linphone_address_destroy(contact);
+	}
+	linphone_address_destroy (proxy);
+	return ret;
+}
+
 static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
 	const char *id_str;
 	if (obj->reg_identity!=NULL) id_str=obj->reg_identity;
 	else id_str=linphone_core_get_primary_contact(obj->lc);
 	if (obj->reg_sendregister){
+		char *contact;
 		if (obj->op)
 			sal_op_release(obj->op);
 		obj->op=sal_op_new(obj->lc->sal);
+		contact=guess_contact_for_register(obj);
+		sal_op_set_contact(obj->op,contact);
+		ms_free(contact);
 		sal_op_set_user_pointer(obj->op,obj);
 		if (!sal_register(obj->op,obj->reg_proxy,obj->reg_identity,obj->expires)) {
 			gstate_new_state(obj->lc,GSTATE_REG_PENDING,NULL);

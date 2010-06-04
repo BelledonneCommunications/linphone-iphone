@@ -251,6 +251,7 @@ Sal * sal_init(){
 	}
 	eXosip_init();
 	sal=ms_new0(Sal,1);
+	sal->keepalive_period=30;
 	return sal;
 }
 
@@ -309,6 +310,14 @@ void sal_set_callbacks(Sal *ctx, const SalCallbacks *cbs){
 		ctx->callbacks.ping_reply=(SalOnPingReply)unimplemented_stub;
 }
 
+int sal_unlisten_ports(Sal *ctx){
+	if (ctx->running){
+		eXosip_quit();
+		eXosip_init();
+	}
+	return 0;
+}
+
 int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int is_secure){
 	int err;
 	bool_t ipv6;
@@ -325,10 +334,6 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 		ms_warning("unexpected proto, using datagram");
 	}
 
-	if (ctx->running){
-		eXosip_quit();
-		eXosip_init();
-	}
 	err=0;
 	eXosip_set_option(13,&err); /*13=EXOSIP_OPT_SRV_WITH_NAPTR, as it is an enum value, we can't use it unless we are sure of the
 					version of eXosip, which is not the case*/
@@ -344,6 +349,7 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 #ifdef HAVE_EXOSIP_GET_SOCKET
 	ms_message("Exosip has socket number %i",eXosip_get_socket(proto));
 #endif
+	eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE, &ctx->keepalive_period);
 	ctx->running=TRUE;
 	return err;
 }
@@ -1749,6 +1755,7 @@ void sal_address_destroy(SalAddress *u){
 }
 
 void sal_set_keepalive_period(Sal *ctx,unsigned int value) {
+	ctx->keepalive_period=value;
 	eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE, &value);
 }
 

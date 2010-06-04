@@ -44,6 +44,15 @@ struct SalOp;
 struct _LpConfig;
 
 
+struct _LCSipTransports{
+	int udp_port;
+	int tcp_port;
+	int dtls_port;
+	int tls_port;
+};
+
+typedef struct _LCSipTransports LCSipTransports;
+
 /**
  * Object that represents a SIP address.
  *
@@ -609,9 +618,13 @@ void linphone_core_set_use_rfc2833_for_dtmf(LinphoneCore *lc,bool_t use_rfc2833)
 
 bool_t linphone_core_get_use_rfc2833_for_dtmf(LinphoneCore *lc);
 
+void linphone_core_set_sip_port(LinphoneCore *lc, int port);
+
 int linphone_core_get_sip_port(LinphoneCore *lc);
 
-void linphone_core_set_sip_port(LinphoneCore *lc,int port);
+int linphone_core_set_sip_transports(LinphoneCore *lc, const LCSipTransports *transports);
+
+int linphone_core_get_sip_transports(LinphoneCore *lc, LCSipTransports *transports);
 
 ortp_socket_t linphone_core_get_sip_socket(LinphoneCore *lc);
 
