@@ -99,7 +99,8 @@ LinphoneCoreVTable linphonec_vtable = {
 	
 #if __IPHONE_OS_VERSION_MIN_REQUIRED >= 40000
 
-	LinphoneProxyConfig* proxyCfg = linphone_core_get_default_proxy(myLinphoneCore, &proxyCfg);	
+	LinphoneProxyConfig* proxyCfg;
+	linphone_core_get_default_proxy(myLinphoneCore, &proxyCfg);	
 	if (backgroundSupported && proxyCfg) {
 		if ([[UIApplication sharedApplication] setKeepAliveTimeout:(NSTimeInterval)linphone_proxy_config_get_expires(proxyCfg) 
 											   handler:^{
@@ -112,7 +113,7 @@ LinphoneCoreVTable linphonec_vtable = {
 												]) {
 		
 			 
-			ms_warning("keepalive handler succesfully registered");
+			ms_warning("keepalive handler succesfully registered"); 
 		} else {
 			ms_warning("keepalive handler cannot be registered");
 		}
@@ -275,6 +276,26 @@ extern void libmsilbc_init();
 										, [factoryConfig cStringUsingEncoding:[NSString defaultCStringEncoding]]
 										,self);
 	
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 40000	
+	int sipsock = linphone_core_get_sip_socket(myLinphoneCore);
+	
+	CFReadStreamRef readStream;
+	CFWriteStreamRef writeStream;
+	
+	CFStreamCreatePairWithSocket(NULL, (CFSocketNativeHandle)sipsock, &readStream, &writeStream);
+	
+	if (!CFReadStreamSetProperty(readStream, kCFStreamNetworkServiceType, kCFStreamNetworkServiceTypeVoIP)) {
+		ms_error("cannot set service type to voip for read stream");
+	}
+	if (!CFWriteStreamSetProperty(writeStream, kCFStreamNetworkServiceType, kCFStreamNetworkServiceTypeVoIP)) {
+		ms_error("cannot set service type to voip for write stream");
+	}
+	if (CFReadStreamOpen(readStream) == false) {
+		ms_error("cannot open read stream");
+		
+	};
+#endif	
+	
 	//initial state is network off
 	linphone_core_set_network_reachable(myLinphoneCore,false);
 	
@@ -426,22 +447,7 @@ extern void libmsilbc_init();
 			linphone_core_enable_payload_type(myLinphoneCore,pt, TRUE);
 		}
 	}
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 40000	
-	int sipsock = linphone_core_get_sip_socket(myLinphoneCore);
-	
-	CFReadStreamRef readStream;
-	CFWriteStreamRef writeStream;
-	
-	CFStreamCreatePairWithSocket(NULL, (CFSocketNativeHandle)sipsock, &readStream, &writeStream);
-	
-	if (!CFReadStreamSetProperty(readStream, kCFStreamNetworkServiceType, kCFStreamNetworkServiceTypeVoIP)) {
-		ms_error("cannot set service type to voip for read stream");
-	}
-	if (!CFWriteStreamSetProperty(writeStream, kCFStreamNetworkServiceType, kCFStreamNetworkServiceTypeVoIP)) {
-		ms_error("cannot set service type to voip for write stream");
-	}
-#endif	
-	
+
 	// start scheduler
 	[NSTimer scheduledTimerWithTimeInterval:0.1 
 									 target:self 
