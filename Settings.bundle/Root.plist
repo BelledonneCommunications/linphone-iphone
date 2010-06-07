@@ -194,6 +194,26 @@
 			<key>AutocorrectionType</key>
 			<string>No</string>
 		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Values</key>
+			<array>
+				<string>udp</string>
+				<string>tcp</string>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>udp</string>
+				<string>tcp</string>
+			</array>
+			<key>Title</key>
+			<string>Transport</string>
+			<key>Key</key>
+			<string>transport_preference</string>
+			<key>DefaultValue</key>
+			<string>udp</string>
+		</dict>
 	</array>
 </dict>
 </plist>

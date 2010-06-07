@@ -76,6 +76,7 @@
 bool networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void * info);
 
 -(void) doRegister;
+-(void) doLinphoneConfiguration:(NSNotification *)notification;
 
 
 @property (nonatomic, retain) IBOutlet UIWindow *window;

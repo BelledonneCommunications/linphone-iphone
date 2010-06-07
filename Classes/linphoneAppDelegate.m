@@ -275,39 +275,62 @@ extern void libmsilbc_init();
 										, [confiFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]
 										, [factoryConfig cStringUsingEncoding:[NSString defaultCStringEncoding]]
 										,self);
+
+	[ self doLinphoneConfiguration:nil];
+	[[NSNotificationCenter defaultCenter]	addObserver:self
+											selector:@selector(doLinphoneConfiguration:)
+											name:NSUserDefaultsDidChangeNotification object:nil];
 	
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 40000	
-	int sipsock = linphone_core_get_sip_socket(myLinphoneCore);
 	
-	CFReadStreamRef readStream;
-	CFWriteStreamRef writeStream;
+	// start scheduler
+	[NSTimer scheduledTimerWithTimeInterval:0.1 
+									 target:self 
+								   selector:@selector(iterate) 
+								   userInfo:nil 
+									repeats:YES];
 	
-	CFStreamCreatePairWithSocket(NULL, (CFSocketNativeHandle)sipsock, &readStream, &writeStream);
+}
+-(void) doLinphoneConfiguration:(NSNotification *)notification {
+	ms_message("Configuring Linphone");
 	
-	if (!CFReadStreamSetProperty(readStream, kCFStreamNetworkServiceType, kCFStreamNetworkServiceTypeVoIP)) {
-		ms_error("cannot set service type to voip for read stream");
+	isDebug = [[NSUserDefaults standardUserDefaults] boolForKey:@"debugenable_preference"];  
+	if (isDebug) {
+		//redirect all traces to the iphone log framework
+		linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
 	}
-	if (!CFWriteStreamSetProperty(writeStream, kCFStreamNetworkServiceType, kCFStreamNetworkServiceTypeVoIP)) {
-		ms_error("cannot set service type to voip for write stream");
+	else {
+		linphone_core_disable_logs();
 	}
-	if (CFReadStreamOpen(readStream) == false) {
-		ms_error("cannot open read stream");
-		
-	};
-#endif	
+	NSString* transport = [[NSUserDefaults standardUserDefaults] stringForKey:@"transport_preference"];
+	
+	LCSipTransports transportValue;
+	if (transport!=nil) {
+		if (linphone_core_get_sip_transports(myLinphoneCore, &transportValue)) {
+			ms_error("cannot get current transport");	
+		}
+		if ([transport isEqualToString:@"tcp"]) {
+			if (transportValue.tcp_port == 0) transportValue.tcp_port=transportValue.udp_port;
+			transportValue.udp_port=0;
+		} else if ([transport isEqualToString:@"udp"]){
+			if (transportValue.udp_port == 0) transportValue.udp_port=transportValue.tcp_port;
+			transportValue.tcp_port=0;
+		} else {
+			ms_error("unexpected trasnport [%s]",[transport cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+		}
+		if (linphone_core_set_sip_transports(myLinphoneCore, &transportValue)) {
+			ms_error("cannot set transport");	
+		}
+	}
+	
+	
 	
 	//initial state is network off
 	linphone_core_set_network_reachable(myLinphoneCore,false);
 	
-	// Set audio assets
-	const char*  lRing = [[myBundle pathForResource:@"oldphone-mono"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
-	linphone_core_set_ring(myLinphoneCore, lRing );
-	const char*  lRingBack = [[myBundle pathForResource:@"ringback"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
-	linphone_core_set_ringback(myLinphoneCore, lRingBack);
 	
 	
 	//configure sip account
-
+	
 	//madatory parameters
 	
 	NSString* username = [[NSUserDefaults standardUserDefaults] stringForKey:@"username_preference"];
@@ -315,13 +338,15 @@ extern void libmsilbc_init();
 	NSString* accountPassword = [[NSUserDefaults standardUserDefaults] stringForKey:@"password_preference"];
 	bool configCheckDisable = [[NSUserDefaults standardUserDefaults] boolForKey:@"check_config_disable_preference"];
 	bool isOutboundProxy= [[NSUserDefaults standardUserDefaults] boolForKey:@"outbound_proxy_preference"];
-
 	
-		//clear auth info list
+	
+	//clear auth info list
 	linphone_core_clear_all_auth_info(myLinphoneCore);
 	//clear existing proxy config
 	linphone_core_clear_proxy_config(myLinphoneCore);
-	
+	if (proxyReachability !=nil) {
+		SCNetworkReachabilityUnscheduleFromRunLoop(proxyReachability,CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+	}
 	if (username && [username length] >0 && domain && [domain length]>0) {
 		
 		
@@ -358,7 +383,7 @@ extern void libmsilbc_init();
 		
 		if (isOutboundProxy)
 			linphone_proxy_config_set_route(proxyCfg,proxy);
-
+		
 		if ([prefix length]>0) {
 			linphone_proxy_config_set_dial_prefix(proxyCfg, [prefix cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 		}
@@ -371,24 +396,24 @@ extern void libmsilbc_init();
 		LinphoneAddress* addr=linphone_address_new(linphone_proxy_config_get_addr(proxyCfg));
 		proxyReachability=SCNetworkReachabilityCreateWithName(nil, linphone_address_get_domain(addr));
 		
-
+		
 		
 		[self doRegister];
 	} else if (configCheckDisable == false) { 		
 		UIAlertView* error = [[UIAlertView alloc]	initWithTitle:@"Warning"
-													message:@"It seems you have not configured any proxy server from settings" 
-													delegate:self 
-													cancelButtonTitle:@"Continue" 
-													otherButtonTitles:@"Never remind",nil];
+														message:@"It seems you have not configured any proxy server from settings" 
+													   delegate:self 
+											  cancelButtonTitle:@"Continue" 
+											  otherButtonTitles:@"Never remind",nil];
 		[error show];
 		proxyReachability=SCNetworkReachabilityCreateWithName(nil, "linphone.org");
-
+		
 	}		
-
+	
 	proxyReachabilityContext.info=self;
 	SCNetworkReachabilitySetCallback(proxyReachability, (SCNetworkReachabilityCallBack)networkReachabilityCallBack,&proxyReachabilityContext);
 	SCNetworkReachabilityScheduleWithRunLoop(proxyReachability, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
-
+	
 	//Configure Codecs
 	
 	PayloadType *pt;
@@ -447,15 +472,9 @@ extern void libmsilbc_init();
 			linphone_core_enable_payload_type(myLinphoneCore,pt, TRUE);
 		}
 	}
-
-	// start scheduler
-	[NSTimer scheduledTimerWithTimeInterval:0.1 
-									 target:self 
-								   selector:@selector(iterate) 
-								   userInfo:nil 
-									repeats:YES];
 	
 }
+
 // no proxy configured alert 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (buttonIndex == 1) {
