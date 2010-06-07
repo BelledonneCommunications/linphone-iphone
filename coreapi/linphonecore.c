@@ -1553,7 +1553,7 @@ int linphone_core_set_sip_transports(LinphoneCore *lc, const LCSipTransports * t
  * is not used.
  * @ingroup network_parameters
 **/
-int linphone_core_get_sip_transport(LinphoneCore *lc, LCSipTransports *tr){
+int linphone_core_get_sip_transports(LinphoneCore *lc, LCSipTransports *tr){
 	memcpy(tr,&lc->sip_conf.transports,sizeof(*tr));
 	return 0;
 }
