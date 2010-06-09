@@ -683,6 +683,7 @@ static int get_local_ip_with_getifaddrs(int type, char *address, int size)
 			if (strchr(address, '%') == NULL) {	/*avoid ipv6 link-local addresses */
 				/*ms_message("getifaddrs() found %s",address);*/
 				ret++;
+				break;
 			}
 		}
 	}
