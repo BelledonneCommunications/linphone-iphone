@@ -265,6 +265,13 @@ LinphoneSoundDaemon * linphone_sound_daemon_new(const char *cardname, int rate, 
 	return lsd;
 }
 
+void linphone_sound_daemon_stop_all_players(LinphoneSoundDaemon *obj){
+	int i;
+	for(i=1;i<MAX_BRANCHES;++i){
+		lsd_player_stop(&obj->branches[i]);
+	}
+}
+
 void linphone_sound_daemon_destroy(LinphoneSoundDaemon *obj){
 	int i;
 	MSConnectionPoint mp;
@@ -272,6 +279,7 @@ void linphone_sound_daemon_destroy(LinphoneSoundDaemon *obj){
 	mp.filter=obj->mixer;
 	for(i=0;i<MAX_BRANCHES;++i){
 		mp.pin=i;
+		if (i!=0) linphone_sound_daemon_release_player(obj,&obj->branches[i]);
 		lsd_player_uninit (&obj->branches[i],mp);
 	}
 	ms_filter_unlink(obj->mixer,0,obj->soundout,0);
