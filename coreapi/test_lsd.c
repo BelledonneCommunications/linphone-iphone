@@ -51,7 +51,7 @@ int main(int argc, char *argv[]){
 
 	linphone_core_enable_logs(stdout);
 	lc=linphone_core_new(&vtable,NULL,NULL,NULL);
-	lsd=linphone_sound_daemon_new (NULL);
+	lsd=linphone_sound_daemon_new (NULL,44100,1);
 
 	linphone_core_use_sound_daemon(lc,lsd);
 

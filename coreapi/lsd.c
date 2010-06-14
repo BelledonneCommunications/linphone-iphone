@@ -219,7 +219,7 @@ void lsd_player_set_gain(LsdPlayer *p, float gain){
 	ms_filter_call_method(p->lsd->mixer,MS_AUDIO_MIXER_SET_INPUT_GAIN,&gainctl);
 }
 
-LinphoneSoundDaemon * linphone_sound_daemon_new(const char *cardname){
+LinphoneSoundDaemon * linphone_sound_daemon_new(const char *cardname, int rate, int nchannels){
 	int i;
 	MSConnectionPoint mp;
 	LinphoneSoundDaemon *lsd;
@@ -238,8 +238,8 @@ LinphoneSoundDaemon * linphone_sound_daemon_new(const char *cardname){
 	lsd=ms_new0(LinphoneSoundDaemon,1);
 	lsd->soundout=ms_snd_card_create_writer(card);
 	lsd->mixer=ms_filter_new(MS_AUDIO_MIXER_ID);
-	lsd->out_rate=44100;
-	lsd->out_nchans=2;
+	lsd->out_rate=rate;
+	lsd->out_nchans=nchannels;
 	ms_filter_call_method(lsd->soundout,MS_FILTER_SET_SAMPLE_RATE,&lsd->out_rate);
 	ms_filter_call_method(lsd->soundout,MS_FILTER_SET_NCHANNELS,&lsd->out_nchans);
 	ms_filter_call_method(lsd->mixer,MS_FILTER_SET_SAMPLE_RATE,&lsd->out_rate);
