@@ -244,7 +244,13 @@ static char *guess_contact_for_register(LinphoneProxyConfig *obj){
 		contact=linphone_address_new(obj->reg_identity);
 		linphone_address_set_domain (contact,localip);
 		linphone_address_set_port_int(contact,linphone_core_get_sip_port(obj->lc));
-		ret=linphone_address_as_string_uri_only (contact);
+		linphone_address_set_display_name(contact,NULL);
+		LCSipTransports tr;
+		linphone_core_get_sip_transports(obj->lc,&tr);
+		if (tr.udp_port <= 0 && tr.tcp_port>0) {
+			sal_address_add_param(contact,"transport","tcp");
+		}
+		ret=linphone_address_as_string(contact);
 		linphone_address_destroy(contact);
 	}
 	linphone_address_destroy (proxy);

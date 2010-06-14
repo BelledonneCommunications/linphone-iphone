@@ -57,7 +57,7 @@ void sal_address_clean(SalAddress *addr);
 char *sal_address_as_string(const SalAddress *u);
 char *sal_address_as_string_uri_only(const SalAddress *u);
 void sal_address_destroy(SalAddress *u);
-
+void sal_address_add_param(SalAddress *u,const char* name,const char* value);
 
 
 
