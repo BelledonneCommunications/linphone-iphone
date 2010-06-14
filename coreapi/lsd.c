@@ -285,5 +285,9 @@ MSSndCard *linphone_sound_daemon_get_proxy_card(LinphoneSoundDaemon *lsd){
 }
 
 void linphone_core_use_sound_daemon(LinphoneCore *lc, LinphoneSoundDaemon *lsd){
-	lc->sound_conf.lsd_card=linphone_sound_daemon_get_proxy_card (lsd);
+	if (lsd!=NULL){
+		lc->sound_conf.lsd_card=linphone_sound_daemon_get_proxy_card (lsd);
+	}else {
+		lc->sound_conf.lsd_card=NULL;
+	}
 }

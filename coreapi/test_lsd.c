@@ -95,8 +95,9 @@ int main(int argc, char *argv[]){
 		wait_a_bit(lc,10);
 		linphone_core_terminate_call(lc,NULL);
 	}
-	
-	linphone_core_destroy(lc);
+	linphone_core_use_sound_daemon(lc,NULL);
 	linphone_sound_daemon_destroy(lsd);
+	linphone_core_destroy(lc);
+	
 	return 0;
 }
