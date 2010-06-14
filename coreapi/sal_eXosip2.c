@@ -644,9 +644,13 @@ int sal_call_send_dtmf(SalOp *h, char dtmf){
 }
 
 int sal_call_terminate(SalOp *h){
+	int err;
 	eXosip_lock();
-	eXosip_call_terminate(h->cid,h->did);
+	err=eXosip_call_terminate(h->cid,h->did);
 	eXosip_unlock();
+	if (err!=0){
+		ms_warning("Exosip could not terminate the call: cid=%i did=%i", h->cid,h->did);
+	}
 	sal_remove_call(h->base.root,h);
 	h->cid=-1;
 	return 0;
@@ -845,7 +849,8 @@ static int call_proceeding(Sal *sal, eXosip_event_t *ev){
 		eXosip_unlock();
 		return -1;
 	}
-	op->did=ev->did;
+	if (ev->did>0)
+		op->did=ev->did;
 	op->tid=ev->tid;
 	
 	/* update contact if received and rport are set by the server
@@ -878,6 +883,9 @@ static void call_accepted(Sal *sal, eXosip_event_t *ev){
 	if (op==NULL){
 		ms_error("A closed call is accepted ?");
 		return;
+	}
+	if (op->did==-1){
+		op->did=ev->did;
 	}
 	sdp=eXosip_get_sdp_info(ev->response);
 	if (sdp){

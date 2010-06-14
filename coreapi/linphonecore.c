@@ -2358,8 +2358,8 @@ int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *the_call)
 	LinphoneCall *call;
 	if (the_call == NULL){
 		call = linphone_core_get_current_call(lc);
-		if(call == NULL)
-		{
+		if(call == NULL){
+			ms_warning("No currently active call to terminate !");
 			return -1;
 		}
 	}
