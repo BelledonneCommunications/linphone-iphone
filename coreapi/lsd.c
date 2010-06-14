@@ -261,7 +261,7 @@ LinphoneSoundDaemon * linphone_sound_daemon_new(const char *cardname, int rate, 
 
 	lsd->proxycard=ms_snd_card_new(&proxycard);
 	lsd->proxycard->data=lsd;
-	
+	ms_message("LinphoneSoundDaemon started with rate=%i, nchannels=%i",rate,nchannels);
 	return lsd;
 }
 
