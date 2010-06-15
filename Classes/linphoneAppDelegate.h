@@ -52,6 +52,7 @@
 	LinphoneCore* myLinphoneCore;
 	SCNetworkReachabilityContext proxyReachabilityContext;
 	SCNetworkReachabilityRef proxyReachability;
+	CFReadStreamRef mReadStream;
 
 	
 }

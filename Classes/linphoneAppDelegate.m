@@ -26,6 +26,11 @@
 #import "ConsoleViewController.h"
 #import "MoreViewController.h"
 
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+
+
 extern void ms_au_register_card();
 void linphone_iphone_keepAliveHandler () { 
 	ms_message("keepalive handler invoked");
@@ -98,11 +103,29 @@ LinphoneCoreVTable linphonec_vtable = {
 - (void)applicationDidEnterBackground:(UIApplication *)application {
 	
 #if __IPHONE_OS_VERSION_MIN_REQUIRED >= 40000
-
+	
+	struct addrinfo hints;
+	struct addrinfo *res=NULL;
+	int err;
+	
 	LinphoneProxyConfig* proxyCfg;
+	LinphoneAddress *addr;
+	int sipsock = linphone_core_get_sip_socket(myLinphoneCore);	
 	linphone_core_get_default_proxy(myLinphoneCore, &proxyCfg);	
+	
 	if (backgroundSupported && proxyCfg) {
-		if ([[UIApplication sharedApplication] setKeepAliveTimeout:(NSTimeInterval)linphone_proxy_config_get_expires(proxyCfg) 
+		//first register
+		
+		linphone_core_set_network_reachable(myLinphoneCore,false);
+		linphone_core_iterate(myLinphoneCore);
+		linphone_core_set_network_reachable(myLinphoneCore,true);
+		
+		int i=0;
+		while (!linphone_proxy_config_is_registered(proxyCfg) && i++<200 ) {
+			linphone_core_iterate(myLinphoneCore);
+			usleep(100000);
+		}
+		if ([[UIApplication sharedApplication] setKeepAliveTimeout:600/*(NSTimeInterval)linphone_proxy_config_get_expires(proxyCfg)*/ 
 											   handler:^{
 												   ms_warning("keepalive handler");
 												   linphone_core_set_network_reachable(myLinphoneCore,false);
@@ -117,10 +140,38 @@ LinphoneCoreVTable linphonec_vtable = {
 		} else {
 			ms_warning("keepalive handler cannot be registered");
 		}
-		
-		
-		
+		if (mReadStream == nil) {
+			const char *port;
+			addr=linphone_address_new(linphone_proxy_config_get_addr(proxyCfg));
+			memset(&hints,0,sizeof(hints));
+			hints.ai_family=linphone_core_ipv6_enabled(myLinphoneCore) ? AF_INET6 : AF_INET;
+			port=linphone_address_get_port(addr);
+			if (port==NULL) port="5060";
+			err=getaddrinfo(linphone_address_get_domain(addr),port,&hints,&res);
+			if (err!=0){
+				ms_error("getaddrinfo() failed for %s: %s",linphone_address_get_domain(addr),gai_strerror(err));
+				linphone_address_destroy(addr);
+				return;
+			}
+			err=connect(sipsock,res->ai_addr,res->ai_addrlen);
+			if (err==-1){
+				ms_error("Connect failed: %s",strerror(errno));
+			}
+			freeaddrinfo(res);
+			
+			CFStreamCreatePairWithSocket(NULL, (CFSocketNativeHandle)sipsock, &mReadStream,nil);
+			
+			if (!CFReadStreamSetProperty(mReadStream, kCFStreamNetworkServiceType, kCFStreamNetworkServiceTypeVoIP)) {
+				ms_error("cannot set service type to voip for read stream");
+			}
+			
+			
+			if (!CFReadStreamOpen(mReadStream)) {
+				ms_error("cannot open read stream");
+			}		
+		}
 	}	
+	
 #endif
 	
 }
@@ -207,6 +258,18 @@ LinphoneCoreVTable linphonec_vtable = {
 		[self doRegister];
 	} else {
 		isStarted=true;
+	}
+	if (mReadStream !=nil) {
+
+		//unconnect
+		int socket = linphone_core_get_sip_socket(myLinphoneCore);
+		struct addrinfo hints;
+		memset(&hints,0,sizeof(hints));
+		hints.ai_family=AF_UNSPEC;
+		connect(socket,&hints,sizeof(hints));
+		CFReadStreamClose(mReadStream);
+		CFRelease(mReadStream);
+		mReadStream=nil;
 	}
 }
 
@@ -326,6 +389,13 @@ extern void libmsilbc_init();
 	
 	//initial state is network off
 	linphone_core_set_network_reachable(myLinphoneCore,false);
+	// Set audio assets
+	NSBundle* myBundle = [NSBundle mainBundle];
+	const char*  lRing = [[myBundle pathForResource:@"oldphone-mono"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
+	linphone_core_set_ring(myLinphoneCore, lRing );
+	const char*  lRingBack = [[myBundle pathForResource:@"ringback"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
+	linphone_core_set_ringback(myLinphoneCore, lRingBack);
+ 	
 	
 	
 	
@@ -409,7 +479,6 @@ extern void libmsilbc_init();
 		proxyReachability=SCNetworkReachabilityCreateWithName(nil, "linphone.org");
 		
 	}		
-	
 	proxyReachabilityContext.info=self;
 	SCNetworkReachabilitySetCallback(proxyReachability, (SCNetworkReachabilityCallBack)networkReachabilityCallBack,&proxyReachabilityContext);
 	SCNetworkReachabilityScheduleWithRunLoop(proxyReachability, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);

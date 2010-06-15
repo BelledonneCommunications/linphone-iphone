@@ -5,7 +5,7 @@ firewall_policy=0
 mtu=0
 
 [sip]
-sip_port=5060
+sip_random_port=1
 guess_hostname=1
 contact=sip:toto@unknown-host
 inc_timeout=15
@@ -14,7 +14,6 @@ use_ipv6=0
 register_only_when_network_is_up=0
 default_proxy=-1
 auto_net_state_mon=0
-transport=udp
 keepalive_period=3600000
 
 [rtp]
