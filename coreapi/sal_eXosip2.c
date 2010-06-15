@@ -1758,4 +1758,16 @@ void sal_set_keepalive_period(Sal *ctx,unsigned int value) {
 	ctx->keepalive_period=value;
 	eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE, &value);
 }
+const char * sal_address_get_port(const SalAddress *addr) {
+	const osip_from_t *u=(const osip_from_t*)addr;
+	return null_if_empty(u->url->port);
+}
+int sal_address_get_port_int(const SalAddress *uri) {
+	const char* port = sal_address_get_port(uri);
+	if (port != NULL) {
+		return atoi(port);
+	} else {
+		return 5060;
+	}
+}
 

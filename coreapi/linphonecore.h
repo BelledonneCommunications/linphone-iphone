@@ -75,6 +75,15 @@ const char *linphone_address_get_scheme(const LinphoneAddress *u);
 const char *linphone_address_get_display_name(const LinphoneAddress* u);
 const char *linphone_address_get_username(const LinphoneAddress *u);
 const char *linphone_address_get_domain(const LinphoneAddress *u);
+/**
+ * Get port number as an integer value.
+ *
+ */
+int linphone_address_get_port_int(const LinphoneAddress *u);
+/**
+ * Get port number, null if not present.
+ */
+const char* linphone_address_get_port(const LinphoneAddress *u);
 void linphone_address_set_display_name(LinphoneAddress *u, const char *display_name);
 void linphone_address_set_username(LinphoneAddress *uri, const char *username);
 void linphone_address_set_domain(LinphoneAddress *uri, const char *host);

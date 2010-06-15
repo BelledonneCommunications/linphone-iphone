@@ -646,9 +646,16 @@ static void sip_config_read(LinphoneCore *lc)
 	}
 	linphone_core_enable_ipv6(lc,ipv6);
 	memset(&tr,0,sizeof(tr));
-	tr.udp_port=lp_config_get_int(lc->config,"sip","sip_port",5060);
-	tr.tcp_port=lp_config_get_int(lc->config,"sip","sip_tcp_port",0);
-
+	if (lp_config_get_int(lc->config,"sip","sip_random_port",0)) {
+		tr.udp_port=(0xDFF&+random())+1024;
+	} else {
+		tr.udp_port=lp_config_get_int(lc->config,"sip","sip_port",5060);
+	}
+	if (lp_config_get_int(lc->config,"sip","sip_tcp_random_port",0)) {
+		tr.tcp_port=(0xDFF&+random())+1024;
+	} else {
+		tr.tcp_port=lp_config_get_int(lc->config,"sip","sip_tcp_port",0);
+	}
 	/*start listening on ports*/
  	linphone_core_set_sip_transports(lc,&tr);
 

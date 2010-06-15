@@ -136,5 +136,11 @@ void linphone_address_destroy(LinphoneAddress *u){
 	sal_address_destroy(u);
 }
 
+int linphone_address_get_port_int(const LinphoneAddress *u) {
+	return sal_address_get_port_int(u);
+}
+const char* linphone_address_get_port(const LinphoneAddress *u) {
+	return sal_address_get_port(u);
+}
 
 /** @} */

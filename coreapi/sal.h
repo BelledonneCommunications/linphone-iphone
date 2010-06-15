@@ -48,6 +48,9 @@ const char *sal_address_get_display_name(const SalAddress* addr);
 char *sal_address_get_display_name_unquoted(const SalAddress *addr);
 const char *sal_address_get_username(const SalAddress *addr);
 const char *sal_address_get_domain(const SalAddress *addr);
+const char * sal_address_get_port(const SalAddress *addr);
+int sal_address_get_port_int(const SalAddress *uri);
+
 void sal_address_set_display_name(SalAddress *addr, const char *display_name);
 void sal_address_set_username(SalAddress *addr, const char *username);
 void sal_address_set_domain(SalAddress *addr, const char *host);
