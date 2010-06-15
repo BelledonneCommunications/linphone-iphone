@@ -1749,6 +1749,9 @@ char *sal_address_as_string_uri_only(const SalAddress *u){
 	osip_free(tmp);
 	return ret;
 }
+void sal_address_add_param(SalAddress *u,const char* name,const char* value) {
+	osip_uri_uparam_add	(((osip_from_t*)u)->url,ms_strdup(name),ms_strdup(value));
+}
 
 void sal_address_destroy(SalAddress *u){
 	osip_from_free((osip_from_t*)u);
