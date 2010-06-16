@@ -45,6 +45,7 @@ LinphoneSoundDaemon * linphone_sound_daemon_new(const char *cardname, int rate, 
 LsdPlayer * linphone_sound_daemon_get_player(LinphoneSoundDaemon *lsd);
 void linphone_sound_daemon_release_player(LinphoneSoundDaemon *lsd, LsdPlayer *lsdplayer);
 void linphone_sound_daemon_stop_all_players(LinphoneSoundDaemon *obj);
+void linphone_sound_daemon_release_all_players(LinphoneSoundDaemon *obj);
 void linphone_core_use_sound_daemon(LinphoneCore *lc, LinphoneSoundDaemon *lsd);
 void linphone_sound_daemon_destroy(LinphoneSoundDaemon *obj);
 

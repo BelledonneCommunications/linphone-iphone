@@ -272,6 +272,13 @@ void linphone_sound_daemon_stop_all_players(LinphoneSoundDaemon *obj){
 	}
 }
 
+void linphone_sound_daemon_release_all_players(LinphoneSoundDaemon *obj){
+	int i;
+	for(i=1;i<MAX_BRANCHES;++i){
+		linphone_sound_daemon_release_player(obj,&obj->branches[i]);
+	}
+}
+
 void linphone_sound_daemon_destroy(LinphoneSoundDaemon *obj){
 	int i;
 	MSConnectionPoint mp;
