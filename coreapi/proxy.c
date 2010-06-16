@@ -22,6 +22,7 @@ Copyright (C) 2000  Simon MORLAT (simon.morlat@linphone.org)
 #include "sipsetup.h"
 #include "lpconfig.h"
 #include "private.h"
+#include "mediastreamer2/mediastream.h"
 
 
 #include <ctype.h>
@@ -505,6 +506,7 @@ void linphone_core_remove_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *cf
 	lc->sip_conf.proxies=ms_list_remove(lc->sip_conf.proxies,(void *)cfg);
 	/* add to the list of destroyed proxies, so that the possible unREGISTER request can succeed authentication */
 	lc->sip_conf.deleted_proxies=ms_list_append(lc->sip_conf.deleted_proxies,(void *)cfg);
+	cfg->deletion_date=ms_time(NULL);
 	/* this will unREGISTER */
 	linphone_proxy_config_edit(cfg);
 	if (lc->default_proxy==cfg){
@@ -790,6 +792,7 @@ void linphone_proxy_config_set_user_data(LinphoneProxyConfig *cr, void * ud) {
 void * linphone_proxy_config_get_user_data(LinphoneProxyConfig *cr) {
 	return cr->user_data;
 }
+
 
 
 
