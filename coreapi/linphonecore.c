@@ -2142,6 +2142,13 @@ bool_t linphone_core_inc_invite_pending(LinphoneCore*lc){
 	return FALSE;
 }
 
+#ifdef TEST_EXT_RENDERER
+static void rendercb(void *data, const MSPicture *local, const MSPicture *remote){
+	ms_message("rendercb, local buffer=%p, remote buffer=%p",
+	           local ? local->planes[0] : NULL, remote? remote->planes[0] : NULL);
+}
+#endif
+
 void linphone_core_init_media_streams(LinphoneCore *lc, LinphoneCall *call){
 	SalMediaDescription *md=call->localdesc;
 	lc->audiostream=audio_stream_new(md->streams[0].port,linphone_core_ipv6_enabled(lc));
@@ -2169,8 +2176,12 @@ void linphone_core_init_media_streams(LinphoneCore *lc, LinphoneCall *call){
 		rtp_session_set_transports(lc->audiostream->session,lc->a_rtp,lc->a_rtcp);
 
 #ifdef VIDEO_ENABLED
-	if ((lc->video_conf.display || lc->video_conf.capture) && md->streams[1].port>0)
+	if ((lc->video_conf.display || lc->video_conf.capture) && md->streams[1].port>0){
 		lc->videostream=video_stream_new(md->streams[1].port,linphone_core_ipv6_enabled(lc));
+#ifdef TEST_EXT_RENDERER
+		video_stream_set_render_callback(lc->videostream,rendercb,NULL);
+#endif
+	}
 #else
 	lc->videostream=NULL;
 #endif
