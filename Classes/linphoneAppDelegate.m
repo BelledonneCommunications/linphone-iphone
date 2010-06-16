@@ -568,6 +568,7 @@ extern void libmsilbc_init();
 		{
 			notif.repeatInterval = 0;
 			notif.alertBody =[NSString  stringWithFormat:@" %@ is calling you",from];
+			notif.soundName = UILocalNotificationDefaultSoundName;
 			
 			[[UIApplication sharedApplication]  presentLocalNotificationNow:notif];
 		}
