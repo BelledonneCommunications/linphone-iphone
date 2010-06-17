@@ -166,7 +166,7 @@ void linphone_call_set_terminated(LinphoneCall *call){
 		linphone_core_notify_all_friends(lc,lc->prev_mode);
 	
 	linphone_core_update_allocated_audio_bandwidth(lc);
-	if (call->state==LinphoneCallAVRunning){
+	if (call->state==LinphoneCallAVRunning || call->state==LinphoneCallPaused){
 		status=LinphoneCallSuccess;
 		
 	}
@@ -288,6 +288,14 @@ void linphone_call_set_user_pointer(LinphoneCall *call, void *user_pointer)
 {
 	call->user_pointer = user_pointer;
 }
+
+/**
+ * Returns the call log associated to this call.
+**/
+LinphoneCallLog *linphone_call_get_call_log(const LinphoneCall *call){
+	return call->log;
+}
+
 
 /**
  * @}

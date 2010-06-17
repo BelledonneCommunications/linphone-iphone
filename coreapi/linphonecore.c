@@ -910,13 +910,14 @@ static void linphone_core_free_payload_types(void){
 static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vtable, const char *config_path, 
     const char *factory_config_path, void * userdata)
 {
+	LinphoneGeneralStateContext gctx={0};
 	memset (lc, 0, sizeof (LinphoneCore));
 	lc->data=userdata;
 
 	memcpy(&lc->vtable,vtable,sizeof(LinphoneCoreVTable));
 
 	gstate_initialize(lc);
-	gstate_new_state(lc, GSTATE_POWER_STARTUP, NULL);
+	gstate_new_state(lc, GSTATE_POWER_STARTUP, gctx, NULL);
 
 	ortp_init();
 	linphone_core_assign_payload_type(&payload_type_pcmu8000,0,NULL);
@@ -982,7 +983,7 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	ui_config_read(lc);
 	if (lc->vtable.display_status)
 		lc->vtable.display_status(lc,_("Ready"));
-	gstate_new_state(lc, GSTATE_POWER_ON, NULL);
+	gstate_new_state(lc, GSTATE_POWER_ON, gctx, NULL);
 	lc->auto_net_state_mon=lc->sip_conf.auto_net_state_mon;
 
     lc->ready=TRUE;
@@ -1902,6 +1903,7 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, LinphonePro
 	char *contact;
 	char *real_url,*barmsg;
 	char *from;
+	LinphoneGeneralStateContext gctx;
 	/*try to be best-effort in giving real local or routable contact address */
 	contact=get_fixed_contact(lc,call,dest_proxy);
 	if (contact){
@@ -1936,7 +1938,10 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, LinphonePro
 		if(call == linphone_core_get_current_call(lc))
 			linphone_core_stop_media_streams(lc,call);
 		linphone_call_set_terminated (call);
-	}else gstate_new_state(lc, GSTATE_CALL_OUT_INVITE, real_url);
+	}else {
+		gctx.call=call;
+		gstate_new_state(lc, GSTATE_CALL_OUT_INVITE, gctx, real_url);
+	}
 	ms_free(real_url);
 	ms_free(from);
 	return err;
@@ -2406,6 +2411,7 @@ int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call)
 {
 	LinphoneProxyConfig *cfg=NULL;
 	const char *contact=NULL;
+	LinphoneGeneralStateContext gctx;
 	
 	if (call==NULL){
 		//if just one call is present answer the only one ...
@@ -2441,7 +2447,8 @@ int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call)
 	sal_call_accept(call->op);
 	if (lc->vtable.display_status!=NULL)
 		lc->vtable.display_status(lc,_("Connected."));
-	gstate_new_state(lc, GSTATE_CALL_IN_CONNECTED, NULL);
+	gctx.call=call;
+	gstate_new_state(lc, GSTATE_CALL_IN_CONNECTED, gctx, NULL);
 	call->resultdesc=sal_call_get_final_media_description(call->op);
 	if (call->resultdesc){
 		sal_media_description_ref(call->resultdesc);
@@ -2463,6 +2470,7 @@ int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call)
 int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *the_call)
 {
 	LinphoneCall *call;
+	LinphoneGeneralStateContext gctx;
 	if (the_call == NULL){
 		call = linphone_core_get_current_call(lc);
 		if(call == NULL){
@@ -2485,7 +2493,8 @@ int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *the_call)
 		linphone_core_stop_media_streams(lc,call);
 	if (lc->vtable.display_status!=NULL)
 		lc->vtable.display_status(lc,_("Call ended") );
-	gstate_new_state(lc, GSTATE_CALL_END, NULL);
+	gctx.call=call;
+	gstate_new_state(lc, GSTATE_CALL_END, gctx, NULL);
 	linphone_call_set_terminated(call);
 	return 0;
 }
@@ -3816,6 +3825,7 @@ LpConfig *linphone_core_get_config(LinphoneCore *lc){
 
 static void linphone_core_uninit(LinphoneCore *lc)
 {
+	LinphoneGeneralStateContext gctx;
 	while(lc->calls)
 	{
 		LinphoneCall *the_call = lc->calls->data;
@@ -3830,7 +3840,8 @@ static void linphone_core_uninit(LinphoneCore *lc)
 
 	if (lc->friends)
 		ms_list_for_each(lc->friends,(void (*)(void *))linphone_friend_close_subscriptions);
-	gstate_new_state(lc, GSTATE_POWER_SHUTDOWN, NULL);
+	gctx.call=NULL;
+	gstate_new_state(lc, GSTATE_POWER_SHUTDOWN, gctx, NULL);
 #ifdef VIDEO_ENABLED
 	if (lc->previewstream!=NULL){
 		video_preview_stop(lc->previewstream);
@@ -3857,7 +3868,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	linphone_core_free_payload_types();
 
 	ortp_exit();
-	gstate_new_state(lc, GSTATE_POWER_OFF, NULL);
+	gstate_new_state(lc, GSTATE_POWER_OFF, gctx, NULL);
 }
 
 static void set_network_reachable(LinphoneCore* lc,bool_t isReachable){

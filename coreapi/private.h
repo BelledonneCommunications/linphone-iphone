@@ -55,7 +55,10 @@
 #endif
 
 
-
+/* private: set a new state */
+void gstate_new_state(struct _LinphoneCore *lc, gstate_t new_state, LinphoneGeneralStateContext context, const char *message);
+/*private*/
+void gstate_initialize(struct _LinphoneCore *lc);
 
 struct _LinphoneCall
 {

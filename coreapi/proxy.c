@@ -259,7 +259,10 @@ static char *guess_contact_for_register(LinphoneProxyConfig *obj){
 }
 
 static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
+	LinphoneGeneralStateContext gctx;
 	const char *id_str;
+
+	gctx.proxy=obj;
 	if (obj->reg_identity!=NULL) id_str=obj->reg_identity;
 	else id_str=linphone_core_get_primary_contact(obj->lc);
 	if (obj->reg_sendregister){
@@ -272,9 +275,9 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
 		ms_free(contact);
 		sal_op_set_user_pointer(obj->op,obj);
 		if (!sal_register(obj->op,obj->reg_proxy,obj->reg_identity,obj->expires)) {
-			gstate_new_state(obj->lc,GSTATE_REG_PENDING,NULL);
+			gstate_new_state(obj->lc,GSTATE_REG_PENDING, gctx, NULL);
 		} else {
-			gstate_new_state(obj->lc,GSTATE_REG_FAILED,NULL);
+			gstate_new_state(obj->lc,GSTATE_REG_FAILED, gctx, NULL);
 		}
 	}
 }

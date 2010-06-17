@@ -97,30 +97,6 @@ void linphone_address_destroy(LinphoneAddress *u);
 
 struct _SipSetupContext;
 
-/**
- * The LinphoneCall object represents a call issued or received by the LinphoneCore
-**/
-struct _LinphoneCall;
-typedef struct _LinphoneCall LinphoneCall;
-
-typedef enum _LinphoneCallState{
-	LinphoneCallInit,
-	LinphoneCallPreEstablishing,
-	LinphoneCallRinging,
-	LinphoneCallAVRunning,
-	LinphoneCallPaused,
-	LinphoneCallTerminated
-}LinphoneCallState;
-
-LinphoneCallState linphone_call_get_state(const LinphoneCall *call);
-bool_t linphone_call_asked_to_autoanswer(LinphoneCall *call);
-bool_t linphone_call_paused(LinphoneCall *call);
-const LinphoneAddress * linphone_core_get_current_call_remote_address(struct _LinphoneCore *lc);
-const LinphoneAddress * linphone_call_get_remote_address(const LinphoneCall *call);
-char *linphone_call_get_remote_address_as_string(const LinphoneCall *call);
-void linphone_call_ref(LinphoneCall *call);
-void linphone_call_unref(LinphoneCall *call);
-
 
 /**
  * Enum representing the direction of a call.
@@ -177,6 +153,33 @@ const char *linphone_call_log_get_ref_key(const LinphoneCallLog *cl);
 const rtp_stats_t *linphone_call_log_get_local_stats(const LinphoneCallLog *cl);
 const rtp_stats_t *linphone_call_log_get_remote_stats(const LinphoneCallLog *cl);
 char * linphone_call_log_to_str(LinphoneCallLog *cl);
+
+
+/**
+ * The LinphoneCall object represents a call issued or received by the LinphoneCore
+**/
+struct _LinphoneCall;
+typedef struct _LinphoneCall LinphoneCall;
+
+typedef enum _LinphoneCallState{
+	LinphoneCallInit,
+	LinphoneCallPreEstablishing,
+	LinphoneCallRinging,
+	LinphoneCallAVRunning,
+	LinphoneCallPaused,
+	LinphoneCallTerminated
+}LinphoneCallState;
+
+LinphoneCallState linphone_call_get_state(const LinphoneCall *call);
+bool_t linphone_call_asked_to_autoanswer(LinphoneCall *call);
+bool_t linphone_call_paused(LinphoneCall *call);
+const LinphoneAddress * linphone_core_get_current_call_remote_address(struct _LinphoneCore *lc);
+const LinphoneAddress * linphone_call_get_remote_address(const LinphoneCall *call);
+char *linphone_call_get_remote_address_as_string(const LinphoneCall *call);
+void linphone_call_ref(LinphoneCall *call);
+void linphone_call_unref(LinphoneCall *call);
+LinphoneCallLog *linphone_call_get_call_log(const LinphoneCall *call);
+
 
 typedef enum{
 	LinphoneSPWait,
@@ -405,10 +408,11 @@ struct _LinphoneGeneralState {
 };
 typedef struct _LinphoneGeneralState LinphoneGeneralState;
 
-/* private: set a new state */
-void gstate_new_state(struct _LinphoneCore *lc, gstate_t new_state, const char *message);
-/*private*/
-void gstate_initialize(struct _LinphoneCore *lc) ;
+
+typedef union _LinphoneGeneralStateContext{
+	LinphoneCall *call;
+	LinphoneProxyConfig *proxy;
+}LinphoneGeneralStateContext;
 
 /**
  * @addtogroup initializing
@@ -458,7 +462,7 @@ typedef void (*CallLogUpdated)(struct _LinphoneCore *lc, struct _LinphoneCallLog
 /** Callback prototype */
 typedef void (*TextMessageReceived)(struct _LinphoneCore *lc, LinphoneChatRoom *room, const char *from, const char *message);
 /** Callback prototype */
-typedef void (*GeneralStateChange)(struct _LinphoneCore *lc, LinphoneGeneralState *gstate);
+typedef void (*GeneralStateChange)(struct _LinphoneCore *lc, LinphoneGeneralState *gstate, LinphoneGeneralStateContext ctx);
 /** Callback prototype */
 typedef void (*DtmfReceived)(struct _LinphoneCore* lc, int dtmf);
 /** Callback prototype */

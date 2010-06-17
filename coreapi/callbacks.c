@@ -52,6 +52,7 @@ static void call_received(SalOp *h){
 	const char *from,*to;
 	char *tmp;
 	LinphoneAddress *from_parsed;
+	LinphoneGeneralStateContext gctx;
 
 	/* first check if we can answer successfully to this invite */
 	if (lc->presence_mode!=LINPHONE_STATUS_ONLINE){
@@ -105,7 +106,8 @@ static void call_received(SalOp *h){
 	linphone_address_clean(from_parsed);
 	tmp=linphone_address_as_string(from_parsed);
 	linphone_address_destroy(from_parsed);
-	gstate_new_state(lc, GSTATE_CALL_IN_INVITE, tmp);
+	gctx.call=call;
+	gstate_new_state(lc, GSTATE_CALL_IN_INVITE, gctx, tmp);
 	barmesg=ortp_strdup_printf("%s %s%s",tmp,_("is contacting you"),
 	    (sal_call_autoanswer_asked(h)) ?_(" and asked autoanswer."):_("."));
 	if (lc->vtable.show) lc->vtable.show(lc);
@@ -136,7 +138,11 @@ static void call_ringing(SalOp *h){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(h));
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(h);
 	SalMediaDescription *md;
+	LinphoneGeneralStateContext gctx;
+	
 	if (call==NULL) return;
+	gctx.call=call;
+	
 	if (lc->vtable.display_status)
 		lc->vtable.display_status(lc,_("Remote ringing."));
 	if (lc->vtable.ringing_recv)
@@ -148,7 +154,8 @@ static void call_ringing(SalOp *h){
 			MSSndCard *ringcard=lc->sound_conf.lsd_card ? lc->sound_conf.lsd_card : lc->sound_conf.play_sndcard;
 			ms_message("Remote ringing...");
 			lc->ringstream=ring_start(lc->sound_conf.remote_ring,2000,ringcard);
-			gstate_new_state(lc, GSTATE_CALL_OUT_RINGING, NULL);
+			
+			gstate_new_state(lc, GSTATE_CALL_OUT_RINGING, gctx, NULL);
 		}
 	}else{
 		/*accept early media */
@@ -162,7 +169,7 @@ static void call_ringing(SalOp *h){
 		if (lc->vtable.show) lc->vtable.show(lc);
 		if (lc->vtable.display_status) 
 			lc->vtable.display_status(lc,_("Early media."));
-		gstate_new_state(lc, GSTATE_CALL_OUT_RINGING, NULL);
+		gstate_new_state(lc, GSTATE_CALL_OUT_RINGING, gctx, NULL);
 		if (lc->ringstream!=NULL){
 			ring_stop(lc->ringstream);
 			lc->ringstream=NULL;
@@ -183,10 +190,12 @@ static void call_ringing(SalOp *h){
 static void call_accepted(SalOp *op){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
+	LinphoneGeneralStateContext gctx;
 	if (call==NULL){
 		ms_warning("No call to accept.");
 		return ;
 	}
+	gctx.call=call;
 	if (call->state==LinphoneCallAVRunning){
 		ms_message("GET ACK of resume\n");
 		if(lc->vtable.ack_resumed_recv)
@@ -219,7 +228,7 @@ static void call_accepted(SalOp *op){
 		else
 		{
 			linphone_core_set_as_current_call (lc,call);
-			gstate_new_state(lc, GSTATE_CALL_OUT_CONNECTED, NULL);
+			gstate_new_state(lc, GSTATE_CALL_OUT_CONNECTED, gctx, NULL);
 			linphone_connect_incoming(lc,call);
 		}		
 	}else{
@@ -232,10 +241,12 @@ static void call_accepted(SalOp *op){
 static void call_ack(SalOp *op){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
+	LinphoneGeneralStateContext gctx;
 	if (call==NULL){
 		ms_warning("No call to be ACK'd");
 		return ;
 	}
+	gctx.call=call;
 	if (call->media_pending){
 		if (lc->audiostream->ticker!=NULL){
 			/*case where we accepted early media */
@@ -251,7 +262,7 @@ static void call_ack(SalOp *op){
 		if (call->resultdesc)
 			sal_media_description_ref(call->resultdesc);
 		if (call->resultdesc && !sal_media_description_empty(call->resultdesc)){
-			gstate_new_state(lc, GSTATE_CALL_IN_CONNECTED, NULL);
+			gstate_new_state(lc, GSTATE_CALL_IN_CONNECTED, gctx, NULL);
 			linphone_connect_incoming(lc,call);
 		}else{
 			/*send a bye*/
@@ -312,6 +323,8 @@ static void call_updated(SalOp *op){
 static void call_terminated(SalOp *op, const char *from){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
+	LinphoneGeneralStateContext gctx;
+	gctx.call=call;
 	if (linphone_call_get_state(call)==LinphoneCallTerminated){
 		ms_warning("call_terminated: ignoring.");
 		return;
@@ -329,7 +342,7 @@ static void call_terminated(SalOp *op, const char *from){
 	if (lc->vtable.display_status!=NULL)
 		lc->vtable.display_status(lc,_("Call terminated."));
 	call->state=LinphoneCallTerminated;
-	gstate_new_state(lc, GSTATE_CALL_END, NULL);
+	gstate_new_state(lc, GSTATE_CALL_END, gctx, NULL);
 	if (lc->vtable.bye_recv!=NULL){
 		LinphoneAddress *addr=linphone_address_new(from);
 		char *tmp;
@@ -352,7 +365,9 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 	char *msg603=_("Call declined.");
 	char *msg=(char*)details;
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
+	LinphoneGeneralStateContext gctx;
 
+	gctx.call=call;
 	if (lc->vtable.show) lc->vtable.show(lc);
 
 	if (error==SalErrorNoResponse){
@@ -412,8 +427,8 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 	if(call == linphone_core_get_current_call(lc))
 		linphone_core_stop_media_streams(lc,call);
 	if (call!=NULL) {
-		if (sr!=SalReasonDeclined) gstate_new_state(lc, GSTATE_CALL_ERROR, msg);
-		else gstate_new_state(lc, GSTATE_CALL_END, NULL);
+		if (sr!=SalReasonDeclined) gstate_new_state(lc, GSTATE_CALL_ERROR, gctx, msg);
+		else gstate_new_state(lc, GSTATE_CALL_END, gctx, NULL);
 		linphone_call_set_terminated(call);
 	}
 }
@@ -450,8 +465,10 @@ static void register_success(SalOp *op, bool_t registered){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)sal_op_get_user_pointer(op);
 	char *msg;
+	LinphoneGeneralStateContext gctx;
+	gctx.proxy=cfg;
 	cfg->registered=registered;
-	gstate_new_state(lc, GSTATE_REG_OK, NULL);
+	gstate_new_state(lc, GSTATE_REG_OK,gctx, NULL);
 	if (cfg->registered) msg=ms_strdup_printf(_("Registration on %s successful."),sal_op_get_proxy(op));
 	else msg=ms_strdup_printf(_("Unregistration on %s done."),sal_op_get_proxy(op));
 	if (lc->vtable.display_status) 
@@ -461,9 +478,11 @@ static void register_success(SalOp *op, bool_t registered){
 
 static void register_failure(SalOp *op, SalError error, SalReason reason, const char *details){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
+	LinphoneGeneralStateContext gctx;
 	char *msg=ortp_strdup_printf(_("Registration on %s failed: %s"),sal_op_get_proxy(op),(details!=NULL) ? details : _("no response timeout"));
 	if (lc->vtable.display_status) lc->vtable.display_status(lc,msg);
-	gstate_new_state(lc, GSTATE_REG_FAILED, msg);
+	gctx.proxy=(LinphoneProxyConfig*)sal_op_get_user_pointer (op);
+	gstate_new_state(lc, GSTATE_REG_FAILED, gctx, msg);
 	ms_free(msg);
 }
 

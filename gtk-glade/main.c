@@ -53,7 +53,7 @@ static void linphone_gtk_display_warning(LinphoneCore *lc, const char *warning);
 static void linphone_gtk_display_url(LinphoneCore *lc, const char *msg, const char *url);
 static void linphone_gtk_display_question(LinphoneCore *lc, const char *question);
 static void linphone_gtk_call_log_updated(LinphoneCore *lc, LinphoneCallLog *cl);
-static void linphone_gtk_general_state(LinphoneCore *lc, LinphoneGeneralState *gstate);
+static void linphone_gtk_general_state(LinphoneCore *lc, LinphoneGeneralState *gstate, LinphoneGeneralStateContext gctx);
 static void linphone_gtk_refer_received(LinphoneCore *lc, LinphoneCall *call, const char  *refer_to);
 static gboolean linphone_gtk_auto_answer(GtkWidget *incall_window);
 
@@ -879,7 +879,7 @@ static void linphone_gtk_call_log_updated(LinphoneCore *lc, LinphoneCallLog *cl)
 	if (w) linphone_gtk_call_log_update(w);
 }
 
-static void linphone_gtk_general_state(LinphoneCore *lc, LinphoneGeneralState *gstate){
+static void linphone_gtk_general_state(LinphoneCore *lc, LinphoneGeneralState *gstate, LinphoneGeneralStateContext gctx){
 	switch(gstate->new_state){
 		case GSTATE_CALL_OUT_CONNECTED:
 		case GSTATE_CALL_IN_CONNECTED:

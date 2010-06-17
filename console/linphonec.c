@@ -132,7 +132,7 @@ static void linphonec_bye_received(LinphoneCore *lc, LinphoneCall *call);
 static void linphonec_text_received(LinphoneCore *lc, LinphoneChatRoom *cr,
 		const char *from, const char *msg);
 static void linphonec_display_status (LinphoneCore * lc, const char *something);
-static void linphonec_general_state (LinphoneCore * lc, LinphoneGeneralState *gstate);
+static void linphonec_general_state (LinphoneCore * lc, LinphoneGeneralState *gstate, LinphoneGeneralStateContext gctx);
 static void linphonec_dtmf_received(LinphoneCore *lc, int dtmf);
 static void print_prompt(LinphoneCore *opm);
 void linphonec_out(const char *fmt,...);
@@ -435,7 +435,7 @@ static void linphonec_dtmf_received(LinphoneCore *lc, int dtmf){
 }
 
 static void
-linphonec_general_state (LinphoneCore * lc, LinphoneGeneralState *gstate)
+linphonec_general_state (LinphoneCore * lc, LinphoneGeneralState *gstate, LinphoneGeneralStateContext gctx)
 {
         if (show_general_state) {
           switch(gstate->new_state) {
