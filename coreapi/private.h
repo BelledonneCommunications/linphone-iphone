@@ -207,6 +207,7 @@ struct _LinphoneProxyConfig
 	bool_t publish;
 	bool_t dial_escape_plus;
 	void* user_data;
+	time_t deletion_date;
 };
 
 struct _LinphoneAuthInfo 

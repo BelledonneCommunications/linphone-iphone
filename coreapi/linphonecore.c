@@ -646,9 +646,16 @@ static void sip_config_read(LinphoneCore *lc)
 	}
 	linphone_core_enable_ipv6(lc,ipv6);
 	memset(&tr,0,sizeof(tr));
-	tr.udp_port=lp_config_get_int(lc->config,"sip","sip_port",5060);
-	tr.tcp_port=lp_config_get_int(lc->config,"sip","sip_tcp_port",0);
-
+	if (lp_config_get_int(lc->config,"sip","sip_random_port",0)) {
+		tr.udp_port=(0xDFF&+random())+1024;
+	} else {
+		tr.udp_port=lp_config_get_int(lc->config,"sip","sip_port",5060);
+	}
+	if (lp_config_get_int(lc->config,"sip","sip_tcp_random_port",0)) {
+		tr.tcp_port=(0xDFF&+random())+1024;
+	} else {
+		tr.tcp_port=lp_config_get_int(lc->config,"sip","sip_tcp_port",0);
+	}
 	/*start listening on ports*/
  	linphone_core_set_sip_transports(lc,&tr);
 
@@ -1553,7 +1560,7 @@ int linphone_core_set_sip_transports(LinphoneCore *lc, const LCSipTransports * t
  * is not used.
  * @ingroup network_parameters
 **/
-int linphone_core_get_sip_transport(LinphoneCore *lc, LCSipTransports *tr){
+int linphone_core_get_sip_transports(LinphoneCore *lc, LCSipTransports *tr){
 	memcpy(tr,&lc->sip_conf.transports,sizeof(*tr));
 	return 0;
 }
@@ -1639,6 +1646,16 @@ static void monitor_network_state(LinphoneCore *lc, time_t curtime){
 
 static void proxy_update(LinphoneCore *lc){
 	ms_list_for_each(lc->sip_conf.proxies,(void (*)(void*))&linphone_proxy_config_update);
+	MSList* list=ms_list_copy(lc->sip_conf.deleted_proxies);
+	for(;list!=NULL;list=list->next){
+		LinphoneProxyConfig* cfg = (LinphoneProxyConfig*) list->data;
+		if (ms_time(NULL) - cfg->deletion_date > 5) {
+			lc->sip_conf.deleted_proxies =ms_list_remove(lc->sip_conf.deleted_proxies,(void *)cfg);
+			ms_message("clearing proxy config for [%s]",linphone_proxy_config_get_addr(cfg));
+			linphone_proxy_config_destroy(cfg);
+		}
+	}
+	ms_list_free(list);
 }
 
 static void assign_buddy_info(LinphoneCore *lc, BuddyInfo *info){

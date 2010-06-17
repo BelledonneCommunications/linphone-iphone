@@ -1749,6 +1749,9 @@ char *sal_address_as_string_uri_only(const SalAddress *u){
 	osip_free(tmp);
 	return ret;
 }
+void sal_address_add_param(SalAddress *u,const char* name,const char* value) {
+	osip_uri_uparam_add	(((osip_from_t*)u)->url,ms_strdup(name),ms_strdup(value));
+}
 
 void sal_address_destroy(SalAddress *u){
 	osip_from_free((osip_from_t*)u);
@@ -1757,5 +1760,17 @@ void sal_address_destroy(SalAddress *u){
 void sal_set_keepalive_period(Sal *ctx,unsigned int value) {
 	ctx->keepalive_period=value;
 	eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE, &value);
+}
+const char * sal_address_get_port(const SalAddress *addr) {
+	const osip_from_t *u=(const osip_from_t*)addr;
+	return null_if_empty(u->url->port);
+}
+int sal_address_get_port_int(const SalAddress *uri) {
+	const char* port = sal_address_get_port(uri);
+	if (port != NULL) {
+		return atoi(port);
+	} else {
+		return 5060;
+	}
 }
 
