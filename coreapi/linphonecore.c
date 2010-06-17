@@ -2655,7 +2655,11 @@ void linphone_core_set_ring_level(LinphoneCore *lc, int level){
 	if (sndcard) ms_snd_card_set_level(sndcard,MS_SND_CARD_PLAYBACK,level);
 }
 
-
+/**
+ * Sets call playback gain in db
+ *
+ * @ingroup media_parameters
+**/
 void linphone_core_set_soft_play_level(LinphoneCore *lc, float level){
 	float gain=level;
 	lc->sound_conf.soft_play_lev=level;
@@ -2666,11 +2670,17 @@ void linphone_core_set_soft_play_level(LinphoneCore *lc, float level){
 		ms_filter_call_method(st->volrecv,MS_VOLUME_SET_DB_GAIN,&gain);
 	}else ms_warning("Could not apply gain: gain control wasn't activated.");
 }
+
+/**
+ * Returns call playback gain in db
+ *
+ * @ingroup media_parameters
+**/
 float linphone_core_get_soft_play_level(LinphoneCore *lc) {
 	float gain=0;
 	AudioStream *st=lc->audiostream;
 	if (st->volrecv){
-		ms_filter_call_method(st->volrecv,MS_VOLUME_GET,&gain);
+		ms_filter_call_method(st->volrecv,MS_VOLUME_GET_GAIN_DB,&gain);
 	}else ms_warning("Could not get gain: gain control wasn't activated.");
 
 	return gain;
