@@ -478,19 +478,20 @@ static void sip_config_read(LinphoneCore *lc)
 {
 	char *contact;
 	const char *tmpstr;
-	int port;
+	LCSipTransports tr;
 	int i,tmp;
 	int ipv6;
+
+	tmp=lp_config_get_int(lc->config,"sip","use_info",0);
+	linphone_core_set_use_info_for_dtmf(lc,tmp);
 
 	if (lp_config_get_int(lc->config,"sip","use_session_timers",0)==1){
 		sal_use_session_timers(lc->sal,200);
 	}
-	
-	port=lp_config_get_int(lc->config,"sip","use_info",0);
-	linphone_core_set_use_info_for_dtmf(lc,port);
 
-	port=lp_config_get_int(lc->config,"sip","use_rfc2833",0);
-	linphone_core_set_use_rfc2833_for_dtmf(lc,port);
+
+	tmp=lp_config_get_int(lc->config,"sip","use_rfc2833",0);
+	linphone_core_set_use_rfc2833_for_dtmf(lc,tmp);
 
 	ipv6=lp_config_get_int(lc->config,"sip","use_ipv6",-1);
 	if (ipv6==-1){
@@ -501,8 +502,19 @@ static void sip_config_read(LinphoneCore *lc)
 		}
 	}
 	linphone_core_enable_ipv6(lc,ipv6);
-	port=lp_config_get_int(lc->config,"sip","sip_port",5060);
-	linphone_core_set_sip_port(lc,port);
+	memset(&tr,0,sizeof(tr));
+	if (lp_config_get_int(lc->config,"sip","sip_random_port",0)) {
+		tr.udp_port=(0xDFF&+random())+1024;
+	} else {
+		tr.udp_port=lp_config_get_int(lc->config,"sip","sip_port",5060);
+	}
+	if (lp_config_get_int(lc->config,"sip","sip_tcp_random_port",0)) {
+		tr.tcp_port=(0xDFF&+random())+1024;
+	} else {
+		tr.tcp_port=lp_config_get_int(lc->config,"sip","sip_tcp_port",0);
+	}
+	/*start listening on ports*/
+ 	linphone_core_set_sip_transports(lc,&tr);
 
 	tmpstr=lp_config_get_string(lc->config,"sip","contact",NULL);
 	if (tmpstr==NULL || linphone_core_set_primary_contact(lc,tmpstr)==-1) {
@@ -553,6 +565,11 @@ static void sip_config_read(LinphoneCore *lc)
 			break;
 		}
 	}
+
+
+
+
+	lc->sip_conf.sdp_200_ack=lp_config_get_int(lc->config,"sip","sdp_200_ack",0);
 	
 	/*for tuning or test*/
 	lc->sip_conf.sdp_200_ack=lp_config_get_int(lc->config,"sip","sdp_200_ack",0);
@@ -570,6 +587,8 @@ static void rtp_config_read(LinphoneCore *lc)
 	int port;
 	int jitt_comp;
 	int nortp_timeout;
+	bool_t rtp_no_xmit_on_audio_mute;
+
 	port=lp_config_get_int(lc->config,"rtp","audio_rtp_port",7078);
 	linphone_core_set_audio_port(lc,port);
 
@@ -582,6 +601,8 @@ static void rtp_config_read(LinphoneCore *lc)
 	jitt_comp=lp_config_get_int(lc->config,"rtp","video_jitt_comp",60);
 	nortp_timeout=lp_config_get_int(lc->config,"rtp","nortp_timeout",30);
 	linphone_core_set_nortp_timeout(lc,nortp_timeout);
+	rtp_no_xmit_on_audio_mute=lp_config_get_int(lc->config,"rtp","rtp_no_xmit_on_audio_mute",FALSE);
+	linphone_core_set_rtp_no_xmit_on_audio_mute(lc,rtp_no_xmit_on_audio_mute);	
 }
 
 static PayloadType * find_payload(RtpProfile *prof, const char *mime_type, int clock_rate, const char *recv_fmtp){
@@ -1076,7 +1097,7 @@ static void update_primary_contact(LinphoneCore *lc){
 		lc->sip_conf.loopback_only=TRUE;
 	}else lc->sip_conf.loopback_only=FALSE;
 	linphone_address_set_domain(url,tmp);
-	linphone_address_set_port_int(url,lc->sip_conf.sip_port);
+	linphone_address_set_port_int(url,linphone_core_get_sip_port (lc));
 	guessed=linphone_address_as_string(url);
 	lc->sip_conf.guessed_contact=guessed;
 	linphone_address_destroy(url);
@@ -1205,6 +1226,10 @@ int linphone_core_get_nortp_timeout(const LinphoneCore *lc){
 	return lc->rtp_conf.nortp_timeout;
 }
 
+bool_t linphone_core_get_rtp_no_xmit_on_audio_mute(const LinphoneCore *lc){
+	return lc->rtp_conf.rtp_no_xmit_on_audio_mute;
+}
+
 /**
  * Sets the nominal audio jitter buffer size in milliseconds.
  *
@@ -1213,6 +1238,10 @@ int linphone_core_get_nortp_timeout(const LinphoneCore *lc){
 void linphone_core_set_audio_jittcomp(LinphoneCore *lc, int value)
 {
 	lc->rtp_conf.audio_jitt_comp=value;
+}
+
+void linphone_core_set_rtp_no_xmit_on_audio_mute(LinphoneCore *lc,bool_t rtp_no_xmit_on_audio_mute){
+	lc->rtp_conf.rtp_no_xmit_on_audio_mute=rtp_no_xmit_on_audio_mute;
 }
 
 /**
@@ -1287,11 +1316,13 @@ void linphone_core_set_use_rfc2833_for_dtmf(LinphoneCore *lc,bool_t use_rfc2833)
 /**
  * Returns the UDP port used by SIP.
  *
+ * Deprecated: use linphone_core_get_sip_transports() instead.
  * @ingroup network_parameters
 **/
 int linphone_core_get_sip_port(LinphoneCore *lc)
 {
-	return lc->sip_conf.sip_port;
+	LCSipTransports *tr=&lc->sip_conf.transports;
+	return tr->udp_port>0 ? tr->udp_port : tr->tcp_port;
 }
 
 static char _ua_name[64]="Linphone";
@@ -1323,35 +1354,89 @@ void linphone_core_set_user_agent(const char *name, const char *ver){
 	strncpy(_ua_version,ver,sizeof(_ua_version));
 }
 
-/**
- * Sets the UDP port to be used by SIP.
- *
- * @ingroup network_parameters
-**/
-int linphone_core_set_sip_port(LinphoneCore *lc,int port)
-{
-	const char *anyaddr;
-	int err=0;
-	if (port==lc->sip_conf.sip_port) return 0;
-	lc->sip_conf.sip_port=port;
+static void transport_error(LinphoneCore *lc, const char* transport, int port){
+	char *msg=ortp_strdup_printf("Could not start %s transport on port %i, maybe this port is already used.",transport,port);
+	ms_warning(msg);
+	if (lc->vtable.display_warning)
+		lc->vtable.display_warning(lc,msg);
+	ms_free(msg);
+}
 
-	if (lc->sal==NULL) return -1;
-	
+static bool_t transports_unchanged(const LCSipTransports * tr1, const LCSipTransports * tr2){
+	return
+		tr2->udp_port==tr1->udp_port &&
+		tr2->tcp_port==tr1->tcp_port &&
+		tr2->dtls_port==tr1->dtls_port &&
+		tr2->tls_port==tr1->tls_port;
+}
+
+static int apply_transports(LinphoneCore *lc){
+	Sal *sal=lc->sal;
+	const char *anyaddr;
+	LCSipTransports *tr=&lc->sip_conf.transports;
+
 	if (lc->sip_conf.ipv6_enabled)
 		anyaddr="::0";
 	else
 		anyaddr="0.0.0.0";
-	err=sal_listen_port (lc->sal,anyaddr,port, SalTransportDatagram,FALSE);
-	if (err<0){
-		char *msg=ortp_strdup_printf("UDP port %i seems already in use ! Cannot initialize.",port);
-		ms_warning(msg);
-		if (lc->vtable.display_warning)
-			lc->vtable.display_warning(lc,msg);
-		ms_free(msg);
-		return -1;
+
+	sal_unlisten_ports (sal);
+	if (tr->udp_port>0){
+		if (sal_listen_port (sal,anyaddr,tr->udp_port,SalTransportDatagram,FALSE)!=0){
+			transport_error(lc,"UDP",tr->udp_port);
+			return -1;
+		}
+	}
+	if (tr->tcp_port>0){
+		if (sal_listen_port (sal,anyaddr,tr->tcp_port,SalTransportStream,FALSE)!=0){
+			transport_error(lc,"TCP",tr->tcp_port);
+		}
 	}
 	apply_user_agent(lc);
 	return 0;
+}
+
+/**
+ * Sets the ports to be used for each of transport (UDP or TCP)
+ *
+ * A zero value port for a given transport means the transport
+ * is not used.
+ *
+ * @ingroup network_parameters
+**/
+int linphone_core_set_sip_transports(LinphoneCore *lc, const LCSipTransports * tr){
+	
+	if (transports_unchanged(tr,&lc->sip_conf.transports))
+		return 0;
+	memcpy(&lc->sip_conf.transports,tr,sizeof(*tr));
+	
+	if (lc->sal==NULL) return 0;
+	return apply_transports(lc);
+}
+
+/**
+ * Retrieves the ports used for each transport (udp, tcp).
+ * A zero value port for a given transport means the transport
+ * is not used.
+ * @ingroup network_parameters
+**/
+int linphone_core_get_sip_transports(LinphoneCore *lc, LCSipTransports *tr){
+	memcpy(tr,&lc->sip_conf.transports,sizeof(*tr));
+	return 0;
+}
+
+/**
+ * Sets the UDP port to be used by SIP.
+ *
+ * Deprecated: use linphone_core_set_sip_transports() instead.
+ * @ingroup network_parameters
+**/
+void linphone_core_set_sip_port(LinphoneCore *lc,int port)
+{
+	LCSipTransports tr;
+	memset(&tr,0,sizeof(tr));
+	tr.udp_port=port;
+	linphone_core_set_sip_transports (lc,&tr);
 }
 
 /**
@@ -1378,7 +1463,7 @@ void linphone_core_enable_ipv6(LinphoneCore *lc, bool_t val){
 		lc->sip_conf.ipv6_enabled=val;
 		if (lc->sal){
 			/* we need to restart eXosip */
-			linphone_core_set_sip_port(lc, lc->sip_conf.sip_port);
+			apply_transports(lc);
 		}
 	}
 }
@@ -1435,6 +1520,16 @@ static void monitor_network_state(LinphoneCore *lc, time_t curtime){
 
 static void proxy_update(LinphoneCore *lc){
 	ms_list_for_each(lc->sip_conf.proxies,(void (*)(void*))&linphone_proxy_config_update);
+	MSList* list=ms_list_copy(lc->sip_conf.deleted_proxies);
+	for(;list!=NULL;list=list->next){
+		LinphoneProxyConfig* cfg = (LinphoneProxyConfig*) list->data;
+		if (ms_time(NULL) - cfg->deletion_date > 5) {
+			lc->sip_conf.deleted_proxies =ms_list_remove(lc->sip_conf.deleted_proxies,(void *)cfg);
+			ms_message("clearing proxy config for [%s]",linphone_proxy_config_get_addr(cfg));
+			linphone_proxy_config_destroy(cfg);
+		}
+	}
+	ms_list_free(list);
 }
 
 static void assign_buddy_info(LinphoneCore *lc, BuddyInfo *info){
@@ -1971,6 +2066,13 @@ bool_t linphone_core_inc_invite_pending(LinphoneCore*lc){
 	return FALSE;
 }
 
+#ifdef TEST_EXT_RENDERER
+static void rendercb(void *data, const MSPicture *local, const MSPicture *remote){
+	ms_message("rendercb, local buffer=%p, remote buffer=%p",
+	           local ? local->planes[0] : NULL, remote? remote->planes[0] : NULL);
+}
+#endif
+
 void linphone_core_init_media_streams(LinphoneCore *lc, LinphoneCall *call){
 #ifdef PRINTF_DEBUG
 	printf("%s(%d)\n",__FUNCTION__,__LINE__);
@@ -2001,8 +2103,12 @@ void linphone_core_init_media_streams(LinphoneCore *lc, LinphoneCall *call){
 		rtp_session_set_transports(lc->audiostream->session,lc->a_rtp,lc->a_rtcp);
 
 #ifdef VIDEO_ENABLED
-	if ((lc->video_conf.display || lc->video_conf.capture) && md->streams[1].port>0)
+	if ((lc->video_conf.display || lc->video_conf.capture) && md->streams[1].port>0){
 		lc->videostream=video_stream_new(md->streams[1].port,linphone_core_ipv6_enabled(lc));
+#ifdef TEST_EXT_RENDERER
+		video_stream_set_render_callback(lc->videostream,rendercb,NULL);
+#endif
+	}
 #else
 	lc->videostream=NULL;
 #endif
@@ -2047,6 +2153,7 @@ static void post_configure_audio_streams(LinphoneCore *lc){
 	float gain=lp_config_get_float(lc->config,"sound","mic_gain",-1);
 	if (gain!=-1)
 		audio_stream_set_mic_gain(st,gain);
+	lc->audio_muted=FALSE;
 	float recv_gain = lc->sound_conf.soft_play_lev;
 	if (recv_gain != 0) {
 		linphone_core_set_soft_play_level(lc,recv_gain);
@@ -2667,7 +2774,11 @@ void linphone_core_set_ring_level(LinphoneCore *lc, int level){
 	if (sndcard) ms_snd_card_set_level(sndcard,MS_SND_CARD_PLAYBACK,level);
 }
 
-
+/**
+ * Sets call playback gain in db
+ *
+ * @ingroup media_parameters
+**/
 void linphone_core_set_soft_play_level(LinphoneCore *lc, float level){
 	float gain=level;
 	lc->sound_conf.soft_play_lev=level;
@@ -2678,11 +2789,17 @@ void linphone_core_set_soft_play_level(LinphoneCore *lc, float level){
 		ms_filter_call_method(st->volrecv,MS_VOLUME_SET_DB_GAIN,&gain);
 	}else ms_warning("Could not apply gain: gain control wasn't activated.");
 }
+
+/**
+ * Returns call playback gain in db
+ *
+ * @ingroup media_parameters
+**/
 float linphone_core_get_soft_play_level(LinphoneCore *lc) {
 	float gain=0;
 	AudioStream *st=lc->audiostream;
 	if (st->volrecv){
-		ms_filter_call_method(st->volrecv,MS_VOLUME_GET,&gain);
+		ms_filter_call_method(st->volrecv,MS_VOLUME_GET_GAIN_DB,&gain);
 	}else ms_warning("Could not get gain: gain control wasn't activated.");
 
 	return gain;
@@ -2993,6 +3110,10 @@ void linphone_core_mute_mic(LinphoneCore *lc, bool_t val){
 	if (lc->audiostream!=NULL){
 		 audio_stream_set_mic_gain(lc->audiostream,
 			(val==TRUE) ? 0 : 1.0);
+		 if ( linphone_core_get_rtp_no_xmit_on_audio_mute(lc) ){
+		   audio_stream_mute_rtp(lc->audiostream,val);
+		 }
+                 lc->audio_muted=val;
 	}
 }
 
@@ -3003,6 +3124,24 @@ bool_t linphone_core_is_mic_muted(LinphoneCore *lc) {
 	}else ms_warning("Could not get gain: gain control wasn't activated. ");
 
 	return gain==0;
+}
+
+// returns audio mute status for active stream
+bool_t linphone_core_is_audio_muted(LinphoneCore *lc){
+        if( lc->audiostream != NULL )
+	  return (lc->audio_muted);
+        return FALSE;
+}
+
+// returns rtp transmission status for an active stream
+// if audio is muted and config parameter rtp_no_xmit_on_audio_mute 
+// was set on then rtp transmission is also muted
+bool_t linphone_core_is_rtp_muted(LinphoneCore *lc){
+        if( (lc->audiostream != NULL) &&  
+	    linphone_core_get_rtp_no_xmit_on_audio_mute(lc)){
+	  return lc->audio_muted;
+	}
+	return FALSE;
 }
 
 void linphone_core_enable_agc(LinphoneCore *lc, bool_t val){
@@ -3529,7 +3668,7 @@ void sip_config_uninit(LinphoneCore *lc)
 	MSList *elem;
 	int i;
 	sip_config_t *config=&lc->sip_conf;
-	lp_config_set_int(lc->config,"sip","sip_port",config->sip_port);
+	lp_config_set_int(lc->config,"sip","sip_port",config->transports.udp_port);
 	lp_config_set_int(lc->config,"sip","guess_hostname",config->guess_hostname);
 	lp_config_set_string(lc->config,"sip","contact",config->contact);
 	lp_config_set_int(lc->config,"sip","inc_timeout",config->inc_timeout);

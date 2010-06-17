@@ -44,6 +44,15 @@ struct SalOp;
 struct _LpConfig;
 
 
+struct _LCSipTransports{
+	int udp_port;
+	int tcp_port;
+	int dtls_port;
+	int tls_port;
+};
+
+typedef struct _LCSipTransports LCSipTransports;
+
 /**
  * Object that represents a SIP address.
  *
@@ -66,6 +75,15 @@ const char *linphone_address_get_scheme(const LinphoneAddress *u);
 const char *linphone_address_get_display_name(const LinphoneAddress* u);
 const char *linphone_address_get_username(const LinphoneAddress *u);
 const char *linphone_address_get_domain(const LinphoneAddress *u);
+/**
+ * Get port number as an integer value.
+ *
+ */
+int linphone_address_get_port_int(const LinphoneAddress *u);
+/**
+ * Get port number, null if not present.
+ */
+const char* linphone_address_get_port(const LinphoneAddress *u);
 void linphone_address_set_display_name(LinphoneAddress *u, const char *display_name);
 void linphone_address_set_username(LinphoneAddress *uri, const char *username);
 void linphone_address_set_domain(LinphoneAddress *uri, const char *host);
@@ -655,9 +673,13 @@ void linphone_core_set_use_rfc2833_for_dtmf(LinphoneCore *lc,bool_t use_rfc2833)
 
 bool_t linphone_core_get_use_rfc2833_for_dtmf(LinphoneCore *lc);
 
+void linphone_core_set_sip_port(LinphoneCore *lc, int port);
+
 int linphone_core_get_sip_port(LinphoneCore *lc);
 
-int linphone_core_set_sip_port(LinphoneCore *lc,int port);
+int linphone_core_set_sip_transports(LinphoneCore *lc, const LCSipTransports *transports);
+
+int linphone_core_get_sip_transports(LinphoneCore *lc, LCSipTransports *transports);
 
 ortp_socket_t linphone_core_get_sip_socket(LinphoneCore *lc);
 
@@ -733,6 +755,12 @@ void linphone_core_mute_mic(LinphoneCore *lc, bool_t muted);
  * @ingroup media_parameters
 **/
 bool_t linphone_core_is_mic_muted(LinphoneCore *lc);
+
+bool_t linphone_core_is_audio_muted(LinphoneCore *lc);
+bool_t linphone_core_is_rtp_muted(LinphoneCore *lc);
+
+bool_t linphone_core_get_rtp_no_xmit_on_audio_mute(const LinphoneCore *lc);
+void linphone_core_set_rtp_no_xmit_on_audio_mute(LinphoneCore *lc, bool_t val);
 
 void linphone_core_set_presence_info(LinphoneCore *lc,int minutes_away,const char *contact,LinphoneOnlineStatus os);
 

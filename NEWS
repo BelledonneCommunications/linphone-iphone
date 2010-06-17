@@ -1,3 +1,11 @@
+linphone-3.3.1 -- June 3, 2010
+	* fix bugs when carrying non ascii displaynames in SIP messages
+	* fix crash when codecs are incompatible
+	* fix bug with streams not restarted in case of reinvites
+	Requires:
+		mediastreamer2-2.5.0
+		ortp-0.16.3
+
 linphone-3.3.0 -- May 19, 2010
 	* liblinphone is ported to iphoneOS and Google Android
 	* Internal refactoring of liblinphone (code factorisation, encapsulation

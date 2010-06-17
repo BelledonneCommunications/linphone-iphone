@@ -3,6 +3,13 @@ AC_DEFUN([LP_SETUP_EXOSIP],[
 AC_REQUIRE([AC_CANONICAL_HOST])
 AC_REQUIRE([LP_CHECK_OSIP2])
 
+
+case $target_os in
+	*darwin*)
+		OSIP_LIBS="$OSIP_LIBS  -framework CoreFoundation -framework CFNetwork "
+	;;
+esac
+
 dnl eXosip embeded stuff
 EXOSIP_CFLAGS="$OSIP_CFLAGS -DOSIP_MT "
 EXOSIP_LIBS="$OSIP_LIBS -leXosip2  "
@@ -11,6 +18,8 @@ CPPFLAGS_save=$CPPFLAGS
 CPPFLAGS="$OSIP_CFLAGS $CPPFLAGS"
 AC_CHECK_HEADER([eXosip2/eXosip.h], ,AC_MSG_ERROR([Could not find eXosip2 headers !]))
 CPPFLAGS=$CPPFLAGS_save
+
+
 
 dnl check for eXosip2 libs
 LDFLAGS_save=$LDFLAGS

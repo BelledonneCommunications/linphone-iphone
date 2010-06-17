@@ -22,6 +22,7 @@ Copyright (C) 2000  Simon MORLAT (simon.morlat@linphone.org)
 #include "sipsetup.h"
 #include "lpconfig.h"
 #include "private.h"
+#include "mediastreamer2/mediastream.h"
 
 
 #include <ctype.h>
@@ -230,14 +231,45 @@ void linphone_proxy_config_apply(LinphoneProxyConfig *obj,LinphoneCore *lc)
 	linphone_proxy_config_done(obj);
 }
 
+static char *guess_contact_for_register(LinphoneProxyConfig *obj){
+	LinphoneAddress *proxy=linphone_address_new(obj->reg_proxy);
+	char *ret=NULL;
+	const char *host;
+	if (proxy==NULL) return NULL;
+	host=linphone_address_get_domain (proxy);
+	if (host!=NULL){
+		LinphoneAddress *contact;
+		char localip[LINPHONE_IPADDR_SIZE];
+		
+		linphone_core_get_local_ip(obj->lc,host,localip);
+		contact=linphone_address_new(obj->reg_identity);
+		linphone_address_set_domain (contact,localip);
+		linphone_address_set_port_int(contact,linphone_core_get_sip_port(obj->lc));
+		linphone_address_set_display_name(contact,NULL);
+		LCSipTransports tr;
+		linphone_core_get_sip_transports(obj->lc,&tr);
+		if (tr.udp_port <= 0 && tr.tcp_port>0) {
+			sal_address_add_param(contact,"transport","tcp");
+		}
+		ret=linphone_address_as_string(contact);
+		linphone_address_destroy(contact);
+	}
+	linphone_address_destroy (proxy);
+	return ret;
+}
+
 static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
 	const char *id_str;
 	if (obj->reg_identity!=NULL) id_str=obj->reg_identity;
 	else id_str=linphone_core_get_primary_contact(obj->lc);
 	if (obj->reg_sendregister){
+		char *contact;
 		if (obj->op)
 			sal_op_release(obj->op);
 		obj->op=sal_op_new(obj->lc->sal);
+		contact=guess_contact_for_register(obj);
+		sal_op_set_contact(obj->op,contact);
+		ms_free(contact);
 		sal_op_set_user_pointer(obj->op,obj);
 		if (!sal_register(obj->op,obj->reg_proxy,obj->reg_identity,obj->expires)) {
 			gstate_new_state(obj->lc,GSTATE_REG_PENDING,NULL);
@@ -474,6 +506,7 @@ void linphone_core_remove_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *cf
 	lc->sip_conf.proxies=ms_list_remove(lc->sip_conf.proxies,(void *)cfg);
 	/* add to the list of destroyed proxies, so that the possible unREGISTER request can succeed authentication */
 	lc->sip_conf.deleted_proxies=ms_list_append(lc->sip_conf.deleted_proxies,(void *)cfg);
+	cfg->deletion_date=ms_time(NULL);
 	/* this will unREGISTER */
 	linphone_proxy_config_edit(cfg);
 	if (lc->default_proxy==cfg){
@@ -759,6 +792,7 @@ void linphone_proxy_config_set_user_data(LinphoneProxyConfig *cr, void * ud) {
 void * linphone_proxy_config_get_user_data(LinphoneProxyConfig *cr) {
 	return cr->user_data;
 }
+
 
 
 

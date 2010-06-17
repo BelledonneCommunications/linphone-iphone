@@ -203,6 +203,7 @@ struct _LinphoneProxyConfig
 	bool_t publish;
 	bool_t dial_escape_plus;
 	void* user_data;
+	time_t deletion_date;
 };
 
 struct _LinphoneAuthInfo 
@@ -238,14 +239,16 @@ struct _LinphoneFriend{
 	bool_t inc_subscribe_pending;
 };	
 
+
 typedef struct sip_config
 {
 	char *contact;
 	char *guessed_contact;
-	int sip_port;
 	MSList *proxies;
 	MSList *deleted_proxies;
 	int inc_timeout;	/*timeout after an un-answered incoming call is rejected*/
+	unsigned int keepalive_period; /* interval in ms between keep alive messages sent to the proxy server*/
+	LCSipTransports transports;
 	bool_t use_info;
 	bool_t use_rfc2833;	/*force RFC2833 to be sent*/
 	bool_t guess_hostname;
@@ -256,7 +259,6 @@ typedef struct sip_config
 	bool_t register_only_when_network_is_up;
 	bool_t ping_with_options;
 	bool_t auto_net_state_mon;
-	unsigned int keepalive_period; /* interval in ms between keep alive messages sent to the proxy server*/
 } sip_config_t;
 
 typedef struct rtp_config
@@ -266,6 +268,8 @@ typedef struct rtp_config
 	int audio_jitt_comp;  /*jitter compensation*/
 	int video_jitt_comp;  /*jitter compensation*/
 	int nortp_timeout;
+	bool_t rtp_no_xmit_on_audio_mute;                              
+                              /* stop rtp xmit when audio muted */
 }rtp_config_t;
 
 
@@ -397,6 +401,7 @@ struct _LinphoneCore
 	bool_t preview_finished;
 	bool_t auto_net_state_mon;
 	bool_t network_reachable;
+        bool_t audio_muted;
 };
 
 bool_t linphone_core_can_we_add_call(LinphoneCore *lc);

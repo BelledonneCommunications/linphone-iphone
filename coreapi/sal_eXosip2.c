@@ -251,6 +251,7 @@ Sal * sal_init(){
 	}
 	eXosip_init();
 	sal=ms_new0(Sal,1);
+	sal->keepalive_period=30;
 	return sal;
 }
 
@@ -309,15 +310,30 @@ void sal_set_callbacks(Sal *ctx, const SalCallbacks *cbs){
 		ctx->callbacks.ping_reply=(SalOnPingReply)unimplemented_stub;
 }
 
+int sal_unlisten_ports(Sal *ctx){
+	if (ctx->running){
+		eXosip_quit();
+		eXosip_init();
+	}
+	return 0;
+}
+
 int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int is_secure){
 	int err;
 	bool_t ipv6;
 	int proto=IPPROTO_UDP;
 	
-	if (ctx->running){
-		eXosip_quit();
-		eXosip_init();
+	switch (tr) {
+	case SalTransportDatagram:
+		proto=IPPROTO_UDP;
+		break;
+	case SalTransportStream:
+		proto= IPPROTO_TCP;
+		break;
+	default:
+		ms_warning("unexpected proto, using datagram");
 	}
+
 	err=0;
 	eXosip_set_option(13,&err); /*13=EXOSIP_OPT_SRV_WITH_NAPTR, as it is an enum value, we can't use it unless we are sure of the
 					version of eXosip, which is not the case*/
@@ -325,14 +341,15 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 	ipv6=strchr(addr,':')!=NULL;
 	eXosip_enable_ipv6(ipv6);
 
-	if (tr!=SalTransportDatagram || is_secure){
-		ms_fatal("SIP over TCP or TLS or DTLS is not supported yet.");
+	if (is_secure){
+		ms_fatal("SIP over TLS or DTLS is not supported yet.");
 		return -1;
 	}
 	err=eXosip_listen_addr(proto, addr, port, ipv6 ?  PF_INET6 : PF_INET, 0);
 #ifdef HAVE_EXOSIP_GET_SOCKET
 	ms_message("Exosip has socket number %i",eXosip_get_socket(proto));
 #endif
+	eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE, &ctx->keepalive_period);
 	ctx->running=TRUE;
 	return err;
 }
@@ -367,6 +384,12 @@ static int extract_received_rport(osip_message_t *msg, const char **received, in
 	*received=NULL;
 	osip_message_get_via(msg,0,&via);
 	if (!via) return -1;
+
+	/* it is useless to do that with tcp since client socket might have a different port
+		than the server socket.
+	*/
+	if (strcasecmp(via->protocol,"tcp")==0) return -1;
+	
 	if (via->port && via->port[0]!='\0')
 		*rportval=atoi(via->port);
 	
@@ -1750,13 +1773,29 @@ char *sal_address_as_string_uri_only(const SalAddress *u){
 	osip_free(tmp);
 	return ret;
 }
+void sal_address_add_param(SalAddress *u,const char* name,const char* value) {
+	osip_uri_uparam_add	(((osip_from_t*)u)->url,ms_strdup(name),ms_strdup(value));
+}
 
 void sal_address_destroy(SalAddress *u){
 	osip_from_free((osip_from_t*)u);
 }
 
 void sal_set_keepalive_period(Sal *ctx,unsigned int value) {
+	ctx->keepalive_period=value;
 	eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE, &value);
+}
+const char * sal_address_get_port(const SalAddress *addr) {
+	const osip_from_t *u=(const osip_from_t*)addr;
+	return null_if_empty(u->url->port);
+}
+int sal_address_get_port_int(const SalAddress *uri) {
+	const char* port = sal_address_get_port(uri);
+	if (port != NULL) {
+		return atoi(port);
+	} else {
+		return 5060;
+	}
 }
 
 /**

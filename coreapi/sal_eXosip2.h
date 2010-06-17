@@ -38,6 +38,7 @@ struct Sal{
 	MSList *other_transactions; /*MSList of SalOp */
 	int running;
 	int session_expires;
+	int keepalive_period;
 	void *up;
 };
 
