@@ -72,4 +72,7 @@ public interface LinphoneProxyConfig {
 	public String getProxy();
 	public boolean registerEnabled();
 	public boolean isRegistered();
+	public void setRoute(String routeUri) throws LinphoneCoreException;
+	public String getRoute();
+	
 }

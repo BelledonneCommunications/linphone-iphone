@@ -185,4 +185,15 @@ public interface LinphoneCore {
 	 * 
 	 */
 	public void clearCallLogs();
+	
+	
+	/***
+	 * get payload type  from mime type an clock rate
+	 * 
+	 * return null if not found
+	 */
+	public PayloadType findPayloadType(String mime,int clockRate); 
+	
+	public void enablePayloadType(PayloadType pt, boolean enable) throws LinphoneCoreException;
+	
 }

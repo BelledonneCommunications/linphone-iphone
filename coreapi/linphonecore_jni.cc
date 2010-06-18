@@ -337,6 +337,23 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isMicMuted(	JNIEnv* 
 		,jlong lc) {
 	return linphone_core_is_mic_muted((LinphoneCore*)lc);
 }
+extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_findPayloadType(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			,jstring jmime
+																			,jint rate) {
+	const char* mime = env->GetStringUTFChars(jmime, NULL);
+	jlong result = (jlong)linphone_core_find_payload_type((LinphoneCore*)lc,mime,rate);
+	env->ReleaseStringUTFChars(jmime, mime);
+	return result;
+}
+extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_enablePayloadType(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			,jlong pt
+																			,jboolean enable) {
+	return linphone_core_enable_payload_type((LinphoneCore*)lc,(PayloadType*)pt,enable);
+}
 
 
 
@@ -373,6 +390,20 @@ extern "C" jstring Java_org_linphone_core_LinphoneProxyConfigImpl_getProxy(JNIEn
 	const char* proxy = linphone_proxy_config_get_addr((LinphoneProxyConfig*)proxyCfg);
 	if (proxy) {
 		return env->NewStringUTF(proxy);
+	} else {
+		return NULL;
+	}
+}
+extern "C" int Java_org_linphone_core_LinphoneProxyConfigImpl_setRoute(JNIEnv* env,jobject thiz,jlong proxyCfg,jstring jroute) {
+	const char* route = env->GetStringUTFChars(jroute, NULL);
+	int err=linphone_proxy_config_set_route((LinphoneProxyConfig*)proxyCfg,route);
+	env->ReleaseStringUTFChars(jroute, route);
+	return err;
+}
+extern "C" jstring Java_org_linphone_core_LinphoneProxyConfigImpl_getRoute(JNIEnv* env,jobject thiz,jlong proxyCfg) {
+	const char* route = linphone_proxy_config_get_route((LinphoneProxyConfig*)proxyCfg);
+	if (route) {
+		return env->NewStringUTF(route);
 	} else {
 		return NULL;
 	}
@@ -552,4 +583,18 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCallLogImpl_isIncoming(JNIEnv
 																		,jobject  thiz
 																		,jlong ptr) {
 	return ((LinphoneCallLog*)ptr)->dir==LinphoneCallIncoming?JNI_TRUE:JNI_FALSE;
+}
+
+extern "C" jstring Java_org_linphone_core_PayloadTypeImpl_toString(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+
+	PayloadType* pt = (PayloadType*)ptr;
+	char* value = ms_strdup_printf("[%s] clock [%s], bitrate [%s]"
+									,payload_type_get_mime(pt)
+									,payload_type_get_rate(pt)
+									,payload_type_get_bitrate(pt));
+	jstring jvalue =env->NewStringUTF(value);
+	ms_free(value);
+	return jvalue;
 }

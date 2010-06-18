@@ -71,7 +71,6 @@ LOCAL_C_INCLUDES += \
 LOCAL_LDLIBS += -llog
 
 LOCAL_STATIC_LIBRARIES := \
-	libmsandroidsnd \
 	libmediastreamer2 \
 	libortp \
 	libspeex \

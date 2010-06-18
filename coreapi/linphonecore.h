@@ -573,6 +573,14 @@ bool_t linphone_core_payload_type_enabled(LinphoneCore *lc, PayloadType *pt);
 
 int linphone_core_enable_payload_type(LinphoneCore *lc, PayloadType *pt, bool_t enable);
 
+/*
+ * get payload type  from mime type an clock rate
+ * @ingroup media_parameters
+ * iterates both audio an video
+ * return NULL if not found
+ */
+PayloadType* linphone_core_find_payload_type(LinphoneCore* lc, const char* type, int rate) ;
+
 const char *linphone_core_get_payload_type_description(LinphoneCore *lc, PayloadType *pt);
 
 bool_t linphone_core_check_payload_type_usability(LinphoneCore *lc, PayloadType *pt);

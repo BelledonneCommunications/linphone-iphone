@@ -3777,3 +3777,27 @@ void linphone_core_destroy(LinphoneCore *lc){
 	ms_free(lc);
 }
 
+static PayloadType* find_payload_type_from_list(const char* type, int rate,const MSList* from) {
+	const MSList *elem;
+	for(elem=from;elem!=NULL;elem=elem->next){
+		PayloadType *pt=(PayloadType*)elem->data;
+		if ((strcmp((char*)type, payload_type_get_mime(pt)) == 0) && rate==pt->clock_rate) {
+			return pt;
+		}
+	}
+	return NULL;
+}
+
+PayloadType* linphone_core_find_payload_type(LinphoneCore* lc, const char* type, int rate) {
+	PayloadType* result = find_payload_type_from_list(type, rate, linphone_core_get_audio_codecs(lc));
+	if (result)  {
+		return result;
+	} else {
+		result = find_payload_type_from_list(type, rate, linphone_core_get_video_codecs(lc));
+		if (result) {
+			return result;
+		}
+	}
+	//not found
+	return NULL;
+}
