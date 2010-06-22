@@ -464,7 +464,7 @@ typedef void (*TextMessageReceived)(struct _LinphoneCore *lc, LinphoneChatRoom *
 /** Callback prototype */
 typedef void (*GeneralStateChange)(struct _LinphoneCore *lc, LinphoneGeneralState *gstate, LinphoneGeneralStateContext ctx);
 /** Callback prototype */
-typedef void (*DtmfReceived)(struct _LinphoneCore* lc, int dtmf);
+typedef void (*DtmfReceived)(struct _LinphoneCore* lc, LinphoneCall *call, int dtmf);
 /** Callback prototype */
 typedef void (*ReferReceived)(struct _LinphoneCore *lc, LinphoneCall *call, const char *refer_to);
 /** Callback prototype */

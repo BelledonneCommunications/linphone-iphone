@@ -133,7 +133,7 @@ static void linphonec_text_received(LinphoneCore *lc, LinphoneChatRoom *cr,
 		const char *from, const char *msg);
 static void linphonec_display_status (LinphoneCore * lc, const char *something);
 static void linphonec_general_state (LinphoneCore * lc, LinphoneGeneralState *gstate, LinphoneGeneralStateContext gctx);
-static void linphonec_dtmf_received(LinphoneCore *lc, int dtmf);
+static void linphonec_dtmf_received(LinphoneCore *lc, LinphoneCall *call, int dtmf);
 static void print_prompt(LinphoneCore *opm);
 void linphonec_out(const char *fmt,...);
 /***************************************************************************
@@ -429,9 +429,11 @@ linphonec_text_received(LinphoneCore *lc, LinphoneChatRoom *cr,
 }
 
 
-static void linphonec_dtmf_received(LinphoneCore *lc, int dtmf){
-	fprintf(stdout,"Receiving tone %c\n",dtmf);
+static void linphonec_dtmf_received(LinphoneCore *lc, LinphoneCall *call, int dtmf){
+	char *from=linphone_call_get_remote_address_as_string(call);
+	fprintf(stdout,"Receiving tone %c from %s\n",dtmf,from);
 	fflush(stdout);
+	ms_free(from);
 }
 
 static void
@@ -463,6 +465,9 @@ linphonec_general_state (LinphoneCore * lc, LinphoneGeneralState *gstate, Linpho
            case GSTATE_CALL_IDLE:
              printf("GSTATE_CALL_IDLE");
              break;
+           case GSTATE_CALL_OUT_RINGING:
+        	 printf("GSTATE_CALL_OUT_RINGING");
+        	 break;
            case GSTATE_CALL_OUT_INVITE:
              printf("GSTATE_CALL_OUT_INVITE");
              break;

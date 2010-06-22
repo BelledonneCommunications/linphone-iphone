@@ -100,8 +100,13 @@ static void call_received(SalOp *h){
 		return;
 	}
 	/* the call is acceptable so we can now add it to our list */
-	linphone_core_add_call(lc,call);
-	
+	if(linphone_core_add_call(lc,call)!= 0)
+	{
+		ms_warning("we cannot handle anymore call\n");
+		sal_call_decline(h,SalReasonMedia,NULL);
+		linphone_call_unref(call);
+		return;
+	}
 	from_parsed=linphone_address_new(sal_op_get_from(h));
 	linphone_address_clean(from_parsed);
 	tmp=linphone_address_as_string(from_parsed);
@@ -227,7 +232,11 @@ static void call_accepted(SalOp *op){
 		}//if there is an accepted incoming call
 		else
 		{
-			linphone_core_set_as_current_call (lc,call);
+			/*
+			 * Do not set the call as current here,
+			 * because we can go through this function not only when an incoming call is accepted
+			 */
+			//linphone_core_set_as_current_call (lc,call);
 			gstate_new_state(lc, GSTATE_CALL_OUT_CONNECTED, gctx, NULL);
 			linphone_connect_incoming(lc,call);
 		}		
@@ -496,8 +505,9 @@ static void vfu_request(SalOp *op){
 
 static void dtmf_received(SalOp *op, char dtmf){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
+	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
 	if (lc->vtable.dtmf_received != NULL)
-		lc->vtable.dtmf_received(lc, dtmf);
+		lc->vtable.dtmf_received(lc, call, dtmf);
 }
 
 static void refer_received(Sal *sal, SalOp *op, const char *referto){

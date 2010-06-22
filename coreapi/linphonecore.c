@@ -1479,7 +1479,7 @@ static void display_bandwidth(RtpSession *as, RtpSession *vs){
 
 static void linphone_core_disconnected(LinphoneCore *lc, LinphoneCall *call){
 	char temp[256];
-	char *from;
+	char *from=NULL;
 	if(call)
 		from = linphone_call_get_remote_address_as_string(call);
 	if(from)
@@ -1493,7 +1493,9 @@ static void linphone_core_disconnected(LinphoneCore *lc, LinphoneCall *call){
 	}
 	if (lc->vtable.display_warning!=NULL)
 	lc->vtable.display_warning(lc,temp);
-	linphone_core_terminate_call(lc,call);//TODO failure ??
+	if(lc->vtable.failure_recv)
+		lc->vtable.failure_recv(lc,call, 480);//480 Temporarily Unavailable
+	linphone_core_terminate_call(lc,call);
 }
 
 static void monitor_network_state(LinphoneCore *lc, time_t curtime){
@@ -2128,7 +2130,7 @@ static void linphone_core_dtmf_received(RtpSession* s, int dtmf, void* user_data
 		return;
 	}
 	if (lc->vtable.dtmf_received != NULL)
-		lc->vtable.dtmf_received(lc, dtmf_tab[dtmf]);
+		lc->vtable.dtmf_received(lc, linphone_core_get_current_call(lc), dtmf_tab[dtmf]);
 }
 
 static void parametrize_equalizer(LinphoneCore *lc, AudioStream *st){
