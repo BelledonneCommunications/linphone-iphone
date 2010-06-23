@@ -37,7 +37,6 @@
 		2242D9C910D691F900E9963F /* GenericTabViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2242D9C810D691F900E9963F /* GenericTabViewController.m */; };
 		2245671D107699F700F10948 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2245671C107699F700F10948 /* Settings.bundle */; };
 		224567C2107B968500F10948 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 224567C1107B968500F10948 /* AVFoundation.framework */; };
-		225862E21140F5D700C5A737 /* linphone-3-250x130.png in Resources */ = {isa = PBXBuildFile; fileRef = 225862E11140F5D700C5A737 /* linphone-3-250x130.png */; };
 		225CB2EA11ABB51000628906 /* clavier-01-106px.png in Resources */ = {isa = PBXBuildFile; fileRef = 225CB2E811ABB51000628906 /* clavier-01-106px.png */; };
 		225CB2EB11ABB51000628906 /* clavier-01-108px.png in Resources */ = {isa = PBXBuildFile; fileRef = 225CB2E911ABB51000628906 /* clavier-01-108px.png */; };
 		225CB2EE11ABB65D00628906 /* clavier-01-160px.png in Resources */ = {isa = PBXBuildFile; fileRef = 225CB2ED11ABB65D00628906 /* clavier-01-160px.png */; };
@@ -190,11 +189,11 @@
 		220FAD2F10765B400068D98F /* libspeex.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libspeex.a; path = "../liblinphone-sdk/apple-darwin/lib/libspeex.a"; sourceTree = SOURCE_ROOT; };
 		220FAD3010765B400068D98F /* libspeexdsp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libspeexdsp.a; path = "../liblinphone-sdk/apple-darwin/lib/libspeexdsp.a"; sourceTree = SOURCE_ROOT; };
 		220FAE4A10767A6A0068D98F /* PhoneMainView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PhoneMainView.xib; sourceTree = "<group>"; };
-		22226C11118197C0000CA27B /* startcall-green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "startcall-green.png"; path = "../../workspace-android/android-ndk-1.6_r1/apps/linphone-android/submodules/linphone/pixmaps/startcall-green.png"; sourceTree = SOURCE_ROOT; };
-		22226C13118197EC000CA27B /* stopcall-red.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "stopcall-red.png"; path = "../../workspace-android/android-ndk-1.6_r1/apps/linphone-android/submodules/linphone/pixmaps/stopcall-red.png"; sourceTree = SOURCE_ROOT; };
-		22226C161181986A000CA27B /* contact-orange.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "contact-orange.png"; path = "../../workspace-android/android-ndk-1.6_r1/apps/linphone-android/submodules/linphone/pixmaps/contact-orange.png"; sourceTree = SOURCE_ROOT; };
-		22226C171181986A000CA27B /* dialer-orange.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "dialer-orange.png"; path = "../../workspace-android/android-ndk-1.6_r1/apps/linphone-android/submodules/linphone/pixmaps/dialer-orange.png"; sourceTree = SOURCE_ROOT; };
-		22226C1C11819B34000CA27B /* history-orange.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "history-orange.png"; path = "../../workspace-android/android-ndk-1.6_r1/apps/linphone-android/submodules/linphone/pixmaps/history-orange.png"; sourceTree = SOURCE_ROOT; };
+		22226C11118197C0000CA27B /* startcall-green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "startcall-green.png"; path = "../liblinphone-sdk/apple-darwin/share/pixmaps/linphone/startcall-green.png"; sourceTree = SOURCE_ROOT; };
+		22226C13118197EC000CA27B /* stopcall-red.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "stopcall-red.png"; path = "../liblinphone-sdk/apple-darwin/share/pixmaps/linphone/stopcall-red.png"; sourceTree = SOURCE_ROOT; };
+		22226C161181986A000CA27B /* contact-orange.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "contact-orange.png"; path = "../liblinphone-sdk/apple-darwin/share/pixmaps/linphone/contact-orange.png"; sourceTree = SOURCE_ROOT; };
+		22226C171181986A000CA27B /* dialer-orange.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "dialer-orange.png"; path = "../liblinphone-sdk/apple-darwin/share/pixmaps/linphone/dialer-orange.png"; sourceTree = SOURCE_ROOT; };
+		22226C1C11819B34000CA27B /* history-orange.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "history-orange.png"; path = "../liblinphone-sdk/apple-darwin/share/pixmaps/linphone/history-orange.png"; sourceTree = SOURCE_ROOT; };
 		223148E31178A08200637D6A /* libilbc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libilbc.a; path = "../liblinphone-sdk/apple-darwin/lib/libilbc.a"; sourceTree = SOURCE_ROOT; };
 		223148E51178A09900637D6A /* libmsilbc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmsilbc.a; path = "../liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmsilbc.a"; sourceTree = SOURCE_ROOT; };
 		2237D4081084D7A9001383EE /* oldphone-mono.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = "oldphone-mono.wav"; path = "../liblinphone-sdk/apple-darwin/share/sounds/linphone/rings/oldphone-mono.wav"; sourceTree = "<group>"; };
@@ -206,7 +205,6 @@
 		2242D9C810D691F900E9963F /* GenericTabViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GenericTabViewController.m; sourceTree = "<group>"; };
 		2245671C107699F700F10948 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		224567C1107B968500F10948 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
-		225862E11140F5D700C5A737 /* linphone-3-250x130.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "linphone-3-250x130.png"; path = "../liblinphone-sdk/apple-darwin/share/pixmaps/linphone/linphone-3-250x130.png"; sourceTree = SOURCE_ROOT; };
 		2258633C11410BAC00C5A737 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		225CB2E811ABB51000628906 /* clavier-01-106px.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "clavier-01-106px.png"; path = "Resources/clavier-01-106px.png"; sourceTree = "<group>"; };
 		225CB2E911ABB51000628906 /* clavier-01-108px.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "clavier-01-108px.png"; path = "Resources/clavier-01-108px.png"; sourceTree = "<group>"; };
@@ -559,7 +557,6 @@
 				22226C11118197C0000CA27B /* startcall-green.png */,
 				22058C70116E305000B08DDD /* icone-linphone-57.png */,
 				2237D4081084D7A9001383EE /* oldphone-mono.wav */,
-				225862E11140F5D700C5A737 /* linphone-3-250x130.png */,
 				22E0A783111C1BA800B04932 /* Speaker-32-on.png */,
 				22E0A784111C1BA800B04932 /* Speaker-32-off.png */,
 				2242D91810D66C2100E9963F /* mic_active.png */,
@@ -642,7 +639,6 @@
 				22E0A786111C1BA800B04932 /* Speaker-32-off.png in Resources */,
 				22E0A821111C44E100B04932 /* MoreViewController.xib in Resources */,
 				22E0A823111C44E100B04932 /* ConsoleViewController.xib in Resources */,
-				225862E21140F5D700C5A737 /* linphone-3-250x130.png in Resources */,
 				22058C71116E305000B08DDD /* icone-linphone-57.png in Resources */,
 				22226C12118197C0000CA27B /* startcall-green.png in Resources */,
 				22226C14118197EC000CA27B /* stopcall-red.png in Resources */,

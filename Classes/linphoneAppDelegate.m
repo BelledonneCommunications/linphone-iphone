@@ -114,8 +114,9 @@ LinphoneCoreVTable linphonec_vtable = {
 	linphone_core_get_default_proxy(myLinphoneCore, &proxyCfg);	
 	
 	if (backgroundSupported && proxyCfg) {
-		//first register
 		
+		
+		//register
 		linphone_core_set_network_reachable(myLinphoneCore,false);
 		linphone_core_iterate(myLinphoneCore);
 		linphone_core_set_network_reachable(myLinphoneCore,true);
@@ -128,8 +129,10 @@ LinphoneCoreVTable linphonec_vtable = {
 		if ([[UIApplication sharedApplication] setKeepAliveTimeout:600/*(NSTimeInterval)linphone_proxy_config_get_expires(proxyCfg)*/ 
 											   handler:^{
 												   ms_warning("keepalive handler");
+												   //kick up network cnx, just in case
 												   linphone_core_set_network_reachable(myLinphoneCore,false);
 												   linphone_core_iterate(myLinphoneCore);
+												   [self kickOffNetworkConnection];
 												   linphone_core_set_network_reachable(myLinphoneCore,true);
 												   linphone_core_iterate(myLinphoneCore);
 											   }
