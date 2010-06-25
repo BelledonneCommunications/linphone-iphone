@@ -562,9 +562,9 @@ extern "C" void Java_org_linphone_core_LinphoneAddressImpl_setDisplayName(JNIEnv
 																		,jobject  thiz
 																		,jlong address
 																		,jstring jdisplayName) {
-	const char* displayName = env->GetStringUTFChars(jdisplayName, NULL);
+	const char* displayName = jdisplayName!= NULL?env->GetStringUTFChars(jdisplayName, NULL):NULL;
 	linphone_address_set_display_name((LinphoneAddress*)address,displayName);
-	env->ReleaseStringUTFChars(jdisplayName, displayName);
+	if (displayName != NULL) env->ReleaseStringUTFChars(jdisplayName, displayName);
 }
 
 
