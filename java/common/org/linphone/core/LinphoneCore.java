@@ -159,12 +159,12 @@ public interface LinphoneCore {
 	 * Allow to control play level before entering  sound card:  
 	 * @param level in db
 	 */
-	public void setSoftPlayLevel(float gain);
+	public void setPlaybackGain(float gain);
 	/**
 	 * get play level before entering  sound card:  
 	 * @return level in db
 	 */
-	public float getSoftPlayLevel();
+	public float getPlaybackGain();
 	/**
 	 *  Mutes or unmutes the local microphone.
 	 * @param isMuted
@@ -195,5 +195,9 @@ public interface LinphoneCore {
 	public PayloadType findPayloadType(String mime,int clockRate); 
 	
 	public void enablePayloadType(PayloadType pt, boolean enable) throws LinphoneCoreException;
+	
+	public void enableEchoCancellation(boolean enable);
+	
+	public boolean isEchoCancellationEnabled();
 	
 }
