@@ -292,17 +292,17 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setNetworkStateReachable
 		linphone_core_set_network_reachable((LinphoneCore*)lc,isReachable);
 }
 
-extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setSoftPlayLevel(	JNIEnv*  env
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setPlaybackGain(	JNIEnv*  env
 		,jobject  thiz
 		,jlong lc
 		,jfloat gain) {
-		linphone_core_set_soft_play_level((LinphoneCore*)lc,gain);
+		linphone_core_set_playback_gain_db((LinphoneCore*)lc,gain);
 }
 
-extern "C" float Java_org_linphone_core_LinphoneCoreImpl_getSoftPlayLevel(	JNIEnv*  env
+extern "C" float Java_org_linphone_core_LinphoneCoreImpl_getPlaybackGain(	JNIEnv*  env
 		,jobject  thiz
 		,jlong lc) {
-		return linphone_core_get_soft_play_level((LinphoneCore*)lc);
+		return linphone_core_get_playback_gain_db((LinphoneCore*)lc);
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_muteMic(	JNIEnv*  env
@@ -354,7 +354,18 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_enablePayloadType(JNIEn
 																			,jboolean enable) {
 	return linphone_core_enable_payload_type((LinphoneCore*)lc,(PayloadType*)pt,enable);
 }
-
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_enableEchoCancellation(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			,jboolean enable) {
+	linphone_core_enable_echo_cancellation((LinphoneCore*)lc,enable);
+}
+extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isEchoCancellationEnabled(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			) {
+	return linphone_core_echo_cancellation_enabled((LinphoneCore*)lc);
+}
 
 
 //ProxyConfig
