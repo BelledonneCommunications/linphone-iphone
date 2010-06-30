@@ -161,9 +161,11 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_newLinphoneCore(JNIEnv*
 	LinphoneCoreData* ldata = new LinphoneCoreData(env,thiz,jlistener,juserdata);
 #ifdef ANDROID
 	ms_andsnd_register_card(jvm);
-	// requires an fpu libmsilbc_init();
 #endif /*ANDROID*/
 
+#ifdef HAVE_ILBC
+	libmsilbc_init(); // requires an fpu
+#endif
 	jlong nativePtr = (jlong)linphone_core_new(	&ldata->vTable
 			,userConfig
 			,factoryConfig
