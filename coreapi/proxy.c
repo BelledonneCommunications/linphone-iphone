@@ -167,7 +167,12 @@ int linphone_proxy_config_set_route(LinphoneProxyConfig *obj, const char *route)
 		ms_free(obj->reg_route);
 		obj->reg_route=NULL;
 	}
-	obj->reg_route=ms_strdup(route);
+	if (route!=NULL){
+		/*try to prepend 'sip:' */
+		if (strstr(route,"sip:")==NULL){
+			obj->reg_route=ms_strdup_printf("sip:%s",route);
+		}else obj->reg_route=ms_strdup(route);
+	}
 	return 0;
 }
 
