@@ -271,7 +271,7 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 	/*char *retrymsg=_("%s. Retry after %i minute(s).");*/
 	char *msg600=_("User does not want to be disturbed.");
 	char *msg603=_("Call declined.");
-	char *msg=(char*)details;
+	const char *msg=details;
 	LinphoneCall *call=lc->call;
 
 	if (sal_op_get_user_pointer(op)!=lc->call){
@@ -281,11 +281,13 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 	if (lc->vtable.show) lc->vtable.show(lc);
 
 	if (error==SalErrorNoResponse){
+		msg=_("No response.");
 		if (lc->vtable.display_status)
-			lc->vtable.display_status(lc,_("No response."));
+			lc->vtable.display_status(lc,msg);
 	}else if (error==SalErrorProtocol){
+		msg=details ? details : _("Protocol error.");
 		if (lc->vtable.display_status)
-			lc->vtable.display_status(lc, details ? details : _("Protocol error."));
+			lc->vtable.display_status(lc, msg);
 	}else if (error==SalErrorFailure){
 		switch(sr){
 			case SalReasonDeclined:
@@ -336,7 +338,7 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 	if (call!=NULL) {
 		linphone_call_destroy(call);
 		if (sr!=SalReasonDeclined) gstate_new_state(lc, GSTATE_CALL_ERROR, msg);
-		else gstate_new_state(lc, GSTATE_CALL_END, NULL);
+		else gstate_new_state(lc, GSTATE_CALL_END, msg);
 		lc->call=NULL;
 	}
 }
