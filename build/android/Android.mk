@@ -71,14 +71,16 @@ LOCAL_C_INCLUDES += \
 LOCAL_LDLIBS += -llog
 
 LOCAL_STATIC_LIBRARIES := \
-	libmsandroidsnd \
 	libmediastreamer2 \
 	libortp \
 	libspeex \
 	libeXosip2 \
 	libosip2 \
 	libgsm
-#	libmsilbc \
+ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
+   LOCAL_CFLAGS += -DHAVE_ILBC=1
+   LOCAL_STATIC_LIBRARIES += libmsilbc
+endif
 LOCAL_MODULE_CLASS = SHARED_LIBRARIES
 
 include $(BUILD_SHARED_LIBRARY)

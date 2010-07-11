@@ -41,6 +41,9 @@
 #include <sys/wait.h>
 #endif
 
+#define AUDIO 0
+#define VIDEO 1
+
 /***************************************************************************
  *
  *  Forward declarations 
@@ -76,7 +79,9 @@ static int lpc_cmd_duration(LinphoneCore *lc, char *args);
 static int lpc_cmd_status(LinphoneCore *lc, char *args);
 static int lpc_cmd_ports(LinphoneCore *lc, char *args);
 static int lpc_cmd_speak(LinphoneCore *lc, char *args);
-static int lpc_cmd_codec(LinphoneCore *lc, char *args);
+static int lpc_cmd_acodec(LinphoneCore *lc, char *args);
+static int lpc_cmd_vcodec(LinphoneCore *lc, char *args);
+static int lpc_cmd_codec(int type, LinphoneCore *lc, char *args);
 static int lpc_cmd_echocancellation(LinphoneCore *lc, char *args);
 static int lpc_cmd_mute_mic(LinphoneCore *lc, char *args);
 static int lpc_cmd_unmute_mic(LinphoneCore *lc, char *args);
@@ -98,9 +103,9 @@ static int linphonec_friend_add(LinphoneCore *lc, const char *name, const char *
 #endif
 static int linphonec_friend_delete(LinphoneCore *lc, int num);
 static int linphonec_friend_delete(LinphoneCore *lc, int num);
-static void linphonec_codec_list(LinphoneCore *lc);
-static void linphonec_codec_enable(LinphoneCore *lc, int index);
-static void linphonec_codec_disable(LinphoneCore *lc, int index);
+static void linphonec_codec_list(int type, LinphoneCore *lc);
+static void linphonec_codec_enable(int type, LinphoneCore *lc, int index);
+static void linphonec_codec_disable(int type, LinphoneCore *lc, int index);
 
 
 
@@ -218,10 +223,14 @@ LPC_COMMAND commands[] = {
 			"'speak <voice name> <sentence>'	: speak a text using the specified espeak voice.\n"
 			"Example for english voice: 'speak default Hello my friend !'"
 	},
-    { "codec", lpc_cmd_codec, "Codec configuration",
-            "'codec list' : list codecs\n"  
-            "'codec enable <index>' : enable available codec\n"  
-            "'codec disable <index>' : disable codecs" }, 
+    { "codec", lpc_cmd_acodec, "Audio codec configuration",
+            "'codec list' : list audio codecs\n"
+            "'codec enable <index>' : enable available audio codec\n"
+            "'codec disable <index>' : disable audio codec" },
+    { "vcodec", lpc_cmd_vcodec, "Video codec configuration",
+            "'vcodec list' : list video codecs\n"
+            "'vcodec enable <index>' : enable available video codec\n"
+            "'vcodec disable <index>' : disable video codec" },
     { "ec", lpc_cmd_echocancellation, "Echo cancellation",
             "'ec on [<delay>] [<tail>] [<framesize>]' : turn EC on with given delay, tail length and framesize\n"
             "'ec off' : turn echo cancellation (EC) off\n"
@@ -1690,7 +1699,15 @@ static int lpc_cmd_speak(LinphoneCore *lc, char *args){
 	return 1;
 }
 
-static int lpc_cmd_codec(LinphoneCore *lc, char *args){
+static int lpc_cmd_acodec(LinphoneCore *lc, char *args){
+    return lpc_cmd_codec(AUDIO, lc, args);
+}
+
+static int lpc_cmd_vcodec(LinphoneCore *lc, char *args){
+    return lpc_cmd_codec(VIDEO, lc, args);
+}
+
+static int lpc_cmd_codec(int type, LinphoneCore *lc, char *args){
 	char *arg1 = args;
 	char *arg2 = NULL;
 	char *ptr = args;
@@ -1711,20 +1728,20 @@ static int lpc_cmd_codec(LinphoneCore *lc, char *args){
 #ifdef HAVE_READLINE
 		rl_inhibit_completion=1;
 #endif
-        if (!strcmp(arg2,"all")) linphonec_codec_enable(lc,-1);
-        else linphonec_codec_enable(lc,atoi(arg2));
+        if (!strcmp(arg2,"all")) linphonec_codec_enable(type,lc,-1);
+        else linphonec_codec_enable(type,lc,atoi(arg2));
 #ifdef HAVE_READLINE
 		rl_inhibit_completion=0;
 #endif
 	}
 	else if (strcmp(arg1,"list")==0)
 	{
-		linphonec_codec_list(lc);
+		linphonec_codec_list(type,lc);
 	}
 	else if (strcmp(arg1,"disable")==0)
 	{
-        if (!strcmp(arg2,"all")) linphonec_codec_disable(lc,-1);
-        else linphonec_codec_disable(lc,atoi(arg2));
+        if (!strcmp(arg2,"all")) linphonec_codec_disable(type,lc,-1);
+        else linphonec_codec_disable(type,lc,atoi(arg2));
 	}
 	else
 	{
@@ -1734,12 +1751,19 @@ static int lpc_cmd_codec(LinphoneCore *lc, char *args){
 	return 1;
 }
 
-static void linphonec_codec_list(LinphoneCore *lc){
+static void linphonec_codec_list(int type, LinphoneCore *lc){
 	PayloadType *pt;
     codecs_config_t *config=&lc->codecs_conf;
 	int index=0;
-	MSList *node;
-	for(node=config->audio_codecs;node!=NULL;node=ms_list_next(node)){
+	MSList *node=NULL;
+
+    if (type == AUDIO) {
+      node=config->audio_codecs;
+    } else if(type==VIDEO) {
+      node=config->video_codecs;
+    }
+
+	for(;node!=NULL;node=ms_list_next(node)){
 		pt=(PayloadType*)(node->data);
         linphonec_out("%2d: %s (%d) %s\n", index, pt->mime_type, pt->clock_rate, 
 		    linphone_core_payload_type_enabled(lc,pt) ? "enabled" : "disabled");
@@ -1747,12 +1771,19 @@ static void linphonec_codec_list(LinphoneCore *lc){
 	}
 }
 
-static void linphonec_codec_enable(LinphoneCore *lc, int sel_index){
+static void linphonec_codec_enable(int type, LinphoneCore *lc, int sel_index){
 	PayloadType *pt;
     codecs_config_t *config=&lc->codecs_conf;
 	int index=0;
-	MSList *node;
-    for(node=config->audio_codecs;node!=NULL;node=ms_list_next(node)){
+	MSList *node=NULL;
+
+    if (type == AUDIO) {
+      node=config->audio_codecs;
+    } else if(type==VIDEO) {
+      node=config->video_codecs;
+    }
+
+    for(;node!=NULL;node=ms_list_next(node)){
         if (index == sel_index || sel_index == -1) {
 		    pt=(PayloadType*)(node->data);
             pt->flags|=PAYLOAD_TYPE_ENABLED;
@@ -1762,12 +1793,19 @@ static void linphonec_codec_enable(LinphoneCore *lc, int sel_index){
 	}
 }
 
-static void linphonec_codec_disable(LinphoneCore *lc, int sel_index){
+static void linphonec_codec_disable(int type, LinphoneCore *lc, int sel_index){
 	PayloadType *pt;
     codecs_config_t *config=&lc->codecs_conf;
 	int index=0;
-	MSList *node;
-	for(node=config->audio_codecs;node!=NULL;node=ms_list_next(node)){
+	MSList *node=NULL;
+
+    if (type == AUDIO) {
+      node=config->audio_codecs;
+    } else if(type==VIDEO) {
+      node=config->video_codecs;
+    }
+
+	for(;node!=NULL;node=ms_list_next(node)){
         if (index == sel_index || sel_index == -1) {
     		pt=(PayloadType*)(node->data);
             pt->flags&=~PAYLOAD_TYPE_ENABLED;
