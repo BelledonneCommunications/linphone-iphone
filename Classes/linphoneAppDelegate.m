@@ -297,22 +297,6 @@ extern void libmsilbc_init();
  */
 -(void)startlibLinphone  {
 	
-	//init audio session
-	NSError *setError = nil;
-	AVAudioSession *audioSession = [AVAudioSession sharedInstance];
-	BOOL bAudioInputAvailable= [audioSession inputIsAvailable];
-	
-	if(!bAudioInputAvailable){
-		UIAlertView* error = [[UIAlertView alloc]	initWithTitle:@"No microphone"
-														message:@"You need to plug a microphone to your device to use this application." 
-													   delegate:self 
-											  cancelButtonTitle:@"Ok" 
-											  otherButtonTitles:nil ,nil];
-		[error show];
-	}else{
-		[audioSession setCategory: AVAudioSessionCategoryPlayAndRecord error: &setError]; //must be call before linphone_core_init
-	}
-	
 	//get default config from bundle
 	NSBundle* myBundle = [NSBundle mainBundle];
 	NSString* factoryConfig = [myBundle pathForResource:@"linphonerc"ofType:nil] ;
@@ -329,8 +313,6 @@ extern void libmsilbc_init();
 		linphone_core_disable_logs();
 	}
 	
-	//register audio queue sound card
-	ms_au_register_card();
 	libmsilbc_init();
 	
 	/*
@@ -354,6 +336,21 @@ extern void libmsilbc_init();
 								   selector:@selector(iterate) 
 								   userInfo:nil 
 									repeats:YES];
+	//init audio session
+	NSError *setError = nil;
+	AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+	 BOOL bAudioInputAvailable= [audioSession inputIsAvailable];
+	 
+	 if(!bAudioInputAvailable){
+		 UIAlertView* error = [[UIAlertView alloc]	initWithTitle:@"No microphone"
+													message:@"You need to plug a microphone to your device to use this application." 
+													delegate:self 
+													cancelButtonTitle:@"Ok" 
+													otherButtonTitles:nil ,nil];
+		 [error show];
+	 }
+	
+	
 	
 }
 -(void) doLinphoneConfiguration:(NSNotification *)notification {

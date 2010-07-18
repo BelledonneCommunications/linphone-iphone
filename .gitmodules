@@ -1,0 +1,21 @@
+[submodule "submodules/linphone"]
+	path = submodules/linphone
+	url = git://git.sv.gnu.org/linphone.git
+[submodule "submodules/externals/osip"]
+	path = submodules/externals/osip
+	url = git://git.savannah.gnu.org/osip.git
+[submodule "submodules/externals/exosip"]
+	path = submodules/externals/exosip
+	url = git://git.savannah.nongnu.org/exosip.git
+[submodule "submodules/externals/gsm"]
+	path = submodules/externals/gsm
+	url = git://git.linphone.org/gsm.git
+[submodule "submodules/externals/speex"]
+	path = submodules/externals/speex
+	url = http://git.xiph.org/speex.git
+[submodule "submodules/msilbc"]
+	path = submodules/msilbc
+	url = git://git.linphone.org/msilbc.git
+[submodule "submodules/libilbc-rfc3951"]
+	path = submodules/libilbc-rfc3951
+	url = git://git.linphone.org/libilbc-rfc3951.git
