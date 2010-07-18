@@ -90,22 +90,20 @@ bool_t linphone_proxy_config_is_registered(const LinphoneProxyConfig *obj){
  * - hostnames : sip:sip.example.net
 **/
 int linphone_proxy_config_set_server_addr(LinphoneProxyConfig *obj, const char *server_addr){
-	LinphoneAddress *addr;
-	char *try=NULL;
+	LinphoneAddress *addr=NULL;
+	char *modified=NULL;
 	
 	if (obj->reg_proxy!=NULL) ms_free(obj->reg_proxy);
 	obj->reg_proxy=NULL;
 	
 	if (server_addr!=NULL && strlen(server_addr)>0){
-		addr=linphone_address_new(server_addr);
-		if (!addr){
-			/*try to prepend 'sip:' */
-			if (strstr(server_addr,"sip:")==NULL){
-				try=ms_strdup_printf("sip:%s",server_addr);
-				addr=linphone_address_new(try);
-				ms_free(try);
-			}
+		if (strstr(server_addr,"sip:")==NULL){
+			modified=ms_strdup_printf("sip:%s",server_addr);
+			addr=linphone_address_new(modified);
+			ms_free(modified);
 		}
+		if (addr==NULL)
+			addr=linphone_address_new(server_addr);
 		if (addr){
 			obj->reg_proxy=linphone_address_as_string_uri_only(addr);
 			linphone_address_destroy(addr);
