@@ -122,7 +122,7 @@ LinphoneCoreVTable linphonec_vtable = {
 		linphone_core_set_network_reachable(myLinphoneCore,true);
 		
 		int i=0;
-		while (!linphone_proxy_config_is_registered(proxyCfg) && i++<200 ) {
+		while (!linphone_proxy_config_is_registered(proxyCfg) && i++<40 ) {
 			linphone_core_iterate(myLinphoneCore);
 			usleep(100000);
 		}

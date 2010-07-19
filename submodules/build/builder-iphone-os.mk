@@ -32,7 +32,7 @@ linphone_configure_controls=  --disable-video \
                               --with-gsm=$(prefix) \
                               --enable-nonstandard-gsm \
                               SPEEX_CFLAGS="-I$(prefix)/include" \
-                              SPEEX_LIBS="-L$(prefix)/lib -lspeex "
+                              SPEEX_LIBS="-L$(prefix)/lib -lspeex -lspeexdsp"
 
 #path
 BUILDER_SRC_DIR?=$(shell pwd)/../
