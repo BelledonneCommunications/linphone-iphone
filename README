@@ -10,7 +10,8 @@ Linphone for iPhone depends on liblinphone sdk. To build this sdk, you must inst
 Link macport libtoolize to glibtoolize (sudo ln -s /opt/local/bin/glibtoolize /opt/local/bin/libtoolize)
  
 To generate the liblinphone dual arch sdk, once the above commands have been executed:
-	 make -f  builder-iphone-simulator.mk  all &&  make -f  builder-iphone-os.mk  all &&make -f builder-iphone-os.mk delivery-sdk
+	cd submodules/build
+	make -f  builder-iphone-simulator.mk  all &&  make -f  builder-iphone-os.mk  all &&make -f builder-iphone-os.mk delivery-sdk
 
 Libraries are available in liblinphone-sdk/
 
