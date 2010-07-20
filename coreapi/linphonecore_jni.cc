@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 extern "C" void libmsilbc_init();
 #endif /*ANDROID*/
 
-extern "C" void ms_andsnd_register_card(JavaVM *jvm) ;
+extern "C" void ms_andsnd_set_jvm(JavaVM *jvm) ;
 static JavaVM *jvm=0;
 
 #ifdef ANDROID
@@ -44,7 +44,7 @@ static void linphone_android_log_handler(OrtpLogLevel lev, const char *fmt, va_l
 JNIEXPORT jint JNICALL  JNI_OnLoad(JavaVM *ajvm, void *reserved)
 {
 #ifdef ANDROID
-	ms_andsnd_register_card(ajvm);
+	ms_andsnd_set_jvm(ajvm);
 #endif /*ANDROID*/
 	jvm=ajvm;
 	return JNI_VERSION_1_2;
@@ -161,7 +161,7 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_newLinphoneCore(JNIEnv*
 	const char* factoryConfig = env->GetStringUTFChars(jfactoryConfig, NULL);
 	LinphoneCoreData* ldata = new LinphoneCoreData(env,thiz,jlistener,juserdata);
 #ifdef ANDROID
-	ms_andsnd_register_card(jvm);
+	ms_andsnd_set_jvm(jvm);
 #endif /*ANDROID*/
 
 #ifdef HAVE_ILBC
