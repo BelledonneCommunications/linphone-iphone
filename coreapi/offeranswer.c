@@ -59,8 +59,8 @@ static MSList *match_payloads(const MSList *local, const MSList *remote){
 		matched=find_payload_type_best_match(local,p2);
 		if (matched){
 			matched=payload_type_clone(matched);
-			if (p2->recv_fmtp)
-				payload_type_set_send_fmtp(matched,p2->recv_fmtp);
+			if (p2->send_fmtp)
+				payload_type_set_send_fmtp(matched,p2->send_fmtp);
 			res=ms_list_append(res,matched);
 			payload_type_set_number(matched,payload_type_get_number(p2));
 		}else{

@@ -1,4 +1,4 @@
-linphone-3.3.2 -- June 25, 2010
+linphone-3.3.2 -- July 1st, 2010
 	* fix crash when setting firewall address in gtk interface
 	* fix crash while closing video window on windows
 	* fix un-sent BYE message in some rare cases.

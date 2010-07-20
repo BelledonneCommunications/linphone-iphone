@@ -83,7 +83,7 @@ public:
 		/*displayStatus(LinphoneCore lc,String message);*/
 		displayStatusId = env->GetMethodID(listernerClass,"displayStatus","(Lorg/linphone/core/LinphoneCore;Ljava/lang/String;)V");
 		/*void generalState(LinphoneCore lc,int state); */
-		generalStateId = env->GetMethodID(listernerClass,"generalState","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCore$GeneralState;)V");
+		generalStateId = env->GetMethodID(listernerClass,"generalState","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCore$GeneralState;Ljava/lang/String;)V");
 
 		generalStateClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneCore$GeneralState"));
 		generalStateFromIntId = env->GetStaticMethodID(generalStateClass,"fromInt","(I)Lorg/linphone/core/LinphoneCore$GeneralState;");
@@ -145,7 +145,8 @@ public:
 		env->CallVoidMethod(lcData->listener
 							,lcData->generalStateId
 							,lcData->core
-							,env->CallStaticObjectMethod(lcData->generalStateClass,lcData->generalStateFromIntId,gstate->new_state));
+							,env->CallStaticObjectMethod(lcData->generalStateClass,lcData->generalStateFromIntId,gstate->new_state),
+							gstate->message ? env->NewStringUTF(gstate->message) : NULL);
 	}
 
 };
@@ -161,9 +162,11 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_newLinphoneCore(JNIEnv*
 	LinphoneCoreData* ldata = new LinphoneCoreData(env,thiz,jlistener,juserdata);
 #ifdef ANDROID
 	ms_andsnd_register_card(jvm);
-	// requires an fpu libmsilbc_init();
 #endif /*ANDROID*/
 
+#ifdef HAVE_ILBC
+	libmsilbc_init(); // requires an fpu
+#endif
 	jlong nativePtr = (jlong)linphone_core_new(	&ldata->vTable
 			,userConfig
 			,factoryConfig

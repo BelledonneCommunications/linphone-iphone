@@ -2246,6 +2246,7 @@ static void post_configure_audio_streams(LinphoneCore *lc){
 	float recv_gain;
 	float ng_thres=lp_config_get_float(lc->config,"sound","ng_thres",0.05);
 	float ng_floorgain=lp_config_get_float(lc->config,"sound","ng_floorgain",0);
+	int dc_removal=lp_config_get_int(lc->config,"sound","dc_removal",0);
 	
 	if (mic_gain!=-1)
 		audio_stream_set_mic_gain(st,mic_gain);
@@ -2254,6 +2255,9 @@ static void post_configure_audio_streams(LinphoneCore *lc){
 	recv_gain = lc->sound_conf.soft_play_lev;
 	if (recv_gain != 0) {
 		linphone_core_set_playback_gain_db (lc,recv_gain);
+	}
+	if (st->volsend){
+		ms_filter_call_method(st->volsend,MS_VOLUME_REMOVE_DC,&dc_removal);
 	}
 	if (linphone_core_echo_limiter_enabled(lc)){
 		float speed=lp_config_get_float(lc->config,"sound","el_speed",-1);
