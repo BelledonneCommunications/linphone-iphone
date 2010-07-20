@@ -143,7 +143,12 @@ LinphoneCoreVTable linphonec_vtable = {
 		} else {
 			ms_warning("keepalive handler cannot be registered");
 		}
-		if (mReadStream == nil) {
+		LCSipTransports transportValue;
+		if (linphone_core_get_sip_transports(myLinphoneCore, &transportValue)) {
+			ms_error("cannot get current transport");	
+		}
+		
+		if (mReadStream == nil && transportValue.udp_port>0) { //only for udp
 			const char *port;
 			addr=linphone_address_new(linphone_proxy_config_get_addr(proxyCfg));
 			memset(&hints,0,sizeof(hints));
