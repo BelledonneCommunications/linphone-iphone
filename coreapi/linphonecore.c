@@ -2515,7 +2515,9 @@ int linphone_core_accept_call(LinphoneCore *lc, const char *url)
 	contact=get_fixed_contact(lc,call,cfg);
 	if (contact)
 		sal_op_set_contact(call->op,contact);
-	
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 40000
+	linphone_core_init_media_streams(lc,call);
+#endif
 	sal_call_accept(call->op);
 	lc->vtable.display_status(lc,_("Connected."));
 	gstate_new_state(lc, GSTATE_CALL_IN_CONNECTED, NULL);

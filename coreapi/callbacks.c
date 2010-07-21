@@ -105,7 +105,9 @@ static void call_received(SalOp *h){
 	}
 	linphone_call_set_state(call,LCStateRinging);
 	sal_call_notify_ringing(h);
+#if !(__IPHONE_OS_VERSION_MIN_REQUIRED >= 40000)
 	linphone_core_init_media_streams(lc,lc->call);
+#endif
 	if (lc->vtable.inv_recv) lc->vtable.inv_recv(lc,tmp);
 	ms_free(barmesg);
 	ms_free(tmp);
