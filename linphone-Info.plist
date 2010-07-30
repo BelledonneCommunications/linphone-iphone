@@ -2,10 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>UIApplicationExitsOnSuspend</key>
+	<false/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
-	<key>UIRequiresPersistentWiFi</key>
-	<true/>
 	<key>CFBundleDisplayName</key>
 	<string>Linphone</string>
 	<key>CFBundleExecutable</key>
@@ -20,23 +20,25 @@
 	<string>${PRODUCT_NAME}</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>3.3.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>1.0.2</string>
-	<key>CFBundleShortVersionString</key>
-	<string>3.3.0</string>
 	<key>NSMainNibFile</key>
 	<string>PhoneMainView</string>
-	<key>UIRequiredDeviceCapabilities</key>
-	<array>
-		<string>wifi</string>
-		<string>microphone</string>
-	</array>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>voip</string>
 		<string>audio</string>
 	</array>
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>wifi</string>
+		<string>microphone</string>
+	</array>
+	<key>UIRequiresPersistentWiFi</key>
+	<true/>
 </dict>
 </plist>
