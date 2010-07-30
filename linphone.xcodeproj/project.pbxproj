@@ -732,7 +732,14 @@
 				LIBRARY_SEARCH_PATHS = (
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib\"",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
-					"\"$(SRCROOT)/submodules/build/Debug-iphoneos\"",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*][arch=*]" = (
+					"\"$(SRCROOT)/submodules/build/$(CONFIGURATION)-iphoneos\"",
+					"$(inherited)",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*][arch=*]" = (
+					"\"$(SRCROOT)/submodules/build/$(CONFIGURATION)-iphonesimulator\"",
+					"$(inherited)",
 				);
 				PRODUCT_NAME = linphone;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -763,7 +770,14 @@
 				LIBRARY_SEARCH_PATHS = (
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib\"",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
-					"\"$(SRCROOT)/submodules/build/Debug-iphoneos\"",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*][arch=*]" = (
+					"\"$(SRCROOT)/submodules/build/$(CONFIGURATION)-iphoneos\"",
+					"$(inherited)",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*][arch=*]" = (
+					"\"$(SRCROOT)/submodules/build/$(CONFIGURATION)-iphonesimulator\"",
+					"$(inherited)",
 				);
 				PRODUCT_NAME = linphone;
 				SDKROOT = iphoneos4.0;
@@ -814,7 +828,14 @@
 				LIBRARY_SEARCH_PATHS = (
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib\"",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
-					"\"$(SRCROOT)/submodules/build/Debug-iphoneos\"",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*][arch=*]" = (
+					"\"$(SRCROOT)/submodules/build/$(CONFIGURATION)-iphoneos\"",
+					"$(inherited)",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*][arch=*]" = (
+					"\"$(SRCROOT)/submodules/build/$(CONFIGURATION)-iphonesimulator\"",
+					"$(inherited)",
 				);
 				PRODUCT_NAME = linphone;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
