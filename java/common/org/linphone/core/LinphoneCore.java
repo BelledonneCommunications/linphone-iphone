@@ -70,7 +70,18 @@ public interface LinphoneCore {
 		}
 	}
 
-	
+	static public class Transport {
+		public final static Transport udp =new Transport("udp");
+		public final static Transport tcp =new Transport("tcp");
+		private final String mStringValue;
+
+		private Transport(String stringValue) {
+			mStringValue=stringValue;
+		}
+		public String toString() {
+			return mStringValue;
+		}		
+	}
 	/**
 	 * clear all added proxy config
 	 */
@@ -186,6 +197,7 @@ public interface LinphoneCore {
 	 */
 	public void clearCallLogs();
 	
+<<<<<<< master
 	
 	/***
 	 * get payload type  from mime type an clock rate
@@ -200,4 +212,7 @@ public interface LinphoneCore {
 	
 	public boolean isEchoCancellationEnabled();
 	
+=======
+	public void setSignalingTransport(Transport aTransport);
+>>>>>>> local
 }
