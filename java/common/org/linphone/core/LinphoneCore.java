@@ -22,6 +22,8 @@ package org.linphone.core;
 import java.util.Vector;
 
 
+
+
 	
 public interface LinphoneCore {
 	/*
@@ -177,6 +179,17 @@ public interface LinphoneCore {
 	 */
 	public float getPlaybackGain();
 	/**
+	 * set play level
+	 * @param level [0..100]
+	 */
+	public void setPlayLevel(int level);
+	/**
+	 * get playback level [0..100];
+	 * -1 if not cannot be determined
+	 * @return
+	 */
+	public int getPlayLevel();
+	/**
 	 *  Mutes or unmutes the local microphone.
 	 * @param isMuted
 	 */
@@ -197,7 +210,6 @@ public interface LinphoneCore {
 	 */
 	public void clearCallLogs();
 	
-<<<<<<< master
 	
 	/***
 	 * get payload type  from mime type an clock rate
@@ -212,7 +224,6 @@ public interface LinphoneCore {
 	
 	public boolean isEchoCancellationEnabled();
 	
-=======
 	public void setSignalingTransport(Transport aTransport);
->>>>>>> local
+
 }
