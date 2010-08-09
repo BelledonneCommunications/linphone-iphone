@@ -470,8 +470,8 @@ static void sound_config_read(LinphoneCore *lc)
 	linphone_core_enable_agc(lc,
 		lp_config_get_int(lc->config,"sound","agc",0));
 
-	gain=lp_config_get_float(lc->config,"sound","soft_play_lev",0);
-	linphone_core_set_soft_play_level(lc,gain);
+	gain=lp_config_get_float(lc->config,"sound","playback_gain_db",0);
+	linphone_core_set_playback_gain_db (lc,gain);
 }
 
 static void sip_config_read(LinphoneCore *lc)
@@ -1068,7 +1068,8 @@ int linphone_core_set_primary_contact(LinphoneCore *lc, const char *contact)
 
 /*result must be an array of chars at least LINPHONE_IPADDR_SIZE */
 void linphone_core_get_local_ip(LinphoneCore *lc, const char *dest, char *result){
-	if (linphone_core_get_firewall_policy(lc)==LINPHONE_POLICY_USE_NAT_ADDRESS){
+	if (linphone_core_get_firewall_policy(lc)==LINPHONE_POLICY_USE_NAT_ADDRESS
+	    && linphone_core_get_nat_address(lc)!=NULL){
 		strncpy(result,linphone_core_get_nat_address(lc),LINPHONE_IPADDR_SIZE);
 		return;
 	}
@@ -2090,8 +2091,8 @@ void linphone_core_init_media_streams(LinphoneCore *lc, LinphoneCall *call){
 		const char *type=lp_config_get_string(lc->config,"sound","el_type","mic");
 		if (strcasecmp(type,"mic")==0)
 			audio_stream_enable_echo_limiter(lc->audiostream,ELControlMic);
-		else if (strcasecmp(type,"speaker")==0)
-			audio_stream_enable_echo_limiter(lc->audiostream,ELControlSpeaker);
+		else if (strcasecmp(type,"full")==0)
+			audio_stream_enable_echo_limiter(lc->audiostream,ELControlFull);
 	}
 	audio_stream_enable_gain_control(lc->audiostream,TRUE);
 	if (linphone_core_echo_cancellation_enabled(lc)){
@@ -2157,45 +2158,52 @@ static void parametrize_equalizer(LinphoneCore *lc, AudioStream *st){
 
 static void post_configure_audio_streams(LinphoneCore *lc){
 	AudioStream *st=lc->audiostream;
-	float gain=lp_config_get_float(lc->config,"sound","mic_gain",-1);
-	if (gain!=-1)
-		audio_stream_set_mic_gain(st,gain);
+	float mic_gain=lp_config_get_float(lc->config,"sound","mic_gain",1);
+	float thres = 0;
+	float recv_gain;
+	float ng_thres=lp_config_get_float(lc->config,"sound","ng_thres",0.05);
+	float ng_floorgain=lp_config_get_float(lc->config,"sound","ng_floorgain",0);
+	int dc_removal=lp_config_get_int(lc->config,"sound","dc_removal",0);
+	
+	if (mic_gain!=-1)
+		audio_stream_set_mic_gain(st,mic_gain);
 	lc->audio_muted=FALSE;
-	float recv_gain = lc->sound_conf.soft_play_lev;
+
+	recv_gain = lc->sound_conf.soft_play_lev;
 	if (recv_gain != 0) {
-		linphone_core_set_soft_play_level(lc,recv_gain);
+		linphone_core_set_playback_gain_db (lc,recv_gain);
+	}
+	if (st->volsend){
+		ms_filter_call_method(st->volsend,MS_VOLUME_REMOVE_DC,&dc_removal);
 	}
 	if (linphone_core_echo_limiter_enabled(lc)){
 		float speed=lp_config_get_float(lc->config,"sound","el_speed",-1);
-		float thres=lp_config_get_float(lc->config,"sound","el_thres",-1);
+		thres=lp_config_get_float(lc->config,"sound","el_thres",-1);
 		float force=lp_config_get_float(lc->config,"sound","el_force",-1);
 		int sustain=lp_config_get_int(lc->config,"sound","el_sustain",-1);
 		MSFilter *f=NULL;
-		if (st->el_type==ELControlMic){
+		if (st->el_type!=ELInactive){
 			f=st->volsend;
 			if (speed==-1) speed=0.03;
-			if (force==-1) force=10;
-		}
-		else if (st->el_type==ELControlSpeaker){
-			f=st->volrecv;
-			if (speed==-1) speed=0.02;
-			if (force==-1) force=5;
-		}
-		if (speed!=-1)
+			if (force==-1) force=25;
 			ms_filter_call_method(f,MS_VOLUME_SET_EA_SPEED,&speed);
-		if (thres!=-1)
-			ms_filter_call_method(f,MS_VOLUME_SET_EA_THRESHOLD,&thres);
-		if (force!=-1)
 			ms_filter_call_method(f,MS_VOLUME_SET_EA_FORCE,&force);
-		if (sustain!=-1)
-			ms_filter_call_method(f,MS_VOLUME_SET_EA_SUSTAIN,&sustain);
-
+			if (thres!=-1)
+				ms_filter_call_method(f,MS_VOLUME_SET_EA_THRESHOLD,&thres);
+			if (sustain!=-1)
+				ms_filter_call_method(f,MS_VOLUME_SET_EA_SUSTAIN,&sustain);
+		}
 	}
+		
 	if (st->volsend){
-		float ng_thres=lp_config_get_float(lc->config,"sound","ng_thres",0.05);
-		float ng_floorgain=lp_config_get_float(lc->config,"sound","ng_floorgain",0);
 		ms_filter_call_method(st->volsend,MS_VOLUME_SET_NOISE_GATE_THRESHOLD,&ng_thres);
 		ms_filter_call_method(st->volsend,MS_VOLUME_SET_NOISE_GATE_FLOORGAIN,&ng_floorgain);
+	}
+	if (st->volrecv){
+		/* parameters for a limited noise-gate effect, using echo limiter threshold */
+		float floorgain = 1/mic_gain;
+		ms_filter_call_method(st->volrecv,MS_VOLUME_SET_NOISE_GATE_THRESHOLD,&thres);
+		ms_filter_call_method(st->volrecv,MS_VOLUME_SET_NOISE_GATE_FLOORGAIN,&floorgain);
 	}
 	parametrize_equalizer(lc,st);
 	if (lc->vtable.dtmf_received!=NULL){
@@ -2445,7 +2453,9 @@ int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call)
 	contact=get_fixed_contact(lc,call,cfg);
 	if (contact)
 		sal_op_set_contact(call->op,contact);
-	
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 40000
+	linphone_core_init_media_streams(lc,call);
+#endif
 	sal_call_accept(call->op);
 	if (lc->vtable.display_status!=NULL)
 		lc->vtable.display_status(lc,_("Connected."));
@@ -2786,13 +2796,13 @@ void linphone_core_set_ring_level(LinphoneCore *lc, int level){
 }
 
 /**
- * Sets call playback gain in db
+ * Allow to control play level before entering sound card:  gain in db
  *
  * @ingroup media_parameters
 **/
-void linphone_core_set_soft_play_level(LinphoneCore *lc, float level){
-	float gain=level;
-	lc->sound_conf.soft_play_lev=level;
+void linphone_core_set_playback_gain_db (LinphoneCore *lc, float gaindb){
+	float gain=gaindb;
+	lc->sound_conf.soft_play_lev=gaindb;
 	AudioStream *st=lc->audiostream;
 	if (!st) return; /*just return*/
 
@@ -2802,11 +2812,11 @@ void linphone_core_set_soft_play_level(LinphoneCore *lc, float level){
 }
 
 /**
- * Returns call playback gain in db
+ * Get playback gain in db before entering  sound card.
  *
  * @ingroup media_parameters
 **/
-float linphone_core_get_soft_play_level(LinphoneCore *lc) {
+float linphone_core_get_playback_gain_db(LinphoneCore *lc) {
 	float gain=0;
 	AudioStream *st=lc->audiostream;
 	if (st->volrecv){
@@ -3120,7 +3130,7 @@ bool_t linphone_core_echo_limiter_enabled(const LinphoneCore *lc){
 void linphone_core_mute_mic(LinphoneCore *lc, bool_t val){
 	if (lc->audiostream!=NULL){
 		 audio_stream_set_mic_gain(lc->audiostream,
-			(val==TRUE) ? 0 : 1.0);
+			(val==TRUE) ? 0 : 1.0);   // REVISIT: take mic_gain value
 		 if ( linphone_core_get_rtp_no_xmit_on_audio_mute(lc) ){
 		   audio_stream_mute_rtp(lc->audiostream,val);
 		 }
@@ -4016,4 +4026,29 @@ int linphone_core_del_call( LinphoneCore *lc, LinphoneCall *call)
 	}
 	lc->calls = the_calls;
 	return 0;
+}
+
+static PayloadType* find_payload_type_from_list(const char* type, int rate,const MSList* from) {
+	const MSList *elem;
+	for(elem=from;elem!=NULL;elem=elem->next){
+		PayloadType *pt=(PayloadType*)elem->data;
+		if ((strcmp((char*)type, payload_type_get_mime(pt)) == 0) && rate==pt->clock_rate) {
+			return pt;
+		}
+	}
+	return NULL;
+}
+
+PayloadType* linphone_core_find_payload_type(LinphoneCore* lc, const char* type, int rate) {
+	PayloadType* result = find_payload_type_from_list(type, rate, linphone_core_get_audio_codecs(lc));
+	if (result)  {
+		return result;
+	} else {
+		result = find_payload_type_from_list(type, rate, linphone_core_get_video_codecs(lc));
+		if (result) {
+			return result;
+		}
+	}
+	//not found
+	return NULL;
 }

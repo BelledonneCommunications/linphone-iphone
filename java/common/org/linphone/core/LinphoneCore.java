@@ -70,7 +70,18 @@ public interface LinphoneCore {
 		}
 	}
 
-	
+	static public class Transport {
+		public final static Transport udp =new Transport("udp");
+		public final static Transport tcp =new Transport("tcp");
+		private final String mStringValue;
+
+		private Transport(String stringValue) {
+			mStringValue=stringValue;
+		}
+		public String toString() {
+			return mStringValue;
+		}		
+	}
 	/**
 	 * clear all added proxy config
 	 */
@@ -159,12 +170,12 @@ public interface LinphoneCore {
 	 * Allow to control play level before entering  sound card:  
 	 * @param level in db
 	 */
-	public void setSoftPlayLevel(float gain);
+	public void setPlaybackGain(float gain);
 	/**
 	 * get play level before entering  sound card:  
 	 * @return level in db
 	 */
-	public float getSoftPlayLevel();
+	public float getPlaybackGain();
 	/**
 	 *  Mutes or unmutes the local microphone.
 	 * @param isMuted
@@ -185,4 +196,23 @@ public interface LinphoneCore {
 	 * 
 	 */
 	public void clearCallLogs();
+	
+<<<<<<< master
+	
+	/***
+	 * get payload type  from mime type an clock rate
+	 * 
+	 * return null if not found
+	 */
+	public PayloadType findPayloadType(String mime,int clockRate); 
+	
+	public void enablePayloadType(PayloadType pt, boolean enable) throws LinphoneCoreException;
+	
+	public void enableEchoCancellation(boolean enable);
+	
+	public boolean isEchoCancellationEnabled();
+	
+=======
+	public void setSignalingTransport(Transport aTransport);
+>>>>>>> local
 }

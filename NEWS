@@ -1,3 +1,11 @@
+linphone-3.3.2 -- July 1st, 2010
+	* fix crash when setting firewall address in gtk interface
+	* fix crash while closing video window on windows
+	* fix un-sent BYE message in some rare cases.
+	Requires:
+		mediastreamer2-2.6.0
+		ortp-0.16.3
+
 linphone-3.3.1 -- June 3, 2010
 	* fix bugs when carrying non ascii displaynames in SIP messages
 	* fix crash when codecs are incompatible

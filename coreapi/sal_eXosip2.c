@@ -907,9 +907,9 @@ static void call_accepted(Sal *sal, eXosip_event_t *ev){
 		ms_error("A closed call is accepted ?");
 		return;
 	}
-	if (op->did==-1){
-		op->did=ev->did;
-	}
+
+	op->did=ev->did;
+	
 	sdp=eXosip_get_sdp_info(ev->response);
 	if (sdp){
 		op->base.remote_media=sal_media_description_new();

@@ -133,8 +133,11 @@ static void call_received(SalOp *h){
 	}
 	call->state=LinphoneCallRinging;
 	sal_call_notify_ringing(h);
-	linphone_core_init_media_streams(lc,call);
+#if !(__IPHONE_OS_VERSION_MIN_REQUIRED >= 40000)
+	linphone_core_init_media_streams(lc,lc->call);
+#endif
 	if (lc->vtable.inv_recv) lc->vtable.inv_recv(lc,call);
+#endif
 	ms_free(barmesg);
 	ms_free(tmp);
 }
@@ -372,7 +375,7 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 	/*char *retrymsg=_("%s. Retry after %i minute(s).");*/
 	char *msg600=_("User does not want to be disturbed.");
 	char *msg603=_("Call declined.");
-	char *msg=(char*)details;
+	const char *msg=details;
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
 	LinphoneGeneralStateContext gctx;
 
@@ -380,11 +383,13 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 	if (lc->vtable.show) lc->vtable.show(lc);
 
 	if (error==SalErrorNoResponse){
+		msg=_("No response.");
 		if (lc->vtable.display_status)
-			lc->vtable.display_status(lc,_("No response."));
+			lc->vtable.display_status(lc,msg);
 	}else if (error==SalErrorProtocol){
+		msg=details ? details : _("Protocol error.");
 		if (lc->vtable.display_status)
-			lc->vtable.display_status(lc, details ? details : _("Protocol error."));
+			lc->vtable.display_status(lc, msg);
 	}else if (error==SalErrorFailure){
 		switch(sr){
 			case SalReasonDeclined:

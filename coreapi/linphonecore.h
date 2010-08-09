@@ -623,6 +623,14 @@ bool_t linphone_core_payload_type_enabled(LinphoneCore *lc, PayloadType *pt);
 
 int linphone_core_enable_payload_type(LinphoneCore *lc, PayloadType *pt, bool_t enable);
 
+/*
+ * get payload type  from mime type an clock rate
+ * @ingroup media_parameters
+ * iterates both audio an video
+ * return NULL if not found
+ */
+PayloadType* linphone_core_find_payload_type(LinphoneCore* lc, const char* type, int rate) ;
+
 const char *linphone_core_get_payload_type_description(LinphoneCore *lc, PayloadType *pt);
 
 bool_t linphone_core_check_payload_type_usability(LinphoneCore *lc, PayloadType *pt);
@@ -717,18 +725,10 @@ int linphone_core_get_play_level(LinphoneCore *lc);
 int linphone_core_get_rec_level(LinphoneCore *lc);
 void linphone_core_set_ring_level(LinphoneCore *lc, int level);
 void linphone_core_set_play_level(LinphoneCore *lc, int level);
-/**
- * Allow to control play level before entering  sound card:  level in db
- *
- * @ingroup media_parameters
-**/
-void linphone_core_set_soft_play_level(LinphoneCore *lc, float level);
-/**
- * get play level before entering  sound card:  level in db
- *
- * @ingroup media_parameters
-**/
-float linphone_core_get_soft_play_level(LinphoneCore *lc);
+
+void linphone_core_set_playback_gain_db(LinphoneCore *lc, float level);
+
+float linphone_core_get_playback_gain_db(LinphoneCore *lc);
 void linphone_core_set_rec_level(LinphoneCore *lc, int level);
 const char * linphone_core_get_ringer_device(LinphoneCore *lc);
 const char * linphone_core_get_playback_device(LinphoneCore *lc);

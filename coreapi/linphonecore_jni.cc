@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 extern "C" void libmsilbc_init();
 #endif /*ANDROID*/
 
-extern "C" void ms_andsnd_register_card(JavaVM *jvm) ;
+extern "C" void ms_andsnd_set_jvm(JavaVM *jvm) ;
 static JavaVM *jvm=0;
 
 #ifdef ANDROID
@@ -44,7 +44,7 @@ static void linphone_android_log_handler(OrtpLogLevel lev, const char *fmt, va_l
 JNIEXPORT jint JNICALL  JNI_OnLoad(JavaVM *ajvm, void *reserved)
 {
 #ifdef ANDROID
-	ms_andsnd_register_card(ajvm);
+	ms_andsnd_set_jvm(ajvm);
 #endif /*ANDROID*/
 	jvm=ajvm;
 	return JNI_VERSION_1_2;
@@ -83,7 +83,7 @@ public:
 		/*displayStatus(LinphoneCore lc,String message);*/
 		displayStatusId = env->GetMethodID(listernerClass,"displayStatus","(Lorg/linphone/core/LinphoneCore;Ljava/lang/String;)V");
 		/*void generalState(LinphoneCore lc,int state); */
-		generalStateId = env->GetMethodID(listernerClass,"generalState","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCore$GeneralState;)V");
+		generalStateId = env->GetMethodID(listernerClass,"generalState","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCore$GeneralState;Ljava/lang/String;)V");
 
 		generalStateClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneCore$GeneralState"));
 		generalStateFromIntId = env->GetStaticMethodID(generalStateClass,"fromInt","(I)Lorg/linphone/core/LinphoneCore$GeneralState;");
@@ -145,7 +145,8 @@ public:
 		env->CallVoidMethod(lcData->listener
 							,lcData->generalStateId
 							,lcData->core
-							,env->CallStaticObjectMethod(lcData->generalStateClass,lcData->generalStateFromIntId,gstate->new_state));
+							,env->CallStaticObjectMethod(lcData->generalStateClass,lcData->generalStateFromIntId,gstate->new_state),
+							gstate->message ? env->NewStringUTF(gstate->message) : NULL);
 	}
 
 };
@@ -160,10 +161,12 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_newLinphoneCore(JNIEnv*
 	const char* factoryConfig = env->GetStringUTFChars(jfactoryConfig, NULL);
 	LinphoneCoreData* ldata = new LinphoneCoreData(env,thiz,jlistener,juserdata);
 #ifdef ANDROID
-	ms_andsnd_register_card(jvm);
-	// requires an fpu libmsilbc_init();
+	ms_andsnd_set_jvm(jvm);
 #endif /*ANDROID*/
 
+#ifdef HAVE_ILBC
+	libmsilbc_init(); // requires an fpu
+#endif
 	jlong nativePtr = (jlong)linphone_core_new(	&ldata->vTable
 			,userConfig
 			,factoryConfig
@@ -292,17 +295,17 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setNetworkStateReachable
 		linphone_core_set_network_reachable((LinphoneCore*)lc,isReachable);
 }
 
-extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setSoftPlayLevel(	JNIEnv*  env
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setPlaybackGain(	JNIEnv*  env
 		,jobject  thiz
 		,jlong lc
 		,jfloat gain) {
-		linphone_core_set_soft_play_level((LinphoneCore*)lc,gain);
+		linphone_core_set_playback_gain_db((LinphoneCore*)lc,gain);
 }
 
-extern "C" float Java_org_linphone_core_LinphoneCoreImpl_getSoftPlayLevel(	JNIEnv*  env
+extern "C" float Java_org_linphone_core_LinphoneCoreImpl_getPlaybackGain(	JNIEnv*  env
 		,jobject  thiz
 		,jlong lc) {
-		return linphone_core_get_soft_play_level((LinphoneCore*)lc);
+		return linphone_core_get_playback_gain_db((LinphoneCore*)lc);
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_muteMic(	JNIEnv*  env
@@ -337,7 +340,35 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isMicMuted(	JNIEnv* 
 		,jlong lc) {
 	return linphone_core_is_mic_muted((LinphoneCore*)lc);
 }
-
+extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_findPayloadType(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			,jstring jmime
+																			,jint rate) {
+	const char* mime = env->GetStringUTFChars(jmime, NULL);
+	jlong result = (jlong)linphone_core_find_payload_type((LinphoneCore*)lc,mime,rate);
+	env->ReleaseStringUTFChars(jmime, mime);
+	return result;
+}
+extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_enablePayloadType(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			,jlong pt
+																			,jboolean enable) {
+	return linphone_core_enable_payload_type((LinphoneCore*)lc,(PayloadType*)pt,enable);
+}
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_enableEchoCancellation(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			,jboolean enable) {
+	linphone_core_enable_echo_cancellation((LinphoneCore*)lc,enable);
+}
+extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isEchoCancellationEnabled(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			) {
+	return linphone_core_echo_cancellation_enabled((LinphoneCore*)lc);
+}
 
 
 //ProxyConfig
@@ -373,6 +404,20 @@ extern "C" jstring Java_org_linphone_core_LinphoneProxyConfigImpl_getProxy(JNIEn
 	const char* proxy = linphone_proxy_config_get_addr((LinphoneProxyConfig*)proxyCfg);
 	if (proxy) {
 		return env->NewStringUTF(proxy);
+	} else {
+		return NULL;
+	}
+}
+extern "C" int Java_org_linphone_core_LinphoneProxyConfigImpl_setRoute(JNIEnv* env,jobject thiz,jlong proxyCfg,jstring jroute) {
+	const char* route = env->GetStringUTFChars(jroute, NULL);
+	int err=linphone_proxy_config_set_route((LinphoneProxyConfig*)proxyCfg,route);
+	env->ReleaseStringUTFChars(jroute, route);
+	return err;
+}
+extern "C" jstring Java_org_linphone_core_LinphoneProxyConfigImpl_getRoute(JNIEnv* env,jobject thiz,jlong proxyCfg) {
+	const char* route = linphone_proxy_config_get_route((LinphoneProxyConfig*)proxyCfg);
+	if (route) {
+		return env->NewStringUTF(route);
 	} else {
 		return NULL;
 	}
@@ -531,9 +576,9 @@ extern "C" void Java_org_linphone_core_LinphoneAddressImpl_setDisplayName(JNIEnv
 																		,jobject  thiz
 																		,jlong address
 																		,jstring jdisplayName) {
-	const char* displayName = env->GetStringUTFChars(jdisplayName, NULL);
+	const char* displayName = jdisplayName!= NULL?env->GetStringUTFChars(jdisplayName, NULL):NULL;
 	linphone_address_set_display_name((LinphoneAddress*)address,displayName);
-	env->ReleaseStringUTFChars(jdisplayName, displayName);
+	if (displayName != NULL) env->ReleaseStringUTFChars(jdisplayName, displayName);
 }
 
 
@@ -552,4 +597,18 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCallLogImpl_isIncoming(JNIEnv
 																		,jobject  thiz
 																		,jlong ptr) {
 	return ((LinphoneCallLog*)ptr)->dir==LinphoneCallIncoming?JNI_TRUE:JNI_FALSE;
+}
+
+extern "C" jstring Java_org_linphone_core_PayloadTypeImpl_toString(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+
+	PayloadType* pt = (PayloadType*)ptr;
+	char* value = ms_strdup_printf("[%s] clock [%s], bitrate [%s]"
+									,payload_type_get_mime(pt)
+									,payload_type_get_rate(pt)
+									,payload_type_get_bitrate(pt));
+	jstring jvalue =env->NewStringUTF(value);
+	ms_free(value);
+	return jvalue;
 }

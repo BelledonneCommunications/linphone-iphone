@@ -47,5 +47,6 @@ public interface LinphoneCoreListener {
 		 * @param state LinphoneCore.GeneralState
 		 * @return 
 		 * */		
-		public void generalState(LinphoneCore lc,LinphoneCore.GeneralState state); 
+		public void generalState(LinphoneCore lc,LinphoneCore.GeneralState state, String message);
 }
+
