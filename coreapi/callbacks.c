@@ -134,10 +134,9 @@ static void call_received(SalOp *h){
 	call->state=LinphoneCallRinging;
 	sal_call_notify_ringing(h);
 #if !(__IPHONE_OS_VERSION_MIN_REQUIRED >= 40000)
-	linphone_core_init_media_streams(lc,lc->call);
+	linphone_core_init_media_streams(lc,call);
 #endif
 	if (lc->vtable.inv_recv) lc->vtable.inv_recv(lc,call);
-#endif
 	ms_free(barmesg);
 	ms_free(tmp);
 }
@@ -205,7 +204,7 @@ static void call_accepted(SalOp *op){
 	}
 	gctx.call=call;
 	if (call->state==LinphoneCallAVRunning){
-		ms_message("GET ACK of resume\n");
+		ms_message("GET 200Ok of resume\n");
 		if(lc->vtable.ack_resumed_recv)
 			lc->vtable.ack_resumed_recv(lc,call);
 		return ; //already accepted
@@ -226,20 +225,16 @@ static void call_accepted(SalOp *op){
 		call->media_pending=FALSE;
 	}
 	if (call->resultdesc && !sal_media_description_empty(call->resultdesc)){
-		//if we initiate a pause
+		//if we initiated a pause
 		if(call->state == LinphoneCallPaused)
 		{
-			ms_message("GET ACK of pause\n");
+			ms_message("GET 200Ok of pause\n");
 			if(lc->vtable.ack_paused_recv)
 				lc->vtable.ack_paused_recv(lc,call);
 		}//if there is an accepted incoming call
 		else
 		{
-			/*
-			 * Do not set the call as current here,
-			 * because we can go through this function not only when an incoming call is accepted
-			 */
-			//linphone_core_set_as_current_call (lc,call);
+			linphone_core_set_as_current_call (lc,call);
 			gstate_new_state(lc, GSTATE_CALL_OUT_CONNECTED, gctx, NULL);
 			linphone_connect_incoming(lc,call);
 		}		

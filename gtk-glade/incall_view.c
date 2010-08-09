@@ -213,11 +213,9 @@ void linphone_gtk_enable_mute_button(GtkToggleButton *button, gboolean sensitive
 }
 
 void linphone_gtk_draw_hold_button(GtkToggleButton *button, gboolean active){
-	GtkWidget *status=linphone_gtk_get_widget(linphone_gtk_get_main_window(),"in_call_status");
 	if (active){
 		GtkWidget *image=create_pixmap("hold_off.png");
 		gtk_button_set_label(GTK_BUTTON(button),_("HoldOff"));
-		gtk_label_set_markup(GTK_LABEL(status),_("<b>In call holded with</b>"));
 		if (image!=NULL) {
 			gtk_button_set_image(GTK_BUTTON(button),image);
 			gtk_widget_show(image);
@@ -225,7 +223,6 @@ void linphone_gtk_draw_hold_button(GtkToggleButton *button, gboolean active){
 	}else{
 		GtkWidget *image=create_pixmap("hold_on.png");
 		gtk_button_set_label(GTK_BUTTON(button),_("HoldOn"));
-		gtk_label_set_markup(GTK_LABEL(status),_("<b>In call with</b>"));
 		if (image!=NULL) {
 			gtk_button_set_image(GTK_BUTTON(button),image);
 			gtk_widget_show(image);

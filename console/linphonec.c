@@ -194,13 +194,8 @@ LinphoneCoreVTable linphonec_vtable
 	.auth_info_requested = linphonec_prompt_for_auth,
 	.display_status = linphonec_display_status,
 	.display_message=linphonec_display_something,
-#ifdef VINCENT_MAURY_RSVP
-	/* the yes/no dialog box */
-	.display_yes_no= (DisplayMessageCb) stub,
-#endif
 	.display_warning=linphonec_display_warning,
 	.display_url=linphonec_display_url,
-	.display_question=(DisplayQuestionCb)stub,
 	.text_received=linphonec_text_received,
 	.general_state=linphonec_general_state,
 	.dtmf_received=linphonec_dtmf_received,

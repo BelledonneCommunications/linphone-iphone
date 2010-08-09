@@ -62,11 +62,28 @@ const SalStreamDescription *sal_media_description_find_stream(const SalMediaDesc
 	return NULL;
 }
 
-bool_t sal_media_description_empty(SalMediaDescription *md){
+bool_t sal_media_description_empty(const SalMediaDescription *md){
+	int i;
+	for(i=0;i<md->nstreams;++i){
+		const SalStreamDescription *ss=&md->streams[i];
+		if (ss->port!=0) return FALSE;
+	}
+	return TRUE;
+}
+
+void sal_media_description_set_dir(SalMediaDescription *md, SalStreamDir stream_dir){
 	int i;
 	for(i=0;i<md->nstreams;++i){
 		SalStreamDescription *ss=&md->streams[i];
-		if (ss->port!=0) return FALSE;
+		ss->dir=stream_dir;
+	}
+}
+
+bool_t sal_media_description_has_dir(const SalMediaDescription *md, SalStreamDir stream_dir){
+	int i;
+	for(i=0;i<md->nstreams;++i){
+		const SalStreamDescription *ss=&md->streams[i];
+		if (ss->dir!=stream_dir) return FALSE;
 	}
 	return TRUE;
 }

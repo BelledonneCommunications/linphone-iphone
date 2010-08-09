@@ -51,7 +51,6 @@ static void linphone_gtk_display_status(LinphoneCore *lc, const char *status);
 static void linphone_gtk_display_message(LinphoneCore *lc, const char *msg);
 static void linphone_gtk_display_warning(LinphoneCore *lc, const char *warning);
 static void linphone_gtk_display_url(LinphoneCore *lc, const char *msg, const char *url);
-static void linphone_gtk_display_question(LinphoneCore *lc, const char *question);
 static void linphone_gtk_call_log_updated(LinphoneCore *lc, LinphoneCallLog *cl);
 static void linphone_gtk_general_state(LinphoneCore *lc, LinphoneGeneralState *gstate, LinphoneGeneralStateContext gctx);
 static void linphone_gtk_refer_received(LinphoneCore *lc, LinphoneCall *call, const char  *refer_to);
@@ -68,7 +67,6 @@ static LinphoneCoreVTable vtable={
 	.display_message=linphone_gtk_display_message,
 	.display_warning=linphone_gtk_display_warning,
 	.display_url=linphone_gtk_display_url,
-	.display_question=linphone_gtk_display_question,
 	.call_log_updated=linphone_gtk_call_log_updated,
 	.text_received=linphone_gtk_text_received,
 	.general_state=linphone_gtk_general_state,
@@ -868,10 +866,6 @@ static void linphone_gtk_display_url(LinphoneCore *lc, const char *msg, const ch
 	char richtext[4096];
 	snprintf(richtext,sizeof(richtext),"%s %s",msg,url);
 	linphone_gtk_display_something(GTK_MESSAGE_INFO,richtext);
-}
-
-static void linphone_gtk_display_question(LinphoneCore *lc, const char *question){
-	linphone_gtk_display_something(GTK_MESSAGE_QUESTION,question);
 }
 
 static void linphone_gtk_call_log_updated(LinphoneCore *lc, LinphoneCallLog *cl){

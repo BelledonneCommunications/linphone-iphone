@@ -106,6 +106,23 @@ static int _sdp_message_get_a_ptime(sdp_message_t *sdp, int mline){
 	return 0;
 }
 
+static int _sdp_message_get_mline_dir(sdp_message_t *sdp, int mline){
+	int i;
+	sdp_attribute_t *attr;
+	for (i=0;(attr=sdp_message_attribute_get(sdp,mline,i))!=NULL;i++){
+		if (keywordcmp("sendrecv",attr->a_att_field)==0){
+			return SalStreamSendRecv;
+		}else if (keywordcmp("sendonly",attr->a_att_field)==0){
+			return SalStreamSendOnly;
+		}else if (keywordcmp("recvonly",attr->a_att_field)==0){
+			return SalStreamSendOnly;
+		}else if (keywordcmp("inactive",attr->a_att_field)==0){
+			return SalStreamInactive;
+		}
+	}
+	return SalStreamSendRecv;
+}
+
 static sdp_message_t *create_generic_sdp(const SalMediaDescription *desc)
 {
 	sdp_message_t *local;
@@ -121,7 +138,7 @@ static sdp_message_t *create_generic_sdp(const SalMediaDescription *desc)
 			  osip_strdup ("IN"), inet6 ? osip_strdup("IP6") : osip_strdup ("IP4"),
 			  osip_strdup (desc->addr));
 	sdp_message_s_name_set (local, osip_strdup ("A conversation"));
-	if(!desc->notsending)
+	if(!sal_media_description_has_dir (desc,SalStreamSendOnly))
 	{
 		sdp_message_c_connection_add (local, -1,
 				osip_strdup ("IN"), inet6 ? osip_strdup ("IP6") : osip_strdup ("IP4"),
@@ -131,7 +148,7 @@ static sdp_message_t *create_generic_sdp(const SalMediaDescription *desc)
 	{
 		sdp_message_c_connection_add (local, -1,
 				osip_strdup ("IN"), inet6 ? osip_strdup ("IP6") : osip_strdup ("IP4"),
-						inet6 ? osip_strdup ("0.0.0.0.0.0") : osip_strdup ("0.0.0.0"), NULL, NULL);
+						inet6 ? osip_strdup ("::0") : osip_strdup ("0.0.0.0"), NULL, NULL);
 	}		
 	sdp_message_t_time_descr_add (local, osip_strdup ("0"), osip_strdup ("0"));
 	if (desc->bandwidth>0) sdp_message_b_bandwidth_add (local, -1, osip_strdup ("AS"),
@@ -167,6 +184,7 @@ static void add_line(sdp_message_t *msg, int lineno, const SalStreamDescription 
 	const char *mt=desc->type==SalAudio ? "audio" : "video";
 	const MSList *elem;
 	const char *addr;
+	const char *dir="sendrecv";
 	int port;
 	if (desc->candidates[0].addr[0]!='\0'){
 		addr=desc->candidates[0].addr;
@@ -195,10 +213,21 @@ static void add_line(sdp_message_t *msg, int lineno, const SalStreamDescription 
 	for(elem=desc->payloads;elem!=NULL;elem=elem->next){
 		add_payload(msg, lineno, (PayloadType*)elem->data);
 	}
-	if(desc->notsending)//to hold the distant SIP endpoint
-		sdp_message_a_attribute_add (msg, lineno, osip_strdup ("sendonly"),NULL);
-	else
-		sdp_message_a_attribute_add (msg, lineno, osip_strdup ("sendrecv"),NULL);
+	switch(desc->dir){
+		case SalStreamSendRecv:
+			dir="sendrecv";
+		break;
+		case SalStreamRecvOnly:
+			dir="recvonly";
+			break;
+		case SalStreamSendOnly:
+			dir="sendonly";
+			break;
+		case SalStreamInactive:
+			dir="inactive";
+			break;
+	}
+	sdp_message_a_attribute_add (msg, lineno, osip_strdup (dir),NULL);
 }
 
 sdp_message_t *media_description_to_sdp(const SalMediaDescription *desc){
@@ -285,6 +314,7 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 		for(j=0;(sbw=sdp_message_bandwidth_get(msg,i,j))!=NULL;++j){
 			if (strcasecmp(sbw->b_bwtype,"AS")==0) stream->bandwidth=atoi(sbw->b_bandwidth);
 		}
+		stream->dir=_sdp_message_get_mline_dir(msg,i);
 		/* for each payload type */
 		for (j=0;((number=sdp_message_m_payload_get (msg, i,j)) != NULL); j++){
 			const char *rtpmap,*fmtp;

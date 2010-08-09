@@ -3983,16 +3983,15 @@ int linphone_core_set_as_current_call(LinphoneCore *lc, LinphoneCall *call)
 	return 0;
 }
 
-/**
- * Add the call in the LinphoneCall list
- *
- * @ingroup call_control
-**/
+
 int linphone_core_add_call( LinphoneCore *lc, LinphoneCall *call)
 {
 	if(linphone_core_can_we_add_call(lc))
 	{
 		MSList *the_calls = lc->calls;
+		if (the_calls==NULL){
+			lc->current_call=call;
+		}
 		the_calls = ms_list_append(the_calls,call);
 		lc->calls = the_calls;
 		return 0;
@@ -4000,11 +3999,6 @@ int linphone_core_add_call( LinphoneCore *lc, LinphoneCall *call)
 	return -1;
 }
 
-/**
- * Add the call in the LinphoneCall list
- *
- * @ingroup call_control
-**/
 int linphone_core_del_call( LinphoneCore *lc, LinphoneCall *call)
 {
 	MSList *it;

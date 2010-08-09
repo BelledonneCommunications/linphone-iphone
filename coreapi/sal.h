@@ -86,6 +86,13 @@ typedef enum{
 	SalProtoRtpSavp
 }SalMediaProto;
 
+typedef enum{
+	SalStreamSendRecv,
+	SalStreamSendOnly,
+	SalStreamRecvOnly,
+	SalStreamInactive
+}SalStreamDir;
+
 typedef struct SalEndpointCandidate{
 	char addr[64];
 	int port;
@@ -102,7 +109,7 @@ typedef struct SalStreamDescription{
 	int bandwidth;
 	int ptime;
 	SalEndpointCandidate candidates[SAL_ENDPOINT_CANDIDATE_MAX];
-	bool_t notsending;
+	SalStreamDir dir;
 } SalStreamDescription;
 
 #define SAL_MEDIA_DESCRIPTION_MAX_STREAMS 4
@@ -114,15 +121,16 @@ typedef struct SalMediaDescription{
 	int nstreams;
 	int bandwidth;
 	SalStreamDescription streams[SAL_MEDIA_DESCRIPTION_MAX_STREAMS];
-	bool_t notsending;
 } SalMediaDescription;
 
 SalMediaDescription *sal_media_description_new();
 void sal_media_description_ref(SalMediaDescription *md);
 void sal_media_description_unref(SalMediaDescription *md);
-bool_t sal_media_description_empty(SalMediaDescription *md);
+bool_t sal_media_description_empty(const SalMediaDescription *md);
+bool_t sal_media_description_has_dir(const SalMediaDescription *md, SalStreamDir dir);
 const SalStreamDescription *sal_media_description_find_stream(const SalMediaDescription *md,
     SalMediaProto proto, SalStreamType type);
+void sal_media_description_set_dir(SalMediaDescription *md, SalStreamDir stream_dir);
 
 /*this structure must be at the first byte of the SalOp structure defined by implementors*/
 typedef struct SalOpBase{

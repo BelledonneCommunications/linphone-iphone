@@ -179,7 +179,8 @@ char *linphone_call_get_remote_address_as_string(const LinphoneCall *call);
 void linphone_call_ref(LinphoneCall *call);
 void linphone_call_unref(LinphoneCall *call);
 LinphoneCallLog *linphone_call_get_call_log(const LinphoneCall *call);
-
+void *linphone_call_get_user_pointer(LinphoneCall *call);
+void linphone_call_set_user_pointer(LinphoneCall *call, void *user_pointer);
 
 typedef enum{
 	LinphoneSPWait,
@@ -378,26 +379,28 @@ typedef enum _gstate_group {
 } gstate_group_t;
 
 typedef enum _gstate {
-  /* states for GSTATE_GROUP_POWER */
-  GSTATE_POWER_OFF = 0,        /* initial state */
-  GSTATE_POWER_STARTUP,
-  GSTATE_POWER_ON,
-  GSTATE_POWER_SHUTDOWN,
-  /* states for GSTATE_GROUP_REG */
-  GSTATE_REG_NONE = 10,       /* initial state */
-  GSTATE_REG_OK,
-  GSTATE_REG_FAILED,
-  GSTATE_REG_PENDING, /* a registration request is ongoing*/
-  /* states for GSTATE_GROUP_CALL */
-  GSTATE_CALL_IDLE = 20,      /* initial state */
-  GSTATE_CALL_OUT_INVITE,
-  GSTATE_CALL_OUT_CONNECTED,
-  GSTATE_CALL_IN_INVITE,
-  GSTATE_CALL_IN_CONNECTED,
-  GSTATE_CALL_END,
-  GSTATE_CALL_ERROR,
-  GSTATE_INVALID,
-  GSTATE_CALL_OUT_RINGING /*remote ringing*/
+	/* states for GSTATE_GROUP_POWER */
+	GSTATE_POWER_OFF = 0,        /* initial state */
+	GSTATE_POWER_STARTUP,
+	GSTATE_POWER_ON,
+	GSTATE_POWER_SHUTDOWN,
+	/* states for GSTATE_GROUP_REG */
+	GSTATE_REG_NONE = 10,       /* initial state */
+	GSTATE_REG_OK,
+	GSTATE_REG_FAILED,
+	GSTATE_REG_PENDING, /* a registration request is ongoing*/
+	/* states for GSTATE_GROUP_CALL */
+	GSTATE_CALL_IDLE = 20,      /* initial state */
+	GSTATE_CALL_OUT_INVITE,
+	GSTATE_CALL_OUT_CONNECTED,
+	GSTATE_CALL_IN_INVITE,
+	GSTATE_CALL_IN_CONNECTED,
+	GSTATE_CALL_END,
+	GSTATE_CALL_ERROR,
+	GSTATE_CALL_OUT_RINGING, /*remote ringing*/
+	GSTATE_CALL_PAUSED,
+	GSTATE_CALL_RESUMED,
+	GSTATE_INVALID
 } gstate_t;
 
 struct _LinphoneGeneralState {
@@ -476,7 +479,6 @@ typedef void (*BuddyInfoUpdated)(struct _LinphoneCore *lc, LinphoneFriend *lf);
 **/
 typedef struct _LinphoneVTable
 {
-	ShowInterfaceCb show; /**< Notifies the application that it should show up*/
 	InviteReceivedCb inv_recv; /**< Notifies incoming calls */
 	ByeReceivedCb bye_recv; /**< Notify calls terminated by far end*/
 	RingingReceivedCb ringing_recv; /**< Notify that the distant phone is ringing*/
@@ -486,21 +488,21 @@ typedef struct _LinphoneVTable
 	ResumedReceivedCb resumed_recv; /**< Notify that the call has been resumed*/
 	AckPausedReceivedCb ack_paused_recv;/**< Notify that the previous command pause sent to the call has been acknowledge*/
 	AckResumedReceivedCb ack_resumed_recv;/**< Notify that the previous command resumed sent to the call has been acknowledge*/	
+	GeneralStateChange general_state; /**< State notification callback */
 	NotifyPresenceReceivedCb notify_presence_recv; /**< Notify received presence events*/
 	NewUnknownSubscriberCb new_unknown_subscriber; /**< Notify about unknown subscriber */
 	AuthInfoRequested auth_info_requested; /**< Ask the application some authentication information */
-	DisplayStatusCb display_status; /**< Callback that notifies various events with human readable text.*/
-	DisplayMessageCb display_message;/**< Callback to display a message to the user */
-	DisplayMessageCb display_warning;/** Callback to display a warning to the user */
-	DisplayUrlCb display_url;
-	DisplayQuestionCb display_question;
 	CallLogUpdated call_log_updated; /**< Notifies that call log list has been updated */
 	TextMessageReceived text_received; /**< A text message has been received */
-	GeneralStateChange general_state; /**< State notification callback */
 	DtmfReceived dtmf_received; /**< A dtmf has been received received */
 	ReferReceived refer_received; /**< A refer was received */
 	BuddyInfoUpdated buddy_info_updated; /**< a LinphoneFriend's BuddyInfo has changed*/
 	NotifyReceivedCb notify_recv; /**< Other notifications*/
+	DisplayStatusCb display_status; /**< Callback that notifies various events with human readable text.*/
+	DisplayMessageCb display_message;/**< Callback to display a message to the user */
+	DisplayMessageCb display_warning;/** Callback to display a warning to the user */
+	DisplayUrlCb display_url;
+	ShowInterfaceCb show; /**< Notifies the application that it should show up*/
 } LinphoneCoreVTable;
 
 /**
@@ -875,7 +877,6 @@ int linphone_core_get_current_call_stats(LinphoneCore *lc, rtp_stats_t *local, r
 }
 #endif
 MSList *linphone_core_get_calls(LinphoneCore *lc);
-void *linphone_call_get_user_pointer(LinphoneCall *call);
-void linphone_call_set_user_pointer(LinphoneCall *call, void *user_pointer);
+
 
 #endif
