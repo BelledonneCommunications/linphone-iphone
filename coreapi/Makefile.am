@@ -32,7 +32,6 @@ liblinphone_la_SOURCES=\
 	authentication.c \
 	lpconfig.c lpconfig.h \
 	chat.c \
-	general_state.c \
 	linphonecall.c \
 	sipsetup.c sipsetup.h \
 	siplogin.c \

@@ -262,10 +262,8 @@ static char *guess_contact_for_register(LinphoneProxyConfig *obj){
 }
 
 static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
-	LinphoneGeneralStateContext gctx;
 	const char *id_str;
 
-	gctx.proxy=obj;
 	if (obj->reg_identity!=NULL) id_str=obj->reg_identity;
 	else id_str=linphone_core_get_primary_contact(obj->lc);
 	if (obj->reg_sendregister){
@@ -277,10 +275,10 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
 		sal_op_set_contact(obj->op,contact);
 		ms_free(contact);
 		sal_op_set_user_pointer(obj->op,obj);
-		if (!sal_register(obj->op,obj->reg_proxy,obj->reg_identity,obj->expires)) {
-			gstate_new_state(obj->lc,GSTATE_REG_PENDING, gctx, NULL);
+		if (sal_register(obj->op,obj->reg_proxy,obj->reg_identity,obj->expires)==0) {
+			linphone_proxy_config_set_state(obj,LinphoneRegistrationProgress,"Registration in progress");
 		} else {
-			gstate_new_state(obj->lc,GSTATE_REG_FAILED, gctx, NULL);
+			linphone_proxy_config_set_state(obj,LinphoneRegistrationFailed,"Registration failed");
 		}
 	}
 }
@@ -799,6 +797,12 @@ void * linphone_proxy_config_get_user_data(LinphoneProxyConfig *cr) {
 	return cr->user_data;
 }
 
+void linphone_proxy_config_set_state(LinphoneProxyConfig *cfg, LinphoneRegistrationState state, const char *message){
+	LinphoneCore *lc=cfg->lc;
+	if (lc && lc->vtable.registration_state_changed){
+		lc->vtable.registration_state_changed(lc,cfg,state,message);
+	}
+}
 
 
 

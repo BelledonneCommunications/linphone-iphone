@@ -1782,13 +1782,9 @@ int sal_address_get_port_int(const SalAddress *uri) {
 	}
 }
 
-/**
+/*
  * Send a re-Invite used to hold the current call
- *
- * @ingroup call_control
- * @param lc the LinphoneCore object
- * @param url the destination of the call (sip address).
-**/
+*/
 int sal_call_hold(SalOp *h, bool_t holdon)
 {
 	int err=0;

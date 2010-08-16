@@ -29,37 +29,37 @@
 const char *linphone_online_status_to_string(LinphoneOnlineStatus ss){
 	const char *str=NULL;
 	switch(ss){
-		case LINPHONE_STATUS_ONLINE:
+		case LinphoneStatusOnline:
 		str=_("Online");
 		break;
-		case LINPHONE_STATUS_BUSY:
+		case LinphoneStatusBusy:
 		str=_("Busy");
 		break;
-		case LINPHONE_STATUS_BERIGHTBACK:
+		case LinphoneStatusBeRightBack:
 		str=_("Be right back");
 		break;
-		case LINPHONE_STATUS_AWAY:
+		case LinphoneStatusAway:
 		str=_("Away");
 		break;
-		case LINPHONE_STATUS_ONTHEPHONE:
+		case LinphoneStatusOnThePhone:
 		str=_("On the phone");
 		break;
-		case LINPHONE_STATUS_OUTTOLUNCH:
+		case LinphoneStatusOutToLunch:
 		str=_("Out to lunch");
 		break;
-		case LINPHONE_STATUS_NOT_DISTURB:
+		case LinphoneStatusDoNotDisturb:
 		str=_("Do not disturb");
 		break;
-		case LINPHONE_STATUS_MOVED:
+		case LinphoneStatusMoved:
 		str=_("Moved");
 		break;
-		case LINPHONE_STATUS_ALT_SERVICE:
+		case LinphoneStatusAltService:
 		str=_("Using another messaging service");
 		break;
-		case LINPHONE_STATUS_OFFLINE:
+		case LinphoneStatusOffline:
 		str=_("Offline");
 		break;
-		case LINPHONE_STATUS_PENDING:
+		case LinphoneStatusPending:
 		str=_("Pending");
 		break;
 		default:
@@ -138,7 +138,7 @@ void __linphone_friend_do_subscribe(LinphoneFriend *fr){
 	}else from=linphone_core_get_primary_contact(fr->lc);
 	if (fr->outsub==NULL){
 		/* people for which we don't have yet an answer should appear as offline */
-		fr->status=LINPHONE_STATUS_OFFLINE;
+		fr->status=LinphoneStatusOffline;
 		/*
 		if (fr->lc->vtable.notify_recv)
 			fr->lc->vtable.notify_recv(fr->lc,(LinphoneFriend*)fr);
@@ -157,7 +157,7 @@ void __linphone_friend_do_subscribe(LinphoneFriend *fr){
 LinphoneFriend * linphone_friend_new(){
 	LinphoneFriend *obj=ms_new0(LinphoneFriend,1);
 	obj->pol=LinphoneSPAccept;
-	obj->status=LINPHONE_STATUS_OFFLINE;
+	obj->status=LinphoneStatusOffline;
 	obj->subscribe=TRUE;
 	return obj;	
 }
@@ -243,37 +243,37 @@ int linphone_friend_set_inc_subscribe_policy(LinphoneFriend *fr, LinphoneSubscri
 
 SalPresenceStatus linphone_online_status_to_sal(LinphoneOnlineStatus os){
 	switch(os){
-		case LINPHONE_STATUS_OFFLINE:
+		case LinphoneStatusOffline:
 			return SalPresenceOffline;
 		break;
-		case LINPHONE_STATUS_ONLINE:
+		case LinphoneStatusOnline:
 			return SalPresenceOnline;
 		break;
-		case LINPHONE_STATUS_BUSY:
+		case LinphoneStatusBusy:
 			return SalPresenceBusy;
 		break;
-		case LINPHONE_STATUS_BERIGHTBACK:
+		case LinphoneStatusBeRightBack:
 			return SalPresenceBerightback;
 		break;
-		case LINPHONE_STATUS_AWAY:
+		case LinphoneStatusAway:
 			return SalPresenceAway;
 		break;
-		case LINPHONE_STATUS_ONTHEPHONE:
+		case LinphoneStatusOnThePhone:
 			return SalPresenceOnthephone;
 		break;
-		case LINPHONE_STATUS_OUTTOLUNCH:
+		case LinphoneStatusOutToLunch:
 			return SalPresenceOuttolunch;
 		break;
-		case LINPHONE_STATUS_NOT_DISTURB:
+		case LinphoneStatusDoNotDisturb:
 			return SalPresenceDonotdisturb;
 		break;
-		case LINPHONE_STATUS_MOVED:
+		case LinphoneStatusMoved:
 			return SalPresenceMoved;
 		break;
-		case LINPHONE_STATUS_ALT_SERVICE:
+		case LinphoneStatusAltService:
 			return SalPresenceAltService;
 		break;
-		case LINPHONE_STATUS_PENDING:
+		case LinphoneStatusPending:
 			return SalPresenceOffline;
 		break;
 		default:
@@ -347,7 +347,7 @@ void linphone_friend_apply(LinphoneFriend *fr, LinphoneCore *lc){
 	if (fr->inc_subscribe_pending){
 		switch(fr->pol){
 			case LinphoneSPWait:
-				linphone_friend_notify(fr,LINPHONE_STATUS_PENDING);
+				linphone_friend_notify(fr,LinphoneStatusPending);
 				break;
 			case LinphoneSPAccept:
 				if (fr->lc!=NULL)
@@ -356,7 +356,7 @@ void linphone_friend_apply(LinphoneFriend *fr, LinphoneCore *lc){
 				  }
 				break;
 			case LinphoneSPDeny:
-				linphone_friend_notify(fr,LINPHONE_STATUS_OFFLINE);
+				linphone_friend_notify(fr,LinphoneStatusOffline);
 				break;
 		}
 		fr->inc_subscribe_pending=FALSE;
