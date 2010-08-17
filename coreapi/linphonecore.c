@@ -2145,6 +2145,7 @@ int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call)
 	call->resultdesc=sal_call_get_final_media_description(call->op);
 	if (call->resultdesc){
 		linphone_call_start_media_streams(call);
+		linphone_call_set_state(call,LinphoneCallStreamsRunning,"Connected (streams running)");
 		sal_media_description_ref(call->resultdesc);
 	}else call->media_pending=TRUE;
 	ms_message("call answered.");

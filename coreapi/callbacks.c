@@ -189,6 +189,11 @@ static void call_accepted(SalOp *op){
 		sal_media_description_ref(call->resultdesc);
 		call->media_pending=FALSE;
 	}
+	if (call->state==LinphoneCallOutgoingProgress ||
+	    call->state==LinphoneCallOutgoingRinging ||
+	    call->state==LinphoneCallOutgoingEarlyMedia){
+		linphone_call_set_state(call,LinphoneCallConnected,"Connected");
+	}
 	if (call->resultdesc && !sal_media_description_empty(call->resultdesc)){
 		if (sal_media_description_has_dir(call->resultdesc,SalStreamSendOnly)){
 			/*we initiated a pause*/
@@ -200,14 +205,14 @@ static void call_accepted(SalOp *op){
 				ms_free(msg);
 			}
 			linphone_call_set_state(call,LinphoneCallPaused,"Call paused");
-			linphone_call_start_media_streams (call);
 		}else{
-			linphone_connect_incoming(lc,call);
-		}		
+			linphone_call_set_state(call,LinphoneCallStreamsRunning,"Connected (streams running)");
+		}
+		linphone_call_start_media_streams (call);
 	}else{
 		/*send a bye*/
 		ms_error("Incompatible SDP offer received in 200Ok, need to abort the call");
-		linphone_core_terminate_call(lc,NULL);
+		linphone_core_abort_call(lc,call,"No codec intersection");
 	}
 }
 
