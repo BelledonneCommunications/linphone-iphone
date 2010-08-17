@@ -438,8 +438,8 @@ static void register_failure(SalOp *op, SalError error, SalReason reason, const 
 }
 
 static void vfu_request(SalOp *op){
-	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer (op);
 #ifdef VIDEO_ENABLED
+	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer (op);
 	if (call==NULL){
 		ms_warning("VFU request but no call !");
 		return ;

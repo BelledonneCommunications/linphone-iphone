@@ -395,7 +395,7 @@ void linphone_call_init_media_streams(LinphoneCall *call){
 #endif
 	}
 #else
-	lc->videostream=NULL;
+	call->videostream=NULL;
 #endif
 }
 
