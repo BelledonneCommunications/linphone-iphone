@@ -3018,9 +3018,9 @@ bool_t linphone_core_video_preview_enabled(const LinphoneCore *lc){
  * This function works at any time, including during calls.
 **/
 void linphone_core_enable_self_view(LinphoneCore *lc, bool_t val){
+#ifdef VIDEO_ENABLED
 	LinphoneCall *call=linphone_core_get_current_call (lc);
 	lc->video_conf.selfview=val;
-#ifdef VIDEO_ENABLED
 	if (call && call->videostream){
 		video_stream_enable_self_view(call->videostream,val);
 	}
