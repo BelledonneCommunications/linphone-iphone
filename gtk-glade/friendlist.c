@@ -39,18 +39,18 @@ typedef struct _status_picture_tab_t{
 } status_picture_tab_t;
 
 status_picture_tab_t status_picture_tab[]={
-	{	LINPHONE_STATUS_ONLINE,		"status-green.png"	},
-	{	LINPHONE_STATUS_BUSY,		"status-orange.png"		},
-	{	LINPHONE_STATUS_BERIGHTBACK,	"status-orange.png"		},
-	{	LINPHONE_STATUS_AWAY,		"status-orange.png"		},
-	{	LINPHONE_STATUS_ONTHEPHONE,	"status-orange.png"		},
-	{	LINPHONE_STATUS_OUTTOLUNCH,	"status-orange.png"		},
-	{	LINPHONE_STATUS_NOT_DISTURB,	"status-red.png"	},
-	{	LINPHONE_STATUS_MOVED,		"status-orange.png"	},
-	{	LINPHONE_STATUS_ALT_SERVICE,	"status-orange.png"	},
-	{	LINPHONE_STATUS_OFFLINE,	"status-offline.png"		},
-	{	LINPHONE_STATUS_PENDING,	"status-offline.png"		},
-	{	LINPHONE_STATUS_END,		NULL			},
+	{	LinphoneStatusOnline,		"status-green.png"	},
+	{	LinphoneStatusBusy,		"status-orange.png"		},
+	{	LinphoneStatusBeRightBack,	"status-orange.png"		},
+	{	LinphoneStatusAway,		"status-orange.png"		},
+	{	LinphoneStatusOnThePhone,	"status-orange.png"		},
+	{	LinphoneStatusOutToLunch,	"status-orange.png"		},
+	{	LinphoneStatusDoNotDisturb,	"status-red.png"	},
+	{	LinphoneStatusMoved,		"status-orange.png"	},
+	{	LinphoneStatusAltService,	"status-orange.png"	},
+	{	LinphoneStatusOffline,	"status-offline.png"		},
+	{	LinphoneStatusPending,	"status-offline.png"		},
+	{	LinphoneStatusEnd,		NULL			},
 };
 
 static GdkPixbuf *create_status_picture(LinphoneOnlineStatus ss){
@@ -132,7 +132,7 @@ static GtkWidget * create_presence_menu(){
 	GdkPixbuf *pbuf;
 	status_picture_tab_t *t;
 	for(t=status_picture_tab;t->img!=NULL;++t){
-		if (t->status==LINPHONE_STATUS_PENDING){
+		if (t->status==LinphoneStatusPending){
 			continue;
 		}
 		menu_item=gtk_image_menu_item_new_with_label(linphone_online_status_to_string(t->status));
@@ -317,7 +317,7 @@ void linphone_gtk_show_friends(void){
 				continue;
 			}
 		}
-		if (!online_only || (linphone_friend_get_status(lf)!=LINPHONE_STATUS_OFFLINE)){
+		if (!online_only || (linphone_friend_get_status(lf)!=LinphoneStatusOffline)){
 			BuddyInfo *bi;
 			if (name==NULL || name[0]=='\0') display=uri;
 			gtk_list_store_append(store,&iter);

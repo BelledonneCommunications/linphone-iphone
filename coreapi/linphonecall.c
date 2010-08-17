@@ -335,6 +335,16 @@ LinphoneCallLog *linphone_call_get_call_log(const LinphoneCall *call){
 	return call->log;
 }
 
+/**
+ * Returns the refer-to uri (if the call received was transfered).
+**/
+const char *linphone_call_get_refer_to(const LinphoneCall *call){
+	return call->refer_to;
+}
+
+LinphoneCallDir linphone_call_get_dir(const LinphoneCall *call){
+	return call->log->dir;
+}
 
 /**
  * @}
@@ -550,21 +560,35 @@ void linphone_call_start_media_streams(LinphoneCall *call){
 	{
 		const SalStreamDescription *stream=sal_media_description_find_stream(call->resultdesc,
 		    					SalProtoRtpAvp,SalAudio);
-		if (stream && stream->port!=0){
+		if (stream){
+			MSSndCard *playcard=lc->sound_conf.lsd_card ? 
+				lc->sound_conf.lsd_card : lc->sound_conf.play_sndcard;
+			MSSndCard *captcard=lc->sound_conf.capt_sndcard;
+			const char *playfile=lc->play_file;
+			const char *recfile=lc->rec_file;
 			call->audio_profile=make_profile(lc,call->resultdesc,stream,&used_pt);
-			if (!lc->use_files){
-				MSSndCard *playcard=lc->sound_conf.lsd_card ? 
-					lc->sound_conf.lsd_card : lc->sound_conf.play_sndcard;
-				MSSndCard *captcard=lc->sound_conf.capt_sndcard;
+			if (used_pt!=-1){
 				if (playcard==NULL) {
 					ms_warning("No card defined for playback !");
-					goto end;
 				}
 				if (captcard==NULL) {
 					ms_warning("No card defined for capture !");
-					goto end;
 				}
-				audio_stream_start_now(
+				ms_message("streamdir is %i",stream->dir);
+				/*Replace soundcard filters by inactive file players or recorders
+				 when placed in recvonly or sendonly mode*/
+				if (stream->port==0 || stream->dir==SalStreamRecvOnly){
+					captcard=NULL;
+					playfile=NULL;
+				}else if (stream->dir==SalStreamSendOnly){
+					playcard=NULL;
+					captcard=NULL;
+					recfile=NULL;
+				}
+				/*if playfile are supplied don't use soundcards*/
+				if (playfile) captcard=NULL;
+				if (recfile) playcard=NULL;
+				audio_stream_start_full(
 					call->audiostream,
 					call->audio_profile,
 					stream->addr[0]!='\0' ? stream->addr : call->resultdesc->addr,
@@ -572,54 +596,63 @@ void linphone_call_start_media_streams(LinphoneCall *call){
 					stream->port+1,
 					used_pt,
 					jitt_comp,
+					playfile,
+					recfile,
 					playcard,
 					captcard,
 					linphone_core_echo_cancellation_enabled(lc));
-			}else{
-				audio_stream_start_with_files(
-					call->audiostream,
-					call->audio_profile,
-					stream->addr[0]!='\0' ? stream->addr : call->resultdesc->addr,
-					stream->port,
-					stream->port+1,
-					used_pt,
-					100,
-					lc->play_file,
-					lc->rec_file);
-			}
-			post_configure_audio_streams(call);
-			audio_stream_set_rtcp_information(call->audiostream, cname, tool);
-		}else ms_warning("No audio stream defined ?");
+				post_configure_audio_streams(call);
+				audio_stream_set_rtcp_information(call->audiostream, cname, tool);
+			}else ms_warning("No audio stream accepted ?");
+		}
 	}
 #ifdef VIDEO_ENABLED
 	{
 		const SalStreamDescription *stream=sal_media_description_find_stream(call->resultdesc,
 		    					SalProtoRtpAvp,SalVideo);
+		used_pt=-1;
 		/* shutdown preview */
 		if (lc->previewstream!=NULL) {
 			video_preview_stop(lc->previewstream);
 			lc->previewstream=NULL;
 		}
-		if (stream && stream->port!=0 && (lc->video_conf.display || lc->video_conf.capture)) {
+		if (stream) {
 			const char *addr=stream->addr[0]!='\0' ? stream->addr : call->resultdesc->addr;
 			call->video_profile=make_profile(lc,call->resultdesc,stream,&used_pt);
-			video_stream_set_sent_video_size(call->videostream,linphone_core_get_preferred_video_size(lc));
-			video_stream_enable_self_view(call->videostream,lc->video_conf.selfview);
-			if (lc->video_conf.display && lc->video_conf.capture)
-				video_stream_start(call->videostream,
-				call->video_profile, addr, stream->port,
-				stream->port+1,
-				used_pt, jitt_comp, lc->video_conf.device);
-			else if (lc->video_conf.display)
-				video_stream_recv_only_start(call->videostream,
-				call->video_profile, addr, stream->port,
-				used_pt, jitt_comp);
-			else if (lc->video_conf.capture)
-				video_stream_send_only_start(call->videostream,
-				call->video_profile, addr, stream->port,
-				stream->port+1,
-				used_pt, jitt_comp, lc->video_conf.device);
-			video_stream_set_rtcp_information(call->videostream, cname,tool);
+			if (used_pt!=-1){
+				VideoStreamDir dir=VideoStreamSendRecv;
+				MSWebCam *cam=lc->video_conf.device;
+				bool_t is_inactive=FALSE;
+				
+				video_stream_set_sent_video_size(call->videostream,linphone_core_get_preferred_video_size(lc));
+				video_stream_enable_self_view(call->videostream,lc->video_conf.selfview);
+						
+				if (stream->dir==SalStreamSendOnly && lc->video_conf.capture ){
+					cam=ms_web_cam_manager_get_cam(ms_web_cam_manager_get(),"Static picture");
+					dir=VideoStreamSendOnly;
+				}else if (stream->dir==SalStreamRecvOnly && lc->video_conf.display ){
+					dir=VideoStreamRecvOnly;
+				}else if (stream->dir==SalStreamSendRecv){
+					if (lc->video_conf.display && lc->video_conf.capture)
+						dir=VideoStreamSendRecv;
+					else if (lc->video_conf.display)
+						dir=VideoStreamRecvOnly;
+					else
+						dir=VideoStreamSendOnly;
+				}else{
+					ms_warning("video stream is inactive.");
+					/*either inactive or incompatible with local capabilities*/
+					is_inactive=TRUE;
+				}
+				if (!is_inactive){
+					video_stream_set_direction (call->videostream, dir);
+					video_stream_start(call->videostream,
+						call->video_profile, addr, stream->port,
+						stream->port+1,
+						used_pt, jitt_comp, cam);
+					video_stream_set_rtcp_information(call->videostream, cname,tool);
+				}
+			}else ms_warning("No video stream accepted.");
 		}else{
 			ms_warning("No valid video stream defined.");
 		}
@@ -638,7 +671,6 @@ static void linphone_call_log_fill_stats(LinphoneCallLog *log, AudioStream *st){
 }
 
 void linphone_call_stop_media_streams(LinphoneCall *call){
-	LinphoneCore *lc=call->core;
 	if (call->audiostream!=NULL) {
 		linphone_call_log_fill_stats (call->log,call->audiostream);
 		audio_stream_stop(call->audiostream);
@@ -646,12 +678,7 @@ void linphone_call_stop_media_streams(LinphoneCall *call){
 	}
 #ifdef VIDEO_ENABLED
 	if (call->videostream!=NULL){
-		if (lc->video_conf.display && lc->video_conf.capture)
-			video_stream_stop(call->videostream);
-		else if (lc->video_conf.display)
-			video_stream_recv_only_stop(call->videostream);
-		else if (lc->video_conf.capture)
-			video_stream_send_only_stop(call->videostream);
+		video_stream_stop(call->videostream);
 		call->videostream=NULL;
 	}
 	
@@ -668,6 +695,4 @@ void linphone_call_stop_media_streams(LinphoneCall *call){
 	}
 }
 
-void linphone_call_set_media_streams_dir(LinphoneCall *call, SalStreamDir dir){
-}
 

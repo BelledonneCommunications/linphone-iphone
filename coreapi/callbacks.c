@@ -95,7 +95,7 @@ static void call_received(SalOp *h){
 	linphone_address_clean(from_parsed);
 	tmp=linphone_address_as_string(from_parsed);
 	linphone_address_destroy(from_parsed);
-	linphone_call_set_state(call,LinphoneCallIncomingProgress,"Incoming call");
+	linphone_call_set_state(call,LinphoneCallIncomingReceived,"Incoming call");
 	barmesg=ortp_strdup_printf("%s %s%s",tmp,_("is contacting you"),
 	    (sal_call_autoanswer_asked(h)) ?_(" and asked autoanswer."):_("."));
 	if (lc->vtable.show) lc->vtable.show(lc);
@@ -190,10 +190,16 @@ static void call_accepted(SalOp *op){
 		call->media_pending=FALSE;
 	}
 	if (call->resultdesc && !sal_media_description_empty(call->resultdesc)){
-		if (call->state==LinphoneCallPausing || sal_media_description_has_dir(call->resultdesc,SalStreamSendOnly)){
+		if (sal_media_description_has_dir(call->resultdesc,SalStreamSendOnly)){
 			/*we initiated a pause*/
+			if (lc->vtable.display_status){
+				char *tmp=linphone_call_get_remote_address_as_string (call);
+				char *msg=ms_strdup_printf(_("Call with %s is paused."),tmp);
+				lc->vtable.display_status(lc,msg);
+				ms_free(tmp);
+				ms_free(msg);
+			}
 			linphone_call_set_state(call,LinphoneCallPaused,"Call paused");
-			linphone_call_set_media_streams_dir (call,SalStreamSendOnly);
 			linphone_call_start_media_streams (call);
 		}else{
 			linphone_connect_incoming(lc,call);
@@ -252,21 +258,17 @@ static void call_updated(SalOp *op){
 			if(lc->vtable.display_status)
 				lc->vtable.display_status(lc,_("We have been resumed..."));
 			linphone_call_set_state (call,LinphoneCallStreamsRunning,"Connected (streams running)");
-			linphone_call_set_media_streams_dir (call,SalStreamSendRecv);
 		}
 		else if(call->state==LinphoneCallStreamsRunning &&
 		        sal_media_description_has_dir(call->resultdesc,SalStreamRecvOnly) && !strcmp(call->resultdesc->addr,"0.0.0.0")){
 			if(lc->vtable.display_status)
 				lc->vtable.display_status(lc,_("We are being paused..."));
 			linphone_call_set_state (call,LinphoneCallPaused,"Call paused");
-			linphone_call_set_media_streams_dir (call,SalStreamRecvOnly);
 		}
-		else
-		{
-			linphone_call_stop_media_streams (call);
-			linphone_call_init_media_streams (call);
-			linphone_connect_incoming(lc,call);
-		}
+		
+		linphone_call_stop_media_streams (call);
+		linphone_call_init_media_streams (call);
+		linphone_connect_incoming(lc,call);
 	}
 }
 
@@ -457,9 +459,17 @@ static void dtmf_received(SalOp *op, char dtmf){
 static void refer_received(Sal *sal, SalOp *op, const char *referto){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal);
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
-	if (lc->vtable.refer_received){
-		lc->vtable.refer_received(lc,call,referto);
-		if (op) sal_refer_accept(op);
+	if (call){
+		linphone_call_set_state(call,LinphoneCallRefered,"Refered");
+		if (lc->vtable.display_status){
+			char *msg=ms_strdup_printf(_("We are transferred to %s"),referto);
+			lc->vtable.display_status(lc,msg);
+			ms_free(msg);
+		}
+		sal_refer_accept(op);
+	}else if (lc->vtable.refer_received){
+		lc->vtable.refer_received(lc,referto);
+		sal_refer_accept(op);
 	}
 }
 

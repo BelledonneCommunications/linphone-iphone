@@ -85,6 +85,8 @@ static void initiate_outgoing(const SalStreamDescription *local_offer,
 		result->payloads=match_payloads(local_offer->payloads,remote_answer->payloads);
 	result->proto=local_offer->proto;
 	result->type=local_offer->type;
+	result->dir=local_offer->dir;
+
 	if (result->payloads && !only_telephone_event(result->payloads)){
 		strcpy(result->addr,remote_answer->addr);
 		result->port=remote_answer->port;
@@ -102,6 +104,13 @@ static void initiate_incoming(const SalStreamDescription *local_cap,
 	result->payloads=match_payloads(local_cap->payloads,remote_offer->payloads);
 	result->proto=local_cap->proto;
 	result->type=local_cap->type;
+	if (remote_offer->dir==SalStreamSendOnly)
+		result->dir=SalStreamRecvOnly;
+	else if (remote_offer->dir==SalStreamRecvOnly){
+		result->dir=SalStreamSendOnly;
+	}else if (remote_offer->dir==SalStreamInactive){
+		result->dir=SalStreamInactive;
+	}else result->dir=SalStreamSendRecv;
 	if (result->payloads && !only_telephone_event(result->payloads)){
 		strcpy(result->addr,local_cap->addr);
 		result->port=local_cap->port;

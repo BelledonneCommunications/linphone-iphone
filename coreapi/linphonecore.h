@@ -167,9 +167,11 @@ bool_t linphone_call_asked_to_autoanswer(LinphoneCall *call);
 const LinphoneAddress * linphone_core_get_current_call_remote_address(struct _LinphoneCore *lc);
 const LinphoneAddress * linphone_call_get_remote_address(const LinphoneCall *call);
 char *linphone_call_get_remote_address_as_string(const LinphoneCall *call);
+LinphoneCallDir linphone_call_get_dir(const LinphoneCall *call);
 void linphone_call_ref(LinphoneCall *call);
 void linphone_call_unref(LinphoneCall *call);
 LinphoneCallLog *linphone_call_get_call_log(const LinphoneCall *call);
+const char *linphone_call_get_refer_to(const LinphoneCall *call);
 void *linphone_call_get_user_pointer(LinphoneCall *call);
 void linphone_call_set_user_pointer(LinphoneCall *call, void *user_pointer);
 
@@ -364,7 +366,7 @@ void * linphone_chat_room_get_user_data(LinphoneChatRoom *cr);
 
 typedef enum _LinphoneCallState{
 	LinphoneCallIdle,
-	LinphoneCallIncomingProgress,
+	LinphoneCallIncomingReceived,
 	LinphoneCallOutgoingInit,
 	LinphoneCallOutgoingProgress,
 	LinphoneCallOutgoingRinging,
@@ -431,7 +433,7 @@ typedef void (*TextMessageReceived)(struct _LinphoneCore *lc, LinphoneChatRoom *
 /** Callback prototype */
 typedef void (*DtmfReceived)(struct _LinphoneCore* lc, LinphoneCall *call, int dtmf);
 /** Callback prototype */
-typedef void (*ReferReceived)(struct _LinphoneCore *lc, LinphoneCall *call, const char *refer_to);
+typedef void (*ReferReceived)(struct _LinphoneCore *lc, const char *refer_to);
 /** Callback prototype */
 typedef void (*BuddyInfoUpdated)(struct _LinphoneCore *lc, LinphoneFriend *lf);
 
@@ -449,7 +451,7 @@ typedef struct _LinphoneVTable{
 	CallLogUpdated call_log_updated; /**< Notifies that call log list has been updated */
 	TextMessageReceived text_received; /**< A text message has been received */
 	DtmfReceived dtmf_received; /**< A dtmf has been received received */
-	ReferReceived refer_received; /**< A refer was received */
+	ReferReceived refer_received; /**< An out of call refer was received */
 	BuddyInfoUpdated buddy_info_updated; /**< a LinphoneFriend's BuddyInfo has changed*/
 	NotifyReceivedCb notify_recv; /**< Other notifications*/
 	DisplayStatusCb display_status; /**< Callback that notifies various events with human readable text.*/
@@ -813,10 +815,12 @@ void linphone_core_set_audio_transports(LinphoneCore *lc, RtpTransport *rtp, Rtp
 
 int linphone_core_get_current_call_stats(LinphoneCore *lc, rtp_stats_t *local, rtp_stats_t *remote);
 
+const MSList *linphone_core_get_calls(LinphoneCore *lc);
+
 #ifdef __cplusplus
 }
 #endif
-MSList *linphone_core_get_calls(LinphoneCore *lc);
+
 
 
 #endif

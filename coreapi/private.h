@@ -75,6 +75,7 @@ struct _LinphoneCall
 	int video_port;
 	struct _AudioStream *audiostream;  /**/
 	struct _VideoStream *videostream;
+	char *refer_to;
 	bool_t media_pending;
 	bool_t audio_muted;
 };

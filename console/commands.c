@@ -407,19 +407,20 @@ lpc_cmd_call(LinphoneCore *lc, char *args)
 	}
 	if(!strcmp(args,"show"))
 	{
-		MSList *calls = linphone_core_get_calls(lc);
+		const MSList *calls = linphone_core_get_calls(lc);
 		if(calls)
 		{
-			MSList *p_calls = calls;
+			const MSList *p_calls = calls;
 			linphonec_out("<remote>\t\t\t\t<status>\r\n");
 			while(p_calls != NULL)			
 			{
+				char *tmp=linphone_call_get_remote_address_as_string(p_calls->data);
 				linphonec_out("%s\t\t\t%s\r\n",
-						linphone_call_get_remote_address_as_string(p_calls->data),
+						tmp,
 						(((LinphoneCall *)p_calls->data)==linphone_core_get_current_call(lc))?"yes":"no");
 				p_calls = p_calls->next;
+				ms_free(tmp);
 			}
-			ms_list_free(calls);
 		}
 		else
 		{
@@ -639,7 +640,7 @@ lpc_cmd_nat(LinphoneCore *lc, char *args)
 	}
 
 	nat = linphone_core_get_nat_address(lc);
-	use = linphone_core_get_firewall_policy(lc)==LINPHONE_POLICY_USE_NAT_ADDRESS;
+	use = linphone_core_get_firewall_policy(lc)==LinphonePolicyUseNatAddress;
 	linphonec_out("Nat address: %s%s\n", nat ? nat : "unspecified" , use ? "" : " (disabled - use 'firewall nat' to enable)");
 
 	return 1;
@@ -660,7 +661,7 @@ lpc_cmd_stun(LinphoneCore *lc, char *args)
 	}
 
 	stun = linphone_core_get_stun_server(lc);
-	use = linphone_core_get_firewall_policy(lc)==LINPHONE_POLICY_USE_STUN;
+	use = linphone_core_get_firewall_policy(lc)==LinphonePolicyUseStun;
 	linphonec_out("Stun server: %s%s\n", stun ? stun : "unspecified" , use? "" : " (disabled - use 'firewall stun' to enable)");
 
 	return 1;
@@ -677,7 +678,7 @@ lpc_cmd_firewall(LinphoneCore *lc, char *args)
 	{
 		if (strcmp(args,"none")==0)
 		{
-			linphone_core_set_firewall_policy(lc,LINPHONE_POLICY_NO_FIREWALL);
+			linphone_core_set_firewall_policy(lc,LinphonePolicyNoFirewall);
 		}
 		else if (strcmp(args,"stun")==0)
 		{
@@ -687,7 +688,7 @@ lpc_cmd_firewall(LinphoneCore *lc, char *args)
 				linphonec_out("No stun server address is defined, use 'stun <address>' first\n");
 				return 1;
 			}
-			linphone_core_set_firewall_policy(lc,LINPHONE_POLICY_USE_STUN);
+			linphone_core_set_firewall_policy(lc,LinphonePolicyUseStun);
 		}
 		else if (strcmp(args,"nat")==0)
 		{
@@ -697,19 +698,19 @@ lpc_cmd_firewall(LinphoneCore *lc, char *args)
 				linphonec_out("No nat address is defined, use 'nat <address>' first");
 				return 1;
 			}
-			linphone_core_set_firewall_policy(lc,LINPHONE_POLICY_USE_NAT_ADDRESS);
+			linphone_core_set_firewall_policy(lc,LinphonePolicyUseNatAddress);
 		}
 	}
 
 	switch(linphone_core_get_firewall_policy(lc))
 	{
-		case LINPHONE_POLICY_NO_FIREWALL:
+		case LinphonePolicyNoFirewall:
 			linphonec_out("No firewall\n");
 			break;
-		case LINPHONE_POLICY_USE_STUN:
+		case LinphonePolicyUseStun:
 			linphonec_out("Using stun server %s to discover firewall address\n", setting ? setting : linphone_core_get_stun_server(lc));
 			break;
-		case LINPHONE_POLICY_USE_NAT_ADDRESS:
+		case LinphonePolicyUseNatAddress:
 			linphonec_out("Using supplied nat address %s.\n", setting ? setting : linphone_core_get_nat_address(lc));
 			break;
 	}
@@ -1229,7 +1230,7 @@ static int lpc_cmd_resume(LinphoneCore *lc, char *args){
 	else
 	{
 		int returned = 0;
-		MSList *calls = linphone_core_get_calls(lc);
+		const MSList *calls = linphone_core_get_calls(lc);
 		if(ms_list_size(calls) == 1)
 		{
 			if(linphone_core_resume_call(lc,calls->data) < 0)
@@ -1241,7 +1242,6 @@ static int lpc_cmd_resume(LinphoneCore *lc, char *args){
 			{
 				returned = 1;
 			}
-			ms_list_free(calls);
 			return returned;
 		}
 	}
@@ -1775,31 +1775,31 @@ static int lpc_cmd_status(LinphoneCore *lc, char *args)
 	}
 	else if (strstr(args,"hook"))
 	{
-		gstate_t call_state=linphone_core_get_state(lc,GSTATE_GROUP_CALL);
-/*
-		if (!cfg || !linphone_proxy_config_is_registered(cfg)){
-			linphonec_out("unregistered\n");
-			return 1;
-		}
- */
+		LinphoneCall *call=linphone_core_get_current_call (lc);
+		LinphoneCallState call_state=LinphoneCallIdle;
+		if (call) call_state=linphone_call_get_state(call);
+
  		switch(call_state){
-			case GSTATE_CALL_OUT_INVITE:
+			case LinphoneCallOutgoingInit:
+			case LinphoneCallOutgoingProgress:
 				linphonec_out("hook=dialing\n");
 			break;
-			case GSTATE_CALL_IDLE:
+			case LinphoneCallIdle:
 				linphonec_out("hook=offhook\n");
 			break;
-			case GSTATE_CALL_OUT_CONNECTED:
-				linphonec_out("Call out, hook=%s duration=%i, muted=%s rtp-xmit-muted=%s\n", linphonec_get_callee(),
+			case LinphoneCallStreamsRunning:
+			case LinphoneCallConnected:
+				if (linphone_call_get_dir(call)==LinphoneCallOutgoing){
+					linphonec_out("Call out, hook=%s duration=%i, muted=%s rtp-xmit-muted=%s\n", linphonec_get_callee(),
 					      linphone_core_get_current_call_duration(lc),
-					      lc->audio_muted ? "yes" : "no",
+					      linphone_core_is_mic_muted (lc) ? "yes" : "no",
 					      linphone_core_is_rtp_muted(lc) ? "yes"  : "no");
- 			break;
-			case GSTATE_CALL_IN_CONNECTED:
-				linphonec_out("hook=answered duration=%i\n" ,
-					linphone_core_get_current_call_duration(lc));
+				}else{
+					linphonec_out("hook=answered duration=%i\n" ,
+						linphone_core_get_current_call_duration(lc));
+		 		}
 				break;
-			case GSTATE_CALL_IN_INVITE:
+			case LinphoneCallIncomingReceived:
 				linphonec_out("Incoming call from %s\n",linphonec_get_caller());
 				break;
 			default:
@@ -2048,22 +2048,21 @@ static int lpc_cmd_unmute_mic(LinphoneCore *lc, char *args){
 
 static int lpc_cmd_rtp_no_xmit_on_audio_mute(LinphoneCore *lc, char *args)
 {
-  bool_t rtp_xmit_off=FALSE;
-  char *status;
-  gstate_t call_state=linphone_core_get_state(lc,GSTATE_GROUP_CALL);
+	bool_t rtp_xmit_off=FALSE;
+	char *status;
 
-  if(args){
-    if(strstr(args,"1"))rtp_xmit_off=TRUE;
-    if(call_state == GSTATE_CALL_IDLE)
-      linphone_core_set_rtp_no_xmit_on_audio_mute(lc,rtp_xmit_off);
-    else 
-      linphonec_out("nortp-on-audio-mute: call in progress - cannot change state\n");
-  }
-  rtp_xmit_off=linphone_core_get_rtp_no_xmit_on_audio_mute(lc);
-  if(rtp_xmit_off)status="off";
-  else status="on";
-  linphonec_out("rtp transmit %s when audio muted\n",status);
-  return 1;
+	if(args){
+		if(strstr(args,"1"))rtp_xmit_off=TRUE;
+		if(linphone_core_get_current_call (lc)==NULL)
+			linphone_core_set_rtp_no_xmit_on_audio_mute(lc,rtp_xmit_off);
+		else 
+			linphonec_out("nortp-on-audio-mute: call in progress - cannot change state\n");
+	}
+	rtp_xmit_off=linphone_core_get_rtp_no_xmit_on_audio_mute(lc);
+	if (rtp_xmit_off) status="off";
+	else status="on";
+	linphonec_out("rtp transmit %s when audio muted\n",status);
+	return 1;
 }
 
 
