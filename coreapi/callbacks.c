@@ -26,18 +26,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
 static void linphone_connect_incoming(LinphoneCore *lc, LinphoneCall *call){
-	if (lc->vtable.show)
-		lc->vtable.show(lc);
-	if (lc->vtable.display_status)
-		lc->vtable.display_status(lc,_("Connected."));
-	linphone_call_set_state(call,LinphoneCallConnected,"Connected");
 	if (lc->ringstream!=NULL){
 		ring_stop(lc->ringstream);
 		lc->ringstream=NULL;
 	}
-
 	linphone_call_start_media_streams(call);
-	linphone_call_set_state (call,LinphoneCallStreamsRunning,"Connected (streams running)");
 }
 
 static void call_received(SalOp *h){
@@ -208,7 +201,7 @@ static void call_accepted(SalOp *op){
 		}else{
 			linphone_call_set_state(call,LinphoneCallStreamsRunning,"Connected (streams running)");
 		}
-		linphone_call_start_media_streams (call);
+		linphone_connect_incoming (lc,call);
 	}else{
 		/*send a bye*/
 		ms_error("Incompatible SDP offer received in 200Ok, need to abort the call");
@@ -236,6 +229,7 @@ static void call_ack(SalOp *op){
 			sal_media_description_ref(call->resultdesc);
 		if (call->resultdesc && !sal_media_description_empty(call->resultdesc)){
 			linphone_connect_incoming(lc,call);
+			linphone_call_set_state (call,LinphoneCallStreamsRunning,"Connected (streams running)");
 		}else{
 			/*send a bye*/
 			ms_error("Incompatible SDP response received in ACK, need to abort the call");
@@ -273,7 +267,7 @@ static void call_updated(SalOp *op){
 		
 		linphone_call_stop_media_streams (call);
 		linphone_call_init_media_streams (call);
-		linphone_connect_incoming(lc,call);
+		linphone_call_start_media_streams (call);
 	}
 }
 
