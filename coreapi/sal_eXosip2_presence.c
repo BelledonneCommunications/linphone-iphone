@@ -176,9 +176,9 @@ static void add_presence_body(osip_message_t *notify, SalPresenceStatus online_s
 #endif
 	char *contact_info;
 
-	osip_contact_t *ct=NULL;
-	osip_message_get_contact(notify,0,&ct);
-	osip_contact_to_str(ct,&contact_info);
+	osip_from_t *from=NULL;
+	from=osip_message_get_from(notify);
+	osip_uri_to_str(from->url,&contact_info);
 
 #ifdef SUPPORT_MSN
 
