@@ -56,13 +56,14 @@ extern char *lpc_strip_blanks(char *input);
 static int lpc_cmd_help(LinphoneCore *, char *);
 static int lpc_cmd_proxy(LinphoneCore *, char *);
 static int lpc_cmd_call(LinphoneCore *, char *);
+static int lpc_cmd_calls(LinphoneCore *, char *);
 static int lpc_cmd_chat(LinphoneCore *, char *);
 static int lpc_cmd_answer(LinphoneCore *, char *);
 static int lpc_cmd_autoanswer(LinphoneCore *, char *);
 static int lpc_cmd_terminate(LinphoneCore *, char *);
 static int lpc_cmd_call_logs(LinphoneCore *, char *);
 static int lpc_cmd_ipv6(LinphoneCore *, char *);
-static int lpc_cmd_refer(LinphoneCore *, char *);
+static int lpc_cmd_transfer(LinphoneCore *, char *);
 static int lpc_cmd_quit(LinphoneCore *, char *);
 static int lpc_cmd_nat(LinphoneCore *, char *);
 static int lpc_cmd_stun(LinphoneCore *, char *);
@@ -131,7 +132,10 @@ LPC_COMMAND commands[] = {
 	{ "help", lpc_cmd_help, "Print commands help", NULL },
 	{ "call", lpc_cmd_call, "Call a SIP uri",
 		"'call <sip-url>' \t: initiate a call to the specified destination.\n"
-		"'call show' \t: show all the current calls status.\n"
+		"'call show' \t: show all the current calls with their id and status.\n"
+		},
+	{ "calls", lpc_cmd_calls, "Show all the current calls with their id and status.\n",
+		NULL
 		},
 	{ "chat", lpc_cmd_chat, "Chat with a SIP uri",
 		"'chat <sip-url> \"message\"' "
@@ -139,12 +143,12 @@ LPC_COMMAND commands[] = {
 		},
 	{ "terminate", lpc_cmd_terminate, "Terminate a call",
 		"'terminate' : Terminate the current call\n"
-		"'terminate <sip:XXX@XXX.XXX.XXX.XXX>' : Terminate the call with remote address\n"
+		"'terminate <call id>' : Terminate the call with supplied id\n"
 		"'terminate <all>' : Terminate all the current calls\n"
 		},
 	{ "answer", lpc_cmd_answer, "Answer a call",
 		"'answer' : Answer the current incoming call\n"
-		"'answer <sip:XXX@XXX.XXX.XXX.XXX>' : Answer the call with remote address\n"
+		"'answer <call id>' : Answer the call with given id\n"
 	},
 	{ "autoanswer", lpc_cmd_autoanswer, "Show/set auto-answer mode",
 		"'autoanswer'       \t: show current autoanswer mode\n"
@@ -177,10 +181,10 @@ LPC_COMMAND commands[] = {
 		"'ipv6 enable' : enable the use of the ipv6 network.\n"
 		"'ipv6 disable' : do not use ipv6 network."
 	},
-	{ "refer", lpc_cmd_refer,
-		"Refer the current call to the specified destination.",
-		"'refer <sip-url>' or 'r <sip-url>' "
-		": refer the current call to the specified destination."
+	{ "transfer", lpc_cmd_transfer,
+		"Transfer a call to a specified destination.",
+		"'transfer <sip-uri>' : transfers the current active call to the destination sip-uri"
+		"'transfer <call id> <sip-uri>': transfers the call with 'id' to the destination sip-uri"
 	},
 	{ "nat", lpc_cmd_nat, "Set nat address",
 		"'nat'        : show nat settings.\n"
@@ -245,7 +249,7 @@ LPC_COMMAND commands[] = {
 		"'pause' : pause the current call\n"},
 	{ "resume", lpc_cmd_resume, "resume a call",
 		"'resume' : resume the unique call\n"
-		"'resume <sip:XXX@XXX.XXX.XXX.XXX>' : hold off the call with cid <cid>\n"},
+		"'resume <call id>' : hold off the call with given id\n"},
 	{ "mute", lpc_cmd_mute_mic, 
 	  "Mute microphone and suspend voice transmission."},
 	{ "unmute", lpc_cmd_unmute_mic, 
@@ -398,6 +402,35 @@ lpc_cmd_help(LinphoneCore *lc, char *arg)
 static char callee_name[256]={0};
 static char caller_name[256]={0};
 
+static const char *get_call_status(LinphoneCall *call){
+	switch(linphone_call_get_state(call)){
+		case LinphoneCallPaused:
+			if (linphone_call_get_refer_to (call)!=NULL){
+				return "Paused (transfered)";
+			}else{
+				return "Paused";
+			}
+		break;
+		case LinphoneCallIncomingReceived:
+			return "Pending";
+		break;
+		case LinphoneCallOutgoingInit:
+		case LinphoneCallOutgoingProgress:
+			return "Dialing out";
+		break;
+		case LinphoneCallOutgoingEarlyMedia:
+		case LinphoneCallOutgoingRinging:
+			return "Remote ringing";
+		break;
+		default:
+			if (linphone_call_has_transfer_pending(call)){
+				return "Running (transfer pending)";
+			}else
+				return "Running";
+	}
+	return "";
+}
+
 static int
 lpc_cmd_call(LinphoneCore *lc, char *args)
 {
@@ -405,36 +438,14 @@ lpc_cmd_call(LinphoneCore *lc, char *args)
 	{
 		return 0;
 	}
-	if(!strcmp(args,"show"))
 	{
-		const MSList *calls = linphone_core_get_calls(lc);
-		if(calls)
-		{
-			const MSList *p_calls = calls;
-			linphonec_out("<remote>\t\t\t\t<status>\r\n");
-			while(p_calls != NULL)			
-			{
-				char *tmp=linphone_call_get_remote_address_as_string(p_calls->data);
-				linphonec_out("%s\t\t\t%s\r\n",
-						tmp,
-						(((LinphoneCall *)p_calls->data)==linphone_core_get_current_call(lc))?"yes":"no");
-				p_calls = p_calls->next;
-				ms_free(tmp);
-			}
-		}
-		else
-		{
-			linphonec_out("No active call.\n");
-		}
-	}
-	else
-	{
+		LinphoneCall *call;
 		if ( linphone_core_in_call(lc) )
 		{
 			linphonec_out("Terminate or hold on the current call first.\n");
 			return 1;
 		}
-		if ( NULL == linphone_core_invite(lc, args) )
+		if ( NULL == (call=linphone_core_invite(lc, args)) )
 		{
 			linphonec_out("Error from linphone_core_invite.\n");
 		}
@@ -445,6 +456,32 @@ lpc_cmd_call(LinphoneCore *lc, char *args)
 	}
 	return 1;
 }
+
+static int 
+lpc_cmd_calls(LinphoneCore *lc, char *args){
+	const MSList *calls = linphone_core_get_calls(lc);
+	if(calls)
+	{
+		const MSList *p_calls = calls;
+		linphonec_out("ID\t\tDestination\t\t\t\tStatus\n---------------------------------------------------------------------\n");
+		while(p_calls != NULL)			
+		{
+			LinphoneCall *call=(LinphoneCall*)p_calls->data;
+			char *tmp=linphone_call_get_remote_address_as_string(call);
+			linphonec_out("%li\t%s\t\t\t%s\r\n",
+						  (long)linphone_call_get_user_pointer (call),
+					tmp,
+					get_call_status(call));
+			p_calls = p_calls->next;
+			ms_free(tmp);
+		}
+	}else
+	{
+		linphonec_out("No active call.\n");
+	}
+	return 1;
+}
+
 
 static int
 lpc_cmd_chat(LinphoneCore *lc, char *args)
@@ -488,12 +525,34 @@ void linphonec_set_caller(const char *caller){
 }
 
 static int
-lpc_cmd_refer(LinphoneCore *lc, char *args)
+lpc_cmd_transfer(LinphoneCore *lc, char *args)
 {
-	if (args)
-		linphone_core_refer(lc, linphone_core_get_current_call(lc), args);
-	else{
-		linphonec_out("refer needs an argument\n");
+	if (args){
+		LinphoneCall *call;
+		const char *refer_to=NULL;
+		char arg1[256]={0};
+		char arg2[266]={0};
+		int n=sscanf(args,"%s %s",arg1,arg2);
+		if (n==1 || isalpha(*arg1)){
+			call=linphone_core_get_current_call(lc);
+			if (call==NULL && linphone_core_get_calls_nb (lc)==1){
+				call=(LinphoneCall*)linphone_core_get_calls(lc)->data;
+			}
+			refer_to=args;
+			if (call==NULL){
+				linphonec_out("No active call, please specify a call id among the ones listed by 'calls' command.\n");
+				return 0;
+			}
+		}else{
+			long id=atoi(arg1);
+			refer_to=args+strlen(arg1)+1;
+			call=linphonec_get_call(id);
+			if (call==NULL) return 0;
+		}
+		linphone_core_transfer_call(lc, call, refer_to);
+	}else{
+		linphonec_out("Transfer command requires at least one argument\n");
+		return 0;
 	}
 	return 1;
 }
@@ -501,96 +560,64 @@ lpc_cmd_refer(LinphoneCore *lc, char *args)
 static int
 lpc_cmd_terminate(LinphoneCore *lc, char *args)
 {
-	char *arg1 = args;
-	char *arg2 = NULL;
-	char *ptr = args;
-
+	if (linphone_core_get_calls(lc)==NULL){
+		linphonec_out("No active calls");
+		return 1;
+	}
 	if (!args)
 	{
-		if(linphone_core_in_call(lc))
-		{
-			if ( -1 == linphone_core_terminate_call(lc, linphone_core_get_current_call(lc)) )
-			{
-				linphonec_out("Could not stop the active call.\n");
-			}
-		}
-		else
-		{
-			linphonec_out("No active call.\n");
+		if ( -1 == linphone_core_terminate_call(lc, NULL) ){
+			linphonec_out("Could not stop the active call.\n");
 		}
 		return 1;
 	}
 	
-	/* Isolate first and second arg */
-	while(*ptr && !isspace(*ptr)) ++ptr;
-	if ( *ptr )
-	{
-		*ptr='\0';
-		arg2=ptr+1;
-		while(*arg2 && isspace(*arg2)) ++arg2;
-	}
-	if (arg1 != 0)
-	{
-		if(strcmp(arg1,"all")==0)
-		{
-			linphonec_out("We are going to stop all the calls.\n");
-			return (linphone_core_terminate_all_calls(lc)==0)?1:0;
-		}
-		else
-		{
-			char the_remote_address[255];
-			int n = sscanf(arg1, "%s", the_remote_address);
-			if (n == 1)
-			{
-				if ( -1 == linphone_core_terminate_call(lc,linphone_core_get_call_by_remote_address(lc,the_remote_address)))
-				{
-					linphonec_out("Cannot stop the call with %s.\n",the_remote_address);
-				}
-				return 1;
+	if(strcmp(args,"all")==0){
+		linphonec_out("We are going to stop all the calls.\n");
+		linphone_core_terminate_all_calls(lc);
+		return 1;
+	}else{
+		/*the argument is a linphonec call id */
+		long id=atoi(args);
+		LinphoneCall *call=linphonec_get_call(id);
+		if (call){
+			if (linphone_core_terminate_call(lc,call)==-1){
+				linphonec_out("Could not stop the call with id %li",id);
 			}
-		}
+		}else return 0;
+		return 1;
 	}
 	return 0;
 	
 }
 
 static int
-lpc_cmd_answer(LinphoneCore *lc, char *args)
-{
-	char *arg1 = args;
-	char *arg2 = NULL;
-	char *ptr = args;
-
+lpc_cmd_answer(LinphoneCore *lc, char *args){
 	if (!args)
 	{
-		//if just one call is present answer the only one in passing NULL to the linphone_core_accept_call ...
-		if ( -1 == linphone_core_accept_call(lc, NULL) )
-		{
-			linphonec_out("No incoming call.\n");
+		int nb=ms_list_size(linphone_core_get_calls(lc));
+		if (nb==1){
+			//if just one call is present answer the only one in passing NULL to the linphone_core_accept_call ...
+			if ( -1 == linphone_core_accept_call(lc, NULL) )
+			{
+				linphonec_out("Fail to accept incoming call\n");
+			}
+		}else if (nb==0){
+			linphonec_out("There are no calls to answer.\n");
+		}else{
+			linphonec_out("Multiple calls in progress, please specify call id.\n");
+			return 0;
 		}
 		return 1;
-	}
-
-	// Isolate first and second arg
-	while(*ptr && !isspace(*ptr)) ++ptr;
-	if ( *ptr )
-	{
-		*ptr='\0';
-		arg2=ptr+1;
-		while(*arg2 && isspace(*arg2)) ++arg2;
-	}
-	if (arg1 != 0)
-	{
-		char the_remote_address[256];
-		int n = sscanf(arg1, "%s", the_remote_address);
-		if (n == 1)
-		{
-			if ( -1 == linphone_core_accept_call(lc, linphone_core_get_call_by_remote_address(lc,the_remote_address)) )
-			{
-				linphonec_out("Cannot answer the call from %s.\n",the_remote_address);
+	}else{
+		long id;
+		if (sscanf(args,"%li",&id)==1){
+			LinphoneCall *call=linphonec_get_call (id);
+			if (linphone_core_accept_call (lc,call)==-1){
+				linphonec_out("Fail to accept call %i\n",id);
 			}
-			return 1;
-		}
+		}else return 0;
+		return 1;
 	}
 	return 0;
 }
@@ -1209,40 +1236,42 @@ static int lpc_cmd_resume(LinphoneCore *lc, char *args){
 	if(linphone_core_in_call(lc))
 	{
 		linphonec_out("There is already a call in process pause or stop it first");
+		return 1;
 	}
 	if (args)
 	{
-		char the_remote_address[255];
-		int n = sscanf(args, "%s", the_remote_address);
-		if (n == 1)
-		{
-			if(linphone_core_resume_call(lc,linphone_core_get_call_by_remote_address(lc,the_remote_address)) < 0)
-			{
-				linphonec_out("There was a problem to resume the call check the remote address you gave %s\n",args);
-				return 0;
-			}
-			else
+		long id;
+		int n = sscanf(args, "%li", &id);
+		if (n == 1){
+			LinphoneCall *call=linphonec_get_call (id);
+			if (call){
+				if(linphone_core_resume_call(lc,call)==-1)
+				{
+					linphonec_out("There was a problem to resume the call check the remote address you gave %s\n",args);
+					return 1;
+				}
+			}else
 			{
 				return 1;
 			}
-		}
+		}else return 0;
 	}
 	else
 	{
-		int returned = 0;
 		const MSList *calls = linphone_core_get_calls(lc);
-		if(ms_list_size(calls) == 1)
+		int nbcalls=ms_list_size(calls);
+		if( nbcalls == 1)
 		{
 			if(linphone_core_resume_call(lc,calls->data) < 0)
 			{
-				linphonec_out("There was a problem to resume the unique call \n");
-				returned = 0;
+				linphonec_out("There was a problem to resume the unique call.\n");
 			}
-			else
-			{
-				returned = 1;
-			}
-			return returned;
+			return 1;
+		}else if (nbcalls==0){
+			linphonec_out("There is no calls at this time.\n");
+			return 1;
+		}else{
+			linphonec_out("There are %i calls at this time, please specify call id as given with 'calls' command.\n");
 		}
 	}
 	return 0;

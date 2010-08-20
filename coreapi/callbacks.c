@@ -95,8 +95,8 @@ static void call_received(SalOp *h){
 	if (lc->vtable.display_status) 
 	    lc->vtable.display_status(lc,barmesg);
 
-	/* play the ring */
-	if (lc->sound_conf.ring_sndcard!=NULL && !linphone_core_in_call(lc)){
+	/* play the ring if this is the only call*/
+	if (lc->sound_conf.ring_sndcard!=NULL && ms_list_size(lc->calls)==1){
 		if(lc->ringstream==NULL){
 			MSSndCard *ringcard=lc->sound_conf.lsd_card ?lc->sound_conf.lsd_card : lc->sound_conf.ring_sndcard;
 			ms_message("Starting local ring...");
@@ -106,6 +106,8 @@ static void call_received(SalOp *h){
 		{
 			ms_message("the local ring is already started");
 		}
+	}else{
+		/*TODO : play a tone within the context of the current call */
 	}
 	sal_call_notify_ringing(h);
 #if !(__IPHONE_OS_VERSION_MIN_REQUIRED >= 40000)
@@ -198,6 +200,16 @@ static void call_accepted(SalOp *op){
 				ms_free(msg);
 			}
 			linphone_call_set_state(call,LinphoneCallPaused,"Call paused");
+		}else if (sal_media_description_has_dir(call->resultdesc,SalStreamRecvOnly)){
+			/*we are put on hold when the call is initially accepted */
+			if (lc->vtable.display_status){
+				char *tmp=linphone_call_get_remote_address_as_string (call);
+				char *msg=ms_strdup_printf(_("Call answered by %s - on hold."),tmp);
+				lc->vtable.display_status(lc,msg);
+				ms_free(tmp);
+				ms_free(msg);
+			}
+			linphone_call_set_state(call,LinphoneCallPaused,"Call paused");
 		}else{
 			linphone_call_set_state(call,LinphoneCallStreamsRunning,"Connected (streams running)");
 		}
@@ -241,7 +253,7 @@ static void call_ack(SalOp *op){
 }
 
 /* this callback is called when an incoming re-INVITE modifies the session*/
-static void call_updated(SalOp *op){
+static void call_updating(SalOp *op){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
 	if (call->resultdesc)
@@ -254,6 +266,13 @@ static void call_updated(SalOp *op){
 	{
 		if (call->state==LinphoneCallPaused &&
 		    sal_media_description_has_dir(call->resultdesc,SalStreamSendRecv) && strcmp(call->resultdesc->addr,"0.0.0.0")!=0){
+			/*make sure we can be resumed */
+			if (lc->current_call!=NULL && lc->current_call!=call){
+				ms_warning("Attempt to be resumed but already in call with somebody else!");
+				/*we are actively running another call, reject with a busy*/
+				sal_call_decline (op,SalReasonBusy,NULL);
+				return;
+			}
 			if(lc->vtable.display_status)
 				lc->vtable.display_status(lc,_("We have been resumed..."));
 			linphone_call_set_state (call,LinphoneCallStreamsRunning,"Connected (streams running)");
@@ -263,12 +282,18 @@ static void call_updated(SalOp *op){
 			if(lc->vtable.display_status)
 				lc->vtable.display_status(lc,_("We are being paused..."));
 			linphone_call_set_state (call,LinphoneCallPaused,"Call paused");
+			if (lc->current_call!=call){
+				ms_error("Inconsitency detected: current call is %p but call %p is being paused !",lc->current_call,call);
+			}
+			lc->current_call=NULL;
 		}
-		
+		/*accept the modification (sends a 200Ok)*/
+		sal_call_accept(op);
 		linphone_call_stop_media_streams (call);
 		linphone_call_init_media_streams (call);
 		linphone_call_start_media_streams (call);
 	}
+	if (lc->current_call==NULL) linphone_core_start_pending_refered_calls (lc);
 }
 
 static void call_terminated(SalOp *op, const char *from){
@@ -459,12 +484,18 @@ static void refer_received(Sal *sal, SalOp *op, const char *referto){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal);
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
 	if (call){
+		if (call->refer_to!=NULL){
+			ms_free(call->refer_to);
+		}
+		call->refer_to=ms_strdup(referto);
+		call->refer_pending=TRUE;
 		linphone_call_set_state(call,LinphoneCallRefered,"Refered");
 		if (lc->vtable.display_status){
 			char *msg=ms_strdup_printf(_("We are transferred to %s"),referto);
 			lc->vtable.display_status(lc,msg);
 			ms_free(msg);
 		}
+		if (lc->current_call==NULL) linphone_core_start_pending_refered_calls (lc);
 		sal_refer_accept(op);
 	}else if (lc->vtable.refer_received){
 		lc->vtable.refer_received(lc,referto);
@@ -479,10 +510,10 @@ static void text_received(Sal *sal, const char *from, const char *msg){
 
 static void notify(SalOp *op, const char *from, const char *msg){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
-
+	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer (op);
 	ms_message("get a %s notify from %s",msg,from);
 	if(lc->vtable.notify_recv)
-		lc->vtable.notify_recv(lc,from,msg);
+		lc->vtable.notify_recv(lc,call,from,msg);
 }
 
 static void notify_presence(SalOp *op, SalSubscribeState ss, SalPresenceStatus status, const char *msg){
@@ -525,7 +556,7 @@ SalCallbacks linphone_sal_callbacks={
 	call_ringing,
 	call_accepted,
 	call_ack,
-	call_updated,
+	call_updating,
 	call_terminated,
 	call_failure,
 	auth_requested,

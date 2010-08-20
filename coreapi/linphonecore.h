@@ -172,6 +172,7 @@ void linphone_call_ref(LinphoneCall *call);
 void linphone_call_unref(LinphoneCall *call);
 LinphoneCallLog *linphone_call_get_call_log(const LinphoneCall *call);
 const char *linphone_call_get_refer_to(const LinphoneCall *call);
+bool_t linphone_call_has_transfer_pending(const LinphoneCall *call);
 void *linphone_call_get_user_pointer(LinphoneCall *call);
 void linphone_call_set_user_pointer(LinphoneCall *call, void *user_pointer);
 
@@ -419,7 +420,7 @@ typedef void (*DisplayUrlCb)(struct _LinphoneCore *lc, const char *message, cons
 /** Callback prototype */
 typedef void (*LinphoneCoreCbFunc)(struct _LinphoneCore *lc,void * user_data);
 /** Callback prototype */
-typedef void (*NotifyReceivedCb)(struct _LinphoneCore *lc, const char *from, const char *msg);
+typedef void (*NotifyReceivedCb)(struct _LinphoneCore *lc, LinphoneCall *call, const char *from, const char *event);
 /** Callback prototype */
 typedef void (*NotifyPresenceReceivedCb)(struct _LinphoneCore *lc, LinphoneFriend * fid);
 /** Callback prototype */
@@ -509,7 +510,7 @@ LinphoneCall * linphone_core_invite(LinphoneCore *lc, const char *url);
 
 LinphoneCall * linphone_core_invite_address(LinphoneCore *lc, const LinphoneAddress *addr);
 
-int linphone_core_refer(LinphoneCore *lc, LinphoneCall *call, const char *url);
+int linphone_core_transfer_call(LinphoneCore *lc, LinphoneCall *call, const char *refer_to);
 
 bool_t linphone_core_inc_invite_pending(LinphoneCore*lc);
 

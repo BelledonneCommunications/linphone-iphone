@@ -284,8 +284,8 @@ void sal_set_callbacks(Sal *ctx, const SalCallbacks *cbs){
 		ctx->callbacks.call_failure=(SalOnCallFailure)unimplemented_stub;
 	if (ctx->callbacks.call_terminated==NULL) 
 		ctx->callbacks.call_terminated=(SalOnCallTerminated)unimplemented_stub;
-	if (ctx->callbacks.call_updated==NULL) 
-		ctx->callbacks.call_updated=(SalOnCallUpdated)unimplemented_stub;
+	if (ctx->callbacks.call_updating==NULL) 
+		ctx->callbacks.call_updating=(SalOnCallUpdating)unimplemented_stub;
 	if (ctx->callbacks.auth_requested==NULL) 
 		ctx->callbacks.auth_requested=(SalOnAuthRequested)unimplemented_stub;
 	if (ctx->callbacks.auth_success==NULL) 
@@ -773,35 +773,27 @@ static void handle_reinvite(Sal *sal,  eXosip_event_t *ev){
 		sal_media_description_unref(op->base.remote_media);
 		op->base.remote_media=NULL;
 	}
-	eXosip_lock();
-	eXosip_call_build_answer(ev->tid,200,&msg);
-	eXosip_unlock();
-	if (msg==NULL) return;
-	if (op->base.root->session_expires!=0){
-		if (op->supports_session_timers) osip_message_set_supported(msg, "timer");
-	}
-	if (op->base.contact){
-		_osip_list_set_empty(&msg->contacts,(void (*)(void*))osip_contact_free);
-		osip_message_set_contact(msg,op->base.contact);
+	if (op->result){
+		sal_media_description_unref(op->result);
+		op->result=NULL;
 	}
 	if (sdp){
 		op->sdp_offering=FALSE;
 		op->base.remote_media=sal_media_description_new();
 		sdp_to_media_description(sdp,op->base.remote_media);
 		sdp_message_free(sdp);
-		sdp_process(op);
-		if (op->sdp_answer!=NULL){
-			set_sdp(msg,op->sdp_answer);
-			sdp_message_free(op->sdp_answer);
-			op->sdp_answer=NULL;
-		}
+		sal->callbacks.call_updating(op);
 	}else {
 		op->sdp_offering=TRUE;
-		set_sdp_from_desc(msg,op->base.local_media);
+		eXosip_lock();
+		eXosip_call_build_answer(ev->tid,200,&msg);
+		if (msg!=NULL){
+			set_sdp_from_desc(msg,op->base.local_media);
+			eXosip_call_send_answer(ev->tid,200,msg);
+		}
+		eXosip_unlock();
 	}
-	eXosip_lock();
-	eXosip_call_send_answer(ev->tid,200,msg);
-	eXosip_unlock();
+	
 }
 
 static void handle_ack(Sal *sal,  eXosip_event_t *ev){
@@ -820,7 +812,7 @@ static void handle_ack(Sal *sal,  eXosip_event_t *ev){
 		sdp_message_free(sdp);
 	}
 	if (op->reinvite){
-		sal->callbacks.call_updated(op);
+		if (sdp) sal->callbacks.call_updating(op);
 		op->reinvite=FALSE;
 	}else{
 		sal->callbacks.call_ack(op);

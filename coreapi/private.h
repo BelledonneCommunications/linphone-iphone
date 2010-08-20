@@ -76,6 +76,7 @@ struct _LinphoneCall
 	struct _AudioStream *audiostream;  /**/
 	struct _VideoStream *videostream;
 	char *refer_to;
+	bool_t refer_pending;
 	bool_t media_pending;
 	bool_t audio_muted;
 };
@@ -184,7 +185,7 @@ void linphone_core_update_progress(LinphoneCore *lc, const char *purpose, float 
 void linphone_core_stop_waiting(LinphoneCore *lc);
 
 int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, LinphoneProxyConfig *dest_proxy);
-
+void linphone_core_start_pending_refered_calls(LinphoneCore *lc);
 extern SalCallbacks linphone_sal_callbacks;
 
 

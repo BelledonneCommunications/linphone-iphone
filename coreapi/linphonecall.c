@@ -87,7 +87,7 @@ static int find_port_offset(LinphoneCore *lc){
 	MSList *elem;
 	int audio_port;
 	bool_t already_used=FALSE;
-	for(offset=0;offset<100;++offset){
+	for(offset=0;offset<100;offset+=2){
 		audio_port=linphone_core_get_audio_port (lc)+offset;
 		already_used=FALSE;
 		for(elem=lc->calls;elem!=NULL;elem=elem->next){
@@ -204,13 +204,17 @@ static void linphone_call_set_terminated(LinphoneCall *call){
 		
 	}
 	linphone_call_log_completed(call->log,call, status);
-	if (linphone_core_del_call(lc,call) != 0){
-		ms_error("Could not remove the call from the list !!!");
-	}
+	
 	if (call == lc->current_call){
 		ms_message("Resetting the current call");
 		lc->current_call=NULL;
+		linphone_core_start_pending_refered_calls(lc);
 	}
+
+	if (linphone_core_del_call(lc,call) != 0){
+		ms_error("Could not remove the call from the list !!!");
+	}
+	
 	if (ms_list_size(lc->calls)==0)
 		linphone_core_notify_all_friends(lc,lc->presence_mode);
 	
@@ -226,7 +230,11 @@ static void linphone_call_set_terminated(LinphoneCall *call){
 void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const char *message){
 	LinphoneCore *lc=call->core;
 	if (call->state!=cstate){
-		call->state=cstate;
+		if (cstate!=LinphoneCallRefered){
+			/*LinphoneCallRefered is rather an event, not a state.
+			 Indeed it does not change the state of the call (still paused or running)*/
+			call->state=cstate;
+		}
 		if (lc->vtable.call_state_changed)
 			lc->vtable.call_state_changed(lc,call,cstate,message);
 	}
@@ -250,6 +258,9 @@ static void linphone_call_destroy(LinphoneCall *obj)
 	}
 	if (obj->ping_op) {
 		sal_op_release(obj->ping_op);
+	}
+	if (obj->refer_to){
+		ms_free(obj->refer_to);
 	}
 	ms_free(obj);
 }
@@ -336,7 +347,7 @@ LinphoneCallLog *linphone_call_get_call_log(const LinphoneCall *call){
 }
 
 /**
- * Returns the refer-to uri (if the call received was transfered).
+ * Returns the refer-to uri (if the call was transfered).
 **/
 const char *linphone_call_get_refer_to(const LinphoneCall *call){
 	return call->refer_to;
@@ -344,6 +355,18 @@ const char *linphone_call_get_refer_to(const LinphoneCall *call){
 
 LinphoneCallDir linphone_call_get_dir(const LinphoneCall *call){
 	return call->log->dir;
+}
+
+/**
+ * Returns true if this calls has received a transfer that has not been
+ * executed yet.
+ * Pending transfers are executed when this call is being paused or closed,
+ * locally or by remote endpoint.
+ * If the call is already paused while receiving the transfer request, the 
+ * transfer immediately occurs.
+**/
+bool_t linphone_call_has_transfer_pending(const LinphoneCall *call){
+	return call->refer_pending;
 }
 
 /**

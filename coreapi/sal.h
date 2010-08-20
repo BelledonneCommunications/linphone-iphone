@@ -187,7 +187,7 @@ typedef void (*SalOnCallReceived)(SalOp *op);
 typedef void (*SalOnCallRinging)(SalOp *op);
 typedef void (*SalOnCallAccepted)(SalOp *op);
 typedef void (*SalOnCallAck)(SalOp *op);
-typedef void (*SalOnCallUpdated)(SalOp *op);
+typedef void (*SalOnCallUpdating)(SalOp *op);/*< Called when a reINVITE is received*/
 typedef void (*SalOnCallTerminated)(SalOp *op, const char *from);
 typedef void (*SalOnCallFailure)(SalOp *op, SalError error, SalReason reason, const char *details, int code);
 typedef void (*SalOnAuthRequested)(SalOp *op, const char *realm, const char *username);
@@ -210,7 +210,7 @@ typedef struct SalCallbacks{
 	SalOnCallRinging call_ringing;
 	SalOnCallAccepted call_accepted;
 	SalOnCallAck call_ack;
-	SalOnCallUpdated call_updated;
+	SalOnCallUpdating call_updating;
 	SalOnCallTerminated call_terminated;
 	SalOnCallFailure call_failure;
 	SalOnAuthRequested auth_requested;
@@ -273,6 +273,7 @@ void *sal_op_get_user_pointer(const SalOp *op);
 int sal_call_set_local_media_description(SalOp *h, SalMediaDescription *desc);
 int sal_call(SalOp *h, const char *from, const char *to);
 int sal_call_notify_ringing(SalOp *h);
+/*accept an incoming call or, during a call accept a reINVITE*/
 int sal_call_accept(SalOp*h);
 int sal_call_decline(SalOp *h, SalReason reason, const char *redirection /*optional*/);
 int sal_call_hold(SalOp *h, bool_t holdon);

@@ -118,7 +118,7 @@ static void linphonec_display_refer (LinphoneCore * lc, const char *refer_to);
 static void linphonec_display_something (LinphoneCore * lc, const char *something);
 static void linphonec_display_url (LinphoneCore * lc, const char *something, const char *url);
 static void linphonec_display_warning (LinphoneCore * lc, const char *something);
-static void linphonec_notify_received(LinphoneCore *lc,const char *from,const char *msg);
+static void linphonec_notify_received(LinphoneCore *lc, LinphoneCall *call, const char *from,const char *event);
 
 static void linphonec_notify_presence_received(LinphoneCore *lc,LinphoneFriend *fid);
 static void linphonec_new_unknown_subscriber(LinphoneCore *lc,
@@ -168,6 +168,24 @@ static bool_t pipe_reader_run=FALSE;
 static ortp_pipe_t server_sock;
 #endif /*_WIN32_WCE*/
 
+
+void linphonec_call_identify(LinphoneCall* call){
+	static long callid=1;
+	linphone_call_set_user_pointer (call,(void*)callid);
+	callid++;
+}
+
+LinphoneCall *linphonec_get_call(long id){
+	const MSList *elem=linphone_core_get_calls(linphonec);
+	for (;elem!=NULL;elem=elem->next){
+		LinphoneCall *call=(LinphoneCall*)elem->data;
+		if (linphone_call_get_user_pointer (call)==(void*)id){
+			return call;
+		}
+	}
+	linphonec_out("Sorry, no call with id %i exists at this time.",id);
+	return NULL;
+}
 
 /***************************************************************************
  *
@@ -252,13 +270,12 @@ linphonec_prompt_for_auth(LinphoneCore *lc, const char *realm, const char *usern
  * Linphone core callback
  */
 static void
-linphonec_notify_received(LinphoneCore *lc,const char *from,const char *msg)
+linphonec_notify_received(LinphoneCore *lc, LinphoneCall *call, const char *from,const char *event)
 {
-	printf("Notify type %s from %s\n", msg, from);
-	if(!strcmp(msg,"refer"))
+	if(!strcmp(event,"refer"))
 	{
-		printf("The distant SIP end point get the refer we can close the call\n");
-		linphonec_parse_command_line(linphonec, "terminate");
+		linphonec_out("The distand endpoint %s of call %li has been transfered, you can safely close the call.\n",
+		              from,(long)linphone_call_get_user_pointer (call));
 	}
 }
 
@@ -291,27 +308,34 @@ linphonec_new_unknown_subscriber(LinphoneCore *lc, LinphoneFriend *lf,
 
 static void linphonec_call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState st, const char *msg){
 	char *from=linphone_call_get_remote_address_as_string(call);
+	long id=(long)linphone_call_get_user_pointer (call);
 	switch(st){
 		case LinphoneCallEnd:
-			printf("Call with %s ended.\n", from);
+			linphonec_out("Call %i with %s ended.\n", id, from);
 		break;
 		case LinphoneCallResuming:
-			printf("Resuming call with %s.\n", from);
+			linphonec_out("Resuming call %i with %s.\n", id, from);
 		break;
 		case LinphoneCallStreamsRunning:
-			printf("Media streams established with %s.\n", from);
+			linphonec_out("Media streams established with %s for call %i.\n", from,id);
 		break;
 		case LinphoneCallPausing:
-			printf("Pausing call with %s.\n", from);
+			linphonec_out("Pausing call %i with %s.\n", id, from);
 		break;
 		case LinphoneCallPaused:
-			printf("Call with %s is now paused.\n", from);
+			linphonec_out("Call %i with %s is now paused.\n", id, from);
 		break;
 		case LinphoneCallIncomingReceived:
+			linphonec_call_identify(call);
+			id=(long)linphone_call_get_user_pointer (call);
 			linphonec_set_caller(from);
 			if ( auto_answer)  {
 				answer_call=TRUE;
 			}
+			linphonec_out("Receiving new incoming call from %s, assigned id %i", from,id);
+		break;
+		case LinphoneCallOutgoingInit:
+			linphonec_call_identify(call);
 		break;
 		default:
 		break;
@@ -682,11 +706,10 @@ void linphonec_main_loop_exit(void){
 void
 linphonec_finish(int exit_status)
 {
-	printf("Terminating...\n");
+	linphonec_out("Terminating...\n");
 
 	/* Terminate any pending call */
-   	linphonec_parse_command_line(linphonec, "terminate");
-   	linphonec_command_finished();
+	linphone_core_terminate_all_calls(linphonec);
 #ifdef HAVE_READLINE
 	linphonec_finish_readline();
 #endif

@@ -1671,25 +1671,22 @@ void linphone_core_iterate(LinphoneCore *lc){
 	call = linphone_core_get_current_call(lc);
 	if(call)
 	{
-		if (call->state==LinphoneCallConnected)
+		if (one_second_elapsed)
 		{
-			if (one_second_elapsed)
-			{
-				RtpSession *as=NULL,*vs=NULL;
-				lc->prevtime=curtime;
-				if (call->audiostream!=NULL)
-					as=call->audiostream->session;
-				if (call->videostream!=NULL)
-					vs=call->videostream->session;
-				display_bandwidth(as,vs);
-			}
-#ifdef VIDEO_ENABLED
+			RtpSession *as=NULL,*vs=NULL;
+			lc->prevtime=curtime;
+			if (call->audiostream!=NULL)
+				as=call->audiostream->session;
 			if (call->videostream!=NULL)
-				video_stream_iterate(call->videostream);
-#endif
-			if (call->audiostream!=NULL && disconnect_timeout>0)
-				disconnected=!audio_stream_alive(call->audiostream,disconnect_timeout);
+				vs=call->videostream->session;
+			display_bandwidth(as,vs);
 		}
+#ifdef VIDEO_ENABLED
+		if (call->videostream!=NULL)
+			video_stream_iterate(call->videostream);
+#endif
+		if (call->audiostream!=NULL && disconnect_timeout>0)
+			disconnected=!audio_stream_alive(call->audiostream,disconnect_timeout);
 	}
 	if (linphone_core_video_preview_enabled(lc)){
 		if (lc->previewstream==NULL && lc->calls==NULL)
@@ -1833,6 +1830,19 @@ bool_t linphone_core_is_in_communication_with(LinphoneCore *lc, const char *to)
 	if(tmp)
 		ms_free(tmp);
 	return returned;
+}
+
+void linphone_core_start_pending_refered_calls(LinphoneCore *lc){
+	MSList *elem;
+	for(elem=lc->calls;elem!=NULL;elem=elem->next){
+		LinphoneCall *call=(LinphoneCall*)elem->data;
+		if (call->refer_pending){
+			ms_message("Starting new call to refered address %s",call->refer_to);
+			call->refer_pending=FALSE;
+			linphone_core_invite(lc,call->refer_to);
+			break;
+		}
+	}
 }
 
 LinphoneProxyConfig * linphone_core_lookup_known_proxy(LinphoneCore *lc, const LinphoneAddress *uri){
@@ -2036,7 +2046,13 @@ LinphoneCall * linphone_core_invite_address(LinphoneCore *lc, const LinphoneAddr
 	return call;
 }
 
-int linphone_core_refer(LinphoneCore *lc, LinphoneCall *call, const char *url)
+/**
+ * Performs a simple call transfer to the specified destination.
+ *
+ * The remote endpoint is expected to issue a new call to the specified destination.
+ * The current call remains active and thus can be later paused or terminated.
+**/
+int linphone_core_transfer_call(LinphoneCore *lc, LinphoneCall *call, const char *url)
 {
 	char *real_url=NULL;
 	LinphoneAddress *real_parsed_url=linphone_core_interpret_url(lc,url);
@@ -2053,6 +2069,7 @@ int linphone_core_refer(LinphoneCore *lc, LinphoneCall *call, const char *url)
 	real_url=linphone_address_as_string (real_parsed_url);
 	sal_refer(call->op,real_url);
 	ms_free(real_url);
+	linphone_address_destroy(real_parsed_url);
 	return 0;
 }
 
@@ -2114,7 +2131,7 @@ int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call)
 		MSList *elem;
 		for(elem=lc->calls;elem!=NULL;elem=elem->next){
 			LinphoneCall *c=(LinphoneCall*)elem->data;
-			if (c!=call && (c->state!=LinphoneCallPaused || c->state!=LinphoneCallPausing)){
+			if (c!=call && (c->state!=LinphoneCallPaused)){
 				ms_warning("Cannot accept this call as another one is running, pause it before.");
 				return -1;
 			}
@@ -2181,8 +2198,10 @@ int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *the_call)
 	LinphoneCall *call;
 	if (the_call == NULL){
 		call = linphone_core_get_current_call(lc);
-		if(call == NULL){
-			ms_warning("No currently active call to terminate !");
+		if (ms_list_size(lc->calls)==1){
+			call=(LinphoneCall*)lc->calls->data;
+		}else{
+			ms_warning("No unique call to terminate !");
 			return -1;
 		}
 	}
@@ -2276,6 +2295,7 @@ int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *the_call)
 	if (lc->vtable.display_status)
 		lc->vtable.display_status(lc,_("Pausing the current call..."));
 	lc->current_call=NULL;
+	linphone_core_start_pending_refered_calls(lc);
 	return 0;
 }
 
