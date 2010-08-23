@@ -1245,15 +1245,11 @@ static int lpc_cmd_resume(LinphoneCore *lc, char *args){
 		if (n == 1){
 			LinphoneCall *call=linphonec_get_call (id);
 			if (call){
-				if(linphone_core_resume_call(lc,call)==-1)
-				{
+				if(linphone_core_resume_call(lc,call)==-1){
 					linphonec_out("There was a problem to resume the call check the remote address you gave %s\n",args);
-					return 1;
 				}
-			}else
-			{
-				return 1;
 			}
+			return 1;
 		}else return 0;
 	}
 	else

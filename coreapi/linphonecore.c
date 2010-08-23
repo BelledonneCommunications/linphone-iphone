@@ -2031,11 +2031,11 @@ LinphoneCall * linphone_core_invite_address(LinphoneCore *lc, const LinphoneAddr
 	}
 	/* this call becomes now the current one*/
 	lc->current_call=call;
+	linphone_call_set_state (call,LinphoneCallOutgoingInit,"Starting outgoing call");
 	if (dest_proxy!=NULL || lc->sip_conf.ping_with_options==FALSE){
 		err=linphone_core_start_invite(lc,call,dest_proxy);
 	}else{
 		/*defer the start of the call after the OPTIONS ping*/
-		linphone_call_set_state (call,LinphoneCallOutgoingInit,"Starting outgoing call");
 		call->ping_op=sal_op_new(lc->sal);
 		sal_ping(call->ping_op,from,real_url);
 		sal_op_set_user_pointer(call->ping_op,call);
