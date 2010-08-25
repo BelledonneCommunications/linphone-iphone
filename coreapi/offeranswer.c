@@ -29,7 +29,10 @@ static PayloadType * find_payload_type_best_match(const MSList *l, const Payload
 
 	for (elem=l;elem!=NULL;elem=elem->next){
 		pt=(PayloadType*)elem->data;
-		if (strcasecmp(pt->mime_type,refpt->mime_type)==0 && pt->clock_rate==refpt->clock_rate){
+		/* the compare between G729 and G729A is for some stupid uncompliant phone*/
+		if (strcasecmp(pt->mime_type,refpt->mime_type)==0  ||
+		    ((strcasecmp(pt->mime_type, "G729") == 0 && strcasecmp(refpt->mime_type, "G729A") == 0 ))
+			&& pt->clock_rate==refpt->clock_rate){
 			candidate=pt;
 			/*good candidate, check fmtp for H264 */
 			if (strcasecmp(pt->mime_type,"H264")==0){
