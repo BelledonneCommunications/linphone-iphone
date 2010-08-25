@@ -609,8 +609,10 @@ void linphone_call_start_media_streams(LinphoneCall *call){
 					recfile=NULL;
 				}
 				/*if playfile are supplied don't use soundcards*/
-				if (playfile) captcard=NULL;
-				if (recfile) playcard=NULL;
+				if (lc->use_files) {
+					captcard=NULL;
+					playcard=NULL;
+				}
 				audio_stream_start_full(
 					call->audiostream,
 					call->audio_profile,

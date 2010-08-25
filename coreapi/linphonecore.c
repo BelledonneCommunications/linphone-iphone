@@ -3238,10 +3238,19 @@ MSVideoSize linphone_core_get_preferred_video_size(LinphoneCore *lc){
 	return lc->video_conf.vsize;
 }
 
+/**
+ * Ask the core to stream audio from and to files, instead of using the soundcard.
+**/
 void linphone_core_use_files(LinphoneCore *lc, bool_t yesno){
 	lc->use_files=yesno;
 }
 
+/**
+ * Sets a wav file to be played when putting somebody on hold,
+ * or when files are used instead of soundcards (see linphone_core_use_files()).
+ * 
+ * The file must be a 16 bit linear wav file.
+**/
 void linphone_core_set_play_file(LinphoneCore *lc, const char *file){
 	LinphoneCall *call=linphone_core_get_current_call(lc);
 	if (lc->play_file!=NULL){
@@ -3255,6 +3264,13 @@ void linphone_core_set_play_file(LinphoneCore *lc, const char *file){
 	}
 }
 
+
+/**
+ * Sets a wav file where incoming stream is to be recorded,
+ * when files are used instead of soundcards (see linphone_core_use_files()).
+ * 
+ * The file must be a 16 bit linear wav file.
+**/
 void linphone_core_set_record_file(LinphoneCore *lc, const char *file){
 	LinphoneCall *call=linphone_core_get_current_call(lc);
 	if (lc->rec_file!=NULL){
