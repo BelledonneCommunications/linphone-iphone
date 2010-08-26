@@ -1422,7 +1422,7 @@ static bool_t registration_failure(Sal *sal, eXosip_event_t *ev){
 	if (ev->response){
 		status_code=osip_message_get_status_code(ev->response);
 		reason=osip_message_get_reason_phrase(ev->response);
-	}else return TRUE;
+	}
 	switch(status_code){
 		case 401:
 		case 407:
@@ -1436,7 +1436,7 @@ static bool_t registration_failure(Sal *sal, eXosip_event_t *ev){
 		default:
 			/* if contact is up to date, process the failure, otherwise resend a new register with
 				updated contact first, just in case the faillure is due to incorrect contact */
-			if (register_again_with_updated_contact(op,ev->request,ev->response))
+			if (ev->response && register_again_with_updated_contact(op,ev->request,ev->response))
 				return TRUE; /*we are retrying with an updated contact*/
 			if (status_code==403){
 				se=SalErrorFailure;
