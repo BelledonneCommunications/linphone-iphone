@@ -364,6 +364,7 @@ struct _LinphoneCore
 	MSList *friends;
 	MSList *auth_info;
 	struct _RingStream *ringstream;
+	time_t dmfs_playing_start_time;
 	LCCallbackObj preview_finished_cb;
 	struct _LinphoneCall *call;   /* the current call, in the future it will be a list of calls (conferencing)*/
 	MSList *queued_calls;	/* used by the autoreplier */

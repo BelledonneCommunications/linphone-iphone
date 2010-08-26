@@ -774,6 +774,9 @@ void linphone_core_set_play_file(LinphoneCore *lc, const char *file);
 void linphone_core_set_record_file(LinphoneCore *lc, const char *file);
 
 gstate_t linphone_core_get_state(const LinphoneCore *lc, gstate_group_t group);
+void linphone_core_play_dtmf(LinphoneCore *lc, char dtmf, int duration_ms);
+void linphone_core_stop_dtmf(LinphoneCore *lc);
+
 int linphone_core_get_current_call_duration(const LinphoneCore *lc);
 const LinphoneAddress *linphone_core_get_remote_uri(LinphoneCore *lc);
 

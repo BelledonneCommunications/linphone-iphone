@@ -100,6 +100,11 @@ static void call_received(SalOp *h){
 
 	/* play the ring */
 	if (lc->sound_conf.ring_sndcard!=NULL){
+		if (lc->ringstream && lc->dmfs_playing_start_time!=0){
+			ring_stop(lc->ringstream);
+			lc->ringstream=NULL;
+			lc->dmfs_playing_start_time=0;
+		}
 		ms_message("Starting local ring...");
 		lc->ringstream=ring_start(lc->sound_conf.local_ring,2000,lc->sound_conf.ring_sndcard);
 	}
@@ -122,6 +127,11 @@ static void call_ringing(SalOp *h){
 		lc->vtable.display_status(lc,_("Remote ringing."));
 	md=sal_call_get_final_media_description(h);
 	if (md==NULL){
+		if (lc->ringstream && lc->dmfs_playing_start_time!=0){
+			ring_stop(lc->ringstream);
+			lc->ringstream=NULL;
+			lc->dmfs_playing_start_time=0;
+		}
 		if (lc->ringstream!=NULL) return;	/*already ringing !*/
 		if (lc->sound_conf.play_sndcard!=NULL){
 			ms_message("Remote ringing...");
