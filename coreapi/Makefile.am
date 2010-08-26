@@ -6,7 +6,7 @@ EXTRA_DIST=linphonecore_jni.cc
 ## Process this file with automake to produce Makefile.in
 linphone_includedir=$(includedir)/linphone
 
-linphone_include_HEADERS=linphonecore.h ../config.h lpconfig.h sipsetup.h
+linphone_include_HEADERS=linphonecore.h linphonecore_utils.h ../config.h lpconfig.h sipsetup.h
 
 INCLUDES = \
 	-I$(top_srcdir)\
@@ -32,9 +32,10 @@ liblinphone_la_SOURCES=\
 	authentication.c \
 	lpconfig.c lpconfig.h \
 	chat.c \
-	general_state.c \
+	linphonecall.c \
 	sipsetup.c sipsetup.h \
-	siplogin.c
+	siplogin.c \
+	lsd.c linphonecore_utils.h
 
 
 liblinphone_la_LDFLAGS= -version-info $(LIBLINPHONE_SO_VERSION) -no-undefined
@@ -48,6 +49,11 @@ if BUILD_WIN32
 liblinphone_la_LIBADD+=$(top_builddir)/oRTP/src/libortp.la
 endif
 
+noinst_PROGRAMS=test_lsd
+
+test_lsd_SOURCES=test_lsd.c
+
+test_lsd_LDADD=liblinphone.la
 
 AM_CFLAGS=$(STRICT_OPTIONS)  -DIN_LINPHONE \
 	$(ORTP_CFLAGS) \

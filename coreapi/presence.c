@@ -92,36 +92,36 @@ void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeState ss, Sal
 	char *tmp;
 	LinphoneFriend *lf;
 	LinphoneAddress *friend=NULL;
-	LinphoneOnlineStatus estatus=LINPHONE_STATUS_OFFLINE;
+	LinphoneOnlineStatus estatus=LinphoneStatusOffline;
 	
 	switch(sal_status){
 		case SalPresenceOffline:
-			estatus=LINPHONE_STATUS_OFFLINE;
+			estatus=LinphoneStatusOffline;
 		break;
 		case SalPresenceOnline:
-			estatus=LINPHONE_STATUS_ONLINE;
+			estatus=LinphoneStatusOnline;
 		break;
 		case SalPresenceBusy:
-			estatus=LINPHONE_STATUS_BUSY;
+			estatus=LinphoneStatusBusy;
 		break;
 		case SalPresenceBerightback:
-			estatus=LINPHONE_STATUS_AWAY;
+			estatus=LinphoneStatusBeRightBack;
 		break;
 		case SalPresenceAway:
-			estatus=LINPHONE_STATUS_AWAY;
+			estatus=LinphoneStatusAway;
 		break;
 		case SalPresenceOnthephone:
-			estatus=LINPHONE_STATUS_ONTHEPHONE;
+			estatus=LinphoneStatusOnThePhone;
 		break;
 		case SalPresenceOuttolunch:
-			estatus=LINPHONE_STATUS_OUTTOLUNCH;
+			estatus=LinphoneStatusOutToLunch;
 		break;
 		case SalPresenceDonotdisturb:
-			estatus=LINPHONE_STATUS_BUSY;
+			estatus=LinphoneStatusDoNotDisturb;
 		break;
 		case SalPresenceMoved:
 		case SalPresenceAltService:
-			estatus=LINPHONE_STATUS_AWAY;
+			estatus=LinphoneStatusMoved;
 		break;
 	}
 	lf=linphone_find_friend_by_out_subscribe(lc->friends,op);
@@ -130,7 +130,8 @@ void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeState ss, Sal
 		tmp=linphone_address_as_string(friend);
 		lf->status=estatus;
 		lf->subscribe_active=TRUE;
-		lc->vtable.notify_presence_recv(lc,(LinphoneFriend*)lf);
+		if (lc->vtable.notify_presence_recv)
+			lc->vtable.notify_presence_recv(lc,(LinphoneFriend*)lf);
 		ms_free(tmp);
 	}else{
 		ms_message("But this person is not part of our friend list, so we don't care.");

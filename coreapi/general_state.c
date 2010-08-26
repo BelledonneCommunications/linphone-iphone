@@ -83,35 +83,36 @@ static void linphone_core_set_state(LinphoneCore *lc, gstate_group_t group, gsta
 
 void gstate_new_state(struct _LinphoneCore *lc,
                       gstate_t new_state,
+                      LinphoneGeneralStateContext gctx,
                       const char *message) {
-  LinphoneGeneralState states_arg;
-  
-  /* determine the affected group */
-  if (new_state < GSTATE_REG_NONE)
-    states_arg.group = GSTATE_GROUP_POWER;
-  else if (new_state < GSTATE_CALL_IDLE)
-    states_arg.group = GSTATE_GROUP_REG;
-  else
-    states_arg.group = GSTATE_GROUP_CALL;
-  
-  /* store the new state while remembering the old one */
-  states_arg.new_state = new_state;
-  states_arg.old_state = linphone_core_get_state(lc,states_arg.group);
-  linphone_core_set_state(lc, states_arg.group,new_state);
-  states_arg.message = message;
-  
-  /*printf("gstate_new_state: %s\t-> %s\t(%s)\n",
-         _gstates_text[states_arg.old_state],
-         _gstates_text[states_arg.new_state],
-         message);*/
+	LinphoneGeneralState states_arg;
 
-  /* call the virtual method */
-  if (lc->vtable.general_state)
-    lc->vtable.general_state(lc, &states_arg);
-  
-  /* immediately proceed to idle state */
-  if (new_state == GSTATE_CALL_END ||
-      new_state == GSTATE_CALL_ERROR)
-    gstate_new_state(lc, GSTATE_CALL_IDLE, NULL);
+	/* determine the affected group */
+	if (new_state < GSTATE_REG_NONE)
+		states_arg.group = GSTATE_GROUP_POWER;
+	else if (new_state < GSTATE_CALL_IDLE)
+		states_arg.group = GSTATE_GROUP_REG;
+	else
+		states_arg.group = GSTATE_GROUP_CALL;
+
+	/* store the new state while remembering the old one */
+	states_arg.new_state = new_state;
+	states_arg.old_state = linphone_core_get_state(lc,states_arg.group);
+	linphone_core_set_state(lc, states_arg.group,new_state);
+	states_arg.message = message;
+
+	/*printf("gstate_new_state: %s\t-> %s\t(%s)\n",
+	_gstates_text[states_arg.old_state],
+	_gstates_text[states_arg.new_state],
+	message);*/
+
+	/* call the virtual method */
+	if (lc->vtable.general_state)
+		lc->vtable.general_state(lc, &states_arg, gctx);
+
+	/* immediately proceed to idle state */
+	if (new_state == GSTATE_CALL_END ||
+		new_state == GSTATE_CALL_ERROR)
+	gstate_new_state(lc, GSTATE_CALL_IDLE, gctx, NULL);
 }
 

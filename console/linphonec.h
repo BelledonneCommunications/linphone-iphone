@@ -112,6 +112,8 @@ void linphonec_set_autoanswer(bool_t enabled);
 bool_t linphonec_get_autoanswer();
 void linphonec_command_finished(void);
 void linphonec_set_caller(const char *caller);
+LinphoneCall *linphonec_get_call(long id);
+void linphonec_call_identify(LinphoneCall* call);
 
 #endif /* def LINPHONEC_H */
 

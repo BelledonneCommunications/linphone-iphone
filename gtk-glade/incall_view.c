@@ -124,7 +124,7 @@ void linphone_gtk_in_call_view_set_in_call(){
 	GtkWidget *duration=linphone_gtk_get_widget(main_window,"in_call_duration");
 	GtkWidget *animation=linphone_gtk_get_widget(main_window,"in_call_animation");
 	GdkPixbufAnimation *pbuf=create_pixbuf_animation("incall_anim.gif");
-	const LinphoneAddress *uri=linphone_core_get_remote_uri(lc);
+	const LinphoneAddress *uri=linphone_core_get_current_call_remote_address(lc);
 	char *tmp=linphone_address_as_string(uri);
 	display_peer_name_in_label(callee,tmp);
 	ms_free(tmp);
@@ -137,7 +137,9 @@ void linphone_gtk_in_call_view_set_in_call(){
 		g_object_unref(G_OBJECT(pbuf));
 	}else gtk_image_set_from_stock(GTK_IMAGE(animation),GTK_STOCK_INFO,GTK_ICON_SIZE_DIALOG);
 	linphone_gtk_enable_mute_button(
-		GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(main_window,"incall_mute")),TRUE);
+					GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(main_window,"incall_mute")),TRUE);
+	linphone_gtk_enable_hold_button(
+		GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(main_window,"hold_call")),TRUE);
 }
 
 void linphone_gtk_in_call_view_update_duration(int duration){
@@ -175,6 +177,8 @@ void linphone_gtk_in_call_view_terminate(const char *error_msg){
 	}
 	linphone_gtk_enable_mute_button(
 		GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(main_window,"incall_mute")),FALSE);
+	linphone_gtk_enable_hold_button(
+		GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(main_window,"hold_call")),FALSE);
 	g_timeout_add_seconds(2,(GSourceFunc)in_call_view_terminated,NULL);
 }
 
@@ -202,7 +206,54 @@ void linphone_gtk_mute_toggled(GtkToggleButton *button){
 	linphone_gtk_draw_mute_button(button,active);
 }
 
-void linphone_gtk_enable_mute_button(GtkToggleButton *button, gboolean sensitive){
+void linphone_gtk_enable_mute_button(GtkToggleButton *button, gboolean sensitive)
+{
 	gtk_widget_set_sensitive(GTK_WIDGET(button),sensitive);
 	linphone_gtk_draw_mute_button(button,FALSE);
+}
+
+void linphone_gtk_draw_hold_button(GtkToggleButton *button, gboolean active){
+	if (active){
+		GtkWidget *image=create_pixmap("hold_off.png");
+		gtk_button_set_label(GTK_BUTTON(button),_("HoldOff"));
+		if (image!=NULL) {
+			gtk_button_set_image(GTK_BUTTON(button),image);
+			gtk_widget_show(image);
+		}
+	}else{
+		GtkWidget *image=create_pixmap("hold_on.png");
+		gtk_button_set_label(GTK_BUTTON(button),_("HoldOn"));
+		if (image!=NULL) {
+			gtk_button_set_image(GTK_BUTTON(button),image);
+			gtk_widget_show(image);
+		}
+	}
+}
+
+void linphone_gtk_hold_toggled(GtkToggleButton *button){
+	gboolean active=gtk_toggle_button_get_active(button);
+	
+	if(active)
+	{
+		LinphoneCall *call=linphone_core_get_current_call (linphone_gtk_get_core());
+		if (call==NULL) return;
+		linphone_core_pause_call(linphone_gtk_get_core(),call);
+	}
+	else
+	{
+		const MSList *calls=linphone_core_get_calls(linphone_gtk_get_core());
+		if (calls==NULL) return;
+		if (ms_list_size(calls)>1){
+			g_warning("Simultaneously calls not yet implemented in gtk ui.");
+			return;
+		}
+		/*we are supposed to have only one */
+		linphone_core_resume_call(linphone_gtk_get_core(),(LinphoneCall*)calls->data);
+	}
+	linphone_gtk_draw_hold_button(button,active);
+}
+
+void linphone_gtk_enable_hold_button(GtkToggleButton *button, gboolean sensitive){
+	gtk_widget_set_sensitive(GTK_WIDGET(button),sensitive);
+	linphone_gtk_draw_hold_button(button,FALSE);
 }

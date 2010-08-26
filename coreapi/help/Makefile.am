@@ -31,3 +31,22 @@ endif
 
 clean-local:
 	rm -rf doc
+
+noinst_PROGRAMS=helloworld
+
+helloworld_SOURCES=helloworld.c
+
+helloworld_LDADD=$(top_builddir)/coreapi/liblinphone.la
+
+INCLUDES=-I$(top_srcdir)/coreapi
+
+AM_CFLAGS=$(STRICT_OPTIONS)  -DIN_LINPHONE \
+	$(ORTP_CFLAGS) \
+	$(OSIP_CFLAGS) \
+	$(EXOSIP_CFLAGS) \
+	-DENABLE_TRACE 	\
+	-DLOG_DOMAIN=\"LinphoneCore\" \
+	 $(IPV6_CFLAGS) \
+	 -DORTP_INET6 \
+	 $(VIDEO_CFLAGS) 
+

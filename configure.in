@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([linphone],[3.3.2],[linphone-developers@nongnu.org])
+AC_INIT([linphone],[3.3.99.1],[linphone-developers@nongnu.org])
 AC_CANONICAL_SYSTEM
 
 dnl Source packaging numbers
@@ -15,7 +15,12 @@ LINPHONE_VERSION=$LINPHONE_MAJOR_VERSION.$LINPHONE_MINOR_VERSION.${LINPHONE_MICR
 if test "$LINPHONE_EXTRA_VERSION" != "" ;then
 	LINPHONE_VERSION=$LINPHONE_VERSION.${LINPHONE_EXTRA_VERSION}
 fi
-LIBLINPHONE_SO_VERSION=`expr $LINPHONE_MINOR_VERSION + $LINPHONE_MAJOR_VERSION`:$LINPHONE_MICRO_VERSION:$LINPHONE_MINOR_VERSION
+
+LIBLINPHONE_SO_CURRENT=4 dnl increment this number when you add/change/remove an interface
+LIBLINPHONE_SO_REVISION=0 dnl increment this number when you change source code, without changing interfaces; set to 0 when incrementing CURRENT
+LIBLINPHONE_SO_AGE=0 dnl increment this number when you add an interface, set to 0 if you remove an interface
+
+LIBLINPHONE_SO_VERSION=$LIBLINPHONE_SO_CURRENT:$LIBLINPHONE_SO_REVISION:$LIBLINPHONE_SO_AGE
 
 AC_SUBST(LIBLINPHONE_SO_VERSION, $LIBLINPHONE_SO_VERSION)
 AC_SUBST(LINPHONE_VERSION)

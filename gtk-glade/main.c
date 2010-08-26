@@ -42,8 +42,7 @@ static LinphoneCore *the_core=NULL;
 static GtkWidget *the_ui=NULL;
 
 static void linphone_gtk_show(LinphoneCore *lc);
-static void linphone_gtk_inv_recv(LinphoneCore *lc, const char *from);
-static void linphone_gtk_bye_recv(LinphoneCore *lc, const char *from);
+static void linphone_gtk_inv_recv(LinphoneCore *lc, LinphoneCall *call);
 static void linphone_gtk_notify_recv(LinphoneCore *lc, LinphoneFriend * fid);
 static void linphone_gtk_new_unknown_subscriber(LinphoneCore *lc, LinphoneFriend *lf, const char *url);
 static void linphone_gtk_auth_info_requested(LinphoneCore *lc, const char *realm, const char *username);
@@ -51,30 +50,11 @@ static void linphone_gtk_display_status(LinphoneCore *lc, const char *status);
 static void linphone_gtk_display_message(LinphoneCore *lc, const char *msg);
 static void linphone_gtk_display_warning(LinphoneCore *lc, const char *warning);
 static void linphone_gtk_display_url(LinphoneCore *lc, const char *msg, const char *url);
-static void linphone_gtk_display_question(LinphoneCore *lc, const char *question);
 static void linphone_gtk_call_log_updated(LinphoneCore *lc, LinphoneCallLog *cl);
-static void linphone_gtk_general_state(LinphoneCore *lc, LinphoneGeneralState *gstate);
-static void linphone_gtk_refer_received(LinphoneCore *lc, const char *refer_to);
+static void linphone_gtk_refer_received(LinphoneCore *lc, const char  *refer_to);
+static void linphone_gtk_call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cs, const char *msg);
 static gboolean linphone_gtk_auto_answer(GtkWidget *incall_window);
 
-static LinphoneCoreVTable vtable={
-	.show=linphone_gtk_show,
-	.inv_recv=linphone_gtk_inv_recv,
-	.bye_recv=linphone_gtk_bye_recv,
-	.notify_presence_recv=linphone_gtk_notify_recv,
-	.new_unknown_subscriber=linphone_gtk_new_unknown_subscriber,
-	.auth_info_requested=linphone_gtk_auth_info_requested,
-	.display_status=linphone_gtk_display_status,
-	.display_message=linphone_gtk_display_message,
-	.display_warning=linphone_gtk_display_warning,
-	.display_url=linphone_gtk_display_url,
-	.display_question=linphone_gtk_display_question,
-	.call_log_updated=linphone_gtk_call_log_updated,
-	.text_received=linphone_gtk_text_received,
-	.general_state=linphone_gtk_general_state,
-	.refer_received=linphone_gtk_refer_received,
-	.buddy_info_updated=linphone_gtk_buddy_info_updated
-};
 
 static gboolean verbose=0;
 static gboolean auto_answer = 0;
@@ -211,6 +191,22 @@ static const char *linphone_gtk_get_factory_config_file(){
 
 static void linphone_gtk_init_liblinphone(const char *config_file,
 		const char *factory_config_file) {
+	LinphoneCoreVTable vtable={0};
+
+	vtable.call_state_changed=linphone_gtk_call_state_changed;
+	vtable.show=linphone_gtk_show;
+	vtable.notify_presence_recv=linphone_gtk_notify_recv;
+	vtable.new_unknown_subscriber=linphone_gtk_new_unknown_subscriber;
+	vtable.auth_info_requested=linphone_gtk_auth_info_requested;
+	vtable.display_status=linphone_gtk_display_status;
+	vtable.display_message=linphone_gtk_display_message;
+	vtable.display_warning=linphone_gtk_display_warning;
+	vtable.display_url=linphone_gtk_display_url;
+	vtable.call_log_updated=linphone_gtk_call_log_updated;
+	vtable.text_received=linphone_gtk_text_received;
+	vtable.refer_received=linphone_gtk_refer_received;
+	vtable.buddy_info_updated=linphone_gtk_buddy_info_updated;
+
 	linphone_core_set_user_agent("Linphone", LINPHONE_VERSION);
 	the_core=linphone_core_new(&vtable,config_file,factory_config_file,NULL);
 	linphone_core_set_waiting_callback(the_core,linphone_gtk_wait,NULL);
@@ -390,7 +386,7 @@ static void set_video_window_decorations(GdkWindow *w){
 		gdk_window_set_keep_above(w, FALSE);
 	}else{
 		LinphoneAddress *uri =
-			linphone_address_clone(linphone_core_get_remote_uri(linphone_gtk_get_core()));
+			linphone_address_clone(linphone_core_get_current_call_remote_address(linphone_gtk_get_core()));
 		char *display_name;
 
 		linphone_address_clean(uri);
@@ -588,7 +584,7 @@ static void linphone_gtk_call_started(GtkWidget *mw){
 
 static gboolean linphone_gtk_start_call_do(GtkWidget *uri_bar){
 	const char *entered=gtk_entry_get_text(GTK_ENTRY(uri_bar));
-	if (linphone_core_invite(linphone_gtk_get_core(),entered)==0) {
+	if (linphone_core_invite(linphone_gtk_get_core(),entered)!=NULL) {
 		completion_add_text(GTK_ENTRY(uri_bar),entered);
 	}else{
 		linphone_gtk_call_terminated(NULL);
@@ -643,7 +639,9 @@ void linphone_gtk_uri_bar_activate(GtkWidget *w){
 
 
 void linphone_gtk_terminate_call(GtkWidget *button){
-	linphone_core_terminate_call(linphone_gtk_get_core(),NULL);
+	const MSList *elem=linphone_core_get_calls(linphone_gtk_get_core());
+	if (elem==NULL) return;
+	linphone_core_terminate_call(linphone_gtk_get_core(),(LinphoneCall*)elem->data);
 }
 
 void linphone_gtk_decline_call(GtkWidget *button){
@@ -704,10 +702,11 @@ static void linphone_gtk_show(LinphoneCore *lc){
 	linphone_gtk_show_main_window();
 }
 
-static void linphone_gtk_inv_recv(LinphoneCore *lc, const char *from){
+static void linphone_gtk_inv_recv(LinphoneCore *lc, LinphoneCall *call){
 	GtkWidget *w=linphone_gtk_create_window("incoming_call");
 	GtkWidget *label;
 	gchar *msg;
+	char *from=linphone_call_get_remote_address_as_string(call);
 
 	if (auto_answer){
 		g_timeout_add(2000,(GSourceFunc)linphone_gtk_auto_answer,w);
@@ -727,10 +726,7 @@ static void linphone_gtk_inv_recv(LinphoneCore *lc, const char *from){
 	g_object_set_data(G_OBJECT(linphone_gtk_get_main_window()),"incoming_call",w);
 	gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(linphone_gtk_get_main_window(),"uribar")),
 			from);
-}
-
-static void linphone_gtk_bye_recv(LinphoneCore *lc, const char *from){
-	
+	ms_free(from);
 }
 
 static void linphone_gtk_notify_recv(LinphoneCore *lc, LinphoneFriend * fid){
@@ -868,30 +864,28 @@ static void linphone_gtk_display_url(LinphoneCore *lc, const char *msg, const ch
 	linphone_gtk_display_something(GTK_MESSAGE_INFO,richtext);
 }
 
-static void linphone_gtk_display_question(LinphoneCore *lc, const char *question){
-	linphone_gtk_display_something(GTK_MESSAGE_QUESTION,question);
-}
-
 static void linphone_gtk_call_log_updated(LinphoneCore *lc, LinphoneCallLog *cl){
 	GtkWidget *w=(GtkWidget*)g_object_get_data(G_OBJECT(linphone_gtk_get_main_window()),"call_logs");
 	if (w) linphone_gtk_call_log_update(w);
 }
 
-static void linphone_gtk_general_state(LinphoneCore *lc, LinphoneGeneralState *gstate){
-	switch(gstate->new_state){
-		case GSTATE_CALL_OUT_CONNECTED:
-		case GSTATE_CALL_IN_CONNECTED:
+static void linphone_gtk_call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cs, const char *msg){
+	switch(cs){
+		case LinphoneCallConnected:
 			if (linphone_gtk_use_in_call_view())
 				linphone_gtk_in_call_view_set_in_call();
 			linphone_gtk_enable_mute_button(
 				GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(linphone_gtk_get_main_window(),"main_mute")),
 			TRUE);
 		break;
-		case GSTATE_CALL_ERROR:
-			linphone_gtk_call_terminated(gstate->message);
+		case LinphoneCallError:
+			linphone_gtk_call_terminated(msg);
 		break;
-		case GSTATE_CALL_END:
+		case LinphoneCallEnd:
 			linphone_gtk_call_terminated(NULL);
+		break;
+		case LinphoneCallIncomingReceived:
+			linphone_gtk_inv_recv (lc,call);
 		break;
 		default:
 		break;
@@ -1145,6 +1139,8 @@ static void linphone_gtk_init_main_window(){
 					"main_mute")),FALSE);
 	linphone_gtk_enable_mute_button(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(main_window,
 					"incall_mute")),FALSE);
+	linphone_gtk_enable_hold_button(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(main_window,
+					"hold_call")),FALSE);
 	if (!linphone_gtk_use_in_call_view()) {
 		gtk_widget_show(linphone_gtk_get_widget(main_window, "main_mute"));
 	}

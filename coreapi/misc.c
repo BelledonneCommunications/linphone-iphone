@@ -497,10 +497,10 @@ void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 			lc->vtable.display_status(lc,_("Stun lookup in progress..."));
 
 		/*create the two audio and video RTP sockets, and send STUN message to our stun server */
-		sock1=create_socket(linphone_core_get_audio_port(lc));
+		sock1=create_socket(call->audio_port);
 		if (sock1<0) return;
 		if (video_enabled){
-			sock2=create_socket(linphone_core_get_video_port(lc));
+			sock2=create_socket(call->video_port);
 			if (sock2<0) return ;
 		}
 		sendStunRequest(sock1,(struct sockaddr*)&ss,ss_len,11,TRUE);

@@ -97,14 +97,7 @@ void linphone_address_destroy(LinphoneAddress *u);
 
 struct _SipSetupContext;
 
-/**
- * The LinphoneCall object represents a call issued or received by the LinphoneCore
-**/
-struct _LinphoneCall;
-typedef struct _LinphoneCall LinphoneCall;
 
-bool_t linphone_call_asked_to_autoanswer(struct _LinphoneCall *call);
-	
 /**
  * Enum representing the direction of a call.
  * @ingroup call_logs
@@ -161,6 +154,28 @@ const rtp_stats_t *linphone_call_log_get_local_stats(const LinphoneCallLog *cl);
 const rtp_stats_t *linphone_call_log_get_remote_stats(const LinphoneCallLog *cl);
 char * linphone_call_log_to_str(LinphoneCallLog *cl);
 
+
+/**
+ * The LinphoneCall object represents a call issued or received by the LinphoneCore
+**/
+struct _LinphoneCall;
+typedef struct _LinphoneCall LinphoneCall;
+
+
+enum _LinphoneCallState linphone_call_get_state(const LinphoneCall *call);
+bool_t linphone_call_asked_to_autoanswer(LinphoneCall *call);
+const LinphoneAddress * linphone_core_get_current_call_remote_address(struct _LinphoneCore *lc);
+const LinphoneAddress * linphone_call_get_remote_address(const LinphoneCall *call);
+char *linphone_call_get_remote_address_as_string(const LinphoneCall *call);
+LinphoneCallDir linphone_call_get_dir(const LinphoneCall *call);
+void linphone_call_ref(LinphoneCall *call);
+void linphone_call_unref(LinphoneCall *call);
+LinphoneCallLog *linphone_call_get_call_log(const LinphoneCall *call);
+const char *linphone_call_get_refer_to(const LinphoneCall *call);
+bool_t linphone_call_has_transfer_pending(const LinphoneCall *call);
+void *linphone_call_get_user_pointer(LinphoneCall *call);
+void linphone_call_set_user_pointer(LinphoneCall *call, void *user_pointer);
+
 typedef enum{
 	LinphoneSPWait,
 	LinphoneSPDeny,
@@ -168,18 +183,18 @@ typedef enum{
 }LinphoneSubscribePolicy;
 
 typedef enum _LinphoneOnlineStatus{
-	LINPHONE_STATUS_OFFLINE,
-	LINPHONE_STATUS_ONLINE,
-	LINPHONE_STATUS_BUSY,
-	LINPHONE_STATUS_BERIGHTBACK,
-	LINPHONE_STATUS_AWAY,
-	LINPHONE_STATUS_ONTHEPHONE,
-	LINPHONE_STATUS_OUTTOLUNCH,
-	LINPHONE_STATUS_NOT_DISTURB,
-	LINPHONE_STATUS_MOVED,
-	LINPHONE_STATUS_ALT_SERVICE,
-	LINPHONE_STATUS_PENDING,
-	LINPHONE_STATUS_END
+	LinphoneStatusOffline,
+	LinphoneStatusOnline,
+	LinphoneStatusBusy,
+	LinphoneStatusBeRightBack,
+	LinphoneStatusAway,
+	LinphoneStatusOnThePhone,
+	LinphoneStatusOutToLunch,
+	LinphoneStatusDoNotDisturb,
+	LinphoneStatusMoved,
+	LinphoneStatusAltService,
+	LinphoneStatusPending,
+	LinphoneStatusEnd
 }LinphoneOnlineStatus;
 
 const char *linphone_online_status_to_string(LinphoneOnlineStatus ss);
@@ -350,60 +365,52 @@ void linphone_chat_room_destroy(LinphoneChatRoom *cr);
 void linphone_chat_room_set_user_data(LinphoneChatRoom *cr, void * ud);
 void * linphone_chat_room_get_user_data(LinphoneChatRoom *cr);
 
-/* describes the different groups of states */
-typedef enum _gstate_group {
-  GSTATE_GROUP_POWER,
-  GSTATE_GROUP_REG,
-  GSTATE_GROUP_CALL
-} gstate_group_t;
+typedef enum _LinphoneCallState{
+	LinphoneCallIdle,
+	LinphoneCallIncomingReceived,
+	LinphoneCallOutgoingInit,
+	LinphoneCallOutgoingProgress,
+	LinphoneCallOutgoingRinging,
+	LinphoneCallOutgoingEarlyMedia,
+	LinphoneCallConnected,
+	LinphoneCallStreamsRunning,
+	LinphoneCallPausing,
+	LinphoneCallPaused,
+	LinphoneCallResuming,
+	LinphoneCallRefered,
+	LinphoneCallError,
+	LinphoneCallEnd,
+} LinphoneCallState;
 
-typedef enum _gstate {
-  /* states for GSTATE_GROUP_POWER */
-  GSTATE_POWER_OFF = 0,        /* initial state */
-  GSTATE_POWER_STARTUP,
-  GSTATE_POWER_ON,
-  GSTATE_POWER_SHUTDOWN,
-  /* states for GSTATE_GROUP_REG */
-  GSTATE_REG_NONE = 10,       /* initial state */
-  GSTATE_REG_OK,
-  GSTATE_REG_FAILED,
-  GSTATE_REG_PENDING, /* a registration request is ongoing*/
-  /* states for GSTATE_GROUP_CALL */
-  GSTATE_CALL_IDLE = 20,      /* initial state */
-  GSTATE_CALL_OUT_INVITE,
-  GSTATE_CALL_OUT_CONNECTED,
-  GSTATE_CALL_IN_INVITE,
-  GSTATE_CALL_IN_CONNECTED,
-  GSTATE_CALL_END,
-  GSTATE_CALL_ERROR,
-  GSTATE_INVALID,
-  GSTATE_CALL_OUT_RINGING /*remote ringing*/
-} gstate_t;
+typedef enum _LinphoneGlobalState{
+	LinphoneGlobalOff,
+	LinphoneGlobalStartup,
+	LinphoneGlobalOn,
+	LinphoneGlobalShutdown
+}LinphoneGlobalState;
 
-struct _LinphoneGeneralState {
-  gstate_t old_state;
-  gstate_t new_state;
-  gstate_group_t group;
-  const char *message;
-};
-typedef struct _LinphoneGeneralState LinphoneGeneralState;
-
-/* private: set a new state */
-void gstate_new_state(struct _LinphoneCore *lc, gstate_t new_state, const char *message);
-/*private*/
-void gstate_initialize(struct _LinphoneCore *lc) ;
+typedef enum _LinphoneRegistrationState{
+	LinphoneRegistrationNone,
+	LinphoneRegistrationProgress,
+	LinphoneRegistrationOk,
+	LinphoneRegistrationCleared,
+	LinphoneRegistrationFailed
+}LinphoneRegistrationState;
 
 /**
  * @addtogroup initializing
  * @{
 **/
 
+
+/**Call state notification callback prototype*/
+typedef void (*LinphoneGlobalStateCb)(struct _LinphoneCore *lc, LinphoneGlobalState gstate, const char *message);
+/**Call state notification callback prototype*/
+typedef void (*LinphoneCallStateCb)(struct _LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *message);
+/**Registration state notification callback prototype*/
+typedef void (*LinphoneRegistrationStateCb)(struct _LinphoneCore *lc, LinphoneProxyConfig *cfg, LinphoneCallState cstate, const char *message);
 /** Callback prototype */
 typedef void (*ShowInterfaceCb)(struct _LinphoneCore *lc);
-/** Callback prototype */
-typedef void (*InviteReceivedCb)(struct _LinphoneCore *lc, const char *from);
-/** Callback prototype */
-typedef void (*ByeReceivedCb)(struct _LinphoneCore *lc, const char *from);
 /** Callback prototype */
 typedef void (*DisplayStatusCb)(struct _LinphoneCore *lc, const char *message);
 /** Callback prototype */
@@ -411,11 +418,9 @@ typedef void (*DisplayMessageCb)(struct _LinphoneCore *lc, const char *message);
 /** Callback prototype */
 typedef void (*DisplayUrlCb)(struct _LinphoneCore *lc, const char *message, const char *url);
 /** Callback prototype */
-typedef void (*DisplayQuestionCb)(struct _LinphoneCore *lc, const char *message);
-/** Callback prototype */
 typedef void (*LinphoneCoreCbFunc)(struct _LinphoneCore *lc,void * user_data);
 /** Callback prototype */
-typedef void (*NotifyReceivedCb)(struct _LinphoneCore *lc, const char *from, const char *msg);
+typedef void (*NotifyReceivedCb)(struct _LinphoneCore *lc, LinphoneCall *call, const char *from, const char *event);
 /** Callback prototype */
 typedef void (*NotifyPresenceReceivedCb)(struct _LinphoneCore *lc, LinphoneFriend * fid);
 /** Callback prototype */
@@ -427,9 +432,7 @@ typedef void (*CallLogUpdated)(struct _LinphoneCore *lc, struct _LinphoneCallLog
 /** Callback prototype */
 typedef void (*TextMessageReceived)(struct _LinphoneCore *lc, LinphoneChatRoom *room, const char *from, const char *message);
 /** Callback prototype */
-typedef void (*GeneralStateChange)(struct _LinphoneCore *lc, LinphoneGeneralState *gstate);
-/** Callback prototype */
-typedef void (*DtmfReceived)(struct _LinphoneCore* lc, int dtmf);
+typedef void (*DtmfReceived)(struct _LinphoneCore* lc, LinphoneCall *call, int dtmf);
 /** Callback prototype */
 typedef void (*ReferReceived)(struct _LinphoneCore *lc, const char *refer_to);
 /** Callback prototype */
@@ -437,28 +440,26 @@ typedef void (*BuddyInfoUpdated)(struct _LinphoneCore *lc, LinphoneFriend *lf);
 
 /**
  * This structure holds all callbacks that the application should implement.
- * 
+ *  None is mandatory.
 **/
-typedef struct _LinphoneVTable
-{
-	ShowInterfaceCb show; /**< Notifies the application that it should show up*/
-	InviteReceivedCb inv_recv; /**< Notifies incoming calls */
-	ByeReceivedCb bye_recv; /**< Notify calls terminated by far end*/
+typedef struct _LinphoneVTable{
+	LinphoneGlobalStateCb global_state_changed; /**<Notifies globlal state changes*/
+	LinphoneRegistrationStateCb registration_state_changed;/**<Notifies registration state changes*/
+	LinphoneCallStateCb call_state_changed;/**<Notifies call state changes*/
 	NotifyPresenceReceivedCb notify_presence_recv; /**< Notify received presence events*/
 	NewUnknownSubscriberCb new_unknown_subscriber; /**< Notify about unknown subscriber */
 	AuthInfoRequested auth_info_requested; /**< Ask the application some authentication information */
+	CallLogUpdated call_log_updated; /**< Notifies that call log list has been updated */
+	TextMessageReceived text_received; /**< A text message has been received */
+	DtmfReceived dtmf_received; /**< A dtmf has been received received */
+	ReferReceived refer_received; /**< An out of call refer was received */
+	BuddyInfoUpdated buddy_info_updated; /**< a LinphoneFriend's BuddyInfo has changed*/
+	NotifyReceivedCb notify_recv; /**< Other notifications*/
 	DisplayStatusCb display_status; /**< Callback that notifies various events with human readable text.*/
 	DisplayMessageCb display_message;/**< Callback to display a message to the user */
 	DisplayMessageCb display_warning;/** Callback to display a warning to the user */
 	DisplayUrlCb display_url;
-	DisplayQuestionCb display_question;
-	CallLogUpdated call_log_updated; /**< Notifies that call log list has been updated */
-	TextMessageReceived text_received; /**< A text message has been received */
-	GeneralStateChange general_state; /**< State notification callback */
-	DtmfReceived dtmf_received; /**< A dtmf has been received received */
-	ReferReceived refer_received; /**< A refer was received */
-	BuddyInfoUpdated buddy_info_updated; /**< a LinphoneFriend's BuddyInfo has changed*/
-	NotifyReceivedCb notify_recv; /**< Other notifications*/
+	ShowInterfaceCb show; /**< Notifies the application that it should show up*/
 } LinphoneCoreVTable;
 
 /**
@@ -474,9 +475,9 @@ typedef struct _LCCallbackObj
 
 
 typedef enum _LinphoneFirewallPolicy{
-	LINPHONE_POLICY_NO_FIREWALL,
-	LINPHONE_POLICY_USE_NAT_ADDRESS,
-	LINPHONE_POLICY_USE_STUN
+	LinphonePolicyNoFirewall,
+	LinphonePolicyUseNatAddress,
+	LinphonePolicyUseStun
 } LinphoneFirewallPolicy;
 
 typedef enum _LinphoneWaitingState{
@@ -505,21 +506,29 @@ void linphone_core_iterate(LinphoneCore *lc);
 
 LinphoneAddress * linphone_core_interpret_url(LinphoneCore *lc, const char *url);
 
-int linphone_core_invite(LinphoneCore *lc, const char *url);
+LinphoneCall * linphone_core_invite(LinphoneCore *lc, const char *url);
 
-int linphone_core_invite_address(LinphoneCore *lc, const LinphoneAddress *addr);
+LinphoneCall * linphone_core_invite_address(LinphoneCore *lc, const LinphoneAddress *addr);
 
-int linphone_core_refer(LinphoneCore *lc, const char *url);
+int linphone_core_transfer_call(LinphoneCore *lc, LinphoneCall *call, const char *refer_to);
 
 bool_t linphone_core_inc_invite_pending(LinphoneCore*lc);
 
 bool_t linphone_core_in_call(const LinphoneCore *lc);
 
-LinphoneCall *linphone_core_get_current_call(LinphoneCore *lc);
+LinphoneCall *linphone_core_get_current_call(const LinphoneCore *lc);
 
-int linphone_core_accept_call(LinphoneCore *lc, const char *url);
+int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call);
 
-int linphone_core_terminate_call(LinphoneCore *lc, const char *url);
+int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *call);
+
+int linphone_core_terminate_all_calls(LinphoneCore *lc);
+
+int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call);
+
+int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *call);
+
+LinphoneCall *linphone_core_get_call_by_remote_address(LinphoneCore *lc, const char *remote_address);
 
 void linphone_core_send_dtmf(LinphoneCore *lc,char dtmf);
 
@@ -553,13 +562,6 @@ void linphone_core_set_download_ptime(LinphoneCore *lc, int ptime);
  */
 int  linphone_core_get_download_ptime(LinphoneCore *lc);
 
-#ifdef VINCENT_MAURY_RSVP
-/* QoS functions */
-int linphone_core_set_rpc_mode(LinphoneCore *lc, int on); /* on = 1 (RPC_ENABLE = 1) */
-int linphone_core_set_rsvp_mode(LinphoneCore *lc, int on); /* on = 1 (RSVP_ENABLE = 1) */
-int linphone_core_change_qos(LinphoneCore *lc, int answer); /* answer = 1 for yes, 0 for no */
-#endif
-
 /* returns a MSList of PayloadType */
 const MSList *linphone_core_get_audio_codecs(const LinphoneCore *lc);
 
@@ -573,12 +575,6 @@ bool_t linphone_core_payload_type_enabled(LinphoneCore *lc, PayloadType *pt);
 
 int linphone_core_enable_payload_type(LinphoneCore *lc, PayloadType *pt, bool_t enable);
 
-/*
- * get payload type  from mime type an clock rate
- * @ingroup media_parameters
- * iterates both audio an video
- * return NULL if not found
- */
 PayloadType* linphone_core_find_payload_type(LinphoneCore* lc, const char* type, int rate) ;
 
 const char *linphone_core_get_payload_type_description(LinphoneCore *lc, PayloadType *pt);
@@ -773,12 +769,12 @@ void linphone_core_use_files(LinphoneCore *lc, bool_t yesno);
 void linphone_core_set_play_file(LinphoneCore *lc, const char *file);
 void linphone_core_set_record_file(LinphoneCore *lc, const char *file);
 
-gstate_t linphone_core_get_state(const LinphoneCore *lc, gstate_group_t group);
 void linphone_core_play_dtmf(LinphoneCore *lc, char dtmf, int duration_ms);
 void linphone_core_stop_dtmf(LinphoneCore *lc);
 
+
 int linphone_core_get_current_call_duration(const LinphoneCore *lc);
-const LinphoneAddress *linphone_core_get_remote_uri(LinphoneCore *lc);
+const LinphoneAddress *linphone_core_get_remote_address(LinphoneCore *lc);
 
 int linphone_core_get_mtu(const LinphoneCore *lc);
 void linphone_core_set_mtu(LinphoneCore *lc, int mtu);
@@ -824,8 +820,12 @@ void linphone_core_set_audio_transports(LinphoneCore *lc, RtpTransport *rtp, Rtp
 
 int linphone_core_get_current_call_stats(LinphoneCore *lc, rtp_stats_t *local, rtp_stats_t *remote);
 
+const MSList *linphone_core_get_calls(LinphoneCore *lc);
+
 #ifdef __cplusplus
 }
 #endif
+
+
 
 #endif

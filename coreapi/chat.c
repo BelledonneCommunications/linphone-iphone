@@ -55,7 +55,7 @@ void linphone_chat_room_send_message(LinphoneChatRoom *cr, const char *msg){
 	if(linphone_core_is_in_communication_with(cr->lc,cr->peer))
 	{
 		ms_message("send SIP message into the call\n");
-		op = cr->lc->call->op;
+		op = (linphone_core_get_current_call(cr->lc))->op;
 	}
 	else
 	{

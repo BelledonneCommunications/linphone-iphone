@@ -284,8 +284,8 @@ void sal_set_callbacks(Sal *ctx, const SalCallbacks *cbs){
 		ctx->callbacks.call_failure=(SalOnCallFailure)unimplemented_stub;
 	if (ctx->callbacks.call_terminated==NULL) 
 		ctx->callbacks.call_terminated=(SalOnCallTerminated)unimplemented_stub;
-	if (ctx->callbacks.call_updated==NULL) 
-		ctx->callbacks.call_updated=(SalOnCallUpdated)unimplemented_stub;
+	if (ctx->callbacks.call_updating==NULL) 
+		ctx->callbacks.call_updating=(SalOnCallUpdating)unimplemented_stub;
 	if (ctx->callbacks.auth_requested==NULL) 
 		ctx->callbacks.auth_requested=(SalOnAuthRequested)unimplemented_stub;
 	if (ctx->callbacks.auth_success==NULL) 
@@ -654,9 +654,13 @@ int sal_call_send_dtmf(SalOp *h, char dtmf){
 }
 
 int sal_call_terminate(SalOp *h){
+	int err;
 	eXosip_lock();
-	eXosip_call_terminate(h->cid,h->did);
+	err=eXosip_call_terminate(h->cid,h->did);
 	eXosip_unlock();
+	if (err!=0){
+		ms_warning("Exosip could not terminate the call: cid=%i did=%i", h->cid,h->did);
+	}
 	sal_remove_call(h->base.root,h);
 	h->cid=-1;
 	return 0;
@@ -769,35 +773,27 @@ static void handle_reinvite(Sal *sal,  eXosip_event_t *ev){
 		sal_media_description_unref(op->base.remote_media);
 		op->base.remote_media=NULL;
 	}
-	eXosip_lock();
-	eXosip_call_build_answer(ev->tid,200,&msg);
-	eXosip_unlock();
-	if (msg==NULL) return;
-	if (op->base.root->session_expires!=0){
-		if (op->supports_session_timers) osip_message_set_supported(msg, "timer");
-	}
-	if (op->base.contact){
-		_osip_list_set_empty(&msg->contacts,(void (*)(void*))osip_contact_free);
-		osip_message_set_contact(msg,op->base.contact);
+	if (op->result){
+		sal_media_description_unref(op->result);
+		op->result=NULL;
 	}
 	if (sdp){
 		op->sdp_offering=FALSE;
 		op->base.remote_media=sal_media_description_new();
 		sdp_to_media_description(sdp,op->base.remote_media);
 		sdp_message_free(sdp);
-		sdp_process(op);
-		if (op->sdp_answer!=NULL){
-			set_sdp(msg,op->sdp_answer);
-			sdp_message_free(op->sdp_answer);
-			op->sdp_answer=NULL;
-		}
+		sal->callbacks.call_updating(op);
 	}else {
 		op->sdp_offering=TRUE;
-		set_sdp_from_desc(msg,op->base.local_media);
+		eXosip_lock();
+		eXosip_call_build_answer(ev->tid,200,&msg);
+		if (msg!=NULL){
+			set_sdp_from_desc(msg,op->base.local_media);
+			eXosip_call_send_answer(ev->tid,200,msg);
+		}
+		eXosip_unlock();
 	}
-	eXosip_lock();
-	eXosip_call_send_answer(ev->tid,200,msg);
-	eXosip_unlock();
+	
 }
 
 static void handle_ack(Sal *sal,  eXosip_event_t *ev){
@@ -816,7 +812,7 @@ static void handle_ack(Sal *sal,  eXosip_event_t *ev){
 		sdp_message_free(sdp);
 	}
 	if (op->reinvite){
-		sal->callbacks.call_updated(op);
+		if (sdp) sal->callbacks.call_updating(op);
 		op->reinvite=FALSE;
 	}else{
 		sal->callbacks.call_ack(op);
@@ -855,7 +851,8 @@ static int call_proceeding(Sal *sal, eXosip_event_t *ev){
 		eXosip_unlock();
 		return -1;
 	}
-	op->did=ev->did;
+	if (ev->did>0)
+		op->did=ev->did;
 	op->tid=ev->tid;
 	
 	/* update contact if received and rport are set by the server
@@ -938,7 +935,7 @@ static void call_released(Sal *sal, eXosip_event_t *ev){
 	}
 	op->cid=-1;
 	if (op->did==-1) 
-		sal->callbacks.call_failure(op,SalErrorNoResponse,SalReasonUnknown,NULL);
+		sal->callbacks.call_failure(op,SalErrorNoResponse,SalReasonUnknown,NULL, 487);
 }
 
 static int get_auth_data_from_response(osip_message_t *resp, const char **realm, const char **username){
@@ -1100,7 +1097,7 @@ static bool_t call_failure(Sal *sal, eXosip_event_t *ev){
 				sr=SalReasonUnknown;
 			}else error=SalErrorNoResponse;
 	}
-	sal->callbacks.call_failure(op,error,sr,reason);
+	sal->callbacks.call_failure(op,error,sr,reason,code);
 	if (computedReason != NULL){
 		ms_free(computedReason);
 	}
@@ -1775,5 +1772,34 @@ int sal_address_get_port_int(const SalAddress *uri) {
 	} else {
 		return 5060;
 	}
+}
+
+/*
+ * Send a re-Invite used to hold the current call
+*/
+int sal_call_hold(SalOp *h, bool_t holdon)
+{
+	int err=0;
+
+	osip_message_t *reinvite=NULL;
+	if(eXosip_call_build_request(h->did,"INVITE",&reinvite) != OSIP_SUCCESS || reinvite==NULL)
+		return -1;
+	osip_message_set_subject(reinvite,osip_strdup("Phone Call Hold"));
+	osip_message_set_allow(reinvite, "INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, NOTIFY, MESSAGE, SUBSCRIBE, INFO");
+	if (h->base.root->session_expires!=0){
+		osip_message_set_header(reinvite, "Session-expires", "200");
+		osip_message_set_supported(reinvite, "timer");
+	}
+	//add something to say that the distant sip phone will be in sendonly/sendrecv mode
+	if (h->base.local_media){
+		h->sdp_offering=TRUE;
+		sal_media_description_set_dir(h->base.local_media, holdon ? SalStreamSendOnly : SalStreamSendRecv);
+		set_sdp_from_desc(reinvite,h->base.local_media);
+	}else h->sdp_offering=FALSE;
+	eXosip_lock();
+	err = eXosip_call_send_request(h->did, reinvite);
+	eXosip_unlock();
+	
+	return err;
 }
 

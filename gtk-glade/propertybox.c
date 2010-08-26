@@ -119,17 +119,17 @@ void linphone_gtk_video_port_changed(GtkWidget *w){
 
 void linphone_gtk_no_firewall_toggled(GtkWidget *w){
 	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w)))
-		linphone_core_set_firewall_policy(linphone_gtk_get_core(),LINPHONE_POLICY_NO_FIREWALL);
+		linphone_core_set_firewall_policy(linphone_gtk_get_core(),LinphonePolicyNoFirewall);
 }
 
 void linphone_gtk_use_nat_address_toggled(GtkWidget *w){
 	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w)))
-		linphone_core_set_firewall_policy(linphone_gtk_get_core(),LINPHONE_POLICY_USE_NAT_ADDRESS);
+		linphone_core_set_firewall_policy(linphone_gtk_get_core(),LinphonePolicyUseNatAddress);
 }
 
 void linphone_gtk_use_stun_toggled(GtkWidget *w){
 	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w)))
-		linphone_core_set_firewall_policy(linphone_gtk_get_core(),LINPHONE_POLICY_USE_STUN);
+		linphone_core_set_firewall_policy(linphone_gtk_get_core(),LinphonePolicyUseStun);
 }
 
 void linphone_gtk_mtu_changed(GtkWidget *w){
@@ -762,13 +762,13 @@ void linphone_gtk_show_parameters(void){
 	if (tmp) gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(pb,"stun_server")),tmp);
 	pol=linphone_core_get_firewall_policy(lc);
 	switch(pol){
-		case LINPHONE_POLICY_NO_FIREWALL:
+		case LinphonePolicyNoFirewall:
 			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb,"no_nat")),TRUE);
 		break;
-		case LINPHONE_POLICY_USE_NAT_ADDRESS:
+		case LinphonePolicyUseNatAddress:
 			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb,"use_nat_address")),TRUE);
 		break;
-		case LINPHONE_POLICY_USE_STUN:
+		case LinphonePolicyUseStun:
 			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb,"use_stun")),TRUE);
 		break;
 	}
