@@ -53,7 +53,7 @@ static PayloadType * find_payload_type_best_match(const MSList *l, const Payload
 	return candidate;
 }
 
-static MSList *match_payloads(const MSList *local, const MSList *remote){
+static MSList *match_payloads(const MSList *local, const MSList *remote, bool_t reading_response){
 	const MSList *e2;
 	MSList *res=NULL;
 	PayloadType *matched;
@@ -61,11 +61,28 @@ static MSList *match_payloads(const MSList *local, const MSList *remote){
 		PayloadType *p2=(PayloadType*)e2->data;
 		matched=find_payload_type_best_match(local,p2);
 		if (matched){
-			matched=payload_type_clone(matched);
+			PayloadType *newp;
+			int local_number=payload_type_get_number(matched);
+			int remote_number=payload_type_get_number(p2);
+			
+			newp=payload_type_clone(matched);
 			if (p2->send_fmtp)
-				payload_type_set_send_fmtp(matched,p2->send_fmtp);
-			res=ms_list_append(res,matched);
-			payload_type_set_number(matched,payload_type_get_number(p2));
+				payload_type_set_send_fmtp(newp,p2->send_fmtp);
+			res=ms_list_append(res,newp);
+			/* we should use the remote numbering even when parsing a response */
+			payload_type_set_number(newp,remote_number);
+			if (reading_response && remote_number!=local_number){
+				ms_warning("For payload type %s, proposed number was %i but the remote phone answered %i",
+				           local_number, remote_number);
+				/*
+				 We must add this payload type with our local numbering in order to be able to receive it.
+				 Indeed despite we must sent with the remote numbering, we must be able to receive with
+				 our local one.
+				*/
+				newp=payload_type_clone(matched);
+				payload_type_set_number(newp,local_number);
+				res=ms_list_append(res,newp);
+			}
 		}else{
 			ms_message("No match for %s/%i",p2->mime_type,p2->clock_rate);
 		}
@@ -85,7 +102,7 @@ static void initiate_outgoing(const SalStreamDescription *local_offer,
     					const SalStreamDescription *remote_answer,
     					SalStreamDescription *result){
 	if (remote_answer->port!=0)
-		result->payloads=match_payloads(local_offer->payloads,remote_answer->payloads);
+		result->payloads=match_payloads(local_offer->payloads,remote_answer->payloads,TRUE);
 	result->proto=local_offer->proto;
 	result->type=local_offer->type;
 	result->dir=local_offer->dir;
@@ -104,7 +121,7 @@ static void initiate_outgoing(const SalStreamDescription *local_offer,
 static void initiate_incoming(const SalStreamDescription *local_cap,
     					const SalStreamDescription *remote_offer,
     					SalStreamDescription *result){
-	result->payloads=match_payloads(local_cap->payloads,remote_offer->payloads);
+	result->payloads=match_payloads(local_cap->payloads,remote_offer->payloads, FALSE);
 	result->proto=local_cap->proto;
 	result->type=local_cap->type;
 	if (remote_offer->dir==SalStreamSendOnly)

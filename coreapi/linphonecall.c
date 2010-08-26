@@ -529,7 +529,8 @@ static RtpProfile *make_profile(LinphoneCore *lc, const SalMediaDescription *md,
 	
 	for(elem=desc->payloads;elem!=NULL;elem=elem->next){
 		PayloadType *pt=(PayloadType*)elem->data;
-	
+		int number;
+		
 		if (first) {
 			if (desc->type==SalAudio){
 				linphone_core_update_allocated_audio_bandwidth_in_call(lc,pt);
@@ -558,7 +559,12 @@ static RtpProfile *make_profile(LinphoneCore *lc, const SalMediaDescription *md,
 			snprintf(tmp,sizeof(tmp),"ptime=%i",desc->ptime);
 			payload_type_append_send_fmtp(pt,tmp);
 		}
-		rtp_profile_set_payload(prof,payload_type_get_number(pt),pt);
+		number=payload_type_get_number(pt);
+		if (rtp_profile_get_payload(prof,number)!=NULL){
+			ms_warning("A payload type with number %i already exists in profile !",number);
+			payload_type_destroy(pt);
+		}else
+			rtp_profile_set_payload(prof,number,pt);
 	}
 	return prof;
 }
