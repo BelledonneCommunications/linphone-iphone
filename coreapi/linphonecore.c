@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/mseventqueue.h"
 #include "mediastreamer2/msvolume.h"
 #include "mediastreamer2/msequalizer.h"
+#include "mediastreamer2/dtmfgen.h"
 
 #ifdef INET6
 #ifndef WIN32
@@ -1641,6 +1642,13 @@ void linphone_core_iterate(LinphoneCore *lc){
 		lc_callback_obj_invoke(&lc->preview_finished_cb,lc);
 	}
 
+	if (lc->ringstream && lc->dmfs_playing_start_time!=0 
+	    && (curtime-lc->dmfs_playing_start_time)>5){
+		ring_stop(lc->ringstream);
+		lc->ringstream=NULL;
+		lc->dmfs_playing_start_time=0;
+	}
+
 	sal_iterate(lc->sal);
 	ms_event_queue_pump(lc->msevq);
 	if (lc->auto_net_state_mon) monitor_network_state(lc,curtime);
@@ -1671,7 +1679,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 	call = linphone_core_get_current_call(lc);
 	if(call)
 	{
-		if (one_second_elapsed)
+		if (call->state==LinphoneCallStreamsRunning && one_second_elapsed)
 		{
 			RtpSession *as=NULL,*vs=NULL;
 			lc->prevtime=curtime;
@@ -3283,6 +3291,48 @@ void linphone_core_set_record_file(LinphoneCore *lc, const char *file){
 			audio_stream_record(call->audiostream,file);
 	}
 }
+
+static MSFilter *get_dtmf_gen(LinphoneCore *lc){
+	LinphoneCall *call=linphone_core_get_current_call (lc);
+	if (call){
+		AudioStream *stream=call->audiostream;
+		if (stream){
+			return stream->dtmfgen;
+		}
+	}
+	if (lc->ringstream==NULL){
+		MSSndCard *ringcard=lc->sound_conf.lsd_card ?lc->sound_conf.lsd_card : lc->sound_conf.ring_sndcard;
+		lc->ringstream=ring_start(NULL,0,ringcard);
+		lc->dmfs_playing_start_time=time(NULL);
+	}else{
+		if (lc->dmfs_playing_start_time!=0)
+			lc->dmfs_playing_start_time=time(NULL);
+	}
+	return lc->ringstream->gendtmf;
+}
+
+/**
+ * Plays a dtmf to the local user.
+**/
+void linphone_core_play_dtmf(LinphoneCore *lc, char dtmf, int duration_ms){
+	MSFilter *f=get_dtmf_gen(lc);
+	if (f==NULL){
+		ms_error("No dtmf generator at this time !");
+		return;
+	}
+	if (duration_ms>0)
+		ms_filter_call_method(f, MS_DTMF_GEN_PLAY, &dtmf);
+	else ms_filter_call_method(f, MS_DTMF_GEN_START, &dtmf);
+}
+
+/**
+ * Stops playing a dtmf started by linphone_core_play_dtmf().
+**/
+void linphone_core_stop_dtmf(LinphoneCore *lc){
+	MSFilter *f=get_dtmf_gen(lc);
+	ms_filter_call_method_noarg (f, MS_DTMF_GEN_STOP);
+}
+
 
 /**
  * Retrieves the user pointer that was given to linphone_core_new()

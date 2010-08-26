@@ -97,6 +97,11 @@ static void call_received(SalOp *h){
 
 	/* play the ring if this is the only call*/
 	if (lc->sound_conf.ring_sndcard!=NULL && ms_list_size(lc->calls)==1){
+		if (lc->ringstream && lc->dmfs_playing_start_time!=0){
+			ring_stop(lc->ringstream);
+			lc->ringstream=NULL;
+			lc->dmfs_playing_start_time=0;
+		}
 		if(lc->ringstream==NULL){
 			MSSndCard *ringcard=lc->sound_conf.lsd_card ?lc->sound_conf.lsd_card : lc->sound_conf.ring_sndcard;
 			ms_message("Starting local ring...");
@@ -129,6 +134,11 @@ static void call_ringing(SalOp *h){
 	
 	md=sal_call_get_final_media_description(h);
 	if (md==NULL){
+		if (lc->ringstream && lc->dmfs_playing_start_time!=0){
+			ring_stop(lc->ringstream);
+			lc->ringstream=NULL;
+			lc->dmfs_playing_start_time=0;
+		}
 		if (lc->ringstream!=NULL) return;	/*already ringing !*/
 		if (lc->sound_conf.play_sndcard!=NULL){
 			MSSndCard *ringcard=lc->sound_conf.lsd_card ? lc->sound_conf.lsd_card : lc->sound_conf.play_sndcard;

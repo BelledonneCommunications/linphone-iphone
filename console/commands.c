@@ -296,6 +296,7 @@ linphonec_parse_command_line(LinphoneCore *lc, char *cl)
 		while ( isdigit(*cl) || *cl == '#' || *cl == '*' )
 		{
 			linphone_core_send_dtmf(lc, *cl);
+			linphone_core_play_dtmf (lc,*cl,100);
 			ms_sleep(1); // be nice
 			++cl;
 		}

@@ -997,12 +997,12 @@ void linphone_gtk_load_identities(void){
 
 static void linphone_gtk_dtmf_clicked(GtkButton *button){
 	const char *label=gtk_button_get_label(button);
+	GtkWidget *uri_bar=linphone_gtk_get_widget(gtk_widget_get_toplevel(GTK_WIDGET(button)),"uribar");
+	int pos=-1;
+	gtk_editable_insert_text(GTK_EDITABLE(uri_bar),label,1,&pos);
+	linphone_core_play_dtmf (linphone_gtk_get_core(),label[0],100);
 	if (linphone_core_in_call(linphone_gtk_get_core())){
 		linphone_core_send_dtmf(linphone_gtk_get_core(),label[0]);
-	}else{
-		GtkWidget *uri_bar=linphone_gtk_get_widget(gtk_widget_get_toplevel(GTK_WIDGET(button)),"uribar");
-		int pos=-1;
-		gtk_editable_insert_text(GTK_EDITABLE(uri_bar),label,1,&pos);
 	}
 }
 

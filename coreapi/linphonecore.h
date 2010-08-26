@@ -769,6 +769,9 @@ void linphone_core_use_files(LinphoneCore *lc, bool_t yesno);
 void linphone_core_set_play_file(LinphoneCore *lc, const char *file);
 void linphone_core_set_record_file(LinphoneCore *lc, const char *file);
 
+void linphone_core_play_dtmf(LinphoneCore *lc, char dtmf, int duration_ms);
+void linphone_core_stop_dtmf(LinphoneCore *lc);
+
 int linphone_core_get_current_call_duration(const LinphoneCore *lc);
 const LinphoneAddress *linphone_core_get_remote_address(LinphoneCore *lc);
 
