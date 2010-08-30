@@ -1,5 +1,5 @@
 
-SUBDIRS=help
+SUBDIRS=. help
 
 EXTRA_DIST=linphonecore_jni.cc
 
