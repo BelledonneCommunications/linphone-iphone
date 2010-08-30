@@ -73,7 +73,7 @@ static MSList *match_payloads(const MSList *local, const MSList *remote, bool_t 
 			payload_type_set_number(newp,remote_number);
 			if (reading_response && remote_number!=local_number){
 				ms_warning("For payload type %s, proposed number was %i but the remote phone answered %i",
-				           local_number, remote_number);
+				          newp->mime_type, local_number, remote_number);
 				/*
 				 We must add this payload type with our local numbering in order to be able to receive it.
 				 Indeed despite we must sent with the remote numbering, we must be able to receive with
