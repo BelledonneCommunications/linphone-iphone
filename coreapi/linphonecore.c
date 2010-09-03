@@ -3106,8 +3106,8 @@ const char *linphone_core_get_video_device(const LinphoneCore *lc){
 	return NULL;
 }
 
-int linphone_core_set_static_picture(LinphoneCore *lc, const char *path) {
 #ifdef VIDEO_ENABLED
+static VideoStream * get_active_video_stream(LinphoneCore *lc){
 	VideoStream *vs = NULL;
 	LinphoneCall *call=linphone_core_get_current_call (lc);
 	/* Select the video stream from the call in the first place */
@@ -3118,7 +3118,13 @@ int linphone_core_set_static_picture(LinphoneCore *lc, const char *path) {
 	if (vs == NULL && lc->previewstream) {
 		vs = lc->previewstream;
 	}
-	
+	return vs;
+}
+#endif
+
+int linphone_core_set_static_picture(LinphoneCore *lc, const char *path) {
+#ifdef VIDEO_ENABLED
+	VideoStream *vs=get_active_video_stream(lc);
 	/* If we have a video stream (either preview, either from call), we
 		 have a source and it is using the static picture filter, then
 		 force the filter to use that picture. */
@@ -3128,10 +3134,51 @@ int linphone_core_set_static_picture(LinphoneCore *lc, const char *path) {
 														(void *)path);
 		}
 	}
-
 	/* Tell the static image filter to use that image from now on so
 		 that the image will be used next time it has to be read */
 	ms_static_image_set_default_image(path);
+#else
+	ms_warning("Video support not compiled.");
+#endif
+	return 0;
+}
+
+int linphone_core_set_static_picture_fps(LinphoneCore *lc, float fps) {
+#ifdef VIDEO_ENABLED
+	VideoStream *vs = NULL;
+
+	vs=get_active_video_stream(lc);
+	
+	/* If we have a video stream (either preview, either from call), we
+		 have a source and it is using the static picture filter, then
+		 force the filter to use that picture. */
+	if (vs && vs->source) {
+		if (ms_filter_get_id(vs->source) == MS_STATIC_IMAGE_ID) {
+			ms_filter_call_method(vs->source, MS_FILTER_SET_FPS,(void *)&fps);
+		}
+	}
+#else
+	ms_warning("Video support not compiled.");
+#endif
+	return 0;
+}
+
+float linphone_core_get_static_picture_fps(LinphoneCore *lc) {
+#ifdef VIDEO_ENABLED
+	VideoStream *vs = NULL;
+	vs=get_active_video_stream(lc);
+	/* If we have a video stream (either preview, either from call), we
+		 have a source and it is using the static picture filter, then
+		 force the filter to use that picture. */
+	if (vs && vs->source) {
+		if (ms_filter_get_id(vs->source) == MS_STATIC_IMAGE_ID) {
+		  
+		        float fps;
+		  
+			ms_filter_call_method(vs->source, MS_FILTER_GET_FPS,(void *)&fps);
+			return fps;
+		}
+	}
 #else
 	ms_warning("Video support not compiled.");
 #endif

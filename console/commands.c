@@ -175,6 +175,7 @@ LPC_COMMAND commands[] = {
 	},
 	{ "staticpic", lpc_cmd_staticpic, "Manage static pictures when nowebcam",
 		"'staticpic set' : Set path to picture that should be used.\n"
+		"'staticpic fps' : Get/set frames per seconds for picture emission.\n"
 	},
 	{ "ipv6", lpc_cmd_ipv6, "Use IPV6",
 		"'ipv6 status' : show ipv6 usage status.\n"
@@ -1216,6 +1217,19 @@ lpc_cmd_staticpic(LinphoneCore *lc, char *args)
 	if (strcmp(arg1, "set")==0 && arg2) {
 		linphone_core_set_static_picture(lc, arg2);
 		return 1;
+	}
+
+	if (strcmp(arg1, "fps")==0) {
+	  if (arg2) {
+	        float fps = atof(arg2); /* FIXME: Handle not-a-float */
+		linphone_core_set_static_picture_fps(lc, fps);
+		return 1;
+	  } else {
+		float fps;
+		fps = linphone_core_get_static_picture_fps(lc);
+		linphonec_out("Current FPS %f\n", fps);
+		return 1;
+	  }
 	}
 
 	return 0; /* Syntax error */

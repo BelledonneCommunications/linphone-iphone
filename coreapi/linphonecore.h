@@ -760,6 +760,10 @@ const char *linphone_core_get_video_device(const LinphoneCore *lc);
 /* Set static picture to be used when "Static picture" is the video device */
 int linphone_core_set_static_picture(LinphoneCore *lc, const char *path);
 
+/* Set and get frame rate for static picture */
+int linphone_core_set_static_picture_fps(LinphoneCore *lc, float fps);
+float linphone_core_get_static_picture_fps(LinphoneCore *lc);
+
 /*function to be used for eventually setting window decorations (icons, title...)*/
 unsigned long linphone_core_get_native_video_window_id(const LinphoneCore *lc);
 
