@@ -159,6 +159,7 @@ char * linphone_call_log_to_str(LinphoneCallLog *cl);
  * The LinphoneCall object represents a call issued or received by the LinphoneCore
 **/
 struct _LinphoneCall;
+enum _LinphoneCallState;
 typedef struct _LinphoneCall LinphoneCall;
 
 
