@@ -1252,9 +1252,26 @@
                       </packing>
                     </child>
                     <child type="tab">
-                      <object class="GtkLabel" id="label18">
+                      <object class="GtkHBox" id="hbox10">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">Call Details</property>
+                        <child>
+                          <object class="GtkImage" id="incall_icon">
+                            <property name="visible">True</property>
+                            <property name="stock">gtk-missing-image</property>
+                          </object>
+                          <packing>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="label18">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Call Details</property>
+                          </object>
+                          <packing>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
                       </object>
                       <packing>
                         <property name="position">2</property>
