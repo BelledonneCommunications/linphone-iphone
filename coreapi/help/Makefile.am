@@ -38,7 +38,8 @@ helloworld_SOURCES=helloworld.c
 
 helloworld_LDADD=$(top_builddir)/coreapi/liblinphone.la
 
-INCLUDES=-I$(top_srcdir)/coreapi
+INCLUDES=-I$(top_srcdir)/coreapi \
+		-I$(top_srcdir)/mediastreamer2/include
 
 AM_CFLAGS=$(STRICT_OPTIONS)  -DIN_LINPHONE \
 	$(ORTP_CFLAGS) \
