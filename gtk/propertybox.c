@@ -813,11 +813,13 @@ void linphone_gtk_show_parameters(void){
 	linphone_gtk_show_sip_accounts(pb);
 	/* CODECS CONFIG */
 	linphone_gtk_init_codec_list(GTK_TREE_VIEW(codec_list));
+	linphone_gtk_draw_codec_list(GTK_TREE_VIEW(codec_list),0);
 	gtk_combo_box_set_active(GTK_COMBO_BOX(linphone_gtk_get_widget(pb,"codec_view")),0);
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb,"download_bw")),
 				linphone_core_get_download_bandwidth(lc));
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb,"upload_bw")),
 				linphone_core_get_upload_bandwidth(lc));
+	
 
 	/* UI CONFIG */
 	linphone_gtk_fill_langs(pb);

@@ -177,7 +177,7 @@ const gchar *linphone_gtk_get_ui_config(const char *key, const char *def){
 		LpConfig *cfg=linphone_core_get_config(linphone_gtk_get_core());
 		return lp_config_get_string(cfg,"GtkUi",key,def);
 	}else{
-		ms_warning ("Cannot read config, no core created yet.");
+		g_error ("Cannot read config, no core created yet.");
 		return NULL;
 	}
 }

@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#define USE_LIBGLADE 1
+//#define USE_LIBGLADE 1
 
 #define VIDEOSELFVIEW_DEFAULT 1
 
@@ -280,11 +280,42 @@ GtkWidget *linphone_gtk_get_widget(GtkWidget *window, const char *name){
 #else
 
 GtkWidget *linphone_gtk_create_window(const char *window_name){
-	
+	GError* error = NULL;
+	GtkBuilder* builder = gtk_builder_new ();
+	char path[2048];
+	GtkWidget *w;
+	snprintf(path,sizeof(path),"%s/%s.ui",BUILD_TREE_XML_DIR,window_name);
+	if (access(path,F_OK)!=0){
+		snprintf(path,sizeof(path),"%s/%s.ui",INSTALLED_XML_DIR,window_name);
+		if (access(path,F_OK)!=0){
+			g_error("Could not locate neither %s/%s.ui and %s/%s.ui .",BUILD_TREE_XML_DIR,window_name,
+				INSTALLED_XML_DIR,window_name);
+			return NULL;
+		}
+	}
+	if (!gtk_builder_add_from_file (builder, path, &error)){
+		g_error("Couldn't load builder file: %s", error->message);
+		g_error_free (error);
+	}
+	w=GTK_WIDGET(gtk_builder_get_object (builder,window_name));
+	if (w==NULL){
+		g_error("Could not retrieve '%s' window from xml file",window_name);
+		return NULL;
+	}
+	g_object_set_data(G_OBJECT(w),"builder",builder);
+	gtk_builder_connect_signals(builder,w);
+	linphone_gtk_configure_window(w,window_name);
+	return w;
 }
 
 GtkWidget *linphone_gtk_get_widget(GtkWidget *window, const char *name){
-	GObject *w=gtk_builder_get_object(the_ui,name);
+	GtkBuilder *builder=(GtkBuilder*)g_object_get_data(G_OBJECT(window),"builder");
+	GObject *w;
+	if (builder==NULL){
+		g_error("Fail to retrieve builder from window !");
+		return NULL;
+	}
+	w=gtk_builder_get_object(builder,name);
 	if (w==NULL){
 		g_error("No widget named %s found in xml interface.",name);
 	}
@@ -1104,10 +1135,10 @@ static void linphone_gtk_configure_main_window(){
 			g_object_unref(G_OBJECT(pbuf));
 		}
 	}
-	if (!linphone_gtk_can_manage_accounts())
-		gtk_widget_hide(linphone_gtk_get_widget(w,"run_assistant"));
+	if (linphone_gtk_can_manage_accounts())
+		gtk_widget_show(linphone_gtk_get_widget(w,"assistant_item"));
 	if (update_check_menu){
-		gtk_widget_show(linphone_gtk_get_widget(w,"versioncheck"));
+		gtk_widget_show(linphone_gtk_get_widget(w,"versioncheck_item"));
 	}
 }
 
@@ -1280,6 +1311,7 @@ int main(int argc, char *argv[]){
 	}
 	
 	settings=gtk_settings_get_default();
+	g_type_class_unref (g_type_class_ref (GTK_TYPE_IMAGE_MENU_ITEM));
 	g_object_set(settings, "gtk-menu-images", TRUE, NULL);
 	g_object_set(settings, "gtk-button-images", TRUE, NULL);
 #ifdef WIN32
@@ -1304,9 +1336,7 @@ int main(int argc, char *argv[]){
 	add_pixmap_directory(PACKAGE_DATA_DIR "/pixmaps/linphone");
 
 	
-	g_set_application_name("Linphone");
-	pbuf=create_pixbuf(linphone_gtk_get_ui_config("icon",LINPHONE_ICON));
-	if (pbuf!=NULL) gtk_window_set_default_icon(pbuf);
+	
 	
 	the_ui=linphone_gtk_create_window("main");
 	
@@ -1314,6 +1344,11 @@ int main(int argc, char *argv[]){
 	linphone_core_enable_logs_with_cb(linphone_gtk_log_handler);
 
 	linphone_gtk_init_liblinphone(config_file, factory_config_file);
+	
+	g_set_application_name(linphone_gtk_get_ui_config("title","Linphone"));
+	pbuf=create_pixbuf(linphone_gtk_get_ui_config("icon",LINPHONE_ICON));
+	if (pbuf!=NULL) gtk_window_set_default_icon(pbuf);
+	
 	/* do not lower timeouts under 30 ms because it exhibits a bug on gtk+/win32, with cpu running 20% all the time...*/
 	gtk_timeout_add(30,(GtkFunction)linphone_gtk_iterate,(gpointer)linphone_gtk_get_core());
 	gtk_timeout_add(30,(GtkFunction)linphone_gtk_check_logs,(gpointer)NULL);

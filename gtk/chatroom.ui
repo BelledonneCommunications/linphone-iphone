@@ -1,69 +1,67 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
+<?xml version="1.0"?>
 <!--Generated with glade3 3.4.5 on Wed Jul 30 15:51:13 2008 -->
-<glade-interface>
-  <widget class="GtkWindow" id="chatroom">
-    <signal name="destroy" handler="linphone_gtk_chat_destroyed"/>
+<interface>
+  <object class="GtkWindow" id="chatroom">
+    <signal handler="linphone_gtk_chat_destroyed" name="destroy"/>
     <child>
-      <widget class="GtkVBox" id="vbox1">
+      <object class="GtkVBox" id="vbox1">
         <property name="visible">True</property>
         <child>
-          <widget class="GtkTextView" id="textlog">
+          <object class="GtkTextView" id="textlog">
             <property name="width_request">200</property>
             <property name="height_request">200</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="editable">False</property>
             <property name="wrap_mode">GTK_WRAP_WORD</property>
-          </widget>
+          </object>
         </child>
         <child>
-          <widget class="GtkHBox" id="hbox1">
+          <object class="GtkHBox" id="hbox1">
             <property name="visible">True</property>
             <child>
-              <widget class="GtkEntry" id="text_entry">
+              <object class="GtkEntry" id="text_entry">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="has_focus">True</property>
-                <signal name="activate" handler="linphone_gtk_send_text"/>
-              </widget>
+                <signal handler="linphone_gtk_send_text" name="activate"/>
+              </object>
             </child>
             <child>
-              <widget class="GtkButton" id="send">
+              <object class="GtkButton" id="send">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="response_id">0</property>
-                <signal name="clicked" handler="linphone_gtk_send_text"/>
+                <signal handler="linphone_gtk_send_text" name="clicked"/>
                 <child>
-                  <widget class="GtkHBox" id="hbox2">
+                  <object class="GtkHBox" id="hbox2">
                     <property name="visible">True</property>
                     <child>
-                      <widget class="GtkImage" id="image1">
+                      <object class="GtkImage" id="image1">
                         <property name="visible">True</property>
                         <property name="stock">gtk-ok</property>
-                      </widget>
+                      </object>
                     </child>
                     <child>
-                      <widget class="GtkLabel" id="label1">
+                      <object class="GtkLabel" id="label1">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Send</property>
-                      </widget>
+                      </object>
                       <packing>
                         <property name="padding">7</property>
                         <property name="position">1</property>
                       </packing>
                     </child>
-                  </widget>
+                  </object>
                 </child>
-              </widget>
+              </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
                 <property name="position">1</property>
               </packing>
             </child>
-          </widget>
+          </object>
           <packing>
             <property name="expand">False</property>
             <property name="fill">False</property>
@@ -71,30 +69,29 @@
           </packing>
         </child>
         <child>
-          <widget class="GtkHButtonBox" id="hbuttonbox1">
+          <object class="GtkHButtonBox" id="hbuttonbox1">
             <property name="visible">True</property>
             <property name="layout_style">GTK_BUTTONBOX_END</property>
             <child>
-              <widget class="GtkButton" id="button1">
+              <object class="GtkButton" id="button1">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="label" translatable="yes">gtk-close</property>
                 <property name="use_stock">True</property>
-                <property name="response_id">0</property>
-                <signal name="clicked" handler="linphone_gtk_chat_close"/>
-              </widget>
+                <signal handler="linphone_gtk_chat_close" name="clicked"/>
+              </object>
               <packing>
                 <property name="pack_type">GTK_PACK_END</property>
               </packing>
             </child>
-          </widget>
+          </object>
           <packing>
             <property name="expand">False</property>
             <property name="position">2</property>
           </packing>
         </child>
-      </widget>
+      </object>
     </child>
-  </widget>
-</glade-interface>
+  </object>
+</interface>
