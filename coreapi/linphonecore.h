@@ -159,8 +159,24 @@ char * linphone_call_log_to_str(LinphoneCallLog *cl);
  * The LinphoneCall object represents a call issued or received by the LinphoneCore
 **/
 struct _LinphoneCall;
-enum _LinphoneCallState;
 typedef struct _LinphoneCall LinphoneCall;
+
+typedef enum _LinphoneCallState{
+	LinphoneCallIdle,
+	LinphoneCallIncomingReceived,
+	LinphoneCallOutgoingInit,
+	LinphoneCallOutgoingProgress,
+	LinphoneCallOutgoingRinging,
+	LinphoneCallOutgoingEarlyMedia,
+	LinphoneCallConnected,
+	LinphoneCallStreamsRunning,
+	LinphoneCallPausing,
+	LinphoneCallPaused,
+	LinphoneCallResuming,
+	LinphoneCallRefered,
+	LinphoneCallError,
+	LinphoneCallEnd,
+} LinphoneCallState;
 
 
 enum _LinphoneCallState linphone_call_get_state(const LinphoneCall *call);
@@ -366,23 +382,6 @@ void linphone_chat_room_send_message(LinphoneChatRoom *cr, const char *msg);
 void linphone_chat_room_destroy(LinphoneChatRoom *cr);
 void linphone_chat_room_set_user_data(LinphoneChatRoom *cr, void * ud);
 void * linphone_chat_room_get_user_data(LinphoneChatRoom *cr);
-
-typedef enum _LinphoneCallState{
-	LinphoneCallIdle,
-	LinphoneCallIncomingReceived,
-	LinphoneCallOutgoingInit,
-	LinphoneCallOutgoingProgress,
-	LinphoneCallOutgoingRinging,
-	LinphoneCallOutgoingEarlyMedia,
-	LinphoneCallConnected,
-	LinphoneCallStreamsRunning,
-	LinphoneCallPausing,
-	LinphoneCallPaused,
-	LinphoneCallResuming,
-	LinphoneCallRefered,
-	LinphoneCallError,
-	LinphoneCallEnd,
-} LinphoneCallState;
 
 typedef enum _LinphoneGlobalState{
 	LinphoneGlobalOff,

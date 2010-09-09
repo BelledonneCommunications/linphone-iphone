@@ -1697,7 +1697,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 		if (lc->previewstream==NULL && lc->calls==NULL)
 			toggle_video_preview(lc,TRUE);
 #ifdef VIDEO_ENABLED
-		else video_stream_iterate(lc->previewstream);
+		if (lc->previewstream) video_stream_iterate(lc->previewstream);
 #endif
 	}else{
 		if (lc->previewstream!=NULL)
