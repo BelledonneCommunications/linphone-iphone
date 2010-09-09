@@ -300,15 +300,10 @@ bool_t linphone_call_asked_to_autoanswer(LinphoneCall *call){
 		return FALSE;
 }
 
-int linphone_core_get_call_duration(LinphoneCall *call){
-	if (call==NULL) return 0;
-	if (call->media_start_time==0) return 0;
-	return time(NULL)-call->media_start_time;
-}
-
 int linphone_core_get_current_call_duration(const LinphoneCore *lc){
 	LinphoneCall *call=linphone_core_get_current_call((LinphoneCore *)lc);
-	return linphone_core_get_call_duration(call);
+	if (call)  return linphone_call_get_duration(call);
+	return -1;
 }
 
 const LinphoneAddress *linphone_core_get_current_call_remote_address(struct _LinphoneCore *lc){

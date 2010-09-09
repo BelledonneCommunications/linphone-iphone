@@ -48,6 +48,8 @@ GdkPixbuf *_gdk_pixbuf_new_from_memory_at_scale(const void *data, gint len, gint
 
 GtkWidget *linphone_gtk_create_window(const char *window_name);
 GtkWidget *linphone_gtk_get_widget(GtkWidget *window, const char *name);
+GtkWidget *linphone_gtk_create_widget(const char *filename, const char *widget_name);
+
 LinphoneCore *linphone_gtk_get_core(void);
 GtkWidget *linphone_gtk_get_main_window();
 void linphone_gtk_display_something(GtkMessageType type,const gchar *message);
@@ -85,12 +87,13 @@ void linphone_gtk_show_directory_search(void);
 
 /*functions controlling the different views*/
 gboolean linphone_gtk_use_in_call_view();
-void linphone_gtk_show_in_call_view(void);
-void linphone_gtk_show_idle_view(void);
-void linphone_gtk_in_call_view_set_calling(const char *uri);
-void linphone_gtk_in_call_view_set_in_call(void);
-void linphone_gtk_in_call_view_update_duration(int duration);
-void linphone_gtk_in_call_view_terminate(const char *error_msg);
+LinphoneCall *linphone_gtk_get_currently_displayed_call();
+void linphone_gtk_create_in_call_view(LinphoneCall *call);
+void linphone_gtk_in_call_view_set_calling(LinphoneCall *call);
+void linphone_gtk_in_call_view_set_in_call(LinphoneCall *call);
+void linphone_gtk_in_call_view_update_duration(LinphoneCall *call);
+void linphone_gtk_in_call_view_terminate(LinphoneCall *call, const char *error_msg);
+void linphone_gtk_in_call_view_set_incoming(LinphoneCall *call);
 void linphone_gtk_enable_mute_button(GtkToggleButton *button, gboolean sensitive);
 void linphone_gtk_enable_hold_button(GtkToggleButton *button, gboolean sensitive);
 

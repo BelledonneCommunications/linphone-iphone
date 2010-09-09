@@ -2,7 +2,6 @@ UI_FILES=	about.ui \
 		main.ui \
 		password.ui \
 		contact.ui \
-		incoming_call.ui \
 		parameters.ui \
 		sip_account.ui \
 		chatroom.ui \

@@ -221,6 +221,9 @@ static void call_accepted(SalOp *op){
 			}
 			linphone_call_set_state(call,LinphoneCallPaused,"Call paused");
 		}else{
+			if (lc->vtable.display_status){
+				lc->vtable.display_status(lc,_("Call answered - connected."));
+			}
 			linphone_call_set_state(call,LinphoneCallStreamsRunning,"Connected (streams running)");
 		}
 		linphone_connect_incoming (lc,call);
