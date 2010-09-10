@@ -43,10 +43,20 @@ public interface LinphoneCoreListener {
 		/** Callback to display a warning to the user 
 		 * @return */
 		public void displayWarning(LinphoneCore lc,String message);
-		/** State notification callback 
-		 * @param state LinphoneCore.GeneralState
+		/** General State notification  
+		 * @param state LinphoneCore.State
 		 * @return 
 		 * */		
-		public void generalState(LinphoneCore lc,LinphoneCore.GeneralState state, String message);
+		public void globalState(LinphoneCore lc,LinphoneCore.GlobalState state, String message);
+		/** Call  State notification  
+		 * @param state LinphoneCall.State
+		 * @return 
+		 * */		
+		
+		public void callState(LinphoneCore lc, LinphoneCall call, LinphoneCall.State cstate,String message);
+		/**
+		 * Registration state notification
+		 * */
+		public void registrationState(LinphoneCore lc, LinphoneProxyConfig cfg, LinphoneCore.RegistrationState cstate, String smessage);
 }
 

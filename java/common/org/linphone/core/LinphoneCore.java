@@ -21,48 +21,31 @@ package org.linphone.core;
 
 import java.util.Vector;
 
-
-
-
 	
 public interface LinphoneCore {
 	/*
 	 * linphone core states
 	 */
-	static public class 	GeneralState {
+	static public class 	GlobalState {
 		static private Vector values = new Vector();
-		/* states for GSTATE_GROUP_POWER */
-		static public GeneralState GSTATE_POWER_OFF = new GeneralState(0,"GSTATE_POWER_OFF");        /* initial state */
-		static public GeneralState GSTATE_POWER_STARTUP = new GeneralState(1,"GSTATE_POWER_STARTUP");
-		static public GeneralState GSTATE_POWER_ON = new GeneralState(2,"GSTATE_POWER_ON");
-		static public GeneralState GSTATE_POWER_SHUTDOWN = new GeneralState(3,"GSTATE_POWER_SHUTDOWN");
-		/* states for GSTATE_GROUP_REG */
-		static public GeneralState GSTATE_REG_NONE = new GeneralState(10,"GSTATE_REG_NONE");       /* initial state */
-		static public GeneralState GSTATE_REG_OK  = new GeneralState(11,"GSTATE_REG_OK");
-		static public GeneralState GSTATE_REG_FAILED = new GeneralState(12,"GSTATE_REG_FAILED");
-		static public GeneralState GSTATE_REG_PENDING = new GeneralState(13,"GSTATE_REG_PENDING");
-		/* states for GSTATE_GROUP_CALL */
-		static public GeneralState GSTATE_CALL_IDLE = new GeneralState(20,"GSTATE_CALL_IDLE");      /* initial state */
-		static public GeneralState GSTATE_CALL_OUT_INVITE = new GeneralState(21,"GSTATE_CALL_OUT_INVITE");
-		static public GeneralState GSTATE_CALL_OUT_CONNECTED = new GeneralState(22,"GSTATE_CALL_OUT_CONNECTED");
-		static public GeneralState GSTATE_CALL_IN_INVITE = new GeneralState(23,"GSTATE_CALL_IN_INVITE");
-		static public GeneralState GSTATE_CALL_IN_CONNECTED = new GeneralState(24,"GSTATE_CALL_IN_CONNECTED");
-		static public GeneralState GSTATE_CALL_END = new GeneralState(25,"GSTATE_CALL_END");
-		static public GeneralState GSTATE_CALL_ERROR = new GeneralState(26,"GSTATE_CALL_ERROR");
-		static public GeneralState GSTATE_INVALID = new GeneralState(27,"GSTATE_INVALID");
-		static public GeneralState GSTATE_CALL_OUT_RINGING = new GeneralState(28,"GSTATE_CALL_OUT_RINGING");
+
+		static public GlobalState GlobalOff = new GlobalState(0,"GlobalOff");       
+		static public GlobalState GlobalStartup = new GlobalState(1,"GlobalStartup");
+		static public GlobalState GlobalOn = new GlobalState(2,"GlobalOn");
+		static public GlobalState GlobalShutdown = new GlobalState(3,"GlobalShutdown");
+
 		private final int mValue;
 		private final String mStringValue;
 
-		private GeneralState(int value,String stringValue) {
+		private GlobalState(int value,String stringValue) {
 			mValue = value;
 			values.addElement(this);
 			mStringValue=stringValue;
 		}
-		public static GeneralState fromInt(int value) {
+		public static GlobalState fromInt(int value) {
 
 			for (int i=0; i<values.size();i++) {
-				GeneralState state = (GeneralState) values.elementAt(i);
+				GlobalState state = (GlobalState) values.elementAt(i);
 				if (state.mValue == value) return state;
 			}
 			throw new RuntimeException("state not found ["+value+"]");
@@ -71,7 +54,33 @@ public interface LinphoneCore {
 			return mStringValue;
 		}
 	}
+	static public class 	RegistrationState {
+		static private Vector values = new Vector();
+		static public RegistrationState RegistrationNone = new RegistrationState(0,"RegistrationNone");       
+		static public RegistrationState RegistrationProgress  = new RegistrationState(1,"RegistrationProgress");
+		static public RegistrationState RegistrationOk = new RegistrationState(2,"RegistrationOk");
+		static public RegistrationState RegistrationCleared = new RegistrationState(3,"RegistrationCleared");
+		static public RegistrationState RegistrationFailed = new RegistrationState(4,"RegistrationFailed");
+		private final int mValue;
+		private final String mStringValue;
 
+		private RegistrationState(int value,String stringValue) {
+			mValue = value;
+			values.addElement(this);
+			mStringValue=stringValue;
+		}
+		public static RegistrationState fromInt(int value) {
+
+			for (int i=0; i<values.size();i++) {
+				RegistrationState state = (RegistrationState) values.elementAt(i);
+				if (state.mValue == value) return state;
+			}
+			throw new RuntimeException("state not found ["+value+"]");
+		}
+		public String toString() {
+			return mStringValue;
+		}
+	}
 	static public class Transport {
 		public final static Transport udp =new Transport("udp");
 		public final static Transport tcp =new Transport("tcp");
@@ -117,11 +126,17 @@ public interface LinphoneCore {
 	 * Starts a call given a destination. Internally calls interpretUrl() then invite(LinphoneAddress).
 	 * @param uri
 	 */
-	public void invite(String destination)throws LinphoneCoreException;
+	public LinphoneCall invite(String destination)throws LinphoneCoreException;
 	
-	public void invite(LinphoneAddress to)throws LinphoneCoreException;
+	public LinphoneCall invite(LinphoneAddress to)throws LinphoneCoreException;
 	
-	public void terminateCall();
+	public void terminateCall(LinphoneCall aCall);
+	/**
+	 * Returns The LinphoneCall the current call if one is in call
+	 *
+	**/
+	public LinphoneCall getCurrentCall();
+	
 	/**
 	 * get the remote address in case of in/out call
 	 * @return null if no call engaged yet
@@ -147,7 +162,7 @@ public interface LinphoneCore {
 	 * this method.
 	 * @throws LinphoneCoreException 
 	 */
-	public void acceptCall() throws LinphoneCoreException;
+	public void acceptCall(LinphoneCall aCall) throws LinphoneCoreException;
 	
 	
 	/**
