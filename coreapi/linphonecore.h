@@ -160,7 +160,7 @@ char * linphone_call_log_to_str(LinphoneCallLog *cl);
 **/
 struct _LinphoneCall;
 typedef struct _LinphoneCall LinphoneCall;
-
+enum _LinphoneCallState;
 
 enum _LinphoneCallState linphone_call_get_state(const LinphoneCall *call);
 bool_t linphone_call_asked_to_autoanswer(LinphoneCall *call);
@@ -408,7 +408,7 @@ typedef void (*LinphoneGlobalStateCb)(struct _LinphoneCore *lc, LinphoneGlobalSt
 /**Call state notification callback prototype*/
 typedef void (*LinphoneCallStateCb)(struct _LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *message);
 /**Registration state notification callback prototype*/
-typedef void (*LinphoneRegistrationStateCb)(struct _LinphoneCore *lc, LinphoneProxyConfig *cfg, LinphoneCallState cstate, const char *message);
+typedef void (*LinphoneRegistrationStateCb)(struct _LinphoneCore *lc, LinphoneProxyConfig *cfg, LinphoneRegistrationState cstate, const char *message);
 /** Callback prototype */
 typedef void (*ShowInterfaceCb)(struct _LinphoneCore *lc);
 /** Callback prototype */
