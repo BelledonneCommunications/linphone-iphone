@@ -225,5 +225,9 @@ public interface LinphoneCore {
 	public boolean isEchoCancellationEnabled();
 	
 	public void setSignalingTransport(Transport aTransport);
+	
+	public void enableSpeaker(boolean value);
+	
+	public boolean isSpeakerEnabled();
 
 }
