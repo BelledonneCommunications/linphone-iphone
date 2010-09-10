@@ -637,7 +637,7 @@ static bool_t all_calls_paused(const MSList *calls){
 	for(;calls!=NULL;calls=calls->next){
 		LinphoneCall *call=(LinphoneCall*)calls->data;
 		LinphoneCallState cs=linphone_call_get_state(call);
-		if (cs!=LinphoneCallPaused && cs!=LinphoneCallIncomingReceived)
+		if (cs!=LinphoneCallPaused && cs!=LinphoneCallIncomingReceived && cs!=LinphoneCallPausing)
 			return FALSE;
 	}
 	return TRUE;
@@ -655,17 +655,15 @@ static void linphone_gtk_update_call_buttons(LinphoneCall *call){
 	if (calls==NULL){
 		start_active=TRUE;
 		stop_active=FALSE;
-	}else if (linphone_core_get_current_call(lc)!=NULL){
-		start_active=FALSE;
+	}else{
 		stop_active=TRUE;
-	}else if (all_calls_paused(calls)){
-		start_active=TRUE;
-		stop_active=TRUE;
-		add_call=TRUE;
-	}else if (call!=NULL){
-		if (linphone_call_get_state(call)==LinphoneCallIncomingReceived){
+		if (all_calls_paused(calls)){
 			start_active=TRUE;
-			stop_active=TRUE;
+			add_call=TRUE;
+		}else if (call!=NULL && linphone_call_get_state(call)==LinphoneCallIncomingReceived){
+			start_active=TRUE;
+		}else{
+			start_active=FALSE;
 		}
 	}
 	button=linphone_gtk_get_widget(mw,"start_call");
@@ -679,7 +677,7 @@ static void linphone_gtk_update_call_buttons(LinphoneCall *call){
 	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"terminate_call"),stop_active);
 	if (linphone_core_get_calls(lc)==NULL){
 		linphone_gtk_enable_mute_button(
-				GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(linphone_gtk_get_main_window(),"main_mute")),
+				GTK_BUTTON(linphone_gtk_get_widget(linphone_gtk_get_main_window(),"main_mute")),
 			FALSE);
 	}
 	update_video_title();
@@ -943,7 +941,7 @@ static void linphone_gtk_call_state_changed(LinphoneCore *lc, LinphoneCall *call
 		case LinphoneCallStreamsRunning:
 			linphone_gtk_in_call_view_set_in_call(call);
 			linphone_gtk_enable_mute_button(
-				GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(linphone_gtk_get_main_window(),"main_mute")),
+				GTK_BUTTON(linphone_gtk_get_widget(linphone_gtk_get_main_window(),"main_mute")),
 			TRUE);
 			g_timeout_add(250,(GSourceFunc)in_call_timer,NULL);
 		break;
@@ -961,9 +959,16 @@ static void linphone_gtk_call_state_changed(LinphoneCore *lc, LinphoneCall *call
 				g_timeout_add(2000,(GSourceFunc)linphone_gtk_auto_answer ,call);
 			}		
 		break;
-		case LinphoneCallPaused:
+		case LinphoneCallResuming:
+			linphone_gtk_enable_hold_button(call,TRUE,TRUE);
+		break;
+		case LinphoneCallPausing:
+			linphone_gtk_enable_hold_button(call,TRUE,FALSE);
 		case LinphoneCallPausedByRemote:
 			linphone_gtk_in_call_view_set_paused(call);
+		break;
+		case LinphoneCallConnected:
+			linphone_gtk_enable_hold_button (call,TRUE,TRUE);
 		break;
 		default:
 		break;
@@ -1231,12 +1236,8 @@ static void linphone_gtk_init_main_window(){
 	linphone_gtk_connect_digits();
 	linphone_gtk_check_menu_items();
 	main_window=linphone_gtk_get_main_window();
-	linphone_gtk_enable_mute_button(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(main_window,
+	linphone_gtk_enable_mute_button(GTK_BUTTON(linphone_gtk_get_widget(main_window,
 					"main_mute")),FALSE);
-	linphone_gtk_enable_mute_button(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(main_window,
-					"incall_mute")),FALSE);
-	linphone_gtk_enable_hold_button(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(main_window,
-					"hold_call")),FALSE);
 	if (!linphone_gtk_use_in_call_view()) {
 		gtk_widget_show(linphone_gtk_get_widget(main_window, "main_mute"));
 	}

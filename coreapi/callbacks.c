@@ -185,6 +185,8 @@ static void call_accepted(SalOp *op){
 	if ((call->audiostream!=NULL) && (call->audiostream->ticker!=NULL)){
 		/*case where we accepted early media or already in call*/
 		linphone_call_stop_media_streams(call);
+	}
+	if (call->audiostream==NULL){
 		linphone_call_init_media_streams(call);
 	}
 	if (call->resultdesc)
@@ -200,8 +202,8 @@ static void call_accepted(SalOp *op){
 		linphone_call_set_state(call,LinphoneCallConnected,"Connected");
 	}
 	if (call->resultdesc && !sal_media_description_empty(call->resultdesc)){
-		if (sal_media_description_has_dir(call->resultdesc,SalStreamSendOnly)){
-			/*we initiated a pause*/
+		if (sal_media_description_has_dir(call->resultdesc,SalStreamSendOnly) ||
+		    sal_media_description_has_dir(call->resultdesc,SalStreamInactive)){
 			if (lc->vtable.display_status){
 				char *tmp=linphone_call_get_remote_address_as_string (call);
 				char *msg=ms_strdup_printf(_("Call with %s is paused."),tmp);
@@ -298,7 +300,6 @@ static void call_updating(SalOp *op){
 			if (lc->current_call!=call){
 				ms_error("Inconsitency detected: current call is %p but call %p is being paused !",lc->current_call,call);
 			}
-			lc->current_call=NULL;
 		}
 		/*accept the modification (sends a 200Ok)*/
 		sal_call_accept(op);

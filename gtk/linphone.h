@@ -95,8 +95,8 @@ void linphone_gtk_in_call_view_update_duration(LinphoneCall *call);
 void linphone_gtk_in_call_view_terminate(LinphoneCall *call, const char *error_msg);
 void linphone_gtk_in_call_view_set_incoming(LinphoneCall *call, bool_t with_pause);
 void linphone_gtk_in_call_view_set_paused(LinphoneCall *call);
-void linphone_gtk_enable_mute_button(GtkToggleButton *button, gboolean sensitive);
-void linphone_gtk_enable_hold_button(GtkToggleButton *button, gboolean sensitive);
+void linphone_gtk_enable_mute_button(GtkButton *button, gboolean sensitive);
+void linphone_gtk_enable_hold_button(LinphoneCall *call, gboolean sensitive, gboolean holdon);
 
 void linphone_gtk_show_login_frame(LinphoneProxyConfig *cfg);
 
