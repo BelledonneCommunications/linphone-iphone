@@ -2255,7 +2255,7 @@ const MSList *linphone_core_get_calls(LinphoneCore *lc)
 }
 
 /**
- * Returns TRUE if there is a call running or pending.
+ * Returns TRUE if there is a call running.
  *
  * @ingroup call_control
 **/
@@ -2282,6 +2282,11 @@ LinphoneCall *linphone_core_get_current_call(const LinphoneCore *lc)
 int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *the_call)
 {
 	LinphoneCall *call = the_call;
+
+	if (call->state!=LinphoneCallStreamsRunning && call->state!=LinphoneCallPausedByRemote){
+		ms_warning("Cannot pause this call, it is not active.");
+		return -1;
+	}
 	
 	if (sal_call_hold(call->op,TRUE) != 0)
 	{
@@ -2292,6 +2297,8 @@ int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *the_call)
 	if (lc->vtable.display_status)
 		lc->vtable.display_status(lc,_("Pausing the current call..."));
 	lc->current_call=NULL;
+	if (call->audiostream || call->videostream)
+		linphone_call_stop_media_streams (call);
 	linphone_core_start_pending_refered_calls(lc);
 	return 0;
 }
@@ -2304,7 +2311,7 @@ int linphone_core_pause_all_calls(LinphoneCore *lc){
 	for(elem=lc->calls;elem!=NULL;elem=elem->next){
 		LinphoneCall *call=(LinphoneCall *)elem->data;
 		LinphoneCallState cs=linphone_call_get_state(call);
-		if (cs==LinphoneCallStreamsRunning && cs==LinphoneCallPausedByRemote){
+		if (cs==LinphoneCallStreamsRunning || cs==LinphoneCallPausedByRemote){
 			linphone_core_pause_call(lc,call);
 		}
 	}

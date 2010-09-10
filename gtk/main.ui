@@ -1414,13 +1414,12 @@
                     <property name="visible">True</property>
                     <property name="layout_style">spread</property>
                     <child>
-                      <object class="GtkToggleButton" id="incall_mute">
+                      <object class="GtkButton" id="incall_mute">
                         <property name="label" translatable="yes">Mute</property>
                         <property name="visible">True</property>
-                        <property name="sensitive">False</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
-                        <signal name="toggled" handler="linphone_gtk_mute_toggled"/>
+                        <signal name="clicked" handler="linphone_gtk_mute_clicked"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -1429,13 +1428,12 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkToggleButton" id="hold_call">
-                        <property name="label" translatable="yes">HoldOn</property>
+                      <object class="GtkButton" id="hold_call">
+                        <property name="label" translatable="yes">Pause</property>
                         <property name="visible">True</property>
-                        <property name="sensitive">False</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
-                        <signal name="toggled" handler="linphone_gtk_hold_toggled"/>
+                        <signal name="clicked" handler="linphone_gtk_hold_clicked"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
