@@ -673,7 +673,7 @@ void linphone_call_start_media_streams(LinphoneCall *call){
 				video_stream_enable_self_view(call->videostream,lc->video_conf.selfview);
 						
 				if (stream->dir==SalStreamSendOnly && lc->video_conf.capture ){
-					cam=ms_web_cam_manager_get_cam(ms_web_cam_manager_get(),"Static picture");
+					cam=ms_web_cam_manager_get_cam(ms_web_cam_manager_get(),"StaticImage: Static picture");
 					dir=VideoStreamSendOnly;
 				}else if (stream->dir==SalStreamRecvOnly && lc->video_conf.display ){
 					dir=VideoStreamRecvOnly;
