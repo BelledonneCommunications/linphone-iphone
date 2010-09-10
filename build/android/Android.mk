@@ -37,7 +37,6 @@ LOCAL_SRC_FILES = \
 	authentication.c \
 	lpconfig.c \
 	chat.c \
-	general_state.c \
 	sipsetup.c \
 	siplogin.c \
 	address.c \

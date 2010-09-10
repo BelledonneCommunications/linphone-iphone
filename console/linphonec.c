@@ -325,6 +325,9 @@ static void linphonec_call_state_changed(LinphoneCore *lc, LinphoneCall *call, L
 		case LinphoneCallPaused:
 			linphonec_out("Call %i with %s is now paused.\n", id, from);
 		break;
+		case LinphoneCallPausedByRemote:
+			linphonec_out("Call %i has been paused by %s.\n",id,from);
+		break;
 		case LinphoneCallIncomingReceived:
 			linphonec_call_identify(call);
 			id=(long)linphone_call_get_user_pointer (call);

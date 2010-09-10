@@ -98,6 +98,21 @@ static bool_t only_telephone_event(const MSList *l){
 	return TRUE;
 }
 
+static SalStreamDir compute_dir(SalStreamDir local, SalStreamDir answered){
+	SalStreamDir res=local;
+	if (local==SalStreamSendRecv){
+		if (answered==SalStreamRecvOnly){
+			res=SalStreamSendOnly;
+		}else if (answered==SalStreamSendOnly){
+			res=SalStreamRecvOnly;
+		}
+	}
+	if (answered==SalStreamInactive){
+		res=SalStreamInactive;
+	}
+	return res;
+}
+
 static void initiate_outgoing(const SalStreamDescription *local_offer,
     					const SalStreamDescription *remote_answer,
     					SalStreamDescription *result){
@@ -105,7 +120,7 @@ static void initiate_outgoing(const SalStreamDescription *local_offer,
 		result->payloads=match_payloads(local_offer->payloads,remote_answer->payloads,TRUE);
 	result->proto=local_offer->proto;
 	result->type=local_offer->type;
-	result->dir=local_offer->dir;
+	result->dir=compute_dir(local_offer->dir,remote_answer->dir);
 
 	if (result->payloads && !only_telephone_event(result->payloads)){
 		strcpy(result->addr,remote_answer->addr);

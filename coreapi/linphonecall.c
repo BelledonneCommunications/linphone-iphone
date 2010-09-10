@@ -229,17 +229,23 @@ static void linphone_call_set_terminated(LinphoneCall *call){
 
 void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const char *message){
 	LinphoneCore *lc=call->core;
+	bool_t finalize_call=FALSE;
 	if (call->state!=cstate){
 		if (cstate!=LinphoneCallRefered){
 			/*LinphoneCallRefered is rather an event, not a state.
 			 Indeed it does not change the state of the call (still paused or running)*/
 			call->state=cstate;
 		}
+		if (cstate==LinphoneCallEnd || cstate==LinphoneCallError){
+			finalize_call=TRUE;
+			linphone_call_ref(call);
+			linphone_call_set_terminated (call);
+		}
 		if (lc->vtable.call_state_changed)
 			lc->vtable.call_state_changed(lc,call,cstate,message);
+		if (finalize_call)
+			linphone_call_unref(call);
 	}
-	if (call->state==LinphoneCallEnd || call->state==LinphoneCallError)
-		linphone_call_set_terminated (call);
 }
 
 static void linphone_call_destroy(LinphoneCall *obj)
@@ -287,8 +293,9 @@ void linphone_call_ref(LinphoneCall *obj){
 **/
 void linphone_call_unref(LinphoneCall *obj){
 	obj->refcnt--;
-	if (obj->refcnt==0)
+	if (obj->refcnt==0){
 		linphone_call_destroy(obj);
+	}
 }
 
 /**
@@ -367,6 +374,14 @@ LinphoneCallDir linphone_call_get_dir(const LinphoneCall *call){
 **/
 bool_t linphone_call_has_transfer_pending(const LinphoneCall *call){
 	return call->refer_pending;
+}
+
+/**
+ * Returns call's duration in seconds.
+**/
+int linphone_call_get_duration(const LinphoneCall *call){
+	if (call->media_start_time==0) return 0;
+	return time(NULL)-call->media_start_time;
 }
 
 /**
@@ -562,7 +577,6 @@ static RtpProfile *make_profile(LinphoneCore *lc, const SalMediaDescription *md,
 		number=payload_type_get_number(pt);
 		if (rtp_profile_get_payload(prof,number)!=NULL){
 			ms_warning("A payload type with number %i already exists in profile !",number);
-			payload_type_destroy(pt);
 		}else
 			rtp_profile_set_payload(prof,number,pt);
 	}
@@ -589,7 +603,7 @@ void linphone_call_start_media_streams(LinphoneCall *call){
 	{
 		const SalStreamDescription *stream=sal_media_description_find_stream(call->resultdesc,
 		    					SalProtoRtpAvp,SalAudio);
-		if (stream){
+		if (stream && stream->dir!=SalStreamInactive){
 			MSSndCard *playcard=lc->sound_conf.lsd_card ? 
 				lc->sound_conf.lsd_card : lc->sound_conf.play_sndcard;
 			MSSndCard *captcard=lc->sound_conf.capt_sndcard;
@@ -647,7 +661,7 @@ void linphone_call_start_media_streams(LinphoneCall *call){
 			video_preview_stop(lc->previewstream);
 			lc->previewstream=NULL;
 		}
-		if (stream) {
+		if (stream && stream->dir!=SalStreamInactive) {
 			const char *addr=stream->addr[0]!='\0' ? stream->addr : call->resultdesc->addr;
 			call->video_profile=make_profile(lc,call->resultdesc,stream,&used_pt);
 			if (used_pt!=-1){

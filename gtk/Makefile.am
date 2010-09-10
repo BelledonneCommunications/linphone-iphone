@@ -1,15 +1,14 @@
-GLADE_FILES=	about.glade \
-		main.glade \
-		password.glade \
-		contact.glade \
-		incoming_call.glade \
-		parameters.glade \
-		sip_account.glade \
-		chatroom.glade \
-		call_logs.glade \
-		log.glade \
-		buddylookup.glade \
-		waiting.glade
+UI_FILES=	about.ui \
+		main.ui \
+		password.ui \
+		contact.ui \
+		parameters.ui \
+		sip_account.ui \
+		chatroom.ui \
+		call_logs.ui \
+		log.ui \
+		buddylookup.ui \
+		waiting.ui
 
 PIXMAPS=	\
 		stock_people.png 
@@ -18,13 +17,13 @@ LINPHONE_ICO_RC_FILE=linphone.rc
 LINPHONE_ICO_FILE=linphone.ico
 
 EXTRA_DIST=	$(PIXMAPS) \
-		$(GLADE_FILES) \
+		$(UI_FILES) \
 		linphone.iss \
 		$(LINPHONE_ICO_RC_FILE) \
 		$(LINPHONE_ICO_FILE)
 
 
-if BUILD_GLADE_UI
+if BUILD_GTK_UI
 
 BUILT_SOURCES=version_date.h
 
@@ -49,8 +48,7 @@ linphone_3_SOURCES=	\
 linphone_3_LDADD=$(top_builddir)/oRTP/src/libortp.la \
 		$(top_builddir)/mediastreamer2/src/libmediastreamer.la \
 		$(top_builddir)/coreapi/liblinphone.la \
-			$(LIBGTK_LIBS) $(INTLLIBS) \
-			$(LIBGLADE_LIBS)
+			$(LIBGTK_LIBS) $(INTLLIBS) 
 
 
 if BUILD_WIN32
@@ -64,13 +62,8 @@ else
 linphone_3_LDFLAGS=-export-dynamic
 endif
 
-gladedir=$(datadir)/linphone
-glade_DATA=$(GLADE_FILES) $(PIXMAPS) $(top_srcdir)/COPYING
-
-#all-local:	gtk-linphone.ui	
-
-#gtk-linphone.ui:	gtk-linphone.glade
-#	gtk-builder-convert gtk-linphone.glade $@
+uidir=$(datadir)/linphone
+ui_DATA=$(UI_FILES) $(PIXMAPS) $(top_srcdir)/COPYING
 
 endif
 
@@ -78,7 +71,7 @@ endif
 AM_CFLAGS= -DIN_LINPHONE -I$(top_srcdir)/coreapi/ \
 		-I$(top_srcdir)/mediastreamer2/include/ \
 		$(ORTP_CFLAGS) \
-		$(LIBGLADE_CFLAGS) $(STRICT_OPTIONS) $(LIBGTK_CFLAGS) $(IPV6_CFLAGS) \
+		$(STRICT_OPTIONS) $(LIBGTK_CFLAGS) $(IPV6_CFLAGS) \
 		$(OSIP_CFLAGS) 
 
 

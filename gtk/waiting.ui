@@ -1,8 +1,7 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
+<?xml version="1.0"?>
 <!--Generated with glade3 3.4.5 on Sun Mar 29 15:33:09 2009 -->
-<glade-interface>
-  <widget class="GtkWindow" id="waiting">
+<interface>
+  <object class="GtkWindow" id="waiting">
     <property name="title" translatable="yes">Linphone</property>
     <property name="resizable">False</property>
     <property name="modal">True</property>
@@ -10,52 +9,49 @@
     <property name="icon">linphone2.png</property>
     <property name="deletable">False</property>
     <child>
-      <widget class="GtkFrame" id="frame1">
+      <object class="GtkFrame" id="frame1">
         <property name="visible">True</property>
         <property name="label_xalign">0</property>
         <child>
-          <widget class="GtkAlignment" id="alignment1">
+          <object class="GtkAlignment" id="alignment1">
             <property name="visible">True</property>
             <property name="left_padding">12</property>
             <child>
-              <widget class="GtkHBox" id="hbox1">
+              <object class="GtkHBox" id="hbox1">
                 <property name="visible">True</property>
                 <property name="spacing">5</property>
                 <child>
-                  <widget class="GtkImage" id="image1">
+                  <object class="GtkImage" id="image1">
                     <property name="visible">True</property>
                     <property name="stock">gtk-dialog-info</property>
-                  </widget>
+                  </object>
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
                   </packing>
                 </child>
                 <child>
-                  <widget class="GtkProgressBar" id="progressbar">
+                  <object class="GtkProgressBar" id="progressbar">
                     <property name="visible">True</property>
-                  </widget>
+                  </object>
                   <packing>
                     <property name="padding">5</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
-              </widget>
+              </object>
             </child>
-          </widget>
+          </object>
         </child>
-        <child>
-          <widget class="GtkLabel" id="label1">
+        <child type="label">
+          <object class="GtkLabel" id="label1">
             <property name="visible">True</property>
             <property name="label" translatable="yes">Please wait</property>
             <property name="use_markup">True</property>
             <property name="justify">GTK_JUSTIFY_CENTER</property>
-          </widget>
-          <packing>
-            <property name="type">label_item</property>
-          </packing>
+          </object>
         </child>
-      </widget>
+      </object>
     </child>
-  </widget>
-</glade-interface>
+  </object>
+</interface>

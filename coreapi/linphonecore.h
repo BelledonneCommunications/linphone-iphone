@@ -160,7 +160,25 @@ char * linphone_call_log_to_str(LinphoneCallLog *cl);
 **/
 struct _LinphoneCall;
 typedef struct _LinphoneCall LinphoneCall;
-enum _LinphoneCallState;
+
+typedef enum _LinphoneCallState{
+	LinphoneCallIdle,
+	LinphoneCallIncomingReceived,
+	LinphoneCallOutgoingInit,
+	LinphoneCallOutgoingProgress,
+	LinphoneCallOutgoingRinging,
+	LinphoneCallOutgoingEarlyMedia,
+	LinphoneCallConnected,
+	LinphoneCallStreamsRunning,
+	LinphoneCallPausing,
+	LinphoneCallPaused,
+	LinphoneCallResuming,
+	LinphoneCallRefered,
+	LinphoneCallError,
+	LinphoneCallEnd,
+	LinphoneCallPausedByRemote
+} LinphoneCallState;
+
 
 enum _LinphoneCallState linphone_call_get_state(const LinphoneCall *call);
 bool_t linphone_call_asked_to_autoanswer(LinphoneCall *call);
@@ -173,6 +191,7 @@ void linphone_call_unref(LinphoneCall *call);
 LinphoneCallLog *linphone_call_get_call_log(const LinphoneCall *call);
 const char *linphone_call_get_refer_to(const LinphoneCall *call);
 bool_t linphone_call_has_transfer_pending(const LinphoneCall *call);
+int linphone_call_get_duration(const LinphoneCall *call);
 void *linphone_call_get_user_pointer(LinphoneCall *call);
 void linphone_call_set_user_pointer(LinphoneCall *call, void *user_pointer);
 
@@ -365,23 +384,6 @@ void linphone_chat_room_destroy(LinphoneChatRoom *cr);
 void linphone_chat_room_set_user_data(LinphoneChatRoom *cr, void * ud);
 void * linphone_chat_room_get_user_data(LinphoneChatRoom *cr);
 
-typedef enum _LinphoneCallState{
-	LinphoneCallIdle,
-	LinphoneCallIncomingReceived,
-	LinphoneCallOutgoingInit,
-	LinphoneCallOutgoingProgress,
-	LinphoneCallOutgoingRinging,
-	LinphoneCallOutgoingEarlyMedia,
-	LinphoneCallConnected,
-	LinphoneCallStreamsRunning,
-	LinphoneCallPausing,
-	LinphoneCallPaused,
-	LinphoneCallResuming,
-	LinphoneCallRefered,
-	LinphoneCallError,
-	LinphoneCallEnd,
-} LinphoneCallState;
-
 typedef enum _LinphoneGlobalState{
 	LinphoneGlobalOff,
 	LinphoneGlobalStartup,
@@ -525,6 +527,8 @@ int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *call);
 int linphone_core_terminate_all_calls(LinphoneCore *lc);
 
 int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call);
+
+int linphone_core_pause_all_calls(LinphoneCore *lc);
 
 int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *call);
 
@@ -759,6 +763,10 @@ const char *linphone_core_get_video_device(const LinphoneCore *lc);
 
 /* Set static picture to be used when "Static picture" is the video device */
 int linphone_core_set_static_picture(LinphoneCore *lc, const char *path);
+
+/* Set and get frame rate for static picture */
+int linphone_core_set_static_picture_fps(LinphoneCore *lc, float fps);
+float linphone_core_get_static_picture_fps(LinphoneCore *lc);
 
 /*function to be used for eventually setting window decorations (icons, title...)*/
 unsigned long linphone_core_get_native_video_window_id(const LinphoneCore *lc);

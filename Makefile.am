@@ -10,7 +10,7 @@ ORTP_DIR = oRTP
 endif
 
 SUBDIRS = m4 pixmaps po $(ORTP_DIR) mediastreamer2\
-		coreapi console gtk-glade share scripts
+		coreapi console gtk share scripts
 
 
 
@@ -125,7 +125,7 @@ zip:
 #add gtk dlls and files
 	make gtk-cherrypick
 	make other-cherrypick
-	cp -f $(top_srcdir)/gtk-glade/gtkrc $(INSTALLDIR_WITH_PREFIX)/.
+	cp -f $(top_srcdir)/gtk/gtkrc $(INSTALLDIR_WITH_PREFIX)/.
 	cp -f $(top_srcdir)/README $(INSTALLDIR_WITH_PREFIX)/.
 	cp -f $(top_srcdir)/COPYING $(INSTALLDIR_WITH_PREFIX)/.
 	cd $(INSTALLDIR_WITH_PREFIX) && zip -r $(ZIPFILE) *
@@ -162,7 +162,7 @@ setup.exe: filelist
 	rm -f $(INSTALLDIR_WITH_PREFIX)/$(ISS_SCRIPT)
 
 newdate:
-	cd gtk-glade && $(MAKE) newdate
+	cd gtk && $(MAKE) newdate
 
 
 Portfile:	$(top_srcdir)/scripts/Portfile.tmpl dist
