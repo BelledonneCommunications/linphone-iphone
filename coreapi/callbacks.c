@@ -277,7 +277,7 @@ static void call_updating(SalOp *op){
 
 	if (call->resultdesc && !sal_media_description_empty(call->resultdesc))
 	{
-		if (call->state==LinphoneCallPaused &&
+		if (call->state==LinphoneCallPausedByRemote &&
 		    sal_media_description_has_dir(call->resultdesc,SalStreamSendRecv) && strcmp(call->resultdesc->addr,"0.0.0.0")!=0){
 			/*make sure we can be resumed */
 			if (lc->current_call!=NULL && lc->current_call!=call){
@@ -294,7 +294,7 @@ static void call_updating(SalOp *op){
 		        sal_media_description_has_dir(call->resultdesc,SalStreamRecvOnly) && !strcmp(call->resultdesc->addr,"0.0.0.0")){
 			if(lc->vtable.display_status)
 				lc->vtable.display_status(lc,_("We are being paused..."));
-			linphone_call_set_state (call,LinphoneCallPaused,"Call paused");
+			linphone_call_set_state (call,LinphoneCallPausedByRemote,"Call paused by remote");
 			if (lc->current_call!=call){
 				ms_error("Inconsitency detected: current call is %p but call %p is being paused !",lc->current_call,call);
 			}

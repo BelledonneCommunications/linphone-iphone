@@ -2283,11 +2283,6 @@ int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *the_call)
 {
 	LinphoneCall *call = the_call;
 	
-	if(linphone_core_get_current_call(lc) != call)
-	{
-		ms_error("The call asked to be paused was not the current on");
-		return -1;
-	}
 	if (sal_call_hold(call->op,TRUE) != 0)
 	{
 		if (lc->vtable.display_warning)
@@ -2302,6 +2297,21 @@ int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *the_call)
 }
 
 /**
+ * Pause all currently running calls.
+**/
+int linphone_core_pause_all_calls(LinphoneCore *lc){
+	const MSList *elem;
+	for(elem=lc->calls;elem!=NULL;elem=elem->next){
+		LinphoneCall *call=(LinphoneCall *)elem->data;
+		LinphoneCallState cs=linphone_call_get_state(call);
+		if (cs==LinphoneCallStreamsRunning && cs==LinphoneCallPausedByRemote){
+			linphone_core_pause_call(lc,call);
+		}
+	}
+	return 0;
+}
+
+/**
  * Resumes the call.
  *
  * @ingroup call_control
@@ -2312,7 +2322,7 @@ int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *the_call)
 	LinphoneCall *call = the_call;
 	
 	if(call->state!=LinphoneCallPaused ){
-		ms_warning("we cannot resume a call when the communication is not established");
+		ms_warning("we cannot resume a call that has not been established and paused before");
 		return -1;
 	}
 	if(linphone_core_get_current_call(lc) != NULL){

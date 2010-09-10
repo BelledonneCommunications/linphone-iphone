@@ -636,7 +636,8 @@ static gboolean in_call_timer(){
 static bool_t all_calls_paused(const MSList *calls){
 	for(;calls!=NULL;calls=calls->next){
 		LinphoneCall *call=(LinphoneCall*)calls->data;
-		if (linphone_call_get_state(call)!=LinphoneCallPaused)
+		LinphoneCallState cs=linphone_call_get_state(call);
+		if (cs!=LinphoneCallPaused && cs!=LinphoneCallIncomingReceived)
 			return FALSE;
 	}
 	return TRUE;
@@ -741,8 +742,10 @@ void linphone_gtk_decline_clicked(GtkWidget *button){
 
 void linphone_gtk_answer_clicked(GtkWidget *button){
 	LinphoneCall *call=linphone_gtk_get_currently_displayed_call ();
-	if (call)
+	if (call){
+		linphone_core_pause_all_calls(linphone_gtk_get_core());
 		linphone_core_accept_call(linphone_gtk_get_core(),call);
+	}
 }
 
 void linphone_gtk_set_audio_video(){
@@ -937,7 +940,7 @@ static void linphone_gtk_call_state_changed(LinphoneCore *lc, LinphoneCall *call
 		case LinphoneCallOutgoingProgress:
 			linphone_gtk_in_call_view_set_calling (call);
 		break;
-		case LinphoneCallConnected:
+		case LinphoneCallStreamsRunning:
 			linphone_gtk_in_call_view_set_in_call(call);
 			linphone_gtk_enable_mute_button(
 				GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(linphone_gtk_get_main_window(),"main_mute")),
@@ -952,12 +955,15 @@ static void linphone_gtk_call_state_changed(LinphoneCore *lc, LinphoneCall *call
 		break;
 		case LinphoneCallIncomingReceived:
 			linphone_gtk_create_in_call_view (call);
-			linphone_gtk_in_call_view_set_incoming(call);
+			linphone_gtk_in_call_view_set_incoming(call,!all_calls_paused (linphone_core_get_calls(lc)));
 			if (auto_answer)  {
 				linphone_call_ref(call);
 				g_timeout_add(2000,(GSourceFunc)linphone_gtk_auto_answer ,call);
-			}
-				
+			}		
+		break;
+		case LinphoneCallPaused:
+		case LinphoneCallPausedByRemote:
+			linphone_gtk_in_call_view_set_paused(call);
 		break;
 		default:
 		break;

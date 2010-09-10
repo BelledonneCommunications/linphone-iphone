@@ -176,6 +176,7 @@ typedef enum _LinphoneCallState{
 	LinphoneCallRefered,
 	LinphoneCallError,
 	LinphoneCallEnd,
+	LinphoneCallPausedByRemote
 } LinphoneCallState;
 
 
@@ -526,6 +527,8 @@ int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *call);
 int linphone_core_terminate_all_calls(LinphoneCore *lc);
 
 int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call);
+
+int linphone_core_pause_all_calls(LinphoneCore *lc);
 
 int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *call);
 

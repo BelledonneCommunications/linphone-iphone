@@ -293,8 +293,9 @@ void linphone_call_ref(LinphoneCall *obj){
 **/
 void linphone_call_unref(LinphoneCall *obj){
 	obj->refcnt--;
-	if (obj->refcnt==0)
+	if (obj->refcnt==0){
 		linphone_call_destroy(obj);
+	}
 }
 
 /**
@@ -576,7 +577,6 @@ static RtpProfile *make_profile(LinphoneCore *lc, const SalMediaDescription *md,
 		number=payload_type_get_number(pt);
 		if (rtp_profile_get_payload(prof,number)!=NULL){
 			ms_warning("A payload type with number %i already exists in profile !",number);
-			payload_type_destroy(pt);
 		}else
 			rtp_profile_set_payload(prof,number,pt);
 	}
@@ -603,7 +603,7 @@ void linphone_call_start_media_streams(LinphoneCall *call){
 	{
 		const SalStreamDescription *stream=sal_media_description_find_stream(call->resultdesc,
 		    					SalProtoRtpAvp,SalAudio);
-		if (stream){
+		if (stream && stream->dir!=SalStreamInactive){
 			MSSndCard *playcard=lc->sound_conf.lsd_card ? 
 				lc->sound_conf.lsd_card : lc->sound_conf.play_sndcard;
 			MSSndCard *captcard=lc->sound_conf.capt_sndcard;
@@ -661,7 +661,7 @@ void linphone_call_start_media_streams(LinphoneCall *call){
 			video_preview_stop(lc->previewstream);
 			lc->previewstream=NULL;
 		}
-		if (stream) {
+		if (stream && stream->dir!=SalStreamInactive) {
 			const char *addr=stream->addr[0]!='\0' ? stream->addr : call->resultdesc->addr;
 			call->video_profile=make_profile(lc,call->resultdesc,stream,&used_pt);
 			if (used_pt!=-1){

@@ -413,6 +413,9 @@ static const char *get_call_status(LinphoneCall *call){
 				return "Paused";
 			}
 		break;
+		case LinphoneCallPausedByRemote:
+			return "Paused by remote";
+		break;
 		case LinphoneCallIncomingReceived:
 			return "Pending";
 		break;
