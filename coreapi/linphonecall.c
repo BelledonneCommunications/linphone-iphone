@@ -227,10 +227,48 @@ static void linphone_call_set_terminated(LinphoneCall *call){
 	linphone_call_unref(call);
 }
 
+const char *linphone_call_state_to_string(LinphoneCallState cs){
+	switch (cs){
+		case LinphoneCallIdle:
+			return "LinphoneCallIdle";
+		case LinphoneCallIncomingReceived:
+			return "LinphoneCallIncomingReceived";
+		case LinphoneCallOutgoingInit:
+			return "LinphoneCallOutgoingInit";
+		case LinphoneCallOutgoingProgress:
+			return "LinphoneCallOutgoingProgress";
+		case LinphoneCallOutgoingRinging:
+			return "LinphoneCallOutgoingRinging";
+		case LinphoneCallOutgoingEarlyMedia:
+			return "LinphoneCallOutgoingEarlyMedia";
+		case LinphoneCallConnected:
+			return "LinphoneCallConnected";
+		case LinphoneCallStreamsRunning:
+			return "LinphoneCallStreamsRunning";
+		case LinphoneCallPausing:
+			return "LinphoneCallPausing";
+		case LinphoneCallPaused:
+			return "LinphoneCallPaused";
+		case LinphoneCallResuming:
+			return "LinphoneCallResuming";
+		case LinphoneCallRefered:
+			return "LinphoneCallRefered";
+		case LinphoneCallError:
+			return "LinphoneCallRefered";
+		case LinphoneCallEnd:
+			return "LinphoneCallEnd";
+		case LinphoneCallPausedByRemote:
+			return "LinphoneCallPausedByRemote";
+	}
+	return "undefined state";
+}
+
 void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const char *message){
 	LinphoneCore *lc=call->core;
 	bool_t finalize_call=FALSE;
 	if (call->state!=cstate){
+		ms_message("Call %p: moving from state %s to %s",call,linphone_call_state_to_string(call->state),
+		           linphone_call_state_to_string(cstate));
 		if (cstate!=LinphoneCallRefered){
 			/*LinphoneCallRefered is rather an event, not a state.
 			 Indeed it does not change the state of the call (still paused or running)*/

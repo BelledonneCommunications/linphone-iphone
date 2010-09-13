@@ -545,12 +545,11 @@
                                   <object class="GtkHBox" id="hbox7">
                                     <property name="visible">True</property>
                                     <child>
-                                      <object class="GtkToggleButton" id="main_mute">
+                                      <object class="GtkButton" id="main_mute">
                                         <property name="label" translatable="yes">Mute</property>
-                                        <property name="sensitive">False</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">True</property>
-                                        <signal name="toggled" handler="linphone_gtk_mute_toggled"/>
+                                        <signal name="clicked" handler="linphone_gtk_mute_clicked"/>
                                       </object>
                                       <packing>
                                         <property name="fill">False</property>
