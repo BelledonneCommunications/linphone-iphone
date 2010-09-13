@@ -83,9 +83,9 @@ bool_t sal_media_description_has_dir(const SalMediaDescription *md, SalStreamDir
 	int i;
 	for(i=0;i<md->nstreams;++i){
 		const SalStreamDescription *ss=&md->streams[i];
-		if (ss->dir!=stream_dir) return FALSE;
+		if (ss->dir==stream_dir) return TRUE;
 	}
-	return TRUE;
+	return FALSE;
 }
 
 static void assign_string(char **str, const char *arg){

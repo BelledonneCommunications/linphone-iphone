@@ -280,7 +280,7 @@ static void call_updating(SalOp *op){
 
 	if (call->resultdesc && !sal_media_description_empty(call->resultdesc))
 	{
-		if (call->state==LinphoneCallPausedByRemote &&
+		if ((call->state==LinphoneCallPausedByRemote || call->state==LinphoneCallPaused) &&
 		    sal_media_description_has_dir(call->resultdesc,SalStreamSendRecv) && strcmp(call->resultdesc->addr,"0.0.0.0")!=0){
 			/*make sure we can be resumed */
 			if (lc->current_call!=NULL && lc->current_call!=call){

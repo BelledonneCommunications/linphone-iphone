@@ -961,6 +961,7 @@ static void linphone_gtk_call_state_changed(LinphoneCore *lc, LinphoneCall *call
 		break;
 		case LinphoneCallResuming:
 			linphone_gtk_enable_hold_button(call,TRUE,TRUE);
+			linphone_gtk_in_call_view_set_in_call (call);
 		break;
 		case LinphoneCallPausing:
 			linphone_gtk_enable_hold_button(call,TRUE,FALSE);
