@@ -3363,7 +3363,13 @@ static MSFilter *get_dtmf_gen(LinphoneCore *lc){
 	}
 	if (lc->ringstream==NULL){
 		MSSndCard *ringcard=lc->sound_conf.lsd_card ?lc->sound_conf.lsd_card : lc->sound_conf.ring_sndcard;
-		lc->ringstream=ring_start(NULL,0,ringcard);
+		const char *playfile;
+#ifdef ANDROID
+		playfile="/data/data/org.linphone/files/silence.wav";
+#else
+		playfile=NULL;
+#endif
+		lc->ringstream=ring_start(playfile,0,ringcard);
 		lc->dmfs_playing_start_time=time(NULL);
 	}else{
 		if (lc->dmfs_playing_start_time!=0)
