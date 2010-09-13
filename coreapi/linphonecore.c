@@ -2133,7 +2133,7 @@ int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call)
 		MSList *elem;
 		for(elem=lc->calls;elem!=NULL;elem=elem->next){
 			LinphoneCall *c=(LinphoneCall*)elem->data;
-			if (c!=call && (c->state!=LinphoneCallPaused)){
+			if (c!=call && (c->state!=LinphoneCallPaused && c->state!=LinphoneCallPausing)){
 				ms_warning("Cannot accept this call as another one is running, pause it before.");
 				return -1;
 			}
@@ -2333,10 +2333,12 @@ int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *the_call)
 		return -1;
 	}
 	if(linphone_core_get_current_call(lc) != NULL){
+		ms_warning("There is already a call in process, pause or stop it first.");
 		if (lc->vtable.display_warning)
 			lc->vtable.display_warning(lc,_("There is already a call in process, pause or stop it first."));
 		return -1;
 	}
+	ms_message("Resuming call %p",call);
 	if(sal_call_hold(call->op,FALSE) != 0){
 		return -1;
 	}
