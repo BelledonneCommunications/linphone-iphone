@@ -30,7 +30,6 @@ LOCAL_SRC_FILES = \
 	linphonecore.c \
 	misc.c  \
 	enum.c \
-	enum.h \
 	presence.c \
 	proxy.c \
 	friend.c \
@@ -46,7 +45,8 @@ LOCAL_SRC_FILES = \
 	sal_eXosip2_presence.c \
 	sal_eXosip2_sdp.c \
 	offeranswer.c \
-	callbacks.c
+	callbacks.c \
+	linphonecall.c
 
 LOCAL_CFLAGS += \
 	-D_BYTE_ORDER=_LITTLE_ENDIAN \

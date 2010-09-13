@@ -40,6 +40,7 @@ public interface LinphoneCall {
 		public final static State Refered = new State(11,"Refered");
 		public final static State Error = new State(12,"Error");
 		public final static State CallEnd = new State(13,"CallEnd");
+		public final static State PausedByRemote = new State(14,"PausedByRemote");
 		private State(int value,String stringValue) {
 			mValue = value;
 			values.addElement(this);

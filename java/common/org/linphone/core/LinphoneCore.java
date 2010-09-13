@@ -135,10 +135,10 @@ public interface LinphoneCore {
 	 * Returns The LinphoneCall the current call if one is in call
 	 *
 	**/
-	public LinphoneCall getCurrentCall();
+	public LinphoneCall getCurrentCall(); 
 	
 	/**
-	 * get the remote address in case of in/out call
+	 * get current call remote address in case of in/out call
 	 * @return null if no call engaged yet
 	 */
 	public LinphoneAddress getRemoteAddress();
@@ -220,6 +220,17 @@ public interface LinphoneCore {
 	 * @param number
 	 */
 	public void sendDtmf(char number);
+	/**
+	 * Initiate a dtmf signal to the speqker if not in call
+	 * @param number
+	 * @param duration in ms , -1 for unlimited
+	 */
+	public void playDtmf(char number,int duration);
+	/**
+	 * stop current dtmf
+	 */
+	public void stopDtmf();
+	
 	/**
 	 * 
 	 */

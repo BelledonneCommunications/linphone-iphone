@@ -25,9 +25,6 @@ public interface LinphoneCoreListener {
 	/**< Notifies the application that it should show up
 	 * @return */
 		public void show(LinphoneCore lc);
-		/**< Notifies incoming calls 
-		 * @return */
-		public void inviteReceived(LinphoneCore lc,String from);
 		 /**< Notify calls terminated by far end
 		 * @return */
 		public void byeReceived(LinphoneCore lc,String from);

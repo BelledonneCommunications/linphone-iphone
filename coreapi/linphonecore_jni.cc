@@ -72,14 +72,13 @@ public:
 		userdata = auserdata?env->NewGlobalRef(auserdata):0;
 		memset(&vTable,0,sizeof(vTable));
 		vTable.show = showInterfaceCb;
-		vTable.inv_recv = inviteReceivedCb;
 		vTable.auth_info_requested = authInfoRequested;
 		vTable.display_status = displayStatusCb;
 		vTable.display_message = displayMessageCb;
 		vTable.display_warning = displayMessageCb;
 		vTable.global_state_changed = globalStateChange;
-		vTable.registration_state_changed = registrationState;
-		vTable.call_state_changed = callState;
+		vTable.registration_state_changed = registrationStateChange;
+		vTable.call_state_changed = callStateChange;
 
 		listernerClass = (jclass)env->NewGlobalRef(env->GetObjectClass( alistener));
 		/*displayStatus(LinphoneCore lc,String message);*/
@@ -112,7 +111,12 @@ public:
 		env->DeleteGlobalRef(listener);
 		if (userdata) env->DeleteGlobalRef(userdata);
 		env->DeleteGlobalRef(listernerClass);
-		env->DeleteGlobalRef(generalStateClass);
+		env->DeleteGlobalRef(globalStateClass);
+		env->DeleteGlobalRef(registrationStateClass);
+		env->DeleteGlobalRef(callStateClass);
+		env->DeleteGlobalRef(proxyClass);
+		env->DeleteGlobalRef(callClass);
+
 	}
 	jobject core;
 	jobject listener;
@@ -142,9 +146,6 @@ public:
 	LinphoneCoreVTable vTable;
 
 	static void showInterfaceCb(LinphoneCore *lc) {
-
-	}
-	static  void inviteReceivedCb(LinphoneCore *lc, const char *from) {
 
 	}
 	static void byeReceivedCb(LinphoneCore *lc, const char *from) {
@@ -177,10 +178,10 @@ public:
 		env->CallVoidMethod(lcData->listener
 							,lcData->globalStateId
 							,lcData->core
-							,env->CallStaticObjectMethod(lcData->globalStateClass,lcData->globalStateFromIntId,gstate),
+							,env->CallStaticObjectMethod(lcData->globalStateClass,lcData->globalStateFromIntId,(jint)gstate),
 							message ? env->NewStringUTF(message) : NULL);
 	}
-	static void registerStateChange(LinphoneCore *lc, LinphoneProxyConfig proxy,LinphoneRegistrationState state,const char* message) {
+	static void registrationStateChange(LinphoneCore *lc, LinphoneProxyConfig* proxy,LinphoneRegistrationState state,const char* message) {
 		JNIEnv *env = 0;
 		jint result = jvm->AttachCurrentThread(&env,NULL);
 		if (result != 0) {
@@ -191,11 +192,11 @@ public:
 		env->CallVoidMethod(lcData->listener
 							,lcData->registrationStateId
 							,lcData->core
-							,env->NewObject(proxyClass,proxyCtrId,proxy)
-							,env->CallStaticObjectMethod(lcData->registrationStateClass,lcData->registrationStateFromIntId,state),
+							,env->NewObject(lcData->proxyClass,lcData->proxyCtrId,(jlong)proxy)
+							,env->CallStaticObjectMethod(lcData->registrationStateClass,lcData->registrationStateFromIntId,(jint)state),
 							message ? env->NewStringUTF(message) : NULL);
 	}
-	static void callStateChange(LinphoneCore *lc, LinphoneCall call,LinphoneCallState *state,const char* message) {
+	static void callStateChange(LinphoneCore *lc, LinphoneCall* call,LinphoneCallState state,const char* message) {
 		JNIEnv *env = 0;
 		jint result = jvm->AttachCurrentThread(&env,NULL);
 		if (result != 0) {
@@ -206,8 +207,8 @@ public:
 		env->CallVoidMethod(lcData->listener
 							,lcData->callStateId
 							,lcData->core
-							,env->NewObject(callClass,callCtrId,call)
-							,env->CallStaticObjectMethod(lcData->callStateClass,lcData->callStateFromIntId,state),
+							,env->NewObject(lcData->callClass,lcData->callCtrId,(jlong)call)
+							,env->CallStaticObjectMethod(lcData->callStateClass,lcData->callStateFromIntId,(jint)state),
 							message ? env->NewStringUTF(message) : NULL);
 	}
 
@@ -300,11 +301,11 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_invite(	JNIEnv*  env
 		,jlong lc
 		,jstring juri) {
 	const char* uri = env->GetStringUTFChars(juri, NULL);
-	LinphoneCall lCall = linphone_core_invite((LinphoneCore*)lc,uri);
+	LinphoneCall* lCall = linphone_core_invite((LinphoneCore*)lc,uri);
 	env->ReleaseStringUTFChars(juri, uri);
 	return (jlong)lCall;
 }
-extern "C" void Java_org_linphone_core_LinphoneCoreImpl_inviteAddress(	JNIEnv*  env
+extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_inviteAddress(	JNIEnv*  env
 		,jobject  thiz
 		,jlong lc
 		,jlong to) {
@@ -321,7 +322,7 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_terminateCall(	JNIEnv*  
 extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_getRemoteAddress(	JNIEnv*  env
 		,jobject  thiz
 		,jlong lc) {
-	return (jlong)linphone_core_get_remote_uri((LinphoneCore*)lc);
+	return (jlong)linphone_core_get_current_call_remote_address((LinphoneCore*)lc);
 }
 extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isInCall(	JNIEnv*  env
 		,jobject  thiz
@@ -396,6 +397,19 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_sendDtmf(	JNIEnv*  env
 		,jchar dtmf) {
 	linphone_core_send_dtmf((LinphoneCore*)lc,dtmf);
 }
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_playDtmf(	JNIEnv*  env
+		,jobject  thiz
+		,jlong lc
+		,jchar dtmf
+		,jint duration) {
+	linphone_core_play_dtmf((LinphoneCore*)lc,dtmf,duration);
+}
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_stopDtmf(	JNIEnv*  env
+		,jobject  thiz
+		,jlong lc) {
+	linphone_core_stop_dtmf((LinphoneCore*)lc);
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_clearCallLogs(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong lc) {
@@ -434,6 +448,13 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isEchoCancellationEn
 																			,jlong lc
 																			) {
 	return linphone_core_echo_cancellation_enabled((LinphoneCore*)lc);
+}
+
+extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_getCurrentCall(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			) {
+	return (jlong)linphone_core_get_current_call((LinphoneCore*)lc);
 }
 
 
