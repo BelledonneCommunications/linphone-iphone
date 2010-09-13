@@ -2118,7 +2118,7 @@ int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call)
 			call = (LinphoneCall*)linphone_core_get_calls(lc)->data;
 	}
 
-	if (lc->current_call){
+	if (lc->current_call!=NULL && lc->current_call!=call){
 		ms_warning("Cannot accept this call, there is already one running.");
 		return -1;
 	}

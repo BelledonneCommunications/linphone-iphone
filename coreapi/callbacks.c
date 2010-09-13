@@ -97,6 +97,7 @@ static void call_received(SalOp *h){
 
 	/* play the ring if this is the only call*/
 	if (lc->sound_conf.ring_sndcard!=NULL && ms_list_size(lc->calls)==1){
+		lc->current_call=call;
 		if (lc->ringstream && lc->dmfs_playing_start_time!=0){
 			ring_stop(lc->ringstream);
 			lc->ringstream=NULL;
