@@ -1080,15 +1080,19 @@ void linphone_gtk_load_identities(void){
 	gtk_combo_box_set_active(box,def_index);
 }
 
-static void linphone_gtk_dtmf_clicked(GtkButton *button){
+static void linphone_gtk_dtmf_pressed(GtkButton *button){
 	const char *label=gtk_button_get_label(button);
 	GtkWidget *uri_bar=linphone_gtk_get_widget(gtk_widget_get_toplevel(GTK_WIDGET(button)),"uribar");
 	int pos=-1;
 	gtk_editable_insert_text(GTK_EDITABLE(uri_bar),label,1,&pos);
-	linphone_core_play_dtmf (linphone_gtk_get_core(),label[0],100);
+	linphone_core_play_dtmf (linphone_gtk_get_core(),label[0],-1);
 	if (linphone_core_in_call(linphone_gtk_get_core())){
 		linphone_core_send_dtmf(linphone_gtk_get_core(),label[0]);
 	}
+}
+
+static void linphone_gtk_dtmf_released(GtkButton *button){
+	linphone_core_stop_dtmf (linphone_gtk_get_core());
 }
 
 static void linphone_gtk_connect_digits(void){
@@ -1097,7 +1101,8 @@ static void linphone_gtk_connect_digits(void){
 	GList *elem;
 	for(elem=children;elem!=NULL;elem=elem->next){
 		GtkButton *button=GTK_BUTTON(elem->data);
-		g_signal_connect(G_OBJECT(button),"clicked",(GCallback)linphone_gtk_dtmf_clicked,NULL);
+		g_signal_connect(G_OBJECT(button),"pressed",(GCallback)linphone_gtk_dtmf_pressed,NULL);
+		g_signal_connect(G_OBJECT(button),"released",(GCallback)linphone_gtk_dtmf_released,NULL);
 	}
 }
 
