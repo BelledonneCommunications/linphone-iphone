@@ -89,6 +89,7 @@ static int lpc_cmd_resume(LinphoneCore *lc, char *args);
 static int lpc_cmd_mute_mic(LinphoneCore *lc, char *args);
 static int lpc_cmd_unmute_mic(LinphoneCore *lc, char *args);
 static int lpc_cmd_rtp_no_xmit_on_audio_mute(LinphoneCore *lc, char *args);
+static int lpc_cmd_video_window(LinphoneCore *lc, char *args);
 
 /* Command handler helpers */
 static void linphonec_proxy_add(LinphoneCore *lc);
@@ -128,13 +129,16 @@ void linphonec_out(const char *fmt,...);
 /*
  * Commands table.
  */
-LPC_COMMAND commands[] = {
-	{ "help", lpc_cmd_help, "Print commands help", NULL },
+static LPC_COMMAND commands[] = {
+	{ "help", lpc_cmd_help, "Print commands help, 'help advanced' for advanced features.",
+		"'help <command>'\t: displays specific help for command.\n"
+		"'help advanced'\t: shows advanced commands.\n"
+	},
 	{ "call", lpc_cmd_call, "Call a SIP uri",
 		"'call <sip-url>' \t: initiate a call to the specified destination.\n"
 		"'call show' \t: show all the current calls with their id and status.\n"
 		},
-	{ "calls", lpc_cmd_calls, "Show all the current calls with their id and status.\n",
+	{ "calls", lpc_cmd_calls, "Show all the current calls with their id and status.",
 		NULL
 		},
 	{ "chat", lpc_cmd_chat, "Chat with a SIP uri",
@@ -150,6 +154,17 @@ LPC_COMMAND commands[] = {
 		"'answer' : Answer the current incoming call\n"
 		"'answer <call id>' : Answer the call with given id\n"
 	},
+	{ "pause", lpc_cmd_pause, "pause a call",
+		"'pause' : pause the current call\n"},
+	{ "resume", lpc_cmd_resume, "resume a call",
+		"'resume' : resume the unique call\n"
+		"'resume <call id>' : hold off the call with given id\n"},
+	{ "mute", lpc_cmd_mute_mic, 
+	  "Mute microphone and suspend voice transmission."},
+	{ "unmute", lpc_cmd_unmute_mic, 
+		  "Unmute microphone and resume voice transmission."},
+	{ "duration", lpc_cmd_duration, "Print duration in seconds of the last call.", NULL },
+	
 	{ "autoanswer", lpc_cmd_autoanswer, "Show/set auto-answer mode",
 		"'autoanswer'       \t: show current autoanswer mode\n"
 		"'autoanswer enable'\t: enable autoanswer mode\n"
@@ -172,10 +187,6 @@ LPC_COMMAND commands[] = {
 	{ "webcam", lpc_cmd_webcam, "Manage webcams",
 		"'webcam list' : list all known devices.\n"
 		"'webcam use <index>' : select a video device.\n"
-	},
-	{ "staticpic", lpc_cmd_staticpic, "Manage static pictures when nowebcam",
-		"'staticpic set' : Set path to picture that should be used.\n"
-		"'staticpic fps' : Get/set frames per seconds for picture emission.\n"
 	},
 	{ "ipv6", lpc_cmd_ipv6, "Use IPV6",
 		"'ipv6 status' : show ipv6 usage status.\n"
@@ -210,8 +221,10 @@ LPC_COMMAND commands[] = {
 	    "                               there.  Don't use '<' '>' around <addr>.\n"
 		"'friend delete <index>'      : remove friend, 'all' removes all\n"
 	},
-	{ "play", lpc_cmd_play, "play from a wav file",
-		"This feature is available only in file mode (see 'help soundcard')\n"
+	{ "play", lpc_cmd_play, "play a wav file",
+		"This command has two roles:\n"
+		"Plays a file instead of capturing from soundcard - only available in file mode (see 'help soundcard')\n"
+		"Specifies a wav file to be played to play music to far end when putting it on hold (pause)\n"
 		"'play <wav file>'    : play a wav file."
 	},
 	{ "record", lpc_cmd_record, "record to a wav file",
@@ -219,9 +232,30 @@ LPC_COMMAND commands[] = {
 		"'record <wav file>'    : record into wav file."
 	},
 	{ "quit", lpc_cmd_quit, "Exit linphonec", NULL },
+	{ (char *)NULL, (lpc_cmd_handler)NULL, (char *)NULL, (char *)NULL }
+};
+
+
+static LPC_COMMAND advanced_commands[] = {
+	 { "codec", lpc_cmd_acodec, "Audio codec configuration",
+            "'codec list' : list audio codecs\n"
+            "'codec enable <index>' : enable available audio codec\n"
+            "'codec disable <index>' : disable audio codec" },
+    { "vcodec", lpc_cmd_vcodec, "Video codec configuration",
+            "'vcodec list' : list video codecs\n"
+            "'vcodec enable <index>' : enable available video codec\n"
+            "'vcodec disable <index>' : disable video codec" },
+	{ "ec", lpc_cmd_echocancellation, "Echo cancellation",
+	    "'ec on [<delay>] [<tail>] [<framesize>]' : turn EC on with given delay, tail length and framesize\n"
+	    "'ec off' : turn echo cancellation (EC) off\n"
+	    "'ec show' : show EC status" },
+	{ "nortp-on-audio-mute", lpc_cmd_rtp_no_xmit_on_audio_mute,
+		  "Set the rtp_no_xmit_on_audio_mute configuration parameter",
+		  "   If set to 1 then rtp transmission will be muted when\n"
+		  "   audio is muted , otherwise rtp is always sent."}, 
+	{ "video-window", lpc_cmd_video_window, "Control video display window", NULL },
 	{ "register", lpc_cmd_register, "Register in one line to a proxy" , "register <sip identity> <sip proxy> <password>"},
 	{ "unregister", lpc_cmd_unregister, "Unregister from default proxy", NULL	},
-	{ "duration", lpc_cmd_duration, "Print duration in seconds of the last call.", NULL },
 	{ "status", lpc_cmd_status, "Print various status information", 
 			"'status register'  \t: print status concerning registration\n"
 			"'status autoanswer'\t: tell whether autoanswer mode is enabled\n"
@@ -234,33 +268,14 @@ LPC_COMMAND commands[] = {
 			"'speak <voice name> <sentence>'	: speak a text using the specified espeak voice.\n"
 			"Example for english voice: 'speak default Hello my friend !'"
 	},
-    { "codec", lpc_cmd_acodec, "Audio codec configuration",
-            "'codec list' : list audio codecs\n"
-            "'codec enable <index>' : enable available audio codec\n"
-            "'codec disable <index>' : disable audio codec" },
-    { "vcodec", lpc_cmd_vcodec, "Video codec configuration",
-            "'vcodec list' : list video codecs\n"
-            "'vcodec enable <index>' : enable available video codec\n"
-            "'vcodec disable <index>' : disable video codec" },
-	{ "ec", lpc_cmd_echocancellation, "Echo cancellation",
-	    "'ec on [<delay>] [<tail>] [<framesize>]' : turn EC on with given delay, tail length and framesize\n"
-	    "'ec off' : turn echo cancellation (EC) off\n"
-	    "'ec show' : show EC status" },
-	{ "pause", lpc_cmd_pause, "pause a call",
-		"'pause' : pause the current call\n"},
-	{ "resume", lpc_cmd_resume, "resume a call",
-		"'resume' : resume the unique call\n"
-		"'resume <call id>' : hold off the call with given id\n"},
-	{ "mute", lpc_cmd_mute_mic, 
-	  "Mute microphone and suspend voice transmission."},
-	{ "unmute", lpc_cmd_unmute_mic, 
-		  "Unmute microphone and resume voice transmission."},
-	{ "nortp-on-audio-mute", lpc_cmd_rtp_no_xmit_on_audio_mute,
-		  "Set the rtp_no_xmit_on_audio_mute configuration parameter",
-		  "   If set to 1 then rtp transmission will be muted when\n"
-		  "   audio is muted , otherwise rtp is always sent."}, 
-    { (char *)NULL, (lpc_cmd_handler)NULL, (char *)NULL, (char *)NULL }
+	{ "staticpic", lpc_cmd_staticpic, "Manage static pictures when nowebcam",
+		"'staticpic set' : Set path to picture that should be used.\n"
+		"'staticpic fps' : Get/set frames per seconds for picture emission.\n"
+	},
+	{	NULL,NULL,NULL,NULL}
 };
+
+
 
 /***************************************************************************
  *
@@ -332,29 +347,43 @@ linphonec_parse_command_line(LinphoneCore *lc, char *cl)
 char *
 linphonec_command_generator(const char *text, int state)
 {
-	static int index, len;
+	static int index, len, adv;
 	char *name;
 
 	if ( ! state )
 	{
 		index=0;
+		adv=0;
 		len=strlen(text);
 	}
-
 	/*
  	 * Return the next name which partially matches
 	 * from the commands list
 	 */
-	while ((name=commands[index].name))
-	{
-		++index; /* so next call get next command */
-
-		if (strncmp(name, text, len) == 0)
+	if (adv==0){
+		while ((name=commands[index].name))
 		{
-			return ortp_strdup(name);
+			++index; /* so next call get next command */
+
+			if (strncmp(name, text, len) == 0)
+			{
+				return ortp_strdup(name);
+			}
+		}
+		adv=1;
+		index=0;
+	}
+	if (adv==1){
+		while ((name=advanced_commands[index].name))
+		{
+			++index; /* so next call get next command */
+
+			if (strncmp(name, text, len) == 0)
+			{
+				return ortp_strdup(name);
+			}
 		}
 	}
-
 	return NULL;
 }
 
@@ -389,6 +418,23 @@ lpc_cmd_help(LinphoneCore *lc, char *arg)
 		return 1;
 	}
 
+	if (strcmp(arg,"advanced")==0){
+		linphonec_out("Advanced commands are:\n");
+		linphonec_out("---------------------------\n");
+		i=0;
+		while (advanced_commands[i].help)
+		{
+			linphonec_out("%10.10s\t%s\n", advanced_commands[i].name,
+				advanced_commands[i].help);
+			i++;
+		}
+		
+		linphonec_out("---------------------------\n");
+		linphonec_out("Type 'help <command>' for more details.\n");
+
+		return 1;
+	}
+	
 	cmd=lpc_find_command(arg);
 	if ( !cmd )
 	{
@@ -2108,6 +2154,9 @@ static int lpc_cmd_rtp_no_xmit_on_audio_mute(LinphoneCore *lc, char *args)
 	return 1;
 }
 
+static int lpc_cmd_video_window(LinphoneCore *lc, char *args){
+	return 1;
+}
 
 /***************************************************************************
  *
@@ -2127,6 +2176,12 @@ lpc_find_command(const char *name)
 	{
 		if (strcmp(name, commands[i].name) == 0)
 			return &commands[i];
+	}
+
+	for (i=0; advanced_commands[i].name; ++i)
+	{
+		if (strcmp(name, advanced_commands[i].name) == 0)
+			return &advanced_commands[i];
 	}
 
 	return (LPC_COMMAND *)NULL;
