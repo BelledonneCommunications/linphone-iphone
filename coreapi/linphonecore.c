@@ -3815,3 +3815,25 @@ PayloadType* linphone_core_find_payload_type(LinphoneCore* lc, const char* type,
 	/*not found*/
 	return NULL;
 }
+
+const char *linphone_global_state_to_string(LinphoneGlobalState gs){
+	switch(gs){
+		case LinphoneGlobalOff:
+			return "LinphoneGlobalOff";
+		break;
+		case LinphoneGlobalOn:
+			return "LinphoneGlobalOn";
+		break;
+		case LinphoneGlobalStartup:
+			return "LinphoneGlobalStartup";
+		break;
+		case LinphoneGlobalShutdown:
+			return "LinphoneGlobalShutdown";
+		break;
+	}
+	return NULL;
+}
+
+LinphoneGlobalState linphone_core_get_global_state(const LinphoneCore *lc){
+	return LinphoneGlobalOn;
+}

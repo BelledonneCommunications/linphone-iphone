@@ -97,6 +97,12 @@ typedef struct {
 	char *doc;		/* Long description.  */
 } LPC_COMMAND;
 
+typedef struct {
+	int x,y,w,h;
+	bool_t show;
+	bool_t refresh;
+} VideoParams;
+
 /***************************************************************************
  *
  *  Forward declarations

@@ -799,10 +799,35 @@ void * linphone_proxy_config_get_user_data(LinphoneProxyConfig *cr) {
 
 void linphone_proxy_config_set_state(LinphoneProxyConfig *cfg, LinphoneRegistrationState state, const char *message){
 	LinphoneCore *lc=cfg->lc;
+	cfg->state=state;
 	if (lc && lc->vtable.registration_state_changed){
 		lc->vtable.registration_state_changed(lc,cfg,state,message);
 	}
 }
 
+LinphoneRegistrationState linphone_proxy_config_get_state(const LinphoneProxyConfig *cfg){
+	return cfg->state;
+}
+
+ const char *linphone_registration_state_to_string(LinphoneRegistrationState cs){
+	 switch(cs){
+		case LinphoneRegistrationCleared:
+			 return "LinphoneRegistrationCleared";
+		break;
+		case LinphoneRegistrationNone:
+			 return "LinphoneRegistrationNone";
+		break;
+		case LinphoneRegistrationProgress:
+			return "LinphoneRegistrationProgress";
+		break;
+		case LinphoneRegistrationOk:
+			 return "LinphoneRegistrationOk";
+		break;
+		case LinphoneRegistrationFailed:
+			 return "LinphoneRegistrationFailed";
+		break;
+	 }
+	 return NULL;
+ }
 
 

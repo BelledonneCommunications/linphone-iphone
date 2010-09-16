@@ -179,8 +179,10 @@ typedef enum _LinphoneCallState{
 	LinphoneCallPausedByRemote
 } LinphoneCallState;
 
+const char *linphone_call_state_to_string(LinphoneCallState cs);
 
-enum _LinphoneCallState linphone_call_get_state(const LinphoneCall *call);
+
+LinphoneCallState linphone_call_get_state(const LinphoneCall *call);
 bool_t linphone_call_asked_to_autoanswer(LinphoneCall *call);
 const LinphoneAddress * linphone_core_get_current_call_remote_address(struct _LinphoneCore *lc);
 const LinphoneAddress * linphone_call_get_remote_address(const LinphoneCall *call);
@@ -265,6 +267,19 @@ bool_t linphone_friend_in_list(const LinphoneFriend *lf);
 **/
 typedef struct _LinphoneProxyConfig LinphoneProxyConfig;
 
+/**
+ * LinphoneRegistrationState describes proxy registration states.
+**/
+typedef enum _LinphoneRegistrationState{
+	LinphoneRegistrationNone,
+	LinphoneRegistrationProgress,
+	LinphoneRegistrationOk,
+	LinphoneRegistrationCleared,
+	LinphoneRegistrationFailed
+}LinphoneRegistrationState;
+
+const char *linphone_registration_state_to_string(LinphoneRegistrationState cs);
+
 LinphoneProxyConfig *linphone_proxy_config_new(void);
 int linphone_proxy_config_set_server_addr(LinphoneProxyConfig *obj, const char *server_addr);
 int linphone_proxy_config_set_identity(LinphoneProxyConfig *obj, const char *identity);
@@ -278,6 +293,7 @@ void linphone_proxy_config_enable_publish(LinphoneProxyConfig *obj, bool_t val);
 void linphone_proxy_config_set_dial_escape_plus(LinphoneProxyConfig *cfg, bool_t val);
 void linphone_proxy_config_set_dial_prefix(LinphoneProxyConfig *cfg, const char *prefix);
 
+LinphoneRegistrationState linphone_proxy_config_get_state(const LinphoneProxyConfig *obj);
 bool_t linphone_proxy_config_is_registered(const LinphoneProxyConfig *obj);
 const char *linphone_proxy_config_get_domain(const LinphoneProxyConfig *cfg);
 
@@ -391,13 +407,7 @@ typedef enum _LinphoneGlobalState{
 	LinphoneGlobalShutdown
 }LinphoneGlobalState;
 
-typedef enum _LinphoneRegistrationState{
-	LinphoneRegistrationNone,
-	LinphoneRegistrationProgress,
-	LinphoneRegistrationOk,
-	LinphoneRegistrationCleared,
-	LinphoneRegistrationFailed
-}LinphoneRegistrationState;
+const char *linphone_global_state_to_string(LinphoneGlobalState gs);
 
 /**
  * @addtogroup initializing
@@ -829,6 +839,8 @@ void linphone_core_set_audio_transports(LinphoneCore *lc, RtpTransport *rtp, Rtp
 int linphone_core_get_current_call_stats(LinphoneCore *lc, rtp_stats_t *local, rtp_stats_t *remote);
 
 const MSList *linphone_core_get_calls(LinphoneCore *lc);
+
+LinphoneGlobalState linphone_core_get_global_state(const LinphoneCore *lc);
 
 #ifdef __cplusplus
 }

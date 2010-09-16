@@ -77,6 +77,11 @@
 #define PACKAGE_DIR ""
 #endif
 
+#ifdef HAVE_X11_XLIB_H
+#include <X11/Xlib.h>
+#include <SDL/SDL_syswm.h>
+#endif
+
 /***************************************************************************
  *
  *  Types
@@ -168,6 +173,8 @@ static bool_t pipe_reader_run=FALSE;
 static ortp_pipe_t server_sock;
 #endif /*_WIN32_WCE*/
 
+
+extern VideoParams lpc_video_params;
 
 void linphonec_call_identify(LinphoneCall* call){
 	static long callid=1;
@@ -841,6 +848,66 @@ usage: linphonec [-c file] [-s sipaddr] [-a] [-V] [-d level ] [-l logfile]\n\
   	exit(exit_status);
 }
 
+#ifdef VIDEO_ENABLED
+
+#ifdef HAVE_X11_XLIB_H
+static void sdl_x11_apply_video_params(){
+	static SDL_SysWMinfo info;
+	static bool_t wminfo_ready=FALSE;
+	
+	if ( !wminfo_ready){
+		SDL_VERSION(&info.version);
+		if ( SDL_GetWMInfo(&info) ) {
+			if ( info.subsystem == SDL_SYSWM_X11 ) {
+				wminfo_ready=TRUE;
+			}
+		}
+	}
+	if ( !wminfo_ready) return;
+	
+	{
+		XWindowChanges wc;
+		unsigned int flags=0;
+		Display *display = info.info.x11.display;
+		Window window = info.info.x11.wmwindow;
+		
+		memset(&wc,0,sizeof(wc));
+		wc.x=lpc_video_params.x;
+		wc.y=lpc_video_params.y;
+		wc.width=lpc_video_params.w;
+		wc.height=lpc_video_params.h;
+		if (lpc_video_params.x!=-1 ){
+			flags|=CWX|CWY;
+		}
+		if (lpc_video_params.w!=-1){
+			flags|=CWWidth|CWHeight;
+		}
+		info.info.x11.lock_func();
+		XConfigureWindow(display,window,flags,&wc);
+		if (lpc_video_params.show)
+			XMapWindow(display,window);
+		else
+			XUnmapWindow(display,window);
+		info.info.x11.unlock_func();
+	}
+}
+#endif
+
+
+static void lpc_apply_video_params(){
+	if (lpc_video_params.refresh){
+		unsigned long wid=linphone_core_get_native_video_window_id (linphonec);
+		if (wid!=0){
+			lpc_video_params.refresh=FALSE;
+#ifdef HAVE_X11_XLIB_H
+			sdl_x11_apply_video_params();
+#endif
+		}
+	}
+}
+
+#endif
+
 
 /*
  *
@@ -881,6 +948,10 @@ linphonec_idle_call ()
 		rl_inhibit_completion=0;
 #endif
 	}
+
+#ifdef VIDEO_ENABLED
+	lpc_apply_video_params();
+#endif
 
 	return 0;
 }

@@ -294,7 +294,19 @@ AC_ARG_WITH( sdl,
 		[  --with-sdl		Sets the installation prefix of libSDL, needed for video support. [default=/usr] ],
 		[ libsdldir=${withval}],[ libsdldir=/usr ])
 
+AC_ARG_ENABLE(x11,
+			  [  --disable-x11    Disable X11 support],
+		 	  [case "${enableval}" in
+			  yes) enable_x11=true ;;
+			  no)  enable_x11=false ;;
+			  *) AC_MSG_ERROR(bad value ${enableval} for --disable-x11) ;;
+		  	  esac],[enable_x11=true])
+
 if test "$video" = "true"; then
+	
+	if test "$enable_x11" = "true"; then
+	   AC_CHECK_HEADERS(X11/Xlib.h)
+	fi
 	AC_DEFINE(VIDEO_ENABLED,1,[defined if video support is available])
 fi
 

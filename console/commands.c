@@ -90,6 +90,7 @@ static int lpc_cmd_mute_mic(LinphoneCore *lc, char *args);
 static int lpc_cmd_unmute_mic(LinphoneCore *lc, char *args);
 static int lpc_cmd_rtp_no_xmit_on_audio_mute(LinphoneCore *lc, char *args);
 static int lpc_cmd_video_window(LinphoneCore *lc, char *args);
+static int lpc_cmd_states(LinphoneCore *lc, char *args);
 
 /* Command handler helpers */
 static void linphonec_proxy_add(LinphoneCore *lc);
@@ -118,6 +119,7 @@ static LPC_COMMAND *lpc_find_command(const char *name);
 
 void linphonec_out(const char *fmt,...);
 
+VideoParams lpc_video_params={-1,-1,-1,-1,TRUE};
 
 
 /***************************************************************************
@@ -130,7 +132,7 @@ void linphonec_out(const char *fmt,...);
  * Commands table.
  */
 static LPC_COMMAND commands[] = {
-	{ "help", lpc_cmd_help, "Print commands help, 'help advanced' for advanced features.",
+	{ "help", lpc_cmd_help, "Print commands help.",
 		"'help <command>'\t: displays specific help for command.\n"
 		"'help advanced'\t: shows advanced commands.\n"
 	},
@@ -253,7 +255,17 @@ static LPC_COMMAND advanced_commands[] = {
 		  "Set the rtp_no_xmit_on_audio_mute configuration parameter",
 		  "   If set to 1 then rtp transmission will be muted when\n"
 		  "   audio is muted , otherwise rtp is always sent."}, 
-	{ "video-window", lpc_cmd_video_window, "Control video display window", NULL },
+	{ "vwindow", lpc_cmd_video_window, "Control video display window",
+		"'vwindow show': shows video window\n"
+		"'vwindow hide': hides video window\n"
+		"'vwindow pos <x> <y>': Moves video window to x,y pixel coordinates\n"
+		"'vwindow size <width> <height>': Resizes video window"
+	},
+	{ "states", lpc_cmd_states, "Show internal states of liblinphone, registrations and calls, according to linphonecore.h definitions",
+		"'states global': shows global state of liblinphone \n"
+		"'states calls': shows state of calls\n"
+		"'states proxies': shows state of proxy configurations"
+	},
 	{ "register", lpc_cmd_register, "Register in one line to a proxy" , "register <sip identity> <sip proxy> <password>"},
 	{ "unregister", lpc_cmd_unregister, "Unregister from default proxy", NULL	},
 	{ "status", lpc_cmd_status, "Print various status information", 
@@ -413,7 +425,7 @@ lpc_cmd_help(LinphoneCore *lc, char *arg)
 		}
 		
 		linphonec_out("---------------------------\n");
-		linphonec_out("Type 'help <command>' for more details.\n");
+		linphonec_out("Type 'help <command>' for more details or 'help advanced' to list additional commands.\n");
 
 		return 1;
 	}
@@ -2155,7 +2167,86 @@ static int lpc_cmd_rtp_no_xmit_on_audio_mute(LinphoneCore *lc, char *args)
 }
 
 static int lpc_cmd_video_window(LinphoneCore *lc, char *args){
+	char subcommand[64];
+	int a,b;
+	int err;
+#ifdef VIDEO_ENABLED
+	err=sscanf(args,"%s %i %i",subcommand,&a,&b);
+	if (err>=1){
+		if (strcmp(subcommand,"pos")==0){
+			if (err<3) return 0;
+			lpc_video_params.x=a;
+			lpc_video_params.y=b;
+			lpc_video_params.refresh=TRUE;
+		}else if (strcmp(subcommand,"size")==0){
+			if (err<3) return 0;
+			lpc_video_params.w=a;
+			lpc_video_params.h=b;
+			lpc_video_params.refresh=TRUE;
+		}else if (strcmp(subcommand,"show")==0){
+			lpc_video_params.show=TRUE;
+			lpc_video_params.refresh=TRUE;
+		}else if (strcmp(subcommand,"hide")==0){
+			lpc_video_params.show=FALSE;
+			lpc_video_params.refresh=TRUE;
+		}else return 0;
+	}
+#else
+	linphonec_out("Sorry, this version of linphonec wasn't compiled with video support.");
+#endif
 	return 1;
+}
+
+static void lpc_display_global_state(LinphoneCore *lc){
+	linphonec_out("****************Global liblinphone state********************\n\t%s",
+	              linphone_global_state_to_string(linphone_core_get_global_state(lc)));
+}
+
+static void lpc_display_call_states(LinphoneCore *lc){
+	LinphoneCall *call;
+	const MSList *elem;
+	char *tmp;
+	linphonec_out("****************Calls states*******************************\nId    |            Destination         |      State\n");
+
+	for(elem=linphone_core_get_calls(lc);elem!=NULL;elem=elem->next){
+		call=(LinphoneCall*)elem->data;
+		tmp=linphone_call_get_remote_address_as_string (call);
+		linphonec_out("%2.2i|%10.10s|%s",(int)(long)linphone_call_get_user_pointer(call),
+		              tmp,linphone_call_state_to_string(linphone_call_get_state(call)));
+		ms_free(tmp);
+	}
+}
+
+static void lpc_display_proxy_states(LinphoneCore *lc){
+	const MSList *elem;
+	linphonec_out("****************Proxy registration states*****************\nIdentity      |      State\n");
+	for(elem=linphone_core_get_proxy_config_list (lc);elem!=NULL;elem=elem->next){
+		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
+		linphonec_out("%20.10s | %s",linphone_proxy_config_get_identity (cfg),
+		              linphone_registration_state_to_string(linphone_proxy_config_get_state(cfg)));
+	}
+}
+
+static int lpc_cmd_states(LinphoneCore *lc, char *args){
+	if (args==NULL) {
+		lpc_display_global_state(lc);
+		lpc_display_call_states(lc);
+		lpc_display_proxy_states(lc);
+		return 1;
+	}
+	if (strcmp(args,"global")==0){
+		lpc_display_global_state(lc);
+		return 1;
+	}
+	if (strcmp(args,"proxies")==0){
+		lpc_display_proxy_states(lc);
+		return 1;
+	}
+	if (strcmp(args,"calls")==0){
+		lpc_display_call_states(lc);
+		return 1;
+	}
+	return 0;
 }
 
 /***************************************************************************

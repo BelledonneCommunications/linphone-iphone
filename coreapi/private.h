@@ -203,6 +203,7 @@ struct _LinphoneProxyConfig
 	struct _SipSetupContext *ssctx;
 	int auth_failures;
 	char *dial_prefix;
+	LinphoneRegistrationState state;
 	bool_t commit;
 	bool_t reg_sendregister;
 	bool_t registered;
