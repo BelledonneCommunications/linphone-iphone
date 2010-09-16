@@ -2198,7 +2198,7 @@ static int lpc_cmd_video_window(LinphoneCore *lc, char *args){
 }
 
 static void lpc_display_global_state(LinphoneCore *lc){
-	linphonec_out("****************Global liblinphone state********************\n\t%s",
+	linphonec_out("Global liblinphone state\n%s\n",
 	              linphone_global_state_to_string(linphone_core_get_global_state(lc)));
 }
 
@@ -2206,24 +2206,36 @@ static void lpc_display_call_states(LinphoneCore *lc){
 	LinphoneCall *call;
 	const MSList *elem;
 	char *tmp;
-	linphonec_out("****************Calls states*******************************\nId    |            Destination         |      State\n");
-
-	for(elem=linphone_core_get_calls(lc);elem!=NULL;elem=elem->next){
-		call=(LinphoneCall*)elem->data;
-		tmp=linphone_call_get_remote_address_as_string (call);
-		linphonec_out("%2.2i|%10.10s|%s",(int)(long)linphone_call_get_user_pointer(call),
-		              tmp,linphone_call_state_to_string(linphone_call_get_state(call)));
-		ms_free(tmp);
+	linphonec_out("Call states\n"
+	              "Id |            Destination              |      State\n"
+	              "---------------------------------------------------------------\n");
+	elem=linphone_core_get_calls(lc);
+	if (elem==NULL){
+		linphonec_out("(empty)\n");
+	}else{
+		for(;elem!=NULL;elem=elem->next){
+			call=(LinphoneCall*)elem->data;
+			tmp=linphone_call_get_remote_address_as_string (call);
+			linphonec_out("%-2i | %-35s | %s\n",(int)(long)linphone_call_get_user_pointer(call),
+						  tmp,linphone_call_state_to_string(linphone_call_get_state(call)));
+			ms_free(tmp);
+		}
 	}
 }
 
 static void lpc_display_proxy_states(LinphoneCore *lc){
 	const MSList *elem;
-	linphonec_out("****************Proxy registration states*****************\nIdentity      |      State\n");
-	for(elem=linphone_core_get_proxy_config_list (lc);elem!=NULL;elem=elem->next){
-		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
-		linphonec_out("%20.10s | %s",linphone_proxy_config_get_identity (cfg),
-		              linphone_registration_state_to_string(linphone_proxy_config_get_state(cfg)));
+	linphonec_out("Proxy registration states\n"
+	              "           Identity                      |      State\n"
+	              "------------------------------------------------------------\n");
+	elem=linphone_core_get_proxy_config_list (lc);
+	if (elem==NULL) linphonec_out("(empty)\n");
+	else {
+		for(;elem!=NULL;elem=elem->next){
+			LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
+			linphonec_out("%-40s | %s\n",linphone_proxy_config_get_identity (cfg),
+						  linphone_registration_state_to_string(linphone_proxy_config_get_state(cfg)));
+		}
 	}
 }
 

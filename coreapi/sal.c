@@ -81,11 +81,17 @@ void sal_media_description_set_dir(SalMediaDescription *md, SalStreamDir stream_
 
 bool_t sal_media_description_has_dir(const SalMediaDescription *md, SalStreamDir stream_dir){
 	int i;
+	bool_t found=FALSE;
+
+	/* we are looking for at least one stream with requested direction, inactive streams are ignored*/
 	for(i=0;i<md->nstreams;++i){
 		const SalStreamDescription *ss=&md->streams[i];
-		if (ss->dir==stream_dir) return TRUE;
+		if (ss->dir==stream_dir) found=TRUE;
+		else{
+			if (ss->dir!=SalStreamInactive) return FALSE;
+		}
 	}
-	return FALSE;
+	return found;
 }
 
 static void assign_string(char **str, const char *arg){

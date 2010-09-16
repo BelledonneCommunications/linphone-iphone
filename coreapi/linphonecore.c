@@ -903,6 +903,7 @@ static void linphone_core_free_payload_types(void){
 }
 
 void linphone_core_set_state(LinphoneCore *lc, LinphoneGlobalState gstate, const char *message){
+	lc->state=gstate;
 	if (lc->vtable.global_state_changed){
 		lc->vtable.global_state_changed(lc,gstate,message);
 	}
@@ -3835,5 +3836,5 @@ const char *linphone_global_state_to_string(LinphoneGlobalState gs){
 }
 
 LinphoneGlobalState linphone_core_get_global_state(const LinphoneCore *lc){
-	return LinphoneGlobalOn;
+	return lc->state;
 }

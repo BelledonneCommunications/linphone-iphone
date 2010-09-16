@@ -355,6 +355,7 @@ struct _LinphoneCore
 {
 	LinphoneCoreVTable vtable;
 	Sal *sal;
+	LinphoneGlobalState state;
 	struct _LpConfig *config;
 	net_config_t net_conf;
 	sip_config_t sip_conf;

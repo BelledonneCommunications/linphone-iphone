@@ -655,7 +655,6 @@ void linphone_call_start_media_streams(LinphoneCall *call){
 				if (captcard==NULL) {
 					ms_warning("No card defined for capture !");
 				}
-				ms_message("streamdir is %i",stream->dir);
 				/*Replace soundcard filters by inactive file players or recorders
 				 when placed in recvonly or sendonly mode*/
 				if (stream->port==0 || stream->dir==SalStreamRecvOnly){
