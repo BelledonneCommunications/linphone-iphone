@@ -20,7 +20,6 @@ gtk/call_logs.ui
 gtk/main.ui
 gtk/sip_account.ui
 gtk/chatroom.ui
-gtk/incoming_call.ui
 gtk/parameters.ui
 gtk/buddylookup.ui
 gtk/waiting.ui

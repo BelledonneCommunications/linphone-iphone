@@ -853,16 +853,16 @@ usage: linphonec [-c file] [-s sipaddr] [-a] [-V] [-d level ] [-l logfile]\n\
 #ifdef HAVE_X11_XLIB_H
 static void sdl_x11_apply_video_params(){
 	static SDL_SysWMinfo info;
-	static bool_t wminfo_ready=FALSE;
+	bool_t wminfo_ready=FALSE;
 	
-	if ( !wminfo_ready){
-		SDL_VERSION(&info.version);
-		if ( SDL_GetWMInfo(&info) ) {
-			if ( info.subsystem == SDL_SYSWM_X11 ) {
-				wminfo_ready=TRUE;
-			}
+	
+	SDL_VERSION(&info.version);
+	if ( SDL_GetWMInfo(&info) ) {
+		if ( info.subsystem == SDL_SYSWM_X11 ) {
+			wminfo_ready=TRUE;
 		}
 	}
+	
 	if ( !wminfo_ready) return;
 	
 	{
@@ -895,15 +895,17 @@ static void sdl_x11_apply_video_params(){
 
 
 static void lpc_apply_video_params(){
-	if (lpc_video_params.refresh){
-		unsigned long wid=linphone_core_get_native_video_window_id (linphonec);
-		if (wid!=0){
-			lpc_video_params.refresh=FALSE;
+	static unsigned long prev_wid=0;
+
+	unsigned long wid=linphone_core_get_native_video_window_id (linphonec);
+
+	if (wid!=0 && (lpc_video_params.refresh || prev_wid!=wid)){
+		lpc_video_params.refresh=FALSE;
 #ifdef HAVE_X11_XLIB_H
-			sdl_x11_apply_video_params();
+		sdl_x11_apply_video_params();
 #endif
-		}
 	}
+	prev_wid=wid;
 }
 
 #endif

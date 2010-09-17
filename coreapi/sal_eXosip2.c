@@ -1124,7 +1124,17 @@ static void process_media_control_xml(Sal *sal, eXosip_event_t *ev){
 			eXosip_call_build_answer(ev->tid,200,&ans);
 			if (ans)
 				eXosip_call_send_answer(ev->tid,200,ans);
+			return;
 		}
+	}
+	/*in all other cases we must say it is not implemented.*/
+	{
+		osip_message_t *ans=NULL;
+		eXosip_lock();
+		eXosip_call_build_answer(ev->tid,501,&ans);
+		if (ans)
+			eXosip_call_send_answer(ev->tid,501,ans);
+		eXosip_unlock();
 	}
 }
 
