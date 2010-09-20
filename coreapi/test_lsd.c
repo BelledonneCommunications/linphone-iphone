@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "linphonecore_utils.h"
 
+
 static void play_finished(LsdPlayer *p){
 	const char *filename=(const char *)lsd_player_get_user_pointer (p);
 	ms_message("Playing of %s is finished.",filename);
@@ -35,8 +36,8 @@ static void play_finished(LsdPlayer *p){
 }
 
 static void wait_a_bit(LinphoneCore *lc, int seconds){
-	time_t orig=time(NULL);
-	while(time(NULL)-orig<seconds){
+	time_t orig=ms_time(NULL);
+	while(ms_time(NULL)-orig<seconds){
 		/* we need to call iterate to receive notifications */
 		linphone_core_iterate(lc);
 		ms_usleep (50000);
