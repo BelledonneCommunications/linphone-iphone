@@ -75,11 +75,22 @@ void linphone_gtk_show_login_frame(LinphoneProxyConfig *cfg){
 		return;
 	}
 
-	gtk_widget_hide(linphone_gtk_get_widget(mw,"logout"));
-	gtk_widget_hide(linphone_gtk_get_widget(mw,"idle_frame"));
+	{
+		const char *login_image=linphone_gtk_get_ui_config("login_image",NULL);
+		if (login_image){
+			GdkPixbuf *pbuf=create_pixbuf (login_image);
+			gtk_image_set_from_pixbuf (GTK_IMAGE(linphone_gtk_get_widget(mw,"login_image")),
+			                           pbuf);
+			g_object_unref(G_OBJECT(pbuf));
+		}
+	}
+
+	gtk_widget_hide(linphone_gtk_get_widget(mw,"disconnect_item"));
+	gtk_widget_hide(linphone_gtk_get_widget(mw,"main_frame"));
+	gtk_widget_hide(linphone_gtk_get_widget(mw,"keypad_frame"));
 	gtk_widget_show(linphone_gtk_get_widget(mw,"login_frame"));
 	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"main_menu"),FALSE);
-	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"modes"),FALSE);
+	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"options_menu"),FALSE);
 	str=g_strdup_printf(_("Please enter login information for %s"),linphone_proxy_config_get_domain(cfg));
 	gtk_label_set_text(GTK_LABEL(label),str);
 	g_object_set_data(G_OBJECT(mw),"login_proxy_config",cfg);
@@ -101,11 +112,11 @@ void linphone_gtk_show_login_frame(LinphoneProxyConfig *cfg){
 
 void linphone_gtk_exit_login_frame(void){
 	GtkWidget *mw=linphone_gtk_get_main_window();
-	gtk_widget_show(linphone_gtk_get_widget(mw,"idle_frame"));
+	gtk_widget_show(linphone_gtk_get_widget(mw,"main_frame"));
 	gtk_widget_hide(linphone_gtk_get_widget(mw,"login_frame"));
 	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"main_menu"),TRUE);
-	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"modes"),TRUE);
-	gtk_widget_show(linphone_gtk_get_widget(mw,"logout"));
+	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"options_menu"),TRUE);
+	gtk_widget_show(linphone_gtk_get_widget(mw,"disconnect_item"));
 }
 
 void linphone_gtk_logout_clicked(){

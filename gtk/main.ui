@@ -128,7 +128,7 @@
               </object>
             </child>
             <child>
-              <object class="GtkMenuItem" id="menuitem3">
+              <object class="GtkMenuItem" id="options_menu">
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">_Options</property>
                 <property name="use_underline">True</property>
@@ -1087,6 +1087,7 @@
             <child>
               <object class="GtkFrame" id="login_frame">
                 <property name="label_xalign">0</property>
+                <property name="shadow_type">etched-out</property>
                 <child>
                   <object class="GtkAlignment" id="alignment2">
                     <property name="visible">True</property>
@@ -1096,9 +1097,19 @@
                         <property name="visible">True</property>
                         <property name="orientation">vertical</property>
                         <child>
+                          <object class="GtkImage" id="login_image">
+                            <property name="visible">True</property>
+                            <property name="stock">gtk-missing-image</property>
+                          </object>
+                          <packing>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
                           <object class="GtkFrame" id="frame5">
                             <property name="visible">True</property>
                             <property name="label_xalign">0</property>
+                            <property name="shadow_type">none</property>
                             <child>
                               <object class="GtkAlignment" id="alignment3">
                                 <property name="visible">True</property>
@@ -1211,7 +1222,8 @@
                             </child>
                           </object>
                           <packing>
-                            <property name="position">0</property>
+                            <property name="padding">10</property>
+                            <property name="position">1</property>
                           </packing>
                         </child>
                         <child>
@@ -1234,7 +1246,7 @@
                             </child>
                           </object>
                           <packing>
-                            <property name="position">1</property>
+                            <property name="position">2</property>
                           </packing>
                         </child>
                       </object>
