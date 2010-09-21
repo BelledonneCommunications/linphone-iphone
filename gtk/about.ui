@@ -12,7 +12,7 @@
     <property name="has_separator">False</property>
     <property name="program_name">Linphone</property>
     <property name="version">undef</property>
-    <property name="copyright" translatable="yes">Created by Simon Morlat
+    <property name="copyright" translatable="yes">(C) Belledonne Communications,2010
 </property>
     <property name="comments" translatable="yes">An internet video phone using the standard SIP (rfc3261) protocol.</property>
     <property name="website">http://www.linphone.org</property>
