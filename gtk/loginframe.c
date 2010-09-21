@@ -87,7 +87,6 @@ void linphone_gtk_show_login_frame(LinphoneProxyConfig *cfg){
 
 	gtk_widget_hide(linphone_gtk_get_widget(mw,"disconnect_item"));
 	gtk_widget_hide(linphone_gtk_get_widget(mw,"main_frame"));
-	gtk_widget_hide(linphone_gtk_get_widget(mw,"keypad_frame"));
 	gtk_widget_show(linphone_gtk_get_widget(mw,"login_frame"));
 	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"main_menu"),FALSE);
 	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"options_menu"),FALSE);

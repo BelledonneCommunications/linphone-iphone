@@ -42,6 +42,7 @@ SDK_EXCLUDED= \
 
 
 GTK_PREFIX=/usr
+GTK_THEME=Outcrop
 GTK_FILELIST=gtk+-2.18.5.filelist
 GTK_FILELIST_PATH=$(shell cd $(top_srcdir) && pwd)/$(GTK_FILELIST)
 LINPHONEDEPS_FILELIST=linphone-deps.filelist
@@ -113,7 +114,8 @@ gtk-cherrypick:
 			cp $$file $(INSTALLDIR_WITH_PREFIX)/$$file ;\
 		fi \
 	done && \
-	cp -rf share/themes $(INSTALLDIR_WITH_PREFIX)/share/.
+	mkdir -p  $(INSTALLDIR_WITH_PREFIX)/share/themes && \
+	cp -rf share/themes/$(GTK_THEME) $(INSTALLDIR_WITH_PREFIX)/share/themes/.
 
 zip:
 	rm -f $(ZIPFILE)
