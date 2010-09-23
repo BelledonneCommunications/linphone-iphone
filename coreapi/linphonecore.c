@@ -1965,12 +1965,39 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, LinphonePro
  * @ingroup call_control
  * @param lc the LinphoneCore object
  * @param url the destination of the call (sip address, or phone number).
+ *
+ * The application doesn't own a reference to the returned LinphoneCall object.
+ * Use linphone_call_ref() to safely keep the LinphoneCall pointer valid within your application.
+ *
+ * @Returns a LinphoneCall object or NULL in case of failure
 **/
 LinphoneCall * linphone_core_invite(LinphoneCore *lc, const char *url){
+	LinphoneCall *call;
+	LinphoneCallParams *p=linphone_core_create_default_call_parameters (lc);
+	call=linphone_core_invite_with_params(lc,url,p);
+	linphone_call_params_destroy(p);
+	return call;
+}
+
+
+/**
+ * Initiates an outgoing call according to supplied call parameters
+ *
+ * @ingroup call_control
+ * @param lc the LinphoneCore object
+ * @param url the destination of the call (sip address, or phone number).
+ * @param p call parameters
+ *
+ * The application doesn't own a reference to the returned LinphoneCall object.
+ * Use linphone_call_ref() to safely keep the LinphoneCall pointer valid within your application.
+ *
+ * @Returns a LinphoneCall object or NULL in case of failure
+**/
+LinphoneCall * linphone_core_invite_with_params(LinphoneCore *lc, const char *url, const LinphoneCallParams *p){
 	LinphoneAddress *addr=linphone_core_interpret_url(lc,url);
 	if (addr){
 		LinphoneCall *call;
-		call=linphone_core_invite_address(lc,addr);
+		call=linphone_core_invite_address_with_params(lc,addr,p);
 		linphone_address_destroy(addr);
 		return call;
 	}
@@ -1982,12 +2009,40 @@ LinphoneCall * linphone_core_invite(LinphoneCore *lc, const char *url){
  *
  * @ingroup call_control
  * @param lc the LinphoneCore object
- * @param real_parsed_url the destination of the call (sip address).
+ * @param addr the destination of the call (sip address).
  * 
  * The LinphoneAddress can be constructed directly using linphone_address_new(), or
  * created by linphone_core_interpret_url().
+ * The application doesn't own a reference to the returned LinphoneCall object.
+ * Use linphone_call_ref() to safely keep the LinphoneCall pointer valid within your application.
+ *
+ * @Returns a LinphoneCall object or NULL in case of failure
 **/
-LinphoneCall * linphone_core_invite_address(LinphoneCore *lc, const LinphoneAddress *real_parsed_url)
+LinphoneCall * linphone_core_invite_address(LinphoneCore *lc, const LinphoneAddress *addr){
+	LinphoneCall *call;
+	LinphoneCallParams *p=linphone_core_create_default_call_parameters (lc);
+	call=linphone_core_invite_address_with_params (lc,addr,p);
+	linphone_call_params_destroy(p);
+	return call;
+}
+
+
+/**
+ * Initiates an outgoing call given a destination LinphoneAddress
+ *
+ * @ingroup call_control
+ * @param lc the LinphoneCore object
+ * @param addr the destination of the call (sip address).
+	@param params call parameters
+ * 
+ * The LinphoneAddress can be constructed directly using linphone_address_new(), or
+ * created by linphone_core_interpret_url().
+ * The application doesn't own a reference to the returned LinphoneCall object.
+ * Use linphone_call_ref() to safely keep the LinphoneCall pointer valid within your application.
+ *
+ * @Returns a LinphoneCall object or NULL in case of failure
+**/
+LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const LinphoneAddress *addr, const LinphoneCallParams *params)
 {
 	int err=0;
 	const char *route=NULL;
@@ -2011,8 +2066,8 @@ LinphoneCall * linphone_core_invite_address(LinphoneCore *lc, const LinphoneAddr
 	linphone_core_get_default_proxy(lc,&proxy);
 	route=linphone_core_get_route(lc);
 	
-	real_url=linphone_address_as_string(real_parsed_url);
-	dest_proxy=linphone_core_lookup_known_proxy(lc,real_parsed_url);
+	real_url=linphone_address_as_string(addr);
+	dest_proxy=linphone_core_lookup_known_proxy(lc,addr);
 
 	if (proxy!=dest_proxy && dest_proxy!=NULL) {
 		ms_message("Overriding default proxy setting for this call:");
@@ -2029,7 +2084,7 @@ LinphoneCall * linphone_core_invite_address(LinphoneCore *lc, const LinphoneAddr
 
 	parsed_url2=linphone_address_new(from);
 
-	call=linphone_call_new_outgoing(lc,parsed_url2,linphone_address_clone(real_parsed_url));
+	call=linphone_call_new_outgoing(lc,parsed_url2,linphone_address_clone(addr),params);
 	sal_op_set_route(call->op,route);
 	
 	if(linphone_core_add_call(lc,call)!= 0)
@@ -2090,6 +2145,26 @@ bool_t linphone_core_inc_invite_pending(LinphoneCore*lc){
 			return TRUE;
 	}
 	return FALSE;
+}
+
+/**
+ * Updates a running call according to supplied call parameters.
+ *
+ * For the moment, this is limited to enabling or disabling the video stream.
+ *
+ * @Returns 0 if successful, -1 otherwise.
+**/
+int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, LinphoneCallParams *params){
+	int err;
+	
+	if (call->localdesc)
+		sal_media_description_unref(call->localdesc);
+	call->localdesc=create_local_media_description (lc,call,
+		params->has_video,FALSE);
+	if (lc->vtable.display_status)
+		lc->vtable.display_status(lc,_("Modifying call parameters..."));
+	err=sal_call_update(call->op);
+	return err;
 }
 
 
@@ -3837,4 +3912,10 @@ const char *linphone_global_state_to_string(LinphoneGlobalState gs){
 
 LinphoneGlobalState linphone_core_get_global_state(const LinphoneCore *lc){
 	return lc->state;
+}
+
+LinphoneCallParams *linphone_core_create_default_call_parameters(LinphoneCore *lc){
+	LinphoneCallParams *p=ms_new0(LinphoneCallParams,1);
+	p->has_video=linphone_core_video_enabled(lc);
+	return p;
 }

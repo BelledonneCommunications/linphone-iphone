@@ -277,6 +277,7 @@ int sal_call_notify_ringing(SalOp *h);
 int sal_call_accept(SalOp*h);
 int sal_call_decline(SalOp *h, SalReason reason, const char *redirection /*optional*/);
 int sal_call_hold(SalOp *h, bool_t holdon);
+int sal_call_update(SalOp *h);
 SalMediaDescription * sal_call_get_final_media_description(SalOp *h);
 int sal_refer(SalOp *h, const char *refer_to);
 int sal_refer_accept(SalOp *h);

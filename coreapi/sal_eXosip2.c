@@ -1771,10 +1771,12 @@ void sal_set_keepalive_period(Sal *ctx,unsigned int value) {
 	ctx->keepalive_period=value;
 	eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE, &value);
 }
+
 const char * sal_address_get_port(const SalAddress *addr) {
 	const osip_from_t *u=(const osip_from_t*)addr;
 	return null_if_empty(u->url->port);
 }
+
 int sal_address_get_port_int(const SalAddress *uri) {
 	const char* port = sal_address_get_port(uri);
 	if (port != NULL) {
@@ -1813,3 +1815,29 @@ int sal_call_hold(SalOp *h, bool_t holdon)
 	return err;
 }
 
+/* sends a reinvite. Local media description may have changed by application since call establishment*/
+int sal_call_update(SalOp *h){
+	int err=0;
+	osip_message_t *reinvite=NULL;
+
+	eXosip_lock();
+	if(eXosip_call_build_request(h->did,"INVITE",&reinvite) != OSIP_SUCCESS || reinvite==NULL){
+		eXosip_unlock();
+		return -1;
+	}
+	eXosip_unlock();
+	osip_message_set_subject(reinvite,osip_strdup("Phone call parameters updated"));
+	osip_message_set_allow(reinvite, "INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, NOTIFY, MESSAGE, SUBSCRIBE, INFO");
+	if (h->base.root->session_expires!=0){
+		osip_message_set_header(reinvite, "Session-expires", "200");
+		osip_message_set_supported(reinvite, "timer");
+	}
+	if (h->base.local_media){
+		h->sdp_offering=TRUE;
+		set_sdp_from_desc(reinvite,h->base.local_media);
+	}else h->sdp_offering=FALSE;
+	eXosip_lock();
+	err = eXosip_call_send_request(h->did, reinvite);
+	eXosip_unlock();
+	return err;
+}

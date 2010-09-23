@@ -81,7 +81,12 @@ struct _LinphoneCall
 	bool_t audio_muted;
 };
 
-LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to);
+struct _LinphoneCallParams{
+	bool_t has_video;
+	bool_t pad[3];
+};
+
+LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, const LinphoneCallParams *params);
 LinphoneCall * linphone_call_new_incoming(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, SalOp *op);
 void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const char *message);
 
@@ -413,6 +418,9 @@ int linphone_core_set_as_current_call(LinphoneCore *lc, LinphoneCall *call);
 int linphone_core_get_calls_nb(const LinphoneCore *lc);
 
 void linphone_core_set_state(LinphoneCore *lc, LinphoneGlobalState gstate, const char *message);
+
+SalMediaDescription *create_local_media_description(LinphoneCore *lc, 
+    		LinphoneCall *call, bool_t with_video, bool_t only_one_codec);
 
 #define HOLD_OFF	(0)
 #define HOLD_ON		(1)

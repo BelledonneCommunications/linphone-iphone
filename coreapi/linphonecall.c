@@ -46,10 +46,12 @@ static MSList *make_codec_list(LinphoneCore *lc, const MSList *codecs, bool_t on
 	return l;
 }
 
-static SalMediaDescription *create_local_media_description(LinphoneCore *lc, 
-    		LinphoneCall *call, const char *username, bool_t only_one_codec){
+SalMediaDescription *create_local_media_description(LinphoneCore *lc, 
+    		LinphoneCall *call, bool_t with_video, bool_t only_one_codec){
 	MSList *l;
 	PayloadType *pt;
+	const char *username=(call->dir==LinphoneCallOutgoing) ?
+					linphone_address_get_username(call->log->from): linphone_address_get_username(call->log->to);
 	SalMediaDescription *md=sal_media_description_new();
 	md->nstreams=1;
 	strncpy(md->addr,call->localip,sizeof(md->addr));
@@ -69,7 +71,7 @@ static SalMediaDescription *create_local_media_description(LinphoneCore *lc,
 	if (lc->dw_audio_bw>0)
 		md->streams[0].bandwidth=lc->dw_audio_bw;
 
-	if (linphone_core_video_enabled (lc)){
+	if (with_video){
 		md->nstreams++;
 		md->streams[1].port=call->video_port;
 		md->streams[1].proto=SalProtoRtpAvp;
@@ -134,7 +136,7 @@ static void discover_mtu(LinphoneCore *lc, const char *remote){
 	}
 }
 
-LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to)
+LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, const LinphoneCallParams *params)
 {
 	LinphoneCall *call=ms_new0(LinphoneCall,1);
 	call->dir=LinphoneCallOutgoing;
@@ -143,8 +145,7 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 	call->core=lc;
 	linphone_core_get_local_ip(lc,linphone_address_get_domain(to),call->localip);
 	linphone_call_init_common(call,from,to);
-	call->localdesc=create_local_media_description (lc,call,
-		linphone_address_get_username(from),FALSE);
+	call->localdesc=create_local_media_description (lc,call,params->has_video,FALSE);
 	if (linphone_core_get_firewall_policy(call->core)==LinphonePolicyUseStun)
 		linphone_core_run_stun_tests(call->core,call);
 	discover_mtu(lc,linphone_address_get_domain (to));
@@ -179,7 +180,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	linphone_core_get_local_ip(lc,linphone_address_get_domain(from),call->localip);
 	linphone_call_init_common(call, from, to);
 	call->localdesc=create_local_media_description (lc,call,
-	    linphone_address_get_username(me),lc->sip_conf.only_one_codec);
+	                          linphone_core_video_enabled(lc),lc->sip_conf.only_one_codec);
 	if (linphone_core_get_firewall_policy(call->core)==LinphonePolicyUseStun)
 		linphone_core_run_stun_tests(call->core,call);
 	discover_mtu(lc,linphone_address_get_domain(from));
@@ -777,4 +778,10 @@ void linphone_call_stop_media_streams(LinphoneCall *call){
 	}
 }
 
+void linphone_call_params_enable_video(LinphoneCallParams *cp, bool_t enabled){
+	cp->has_video=enabled;
+}
 
+void linphone_call_params_destroy(LinphoneCallParams *p){
+	ms_free(p);
+}
