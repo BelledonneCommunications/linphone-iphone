@@ -2167,10 +2167,10 @@ static int lpc_cmd_rtp_no_xmit_on_audio_mute(LinphoneCore *lc, char *args)
 }
 
 static int lpc_cmd_video_window(LinphoneCore *lc, char *args){
+#ifdef VIDEO_ENABLED
 	char subcommand[64];
 	int a,b;
 	int err;
-#ifdef VIDEO_ENABLED
 	err=sscanf(args,"%s %i %i",subcommand,&a,&b);
 	if (err>=1){
 		if (strcmp(subcommand,"pos")==0){

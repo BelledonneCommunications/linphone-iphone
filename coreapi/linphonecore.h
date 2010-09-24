@@ -595,7 +595,7 @@ bool_t linphone_core_ipv6_enabled(LinphoneCore *lc);
 void linphone_core_enable_ipv6(LinphoneCore *lc, bool_t val);
 
 LinphoneAddress *linphone_core_get_primary_contact_parsed(LinphoneCore *lc);
-
+const char * linphone_core_get_identity(LinphoneCore *lc);
 /*0= no bandwidth limit*/
 void linphone_core_set_download_bandwidth(LinphoneCore *lc, int bw);
 void linphone_core_set_upload_bandwidth(LinphoneCore *lc, int bw);
@@ -830,7 +830,7 @@ void linphone_core_stop_dtmf(LinphoneCore *lc);
 
 
 int linphone_core_get_current_call_duration(const LinphoneCore *lc);
-const LinphoneAddress *linphone_core_get_remote_address(LinphoneCore *lc);
+
 
 int linphone_core_get_mtu(const LinphoneCore *lc);
 void linphone_core_set_mtu(LinphoneCore *lc, int mtu);
