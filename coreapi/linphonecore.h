@@ -167,6 +167,19 @@ void linphone_call_params_enable_video(LinphoneCallParams *cp, bool_t enabled);
 void linphone_call_params_destroy(LinphoneCallParams *cp);
 
 /**
+ * Enum describing failure reasons.
+**/
+enum _LinphoneError{
+	LinphoneErrorNone,
+	LinphoneErrorNoResponse, /**<No response received from remote*/
+	LinphoneErrorBadCredentials /**<Authentication failed due to bad or missing credentials*/
+};
+
+typedef enum _LinphoneError LinphoneError;
+
+const char *linphone_error_to_string(LinphoneError err);
+
+/**
  * The LinphoneCall object represents a call issued or received by the LinphoneCore
 **/
 struct _LinphoneCall;
@@ -206,6 +219,9 @@ const char *linphone_call_get_refer_to(const LinphoneCall *call);
 bool_t linphone_call_has_transfer_pending(const LinphoneCall *call);
 int linphone_call_get_duration(const LinphoneCall *call);
 const LinphoneCallParams linphone_call_get_current_params(const LinphoneCall *call);
+void linphone_call_enable_camera(LinphoneCall *lc, bool_t enabled);
+bool_t linphone_call_camera_enabled(const LinphoneCall *lc);
+LinphoneError linphone_call_get_error(const LinphoneCall *call);
 void *linphone_call_get_user_pointer(LinphoneCall *call);
 void linphone_call_set_user_pointer(LinphoneCall *call, void *user_pointer);
 
@@ -319,6 +335,8 @@ struct _LinphoneCore * linphone_proxy_config_get_core(const LinphoneProxyConfig 
 
 bool_t linphone_proxy_config_get_dial_escape_plus(const LinphoneProxyConfig *cfg);
 const char * linphone_proxy_config_get_dial_prefix(const LinphoneProxyConfig *cfg);
+
+LinphoneError linphone_proxy_config_get_error(const LinphoneProxyConfig *cfg);
 
 /* destruction is called automatically when removing the proxy config */
 void linphone_proxy_config_destroy(LinphoneProxyConfig *cfg);

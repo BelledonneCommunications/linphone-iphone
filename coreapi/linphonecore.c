@@ -3919,3 +3919,15 @@ LinphoneCallParams *linphone_core_create_default_call_parameters(LinphoneCore *l
 	p->has_video=linphone_core_video_enabled(lc);
 	return p;
 }
+
+const char *linphone_error_to_string(LinphoneError err){
+	switch(err){
+		case LinphoneErrorNone:
+			return "No error";
+		case LinphoneErrorNoResponse:
+			return "No response";
+		case LinphoneErrorBadCredentials:
+			return "Bad credentials";
+	}
+	return "unknown error";
+}
