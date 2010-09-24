@@ -37,11 +37,11 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-	UIBarButtonItem* clear = [[UIBarButtonItem alloc] 
-							  initWithBarButtonSystemItem:UIBarButtonSystemItemTrash 
-							  target:self 
-							  action:@selector(doAction:)]; 
-	[self.navigationItem setRightBarButtonItem:clear];
+	UIBarButtonItem* clearButton = [[UIBarButtonItem alloc] 
+									initWithBarButtonSystemItem:UIBarButtonSystemItemTrash 
+									target:self 
+									action:@selector(doAction:)]; 
+	[self.navigationItem setRightBarButtonItem:clearButton];
 }
 
 /*

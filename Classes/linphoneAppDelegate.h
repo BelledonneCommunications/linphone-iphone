@@ -48,6 +48,7 @@
 	bool isDebug;
 	bool isStarted;
 	bool backgroundSupported;
+	bool isbackgroundModeEnabled;
 
 	LinphoneCore* myLinphoneCore;
 	SCNetworkReachabilityContext proxyReachabilityContext;

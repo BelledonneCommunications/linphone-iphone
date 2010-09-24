@@ -130,7 +130,6 @@
 		222CA76911F6CFB100621220 /* enum.c in Sources */ = {isa = PBXBuildFile; fileRef = 222CA73311F6CFB100621220 /* enum.c */; };
 		222CA76A11F6CFB100621220 /* enum.h in Headers */ = {isa = PBXBuildFile; fileRef = 222CA73411F6CFB100621220 /* enum.h */; };
 		222CA76E11F6CFB100621220 /* friend.c in Sources */ = {isa = PBXBuildFile; fileRef = 222CA73811F6CFB100621220 /* friend.c */; };
-		222CA76F11F6CFB100621220 /* general_state.c in Sources */ = {isa = PBXBuildFile; fileRef = 222CA73911F6CFB100621220 /* general_state.c */; };
 		222CA77011F6CFB100621220 /* linphonecore.c in Sources */ = {isa = PBXBuildFile; fileRef = 222CA73F11F6CFB100621220 /* linphonecore.c */; };
 		222CA77111F6CFB100621220 /* linphonecore.h in Headers */ = {isa = PBXBuildFile; fileRef = 222CA74011F6CFB100621220 /* linphonecore.h */; };
 		222CA77311F6CFB100621220 /* lpconfig.c in Sources */ = {isa = PBXBuildFile; fileRef = 222CA74211F6CFB100621220 /* lpconfig.c */; };
@@ -147,11 +146,10 @@
 		222CA77F11F6CFB100621220 /* sal_eXosip2.h in Headers */ = {isa = PBXBuildFile; fileRef = 222CA75D11F6CFB100621220 /* sal_eXosip2.h */; };
 		222CA78011F6CFB100621220 /* sal_eXosip2_presence.c in Sources */ = {isa = PBXBuildFile; fileRef = 222CA75E11F6CFB100621220 /* sal_eXosip2_presence.c */; };
 		222CA78111F6CFB100621220 /* sal_eXosip2_sdp.c in Sources */ = {isa = PBXBuildFile; fileRef = 222CA75F11F6CFB100621220 /* sal_eXosip2_sdp.c */; };
-		222CA78211F6CFB100621220 /* sdphandler.c in Sources */ = {isa = PBXBuildFile; fileRef = 222CA76011F6CFB100621220 /* sdphandler.c */; };
-		222CA78311F6CFB100621220 /* sdphandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 222CA76111F6CFB100621220 /* sdphandler.h */; };
 		222CA78411F6CFB100621220 /* siplogin.c in Sources */ = {isa = PBXBuildFile; fileRef = 222CA76211F6CFB100621220 /* siplogin.c */; };
 		222CA78511F6CFB100621220 /* sipsetup.c in Sources */ = {isa = PBXBuildFile; fileRef = 222CA76311F6CFB100621220 /* sipsetup.c */; };
 		222CA78611F6CFB100621220 /* sipsetup.h in Headers */ = {isa = PBXBuildFile; fileRef = 222CA76411F6CFB100621220 /* sipsetup.h */; };
+		225D355A124B1FF60008581C /* linphonecall.c in Sources */ = {isa = PBXBuildFile; fileRef = 225D3559124B1FF60008581C /* linphonecall.c */; };
 		22A10B5611F84E2D00373793 /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = 22A10B4F11F84E2D00373793 /* config.h */; };
 		22A10B5711F84E2D00373793 /* gsm.h in Headers */ = {isa = PBXBuildFile; fileRef = 22A10B5011F84E2D00373793 /* gsm.h */; };
 		22A10B5811F84E2D00373793 /* private.h in Headers */ = {isa = PBXBuildFile; fileRef = 22A10B5211F84E2D00373793 /* private.h */; };
@@ -308,7 +306,6 @@
 		222CA73311F6CFB100621220 /* enum.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = enum.c; sourceTree = "<group>"; };
 		222CA73411F6CFB100621220 /* enum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = enum.h; sourceTree = "<group>"; };
 		222CA73811F6CFB100621220 /* friend.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = friend.c; sourceTree = "<group>"; };
-		222CA73911F6CFB100621220 /* general_state.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = general_state.c; sourceTree = "<group>"; };
 		222CA73B11F6CFB100621220 /* Doxyfile.in */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Doxyfile.in; sourceTree = "<group>"; };
 		222CA73C11F6CFB100621220 /* doxygen.dox.in */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = doxygen.dox.in; sourceTree = "<group>"; };
 		222CA73D11F6CFB100621220 /* Makefile.am */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile.am; sourceTree = "<group>"; };
@@ -331,11 +328,10 @@
 		222CA75D11F6CFB100621220 /* sal_eXosip2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sal_eXosip2.h; sourceTree = "<group>"; };
 		222CA75E11F6CFB100621220 /* sal_eXosip2_presence.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sal_eXosip2_presence.c; sourceTree = "<group>"; };
 		222CA75F11F6CFB100621220 /* sal_eXosip2_sdp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sal_eXosip2_sdp.c; sourceTree = "<group>"; };
-		222CA76011F6CFB100621220 /* sdphandler.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sdphandler.c; sourceTree = "<group>"; };
-		222CA76111F6CFB100621220 /* sdphandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sdphandler.h; sourceTree = "<group>"; };
 		222CA76211F6CFB100621220 /* siplogin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = siplogin.c; sourceTree = "<group>"; };
 		222CA76311F6CFB100621220 /* sipsetup.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sipsetup.c; sourceTree = "<group>"; };
 		222CA76411F6CFB100621220 /* sipsetup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sipsetup.h; sourceTree = "<group>"; };
+		225D3559124B1FF60008581C /* linphonecall.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = linphonecall.c; sourceTree = "<group>"; };
 		22A10B4F11F84E2D00373793 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
 		22A10B5011F84E2D00373793 /* gsm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gsm.h; sourceTree = "<group>"; };
 		22A10B5111F84E2D00373793 /* gsm.h.orig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = gsm.h.orig; sourceTree = "<group>"; };
@@ -610,6 +606,7 @@
 		222CA72D11F6CFB100621220 /* coreapi */ = {
 			isa = PBXGroup;
 			children = (
+				225D3559124B1FF60008581C /* linphonecall.c */,
 				22A10EE711F8920F00373793 /* mswebcam.c */,
 				222CA72E11F6CFB100621220 /* .gitignore */,
 				222CA72F11F6CFB100621220 /* address.c */,
@@ -619,7 +616,6 @@
 				222CA73311F6CFB100621220 /* enum.c */,
 				222CA73411F6CFB100621220 /* enum.h */,
 				222CA73811F6CFB100621220 /* friend.c */,
-				222CA73911F6CFB100621220 /* general_state.c */,
 				222CA73A11F6CFB100621220 /* help */,
 				222CA73F11F6CFB100621220 /* linphonecore.c */,
 				222CA74011F6CFB100621220 /* linphonecore.h */,
@@ -639,8 +635,6 @@
 				222CA75D11F6CFB100621220 /* sal_eXosip2.h */,
 				222CA75E11F6CFB100621220 /* sal_eXosip2_presence.c */,
 				222CA75F11F6CFB100621220 /* sal_eXosip2_sdp.c */,
-				222CA76011F6CFB100621220 /* sdphandler.c */,
-				222CA76111F6CFB100621220 /* sdphandler.h */,
 				222CA76211F6CFB100621220 /* siplogin.c */,
 				222CA76311F6CFB100621220 /* sipsetup.c */,
 				222CA76411F6CFB100621220 /* sipsetup.h */,
@@ -770,7 +764,6 @@
 				222CA77A11F6CFB100621220 /* private.h in Headers */,
 				222CA77D11F6CFB100621220 /* sal.h in Headers */,
 				222CA77F11F6CFB100621220 /* sal_eXosip2.h in Headers */,
-				222CA78311F6CFB100621220 /* sdphandler.h in Headers */,
 				222CA78611F6CFB100621220 /* sipsetup.h in Headers */,
 				22A10B5611F84E2D00373793 /* config.h in Headers */,
 				22A10B5711F84E2D00373793 /* gsm.h in Headers */,
@@ -889,7 +882,6 @@
 				222CA76811F6CFB100621220 /* chat.c in Sources */,
 				222CA76911F6CFB100621220 /* enum.c in Sources */,
 				222CA76E11F6CFB100621220 /* friend.c in Sources */,
-				222CA76F11F6CFB100621220 /* general_state.c in Sources */,
 				222CA77011F6CFB100621220 /* linphonecore.c in Sources */,
 				222CA77311F6CFB100621220 /* lpconfig.c in Sources */,
 				222CA77511F6CFB100621220 /* misc.c in Sources */,
@@ -900,10 +892,10 @@
 				222CA77E11F6CFB100621220 /* sal_eXosip2.c in Sources */,
 				222CA78011F6CFB100621220 /* sal_eXosip2_presence.c in Sources */,
 				222CA78111F6CFB100621220 /* sal_eXosip2_sdp.c in Sources */,
-				222CA78211F6CFB100621220 /* sdphandler.c in Sources */,
 				222CA78411F6CFB100621220 /* siplogin.c in Sources */,
 				222CA78511F6CFB100621220 /* sipsetup.c in Sources */,
 				22A10EE811F8920F00373793 /* mswebcam.c in Sources */,
+				225D355A124B1FF60008581C /* linphonecall.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

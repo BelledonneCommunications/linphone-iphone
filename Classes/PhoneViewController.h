@@ -106,8 +106,7 @@
 /*
  * Handle call state change from linphone
  */
--(void) callStateChange:(LinphoneGeneralState*) state;
-
+-(void) onCall:(LinphoneCall*) call StateChanged: (LinphoneCallState) state withMessage: (const char *)  message;
 -(void) setLinphoneCore:(LinphoneCore*) lc;
 
 /********************

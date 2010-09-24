@@ -214,6 +214,16 @@
 			<key>DefaultValue</key>
 			<string>udp</string>
 		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Background mode</string>
+			<key>Key</key>
+			<string>backgroundmode_preference</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
 	</array>
 </dict>
 </plist>

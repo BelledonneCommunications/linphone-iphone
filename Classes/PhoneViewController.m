@@ -112,7 +112,7 @@
 				linphone_address_destroy(tmpAddress);
 			}
 		} else if (linphone_core_inc_invite_pending(mCore)) {
-			linphone_core_accept_call(mCore,NULL);
+			linphone_core_accept_call(mCore,linphone_core_get_current_call(mCore));
 			UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_None;  
 			AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute
 									 , sizeof (audioRouteOverride)
@@ -122,7 +122,7 @@
 		//Cancel audio route redirection
 		
 	} else if (sender == hangup) {
-		linphone_core_terminate_call(mCore,NULL);
+		linphone_core_terminate_call(mCore,linphone_core_get_current_call(mCore));
 	} else if (sender == mute) {
 		[self muteAction:!isMuted]; 
 		
@@ -168,7 +168,7 @@
 				newAddress = [address.text substringToIndex: [address.text length]-1];
 			} 
 		} else  {
-			ms_message(@"unknown event from diad pad");
+			ms_message("unknown event from diad pad");
 			return;
 		}
 		if (newAddress != nil) {
@@ -201,7 +201,7 @@
 			} else if (sender == hash) {
 				linphone_core_send_dtmf(mCore,'#');	
 			} else if (sender == hangup) {
-				linphone_core_terminate_call(mCore,NULL);
+				linphone_core_terminate_call(mCore,linphone_core_get_current_call(mCore));
 			}
 	}		
 }
@@ -214,7 +214,7 @@
 												 selector:@selector(doKeyZeroLongPress)
 												   object:nil];
 	} else  {
-		ms_message(@"unknown up event from dial pad");	
+		ms_message("unknown up event from dial pad");	
 	}
 }
 
@@ -312,45 +312,44 @@
 	[super dealloc];
 }
 
--(void) callStateChange:(LinphoneGeneralState*) state {
-	//	/* states for GSTATE_GROUP_POWER */
-	//	GSTATE_POWER_OFF = 0,        /* initial state */
-	//	GSTATE_POWER_STARTUP,
-	//	GSTATE_POWER_ON,
-	//	GSTATE_POWER_SHUTDOWN,
-	//	/* states for GSTATE_GROUP_REG */
-	//	GSTATE_REG_NONE = 10,       /* initial state */
-	//	GSTATE_REG_OK,
-	//	GSTATE_REG_FAILED,
-	//	/* states for GSTATE_GROUP_CALL */
-	//	GSTATE_CALL_IDLE = 20,      /* initial state */
-	//	GSTATE_CALL_OUT_INVITE,
-	//	GSTATE_CALL_OUT_CONNECTED,
-	//	GSTATE_CALL_IN_INVITE,
-	//	GSTATE_CALL_IN_CONNECTED,
-	//	GSTATE_CALL_END,
-	//	GSTATE_CALL_ERROR,
-	//	GSTATE_INVALID
-	switch (state->new_state) {
-		case GSTATE_CALL_IN_INVITE:
-		case GSTATE_CALL_OUT_INVITE: {
+-(void) onCall:(LinphoneCall*) currentCall StateChanged: (LinphoneCallState) new_state withMessage: (const char *)  message {
+	/*
+	 LinphoneCallIdle,
+	 LinphoneCallIncomingReceived,
+	 LinphoneCallOutgoingInit,
+	 LinphoneCallOutgoingProgress,
+	 LinphoneCallOutgoingRinging,
+	 LinphoneCallOutgoingEarlyMedia,
+	 LinphoneCallConnected,
+	 LinphoneCallStreamsRunning,
+	 LinphoneCallPausing,
+	 LinphoneCallPaused,
+	 LinphoneCallResuming,
+	 LinphoneCallRefered,
+	 LinphoneCallError,
+	 LinphoneCallEnd,
+	 LinphoneCallPausedByRemote
+	 */
+	switch (new_state) {
+		case LinphoneCallOutgoingInit:
+		case LinphoneCallIncomingReceived: {
 			[hangup setEnabled:true];
 			break;
 		}
 			
-		case GSTATE_CALL_ERROR: {
+		case LinphoneCallError: {
 			/*
 			NSString* lTitle= state->message!=nil?[NSString stringWithCString:state->message length:strlen(state->message)]: @"Error";
 			NSString* lMessage=lTitle;
 			*/
 			NSString* lMessage;
 			NSString* lTitle;
-			const char *errormsg=state->message;
+			
 			
 			lMessage=@"Please make sure your device is connected to the internet and double check your SIP account configuration in the settings.";
 
-			if (errormsg!=nil){
-				lMessage=[NSString stringWithFormat : @"%@\nReason was: %s",lMessage, errormsg];
+			if (message!=nil){
+				lMessage=[NSString stringWithFormat : @"%@\nReason was: %s",lMessage, message];
 			}
 			lTitle=@"Call failed";
 			
@@ -365,20 +364,20 @@
 			
 		}
 			break;
-		case GSTATE_CALL_IN_CONNECTED:
-		case GSTATE_CALL_OUT_CONNECTED: {
+		
+		case LinphoneCallConnected: {
 			[self muteAction:false];
 			// test if speaker must be unactivated after ring tone
 			if (!isSpeaker) [self speakerAction:false];
 			
-			const LinphoneAddress* callAddress = linphone_core_get_remote_uri(mCore);
+			const LinphoneAddress* callAddress = linphone_call_get_remote_address(linphone_core_get_current_call(mCore));
 			const char* callDisplayName =  linphone_address_get_display_name(callAddress)?linphone_address_get_display_name(callAddress):"";
 			if (callDisplayName && callDisplayName[0] != '\000') {
 				
-			[peerLabel setText:[NSString stringWithCString:callDisplayName length:strlen(callDisplayName)]];
+			[peerLabel setText:[NSString stringWithCString:callDisplayName encoding:[NSString defaultCStringEncoding]]];
 			} else {
 				const char* username = linphone_address_get_username(callAddress)!=0?linphone_address_get_username(callAddress):"";
-				[peerLabel setText:[NSString stringWithCString:username length:strlen(username)]];
+				[peerLabel setText:[NSString stringWithCString:username encoding:[NSString defaultCStringEncoding]]];
 			}
 			// start scheduler
 			durationRefreasher = [NSTimer scheduledTimerWithTimeInterval:1 
@@ -393,7 +392,7 @@
 			break;
 		}
 			
-		case GSTATE_CALL_END: {
+		case LinphoneCallEnd: {
 			[address setHidden:false];
 			[incallView setHidden:true];
 			[call setEnabled:true];

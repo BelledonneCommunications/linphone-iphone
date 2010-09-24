@@ -32,9 +32,6 @@
 
 
 extern void ms_au_register_card();
-void linphone_iphone_keepAliveHandler () { 
-	ms_message("keepalive handler invoked");
-};
 
 //generic log handler for debug version
 void linphone_iphone_log_handler(int lev, const char *fmt, va_list args){
@@ -48,7 +45,7 @@ void linphone_iphone_log_handler(int lev, const char *fmt, va_list args){
 
 //Error/warning log handler 
 void linphone_iphone_log(struct _LinphoneCore * lc, const char * message) {
-	NSString* log = [NSString stringWithCString:message length:strlen(message)]; 
+	NSString* log = [NSString stringWithCString:message encoding:[NSString defaultCStringEncoding]]; 
 	NSLog(log);
 	[ConsoleViewController addLog:log];
 }
@@ -56,27 +53,48 @@ void linphone_iphone_log(struct _LinphoneCore * lc, const char * message) {
 //status 
 void linphone_iphone_display_status(struct _LinphoneCore * lc, const char * message) {
 	PhoneViewController* lPhone = ((linphoneAppDelegate*) linphone_core_get_user_data(lc)).myPhoneViewController;
-	[lPhone displayStatus:[NSString stringWithCString:message length:strlen(message)]];
+	[lPhone displayStatus:[NSString stringWithCString:message encoding:[NSString defaultCStringEncoding]]];
 }
 
-void linphone_iphone_show(struct _LinphoneCore * lc) {
-	//nop
+void linphone_iphone_call_state(LinphoneCore *lc, LinphoneCall* call, LinphoneCallState state,const char* message) {
+	linphoneAppDelegate* lAppDelegate = (linphoneAppDelegate*) linphone_core_get_user_data(lc); 
+	if (state == LinphoneCallIncomingReceived) {
+		[lAppDelegate newIncomingCall:[[NSString alloc] initWithCString:linphone_address_get_username(linphone_call_get_remote_address(call))]]; 
+	}
+	PhoneViewController* lPhone = lAppDelegate.myPhoneViewController;
+	[lPhone onCall:call StateChanged:state withMessage:message];
 }
-void linphone_iphone_call_received(LinphoneCore *lc, const char *from){
-	LinphoneAddress* fromAddr = linphone_address_new(from);
-	[((linphoneAppDelegate*) linphone_core_get_user_data(lc)) newIncomingCall:[[NSString alloc] initWithCString:linphone_address_get_username(fromAddr) encoding:[NSString defaultCStringEncoding]]];
-	linphone_address_destroy(fromAddr);
+
+void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyConfig* cfg, LinphoneRegistrationState state,const char* message) {
+	linphoneAppDelegate* lAppDelegate = (linphoneAppDelegate*) linphone_core_get_user_data(lc); 
+	if (state == LinphoneRegistrationFailed ) {
+		
+		NSString* lErrorMessage;
+		if (linphone_proxy_config_get_error(cfg) == LinphoneErrorBadCredentials) {
+			lErrorMessage = @"Bad credentials, check your account settings";
+		} else if (linphone_proxy_config_get_error(cfg) == LinphoneErrorNoResponse) {
+			lErrorMessage = @"SIP server unreachable";
+		} 
+		if (lErrorMessage != nil) {
+			
+			
+			UIAlertView* error = [[UIAlertView alloc]	initWithTitle:@"Registration failure"
+															message:lErrorMessage
+														   delegate:lAppDelegate 
+												  cancelButtonTitle:@"Continue" 
+												  otherButtonTitles:nil ,nil];
+			[error show];
+		}
+		
+	}
 	
-};
-void linphone_iphone_general_state(LinphoneCore *lc, LinphoneGeneralState *gstate) {
-	PhoneViewController* lPhone = ((linphoneAppDelegate*) linphone_core_get_user_data(lc)).myPhoneViewController;
-	[lPhone callStateChange:gstate];
 }
+
 
 LinphoneCoreVTable linphonec_vtable = {
-.show =(ShowInterfaceCb) linphone_iphone_show,
-.inv_recv = linphone_iphone_call_received,
-.bye_recv = NULL, 
+.show =NULL,
+.call_state_changed =(LinphoneCallStateCb)linphone_iphone_call_state,
+.registration_state_changed = linphone_iphone_registration_state,
 .notify_recv = NULL,
 .new_unknown_subscriber = NULL,
 .auth_info_requested = NULL,
@@ -84,9 +102,7 @@ LinphoneCoreVTable linphonec_vtable = {
 .display_message=linphone_iphone_log,
 .display_warning=linphone_iphone_log,
 .display_url=NULL,
-.display_question=(DisplayQuestionCb)NULL,
 .text_received=NULL,
-.general_state=(GeneralStateChange)linphone_iphone_general_state,
 .dtmf_received=NULL
 };
 
@@ -116,76 +132,85 @@ LinphoneCoreVTable linphonec_vtable = {
 	if (backgroundSupported && proxyCfg) {
 		
 		
-		//register
-		linphone_core_set_network_reachable(myLinphoneCore,false);
-		linphone_core_iterate(myLinphoneCore);
-		linphone_core_set_network_reachable(myLinphoneCore,true);
-		
-		int i=0;
-		while (!linphone_proxy_config_is_registered(proxyCfg) && i++<40 ) {
+		if (isbackgroundModeEnabled) {
+			//register
+			linphone_core_set_network_reachable(myLinphoneCore,false);
 			linphone_core_iterate(myLinphoneCore);
-			usleep(100000);
+			linphone_core_set_network_reachable(myLinphoneCore,true);
+			
+			int i=0;
+			while (!linphone_proxy_config_is_registered(proxyCfg) && i++<40 ) {
+				linphone_core_iterate(myLinphoneCore);
+				usleep(100000);
+			}
+			if ([[UIApplication sharedApplication] setKeepAliveTimeout:600/*(NSTimeInterval)linphone_proxy_config_get_expires(proxyCfg)*/ 
+															   handler:^{
+																   ms_warning("keepalive handler");
+																   //kick up network cnx, just in case
+																   linphone_core_set_network_reachable(myLinphoneCore,false);
+																   linphone_core_iterate(myLinphoneCore);
+																   [self kickOffNetworkConnection];
+																   linphone_core_set_network_reachable(myLinphoneCore,true);
+																   linphone_core_iterate(myLinphoneCore);
+															   }
+				 ]) {
+				
+				
+				ms_warning("keepalive handler succesfully registered"); 
+			} else {
+				ms_warning("keepalive handler cannot be registered");
+			}
+			LCSipTransports transportValue;
+			if (linphone_core_get_sip_transports(myLinphoneCore, &transportValue)) {
+				ms_error("cannot get current transport");	
+			}
+			
+			if (mReadStream == nil && transportValue.udp_port>0) { //only for udp
+				const char *port;
+				addr=linphone_address_new(linphone_proxy_config_get_addr(proxyCfg));
+				memset(&hints,0,sizeof(hints));
+				hints.ai_family=linphone_core_ipv6_enabled(myLinphoneCore) ? AF_INET6 : AF_INET;
+				port=linphone_address_get_port(addr);
+				if (port==NULL) port="5060";
+				err=getaddrinfo(linphone_address_get_domain(addr),port,&hints,&res);
+				if (err!=0){
+					ms_error("getaddrinfo() failed for %s: %s",linphone_address_get_domain(addr),gai_strerror(err));
+					linphone_address_destroy(addr);
+					return;
+				}
+				err=connect(sipsock,res->ai_addr,res->ai_addrlen);
+				if (err==-1){
+					ms_error("Connect failed: %s",strerror(errno));
+				}
+				freeaddrinfo(res);
+				
+				CFStreamCreatePairWithSocket(NULL, (CFSocketNativeHandle)sipsock, &mReadStream,nil);
+				
+				if (!CFReadStreamSetProperty(mReadStream, kCFStreamNetworkServiceType, kCFStreamNetworkServiceTypeVoIP)) {
+					ms_error("cannot set service type to voip for read stream");
+				}
+				
+				
+				if (!CFReadStreamOpen(mReadStream)) {
+					ms_error("cannot open read stream");
+				}		
+			}
 		}
-		if ([[UIApplication sharedApplication] setKeepAliveTimeout:600/*(NSTimeInterval)linphone_proxy_config_get_expires(proxyCfg)*/ 
-											   handler:^{
-												   ms_warning("keepalive handler");
-												   //kick up network cnx, just in case
-												   linphone_core_set_network_reachable(myLinphoneCore,false);
-												   linphone_core_iterate(myLinphoneCore);
-												   [self kickOffNetworkConnection];
-												   linphone_core_set_network_reachable(myLinphoneCore,true);
-												   linphone_core_iterate(myLinphoneCore);
-											   }
-												]) {
+		else {
+			//only unregister
+			//register
+			linphone_proxy_config_edit(proxyCfg); //force unregister
+			linphone_core_iterate(myLinphoneCore);
+			ms_warning("Entering lite bg mode");
+		}
+	}
 		
-			 
-			ms_warning("keepalive handler succesfully registered"); 
-		} else {
-			ms_warning("keepalive handler cannot be registered");
-		}
-		LCSipTransports transportValue;
-		if (linphone_core_get_sip_transports(myLinphoneCore, &transportValue)) {
-			ms_error("cannot get current transport");	
-		}
-		
-		if (mReadStream == nil && transportValue.udp_port>0) { //only for udp
-			const char *port;
-			addr=linphone_address_new(linphone_proxy_config_get_addr(proxyCfg));
-			memset(&hints,0,sizeof(hints));
-			hints.ai_family=linphone_core_ipv6_enabled(myLinphoneCore) ? AF_INET6 : AF_INET;
-			port=linphone_address_get_port(addr);
-			if (port==NULL) port="5060";
-			err=getaddrinfo(linphone_address_get_domain(addr),port,&hints,&res);
-			if (err!=0){
-				ms_error("getaddrinfo() failed for %s: %s",linphone_address_get_domain(addr),gai_strerror(err));
-				linphone_address_destroy(addr);
-				return;
-			}
-			err=connect(sipsock,res->ai_addr,res->ai_addrlen);
-			if (err==-1){
-				ms_error("Connect failed: %s",strerror(errno));
-			}
-			freeaddrinfo(res);
-			
-			CFStreamCreatePairWithSocket(NULL, (CFSocketNativeHandle)sipsock, &mReadStream,nil);
-			
-			if (!CFReadStreamSetProperty(mReadStream, kCFStreamNetworkServiceType, kCFStreamNetworkServiceTypeVoIP)) {
-				ms_error("cannot set service type to voip for read stream");
-			}
-			
-			
-			if (!CFReadStreamOpen(mReadStream)) {
-				ms_error("cannot open read stream");
-			}		
-		}
-	}	
-	
 #endif
-	
-}
+		
+	}
 
 
-- (void)applicationDidFinishLaunching:(UIApplication *)application {    
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions{    
 	
 	//as defined in PhoneMainView.xib		
 #define DIALER_TAB_INDEX 1
@@ -271,9 +296,9 @@ LinphoneCoreVTable linphonec_vtable = {
 
 		//unconnect
 		int socket = linphone_core_get_sip_socket(myLinphoneCore);
-		struct addrinfo hints;
+		struct sockaddr hints;
 		memset(&hints,0,sizeof(hints));
-		hints.ai_family=AF_UNSPEC;
+		hints.sa_family=AF_UNSPEC;
 		connect(socket,&hints,sizeof(hints));
 		CFReadStreamClose(mReadStream);
 		CFRelease(mReadStream);
@@ -342,7 +367,6 @@ extern void libmsilbc_init();
 								   userInfo:nil 
 									repeats:YES];
 	//init audio session
-	NSError *setError = nil;
 	AVAudioSession *audioSession = [AVAudioSession sharedInstance];
 	 BOOL bAudioInputAvailable= [audioSession inputIsAvailable];
 	 
@@ -547,6 +571,8 @@ extern void libmsilbc_init();
 		}
 	}
 	
+	isbackgroundModeEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"backgroundmode_preference"];
+	
 }
 
 // no proxy configured alert 
@@ -573,30 +599,34 @@ extern void libmsilbc_init();
 		{
 			notif.repeatInterval = 0;
 			notif.alertBody =[NSString  stringWithFormat:@" %@ is calling you",from];
-			notif.soundName = UILocalNotificationDefaultSoundName;
+			notif.alertAction = @"Answer";
+			notif.soundName = @"oldphone-mono-30s.wav";
 			
 			[[UIApplication sharedApplication]  presentLocalNotificationNow:notif];
 		}
-	}
+	} else 
+		
 #endif
-	
-	
-	
+	{
 	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:[NSString  stringWithFormat:@" %@ is calling you",from]
 															 delegate:self cancelButtonTitle:@"Decline" destructiveButtonTitle:@"Answer" otherButtonTitles:nil];
     actionSheet.actionSheetStyle = UIActionSheetStyleDefault;
     [actionSheet showFromTabBar:myTabBarController.tabBar];
     [actionSheet release];
-
+	}
 		
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (buttonIndex == 0 ) {
-		linphone_core_accept_call(myLinphoneCore,NULL);	
+		linphone_core_accept_call(myLinphoneCore,linphone_core_get_current_call(myLinphoneCore));	
 	} else {
-		linphone_core_terminate_call (myLinphoneCore,NULL);
+		linphone_core_terminate_call (myLinphoneCore,linphone_core_get_current_call(myLinphoneCore));
 	}
+}
+
+- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
+	linphone_core_accept_call(myLinphoneCore,linphone_core_get_current_call(myLinphoneCore));	
 }
 //scheduling loop
 -(void) iterate {
@@ -608,7 +638,7 @@ extern void libmsilbc_init();
 	const MSList *elem;
 	for(elem=list;elem!=NULL;elem=elem->next){
 		PayloadType *pt=(PayloadType*)elem->data;
-		if ([type isEqualToString:[NSString stringWithCString:payload_type_get_mime(pt) length:strlen(payload_type_get_mime(pt))]] && rate==pt->clock_rate) {
+		if ([type isEqualToString:[NSString stringWithCString:payload_type_get_mime(pt) encoding:[NSString defaultCStringEncoding]]] && rate==pt->clock_rate) {
 			return pt;
 		}
 	}

@@ -35,6 +35,7 @@
 		2245671D107699F700F10948 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2245671C107699F700F10948 /* Settings.bundle */; };
 		224567C2107B968500F10948 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 224567C1107B968500F10948 /* AVFoundation.framework */; };
 		2245F78A1201D38000C4179D /* MoreViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22E0A81B111C44E100B04932 /* MoreViewController.xib */; };
+		224E7F4D124CB00900113C4A /* oldphone-mono-30s.wav in Resources */ = {isa = PBXBuildFile; fileRef = 224E7F4C124CB00900113C4A /* oldphone-mono-30s.wav */; };
 		225CB2EA11ABB51000628906 /* clavier-01-106px.png in Resources */ = {isa = PBXBuildFile; fileRef = 225CB2E811ABB51000628906 /* clavier-01-106px.png */; };
 		225CB2EB11ABB51000628906 /* clavier-01-108px.png in Resources */ = {isa = PBXBuildFile; fileRef = 225CB2E911ABB51000628906 /* clavier-01-108px.png */; };
 		225CB2EE11ABB65D00628906 /* clavier-01-160px.png in Resources */ = {isa = PBXBuildFile; fileRef = 225CB2ED11ABB65D00628906 /* clavier-01-160px.png */; };
@@ -46,9 +47,9 @@
 		227BCDC210D4004600FBFD76 /* CallHistoryTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 227BCDC010D4004600FBFD76 /* CallHistoryTableViewController.m */; };
 		227BCDC310D4004600FBFD76 /* CallHistoryTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 227BCDC110D4004600FBFD76 /* CallHistoryTableViewController.xib */; };
 		228697C411AC29B800E9E0CA /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 228697C311AC29B800E9E0CA /* CFNetwork.framework */; };
-		22A10F3911F8960300373793 /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD2A10765B400068D98F /* liblinphone.a */; };
 		22A10F3A11F8960300373793 /* libmediastreamer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD2B10765B400068D98F /* libmediastreamer.a */; };
 		22A10F3B11F8960300373793 /* libortp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD2C10765B400068D98F /* libortp.a */; };
+		22A805C3124D021E005E4D90 /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD2A10765B400068D98F /* liblinphone.a */; };
 		22B5EFA310CE50BD00777D97 /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22B5EFA210CE50BD00777D97 /* AddressBookUI.framework */; };
 		22B5EFE510CE5E5800777D97 /* ContactPickerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 22B5EFE410CE5E5800777D97 /* ContactPickerDelegate.m */; };
 		22B5F03510CE6B2F00777D97 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22B5F03410CE6B2F00777D97 /* AddressBook.framework */; };
@@ -215,6 +216,7 @@
 		2245671C107699F700F10948 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		224567C1107B968500F10948 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		2245F77E1201D2AF00C4179D /* linphone-Info copy.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "linphone-Info copy.plist"; sourceTree = "<group>"; };
+		224E7F4C124CB00900113C4A /* oldphone-mono-30s.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = "oldphone-mono-30s.wav"; path = "liblinphone-sdk/apple-darwin/share/sounds/linphone/rings/oldphone-mono-30s.wav"; sourceTree = "<group>"; };
 		2258633C11410BAC00C5A737 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		225CB2E811ABB51000628906 /* clavier-01-106px.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "clavier-01-106px.png"; path = "Resources/clavier-01-106px.png"; sourceTree = "<group>"; };
 		225CB2E911ABB51000628906 /* clavier-01-108px.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "clavier-01-108px.png"; path = "Resources/clavier-01-108px.png"; sourceTree = "<group>"; };
@@ -277,9 +279,9 @@
 				223148E41178A08200637D6A /* libilbc.a in Frameworks */,
 				223148E61178A09900637D6A /* libmsilbc.a in Frameworks */,
 				228697C411AC29B800E9E0CA /* CFNetwork.framework in Frameworks */,
-				22A10F3911F8960300373793 /* liblinphone.a in Frameworks */,
 				22A10F3A11F8960300373793 /* libmediastreamer.a in Frameworks */,
 				22A10F3B11F8960300373793 /* libortp.a in Frameworks */,
+				22A805C3124D021E005E4D90 /* liblinphone.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -563,6 +565,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				224E7F4C124CB00900113C4A /* oldphone-mono-30s.wav */,
 				225CB2F911ABB76400628906 /* linphone-banner.png */,
 				225CB2ED11ABB65D00628906 /* clavier-01-160px.png */,
 				225CB2E811ABB51000628906 /* clavier-01-106px.png */,
@@ -683,6 +686,7 @@
 				225CB2EE11ABB65D00628906 /* clavier-01-160px.png in Resources */,
 				225CB2FA11ABB76400628906 /* linphone-banner.png in Resources */,
 				2245F78A1201D38000C4179D /* MoreViewController.xib in Resources */,
+				224E7F4D124CB00900113C4A /* oldphone-mono-30s.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
