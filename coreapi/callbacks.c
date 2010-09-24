@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "private.h"
 #include "mediastreamer2/mediastream.h"
 
+static void register_failure(SalOp *op, SalError error, SalReason reason, const char *details);
 
 static void linphone_connect_incoming(LinphoneCore *lc, LinphoneCall *call){
 	if (lc->ringstream!=NULL){
@@ -426,6 +427,9 @@ static void auth_requested(SalOp *h, const char *realm, const char *username){
 		sal_op_authenticate(h,&sai);
 		ai->usecount++;
 	}else{
+		if (ai && ai->works==FALSE) {
+			register_failure(h, SalErrorFailure, SalReasonForbidden, _("Authentication failure"));
+		} 
 		if (lc->vtable.auth_info_requested)
 			lc->vtable.auth_info_requested(lc,realm,username);
 	}
@@ -446,6 +450,7 @@ static void register_success(SalOp *op, bool_t registered){
 	char *msg;
 	
 	cfg->registered=registered;
+	linphone_proxy_config_set_error(cfg,LinphoneErrorNone);
 	linphone_proxy_config_set_state(cfg, registered ? LinphoneRegistrationOk : LinphoneRegistrationCleared ,
 	                                registered ? "Registration sucessful" : "Unregistration done");
 	if (lc->vtable.display_status){
@@ -472,6 +477,11 @@ static void register_failure(SalOp *op, SalError error, SalReason reason, const 
 		char *msg=ortp_strdup_printf(_("Registration on %s failed: %s"),sal_op_get_proxy(op),details  );
 		lc->vtable.display_status(lc,msg);
 		ms_free(msg);
+	}
+	if (error== SalErrorFailure && reason == SalReasonForbidden) {
+		linphone_proxy_config_set_error(cfg, LinphoneErrorBadCredentials);
+	} else if (error == SalErrorNoResponse) {
+		linphone_proxy_config_set_error(cfg, LinphoneErrorNoResponse);
 	}
 	linphone_proxy_config_set_state(cfg,LinphoneRegistrationFailed,details);
 }
