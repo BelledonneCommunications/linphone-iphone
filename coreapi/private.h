@@ -196,7 +196,7 @@ void linphone_core_stop_waiting(LinphoneCore *lc);
 int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, LinphoneProxyConfig *dest_proxy);
 void linphone_core_start_pending_refered_calls(LinphoneCore *lc);
 extern SalCallbacks linphone_sal_callbacks;
-
+void linphone_proxy_config_set_error(LinphoneProxyConfig *cfg,LinphoneError error);
 
 struct _LinphoneProxyConfig
 {
@@ -220,6 +220,7 @@ struct _LinphoneProxyConfig
 	bool_t dial_escape_plus;
 	void* user_data;
 	time_t deletion_date;
+	LinphoneError error;
 };
 
 struct _LinphoneAuthInfo 
