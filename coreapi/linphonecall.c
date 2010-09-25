@@ -31,6 +31,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/msvolume.h"
 #include "mediastreamer2/msequalizer.h"
 
+static MSWebCam *get_nowebcam_device(){
+	return ms_web_cam_manager_get_cam(ms_web_cam_manager_get(),"StaticImage: Static picture");
+}
 
 
 static MSList *make_codec_list(LinphoneCore *lc, const MSList *codecs, bool_t only_one_codec){
@@ -440,6 +443,14 @@ int linphone_call_get_duration(const LinphoneCall *call){
  * Indicate whether camera input should be sent to remote end.
 **/
 void linphone_call_enable_camera (LinphoneCall *call, bool_t enable){
+	if (call->videostream!=NULL && call->videostream->ticker!=NULL){
+		LinphoneCore *lc=call->core;
+		MSWebCam *nowebcam=get_nowebcam_device();
+		if (call->camera_active!=enable && lc->video_conf.device!=nowebcam){
+			video_stream_change_camera(call->videostream,
+			             enable ? lc->video_conf.device : nowebcam);
+		}
+	}
 	call->camera_active=enable;
 }
 
@@ -753,7 +764,7 @@ void linphone_call_start_media_streams(LinphoneCall *call){
 				video_stream_enable_self_view(call->videostream,lc->video_conf.selfview);
 						
 				if (stream->dir==SalStreamSendOnly && lc->video_conf.capture ){
-					cam=ms_web_cam_manager_get_cam(ms_web_cam_manager_get(),"StaticImage: Static picture");
+					cam=get_nowebcam_device();
 					dir=VideoStreamSendOnly;
 				}else if (stream->dir==SalStreamRecvOnly && lc->video_conf.display ){
 					dir=VideoStreamRecvOnly;
@@ -768,6 +779,9 @@ void linphone_call_start_media_streams(LinphoneCall *call){
 					ms_warning("video stream is inactive.");
 					/*either inactive or incompatible with local capabilities*/
 					is_inactive=TRUE;
+				}
+				if (call->camera_active==FALSE){
+					cam=get_nowebcam_device();
 				}
 				if (!is_inactive){
 					video_stream_set_direction (call->videostream, dir);
