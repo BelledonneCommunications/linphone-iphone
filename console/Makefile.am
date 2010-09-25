@@ -9,9 +9,7 @@ INCLUDES = \
 	-I$(top_srcdir)/coreapi\
 	$(ORTP_CFLAGS) \
 	-I$(top_srcdir)/exosip \
-	-I$(top_srcdir)/mediastreamer2/include
-
-
+	$(MEDIASTREAMER_CFLAGS)
 
 bin_PROGRAMS =  linphonec linphonecsh
 
@@ -22,7 +20,7 @@ endif
 linphonec_SOURCES = linphonec.c linphonec.h commands.c
 linphonec_CFLAGS=$(COMMON_CFLAGS) $(CONSOLE_FLAGS)
 linphonec_LDADD = $(top_builddir)/coreapi/liblinphone.la $(READLINE_LIBS)  \
-		$(top_builddir)/mediastreamer2/src/libmediastreamer.la \
+		$(MEDIASTREAMER_LIBS) \
 		$(ORTP_LIBS) \
 		$(SPEEX_LIBS) \
 		$(OSIP_LIBS)
@@ -41,7 +39,7 @@ sipomatic_CFLAGS= $(COMMON_CFLAGS) $(CONSOLE_FLAGS)
 
 sipomatic_LDADD= 	$(INTLLIBS)  \
 			$(top_builddir)/coreapi/liblinphone.la \
-			$(top_builddir)/mediastreamer2/src/libmediastreamer.la \
+			$(MEDIASTREAMER_LIBS) \
 			$(ORTP_LIBS) \
 			$(SPEEX_LIBS) \
 			$(OSIP_LIBS)

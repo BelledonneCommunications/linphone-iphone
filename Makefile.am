@@ -3,13 +3,20 @@
 # let make re-run automake upon need
 ACLOCAL_AMFLAGS = -I m4 $(ACLOCAL_MACOS_FLAGS)
 
-if EXTERNAL_ORTP
-ORTP_DIR =
+if EXTERNAL_MEDIASTREAMER
+MS2_DIR=
 else
-ORTP_DIR = oRTP
+MS2_DIR=mediastreamer2
 endif
 
-SUBDIRS = m4 pixmaps po $(ORTP_DIR) mediastreamer2\
+if EXTERNAL_ORTP
+ORTP_DIR=
+else
+ORTP_DIR=oRTP
+endif
+
+
+SUBDIRS = m4 pixmaps po $(ORTP_DIR) $(MS2_DIR) \
 		coreapi console gtk share scripts
 
 
