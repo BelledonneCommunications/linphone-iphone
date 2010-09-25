@@ -145,7 +145,9 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 	call->core=lc;
 	linphone_core_get_local_ip(lc,linphone_address_get_domain(to),call->localip);
 	linphone_call_init_common(call,from,to);
+	call->params=*params;
 	call->localdesc=create_local_media_description (lc,call,params->has_video,FALSE);
+	call->camera_active=params->has_video;
 	if (linphone_core_get_firewall_policy(call->core)==LinphonePolicyUseStun)
 		linphone_core_run_stun_tests(call->core,call);
 	discover_mtu(lc,linphone_address_get_domain (to));
@@ -179,8 +181,10 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	linphone_address_clean(from);
 	linphone_core_get_local_ip(lc,linphone_address_get_domain(from),call->localip);
 	linphone_call_init_common(call, from, to);
+	call->params.has_video=linphone_core_video_enabled(lc);
 	call->localdesc=create_local_media_description (lc,call,
-	                          linphone_core_video_enabled(lc),lc->sip_conf.only_one_codec);
+	                          call->params.has_video,lc->sip_conf.only_one_codec);
+	call->camera_active=call->params.has_video;
 	if (linphone_core_get_firewall_policy(call->core)==LinphonePolicyUseStun)
 		linphone_core_run_stun_tests(call->core,call);
 	discover_mtu(lc,linphone_address_get_domain(from));
@@ -260,6 +264,8 @@ const char *linphone_call_state_to_string(LinphoneCallState cs){
 			return "LinphoneCallEnd";
 		case LinphoneCallPausedByRemote:
 			return "LinphoneCallPausedByRemote";
+		case LinphoneCallUpdatedByRemote:
+			return "LinphoneCallUpdatedByRemote";
 	}
 	return "undefined state";
 }
@@ -335,6 +341,13 @@ void linphone_call_unref(LinphoneCall *obj){
 	if (obj->refcnt==0){
 		linphone_call_destroy(obj);
 	}
+}
+
+/**
+ * Returns current parameters associated to the call.
+**/
+const LinphoneCallParams * linphone_call_get_current_params(const LinphoneCall *call){
+	return &call->params;
 }
 
 /**
@@ -421,6 +434,35 @@ bool_t linphone_call_has_transfer_pending(const LinphoneCall *call){
 int linphone_call_get_duration(const LinphoneCall *call){
 	if (call->media_start_time==0) return 0;
 	return time(NULL)-call->media_start_time;
+}
+
+/**
+ * Indicate whether camera input should be sent to remote end.
+**/
+void linphone_call_enable_camera (LinphoneCall *call, bool_t enable){
+	call->camera_active=enable;
+}
+
+bool_t linphone_call_camera_enabled (const LinphoneCall *call){
+	return call->camera_active;
+}
+
+void linphone_call_params_enable_video(LinphoneCallParams *cp, bool_t enabled){
+	cp->has_video=enabled;
+}
+
+bool_t linphone_call_params_video_enabled(const LinphoneCallParams *cp){
+	return cp->has_video;
+}
+
+LinphoneCallParams * linphone_call_params_copy(const LinphoneCallParams *cp){
+	LinphoneCallParams *ncp=ms_new0(LinphoneCallParams,1);
+	memcpy(ncp,cp,sizeof(LinphoneCallParams));
+	return ncp;
+}
+
+void linphone_call_params_destroy(LinphoneCallParams *p){
+	ms_free(p);
 }
 
 /**
@@ -778,10 +820,3 @@ void linphone_call_stop_media_streams(LinphoneCall *call){
 	}
 }
 
-void linphone_call_params_enable_video(LinphoneCallParams *cp, bool_t enabled){
-	cp->has_video=enabled;
-}
-
-void linphone_call_params_destroy(LinphoneCallParams *p){
-	ms_free(p);
-}

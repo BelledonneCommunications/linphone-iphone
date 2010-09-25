@@ -301,6 +301,8 @@ static void call_updating(SalOp *op){
 			if (lc->current_call!=call){
 				ms_error("Inconsitency detected: current call is %p but call %p is being paused !",lc->current_call,call);
 			}
+		}else{
+			linphone_call_set_state(call, LinphoneCallUpdatedByRemote,"Call updated by remote");
 		}
 		/*accept the modification (sends a 200Ok)*/
 		sal_call_accept(op);

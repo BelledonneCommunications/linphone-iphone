@@ -163,7 +163,9 @@ char * linphone_call_log_to_str(LinphoneCallLog *cl);
 struct _LinphoneCallParams;
 typedef struct _LinphoneCallParams LinphoneCallParams;
 
+LinphoneCallParams * linphone_call_params_copy(const LinphoneCallParams *cp);
 void linphone_call_params_enable_video(LinphoneCallParams *cp, bool_t enabled);
+bool_t linphone_call_params_video_enabled(const LinphoneCallParams *cp);
 void linphone_call_params_destroy(LinphoneCallParams *cp);
 
 /**
@@ -200,7 +202,8 @@ typedef enum _LinphoneCallState{
 	LinphoneCallRefered,
 	LinphoneCallError,
 	LinphoneCallEnd,
-	LinphoneCallPausedByRemote
+	LinphoneCallPausedByRemote,
+	LinphoneCallUpdatedByRemote /**<used when video is asked by remote */
 } LinphoneCallState;
 
 const char *linphone_call_state_to_string(LinphoneCallState cs);
@@ -218,7 +221,7 @@ LinphoneCallLog *linphone_call_get_call_log(const LinphoneCall *call);
 const char *linphone_call_get_refer_to(const LinphoneCall *call);
 bool_t linphone_call_has_transfer_pending(const LinphoneCall *call);
 int linphone_call_get_duration(const LinphoneCall *call);
-const LinphoneCallParams linphone_call_get_current_params(const LinphoneCall *call);
+const LinphoneCallParams * linphone_call_get_current_params(const LinphoneCall *call);
 void linphone_call_enable_camera(LinphoneCall *lc, bool_t enabled);
 bool_t linphone_call_camera_enabled(const LinphoneCall *lc);
 LinphoneError linphone_call_get_error(const LinphoneCall *call);

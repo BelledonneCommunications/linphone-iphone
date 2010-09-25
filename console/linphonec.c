@@ -173,6 +173,8 @@ static bool_t pipe_reader_run=FALSE;
 static ortp_pipe_t server_sock;
 #endif /*_WIN32_WCE*/
 
+bool_t linphonec_camera_enabled=TRUE;
+
 
 extern VideoParams lpc_video_params;
 
@@ -313,6 +315,13 @@ linphonec_new_unknown_subscriber(LinphoneCore *lc, LinphoneFriend *lf,
 
 }
 
+static void linphonec_call_updated(LinphoneCall *call){
+	const LinphoneCallParams *cp=linphone_call_get_current_params(call);
+	if (!linphone_call_camera_enabled (call) && linphone_call_params_video_enabled (cp)){
+		linphonec_out("Far end requests to share video.\nType 'camera on' if you agree.");
+	}
+}
+
 static void linphonec_call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState st, const char *msg){
 	char *from=linphone_call_get_remote_address_as_string(call);
 	long id=(long)linphone_call_get_user_pointer (call);
@@ -337,6 +346,7 @@ static void linphonec_call_state_changed(LinphoneCore *lc, LinphoneCall *call, L
 		break;
 		case LinphoneCallIncomingReceived:
 			linphonec_call_identify(call);
+			linphone_call_enable_camera (call,linphonec_camera_enabled);
 			id=(long)linphone_call_get_user_pointer (call);
 			linphonec_set_caller(from);
 			if ( auto_answer)  {
@@ -346,6 +356,9 @@ static void linphonec_call_state_changed(LinphoneCore *lc, LinphoneCall *call, L
 		break;
 		case LinphoneCallOutgoingInit:
 			linphonec_call_identify(call);
+		break;
+		case LinphoneCallUpdatedByRemote:
+			linphonec_call_updated(call);
 		break;
 		default:
 		break;

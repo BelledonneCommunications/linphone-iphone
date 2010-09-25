@@ -89,6 +89,7 @@ static int lpc_cmd_resume(LinphoneCore *lc, char *args);
 static int lpc_cmd_mute_mic(LinphoneCore *lc, char *args);
 static int lpc_cmd_unmute_mic(LinphoneCore *lc, char *args);
 static int lpc_cmd_rtp_no_xmit_on_audio_mute(LinphoneCore *lc, char *args);
+static int lpc_cmd_camera(LinphoneCore *lc, char *args);
 static int lpc_cmd_video_window(LinphoneCore *lc, char *args);
 static int lpc_cmd_states(LinphoneCore *lc, char *args);
 
@@ -136,9 +137,12 @@ static LPC_COMMAND commands[] = {
 		"'help <command>'\t: displays specific help for command.\n"
 		"'help advanced'\t: shows advanced commands.\n"
 	},
-	{ "call", lpc_cmd_call, "Call a SIP uri",
-		"'call <sip-url>' \t: initiate a call to the specified destination.\n"
-		"'call show' \t: show all the current calls with their id and status.\n"
+	{ "call", lpc_cmd_call, "Call a SIP uri or number",
+#ifdef VIDEO_ENABLED
+		"'call <sip-url or number>  [--audio-only]' \t: initiate a call to the specified destination.\n"
+#else
+		"'call <sip-url or number>' \t: initiate a call to the specified destination.\n"
+#endif
 		},
 	{ "calls", lpc_cmd_calls, "Show all the current calls with their id and status.",
 		NULL
@@ -163,6 +167,11 @@ static LPC_COMMAND commands[] = {
 		"'resume <call id>' : hold off the call with given id\n"},
 	{ "mute", lpc_cmd_mute_mic, 
 	  "Mute microphone and suspend voice transmission."},
+#ifdef VIDEO_ENABLED
+	{ "camera", lpc_cmd_camera, "Send camera output for current call.",
+		"'camera on'\t: allow sending of local camera video to remote end.\n"
+		"'camera off'\t: disable sending of local camera's video to remote end.\n"},
+#endif
 	{ "unmute", lpc_cmd_unmute_mic, 
 		  "Unmute microphone and resume voice transmission."},
 	{ "duration", lpc_cmd_duration, "Print duration in seconds of the last call.", NULL },
@@ -503,12 +512,19 @@ lpc_cmd_call(LinphoneCore *lc, char *args)
 	}
 	{
 		LinphoneCall *call;
+		LinphoneCallParams *cp=linphone_core_create_default_call_parameters (lc);
+		char *opt;
 		if ( linphone_core_in_call(lc) )
 		{
 			linphonec_out("Terminate or hold on the current call first.\n");
 			return 1;
 		}
-		if ( NULL == (call=linphone_core_invite(lc, args)) )
+		opt=strstr(args,"--audio-only");
+		if (opt){
+			opt[0]='\0';
+			linphone_call_params_enable_video (cp,FALSE);
+		}
+		if ( NULL == (call=linphone_core_invite_with_params(lc, args,cp)) )
 		{
 			linphonec_out("Error from linphone_core_invite.\n");
 		}
@@ -516,6 +532,7 @@ lpc_cmd_call(LinphoneCore *lc, char *args)
 		{
 			snprintf(callee_name,sizeof(callee_name),"%s",args);
 		}
+		linphone_call_params_destroy(cp);
 	}
 	return 1;
 }
@@ -2259,6 +2276,53 @@ static int lpc_cmd_states(LinphoneCore *lc, char *args){
 		return 1;
 	}
 	return 0;
+}
+
+static int lpc_cmd_camera(LinphoneCore *lc, char *args){
+	LinphoneCall *call=linphone_core_get_current_call(lc);
+	bool_t activated=FALSE;
+	
+	if (linphone_core_video_enabled (lc)==FALSE){
+		linphonec_out("Video is disabled, re-run linphonec with -V option.");
+		return 1;
+	}
+
+	if (args){
+		if (strcmp(args,"on")==0)
+			activated=TRUE;
+		else if (strcmp(args,"off")==0)
+			activated=FALSE;
+		else
+			return 0;
+	}
+
+	if (call==NULL){
+		if (args){
+			linphonec_camera_enabled=activated;
+		}
+		if (linphonec_camera_enabled){
+			linphonec_out("Camera is enabled. Video stream will be setup immediately for outgoing and incoming calls.\n");
+		}else{
+			linphonec_out("Camera is disabled. Calls will be established with audio-only, with the possibility to later add video using 'camera on'.\n");
+		}
+	}else{
+		const LinphoneCallParams *cp=linphone_call_get_current_params (call);
+		if (args){
+			linphone_call_enable_camera(call,activated);
+			if ((activated && !linphone_call_params_video_enabled (cp))){
+				/*update the call to add the video stream*/
+				LinphoneCallParams *ncp=linphone_call_params_copy(cp);
+				linphone_call_params_enable_video(ncp,TRUE);
+				linphone_core_update_call(lc,call,ncp);
+				linphone_call_params_destroy (ncp);
+				linphonec_out("Trying to bring up video stream...");
+			}
+		}
+		if (linphone_call_camera_enabled (call))
+				linphonec_out("Camera is allowed for current call.\n");
+		else linphonec_out("Camera is dis-allowed for current call.\n");
+	}
+	return 1;
 }
 
 /***************************************************************************

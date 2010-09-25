@@ -54,6 +54,12 @@
 #endif
 #endif
 
+
+struct _LinphoneCallParams{
+	bool_t has_video;
+	bool_t pad[3];
+};
+
 struct _LinphoneCall
 {
 	struct _LinphoneCore *core;
@@ -76,15 +82,13 @@ struct _LinphoneCall
 	struct _AudioStream *audiostream;  /**/
 	struct _VideoStream *videostream;
 	char *refer_to;
+	LinphoneCallParams params;
 	bool_t refer_pending;
 	bool_t media_pending;
 	bool_t audio_muted;
+	bool_t camera_active;
 };
 
-struct _LinphoneCallParams{
-	bool_t has_video;
-	bool_t pad[3];
-};
 
 LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, const LinphoneCallParams *params);
 LinphoneCall * linphone_call_new_incoming(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, SalOp *op);
