@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "linphonecore.h"
 #include "private.h"
 #include "mediastreamer2/mediastream.h"
+#include "lpconfig.h"
 
 static void register_failure(SalOp *op, SalError error, SalReason reason, const char *details);
 
@@ -41,6 +42,7 @@ static void call_received(SalOp *h){
 	const char *from,*to;
 	char *tmp;
 	LinphoneAddress *from_parsed;
+	bool_t early_media=lp_config_get_int(lc->config,"sip","send_early_media",0);
 
 	/* first check if we can answer successfully to this invite */
 	if (lc->presence_mode==LinphoneStatusBusy ||
@@ -116,9 +118,12 @@ static void call_received(SalOp *h){
 	}else{
 		/*TODO : play a tone within the context of the current call */
 	}
-	sal_call_notify_ringing(h);
+	sal_call_notify_ringing(h,early_media);
 #if !(__IPHONE_OS_VERSION_MIN_REQUIRED >= 40000)
 	linphone_call_init_media_streams(call);
+	if (early_media){
+		linphone_call_start_early_media (call);
+	}
 #endif
 	ms_free(barmesg);
 	ms_free(tmp);

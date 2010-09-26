@@ -30,6 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/mediastream.h"
 #include "mediastreamer2/msvolume.h"
 #include "mediastreamer2/msequalizer.h"
+#include "mediastreamer2/msfileplayer.h"
 
 static MSWebCam *get_nowebcam_device(){
 	return ms_web_cam_manager_get_cam(ms_web_cam_manager_get(),"StaticImage: Static picture");
@@ -53,9 +54,11 @@ SalMediaDescription *create_local_media_description(LinphoneCore *lc,
     		LinphoneCall *call, bool_t with_video, bool_t only_one_codec){
 	MSList *l;
 	PayloadType *pt;
-	const char *username=(call->dir==LinphoneCallOutgoing) ?
-					linphone_address_get_username(call->log->from): linphone_address_get_username(call->log->to);
+	const char *me=linphone_core_get_identity(lc);
+	LinphoneAddress *addr=linphone_address_new(me);
+	const char *username=linphone_address_get_username (addr);
 	SalMediaDescription *md=sal_media_description_new();
+
 	md->nstreams=1;
 	strncpy(md->addr,call->localip,sizeof(md->addr));
 	strncpy(md->username,username,sizeof(md->username));
@@ -84,6 +87,7 @@ SalMediaDescription *create_local_media_description(LinphoneCore *lc,
 		if (lc->dw_video_bw)
 			md->streams[1].bandwidth=lc->dw_video_bw;
 	}
+	linphone_address_destroy(addr);
 	return md;
 }
 
@@ -159,7 +163,6 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 
 LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, SalOp *op){
 	LinphoneCall *call=ms_new0(LinphoneCall,1);
-	LinphoneAddress *me=linphone_core_get_primary_contact_parsed(lc);
 	char *to_str;
 	char *from_str;
 
@@ -191,7 +194,6 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	if (linphone_core_get_firewall_policy(call->core)==LinphonePolicyUseStun)
 		linphone_core_run_stun_tests(call->core,call);
 	discover_mtu(lc,linphone_address_get_domain(from));
-	linphone_address_destroy(me);
 	return call;
 }
 
@@ -675,7 +677,14 @@ static RtpProfile *make_profile(LinphoneCore *lc, const SalMediaDescription *md,
 	return prof;
 }
 
-void linphone_call_start_media_streams(LinphoneCall *call){
+static void setup_ring_player(LinphoneCore *lc, LinphoneCall *call){
+	const char *ringfile=lc->sound_conf.remote_ring;
+	int pause_time=3000;
+	audio_stream_play(call->audiostream,ringfile);
+	ms_filter_call_method(call->audiostream->soundread,MS_FILE_PLAYER_LOOP,&pause_time);
+}
+
+static void _linphone_call_start_media_streams(LinphoneCall *call, bool_t send_early_media){
 	LinphoneCore *lc=call->core;
 	LinphoneAddress *me=linphone_core_get_primary_contact_parsed(lc);
 	const char *tool="linphone-" LINPHONE_VERSION;
@@ -714,7 +723,7 @@ void linphone_call_start_media_streams(LinphoneCall *call){
 				if (stream->port==0 || stream->dir==SalStreamRecvOnly){
 					captcard=NULL;
 					playfile=NULL;
-				}else if (stream->dir==SalStreamSendOnly){
+				}else if (stream->dir==SalStreamSendOnly || send_early_media){
 					playcard=NULL;
 					captcard=NULL;
 					recfile=NULL;
@@ -738,12 +747,13 @@ void linphone_call_start_media_streams(LinphoneCall *call){
 					captcard,
 					linphone_core_echo_cancellation_enabled(lc));
 				post_configure_audio_streams(call);
+				if (send_early_media) setup_ring_player(lc,call);
 				audio_stream_set_rtcp_information(call->audiostream, cname, tool);
 			}else ms_warning("No audio stream accepted ?");
 		}
 	}
 #ifdef VIDEO_ENABLED
-	{
+	if (!send_early_media){
 		const SalStreamDescription *stream=sal_media_description_find_stream(call->resultdesc,
 		    					SalProtoRtpAvp,SalVideo);
 		used_pt=-1;
@@ -804,6 +814,13 @@ void linphone_call_start_media_streams(LinphoneCall *call){
 }
 
 
+void linphone_call_start_media_streams(LinphoneCall *call){
+	_linphone_call_start_media_streams(call,FALSE);
+}
+
+void linphone_call_start_early_media(LinphoneCall *call){
+	_linphone_call_start_media_streams(call,TRUE);
+}
 
 static void linphone_call_log_fill_stats(LinphoneCallLog *log, AudioStream *st){
 	audio_stream_get_local_rtp_stats (st,&log->local_stats);

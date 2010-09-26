@@ -183,7 +183,7 @@ void linphone_core_text_received(LinphoneCore *lc, const char *from, const char 
 
 void linphone_call_init_media_streams(LinphoneCall *call);
 void linphone_call_start_media_streams(LinphoneCall *call);
-void linphone_call_set_media_streams_dir(LinphoneCall *call, SalStreamDir dir);
+void linphone_call_start_early_media(LinphoneCall *call);
 void linphone_call_stop_media_streams(LinphoneCall *call);
 
 const char * linphone_core_get_identity(LinphoneCore *lc);

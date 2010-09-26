@@ -52,11 +52,11 @@ void sal_media_description_unref(SalMediaDescription *md){
 	}
 }
 
-const SalStreamDescription *sal_media_description_find_stream(const SalMediaDescription *md,
+SalStreamDescription *sal_media_description_find_stream(SalMediaDescription *md,
     SalMediaProto proto, SalStreamType type){
 	int i;
 	for(i=0;i<md->nstreams;++i){
-		const SalStreamDescription *ss=&md->streams[i];
+		SalStreamDescription *ss=&md->streams[i];
 		if (ss->proto==proto && ss->type==type) return ss;
 	}
 	return NULL;

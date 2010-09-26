@@ -128,7 +128,7 @@ void sal_media_description_ref(SalMediaDescription *md);
 void sal_media_description_unref(SalMediaDescription *md);
 bool_t sal_media_description_empty(const SalMediaDescription *md);
 bool_t sal_media_description_has_dir(const SalMediaDescription *md, SalStreamDir dir);
-const SalStreamDescription *sal_media_description_find_stream(const SalMediaDescription *md,
+SalStreamDescription *sal_media_description_find_stream(SalMediaDescription *md,
     SalMediaProto proto, SalStreamType type);
 void sal_media_description_set_dir(SalMediaDescription *md, SalStreamDir stream_dir);
 
@@ -272,7 +272,7 @@ void *sal_op_get_user_pointer(const SalOp *op);
 /*Call API*/
 int sal_call_set_local_media_description(SalOp *h, SalMediaDescription *desc);
 int sal_call(SalOp *h, const char *from, const char *to);
-int sal_call_notify_ringing(SalOp *h);
+int sal_call_notify_ringing(SalOp *h, bool_t early_media);
 /*accept an incoming call or, during a call accept a reINVITE*/
 int sal_call_accept(SalOp*h);
 int sal_call_decline(SalOp *h, SalReason reason, const char *redirection /*optional*/);

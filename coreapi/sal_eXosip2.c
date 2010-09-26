@@ -503,10 +503,31 @@ int sal_call(SalOp *h, const char *from, const char *to){
 	return 0;
 }
 
-int sal_call_notify_ringing(SalOp *h){
-	eXosip_lock();
-	eXosip_call_send_answer(h->tid,180,NULL);
-	eXosip_unlock();
+int sal_call_notify_ringing(SalOp *h, bool_t early_media){
+	osip_message_t *msg;
+	int err;
+	
+	/*if early media send also 180 and 183 */
+	if (early_media && h->sdp_answer){
+		msg=NULL;
+		eXosip_lock();
+		err=eXosip_call_build_answer(h->tid,180,&msg);
+		if (msg){
+			set_sdp(msg,h->sdp_answer);
+			eXosip_call_send_answer(h->tid,180,msg);
+		}
+		msg=NULL;
+		err=eXosip_call_build_answer(h->tid,183,&msg);
+		if (msg){
+			set_sdp(msg,h->sdp_answer);
+			eXosip_call_send_answer(h->tid,183,msg);
+		}
+		eXosip_unlock();
+	}else{
+		eXosip_lock();
+		eXosip_call_send_answer(h->tid,180,NULL);
+		eXosip_unlock();
+	}
 	return 0;
 }
 

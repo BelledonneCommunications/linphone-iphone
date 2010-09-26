@@ -1792,7 +1792,7 @@ LinphoneAddress * linphone_core_interpret_url(LinphoneCore *lc, const char *url)
 /**
  * Returns the default identity SIP address.
  *
- * @ingroup proxiesb
+ * @ingroup proxies
  * This is an helper function:
  *
  * If no default proxy is set, this will return the primary contact (
@@ -2231,6 +2231,12 @@ int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call)
 		sal_op_set_contact(call->op,contact);
 #if __IPHONE_OS_VERSION_MIN_REQUIRED >= 40000
 	linphone_call_init_media_streams(call);
+#else
+	if (call->audiostream!=NULL && call->audiostream->ticker!=NULL){
+		/*case where we sent early media*/
+		linphone_call_stop_media_streams (call);
+		linphone_call_init_media_streams (call);
+	}
 #endif
 	sal_call_accept(call->op);
 	if (lc->vtable.display_status!=NULL)

@@ -591,6 +591,8 @@ int linphone_core_set_primary_contact(LinphoneCore *lc, const char *contact);
 
 const char *linphone_core_get_primary_contact(LinphoneCore *lc);
 
+const char * linphone_core_get_identity(LinphoneCore *lc);
+
 void linphone_core_set_guess_hostname(LinphoneCore *lc, bool_t val);
 bool_t linphone_core_get_guess_hostname(LinphoneCore *lc);
 
