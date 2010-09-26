@@ -225,6 +225,7 @@ const LinphoneCallParams * linphone_call_get_current_params(const LinphoneCall *
 void linphone_call_enable_camera(LinphoneCall *lc, bool_t enabled);
 bool_t linphone_call_camera_enabled(const LinphoneCall *lc);
 LinphoneError linphone_call_get_error(const LinphoneCall *call);
+const char *linphone_call_get_remote_user_agent(LinphoneCall *call);
 void *linphone_call_get_user_pointer(LinphoneCall *call);
 void linphone_call_set_user_pointer(LinphoneCall *call, void *user_pointer);
 

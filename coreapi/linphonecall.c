@@ -417,8 +417,21 @@ const char *linphone_call_get_refer_to(const LinphoneCall *call){
 	return call->refer_to;
 }
 
+/**
+ * Returns direction of the call (incoming or outgoing).
+**/
 LinphoneCallDir linphone_call_get_dir(const LinphoneCall *call){
 	return call->log->dir;
+}
+
+/**
+ * Returns the far end's user agent description string, if available.
+**/
+const char *linphone_call_get_remote_user_agent(LinphoneCall *call){
+	if (call->op){
+		return sal_op_get_remote_ua (call->op);
+	}
+	return NULL;
 }
 
 /**
@@ -456,24 +469,39 @@ void linphone_call_enable_camera (LinphoneCall *call, bool_t enable){
 	call->camera_active=enable;
 }
 
+/**
+ *
+**/
 bool_t linphone_call_camera_enabled (const LinphoneCall *call){
 	return call->camera_active;
 }
 
+/**
+ * 
+**/
 void linphone_call_params_enable_video(LinphoneCallParams *cp, bool_t enabled){
 	cp->has_video=enabled;
 }
 
+/**
+ *
+**/
 bool_t linphone_call_params_video_enabled(const LinphoneCallParams *cp){
 	return cp->has_video;
 }
 
+/**
+ *
+**/
 LinphoneCallParams * linphone_call_params_copy(const LinphoneCallParams *cp){
 	LinphoneCallParams *ncp=ms_new0(LinphoneCallParams,1);
 	memcpy(ncp,cp,sizeof(LinphoneCallParams));
 	return ncp;
 }
 
+/**
+ *
+**/
 void linphone_call_params_destroy(LinphoneCallParams *p){
 	ms_free(p);
 }
@@ -680,8 +708,12 @@ static RtpProfile *make_profile(LinphoneCore *lc, const SalMediaDescription *md,
 static void setup_ring_player(LinphoneCore *lc, LinphoneCall *call){
 	const char *ringfile=lc->sound_conf.remote_ring;
 	int pause_time=3000;
-	audio_stream_play(call->audiostream,ringfile);
-	ms_filter_call_method(call->audiostream->soundread,MS_FILE_PLAYER_LOOP,&pause_time);
+	if (lc->play_file!=NULL){
+		audio_stream_play(call->audiostream,lc->play_file);
+	}else{
+		audio_stream_play(call->audiostream,ringfile);
+		ms_filter_call_method(call->audiostream->soundread,MS_FILE_PLAYER_LOOP,&pause_time);
+	}
 }
 
 static void _linphone_call_start_media_streams(LinphoneCall *call, bool_t send_early_media){

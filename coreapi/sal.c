@@ -143,6 +143,10 @@ const char *sal_op_get_route(const SalOp *op){
 	return ((SalOpBase*)op)->route;
 }
 
+const char *sal_op_get_remote_ua(const SalOp *op){
+	return ((SalOpBase*)op)->remote_ua;
+}
+
 void *sal_op_get_user_pointer(const SalOp *op){
 	return ((SalOpBase*)op)->user_pointer;
 }
@@ -186,6 +190,10 @@ void __sal_op_free(SalOp *op){
 	if (b->origin){
 		ms_free(b->origin);
 		b->origin=NULL;
+	}
+	if (b->remote_ua){
+		ms_free(b->remote_ua);
+		b->remote_ua=NULL;
 	}
 	if (b->local_media)
 		sal_media_description_unref(b->local_media);

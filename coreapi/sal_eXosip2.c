@@ -722,6 +722,16 @@ static void set_network_origin(SalOp *op, osip_message_t *req){
 	__sal_op_set_network_origin(op,origin);
 }
 
+static void set_remote_ua(SalOp* op, osip_message_t *req){
+	if (op->base.remote_ua==NULL){
+		osip_header_t *h=NULL;
+		osip_message_get_user_agent(req,0,&h);
+		if (h){
+			op->base.remote_ua=ms_strdup(h->hvalue);
+		}
+	}
+}
+
 static SalOp *find_op(Sal *sal, eXosip_event_t *ev){
 	if (ev->cid>0){
 		return sal_find_call(sal,ev->cid);
@@ -741,6 +751,7 @@ static void inc_new_call(Sal *sal, eXosip_event_t *ev){
 	sdp_message_t *sdp=eXosip_get_sdp_info(ev->request);
 
 	set_network_origin(op,ev->request);
+	set_remote_ua(op,ev->request);
 	
 	if (sdp){
 		op->sdp_offering=FALSE;
@@ -886,7 +897,8 @@ static void call_ringing(Sal *sal, eXosip_event_t *ev){
 	sdp_message_t *sdp;
 	SalOp *op=find_op(sal,ev);
 	if (call_proceeding(sal, ev)==-1) return;
-	
+
+	set_remote_ua(op,ev->response);
 	sdp=eXosip_get_sdp_info(ev->response);
 	if (sdp){
 		op->base.remote_media=sal_media_description_new();
@@ -909,7 +921,8 @@ static void call_accepted(Sal *sal, eXosip_event_t *ev){
 	}
 
 	op->did=ev->did;
-	
+	set_remote_ua(op,ev->response);
+
 	sdp=eXosip_get_sdp_info(ev->response);
 	if (sdp){
 		op->base.remote_media=sal_media_description_new();

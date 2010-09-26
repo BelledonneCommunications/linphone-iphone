@@ -92,6 +92,7 @@ static int lpc_cmd_rtp_no_xmit_on_audio_mute(LinphoneCore *lc, char *args);
 static int lpc_cmd_camera(LinphoneCore *lc, char *args);
 static int lpc_cmd_video_window(LinphoneCore *lc, char *args);
 static int lpc_cmd_states(LinphoneCore *lc, char *args);
+static int lpc_cmd_identify(LinphoneCore *lc, char *args);
 
 /* Command handler helpers */
 static void linphonec_proxy_add(LinphoneCore *lc);
@@ -292,6 +293,10 @@ static LPC_COMMAND advanced_commands[] = {
 	{ "staticpic", lpc_cmd_staticpic, "Manage static pictures when nowebcam",
 		"'staticpic set' : Set path to picture that should be used.\n"
 		"'staticpic fps' : Get/set frames per seconds for picture emission.\n"
+	},
+	{ "identify", lpc_cmd_identify, "Returns the user-agent string of far end",
+		"'identify' \t: returns remote user-agent string for current call.\n"
+		"'identify <id>' \t: returns remote user-agent string for call with supplied id.\n"
 	},
 	{	NULL,NULL,NULL,NULL}
 };
@@ -2321,6 +2326,28 @@ static int lpc_cmd_camera(LinphoneCore *lc, char *args){
 		if (linphone_call_camera_enabled (call))
 				linphonec_out("Camera is allowed for current call.\n");
 		else linphonec_out("Camera is dis-allowed for current call.\n");
+	}
+	return 1;
+}
+
+static int lpc_cmd_identify(LinphoneCore *lc, char *args){
+	LinphoneCall *call;
+	const char *remote_ua;
+	if (args==NULL){
+		call=linphone_core_get_current_call(lc);
+		if (call==NULL) {
+			linphonec_out("There is currently running call. Specify call id.\n");
+			return 0;
+		}
+	}else{
+		call=linphonec_get_call(atoi(args));
+		if (call==NULL){
+			return 0;
+		}
+	}
+	remote_ua=linphone_call_get_remote_user_agent(call);
+	if (remote_ua){
+		linphonec_out("Remote user agent string is: %s\n",remote_ua);
 	}
 	return 1;
 }
