@@ -458,6 +458,7 @@ int linphone_call_get_duration(const LinphoneCall *call){
  * Indicate whether camera input should be sent to remote end.
 **/
 void linphone_call_enable_camera (LinphoneCall *call, bool_t enable){
+#ifdef VIDEO_ENABLED
 	if (call->videostream!=NULL && call->videostream->ticker!=NULL){
 		LinphoneCore *lc=call->core;
 		MSWebCam *nowebcam=get_nowebcam_device();
@@ -467,6 +468,7 @@ void linphone_call_enable_camera (LinphoneCall *call, bool_t enable){
 		}
 	}
 	call->camera_active=enable;
+#endif
 }
 
 /**
@@ -710,10 +712,11 @@ static void setup_ring_player(LinphoneCore *lc, LinphoneCall *call){
 	int pause_time=3000;
 	if (lc->play_file!=NULL){
 		audio_stream_play(call->audiostream,lc->play_file);
+		pause_time=0;
 	}else{
 		audio_stream_play(call->audiostream,ringfile);
-		ms_filter_call_method(call->audiostream->soundread,MS_FILE_PLAYER_LOOP,&pause_time);
 	}
+	ms_filter_call_method(call->audiostream->soundread,MS_FILE_PLAYER_LOOP,&pause_time);
 }
 
 static void _linphone_call_start_media_streams(LinphoneCall *call, bool_t send_early_media){
@@ -777,7 +780,7 @@ static void _linphone_call_start_media_streams(LinphoneCall *call, bool_t send_e
 					recfile,
 					playcard,
 					captcard,
-					linphone_core_echo_cancellation_enabled(lc));
+					send_early_media ? FALSE : linphone_core_echo_cancellation_enabled(lc));
 				post_configure_audio_streams(call);
 				if (send_early_media) setup_ring_player(lc,call);
 				audio_stream_set_rtcp_information(call->audiostream, cname, tool);
