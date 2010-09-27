@@ -139,29 +139,41 @@
 		
 		if (sender == one) {
 			newAddress = [address.text stringByAppendingString:@"1"];
+			linphone_core_play_dtmf(mCore, '1', -1);
 		} else if (sender == two) {
 			newAddress = [address.text stringByAppendingString:@"2"];
+			linphone_core_play_dtmf(mCore, '2', -1);
 		} else if (sender == three) {
 			newAddress = [address.text stringByAppendingString:@"3"];
+			linphone_core_play_dtmf(mCore, '3', -1);
 		} else if (sender == four) {
 			newAddress = [address.text stringByAppendingString:@"4"];
+			linphone_core_play_dtmf(mCore, '4', -1);
 		} else if (sender == five) {
 			newAddress = [address.text stringByAppendingString:@"5"];
+			linphone_core_play_dtmf(mCore, '5', -1);
 		} else if (sender == six) {
 			newAddress = [address.text stringByAppendingString:@"6"];
+			linphone_core_play_dtmf(mCore, '6', -1);
 		} else if (sender == seven) {
 			newAddress = [address.text stringByAppendingString:@"7"];
+			linphone_core_play_dtmf(mCore, '7', -1);
 		} else if (sender == eight) {
 			newAddress = [address.text stringByAppendingString:@"8"];
+			linphone_core_play_dtmf(mCore, '8', -1);
 		} else if (sender == nine) {
 			newAddress = [address.text stringByAppendingString:@"9"];
+			linphone_core_play_dtmf(mCore, '9', -1);
 		} else if (sender == star) {
 			newAddress = [address.text stringByAppendingString:@"*"];
+			linphone_core_play_dtmf(mCore, '*', -1);
 		} else if (sender == zero) {
 			newAddress = [address.text stringByAppendingString:@"0"];
+			linphone_core_play_dtmf(mCore, '0', -1);
 			//start timer for +
 			[self performSelector:@selector(doKeyZeroLongPress) withObject:nil afterDelay:0.5];
 		} else if (sender == hash) {
+			linphone_core_play_dtmf(mCore, '#', -1);
 			newAddress = [address.text stringByAppendingString:@"#"];
 		} else if (sender == back) {
 			if ([address.text length] >0) {
@@ -213,9 +225,8 @@
 		[NSObject cancelPreviousPerformRequestsWithTarget:self 
 												 selector:@selector(doKeyZeroLongPress)
 												   object:nil];
-	} else  {
-		ms_message("unknown up event from dial pad");	
-	}
+	} 
+	linphone_core_stop_dtmf(mCore);
 }
 
 -(void)doKeyZeroLongPress {

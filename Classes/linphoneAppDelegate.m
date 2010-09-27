@@ -118,7 +118,7 @@ LinphoneCoreVTable linphonec_vtable = {
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
 	
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 40000
+//#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 40000
 	
 	struct addrinfo hints;
 	struct addrinfo *res=NULL;
@@ -205,7 +205,7 @@ LinphoneCoreVTable linphonec_vtable = {
 		}
 	}
 		
-#endif
+//#endif
 		
 	}
 
@@ -591,8 +591,8 @@ extern void libmsilbc_init();
 								 , sizeof (audioRouteOverride)
 								 , &audioRouteOverride);
     
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 40000
-	if ([UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground) {
+//#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 40000
+	if (backgroundSupported && [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground) {
 		// Create a new notification
 		UILocalNotification* notif = [[[UILocalNotification alloc] init] autorelease];
 		if (notif)
@@ -606,7 +606,7 @@ extern void libmsilbc_init();
 		}
 	} else 
 		
-#endif
+//#endif
 	{
 	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:[NSString  stringWithFormat:@" %@ is calling you",from]
 															 delegate:self cancelButtonTitle:@"Decline" destructiveButtonTitle:@"Answer" otherButtonTitles:nil];
