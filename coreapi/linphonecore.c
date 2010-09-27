@@ -2163,6 +2163,7 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, LinphoneCall
 		params->has_video,FALSE);
 	if (lc->vtable.display_status)
 		lc->vtable.display_status(lc,_("Modifying call parameters..."));
+	sal_call_set_local_media_description (call->op,call->localdesc);
 	err=sal_call_update(call->op);
 	return err;
 }
