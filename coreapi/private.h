@@ -320,6 +320,7 @@ typedef struct sound_config
 	char source;
 	char *local_ring;
 	char *remote_ring;
+	char *ringback_tone;
 	bool_t ec;
 	bool_t ea;
 	bool_t agc;

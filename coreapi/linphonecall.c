@@ -710,14 +710,8 @@ static RtpProfile *make_profile(LinphoneCore *lc, const SalMediaDescription *md,
 }
 
 static void setup_ring_player(LinphoneCore *lc, LinphoneCall *call){
-	const char *ringfile=lc->sound_conf.remote_ring;
 	int pause_time=3000;
-	if (lc->play_file!=NULL){
-		audio_stream_play(call->audiostream,lc->play_file);
-		pause_time=0;
-	}else{
-		audio_stream_play(call->audiostream,ringfile);
-	}
+	audio_stream_play(call->audiostream,lc->sound_conf.ringback_tone);
 	ms_filter_call_method(call->audiostream->soundread,MS_FILE_PLAYER_LOOP,&pause_time);
 }
 
@@ -764,6 +758,8 @@ static void _linphone_call_start_media_streams(LinphoneCall *call, bool_t send_e
 					playcard=NULL;
 					captcard=NULL;
 					recfile=NULL;
+					if (send_early_media)
+						playfile=NULL;
 				}
 				/*if playfile are supplied don't use soundcards*/
 				if (lc->use_files) {

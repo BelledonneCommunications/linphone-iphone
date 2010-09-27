@@ -42,8 +42,8 @@ static void call_received(SalOp *h){
 	const char *from,*to;
 	char *tmp;
 	LinphoneAddress *from_parsed;
-	bool_t early_media=lp_config_get_int(lc->config,"sip","send_early_media",0);
-
+	const char * early_media=linphone_core_get_remote_ringback_tone (lc);
+	
 	/* first check if we can answer successfully to this invite */
 	if (lc->presence_mode==LinphoneStatusBusy ||
 	    lc->presence_mode==LinphoneStatusOffline ||
@@ -118,10 +118,10 @@ static void call_received(SalOp *h){
 	}else{
 		/*TODO : play a tone within the context of the current call */
 	}
-	sal_call_notify_ringing(h,early_media);
+	sal_call_notify_ringing(h,early_media!=NULL);
 #if !(__IPHONE_OS_VERSION_MIN_REQUIRED >= 40000)
 	linphone_call_init_media_streams(call);
-	if (early_media){
+	if (early_media!=NULL){
 		linphone_call_start_early_media (call);
 	}
 #endif

@@ -95,6 +95,7 @@ static int lpc_cmd_video_window(LinphoneCore *lc, char *args);
 #endif
 static int lpc_cmd_states(LinphoneCore *lc, char *args);
 static int lpc_cmd_identify(LinphoneCore *lc, char *args);
+static int lpc_cmd_ringback(LinphoneCore *lc, char *args);
 
 /* Command handler helpers */
 static void linphonec_proxy_add(LinphoneCore *lc);
@@ -301,6 +302,10 @@ static LPC_COMMAND advanced_commands[] = {
 	{ "identify", lpc_cmd_identify, "Returns the user-agent string of far end",
 		"'identify' \t: returns remote user-agent string for current call.\n"
 		"'identify <id>' \t: returns remote user-agent string for call with supplied id.\n"
+	},
+	{ "ringback", lpc_cmd_ringback, "Specifies a ringback tone to be played to remote end during incoming calls",
+		"'ringback <path of mono .wav file>'\t: Specifies a ringback tone to be played to remote end during incoming calls\n"
+		"'ringback disable'\t: Disable playing of ringback tone to callers\n"
 	},
 	{	NULL,NULL,NULL,NULL}
 };
@@ -650,7 +655,7 @@ static int
 lpc_cmd_terminate(LinphoneCore *lc, char *args)
 {
 	if (linphone_core_get_calls(lc)==NULL){
-		linphonec_out("No active calls");
+		linphonec_out("No active calls\n");
 		return 1;
 	}
 	if (!args)
@@ -671,7 +676,7 @@ lpc_cmd_terminate(LinphoneCore *lc, char *args)
 		LinphoneCall *call=linphonec_get_call(id);
 		if (call){
 			if (linphone_core_terminate_call(lc,call)==-1){
-				linphonec_out("Could not stop the call with id %li",id);
+				linphonec_out("Could not stop the call with id %li\n",id);
 			}
 		}else return 0;
 		return 1;
@@ -2354,6 +2359,18 @@ static int lpc_cmd_identify(LinphoneCore *lc, char *args){
 	if (remote_ua){
 		linphonec_out("Remote user agent string is: %s\n",remote_ua);
 	}
+	return 1;
+}
+
+static int lpc_cmd_ringback(LinphoneCore *lc, char *args){
+	if (!args) return 0;
+	if (strcmp(args,"disable")==0){
+		linphone_core_set_remote_ringback_tone(lc,NULL);
+		linphonec_out("Disabling ringback tone.\n");
+		return 1;
+	}
+	linphone_core_set_remote_ringback_tone (lc,args);
+	linphonec_out("Using %s as ringback tone to be played to callers.",args);
 	return 1;
 }
 
