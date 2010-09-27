@@ -32,9 +32,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/msequalizer.h"
 #include "mediastreamer2/msfileplayer.h"
 
+#ifdef VIDEO_ENABLED
 static MSWebCam *get_nowebcam_device(){
 	return ms_web_cam_manager_get_cam(ms_web_cam_manager_get(),"StaticImage: Static picture");
 }
+#endif
 
 
 static MSList *make_codec_list(LinphoneCore *lc, const MSList *codecs, bool_t only_one_codec){
@@ -804,6 +806,8 @@ static void _linphone_call_start_media_streams(LinphoneCall *call, bool_t send_e
 				VideoStreamDir dir=VideoStreamSendRecv;
 				MSWebCam *cam=lc->video_conf.device;
 				bool_t is_inactive=FALSE;
+
+				call->params.has_video=TRUE;
 				
 				video_stream_set_sent_video_size(call->videostream,linphone_core_get_preferred_video_size(lc));
 				video_stream_enable_self_view(call->videostream,lc->video_conf.selfview);

@@ -89,8 +89,10 @@ static int lpc_cmd_resume(LinphoneCore *lc, char *args);
 static int lpc_cmd_mute_mic(LinphoneCore *lc, char *args);
 static int lpc_cmd_unmute_mic(LinphoneCore *lc, char *args);
 static int lpc_cmd_rtp_no_xmit_on_audio_mute(LinphoneCore *lc, char *args);
+#ifdef VIDEO_ENABLED
 static int lpc_cmd_camera(LinphoneCore *lc, char *args);
 static int lpc_cmd_video_window(LinphoneCore *lc, char *args);
+#endif
 static int lpc_cmd_states(LinphoneCore *lc, char *args);
 static int lpc_cmd_identify(LinphoneCore *lc, char *args);
 
@@ -265,12 +267,14 @@ static LPC_COMMAND advanced_commands[] = {
 		  "Set the rtp_no_xmit_on_audio_mute configuration parameter",
 		  "   If set to 1 then rtp transmission will be muted when\n"
 		  "   audio is muted , otherwise rtp is always sent."}, 
+#ifdef VIDEO_ENABLED
 	{ "vwindow", lpc_cmd_video_window, "Control video display window",
 		"'vwindow show': shows video window\n"
 		"'vwindow hide': hides video window\n"
 		"'vwindow pos <x> <y>': Moves video window to x,y pixel coordinates\n"
 		"'vwindow size <width> <height>': Resizes video window"
 	},
+#endif
 	{ "states", lpc_cmd_states, "Show internal states of liblinphone, registrations and calls, according to linphonecore.h definitions",
 		"'states global': shows global state of liblinphone \n"
 		"'states calls': shows state of calls\n"
@@ -1658,7 +1662,6 @@ linphonec_proxy_remove(LinphoneCore *lc, int index)
 	}
 	linphone_core_remove_proxy_config(lc,cfg);
 	linphonec_out("Proxy %s removed.\n", cfg->reg_proxy);
-	linphone_proxy_config_destroy(cfg);
 }
 
 static int
@@ -2188,8 +2191,8 @@ static int lpc_cmd_rtp_no_xmit_on_audio_mute(LinphoneCore *lc, char *args)
 	return 1;
 }
 
-static int lpc_cmd_video_window(LinphoneCore *lc, char *args){
 #ifdef VIDEO_ENABLED
+static int lpc_cmd_video_window(LinphoneCore *lc, char *args){
 	char subcommand[64];
 	int a,b;
 	int err;
@@ -2213,11 +2216,10 @@ static int lpc_cmd_video_window(LinphoneCore *lc, char *args){
 			lpc_video_params.refresh=TRUE;
 		}else return 0;
 	}
-#else
-	linphonec_out("Sorry, this version of linphonec wasn't compiled with video support.");
-#endif
+
 	return 1;
 }
+#endif
 
 static void lpc_display_global_state(LinphoneCore *lc){
 	linphonec_out("Global liblinphone state\n%s\n",
@@ -2283,6 +2285,7 @@ static int lpc_cmd_states(LinphoneCore *lc, char *args){
 	return 0;
 }
 
+#ifdef VIDEO_ENABLED
 static int lpc_cmd_camera(LinphoneCore *lc, char *args){
 	LinphoneCall *call=linphone_core_get_current_call(lc);
 	bool_t activated=FALSE;
@@ -2329,6 +2332,8 @@ static int lpc_cmd_camera(LinphoneCore *lc, char *args){
 	}
 	return 1;
 }
+
+#endif
 
 static int lpc_cmd_identify(LinphoneCore *lc, char *args){
 	LinphoneCall *call;
