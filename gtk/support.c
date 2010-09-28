@@ -192,6 +192,10 @@ void linphone_gtk_set_ui_config_int(const char *key , int val){
 	lp_config_set_int(cfg,"GtkUi",key,val);
 }
 
+void linphone_gtk_set_ui_config(const char *key , const char * val){
+	LpConfig *cfg=linphone_core_get_config(linphone_gtk_get_core());
+	lp_config_set_string(cfg,"GtkUi",key,val);
+}
 
 static void parse_item(const char *item, const char *window_name, GtkWidget *w,  gboolean show){
 	char tmp[64];

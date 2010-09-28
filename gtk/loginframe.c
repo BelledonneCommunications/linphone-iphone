@@ -96,6 +96,11 @@ void linphone_gtk_show_login_frame(LinphoneProxyConfig *cfg){
 	g_free(str);
 
 	from=linphone_address_new(linphone_proxy_config_get_identity(cfg));
+	if (linphone_address_get_username(from)[0]=='?'){
+		const char *username=linphone_gtk_get_ui_config ("login_username",NULL);
+		if (username)
+			linphone_address_set_username(from,username);
+	}
 	
 	ai=linphone_core_find_auth_info(lc,linphone_proxy_config_get_domain(cfg),linphone_address_get_username(from));
 	/*display the last entered username, if not '?????'*/
@@ -152,6 +157,7 @@ void linphone_gtk_login_frame_connect_clicked(GtkWidget *button){
 
 	autologin=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(mw,"automatic_login")));
 	linphone_gtk_set_ui_config_int("automatic_login",autologin);
+	linphone_gtk_set_ui_config("login_username",username);
 
 	from=linphone_address_new(linphone_proxy_config_get_identity(cfg));
 	linphone_address_set_username(from,username);
