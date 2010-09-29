@@ -1,6 +1,7 @@
 # -*- shell-script -*-
 
 GCC_VERSION=4.2
+SDK_VERSION_MAJOR=4
 SDK_VERSION=4.0
 
 if test "${host_alias}" = "i386-apple-darwin" ; then 
@@ -15,9 +16,10 @@ else
 fi
 echo "Loading config.site for iPhone platform=${PLATFORM} version=${SDK_VERSION}"
 
+SDK_PATH_LIST=`ls -drt /Developer/Platforms/iPhone${PLATFORM}.platform/Developer/SDKs/iPhone${PLATFORM}4*`
 SDK_BIN_PATH=/Developer/Platforms/iPhone${PLATFORM}.platform/Developer/usr/bin     
-SYSROOT_PATH=/Developer/Platforms/iPhone${PLATFORM}.platform/Developer/SDKs/iPhone${PLATFORM}${SDK_VERSION}.sdk
-
+for SYSROOT_PATH in $SDK_PATH_LIST ; do echo $SYSROOT_PATH ; done ;
+echo "Selecting SDK path = ${SYSROOT_PATH}"
 CC="${SDK_BIN_PATH}/gcc-${GCC_VERSION} -std=c99 -arch ${ARCH} --sysroot=${SYSROOT_PATH} -miphoneos-version-min=${SDK_VERSION}"
 CXX="${SDK_BIN_PATH}/g++-${GCC_VERSION} -arch ${ARCH} --sysroot=${SYSROOT_PATH}"
 LD="${SDK_BIN_PATH}/ld-${GCC_VERSION} -arch ${ARCH}"

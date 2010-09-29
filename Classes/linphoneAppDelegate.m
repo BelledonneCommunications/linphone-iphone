@@ -60,6 +60,9 @@ void linphone_iphone_call_state(LinphoneCore *lc, LinphoneCall* call, LinphoneCa
 	linphoneAppDelegate* lAppDelegate = (linphoneAppDelegate*) linphone_core_get_user_data(lc); 
 	if (state == LinphoneCallIncomingReceived) {
 		[lAppDelegate newIncomingCall:[[NSString alloc] initWithCString:linphone_address_get_username(linphone_call_get_remote_address(call))]]; 
+	} else if (lAppDelegate.backgroundSupported && [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground && (LinphoneCallEnd|LinphoneCallError)) {
+		// cancel local notif if needed
+		[[UIApplication sharedApplication] cancelAllLocalNotifications];
 	}
 	PhoneViewController* lPhone = lAppDelegate.myPhoneViewController;
 	[lPhone onCall:call StateChanged:state withMessage:message];
@@ -115,6 +118,7 @@ LinphoneCoreVTable linphonec_vtable = {
 @synthesize myTabBarController;
 @synthesize myPeoplePickerController;
 @synthesize myPhoneViewController;
+@synthesize backgroundSupported;
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
 	
@@ -600,7 +604,7 @@ extern void libmsilbc_init();
 			notif.repeatInterval = 0;
 			notif.alertBody =[NSString  stringWithFormat:@" %@ is calling you",from];
 			notif.alertAction = @"Answer";
-			notif.soundName = @"oldphone-mono-30s.wav";
+			notif.soundName = @"oldphone-mono-30s.caf";
 			
 			[[UIApplication sharedApplication]  presentLocalNotificationNow:notif];
 		}

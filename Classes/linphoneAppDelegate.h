@@ -85,6 +85,7 @@ bool networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 @property (nonatomic, retain) IBOutlet UITabBarController*  myTabBarController;
 @property (nonatomic, retain) ABPeoplePickerNavigationController* myPeoplePickerController;
 @property (nonatomic, retain) IBOutlet PhoneViewController* myPhoneViewController;
+@property(readonly) bool backgroundSupported;
 
 
 @end
