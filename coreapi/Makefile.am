@@ -53,7 +53,9 @@ noinst_PROGRAMS=test_lsd
 
 test_lsd_SOURCES=test_lsd.c
 
-test_lsd_LDADD=liblinphone.la
+test_lsd_LDADD=liblinphone.la \
+							$(MEDIASTREAMER_LIBS) \
+							$(ORTP_LIBS)
 
 AM_CFLAGS=$(STRICT_OPTIONS)  -DIN_LINPHONE \
 	$(ORTP_CFLAGS) \

@@ -746,6 +746,8 @@ void linphone_core_set_ring(LinphoneCore *lc, const char *path);
 const char *linphone_core_get_ring(const LinphoneCore *lc);
 void linphone_core_set_ringback(LinphoneCore *lc, const char *path);
 const char * linphone_core_get_ringback(const LinphoneCore *lc);
+void linphone_core_set_remote_ringback_tone(LinphoneCore *lc,const char *);
+const char *linphone_core_get_remote_ringback_tone(const LinphoneCore *lc);
 int linphone_core_preview_ring(LinphoneCore *lc, const char *ring,LinphoneCoreCbFunc func,void * userdata);
 void linphone_core_enable_echo_cancellation(LinphoneCore *lc, bool_t val);
 bool_t linphone_core_echo_cancellation_enabled(LinphoneCore *lc);

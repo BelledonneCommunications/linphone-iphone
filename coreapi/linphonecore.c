@@ -467,6 +467,8 @@ static void sound_config_read(LinphoneCore *lc)
 
 	gain=lp_config_get_float(lc->config,"sound","playback_gain_db",0);
 	linphone_core_set_playback_gain_db (lc,gain);
+
+	linphone_core_set_remote_ringback_tone (lc,lp_config_get_string(lc->config,"sound","ringback_tone",NULL));
 }
 
 static void sip_config_read(LinphoneCore *lc)
@@ -3866,6 +3868,25 @@ int linphone_core_del_call( LinphoneCore *lc, LinphoneCall *call)
 	}
 	lc->calls = the_calls;
 	return 0;
+}
+
+/**
+ * Specifiies a ring back tone to be played to far end during incoming calls.
+**/
+void linphone_core_set_remote_ringback_tone(LinphoneCore *lc, const char *file){
+	if (lc->sound_conf.ringback_tone){
+		ms_free(lc->sound_conf.ringback_tone);
+		lc->sound_conf.ringback_tone=NULL;
+	}
+	if (file)
+		lc->sound_conf.ringback_tone=ms_strdup(file);
+}
+
+/**
+ * Returns the ring back tone played to far end during incoming calls.
+**/
+const char *linphone_core_get_remote_ringback_tone(const LinphoneCore *lc){
+	return lc->sound_conf.ringback_tone;
 }
 
 static PayloadType* find_payload_type_from_list(const char* type, int rate,const MSList* from) {

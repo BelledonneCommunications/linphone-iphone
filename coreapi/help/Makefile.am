@@ -36,7 +36,9 @@ noinst_PROGRAMS=helloworld
 
 helloworld_SOURCES=helloworld.c
 
-helloworld_LDADD=$(top_builddir)/coreapi/liblinphone.la
+helloworld_LDADD=$(top_builddir)/coreapi/liblinphone.la \
+				$(MEDIASTREAMER_LIBS) \
+				$(ORTP_LIBS)
 
 INCLUDES=-I$(top_srcdir)/coreapi \
 		$(MEDIASTREAMER_CFLAGS)

@@ -99,4 +99,4 @@ void linphone_gtk_enable_mute_button(GtkButton *button, gboolean sensitive);
 void linphone_gtk_enable_hold_button(LinphoneCall *call, gboolean sensitive, gboolean holdon);
 
 void linphone_gtk_show_login_frame(LinphoneProxyConfig *cfg);
-
+void linphone_gtk_set_ui_config(const char *key, const char *value);

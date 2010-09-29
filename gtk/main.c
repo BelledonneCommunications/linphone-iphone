@@ -413,8 +413,10 @@ void linphone_gtk_show_about(){
 	struct stat filestat;
 	const char *license_file=PACKAGE_DATA_DIR "/linphone/COPYING";
 	GtkWidget *about;
+	const char *tmp;
 	GdkPixbuf *logo=create_pixbuf(
 	    linphone_gtk_get_ui_config("logo","linphone-banner.png"));
+	static const char *defcfg="defcfg";
 	
 	about=linphone_gtk_create_window("about");
 	gtk_about_dialog_set_url_hook(about_url_clicked,NULL,NULL);
@@ -436,7 +438,19 @@ void linphone_gtk_show_about(){
 	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(about),linphone_gtk_get_ui_config("title","Linphone"));
 	gtk_about_dialog_set_website(GTK_ABOUT_DIALOG(about),linphone_gtk_get_ui_config("home","http://www.linphone.org"));
 	if (logo)	gtk_about_dialog_set_logo(GTK_ABOUT_DIALOG(about),logo);
-	    
+	tmp=linphone_gtk_get_ui_config("artists",defcfg);
+	if (tmp!=defcfg){
+		const char *tmp2[2];
+		tmp2[0]=tmp;
+		tmp2[1]=NULL;
+		gtk_about_dialog_set_artists(GTK_ABOUT_DIALOG(about),tmp2);
+	}
+	tmp=linphone_gtk_get_ui_config("translators",defcfg);
+	if (tmp!=defcfg)
+		gtk_about_dialog_set_translator_credits (GTK_ABOUT_DIALOG(about),tmp);
+	tmp=linphone_gtk_get_ui_config("comments",defcfg);
+	if (tmp!=defcfg)
+		gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(about),tmp);
 	gtk_widget_show(about);
 }
 
