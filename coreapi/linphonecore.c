@@ -3476,7 +3476,8 @@ void linphone_core_play_dtmf(LinphoneCore *lc, char dtmf, int duration_ms){
 **/
 void linphone_core_stop_dtmf(LinphoneCore *lc){
 	MSFilter *f=get_dtmf_gen(lc);
-	ms_filter_call_method_noarg (f, MS_DTMF_GEN_STOP);
+	if (f!=NULL)
+		ms_filter_call_method_noarg (f, MS_DTMF_GEN_STOP);
 }
 
 
