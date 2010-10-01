@@ -747,7 +747,7 @@ linphonec_finish(int exit_status)
 	{
 		fclose (mylogfile);
 	}
-
+	printf("\n");
 	exit(exit_status);
 
 }
