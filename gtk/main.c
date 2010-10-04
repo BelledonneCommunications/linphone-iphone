@@ -1152,6 +1152,7 @@ static void linphone_gtk_configure_main_window(){
 	static const char *search_icon;
 	static gboolean update_check_menu;
 	static gboolean buttons_have_borders;
+	static gboolean show_abcd;
 	GtkWidget *w=linphone_gtk_get_main_window();
 	if (!config_loaded){
 		title=linphone_gtk_get_ui_config("title","Linphone");
@@ -1162,6 +1163,7 @@ static void linphone_gtk_configure_main_window(){
 		search_icon=linphone_gtk_get_ui_config("directory_search_icon",NULL);
 		update_check_menu=linphone_gtk_get_ui_config_int("update_check_menu",0);
 		buttons_have_borders=linphone_gtk_get_ui_config_int("buttons_border",1);
+		show_abcd=linphone_gtk_get_ui_config_int("show_abcd",1);
 		config_loaded=TRUE;
 	}
 	linphone_gtk_configure_window(w,"main_window");
@@ -1218,6 +1220,9 @@ static void linphone_gtk_configure_main_window(){
 		gtk_widget_show(linphone_gtk_get_widget(w,"assistant_item"));
 	if (update_check_menu){
 		gtk_widget_show(linphone_gtk_get_widget(w,"versioncheck_item"));
+	}
+	if (!show_abcd){
+		gtk_table_resize(GTK_TABLE(linphone_gtk_get_widget(w,"dtmf_table")),4,3);
 	}
 }
 
