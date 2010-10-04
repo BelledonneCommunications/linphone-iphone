@@ -27,21 +27,8 @@ enum {
 	NetworkKindOpticalFiber
 };
 
-static gboolean check_login_ok(LinphoneProxyConfig *cfg){
-	if (linphone_proxy_config_is_registered(cfg)){
-		linphone_gtk_exit_login_frame();
-		return FALSE;	
-	}
-	return TRUE;
-}
-
 static void do_login(SipSetupContext *ssctx, const char *identity, const char * passwd){
-	GtkWidget *mw=linphone_gtk_get_main_window();
 	if (sip_setup_context_login_account(ssctx,identity,passwd)==0){
-		guint t=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(mw),"login_tout"));
-		if (t!=0) g_source_remove(t);
-		t=g_timeout_add(50,(GSourceFunc)check_login_ok,sip_setup_context_get_proxy_config(ssctx));
-		g_object_set_data(G_OBJECT(mw),"login_tout",GINT_TO_POINTER(t));
 	}
 }
 
