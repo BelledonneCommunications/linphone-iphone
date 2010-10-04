@@ -35,6 +35,18 @@ static void linphone_connect_incoming(LinphoneCore *lc, LinphoneCall *call){
 	linphone_call_start_media_streams(call);
 }
 
+static bool_t is_duplicate_call(LinphoneCore *lc, const LinphoneAddress *from, const LinphoneAddress *to){
+	MSList *elem;
+	for(elem=lc->calls;elem!=NULL;elem=elem->next){
+		LinphoneCall *call=(LinphoneCall*)elem->data;
+		if (linphone_address_weak_compare(call->log->from,from) &&
+		    linphone_address_weak_compare(call->log->to, to)){
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
+
 static void call_received(SalOp *h){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(h));
 	char *barmesg;
@@ -42,6 +54,7 @@ static void call_received(SalOp *h){
 	const char *from,*to;
 	char *tmp;
 	LinphoneAddress *from_parsed;
+	LinphoneAddress *from_addr, *to_addr;
 	const char * early_media=linphone_core_get_remote_ringback_tone (lc);
 	
 	/* first check if we can answer successfully to this invite */
@@ -67,9 +80,18 @@ static void call_received(SalOp *h){
 	}
 	from=sal_op_get_from(h);
 	to=sal_op_get_to(h);
+	from_addr=linphone_address_new(from);
+	to_addr=linphone_address_new(to);
+
+	if (is_duplicate_call(lc,from_addr,to_addr)){
+		ms_warning("Receiving duplicated call, refusing this one.");
+		sal_call_decline(h,SalReasonBusy,NULL);
+		linphone_address_destroy(from_addr);
+		linphone_address_destroy(to_addr);
+		return;
+	}
 	
-	call=linphone_call_new_incoming(lc,linphone_address_new(from),linphone_address_new(to),h);
-	
+	call=linphone_call_new_incoming(lc,from_addr,to_addr,h);
 	sal_call_set_local_media_description(h,call->localdesc);
 	call->resultdesc=sal_call_get_final_media_description(h);
 	if (call->resultdesc)
@@ -79,14 +101,11 @@ static void call_received(SalOp *h){
 		linphone_call_unref(call);
 		return;
 	}
+	
+	
 	/* the call is acceptable so we can now add it to our list */
-	if(linphone_core_add_call(lc,call)!= 0)
-	{
-		ms_warning("we cannot handle anymore call\n");
-		sal_call_decline(h,SalReasonMedia,NULL);
-		linphone_call_unref(call);
-		return;
-	}
+	linphone_core_add_call(lc,call);
+	
 	from_parsed=linphone_address_new(sal_op_get_from(h));
 	linphone_address_clean(from_parsed);
 	tmp=linphone_address_as_string(from_parsed);
@@ -322,6 +341,8 @@ static void call_updating(SalOp *op){
 static void call_terminated(SalOp *op, const char *from){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
+
+	if (call==NULL) return;
 	
 	if (linphone_call_get_state(call)==LinphoneCallEnd || linphone_call_get_state(call)==LinphoneCallError){
 		ms_warning("call_terminated: ignoring.");
