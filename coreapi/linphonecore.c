@@ -706,6 +706,17 @@ static MSList *add_missing_codecs(SalStreamType mtype, MSList *l){
 	return l;
 }
 
+static MSList *codec_append_if_new(MSList *l, PayloadType *pt){
+	MSList *elem;
+	for (elem=l;l!=NULL;l=elem->next){
+		PayloadType *ept=(PayloadType*)elem->data;
+		if (pt==ept)
+			return l;
+	}
+	l=ms_list_append(l,pt);
+	return l;
+}
+
 static void codecs_config_read(LinphoneCore *lc)
 {
 	int i;
@@ -716,7 +727,7 @@ static void codecs_config_read(LinphoneCore *lc)
 		if (pt){
 			if (!ms_filter_codec_supported(pt->mime_type)){
 				ms_warning("Codec %s is not supported by mediastreamer2, removed.",pt->mime_type);
-			}else audio_codecs=ms_list_append(audio_codecs,pt);
+			}else audio_codecs=codec_append_if_new(audio_codecs,pt);
 		}
 	}
 	audio_codecs=add_missing_codecs(SalAudio,audio_codecs);
@@ -724,7 +735,7 @@ static void codecs_config_read(LinphoneCore *lc)
 		if (pt){
 			if (!ms_filter_codec_supported(pt->mime_type)){
 				ms_warning("Codec %s is not supported by mediastreamer2, removed.",pt->mime_type);
-			}else video_codecs=ms_list_append(video_codecs,(void *)pt);
+			}else video_codecs=codec_append_if_new(video_codecs,(void *)pt);
 		}
 	}
 	video_codecs=add_missing_codecs(SalVideo,video_codecs);
