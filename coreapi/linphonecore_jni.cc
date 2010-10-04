@@ -496,10 +496,14 @@ extern "C" jstring Java_org_linphone_core_LinphoneProxyConfigImpl_getProxy(JNIEn
 	}
 }
 extern "C" int Java_org_linphone_core_LinphoneProxyConfigImpl_setRoute(JNIEnv* env,jobject thiz,jlong proxyCfg,jstring jroute) {
-	const char* route = env->GetStringUTFChars(jroute, NULL);
-	int err=linphone_proxy_config_set_route((LinphoneProxyConfig*)proxyCfg,route);
-	env->ReleaseStringUTFChars(jroute, route);
-	return err;
+	if (jroute != NULL) {
+		const char* route = env->GetStringUTFChars(jroute, NULL);
+		int err=linphone_proxy_config_set_route((LinphoneProxyConfig*)proxyCfg,route);
+		env->ReleaseStringUTFChars(jroute, route);
+		return err;
+	} else {
+		return linphone_proxy_config_set_route((LinphoneProxyConfig*)proxyCfg,NULL);
+	}
 }
 extern "C" jstring Java_org_linphone_core_LinphoneProxyConfigImpl_getRoute(JNIEnv* env,jobject thiz,jlong proxyCfg) {
 	const char* route = linphone_proxy_config_get_route((LinphoneProxyConfig*)proxyCfg);
