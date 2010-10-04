@@ -47,8 +47,21 @@ static void do_login(SipSetupContext *ssctx, const char *identity, const char * 
 
 static gboolean do_login_noprompt(LinphoneProxyConfig *cfg){
 	SipSetupContext *ssctx=linphone_proxy_config_get_sip_setup_context(cfg);
+	LinphoneAddress *addr;
+	const char *username;
+	char *tmp;
 	if (ssctx==NULL) return TRUE;/*not ready ?*/
-	do_login(ssctx,linphone_proxy_config_get_identity(cfg),NULL);
+	username=linphone_gtk_get_ui_config ("login_username",NULL);
+	if (username==NULL) {
+		linphone_gtk_set_ui_config_int("automatic_login",0);
+		linphone_gtk_show_login_frame(cfg);
+		return FALSE;
+	}
+	addr=linphone_address_new(linphone_proxy_config_get_identity(cfg));
+	linphone_address_set_username(addr,username);
+	tmp=linphone_address_as_string (addr);
+	do_login(ssctx,tmp,NULL);
+	linphone_address_destroy(addr);
 	return FALSE;
 }
 

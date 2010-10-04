@@ -94,7 +94,7 @@ static GOptionEntry linphone_options[]={
 	    .description = N_("if set automatically answer incoming calls")
 	},
 #ifdef WIN32
-	{				/* zsd addition */
+	{
 	    .long_name = "workdir",
 	    .short_name = '\0',
 	    .arg = G_OPTION_ARG_STRING,
@@ -1234,7 +1234,7 @@ void linphone_gtk_manage_login(void){
 }
 
 
-void linphone_gtk_close(GtkWidget *mw){
+gboolean linphone_gtk_close(GtkWidget *mw){
 	/*shutdown calls if any*/
 	LinphoneCore *lc=linphone_gtk_get_core();
 	if (linphone_core_in_call(lc)){
@@ -1242,6 +1242,7 @@ void linphone_gtk_close(GtkWidget *mw){
 	}
 	linphone_core_enable_video_preview(lc,FALSE);
 	gtk_widget_hide(mw);
+	return TRUE;
 }
 
 static void linphone_gtk_init_main_window(){
