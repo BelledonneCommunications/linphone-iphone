@@ -467,6 +467,8 @@ static void sound_config_read(LinphoneCore *lc)
 
 	gain=lp_config_get_float(lc->config,"sound","playback_gain_db",0);
 	linphone_core_set_playback_gain_db (lc,gain);
+
+	linphone_core_set_remote_ringback_tone (lc,lp_config_get_string(lc->config,"sound","ringback_tone",NULL));
 }
 
 static void sip_config_read(LinphoneCore *lc)
@@ -704,6 +706,17 @@ static MSList *add_missing_codecs(SalStreamType mtype, MSList *l){
 	return l;
 }
 
+static MSList *codec_append_if_new(MSList *l, PayloadType *pt){
+	MSList *elem;
+	for (elem=l;l!=NULL;l=elem->next){
+		PayloadType *ept=(PayloadType*)elem->data;
+		if (pt==ept)
+			return l;
+	}
+	l=ms_list_append(l,pt);
+	return l;
+}
+
 static void codecs_config_read(LinphoneCore *lc)
 {
 	int i;
@@ -714,7 +727,7 @@ static void codecs_config_read(LinphoneCore *lc)
 		if (pt){
 			if (!ms_filter_codec_supported(pt->mime_type)){
 				ms_warning("Codec %s is not supported by mediastreamer2, removed.",pt->mime_type);
-			}else audio_codecs=ms_list_append(audio_codecs,pt);
+			}else audio_codecs=codec_append_if_new(audio_codecs,pt);
 		}
 	}
 	audio_codecs=add_missing_codecs(SalAudio,audio_codecs);
@@ -722,7 +735,7 @@ static void codecs_config_read(LinphoneCore *lc)
 		if (pt){
 			if (!ms_filter_codec_supported(pt->mime_type)){
 				ms_warning("Codec %s is not supported by mediastreamer2, removed.",pt->mime_type);
-			}else video_codecs=ms_list_append(video_codecs,(void *)pt);
+			}else video_codecs=codec_append_if_new(video_codecs,(void *)pt);
 		}
 	}
 	video_codecs=add_missing_codecs(SalVideo,video_codecs);
@@ -1792,7 +1805,7 @@ LinphoneAddress * linphone_core_interpret_url(LinphoneCore *lc, const char *url)
 /**
  * Returns the default identity SIP address.
  *
- * @ingroup proxiesb
+ * @ingroup proxies
  * This is an helper function:
  *
  * If no default proxy is set, this will return the primary contact (
@@ -1965,12 +1978,39 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, LinphonePro
  * @ingroup call_control
  * @param lc the LinphoneCore object
  * @param url the destination of the call (sip address, or phone number).
+ *
+ * The application doesn't own a reference to the returned LinphoneCall object.
+ * Use linphone_call_ref() to safely keep the LinphoneCall pointer valid within your application.
+ *
+ * @Returns a LinphoneCall object or NULL in case of failure
 **/
 LinphoneCall * linphone_core_invite(LinphoneCore *lc, const char *url){
+	LinphoneCall *call;
+	LinphoneCallParams *p=linphone_core_create_default_call_parameters (lc);
+	call=linphone_core_invite_with_params(lc,url,p);
+	linphone_call_params_destroy(p);
+	return call;
+}
+
+
+/**
+ * Initiates an outgoing call according to supplied call parameters
+ *
+ * @ingroup call_control
+ * @param lc the LinphoneCore object
+ * @param url the destination of the call (sip address, or phone number).
+ * @param p call parameters
+ *
+ * The application doesn't own a reference to the returned LinphoneCall object.
+ * Use linphone_call_ref() to safely keep the LinphoneCall pointer valid within your application.
+ *
+ * @Returns a LinphoneCall object or NULL in case of failure
+**/
+LinphoneCall * linphone_core_invite_with_params(LinphoneCore *lc, const char *url, const LinphoneCallParams *p){
 	LinphoneAddress *addr=linphone_core_interpret_url(lc,url);
 	if (addr){
 		LinphoneCall *call;
-		call=linphone_core_invite_address(lc,addr);
+		call=linphone_core_invite_address_with_params(lc,addr,p);
 		linphone_address_destroy(addr);
 		return call;
 	}
@@ -1982,12 +2022,40 @@ LinphoneCall * linphone_core_invite(LinphoneCore *lc, const char *url){
  *
  * @ingroup call_control
  * @param lc the LinphoneCore object
- * @param real_parsed_url the destination of the call (sip address).
+ * @param addr the destination of the call (sip address).
  * 
  * The LinphoneAddress can be constructed directly using linphone_address_new(), or
  * created by linphone_core_interpret_url().
+ * The application doesn't own a reference to the returned LinphoneCall object.
+ * Use linphone_call_ref() to safely keep the LinphoneCall pointer valid within your application.
+ *
+ * @Returns a LinphoneCall object or NULL in case of failure
 **/
-LinphoneCall * linphone_core_invite_address(LinphoneCore *lc, const LinphoneAddress *real_parsed_url)
+LinphoneCall * linphone_core_invite_address(LinphoneCore *lc, const LinphoneAddress *addr){
+	LinphoneCall *call;
+	LinphoneCallParams *p=linphone_core_create_default_call_parameters (lc);
+	call=linphone_core_invite_address_with_params (lc,addr,p);
+	linphone_call_params_destroy(p);
+	return call;
+}
+
+
+/**
+ * Initiates an outgoing call given a destination LinphoneAddress
+ *
+ * @ingroup call_control
+ * @param lc the LinphoneCore object
+ * @param addr the destination of the call (sip address).
+	@param params call parameters
+ * 
+ * The LinphoneAddress can be constructed directly using linphone_address_new(), or
+ * created by linphone_core_interpret_url().
+ * The application doesn't own a reference to the returned LinphoneCall object.
+ * Use linphone_call_ref() to safely keep the LinphoneCall pointer valid within your application.
+ *
+ * @Returns a LinphoneCall object or NULL in case of failure
+**/
+LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const LinphoneAddress *addr, const LinphoneCallParams *params)
 {
 	int err=0;
 	const char *route=NULL;
@@ -2011,8 +2079,8 @@ LinphoneCall * linphone_core_invite_address(LinphoneCore *lc, const LinphoneAddr
 	linphone_core_get_default_proxy(lc,&proxy);
 	route=linphone_core_get_route(lc);
 	
-	real_url=linphone_address_as_string(real_parsed_url);
-	dest_proxy=linphone_core_lookup_known_proxy(lc,real_parsed_url);
+	real_url=linphone_address_as_string(addr);
+	dest_proxy=linphone_core_lookup_known_proxy(lc,addr);
 
 	if (proxy!=dest_proxy && dest_proxy!=NULL) {
 		ms_message("Overriding default proxy setting for this call:");
@@ -2029,7 +2097,7 @@ LinphoneCall * linphone_core_invite_address(LinphoneCore *lc, const LinphoneAddr
 
 	parsed_url2=linphone_address_new(from);
 
-	call=linphone_call_new_outgoing(lc,parsed_url2,linphone_address_clone(real_parsed_url));
+	call=linphone_call_new_outgoing(lc,parsed_url2,linphone_address_clone(addr),params);
 	sal_op_set_route(call->op,route);
 	
 	if(linphone_core_add_call(lc,call)!= 0)
@@ -2090,6 +2158,27 @@ bool_t linphone_core_inc_invite_pending(LinphoneCore*lc){
 			return TRUE;
 	}
 	return FALSE;
+}
+
+/**
+ * Updates a running call according to supplied call parameters.
+ *
+ * For the moment, this is limited to enabling or disabling the video stream.
+ *
+ * @Returns 0 if successful, -1 otherwise.
+**/
+int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, LinphoneCallParams *params){
+	int err;
+	
+	if (call->localdesc)
+		sal_media_description_unref(call->localdesc);
+	call->localdesc=create_local_media_description (lc,call,
+		params->has_video,FALSE);
+	if (lc->vtable.display_status)
+		lc->vtable.display_status(lc,_("Modifying call parameters..."));
+	sal_call_set_local_media_description (call->op,call->localdesc);
+	err=sal_call_update(call->op);
+	return err;
 }
 
 
@@ -2156,6 +2245,12 @@ int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call)
 		sal_op_set_contact(call->op,contact);
 #if __IPHONE_OS_VERSION_MIN_REQUIRED >= 40000
 	linphone_call_init_media_streams(call);
+#else
+	if (call->audiostream!=NULL && call->audiostream->ticker!=NULL){
+		/*case where we sent early media*/
+		linphone_call_stop_media_streams (call);
+		linphone_call_init_media_streams (call);
+	}
 #endif
 	sal_call_accept(call->op);
 	if (lc->vtable.display_status!=NULL)
@@ -3392,7 +3487,8 @@ void linphone_core_play_dtmf(LinphoneCore *lc, char dtmf, int duration_ms){
 **/
 void linphone_core_stop_dtmf(LinphoneCore *lc){
 	MSFilter *f=get_dtmf_gen(lc);
-	ms_filter_call_method_noarg (f, MS_DTMF_GEN_STOP);
+	if (f!=NULL)
+		ms_filter_call_method_noarg (f, MS_DTMF_GEN_STOP);
 }
 
 
@@ -3786,6 +3882,25 @@ int linphone_core_del_call( LinphoneCore *lc, LinphoneCall *call)
 	return 0;
 }
 
+/**
+ * Specifiies a ring back tone to be played to far end during incoming calls.
+**/
+void linphone_core_set_remote_ringback_tone(LinphoneCore *lc, const char *file){
+	if (lc->sound_conf.ringback_tone){
+		ms_free(lc->sound_conf.ringback_tone);
+		lc->sound_conf.ringback_tone=NULL;
+	}
+	if (file)
+		lc->sound_conf.ringback_tone=ms_strdup(file);
+}
+
+/**
+ * Returns the ring back tone played to far end during incoming calls.
+**/
+const char *linphone_core_get_remote_ringback_tone(const LinphoneCore *lc){
+	return lc->sound_conf.ringback_tone;
+}
+
 static PayloadType* find_payload_type_from_list(const char* type, int rate,const MSList* from) {
 	const MSList *elem;
 	for(elem=from;elem!=NULL;elem=elem->next){
@@ -3837,4 +3952,22 @@ const char *linphone_global_state_to_string(LinphoneGlobalState gs){
 
 LinphoneGlobalState linphone_core_get_global_state(const LinphoneCore *lc){
 	return lc->state;
+}
+
+LinphoneCallParams *linphone_core_create_default_call_parameters(LinphoneCore *lc){
+	LinphoneCallParams *p=ms_new0(LinphoneCallParams,1);
+	p->has_video=linphone_core_video_enabled(lc);
+	return p;
+}
+
+const char *linphone_error_to_string(LinphoneError err){
+	switch(err){
+		case LinphoneErrorNone:
+			return "No error";
+		case LinphoneErrorNoResponse:
+			return "No response";
+		case LinphoneErrorBadCredentials:
+			return "Bad credentials";
+	}
+	return "unknown error";
 }

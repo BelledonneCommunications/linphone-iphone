@@ -128,7 +128,7 @@ void sal_media_description_ref(SalMediaDescription *md);
 void sal_media_description_unref(SalMediaDescription *md);
 bool_t sal_media_description_empty(const SalMediaDescription *md);
 bool_t sal_media_description_has_dir(const SalMediaDescription *md, SalStreamDir dir);
-const SalStreamDescription *sal_media_description_find_stream(const SalMediaDescription *md,
+SalStreamDescription *sal_media_description_find_stream(SalMediaDescription *md,
     SalMediaProto proto, SalStreamType type);
 void sal_media_description_set_dir(SalMediaDescription *md, SalStreamDir stream_dir);
 
@@ -140,6 +140,7 @@ typedef struct SalOpBase{
 	char *from;
 	char *to;
 	char *origin;
+	char *remote_ua;
 	SalMediaDescription *local_media;
 	SalMediaDescription *remote_media;
 	void *user_pointer;
@@ -267,16 +268,19 @@ const char *sal_op_get_route(const SalOp *op);
 const char *sal_op_get_proxy(const SalOp *op);
 /*for incoming requests, returns the origin of the packet as a sip uri*/
 const char *sal_op_get_network_origin(const SalOp *op);
+/*returns far-end "User-Agent" string */
+const char *sal_op_get_remote_ua(const SalOp *op);
 void *sal_op_get_user_pointer(const SalOp *op);
 
 /*Call API*/
 int sal_call_set_local_media_description(SalOp *h, SalMediaDescription *desc);
 int sal_call(SalOp *h, const char *from, const char *to);
-int sal_call_notify_ringing(SalOp *h);
+int sal_call_notify_ringing(SalOp *h, bool_t early_media);
 /*accept an incoming call or, during a call accept a reINVITE*/
 int sal_call_accept(SalOp*h);
 int sal_call_decline(SalOp *h, SalReason reason, const char *redirection /*optional*/);
 int sal_call_hold(SalOp *h, bool_t holdon);
+int sal_call_update(SalOp *h);
 SalMediaDescription * sal_call_get_final_media_description(SalOp *h);
 int sal_refer(SalOp *h, const char *refer_to);
 int sal_refer_accept(SalOp *h);

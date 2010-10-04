@@ -176,7 +176,7 @@
             <child>
               <object class="GtkMenuItem" id="menuitem4">
                 <property name="visible">True</property>
-                <property name="label" translatable="yes">Aid_e</property>
+                <property name="label" translatable="yes">_Help</property>
                 <property name="use_underline">True</property>
                 <child type="submenu">
                   <object class="GtkMenu" id="menu3">
@@ -521,6 +521,28 @@
                                                 <property name="fill">False</property>
                                                 <property name="padding">5</property>
                                                 <property name="position">2</property>
+                                              </packing>
+                                            </child>
+                                            <child>
+                                              <object class="GtkHButtonBox" id="hbuttonbox1">
+                                                <property name="visible">True</property>
+                                                <child>
+                                                  <object class="GtkButton" id="add_contact_button">
+                                                    <property name="label" translatable="yes">Add contact</property>
+                                                    <property name="can_focus">True</property>
+                                                    <property name="receives_default">True</property>
+                                                    <property name="image">image6</property>
+                                                    <signal name="clicked" handler="linphone_gtk_add_contact"/>
+                                                  </object>
+                                                  <packing>
+                                                    <property name="expand">False</property>
+                                                    <property name="fill">False</property>
+                                                    <property name="position">0</property>
+                                                  </packing>
+                                                </child>
+                                              </object>
+                                              <packing>
+                                                <property name="position">3</property>
                                               </packing>
                                             </child>
                                           </object>
@@ -1272,6 +1294,8 @@
             </child>
           </object>
           <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
             <property name="position">2</property>
           </packing>
         </child>
@@ -1381,7 +1405,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkFrame" id="frame1">
+                  <object class="GtkFrame" id="duration_frame">
                     <property name="visible">True</property>
                     <property name="label_xalign">0</property>
                     <child>
@@ -1414,7 +1438,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkHButtonBox" id="hbuttonbox4">
+                  <object class="GtkHButtonBox" id="mute_pause_buttons">
                     <property name="visible">True</property>
                     <property name="layout_style">spread</property>
                     <child>
@@ -1466,5 +1490,9 @@
         </child>
       </object>
     </child>
+  </object>
+  <object class="GtkImage" id="image6">
+    <property name="visible">True</property>
+    <property name="stock">gtk-add</property>
   </object>
 </interface>

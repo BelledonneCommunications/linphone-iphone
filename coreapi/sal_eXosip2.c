@@ -503,10 +503,31 @@ int sal_call(SalOp *h, const char *from, const char *to){
 	return 0;
 }
 
-int sal_call_notify_ringing(SalOp *h){
-	eXosip_lock();
-	eXosip_call_send_answer(h->tid,180,NULL);
-	eXosip_unlock();
+int sal_call_notify_ringing(SalOp *h, bool_t early_media){
+	osip_message_t *msg;
+	int err;
+	
+	/*if early media send also 180 and 183 */
+	if (early_media && h->sdp_answer){
+		msg=NULL;
+		eXosip_lock();
+		err=eXosip_call_build_answer(h->tid,180,&msg);
+		if (msg){
+			set_sdp(msg,h->sdp_answer);
+			eXosip_call_send_answer(h->tid,180,msg);
+		}
+		msg=NULL;
+		err=eXosip_call_build_answer(h->tid,183,&msg);
+		if (msg){
+			set_sdp(msg,h->sdp_answer);
+			eXosip_call_send_answer(h->tid,183,msg);
+		}
+		eXosip_unlock();
+	}else{
+		eXosip_lock();
+		eXosip_call_send_answer(h->tid,180,NULL);
+		eXosip_unlock();
+	}
 	return 0;
 }
 
@@ -701,6 +722,16 @@ static void set_network_origin(SalOp *op, osip_message_t *req){
 	__sal_op_set_network_origin(op,origin);
 }
 
+static void set_remote_ua(SalOp* op, osip_message_t *req){
+	if (op->base.remote_ua==NULL){
+		osip_header_t *h=NULL;
+		osip_message_get_user_agent(req,0,&h);
+		if (h){
+			op->base.remote_ua=ms_strdup(h->hvalue);
+		}
+	}
+}
+
 static SalOp *find_op(Sal *sal, eXosip_event_t *ev){
 	if (ev->cid>0){
 		return sal_find_call(sal,ev->cid);
@@ -720,6 +751,7 @@ static void inc_new_call(Sal *sal, eXosip_event_t *ev){
 	sdp_message_t *sdp=eXosip_get_sdp_info(ev->request);
 
 	set_network_origin(op,ev->request);
+	set_remote_ua(op,ev->request);
 	
 	if (sdp){
 		op->sdp_offering=FALSE;
@@ -865,7 +897,8 @@ static void call_ringing(Sal *sal, eXosip_event_t *ev){
 	sdp_message_t *sdp;
 	SalOp *op=find_op(sal,ev);
 	if (call_proceeding(sal, ev)==-1) return;
-	
+
+	set_remote_ua(op,ev->response);
 	sdp=eXosip_get_sdp_info(ev->response);
 	if (sdp){
 		op->base.remote_media=sal_media_description_new();
@@ -888,7 +921,8 @@ static void call_accepted(Sal *sal, eXosip_event_t *ev){
 	}
 
 	op->did=ev->did;
-	
+	set_remote_ua(op,ev->response);
+
 	sdp=eXosip_get_sdp_info(ev->response);
 	if (sdp){
 		op->base.remote_media=sal_media_description_new();
@@ -1771,10 +1805,12 @@ void sal_set_keepalive_period(Sal *ctx,unsigned int value) {
 	ctx->keepalive_period=value;
 	eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE, &value);
 }
+
 const char * sal_address_get_port(const SalAddress *addr) {
 	const osip_from_t *u=(const osip_from_t*)addr;
 	return null_if_empty(u->url->port);
 }
+
 int sal_address_get_port_int(const SalAddress *uri) {
 	const char* port = sal_address_get_port(uri);
 	if (port != NULL) {
@@ -1813,3 +1849,29 @@ int sal_call_hold(SalOp *h, bool_t holdon)
 	return err;
 }
 
+/* sends a reinvite. Local media description may have changed by application since call establishment*/
+int sal_call_update(SalOp *h){
+	int err=0;
+	osip_message_t *reinvite=NULL;
+
+	eXosip_lock();
+	if(eXosip_call_build_request(h->did,"INVITE",&reinvite) != OSIP_SUCCESS || reinvite==NULL){
+		eXosip_unlock();
+		return -1;
+	}
+	eXosip_unlock();
+	osip_message_set_subject(reinvite,osip_strdup("Phone call parameters updated"));
+	osip_message_set_allow(reinvite, "INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, NOTIFY, MESSAGE, SUBSCRIBE, INFO");
+	if (h->base.root->session_expires!=0){
+		osip_message_set_header(reinvite, "Session-expires", "200");
+		osip_message_set_supported(reinvite, "timer");
+	}
+	if (h->base.local_media){
+		h->sdp_offering=TRUE;
+		set_sdp_from_desc(reinvite,h->base.local_media);
+	}else h->sdp_offering=FALSE;
+	eXosip_lock();
+	err = eXosip_call_send_request(h->did, reinvite);
+	eXosip_unlock();
+	return err;
+}

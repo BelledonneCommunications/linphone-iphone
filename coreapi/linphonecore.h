@@ -93,6 +93,7 @@ void linphone_address_set_port_int(LinphoneAddress *uri, int port);
 void linphone_address_clean(LinphoneAddress *uri);
 char *linphone_address_as_string(const LinphoneAddress *u);
 char *linphone_address_as_string_uri_only(const LinphoneAddress *u);
+bool_t linphone_address_weak_compare(const LinphoneAddress *a1, const LinphoneAddress *a2);
 void linphone_address_destroy(LinphoneAddress *u);
 
 struct _SipSetupContext;
@@ -156,6 +157,32 @@ char * linphone_call_log_to_str(LinphoneCallLog *cl);
 
 
 /**
+ * The LinphoneCallParams is an object contaning various call related parameters.
+ * It can be used to retrieve parameters from a currently running call or modify the call's characterisitcs 
+ * dynamically.
+**/
+struct _LinphoneCallParams;
+typedef struct _LinphoneCallParams LinphoneCallParams;
+
+LinphoneCallParams * linphone_call_params_copy(const LinphoneCallParams *cp);
+void linphone_call_params_enable_video(LinphoneCallParams *cp, bool_t enabled);
+bool_t linphone_call_params_video_enabled(const LinphoneCallParams *cp);
+void linphone_call_params_destroy(LinphoneCallParams *cp);
+
+/**
+ * Enum describing failure reasons.
+**/
+enum _LinphoneError{
+	LinphoneErrorNone,
+	LinphoneErrorNoResponse, /**<No response received from remote*/
+	LinphoneErrorBadCredentials /**<Authentication failed due to bad or missing credentials*/
+};
+
+typedef enum _LinphoneError LinphoneError;
+
+const char *linphone_error_to_string(LinphoneError err);
+
+/**
  * The LinphoneCall object represents a call issued or received by the LinphoneCore
 **/
 struct _LinphoneCall;
@@ -176,7 +203,8 @@ typedef enum _LinphoneCallState{
 	LinphoneCallRefered,
 	LinphoneCallError,
 	LinphoneCallEnd,
-	LinphoneCallPausedByRemote
+	LinphoneCallPausedByRemote,
+	LinphoneCallUpdatedByRemote /**<used when video is asked by remote */
 } LinphoneCallState;
 
 const char *linphone_call_state_to_string(LinphoneCallState cs);
@@ -194,6 +222,11 @@ LinphoneCallLog *linphone_call_get_call_log(const LinphoneCall *call);
 const char *linphone_call_get_refer_to(const LinphoneCall *call);
 bool_t linphone_call_has_transfer_pending(const LinphoneCall *call);
 int linphone_call_get_duration(const LinphoneCall *call);
+const LinphoneCallParams * linphone_call_get_current_params(const LinphoneCall *call);
+void linphone_call_enable_camera(LinphoneCall *lc, bool_t enabled);
+bool_t linphone_call_camera_enabled(const LinphoneCall *lc);
+LinphoneError linphone_call_get_error(const LinphoneCall *call);
+const char *linphone_call_get_remote_user_agent(LinphoneCall *call);
 void *linphone_call_get_user_pointer(LinphoneCall *call);
 void linphone_call_set_user_pointer(LinphoneCall *call, void *user_pointer);
 
@@ -307,6 +340,8 @@ struct _LinphoneCore * linphone_proxy_config_get_core(const LinphoneProxyConfig 
 
 bool_t linphone_proxy_config_get_dial_escape_plus(const LinphoneProxyConfig *cfg);
 const char * linphone_proxy_config_get_dial_prefix(const LinphoneProxyConfig *cfg);
+
+LinphoneError linphone_proxy_config_get_error(const LinphoneProxyConfig *cfg);
 
 /* destruction is called automatically when removing the proxy config */
 void linphone_proxy_config_destroy(LinphoneProxyConfig *cfg);
@@ -522,6 +557,10 @@ LinphoneCall * linphone_core_invite(LinphoneCore *lc, const char *url);
 
 LinphoneCall * linphone_core_invite_address(LinphoneCore *lc, const LinphoneAddress *addr);
 
+LinphoneCall * linphone_core_invite_with_params(LinphoneCore *lc, const char *url, const LinphoneCallParams *params);
+
+LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const LinphoneAddress *addr, const LinphoneCallParams *params);
+
 int linphone_core_transfer_call(LinphoneCore *lc, LinphoneCall *call, const char *refer_to);
 
 bool_t linphone_core_inc_invite_pending(LinphoneCore*lc);
@@ -542,6 +581,10 @@ int linphone_core_pause_all_calls(LinphoneCore *lc);
 
 int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *call);
 
+int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, LinphoneCallParams *params);
+
+LinphoneCallParams *linphone_core_create_default_call_parameters(LinphoneCore *lc);
+
 LinphoneCall *linphone_core_get_call_by_remote_address(LinphoneCore *lc, const char *remote_address);
 
 void linphone_core_send_dtmf(LinphoneCore *lc,char dtmf);
@@ -550,6 +593,8 @@ int linphone_core_set_primary_contact(LinphoneCore *lc, const char *contact);
 
 const char *linphone_core_get_primary_contact(LinphoneCore *lc);
 
+const char * linphone_core_get_identity(LinphoneCore *lc);
+
 void linphone_core_set_guess_hostname(LinphoneCore *lc, bool_t val);
 bool_t linphone_core_get_guess_hostname(LinphoneCore *lc);
 
@@ -557,7 +602,7 @@ bool_t linphone_core_ipv6_enabled(LinphoneCore *lc);
 void linphone_core_enable_ipv6(LinphoneCore *lc, bool_t val);
 
 LinphoneAddress *linphone_core_get_primary_contact_parsed(LinphoneCore *lc);
-
+const char * linphone_core_get_identity(LinphoneCore *lc);
 /*0= no bandwidth limit*/
 void linphone_core_set_download_bandwidth(LinphoneCore *lc, int bw);
 void linphone_core_set_upload_bandwidth(LinphoneCore *lc, int bw);
@@ -702,6 +747,8 @@ void linphone_core_set_ring(LinphoneCore *lc, const char *path);
 const char *linphone_core_get_ring(const LinphoneCore *lc);
 void linphone_core_set_ringback(LinphoneCore *lc, const char *path);
 const char * linphone_core_get_ringback(const LinphoneCore *lc);
+void linphone_core_set_remote_ringback_tone(LinphoneCore *lc,const char *);
+const char *linphone_core_get_remote_ringback_tone(const LinphoneCore *lc);
 int linphone_core_preview_ring(LinphoneCore *lc, const char *ring,LinphoneCoreCbFunc func,void * userdata);
 void linphone_core_enable_echo_cancellation(LinphoneCore *lc, bool_t val);
 bool_t linphone_core_echo_cancellation_enabled(LinphoneCore *lc);
@@ -792,7 +839,7 @@ void linphone_core_stop_dtmf(LinphoneCore *lc);
 
 
 int linphone_core_get_current_call_duration(const LinphoneCore *lc);
-const LinphoneAddress *linphone_core_get_remote_address(LinphoneCore *lc);
+
 
 int linphone_core_get_mtu(const LinphoneCore *lc);
 void linphone_core_set_mtu(LinphoneCore *lc, int mtu);

@@ -168,7 +168,7 @@ int offer_answer_initiate_outgoing(const SalMediaDescription *local_offer,
     for(i=0,j=0;i<local_offer->nstreams;++i){
 		ms_message("Processing for stream %i",i);
 		ls=&local_offer->streams[i];
-		rs=sal_media_description_find_stream(remote_answer,ls->proto,ls->type);
+		rs=sal_media_description_find_stream((SalMediaDescription*)remote_answer,ls->proto,ls->type);
     	if (rs) {
 			initiate_outgoing(ls,rs,&result->streams[j]);
 			++j;
@@ -194,7 +194,7 @@ int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities
     for(i=0,j=0;i<remote_offer->nstreams;++i){
 		rs=&remote_offer->streams[i];
 		ms_message("Processing for stream %i",i);
-		ls=sal_media_description_find_stream(local_capabilities,rs->proto,rs->type);
+		ls=sal_media_description_find_stream((SalMediaDescription*)local_capabilities,rs->proto,rs->type);
 		if (ls){
     		initiate_incoming(ls,rs,&result->streams[j]);
 			++j;

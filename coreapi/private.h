@@ -54,6 +54,12 @@
 #endif
 #endif
 
+
+struct _LinphoneCallParams{
+	bool_t has_video;
+	bool_t pad[3];
+};
+
 struct _LinphoneCall
 {
 	struct _LinphoneCore *core;
@@ -76,12 +82,15 @@ struct _LinphoneCall
 	struct _AudioStream *audiostream;  /**/
 	struct _VideoStream *videostream;
 	char *refer_to;
+	LinphoneCallParams params;
 	bool_t refer_pending;
 	bool_t media_pending;
 	bool_t audio_muted;
+	bool_t camera_active;
 };
 
-LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to);
+
+LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, const LinphoneCallParams *params);
 LinphoneCall * linphone_call_new_incoming(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, SalOp *op);
 void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const char *message);
 
@@ -174,7 +183,7 @@ void linphone_core_text_received(LinphoneCore *lc, const char *from, const char 
 
 void linphone_call_init_media_streams(LinphoneCall *call);
 void linphone_call_start_media_streams(LinphoneCall *call);
-void linphone_call_set_media_streams_dir(LinphoneCall *call, SalStreamDir dir);
+void linphone_call_start_early_media(LinphoneCall *call);
 void linphone_call_stop_media_streams(LinphoneCall *call);
 
 const char * linphone_core_get_identity(LinphoneCore *lc);
@@ -187,7 +196,7 @@ void linphone_core_stop_waiting(LinphoneCore *lc);
 int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, LinphoneProxyConfig *dest_proxy);
 void linphone_core_start_pending_refered_calls(LinphoneCore *lc);
 extern SalCallbacks linphone_sal_callbacks;
-
+void linphone_proxy_config_set_error(LinphoneProxyConfig *cfg,LinphoneError error);
 
 struct _LinphoneProxyConfig
 {
@@ -211,6 +220,7 @@ struct _LinphoneProxyConfig
 	bool_t dial_escape_plus;
 	void* user_data;
 	time_t deletion_date;
+	LinphoneError error;
 };
 
 struct _LinphoneAuthInfo 
@@ -310,6 +320,7 @@ typedef struct sound_config
 	char source;
 	char *local_ring;
 	char *remote_ring;
+	char *ringback_tone;
 	bool_t ec;
 	bool_t ea;
 	bool_t agc;
@@ -413,6 +424,9 @@ int linphone_core_set_as_current_call(LinphoneCore *lc, LinphoneCall *call);
 int linphone_core_get_calls_nb(const LinphoneCore *lc);
 
 void linphone_core_set_state(LinphoneCore *lc, LinphoneGlobalState gstate, const char *message);
+
+SalMediaDescription *create_local_media_description(LinphoneCore *lc, 
+    		LinphoneCall *call, bool_t with_video, bool_t only_one_codec);
 
 #define HOLD_OFF	(0)
 #define HOLD_ON		(1)

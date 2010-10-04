@@ -89,8 +89,13 @@ static int lpc_cmd_resume(LinphoneCore *lc, char *args);
 static int lpc_cmd_mute_mic(LinphoneCore *lc, char *args);
 static int lpc_cmd_unmute_mic(LinphoneCore *lc, char *args);
 static int lpc_cmd_rtp_no_xmit_on_audio_mute(LinphoneCore *lc, char *args);
+#ifdef VIDEO_ENABLED
+static int lpc_cmd_camera(LinphoneCore *lc, char *args);
 static int lpc_cmd_video_window(LinphoneCore *lc, char *args);
+#endif
 static int lpc_cmd_states(LinphoneCore *lc, char *args);
+static int lpc_cmd_identify(LinphoneCore *lc, char *args);
+static int lpc_cmd_ringback(LinphoneCore *lc, char *args);
 
 /* Command handler helpers */
 static void linphonec_proxy_add(LinphoneCore *lc);
@@ -136,9 +141,12 @@ static LPC_COMMAND commands[] = {
 		"'help <command>'\t: displays specific help for command.\n"
 		"'help advanced'\t: shows advanced commands.\n"
 	},
-	{ "call", lpc_cmd_call, "Call a SIP uri",
-		"'call <sip-url>' \t: initiate a call to the specified destination.\n"
-		"'call show' \t: show all the current calls with their id and status.\n"
+	{ "call", lpc_cmd_call, "Call a SIP uri or number",
+#ifdef VIDEO_ENABLED
+		"'call <sip-url or number>  [--audio-only]' \t: initiate a call to the specified destination.\n"
+#else
+		"'call <sip-url or number>' \t: initiate a call to the specified destination.\n"
+#endif
 		},
 	{ "calls", lpc_cmd_calls, "Show all the current calls with their id and status.",
 		NULL
@@ -163,6 +171,11 @@ static LPC_COMMAND commands[] = {
 		"'resume <call id>' : hold off the call with given id\n"},
 	{ "mute", lpc_cmd_mute_mic, 
 	  "Mute microphone and suspend voice transmission."},
+#ifdef VIDEO_ENABLED
+	{ "camera", lpc_cmd_camera, "Send camera output for current call.",
+		"'camera on'\t: allow sending of local camera video to remote end.\n"
+		"'camera off'\t: disable sending of local camera's video to remote end.\n"},
+#endif
 	{ "unmute", lpc_cmd_unmute_mic, 
 		  "Unmute microphone and resume voice transmission."},
 	{ "duration", lpc_cmd_duration, "Print duration in seconds of the last call.", NULL },
@@ -255,12 +268,14 @@ static LPC_COMMAND advanced_commands[] = {
 		  "Set the rtp_no_xmit_on_audio_mute configuration parameter",
 		  "   If set to 1 then rtp transmission will be muted when\n"
 		  "   audio is muted , otherwise rtp is always sent."}, 
+#ifdef VIDEO_ENABLED
 	{ "vwindow", lpc_cmd_video_window, "Control video display window",
 		"'vwindow show': shows video window\n"
 		"'vwindow hide': hides video window\n"
 		"'vwindow pos <x> <y>': Moves video window to x,y pixel coordinates\n"
 		"'vwindow size <width> <height>': Resizes video window"
 	},
+#endif
 	{ "states", lpc_cmd_states, "Show internal states of liblinphone, registrations and calls, according to linphonecore.h definitions",
 		"'states global': shows global state of liblinphone \n"
 		"'states calls': shows state of calls\n"
@@ -283,6 +298,14 @@ static LPC_COMMAND advanced_commands[] = {
 	{ "staticpic", lpc_cmd_staticpic, "Manage static pictures when nowebcam",
 		"'staticpic set' : Set path to picture that should be used.\n"
 		"'staticpic fps' : Get/set frames per seconds for picture emission.\n"
+	},
+	{ "identify", lpc_cmd_identify, "Returns the user-agent string of far end",
+		"'identify' \t: returns remote user-agent string for current call.\n"
+		"'identify <id>' \t: returns remote user-agent string for call with supplied id.\n"
+	},
+	{ "ringback", lpc_cmd_ringback, "Specifies a ringback tone to be played to remote end during incoming calls",
+		"'ringback <path of mono .wav file>'\t: Specifies a ringback tone to be played to remote end during incoming calls\n"
+		"'ringback disable'\t: Disable playing of ringback tone to callers\n"
 	},
 	{	NULL,NULL,NULL,NULL}
 };
@@ -503,12 +526,19 @@ lpc_cmd_call(LinphoneCore *lc, char *args)
 	}
 	{
 		LinphoneCall *call;
+		LinphoneCallParams *cp=linphone_core_create_default_call_parameters (lc);
+		char *opt;
 		if ( linphone_core_in_call(lc) )
 		{
 			linphonec_out("Terminate or hold on the current call first.\n");
 			return 1;
 		}
-		if ( NULL == (call=linphone_core_invite(lc, args)) )
+		opt=strstr(args,"--audio-only");
+		if (opt){
+			opt[0]='\0';
+			linphone_call_params_enable_video (cp,FALSE);
+		}
+		if ( NULL == (call=linphone_core_invite_with_params(lc, args,cp)) )
 		{
 			linphonec_out("Error from linphone_core_invite.\n");
 		}
@@ -516,6 +546,7 @@ lpc_cmd_call(LinphoneCore *lc, char *args)
 		{
 			snprintf(callee_name,sizeof(callee_name),"%s",args);
 		}
+		linphone_call_params_destroy(cp);
 	}
 	return 1;
 }
@@ -624,7 +655,7 @@ static int
 lpc_cmd_terminate(LinphoneCore *lc, char *args)
 {
 	if (linphone_core_get_calls(lc)==NULL){
-		linphonec_out("No active calls");
+		linphonec_out("No active calls\n");
 		return 1;
 	}
 	if (!args)
@@ -645,7 +676,7 @@ lpc_cmd_terminate(LinphoneCore *lc, char *args)
 		LinphoneCall *call=linphonec_get_call(id);
 		if (call){
 			if (linphone_core_terminate_call(lc,call)==-1){
-				linphonec_out("Could not stop the call with id %li",id);
+				linphonec_out("Could not stop the call with id %li\n",id);
 			}
 		}else return 0;
 		return 1;
@@ -1636,7 +1667,6 @@ linphonec_proxy_remove(LinphoneCore *lc, int index)
 	}
 	linphone_core_remove_proxy_config(lc,cfg);
 	linphonec_out("Proxy %s removed.\n", cfg->reg_proxy);
-	linphone_proxy_config_destroy(cfg);
 }
 
 static int
@@ -2166,11 +2196,11 @@ static int lpc_cmd_rtp_no_xmit_on_audio_mute(LinphoneCore *lc, char *args)
 	return 1;
 }
 
+#ifdef VIDEO_ENABLED
 static int lpc_cmd_video_window(LinphoneCore *lc, char *args){
 	char subcommand[64];
 	int a,b;
 	int err;
-#ifdef VIDEO_ENABLED
 	err=sscanf(args,"%s %i %i",subcommand,&a,&b);
 	if (err>=1){
 		if (strcmp(subcommand,"pos")==0){
@@ -2191,11 +2221,10 @@ static int lpc_cmd_video_window(LinphoneCore *lc, char *args){
 			lpc_video_params.refresh=TRUE;
 		}else return 0;
 	}
-#else
-	linphonec_out("Sorry, this version of linphonec wasn't compiled with video support.");
-#endif
+
 	return 1;
 }
+#endif
 
 static void lpc_display_global_state(LinphoneCore *lc){
 	linphonec_out("Global liblinphone state\n%s\n",
@@ -2259,6 +2288,90 @@ static int lpc_cmd_states(LinphoneCore *lc, char *args){
 		return 1;
 	}
 	return 0;
+}
+
+#ifdef VIDEO_ENABLED
+static int lpc_cmd_camera(LinphoneCore *lc, char *args){
+	LinphoneCall *call=linphone_core_get_current_call(lc);
+	bool_t activated=FALSE;
+	
+	if (linphone_core_video_enabled (lc)==FALSE){
+		linphonec_out("Video is disabled, re-run linphonec with -V option.");
+		return 1;
+	}
+
+	if (args){
+		if (strcmp(args,"on")==0)
+			activated=TRUE;
+		else if (strcmp(args,"off")==0)
+			activated=FALSE;
+		else
+			return 0;
+	}
+
+	if (call==NULL){
+		if (args){
+			linphonec_camera_enabled=activated;
+		}
+		if (linphonec_camera_enabled){
+			linphonec_out("Camera is enabled. Video stream will be setup immediately for outgoing and incoming calls.\n");
+		}else{
+			linphonec_out("Camera is disabled. Calls will be established with audio-only, with the possibility to later add video using 'camera on'.\n");
+		}
+	}else{
+		const LinphoneCallParams *cp=linphone_call_get_current_params (call);
+		if (args){
+			linphone_call_enable_camera(call,activated);
+			if ((activated && !linphone_call_params_video_enabled (cp))){
+				/*update the call to add the video stream*/
+				LinphoneCallParams *ncp=linphone_call_params_copy(cp);
+				linphone_call_params_enable_video(ncp,TRUE);
+				linphone_core_update_call(lc,call,ncp);
+				linphone_call_params_destroy (ncp);
+				linphonec_out("Trying to bring up video stream...\n");
+			}
+		}
+		if (linphone_call_camera_enabled (call))
+				linphonec_out("Camera is allowed for current call.\n");
+		else linphonec_out("Camera is dis-allowed for current call.\n");
+	}
+	return 1;
+}
+
+#endif
+
+static int lpc_cmd_identify(LinphoneCore *lc, char *args){
+	LinphoneCall *call;
+	const char *remote_ua;
+	if (args==NULL){
+		call=linphone_core_get_current_call(lc);
+		if (call==NULL) {
+			linphonec_out("There is currently running call. Specify call id.\n");
+			return 0;
+		}
+	}else{
+		call=linphonec_get_call(atoi(args));
+		if (call==NULL){
+			return 0;
+		}
+	}
+	remote_ua=linphone_call_get_remote_user_agent(call);
+	if (remote_ua){
+		linphonec_out("Remote user agent string is: %s\n",remote_ua);
+	}
+	return 1;
+}
+
+static int lpc_cmd_ringback(LinphoneCore *lc, char *args){
+	if (!args) return 0;
+	if (strcmp(args,"disable")==0){
+		linphone_core_set_remote_ringback_tone(lc,NULL);
+		linphonec_out("Disabling ringback tone.\n");
+		return 1;
+	}
+	linphone_core_set_remote_ringback_tone (lc,args);
+	linphonec_out("Using %s as ringback tone to be played to callers.",args);
+	return 1;
 }
 
 /***************************************************************************

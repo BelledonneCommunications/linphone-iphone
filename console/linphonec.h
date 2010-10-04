@@ -121,6 +121,8 @@ void linphonec_set_caller(const char *caller);
 LinphoneCall *linphonec_get_call(long id);
 void linphonec_call_identify(LinphoneCall* call);
 
+extern bool_t linphonec_camera_enabled;
+
 #endif /* def LINPHONEC_H */
 
 /****************************************************************************

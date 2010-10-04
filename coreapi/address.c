@@ -129,6 +129,29 @@ char *linphone_address_as_string_uri_only(const LinphoneAddress *u){
 	return sal_address_as_string_uri_only(u);
 }
 
+static bool_t strings_equals(const char *s1, const char *s2){
+	if (s1==NULL && s2==NULL) return TRUE;
+	if (s1!=NULL && s2!=NULL && strcmp(s1,s2)==0) return TRUE;
+	return FALSE;
+}
+
+/**
+ * Compare two LinphoneAddress ignoring tags and headers, basically just domain, username, and port.
+ * Returns TRUE if they are equal.
+**/
+bool_t linphone_address_weak_compare(const LinphoneAddress *a1, const LinphoneAddress *a2){
+	const char *u1,*u2;
+	const char *h1,*h2;
+	int p1,p2;
+	u1=linphone_address_get_username(a1);
+	u2=linphone_address_get_username(a2);
+	p1=linphone_address_get_port_int(a1);
+	p2=linphone_address_get_port_int(a2);
+	h1=linphone_address_get_domain(a1);
+	h2=linphone_address_get_domain(a2);
+	return strings_equals(u1,u2) && strings_equals(h1,h2) && p1==p2;
+}
+
 /**
  * Destroys a LinphoneAddress object.
 **/
@@ -139,6 +162,7 @@ void linphone_address_destroy(LinphoneAddress *u){
 int linphone_address_get_port_int(const LinphoneAddress *u) {
 	return sal_address_get_port_int(u);
 }
+
 const char* linphone_address_get_port(const LinphoneAddress *u) {
 	return sal_address_get_port(u);
 }
