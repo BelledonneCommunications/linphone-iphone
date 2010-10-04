@@ -528,11 +528,10 @@
                                                 <property name="visible">True</property>
                                                 <child>
                                                   <object class="GtkButton" id="add_contact_button">
-                                                    <property name="label">gtk-add</property>
-                                                    <property name="visible">True</property>
+                                                    <property name="label" translatable="yes">Add contact</property>
                                                     <property name="can_focus">True</property>
                                                     <property name="receives_default">True</property>
-                                                    <property name="use_stock">True</property>
+                                                    <property name="image">image6</property>
                                                     <signal name="clicked" handler="linphone_gtk_add_contact"/>
                                                   </object>
                                                   <packing>
@@ -1491,5 +1490,9 @@
         </child>
       </object>
     </child>
+  </object>
+  <object class="GtkImage" id="image6">
+    <property name="visible">True</property>
+    <property name="stock">gtk-add</property>
   </object>
 </interface>

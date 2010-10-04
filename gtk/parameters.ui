@@ -767,7 +767,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkFrame" id="video_fram">
+                  <object class="GtkFrame" id="video_frame">
                     <property name="visible">True</property>
                     <property name="label_xalign">0</property>
                     <child>
@@ -842,7 +842,7 @@
                       </object>
                     </child>
                     <child type="label">
-                      <object class="GtkLabel" id="video_frame">
+                      <object class="GtkLabel" id="video_frame_title">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">&lt;b&gt;Video&lt;/b&gt;</property>
                         <property name="use_markup">True</property>

@@ -41,6 +41,7 @@ const char *this_program_ident_string="linphone_ident_string=" LINPHONE_VERSION;
 static LinphoneCore *the_core=NULL;
 static GtkWidget *the_ui=NULL;
 
+static void linphone_gtk_registration_state_changed(LinphoneCore *lc, LinphoneProxyConfig *cfg, LinphoneRegistrationState rs, const char *msg);
 static void linphone_gtk_show(LinphoneCore *lc);
 static void linphone_gtk_notify_recv(LinphoneCore *lc, LinphoneFriend * fid);
 static void linphone_gtk_new_unknown_subscriber(LinphoneCore *lc, LinphoneFriend *lf, const char *url);
@@ -193,6 +194,7 @@ static void linphone_gtk_init_liblinphone(const char *config_file,
 	LinphoneCoreVTable vtable={0};
 
 	vtable.call_state_changed=linphone_gtk_call_state_changed;
+	vtable.registration_state_changed=linphone_gtk_registration_state_changed;
 	vtable.show=linphone_gtk_show;
 	vtable.notify_presence_recv=linphone_gtk_notify_recv;
 	vtable.new_unknown_subscriber=linphone_gtk_new_unknown_subscriber;
@@ -991,6 +993,23 @@ static void linphone_gtk_call_state_changed(LinphoneCore *lc, LinphoneCall *call
 	linphone_gtk_update_call_buttons (call);
 }
 
+static void linphone_gtk_registration_state_changed(LinphoneCore *lc, LinphoneProxyConfig *cfg, 
+                                                    LinphoneRegistrationState rs, const char *msg){
+	switch (rs){
+		case LinphoneRegistrationOk:
+			if (cfg){
+				SipSetup *ss=linphone_proxy_config_get_sip_setup(cfg);
+				if (ss && (sip_setup_get_capabilities(ss) & SIP_SETUP_CAP_LOGIN)){
+					linphone_gtk_exit_login_frame();
+				}
+			}
+		break;
+		default:
+		break;
+	}
+}
+
+
 static void icon_popup_menu(GtkStatusIcon *status_icon, guint button, guint activate_time, gpointer user_data){
 	GtkWidget *menu=(GtkWidget*)g_object_get_data(G_OBJECT(status_icon),"menu");
 	gtk_menu_popup(GTK_MENU(menu),NULL,NULL,gtk_status_icon_position_menu,status_icon,button,activate_time);
@@ -1222,6 +1241,10 @@ static void linphone_gtk_configure_main_window(){
 		gtk_widget_show(linphone_gtk_get_widget(w,"versioncheck_item"));
 	}
 	if (!show_abcd){
+		gtk_widget_hide(linphone_gtk_get_widget(w,"dtmf_A"));
+		gtk_widget_hide(linphone_gtk_get_widget(w,"dtmf_B"));
+		gtk_widget_hide(linphone_gtk_get_widget(w,"dtmf_C"));
+		gtk_widget_hide(linphone_gtk_get_widget(w,"dtmf_D"));
 		gtk_table_resize(GTK_TABLE(linphone_gtk_get_widget(w,"dtmf_table")),4,3);
 	}
 }
