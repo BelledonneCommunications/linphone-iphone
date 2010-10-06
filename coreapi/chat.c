@@ -52,10 +52,11 @@
 void linphone_chat_room_send_message(LinphoneChatRoom *cr, const char *msg){
 	const char *identity=linphone_core_get_identity(cr->lc);
 	SalOp *op;
-	if(linphone_core_is_in_communication_with(cr->lc,cr->peer))
+	LinphoneCall *call;
+	if((call = linphone_core_get_call_by_remote_address(cr->lc,cr->peer))!=NULL)
 	{
 		ms_message("send SIP message into the call\n");
-		op = (linphone_core_get_current_call(cr->lc))->op;
+		op = call->op;
 	}
 	else
 	{

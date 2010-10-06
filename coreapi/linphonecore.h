@@ -93,7 +93,7 @@ void linphone_address_set_port_int(LinphoneAddress *uri, int port);
 void linphone_address_clean(LinphoneAddress *uri);
 char *linphone_address_as_string(const LinphoneAddress *u);
 char *linphone_address_as_string_uri_only(const LinphoneAddress *u);
-bool_t linphone_address_weak_compare(const LinphoneAddress *a1, const LinphoneAddress *a2);
+bool_t linphone_address_weak_equal(const LinphoneAddress *a1, const LinphoneAddress *a2);
 void linphone_address_destroy(LinphoneAddress *u);
 
 struct _SipSetupContext;

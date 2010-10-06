@@ -39,8 +39,8 @@ static bool_t is_duplicate_call(LinphoneCore *lc, const LinphoneAddress *from, c
 	MSList *elem;
 	for(elem=lc->calls;elem!=NULL;elem=elem->next){
 		LinphoneCall *call=(LinphoneCall*)elem->data;
-		if (linphone_address_weak_compare(call->log->from,from) &&
-		    linphone_address_weak_compare(call->log->to, to)){
+		if (linphone_address_weak_equal(call->log->from,from) &&
+		    linphone_address_weak_equal(call->log->to, to)){
 			return TRUE;
 		}
 	}

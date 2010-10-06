@@ -160,6 +160,7 @@ LPC_AUTH_STACK auth_stack;
 static int trace_level = 0;
 static char *logfile_name = NULL;
 static char configfile_name[PATH_MAX];
+static const char *factory_configfile_name=NULL;
 static char *sipAddr = NULL; /* for autocall */
 #if !defined(_WIN32_WCE)
 static ortp_pipe_t client_sock=ORTP_PIPE_INVALID;
@@ -696,8 +697,7 @@ linphonec_init(int argc, char **argv)
 	/*
 	 * Initialize linphone core
 	 */
-	linphonec=linphone_core_new (&linphonec_vtable, configfile_name, NULL,
-			    NULL);
+	linphonec=linphone_core_new (&linphonec_vtable, configfile_name, factory_configfile_name, NULL);
 	linphone_core_enable_video(linphonec,vcap_enabled,display_enabled);
 	linphone_core_enable_video_preview(linphonec,preview_enabled);
 	if (!(vcap_enabled || display_enabled)) printf("Warning: video is disabled in linphonec, use -V or -C or -D to enable.\n");
@@ -847,6 +847,7 @@ print_usage (int exit_status)
 usage: linphonec [-c file] [-s sipaddr] [-a] [-V] [-d level ] [-l logfile]\n\
        linphonec -v\n\
 \n\
+  -b  file             specify path of readonly factory configuration file.\n\
   -c  file             specify path of configuration file.\n\
   -d  level            be verbose. 0 is no output. 6 is all output\n\
   -l  logfile          specify the log file for your SIP phone\n\
@@ -1139,6 +1140,20 @@ linphonec_parse_cmdline(int argc, char **argv)
 			}
 #endif /*_WIN32_WCE*/
 			snprintf(configfile_name, PATH_MAX, "%s", argv[arg_num]);
+		}
+		else if (strncmp ("-b", argv[arg_num], 2) == 0)
+		{
+			if ( ++arg_num >= argc ) print_usage(EXIT_FAILURE);
+#if !defined(_WIN32_WCE)
+			if (access(argv[arg_num],F_OK)!=0 )
+			{
+				fprintf (stderr,
+					"Cannot open config file %s.\n",
+					 argv[arg_num]);
+				exit(EXIT_FAILURE);
+			}
+#endif /*_WIN32_WCE*/
+			factory_configfile_name = argv[arg_num];
 		}
 		else if (strncmp ("-s", argv[arg_num], 2) == 0)
 		{

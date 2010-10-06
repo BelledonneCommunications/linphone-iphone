@@ -569,6 +569,8 @@ void linphone_call_init_media_streams(LinphoneCall *call){
 #ifdef VIDEO_ENABLED
 	if ((lc->video_conf.display || lc->video_conf.capture) && md->streams[1].port>0){
 		call->videostream=video_stream_new(md->streams[1].port,linphone_core_ipv6_enabled(lc));
+	if( lc->video_conf.displaytype != NULL)
+		video_stream_set_display_filter_name(call->videostream,lc->video_conf.displaytype);
 #ifdef TEST_EXT_RENDERER
 		video_stream_set_render_callback(call->videostream,rendercb,NULL);
 #endif
