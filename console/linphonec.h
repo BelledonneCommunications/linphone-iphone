@@ -99,6 +99,7 @@ typedef struct {
 
 typedef struct {
 	int x,y,w,h;
+	unsigned long wid;
 	bool_t show;
 	bool_t refresh;
 } VideoParams;

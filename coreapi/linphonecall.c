@@ -31,6 +31,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/msvolume.h"
 #include "mediastreamer2/msequalizer.h"
 #include "mediastreamer2/msfileplayer.h"
+#include "mediastreamer2/msjpegwriter.h"
 
 #ifdef VIDEO_ENABLED
 static MSWebCam *get_nowebcam_device(){
@@ -471,6 +472,20 @@ void linphone_call_enable_camera (LinphoneCall *call, bool_t enable){
 	}
 	call->camera_active=enable;
 #endif
+}
+
+/**
+ * Take a photo of currently received video and write it into a jpeg file.
+**/
+int linphone_call_take_video_snapshot(LinphoneCall *call, const char *file){
+#ifdef VIDEO_ENABLED
+	if (call->videostream!=NULL && call->videostream->jpegwriter!=NULL){
+		return ms_filter_call_method(call->videostream->jpegwriter,MS_JPEG_WRITER_TAKE_SNAPSHOT,(void*)file);
+	}
+	ms_warning("Cannot take snapshot: no currently running video stream on this call.");
+	return -1;
+#endif
+	return -1;
 }
 
 /**

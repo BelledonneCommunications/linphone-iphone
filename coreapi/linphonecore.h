@@ -225,6 +225,7 @@ int linphone_call_get_duration(const LinphoneCall *call);
 const LinphoneCallParams * linphone_call_get_current_params(const LinphoneCall *call);
 void linphone_call_enable_camera(LinphoneCall *lc, bool_t enabled);
 bool_t linphone_call_camera_enabled(const LinphoneCall *lc);
+int linphone_call_take_video_snapshot(LinphoneCall *call, const char *file);
 LinphoneError linphone_call_get_error(const LinphoneCall *call);
 const char *linphone_call_get_remote_user_agent(LinphoneCall *call);
 void *linphone_call_get_user_pointer(LinphoneCall *call);
@@ -836,7 +837,6 @@ void linphone_core_set_record_file(LinphoneCore *lc, const char *file);
 
 void linphone_core_play_dtmf(LinphoneCore *lc, char dtmf, int duration_ms);
 void linphone_core_stop_dtmf(LinphoneCore *lc);
-
 
 int linphone_core_get_current_call_duration(const LinphoneCore *lc);
 

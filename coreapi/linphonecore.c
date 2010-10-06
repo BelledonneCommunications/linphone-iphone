@@ -3492,6 +3492,7 @@ void linphone_core_stop_dtmf(LinphoneCore *lc){
 }
 
 
+
 /**
  * Retrieves the user pointer that was given to linphone_core_new()
  *

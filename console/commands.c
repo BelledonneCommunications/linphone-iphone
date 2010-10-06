@@ -92,6 +92,7 @@ static int lpc_cmd_rtp_no_xmit_on_audio_mute(LinphoneCore *lc, char *args);
 #ifdef VIDEO_ENABLED
 static int lpc_cmd_camera(LinphoneCore *lc, char *args);
 static int lpc_cmd_video_window(LinphoneCore *lc, char *args);
+static int lpc_cmd_snapshot(LinphoneCore *lc, char *args);
 #endif
 static int lpc_cmd_states(LinphoneCore *lc, char *args);
 static int lpc_cmd_identify(LinphoneCore *lc, char *args);
@@ -124,7 +125,7 @@ static LPC_COMMAND *lpc_find_command(const char *name);
 
 void linphonec_out(const char *fmt,...);
 
-VideoParams lpc_video_params={-1,-1,-1,-1,TRUE};
+VideoParams lpc_video_params={-1,-1,-1,-1,0,TRUE};
 
 
 /***************************************************************************
@@ -274,6 +275,9 @@ static LPC_COMMAND advanced_commands[] = {
 		"'vwindow hide': hides video window\n"
 		"'vwindow pos <x> <y>': Moves video window to x,y pixel coordinates\n"
 		"'vwindow size <width> <height>': Resizes video window"
+	},
+	{ "snapshot", lpc_cmd_snapshot, "Take a snapshot of currently received video stream",
+		"'snapshot <file path>': take a snapshot and records it in jpeg format into the supplied path\n"
 	},
 #endif
 	{ "states", lpc_cmd_states, "Show internal states of liblinphone, registrations and calls, according to linphonecore.h definitions",
@@ -2201,6 +2205,8 @@ static int lpc_cmd_video_window(LinphoneCore *lc, char *args){
 	char subcommand[64];
 	int a,b;
 	int err;
+
+	if (!args) return 0;
 	err=sscanf(args,"%s %i %i",subcommand,&a,&b);
 	if (err>=1){
 		if (strcmp(subcommand,"pos")==0){
@@ -2219,9 +2225,18 @@ static int lpc_cmd_video_window(LinphoneCore *lc, char *args){
 		}else if (strcmp(subcommand,"hide")==0){
 			lpc_video_params.show=FALSE;
 			lpc_video_params.refresh=TRUE;
+		}else if (strcmp(subcommand,"id")==0){
+			char envbuf[128];
+			if (err == 1){
+				linphonec_out("vwindow id: 0x%x / SDL_WINDOWID='%s'\n",(unsigned int)lpc_video_params.wid, getenv("SDL_WINDOWID"));
+				return 1;
+			} else if (err != 2) return 0;
+			lpc_video_params.wid=a;
+			snprintf(envbuf, sizeof(envbuf)-1, "SDL_WINDOWID=0x%x", (unsigned int)lpc_video_params.wid);
+			err = putenv(envbuf);
+			linphonec_out("vwindow id: 0x%x / SDL_WNIDOWID='%s'\n",(unsigned int)lpc_video_params.wid, getenv("SDL_WINDOWID"));
 		}else return 0;
 	}
-
 	return 1;
 }
 #endif
@@ -2335,6 +2350,17 @@ static int lpc_cmd_camera(LinphoneCore *lc, char *args){
 				linphonec_out("Camera is allowed for current call.\n");
 		else linphonec_out("Camera is dis-allowed for current call.\n");
 	}
+	return 1;
+}
+
+static int lpc_cmd_snapshot(LinphoneCore *lc, char *args){
+	LinphoneCall *call;
+	if (!args) return 0;
+	call=linphone_core_get_current_call(lc);
+	if (call!=NULL){
+		linphone_call_take_video_snapshot (call,args);
+		linphonec_out("Taking video snaphot in file %s\n", args);
+	}else linphonec_out("There is no active call.\n");
 	return 1;
 }
 
