@@ -1,0 +1,128 @@
+/**
+ * @mainpage
+ *
+ * @see http://www.linphone.org
+ *
+ * @section what_is_it What is liblinphone
+ *
+ * Liblinphone is a high level library for bringing SIP video call functionnality
+ * into an application. It aims at making easy the integration of the SIP
+ * video calls into any applications. All variants of linphone are directly based
+ * on it:
+ * - linphone (gtk interface)
+ *
+ * - linphonec (console interface)
+ *
+ * Liblinphone is GPL (see COPYING file). Please understand the licencing details
+ * before using it!
+ * 
+ * For any use of this library beyond the rights granted to you by the
+ * GPL license, please contact Belledonne Communications 
+ * (contact@belledonne-communications.com)
+ * 
+ *
+**/
+
+/**
+ * @page liblinphone_license COPYING 
+ * @verbinclude COPYING
+ */
+
+/**
+ * @defgroup initializing Initializing liblinphone
+**/
+
+/**
+ * @defgroup call_control Placing and receiving calls
+**/
+
+/**
+ * @defgroup media_parameters Controlling media parameters
+**/
+
+/**
+ * @defgroup proxies Managing proxies
+ *User registration is control by  #LinphoneProxyConfig settings.<br> Each #LinphoneProxyConfig object can be configured with registration information 
+ *like \link linphone_proxy_config_set_server_addr() proxy address \endlink , \link linphone_proxy_config_set_identity() user id \endlink, \link linphone_proxy_config_expires() refresh period \endlink, etc 
+ *<br> A created proxy config using linphone_proxy_config_new(), once configured, must be added to #LinphoneCore using function linphone_core_add_proxy_config().
+ *<br> It is recommended to set a default \link #LinphoneProxyConfig proxy config \endlink using function linphone_core_set_default_proxy(). Once done, if \link #LinphoneProxyConfig a proxy config \endlink has been configured with attribute \link linphone_proxy_config_enable_register() enable register \endlink  , next call to linphone_core_iterate() triggers a SIP register.  
+ *<br> Registration status is reported by #LinphoneRegistrationStateCb.
+ *<br>
+ *<br> This pseudo code demonstrate basic registration operation:
+ *<br> \code
+ *	
+ *	LinphoneProxyConfig* proxy_cfg;
+ *	/*create proxy config*/
+ *	proxy_cfg = linphone_proxy_config_new();
+ *	/*parse identity*/
+ *	LinphoneAddress *from = linphone_address_new("sip:toto@sip.titi.com");
+ *	LinphoneAuthInfo *info;
+ *	if (password!=NULL){
+ * 		info=linphone_auth_info_new(linphone_address_get_username(from),NULL,"secret",NULL,NULL); /*create authentication structure from identity*/
+ *		linphone_core_add_auth_info(lc,info); /*add authentication info to LinphoneCore*/
+ *	}	
+ *	// configure proxy entries
+ *	linphone_proxy_config_set_identity(proxy_cfg,identity); /*set identity with user name and domain*/
+ *	const char* server_addr = linphone_address_get_domain(from); /*extract domain address from identity*/
+ *	linphone_proxy_config_set_server_addr(proxy_cfg,server_addr); /* we assume domain = proxy server address*/
+ *	linphone_proxy_config_enable_register(proxy_cfg,TRUE); /*activate registration for this proxy config*/
+ *	linphone_address_destroy(from); /*release resource*/
+ *	
+ *	linphone_core_add_proxy_config(lc,proxy_cfg); /*add proxy config to linphone core*/
+ *	linphone_core_set_default_proxy(lc,proxy_cfg); /*set to default proxy*/ \endcode
+ *<br>
+ * Registration sate call back:
+ \code
+ static void registration_state_changed(struct _LinphoneCore *lc, LinphoneProxyConfig *cfg, LinphoneRegistrationState cstate, const char *message){
+		printf("New registration state %s for user id [%s] at proxy [%s]\n"
+				,linphone_registration_state_to_string(cstate)
+				,linphone_proxy_config_get_identity(cfg)
+				,linphone_proxy_config_get_addr(cfg));
+}
+ \endcode
+ *<br><b>Authentication:</b>
+ *<br>Most of the time, registration requires \ref authentication "authentication" to succed. #LinphoneAuthInfo info must be either added to #LinphoneCore  using function linphone_core_add_auth_info() before #LinphoneProxyConfig is added to Linphone core, or on demand from call back #AuthInfoRequested .    
+ *<br>
+ *<br><b>Unregistration:</b>
+ *<br> Unregistration or any change to #LinphoneProxyConfig must be first started by a call to function linphone_proxy_config_edit() and validated by a call to function linphone_proxy_config_done()
+ *<br> This pseudo code show how to unregister a user associated to a #LinphoneProxyConfig
+ *\code
+ 	LinphoneProxyConfig* proxy_cfg;
+ 	linphone_core_get_default_proxy(lc,&proxy_cfg); /* get default proxy config*/
+	linphone_proxy_config_edit(proxy_cfg); /*start editing proxy configuration*/
+	linphone_proxy_config_enable_register(proxy_cfg,FALSE); /*de-activate registration for this proxy config*/
+	linphone_proxy_config_done(proxy_cfg); /*initiate REGISTER with expire = 0*/
+	\endcode
+	<br>
+	For more complete tutorial can be found see : \ref registration_tutorials "Registration tutorial" 
+**/
+
+/**
+ * @defgroup network_parameters Controlling network parameters (ports, mtu...)
+**/
+
+/**
+ * @defgroup authentication Managing authentication: userid and passwords
+**/
+
+/**
+ * @defgroup call_logs Managing call logs
+**/
+
+
+/**
+ * @defgroup linphone_address SIP address parser API.
+ * This api is useful for manipulating SIP addresses ('from' or 'to' headers).
+**/
+
+/**
+ * @defgroup misc Miscenalleous: logs, version strings, config storage
+**/
+
+/**
+ * @defgroup tutorials Tutorials: 
+ *
+**/
+
+
+

@@ -311,6 +311,10 @@ typedef enum _LinphoneRegistrationState{
 	LinphoneRegistrationFailed
 }LinphoneRegistrationState;
 
+/**
+ * Human readable version of the #LinphoneRegistrationState
+ * @param cs sate
+ */
 const char *linphone_registration_state_to_string(LinphoneRegistrationState cs);
 
 LinphoneProxyConfig *linphone_proxy_config_new(void);
@@ -318,6 +322,12 @@ int linphone_proxy_config_set_server_addr(LinphoneProxyConfig *obj, const char *
 int linphone_proxy_config_set_identity(LinphoneProxyConfig *obj, const char *identity);
 int linphone_proxy_config_set_route(LinphoneProxyConfig *obj, const char *route);
 void linphone_proxy_config_expires(LinphoneProxyConfig *obj, int expires);
+/**
+ * Indicates  either or not, REGISTRATION must be issued for this #LinphoneProxyConfig .
+ * <br> In case this #LinphoneProxyConfig has been added to #LinphoneCore, follows the linphone_proxy_config_edit() rule.
+ * @param obj object pointer
+ * @param val if true, registration will be engaged
+ */
 void linphone_proxy_config_enable_register(LinphoneProxyConfig *obj, bool_t val);
 #define linphone_proxy_config_enableregister linphone_proxy_config_enable_register
 void linphone_proxy_config_edit(LinphoneProxyConfig *obj);
@@ -454,7 +464,9 @@ const char *linphone_global_state_to_string(LinphoneGlobalState gs);
 typedef void (*LinphoneGlobalStateCb)(struct _LinphoneCore *lc, LinphoneGlobalState gstate, const char *message);
 /**Call state notification callback prototype*/
 typedef void (*LinphoneCallStateCb)(struct _LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *message);
-/**Registration state notification callback prototype*/
+/** @ingroup Proxies
+ * Registration state notification callback prototype
+ * */
 typedef void (*LinphoneRegistrationStateCb)(struct _LinphoneCore *lc, LinphoneProxyConfig *cfg, LinphoneRegistrationState cstate, const char *message);
 /** Callback prototype */
 typedef void (*ShowInterfaceCb)(struct _LinphoneCore *lc);
@@ -533,7 +545,10 @@ typedef enum _LinphoneWaitingState{
 	LinphoneWaitingFinished
 } LinphoneWaitingState;
 typedef void * (*LinphoneWaitingCallback)(struct _LinphoneCore *lc, void *context, LinphoneWaitingState ws, const char *purpose, float progress);
-
+/**
+ * Linphone core main object created by function linphone_core_new() .
+ * @ingroup initializing
+ */
 typedef struct _LinphoneCore LinphoneCore;
 
 /* THE main API */
