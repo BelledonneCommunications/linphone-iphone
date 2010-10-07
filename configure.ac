@@ -468,7 +468,6 @@ pixmaps/Makefile
 coreapi/Makefile
 coreapi/help/Makefile
 coreapi/help/Doxyfile
-coreapi/help/doxygen.dox
 gtk/Makefile
 console/Makefile
 share/Makefile

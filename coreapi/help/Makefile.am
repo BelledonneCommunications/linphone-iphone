@@ -1,7 +1,7 @@
 
-EXTRA_DIST = Doxyfile.in doxygen.dox.in
+EXTRA_DIST = Doxyfile.in doxygen.dox
 
-SOURCES=$(top_srcdir)/coreapi/*.h $(top_srcdir)/coreapi/*.c
+SOURCES= doxygen.dox *.c $(top_srcdir)/coreapi/*.c $(top_srcdir)/coreapi/*.h  
 
 
 #html doc
@@ -32,13 +32,20 @@ endif
 clean-local:
 	rm -rf doc
 
-noinst_PROGRAMS=helloworld
+noinst_PROGRAMS=helloworld registration
 
 helloworld_SOURCES=helloworld.c
 
 helloworld_LDADD=$(top_builddir)/coreapi/liblinphone.la \
 				$(MEDIASTREAMER_LIBS) \
 				$(ORTP_LIBS)
+
+registration_SOURCES=registration.c
+
+registration_LDADD=$(top_builddir)/coreapi/liblinphone.la \
+				$(MEDIASTREAMER_LIBS) \
+				$(ORTP_LIBS)
+				
 
 INCLUDES=-I$(top_srcdir)/coreapi \
 		$(MEDIASTREAMER_CFLAGS)

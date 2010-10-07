@@ -39,7 +39,6 @@ INSTALL
 Specfile
 .anjuta/
 .anjuta_sym_db.db
-coreapi/help/doxygen.dox
 gtk-glade/version_date.h
 share/linphone.desktop
 
