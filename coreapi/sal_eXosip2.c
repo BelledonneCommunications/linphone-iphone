@@ -1446,7 +1446,9 @@ static void registration_success(Sal *sal, eXosip_event_t *ev){
 		if (!register_again_with_updated_contact(op,ev->request,ev->response)){
 			sal->callbacks.register_success(op,registered);
 		}
-	}else registered=FALSE;
+	}else {
+		sal->callbacks.register_success(op,FALSE);
+	}
 }
 
 static bool_t registration_failure(Sal *sal, eXosip_event_t *ev){
