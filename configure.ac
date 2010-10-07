@@ -293,10 +293,6 @@ AC_ARG_WITH( ffmpeg,
 		[  --with-ffmpeg		Sets the installation prefix of ffmpeg, needed for video support. [default=/usr] ],
 		[ ffmpegdir=${withval}],[ ffmpegdir=/usr ])
 
-AC_ARG_WITH( sdl,
-		[  --with-sdl		Sets the installation prefix of libSDL, needed for video support. [default=/usr] ],
-		[ libsdldir=${withval}],[ libsdldir=/usr ])
-
 AC_ARG_ENABLE(x11,
 			  [  --disable-x11    Disable X11 support],
 		 	  [case "${enableval}" in
