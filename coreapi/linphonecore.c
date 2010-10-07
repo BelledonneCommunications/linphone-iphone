@@ -350,8 +350,7 @@ void linphone_core_disable_logs(){
 }
 
 
-static void
-net_config_read (LinphoneCore *lc)
+static void net_config_read (LinphoneCore *lc)
 {
 	int tmp;
 	const char *tmpstr;
@@ -774,6 +773,9 @@ static void video_config_read(LinphoneCore *lc){
 	capture=lp_config_get_int(lc->config,"video","capture",enabled);
 	display=lp_config_get_int(lc->config,"video","display",enabled);
 	self_view=lp_config_get_int(lc->config,"video","self_view",enabled);
+	lc->video_conf.displaytype=lp_config_get_string(lc->config,"video","displaytype",NULL);
+	if(lc->video_conf.displaytype)
+		ms_message("we are using a specific display:%s\n",lc->video_conf.displaytype);
 #ifdef VIDEO_ENABLED
 	linphone_core_enable_video(lc,capture,display);
 	linphone_core_enable_self_view(lc,self_view);
@@ -1832,25 +1834,6 @@ const char * linphone_core_get_route(LinphoneCore *lc){
 	return route;
 }
 
-bool_t linphone_core_is_in_communication_with(LinphoneCore *lc, const char *to)
-{
-	char *tmp;
-	bool_t returned;
-	const LinphoneAddress *la=linphone_core_get_current_call_remote_address(lc);
-	if(la == NULL)
-	{
-		return FALSE;
-	}
-	tmp = linphone_address_as_string(la);
-	if(!strcmp(tmp,to))
-		returned = TRUE;
-	else
-		returned = FALSE;
-	if(tmp)
-		ms_free(tmp);
-	return returned;
-}
-
 void linphone_core_start_pending_refered_calls(LinphoneCore *lc){
 	MSList *elem;
 	for(elem=lc->calls;elem!=NULL;elem=elem->next){
@@ -2446,28 +2429,9 @@ int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *the_call)
 	return 0;
 }
 
-/**
- * Compare the remote address with the one in call
- * 
- * @param a the call
- * @param b the remote address to compare with
- * @return 0 if it's the good call else 1
- */
-static int linphone_call_remote_address_compare(const void * a, const void * b)
-{
-	if(b == NULL || a ==NULL)
-		return 1;
-	char *the_remote_address = ((char *)b);
-	LinphoneCall *call = ((LinphoneCall *)a);
-#ifdef DEBUG 
-	ms_message("the remote address:%s\n",the_remote_address);
-	ms_message("the call:%p => %s\n",call,linphone_call_get_remote_address_as_string(call));
-#endif
-	if(!strcmp(linphone_call_get_remote_address_as_string(call),the_remote_address))
-	{
-		return 0;
-	}
-	return 1;
+static int remote_address_compare(LinphoneCall *call, const LinphoneAddress *raddr){
+	const LinphoneAddress *addr=linphone_call_get_remote_address (call);
+	return !linphone_address_weak_equal (addr,raddr);
 }
 
 /**
@@ -2477,12 +2441,9 @@ static int linphone_call_remote_address_compare(const void * a, const void * b)
  * @return the LinphoneCall of the call if found
  */
 LinphoneCall *linphone_core_get_call_by_remote_address(LinphoneCore *lc, const char *remote_address){
-
-	MSList *the_call = ms_list_find_custom(lc->calls,linphone_call_remote_address_compare,(void *)remote_address);
-	if(the_call != NULL)
-	{
-		return ((LinphoneCall *)the_call->data);
-	}
+	LinphoneAddress *raddr=linphone_address_new(remote_address);
+	MSList *elem=ms_list_find_custom(lc->calls,(int (*)(const void*,const void *))remote_address_compare,raddr);
+	if (elem) return (LinphoneCall*) elem->data;
 	return NULL;
 }
 
@@ -3082,7 +3043,7 @@ static void toggle_video_preview(LinphoneCore *lc, bool_t val){
 	if (val){
 		if (lc->previewstream==NULL){
 			lc->previewstream=video_preview_start(lc->video_conf.device,
-						lc->video_conf.vsize);
+						lc->video_conf.vsize,lc->video_conf.displaytype);
 		}
 	}else{
 		if (lc->previewstream!=NULL){
@@ -3490,6 +3451,7 @@ void linphone_core_stop_dtmf(LinphoneCore *lc){
 	if (f!=NULL)
 		ms_filter_call_method_noarg (f, MS_DTMF_GEN_STOP);
 }
+
 
 
 /**

@@ -188,7 +188,6 @@ void linphone_call_stop_media_streams(LinphoneCall *call);
 
 const char * linphone_core_get_identity(LinphoneCore *lc);
 const char * linphone_core_get_route(LinphoneCore *lc);
-bool_t linphone_core_is_in_communication_with(LinphoneCore *lc, const char *to);
 void linphone_core_start_waiting(LinphoneCore *lc, const char *purpose);
 void linphone_core_update_progress(LinphoneCore *lc, const char *purpose, float progresses);
 void linphone_core_stop_waiting(LinphoneCore *lc);
@@ -340,6 +339,7 @@ typedef struct video_config{
 	bool_t show_local;
 	bool_t display;
 	bool_t selfview; /*during calls*/
+	const char *displaytype;
 }video_config_t;
 
 typedef struct ui_config

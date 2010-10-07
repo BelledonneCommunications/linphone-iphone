@@ -139,7 +139,7 @@ static bool_t strings_equals(const char *s1, const char *s2){
  * Compare two LinphoneAddress ignoring tags and headers, basically just domain, username, and port.
  * Returns TRUE if they are equal.
 **/
-bool_t linphone_address_weak_compare(const LinphoneAddress *a1, const LinphoneAddress *a2){
+bool_t linphone_address_weak_equal(const LinphoneAddress *a1, const LinphoneAddress *a2){
 	const char *u1,*u2;
 	const char *h1,*h2;
 	int p1,p2;

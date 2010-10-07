@@ -93,7 +93,7 @@ void linphone_address_set_port_int(LinphoneAddress *uri, int port);
 void linphone_address_clean(LinphoneAddress *uri);
 char *linphone_address_as_string(const LinphoneAddress *u);
 char *linphone_address_as_string_uri_only(const LinphoneAddress *u);
-bool_t linphone_address_weak_compare(const LinphoneAddress *a1, const LinphoneAddress *a2);
+bool_t linphone_address_weak_equal(const LinphoneAddress *a1, const LinphoneAddress *a2);
 void linphone_address_destroy(LinphoneAddress *u);
 
 struct _SipSetupContext;
@@ -225,6 +225,7 @@ int linphone_call_get_duration(const LinphoneCall *call);
 const LinphoneCallParams * linphone_call_get_current_params(const LinphoneCall *call);
 void linphone_call_enable_camera(LinphoneCall *lc, bool_t enabled);
 bool_t linphone_call_camera_enabled(const LinphoneCall *lc);
+int linphone_call_take_video_snapshot(LinphoneCall *call, const char *file);
 LinphoneError linphone_call_get_error(const LinphoneCall *call);
 const char *linphone_call_get_remote_user_agent(LinphoneCall *call);
 void *linphone_call_get_user_pointer(LinphoneCall *call);
@@ -851,7 +852,6 @@ void linphone_core_set_record_file(LinphoneCore *lc, const char *file);
 
 void linphone_core_play_dtmf(LinphoneCore *lc, char dtmf, int duration_ms);
 void linphone_core_stop_dtmf(LinphoneCore *lc);
-
 
 int linphone_core_get_current_call_duration(const LinphoneCore *lc);
 

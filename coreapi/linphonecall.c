@@ -31,6 +31,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/msvolume.h"
 #include "mediastreamer2/msequalizer.h"
 #include "mediastreamer2/msfileplayer.h"
+#include "mediastreamer2/msjpegwriter.h"
 
 #ifdef VIDEO_ENABLED
 static MSWebCam *get_nowebcam_device(){
@@ -474,6 +475,20 @@ void linphone_call_enable_camera (LinphoneCall *call, bool_t enable){
 }
 
 /**
+ * Take a photo of currently received video and write it into a jpeg file.
+**/
+int linphone_call_take_video_snapshot(LinphoneCall *call, const char *file){
+#ifdef VIDEO_ENABLED
+	if (call->videostream!=NULL && call->videostream->jpegwriter!=NULL){
+		return ms_filter_call_method(call->videostream->jpegwriter,MS_JPEG_WRITER_TAKE_SNAPSHOT,(void*)file);
+	}
+	ms_warning("Cannot take snapshot: no currently running video stream on this call.");
+	return -1;
+#endif
+	return -1;
+}
+
+/**
  *
 **/
 bool_t linphone_call_camera_enabled (const LinphoneCall *call){
@@ -554,6 +569,8 @@ void linphone_call_init_media_streams(LinphoneCall *call){
 #ifdef VIDEO_ENABLED
 	if ((lc->video_conf.display || lc->video_conf.capture) && md->streams[1].port>0){
 		call->videostream=video_stream_new(md->streams[1].port,linphone_core_ipv6_enabled(lc));
+	if( lc->video_conf.displaytype != NULL)
+		video_stream_set_display_filter_name(call->videostream,lc->video_conf.displaytype);
 #ifdef TEST_EXT_RENDERER
 		video_stream_set_render_callback(call->videostream,rendercb,NULL);
 #endif
