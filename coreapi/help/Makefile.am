@@ -32,7 +32,7 @@ endif
 clean-local:
 	rm -rf doc
 
-noinst_PROGRAMS=helloworld registration
+noinst_PROGRAMS=helloworld registration buddy_status
 
 helloworld_SOURCES=helloworld.c
 
@@ -45,6 +45,12 @@ registration_SOURCES=registration.c
 registration_LDADD=$(top_builddir)/coreapi/liblinphone.la \
 				$(MEDIASTREAMER_LIBS) \
 				$(ORTP_LIBS)
+
+buddy_status_SOURCES=buddy_status.c
+
+buddy_status_LDADD=$(top_builddir)/coreapi/liblinphone.la \
+				$(MEDIASTREAMER_LIBS) \
+				$(ORTP_LIBS)				
 				
 
 INCLUDES=-I$(top_srcdir)/coreapi \

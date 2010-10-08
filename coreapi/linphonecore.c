@@ -1965,7 +1965,7 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, LinphonePro
  * The application doesn't own a reference to the returned LinphoneCall object.
  * Use linphone_call_ref() to safely keep the LinphoneCall pointer valid within your application.
  *
- * @Returns a LinphoneCall object or NULL in case of failure
+ * @return a LinphoneCall object or NULL in case of failure
 **/
 LinphoneCall * linphone_core_invite(LinphoneCore *lc, const char *url){
 	LinphoneCall *call;
@@ -1987,7 +1987,7 @@ LinphoneCall * linphone_core_invite(LinphoneCore *lc, const char *url){
  * The application doesn't own a reference to the returned LinphoneCall object.
  * Use linphone_call_ref() to safely keep the LinphoneCall pointer valid within your application.
  *
- * @Returns a LinphoneCall object or NULL in case of failure
+ * @return a LinphoneCall object or NULL in case of failure
 **/
 LinphoneCall * linphone_core_invite_with_params(LinphoneCore *lc, const char *url, const LinphoneCallParams *p){
 	LinphoneAddress *addr=linphone_core_interpret_url(lc,url);
@@ -2012,7 +2012,7 @@ LinphoneCall * linphone_core_invite_with_params(LinphoneCore *lc, const char *ur
  * The application doesn't own a reference to the returned LinphoneCall object.
  * Use linphone_call_ref() to safely keep the LinphoneCall pointer valid within your application.
  *
- * @Returns a LinphoneCall object or NULL in case of failure
+ * @return a LinphoneCall object or NULL in case of failure
 **/
 LinphoneCall * linphone_core_invite_address(LinphoneCore *lc, const LinphoneAddress *addr){
 	LinphoneCall *call;
@@ -2036,7 +2036,7 @@ LinphoneCall * linphone_core_invite_address(LinphoneCore *lc, const LinphoneAddr
  * The application doesn't own a reference to the returned LinphoneCall object.
  * Use linphone_call_ref() to safely keep the LinphoneCall pointer valid within your application.
  *
- * @Returns a LinphoneCall object or NULL in case of failure
+ * @return a LinphoneCall object or NULL in case of failure
 **/
 LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const LinphoneAddress *addr, const LinphoneCallParams *params)
 {
@@ -2148,7 +2148,7 @@ bool_t linphone_core_inc_invite_pending(LinphoneCore*lc){
  *
  * For the moment, this is limited to enabling or disabling the video stream.
  *
- * @Returns 0 if successful, -1 otherwise.
+ * @return 0 if successful, -1 otherwise.
 **/
 int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, LinphoneCallParams *params){
 	int err;
