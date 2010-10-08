@@ -2225,7 +2225,7 @@ static int lpc_cmd_video_window(LinphoneCore *lc, char *args){
 			lpc_video_params.show=FALSE;
 			lpc_video_params.refresh=TRUE;
 		}else if (strcmp(subcommand,"id")==0){
-			char envbuf[128];
+			static char envbuf[128];
 			if (err == 1){
 				linphonec_out("vwindow id: 0x%x / SDL_WINDOWID='%s'\n",(unsigned int)lpc_video_params.wid, getenv("SDL_WINDOWID"));
 				return 1;

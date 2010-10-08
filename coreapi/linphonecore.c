@@ -3201,7 +3201,7 @@ int linphone_core_set_static_picture(LinphoneCore *lc, const char *path) {
 		 force the filter to use that picture. */
 	if (vs && vs->source) {
 		if (ms_filter_get_id(vs->source) == MS_STATIC_IMAGE_ID) {
-			ms_filter_call_method(vs->source, MS_FILTER_SET_IMAGE,
+			ms_filter_call_method(vs->source, MS_STATIC_IMAGE_SET_IMAGE,
 														(void *)path);
 		}
 	}
