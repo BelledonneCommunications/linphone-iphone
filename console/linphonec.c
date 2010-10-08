@@ -193,7 +193,7 @@ LinphoneCall *linphonec_get_call(long id){
 			return call;
 		}
 	}
-	linphonec_out("Sorry, no call with id %i exists at this time.",id);
+	linphonec_out("Sorry, no call with id %i exists at this time.\n",id);
 	return NULL;
 }
 
@@ -209,7 +209,7 @@ LinphoneCall *linphonec_get_call(long id){
 static void
 linphonec_display_refer (LinphoneCore * lc, const char *refer_to)
 {
-	linphonec_out("Receiving out of call refer to %s", refer_to);
+	linphonec_out("Receiving out of call refer to %s\n", refer_to);
 }
 
 /*
@@ -319,7 +319,7 @@ linphonec_new_unknown_subscriber(LinphoneCore *lc, LinphoneFriend *lf,
 static void linphonec_call_updated(LinphoneCall *call){
 	const LinphoneCallParams *cp=linphone_call_get_current_params(call);
 	if (!linphone_call_camera_enabled (call) && linphone_call_params_video_enabled (cp)){
-		linphonec_out("Far end requests to share video.\nType 'camera on' if you agree.");
+		linphonec_out("Far end requests to share video.\nType 'camera on' if you agree.\n");
 	}
 }
 
@@ -353,7 +353,7 @@ static void linphonec_call_state_changed(LinphoneCore *lc, LinphoneCall *call, L
 			if ( auto_answer)  {
 				answer_call=TRUE;
 			}
-			linphonec_out("Receiving new incoming call from %s, assigned id %i", from,id);
+			linphonec_out("Receiving new incoming call from %s, assigned id %i\n", from,id);
 		break;
 		case LinphoneCallOutgoingInit:
 			linphonec_call_identify(call);
@@ -729,6 +729,10 @@ void linphonec_main_loop_exit(void){
 void
 linphonec_finish(int exit_status)
 {
+	// Do not allow concurrent destroying to prevent glibc errors
+	static bool_t terminating=FALSE;
+	if (terminating) return; 
+	terminating=TRUE;
 	linphonec_out("Terminating...\n");
 
 	/* Terminate any pending call */
@@ -916,7 +920,9 @@ static void lpc_apply_video_params(){
 	if (wid!=0 && (lpc_video_params.refresh || prev_wid!=wid)){
 		lpc_video_params.refresh=FALSE;
 #ifdef HAVE_X11_XLIB_H
-		sdl_x11_apply_video_params();
+		if (lpc_video_params.wid==0){  // do not manage window if embedded
+			sdl_x11_apply_video_params();
+		}
 #endif
 	}
 	prev_wid=wid;
