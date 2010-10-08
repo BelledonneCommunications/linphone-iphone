@@ -57,7 +57,10 @@ LOCAL_CFLAGS += \
 	-DLOG_DOMAIN=\"Linphone\"
 
 LOCAL_CFLAGS += -DIN_LINPHONE
-#LOCAL_CFLAGS += -DVIDEO_ENABLED -DIN_LINPHONE
+
+ifeq ($(LINPHONE_VIDEO),1)
+LOCAL_CFLAGS += -DVIDEO_ENABLED
+endif
 
 LOCAL_C_INCLUDES += \
 	$(LOCAL_PATH) \
@@ -76,6 +79,15 @@ LOCAL_STATIC_LIBRARIES := \
 	libeXosip2 \
 	libosip2 \
 	libgsm
+
+ifeq ($(LINPHONE_VIDEO),1)
+LOCAL_STATIC_LIBRARIES += \
+	libavcodec \
+	libswscale \
+	libavcore \
+	libavutil
+endif
+
 ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
    LOCAL_CFLAGS += -DHAVE_ILBC=1
    LOCAL_STATIC_LIBRARIES += libmsilbc
