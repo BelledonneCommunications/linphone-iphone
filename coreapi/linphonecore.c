@@ -627,7 +627,7 @@ static PayloadType * find_payload(RtpProfile *prof, const char *mime_type, int c
 	return candidate;
 }
 
-static bool_t get_codec(LpConfig *config, char* type, int index, PayloadType **ret){
+static bool_t get_codec(LpConfig *config, const char* type, int index, PayloadType **ret){
 	char codeckey[50];
 	const char *mime,*fmtp;
 	int rate,enabled;
@@ -707,7 +707,7 @@ static MSList *add_missing_codecs(SalStreamType mtype, MSList *l){
 
 static MSList *codec_append_if_new(MSList *l, PayloadType *pt){
 	MSList *elem;
-	for (elem=l;l!=NULL;l=elem->next){
+	for (elem=l;elem!=NULL;elem=elem->next){
 		PayloadType *ept=(PayloadType*)elem->data;
 		if (pt==ept)
 			return l;
