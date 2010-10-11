@@ -71,7 +71,7 @@ int main(int argc, char *argv[]){
 	}
 
 	signal(SIGINT,stop);
-#define DEBUG
+
 #ifdef DEBUG
 	linphone_core_enable_logs(NULL); /*enable liblinphone logs.*/
 #endif
@@ -124,7 +124,7 @@ int main(int argc, char *argv[]){
 	linphone_proxy_config_enable_register(proxy_cfg,FALSE); /*de-activate registration for this proxy config*/
 	linphone_proxy_config_done(proxy_cfg); /*initiate REGISTER with expire = 0*/
 
-	while(linphone_proxy_config_get_state(proxy_cfg) ==  LinphoneRegistrationOk){
+	while(linphone_proxy_config_get_state(proxy_cfg) !=  LinphoneRegistrationCleared){
 		linphone_core_iterate(lc); /*to make sure we receive call backs before shutting down*/
 		ms_usleep(50000);
 	}

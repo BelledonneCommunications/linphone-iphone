@@ -42,13 +42,13 @@
 
 /**
  * @defgroup proxies Managing proxies
- *User registration is control by  #LinphoneProxyConfig settings.<br> Each #LinphoneProxyConfig object can be configured with registration information 
- *like \link linphone_proxy_config_set_server_addr() proxy address \endlink , \link linphone_proxy_config_set_identity() user id \endlink, \link linphone_proxy_config_expires() refresh period \endlink, etc 
+ *User registration is controled by  #LinphoneProxyConfig settings.<br> Each #LinphoneProxyConfig object can be configured with registration informations 
+ *like \link linphone_proxy_config_set_server_addr() proxy address \endlink , \link linphone_proxy_config_set_identity() user id \endlink, \link linphone_proxy_config_expires() refresh period \endlink, and so on. 
  *<br> A created proxy config using linphone_proxy_config_new(), once configured, must be added to #LinphoneCore using function linphone_core_add_proxy_config().
  *<br> It is recommended to set a default \link #LinphoneProxyConfig proxy config \endlink using function linphone_core_set_default_proxy(). Once done, if \link #LinphoneProxyConfig a proxy config \endlink has been configured with attribute \link linphone_proxy_config_enable_register() enable register \endlink  , next call to linphone_core_iterate() triggers a SIP register.  
  *<br> Registration status is reported by #LinphoneRegistrationStateCb.
  *<br>
- *<br> This pseudo code demonstrate basic registration operation:
+ *<br> This pseudo code demonstrates basic registration operations:
  *<br> \code
  *	
  *	LinphoneProxyConfig* proxy_cfg;
@@ -84,8 +84,8 @@
  *<br>Most of the time, registration requires \ref authentication "authentication" to succed. #LinphoneAuthInfo info must be either added to #LinphoneCore  using function linphone_core_add_auth_info() before #LinphoneProxyConfig is added to Linphone core, or on demand from call back #AuthInfoRequested .    
  *<br>
  *<br><b>Unregistration:</b>
- *<br> Unregistration or any change to #LinphoneProxyConfig must be first started by a call to function linphone_proxy_config_edit() and validated by a call to function linphone_proxy_config_done()
- *<br> This pseudo code show how to unregister a user associated to a #LinphoneProxyConfig
+ *<br> Unregistration or any changes to #LinphoneProxyConfig must be first started by a call to function linphone_proxy_config_edit() and validated by  function linphone_proxy_config_done()
+ *<br> This pseudo code shows how to unregister a user associated to a #LinphoneProxyConfig
  *\code
  	LinphoneProxyConfig* proxy_cfg;
  	linphone_core_get_default_proxy(lc,&proxy_cfg); /* get default proxy config*/
