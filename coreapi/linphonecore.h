@@ -964,7 +964,12 @@ float linphone_core_get_static_picture_fps(LinphoneCore *lc);
 
 /*function to be used for eventually setting window decorations (icons, title...)*/
 unsigned long linphone_core_get_native_video_window_id(const LinphoneCore *lc);
+void linphone_core_set_native_video_window_id(LinphoneCore *lc, unsigned long id);
 
+unsigned long linphone_core_get_native_preview_window_id(const LinphoneCore *lc);
+void linphone_core_set_native_preview_window_id(LinphoneCore *lc, unsigned long id);
+
+void linphone_core_use_preview_window(LinphoneCore *lc, bool_t yesno);
 
 /*play/record support: use files instead of soundcard*/
 void linphone_core_use_files(LinphoneCore *lc, bool_t yesno);

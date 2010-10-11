@@ -3269,7 +3269,49 @@ unsigned long linphone_core_get_native_video_window_id(const LinphoneCore *lc){
 	if (lc->previewstream)
 		return video_stream_get_native_window_id(lc->previewstream);
 #endif
-	return 0;
+	return lc->video_window_id;
+}
+
+/**
+ * Set the native video window id where the video is to be displayed.
+ * If not set the core will create its own window.
+**/
+void linphone_core_set_native_video_window_id(LinphoneCore *lc, unsigned long id){
+	lc->video_window_id=id;
+}
+
+/**
+ * Returns the native window handle of the video preview window, casted as an unsigned long.
+ *
+ * @ingroup media_parameters
+**/
+unsigned long linphone_core_get_native_preview_window_id(const LinphoneCore *lc){
+#ifdef VIDEO_ENABLED
+	LinphoneCall *call=linphone_core_get_current_call (lc);
+	if (call && call->videostream)
+		return video_stream_get_native_preview_window_id(call->videostream);
+	if (lc->previewstream)
+		return video_stream_get_native_preview_window_id(lc->previewstream);
+#endif
+	return lc->preview_window_id;
+}
+
+/**
+ * Set the native window id where the preview video (local camera) is to be displayed.
+ * This has to be used in conjonction with linphone_core_use_preview_window().
+ * If not set the core will create its own window.
+**/
+void linphone_core_set_native_preview_window_id(LinphoneCore *lc, unsigned long id){
+	lc->preview_window_id=id;
+}
+
+/**
+ * Tells the core to use a separate window for local camera preview video, instead of
+ * inserting local view within the remote video window.
+ *
+**/
+void linphone_core_use_preview_window(LinphoneCore *lc, bool_t yesno){
+	lc->use_preview_window=yesno;
 }
 
 static MSVideoSizeDef supported_resolutions[]={

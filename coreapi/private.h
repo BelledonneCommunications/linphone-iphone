@@ -408,6 +408,8 @@ struct _LinphoneCore
 	int audio_bw;
 	LinphoneWaitingCallback wait_cb;
 	void *wait_ctx;
+	unsigned long video_window_id;
+	unsigned long preview_window_id;
 	bool_t use_files;
 	bool_t apply_nat_settings;
 	bool_t ready;
@@ -415,6 +417,7 @@ struct _LinphoneCore
 	bool_t preview_finished;
 	bool_t auto_net_state_mon;
 	bool_t network_reachable;
+	bool_t use_preview_window;
 };
 
 bool_t linphone_core_can_we_add_call(LinphoneCore *lc);
