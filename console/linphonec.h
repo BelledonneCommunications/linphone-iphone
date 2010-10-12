@@ -104,6 +104,10 @@ typedef struct {
 	bool_t refresh;
 } VideoParams;
 
+
+extern VideoParams lpc_video_params;
+extern VideoParams lpc_preview_params;
+
 /***************************************************************************
  *
  *  Forward declarations

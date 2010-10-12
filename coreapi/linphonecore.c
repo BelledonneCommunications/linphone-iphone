@@ -3042,8 +3042,13 @@ static void toggle_video_preview(LinphoneCore *lc, bool_t val){
 #ifdef VIDEO_ENABLED
 	if (val){
 		if (lc->previewstream==NULL){
-			lc->previewstream=video_preview_start(lc->video_conf.device,
-						lc->video_conf.vsize,lc->video_conf.displaytype);
+			lc->previewstream=video_preview_new();
+			video_preview_set_size(lc->previewstream,lc->video_conf.vsize);
+			if (lc->video_conf.displaytype)
+				video_preview_set_display_filter_name(lc->previewstream,lc->video_conf.displaytype);
+			if (lc->preview_window_id!=0)
+				video_preview_set_native_window_id(lc->previewstream,lc->preview_window_id);
+			video_preview_start(lc->previewstream,lc->video_conf.device);
 		}
 	}else{
 		if (lc->previewstream!=NULL){
@@ -3291,7 +3296,7 @@ unsigned long linphone_core_get_native_preview_window_id(const LinphoneCore *lc)
 	if (call && call->videostream)
 		return video_stream_get_native_preview_window_id(call->videostream);
 	if (lc->previewstream)
-		return video_stream_get_native_preview_window_id(lc->previewstream);
+		return video_preview_get_native_window_id(lc->previewstream);
 #endif
 	return lc->preview_window_id;
 }

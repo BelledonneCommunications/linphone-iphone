@@ -31,6 +31,7 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
+#include "mediastreamer2/mediastream.h"
 
 #ifndef LIBLINPHONE_VERSION 
 #define LIBLINPHONE_VERSION LINPHONE_VERSION
@@ -389,7 +390,7 @@ struct _LinphoneCore
 	MSList *chatrooms;
 	int max_call_logs;
 	int missed_calls;
-	struct _VideoStream *previewstream;
+	VideoPreview *previewstream;
 	struct _MSEventQueue *msevq;
 	RtpTransport *a_rtp,*a_rtcp;
 	MSList *bl_reqs;

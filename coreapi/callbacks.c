@@ -297,6 +297,8 @@ static void call_ack(SalOp *op){
 static void call_updating(SalOp *op){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
+	LinphoneCallState prevstate=LinphoneCallIdle;
+	
 	if (call->resultdesc)
 		sal_media_description_unref(call->resultdesc);
 	call->resultdesc=sal_call_get_final_media_description(op);
@@ -319,7 +321,9 @@ static void call_updating(SalOp *op){
 			linphone_call_set_state (call,LinphoneCallStreamsRunning,"Connected (streams running)");
 		}
 		else if(call->state==LinphoneCallStreamsRunning &&
-		        sal_media_description_has_dir(call->resultdesc,SalStreamRecvOnly) && !strcmp(call->resultdesc->addr,"0.0.0.0")){
+		        ( sal_media_description_has_dir(call->resultdesc,SalStreamRecvOnly) 
+		         || sal_media_description_has_dir(call->resultdesc,SalStreamInactive)
+		         || strcmp(call->resultdesc->addr,"0.0.0.0")==0)){
 			if(lc->vtable.display_status)
 				lc->vtable.display_status(lc,_("We are being paused..."));
 			linphone_call_set_state (call,LinphoneCallPausedByRemote,"Call paused by remote");
@@ -327,6 +331,7 @@ static void call_updating(SalOp *op){
 				ms_error("Inconsitency detected: current call is %p but call %p is being paused !",lc->current_call,call);
 			}
 		}else{
+			prevstate=call->state;
 			linphone_call_set_state(call, LinphoneCallUpdatedByRemote,"Call updated by remote");
 		}
 		/*accept the modification (sends a 200Ok)*/
@@ -334,6 +339,9 @@ static void call_updating(SalOp *op){
 		linphone_call_stop_media_streams (call);
 		linphone_call_init_media_streams (call);
 		linphone_call_start_media_streams (call);
+		if (prevstate!=LinphoneCallIdle){
+			linphone_call_set_state (call,prevstate,"Connected (streams running)");
+		}
 	}
 	if (lc->current_call==NULL) linphone_core_start_pending_refered_calls (lc);
 }

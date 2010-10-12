@@ -51,6 +51,3 @@ linphonecsh_LDADD = $(ORTP_LIBS)
 endif
 
 
-
-
-
