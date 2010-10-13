@@ -922,7 +922,7 @@ static void lpc_apply_video_params(){
 	if (pwid!=0 && (lpc_preview_params.refresh || old_pwid!=pwid)){
 		lpc_preview_params.refresh=FALSE;
 #ifdef HAVE_X11_XLIB_H
-		printf("wid=%lu pwid=%lu\n",wid,pwid);
+		/*printf("wid=%lu pwid=%lu\n",wid,pwid);*/
 		if (lpc_preview_params.wid==0){  // do not manage window if embedded
 			printf("Refreshing\n");
 			x11_apply_video_params(&lpc_preview_params,pwid);
