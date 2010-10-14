@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "sal_eXosip2.h"
 
 
-static SalOp * sal_find_out_subscribe(Sal *sal, int sid){
+SalOp * sal_find_out_subscribe(Sal *sal, int sid){
 	const MSList *elem;
 	SalOp *op;
 	for(elem=sal->out_subscribes;elem!=NULL;elem=elem->next){

@@ -284,6 +284,8 @@ int sal_call_update(SalOp *h);
 SalMediaDescription * sal_call_get_final_media_description(SalOp *h);
 int sal_refer(SalOp *h, const char *refer_to);
 int sal_refer_accept(SalOp *h);
+/* returns the SalOp of a call that should be replaced by h, if any */
+SalOp *sal_call_get_replaces(SalOp *h);
 int sal_call_send_dtmf(SalOp *h, char dtmf);
 int sal_call_terminate(SalOp *h);
 bool_t sal_call_autoanswer_asked(SalOp *op);

@@ -56,6 +56,7 @@ struct SalOp{
 	eXosip_event_t *pending_auth;
 	osip_call_id_t *call_id; /*used for out of calls transaction in order
 	 			to retrieve the operation when receiving a response*/
+	char *replaces;
 	bool_t supports_session_timers;
 	bool_t sdp_offering;
 	bool_t reinvite;
@@ -72,7 +73,7 @@ void sal_exosip_notify_recv(Sal *sal,eXosip_event_t *ev);
 void sal_exosip_subscription_closed(Sal *sal,eXosip_event_t *ev);
 
 void sal_exosip_in_subscription_closed(Sal *sal, eXosip_event_t *ev);
-
+SalOp * sal_find_out_subscribe(Sal *sal, int sid);
 void sal_exosip_fix_route(SalOp *op);
 
 
