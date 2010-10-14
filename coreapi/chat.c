@@ -33,7 +33,6 @@
 		cr->lc=lc;
 		cr->peer=linphone_address_as_string(parsed_url);
 		cr->peer_url=parsed_url;
-		cr->route=ms_strdup(linphone_core_get_route(lc));
 		lc->chatrooms=ms_list_append(lc->chatrooms,(void *)cr);
 		return cr;
 	}
@@ -46,11 +45,13 @@
 	lc->chatrooms=ms_list_remove(lc->chatrooms,(void *) cr);
 	linphone_address_destroy(cr->peer_url);
 	ms_free(cr->peer);
-	ms_free(cr->route);
+	if (cr->op)
+		 sal_op_release(cr->op);
  }
  
 void linphone_chat_room_send_message(LinphoneChatRoom *cr, const char *msg){
-	const char *identity=linphone_core_get_identity(cr->lc);
+	const char *route=NULL;
+	const char *identity=linphone_core_find_best_identity(cr->lc,cr->peer_url,&route);
 	SalOp *op;
 	LinphoneCall *call;
 	if((call = linphone_core_get_call_by_remote_address(cr->lc,cr->peer))!=NULL)
@@ -61,7 +62,12 @@ void linphone_chat_room_send_message(LinphoneChatRoom *cr, const char *msg){
 	else
 	{
 		op = sal_op_new(cr->lc->sal);
-		sal_op_set_route(op,cr->route);
+		sal_op_set_route(op,route);
+		if (cr->op!=NULL){
+			sal_op_release (cr->op);
+			cr->op=NULL;
+		}
+		cr->op=op;
 	}
 	sal_text_send(op,identity,cr->peer,msg);
 }

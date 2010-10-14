@@ -38,7 +38,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 /*#define UNSTANDART_GSM_11K 1*/
 
 static const char *liblinphone_version=LIBLINPHONE_VERSION;
-static void set_network_reachable(LinphoneCore* lc,bool_t isReachable);
+static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t curtime);
 
 #include "enum.h"
 
@@ -51,6 +51,7 @@ static void toggle_video_preview(LinphoneCore *lc, bool_t val);
 #define REMOTE_RING "ringback.wav"
 
 extern SalCallbacks linphone_sal_callbacks;
+
 
 void lc_callback_obj_init(LCCallbackObj *obj,LinphoneCoreCbFunc func,void* ud)
 {
@@ -103,7 +104,7 @@ static void call_logs_write_to_config_file(LinphoneCore *lc){
 	char *tmp;
 	LpConfig *cfg=lc->config;
 
-	if (!lc->ready) return;
+	if (linphone_core_get_global_state (lc)==LinphoneGlobalStartup) return;
 	
 	for(i=0,elem=lc->call_logs;elem!=NULL;elem=elem->next,++i){
 		LinphoneCallLog *cl=(LinphoneCallLog*)elem->data;
@@ -996,10 +997,8 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	ui_config_read(lc);
 	if (lc->vtable.display_status)
 		lc->vtable.display_status(lc,_("Ready"));
-	linphone_core_set_state(lc,LinphoneGlobalOn,"Ready");
 	lc->auto_net_state_mon=lc->sip_conf.auto_net_state_mon;
-
-    lc->ready=TRUE;
+	linphone_core_set_state(lc,LinphoneGlobalOn,"Ready");
 }
 
 /**
@@ -1529,7 +1528,7 @@ static void monitor_network_state(LinphoneCore *lc, time_t curtime){
 			if (new_status){
 				ms_message("New local ip address is %s",result);
 			}
-			set_network_reachable(lc,new_status);
+			set_network_reachable(lc,new_status, curtime);
 			last_status=new_status;
 		}
 	}
@@ -1724,6 +1723,12 @@ void linphone_core_iterate(LinphoneCore *lc){
 
 	linphone_core_do_plugin_tasks(lc);
 
+	if (lc->initial_subscribes_sent==FALSE && lc->netup_time!=0 &&
+	    (curtime-lc->netup_time)>3){
+		linphone_core_send_initial_subscribes(lc);
+		lc->initial_subscribes_sent=TRUE;
+	}
+
 	if (one_second_elapsed && lp_config_needs_commit(lc->config)){
 		lp_config_sync(lc->config);
 	}
@@ -1859,6 +1864,17 @@ LinphoneProxyConfig * linphone_core_lookup_known_proxy(LinphoneCore *lc, const L
 		}
 	}
 	return found_cfg;
+}
+
+const char *linphone_core_find_best_identity(LinphoneCore *lc, const LinphoneAddress *to, const char **route){
+	LinphoneProxyConfig *cfg=linphone_core_lookup_known_proxy(lc,to);
+	if (cfg==NULL)
+		linphone_core_get_default_proxy (lc,&cfg);
+	if (cfg!=NULL){
+		*route=linphone_proxy_config_get_route(cfg);
+		return linphone_proxy_config_get_identity (cfg);
+	}
+	return linphone_core_get_primary_contact (lc);
 }
 
 static char *get_fixed_contact(LinphoneCore *lc, LinphoneCall *call , LinphoneProxyConfig *dest_proxy){
@@ -2669,7 +2685,7 @@ bool_t linphone_core_sound_device_can_playback(LinphoneCore *lc, const char *dev
 int linphone_core_set_ringer_device(LinphoneCore *lc, const char * devid){
 	MSSndCard *card=get_card_from_string_id(devid,MS_SND_CARD_CAP_PLAYBACK);
 	lc->sound_conf.ring_sndcard=card;
-	if (card && lc->ready)
+	if (card && linphone_core_ready(lc))
 		lp_config_set_string(lc->config,"sound","ringer_dev_id",ms_snd_card_get_string_id(card));
 	return 0;
 }
@@ -2683,7 +2699,7 @@ int linphone_core_set_ringer_device(LinphoneCore *lc, const char * devid){
 int linphone_core_set_playback_device(LinphoneCore *lc, const char * devid){
 	MSSndCard *card=get_card_from_string_id(devid,MS_SND_CARD_CAP_PLAYBACK);
 	lc->sound_conf.play_sndcard=card;
-	if (card && lc->ready)
+	if (card &&  linphone_core_ready(lc))
 		lp_config_set_string(lc->config,"sound","playback_dev_id",ms_snd_card_get_string_id(card));
 	return 0;
 }
@@ -2697,7 +2713,7 @@ int linphone_core_set_playback_device(LinphoneCore *lc, const char * devid){
 int linphone_core_set_capture_device(LinphoneCore *lc, const char * devid){
 	MSSndCard *card=get_card_from_string_id(devid,MS_SND_CARD_CAP_CAPTURE);
 	lc->sound_conf.capt_sndcard=card;
-	if (card && lc->ready)
+	if (card &&  linphone_core_ready(lc))
 		lp_config_set_string(lc->config,"sound","capture_dev_id",ms_snd_card_get_string_id(card));
 	return 0;
 }
@@ -2788,7 +2804,7 @@ void linphone_core_set_ring(LinphoneCore *lc,const char *path){
 		ms_free(lc->sound_conf.local_ring);
 	}
 	lc->sound_conf.local_ring=ms_strdup(path);
-	if (lc->ready && lc->sound_conf.local_ring)
+	if ( linphone_core_ready(lc) && lc->sound_conf.local_ring)
 		lp_config_set_string(lc->config,"sound","local_ring",lc->sound_conf.local_ring);
 }
 
@@ -2852,7 +2868,7 @@ const char * linphone_core_get_ringback(const LinphoneCore *lc){
 **/
 void linphone_core_enable_echo_cancellation(LinphoneCore *lc, bool_t val){
 	lc->sound_conf.ec=val;
-	if (lc->ready)
+	if ( linphone_core_ready(lc))
 		lp_config_set_int(lc->config,"sound","echocancellation",val);
 }
 
@@ -3042,8 +3058,13 @@ static void toggle_video_preview(LinphoneCore *lc, bool_t val){
 #ifdef VIDEO_ENABLED
 	if (val){
 		if (lc->previewstream==NULL){
-			lc->previewstream=video_preview_start(lc->video_conf.device,
-						lc->video_conf.vsize,lc->video_conf.displaytype);
+			lc->previewstream=video_preview_new();
+			video_preview_set_size(lc->previewstream,lc->video_conf.vsize);
+			if (lc->video_conf.displaytype)
+				video_preview_set_display_filter_name(lc->previewstream,lc->video_conf.displaytype);
+			if (lc->preview_window_id!=0)
+				video_preview_set_native_window_id(lc->previewstream,lc->preview_window_id);
+			video_preview_start(lc->previewstream,lc->video_conf.device);
 		}
 	}else{
 		if (lc->previewstream!=NULL){
@@ -3157,7 +3178,7 @@ int linphone_core_set_video_device(LinphoneCore *lc, const char *id){
 	if (olddev!=NULL && olddev!=lc->video_conf.device){
 		toggle_video_preview(lc,FALSE);/*restart the video local preview*/
 	}
-	if (lc->ready && lc->video_conf.device){
+	if ( linphone_core_ready(lc) && lc->video_conf.device){
 		vd=ms_web_cam_get_string_id(lc->video_conf.device);
 		if (vd && strstr(vd,"Static picture")!=NULL){
 			vd=NULL;
@@ -3269,7 +3290,49 @@ unsigned long linphone_core_get_native_video_window_id(const LinphoneCore *lc){
 	if (lc->previewstream)
 		return video_stream_get_native_window_id(lc->previewstream);
 #endif
-	return 0;
+	return lc->video_window_id;
+}
+
+/**
+ * Set the native video window id where the video is to be displayed.
+ * If not set the core will create its own window.
+**/
+void linphone_core_set_native_video_window_id(LinphoneCore *lc, unsigned long id){
+	lc->video_window_id=id;
+}
+
+/**
+ * Returns the native window handle of the video preview window, casted as an unsigned long.
+ *
+ * @ingroup media_parameters
+**/
+unsigned long linphone_core_get_native_preview_window_id(const LinphoneCore *lc){
+#ifdef VIDEO_ENABLED
+	LinphoneCall *call=linphone_core_get_current_call (lc);
+	if (call && call->videostream)
+		return video_stream_get_native_preview_window_id(call->videostream);
+	if (lc->previewstream)
+		return video_preview_get_native_window_id(lc->previewstream);
+#endif
+	return lc->preview_window_id;
+}
+
+/**
+ * Set the native window id where the preview video (local camera) is to be displayed.
+ * This has to be used in conjonction with linphone_core_use_preview_window().
+ * If not set the core will create its own window.
+**/
+void linphone_core_set_native_preview_window_id(LinphoneCore *lc, unsigned long id){
+	lc->preview_window_id=id;
+}
+
+/**
+ * Tells the core to use a separate window for local camera preview video, instead of
+ * inserting local view within the remote video window.
+ *
+**/
+void linphone_core_use_preview_window(LinphoneCore *lc, bool_t yesno){
+	lc->use_preview_window=yesno;
 }
 
 static MSVideoSizeDef supported_resolutions[]={
@@ -3334,7 +3397,7 @@ void linphone_core_set_preferred_video_size(LinphoneCore *lc, MSVideoSize vsize)
 			toggle_video_preview(lc,FALSE);
 			toggle_video_preview(lc,TRUE);
 		}
-		if (lc->ready)
+		if ( linphone_core_ready(lc))
 			lp_config_set_string(lc->config,"video","size",video_size_get_name(vsize));
 	}
 }
@@ -3751,7 +3814,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	linphone_core_set_state(lc,LinphoneGlobalOff,"Off");
 }
 
-static void set_network_reachable(LinphoneCore* lc,bool_t isReachable){
+static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t curtime){
 	ms_message("Network state is now [%s]",isReachable?"UP":"DOWN");
 	// second get the list of available proxies
 	const MSList *elem=linphone_core_get_proxy_config_list(lc);
@@ -3765,6 +3828,7 @@ static void set_network_reachable(LinphoneCore* lc,bool_t isReachable){
 			}
 		}
 	}
+	lc->netup_time=curtime;
 	lc->network_reachable=isReachable;
 }
 
@@ -3774,7 +3838,7 @@ void linphone_core_set_network_reachable(LinphoneCore* lc,bool_t isReachable) {
 		ms_message("Disabling automatic network state monitoring");
 		lc->auto_net_state_mon=FALSE;
 	}
-	set_network_reachable(lc,isReachable);
+	set_network_reachable(lc,isReachable, ms_time(NULL));
 }
 
 bool_t linphone_core_is_network_reachabled(LinphoneCore* lc) {

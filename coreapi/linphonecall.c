@@ -824,7 +824,12 @@ static void _linphone_call_start_media_streams(LinphoneCall *call, bool_t send_e
 				
 				video_stream_set_sent_video_size(call->videostream,linphone_core_get_preferred_video_size(lc));
 				video_stream_enable_self_view(call->videostream,lc->video_conf.selfview);
-						
+				if (lc->video_window_id!=0)
+					video_stream_set_native_window_id(call->videostream,lc->video_window_id);
+				if (lc->preview_window_id!=0)
+					video_stream_set_native_preview_window_id (call->videostream,lc->preview_window_id);
+				video_stream_use_preview_video_window (call->videostream,lc->use_preview_window);
+				
 				if (stream->dir==SalStreamSendOnly && lc->video_conf.capture ){
 					cam=get_nowebcam_device();
 					dir=VideoStreamSendOnly;

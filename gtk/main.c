@@ -649,12 +649,14 @@ static gboolean in_call_timer(){
 	return FALSE;
 }
 
-static bool_t all_calls_paused(const MSList *calls){
+static bool_t all_other_calls_paused(LinphoneCall *refcall, const MSList *calls){
 	for(;calls!=NULL;calls=calls->next){
 		LinphoneCall *call=(LinphoneCall*)calls->data;
 		LinphoneCallState cs=linphone_call_get_state(call);
-		if (cs!=LinphoneCallPaused && cs!=LinphoneCallIncomingReceived && cs!=LinphoneCallPausing)
-			return FALSE;
+		if (refcall!=call){
+			if (cs!=LinphoneCallPaused  && cs!=LinphoneCallPausing)
+				return FALSE;
+		}
 	}
 	return TRUE;
 }
@@ -673,11 +675,17 @@ static void linphone_gtk_update_call_buttons(LinphoneCall *call){
 		stop_active=FALSE;
 	}else{
 		stop_active=TRUE;
-		if (all_calls_paused(calls)){
+		if (all_other_calls_paused(NULL,calls)){
 			start_active=TRUE;
 			add_call=TRUE;
-		}else if (call!=NULL && linphone_call_get_state(call)==LinphoneCallIncomingReceived){
-			start_active=TRUE;
+		}else if (call!=NULL && linphone_call_get_state(call)==LinphoneCallIncomingReceived && all_other_calls_paused(call,calls)){
+			if (ms_list_size(calls)>1){
+				start_active=TRUE;
+				add_call=TRUE;
+			}else{
+				start_active=TRUE;
+				add_call=FALSE;
+			}
 		}else{
 			start_active=FALSE;
 		}
@@ -969,7 +977,7 @@ static void linphone_gtk_call_state_changed(LinphoneCore *lc, LinphoneCall *call
 		break;
 		case LinphoneCallIncomingReceived:
 			linphone_gtk_create_in_call_view (call);
-			linphone_gtk_in_call_view_set_incoming(call,!all_calls_paused (linphone_core_get_calls(lc)));
+			linphone_gtk_in_call_view_set_incoming(call,!all_other_calls_paused (call,linphone_core_get_calls(lc)));
 			if (auto_answer)  {
 				linphone_call_ref(call);
 				g_timeout_add(2000,(GSourceFunc)linphone_gtk_auto_answer ,call);

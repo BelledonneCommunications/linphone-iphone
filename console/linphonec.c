@@ -177,7 +177,6 @@ static ortp_pipe_t server_sock;
 bool_t linphonec_camera_enabled=TRUE;
 
 
-extern VideoParams lpc_video_params;
 
 void linphonec_call_identify(LinphoneCall* call){
 	static long callid=1;
@@ -869,63 +868,68 @@ usage: linphonec [-c file] [-s sipaddr] [-a] [-V] [-d level ] [-l logfile]\n\
 #ifdef VIDEO_ENABLED
 
 #ifdef HAVE_X11_XLIB_H
-static void sdl_x11_apply_video_params(){
-	static SDL_SysWMinfo info;
-	bool_t wminfo_ready=FALSE;
-	
-	
-	SDL_VERSION(&info.version);
-	if ( SDL_GetWMInfo(&info) ) {
-		if ( info.subsystem == SDL_SYSWM_X11 ) {
-			wminfo_ready=TRUE;
-		}
+static void x11_apply_video_params(VideoParams *params, Window window){
+	XWindowChanges wc;
+	unsigned int flags=0;
+	static Display *display = NULL;
+	const char *dname=getenv("DISPLAY");
+
+	if (display==NULL && dname!=NULL){
+		display=XOpenDisplay(dname);
 	}
-	
-	if ( !wminfo_ready) return;
-	
-	{
-		XWindowChanges wc;
-		unsigned int flags=0;
-		Display *display = info.info.x11.display;
-		Window window = info.info.x11.wmwindow;
-		
-		memset(&wc,0,sizeof(wc));
-		wc.x=lpc_video_params.x;
-		wc.y=lpc_video_params.y;
-		wc.width=lpc_video_params.w;
-		wc.height=lpc_video_params.h;
-		if (lpc_video_params.x!=-1 ){
-			flags|=CWX|CWY;
-		}
-		if (lpc_video_params.w!=-1){
-			flags|=CWWidth|CWHeight;
-		}
-		info.info.x11.lock_func();
-		XConfigureWindow(display,window,flags,&wc);
-		if (lpc_video_params.show)
-			XMapWindow(display,window);
-		else
-			XUnmapWindow(display,window);
-		info.info.x11.unlock_func();
+
+	if (display==NULL){
+		ms_error("Could not open display %s",dname);
+		return;
 	}
+	memset(&wc,0,sizeof(wc));
+	wc.x=params->x;
+	wc.y=params->y;
+	wc.width=params->w;
+	wc.height=params->h;
+	if (params->x!=-1 ){
+		flags|=CWX|CWY;
+	}
+	if (params->w!=-1){
+		flags|=CWWidth|CWHeight;
+	}
+	/*printf("XConfigureWindow x=%i,y=%i,w=%i,h=%i\n",
+	       wc.x, wc.y ,wc.width, wc.height);*/
+	XConfigureWindow(display,window,flags,&wc);
+	if (params->show)
+		XMapWindow(display,window);
+	else
+		XUnmapWindow(display,window);
+	XSync(display,FALSE);
 }
 #endif
 
 
 static void lpc_apply_video_params(){
-	static unsigned long prev_wid=0;
-
+	static unsigned long old_wid=0,old_pwid=0;
 	unsigned long wid=linphone_core_get_native_video_window_id (linphonec);
+	unsigned long pwid=linphone_core_get_native_preview_window_id (linphonec);
 
-	if (wid!=0 && (lpc_video_params.refresh || prev_wid!=wid)){
+	if (wid!=0 && (lpc_video_params.refresh || old_wid!=wid)){
 		lpc_video_params.refresh=FALSE;
 #ifdef HAVE_X11_XLIB_H
 		if (lpc_video_params.wid==0){  // do not manage window if embedded
-			sdl_x11_apply_video_params();
+			x11_apply_video_params(&lpc_video_params,wid);
 		}
 #endif
 	}
-	prev_wid=wid;
+	old_wid=wid;
+	if (pwid!=0 && (lpc_preview_params.refresh || old_pwid!=pwid)){
+		lpc_preview_params.refresh=FALSE;
+#ifdef HAVE_X11_XLIB_H
+		/*printf("wid=%lu pwid=%lu\n",wid,pwid);*/
+		if (lpc_preview_params.wid==0){  // do not manage window if embedded
+			printf("Refreshing\n");
+			x11_apply_video_params(&lpc_preview_params,pwid);
+		}
+#endif
+	}
+	old_pwid=pwid;
 }
 
 #endif

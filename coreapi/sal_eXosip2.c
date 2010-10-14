@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 static void text_received(Sal *sal, eXosip_event_t *ev);
 
-static void _osip_list_set_empty(osip_list_t *l, void (*freefunc)(void*)){
+void _osip_list_set_empty(osip_list_t *l, void (*freefunc)(void*)){
 	void *data;
 	while((data=osip_list_get(l,0))!=NULL){
 		osip_list_remove(l,0);
@@ -102,7 +102,7 @@ static SalOp * sal_find_other(Sal *sal, osip_message_t *response){
 	return NULL;
 }
 
-static void sal_add_other(Sal *sal, SalOp *op, osip_message_t *request){
+void sal_add_other(Sal *sal, SalOp *op, osip_message_t *request){
 	osip_call_id_t *callid=osip_message_get_call_id(request);
 	if (callid==NULL) {
 		ms_error("There is no call id in the request !");
@@ -161,6 +161,7 @@ SalOp * sal_op_new(Sal *sal){
 	op->sdp_answer=NULL;
 	op->reinvite=FALSE;
 	op->call_id=NULL;
+	op->replaces=NULL;
 	op->masquerade_via=FALSE;
 	op->auto_answer_asked=FALSE;
 	return op;
@@ -200,6 +201,9 @@ void sal_op_release(SalOp *op){
 	if (op->call_id){
 		sal_remove_other(op->base.root,op);
 		osip_call_id_free(op->call_id);
+	}
+	if (op->replaces){
+		ms_free(op->replaces);
 	}
 	__sal_op_free(op);
 }
@@ -655,6 +659,20 @@ int sal_refer(SalOp *h, const char *refer_to){
 	return err;
 }
 
+SalOp *sal_call_get_replaces(SalOp *h){
+	if (h->replaces!=NULL){
+		int cid;
+		eXosip_lock();
+		cid=eXosip_call_find_by_replaces(h->replaces);
+		eXosip_unlock();
+		if (cid>0){
+			SalOp *ret=sal_find_call(h->base.root,cid);
+			return ret;
+		}
+	}
+	return NULL;
+}
+
 int sal_call_send_dtmf(SalOp *h, char dtmf){
 	osip_message_t *msg=NULL;
 	char dtmf_body[128];
@@ -732,12 +750,30 @@ static void set_remote_ua(SalOp* op, osip_message_t *req){
 	}
 }
 
+static void set_replaces(SalOp *op, osip_message_t *req){
+	osip_header_t *h=NULL;
+
+	if (op->replaces){
+		ms_free(op->replaces);
+		op->replaces=NULL;
+	}
+	osip_message_header_get_byname(req,"replaces",0,&h);
+	if (h){
+		if (h->hvalue && h->hvalue[0]!='\0'){
+			op->replaces=ms_strdup(h->hvalue);
+		}
+	}
+}
+
 static SalOp *find_op(Sal *sal, eXosip_event_t *ev){
 	if (ev->cid>0){
 		return sal_find_call(sal,ev->cid);
 	}
 	if (ev->rid>0){
 		return sal_find_register(sal,ev->rid);
+	}
+	if (ev->sid>0){
+		return sal_find_out_subscribe(sal,ev->sid);
 	}
 	if (ev->response) return sal_find_other(sal,ev->response);
 	return NULL;
@@ -752,6 +788,7 @@ static void inc_new_call(Sal *sal, eXosip_event_t *ev){
 
 	set_network_origin(op,ev->request);
 	set_remote_ua(op,ev->request);
+	set_replaces(op,ev->request);
 	
 	if (sdp){
 		op->sdp_offering=FALSE;

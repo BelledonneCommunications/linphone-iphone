@@ -91,6 +91,7 @@ static int lpc_cmd_rtp_no_xmit_on_audio_mute(LinphoneCore *lc, char *args);
 #ifdef VIDEO_ENABLED
 static int lpc_cmd_camera(LinphoneCore *lc, char *args);
 static int lpc_cmd_video_window(LinphoneCore *lc, char *args);
+static int lpc_cmd_preview_window(LinphoneCore *lc, char *args);
 static int lpc_cmd_snapshot(LinphoneCore *lc, char *args);
 #endif
 static int lpc_cmd_states(LinphoneCore *lc, char *args);
@@ -125,7 +126,7 @@ static LPC_COMMAND *lpc_find_command(const char *name);
 void linphonec_out(const char *fmt,...);
 
 VideoParams lpc_video_params={-1,-1,-1,-1,0,TRUE};
-
+VideoParams lpc_preview_params={-1,-1,-1,-1,0,TRUE};
 
 /***************************************************************************
  *
@@ -273,7 +274,17 @@ static LPC_COMMAND advanced_commands[] = {
 		"'vwindow show': shows video window\n"
 		"'vwindow hide': hides video window\n"
 		"'vwindow pos <x> <y>': Moves video window to x,y pixel coordinates\n"
-		"'vwindow size <width> <height>': Resizes video window"
+		"'vwindow size <width> <height>': Resizes video window\n"
+		"'vwindow id <window id>': embeds video display into supplied window id."
+	},
+	{ "pwindow", lpc_cmd_preview_window, "Control local camera video display (preview window)",
+		"'pwindow show': shows the local camera video display\n"
+		"'pwindow hide': hides the local camera video display\n"
+		"'pwindow pos <x> <y>': Moves preview window to x,y pixel coordinates\n"
+		"'pwindow size <width> <height>': Resizes preview window\n"
+		"'pwindow id <window id>': embeds preview display into supplied window id.\n"
+		"'pwindow integrated': integrate preview display within the video window of current call.\n"
+		"'pwindow standalone': use standalone window for preview display."
 	},
 	{ "snapshot", lpc_cmd_snapshot, "Take a snapshot of currently received video stream",
 		"'snapshot <file path>': take a snapshot and records it in jpeg format into the supplied path\n"
@@ -2200,43 +2211,61 @@ static int lpc_cmd_rtp_no_xmit_on_audio_mute(LinphoneCore *lc, char *args)
 }
 
 #ifdef VIDEO_ENABLED
-static int lpc_cmd_video_window(LinphoneCore *lc, char *args){
+static int _lpc_cmd_video_window(LinphoneCore *lc, char *args, bool_t is_preview){
 	char subcommand[64];
 	int a,b;
 	int err;
+	VideoParams *params=is_preview ? &lpc_preview_params : &lpc_video_params;
 
 	if (!args) return 0;
 	err=sscanf(args,"%s %i %i",subcommand,&a,&b);
 	if (err>=1){
 		if (strcmp(subcommand,"pos")==0){
 			if (err<3) return 0;
-			lpc_video_params.x=a;
-			lpc_video_params.y=b;
-			lpc_video_params.refresh=TRUE;
+			params->x=a;
+			params->y=b;
+			params->refresh=TRUE;
 		}else if (strcmp(subcommand,"size")==0){
 			if (err<3) return 0;
-			lpc_video_params.w=a;
-			lpc_video_params.h=b;
-			lpc_video_params.refresh=TRUE;
+			params->w=a;
+			params->h=b;
+			params->refresh=TRUE;
 		}else if (strcmp(subcommand,"show")==0){
-			lpc_video_params.show=TRUE;
-			lpc_video_params.refresh=TRUE;
+			params->show=TRUE;
+			params->refresh=TRUE;
+			if (is_preview) linphone_core_enable_video_preview (lc,TRUE);
 		}else if (strcmp(subcommand,"hide")==0){
-			lpc_video_params.show=FALSE;
-			lpc_video_params.refresh=TRUE;
+			params->show=FALSE;
+			params->refresh=TRUE;
+			if (is_preview) linphone_core_enable_video_preview (lc,FALSE);
 		}else if (strcmp(subcommand,"id")==0){
-			static char envbuf[128];
 			if (err == 1){
-				linphonec_out("vwindow id: 0x%x / SDL_WINDOWID='%s'\n",(unsigned int)lpc_video_params.wid, getenv("SDL_WINDOWID"));
+				linphonec_out("vwindow id: 0x%x\n",is_preview ? linphone_core_get_native_preview_window_id (lc) :
+				              linphone_core_get_native_video_window_id (lc));
 				return 1;
 			} else if (err != 2) return 0;
-			lpc_video_params.wid=a;
-			snprintf(envbuf, sizeof(envbuf)-1, "SDL_WINDOWID=0x%x", (unsigned int)lpc_video_params.wid);
-			err = putenv(envbuf);
-			linphonec_out("vwindow id: 0x%x / SDL_WNIDOWID='%s'\n",(unsigned int)lpc_video_params.wid, getenv("SDL_WINDOWID"));
+			params->wid=a;
+			if (is_preview)
+				linphone_core_set_native_preview_window_id (lc,a);
+			else
+				linphone_core_set_native_video_window_id(lc,a);
+		}else if (is_preview==TRUE){
+			if (strcmp(subcommand,"integrated")==0){
+				linphone_core_use_preview_window (lc,FALSE);
+			}else if (strcmp(subcommand,"standalone")==0){
+				linphone_core_use_preview_window(lc,TRUE);
+			}else return 0;
 		}else return 0;
 	}
 	return 1;
+}
+
+static int lpc_cmd_video_window(LinphoneCore *lc, char *args){
+	return _lpc_cmd_video_window(lc, args, FALSE);
+}
+
+static int lpc_cmd_preview_window(LinphoneCore *lc, char *args){
+	return _lpc_cmd_video_window(lc, args, TRUE);
 }
 #endif
 

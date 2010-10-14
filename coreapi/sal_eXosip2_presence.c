@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "sal_eXosip2.h"
 
 
-static SalOp * sal_find_out_subscribe(Sal *sal, int sid){
+SalOp * sal_find_out_subscribe(Sal *sal, int sid){
 	const MSList *elem;
 	SalOp *op;
 	for(elem=sal->out_subscribes;elem!=NULL;elem=elem->next){
@@ -83,9 +83,14 @@ int sal_text_send(SalOp *op, const char *from, const char *to, const char *msg){
 		eXosip_lock();
 		eXosip_message_build_request(&sip,"MESSAGE",sal_op_get_to(op),
 			sal_op_get_from(op),sal_op_get_route(op));
-		osip_message_set_content_type(sip,"text/plain");
-		osip_message_set_body(sip,msg,strlen(msg));
-		eXosip_message_send_request(sip);
+		if (sip!=NULL){
+			osip_message_set_content_type(sip,"text/plain");
+			osip_message_set_body(sip,msg,strlen(msg));
+			sal_add_other(op->base.root,op,sip);
+			eXosip_message_send_request(sip);
+		}else{
+			ms_error("Could not build MESSAGE request !");
+		}
 		eXosip_unlock();
 	}
 	else
@@ -93,22 +98,16 @@ int sal_text_send(SalOp *op, const char *from, const char *to, const char *msg){
 		/* we are currently in communication with the destination */
 		eXosip_lock();
 		//First we generate an INFO message to get the current call_id and a good cseq
-		eXosip_call_build_info(op->did,&sip);
+		eXosip_call_build_request(op->did,"MESSAGE",&sip);
 		if(sip == NULL)
 		{
 			ms_warning("could not get a build info to send MESSAGE, maybe no previous call established ?");
-			osip_message_free(sip);
 			eXosip_unlock();
 			return -1;
 		}
-		//change the sip_message to be a MESSAGE ...
-		osip_free(osip_message_get_method(sip));
-		osip_message_set_method(sip,osip_strdup("MESSAGE"));
-		osip_free(osip_cseq_get_method(osip_message_get_cseq(sip)));
-		osip_cseq_set_method(osip_message_get_cseq(sip),osip_strdup("MESSAGE"));
 		osip_message_set_content_type(sip,"text/plain");
 		osip_message_set_body(sip,msg,strlen(msg));
-		eXosip_message_send_request(sip);
+		eXosip_call_send_request(op->did,sip);
 		eXosip_unlock();
 	}
 	return 0;
@@ -125,6 +124,10 @@ int sal_subscribe_presence(SalOp *op, const char *from, const char *to){
 	eXosip_lock();
 	eXosip_subscribe_build_initial_request(&msg,sal_op_get_to(op),sal_op_get_from(op),
 	    	sal_op_get_route(op),"presence",600);
+	if (op->base.contact){
+		_osip_list_set_empty(&msg->contacts,(void (*)(void*))osip_contact_free);
+		osip_message_set_contact(msg,op->base.contact);
+	}
 	op->sid=eXosip_subscribe_send_initial_request(msg);
 	eXosip_unlock();
 	if (op->sid==-1){
@@ -156,6 +159,10 @@ int sal_subscribe_accept(SalOp *op){
 	osip_message_t *msg;
 	eXosip_lock();
 	eXosip_insubscription_build_answer(op->tid,202,&msg);
+	if (op->base.contact){
+		_osip_list_set_empty(&msg->contacts,(void (*)(void*))osip_contact_free);
+		osip_message_set_contact(msg,op->base.contact);
+	}
 	eXosip_insubscription_send_answer(op->tid,202,msg);
 	eXosip_unlock();
 	return 0;

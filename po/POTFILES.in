@@ -72,4 +72,4 @@ mediastreamer2/src/chanadapt.c
 mediastreamer2/src/itc.c
 mediastreamer2/src/extdisplay.c
 mediastreamer2/src/msiounit.c
-
+mediastreamer2/src/x11video.c

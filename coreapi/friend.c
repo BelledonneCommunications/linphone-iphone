@@ -128,6 +128,7 @@ void __linphone_friend_do_subscribe(LinphoneFriend *fr){
 	char *friend=NULL;
 	const char *route=NULL;
 	const char *from=NULL;
+	const char *fixed_contact=NULL;
 	LinphoneProxyConfig *cfg;
 	
 	friend=linphone_address_as_string(fr->uri);
@@ -135,6 +136,12 @@ void __linphone_friend_do_subscribe(LinphoneFriend *fr){
 	if (cfg!=NULL){
 		route=linphone_proxy_config_get_route(cfg);
 		from=linphone_proxy_config_get_identity(cfg);
+		if (cfg->op){
+			fixed_contact=sal_op_get_contact(cfg->op);
+			if (fixed_contact) {
+				ms_message("Contact for subscribe has been fixed using proxy to %s",fixed_contact);
+			}
+		}
 	}else from=linphone_core_get_primary_contact(fr->lc);
 	if (fr->outsub==NULL){
 		/* people for which we don't have yet an answer should appear as offline */
@@ -149,6 +156,7 @@ void __linphone_friend_do_subscribe(LinphoneFriend *fr){
 	}
 	fr->outsub=sal_op_new(fr->lc->sal);
 	sal_op_set_route(fr->outsub,route);
+	sal_op_set_contact(fr->outsub,fixed_contact);
 	sal_subscribe_presence(fr->outsub,from,friend);
 	fr->subscribe_active=TRUE;
 	ms_free(friend);
@@ -367,6 +375,7 @@ void linphone_friend_apply(LinphoneFriend *fr, LinphoneCore *lc){
 	}
 	ms_message("linphone_friend_apply() done.");
 	lc->bl_refresh=TRUE;
+	fr->commit=FALSE;
 }
 
 void linphone_friend_edit(LinphoneFriend *fr){
@@ -391,7 +400,8 @@ void linphone_core_add_friend(LinphoneCore *lc, LinphoneFriend *lf)
 		return ;
 	}
 	lc->friends=ms_list_append(lc->friends,lf);
-	linphone_friend_apply(lf,lc);
+	if ( linphone_core_ready(lc)) linphone_friend_apply(lf,lc);
+	else lf->commit=TRUE;
 	return ;
 }
 
@@ -401,6 +411,15 @@ void linphone_core_remove_friend(LinphoneCore *lc, LinphoneFriend* fl){
 		lc->friends=ms_list_remove_link(lc->friends,el);
 		linphone_friend_destroy((LinphoneFriend*)el->data);
 		linphone_core_write_friends_config(lc);
+	}
+}
+
+void linphone_core_send_initial_subscribes(LinphoneCore *lc){
+	const MSList *elem;
+	for(elem=lc->friends;elem!=NULL;elem=elem->next){
+		LinphoneFriend *f=(LinphoneFriend*)elem->data;
+		if (f->commit)
+			linphone_friend_apply(f,lc);
 	}
 }
 
@@ -562,7 +581,7 @@ void linphone_core_write_friends_config(LinphoneCore* lc)
 {
 	MSList *elem;
 	int i;
-	if (!lc->ready) return; /*dont write config when reading it !*/
+	if (! linphone_core_ready(lc)) return; /*dont write config when reading it !*/
 	for (elem=lc->friends,i=0; elem!=NULL; elem=ms_list_next(elem),i++){
 		linphone_friend_write_to_config_file(lc->config,(LinphoneFriend*)elem->data,i);
 	}
