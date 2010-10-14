@@ -72,6 +72,7 @@ void linphone_proxy_config_destroy(LinphoneProxyConfig *obj){
 	if (obj->type!=NULL) ms_free(obj->type);
 	if (obj->dial_prefix!=NULL) ms_free(obj->dial_prefix);
 	if (obj->op) sal_op_release(obj->op);
+	if (obj->publish_op) sal_op_release(obj->publish_op);
 }
 
 /**
@@ -433,7 +434,9 @@ int linphone_proxy_config_send_publish(LinphoneProxyConfig *proxy,
 	SalOp *op=sal_op_new(proxy->lc->sal);
 	err=sal_publish(op,linphone_proxy_config_get_identity(proxy),
 	    linphone_proxy_config_get_identity(proxy),linphone_online_status_to_sal(presence_mode));
-	sal_op_release(op);
+	if (proxy->publish_op!=NULL)
+		sal_op_release(proxy->publish_op);
+	proxy->publish_op=op;
 	return err;
 }
 
@@ -693,6 +696,9 @@ void linphone_proxy_config_update(LinphoneProxyConfig *cfg){
 		}
 		if (lc->sip_conf.register_only_when_network_is_up || lc->network_reachable)
 			linphone_proxy_config_register(cfg);
+		if (cfg->publish && cfg->publish_op==NULL){
+			linphone_proxy_config_send_publish(cfg,lc->presence_mode);
+		}
 		cfg->commit=FALSE;
 	}
 }

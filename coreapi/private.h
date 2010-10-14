@@ -213,6 +213,7 @@ struct _LinphoneProxyConfig
 	int auth_failures;
 	char *dial_prefix;
 	LinphoneRegistrationState state;
+	SalOp *publish_op;
 	bool_t commit;
 	bool_t reg_sendregister;
 	bool_t registered;
