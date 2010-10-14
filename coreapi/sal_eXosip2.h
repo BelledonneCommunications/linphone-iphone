@@ -66,6 +66,7 @@ struct SalOp{
 
 void sal_remove_out_subscribe(Sal *sal, SalOp *op);
 void sal_remove_in_subscribe(Sal *sal, SalOp *op);
+void sal_add_other(Sal *sal, SalOp *op,  osip_message_t *request);
 
 void sal_exosip_subscription_recv(Sal *sal, eXosip_event_t *ev);
 void sal_exosip_subscription_answered(Sal *sal,eXosip_event_t *ev);
@@ -76,5 +77,6 @@ void sal_exosip_in_subscription_closed(Sal *sal, eXosip_event_t *ev);
 SalOp * sal_find_out_subscribe(Sal *sal, int sid);
 void sal_exosip_fix_route(SalOp *op);
 
+void _osip_list_set_empty(osip_list_t *l, void (*freefunc)(void*));
 
 #endif

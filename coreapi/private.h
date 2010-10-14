@@ -166,6 +166,7 @@ void linphone_core_update_allocated_audio_bandwidth(LinphoneCore *lc);
 void linphone_core_update_allocated_audio_bandwidth_in_call(LinphoneCore *lc, const PayloadType *pt);
 void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call);
 
+void linphone_core_send_initial_subscribes(LinphoneCore *lc);
 void linphone_core_write_friends_config(LinphoneCore* lc);
 void linphone_friend_write_to_config_file(struct _LpConfig *config, LinphoneFriend *lf, int index);
 LinphoneFriend * linphone_friend_new_from_config_file(struct _LinphoneCore *lc, int index);
@@ -173,6 +174,7 @@ LinphoneFriend * linphone_friend_new_from_config_file(struct _LinphoneCore *lc, 
 void linphone_proxy_config_update(LinphoneProxyConfig *cfg);
 void linphone_proxy_config_get_contact(LinphoneProxyConfig *cfg, const char **ip, int *port);
 LinphoneProxyConfig * linphone_core_lookup_known_proxy(LinphoneCore *lc, const LinphoneAddress *uri);
+const char *linphone_core_find_best_identity(LinphoneCore *lc, const LinphoneAddress *to, const char **route);
 int linphone_core_get_local_ip_for(int type, const char *dest, char *result);
 
 LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(struct _LpConfig *config, int index);
@@ -238,8 +240,8 @@ struct _LinphoneAuthInfo
 struct _LinphoneChatRoom{
 	struct _LinphoneCore *lc;
 	char  *peer;
-	char *route;
 	LinphoneAddress *peer_url;
+	SalOp *op;
 	void * user_data;
 };
 
@@ -255,6 +257,7 @@ struct _LinphoneFriend{
 	bool_t subscribe;
 	bool_t subscribe_active;
 	bool_t inc_subscribe_pending;
+	bool_t commit;
 };	
 
 
@@ -412,9 +415,10 @@ struct _LinphoneCore
 	void *wait_ctx;
 	unsigned long video_window_id;
 	unsigned long preview_window_id;
+	time_t netup_time; /*time when network went reachable */
 	bool_t use_files;
 	bool_t apply_nat_settings;
-	bool_t ready;
+	bool_t initial_subscribes_sent;
 	bool_t bl_refresh;
 	bool_t preview_finished;
 	bool_t auto_net_state_mon;
@@ -432,6 +436,8 @@ void linphone_core_set_state(LinphoneCore *lc, LinphoneGlobalState gstate, const
 
 SalMediaDescription *create_local_media_description(LinphoneCore *lc, 
     		LinphoneCall *call, bool_t with_video, bool_t only_one_codec);
+
+#define linphone_core_ready(lc) ((lc)->state!=LinphoneGlobalStartup)
 
 #define HOLD_OFF	(0)
 #define HOLD_ON		(1)

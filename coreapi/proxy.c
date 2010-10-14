@@ -167,10 +167,16 @@ int linphone_proxy_config_set_route(LinphoneProxyConfig *obj, const char *route)
 		obj->reg_route=NULL;
 	}
 	if (route!=NULL){
+		LinphoneAddress *addr;
 		/*try to prepend 'sip:' */
 		if (strstr(route,"sip:")==NULL){
 			obj->reg_route=ms_strdup_printf("sip:%s",route);
 		}else obj->reg_route=ms_strdup(route);
+		addr=linphone_address_new(obj->reg_route);
+		if (addr==NULL){
+			ms_free(obj->reg_route);
+			obj->reg_route=NULL;
+		}else linphone_address_destroy(addr);
 	}
 	return 0;
 }
@@ -694,7 +700,7 @@ void linphone_proxy_config_update(LinphoneProxyConfig *cfg){
 		if (cfg->type && cfg->ssctx==NULL){
 			linphone_proxy_config_activate_sip_setup(cfg);
 		}
-		if (lc->sip_conf.register_only_when_network_is_up || lc->network_reachable)
+		if (!lc->sip_conf.register_only_when_network_is_up || lc->network_reachable)
 			linphone_proxy_config_register(cfg);
 		if (cfg->publish && cfg->publish_op==NULL){
 			linphone_proxy_config_send_publish(cfg,lc->presence_mode);

@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 static void text_received(Sal *sal, eXosip_event_t *ev);
 
-static void _osip_list_set_empty(osip_list_t *l, void (*freefunc)(void*)){
+void _osip_list_set_empty(osip_list_t *l, void (*freefunc)(void*)){
 	void *data;
 	while((data=osip_list_get(l,0))!=NULL){
 		osip_list_remove(l,0);
@@ -102,7 +102,7 @@ static SalOp * sal_find_other(Sal *sal, osip_message_t *response){
 	return NULL;
 }
 
-static void sal_add_other(Sal *sal, SalOp *op, osip_message_t *request){
+void sal_add_other(Sal *sal, SalOp *op, osip_message_t *request){
 	osip_call_id_t *callid=osip_message_get_call_id(request);
 	if (callid==NULL) {
 		ms_error("There is no call id in the request !");
