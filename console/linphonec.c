@@ -599,7 +599,7 @@ main (int argc, char *argv[]) {
 #endif
 	linphonec_vtable.call_state_changed=linphonec_call_state_changed;
 	linphonec_vtable.notify_presence_recv = linphonec_notify_presence_received;
-	linphonec_vtable.new_unknown_subscriber = linphonec_new_unknown_subscriber;
+	linphonec_vtable.new_subscription_request = linphonec_new_unknown_subscriber;
 	linphonec_vtable.auth_info_requested = linphonec_prompt_for_auth;
 	linphonec_vtable.display_status = linphonec_display_status;
 	linphonec_vtable.display_message=linphonec_display_something;

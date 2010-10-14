@@ -39,6 +39,11 @@ extern "C" {
 
 struct _MSSndCard;
 struct _LinphoneCore;
+/**
+ * Linphone core main object created by function linphone_core_new() .
+ * @ingroup initializing
+ */
+typedef struct _LinphoneCore LinphoneCore;
 struct SalOp;
 
 struct _LpConfig;
@@ -68,6 +73,11 @@ typedef struct _LCSipTransports LCSipTransports;
  * @var LinphoneAddress
  */
 typedef struct SalAddress LinphoneAddress;
+#ifdef IN_LINPHONE
+#include "linphonefriend.h"
+#else
+#include "linphone/linphonefriend.h"
+#endif
 
 LinphoneAddress * linphone_address_new(const char *uri);
 LinphoneAddress * linphone_address_clone(const LinphoneAddress *uri);
@@ -230,155 +240,7 @@ LinphoneError linphone_call_get_error(const LinphoneCall *call);
 const char *linphone_call_get_remote_user_agent(LinphoneCall *call);
 void *linphone_call_get_user_pointer(LinphoneCall *call);
 void linphone_call_set_user_pointer(LinphoneCall *call, void *user_pointer);
-/**
- * @ingroup buddy_list
- * Enum controlling behavior for incoming subscription request.
- * <br> Use by linphone_friend_set_inc_subscribe_policy()
- */
-typedef  enum {
-	/**
-	 * Does not automatically accept an incoming subscription request.
-	 *
-	 */
-	LinphoneSPWait,
-	/**
-	 * Rejects incoming subscription request.
-	 */
-	LinphoneSPDeny,
-	/**
-	 * Automatically accepts a subscription request.
-	 */
-	LinphoneSPAccept
-}LinphoneSubscribePolicy;
 
-/**
- * @ingroup buddy_list
- */
-typedef enum _LinphoneOnlineStatus{
-	LinphoneStatusOffline,
-	LinphoneStatusOnline,
-	LinphoneStatusBusy,
-	LinphoneStatusBeRightBack,
-	LinphoneStatusAway,
-	LinphoneStatusOnThePhone,
-	LinphoneStatusOutToLunch,
-	LinphoneStatusDoNotDisturb,
-	LinphoneStatusMoved,
-	LinphoneStatusAltService,
-	LinphoneStatusPending,
-	LinphoneStatusEnd
-}LinphoneOnlineStatus;
-/**
- * @ingroup buddy_list
- * return humain readable presence status
- * @param ss
- */
-const char *linphone_online_status_to_string(LinphoneOnlineStatus ss);
-
-/**
- * @addtogroup buddy_list
- * @{
- */
-struct _LinphoneFriend;
-/**
- * Represents a buddy, all presence actions like subscription and status change notification are performed on this object
- */
-typedef struct _LinphoneFriend LinphoneFriend;
-/**
- * Contructor
- * @return a new empty #LinphoneFriend
- */
-LinphoneFriend * linphone_friend_new();
-/**
- * Contructor same as linphone_friend_new() + linphone_friend_set_sip_addr()
- * @param addr a buddy address, must be a sip uri like sip:joe@sip.linphone.org
- * @return a new #LinphoneFriend with \link linphone_friend_get_address() address initialized \endlink
- */
-LinphoneFriend *linphone_friend_new_with_addr(const char *addr);
-/**
- * Configure #LinphoneFriend with a new address.
- *  @param uri a buddy address, must be a sip uri like sip:joe@sip.linphone.org
- *  @return 0 if succeed
- */
-int linphone_friend_set_sip_addr(LinphoneFriend *fr, const char *uri);
-/**
- * modify friend nickname
- * @param fr #LinphoneFriend object
- * @param new name
- * @return 0 if succeed
- *
- */
-int linphone_friend_set_name(LinphoneFriend *fr, const char *name);
-/**
- * Configure #LinphoneFriend to subscribe to presence information
- * @param fr #LinphoneFriend object
- * @param val if TRUE this friend will receive subscription message
- */
-
-int linphone_friend_enable_subscribes(LinphoneFriend *fr, bool_t val);
-
-#define linphone_friend_send_subscribe linphone_friend_enable_subscribes
-/**
- * Configure incoming subscription policy for this friend.
- * @param fr #LinphoneFriend object
- * @param pol #LinphoneSubscribePolicy policy to apply.
- */
-int linphone_friend_set_inc_subscribe_policy(LinphoneFriend *fr, LinphoneSubscribePolicy pol);
-/**
- * Starts editing a friend configuration.
- *
- * Because friend configuration must be consistent, applications MUST
- * call linphone_friend_edit() before doing any attempts to modify
- * friend configuration (such as \link linphone_friend_set_name() nick name \endlink , \link linphone_friend_set_sip_addr() address \endlink and so on).
- * Once the modifications are done, then the application must call
- * linphone_friend_done() to commit the changes.
-**/
-void linphone_friend_edit(LinphoneFriend *fr);
-/**
- * Commits modification made to the friend configuration.
- * @param fr #LinphoneFriend object
-**/
-void linphone_friend_done(LinphoneFriend *fr);
-/**
- * Destructor
- * @param fr #LinphoneFriend object
- */
-void linphone_friend_destroy(LinphoneFriend *lf);
-/**
- * get address of this friend
- * @param lf #LinphoneFriend object
- * @return #LinphoneAddress
- */
-const LinphoneAddress *linphone_friend_get_address(const LinphoneFriend *lf);
-/**
- * get subscription flag value
- * @param lf #LinphoneFriend object
- * @return returns true is subscription is activated for this friend
- *
- */
-bool_t linphone_friend_subscribes_enabled(const LinphoneFriend *lf);
-#define linphone_friend_get_send_subscribe linphone_friend_subscribes_enabled
-/**
- * get current subscription policy for this #LinphoneFriend
- * @param lf #LinphoneFriend object
- * @return #LinphoneSubscribePolicy
- *
- */
-LinphoneSubscribePolicy linphone_friend_get_inc_subscribe_policy(const LinphoneFriend *lf);
-/**
- * get friend status
- * @return #LinphoneOnlineStatus
- */
-LinphoneOnlineStatus linphone_friend_get_status(const LinphoneFriend *lf);
-BuddyInfo * linphone_friend_get_info(const LinphoneFriend *lf);
-void linphone_friend_set_ref_key(LinphoneFriend *lf, const char *key);
-const char *linphone_friend_get_ref_key(const LinphoneFriend *lf);
-bool_t linphone_friend_in_list(const LinphoneFriend *lf);
-
-#define linphone_friend_url(lf) ((lf)->url)
-/**
- * @}
- */
 
 /**
  * @addtogroup proxies
@@ -586,11 +448,18 @@ typedef void (*NotifyReceivedCb)(struct _LinphoneCore *lc, LinphoneCall *call, c
 /**
  * Report status change for a friend previously \link linphone_core_add_friend() added \endlink to #LinphoneCore.
  * @param lc #LinphoneCore object .
- * @param fr Updated #LinphoneFriend .
+ * @param lf Updated #LinphoneFriend .
  */
-typedef void (*NotifyPresenceReceivedCb)(struct _LinphoneCore *lc, LinphoneFriend * fr);
-/** Callback prototype */
-typedef void (*NewUnknownSubscriberCb)(struct _LinphoneCore *lc, LinphoneFriend *lf, const char *url);
+typedef void (*NotifyPresenceReceivedCb)(struct _LinphoneCore *lc, LinphoneFriend * lf);
+/**
+ *  Reports that a new subscription request has been received and wait for a decision.
+ *  <br> Status on this subscription request is notified by \link linphone_friend_set_inc_subscribe_policy() changing policy \endlink for this friend
+ *	@param lc #LinphoneCore object
+ *	@param lf #LinphoneFriend corresponding to the subscriber
+ *	@param url of the subscriber
+ *  Callback prototype
+ *  */
+typedef void (*NewSubscribtionRequestCb)(struct _LinphoneCore *lc, LinphoneFriend *lf, const char *url);
 /** Callback prototype */
 typedef void (*AuthInfoRequested)(struct _LinphoneCore *lc, const char *realm, const char *username);
 /** Callback prototype */
@@ -613,7 +482,7 @@ typedef struct _LinphoneVTable{
 	LinphoneRegistrationStateCb registration_state_changed;/**<Notifies registration state changes*/
 	LinphoneCallStateCb call_state_changed;/**<Notifies call state changes*/
 	NotifyPresenceReceivedCb notify_presence_recv; /**< Notify received presence events*/
-	NewUnknownSubscriberCb new_unknown_subscriber; /**< Notify about unknown subscriber */
+	NewSubscribtionRequestCb new_subscription_request; /**< Notify about pending subscription request */
 	AuthInfoRequested auth_info_requested; /**< Ask the application some authentication information */
 	CallLogUpdated call_log_updated; /**< Notifies that call log list has been updated */
 	TextMessageReceived text_received; /**< A text message has been received */
@@ -652,11 +521,7 @@ typedef enum _LinphoneWaitingState{
 	LinphoneWaitingFinished
 } LinphoneWaitingState;
 typedef void * (*LinphoneWaitingCallback)(struct _LinphoneCore *lc, void *context, LinphoneWaitingState ws, const char *purpose, float progress);
-/**
- * Linphone core main object created by function linphone_core_new() .
- * @ingroup initializing
- */
-typedef struct _LinphoneCore LinphoneCore;
+
 
 /* THE main API */
 
@@ -895,36 +760,7 @@ bool_t linphone_core_is_rtp_muted(LinphoneCore *lc);
 bool_t linphone_core_get_rtp_no_xmit_on_audio_mute(const LinphoneCore *lc);
 void linphone_core_set_rtp_no_xmit_on_audio_mute(LinphoneCore *lc, bool_t val);
 
-/**
- * @addtogroup buddy_list
- * @{
- */
-void linphone_core_set_presence_info(LinphoneCore *lc,int minutes_away,const char *contact,LinphoneOnlineStatus os);
 
-LinphoneOnlineStatus linphone_core_get_presence_info(const LinphoneCore *lc);
-
-void linphone_core_interpret_friend_uri(LinphoneCore *lc, const char *uri, char **result);
-/**
- * Add a friend to the current buddy list, if \link linphone_friend_enable_subscribes() subscription attribute \endlink is set, a SIP SUBSCRIBE message is sent.
- * @param lc #LinphoneCore object
- * @param fr #LinphoneFriend to add
- */
-void linphone_core_add_friend(LinphoneCore *lc, LinphoneFriend *fr);
-/**
- *
- */
-void linphone_core_remove_friend(LinphoneCore *lc, LinphoneFriend *fr);
-void linphone_core_reject_subscriber(LinphoneCore *lc, LinphoneFriend *lf);
-/* a list of LinphoneFriend */
-const MSList * linphone_core_get_friend_list(const LinphoneCore *lc);
-/* notify all friends that have subscribed */
-void linphone_core_notify_all_friends(LinphoneCore *lc, LinphoneOnlineStatus os);
-LinphoneFriend *linphone_core_get_friend_by_address(const LinphoneCore *lc, const char *addr);
-LinphoneFriend *linphone_core_get_friend_by_ref_key(const LinphoneCore *lc, const char *key);
-
-/**
- * @}
- */
 /* returns a list of LinphoneCallLog */
 const MSList * linphone_core_get_call_logs(LinphoneCore *lc);
 void linphone_core_clear_call_logs(LinphoneCore *lc);

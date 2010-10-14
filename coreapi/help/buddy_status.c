@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *Desmonstrating how to initiate a SIP subscription and receive notification from a sip uri identity passed from the command line.
  *<br>Argument must be like sip:jehan@sip.linphone.org .
  *<br>
- *ex registration sip:jehan@sip.linphone.org secret
+ *ex budy_list sip:jehan@sip.linphone.org
  *<br>Subscription is cleared on SIGINT
  *<br>
  *@include buddy_status.c
@@ -52,6 +52,16 @@ static void notify_presence_recv_updated (struct _LinphoneCore *lc,  LinphoneFri
 				,linphone_online_status_to_string(linphone_friend_get_status(friend))
 				,linphone_address_as_string (friend_address));
 }
+static void new_subscription_request (struct _LinphoneCore *lc,  LinphoneFriend *friend, const char* url) {
+	const LinphoneAddress* friend_address = linphone_friend_get_address(friend);
+	printf(" [%s] wants to see your status, accepting\n"
+				,linphone_address_as_string (friend_address));
+	linphone_friend_edit(friend); /* start editing friend */
+	linphone_friend_set_inc_subscribe_policy(friend,LinphoneSPAccept); /* Accept incoming subscription request for this friend*/
+	linphone_friend_done(friend); /*commit change*/
+	linphone_core_add_friend(lc,friend); /* add this new friend to the buddy list*/
+
+}
 
 LinphoneCore *lc;
 int main(int argc, char *argv[]){
@@ -76,6 +86,7 @@ int main(int argc, char *argv[]){
 	 in order to get notifications about the progress of the registration.
 	 */
 	vtable.notify_presence_recv=notify_presence_recv_updated;
+	vtable.new_subscription_request=new_subscription_request;
 
 	/*
 	 Instanciate a LinphoneCore object given the LinphoneCoreVTable
@@ -92,21 +103,30 @@ int main(int argc, char *argv[]){
 
 		linphone_friend_enable_subscribes(my_friend,TRUE); /*configure this friend to emit SUBSCRIBE message after being added to LinphoneCore*/
 		linphone_friend_set_name(my_friend,"My best friend"); /* add a nickname to this buddy */
-		//linphone_friend_set_inc_subscribe_policy(my_friend,)
+
+		linphone_friend_set_inc_subscribe_policy(my_friend,LinphoneSPAccept); /* Accept incoming subscription request for this friend*/
+
+
 		linphone_core_add_friend(lc,my_friend); /* add my friend to the buddy list, initiate SUBSCRIBE message*/
 
 	}
 
-	/* main loop for receiving notifications and doing background linphonecore work: */
+	linphone_core_set_presence_info(lc,0,NULL,LinphoneStatusOnline); /*set my status to online*/
+
+	/* main loop for receiving notifications and doing background linphone core work: */
 	while(running){
-		linphone_core_iterate(lc); /* first iterate initiates registration */
+		linphone_core_iterate(lc); /* first iterate initiates subscription */
 		ms_usleep(50000);
 	}
+
+	linphone_core_set_presence_info(lc,0,NULL,LinphoneStatusOffline); /* change my presence status to offline*/
+	linphone_core_iterate(lc); /* just to make sure new status is initiate message is issued */
 
 	linphone_friend_edit(my_friend); /* start editing friend */
 	linphone_friend_enable_subscribes(my_friend,FALSE); /*disable subscription for this friend*/
 	linphone_friend_done(my_friend); /*commit changes triggering an UNSUBSCRIBE message*/
 
+	linphone_core_iterate(lc); /* just to make sure unsubscribe message is issued */
 
 end:
 	printf("Shutting down...\n");

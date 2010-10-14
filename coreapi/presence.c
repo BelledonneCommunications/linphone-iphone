@@ -31,9 +31,9 @@ void linphone_core_add_subscriber(LinphoneCore *lc, const char *subscriber, SalO
 	linphone_friend_set_inc_subscribe_policy(fl,LinphoneSPAccept);
 	fl->inc_subscribe_pending=TRUE;
 	lc->subscribers=ms_list_append(lc->subscribers,(void *)fl);
-	if (lc->vtable.new_unknown_subscriber!=NULL) {
+	if (lc->vtable.new_subscription_request!=NULL) {
 		char *tmp=linphone_address_as_string(fl->uri);
-		lc->vtable.new_unknown_subscriber(lc,fl,tmp);
+		lc->vtable.new_subscription_request(lc,fl,tmp);
 		ms_free(tmp);
 	}
 }

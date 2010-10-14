@@ -230,7 +230,7 @@ int linphone_friend_set_name(LinphoneFriend *lf, const char *name){
 	return 0;
 }
 
-int linphone_friend_send_subscribe(LinphoneFriend *fr, bool_t val){
+int linphone_friend_enable_subscribes(LinphoneFriend *fr, bool_t val){
 	fr->subscribe=val;
 	return 0;
 }

@@ -197,7 +197,7 @@ static void linphone_gtk_init_liblinphone(const char *config_file,
 	vtable.registration_state_changed=linphone_gtk_registration_state_changed;
 	vtable.show=linphone_gtk_show;
 	vtable.notify_presence_recv=linphone_gtk_notify_recv;
-	vtable.new_unknown_subscriber=linphone_gtk_new_unknown_subscriber;
+	vtable.new_subscription_request=linphone_gtk_new_unknown_subscriber;
 	vtable.auth_info_requested=linphone_gtk_auth_info_requested;
 	vtable.display_status=linphone_gtk_display_status;
 	vtable.display_message=linphone_gtk_display_message;

@@ -92,9 +92,9 @@
 	linphone_proxy_config_edit(proxy_cfg); /*start editing proxy configuration*/
 	linphone_proxy_config_enable_register(proxy_cfg,FALSE); /*de-activate registration for this proxy config*/
 	linphone_proxy_config_done(proxy_cfg); /*initiate REGISTER with expire = 0*/
-	\endcode
+\endcode
 	<br>
-	For more complete tutorial can be found see : \ref registration_tutorials "Registration tutorial" 
+	A complete tutorial can be found at : \ref registration_tutorials "Registration tutorial" 
 **/
 
 /**
@@ -106,7 +106,47 @@
 **/
 
 /**
-* @defgroup buddy_list Managing Buddies and buddy list
+* @defgroup buddy_list Managing Buddies and buddy list and presence 
+<b>Buddies and buddy list</b>
+<br>Each buddy is represented by a #LinphoneFriend object created by function linphone_friend_new(). 
+Buddy configuration parameters like \link linphone_friend_set_sip_addr() sip uri \endlink or  \link linphone_friend_set_inc_subscribe_policy status publication \endlink policy for this \link #LinphoneFriend friend \endlink  are configurable for each buddy.
+<br>Here under a typical buddy creation:
+<br>
+\code
+LinphoneFriend* my_friend=linphone_friend_new_with_addr("sip:joe@sip.linphone.org"); /*creates friend object for buddy joe*/
+linphone_friend_enable_subscribes(my_friend,TRUE); /*configure this friend to emit SUBSCRIBE message after being added to LinphoneCore*/
+linphone_friend_set_name(my_friend,"My best friend"); /* add a nickname to this buddy */
+linphone_friend_set_inc_subscribe_policy(my_friend,LinphoneSPAccept); /* Incoming subscription request for this friend*/
+\endcode
+\link #LinphoneFriend  friends \endlink status changes are reported by callback LinphoneCoreVTable.notify_presence_recv
+\code
+static void notify_presence_recv_updated (struct _LinphoneCore *lc,  LinphoneFriend *friend) {
+	const LinphoneAddress* friend_address = linphone_friend_get_address(friend);
+	printf("New state state [%s] for user id [%s] \n"
+				,linphone_online_status_to_string(linphone_friend_get_status(friend))
+				,linphone_address_as_string (friend_address));
+}
+\endcode
+<br>Once created a buddy can be added to the buddy list using function linphone_core_add_friend() . Added friends will be notified about \link linphone_core_set_presence_info() local status changes \endlink
+<br>
+Any subsequente modifications to #LinphoneFriend must be first started by a call to function linphone_friend_config_edit() and validated by  function linphone_friend_config_done()
+\code
+linphone_friend_edit(my_friend); /* start editing friend */
+linphone_friend_enable_subscribes(my_friend,FALSE); /*disable subscription for this friend*/
+linphone_friend_done(my_friend); /*commit changes triggering an UNSUBSCRIBE message*/
+\endcode
+
+
+<b> Publishing presence status </b>
+<br>Local presence status can be changed using function linphone_core_set_presence_info() .New status is propagated to all friend \link linphone_core_add_friend() previously added \endlink to #LinphoneCore. 
+
+<b>Handling incoming subscription request</b>
+<br> New incoming subscription requests are process according to \link linphone_friend_set_inc_subscribe_policy() the incoming subscription policy state \endlink for subscription initiated by \link linphone_core_add_friend() members of the buddy list \endlink
+<br> For incoming request comming from an unknown buddy, the call back  LinphoneCoreVTable.new_subscription_request .
+
+<br> A complete tutorial can be found at : \ref buddy_tutorials "Registration tutorial" 
+
+
 */
 
 
