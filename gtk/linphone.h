@@ -61,7 +61,7 @@ void linphone_gtk_set_my_presence(LinphoneOnlineStatus ss);
 void linphone_gtk_show_parameters(void);
 void linphone_gtk_load_identities(void);
 void linphone_gtk_create_chatroom(const char *with);
-void linphone_gtk_text_received(LinphoneCore *lc, LinphoneChatRoom *room, const char *from, const char *message);
+void linphone_gtk_text_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from, const char *message);
 void linphone_gtk_call_log_update(GtkWidget *w);
 void linphone_gtk_create_log_window(void);
 void linphone_gtk_log_show(void);

@@ -78,7 +78,7 @@ bool_t linphone_chat_room_matches(LinphoneChatRoom *cr, const LinphoneAddress *f
 	return FALSE;
 }
 
-void linphone_chat_room_text_received(LinphoneChatRoom *cr, LinphoneCore *lc, const char *from, const char *msg){
+void linphone_chat_room_text_received(LinphoneChatRoom *cr, LinphoneCore *lc, const LinphoneAddress *from, const char *msg){
 	if (lc->vtable.text_received!=NULL) lc->vtable.text_received(lc, cr, from, msg);
 }
 
@@ -102,8 +102,9 @@ void linphone_core_text_received(LinphoneCore *lc, const char *from, const char 
 		/* create a new chat room */
 		cr=linphone_core_create_chat_room(lc,cleanfrom);
 	}
+
 	linphone_address_destroy(addr);
-	linphone_chat_room_text_received(cr,lc,cleanfrom,msg);
+	linphone_chat_room_text_received(cr,lc,cr->peer_url,msg);
 	ms_free(cleanfrom);
 }
 
@@ -113,4 +114,7 @@ void linphone_chat_room_set_user_data(LinphoneChatRoom *cr, void * ud){
 }
 void * linphone_chat_room_get_user_data(LinphoneChatRoom *cr){
 	return cr->user_data;
+}
+const LinphoneAddress* linphone_chat_room_get_peer_address(LinphoneChatRoom *cr) {
+	return cr->peer_url;
 }

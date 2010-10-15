@@ -402,14 +402,48 @@ LinphoneAuthInfo * linphone_auth_info_new_from_config_file(struct _LpConfig *con
 
 
 struct _LinphoneChatRoom;
+/**
+ * @addtogroup chatroom
+ * @{
+ */
+/**
+ * A chat room is the place where text messages are exchanged.
+ * <br> Can be created by linphone_core_create_chat_room().
+ */
 typedef struct _LinphoneChatRoom LinphoneChatRoom;
-
-LinphoneChatRoom * linphone_core_create_chat_room(struct _LinphoneCore *lc, const char *to);
-void linphone_chat_room_send_message(LinphoneChatRoom *cr, const char *msg);
+/**
+ * Create a new chat room for messaging from a sip uri like sip:joe@sip.linphone.org
+ * @param lc #LinphoneCore object
+ * @param to destination address for messages
+ * @return #LinphoneChatRoom where messaging can take place.
+ */
+LinphoneChatRoom * linphone_core_create_chat_room(LinphoneCore *lc, const char *to);
+/**
+ * Destructor
+ * @param cr #LinphoneChatRoom object
+ */
 void linphone_chat_room_destroy(LinphoneChatRoom *cr);
+
+
+/**
+ * get peer address \link linphone_core_create_chat_room() associated to \endlink this #LinphoneChatRoom
+ * @param cr #LinphoneChatRoom object
+ * @return #LinphoneAddress peer address
+ */
+const LinphoneAddress* linphone_chat_room_get_peer_address(LinphoneChatRoom *cr);
+/**
+ * send a message to peer member of this chat room.
+ * @param cr #LinphoneChatRoom object
+ * @param msg message to be sent
+ */
+void linphone_chat_room_send_message(LinphoneChatRoom *cr, const char *msg);
+
 void linphone_chat_room_set_user_data(LinphoneChatRoom *cr, void * ud);
 void * linphone_chat_room_get_user_data(LinphoneChatRoom *cr);
 
+/**
+ * @}
+ */
 typedef enum _LinphoneGlobalState{
 	LinphoneGlobalOff,
 	LinphoneGlobalStartup,
@@ -464,8 +498,15 @@ typedef void (*NewSubscribtionRequestCb)(struct _LinphoneCore *lc, LinphoneFrien
 typedef void (*AuthInfoRequested)(struct _LinphoneCore *lc, const char *realm, const char *username);
 /** Callback prototype */
 typedef void (*CallLogUpdated)(struct _LinphoneCore *lc, struct _LinphoneCallLog *newcl);
-/** Callback prototype */
-typedef void (*TextMessageReceived)(struct _LinphoneCore *lc, LinphoneChatRoom *room, const char *from, const char *message);
+/**
+ * Callback prototype
+ *
+ * @param lc #LinphoneCore object
+ * @param room #LinphoneChatRoom involved in this conversation. Can be be created by the framework in case \link #LinphoneAddress the from \endlink is not present in any chat room.
+ * @param from #LinphoneAddress from
+ * @param message incoming message
+ *  */
+typedef void (*TextMessageReceived)(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from, const char *message);
 /** Callback prototype */
 typedef void (*DtmfReceived)(struct _LinphoneCore* lc, LinphoneCall *call, int dtmf);
 /** Callback prototype */

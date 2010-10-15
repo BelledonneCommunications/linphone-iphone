@@ -94,13 +94,13 @@ void linphone_gtk_send_text(GtkWidget *button){
 	}
 }
 
-void linphone_gtk_text_received(LinphoneCore *lc, LinphoneChatRoom *room, const char *from, const char *message){
+void linphone_gtk_text_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from, const char *message){
 	GtkWidget *w=(GtkWidget*)linphone_chat_room_get_user_data(room);
 	if (w==NULL){
-		w=linphone_gtk_init_chatroom(room,from);
+		w=linphone_gtk_init_chatroom(room,linphone_address_as_string_uri_only(from));
 	}
 	linphone_gtk_push_text(GTK_TEXT_VIEW(linphone_gtk_get_widget(w,"textlog")),
-				from,
+				linphone_address_as_string_uri_only(from),
 				message,FALSE);
 	gtk_window_present(GTK_WINDOW(w));
 	/*gtk_window_set_urgency_hint(GTK_WINDOW(w),TRUE);*/

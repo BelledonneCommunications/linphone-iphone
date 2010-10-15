@@ -130,7 +130,7 @@ static void linphonec_new_unknown_subscriber(LinphoneCore *lc,
 		LinphoneFriend *lf, const char *url);
 
 static void linphonec_text_received(LinphoneCore *lc, LinphoneChatRoom *cr,
-		const char *from, const char *msg);
+		const LinphoneAddress *from, const char *msg);
 static void linphonec_display_status (LinphoneCore * lc, const char *something);
 static void linphonec_dtmf_received(LinphoneCore *lc, LinphoneCall *call, int dtmf);
 static void print_prompt(LinphoneCore *opm);
@@ -371,9 +371,9 @@ static void linphonec_call_state_changed(LinphoneCore *lc, LinphoneCall *call, L
  */
 static void
 linphonec_text_received(LinphoneCore *lc, LinphoneChatRoom *cr,
-		const char *from, const char *msg)
+		const LinphoneAddress *from, const char *msg)
 {
-	printf("%s: %s\n", from, msg);
+	printf("%s: %s\n", linphone_address_as_string(from), msg);
 	// TODO: provide mechanism for answering.. ('say' command?)
 }
 

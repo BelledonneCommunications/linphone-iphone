@@ -1,6 +1,6 @@
 
 /*
-linphone
+buddy_status
 Copyright (C) 2010  Belledonne Communications SARL 
 
 This program is free software; you can redistribute it and/or
@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  * @defgroup buddy_tutorials Basic buddy status notification
  * @ingroup tutorials
  *This program is a _very_ simple usage example of liblinphone,
- *desmonstrating how to initiate  SIP subscriptions and receive notifications from a sip uri identity passed from the command line.
+ *demonstrating how to initiate  SIP subscriptions and receive notifications from a sip uri identity passed from the command line.
  *<br>Argument must be like sip:jehan@sip.linphone.org .
  *<br>
  *ex budy_list sip:jehan@sip.linphone.org
@@ -82,14 +82,14 @@ int main(int argc, char *argv[]){
 #endif
 	/* 
 	 Fill the LinphoneCoreVTable with application callbacks.
-	 All are optional. Here we only use the registration_state_changed callbacks
-	 in order to get notifications about the progress of the registration.
+	 All are optional. Here we only use the both notify_presence_recv and new_subscription_request callbacks
+	 in order to get notifications about friend status.
 	 */
 	vtable.notify_presence_recv=notify_presence_recv_updated;
 	vtable.new_subscription_request=new_subscription_request;
 
 	/*
-	 Instanciate a LinphoneCore object given the LinphoneCoreVTable
+	 Instantiate a LinphoneCore object given the LinphoneCoreVTable
 	*/
 	lc=linphone_core_new(&vtable,NULL,NULL,NULL);
 	LinphoneFriend* my_friend=NULL;
