@@ -21,8 +21,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 /**
  * @defgroup buddy_tutorials Basic buddy status notification
  * @ingroup tutorials
- *This program is a _very_ simple usage example of liblinphone.
- *Desmonstrating how to initiate a SIP subscription and receive notification from a sip uri identity passed from the command line.
+ *This program is a _very_ simple usage example of liblinphone,
+ *desmonstrating how to initiate  SIP subscriptions and receive notifications from a sip uri identity passed from the command line.
  *<br>Argument must be like sip:jehan@sip.linphone.org .
  *<br>
  *ex budy_list sip:jehan@sip.linphone.org
@@ -76,7 +76,7 @@ int main(int argc, char *argv[]){
 	}
 
 	signal(SIGINT,stop);
-#define DEBUG
+//#define DEBUG
 #ifdef DEBUG
 	linphone_core_enable_logs(NULL); /*enable liblinphone logs.*/
 #endif
@@ -102,11 +102,7 @@ int main(int argc, char *argv[]){
 		}
 
 		linphone_friend_enable_subscribes(my_friend,TRUE); /*configure this friend to emit SUBSCRIBE message after being added to LinphoneCore*/
-		linphone_friend_set_name(my_friend,"My best friend"); /* add a nickname to this buddy */
-
 		linphone_friend_set_inc_subscribe_policy(my_friend,LinphoneSPAccept); /* Accept incoming subscription request for this friend*/
-
-
 		linphone_core_add_friend(lc,my_friend); /* add my friend to the buddy list, initiate SUBSCRIBE message*/
 
 	}
