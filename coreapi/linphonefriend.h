@@ -34,7 +34,7 @@ extern "C" {
 typedef  enum {
 	/**
 	 * Does not automatically accept an incoming subscription request.
-	 * This policy implies that a decision has to be taken for each incoming subscription request notify in callback LinphoneCoreVTable.new_subscription_request
+	 * This policy implies that a decision has to be taken for each incoming subscription request notified by callback LinphoneCoreVTable.new_subscription_request
 	 *
 	 */
 	LinphoneSPWait,
@@ -99,11 +99,6 @@ typedef enum _LinphoneOnlineStatus{
 
 	LinphoneStatusEnd
 }LinphoneOnlineStatus;
-/**
- * return humain readable presence status
- * @param ss
- */
-const char *linphone_online_status_to_string(LinphoneOnlineStatus ss);
 
 
 struct _LinphoneFriend;
@@ -118,25 +113,40 @@ typedef struct _LinphoneFriend LinphoneFriend;
  */
 LinphoneFriend * linphone_friend_new();
 /**
- * Contructor same as linphone_friend_new() + linphone_friend_set_sip_addr()
+ * Contructor same as linphone_friend_new() + linphone_friend_set_addr()
  * @param addr a buddy address, must be a sip uri like sip:joe@sip.linphone.org
  * @return a new #LinphoneFriend with \link linphone_friend_get_address() address initialized \endlink
  */
 LinphoneFriend *linphone_friend_new_with_addr(const char *addr);
+
 /**
- * Configure #LinphoneFriend with a new address.
- *  @param uri a buddy address, must be a sip uri like sip:joe@sip.linphone.org
- *  @return 0 if succeed
+ * Destructor
+ * @param lf #LinphoneFriend object
  */
-int linphone_friend_set_sip_addr(LinphoneFriend *fr, const char *uri);
+void linphone_friend_destroy(LinphoneFriend *lf);
+
 /**
- * modify friend nickname
+ * set #LinphoneAddress for this friend
  * @param fr #LinphoneFriend object
- * @param new name
- * @return 0 if succeed
+ * @param address #LinphoneAddress
+ */
+int linphone_friend_set_addr(LinphoneFriend *fr, const LinphoneAddress* address);
+
+/**
+ * get address of this friend
+ * @param lf #LinphoneFriend object
+ * @return #LinphoneAddress
+ */
+const LinphoneAddress *linphone_friend_get_address(const LinphoneFriend *lf);
+/**
+ * get subscription flag value
+ * @param lf #LinphoneFriend object
+ * @return returns true is subscription is activated for this friend
  *
  */
-int linphone_friend_set_name(LinphoneFriend *fr, const char *name);
+bool_t linphone_friend_subscribes_enabled(const LinphoneFriend *lf);
+#define linphone_friend_get_send_subscribe linphone_friend_subscribes_enabled
+
 /**
  * Configure #LinphoneFriend to subscribe to presence information
  * @param fr #LinphoneFriend object
@@ -153,11 +163,19 @@ int linphone_friend_enable_subscribes(LinphoneFriend *fr, bool_t val);
  */
 int linphone_friend_set_inc_subscribe_policy(LinphoneFriend *fr, LinphoneSubscribePolicy pol);
 /**
+ * get current subscription policy for this #LinphoneFriend
+ * @param lf #LinphoneFriend object
+ * @return #LinphoneSubscribePolicy
+ *
+ */
+LinphoneSubscribePolicy linphone_friend_get_inc_subscribe_policy(const LinphoneFriend *lf);
+
+/**
  * Starts editing a friend configuration.
  *
  * Because friend configuration must be consistent, applications MUST
  * call linphone_friend_edit() before doing any attempts to modify
- * friend configuration (such as \link linphone_friend_set_name() nick name \endlink , \link linphone_friend_set_sip_addr() address \endlink and so on).
+ * friend configuration (such as \link linphone_friend_set_addr() address \endlink  or \link linphone_friend_set_inc_subscribe_policy() subscription policy\endlink  and so on).
  * Once the modifications are done, then the application must call
  * linphone_friend_done() to commit the changes.
 **/
@@ -167,32 +185,10 @@ void linphone_friend_edit(LinphoneFriend *fr);
  * @param fr #LinphoneFriend object
 **/
 void linphone_friend_done(LinphoneFriend *fr);
-/**
- * Destructor
- * @param fr #LinphoneFriend object
- */
-void linphone_friend_destroy(LinphoneFriend *lf);
-/**
- * get address of this friend
- * @param lf #LinphoneFriend object
- * @return #LinphoneAddress
- */
-const LinphoneAddress *linphone_friend_get_address(const LinphoneFriend *lf);
-/**
- * get subscription flag value
- * @param lf #LinphoneFriend object
- * @return returns true is subscription is activated for this friend
- *
- */
-bool_t linphone_friend_subscribes_enabled(const LinphoneFriend *lf);
-#define linphone_friend_get_send_subscribe linphone_friend_subscribes_enabled
-/**
- * get current subscription policy for this #LinphoneFriend
- * @param lf #LinphoneFriend object
- * @return #LinphoneSubscribePolicy
- *
- */
-LinphoneSubscribePolicy linphone_friend_get_inc_subscribe_policy(const LinphoneFriend *lf);
+
+
+
+
 /**
  * get friend status
  * @return #LinphoneOnlineStatus
@@ -204,6 +200,13 @@ const char *linphone_friend_get_ref_key(const LinphoneFriend *lf);
 bool_t linphone_friend_in_list(const LinphoneFriend *lf);
 
 #define linphone_friend_url(lf) ((lf)->url)
+
+/**
+ * return humain readable presence status
+ * @param ss
+ */
+const char *linphone_online_status_to_string(LinphoneOnlineStatus ss);
+
 
 /**
  * Set my presence status
@@ -236,7 +239,7 @@ void linphone_core_remove_friend(LinphoneCore *lc, LinphoneFriend *fr);
 /**
  * Black list a friend. same as linphone_friend_set_inc_subscribe_policy() with #LinphoneSPDeny policy;
  * @param lc #LinphoneCore object
- * @param fr #LinphoneFriend to add
+ * @param lf #LinphoneFriend to add
  */
 void linphone_core_reject_subscriber(LinphoneCore *lc, LinphoneFriend *lf);
 /**

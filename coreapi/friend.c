@@ -171,8 +171,13 @@ LinphoneFriend * linphone_friend_new(){
 }
 
 LinphoneFriend *linphone_friend_new_with_addr(const char *addr){
+	LinphoneAddress* linphone_address = linphone_address_new(addr);
+	if (linphone_address == NULL) {
+		ms_error("Cannot create friend for address [%s]",addr?addr:"null");
+		return NULL;
+	}
 	LinphoneFriend *fr=linphone_friend_new();
-	if (linphone_friend_set_sip_addr(fr,addr)<0){
+	if (linphone_friend_set_addr(fr,linphone_address)<0){
 		linphone_friend_destroy(fr);
 		return NULL;
 	}
@@ -216,8 +221,8 @@ void linphone_core_interpret_friend_uri(LinphoneCore *lc, const char *uri, char 
 	linphone_address_destroy(fr);
 }
 
-int linphone_friend_set_sip_addr(LinphoneFriend *lf, const char *addr){
-	LinphoneAddress *fr=linphone_address_new(addr);
+int linphone_friend_set_addr(LinphoneFriend *lf, const LinphoneAddress *addr){
+	LinphoneAddress *fr=linphone_address_clone(addr);
 	if (fr==NULL) {
 		ms_warning("Invalid friend sip uri: %s",addr);
 		return -1;
