@@ -68,31 +68,11 @@ const char *linphone_online_status_to_string(LinphoneOnlineStatus ss){
 	return str;
 }
 
-static int friend_data_compare(const void * a, const void * b, void * data){
+static int friend_compare(const void * a, const void * b){
 	LinphoneAddress *fa=((LinphoneFriend*)a)->uri;
 	LinphoneAddress *fb=((LinphoneFriend*)b)->uri;
-	const char *ua,*ub;
-	ua=linphone_address_get_username(fa);
-	ub=linphone_address_get_username(fb);
-	if (ua!=NULL && ub!=NULL) {
-		//printf("Comparing usernames %s,%s\n",ua,ub);
-		return strcasecmp(ua,ub);
-	}
-	else {
-		/* compare hosts*/
-		ua=linphone_address_get_domain(fa);
-		ub=linphone_address_get_domain(fb);
-		if (ua!=NULL && ub!=NULL){
-			int ret=strcasecmp(ua,ub);
-			//printf("Comparing hostnames %s,%s,res=%i\n",ua,ub,ret);
-			return ret;
-		}
-		else return -1;
-	}
-}
-
-static int friend_compare(const void * a, const void * b){
-	return friend_data_compare(a,b,NULL);
+	if (linphone_address_weak_equal (fa,fb)) return 0;
+	return 1;
 }
 
 
