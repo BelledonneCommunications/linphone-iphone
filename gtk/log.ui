@@ -8,7 +8,7 @@
     <property name="border_width">5</property>
     <property name="title" translatable="yes">Linphone debug window</property>
     <property name="window_position">center-on-parent</property>
-    <property name="type_hint">dialog</property>
+    <property name="type_hint">normal</property>
     <property name="deletable">False</property>
     <property name="has_separator">False</property>
     <signal name="response" handler="gtk_widget_hide"/>
