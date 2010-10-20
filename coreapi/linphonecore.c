@@ -1844,9 +1844,12 @@ void linphone_core_start_pending_refered_calls(LinphoneCore *lc){
 	for(elem=lc->calls;elem!=NULL;elem=elem->next){
 		LinphoneCall *call=(LinphoneCall*)elem->data;
 		if (call->refer_pending){
+			LinphoneCallParams *cp=linphone_core_create_default_call_parameters(lc);
+			cp->referer=call;
 			ms_message("Starting new call to refered address %s",call->refer_to);
 			call->refer_pending=FALSE;
-			linphone_core_invite(lc,call->refer_to);
+			linphone_core_invite_with_params(lc,call->refer_to,cp);
+			linphone_call_params_destroy(cp);
 			break;
 		}
 	}
@@ -2143,10 +2146,26 @@ int linphone_core_transfer_call(LinphoneCore *lc, LinphoneCall *call, const char
 	}
 	//lc->call=NULL; //Do not do that you will lose the call afterward . . .
 	real_url=linphone_address_as_string (real_parsed_url);
-	sal_refer(call->op,real_url);
+	sal_call_refer(call->op,real_url);
 	ms_free(real_url);
 	linphone_address_destroy(real_parsed_url);
 	return 0;
+}
+
+/**
+ * Transfer a call to destination of another running call. This is used for "attended transfer" scenarios.
+ * @param lc linphone core object
+ * @param call a running call you want to transfer
+ * @param dest a running call whose remote person will receive the transfer
+ *
+ * The transfered call is supposed to be in paused state, so that it is able to accept the transfer immediately.
+ * The destination call is a call previously established to introduce the transfered person.
+ * This method will send a transfer request to the transfered person. The phone of the transfered is then
+ * expected to automatically call to the destination of the transfer. The receiver of the transfer will then automatically
+ * close the call with us (the 'dest' call).
+**/
+int linphone_core_transfer_call_to_another(LinphoneCore *lc, LinphoneCall *call, LinphoneCall *dest){
+	return sal_call_refer_with_replaces (call->op,dest->op);
 }
 
 bool_t linphone_core_inc_invite_pending(LinphoneCore*lc){
@@ -2198,6 +2217,7 @@ int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call)
 {
 	LinphoneProxyConfig *cfg=NULL;
 	const char *contact=NULL;
+	SalOp *replaced;
 	
 	if (call==NULL){
 		//if just one call is present answer the only one ...
@@ -2207,16 +2227,27 @@ int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call)
 			call = (LinphoneCall*)linphone_core_get_calls(lc)->data;
 	}
 
+	if (call->state==LinphoneCallConnected){
+		/*call already accepted*/
+		return -1;
+	}
+	
+	/* check if this call is supposed to replace an already running one*/
+	replaced=sal_call_get_replaces(call->op);
+	if (replaced){
+		LinphoneCall *rc=(LinphoneCall*)sal_op_get_user_pointer (replaced);
+		if (rc){
+			ms_message("Call %p replaces call %p. This last one is going to be terminated automatically.",
+			           call,rc);
+			linphone_core_terminate_call (lc,rc);
+		}
+	}
+
 	if (lc->current_call!=NULL && lc->current_call!=call){
 		ms_warning("Cannot accept this call, there is already one running.");
 		return -1;
 	}
 	
-	if (call->state==LinphoneCallConnected){
-		/*call already accepted*/
-		return -1;
-	}
-
 	/*can accept a new call only if others are on hold */
 	{
 		MSList *elem;

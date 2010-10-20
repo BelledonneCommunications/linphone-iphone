@@ -57,6 +57,7 @@
 
 
 struct _LinphoneCallParams{
+	LinphoneCall *referer; /*in case this call creation is consecutive to an incoming transfer, this points to the original call */
 	bool_t has_video;
 	bool_t pad[3];
 };

@@ -591,6 +591,8 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 
 int linphone_core_transfer_call(LinphoneCore *lc, LinphoneCall *call, const char *refer_to);
 
+int linphone_core_transfer_call_to_another(LinphoneCore *lc, LinphoneCall *call, LinphoneCall *dest);
+
 bool_t linphone_core_inc_invite_pending(LinphoneCore*lc);
 
 bool_t linphone_core_in_call(const LinphoneCore *lc);

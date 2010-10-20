@@ -557,10 +557,10 @@ static void refer_received(Sal *sal, SalOp *op, const char *referto){
 			ms_free(msg);
 		}
 		if (lc->current_call==NULL) linphone_core_start_pending_refered_calls (lc);
-		sal_refer_accept(op);
+		sal_call_accept_refer(op);
 	}else if (lc->vtable.refer_received){
 		lc->vtable.refer_received(lc,referto);
-		sal_refer_accept(op);
+		sal_call_accept_refer(op);
 	}
 }
 
