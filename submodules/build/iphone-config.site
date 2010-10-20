@@ -27,4 +27,4 @@ AR=${SDK_BIN_PATH}/ar
 RANLIB=${SDK_BIN_PATH}/ranlib
 
 CPPFLAGS="-Dasm=__asm"
-LDFLAGS="-Wl,-syslibroot,${SYSROOT_PATH}" 
+LDFLAGS="-Wl,-syslibroot,${SYSROOT_PATH} -framework CFNetwork" 
