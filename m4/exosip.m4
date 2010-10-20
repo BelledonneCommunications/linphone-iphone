@@ -6,7 +6,7 @@ AC_REQUIRE([LP_CHECK_OSIP2])
 
 case $target_os in
 	*darwin*)
-		OSIP_LIBS="$OSIP_LIBS  -framework CoreFoundation -framework CoreServices "
+		OSIP_LIBS="$OSIP_LIBS  -framework CoreFoundation "
 	;;
 esac
 
