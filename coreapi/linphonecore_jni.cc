@@ -470,7 +470,7 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setPresenceInfo(JNIEnv* 
 																			,jstring jalternative_contact
 																			,jint status) {
 	const char* alternative_contact = env->GetStringUTFChars(jalternative_contact, NULL);
-	linphone_core_set_presence_info((LinphoneCore*)lc,minute_away,alternative_contact,status);
+	linphone_core_set_presence_info((LinphoneCore*)lc,minute_away,alternative_contact,(LinphoneOnlineStatus)status);
 	env->ReleaseStringUTFChars(jalternative_contact, alternative_contact);
 }
 
@@ -787,9 +787,9 @@ extern "C" void Java_org_linphone_core_LinphoneFriendImpl_setAddress(JNIEnv*  en
 																		,jobject  thiz
 																		,jlong ptr
 																		,jlong linphoneAddress) {
-	linphone_friend_set_address((LinphoneFriend*)ptr,(LinphoneAddress*)linphoneAddress);
+	linphone_friend_set_addr((LinphoneFriend*)ptr,(LinphoneAddress*)linphoneAddress);
 }
-extern "C" long Java_org_linphone_core_LinphoneFriendImpl_setAddress(JNIEnv*  env
+extern "C" long Java_org_linphone_core_LinphoneFriendImpl_getAddress(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr) {
 	return (long)linphone_friend_get_address((LinphoneFriend*)ptr);
@@ -798,7 +798,7 @@ extern "C" void Java_org_linphone_core_LinphoneFriendImpl_setIncSubscribePolicy(
 																		,jobject  thiz
 																		,jlong ptr
 																		,jint policy) {
-	linphone_friend_set_inc_subscribe_policy((LinphoneFriend*)ptr,policy);
+	linphone_friend_set_inc_subscribe_policy((LinphoneFriend*)ptr,(LinphoneSubscribePolicy)policy);
 }
 extern "C" jint Java_org_linphone_core_LinphoneFriendImpl_getIncSubscribePolicy(JNIEnv*  env
 																		,jobject  thiz
