@@ -62,4 +62,17 @@ abstract public class LinphoneCoreFactory {
 	abstract public  void setDebugMode(boolean enable);
 	
 	abstract public void setLogHandler(LinphoneLogHandler handler);
+	/**
+	 * Create a LinphoneFriend, similar to {@link #createLinphoneFriend()} + {@link LinphoneFriend#setAddress(LinphoneAddress)} 
+	 * @param friendUri a buddy address, must be a sip uri like sip:joe@sip.linphone.org
+	 * @return a new LinphoneFriend with address initialized
+	 */
+	abstract LinphoneFriend createLinphoneFriend(String friendUri);
+	/**
+	 * Create a new LinphoneFriend
+	 * @return
+	 */
+	abstract LinphoneFriend createLinphoneFriend();
+	
+	
 }

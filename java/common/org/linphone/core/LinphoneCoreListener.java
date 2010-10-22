@@ -55,5 +55,28 @@ public interface LinphoneCoreListener {
 		 * Registration state notification
 		 * */
 		public void registrationState(LinphoneCore lc, LinphoneProxyConfig cfg, LinphoneCore.RegistrationState cstate, String smessage);
+		/**
+		 * Reports that a new subscription request has been received and wait for a decision. 
+		 *Status on this subscription request is notified by changing policy for this friend
+		 *@param lc LinphoneCore 	
+		 *@param lf LinphoneFriend corresponding to the subscriber
+		 *@param url of the subscriber
+		 * 
+		 */
+		public void newSubscriptionRequest(LinphoneCore lc, LinphoneFriend lf, String url);
+		/**
+		 * Report status change for a friend previously added to LinphoneCore.
+		 * @param lc LinphoneCore
+		 * @param lf updated LinphoneFriend
+		 */
+		public void notifyPresenceReceived(LinphoneCore lc, LinphoneFriend lf);
+		/**
+		 * invoked when a new text message is received
+		 * @param lc LinphoneCore
+		 * @param  room 	LinphoneChatRoom involved in this conversation. Can be be created by the framework in case the from is not present in any chat room.
+		 * @param from  	LinphoneAddress from
+		 * @param message 	incoming message
+		 */
+		public void textReceived(LinphoneCore lc, LinphoneChatRoom cr,LinphoneAddress from,String message);
 }
 

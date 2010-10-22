@@ -1,0 +1,194 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+<!--
+
+  @(#)package.html	
+
+Copyright (C) 2010  Belledonne Communications, Grenoble, France
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+
+-->
+</head>
+<body bgcolor="white">
+
+Liblinphone is a high level library for bringing SIP video call functionnality into an application. It aims at making easy the integration of the SIP video calls into any applications. All variants of linphone are directly based on it:
+
+	<li>linphone (GUI interface)
+	<li>linphonec (console interface)
+<br> Liblinphone is GPL (see COPYING file). Please understand the licencing details before using it!
+
+<br>For any use of this library beyond the rights granted to you by the GPL license, please contact Belledonne Communications (contact@belledonne-communications.com)
+
+
+
+
+<h2>Package Specification</h2>
+
+LibLinphone package is organized in submodules.
+<ul>
+  <li><a href="#proxy">Managing proxies</a>
+</ul>
+<ul>
+  <li><a href="#buddy">Managing Buddies and buddy list and presence</a>
+</ul>
+<ul>
+  <li><a href="#chat">Chat room and Messaging</a>
+</ul>
+
+<h2>Related Documentation</h2>
+
+For overviews, tutorials, examples, guides, and tool documentation, please see:
+<ul>
+  <li><a href="http://www.linphone.org">linphone web site</a>
+</ul>
+
+<!-- Put @see and @since tags down here. -->
+<h3>
+<a name="proxy">Managing proxies</a>
+</h3>
+User registration is controled by  {@link org.linphone.core.LinphoneProxyConfig } settings.
+<br> Each {@link org.linphone.core.LinphoneProxyConfig } object can be configured with registration informations 
+like {@link org.linphone.core.LinphoneProxyConfig#setProxy proxy address } , {@link org.linphone.core.LinphoneProxyConfig#setIdentity user id}, and so on. 
+<br> A created proxy config using {@link org.linphone.core.LinphoneCoreFactory#createProxyConfig }, once configured, must be added to {@link org.linphone.core.LinphoneCore} using function {@link org.linphone.core.LinphoneCore#addProxyConfig }.
+<br> It is recommended to set a default {@link org.linphone.core.LinphoneProxyConfig proxy config }  using function {@link org.linphone.core.LinphoneCore#setDefaultProxyConfig }. Once done, if {@link org.linphone.core.LinphoneProxyConfig a proxy config } has been configured with attribute {@link org.linphone.core.LinphoneProxyConfig#enableRegister enable register }  , next call to {@link org.linphone.core.LinphoneCore#iterate } triggers a SIP register.  
+<br> Registration status is reported by {@link org.linphone.core.LinphoneCoreListener#registrationState registration listener}.
+<br>
+<br> This pseudo code demonstrates basic registration operations:
+<br> 
+<pre>
+<code>
+	
+	LinphoneProxyConfig proxy_cfg;
+	/*create proxy config*/
+	proxy_cfg = LinphoneCoreFactory.instance().createProxyConfig();
+	/*parse identity*/
+	LinphoneAddress from = LinphoneCoreFactory.instance().createAddress("sip:toto@sip.titi.com");
+	LinphoneAuthInfo info;
+	if (password!=NULL){
+ 		info=LinphoneCoreFactory.instance().createAuthInfo(from.getUsername(),null,"secret",null,null); /*create authentication structure from identity*/
+		lc.addAuthInfo(info); /*add authentication info to LinphoneCore*/
+	}	
+	// configure proxy entries
+	proxy_cfg.setIdenty(identity); /*set identity with user name and domain*/
+	String server_addr = from.getDomain(); /*extract domain address from identity*/
+	proxy_cfg.setProxy(server_addr); /* we assume domain = proxy server address*/
+	proxy_cfg.enableRegister(true); /*activate registration for this proxy config*/
+	
+	lc.addProxyConfig(proxy_cfg); /*add proxy config to linphone core*/
+	lc.setDefaultProxyconfig(proxy_cfg); /*set to default proxy*/ 
+</code>
+</pre>
+<br>
+  {@link org.linphone.core.LinphoneCoreListener#registrationState Registration state listener} :
+<pre>
+<code>
+ void registrationState(LinphoneCore lc, LinphoneProxyConfig cfg, LinphoneCore.RegistrationState cstate, String message){
+		System.out.println(New registration state ["+cstate+"] for user id ["+cfg.getUserName()+"] at proxy ["+cfg.getProxy()+"]";
+}
+</pre>
+</code>
+
+<br><b>Authentication:</b>
+<br>Most of the time, registration requires {@link org.linphone.core.LinphoneAuthInfo authentication } to succed. {@link org.linphone.core.LinphoneAuthInfo} info must be either added to {@link org.linphone.core.LinphoneCore } using method {@link org.linphone.core.LinphoneCore#addAuthInfo } before {@link org.linphone.core.LinphoneProxyConfig} is added to Linphone core, or on demand from listener {@link org.linphone.core.LinphoneCoreListener#authInfoRequested(LinphoneCore, String, String)}  .    
+<br>
+<br><b>Unregistration:</b>
+<br> Unregistration or any changes to {@link org.linphone.core.LinphoneProxyConfig} must be first started by a call to function {@link org.linphone.core.LinphoneProxyConfig#edit } and validated by  function {@link org.linphone.core.LinphoneProxyConfig#done }
+<br> This pseudo code shows how to unregister a user associated to a{@link org.linphone.core.LinphoneProxyConfig}
+<pre>
+<code>
+ 	LinphoneProxyConfig proxy_cfg;
+ 	lc.setDefaultProxyConfig(proxy_cfg); /* get default proxy config*/
+	proxy_cfg.edit(); /*start editing proxy configuration*/
+	proxy_cfg.enableRegister(false); /*de-activate registration for this proxy config*/
+	proxy_cfg.done(); /*initiate REGISTER with expire = 0*/
+</pre>
+</code>
+<br>
+<br>
+<h3>
+<a name="buddy">Managing Buddies and buddy list and presence</a>
+</h3>
+<br>
+<b>Buddies and buddy list</b>
+<br>Each buddy is represented by a {@link org.linphone.core.LinphoneFriend } object created by function {@link org.linphone.core.LinphoneCoreFactory#createLinphoneFriend()}. 
+Buddy configuration parameters like {@link org.linphone.core.LinphoneFriend#setAddress(LinphoneAddress) sip uri} or  {@link org.linphone.core.LinphoneFriend#setIncSubscribePolicy(LinphoneFriend.SubscribePolicy) status publication}  are configurable for each buddy.
+<br>Here under a typical buddy creation:
+<br>
+<pre>
+<code>
+	LinphoneFriend my_friend=LinphoneFactory.instance().createFriend("sip:joe@sip.linphone.org"); /*creates friend object for buddy joe*/
+	my_friend.enableSubscribes(true); /*configure this friend to emit SUBSCRIBE message after being added to LinphoneCore*/
+	my_friend.setIncSubscribePolicy(LinphoneFriend.SubscribePolicy.Accept); /* accept Incoming subscription request for this friend*/
+</code>
+</pre>
+{@link LinphoneFriend  friends } status changes are reported by  {@link org.linphone.core.LinphoneCoreListener#notifyPresenceReceived(LinphoneCore lc, LinphoneFriend lf)} .
+<pre>
+<code>
+ void notifyPresenceReceived(LinphoneCore lc, LinphoneFriend lf){
+	LinphoneAddress friend_address = lf.getAddress();
+	System.out.println("New state ["+lf.getStatus()+"] for user id ["+friend_address+"] ");
+}
+</code>
+</pre>
+
+<br>Once created a buddy can be added to the buddy list using function {@link org.linphone.core.LinphoneCore#addFriend(LinphoneFriend lf) } . Added friends will be notified about {@link org.linphone.core.LinphoneCore#setPresenceInfo(int minute_away,String alternative_contact, OnlineStatus status) local status changes }
+<br>
+Any subsequente modifications to {@link org.linphone.core.LinphoneFriend} must be first started by a call to function  to {@link org.linphone.core.LinphoneFriend#edit()} and validated by  function {@link org.linphone.core.LinphoneFriend#done()}
+<pre>
+<code>
+	my_friend.edit(); /* start editing friend */
+	my_friend.enableSubscribes(true); /*disable subscription for this friend*/
+	my_friend.done(); /*commit changes triggering an UNSUBSCRIBE message*/
+</code>
+</pre>
+
+<b> Publishing presence status </b>
+<br>Local presence status can be changed using function {@link org.linphone.core.LinphoneCore#setPresenceInfo }.New status is propagated to all friends {@link org.linphone.core.LinphoneCore#addFriend(LinphoneFriend lf)  previously added } to LinphoneCore. 
+<br>
+<br>
+<b>Handling incoming subscription request</b>
+<br> New incoming subscription requests are process according to{@link org.linphone.core.LinphoneFriend#setIncSubscribePolicy(LinphoneFriend.SubscribePolicy)  the incoming subscription policy state}  for subscription initiated by {@link org.linphone.core.LinphoneCore#addFriend(LinphoneFriend lf) members of the buddy list. }
+<br> For incoming request coming from an unknown buddy, the call back  {@link org.linphone.core.LinphoneCoreListener#newSubscriptionRequest(LinphoneCore lc, LinphoneFriend lf, String url)}
+
+<h3>
+<a name="chat">Chat room and Messaging</a>
+</h3>
+<b> Exchanging text messages</b>
+<br> Messages are sent using {@link org.linphone.core.LinphoneChatRoom} object. First step is to create a {@link org.linphone.core.LinphoneCore#createChatRoom chat room }
+from a peer sip uri.
+<pre>
+<code>
+	LinphoneChatRoom chat_room = lc.createChatRoom("sip:joe@sip.linphone.org");
+</pre>
+</code>
+<br>Once created, messages are sent using function {@link org.linphone.core.LinphoneChatRoom#sendMessage }  . 
+<pre>
+<code>
+	chat_room.sendMessage("Hello world"); /*sending message*/
+</pre>
+</code>
+<br>Incoming message are received from {@link org.linphone.core.LinphoneCoreListener#textReceived  a listener }
+<pre>
+<code>
+	void textReceived(LinphoneCore lc, LinphoneChatRoom cr,LinphoneAddress from,String message) {
+		System.out.println("Message ["+message+"] received from ["+from+"] ");
+	}
+</code>
+<pre>
+</body>
+</html>

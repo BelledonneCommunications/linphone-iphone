@@ -456,7 +456,34 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_getCurrentCall(JNIEnv* 
 																			) {
 	return (jlong)linphone_core_get_current_call((LinphoneCore*)lc);
 }
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_addFriend(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			,jlong aFriend
+																			) {
+	linphone_core_add_friend((LinphoneCore*)lc,(LinphoneFriend*)aFriend);
+}
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setPresenceInfo(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			,jint minute_away
+																			,jstring jalternative_contact
+																			,jint status) {
+	const char* alternative_contact = env->GetStringUTFChars(jalternative_contact, NULL);
+	linphone_core_set_presence_info((LinphoneCore*)lc,minute_away,alternative_contact,status);
+	env->ReleaseStringUTFChars(jalternative_contact, alternative_contact);
+}
 
+extern "C" long Java_org_linphone_core_LinphoneCoreImpl_createChatRoom(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			,jstring jto) {
+
+	const char* to = env->GetStringUTFChars(jto, NULL);
+	LinphoneChatRoom* lResult = linphone_core_create_chat_room((LinphoneCore*)lc,to);
+	env->ReleaseStringUTFChars(jto, to);
+	return (long)lResult;
+}
 
 //ProxyConfig
 
@@ -741,6 +768,82 @@ extern "C" jint Java_org_linphone_core_LinphoneCallImpl_getState(	JNIEnv*  env
 	return (jint)linphone_call_get_state((LinphoneCall*)ptr);
 }
 
+//LinphoneFriend
+extern "C" long Java_org_linphone_core_LinphoneFriendImpl_newLinphoneFriend(JNIEnv*  env
+																		,jobject  thiz
+																		,jstring jFriendUri) {
+	LinphoneFriend* lResult;
 
+	if (jFriendUri) {
+		const char* friendUri = env->GetStringUTFChars(jFriendUri, NULL);
+		lResult= linphone_friend_new_with_addr(friendUri);
+		env->ReleaseStringUTFChars(jFriendUri, friendUri);
+	} else {
+		lResult = linphone_friend_new();
+	}
+	return (long)lResult;
+}
+extern "C" void Java_org_linphone_core_LinphoneFriendImpl_setAddress(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr
+																		,jlong linphoneAddress) {
+	linphone_friend_set_address((LinphoneFriend*)ptr,(LinphoneAddress*)linphoneAddress);
+}
+extern "C" long Java_org_linphone_core_LinphoneFriendImpl_setAddress(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	return (long)linphone_friend_get_address((LinphoneFriend*)ptr);
+}
+extern "C" void Java_org_linphone_core_LinphoneFriendImpl_setIncSubscribePolicy(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr
+																		,jint policy) {
+	linphone_friend_set_inc_subscribe_policy((LinphoneFriend*)ptr,policy);
+}
+extern "C" jint Java_org_linphone_core_LinphoneFriendImpl_getIncSubscribePolicy(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	return linphone_friend_get_inc_subscribe_policy((LinphoneFriend*)ptr);
+}
+extern "C" void Java_org_linphone_core_LinphoneFriendImpl_enableSubscribes(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr
+																		,jboolean value) {
+	linphone_friend_enable_subscribes((LinphoneFriend*)ptr,value);
+}
+extern "C" jboolean Java_org_linphone_core_LinphoneFriendImpl_isSubscribesEnabled(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	return linphone_friend_subscribes_enabled((LinphoneFriend*)ptr);
+}
+extern "C" jboolean Java_org_linphone_core_LinphoneFriendImpl_getStatus(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	return linphone_friend_get_status((LinphoneFriend*)ptr);
+}
+extern "C" void Java_org_linphone_core_LinphoneFriendImpl_edit(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	return linphone_friend_edit((LinphoneFriend*)ptr);
+}
+extern "C" void Java_org_linphone_core_LinphoneFriendImpl_done(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	 linphone_friend_done((LinphoneFriend*)ptr);
+}
+//LinphoneChatRoom
+extern "C" long Java_org_linphone_core_LinphoneChatRoomImpl_getPeerAddress(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	return (long) linphone_chat_room_get_peer_address((LinphoneChatRoom*)ptr);
+}
+extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_sendMessage(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr
+																		,jstring jmessage) {
+	const char* message = env->GetStringUTFChars(jmessage, NULL);
+	linphone_chat_room_send_message((LinphoneChatRoom*)ptr,message);
+	env->ReleaseStringUTFChars(jmessage, message);
 
+}
 
