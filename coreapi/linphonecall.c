@@ -224,7 +224,6 @@ static void linphone_call_set_terminated(LinphoneCall *call){
 	if (call == lc->current_call){
 		ms_message("Resetting the current call");
 		lc->current_call=NULL;
-		linphone_core_start_pending_refered_calls(lc);
 	}
 
 	if (linphone_core_del_call(lc,call) != 0){

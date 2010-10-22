@@ -197,7 +197,7 @@ void linphone_core_update_progress(LinphoneCore *lc, const char *purpose, float 
 void linphone_core_stop_waiting(LinphoneCore *lc);
 
 int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, LinphoneProxyConfig *dest_proxy);
-void linphone_core_start_pending_refered_calls(LinphoneCore *lc);
+void linphone_core_start_refered_call(LinphoneCore *lc, LinphoneCall *call);
 extern SalCallbacks linphone_sal_callbacks;
 void linphone_proxy_config_set_error(LinphoneProxyConfig *cfg,LinphoneError error);
 
