@@ -754,14 +754,10 @@ static int get_local_ip_for_with_connect(int type, const char *dest, char *resul
 }
 
 int linphone_core_get_local_ip_for(int type, const char *dest, char *result){
-	if (dest==NULL) {
-		if (type==AF_INET)
-			dest="87.98.157.38"; /*a public IP address*/
-		else dest="2a00:1450:8002::68";
-	}
 	strcpy(result,type==AF_INET ? "127.0.0.1" : "::1");
 #ifdef HAVE_GETIFADDRS
-	{
+	if (dest==NULL) {
+		/*we use getifaddrs for lookup of default interface */
 		int found_ifs;
 	
 		found_ifs=get_local_ip_with_getifaddrs(type,result,LINPHONE_IPADDR_SIZE);
@@ -774,5 +770,8 @@ int linphone_core_get_local_ip_for(int type, const char *dest, char *result){
 	}
 #endif
 	/*else use connect to find the best local ip address */
+	if (type==AF_INET)
+		dest="87.98.157.38"; /*a public IP address*/
+	else dest="2a00:1450:8002::68";
 	return get_local_ip_for_with_connect(type,dest,result);
 }

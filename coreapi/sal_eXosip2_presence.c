@@ -627,6 +627,7 @@ int sal_publish(SalOp *op, const char *from, const char *to, SalPresenceStatus p
 	  ms_message("Failed to send publish request.");
 	  return -1;
 	}
+	sal_add_other(sal_op_get_sal(op),op,pub);
 	return 0;
 }
 

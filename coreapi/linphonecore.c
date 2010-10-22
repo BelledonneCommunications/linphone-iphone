@@ -1839,19 +1839,14 @@ const char * linphone_core_get_route(LinphoneCore *lc){
 	return route;
 }
 
-void linphone_core_start_pending_refered_calls(LinphoneCore *lc){
-	MSList *elem;
-	for(elem=lc->calls;elem!=NULL;elem=elem->next){
-		LinphoneCall *call=(LinphoneCall*)elem->data;
-		if (call->refer_pending){
-			LinphoneCallParams *cp=linphone_core_create_default_call_parameters(lc);
-			cp->referer=call;
-			ms_message("Starting new call to refered address %s",call->refer_to);
-			call->refer_pending=FALSE;
-			linphone_core_invite_with_params(lc,call->refer_to,cp);
-			linphone_call_params_destroy(cp);
-			break;
-		}
+void linphone_core_start_refered_call(LinphoneCore *lc, LinphoneCall *call){
+	if (call->refer_pending){
+		LinphoneCallParams *cp=linphone_core_create_default_call_parameters(lc);
+		cp->referer=call;
+		ms_message("Starting new call to refered address %s",call->refer_to);
+		call->refer_pending=FALSE;
+		linphone_core_invite_with_params(lc,call->refer_to,cp);
+		linphone_call_params_destroy(cp);
 	}
 }
 
@@ -2425,7 +2420,6 @@ int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *the_call)
 	lc->current_call=NULL;
 	if (call->audiostream || call->videostream)
 		linphone_call_stop_media_streams (call);
-	linphone_core_start_pending_refered_calls(lc);
 	return 0;
 }
 

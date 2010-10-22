@@ -343,7 +343,6 @@ static void call_updating(SalOp *op){
 			linphone_call_set_state (call,prevstate,"Connected (streams running)");
 		}
 	}
-	if (lc->current_call==NULL) linphone_core_start_pending_refered_calls (lc);
 }
 
 static void call_terminated(SalOp *op, const char *from){
@@ -556,7 +555,11 @@ static void refer_received(Sal *sal, SalOp *op, const char *referto){
 			lc->vtable.display_status(lc,msg);
 			ms_free(msg);
 		}
-		if (lc->current_call==NULL) linphone_core_start_pending_refered_calls (lc);
+		if (call->state!=LinphoneCallPaused){
+			ms_message("Automatically pausing current call to accept transfer.");
+			linphone_core_pause_call(lc,call);
+		}
+		linphone_core_start_refered_call(lc,call);
 		sal_call_accept_refer(op);
 	}else if (lc->vtable.refer_received){
 		lc->vtable.refer_received(lc,referto);
