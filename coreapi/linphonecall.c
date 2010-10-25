@@ -797,7 +797,7 @@ static void _linphone_call_start_media_streams(LinphoneCall *call, bool_t send_e
 					recfile,
 					playcard,
 					captcard,
-					send_early_media ? FALSE : linphone_core_echo_cancellation_enabled(lc));
+					captcard==NULL ? FALSE : linphone_core_echo_cancellation_enabled(lc));
 				post_configure_audio_streams(call);
 				if (send_early_media) setup_ring_player(lc,call);
 				audio_stream_set_rtcp_information(call->audiostream, cname, tool);
