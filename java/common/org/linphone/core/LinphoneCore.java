@@ -23,7 +23,7 @@ import java.util.Vector;
 
 	
 public interface LinphoneCore {
-	/*
+	/**
 	 * linphone core states
 	 */
 	static public class 	GlobalState {
@@ -255,5 +255,24 @@ public interface LinphoneCore {
 	public void enableSpeaker(boolean value);
 	
 	public boolean isSpeakerEnabled();
+	/**
+	 * add a friend to the current buddy list, if subscription attribute is set, a SIP SUBSCRIBE message is sent.
+	 * @param lf LinphoenFriend to add
+	 * @throws LinphoneCoreException
+	 */
+	void addFriend(LinphoneFriend lf) throws LinphoneCoreException;
 
+	/**
+	 * Set my presence status
+	 * @param minute_away how long in away
+	 * @param status sip uri used to redirect call in state LinphoneStatusMoved
+	 */
+	void setPresenceInfo(int minute_away,String alternative_contact, OnlineStatus status);
+	/**
+	 * Create a new chat room for messaging from a sip uri like sip:joe@sip.linphone.org
+	 * @param to 	destination address for messages 
+	 *
+	 * @return {@link LinphoneChatRoom} where messaging can take place.
+	 */
+	LinphoneChatRoom createChatRoom(String to);
 }
