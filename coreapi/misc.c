@@ -775,3 +775,19 @@ int linphone_core_get_local_ip_for(int type, const char *dest, char *result){
 	else dest="2a00:1450:8002::68";
 	return get_local_ip_for_with_connect(type,dest,result);
 }
+
+#ifndef WIN32
+#include <resolv.h>
+
+void _linphone_core_configure_resolver(){
+	res_init();
+	_res.retrans=1; /*retransmit every second*/
+	_res.retry=2; /*only two times per DNS server*/
+}
+
+#else
+
+void _linphone_core_configure_resolver(){
+}
+
+#endif

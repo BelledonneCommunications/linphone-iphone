@@ -841,10 +841,12 @@ LinphoneRegistrationState linphone_proxy_config_get_state(const LinphoneProxyCon
 	 }
 	 return NULL;
  }
-LinphoneError linphone_proxy_config_get_error(const LinphoneProxyConfig *cfg) {
+
+LinphoneReason linphone_proxy_config_get_error(const LinphoneProxyConfig *cfg) {
 	return cfg->error;
 }
-void linphone_proxy_config_set_error(LinphoneProxyConfig *cfg,LinphoneError error) {
+
+void linphone_proxy_config_set_error(LinphoneProxyConfig *cfg,LinphoneReason error) {
 	cfg->error = error;
 }
 

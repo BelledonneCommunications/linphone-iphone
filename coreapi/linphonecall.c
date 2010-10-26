@@ -216,7 +216,10 @@ static void linphone_call_set_terminated(LinphoneCall *call){
 	
 	linphone_core_update_allocated_audio_bandwidth(lc);
 	if (call->state==LinphoneCallEnd){
-		status=LinphoneCallSuccess;
+		if (call->reason==LinphoneReasonDeclined){
+			status=LinphoneCallDeclined;
+		}
+		else status=LinphoneCallSuccess;
 		
 	}
 	linphone_call_log_completed(call->log,call, status);
@@ -382,6 +385,13 @@ char *linphone_call_get_remote_address_as_string(const LinphoneCall *call){
 **/
 LinphoneCallState linphone_call_get_state(const LinphoneCall *call){
 	return call->state;
+}
+
+/**
+ * Returns the reason for a call termination (either error or normal termination)
+**/
+LinphoneReason linphone_call_get_reason(const LinphoneCall *call){
+	return call->reason;
 }
 
 /**

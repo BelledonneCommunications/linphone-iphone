@@ -444,8 +444,10 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 	}
 	linphone_call_stop_media_streams (call);
 	if (sr!=SalReasonDeclined) linphone_call_set_state(call,LinphoneCallError,msg);
-	else linphone_call_set_state(call,LinphoneCallEnd,"Call declined.");
-	
+	else{
+		call->reason=LinphoneReasonDeclined;
+		linphone_call_set_state(call,LinphoneCallEnd,"Call declined.");
+	}
 }
 
 static void auth_requested(SalOp *h, const char *realm, const char *username){
@@ -485,7 +487,7 @@ static void register_success(SalOp *op, bool_t registered){
 	char *msg;
 	
 	cfg->registered=registered;
-	linphone_proxy_config_set_error(cfg,LinphoneErrorNone);
+	linphone_proxy_config_set_error(cfg,LinphoneReasonNone);
 	linphone_proxy_config_set_state(cfg, registered ? LinphoneRegistrationOk : LinphoneRegistrationCleared ,
 	                                registered ? "Registration sucessful" : "Unregistration done");
 	if (lc->vtable.display_status){
@@ -514,9 +516,9 @@ static void register_failure(SalOp *op, SalError error, SalReason reason, const 
 		ms_free(msg);
 	}
 	if (error== SalErrorFailure && reason == SalReasonForbidden) {
-		linphone_proxy_config_set_error(cfg, LinphoneErrorBadCredentials);
+		linphone_proxy_config_set_error(cfg, LinphoneReasonBadCredentials);
 	} else if (error == SalErrorNoResponse) {
-		linphone_proxy_config_set_error(cfg, LinphoneErrorNoResponse);
+		linphone_proxy_config_set_error(cfg, LinphoneReasonNoResponse);
 	}
 	linphone_proxy_config_set_state(cfg,LinphoneRegistrationFailed,details);
 }
