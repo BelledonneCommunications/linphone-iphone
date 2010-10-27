@@ -1,0 +1,8 @@
+//
+// Prefix header for all source files of the 'hello-world' target in the 'hello-world' project
+//
+
+#ifdef __OBJC__
+    #import <Foundation/Foundation.h>
+    #import <UIKit/UIKit.h>
+#endif
