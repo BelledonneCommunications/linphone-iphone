@@ -110,7 +110,6 @@ static void call_received(SalOp *h){
 	linphone_address_clean(from_parsed);
 	tmp=linphone_address_as_string(from_parsed);
 	linphone_address_destroy(from_parsed);
-	linphone_call_set_state(call,LinphoneCallIncomingReceived,"Incoming call");
 	barmesg=ortp_strdup_printf("%s %s%s",tmp,_("is contacting you"),
 	    (sal_call_autoanswer_asked(h)) ?_(" and asked autoanswer."):_("."));
 	if (lc->vtable.show) lc->vtable.show(lc);
@@ -146,6 +145,11 @@ static void call_received(SalOp *h){
 #endif
 	ms_free(barmesg);
 	ms_free(tmp);
+	
+	linphone_call_set_state(call,LinphoneCallIncomingReceived,"Incoming call");
+	if (sal_call_get_replaces(call->op)!=NULL && lp_config_get_int(lc->config,"sip","auto_answer_replacing_calls",1)){
+		linphone_core_accept_call(lc,call);
+	}
 }
 
 static void call_ringing(SalOp *h){
