@@ -275,4 +275,7 @@ public interface LinphoneCore {
 	 * @return {@link LinphoneChatRoom} where messaging can take place.
 	 */
 	LinphoneChatRoom createChatRoom(String to);
+	
+	public void setVideoWindow(VideoWindow w);
+	public void setPreviewWindow(VideoWindow w);
 }
