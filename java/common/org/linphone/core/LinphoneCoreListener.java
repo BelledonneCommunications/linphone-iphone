@@ -19,15 +19,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 package org.linphone.core;
 
 
-
+/**
+ * 
+ *This interface holds all callbacks that the application should implement. None is mandatory.
+ */
 public interface LinphoneCoreListener {
 
 	/**< Notifies the application that it should show up
 	 * @return */
 		public void show(LinphoneCore lc);
-		 /**< Notify calls terminated by far end
-		 * @return */
-		public void byeReceived(LinphoneCore lc,String from);
 		/**< Ask the application some authentication information 
 		 * @return */
 		public void authInfoRequested(LinphoneCore lc,String realm,String username); 
