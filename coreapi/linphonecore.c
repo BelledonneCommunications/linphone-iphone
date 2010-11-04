@@ -946,6 +946,14 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	linphone_core_assign_payload_type(&payload_type_ilbc,113,"mode=30");
 	linphone_core_assign_payload_type(&payload_type_amr,114,"octet-align=1");
 
+#if defined(ANDROID) || defined (__IPHONE_OS_VERSION_MIN_REQUIRED)
+	/*shorten the DNS lookup time and send more retransmissions on mobiles:
+	 - to workaround potential packet losses
+	 - to avoid hanging for 30 seconds when the network doesn't work despite the phone thinks it does.
+	 */
+	_linphone_core_configure_resolver();
+#endif
+
 #ifdef ENABLE_NONSTANDARD_GSM
 	{
 		PayloadType *pt;
@@ -2332,7 +2340,9 @@ int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *the_call)
 		call = the_call;
 	}
 	sal_call_terminate(call->op);
-
+	if (call->state==LinphoneCallIncomingReceived){
+		call->reason=LinphoneReasonDeclined;
+	}
 	/*stop ringing*/
 	if (lc->ringstream!=NULL) {
 		ring_stop(lc->ringstream);
@@ -4011,14 +4021,16 @@ LinphoneCallParams *linphone_core_create_default_call_parameters(LinphoneCore *l
 	return p;
 }
 
-const char *linphone_error_to_string(LinphoneError err){
+const char *linphone_error_to_string(LinphoneReason err){
 	switch(err){
-		case LinphoneErrorNone:
+		case LinphoneReasonNone:
 			return "No error";
-		case LinphoneErrorNoResponse:
+		case LinphoneReasonNoResponse:
 			return "No response";
-		case LinphoneErrorBadCredentials:
+		case LinphoneReasonBadCredentials:
 			return "Bad credentials";
+		case LinphoneReasonDeclined:
+			return "Call declined";
 	}
 	return "unknown error";
 }

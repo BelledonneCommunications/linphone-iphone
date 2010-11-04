@@ -775,3 +775,28 @@ int linphone_core_get_local_ip_for(int type, const char *dest, char *result){
 	else dest="2a00:1450:8002::68";
 	return get_local_ip_for_with_connect(type,dest,result);
 }
+
+#ifndef WIN32
+#include <resolv.h>
+
+
+
+
+void _linphone_core_configure_resolver(){
+/*bionic declares _res but does not define nor export it !!*/
+#ifdef ANDROID
+	/*timeout and attempts are the same as retrans and retry, but are android specific names.*/
+	setenv("RES_OPTIONS","timeout:1 attempts:2 retrans:1 retry:2",1);
+#else
+	res_init();
+	_res.retrans=1; /*retransmit every second*/
+	_res.retry=2; /*only two times per DNS server*/
+#endif
+}
+
+#else
+
+void _linphone_core_configure_resolver(){
+}
+
+#endif
