@@ -79,6 +79,9 @@ public:
 		vTable.global_state_changed = globalStateChange;
 		vTable.registration_state_changed = registrationStateChange;
 		vTable.call_state_changed = callStateChange;
+		vTable.text_received = text_received;
+		vTable.new_subscription_request = new_subscription_request;
+		vTable.notify_presence_recv = notify_presence_recv;
 
 		listernerClass = (jclass)env->NewGlobalRef(env->GetObjectClass( alistener));
 		/*displayStatus(LinphoneCore lc,String message);*/
@@ -96,11 +99,26 @@ public:
 		callStateClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneCall$State"));
 		callStateFromIntId = env->GetStaticMethodID(callStateClass,"fromInt","(I)Lorg/linphone/core/LinphoneCall$State;");
 
+		/*void newSubscriptionRequest(LinphoneCore lc, LinphoneFriend lf, String url)*/
+		newSubscriptionRequestId = env->GetMethodID(listernerClass,"newSubscriptionRequest","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneFriend;Ljava/lang/String;)V");
+
+		/*void notifyPresenceReceived(LinphoneCore lc, LinphoneFriend lf);*/
+		notifyPresenceReceivedId = env->GetMethodID(listernerClass,"notifyPresenceReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneFriend)V");
+
+		/*void textReceived(LinphoneCore lc, LinphoneChatRoom cr,LinphoneAddress from,String message);*/
+		textReceivedId = env->GetMethodID(listernerClass,"textReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCore/LinphoneChatRoom;Lorg/linphone/core/LinphoneFriend;Ljava/lang/String;)V");
+
 		proxyClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneProxyConfigImpl"));
 		proxyCtrId = env->GetMethodID(proxyClass,"<init>", "(J)V");
 
 		callClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneCallImpl"));
 		callCtrId = env->GetMethodID(callClass,"<init>", "(J)V");
+
+		chatRoomClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneChatRoomImpl"));
+		chatRoomCtrId = env->GetMethodID(chatRoomClass,"<init>", "(J)V");
+
+		friendClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneFriendImpl"));;
+		friendCtrId =env->GetMethodID(friendClass,"<init>", "(J)V");
 
 	}
 
@@ -116,6 +134,8 @@ public:
 		env->DeleteGlobalRef(callStateClass);
 		env->DeleteGlobalRef(proxyClass);
 		env->DeleteGlobalRef(callClass);
+		env->DeleteGlobalRef(chatRoomClass);
+		env->DeleteGlobalRef(friendClass);
 
 	}
 	jobject core;
@@ -124,6 +144,9 @@ public:
 
 	jclass listernerClass;
 	jmethodID displayStatusId;
+	jmethodID newSubscriptionRequestId;
+	jmethodID notifyPresenceReceivedId;
+	jmethodID textReceivedId;
 
 	jclass globalStateClass;
 	jmethodID globalStateId;
@@ -142,6 +165,12 @@ public:
 
 	jclass callClass;
 	jmethodID callCtrId;
+
+	jclass chatRoomClass;
+	jmethodID chatRoomCtrId;
+
+	jclass friendClass;
+	jmethodID friendCtrId;
 
 	LinphoneCoreVTable vTable;
 
@@ -210,6 +239,48 @@ public:
 							,env->NewObject(lcData->callClass,lcData->callCtrId,(jlong)call)
 							,env->CallStaticObjectMethod(lcData->callStateClass,lcData->callStateFromIntId,(jint)state),
 							message ? env->NewStringUTF(message) : NULL);
+	}
+	static void notify_presence_recv (LinphoneCore *lc,  LinphoneFriend *my_friend) {
+		JNIEnv *env = 0;
+		jint result = jvm->AttachCurrentThread(&env,NULL);
+		if (result != 0) {
+			ms_error("cannot attach VM\n");
+			return;
+		}
+		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_get_user_data(lc);
+		env->CallVoidMethod(lcData->listener
+							,lcData->notifyPresenceReceivedId
+							,lcData->core
+							,env->NewObject(lcData->friendClass,lcData->friendCtrId,(jlong)my_friend));
+	}
+	static void new_subscription_request (LinphoneCore *lc,  LinphoneFriend *my_friend, const char* url) {
+		JNIEnv *env = 0;
+		jint result = jvm->AttachCurrentThread(&env,NULL);
+		if (result != 0) {
+			ms_error("cannot attach VM\n");
+			return;
+		}
+		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_get_user_data(lc);
+		env->CallVoidMethod(lcData->listener
+							,lcData->newSubscriptionRequestId
+							,lcData->core
+							,env->NewObject(lcData->friendClass,lcData->friendCtrId,(jlong)my_friend)
+							,url ? env->NewStringUTF(url) : NULL);
+	}
+	static void text_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from, const char *message) {
+		JNIEnv *env = 0;
+		jint result = jvm->AttachCurrentThread(&env,NULL);
+		if (result != 0) {
+			ms_error("cannot attach VM\n");
+			return;
+		}
+		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_get_user_data(lc);
+		env->CallVoidMethod(lcData->listener
+							,lcData->textReceivedId
+							,lcData->core
+							,env->NewObject(lcData->chatRoomClass,lcData->chatRoomCtrId,(jlong)room)
+							,env->NewObject(lcData->friendClass,lcData->friendCtrId,(jlong)from)
+							,message ? env->NewStringUTF(message) : NULL);
 	}
 
 
