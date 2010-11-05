@@ -21,6 +21,7 @@ package org.linphone.core;
 
 
 
+
 abstract public class LinphoneCoreFactory {
 	
 	private static String factoryName = "org.linphone.core.LinphoneCoreFactoryImpl";
@@ -49,6 +50,8 @@ abstract public class LinphoneCoreFactory {
 	abstract public LinphoneAuthInfo createAuthInfo(String username,String password, String realm);
 	
 	abstract public LinphoneCore createLinphoneCore(LinphoneCoreListener listener, String userConfig,String factoryConfig,Object  userdata) throws LinphoneCoreException;
+	abstract public LinphoneCore createLinphoneCore(LinphoneCoreListener listener) throws LinphoneCoreException;
+
 	/**
 	 * Constructs a LinphoneAddress object
 	 * @param username 
@@ -77,12 +80,12 @@ abstract public class LinphoneCoreFactory {
 	 * @param friendUri a buddy address, must be a sip uri like sip:joe@sip.linphone.org
 	 * @return a new LinphoneFriend with address initialized
 	 */
-	abstract LinphoneFriend createLinphoneFriend(String friendUri);
+	abstract public LinphoneFriend createLinphoneFriend(String friendUri);
 	/**
 	 * Create a new LinphoneFriend
 	 * @return
 	 */
-	abstract LinphoneFriend createLinphoneFriend();
+	abstract public LinphoneFriend createLinphoneFriend();
 	
 	
 }
