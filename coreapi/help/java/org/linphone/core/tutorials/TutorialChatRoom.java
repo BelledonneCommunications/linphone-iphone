@@ -1,7 +1,6 @@
 /*
-linphone
+TutorialChatRoom.java
 Copyright (C) 2010  Belledonne Communications SARL 
- (simon.morlat@linphone.org)
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -85,6 +84,7 @@ public class TutorialChatRoom implements LinphoneCoreListener {
 	
 	public static void main(String[] args) {
 		// Check tutorial was called with the right number of arguments
+		// Takes the sip uri identity from the command line arguments
 		if (args.length != 1) {
 			throw new IllegalArgumentException("Bad number of arguments");
 		}
@@ -108,7 +108,10 @@ public class TutorialChatRoom implements LinphoneCoreListener {
 		LinphoneCore lc = LinphoneCoreFactory.instance().createLinphoneCore(this);
 
 		try {
+			// Next step is to create a chat room
 			LinphoneChatRoom chatRoom = lc.createChatRoom(destinationSipAddress);
+			
+			// Send message
 			chatRoom.sendMessage("Hello world");
 			
 			// main loop for receiving notifications and doing background linphonecore work

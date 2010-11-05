@@ -1,7 +1,6 @@
 /*
-linphone
+TutorialHelloWorld.java
 Copyright (C) 2010  Belledonne Communications SARL 
- (simon.morlat@linphone.org)
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

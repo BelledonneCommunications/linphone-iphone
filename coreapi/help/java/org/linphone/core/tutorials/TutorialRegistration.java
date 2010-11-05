@@ -1,7 +1,6 @@
 /*
-linphone
+TutorialRegistration.java
 Copyright (C) 2010  Belledonne Communications SARL 
- (simon.morlat@linphone.org)
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -93,7 +92,9 @@ public class TutorialRegistration implements LinphoneCoreListener {
 		// Create tutorial object
 		TutorialRegistration tutorial = new TutorialRegistration();
 		try {
+			// takes sip uri identity from the command line arguments
 			String userSipAddress = args[1];
+			// takes password from the command line arguments
 			String userSipPassword = args[2];
 			tutorial.launchTutorial(userSipAddress, userSipPassword);
 		} catch (Exception e) {
@@ -113,16 +114,20 @@ public class TutorialRegistration implements LinphoneCoreListener {
 	
 		try {
 			
+			// Parse identity
 			LinphoneAddress address = lcFactory.createLinphoneAddress(sipAddress);
 			String username = address.getUserName();
 			String domain = address.getDomain();
 
+
 			if (password != null) {
+				// create authentication structure from identity and add to linphone
 				lc.addAuthInfo(lcFactory.createAuthInfo(username, password, null));
 			}
-			
+
+			// create proxy config
 			LinphoneProxyConfig proxyCfg = lcFactory.createProxyConfig(sipAddress, domain, null, true);
-			lc.addProxyConfig(proxyCfg);
+			lc.addProxyConfig(proxyCfg); // add it to linphone
 			lc.setDefaultProxyConfig(proxyCfg);
 
 			
@@ -131,7 +136,7 @@ public class TutorialRegistration implements LinphoneCoreListener {
 			// main loop for receiving notifications and doing background linphonecore work
 			running = true;
 			while (running) {
-				lc.iterate();
+				lc.iterate(); // first iterate initiates registration 
 				try{
 					Thread.sleep(50);
 				} catch(InterruptedException ie) {
@@ -141,6 +146,7 @@ public class TutorialRegistration implements LinphoneCoreListener {
 			}
 
 
+			// Automatic unregistration on exit
 			
 			
 		} finally {

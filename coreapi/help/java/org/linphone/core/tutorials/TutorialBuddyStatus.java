@@ -1,7 +1,6 @@
 /*
-linphone
+TutorialBuddyStatus
 Copyright (C) 2010  Belledonne Communications SARL 
- (simon.morlat@linphone.org)
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -66,10 +65,11 @@ public class TutorialBuddyStatus implements LinphoneCoreListener {
 
 	public void newSubscriptionRequest(LinphoneCore lc, LinphoneFriend lf,String url) {
 		write("["+lf.getAddress().getUserName()+"] wants to see your status, accepting");
-		lf.edit();
-		lf.setIncSubscribePolicy(SubscribePolicy.SPAccept);
-		lf.done();
+		lf.edit(); // start editing friend
+		lf.setIncSubscribePolicy(SubscribePolicy.SPAccept); // accept incoming subscription request for this friend
+		lf.done(); // commit change
 		try {
+			// add this new friend to the buddy list
 			lc.addFriend(lf);
 		} catch (LinphoneCoreException e) {
 			write("Error while adding friend [" + lf.getAddress().getUserName() + "] to linphone in the callback");
@@ -104,6 +104,7 @@ public class TutorialBuddyStatus implements LinphoneCoreListener {
 		// Create tutorial object
 		TutorialBuddyStatus tutorial = new TutorialBuddyStatus();
 		try {
+			// takes sip uri identity from the command line arguments 
 			String userSipAddress = args[1];
 			tutorial.launchTutorial(userSipAddress);
 		} catch (Exception e) {
@@ -123,29 +124,34 @@ public class TutorialBuddyStatus implements LinphoneCoreListener {
 
 		try {
 
-			// Create friend address
+			// Create friend object from string address
 			LinphoneFriend lf = lcFactory.createLinphoneFriend(sipAddress);
 			if (lf == null) {
 				write("Could not create friend; weird SIP address?");
 				return;
 			}
 
+			// configure this friend to emit SUBSCRIBE message after being added to LinphoneCore
 			lf.enableSubscribes(true);
+			
+			// accept incoming subscription request for this friend
 			lf.setIncSubscribePolicy(SubscribePolicy.SPAccept);
 			try {
+				// add my friend to the buddy list, initiate SUBSCRIBE message
 				lc.addFriend(lf);
 			} catch (LinphoneCoreException e) {
 				write("Error while adding friend " + lf.getAddress().getUserName() + " to linphone");
+				return;
 			}
 			
-			
+			// set my status to online 
 			lc.setPresenceInfo(0, null, OnlineStatus.Online);
 			
 			
 			// main loop for receiving notifications and doing background linphonecore work
 			running = true;
 			while (running) {
-				lc.iterate();
+				lc.iterate(); // first iterate initiates subscription
 				try{
 					Thread.sleep(50);
 				} catch(InterruptedException ie) {
@@ -155,13 +161,16 @@ public class TutorialBuddyStatus implements LinphoneCoreListener {
 			}
 
 
+			// change my presence status to offline
 			lc.setPresenceInfo(0, null, OnlineStatus.Offline);
+			// just to make sure new status is initiate message is issued
 			lc.iterate();
 
-			lf.edit();
-			lf.enableSubscribes(false);
-			lf.done();
-			lc.iterate();
+			
+			lf.edit(); // start editing friend 
+			lf.enableSubscribes(false); // disable subscription for this friend
+			lf.done(); // commit changes triggering an UNSUBSCRIBE message
+			lc.iterate(); // just to make sure unsubscribe message is issued
 
 
 		} finally {
