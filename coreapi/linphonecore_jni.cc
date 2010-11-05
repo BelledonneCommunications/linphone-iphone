@@ -103,10 +103,10 @@ public:
 		newSubscriptionRequestId = env->GetMethodID(listernerClass,"newSubscriptionRequest","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneFriend;Ljava/lang/String;)V");
 
 		/*void notifyPresenceReceived(LinphoneCore lc, LinphoneFriend lf);*/
-		notifyPresenceReceivedId = env->GetMethodID(listernerClass,"notifyPresenceReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneFriend)V");
+		notifyPresenceReceivedId = env->GetMethodID(listernerClass,"notifyPresenceReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneFriend;)V");
 
 		/*void textReceived(LinphoneCore lc, LinphoneChatRoom cr,LinphoneAddress from,String message);*/
-		textReceivedId = env->GetMethodID(listernerClass,"textReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCore/LinphoneChatRoom;Lorg/linphone/core/LinphoneFriend;Ljava/lang/String;)V");
+		textReceivedId = env->GetMethodID(listernerClass,"textReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneChatRoom;Lorg/linphone/core/LinphoneAddress;Ljava/lang/String;)V");
 
 		proxyClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneProxyConfigImpl"));
 		proxyCtrId = env->GetMethodID(proxyClass,"<init>", "(J)V");
@@ -119,6 +119,9 @@ public:
 
 		friendClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneFriendImpl"));;
 		friendCtrId =env->GetMethodID(friendClass,"<init>", "(J)V");
+
+		addressClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneAddressImpl"));
+		addressCtrId =env->GetMethodID(addressClass,"<init>", "(J)V");
 
 	}
 
@@ -171,6 +174,9 @@ public:
 
 	jclass friendClass;
 	jmethodID friendCtrId;
+
+	jclass addressClass;
+	jmethodID addressCtrId;
 
 	LinphoneCoreVTable vTable;
 
@@ -279,7 +285,7 @@ public:
 							,lcData->textReceivedId
 							,lcData->core
 							,env->NewObject(lcData->chatRoomClass,lcData->chatRoomCtrId,(jlong)room)
-							,env->NewObject(lcData->friendClass,lcData->friendCtrId,(jlong)from)
+							,env->NewObject(lcData->addressClass,lcData->addressCtrId,(jlong)from)
 							,message ? env->NewStringUTF(message) : NULL);
 	}
 
