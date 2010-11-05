@@ -52,9 +52,19 @@ abstract public class LinphoneCoreFactory {
 	abstract public LinphoneCore createLinphoneCore(LinphoneCoreListener listener, String userConfig,String factoryConfig,Object  userdata) throws LinphoneCoreException;
 	abstract public LinphoneCore createLinphoneCore(LinphoneCoreListener listener) throws LinphoneCoreException;
 
-	
+	/**
+	 * Constructs a LinphoneAddress object
+	 * @param username 
+	 * @param domain
+	 * @param displayName
+	 * @return 
+	 */
 	abstract public LinphoneAddress createLinphoneAddress(String username,String domain,String displayName);
-	
+	/**
+	 * Constructs a LinphoneAddress object by parsing the user supplied address, given as a string.
+	 * @param address should be like sip:joe@sip.linphone.org
+	 * @return
+	 */
 	abstract public LinphoneAddress createLinphoneAddress(String address);
 	
 	abstract public  LinphoneProxyConfig createProxyConfig(String identity, String proxy,String route,boolean enableRegister) throws LinphoneCoreException;

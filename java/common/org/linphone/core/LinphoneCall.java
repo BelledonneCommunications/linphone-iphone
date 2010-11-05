@@ -20,26 +20,78 @@ package org.linphone.core;
 
 import java.util.Vector;
 
-
+/**
+ * Object representing a Call. calls are created using {@link LinphoneCore#invite(LinphoneAddress)} or paased to the application by listener {@link LinphoneCoreListener#callState(LinphoneCore, LinphoneCall, State, String)}
+ * 
+ */
 public interface LinphoneCall {
+	/**
+	 * Linphone call states
+	 *
+	 */
 	static class State {
 		static private Vector values = new Vector();
 		private final int mValue;
 		private final String mStringValue;
+		/**
+		 * Idle
+		 */
 		public final static State Idle = new State(0,"Idle");
+		/**
+		 * Incoming call received.
+		 */
 		public final static State IncomingReceived = new State(1,"IncomingReceived");
+		/**
+		 * Outgoing call initialiazed.
+		 */
 		public final static State OutgoingInit = new State(2,"OutgoingInit");
+		/**
+		 * Outgoing call in progress. 
+		 */
 		public final static State OutgoingProgress = new State(3,"OutgoingProgress");
+		/**
+		 * Outgoing call ringing.
+		 */
 		public final static State OutgoingRinging = new State(4,"OutgoingRinging");
+		/**
+		 * Outgoing call early media
+		 */
 		public final static State OutgoingEarlyMedia = new State(5,"OutgoingEarlyMedia");
+		/**
+		 * Connected
+		 */
 		public final static State Connected = new State(6,"Connected");
+		/**
+		 * Streams running
+		 */
 		public final static State StreamsRunning = new State(7,"StreamsRunning");
+		/**
+		 * Paussing
+		 */
 		public final static State Pausing = new State(8,"Pausing");
+		/**
+		 * Paused
+		 */
 		public final static State Paused = new State(9,"Paused");
+		/**
+		 * Resuming
+		 */
 		public final static State Resuming = new State(10,"Resuming");
+		/**
+		 * Refered
+		 */
 		public final static State Refered = new State(11,"Refered");
+		/**
+		 * Error
+		 */
 		public final static State Error = new State(12,"Error");
+		/**
+		 * Call end
+		 */
 		public final static State CallEnd = new State(13,"CallEnd");
+		/**
+		 * Paused by remote
+		 */
 		public final static State PausedByRemote = new State(14,"PausedByRemote");
 		private State(int value,String stringValue) {
 			mValue = value;
@@ -69,10 +121,14 @@ public interface LinphoneCall {
 	 *
 	**/
 	public LinphoneAddress  getRemoteAddress();
-	
+	/**
+	 * get direction of the call (incoming or outgoing).
+	 * @return CallDirection 
+	 */
 	public CallDirection getDirection();
 	/**
-	 * Returns the call log associated to this call.
+	 * get the call log associated to this call.
+	 * @Return LinphoneCallLog
 	**/
 	public LinphoneCallLog getCallLog();
 
