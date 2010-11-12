@@ -70,7 +70,7 @@ LOCAL_C_INCLUDES += \
 	$(LOCAL_PATH)/../../externals/exosip/include \
 	$(LOCAL_PATH)/../../externals/osip/include 
 
-LOCAL_LDLIBS += -llog
+LOCAL_LDLIBS += -llog -ldl
 
 LOCAL_STATIC_LIBRARIES := \
 	libmediastreamer2 \
