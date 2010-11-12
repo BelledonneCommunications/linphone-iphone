@@ -951,4 +951,3 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setVideoWindowId(JNIEnv*
 	ms_message("linphone_core_set_native_video_window_id() called !!!!!!!");
 }
 
-
