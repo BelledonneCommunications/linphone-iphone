@@ -562,6 +562,20 @@ extern "C" long Java_org_linphone_core_LinphoneCoreImpl_createChatRoom(JNIEnv*  
 	return (long)lResult;
 }
 
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_enableVideo(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			,jboolean vcap_enabled
+																			,jboolean display_enabled) {
+	linphone_core_enable_video((LinphoneCore*)lc, vcap_enabled,display_enabled);
+
+}
+extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isVideoEnabled(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc) {
+	return linphone_core_video_enabled((LinphoneCore*)lc);
+}
+
 //ProxyConfig
 
 extern "C" jlong Java_org_linphone_core_LinphoneProxyConfigImpl_newLinphoneProxyConfig(JNIEnv*  env,jobject  thiz) {
