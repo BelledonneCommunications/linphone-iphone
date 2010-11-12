@@ -943,3 +943,8 @@ extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_sendMessage(JNIEnv* 
 
 }
 
+// FIXME stubb function
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setVideoWindowId(JNIEnv* env
+																		,jobject thiz
+																		,jobject obj) {
+}
