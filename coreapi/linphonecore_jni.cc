@@ -24,6 +24,8 @@ extern "C" void libmsilbc_init();
 #endif /*ANDROID*/
 
 extern "C" void ms_andsnd_set_jvm(JavaVM *jvm) ;
+extern "C" void ms_andvid_set_jvm(JavaVM *jvm) ;
+
 static JavaVM *jvm=0;
 
 #ifdef ANDROID
@@ -45,6 +47,9 @@ JNIEXPORT jint JNICALL  JNI_OnLoad(JavaVM *ajvm, void *reserved)
 {
 #ifdef ANDROID
 	ms_andsnd_set_jvm(ajvm);
+	#ifdef VIDEO_ENABLED
+		ms_andvid_set_jvm(ajvm);
+	#endif /*VIDEO_ENABLED*/
 #endif /*ANDROID*/
 	jvm=ajvm;
 	return JNI_VERSION_1_2;
