@@ -372,6 +372,24 @@ public interface LinphoneCore {
 	 */
 	LinphoneChatRoom createChatRoom(String to);
 	
-	public void setVideoWindow(VideoWindow w);
-	public void setPreviewWindow(VideoWindow w);
+	public void setVideoWindow(Object w);
+	public void setPreviewWindow(Object w);
+	/**
+	 * Enables video globally.
+	 *
+	 * 
+	 * This function does not have any effect during calls. It just indicates #LinphoneCore to
+	 * initiate future calls with video or not. The two boolean parameters indicate in which
+	 * direction video is enabled. Setting both to false disables video entirely.
+	 *
+	 * @param vcap_enabled indicates whether video capture is enabled
+	 * @param display_enabled indicates whether video display should be shown
+	 *
+	**/
+	void enableVideo(boolean vcap_enabled, boolean display_enabled);
+	/**
+	 * Returns TRUE if video is enabled, FALSE otherwise.
+	 *	
+	 ***/
+	boolean isVideoEnabled();
 }

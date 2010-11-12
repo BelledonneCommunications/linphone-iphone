@@ -303,8 +303,8 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_newLinphoneCore(JNIEnv*
 		,jstring jfactoryConfig
 		,jobject  juserdata){
 
-	const char* userConfig = env->GetStringUTFChars(juserConfig, NULL);
-	const char* factoryConfig = env->GetStringUTFChars(jfactoryConfig, NULL);
+	const char* userConfig = juserConfig?env->GetStringUTFChars(juserConfig, NULL):NULL;
+	const char* factoryConfig = jfactoryConfig?env->GetStringUTFChars(jfactoryConfig, NULL):NULL;
 	LinphoneCoreData* ldata = new LinphoneCoreData(env,thiz,jlistener,juserdata);
 #ifdef ANDROID
 	ms_andsnd_set_jvm(jvm);
@@ -322,8 +322,8 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_newLinphoneCore(JNIEnv*
 	//clear existing proxy config
 	linphone_core_clear_proxy_config((LinphoneCore*) nativePtr);
 
-	env->ReleaseStringUTFChars(juserConfig, userConfig);
-	env->ReleaseStringUTFChars(jfactoryConfig, factoryConfig);
+	if (userConfig) env->ReleaseStringUTFChars(juserConfig, userConfig);
+	if (factoryConfig) env->ReleaseStringUTFChars(jfactoryConfig, factoryConfig);
 	return nativePtr;
 }
 extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_delete(JNIEnv*  env
@@ -565,6 +565,20 @@ extern "C" long Java_org_linphone_core_LinphoneCoreImpl_createChatRoom(JNIEnv*  
 	LinphoneChatRoom* lResult = linphone_core_create_chat_room((LinphoneCore*)lc,to);
 	env->ReleaseStringUTFChars(jto, to);
 	return (long)lResult;
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_enableVideo(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			,jboolean vcap_enabled
+																			,jboolean display_enabled) {
+	linphone_core_enable_video((LinphoneCore*)lc, vcap_enabled,display_enabled);
+
+}
+extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isVideoEnabled(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc) {
+	return linphone_core_video_enabled((LinphoneCore*)lc);
 }
 
 //ProxyConfig
