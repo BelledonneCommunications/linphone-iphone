@@ -280,6 +280,7 @@ LinphoneCoreVTable linphonec_vtable = {
 	
 }
 -(void) kickOffNetworkConnection {
+	signal(SIGPIPE,SIG_IGN);
 	CFWriteStreamRef writeStream;
 	CFStreamCreatePairWithSocketToHost(NULL, (CFStringRef)@"linphone.org", 15000, nil, &writeStream);
 	CFWriteStreamOpen (writeStream);
