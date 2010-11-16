@@ -941,6 +941,7 @@ static void update_contact_from_response(SalOp *op, osip_message_t *response){
 			tmp=sal_address_as_string(addr);
 			ms_message("Contact address updated to %s for this dialog",tmp);
 			sal_op_set_contact(op,tmp);
+			sal_address_destroy(addr);
 			ms_free(tmp);
 		}
 	}
