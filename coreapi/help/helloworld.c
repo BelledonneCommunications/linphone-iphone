@@ -27,8 +27,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
  @include helloworld.c
  */
-
-#include <linphonecore.h>
+#ifdef IN_LINPHONE
+#include "linphonecore.h"
+#else
+#include "linphone/linphonecore.h"
+#endif
 
 #include <signal.h>
 
@@ -78,7 +81,10 @@ int main(int argc, char *argv[]){
 	}
 
 	signal(SIGINT,stop);
-	
+
+#ifdef DEBUG
+	linphone_core_enable_logs(NULL); /*enable liblinphone logs.*/
+#endif
 	/* 
 	 Fill the LinphoneCoreVTable with application callbacks.
 	 All are optional. Here we only use the call_state_changed callbacks
