@@ -1309,7 +1309,7 @@ void linphone_gtk_log_handler(OrtpLogLevel lev, const char *fmt, va_list args){
 	if (verbose){
 		const char *lname="undef";
 		char *msg;
-		#ifdef __linux
+	#if defined(__linux) || defined(__APPLE__)
 		va_list cap;/*copy of our argument list: a va_list cannot be re-used (SIGSEGV on linux 64 bits)*/
 		#endif
 		switch(lev){
@@ -1331,7 +1331,7 @@ void linphone_gtk_log_handler(OrtpLogLevel lev, const char *fmt, va_list args){
 			default:
 				g_error("Bad level !");
 		}
-#ifdef __linux
+#if defined(__linux) || defined(__APPLE__)
 		va_copy(cap,args);
 		msg=g_strdup_vprintf(fmt,cap);
 		va_end(cap);
