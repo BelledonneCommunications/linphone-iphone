@@ -1,5 +1,5 @@
 /*
-LinPhoneCallLog.java
+LinphoneChatRoom.java
 Copyright (C) 2010  Belledonne Communications, Grenoble, France
 
 This program is free software; you can redistribute it and/or
@@ -18,24 +18,22 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package org.linphone.core;
 /**
- * Call data records object 
+ * 
+ * A chat room is the place where text messages are exchanged. 
+Can be created by linphone_core_create_chat_room().
  *
  */
-public interface LinphoneCallLog {
+public interface LinphoneChatRoom {
+	/**
+	 * get peer address associated to this LinphoneChatRoom
+	 *
+	 * @return LinphoneAddress peer address
+	 */
+	LinphoneAddress getPeerAddress();
+	/**
+	* send a message to peer member of this chat room.
+	* @param  	message to be sent
+	*/
+	void sendMessage(String message);
 
-	/**
-	 * Originator of the call as a LinphoneAddress object.
-	 * @return LinphoneAddress
-	 */
-	public LinphoneAddress getFrom();
-	/**
-	 * Destination of the call as a LinphoneAddress object.
-	 * @return
-	 */
-	public LinphoneAddress getTo ();
-	/**
-	 * The direction of the call
-	 * @return CallDirection
-	 */
-	public CallDirection getDirection();
 }

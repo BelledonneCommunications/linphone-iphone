@@ -754,14 +754,10 @@ static int get_local_ip_for_with_connect(int type, const char *dest, char *resul
 }
 
 int linphone_core_get_local_ip_for(int type, const char *dest, char *result){
-	if (dest==NULL) {
-		if (type==AF_INET)
-			dest="87.98.157.38"; /*a public IP address*/
-		else dest="2a00:1450:8002::68";
-	}
 	strcpy(result,type==AF_INET ? "127.0.0.1" : "::1");
 #ifdef HAVE_GETIFADDRS
-	{
+	if (dest==NULL) {
+		/*we use getifaddrs for lookup of default interface */
 		int found_ifs;
 	
 		found_ifs=get_local_ip_with_getifaddrs(type,result,LINPHONE_IPADDR_SIZE);
@@ -774,5 +770,33 @@ int linphone_core_get_local_ip_for(int type, const char *dest, char *result){
 	}
 #endif
 	/*else use connect to find the best local ip address */
+	if (type==AF_INET)
+		dest="87.98.157.38"; /*a public IP address*/
+	else dest="2a00:1450:8002::68";
 	return get_local_ip_for_with_connect(type,dest,result);
 }
+
+#ifndef WIN32
+#include <resolv.h>
+
+
+
+
+void _linphone_core_configure_resolver(){
+/*bionic declares _res but does not define nor export it !!*/
+#ifdef ANDROID
+	/*timeout and attempts are the same as retrans and retry, but are android specific names.*/
+	setenv("RES_OPTIONS","timeout:1 attempts:2 retrans:1 retry:2",1);
+#else
+	res_init();
+	_res.retrans=1; /*retransmit every second*/
+	_res.retry=2; /*only two times per DNS server*/
+#endif
+}
+
+#else
+
+void _linphone_core_configure_resolver(){
+}
+
+#endif

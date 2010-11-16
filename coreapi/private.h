@@ -57,6 +57,7 @@
 
 
 struct _LinphoneCallParams{
+	LinphoneCall *referer; /*in case this call creation is consecutive to an incoming transfer, this points to the original call */
 	bool_t has_video;
 	bool_t pad[3];
 };
@@ -76,6 +77,7 @@ struct _LinphoneCall
 	time_t start_time; /*time at which the call was initiated*/
 	time_t media_start_time; /*time at which it was accepted, media streams established*/
 	LinphoneCallState	state;
+	LinphoneReason reason;
 	int refcnt;
 	void * user_pointer;
 	int audio_port;
@@ -196,9 +198,9 @@ void linphone_core_update_progress(LinphoneCore *lc, const char *purpose, float 
 void linphone_core_stop_waiting(LinphoneCore *lc);
 
 int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, LinphoneProxyConfig *dest_proxy);
-void linphone_core_start_pending_refered_calls(LinphoneCore *lc);
+void linphone_core_start_refered_call(LinphoneCore *lc, LinphoneCall *call);
 extern SalCallbacks linphone_sal_callbacks;
-void linphone_proxy_config_set_error(LinphoneProxyConfig *cfg,LinphoneError error);
+void linphone_proxy_config_set_error(LinphoneProxyConfig *cfg, LinphoneReason error);
 
 struct _LinphoneProxyConfig
 {
@@ -223,7 +225,7 @@ struct _LinphoneProxyConfig
 	bool_t dial_escape_plus;
 	void* user_data;
 	time_t deletion_date;
-	LinphoneError error;
+	LinphoneReason error;
 };
 
 struct _LinphoneAuthInfo 
@@ -438,6 +440,7 @@ SalMediaDescription *create_local_media_description(LinphoneCore *lc,
     		LinphoneCall *call, bool_t with_video, bool_t only_one_codec);
 
 #define linphone_core_ready(lc) ((lc)->state!=LinphoneGlobalStartup)
+void _linphone_core_configure_resolver();
 
 #define HOLD_OFF	(0)
 #define HOLD_ON		(1)

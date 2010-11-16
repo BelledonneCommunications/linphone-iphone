@@ -946,6 +946,14 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	linphone_core_assign_payload_type(&payload_type_ilbc,113,"mode=30");
 	linphone_core_assign_payload_type(&payload_type_amr,114,"octet-align=1");
 
+#if defined(ANDROID) || defined (__IPHONE_OS_VERSION_MIN_REQUIRED)
+	/*shorten the DNS lookup time and send more retransmissions on mobiles:
+	 - to workaround potential packet losses
+	 - to avoid hanging for 30 seconds when the network doesn't work despite the phone thinks it does.
+	 */
+	_linphone_core_configure_resolver();
+#endif
+
 #ifdef ENABLE_NONSTANDARD_GSM
 	{
 		PayloadType *pt;
@@ -1839,16 +1847,14 @@ const char * linphone_core_get_route(LinphoneCore *lc){
 	return route;
 }
 
-void linphone_core_start_pending_refered_calls(LinphoneCore *lc){
-	MSList *elem;
-	for(elem=lc->calls;elem!=NULL;elem=elem->next){
-		LinphoneCall *call=(LinphoneCall*)elem->data;
-		if (call->refer_pending){
-			ms_message("Starting new call to refered address %s",call->refer_to);
-			call->refer_pending=FALSE;
-			linphone_core_invite(lc,call->refer_to);
-			break;
-		}
+void linphone_core_start_refered_call(LinphoneCore *lc, LinphoneCall *call){
+	if (call->refer_pending){
+		LinphoneCallParams *cp=linphone_core_create_default_call_parameters(lc);
+		cp->referer=call;
+		ms_message("Starting new call to refered address %s",call->refer_to);
+		call->refer_pending=FALSE;
+		linphone_core_invite_with_params(lc,call->refer_to,cp);
+		linphone_call_params_destroy(cp);
 	}
 }
 
@@ -2143,10 +2149,26 @@ int linphone_core_transfer_call(LinphoneCore *lc, LinphoneCall *call, const char
 	}
 	//lc->call=NULL; //Do not do that you will lose the call afterward . . .
 	real_url=linphone_address_as_string (real_parsed_url);
-	sal_refer(call->op,real_url);
+	sal_call_refer(call->op,real_url);
 	ms_free(real_url);
 	linphone_address_destroy(real_parsed_url);
 	return 0;
+}
+
+/**
+ * Transfer a call to destination of another running call. This is used for "attended transfer" scenarios.
+ * @param lc linphone core object
+ * @param call a running call you want to transfer
+ * @param dest a running call whose remote person will receive the transfer
+ *
+ * The transfered call is supposed to be in paused state, so that it is able to accept the transfer immediately.
+ * The destination call is a call previously established to introduce the transfered person.
+ * This method will send a transfer request to the transfered person. The phone of the transfered is then
+ * expected to automatically call to the destination of the transfer. The receiver of the transfer will then automatically
+ * close the call with us (the 'dest' call).
+**/
+int linphone_core_transfer_call_to_another(LinphoneCore *lc, LinphoneCall *call, LinphoneCall *dest){
+	return sal_call_refer_with_replaces (call->op,dest->op);
 }
 
 bool_t linphone_core_inc_invite_pending(LinphoneCore*lc){
@@ -2198,6 +2220,7 @@ int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call)
 {
 	LinphoneProxyConfig *cfg=NULL;
 	const char *contact=NULL;
+	SalOp *replaced;
 	
 	if (call==NULL){
 		//if just one call is present answer the only one ...
@@ -2207,16 +2230,27 @@ int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call)
 			call = (LinphoneCall*)linphone_core_get_calls(lc)->data;
 	}
 
+	if (call->state==LinphoneCallConnected){
+		/*call already accepted*/
+		return -1;
+	}
+	
+	/* check if this call is supposed to replace an already running one*/
+	replaced=sal_call_get_replaces(call->op);
+	if (replaced){
+		LinphoneCall *rc=(LinphoneCall*)sal_op_get_user_pointer (replaced);
+		if (rc){
+			ms_message("Call %p replaces call %p. This last one is going to be terminated automatically.",
+			           call,rc);
+			linphone_core_terminate_call (lc,rc);
+		}
+	}
+
 	if (lc->current_call!=NULL && lc->current_call!=call){
 		ms_warning("Cannot accept this call, there is already one running.");
 		return -1;
 	}
 	
-	if (call->state==LinphoneCallConnected){
-		/*call already accepted*/
-		return -1;
-	}
-
 	/*can accept a new call only if others are on hold */
 	{
 		MSList *elem;
@@ -2306,7 +2340,9 @@ int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *the_call)
 		call = the_call;
 	}
 	sal_call_terminate(call->op);
-
+	if (call->state==LinphoneCallIncomingReceived){
+		call->reason=LinphoneReasonDeclined;
+	}
 	/*stop ringing*/
 	if (lc->ringstream!=NULL) {
 		ring_stop(lc->ringstream);
@@ -2394,7 +2430,6 @@ int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *the_call)
 	lc->current_call=NULL;
 	if (call->audiostream || call->videostream)
 		linphone_call_stop_media_streams (call);
-	linphone_core_start_pending_refered_calls(lc);
 	return 0;
 }
 
@@ -3298,7 +3333,13 @@ unsigned long linphone_core_get_native_video_window_id(const LinphoneCore *lc){
  * If not set the core will create its own window.
 **/
 void linphone_core_set_native_video_window_id(LinphoneCore *lc, unsigned long id){
+#ifdef VIDEO_ENABLED
+	LinphoneCall *call=linphone_core_get_current_call(lc);
 	lc->video_window_id=id;
+	if (call!=NULL && call->videostream){
+		video_stream_set_native_window_id(call->videostream,id);
+	}
+#endif
 }
 
 /**
@@ -3986,14 +4027,17 @@ LinphoneCallParams *linphone_core_create_default_call_parameters(LinphoneCore *l
 	return p;
 }
 
-const char *linphone_error_to_string(LinphoneError err){
+const char *linphone_error_to_string(LinphoneReason err){
 	switch(err){
-		case LinphoneErrorNone:
+		case LinphoneReasonNone:
 			return "No error";
-		case LinphoneErrorNoResponse:
+		case LinphoneReasonNoResponse:
 			return "No response";
-		case LinphoneErrorBadCredentials:
+		case LinphoneReasonBadCredentials:
 			return "Bad credentials";
+		case LinphoneReasonDeclined:
+			return "Call declined";
 	}
 	return "unknown error";
 }
+

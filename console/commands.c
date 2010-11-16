@@ -170,6 +170,12 @@ static LPC_COMMAND commands[] = {
 	{ "resume", lpc_cmd_resume, "resume a call",
 		"'resume' : resume the unique call\n"
 		"'resume <call id>' : hold off the call with given id\n"},
+	{ "transfer", lpc_cmd_transfer,
+		"Transfer a call to a specified destination.",
+		"'transfer <sip-uri>' : transfers the current active call to the destination sip-uri\n"
+		"'transfer <call id> <sip-uri>': transfers the call with 'id' to the destination sip-uri\n"
+		"'transfer <call id1> --to-call <call id2>': transfers the call with 'id1' to the destination of call 'id2' (attended transfer)\n"
+	},
 	{ "mute", lpc_cmd_mute_mic, 
 	  "Mute microphone and suspend voice transmission."},
 #ifdef VIDEO_ENABLED
@@ -208,11 +214,6 @@ static LPC_COMMAND commands[] = {
 		"'ipv6 status' : show ipv6 usage status.\n"
 		"'ipv6 enable' : enable the use of the ipv6 network.\n"
 		"'ipv6 disable' : do not use ipv6 network."
-	},
-	{ "transfer", lpc_cmd_transfer,
-		"Transfer a call to a specified destination.",
-		"'transfer <sip-uri>' : transfers the current active call to the destination sip-uri"
-		"'transfer <call id> <sip-uri>': transfers the call with 'id' to the destination sip-uri"
 	},
 	{ "nat", lpc_cmd_nat, "Set nat address",
 		"'nat'        : show nat settings.\n"
@@ -637,10 +638,12 @@ lpc_cmd_transfer(LinphoneCore *lc, char *args)
 {
 	if (args){
 		LinphoneCall *call;
+		LinphoneCall *call2;
 		const char *refer_to=NULL;
 		char arg1[256]={0};
 		char arg2[266]={0};
-		int n=sscanf(args,"%s %s",arg1,arg2);
+		long id2=0;
+		int n=sscanf(args,"%s %s %li",arg1,arg2,&id2);
 		if (n==1 || isalpha(*arg1)){
 			call=linphone_core_get_current_call(lc);
 			if (call==NULL && ms_list_size(linphone_core_get_calls(lc))==1){
@@ -651,13 +654,24 @@ lpc_cmd_transfer(LinphoneCore *lc, char *args)
 				linphonec_out("No active call, please specify a call id among the ones listed by 'calls' command.\n");
 				return 0;
 			}
-		}else{
+			linphone_core_transfer_call(lc, call, refer_to);
+		}else if (n==2){
 			long id=atoi(arg1);
 			refer_to=args+strlen(arg1)+1;
 			call=linphonec_get_call(id);
 			if (call==NULL) return 0;
-		}
-		linphone_core_transfer_call(lc, call, refer_to);
+			linphone_core_transfer_call(lc, call, refer_to);
+		}else if (n==3){
+			long id=atoi(arg1);
+			call=linphonec_get_call(id);
+			call2=linphonec_get_call(id2);
+			if (call==NULL || call2==NULL) return 0;
+			if (strcmp(arg2,"--to-call")!=0){
+				return 0;
+			}
+			linphonec_out("Performing attended transfer of call %i to call %i",id,id2);
+			linphone_core_transfer_call_to_another (lc,call,call2);
+		}else return 0;
 	}else{
 		linphonec_out("Transfer command requires at least one argument\n");
 		return 0;

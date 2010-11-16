@@ -161,6 +161,9 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 	if (linphone_core_get_firewall_policy(call->core)==LinphonePolicyUseStun)
 		linphone_core_run_stun_tests(call->core,call);
 	discover_mtu(lc,linphone_address_get_domain (to));
+	if (params->referer){
+		sal_call_set_referer (call->op,params->referer->op);
+	}
 	return call;
 }
 
@@ -213,7 +216,10 @@ static void linphone_call_set_terminated(LinphoneCall *call){
 	
 	linphone_core_update_allocated_audio_bandwidth(lc);
 	if (call->state==LinphoneCallEnd){
-		status=LinphoneCallSuccess;
+		if (call->reason==LinphoneReasonDeclined){
+			status=LinphoneCallDeclined;
+		}
+		else status=LinphoneCallSuccess;
 		
 	}
 	linphone_call_log_completed(call->log,call, status);
@@ -221,7 +227,6 @@ static void linphone_call_set_terminated(LinphoneCall *call){
 	if (call == lc->current_call){
 		ms_message("Resetting the current call");
 		lc->current_call=NULL;
-		linphone_core_start_pending_refered_calls(lc);
 	}
 
 	if (linphone_core_del_call(lc,call) != 0){
@@ -380,6 +385,13 @@ char *linphone_call_get_remote_address_as_string(const LinphoneCall *call){
 **/
 LinphoneCallState linphone_call_get_state(const LinphoneCall *call){
 	return call->state;
+}
+
+/**
+ * Returns the reason for a call termination (either error or normal termination)
+**/
+LinphoneReason linphone_call_get_reason(const LinphoneCall *call){
+	return call->reason;
 }
 
 /**
@@ -795,7 +807,7 @@ static void _linphone_call_start_media_streams(LinphoneCall *call, bool_t send_e
 					recfile,
 					playcard,
 					captcard,
-					send_early_media ? FALSE : linphone_core_echo_cancellation_enabled(lc));
+					captcard==NULL ? FALSE : linphone_core_echo_cancellation_enabled(lc));
 				post_configure_audio_streams(call);
 				if (send_early_media) setup_ring_player(lc,call);
 				audio_stream_set_rtcp_information(call->audiostream, cname, tool);

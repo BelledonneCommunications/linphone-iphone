@@ -1,6 +1,6 @@
 /*
-LinPhoneCallLog.java
-Copyright (C) 2010  Belledonne Communications, Grenoble, France
+TutorialNotifier.java
+Copyright (C) 2010  Belledonne Communications SARL 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -15,27 +15,19 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
-package org.linphone.core;
+ */
+package org.linphone.core.tutorials;
+
 /**
- * Call data records object 
+ * Notify to the standard output.
+ * Subclass to define another text output.
+ * 
+ * @author Guillaume Beraudo
  *
  */
-public interface LinphoneCallLog {
+public class TutorialNotifier {
 
-	/**
-	 * Originator of the call as a LinphoneAddress object.
-	 * @return LinphoneAddress
-	 */
-	public LinphoneAddress getFrom();
-	/**
-	 * Destination of the call as a LinphoneAddress object.
-	 * @return
-	 */
-	public LinphoneAddress getTo ();
-	/**
-	 * The direction of the call
-	 * @return CallDirection
-	 */
-	public CallDirection getDirection();
+	public void notify(String s) {
+		System.out.println(s);
+	}
 }
