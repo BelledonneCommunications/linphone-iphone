@@ -1732,8 +1732,16 @@ static bool_t process_event(Sal *sal, eXosip_event_t *ev){
 			other_request_reply(sal,ev);
 			break;
 		case EXOSIP_MESSAGE_REQUESTFAILURE:
-			if (ev->response && (ev->response->status_code == 407 || ev->response->status_code == 401)){
-				return process_authentication(sal,ev);
+			if (ev->response) {
+				switch (ev->response->status_code) {
+					case 407:
+					case 401:
+						return process_authentication(sal,ev);
+					case 412: {
+						eXosip_automatic_action ();
+						return 1;
+					}
+				}
 			}
 			other_request_reply(sal,ev);
 			break;
