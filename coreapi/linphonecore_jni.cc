@@ -551,9 +551,9 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setPresenceInfo(JNIEnv* 
 																			,jint minute_away
 																			,jstring jalternative_contact
 																			,jint status) {
-	const char* alternative_contact = env->GetStringUTFChars(jalternative_contact, NULL);
+	const char* alternative_contact = jalternative_contact?env->GetStringUTFChars(jalternative_contact, NULL):NULL;
 	linphone_core_set_presence_info((LinphoneCore*)lc,minute_away,alternative_contact,(LinphoneOnlineStatus)status);
-	env->ReleaseStringUTFChars(jalternative_contact, alternative_contact);
+	if (alternative_contact) env->ReleaseStringUTFChars(jalternative_contact, alternative_contact);
 }
 
 extern "C" long Java_org_linphone_core_LinphoneCoreImpl_createChatRoom(JNIEnv*  env
