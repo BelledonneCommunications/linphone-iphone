@@ -3664,6 +3664,7 @@ void sip_config_uninit(LinphoneCore *lc)
 	int i;
 	sip_config_t *config=&lc->sip_conf;
 	lp_config_set_int(lc->config,"sip","sip_port",config->transports.udp_port);
+	lp_config_set_int(lc->config,"sip","sip_tcp_port",config->transports.tcp_port);
 	lp_config_set_int(lc->config,"sip","guess_hostname",config->guess_hostname);
 	lp_config_set_string(lc->config,"sip","contact",config->contact);
 	lp_config_set_int(lc->config,"sip","inc_timeout",config->inc_timeout);
