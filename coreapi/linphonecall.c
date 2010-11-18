@@ -272,7 +272,7 @@ const char *linphone_call_state_to_string(LinphoneCallState cs){
 		case LinphoneCallRefered:
 			return "LinphoneCallRefered";
 		case LinphoneCallError:
-			return "LinphoneCallRefered";
+			return "LinphoneCallError";
 		case LinphoneCallEnd:
 			return "LinphoneCallEnd";
 		case LinphoneCallPausedByRemote:
