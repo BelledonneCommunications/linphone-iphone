@@ -115,6 +115,48 @@ public interface LinphoneCore {
 		}
 	}
 	/**
+	 * Describes proxy registration states.
+	 *
+	 */
+	static public class 	FirewallPolicy {
+		static private Vector values = new Vector();
+		/**
+		 * No firewall is assumed.
+		 */
+		static public FirewallPolicy NoFirewall = new FirewallPolicy(0,"NoFirewall");       
+		/**
+		 * Use NAT address (discouraged)
+		 */
+		static public FirewallPolicy UseNatAddress  = new FirewallPolicy(1,"UseNatAddress");
+		/**
+		 * Use stun server to discover RTP addresses and ports.
+		 */
+		static public FirewallPolicy UseStun = new FirewallPolicy(2,"UseStun");
+		
+		private final int mValue;
+		private final String mStringValue;
+
+		private FirewallPolicy(int value,String stringValue) {
+			mValue = value;
+			values.addElement(this);
+			mStringValue=stringValue;
+		}
+		public static FirewallPolicy fromInt(int value) {
+
+			for (int i=0; i<values.size();i++) {
+				FirewallPolicy state = (FirewallPolicy) values.elementAt(i);
+				if (state.mValue == value) return state;
+			}
+			throw new RuntimeException("state not found ["+value+"]");
+		}
+		public String toString() {
+			return mStringValue;
+		}
+		public int value(){
+			return mValue;
+		}
+	}
+	/**
 	 * Signaling transports 
 	 *
 	 */
@@ -392,4 +434,24 @@ public interface LinphoneCore {
 	 *	
 	 ***/
 	boolean isVideoEnabled();
+	
+	/**
+	 * Specify a STUN server to help firewall traversal.
+	 * @param stun_server Stun server address and port, such as stun.linphone.org or stun.linphone.org:3478
+	 */
+	public void setStunServer(String stun_server);
+	/**
+	 * @return stun server address if previously set.
+	 */
+	public String getStunServer();
+	
+	/**
+	 * Sets policy regarding workarounding NATs
+	 * @param pol one of the FirewallPolicy members.
+	**/
+	public void setFirewallPolicy(FirewallPolicy pol);
+	/**
+	 * @return previously set firewall policy.
+	 */
+	public FirewallPolicy getFirewallPolicy();
 }

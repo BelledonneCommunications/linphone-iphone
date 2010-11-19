@@ -950,3 +950,28 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setVideoWindowId(JNIEnv*
 	linphone_core_set_native_video_window_id((LinphoneCore*)lc,(unsigned long)obj);
 }
 
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setFirewallPolicy(JNIEnv *env, jobject thiz, jlong lc, int enum_value){
+	linphone_core_set_firewall_policy((LinphoneCore*)lc,(LinphoneFirewallPolicy)enum_value);
+}
+
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getFirewallPolicy(JNIEnv *env, jobject thiz, jlong lc){
+	return linphone_core_get_firewall_policy((LinphoneCore*)lc);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setStunServer(JNIEnv *env, jobject thiz, jlong lc, jstring jserver){
+	const char* server = NULL;
+	if (jserver) server=env->GetStringUTFChars(jserver, NULL);
+	linphone_core_set_stun_server((LinphoneCore*)lc,server);
+	if (server) env->ReleaseStringUTFChars(jserver,server);
+}
+
+extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getStunServer(JNIEnv *env, jobject thiz, jlong lc){
+	const char *ret= linphone_core_get_stun_server((LinphoneCore*)lc);
+	if (ret==NULL) return NULL;
+	jstring jvalue =env->NewStringUTF(ret);
+	return jvalue;
+}
+
+
+
