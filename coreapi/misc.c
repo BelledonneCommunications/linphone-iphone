@@ -462,8 +462,13 @@ static int recvStunResponse(ortp_socket_t sock, char *ipaddr, int *port, int *id
 		struct in_addr ia;
 		stunParseMessage(buf,len, &resp );
 		*id=resp.msgHdr.tr_id.octet[0];
-		*port = resp.mappedAddress.ipv4.port;
-		ia.s_addr=htonl(resp.mappedAddress.ipv4.addr);
+		if (resp.hasXorMappedAddress){
+			*port = resp.xorMappedAddress.ipv4.port;
+			ia.s_addr=htonl(resp.xorMappedAddress.ipv4.addr);
+		}else if (resp.hasMappedAddress){
+			*port = resp.mappedAddress.ipv4.port;
+			ia.s_addr=htonl(resp.mappedAddress.ipv4.addr);
+		}else return -1;
 		strncpy(ipaddr,inet_ntoa(ia),LINPHONE_IPADDR_SIZE);
 	}
 	return len;
