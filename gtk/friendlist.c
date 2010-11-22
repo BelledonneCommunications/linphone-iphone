@@ -450,9 +450,12 @@ void linphone_gtk_contact_ok(GtkWidget *button){
 		linphone_gtk_display_something(GTK_MESSAGE_WARNING,_("Invalid sip contact !"));
 		return ;
 	}
-	linphone_friend_set_sip_addr(lf,fixed_uri);
+	LinphoneAddress* friend_address = linphone_address_new(fixed_uri);
+	linphone_address_set_display_name(friend_address,name);
+	linphone_friend_set_addr(lf,friend_address);
 	ms_free(fixed_uri);
-	linphone_friend_set_name(lf,name);
+	linphone_address_destroy(friend_address);
+
 	linphone_friend_send_subscribe(lf,show_presence);
 	linphone_friend_set_inc_subscribe_policy(lf,allow_presence==TRUE ? LinphoneSPAccept : LinphoneSPDeny);
 	if (linphone_friend_in_list(lf)) {

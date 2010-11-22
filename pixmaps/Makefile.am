@@ -12,6 +12,6 @@ status-orange.png \
 status-red.png \
 status-offline.png \
 contact-orange.png dialer-orange.png history-orange.png\
-startcall-green.png stopcall-red.png 
+startcall-green.png stopcall-red.png addcall-green.png
 
 EXTRA_DIST=$(pixmap_DATA)

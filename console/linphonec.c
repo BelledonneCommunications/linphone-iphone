@@ -77,6 +77,11 @@
 #define PACKAGE_DIR ""
 #endif
 
+#ifdef HAVE_X11_XLIB_H
+#include <X11/Xlib.h>
+#include <SDL/SDL_syswm.h>
+#endif
+
 /***************************************************************************
  *
  *  Types
@@ -125,7 +130,7 @@ static void linphonec_new_unknown_subscriber(LinphoneCore *lc,
 		LinphoneFriend *lf, const char *url);
 
 static void linphonec_text_received(LinphoneCore *lc, LinphoneChatRoom *cr,
-		const char *from, const char *msg);
+		const LinphoneAddress *from, const char *msg);
 static void linphonec_display_status (LinphoneCore * lc, const char *something);
 static void linphonec_dtmf_received(LinphoneCore *lc, LinphoneCall *call, int dtmf);
 static void print_prompt(LinphoneCore *opm);
@@ -155,6 +160,7 @@ LPC_AUTH_STACK auth_stack;
 static int trace_level = 0;
 static char *logfile_name = NULL;
 static char configfile_name[PATH_MAX];
+static const char *factory_configfile_name=NULL;
 static char *sipAddr = NULL; /* for autocall */
 #if !defined(_WIN32_WCE)
 static ortp_pipe_t client_sock=ORTP_PIPE_INVALID;
@@ -167,6 +173,9 @@ static bool_t pipe_reader_run=FALSE;
 #if !defined(_WIN32_WCE)
 static ortp_pipe_t server_sock;
 #endif /*_WIN32_WCE*/
+
+bool_t linphonec_camera_enabled=TRUE;
+
 
 
 void linphonec_call_identify(LinphoneCall* call){
@@ -183,7 +192,7 @@ LinphoneCall *linphonec_get_call(long id){
 			return call;
 		}
 	}
-	linphonec_out("Sorry, no call with id %i exists at this time.",id);
+	linphonec_out("Sorry, no call with id %i exists at this time.\n",id);
 	return NULL;
 }
 
@@ -199,7 +208,7 @@ LinphoneCall *linphonec_get_call(long id){
 static void
 linphonec_display_refer (LinphoneCore * lc, const char *refer_to)
 {
-	linphonec_out("Receiving out of call refer to %s", refer_to);
+	linphonec_out("Receiving out of call refer to %s\n", refer_to);
 }
 
 /*
@@ -306,6 +315,13 @@ linphonec_new_unknown_subscriber(LinphoneCore *lc, LinphoneFriend *lf,
 
 }
 
+static void linphonec_call_updated(LinphoneCall *call){
+	const LinphoneCallParams *cp=linphone_call_get_current_params(call);
+	if (!linphone_call_camera_enabled (call) && linphone_call_params_video_enabled (cp)){
+		linphonec_out("Far end requests to share video.\nType 'camera on' if you agree.\n");
+	}
+}
+
 static void linphonec_call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState st, const char *msg){
 	char *from=linphone_call_get_remote_address_as_string(call);
 	long id=(long)linphone_call_get_user_pointer (call);
@@ -330,15 +346,19 @@ static void linphonec_call_state_changed(LinphoneCore *lc, LinphoneCall *call, L
 		break;
 		case LinphoneCallIncomingReceived:
 			linphonec_call_identify(call);
+			linphone_call_enable_camera (call,linphonec_camera_enabled);
 			id=(long)linphone_call_get_user_pointer (call);
 			linphonec_set_caller(from);
 			if ( auto_answer)  {
 				answer_call=TRUE;
 			}
-			linphonec_out("Receiving new incoming call from %s, assigned id %i", from,id);
+			linphonec_out("Receiving new incoming call from %s, assigned id %i\n", from,id);
 		break;
 		case LinphoneCallOutgoingInit:
 			linphonec_call_identify(call);
+		break;
+		case LinphoneCallUpdatedByRemote:
+			linphonec_call_updated(call);
 		break;
 		default:
 		break;
@@ -351,9 +371,9 @@ static void linphonec_call_state_changed(LinphoneCore *lc, LinphoneCall *call, L
  */
 static void
 linphonec_text_received(LinphoneCore *lc, LinphoneChatRoom *cr,
-		const char *from, const char *msg)
+		const LinphoneAddress *from, const char *msg)
 {
-	printf("%s: %s\n", from, msg);
+	printf("%s: %s\n", linphone_address_as_string(from), msg);
 	// TODO: provide mechanism for answering.. ('say' command?)
 }
 
@@ -578,7 +598,7 @@ main (int argc, char *argv[]) {
 #endif
 	linphonec_vtable.call_state_changed=linphonec_call_state_changed;
 	linphonec_vtable.notify_presence_recv = linphonec_notify_presence_received;
-	linphonec_vtable.new_unknown_subscriber = linphonec_new_unknown_subscriber;
+	linphonec_vtable.new_subscription_request = linphonec_new_unknown_subscriber;
 	linphonec_vtable.auth_info_requested = linphonec_prompt_for_auth;
 	linphonec_vtable.display_status = linphonec_display_status;
 	linphonec_vtable.display_message=linphonec_display_something;
@@ -676,8 +696,7 @@ linphonec_init(int argc, char **argv)
 	/*
 	 * Initialize linphone core
 	 */
-	linphonec=linphone_core_new (&linphonec_vtable, configfile_name, NULL,
-			    NULL);
+	linphonec=linphone_core_new (&linphonec_vtable, configfile_name, factory_configfile_name, NULL);
 	linphone_core_enable_video(linphonec,vcap_enabled,display_enabled);
 	linphone_core_enable_video_preview(linphonec,preview_enabled);
 	if (!(vcap_enabled || display_enabled)) printf("Warning: video is disabled in linphonec, use -V or -C or -D to enable.\n");
@@ -709,6 +728,10 @@ void linphonec_main_loop_exit(void){
 void
 linphonec_finish(int exit_status)
 {
+	// Do not allow concurrent destroying to prevent glibc errors
+	static bool_t terminating=FALSE;
+	if (terminating) return; 
+	terminating=TRUE;
 	linphonec_out("Terminating...\n");
 
 	/* Terminate any pending call */
@@ -727,7 +750,7 @@ linphonec_finish(int exit_status)
 	{
 		fclose (mylogfile);
 	}
-
+	printf("\n");
 	exit(exit_status);
 
 }
@@ -827,6 +850,7 @@ print_usage (int exit_status)
 usage: linphonec [-c file] [-s sipaddr] [-a] [-V] [-d level ] [-l logfile]\n\
        linphonec -v\n\
 \n\
+  -b  file             specify path of readonly factory configuration file.\n\
   -c  file             specify path of configuration file.\n\
   -d  level            be verbose. 0 is no output. 6 is all output\n\
   -l  logfile          specify the log file for your SIP phone\n\
@@ -840,6 +864,75 @@ usage: linphonec [-c file] [-s sipaddr] [-a] [-V] [-d level ] [-l logfile]\n\
 
   	exit(exit_status);
 }
+
+#ifdef VIDEO_ENABLED
+
+#ifdef HAVE_X11_XLIB_H
+static void x11_apply_video_params(VideoParams *params, Window window){
+	XWindowChanges wc;
+	unsigned int flags=0;
+	static Display *display = NULL;
+	const char *dname=getenv("DISPLAY");
+
+	if (display==NULL && dname!=NULL){
+		display=XOpenDisplay(dname);
+	}
+
+	if (display==NULL){
+		ms_error("Could not open display %s",dname);
+		return;
+	}
+	memset(&wc,0,sizeof(wc));
+	wc.x=params->x;
+	wc.y=params->y;
+	wc.width=params->w;
+	wc.height=params->h;
+	if (params->x!=-1 ){
+		flags|=CWX|CWY;
+	}
+	if (params->w!=-1){
+		flags|=CWWidth|CWHeight;
+	}
+	/*printf("XConfigureWindow x=%i,y=%i,w=%i,h=%i\n",
+	       wc.x, wc.y ,wc.width, wc.height);*/
+	XConfigureWindow(display,window,flags,&wc);
+	if (params->show)
+		XMapWindow(display,window);
+	else
+		XUnmapWindow(display,window);
+	XSync(display,FALSE);
+}
+#endif
+
+
+static void lpc_apply_video_params(){
+	static unsigned long old_wid=0,old_pwid=0;
+	unsigned long wid=linphone_core_get_native_video_window_id (linphonec);
+	unsigned long pwid=linphone_core_get_native_preview_window_id (linphonec);
+
+	if (wid!=0 && (lpc_video_params.refresh || old_wid!=wid)){
+		lpc_video_params.refresh=FALSE;
+#ifdef HAVE_X11_XLIB_H
+		if (lpc_video_params.wid==0){  // do not manage window if embedded
+			x11_apply_video_params(&lpc_video_params,wid);
+		}
+#endif
+	}
+	old_wid=wid;
+	if (pwid!=0 && (lpc_preview_params.refresh || old_pwid!=pwid)){
+		lpc_preview_params.refresh=FALSE;
+#ifdef HAVE_X11_XLIB_H
+		/*printf("wid=%lu pwid=%lu\n",wid,pwid);*/
+		if (lpc_preview_params.wid==0){  // do not manage window if embedded
+			printf("Refreshing\n");
+			x11_apply_video_params(&lpc_preview_params,pwid);
+		}
+#endif
+	}
+	old_pwid=pwid;
+}
+
+#endif
 
 
 /*
@@ -881,6 +974,10 @@ linphonec_idle_call ()
 		rl_inhibit_completion=0;
 #endif
 	}
+
+#ifdef VIDEO_ENABLED
+	lpc_apply_video_params();
+#endif
 
 	return 0;
 }
@@ -1053,6 +1150,20 @@ linphonec_parse_cmdline(int argc, char **argv)
 			}
 #endif /*_WIN32_WCE*/
 			snprintf(configfile_name, PATH_MAX, "%s", argv[arg_num]);
+		}
+		else if (strncmp ("-b", argv[arg_num], 2) == 0)
+		{
+			if ( ++arg_num >= argc ) print_usage(EXIT_FAILURE);
+#if !defined(_WIN32_WCE)
+			if (access(argv[arg_num],F_OK)!=0 )
+			{
+				fprintf (stderr,
+					"Cannot open config file %s.\n",
+					 argv[arg_num]);
+				exit(EXIT_FAILURE);
+			}
+#endif /*_WIN32_WCE*/
+			factory_configfile_name = argv[arg_num];
 		}
 		else if (strncmp ("-s", argv[arg_num], 2) == 0)
 		{

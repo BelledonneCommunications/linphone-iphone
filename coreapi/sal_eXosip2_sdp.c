@@ -323,13 +323,14 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 			payload_type_set_number(pt,ptn);
 			/* get the rtpmap associated to this codec, if any */
 			rtpmap=sdp_message_a_attr_value_get_with_pt(msg, i,ptn,"rtpmap");
-			payload_type_fill_from_rtpmap(pt,rtpmap);
-			/* get the fmtp, if any */
-			fmtp=sdp_message_a_attr_value_get_with_pt(msg, i, ptn,"fmtp");
-			payload_type_set_send_fmtp(pt,fmtp);
-			stream->payloads=ms_list_append(stream->payloads,pt);
-			ms_message("Found payload %s/%i fmtp=%s",pt->mime_type,pt->clock_rate,
-			    pt->send_fmtp ? pt->send_fmtp : "");
+			if (payload_type_fill_from_rtpmap(pt,rtpmap)==0){
+				/* get the fmtp, if any */
+				fmtp=sdp_message_a_attr_value_get_with_pt(msg, i, ptn,"fmtp");
+				payload_type_set_send_fmtp(pt,fmtp);
+				stream->payloads=ms_list_append(stream->payloads,pt);
+				ms_message("Found payload %s/%i fmtp=%s",pt->mime_type,pt->clock_rate,
+					pt->send_fmtp ? pt->send_fmtp : "");
+			}
 		}
 	}
 	desc->nstreams=i;

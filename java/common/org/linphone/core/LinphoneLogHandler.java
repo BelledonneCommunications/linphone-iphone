@@ -17,7 +17,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package org.linphone.core;
-
+/**
+ * Interface to implement for handling liblinphone log.
+ * <br> use {@link LinphoneCoreFactory#setLogHandler(LinphoneLogHandler)}
+ *
+ */
 public interface LinphoneLogHandler {
 	public static final int Fatal=1<<4;
 	public static final int Error=1<<3|Fatal;
@@ -25,5 +29,13 @@ public interface LinphoneLogHandler {
 	public static final int Info=1<<1|Warn;
 	public static final int Debug=1|Info;
 	
+	/**
+	 * Method invoked for each traces
+	 * @param loggerName
+	 * @param level
+	 * @param levelString
+	 * @param msg
+	 * @param e
+	 */
 	public void log(String loggerName, int level, String levelString, String msg, Throwable e);
 }

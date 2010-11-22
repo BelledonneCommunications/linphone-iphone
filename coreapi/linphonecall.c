@@ -30,7 +30,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/mediastream.h"
 #include "mediastreamer2/msvolume.h"
 #include "mediastreamer2/msequalizer.h"
+#include "mediastreamer2/msfileplayer.h"
+#include "mediastreamer2/msjpegwriter.h"
 
+#ifdef VIDEO_ENABLED
+static MSWebCam *get_nowebcam_device(){
+	return ms_web_cam_manager_get_cam(ms_web_cam_manager_get(),"StaticImage: Static picture");
+}
+#endif
 
 
 static MSList *make_codec_list(LinphoneCore *lc, const MSList *codecs, bool_t only_one_codec){
@@ -46,11 +53,15 @@ static MSList *make_codec_list(LinphoneCore *lc, const MSList *codecs, bool_t on
 	return l;
 }
 
-static SalMediaDescription *create_local_media_description(LinphoneCore *lc, 
-    		LinphoneCall *call, const char *username, bool_t only_one_codec){
+SalMediaDescription *create_local_media_description(LinphoneCore *lc, 
+    		LinphoneCall *call, bool_t with_video, bool_t only_one_codec){
 	MSList *l;
 	PayloadType *pt;
+	const char *me=linphone_core_get_identity(lc);
+	LinphoneAddress *addr=linphone_address_new(me);
+	const char *username=linphone_address_get_username (addr);
 	SalMediaDescription *md=sal_media_description_new();
+
 	md->nstreams=1;
 	strncpy(md->addr,call->localip,sizeof(md->addr));
 	strncpy(md->username,username,sizeof(md->username));
@@ -69,7 +80,7 @@ static SalMediaDescription *create_local_media_description(LinphoneCore *lc,
 	if (lc->dw_audio_bw>0)
 		md->streams[0].bandwidth=lc->dw_audio_bw;
 
-	if (linphone_core_video_enabled (lc)){
+	if (with_video){
 		md->nstreams++;
 		md->streams[1].port=call->video_port;
 		md->streams[1].proto=SalProtoRtpAvp;
@@ -79,6 +90,7 @@ static SalMediaDescription *create_local_media_description(LinphoneCore *lc,
 		if (lc->dw_video_bw)
 			md->streams[1].bandwidth=lc->dw_video_bw;
 	}
+	linphone_address_destroy(addr);
 	return md;
 }
 
@@ -134,7 +146,7 @@ static void discover_mtu(LinphoneCore *lc, const char *remote){
 	}
 }
 
-LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to)
+LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, const LinphoneCallParams *params)
 {
 	LinphoneCall *call=ms_new0(LinphoneCall,1);
 	call->dir=LinphoneCallOutgoing;
@@ -143,17 +155,20 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 	call->core=lc;
 	linphone_core_get_local_ip(lc,linphone_address_get_domain(to),call->localip);
 	linphone_call_init_common(call,from,to);
-	call->localdesc=create_local_media_description (lc,call,
-		linphone_address_get_username(from),FALSE);
+	call->params=*params;
+	call->localdesc=create_local_media_description (lc,call,params->has_video,FALSE);
+	call->camera_active=params->has_video;
 	if (linphone_core_get_firewall_policy(call->core)==LinphonePolicyUseStun)
 		linphone_core_run_stun_tests(call->core,call);
 	discover_mtu(lc,linphone_address_get_domain (to));
+	if (params->referer){
+		sal_call_set_referer (call->op,params->referer->op);
+	}
 	return call;
 }
 
 LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, SalOp *op){
 	LinphoneCall *call=ms_new0(LinphoneCall,1);
-	LinphoneAddress *me=linphone_core_get_primary_contact_parsed(lc);
 	char *to_str;
 	char *from_str;
 
@@ -178,12 +193,13 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	linphone_address_clean(from);
 	linphone_core_get_local_ip(lc,linphone_address_get_domain(from),call->localip);
 	linphone_call_init_common(call, from, to);
+	call->params.has_video=linphone_core_video_enabled(lc);
 	call->localdesc=create_local_media_description (lc,call,
-	    linphone_address_get_username(me),lc->sip_conf.only_one_codec);
+	                          call->params.has_video,lc->sip_conf.only_one_codec);
+	call->camera_active=call->params.has_video;
 	if (linphone_core_get_firewall_policy(call->core)==LinphonePolicyUseStun)
 		linphone_core_run_stun_tests(call->core,call);
 	discover_mtu(lc,linphone_address_get_domain(from));
-	linphone_address_destroy(me);
 	return call;
 }
 
@@ -200,7 +216,10 @@ static void linphone_call_set_terminated(LinphoneCall *call){
 	
 	linphone_core_update_allocated_audio_bandwidth(lc);
 	if (call->state==LinphoneCallEnd){
-		status=LinphoneCallSuccess;
+		if (call->reason==LinphoneReasonDeclined){
+			status=LinphoneCallDeclined;
+		}
+		else status=LinphoneCallSuccess;
 		
 	}
 	linphone_call_log_completed(call->log,call, status);
@@ -208,7 +227,6 @@ static void linphone_call_set_terminated(LinphoneCall *call){
 	if (call == lc->current_call){
 		ms_message("Resetting the current call");
 		lc->current_call=NULL;
-		linphone_core_start_pending_refered_calls(lc);
 	}
 
 	if (linphone_core_del_call(lc,call) != 0){
@@ -254,11 +272,13 @@ const char *linphone_call_state_to_string(LinphoneCallState cs){
 		case LinphoneCallRefered:
 			return "LinphoneCallRefered";
 		case LinphoneCallError:
-			return "LinphoneCallRefered";
+			return "LinphoneCallError";
 		case LinphoneCallEnd:
 			return "LinphoneCallEnd";
 		case LinphoneCallPausedByRemote:
 			return "LinphoneCallPausedByRemote";
+		case LinphoneCallUpdatedByRemote:
+			return "LinphoneCallUpdatedByRemote";
 	}
 	return "undefined state";
 }
@@ -337,6 +357,13 @@ void linphone_call_unref(LinphoneCall *obj){
 }
 
 /**
+ * Returns current parameters associated to the call.
+**/
+const LinphoneCallParams * linphone_call_get_current_params(const LinphoneCall *call){
+	return &call->params;
+}
+
+/**
  * Returns the remote address associated to this call
  *
 **/
@@ -358,6 +385,13 @@ char *linphone_call_get_remote_address_as_string(const LinphoneCall *call){
 **/
 LinphoneCallState linphone_call_get_state(const LinphoneCall *call){
 	return call->state;
+}
+
+/**
+ * Returns the reason for a call termination (either error or normal termination)
+**/
+LinphoneReason linphone_call_get_reason(const LinphoneCall *call){
+	return call->reason;
 }
 
 /**
@@ -398,8 +432,21 @@ const char *linphone_call_get_refer_to(const LinphoneCall *call){
 	return call->refer_to;
 }
 
+/**
+ * Returns direction of the call (incoming or outgoing).
+**/
 LinphoneCallDir linphone_call_get_dir(const LinphoneCall *call){
 	return call->log->dir;
+}
+
+/**
+ * Returns the far end's user agent description string, if available.
+**/
+const char *linphone_call_get_remote_user_agent(LinphoneCall *call){
+	if (call->op){
+		return sal_op_get_remote_ua (call->op);
+	}
+	return NULL;
 }
 
 /**
@@ -420,6 +467,74 @@ bool_t linphone_call_has_transfer_pending(const LinphoneCall *call){
 int linphone_call_get_duration(const LinphoneCall *call){
 	if (call->media_start_time==0) return 0;
 	return time(NULL)-call->media_start_time;
+}
+
+/**
+ * Indicate whether camera input should be sent to remote end.
+**/
+void linphone_call_enable_camera (LinphoneCall *call, bool_t enable){
+#ifdef VIDEO_ENABLED
+	if (call->videostream!=NULL && call->videostream->ticker!=NULL){
+		LinphoneCore *lc=call->core;
+		MSWebCam *nowebcam=get_nowebcam_device();
+		if (call->camera_active!=enable && lc->video_conf.device!=nowebcam){
+			video_stream_change_camera(call->videostream,
+			             enable ? lc->video_conf.device : nowebcam);
+		}
+	}
+	call->camera_active=enable;
+#endif
+}
+
+/**
+ * Take a photo of currently received video and write it into a jpeg file.
+**/
+int linphone_call_take_video_snapshot(LinphoneCall *call, const char *file){
+#ifdef VIDEO_ENABLED
+	if (call->videostream!=NULL && call->videostream->jpegwriter!=NULL){
+		return ms_filter_call_method(call->videostream->jpegwriter,MS_JPEG_WRITER_TAKE_SNAPSHOT,(void*)file);
+	}
+	ms_warning("Cannot take snapshot: no currently running video stream on this call.");
+	return -1;
+#endif
+	return -1;
+}
+
+/**
+ *
+**/
+bool_t linphone_call_camera_enabled (const LinphoneCall *call){
+	return call->camera_active;
+}
+
+/**
+ * 
+**/
+void linphone_call_params_enable_video(LinphoneCallParams *cp, bool_t enabled){
+	cp->has_video=enabled;
+}
+
+/**
+ *
+**/
+bool_t linphone_call_params_video_enabled(const LinphoneCallParams *cp){
+	return cp->has_video;
+}
+
+/**
+ *
+**/
+LinphoneCallParams * linphone_call_params_copy(const LinphoneCallParams *cp){
+	LinphoneCallParams *ncp=ms_new0(LinphoneCallParams,1);
+	memcpy(ncp,cp,sizeof(LinphoneCallParams));
+	return ncp;
+}
+
+/**
+ *
+**/
+void linphone_call_params_destroy(LinphoneCallParams *p){
+	ms_free(p);
 }
 
 /**
@@ -466,6 +581,8 @@ void linphone_call_init_media_streams(LinphoneCall *call){
 #ifdef VIDEO_ENABLED
 	if ((lc->video_conf.display || lc->video_conf.capture) && md->streams[1].port>0){
 		call->videostream=video_stream_new(md->streams[1].port,linphone_core_ipv6_enabled(lc));
+	if( lc->video_conf.displaytype != NULL)
+		video_stream_set_display_filter_name(call->videostream,lc->video_conf.displaytype);
 #ifdef TEST_EXT_RENDERER
 		video_stream_set_render_callback(call->videostream,rendercb,NULL);
 #endif
@@ -621,7 +738,13 @@ static RtpProfile *make_profile(LinphoneCore *lc, const SalMediaDescription *md,
 	return prof;
 }
 
-void linphone_call_start_media_streams(LinphoneCall *call){
+static void setup_ring_player(LinphoneCore *lc, LinphoneCall *call){
+	int pause_time=3000;
+	audio_stream_play(call->audiostream,lc->sound_conf.ringback_tone);
+	ms_filter_call_method(call->audiostream->soundread,MS_FILE_PLAYER_LOOP,&pause_time);
+}
+
+static void _linphone_call_start_media_streams(LinphoneCall *call, bool_t send_early_media){
 	LinphoneCore *lc=call->core;
 	LinphoneAddress *me=linphone_core_get_primary_contact_parsed(lc);
 	const char *tool="linphone-" LINPHONE_VERSION;
@@ -655,16 +778,17 @@ void linphone_call_start_media_streams(LinphoneCall *call){
 				if (captcard==NULL) {
 					ms_warning("No card defined for capture !");
 				}
-				ms_message("streamdir is %i",stream->dir);
 				/*Replace soundcard filters by inactive file players or recorders
 				 when placed in recvonly or sendonly mode*/
 				if (stream->port==0 || stream->dir==SalStreamRecvOnly){
 					captcard=NULL;
 					playfile=NULL;
-				}else if (stream->dir==SalStreamSendOnly){
+				}else if (stream->dir==SalStreamSendOnly || send_early_media){
 					playcard=NULL;
 					captcard=NULL;
 					recfile=NULL;
+					if (send_early_media)
+						playfile=NULL;
 				}
 				/*if playfile are supplied don't use soundcards*/
 				if (lc->use_files) {
@@ -683,14 +807,15 @@ void linphone_call_start_media_streams(LinphoneCall *call){
 					recfile,
 					playcard,
 					captcard,
-					linphone_core_echo_cancellation_enabled(lc));
+					captcard==NULL ? FALSE : linphone_core_echo_cancellation_enabled(lc));
 				post_configure_audio_streams(call);
+				if (send_early_media) setup_ring_player(lc,call);
 				audio_stream_set_rtcp_information(call->audiostream, cname, tool);
 			}else ms_warning("No audio stream accepted ?");
 		}
 	}
 #ifdef VIDEO_ENABLED
-	{
+	if (!send_early_media){
 		const SalStreamDescription *stream=sal_media_description_find_stream(call->resultdesc,
 		    					SalProtoRtpAvp,SalVideo);
 		used_pt=-1;
@@ -706,12 +831,19 @@ void linphone_call_start_media_streams(LinphoneCall *call){
 				VideoStreamDir dir=VideoStreamSendRecv;
 				MSWebCam *cam=lc->video_conf.device;
 				bool_t is_inactive=FALSE;
+
+				call->params.has_video=TRUE;
 				
 				video_stream_set_sent_video_size(call->videostream,linphone_core_get_preferred_video_size(lc));
 				video_stream_enable_self_view(call->videostream,lc->video_conf.selfview);
-						
+				if (lc->video_window_id!=0)
+					video_stream_set_native_window_id(call->videostream,lc->video_window_id);
+				if (lc->preview_window_id!=0)
+					video_stream_set_native_preview_window_id (call->videostream,lc->preview_window_id);
+				video_stream_use_preview_video_window (call->videostream,lc->use_preview_window);
+				
 				if (stream->dir==SalStreamSendOnly && lc->video_conf.capture ){
-					cam=ms_web_cam_manager_get_cam(ms_web_cam_manager_get(),"StaticImage: Static picture");
+					cam=get_nowebcam_device();
 					dir=VideoStreamSendOnly;
 				}else if (stream->dir==SalStreamRecvOnly && lc->video_conf.display ){
 					dir=VideoStreamRecvOnly;
@@ -726,6 +858,9 @@ void linphone_call_start_media_streams(LinphoneCall *call){
 					ms_warning("video stream is inactive.");
 					/*either inactive or incompatible with local capabilities*/
 					is_inactive=TRUE;
+				}
+				if (call->camera_active==FALSE){
+					cam=get_nowebcam_device();
 				}
 				if (!is_inactive){
 					video_stream_set_direction (call->videostream, dir);
@@ -748,6 +883,13 @@ void linphone_call_start_media_streams(LinphoneCall *call){
 }
 
 
+void linphone_call_start_media_streams(LinphoneCall *call){
+	_linphone_call_start_media_streams(call,FALSE);
+}
+
+void linphone_call_start_early_media(LinphoneCall *call){
+	_linphone_call_start_media_streams(call,TRUE);
+}
 
 static void linphone_call_log_fill_stats(LinphoneCallLog *log, AudioStream *st){
 	audio_stream_get_local_rtp_stats (st,&log->local_stats);
@@ -777,5 +919,4 @@ void linphone_call_stop_media_streams(LinphoneCall *call){
 		call->video_profile=NULL;
 	}
 }
-
 

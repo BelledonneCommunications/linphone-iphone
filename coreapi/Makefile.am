@@ -6,11 +6,11 @@ EXTRA_DIST=linphonecore_jni.cc
 ## Process this file with automake to produce Makefile.in
 linphone_includedir=$(includedir)/linphone
 
-linphone_include_HEADERS=linphonecore.h linphonecore_utils.h ../config.h lpconfig.h sipsetup.h
+linphone_include_HEADERS=linphonecore.h linphonefriend.h linphonecore_utils.h ../config.h lpconfig.h sipsetup.h
 
 INCLUDES = \
 	-I$(top_srcdir)\
-	-I$(top_srcdir)/mediastreamer2/include
+	$(MEDIASTREAMER_CFLAGS)
 
 
 lib_LTLIBRARIES=liblinphone.la
@@ -42,7 +42,7 @@ liblinphone_la_LDFLAGS= -version-info $(LIBLINPHONE_SO_VERSION) -no-undefined
 
 liblinphone_la_LIBADD= \
 		$(EXOSIP_LIBS) \
-		$(top_builddir)/mediastreamer2/src/libmediastreamer.la \
+		$(MEDIASTREAMER_LIBS) \
 		$(ORTP_LIBS)
 
 if BUILD_WIN32
@@ -53,11 +53,14 @@ noinst_PROGRAMS=test_lsd
 
 test_lsd_SOURCES=test_lsd.c
 
-test_lsd_LDADD=liblinphone.la
+test_lsd_LDADD=liblinphone.la \
+							$(MEDIASTREAMER_LIBS) \
+							$(ORTP_LIBS)
 
 AM_CFLAGS=$(STRICT_OPTIONS)  -DIN_LINPHONE \
 	$(ORTP_CFLAGS) \
 	$(OSIP_CFLAGS) \
+	$(MEDIASTREAMER_CFLAGS) \
 	$(EXOSIP_CFLAGS) \
 	-DENABLE_TRACE 	\
 	-DLOG_DOMAIN=\"LinphoneCore\" \

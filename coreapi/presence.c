@@ -31,9 +31,9 @@ void linphone_core_add_subscriber(LinphoneCore *lc, const char *subscriber, SalO
 	linphone_friend_set_inc_subscribe_policy(fl,LinphoneSPAccept);
 	fl->inc_subscribe_pending=TRUE;
 	lc->subscribers=ms_list_append(lc->subscribers,(void *)fl);
-	if (lc->vtable.new_unknown_subscriber!=NULL) {
+	if (lc->vtable.new_subscription_request!=NULL) {
 		char *tmp=linphone_address_as_string(fl->uri);
-		lc->vtable.new_unknown_subscriber(lc,fl,tmp);
+		lc->vtable.new_subscription_request(lc,fl,tmp);
 		ms_free(tmp);
 	}
 }
@@ -57,11 +57,24 @@ void linphone_subscription_new(LinphoneCore *lc, SalOp *op, const char *from){
 	LinphoneFriend *lf=NULL;
 	char *tmp;
 	LinphoneAddress *uri;
+	LinphoneProxyConfig *cfg;
+	const char *fixed_contact;
 	
 	uri=linphone_address_new(from);
 	linphone_address_clean(uri);
 	tmp=linphone_address_as_string(uri);
 	ms_message("Receiving new subscription from %s.",from);
+
+	cfg=linphone_core_lookup_known_proxy(lc,uri);
+	if (cfg!=NULL){
+		if (cfg->op){
+			fixed_contact=sal_op_get_contact(cfg->op);
+			if (fixed_contact) {
+				sal_op_set_contact (op,fixed_contact);
+				ms_message("Contact for next subscribe answer has been fixed using proxy to %s",fixed_contact);
+			}
+		}
+	}
 	/* check if we answer to this subscription */
 	if (linphone_find_friend(lc->friends,uri,&lf)!=NULL){
 		lf->insub=op;

@@ -1,7 +1,8 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([linphone],[3.3.99.2],[linphone-developers@nongnu.org])
+AC_INIT([linphone],[3.3.99.9],[linphone-developers@nongnu.org])
 AC_CANONICAL_SYSTEM
+AC_CONFIG_SRCDIR([coreapi/linphonecore.c])
 
 dnl Source packaging numbers
 
@@ -28,7 +29,8 @@ AC_SUBST(LINPHONE_VERSION)
 AC_MSG_NOTICE([$PACKAGE_NAME-$PACKAGE_VERSION		A full featured audio/video sip phone.])
 AC_MSG_NOTICE([licensed under the terms of the General Public License (GPL)])
 
-AM_INIT_AUTOMAKE([tar-ustar])
+AM_INIT_AUTOMAKE
+AC_SUBST([LIBTOOL_DEPS])
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])],)
 AC_CONFIG_HEADER(config.h)
 AC_CONFIG_MACRO_DIR([m4])
@@ -67,7 +69,8 @@ AC_SUBST(CONSOLE_FLAGS)
 AC_SUBST(GUI_FLAGS)
 
 dnl localization tools
-ifdef([IT_PROG_INTLTOOL],[IT_PROG_INTLTOOL],[AC_PROG_INTLTOOL])
+IT_PROG_INTLTOOL([0.40], [no-xml])
+
 dnl Initialize libtool
 AC_LIBTOOL_WIN32_DLL
 AC_PROG_LIBTOOL
@@ -290,11 +293,19 @@ AC_ARG_WITH( ffmpeg,
 		[  --with-ffmpeg		Sets the installation prefix of ffmpeg, needed for video support. [default=/usr] ],
 		[ ffmpegdir=${withval}],[ ffmpegdir=/usr ])
 
-AC_ARG_WITH( sdl,
-		[  --with-sdl		Sets the installation prefix of libSDL, needed for video support. [default=/usr] ],
-		[ libsdldir=${withval}],[ libsdldir=/usr ])
+AC_ARG_ENABLE(x11,
+			  [  --disable-x11    Disable X11 support],
+		 	  [case "${enableval}" in
+			  yes) enable_x11=true ;;
+			  no)  enable_x11=false ;;
+			  *) AC_MSG_ERROR(bad value ${enableval} for --disable-x11) ;;
+		  	  esac],[enable_x11=true])
 
 if test "$video" = "true"; then
+	
+	if test "$enable_x11" = "true"; then
+	   AC_CHECK_HEADERS(X11/Xlib.h)
+	fi
 	AC_DEFINE(VIDEO_ENABLED,1,[defined if video support is available])
 fi
 
@@ -362,22 +373,46 @@ fi
 
 AC_SUBST(STRICT_OPTIONS)
 
-AC_CONFIG_SUBDIRS( mediastreamer2 )
+top_srcdir=`dirname $0`
+
+AC_ARG_ENABLE([external-mediastreamer],
+      [AS_HELP_STRING([--enable-external-mediastreamer],[Use external mediastreamer library])],,
+      [enable_external_mediastreamer=no])
+
+AS_CASE($enable_external_mediastreamer,
+		[yes],[
+			PKG_CHECK_MODULES([MEDIASTREAMER], [mediastreamer])
+			MS2_VERSION=`$PKG_CONFIG --modversion mediastreamer`
+			AM_CONDITIONAL(EXTERNAL_MEDIASTREAMER, [true])],
+		[no],[
+			AC_CONFIG_SUBDIRS( mediastreamer2 )
+			MEDIASTREAMER_DIR=${top_srcdir}/mediastreamer2
+			MEDIASTREAMER_CFLAGS="-I\$(top_srcdir)/mediastreamer2/include"
+			MEDIASTREAMER_LIBS="\$(top_builddir)/mediastreamer2/src/libmediastreamer.la"
+dnl need to temporary change quotes to allow square brackets
+		 	changequote(<<, >>)
+			MS2_VERSION=`grep -e '^.C_INIT(' $MEDIASTREAMER_DIR/configure.ac | sed -e 's:\([^(]\+\)(\[mediastreamer\],\[\(.*\)\]):\2:g'`
+			changequote([, ])
+			AM_CONDITIONAL(EXTERNAL_MEDIASTREAMER, [false])],
+        [AC_MSG_ERROR([bad value '${enable_external_mediastreamer}' for --enable-external-mediastreamer])])
+
+AC_SUBST(MEDIASTREAMER_CFLAGS)
+AC_SUBST(MEDIASTREAMER_LIBS)
+AC_SUBST([MS2_VERSION])
 
 dnl check for db2html (docbook) to generate html user manual
 AC_CHECK_PROG(have_sgmltools,sgmltools, yes, no)
 AM_CONDITIONAL(ENABLE_MANUAL, test x$have_sgmltools$build_manual = xyesyes )
 
 dnl for external use of linphone libs
-LINPHONE_CFLAGS="-I${includedir} -I${includedir}/linphone  "
-LINPHONE_LIBS="-L${libdir}  -llinphone"
+LINPHONE_CFLAGS="-I${includedir} -I${includedir}/linphone"
+LINPHONE_LIBS="-L${libdir} -llinphone"
 
 if test x$mingw_found = xyes ; then
 	LINPHONE_LIBS="$LINPHONE_LIBS $OSIP_LIBS"
 fi
 AC_SUBST(LINPHONE_CFLAGS)
 AC_SUBST(LINPHONE_LIBS)
-
 
 AC_DEFINE_UNQUOTED(LINPHONE_VERSION,"$PACKAGE_VERSION",[Linphone's version number])
 
@@ -394,7 +429,8 @@ AC_ARG_ENABLE(external-ortp,
       esac],[external_ortp=false])
 
 if test "$external_ortp" = 'true'; then
-	LP_CHECK_ORTP
+	PKG_CHECK_MODULES([ORTP], [ortp])
+	ORTP_VERSION=`$PKG_CONFIG --modversion ortp`
 else
 	AC_CONFIG_SUBDIRS( oRTP )
 	ORTP_CFLAGS="-I\$(top_srcdir)/oRTP/include"
@@ -402,21 +438,15 @@ else
 	if test x$ac_cv_c_bigendian = xyes ; then
 		ORTP_CFLAGS="$ORTP_CFLAGS -DORTP_BIGENDIAN"
 	fi
+	changequote(<<, >>)
+	ORTP_VERSION=`grep -E ^[AC]+_INIT ${top_srcdir}/oRTP/configure.ac | sed -e 's:^.*_INIT(.*,\[\(.*\)\]):\1:g'`
+	changequote([, ])
 fi
 AC_SUBST(ORTP_CFLAGS)
 AC_SUBST(ORTP_LIBS)
+AC_SUBST([ORTP_VERSION])
 
 AM_CONDITIONAL(EXTERNAL_ORTP, [test "$external_ortp" = 'true'])
-
-dnl Packaging: Pick oRTP version from ${top_srcdir}/oRTP/configure.ac
-dnl Feel free to propose an alternative & cleaner version...
-top_srcdir=`dirname $0`
-changequote(, )dnl
-ORTP_VERSION=`grep -E ^[AC]+_INIT ${top_srcdir}/oRTP/configure.ac | sed -e 's:^.*_INIT(.*,\[\(.*\)\]):\1:g'`
-MS2_VERSION=`grep -E ^[AC]+_INIT ${top_srcdir}/mediastreamer2/configure.ac | sed -e 's:^.*_INIT(.*,\[\(.*\)\]):\1:g'`
-changequote([, ])dnl
-AC_SUBST([ORTP_VERSION])
-AC_SUBST([MS2_VERSION])
 
 dnl ##################################################
 dnl # Check for doxygen
@@ -429,12 +459,11 @@ AM_CONDITIONAL(HAVE_DOXYGEN, test $DOXYGEN != false)
 AC_OUTPUT([ 
 Makefile 
 m4/Makefile
-po/Makefile.in 
+po/Makefile.in
 pixmaps/Makefile
 coreapi/Makefile
 coreapi/help/Makefile
 coreapi/help/Doxyfile
-coreapi/help/doxygen.dox
 gtk/Makefile
 console/Makefile
 share/Makefile

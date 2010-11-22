@@ -45,8 +45,8 @@ linphone_3_SOURCES=	\
 			loginframe.c \
 			linphone.h 
 
-linphone_3_LDADD=$(top_builddir)/oRTP/src/libortp.la \
-		$(top_builddir)/mediastreamer2/src/libmediastreamer.la \
+linphone_3_LDADD=$(ORTP_LIBS) \
+		$(MEDIASTREAMER_LIBS) \
 		$(top_builddir)/coreapi/liblinphone.la \
 			$(LIBGTK_LIBS) $(INTLLIBS) 
 
@@ -69,13 +69,13 @@ endif
 
 
 AM_CFLAGS= -DIN_LINPHONE -I$(top_srcdir)/coreapi/ \
-		-I$(top_srcdir)/mediastreamer2/include/ \
+		$(MEDIASTREAMER_CFLAGS) \
 		$(ORTP_CFLAGS) \
 		$(STRICT_OPTIONS) $(LIBGTK_CFLAGS) $(IPV6_CFLAGS) \
 		$(OSIP_CFLAGS) 
 
 
-version_date.h: $(top_srcdir)/configure.in
+version_date.h: $(top_srcdir)/configure.ac
 	echo "#define LINPHONE_VERSION_DATE \"$(VERSION)-`date +%y%m%d`\"" > $@
 
 newdate:

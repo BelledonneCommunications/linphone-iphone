@@ -97,6 +97,17 @@ typedef struct {
 	char *doc;		/* Long description.  */
 } LPC_COMMAND;
 
+typedef struct {
+	int x,y,w,h;
+	unsigned long wid;
+	bool_t show;
+	bool_t refresh;
+} VideoParams;
+
+
+extern VideoParams lpc_video_params;
+extern VideoParams lpc_preview_params;
+
 /***************************************************************************
  *
  *  Forward declarations
@@ -114,6 +125,8 @@ void linphonec_command_finished(void);
 void linphonec_set_caller(const char *caller);
 LinphoneCall *linphonec_get_call(long id);
 void linphonec_call_identify(LinphoneCall* call);
+
+extern bool_t linphonec_camera_enabled;
 
 #endif /* def LINPHONEC_H */
 

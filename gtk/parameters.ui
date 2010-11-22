@@ -1,55 +1,64 @@
 <?xml version="1.0"?>
 <interface>
+  <requires lib="gtk+" version="2.16"/>
+  <!-- interface-naming-policy toplevel-contextual -->
   <object class="GtkAdjustment" id="adjustment1">
-    <property name="upper">3001</property>
-    <property name="lower">500</property>
-    <property name="page_increment">10</property>
-    <property name="step_increment">1</property>
-    <property name="page_size">10</property>
     <property name="value">500</property>
+    <property name="lower">500</property>
+    <property name="upper">3001</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+    <property name="page_size">10</property>
   </object>
   <object class="GtkAdjustment" id="adjustment2">
-    <property name="upper">65535</property>
-    <property name="lower">1</property>
-    <property name="page_increment">10</property>
-    <property name="step_increment">1</property>
-    <property name="page_size">10</property>
     <property name="value">1</property>
+    <property name="lower">1</property>
+    <property name="upper">65535</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+    <property name="page_size">10</property>
   </object>
   <object class="GtkAdjustment" id="adjustment3">
-    <property name="upper">65535</property>
-    <property name="lower">1</property>
-    <property name="page_increment">10</property>
-    <property name="step_increment">1</property>
-    <property name="page_size">10</property>
     <property name="value">1</property>
+    <property name="lower">1</property>
+    <property name="upper">65535</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+    <property name="page_size">10</property>
   </object>
   <object class="GtkAdjustment" id="adjustment4">
-    <property name="upper">65535</property>
-    <property name="lower">1</property>
-    <property name="page_increment">10</property>
-    <property name="step_increment">1</property>
-    <property name="page_size">10</property>
     <property name="value">1</property>
+    <property name="lower">0</property>
+    <property name="upper">65535</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+    <property name="page_size">10</property>
+  </object>
+  <object class="GtkAdjustment" id="adjustment_tcp_port">
+    <property name="value">1</property>
+    <property name="lower">0</property>
+    <property name="upper">65535</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+    <property name="page_size">10</property>
   </object>
   <object class="GtkAdjustment" id="adjustment5">
-    <property name="upper">100000</property>
     <property name="lower">-1</property>
-    <property name="page_increment">10</property>
+    <property name="upper">100000</property>
     <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
     <property name="page_size">10</property>
-    <property name="value">0</property>
   </object>
   <object class="GtkAdjustment" id="adjustment6">
-    <property name="upper">100000</property>
     <property name="lower">-1</property>
-    <property name="page_increment">10</property>
+    <property name="upper">100000</property>
     <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
     <property name="page_size">10</property>
-    <property name="value">0</property>
   </object>
   <object class="GtkListStore" id="model1">
     <columns>
+      <!-- column-name gchararray -->
       <column type="gchararray"/>
     </columns>
     <data>
@@ -60,6 +69,7 @@
   </object>
   <object class="GtkListStore" id="model2">
     <columns>
+      <!-- column-name gchararray -->
       <column type="gchararray"/>
     </columns>
     <data>
@@ -70,6 +80,7 @@
   </object>
   <object class="GtkListStore" id="model3">
     <columns>
+      <!-- column-name gchararray -->
       <column type="gchararray"/>
     </columns>
     <data>
@@ -80,6 +91,7 @@
   </object>
   <object class="GtkListStore" id="model4">
     <columns>
+      <!-- column-name gchararray -->
       <column type="gchararray"/>
     </columns>
     <data>
@@ -90,6 +102,7 @@
   </object>
   <object class="GtkListStore" id="model5">
     <columns>
+      <!-- column-name gchararray -->
       <column type="gchararray"/>
     </columns>
     <data>
@@ -100,6 +113,7 @@
   </object>
   <object class="GtkListStore" id="model6">
     <columns>
+      <!-- column-name gchararray -->
       <column type="gchararray"/>
     </columns>
     <data>
@@ -113,6 +127,7 @@
   </object>
   <object class="GtkListStore" id="model7">
     <columns>
+      <!-- column-name gchararray -->
       <column type="gchararray"/>
     </columns>
     <data>
@@ -121,8 +136,6 @@
       </row>
     </data>
   </object>
-  <!-- interface-requires gtk+ 2.16 -->
-  <!-- interface-naming-policy toplevel-contextual -->
   <object class="GtkWindow" id="parameters">
     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
     <property name="title" translatable="yes">Settings</property>
@@ -166,7 +179,7 @@
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">False</property>
                                     <property name="draw_indicator">True</property>
-                                    <signal handler="linphone_gtk_mtu_set" name="toggled"/>
+                                    <signal name="toggled" handler="linphone_gtk_mtu_set"/>
                                   </object>
                                   <packing>
                                     <property name="position">0</property>
@@ -177,7 +190,7 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="adjustment">adjustment1</property>
-                                    <signal handler="linphone_gtk_mtu_changed" name="value_changed"/>
+                                    <signal name="value_changed" handler="linphone_gtk_mtu_changed"/>
                                   </object>
                                   <packing>
                                     <property name="position">1</property>
@@ -195,7 +208,7 @@
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
                                 <property name="draw_indicator">True</property>
-                                <signal handler="linphone_gtk_use_sip_info_dtmf_toggled" name="toggled"/>
+                                <signal name="toggled" handler="linphone_gtk_use_sip_info_dtmf_toggled"/>
                               </object>
                               <packing>
                                 <property name="position">1</property>
@@ -209,7 +222,7 @@
                                 <property name="receives_default">False</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <property name="draw_indicator">True</property>
-                                <signal handler="linphone_gtk_ipv6_toggled" name="toggled"/>
+                                <signal name="toggled" handler="linphone_gtk_ipv6_toggled"/>
                               </object>
                               <packing>
                                 <property name="position">2</property>
@@ -247,7 +260,7 @@
                           <object class="GtkTable" id="table1">
                             <property name="visible">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                            <property name="n_rows">3</property>
+                            <property name="n_rows">4</property>
                             <property name="n_columns">2</property>
                             <child>
                               <object class="GtkSpinButton" id="video_rtp_port">
@@ -255,7 +268,22 @@
                                 <property name="can_focus">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <property name="adjustment">adjustment2</property>
-                                <signal handler="linphone_gtk_video_port_changed" name="value_changed"/>
+                                <signal name="value_changed" handler="linphone_gtk_video_port_changed"/>
+                              </object>
+                              <packing>
+                                <property name="left_attach">1</property>
+                                <property name="right_attach">2</property>
+                                <property name="top_attach">3</property>
+                                <property name="bottom_attach">4</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSpinButton" id="audio_rtp_port">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                <property name="adjustment">adjustment3</property>
+                                <signal name="value_changed" handler="linphone_gtk_audio_port_changed"/>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -265,12 +293,12 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkSpinButton" id="audio_rtp_port">
+                              <object class="GtkSpinButton" id="tcp_sip_port">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                <property name="adjustment">adjustment3</property>
-                                <signal handler="linphone_gtk_audio_port_changed" name="value_changed"/>
+                                <property name="adjustment">adjustment_tcp_port</property>
+                                <signal name="value_changed" handler="linphone_gtk_tcp_sip_port_changed"/>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -280,12 +308,12 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkSpinButton" id="sip_port">
+                              <object class="GtkSpinButton" id="udp_sip_port">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <property name="adjustment">adjustment4</property>
-                                <signal handler="linphone_gtk_sip_port_changed" name="value_changed"/>
+                                <signal name="value_changed" handler="linphone_gtk_udp_sip_port_changed"/>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -300,8 +328,8 @@
                                 <property name="justify">right</property>
                               </object>
                               <packing>
-                                <property name="top_attach">2</property>
-                                <property name="bottom_attach">3</property>
+                                <property name="top_attach">3</property>
+                                <property name="bottom_attach">4</property>
                               </packing>
                             </child>
                             <child>
@@ -309,6 +337,18 @@
                                 <property name="visible">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <property name="label" translatable="yes">Audio RTP/UDP:</property>
+                                <property name="justify">right</property>
+                              </object>
+                              <packing>
+                                <property name="top_attach">2</property>
+                                <property name="bottom_attach">3</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="label_tcp_port">
+                                <property name="visible">True</property>
+                                <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                <property name="label" translatable="yes">SIP (TCP):</property>
                                 <property name="justify">right</property>
                               </object>
                               <packing>
@@ -359,7 +399,7 @@
                             <property name="receives_default">False</property>
                             <property name="active">True</property>
                             <property name="draw_indicator">True</property>
-                            <signal handler="linphone_gtk_no_firewall_toggled" name="toggled"/>
+                            <signal name="toggled" handler="linphone_gtk_no_firewall_toggled"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -380,7 +420,7 @@
                                 <property name="active">True</property>
                                 <property name="draw_indicator">True</property>
                                 <property name="group">no_nat</property>
-                                <signal handler="linphone_gtk_use_nat_address_toggled" name="toggled"/>
+                                <signal name="toggled" handler="linphone_gtk_use_nat_address_toggled"/>
                               </object>
                               <packing>
                                 <property name="position">0</property>
@@ -406,7 +446,7 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                    <signal handler="linphone_gtk_nat_address_changed" name="changed"/>
+                                    <signal name="changed" handler="linphone_gtk_nat_address_changed"/>
                                   </object>
                                   <packing>
                                     <property name="position">1</property>
@@ -437,7 +477,7 @@
                                 <property name="active">True</property>
                                 <property name="draw_indicator">True</property>
                                 <property name="group">no_nat</property>
-                                <signal handler="linphone_gtk_use_stun_toggled" name="toggled"/>
+                                <signal name="toggled" handler="linphone_gtk_use_stun_toggled"/>
                               </object>
                               <packing>
                                 <property name="position">0</property>
@@ -463,7 +503,7 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                    <signal handler="linphone_gtk_stun_server_changed" name="changed"/>
+                                    <signal name="changed" handler="linphone_gtk_stun_server_changed"/>
                                   </object>
                                   <packing>
                                     <property name="position">1</property>
@@ -557,7 +597,7 @@
                                   <object class="GtkFileChooserButton" id="ring_chooser">
                                     <property name="visible">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                    <signal handler="linphone_gtk_ring_file_set" name="file_set"/>
+                                    <signal name="file_set" handler="linphone_gtk_ring_file_set"/>
                                   </object>
                                   <packing>
                                     <property name="position">0</property>
@@ -571,7 +611,7 @@
                                     <property name="receives_default">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                     <property name="use_stock">True</property>
-                                    <signal handler="linphone_gtk_play_ring_file" name="clicked"/>
+                                    <signal name="clicked" handler="linphone_gtk_play_ring_file"/>
                                   </object>
                                   <packing>
                                     <property name="position">1</property>
@@ -603,7 +643,7 @@
                               <object class="GtkEntry" id="alsa_dev">
                                 <property name="can_focus">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                <signal handler="linphone_gtk_alsa_special_device_changed" name="editing_done"/>
+                                <signal name="editing_done" handler="linphone_gtk_alsa_special_device_changed"/>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -617,8 +657,8 @@
                               <object class="GtkComboBox" id="capture_device">
                                 <property name="visible">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                <signal handler="linphone_gtk_capture_device_changed" name="changed"/>
                                 <property name="model">model1</property>
+                                <signal name="changed" handler="linphone_gtk_capture_device_changed"/>
                                 <child>
                                   <object class="GtkCellRendererText" id="renderer1"/>
                                   <attributes>
@@ -638,8 +678,8 @@
                               <object class="GtkComboBox" id="ring_device">
                                 <property name="visible">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                <signal handler="linphone_gtk_ring_device_changed" name="changed"/>
                                 <property name="model">model2</property>
+                                <signal name="changed" handler="linphone_gtk_ring_device_changed"/>
                                 <child>
                                   <object class="GtkCellRendererText" id="renderer2"/>
                                   <attributes>
@@ -709,8 +749,8 @@
                               <object class="GtkComboBox" id="playback_device">
                                 <property name="visible">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                <signal handler="linphone_gtk_playback_device_changed" name="changed"/>
                                 <property name="model">model3</property>
+                                <signal name="changed" handler="linphone_gtk_playback_device_changed"/>
                                 <child>
                                   <object class="GtkCellRendererText" id="renderer3"/>
                                   <attributes>
@@ -732,7 +772,7 @@
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
                                 <property name="draw_indicator">True</property>
-                                <signal handler="linphone_gtk_echo_cancelation_toggled" name="toggled"/>
+                                <signal name="toggled" handler="linphone_gtk_echo_cancelation_toggled"/>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -762,7 +802,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkFrame" id="frame4">
+                  <object class="GtkFrame" id="video_frame">
                     <property name="visible">True</property>
                     <property name="label_xalign">0</property>
                     <child>
@@ -787,8 +827,8 @@
                             <child>
                               <object class="GtkComboBox" id="webcams">
                                 <property name="visible">True</property>
-                                <signal handler="linphone_gtk_cam_changed" name="changed"/>
                                 <property name="model">model4</property>
+                                <signal name="changed" handler="linphone_gtk_cam_changed"/>
                                 <child>
                                   <object class="GtkCellRendererText" id="renderer4"/>
                                   <attributes>
@@ -815,9 +855,9 @@
                             <child>
                               <object class="GtkComboBox" id="video_size">
                                 <property name="visible">True</property>
-                                <property name="active">0</property>
-                                <signal handler="linphone_gtk_video_size_changed" name="changed"/>
                                 <property name="model">model5</property>
+                                <property name="active">0</property>
+                                <signal name="changed" handler="linphone_gtk_video_size_changed"/>
                                 <child>
                                   <object class="GtkCellRendererText" id="renderer5"/>
                                   <attributes>
@@ -837,7 +877,7 @@
                       </object>
                     </child>
                     <child type="label">
-                      <object class="GtkLabel" id="video_frame">
+                      <object class="GtkLabel" id="video_frame_title">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">&lt;b&gt;Video&lt;/b&gt;</property>
                         <property name="use_markup">True</property>
@@ -850,6 +890,9 @@
                   </packing>
                 </child>
               </object>
+              <packing>
+                <property name="position">1</property>
+              </packing>
             </child>
             <child type="tab">
               <object class="GtkHBox" id="hbox11">
@@ -890,7 +933,7 @@
                   <object class="GtkFrame" id="frame11">
                     <property name="visible">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                    <property name="tooltip-text" translatable="yes">This section defines your SIP address when not using a SIP account</property>
+                    <property name="tooltip_text" translatable="yes">This section defines your SIP address when not using a SIP account</property>
                     <property name="label_xalign">0</property>
                     <child>
                       <object class="GtkAlignment" id="alignment11">
@@ -915,7 +958,7 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                <signal handler="linphone_gtk_update_my_contact" name="changed"/>
+                                <signal name="changed" handler="linphone_gtk_update_my_contact"/>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -949,7 +992,7 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                <signal handler="linphone_gtk_update_my_contact" name="changed"/>
+                                <signal name="changed" handler="linphone_gtk_update_my_contact"/>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -1033,7 +1076,7 @@
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                    <signal handler="linphone_gtk_add_proxy" name="clicked"/>
+                                    <signal name="clicked" handler="linphone_gtk_add_proxy"/>
                                     <child>
                                       <object class="GtkHBox" id="hbox14">
                                         <property name="visible">True</property>
@@ -1073,7 +1116,7 @@
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                    <signal handler="linphone_gtk_edit_proxy" name="clicked"/>
+                                    <signal name="clicked" handler="linphone_gtk_edit_proxy"/>
                                     <child>
                                       <object class="GtkHBox" id="hbox16">
                                         <property name="visible">True</property>
@@ -1113,7 +1156,7 @@
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                    <signal handler="linphone_gtk_remove_proxy" name="clicked"/>
+                                    <signal name="clicked" handler="linphone_gtk_remove_proxy"/>
                                     <child>
                                       <object class="GtkHBox" id="hbox7">
                                         <property name="visible">True</property>
@@ -1151,7 +1194,7 @@
                                   <object class="GtkButton" id="create_phonics">
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
-                                    <signal handler="linphone_gtk_create_fonics_account" name="clicked"/>
+                                    <signal name="clicked" handler="linphone_gtk_create_fonics_account"/>
                                     <child>
                                       <object class="GtkHBox" id="hbox1">
                                         <property name="visible">True</property>
@@ -1227,7 +1270,7 @@ virtual network !</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                <signal handler="linphone_gtk_clear_passwords" name="clicked"/>
+                                <signal name="clicked" handler="linphone_gtk_clear_passwords"/>
                                 <child>
                                   <object class="GtkHBox" id="hbox18">
                                     <property name="visible">True</property>
@@ -1279,6 +1322,9 @@ virtual network !</property>
                   </packing>
                 </child>
               </object>
+              <packing>
+                <property name="position">2</property>
+              </packing>
             </child>
             <child type="tab">
               <object class="GtkHBox" id="hbox10">
@@ -1334,9 +1380,9 @@ virtual network !</property>
                               <object class="GtkComboBox" id="codec_view">
                                 <property name="visible">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                <property name="active">0</property>
-                                <signal handler="linphone_gtk_codec_view_changed" name="changed"/>
                                 <property name="model">model6</property>
+                                <property name="active">0</property>
+                                <signal name="changed" handler="linphone_gtk_codec_view_changed"/>
                                 <child>
                                   <object class="GtkCellRendererText" id="renderer6"/>
                                   <attributes>
@@ -1387,7 +1433,7 @@ virtual network !</property>
                                         <property name="receives_default">True</property>
                                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                         <property name="use_stock">True</property>
-                                        <signal handler="linphone_gtk_codec_up" name="clicked"/>
+                                        <signal name="clicked" handler="linphone_gtk_codec_up"/>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -1403,7 +1449,7 @@ virtual network !</property>
                                         <property name="receives_default">True</property>
                                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                         <property name="use_stock">True</property>
-                                        <signal handler="linphone_gtk_codec_down" name="clicked"/>
+                                        <signal name="clicked" handler="linphone_gtk_codec_down"/>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -1417,7 +1463,7 @@ virtual network !</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">True</property>
                                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                        <signal handler="linphone_gtk_codec_enable" name="clicked"/>
+                                        <signal name="clicked" handler="linphone_gtk_codec_enable"/>
                                         <child>
                                           <object class="GtkHBox" id="hbox8">
                                             <property name="visible">True</property>
@@ -1457,7 +1503,7 @@ virtual network !</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">True</property>
                                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                        <signal handler="linphone_gtk_codec_disable" name="clicked"/>
+                                        <signal name="clicked" handler="linphone_gtk_codec_disable"/>
                                         <child>
                                           <object class="GtkHBox" id="hbox9">
                                             <property name="visible">True</property>
@@ -1540,9 +1586,9 @@ virtual network !</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                <property name="tooltip-text" translatable="yes">0 stands for "unlimited"</property>
+                                <property name="tooltip_text" translatable="yes">0 stands for "unlimited"</property>
                                 <property name="adjustment">adjustment5</property>
-                                <signal handler="linphone_gtk_upload_bw_changed" name="value_changed"/>
+                                <signal name="value_changed" handler="linphone_gtk_upload_bw_changed"/>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -1556,9 +1602,9 @@ virtual network !</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                <property name="tooltip-text" translatable="yes">0 stands for "unlimited"</property>
+                                <property name="tooltip_text" translatable="yes">0 stands for "unlimited"</property>
                                 <property name="adjustment">adjustment6</property>
-                                <signal handler="linphone_gtk_download_bw_changed" name="value_changed"/>
+                                <signal name="value_changed" handler="linphone_gtk_download_bw_changed"/>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -1603,6 +1649,9 @@ virtual network !</property>
                   </packing>
                 </child>
               </object>
+              <packing>
+                <property name="position">3</property>
+              </packing>
             </child>
             <child type="tab">
               <object class="GtkHBox" id="hbox15">
@@ -1649,8 +1698,8 @@ virtual network !</property>
                         <child>
                           <object class="GtkComboBox" id="lang_combo">
                             <property name="visible">True</property>
-                            <signal handler="linphone_gtk_lang_changed" name="changed"/>
                             <property name="model">model7</property>
+                            <signal name="changed" handler="linphone_gtk_lang_changed"/>
                             <child>
                               <object class="GtkCellRendererText" id="renderer7"/>
                               <attributes>
@@ -1689,7 +1738,7 @@ virtual network !</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
                             <property name="draw_indicator">True</property>
-                            <signal handler="linphone_gtk_ui_level_toggled" name="toggled"/>
+                            <signal name="toggled" handler="linphone_gtk_ui_level_toggled"/>
                           </object>
                         </child>
                       </object>
@@ -1708,6 +1757,9 @@ virtual network !</property>
                   </packing>
                 </child>
               </object>
+              <packing>
+                <property name="position">4</property>
+              </packing>
             </child>
             <child type="tab">
               <object class="GtkHBox" id="hbox4">
@@ -1753,7 +1805,7 @@ virtual network !</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                <signal handler="linphone_gtk_parameters_closed" name="clicked"/>
+                <signal name="clicked" handler="linphone_gtk_parameters_closed"/>
                 <child>
                   <object class="GtkHBox" id="hbox3">
                     <property name="visible">True</property>

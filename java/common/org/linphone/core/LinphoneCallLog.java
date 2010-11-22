@@ -17,7 +17,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package org.linphone.core;
-
+/**
+ * Call data records object 
+ *
+ */
 import java.util.Vector;
 
 
@@ -68,10 +71,20 @@ public interface LinphoneCallLog {
 		}
 	}
 	
+	/**
+	 * Originator of the call as a LinphoneAddress object.
+	 * @return LinphoneAddress
+	 */
 	public LinphoneAddress getFrom();
-	
+	/**
+	 * Destination of the call as a LinphoneAddress object.
+	 * @return
+	 */
 	public LinphoneAddress getTo ();
-	
+	/**
+	 * The direction of the call
+	 * @return CallDirection
+	 */
 	public CallDirection getDirection();
 	/**
 	 * get status of this call

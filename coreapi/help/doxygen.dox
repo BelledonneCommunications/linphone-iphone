@@ -1,0 +1,193 @@
+/**
+ * @mainpage
+ *
+ * @see http://www.linphone.org
+ *
+ * @section what_is_it What is liblinphone
+ *
+ * Liblinphone is a high level library for bringing SIP video call functionnality
+ * into an application. It aims at making easy the integration of the SIP
+ * video calls into any applications. All variants of linphone are directly based
+ * on it:
+ * - linphone (gtk interface)
+ *
+ * - linphonec (console interface)
+ *
+ * Liblinphone is GPL (see COPYING file). Please understand the licencing details
+ * before using it!
+ * 
+ * For any use of this library beyond the rights granted to you by the
+ * GPL license, please contact Belledonne Communications 
+ * (contact@belledonne-communications.com)
+ * 
+ *
+**/
+
+/**
+ * @page liblinphone_license COPYING 
+ * @verbinclude COPYING
+ */
+
+/**
+ * @defgroup initializing Initializing liblinphone
+**/
+
+/**
+ * @defgroup call_control Placing and receiving calls
+**/
+
+/**
+ * @defgroup media_parameters Controlling media parameters
+**/
+
+/**
+ * @defgroup proxies Managing proxies
+ *User registration is controled by  #LinphoneProxyConfig settings.<br> Each #LinphoneProxyConfig object can be configured with registration informations 
+ *like \link linphone_proxy_config_set_server_addr() proxy address \endlink , \link linphone_proxy_config_set_identity() user id \endlink, \link linphone_proxy_config_expires() refresh period \endlink, and so on. 
+ *<br> A created proxy config using linphone_proxy_config_new(), once configured, must be added to #LinphoneCore using function linphone_core_add_proxy_config().
+ *<br> It is recommended to set a default \link #LinphoneProxyConfig proxy config \endlink using function linphone_core_set_default_proxy(). Once done, if \link #LinphoneProxyConfig a proxy config \endlink has been configured with attribute \link linphone_proxy_config_enable_register() enable register \endlink  , next call to linphone_core_iterate() triggers a SIP register.  
+ *<br> Registration status is reported by #LinphoneRegistrationStateCb.
+ *<br>
+ *<br> This pseudo code demonstrates basic registration operations:
+ *<br> \code
+ *	
+ *	LinphoneProxyConfig* proxy_cfg;
+ *	/*create proxy config*/
+ *	proxy_cfg = linphone_proxy_config_new();
+ *	/*parse identity*/
+ *	LinphoneAddress *from = linphone_address_new("sip:toto@sip.titi.com");
+ *	LinphoneAuthInfo *info;
+ *	if (password!=NULL){
+ * 		info=linphone_auth_info_new(linphone_address_get_username(from),NULL,"secret",NULL,NULL); /*create authentication structure from identity*/
+ *		linphone_core_add_auth_info(lc,info); /*add authentication info to LinphoneCore*/
+ *	}	
+ *	// configure proxy entries
+ *	linphone_proxy_config_set_identity(proxy_cfg,identity); /*set identity with user name and domain*/
+ *	const char* server_addr = linphone_address_get_domain(from); /*extract domain address from identity*/
+ *	linphone_proxy_config_set_server_addr(proxy_cfg,server_addr); /* we assume domain = proxy server address*/
+ *	linphone_proxy_config_enable_register(proxy_cfg,TRUE); /*activate registration for this proxy config*/
+ *	linphone_address_destroy(from); /*release resource*/
+ *	
+ *	linphone_core_add_proxy_config(lc,proxy_cfg); /*add proxy config to linphone core*/
+ *	linphone_core_set_default_proxy(lc,proxy_cfg); /*set to default proxy*/ \endcode
+ *<br>
+ * Registration sate call back:
+ \code
+ static void registration_state_changed(struct _LinphoneCore *lc, LinphoneProxyConfig *cfg, LinphoneRegistrationState cstate, const char *message){
+		printf("New registration state %s for user id [%s] at proxy [%s]\n"
+				,linphone_registration_state_to_string(cstate)
+				,linphone_proxy_config_get_identity(cfg)
+				,linphone_proxy_config_get_addr(cfg));
+}
+ \endcode
+ *<br><b>Authentication:</b>
+ *<br>Most of the time, registration requires \ref authentication "authentication" to succed. #LinphoneAuthInfo info must be either added to #LinphoneCore  using function linphone_core_add_auth_info() before #LinphoneProxyConfig is added to Linphone core, or on demand from call back #AuthInfoRequested .    
+ *<br>
+ *<br><b>Unregistration:</b>
+ *<br> Unregistration or any changes to #LinphoneProxyConfig must be first started by a call to function linphone_proxy_config_edit() and validated by  function linphone_proxy_config_done()
+ *<br> This pseudo code shows how to unregister a user associated to a #LinphoneProxyConfig
+ *\code
+ 	LinphoneProxyConfig* proxy_cfg;
+ 	linphone_core_get_default_proxy(lc,&proxy_cfg); /* get default proxy config*/
+	linphone_proxy_config_edit(proxy_cfg); /*start editing proxy configuration*/
+	linphone_proxy_config_enable_register(proxy_cfg,FALSE); /*de-activate registration for this proxy config*/
+	linphone_proxy_config_done(proxy_cfg); /*initiate REGISTER with expire = 0*/
+\endcode
+	<br>
+	A complete tutorial can be found at : \ref registration_tutorials "Registration tutorial" 
+**/
+
+/**
+ * @defgroup network_parameters Controlling network parameters (ports, mtu...)
+**/
+
+/**
+ * @defgroup authentication Managing authentication: userid and passwords
+**/
+
+/**
+* @defgroup buddy_list Managing Buddies and buddy list and presence 
+<b>Buddies and buddy list</b>
+<br>Each buddy is represented by a #LinphoneFriend object created by function linphone_friend_new(). 
+Buddy configuration parameters like \link linphone_friend_set_addr() sip uri \endlink or  \link linphone_friend_set_inc_subscribe_policy() status publication \endlink policy for this \link #LinphoneFriend friend \endlink  are configurable for each buddy.
+<br>Here under a typical buddy creation:
+<br>
+\code
+LinphoneFriend* my_friend=linphone_friend_new_with_addr("sip:joe@sip.linphone.org"); /*creates friend object for buddy joe*/
+linphone_friend_enable_subscribes(my_friend,TRUE); /*configure this friend to emit SUBSCRIBE message after being added to LinphoneCore*/
+linphone_friend_set_inc_subscribe_policy(my_friend,LinphoneSPAccept); /* accept Incoming subscription request for this friend*/
+\endcode
+\link #LinphoneFriend  friends \endlink status changes are reported by callback LinphoneCoreVTable.notify_presence_recv
+\code
+static void notify_presence_recv_updated (struct _LinphoneCore *lc,  LinphoneFriend *friend) {
+	const LinphoneAddress* friend_address = linphone_friend_get_address(friend);
+	printf("New state state [%s] for user id [%s] \n"
+				,linphone_online_status_to_string(linphone_friend_get_status(friend))
+				,linphone_address_as_string (friend_address));
+}
+\endcode
+<br>Once created a buddy can be added to the buddy list using function linphone_core_add_friend() . Added friends will be notified about \link linphone_core_set_presence_info() local status changes \endlink
+<br>
+Any subsequente modifications to #LinphoneFriend must be first started by a call to function linphone_friend_edit() and validated by  function linphone_friend_done()
+\code
+linphone_friend_edit(my_friend); /* start editing friend */
+linphone_friend_enable_subscribes(my_friend,FALSE); /*disable subscription for this friend*/
+linphone_friend_done(my_friend); /*commit changes triggering an UNSUBSCRIBE message*/
+\endcode
+
+
+<b> Publishing presence status </b>
+<br>Local presence status can be changed using function linphone_core_set_presence_info() .New status is propagated to all friends \link linphone_core_add_friend() previously added \endlink to #LinphoneCore. 
+
+<b>Handling incoming subscription request</b>
+<br> New incoming subscription requests are process according to \link linphone_friend_set_inc_subscribe_policy() the incoming subscription policy state \endlink for subscription initiated by \link linphone_core_add_friend() members of the buddy list. \endlink
+<br> For incoming request comming from an unknown buddy, the call back  LinphoneCoreVTable.new_subscription_request is invoked.
+
+<br> A complete tutorial can be found at : \ref buddy_tutorials "Registration tutorial" 
+
+
+**/
+
+/**
+* @defgroup chatroom Chat room and Messaging 
+<b> Exchanging text messages</b>
+<br> Messages are sent using #LinphoneChatRoom object. First step is to create a \link linphone_core_create_chat_room() chat room \endlink
+from a peer sip uri.
+\code
+LinphoneChatRoom* chat_room = linphone_core_create_chat_room(lc,"sip:joe@sip.linphone.org");
+\endcode
+
+<br>Once created, messages are sent using function linphone_chat_room_send_message()  . 
+\code
+linphone_chat_room_send_message(chat_room,"Hello world"); /*sending message*/
+\endcode
+<br>Incoming message are received from call back LinphoneCoreVTable.text_received
+\code
+void text_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from, const char *message) {
+	printf(" Message [%s] received from [%s] \n",message,linphone_address_as_string (from));
+}
+\endcode
+<br> A complete tutorial can be found at : \ref chatroom_tuto "Chat room tutorial" 
+**/
+
+/**
+ * @defgroup call_logs Managing call logs
+**/
+
+
+/**
+ * @defgroup linphone_address SIP address parser API.
+ * This api is useful for manipulating SIP addresses ('from' or 'to' headers).
+**/
+
+/**
+ * @defgroup misc Miscenalleous: logs, version strings, config storage
+**/
+
+/**
+ * @defgroup tutorials Tutorials: 
+ *
+**/
+
+
+

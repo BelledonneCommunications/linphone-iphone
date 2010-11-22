@@ -19,12 +19,19 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-/*
+/**
+ * @defgroup basic_call_tutorials Basic call
+ * @ingroup tutorials
  This program is a _very_ simple usage example of liblinphone.
  It just takes a sip-uri as first argument and attempts to call it
- */
 
-#include <linphonecore.h>
+ @include helloworld.c
+ */
+#ifdef IN_LINPHONE
+#include "linphonecore.h"
+#else
+#include "linphone/linphonecore.h"
+#endif
 
 #include <signal.h>
 
@@ -74,7 +81,10 @@ int main(int argc, char *argv[]){
 	}
 
 	signal(SIGINT,stop);
-	
+
+#ifdef DEBUG
+	linphone_core_enable_logs(NULL); /*enable liblinphone logs.*/
+#endif
 	/* 
 	 Fill the LinphoneCoreVTable with application callbacks.
 	 All are optional. Here we only use the call_state_changed callbacks
