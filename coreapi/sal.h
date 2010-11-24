@@ -282,8 +282,11 @@ int sal_call_decline(SalOp *h, SalReason reason, const char *redirection /*optio
 int sal_call_hold(SalOp *h, bool_t holdon);
 int sal_call_update(SalOp *h);
 SalMediaDescription * sal_call_get_final_media_description(SalOp *h);
-int sal_refer(SalOp *h, const char *refer_to);
-int sal_refer_accept(SalOp *h);
+int sal_call_refer(SalOp *h, const char *refer_to);
+int sal_call_refer_with_replaces(SalOp *h, SalOp *other_call_h);
+int sal_call_accept_refer(SalOp *h);
+/*informs this call is consecutive to an incoming refer */
+int sal_call_set_referer(SalOp *h, SalOp *refered_call);
 /* returns the SalOp of a call that should be replaced by h, if any */
 SalOp *sal_call_get_replaces(SalOp *h);
 int sal_call_send_dtmf(SalOp *h, char dtmf);

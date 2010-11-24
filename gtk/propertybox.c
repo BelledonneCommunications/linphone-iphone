@@ -102,9 +102,22 @@ void linphone_gtk_ipv6_toggled(GtkWidget *w){
 				gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w)));
 }
 
-void linphone_gtk_sip_port_changed(GtkWidget *w){
-	linphone_core_set_sip_port(linphone_gtk_get_core(),
-			(gint)gtk_spin_button_get_value(GTK_SPIN_BUTTON(w)));
+void linphone_gtk_udp_sip_port_changed(GtkWidget *w){
+	LCSipTransports tr;
+	LinphoneCore *lc=linphone_gtk_get_core();
+
+	linphone_core_get_sip_transports(lc,&tr);
+	tr.udp_port = (gint)gtk_spin_button_get_value(GTK_SPIN_BUTTON(w));
+	linphone_core_set_sip_transports(lc,&tr);
+}
+
+void linphone_gtk_tcp_sip_port_changed(GtkWidget *w){
+	LCSipTransports tr;
+	LinphoneCore *lc=linphone_gtk_get_core();
+
+	linphone_core_get_sip_transports(lc,&tr);
+	tr.tcp_port = (gint)gtk_spin_button_get_value(GTK_SPIN_BUTTON(w));
+	linphone_core_set_sip_transports(lc,&tr);
 }
 
 void linphone_gtk_audio_port_changed(GtkWidget *w){
@@ -746,12 +759,16 @@ void linphone_gtk_show_parameters(void){
 	GtkWidget *codec_list=linphone_gtk_get_widget(pb,"codec_list");
 	int mtu;
 	int ui_advanced;
+	LCSipTransports tr;
 
 	/* NETWORK CONFIG */
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb,"ipv6_enabled")),
 				linphone_core_ipv6_enabled(lc));
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb,"sip_port")),
-				linphone_core_get_sip_port(lc));
+	linphone_core_get_sip_transports(lc,&tr);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb,"udp_sip_port")),
+				tr.udp_port);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb,"tcp_sip_port")),
+				tr.tcp_port);
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb,"audio_rtp_port")),
 				linphone_core_get_audio_port(lc));
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb,"video_rtp_port")),

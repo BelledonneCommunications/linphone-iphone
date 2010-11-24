@@ -33,7 +33,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
  */
 
+#ifdef IN_LINPHONE
 #include "linphonecore.h"
+#else
+#include "linphone/linphonecore.h"
+#endif
 
 #include <signal.h>
 
@@ -46,13 +50,13 @@ static void stop(int signum){
 /**
  * presence state change notification callback
  */
-static void notify_presence_recv_updated (struct _LinphoneCore *lc,  LinphoneFriend *friend) {
+static void notify_presence_recv_updated (LinphoneCore *lc,  LinphoneFriend *friend) {
 	const LinphoneAddress* friend_address = linphone_friend_get_address(friend);
 	printf("New state state [%s] for user id [%s] \n"
 				,linphone_online_status_to_string(linphone_friend_get_status(friend))
 				,linphone_address_as_string (friend_address));
 }
-static void new_subscription_request (struct _LinphoneCore *lc,  LinphoneFriend *friend, const char* url) {
+static void new_subscription_request (LinphoneCore *lc,  LinphoneFriend *friend, const char* url) {
 	const LinphoneAddress* friend_address = linphone_friend_get_address(friend);
 	printf(" [%s] wants to see your status, accepting\n"
 				,linphone_address_as_string (friend_address));

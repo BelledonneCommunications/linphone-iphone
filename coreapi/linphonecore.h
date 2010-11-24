@@ -131,7 +131,8 @@ typedef enum _LinphoneCallDir LinphoneCallDir;
 typedef enum _LinphoneCallStatus { 
 	LinphoneCallSuccess, /**< The call was sucessful*/
 	LinphoneCallAborted, /**< The call was aborted */
-	LinphoneCallMissed /**< The call was missed (unanswered)*/
+	LinphoneCallMissed, /**< The call was missed (unanswered)*/
+	LinphoneCallDeclined /**< The call was declined, either locally or by remote end*/
 } LinphoneCallStatus;
 
 /**
@@ -182,15 +183,16 @@ void linphone_call_params_destroy(LinphoneCallParams *cp);
 /**
  * Enum describing failure reasons.
 **/
-enum _LinphoneError{
-	LinphoneErrorNone,
-	LinphoneErrorNoResponse, /**<No response received from remote*/
-	LinphoneErrorBadCredentials /**<Authentication failed due to bad or missing credentials*/
+enum _LinphoneReason{
+	LinphoneReasonNone,
+	LinphoneReasonNoResponse, /**<No response received from remote*/
+	LinphoneReasonBadCredentials, /**<Authentication failed due to bad or missing credentials*/
+	LinphoneReasonDeclined, /**<The call has been declined*/
 };
 
-typedef enum _LinphoneError LinphoneError;
+typedef enum _LinphoneReason LinphoneReason;
 
-const char *linphone_error_to_string(LinphoneError err);
+const char *linphone_reason_to_string(LinphoneReason err);
 
 /**
  * The LinphoneCall object represents a call issued or received by the LinphoneCore
@@ -200,21 +202,21 @@ typedef struct _LinphoneCall LinphoneCall;
 
 typedef enum _LinphoneCallState{
 	LinphoneCallIdle,
-	LinphoneCallIncomingReceived,
-	LinphoneCallOutgoingInit,
-	LinphoneCallOutgoingProgress,
-	LinphoneCallOutgoingRinging,
-	LinphoneCallOutgoingEarlyMedia,
-	LinphoneCallConnected,
-	LinphoneCallStreamsRunning,
-	LinphoneCallPausing,
-	LinphoneCallPaused,
-	LinphoneCallResuming,
-	LinphoneCallRefered,
-	LinphoneCallError,
-	LinphoneCallEnd,
-	LinphoneCallPausedByRemote,
-	LinphoneCallUpdatedByRemote /**<used when video is asked by remote */
+	LinphoneCallIncomingReceived, /**<This is a new incoming call */
+	LinphoneCallOutgoingInit, /**<An outgoing call is started */
+	LinphoneCallOutgoingProgress, /**<An outgoing call is in progress */
+	LinphoneCallOutgoingRinging, /**<An outgoing call is ringing at remote end */
+	LinphoneCallOutgoingEarlyMedia, /**<An outgoing call is proposed early media */
+	LinphoneCallConnected, /**<Connected, the call is answered */
+	LinphoneCallStreamsRunning, /**<The media streams are established and running*/
+	LinphoneCallPausing, /**<The call is pausing at the initiative of local end */
+	LinphoneCallPaused, /**< The call is paused, remote end has accepted the pause */
+	LinphoneCallResuming, /**<The call is being resumed by local end*/
+	LinphoneCallRefered, /**<The call is being transfered to another party, resulting in a new outgoing call to follow immediately*/
+	LinphoneCallError, /**<The call encountered an error*/
+	LinphoneCallEnd, /**<The call ended normally*/
+	LinphoneCallPausedByRemote, /**<The call is paused by remote end*/
+	LinphoneCallUpdatedByRemote /**<The call's parameters are updated, used for example when video is asked by remote */
 } LinphoneCallState;
 
 const char *linphone_call_state_to_string(LinphoneCallState cs);
@@ -236,7 +238,7 @@ const LinphoneCallParams * linphone_call_get_current_params(const LinphoneCall *
 void linphone_call_enable_camera(LinphoneCall *lc, bool_t enabled);
 bool_t linphone_call_camera_enabled(const LinphoneCall *lc);
 int linphone_call_take_video_snapshot(LinphoneCall *call, const char *file);
-LinphoneError linphone_call_get_error(const LinphoneCall *call);
+LinphoneReason linphone_call_get_reason(const LinphoneCall *call);
 const char *linphone_call_get_remote_user_agent(LinphoneCall *call);
 void *linphone_call_get_user_pointer(LinphoneCall *call);
 void linphone_call_set_user_pointer(LinphoneCall *call, void *user_pointer);
@@ -315,7 +317,7 @@ struct _LinphoneCore * linphone_proxy_config_get_core(const LinphoneProxyConfig 
 bool_t linphone_proxy_config_get_dial_escape_plus(const LinphoneProxyConfig *cfg);
 const char * linphone_proxy_config_get_dial_prefix(const LinphoneProxyConfig *cfg);
 
-LinphoneError linphone_proxy_config_get_error(const LinphoneProxyConfig *cfg);
+LinphoneReason linphone_proxy_config_get_error(const LinphoneProxyConfig *cfg);
 
 /* destruction is called automatically when removing the proxy config */
 void linphone_proxy_config_destroy(LinphoneProxyConfig *cfg);
@@ -590,6 +592,8 @@ LinphoneCall * linphone_core_invite_with_params(LinphoneCore *lc, const char *ur
 LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const LinphoneAddress *addr, const LinphoneCallParams *params);
 
 int linphone_core_transfer_call(LinphoneCore *lc, LinphoneCall *call, const char *refer_to);
+
+int linphone_core_transfer_call_to_another(LinphoneCore *lc, LinphoneCall *call, LinphoneCall *dest);
 
 bool_t linphone_core_inc_invite_pending(LinphoneCore*lc);
 

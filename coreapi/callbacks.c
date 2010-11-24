@@ -110,7 +110,6 @@ static void call_received(SalOp *h){
 	linphone_address_clean(from_parsed);
 	tmp=linphone_address_as_string(from_parsed);
 	linphone_address_destroy(from_parsed);
-	linphone_call_set_state(call,LinphoneCallIncomingReceived,"Incoming call");
 	barmesg=ortp_strdup_printf("%s %s%s",tmp,_("is contacting you"),
 	    (sal_call_autoanswer_asked(h)) ?_(" and asked autoanswer."):_("."));
 	if (lc->vtable.show) lc->vtable.show(lc);
@@ -146,6 +145,11 @@ static void call_received(SalOp *h){
 #endif
 	ms_free(barmesg);
 	ms_free(tmp);
+	
+	linphone_call_set_state(call,LinphoneCallIncomingReceived,"Incoming call");
+	if (sal_call_get_replaces(call->op)!=NULL && lp_config_get_int(lc->config,"sip","auto_answer_replacing_calls",1)){
+		linphone_core_accept_call(lc,call);
+	}
 }
 
 static void call_ringing(SalOp *h){
@@ -343,7 +347,6 @@ static void call_updating(SalOp *op){
 			linphone_call_set_state (call,prevstate,"Connected (streams running)");
 		}
 	}
-	if (lc->current_call==NULL) linphone_core_start_pending_refered_calls (lc);
 }
 
 static void call_terminated(SalOp *op, const char *from){
@@ -445,8 +448,10 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 	}
 	linphone_call_stop_media_streams (call);
 	if (sr!=SalReasonDeclined) linphone_call_set_state(call,LinphoneCallError,msg);
-	else linphone_call_set_state(call,LinphoneCallEnd,"Call declined.");
-	
+	else{
+		call->reason=LinphoneReasonDeclined;
+		linphone_call_set_state(call,LinphoneCallEnd,"Call declined.");
+	}
 }
 
 static void auth_requested(SalOp *h, const char *realm, const char *username){
@@ -486,7 +491,7 @@ static void register_success(SalOp *op, bool_t registered){
 	char *msg;
 	
 	cfg->registered=registered;
-	linphone_proxy_config_set_error(cfg,LinphoneErrorNone);
+	linphone_proxy_config_set_error(cfg,LinphoneReasonNone);
 	linphone_proxy_config_set_state(cfg, registered ? LinphoneRegistrationOk : LinphoneRegistrationCleared ,
 	                                registered ? "Registration sucessful" : "Unregistration done");
 	if (lc->vtable.display_status){
@@ -515,9 +520,9 @@ static void register_failure(SalOp *op, SalError error, SalReason reason, const 
 		ms_free(msg);
 	}
 	if (error== SalErrorFailure && reason == SalReasonForbidden) {
-		linphone_proxy_config_set_error(cfg, LinphoneErrorBadCredentials);
+		linphone_proxy_config_set_error(cfg, LinphoneReasonBadCredentials);
 	} else if (error == SalErrorNoResponse) {
-		linphone_proxy_config_set_error(cfg, LinphoneErrorNoResponse);
+		linphone_proxy_config_set_error(cfg, LinphoneReasonNoResponse);
 	}
 	linphone_proxy_config_set_state(cfg,LinphoneRegistrationFailed,details);
 }
@@ -556,11 +561,15 @@ static void refer_received(Sal *sal, SalOp *op, const char *referto){
 			lc->vtable.display_status(lc,msg);
 			ms_free(msg);
 		}
-		if (lc->current_call==NULL) linphone_core_start_pending_refered_calls (lc);
-		sal_refer_accept(op);
+		if (call->state!=LinphoneCallPaused){
+			ms_message("Automatically pausing current call to accept transfer.");
+			linphone_core_pause_call(lc,call);
+		}
+		linphone_core_start_refered_call(lc,call);
+		sal_call_accept_refer(op);
 	}else if (lc->vtable.refer_received){
 		lc->vtable.refer_received(lc,referto);
-		sal_refer_accept(op);
+		sal_call_accept_refer(op);
 	}
 }
 

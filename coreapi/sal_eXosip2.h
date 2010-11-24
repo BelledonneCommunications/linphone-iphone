@@ -57,6 +57,7 @@ struct SalOp{
 	osip_call_id_t *call_id; /*used for out of calls transaction in order
 	 			to retrieve the operation when receiving a response*/
 	char *replaces;
+	char *referred_by;
 	bool_t supports_session_timers;
 	bool_t sdp_offering;
 	bool_t reinvite;

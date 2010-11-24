@@ -21,17 +21,31 @@ package org.linphone.core;
 
 import java.util.Vector;
 
-	
+/**
+ * Linphone core main object created by method {@link LinphoneCoreFactory#createLinphoneCore(LinphoneCoreListener, String, String, Object)}.	
+ *
+ */
 public interface LinphoneCore {
-	/*
+	/**
 	 * linphone core states
 	 */
 	static public class 	GlobalState {
 		static private Vector values = new Vector();
-
+		/**
+		 * Off
+		 */
 		static public GlobalState GlobalOff = new GlobalState(0,"GlobalOff");       
+		/**
+		 * Startup
+		 */
 		static public GlobalState GlobalStartup = new GlobalState(1,"GlobalStartup");
+		/**
+		 * On
+		 */
 		static public GlobalState GlobalOn = new GlobalState(2,"GlobalOn");
+		/**
+		 * Shutdown
+		 */
 		static public GlobalState GlobalShutdown = new GlobalState(3,"GlobalShutdown");
 
 		private final int mValue;
@@ -54,12 +68,31 @@ public interface LinphoneCore {
 			return mStringValue;
 		}
 	}
+	/**
+	 * Describes proxy registration states.
+	 *
+	 */
 	static public class 	RegistrationState {
 		static private Vector values = new Vector();
+		/**
+		 * None
+		 */
 		static public RegistrationState RegistrationNone = new RegistrationState(0,"RegistrationNone");       
+		/**
+		 * In Progress
+		 */
 		static public RegistrationState RegistrationProgress  = new RegistrationState(1,"RegistrationProgress");
+		/**
+		 * Ok
+		 */
 		static public RegistrationState RegistrationOk = new RegistrationState(2,"RegistrationOk");
+		/**
+		 * Cleared
+		 */
 		static public RegistrationState RegistrationCleared = new RegistrationState(3,"RegistrationCleared");
+		/**
+		 * Failed
+		 */
 		static public RegistrationState RegistrationFailed = new RegistrationState(4,"RegistrationFailed");
 		private final int mValue;
 		private final String mStringValue;
@@ -81,8 +114,60 @@ public interface LinphoneCore {
 			return mStringValue;
 		}
 	}
+	/**
+	 * Describes proxy registration states.
+	 *
+	 */
+	static public class 	FirewallPolicy {
+		static private Vector values = new Vector();
+		/**
+		 * No firewall is assumed.
+		 */
+		static public FirewallPolicy NoFirewall = new FirewallPolicy(0,"NoFirewall");       
+		/**
+		 * Use NAT address (discouraged)
+		 */
+		static public FirewallPolicy UseNatAddress  = new FirewallPolicy(1,"UseNatAddress");
+		/**
+		 * Use stun server to discover RTP addresses and ports.
+		 */
+		static public FirewallPolicy UseStun = new FirewallPolicy(2,"UseStun");
+		
+		private final int mValue;
+		private final String mStringValue;
+
+		private FirewallPolicy(int value,String stringValue) {
+			mValue = value;
+			values.addElement(this);
+			mStringValue=stringValue;
+		}
+		public static FirewallPolicy fromInt(int value) {
+
+			for (int i=0; i<values.size();i++) {
+				FirewallPolicy state = (FirewallPolicy) values.elementAt(i);
+				if (state.mValue == value) return state;
+			}
+			throw new RuntimeException("state not found ["+value+"]");
+		}
+		public String toString() {
+			return mStringValue;
+		}
+		public int value(){
+			return mValue;
+		}
+	}
+	/**
+	 * Signaling transports 
+	 *
+	 */
 	static public class Transport {
+		/**
+		 * UDP transport
+		 */
 		public final static Transport udp =new Transport("udp");
+		/**
+		 * TCP transport
+		 */
 		public final static Transport tcp =new Transport("tcp");
 		private final String mStringValue;
 
@@ -94,15 +179,26 @@ public interface LinphoneCore {
 		}		
 	}
 	/**
-	 * clear all added proxy config
+	 * clear all added proxy configs
 	 */
 	public void clearProxyConfigs();
-	
+	/**
+	 * Add a proxy configuration. This will start registration on the proxy, if registration is enabled.
+	 * @param proxyCfg
+	 * @throws LinphoneCoreException
+	 */
 	public void addProxyConfig(LinphoneProxyConfig proxyCfg) throws LinphoneCoreException;
-
+	/**
+	 * Sets the default proxy.
+	 *<br>
+	 * This default proxy must be part of the list of already entered {@link LinphoneProxyConfig}. 
+	 * Toggling it as default will make LinphoneCore use the identity associated with the proxy configuration in all incoming and outgoing calls.
+	 * @param proxyCfg 
+	 */
 	public void setDefaultProxyConfig(LinphoneProxyConfig proxyCfg);
 	
 	/**
+	 * get he default proxy configuration, that is the one used to determine the current identity.
 	 * @return null if no default proxy config 
 	 */
 	public LinphoneProxyConfig getDefaultProxyConfig() ;
@@ -111,7 +207,11 @@ public interface LinphoneCore {
 	 * clear all the added auth info
 	 */
 	void clearAuthInfos();
-	
+	/**
+	 * Adds authentication information to the LinphoneCore.
+	 * <br>This information will be used during all SIP transacations that require authentication.
+	 * @param info
+	 */
 	void addAuthInfo(LinphoneAuthInfo info);
 	
 	/**
@@ -123,13 +223,22 @@ public interface LinphoneCore {
 	public LinphoneAddress interpretUrl(String destination) throws LinphoneCoreException;
 	
 	/**
-	 * Starts a call given a destination. Internally calls interpretUrl() then invite(LinphoneAddress).
+	 * Starts a call given a destination. Internally calls {@link #interpretUrl(String)} then {@link #invite(LinphoneAddress)}.
 	 * @param uri
 	 */
 	public LinphoneCall invite(String destination)throws LinphoneCoreException;
-	
+	/**
+	 * Initiates an outgoing call given a destination LinphoneAddress
+	 *<br>The LinphoneAddress can be constructed directly using linphone_address_new(), or created by linphone_core_interpret_url(). The application doesn't own a reference to the returned LinphoneCall object. Use linphone_call_ref() to safely keep the LinphoneCall pointer valid within your application.
+	 * @param to the destination of the call (sip address).
+	 * @return LinphoneCall
+	 * @throws LinphoneCoreException
+	 */
 	public LinphoneCall invite(LinphoneAddress to)throws LinphoneCoreException;
-	
+	/**
+	 * Terminates a call.
+	 * @param aCall to be terminated
+	 */
 	public void terminateCall(LinphoneCall aCall);
 	/**
 	 * Returns The LinphoneCall the current call if one is in call
@@ -152,6 +261,17 @@ public interface LinphoneCore {
 	 * @return Returns true if in incoming call is pending, ie waiting for being answered or declined.
 	 */
 	public boolean isInComingInvitePending();
+	/**
+	 * Main loop function. It is crucial that your application call it periodically.
+	 *
+	 *	#iterate() performs various backgrounds tasks:
+	 * <li>receiving of SIP messages
+	 * <li> handles timers and timeout
+	 * <li> performs registration to proxies
+	 * <li> authentication retries The application MUST call this function from periodically, in its main loop. 
+	 * <br> Be careful that this function must be call from the same thread as other liblinphone methods. In not the case make sure all liblinphone calls are serialized with a mutex.
+
+	 */
 	public void iterate();
 	/**
 	 * Accept an incoming call.
@@ -232,28 +352,106 @@ public interface LinphoneCore {
 	public void stopDtmf();
 	
 	/**
-	 * 
+	 * remove all call logs
 	 */
 	public void clearCallLogs();
-	
-	
 	/***
 	 * get payload type  from mime type an clock rate
 	 * 
 	 * return null if not found
 	 */
 	public PayloadType findPayloadType(String mime,int clockRate); 
-	
+	/**
+	 * not implemented yet
+	 * @param pt
+	 * @param enable
+	 * @throws LinphoneCoreException
+	 */
 	public void enablePayloadType(PayloadType pt, boolean enable) throws LinphoneCoreException;
-	
+	/**
+	 * Enables or disable echo cancellation.
+	 * @param enable
+	 */
 	public void enableEchoCancellation(boolean enable);
-	
+	/**
+	 * get EC status 
+	 * @return true if echo cancellation is enabled.
+	 */
 	public boolean isEchoCancellationEnabled();
-	
+	/**
+	 * not implemented yet
+	 * @param aTransport
+	 */
 	public void setSignalingTransport(Transport aTransport);
-	
+	/**
+	 * not implemented
+	 * @param value
+	 */
 	public void enableSpeaker(boolean value);
-	
+	/**
+	 * not implemented
+	 * @return
+	 */
 	public boolean isSpeakerEnabled();
+	/**
+	 * add a friend to the current buddy list, if subscription attribute is set, a SIP SUBSCRIBE message is sent.
+	 * @param lf LinphoenFriend to add
+	 * @throws LinphoneCoreException
+	 */
+	void addFriend(LinphoneFriend lf) throws LinphoneCoreException;
 
+	/**
+	 * Set my presence status
+	 * @param minute_away how long in away
+	 * @param status sip uri used to redirect call in state LinphoneStatusMoved
+	 */
+	void setPresenceInfo(int minute_away,String alternative_contact, OnlineStatus status);
+	/**
+	 * Create a new chat room for messaging from a sip uri like sip:joe@sip.linphone.org
+	 * @param to 	destination address for messages 
+	 *
+	 * @return {@link LinphoneChatRoom} where messaging can take place.
+	 */
+	LinphoneChatRoom createChatRoom(String to);
+	
+	public void setVideoWindow(Object w);
+	public void setPreviewWindow(Object w);
+	/**
+	 * Enables video globally.
+	 *
+	 * 
+	 * This function does not have any effect during calls. It just indicates #LinphoneCore to
+	 * initiate future calls with video or not. The two boolean parameters indicate in which
+	 * direction video is enabled. Setting both to false disables video entirely.
+	 *
+	 * @param vcap_enabled indicates whether video capture is enabled
+	 * @param display_enabled indicates whether video display should be shown
+	 *
+	**/
+	void enableVideo(boolean vcap_enabled, boolean display_enabled);
+	/**
+	 * Returns TRUE if video is enabled, FALSE otherwise.
+	 *	
+	 ***/
+	boolean isVideoEnabled();
+	
+	/**
+	 * Specify a STUN server to help firewall traversal.
+	 * @param stun_server Stun server address and port, such as stun.linphone.org or stun.linphone.org:3478
+	 */
+	public void setStunServer(String stun_server);
+	/**
+	 * @return stun server address if previously set.
+	 */
+	public String getStunServer();
+	
+	/**
+	 * Sets policy regarding workarounding NATs
+	 * @param pol one of the FirewallPolicy members.
+	**/
+	public void setFirewallPolicy(FirewallPolicy pol);
+	/**
+	 * @return previously set firewall policy.
+	 */
+	public FirewallPolicy getFirewallPolicy();
 }

@@ -162,6 +162,7 @@ SalOp * sal_op_new(Sal *sal){
 	op->reinvite=FALSE;
 	op->call_id=NULL;
 	op->replaces=NULL;
+	op->referred_by=NULL;
 	op->masquerade_via=FALSE;
 	op->auto_answer_asked=FALSE;
 	return op;
@@ -204,6 +205,9 @@ void sal_op_release(SalOp *op){
 	}
 	if (op->replaces){
 		ms_free(op->replaces);
+	}
+	if (op->referred_by){
+		ms_free(op->referred_by);
 	}
 	__sal_op_free(op);
 }
@@ -494,6 +498,12 @@ int sal_call(SalOp *h, const char *from, const char *to){
 		h->sdp_offering=TRUE;
 		set_sdp_from_desc(invite,h->base.local_media);
 	}else h->sdp_offering=FALSE;
+	if (h->replaces){
+		osip_message_set_header(invite,"Replaces",h->replaces);
+		if (h->referred_by)
+			osip_message_set_header(invite,"Referred-By",h->referred_by);
+	}
+	
 	eXosip_lock();
 	err=eXosip_call_send_initial_invite(invite);
 	eXosip_unlock();
@@ -610,6 +620,14 @@ SalMediaDescription * sal_call_get_final_media_description(SalOp *h){
 	return h->result;
 }
 
+int sal_call_set_referer(SalOp *h, SalOp *refered_call){
+	if (refered_call->replaces)
+		h->replaces=ms_strdup(refered_call->replaces);
+	if (refered_call->referred_by)
+		h->referred_by=ms_strdup(refered_call->referred_by);
+	return 0;
+}
+
 int sal_ping(SalOp *op, const char *from, const char *to){
 	osip_message_t *options=NULL;
 	
@@ -628,7 +646,7 @@ int sal_ping(SalOp *op, const char *from, const char *to){
 	return -1;
 }
 
-int sal_refer_accept(SalOp *op){
+int sal_call_accept_refer(SalOp *op){
 	osip_message_t *msg=NULL;
 	int err=0;
 	eXosip_lock();
@@ -648,11 +666,29 @@ int sal_refer_accept(SalOp *op){
 	return err;
 }
 
-int sal_refer(SalOp *h, const char *refer_to){
+int sal_call_refer(SalOp *h, const char *refer_to){
 	osip_message_t *msg=NULL;
 	int err=0;
 	eXosip_lock();
 	eXosip_call_build_refer(h->did,refer_to, &msg);
+	if (msg) err=eXosip_call_send_request(h->did, msg);
+	else err=-1;
+	eXosip_unlock();
+	return err;
+}
+
+int sal_call_refer_with_replaces(SalOp *h, SalOp *other_call_h){
+	osip_message_t *msg=NULL;
+	char referto[256]={0};
+	int err=0;
+	eXosip_lock();
+	if (eXosip_call_get_referto(other_call_h->did,referto,sizeof(referto)-1)!=0){
+		ms_error("eXosip_call_get_referto() failed for did=%i",other_call_h->did);
+		eXosip_unlock();
+		return -1;
+	}
+	eXosip_call_build_refer(h->did,referto, &msg);
+	osip_message_set_header(msg,"Referred-By",h->base.from);
 	if (msg) err=eXosip_call_send_request(h->did, msg);
 	else err=-1;
 	eXosip_unlock();
@@ -905,6 +941,7 @@ static void update_contact_from_response(SalOp *op, osip_message_t *response){
 			tmp=sal_address_as_string(addr);
 			ms_message("Contact address updated to %s for this dialog",tmp);
 			sal_op_set_contact(op,tmp);
+			sal_address_destroy(addr);
 			ms_free(tmp);
 		}
 	}
@@ -1240,6 +1277,59 @@ static void process_dtmf_relay(Sal *sal, eXosip_event_t *ev){
 	}
 }
 
+static void fill_options_answer(osip_message_t *options){
+	osip_message_set_allow(options,"INVITE, ACK, BYE, CANCEL, OPTIONS, MESSAGE, SUBSCRIBE, NOTIFY, INFO");
+	osip_message_set_accept(options,"application/sdp");
+}
+
+static void process_refer(Sal *sal, SalOp *op, eXosip_event_t *ev){
+	osip_header_t *h=NULL;
+	osip_message_t *ans=NULL;
+	ms_message("Receiving REFER request !");
+	osip_message_header_get_byname(ev->request,"Refer-To",0,&h);
+
+	if (h){
+		osip_from_t *from=NULL;
+		char *tmp;
+		osip_from_init(&from);
+	
+		if (osip_from_parse(from,h->hvalue)==0){
+			if (op ){
+				osip_uri_header_t *uh=NULL;
+				osip_header_t *referred_by=NULL;
+				osip_uri_header_get_byname(&from->url->url_headers,(char*)"Replaces",&uh);
+				if (uh!=NULL && uh->gvalue && uh->gvalue[0]!='\0'){
+					ms_message("Found replaces in Refer-To");
+					if (op->replaces){
+						ms_free(op->replaces);
+					}
+					op->replaces=ms_strdup(uh->gvalue);
+				}
+				osip_message_header_get_byname(ev->request,"Referred-By",0,&referred_by);
+				if (referred_by && referred_by->hvalue && referred_by->hvalue[0]!='\0'){
+					if (op->referred_by)
+						ms_free(op->referred_by);
+					op->referred_by=ms_strdup(referred_by->hvalue);
+				}
+			}
+			osip_uri_header_freelist(&from->url->url_headers);
+			osip_from_to_str(from,&tmp);
+			sal->callbacks.refer_received(sal,op,tmp);
+			osip_free(tmp);
+			osip_from_free(from);
+		}
+		eXosip_lock();
+		eXosip_call_build_answer(ev->tid,202,&ans);
+		if (ans)
+			eXosip_call_send_answer(ev->tid,202,ans);
+		eXosip_unlock();
+	}
+	else
+	{
+		ms_warning("cannot do anything with the refer without destination\n");
+	}
+}
+
 static void call_message_new(Sal *sal, eXosip_event_t *ev){
 	osip_message_t *ans=NULL;
 	if (ev->request){
@@ -1268,8 +1358,7 @@ static void call_message_new(Sal *sal, eXosip_event_t *ev){
 					eXosip_call_send_answer(ev->tid,200,ans);
 				eXosip_unlock();
 			}
-		}
-		if(MSG_IS_MESSAGE(ev->request)){
+		}else if(MSG_IS_MESSAGE(ev->request)){
 			/* SIP messages could be received into call */
 			text_received(sal, ev);
 			eXosip_lock();
@@ -1277,27 +1366,12 @@ static void call_message_new(Sal *sal, eXosip_event_t *ev){
 			if (ans)
 				eXosip_call_send_answer(ev->tid,200,ans);
 			eXosip_unlock();
-		}
-		if(MSG_IS_REFER(ev->request)){
-			osip_header_t *h=NULL;
+		}else if(MSG_IS_REFER(ev->request)){
 			SalOp *op=find_op(sal,ev);
 			
 			ms_message("Receiving REFER request !");
-			osip_message_header_get_byname(ev->request,"Refer-To",0,&h);
-			eXosip_lock();
-			eXosip_call_build_answer(ev->tid,202,&ans);
-			if (ans)
-				eXosip_call_send_answer(ev->tid,202,ans);
-			eXosip_unlock();
-			if (h){
-				sal->callbacks.refer_received(sal,op,h->hvalue);
-			}
-			else
-			{
-				ms_warning("cannot do anything with the refer without destination\n");
-			}
-		}
-		if(MSG_IS_NOTIFY(ev->request)){
+			process_refer(sal,op,ev);
+		}else if(MSG_IS_NOTIFY(ev->request)){
 			osip_header_t *h=NULL;
 			char *from=NULL;
 			SalOp *op=find_op(sal,ev);
@@ -1314,6 +1388,14 @@ static void call_message_new(Sal *sal, eXosip_event_t *ev){
 				eXosip_call_send_answer(ev->tid,200,ans);
 			eXosip_unlock();
 			osip_free(from);
+		}else if (MSG_IS_OPTIONS(ev->request)){
+			eXosip_lock();
+			eXosip_call_build_answer(ev->tid,200,&ans);
+			if (ans){
+				fill_options_answer(ans);
+				eXosip_call_send_answer(ev->tid,200,ans);
+			}
+			eXosip_unlock();
 		}
 	}else ms_warning("call_message_new: No request ?");
 }
@@ -1362,6 +1444,8 @@ static void text_received(Sal *sal, eXosip_event_t *ev){
 	osip_free(from);
 }
 
+
+
 static void other_request(Sal *sal, eXosip_event_t *ev){
 	ms_message("in other_request");
 	if (ev->request==NULL) return;
@@ -1371,8 +1455,7 @@ static void other_request(Sal *sal, eXosip_event_t *ev){
 	}else if (strcmp(ev->request->sip_method,"OPTIONS")==0){
 		osip_message_t *options=NULL;
 		eXosip_options_build_answer(ev->tid,200,&options);
-		osip_message_set_allow(options,"INVITE, ACK, BYE, CANCEL, OPTIONS, MESSAGE, SUBSCRIBE, NOTIFY, INFO");
-		osip_message_set_accept(options,"application/sdp");
+		fill_options_answer(options);
 		eXosip_options_send_answer(ev->tid,200,options);
 	}else if (strcmp(ev->request->sip_method,"WAKEUP")==0
 		&& comes_from_local_if(ev->request)) {
@@ -1382,12 +1465,7 @@ static void other_request(Sal *sal, eXosip_event_t *ev){
 	}else if (strncmp(ev->request->sip_method, "REFER", 5) == 0){
 		ms_message("Receiving REFER request !");
 		if (comes_from_local_if(ev->request)) {
-			osip_header_t *h=NULL;
-			osip_message_header_get_byname(ev->request,"Refer-To",0,&h);
-			eXosip_message_send_answer(ev->tid,200,NULL);
-			if (h){
-				sal->callbacks.refer_received(sal,NULL,h->hvalue);
-			}
+			process_refer(sal,NULL,ev);
 		}else ms_warning("Ignored REFER not coming from this local loopback interface.");
 	}else if (strncmp(ev->request->sip_method, "UPDATE", 6) == 0){
 		inc_update(sal,ev);
@@ -1654,8 +1732,16 @@ static bool_t process_event(Sal *sal, eXosip_event_t *ev){
 			other_request_reply(sal,ev);
 			break;
 		case EXOSIP_MESSAGE_REQUESTFAILURE:
-			if (ev->response && (ev->response->status_code == 407 || ev->response->status_code == 401)){
-				return process_authentication(sal,ev);
+			if (ev->response) {
+				switch (ev->response->status_code) {
+					case 407:
+					case 401:
+						return process_authentication(sal,ev);
+					case 412: {
+						eXosip_automatic_action ();
+						return 1;
+					}
+				}
 			}
 			other_request_reply(sal,ev);
 			break;

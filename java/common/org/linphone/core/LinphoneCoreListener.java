@@ -19,15 +19,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 package org.linphone.core;
 
 
-
+/**
+ * 
+ *This interface holds all callbacks that the application should implement. None is mandatory.
+ */
 public interface LinphoneCoreListener {
 
 	/**< Notifies the application that it should show up
 	 * @return */
 		public void show(LinphoneCore lc);
-		 /**< Notify calls terminated by far end
-		 * @return */
-		public void byeReceived(LinphoneCore lc,String from);
 		/**< Ask the application some authentication information 
 		 * @return */
 		public void authInfoRequested(LinphoneCore lc,String realm,String username); 
@@ -55,5 +55,28 @@ public interface LinphoneCoreListener {
 		 * Registration state notification
 		 * */
 		public void registrationState(LinphoneCore lc, LinphoneProxyConfig cfg, LinphoneCore.RegistrationState cstate, String smessage);
+		/**
+		 * Reports that a new subscription request has been received and wait for a decision. 
+		 *Status on this subscription request is notified by changing policy for this friend
+		 *@param lc LinphoneCore 	
+		 *@param lf LinphoneFriend corresponding to the subscriber
+		 *@param url of the subscriber
+		 * 
+		 */
+		public void newSubscriptionRequest(LinphoneCore lc, LinphoneFriend lf, String url);
+		/**
+		 * Report status change for a friend previously added to LinphoneCore.
+		 * @param lc LinphoneCore
+		 * @param lf updated LinphoneFriend
+		 */
+		public void notifyPresenceReceived(LinphoneCore lc, LinphoneFriend lf);
+		/**
+		 * invoked when a new text message is received
+		 * @param lc LinphoneCore
+		 * @param  room 	LinphoneChatRoom involved in this conversation. Can be be created by the framework in case the from is not present in any chat room.
+		 * @param from  	LinphoneAddress from
+		 * @param message 	incoming message
+		 */
+		public void textReceived(LinphoneCore lc, LinphoneChatRoom cr,LinphoneAddress from,String message);
 }
 
