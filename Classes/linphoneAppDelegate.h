@@ -54,6 +54,7 @@
 	SCNetworkReachabilityContext proxyReachabilityContext;
 	SCNetworkReachabilityRef proxyReachability;
 	CFReadStreamRef mReadStream;
+	NSTimer* mIterateTimer;
 
 	
 }

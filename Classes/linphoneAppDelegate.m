@@ -122,7 +122,7 @@ LinphoneCoreVTable linphonec_vtable = {
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
 	
-//#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 40000
+	//#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 40000
 	
 	struct addrinfo hints;
 	struct addrinfo *res=NULL;
@@ -133,85 +133,79 @@ LinphoneCoreVTable linphonec_vtable = {
 	int sipsock = linphone_core_get_sip_socket(myLinphoneCore);	
 	linphone_core_get_default_proxy(myLinphoneCore, &proxyCfg);	
 	
-	if (backgroundSupported && proxyCfg) {
+	if (isbackgroundModeEnabled && proxyCfg) {
+		//register
+		linphone_core_set_network_reachable(myLinphoneCore,false);
+		linphone_core_iterate(myLinphoneCore);
+		linphone_core_set_network_reachable(myLinphoneCore,true);
 		
-		
-		if (isbackgroundModeEnabled) {
-			//register
-			linphone_core_set_network_reachable(myLinphoneCore,false);
+		int i=0;
+		while (!linphone_proxy_config_is_registered(proxyCfg) && i++<40 ) {
 			linphone_core_iterate(myLinphoneCore);
-			linphone_core_set_network_reachable(myLinphoneCore,true);
-			
-			int i=0;
-			while (!linphone_proxy_config_is_registered(proxyCfg) && i++<40 ) {
-				linphone_core_iterate(myLinphoneCore);
-				usleep(100000);
-			}
-			if ([[UIApplication sharedApplication] setKeepAliveTimeout:600/*(NSTimeInterval)linphone_proxy_config_get_expires(proxyCfg)*/ 
-															   handler:^{
-																   ms_warning("keepalive handler");
-																   //kick up network cnx, just in case
-																   linphone_core_set_network_reachable(myLinphoneCore,false);
-																   linphone_core_iterate(myLinphoneCore);
-																   [self kickOffNetworkConnection];
-																   linphone_core_set_network_reachable(myLinphoneCore,true);
-																   linphone_core_iterate(myLinphoneCore);
-															   }
-				 ]) {
-				
-				
-				ms_warning("keepalive handler succesfully registered"); 
-			} else {
-				ms_warning("keepalive handler cannot be registered");
-			}
-			LCSipTransports transportValue;
-			if (linphone_core_get_sip_transports(myLinphoneCore, &transportValue)) {
-				ms_error("cannot get current transport");	
-			}
-			
-			if (mReadStream == nil && transportValue.udp_port>0) { //only for udp
-				const char *port;
-				addr=linphone_address_new(linphone_proxy_config_get_addr(proxyCfg));
-				memset(&hints,0,sizeof(hints));
-				hints.ai_family=linphone_core_ipv6_enabled(myLinphoneCore) ? AF_INET6 : AF_INET;
-				port=linphone_address_get_port(addr);
-				if (port==NULL) port="5060";
-				err=getaddrinfo(linphone_address_get_domain(addr),port,&hints,&res);
-				if (err!=0){
-					ms_error("getaddrinfo() failed for %s: %s",linphone_address_get_domain(addr),gai_strerror(err));
-					linphone_address_destroy(addr);
-					return;
-				}
-				err=connect(sipsock,res->ai_addr,res->ai_addrlen);
-				if (err==-1){
-					ms_error("Connect failed: %s",strerror(errno));
-				}
-				freeaddrinfo(res);
-				
-				CFStreamCreatePairWithSocket(NULL, (CFSocketNativeHandle)sipsock, &mReadStream,nil);
-				
-				if (!CFReadStreamSetProperty(mReadStream, kCFStreamNetworkServiceType, kCFStreamNetworkServiceTypeVoIP)) {
-					ms_error("cannot set service type to voip for read stream");
-				}
-				
-				
-				if (!CFReadStreamOpen(mReadStream)) {
-					ms_error("cannot open read stream");
-				}		
-			}
+			usleep(100000);
 		}
-		else {
-			//only unregister
-			//register
-			linphone_proxy_config_edit(proxyCfg); //force unregister
-			linphone_core_iterate(myLinphoneCore);
-			ms_warning("Entering lite bg mode");
+		if ([[UIApplication sharedApplication] setKeepAliveTimeout:600/*(NSTimeInterval)linphone_proxy_config_get_expires(proxyCfg)*/ 
+														   handler:^{
+															   ms_warning("keepalive handler");
+															   //kick up network cnx, just in case
+															   linphone_core_set_network_reachable(myLinphoneCore,false);
+															   linphone_core_iterate(myLinphoneCore);
+															   [self kickOffNetworkConnection];
+															   linphone_core_set_network_reachable(myLinphoneCore,true);
+															   linphone_core_iterate(myLinphoneCore);
+														   }
+			 ]) {
+			
+			
+			ms_warning("keepalive handler succesfully registered"); 
+		} else {
+			ms_warning("keepalive handler cannot be registered");
+		}
+		LCSipTransports transportValue;
+		if (linphone_core_get_sip_transports(myLinphoneCore, &transportValue)) {
+			ms_error("cannot get current transport");	
+		}
+		
+		if (mReadStream == nil && transportValue.udp_port>0) { //only for udp
+			const char *port;
+			addr=linphone_address_new(linphone_proxy_config_get_addr(proxyCfg));
+			memset(&hints,0,sizeof(hints));
+			hints.ai_family=linphone_core_ipv6_enabled(myLinphoneCore) ? AF_INET6 : AF_INET;
+			port=linphone_address_get_port(addr);
+			if (port==NULL) port="5060";
+			err=getaddrinfo(linphone_address_get_domain(addr),port,&hints,&res);
+			if (err!=0){
+				ms_error("getaddrinfo() failed for %s: %s",linphone_address_get_domain(addr),gai_strerror(err));
+				linphone_address_destroy(addr);
+				return;
+			}
+			err=connect(sipsock,res->ai_addr,res->ai_addrlen);
+			if (err==-1){
+				ms_error("Connect failed: %s",strerror(errno));
+			}
+			freeaddrinfo(res);
+			
+			CFStreamCreatePairWithSocket(NULL, (CFSocketNativeHandle)sipsock, &mReadStream,nil);
+			
+			if (!CFReadStreamSetProperty(mReadStream, kCFStreamNetworkServiceType, kCFStreamNetworkServiceTypeVoIP)) {
+				ms_error("cannot set service type to voip for read stream");
+			}
+			
+			
+			if (!CFReadStreamOpen(mReadStream)) {
+				ms_error("cannot open read stream");
+			}		
 		}
 	}
-		
-//#endif
-		
+	else {
+		ms_warning("Entering lite bg mode");
+		[self applicationWillTerminate:nil];
 	}
+	
+	
+	//#endif
+	
+}
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions{    
@@ -279,8 +273,9 @@ LinphoneCoreVTable linphonec_vtable = {
 	
 	
 }
+
 -(void) kickOffNetworkConnection {
-	signal(SIGPIPE,SIG_IGN);
+	ms_message("waiking up network connection");
 	CFWriteStreamRef writeStream;
 	CFStreamCreatePairWithSocketToHost(NULL, (CFStringRef)@"linphone.org", 15000, nil, &writeStream);
 	CFWriteStreamOpen (writeStream);
@@ -291,6 +286,14 @@ LinphoneCoreVTable linphonec_vtable = {
 }
 - (void)applicationDidBecomeActive:(UIApplication *)application {
 	
+	if (myLinphoneCore == nil) {
+		//back from standby and background mode is disabled
+		[self	startlibLinphone];
+		
+		[myCallHistoryTableViewController setLinphoneCore: myLinphoneCore];
+		
+		[myPhoneViewController setLinphoneCore: myLinphoneCore];
+	}
 	if (isStarted) {
 		ms_message("becomming active, make sure we are registered");
 		[self doRegister];
@@ -316,7 +319,9 @@ LinphoneCoreVTable linphonec_vtable = {
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
+	[mIterateTimer invalidate]; 
 	linphone_core_destroy(myLinphoneCore);
+	myLinphoneCore = nil;
 }
 
 - (void)dealloc {
@@ -338,6 +343,7 @@ extern void libmsilbc_init();
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
 	NSString *confiFileName = [[paths objectAtIndex:0] stringByAppendingString:@"/.linphonerc"];
 	;
+	signal(SIGPIPE, SIG_IGN);
 	//log management	
 	isDebug = [[NSUserDefaults standardUserDefaults] boolForKey:@"debugenable_preference"];  
 	if (isDebug) {
@@ -366,11 +372,11 @@ extern void libmsilbc_init();
 	
 	
 	// start scheduler
-	[NSTimer scheduledTimerWithTimeInterval:0.1 
-									 target:self 
-								   selector:@selector(iterate) 
-								   userInfo:nil 
-									repeats:YES];
+	mIterateTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 
+														target:self 
+														selector:@selector(iterate) 
+														userInfo:nil 
+														repeats:YES];
 	//init audio session
 	AVAudioSession *audioSession = [AVAudioSession sharedInstance];
 	 BOOL bAudioInputAvailable= [audioSession inputIsAvailable];
