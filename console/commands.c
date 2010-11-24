@@ -144,7 +144,10 @@ static LPC_COMMAND commands[] = {
 	},
 	{ "call", lpc_cmd_call, "Call a SIP uri or number",
 #ifdef VIDEO_ENABLED
-		"'call <sip-url or number>  [--audio-only]' \t: initiate a call to the specified destination.\n"
+		"'call <sip-url or number>  [options]' \t: initiate a call to the specified destination.\n"
+		"Options can be:\n"
+		"--audio-only : initiate the call without video.\n"
+		"--early-media : sends audio and video stream immediately when remote proposes early media.\n"
 #else
 		"'call <sip-url or number>' \t: initiate a call to the specified destination.\n"
 #endif
@@ -542,16 +545,21 @@ lpc_cmd_call(LinphoneCore *lc, char *args)
 	{
 		LinphoneCall *call;
 		LinphoneCallParams *cp=linphone_core_create_default_call_parameters (lc);
-		char *opt;
+		char *opt1,*opt2;
 		if ( linphone_core_in_call(lc) )
 		{
 			linphonec_out("Terminate or hold on the current call first.\n");
 			return 1;
 		}
-		opt=strstr(args,"--audio-only");
-		if (opt){
-			opt[0]='\0';
+		opt1=strstr(args,"--audio-only");
+		opt2=strstr(args,"--early-media");
+		if (opt1){
+			opt1[0]='\0';
 			linphone_call_params_enable_video (cp,FALSE);
+		}
+		if (opt2){
+			opt2[0]='\0';
+			linphone_call_params_enable_early_media_sending(cp,TRUE);
 		}
 		if ( NULL == (call=linphone_core_invite_with_params(lc, args,cp)) )
 		{

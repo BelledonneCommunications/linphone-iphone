@@ -467,8 +467,9 @@ static void sound_config_read(LinphoneCore *lc)
 
 	gain=lp_config_get_float(lc->config,"sound","playback_gain_db",0);
 	linphone_core_set_playback_gain_db (lc,gain);
-
+/*
 	linphone_core_set_remote_ringback_tone (lc,lp_config_get_string(lc->config,"sound","ringback_tone",NULL));
+	*/
 }
 
 static void sip_config_read(LinphoneCore *lc)
@@ -2221,6 +2222,7 @@ int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call)
 	LinphoneProxyConfig *cfg=NULL;
 	const char *contact=NULL;
 	SalOp *replaced;
+	SalMediaDescription *new_md;
 	
 	if (call==NULL){
 		//if just one call is present answer the only one ...
@@ -2276,26 +2278,21 @@ int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call)
 	contact=get_fixed_contact(lc,call,cfg);
 	if (contact)
 		sal_op_set_contact(call->op,contact);
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 40000
-	linphone_call_init_media_streams(call);
-#else
-	if (call->audiostream!=NULL && call->audiostream->ticker!=NULL){
-		/*case where we sent early media*/
-		linphone_call_stop_media_streams (call);
-		linphone_call_init_media_streams (call);
-	}
-#endif
+
+	if (call->audiostream==NULL)
+		linphone_call_init_media_streams(call);
+	
 	sal_call_accept(call->op);
 	if (lc->vtable.display_status!=NULL)
 		lc->vtable.display_status(lc,_("Connected."));
 	lc->current_call=call;
 	linphone_call_set_state(call,LinphoneCallConnected,"Connected");
-	call->resultdesc=sal_call_get_final_media_description(call->op);
-	if (call->resultdesc){
-		linphone_call_start_media_streams(call);
+	new_md=sal_call_get_final_media_description(call->op);
+	linphone_core_update_streams(lc, call, new_md);
+	if (new_md){
 		linphone_call_set_state(call,LinphoneCallStreamsRunning,"Connected (streams running)");
-		sal_media_description_ref(call->resultdesc);
 	}else call->media_pending=TRUE;
+	
 	ms_message("call answered.");
 	return 0;
 }
@@ -2946,17 +2943,12 @@ void linphone_core_mute_mic(LinphoneCore *lc, bool_t val){
 }
 
 bool_t linphone_core_is_mic_muted(LinphoneCore *lc) {
-	float gain=1.0;
 	LinphoneCall *call=linphone_core_get_current_call(lc);
 	if (call==NULL){
 		ms_warning("linphone_core_is_mic_muted(): No current call !");
 		return FALSE;
 	}
-	if (call->audiostream && call->audiostream->volsend){
-			ms_filter_call_method(call->audiostream->volsend,MS_VOLUME_GET_GAIN,&gain);
-	}else ms_warning("Could not get gain: gain control wasn't activated. ");
-
-	return gain==0 || call->audio_muted;
+	return call->audio_muted;
 }
 
 // returns rtp transmission status for an active stream

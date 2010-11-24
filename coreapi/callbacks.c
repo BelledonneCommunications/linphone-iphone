@@ -27,12 +27,60 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 static void register_failure(SalOp *op, SalError error, SalReason reason, const char *details);
 
-static void linphone_connect_incoming(LinphoneCore *lc, LinphoneCall *call){
+void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMediaDescription *new_md){
+	SalMediaDescription *oldmd=call->resultdesc;
+	
 	if (lc->ringstream!=NULL){
 		ring_stop(lc->ringstream);
 		lc->ringstream=NULL;
 	}
-	linphone_call_start_media_streams(call);
+	if (new_md!=NULL){
+		sal_media_description_ref(new_md);
+		call->media_pending=FALSE;
+	}else{
+		call->media_pending=TRUE;
+	}
+	call->resultdesc=new_md;
+	if (call->audiostream && call->audiostream->ticker){
+		/* we already started media: check if we really need to restart it*/
+		if (oldmd){
+			if (sal_media_description_equals(oldmd,new_md)){
+				sal_media_description_unref(oldmd);
+				if (call->all_muted){
+					ms_message("Early media finished, unmuting inputs...");
+					/*we were in early media, now we want to enable real media */
+					linphone_call_enable_camera (call,linphone_call_camera_enabled (call));
+					if (call->audiostream)
+						linphone_core_mute_mic (lc, linphone_core_is_mic_muted(lc));
+				}
+				ms_message("No need to restart streams, SDP is unchanged.");
+				return;
+			}else{
+				ms_message("Media descriptions are different, need to restart the streams.");
+			}
+		}
+		linphone_call_stop_media_streams (call);
+		linphone_call_init_media_streams (call);
+	}
+	if (oldmd) 
+		sal_media_description_unref(oldmd);
+	
+	if (new_md) {
+		bool_t all_muted=FALSE;
+		bool_t send_ringbacktone=FALSE;
+		
+		if (call->audiostream==NULL){
+			/*this happens after pausing the call locally. The streams is destroyed and then we wait the 200Ok to recreate it*/
+			linphone_call_init_media_streams (call);
+		}
+		if (call->state==LinphoneCallIncomingEarlyMedia ||
+		    (call->state==LinphoneCallOutgoingEarlyMedia && !call->params.real_early_media)){
+			all_muted=TRUE;
+		}else if (call->state==LinphoneCallIncomingEarlyMedia && linphone_core_get_remote_ringback_tone (lc)!=NULL){
+			send_ringbacktone=TRUE;
+		}
+		linphone_call_start_media_streams(call,all_muted,send_ringbacktone);
+	}
 }
 
 static bool_t is_duplicate_call(LinphoneCore *lc, const LinphoneAddress *from, const LinphoneAddress *to){
@@ -55,7 +103,9 @@ static void call_received(SalOp *h){
 	char *tmp;
 	LinphoneAddress *from_parsed;
 	LinphoneAddress *from_addr, *to_addr;
-	const char * early_media=linphone_core_get_remote_ringback_tone (lc);
+	SalMediaDescription *md;
+	bool_t propose_early_media=lp_config_get_int(lc->config,"sip","incoming_calls_early_media",FALSE);
+	const char *ringback_tone=linphone_core_get_remote_ringback_tone (lc);
 	
 	/* first check if we can answer successfully to this invite */
 	if (lc->presence_mode==LinphoneStatusBusy ||
@@ -93,15 +143,13 @@ static void call_received(SalOp *h){
 	
 	call=linphone_call_new_incoming(lc,from_addr,to_addr,h);
 	sal_call_set_local_media_description(h,call->localdesc);
-	call->resultdesc=sal_call_get_final_media_description(h);
-	if (call->resultdesc)
-		sal_media_description_ref(call->resultdesc);
-	if (call->resultdesc && sal_media_description_empty(call->resultdesc)){
+	md=sal_call_get_final_media_description(h);
+
+	if (md && sal_media_description_empty(md)){
 		sal_call_decline(h,SalReasonMedia,NULL);
 		linphone_call_unref(call);
 		return;
 	}
-	
 	
 	/* the call is acceptable so we can now add it to our list */
 	linphone_core_add_call(lc,call);
@@ -136,17 +184,18 @@ static void call_received(SalOp *h){
 	}else{
 		/*TODO : play a tone within the context of the current call */
 	}
-	sal_call_notify_ringing(h,early_media!=NULL);
-#if !(__IPHONE_OS_VERSION_MIN_REQUIRED >= 40000)
-	linphone_call_init_media_streams(call);
-	if (early_media!=NULL){
-		linphone_call_start_early_media (call);
+	linphone_call_set_state(call,LinphoneCallIncomingReceived,"Incoming call");
+	
+	sal_call_notify_ringing(h,propose_early_media || ringback_tone!=NULL);
+
+	if (propose_early_media || ringback_tone!=NULL){
+		linphone_call_set_state(call,LinphoneCallIncomingEarlyMedia,"Incoming call early media");
+		linphone_core_update_streams(lc,call,md);
 	}
-#endif
 	ms_free(barmesg);
 	ms_free(tmp);
 	
-	linphone_call_set_state(call,LinphoneCallIncomingReceived,"Incoming call");
+	
 	if (sal_call_get_replaces(call->op)!=NULL && lp_config_get_int(lc->config,"sip","auto_answer_replacing_calls",1)){
 		linphone_core_accept_call(lc,call);
 	}
@@ -183,8 +232,6 @@ static void call_ringing(SalOp *h){
 			ms_message("Early media already started.");
 			return;
 		}
-		sal_media_description_ref(md);
-		call->resultdesc=md;
 		if (lc->vtable.show) lc->vtable.show(lc);
 		if (lc->vtable.display_status) 
 			lc->vtable.display_status(lc,_("Early media."));
@@ -194,8 +241,7 @@ static void call_ringing(SalOp *h){
 			lc->ringstream=NULL;
 		}
 		ms_message("Doing early media...");
-		linphone_call_start_media_streams(call);
-		call->media_pending=TRUE;
+		linphone_core_update_streams (lc,call,md);
 	}
 }
 
@@ -207,33 +253,23 @@ static void call_ringing(SalOp *h){
 static void call_accepted(SalOp *op){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
-
+	SalMediaDescription *md;
+	
 	if (call==NULL){
 		ms_warning("No call to accept.");
 		return ;
 	}
-	if ((call->audiostream!=NULL) && (call->audiostream->ticker!=NULL)){
-		/*case where we accepted early media or already in call*/
-		linphone_call_stop_media_streams(call);
-	}
-	if (call->audiostream==NULL){
-		linphone_call_init_media_streams(call);
-	}
-	if (call->resultdesc)
-		sal_media_description_unref(call->resultdesc);
-	call->resultdesc=sal_call_get_final_media_description(op);
-	if (call->resultdesc){
-		sal_media_description_ref(call->resultdesc);
-		call->media_pending=FALSE;
-	}
+	
+	md=sal_call_get_final_media_description(op);
+	
 	if (call->state==LinphoneCallOutgoingProgress ||
 	    call->state==LinphoneCallOutgoingRinging ||
 	    call->state==LinphoneCallOutgoingEarlyMedia){
 		linphone_call_set_state(call,LinphoneCallConnected,"Connected");
 	}
-	if (call->resultdesc && !sal_media_description_empty(call->resultdesc)){
-		if (sal_media_description_has_dir(call->resultdesc,SalStreamSendOnly) ||
-		    sal_media_description_has_dir(call->resultdesc,SalStreamInactive)){
+	if (md && !sal_media_description_empty(md)){
+		if (sal_media_description_has_dir(md,SalStreamSendOnly) ||
+		    sal_media_description_has_dir(md,SalStreamInactive)){
 			if (lc->vtable.display_status){
 				char *tmp=linphone_call_get_remote_address_as_string (call);
 				char *msg=ms_strdup_printf(_("Call with %s is paused."),tmp);
@@ -242,7 +278,7 @@ static void call_accepted(SalOp *op){
 				ms_free(msg);
 			}
 			linphone_call_set_state(call,LinphoneCallPaused,"Call paused");
-		}else if (sal_media_description_has_dir(call->resultdesc,SalStreamRecvOnly)){
+		}else if (sal_media_description_has_dir(md,SalStreamRecvOnly)){
 			/*we are put on hold when the call is initially accepted */
 			if (lc->vtable.display_status){
 				char *tmp=linphone_call_get_remote_address_as_string (call);
@@ -258,7 +294,7 @@ static void call_accepted(SalOp *op){
 			}
 			linphone_call_set_state(call,LinphoneCallStreamsRunning,"Connected (streams running)");
 		}
-		linphone_connect_incoming (lc,call);
+		linphone_core_update_streams (lc,call,md);
 	}else{
 		/*send a bye*/
 		ms_error("Incompatible SDP offer received in 200Ok, need to abort the call");
@@ -274,18 +310,9 @@ static void call_ack(SalOp *op){
 		return ;
 	}
 	if (call->media_pending){
-		if (call->audiostream->ticker!=NULL){
-			/*case where we accepted early media */
-			linphone_call_stop_media_streams(call);
-			linphone_call_init_media_streams(call);
-		}
-		if (call->resultdesc)
-			sal_media_description_unref(call->resultdesc);
-		call->resultdesc=sal_call_get_final_media_description(op);
-		if (call->resultdesc)
-			sal_media_description_ref(call->resultdesc);
-		if (call->resultdesc && !sal_media_description_empty(call->resultdesc)){
-			linphone_connect_incoming(lc,call);
+		SalMediaDescription *md=sal_call_get_final_media_description(op);
+		if (md && !sal_media_description_empty(md)){
+			linphone_core_update_streams (lc,call,md);
 			linphone_call_set_state (call,LinphoneCallStreamsRunning,"Connected (streams running)");
 		}else{
 			/*send a bye*/
@@ -293,7 +320,6 @@ static void call_ack(SalOp *op){
 			linphone_core_abort_call(lc,call,"No codec intersection");
 			return;
 		}
-		call->media_pending=FALSE;
 	}
 }
 
@@ -302,17 +328,14 @@ static void call_updating(SalOp *op){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
 	LinphoneCallState prevstate=LinphoneCallIdle;
+	SalMediaDescription *md;
 	
-	if (call->resultdesc)
-		sal_media_description_unref(call->resultdesc);
-	call->resultdesc=sal_call_get_final_media_description(op);
-	if (call->resultdesc)
-		sal_media_description_ref(call->resultdesc);
-
-	if (call->resultdesc && !sal_media_description_empty(call->resultdesc))
+	md=sal_call_get_final_media_description(op);
+	
+	if (md && !sal_media_description_empty(md))
 	{
 		if ((call->state==LinphoneCallPausedByRemote || call->state==LinphoneCallPaused) &&
-		    sal_media_description_has_dir(call->resultdesc,SalStreamSendRecv) && strcmp(call->resultdesc->addr,"0.0.0.0")!=0){
+		    sal_media_description_has_dir(md,SalStreamSendRecv) && strcmp(md->addr,"0.0.0.0")!=0){
 			/*make sure we can be resumed */
 			if (lc->current_call!=NULL && lc->current_call!=call){
 				ms_warning("Attempt to be resumed but already in call with somebody else!");
@@ -325,9 +348,9 @@ static void call_updating(SalOp *op){
 			linphone_call_set_state (call,LinphoneCallStreamsRunning,"Connected (streams running)");
 		}
 		else if(call->state==LinphoneCallStreamsRunning &&
-		        ( sal_media_description_has_dir(call->resultdesc,SalStreamRecvOnly) 
-		         || sal_media_description_has_dir(call->resultdesc,SalStreamInactive)
-		         || strcmp(call->resultdesc->addr,"0.0.0.0")==0)){
+		        ( sal_media_description_has_dir(md,SalStreamRecvOnly) 
+		         || sal_media_description_has_dir(md,SalStreamInactive)
+		         || strcmp(md->addr,"0.0.0.0")==0)){
 			if(lc->vtable.display_status)
 				lc->vtable.display_status(lc,_("We are being paused..."));
 			linphone_call_set_state (call,LinphoneCallPausedByRemote,"Call paused by remote");
@@ -340,9 +363,7 @@ static void call_updating(SalOp *op){
 		}
 		/*accept the modification (sends a 200Ok)*/
 		sal_call_accept(op);
-		linphone_call_stop_media_streams (call);
-		linphone_call_init_media_streams (call);
-		linphone_call_start_media_streams (call);
+		linphone_core_update_streams (lc,call,md);
 		if (prevstate!=LinphoneCallIdle){
 			linphone_call_set_state (call,prevstate,"Connected (streams running)");
 		}
