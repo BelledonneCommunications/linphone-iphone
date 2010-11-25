@@ -168,8 +168,8 @@ char * linphone_call_log_to_str(LinphoneCallLog *cl);
 
 
 /**
- * The LinphoneCallParams is an object contaning various call related parameters.
- * It can be used to retrieve parameters from a currently running call or modify the call's characterisitcs 
+ * The LinphoneCallParams is an object containing various call related parameters.
+ * It can be used to retrieve parameters from a currently running call or modify the call's characteristics 
  * dynamically.
 **/
 struct _LinphoneCallParams;
