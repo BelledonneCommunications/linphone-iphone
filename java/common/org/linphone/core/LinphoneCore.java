@@ -115,7 +115,7 @@ public interface LinphoneCore {
 		}
 	}
 	/**
-	 * Describes proxy registration states.
+	 * Describes firewall policy.
 	 *
 	 */
 	static public class 	FirewallPolicy {
@@ -461,4 +461,16 @@ public interface LinphoneCore {
 
 	public LinphoneCallParams createDefaultCallParameters();
 
+	/**
+	 * Sets the path to a wav file used for ringing.
+	 *
+	 * @param path The file must be a wav 16bit linear. Local ring is disabled if null
+	 */
+	public void setRing(String path);
+	/**
+	 * gets the path to a wav file used for ringing.
+	 *
+	 * @param null if not set
+	 */
+	public String getRing();
 }
