@@ -52,8 +52,10 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 					linphone_call_enable_camera (call,linphone_call_camera_enabled (call));
 					if (call->audiostream)
 						linphone_core_mute_mic (lc, linphone_core_is_mic_muted(lc));
+#ifdef VIDEO_ENABLED
 					if (call->videostream && call->camera_active)
 						video_stream_change_camera(call->videostream,lc->video_conf.device );
+#endif
 				}
 				ms_message("No need to restart streams, SDP is unchanged.");
 				return;
