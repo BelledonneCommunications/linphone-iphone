@@ -973,5 +973,32 @@ extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getStunServer(JNIEnv 
 	return jvalue;
 }
 
+extern "C" void Java_org_linphone_core_LinphoneCallParamsImpl_enableVideo(JNIEnv *env, jobject thiz, jlong lcp, jboolean b){
+	linphone_call_params_enable_video((LinphoneCallParams*)lcp, b);
+}
 
+extern "C" jboolean Java_org_linphone_core_LinphoneCallParamsImpl_getVideoEnabled(JNIEnv *env, jobject thiz, jlong lcp){
+	return linphone_call_params_video_enabled((LinphoneCallParams*)lcp);
+}
+extern "C" jlong Java_org_linphone_core_LinphoneCallParamsImpl_copy(JNIEnv *env, jobject thiz, jlong lcp){
+	return (jlong) linphone_call_params_copy((LinphoneCallParams*)lcp);
+}
+extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_createDefaultCallParams(JNIEnv *env, jobject thiz, jlong lc){
+	return (jlong) linphone_core_create_default_call_parameters((LinphoneCore*)lc);
+}
 
+extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_getCurrentParams(JNIEnv *env, jobject thiz, jlong lc){
+	return (jlong) linphone_call_get_current_params((LinphoneCall*)lc);
+}
+
+extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_inviteAddressWithParams(JNIEnv *env, jobject thiz, jlong lc, jlong addr, jlong params){
+	return (jlong) linphone_core_invite_address_with_params((LinphoneCore *)lc, (const LinphoneAddress *)addr, (const LinphoneCallParams *)params);
+}
+
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_updateAddressWithParams(JNIEnv *env, jobject thiz, jlong lc, jlong call, jlong params){
+	return (jint) linphone_core_update_call((LinphoneCore *)lc, (LinphoneCall *)call, (LinphoneCallParams *)params);
+}
+
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_updateCall(JNIEnv *env, jobject thiz, jlong lc, jlong call, jlong params){
+	return (jint) linphone_core_update_call((LinphoneCore *)lc, (LinphoneCall *)call, (LinphoneCallParams *)params);
+}
