@@ -2830,7 +2830,7 @@ void linphone_core_set_sound_source(LinphoneCore *lc, char source)
 /**
  * Sets the path to a wav file used for ringing.
  *
- * The file must be a wav 16bit linear.
+ * @param path The file must be a wav 16bit linear. Local ring is disabled if null
  *
  * @ingroup media_parameters
 **/
