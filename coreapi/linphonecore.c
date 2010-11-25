@@ -2195,6 +2195,7 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, LinphoneCall
 		sal_media_description_unref(call->localdesc);
 	call->localdesc=create_local_media_description (lc,call,
 		params->has_video,FALSE);
+	call->camera_active=params->has_video;
 	if (lc->vtable.display_status)
 		lc->vtable.display_status(lc,_("Modifying call parameters..."));
 	sal_call_set_local_media_description (call->op,call->localdesc);

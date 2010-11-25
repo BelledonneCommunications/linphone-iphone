@@ -75,11 +75,11 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 			/*this happens after pausing the call locally. The streams is destroyed and then we wait the 200Ok to recreate it*/
 			linphone_call_init_media_streams (call);
 		}
-		if (call->state==LinphoneCallIncomingEarlyMedia ||
+		if (call->state==LinphoneCallIncomingEarlyMedia && linphone_core_get_remote_ringback_tone (lc)!=NULL){
+			send_ringbacktone=TRUE;
+		}else if (call->state==LinphoneCallIncomingEarlyMedia ||
 		    (call->state==LinphoneCallOutgoingEarlyMedia && !call->params.real_early_media)){
 			all_muted=TRUE;
-		}else if (call->state==LinphoneCallIncomingEarlyMedia && linphone_core_get_remote_ringback_tone (lc)!=NULL){
-			send_ringbacktone=TRUE;
 		}
 		linphone_call_start_media_streams(call,all_muted,send_ringbacktone);
 	}
