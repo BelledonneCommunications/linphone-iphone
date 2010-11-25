@@ -804,7 +804,11 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 					playcard=NULL;
 					captcard=NULL;
 					recfile=NULL;
-					if (!send_ringbacktone) playfile=NULL;
+					playfile=NULL;
+				}
+				if (send_ringbacktone){
+					captcard=NULL;
+					playfile=NULL;/* it is setup later*/
 				}
 				/*if playfile are supplied don't use soundcards*/
 				if (lc->use_files) {
