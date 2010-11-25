@@ -168,8 +168,8 @@ char * linphone_call_log_to_str(LinphoneCallLog *cl);
 
 
 /**
- * The LinphoneCallParams is an object contaning various call related parameters.
- * It can be used to retrieve parameters from a currently running call or modify the call's characterisitcs 
+ * The LinphoneCallParams is an object containing various call related parameters.
+ * It can be used to retrieve parameters from a currently running call or modify the call's characteristics 
  * dynamically.
 **/
 struct _LinphoneCallParams;
@@ -178,6 +178,8 @@ typedef struct _LinphoneCallParams LinphoneCallParams;
 LinphoneCallParams * linphone_call_params_copy(const LinphoneCallParams *cp);
 void linphone_call_params_enable_video(LinphoneCallParams *cp, bool_t enabled);
 bool_t linphone_call_params_video_enabled(const LinphoneCallParams *cp);
+void linphone_call_params_enable_early_media_sending(LinphoneCallParams *cp, bool_t enabled);
+bool_t linphone_call_params_early_media_sending_enabled(const LinphoneCallParams *cp);
 void linphone_call_params_destroy(LinphoneCallParams *cp);
 
 /**
@@ -216,7 +218,9 @@ typedef enum _LinphoneCallState{
 	LinphoneCallError, /**<The call encountered an error*/
 	LinphoneCallEnd, /**<The call ended normally*/
 	LinphoneCallPausedByRemote, /**<The call is paused by remote end*/
-	LinphoneCallUpdatedByRemote /**<The call's parameters are updated, used for example when video is asked by remote */
+	LinphoneCallUpdatedByRemote, /**<The call's parameters are updated, used for example when video is asked by remote */
+	LinphoneCallIncomingEarlyMedia, /**<We are proposing early media to an incoming call */
+	LinphoneCallUpdated /**<The remote accepted the call update initiated by us */
 } LinphoneCallState;
 
 const char *linphone_call_state_to_string(LinphoneCallState cs);
@@ -779,8 +783,10 @@ void linphone_core_set_ring(LinphoneCore *lc, const char *path);
 const char *linphone_core_get_ring(const LinphoneCore *lc);
 void linphone_core_set_ringback(LinphoneCore *lc, const char *path);
 const char * linphone_core_get_ringback(const LinphoneCore *lc);
+
 void linphone_core_set_remote_ringback_tone(LinphoneCore *lc,const char *);
 const char *linphone_core_get_remote_ringback_tone(const LinphoneCore *lc);
+
 int linphone_core_preview_ring(LinphoneCore *lc, const char *ring,LinphoneCoreCbFunc func,void * userdata);
 void linphone_core_enable_echo_cancellation(LinphoneCore *lc, bool_t val);
 bool_t linphone_core_echo_cancellation_enabled(LinphoneCore *lc);

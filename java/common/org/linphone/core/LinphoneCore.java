@@ -454,6 +454,13 @@ public interface LinphoneCore {
 	 * @return previously set firewall policy.
 	 */
 	public FirewallPolicy getFirewallPolicy();
+
+	public LinphoneCall inviteAddressWithParams(LinphoneAddress destination, LinphoneCallParams params) throws LinphoneCoreException ;
+	
+	public int updateCall(LinphoneCall call, LinphoneCallParams params);
+
+	public LinphoneCallParams createDefaultCallParameters();
+
 	/**
 	 * Sets the path to a wav file used for ringing.
 	 *

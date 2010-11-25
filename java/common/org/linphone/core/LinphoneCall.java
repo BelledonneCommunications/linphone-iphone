@@ -132,4 +132,9 @@ public interface LinphoneCall {
 	**/
 	public LinphoneCallLog getCallLog();
 
+	/**
+	 * @return parameters for this call; read only, call copy() to get a read/write version.
+	 */
+	public LinphoneCallParams getCurrentParamsReadOnly();
+	
 }
