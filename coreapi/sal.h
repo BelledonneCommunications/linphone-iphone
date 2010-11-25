@@ -127,6 +127,7 @@ SalMediaDescription *sal_media_description_new();
 void sal_media_description_ref(SalMediaDescription *md);
 void sal_media_description_unref(SalMediaDescription *md);
 bool_t sal_media_description_empty(const SalMediaDescription *md);
+bool_t sal_media_description_equals(const SalMediaDescription *md1, const SalMediaDescription *md2);
 bool_t sal_media_description_has_dir(const SalMediaDescription *md, SalStreamDir dir);
 SalStreamDescription *sal_media_description_find_stream(SalMediaDescription *md,
     SalMediaProto proto, SalStreamType type);

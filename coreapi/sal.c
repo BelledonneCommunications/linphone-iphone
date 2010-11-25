@@ -94,6 +94,72 @@ bool_t sal_media_description_has_dir(const SalMediaDescription *md, SalStreamDir
 	return found;
 }
 
+/*
+static bool_t fmtp_equals(const char *p1, const char *p2){
+	if (p1 && p2 && strcmp(p1,p2)==0) return TRUE;
+	if (p1==NULL && p2==NULL) return TRUE;
+	return FALSE;
+}
+*/
+
+static bool_t payload_type_equals(const PayloadType *p1, const PayloadType *p2){
+	if (p1->type!=p2->type) return FALSE;
+	if (strcmp(p1->mime_type,p2->mime_type)!=0) return FALSE;
+	if (p1->clock_rate!=p2->clock_rate) return FALSE;
+	if (p1->channels!=p2->channels) return FALSE;
+	/*
+	 Do not compare fmtp right now: they are modified internally when the call is started
+	*/
+	/*
+	if (!fmtp_equals(p1->recv_fmtp,p2->recv_fmtp) ||
+	    !fmtp_equals(p1->send_fmtp,p2->send_fmtp))
+		return FALSE;
+	*/
+	return TRUE;
+}
+
+static bool_t payload_list_equals(const MSList *l1, const MSList *l2){
+	const MSList *e1,*e2;
+	for(e1=l1,e2=l2;e1!=NULL && e2!=NULL; e1=e1->next,e2=e2->next){
+		PayloadType *p1=(PayloadType*)e1->data;
+		PayloadType *p2=(PayloadType*)e2->data;
+		if (!payload_type_equals(p1,p2))
+			return FALSE;
+	}
+	if (e1!=NULL || e2!=NULL){
+		/*means one list is longer than the other*/
+		abort();
+		return FALSE;
+	}
+	return TRUE;
+}
+
+bool_t sal_stream_description_equals(const SalStreamDescription *sd1, const SalStreamDescription *sd2){
+	if (sd1->proto!=sd2->proto) return FALSE;
+	if (sd1->type!=sd2->type) return FALSE;
+	if (strcmp(sd1->addr,sd2->addr)!=0) return FALSE;
+	if (sd1->port!=sd2->port) return FALSE;
+	if (!payload_list_equals(sd1->payloads,sd2->payloads)) return FALSE;
+	if (sd1->bandwidth!=sd2->bandwidth) return FALSE;
+	if (sd1->ptime!=sd2->ptime) return FALSE;
+	/* compare candidates: TODO */
+	if (sd1->dir!=sd2->dir) return FALSE;
+	return TRUE;
+}
+
+bool_t sal_media_description_equals(const SalMediaDescription *md1, const SalMediaDescription *md2){
+	int i;
+	
+	if (strcmp(md1->addr,md2->addr)!=0) return FALSE;
+	if (md1->nstreams!=md2->nstreams) return FALSE;
+	if (md1->bandwidth!=md2->bandwidth) return FALSE;
+	for(i=0;i<md1->nstreams;++i){
+		if (!sal_stream_description_equals(&md1->streams[i],&md2->streams[i]))
+			return FALSE;
+	}
+	return TRUE;
+}
+
 static void assign_string(char **str, const char *arg){
 	if (*str){
 		ms_free(*str);

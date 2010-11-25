@@ -356,10 +356,28 @@ static void linphonec_call_state_changed(LinphoneCore *lc, LinphoneCall *call, L
 		break;
 		case LinphoneCallOutgoingInit:
 			linphonec_call_identify(call);
+			id=(long)linphone_call_get_user_pointer (call);
+			from=linphone_call_get_remote_address_as_string(call);
+			linphonec_out("Establishing call id to %s, assigned id %i\n", from,id);
 		break;
 		case LinphoneCallUpdatedByRemote:
 			linphonec_call_updated(call);
 		break;
+		case LinphoneCallOutgoingProgress:
+			linphonec_out("Call %i to %s in progress.\n", id, from);
+			break;
+		case LinphoneCallOutgoingRinging:
+			linphonec_out("Call %i to %s ringing.\n", id, from);
+			break;
+		case LinphoneCallConnected:
+			linphonec_out("Call %i with %s connected.\n", id, from);
+			break;
+		case LinphoneCallOutgoingEarlyMedia:
+			linphonec_out("Call %i with %s early media.\n", id, from);
+			break;
+		case LinphoneCallError:
+			linphonec_out("Call %i with %s error.\n", id, from);
+			break;
 		default:
 		break;
 	}
