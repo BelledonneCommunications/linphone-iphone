@@ -467,9 +467,8 @@ static void sound_config_read(LinphoneCore *lc)
 
 	gain=lp_config_get_float(lc->config,"sound","playback_gain_db",0);
 	linphone_core_set_playback_gain_db (lc,gain);
-/*
+
 	linphone_core_set_remote_ringback_tone (lc,lp_config_get_string(lc->config,"sound","ringback_tone",NULL));
-	*/
 }
 
 static void sip_config_read(LinphoneCore *lc)
