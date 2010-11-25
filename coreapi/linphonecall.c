@@ -281,6 +281,8 @@ const char *linphone_call_state_to_string(LinphoneCallState cs){
 			return "LinphoneCallUpdatedByRemote";
 		case LinphoneCallIncomingEarlyMedia:
 			return "LinphoneCallIncomingEarlyMedia";
+		case LinphoneCallUpdated:
+			return "LinphoneCallUpdated";
 	}
 	return "undefined state";
 }
@@ -829,7 +831,7 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 					captcard,
 					captcard==NULL ? FALSE : linphone_core_echo_cancellation_enabled(lc));
 				post_configure_audio_streams(call);
-				if (all_inputs_muted){
+				if (all_inputs_muted && !send_ringbacktone){
 					audio_stream_set_mic_gain(call->audiostream,0);
 				}
 				if (send_ringbacktone){
@@ -902,6 +904,7 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 	}
 #endif
 	call->all_muted=all_inputs_muted;
+	call->playing_ringbacktone=send_ringbacktone;
 	
 	goto end;
 	end:

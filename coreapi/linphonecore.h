@@ -219,7 +219,8 @@ typedef enum _LinphoneCallState{
 	LinphoneCallEnd, /**<The call ended normally*/
 	LinphoneCallPausedByRemote, /**<The call is paused by remote end*/
 	LinphoneCallUpdatedByRemote, /**<The call's parameters are updated, used for example when video is asked by remote */
-	LinphoneCallIncomingEarlyMedia /**<We are proposing early media to an incoming call */
+	LinphoneCallIncomingEarlyMedia, /**<We are proposing early media to an incoming call */
+	LinphoneCallUpdated /**<The remote accepted the call update initiated by us */
 } LinphoneCallState;
 
 const char *linphone_call_state_to_string(LinphoneCallState cs);

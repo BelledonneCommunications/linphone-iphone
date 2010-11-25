@@ -44,7 +44,7 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 	if (call->audiostream && call->audiostream->ticker){
 		/* we already started media: check if we really need to restart it*/
 		if (oldmd){
-			if (sal_media_description_equals(oldmd,new_md)){
+			if (sal_media_description_equals(oldmd,new_md) && !call->playing_ringbacktone){
 				sal_media_description_unref(oldmd);
 				if (call->all_muted){
 					ms_message("Early media finished, unmuting inputs...");
@@ -79,7 +79,8 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 		}
 		if (call->state==LinphoneCallIncomingEarlyMedia && linphone_core_get_remote_ringback_tone (lc)!=NULL){
 			send_ringbacktone=TRUE;
-		}else if (call->state==LinphoneCallIncomingEarlyMedia ||
+		}
+		if (call->state==LinphoneCallIncomingEarlyMedia ||
 		    (call->state==LinphoneCallOutgoingEarlyMedia && !call->params.real_early_media)){
 			all_muted=TRUE;
 		}
@@ -296,6 +297,11 @@ static void call_accepted(SalOp *op){
 			if (lc->vtable.display_status){
 				lc->vtable.display_status(lc,_("Call answered - connected."));
 			}
+			if (call->state==LinphoneCallStreamsRunning){
+				/*media was running before, the remote as acceted a call modification (that is
+					a reinvite made by us. We must notify the application this reinvite was accepted*/
+				linphone_call_set_state(call, LinphoneCallUpdated, "Call updated");
+			}
 			linphone_call_set_state(call,LinphoneCallStreamsRunning,"Connected (streams running)");
 		}
 		linphone_core_update_streams (lc,call,md);
@@ -316,6 +322,11 @@ static void call_ack(SalOp *op){
 	if (call->media_pending){
 		SalMediaDescription *md=sal_call_get_final_media_description(op);
 		if (md && !sal_media_description_empty(md)){
+			if (call->state==LinphoneCallStreamsRunning){
+				/*media was running before, the remote as acceted a call modification (that is
+					a reinvite made by us. We must notify the application this reinvite was accepted*/
+				linphone_call_set_state(call, LinphoneCallUpdated, "Call updated");
+			}
 			linphone_core_update_streams (lc,call,md);
 			linphone_call_set_state (call,LinphoneCallStreamsRunning,"Connected (streams running)");
 		}else{
