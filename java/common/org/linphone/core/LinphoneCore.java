@@ -461,4 +461,11 @@ public interface LinphoneCore {
 
 	public LinphoneCallParams createDefaultCallParameters();
 
+	public void setUploadBandwidth(int bw);
+
+	public void setDownloadBandwidth(int bw);
+
+	public void setPreferredVideoSize(VideoSize vSize);
+	
+	public VideoSize getPreferredVideoSize();
 }

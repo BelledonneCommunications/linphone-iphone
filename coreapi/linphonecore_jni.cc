@@ -1002,3 +1002,28 @@ extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_updateAddressWithParams(
 extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_updateCall(JNIEnv *env, jobject thiz, jlong lc, jlong call, jlong params){
 	return (jint) linphone_core_update_call((LinphoneCore *)lc, (LinphoneCall *)call, (LinphoneCallParams *)params);
 }
+
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setPreferredVideoSize(JNIEnv *env, jobject thiz, jlong lc, jint width, jint height){
+	MSVideoSize vsize;
+	vsize.width = (int)width;
+	vsize.height = (int)height;
+	linphone_core_set_preferred_video_size((LinphoneCore *)lc, vsize);
+}
+
+extern "C" jintArray Java_org_linphone_core_LinphoneCoreImpl_getPreferredVideoSize(JNIEnv *env, jobject thiz, jlong lc){
+	MSVideoSize vsize = linphone_core_get_preferred_video_size((LinphoneCore *)lc);
+    jintArray arr = env->NewIntArray(2);
+	int tVsize [2]= {vsize.width,vsize.height};
+    env->SetIntArrayRegion(arr, 0, 2, tVsize);
+    return arr;
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setDownloadBandwidth(JNIEnv *env, jobject thiz, jlong lc, jint bw){
+	linphone_core_set_download_bandwidth((LinphoneCore *)lc, (int) bw);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setUploadBandwidth(JNIEnv *env, jobject thiz, jlong lc, jint bw){
+	linphone_core_set_upload_bandwidth((LinphoneCore *)lc, (int) bw);
+}
+
