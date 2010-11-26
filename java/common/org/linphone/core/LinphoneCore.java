@@ -165,6 +165,11 @@ public interface LinphoneCore {
 	 */
 	public void setNetworkStateReachable(boolean isReachable);
 	/**
+	 * 
+	 * @return if false, there is no network connection.
+	 */
+	public boolean setNetworkStateReachable();
+	/**
 	 * destroy linphone core and free all underlying resources
 	 */
 	public void destroy();
