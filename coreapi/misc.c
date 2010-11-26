@@ -258,7 +258,7 @@ void linphone_core_update_allocated_audio_bandwidth(LinphoneCore *lc){
 	}
 }
 
-bool_t linphone_core_is_payload_type_usable(LinphoneCore *lc, PayloadType *pt,  int bandwidth_limit)
+bool_t linphone_core_is_payload_type_usable_for_bandwidth(LinphoneCore *lc, PayloadType *pt,  int bandwidth_limit)
 {
 	double codec_band;
 	bool_t ret=FALSE;
@@ -288,8 +288,6 @@ bool_t linphone_core_is_payload_type_usable(LinphoneCore *lc, PayloadType *pt,  
 			else ret=FALSE;
 			break;
 	}
-	/*if (!ret) ms_warning("Payload %s is not usable with your internet connection.",pt->mime_type);*/
-
 	return ret;
 }
 

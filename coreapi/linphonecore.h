@@ -180,6 +180,7 @@ void linphone_call_params_enable_video(LinphoneCallParams *cp, bool_t enabled);
 bool_t linphone_call_params_video_enabled(const LinphoneCallParams *cp);
 void linphone_call_params_enable_early_media_sending(LinphoneCallParams *cp, bool_t enabled);
 bool_t linphone_call_params_early_media_sending_enabled(const LinphoneCallParams *cp);
+void linphone_call_params_set_audio_bandwidth_limit(LinphoneCallParams *cp, int bw);
 void linphone_call_params_destroy(LinphoneCallParams *cp);
 
 /**

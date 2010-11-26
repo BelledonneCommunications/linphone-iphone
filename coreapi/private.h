@@ -58,6 +58,7 @@
 
 struct _LinphoneCallParams{
 	LinphoneCall *referer; /*in case this call creation is consecutive to an incoming transfer, this points to the original call */
+	int audio_bw; /* bandwidth limit for audio stream */
 	bool_t has_video;
 	bool_t real_early_media; /*send real media even during early media (for outgoing calls)*/
 	bool_t pad[2];
@@ -441,6 +442,9 @@ void linphone_core_set_state(LinphoneCore *lc, LinphoneGlobalState gstate, const
 SalMediaDescription *create_local_media_description(LinphoneCore *lc, LinphoneCall *call);
 
 void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMediaDescription *new_md);
+
+bool_t linphone_core_is_payload_type_usable_for_bandwidth(LinphoneCore *lc, PayloadType *pt,  int bandwidth_limit);
+
 #define linphone_core_ready(lc) ((lc)->state!=LinphoneGlobalStartup)
 void _linphone_core_configure_resolver();
 
