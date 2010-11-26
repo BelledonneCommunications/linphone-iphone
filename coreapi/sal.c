@@ -52,21 +52,110 @@ void sal_media_description_unref(SalMediaDescription *md){
 	}
 }
 
-const SalStreamDescription *sal_media_description_find_stream(const SalMediaDescription *md,
+SalStreamDescription *sal_media_description_find_stream(SalMediaDescription *md,
     SalMediaProto proto, SalStreamType type){
 	int i;
 	for(i=0;i<md->nstreams;++i){
-		const SalStreamDescription *ss=&md->streams[i];
+		SalStreamDescription *ss=&md->streams[i];
 		if (ss->proto==proto && ss->type==type) return ss;
 	}
 	return NULL;
 }
 
-bool_t sal_media_description_empty(SalMediaDescription *md){
+bool_t sal_media_description_empty(const SalMediaDescription *md){
+	int i;
+	for(i=0;i<md->nstreams;++i){
+		const SalStreamDescription *ss=&md->streams[i];
+		if (ss->port!=0) return FALSE;
+	}
+	return TRUE;
+}
+
+void sal_media_description_set_dir(SalMediaDescription *md, SalStreamDir stream_dir){
 	int i;
 	for(i=0;i<md->nstreams;++i){
 		SalStreamDescription *ss=&md->streams[i];
-		if (ss->port!=0) return FALSE;
+		ss->dir=stream_dir;
+	}
+}
+
+bool_t sal_media_description_has_dir(const SalMediaDescription *md, SalStreamDir stream_dir){
+	int i;
+	bool_t found=FALSE;
+
+	/* we are looking for at least one stream with requested direction, inactive streams are ignored*/
+	for(i=0;i<md->nstreams;++i){
+		const SalStreamDescription *ss=&md->streams[i];
+		if (ss->dir==stream_dir) found=TRUE;
+		else{
+			if (ss->dir!=SalStreamInactive) return FALSE;
+		}
+	}
+	return found;
+}
+
+/*
+static bool_t fmtp_equals(const char *p1, const char *p2){
+	if (p1 && p2 && strcmp(p1,p2)==0) return TRUE;
+	if (p1==NULL && p2==NULL) return TRUE;
+	return FALSE;
+}
+*/
+
+static bool_t payload_type_equals(const PayloadType *p1, const PayloadType *p2){
+	if (p1->type!=p2->type) return FALSE;
+	if (strcmp(p1->mime_type,p2->mime_type)!=0) return FALSE;
+	if (p1->clock_rate!=p2->clock_rate) return FALSE;
+	if (p1->channels!=p2->channels) return FALSE;
+	/*
+	 Do not compare fmtp right now: they are modified internally when the call is started
+	*/
+	/*
+	if (!fmtp_equals(p1->recv_fmtp,p2->recv_fmtp) ||
+	    !fmtp_equals(p1->send_fmtp,p2->send_fmtp))
+		return FALSE;
+	*/
+	return TRUE;
+}
+
+static bool_t payload_list_equals(const MSList *l1, const MSList *l2){
+	const MSList *e1,*e2;
+	for(e1=l1,e2=l2;e1!=NULL && e2!=NULL; e1=e1->next,e2=e2->next){
+		PayloadType *p1=(PayloadType*)e1->data;
+		PayloadType *p2=(PayloadType*)e2->data;
+		if (!payload_type_equals(p1,p2))
+			return FALSE;
+	}
+	if (e1!=NULL || e2!=NULL){
+		/*means one list is longer than the other*/
+		abort();
+		return FALSE;
+	}
+	return TRUE;
+}
+
+bool_t sal_stream_description_equals(const SalStreamDescription *sd1, const SalStreamDescription *sd2){
+	if (sd1->proto!=sd2->proto) return FALSE;
+	if (sd1->type!=sd2->type) return FALSE;
+	if (strcmp(sd1->addr,sd2->addr)!=0) return FALSE;
+	if (sd1->port!=sd2->port) return FALSE;
+	if (!payload_list_equals(sd1->payloads,sd2->payloads)) return FALSE;
+	if (sd1->bandwidth!=sd2->bandwidth) return FALSE;
+	if (sd1->ptime!=sd2->ptime) return FALSE;
+	/* compare candidates: TODO */
+	if (sd1->dir!=sd2->dir) return FALSE;
+	return TRUE;
+}
+
+bool_t sal_media_description_equals(const SalMediaDescription *md1, const SalMediaDescription *md2){
+	int i;
+	
+	if (strcmp(md1->addr,md2->addr)!=0) return FALSE;
+	if (md1->nstreams!=md2->nstreams) return FALSE;
+	if (md1->bandwidth!=md2->bandwidth) return FALSE;
+	for(i=0;i<md1->nstreams;++i){
+		if (!sal_stream_description_equals(&md1->streams[i],&md2->streams[i]))
+			return FALSE;
 	}
 	return TRUE;
 }
@@ -120,6 +209,10 @@ const char *sal_op_get_route(const SalOp *op){
 	return ((SalOpBase*)op)->route;
 }
 
+const char *sal_op_get_remote_ua(const SalOp *op){
+	return ((SalOpBase*)op)->remote_ua;
+}
+
 void *sal_op_get_user_pointer(const SalOp *op){
 	return ((SalOpBase*)op)->user_pointer;
 }
@@ -163,6 +256,10 @@ void __sal_op_free(SalOp *op){
 	if (b->origin){
 		ms_free(b->origin);
 		b->origin=NULL;
+	}
+	if (b->remote_ua){
+		ms_free(b->remote_ua);
+		b->remote_ua=NULL;
 	}
 	if (b->local_media)
 		sal_media_description_unref(b->local_media);

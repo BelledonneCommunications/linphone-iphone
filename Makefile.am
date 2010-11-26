@@ -3,14 +3,21 @@
 # let make re-run automake upon need
 ACLOCAL_AMFLAGS = -I m4 $(ACLOCAL_MACOS_FLAGS)
 
-if EXTERNAL_ORTP
-ORTP_DIR =
+if EXTERNAL_MEDIASTREAMER
+MS2_DIR=
 else
-ORTP_DIR = oRTP
+MS2_DIR=mediastreamer2
 endif
 
-SUBDIRS = m4 pixmaps po $(ORTP_DIR) mediastreamer2\
-		coreapi console gtk-glade share scripts
+if EXTERNAL_ORTP
+ORTP_DIR=
+else
+ORTP_DIR=oRTP
+endif
+
+
+SUBDIRS = m4 pixmaps po $(ORTP_DIR) $(MS2_DIR) \
+		coreapi console gtk share scripts
 
 
 
@@ -42,6 +49,7 @@ SDK_EXCLUDED= \
 
 
 GTK_PREFIX=/usr
+GTK_THEME=Outcrop
 GTK_FILELIST=gtk+-2.18.5.filelist
 GTK_FILELIST_PATH=$(shell cd $(top_srcdir) && pwd)/$(GTK_FILELIST)
 LINPHONEDEPS_FILELIST=linphone-deps.filelist
@@ -113,7 +121,8 @@ gtk-cherrypick:
 			cp $$file $(INSTALLDIR_WITH_PREFIX)/$$file ;\
 		fi \
 	done && \
-	cp -rf share/themes $(INSTALLDIR_WITH_PREFIX)/share/.
+	mkdir -p  $(INSTALLDIR_WITH_PREFIX)/share/themes && \
+	cp -rf share/themes/$(GTK_THEME) $(INSTALLDIR_WITH_PREFIX)/share/themes/.
 
 zip:
 	rm -f $(ZIPFILE)
@@ -125,7 +134,7 @@ zip:
 #add gtk dlls and files
 	make gtk-cherrypick
 	make other-cherrypick
-	cp -f $(top_srcdir)/gtk-glade/gtkrc $(INSTALLDIR_WITH_PREFIX)/.
+	cp -f $(top_srcdir)/gtk/gtkrc $(INSTALLDIR_WITH_PREFIX)/.
 	cp -f $(top_srcdir)/README $(INSTALLDIR_WITH_PREFIX)/.
 	cp -f $(top_srcdir)/COPYING $(INSTALLDIR_WITH_PREFIX)/.
 	cd $(INSTALLDIR_WITH_PREFIX) && zip -r $(ZIPFILE) *
@@ -162,7 +171,7 @@ setup.exe: filelist
 	rm -f $(INSTALLDIR_WITH_PREFIX)/$(ISS_SCRIPT)
 
 newdate:
-	cd gtk-glade && $(MAKE) newdate
+	cd gtk && $(MAKE) newdate
 
 
 Portfile:	$(top_srcdir)/scripts/Portfile.tmpl dist

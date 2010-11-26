@@ -30,14 +30,12 @@ LOCAL_SRC_FILES = \
 	linphonecore.c \
 	misc.c  \
 	enum.c \
-	enum.h \
 	presence.c \
 	proxy.c \
 	friend.c \
 	authentication.c \
 	lpconfig.c \
 	chat.c \
-	general_state.c \
 	sipsetup.c \
 	siplogin.c \
 	address.c \
@@ -47,7 +45,8 @@ LOCAL_SRC_FILES = \
 	sal_eXosip2_presence.c \
 	sal_eXosip2_sdp.c \
 	offeranswer.c \
-	callbacks.c
+	callbacks.c \
+	linphonecall.c
 
 LOCAL_CFLAGS += \
 	-D_BYTE_ORDER=_LITTLE_ENDIAN \
@@ -58,7 +57,10 @@ LOCAL_CFLAGS += \
 	-DLOG_DOMAIN=\"Linphone\"
 
 LOCAL_CFLAGS += -DIN_LINPHONE
-#LOCAL_CFLAGS += -DVIDEO_ENABLED -DIN_LINPHONE
+
+ifeq ($(LINPHONE_VIDEO),1)
+LOCAL_CFLAGS += -DVIDEO_ENABLED
+endif
 
 LOCAL_C_INCLUDES += \
 	$(LOCAL_PATH) \
@@ -68,7 +70,7 @@ LOCAL_C_INCLUDES += \
 	$(LOCAL_PATH)/../../externals/exosip/include \
 	$(LOCAL_PATH)/../../externals/osip/include 
 
-LOCAL_LDLIBS += -llog
+LOCAL_LDLIBS += -llog -ldl
 
 LOCAL_STATIC_LIBRARIES := \
 	libmediastreamer2 \
@@ -77,6 +79,15 @@ LOCAL_STATIC_LIBRARIES := \
 	libeXosip2 \
 	libosip2 \
 	libgsm
+
+ifeq ($(LINPHONE_VIDEO),1)
+LOCAL_STATIC_LIBRARIES += \
+	libavcodec \
+	libswscale \
+	libavcore \
+	libavutil
+endif
+
 ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
    LOCAL_CFLAGS += -DHAVE_ILBC=1
    LOCAL_STATIC_LIBRARIES += libmsilbc

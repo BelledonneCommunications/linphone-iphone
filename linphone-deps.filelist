@@ -2,8 +2,8 @@
 ./bin/avformat-52.dll
 ./bin/avutil-50.dll
 ./bin/libeXosip2-4.dll
-./bin/libogg-0.dll
-./bin/libtheora-0.dll
+./bin/libogg.dll
+./bin/libtheora.dll
 ./bin/libxml2-2.dll
 ./bin/libosip2-4.dll
 ./bin/libosipparser2-4.dll

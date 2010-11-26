@@ -33,7 +33,6 @@
 		cr->lc=lc;
 		cr->peer=linphone_address_as_string(parsed_url);
 		cr->peer_url=parsed_url;
-		cr->route=ms_strdup(linphone_core_get_route(lc));
 		lc->chatrooms=ms_list_append(lc->chatrooms,(void *)cr);
 		return cr;
 	}
@@ -46,21 +45,29 @@
 	lc->chatrooms=ms_list_remove(lc->chatrooms,(void *) cr);
 	linphone_address_destroy(cr->peer_url);
 	ms_free(cr->peer);
-	ms_free(cr->route);
+	if (cr->op)
+		 sal_op_release(cr->op);
  }
  
 void linphone_chat_room_send_message(LinphoneChatRoom *cr, const char *msg){
-	const char *identity=linphone_core_get_identity(cr->lc);
+	const char *route=NULL;
+	const char *identity=linphone_core_find_best_identity(cr->lc,cr->peer_url,&route);
 	SalOp *op;
-	if(linphone_core_is_in_communication_with(cr->lc,cr->peer))
+	LinphoneCall *call;
+	if((call = linphone_core_get_call_by_remote_address(cr->lc,cr->peer))!=NULL)
 	{
 		ms_message("send SIP message into the call\n");
-		op = cr->lc->call->op;
+		op = call->op;
 	}
 	else
 	{
 		op = sal_op_new(cr->lc->sal);
-		sal_op_set_route(op,cr->route);
+		sal_op_set_route(op,route);
+		if (cr->op!=NULL){
+			sal_op_release (cr->op);
+			cr->op=NULL;
+		}
+		cr->op=op;
 	}
 	sal_text_send(op,identity,cr->peer,msg);
 }
@@ -71,7 +78,7 @@ bool_t linphone_chat_room_matches(LinphoneChatRoom *cr, const LinphoneAddress *f
 	return FALSE;
 }
 
-void linphone_chat_room_text_received(LinphoneChatRoom *cr, LinphoneCore *lc, const char *from, const char *msg){
+void linphone_chat_room_text_received(LinphoneChatRoom *cr, LinphoneCore *lc, const LinphoneAddress *from, const char *msg){
 	if (lc->vtable.text_received!=NULL) lc->vtable.text_received(lc, cr, from, msg);
 }
 
@@ -95,8 +102,9 @@ void linphone_core_text_received(LinphoneCore *lc, const char *from, const char 
 		/* create a new chat room */
 		cr=linphone_core_create_chat_room(lc,cleanfrom);
 	}
+
 	linphone_address_destroy(addr);
-	linphone_chat_room_text_received(cr,lc,cleanfrom,msg);
+	linphone_chat_room_text_received(cr,lc,cr->peer_url,msg);
 	ms_free(cleanfrom);
 }
 
@@ -106,4 +114,7 @@ void linphone_chat_room_set_user_data(LinphoneChatRoom *cr, void * ud){
 }
 void * linphone_chat_room_get_user_data(LinphoneChatRoom *cr){
 	return cr->user_data;
+}
+const LinphoneAddress* linphone_chat_room_get_peer_address(LinphoneChatRoom *cr) {
+	return cr->peer_url;
 }

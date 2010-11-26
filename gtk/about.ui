@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<interface>
+  <!-- interface-requires gtk+ 2.12 -->
+  <!-- interface-naming-policy toplevel-contextual -->
+  <object class="GtkAboutDialog" id="about">
+    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+    <property name="border_width">5</property>
+    <property name="title" translatable="yes">About linphone</property>
+    <property name="resizable">False</property>
+    <property name="window_position">center-on-parent</property>
+    <property name="type_hint">dialog</property>
+    <property name="has_separator">False</property>
+    <property name="program_name">Linphone</property>
+    <property name="version">undef</property>
+    <property name="copyright" translatable="yes">(C) Belledonne Communications,2010
+</property>
+    <property name="comments" translatable="yes">An internet video phone using the standard SIP (rfc3261) protocol.</property>
+    <property name="website">http://www.linphone.org</property>
+    <property name="license">GPL</property>
+    <property name="authors">Simon Morlat</property>
+    <property name="documenters"></property>
+    <property name="translator_credits" translatable="yes">fr: Simon Morlat
+en: Simon Morlat and Delphine Perreau
+it: Alberto Zanoni &lt;alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it&gt;
+de: Jean-Jacques Sarton &lt;jj.sarton@-NO-SPAM-PLEASE-t-online.de&gt;
+sv: Daniel Nylander &lt;po@danielnylander.se&gt;
+es: Jesus Benitez &lt;gnelson at inMail dot sk&gt;
+ja: YAMAGUCHI YOSHIYA &lt;yushiya@anet.ne.jp&gt;
+pt_BR: Rafael Caesar Lenzi &lt;rc_lenzi@yahoo.com.br&gt;
+pl: Robert Nasiadek &lt;darkone@darkone.pl&gt;
+cs: Petr Pisar &lt;petr.pisar@atlas.cz&gt;
+hu: anonymous
+</property>
+    <property name="artists">Icons by kerosine.fr</property>
+    <signal name="response" handler="linphone_gtk_about_response"/>
+    <child internal-child="vbox">
+      <object class="GtkVBox" id="dialog-vbox8">
+        <property name="visible">True</property>
+        <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">2</property>
+        <child>
+          <placeholder/>
+        </child>
+        <child internal-child="action_area">
+          <object class="GtkHButtonBox" id="dialog-action_area7">
+            <property name="visible">True</property>
+            <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+            <property name="layout_style">end</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="pack_type">end</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

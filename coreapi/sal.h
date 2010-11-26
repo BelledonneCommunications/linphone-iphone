@@ -86,6 +86,13 @@ typedef enum{
 	SalProtoRtpSavp
 }SalMediaProto;
 
+typedef enum{
+	SalStreamSendRecv,
+	SalStreamSendOnly,
+	SalStreamRecvOnly,
+	SalStreamInactive
+}SalStreamDir;
+
 typedef struct SalEndpointCandidate{
 	char addr[64];
 	int port;
@@ -102,6 +109,7 @@ typedef struct SalStreamDescription{
 	int bandwidth;
 	int ptime;
 	SalEndpointCandidate candidates[SAL_ENDPOINT_CANDIDATE_MAX];
+	SalStreamDir dir;
 } SalStreamDescription;
 
 #define SAL_MEDIA_DESCRIPTION_MAX_STREAMS 4
@@ -118,9 +126,12 @@ typedef struct SalMediaDescription{
 SalMediaDescription *sal_media_description_new();
 void sal_media_description_ref(SalMediaDescription *md);
 void sal_media_description_unref(SalMediaDescription *md);
-bool_t sal_media_description_empty(SalMediaDescription *md);
-const SalStreamDescription *sal_media_description_find_stream(const SalMediaDescription *md,
+bool_t sal_media_description_empty(const SalMediaDescription *md);
+bool_t sal_media_description_equals(const SalMediaDescription *md1, const SalMediaDescription *md2);
+bool_t sal_media_description_has_dir(const SalMediaDescription *md, SalStreamDir dir);
+SalStreamDescription *sal_media_description_find_stream(SalMediaDescription *md,
     SalMediaProto proto, SalStreamType type);
+void sal_media_description_set_dir(SalMediaDescription *md, SalStreamDir stream_dir);
 
 /*this structure must be at the first byte of the SalOp structure defined by implementors*/
 typedef struct SalOpBase{
@@ -130,6 +141,7 @@ typedef struct SalOpBase{
 	char *from;
 	char *to;
 	char *origin;
+	char *remote_ua;
 	SalMediaDescription *local_media;
 	SalMediaDescription *remote_media;
 	void *user_pointer;
@@ -177,9 +189,9 @@ typedef void (*SalOnCallReceived)(SalOp *op);
 typedef void (*SalOnCallRinging)(SalOp *op);
 typedef void (*SalOnCallAccepted)(SalOp *op);
 typedef void (*SalOnCallAck)(SalOp *op);
-typedef void (*SalOnCallUpdated)(SalOp *op);
+typedef void (*SalOnCallUpdating)(SalOp *op);/*< Called when a reINVITE is received*/
 typedef void (*SalOnCallTerminated)(SalOp *op, const char *from);
-typedef void (*SalOnCallFailure)(SalOp *op, SalError error, SalReason reason, const char *details);
+typedef void (*SalOnCallFailure)(SalOp *op, SalError error, SalReason reason, const char *details, int code);
 typedef void (*SalOnAuthRequested)(SalOp *op, const char *realm, const char *username);
 typedef void (*SalOnAuthSuccess)(SalOp *op, const char *realm, const char *username);
 typedef void (*SalOnRegisterSuccess)(SalOp *op, bool_t registered);
@@ -200,7 +212,7 @@ typedef struct SalCallbacks{
 	SalOnCallRinging call_ringing;
 	SalOnCallAccepted call_accepted;
 	SalOnCallAck call_ack;
-	SalOnCallUpdated call_updated;
+	SalOnCallUpdating call_updating;
 	SalOnCallTerminated call_terminated;
 	SalOnCallFailure call_failure;
 	SalOnAuthRequested auth_requested;
@@ -234,6 +246,7 @@ void sal_set_user_agent(Sal *ctx, const char *user_agent);
 /*keepalive period in ms*/
 void sal_set_keepalive_period(Sal *ctx,unsigned int value);
 void sal_use_session_timers(Sal *ctx, int expires);
+void sal_use_one_matching_codec_policy(Sal *ctx, bool_t one_matching_codec);
 int sal_iterate(Sal *sal);
 MSList * sal_get_pending_auths(Sal *sal);
 
@@ -257,17 +270,27 @@ const char *sal_op_get_route(const SalOp *op);
 const char *sal_op_get_proxy(const SalOp *op);
 /*for incoming requests, returns the origin of the packet as a sip uri*/
 const char *sal_op_get_network_origin(const SalOp *op);
+/*returns far-end "User-Agent" string */
+const char *sal_op_get_remote_ua(const SalOp *op);
 void *sal_op_get_user_pointer(const SalOp *op);
 
 /*Call API*/
 int sal_call_set_local_media_description(SalOp *h, SalMediaDescription *desc);
 int sal_call(SalOp *h, const char *from, const char *to);
-int sal_call_notify_ringing(SalOp *h);
+int sal_call_notify_ringing(SalOp *h, bool_t early_media);
+/*accept an incoming call or, during a call accept a reINVITE*/
 int sal_call_accept(SalOp*h);
 int sal_call_decline(SalOp *h, SalReason reason, const char *redirection /*optional*/);
+int sal_call_hold(SalOp *h, bool_t holdon);
+int sal_call_update(SalOp *h);
 SalMediaDescription * sal_call_get_final_media_description(SalOp *h);
-int sal_refer(SalOp *h, const char *refer_to);
-int sal_refer_accept(SalOp *h);
+int sal_call_refer(SalOp *h, const char *refer_to);
+int sal_call_refer_with_replaces(SalOp *h, SalOp *other_call_h);
+int sal_call_accept_refer(SalOp *h);
+/*informs this call is consecutive to an incoming refer */
+int sal_call_set_referer(SalOp *h, SalOp *refered_call);
+/* returns the SalOp of a call that should be replaced by h, if any */
+SalOp *sal_call_get_replaces(SalOp *h);
 int sal_call_send_dtmf(SalOp *h, char dtmf);
 int sal_call_terminate(SalOp *h);
 bool_t sal_call_autoanswer_asked(SalOp *op);
@@ -305,6 +328,5 @@ void sal_get_default_local_ip(Sal *sal, int address_family, char *ip, size_t ipl
 void __sal_op_init(SalOp *b, Sal *sal);
 void __sal_op_set_network_origin(SalOp *op, const char *origin /*a sip uri*/);
 void __sal_op_free(SalOp *b);
-
 
 #endif

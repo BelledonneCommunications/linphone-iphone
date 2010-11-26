@@ -22,7 +22,7 @@ $(INSTALL_ROOT): $(WORKDIR)
 
 
 #Inno Setup 5 compiler
-ISCC=ISCC.exe
+ISCC="c:\Program Files\Inno setup 5\ISCC.exe"
 
 $(LINPHONE_SRC_DIR)/configure:
 	cd $(LINPHONE_SRC_DIR) && ./autogen.sh

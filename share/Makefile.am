@@ -5,6 +5,7 @@ LINPHONE_SOUNDS=ringback.wav hello8000.wav hello16000.wav
 LINPHONE_RINGS=rings/orig.wav \
 				rings/oldphone.wav \
 				rings/oldphone-mono.wav \
+				rings/oldphone-mono-30s.caf \
 				rings/rock.wav \
 				rings/bigben.wav \
 				rings/toy.wav \

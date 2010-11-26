@@ -1,7 +1,7 @@
 
-EXTRA_DIST = Doxyfile.in doxygen.dox.in
+EXTRA_DIST = Doxyfile.in doxygen.dox
 
-SOURCES=$(top_srcdir)/coreapi/*.h $(top_srcdir)/coreapi/*.c
+SOURCES= doxygen.dox $(top_srcdir)/coreapi/help/*.c $(top_srcdir)/coreapi/*.c $(top_srcdir)/coreapi/*.h  
 
 
 #html doc
@@ -31,3 +31,40 @@ endif
 
 clean-local:
 	rm -rf doc
+
+noinst_PROGRAMS=helloworld registration buddy_status chatroom
+
+helloworld_SOURCES=helloworld.c
+
+helloworld_LDADD=$(top_builddir)/coreapi/liblinphone.la \
+				$(MEDIASTREAMER_LIBS) \
+				$(ORTP_LIBS)
+
+registration_SOURCES=registration.c
+
+registration_LDADD=$(helloworld_LDADD)
+
+buddy_status_SOURCES=buddy_status.c
+
+buddy_status_LDADD=$(helloworld_LDADD)
+
+chatroom_SOURCES=chatroom.c
+
+chatroom_LDADD=$(helloworld_LDADD)
+												
+				
+
+INCLUDES=-I$(top_srcdir)/coreapi \
+		$(MEDIASTREAMER_CFLAGS)
+
+AM_CFLAGS=$(STRICT_OPTIONS)  -DIN_LINPHONE \
+	$(ORTP_CFLAGS) \
+	$(OSIP_CFLAGS) \
+	$(MEDIASTREAMER_CFLAGS) \
+	$(EXOSIP_CFLAGS) \
+	-DENABLE_TRACE 	\
+	-DLOG_DOMAIN=\"LinphoneCore\" \
+	 $(IPV6_CFLAGS) \
+	 -DORTP_INET6 \
+	 $(VIDEO_CFLAGS) 
+

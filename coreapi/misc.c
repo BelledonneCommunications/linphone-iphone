@@ -258,6 +258,39 @@ void linphone_core_update_allocated_audio_bandwidth(LinphoneCore *lc){
 	}
 }
 
+bool_t linphone_core_is_payload_type_usable_for_bandwidth(LinphoneCore *lc, PayloadType *pt,  int bandwidth_limit)
+{
+	double codec_band;
+	bool_t ret=FALSE;
+	
+	switch (pt->type){
+		case PAYLOAD_AUDIO_CONTINUOUS:
+		case PAYLOAD_AUDIO_PACKETIZED:
+			codec_band=get_audio_payload_bandwidth(lc,pt);
+			ret=bandwidth_is_greater(bandwidth_limit*1000,codec_band);
+			/*hack to avoid using uwb codecs when having low bitrate and video*/
+			if (bandwidth_is_greater(199,bandwidth_limit)){
+				if (linphone_core_video_enabled(lc) && pt->clock_rate>16000){
+					ret=FALSE;
+				}
+			}
+			//ms_message("Payload %s: %g",pt->mime_type,codec_band);
+			break;
+		case PAYLOAD_VIDEO:
+			if (bandwidth_limit!=0) {/* infinite (-1) or strictly positive*/
+				/*let the video use all the bandwidth minus the maximum bandwidth used by audio */
+				if (bandwidth_limit>0)
+					pt->normal_bitrate=bandwidth_limit*1000;
+				else
+					pt->normal_bitrate=1500000; /*around 1.5 Mbit/s*/
+				ret=TRUE;
+			}
+			else ret=FALSE;
+			break;
+	}
+	return ret;
+}
+
 /* return TRUE if codec can be used with bandwidth, FALSE else*/
 bool_t linphone_core_check_payload_type_usability(LinphoneCore *lc, PayloadType *pt)
 {
@@ -462,8 +495,13 @@ static int recvStunResponse(ortp_socket_t sock, char *ipaddr, int *port, int *id
 		struct in_addr ia;
 		stunParseMessage(buf,len, &resp );
 		*id=resp.msgHdr.tr_id.octet[0];
-		*port = resp.mappedAddress.ipv4.port;
-		ia.s_addr=htonl(resp.mappedAddress.ipv4.addr);
+		if (resp.hasXorMappedAddress){
+			*port = resp.xorMappedAddress.ipv4.port;
+			ia.s_addr=htonl(resp.xorMappedAddress.ipv4.addr);
+		}else if (resp.hasMappedAddress){
+			*port = resp.mappedAddress.ipv4.port;
+			ia.s_addr=htonl(resp.mappedAddress.ipv4.addr);
+		}else return -1;
 		strncpy(ipaddr,inet_ntoa(ia),LINPHONE_IPADDR_SIZE);
 	}
 	return len;
@@ -497,10 +535,10 @@ void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 			lc->vtable.display_status(lc,_("Stun lookup in progress..."));
 
 		/*create the two audio and video RTP sockets, and send STUN message to our stun server */
-		sock1=create_socket(linphone_core_get_audio_port(lc));
+		sock1=create_socket(call->audio_port);
 		if (sock1<0) return;
 		if (video_enabled){
-			sock2=create_socket(linphone_core_get_video_port(lc));
+			sock2=create_socket(call->video_port);
 			if (sock2<0) return ;
 		}
 		sendStunRequest(sock1,(struct sockaddr*)&ss,ss_len,11,TRUE);
@@ -754,14 +792,10 @@ static int get_local_ip_for_with_connect(int type, const char *dest, char *resul
 }
 
 int linphone_core_get_local_ip_for(int type, const char *dest, char *result){
-	if (dest==NULL) {
-		if (type==AF_INET)
-			dest="87.98.157.38"; /*a public IP address*/
-		else dest="2a00:1450:8002::68";
-	}
 	strcpy(result,type==AF_INET ? "127.0.0.1" : "::1");
 #ifdef HAVE_GETIFADDRS
-	{
+	if (dest==NULL) {
+		/*we use getifaddrs for lookup of default interface */
 		int found_ifs;
 	
 		found_ifs=get_local_ip_with_getifaddrs(type,result,LINPHONE_IPADDR_SIZE);
@@ -774,5 +808,33 @@ int linphone_core_get_local_ip_for(int type, const char *dest, char *result){
 	}
 #endif
 	/*else use connect to find the best local ip address */
+	if (type==AF_INET)
+		dest="87.98.157.38"; /*a public IP address*/
+	else dest="2a00:1450:8002::68";
 	return get_local_ip_for_with_connect(type,dest,result);
 }
+
+#ifndef WIN32
+#include <resolv.h>
+
+
+
+
+void _linphone_core_configure_resolver(){
+/*bionic declares _res but does not define nor export it !!*/
+#ifdef ANDROID
+	/*timeout and attempts are the same as retrans and retry, but are android specific names.*/
+	setenv("RES_OPTIONS","timeout:1 attempts:2 retrans:1 retry:2",1);
+#else
+	res_init();
+	_res.retrans=1; /*retransmit every second*/
+	_res.retry=2; /*only two times per DNS server*/
+#endif
+}
+
+#else
+
+void _linphone_core_configure_resolver(){
+}
+
+#endif

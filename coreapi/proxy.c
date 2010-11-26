@@ -72,6 +72,7 @@ void linphone_proxy_config_destroy(LinphoneProxyConfig *obj){
 	if (obj->type!=NULL) ms_free(obj->type);
 	if (obj->dial_prefix!=NULL) ms_free(obj->dial_prefix);
 	if (obj->op) sal_op_release(obj->op);
+	if (obj->publish_op) sal_op_release(obj->publish_op);
 }
 
 /**
@@ -166,10 +167,16 @@ int linphone_proxy_config_set_route(LinphoneProxyConfig *obj, const char *route)
 		obj->reg_route=NULL;
 	}
 	if (route!=NULL){
+		LinphoneAddress *addr;
 		/*try to prepend 'sip:' */
 		if (strstr(route,"sip:")==NULL){
 			obj->reg_route=ms_strdup_printf("sip:%s",route);
 		}else obj->reg_route=ms_strdup(route);
+		addr=linphone_address_new(obj->reg_route);
+		if (addr==NULL){
+			ms_free(obj->reg_route);
+			obj->reg_route=NULL;
+		}else linphone_address_destroy(addr);
 	}
 	return 0;
 }
@@ -263,6 +270,7 @@ static char *guess_contact_for_register(LinphoneProxyConfig *obj){
 
 static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
 	const char *id_str;
+
 	if (obj->reg_identity!=NULL) id_str=obj->reg_identity;
 	else id_str=linphone_core_get_primary_contact(obj->lc);
 	if (obj->reg_sendregister){
@@ -274,10 +282,10 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
 		sal_op_set_contact(obj->op,contact);
 		ms_free(contact);
 		sal_op_set_user_pointer(obj->op,obj);
-		if (!sal_register(obj->op,obj->reg_proxy,obj->reg_identity,obj->expires)) {
-			gstate_new_state(obj->lc,GSTATE_REG_PENDING,NULL);
+		if (sal_register(obj->op,obj->reg_proxy,obj->reg_identity,obj->expires)==0) {
+			linphone_proxy_config_set_state(obj,LinphoneRegistrationProgress,"Registration in progress");
 		} else {
-			gstate_new_state(obj->lc,GSTATE_REG_FAILED,NULL);
+			linphone_proxy_config_set_state(obj,LinphoneRegistrationFailed,"Registration failed");
 		}
 	}
 }
@@ -432,7 +440,9 @@ int linphone_proxy_config_send_publish(LinphoneProxyConfig *proxy,
 	SalOp *op=sal_op_new(proxy->lc->sal);
 	err=sal_publish(op,linphone_proxy_config_get_identity(proxy),
 	    linphone_proxy_config_get_identity(proxy),linphone_online_status_to_sal(presence_mode));
-	sal_op_release(op);
+	if (proxy->publish_op!=NULL)
+		sal_op_release(proxy->publish_op);
+	proxy->publish_op=op;
 	return err;
 }
 
@@ -690,8 +700,11 @@ void linphone_proxy_config_update(LinphoneProxyConfig *cfg){
 		if (cfg->type && cfg->ssctx==NULL){
 			linphone_proxy_config_activate_sip_setup(cfg);
 		}
-		if (lc->sip_conf.register_only_when_network_is_up || lc->network_reachable)
+		if (!lc->sip_conf.register_only_when_network_is_up || lc->network_reachable)
 			linphone_proxy_config_register(cfg);
+		if (cfg->publish && cfg->publish_op==NULL){
+			linphone_proxy_config_send_publish(cfg,lc->presence_mode);
+		}
 		cfg->commit=FALSE;
 	}
 }
@@ -796,6 +809,45 @@ void * linphone_proxy_config_get_user_data(LinphoneProxyConfig *cr) {
 	return cr->user_data;
 }
 
+void linphone_proxy_config_set_state(LinphoneProxyConfig *cfg, LinphoneRegistrationState state, const char *message){
+	LinphoneCore *lc=cfg->lc;
+	cfg->state=state;
+	if (lc && lc->vtable.registration_state_changed){
+		lc->vtable.registration_state_changed(lc,cfg,state,message);
+	}
+}
 
+LinphoneRegistrationState linphone_proxy_config_get_state(const LinphoneProxyConfig *cfg){
+	return cfg->state;
+}
+
+ const char *linphone_registration_state_to_string(LinphoneRegistrationState cs){
+	 switch(cs){
+		case LinphoneRegistrationCleared:
+			 return "LinphoneRegistrationCleared";
+		break;
+		case LinphoneRegistrationNone:
+			 return "LinphoneRegistrationNone";
+		break;
+		case LinphoneRegistrationProgress:
+			return "LinphoneRegistrationProgress";
+		break;
+		case LinphoneRegistrationOk:
+			 return "LinphoneRegistrationOk";
+		break;
+		case LinphoneRegistrationFailed:
+			 return "LinphoneRegistrationFailed";
+		break;
+	 }
+	 return NULL;
+ }
+
+LinphoneReason linphone_proxy_config_get_error(const LinphoneProxyConfig *cfg) {
+	return cfg->error;
+}
+
+void linphone_proxy_config_set_error(LinphoneProxyConfig *cfg,LinphoneReason error) {
+	cfg->error = error;
+}
 
 

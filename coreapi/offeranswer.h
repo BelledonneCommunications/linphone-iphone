@@ -41,7 +41,7 @@ int offer_answer_initiate_outgoing(const SalMediaDescription *local_offer,
 **/
 int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities,
 						const SalMediaDescription *remote_offer,
-    					SalMediaDescription *result);
+    					SalMediaDescription *result, bool_t one_matching_codec);
 					
 #endif
 
