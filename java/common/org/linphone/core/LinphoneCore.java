@@ -303,7 +303,7 @@ public interface LinphoneCore {
 	 * 
 	 * @return if false, there is no network connection.
 	 */
-	public boolean setNetworkStateReachable();
+	public boolean getNetworkStateReachable();
 	/**
 	 * destroy linphone core and free all underlying resources
 	 */
