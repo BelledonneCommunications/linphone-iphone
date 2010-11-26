@@ -258,6 +258,41 @@ void linphone_core_update_allocated_audio_bandwidth(LinphoneCore *lc){
 	}
 }
 
+bool_t linphone_core_is_payload_type_usable(LinphoneCore *lc, PayloadType *pt,  int bandwidth_limit)
+{
+	double codec_band;
+	bool_t ret=FALSE;
+	
+	switch (pt->type){
+		case PAYLOAD_AUDIO_CONTINUOUS:
+		case PAYLOAD_AUDIO_PACKETIZED:
+			codec_band=get_audio_payload_bandwidth(lc,pt);
+			ret=bandwidth_is_greater(bandwidth_limit*1000,codec_band);
+			/*hack to avoid using uwb codecs when having low bitrate and video*/
+			if (bandwidth_is_greater(199,bandwidth_limit)){
+				if (linphone_core_video_enabled(lc) && pt->clock_rate>16000){
+					ret=FALSE;
+				}
+			}
+			//ms_message("Payload %s: %g",pt->mime_type,codec_band);
+			break;
+		case PAYLOAD_VIDEO:
+			if (bandwidth_limit!=0) {/* infinite (-1) or strictly positive*/
+				/*let the video use all the bandwidth minus the maximum bandwidth used by audio */
+				if (bandwidth_limit>0)
+					pt->normal_bitrate=bandwidth_limit*1000;
+				else
+					pt->normal_bitrate=1500000; /*around 1.5 Mbit/s*/
+				ret=TRUE;
+			}
+			else ret=FALSE;
+			break;
+	}
+	/*if (!ret) ms_warning("Payload %s is not usable with your internet connection.",pt->mime_type);*/
+
+	return ret;
+}
+
 /* return TRUE if codec can be used with bandwidth, FALSE else*/
 bool_t linphone_core_check_payload_type_usability(LinphoneCore *lc, PayloadType *pt)
 {

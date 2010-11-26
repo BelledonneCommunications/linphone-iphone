@@ -27,6 +27,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 static void register_failure(SalOp *op, SalError error, SalReason reason, const char *details);
 
+static bool_t media_parameters_changed(LinphoneCall *call, SalMediaDescription *oldmd, SalMediaDescription *newmd){
+	return !sal_media_description_equals(oldmd,newmd)  || call->up_bw!=linphone_core_get_upload_bandwidth(call->core);
+}
+
 void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMediaDescription *new_md){
 	SalMediaDescription *oldmd=call->resultdesc;
 	
@@ -44,7 +48,7 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 	if (call->audiostream && call->audiostream->ticker){
 		/* we already started media: check if we really need to restart it*/
 		if (oldmd){
-			if (sal_media_description_equals(oldmd,new_md) && !call->playing_ringbacktone){
+			if (!media_parameters_changed(call,oldmd,new_md) && !call->playing_ringbacktone){
 				sal_media_description_unref(oldmd);
 				if (call->all_muted){
 					ms_message("Early media finished, unmuting inputs...");

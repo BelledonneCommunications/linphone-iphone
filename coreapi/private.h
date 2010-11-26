@@ -87,6 +87,7 @@ struct _LinphoneCall
 	struct _VideoStream *videostream;
 	char *refer_to;
 	LinphoneCallParams params;
+	int up_bw; /*upload bandwidth setting at the time the call is started. Used to detect if it changes during a call */
 	bool_t refer_pending;
 	bool_t media_pending;
 	bool_t audio_muted;
@@ -280,7 +281,6 @@ typedef struct sip_config
 	bool_t loopback_only;
 	bool_t ipv6_enabled;
 	bool_t sdp_200_ack;
-	bool_t only_one_codec; /*in SDP answers*/
 	bool_t register_only_when_network_is_up;
 	bool_t ping_with_options;
 	bool_t auto_net_state_mon;
@@ -438,8 +438,8 @@ int linphone_core_get_calls_nb(const LinphoneCore *lc);
 
 void linphone_core_set_state(LinphoneCore *lc, LinphoneGlobalState gstate, const char *message);
 
-SalMediaDescription *create_local_media_description(LinphoneCore *lc, 
-    		LinphoneCall *call, bool_t with_video, bool_t only_one_codec);
+SalMediaDescription *create_local_media_description(LinphoneCore *lc, LinphoneCall *call);
+
 void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMediaDescription *new_md);
 #define linphone_core_ready(lc) ((lc)->state!=LinphoneGlobalStartup)
 void _linphone_core_configure_resolver();

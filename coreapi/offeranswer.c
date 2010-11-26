@@ -20,6 +20,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "sal.h"
 #include "offeranswer.h"
 
+static bool_t only_telephone_event(const MSList *l){
+	PayloadType *p=(PayloadType*)l->data;
+	if (strcasecmp(p->mime_type,"telephone-event")!=0){
+		return FALSE;
+	}
+	return TRUE;
+}
 
 static PayloadType * find_payload_type_best_match(const MSList *l, const PayloadType *refpt){
 	PayloadType *pt;
@@ -53,10 +60,12 @@ static PayloadType * find_payload_type_best_match(const MSList *l, const Payload
 	return candidate;
 }
 
-static MSList *match_payloads(const MSList *local, const MSList *remote, bool_t reading_response){
+static MSList *match_payloads(const MSList *local, const MSList *remote, bool_t reading_response, bool_t one_matching_codec){
 	const MSList *e2;
 	MSList *res=NULL;
 	PayloadType *matched;
+	bool_t found_codec=FALSE;
+	
 	for(e2=remote;e2!=NULL;e2=e2->next){
 		PayloadType *p2=(PayloadType*)e2->data;
 		matched=find_payload_type_best_match(local,p2);
@@ -64,6 +73,14 @@ static MSList *match_payloads(const MSList *local, const MSList *remote, bool_t 
 			PayloadType *newp;
 			int local_number=payload_type_get_number(matched);
 			int remote_number=payload_type_get_number(p2);
+
+			if (one_matching_codec){
+				if (strcasecmp(matched->mime_type,"telephone-event")!=0){
+					if (found_codec){/* we have found a real codec already*/
+						continue; /*this codec won't be added*/
+					}else found_codec=TRUE;
+				}
+			}
 			
 			newp=payload_type_clone(matched);
 			if (p2->send_fmtp)
@@ -90,13 +107,7 @@ static MSList *match_payloads(const MSList *local, const MSList *remote, bool_t 
 	return res;
 }
 
-static bool_t only_telephone_event(const MSList *l){
-	PayloadType *p=(PayloadType*)l->data;
-	if (strcasecmp(p->mime_type,"telephone-event")!=0){
-		return FALSE;
-	}
-	return TRUE;
-}
+
 
 static SalStreamDir compute_dir(SalStreamDir local, SalStreamDir answered){
 	SalStreamDir res=local;
@@ -117,7 +128,7 @@ static void initiate_outgoing(const SalStreamDescription *local_offer,
     					const SalStreamDescription *remote_answer,
     					SalStreamDescription *result){
 	if (remote_answer->port!=0)
-		result->payloads=match_payloads(local_offer->payloads,remote_answer->payloads,TRUE);
+		result->payloads=match_payloads(local_offer->payloads,remote_answer->payloads,TRUE,FALSE);
 	result->proto=local_offer->proto;
 	result->type=local_offer->type;
 	result->dir=compute_dir(local_offer->dir,remote_answer->dir);
@@ -135,8 +146,8 @@ static void initiate_outgoing(const SalStreamDescription *local_offer,
 
 static void initiate_incoming(const SalStreamDescription *local_cap,
     					const SalStreamDescription *remote_offer,
-    					SalStreamDescription *result){
-	result->payloads=match_payloads(local_cap->payloads,remote_offer->payloads, FALSE);
+    					SalStreamDescription *result, bool_t one_matching_codec){
+	result->payloads=match_payloads(local_cap->payloads,remote_offer->payloads, FALSE, one_matching_codec);
 	result->proto=local_cap->proto;
 	result->type=local_cap->type;
 	if (remote_offer->dir==SalStreamSendOnly)
@@ -187,7 +198,7 @@ int offer_answer_initiate_outgoing(const SalMediaDescription *local_offer,
 **/
 int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities,
 						const SalMediaDescription *remote_offer,
-    					SalMediaDescription *result){
+    					SalMediaDescription *result, bool_t one_matching_codec){
     int i,j;
 	const SalStreamDescription *ls,*rs;
 							
@@ -196,7 +207,7 @@ int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities
 		ms_message("Processing for stream %i",i);
 		ls=sal_media_description_find_stream((SalMediaDescription*)local_capabilities,rs->proto,rs->type);
 		if (ls){
-    		initiate_incoming(ls,rs,&result->streams[j]);
+    		initiate_incoming(ls,rs,&result->streams[j],one_matching_codec);
 			++j;
 		}
     }

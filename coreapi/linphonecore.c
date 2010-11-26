@@ -486,7 +486,6 @@ static void sip_config_read(LinphoneCore *lc)
 		sal_use_session_timers(lc->sal,200);
 	}
 
-
 	tmp=lp_config_get_int(lc->config,"sip","use_rfc2833",0);
 	linphone_core_set_use_rfc2833_for_dtmf(lc,tmp);
 
@@ -562,21 +561,16 @@ static void sip_config_read(LinphoneCore *lc)
 			break;
 		}
 	}
-
-
-
-
-	lc->sip_conf.sdp_200_ack=lp_config_get_int(lc->config,"sip","sdp_200_ack",0);
 	
 	/*for tuning or test*/
 	lc->sip_conf.sdp_200_ack=lp_config_get_int(lc->config,"sip","sdp_200_ack",0);
-	lc->sip_conf.only_one_codec=lp_config_get_int(lc->config,"sip","only_one_codec",0);
 	lc->sip_conf.register_only_when_network_is_up=
 		lp_config_get_int(lc->config,"sip","register_only_when_network_is_up",1);
 	lc->sip_conf.ping_with_options=lp_config_get_int(lc->config,"sip","ping_with_options",1);
 	lc->sip_conf.auto_net_state_mon=lp_config_get_int(lc->config,"sip","auto_net_state_mon",1);
 	lc->sip_conf.keepalive_period=lp_config_get_int(lc->config,"sip","keepalive_period",10000);
 	sal_set_keepalive_period(lc->sal,lc->sip_conf.keepalive_period);
+	sal_use_one_matching_codec_policy(lc->sal,lp_config_get_int(lc->config,"sip","only_one_codec",0));
 }
 
 static void rtp_config_read(LinphoneCore *lc)
@@ -2193,8 +2187,8 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, LinphoneCall
 	
 	if (call->localdesc)
 		sal_media_description_unref(call->localdesc);
-	call->localdesc=create_local_media_description (lc,call,
-		params->has_video,FALSE);
+	call->params=*params;
+	call->localdesc=create_local_media_description (lc,call);
 	call->camera_active=params->has_video;
 	if (lc->vtable.display_status)
 		lc->vtable.display_status(lc,_("Modifying call parameters..."));
