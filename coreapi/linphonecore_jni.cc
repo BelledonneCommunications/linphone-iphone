@@ -580,6 +580,26 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isVideoEnabled(JNIEn
 																			,jlong lc) {
 	return linphone_core_video_enabled((LinphoneCore*)lc);
 }
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setRing(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			,jstring jpath) {
+	const char* path = jpath?env->GetStringUTFChars(jpath, NULL):NULL;
+	linphone_core_set_ring((LinphoneCore*)lc,path);
+	if (path) env->ReleaseStringUTFChars(jpath, path);
+}
+extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getRing(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			) {
+	const char* path = linphone_core_get_ring((LinphoneCore*)lc);
+	if (path) {
+		return env->NewStringUTF(path);
+	} else {
+		return NULL;
+	}
+}
+
 
 //ProxyConfig
 

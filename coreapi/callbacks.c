@@ -177,7 +177,7 @@ static void call_received(SalOp *h){
 			lc->ringstream=NULL;
 			lc->dmfs_playing_start_time=0;
 		}
-		if(lc->ringstream==NULL){
+		if(lc->ringstream==NULL && lc->sound_conf.local_ring){
 			MSSndCard *ringcard=lc->sound_conf.lsd_card ?lc->sound_conf.lsd_card : lc->sound_conf.ring_sndcard;
 			ms_message("Starting local ring...");
 			lc->ringstream=ring_start(lc->sound_conf.local_ring,2000,ringcard);
