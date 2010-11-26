@@ -473,4 +473,11 @@ public interface LinphoneCore {
 	 * @param null if not set
 	 */
 	public String getRing();
+	public void setUploadBandwidth(int bw);
+
+	public void setDownloadBandwidth(int bw);
+
+	public void setPreferredVideoSize(VideoSize vSize);
+	
+	public VideoSize getPreferredVideoSize();
 }
