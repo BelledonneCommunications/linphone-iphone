@@ -85,7 +85,8 @@ LOCAL_STATIC_LIBRARIES += \
 	libavcodec \
 	libswscale \
 	libavcore \
-	libavutil
+	libavutil \
+	libx264
 endif
 
 ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
