@@ -298,12 +298,12 @@ public interface LinphoneCore {
 	 * @param network state  
 	 *
 	 */
-	public void setNetworkStateReachable(boolean isReachable);
+	public void setNetworkReachable(boolean isReachable);
 	/**
 	 * 
 	 * @return if false, there is no network connection.
 	 */
-	public boolean getNetworkStateReachable();
+	public boolean isNetworkReachable();
 	/**
 	 * destroy linphone core and free all underlying resources
 	 */
