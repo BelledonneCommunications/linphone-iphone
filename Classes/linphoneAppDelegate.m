@@ -73,9 +73,9 @@ void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyConfig* c
 	if (state == LinphoneRegistrationFailed ) {
 		
 		NSString* lErrorMessage;
-		if (linphone_proxy_config_get_error(cfg) == LinphoneErrorBadCredentials) {
+		if (linphone_proxy_config_get_error(cfg) == LinphoneReasonBadCredentials) {
 			lErrorMessage = @"Bad credentials, check your account settings";
-		} else if (linphone_proxy_config_get_error(cfg) == LinphoneErrorNoResponse) {
+		} else if (linphone_proxy_config_get_error(cfg) == LinphoneReasonNoResponse) {
 			lErrorMessage = @"SIP server unreachable";
 		} 
 		if (lErrorMessage != nil) {
