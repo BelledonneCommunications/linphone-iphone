@@ -486,7 +486,6 @@ static void sip_config_read(LinphoneCore *lc)
 		sal_use_session_timers(lc->sal,200);
 	}
 
-
 	tmp=lp_config_get_int(lc->config,"sip","use_rfc2833",0);
 	linphone_core_set_use_rfc2833_for_dtmf(lc,tmp);
 
@@ -562,21 +561,16 @@ static void sip_config_read(LinphoneCore *lc)
 			break;
 		}
 	}
-
-
-
-
-	lc->sip_conf.sdp_200_ack=lp_config_get_int(lc->config,"sip","sdp_200_ack",0);
 	
 	/*for tuning or test*/
 	lc->sip_conf.sdp_200_ack=lp_config_get_int(lc->config,"sip","sdp_200_ack",0);
-	lc->sip_conf.only_one_codec=lp_config_get_int(lc->config,"sip","only_one_codec",0);
 	lc->sip_conf.register_only_when_network_is_up=
 		lp_config_get_int(lc->config,"sip","register_only_when_network_is_up",1);
 	lc->sip_conf.ping_with_options=lp_config_get_int(lc->config,"sip","ping_with_options",1);
 	lc->sip_conf.auto_net_state_mon=lp_config_get_int(lc->config,"sip","auto_net_state_mon",1);
 	lc->sip_conf.keepalive_period=lp_config_get_int(lc->config,"sip","keepalive_period",10000);
 	sal_set_keepalive_period(lc->sal,lc->sip_conf.keepalive_period);
+	sal_use_one_matching_codec_policy(lc->sal,lp_config_get_int(lc->config,"sip","only_one_codec",0));
 }
 
 static void rtp_config_read(LinphoneCore *lc)
@@ -2193,8 +2187,9 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, LinphoneCall
 	
 	if (call->localdesc)
 		sal_media_description_unref(call->localdesc);
-	call->localdesc=create_local_media_description (lc,call,
-		params->has_video,FALSE);
+	call->params=*params;
+	call->localdesc=create_local_media_description (lc,call);
+	call->camera_active=params->has_video;
 	if (lc->vtable.display_status)
 		lc->vtable.display_status(lc,_("Modifying call parameters..."));
 	sal_call_set_local_media_description (call->op,call->localdesc);
@@ -2221,6 +2216,7 @@ int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call)
 	LinphoneProxyConfig *cfg=NULL;
 	const char *contact=NULL;
 	SalOp *replaced;
+	SalMediaDescription *new_md;
 	
 	if (call==NULL){
 		//if just one call is present answer the only one ...
@@ -2276,26 +2272,21 @@ int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call)
 	contact=get_fixed_contact(lc,call,cfg);
 	if (contact)
 		sal_op_set_contact(call->op,contact);
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 40000
-	linphone_call_init_media_streams(call);
-#else
-	if (call->audiostream!=NULL && call->audiostream->ticker!=NULL){
-		/*case where we sent early media*/
-		linphone_call_stop_media_streams (call);
-		linphone_call_init_media_streams (call);
-	}
-#endif
+
+	if (call->audiostream==NULL)
+		linphone_call_init_media_streams(call);
+	
 	sal_call_accept(call->op);
 	if (lc->vtable.display_status!=NULL)
 		lc->vtable.display_status(lc,_("Connected."));
 	lc->current_call=call;
 	linphone_call_set_state(call,LinphoneCallConnected,"Connected");
-	call->resultdesc=sal_call_get_final_media_description(call->op);
-	if (call->resultdesc){
-		linphone_call_start_media_streams(call);
+	new_md=sal_call_get_final_media_description(call->op);
+	linphone_core_update_streams(lc, call, new_md);
+	if (new_md){
 		linphone_call_set_state(call,LinphoneCallStreamsRunning,"Connected (streams running)");
-		sal_media_description_ref(call->resultdesc);
 	}else call->media_pending=TRUE;
+	
 	ms_message("call answered.");
 	return 0;
 }
@@ -2830,7 +2821,7 @@ void linphone_core_set_sound_source(LinphoneCore *lc, char source)
 /**
  * Sets the path to a wav file used for ringing.
  *
- * The file must be a wav 16bit linear.
+ * @param path The file must be a wav 16bit linear. Local ring is disabled if null
  *
  * @ingroup media_parameters
 **/
@@ -2946,17 +2937,12 @@ void linphone_core_mute_mic(LinphoneCore *lc, bool_t val){
 }
 
 bool_t linphone_core_is_mic_muted(LinphoneCore *lc) {
-	float gain=1.0;
 	LinphoneCall *call=linphone_core_get_current_call(lc);
 	if (call==NULL){
 		ms_warning("linphone_core_is_mic_muted(): No current call !");
 		return FALSE;
 	}
-	if (call->audiostream && call->audiostream->volsend){
-			ms_filter_call_method(call->audiostream->volsend,MS_VOLUME_GET_GAIN,&gain);
-	}else ms_warning("Could not get gain: gain control wasn't activated. ");
-
-	return gain==0 || call->audio_muted;
+	return call->audio_muted;
 }
 
 // returns rtp transmission status for an active stream

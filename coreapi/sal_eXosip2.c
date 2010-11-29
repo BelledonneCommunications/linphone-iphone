@@ -379,6 +379,10 @@ void sal_use_session_timers(Sal *ctx, int expires){
 	ctx->session_expires=expires;
 }
 
+void sal_use_one_matching_codec_policy(Sal *ctx, bool_t one_matching_codec){
+	ctx->one_matching_codec=one_matching_codec;
+}
+
 MSList *sal_get_pending_auths(Sal *sal){
 	return ms_list_copy(sal->pending_auths);
 }
@@ -449,7 +453,7 @@ static void sdp_process(SalOp *h){
 		offer_answer_initiate_outgoing(h->base.local_media,h->base.remote_media,h->result);
 	}else{
 		int i;
-		offer_answer_initiate_incoming(h->base.local_media,h->base.remote_media,h->result);
+		offer_answer_initiate_incoming(h->base.local_media,h->base.remote_media,h->result,h->base.root->one_matching_codec);
 		h->sdp_answer=media_description_to_sdp(h->result);
 		strcpy(h->result->addr,h->base.remote_media->addr);
 		h->result->bandwidth=h->base.remote_media->bandwidth;
@@ -1955,7 +1959,7 @@ int sal_call_hold(SalOp *h, bool_t holdon)
 	osip_message_t *reinvite=NULL;
 	if(eXosip_call_build_request(h->did,"INVITE",&reinvite) != OSIP_SUCCESS || reinvite==NULL)
 		return -1;
-	osip_message_set_subject(reinvite,osip_strdup("Phone Call Hold"));
+	osip_message_set_subject(reinvite,holdon ? "Phone call hold" : "Phone call resume" );	
 	osip_message_set_allow(reinvite, "INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, NOTIFY, MESSAGE, SUBSCRIBE, INFO");
 	if (h->base.root->session_expires!=0){
 		osip_message_set_header(reinvite, "Session-expires", "200");

@@ -580,6 +580,26 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isVideoEnabled(JNIEn
 																			,jlong lc) {
 	return linphone_core_video_enabled((LinphoneCore*)lc);
 }
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setRing(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			,jstring jpath) {
+	const char* path = jpath?env->GetStringUTFChars(jpath, NULL):NULL;
+	linphone_core_set_ring((LinphoneCore*)lc,path);
+	if (path) env->ReleaseStringUTFChars(jpath, path);
+}
+extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getRing(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			) {
+	const char* path = linphone_core_get_ring((LinphoneCore*)lc);
+	if (path) {
+		return env->NewStringUTF(path);
+	} else {
+		return NULL;
+	}
+}
+
 
 //ProxyConfig
 
@@ -973,5 +993,57 @@ extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getStunServer(JNIEnv 
 	return jvalue;
 }
 
+extern "C" void Java_org_linphone_core_LinphoneCallParamsImpl_enableVideo(JNIEnv *env, jobject thiz, jlong lcp, jboolean b){
+	linphone_call_params_enable_video((LinphoneCallParams*)lcp, b);
+}
 
+extern "C" jboolean Java_org_linphone_core_LinphoneCallParamsImpl_getVideoEnabled(JNIEnv *env, jobject thiz, jlong lcp){
+	return linphone_call_params_video_enabled((LinphoneCallParams*)lcp);
+}
+extern "C" jlong Java_org_linphone_core_LinphoneCallParamsImpl_copy(JNIEnv *env, jobject thiz, jlong lcp){
+	return (jlong) linphone_call_params_copy((LinphoneCallParams*)lcp);
+}
+extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_createDefaultCallParams(JNIEnv *env, jobject thiz, jlong lc){
+	return (jlong) linphone_core_create_default_call_parameters((LinphoneCore*)lc);
+}
+
+extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_getCurrentParams(JNIEnv *env, jobject thiz, jlong lc){
+	return (jlong) linphone_call_get_current_params((LinphoneCall*)lc);
+}
+
+extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_inviteAddressWithParams(JNIEnv *env, jobject thiz, jlong lc, jlong addr, jlong params){
+	return (jlong) linphone_core_invite_address_with_params((LinphoneCore *)lc, (const LinphoneAddress *)addr, (const LinphoneCallParams *)params);
+}
+
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_updateAddressWithParams(JNIEnv *env, jobject thiz, jlong lc, jlong call, jlong params){
+	return (jint) linphone_core_update_call((LinphoneCore *)lc, (LinphoneCall *)call, (LinphoneCallParams *)params);
+}
+
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_updateCall(JNIEnv *env, jobject thiz, jlong lc, jlong call, jlong params){
+	return (jint) linphone_core_update_call((LinphoneCore *)lc, (LinphoneCall *)call, (LinphoneCallParams *)params);
+}
+
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setPreferredVideoSize(JNIEnv *env, jobject thiz, jlong lc, jint width, jint height){
+	MSVideoSize vsize;
+	vsize.width = (int)width;
+	vsize.height = (int)height;
+	linphone_core_set_preferred_video_size((LinphoneCore *)lc, vsize);
+}
+
+extern "C" jintArray Java_org_linphone_core_LinphoneCoreImpl_getPreferredVideoSize(JNIEnv *env, jobject thiz, jlong lc){
+	MSVideoSize vsize = linphone_core_get_preferred_video_size((LinphoneCore *)lc);
+    jintArray arr = env->NewIntArray(2);
+	int tVsize [2]= {vsize.width,vsize.height};
+    env->SetIntArrayRegion(arr, 0, 2, tVsize);
+    return arr;
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setDownloadBandwidth(JNIEnv *env, jobject thiz, jlong lc, jint bw){
+	linphone_core_set_download_bandwidth((LinphoneCore *)lc, (int) bw);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setUploadBandwidth(JNIEnv *env, jobject thiz, jlong lc, jint bw){
+	linphone_core_set_upload_bandwidth((LinphoneCore *)lc, (int) bw);
+}
 

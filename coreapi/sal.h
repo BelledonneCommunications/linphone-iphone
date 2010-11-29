@@ -127,6 +127,7 @@ SalMediaDescription *sal_media_description_new();
 void sal_media_description_ref(SalMediaDescription *md);
 void sal_media_description_unref(SalMediaDescription *md);
 bool_t sal_media_description_empty(const SalMediaDescription *md);
+bool_t sal_media_description_equals(const SalMediaDescription *md1, const SalMediaDescription *md2);
 bool_t sal_media_description_has_dir(const SalMediaDescription *md, SalStreamDir dir);
 SalStreamDescription *sal_media_description_find_stream(SalMediaDescription *md,
     SalMediaProto proto, SalStreamType type);
@@ -245,6 +246,7 @@ void sal_set_user_agent(Sal *ctx, const char *user_agent);
 /*keepalive period in ms*/
 void sal_set_keepalive_period(Sal *ctx,unsigned int value);
 void sal_use_session_timers(Sal *ctx, int expires);
+void sal_use_one_matching_codec_policy(Sal *ctx, bool_t one_matching_codec);
 int sal_iterate(Sal *sal);
 MSList * sal_get_pending_auths(Sal *sal);
 

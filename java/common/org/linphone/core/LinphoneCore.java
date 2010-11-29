@@ -115,7 +115,7 @@ public interface LinphoneCore {
 		}
 	}
 	/**
-	 * Describes proxy registration states.
+	 * Describes firewall policy.
 	 *
 	 */
 	static public class 	FirewallPolicy {
@@ -298,7 +298,12 @@ public interface LinphoneCore {
 	 * @param network state  
 	 *
 	 */
-	public void setNetworkStateReachable(boolean isReachable);
+	public void setNetworkReachable(boolean isReachable);
+	/**
+	 * 
+	 * @return if false, there is no network connection.
+	 */
+	public boolean isNetworkReachable();
 	/**
 	 * destroy linphone core and free all underlying resources
 	 */
@@ -454,4 +459,30 @@ public interface LinphoneCore {
 	 * @return previously set firewall policy.
 	 */
 	public FirewallPolicy getFirewallPolicy();
+
+	public LinphoneCall inviteAddressWithParams(LinphoneAddress destination, LinphoneCallParams params) throws LinphoneCoreException ;
+	
+	public int updateCall(LinphoneCall call, LinphoneCallParams params);
+
+	public LinphoneCallParams createDefaultCallParameters();
+
+	/**
+	 * Sets the path to a wav file used for ringing.
+	 *
+	 * @param path The file must be a wav 16bit linear. Local ring is disabled if null
+	 */
+	public void setRing(String path);
+	/**
+	 * gets the path to a wav file used for ringing.
+	 *
+	 * @param null if not set
+	 */
+	public String getRing();
+	public void setUploadBandwidth(int bw);
+
+	public void setDownloadBandwidth(int bw);
+
+	public void setPreferredVideoSize(VideoSize vSize);
+	
+	public VideoSize getPreferredVideoSize();
 }

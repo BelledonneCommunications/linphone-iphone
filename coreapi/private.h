@@ -58,8 +58,10 @@
 
 struct _LinphoneCallParams{
 	LinphoneCall *referer; /*in case this call creation is consecutive to an incoming transfer, this points to the original call */
+	int audio_bw; /* bandwidth limit for audio stream */
 	bool_t has_video;
-	bool_t pad[3];
+	bool_t real_early_media; /*send real media even during early media (for outgoing calls)*/
+	bool_t pad[2];
 };
 
 struct _LinphoneCall
@@ -86,10 +88,13 @@ struct _LinphoneCall
 	struct _VideoStream *videostream;
 	char *refer_to;
 	LinphoneCallParams params;
+	int up_bw; /*upload bandwidth setting at the time the call is started. Used to detect if it changes during a call */
 	bool_t refer_pending;
 	bool_t media_pending;
 	bool_t audio_muted;
 	bool_t camera_active;
+	bool_t all_muted; /*this flag is set during early medias*/
+	bool_t playing_ringbacktone;
 };
 
 
@@ -187,8 +192,7 @@ int linphone_proxy_config_normalize_number(LinphoneProxyConfig *cfg, const char 
 void linphone_core_text_received(LinphoneCore *lc, const char *from, const char *msg);
 
 void linphone_call_init_media_streams(LinphoneCall *call);
-void linphone_call_start_media_streams(LinphoneCall *call);
-void linphone_call_start_early_media(LinphoneCall *call);
+void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_muted, bool_t send_ringbacktone);
 void linphone_call_stop_media_streams(LinphoneCall *call);
 
 const char * linphone_core_get_identity(LinphoneCore *lc);
@@ -278,7 +282,6 @@ typedef struct sip_config
 	bool_t loopback_only;
 	bool_t ipv6_enabled;
 	bool_t sdp_200_ack;
-	bool_t only_one_codec; /*in SDP answers*/
 	bool_t register_only_when_network_is_up;
 	bool_t ping_with_options;
 	bool_t auto_net_state_mon;
@@ -436,8 +439,11 @@ int linphone_core_get_calls_nb(const LinphoneCore *lc);
 
 void linphone_core_set_state(LinphoneCore *lc, LinphoneGlobalState gstate, const char *message);
 
-SalMediaDescription *create_local_media_description(LinphoneCore *lc, 
-    		LinphoneCall *call, bool_t with_video, bool_t only_one_codec);
+SalMediaDescription *create_local_media_description(LinphoneCore *lc, LinphoneCall *call);
+
+void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMediaDescription *new_md);
+
+bool_t linphone_core_is_payload_type_usable_for_bandwidth(LinphoneCore *lc, PayloadType *pt,  int bandwidth_limit);
 
 #define linphone_core_ready(lc) ((lc)->state!=LinphoneGlobalStartup)
 void _linphone_core_configure_resolver();

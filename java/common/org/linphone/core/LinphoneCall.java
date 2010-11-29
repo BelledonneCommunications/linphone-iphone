@@ -89,10 +89,28 @@ public interface LinphoneCall {
 		 * Call end
 		 */
 		public final static State CallEnd = new State(13,"CallEnd");
+		
 		/**
 		 * Paused by remote
 		 */
 		public final static State PausedByRemote = new State(14,"PausedByRemote");
+		
+		/**
+		 * The call's parameters are updated, used for example when video is asked by remote
+		 */
+		public static final State CallUpdatedByRemote = new State(15, "CallUpdatedByRemote");
+
+		/**
+		 * We are proposing early media to an incoming call
+		 */
+		public static final State CallIncomingEarlyMedia = new State(16,"CallIncomingEarlyMedia");
+
+		/**
+		 * The remote accepted the call update initiated by us
+		 */
+		public static final State CallUpdated = new State(17, "CallUpdated");
+
+
 		private State(int value,String stringValue) {
 			mValue = value;
 			values.addElement(this);
@@ -132,4 +150,9 @@ public interface LinphoneCall {
 	**/
 	public LinphoneCallLog getCallLog();
 
+	/**
+	 * @return parameters for this call; read only, call copy() to get a read/write version.
+	 */
+	public LinphoneCallParams getCurrentParamsReadOnly();
+	
 }
