@@ -40,6 +40,7 @@ struct Sal{
 	int session_expires;
 	int keepalive_period;
 	void *up;
+	bool_t one_matching_codec;
 };
 
 struct SalOp{

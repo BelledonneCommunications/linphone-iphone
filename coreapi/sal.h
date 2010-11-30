@@ -246,6 +246,7 @@ void sal_set_user_agent(Sal *ctx, const char *user_agent);
 /*keepalive period in ms*/
 void sal_set_keepalive_period(Sal *ctx,unsigned int value);
 void sal_use_session_timers(Sal *ctx, int expires);
+void sal_use_one_matching_codec_policy(Sal *ctx, bool_t one_matching_codec);
 int sal_iterate(Sal *sal);
 MSList * sal_get_pending_auths(Sal *sal);
 

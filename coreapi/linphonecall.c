@@ -40,21 +40,25 @@ static MSWebCam *get_nowebcam_device(){
 #endif
 
 
-static MSList *make_codec_list(LinphoneCore *lc, const MSList *codecs, bool_t only_one_codec){
+static MSList *make_codec_list(LinphoneCore *lc, const MSList *codecs, int bandwidth_limit){
 	MSList *l=NULL;
 	const MSList *it;
 	for(it=codecs;it!=NULL;it=it->next){
 		PayloadType *pt=(PayloadType*)it->data;
-		if ((pt->flags & PAYLOAD_TYPE_ENABLED) && linphone_core_check_payload_type_usability(lc,pt)){
-			l=ms_list_append(l,payload_type_clone(pt));
-			if (only_one_codec) break;
+		if (pt->flags & PAYLOAD_TYPE_ENABLED){
+			if (bandwidth_limit>0 && !linphone_core_is_payload_type_usable_for_bandwidth(lc,pt,bandwidth_limit)){
+				ms_message("Codec %s/%i eliminated because of audio bandwidth constraint.",pt->mime_type,pt->clock_rate);
+				continue;
+			}
+			if (linphone_core_check_payload_type_usability(lc,pt)){
+				l=ms_list_append(l,payload_type_clone(pt));
+			}
 		}
 	}
 	return l;
 }
 
-SalMediaDescription *create_local_media_description(LinphoneCore *lc, 
-    		LinphoneCall *call, bool_t with_video, bool_t only_one_codec){
+SalMediaDescription *create_local_media_description(LinphoneCore *lc, LinphoneCall *call){
 	MSList *l;
 	PayloadType *pt;
 	const char *me=linphone_core_get_identity(lc);
@@ -72,7 +76,7 @@ SalMediaDescription *create_local_media_description(LinphoneCore *lc,
 	md->streams[0].proto=SalProtoRtpAvp;
 	md->streams[0].type=SalAudio;
 	md->streams[0].ptime=lc->net_conf.down_ptime;
-	l=make_codec_list(lc,lc->codecs_conf.audio_codecs,only_one_codec);
+	l=make_codec_list(lc,lc->codecs_conf.audio_codecs,call->params.audio_bw);
 	pt=payload_type_clone(rtp_profile_get_payload_from_mime(&av_profile,"telephone-event"));
 	l=ms_list_append(l,pt);
 	md->streams[0].payloads=l;
@@ -80,12 +84,12 @@ SalMediaDescription *create_local_media_description(LinphoneCore *lc,
 	if (lc->dw_audio_bw>0)
 		md->streams[0].bandwidth=lc->dw_audio_bw;
 
-	if (with_video){
+	if (call->params.has_video){
 		md->nstreams++;
 		md->streams[1].port=call->video_port;
 		md->streams[1].proto=SalProtoRtpAvp;
 		md->streams[1].type=SalVideo;
-		l=make_codec_list(lc,lc->codecs_conf.video_codecs,only_one_codec);
+		l=make_codec_list(lc,lc->codecs_conf.video_codecs,0);
 		md->streams[1].payloads=l;
 		if (lc->dw_video_bw)
 			md->streams[1].bandwidth=lc->dw_video_bw;
@@ -156,7 +160,7 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 	linphone_core_get_local_ip(lc,linphone_address_get_domain(to),call->localip);
 	linphone_call_init_common(call,from,to);
 	call->params=*params;
-	call->localdesc=create_local_media_description (lc,call,params->has_video,FALSE);
+	call->localdesc=create_local_media_description (lc,call);
 	call->camera_active=params->has_video;
 	if (linphone_core_get_firewall_policy(call->core)==LinphonePolicyUseStun)
 		linphone_core_run_stun_tests(call->core,call);
@@ -194,8 +198,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	linphone_core_get_local_ip(lc,linphone_address_get_domain(from),call->localip);
 	linphone_call_init_common(call, from, to);
 	call->params.has_video=linphone_core_video_enabled(lc);
-	call->localdesc=create_local_media_description (lc,call,
-	                          call->params.has_video,lc->sip_conf.only_one_codec);
+	call->localdesc=create_local_media_description (lc,call);
 	call->camera_active=call->params.has_video;
 	if (linphone_core_get_firewall_policy(call->core)==LinphonePolicyUseStun)
 		linphone_core_run_stun_tests(call->core,call);
@@ -534,6 +537,14 @@ void linphone_call_params_enable_early_media_sending(LinphoneCallParams *cp, boo
 
 bool_t linphone_call_params_early_media_sending_enabled(const LinphoneCallParams *cp){
 	return cp->real_early_media;
+}
+
+/**
+ * Refine bandwidth settings for this call by setting a bandwidth limit for audio streams.
+ * As a consequence, codecs whose bitrates are not compatible with this limit won't be used.
+**/
+void linphone_call_params_set_audio_bandwidth_limit(LinphoneCallParams *cp, int bandwidth){
+	cp->audio_bw=bandwidth;
 }
 
 /**
@@ -905,6 +916,7 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 #endif
 	call->all_muted=all_inputs_muted;
 	call->playing_ringbacktone=send_ringbacktone;
+	call->up_bw=linphone_core_get_upload_bandwidth(lc);
 	
 	goto end;
 	end:

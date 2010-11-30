@@ -512,6 +512,7 @@ static gboolean linphone_gtk_iterate(LinphoneCore *lc){
 	static gboolean first_time=TRUE;
 	unsigned long id;
 	static unsigned long previd=0;
+	static unsigned long preview_previd=0;
 	static gboolean in_iterate=FALSE;
 	
 	/*avoid reentrancy*/
@@ -530,6 +531,25 @@ static gboolean linphone_gtk_iterate(LinphoneCore *lc){
 		previd=id;
 		if (id!=0){
 			ms_message("Updating window decorations");
+#ifndef WIN32
+			w=gdk_window_foreign_new(id);
+#else
+			w=gdk_window_foreign_new((HANDLE)id);
+#endif
+			if (w) {
+				set_video_window_decorations(w);
+				g_object_unref(G_OBJECT(w));
+			}
+			else ms_error("gdk_window_foreign_new() failed");
+			if (video_needs_update) video_needs_update=FALSE;
+		}
+	}
+	id=linphone_core_get_native_preview_window_id (lc);
+	if (id!=preview_previd ){
+		GdkWindow *w;
+		preview_previd=id;
+		if (id!=0){
+			ms_message("Updating window decorations for preview");
 #ifndef WIN32
 			w=gdk_window_foreign_new(id);
 #else

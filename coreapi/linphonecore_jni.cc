@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifdef ANDROID
 #include <android/log.h>
 extern "C" void libmsilbc_init();
+extern "C" void libmsx264_init();
 #endif /*ANDROID*/
 
 extern "C" void ms_andsnd_set_jvm(JavaVM *jvm) ;
@@ -48,7 +49,7 @@ JNIEXPORT jint JNICALL  JNI_OnLoad(JavaVM *ajvm, void *reserved)
 #ifdef ANDROID
 	ms_andsnd_set_jvm(ajvm);
 	#ifdef VIDEO_ENABLED
-		ms_andvid_set_jvm(ajvm);
+	ms_andvid_set_jvm(ajvm);
 	#endif /*VIDEO_ENABLED*/
 #endif /*ANDROID*/
 	jvm=ajvm;
@@ -312,6 +313,9 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_newLinphoneCore(JNIEnv*
 
 #ifdef HAVE_ILBC
 	libmsilbc_init(); // requires an fpu
+#endif
+#ifdef VIDEO_ENABLED
+	libmsx264_init();
 #endif
 	jlong nativePtr = (jlong)linphone_core_new(	&ldata->vTable
 			,userConfig
@@ -1022,3 +1026,28 @@ extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_updateAddressWithParams(
 extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_updateCall(JNIEnv *env, jobject thiz, jlong lc, jlong call, jlong params){
 	return (jint) linphone_core_update_call((LinphoneCore *)lc, (LinphoneCall *)call, (LinphoneCallParams *)params);
 }
+
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setPreferredVideoSize(JNIEnv *env, jobject thiz, jlong lc, jint width, jint height){
+	MSVideoSize vsize;
+	vsize.width = (int)width;
+	vsize.height = (int)height;
+	linphone_core_set_preferred_video_size((LinphoneCore *)lc, vsize);
+}
+
+extern "C" jintArray Java_org_linphone_core_LinphoneCoreImpl_getPreferredVideoSize(JNIEnv *env, jobject thiz, jlong lc){
+	MSVideoSize vsize = linphone_core_get_preferred_video_size((LinphoneCore *)lc);
+    jintArray arr = env->NewIntArray(2);
+	int tVsize [2]= {vsize.width,vsize.height};
+    env->SetIntArrayRegion(arr, 0, 2, tVsize);
+    return arr;
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setDownloadBandwidth(JNIEnv *env, jobject thiz, jlong lc, jint bw){
+	linphone_core_set_download_bandwidth((LinphoneCore *)lc, (int) bw);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setUploadBandwidth(JNIEnv *env, jobject thiz, jlong lc, jint bw){
+	linphone_core_set_upload_bandwidth((LinphoneCore *)lc, (int) bw);
+}
+
