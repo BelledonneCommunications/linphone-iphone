@@ -18,6 +18,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include <jni.h>
 #include "linphonecore.h"
+#include "mediastreamer2/msjava.h"
+
 #ifdef ANDROID
 #include <android/log.h>
 extern "C" void libmsilbc_init();
@@ -47,6 +49,7 @@ static void linphone_android_log_handler(OrtpLogLevel lev, const char *fmt, va_l
 JNIEXPORT jint JNICALL  JNI_OnLoad(JavaVM *ajvm, void *reserved)
 {
 #ifdef ANDROID
+	ms_set_jvm(ajvm);
 	ms_andsnd_set_jvm(ajvm);
 	#ifdef VIDEO_ENABLED
 	ms_andvid_set_jvm(ajvm);
