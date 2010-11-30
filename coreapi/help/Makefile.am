@@ -32,23 +32,29 @@ endif
 clean-local:
 	rm -rf doc
 
+#tutorials
+
 noinst_PROGRAMS=helloworld registration buddy_status chatroom
 
 helloworld_SOURCES=helloworld.c
+LINPHONE_TUTOS=$(helloworld_SOURCES)
 
 helloworld_LDADD=$(top_builddir)/coreapi/liblinphone.la \
 				$(MEDIASTREAMER_LIBS) \
 				$(ORTP_LIBS)
 
 registration_SOURCES=registration.c
+LINPHONE_TUTOS+=$(registration_SOURCES)
 
 registration_LDADD=$(helloworld_LDADD)
 
 buddy_status_SOURCES=buddy_status.c
+LINPHONE_TUTOS+=$(buddy_status_SOURCES)
 
 buddy_status_LDADD=$(helloworld_LDADD)
 
 chatroom_SOURCES=chatroom.c
+LINPHONE_TUTOS+=$(chatroom_SOURCES)
 
 chatroom_LDADD=$(helloworld_LDADD)
 												
@@ -68,3 +74,7 @@ AM_CFLAGS=$(STRICT_OPTIONS)  -DIN_LINPHONE \
 	 -DORTP_INET6 \
 	 $(VIDEO_CFLAGS) 
 
+
+tutodir=$(datadir)/tutorials/linphone
+
+tuto_DATA=$(LINPHONE_TUTOS)
