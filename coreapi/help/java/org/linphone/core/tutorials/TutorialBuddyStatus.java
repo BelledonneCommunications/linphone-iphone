@@ -81,7 +81,9 @@ public class TutorialBuddyStatus implements LinphoneCoreListener {
 	}
 
 
-	public void registrationState(LinphoneCore lc, LinphoneProxyConfig cfg,RegistrationState cstate, String smessage) {}
+	public void registrationState(LinphoneCore lc, LinphoneProxyConfig cfg,RegistrationState cstate, String smessage) {
+		write(cfg.getIdentity() + " : "+smessage+"\n");
+	}
 	public void show(LinphoneCore lc) {}
 	public void byeReceived(LinphoneCore lc, String from) {}
 	public void authInfoRequested(LinphoneCore lc, String realm, String username) {}
@@ -97,8 +99,8 @@ public class TutorialBuddyStatus implements LinphoneCoreListener {
 
 	public static void main(String[] args) {
 		// Check tutorial was called with the right number of arguments
-		if (args.length != 1) {
-			throw new IllegalArgumentException("Bad number of arguments");
+		if (args.length < 1 || args.length > 3 ) {
+			throw new IllegalArgumentException("Bad number of arguments ["+args.length+"] should be 1, 2 or 3");
 		}
 
 		// Create tutorial object
@@ -106,7 +108,13 @@ public class TutorialBuddyStatus implements LinphoneCoreListener {
 		try {
 			// takes sip uri identity from the command line arguments 
 			String userSipAddress = args[1];
-			tutorial.launchTutorial(userSipAddress);
+			
+			// takes sip uri identity from the command line arguments
+			String mySipAddress = args.length>1?args[1]:null;
+			// takes password from the command line arguments
+			String mySipPassword =args.length>2?args[2]:null;
+
+			tutorial.launchTutorial(userSipAddress,mySipAddress,mySipPassword);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -114,7 +122,7 @@ public class TutorialBuddyStatus implements LinphoneCoreListener {
 
 
 
-	public void launchTutorial(String sipAddress) throws LinphoneCoreException {
+	public void launchTutorial(String sipAddress,String mySipAddress, String mySipPassword) throws LinphoneCoreException {
 		final LinphoneCoreFactory lcFactory = LinphoneCoreFactory.instance();
 
 		// First instantiate the core Linphone object given only a listener.
@@ -131,6 +139,33 @@ public class TutorialBuddyStatus implements LinphoneCoreListener {
 				return;
 			}
 
+			if (mySipAddress != null) {
+				// Parse identity
+				LinphoneAddress address = lcFactory.createLinphoneAddress(mySipAddress);
+				String username = address.getUserName();
+				String domain = address.getDomain();
+
+
+				if (mySipPassword != null) {
+					// create authentication structure from identity and add to linphone
+					lc.addAuthInfo(lcFactory.createAuthInfo(username, mySipPassword, null));
+				}
+
+				// create proxy config
+				LinphoneProxyConfig proxyCfg = lcFactory.createProxyConfig(mySipAddress, domain, null, true);
+				lc.addProxyConfig(proxyCfg); // add it to linphone
+				lc.setDefaultProxyConfig(proxyCfg);
+				while (!proxyCfg.isRegistered()) {
+					lc.iterate(); //iterate until registration
+					try{
+						Thread.sleep(1000);
+					} catch(InterruptedException ie) {
+						write("Interrupted!\nAborting");
+						return;
+					}
+				}
+			}
+			
 			// configure this friend to emit SUBSCRIBE message after being added to LinphoneCore
 			lf.enableSubscribes(true);
 			
