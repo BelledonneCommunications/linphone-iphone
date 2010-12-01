@@ -25,6 +25,7 @@ public final class VideoSize {
 	public static final int QCIF = 0;
 	public static final int CIF = 1;
 	public static final int HVGA = 2;
+	public static final int QVGA = 3;
 
 	private int width;
 	public int getWidth() {return width;}
@@ -47,7 +48,9 @@ public final class VideoSize {
 		case CIF:
 			return new VideoSize(352, 288);
 		case HVGA:
-			return new VideoSize(320, 480);
+			return new VideoSize(480, 320);
+		case QVGA:
+			return new VideoSize(320, 240);
 		default:
 			return new VideoSize(); // Invalid one
 		}
