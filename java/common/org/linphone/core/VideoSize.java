@@ -41,16 +41,16 @@ public final class VideoSize {
 		this.height = height;
 	}
 
-	public static final VideoSize createStandard(int code) {
+	public static final VideoSize createStandard(int code, boolean inverted) {
 		switch (code) {
 		case QCIF:
-			return new VideoSize(176, 144);
+			return inverted? new VideoSize(144, 176) : new VideoSize(176, 144);
 		case CIF:
-			return new VideoSize(352, 288);
+			return inverted? new VideoSize(288, 352) : new VideoSize(352, 288);
 		case HVGA:
-			return new VideoSize(480, 320);
+			return inverted? new VideoSize(320,480) : new VideoSize(480, 320);
 		case QVGA:
-			return new VideoSize(320, 240);
+			return inverted? new VideoSize(240, 320) : new VideoSize(320, 240);
 		default:
 			return new VideoSize(); // Invalid one
 		}
