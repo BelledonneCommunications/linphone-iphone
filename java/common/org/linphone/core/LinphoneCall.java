@@ -155,4 +155,6 @@ public interface LinphoneCall {
 	 */
 	public LinphoneCallParams getCurrentParamsReadOnly();
 	
+	public void enableCamera(boolean enabled);
+
 }

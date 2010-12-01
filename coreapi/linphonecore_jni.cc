@@ -1015,6 +1015,10 @@ extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_getCurrentParams(JNIEnv
 	return (jlong) linphone_call_get_current_params((LinphoneCall*)lc);
 }
 
+extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_enableCamera(JNIEnv *env, jobject thiz, jlong lc, jboolean b){
+	linphone_call_enable_camera((LinphoneCall *)lc, (bool_t) b);
+}
+
 extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_inviteAddressWithParams(JNIEnv *env, jobject thiz, jlong lc, jlong addr, jlong params){
 	return (jlong) linphone_core_invite_address_with_params((LinphoneCore *)lc, (const LinphoneAddress *)addr, (const LinphoneCallParams *)params);
 }
