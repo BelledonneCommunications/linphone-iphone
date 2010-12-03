@@ -26,9 +26,6 @@ extern "C" void libmsilbc_init();
 extern "C" void libmsx264_init();
 #endif /*ANDROID*/
 
-extern "C" void ms_andsnd_set_jvm(JavaVM *jvm) ;
-extern "C" void ms_andvid_set_jvm(JavaVM *jvm) ;
-
 static JavaVM *jvm=0;
 
 #ifdef ANDROID
@@ -50,10 +47,6 @@ JNIEXPORT jint JNICALL  JNI_OnLoad(JavaVM *ajvm, void *reserved)
 {
 #ifdef ANDROID
 	ms_set_jvm(ajvm);
-	ms_andsnd_set_jvm(ajvm);
-	#ifdef VIDEO_ENABLED
-	ms_andvid_set_jvm(ajvm);
-	#endif /*VIDEO_ENABLED*/
 #endif /*ANDROID*/
 	jvm=ajvm;
 	return JNI_VERSION_1_2;
@@ -310,9 +303,6 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_newLinphoneCore(JNIEnv*
 	const char* userConfig = juserConfig?env->GetStringUTFChars(juserConfig, NULL):NULL;
 	const char* factoryConfig = jfactoryConfig?env->GetStringUTFChars(jfactoryConfig, NULL):NULL;
 	LinphoneCoreData* ldata = new LinphoneCoreData(env,thiz,jlistener,juserdata);
-#ifdef ANDROID
-	ms_andsnd_set_jvm(jvm);
-#endif /*ANDROID*/
 
 #ifdef HAVE_ILBC
 	libmsilbc_init(); // requires an fpu
