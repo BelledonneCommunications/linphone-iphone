@@ -1,0 +1,5 @@
+This xcode project just compile linphone tutorials from the sdk.
+This project assumes liblinphone-sdk to be located in the same directory then liblinphone-tutorials.
+
+For each xcode tutotial target, do not forget to fill arguments to be passed on launch.
+

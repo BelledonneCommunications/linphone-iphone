@@ -7,6 +7,7 @@ Linphone for iPhone depends on liblinphone sdk. To build this sdk, you must inst
 -libtool
 -intltool
 -wget
+-pkgconfig
 
 Link macport libtoolize to glibtoolize (sudo ln -s /opt/local/bin/glibtoolize /opt/local/bin/libtoolize)
 

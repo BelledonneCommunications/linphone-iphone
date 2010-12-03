@@ -307,7 +307,6 @@
 		222CA73411F6CFB100621220 /* enum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = enum.h; sourceTree = "<group>"; };
 		222CA73811F6CFB100621220 /* friend.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = friend.c; sourceTree = "<group>"; };
 		222CA73B11F6CFB100621220 /* Doxyfile.in */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Doxyfile.in; sourceTree = "<group>"; };
-		222CA73C11F6CFB100621220 /* doxygen.dox.in */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = doxygen.dox.in; sourceTree = "<group>"; };
 		222CA73D11F6CFB100621220 /* Makefile.am */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile.am; sourceTree = "<group>"; };
 		222CA73E11F6CFB100621220 /* Makefile.in */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile.in; sourceTree = "<group>"; };
 		222CA73F11F6CFB100621220 /* linphonecore.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = linphonecore.c; sourceTree = "<group>"; };
@@ -646,7 +645,6 @@
 			isa = PBXGroup;
 			children = (
 				222CA73B11F6CFB100621220 /* Doxyfile.in */,
-				222CA73C11F6CFB100621220 /* doxygen.dox.in */,
 				222CA73D11F6CFB100621220 /* Makefile.am */,
 				222CA73E11F6CFB100621220 /* Makefile.in */,
 			);

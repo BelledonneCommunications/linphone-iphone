@@ -269,7 +269,11 @@ multi-arch:
 delivery-sdk: multi-arch
 	cd $(BUILDER_SRC_DIR)/../ \
 	&& zip  -r   $(BUILDER_SRC_DIR)/liblinphone-iphone-sdk.zip \
-	liblinphone-sdk/apple-darwin
+	liblinphone-sdk/apple-darwin \
+	liblinphone-tutorials \
+	-x liblinphone-tutorials/hello-world/build\* \
+	-x liblinphone-tutorials/hello-world/hello-world.xcodeproj/*.pbxuser \
+	-x liblinphone-tutorials/hello-world/hello-world.xcodeproj/*.mode1v3 
 
 delivery:
 	cd $(BUILDER_SRC_DIR)/../ \
