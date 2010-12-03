@@ -509,6 +509,24 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_findPayloadType(JNIEnv*
 	env->ReleaseStringUTFChars(jmime, mime);
 	return result;
 }
+extern "C" jlongArray Java_org_linphone_core_LinphoneCoreImpl_listVideoPayloadTypes(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc) {
+	const MSList* codecs = linphone_core_get_video_codecs((LinphoneCore*)lc);
+	int codecsCount = ms_list_size(codecs);
+	jlongArray jCodecs = env->NewLongArray(codecsCount);
+	jlong *jInternalArray = env->GetLongArrayElements(jCodecs, NULL);
+
+	for (int i = 0; i < codecsCount; i++ ) {
+		jInternalArray[i] = (unsigned long) (codecs->data);
+		codecs = codecs->next;
+	}
+
+	env->ReleaseLongArrayElements(jCodecs, jInternalArray, 0);
+
+	return jCodecs;
+}
+
 extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_enablePayloadType(JNIEnv*  env
 																			,jobject  thiz
 																			,jlong lc
@@ -831,12 +849,9 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCallLogImpl_isIncoming(JNIEnv
 	return ((LinphoneCallLog*)ptr)->dir==LinphoneCallIncoming?JNI_TRUE:JNI_FALSE;
 }
 
-extern "C" jstring Java_org_linphone_core_PayloadTypeImpl_toString(JNIEnv*  env
-																		,jobject  thiz
-																		,jlong ptr) {
-
+extern "C" jstring Java_org_linphone_core_PayloadTypeImpl_toString(JNIEnv*  env,jobject  thiz,jlong ptr) {
 	PayloadType* pt = (PayloadType*)ptr;
-	char* value = ms_strdup_printf("[%s] clock [%s], bitrate [%s]"
+	char* value = ms_strdup_printf("[%s] clock [%i], bitrate [%i]"
 									,payload_type_get_mime(pt)
 									,payload_type_get_rate(pt)
 									,payload_type_get_bitrate(pt));
@@ -844,6 +859,16 @@ extern "C" jstring Java_org_linphone_core_PayloadTypeImpl_toString(JNIEnv*  env
 	ms_free(value);
 	return jvalue;
 }
+extern "C" jstring Java_org_linphone_core_PayloadTypeImpl_getMime(JNIEnv*  env,jobject  thiz,jlong ptr) {
+	PayloadType* pt = (PayloadType*)ptr;
+	jstring jvalue =env->NewStringUTF(payload_type_get_mime(pt));
+	return jvalue;
+}
+extern "C" jint Java_org_linphone_core_PayloadTypeImpl_getRate(JNIEnv*  env,jobject  thiz, jlong ptr) {
+	PayloadType* pt = (PayloadType*)ptr;
+	return payload_type_get_rate(pt);
+}
+
 //LinphoneCall
 extern "C" void Java_org_linphone_core_LinphoneCallImpl_ref(JNIEnv*  env
 																		,jobject  thiz

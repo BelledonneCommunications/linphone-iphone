@@ -485,4 +485,7 @@ public interface LinphoneCore {
 	public void setPreferredVideoSize(VideoSize vSize);
 	
 	public VideoSize getPreferredVideoSize();
+	
+	public PayloadType[] listVideoCodecs();
+
 }
