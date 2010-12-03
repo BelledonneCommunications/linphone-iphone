@@ -40,7 +40,9 @@ import org.linphone.core.LinphoneFriend.SubscribePolicy;
  * from a sip uri identity passed from the command line.
  * <br>Argument must be like sip:jehan@sip.linphone.org .
  * ex budy_list sip:jehan@sip.linphone.org
- * <br>Subscription is cleared on SIGINT
+ * <br>
+ * Optionnally argument 2 can be registration sip identy.Argument 3 can be passord.
+ * ex: budy_list sip:jehan@sip.linphone.org sip:myidentity@sip.linphone.org mypassword
  *
  * Ported from buddy_status.c
  *
