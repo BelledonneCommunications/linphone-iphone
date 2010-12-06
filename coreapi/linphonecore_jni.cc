@@ -18,14 +18,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include <jni.h>
 #include "linphonecore.h"
+#include "mediastreamer2/msjava.h"
+
 #ifdef ANDROID
 #include <android/log.h>
 extern "C" void libmsilbc_init();
 extern "C" void libmsx264_init();
 #endif /*ANDROID*/
-
-extern "C" void ms_andsnd_set_jvm(JavaVM *jvm) ;
-extern "C" void ms_andvid_set_jvm(JavaVM *jvm) ;
 
 static JavaVM *jvm=0;
 
@@ -47,10 +46,7 @@ static void linphone_android_log_handler(OrtpLogLevel lev, const char *fmt, va_l
 JNIEXPORT jint JNICALL  JNI_OnLoad(JavaVM *ajvm, void *reserved)
 {
 #ifdef ANDROID
-	ms_andsnd_set_jvm(ajvm);
-	#ifdef VIDEO_ENABLED
-	ms_andvid_set_jvm(ajvm);
-	#endif /*VIDEO_ENABLED*/
+	ms_set_jvm(ajvm);
 #endif /*ANDROID*/
 	jvm=ajvm;
 	return JNI_VERSION_1_2;
@@ -307,9 +303,6 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_newLinphoneCore(JNIEnv*
 	const char* userConfig = juserConfig?env->GetStringUTFChars(juserConfig, NULL):NULL;
 	const char* factoryConfig = jfactoryConfig?env->GetStringUTFChars(jfactoryConfig, NULL):NULL;
 	LinphoneCoreData* ldata = new LinphoneCoreData(env,thiz,jlistener,juserdata);
-#ifdef ANDROID
-	ms_andsnd_set_jvm(jvm);
-#endif /*ANDROID*/
 
 #ifdef HAVE_ILBC
 	libmsilbc_init(); // requires an fpu
@@ -516,6 +509,24 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_findPayloadType(JNIEnv*
 	env->ReleaseStringUTFChars(jmime, mime);
 	return result;
 }
+extern "C" jlongArray Java_org_linphone_core_LinphoneCoreImpl_listVideoPayloadTypes(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc) {
+	const MSList* codecs = linphone_core_get_video_codecs((LinphoneCore*)lc);
+	int codecsCount = ms_list_size(codecs);
+	jlongArray jCodecs = env->NewLongArray(codecsCount);
+	jlong *jInternalArray = env->GetLongArrayElements(jCodecs, NULL);
+
+	for (int i = 0; i < codecsCount; i++ ) {
+		jInternalArray[i] = (unsigned long) (codecs->data);
+		codecs = codecs->next;
+	}
+
+	env->ReleaseLongArrayElements(jCodecs, jInternalArray, 0);
+
+	return jCodecs;
+}
+
 extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_enablePayloadType(JNIEnv*  env
 																			,jobject  thiz
 																			,jlong lc
@@ -846,12 +857,9 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCallLogImpl_isIncoming(JNIEnv
 	return ((LinphoneCallLog*)ptr)->dir==LinphoneCallIncoming?JNI_TRUE:JNI_FALSE;
 }
 
-extern "C" jstring Java_org_linphone_core_PayloadTypeImpl_toString(JNIEnv*  env
-																		,jobject  thiz
-																		,jlong ptr) {
-
+extern "C" jstring Java_org_linphone_core_PayloadTypeImpl_toString(JNIEnv*  env,jobject  thiz,jlong ptr) {
 	PayloadType* pt = (PayloadType*)ptr;
-	char* value = ms_strdup_printf("[%s] clock [%s], bitrate [%s]"
+	char* value = ms_strdup_printf("[%s] clock [%i], bitrate [%i]"
 									,payload_type_get_mime(pt)
 									,payload_type_get_rate(pt)
 									,payload_type_get_bitrate(pt));
@@ -859,6 +867,16 @@ extern "C" jstring Java_org_linphone_core_PayloadTypeImpl_toString(JNIEnv*  env
 	ms_free(value);
 	return jvalue;
 }
+extern "C" jstring Java_org_linphone_core_PayloadTypeImpl_getMime(JNIEnv*  env,jobject  thiz,jlong ptr) {
+	PayloadType* pt = (PayloadType*)ptr;
+	jstring jvalue =env->NewStringUTF(payload_type_get_mime(pt));
+	return jvalue;
+}
+extern "C" jint Java_org_linphone_core_PayloadTypeImpl_getRate(JNIEnv*  env,jobject  thiz, jlong ptr) {
+	PayloadType* pt = (PayloadType*)ptr;
+	return payload_type_get_rate(pt);
+}
+
 //LinphoneCall
 extern "C" void Java_org_linphone_core_LinphoneCallImpl_ref(JNIEnv*  env
 																		,jobject  thiz
@@ -1021,6 +1039,10 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_createDefaultCallParams
 
 extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_getCurrentParams(JNIEnv *env, jobject thiz, jlong lc){
 	return (jlong) linphone_call_get_current_params((LinphoneCall*)lc);
+}
+
+extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_enableCamera(JNIEnv *env, jobject thiz, jlong lc, jboolean b){
+	linphone_call_enable_camera((LinphoneCall *)lc, (bool_t) b);
 }
 
 extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_inviteAddressWithParams(JNIEnv *env, jobject thiz, jlong lc, jlong addr, jlong params){

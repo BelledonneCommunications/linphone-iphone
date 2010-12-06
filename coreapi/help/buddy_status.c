@@ -66,19 +66,36 @@ static void new_subscription_request (LinphoneCore *lc,  LinphoneFriend *friend,
 	linphone_core_add_friend(lc,friend); /* add this new friend to the buddy list*/
 
 }
+/**
+ * Registration state notification callback
+ */
+static void registration_state_changed(struct _LinphoneCore *lc, LinphoneProxyConfig *cfg, LinphoneRegistrationState cstate, const char *message){
+		printf("New registration state %s for user id [%s] at proxy [%s]\n"
+				,linphone_registration_state_to_string(cstate)
+				,linphone_proxy_config_get_identity(cfg)
+				,linphone_proxy_config_get_addr(cfg));
+}
 
 LinphoneCore *lc;
 int main(int argc, char *argv[]){
 	LinphoneCoreVTable vtable={0};
 
 	char* dest_friend=NULL;
-
+	char* identity=NULL;
+	char* password=NULL;
 
 	/* takes   sip uri  identity from the command line arguments */
 	if (argc>1){
 		dest_friend=argv[1];
 	}
-
+	/* takes   sip uri  identity from the command line arguments */
+	if (argc>2){
+		identity=argv[2];
+	}
+	/* takes   password from the command line arguments */
+	if (argc>3){
+		password=argv[3];
+	}
 	signal(SIGINT,stop);
 //#define DEBUG
 #ifdef DEBUG
@@ -91,11 +108,47 @@ int main(int argc, char *argv[]){
 	 */
 	vtable.notify_presence_recv=notify_presence_recv_updated;
 	vtable.new_subscription_request=new_subscription_request;
+	vtable.registration_state_changed=registration_state_changed; /*just in case sip proxy is used*/
 
 	/*
 	 Instantiate a LinphoneCore object given the LinphoneCoreVTable
 	*/
 	lc=linphone_core_new(&vtable,NULL,NULL,NULL);
+	/*sip proxy might be requested*/
+	if (identity != NULL)  {
+		/*create proxy config*/
+		LinphoneProxyConfig* proxy_cfg = linphone_proxy_config_new();
+		/*parse identity*/
+		LinphoneAddress *from = linphone_address_new(identity);
+		if (from==NULL){
+			printf("%s not a valid sip uri, must be like sip:toto@sip.linphone.org \n",identity);
+			goto end;
+		}
+		LinphoneAuthInfo *info;
+		if (password!=NULL){
+			info=linphone_auth_info_new(linphone_address_get_username(from),NULL,password,NULL,NULL); /*create authentication structure from identity*/
+			linphone_core_add_auth_info(lc,info); /*add authentication info to LinphoneCore*/
+		}
+
+		// configure proxy entries
+		linphone_proxy_config_set_identity(proxy_cfg,identity); /*set identity with user name and domain*/
+		linphone_proxy_config_set_server_addr(proxy_cfg,linphone_address_get_domain(from)); /* we assume domain = proxy server address*/
+		linphone_proxy_config_enable_register(proxy_cfg,TRUE); /*activate registration for this proxy config*/
+		linphone_proxy_config_enable_publish(proxy_cfg,TRUE); /* enable presence satus publication for this proxy*/
+		linphone_address_destroy(from); /*release resource*/
+
+		linphone_core_add_proxy_config(lc,proxy_cfg); /*add proxy config to linphone core*/
+		linphone_core_set_default_proxy(lc,proxy_cfg); /*set to default proxy*/
+
+
+		/* Loop until registration status is available */
+		do {
+			linphone_core_iterate(lc); /* first iterate initiates registration */
+			ms_usleep(100000);
+		}
+		while(	running && linphone_proxy_config_get_state(proxy_cfg) == LinphoneRegistrationProgress);
+
+	}
 	LinphoneFriend* my_friend=NULL;
 
 	if (dest_friend) {
