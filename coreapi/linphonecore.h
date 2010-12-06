@@ -303,6 +303,13 @@ void linphone_proxy_config_enable_register(LinphoneProxyConfig *obj, bool_t val)
 #define linphone_proxy_config_enableregister linphone_proxy_config_enable_register
 void linphone_proxy_config_edit(LinphoneProxyConfig *obj);
 int linphone_proxy_config_done(LinphoneProxyConfig *obj);
+/**
+ * Indicates  either or not, PUBLISH must be issued for this #LinphoneProxyConfig .
+ * <br> In case this #LinphoneProxyConfig has been added to #LinphoneCore, follows the linphone_proxy_config_edit() rule.
+ * @param obj object pointer
+ * @param val if true, publish will be engaged
+ *
+ */
 void linphone_proxy_config_enable_publish(LinphoneProxyConfig *obj, bool_t val);
 void linphone_proxy_config_set_dial_escape_plus(LinphoneProxyConfig *cfg, bool_t val);
 void linphone_proxy_config_set_dial_prefix(LinphoneProxyConfig *cfg, const char *prefix);

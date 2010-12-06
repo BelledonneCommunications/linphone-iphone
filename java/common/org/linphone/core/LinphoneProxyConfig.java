@@ -112,5 +112,18 @@ public interface LinphoneProxyConfig {
 	 * @return  the route set for this proxy configuration.
 	 */
 	public String getRoute();
+	/**
+	 * Indicates  either or not, PUBLISH must be issued for this #LinphoneProxyConfig .
+	 * <br> In case this #LinphoneProxyConfig has been added to #LinphoneCore, follows the linphone_proxy_config_edit() rule.
+	 * @param obj object pointer
+	 * @param val if true, publish will be engaged
+	 *
+	 */
+	public void enablePublish(boolean enable);
+	/**
+	 * returns publish state for this proxy config (see {@link #enablePublish(boolean)} )
+	 */
+	public boolean publishEnabled();
+	
 	
 }

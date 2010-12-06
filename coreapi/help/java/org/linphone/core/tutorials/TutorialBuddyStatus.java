@@ -153,6 +153,7 @@ public class TutorialBuddyStatus implements LinphoneCoreListener {
 
 				// create proxy config
 				LinphoneProxyConfig proxyCfg = lcFactory.createProxyConfig(mySipAddress, domain, null, true);
+				proxyCfg.enablePublish(true);
 				lc.addProxyConfig(proxyCfg); // add it to linphone
 				lc.setDefaultProxyConfig(proxyCfg);
 				while (!proxyCfg.isRegistered()) {
