@@ -725,7 +725,15 @@ extern "C" void Java_org_linphone_core_LinphoneProxyConfigImpl_setDialPrefix(JNI
 	linphone_proxy_config_set_dial_prefix((LinphoneProxyConfig*)proxyCfg,prefix);
 	env->ReleaseStringUTFChars(jprefix, prefix);
 }
-
+extern "C" void Java_org_linphone_core_LinphoneProxyConfigImpl_enablePublish(JNIEnv* env
+																				,jobject thiz
+																				,jlong proxyCfg
+																				,jboolean val) {
+	linphone_proxy_config_enable_publish((LinphoneProxyConfig*)proxyCfg,val);
+}
+extern "C" jboolean Java_org_linphone_core_LinphoneProxyConfigImpl_publishEnabled(JNIEnv* env,jobject thiz,jlong proxyCfg) {
+	return linphone_proxy_config_publish_enabled((LinphoneProxyConfig*)proxyCfg);
+}
 
 //Auth Info
 

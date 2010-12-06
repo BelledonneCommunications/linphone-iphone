@@ -215,7 +215,6 @@ void linphone_proxy_config_expires(LinphoneProxyConfig *obj, int val){
 void linphone_proxy_config_enable_publish(LinphoneProxyConfig *obj, bool_t val){
 	obj->publish=val;
 }
-
 /**
  * Starts editing a proxy configuration.
  *
