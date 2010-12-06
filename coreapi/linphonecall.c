@@ -367,7 +367,7 @@ void linphone_call_unref(LinphoneCall *obj){
  * Returns current parameters associated to the call.
 **/
 const LinphoneCallParams * linphone_call_get_current_params(const LinphoneCall *call){
-	return &call->params;
+	return &call->current_params;
 }
 
 /**
@@ -785,6 +785,7 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 		ms_fatal("start_media_stream() called without prior init !");
 		return;
 	}
+	call->current_params = call->params;
 	/* adjust rtp jitter compensation. It must be at least the latency of the sound card */
 	int jitt_comp=MAX(lc->sound_conf.latency,lc->rtp_conf.audio_jitt_comp);
 
@@ -862,6 +863,7 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 			video_preview_stop(lc->previewstream);
 			lc->previewstream=NULL;
 		}
+		call->current_params.has_video=FALSE;
 		if (stream && stream->dir!=SalStreamInactive) {
 			const char *addr=stream->addr[0]!='\0' ? stream->addr : call->resultdesc->addr;
 			call->video_profile=make_profile(lc,call->resultdesc,stream,&used_pt);
@@ -870,7 +872,7 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 				MSWebCam *cam=lc->video_conf.device;
 				bool_t is_inactive=FALSE;
 
-				call->params.has_video=TRUE;
+				call->current_params.has_video=TRUE;
 				
 				video_stream_set_sent_video_size(call->videostream,linphone_core_get_preferred_video_size(lc));
 				video_stream_enable_self_view(call->videostream,lc->video_conf.selfview);

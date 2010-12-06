@@ -28,5 +28,4 @@ package org.linphone.core;
 public interface LinphoneCallParams {
 	void setVideoEnabled(boolean b);
 	boolean getVideoEnabled();
-	LinphoneCallParams copy();
 }

@@ -618,7 +618,7 @@ int linphone_core_pause_all_calls(LinphoneCore *lc);
 
 int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *call);
 
-int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, LinphoneCallParams *params);
+int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params);
 
 LinphoneCallParams *linphone_core_create_default_call_parameters(LinphoneCore *lc);
 

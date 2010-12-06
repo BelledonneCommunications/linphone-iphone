@@ -1022,15 +1022,15 @@ extern "C" void Java_org_linphone_core_LinphoneCallParamsImpl_enableVideo(JNIEnv
 extern "C" jboolean Java_org_linphone_core_LinphoneCallParamsImpl_getVideoEnabled(JNIEnv *env, jobject thiz, jlong lcp){
 	return linphone_call_params_video_enabled((LinphoneCallParams*)lcp);
 }
-extern "C" jlong Java_org_linphone_core_LinphoneCallParamsImpl_copy(JNIEnv *env, jobject thiz, jlong lcp){
-	return (jlong) linphone_call_params_copy((LinphoneCallParams*)lcp);
+extern "C" void Java_org_linphone_core_LinphoneCallParamsImpl_destroy(JNIEnv *env, jobject thiz, jlong lc){
+	return linphone_call_params_destroy((LinphoneCallParams*)lc);
 }
 extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_createDefaultCallParams(JNIEnv *env, jobject thiz, jlong lc){
 	return (jlong) linphone_core_create_default_call_parameters((LinphoneCore*)lc);
 }
 
-extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_getCurrentParams(JNIEnv *env, jobject thiz, jlong lc){
-	return (jlong) linphone_call_get_current_params((LinphoneCall*)lc);
+extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_getCurrentParamsCopy(JNIEnv *env, jobject thiz, jlong lc){
+	return (jlong) linphone_call_params_copy(linphone_call_get_current_params((LinphoneCall*)lc));
 }
 
 extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_enableCamera(JNIEnv *env, jobject thiz, jlong lc, jboolean b){
@@ -1046,7 +1046,7 @@ extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_updateAddressWithParams(
 }
 
 extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_updateCall(JNIEnv *env, jobject thiz, jlong lc, jlong call, jlong params){
-	return (jint) linphone_core_update_call((LinphoneCore *)lc, (LinphoneCall *)call, (LinphoneCallParams *)params);
+	return (jint) linphone_core_update_call((LinphoneCore *)lc, (LinphoneCall *)call, (const LinphoneCallParams *)params);
 }
 
 

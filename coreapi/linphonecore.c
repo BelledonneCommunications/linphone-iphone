@@ -2182,9 +2182,8 @@ bool_t linphone_core_inc_invite_pending(LinphoneCore*lc){
  *
  * @return 0 if successful, -1 otherwise.
 **/
-int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, LinphoneCallParams *params){
+int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params){
 	int err;
-	
 	if (call->localdesc)
 		sal_media_description_unref(call->localdesc);
 	call->params=*params;

@@ -286,6 +286,7 @@ static void call_accepted(SalOp *op){
 				ms_free(tmp);
 				ms_free(msg);
 			}
+			linphone_core_update_streams (lc,call,md);
 			linphone_call_set_state(call,LinphoneCallPaused,"Call paused");
 		}else if (sal_media_description_has_dir(md,SalStreamRecvOnly)){
 			/*we are put on hold when the call is initially accepted */
@@ -296,6 +297,7 @@ static void call_accepted(SalOp *op){
 				ms_free(tmp);
 				ms_free(msg);
 			}
+			linphone_core_update_streams (lc,call,md);
 			linphone_call_set_state(call,LinphoneCallPaused,"Call paused");
 		}else{
 			if (lc->vtable.display_status){
@@ -306,9 +308,9 @@ static void call_accepted(SalOp *op){
 					a reinvite made by us. We must notify the application this reinvite was accepted*/
 				linphone_call_set_state(call, LinphoneCallUpdated, "Call updated");
 			}
-			linphone_call_set_state(call,LinphoneCallStreamsRunning,"Connected (streams running)");
+			linphone_core_update_streams (lc,call,md);
+			linphone_call_set_state(call, LinphoneCallStreamsRunning, "Streams running");
 		}
-		linphone_core_update_streams (lc,call,md);
 	}else{
 		/*send a bye*/
 		ms_error("Incompatible SDP offer received in 200Ok, need to abort the call");

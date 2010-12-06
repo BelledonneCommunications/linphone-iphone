@@ -88,6 +88,7 @@ struct _LinphoneCall
 	struct _VideoStream *videostream;
 	char *refer_to;
 	LinphoneCallParams params;
+	LinphoneCallParams current_params;
 	int up_bw; /*upload bandwidth setting at the time the call is started. Used to detect if it changes during a call */
 	bool_t refer_pending;
 	bool_t media_pending;
