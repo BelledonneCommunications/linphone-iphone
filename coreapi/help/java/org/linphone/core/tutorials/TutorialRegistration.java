@@ -150,10 +150,9 @@ public class TutorialRegistration implements LinphoneCoreListener {
 			
 			
 		} finally {
-			write("Shutting down...");
+			write("Shutting down linphone...");
 			// You need to destroy the LinphoneCore object when no longer used
 			lc.destroy();
-			write("Exited");
 		}
 	}
 
