@@ -1023,6 +1023,10 @@ extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getStunServer(JNIEnv 
 	return jvalue;
 }
 
+extern "C" void Java_org_linphone_core_LinphoneCallParamsImpl_audioBandwidth(JNIEnv *env, jobject thiz, jlong lcp, jint bw){
+	linphone_call_params_set_audio_bandwidth_limit((LinphoneCallParams*)lcp, bw);
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCallParamsImpl_enableVideo(JNIEnv *env, jobject thiz, jlong lcp, jboolean b){
 	linphone_call_params_enable_video((LinphoneCallParams*)lcp, b);
 }
