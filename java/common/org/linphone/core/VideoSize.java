@@ -36,7 +36,7 @@ public final class VideoSize {
 	public void setHeight(int height) {this.height = height;}
 
 	public VideoSize() {}
-	private VideoSize(int width, int height) {
+	public VideoSize(int width, int height) {
 		this.width = width;
 		this.height = height;
 	}

@@ -28,4 +28,10 @@ package org.linphone.core;
 public interface LinphoneCallParams {
 	void setVideoEnabled(boolean b);
 	boolean getVideoEnabled();
+	
+	/**
+	 * @param value 0 to disable limitation
+	 */
+	void setAudioBandwidth(int value);
+	
 }
