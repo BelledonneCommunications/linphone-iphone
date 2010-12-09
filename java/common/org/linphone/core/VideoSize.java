@@ -83,5 +83,15 @@ public final class VideoSize {
 		return true;
 	}
 	
+	@Override
+	public String toString() {
+		return "width = "+width + " height = " + height;
+	}
+	public boolean isPortrait() {
+		return height >= width;
+	}
+	public VideoSize createInverted() {
+		return new VideoSize(height, width);
+	}
 	
 }
