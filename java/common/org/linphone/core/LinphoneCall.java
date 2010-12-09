@@ -24,6 +24,7 @@ import java.util.Vector;
  * Object representing a Call. calls are created using {@link LinphoneCore#invite(LinphoneAddress)} or paased to the application by listener {@link LinphoneCoreListener#callState(LinphoneCore, LinphoneCall, State, String)}
  * 
  */
+@SuppressWarnings("unchecked")
 public interface LinphoneCall {
 	/**
 	 * Linphone call states

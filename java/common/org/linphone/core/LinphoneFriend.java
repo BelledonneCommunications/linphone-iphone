@@ -27,6 +27,7 @@ import java.util.Vector;
  * 
  *
  */
+@SuppressWarnings("unchecked")
 public interface LinphoneFriend {
 	/**
 	 * Enum controlling behavior for incoming subscription request. 
