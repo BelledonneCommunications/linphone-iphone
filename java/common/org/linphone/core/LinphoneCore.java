@@ -25,11 +25,12 @@ import java.util.Vector;
  * Linphone core main object created by method {@link LinphoneCoreFactory#createLinphoneCore(LinphoneCoreListener, String, String, Object)}.	
  *
  */
+@SuppressWarnings("unchecked")
 public interface LinphoneCore {
 	/**
 	 * linphone core states
 	 */
-	static public class 	GlobalState {
+	static public class GlobalState {
 		static private Vector values = new Vector();
 		/**
 		 * Off
@@ -72,28 +73,28 @@ public interface LinphoneCore {
 	 * Describes proxy registration states.
 	 *
 	 */
-	static public class 	RegistrationState {
-		static private Vector values = new Vector();
+	static public class RegistrationState {
+		private static Vector values = new Vector();
 		/**
 		 * None
 		 */
-		static public RegistrationState RegistrationNone = new RegistrationState(0,"RegistrationNone");       
+		public static RegistrationState RegistrationNone = new RegistrationState(0,"RegistrationNone");       
 		/**
 		 * In Progress
 		 */
-		static public RegistrationState RegistrationProgress  = new RegistrationState(1,"RegistrationProgress");
+		public static RegistrationState RegistrationProgress  = new RegistrationState(1,"RegistrationProgress");
 		/**
 		 * Ok
 		 */
-		static public RegistrationState RegistrationOk = new RegistrationState(2,"RegistrationOk");
+		public static RegistrationState RegistrationOk = new RegistrationState(2,"RegistrationOk");
 		/**
 		 * Cleared
 		 */
-		static public RegistrationState RegistrationCleared = new RegistrationState(3,"RegistrationCleared");
+		public static RegistrationState RegistrationCleared = new RegistrationState(3,"RegistrationCleared");
 		/**
 		 * Failed
 		 */
-		static public RegistrationState RegistrationFailed = new RegistrationState(4,"RegistrationFailed");
+		public static RegistrationState RegistrationFailed = new RegistrationState(4,"RegistrationFailed");
 		private final int mValue;
 		private final String mStringValue;
 
@@ -118,7 +119,7 @@ public interface LinphoneCore {
 	 * Describes firewall policy.
 	 *
 	 */
-	static public class 	FirewallPolicy {
+	static public class FirewallPolicy {
 		static private Vector values = new Vector();
 		/**
 		 * No firewall is assumed.

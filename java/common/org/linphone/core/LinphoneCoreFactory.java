@@ -21,7 +21,7 @@ package org.linphone.core;
 
 
 
-
+@SuppressWarnings("unchecked")
 abstract public class LinphoneCoreFactory {
 	
 	private static String factoryName = "org.linphone.core.LinphoneCoreFactoryImpl";
