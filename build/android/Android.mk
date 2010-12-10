@@ -72,10 +72,11 @@ LOCAL_C_INCLUDES += \
 
 LOCAL_LDLIBS += -llog -ldl
 
+
+
 LOCAL_STATIC_LIBRARIES := \
 	libmediastreamer2 \
 	libortp \
-	libspeex \
 	libeXosip2 \
 	libosip2 \
 	libgsm
@@ -88,8 +89,10 @@ LOCAL_STATIC_LIBRARIES += \
 	libavutil \
 	libmsx264 \
 	libx264
-	
 endif
+
+LOCAL_STATIC_LIBRARIES += libspeex 
+
 
 ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
    LOCAL_CFLAGS += -DHAVE_ILBC=1
