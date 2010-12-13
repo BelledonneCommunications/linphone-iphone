@@ -816,13 +816,6 @@ static void autoreplier_config_init(LinphoneCore *lc)
  */
 void linphone_core_set_download_bandwidth(LinphoneCore *lc, int bw){
 	lc->net_conf.download_bw=bw;
-	if (bw==0){ /*infinite*/
-		lc->dw_audio_bw=-1;
-		lc->dw_video_bw=-1;
-	}else {
-		lc->dw_audio_bw=MIN(lc->audio_bw,bw);
-		lc->dw_video_bw=MAX(bw-lc->dw_audio_bw-10,0);/*-10: security margin*/
-	}
 }
 
 /**
@@ -840,13 +833,6 @@ void linphone_core_set_download_bandwidth(LinphoneCore *lc, int bw){
  */
 void linphone_core_set_upload_bandwidth(LinphoneCore *lc, int bw){
 	lc->net_conf.upload_bw=bw;
-	if (bw==0){ /*infinite*/
-		lc->up_audio_bw=-1;
-		lc->up_video_bw=-1;
-	}else{
-		lc->up_audio_bw=MIN(lc->audio_bw,bw);
-		lc->up_video_bw=MAX(bw-lc->up_audio_bw-10,0);/*-10: security margin*/
-	}
 }
 
 /**

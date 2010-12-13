@@ -90,6 +90,7 @@ struct _LinphoneCall
 	LinphoneCallParams params;
 	LinphoneCallParams current_params;
 	int up_bw; /*upload bandwidth setting at the time the call is started. Used to detect if it changes during a call */
+	int audio_bw;	/*upload bandwidth used by audio */
 	bool_t refer_pending;
 	bool_t media_pending;
 	bool_t audio_muted;
@@ -171,7 +172,7 @@ void linphone_subscription_closed(LinphoneCore *lc, SalOp *op);
 MSList *linphone_find_friend(MSList *fl, const LinphoneAddress *fri, LinphoneFriend **lf);
 
 void linphone_core_update_allocated_audio_bandwidth(LinphoneCore *lc);
-void linphone_core_update_allocated_audio_bandwidth_in_call(LinphoneCore *lc, const PayloadType *pt);
+void linphone_core_update_allocated_audio_bandwidth_in_call(LinphoneCall *call, const PayloadType *pt);
 void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call);
 
 void linphone_core_send_initial_subscribes(LinphoneCore *lc);
@@ -412,10 +413,6 @@ struct _LinphoneCore
 	char *play_file;
 	char *rec_file;
 	time_t prevtime;
-	int dw_audio_bw;
-	int up_audio_bw;
-	int dw_video_bw;
-	int up_video_bw;
 	int audio_bw;
 	LinphoneWaitingCallback wait_cb;
 	void *wait_ctx;
