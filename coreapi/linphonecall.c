@@ -777,6 +777,10 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 	const char *tool="linphone-" LINPHONE_VERSION;
 	char *cname;
 	int used_pt=-1;
+#ifdef VIDEO_ENABLED
+	const SalStreamDescription *vstream=sal_media_description_find_stream(call->resultdesc,
+		    					SalProtoRtpAvp,SalVideo);
+#endif
 	
 	if(call->audiostream == NULL)
 	{
@@ -800,6 +804,8 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 			const char *playfile=lc->play_file;
 			const char *recfile=lc->rec_file;
 			call->audio_profile=make_profile(call,call->resultdesc,stream,&used_pt);
+			bool_t use_ec;
+
 			if (used_pt!=-1){
 				if (playcard==NULL) {
 					ms_warning("No card defined for playback !");
@@ -827,6 +833,12 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 					captcard=NULL;
 					playcard=NULL;
 				}
+				use_ec=captcard==NULL ? FALSE : linphone_core_echo_cancellation_enabled(lc);
+#if defined(VIDEO_ENABLED) && defined(ANDROID)
+				/*On android we have to disable the echo canceller to preserve CPU for video codecs */
+				if (vstream && vstream->dir!=SalStreamInactive && vstream->payloads!=NULL)
+					use_ec=FALSE;
+#endif
 				audio_stream_start_full(
 					call->audiostream,
 					call->audio_profile,
@@ -839,7 +851,8 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 					recfile,
 					playcard,
 					captcard,
-					captcard==NULL ? FALSE : linphone_core_echo_cancellation_enabled(lc));
+					use_ec
+					);
 				post_configure_audio_streams(call);
 				if (all_inputs_muted && !send_ringbacktone){
 					audio_stream_set_mic_gain(call->audiostream,0);
@@ -853,8 +866,7 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 	}
 #ifdef VIDEO_ENABLED
 	{
-		const SalStreamDescription *stream=sal_media_description_find_stream(call->resultdesc,
-		    					SalProtoRtpAvp,SalVideo);
+		
 		used_pt=-1;
 		/* shutdown preview */
 		if (lc->previewstream!=NULL) {
@@ -862,9 +874,9 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 			lc->previewstream=NULL;
 		}
 		call->current_params.has_video=FALSE;
-		if (stream && stream->dir!=SalStreamInactive) {
-			const char *addr=stream->addr[0]!='\0' ? stream->addr : call->resultdesc->addr;
-			call->video_profile=make_profile(call,call->resultdesc,stream,&used_pt);
+		if (vstream && vstream->dir!=SalStreamInactive) {
+			const char *addr=vstream->addr[0]!='\0' ? vstream->addr : call->resultdesc->addr;
+			call->video_profile=make_profile(call,call->resultdesc,vstream,&used_pt);
 			if (used_pt!=-1){
 				VideoStreamDir dir=VideoStreamSendRecv;
 				MSWebCam *cam=lc->video_conf.device;
@@ -880,12 +892,12 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 					video_stream_set_native_preview_window_id (call->videostream,lc->preview_window_id);
 				video_stream_use_preview_video_window (call->videostream,lc->use_preview_window);
 				
-				if (stream->dir==SalStreamSendOnly && lc->video_conf.capture ){
+				if (vstream->dir==SalStreamSendOnly && lc->video_conf.capture ){
 					cam=get_nowebcam_device();
 					dir=VideoStreamSendOnly;
-				}else if (stream->dir==SalStreamRecvOnly && lc->video_conf.display ){
+				}else if (vstream->dir==SalStreamRecvOnly && lc->video_conf.display ){
 					dir=VideoStreamRecvOnly;
-				}else if (stream->dir==SalStreamSendRecv){
+				}else if (vstream->dir==SalStreamSendRecv){
 					if (lc->video_conf.display && lc->video_conf.capture)
 						dir=VideoStreamSendRecv;
 					else if (lc->video_conf.display)
@@ -903,8 +915,8 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 				if (!is_inactive){
 					video_stream_set_direction (call->videostream, dir);
 					video_stream_start(call->videostream,
-						call->video_profile, addr, stream->port,
-						stream->port+1,
+						call->video_profile, addr, vstream->port,
+						vstream->port+1,
 						used_pt, jitt_comp, cam);
 					video_stream_set_rtcp_information(call->videostream, cname,tool);
 				}
