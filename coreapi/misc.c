@@ -298,7 +298,7 @@ bool_t linphone_core_check_payload_type_usability(LinphoneCore *lc, PayloadType 
 		allowed_bw=-1;
 		video_bw=1500; /*around 1.5 Mbit/s*/
 	}else
-		video_bw=allowed_bw-lc->audio_bw-10;
+		video_bw=get_video_bandwidth(allowed_bw,lc->audio_bw);
 
 	switch (pt->type){
 		case PAYLOAD_AUDIO_CONTINUOUS:

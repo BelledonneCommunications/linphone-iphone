@@ -738,13 +738,13 @@ static RtpProfile *make_profile(LinphoneCall *call, const SalMediaDescription *m
 			/*case where b=AS is given globally, not per stream*/
 			remote_bw=md->bandwidth;
 			if (desc->type==SalVideo){
-				remote_bw-=call->audio_bw+10;
+				remote_bw=get_video_bandwidth(remote_bw,call->audio_bw);
 			}
 		}
 		
 		if (desc->type==SalAudio){			
 				bw=get_min_bandwidth(call->audio_bw,remote_bw);
-		}else bw=get_min_bandwidth(linphone_core_get_upload_bandwidth (lc)-call->audio_bw,remote_bw);
+		}else bw=get_min_bandwidth(get_video_bandwidth(linphone_core_get_upload_bandwidth (lc),call->audio_bw),remote_bw);
 		if (bw>0) pt->normal_bitrate=bw*1000;
 		else if (desc->type==SalAudio){
 			pt->normal_bitrate=-1;

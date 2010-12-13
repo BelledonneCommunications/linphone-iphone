@@ -148,6 +148,11 @@ static inline bool_t bandwidth_is_greater(int bw1, int bw2){
 	else return bw1>=bw2;
 }
 
+static inline int get_video_bandwidth(int total, int audio){
+	if (total<=0) return 0;
+	return total-audio-10;
+}
+
 static inline void set_string(char **dest, const char *src){
 	if (*dest){
 		ms_free(*dest);
