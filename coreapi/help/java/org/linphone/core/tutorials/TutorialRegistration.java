@@ -124,53 +124,40 @@ public class TutorialRegistration implements LinphoneCoreListener {
 
 			// create proxy config
 			LinphoneProxyConfig proxyCfg = lcFactory.createProxyConfig(sipAddress, domain, null, true);
+			proxyCfg.setExpires(2000);
 			lc.addProxyConfig(proxyCfg); // add it to linphone
 			lc.setDefaultProxyConfig(proxyCfg);
 
-			
+
 			
 			// main loop for receiving notifications and doing background linphonecore work
 			running = true;
 			while (running) {
 				lc.iterate(); // first iterate initiates registration 
-				try{
-					Thread.sleep(50);
-				} catch(InterruptedException ie) {
-					write("Interrupted!\nAborting");
-					return;
-				}
+				sleep(50);
 			}
 
-			// Unregister then register again
+
+			// Unregister
 			lc.getDefaultProxyConfig().edit();
 			lc.getDefaultProxyConfig().enableRegister(false);
 			lc.getDefaultProxyConfig().done();
-			
-			for (int i = 0; i < 20; i++) {
+			while(lc.getDefaultProxyConfig().getState() != RegistrationState.RegistrationCleared) {
 				lc.iterate();
-				try{
-					Thread.sleep(50);
-				} catch(InterruptedException ie) {
-					write("Interrupted!\nAborting");
-					return;
-				}
+				sleep(50);
 			}
 
+			// Then register again
 			lc.getDefaultProxyConfig().edit();
 			lc.getDefaultProxyConfig().enableRegister(true);
 			lc.getDefaultProxyConfig().done();
 
-			for (int i = 0; i < 20; i++) {
+			while(lc.getDefaultProxyConfig().getState() != RegistrationState.RegistrationOk
+					&& lc.getDefaultProxyConfig().getState() != RegistrationState.RegistrationFailed) {
 				lc.iterate();
-				try{
-					Thread.sleep(50);
-				} catch(InterruptedException ie) {
-					write("Interrupted!\nAborting");
-					return;
-				}
+				sleep(50);
 			}
 
-			
 			// Automatic unregistration on exit
 		} finally {
 			write("Shutting down linphone...");
@@ -179,6 +166,14 @@ public class TutorialRegistration implements LinphoneCoreListener {
 		}
 	}
 
+	private void sleep(int ms) {
+		try {
+			Thread.sleep(ms);
+		} catch(InterruptedException ie) {
+			write("Interrupted!\nAborting");
+			return;
+		}
+	}
 
 	public void stopMainLoop() {
 		running=false;

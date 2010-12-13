@@ -126,4 +126,11 @@ public interface LinphoneProxyConfig {
 	public boolean publishEnabled();
 	
 	
+	LinphoneCore.RegistrationState getState();
+	
+	/**
+	 * Sets the registration expiration time.
+	 * @param delay expiration time in seconds
+	 */
+	void setExpires(int delay);
 }
