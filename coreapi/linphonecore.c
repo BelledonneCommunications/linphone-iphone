@@ -3669,16 +3669,13 @@ void sip_config_uninit(LinphoneCore *lc)
 		linphone_proxy_config_edit(cfg);	/* to unregister */
 	}
 
-	if (lc->sal){
-	    int i;
-		for (i=0;i<20;i++){
-			sal_iterate(lc->sal);
+	for (i=0;i<20;i++){
+		linphone_core_iterate(lc);
 #ifndef WIN32
-			usleep(100000);
+		usleep(100000);
 #else
-			Sleep(100);
+		Sleep(100);
 #endif
-		}
 	}
 
 	ms_list_for_each(config->proxies,(void (*)(void*)) linphone_proxy_config_destroy);
