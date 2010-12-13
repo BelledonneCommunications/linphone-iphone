@@ -816,13 +816,6 @@ static void autoreplier_config_init(LinphoneCore *lc)
  */
 void linphone_core_set_download_bandwidth(LinphoneCore *lc, int bw){
 	lc->net_conf.download_bw=bw;
-	if (bw==0){ /*infinite*/
-		lc->dw_audio_bw=-1;
-		lc->dw_video_bw=-1;
-	}else {
-		lc->dw_audio_bw=MIN(lc->audio_bw,bw);
-		lc->dw_video_bw=MAX(bw-lc->dw_audio_bw-10,0);/*-10: security margin*/
-	}
 }
 
 /**
@@ -840,13 +833,6 @@ void linphone_core_set_download_bandwidth(LinphoneCore *lc, int bw){
  */
 void linphone_core_set_upload_bandwidth(LinphoneCore *lc, int bw){
 	lc->net_conf.upload_bw=bw;
-	if (bw==0){ /*infinite*/
-		lc->up_audio_bw=-1;
-		lc->up_video_bw=-1;
-	}else{
-		lc->up_audio_bw=MIN(lc->audio_bw,bw);
-		lc->up_video_bw=MAX(bw-lc->up_audio_bw-10,0);/*-10: security margin*/
-	}
 }
 
 /**
@@ -2212,7 +2198,7 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 **/
 int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call)
 {
-	LinphoneProxyConfig *cfg=NULL;
+	LinphoneProxyConfig *cfg=NULL,*dest_proxy=NULL;
 	const char *contact=NULL;
 	SalOp *replaced;
 	SalMediaDescription *new_md;
@@ -2267,8 +2253,15 @@ int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call)
 	}
 	
 	linphone_core_get_default_proxy(lc,&cfg);
+	dest_proxy=cfg;
+	dest_proxy=linphone_core_lookup_known_proxy(lc,call->log->to);
+
+	if (cfg!=dest_proxy && dest_proxy!=NULL) {
+		ms_message("Overriding default proxy setting for this call:");
+		ms_message("The used identity will be %s",linphone_proxy_config_get_identity(dest_proxy));
+	}
 	/*try to be best-effort in giving real local or routable contact address*/
-	contact=get_fixed_contact(lc,call,cfg);
+	contact=get_fixed_contact(lc,call,dest_proxy);
 	if (contact)
 		sal_op_set_contact(call->op,contact);
 
@@ -3962,14 +3955,6 @@ static PayloadType* find_payload_type_from_list(const char* type, int rate,const
 		}
 	}
 	return NULL;
-}
-
-static void printCodecs(const MSList* from) {
-	const MSList *elem;
-	for(elem=from;elem!=NULL;elem=elem->next){
-		PayloadType *pt=(PayloadType*)elem->data;
-		ms_message(payload_type_get_mime(pt));
-	}
 }
 
 /**
