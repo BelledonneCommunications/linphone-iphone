@@ -3967,14 +3967,6 @@ static PayloadType* find_payload_type_from_list(const char* type, int rate,const
 	return NULL;
 }
 
-static void printCodecs(const MSList* from) {
-	const MSList *elem;
-	for(elem=from;elem!=NULL;elem=elem->next){
-		PayloadType *pt=(PayloadType*)elem->data;
-		ms_message(payload_type_get_mime(pt));
-	}
-}
-
 /**
  * Get payload type  from mime type and clock rate
  * @ingroup media_parameters
