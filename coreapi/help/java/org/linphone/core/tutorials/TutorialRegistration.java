@@ -65,9 +65,6 @@ public class TutorialRegistration implements LinphoneCoreListener {
 	 */
 	public void registrationState(LinphoneCore lc, LinphoneProxyConfig cfg,RegistrationState cstate, String smessage) {
 		write(cfg.getIdentity() + " : "+smessage+"\n");
-
-		if (RegistrationState.RegistrationOk.equals(cstate))
-			running = false;
 	}
 
 	public void show(LinphoneCore lc) {}
@@ -132,7 +129,6 @@ public class TutorialRegistration implements LinphoneCoreListener {
 
 			
 			
-			
 			// main loop for receiving notifications and doing background linphonecore work
 			running = true;
 			while (running) {
@@ -145,10 +141,37 @@ public class TutorialRegistration implements LinphoneCoreListener {
 				}
 			}
 
+			// Unregister then register again
+			lc.getDefaultProxyConfig().edit();
+			lc.getDefaultProxyConfig().enableRegister(false);
+			lc.getDefaultProxyConfig().done();
+			
+			for (int i = 0; i < 20; i++) {
+				lc.iterate();
+				try{
+					Thread.sleep(50);
+				} catch(InterruptedException ie) {
+					write("Interrupted!\nAborting");
+					return;
+				}
+			}
 
+			lc.getDefaultProxyConfig().edit();
+			lc.getDefaultProxyConfig().enableRegister(true);
+			lc.getDefaultProxyConfig().done();
+
+			for (int i = 0; i < 20; i++) {
+				lc.iterate();
+				try{
+					Thread.sleep(50);
+				} catch(InterruptedException ie) {
+					write("Interrupted!\nAborting");
+					return;
+				}
+			}
+
+			
 			// Automatic unregistration on exit
-			
-			
 		} finally {
 			write("Shutting down linphone...");
 			// You need to destroy the LinphoneCore object when no longer used
