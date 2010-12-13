@@ -65,9 +65,6 @@ public class TutorialRegistration implements LinphoneCoreListener {
 	 */
 	public void registrationState(LinphoneCore lc, LinphoneProxyConfig cfg,RegistrationState cstate, String smessage) {
 		write(cfg.getIdentity() + " : "+smessage+"\n");
-
-		if (RegistrationState.RegistrationOk.equals(cstate))
-			running = false;
 	}
 
 	public void show(LinphoneCore lc) {}
@@ -127,36 +124,57 @@ public class TutorialRegistration implements LinphoneCoreListener {
 
 			// create proxy config
 			LinphoneProxyConfig proxyCfg = lcFactory.createProxyConfig(sipAddress, domain, null, true);
+			proxyCfg.setExpires(2000);
 			lc.addProxyConfig(proxyCfg); // add it to linphone
 			lc.setDefaultProxyConfig(proxyCfg);
 
-			
-			
+
 			
 			// main loop for receiving notifications and doing background linphonecore work
 			running = true;
 			while (running) {
 				lc.iterate(); // first iterate initiates registration 
-				try{
-					Thread.sleep(50);
-				} catch(InterruptedException ie) {
-					write("Interrupted!\nAborting");
-					return;
-				}
+				sleep(50);
+			}
+
+
+			// Unregister
+			lc.getDefaultProxyConfig().edit();
+			lc.getDefaultProxyConfig().enableRegister(false);
+			lc.getDefaultProxyConfig().done();
+			while(lc.getDefaultProxyConfig().getState() != RegistrationState.RegistrationCleared) {
+				lc.iterate();
+				sleep(50);
+			}
+
+			// Then register again
+			lc.getDefaultProxyConfig().edit();
+			lc.getDefaultProxyConfig().enableRegister(true);
+			lc.getDefaultProxyConfig().done();
+
+			while(lc.getDefaultProxyConfig().getState() != RegistrationState.RegistrationOk
+					&& lc.getDefaultProxyConfig().getState() != RegistrationState.RegistrationFailed) {
+				lc.iterate();
+				sleep(50);
 			}
 
 
 			// Automatic unregistration on exit
-			
-			
 		} finally {
-			write("Shutting down...");
+			write("Shutting down linphone...");
 			// You need to destroy the LinphoneCore object when no longer used
 			lc.destroy();
-			write("Exited");
 		}
 	}
 
+	private void sleep(int ms) {
+		try {
+			Thread.sleep(ms);
+		} catch(InterruptedException ie) {
+			write("Interrupted!\nAborting");
+			return;
+		}
+	}
 
 	public void stopMainLoop() {
 		running=false;

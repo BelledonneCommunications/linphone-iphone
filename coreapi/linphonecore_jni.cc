@@ -924,3 +924,10 @@ extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_sendMessage(JNIEnv* 
 
 }
 
+extern "C" int Java_org_linphone_core_LinphoneProxyConfigImpl_getState(JNIEnv*  env,jobject thiz,jlong ptr) {
+	return (int) linphone_proxy_config_get_state((const LinphoneProxyConfig *) ptr);
+}
+extern "C" void Java_org_linphone_core_LinphoneProxyConfigImpl_setExpires(JNIEnv*  env,jobject thiz,jlong ptr,jint delay) {
+	linphone_proxy_config_expires((LinphoneProxyConfig *) ptr, (int) delay);
+}
+
