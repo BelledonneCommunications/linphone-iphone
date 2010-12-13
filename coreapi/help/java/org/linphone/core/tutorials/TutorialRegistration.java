@@ -64,7 +64,7 @@ public class TutorialRegistration implements LinphoneCoreListener {
 	 * Registration state notification listener
 	 */
 	public void registrationState(LinphoneCore lc, LinphoneProxyConfig cfg,RegistrationState cstate, String smessage) {
-		write(cfg.getIdentity() + " : "+smessage+"\n");
+		write(cfg.getIdentity() + " : "+smessage);
 	}
 
 	public void show(LinphoneCore lc) {}

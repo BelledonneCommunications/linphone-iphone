@@ -993,7 +993,6 @@ extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_sendMessage(JNIEnv* 
 
 }
 
-<<<<<<< HEAD
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setVideoWindowId(JNIEnv* env
 																		,jobject thiz
 																		,jlong lc
@@ -1084,7 +1083,7 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setDownloadBandwidth(JNI
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setUploadBandwidth(JNIEnv *env, jobject thiz, jlong lc, jint bw){
 	linphone_core_set_upload_bandwidth((LinphoneCore *)lc, (int) bw);
-
+}
 extern "C" int Java_org_linphone_core_LinphoneProxyConfigImpl_getState(JNIEnv*  env,jobject thiz,jlong ptr) {
 	return (int) linphone_proxy_config_get_state((const LinphoneProxyConfig *) ptr);
 }
