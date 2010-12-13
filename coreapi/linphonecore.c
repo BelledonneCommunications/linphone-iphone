@@ -2198,7 +2198,7 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 **/
 int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call)
 {
-	LinphoneProxyConfig *cfg=NULL;
+	LinphoneProxyConfig *cfg=NULL,*dest_proxy=NULL;
 	const char *contact=NULL;
 	SalOp *replaced;
 	SalMediaDescription *new_md;
@@ -2253,8 +2253,15 @@ int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call)
 	}
 	
 	linphone_core_get_default_proxy(lc,&cfg);
+	dest_proxy=cfg;
+	dest_proxy=linphone_core_lookup_known_proxy(lc,call->log->to);
+
+	if (cfg!=dest_proxy && dest_proxy!=NULL) {
+		ms_message("Overriding default proxy setting for this call:");
+		ms_message("The used identity will be %s",linphone_proxy_config_get_identity(dest_proxy));
+	}
 	/*try to be best-effort in giving real local or routable contact address*/
-	contact=get_fixed_contact(lc,call,cfg);
+	contact=get_fixed_contact(lc,call,dest_proxy);
 	if (contact)
 		sal_op_set_contact(call->op,contact);
 

@@ -289,12 +289,8 @@ bool_t linphone_core_check_payload_type_usability(LinphoneCore *lc, PayloadType 
 	double codec_band;
 	int allowed_bw,video_bw;
 	bool_t ret=FALSE;
-	/*
-	  update allocated audio bandwidth to allocate the remaining to video.
-	  This must be done outside calls, because after sdp negociation
-	  the audio bandwidth is refined to the selected codec
-	*/
-	if (!linphone_core_in_call(lc)) linphone_core_update_allocated_audio_bandwidth(lc);
+
+	linphone_core_update_allocated_audio_bandwidth(lc);
 	allowed_bw=get_min_bandwidth(linphone_core_get_download_bandwidth(lc),
 					linphone_core_get_upload_bandwidth(lc));
 	if (allowed_bw==0) {
@@ -317,8 +313,10 @@ bool_t linphone_core_check_payload_type_usability(LinphoneCore *lc, PayloadType 
 			//ms_message("Payload %s: %g",pt->mime_type,codec_band);
 			break;
 		case PAYLOAD_VIDEO:
-			if (video_bw>0)
+			if (video_bw>0){
 				pt->normal_bitrate=video_bw*1000;
+				ret=TRUE;
+			}
 			else ret=FALSE;
 			break;
 	}
