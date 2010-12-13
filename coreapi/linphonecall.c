@@ -738,7 +738,7 @@ static RtpProfile *make_profile(LinphoneCall *call, const SalMediaDescription *m
 			/*case where b=AS is given globally, not per stream*/
 			remote_bw=md->bandwidth;
 			if (desc->type==SalVideo){
-				remote_bw-=call->audio_bw-10;
+				remote_bw-=call->audio_bw+10;
 			}
 		}
 		

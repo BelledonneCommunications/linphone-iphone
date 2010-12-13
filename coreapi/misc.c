@@ -235,6 +235,7 @@ static double get_audio_payload_bandwidth(LinphoneCore *lc, const PayloadType *p
 
 void linphone_core_update_allocated_audio_bandwidth_in_call(LinphoneCall *call, const PayloadType *pt){
 	call->audio_bw=(int)(get_audio_payload_bandwidth(call->core,pt)/1000.0);
+	ms_message("Audio bandwidth for this call is %i",call->audio_bw);
 }
 
 void linphone_core_update_allocated_audio_bandwidth(LinphoneCore *lc){

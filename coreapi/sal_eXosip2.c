@@ -455,6 +455,8 @@ static void sdp_process(SalOp *h){
 		int i;
 		offer_answer_initiate_incoming(h->base.local_media,h->base.remote_media,h->result,h->base.root->one_matching_codec);
 		h->sdp_answer=media_description_to_sdp(h->result);
+		/*once we have generated the SDP answer, we modify the result description for processing by the upper layer.
+		 It should contains media parameters constraint from the remote offer, not our response*/
 		strcpy(h->result->addr,h->base.remote_media->addr);
 		h->result->bandwidth=h->base.remote_media->bandwidth;
 		for(i=0;i<h->result->nstreams;++i){
@@ -637,6 +639,7 @@ int sal_ping(SalOp *op, const char *from, const char *to){
 	
 	sal_op_set_from(op,from);
 	sal_op_set_to(op,to);
+	/*bug here: eXosip2 does not honor the route argument*/
 	eXosip_options_build_request (&options, sal_op_get_to(op),
 			sal_op_get_from(op),sal_op_get_route(op));
 	if (options){

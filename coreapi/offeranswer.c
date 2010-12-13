@@ -161,7 +161,7 @@ static void initiate_incoming(const SalStreamDescription *local_cap,
 		strcpy(result->addr,local_cap->addr);
 		result->port=local_cap->port;
 		result->bandwidth=local_cap->bandwidth;
-		result->ptime=local_cap->ptime;		
+		result->ptime=local_cap->ptime;	
 	}else{
 		result->port=0;
 	}
@@ -187,6 +187,7 @@ int offer_answer_initiate_outgoing(const SalMediaDescription *local_offer,
 		else ms_warning("No matching stream for %i",i);
     }
 	result->nstreams=j;
+	result->bandwidth=remote_answer->bandwidth;
 	strcpy(result->addr,remote_answer->addr);
 	return 0;
 }
@@ -214,6 +215,7 @@ int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities
 	result->nstreams=j;
 	strcpy(result->username, local_capabilities->username);
 	strcpy(result->addr,local_capabilities->addr);
+	result->bandwidth=local_capabilities->bandwidth;
 	return 0;
 }
     					
