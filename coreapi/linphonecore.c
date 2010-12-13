@@ -1650,7 +1650,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 	}
 
 	sal_iterate(lc->sal);
-	ms_event_queue_pump(lc->msevq);
+	if (lc->msevq) ms_event_queue_pump(lc->msevq);
 	if (lc->auto_net_state_mon) monitor_network_state(lc,curtime);
 
 	proxy_update(lc);
@@ -3811,6 +3811,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	}
 #endif
 	ms_event_queue_destroy(lc->msevq);
+	lc->msevq=NULL;
 	/* save all config */
 	net_config_uninit(lc);
 	sip_config_uninit(lc);
