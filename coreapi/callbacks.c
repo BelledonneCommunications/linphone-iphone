@@ -193,21 +193,26 @@ static void call_received(SalOp *h){
 	}else{
 		/*TODO : play a tone within the context of the current call */
 	}
+
+	
+	linphone_call_ref(call); /*prevent the call from being destroyed while we are notifying, if the user declines within the state callback */
 	linphone_call_set_state(call,LinphoneCallIncomingReceived,"Incoming call");
 	
-	sal_call_notify_ringing(h,propose_early_media || ringback_tone!=NULL);
+	if (call->state==LinphoneCallIncomingReceived){
+		sal_call_notify_ringing(h,propose_early_media || ringback_tone!=NULL);
 
-	if (propose_early_media || ringback_tone!=NULL){
-		linphone_call_set_state(call,LinphoneCallIncomingEarlyMedia,"Incoming call early media");
-		linphone_core_update_streams(lc,call,md);
+		if (propose_early_media || ringback_tone!=NULL){
+			linphone_call_set_state(call,LinphoneCallIncomingEarlyMedia,"Incoming call early media");
+			linphone_core_update_streams(lc,call,md);
+		}
+		if (sal_call_get_replaces(call->op)!=NULL && lp_config_get_int(lc->config,"sip","auto_answer_replacing_calls",1)){
+			linphone_core_accept_call(lc,call);
+		}
 	}
+	linphone_call_unref(call);
+
 	ms_free(barmesg);
 	ms_free(tmp);
-	
-	
-	if (sal_call_get_replaces(call->op)!=NULL && lp_config_get_int(lc->config,"sip","auto_answer_replacing_calls",1)){
-		linphone_core_accept_call(lc,call);
-	}
 }
 
 static void call_ringing(SalOp *h){
