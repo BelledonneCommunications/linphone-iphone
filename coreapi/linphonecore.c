@@ -3661,6 +3661,8 @@ void sip_config_uninit(LinphoneCore *lc)
 		linphone_proxy_config_write_to_config_file(lc->config,cfg,i);
 		linphone_proxy_config_edit(cfg);	/* to unregister */
 	}
+	/*to ensure remove configs are erased:*/
+	linphone_proxy_config_write_to_config_file(lc->config,NULL,i);
 
 	for (i=0;i<20;i++){
 		linphone_core_iterate(lc);
