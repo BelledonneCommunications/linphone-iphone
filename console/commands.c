@@ -1948,10 +1948,18 @@ static int lpc_cmd_status(LinphoneCore *lc, char *args)
 		LinphoneCallState call_state=LinphoneCallIdle;
 		if (call) call_state=linphone_call_get_state(call);
 
- 		switch(call_state){
+		switch(call_state){
 			case LinphoneCallOutgoingInit:
+				linphonec_out("hook=outgoing_init sip:%s\n",linphonec_get_callee());
+			break;
 			case LinphoneCallOutgoingProgress:
-				linphonec_out("hook=dialing\n");
+				linphonec_out("hook=dialing sip:%s\n",linphonec_get_callee());
+			break;
+			case LinphoneCallOutgoingRinging:
+				linphonec_out("hook=ringing sip:%s\n",linphonec_get_callee());
+			break;
+			case LinphoneCallPaused:
+				linphonec_out("hook=paused sip:%s\n",linphonec_get_callee());
 			break;
 			case LinphoneCallIdle:
 				linphonec_out("hook=offhook\n");
@@ -1964,8 +1972,8 @@ static int lpc_cmd_status(LinphoneCore *lc, char *args)
 					      linphone_core_is_mic_muted (lc) ? "yes" : "no",
 					      linphone_core_is_rtp_muted(lc) ? "yes"  : "no");
 				}else{
-					linphonec_out("hook=answered duration=%i\n" ,
-						linphone_core_get_current_call_duration(lc));
+					linphonec_out("hook=answered duration=%i %s\n" ,
+						linphone_core_get_current_call_duration(lc), linphonec_get_caller());
 		 		}
 				break;
 			case LinphoneCallIncomingReceived:
