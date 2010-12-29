@@ -27,13 +27,8 @@ public final class VideoSize {
 	public static final int HVGA = 2;
 	public static final int QVGA = 3;
 
-	private int width;
-	public int getWidth() {return width;}
-	public void setWidth(int width) {this.width = width;}
-
-	private int height;
-	public int getHeight() {return height;}
-	public void setHeight(int height) {this.height = height;}
+	public int width;
+	public int height;
 
 	public VideoSize() {}
 	public VideoSize(int width, int height) {
