@@ -95,25 +95,19 @@ AC_SUBST(ALL_LINGUAS)
 AC_DEFINE_UNQUOTED(LINPHONE_ALL_LANGS, "$ALL_LINGUAS", [All supported languages])
 
 if test "$mingw_found" != "yes" ; then
-dnl gettext macro does not work properly under mingw.
+dnl gettext macro does not work properly under mingw. And we want to use the one provided by GTK.
 AM_GNU_GETTEXT([external])
 LIBS="$LIBS $LIBINTL"
 else
-	if test "$mingwce_found" != "yes" ; then 
-		AC_DEFINE(ENABLE_NLS,1,[Tells whether localisation is possible])
-		AC_DEFINE(HAVE_GETTEXT,1,[Tells wheter localisation is possible])
-		LIBS="$LIBS -L/usr/lib -lintl"
-	else
-		dnl gettext macro does not work properly under mingw.
-		AM_GNU_GETTEXT([external])
-		LIBS="$LIBS $LIBINTL"
-	fi
+	AC_DEFINE(ENABLE_NLS,1,[Tells whether localisation is possible])
+	AC_DEFINE(HAVE_GETTEXT,1,[Tells wheter localisation is possible])
+	LIBS="$LIBS -lintl"
 fi
 
 GETTEXT_PACKAGE=linphone
 AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE",[The name of the gettext package name])
-AC_CHECK_LIB(intl,libintl_gettext)
+dnl AC_CHECK_LIB(intl,libintl_gettext)
 
 AC_CHECK_FUNCS([get_current_dir_name strndup stpcpy] )
 

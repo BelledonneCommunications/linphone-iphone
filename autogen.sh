@@ -20,6 +20,10 @@ if test -d /opt/local/share/aclocal ; then
         ACLOCAL_ARGS="-I /opt/local/share/aclocal"
 fi
 
+if test -d /share/aclocal ; then
+        ACLOCAL_ARGS="$ACLOCAL_ARGS -I /share/aclocal"
+fi
+
 if test -f /opt/local/bin/intltoolize ; then
 	#darwin
 	INTLTOOLIZE=/opt/local/bin/intltoolize

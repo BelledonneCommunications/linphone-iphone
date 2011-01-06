@@ -50,14 +50,14 @@ SDK_EXCLUDED= \
 
 GTK_PREFIX=/usr
 GTK_THEME=Outcrop
-GTK_FILELIST=gtk+-2.18.5.filelist
+GTK_FILELIST=gtk+-2.22.1.filelist
 GTK_FILELIST_PATH=$(shell cd $(top_srcdir) && pwd)/$(GTK_FILELIST)
 LINPHONEDEPS_FILELIST=linphone-deps.filelist
 WINBINDIST_FILES=$(shell cat $(top_srcdir)/$(LINPHONEDEPS_FILELIST))
 ISS_SCRIPT=linphone.iss
 ISS_SCRIPT_PATH=$(shell cd $(top_srcdir) && pwd)/$(ISS_SCRIPT)
 #path to Inno Setup 5 compiler
-ISCC=/c/Program\ Files/Inno\ Setup\ 5/ISCC.exe
+ISCC=ISCC.exe
 PACKAGE_WIN32_FILELIST=$(PACKAGE)-win32.filelist
 
 EXTRA_DIST = config.rpath  BUGS linphone.kdevelop  \
