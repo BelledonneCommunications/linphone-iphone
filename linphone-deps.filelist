@@ -1,5 +1,4 @@
 ./bin/avcodec-52.dll
-./bin/avformat-52.dll
 ./bin/avutil-50.dll
 ./bin/libeXosip2-4.dll
 ./bin/libogg.dll
@@ -8,3 +7,4 @@
 ./bin/libosip2-4.dll
 ./bin/libosipparser2-4.dll
 ./bin/swscale-0.dll
+
