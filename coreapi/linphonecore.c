@@ -919,8 +919,8 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	linphone_core_assign_payload_type(&payload_type_gsm,3,NULL);
 	linphone_core_assign_payload_type(&payload_type_pcma8000,8,NULL);
 	linphone_core_assign_payload_type(&payload_type_lpc1015,115,NULL);
-	linphone_core_assign_payload_type(&payload_type_speex_nb,110,"vbr=vad");
-	linphone_core_assign_payload_type(&payload_type_speex_wb,111,"vbr=vad");
+	linphone_core_assign_payload_type(&payload_type_speex_nb,110,"vbr=on");
+	linphone_core_assign_payload_type(&payload_type_speex_wb,111,"vbr=on");
 	linphone_core_assign_payload_type(&payload_type_speex_uwb,112,"vbr=on");
 	linphone_core_assign_payload_type(&payload_type_telephone_event,101,"0-11");
 	linphone_core_assign_payload_type(&payload_type_ilbc,113,"mode=30");
