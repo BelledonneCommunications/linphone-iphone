@@ -822,7 +822,8 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 					playcard=NULL;
 					captcard=NULL;
 					recfile=NULL;
-					playfile=NULL;
+					/*And we will eventually play "playfile" if set by the user*/
+					/*playfile=NULL;*/
 				}
 				if (send_ringbacktone){
 					captcard=NULL;
@@ -856,6 +857,10 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 				post_configure_audio_streams(call);
 				if (all_inputs_muted && !send_ringbacktone){
 					audio_stream_set_mic_gain(call->audiostream,0);
+				}
+				if (stream->dir==SalStreamSendOnly && playfile!=NULL){
+					int pause_time=500;
+					ms_filter_call_method(call->audiostream->soundread,MS_FILE_PLAYER_LOOP,&pause_time);
 				}
 				if (send_ringbacktone){
 					setup_ring_player(lc,call);
