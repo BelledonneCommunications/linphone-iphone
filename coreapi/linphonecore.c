@@ -2185,11 +2185,14 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 		sal_call_set_local_media_description (call->op,call->localdesc);
 		err=sal_call_update(call->op);
 	}else{
+#ifdef VIDEO_ENABLED
 		if (call->videostream!=NULL){
 			video_stream_set_sent_video_size(call->videostream,linphone_core_get_preferred_video_size(lc));
 			video_stream_update_video_params (call->videostream);
 		}
+#endif
 	}
+
 	return err;
 }
 
