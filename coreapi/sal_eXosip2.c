@@ -165,6 +165,7 @@ SalOp * sal_op_new(Sal *sal){
 	op->referred_by=NULL;
 	op->masquerade_via=FALSE;
 	op->auto_answer_asked=FALSE;
+	op->auth_info=NULL;
 	return op;
 }
 
@@ -208,6 +209,9 @@ void sal_op_release(SalOp *op){
 	}
 	if (op->referred_by){
 		ms_free(op->referred_by);
+	}
+	if (op->auth_info) {
+		sal_auth_info_delete(op->auth_info);
 	}
 	__sal_op_free(op);
 }
@@ -735,11 +739,28 @@ int sal_call_send_dtmf(SalOp *h, char dtmf){
 	return 0;
 }
 
+static void push_auth_to_exosip(const SalAuthInfo *info){
+	const char *userid;
+	if (info->userid==NULL || info->userid[0]=='\0') userid=info->username;
+	else userid=info->userid;
+	ms_message("Authentication info for username [%s], id[%s], realm [%s] added to eXosip", info->username,userid, info->realm);
+	eXosip_add_authentication_info (info->username,userid,
+                                  info->password, NULL,info->realm);
+}
+/**
+ * Just for symmetry ;-)
+ */
+static void pop_auth_from_exosip() {
+	eXosip_clear_authentication_info();
+}
+
 int sal_call_terminate(SalOp *h){
 	int err;
+	if (h->auth_info) push_auth_to_exosip(h->auth_info);
 	eXosip_lock();
 	err=eXosip_call_terminate(h->cid,h->did);
 	eXosip_unlock();
+	pop_auth_from_exosip();
 	if (err!=0){
 		ms_warning("Exosip could not terminate the call: cid=%i did=%i", h->cid,h->did);
 	}
@@ -750,20 +771,17 @@ int sal_call_terminate(SalOp *h){
 
 void sal_op_authenticate(SalOp *h, const SalAuthInfo *info){
 	if (h->pending_auth){
-		const char *userid;
-		if (info->userid==NULL || info->userid[0]=='\0') userid=info->username;
-		else userid=info->userid;
-		ms_message("Authentication info for %s %s added to eXosip", info->username,info->realm);
-		eXosip_add_authentication_info (info->username,userid,
-                                      info->password, NULL,info->realm);
+		push_auth_to_exosip(info);
 		eXosip_lock();
 		eXosip_default_action(h->pending_auth);
 		eXosip_unlock();
 		ms_message("eXosip_default_action() done");
-		eXosip_clear_authentication_info();
+		pop_auth_from_exosip();
 		eXosip_event_free(h->pending_auth);
 		sal_remove_pending_auth(sal_op_get_sal(h),h);
 		h->pending_auth=NULL;
+		if (h->auth_info) sal_auth_info_delete(h->auth_info); /*if already exist*/
+		h->auth_info=sal_auth_info_clone(info); /*store auth info for subsequent request*/
 	}
 }
 

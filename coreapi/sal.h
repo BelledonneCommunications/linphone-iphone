@@ -238,6 +238,10 @@ typedef struct SalAuthInfo{
 	char *realm;
 }SalAuthInfo;
 
+SalAuthInfo* sal_auth_info_new();
+SalAuthInfo* sal_auth_info_clone(const SalAuthInfo* auth_info);
+void sal_auth_info_delete(const SalAuthInfo* auth_info);
+
 void sal_set_callbacks(Sal *ctx, const SalCallbacks *cbs);
 int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int is_secure);
 int sal_unlisten_ports(Sal *ctx);
