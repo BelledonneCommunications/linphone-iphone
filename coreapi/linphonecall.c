@@ -678,6 +678,7 @@ static void post_configure_audio_streams(LinphoneCall*call){
 		thres=lp_config_get_float(lc->config,"sound","el_thres",-1);
 		float force=lp_config_get_float(lc->config,"sound","el_force",-1);
 		int sustain=lp_config_get_int(lc->config,"sound","el_sustain",-1);
+		float transmit_thres=lp_config_get_float(lc->config,"sound","el_transmit_thres",-1);
 		MSFilter *f=NULL;
 		if (st->el_type!=ELInactive){
 			f=st->volsend;
@@ -689,6 +690,8 @@ static void post_configure_audio_streams(LinphoneCall*call){
 				ms_filter_call_method(f,MS_VOLUME_SET_EA_THRESHOLD,&thres);
 			if (sustain!=-1)
 				ms_filter_call_method(f,MS_VOLUME_SET_EA_SUSTAIN,&sustain);
+			if (transmit_thres!=-1)
+				ms_filter_call_method(f,MS_VOLUME_SET_EA_TRANSMIT_THRESHOLD,&transmit_thres);
 		}
 	}
 		

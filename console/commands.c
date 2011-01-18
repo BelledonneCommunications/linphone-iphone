@@ -83,6 +83,7 @@ static int lpc_cmd_acodec(LinphoneCore *lc, char *args);
 static int lpc_cmd_vcodec(LinphoneCore *lc, char *args);
 static int lpc_cmd_codec(int type, LinphoneCore *lc, char *args);
 static int lpc_cmd_echocancellation(LinphoneCore *lc, char *args);
+static int lpc_cmd_echolimiter(LinphoneCore *lc, char *args);
 static int lpc_cmd_pause(LinphoneCore *lc, char *args);
 static int lpc_cmd_resume(LinphoneCore *lc, char *args);
 static int lpc_cmd_mute_mic(LinphoneCore *lc, char *args);
@@ -269,6 +270,10 @@ static LPC_COMMAND advanced_commands[] = {
 	    "'ec on [<delay>] [<tail>] [<framesize>]' : turn EC on with given delay, tail length and framesize\n"
 	    "'ec off' : turn echo cancellation (EC) off\n"
 	    "'ec show' : show EC status" },
+	{ "el", lpc_cmd_echolimiter, "Echo limiter",
+	    "'el on turns on echo limiter (automatic half duplex, for cases where echo canceller cannot work)\n"
+	    "'el off' : turn echo limiter off\n"
+	    "'el show' : show echo limiter status" },
 	{ "nortp-on-audio-mute", lpc_cmd_rtp_no_xmit_on_audio_mute,
 		  "Set the rtp_no_xmit_on_audio_mute configuration parameter",
 		  "   If set to 1 then rtp transmission will be muted when\n"
@@ -2208,6 +2213,18 @@ static int lpc_cmd_echocancellation(LinphoneCore *lc, char *args){
     }
 
     return 1;
+}
+
+static int lpc_cmd_echolimiter(LinphoneCore *lc, char *args){
+	if (args){
+		if (strcmp(args,"on")==0){
+			linphone_core_enable_echo_limiter (lc,TRUE);
+		}else if (strcmp(args,"off")==0){
+			linphone_core_enable_echo_limiter (lc,FALSE);
+		}
+	}
+	linphonec_out("Echo limiter is now %s.\n",linphone_core_echo_limiter_enabled (lc) ? "on":"off");
+	return 1;
 }
 
 static int lpc_cmd_mute_mic(LinphoneCore *lc, char *args)

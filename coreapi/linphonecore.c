@@ -2162,23 +2162,34 @@ bool_t linphone_core_inc_invite_pending(LinphoneCore*lc){
 }
 
 /**
- * Updates a running call according to supplied call parameters.
+ * Updates a running call according to supplied call parameters or parameters changed in the LinphoneCore.
  *
- * For the moment, this is limited to enabling or disabling the video stream.
+ * In this version this is limited to the following use cases:
+ * - setting up/down the video stream according to the video parameter of the LinphoneCallParams (see linphone_call_params_enable_video() ).
+ * - changing the size of the transmitted video after calling linphone_core_set_preferred_video_size()
+ *
+ * In case no changes are requested through the LinphoneCallParams argument, then this argument can be ommitted and set to NULL.
  *
  * @return 0 if successful, -1 otherwise.
 **/
 int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params){
-	int err;
-	if (call->localdesc)
-		sal_media_description_unref(call->localdesc);
-	call->params=*params;
-	call->localdesc=create_local_media_description (lc,call);
-	call->camera_active=params->has_video;
-	if (lc->vtable.display_status)
-		lc->vtable.display_status(lc,_("Modifying call parameters..."));
-	sal_call_set_local_media_description (call->op,call->localdesc);
-	err=sal_call_update(call->op);
+	int err=0;
+	if (params!=NULL){
+		if (call->localdesc)
+			sal_media_description_unref(call->localdesc);
+		call->params=*params;
+		call->localdesc=create_local_media_description (lc,call);
+		call->camera_active=params->has_video;
+		if (lc->vtable.display_status)
+			lc->vtable.display_status(lc,_("Modifying call parameters..."));
+		sal_call_set_local_media_description (call->op,call->localdesc);
+		err=sal_call_update(call->op);
+	}else{
+		if (call->videostream!=NULL){
+			video_stream_set_sent_video_size(call->videostream,linphone_core_get_preferred_video_size(lc));
+			video_stream_update_video_params (call->videostream);
+		}
+	}
 	return err;
 }
 
