@@ -64,6 +64,7 @@ struct SalOp{
 	bool_t reinvite;
 	bool_t masquerade_via;
 	bool_t auto_answer_asked;
+	const SalAuthInfo *auth_info;
 };
 
 void sal_remove_out_subscribe(Sal *sal, SalOp *op);
