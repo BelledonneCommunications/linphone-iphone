@@ -83,7 +83,7 @@ static void transfer_button_clicked(GtkWidget *button, gpointer call_ref){
 		GtkWidget *call_view=(GtkWidget*)linphone_call_get_user_pointer(other_call);
 		if (other_call!=call){
 			int call_index=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(call_view),"call_index"));
-			char *remote_uri=linphone_call_get_remote_address_as_string (call);
+			char *remote_uri=linphone_call_get_remote_address_as_string (other_call);
 			char *text=g_strdup_printf("Transfer to call #%i with %s",call_index,remote_uri);
 			menu_item=gtk_image_menu_item_new_with_label(text);
 			ms_free(remote_uri);

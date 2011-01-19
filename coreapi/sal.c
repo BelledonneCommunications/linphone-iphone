@@ -267,9 +267,11 @@ void __sal_op_free(SalOp *op){
 		sal_media_description_unref(b->remote_media);
 	ms_free(op);
 }
+
 SalAuthInfo* sal_auth_info_new() {
 	return ms_new0(SalAuthInfo,1);
 }
+
 SalAuthInfo* sal_auth_info_clone(const SalAuthInfo* auth_info) {
 	SalAuthInfo* new_auth_info=sal_auth_info_new();
 	new_auth_info->username=auth_info->username?ms_strdup(auth_info->username):NULL;
@@ -278,6 +280,7 @@ SalAuthInfo* sal_auth_info_clone(const SalAuthInfo* auth_info) {
 	new_auth_info->password=auth_info->password?ms_strdup(auth_info->password):NULL;
 	return new_auth_info;
 }
+
 void sal_auth_info_delete(const SalAuthInfo* auth_info) {
 	if (auth_info->username) ms_free(auth_info->username);
 	if (auth_info->userid) ms_free(auth_info->userid);

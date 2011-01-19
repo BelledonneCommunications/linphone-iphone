@@ -747,7 +747,7 @@ static void push_auth_to_exosip(const SalAuthInfo *info){
 	eXosip_add_authentication_info (info->username,userid,
                                   info->password, NULL,info->realm);
 }
-/**
+/*
  * Just for symmetry ;-)
  */
 static void pop_auth_from_exosip() {
