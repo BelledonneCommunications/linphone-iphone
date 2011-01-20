@@ -298,6 +298,7 @@ static LPC_COMMAND advanced_commands[] = {
 	{ "snapshot", lpc_cmd_snapshot, "Take a snapshot of currently received video stream",
 		"'snapshot <file path>': take a snapshot and records it in jpeg format into the supplied path\n"
 	},
+	{ "vfureq", lpc_cmd_vfureq, "Request the other side to send VFU for the current call"},
 #endif
 	{ "states", lpc_cmd_states, "Show internal states of liblinphone, registrations and calls, according to linphonecore.h definitions",
 		"'states global': shows global state of liblinphone \n"
@@ -2433,12 +2434,21 @@ static int lpc_cmd_snapshot(LinphoneCore *lc, char *args){
 	if (!args) return 0;
 	call=linphone_core_get_current_call(lc);
 	if (call!=NULL){
-		linphone_call_take_video_snapshot (call,args);
-		linphonec_out("Taking video snaphot in file %s\n", args);
+		linphone_call_take_video_snapshot(call,args);
+		linphonec_out("Taking video snapshot in file %s\n", args);
 	}else linphonec_out("There is no active call.\n");
 	return 1;
 }
 
+static int lpc_cmd_vfureq(LinphoneCore *lc){
+	LinphoneCall *call;
+	call=linphone_core_get_current_call(lc);
+	if (call!=NULL){
+		linphone_call_send_vfu_request(call);
+		linphonec_out("VFU request sent\n");
+	}else linphonec_out("There is no active call.\n");
+	return 1;
+}
 #endif
 
 static int lpc_cmd_identify(LinphoneCore *lc, char *args){

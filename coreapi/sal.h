@@ -298,6 +298,7 @@ SalOp *sal_call_get_replaces(SalOp *h);
 int sal_call_send_dtmf(SalOp *h, char dtmf);
 int sal_call_terminate(SalOp *h);
 bool_t sal_call_autoanswer_asked(SalOp *op);
+void sal_call_send_vfu_request(SalOp *h);
 
 /*Registration*/
 int sal_register(SalOp *op, const char *proxy, const char *from, int expires);

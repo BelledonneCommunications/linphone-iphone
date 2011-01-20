@@ -1237,6 +1237,33 @@ static bool_t call_failure(Sal *sal, eXosip_event_t *ev){
 	return TRUE;
 }
 
+/* Request remote side to send us VFU */
+static void sal_call_send_vfu_request(SalOp *h){
+	osip_message_t *msg=NULL;
+	char info_body[] =
+			"<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n"
+			 "<media_control>\n"
+			 "  <vc_primitive>\n"
+			 "    <to_encoder>\n"
+			 "      <picture_fast_update/>\n"
+			 "    </to_encoder>\n"
+			 "  </vc_primitive>\n"
+			 "</media_control>\n";
+
+	char clen[10];
+
+	eXosip_lock();
+	eXosip_call_build_info(h->did,&msg);
+	if (msg){
+		osip_message_set_body(msg,info_body,strlen(info_body));
+		osip_message_set_content_type(msg,"application/media_control+xml");
+		snprintf(clen,sizeof(clen),"%lu",(unsigned long)strlen(info_body));
+		osip_message_set_content_length(msg,clen);
+		eXosip_call_send_request(h->did,msg);
+	}
+	eXosip_unlock();
+	return 0;
+}
 
 static void process_media_control_xml(Sal *sal, eXosip_event_t *ev){
 	SalOp *op=find_op(sal,ev);
