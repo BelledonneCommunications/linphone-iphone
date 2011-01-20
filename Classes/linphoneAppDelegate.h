@@ -76,7 +76,7 @@
 /**
  * return true if register is activated
  */
-bool networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void * info);
+void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void * info);
 
 -(void) doRegister;
 -(void) doLinphoneConfiguration:(NSNotification *)notification;

@@ -371,7 +371,7 @@
 												  otherButtonTitles:nil];
 			[error show];
 			//[self performSelector:@selector(dismissAlertDialog:) withObject:error afterDelay:2];
-			//[self performSelector:@selector(dismissIncallView) withObject:nil afterDelay:2];
+			[self performSelector:@selector(dismissIncallView) withObject:nil afterDelay:2];
 			
 		}
 			break;

@@ -275,15 +275,17 @@ LinphoneCoreVTable linphonec_vtable = {
 }
 
 -(void) kickOffNetworkConnection {
-	ms_message("waiking up network connection");
+	/*start a new thread to avoid blocking the main ui in case of peer host failure*/
+	[NSThread detachNewThreadSelector:@selector(runNetworkConnection) toTarget:self withObject:nil];
+}
+-(void) runNetworkConnection {
 	CFWriteStreamRef writeStream;
-	CFStreamCreatePairWithSocketToHost(NULL, (CFStringRef)@"linphone.org", 15000, nil, &writeStream);
+	CFStreamCreatePairWithSocketToHost(NULL, (CFStringRef)@"192.168.0.200"/*"linphone.org"*/, 15000, nil, &writeStream);
 	CFWriteStreamOpen (writeStream);
 	const char* buff="hello";
 	CFWriteStreamWrite (writeStream,(const UInt8*)buff,strlen(buff));
 	CFWriteStreamClose (writeStream);
-	
-}
+}	
 - (void)applicationDidBecomeActive:(UIApplication *)application {
 	
 	if (myLinphoneCore == nil) {
@@ -406,6 +408,9 @@ extern void libmsilbc_init();
 	}
 	NSString* transport = [[NSUserDefaults standardUserDefaults] stringForKey:@"transport_preference"];
 	
+	//initial state is network off should be done as soon as possible
+	linphone_core_set_network_reachable(myLinphoneCore,false);
+	
 	LCSipTransports transportValue;
 	if (transport!=nil) {
 		if (linphone_core_get_sip_transports(myLinphoneCore, &transportValue)) {
@@ -427,8 +432,7 @@ extern void libmsilbc_init();
 	
 	
 	
-	//initial state is network off
-	linphone_core_set_network_reachable(myLinphoneCore,false);
+	
 	// Set audio assets
 	NSBundle* myBundle = [NSBundle mainBundle];
 	const char*  lRing = [[myBundle pathForResource:@"oldphone-mono"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
@@ -657,22 +661,19 @@ extern void libmsilbc_init();
 	
 }
 
-bool networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void * info) {
+void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void * info) {
 	id<LinphoneTabManagerDelegate> linphoneDelegate=info;
 	LinphoneCore* lc = [linphoneDelegate getLinphoneCore];  
 	bool result = false;
-	
+	ms_message("Network connection flag [%x]",flags);
 	if (lc != nil) {
 		if ((flags == 0) | (flags & (kSCNetworkReachabilityFlagsConnectionRequired |kSCNetworkReachabilityFlagsConnectionOnTraffic))) {
 			[linphoneDelegate kickOffNetworkConnection];
-		}
-		if (flags) {
-			linphone_core_set_network_reachable(lc,true);
-			result = true;
-		} else {
 			linphone_core_set_network_reachable(lc,false);
-			result = false;
+		} else {
+			linphone_core_set_network_reachable(lc,true);
 		}
+
 	}
 	return result;
 }
