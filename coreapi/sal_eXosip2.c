@@ -747,7 +747,7 @@ static void push_auth_to_exosip(const SalAuthInfo *info){
 	eXosip_add_authentication_info (info->username,userid,
                                   info->password, NULL,info->realm);
 }
-/**
+/*
  * Just for symmetry ;-)
  */
 static void pop_auth_from_exosip() {
@@ -1729,7 +1729,7 @@ static bool_t process_event(Sal *sal, eXosip_event_t *ev){
 			call_message_new(sal,ev);
 			break;
 		case EXOSIP_CALL_MESSAGE_REQUESTFAILURE:
-			if (ev->did<0 && ev->response &&
+			if (ev->response &&
 				(ev->response->status_code==407 || ev->response->status_code==401)){
 				 return process_authentication(sal,ev);
 			}
