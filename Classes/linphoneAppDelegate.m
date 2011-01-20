@@ -513,15 +513,17 @@ extern void libmsilbc_init();
 		
 		
 		[self doRegister];
-	} else if (configCheckDisable == false) { 		
-		UIAlertView* error = [[UIAlertView alloc]	initWithTitle:@"Warning"
-														message:@"It seems you have not configured any proxy server from settings" 
-													   delegate:self 
-											  cancelButtonTitle:@"Continue" 
-											  otherButtonTitles:@"Never remind",nil];
-		[error show];
-		proxyReachability=SCNetworkReachabilityCreateWithName(nil, "linphone.org");
+	} else {
+		if (configCheckDisable == false) {
+			UIAlertView* error = [[UIAlertView alloc]	initWithTitle:@"Warning"
+															message:@"It seems you have not configured any proxy server from settings" 
+														   delegate:self
+												  cancelButtonTitle:@"Continue"
+												  otherButtonTitles:@"Never remind",nil];
+			[error show];
+		}
 		
+		proxyReachability=SCNetworkReachabilityCreateWithName(nil, "linphone.org");		
 	}		
 	proxyReachabilityContext.info=self;
 	SCNetworkReachabilitySetCallback(proxyReachability, (SCNetworkReachabilityCallBack)networkReachabilityCallBack,&proxyReachabilityContext);
