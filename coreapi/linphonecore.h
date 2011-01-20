@@ -929,6 +929,6 @@ LinphoneGlobalState linphone_core_get_global_state(const LinphoneCore *lc);
 }
 #endif
 
-
+void linphone_call_send_vfu_request(LinphoneCall *call);
 
 #endif

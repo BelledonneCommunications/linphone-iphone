@@ -1238,7 +1238,7 @@ static bool_t call_failure(Sal *sal, eXosip_event_t *ev){
 }
 
 /* Request remote side to send us VFU */
-static void sal_call_send_vfu_request(SalOp *h){
+void sal_call_send_vfu_request(SalOp *h){
 	osip_message_t *msg=NULL;
 	char info_body[] =
 			"<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n"
@@ -1262,7 +1262,6 @@ static void sal_call_send_vfu_request(SalOp *h){
 		eXosip_call_send_request(h->did,msg);
 	}
 	eXosip_unlock();
-	return 0;
 }
 
 static void process_media_control_xml(Sal *sal, eXosip_event_t *ev){

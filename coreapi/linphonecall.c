@@ -973,11 +973,12 @@ void linphone_call_stop_media_streams(LinphoneCall *call){
 	}
 }
 
+#ifdef VIDEO_ENABLED
 /**
  * Request remote side to send us VFU.
 **/
 void linphone_call_send_vfu_request(LinphoneCall *call)
 {
-	LinphoneCall *call=linphone_core_get_current_call(lc);
-		sal_call_send_vfu_request(call->op);
+	sal_call_send_vfu_request(call->op);
 }
+#endif

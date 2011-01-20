@@ -94,6 +94,7 @@ static int lpc_cmd_camera(LinphoneCore *lc, char *args);
 static int lpc_cmd_video_window(LinphoneCore *lc, char *args);
 static int lpc_cmd_preview_window(LinphoneCore *lc, char *args);
 static int lpc_cmd_snapshot(LinphoneCore *lc, char *args);
+static int lpc_cmd_vfureq(LinphoneCore *lc, char *arg);
 #endif
 static int lpc_cmd_states(LinphoneCore *lc, char *args);
 static int lpc_cmd_identify(LinphoneCore *lc, char *args);
@@ -2440,7 +2441,7 @@ static int lpc_cmd_snapshot(LinphoneCore *lc, char *args){
 	return 1;
 }
 
-static int lpc_cmd_vfureq(LinphoneCore *lc){
+static int lpc_cmd_vfureq(LinphoneCore *lc, char *arg){
 	LinphoneCall *call;
 	call=linphone_core_get_current_call(lc);
 	if (call!=NULL){
