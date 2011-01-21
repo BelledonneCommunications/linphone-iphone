@@ -1616,9 +1616,9 @@ static void linphone_core_do_plugin_tasks(LinphoneCore *lc){
  * - handles timers and timeout
  * - performs registration to proxies
  * - authentication retries
- * The application MUST call this function from periodically, in its main loop.
- * Be careful that this function must be call from the same thread as
- * other liblinphone methods. In not the case make sure all liblinphone calls are 
+ * The application MUST call this function periodically, in its main loop.
+ * Be careful that this function must be called from the same thread as
+ * other liblinphone methods. If it is not the case make sure all liblinphone calls are
  * serialized with a mutex.
 **/
 void linphone_core_iterate(LinphoneCore *lc){
@@ -2849,7 +2849,7 @@ const char *linphone_core_get_ring(const LinphoneCore *lc){
 	return lc->sound_conf.local_ring;
 }
 
-static void notify_end_of_ring(void *ud ,unsigned int event, void * arg){
+static void notify_end_of_ring(void *ud, MSFilter *f, unsigned int event, void *arg){
 	LinphoneCore *lc=(LinphoneCore*)ud;
 	lc->preview_finished=1;
 }

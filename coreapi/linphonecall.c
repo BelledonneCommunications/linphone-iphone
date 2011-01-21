@@ -572,6 +572,21 @@ static void rendercb(void *data, const MSPicture *local, const MSPicture *remote
 }
 #endif
 
+#ifdef VIDEO_ENABLED
+static void video_stream_event_cb(void *user_pointer, const MSFilter *f, const unsigned int event_id, const void *args){
+	ms_warning("In linphonecall.c: video_stream_event_cb");
+	switch (event_id) {
+		case MS_VIDEO_DECODER_DECODING_ERRORS:
+			ms_warning("CAse is MS_VIDEO_DECODER_DECODING_ERRORS");
+			linphone_call_send_vfu_request((LinphoneCall*) user_pointer);
+			break;
+		default:
+			ms_warning("Unhandled event %i", event_id);
+			break;
+	}
+}
+#endif
+
 void linphone_call_init_media_streams(LinphoneCall *call){
 	LinphoneCore *lc=call->core;
 	SalMediaDescription *md=call->localdesc;
@@ -606,6 +621,7 @@ void linphone_call_init_media_streams(LinphoneCall *call){
 		call->videostream=video_stream_new(md->streams[1].port,linphone_core_ipv6_enabled(lc));
 	if( lc->video_conf.displaytype != NULL)
 		video_stream_set_display_filter_name(call->videostream,lc->video_conf.displaytype);
+	video_stream_set_event_callback(call->videostream,video_stream_event_cb, call);
 #ifdef TEST_EXT_RENDERER
 		video_stream_set_render_callback(call->videostream,rendercb,NULL);
 #endif
@@ -979,6 +995,7 @@ void linphone_call_stop_media_streams(LinphoneCall *call){
 **/
 void linphone_call_send_vfu_request(LinphoneCall *call)
 {
-	sal_call_send_vfu_request(call->op);
+	if (LinphoneCallStreamsRunning == linphone_call_get_state(call))
+		sal_call_send_vfu_request(call->op);
 }
 #endif

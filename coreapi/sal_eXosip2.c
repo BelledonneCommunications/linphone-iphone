@@ -1241,14 +1241,14 @@ static bool_t call_failure(Sal *sal, eXosip_event_t *ev){
 void sal_call_send_vfu_request(SalOp *h){
 	osip_message_t *msg=NULL;
 	char info_body[] =
-			"<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n"
-			 "<media_control>\n"
-			 "  <vc_primitive>\n"
-			 "    <to_encoder>\n"
-			 "      <picture_fast_update/>\n"
-			 "    </to_encoder>\n"
-			 "  </vc_primitive>\n"
-			 "</media_control>\n";
+			"<?xml version=\"1.0\" encoding=\"utf-8\" ?>"
+			 "<media_control>"
+			 "  <vc_primitive>"
+			 "    <to_encoder>"
+			 "      <picture_fast_update></picture_fast_update>"
+			 "    </to_encoder>"
+			 "  </vc_primitive>"
+			 "</media_control>";
 
 	char clen[10];
 
@@ -1260,6 +1260,7 @@ void sal_call_send_vfu_request(SalOp *h){
 		snprintf(clen,sizeof(clen),"%lu",(unsigned long)strlen(info_body));
 		osip_message_set_content_length(msg,clen);
 		eXosip_call_send_request(h->did,msg);
+		ms_message("Sending VFU request !");
 	}
 	eXosip_unlock();
 }
