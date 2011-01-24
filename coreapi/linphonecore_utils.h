@@ -49,4 +49,21 @@ void linphone_sound_daemon_release_all_players(LinphoneSoundDaemon *obj);
 void linphone_core_use_sound_daemon(LinphoneCore *lc, LinphoneSoundDaemon *lsd);
 void linphone_sound_daemon_destroy(LinphoneSoundDaemon *obj);
 
+/**
+ * Enum describing the result of the echo canceller calibration process.
+**/
+typedef enum {
+	LinphoneEcCalibratorInProgress,
+	LinphoneEcCalibratorDone,
+	LinphoneEcCalibratorFailed
+}LinphoneEcCalibratorStatus;
+
+
+typedef void (*LinphoneEcCalibrationCallback)(LinphoneCore *lc, LinphoneEcCalibratorStatus status, int delay_ms, void *data);
+
+/**
+ * Start an echo calibration of the sound devices, in order to find adequate settings for the echo canceller automatically.
+**/
+int linphone_core_start_echo_calibration(LinphoneCore *lc, LinphoneEcCalibrationCallback cb, void *cb_data);
+
 #endif
