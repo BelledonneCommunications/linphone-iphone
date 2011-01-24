@@ -4037,4 +4037,19 @@ const char *linphone_error_to_string(LinphoneReason err){
 	}
 	return "unknown error";
 }
-
+/**
+ * enable signaling keep alive
+ */
+void linphone_core_enable_keep_alive(LinphoneCore* lc,bool_t enable) {
+	if (enable > 0) {
+		sal_set_keepalive_period(lc->sal,lc->sip_conf.keepalive_period);
+	} else {
+		sal_set_keepalive_period(lc->sal,0);
+	}
+}
+/**
+ * Is signaling keep alive
+ */
+bool_t linphone_core_keep_alive_enabled(LinphoneCore* lc) {
+	return sal_get_keepalive_period(lc->sal) > 0;
+}

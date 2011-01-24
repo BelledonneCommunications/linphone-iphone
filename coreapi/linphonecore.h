@@ -919,6 +919,14 @@ void linphone_core_set_network_reachable(LinphoneCore* lc,bool_t value);
  */
 bool_t linphone_core_is_network_reachabled(LinphoneCore* lc);
 
+/**
+ *  enable signaling keep alive. small udp packet sent periodically to keep udp NAT association
+ */
+void linphone_core_enable_keep_alive(LinphoneCore* lc,bool_t enable);
+/**
+ * Is signaling keep alive
+ */
+bool_t linphone_core_keep_alive_enabled(LinphoneCore* lc);
 
 void *linphone_core_get_user_data(LinphoneCore *lc);
 

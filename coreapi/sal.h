@@ -249,6 +249,11 @@ ortp_socket_t sal_get_socket(Sal *ctx);
 void sal_set_user_agent(Sal *ctx, const char *user_agent);
 /*keepalive period in ms*/
 void sal_set_keepalive_period(Sal *ctx,unsigned int value);
+/**
+ * returns keepalive period in ms
+ * 0 desactiaved
+ * */
+unsigned int sal_get_keepalive_period(Sal *ctx);
 void sal_use_session_timers(Sal *ctx, int expires);
 void sal_use_one_matching_codec_policy(Sal *ctx, bool_t one_matching_codec);
 int sal_iterate(Sal *sal);

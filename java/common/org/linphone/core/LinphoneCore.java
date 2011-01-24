@@ -488,5 +488,13 @@ public interface LinphoneCore {
 	public VideoSize getPreferredVideoSize();
 	
 	public PayloadType[] listVideoCodecs();
-
+	/**
+	 * enable signaling keep alive. small udp packet sent periodically to keep udp NAT association
+	 */
+	void enableKeepAlive(boolean enable);
+	/**
+	 * get keep elive mode
+	 * @return true if enable
+ 	 */
+	boolean isKeepAliveEnabled();
 }

@@ -614,8 +614,19 @@ extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getRing(JNIEnv*  env
 		return NULL;
 	}
 }
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_enableKeepAlive(JNIEnv*  env
+																,jobject  thiz
+																,jlong lc
+																,jboolean enable) {
+	linphone_core_enable_keep_alive((LinphoneCore*)lc,enable);
 
+}
+extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isKeepAliveEnabled(JNIEnv*  env
+																,jobject  thiz
+																,jlong lc) {
+	return linphone_core_keep_alive_enabled((LinphoneCore*)lc);
 
+}
 //ProxyConfig
 
 extern "C" jlong Java_org_linphone_core_LinphoneProxyConfigImpl_newLinphoneProxyConfig(JNIEnv*  env,jobject  thiz) {

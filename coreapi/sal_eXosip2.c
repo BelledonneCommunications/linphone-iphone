@@ -1982,6 +1982,9 @@ void sal_set_keepalive_period(Sal *ctx,unsigned int value) {
 	ctx->keepalive_period=value;
 	eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE, &value);
 }
+unsigned int sal_get_keepalive_period(Sal *ctx) {
+	return ctx->keepalive_period;
+}
 
 const char * sal_address_get_port(const SalAddress *addr) {
 	const osip_from_t *u=(const osip_from_t*)addr;
