@@ -2155,7 +2155,8 @@ bool_t linphone_core_inc_invite_pending(LinphoneCore*lc){
 	LinphoneCall *call = linphone_core_get_current_call(lc);
 	if(call != NULL)
 	{
-		if(call->dir==LinphoneCallIncoming)
+		if(call->dir==LinphoneCallIncoming
+			&& (call->state == LinphoneCallIncomingReceived || call->state ==  LinphoneCallIncomingEarlyMedia))
 			return TRUE;
 	}
 	return FALSE;
