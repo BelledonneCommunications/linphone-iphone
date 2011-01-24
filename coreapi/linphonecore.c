@@ -2894,7 +2894,7 @@ const char * linphone_core_get_ringback(const LinphoneCore *lc){
 }
 
 /**
- * Enables or disable echo cancellation.
+ * Enables or disable echo cancellation. Value is saved an used for subsequent calls
  *
  * @ingroup media_parameters
 **/
@@ -2903,6 +2903,7 @@ void linphone_core_enable_echo_cancellation(LinphoneCore *lc, bool_t val){
 	if ( linphone_core_ready(lc))
 		lp_config_set_int(lc->config,"sound","echocancellation",val);
 }
+
 
 /**
  * Returns TRUE if echo cancellation is enabled.
