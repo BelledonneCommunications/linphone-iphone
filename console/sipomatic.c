@@ -66,7 +66,7 @@ void sipomatic_process_event(Sipomatic *obj,eXosip_event_t *ev)
 }
 
 
-void endoffile_cb(void *ud, unsigned int ev,void * arg){
+void endoffile_cb(void *ud, MSFilter *f, unsigned int ev,void * arg){
 	Call*call=(Call*)ud;
 	call->eof=1;
 }
