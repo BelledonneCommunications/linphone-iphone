@@ -26,6 +26,7 @@
 #define _PRIVATE_H
 
 #include "linphonecore.h"
+#include "linphonecore_utils.h"
 #include "sal.h"
 
 #ifdef HAVE_CONFIG_H
@@ -424,6 +425,7 @@ struct _LinphoneCore
 	unsigned long video_window_id;
 	unsigned long preview_window_id;
 	time_t netup_time; /*time when network went reachable */
+	struct _EcCalibrator *ecc;
 	bool_t use_files;
 	bool_t apply_nat_settings;
 	bool_t initial_subscribes_sent;
@@ -450,6 +452,27 @@ bool_t linphone_core_is_payload_type_usable_for_bandwidth(LinphoneCore *lc, Payl
 
 #define linphone_core_ready(lc) ((lc)->state!=LinphoneGlobalStartup)
 void _linphone_core_configure_resolver();
+
+struct _EcCalibrator{
+	ms_thread_t thread;
+	MSSndCard *play_card,*capt_card;
+	MSFilter *sndread,*det,*rec;
+	MSFilter *play, *gen, *sndwrite;
+	MSTicker *ticker;
+	LinphoneEcCalibrationCallback cb;
+	void *cb_data;
+	int recv_count;
+	int sent_count;
+	int64_t acc;
+	int delay;
+	LinphoneEcCalibratorStatus status;
+};
+
+typedef struct _EcCalibrator EcCalibrator;
+
+LinphoneEcCalibratorStatus ec_calibrator_get_status(EcCalibrator *ecc);
+
+void ec_calibrator_destroy(EcCalibrator *ecc);
 
 #define HOLD_OFF	(0)
 #define HOLD_ON		(1)

@@ -1635,6 +1635,19 @@ void linphone_core_iterate(LinphoneCore *lc){
 		one_second_elapsed=TRUE;
 	}
 
+	if (lc->ecc!=NULL){
+		LinphoneEcCalibratorStatus ecs=ec_calibrator_get_status(lc->ecc);
+		if (ecs!=LinphoneEcCalibratorInProgress){
+			if (lc->ecc->cb)
+				lc->ecc->cb(lc,ecs,lc->ecc->delay,lc->ecc->cb_data);
+			if (ecs==LinphoneEcCalibratorDone){
+				lp_config_set_int(lc->config, "sound", "ec_delay",lc->ecc->delay);
+			}
+			ec_calibrator_destroy(lc->ecc);
+			lc->ecc=NULL;
+		}
+	}
+
 	if (lc->preview_finished){
 		lc->preview_finished=0;
 		ring_stop(lc->ringstream);
