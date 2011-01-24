@@ -21,7 +21,7 @@ package org.linphone.core;
 import java.util.Vector;
 
 /**
- * Object representing a Call. calls are created using {@link LinphoneCore#invite(LinphoneAddress)} or paased to the application by listener {@link LinphoneCoreListener#callState(LinphoneCore, LinphoneCall, State, String)}
+ * Object representing a Call. calls are created using {@link LinphoneCore#invite(LinphoneAddress)} or passed to the application by listener {@link LinphoneCoreListener#callState(LinphoneCore, LinphoneCall, State, String)}
  * 
  */
 @SuppressWarnings("unchecked")
@@ -154,5 +154,25 @@ public interface LinphoneCall {
 	public LinphoneCallParams getCurrentParamsCopy();
 	
 	public void enableCamera(boolean enabled);
+	/**
+	 * Enables or disable echo cancellation.
+	 * @param enable
+	 */
+	public void enableEchoCancellation(boolean enable);
+	/**
+	 * get EC status 
+	 * @return true if echo cancellation is enabled.
+	 */
+	public boolean isEchoCancellationEnabled();
+	/**
+	 * Enables or disable echo limiter cancellation.
+	 * @param enable
+	 */
+	public void enableEchoLimiter(boolean enable);
+	/**
+	 * get EL status 
+	 * @return true if echo limiter is enabled.
+	 */
+	public boolean isEchoLimiterEnabled();
 
 }

@@ -247,8 +247,34 @@ LinphoneReason linphone_call_get_reason(const LinphoneCall *call);
 const char *linphone_call_get_remote_user_agent(LinphoneCall *call);
 void *linphone_call_get_user_pointer(LinphoneCall *call);
 void linphone_call_set_user_pointer(LinphoneCall *call, void *user_pointer);
-
-
+/**
+ * Enables or disable echo cancellation for this call
+ * @param call
+ * @param val
+ *
+ * @ingroup media_parameters
+**/
+void linphone_call_enable_echo_cancellation(LinphoneCall *call, bool_t val) ;
+/**
+ * Returns TRUE if echo cancellation is enabled.
+ *
+ * @ingroup media_parameters
+**/
+bool_t linphone_call_echo_cancellation_enabled(LinphoneCall *lc);
+/**
+ * Enables or disable echo limiter for this call
+ * @param call
+ * @param val
+ *
+ * @ingroup media_parameters
+**/
+void linphone_call_enable_echo_limiter(LinphoneCall *call, bool_t val);
+/**
+ * Returns TRUE if echo limiter is enabled.
+ *
+ * @ingroup media_parameters
+**/
+bool_t linphone_call_echo_limiter_enabled(const LinphoneCall *call);
 /**
  * @addtogroup proxies
  * @{

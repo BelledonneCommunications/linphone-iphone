@@ -857,6 +857,7 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCallLogImpl_isIncoming(JNIEnv
 	return ((LinphoneCallLog*)ptr)->dir==LinphoneCallIncoming?JNI_TRUE:JNI_FALSE;
 }
 
+/*payloadType*/
 extern "C" jstring Java_org_linphone_core_PayloadTypeImpl_toString(JNIEnv*  env,jobject  thiz,jlong ptr) {
 	PayloadType* pt = (PayloadType*)ptr;
 	char* value = ms_strdup_printf("[%s] clock [%i], bitrate [%i]"
@@ -913,6 +914,30 @@ extern "C" jint Java_org_linphone_core_LinphoneCallImpl_getState(	JNIEnv*  env
 																		,jlong ptr) {
 	return (jint)linphone_call_get_state((LinphoneCall*)ptr);
 }
+extern "C" void Java_org_linphone_core_LinphoneCallImpl_enableEchoCancellation(	JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr
+																		,jboolean value) {
+	linphone_call_enable_echo_cancellation((LinphoneCall*)ptr,value);
+}
+extern "C" jboolean Java_org_linphone_core_LinphoneCallImpl_isEchoCancellationEnabled(	JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	return linphone_call_echo_cancellation_enabled((LinphoneCall*)ptr);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCallImpl_enableEchoLimiter(	JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr
+																		,jboolean value) {
+	linphone_call_enable_echo_limiter((LinphoneCall*)ptr,value);
+}
+extern "C" jboolean Java_org_linphone_core_LinphoneCallImpl_isEchoLimiterEnabled(	JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	return linphone_call_echo_limiter_enabled((LinphoneCall*)ptr);
+}
+
 
 //LinphoneFriend
 extern "C" long Java_org_linphone_core_LinphoneFriendImpl_newLinphoneFriend(JNIEnv*  env

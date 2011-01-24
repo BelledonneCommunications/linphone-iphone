@@ -688,30 +688,24 @@ static void post_configure_audio_streams(LinphoneCall*call){
 	}
 	if (st->volsend){
 		ms_filter_call_method(st->volsend,MS_VOLUME_REMOVE_DC,&dc_removal);
-	}
-	if (linphone_core_echo_limiter_enabled(lc)){
 		float speed=lp_config_get_float(lc->config,"sound","el_speed",-1);
 		thres=lp_config_get_float(lc->config,"sound","el_thres",-1);
 		float force=lp_config_get_float(lc->config,"sound","el_force",-1);
 		int sustain=lp_config_get_int(lc->config,"sound","el_sustain",-1);
 		float transmit_thres=lp_config_get_float(lc->config,"sound","el_transmit_thres",-1);
 		MSFilter *f=NULL;
-		if (st->el_type!=ELInactive){
-			f=st->volsend;
-			if (speed==-1) speed=0.03;
-			if (force==-1) force=25;
-			ms_filter_call_method(f,MS_VOLUME_SET_EA_SPEED,&speed);
-			ms_filter_call_method(f,MS_VOLUME_SET_EA_FORCE,&force);
-			if (thres!=-1)
-				ms_filter_call_method(f,MS_VOLUME_SET_EA_THRESHOLD,&thres);
-			if (sustain!=-1)
-				ms_filter_call_method(f,MS_VOLUME_SET_EA_SUSTAIN,&sustain);
-			if (transmit_thres!=-1)
+		f=st->volsend;
+		if (speed==-1) speed=0.03;
+		if (force==-1) force=25;
+		ms_filter_call_method(f,MS_VOLUME_SET_EA_SPEED,&speed);
+		ms_filter_call_method(f,MS_VOLUME_SET_EA_FORCE,&force);
+		if (thres!=-1)
+			ms_filter_call_method(f,MS_VOLUME_SET_EA_THRESHOLD,&thres);
+		if (sustain!=-1)
+			ms_filter_call_method(f,MS_VOLUME_SET_EA_SUSTAIN,&sustain);
+		if (transmit_thres!=-1)
 				ms_filter_call_method(f,MS_VOLUME_SET_EA_TRANSMIT_THRESHOLD,&transmit_thres);
-		}
-	}
-		
-	if (st->volsend){
+
 		ms_filter_call_method(st->volsend,MS_VOLUME_SET_NOISE_GATE_THRESHOLD,&ng_thres);
 		ms_filter_call_method(st->volsend,MS_VOLUME_SET_NOISE_GATE_FLOORGAIN,&ng_floorgain);
 	}
@@ -999,3 +993,42 @@ void linphone_call_send_vfu_request(LinphoneCall *call)
 		sal_call_send_vfu_request(call->op);
 }
 #endif
+
+void linphone_call_enable_echo_cancellation(LinphoneCall *call, bool_t enable) {
+	if (call!=NULL && call->audiostream!=NULL && call->audiostream->ec){
+		bool_t bypass_mode = !enable;
+		ms_filter_call_method(call->audiostream->ec,MS_ECHO_CANCELLER_SET_BYPASS_MODE,&bypass_mode);
+	}
+}
+bool_t linphone_call_echo_cancellation_enabled(LinphoneCall *call) {
+	if (call!=NULL && call->audiostream!=NULL && call->audiostream->ec){
+		bool_t val;
+		ms_filter_call_method(call->audiostream->ec,MS_ECHO_CANCELLER_GET_BYPASS_MODE,&val);
+		return !val;
+	} else {
+		return linphone_core_echo_cancellation_enabled(call->core);
+	}
+}
+
+void linphone_call_enable_echo_limiter(LinphoneCall *call, bool_t val){
+	if (call!=NULL && call->audiostream!=NULL ) {
+		if (val) {
+		const char *type=lp_config_get_string(call->core->config,"sound","el_type","mic");
+		if (strcasecmp(type,"mic")==0)
+			audio_stream_enable_echo_limiter(call->audiostream,ELControlMic);
+		else if (strcasecmp(type,"full")==0)
+			audio_stream_enable_echo_limiter(call->audiostream,ELControlFull);
+		} else {
+			audio_stream_enable_echo_limiter(call->audiostream,ELInactive);
+		}
+	}
+}
+
+bool_t linphone_call_echo_limiter_enabled(const LinphoneCall *call){
+	if (call!=NULL && call->audiostream!=NULL ){
+		return call->audiostream->el_type !=ELInactive ;
+	} else {
+		return linphone_core_echo_limiter_enabled(call->core);
+	}
+}
+
