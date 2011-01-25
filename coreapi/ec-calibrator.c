@@ -39,10 +39,15 @@ static void ecc_init_filters(EcCalibrator *ecc){
 
 	ecc->play=ms_filter_new(MS_FILE_PLAYER_ID);
 	ecc->gen=ms_filter_new(MS_DTMF_GEN_ID);
+	ecc->resampler=ms_filter_new(MS_RESAMPLE_ID);
 	ecc->sndwrite=ms_snd_card_create_writer(ecc->capt_card);
 
 	ms_filter_link(ecc->play,0,ecc->gen,0);
-	ms_filter_link(ecc->gen,0,ecc->sndwrite,0);
+	ms_filter_link(ecc->gen,0,ecc->resampler,0);
+	ms_filter_link(ecc->resampler,0,ecc->sndwrite,0);
+	unsigned int rate;
+	ms_filter_call_method(ecc->sndwrite,MS_FILTER_GET_SAMPLE_RATE,&rate);
+	ms_filter_call_method(ecc->resampler,MS_FILTER_SET_OUTPUT_SAMPLE_RATE,&rate);
 
 	ms_ticker_attach(ecc->ticker,ecc->play);
 	ms_ticker_attach(ecc->ticker,ecc->sndread);
@@ -53,7 +58,8 @@ static void ecc_deinit_filters(EcCalibrator *ecc){
 	ms_ticker_detach(ecc->ticker,ecc->sndread);
 
 	ms_filter_unlink(ecc->play,0,ecc->gen,0);
-	ms_filter_unlink(ecc->gen,0,ecc->sndwrite,0);
+	ms_filter_unlink(ecc->gen,0,ecc->resampler,0);
+	ms_filter_unlink(ecc->resampler,0,ecc->sndwrite,0);
 
 	ms_filter_unlink(ecc->sndread,0,ecc->det,0);
 	ms_filter_unlink(ecc->det,0,ecc->rec,0);
@@ -63,6 +69,7 @@ static void ecc_deinit_filters(EcCalibrator *ecc){
 	ms_filter_destroy(ecc->rec);
 	ms_filter_destroy(ecc->play);
 	ms_filter_destroy(ecc->gen);
+	ms_filter_destroy(ecc->resampler);
 	ms_filter_destroy(ecc->sndwrite);
 
 	ms_ticker_destroy(ecc->ticker);
@@ -138,6 +145,7 @@ static void  * ecc_thread(void *p){
 	ecc_init_filters(ecc);
 	ecc_play_tones(ecc);
 	ecc_deinit_filters(ecc);
+	ms_thread_exit(NULL);
 	return NULL;
 }
 

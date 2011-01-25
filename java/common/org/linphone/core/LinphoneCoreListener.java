@@ -78,5 +78,14 @@ public interface LinphoneCoreListener {
 		 * @param message 	incoming message
 		 */
 		public void textReceived(LinphoneCore lc, LinphoneChatRoom cr,LinphoneAddress from,String message);
+		/**
+		 * Invoked when echo cancalation calibration is completed
+		 * @param lc LinphoneCore
+		 * @param status 
+		 * @param delay_ms echo delay
+		 * @param data
+		 */
+		 void ecCalibrationStatus(LinphoneCore lc,LinphoneCore.EcCalibratorStatus status, int delay_ms, Object data);
+		
 }
 

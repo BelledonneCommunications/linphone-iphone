@@ -46,7 +46,8 @@ LOCAL_SRC_FILES = \
 	sal_eXosip2_sdp.c \
 	offeranswer.c \
 	callbacks.c \
-	linphonecall.c
+	linphonecall.c \
+	ec-calibrator.c
 
 LOCAL_CFLAGS += \
 	-D_BYTE_ORDER=_LITTLE_ENDIAN \

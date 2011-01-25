@@ -25,6 +25,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #else
 #include "linphone/linphonecore.h"
 #endif
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef struct _LsdPlayer LsdPlayer;
 typedef struct _LinphoneSoundDaemon LinphoneSoundDaemon;
@@ -65,5 +68,7 @@ typedef void (*LinphoneEcCalibrationCallback)(LinphoneCore *lc, LinphoneEcCalibr
  * Start an echo calibration of the sound devices, in order to find adequate settings for the echo canceller automatically.
 **/
 int linphone_core_start_echo_calibration(LinphoneCore *lc, LinphoneEcCalibrationCallback cb, void *cb_data);
-
+#ifdef __cplusplus
+}
+#endif
 #endif

@@ -180,6 +180,50 @@ public interface LinphoneCore {
 		}		
 	}
 	/**
+	 * 	EC Calibrator Status
+.
+	 *
+	 */
+	static public class EcCalibratorStatus {
+
+		static private Vector values = new Vector();
+		/**
+		 * Calibration in progress
+		 */
+		static public EcCalibratorStatus InProgress = new EcCalibratorStatus(0,"InProgress");       
+		/**
+		 * Calibration done
+		 */
+		static public EcCalibratorStatus Done  = new EcCalibratorStatus(1,"Done");
+		/**
+		 * Calibration in progress
+		 */
+		static public EcCalibratorStatus Failed = new EcCalibratorStatus(2,"Failed");
+
+		private final int mValue;
+		private final String mStringValue;
+
+		private EcCalibratorStatus(int value,String stringValue) {
+			mValue = value;
+			values.addElement(this);
+			mStringValue=stringValue;
+		}
+		public static EcCalibratorStatus fromInt(int value) {
+
+			for (int i=0; i<values.size();i++) {
+				EcCalibratorStatus status = (EcCalibratorStatus) values.elementAt(i);
+				if (status.mValue == value) return status;
+			}
+			throw new RuntimeException("status not found ["+value+"]");
+		}
+		public String toString() {
+			return mStringValue;
+		}
+		public int value(){
+			return mValue;
+		}
+	}
+	/**
 	 * clear all added proxy configs
 	 */
 	public void clearProxyConfigs();
@@ -497,4 +541,11 @@ public interface LinphoneCore {
 	 * @return true if enable
  	 */
 	boolean isKeepAliveEnabled();
+	/**
+	 * Start an echo calibration of the sound devices, in order to find adequate settings for the echo canceler automatically.
+	 * status is notified to {@link LinphoneCoreListener#ecCalibrationStatus(EcCalibratorStatus, int, Object)}
+	 * @param User object
+	 * @throws LinphoneCoreException if operation is still in progress;
+	**/
+	void startEchoCalibration(Object data) throws LinphoneCoreException;
 }

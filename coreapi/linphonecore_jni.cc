@@ -17,7 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include <jni.h>
-#include "linphonecore.h"
+#include "linphonecore_utils.h"
+
 #include "mediastreamer2/msjava.h"
 
 #ifdef ANDROID
@@ -100,7 +101,10 @@ public:
 		callStateId = env->GetMethodID(listernerClass,"callState","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCall;Lorg/linphone/core/LinphoneCall$State;Ljava/lang/String;)V");
 		callStateClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneCall$State"));
 		callStateFromIntId = env->GetStaticMethodID(callStateClass,"fromInt","(I)Lorg/linphone/core/LinphoneCall$State;");
-
+		/*void ecCalibrationStatus(LinphoneCore.EcCalibratorStatus status, int delay_ms, Object data);*/
+		ecCalibrationStatusId = env->GetMethodID(listernerClass,"ecCalibrationStatus","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCore$EcCalibratorStatus;ILjava/lang/Object;)V");
+		ecCalibratorStatusClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneCore$EcCalibratorStatus"));
+		ecCalibratorStatusFromIntId = env->GetStaticMethodID(ecCalibratorStatusClass,"fromInt","(I)Lorg/linphone/core/LinphoneCore$EcCalibratorStatus;");
 		/*void newSubscriptionRequest(LinphoneCore lc, LinphoneFriend lf, String url)*/
 		newSubscriptionRequestId = env->GetMethodID(listernerClass,"newSubscriptionRequest","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneFriend;Ljava/lang/String;)V");
 
@@ -164,6 +168,10 @@ public:
 	jclass callStateClass;
 	jmethodID callStateId;
 	jmethodID callStateFromIntId;
+
+	jclass ecCalibratorStatusClass;
+	jmethodID ecCalibrationStatusId;
+	jmethodID ecCalibratorStatusFromIntId;
 
 	jclass proxyClass;
 	jmethodID proxyCtrId;
@@ -289,6 +297,26 @@ public:
 							,env->NewObject(lcData->chatRoomClass,lcData->chatRoomCtrId,(jlong)room)
 							,env->NewObject(lcData->addressClass,lcData->addressCtrId,(jlong)from)
 							,message ? env->NewStringUTF(message) : NULL);
+	}
+	static void ecCalibrationStatus(LinphoneCore *lc, LinphoneEcCalibratorStatus status, int delay_ms, void *data) {
+		JNIEnv *env = 0;
+		jint result = jvm->AttachCurrentThread(&env,NULL);
+		if (result != 0) {
+			ms_error("cannot attach VM\n");
+			return;
+		}
+		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_get_user_data(lc);
+		env->CallVoidMethod(lcData->listener
+							,lcData->ecCalibrationStatusId
+							,lcData->core
+							,env->CallStaticObjectMethod(lcData->ecCalibratorStatusClass,lcData->ecCalibratorStatusFromIntId,(jint)status)
+							,delay_ms
+							,data ? data : NULL);
+		if (data != NULL &&status !=LinphoneEcCalibratorInProgress ) {
+			//final state, releasing global ref
+			env->DeleteGlobalRef((jobject)data);
+		}
+
 	}
 
 
@@ -627,6 +655,18 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isKeepAliveEnabled(J
 	return linphone_core_keep_alive_enabled((LinphoneCore*)lc);
 
 }
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_startEchoCalibration(JNIEnv*  env
+																				,jobject  thiz
+																				,jlong lc
+																				,jobject data) {
+	return linphone_core_start_echo_calibration((LinphoneCore*)lc
+													, LinphoneCoreData::ecCalibrationStatus
+													, data?env->NewGlobalRef(data):NULL);
+
+}
+
+
+
 //ProxyConfig
 
 extern "C" jlong Java_org_linphone_core_LinphoneProxyConfigImpl_newLinphoneProxyConfig(JNIEnv*  env,jobject  thiz) {

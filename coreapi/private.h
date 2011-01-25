@@ -457,7 +457,7 @@ struct _EcCalibrator{
 	ms_thread_t thread;
 	MSSndCard *play_card,*capt_card;
 	MSFilter *sndread,*det,*rec;
-	MSFilter *play, *gen, *sndwrite;
+	MSFilter *play, *gen, *sndwrite,*resampler;
 	MSTicker *ticker;
 	LinphoneEcCalibrationCallback cb;
 	void *cb_data;
