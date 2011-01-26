@@ -33,16 +33,16 @@ linphoned_LDADD=$(linphonec_LDADD)
 endif
 
 
-sipomatic_SOURCES=\
-	sipomatic.c sipomatic.h
-sipomatic_CFLAGS= $(COMMON_CFLAGS) $(CONSOLE_FLAGS)
-
-sipomatic_LDADD= 	$(INTLLIBS)  \
-			$(top_builddir)/coreapi/liblinphone.la \
-			$(MEDIASTREAMER_LIBS) \
-			$(ORTP_LIBS) \
-			$(SPEEX_LIBS) \
-			$(OSIP_LIBS)
+#sipomatic_SOURCES=\
+#	sipomatic.c sipomatic.h
+#sipomatic_CFLAGS= $(COMMON_CFLAGS) $(CONSOLE_FLAGS)
+#
+#sipomatic_LDADD= 	$(INTLLIBS)  \
+#			$(top_builddir)/coreapi/liblinphone.la \
+#			$(MEDIASTREAMER_LIBS) \
+#			$(ORTP_LIBS) \
+#			$(SPEEX_LIBS) \
+#			$(OSIP_LIBS)
 
 linphonecsh_SOURCES = shell.c
 linphonecsh_CFLAGS = $(CONSOLE_FLAGS)
