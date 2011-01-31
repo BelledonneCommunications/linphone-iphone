@@ -40,7 +40,7 @@
 			<key>DefaultValue</key>
 			<string></string>
 			<key>IsSecure</key>
-			<false/>
+			<true/>
 			<key>KeyboardType</key>
 			<string>Alphabet</string>
 			<key>AutocapitalizationType</key>
