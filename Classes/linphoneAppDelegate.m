@@ -58,12 +58,6 @@ void linphone_iphone_display_status(struct _LinphoneCore * lc, const char * mess
 
 void linphone_iphone_call_state(LinphoneCore *lc, LinphoneCall* call, LinphoneCallState state,const char* message) {
 	linphoneAppDelegate* lAppDelegate = (linphoneAppDelegate*) linphone_core_get_user_data(lc); 
-	if (state == LinphoneCallIncomingReceived) {
-		[lAppDelegate newIncomingCall:[[NSString alloc] initWithCString:linphone_address_get_username(linphone_call_get_remote_address(call))]]; 
-	} else if (lAppDelegate.backgroundSupported && [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground && (LinphoneCallEnd|LinphoneCallError)) {
-		// cancel local notif if needed
-		[[UIApplication sharedApplication] cancelAllLocalNotifications];
-	}
 	PhoneViewController* lPhone = lAppDelegate.myPhoneViewController;
 	[lPhone onCall:call StateChanged:state withMessage:message];
 }
@@ -600,47 +594,8 @@ extern void libmsilbc_init();
 }
 
 
--(void) newIncomingCall:(NSString*) from {
-		//redirect audio to speaker
-	UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;  
-		
-	AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute
-								 , sizeof (audioRouteOverride)
-								 , &audioRouteOverride);
-    
-//#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 40000
-	if (backgroundSupported && [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground) {
-		// Create a new notification
-		UILocalNotification* notif = [[[UILocalNotification alloc] init] autorelease];
-		if (notif)
-		{
-			notif.repeatInterval = 0;
-			notif.alertBody =[NSString  stringWithFormat:@" %@ is calling you",from];
-			notif.alertAction = @"Answer";
-			notif.soundName = @"oldphone-mono-30s.caf";
-			
-			[[UIApplication sharedApplication]  presentLocalNotificationNow:notif];
-		}
-	} else 
-		
-//#endif
-	{
-	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:[NSString  stringWithFormat:@" %@ is calling you",from]
-															 delegate:self cancelButtonTitle:@"Decline" destructiveButtonTitle:@"Answer" otherButtonTitles:nil];
-    actionSheet.actionSheetStyle = UIActionSheetStyleDefault;
-    [actionSheet showFromTabBar:myTabBarController.tabBar];
-    [actionSheet release];
-	}
-		
-}
 
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-	if (buttonIndex == 0 ) {
-		linphone_core_accept_call(myLinphoneCore,linphone_core_get_current_call(myLinphoneCore));	
-	} else {
-		linphone_core_terminate_call (myLinphoneCore,linphone_core_get_current_call(myLinphoneCore));
-	}
-}
+
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
 	linphone_core_accept_call(myLinphoneCore,linphone_core_get_current_call(myLinphoneCore));	

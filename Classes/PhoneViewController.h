@@ -29,7 +29,7 @@
 @end
 @class IncallViewController;
 
-@interface PhoneViewController : UIViewController <UITextFieldDelegate,PhoneViewControllerDelegate> {
+@interface PhoneViewController : UIViewController <UITextFieldDelegate,PhoneViewControllerDelegate,UIActionSheetDelegate> {
 
 @private
 	//UI definition
@@ -72,6 +72,8 @@
 	 */
 	LinphoneCore* mCore;
 	IncallViewController *myIncallViewController;
+	UIActionSheet *mIncomingCallActionSheet;
+
 	
 }
 @property (nonatomic, retain) IBOutlet UITextField* address;

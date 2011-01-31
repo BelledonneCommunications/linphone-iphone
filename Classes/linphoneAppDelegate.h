@@ -36,7 +36,7 @@
 @class PhoneViewController;
 @class CallHistoryTableViewController;
 
-@interface linphoneAppDelegate : NSObject <UIApplicationDelegate,LinphoneTabManagerDelegate,UIActionSheetDelegate,UIAlertViewDelegate> {
+@interface linphoneAppDelegate : NSObject <UIApplicationDelegate,LinphoneTabManagerDelegate,UIAlertViewDelegate> {
     UIWindow *window;
 	IBOutlet UITabBarController*  myTabBarController;
 	IBOutlet ABPeoplePickerNavigationController* myPeoplePickerController;
@@ -55,8 +55,7 @@
 	SCNetworkReachabilityRef proxyReachability;
 	CFReadStreamRef mReadStream;
 	NSTimer* mIterateTimer;
-
-	
+		
 }
 /**********************************
  * liblinphone initialization method

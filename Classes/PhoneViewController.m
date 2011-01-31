@@ -113,13 +113,7 @@
 			}
 		} else if (linphone_core_inc_invite_pending(mCore)) {
 			linphone_core_accept_call(mCore,linphone_core_get_current_call(mCore));
-			UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_None;  
-			AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute
-									 , sizeof (audioRouteOverride)
-									 , &audioRouteOverride);
-			
 		}
-		//Cancel audio route redirection
 		
 	} else if (sender == hangup) {
 		linphone_core_terminate_call(mCore,linphone_core_get_current_call(mCore));
@@ -322,6 +316,82 @@
 	[status dealloc];
 	[super dealloc];
 }
+-(void) newIncomingCall:(NSString*) from {
+	
+	//#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 40000
+	if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)] 
+		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground) {
+		// Create a new notification
+		UILocalNotification* notif = [[[UILocalNotification alloc] init] autorelease];
+		if (notif)
+		{
+			notif.repeatInterval = 0;
+			notif.alertBody =[NSString  stringWithFormat:@" %@ is calling you",from];
+			notif.alertAction = @"Answer";
+			notif.soundName = @"oldphone-mono-30s.caf";
+			
+			[[UIApplication sharedApplication]  presentLocalNotificationNow:notif];
+		}
+	} else 
+		//#endif
+	{
+		mIncomingCallActionSheet = [[UIActionSheet alloc] initWithTitle:[NSString  stringWithFormat:@" %@ is calling you",from]
+															   delegate:self cancelButtonTitle:@"Decline" destructiveButtonTitle:@"Answer" otherButtonTitles:nil];
+		mIncomingCallActionSheet.actionSheetStyle = UIActionSheetStyleDefault;
+		[mIncomingCallActionSheet showInView:self.view];
+		[mIncomingCallActionSheet release];
+	}
+	
+}
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (buttonIndex == 0 ) {
+		linphone_core_accept_call(mCore,linphone_core_get_current_call(mCore));	
+	} else {
+		linphone_core_terminate_call (mCore,linphone_core_get_current_call(mCore));
+	}
+	mIncomingCallActionSheet = nil;
+}
+-(void) enterIncallMode {
+	[hangup setEnabled:true];
+	[self muteAction:false];
+	// test if speaker must be unactivated after ring tone
+	if (!isSpeaker) [self speakerAction:false];
+	
+	const LinphoneAddress* callAddress = linphone_call_get_remote_address(linphone_core_get_current_call(mCore));
+	const char* callDisplayName =  linphone_address_get_display_name(callAddress)?linphone_address_get_display_name(callAddress):"";
+	if (callDisplayName && callDisplayName[0] != '\000') {
+		
+		[peerLabel setText:[NSString stringWithCString:callDisplayName encoding:[NSString defaultCStringEncoding]]];
+	} else {
+		const char* username = linphone_address_get_username(callAddress)!=0?linphone_address_get_username(callAddress):"";
+		[peerLabel setText:[NSString stringWithCString:username encoding:[NSString defaultCStringEncoding]]];
+	}
+	// start scheduler
+	durationRefreasher = [NSTimer scheduledTimerWithTimeInterval:1 
+														  target:self 
+														selector:@selector(updateCallDuration) 
+														userInfo:nil 
+														 repeats:YES];
+	[address setHidden:true];
+	[incallView setHidden:false];
+	if (linphone_call_get_dir(linphone_core_get_current_call(mCore)) == LinphoneCallOutgoing) {
+		[call setEnabled:false];
+	}
+	
+}
+-(void) exitIncallMode {
+	[address setHidden:false];
+	[incallView setHidden:true];
+	[call setEnabled:true];
+	[hangup setEnabled:false];
+	
+	if (durationRefreasher != nil) {
+		[ durationRefreasher invalidate];
+		durationRefreasher=nil;
+	}
+	[peerLabel setText:@""];
+	[callDuration setText:@""];
+}
 
 -(void) onCall:(LinphoneCall*) currentCall StateChanged: (LinphoneCallState) new_state withMessage: (const char *)  message {
 	/*
@@ -341,24 +411,38 @@
 	 LinphoneCallEnd,
 	 LinphoneCallPausedByRemote
 	 */
+	if (new_state != LinphoneCallIncomingReceived) {
+		if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]  
+			&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground ) {
+				// cancel local notif if needed
+				[[UIApplication sharedApplication] cancelAllLocalNotifications];
+			} else {
+				if (mIncomingCallActionSheet) {
+					[mIncomingCallActionSheet dismissWithClickedButtonIndex:1 animated:true];
+					mIncomingCallActionSheet=nil;
+				}
+			}
+	}
 	switch (new_state) {
 		case LinphoneCallOutgoingInit:
 		case LinphoneCallIncomingReceived: {
-			[hangup setEnabled:true];
+			[self enterIncallMode];
+			[self newIncomingCall:[[NSString alloc] initWithCString:linphone_address_get_username(linphone_call_get_remote_address(currentCall))]]; 
 			break;
-		}
+		} 
+			
 			
 		case LinphoneCallError: {
 			/*
-			NSString* lTitle= state->message!=nil?[NSString stringWithCString:state->message length:strlen(state->message)]: @"Error";
-			NSString* lMessage=lTitle;
-			*/
+			 NSString* lTitle= state->message!=nil?[NSString stringWithCString:state->message length:strlen(state->message)]: @"Error";
+			 NSString* lMessage=lTitle;
+			 */
 			NSString* lMessage;
 			NSString* lTitle;
 			
 			
 			lMessage=@"Please make sure your device is connected to the internet and double check your SIP account configuration in the settings.";
-
+			
 			if (message!=nil){
 				lMessage=[NSString stringWithFormat : @"%@\nReason was: %s",lMessage, message];
 			}
@@ -370,52 +454,14 @@
 												  cancelButtonTitle:@"Dismiss" 
 												  otherButtonTitles:nil];
 			[error show];
+			[self exitIncallMode];
 			//[self performSelector:@selector(dismissAlertDialog:) withObject:error afterDelay:2];
-			[self performSelector:@selector(dismissIncallView) withObject:nil afterDelay:2];
-			
-		}
-			break;
-		
-		case LinphoneCallConnected: {
-			[self muteAction:false];
-			// test if speaker must be unactivated after ring tone
-			if (!isSpeaker) [self speakerAction:false];
-			
-			const LinphoneAddress* callAddress = linphone_call_get_remote_address(linphone_core_get_current_call(mCore));
-			const char* callDisplayName =  linphone_address_get_display_name(callAddress)?linphone_address_get_display_name(callAddress):"";
-			if (callDisplayName && callDisplayName[0] != '\000') {
-				
-			[peerLabel setText:[NSString stringWithCString:callDisplayName encoding:[NSString defaultCStringEncoding]]];
-			} else {
-				const char* username = linphone_address_get_username(callAddress)!=0?linphone_address_get_username(callAddress):"";
-				[peerLabel setText:[NSString stringWithCString:username encoding:[NSString defaultCStringEncoding]]];
-			}
-			// start scheduler
-			durationRefreasher = [NSTimer scheduledTimerWithTimeInterval:1 
-																	target:self 
-																	selector:@selector(updateCallDuration) 
-																	userInfo:nil 
-																	repeats:YES];
-			[address setHidden:true];
-			[incallView setHidden:false];
-			[call setEnabled:false];
-			
+			//[self performSelector:@selector(dismissIncallView) withObject:nil afterDelay:2];
 			break;
 		}
 			
 		case LinphoneCallEnd: {
-			[address setHidden:false];
-			[incallView setHidden:true];
-			[call setEnabled:true];
-			[hangup setEnabled:false];
-			
-			if (durationRefreasher != nil) {
-				[ durationRefreasher invalidate];
-				durationRefreasher=nil;
-			}
-			[peerLabel setText:@""];
-			[callDuration setText:@""];
-			
+			[self exitIncallMode];
 			break;
 		}
 		default:
@@ -454,5 +500,4 @@
 	isSpeaker=value;
 	
 };
-
 @end
