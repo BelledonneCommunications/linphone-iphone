@@ -236,13 +236,6 @@ static void linphone_call_set_terminated(LinphoneCall *call){
 	if (ms_list_size(lc->calls)==0)
 		linphone_core_notify_all_friends(lc,lc->presence_mode);
 	
-	if (call->op!=NULL) {
-		/* so that we cannot have anymore upcalls for SAL
-		 concerning this call*/
-		sal_op_release(call->op);
-		call->op=NULL;
-	}
-	linphone_call_unref(call);
 }
 
 const char *linphone_call_state_to_string(LinphoneCallState cs){
@@ -283,13 +276,15 @@ const char *linphone_call_state_to_string(LinphoneCallState cs){
 			return "LinphoneCallIncomingEarlyMedia";
 		case LinphoneCallUpdated:
 			return "LinphoneCallUpdated";
+		case LinphoneCallReleased:
+			return "LinphoneCallReleased";
 	}
 	return "undefined state";
 }
 
 void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const char *message){
 	LinphoneCore *lc=call->core;
-	bool_t finalize_call=FALSE;
+
 	if (call->state!=cstate){
 		ms_message("Call %p: moving from state %s to %s",call,linphone_call_state_to_string(call->state),
 		           linphone_call_state_to_string(cstate));
@@ -299,14 +294,19 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 			call->state=cstate;
 		}
 		if (cstate==LinphoneCallEnd || cstate==LinphoneCallError){
-			finalize_call=TRUE;
-			linphone_call_ref(call);
 			linphone_call_set_terminated (call);
 		}
 		if (lc->vtable.call_state_changed)
 			lc->vtable.call_state_changed(lc,call,cstate,message);
-		if (finalize_call)
+		if (cstate==LinphoneCallReleased){
+			if (call->op!=NULL) {
+				/* so that we cannot have anymore upcalls for SAL
+				 concerning this call*/
+				sal_op_release(call->op);
+				call->op=NULL;
+			}
 			linphone_call_unref(call);
+		}
 	}
 }
 

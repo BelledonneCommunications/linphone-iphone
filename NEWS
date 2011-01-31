@@ -6,8 +6,10 @@ linphone-3.4.0 -- XXXXX
 		- creation of another outgoing call while already in call
 		- blind call transfer
 		- attended call transfer
+			**CAUTION**: LinphoneCoreVTable has changed: pay attention to this when upgrading an old application to a newer liblinphone.
 	* improve bandwidth management (one b=AS line is used for audio+video)
-	* improvements in the echo limiter
+	* improvements in the echo limiter performance
+	* implement a echo calibration feature (see linphone_core_start_echo_calibration()).
 	* stun support bugfixes
 	* possibility to use two video windows, one for local preview, one for remote video (linphonec only)
 	* optimize by not re-creating streams when SDP is unchanged during a reinvite

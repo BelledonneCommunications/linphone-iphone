@@ -501,6 +501,11 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 	}
 }
 
+static void call_released(SalOp *op){
+	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
+	linphone_call_set_state(call,LinphoneCallReleased,"Call released");
+}
+
 static void auth_requested(SalOp *h, const char *realm, const char *username){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(h));
 	LinphoneAuthInfo *ai=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,realm,username);
@@ -676,6 +681,7 @@ SalCallbacks linphone_sal_callbacks={
 	call_updating,
 	call_terminated,
 	call_failure,
+	call_released,
 	auth_requested,
 	auth_success,
 	register_success,

@@ -192,6 +192,7 @@ typedef void (*SalOnCallAck)(SalOp *op);
 typedef void (*SalOnCallUpdating)(SalOp *op);/*< Called when a reINVITE is received*/
 typedef void (*SalOnCallTerminated)(SalOp *op, const char *from);
 typedef void (*SalOnCallFailure)(SalOp *op, SalError error, SalReason reason, const char *details, int code);
+typedef void (*SalOnCallReleased)(SalOp *salop);
 typedef void (*SalOnAuthRequested)(SalOp *op, const char *realm, const char *username);
 typedef void (*SalOnAuthSuccess)(SalOp *op, const char *realm, const char *username);
 typedef void (*SalOnRegisterSuccess)(SalOp *op, bool_t registered);
@@ -215,6 +216,7 @@ typedef struct SalCallbacks{
 	SalOnCallUpdating call_updating;
 	SalOnCallTerminated call_terminated;
 	SalOnCallFailure call_failure;
+	SalOnCallReleased call_released;
 	SalOnAuthRequested auth_requested;
 	SalOnAuthSuccess auth_success;
 	SalOnRegisterSuccess register_success;

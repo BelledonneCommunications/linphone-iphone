@@ -590,6 +590,8 @@ static void rtp_config_read(LinphoneCore *lc)
 	jitt_comp=lp_config_get_int(lc->config,"rtp","audio_jitt_comp",60);
 	linphone_core_set_audio_jittcomp(lc,jitt_comp);
 	jitt_comp=lp_config_get_int(lc->config,"rtp","video_jitt_comp",60);
+	if (jitt_comp==0) jitt_comp=60;
+	lc->rtp_conf.video_jitt_comp=jitt_comp;
 	nortp_timeout=lp_config_get_int(lc->config,"rtp","nortp_timeout",30);
 	linphone_core_set_nortp_timeout(lc,nortp_timeout);
 	rtp_no_xmit_on_audio_mute=lp_config_get_int(lc->config,"rtp","rtp_no_xmit_on_audio_mute",FALSE);

@@ -296,6 +296,8 @@ void sal_set_callbacks(Sal *ctx, const SalCallbacks *cbs){
 		ctx->callbacks.call_failure=(SalOnCallFailure)unimplemented_stub;
 	if (ctx->callbacks.call_terminated==NULL) 
 		ctx->callbacks.call_terminated=(SalOnCallTerminated)unimplemented_stub;
+	if (ctx->callbacks.call_released==NULL)
+		ctx->callbacks.call_released=(SalOnCallReleased)unimplemented_stub;
 	if (ctx->callbacks.call_updating==NULL) 
 		ctx->callbacks.call_updating=(SalOnCallUpdating)unimplemented_stub;
 	if (ctx->callbacks.auth_requested==NULL) 
@@ -764,8 +766,6 @@ int sal_call_terminate(SalOp *h){
 	if (err!=0){
 		ms_warning("Exosip could not terminate the call: cid=%i did=%i", h->cid,h->did);
 	}
-	sal_remove_call(h->base.root,h);
-	h->cid=-1;
 	return 0;
 }
 
@@ -1054,8 +1054,6 @@ static void call_terminated(Sal *sal, eXosip_event_t *ev){
 	if (ev->request){
 		osip_from_to_str(ev->request->from,&from);
 	}
-	sal_remove_call(sal,op);
-	op->cid=-1;
 	sal->callbacks.call_terminated(op,from!=NULL ? from : sal_op_get_from(op));
 	if (from) osip_free(from);
 }
@@ -1066,9 +1064,10 @@ static void call_released(Sal *sal, eXosip_event_t *ev){
 		ms_warning("No op associated to this call_released()");
 		return;
 	}
-	op->cid=-1;
-	if (op->did==-1) 
+	if (op->did==-1) {
 		sal->callbacks.call_failure(op,SalErrorNoResponse,SalReasonUnknown,NULL, 487);
+	}
+	sal->callbacks.call_released(op);
 }
 
 static int get_auth_data_from_response(osip_message_t *resp, const char **realm, const char **username){
