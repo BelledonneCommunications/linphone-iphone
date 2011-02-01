@@ -49,6 +49,8 @@ static void toggle_video_preview(LinphoneCore *lc, bool_t val);
 #define LOCAL_RING "rings/oldphone.wav"
 /* same for remote ring (ringback)*/
 #define REMOTE_RING "ringback.wav"
+#define HOLD_MUSIC "rings/toy-mono.wav"
+
 
 extern SalCallbacks linphone_sal_callbacks;
 
@@ -452,6 +454,8 @@ static void sound_config_read(LinphoneCore *lc)
 		tmpbuf=PACKAGE_SOUND_DIR "/" REMOTE_RING;
 	}
 	linphone_core_set_ringback(lc,tmpbuf);
+
+	linphone_core_set_play_file(lc,lp_config_get_string(lc->config,"sound","hold_music",PACKAGE_SOUND_DIR "/" HOLD_MUSIC));
 	check_sound_device(lc);
 	lc->sound_conf.latency=0;
 
@@ -3696,7 +3700,7 @@ void sip_config_uninit(LinphoneCore *lc)
 	linphone_proxy_config_write_to_config_file(lc->config,NULL,i);
 
 	for (i=0;i<20;i++){
-		linphone_core_iterate(lc);
+		sal_iterate(lc->sal);
 #ifndef WIN32
 		usleep(100000);
 #else
