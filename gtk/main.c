@@ -1446,6 +1446,7 @@ int main(int argc, char *argv[]){
 	
 	settings=gtk_settings_get_default();
 	g_type_class_unref (g_type_class_ref (GTK_TYPE_IMAGE_MENU_ITEM));
+	g_type_class_unref (g_type_class_ref (GTK_TYPE_BUTTON));
 	g_object_set(settings, "gtk-menu-images", TRUE, NULL);
 	g_object_set(settings, "gtk-button-images", TRUE, NULL);
 #ifdef WIN32
