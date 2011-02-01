@@ -110,7 +110,11 @@ public interface LinphoneCall {
 		 * The remote accepted the call update initiated by us
 		 */
 		public static final State CallUpdated = new State(17, "CallUpdated");
-
+		
+		/**
+		 * The call object is now released.
+		 */
+		public static final State CallReleased = new State(18,"CallReleased");
 
 		private State(int value,String stringValue) {
 			mValue = value;
