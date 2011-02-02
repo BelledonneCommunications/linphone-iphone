@@ -32,6 +32,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/msequalizer.h"
 #include "mediastreamer2/msfileplayer.h"
 #include "mediastreamer2/msjpegwriter.h"
+#include "mediastreamer2/mseventqueue.h"
 
 #ifdef VIDEO_ENABLED
 static MSWebCam *get_nowebcam_device(){
@@ -983,6 +984,7 @@ void linphone_call_stop_media_streams(LinphoneCall *call){
 		video_stream_stop(call->videostream);
 		call->videostream=NULL;
 	}
+	ms_event_queue_skip(call->core->msevq);
 	
 #endif
 	if (call->audio_profile){
