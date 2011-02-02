@@ -575,6 +575,7 @@ static void sip_config_read(LinphoneCore *lc)
 	lc->sip_conf.keepalive_period=lp_config_get_int(lc->config,"sip","keepalive_period",10000);
 	sal_set_keepalive_period(lc->sal,lc->sip_conf.keepalive_period);
 	sal_use_one_matching_codec_policy(lc->sal,lp_config_get_int(lc->config,"sip","only_one_codec",0));
+	sal_use_double_registrations(lc->sal,lp_config_get_int(lc->config,"sip","use_double_registrations",1));
 }
 
 static void rtp_config_read(LinphoneCore *lc)

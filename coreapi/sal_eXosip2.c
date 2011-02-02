@@ -264,6 +264,7 @@ Sal * sal_init(){
 	eXosip_init();
 	sal=ms_new0(Sal,1);
 	sal->keepalive_period=30;
+	sal->double_reg=TRUE;
 	return sal;
 }
 
@@ -391,6 +392,10 @@ void sal_use_one_matching_codec_policy(Sal *ctx, bool_t one_matching_codec){
 
 MSList *sal_get_pending_auths(Sal *sal){
 	return ms_list_copy(sal->pending_auths);
+}
+
+void sal_use_double_registrations(Sal *ctx, bool_t enabled){
+	ctx->double_reg=enabled;
 }
 
 static int extract_received_rport(osip_message_t *msg, const char **received, int *rportval){
@@ -1552,6 +1557,9 @@ static bool_t register_again_with_updated_contact(SalOp *op, osip_message_t *ori
 	char *tmp;
 	char port[20];
 	SalAddress *addr;
+	Sal *sal=op->base.root;
+
+	if (sal->double_reg==FALSE) return FALSE;
 	
 	if (extract_received_rport(last_answer,&received,&rport)==-1) return FALSE;
 	osip_message_get_contact(orig_request,0,&ctt);

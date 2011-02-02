@@ -257,6 +257,7 @@ void sal_set_keepalive_period(Sal *ctx,unsigned int value);
  * */
 unsigned int sal_get_keepalive_period(Sal *ctx);
 void sal_use_session_timers(Sal *ctx, int expires);
+void sal_use_double_registrations(Sal *ctx, bool_t enabled);
 void sal_use_one_matching_codec_policy(Sal *ctx, bool_t one_matching_codec);
 int sal_iterate(Sal *sal);
 MSList * sal_get_pending_auths(Sal *sal);

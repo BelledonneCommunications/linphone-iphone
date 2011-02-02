@@ -41,6 +41,7 @@ struct Sal{
 	int keepalive_period;
 	void *up;
 	bool_t one_matching_codec;
+	bool_t double_reg;
 };
 
 struct SalOp{
