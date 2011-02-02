@@ -110,18 +110,18 @@ static void ecc_play_tones(EcCalibrator *ecc){
 
 	/*play an initial tone to startup the audio playback/capture*/
 	ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
-	sleep(2);
+	ms_sleep(2);
 
 	ms_filter_set_notify_callback(ecc->gen,on_tone_sent,ecc);
 	tone.frequency=2000;
 	tone.duration=100;
 
 	ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
-	sleep(1);
+	ms_sleep(1);
 	ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
-	sleep(1);
+	ms_sleep(1);
 	ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
-	sleep(1);
+	ms_sleep(1);
 
 	if (ecc->sent_count==3 && ecc->recv_count==3){
 		int delay=ecc->acc/3;
