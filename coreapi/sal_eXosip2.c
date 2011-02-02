@@ -841,6 +841,9 @@ static SalOp *find_op(Sal *sal, eXosip_event_t *ev){
 	if (ev->sid>0){
 		return sal_find_out_subscribe(sal,ev->sid);
 	}
+	if (ev->nid>0){
+		return sal_find_in_subscribe(sal,ev->nid);
+	}
 	if (ev->response) return sal_find_other(sal,ev->response);
 	return NULL;
 }
@@ -1791,6 +1794,7 @@ static bool_t process_event(Sal *sal, eXosip_event_t *ev){
 			other_request_reply(sal,ev);
 			break;
 		case EXOSIP_MESSAGE_REQUESTFAILURE:
+		case EXOSIP_NOTIFICATION_REQUESTFAILURE:
 			if (ev->response) {
 				switch (ev->response->status_code) {
 					case 407:
