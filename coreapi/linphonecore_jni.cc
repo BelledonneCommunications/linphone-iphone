@@ -989,6 +989,12 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCallImpl_isEchoLimiterEnabled
 	return linphone_call_echo_limiter_enabled((LinphoneCall*)ptr);
 }
 
+extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_getReplacedCall(	JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	return (jlong)linphone_call_get_replaced_call((LinphoneCall*)ptr);
+}
+
 
 //LinphoneFriend
 extern "C" long Java_org_linphone_core_LinphoneFriendImpl_newLinphoneFriend(JNIEnv*  env
