@@ -178,5 +178,9 @@ public interface LinphoneCall {
 	 * @return true if echo limiter is enabled.
 	 */
 	public boolean isEchoLimiterEnabled();
-
+	/**
+	 * Returns the object associated to a call this one is replacing.
+	 * Call replacement can occur during transfer scenarios.
+	 */
+	public LinphoneCall getReplacedCall();
 }
