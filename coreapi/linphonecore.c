@@ -2441,8 +2441,8 @@ int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *the_call)
 		sal_media_description_set_dir(call->localdesc,SalStreamSendOnly);
 		subject="Call on hold";
 	}else if (sal_media_description_has_dir(call->resultdesc,SalStreamRecvOnly)){
-		sal_media_description_set_dir(call->localdesc,SalStreamInactive);
-		subject="Call inactive";
+		sal_media_description_set_dir(call->localdesc,SalStreamSendOnly);
+		subject="Call on hold for me too";
 	}else{
 		ms_error("No reason to pause this call, it is already paused or inactive.");
 		return -1;
