@@ -21,8 +21,6 @@
 
 
 @implementation GenericTabViewController
-@synthesize phoneControllerDelegate;
-@synthesize linphoneDelegate;
 @synthesize header;
 
 
@@ -36,9 +34,7 @@
 	[self.tableView reloadData];
 }
 
--(void) setLinphoneCore:(LinphoneCore*) lc {
-	myLinphoneCore = lc;
-}
+
 
 - (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath {
 	

@@ -1,6 +1,6 @@
-/* GenericTabViewController.h
+/* UIMuteButton.m
  *
- * Copyright (C) 2009  Belledonne Comunications, Grenoble, France
+ * Copyright (C) 2011  Belledonne Comunications, Grenoble, France
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -15,17 +15,42 @@
  *  You should have received a copy of the GNU General Public License   
  *  along with this program; if not, write to the Free Software         
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */     
+ */       
+#import "UIMuteButton.h"
+#include "LinphoneManager.h"
 
-#import <UIKit/UIKit.h>
-#include "linphonecore.h"
-#import "PhoneViewController.h"
-#import "linphoneAppDelegate.h"
 
-@interface GenericTabViewController : UITableViewController {
-	LinphoneCore* myLinphoneCore;
-	IBOutlet UIView* header; 
+@implementation UIMuteButton
+
+
+
+-(void) onOn {
+	linphone_core_mute_mic([LinphoneManager getLc], true);
 }
-@property (nonatomic, retain) IBOutlet UIView* header;
-@end
+-(void) onOff {
+	linphone_core_mute_mic([LinphoneManager getLc], false);
+}
+-(bool) isInitialStateOn {
+	@try {
+		return true == linphone_core_is_mic_muted([LinphoneManager getLc]);
+	} @catch(NSException* e) {
+		//not ready yet
+		return false;
+	}
+	
+}
 
+/*
+// Only override drawRect: if you perform custom drawing.
+// An empty implementation adversely affects performance during animation.
+- (void)drawRect:(CGRect)rect {
+    // Drawing code.
+}
+*/
+
+- (void)dealloc {
+    [super dealloc];
+}
+
+
+@end

@@ -17,11 +17,9 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */           
 #import "ContactPickerDelegate.h"
-
+#import "LinphoneManager.h"
 
 @implementation ContactPickerDelegate
-@synthesize phoneControllerDelegate;
-@synthesize linphoneDelegate;
 
 
 - (BOOL)peoplePickerNavigationController:(ABPeoplePickerNavigationController *)peoplePicker 
@@ -38,14 +36,16 @@
 	CFTypeRef multiValue = ABRecordCopyValue(person, property);
 	CFIndex valueIdx = ABMultiValueGetIndexForIdentifier(multiValue,identifier);
 	NSString *phoneNumber = (NSString *)ABMultiValueCopyValueAtIndex(multiValue, valueIdx);
-	[phoneControllerDelegate setPhoneNumber:phoneNumber withDisplayName:(NSString*)ABRecordCopyCompositeName(person)];
-	
-	[linphoneDelegate selectDialerTab];
+	[[LinphoneManager instance].uiController displayDialerFromUI:nil 
+														 forUser:phoneNumber 
+												 withDisplayName:(NSString*)ABRecordCopyCompositeName(person)];
 	return false;
 }
 
 - (void)peoplePickerNavigationControllerDidCancel:(ABPeoplePickerNavigationController *)peoplePicker {
-	[linphoneDelegate selectDialerTab];
+	[[LinphoneManager instance].uiController displayDialerFromUI:nil 
+														 forUser:nil 
+												 withDisplayName:@""];
 }
 
 @end

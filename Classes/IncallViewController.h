@@ -1,4 +1,4 @@
-/* PhoneViewController.h
+/* IncallViewController.h
  *
  * Copyright (C) 2009  Belledonne Comunications, Grenoble, France
  *
@@ -15,66 +15,73 @@
  *  You should have received a copy of the GNU General Public License   
  *  along with this program; if not, write to the Free Software         
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */                          
+ */              
 #import <UIKit/UIKit.h>
-#import <Foundation/Foundation.h>
 #import "linphonecore.h"
-#import "UILinphone.h"
+#import "PhoneViewController.h"
+#import <AddressBookUI/ABPeoplePickerNavigationController.h>
 
 
-@class IncallViewController;
-
-@interface PhoneViewController : UIViewController <UITextFieldDelegate,UIActionSheetDelegate,LinphoneUIControler> {
-
-@private
-	//UI definition
-	UITextField* address;
-	UILabel* mDisplayName;
+@interface IncallViewController : UIViewController <ABPeoplePickerNavigationControllerDelegate> {
+	LinphoneCore* myLinphoneCore;
+	id<PhoneViewControllerDelegate> phoneviewDelegate;
+	NSTimer *durationRefreasher;
 	
-	UIView* incallView;
-	UIDuration* callDuration;
-	UIMuteButton* mute;
-	UISpeakerButton* speaker;	
-	UILabel* peerLabel;
-		
 	
-	UICallButton* call;
-	UIHangUpButton* hangup;
-
+	UIView* controlSubView;
+	UIView* padSubView;
+	
+	UILabel* peerName;
+	UILabel* peerNumber;
+	UILabel* callDuration;
 	UILabel* status;
-
+	UIButton* end;
+	UIButton* dialer;
+	UIButton* mute;
+	UIButton* speaker;
+	UIButton* contacts;
+	
 	//key pad
-	UIDigitButton* one;
-	UIDigitButton* two;
-	UIDigitButton* three;
-	UIDigitButton* four;
-	UIDigitButton* five;
-	UIDigitButton* six;
-	UIDigitButton* seven;
-	UIDigitButton* eight;
-	UIDigitButton* nine;
-	UIDigitButton* star;
-	UIDigitButton* zero;
-	UIDigitButton* hash;
-
-	UIButton* back;
+	UIButton* one;
+	UIButton* two;
+	UIButton* three;
+	UIButton* four;
+	UIButton* five;
+	UIButton* six;
+	UIButton* seven;
+	UIButton* eight;
+	UIButton* nine;
+	UIButton* star;
+	UIButton* zero;
+	UIButton* hash;
 	
-	UITabBarController*  myTabBarController;
-	IncallViewController *myIncallViewController;
-	UIActionSheet *mIncomingCallActionSheet;
-
+	UIButton* close;
 	
+	bool isMuted;
+	bool isSpeaker;
+	
+	ABPeoplePickerNavigationController* myPeoplePickerController;
 }
-@property (nonatomic, retain) IBOutlet UITextField* address;
-@property (nonatomic, retain) IBOutlet UIButton* call;
-@property (nonatomic, retain) IBOutlet UIButton* hangup;
-@property (nonatomic, retain) IBOutlet UILabel* status;
 
-@property (nonatomic, retain) IBOutlet UIView* incallView;
+-(void) setLinphoneCore:(LinphoneCore*) lc;
+-(void) startCall;
+
+-(void)displayStatus:(NSString*) message;
+
+- (IBAction)doAction:(id)sender;
+
+@property (nonatomic, retain) IBOutlet UIView* controlSubView;
+@property (nonatomic, retain) IBOutlet UIView* padSubView;
+
+@property (nonatomic, retain) IBOutlet UILabel* peerName;
+@property (nonatomic, retain) IBOutlet UILabel* peerNumber;
 @property (nonatomic, retain) IBOutlet UILabel* callDuration;
+@property (nonatomic, retain) IBOutlet UILabel* status;
+@property (nonatomic, retain) IBOutlet UIButton* end;
+@property (nonatomic, retain) IBOutlet UIButton* dialer;
 @property (nonatomic, retain) IBOutlet UIButton* mute;
-@property (nonatomic, retain) IBOutlet UIButton* speaker;	
-@property (nonatomic, retain) IBOutlet UILabel* peerLabel;
+@property (nonatomic, retain) IBOutlet UIButton* speaker;
+@property (nonatomic, retain) IBOutlet UIButton* contacts;
 
 
 @property (nonatomic, retain) IBOutlet UIButton* one;
@@ -89,14 +96,7 @@
 @property (nonatomic, retain) IBOutlet UIButton* star;
 @property (nonatomic, retain) IBOutlet UIButton* zero;
 @property (nonatomic, retain) IBOutlet UIButton* hash;
+@property (nonatomic, retain) IBOutlet UIButton* close;
 
-@property (nonatomic, retain) IBOutlet UIButton* back;
-
-
-
-// method to handle keypad event
-- (IBAction)doKeyPad:(id)sender;
-
-
-@property (nonatomic, retain) IBOutlet UITabBarController*  myTabBarController;
+@property (nonatomic, retain) id<PhoneViewControllerDelegate> phoneviewDelegate;
 @end

@@ -20,72 +20,30 @@
 
 #import <UIKit/UIKit.h>
 #import <AddressBookUI/ABPeoplePickerNavigationController.h>
-#import <SystemConfiguration/SCNetworkReachability.h>
-#include"linphonecore.h"
 
-
-@protocol LinphoneTabManagerDelegate
-
--(void)selectDialerTab;
--(void) kickOffNetworkConnection;
--(LinphoneCore*) getLinphoneCore; 
-@end
+#define DIALER_TAB_INDEX 1
+#define CONTACTS_TAB_INDEX 2
+#define HISTORY_TAB_INDEX 0
+#define MORE_TAB_INDEX 3
 
 @class ContactPickerDelegate;
 @class IncallViewController;
 @class PhoneViewController;
 @class CallHistoryTableViewController;
 
-@interface linphoneAppDelegate : NSObject <UIApplicationDelegate,LinphoneTabManagerDelegate,UIAlertViewDelegate> {
+@interface linphoneAppDelegate : NSObject <UIApplicationDelegate,UIAlertViewDelegate> {
     UIWindow *window;
 	IBOutlet UITabBarController*  myTabBarController;
 	IBOutlet ABPeoplePickerNavigationController* myPeoplePickerController;
 	IBOutlet PhoneViewController* myPhoneViewController;
 	CallHistoryTableViewController* myCallHistoryTableViewController;
-	
 	ContactPickerDelegate* myContactPickerDelegate;
-	
-	bool isDebug;
-	bool isStarted;
-	bool backgroundSupported;
-	bool isbackgroundModeEnabled;
-
-	LinphoneCore* myLinphoneCore;
-	SCNetworkReachabilityContext proxyReachabilityContext;
-	SCNetworkReachabilityRef proxyReachability;
-	CFReadStreamRef mReadStream;
-	NSTimer* mIterateTimer;
-		
 }
-/**********************************
- * liblinphone initialization method
- **********************************/
--(void) startlibLinphone;
-
-/*
- * liblinphone scheduling method;
- */
--(void) iterate;
-
--(void) newIncomingCall:(NSString*) from;
-
-
--(PayloadType*) findPayload:(NSString*)type withRate:(int)rate from:(const MSList*)list;
-
-/**
- * return true if register is activated
- */
-void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void * info);
-
--(void) doRegister;
--(void) doLinphoneConfiguration:(NSNotification *)notification;
-
 
 @property (nonatomic, retain) IBOutlet UIWindow *window;
 @property (nonatomic, retain) IBOutlet UITabBarController*  myTabBarController;
 @property (nonatomic, retain) ABPeoplePickerNavigationController* myPeoplePickerController;
 @property (nonatomic, retain) IBOutlet PhoneViewController* myPhoneViewController;
-@property(readonly) bool backgroundSupported;
 
 
 @end

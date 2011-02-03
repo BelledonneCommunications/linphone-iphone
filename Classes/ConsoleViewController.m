@@ -67,7 +67,7 @@ NSMutableString* MoreViewController_logs;
 }
 
 
-+(void) addLog:(NSString*) log {
+-(void) addLog:(NSString*) log {
 	@synchronized(self) {
 		if (!MoreViewController_logs) {
 			MoreViewController_logs = [[NSMutableString alloc] init];

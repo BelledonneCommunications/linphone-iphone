@@ -1,6 +1,6 @@
-/* GenericTabViewController.h
+/* LinphoneManager.h
  *
- * Copyright (C) 2009  Belledonne Comunications, Grenoble, France
+ * Copyright (C) 2011  Belledonne Comunications, Grenoble, France
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -15,17 +15,37 @@
  *  You should have received a copy of the GNU General Public License   
  *  along with this program; if not, write to the Free Software         
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */     
+ */              
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
+#import <SystemConfiguration/SCNetworkReachability.h>
 #include "linphonecore.h"
-#import "PhoneViewController.h"
-#import "linphoneAppDelegate.h"
+#import "LogView.h"
+#import "LinphoneUIControler.h"
 
-@interface GenericTabViewController : UITableViewController {
-	LinphoneCore* myLinphoneCore;
-	IBOutlet UIView* header; 
+@interface LinphoneManager : NSObject {
+@private
+	SCNetworkReachabilityContext proxyReachabilityContext;
+	SCNetworkReachabilityRef proxyReachability;
+	CFReadStreamRef mReadStream;
+	NSTimer* mIterateTimer;
+	id<LogView> mLogView;	
+	bool isbackgroundModeEnabled;
+	id<LinphoneUIControler> uiController;
+	UIViewController* mCurrentViewController;
+	
 }
-@property (nonatomic, retain) IBOutlet UIView* header;
-@end
++(LinphoneManager*) instance;
++(LinphoneCore*) getLc;
 
+-(void) registerLogView:(id<LogView>) view;
+
+-(void) startLibLinphone;
+-(void) destroyLibLinphone;
+  
+-(void) enterBackgroundMode;
+-(void) becomeActive;
+-(void) kickOffNetworkConnection;
+
+@property (nonatomic, retain) id<LinphoneUIControler> uiController;
+@end

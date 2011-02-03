@@ -18,6 +18,7 @@
  */     
 
 #import "CallHistoryTableViewController.h"
+#import "LinphoneManager.h"
 
 
 @implementation CallHistoryTableViewController
@@ -88,7 +89,7 @@
 
 
 -(void) doAction:(id)sender {
-	linphone_core_clear_call_logs(myLinphoneCore);
+	linphone_core_clear_call_logs([LinphoneManager getLc]);
 	[self.tableView reloadData];
 }
 
@@ -101,7 +102,7 @@
 
 // Customize the number of rows in the table view.
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	const MSList * logs = linphone_core_get_call_logs(myLinphoneCore);
+	const MSList * logs = linphone_core_get_call_logs([LinphoneManager getLc]);
 	return ms_list_size(logs);
 }
 
@@ -119,7 +120,7 @@
     
     // Set up the cell...
 	LinphoneAddress* partyToDisplay; 
-	const MSList * logs = linphone_core_get_call_logs(myLinphoneCore);
+	const MSList * logs = linphone_core_get_call_logs([LinphoneManager getLc]);
 	LinphoneCallLog*  callLogs = ms_list_nth_data(logs,  indexPath.row) ;
 
 	NSString *path;
@@ -159,7 +160,7 @@
 	// [anotherViewController release];
 	[tableView deselectRowAtIndexPath:indexPath animated:NO];
 	
-	const MSList * logs = linphone_core_get_call_logs(myLinphoneCore);
+	const MSList * logs = linphone_core_get_call_logs([LinphoneManager getLc]);
 	LinphoneCallLog*  callLogs = ms_list_nth_data(logs,  indexPath.row) ;
 	LinphoneAddress* partyToCall; 
 	if (callLogs->dir == LinphoneCallIncoming) {
@@ -174,7 +175,7 @@
 	const char* domain = linphone_address_get_domain(partyToCall);
 	
 	LinphoneProxyConfig* proxyCfg;
-	linphone_core_get_default_proxy(myLinphoneCore,&proxyCfg);
+	linphone_core_get_default_proxy([LinphoneManager getLc],&proxyCfg);
 	
 	NSString* phoneNumber;
 	
@@ -183,11 +184,10 @@
 	} else {
 		phoneNumber = [[NSString alloc] initWithCString:linphone_address_as_string_uri_only(partyToCall) encoding:[NSString defaultCStringEncoding]];
 	}
-	[self.phoneControllerDelegate 
-									setPhoneNumber: phoneNumber
-									withDisplayName:[[NSString alloc] initWithCString:displayName encoding:[NSString defaultCStringEncoding]]];
+	[[LinphoneManager instance].uiController displayDialerFromUI:self 
+														 forUser:phoneNumber 
+												 withDisplayName:[[NSString alloc] initWithCString:displayName encoding:[NSString defaultCStringEncoding]]];
 	
-	[self.linphoneDelegate selectDialerTab];
 }
 
 

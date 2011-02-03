@@ -19,7 +19,7 @@
 
 #import "MoreViewController.h"
 #include "ConsoleViewController.h"
-
+#import "LinphoneManager.h"
 
 
 @implementation MoreViewController
@@ -34,6 +34,7 @@
     [super viewDidLoad];
 	[creditText setText: [NSString stringWithFormat:creditText.text,[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]]];
 	consoleViewController = [[ConsoleViewController alloc] initWithNibName:@"ConsoleViewController" bundle:[NSBundle mainBundle]];
+	[[LinphoneManager instance] registerLogView:consoleViewController];
 	isDebug =  [[NSUserDefaults standardUserDefaults] boolForKey:@"debugenable_preference"];  
 
 }

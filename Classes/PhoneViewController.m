@@ -18,10 +18,10 @@
  */               
 
 #import "PhoneViewController.h"
-#import "osip2/osip.h"
+#import "linphoneAppDelegate.h"
 #import <AVFoundation/AVAudioSession.h>
 #import <AudioToolbox/AudioToolbox.h>
-
+#import "LinphoneManager.h"
 
 
 
@@ -51,206 +51,38 @@
 @synthesize hash;
 
 @synthesize back;
+@synthesize myTabBarController;
 
--(void) erasedisplayName {
-	if (displayName) {
-		[displayName release];
-		displayName=nil;
-	}
-}
 
--(void)setPhoneNumber:(NSString*)number {
-	[address setText:number];
-	[self erasedisplayName];
-}
--(void)setPhoneNumber:(NSString*)number withDisplayName:(NSString*) name {
-	[self setPhoneNumber:number];
-	displayName = name;
-}
-
--(void)dismissIncallView {
-	[self dismissModalViewControllerAnimated:true];
-}
-
-//implements call/cancel button behavior 
--(IBAction) doAction:(id)sender {
-	
-	if (sender == call) {
-		if (!linphone_core_is_network_reachabled(mCore)) {
-			UIAlertView* error = [[UIAlertView alloc] initWithTitle:@"Network Error"
-															message:@"There is no network connection available, enable WIFI or WWAN prior to place a call" 
-															delegate:nil 
-															cancelButtonTitle:@"Continue" 
-															otherButtonTitles:nil];
-			[error show];
-			return;
-		}
-		if (!linphone_core_in_call(mCore)) {
-			LinphoneProxyConfig* proxyCfg;	
-			//get default proxy
-			linphone_core_get_default_proxy(mCore,&proxyCfg);
-			
-			if ([address.text length] == 0) return; //just return
-			if ([address.text hasPrefix:@"sip:"]) {
-				linphone_core_invite(mCore, [address.text cStringUsingEncoding:[NSString defaultCStringEncoding]]);
-			} else if ( proxyCfg==nil){
-				UIAlertView* error = [[UIAlertView alloc] initWithTitle:@"Invalid sip address"
-																message:@"Either configure a SIP proxy server from settings prior to place a call or use a valid sip address (I.E sip:john@example.net)" 
-																delegate:nil 
-																cancelButtonTitle:@"Continue" 
-																otherButtonTitles:nil];
-				[error show];
-				
-			} else {
-				char normalizedUserName[256];
-				NSString* toUserName = [NSString stringWithString:[address text]];
-				linphone_proxy_config_normalize_number(proxyCfg,[toUserName cStringUsingEncoding:[NSString defaultCStringEncoding]],normalizedUserName,sizeof(normalizedUserName));
-				LinphoneAddress* tmpAddress = linphone_address_new(linphone_core_get_identity(mCore));
-				linphone_address_set_username(tmpAddress,normalizedUserName);
-				linphone_address_set_display_name(tmpAddress,displayName?[displayName cStringUsingEncoding:[NSString defaultCStringEncoding]]:nil);
-				linphone_core_invite(mCore,linphone_address_as_string(tmpAddress)) ;
-				linphone_address_destroy(tmpAddress);
-			}
-		} else if (linphone_core_inc_invite_pending(mCore)) {
-			linphone_core_accept_call(mCore,linphone_core_get_current_call(mCore));
-		}
-		
-	} else if (sender == hangup) {
-		linphone_core_terminate_call(mCore,linphone_core_get_current_call(mCore));
-	} else if (sender == mute) {
-		[self muteAction:!isMuted]; 
-		
-	} else if (sender == speaker) {
-		[self speakerAction:!isSpeaker];		
-	}
-}
-				
 //implements keypad behavior 
 -(IBAction) doKeyPad:(id)sender {
-	if (!linphone_core_in_call(mCore)) {
-		//outcall behavior	
-		NSString* newAddress = nil;
-		
-		if (sender == one) {
-			newAddress = [address.text stringByAppendingString:@"1"];
-			linphone_core_play_dtmf(mCore, '1', -1);
-		} else if (sender == two) {
-			newAddress = [address.text stringByAppendingString:@"2"];
-			linphone_core_play_dtmf(mCore, '2', -1);
-		} else if (sender == three) {
-			newAddress = [address.text stringByAppendingString:@"3"];
-			linphone_core_play_dtmf(mCore, '3', -1);
-		} else if (sender == four) {
-			newAddress = [address.text stringByAppendingString:@"4"];
-			linphone_core_play_dtmf(mCore, '4', -1);
-		} else if (sender == five) {
-			newAddress = [address.text stringByAppendingString:@"5"];
-			linphone_core_play_dtmf(mCore, '5', -1);
-		} else if (sender == six) {
-			newAddress = [address.text stringByAppendingString:@"6"];
-			linphone_core_play_dtmf(mCore, '6', -1);
-		} else if (sender == seven) {
-			newAddress = [address.text stringByAppendingString:@"7"];
-			linphone_core_play_dtmf(mCore, '7', -1);
-		} else if (sender == eight) {
-			newAddress = [address.text stringByAppendingString:@"8"];
-			linphone_core_play_dtmf(mCore, '8', -1);
-		} else if (sender == nine) {
-			newAddress = [address.text stringByAppendingString:@"9"];
-			linphone_core_play_dtmf(mCore, '9', -1);
-		} else if (sender == star) {
-			newAddress = [address.text stringByAppendingString:@"*"];
-			linphone_core_play_dtmf(mCore, '*', -1);
-		} else if (sender == zero) {
-			newAddress = [address.text stringByAppendingString:@"0"];
-			linphone_core_play_dtmf(mCore, '0', -1);
-			//start timer for +
-			[self performSelector:@selector(doKeyZeroLongPress) withObject:nil afterDelay:0.5];
-		} else if (sender == hash) {
-			linphone_core_play_dtmf(mCore, '#', -1);
-			newAddress = [address.text stringByAppendingString:@"#"];
-		} else if (sender == back) {
-			if ([address.text length] >0) {
-				newAddress = [address.text substringToIndex: [address.text length]-1];
-			} 
-		} else  {
-			ms_message("unknown event from diad pad");
-			return;
-		}
-		if (newAddress != nil) {
-			[address setText:newAddress];	
-		}
-	} else {
-			//incall behavior
-			if (sender == one) {
-				linphone_core_send_dtmf(mCore,'1');	
-			} else if (sender == two) {
-				linphone_core_send_dtmf(mCore,'2');	
-			} else if (sender == three) {
-				linphone_core_send_dtmf(mCore,'3');	
-			} else if (sender == four) {
-				linphone_core_send_dtmf(mCore,'4');	
-			} else if (sender == five) {
-				linphone_core_send_dtmf(mCore,'5');	
-			} else if (sender == six) {
-				linphone_core_send_dtmf(mCore,'6');	
-			} else if (sender == seven) {
-				linphone_core_send_dtmf(mCore,'7');	
-			} else if (sender == eight) {
-				linphone_core_send_dtmf(mCore,'8');	
-			} else if (sender == nine) {
-				linphone_core_send_dtmf(mCore,'9');	
-			} else if (sender == star) {
-				linphone_core_send_dtmf(mCore,'*');	
-			} else if (sender == zero) {
-				linphone_core_send_dtmf(mCore,'0');	
-			} else if (sender == hash) {
-				linphone_core_send_dtmf(mCore,'#');	
-			} else if (sender == hangup) {
-				linphone_core_terminate_call(mCore,linphone_core_get_current_call(mCore));
-			}
-	}		
+	if (sender == back) {
+		if ([address.text length] >0) {
+			NSString* newAddress; 
+			newAddress = [address.text substringToIndex: [address.text length]-1];
+			[address setText:newAddress];
+		} 
+	} 	
+	
 }
 
-//implements keypad up  
--(IBAction) doKeyPadUp:(id)sender {
-	if (sender == zero) {
-		//cancel timer for +
-		[NSObject cancelPreviousPerformRequestsWithTarget:self 
-												 selector:@selector(doKeyZeroLongPress)
-												   object:nil];
-	} 
-	linphone_core_stop_dtmf(mCore);
-}
 
--(void)doKeyZeroLongPress {
-		NSString* newAddress = [[address.text substringToIndex: [address.text length]-1]  stringByAppendingString:@"+"];
-		[address setText:newAddress];
 
-}
 
--(void) setLinphoneCore:(LinphoneCore*) lc {
-	mCore = lc;
-	[myIncallViewController setLinphoneCore:mCore];
-}
--(void)displayStatus:(NSString*) message {
-	[status setText:message];
-	if (myIncallViewController != nil) {
-		[myIncallViewController displayStatus:message];
-	}
-}
 
 /*
  // The designated initializer.  Override if you create the controller programmatically and want to perform customization that is not appropriate for viewDidLoad.
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
-    if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
-    }
-    
-	return self;
-}
-*/
+ - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+ if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
+ }
+ 
+ return self;
+ }
+ */
 - (void)viewDidAppear:(BOOL)animated {
 	[[UIApplication sharedApplication] setIdleTimerDisabled:true];
+	[mute reset];
+	
 }
 - (void)viewDidDisappear:(BOOL)animated {
 	[[UIApplication sharedApplication] setIdleTimerDisabled:false];
@@ -260,16 +92,33 @@
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
     [super viewDidLoad];
+	mDisplayName = [UILabel alloc];
+	[zero initWithNumber:'0'  addressField:address ];
+	[one initWithNumber:'1'  addressField:address ];
+	[two initWithNumber:'2'  addressField:address ];
+	[three initWithNumber:'3'  addressField:address ];
+	[four initWithNumber:'4'  addressField:address ];
+	[five initWithNumber:'5'  addressField:address ];
+	[six initWithNumber:'6'  addressField:address ];
+	[seven initWithNumber:'7'  addressField:address ];
+	[eight initWithNumber:'8'  addressField:address ];
+	[nine initWithNumber:'9'  addressField:address ];
+	[star initWithNumber:'*'  addressField:address ];
+	[hash initWithNumber:'#'  addressField:address ];
+	[call initWithAddress:address withDisplayName:mDisplayName];
+	[mute initWithOnImage:[UIImage imageNamed:@"mic_muted.png"]  offImage:[UIImage imageNamed:@"mic_active.png"] ];
+	[speaker initWithOnImage:[UIImage imageNamed:@"Speaker-32-on.png"]  offImage:[UIImage imageNamed:@"Speaker-32-off.png"] ];
+	
 }
 
 
 /*
-// Override to allow orientations other than the default portrait orientation.
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    // Return YES for supported orientations
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
-}
-*/
+ // Override to allow orientations other than the default portrait orientation.
+ - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+ // Return YES for supported orientations
+ return (interfaceOrientation == UIInterfaceOrientationPortrait);
+ }
+ */
 
 - (void)didReceiveMemoryWarning {
 	// Releases the view if it doesn't have a superview.
@@ -287,38 +136,81 @@
 - (BOOL)textFieldShouldReturn:(UITextField *)theTextField {
     if (theTextField == address) {
         [address resignFirstResponder];
-		[self erasedisplayName]; //display name only relefvant 
+		[mDisplayName setText:@""]; //display name only relefvant 
 		
     }
     return YES;
 }
 
 
-
--(void) dismissAlertDialog:(UIAlertView*) alertView{
-	[alertView dismissWithClickedButtonIndex:0 animated:TRUE];
+-(void) displayDialerFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
+	//cancel local notification, just in case
+	if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]  
+		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground ) {
+		// cancel local notif if needed
+		[[UIApplication sharedApplication] cancelAllLocalNotifications];
+	} else {
+		if (mIncomingCallActionSheet) {
+			[mIncomingCallActionSheet dismissWithClickedButtonIndex:1 animated:true];
+			mIncomingCallActionSheet=nil;
+		}
+	}
+	
+	[address setHidden:false];
+	if (username) {
+		[address setText:username];
+	} //else keep previous
+	
+	[mDisplayName setText:displayName];
+	[incallView setHidden:true];
+	[call setEnabled:true];
+	[hangup setEnabled:false];
+	
+	[callDuration stop];
+	
+	[peerLabel setText:@""];
+	
+	[myTabBarController setSelectedIndex:DIALER_TAB_INDEX];
+	
+}
+-(void) displayCallInProgressFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
+	[hangup setEnabled:true];
+	if (displayName && [displayName length]>0) {
+		[peerLabel setText:displayName];
+	} else {
+		[peerLabel setText:username?username:@""];
+	}
+	if (linphone_call_get_state(linphone_core_get_current_call([LinphoneManager getLc])) == LinphoneCallConnected) {
+		[callDuration start];
+		[callDuration setHidden:false];
+	} else {
+		[callDuration setText:@"Calling..."];
+	}
+	
+	[address setHidden:true];
+	[incallView setHidden:false];
+	if (linphone_call_get_dir(linphone_core_get_current_call([LinphoneManager getLc])) == LinphoneCallOutgoing) {
+		[call setEnabled:false];
+	}
+	
 }
 
-
--(void)updateCallDuration {
-	int lDuration = linphone_core_get_current_call_duration(mCore); 
-	if (lDuration < 60) {
-		[callDuration setText:[NSString stringWithFormat: @"%i s", lDuration]];
-	} else {
-		[callDuration setText:[NSString stringWithFormat: @"%i:%i", lDuration/60,lDuration - 60 *(lDuration/60)]];
+-(void) displayIncallFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
+	[self displayCallInProgressFromUI:viewCtrl
+							  forUser:username
+					  withDisplayName:displayName];
+}
+//status reporting
+-(void) displayStatus:(NSString*) message {
+	[status setText:message];
+	if (myIncallViewController != nil) {
+		[myIncallViewController displayStatus:message];
 	}
 }
 
 
-- (void)dealloc {
-    [address dealloc];
-	[call dealloc];
-	[status dealloc];
-	[super dealloc];
-}
--(void) newIncomingCall:(NSString*) from {
+-(void) displayIncomingCallNotigicationFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
 	
-	//#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 40000
 	if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)] 
 		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground) {
 		// Create a new notification
@@ -326,17 +218,18 @@
 		if (notif)
 		{
 			notif.repeatInterval = 0;
-			notif.alertBody =[NSString  stringWithFormat:@" %@ is calling you",from];
+			notif.alertBody =[NSString  stringWithFormat:@" %@ is calling you",username];
 			notif.alertAction = @"Answer";
 			notif.soundName = @"oldphone-mono-30s.caf";
 			
 			[[UIApplication sharedApplication]  presentLocalNotificationNow:notif];
 		}
-	} else 
-		//#endif
-	{
-		mIncomingCallActionSheet = [[UIActionSheet alloc] initWithTitle:[NSString  stringWithFormat:@" %@ is calling you",from]
-															   delegate:self cancelButtonTitle:@"Decline" destructiveButtonTitle:@"Answer" otherButtonTitles:nil];
+	} else 	{
+		mIncomingCallActionSheet = [[UIActionSheet alloc] initWithTitle:[NSString  stringWithFormat:@" %@ is calling you",username]
+															   delegate:self 
+													  cancelButtonTitle:@"Decline" 
+												 destructiveButtonTitle:@"Answer" 
+													  otherButtonTitles:nil];
 		mIncomingCallActionSheet.actionSheetStyle = UIActionSheetStyleDefault;
 		[mIncomingCallActionSheet showInView:self.view];
 		[mIncomingCallActionSheet release];
@@ -345,159 +238,40 @@
 }
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (buttonIndex == 0 ) {
-		linphone_core_accept_call(mCore,linphone_core_get_current_call(mCore));	
+		linphone_core_accept_call([LinphoneManager getLc],linphone_core_get_current_call([LinphoneManager getLc]));	
 	} else {
-		linphone_core_terminate_call (mCore,linphone_core_get_current_call(mCore));
+		linphone_core_terminate_call ([LinphoneManager getLc],linphone_core_get_current_call([LinphoneManager getLc]));
 	}
 	mIncomingCallActionSheet = nil;
 }
--(void) enterIncallMode {
-	[hangup setEnabled:true];
-	[self muteAction:false];
-	// test if speaker must be unactivated after ring tone
-	if (!isSpeaker) [self speakerAction:false];
-	
-	const LinphoneAddress* callAddress = linphone_call_get_remote_address(linphone_core_get_current_call(mCore));
-	const char* callDisplayName =  linphone_address_get_display_name(callAddress)?linphone_address_get_display_name(callAddress):"";
-	if (callDisplayName && callDisplayName[0] != '\000') {
-		
-		[peerLabel setText:[NSString stringWithCString:callDisplayName encoding:[NSString defaultCStringEncoding]]];
-	} else {
-		const char* username = linphone_address_get_username(callAddress)!=0?linphone_address_get_username(callAddress):"";
-		[peerLabel setText:[NSString stringWithCString:username encoding:[NSString defaultCStringEncoding]]];
-	}
-	// start scheduler
-	durationRefreasher = [NSTimer scheduledTimerWithTimeInterval:1 
-														  target:self 
-														selector:@selector(updateCallDuration) 
-														userInfo:nil 
-														 repeats:YES];
-	[address setHidden:true];
-	[incallView setHidden:false];
-	if (linphone_call_get_dir(linphone_core_get_current_call(mCore)) == LinphoneCallOutgoing) {
-		[call setEnabled:false];
-	}
-	
-}
--(void) exitIncallMode {
-	[address setHidden:false];
-	[incallView setHidden:true];
-	[call setEnabled:true];
-	[hangup setEnabled:false];
-	
-	if (durationRefreasher != nil) {
-		[ durationRefreasher invalidate];
-		durationRefreasher=nil;
-	}
-	[peerLabel setText:@""];
-	[callDuration setText:@""];
+- (void)dealloc {
+	[address dealloc];
+	[ mDisplayName dealloc];
+	[incallView dealloc];
+	[callDuration dealloc];
+	[mute dealloc];
+	[speaker dealloc];	
+	[peerLabel dealloc];
+	[call dealloc];
+	[hangup dealloc];
+	[status dealloc];
+	[one dealloc];
+	[two dealloc];
+	[three dealloc];
+	[four dealloc];
+	[five dealloc];
+	[six dealloc];
+	[seven dealloc];
+	[eight dealloc];
+	[nine dealloc];
+	[star dealloc];
+	[zero dealloc];
+	[hash dealloc];
+	[back dealloc];
+	[myTabBarController release];
+	[myIncallViewController release];
+	[super dealloc];
 }
 
--(void) onCall:(LinphoneCall*) currentCall StateChanged: (LinphoneCallState) new_state withMessage: (const char *)  message {
-	/*
-	 LinphoneCallIdle,
-	 LinphoneCallIncomingReceived,
-	 LinphoneCallOutgoingInit,
-	 LinphoneCallOutgoingProgress,
-	 LinphoneCallOutgoingRinging,
-	 LinphoneCallOutgoingEarlyMedia,
-	 LinphoneCallConnected,
-	 LinphoneCallStreamsRunning,
-	 LinphoneCallPausing,
-	 LinphoneCallPaused,
-	 LinphoneCallResuming,
-	 LinphoneCallRefered,
-	 LinphoneCallError,
-	 LinphoneCallEnd,
-	 LinphoneCallPausedByRemote
-	 */
-	if (new_state != LinphoneCallIncomingReceived) {
-		if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]  
-			&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground ) {
-				// cancel local notif if needed
-				[[UIApplication sharedApplication] cancelAllLocalNotifications];
-			} else {
-				if (mIncomingCallActionSheet) {
-					[mIncomingCallActionSheet dismissWithClickedButtonIndex:1 animated:true];
-					mIncomingCallActionSheet=nil;
-				}
-			}
-	}
-	switch (new_state) {
-		case LinphoneCallOutgoingInit:
-		case LinphoneCallIncomingReceived: {
-			[self enterIncallMode];
-			[self newIncomingCall:[[NSString alloc] initWithCString:linphone_address_get_username(linphone_call_get_remote_address(currentCall))]]; 
-			break;
-		} 
-			
-			
-		case LinphoneCallError: {
-			/*
-			 NSString* lTitle= state->message!=nil?[NSString stringWithCString:state->message length:strlen(state->message)]: @"Error";
-			 NSString* lMessage=lTitle;
-			 */
-			NSString* lMessage;
-			NSString* lTitle;
-			
-			
-			lMessage=@"Please make sure your device is connected to the internet and double check your SIP account configuration in the settings.";
-			
-			if (message!=nil){
-				lMessage=[NSString stringWithFormat : @"%@\nReason was: %s",lMessage, message];
-			}
-			lTitle=@"Call failed";
-			
-			UIAlertView* error = [[UIAlertView alloc] initWithTitle:lTitle
-															message:lMessage 
-														   delegate:nil 
-												  cancelButtonTitle:@"Dismiss" 
-												  otherButtonTitles:nil];
-			[error show];
-			[self exitIncallMode];
-			//[self performSelector:@selector(dismissAlertDialog:) withObject:error afterDelay:2];
-			//[self performSelector:@selector(dismissIncallView) withObject:nil afterDelay:2];
-			break;
-		}
-			
-		case LinphoneCallEnd: {
-			[self exitIncallMode];
-			break;
-		}
-		default:
-			break;
-	}
-	
-}
 
--(void) muteAction:(bool) value {
-	linphone_core_mute_mic(mCore,value);
-	if (value) {
-		[mute setImage:[UIImage imageNamed:@"mic_muted.png"] forState:UIControlStateNormal];
-	} else {
-		[mute setImage:[UIImage imageNamed:@"mic_active.png"] forState:UIControlStateNormal];
-	}
-	isMuted=value;
-	// swithc buttun state
-};
-
--(void) speakerAction:(bool) value {
-	if (value) {
-		//redirect audio to speaker
-		UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;  
-		AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute
-								 , sizeof (audioRouteOverride)
-								 , &audioRouteOverride);
-		[speaker setImage:[UIImage imageNamed:@"Speaker-32-on.png"] forState:UIControlStateNormal];
-	} else {
-		//Cancel audio route redirection
-		UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_None;  
-		AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute
-								 , sizeof (audioRouteOverride)
-								 , &audioRouteOverride);
-		[speaker setImage:[UIImage imageNamed:@"Speaker-32-off.png"] forState:UIControlStateNormal];
-	}
-	isSpeaker=value;
-	
-};
 @end
