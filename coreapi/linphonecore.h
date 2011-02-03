@@ -185,6 +185,7 @@ void linphone_call_params_destroy(LinphoneCallParams *cp);
 
 /**
  * Enum describing failure reasons.
+ * @ingroup initializing
 **/
 enum _LinphoneReason{
 	LinphoneReasonNone,
@@ -203,8 +204,13 @@ const char *linphone_reason_to_string(LinphoneReason err);
 struct _LinphoneCall;
 typedef struct _LinphoneCall LinphoneCall;
 
+/**
+ * LinphoneCallState enum represents the different state a call can reach into.
+ * The application is notified of state changes through the LinphoneCoreVTable::call_state_changed callback.
+ * @ingroup call_control
+**/
 typedef enum _LinphoneCallState{
-	LinphoneCallIdle,
+	LinphoneCallIdle,					/**<Initial call state */
 	LinphoneCallIncomingReceived, /**<This is a new incoming call */
 	LinphoneCallOutgoingInit, /**<An outgoing call is started */
 	LinphoneCallOutgoingProgress, /**<An outgoing call is in progress */
@@ -239,6 +245,7 @@ void linphone_call_unref(LinphoneCall *call);
 LinphoneCallLog *linphone_call_get_call_log(const LinphoneCall *call);
 const char *linphone_call_get_refer_to(const LinphoneCall *call);
 bool_t linphone_call_has_transfer_pending(const LinphoneCall *call);
+LinphoneCall *linphone_call_get_replaced_call(LinphoneCall *call);
 int linphone_call_get_duration(const LinphoneCall *call);
 const LinphoneCallParams * linphone_call_get_current_params(const LinphoneCall *call);
 void linphone_call_enable_camera(LinphoneCall *lc, bool_t enabled);
@@ -302,11 +309,11 @@ typedef struct _LinphoneProxyConfig LinphoneProxyConfig;
  * LinphoneRegistrationState describes proxy registration states.
 **/
 typedef enum _LinphoneRegistrationState{
-	LinphoneRegistrationNone,
-	LinphoneRegistrationProgress,
-	LinphoneRegistrationOk,
-	LinphoneRegistrationCleared,
-	LinphoneRegistrationFailed
+	LinphoneRegistrationNone, /**<Initial state for registrations */
+	LinphoneRegistrationProgress, /**<Registration is in progress */
+	LinphoneRegistrationOk,	/**< Registration is successful */
+	LinphoneRegistrationCleared, /**< Unregistration succeeded */
+	LinphoneRegistrationFailed	/**<Registration failed */
 }LinphoneRegistrationState;
 
 /**
@@ -485,6 +492,17 @@ void * linphone_chat_room_get_user_data(LinphoneChatRoom *cr);
 /**
  * @}
  */
+
+
+/**
+ * @addtogroup initializing
+ * @{
+**/
+
+/**
+ * LinphoneGlobalState describes the global state of the LinphoneCore object.
+ * It is notified via the LinphoneCoreVTable::global_state_changed
+**/
 typedef enum _LinphoneGlobalState{
 	LinphoneGlobalOff,
 	LinphoneGlobalStartup,
@@ -493,11 +511,6 @@ typedef enum _LinphoneGlobalState{
 }LinphoneGlobalState;
 
 const char *linphone_global_state_to_string(LinphoneGlobalState gs);
-
-/**
- * @addtogroup initializing
- * @{
-**/
 
 
 /**Call state notification callback prototype*/

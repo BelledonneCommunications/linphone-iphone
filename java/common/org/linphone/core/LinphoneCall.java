@@ -110,7 +110,11 @@ public interface LinphoneCall {
 		 * The remote accepted the call update initiated by us
 		 */
 		public static final State CallUpdated = new State(17, "CallUpdated");
-
+		
+		/**
+		 * The call object is now released.
+		 */
+		public static final State CallReleased = new State(18,"CallReleased");
 
 		private State(int value,String stringValue) {
 			mValue = value;
@@ -174,5 +178,9 @@ public interface LinphoneCall {
 	 * @return true if echo limiter is enabled.
 	 */
 	public boolean isEchoLimiterEnabled();
-
+	/**
+	 * Returns the object associated to a call this one is replacing.
+	 * Call replacement can occur during transfer scenarios.
+	 */
+	public LinphoneCall getReplacedCall();
 }

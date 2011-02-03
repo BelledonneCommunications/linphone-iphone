@@ -109,7 +109,7 @@ static MSList *match_payloads(const MSList *local, const MSList *remote, bool_t 
 
 
 
-static SalStreamDir compute_dir(SalStreamDir local, SalStreamDir answered){
+static SalStreamDir compute_dir_outgoing(SalStreamDir local, SalStreamDir answered){
 	SalStreamDir res=local;
 	if (local==SalStreamSendRecv){
 		if (answered==SalStreamRecvOnly){
@@ -124,6 +124,30 @@ static SalStreamDir compute_dir(SalStreamDir local, SalStreamDir answered){
 	return res;
 }
 
+static SalStreamDir compute_dir_incoming(SalStreamDir local, SalStreamDir offered){
+	SalStreamDir res=SalStreamSendRecv;
+	if (local==SalStreamSendRecv){
+		if (offered==SalStreamSendOnly)
+			res=SalStreamRecvOnly;
+		else if (offered==SalStreamRecvOnly)
+			res=SalStreamSendOnly;
+		else if (offered==SalStreamInactive)
+			res=SalStreamInactive;
+		else
+			res=SalStreamSendRecv;
+	}else if (local==SalStreamSendOnly){
+		if (offered==SalStreamRecvOnly || offered==SalStreamSendRecv)
+			res=SalStreamSendOnly;
+		else res=SalStreamInactive;
+	}else if (local==SalStreamRecvOnly){
+		if (offered==SalStreamSendOnly || offered==SalStreamSendRecv)
+			res=SalStreamRecvOnly;
+		else
+			res=SalStreamInactive;
+	}else res=SalStreamInactive;
+	return res;
+}
+
 static void initiate_outgoing(const SalStreamDescription *local_offer,
     					const SalStreamDescription *remote_answer,
     					SalStreamDescription *result){
@@ -131,7 +155,7 @@ static void initiate_outgoing(const SalStreamDescription *local_offer,
 		result->payloads=match_payloads(local_offer->payloads,remote_answer->payloads,TRUE,FALSE);
 	result->proto=local_offer->proto;
 	result->type=local_offer->type;
-	result->dir=compute_dir(local_offer->dir,remote_answer->dir);
+	result->dir=compute_dir_outgoing(local_offer->dir,remote_answer->dir);
 
 	if (result->payloads && !only_telephone_event(result->payloads)){
 		strcpy(result->addr,remote_answer->addr);
@@ -150,13 +174,7 @@ static void initiate_incoming(const SalStreamDescription *local_cap,
 	result->payloads=match_payloads(local_cap->payloads,remote_offer->payloads, FALSE, one_matching_codec);
 	result->proto=local_cap->proto;
 	result->type=local_cap->type;
-	if (remote_offer->dir==SalStreamSendOnly)
-		result->dir=SalStreamRecvOnly;
-	else if (remote_offer->dir==SalStreamRecvOnly){
-		result->dir=SalStreamSendOnly;
-	}else if (remote_offer->dir==SalStreamInactive){
-		result->dir=SalStreamInactive;
-	}else result->dir=SalStreamSendRecv;
+	result->dir=compute_dir_incoming(local_cap->dir,remote_offer->dir);
 	if (result->payloads && !only_telephone_event(result->payloads)){
 		strcpy(result->addr,local_cap->addr);
 		result->port=local_cap->port;

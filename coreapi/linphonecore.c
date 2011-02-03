@@ -49,6 +49,8 @@ static void toggle_video_preview(LinphoneCore *lc, bool_t val);
 #define LOCAL_RING "rings/oldphone.wav"
 /* same for remote ring (ringback)*/
 #define REMOTE_RING "ringback.wav"
+#define HOLD_MUSIC "rings/toy-mono.wav"
+
 
 extern SalCallbacks linphone_sal_callbacks;
 
@@ -452,6 +454,8 @@ static void sound_config_read(LinphoneCore *lc)
 		tmpbuf=PACKAGE_SOUND_DIR "/" REMOTE_RING;
 	}
 	linphone_core_set_ringback(lc,tmpbuf);
+
+	linphone_core_set_play_file(lc,lp_config_get_string(lc->config,"sound","hold_music",PACKAGE_SOUND_DIR "/" HOLD_MUSIC));
 	check_sound_device(lc);
 	lc->sound_conf.latency=0;
 
@@ -571,6 +575,7 @@ static void sip_config_read(LinphoneCore *lc)
 	lc->sip_conf.keepalive_period=lp_config_get_int(lc->config,"sip","keepalive_period",10000);
 	sal_set_keepalive_period(lc->sal,lc->sip_conf.keepalive_period);
 	sal_use_one_matching_codec_policy(lc->sal,lp_config_get_int(lc->config,"sip","only_one_codec",0));
+	sal_use_double_registrations(lc->sal,lp_config_get_int(lc->config,"sip","use_double_registrations",1));
 }
 
 static void rtp_config_read(LinphoneCore *lc)
@@ -2199,7 +2204,7 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 		if (lc->vtable.display_status)
 			lc->vtable.display_status(lc,_("Modifying call parameters..."));
 		sal_call_set_local_media_description (call->op,call->localdesc);
-		err=sal_call_update(call->op);
+		err=sal_call_update(call->op,"Media parameters update");
 	}else{
 #ifdef VIDEO_ENABLED
 		if (call->videostream!=NULL){
@@ -2426,13 +2431,23 @@ LinphoneCall *linphone_core_get_current_call(const LinphoneCore *lc)
 int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *the_call)
 {
 	LinphoneCall *call = the_call;
+	const char *subject=NULL;
 
 	if (call->state!=LinphoneCallStreamsRunning && call->state!=LinphoneCallPausedByRemote){
 		ms_warning("Cannot pause this call, it is not active.");
 		return -1;
 	}
-	
-	if (sal_call_hold(call->op,TRUE) != 0)
+	if (sal_media_description_has_dir(call->resultdesc,SalStreamSendRecv)){
+		sal_media_description_set_dir(call->localdesc,SalStreamSendOnly);
+		subject="Call on hold";
+	}else if (sal_media_description_has_dir(call->resultdesc,SalStreamRecvOnly)){
+		sal_media_description_set_dir(call->localdesc,SalStreamSendOnly);
+		subject="Call on hold for me too";
+	}else{
+		ms_error("No reason to pause this call, it is already paused or inactive.");
+		return -1;
+	}
+	if (sal_call_update(call->op,subject) != 0)
 	{
 		if (lc->vtable.display_warning)
 			lc->vtable.display_warning(lc,_("Could not pause the call"));
@@ -2482,14 +2497,14 @@ int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *the_call)
 		return -1;
 	}
 	ms_message("Resuming call %p",call);
-	if(sal_call_hold(call->op,FALSE) != 0){
+	sal_media_description_set_dir(call->localdesc,SalStreamSendRecv);
+	if(sal_call_update(call->op,"Call resuming") != 0){
 		return -1;
 	}
 	linphone_call_set_state (call,LinphoneCallResuming,"Resuming");
 	snprintf(temp,sizeof(temp)-1,"Resuming the call with %s",linphone_call_get_remote_address_as_string(call));
 	if (lc->vtable.display_status) 
 		lc->vtable.display_status(lc,temp);
-	lc->current_call=call;
 	return 0;
 }
 
@@ -3386,6 +3401,10 @@ void linphone_core_use_preview_window(LinphoneCore *lc, bool_t yesno){
 }
 
 static MSVideoSizeDef supported_resolutions[]={
+#ifdef ENABLE_HD
+	{	{MS_VIDEO_SIZE_1080P_W,MS_VIDEO_SIZE_1080P_H}	,	"1080p"	},
+	{	{MS_VIDEO_SIZE_720P_W,MS_VIDEO_SIZE_720P_H}	,	"1080p"	},
+#endif
 	{	{MS_VIDEO_SIZE_SVGA_W,MS_VIDEO_SIZE_SVGA_H}	,	"svga"	},
 	{	{MS_VIDEO_SIZE_4CIF_W,MS_VIDEO_SIZE_4CIF_H}	,	"4cif"	},
 	{	{MS_VIDEO_SIZE_VGA_W,MS_VIDEO_SIZE_VGA_H}	,	"vga"	},
@@ -3696,7 +3715,7 @@ void sip_config_uninit(LinphoneCore *lc)
 	linphone_proxy_config_write_to_config_file(lc->config,NULL,i);
 
 	for (i=0;i<20;i++){
-		linphone_core_iterate(lc);
+		sal_iterate(lc->sal);
 #ifndef WIN32
 		usleep(100000);
 #else

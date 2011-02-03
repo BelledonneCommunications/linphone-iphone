@@ -32,6 +32,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/msequalizer.h"
 #include "mediastreamer2/msfileplayer.h"
 #include "mediastreamer2/msjpegwriter.h"
+#include "mediastreamer2/mseventqueue.h"
 
 #ifdef VIDEO_ENABLED
 static MSWebCam *get_nowebcam_device(){
@@ -474,6 +475,20 @@ int linphone_call_get_duration(const LinphoneCall *call){
 }
 
 /**
+ * Returns the call object this call is replacing, if any.
+ * Call replacement can occur during call transfers.
+ * By default, the core automatically terminates the replaced call and accept the new one.
+ * This function allows the application to know whether a new incoming call is a one that replaces another one.
+**/
+LinphoneCall *linphone_call_get_replaced_call(LinphoneCall *call){
+	SalOp *op=sal_call_get_replaces(call->op);
+	if (op){
+		return (LinphoneCall*)sal_op_get_user_pointer(op);
+	}
+	return NULL;
+}
+
+/**
  * Indicate whether camera input should be sent to remote end.
 **/
 void linphone_call_enable_camera (LinphoneCall *call, bool_t enable){
@@ -505,21 +520,21 @@ int linphone_call_take_video_snapshot(LinphoneCall *call, const char *file){
 }
 
 /**
- *
+ * Returns TRUE if camera pictures are sent to the remote party.
 **/
 bool_t linphone_call_camera_enabled (const LinphoneCall *call){
 	return call->camera_active;
 }
 
 /**
- * 
+ * Enable video stream.
 **/
 void linphone_call_params_enable_video(LinphoneCallParams *cp, bool_t enabled){
 	cp->has_video=enabled;
 }
 
 /**
- *
+ * Returns whether video is enabled.
 **/
 bool_t linphone_call_params_video_enabled(const LinphoneCallParams *cp){
 	return cp->has_video;
@@ -969,6 +984,7 @@ void linphone_call_stop_media_streams(LinphoneCall *call){
 		video_stream_stop(call->videostream);
 		call->videostream=NULL;
 	}
+	ms_event_queue_skip(call->core->msevq);
 	
 #endif
 	if (call->audio_profile){

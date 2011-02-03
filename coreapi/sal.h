@@ -257,6 +257,7 @@ void sal_set_keepalive_period(Sal *ctx,unsigned int value);
  * */
 unsigned int sal_get_keepalive_period(Sal *ctx);
 void sal_use_session_timers(Sal *ctx, int expires);
+void sal_use_double_registrations(Sal *ctx, bool_t enabled);
 void sal_use_one_matching_codec_policy(Sal *ctx, bool_t one_matching_codec);
 int sal_iterate(Sal *sal);
 MSList * sal_get_pending_auths(Sal *sal);
@@ -292,8 +293,7 @@ int sal_call_notify_ringing(SalOp *h, bool_t early_media);
 /*accept an incoming call or, during a call accept a reINVITE*/
 int sal_call_accept(SalOp*h);
 int sal_call_decline(SalOp *h, SalReason reason, const char *redirection /*optional*/);
-int sal_call_hold(SalOp *h, bool_t holdon);
-int sal_call_update(SalOp *h);
+int sal_call_update(SalOp *h, const char *subject);
 SalMediaDescription * sal_call_get_final_media_description(SalOp *h);
 int sal_call_refer(SalOp *h, const char *refer_to);
 int sal_call_refer_with_replaces(SalOp *h, SalOp *other_call_h);
