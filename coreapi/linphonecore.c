@@ -3401,6 +3401,10 @@ void linphone_core_use_preview_window(LinphoneCore *lc, bool_t yesno){
 }
 
 static MSVideoSizeDef supported_resolutions[]={
+#ifdef ENABLE_HD
+	{	{MS_VIDEO_SIZE_1080P_W,MS_VIDEO_SIZE_1080P_H}	,	"1080p"	},
+	{	{MS_VIDEO_SIZE_720P_W,MS_VIDEO_SIZE_720P_H}	,	"1080p"	},
+#endif
 	{	{MS_VIDEO_SIZE_SVGA_W,MS_VIDEO_SIZE_SVGA_H}	,	"svga"	},
 	{	{MS_VIDEO_SIZE_4CIF_W,MS_VIDEO_SIZE_4CIF_H}	,	"4cif"	},
 	{	{MS_VIDEO_SIZE_VGA_W,MS_VIDEO_SIZE_VGA_H}	,	"vga"	},
