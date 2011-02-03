@@ -2011,37 +2011,8 @@ int sal_address_get_port_int(const SalAddress *uri) {
 	}
 }
 
-/*
- * Send a re-Invite used to hold the current call
-*/
-int sal_call_hold(SalOp *h, bool_t holdon)
-{
-	int err=0;
-
-	osip_message_t *reinvite=NULL;
-	if(eXosip_call_build_request(h->did,"INVITE",&reinvite) != OSIP_SUCCESS || reinvite==NULL)
-		return -1;
-	osip_message_set_subject(reinvite,holdon ? "Phone call hold" : "Phone call resume" );	
-	osip_message_set_allow(reinvite, "INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, NOTIFY, MESSAGE, SUBSCRIBE, INFO");
-	if (h->base.root->session_expires!=0){
-		osip_message_set_header(reinvite, "Session-expires", "200");
-		osip_message_set_supported(reinvite, "timer");
-	}
-	//add something to say that the distant sip phone will be in sendonly/sendrecv mode
-	if (h->base.local_media){
-		h->sdp_offering=TRUE;
-		sal_media_description_set_dir(h->base.local_media, holdon ? SalStreamSendOnly : SalStreamSendRecv);
-		set_sdp_from_desc(reinvite,h->base.local_media);
-	}else h->sdp_offering=FALSE;
-	eXosip_lock();
-	err = eXosip_call_send_request(h->did, reinvite);
-	eXosip_unlock();
-	
-	return err;
-}
-
 /* sends a reinvite. Local media description may have changed by application since call establishment*/
-int sal_call_update(SalOp *h){
+int sal_call_update(SalOp *h, const char *subject){
 	int err=0;
 	osip_message_t *reinvite=NULL;
 
@@ -2051,7 +2022,7 @@ int sal_call_update(SalOp *h){
 		return -1;
 	}
 	eXosip_unlock();
-	osip_message_set_subject(reinvite,osip_strdup("Phone call parameters updated"));
+	osip_message_set_subject(reinvite,subject);
 	osip_message_set_allow(reinvite, "INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, NOTIFY, MESSAGE, SUBSCRIBE, INFO");
 	if (h->base.root->session_expires!=0){
 		osip_message_set_header(reinvite, "Session-expires", "200");

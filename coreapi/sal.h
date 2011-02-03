@@ -293,8 +293,7 @@ int sal_call_notify_ringing(SalOp *h, bool_t early_media);
 /*accept an incoming call or, during a call accept a reINVITE*/
 int sal_call_accept(SalOp*h);
 int sal_call_decline(SalOp *h, SalReason reason, const char *redirection /*optional*/);
-int sal_call_hold(SalOp *h, bool_t holdon);
-int sal_call_update(SalOp *h);
+int sal_call_update(SalOp *h, const char *subject);
 SalMediaDescription * sal_call_get_final_media_description(SalOp *h);
 int sal_call_refer(SalOp *h, const char *refer_to);
 int sal_call_refer_with_replaces(SalOp *h, SalOp *other_call_h);

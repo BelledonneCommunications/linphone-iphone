@@ -2204,7 +2204,7 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 		if (lc->vtable.display_status)
 			lc->vtable.display_status(lc,_("Modifying call parameters..."));
 		sal_call_set_local_media_description (call->op,call->localdesc);
-		err=sal_call_update(call->op);
+		err=sal_call_update(call->op,"Media parameters update");
 	}else{
 #ifdef VIDEO_ENABLED
 		if (call->videostream!=NULL){
@@ -2431,13 +2431,23 @@ LinphoneCall *linphone_core_get_current_call(const LinphoneCore *lc)
 int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *the_call)
 {
 	LinphoneCall *call = the_call;
+	const char *subject=NULL;
 
 	if (call->state!=LinphoneCallStreamsRunning && call->state!=LinphoneCallPausedByRemote){
 		ms_warning("Cannot pause this call, it is not active.");
 		return -1;
 	}
-	
-	if (sal_call_hold(call->op,TRUE) != 0)
+	if (sal_media_description_has_dir(call->resultdesc,SalStreamSendRecv)){
+		sal_media_description_set_dir(call->localdesc,SalStreamSendOnly);
+		subject="Call on hold";
+	}else if (sal_media_description_has_dir(call->resultdesc,SalStreamRecvOnly)){
+		sal_media_description_set_dir(call->localdesc,SalStreamInactive);
+		subject="Call inactive";
+	}else{
+		ms_error("No reason to pause this call, it is already paused or inactive.");
+		return -1;
+	}
+	if (sal_call_update(call->op,subject) != 0)
 	{
 		if (lc->vtable.display_warning)
 			lc->vtable.display_warning(lc,_("Could not pause the call"));
@@ -2487,14 +2497,14 @@ int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *the_call)
 		return -1;
 	}
 	ms_message("Resuming call %p",call);
-	if(sal_call_hold(call->op,FALSE) != 0){
+	sal_media_description_set_dir(call->localdesc,SalStreamSendRecv);
+	if(sal_call_update(call->op,"Call resuming") != 0){
 		return -1;
 	}
 	linphone_call_set_state (call,LinphoneCallResuming,"Resuming");
 	snprintf(temp,sizeof(temp)-1,"Resuming the call with %s",linphone_call_get_remote_address_as_string(call));
 	if (lc->vtable.display_status) 
 		lc->vtable.display_status(lc,temp);
-	lc->current_call=call;
 	return 0;
 }
 

@@ -79,19 +79,41 @@ void sal_media_description_set_dir(SalMediaDescription *md, SalStreamDir stream_
 	}
 }
 
-bool_t sal_media_description_has_dir(const SalMediaDescription *md, SalStreamDir stream_dir){
+
+static bool_t is_null_address(const char *addr){
+	return strcmp(addr,"0.0.0.0")==0 || strcmp(addr,"::0")==0;
+}
+
+/*check for the presence of at least one stream with requested direction */
+static bool_t has_dir(const SalMediaDescription *md, SalStreamDir stream_dir){
 	int i;
-	bool_t found=FALSE;
 
 	/* we are looking for at least one stream with requested direction, inactive streams are ignored*/
 	for(i=0;i<md->nstreams;++i){
 		const SalStreamDescription *ss=&md->streams[i];
-		if (ss->dir==stream_dir) found=TRUE;
-		else{
-			if (ss->dir!=SalStreamInactive) return FALSE;
-		}
+		if (ss->dir==stream_dir) return TRUE;
+		if (stream_dir==SalStreamSendOnly && (is_null_address(md->addr) || is_null_address(ss->addr)))
+			return TRUE;
 	}
-	return found;
+	return FALSE;
+}
+
+bool_t sal_media_description_has_dir(const SalMediaDescription *md, SalStreamDir stream_dir){
+	if (stream_dir==SalStreamRecvOnly){
+		if (has_dir(md,SalStreamSendOnly) || has_dir(md,SalStreamSendRecv)) return FALSE;
+		else return TRUE;
+	}else if (stream_dir==SalStreamSendOnly){
+		if (has_dir(md,SalStreamRecvOnly) || has_dir(md,SalStreamSendRecv)) return FALSE;
+		else return TRUE;
+	}else if (stream_dir==SalStreamSendRecv){
+		return has_dir(md,SalStreamSendRecv);
+	}else{
+		/*SalStreamInactive*/
+		if (has_dir(md,SalStreamSendOnly) || has_dir(md,SalStreamSendRecv)  || has_dir(md,SalStreamRecvOnly))
+			return FALSE;
+		else return TRUE;
+	}
+	return FALSE;
 }
 
 /*
