@@ -133,19 +133,16 @@ static SalStreamDir compute_dir_incoming(SalStreamDir local, SalStreamDir offere
 			res=SalStreamSendOnly;
 		if (offered==SalStreamInactive)
 			res=SalStreamInactive;
+		else
+			res=SalStreamSendRecv;
 	}else if (local==SalStreamSendOnly){
-		if (offered==SalStreamSendOnly)
-			res=SalStreamInactive;
 		if (offered==SalStreamRecvOnly)
 			res=SalStreamSendOnly;
-		if (offered==SalStreamInactive)
-			res=SalStreamInactive;
+		else res=SalStreamInactive;
 	}else if (local==SalStreamRecvOnly){
-		if (offered==SalStreamSendOnly)
+		if (offered==SalStreamSendOnly || offered==SalStreamSendRecv)
 			res=SalStreamRecvOnly;
-		if (offered==SalStreamRecvOnly)
-			res=SalStreamInactive;
-		if (offered==SalStreamInactive)
+		else
 			res=SalStreamInactive;
 	}else res=SalStreamInactive;
 	return res;
@@ -177,7 +174,7 @@ static void initiate_incoming(const SalStreamDescription *local_cap,
 	result->payloads=match_payloads(local_cap->payloads,remote_offer->payloads, FALSE, one_matching_codec);
 	result->proto=local_cap->proto;
 	result->type=local_cap->type;
-	result->dir=compute_dir_incoming(result->dir,remote_offer->dir);
+	result->dir=compute_dir_incoming(local_cap->dir,remote_offer->dir);
 	if (result->payloads && !only_telephone_event(result->payloads)){
 		strcpy(result->addr,local_cap->addr);
 		result->port=local_cap->port;

@@ -362,6 +362,7 @@ static void call_updating(SalOp *op){
 	if (md && !sal_media_description_empty(md))
 	{
 		if (sal_media_description_has_dir(call->localdesc,SalStreamSendRecv)){
+			ms_message("Our local status is SalStreamSendRecv");
 			if (sal_media_description_has_dir (md,SalStreamRecvOnly) || sal_media_description_has_dir(md,SalStreamInactive)){
 				/* we are being paused */
 				if(lc->vtable.display_status)
