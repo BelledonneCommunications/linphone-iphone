@@ -136,7 +136,7 @@ static SalStreamDir compute_dir_incoming(SalStreamDir local, SalStreamDir offere
 		else
 			res=SalStreamSendRecv;
 	}else if (local==SalStreamSendOnly){
-		if (offered==SalStreamRecvOnly)
+		if (offered==SalStreamRecvOnly || offered==SalStreamSendRecv)
 			res=SalStreamSendOnly;
 		else res=SalStreamInactive;
 	}else if (local==SalStreamRecvOnly){
