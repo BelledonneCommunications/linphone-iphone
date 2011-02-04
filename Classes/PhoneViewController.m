@@ -82,6 +82,12 @@
 - (void)viewDidAppear:(BOOL)animated {
 	[[UIApplication sharedApplication] setIdleTimerDisabled:true];
 	[mute reset];
+	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"enable_first_login_view_preference"] == false) {
+		myFirstLoginViewController = [[FirstLoginViewController alloc]  initWithNibName:@"FirstLoginViewController" 
+																				 bundle:[NSBundle mainBundle]];
+		[[LinphoneManager instance] setRegistrationDelegate:myFirstLoginViewController];
+		[self presentModalViewController:myFirstLoginViewController animated:true];
+	}; 
 	
 }
 - (void)viewDidDisappear:(BOOL)animated {
@@ -92,6 +98,7 @@
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
     [super viewDidLoad];
+	
 	mDisplayName = [UILabel alloc];
 	[zero initWithNumber:'0'  addressField:address ];
 	[one initWithNumber:'1'  addressField:address ];
@@ -108,6 +115,7 @@
 	[call initWithAddress:address withDisplayName:mDisplayName];
 	[mute initWithOnImage:[UIImage imageNamed:@"mic_muted.png"]  offImage:[UIImage imageNamed:@"mic_active.png"] ];
 	[speaker initWithOnImage:[UIImage imageNamed:@"Speaker-32-on.png"]  offImage:[UIImage imageNamed:@"Speaker-32-off.png"] ];
+	
 	
 }
 
@@ -169,7 +177,11 @@
 	[callDuration stop];
 	
 	[peerLabel setText:@""];
-	
+	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"firstlogindone_preference" 
+												   bundle:[NSBundle mainBundle]] == true) {
+		//first login case, dismmis first login view																		 
+		[self dismissModalViewControllerAnimated:true];
+	}; 
 	[myTabBarController setSelectedIndex:DIALER_TAB_INDEX];
 	
 }
@@ -243,6 +255,10 @@
 		linphone_core_terminate_call ([LinphoneManager getLc],linphone_core_get_current_call([LinphoneManager getLc]));
 	}
 	mIncomingCallActionSheet = nil;
+}
+-(void) displayFirstLoginUI:(UIWindow *) window {
+
+
 }
 - (void)dealloc {
 	[address dealloc];

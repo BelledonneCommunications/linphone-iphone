@@ -184,7 +184,7 @@
 	} else {
 		phoneNumber = [[NSString alloc] initWithCString:linphone_address_as_string_uri_only(partyToCall) encoding:[NSString defaultCStringEncoding]];
 	}
-	[[LinphoneManager instance].uiController displayDialerFromUI:self 
+	[[LinphoneManager instance].callDelegate displayDialerFromUI:self 
 														 forUser:phoneNumber 
 												 withDisplayName:[[NSString alloc] initWithCString:displayName encoding:[NSString defaultCStringEncoding]]];
 	

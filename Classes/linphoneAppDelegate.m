@@ -83,10 +83,12 @@
 	
 	[window makeKeyAndVisible];
 	
-	[[LinphoneManager instance] setUiController:myPhoneViewController];
+	[[LinphoneManager instance] setCallDelegate:myPhoneViewController];
 	[[LinphoneManager instance]	startLibLinphone];
 	
 	[ [UIDevice currentDevice] setProximityMonitoringEnabled:true];
+	
+	
 	
 	return YES;
 }
@@ -100,15 +102,6 @@
 	[myPeoplePickerController release];
 	[super dealloc];
 }
-
-
-// no proxy configured alert 
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-	if (buttonIndex == 1) {
-		[[NSUserDefaults standardUserDefaults] setBool:true forKey:@"check_config_disable_preference"];  
-	}
-}
-
 
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {

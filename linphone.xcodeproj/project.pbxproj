@@ -23,6 +23,8 @@
 		2214EB8912F84EBB002A5394 /* UIHangUpButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2214EB8812F84EBB002A5394 /* UIHangUpButton.m */; };
 		2214EBDA12F8558F002A5394 /* UIToggleButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2214EBD912F8558F002A5394 /* UIToggleButton.m */; };
 		2214EBF312F86360002A5394 /* UIMuteButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2214EBF212F86360002A5394 /* UIMuteButton.m */; };
+		2218A92512FBE1340088A667 /* FirstLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2218A92312FBE1340088A667 /* FirstLoginViewController.m */; };
+		2218A92612FBE1340088A667 /* FirstLoginViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2218A92412FBE1340088A667 /* FirstLoginViewController.xib */; };
 		22226C12118197C0000CA27B /* startcall-green.png in Resources */ = {isa = PBXBuildFile; fileRef = 22226C11118197C0000CA27B /* startcall-green.png */; };
 		22226C14118197EC000CA27B /* stopcall-red.png in Resources */ = {isa = PBXBuildFile; fileRef = 22226C13118197EC000CA27B /* stopcall-red.png */; };
 		22226C181181986A000CA27B /* contact-orange.png in Resources */ = {isa = PBXBuildFile; fileRef = 22226C161181986A000CA27B /* contact-orange.png */; };
@@ -228,8 +230,11 @@
 		2214EBD912F8558F002A5394 /* UIToggleButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIToggleButton.m; sourceTree = "<group>"; };
 		2214EBF112F86360002A5394 /* UIMuteButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIMuteButton.h; sourceTree = "<group>"; };
 		2214EBF212F86360002A5394 /* UIMuteButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIMuteButton.m; sourceTree = "<group>"; };
-		2218A5C412F9597B0088A667 /* LinphoneUIControler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LinphoneUIControler.h; sourceTree = "<group>"; };
+		2218A5C412F9597B0088A667 /* LinphoneUIDelegates.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LinphoneUIDelegates.h; sourceTree = "<group>"; };
 		2218A5CE12F973450088A667 /* LogView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogView.h; sourceTree = "<group>"; };
+		2218A92212FBE1340088A667 /* FirstLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FirstLoginViewController.h; sourceTree = "<group>"; };
+		2218A92312FBE1340088A667 /* FirstLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FirstLoginViewController.m; sourceTree = "<group>"; };
+		2218A92412FBE1340088A667 /* FirstLoginViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FirstLoginViewController.xib; sourceTree = "<group>"; };
 		22226C11118197C0000CA27B /* startcall-green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "startcall-green.png"; path = "liblinphone-sdk/apple-darwin/share/pixmaps/linphone/startcall-green.png"; sourceTree = "<group>"; };
 		22226C13118197EC000CA27B /* stopcall-red.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "stopcall-red.png"; path = "liblinphone-sdk/apple-darwin/share/pixmaps/linphone/stopcall-red.png"; sourceTree = "<group>"; };
 		22226C161181986A000CA27B /* contact-orange.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "contact-orange.png"; path = "liblinphone-sdk/apple-darwin/share/pixmaps/linphone/contact-orange.png"; sourceTree = "<group>"; };
@@ -334,6 +339,9 @@
 			isa = PBXGroup;
 			children = (
 				2214EB7012F84668002A5394 /* LinphoneUI */,
+				2218A92212FBE1340088A667 /* FirstLoginViewController.h */,
+				2218A92312FBE1340088A667 /* FirstLoginViewController.m */,
+				2218A92412FBE1340088A667 /* FirstLoginViewController.xib */,
 				222A483112F7176F0075F07F /* IncallViewController.xib */,
 				222A483212F7176F0075F07F /* IncallViewController.m */,
 				222A483312F7176F0075F07F /* IncallViewController.h */,
@@ -574,7 +582,7 @@
 				22968A5E12F875C600588287 /* UISpeakerButton.m */,
 				22968A8612F87C2000588287 /* UIDuration.h */,
 				22968A8712F87C2000588287 /* UIDuration.m */,
-				2218A5C412F9597B0088A667 /* LinphoneUIControler.h */,
+				2218A5C412F9597B0088A667 /* LinphoneUIDelegates.h */,
 				2218A5CE12F973450088A667 /* LogView.h */,
 			);
 			path = LinphoneUI;
@@ -767,6 +775,7 @@
 				2245F78A1201D38000C4179D /* MoreViewController.xib in Resources */,
 				2242E313125235120061DDCE /* oldphone-mono-30s.caf in Resources */,
 				222A483412F7176F0075F07F /* IncallViewController.xib in Resources */,
+				2218A92612FBE1340088A667 /* FirstLoginViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -793,6 +802,7 @@
 				2214EBF312F86360002A5394 /* UIMuteButton.m in Sources */,
 				22968A5F12F875C600588287 /* UISpeakerButton.m in Sources */,
 				22968A8812F87C2000588287 /* UIDuration.m in Sources */,
+				2218A92512FBE1340088A667 /* FirstLoginViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

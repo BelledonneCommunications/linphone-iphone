@@ -24,4 +24,4 @@
 #import "UIMuteButton.h"
 #import "UISpeakerButton.h"
 #import "UIDuration.h"
-#import "LinphoneUIControler.h"
+#import "LinphoneUIDelegates.h"

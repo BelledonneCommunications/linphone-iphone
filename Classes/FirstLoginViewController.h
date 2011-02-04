@@ -1,6 +1,6 @@
-/* LinphoneManager.h
+/* IncallViewController.h
  *
- * Copyright (C) 2011  Belledonne Comunications, Grenoble, France
+ * Copyright (C) 2009  Belledonne Comunications, Grenoble, France
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,38 +17,24 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */              
 
-#import <Foundation/Foundation.h>
-#import <SystemConfiguration/SCNetworkReachability.h>
-#include "linphonecore.h"
-#import "LogView.h"
+#import <UIKit/UIKit.h>
+#import "LinphoneAppDelegate.h"
 #import "LinphoneUIDelegates.h"
 
-@interface LinphoneManager : NSObject {
-@private
-	SCNetworkReachabilityContext proxyReachabilityContext;
-	SCNetworkReachabilityRef proxyReachability;
-	CFReadStreamRef mReadStream;
-	NSTimer* mIterateTimer;
-	id<LogView> mLogView;	
-	bool isbackgroundModeEnabled;
-	id<LinphoneUICallDelegate> callDelegate;
-	id<LinphoneUIRegistrationDelegate> registrationDelegate;
+
+@interface FirstLoginViewController : UIViewController <UITextFieldDelegate,LinphoneUIRegistrationDelegate>{
+	UIButton* ok;
+	UIButton* site;
+	UITextField* username;
+	UIView* activityIndicator;
 	
-	UIViewController* mCurrentViewController;
 	
 }
-+(LinphoneManager*) instance;
-+(LinphoneCore*) getLc;
+-(void) doOk:(id)sender;
 
--(void) registerLogView:(id<LogView>) view;
-
--(void) startLibLinphone;
--(void) destroyLibLinphone;
-  
--(void) enterBackgroundMode;
--(void) becomeActive;
--(void) kickOffNetworkConnection;
-
-@property (nonatomic, retain) id<LinphoneUICallDelegate> callDelegate;
-@property (nonatomic, retain) id<LinphoneUIRegistrationDelegate> registrationDelegate;
+@property (nonatomic, retain) IBOutlet UIButton* ok;
+@property (nonatomic, retain) IBOutlet UIButton* site;
+@property (nonatomic, retain) IBOutlet UITextField* username;
+@property (nonatomic, retain) IBOutlet UITextField* passwd;
+@property (nonatomic, retain) IBOutlet UIView* activityIndicator;
 @end

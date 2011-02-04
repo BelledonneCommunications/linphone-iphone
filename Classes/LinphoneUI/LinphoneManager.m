@@ -33,7 +33,8 @@ extern void libmsilbc_init();
 
 
 @implementation LinphoneManager
-@synthesize uiController;
+@synthesize callDelegate;
+@synthesize registrationDelegate;
 
 +(LinphoneManager*) instance {
 	if (theLinphoneManager==nil) {
@@ -50,19 +51,19 @@ extern void libmsilbc_init();
 	switch (new_state) {
 			
 		case LinphoneCallIncomingReceived: 
-			[uiController	displayIncomingCallNotigicationFromUI:mCurrentViewController
+			[callDelegate	displayIncomingCallNotigicationFromUI:mCurrentViewController
 														forUser:lUserName 
 												withDisplayName:lDisplayName];
 			break;
 			
 		case LinphoneCallOutgoingInit: 
-			[uiController		displayCallInProgressFromUI:mCurrentViewController
+			[callDelegate		displayCallInProgressFromUI:mCurrentViewController
 											   forUser:lUserName 
 									   withDisplayName:lDisplayName];
 			break;
 			
 		case LinphoneCallConnected:
-			[uiController	displayIncallFromUI:mCurrentViewController
+			[callDelegate	displayIncallFromUI:mCurrentViewController
 									  forUser:lUserName 
 							  withDisplayName:lDisplayName];
 			break;
@@ -89,13 +90,13 @@ extern void libmsilbc_init();
 												  cancelButtonTitle:@"Dismiss" 
 												  otherButtonTitles:nil];
 			[error show];
-			[uiController	displayDialerFromUI:mCurrentViewController
+			[callDelegate	displayDialerFromUI:mCurrentViewController
 									  forUser:@"" 
 							  withDisplayName:@""];
 			break;
 		}
 		case LinphoneCallEnd: 
-			[uiController	displayDialerFromUI:mCurrentViewController
+			[callDelegate	displayDialerFromUI:mCurrentViewController
 									  forUser:@"" 
 							  withDisplayName:@""];
 			break;
@@ -116,7 +117,7 @@ extern void libmsilbc_init();
 	[mLogView addLog:log];
 }
 -(void)displayStatus:(NSString*) message {
-	[uiController displayStatus:message];
+	[callDelegate displayStatus:message];
 }
 //generic log handler for debug version
 static void linphone_iphone_log_handler(int lev, const char *fmt, va_list args){
@@ -162,16 +163,40 @@ static void linphone_iphone_call_state(LinphoneCore *lc, LinphoneCall* call, Lin
 	
 }
 
-static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyConfig* cfg, LinphoneRegistrationState state,const char* message) {
-	if (state == LinphoneRegistrationFailed ) {
+-(void) onRegister:(LinphoneCore *)lc cfg:(LinphoneProxyConfig*) cfg state:(LinphoneRegistrationState) state message:(const char*) message {
+	LinphoneAddress* lAddress = linphone_address_new(linphone_proxy_config_get_identity(cfg));
+	NSString* lUserName = linphone_address_get_username(lAddress)? [[NSString alloc] initWithCString:linphone_address_get_username(lAddress) ]:@"";
+	NSString* lDisplayName = linphone_address_get_display_name(lAddress)? [[NSString alloc] initWithCString:linphone_address_get_display_name(lAddress) ]:@"";
+	NSString* lDomain = [[NSString alloc] initWithCString:linphone_address_get_domain(lAddress)];
+	
+	if (state == LinphoneRegistrationOk) {
+		[[(LinphoneManager*)linphone_core_get_user_data(lc) registrationDelegate] displayRegisteredFromUI:nil
+											  forUser:lUserName
+									  withDisplayName:lDisplayName
+											 onDomain:lDomain ];
+	} else if (state == LinphoneRegistrationProgress) {
+		[registrationDelegate displayRegisteringFromUI:mCurrentViewController
+											  forUser:lUserName
+									  withDisplayName:lDisplayName
+											 onDomain:lDomain ];
+		
+	} else if (state == LinphoneRegistrationCleared || state == LinphoneRegistrationNone) {
+		[registrationDelegate displayNotRegisteredFromUI:mCurrentViewController];
+	} else 	if (state == LinphoneRegistrationFailed ) {
 		NSString* lErrorMessage;
 		if (linphone_proxy_config_get_error(cfg) == LinphoneReasonBadCredentials) {
 			lErrorMessage = @"Bad credentials, check your account settings";
 		} else if (linphone_proxy_config_get_error(cfg) == LinphoneReasonNoResponse) {
 			lErrorMessage = @"SIP server unreachable";
 		} 
-		if (lErrorMessage != nil) {
-			
+		[registrationDelegate displayRegistrationFailedFromUI:mCurrentViewController
+											   forUser:lUserName
+									   withDisplayName:lDisplayName
+											  onDomain:lDomain
+												forReason:lErrorMessage];
+		
+		if (lErrorMessage != nil && registrationDelegate==nil) {
+			//default behavior if no registration delegates
 			
 			UIAlertView* error = [[UIAlertView alloc]	initWithTitle:@"Registration failure"
 															message:lErrorMessage
@@ -184,7 +209,9 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
 	}
 	
 }
-
+static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyConfig* cfg, LinphoneRegistrationState state,const char* message) {
+	[(LinphoneManager*)linphone_core_get_user_data(lc) onRegister:lc cfg:cfg state:state message:message];
+}
 static LinphoneCoreVTable linphonec_vtable = {
 	.show =NULL,
 	.call_state_changed =(LinphoneCallStateCb)linphone_iphone_call_state,
@@ -404,8 +431,12 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		isbackgroundModeEnabled=false;
 	}
 	
-	
-	
+}
+// no proxy configured alert 
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (buttonIndex == 1) {
+		[[NSUserDefaults standardUserDefaults] setBool:true forKey:@"check_config_disable_preference"];
+	}
 }
 -(void) destroyLibLinphone {
 	[mIterateTimer invalidate]; 

@@ -23,8 +23,9 @@
 
 
 @class IncallViewController;
+@class FirstLoginViewController;
 
-@interface PhoneViewController : UIViewController <UITextFieldDelegate,UIActionSheetDelegate,LinphoneUIControler> {
+@interface PhoneViewController : UIViewController <UITextFieldDelegate,UIActionSheetDelegate,LinphoneUICallDelegate> {
 
 @private
 	//UI definition
@@ -62,7 +63,7 @@
 	UITabBarController*  myTabBarController;
 	IncallViewController *myIncallViewController;
 	UIActionSheet *mIncomingCallActionSheet;
-
+	FirstLoginViewController* myFirstLoginViewController;
 	
 }
 @property (nonatomic, retain) IBOutlet UITextField* address;

@@ -19,7 +19,7 @@
 #import <UIKit/UIKit.h>
 
 
-@protocol LinphoneUIControler
+@protocol LinphoneUICallDelegate
 // UI changes
 -(void) displayDialerFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName;
 -(void) displayCallInProgressFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName;
@@ -27,5 +27,14 @@
 -(void) displayIncallFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName;
 //status reporting
 -(void) displayStatus:(NSString*) message; 
+@end
+
+
+@protocol LinphoneUIRegistrationDelegate
+// UI changes for registration
+-(void) displayRegisteredFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName onDomain:(NSString*)domain ;
+-(void) displayRegisteringFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName onDomain:(NSString*)domain ;
+-(void) displayRegistrationFailedFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName onDomain:(NSString*)domain forReason:(NSString*) reason;
+-(void) displayNotRegisteredFromUI:(UIViewController*) viewCtrl; 
 @end
 

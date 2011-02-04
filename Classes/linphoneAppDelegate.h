@@ -31,6 +31,7 @@
 @class PhoneViewController;
 @class CallHistoryTableViewController;
 
+
 @interface linphoneAppDelegate : NSObject <UIApplicationDelegate,UIAlertViewDelegate> {
     UIWindow *window;
 	IBOutlet UITabBarController*  myTabBarController;
@@ -38,6 +39,7 @@
 	IBOutlet PhoneViewController* myPhoneViewController;
 	CallHistoryTableViewController* myCallHistoryTableViewController;
 	ContactPickerDelegate* myContactPickerDelegate;
+	
 }
 
 @property (nonatomic, retain) IBOutlet UIWindow *window;

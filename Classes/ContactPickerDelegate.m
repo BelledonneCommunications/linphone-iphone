@@ -36,14 +36,14 @@
 	CFTypeRef multiValue = ABRecordCopyValue(person, property);
 	CFIndex valueIdx = ABMultiValueGetIndexForIdentifier(multiValue,identifier);
 	NSString *phoneNumber = (NSString *)ABMultiValueCopyValueAtIndex(multiValue, valueIdx);
-	[[LinphoneManager instance].uiController displayDialerFromUI:nil 
+	[[LinphoneManager instance].callDelegate displayDialerFromUI:nil 
 														 forUser:phoneNumber 
 												 withDisplayName:(NSString*)ABRecordCopyCompositeName(person)];
 	return false;
 }
 
 - (void)peoplePickerNavigationControllerDidCancel:(ABPeoplePickerNavigationController *)peoplePicker {
-	[[LinphoneManager instance].uiController displayDialerFromUI:nil 
+	[[LinphoneManager instance].callDelegate displayDialerFromUI:nil 
 														 forUser:nil 
 												 withDisplayName:@""];
 }
