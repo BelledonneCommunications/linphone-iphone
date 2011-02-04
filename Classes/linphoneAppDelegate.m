@@ -43,8 +43,21 @@
 	[[LinphoneManager instance] becomeActive];
 }
 
+- (void) loadDefaultSettings {
+		NSDictionary *appDefaults = [NSDictionary dictionaryWithObjectsAndKeys:
+									 @"NO", @"enable_first_login_view_preference", //
+									 nil];
+		
+		[[NSUserDefaults standardUserDefaults] registerDefaults:appDefaults];
+		[[NSUserDefaults standardUserDefaults] synchronize];
+	
+}
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions{    
 	
+	/*
+	 *Custumization
+	 */
+	[self loadDefaultSettings];
 	//as defined in PhoneMainView.xib		
 	//dialer
 	myPhoneViewController = (PhoneViewController*) [myTabBarController.viewControllers objectAtIndex: DIALER_TAB_INDEX];

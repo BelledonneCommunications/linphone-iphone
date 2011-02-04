@@ -1,6 +1,6 @@
-/* IncallViewController.h
+/* FirstLoginViewController.m
  *
- * Copyright (C) 2009  Belledonne Comunications, Grenoble, France
+ * Copyright (C) 2011  Belledonne Comunications, Grenoble, France
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -79,7 +79,7 @@
 	
 }
 -(void) displayRegisteredFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName onDomain:(NSString*)domain {
-	[[NSUserDefaults standardUserDefaults] setBool:true forKey:@"enable_first_login_view_preference"]; 
+	[[NSUserDefaults standardUserDefaults] setBool:false forKey:@"enable_first_login_view_preference"]; 
 	[self.parentViewController dismissModalViewControllerAnimated:true];
 	[self.activityIndicator setHidden:true];
 	[[LinphoneManager instance] setRegistrationDelegate:nil]; 
