@@ -177,8 +177,7 @@
 	[callDuration stop];
 	
 	[peerLabel setText:@""];
-	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"firstlogindone_preference" 
-												   bundle:[NSBundle mainBundle]] == true) {
+	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"firstlogindone_preference" ] == true) {
 		//first login case, dismmis first login view																		 
 		[self dismissModalViewControllerAnimated:true];
 	}; 

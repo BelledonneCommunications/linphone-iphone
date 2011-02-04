@@ -75,9 +75,15 @@ extern void libmsilbc_init();
 			 */
 			NSString* lMessage;
 			NSString* lTitle;
-			
-			
-			lMessage=@"Please make sure your device is connected to the internet and double check your SIP account configuration in the settings.";
+			LinphoneProxyConfig* proxyCfg;	
+			//get default proxy
+			linphone_core_get_default_proxy([LinphoneManager getLc],&proxyCfg);
+			if (proxyCfg == nil) {
+				lMessage=@"Please make sure your device is connected to the internet and double check your SIP account configuration in the settings.";
+			} else {
+				lMessage=[NSString stringWithFormat : @"Cannot call %@",lUserName];
+
+			}
 			
 			if (message!=nil){
 				lMessage=[NSString stringWithFormat : @"%@\nReason was: %s",lMessage, message];
@@ -168,6 +174,7 @@ static void linphone_iphone_call_state(LinphoneCore *lc, LinphoneCall* call, Lin
 	NSString* lUserName = linphone_address_get_username(lAddress)? [[NSString alloc] initWithCString:linphone_address_get_username(lAddress) ]:@"";
 	NSString* lDisplayName = linphone_address_get_display_name(lAddress)? [[NSString alloc] initWithCString:linphone_address_get_display_name(lAddress) ]:@"";
 	NSString* lDomain = [[NSString alloc] initWithCString:linphone_address_get_domain(lAddress)];
+	linphone_address_destroy(lAddress);
 	
 	if (state == LinphoneRegistrationOk) {
 		[[(LinphoneManager*)linphone_core_get_user_data(lc) registrationDelegate] displayRegisteredFromUI:nil
@@ -269,7 +276,10 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 
 -(void) doLinphoneConfiguration:(NSNotification *)notification {
 	ms_message("Configuring Linphone");
-	
+	if (theLinphoneCore==nil) {
+		ms_warning("cannot configure linphone beacause not initialized yet");
+		return;
+	}
 	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"debugenable_preference"]) {
 		//redirect all traces to the iphone log framework
 		linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
@@ -385,7 +395,8 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		
 		[self doRegister];
 	} else {
-		if (configCheckDisable == false) {
+		if (configCheckDisable == false 
+			&& (!domain  && !username)) {
 			UIAlertView* error = [[UIAlertView alloc]	initWithTitle:@"Warning"
 															message:@"It seems you have not configured any proxy server from settings" 
 														   delegate:self
@@ -577,6 +588,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 										 , [factoryConfig cStringUsingEncoding:[NSString defaultCStringEncoding]]
 										 ,self);
 	
+	[[NSUserDefaults standardUserDefaults] synchronize];//sync before loading config 
 	[ self doLinphoneConfiguration:nil];
 	[[NSNotificationCenter defaultCenter]	addObserver:self
 											 selector:@selector(doLinphoneConfiguration:)
