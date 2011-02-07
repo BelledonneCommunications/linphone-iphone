@@ -27,6 +27,7 @@
 @synthesize credit;
 @synthesize console;
 @synthesize creditText;
+@synthesize weburi;
 
 
 //Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
@@ -125,8 +126,7 @@
 	
     switch (indexPath.row) {
 		case 0:  {
-			NSString *stringURL = @"http://www.linphone.org";
-			NSURL *url = [NSURL URLWithString:stringURL];
+			NSURL *url = [NSURL URLWithString:weburi.text];
 			[[UIApplication sharedApplication] openURL:url];
 			break;
 		};

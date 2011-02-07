@@ -32,6 +32,7 @@
 	UITextView *creditText;
 
 	UITableViewCell *web;
+	UILabel *weburi;
 	UITableViewCell *console;
 
 	ConsoleViewController *consoleViewController;
@@ -42,5 +43,6 @@
 @property (nonatomic, retain) IBOutlet UITableViewCell* credit;
 @property (nonatomic, retain) IBOutlet UITableViewCell* console;
 @property (nonatomic, retain) IBOutlet UITextView *creditText;
+@property (nonatomic, retain) IBOutlet UILabel *weburi;
 
 @end
