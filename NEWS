@@ -1,4 +1,4 @@
-linphone-3.4.0 -- February 2nd, 2011
+linphone-3.4.0 -- February 7th, 2011
 	* implement multiple calls feature: 
 		- call hold (with possibility to play a music file)
 		- call resume 
