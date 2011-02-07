@@ -97,7 +97,9 @@
 										  cancelButtonTitle:@"Continue" 
 										  otherButtonTitles:nil ,nil];
 	[error show];
-	
+	//erase uername passwd
+	[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"username_preference"];
+	[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"password_preference"];
 }
 -(void) displayNotRegisteredFromUI:(UIViewController*) viewCtrl { 
 	[self.activityIndicator setHidden:true];	
