@@ -103,6 +103,7 @@ typedef struct SalEndpointCandidate{
 typedef struct SalStreamDescription{
 	SalMediaProto proto;
 	SalStreamType type;
+	char typeother[32];
 	char addr[64];
 	int port;
 	MSList *payloads; //<list of PayloadType
@@ -120,6 +121,8 @@ typedef struct SalMediaDescription{
 	char username[64];
 	int nstreams;
 	int bandwidth;
+	unsigned int session_ver;
+	unsigned int session_id;
 	SalStreamDescription streams[SAL_MEDIA_DESCRIPTION_MAX_STREAMS];
 } SalMediaDescription;
 

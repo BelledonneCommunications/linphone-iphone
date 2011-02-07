@@ -59,7 +59,7 @@ static MSList *make_codec_list(LinphoneCore *lc, const MSList *codecs, int bandw
 	return l;
 }
 
-SalMediaDescription *create_local_media_description(LinphoneCore *lc, LinphoneCall *call){
+static SalMediaDescription *_create_local_media_description(LinphoneCore *lc, LinphoneCall *call, unsigned int session_id, unsigned int session_ver){
 	MSList *l;
 	PayloadType *pt;
 	const char *me=linphone_core_get_identity(lc);
@@ -67,6 +67,8 @@ SalMediaDescription *create_local_media_description(LinphoneCore *lc, LinphoneCa
 	const char *username=linphone_address_get_username (addr);
 	SalMediaDescription *md=sal_media_description_new();
 	
+	md->session_id=session_id;
+	md->session_ver=session_ver;
 	md->nstreams=1;
 	strncpy(md->addr,call->localip,sizeof(md->addr));
 	strncpy(md->username,username,sizeof(md->username));
@@ -94,6 +96,22 @@ SalMediaDescription *create_local_media_description(LinphoneCore *lc, LinphoneCa
 	}
 	linphone_address_destroy(addr);
 	return md;
+}
+
+void update_local_media_description(LinphoneCore *lc, LinphoneCall *call, SalMediaDescription **md){
+	if (*md == NULL) {
+		*md = _create_local_media_description(lc,call,0,0);
+	} else {
+		unsigned int id = (*md)->session_id;
+		unsigned int ver = (*md)->session_ver+1;
+		sal_media_description_unref(*md);
+		*md = _create_local_media_description(lc,call,id,ver);
+	}
+}
+
+SalMediaDescription *create_local_media_description(LinphoneCore *lc, LinphoneCall *call){
+	unsigned int id=rand();
+	return _create_local_media_description(lc,call,id,id);
 }
 
 static int find_port_offset(LinphoneCore *lc){

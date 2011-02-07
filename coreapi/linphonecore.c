@@ -2196,10 +2196,8 @@ bool_t linphone_core_inc_invite_pending(LinphoneCore*lc){
 int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params){
 	int err=0;
 	if (params!=NULL){
-		if (call->localdesc)
-			sal_media_description_unref(call->localdesc);
 		call->params=*params;
-		call->localdesc=create_local_media_description (lc,call);
+		update_local_media_description(lc,call,&call->localdesc);
 		call->camera_active=params->has_video;
 		if (lc->vtable.display_status)
 			lc->vtable.display_status(lc,_("Modifying call parameters..."));
