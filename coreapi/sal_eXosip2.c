@@ -337,13 +337,17 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 	int err;
 	bool_t ipv6;
 	int proto=IPPROTO_UDP;
+	int keepalive = ctx->keepalive_period;
 	
 	switch (tr) {
 	case SalTransportDatagram:
 		proto=IPPROTO_UDP;
+		eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE, &keepalive);	
 		break;
 	case SalTransportStream:
 		proto= IPPROTO_TCP;
+			keepalive=-1;	
+		eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE,&keepalive);	
 		break;
 	default:
 		ms_warning("unexpected proto, using datagram");
@@ -364,7 +368,7 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 #ifdef HAVE_EXOSIP_GET_SOCKET
 	ms_message("Exosip has socket number %i",eXosip_get_socket(proto));
 #endif
-	eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE, &ctx->keepalive_period);
+	
 	ctx->running=TRUE;
 	return err;
 }
