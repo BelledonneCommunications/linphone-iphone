@@ -3850,7 +3850,6 @@ static void linphone_core_uninit(LinphoneCore *lc)
 		usleep(50000);
 #endif
 	}
-
 	if (lc->friends)
 		ms_list_for_each(lc->friends,(void (*)(void *))linphone_friend_close_subscriptions);
 	linphone_core_set_state(lc,LinphoneGlobalShutdown,"Shutting down");
