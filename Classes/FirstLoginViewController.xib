@@ -69,7 +69,6 @@
 								<double key="NSSize">15</double>
 								<int key="NSfFlags">16</int>
 							</object>
-							<string key="IBUINormalTitle">http://www.linphone.org</string>
 							<object class="NSColor" key="IBUIHighlightedTitleColor" id="992101396">
 								<int key="NSColorSpace">3</int>
 								<bytes key="NSWhite">MQA</bytes>
@@ -472,7 +471,7 @@
 					</object>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-					<string>{{85, 76}, {320, 480}}</string>
+					<string>{{85, 91}, {320, 480}}</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<boolean value="NO"/>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>

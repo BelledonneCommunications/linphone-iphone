@@ -37,7 +37,14 @@
 	//[passwd setText:[[NSUserDefaults standardUserDefaults] stringForKey:@"password_preference"]];
 }
 
-
+-(void) viewDidLoad {
+	NSString* siteUrl = [[NSUserDefaults standardUserDefaults] stringForKey:@"firt_login_view_url"];
+	if (siteUrl==nil) {
+		siteUrl=@"http://www.linphone.org";
+	}
+	[site setTitle:siteUrl forState:UIControlStateNormal];
+	
+}
 
 - (void)dealloc {
     [super dealloc];
@@ -51,7 +58,7 @@
 
 -(void) doOk:(id)sender {
 	if (sender == site) {
-		NSURL *url = [NSURL URLWithString:@"http://www.linphone.org"];
+		NSURL *url = [NSURL URLWithString:site.titleLabel.text];
 		[[UIApplication sharedApplication] openURL:url];
 		return;
 	}

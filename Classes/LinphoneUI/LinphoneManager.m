@@ -190,7 +190,7 @@ static void linphone_iphone_call_state(LinphoneCore *lc, LinphoneCall* call, Lin
 	} else if (state == LinphoneRegistrationCleared || state == LinphoneRegistrationNone) {
 		[registrationDelegate displayNotRegisteredFromUI:mCurrentViewController];
 	} else 	if (state == LinphoneRegistrationFailed ) {
-		NSString* lErrorMessage;
+		NSString* lErrorMessage=nil;
 		if (linphone_proxy_config_get_error(cfg) == LinphoneReasonBadCredentials) {
 			lErrorMessage = @"Bad credentials, check your account settings";
 		} else if (linphone_proxy_config_get_error(cfg) == LinphoneReasonNoResponse) {
