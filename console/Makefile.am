@@ -23,7 +23,8 @@ linphonec_LDADD = $(top_builddir)/coreapi/liblinphone.la $(READLINE_LIBS)  \
 		$(MEDIASTREAMER_LIBS) \
 		$(ORTP_LIBS) \
 		$(SPEEX_LIBS) \
-		$(OSIP_LIBS)
+		$(OSIP_LIBS) \
+		$(X11_LIBS)
 
 if BUILD_WIN32
 #special build of linphonec to detach from the windows console
