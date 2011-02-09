@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 #include "sal_eXosip2.h"
-
+#include "private.h"
 #include "offeranswer.h"
 
 static void text_received(Sal *sal, eXosip_event_t *ev);
@@ -793,7 +793,16 @@ void sal_op_authenticate(SalOp *h, const SalAuthInfo *info){
 		h->auth_info=sal_auth_info_clone(info); /*store auth info for subsequent request*/
 	}
 }
+void sal_op_cancel_authentication(SalOp *h) {
+	if (h->rid >0) {
+		sal_op_get_sal(h)->callbacks.register_failure(h,SalErrorFailure, SalReasonForbidden,_("Authentication failure"));
+	} else if (h->cid >0) {
+		sal_op_get_sal(h)->callbacks.call_failure(h,SalErrorFailure, SalReasonForbidden,_("Authentication failure"),0);
+	} else {
+		ms_warning("Auth failure not handled");
+	}
 
+}
 static void set_network_origin(SalOp *op, osip_message_t *req){
 	const char *received=NULL;
 	int rport=5060;
