@@ -145,6 +145,7 @@ static void linphone_call_init_common(LinphoneCall *call, LinphoneAddress *from,
 	call->start_time=time(NULL);
 	call->media_start_time=0;
 	call->log=linphone_call_log_new(call, from, to);
+	call->owns_call_log=TRUE;
 	linphone_core_notify_all_friends(call->core,LinphoneStatusOnThePhone);
 	port_offset=find_port_offset (call->core);
 	if (port_offset==-1) return;
@@ -241,7 +242,9 @@ static void linphone_call_set_terminated(LinphoneCall *call){
 		else status=LinphoneCallSuccess;
 		
 	}
+	call->owns_call_log=FALSE;
 	linphone_call_log_completed(call->log,call, status);
+	
 	
 	if (call == lc->current_call){
 		ms_message("Resetting the current call");
@@ -305,6 +308,13 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 	LinphoneCore *lc=call->core;
 
 	if (call->state!=cstate){
+		if (call->state==LinphoneCallEnd || call->state==LinphoneCallError){
+			if (cstate!=LinphoneCallReleased){
+				ms_warning("Spurious call state change from %s to %s, ignored.",linphone_call_state_to_string(call->state),
+		           linphone_call_state_to_string(cstate));
+				return;
+			}
+		}
 		ms_message("Call %p: moving from state %s to %s",call,linphone_call_state_to_string(call->state),
 		           linphone_call_state_to_string(cstate));
 		if (cstate!=LinphoneCallRefered){
@@ -315,6 +325,7 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 		if (cstate==LinphoneCallEnd || cstate==LinphoneCallError){
 			linphone_call_set_terminated (call);
 		}
+		
 		if (lc->vtable.call_state_changed)
 			lc->vtable.call_state_changed(lc,call,cstate,message);
 		if (cstate==LinphoneCallReleased){
@@ -349,6 +360,8 @@ static void linphone_call_destroy(LinphoneCall *obj)
 	if (obj->refer_to){
 		ms_free(obj->refer_to);
 	}
+	if (obj->owns_call_log)
+		linphone_call_log_destroy(obj->log);
 	ms_free(obj);
 }
 

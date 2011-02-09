@@ -98,6 +98,7 @@ struct _LinphoneCall
 	bool_t camera_active;
 	bool_t all_muted; /*this flag is set during early medias*/
 	bool_t playing_ringbacktone;
+	bool_t owns_call_log;
 };
 
 
