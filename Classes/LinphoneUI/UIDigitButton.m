@@ -36,7 +36,8 @@
 			[self performSelector:@selector(doKeyZeroLongPress) withObject:nil afterDelay:0.5];
 		}
 	} else {
-		linphone_core_send_dtmf([LinphoneManager getLc],mDigit);	
+		linphone_core_send_dtmf([LinphoneManager getLc],mDigit);
+		linphone_core_play_dtmf([LinphoneManager getLc], mDigit, 100);
 	}
 }
 
