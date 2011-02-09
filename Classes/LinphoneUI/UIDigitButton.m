@@ -38,8 +38,8 @@
 	} else {
 		linphone_core_send_dtmf([LinphoneManager getLc],mDigit);	
 	}
-	
 }
+
 -(void) touchUp:(id) sender {
 	linphone_core_stop_dtmf([LinphoneManager getLc]);
 	if (mDigit == '0') {
