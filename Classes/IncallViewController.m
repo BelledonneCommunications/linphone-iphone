@@ -23,7 +23,7 @@
 
 
 @implementation IncallViewController
-@synthesize phoneviewDelegate;
+
 
 @synthesize controlSubView;
 @synthesize padSubView;
@@ -68,104 +68,60 @@
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
     [super viewDidLoad];
-	isMuted = false;
-	isSpeaker = false;
+	//Controls
+	[mute initWithOnImage:[UIImage imageNamed:@"mic_muted.png"]  offImage:[UIImage imageNamed:@"mic_active.png"] ];
+	[speaker initWithOnImage:[UIImage imageNamed:@"Speaker-32-on.png"]  offImage:[UIImage imageNamed:@"Speaker-32-off.png"] ];
+
+	//Dialer init
+	[zero initWithNumber:'0'];
+	[one initWithNumber:'1'];
+	[two initWithNumber:'2'];
+	[three initWithNumber:'3'];
+	[four initWithNumber:'4'];
+	[five initWithNumber:'5'];
+	[six initWithNumber:'6'];
+	[seven initWithNumber:'7'];
+	[eight initWithNumber:'8'];
+	[nine initWithNumber:'9'];
+	[star initWithNumber:'*'];
+	[hash initWithNumber:'#'];
+	
 	
 }
 
 
-/*
- // Override to allow orientations other than the default portrait orientation.
- - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
- // Return YES for supported orientations
- return (interfaceOrientation == UIInterfaceOrientationPortrait);
- }
- */
 
-- (void)didReceiveMemoryWarning {
-	// Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
-	
-	// Release any cached data, images, etc that aren't in use.
-}
 
 - (void)viewDidUnload {
-	// Release any retained subviews of the main view.
-	// e.g. self.myOutlet = nil;
-	if (durationRefreasher != nil) {
-		[ durationRefreasher invalidate];
-	}
+
 	
 }
 
--(void) setLinphoneCore:(LinphoneCore*) lc {
-	myLinphoneCore = lc;
-}
-
--(void)displayStatus:(NSString*) message {
+-(void) displayStatus:(NSString*) message; {
 	[status setText:message];
 }
 
--(void) startCall {
-	const LinphoneAddress* address = linphone_core_get_remote_uri(myLinphoneCore);
-	const char* displayName =  linphone_address_get_display_name(address)?linphone_address_get_display_name(address):"";
-	[peerName setText:[NSString stringWithCString:displayName length:strlen(displayName)]];
-	
-	const char* username = linphone_address_get_username(address)!=0?linphone_address_get_username(address):"";
-	[peerNumber setText:[NSString stringWithCString:username length:strlen(username)]];
-	// start scheduler
-	durationRefreasher = [NSTimer scheduledTimerWithTimeInterval:1 
-									 target:self 
-								   selector:@selector(updateCallDuration) 
-								   userInfo:nil 
-									repeats:YES];
-	
-}
-
--(void)updateCallDuration {
-	int lDuration = linphone_core_get_current_call_duration(myLinphoneCore); 
-	if (lDuration < 60) {
-		[callDuration setText:[NSString stringWithFormat: @"%i s", lDuration]];
+-(void) displayCallInProgressFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
+	if (displayName && [displayName length]>0) {
+		[peerName setText:displayName];
+		[peerNumber setText:username];
 	} else {
-		[callDuration setText:[NSString stringWithFormat: @"%i:%i", lDuration/60,lDuration - 60 *(lDuration/60)]];
+		[peerName setText:username];
+		[peerNumber setText:@""];
 	}
+	[callDuration setText:@"Calling"];
 }
 
+-(void) displayIncallFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
+	[callDuration start];
+}
+-(void) displayDialerFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
+	[callDuration stop];
+	[self dismissModalViewControllerAnimated:true];
+}
 - (IBAction)doAction:(id)sender {
 	
-	if (linphone_core_in_call(myLinphoneCore)) {
-		//incall behavior
-		if (sender == one) {
-			linphone_core_send_dtmf(myLinphoneCore,'1');	
-		} else if (sender == two) {
-			linphone_core_send_dtmf(myLinphoneCore,'2');	
-		} else if (sender == three) {
-			linphone_core_send_dtmf(myLinphoneCore,'3');	
-		} else if (sender == four) {
-			linphone_core_send_dtmf(myLinphoneCore,'4');	
-		} else if (sender == five) {
-			linphone_core_send_dtmf(myLinphoneCore,'5');	
-		} else if (sender == six) {
-			linphone_core_send_dtmf(myLinphoneCore,'6');	
-		} else if (sender == seven) {
-			linphone_core_send_dtmf(myLinphoneCore,'7');	
-		} else if (sender == eight) {
-			linphone_core_send_dtmf(myLinphoneCore,'8');	
-		} else if (sender == nine) {
-			linphone_core_send_dtmf(myLinphoneCore,'9');	
-		} else if (sender == star) {
-			linphone_core_send_dtmf(myLinphoneCore,'*');	
-		} else if (sender == zero) {
-			linphone_core_send_dtmf(myLinphoneCore,'0');	
-		} else if (sender == hash) {
-			linphone_core_send_dtmf(myLinphoneCore,'#');	
-		}
-	}
-	
-	
-	if (sender == end) {
-		linphone_core_terminate_call(myLinphoneCore,NULL);
-	} else if (sender == dialer) {
+	if (sender == dialer) {
 		[controlSubView setHidden:true];
 		[padSubView setHidden:false];
 		
@@ -173,43 +129,12 @@
 		// start people picker
 		myPeoplePickerController = [[[ABPeoplePickerNavigationController alloc] init] autorelease];
 		[myPeoplePickerController setPeoplePickerDelegate:self];
-
+		
 		[self presentModalViewController: myPeoplePickerController animated:true]; 
 	} else if (sender == close) {
 		[controlSubView setHidden:false];
 		[padSubView setHidden:true];
-	} else if (sender == mute) {
-		isMuted = isMuted?false:true;
-		linphone_core_mute_mic(myLinphoneCore,isMuted);
-		// swithc buttun state
-		UIImage * tmpImage = [mute backgroundImageForState: UIControlStateNormal];
-		[mute setBackgroundImage:[mute backgroundImageForState: UIControlStateHighlighted] forState:UIControlStateNormal];
-		[mute setBackgroundImage:tmpImage forState:UIControlStateHighlighted];
-		
-	} else if (sender == speaker) {
-		isSpeaker = isSpeaker?false:true;
-		if (isSpeaker) {
-			//redirect audio to speaker
-			UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;  
-			AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute
-									 , sizeof (audioRouteOverride)
-									 , &audioRouteOverride);
-		} else {
-			//Cancel audio route redirection
-			UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_None;  
-			AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute
-									 , sizeof (audioRouteOverride)
-									 , &audioRouteOverride);
-		}
-		// switch button state
-		UIImage * tmpImage = [speaker backgroundImageForState: UIControlStateNormal];
-		[speaker setBackgroundImage:[speaker backgroundImageForState: UIControlStateHighlighted] forState:UIControlStateNormal];
-		[speaker setBackgroundImage:tmpImage forState:UIControlStateHighlighted];
-		
-	}else  {
-		NSLog(@"unknown event from incall view");	
-	}
-	
+	} 	
 }
 
 // handle people picker behavior

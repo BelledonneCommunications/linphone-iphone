@@ -27,7 +27,7 @@
 
 
 -(void) touchDown:(id) sender {
-	if (!linphone_core_in_call([LinphoneManager getLc])) {
+	if (mAddress && !linphone_core_in_call([LinphoneManager getLc])) {
 		NSString* newAddress = [NSString stringWithFormat:@"%@%c",mAddress.text,mDigit];
 		[mAddress setText:newAddress];	
 		linphone_core_play_dtmf([LinphoneManager getLc], mDigit, -1);
@@ -58,9 +58,12 @@
 	
 }
 
+-(void) initWithNumber:(char)digit {
+	[self initWithNumber:digit addressField:nil];
+}
 -(void) initWithNumber:(char)digit  addressField:(UITextField*) address{
 	mDigit=digit ;
-	mAddress=[address retain];
+	mAddress=address?[address retain]:nil;
 	[self addTarget:self action:@selector(touchDown:) forControlEvents:UIControlEventTouchDown];
 	[self addTarget:self action:@selector(touchUp:) forControlEvents:UIControlEventTouchUpInside|UIControlEventTouchUpOutside];
 }
