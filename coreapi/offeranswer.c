@@ -218,22 +218,30 @@ int offer_answer_initiate_outgoing(const SalMediaDescription *local_offer,
 int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities,
 						const SalMediaDescription *remote_offer,
     					SalMediaDescription *result, bool_t one_matching_codec){
-    int i,j;
+    int i;
 	const SalStreamDescription *ls,*rs;
 							
-    for(i=0,j=0;i<remote_offer->nstreams;++i){
+    for(i=0;i<remote_offer->nstreams;++i){
 		rs=&remote_offer->streams[i];
 		ms_message("Processing for stream %i",i);
 		ls=sal_media_description_find_stream((SalMediaDescription*)local_capabilities,rs->proto,rs->type);
 		if (ls){
-    		initiate_incoming(ls,rs,&result->streams[j],one_matching_codec);
-			++j;
+    		initiate_incoming(ls,rs,&result->streams[i],one_matching_codec);
+		} else {
+			/* create an inactive stream for the answer, as there where no matching stream a local capability */
+			result->streams[i].dir=SalStreamInactive;
+			result->streams[i].port=0;
+			result->streams[i].type=rs->type;
+			if (rs->type==SalOther){
+				strncpy(result->streams[i].typeother,rs->typeother,sizeof(rs->typeother)-1);
+			}
 		}
     }
-	result->nstreams=j;
+	result->nstreams=i;
 	strcpy(result->username, local_capabilities->username);
 	strcpy(result->addr,local_capabilities->addr);
 	result->bandwidth=local_capabilities->bandwidth;
+	result->session_ver=local_capabilities->session_ver;
+	result->session_id=local_capabilities->session_id;
 	return 0;
 }
-    					

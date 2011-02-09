@@ -298,7 +298,9 @@ AC_ARG_ENABLE(x11,
 if test "$video" = "true"; then
 	
 	if test "$enable_x11" = "true"; then
-	   AC_CHECK_HEADERS(X11/Xlib.h)
+	  	AC_CHECK_HEADERS(X11/Xlib.h)
+		AC_CHECK_LIB(X11,XUnmapWindow, X11_LIBS="-lX11")
+		AC_SUBST(X11_LIBS)
 	fi
 	AC_DEFINE(VIDEO_ENABLED,1,[defined if video support is available])
 fi

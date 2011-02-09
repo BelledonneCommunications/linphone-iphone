@@ -445,6 +445,7 @@ int linphone_core_get_calls_nb(const LinphoneCore *lc);
 void linphone_core_set_state(LinphoneCore *lc, LinphoneGlobalState gstate, const char *message);
 
 SalMediaDescription *create_local_media_description(LinphoneCore *lc, LinphoneCall *call);
+void update_local_media_description(LinphoneCore *lc, LinphoneCall *call, SalMediaDescription **md);
 
 void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMediaDescription *new_md);
 

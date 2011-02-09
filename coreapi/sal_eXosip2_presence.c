@@ -39,6 +39,7 @@ SalOp * sal_find_out_subscribe(Sal *sal, int sid){
 		op=(SalOp*)elem->data;
 		if (op->sid==sid) return op;
 	}
+	ms_message("No op for sid %i",sid);
 	return NULL;
 }
 

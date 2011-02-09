@@ -127,14 +127,18 @@ static sdp_message_t *create_generic_sdp(const SalMediaDescription *desc)
 {
 	sdp_message_t *local;
 	int inet6;
-
+	char sessid[16];
+	char sessver[16];
+	
+	snprintf(sessid,16,"%i",desc->session_id);
+	snprintf(sessver,16,"%i",desc->session_ver);
 	sdp_message_init (&local);
 	if (strchr(desc->addr,':')!=NULL){
 		inet6=1;
 	}else inet6=0;
 	sdp_message_v_version_set (local, osip_strdup ("0"));
 	sdp_message_o_origin_set (local, osip_strdup (desc->username),
-			  osip_strdup ("123456"), osip_strdup ("654321"),
+			  osip_strdup (sessid), osip_strdup (sessver),
 			  osip_strdup ("IN"), inet6 ? osip_strdup("IP6") : osip_strdup ("IP4"),
 			  osip_strdup (desc->addr));
 	sdp_message_s_name_set (local, osip_strdup ("A conversation"));
@@ -181,11 +185,23 @@ static void add_payload(sdp_message_t *msg, int line, const PayloadType *pt)
 
 
 static void add_line(sdp_message_t *msg, int lineno, const SalStreamDescription *desc){
-	const char *mt=desc->type==SalAudio ? "audio" : "video";
+	const char *mt;
 	const MSList *elem;
 	const char *addr;
 	const char *dir="sendrecv";
 	int port;
+	
+	switch (desc->type) {
+	case SalAudio:
+		mt="audio";
+		break;
+	case SalVideo:
+		mt="video";
+		break;
+	case SalOther:
+		mt=desc->typeother;
+		break;
+	}
 	if (desc->candidates[0].addr[0]!='\0'){
 		addr=desc->candidates[0].addr;
 		port=desc->candidates[0].port;
@@ -310,7 +326,13 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 			stream->type=SalAudio;
 		}else if (strcasecmp("video", mtype) == 0){
 			stream->type=SalVideo;
-		}else stream->type=SalOther;
+		}else {
+			stream->type=SalOther;
+			if (stream->typeother){
+				ms_free(stream->typeother);
+			}
+			strncpy(stream->typeother,mtype,sizeof(stream->typeother)-1);
+		}
 		for(j=0;(sbw=sdp_message_bandwidth_get(msg,i,j))!=NULL;++j){
 			if (strcasecmp(sbw->b_bwtype,"AS")==0) stream->bandwidth=atoi(sbw->b_bandwidth);
 		}
