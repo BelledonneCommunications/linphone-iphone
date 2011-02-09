@@ -3551,8 +3551,10 @@ static MSFilter *get_dtmf_gen(LinphoneCore *lc){
 		}
 	}
 	if (lc->ringstream==NULL){
+		float amp=0.1;
 		MSSndCard *ringcard=lc->sound_conf.lsd_card ?lc->sound_conf.lsd_card : lc->sound_conf.ring_sndcard;
 		lc->ringstream=ring_start(NULL,0,ringcard);
+		ms_filter_call_method(lc->ringstream->gendtmf,MS_DTMF_GEN_SET_DEFAULT_AMPLITUDE,&amp);
 		lc->dmfs_playing_start_time=time(NULL);
 	}else{
 		if (lc->dmfs_playing_start_time!=0)
