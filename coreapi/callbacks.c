@@ -524,7 +524,7 @@ static void auth_requested(SalOp *h, const char *realm, const char *username){
 		ai->usecount++;
 	}else{
 		if (ai && ai->works==FALSE) {
-			register_failure(h, SalErrorFailure, SalReasonForbidden, _("Authentication failure"));
+			sal_op_cancel_authentication(h);
 		} 
 		if (lc->vtable.auth_info_requested)
 			lc->vtable.auth_info_requested(lc,realm,username);
