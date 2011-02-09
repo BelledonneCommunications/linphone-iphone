@@ -506,7 +506,9 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 
 static void call_released(SalOp *op){
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
-	linphone_call_set_state(call,LinphoneCallReleased,"Call released");
+	if (call!=NULL){
+		linphone_call_set_state(call,LinphoneCallReleased,"Call released");
+	}else ms_error("call_released() for already destroyed call ?");
 }
 
 static void auth_requested(SalOp *h, const char *realm, const char *username){
