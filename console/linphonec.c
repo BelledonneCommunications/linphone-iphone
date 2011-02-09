@@ -80,7 +80,6 @@
 
 #ifdef HAVE_X11_XLIB_H
 #include <X11/Xlib.h>
-#include <SDL/SDL_syswm.h>
 #endif
 
 /***************************************************************************
