@@ -61,7 +61,7 @@
 	UIButton* back;
 	
 	UITabBarController*  myTabBarController;
-	IncallViewController *myIncallViewController;
+
 	UIActionSheet *mIncomingCallActionSheet;
 	FirstLoginViewController* myFirstLoginViewController;
 	

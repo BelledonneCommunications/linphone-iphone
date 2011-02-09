@@ -44,7 +44,8 @@ extern void libmsilbc_init();
 }
 
 -(void) onCall:(LinphoneCall*) currentCall StateChanged: (LinphoneCallState) new_state withMessage: (const char *)  message {
-	NSString* lUserName = [[NSString alloc] initWithCString:linphone_address_get_username(linphone_call_get_remote_address(currentCall))];
+	const char* lUserNameChars=linphone_address_get_username(linphone_call_get_remote_address(currentCall));
+	NSString* lUserName = lUserNameChars?[[NSString alloc] initWithCString:lUserNameChars]:@"Unknown";
 	const char* lDisplayNameChars =  linphone_address_get_display_name(linphone_call_get_remote_address(currentCall));
 	NSString* lDisplayName = lDisplayNameChars?[[NSString alloc] initWithCString:lDisplayNameChars]:@"";
 	

@@ -214,9 +214,6 @@
 //status reporting
 -(void) displayStatus:(NSString*) message {
 	[status setText:message];
-	if (myIncallViewController != nil) {
-		[myIncallViewController displayStatus:message];
-	}
 }
 
 
@@ -255,10 +252,7 @@
 	}
 	mIncomingCallActionSheet = nil;
 }
--(void) displayFirstLoginUI:(UIWindow *) window {
 
-
-}
 - (void)dealloc {
 	[address dealloc];
 	[ mDisplayName dealloc];
@@ -284,7 +278,6 @@
 	[hash dealloc];
 	[back dealloc];
 	[myTabBarController release];
-	[myIncallViewController release];
 	[super dealloc];
 }
 

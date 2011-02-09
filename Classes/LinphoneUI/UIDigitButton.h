@@ -25,6 +25,7 @@
 	UITextField* mAddress;
 
 }
+-(void) initWithNumber:(char)digit ;
 -(void) initWithNumber:(char)digit addressField:(UITextField*) address;
 
 @end

@@ -20,51 +20,44 @@
 #import "linphonecore.h"
 #import "PhoneViewController.h"
 #import <AddressBookUI/ABPeoplePickerNavigationController.h>
+#include "UILinphone.h"
 
 
-@interface IncallViewController : UIViewController <ABPeoplePickerNavigationControllerDelegate> {
-	LinphoneCore* myLinphoneCore;
-	id<PhoneViewControllerDelegate> phoneviewDelegate;
-	NSTimer *durationRefreasher;
+@interface IncallViewController : UIViewController <ABPeoplePickerNavigationControllerDelegate,LinphoneUICallDelegate> {
 	
 	
 	UIView* controlSubView;
-	UIView* padSubView;
 	
 	UILabel* peerName;
 	UILabel* peerNumber;
-	UILabel* callDuration;
+	UIDuration* callDuration;
 	UILabel* status;
-	UIButton* end;
+	UIHangUpButton* end;
 	UIButton* dialer;
-	UIButton* mute;
-	UIButton* speaker;
+	UIMuteButton* mute;
+	UISpeakerButton* speaker;
 	UIButton* contacts;
+
 	
 	//key pad
-	UIButton* one;
-	UIButton* two;
-	UIButton* three;
-	UIButton* four;
-	UIButton* five;
-	UIButton* six;
-	UIButton* seven;
-	UIButton* eight;
-	UIButton* nine;
-	UIButton* star;
-	UIButton* zero;
-	UIButton* hash;
-	
+
+	UIView* padSubView;
+	UIDigitButton* one;
+	UIDigitButton* two;
+	UIDigitButton* three;
+	UIDigitButton* four;
+	UIDigitButton* five;
+	UIDigitButton* six;
+	UIDigitButton* seven;
+	UIDigitButton* eight;
+	UIDigitButton* nine;
+	UIDigitButton* star;
+	UIDigitButton* zero;
+	UIDigitButton* hash;
 	UIButton* close;
-	
-	bool isMuted;
-	bool isSpeaker;
 	
 	ABPeoplePickerNavigationController* myPeoplePickerController;
 }
-
--(void) setLinphoneCore:(LinphoneCore*) lc;
--(void) startCall;
 
 -(void)displayStatus:(NSString*) message;
 
@@ -98,5 +91,4 @@
 @property (nonatomic, retain) IBOutlet UIButton* hash;
 @property (nonatomic, retain) IBOutlet UIButton* close;
 
-@property (nonatomic, retain) id<PhoneViewControllerDelegate> phoneviewDelegate;
 @end
