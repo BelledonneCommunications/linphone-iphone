@@ -2863,8 +2863,10 @@ void linphone_core_set_sound_source(LinphoneCore *lc, char source)
 void linphone_core_set_ring(LinphoneCore *lc,const char *path){
 	if (lc->sound_conf.local_ring!=0){
 		ms_free(lc->sound_conf.local_ring);
+		lc->sound_conf.local_ring=NULL;
 	}
-	lc->sound_conf.local_ring=ms_strdup(path);
+	if (path)
+		lc->sound_conf.local_ring=ms_strdup(path);
 	if ( linphone_core_ready(lc) && lc->sound_conf.local_ring)
 		lp_config_set_string(lc->config,"sound","local_ring",lc->sound_conf.local_ring);
 }
