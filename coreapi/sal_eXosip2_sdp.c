@@ -185,7 +185,7 @@ static void add_payload(sdp_message_t *msg, int line, const PayloadType *pt)
 
 
 static void add_line(sdp_message_t *msg, int lineno, const SalStreamDescription *desc){
-	const char *mt;
+	const char *mt=NULL;
 	const MSList *elem;
 	const char *addr;
 	const char *dir="sendrecv";
