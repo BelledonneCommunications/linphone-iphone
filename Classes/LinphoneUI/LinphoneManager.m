@@ -19,7 +19,7 @@
 
 
 #import "LinphoneManager.h"
-#include "linphonecore.h"
+#include "linphonecore_utils.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
@@ -468,6 +468,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	LinphoneProxyConfig* proxyCfg;
 	LinphoneAddress *addr;
 	linphone_core_get_default_proxy(theLinphoneCore, &proxyCfg);	
+	linphone_core_stop_dtmf_stream(theLinphoneCore);
 	
 	if (isbackgroundModeEnabled && proxyCfg) {
 		//For registration register
@@ -486,6 +487,10 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		if ([[UIApplication sharedApplication] setKeepAliveTimeout:600/*(NSTimeInterval)linphone_proxy_config_get_expires(proxyCfg)*/ 
 														   handler:^{
 															   ms_warning("keepalive handler");
+															   if (theLinphoneCore == nil) {
+																   ms_warning("It seam that Linphone BG mode was deacticated, just skipping");
+																   return;
+															   }
 															   //kick up network cnx, just in case
 															   linphone_core_set_network_reachable(theLinphoneCore,false);
 															   linphone_core_iterate(theLinphoneCore);
@@ -614,7 +619,8 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 											  otherButtonTitles:nil ,nil];
 		[error show];
 	}
-	
+	/*IOS specific*/
+	linphone_core_start_dtmf_stream(theLinphoneCore);
 	
 	
 }
@@ -625,6 +631,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		
 	} else {
 		ms_message("becomming active, make sure we are registered");
+		linphone_core_start_dtmf_stream(theLinphoneCore);
 		[self doRegister];
 		
 	}

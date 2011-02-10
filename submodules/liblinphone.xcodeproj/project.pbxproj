@@ -151,6 +151,7 @@
 		222CA78611F6CFB100621220 /* sipsetup.h in Headers */ = {isa = PBXBuildFile; fileRef = 222CA76411F6CFB100621220 /* sipsetup.h */; };
 		2252935B12F6CA4700DD9BFB /* ec-calibrator.c in Sources */ = {isa = PBXBuildFile; fileRef = 2252935A12F6CA4700DD9BFB /* ec-calibrator.c */; };
 		225D355A124B1FF60008581C /* linphonecall.c in Sources */ = {isa = PBXBuildFile; fileRef = 225D3559124B1FF60008581C /* linphonecall.c */; };
+		229B9D5913043EAB00EFCD1C /* linphonecore_utils.h in Headers */ = {isa = PBXBuildFile; fileRef = 229B9D5813043EAB00EFCD1C /* linphonecore_utils.h */; };
 		22A10B5611F84E2D00373793 /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = 22A10B4F11F84E2D00373793 /* config.h */; };
 		22A10B5711F84E2D00373793 /* gsm.h in Headers */ = {isa = PBXBuildFile; fileRef = 22A10B5011F84E2D00373793 /* gsm.h */; };
 		22A10B5811F84E2D00373793 /* private.h in Headers */ = {isa = PBXBuildFile; fileRef = 22A10B5211F84E2D00373793 /* private.h */; };
@@ -333,6 +334,7 @@
 		222CA76411F6CFB100621220 /* sipsetup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sipsetup.h; sourceTree = "<group>"; };
 		2252935A12F6CA4700DD9BFB /* ec-calibrator.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "ec-calibrator.c"; path = "linphone/coreapi/ec-calibrator.c"; sourceTree = SOURCE_ROOT; };
 		225D3559124B1FF60008581C /* linphonecall.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = linphonecall.c; sourceTree = "<group>"; };
+		229B9D5813043EAB00EFCD1C /* linphonecore_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linphonecore_utils.h; sourceTree = "<group>"; };
 		22A10B4F11F84E2D00373793 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
 		22A10B5011F84E2D00373793 /* gsm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gsm.h; sourceTree = "<group>"; };
 		22A10B5111F84E2D00373793 /* gsm.h.orig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = gsm.h.orig; sourceTree = "<group>"; };
@@ -608,6 +610,7 @@
 		222CA72D11F6CFB100621220 /* coreapi */ = {
 			isa = PBXGroup;
 			children = (
+				229B9D5813043EAB00EFCD1C /* linphonecore_utils.h */,
 				225D3559124B1FF60008581C /* linphonecall.c */,
 				22A10EE711F8920F00373793 /* mswebcam.c */,
 				222CA72E11F6CFB100621220 /* .gitignore */,
@@ -772,6 +775,7 @@
 				22A10B5911F84E2D00373793 /* proto.h in Headers */,
 				22A10B5A11F84E2D00373793 /* toast.h in Headers */,
 				22A10B5B11F84E2D00373793 /* unproto.h in Headers */,
+				229B9D5913043EAB00EFCD1C /* linphonecore_utils.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

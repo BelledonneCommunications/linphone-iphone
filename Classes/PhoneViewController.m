@@ -81,14 +81,6 @@
  */
 
 
-- (void)dtmfWarmup{
-	@try {
-		linphone_core_play_dtmf([LinphoneManager getLc], ' ', 50);
-	} @catch (NSException *e) {
-		//nop
-	}
-}
-
 - (void)viewDidAppear:(BOOL)animated {
 	[[UIApplication sharedApplication] setIdleTimerDisabled:true];
 	[mute reset];
@@ -98,27 +90,10 @@
 		[[LinphoneManager instance] setRegistrationDelegate:myFirstLoginViewController];
 		[self presentModalViewController:myFirstLoginViewController animated:true];
 	}; 
-	/*
-	 BIG HACK !!
-	 The audio unit takes a lot of time to start, especially on iphone 3G
-	 To prevent a one second delay while playing the first digit, we need to activate
-	 the linphonecore graph responsible to play the dtmfs
-	 */
-	//[self dtmfWarmup];
-	NSDate *soon=[NSDate dateWithTimeIntervalSince1970:(time(NULL)+1)];
-	dtmf_warmup = [[NSTimer alloc] initWithFireDate:soon
-										   interval:4
-											 target:self 
-										   selector:@selector(dtmfWarmup)
-										   userInfo:nil 
-											repeats:YES];
-	[[NSRunLoop currentRunLoop] addTimer:dtmf_warmup
-								 forMode:NSDefaultRunLoopMode];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
 	[[UIApplication sharedApplication] setIdleTimerDisabled:false];
-	[dtmf_warmup invalidate];
 }
 
 
@@ -211,32 +186,33 @@
 	[myTabBarController setSelectedIndex:DIALER_TAB_INDEX];
 	
 }
--(void) displayCallInProgressFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
+-(void) displayIncalViewforUser:(NSString*) username withDisplayName:(NSString*) displayName {
 	[hangup setEnabled:true];
 	if (displayName && [displayName length]>0) {
 		[peerLabel setText:displayName];
 	} else {
 		[peerLabel setText:username?username:@""];
 	}
-	if (linphone_call_get_state(linphone_core_get_current_call([LinphoneManager getLc])) == LinphoneCallConnected) {
-		[callDuration start];
-		[callDuration setHidden:false];
-	} else {
-		[callDuration setText:@"Calling..."];
-	}
-	
 	[address setHidden:true];
 	[incallView setHidden:false];
-	if (linphone_call_get_dir(linphone_core_get_current_call([LinphoneManager getLc])) == LinphoneCallOutgoing) {
-		[call setEnabled:false];
-	}
-	
+}
+-(void) displayCallInProgressFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
+	[self displayIncalViewforUser:username
+				  withDisplayName:displayName];
+	[call setEnabled:false];
+	[callDuration setText:@"Calling..."];
+	[speaker reset];
 }
 
 -(void) displayIncallFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
-	[self displayCallInProgressFromUI:viewCtrl
-							  forUser:username
+	[callDuration start];
+	[callDuration setHidden:false];
+
+	if (linphone_call_get_dir(linphone_core_get_current_call([LinphoneManager getLc])) == LinphoneCallIncoming) {
+		[self displayIncalViewforUser:username
 					  withDisplayName:displayName];
+		[speaker reset];
+	} 
 }
 //status reporting
 -(void) displayStatus:(NSString*) message {

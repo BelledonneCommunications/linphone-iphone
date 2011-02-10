@@ -275,7 +275,7 @@
 		227BCDC010D4004600FBFD76 /* CallHistoryTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallHistoryTableViewController.m; sourceTree = "<group>"; };
 		227BCDC110D4004600FBFD76 /* CallHistoryTableViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CallHistoryTableViewController.xib; sourceTree = "<group>"; };
 		228697C311AC29B800E9E0CA /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
-		228B19AE130290C500F154D3 /* iTunesArtwork */ = {isa = PBXFileReference; lastKnownFileType = file; name = iTunesArtwork; path = Resources/iTunesArtwork; sourceTree = "<group>"; };
+		228B19AE130290C500F154D3 /* iTunesArtwork */ = {isa = PBXFileReference; lastKnownFileType = text; name = iTunesArtwork; path = Resources/iTunesArtwork; sourceTree = "<group>"; };
 		22968A5D12F875C600588287 /* UISpeakerButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UISpeakerButton.h; sourceTree = "<group>"; };
 		22968A5E12F875C600588287 /* UISpeakerButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UISpeakerButton.m; sourceTree = "<group>"; };
 		22968A8612F87C2000588287 /* UIDuration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDuration.h; sourceTree = "<group>"; };
@@ -859,47 +859,6 @@
 			};
 			name = Debug;
 		};
-		1D6058950D05DD3E006BFB54 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				COPY_PHASE_STRIP = YES;
-				FRAMEWORK_SEARCH_PATHS = "";
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = linphone_Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = IN_LINPHONE;
-				HEADER_SEARCH_PATHS = (
-					submodules/linphone/coreapi,
-					submodules/linphone/mediastreamer2/include,
-					submodules/linphone/mediastreamer2/include,
-					submodules/linphone/oRTP/include,
-					submodules/externals/gsm/,
-					submodules/externals/osip/include,
-					submodules/externals/exosip/include,
-					submodules/externals/speex/include,
-				);
-				INFOPLIST_FILE = "linphone-Info.plist";
-				LIBRARY_SEARCH_PATHS = (
-					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib\"",
-					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
-				);
-				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*][arch=*]" = (
-					"\"$(SRCROOT)/submodules/build/$(CONFIGURATION)-iphoneos\"",
-					"$(inherited)",
-				);
-				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*][arch=*]" = (
-					"\"$(SRCROOT)/submodules/build/$(CONFIGURATION)-iphonesimulator\"",
-					"$(inherited)",
-				);
-				OTHER_LDFLAGS = (
-					"-l",
-					linphone,
-				);
-				PRODUCT_NAME = linphone;
-				SDKROOT = iphoneos;
-			};
-			name = Release;
-		};
 		228B19A61302902F00F154D3 /* Distribution adhoc */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1047,20 +1006,6 @@
 			};
 			name = Debug;
 		};
-		C01FCF5008A954540054247B /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				GCC_C_LANGUAGE_STANDARD = c99;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
-				PREBINDING = NO;
-				SDKROOT = iphoneos;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1070,10 +1015,9 @@
 				1D6058940D05DD3E006BFB54 /* Debug */,
 				22F51EE8107FA53D00F98953 /* Distribution */,
 				228B19A71302902F00F154D3 /* Distribution adhoc */,
-				1D6058950D05DD3E006BFB54 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "linphone" */ = {
 			isa = XCConfigurationList;
@@ -1081,10 +1025,9 @@
 				C01FCF4F08A954540054247B /* Debug */,
 				22F51EE7107FA53D00F98953 /* Distribution */,
 				228B19A61302902F00F154D3 /* Distribution adhoc */,
-				C01FCF5008A954540054247B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 	};
