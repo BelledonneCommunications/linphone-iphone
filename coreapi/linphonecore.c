@@ -3867,12 +3867,13 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	lc->msevq=NULL;
 	/* save all config */
 	net_config_uninit(lc);
-	sip_config_uninit(lc);
 	rtp_config_uninit(lc);
+	if (lc->ringstream) ring_stop(lc->ringstream);
 	sound_config_uninit(lc);
 	video_config_uninit(lc);
 	codecs_config_uninit(lc);
 	ui_config_uninit(lc);
+	sip_config_uninit(lc);
 	if (lp_config_needs_commit(lc->config)) lp_config_sync(lc->config);
 	lp_config_destroy(lc->config);
 	lc->config = NULL; /* Mark the config as NULL to block further calls */
@@ -3882,7 +3883,6 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	lc->call_logs=ms_list_free(lc->call_logs);
 
 	linphone_core_free_payload_types();
-
 	ortp_exit();
 	linphone_core_set_state(lc,LinphoneGlobalOff,"Off");
 }
