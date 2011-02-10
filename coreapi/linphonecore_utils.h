@@ -68,6 +68,18 @@ typedef void (*LinphoneEcCalibrationCallback)(LinphoneCore *lc, LinphoneEcCalibr
  * Start an echo calibration of the sound devices, in order to find adequate settings for the echo canceller automatically.
 **/
 int linphone_core_start_echo_calibration(LinphoneCore *lc, LinphoneEcCalibrationCallback cb, void *cb_data);
+#if TARGET_OS_IPHONE	
+/**
+ * IOS special function to warm up  dtmf feeback stream. #linphone_core_stop_dtmf_stream must be called before entering BG mode
+ */
+void linphone_core_start_dtmf_stream(const LinphoneCore* lc);
+/**
+ * IOS special function to stop dtmf feed back function. Must be called before entering BG mode
+ */
+void linphone_core_stop_dtmf_stream(const LinphoneCore* lc);
+#endif
+
+	
 #ifdef __cplusplus
 }
 #endif
