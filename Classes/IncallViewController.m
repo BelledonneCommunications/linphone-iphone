@@ -32,7 +32,7 @@
 @synthesize peerNumber;
 @synthesize callDuration;
 @synthesize status;
-@synthesize end;
+@synthesize endCtrl;
 @synthesize close;
 @synthesize mute;
 @synthesize dialer;
@@ -51,7 +51,7 @@
 @synthesize star;
 @synthesize zero;
 @synthesize hash;
-
+@synthesize endPad;
 
 /*
 // The designated initializer.  Override if you create the controller programmatically and want to perform customization that is not appropriate for viewDidLoad.
@@ -71,6 +71,7 @@
 	//Controls
 	[mute initWithOnImage:[UIImage imageNamed:@"mic_muted.png"]  offImage:[UIImage imageNamed:@"mic_active.png"] ];
 	[speaker initWithOnImage:[UIImage imageNamed:@"Speaker-32-on.png"]  offImage:[UIImage imageNamed:@"Speaker-32-off.png"] ];
+	
 
 	//Dialer init
 	[zero initWithNumber:'0'];
@@ -101,7 +102,14 @@
 	[status setText:message];
 }
 
+-(void) displayPad:(bool) enable {
+	[controlSubView setHidden:enable];
+	[padSubView setHidden:!enable];
+}
 -(void) displayCallInProgressFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
+	//restaure view
+	[self displayPad:false];
+	
 	if (displayName && [displayName length]>0) {
 		[peerName setText:displayName];
 		[peerNumber setText:username];
@@ -122,8 +130,7 @@
 - (IBAction)doAction:(id)sender {
 	
 	if (sender == dialer) {
-		[controlSubView setHidden:true];
-		[padSubView setHidden:false];
+		[self displayPad:true];
 		
 	} else if (sender == contacts) {
 		// start people picker
@@ -132,8 +139,7 @@
 		
 		[self presentModalViewController: myPeoplePickerController animated:true]; 
 	} else if (sender == close) {
-		[controlSubView setHidden:false];
-		[padSubView setHidden:true];
+		[self displayPad:false];
 	} 	
 }
 

@@ -538,7 +538,7 @@
 									<reference key="IBUINormalTitleShadowColor" ref="785445938"/>
 								</object>
 							</object>
-							<string key="NSFrame">{{400, 110}, {270, 317}}</string>
+							<string key="NSFrame">{{25, 110}, {270, 317}}</string>
 							<reference key="NSSuperview" ref="858247959"/>
 							<object class="NSColor" key="IBUIBackgroundColor">
 								<int key="NSColorSpace">3</int>
@@ -571,30 +571,12 @@
 			<object class="NSMutableArray" key="connectionRecords">
 				<bool key="EncodedWithXMLCoder">YES</bool>
 				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchEventConnection" key="connection">
-						<string key="label">doAction:</string>
-						<reference key="source" ref="953411930"/>
-						<reference key="destination" ref="841351856"/>
-						<int key="IBEventType">7</int>
-					</object>
-					<int key="connectionID">20</int>
-				</object>
-				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">view</string>
 						<reference key="source" ref="841351856"/>
 						<reference key="destination" ref="858247959"/>
 					</object>
 					<int key="connectionID">23</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchEventConnection" key="connection">
-						<string key="label">doAction:</string>
-						<reference key="source" ref="846404401"/>
-						<reference key="destination" ref="841351856"/>
-						<int key="IBEventType">7</int>
-					</object>
-					<int key="connectionID">42</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
@@ -613,15 +595,6 @@
 					<int key="connectionID">45</int>
 				</object>
 				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchEventConnection" key="connection">
-						<string key="label">doAction:</string>
-						<reference key="source" ref="759251781"/>
-						<reference key="destination" ref="841351856"/>
-						<int key="IBEventType">7</int>
-					</object>
-					<int key="connectionID">47</int>
-				</object>
-				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">dialer</string>
 						<reference key="source" ref="841351856"/>
@@ -630,29 +603,12 @@
 					<int key="connectionID">49</int>
 				</object>
 				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchEventConnection" key="connection">
-						<string key="label">doAction:</string>
-						<reference key="source" ref="752456321"/>
-						<reference key="destination" ref="841351856"/>
-						<int key="IBEventType">7</int>
-					</object>
-					<int key="connectionID">50</int>
-				</object>
-				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">close</string>
 						<reference key="source" ref="841351856"/>
 						<reference key="destination" ref="759251781"/>
 					</object>
 					<int key="connectionID">51</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">end</string>
-						<reference key="source" ref="841351856"/>
-						<reference key="destination" ref="953411930"/>
-					</object>
-					<int key="connectionID">53</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
@@ -711,75 +667,12 @@
 					<int key="connectionID">60</int>
 				</object>
 				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchEventConnection" key="connection">
-						<string key="label">doAction:</string>
-						<reference key="source" ref="1037442441"/>
-						<reference key="destination" ref="841351856"/>
-						<int key="IBEventType">1</int>
-					</object>
-					<int key="connectionID">61</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchEventConnection" key="connection">
-						<string key="label">doAction:</string>
-						<reference key="source" ref="583355032"/>
-						<reference key="destination" ref="841351856"/>
-						<int key="IBEventType">1</int>
-					</object>
-					<int key="connectionID">62</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchEventConnection" key="connection">
-						<string key="label">doAction:</string>
-						<reference key="source" ref="540604734"/>
-						<reference key="destination" ref="841351856"/>
-						<int key="IBEventType">1</int>
-					</object>
-					<int key="connectionID">63</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchEventConnection" key="connection">
-						<string key="label">doAction:</string>
-						<reference key="source" ref="848096264"/>
-						<reference key="destination" ref="841351856"/>
-						<int key="IBEventType">1</int>
-					</object>
-					<int key="connectionID">64</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchEventConnection" key="connection">
-						<string key="label">doAction:</string>
-						<reference key="source" ref="256512846"/>
-						<reference key="destination" ref="841351856"/>
-						<int key="IBEventType">1</int>
-					</object>
-					<int key="connectionID">65</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchEventConnection" key="connection">
-						<string key="label">doAction:</string>
-						<reference key="source" ref="323385706"/>
-						<reference key="destination" ref="841351856"/>
-						<int key="IBEventType">1</int>
-					</object>
-					<int key="connectionID">66</int>
-				</object>
-				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">four</string>
 						<reference key="source" ref="841351856"/>
 						<reference key="destination" ref="652269854"/>
 					</object>
 					<int key="connectionID">67</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchEventConnection" key="connection">
-						<string key="label">doAction:</string>
-						<reference key="source" ref="652269854"/>
-						<reference key="destination" ref="841351856"/>
-						<int key="IBEventType">1</int>
-					</object>
-					<int key="connectionID">68</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
@@ -790,30 +683,12 @@
 					<int key="connectionID">69</int>
 				</object>
 				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchEventConnection" key="connection">
-						<string key="label">doAction:</string>
-						<reference key="source" ref="373062361"/>
-						<reference key="destination" ref="841351856"/>
-						<int key="IBEventType">1</int>
-					</object>
-					<int key="connectionID">70</int>
-				</object>
-				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">six</string>
 						<reference key="source" ref="841351856"/>
 						<reference key="destination" ref="673101328"/>
 					</object>
 					<int key="connectionID">71</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchEventConnection" key="connection">
-						<string key="label">doAction:</string>
-						<reference key="source" ref="673101328"/>
-						<reference key="destination" ref="841351856"/>
-						<int key="IBEventType">1</int>
-					</object>
-					<int key="connectionID">72</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
@@ -824,39 +699,12 @@
 					<int key="connectionID">73</int>
 				</object>
 				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchEventConnection" key="connection">
-						<string key="label">doAction:</string>
-						<reference key="source" ref="313356310"/>
-						<reference key="destination" ref="841351856"/>
-						<int key="IBEventType">1</int>
-					</object>
-					<int key="connectionID">74</int>
-				</object>
-				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">eight</string>
 						<reference key="source" ref="841351856"/>
 						<reference key="destination" ref="175014683"/>
 					</object>
 					<int key="connectionID">75</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchEventConnection" key="connection">
-						<string key="label">doAction:</string>
-						<reference key="source" ref="175014683"/>
-						<reference key="destination" ref="841351856"/>
-						<int key="IBEventType">1</int>
-					</object>
-					<int key="connectionID">76</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchEventConnection" key="connection">
-						<string key="label">doAction:</string>
-						<reference key="source" ref="723131369"/>
-						<reference key="destination" ref="841351856"/>
-						<int key="IBEventType">1</int>
-					</object>
-					<int key="connectionID">77</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
@@ -867,30 +715,12 @@
 					<int key="connectionID">80</int>
 				</object>
 				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchEventConnection" key="connection">
-						<string key="label">doAction:</string>
-						<reference key="source" ref="861550739"/>
-						<reference key="destination" ref="841351856"/>
-						<int key="IBEventType">7</int>
-					</object>
-					<int key="connectionID">81</int>
-				</object>
-				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">speaker</string>
 						<reference key="source" ref="841351856"/>
 						<reference key="destination" ref="406189871"/>
 					</object>
 					<int key="connectionID">82</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchEventConnection" key="connection">
-						<string key="label">doAction:</string>
-						<reference key="source" ref="406189871"/>
-						<reference key="destination" ref="841351856"/>
-						<int key="IBEventType">7</int>
-					</object>
-					<int key="connectionID">83</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
@@ -931,6 +761,49 @@
 						<reference key="destination" ref="620882994"/>
 					</object>
 					<int key="connectionID">94</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">endPad</string>
+						<reference key="source" ref="841351856"/>
+						<reference key="destination" ref="846404401"/>
+					</object>
+					<int key="connectionID">98</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">endCtrl</string>
+						<reference key="source" ref="841351856"/>
+						<reference key="destination" ref="953411930"/>
+					</object>
+					<int key="connectionID">99</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchEventConnection" key="connection">
+						<string key="label">doAction:</string>
+						<reference key="source" ref="752456321"/>
+						<reference key="destination" ref="841351856"/>
+						<int key="IBEventType">7</int>
+					</object>
+					<int key="connectionID">100</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchEventConnection" key="connection">
+						<string key="label">doAction:</string>
+						<reference key="source" ref="759251781"/>
+						<reference key="destination" ref="841351856"/>
+						<int key="IBEventType">7</int>
+					</object>
+					<int key="connectionID">101</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchEventConnection" key="connection">
+						<string key="label">doAction:</string>
+						<reference key="source" ref="478667533"/>
+						<reference key="destination" ref="841351856"/>
+						<int key="IBEventType">7</int>
+					</object>
+					<int key="connectionID">103</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -1083,7 +956,7 @@
 						<int key="objectID">31</int>
 						<reference key="object" ref="256512846"/>
 						<reference key="parent" ref="759087764"/>
-						<string key="objectName">start</string>
+						<string key="objectName">star</string>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">32</int>
@@ -1272,7 +1145,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">94</int>
+			<int key="maxID">103</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -1301,7 +1174,8 @@
 							<string>controlSubView</string>
 							<string>dialer</string>
 							<string>eight</string>
-							<string>end</string>
+							<string>endCtrl</string>
+							<string>endPad</string>
 							<string>five</string>
 							<string>four</string>
 							<string>hash</string>
@@ -1335,6 +1209,7 @@
 							<string>UIButton</string>
 							<string>UIButton</string>
 							<string>UIButton</string>
+							<string>UIButton</string>
 							<string>UIView</string>
 							<string>UILabel</string>
 							<string>UILabel</string>
@@ -1358,7 +1233,8 @@
 							<string>controlSubView</string>
 							<string>dialer</string>
 							<string>eight</string>
-							<string>end</string>
+							<string>endCtrl</string>
+							<string>endPad</string>
 							<string>five</string>
 							<string>four</string>
 							<string>hash</string>
@@ -1404,7 +1280,11 @@
 								<string key="candidateClassName">UIButton</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">end</string>
+								<string key="name">endCtrl</string>
+								<string key="candidateClassName">UIButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">endPad</string>
 								<string key="candidateClassName">UIButton</string>
 							</object>
 							<object class="IBToOneOutletInfo">

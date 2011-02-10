@@ -32,7 +32,7 @@
 	UILabel* peerNumber;
 	UIDuration* callDuration;
 	UILabel* status;
-	UIHangUpButton* end;
+	UIHangUpButton* endCtrl;
 	UIButton* dialer;
 	UIMuteButton* mute;
 	UISpeakerButton* speaker;
@@ -54,6 +54,7 @@
 	UIDigitButton* star;
 	UIDigitButton* zero;
 	UIDigitButton* hash;
+	UIHangUpButton* endPad;
 	UIButton* close;
 	
 	ABPeoplePickerNavigationController* myPeoplePickerController;
@@ -70,7 +71,7 @@
 @property (nonatomic, retain) IBOutlet UILabel* peerNumber;
 @property (nonatomic, retain) IBOutlet UILabel* callDuration;
 @property (nonatomic, retain) IBOutlet UILabel* status;
-@property (nonatomic, retain) IBOutlet UIButton* end;
+@property (nonatomic, retain) IBOutlet UIButton* endCtrl;
 @property (nonatomic, retain) IBOutlet UIButton* dialer;
 @property (nonatomic, retain) IBOutlet UIButton* mute;
 @property (nonatomic, retain) IBOutlet UIButton* speaker;
@@ -90,5 +91,5 @@
 @property (nonatomic, retain) IBOutlet UIButton* zero;
 @property (nonatomic, retain) IBOutlet UIButton* hash;
 @property (nonatomic, retain) IBOutlet UIButton* close;
-
+@property (nonatomic, retain) IBOutlet UIButton* endPad;
 @end
