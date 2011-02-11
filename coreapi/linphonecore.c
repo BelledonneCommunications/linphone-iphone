@@ -917,7 +917,8 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 {
 	memset (lc, 0, sizeof (LinphoneCore));
 	lc->data=userdata;
-
+	lc->ringstream_autorelease=TRUE;
+	
 	memcpy(&lc->vtable,vtable,sizeof(LinphoneCoreVTable));
 
 	linphone_core_set_state(lc,LinphoneGlobalStartup,"Starting up");
@@ -1662,7 +1663,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 		lc_callback_obj_invoke(&lc->preview_finished_cb,lc);
 	}
 
-	if (lc->ringstream && lc->dmfs_playing_start_time!=0 
+	if (lc->ringstream && lc->ringstream_autorelease && lc->dmfs_playing_start_time!=0 
 	    && (curtime-lc->dmfs_playing_start_time)>5){
 		ring_stop(lc->ringstream);
 		lc->ringstream=NULL;
@@ -4088,3 +4089,15 @@ void linphone_core_enable_keep_alive(LinphoneCore* lc,bool_t enable) {
 bool_t linphone_core_keep_alive_enabled(LinphoneCore* lc) {
 	return sal_get_keepalive_period(lc->sal) > 0;
 }
+	
+void linphone_core_start_dtmf_stream(LinphoneCore* lc) {
+	get_dtmf_gen(lc); /*make sure ring stream is started*/
+	lc->ringstream_autorelease=FALSE; /*disable autorelease mode*/
+}
+
+void linphone_core_stop_dtmf_stream(LinphoneCore* lc) {
+	if (lc->ringstream) ring_stop(lc->ringstream);
+	lc->ringstream=NULL;
+}
+
+

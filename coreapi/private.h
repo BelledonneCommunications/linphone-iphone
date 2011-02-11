@@ -435,6 +435,7 @@ struct _LinphoneCore
 	bool_t auto_net_state_mon;
 	bool_t network_reachable;
 	bool_t use_preview_window;
+	bool_t ringstream_autorelease;
 };
 
 bool_t linphone_core_can_we_add_call(LinphoneCore *lc);
