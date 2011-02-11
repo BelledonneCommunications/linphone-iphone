@@ -2030,7 +2030,7 @@ int sal_call_update(SalOp *h, const char *subject){
 	osip_message_t *reinvite=NULL;
 
 	eXosip_lock();
-	if(eXosip_call_build_request(h->did,"INVITE",&reinvite) != OSIP_SUCCESS || reinvite==NULL){
+	if(eXosip_call_build_request(h->did,"INVITE",&reinvite) != 0 || reinvite==NULL){
 		eXosip_unlock();
 		return -1;
 	}

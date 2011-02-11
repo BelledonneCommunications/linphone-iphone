@@ -150,7 +150,6 @@ static bool_t payload_list_equals(const MSList *l1, const MSList *l2){
 	}
 	if (e1!=NULL || e2!=NULL){
 		/*means one list is longer than the other*/
-		abort();
 		return FALSE;
 	}
 	return TRUE;
