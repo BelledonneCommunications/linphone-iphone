@@ -235,10 +235,12 @@ static void call_ringing(SalOp *h){
 		if (lc->ringstream!=NULL) return;	/*already ringing !*/
 		if (lc->sound_conf.play_sndcard!=NULL){
 			MSSndCard *ringcard=lc->sound_conf.lsd_card ? lc->sound_conf.lsd_card : lc->sound_conf.play_sndcard;
-			ms_message("Remote ringing...");
 			lc->ringstream=ring_start(lc->sound_conf.remote_ring,2000,ringcard);
-			linphone_call_set_state(call,LinphoneCallOutgoingRinging,"Remote ringing");		
 		}
+		ms_message("Remote ringing...");
+		if (lc->vtable.display_status) 
+			lc->vtable.display_status(lc,_("Remote ringing..."));
+		linphone_call_set_state(call,LinphoneCallOutgoingRinging,"Remote ringing");
 	}else{
 		/*accept early media */
 		if (call->audiostream && call->audiostream->ticker!=NULL){
