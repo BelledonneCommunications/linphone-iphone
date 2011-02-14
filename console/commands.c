@@ -473,7 +473,8 @@ lpc_cmd_help(LinphoneCore *lc, char *arg)
 		}
 		
 		linphonec_out("---------------------------\n");
-		linphonec_out("Type 'help <command>' for more details or 'help advanced' to list additional commands.\n");
+		linphonec_out("Type 'help <command>' for more details or\n");
+		linphonec_out("     'help advanced' to list additional commands.\n");
 
 		return 1;
 	}
