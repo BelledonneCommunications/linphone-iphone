@@ -78,6 +78,7 @@ static int lpc_cmd_unregister(LinphoneCore *, char *);
 static int lpc_cmd_duration(LinphoneCore *lc, char *args);
 static int lpc_cmd_status(LinphoneCore *lc, char *args);
 static int lpc_cmd_ports(LinphoneCore *lc, char *args);
+static int lpc_cmd_param(LinphoneCore *lc, char *args);
 static int lpc_cmd_speak(LinphoneCore *lc, char *args);
 static int lpc_cmd_acodec(LinphoneCore *lc, char *args);
 static int lpc_cmd_vcodec(LinphoneCore *lc, char *args);
@@ -315,6 +316,10 @@ static LPC_COMMAND advanced_commands[] = {
 	{ "ports", lpc_cmd_ports, "Network ports configuration", 
 			"'ports'  \t: prints current used ports.\n"
 			"'ports sip <port number>'\t: Sets the sip port.\n" },
+	{ "param", lpc_cmd_param, "parameter set or read as normally given in .linphonerc",
+			"'param <section> <parameter> [<value>]'  \t: reads [sets] given parameter.\n"
+			"NOTES: - changes may become effective after (re)establishing a sip connection.\n"
+			"       - upon exit, .linphonerc will reflect the updated state.\n" },
 	{ "speak", lpc_cmd_speak, "Speak a sentence using espeak TTS engine",
 			"This feature is available only in file mode. (see 'help soundcard')\n"
 			"'speak <voice name> <sentence>'	: speak a text using the specified espeak voice.\n"
@@ -2012,6 +2017,35 @@ static int lpc_cmd_ports(LinphoneCore *lc, char *args)
 		linphone_core_set_sip_port(lc,port);
 	}else return 0;
 
+	return 1;
+}
+
+static int lpc_cmd_param(LinphoneCore *lc, char *args)
+{
+	char section[20], param[20], value[50];
+	const char *string;
+
+	if (args == NULL) {
+		return 0;
+	}
+	switch (sscanf(args,"%s %s %s",section,param,value)) {
+		// case 1 might show all current settings under a section
+		case 2:
+			string = lp_config_get_string(linphone_core_get_config(lc), section, param, "(undef)");
+			linphonec_out("current value: %s\n", string);
+			break;
+		case 3:
+			if (lp_config_get_string(linphone_core_get_config(lc), section, param, NULL) != NULL) {
+				lp_config_set_string(linphone_core_get_config(lc), section, param, value);
+			// no indication of existence
+				linphonec_out("updated value: %s\n", value);
+			} else {
+				linphonec_out("only update of existing variables are allowed\n");
+			}
+			break;
+		default:
+			return 0;
+    }
 	return 1;
 }
 
