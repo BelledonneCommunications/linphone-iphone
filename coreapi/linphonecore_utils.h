@@ -25,6 +25,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #else
 #include "linphone/linphonecore.h"
 #endif
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef struct _LsdPlayer LsdPlayer;
 typedef struct _LinphoneSoundDaemon LinphoneSoundDaemon;
@@ -49,4 +52,35 @@ void linphone_sound_daemon_release_all_players(LinphoneSoundDaemon *obj);
 void linphone_core_use_sound_daemon(LinphoneCore *lc, LinphoneSoundDaemon *lsd);
 void linphone_sound_daemon_destroy(LinphoneSoundDaemon *obj);
 
+/**
+ * Enum describing the result of the echo canceller calibration process.
+**/
+typedef enum {
+	LinphoneEcCalibratorInProgress,
+	LinphoneEcCalibratorDone,
+	LinphoneEcCalibratorFailed
+}LinphoneEcCalibratorStatus;
+
+
+typedef void (*LinphoneEcCalibrationCallback)(LinphoneCore *lc, LinphoneEcCalibratorStatus status, int delay_ms, void *data);
+
+/**
+ * Start an echo calibration of the sound devices, in order to find adequate settings for the echo canceller automatically.
+**/
+int linphone_core_start_echo_calibration(LinphoneCore *lc, LinphoneEcCalibrationCallback cb, void *cb_data);
+#if TARGET_OS_IPHONE	
+/**
+ * IOS special function to warm up  dtmf feeback stream. #linphone_core_stop_dtmf_stream must be called before entering BG mode
+ */
+void linphone_core_start_dtmf_stream(const LinphoneCore* lc);
+/**
+ * IOS special function to stop dtmf feed back function. Must be called before entering BG mode
+ */
+void linphone_core_stop_dtmf_stream(const LinphoneCore* lc);
+#endif
+
+	
+#ifdef __cplusplus
+}
+#endif
 #endif

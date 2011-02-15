@@ -79,19 +79,41 @@ void sal_media_description_set_dir(SalMediaDescription *md, SalStreamDir stream_
 	}
 }
 
-bool_t sal_media_description_has_dir(const SalMediaDescription *md, SalStreamDir stream_dir){
+
+static bool_t is_null_address(const char *addr){
+	return strcmp(addr,"0.0.0.0")==0 || strcmp(addr,"::0")==0;
+}
+
+/*check for the presence of at least one stream with requested direction */
+static bool_t has_dir(const SalMediaDescription *md, SalStreamDir stream_dir){
 	int i;
-	bool_t found=FALSE;
 
 	/* we are looking for at least one stream with requested direction, inactive streams are ignored*/
 	for(i=0;i<md->nstreams;++i){
 		const SalStreamDescription *ss=&md->streams[i];
-		if (ss->dir==stream_dir) found=TRUE;
-		else{
-			if (ss->dir!=SalStreamInactive) return FALSE;
-		}
+		if (ss->dir==stream_dir) return TRUE;
+		if (stream_dir==SalStreamSendOnly && (is_null_address(md->addr) || is_null_address(ss->addr)))
+			return TRUE;
 	}
-	return found;
+	return FALSE;
+}
+
+bool_t sal_media_description_has_dir(const SalMediaDescription *md, SalStreamDir stream_dir){
+	if (stream_dir==SalStreamRecvOnly){
+		if (has_dir(md,SalStreamSendOnly) || has_dir(md,SalStreamSendRecv)) return FALSE;
+		else return TRUE;
+	}else if (stream_dir==SalStreamSendOnly){
+		if (has_dir(md,SalStreamRecvOnly) || has_dir(md,SalStreamSendRecv)) return FALSE;
+		else return TRUE;
+	}else if (stream_dir==SalStreamSendRecv){
+		return has_dir(md,SalStreamSendRecv);
+	}else{
+		/*SalStreamInactive*/
+		if (has_dir(md,SalStreamSendOnly) || has_dir(md,SalStreamSendRecv)  || has_dir(md,SalStreamRecvOnly))
+			return FALSE;
+		else return TRUE;
+	}
+	return FALSE;
 }
 
 /*
@@ -128,7 +150,6 @@ static bool_t payload_list_equals(const MSList *l1, const MSList *l2){
 	}
 	if (e1!=NULL || e2!=NULL){
 		/*means one list is longer than the other*/
-		abort();
 		return FALSE;
 	}
 	return TRUE;
@@ -266,4 +287,25 @@ void __sal_op_free(SalOp *op){
 	if (b->remote_media)
 		sal_media_description_unref(b->remote_media);
 	ms_free(op);
+}
+
+SalAuthInfo* sal_auth_info_new() {
+	return ms_new0(SalAuthInfo,1);
+}
+
+SalAuthInfo* sal_auth_info_clone(const SalAuthInfo* auth_info) {
+	SalAuthInfo* new_auth_info=sal_auth_info_new();
+	new_auth_info->username=auth_info->username?ms_strdup(auth_info->username):NULL;
+	new_auth_info->userid=auth_info->userid?ms_strdup(auth_info->userid):NULL;
+	new_auth_info->realm=auth_info->realm?ms_strdup(auth_info->realm):NULL;
+	new_auth_info->password=auth_info->password?ms_strdup(auth_info->password):NULL;
+	return new_auth_info;
+}
+
+void sal_auth_info_delete(const SalAuthInfo* auth_info) {
+	if (auth_info->username) ms_free(auth_info->username);
+	if (auth_info->userid) ms_free(auth_info->userid);
+	if (auth_info->realm) ms_free(auth_info->realm);
+	if (auth_info->password) ms_free(auth_info->password);
+	ms_free((void*)auth_info);
 }

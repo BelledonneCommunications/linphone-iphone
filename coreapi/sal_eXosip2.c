@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 #include "sal_eXosip2.h"
-
+#include "private.h"
 #include "offeranswer.h"
 
 static void text_received(Sal *sal, eXosip_event_t *ev);
@@ -165,6 +165,7 @@ SalOp * sal_op_new(Sal *sal){
 	op->referred_by=NULL;
 	op->masquerade_via=FALSE;
 	op->auto_answer_asked=FALSE;
+	op->auth_info=NULL;
 	return op;
 }
 
@@ -208,6 +209,9 @@ void sal_op_release(SalOp *op){
 	}
 	if (op->referred_by){
 		ms_free(op->referred_by);
+	}
+	if (op->auth_info) {
+		sal_auth_info_delete(op->auth_info);
 	}
 	__sal_op_free(op);
 }
@@ -260,6 +264,7 @@ Sal * sal_init(){
 	eXosip_init();
 	sal=ms_new0(Sal,1);
 	sal->keepalive_period=30;
+	sal->double_reg=TRUE;
 	return sal;
 }
 
@@ -292,6 +297,8 @@ void sal_set_callbacks(Sal *ctx, const SalCallbacks *cbs){
 		ctx->callbacks.call_failure=(SalOnCallFailure)unimplemented_stub;
 	if (ctx->callbacks.call_terminated==NULL) 
 		ctx->callbacks.call_terminated=(SalOnCallTerminated)unimplemented_stub;
+	if (ctx->callbacks.call_released==NULL)
+		ctx->callbacks.call_released=(SalOnCallReleased)unimplemented_stub;
 	if (ctx->callbacks.call_updating==NULL) 
 		ctx->callbacks.call_updating=(SalOnCallUpdating)unimplemented_stub;
 	if (ctx->callbacks.auth_requested==NULL) 
@@ -330,13 +337,17 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 	int err;
 	bool_t ipv6;
 	int proto=IPPROTO_UDP;
+	int keepalive = ctx->keepalive_period;
 	
 	switch (tr) {
 	case SalTransportDatagram:
 		proto=IPPROTO_UDP;
+		eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE, &keepalive);	
 		break;
 	case SalTransportStream:
 		proto= IPPROTO_TCP;
+			keepalive=-1;	
+		eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE,&keepalive);	
 		break;
 	default:
 		ms_warning("unexpected proto, using datagram");
@@ -357,7 +368,7 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 #ifdef HAVE_EXOSIP_GET_SOCKET
 	ms_message("Exosip has socket number %i",eXosip_get_socket(proto));
 #endif
-	eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE, &ctx->keepalive_period);
+	
 	ctx->running=TRUE;
 	return err;
 }
@@ -385,6 +396,10 @@ void sal_use_one_matching_codec_policy(Sal *ctx, bool_t one_matching_codec){
 
 MSList *sal_get_pending_auths(Sal *sal){
 	return ms_list_copy(sal->pending_auths);
+}
+
+void sal_use_double_registrations(Sal *ctx, bool_t enabled){
+	ctx->double_reg=enabled;
 }
 
 static int extract_received_rport(osip_message_t *msg, const char **received, int *rportval){
@@ -455,6 +470,8 @@ static void sdp_process(SalOp *h){
 		int i;
 		offer_answer_initiate_incoming(h->base.local_media,h->base.remote_media,h->result,h->base.root->one_matching_codec);
 		h->sdp_answer=media_description_to_sdp(h->result);
+		/*once we have generated the SDP answer, we modify the result description for processing by the upper layer.
+		 It should contains media parameters constraint from the remote offer, not our response*/
 		strcpy(h->result->addr,h->base.remote_media->addr);
 		h->result->bandwidth=h->base.remote_media->bandwidth;
 		for(i=0;i<h->result->nstreams;++i){
@@ -637,6 +654,7 @@ int sal_ping(SalOp *op, const char *from, const char *to){
 	
 	sal_op_set_from(op,from);
 	sal_op_set_to(op,to);
+	/*bug here: eXosip2 does not honor the route argument*/
 	eXosip_options_build_request (&options, sal_op_get_to(op),
 			sal_op_get_from(op),sal_op_get_route(op));
 	if (options){
@@ -732,38 +750,59 @@ int sal_call_send_dtmf(SalOp *h, char dtmf){
 	return 0;
 }
 
+static void push_auth_to_exosip(const SalAuthInfo *info){
+	const char *userid;
+	if (info->userid==NULL || info->userid[0]=='\0') userid=info->username;
+	else userid=info->userid;
+	ms_message("Authentication info for username [%s], id[%s], realm [%s] added to eXosip", info->username,userid, info->realm);
+	eXosip_add_authentication_info (info->username,userid,
+                                  info->password, NULL,info->realm);
+}
+/*
+ * Just for symmetry ;-)
+ */
+static void pop_auth_from_exosip() {
+	eXosip_clear_authentication_info();
+}
+
 int sal_call_terminate(SalOp *h){
 	int err;
+	if (h->auth_info) push_auth_to_exosip(h->auth_info);
 	eXosip_lock();
 	err=eXosip_call_terminate(h->cid,h->did);
 	eXosip_unlock();
+	pop_auth_from_exosip();
 	if (err!=0){
 		ms_warning("Exosip could not terminate the call: cid=%i did=%i", h->cid,h->did);
 	}
-	sal_remove_call(h->base.root,h);
-	h->cid=-1;
 	return 0;
 }
 
 void sal_op_authenticate(SalOp *h, const SalAuthInfo *info){
 	if (h->pending_auth){
-		const char *userid;
-		if (info->userid==NULL || info->userid[0]=='\0') userid=info->username;
-		else userid=info->userid;
-		ms_message("Authentication info for %s %s added to eXosip", info->username,info->realm);
-		eXosip_add_authentication_info (info->username,userid,
-                                      info->password, NULL,info->realm);
+		push_auth_to_exosip(info);
 		eXosip_lock();
 		eXosip_default_action(h->pending_auth);
 		eXosip_unlock();
 		ms_message("eXosip_default_action() done");
-		eXosip_clear_authentication_info();
+		pop_auth_from_exosip();
 		eXosip_event_free(h->pending_auth);
 		sal_remove_pending_auth(sal_op_get_sal(h),h);
 		h->pending_auth=NULL;
+		if (h->auth_info) sal_auth_info_delete(h->auth_info); /*if already exist*/
+		h->auth_info=sal_auth_info_clone(info); /*store auth info for subsequent request*/
 	}
 }
+void sal_op_cancel_authentication(SalOp *h) {
+	if (h->rid >0) {
+		sal_op_get_sal(h)->callbacks.register_failure(h,SalErrorFailure, SalReasonForbidden,_("Authentication failure"));
+	} else if (h->cid >0) {
+		sal_op_get_sal(h)->callbacks.call_failure(h,SalErrorFailure, SalReasonForbidden,_("Authentication failure"),0);
+	} else {
+		ms_warning("Auth failure not handled");
+	}
 
+}
 static void set_network_origin(SalOp *op, osip_message_t *req){
 	const char *received=NULL;
 	int rport=5060;
@@ -814,6 +853,9 @@ static SalOp *find_op(Sal *sal, eXosip_event_t *ev){
 	}
 	if (ev->sid>0){
 		return sal_find_out_subscribe(sal,ev->sid);
+	}
+	if (ev->nid>0){
+		return sal_find_in_subscribe(sal,ev->nid);
 	}
 	if (ev->response) return sal_find_other(sal,ev->response);
 	return NULL;
@@ -1033,8 +1075,6 @@ static void call_terminated(Sal *sal, eXosip_event_t *ev){
 	if (ev->request){
 		osip_from_to_str(ev->request->from,&from);
 	}
-	sal_remove_call(sal,op);
-	op->cid=-1;
 	sal->callbacks.call_terminated(op,from!=NULL ? from : sal_op_get_from(op));
 	if (from) osip_free(from);
 }
@@ -1045,9 +1085,10 @@ static void call_released(Sal *sal, eXosip_event_t *ev){
 		ms_warning("No op associated to this call_released()");
 		return;
 	}
-	op->cid=-1;
-	if (op->did==-1) 
+	if (op->did==-1) {
 		sal->callbacks.call_failure(op,SalErrorNoResponse,SalReasonUnknown,NULL, 487);
+	}
+	sal->callbacks.call_released(op);
 }
 
 static int get_auth_data_from_response(osip_message_t *resp, const char **realm, const char **username){
@@ -1216,6 +1257,33 @@ static bool_t call_failure(Sal *sal, eXosip_event_t *ev){
 	return TRUE;
 }
 
+/* Request remote side to send us VFU */
+void sal_call_send_vfu_request(SalOp *h){
+	osip_message_t *msg=NULL;
+	char info_body[] =
+			"<?xml version=\"1.0\" encoding=\"utf-8\" ?>"
+			 "<media_control>"
+			 "  <vc_primitive>"
+			 "    <to_encoder>"
+			 "      <picture_fast_update></picture_fast_update>"
+			 "    </to_encoder>"
+			 "  </vc_primitive>"
+			 "</media_control>";
+
+	char clen[10];
+
+	eXosip_lock();
+	eXosip_call_build_info(h->did,&msg);
+	if (msg){
+		osip_message_set_body(msg,info_body,strlen(info_body));
+		osip_message_set_content_type(msg,"application/media_control+xml");
+		snprintf(clen,sizeof(clen),"%lu",(unsigned long)strlen(info_body));
+		osip_message_set_content_length(msg,clen);
+		eXosip_call_send_request(h->did,msg);
+		ms_message("Sending VFU request !");
+	}
+	eXosip_unlock();
+}
 
 static void process_media_control_xml(Sal *sal, eXosip_event_t *ev){
 	SalOp *op=find_op(sal,ev);
@@ -1505,6 +1573,9 @@ static bool_t register_again_with_updated_contact(SalOp *op, osip_message_t *ori
 	char *tmp;
 	char port[20];
 	SalAddress *addr;
+	Sal *sal=op->base.root;
+
+	if (sal->double_reg==FALSE) return FALSE;
 	
 	if (extract_received_rport(last_answer,&received,&rport)==-1) return FALSE;
 	osip_message_get_contact(orig_request,0,&ctt);
@@ -1681,7 +1752,7 @@ static bool_t process_event(Sal *sal, eXosip_event_t *ev){
 			call_message_new(sal,ev);
 			break;
 		case EXOSIP_CALL_MESSAGE_REQUESTFAILURE:
-			if (ev->did<0 && ev->response &&
+			if (ev->response &&
 				(ev->response->status_code==407 || ev->response->status_code==401)){
 				 return process_authentication(sal,ev);
 			}
@@ -1736,6 +1807,7 @@ static bool_t process_event(Sal *sal, eXosip_event_t *ev){
 			other_request_reply(sal,ev);
 			break;
 		case EXOSIP_MESSAGE_REQUESTFAILURE:
+		case EXOSIP_NOTIFICATION_REQUESTFAILURE:
 			if (ev->response) {
 				switch (ev->response->status_code) {
 					case 407:
@@ -1934,6 +2006,9 @@ void sal_set_keepalive_period(Sal *ctx,unsigned int value) {
 	ctx->keepalive_period=value;
 	eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE, &value);
 }
+unsigned int sal_get_keepalive_period(Sal *ctx) {
+	return ctx->keepalive_period;
+}
 
 const char * sal_address_get_port(const SalAddress *addr) {
 	const osip_from_t *u=(const osip_from_t*)addr;
@@ -1949,47 +2024,18 @@ int sal_address_get_port_int(const SalAddress *uri) {
 	}
 }
 
-/*
- * Send a re-Invite used to hold the current call
-*/
-int sal_call_hold(SalOp *h, bool_t holdon)
-{
-	int err=0;
-
-	osip_message_t *reinvite=NULL;
-	if(eXosip_call_build_request(h->did,"INVITE",&reinvite) != OSIP_SUCCESS || reinvite==NULL)
-		return -1;
-	osip_message_set_subject(reinvite,holdon ? "Phone call hold" : "Phone call resume" );	
-	osip_message_set_allow(reinvite, "INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, NOTIFY, MESSAGE, SUBSCRIBE, INFO");
-	if (h->base.root->session_expires!=0){
-		osip_message_set_header(reinvite, "Session-expires", "200");
-		osip_message_set_supported(reinvite, "timer");
-	}
-	//add something to say that the distant sip phone will be in sendonly/sendrecv mode
-	if (h->base.local_media){
-		h->sdp_offering=TRUE;
-		sal_media_description_set_dir(h->base.local_media, holdon ? SalStreamSendOnly : SalStreamSendRecv);
-		set_sdp_from_desc(reinvite,h->base.local_media);
-	}else h->sdp_offering=FALSE;
-	eXosip_lock();
-	err = eXosip_call_send_request(h->did, reinvite);
-	eXosip_unlock();
-	
-	return err;
-}
-
 /* sends a reinvite. Local media description may have changed by application since call establishment*/
-int sal_call_update(SalOp *h){
+int sal_call_update(SalOp *h, const char *subject){
 	int err=0;
 	osip_message_t *reinvite=NULL;
 
 	eXosip_lock();
-	if(eXosip_call_build_request(h->did,"INVITE",&reinvite) != OSIP_SUCCESS || reinvite==NULL){
+	if(eXosip_call_build_request(h->did,"INVITE",&reinvite) != 0 || reinvite==NULL){
 		eXosip_unlock();
 		return -1;
 	}
 	eXosip_unlock();
-	osip_message_set_subject(reinvite,osip_strdup("Phone call parameters updated"));
+	osip_message_set_subject(reinvite,subject);
 	osip_message_set_allow(reinvite, "INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, NOTIFY, MESSAGE, SUBSCRIBE, INFO");
 	if (h->base.root->session_expires!=0){
 		osip_message_set_header(reinvite, "Session-expires", "200");

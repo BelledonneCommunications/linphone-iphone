@@ -689,6 +689,7 @@ static void linphone_gtk_update_call_buttons(LinphoneCall *call){
 	bool_t start_active=TRUE;
 	bool_t stop_active=FALSE;
 	bool_t add_call=FALSE;
+	int call_list_size=ms_list_size(calls);
 	
 	if (calls==NULL){
 		start_active=TRUE;
@@ -699,7 +700,7 @@ static void linphone_gtk_update_call_buttons(LinphoneCall *call){
 			start_active=TRUE;
 			add_call=TRUE;
 		}else if (call!=NULL && linphone_call_get_state(call)==LinphoneCallIncomingReceived && all_other_calls_paused(call,calls)){
-			if (ms_list_size(calls)>1){
+			if (call_list_size>1){
 				start_active=TRUE;
 				add_call=TRUE;
 			}else{
@@ -724,6 +725,7 @@ static void linphone_gtk_update_call_buttons(LinphoneCall *call){
 				GTK_BUTTON(linphone_gtk_get_widget(linphone_gtk_get_main_window(),"main_mute")),
 			FALSE);
 	}
+	linphone_gtk_enable_transfer_button(lc,call_list_size>1);
 	update_video_title();
 }
 
@@ -1444,6 +1446,7 @@ int main(int argc, char *argv[]){
 	
 	settings=gtk_settings_get_default();
 	g_type_class_unref (g_type_class_ref (GTK_TYPE_IMAGE_MENU_ITEM));
+	g_type_class_unref (g_type_class_ref (GTK_TYPE_BUTTON));
 	g_object_set(settings, "gtk-menu-images", TRUE, NULL);
 	g_object_set(settings, "gtk-button-images", TRUE, NULL);
 #ifdef WIN32

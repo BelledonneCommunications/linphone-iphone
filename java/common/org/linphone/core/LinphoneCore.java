@@ -25,11 +25,12 @@ import java.util.Vector;
  * Linphone core main object created by method {@link LinphoneCoreFactory#createLinphoneCore(LinphoneCoreListener, String, String, Object)}.	
  *
  */
+@SuppressWarnings("unchecked")
 public interface LinphoneCore {
 	/**
 	 * linphone core states
 	 */
-	static public class 	GlobalState {
+	static public class GlobalState {
 		static private Vector values = new Vector();
 		/**
 		 * Off
@@ -72,28 +73,28 @@ public interface LinphoneCore {
 	 * Describes proxy registration states.
 	 *
 	 */
-	static public class 	RegistrationState {
-		static private Vector values = new Vector();
+	static public class RegistrationState {
+		private static Vector values = new Vector();
 		/**
 		 * None
 		 */
-		static public RegistrationState RegistrationNone = new RegistrationState(0,"RegistrationNone");       
+		public static RegistrationState RegistrationNone = new RegistrationState(0,"RegistrationNone");       
 		/**
 		 * In Progress
 		 */
-		static public RegistrationState RegistrationProgress  = new RegistrationState(1,"RegistrationProgress");
+		public static RegistrationState RegistrationProgress  = new RegistrationState(1,"RegistrationProgress");
 		/**
 		 * Ok
 		 */
-		static public RegistrationState RegistrationOk = new RegistrationState(2,"RegistrationOk");
+		public static RegistrationState RegistrationOk = new RegistrationState(2,"RegistrationOk");
 		/**
 		 * Cleared
 		 */
-		static public RegistrationState RegistrationCleared = new RegistrationState(3,"RegistrationCleared");
+		public static RegistrationState RegistrationCleared = new RegistrationState(3,"RegistrationCleared");
 		/**
 		 * Failed
 		 */
-		static public RegistrationState RegistrationFailed = new RegistrationState(4,"RegistrationFailed");
+		public static RegistrationState RegistrationFailed = new RegistrationState(4,"RegistrationFailed");
 		private final int mValue;
 		private final String mStringValue;
 
@@ -118,7 +119,7 @@ public interface LinphoneCore {
 	 * Describes firewall policy.
 	 *
 	 */
-	static public class 	FirewallPolicy {
+	static public class FirewallPolicy {
 		static private Vector values = new Vector();
 		/**
 		 * No firewall is assumed.
@@ -177,6 +178,50 @@ public interface LinphoneCore {
 		public String toString() {
 			return mStringValue;
 		}		
+	}
+	/**
+	 * 	EC Calibrator Status
+.
+	 *
+	 */
+	static public class EcCalibratorStatus {
+
+		static private Vector values = new Vector();
+		/**
+		 * Calibration in progress
+		 */
+		static public EcCalibratorStatus InProgress = new EcCalibratorStatus(0,"InProgress");       
+		/**
+		 * Calibration done
+		 */
+		static public EcCalibratorStatus Done  = new EcCalibratorStatus(1,"Done");
+		/**
+		 * Calibration in progress
+		 */
+		static public EcCalibratorStatus Failed = new EcCalibratorStatus(2,"Failed");
+
+		private final int mValue;
+		private final String mStringValue;
+
+		private EcCalibratorStatus(int value,String stringValue) {
+			mValue = value;
+			values.addElement(this);
+			mStringValue=stringValue;
+		}
+		public static EcCalibratorStatus fromInt(int value) {
+
+			for (int i=0; i<values.size();i++) {
+				EcCalibratorStatus status = (EcCalibratorStatus) values.elementAt(i);
+				if (status.mValue == value) return status;
+			}
+			throw new RuntimeException("status not found ["+value+"]");
+		}
+		public String toString() {
+			return mStringValue;
+		}
+		public int value(){
+			return mValue;
+		}
 	}
 	/**
 	 * clear all added proxy configs
@@ -298,12 +343,12 @@ public interface LinphoneCore {
 	 * @param network state  
 	 *
 	 */
-	public void setNetworkStateReachable(boolean isReachable);
+	public void setNetworkReachable(boolean isReachable);
 	/**
 	 * 
 	 * @return if false, there is no network connection.
 	 */
-	public boolean getNetworkStateReachable();
+	public boolean isNetworkReachable();
 	/**
 	 * destroy linphone core and free all underlying resources
 	 */
@@ -492,4 +537,22 @@ public interface LinphoneCore {
 	public void setPreferredVideoSize(VideoSize vSize);
 	
 	public VideoSize getPreferredVideoSize();
+	
+	public PayloadType[] listVideoCodecs();
+	/**
+	 * enable signaling keep alive. small udp packet sent periodically to keep udp NAT association
+	 */
+	void enableKeepAlive(boolean enable);
+	/**
+	 * get keep elive mode
+	 * @return true if enable
+ 	 */
+	boolean isKeepAliveEnabled();
+	/**
+	 * Start an echo calibration of the sound devices, in order to find adequate settings for the echo canceler automatically.
+	 * status is notified to {@link LinphoneCoreListener#ecCalibrationStatus(EcCalibratorStatus, int, Object)}
+	 * @param User object
+	 * @throws LinphoneCoreException if operation is still in progress;
+	**/
+	void startEchoCalibration(Object data) throws LinphoneCoreException;
 }

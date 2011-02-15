@@ -41,6 +41,7 @@ struct Sal{
 	int keepalive_period;
 	void *up;
 	bool_t one_matching_codec;
+	bool_t double_reg;
 };
 
 struct SalOp{
@@ -64,6 +65,7 @@ struct SalOp{
 	bool_t reinvite;
 	bool_t masquerade_via;
 	bool_t auto_answer_asked;
+	const SalAuthInfo *auth_info;
 };
 
 void sal_remove_out_subscribe(Sal *sal, SalOp *op);
@@ -77,6 +79,7 @@ void sal_exosip_subscription_closed(Sal *sal,eXosip_event_t *ev);
 
 void sal_exosip_in_subscription_closed(Sal *sal, eXosip_event_t *ev);
 SalOp * sal_find_out_subscribe(Sal *sal, int sid);
+SalOp * sal_find_in_subscribe(Sal *sal, int nid);
 void sal_exosip_fix_route(SalOp *op);
 
 void _osip_list_set_empty(osip_list_t *l, void (*freefunc)(void*));

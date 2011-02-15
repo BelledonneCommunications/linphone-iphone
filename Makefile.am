@@ -48,16 +48,16 @@ SDK_EXCLUDED= \
 	$(OPTIONAL_SOUNDS)
 
 
-GTK_PREFIX=/usr
+GTK_PREFIX=/
 GTK_THEME=Outcrop
-GTK_FILELIST=gtk+-2.18.5.filelist
+GTK_FILELIST=gtk+-2.22.1.filelist
 GTK_FILELIST_PATH=$(shell cd $(top_srcdir) && pwd)/$(GTK_FILELIST)
 LINPHONEDEPS_FILELIST=linphone-deps.filelist
 WINBINDIST_FILES=$(shell cat $(top_srcdir)/$(LINPHONEDEPS_FILELIST))
 ISS_SCRIPT=linphone.iss
 ISS_SCRIPT_PATH=$(shell cd $(top_srcdir) && pwd)/$(ISS_SCRIPT)
 #path to Inno Setup 5 compiler
-ISCC=/c/Program\ Files/Inno\ Setup\ 5/ISCC.exe
+ISCC=ISCC.exe
 PACKAGE_WIN32_FILELIST=$(PACKAGE)-win32.filelist
 
 EXTRA_DIST = config.rpath  BUGS linphone.kdevelop  \
@@ -109,7 +109,11 @@ other-cherrypick:
 			cp $$file $(INSTALLDIR_WITH_PREFIX)/$$file ;\
 		fi \
 	done
-	cp /mingw/bin/libgcc_s*.dll $(INSTALLDIR_WITH_PREFIX)/bin/.
+	cp /mingw/bin/libgcc_s*.dll \
+		/mingw/bin/libstdc++-6.dll \
+		/mingw/bin/libintl-8.dll \
+		/mingw/bin/libiconv-2.dll \
+		$(INSTALLDIR_WITH_PREFIX)/bin/.
 
 
 gtk-cherrypick:

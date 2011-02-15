@@ -25,29 +25,27 @@ public final class VideoSize {
 	public static final int QCIF = 0;
 	public static final int CIF = 1;
 	public static final int HVGA = 2;
+	public static final int QVGA = 3;
 
-	private int width;
-	public int getWidth() {return width;}
-	public void setWidth(int width) {this.width = width;}
-
-	private int height;
-	public int getHeight() {return height;}
-	public void setHeight(int height) {this.height = height;}
+	public int width;
+	public int height;
 
 	public VideoSize() {}
-	private VideoSize(int width, int height) {
+	public VideoSize(int width, int height) {
 		this.width = width;
 		this.height = height;
 	}
 
-	public static final VideoSize createStandard(int code) {
+	public static final VideoSize createStandard(int code, boolean inverted) {
 		switch (code) {
 		case QCIF:
-			return new VideoSize(176, 144);
+			return inverted? new VideoSize(144, 176) : new VideoSize(176, 144);
 		case CIF:
-			return new VideoSize(352, 288);
+			return inverted? new VideoSize(288, 352) : new VideoSize(352, 288);
 		case HVGA:
-			return new VideoSize(320, 480);
+			return inverted? new VideoSize(320,480) : new VideoSize(480, 320);
+		case QVGA:
+			return inverted? new VideoSize(240, 320) : new VideoSize(320, 240);
 		default:
 			return new VideoSize(); // Invalid one
 		}
@@ -80,5 +78,15 @@ public final class VideoSize {
 		return true;
 	}
 	
+	@Override
+	public String toString() {
+		return "width = "+width + " height = " + height;
+	}
+	public boolean isPortrait() {
+		return height >= width;
+	}
+	public VideoSize createInverted() {
+		return new VideoSize(height, width);
+	}
 	
 }

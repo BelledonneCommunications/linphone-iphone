@@ -34,6 +34,7 @@
 #endif /*_WIN32_WCE*/
 #include <limits.h>
 #include <ctype.h>
+#include <stdlib.h>
 
 #include <linphonecore.h>
 
@@ -79,7 +80,6 @@
 
 #ifdef HAVE_X11_XLIB_H
 #include <X11/Xlib.h>
-#include <SDL/SDL_syswm.h>
 #endif
 
 /***************************************************************************
@@ -162,6 +162,7 @@ static char *logfile_name = NULL;
 static char configfile_name[PATH_MAX];
 static const char *factory_configfile_name=NULL;
 static char *sipAddr = NULL; /* for autocall */
+static int window_id = 0; /* 0=standalone window, or window id for embedding video */
 #if !defined(_WIN32_WCE)
 static ortp_pipe_t client_sock=ORTP_PIPE_INVALID;
 #endif /*_WIN32_WCE*/
@@ -391,7 +392,7 @@ static void
 linphonec_text_received(LinphoneCore *lc, LinphoneChatRoom *cr,
 		const LinphoneAddress *from, const char *msg)
 {
-	printf("%s: %s\n", linphone_address_as_string(from), msg);
+	linphonec_out("Message received from %s: %s\n", linphone_address_as_string(from), msg);
 	// TODO: provide mechanism for answering.. ('say' command?)
 }
 
@@ -716,6 +717,12 @@ linphonec_init(int argc, char **argv)
 	 */
 	linphonec=linphone_core_new (&linphonec_vtable, configfile_name, factory_configfile_name, NULL);
 	linphone_core_enable_video(linphonec,vcap_enabled,display_enabled);
+	if (display_enabled && window_id != 0) 
+	{
+		printf ("Setting window_id: 0x%x\n", window_id);
+		linphone_core_set_native_video_window_id(linphonec,window_id);
+	}
+
 	linphone_core_enable_video_preview(linphonec,preview_enabled);
 	if (!(vcap_enabled || display_enabled)) printf("Warning: video is disabled in linphonec, use -V or -C or -D to enable.\n");
 #ifdef HAVE_READLINE
@@ -878,6 +885,7 @@ usage: linphonec [-c file] [-s sipaddr] [-a] [-V] [-d level ] [-l logfile]\n\
   -C                   enable video capture only (disabled by default)\n\
   -D                   enable video display only (disabled by default)\n\
   -S                   show general state messages (disabled by default)\n\
+  --wid  windowid      force embedding of video window into provided windowid (disabled by default)\n\
   -v or --version      display version and exits.\n");
 
   	exit(exit_status);
@@ -1225,6 +1233,14 @@ linphonec_parse_cmdline(int argc, char **argv)
 		else if (strncmp ("--pipe", argv[arg_num], 6) == 0)
 		{
 			unix_socket=1;
+		}
+		else if (strncmp ("--wid", argv[arg_num], 5) == 0)
+		{
+			arg_num++;
+			if (arg_num < argc) {
+				char *tmp;
+				window_id = strtol( argv[arg_num], &tmp, 0 );
+			}
 		}
 		else if (old_arg_num == arg_num)
 		{

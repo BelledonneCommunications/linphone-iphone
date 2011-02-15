@@ -39,6 +39,7 @@ SalOp * sal_find_out_subscribe(Sal *sal, int sid){
 		op=(SalOp*)elem->data;
 		if (op->sid==sid) return op;
 	}
+	ms_message("No op for sid %i",sid);
 	return NULL;
 }
 
@@ -50,7 +51,7 @@ void sal_remove_out_subscribe(Sal *sal, SalOp *op){
 	sal->out_subscribes=ms_list_remove(sal->out_subscribes,op);
 }
 
-static SalOp * sal_find_in_subscribe(Sal *sal, int nid){
+SalOp * sal_find_in_subscribe(Sal *sal, int nid){
 	const MSList *elem;
 	SalOp *op;
 	for(elem=sal->in_subscribes;elem!=NULL;elem=elem->next){
@@ -569,6 +570,7 @@ int sal_notify_presence(SalOp *op, SalPresenceStatus status, const char *status_
 	if (msg!=NULL){
 		const char *identity=sal_op_get_contact(op);
 		if (identity==NULL) identity=sal_op_get_to(op);
+		_osip_list_set_empty(&msg->contacts,(void (*)(void*))osip_contact_free);
 		osip_message_set_contact(msg,identity);
 		add_presence_body(msg,status);
 		eXosip_insubscription_send_request(op->did,msg);

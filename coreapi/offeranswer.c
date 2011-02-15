@@ -109,7 +109,7 @@ static MSList *match_payloads(const MSList *local, const MSList *remote, bool_t 
 
 
 
-static SalStreamDir compute_dir(SalStreamDir local, SalStreamDir answered){
+static SalStreamDir compute_dir_outgoing(SalStreamDir local, SalStreamDir answered){
 	SalStreamDir res=local;
 	if (local==SalStreamSendRecv){
 		if (answered==SalStreamRecvOnly){
@@ -124,6 +124,30 @@ static SalStreamDir compute_dir(SalStreamDir local, SalStreamDir answered){
 	return res;
 }
 
+static SalStreamDir compute_dir_incoming(SalStreamDir local, SalStreamDir offered){
+	SalStreamDir res=SalStreamSendRecv;
+	if (local==SalStreamSendRecv){
+		if (offered==SalStreamSendOnly)
+			res=SalStreamRecvOnly;
+		else if (offered==SalStreamRecvOnly)
+			res=SalStreamSendOnly;
+		else if (offered==SalStreamInactive)
+			res=SalStreamInactive;
+		else
+			res=SalStreamSendRecv;
+	}else if (local==SalStreamSendOnly){
+		if (offered==SalStreamRecvOnly || offered==SalStreamSendRecv)
+			res=SalStreamSendOnly;
+		else res=SalStreamInactive;
+	}else if (local==SalStreamRecvOnly){
+		if (offered==SalStreamSendOnly || offered==SalStreamSendRecv)
+			res=SalStreamRecvOnly;
+		else
+			res=SalStreamInactive;
+	}else res=SalStreamInactive;
+	return res;
+}
+
 static void initiate_outgoing(const SalStreamDescription *local_offer,
     					const SalStreamDescription *remote_answer,
     					SalStreamDescription *result){
@@ -131,7 +155,7 @@ static void initiate_outgoing(const SalStreamDescription *local_offer,
 		result->payloads=match_payloads(local_offer->payloads,remote_answer->payloads,TRUE,FALSE);
 	result->proto=local_offer->proto;
 	result->type=local_offer->type;
-	result->dir=compute_dir(local_offer->dir,remote_answer->dir);
+	result->dir=compute_dir_outgoing(local_offer->dir,remote_answer->dir);
 
 	if (result->payloads && !only_telephone_event(result->payloads)){
 		strcpy(result->addr,remote_answer->addr);
@@ -150,18 +174,12 @@ static void initiate_incoming(const SalStreamDescription *local_cap,
 	result->payloads=match_payloads(local_cap->payloads,remote_offer->payloads, FALSE, one_matching_codec);
 	result->proto=local_cap->proto;
 	result->type=local_cap->type;
-	if (remote_offer->dir==SalStreamSendOnly)
-		result->dir=SalStreamRecvOnly;
-	else if (remote_offer->dir==SalStreamRecvOnly){
-		result->dir=SalStreamSendOnly;
-	}else if (remote_offer->dir==SalStreamInactive){
-		result->dir=SalStreamInactive;
-	}else result->dir=SalStreamSendRecv;
+	result->dir=compute_dir_incoming(local_cap->dir,remote_offer->dir);
 	if (result->payloads && !only_telephone_event(result->payloads)){
 		strcpy(result->addr,local_cap->addr);
 		result->port=local_cap->port;
 		result->bandwidth=local_cap->bandwidth;
-		result->ptime=local_cap->ptime;		
+		result->ptime=local_cap->ptime;	
 	}else{
 		result->port=0;
 	}
@@ -187,6 +205,7 @@ int offer_answer_initiate_outgoing(const SalMediaDescription *local_offer,
 		else ms_warning("No matching stream for %i",i);
     }
 	result->nstreams=j;
+	result->bandwidth=remote_answer->bandwidth;
 	strcpy(result->addr,remote_answer->addr);
 	return 0;
 }
@@ -199,21 +218,30 @@ int offer_answer_initiate_outgoing(const SalMediaDescription *local_offer,
 int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities,
 						const SalMediaDescription *remote_offer,
     					SalMediaDescription *result, bool_t one_matching_codec){
-    int i,j;
+    int i;
 	const SalStreamDescription *ls,*rs;
 							
-    for(i=0,j=0;i<remote_offer->nstreams;++i){
+    for(i=0;i<remote_offer->nstreams;++i){
 		rs=&remote_offer->streams[i];
 		ms_message("Processing for stream %i",i);
 		ls=sal_media_description_find_stream((SalMediaDescription*)local_capabilities,rs->proto,rs->type);
 		if (ls){
-    		initiate_incoming(ls,rs,&result->streams[j],one_matching_codec);
-			++j;
+    		initiate_incoming(ls,rs,&result->streams[i],one_matching_codec);
+		} else {
+			/* create an inactive stream for the answer, as there where no matching stream a local capability */
+			result->streams[i].dir=SalStreamInactive;
+			result->streams[i].port=0;
+			result->streams[i].type=rs->type;
+			if (rs->type==SalOther){
+				strncpy(result->streams[i].typeother,rs->typeother,sizeof(rs->typeother)-1);
+			}
 		}
     }
-	result->nstreams=j;
+	result->nstreams=i;
 	strcpy(result->username, local_capabilities->username);
 	strcpy(result->addr,local_capabilities->addr);
+	result->bandwidth=local_capabilities->bandwidth;
+	result->session_ver=local_capabilities->session_ver;
+	result->session_id=local_capabilities->session_id;
 	return 0;
 }
-    					

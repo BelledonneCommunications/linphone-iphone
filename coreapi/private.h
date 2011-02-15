@@ -26,6 +26,7 @@
 #define _PRIVATE_H
 
 #include "linphonecore.h"
+#include "linphonecore_utils.h"
 #include "sal.h"
 
 #ifdef HAVE_CONFIG_H
@@ -88,13 +89,16 @@ struct _LinphoneCall
 	struct _VideoStream *videostream;
 	char *refer_to;
 	LinphoneCallParams params;
+	LinphoneCallParams current_params;
 	int up_bw; /*upload bandwidth setting at the time the call is started. Used to detect if it changes during a call */
+	int audio_bw;	/*upload bandwidth used by audio */
 	bool_t refer_pending;
 	bool_t media_pending;
 	bool_t audio_muted;
 	bool_t camera_active;
 	bool_t all_muted; /*this flag is set during early medias*/
 	bool_t playing_ringbacktone;
+	bool_t owns_call_log;
 };
 
 
@@ -146,6 +150,11 @@ static inline bool_t bandwidth_is_greater(int bw1, int bw2){
 	else return bw1>=bw2;
 }
 
+static inline int get_video_bandwidth(int total, int audio){
+	if (total<=0) return 0;
+	return total-audio-10;
+}
+
 static inline void set_string(char **dest, const char *src){
 	if (*dest){
 		ms_free(*dest);
@@ -170,7 +179,7 @@ void linphone_subscription_closed(LinphoneCore *lc, SalOp *op);
 MSList *linphone_find_friend(MSList *fl, const LinphoneAddress *fri, LinphoneFriend **lf);
 
 void linphone_core_update_allocated_audio_bandwidth(LinphoneCore *lc);
-void linphone_core_update_allocated_audio_bandwidth_in_call(LinphoneCore *lc, const PayloadType *pt);
+void linphone_core_update_allocated_audio_bandwidth_in_call(LinphoneCall *call, const PayloadType *pt);
 void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call);
 
 void linphone_core_send_initial_subscribes(LinphoneCore *lc);
@@ -411,16 +420,13 @@ struct _LinphoneCore
 	char *play_file;
 	char *rec_file;
 	time_t prevtime;
-	int dw_audio_bw;
-	int up_audio_bw;
-	int dw_video_bw;
-	int up_video_bw;
 	int audio_bw;
 	LinphoneWaitingCallback wait_cb;
 	void *wait_ctx;
 	unsigned long video_window_id;
 	unsigned long preview_window_id;
 	time_t netup_time; /*time when network went reachable */
+	struct _EcCalibrator *ecc;
 	bool_t use_files;
 	bool_t apply_nat_settings;
 	bool_t initial_subscribes_sent;
@@ -429,6 +435,7 @@ struct _LinphoneCore
 	bool_t auto_net_state_mon;
 	bool_t network_reachable;
 	bool_t use_preview_window;
+	bool_t ringstream_autorelease;
 };
 
 bool_t linphone_core_can_we_add_call(LinphoneCore *lc);
@@ -440,6 +447,7 @@ int linphone_core_get_calls_nb(const LinphoneCore *lc);
 void linphone_core_set_state(LinphoneCore *lc, LinphoneGlobalState gstate, const char *message);
 
 SalMediaDescription *create_local_media_description(LinphoneCore *lc, LinphoneCall *call);
+void update_local_media_description(LinphoneCore *lc, LinphoneCall *call, SalMediaDescription **md);
 
 void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMediaDescription *new_md);
 
@@ -447,6 +455,27 @@ bool_t linphone_core_is_payload_type_usable_for_bandwidth(LinphoneCore *lc, Payl
 
 #define linphone_core_ready(lc) ((lc)->state!=LinphoneGlobalStartup)
 void _linphone_core_configure_resolver();
+
+struct _EcCalibrator{
+	ms_thread_t thread;
+	MSSndCard *play_card,*capt_card;
+	MSFilter *sndread,*det,*rec;
+	MSFilter *play, *gen, *sndwrite,*resampler;
+	MSTicker *ticker;
+	LinphoneEcCalibrationCallback cb;
+	void *cb_data;
+	int recv_count;
+	int sent_count;
+	int64_t acc;
+	int delay;
+	LinphoneEcCalibratorStatus status;
+};
+
+typedef struct _EcCalibrator EcCalibrator;
+
+LinphoneEcCalibratorStatus ec_calibrator_get_status(EcCalibrator *ecc);
+
+void ec_calibrator_destroy(EcCalibrator *ecc);
 
 #define HOLD_OFF	(0)
 #define HOLD_ON		(1)

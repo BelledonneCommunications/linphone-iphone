@@ -8,7 +8,7 @@ LINPHONE_RINGS=rings/orig.wav \
 				rings/oldphone-mono-30s.caf \
 				rings/rock.wav \
 				rings/bigben.wav \
-				rings/toy.wav \
+				rings/toy-mono.wav \
 				rings/sweet.wav \
 				rings/synth.wav \
 				rings/tapping.wav

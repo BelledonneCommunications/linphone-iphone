@@ -83,6 +83,7 @@ static int lpc_cmd_acodec(LinphoneCore *lc, char *args);
 static int lpc_cmd_vcodec(LinphoneCore *lc, char *args);
 static int lpc_cmd_codec(int type, LinphoneCore *lc, char *args);
 static int lpc_cmd_echocancellation(LinphoneCore *lc, char *args);
+static int lpc_cmd_echolimiter(LinphoneCore *lc, char *args);
 static int lpc_cmd_pause(LinphoneCore *lc, char *args);
 static int lpc_cmd_resume(LinphoneCore *lc, char *args);
 static int lpc_cmd_mute_mic(LinphoneCore *lc, char *args);
@@ -93,6 +94,7 @@ static int lpc_cmd_camera(LinphoneCore *lc, char *args);
 static int lpc_cmd_video_window(LinphoneCore *lc, char *args);
 static int lpc_cmd_preview_window(LinphoneCore *lc, char *args);
 static int lpc_cmd_snapshot(LinphoneCore *lc, char *args);
+static int lpc_cmd_vfureq(LinphoneCore *lc, char *arg);
 #endif
 static int lpc_cmd_states(LinphoneCore *lc, char *args);
 static int lpc_cmd_identify(LinphoneCore *lc, char *args);
@@ -269,6 +271,10 @@ static LPC_COMMAND advanced_commands[] = {
 	    "'ec on [<delay>] [<tail>] [<framesize>]' : turn EC on with given delay, tail length and framesize\n"
 	    "'ec off' : turn echo cancellation (EC) off\n"
 	    "'ec show' : show EC status" },
+	{ "el", lpc_cmd_echolimiter, "Echo limiter",
+	    "'el on turns on echo limiter (automatic half duplex, for cases where echo canceller cannot work)\n"
+	    "'el off' : turn echo limiter off\n"
+	    "'el show' : show echo limiter status" },
 	{ "nortp-on-audio-mute", lpc_cmd_rtp_no_xmit_on_audio_mute,
 		  "Set the rtp_no_xmit_on_audio_mute configuration parameter",
 		  "   If set to 1 then rtp transmission will be muted when\n"
@@ -293,6 +299,7 @@ static LPC_COMMAND advanced_commands[] = {
 	{ "snapshot", lpc_cmd_snapshot, "Take a snapshot of currently received video stream",
 		"'snapshot <file path>': take a snapshot and records it in jpeg format into the supplied path\n"
 	},
+	{ "vfureq", lpc_cmd_vfureq, "Request the other side to send VFU for the current call"},
 #endif
 	{ "states", lpc_cmd_states, "Show internal states of liblinphone, registrations and calls, according to linphonecore.h definitions",
 		"'states global': shows global state of liblinphone \n"
@@ -1948,10 +1955,18 @@ static int lpc_cmd_status(LinphoneCore *lc, char *args)
 		LinphoneCallState call_state=LinphoneCallIdle;
 		if (call) call_state=linphone_call_get_state(call);
 
- 		switch(call_state){
+		switch(call_state){
 			case LinphoneCallOutgoingInit:
+				linphonec_out("hook=outgoing_init sip:%s\n",linphonec_get_callee());
+			break;
 			case LinphoneCallOutgoingProgress:
-				linphonec_out("hook=dialing\n");
+				linphonec_out("hook=dialing sip:%s\n",linphonec_get_callee());
+			break;
+			case LinphoneCallOutgoingRinging:
+				linphonec_out("hook=ringing sip:%s\n",linphonec_get_callee());
+			break;
+			case LinphoneCallPaused:
+				linphonec_out("hook=paused sip:%s\n",linphonec_get_callee());
 			break;
 			case LinphoneCallIdle:
 				linphonec_out("hook=offhook\n");
@@ -1964,8 +1979,8 @@ static int lpc_cmd_status(LinphoneCore *lc, char *args)
 					      linphone_core_is_mic_muted (lc) ? "yes" : "no",
 					      linphone_core_is_rtp_muted(lc) ? "yes"  : "no");
 				}else{
-					linphonec_out("hook=answered duration=%i\n" ,
-						linphone_core_get_current_call_duration(lc));
+					linphonec_out("hook=answered duration=%i %s\n" ,
+						linphone_core_get_current_call_duration(lc), linphonec_get_caller());
 		 		}
 				break;
 			case LinphoneCallIncomingReceived:
@@ -2202,6 +2217,18 @@ static int lpc_cmd_echocancellation(LinphoneCore *lc, char *args){
     return 1;
 }
 
+static int lpc_cmd_echolimiter(LinphoneCore *lc, char *args){
+	if (args){
+		if (strcmp(args,"on")==0){
+			linphone_core_enable_echo_limiter (lc,TRUE);
+		}else if (strcmp(args,"off")==0){
+			linphone_core_enable_echo_limiter (lc,FALSE);
+		}
+	}
+	linphonec_out("Echo limiter is now %s.\n",linphone_core_echo_limiter_enabled (lc) ? "on":"off");
+	return 1;
+}
+
 static int lpc_cmd_mute_mic(LinphoneCore *lc, char *args)
 {
 	linphone_core_mute_mic(lc, 1);
@@ -2408,12 +2435,21 @@ static int lpc_cmd_snapshot(LinphoneCore *lc, char *args){
 	if (!args) return 0;
 	call=linphone_core_get_current_call(lc);
 	if (call!=NULL){
-		linphone_call_take_video_snapshot (call,args);
-		linphonec_out("Taking video snaphot in file %s\n", args);
+		linphone_call_take_video_snapshot(call,args);
+		linphonec_out("Taking video snapshot in file %s\n", args);
 	}else linphonec_out("There is no active call.\n");
 	return 1;
 }
 
+static int lpc_cmd_vfureq(LinphoneCore *lc, char *arg){
+	LinphoneCall *call;
+	call=linphone_core_get_current_call(lc);
+	if (call!=NULL){
+		linphone_call_send_vfu_request(call);
+		linphonec_out("VFU request sent\n");
+	}else linphonec_out("There is no active call.\n");
+	return 1;
+}
 #endif
 
 static int lpc_cmd_identify(LinphoneCore *lc, char *args){

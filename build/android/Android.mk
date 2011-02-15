@@ -46,13 +46,14 @@ LOCAL_SRC_FILES = \
 	sal_eXosip2_sdp.c \
 	offeranswer.c \
 	callbacks.c \
-	linphonecall.c
+	linphonecall.c \
+	ec-calibrator.c
 
 LOCAL_CFLAGS += \
 	-D_BYTE_ORDER=_LITTLE_ENDIAN \
 	-DORTP_INET6 \
 	-DENABLE_TRACE \
-	-DLINPHONE_VERSION=\"Linphone-3.3.x\" \
+	-DLINPHONE_VERSION=\"3.4.0\" \
 	-DLINPHONE_PLUGINS_DIR=\"\\tmp\" \
 	-DLOG_DOMAIN=\"Linphone\"
 
@@ -72,10 +73,11 @@ LOCAL_C_INCLUDES += \
 
 LOCAL_LDLIBS += -llog -ldl
 
+
+
 LOCAL_STATIC_LIBRARIES := \
 	libmediastreamer2 \
 	libortp \
-	libspeex \
 	libeXosip2 \
 	libosip2 \
 	libgsm
@@ -85,8 +87,13 @@ LOCAL_STATIC_LIBRARIES += \
 	libavcodec \
 	libswscale \
 	libavcore \
-	libavutil
+	libavutil \
+	libmsx264 \
+	libx264
 endif
+
+LOCAL_STATIC_LIBRARIES += libspeex 
+
 
 ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
    LOCAL_CFLAGS += -DHAVE_ILBC=1

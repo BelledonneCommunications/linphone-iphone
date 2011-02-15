@@ -103,6 +103,7 @@ typedef struct SalEndpointCandidate{
 typedef struct SalStreamDescription{
 	SalMediaProto proto;
 	SalStreamType type;
+	char typeother[32];
 	char addr[64];
 	int port;
 	MSList *payloads; //<list of PayloadType
@@ -120,6 +121,8 @@ typedef struct SalMediaDescription{
 	char username[64];
 	int nstreams;
 	int bandwidth;
+	unsigned int session_ver;
+	unsigned int session_id;
 	SalStreamDescription streams[SAL_MEDIA_DESCRIPTION_MAX_STREAMS];
 } SalMediaDescription;
 
@@ -192,6 +195,7 @@ typedef void (*SalOnCallAck)(SalOp *op);
 typedef void (*SalOnCallUpdating)(SalOp *op);/*< Called when a reINVITE is received*/
 typedef void (*SalOnCallTerminated)(SalOp *op, const char *from);
 typedef void (*SalOnCallFailure)(SalOp *op, SalError error, SalReason reason, const char *details, int code);
+typedef void (*SalOnCallReleased)(SalOp *salop);
 typedef void (*SalOnAuthRequested)(SalOp *op, const char *realm, const char *username);
 typedef void (*SalOnAuthSuccess)(SalOp *op, const char *realm, const char *username);
 typedef void (*SalOnRegisterSuccess)(SalOp *op, bool_t registered);
@@ -215,6 +219,7 @@ typedef struct SalCallbacks{
 	SalOnCallUpdating call_updating;
 	SalOnCallTerminated call_terminated;
 	SalOnCallFailure call_failure;
+	SalOnCallReleased call_released;
 	SalOnAuthRequested auth_requested;
 	SalOnAuthSuccess auth_success;
 	SalOnRegisterSuccess register_success;
@@ -238,6 +243,10 @@ typedef struct SalAuthInfo{
 	char *realm;
 }SalAuthInfo;
 
+SalAuthInfo* sal_auth_info_new();
+SalAuthInfo* sal_auth_info_clone(const SalAuthInfo* auth_info);
+void sal_auth_info_delete(const SalAuthInfo* auth_info);
+
 void sal_set_callbacks(Sal *ctx, const SalCallbacks *cbs);
 int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int is_secure);
 int sal_unlisten_ports(Sal *ctx);
@@ -245,7 +254,13 @@ ortp_socket_t sal_get_socket(Sal *ctx);
 void sal_set_user_agent(Sal *ctx, const char *user_agent);
 /*keepalive period in ms*/
 void sal_set_keepalive_period(Sal *ctx,unsigned int value);
+/**
+ * returns keepalive period in ms
+ * 0 desactiaved
+ * */
+unsigned int sal_get_keepalive_period(Sal *ctx);
 void sal_use_session_timers(Sal *ctx, int expires);
+void sal_use_double_registrations(Sal *ctx, bool_t enabled);
 void sal_use_one_matching_codec_policy(Sal *ctx, bool_t one_matching_codec);
 int sal_iterate(Sal *sal);
 MSList * sal_get_pending_auths(Sal *sal);
@@ -261,6 +276,7 @@ void sal_op_set_from(SalOp *op, const char *from);
 void sal_op_set_to(SalOp *op, const char *to);
 void sal_op_release(SalOp *h);
 void sal_op_authenticate(SalOp *h, const SalAuthInfo *info);
+void sal_op_cancel_authentication(SalOp *h);
 void sal_op_set_user_pointer(SalOp *h, void *up);
 int sal_op_get_auth_requested(SalOp *h, const char **realm, const char **username);
 const char *sal_op_get_from(const SalOp *op);
@@ -281,8 +297,7 @@ int sal_call_notify_ringing(SalOp *h, bool_t early_media);
 /*accept an incoming call or, during a call accept a reINVITE*/
 int sal_call_accept(SalOp*h);
 int sal_call_decline(SalOp *h, SalReason reason, const char *redirection /*optional*/);
-int sal_call_hold(SalOp *h, bool_t holdon);
-int sal_call_update(SalOp *h);
+int sal_call_update(SalOp *h, const char *subject);
 SalMediaDescription * sal_call_get_final_media_description(SalOp *h);
 int sal_call_refer(SalOp *h, const char *refer_to);
 int sal_call_refer_with_replaces(SalOp *h, SalOp *other_call_h);
@@ -294,6 +309,7 @@ SalOp *sal_call_get_replaces(SalOp *h);
 int sal_call_send_dtmf(SalOp *h, char dtmf);
 int sal_call_terminate(SalOp *h);
 bool_t sal_call_autoanswer_asked(SalOp *op);
+void sal_call_send_vfu_request(SalOp *h);
 
 /*Registration*/
 int sal_register(SalOp *op, const char *proxy, const char *from, int expires);

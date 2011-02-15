@@ -1,61 +1,57 @@
 Software to install
 *******************
 
-* mingw32, using Automated windows installer (when launched, choose candidate to have lastest binaries)
-* msys, using windows installer too.
+Download lastest mingw-get-inst.exe from http://www.mingw.org
+Run mingw-get-inst.exe. Choose "download lastest catalogues".
+In the feature list, select:
+* C compiler
+* C++ compiler
+* Mingw developer toolkit
+Let the installer fetch and install everything.
 
-run msys as Administrator (right click on the icon, and click 'run as administrator')
+In mingw shell, run
 
-Download zip and unzip (download setup.exe and run) from http://gnuwin32.sourceforge.net
-	- add them to your path in msys terminal:
-		export PATH=$PATH:/c/Program\ Files/GnuWin32/bin
+mingw-get install msys-zip
+mingw-get install msys-unzip
+mingw-get install msys-wget
 
-Download from mingw download page (http://www.mingw.org, click download):
-	- MSYS automake-1.11 
-	- MSYS autoconf-2.63
-	- MSYS libtool>=2.2.7 
-	- MSYS libcrypt*-bin
-	- MSYS perl
-	- MSYS gettext-*bin* and gettext-*dev*
-	===> Uncompress all these packages in /
-	- from gcc-4.4 directory
-		Download: 
-			- gcc-core*-bin
-			- gcc-core-*-dll
-			- gcc-c++*-bin
-			- gcc-c++*-dll
-			- gmp*-dll
-			- mpfr*-dll
-	- w32api*-dev
-	- mingwrt-dev and mingwrt-dll (mingw run time)
-	- gnu binutils 2.19
-	===> Uncompress all these packages in /mingw
+mkdir -p /opt/perl/bin
+cp /bin/perl /opt/perl/bin/.
 
-note: lzma files can be uncompressed using tar --lzma -xvf <file>
+cd ~
+#Download intltool
+wget http://ftp.acc.umu.se/pub/GNOME/binaries/win32/intltool/0.40/intltool_0.40.4-1_win32.zip
 
-* Download intltool (quicklink: 
-	http://ftp.acc.umu.se/pub/GNOME/binaries/win32/intltool/0.40/intltool_0.40.4-1_win32.zip
-	note: -dev package is not needed.)
-  uncompress in  / with 'unzip' command.
+Download lastest linphone-deps-win32 zip from  
+http://download.savannah.gnu.org/releases-noredirect/linphone/misc
+using your browser. 
 
-* Download lastest gtk+bundle from http://www.gtk.org , uncompress in /
-* Download libglade and libglade-dev >=2.6.3 from gnome ftp:
-    http://ftp.gnome.org/pub/GNOME/binaries/win32/libglade/2.6/libglade-dev_2.6.4-1_win32.zip
-    http://ftp.gnome.org/pub/GNOME/binaries/win32/libglade/2.6/libglade_2.6.4-1_win32.zip
-    uncompress in /
-* Download ActiveState perl and run the installer with default options (http://www.activestate.com , developer tools)
-	Yes it is required despite MSYS perl is already installed.
+Download lastest gtk+ win32 bundle from http://www.gtk.org 
 
-* Download lastest linphone-deps from linphone downloads, misc directory:
-    http://download.savannah.gnu.org/releases-noredirect/linphone/misc/)
-    uncompress in /
-* Download and install Inno Setup Compiler in its default path (required only if you run 'make setup.exe').
+Install all these three package in /:
 
-* HACKS:
-	Move out /lib/libintl.la : it confuses libtool
-		mv /lib/libintl.la /lib/libintl.la.bak
-	Move out libstdc++.la in order to workaround a gcc-4.4.0 bug (or packaging bug):
-		mv /mingw/lib/gcc/mingw32/4.4.0/libstdc++.la /mingw/lib/gcc/mingw32/4.4.0/libstdc++.la.bak
+cd /
+unzip ~/intltool_0.40.4-1_win32.zip
+unzip <path to gtk bundle zip>
+unzip <path to linphone-deps>
+
+#Install GTK+ Outcrop theme, the one used by linphone for distribution.
+cd /share/themes
+wget http://art.gnome.org/download/themes/gtk2/1122/GTK2-Outcrop.tar.gz
+tar -xvzf GTK2-Outcrop.tar.gz
+
+#Remove the special stdint.h and inttypes.h included in linphone-deps: it is for MSVC only.
+#Mingw will use the one in /mingw/include
+rm /include/stdint.h /include/inttypes.h
+
+#Remove libgcc specific libraries, only needed for MSVC:
+rm /lib/libgcc.a /lib/libmingw32.a /lib/libmingwex.a
+
+#Remove libintl from gtk, we don't need it and it conflicts with the one supplied by mingw.
+rm /lib/libintl.dll.a
+rm /include/intl.h
+
+* Download and install Inno Setup Compiler (required only if you run 'make setup.exe'). Add it to your windows Path environment variable.
 
 Get Linphone source code
 ************************
@@ -66,7 +62,7 @@ It is recommended that you create a directory somewhere with a path without any 
 c:\sources\
 Within msys-git bash, do
 cd /c/sources
-git clone git://git.savannah.nongnu.org/linphone.git
+git clone git://git.savannah.nongnu.org/linphone.git --recursive
 
 
 Building
@@ -75,17 +71,6 @@ Building
 WARNING: During the build, windows might slow down suddenly. Using ctl+alt+del to start the windows system monitor,
  you might see a process 'LVpSRV.exe' or something like this that eats 90% of cpu.
 Kill it. Don't know what it is, but once killed, windows runs normally.
-
-The following variables must be exported:
-
-#use ActiveState perl instead of mingw perl
-export PERL="/c/Perl/bin/perl"
-export INTLTOOL_PERL="/c/Perl/bin/perl"
-#add gnuwin32 tools to your path:
-export PATH=$PATH:/c/Program\ Files/Gnuwin32/bin
-
-for convenience the 'mingw-envsetup.sh' script in linphone sources does this, so you can just source it:
-. ./mingw-envsetup.sh
 
 #run autogen.sh after a git checkout or update
 ./autogen.sh
@@ -97,6 +82,7 @@ make install
 make zip
 #additionally you can make binary installer if you have Inno Setup 5 installed in its default path
 make setup.exe
+#now you're done, you have a fresh linphone windows installer in the current directory.
 
 #build plugins
 cd mediastreamer2/plugins/msx264

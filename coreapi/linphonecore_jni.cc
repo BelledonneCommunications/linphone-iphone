@@ -17,14 +17,15 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include <jni.h>
-#include "linphonecore.h"
+#include "linphonecore_utils.h"
+
+#include "mediastreamer2/msjava.h"
+
 #ifdef ANDROID
 #include <android/log.h>
 extern "C" void libmsilbc_init();
+extern "C" void libmsx264_init();
 #endif /*ANDROID*/
-
-extern "C" void ms_andsnd_set_jvm(JavaVM *jvm) ;
-extern "C" void ms_andvid_set_jvm(JavaVM *jvm) ;
 
 static JavaVM *jvm=0;
 
@@ -46,10 +47,7 @@ static void linphone_android_log_handler(OrtpLogLevel lev, const char *fmt, va_l
 JNIEXPORT jint JNICALL  JNI_OnLoad(JavaVM *ajvm, void *reserved)
 {
 #ifdef ANDROID
-	ms_andsnd_set_jvm(ajvm);
-	#ifdef VIDEO_ENABLED
-		ms_andvid_set_jvm(ajvm);
-	#endif /*VIDEO_ENABLED*/
+	ms_set_jvm(ajvm);
 #endif /*ANDROID*/
 	jvm=ajvm;
 	return JNI_VERSION_1_2;
@@ -103,7 +101,10 @@ public:
 		callStateId = env->GetMethodID(listernerClass,"callState","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCall;Lorg/linphone/core/LinphoneCall$State;Ljava/lang/String;)V");
 		callStateClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneCall$State"));
 		callStateFromIntId = env->GetStaticMethodID(callStateClass,"fromInt","(I)Lorg/linphone/core/LinphoneCall$State;");
-
+		/*void ecCalibrationStatus(LinphoneCore.EcCalibratorStatus status, int delay_ms, Object data);*/
+		ecCalibrationStatusId = env->GetMethodID(listernerClass,"ecCalibrationStatus","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCore$EcCalibratorStatus;ILjava/lang/Object;)V");
+		ecCalibratorStatusClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneCore$EcCalibratorStatus"));
+		ecCalibratorStatusFromIntId = env->GetStaticMethodID(ecCalibratorStatusClass,"fromInt","(I)Lorg/linphone/core/LinphoneCore$EcCalibratorStatus;");
 		/*void newSubscriptionRequest(LinphoneCore lc, LinphoneFriend lf, String url)*/
 		newSubscriptionRequestId = env->GetMethodID(listernerClass,"newSubscriptionRequest","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneFriend;Ljava/lang/String;)V");
 
@@ -167,6 +168,10 @@ public:
 	jclass callStateClass;
 	jmethodID callStateId;
 	jmethodID callStateFromIntId;
+
+	jclass ecCalibratorStatusClass;
+	jmethodID ecCalibrationStatusId;
+	jmethodID ecCalibratorStatusFromIntId;
 
 	jclass proxyClass;
 	jmethodID proxyCtrId;
@@ -293,6 +298,26 @@ public:
 							,env->NewObject(lcData->addressClass,lcData->addressCtrId,(jlong)from)
 							,message ? env->NewStringUTF(message) : NULL);
 	}
+	static void ecCalibrationStatus(LinphoneCore *lc, LinphoneEcCalibratorStatus status, int delay_ms, void *data) {
+		JNIEnv *env = 0;
+		jint result = jvm->AttachCurrentThread(&env,NULL);
+		if (result != 0) {
+			ms_error("cannot attach VM\n");
+			return;
+		}
+		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_get_user_data(lc);
+		env->CallVoidMethod(lcData->listener
+							,lcData->ecCalibrationStatusId
+							,lcData->core
+							,env->CallStaticObjectMethod(lcData->ecCalibratorStatusClass,lcData->ecCalibratorStatusFromIntId,(jint)status)
+							,delay_ms
+							,data ? data : NULL);
+		if (data != NULL &&status !=LinphoneEcCalibratorInProgress ) {
+			//final state, releasing global ref
+			env->DeleteGlobalRef((jobject)data);
+		}
+
+	}
 
 
 };
@@ -306,12 +331,12 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_newLinphoneCore(JNIEnv*
 	const char* userConfig = juserConfig?env->GetStringUTFChars(juserConfig, NULL):NULL;
 	const char* factoryConfig = jfactoryConfig?env->GetStringUTFChars(jfactoryConfig, NULL):NULL;
 	LinphoneCoreData* ldata = new LinphoneCoreData(env,thiz,jlistener,juserdata);
-#ifdef ANDROID
-	ms_andsnd_set_jvm(jvm);
-#endif /*ANDROID*/
 
 #ifdef HAVE_ILBC
 	libmsilbc_init(); // requires an fpu
+#endif
+#ifdef VIDEO_ENABLED
+	libmsx264_init();
 #endif
 	jlong nativePtr = (jlong)linphone_core_new(	&ldata->vTable
 			,userConfig
@@ -512,6 +537,24 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_findPayloadType(JNIEnv*
 	env->ReleaseStringUTFChars(jmime, mime);
 	return result;
 }
+extern "C" jlongArray Java_org_linphone_core_LinphoneCoreImpl_listVideoPayloadTypes(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc) {
+	const MSList* codecs = linphone_core_get_video_codecs((LinphoneCore*)lc);
+	int codecsCount = ms_list_size(codecs);
+	jlongArray jCodecs = env->NewLongArray(codecsCount);
+	jlong *jInternalArray = env->GetLongArrayElements(jCodecs, NULL);
+
+	for (int i = 0; i < codecsCount; i++ ) {
+		jInternalArray[i] = (unsigned long) (codecs->data);
+		codecs = codecs->next;
+	}
+
+	env->ReleaseLongArrayElements(jCodecs, jInternalArray, 0);
+
+	return jCodecs;
+}
+
 extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_enablePayloadType(JNIEnv*  env
 																			,jobject  thiz
 																			,jlong lc
@@ -599,6 +642,29 @@ extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getRing(JNIEnv*  env
 		return NULL;
 	}
 }
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_enableKeepAlive(JNIEnv*  env
+																,jobject  thiz
+																,jlong lc
+																,jboolean enable) {
+	linphone_core_enable_keep_alive((LinphoneCore*)lc,enable);
+
+}
+extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isKeepAliveEnabled(JNIEnv*  env
+																,jobject  thiz
+																,jlong lc) {
+	return linphone_core_keep_alive_enabled((LinphoneCore*)lc);
+
+}
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_startEchoCalibration(JNIEnv*  env
+																				,jobject  thiz
+																				,jlong lc
+																				,jobject data) {
+	return linphone_core_start_echo_calibration((LinphoneCore*)lc
+													, LinphoneCoreData::ecCalibrationStatus
+													, data?env->NewGlobalRef(data):NULL);
+
+}
+
 
 
 //ProxyConfig
@@ -710,7 +776,15 @@ extern "C" void Java_org_linphone_core_LinphoneProxyConfigImpl_setDialPrefix(JNI
 	linphone_proxy_config_set_dial_prefix((LinphoneProxyConfig*)proxyCfg,prefix);
 	env->ReleaseStringUTFChars(jprefix, prefix);
 }
-
+extern "C" void Java_org_linphone_core_LinphoneProxyConfigImpl_enablePublish(JNIEnv* env
+																				,jobject thiz
+																				,jlong proxyCfg
+																				,jboolean val) {
+	linphone_proxy_config_enable_publish((LinphoneProxyConfig*)proxyCfg,val);
+}
+extern "C" jboolean Java_org_linphone_core_LinphoneProxyConfigImpl_publishEnabled(JNIEnv* env,jobject thiz,jlong proxyCfg) {
+	return linphone_proxy_config_publish_enabled((LinphoneProxyConfig*)proxyCfg);
+}
 
 //Auth Info
 
@@ -834,12 +908,10 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCallLogImpl_isIncoming(JNIEnv
 	return ((LinphoneCallLog*)ptr)->dir==LinphoneCallIncoming?JNI_TRUE:JNI_FALSE;
 }
 
-extern "C" jstring Java_org_linphone_core_PayloadTypeImpl_toString(JNIEnv*  env
-																		,jobject  thiz
-																		,jlong ptr) {
-
+/*payloadType*/
+extern "C" jstring Java_org_linphone_core_PayloadTypeImpl_toString(JNIEnv*  env,jobject  thiz,jlong ptr) {
 	PayloadType* pt = (PayloadType*)ptr;
-	char* value = ms_strdup_printf("[%s] clock [%s], bitrate [%s]"
+	char* value = ms_strdup_printf("[%s] clock [%i], bitrate [%i]"
 									,payload_type_get_mime(pt)
 									,payload_type_get_rate(pt)
 									,payload_type_get_bitrate(pt));
@@ -847,6 +919,16 @@ extern "C" jstring Java_org_linphone_core_PayloadTypeImpl_toString(JNIEnv*  env
 	ms_free(value);
 	return jvalue;
 }
+extern "C" jstring Java_org_linphone_core_PayloadTypeImpl_getMime(JNIEnv*  env,jobject  thiz,jlong ptr) {
+	PayloadType* pt = (PayloadType*)ptr;
+	jstring jvalue =env->NewStringUTF(payload_type_get_mime(pt));
+	return jvalue;
+}
+extern "C" jint Java_org_linphone_core_PayloadTypeImpl_getRate(JNIEnv*  env,jobject  thiz, jlong ptr) {
+	PayloadType* pt = (PayloadType*)ptr;
+	return payload_type_get_rate(pt);
+}
+
 //LinphoneCall
 extern "C" void Java_org_linphone_core_LinphoneCallImpl_ref(JNIEnv*  env
 																		,jobject  thiz
@@ -883,6 +965,36 @@ extern "C" jint Java_org_linphone_core_LinphoneCallImpl_getState(	JNIEnv*  env
 																		,jlong ptr) {
 	return (jint)linphone_call_get_state((LinphoneCall*)ptr);
 }
+extern "C" void Java_org_linphone_core_LinphoneCallImpl_enableEchoCancellation(	JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr
+																		,jboolean value) {
+	linphone_call_enable_echo_cancellation((LinphoneCall*)ptr,value);
+}
+extern "C" jboolean Java_org_linphone_core_LinphoneCallImpl_isEchoCancellationEnabled(	JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	return linphone_call_echo_cancellation_enabled((LinphoneCall*)ptr);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCallImpl_enableEchoLimiter(	JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr
+																		,jboolean value) {
+	linphone_call_enable_echo_limiter((LinphoneCall*)ptr,value);
+}
+extern "C" jboolean Java_org_linphone_core_LinphoneCallImpl_isEchoLimiterEnabled(	JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	return linphone_call_echo_limiter_enabled((LinphoneCall*)ptr);
+}
+
+extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_getReplacedCall(	JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	return (jlong)linphone_call_get_replaced_call((LinphoneCall*)ptr);
+}
+
 
 //LinphoneFriend
 extern "C" long Java_org_linphone_core_LinphoneFriendImpl_newLinphoneFriend(JNIEnv*  env
@@ -993,6 +1105,10 @@ extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getStunServer(JNIEnv 
 	return jvalue;
 }
 
+extern "C" void Java_org_linphone_core_LinphoneCallParamsImpl_audioBandwidth(JNIEnv *env, jobject thiz, jlong lcp, jint bw){
+	linphone_call_params_set_audio_bandwidth_limit((LinphoneCallParams*)lcp, bw);
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCallParamsImpl_enableVideo(JNIEnv *env, jobject thiz, jlong lcp, jboolean b){
 	linphone_call_params_enable_video((LinphoneCallParams*)lcp, b);
 }
@@ -1000,15 +1116,19 @@ extern "C" void Java_org_linphone_core_LinphoneCallParamsImpl_enableVideo(JNIEnv
 extern "C" jboolean Java_org_linphone_core_LinphoneCallParamsImpl_getVideoEnabled(JNIEnv *env, jobject thiz, jlong lcp){
 	return linphone_call_params_video_enabled((LinphoneCallParams*)lcp);
 }
-extern "C" jlong Java_org_linphone_core_LinphoneCallParamsImpl_copy(JNIEnv *env, jobject thiz, jlong lcp){
-	return (jlong) linphone_call_params_copy((LinphoneCallParams*)lcp);
+extern "C" void Java_org_linphone_core_LinphoneCallParamsImpl_destroy(JNIEnv *env, jobject thiz, jlong lc){
+	return linphone_call_params_destroy((LinphoneCallParams*)lc);
 }
 extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_createDefaultCallParams(JNIEnv *env, jobject thiz, jlong lc){
 	return (jlong) linphone_core_create_default_call_parameters((LinphoneCore*)lc);
 }
 
-extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_getCurrentParams(JNIEnv *env, jobject thiz, jlong lc){
-	return (jlong) linphone_call_get_current_params((LinphoneCall*)lc);
+extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_getCurrentParamsCopy(JNIEnv *env, jobject thiz, jlong lc){
+	return (jlong) linphone_call_params_copy(linphone_call_get_current_params((LinphoneCall*)lc));
+}
+
+extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_enableCamera(JNIEnv *env, jobject thiz, jlong lc, jboolean b){
+	linphone_call_enable_camera((LinphoneCall *)lc, (bool_t) b);
 }
 
 extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_inviteAddressWithParams(JNIEnv *env, jobject thiz, jlong lc, jlong addr, jlong params){
@@ -1020,7 +1140,7 @@ extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_updateAddressWithParams(
 }
 
 extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_updateCall(JNIEnv *env, jobject thiz, jlong lc, jlong call, jlong params){
-	return (jint) linphone_core_update_call((LinphoneCore *)lc, (LinphoneCall *)call, (LinphoneCallParams *)params);
+	return (jint) linphone_core_update_call((LinphoneCore *)lc, (LinphoneCall *)call, (const LinphoneCallParams *)params);
 }
 
 
@@ -1045,5 +1165,11 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setDownloadBandwidth(JNI
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setUploadBandwidth(JNIEnv *env, jobject thiz, jlong lc, jint bw){
 	linphone_core_set_upload_bandwidth((LinphoneCore *)lc, (int) bw);
+}
+extern "C" int Java_org_linphone_core_LinphoneProxyConfigImpl_getState(JNIEnv*  env,jobject thiz,jlong ptr) {
+	return (int) linphone_proxy_config_get_state((const LinphoneProxyConfig *) ptr);
+}
+extern "C" void Java_org_linphone_core_LinphoneProxyConfigImpl_setExpires(JNIEnv*  env,jobject thiz,jlong ptr,jint delay) {
+	linphone_proxy_config_expires((LinphoneProxyConfig *) ptr, (int) delay);
 }
 

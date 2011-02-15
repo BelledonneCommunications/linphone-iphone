@@ -185,6 +185,7 @@ void linphone_call_params_destroy(LinphoneCallParams *cp);
 
 /**
  * Enum describing failure reasons.
+ * @ingroup initializing
 **/
 enum _LinphoneReason{
 	LinphoneReasonNone,
@@ -203,8 +204,13 @@ const char *linphone_reason_to_string(LinphoneReason err);
 struct _LinphoneCall;
 typedef struct _LinphoneCall LinphoneCall;
 
+/**
+ * LinphoneCallState enum represents the different state a call can reach into.
+ * The application is notified of state changes through the LinphoneCoreVTable::call_state_changed callback.
+ * @ingroup call_control
+**/
 typedef enum _LinphoneCallState{
-	LinphoneCallIdle,
+	LinphoneCallIdle,					/**<Initial call state */
 	LinphoneCallIncomingReceived, /**<This is a new incoming call */
 	LinphoneCallOutgoingInit, /**<An outgoing call is started */
 	LinphoneCallOutgoingProgress, /**<An outgoing call is in progress */
@@ -221,7 +227,8 @@ typedef enum _LinphoneCallState{
 	LinphoneCallPausedByRemote, /**<The call is paused by remote end*/
 	LinphoneCallUpdatedByRemote, /**<The call's parameters are updated, used for example when video is asked by remote */
 	LinphoneCallIncomingEarlyMedia, /**<We are proposing early media to an incoming call */
-	LinphoneCallUpdated /**<The remote accepted the call update initiated by us */
+	LinphoneCallUpdated, /**<The remote accepted the call update initiated by us */
+	LinphoneCallReleased /**< The call object is no more retained by the core */
 } LinphoneCallState;
 
 const char *linphone_call_state_to_string(LinphoneCallState cs);
@@ -238,6 +245,7 @@ void linphone_call_unref(LinphoneCall *call);
 LinphoneCallLog *linphone_call_get_call_log(const LinphoneCall *call);
 const char *linphone_call_get_refer_to(const LinphoneCall *call);
 bool_t linphone_call_has_transfer_pending(const LinphoneCall *call);
+LinphoneCall *linphone_call_get_replaced_call(LinphoneCall *call);
 int linphone_call_get_duration(const LinphoneCall *call);
 const LinphoneCallParams * linphone_call_get_current_params(const LinphoneCall *call);
 void linphone_call_enable_camera(LinphoneCall *lc, bool_t enabled);
@@ -247,8 +255,34 @@ LinphoneReason linphone_call_get_reason(const LinphoneCall *call);
 const char *linphone_call_get_remote_user_agent(LinphoneCall *call);
 void *linphone_call_get_user_pointer(LinphoneCall *call);
 void linphone_call_set_user_pointer(LinphoneCall *call, void *user_pointer);
-
-
+/**
+ * Enables or disable echo cancellation for this call
+ * @param call
+ * @param val
+ *
+ * @ingroup media_parameters
+**/
+void linphone_call_enable_echo_cancellation(LinphoneCall *call, bool_t val) ;
+/**
+ * Returns TRUE if echo cancellation is enabled.
+ *
+ * @ingroup media_parameters
+**/
+bool_t linphone_call_echo_cancellation_enabled(LinphoneCall *lc);
+/**
+ * Enables or disable echo limiter for this call
+ * @param call
+ * @param val
+ *
+ * @ingroup media_parameters
+**/
+void linphone_call_enable_echo_limiter(LinphoneCall *call, bool_t val);
+/**
+ * Returns TRUE if echo limiter is enabled.
+ *
+ * @ingroup media_parameters
+**/
+bool_t linphone_call_echo_limiter_enabled(const LinphoneCall *call);
 /**
  * @addtogroup proxies
  * @{
@@ -275,11 +309,11 @@ typedef struct _LinphoneProxyConfig LinphoneProxyConfig;
  * LinphoneRegistrationState describes proxy registration states.
 **/
 typedef enum _LinphoneRegistrationState{
-	LinphoneRegistrationNone,
-	LinphoneRegistrationProgress,
-	LinphoneRegistrationOk,
-	LinphoneRegistrationCleared,
-	LinphoneRegistrationFailed
+	LinphoneRegistrationNone, /**<Initial state for registrations */
+	LinphoneRegistrationProgress, /**<Registration is in progress */
+	LinphoneRegistrationOk,	/**< Registration is successful */
+	LinphoneRegistrationCleared, /**< Unregistration succeeded */
+	LinphoneRegistrationFailed	/**<Registration failed */
 }LinphoneRegistrationState;
 
 /**
@@ -303,6 +337,13 @@ void linphone_proxy_config_enable_register(LinphoneProxyConfig *obj, bool_t val)
 #define linphone_proxy_config_enableregister linphone_proxy_config_enable_register
 void linphone_proxy_config_edit(LinphoneProxyConfig *obj);
 int linphone_proxy_config_done(LinphoneProxyConfig *obj);
+/**
+ * Indicates  either or not, PUBLISH must be issued for this #LinphoneProxyConfig .
+ * <br> In case this #LinphoneProxyConfig has been added to #LinphoneCore, follows the linphone_proxy_config_edit() rule.
+ * @param obj object pointer
+ * @param val if true, publish will be engaged
+ *
+ */
 void linphone_proxy_config_enable_publish(LinphoneProxyConfig *obj, bool_t val);
 void linphone_proxy_config_set_dial_escape_plus(LinphoneProxyConfig *cfg, bool_t val);
 void linphone_proxy_config_set_dial_prefix(LinphoneProxyConfig *cfg, const char *prefix);
@@ -451,6 +492,17 @@ void * linphone_chat_room_get_user_data(LinphoneChatRoom *cr);
 /**
  * @}
  */
+
+
+/**
+ * @addtogroup initializing
+ * @{
+**/
+
+/**
+ * LinphoneGlobalState describes the global state of the LinphoneCore object.
+ * It is notified via the LinphoneCoreVTable::global_state_changed
+**/
 typedef enum _LinphoneGlobalState{
 	LinphoneGlobalOff,
 	LinphoneGlobalStartup,
@@ -459,11 +511,6 @@ typedef enum _LinphoneGlobalState{
 }LinphoneGlobalState;
 
 const char *linphone_global_state_to_string(LinphoneGlobalState gs);
-
-/**
- * @addtogroup initializing
- * @{
-**/
 
 
 /**Call state notification callback prototype*/
@@ -618,7 +665,7 @@ int linphone_core_pause_all_calls(LinphoneCore *lc);
 
 int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *call);
 
-int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, LinphoneCallParams *params);
+int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params);
 
 LinphoneCallParams *linphone_core_create_default_call_parameters(LinphoneCore *lc);
 
@@ -886,6 +933,14 @@ void linphone_core_set_network_reachable(LinphoneCore* lc,bool_t value);
  */
 bool_t linphone_core_is_network_reachabled(LinphoneCore* lc);
 
+/**
+ *  enable signaling keep alive. small udp packet sent periodically to keep udp NAT association
+ */
+void linphone_core_enable_keep_alive(LinphoneCore* lc,bool_t enable);
+/**
+ * Is signaling keep alive
+ */
+bool_t linphone_core_keep_alive_enabled(LinphoneCore* lc);
 
 void *linphone_core_get_user_data(LinphoneCore *lc);
 
@@ -922,6 +977,6 @@ LinphoneGlobalState linphone_core_get_global_state(const LinphoneCore *lc);
 }
 #endif
 
-
+void linphone_call_send_vfu_request(LinphoneCall *call);
 
 #endif

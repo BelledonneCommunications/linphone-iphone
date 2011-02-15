@@ -156,7 +156,7 @@ void *lsd_player_get_user_pointer(const LsdPlayer *p){
 	return p->user_data;
 }
 
-static void lsd_player_on_eop(void * userdata, unsigned int id, void *arg){
+static void lsd_player_on_eop(void * userdata, MSFilter *f, unsigned int id, void *arg){
 	LsdPlayer *p=(LsdPlayer *)userdata;
 	if (p->eop_cb!=NULL)
 		p->eop_cb(p);

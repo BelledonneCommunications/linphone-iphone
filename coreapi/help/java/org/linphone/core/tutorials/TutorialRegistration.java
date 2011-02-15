@@ -22,6 +22,7 @@ import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneCall;
 import org.linphone.core.LinphoneChatRoom;
 import org.linphone.core.LinphoneCore;
+import org.linphone.core.LinphoneCore.EcCalibratorStatus;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListener;
@@ -64,10 +65,7 @@ public class TutorialRegistration implements LinphoneCoreListener {
 	 * Registration state notification listener
 	 */
 	public void registrationState(LinphoneCore lc, LinphoneProxyConfig cfg,RegistrationState cstate, String smessage) {
-		write(cfg.getIdentity() + " : "+smessage+"\n");
-
-		if (RegistrationState.RegistrationOk.equals(cstate))
-			running = false;
+		write(cfg.getIdentity() + " : "+smessage);
 	}
 
 	public void show(LinphoneCore lc) {}
@@ -81,7 +79,7 @@ public class TutorialRegistration implements LinphoneCoreListener {
 	public void notifyPresenceReceived(LinphoneCore lc, LinphoneFriend lf) {}
 	public void textReceived(LinphoneCore lc, LinphoneChatRoom cr,LinphoneAddress from, String message) {}
 	public void callState(LinphoneCore lc, LinphoneCall call, State cstate, String msg) {}
-
+	public void ecCalibrationStatus(LinphoneCore lc, EcCalibratorStatus status,int delay_ms, Object data) {}
 
 	public static void main(String[] args) {
 		// Check tutorial was called with the right number of arguments
@@ -127,36 +125,56 @@ public class TutorialRegistration implements LinphoneCoreListener {
 
 			// create proxy config
 			LinphoneProxyConfig proxyCfg = lcFactory.createProxyConfig(sipAddress, domain, null, true);
+			proxyCfg.setExpires(2000);
 			lc.addProxyConfig(proxyCfg); // add it to linphone
 			lc.setDefaultProxyConfig(proxyCfg);
 
-			
-			
+
 			
 			// main loop for receiving notifications and doing background linphonecore work
 			running = true;
 			while (running) {
 				lc.iterate(); // first iterate initiates registration 
-				try{
-					Thread.sleep(50);
-				} catch(InterruptedException ie) {
-					write("Interrupted!\nAborting");
-					return;
-				}
+				sleep(50);
 			}
 
 
+			// Unregister
+			lc.getDefaultProxyConfig().edit();
+			lc.getDefaultProxyConfig().enableRegister(false);
+			lc.getDefaultProxyConfig().done();
+			while(lc.getDefaultProxyConfig().getState() != RegistrationState.RegistrationCleared) {
+				lc.iterate();
+				sleep(50);
+			}
+
+			// Then register again
+			lc.getDefaultProxyConfig().edit();
+			lc.getDefaultProxyConfig().enableRegister(true);
+			lc.getDefaultProxyConfig().done();
+
+			while(lc.getDefaultProxyConfig().getState() != RegistrationState.RegistrationOk
+					&& lc.getDefaultProxyConfig().getState() != RegistrationState.RegistrationFailed) {
+				lc.iterate();
+				sleep(50);
+			}
+
 			// Automatic unregistration on exit
-			
-			
 		} finally {
-			write("Shutting down...");
+			write("Shutting down linphone...");
 			// You need to destroy the LinphoneCore object when no longer used
 			lc.destroy();
-			write("Exited");
 		}
 	}
 
+	private void sleep(int ms) {
+		try {
+			Thread.sleep(ms);
+		} catch(InterruptedException ie) {
+			write("Interrupted!\nAborting");
+			return;
+		}
+	}
 
 	public void stopMainLoop() {
 		running=false;
@@ -166,5 +184,7 @@ public class TutorialRegistration implements LinphoneCoreListener {
 	private void write(String s) {
 		TutorialNotifier.notify(s);
 	}
+
+
 
 }

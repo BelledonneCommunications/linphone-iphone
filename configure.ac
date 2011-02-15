@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([linphone],[3.3.99.10],[linphone-developers@nongnu.org])
+AC_INIT([linphone],[3.4.1],[linphone-developers@nongnu.org])
 AC_CANONICAL_SYSTEM
 AC_CONFIG_SRCDIR([coreapi/linphonecore.c])
 
@@ -95,25 +95,19 @@ AC_SUBST(ALL_LINGUAS)
 AC_DEFINE_UNQUOTED(LINPHONE_ALL_LANGS, "$ALL_LINGUAS", [All supported languages])
 
 if test "$mingw_found" != "yes" ; then
-dnl gettext macro does not work properly under mingw.
+dnl gettext macro does not work properly under mingw. And we want to use the one provided by GTK.
 AM_GNU_GETTEXT([external])
 LIBS="$LIBS $LIBINTL"
 else
-	if test "$mingwce_found" != "yes" ; then 
-		AC_DEFINE(ENABLE_NLS,1,[Tells whether localisation is possible])
-		AC_DEFINE(HAVE_GETTEXT,1,[Tells wheter localisation is possible])
-		LIBS="$LIBS -L/usr/lib -lintl"
-	else
-		dnl gettext macro does not work properly under mingw.
-		AM_GNU_GETTEXT([external])
-		LIBS="$LIBS $LIBINTL"
-	fi
+	AC_DEFINE(ENABLE_NLS,1,[Tells whether localisation is possible])
+	AC_DEFINE(HAVE_GETTEXT,1,[Tells wheter localisation is possible])
+	LIBS="$LIBS -lintl"
 fi
 
 GETTEXT_PACKAGE=linphone
 AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE",[The name of the gettext package name])
-AC_CHECK_LIB(intl,libintl_gettext)
+dnl AC_CHECK_LIB(intl,libintl_gettext)
 
 AC_CHECK_FUNCS([get_current_dir_name strndup stpcpy] )
 
@@ -304,7 +298,9 @@ AC_ARG_ENABLE(x11,
 if test "$video" = "true"; then
 	
 	if test "$enable_x11" = "true"; then
-	   AC_CHECK_HEADERS(X11/Xlib.h)
+	  	AC_CHECK_HEADERS(X11/Xlib.h)
+		AC_CHECK_LIB(X11,XUnmapWindow, X11_LIBS="-lX11")
+		AC_SUBST(X11_LIBS)
 	fi
 	AC_DEFINE(VIDEO_ENABLED,1,[defined if video support is available])
 fi

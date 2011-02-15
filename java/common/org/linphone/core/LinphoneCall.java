@@ -21,9 +21,10 @@ package org.linphone.core;
 import java.util.Vector;
 
 /**
- * Object representing a Call. calls are created using {@link LinphoneCore#invite(LinphoneAddress)} or paased to the application by listener {@link LinphoneCoreListener#callState(LinphoneCore, LinphoneCall, State, String)}
+ * Object representing a Call. calls are created using {@link LinphoneCore#invite(LinphoneAddress)} or passed to the application by listener {@link LinphoneCoreListener#callState(LinphoneCore, LinphoneCall, State, String)}
  * 
  */
+@SuppressWarnings("unchecked")
 public interface LinphoneCall {
 	/**
 	 * Linphone call states
@@ -109,7 +110,11 @@ public interface LinphoneCall {
 		 * The remote accepted the call update initiated by us
 		 */
 		public static final State CallUpdated = new State(17, "CallUpdated");
-
+		
+		/**
+		 * The call object is now released.
+		 */
+		public static final State CallReleased = new State(18,"CallReleased");
 
 		private State(int value,String stringValue) {
 			mValue = value;
@@ -150,9 +155,32 @@ public interface LinphoneCall {
 	**/
 	public LinphoneCallLog getCallLog();
 
-	/**
-	 * @return parameters for this call; read only, call copy() to get a read/write version.
-	 */
-	public LinphoneCallParams getCurrentParamsReadOnly();
+	public LinphoneCallParams getCurrentParamsCopy();
 	
+	public void enableCamera(boolean enabled);
+	/**
+	 * Enables or disable echo cancellation.
+	 * @param enable
+	 */
+	public void enableEchoCancellation(boolean enable);
+	/**
+	 * get EC status 
+	 * @return true if echo cancellation is enabled.
+	 */
+	public boolean isEchoCancellationEnabled();
+	/**
+	 * Enables or disable echo limiter cancellation.
+	 * @param enable
+	 */
+	public void enableEchoLimiter(boolean enable);
+	/**
+	 * get EL status 
+	 * @return true if echo limiter is enabled.
+	 */
+	public boolean isEchoLimiterEnabled();
+	/**
+	 * Returns the object associated to a call this one is replacing.
+	 * Call replacement can occur during transfer scenarios.
+	 */
+	public LinphoneCall getReplacedCall();
 }

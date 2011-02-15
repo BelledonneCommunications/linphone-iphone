@@ -20,4 +20,5 @@ package org.linphone.core;
 
 public interface PayloadType {
 
+	String getMime();
 }

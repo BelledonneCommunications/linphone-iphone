@@ -73,3 +73,6 @@ mediastreamer2/src/itc.c
 mediastreamer2/src/extdisplay.c
 mediastreamer2/src/msiounit.c
 mediastreamer2/src/x11video.c
+mediastreamer2/src/msandroid.cpp
+mediastreamer2/src/msandroidvideo.cpp
+

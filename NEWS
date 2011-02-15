@@ -1,3 +1,22 @@
+linphone-3.4.0 -- February 7th, 2011
+	* implement multiple calls feature: 
+		- call hold (with possibility to play a music file)
+		- call resume 
+		- acceptance of 2nd call while putting the others on hold
+		- creation of another outgoing call while already in call
+		- blind call transfer
+		- attended call transfer
+			**CAUTION**: LinphoneCoreVTable has changed: pay attention to this when upgrading an old application to a newer liblinphone.
+	* improve bandwidth management (one b=AS line is used for audio+video)
+	* improvements in the echo limiter performance
+	* implement a echo calibration feature (see linphone_core_start_echo_calibration()).
+	* stun support bugfixes
+	* possibility to use two video windows, one for local preview, one for remote video (linphonec only)
+	* optimize by not re-creating streams when SDP is unchanged during a reinvite
+	* support for sending early media
+	* doxygen doc and javadoc improvements
+	* based on mediastreamer-2.7.0, please refer to mediastreamer NEWS for changes.
+
 linphone-3.3.2 -- July 1st, 2010
 	* fix crash when setting firewall address in gtk interface
 	* fix crash while closing video window on windows
