@@ -384,10 +384,17 @@ public interface LinphoneCore {
 	 */
 	public boolean isEchoCancellationEnabled();
 	/**
-	 * not implemented yet
+	 * set transport used for signaling (TCP or UDP)
+	 * 
 	 * @param aTransport
 	 */
 	public void setSignalingTransport(Transport aTransport);
+	/**
+	 * get transport used for signaling (TCP or UDP)
+	 * 
+	 * @return  Transport;
+	 */
+	public Transport getSignalingTransport();
 	/**
 	 * not implemented
 	 * @param value
