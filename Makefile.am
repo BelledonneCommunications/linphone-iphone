@@ -39,7 +39,7 @@ ZIP_EXCLUDED=include lib \
 
 SDK_ZIPFILE=$(shell cd $(top_builddir) && pwd)/lib$(PACKAGE)-win32-$(VERSION).zip
 SDK_EXCLUDED= \
-	bin/linphone-3.exe \
+	bin/linphone.exe \
 	lib/*.la \
 	share/linphone \
 	share/pixmaps \

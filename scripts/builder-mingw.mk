@@ -11,7 +11,7 @@ MSX264_ZIP=$(WORKDIR)/msx264.zip
 INSTALL_ROOT=$(WORKDIR)/root
 FILELIST=$(WORKDIR)/linphone-bundle.filelist
 
-LINPHONE_VERSION=strings $(INSTALL_ROOT)/bin/linphone-3.exe |grep linphone_ident | sed 's/linphone_ident_string=//'
+LINPHONE_VERSION=strings $(INSTALL_ROOT)/bin/linphone.exe |grep linphone_ident | sed 's/linphone_ident_string=//'
 
 $(WORKDIR):
 	mkdir -p $(WORKDIR)
