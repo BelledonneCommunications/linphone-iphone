@@ -24,6 +24,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "private.h"
 #include "offeranswer.h"
 
+static bool_t call_failure(Sal *sal, eXosip_event_t *ev);
+
 static void text_received(Sal *sal, eXosip_event_t *ev);
 
 void _osip_list_set_empty(osip_list_t *l, void (*freefunc)(void*)){
@@ -1085,8 +1087,9 @@ static void call_released(Sal *sal, eXosip_event_t *ev){
 		ms_warning("No op associated to this call_released()");
 		return;
 	}
-	if (op->did==-1) {
-		sal->callbacks.call_failure(op,SalErrorNoResponse,SalReasonUnknown,NULL, 487);
+	if (ev->response==NULL){
+		/* no response received so far */
+		call_failure(sal,ev);
 	}
 	sal->callbacks.call_released(op);
 }
