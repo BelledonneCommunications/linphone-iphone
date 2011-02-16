@@ -25,7 +25,7 @@ import java.util.Vector;
  * Linphone core main object created by method {@link LinphoneCoreFactory#createLinphoneCore(LinphoneCoreListener, String, String, Object)}.	
  *
  */
-@SuppressWarnings("unchecked")
+
 public interface LinphoneCore {
 	/**
 	 * linphone core states

@@ -24,7 +24,7 @@ package org.linphone.core;
 import java.util.Vector;
 
 
-@SuppressWarnings("unchecked")
+
 public interface LinphoneCallLog {
 	/**
 	 * Represents call status
