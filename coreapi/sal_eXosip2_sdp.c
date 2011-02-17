@@ -328,9 +328,6 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 			stream->type=SalVideo;
 		}else {
 			stream->type=SalOther;
-			if (stream->typeother){
-				ms_free(stream->typeother);
-			}
 			strncpy(stream->typeother,mtype,sizeof(stream->typeother)-1);
 		}
 		for(j=0;(sbw=sdp_message_bandwidth_get(msg,i,j))!=NULL;++j){

@@ -29,6 +29,7 @@ coreapi/presence.c
 coreapi/friend.c
 coreapi/proxy.c
 coreapi/callbacks.c
+coreapi/sal_eXosip2.c
 mediastreamer2/src/alaw.c
 mediastreamer2/src/alsa.c
 mediastreamer2/src/aqsnd.c

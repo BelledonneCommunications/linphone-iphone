@@ -78,7 +78,7 @@ public final class VideoSize {
 		return true;
 	}
 	
-	@Override
+	
 	public String toString() {
 		return "width = "+width + " height = " + height;
 	}

@@ -2716,6 +2716,7 @@ static MSSndCard *get_card_from_string_id(const char *devid, unsigned int cap){
  * Returns true if the specified sound device can capture sound.
  *
  * @ingroup media_parameters
+ * @param lc The LinphoneCore object
  * @param devid the device name as returned by linphone_core_get_sound_devices()
 **/
 bool_t linphone_core_sound_device_can_capture(LinphoneCore *lc, const char *devid){
@@ -2729,6 +2730,7 @@ bool_t linphone_core_sound_device_can_capture(LinphoneCore *lc, const char *devi
  * Returns true if the specified sound device can play sound.
  *
  * @ingroup media_parameters
+ * @param lc The LinphoneCore object
  * @param devid the device name as returned by linphone_core_get_sound_devices()
 **/
 bool_t linphone_core_sound_device_can_playback(LinphoneCore *lc, const char *devid){
@@ -2742,6 +2744,7 @@ bool_t linphone_core_sound_device_can_playback(LinphoneCore *lc, const char *dev
  * Sets the sound device used for ringing.
  *
  * @ingroup media_parameters
+ * @param lc The LinphoneCore object
  * @param devid the device name as returned by linphone_core_get_sound_devices()
 **/
 int linphone_core_set_ringer_device(LinphoneCore *lc, const char * devid){
@@ -2756,6 +2759,7 @@ int linphone_core_set_ringer_device(LinphoneCore *lc, const char * devid){
  * Sets the sound device used for playback.
  *
  * @ingroup media_parameters
+ * @param lc The LinphoneCore object
  * @param devid the device name as returned by linphone_core_get_sound_devices()
 **/
 int linphone_core_set_playback_device(LinphoneCore *lc, const char * devid){
@@ -2770,6 +2774,7 @@ int linphone_core_set_playback_device(LinphoneCore *lc, const char * devid){
  * Sets the sound device used for capture.
  *
  * @ingroup media_parameters
+ * @param lc The LinphoneCore object
  * @param devid the device name as returned by linphone_core_get_sound_devices()
 **/
 int linphone_core_set_capture_device(LinphoneCore *lc, const char * devid){
@@ -2784,6 +2789,7 @@ int linphone_core_set_capture_device(LinphoneCore *lc, const char * devid){
  * Returns the name of the currently assigned sound device for ringing.
  *
  * @ingroup media_parameters
+ * @param lc The LinphoneCore object
 **/
 const char * linphone_core_get_ringer_device(LinphoneCore *lc)
 {
@@ -2795,6 +2801,7 @@ const char * linphone_core_get_ringer_device(LinphoneCore *lc)
  * Returns the name of the currently assigned sound device for playback.
  *
  * @ingroup media_parameters
+ * @param lc The LinphoneCore object
 **/
 const char * linphone_core_get_playback_device(LinphoneCore *lc)
 {
@@ -2805,6 +2812,7 @@ const char * linphone_core_get_playback_device(LinphoneCore *lc)
  * Returns the name of the currently assigned sound device for capture.
  *
  * @ingroup media_parameters
+ * @param lc The LinphoneCore object
 **/
 const char * linphone_core_get_capture_device(LinphoneCore *lc)
 {
@@ -2814,8 +2822,10 @@ const char * linphone_core_get_capture_device(LinphoneCore *lc)
 /**
  * Returns an unmodifiable array of available sound devices.
  *
- * @ingroup media_parameters
  * The array is NULL terminated.
+ *
+ * @ingroup media_parameters
+ * @param lc The LinphoneCore object
 **/
 const char**  linphone_core_get_sound_devices(LinphoneCore *lc){
 	build_sound_devices_table(lc);
@@ -2858,6 +2868,7 @@ void linphone_core_set_sound_source(LinphoneCore *lc, char source)
  * Sets the path to a wav file used for ringing.
  *
  * @param path The file must be a wav 16bit linear. Local ring is disabled if null
+ * @param lc The LinphoneCore object
  *
  * @ingroup media_parameters
 **/
@@ -2875,6 +2886,7 @@ void linphone_core_set_ring(LinphoneCore *lc,const char *path){
 /**
  * Returns the path to the wav file used for ringing.
  *
+ * @param lc The LinphoneCore object
  * @ingroup media_parameters
 **/
 const char *linphone_core_get_ring(const LinphoneCore *lc){
@@ -3143,6 +3155,7 @@ static void toggle_video_preview(LinphoneCore *lc, bool_t val){
  * initiate future calls with video or not. The two boolean parameters indicate in which
  * direction video is enabled. Setting both to false disables video entirely.
  *
+ * @param lc The LinphoneCore object
  * @param vcap_enabled indicates whether video capture is enabled
  * @param display_enabled indicates whether video display should be shown
  *
@@ -3222,6 +3235,7 @@ bool_t linphone_core_self_view_enabled(const LinphoneCore *lc){
  * Sets the active video device.
  *
  * @ingroup media_parameters
+ * @param lc The LinphoneCore object
  * @param id the name of the video device as returned by linphone_core_get_video_devices()
 **/
 int linphone_core_set_video_device(LinphoneCore *lc, const char *id){
@@ -3251,6 +3265,7 @@ int linphone_core_set_video_device(LinphoneCore *lc, const char *id){
 /**
  * Returns the name of the currently active video device.
  *
+ * @param lc The LinphoneCore object
  * @ingroup media_parameters
 **/
 const char *linphone_core_get_video_device(const LinphoneCore *lc){
