@@ -49,6 +49,8 @@ rm /lib/libgcc.a /lib/libmingw32.a /lib/libmingwex.a
 
 #Remove libintl from gtk, we don't need it and it conflicts with the one supplied by mingw.
 rm /lib/libintl.dll.a
+rm /lib/libintl.la
+rm /lib/libintl.a
 rm /include/intl.h
 
 * Download and install Inno Setup Compiler (required only if you run 'make setup.exe'). Add it to your windows Path environment variable.
@@ -56,7 +58,8 @@ rm /include/intl.h
 Get Linphone source code
 ************************
 
-Install msys-git from (http://code.google.com/p/msysgit/)
+Install msys-git from (http://code.google.com/p/msysgit/). During installation you are asked to make a choice about how line endings are treated by git.
+Choose "Checkout line endings as they are, commit as they are". THIS CHOICE IS VERY IMPORTANT. OTHERS BREAK AUTOMAKE.
 
 It is recommended that you create a directory somewhere with a path without any spaces or ~ characters, for example
 c:\sources\
