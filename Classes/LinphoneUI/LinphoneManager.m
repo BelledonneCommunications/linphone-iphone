@@ -35,6 +35,7 @@ extern void libmsilbc_init();
 @implementation LinphoneManager
 @synthesize callDelegate;
 @synthesize registrationDelegate;
+@synthesize connectivity;
 
 +(LinphoneManager*) instance {
 	if (theLinphoneManager==nil) {
@@ -203,7 +204,9 @@ static void linphone_iphone_call_state(LinphoneCore *lc, LinphoneCall* call, Lin
 											  onDomain:lDomain
 												forReason:lErrorMessage];
 		
-		if (lErrorMessage != nil && registrationDelegate==nil) {
+		if (lErrorMessage != nil 
+			&& registrationDelegate==nil
+			&& linphone_proxy_config_get_error(cfg) != LinphoneReasonNoResponse) { //do not report network connection issue on registration
 			//default behavior if no registration delegates
 			
 			UIAlertView* error = [[UIAlertView alloc]	initWithTitle:@"Registration failure"
@@ -259,20 +262,26 @@ static LinphoneCoreVTable linphonec_vtable = {
 
 void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void * info) {
 	ms_message("Network connection flag [%x]",flags);
+	LinphoneManager* lLinphoneMgr = (LinphoneManager*)info;
 	if ([LinphoneManager getLc] != nil) {
 		if ((flags == 0) | (flags & (kSCNetworkReachabilityFlagsConnectionRequired |kSCNetworkReachabilityFlagsConnectionOnTraffic))) {
 			[[LinphoneManager instance] kickOffNetworkConnection];
 			linphone_core_set_network_reachable([LinphoneManager getLc],false);
+			((LinphoneManager*)info).connectivity = none;
 		} else {
-			linphone_core_set_network_reachable([LinphoneManager getLc],true);
+			Connectivity  newConnectivity = flags & kSCNetworkReachabilityFlagsIsWWAN ? wwan:wifi;
+			if (lLinphoneMgr.connectivity == none) {
+				linphone_core_set_network_reachable([LinphoneManager getLc],true);
+			} else if (lLinphoneMgr.connectivity != newConnectivity) {
+				// connectivity has changed
+				linphone_core_set_network_reachable([LinphoneManager getLc],false);
+				linphone_core_set_network_reachable([LinphoneManager getLc],true);
+			}
+			lLinphoneMgr.connectivity=newConnectivity;
+			ms_message("new network connectivity  of type [%s]",(newConnectivity==wifi?"wifi":"wwan"));
 		}
 		
 	}
-}
--(void) doRegister {
-	SCNetworkReachabilityFlags reachabilityFlags;
-	SCNetworkReachabilityGetFlags (proxyReachability,&reachabilityFlags);
-	networkReachabilityCallBack(proxyReachability,reachabilityFlags,self); 
 }
 
 -(void) doLinphoneConfiguration:(NSNotification *)notification {
@@ -290,8 +299,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	}
 	NSString* transport = [[NSUserDefaults standardUserDefaults] stringForKey:@"transport_preference"];
 	
-	//initial state is network off should be done as soon as possible
-	linphone_core_set_network_reachable(theLinphoneCore,false);
+
 	
 	LCSipTransports transportValue;
 	if (transport!=nil) {
@@ -392,9 +400,6 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		LinphoneAddress* addr=linphone_address_new(linphone_proxy_config_get_addr(proxyCfg));
 		proxyReachability=SCNetworkReachabilityCreateWithName(nil, linphone_address_get_domain(addr));
 		
-		
-		
-		[self doRegister];
 	} else {
 		if (configCheckDisable == false 
 			&& (!domain  && !username)) {
@@ -472,9 +477,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	
 	if (isbackgroundModeEnabled && proxyCfg) {
 		//For registration register
-		linphone_core_set_network_reachable(theLinphoneCore,false);
-		linphone_core_iterate(theLinphoneCore);
-		linphone_core_set_network_reachable(theLinphoneCore,true);
+		linphone_core_refresh_registers(theLinphoneCore);
 		
 		
 		//wait for registration answer
@@ -492,10 +495,8 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 																   return;
 															   }
 															   //kick up network cnx, just in case
-															   linphone_core_set_network_reachable(theLinphoneCore,false);
-															   linphone_core_iterate(theLinphoneCore);
 															   [self kickOffNetworkConnection];
-															   linphone_core_set_network_reachable(theLinphoneCore,true);
+															   linphone_core_refresh_registers(theLinphoneCore);
 															   linphone_core_iterate(theLinphoneCore);
 														   }
 			 ]) {
@@ -571,7 +572,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	NSString* factoryConfig = [myBundle pathForResource:@"linphonerc"ofType:nil] ;
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
 	NSString *confiFileName = [[paths objectAtIndex:0] stringByAppendingString:@"/.linphonerc"];
-	;
+	connectivity=none;
 	signal(SIGPIPE, SIG_IGN);
 	//log management	
 	
@@ -600,7 +601,8 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 											 selector:@selector(doLinphoneConfiguration:)
 												 name:NSUserDefaultsDidChangeNotification object:nil];
 	
-	
+	//initial state is network off should be done as soon as possible
+	linphone_core_set_network_reachable(theLinphoneCore,false);
 	// start scheduler
 	mIterateTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 
 													 target:self 
@@ -632,7 +634,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	} else {
 		ms_message("becomming active, make sure we are registered");
 		linphone_core_start_dtmf_stream(theLinphoneCore);
-		[self doRegister];
+		linphone_core_refresh_registers(theLinphoneCore);//just to make sure REGISTRATION is up to date
 		
 	}
 	

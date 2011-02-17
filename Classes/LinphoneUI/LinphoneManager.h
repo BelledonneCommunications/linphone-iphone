@@ -22,6 +22,11 @@
 #include "linphonecore.h"
 #import "LogView.h"
 #import "LinphoneUIDelegates.h"
+typedef enum _Connectivity {
+	wifi,
+	wwan
+	,none
+} Connectivity;
 
 @interface LinphoneManager : NSObject {
 @private
@@ -35,6 +40,7 @@
 	id<LinphoneUIRegistrationDelegate> registrationDelegate;
 	
 	UIViewController* mCurrentViewController;
+	Connectivity connectivity;
 	
 }
 +(LinphoneManager*) instance;
@@ -51,4 +57,5 @@
 
 @property (nonatomic, retain) id<LinphoneUICallDelegate> callDelegate;
 @property (nonatomic, retain) id<LinphoneUIRegistrationDelegate> registrationDelegate;
+@property Connectivity connectivity;
 @end
