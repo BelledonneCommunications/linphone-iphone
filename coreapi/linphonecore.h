@@ -972,7 +972,11 @@ int linphone_core_get_current_call_stats(LinphoneCore *lc, rtp_stats_t *local, r
 const MSList *linphone_core_get_calls(LinphoneCore *lc);
 
 LinphoneGlobalState linphone_core_get_global_state(const LinphoneCore *lc);
-
+/**
+ * force registration refresh to be initiated upon next iterate
+ * @ingroup proxies
+ */
+void linphone_core_refresh_registers(LinphoneCore* lc);	
 #ifdef __cplusplus
 }
 #endif

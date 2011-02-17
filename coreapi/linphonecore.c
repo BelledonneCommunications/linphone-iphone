@@ -3919,8 +3919,24 @@ static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t cu
 	}
 	lc->netup_time=curtime;
 	lc->network_reachable=isReachable;
-}
+	if(!isReachable) {
+		sal_unlisten_ports (lc->sal);
+	} else {
+		apply_transports(lc);
+	}
 
+}
+void linphone_core_refresh_registers(LinphoneCore* lc) {
+	const MSList *elem=linphone_core_get_proxy_config_list(lc);
+	for(;elem!=NULL;elem=elem->next){
+		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
+		if (linphone_proxy_config_register_enabled(cfg) ) {
+			cfg->registered=0;
+			cfg->commit=TRUE;
+		}
+	}
+	
+}
 void linphone_core_set_network_reachable(LinphoneCore* lc,bool_t isReachable) {
 	//first disable automatic mode
 	if (lc->auto_net_state_mon) {
