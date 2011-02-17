@@ -329,6 +329,7 @@ int sal_unlisten_ports(Sal *ctx){
 	if (ctx->running){
 		eXosip_quit();
 		eXosip_init();
+		ctx->running=FALSE;
 	}
 	return 0;
 }
