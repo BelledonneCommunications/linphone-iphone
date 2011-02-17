@@ -1346,9 +1346,11 @@ static void process_dtmf_relay(Sal *sal, eXosip_event_t *ev){
 					sal->callbacks.dtmf_received(op, tmp[0]);
 			}
 		}
+		eXosip_lock();
 		eXosip_call_build_answer(ev->tid,200,&ans);
 		if (ans)
 			eXosip_call_send_answer(ev->tid,200,ans);
+		eXosip_unlock();
 	}
 }
 
