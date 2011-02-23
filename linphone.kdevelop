@@ -16,7 +16,7 @@
   <kdevcustomproject>
     <run>
       <directoryradio>executable</directoryradio>
-      <mainprogram>gtk-glade/linphone-3</mainprogram>
+      <mainprogram>gtk-glade/linphone</mainprogram>
       <programargs/>
       <globaldebugarguments/>
       <globalcwd/>

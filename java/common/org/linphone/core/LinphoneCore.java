@@ -25,7 +25,7 @@ import java.util.Vector;
  * Linphone core main object created by method {@link LinphoneCoreFactory#createLinphoneCore(LinphoneCoreListener, String, String, Object)}.	
  *
  */
-@SuppressWarnings("unchecked")
+
 public interface LinphoneCore {
 	/**
 	 * linphone core states
@@ -178,6 +178,50 @@ public interface LinphoneCore {
 		public String toString() {
 			return mStringValue;
 		}		
+	}
+	/**
+	 * 	EC Calibrator Status
+.
+	 *
+	 */
+	static public class EcCalibratorStatus {
+
+		static private Vector values = new Vector();
+		/**
+		 * Calibration in progress
+		 */
+		static public EcCalibratorStatus InProgress = new EcCalibratorStatus(0,"InProgress");       
+		/**
+		 * Calibration done
+		 */
+		static public EcCalibratorStatus Done  = new EcCalibratorStatus(1,"Done");
+		/**
+		 * Calibration in progress
+		 */
+		static public EcCalibratorStatus Failed = new EcCalibratorStatus(2,"Failed");
+
+		private final int mValue;
+		private final String mStringValue;
+
+		private EcCalibratorStatus(int value,String stringValue) {
+			mValue = value;
+			values.addElement(this);
+			mStringValue=stringValue;
+		}
+		public static EcCalibratorStatus fromInt(int value) {
+
+			for (int i=0; i<values.size();i++) {
+				EcCalibratorStatus status = (EcCalibratorStatus) values.elementAt(i);
+				if (status.mValue == value) return status;
+			}
+			throw new RuntimeException("status not found ["+value+"]");
+		}
+		public String toString() {
+			return mStringValue;
+		}
+		public int value(){
+			return mValue;
+		}
 	}
 	/**
 	 * clear all added proxy configs
@@ -386,10 +430,17 @@ public interface LinphoneCore {
 	 */
 	public boolean isEchoCancellationEnabled();
 	/**
-	 * not implemented yet
+	 * set transport used for signaling (TCP or UDP)
+	 * 
 	 * @param aTransport
 	 */
 	public void setSignalingTransport(Transport aTransport);
+	/**
+	 * get transport used for signaling (TCP or UDP)
+	 * 
+	 * @return  Transport;
+	 */
+	public Transport getSignalingTransport();
 	/**
 	 * not implemented
 	 * @param value
@@ -489,5 +540,20 @@ public interface LinphoneCore {
 	public VideoSize getPreferredVideoSize();
 	
 	public PayloadType[] listVideoCodecs();
-
+	/**
+	 * enable signaling keep alive. small udp packet sent periodically to keep udp NAT association
+	 */
+	void enableKeepAlive(boolean enable);
+	/**
+	 * get keep elive mode
+	 * @return true if enable
+ 	 */
+	boolean isKeepAliveEnabled();
+	/**
+	 * Start an echo calibration of the sound devices, in order to find adequate settings for the echo canceler automatically.
+	 * status is notified to {@link LinphoneCoreListener#ecCalibrationStatus(EcCalibratorStatus, int, Object)}
+	 * @param User object
+	 * @throws LinphoneCoreException if operation is still in progress;
+	**/
+	void startEchoCalibration(Object data) throws LinphoneCoreException;
 }

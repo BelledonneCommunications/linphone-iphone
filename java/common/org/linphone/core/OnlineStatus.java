@@ -25,7 +25,7 @@ import java.util.Vector;
  * Enum describing remote friend status
  *
  */
-@SuppressWarnings("unchecked")
+
 public class OnlineStatus {
 
 		static private Vector values = new Vector();

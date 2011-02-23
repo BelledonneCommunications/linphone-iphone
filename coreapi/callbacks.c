@@ -235,10 +235,12 @@ static void call_ringing(SalOp *h){
 		if (lc->ringstream!=NULL) return;	/*already ringing !*/
 		if (lc->sound_conf.play_sndcard!=NULL){
 			MSSndCard *ringcard=lc->sound_conf.lsd_card ? lc->sound_conf.lsd_card : lc->sound_conf.play_sndcard;
-			ms_message("Remote ringing...");
 			lc->ringstream=ring_start(lc->sound_conf.remote_ring,2000,ringcard);
-			linphone_call_set_state(call,LinphoneCallOutgoingRinging,"Remote ringing");		
 		}
+		ms_message("Remote ringing...");
+		if (lc->vtable.display_status) 
+			lc->vtable.display_status(lc,_("Remote ringing..."));
+		linphone_call_set_state(call,LinphoneCallOutgoingRinging,"Remote ringing");
 	}else{
 		/*accept early media */
 		if (call->audiostream && call->audiostream->ticker!=NULL){
@@ -303,18 +305,30 @@ static void call_accepted(SalOp *op){
 				ms_free(msg);
 			}
 			linphone_core_update_streams (lc,call,md);
-			linphone_call_set_state(call,LinphoneCallPaused,"Call paused");
+			linphone_call_set_state(call,LinphoneCallPausedByRemote,"Call paused by remote");
 		}else{
-			if (lc->vtable.display_status){
-				lc->vtable.display_status(lc,_("Call answered - connected."));
-			}
 			if (call->state==LinphoneCallStreamsRunning){
 				/*media was running before, the remote as acceted a call modification (that is
 					a reinvite made by us. We must notify the application this reinvite was accepted*/
 				linphone_call_set_state(call, LinphoneCallUpdated, "Call updated");
+			}else{
+				if (call->state==LinphoneCallResuming){
+					if (lc->vtable.display_status){
+						lc->vtable.display_status(lc,_("Call resumed."));
+					}
+				}else{
+					if (lc->vtable.display_status){
+						char *tmp=linphone_call_get_remote_address_as_string (call);
+						char *msg=ms_strdup_printf(_("Call answered by %s."),tmp);
+						lc->vtable.display_status(lc,msg);
+						ms_free(tmp);
+						ms_free(msg);
+					}
+				}
 			}
 			linphone_core_update_streams (lc,call,md);
 			linphone_call_set_state(call, LinphoneCallStreamsRunning, "Streams running");
+			lc->current_call=call;
 		}
 	}else{
 		/*send a bye*/
@@ -349,6 +363,7 @@ static void call_ack(SalOp *op){
 	}
 }
 
+
 /* this callback is called when an incoming re-INVITE modifies the session*/
 static void call_updating(SalOp *op){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
@@ -360,32 +375,22 @@ static void call_updating(SalOp *op){
 	
 	if (md && !sal_media_description_empty(md))
 	{
-		if ((call->state==LinphoneCallPausedByRemote || call->state==LinphoneCallPaused) &&
-		    sal_media_description_has_dir(md,SalStreamSendRecv) && strcmp(md->addr,"0.0.0.0")!=0){
-			/*make sure we can be resumed */
-			if (lc->current_call!=NULL && lc->current_call!=call){
-				ms_warning("Attempt to be resumed but already in call with somebody else!");
-				/*we are actively running another call, reject with a busy*/
-				sal_call_decline (op,SalReasonBusy,NULL);
-				return;
+		if (sal_media_description_has_dir(call->localdesc,SalStreamSendRecv)){
+			ms_message("Our local status is SalStreamSendRecv");
+			if (sal_media_description_has_dir (md,SalStreamRecvOnly) || sal_media_description_has_dir(md,SalStreamInactive)){
+				/* we are being paused */
+				if(lc->vtable.display_status)
+					lc->vtable.display_status(lc,_("We are being paused..."));
+				linphone_call_set_state (call,LinphoneCallPausedByRemote,"Call paused by remote");
+			}else if (!sal_media_description_has_dir(call->resultdesc,SalStreamSendRecv) && sal_media_description_has_dir(md,SalStreamSendRecv)){
+				if(lc->vtable.display_status)
+					lc->vtable.display_status(lc,_("We have been resumed..."));
+				linphone_call_set_state (call,LinphoneCallStreamsRunning,"Connected (streams running)");
+				lc->current_call=call;
+			}else{
+				prevstate=call->state;
+				linphone_call_set_state(call, LinphoneCallUpdatedByRemote,"Call updated by remote");
 			}
-			if(lc->vtable.display_status)
-				lc->vtable.display_status(lc,_("We have been resumed..."));
-			linphone_call_set_state (call,LinphoneCallStreamsRunning,"Connected (streams running)");
-		}
-		else if(call->state==LinphoneCallStreamsRunning &&
-		        ( sal_media_description_has_dir(md,SalStreamRecvOnly) 
-		         || sal_media_description_has_dir(md,SalStreamInactive)
-		         || strcmp(md->addr,"0.0.0.0")==0)){
-			if(lc->vtable.display_status)
-				lc->vtable.display_status(lc,_("We are being paused..."));
-			linphone_call_set_state (call,LinphoneCallPausedByRemote,"Call paused by remote");
-			if (lc->current_call!=call){
-				ms_error("Inconsitency detected: current call is %p but call %p is being paused !",lc->current_call,call);
-			}
-		}else{
-			prevstate=call->state;
-			linphone_call_set_state(call, LinphoneCallUpdatedByRemote,"Call updated by remote");
 		}
 		/*accept the modification (sends a 200Ok)*/
 		sal_call_accept(op);
@@ -501,6 +506,13 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 	}
 }
 
+static void call_released(SalOp *op){
+	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
+	if (call!=NULL){
+		linphone_call_set_state(call,LinphoneCallReleased,"Call released");
+	}else ms_error("call_released() for already destroyed call ?");
+}
+
 static void auth_requested(SalOp *h, const char *realm, const char *username){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(h));
 	LinphoneAuthInfo *ai=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,realm,username);
@@ -516,7 +528,7 @@ static void auth_requested(SalOp *h, const char *realm, const char *username){
 		ai->usecount++;
 	}else{
 		if (ai && ai->works==FALSE) {
-			register_failure(h, SalErrorFailure, SalReasonForbidden, _("Authentication failure"));
+			sal_op_cancel_authentication(h);
 		} 
 		if (lc->vtable.auth_info_requested)
 			lc->vtable.auth_info_requested(lc,realm,username);
@@ -676,6 +688,7 @@ SalCallbacks linphone_sal_callbacks={
 	call_updating,
 	call_terminated,
 	call_failure,
+	call_released,
 	auth_requested,
 	auth_success,
 	register_success,

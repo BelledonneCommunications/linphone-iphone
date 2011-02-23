@@ -277,7 +277,9 @@ SalPresenceStatus linphone_online_status_to_sal(LinphoneOnlineStatus os){
 }
 
 void linphone_friend_notify(LinphoneFriend *lf, LinphoneOnlineStatus os){
-	//printf("Wish to notify %p, lf->nid=%i\n",lf,lf->nid);
+	char *addr=linphone_address_as_string(linphone_friend_get_address(lf));
+	ms_message("Want to notify %s, insub=%p",addr,lf->insub);
+	ms_free(addr);
 	if (lf->insub!=NULL){
 		sal_notify_presence(lf->insub,linphone_online_status_to_sal(os),NULL);
 	}
@@ -286,8 +288,6 @@ void linphone_friend_notify(LinphoneFriend *lf, LinphoneOnlineStatus os){
 static void linphone_friend_unsubscribe(LinphoneFriend *lf){
 	if (lf->outsub!=NULL) {
 		sal_unsubscribe(lf->outsub);
-		sal_op_release(lf->outsub);
-		lf->outsub=NULL;
 		lf->subscribe_active=FALSE;
 	}
 }
@@ -296,13 +296,19 @@ void linphone_friend_close_subscriptions(LinphoneFriend *lf){
 	linphone_friend_unsubscribe(lf);
 	if (lf->insub){
 		sal_notify_close(lf->insub);
-		sal_op_release(lf->insub);
-		lf->insub=NULL;
+		
 	}
 }
 
 void linphone_friend_destroy(LinphoneFriend *lf){
-	
+	if (lf->insub) {
+		sal_op_release(lf->insub);
+		lf->insub=NULL;
+	}
+	if (lf->outsub){
+		sal_op_release(lf->outsub);
+		lf->outsub=NULL;
+	}
 	if (lf->uri!=NULL) linphone_address_destroy(lf->uri);
 	if (lf->info!=NULL) buddy_info_free(lf->info);
 	ms_free(lf);

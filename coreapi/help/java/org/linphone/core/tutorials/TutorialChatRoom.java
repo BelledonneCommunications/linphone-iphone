@@ -22,6 +22,7 @@ import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneCall;
 import org.linphone.core.LinphoneChatRoom;
 import org.linphone.core.LinphoneCore;
+import org.linphone.core.LinphoneCore.EcCalibratorStatus;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListener;
@@ -73,7 +74,7 @@ public class TutorialChatRoom implements LinphoneCoreListener {
 	public void newSubscriptionRequest(LinphoneCore lc, LinphoneFriend lf,String url) {}
 	public void notifyPresenceReceived(LinphoneCore lc, LinphoneFriend lf) {}
 	public void callState(LinphoneCore lc, LinphoneCall call, State cstate, String msg){}
-
+	public void ecCalibrationStatus(LinphoneCore lc, EcCalibratorStatus status,int delay_ms, Object data) {}
 	
 	
 	public void textReceived(LinphoneCore lc, LinphoneChatRoom cr,LinphoneAddress from, String message) {
@@ -143,5 +144,6 @@ public class TutorialChatRoom implements LinphoneCoreListener {
 	private void write(String s) {
 		TutorialNotifier.notify(s);
 	}
+
 
 }

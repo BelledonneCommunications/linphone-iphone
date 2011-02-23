@@ -32,6 +32,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/msequalizer.h"
 #include "mediastreamer2/msfileplayer.h"
 #include "mediastreamer2/msjpegwriter.h"
+#include "mediastreamer2/mseventqueue.h"
 
 #ifdef VIDEO_ENABLED
 static MSWebCam *get_nowebcam_device(){
@@ -58,7 +59,7 @@ static MSList *make_codec_list(LinphoneCore *lc, const MSList *codecs, int bandw
 	return l;
 }
 
-SalMediaDescription *create_local_media_description(LinphoneCore *lc, LinphoneCall *call){
+static SalMediaDescription *_create_local_media_description(LinphoneCore *lc, LinphoneCall *call, unsigned int session_id, unsigned int session_ver){
 	MSList *l;
 	PayloadType *pt;
 	const char *me=linphone_core_get_identity(lc);
@@ -66,6 +67,8 @@ SalMediaDescription *create_local_media_description(LinphoneCore *lc, LinphoneCa
 	const char *username=linphone_address_get_username (addr);
 	SalMediaDescription *md=sal_media_description_new();
 	
+	md->session_id=session_id;
+	md->session_ver=session_ver;
 	md->nstreams=1;
 	strncpy(md->addr,call->localip,sizeof(md->addr));
 	strncpy(md->username,username,sizeof(md->username));
@@ -93,6 +96,22 @@ SalMediaDescription *create_local_media_description(LinphoneCore *lc, LinphoneCa
 	}
 	linphone_address_destroy(addr);
 	return md;
+}
+
+void update_local_media_description(LinphoneCore *lc, LinphoneCall *call, SalMediaDescription **md){
+	if (*md == NULL) {
+		*md = _create_local_media_description(lc,call,0,0);
+	} else {
+		unsigned int id = (*md)->session_id;
+		unsigned int ver = (*md)->session_ver+1;
+		sal_media_description_unref(*md);
+		*md = _create_local_media_description(lc,call,id,ver);
+	}
+}
+
+SalMediaDescription *create_local_media_description(LinphoneCore *lc, LinphoneCall *call){
+	unsigned int id=rand();
+	return _create_local_media_description(lc,call,id,id);
 }
 
 static int find_port_offset(LinphoneCore *lc){
@@ -126,6 +145,7 @@ static void linphone_call_init_common(LinphoneCall *call, LinphoneAddress *from,
 	call->start_time=time(NULL);
 	call->media_start_time=0;
 	call->log=linphone_call_log_new(call, from, to);
+	call->owns_call_log=TRUE;
 	linphone_core_notify_all_friends(call->core,LinphoneStatusOnThePhone);
 	port_offset=find_port_offset (call->core);
 	if (port_offset==-1) return;
@@ -222,7 +242,9 @@ static void linphone_call_set_terminated(LinphoneCall *call){
 		else status=LinphoneCallSuccess;
 		
 	}
+	call->owns_call_log=FALSE;
 	linphone_call_log_completed(call->log,call, status);
+	
 	
 	if (call == lc->current_call){
 		ms_message("Resetting the current call");
@@ -236,13 +258,6 @@ static void linphone_call_set_terminated(LinphoneCall *call){
 	if (ms_list_size(lc->calls)==0)
 		linphone_core_notify_all_friends(lc,lc->presence_mode);
 	
-	if (call->op!=NULL) {
-		/* so that we cannot have anymore upcalls for SAL
-		 concerning this call*/
-		sal_op_release(call->op);
-		call->op=NULL;
-	}
-	linphone_call_unref(call);
 }
 
 const char *linphone_call_state_to_string(LinphoneCallState cs){
@@ -283,14 +298,23 @@ const char *linphone_call_state_to_string(LinphoneCallState cs){
 			return "LinphoneCallIncomingEarlyMedia";
 		case LinphoneCallUpdated:
 			return "LinphoneCallUpdated";
+		case LinphoneCallReleased:
+			return "LinphoneCallReleased";
 	}
 	return "undefined state";
 }
 
 void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const char *message){
 	LinphoneCore *lc=call->core;
-	bool_t finalize_call=FALSE;
+
 	if (call->state!=cstate){
+		if (call->state==LinphoneCallEnd || call->state==LinphoneCallError){
+			if (cstate!=LinphoneCallReleased){
+				ms_warning("Spurious call state change from %s to %s, ignored.",linphone_call_state_to_string(call->state),
+		           linphone_call_state_to_string(cstate));
+				return;
+			}
+		}
 		ms_message("Call %p: moving from state %s to %s",call,linphone_call_state_to_string(call->state),
 		           linphone_call_state_to_string(cstate));
 		if (cstate!=LinphoneCallRefered){
@@ -299,14 +323,20 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 			call->state=cstate;
 		}
 		if (cstate==LinphoneCallEnd || cstate==LinphoneCallError){
-			finalize_call=TRUE;
-			linphone_call_ref(call);
 			linphone_call_set_terminated (call);
 		}
+		
 		if (lc->vtable.call_state_changed)
 			lc->vtable.call_state_changed(lc,call,cstate,message);
-		if (finalize_call)
+		if (cstate==LinphoneCallReleased){
+			if (call->op!=NULL) {
+				/* so that we cannot have anymore upcalls for SAL
+				 concerning this call*/
+				sal_op_release(call->op);
+				call->op=NULL;
+			}
 			linphone_call_unref(call);
+		}
 	}
 }
 
@@ -330,6 +360,8 @@ static void linphone_call_destroy(LinphoneCall *obj)
 	if (obj->refer_to){
 		ms_free(obj->refer_to);
 	}
+	if (obj->owns_call_log)
+		linphone_call_log_destroy(obj->log);
 	ms_free(obj);
 }
 
@@ -474,6 +506,20 @@ int linphone_call_get_duration(const LinphoneCall *call){
 }
 
 /**
+ * Returns the call object this call is replacing, if any.
+ * Call replacement can occur during call transfers.
+ * By default, the core automatically terminates the replaced call and accept the new one.
+ * This function allows the application to know whether a new incoming call is a one that replaces another one.
+**/
+LinphoneCall *linphone_call_get_replaced_call(LinphoneCall *call){
+	SalOp *op=sal_call_get_replaces(call->op);
+	if (op){
+		return (LinphoneCall*)sal_op_get_user_pointer(op);
+	}
+	return NULL;
+}
+
+/**
  * Indicate whether camera input should be sent to remote end.
 **/
 void linphone_call_enable_camera (LinphoneCall *call, bool_t enable){
@@ -505,21 +551,21 @@ int linphone_call_take_video_snapshot(LinphoneCall *call, const char *file){
 }
 
 /**
- *
+ * Returns TRUE if camera pictures are sent to the remote party.
 **/
 bool_t linphone_call_camera_enabled (const LinphoneCall *call){
 	return call->camera_active;
 }
 
 /**
- * 
+ * Enable video stream.
 **/
 void linphone_call_params_enable_video(LinphoneCallParams *cp, bool_t enabled){
 	cp->has_video=enabled;
 }
 
 /**
- *
+ * Returns whether video is enabled.
 **/
 bool_t linphone_call_params_video_enabled(const LinphoneCallParams *cp){
 	return cp->has_video;
@@ -969,6 +1015,7 @@ void linphone_call_stop_media_streams(LinphoneCall *call){
 		video_stream_stop(call->videostream);
 		call->videostream=NULL;
 	}
+	ms_event_queue_skip(call->core->msevq);
 	
 #endif
 	if (call->audio_profile){

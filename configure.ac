@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([linphone],[3.3.99.10],[linphone-developers@nongnu.org])
+AC_INIT([linphone],[3.4.1],[linphone-developers@nongnu.org])
 AC_CANONICAL_SYSTEM
 AC_CONFIG_SRCDIR([coreapi/linphonecore.c])
 
@@ -298,7 +298,9 @@ AC_ARG_ENABLE(x11,
 if test "$video" = "true"; then
 	
 	if test "$enable_x11" = "true"; then
-	   AC_CHECK_HEADERS(X11/Xlib.h)
+	  	AC_CHECK_HEADERS(X11/Xlib.h)
+		AC_CHECK_LIB(X11,XUnmapWindow, X11_LIBS="-lX11")
+		AC_SUBST(X11_LIBS)
 	fi
 	AC_DEFINE(VIDEO_ENABLED,1,[defined if video support is available])
 fi

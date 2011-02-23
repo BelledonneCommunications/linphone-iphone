@@ -27,9 +27,9 @@ if BUILD_GTK_UI
 
 BUILT_SOURCES=version_date.h
 
-bin_PROGRAMS=linphone-3
+bin_PROGRAMS=linphone
 
-linphone_3_SOURCES=	\
+linphone_SOURCES=	\
 			main.c \
 			propertybox.c \
 			friendlist.c \
@@ -45,7 +45,7 @@ linphone_3_SOURCES=	\
 			loginframe.c \
 			linphone.h 
 
-linphone_3_LDADD=$(ORTP_LIBS) \
+linphone_LDADD=$(ORTP_LIBS) \
 		$(MEDIASTREAMER_LIBS) \
 		$(top_builddir)/coreapi/liblinphone.la \
 			$(LIBGTK_LIBS) $(INTLLIBS) 
@@ -56,10 +56,10 @@ if BUILD_WIN32
 linphone.res:	$(LINPHONE_ICO_RC_FILE) $(LINPHONE_ICO_FILE)
 	windres $(LINPHONE_ICO_RC_FILE) -O coff -o linphone.res
 
-linphone_3_LDADD+=linphone.res -lwininet
-linphone_3_LDFLAGS=-Wl,--export-all-symbols -mwindows
+linphone_LDADD+=linphone.res -lwininet
+linphone_LDFLAGS=-Wl,--export-all-symbols -mwindows
 else
-linphone_3_LDFLAGS=-export-dynamic
+linphone_LDFLAGS=-export-dynamic
 endif
 
 uidir=$(datadir)/linphone

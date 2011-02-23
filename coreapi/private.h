@@ -26,6 +26,7 @@
 #define _PRIVATE_H
 
 #include "linphonecore.h"
+#include "linphonecore_utils.h"
 #include "sal.h"
 
 #ifdef HAVE_CONFIG_H
@@ -97,6 +98,7 @@ struct _LinphoneCall
 	bool_t camera_active;
 	bool_t all_muted; /*this flag is set during early medias*/
 	bool_t playing_ringbacktone;
+	bool_t owns_call_log;
 };
 
 
@@ -424,6 +426,7 @@ struct _LinphoneCore
 	unsigned long video_window_id;
 	unsigned long preview_window_id;
 	time_t netup_time; /*time when network went reachable */
+	struct _EcCalibrator *ecc;
 	bool_t use_files;
 	bool_t apply_nat_settings;
 	bool_t initial_subscribes_sent;
@@ -432,6 +435,7 @@ struct _LinphoneCore
 	bool_t auto_net_state_mon;
 	bool_t network_reachable;
 	bool_t use_preview_window;
+	bool_t ringstream_autorelease;
 };
 
 bool_t linphone_core_can_we_add_call(LinphoneCore *lc);
@@ -443,6 +447,7 @@ int linphone_core_get_calls_nb(const LinphoneCore *lc);
 void linphone_core_set_state(LinphoneCore *lc, LinphoneGlobalState gstate, const char *message);
 
 SalMediaDescription *create_local_media_description(LinphoneCore *lc, LinphoneCall *call);
+void update_local_media_description(LinphoneCore *lc, LinphoneCall *call, SalMediaDescription **md);
 
 void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMediaDescription *new_md);
 
@@ -450,6 +455,27 @@ bool_t linphone_core_is_payload_type_usable_for_bandwidth(LinphoneCore *lc, Payl
 
 #define linphone_core_ready(lc) ((lc)->state!=LinphoneGlobalStartup)
 void _linphone_core_configure_resolver();
+
+struct _EcCalibrator{
+	ms_thread_t thread;
+	MSSndCard *play_card,*capt_card;
+	MSFilter *sndread,*det,*rec;
+	MSFilter *play, *gen, *sndwrite,*resampler;
+	MSTicker *ticker;
+	LinphoneEcCalibrationCallback cb;
+	void *cb_data;
+	int recv_count;
+	int sent_count;
+	int64_t acc;
+	int delay;
+	LinphoneEcCalibratorStatus status;
+};
+
+typedef struct _EcCalibrator EcCalibrator;
+
+LinphoneEcCalibratorStatus ec_calibrator_get_status(EcCalibrator *ecc);
+
+void ec_calibrator_destroy(EcCalibrator *ecc);
 
 #define HOLD_OFF	(0)
 #define HOLD_ON		(1)

@@ -5,16 +5,16 @@ This is Linphone, a free (GPL) video softphone based on the SIP protocol.
 - you need at least:
 		- libosip2>=3.0.3
 		- libeXosip2>=3.0.3
-		- speex>=1.1.6
-		- libreadline
+		- speex>=1.2.0 (including libspeexdsp part)
+		- libreadline (optional: for convenient command line in linphonec)
 	+ gsm codec (gsm source package or libgsm-dev or gsm-devel) (optional)
 	+ if you want to gtk/glade interface:
 		- gtk>=2.16.0
-		- libglade>=2.2
 	+ if you want video support:
 		- SDL>=1.2.10
-		- libavcodec (ffmpeg) from a year 2007 or later cvs/svn
+		- libavcodec (ffmpeg) 
 		- libswscale (part of ffmpeg too) for better scaling performance
+		- theora (optional)
 
 with their corresponding -dev or -devel package if you don't use source packages.
 
@@ -38,7 +38,7 @@ Here is a short description of the content of the source tree.
 - coreapi/ is the central point of linphone, which handles relationship between sip signalisation and media
   streaming. It contains an easy to use api to create a sip phone.
 
-- gtk-glade/	is the directory that contains the gui frontend of linphone. It uses all libraries descibed above.
+- gtk/	is the directory that contains the gui frontend of linphone. It uses all libraries descibed above.
 
 - console/
 	* linphonec.c is the main file for the console version of linphone.

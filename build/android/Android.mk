@@ -46,13 +46,14 @@ LOCAL_SRC_FILES = \
 	sal_eXosip2_sdp.c \
 	offeranswer.c \
 	callbacks.c \
-	linphonecall.c
+	linphonecall.c \
+	ec-calibrator.c
 
 LOCAL_CFLAGS += \
 	-D_BYTE_ORDER=_LITTLE_ENDIAN \
 	-DORTP_INET6 \
 	-DENABLE_TRACE \
-	-DLINPHONE_VERSION=\"Linphone-3.3.x\" \
+	-DLINPHONE_VERSION=\"3.4.0\" \
 	-DLINPHONE_PLUGINS_DIR=\"\\tmp\" \
 	-DLOG_DOMAIN=\"Linphone\"
 
