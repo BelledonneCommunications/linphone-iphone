@@ -480,8 +480,9 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_playDtmf(	JNIEnv*  env
 		,jobject  thiz
 		,jlong lc
 		,jchar dtmf
-		,jint duration) {
-	linphone_core_play_dtmf((LinphoneCore*)lc,dtmf,duration);
+		,jint duration
+		,jboolean speaker) {
+	linphone_core_play_dtmf((LinphoneCore*)lc,dtmf,duration,speaker);
 }
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_stopDtmf(	JNIEnv*  env
 		,jobject  thiz

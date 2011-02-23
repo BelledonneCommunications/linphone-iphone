@@ -3532,12 +3532,19 @@ static MSFilter *get_dtmf_gen(LinphoneCore *lc){
 /**
  * Plays a dtmf to the local user.
 **/
-void linphone_core_play_dtmf(LinphoneCore *lc, char dtmf, int duration_ms){
+void linphone_core_play_dtmf(LinphoneCore *lc, char dtmf, int duration_ms, bool_t speaker){
 	MSFilter *f=get_dtmf_gen(lc);
 	if (f==NULL){
 		ms_error("No dtmf generator at this time !");
 		return;
 	}
+
+	if (!speaker && !linphone_core_in_call(lc)) {
+		// If not in call and user doesn't want sound to go out from speaker
+		// TODO: update dtmf generator to only output on output stream if speaker is false.
+		return;
+	}
+
 	if (duration_ms>0)
 		ms_filter_call_method(f, MS_DTMF_GEN_PLAY, &dtmf);
 	else ms_filter_call_method(f, MS_DTMF_GEN_START, &dtmf);

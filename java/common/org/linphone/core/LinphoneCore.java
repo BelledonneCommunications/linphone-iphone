@@ -350,8 +350,9 @@ public interface LinphoneCore {
 	 * Initiate a dtmf signal to the speqker if not in call
 	 * @param number
 	 * @param duration in ms , -1 for unlimited
+	 * @param speaker play dtmf on speaker
 	 */
-	public void playDtmf(char number,int duration);
+	public void playDtmf(char number,int duration, boolean speaker);
 	/**
 	 * stop current dtmf
 	 */
