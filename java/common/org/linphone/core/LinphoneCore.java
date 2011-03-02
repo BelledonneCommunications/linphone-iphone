@@ -391,12 +391,12 @@ public interface LinphoneCore {
 	 */
 	public void sendDtmf(char number);
 	/**
-	 * Initiate a dtmf signal to the speqker if not in call
+	 * Initiate a dtmf signal to the speaker if not in call.
+	 * Sending of the DTMF is done in another function.
 	 * @param number
 	 * @param duration in ms , -1 for unlimited
-	 * @param speaker play dtmf on speaker
 	 */
-	public void playDtmf(char number,int duration, boolean speaker);
+	public void playDtmf(char number,int duration);
 	/**
 	 * stop current dtmf
 	 */

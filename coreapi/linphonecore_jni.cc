@@ -508,9 +508,8 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_playDtmf(	JNIEnv*  env
 		,jobject  thiz
 		,jlong lc
 		,jchar dtmf
-		,jint duration
-		,jboolean speaker) {
-	linphone_core_play_dtmf((LinphoneCore*)lc,dtmf,duration,speaker);
+		,jint duration) {
+	linphone_core_play_dtmf((LinphoneCore*)lc,dtmf,duration);
 }
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_stopDtmf(	JNIEnv*  env
 		,jobject  thiz
@@ -1174,3 +1173,6 @@ extern "C" void Java_org_linphone_core_LinphoneProxyConfigImpl_setExpires(JNIEnv
 	linphone_proxy_config_expires((LinphoneProxyConfig *) ptr, (int) delay);
 }
 
+extern "C" jint Java_org_linphone_core_LinphoneCallImpl_getDuration(JNIEnv*  env,jobject thiz,jlong ptr) {
+	linphone_call_get_duration((LinphoneCall *) ptr);
+}
