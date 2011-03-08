@@ -345,52 +345,6 @@ bool_t lp_spawn_command_line_sync(const char *command, char **result,int *comman
 	return FALSE;
 }
 
-#if defined(HAVE_GETIFADDRS) && defined(INET6)
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <ifaddrs.h>
-bool_t host_has_ipv6_network()
-{
-	struct ifaddrs *ifp;
-	struct ifaddrs *ifpstart;
-	bool_t ipv6_present=FALSE;
-
-	if (getifaddrs (&ifpstart) < 0)
-	{
-		return FALSE;
-	}
-
-	for (ifp=ifpstart; ifp != NULL; ifp = ifp->ifa_next)
-	{
-		if (!ifp->ifa_addr)
-		  continue;
-
-		switch (ifp->ifa_addr->sa_family) {
-		case AF_INET:
-
-			break;
-		case AF_INET6:
-		    ipv6_present=TRUE;
-			break;
-		default:
-		        continue;
-  		}
-	}
-
-	freeifaddrs (ifpstart);
-
-	return ipv6_present;
-}
-#else
-
-bool_t host_has_ipv6_network()
-{
-	return FALSE;
-}
-
-
-#endif
-
 static ortp_socket_t create_socket(int local_port){
 	struct sockaddr_in laddr;
 	ortp_socket_t sock;
