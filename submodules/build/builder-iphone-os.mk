@@ -27,12 +27,15 @@ linphone_configure_controls=  --disable-video \
                               --with-readline=none  \
                               --enable-gtk_ui=no \
                               --enable-ssl-hmac=no \
+                              --enable-ssl=yes \
                               --enable-macaqsnd=no \
                               --enable-iounit=yes \
                               --with-gsm=$(prefix) \
-                              --enable-nonstandard-gsm \
                               SPEEX_CFLAGS="-I$(prefix)/include" \
-                              SPEEX_LIBS="-L$(prefix)/lib -lspeex -lspeexdsp"
+                              SPEEXDSP_LIBS="-L$(prefix)/lib -lspeexdsp" \
+                              SPEEX_LIBS="$(SPEEXDSP_LIBS) -lspeex " \
+                              OPENSSL_CFLAGS="-I$(prefix)/include" \
+                              OPENSSL_LIBS="-L$(prefix)/lib -lssl -lcrypto" 
 
 #path
 BUILDER_SRC_DIR?=$(shell pwd)/../
@@ -57,7 +60,10 @@ LIBILBC_BUILD_DIR:=$(BUILDER_BUILD_DIR)/libilbc-rfc3951
 
 ifneq (,$(findstring arm,$(host)))
 	SPEEX_CONFIGURE_OPTION := --enable-fixed-point --disable-float-api
+	OPENSSL_ZIP := openssl-0.9.8j-arm.zip
 	#SPEEX_CONFIGURE_OPTION := --enable-arm5e-asm --enable-fixed-point
+else
+	OPENSSL_ZIP := openssl-0.9.8j-i386.zip
 endif
 
 
@@ -134,14 +140,14 @@ clean-makefile-osip2:
 $(BUILDER_SRC_DIR)/$(eXosip_dir)/configure:
 	 cd $(BUILDER_SRC_DIR)/$(eXosip_dir) && ./autogen.sh
 	 
-$(BUILDER_BUILD_DIR)/$(eXosip_dir)/Makefile: $(BUILDER_SRC_DIR)/$(eXosip_dir)/configure
+$(BUILDER_BUILD_DIR)/$(eXosip_dir)/Makefile: $(BUILDER_SRC_DIR)/$(eXosip_dir)/configure $(prefix)/include/openssl/ssl.h
 	mkdir -p $(BUILDER_BUILD_DIR)/$(eXosip_dir)
 	cd $(BUILDER_BUILD_DIR)/$(eXosip_dir)/\
 	&& PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig  CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
-	$(BUILDER_SRC_DIR)/$(eXosip_dir)/configure -prefix=$(prefix) --host=$(host) ${library_mode} --disable-tools 
+	$(BUILDER_SRC_DIR)/$(eXosip_dir)/configure -prefix=$(prefix) --host=$(host) ${library_mode} CFLAGS="-I$(prefix)/include -L$(prefix)/lib -lcrypto" --enable-openssl  --disable-tools 
 
 build-eXosip2: $(BUILDER_BUILD_DIR)/$(eXosip_dir)/Makefile
-	 cd $(BUILDER_BUILD_DIR)/$(eXosip_dir)  && make  && make install
+	 cd $(BUILDER_BUILD_DIR)/$(eXosip_dir)  && make  DEFS="-DHAVE_CONFIG_H -include $(BUILDER_SRC_DIR)/$(eXosip_dir)/include/eXosip2/eXosip_transport_hook.h" && make install
 
 clean-eXosip2:
 	 cd  $(BUILDER_BUILD_DIR)/$(eXosip_dir)  && make clean
@@ -245,6 +251,10 @@ veryclean-libilbc:
 clean-makefile-libilbc:
 	cd $(LIBILBC_BUILD_DIR) && rm -f Makefile
 
+#openssl
+$(prefix)/include/openssl/ssl.h:
+	cd $(prefix) \
+	&& unzip $(BUILDER_SRC_DIR)/prebuilt/$(OPENSSL_ZIP)
 
 #sdk generation and distribution
 
