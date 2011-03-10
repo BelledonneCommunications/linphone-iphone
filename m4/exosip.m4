@@ -23,7 +23,7 @@ CPPFLAGS=$CPPFLAGS_save
 
 dnl check for eXosip2 libs
 LDFLAGS_save=$LDFLAGS
-LDFLAGS="$OSIP_LIBS $LDFLAGS"
+LDFLAGS="$OSIP_LIBS $LDFLAGS $OPENSSL_LIBS"
 LIBS_save=$LIBS
 AC_CHECK_LIB([eXosip2],[eXosip_subscribe_remove],
 	[],
