@@ -35,6 +35,8 @@ public interface LinphoneFriend {
 	 *
 	 */
 	static class SubscribePolicy {
+
+		@SuppressWarnings("unchecked")
 		static private Vector values = new Vector();
 		protected final int mValue;
 		private final String mStringValue;
@@ -51,6 +53,8 @@ public interface LinphoneFriend {
 		 * Automatically accepts a subscription request.
 		 */
 		public final static SubscribePolicy SPAccept = new SubscribePolicy(2,"SPAccept");
+		
+		@SuppressWarnings("unchecked")
 		private SubscribePolicy(int value,String stringValue) {
 			mValue = value;
 			values.addElement(this);

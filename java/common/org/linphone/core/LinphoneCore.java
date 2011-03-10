@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 package org.linphone.core;
 
 
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -31,6 +32,7 @@ public interface LinphoneCore {
 	 * linphone core states
 	 */
 	static public class GlobalState {
+		@SuppressWarnings("unchecked")
 		static private Vector values = new Vector();
 		/**
 		 * Off
@@ -52,6 +54,7 @@ public interface LinphoneCore {
 		private final int mValue;
 		private final String mStringValue;
 
+		@SuppressWarnings("unchecked")
 		private GlobalState(int value,String stringValue) {
 			mValue = value;
 			values.addElement(this);
@@ -74,6 +77,7 @@ public interface LinphoneCore {
 	 *
 	 */
 	static public class RegistrationState {
+		@SuppressWarnings("unchecked")
 		private static Vector values = new Vector();
 		/**
 		 * None
@@ -98,6 +102,7 @@ public interface LinphoneCore {
 		private final int mValue;
 		private final String mStringValue;
 
+		@SuppressWarnings("unchecked")
 		private RegistrationState(int value,String stringValue) {
 			mValue = value;
 			values.addElement(this);
@@ -120,6 +125,7 @@ public interface LinphoneCore {
 	 *
 	 */
 	static public class FirewallPolicy {
+		@SuppressWarnings("unchecked")
 		static private Vector values = new Vector();
 		/**
 		 * No firewall is assumed.
@@ -137,6 +143,7 @@ public interface LinphoneCore {
 		private final int mValue;
 		private final String mStringValue;
 
+		@SuppressWarnings("unchecked")
 		private FirewallPolicy(int value,String stringValue) {
 			mValue = value;
 			values.addElement(this);
@@ -157,35 +164,20 @@ public interface LinphoneCore {
 			return mValue;
 		}
 	}
+	
 	/**
-	 * Signaling transports 
-	 *
+	 * Signaling transports ports.
 	 */
-	static public class Transport {
-		/**
-		 * UDP transport
-		 */
-		public final static Transport udp =new Transport("udp");
-		/**
-		 * TCP transport
-		 */
-		public final static Transport tcp =new Transport("tcp");
-		private final String mStringValue;
-
-		private Transport(String stringValue) {
-			mStringValue=stringValue;
-		}
-		public String toString() {
-			return mStringValue;
-		}		
+	static public class Transports {
+		public int udp;
+		public int tcp;
+		public int tls;
 	}
 	/**
 	 * 	EC Calibrator Status
-.
-	 *
 	 */
 	static public class EcCalibratorStatus {
-
+		@SuppressWarnings("unchecked")
 		static private Vector values = new Vector();
 		/**
 		 * Calibration in progress
@@ -203,6 +195,7 @@ public interface LinphoneCore {
 		private final int mValue;
 		private final String mStringValue;
 
+		@SuppressWarnings("unchecked")
 		private EcCalibratorStatus(int value,String stringValue) {
 			mValue = value;
 			values.addElement(this);
@@ -333,7 +326,8 @@ public interface LinphoneCore {
 	/**
 	 * @return a list of LinphoneCallLog 
 	 */
-	public Vector getCallLogs();
+	@SuppressWarnings("unchecked")
+	public List getCallLogs();
 	
 	/**
 	 * This method is called by the application to notify the Linphone core library when network is reachable.
@@ -430,17 +424,13 @@ public interface LinphoneCore {
 	 */
 	public boolean isEchoCancellationEnabled();
 	/**
-	 * set transport used for signaling (TCP or UDP)
-	 * 
-	 * @param aTransport
+	 * @param transports used for signaling (TCP, UDP and TLS)
 	 */
-	public void setSignalingTransport(Transport aTransport);
+	public void setSignalingTransportPorts(Transports transports);
 	/**
-	 * get transport used for signaling (TCP or UDP)
-	 * 
-	 * @return  Transport;
+	 * @return transports used for signaling (TCP, UDP, TLS)
 	 */
-	public Transport getSignalingTransport();
+	public Transports getSignalingTransportPorts();
 	/**
 	 * not implemented
 	 * @param value

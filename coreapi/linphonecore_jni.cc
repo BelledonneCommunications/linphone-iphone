@@ -1176,3 +1176,28 @@ extern "C" void Java_org_linphone_core_LinphoneProxyConfigImpl_setExpires(JNIEnv
 extern "C" jint Java_org_linphone_core_LinphoneCallImpl_getDuration(JNIEnv*  env,jobject thiz,jlong ptr) {
 	linphone_call_get_duration((LinphoneCall *) ptr);
 }
+	
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getSignalingTransportPort(JNIEnv* env,jobject thiz,jlong ptr, jint code) {
+	LCSipTransports tr;
+	linphone_core_get_sip_transports((LinphoneCore *) ptr, &tr);
+		switch (code) {
+	case 0:
+		return tr.udp_port;
+	case 1:
+		return tr.tcp_port;
+	case 3:
+		return tr.tls_port;
+	default:
+		return -2;
+	}
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setSignalingTransportPorts(JNIEnv*  env,jobject thiz,jlong ptr,jint udp, jint tcp, jint tls) {
+	LinphoneCore *lc = (LinphoneCore *) ptr;
+	LCSipTransports tr;
+	tr.udp_port = udp;
+	tr.tcp_port = tcp;
+	tr.tls_port = tls;
+	
+	linphone_core_set_sip_transports(lc, &tr); // tr will be copied
+}

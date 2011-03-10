@@ -31,6 +31,7 @@ public interface LinphoneCallLog {
 	 *
 	 */
 	static class CallStatus {
+		@SuppressWarnings("unchecked")
 		static private Vector values = new Vector();
 		private final int mValue;
 		private final String mStringValue;
@@ -50,6 +51,8 @@ public interface LinphoneCallLog {
 		 * remote call declined.
 		 */
 		public final static CallStatus Declined = new CallStatus(3,"Declined");
+		
+		@SuppressWarnings("unchecked")
 		private CallStatus(int value,String stringValue) {
 			mValue = value;
 			values.addElement(this);

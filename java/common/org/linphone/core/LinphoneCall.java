@@ -31,6 +31,7 @@ public interface LinphoneCall {
 	 *
 	 */
 	static class State {
+		@SuppressWarnings("unchecked")
 		static private Vector values = new Vector();
 		private final int mValue;
 		private final String mStringValue;
@@ -116,6 +117,7 @@ public interface LinphoneCall {
 		 */
 		public static final State CallReleased = new State(18,"CallReleased");
 
+		@SuppressWarnings("unchecked")
 		private State(int value,String stringValue) {
 			mValue = value;
 			values.addElement(this);

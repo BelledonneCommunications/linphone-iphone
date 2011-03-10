@@ -15,7 +15,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 package org.linphone.core;
 
 import java.util.Vector;
@@ -27,71 +27,72 @@ import java.util.Vector;
  */
 
 public class OnlineStatus {
+	@SuppressWarnings("unchecked")
+	static private Vector values = new Vector();
+	/**
+	 * Offline
+	 */
+	static public OnlineStatus Offline = new OnlineStatus(0,"Offline");
+	/**
+	 * Online 
+	 */
+	static public OnlineStatus Online = new OnlineStatus(1,"Online");
+	/**
+	 * Busy
+	 */
+	static public OnlineStatus Busy = new OnlineStatus(2,"Busy");
+	/**
+	 * Be Right Back
+	 */
+	static public OnlineStatus BeRightBack = new OnlineStatus(3,"BeRightBack");
+	/**
+	 * Away
+	 */
+	static public OnlineStatus Away = new OnlineStatus(4,"Away");
+	/**
+	 * On The Phone
+	 */
+	static public OnlineStatus OnThePhone = new OnlineStatus(5,"OnThePhone");
+	/**
+	 * Out To Lunch 
+	 */
+	static public OnlineStatus OutToLunch  = new OnlineStatus(6,"OutToLunch ");		
+	/**
+	 * Do Not Disturb
+	 */
+	static public OnlineStatus DoNotDisturb = new OnlineStatus(7,"DoNotDisturb");		
+	/**
+	 * Moved in this sate, call can be redirected if an alternate contact address has been set using function {@link LinphoneCore#setPresenceInfo(int, String, OnlineStatus)}
+	 */
+	static public OnlineStatus StatusMoved = new OnlineStatus(8,"StatusMoved");		
+	/**
+	 * Using another messaging service
+	 */
+	static public OnlineStatus StatusAltService = new OnlineStatus(9,"StatusAltService");		
+	/**
+	 * Pending
+	 */
+	static public OnlineStatus Pending = new OnlineStatus(10,"Pending");
 
-		static private Vector values = new Vector();
-		/**
-		 * Offline
-		 */
-		static public OnlineStatus Offline = new OnlineStatus(0,"Offline");
-		/**
-		 * Online 
-		 */
-		static public OnlineStatus Online = new OnlineStatus(1,"Online");
-		/**
-		 * Busy
-		 */
-		static public OnlineStatus Busy = new OnlineStatus(2,"Busy");
-		/**
-		 * Be Right Back
-		 */
-		static public OnlineStatus BeRightBack = new OnlineStatus(3,"BeRightBack");
-		/**
-		 * Away
-		 */
-		static public OnlineStatus Away = new OnlineStatus(4,"Away");
-		/**
-		 * On The Phone
-		 */
-		static public OnlineStatus OnThePhone = new OnlineStatus(5,"OnThePhone");
-		/**
-		 * Out To Lunch 
-		 */
-		static public OnlineStatus OutToLunch  = new OnlineStatus(6,"OutToLunch ");		
-		/**
-		 * Do Not Disturb
-		 */
-		static public OnlineStatus DoNotDisturb = new OnlineStatus(7,"DoNotDisturb");		
-		/**
-		 * Moved in this sate, call can be redirected if an alternate contact address has been set using function {@link LinphoneCore#setPresenceInfo(int, String, OnlineStatus)}
-		 */
-		static public OnlineStatus StatusMoved = new OnlineStatus(8,"StatusMoved");		
-		/**
-		 * Using another messaging service
-		 */
-		static public OnlineStatus StatusAltService = new OnlineStatus(9,"StatusAltService");		
-		/**
-		 * Pending
-		 */
-		static public OnlineStatus Pending = new OnlineStatus(10,"Pending");
-		
-		protected final int mValue;
-		private final String mStringValue;
+	protected final int mValue;
+	private final String mStringValue;
 
-		private OnlineStatus(int value,String stringValue) {
-			mValue = value;
-			values.addElement(this);
-			mStringValue=stringValue;
+	@SuppressWarnings("unchecked")
+	private OnlineStatus(int value,String stringValue) {
+		mValue = value;
+		values.addElement(this);
+		mStringValue=stringValue;
+	}
+	public static OnlineStatus fromInt(int value) {
+		for (int i=0; i<values.size();i++) {
+			OnlineStatus state = (OnlineStatus) values.elementAt(i);
+			if (state.mValue == value) return state;
 		}
-		public static OnlineStatus fromInt(int value) {
+		throw new RuntimeException("state not found ["+value+"]");
+	}
 
-			for (int i=0; i<values.size();i++) {
-				OnlineStatus state = (OnlineStatus) values.elementAt(i);
-				if (state.mValue == value) return state;
-			}
-			throw new RuntimeException("state not found ["+value+"]");
-		}
-		public String toString() {
-			return mStringValue;
-		}
+	public String toString() {
+		return mStringValue;
+	}
 
 }
