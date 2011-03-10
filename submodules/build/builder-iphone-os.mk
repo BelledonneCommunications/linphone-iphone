@@ -88,7 +88,7 @@ veryclean-linphone: clean-linphone veryclean-osip2 veryclean-eXosip2 veryclean-s
 	cd $(LINPHONE_BUILD_DIR) && make distclean
 	cd $(LINPHONE_SRC_DIR) && rm -f configure
 
-clean-makefile-linphone: clean-makefile-osip2 clean-makefile-eXosip2 clean-makefile-speex clean-makefile-msiounit clean-makefile-libilbc clean-makefile-msilbc
+clean-makefile-linphone: clean-makefile-osip2 clean-makefile-eXosip2 clean-makefile-speex  clean-makefile-libilbc clean-makefile-msilbc
 	cd $(LINPHONE_BUILD_DIR) && rm -f Makefile && rm -f oRTP/Makefile && rm -f mediastreamer2/Makefile
 
 
@@ -218,14 +218,14 @@ build-msilbc: build-libilbc $(MSILBC_BUILD_DIR)/Makefile
 	cd $(MSILBC_BUILD_DIR) && make  && make install
 
 clean-msilbc:
-	cd  $(MSILBC_BUILD_DIR) && make clean
+	cd  $(MSILBC_BUILD_DIR) && make -f clean
 
 veryclean-msilbc:
 	cd $(MSILBC_BUILD_DIR) && make distclean
 	cd $(MSILBC_SRC_DIR) && rm configure
 
 clean-makefile-msilbc:
-	cd $(MSILBC_SRC_DIR) && rm Makefile
+	cd $(MSILBC_SRC_DIR) && rm -f Makefile
 
 # libilbc
 
