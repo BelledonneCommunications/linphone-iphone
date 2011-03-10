@@ -172,6 +172,13 @@ public interface LinphoneCore {
 		public int udp;
 		public int tcp;
 		public int tls;
+		
+		public Transports() {};
+		public Transports(Transports t) {
+			this.udp = t.udp;
+			this.tcp = t.tcp;
+			this.tls = t.tls;
+		}
 	}
 	/**
 	 * 	EC Calibrator Status
