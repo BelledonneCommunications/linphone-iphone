@@ -36,14 +36,14 @@ abstract public class LinphoneCoreFactory {
 		factoryName = className;
 	}
 	
-	public static LinphoneCoreFactory instance() {
+	public static final synchronized LinphoneCoreFactory instance() {
 		try {
 		if (theLinphoneCoreFactory == null) {
 			Class lFactoryClass = Class.forName(factoryName);
 			theLinphoneCoreFactory = (LinphoneCoreFactory) lFactoryClass.newInstance();
 		}
 		} catch (Exception e) {
-			System.err.println("cannot instanciate factory ["+factoryName+"]");
+			System.err.println("Cannot instanciate factory ["+factoryName+"]");
 		}
 		return theLinphoneCoreFactory;
 	}

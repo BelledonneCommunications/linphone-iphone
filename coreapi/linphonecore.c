@@ -496,10 +496,6 @@ static void sip_config_read(LinphoneCore *lc)
 	ipv6=lp_config_get_int(lc->config,"sip","use_ipv6",-1);
 	if (ipv6==-1){
 		ipv6=0;
-		if (host_has_ipv6_network()){
-			if (lc->vtable.display_message)
-				lc->vtable.display_message(lc,_("Your machine appears to be connected to an IPv6 network. By default linphone always uses IPv4. Please update your configuration if you want to use IPv6"));
-		}
 	}
 	linphone_core_enable_ipv6(lc,ipv6);
 	memset(&tr,0,sizeof(tr));
@@ -3590,6 +3586,12 @@ void linphone_core_play_dtmf(LinphoneCore *lc, char dtmf, int duration_ms){
 		ms_error("No dtmf generator at this time !");
 		return;
 	}
+
+	// Play DTMF only when in call
+	if (!linphone_core_in_call(lc)) {
+		return;
+	}
+
 	if (duration_ms>0)
 		ms_filter_call_method(f, MS_DTMF_GEN_PLAY, &dtmf);
 	else ms_filter_call_method(f, MS_DTMF_GEN_START, &dtmf);

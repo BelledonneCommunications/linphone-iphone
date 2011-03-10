@@ -1173,3 +1173,6 @@ extern "C" void Java_org_linphone_core_LinphoneProxyConfigImpl_setExpires(JNIEnv
 	linphone_proxy_config_expires((LinphoneProxyConfig *) ptr, (int) delay);
 }
 
+extern "C" jint Java_org_linphone_core_LinphoneCallImpl_getDuration(JNIEnv*  env,jobject thiz,jlong ptr) {
+	linphone_call_get_duration((LinphoneCall *) ptr);
+}

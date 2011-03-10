@@ -137,50 +137,55 @@ public interface LinphoneCall {
 	/**
 	 * Retrieves the call's current state.
 	**/
-	public State getState();
+	State getState();
 	
 	/**
 	 * Returns the remote address associated to this call
 	 *
 	**/
-	public LinphoneAddress  getRemoteAddress();
+	LinphoneAddress  getRemoteAddress();
 	/**
 	 * get direction of the call (incoming or outgoing).
 	 * @return CallDirection 
 	 */
-	public CallDirection getDirection();
+	CallDirection getDirection();
 	/**
 	 * get the call log associated to this call.
 	 * @Return LinphoneCallLog
 	**/
-	public LinphoneCallLog getCallLog();
+	LinphoneCallLog getCallLog();
 
-	public LinphoneCallParams getCurrentParamsCopy();
+	LinphoneCallParams getCurrentParamsCopy();
 	
-	public void enableCamera(boolean enabled);
+	void enableCamera(boolean enabled);
 	/**
 	 * Enables or disable echo cancellation.
 	 * @param enable
 	 */
-	public void enableEchoCancellation(boolean enable);
+	void enableEchoCancellation(boolean enable);
 	/**
 	 * get EC status 
 	 * @return true if echo cancellation is enabled.
 	 */
-	public boolean isEchoCancellationEnabled();
+	boolean isEchoCancellationEnabled();
 	/**
 	 * Enables or disable echo limiter cancellation.
 	 * @param enable
 	 */
-	public void enableEchoLimiter(boolean enable);
+	void enableEchoLimiter(boolean enable);
 	/**
 	 * get EL status 
 	 * @return true if echo limiter is enabled.
 	 */
-	public boolean isEchoLimiterEnabled();
+	boolean isEchoLimiterEnabled();
 	/**
 	 * Returns the object associated to a call this one is replacing.
 	 * Call replacement can occur during transfer scenarios.
 	 */
-	public LinphoneCall getReplacedCall();
+	LinphoneCall getReplacedCall();
+
+	/**
+	 * @return call duration computed from media start
+	 */
+	int getDuration();
 }
