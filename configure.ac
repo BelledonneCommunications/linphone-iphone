@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([linphone],[3.4.1],[linphone-developers@nongnu.org])
+AC_INIT([linphone],[3.4.2],[linphone-developers@nongnu.org])
 AC_CANONICAL_SYSTEM
 AC_CONFIG_SRCDIR([coreapi/linphonecore.c])
 
@@ -253,6 +253,18 @@ AC_CHECK_FUNCS(getifaddrs)
 dnl check for osip2
 LP_CHECK_OSIP2
 
+dnl conditionnal build for ssl
+AC_ARG_ENABLE(ssl,
+		[  --enable-ssl    Turn on ssl support compiling. Required for sip tls. default = false],
+		[case "${enableval}" in
+		yes) build_ssl=true ;;
+		no)  build_ssl=false ;;
+		*) AC_MSG_ERROR(bad value ${enableval} for --enable-ssl) ;;
+		esac],[build_ssl=false])
+
+if test "$build_ssl" = "true"; then
+	PKG_CHECK_MODULES(OPENSSL, libssl >= 0.9.8)
+fi
 dnl setup flags for exosip library
 LP_SETUP_EXOSIP
 
@@ -272,7 +284,6 @@ dnl Furthermore it is good to repeat here all mediastreamer2 toggles
 dnl since top-level configure --help will not print them.
 
 PKG_CHECK_MODULES(SPEEX, speex >= 1.1.6, build_speex=yes)
-AC_SUBST(SPEEX_LIBS)
 
 dnl conditionnal build of video support
 AC_ARG_ENABLE(video,

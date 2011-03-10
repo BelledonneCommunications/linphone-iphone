@@ -1,3 +1,7 @@
+linphone-3.4.2 -- March 3rd, 2011
+	* fix problems with webcams on windows
+	Requires mediastreamer-2.7.2
+
 linphone-3.4.1 -- February 17th, 2011
 	* bugfixes
 	* gtk executable is renamed "linphone" (was linphone-3 before)
