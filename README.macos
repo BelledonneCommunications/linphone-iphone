@@ -30,5 +30,15 @@ Steps:
 * install to /opt/local
 	sudo make install 
 
+*********************
+Using gtk-osx (jhbuild environnment)
+
+After installing jhbuild and get gtk built,
+
+$ jhbuild shell
+
+$ PKG_CONFIG_PATH=/Users/smorlat/gtk/inst/lib/pkgconfig:/opt/local/lib/pkgconfig/ ./configure --disable-video --disable-gtk_ui --disable-strict
+
+
 
 

@@ -231,7 +231,8 @@ static void add_line(sdp_message_t *msg, int lineno, const SalStreamDescription 
 	}
 	switch(desc->dir){
 		case SalStreamSendRecv:
-			dir="sendrecv";
+			/*dir="sendrecv";*/
+			dir=NULL;
 		break;
 		case SalStreamRecvOnly:
 			dir="recvonly";
@@ -243,7 +244,7 @@ static void add_line(sdp_message_t *msg, int lineno, const SalStreamDescription 
 			dir="inactive";
 			break;
 	}
-	sdp_message_a_attribute_add (msg, lineno, osip_strdup (dir),NULL);
+	if (dir) sdp_message_a_attribute_add (msg, lineno, osip_strdup (dir),NULL);
 }
 
 sdp_message_t *media_description_to_sdp(const SalMediaDescription *desc){
