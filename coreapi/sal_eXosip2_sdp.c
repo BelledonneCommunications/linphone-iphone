@@ -141,7 +141,7 @@ static sdp_message_t *create_generic_sdp(const SalMediaDescription *desc)
 			  osip_strdup (sessid), osip_strdup (sessver),
 			  osip_strdup ("IN"), inet6 ? osip_strdup("IP6") : osip_strdup ("IP4"),
 			  osip_strdup (desc->addr));
-	sdp_message_s_name_set (local, osip_strdup ("A conversation"));
+	sdp_message_s_name_set (local, osip_strdup ("Talk"));
 	if(!sal_media_description_has_dir (desc,SalStreamSendOnly))
 	{
 		sdp_message_c_connection_add (local, -1,
@@ -166,7 +166,7 @@ static void add_payload(sdp_message_t *msg, int line, const PayloadType *pt)
 {
 	char attr[256];
 	sdp_message_m_payload_add (msg,line, int_2char (payload_type_get_number(pt)));
-	if (pt->channels>0)
+	if (pt->channels>1)
 		snprintf (attr,sizeof(attr),"%i %s/%i/%i", payload_type_get_number(pt), 
 		    	pt->mime_type, pt->clock_rate,pt->channels);
 	else

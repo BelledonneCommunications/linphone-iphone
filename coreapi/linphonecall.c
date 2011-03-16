@@ -110,7 +110,7 @@ void update_local_media_description(LinphoneCore *lc, LinphoneCall *call, SalMed
 }
 
 SalMediaDescription *create_local_media_description(LinphoneCore *lc, LinphoneCall *call){
-	unsigned int id=rand();
+	unsigned int id=rand() & 0xfff;
 	return _create_local_media_description(lc,call,id,id);
 }
 
