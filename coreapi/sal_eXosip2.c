@@ -1846,12 +1846,32 @@ int sal_iterate(Sal *sal){
 	return 0;
 }
 
+static void register_set_contact(osip_message_t *msg, const char *contact){
+	osip_uri_param_t *param = NULL;
+	osip_contact_t *ct=NULL;
+	char *line=NULL;
+	/*we get the line parameter choosed by exosip, and add it to our own contact*/
+	osip_message_get_contact(msg,0,&ct);
+	if (ct!=NULL){
+		osip_uri_uparam_get_byname(ct->url, "line", &param);
+		if (param && param->gvalue)
+			line=osip_strdup(param->gvalue);
+	}
+	_osip_list_set_empty(&msg->contacts,(void (*)(void*))osip_contact_free);
+	osip_message_set_contact(msg,contact);
+	osip_message_get_contact(msg,0,&ct);
+	osip_uri_uparam_add(ct->url,osip_strdup("line"),line);
+}
+
 int sal_register(SalOp *h, const char *proxy, const char *from, int expires){
 	osip_message_t *msg;
+	const char *contact=sal_op_get_contact(h);
+	
 	sal_op_set_route(h,proxy);
 	if (h->rid==-1){
 		eXosip_lock();
-		h->rid=eXosip_register_build_initial_register(from,proxy,sal_op_get_contact(h),expires,&msg);
+		h->rid=eXosip_register_build_initial_register(from,proxy,NULL,expires,&msg);
+		if (contact) register_set_contact(msg,contact);
 		sal_add_register(h->base.root,h);
 	}else{
 		eXosip_lock();
