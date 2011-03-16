@@ -220,7 +220,7 @@ build-msilbc: build-libilbc $(MSILBC_BUILD_DIR)/Makefile
 	cd $(MSILBC_BUILD_DIR) && make  && make install
 
 clean-msilbc:
-	cd  $(MSILBC_BUILD_DIR) && make clean
+	cd  $(MSILBC_BUILD_DIR) && make -f clean
 
 veryclean-msilbc:
 	cd $(MSILBC_BUILD_DIR) && make distclean
