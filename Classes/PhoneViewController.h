@@ -29,8 +29,10 @@
 
 @private
 	//UI definition
+	UIView* dialerView;
 	UITextField* address;
 	UILabel* mDisplayName;
+	UIEraseButton* erase;
 	
 	UIView* incallView;
 	UIDuration* callDuration;
@@ -66,10 +68,12 @@
 	FirstLoginViewController* myFirstLoginViewController;
 	
 }
+@property (nonatomic, retain) IBOutlet UIView* dialerView;
 @property (nonatomic, retain) IBOutlet UITextField* address;
 @property (nonatomic, retain) IBOutlet UIButton* call;
 @property (nonatomic, retain) IBOutlet UIButton* hangup;
 @property (nonatomic, retain) IBOutlet UILabel* status;
+@property (nonatomic, retain) IBOutlet UIEraseButton* erase;
 
 @property (nonatomic, retain) IBOutlet UIView* incallView;
 @property (nonatomic, retain) IBOutlet UILabel* callDuration;

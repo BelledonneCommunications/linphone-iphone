@@ -64,6 +64,7 @@
 		22B5EFA310CE50BD00777D97 /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22B5EFA210CE50BD00777D97 /* AddressBookUI.framework */; };
 		22B5EFE510CE5E5800777D97 /* ContactPickerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 22B5EFE410CE5E5800777D97 /* ContactPickerDelegate.m */; };
 		22B5F03510CE6B2F00777D97 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22B5F03410CE6B2F00777D97 /* AddressBook.framework */; };
+		22BB1A69132FF16A005CD7AA /* UIEraseButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22BB1A68132FF16A005CD7AA /* UIEraseButton.m */; };
 		22C755601317E59C007BC101 /* UIBluetoothButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22C7555F1317E59C007BC101 /* UIBluetoothButton.m */; };
 		22C7564D13265CF8007BC101 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22C7564C13265CF8007BC101 /* libcrypto.a */; };
 		22C7564F13265CF8007BC101 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22C7564E13265CF8007BC101 /* libssl.a */; };
@@ -288,6 +289,8 @@
 		22B5EFE310CE5E5800777D97 /* ContactPickerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactPickerDelegate.h; sourceTree = "<group>"; };
 		22B5EFE410CE5E5800777D97 /* ContactPickerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactPickerDelegate.m; sourceTree = "<group>"; };
 		22B5F03410CE6B2F00777D97 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
+		22BB1A67132FF16A005CD7AA /* UIEraseButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIEraseButton.h; sourceTree = "<group>"; };
+		22BB1A68132FF16A005CD7AA /* UIEraseButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIEraseButton.m; sourceTree = "<group>"; };
 		22C7555E1317E59C007BC101 /* UIBluetoothButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIBluetoothButton.h; sourceTree = "<group>"; };
 		22C7555F1317E59C007BC101 /* UIBluetoothButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIBluetoothButton.m; sourceTree = "<group>"; };
 		22C7560513265C6A007BC101 /* aes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aes.h; sourceTree = "<group>"; };
@@ -669,6 +672,8 @@
 				2218A5CE12F973450088A667 /* LogView.h */,
 				22C7555E1317E59C007BC101 /* UIBluetoothButton.h */,
 				22C7555F1317E59C007BC101 /* UIBluetoothButton.m */,
+				22BB1A67132FF16A005CD7AA /* UIEraseButton.h */,
+				22BB1A68132FF16A005CD7AA /* UIEraseButton.m */,
 			);
 			path = LinphoneUI;
 			sourceTree = "<group>";
@@ -971,6 +976,7 @@
 				22968A8812F87C2000588287 /* UIDuration.m in Sources */,
 				2218A92512FBE1340088A667 /* FirstLoginViewController.m in Sources */,
 				22C755601317E59C007BC101 /* UIBluetoothButton.m in Sources */,
+				22BB1A69132FF16A005CD7AA /* UIEraseButton.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
