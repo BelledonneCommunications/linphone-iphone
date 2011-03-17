@@ -25,17 +25,22 @@
 #include <netdb.h>
 #import <AVFoundation/AVAudioSession.h>
 #import <AudioToolbox/AudioToolbox.h>
+#include "TunnelManager.hh"
+
+using namespace belledonnecomm;
 
 static LinphoneCore* theLinphoneCore=nil;
 static LinphoneManager* theLinphoneManager=nil;
+static TunnelManager* sTunnelMgr=NULL;
 
-extern void libmsilbc_init();
-
+extern "C" void libmsilbc_init();
 
 @implementation LinphoneManager
 @synthesize callDelegate;
 @synthesize registrationDelegate;
 @synthesize connectivity;
+
+
 
 +(LinphoneManager*) instance {
 	if (theLinphoneManager==nil) {
@@ -223,21 +228,8 @@ static void linphone_iphone_call_state(LinphoneCore *lc, LinphoneCall* call, Lin
 static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyConfig* cfg, LinphoneRegistrationState state,const char* message) {
 	[(LinphoneManager*)linphone_core_get_user_data(lc) onRegister:lc cfg:cfg state:state message:message];
 }
-static LinphoneCoreVTable linphonec_vtable = {
-	.show =NULL,
-	.call_state_changed =(LinphoneCallStateCb)linphone_iphone_call_state,
-	.registration_state_changed = linphone_iphone_registration_state,
-	.notify_recv = NULL,
-	.new_subscription_request = NULL,
-	.auth_info_requested = NULL,
-	.display_status = linphone_iphone_display_status,
-	.display_message=linphone_iphone_log,
-	.display_warning=linphone_iphone_log,
-	.display_url=NULL,
-	.text_received=NULL,
-	.dtmf_received=NULL
-};
 
+static LinphoneCoreVTable linphonec_vtable; 
 
 -(void) configurePayloadType:(const char*) type fromPrefKey: (NSString*)key withRate:(int)rate  {
 	if ([[NSUserDefaults standardUserDefaults] boolForKey:key]) { 		
@@ -414,6 +406,16 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		proxyReachability=SCNetworkReachabilityCreateWithName(nil, "linphone.org");		
 	}		
 	proxyReachabilityContext.info=self;
+	//tunnel
+	BOOL lTunnelPrefEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"tunnel_enabled_preference"];
+	NSString* lTunnelPrefAddress = [[NSUserDefaults standardUserDefaults] stringForKey:@"tunnel_address_preference"];
+	
+	if (lTunnelPrefAddress && [lTunnelPrefAddress length]) {
+		sTunnelMgr->cleanServers();
+		sTunnelMgr->addServer([lTunnelPrefAddress cStringUsingEncoding:[NSString defaultCStringEncoding]],443);
+	}
+	sTunnelMgr->enable(lTunnelPrefEnabled);
+	
 	SCNetworkReachabilitySetCallback(proxyReachability, (SCNetworkReachabilityCallBack)networkReachabilityCallBack,&proxyReachabilityContext);
 	SCNetworkReachabilityScheduleWithRunLoop(proxyReachability, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
 	
@@ -456,10 +458,14 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	}
 }
 -(void) destroyLibLinphone {
-	[mIterateTimer invalidate]; 
+	[mIterateTimer invalidate];
 	if (theLinphoneCore != nil) { //just in case application terminate before linphone core initialization
 		linphone_core_destroy(theLinphoneCore);
 		theLinphoneCore = nil;
+	}
+	if (sTunnelMgr) {
+		delete sTunnelMgr;
+		sTunnelMgr=NULL;
 	}
 }
 
@@ -559,9 +565,6 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 }
 
 
-
-
-
 /*************
  *lib linphone init method
  */
@@ -573,7 +576,8 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
 	NSString *confiFileName = [[paths objectAtIndex:0] stringByAppendingString:@"/.linphonerc"];
 	connectivity=none;
-	signal(SIGPIPE, SIG_IGN);
+	
+	
 	//log management	
 	
 	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"debugenable_preference"]) {
@@ -590,10 +594,25 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	 * Initialize linphone core
 	 */
 	
+	linphonec_vtable.show =NULL;
+	linphonec_vtable.call_state_changed =(LinphoneCallStateCb)linphone_iphone_call_state;
+	linphonec_vtable.registration_state_changed = linphone_iphone_registration_state;
+	linphonec_vtable.notify_recv = NULL;
+	linphonec_vtable.new_subscription_request = NULL;
+	linphonec_vtable.auth_info_requested = NULL;
+	linphonec_vtable.display_status = linphone_iphone_display_status;
+	linphonec_vtable.display_message=linphone_iphone_log;
+	linphonec_vtable.display_warning=linphone_iphone_log;
+	linphonec_vtable.display_url=NULL;
+	linphonec_vtable.text_received=NULL;
+	linphonec_vtable.dtmf_received=NULL;
+	
 	theLinphoneCore = linphone_core_new (&linphonec_vtable
 										 , [confiFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]
 										 , [factoryConfig cStringUsingEncoding:[NSString defaultCStringEncoding]]
 										 ,self);
+	sTunnelMgr = LinphoneCoreExtensionFactory::instance()->createTunnelManager(theLinphoneCore);
+	sTunnelMgr->enableLogs(linphone_iphone_log_handler);
 	
 	[[NSUserDefaults standardUserDefaults] synchronize];//sync before loading config 
 	[ self doLinphoneConfiguration:nil];

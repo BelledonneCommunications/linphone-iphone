@@ -218,7 +218,7 @@ build-msilbc: build-libilbc $(MSILBC_BUILD_DIR)/Makefile
 	cd $(MSILBC_BUILD_DIR) && make  && make install
 
 clean-msilbc:
-	cd  $(MSILBC_BUILD_DIR) && make -f clean
+	cd  $(MSILBC_BUILD_DIR) && make clean
 
 veryclean-msilbc:
 	cd $(MSILBC_BUILD_DIR) && make distclean
@@ -255,6 +255,9 @@ clean-makefile-libilbc:
 $(prefix)/include/openssl/ssl.h:
 	cd $(prefix) \
 	&& unzip $(BUILDER_SRC_DIR)/prebuilt/$(OPENSSL_ZIP)
+#include extensions
+
+include builders.d/*.mk
 
 #sdk generation and distribution
 

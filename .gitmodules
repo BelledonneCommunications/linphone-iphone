@@ -19,3 +19,6 @@
 [submodule "submodules/libilbc-rfc3951"]
 	path = submodules/libilbc-rfc3951
 	url = git://git.linphone.org/libilbc-rfc3951.git
+[submodule "submodules/tunnel"]
+	path = submodules/tunnel
+	url = gitosis@git.linphone.org:tunnel.git

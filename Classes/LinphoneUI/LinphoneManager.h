@@ -28,6 +28,7 @@ typedef enum _Connectivity {
 	,none
 } Connectivity;
 
+
 @interface LinphoneManager : NSObject {
 @private
 	SCNetworkReachabilityContext proxyReachabilityContext;
