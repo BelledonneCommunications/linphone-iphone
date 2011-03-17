@@ -1,4 +1,4 @@
-/* UIHangUpButton.h
+/* UIEraseButton.m
  *
  * Copyright (C) 2011  Belledonne Comunications, Grenoble, France
  *
@@ -15,14 +15,26 @@
  *  You should have received a copy of the GNU General Public License   
  *  along with this program; if not, write to the Free Software         
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */       
+ */              
 
-#import "UICallButton.h"
-#import "UIHangUpButton.h"
-#import "UIDigitButton.h"
-#import "UIToggleButton.h"
-#import "UIMuteButton.h"
-#import "UISpeakerButton.h"
-#import "UIDuration.h"
 #import "UIEraseButton.h"
-#import "LinphoneUIDelegates.h"
+
+
+@implementation UIEraseButton
+-(void) touchUp:(id) sender {
+	if ([mAddress.text length] > 0) {
+		[mAddress setText:[mAddress.text substringToIndex:[mAddress.text length]-1]];
+	}
+}
+
+-(void) initWithAddressField:(UITextField*) address {
+	mAddress = address;
+	[self addTarget:self action:@selector(touchUp:) forControlEvents:UIControlEventTouchUpInside];
+}
+
+- (void)dealloc {
+    [super dealloc];
+}
+
+
+@end

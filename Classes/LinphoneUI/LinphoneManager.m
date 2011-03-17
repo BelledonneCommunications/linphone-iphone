@@ -409,10 +409,14 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	//tunnel
 	BOOL lTunnelPrefEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"tunnel_enabled_preference"];
 	NSString* lTunnelPrefAddress = [[NSUserDefaults standardUserDefaults] stringForKey:@"tunnel_address_preference"];
-	
+	NSString* lTunnelPrefPort = [[NSUserDefaults standardUserDefaults] stringForKey:@"tunnel_port_preference"];
+	int lTunnelPort = 443;
+	if (lTunnelPrefPort && [lTunnelPrefPort length] > 0  && [lTunnelPrefPort intValue]) {
+		lTunnelPort = [lTunnelPrefPort intValue];
+	}
 	if (lTunnelPrefAddress && [lTunnelPrefAddress length]) {
 		sTunnelMgr->cleanServers();
-		sTunnelMgr->addServer([lTunnelPrefAddress cStringUsingEncoding:[NSString defaultCStringEncoding]],443);
+		sTunnelMgr->addServer([lTunnelPrefAddress cStringUsingEncoding:[NSString defaultCStringEncoding]],lTunnelPort);
 	}
 	sTunnelMgr->enable(lTunnelPrefEnabled);
 	

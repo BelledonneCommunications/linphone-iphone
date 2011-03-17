@@ -26,10 +26,13 @@
 
 
 @implementation PhoneViewController
+@synthesize  dialerView ;
 @synthesize  address ;
 @synthesize  call;
 @synthesize  hangup;
 @synthesize status;
+@synthesize erase;
+
 
 @synthesize incallView;
 @synthesize callDuration;
@@ -117,7 +120,7 @@
 	[call initWithAddress:address withDisplayName:mDisplayName];
 	[mute initWithOnImage:[UIImage imageNamed:@"mic_muted.png"]  offImage:[UIImage imageNamed:@"mic_active.png"] ];
 	[speaker initWithOnImage:[UIImage imageNamed:@"Speaker-32-on.png"]  offImage:[UIImage imageNamed:@"Speaker-32-off.png"] ];
-	
+	[erase initWithAddressField:address];
 	
 }
 
@@ -173,9 +176,11 @@
 	
 	[mDisplayName setText:displayName];
 	[incallView setHidden:true];
+	[dialerView setHidden:false];
+	
 	[call setEnabled:true];
 	[hangup setEnabled:false];
-	
+
 	[callDuration stop];
 	
 	[peerLabel setText:@""];
@@ -195,6 +200,7 @@
 	}
 	[address setHidden:true];
 	[incallView setHidden:false];
+	[dialerView setHidden:true];
 }
 -(void) displayCallInProgressFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
 	[self displayIncalViewforUser:username
@@ -260,6 +266,7 @@
 	[address dealloc];
 	[ mDisplayName dealloc];
 	[incallView dealloc];
+	[dialerView dealloc];
 	[callDuration dealloc];
 	[mute dealloc];
 	[speaker dealloc];	
