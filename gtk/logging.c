@@ -29,6 +29,8 @@ static GtkWidget *log_window=NULL;
 static GStaticMutex log_mutex=G_STATIC_MUTEX_INIT;
 static GList *log_queue=NULL;
 
+#define LOG_MAX_CHARS 1000000  /*1 mega bytes of traces*/
+
 typedef struct _LinphoneGtkLog{
 	OrtpLogLevel lev;
 	gchar *msg;
@@ -275,6 +277,7 @@ static void linphone_gtk_display_log(OrtpLogLevel lev, const char *msg){
 		default:
 			g_error("Bad level !");
 	}
+
 	gtk_text_buffer_get_end_iter(b,&iter);
 	off=gtk_text_iter_get_offset(&iter);
 	gtk_text_buffer_insert(b,&iter,lname,-1);
@@ -288,8 +291,18 @@ static void linphone_gtk_display_log(OrtpLogLevel lev, const char *msg){
 	gtk_text_buffer_get_iter_at_offset(b,&begin,off);
 	if (lev==ORTP_ERROR || lev==ORTP_FATAL) gtk_text_buffer_apply_tag_by_name(b,"red",&begin,&iter);
 	else if (lev==ORTP_WARNING) gtk_text_buffer_apply_tag_by_name(b,"orange",&begin,&iter);
+	/*
 	gtk_text_buffer_get_end_iter(b,&iter);
-	//gtk_text_view_scroll_to_iter(v,&iter,0,FALSE,0,0);
+	gtk_text_view_scroll_to_iter(v,&iter,0,FALSE,0,0);
+	*/
+	while(gtk_text_buffer_get_char_count(b)>LOG_MAX_CHARS){
+		GtkTextIter iter_line_after;
+		gtk_text_buffer_get_start_iter(b,&iter);
+		iter_line_after=iter;
+		if (gtk_text_iter_forward_line(&iter_line_after)){
+			gtk_text_buffer_delete(b,&iter,&iter_line_after);
+		}
+	}
 }
 
 gboolean linphone_gtk_check_logs(){
