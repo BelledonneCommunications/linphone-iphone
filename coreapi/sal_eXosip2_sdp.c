@@ -161,19 +161,32 @@ static sdp_message_t *create_generic_sdp(const SalMediaDescription *desc)
 }
 
 
+static bool_t is_known_rtpmap(const PayloadType *pt){
+	switch(payload_type_get_number(pt)){
+		case 0:
+		case 8:
+		case 3:
+		case 34:
+			return TRUE;
+	}
+	return FALSE;
+}
 
-static void add_payload(sdp_message_t *msg, int line, const PayloadType *pt)
+static void add_payload(sdp_message_t *msg, int line, const PayloadType *pt, bool_t strip_well_known_rtpmaps)
 {
 	char attr[256];
 	sdp_message_m_payload_add (msg,line, int_2char (payload_type_get_number(pt)));
-	if (pt->channels>1)
-		snprintf (attr,sizeof(attr),"%i %s/%i/%i", payload_type_get_number(pt), 
-		    	pt->mime_type, pt->clock_rate,pt->channels);
-	else
-		snprintf (attr,sizeof(attr),"%i %s/%i", payload_type_get_number(pt), 
-		    	pt->mime_type, pt->clock_rate);
-	sdp_message_a_attribute_add (msg, line,
-				     osip_strdup ("rtpmap"), osip_strdup(attr));
+
+	if (!strip_well_known_rtpmaps || !is_known_rtpmap(pt)){
+		if (pt->channels>1)
+			snprintf (attr,sizeof(attr),"%i %s/%i/%i", payload_type_get_number(pt), 
+					pt->mime_type, pt->clock_rate,pt->channels);
+		else
+			snprintf (attr,sizeof(attr),"%i %s/%i", payload_type_get_number(pt), 
+					pt->mime_type, pt->clock_rate);
+		sdp_message_a_attribute_add (msg, line,
+						 osip_strdup ("rtpmap"), osip_strdup(attr));
+	}
 
 	if (pt->recv_fmtp != NULL)
 	{
@@ -190,6 +203,7 @@ static void add_line(sdp_message_t *msg, int lineno, const SalStreamDescription 
 	const char *addr;
 	const char *dir="sendrecv";
 	int port;
+	bool_t strip_well_known_rtpmaps;
 	
 	switch (desc->type) {
 	case SalAudio:
@@ -226,8 +240,9 @@ static void add_line(sdp_message_t *msg, int lineno, const SalStreamDescription 
 				     int_2char(desc->bandwidth));
 	if (desc->ptime>0) sdp_message_a_attribute_add(msg,lineno,osip_strdup("ptime"),
 	    			int_2char(desc->ptime));
+	strip_well_known_rtpmaps=ms_list_size(desc->payloads)>5;
 	for(elem=desc->payloads;elem!=NULL;elem=elem->next){
-		add_payload(msg, lineno, (PayloadType*)elem->data);
+		add_payload(msg, lineno, (PayloadType*)elem->data,strip_well_known_rtpmaps);
 	}
 	switch(desc->dir){
 		case SalStreamSendRecv:
