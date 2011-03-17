@@ -1103,6 +1103,7 @@
 					submodules/externals/osip/include,
 					submodules/externals/exosip/include,
 					submodules/externals/speex/include,
+					submodules/tunnel/include,
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
@@ -1168,6 +1169,7 @@
 					submodules/externals/osip/include,
 					submodules/externals/exosip/include,
 					submodules/externals/speex/include,
+					submodules/tunnel/include,
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
