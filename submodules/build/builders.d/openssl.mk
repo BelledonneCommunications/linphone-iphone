@@ -18,11 +18,12 @@ $(OPENSSL_BUILD_DIR)/Configure:
 
 $(OPENSSL_BUILD_DIR)/Makefile: $(OPENSSL_BUILD_DIR)/Configure
 	cd $(OPENSSL_BUILD_DIR) \
-	./Configure -openssldir=$(prefix) BSD-generic32 no-asm
+	&&  host_alias=${host} . $(BUILDER_SRC_DIR)/build/$(config_site) \
+	&& ./Configure -openssldir=$(prefix) --cross-compile-prefix=$$SDK_BIN_PATH/ BSD-generic32 no-asm
 
 build-openssl: $(OPENSSL_BUILD_DIR)/Makefile
 	cd $(OPENSSL_BUILD_DIR) &&  host_alias=${host} . $(BUILDER_SRC_DIR)/build/$(config_site) \
-	&& make CC="$$CC" build_libs \
+	&& make CC="$$CC" build_crypto build_ssl \
 	&& cp -r include  $(prefix)/ \
 	&& cp lib*.a  $(prefix)/lib 
 
