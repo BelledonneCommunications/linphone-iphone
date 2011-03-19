@@ -142,7 +142,7 @@ clean-makefile-osip2:
 $(BUILDER_SRC_DIR)/$(eXosip_dir)/configure:
 	 cd $(BUILDER_SRC_DIR)/$(eXosip_dir) && ./autogen.sh
 	 
-$(BUILDER_BUILD_DIR)/$(eXosip_dir)/Makefile: $(BUILDER_SRC_DIR)/$(eXosip_dir)/configure $(prefix)/include/openssl/ssl.h
+$(BUILDER_BUILD_DIR)/$(eXosip_dir)/Makefile: $(BUILDER_SRC_DIR)/$(eXosip_dir)/configure 
 	mkdir -p $(BUILDER_BUILD_DIR)/$(eXosip_dir)
 	cd $(BUILDER_BUILD_DIR)/$(eXosip_dir)/\
 	&& PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig  CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
