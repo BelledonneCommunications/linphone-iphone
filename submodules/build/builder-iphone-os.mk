@@ -60,10 +60,8 @@ LIBILBC_BUILD_DIR:=$(BUILDER_BUILD_DIR)/libilbc-rfc3951
 
 ifneq (,$(findstring arm,$(host)))
 	SPEEX_CONFIGURE_OPTION := --enable-fixed-point --disable-float-api
-	OPENSSL_ZIP := openssl-0.9.8j-arm.zip
 	#SPEEX_CONFIGURE_OPTION := --enable-arm5e-asm --enable-fixed-point
 else
-	OPENSSL_ZIP := openssl-0.9.8j-i386.zip
 endif
 
 
@@ -142,7 +140,7 @@ clean-makefile-osip2:
 $(BUILDER_SRC_DIR)/$(eXosip_dir)/configure:
 	 cd $(BUILDER_SRC_DIR)/$(eXosip_dir) && ./autogen.sh
 	 
-$(BUILDER_BUILD_DIR)/$(eXosip_dir)/Makefile: $(BUILDER_SRC_DIR)/$(eXosip_dir)/configure $(prefix)/include/openssl/ssl.h
+$(BUILDER_BUILD_DIR)/$(eXosip_dir)/Makefile: $(BUILDER_SRC_DIR)/$(eXosip_dir)/configure 
 	mkdir -p $(BUILDER_BUILD_DIR)/$(eXosip_dir)
 	cd $(BUILDER_BUILD_DIR)/$(eXosip_dir)/\
 	&& PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig  CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
@@ -256,9 +254,7 @@ clean-makefile-libilbc:
 	cd $(LIBILBC_BUILD_DIR) && rm -f Makefile
 
 #openssl
-
 include builders.d/*.mk
-
 #sdk generation and distribution
 
 multi-arch:
