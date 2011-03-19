@@ -60,10 +60,8 @@ LIBILBC_BUILD_DIR:=$(BUILDER_BUILD_DIR)/libilbc-rfc3951
 
 ifneq (,$(findstring arm,$(host)))
 	SPEEX_CONFIGURE_OPTION := --enable-fixed-point --disable-float-api
-	OPENSSL_ZIP := openssl-0.9.8j-arm.zip
 	#SPEEX_CONFIGURE_OPTION := --enable-arm5e-asm --enable-fixed-point
 else
-	OPENSSL_ZIP := openssl-0.9.8j-i386.zip
 endif
 
 
@@ -256,11 +254,7 @@ clean-makefile-libilbc:
 	cd $(LIBILBC_BUILD_DIR) && rm -f Makefile
 
 #openssl
-include builders.d/openssl.mk
-#$(prefix)/include/openssl/ssl.h:
-#	cd $(prefix) \
-#	&& unzip $(BUILDER_SRC_DIR)/prebuilt/$(OPENSSL_ZIP)
-
+include builders.d/*.mk
 #sdk generation and distribution
 
 multi-arch:
