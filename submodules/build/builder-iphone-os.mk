@@ -73,12 +73,14 @@ all: build-linphone build-msilbc
 
 clean-makefile: clean-makefile-linphone
 clean: clean-linphone
-
+init:
+	mkdir -p $(prefix)/include
+	mkdir -p $(prefix)/lib
 
 veryclean:
 	rm -rf $(BUILDER_BUILD_DIR)
 
-build-linphone: build-osip2 build-eXosip2  build-speex build-libgsm $(LINPHONE_BUILD_DIR)/Makefile
+build-linphone: init build-openssl build-osip2 build-eXosip2  build-speex build-libgsm  $(LINPHONE_BUILD_DIR)/Makefile
 	cd $(LINPHONE_BUILD_DIR)  && PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) make newdate &&  make  && make install
 
 clean-linphone: clean-osip2 clean-eXosip2 clean-speex clean-libgsm  clean-msilbc clean-libilbc
@@ -254,10 +256,6 @@ clean-makefile-libilbc:
 	cd $(LIBILBC_BUILD_DIR) && rm -f Makefile
 
 #openssl
-$(prefix)/include/openssl/ssl.h:
-	cd $(prefix) \
-	&& unzip $(BUILDER_SRC_DIR)/prebuilt/$(OPENSSL_ZIP)
-#include extensions
 
 include builders.d/*.mk
 
