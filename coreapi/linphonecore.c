@@ -658,6 +658,7 @@ static const char *codec_pref_order[]={
 	"theora",
 	"H263-1998",
 	"H263",
+	"x-snow",
 	NULL,
 };
 
@@ -692,7 +693,10 @@ static MSList *add_missing_codecs(SalStreamType mtype, MSList *l){
 			}
 			if (pt && ms_filter_codec_supported(pt->mime_type)){
 				if (ms_list_find(l,pt)==NULL){
-					payload_type_set_flag(pt,PAYLOAD_TYPE_ENABLED);
+					/*do not enable old or experimental codecs by default*/
+					if (strcasecmp(pt->mime_type,"H263")!=0 && strcasecmp(pt->mime_type,"x-snow")!=0){
+						payload_type_set_flag(pt,PAYLOAD_TYPE_ENABLED);
+					}
 					ms_message("Adding new codec %s/%i with fmtp %s",
 					    pt->mime_type,pt->clock_rate,pt->recv_fmtp ? pt->recv_fmtp : "");
 					l=ms_list_insert_sorted(l,pt,(int (*)(const void *, const void *))codec_compare);
@@ -959,7 +963,8 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	linphone_core_assign_payload_type(&payload_type_mp4v,99,"profile-level-id=3");
 	linphone_core_assign_payload_type(&payload_type_x_snow,100,NULL);
 	linphone_core_assign_payload_type(&payload_type_h264,102,"profile-level-id=428014");
-	linphone_core_assign_payload_type(&payload_type_h264,103,"packetization-mode=1;profile-level-id=428014");
+	/* due to limited space in SDP, we have to disable this h264 line which is normally no more necessary */
+	/* linphone_core_assign_payload_type(&payload_type_h264,103,"packetization-mode=1;profile-level-id=428014");*/
 #endif
 
 	ms_init();
