@@ -435,13 +435,13 @@ static void sound_config_read(LinphoneCore *lc)
 	tmpbuf=PACKAGE_SOUND_DIR "/" LOCAL_RING;
 	tmpbuf=lp_config_get_string(lc->config,"sound","local_ring",tmpbuf);
 	if (ortp_file_exist(tmpbuf)==-1) {
+		ms_warning("%s does not exist",tmpbuf);
 		tmpbuf=PACKAGE_SOUND_DIR "/" LOCAL_RING;
 	}
 	if (strstr(tmpbuf,".wav")==NULL){
 		/* it currently uses old sound files, so replace them */
 		tmpbuf=PACKAGE_SOUND_DIR "/" LOCAL_RING;
 	}
-
 	linphone_core_set_ring(lc,tmpbuf);
 
 	tmpbuf=PACKAGE_SOUND_DIR "/" REMOTE_RING;

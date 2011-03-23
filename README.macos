@@ -37,7 +37,7 @@ After installing jhbuild and get gtk built,
 
 $ jhbuild shell
 
-$ PKG_CONFIG_PATH=/Users/smorlat/gtk/inst/lib/pkgconfig:/opt/local/lib/pkgconfig/ ./configure --disable-video --disable-gtk_ui --disable-strict
+$ PKG_CONFIG_PATH=$HOME/gtk/inst/lib/pkgconfig:/opt/local/lib/pkgconfig/ ./configure --disable-video --disable-strict
 
 
 

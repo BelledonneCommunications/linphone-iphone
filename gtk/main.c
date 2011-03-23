@@ -34,6 +34,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <sys/stat.h>
 #include <unistd.h>
 
+#ifdef WIN32
+#define chdir _chdir
+#endif
+
 #define LINPHONE_ICON "linphone.png"
 
 const char *this_program_ident_string="linphone_ident_string=" LINPHONE_VERSION;
@@ -60,9 +64,7 @@ static gboolean verbose=0;
 static gboolean auto_answer = 0;
 static gchar * addr_to_call = NULL;
 static gboolean iconified=FALSE;
-#ifdef WIN32
 static gchar *workingdir=NULL;
-#endif
 static char *progpath=NULL;
 
 static GOptionEntry linphone_options[]={
@@ -94,7 +96,6 @@ static GOptionEntry linphone_options[]={
 	    .arg_data = (gpointer) & auto_answer,
 	    .description = N_("if set automatically answer incoming calls")
 	},
-#ifdef WIN32
 	{
 	    .long_name = "workdir",
 	    .short_name = '\0',
@@ -102,7 +103,6 @@ static GOptionEntry linphone_options[]={
 	    .arg_data = (gpointer) & workingdir,
 	    .description = N_("Specifiy a working directory (should be the base of the installation, eg: c:\\Program Files\\Linphone)")
 	},
-#endif
 	{0}
 };
 
@@ -1331,9 +1331,9 @@ void linphone_gtk_log_handler(OrtpLogLevel lev, const char *fmt, va_list args){
 	if (verbose){
 		const char *lname="undef";
 		char *msg;
-	#if defined(__linux) || defined(__APPLE__)
+#if defined(__linux) || defined(__APPLE__)
 		va_list cap;/*copy of our argument list: a va_list cannot be re-used (SIGSEGV on linux 64 bits)*/
-		#endif
+#endif
 		switch(lev){
 			case ORTP_DEBUG:
 				lname="debug";
@@ -1449,10 +1449,10 @@ int main(int argc, char *argv[]){
 	g_type_class_unref (g_type_class_ref (GTK_TYPE_BUTTON));
 	g_object_set(settings, "gtk-menu-images", TRUE, NULL);
 	g_object_set(settings, "gtk-button-images", TRUE, NULL);
-#ifdef WIN32
+
 	if (workingdir!=NULL)
-		_chdir(workingdir);
-#endif
+		chdir(workingdir);
+
 	/* Now, look for the factory configuration file, we do it this late
 		 since we want to have had time to change directory and to parse
 		 the options, in case we needed to access the working directory */
@@ -1505,3 +1505,4 @@ int main(int argc, char *argv[]){
 	free(progpath);
 	return 0;
 }
+
