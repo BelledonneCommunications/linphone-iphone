@@ -16,7 +16,7 @@ ORTP_DIR=oRTP
 endif
 
 
-SUBDIRS = m4 pixmaps po $(ORTP_DIR) $(MS2_DIR) \
+SUBDIRS = build m4 pixmaps po $(ORTP_DIR) $(MS2_DIR) \
 		coreapi console gtk share scripts
 
 
@@ -59,6 +59,7 @@ ISS_SCRIPT_PATH=$(shell cd $(top_srcdir) && pwd)/$(ISS_SCRIPT)
 #path to Inno Setup 5 compiler
 ISCC=ISCC.exe
 PACKAGE_WIN32_FILELIST=$(PACKAGE)-win32.filelist
+PACKAGE_BUNDLE_FILE=$(top_srcdir)/build/macos/reltime.bundle
 
 EXTRA_DIST = config.rpath  BUGS linphone.kdevelop  \
 				intltool-extract.in	\
@@ -185,4 +186,14 @@ Portfile:	$(top_srcdir)/scripts/Portfile.tmpl dist
 Portfile-devel:	$(top_srcdir)/scripts/Portfile-devel.tmpl dist
 	sed -e 's/\@VERSION\@/$(LINPHONE_VERSION)/g' \
 	  -e 's/\@LINPHONE_MD5\@/$(shell md5sum linphone-$(VERSION).tar.gz | awk {'print $$1'})/' < $< > $@
+
+bundle:
+	rm -rf $(INSTALLDIR)
+	mkdir -p $(INSTALLDIR)
+	make install DESTDIR=$(INSTALLDIR)
+	LINPHONE_INSTALL_PREFIX=$(INSTALLDIR_WITH_PREFIX) \
+	LIBLINPHONE_INSTALL_PREFIX=$(INSTALLDIR_WITH_PREFIX) \
+	ige-mac-bundler $(PACKAGE_BUNDLE_FILE)
+
+
 

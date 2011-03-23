@@ -464,7 +464,10 @@ AM_CONDITIONAL(HAVE_DOXYGEN, test $DOXYGEN != false)
 
 
 AC_OUTPUT([ 
-Makefile 
+Makefile
+build/Makefile
+build/macos/Makefile
+build/macos/Info-linphone.plist
 m4/Makefile
 po/Makefile.in
 pixmaps/Makefile
