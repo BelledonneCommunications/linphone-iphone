@@ -9,7 +9,7 @@
     <key>CFBundleGetInfoString</key>
     <string>@PACKAGE_VERSION@, (C) 2011 The linphone team http://www.linphone.org</string>
     <key>CFBundleIconFile</key>
-    <string>linphone_logo.icns</string>
+    <string>linphone.icns</string>
     <key>CFBundleIdentifier</key>
     <string>org.linphone.linphone</string>
     <key>CFBundleInfoDictionaryVersion</key>

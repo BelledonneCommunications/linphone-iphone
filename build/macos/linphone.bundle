@@ -123,7 +123,7 @@
        /Developer/Applications/Utilities/Icon Composer.app to import
        artwork and create the file. -->
   <data dest="${bundle}/Contents/Resources">
-    ${project}/../../pixmaps/linphone_logo.icns
+    ${project}/../../pixmaps/linphone.icns
   </data>
 
 
