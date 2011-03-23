@@ -1030,6 +1030,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = linphone_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = IN_LINPHONE;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
 					submodules/linphone/coreapi,
 					submodules/linphone/mediastreamer2/include,
@@ -1096,6 +1097,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = linphone_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = IN_LINPHONE;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
 					submodules/linphone/coreapi,
 					submodules/linphone/mediastreamer2/include,
@@ -1162,6 +1164,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = linphone_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = IN_LINPHONE;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
 					submodules/linphone/coreapi,
 					submodules/linphone/mediastreamer2/include,
