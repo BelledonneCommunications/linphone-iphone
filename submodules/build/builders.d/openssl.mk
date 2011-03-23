@@ -30,6 +30,9 @@ build-openssl: $(OPENSSL_BUILD_DIR)/Makefile
 clean-openssl:
 	cd  $(OPENSSL_BUILD_DIR)  && make clean
 
+clean-makefile-openssl:
+	touch $(OPENSSL_BUILD_DIR)/Configure
+	
 veryclean-openssl:
 	rm -rf $(OPENSSL_BUILD_DIR)
 
