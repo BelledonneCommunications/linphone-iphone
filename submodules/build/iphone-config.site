@@ -10,6 +10,9 @@ if test "${host_alias}" = "i386-apple-darwin" ; then
 elif test "${host_alias}" = "armv6-apple-darwin" ; then 
 	ARCH=armv6
 	PLATFORM=OS
+elif test "${host_alias}" = "armv7-apple-darwin" ; then 
+	ARCH=armv7
+	PLATFORM=OS
 else 
 	echo "bad host ${host_alias} must be either i386-apple-darwin or armv6-apple-darwin"
 	exit

@@ -1,2 +1,0 @@
-to build liblinphone sdk with tunnel, execute:
-make -f  builder-iphone-simulator.mk  all build-tunnel &&  make -f  builder-iphone-os.mk  all build-tunnel &&make -f builder-iphone-os.mk delivery-sdk

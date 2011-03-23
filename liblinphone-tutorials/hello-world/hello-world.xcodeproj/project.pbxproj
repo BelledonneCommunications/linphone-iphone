@@ -78,6 +78,14 @@
 		229499FB12A5433F00D6CF48 /* libresolv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 22D1B6A012A3E159001AE361 /* libresolv.dylib */; };
 		22D1B6A112A3E159001AE361 /* libresolv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 22D1B6A012A3E159001AE361 /* libresolv.dylib */; };
 		22DF2B1612A65892007C6B74 /* buddy_status.c in Sources */ = {isa = PBXBuildFile; fileRef = 2294995512A53FD800D6CF48 /* buddy_status.c */; };
+		22E5AFC5133A2E260044EA25 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22E5AFC3133A2E260044EA25 /* libssl.a */; };
+		22E5AFC6133A2E260044EA25 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22E5AFC4133A2E260044EA25 /* libcrypto.a */; };
+		22E5AFC9133A2E3F0044EA25 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22E5AFC7133A2E3F0044EA25 /* libssl.a */; };
+		22E5AFCA133A2E3F0044EA25 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22E5AFC8133A2E3F0044EA25 /* libcrypto.a */; };
+		22E5AFCD133A2E5C0044EA25 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22E5AFCB133A2E5C0044EA25 /* libssl.a */; };
+		22E5AFCE133A2E5C0044EA25 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22E5AFCC133A2E5C0044EA25 /* libcrypto.a */; };
+		22E5AFD1133A2E760044EA25 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22E5AFCF133A2E760044EA25 /* libssl.a */; };
+		22E5AFD2133A2E760044EA25 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22E5AFD0133A2E760044EA25 /* libcrypto.a */; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
 /* End PBXBuildFile section */
 
@@ -107,6 +115,14 @@
 		229499BA12A5417D00D6CF48 /* hello-world.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "hello-world.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		229499FF12A5433F00D6CF48 /* hello-world.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "hello-world.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		22D1B6A012A3E159001AE361 /* libresolv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libresolv.dylib; path = usr/lib/libresolv.dylib; sourceTree = SDKROOT; };
+		22E5AFC3133A2E260044EA25 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = "../../liblinphone-sdk/apple-darwin/lib/libssl.a"; sourceTree = "<group>"; };
+		22E5AFC4133A2E260044EA25 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = "../../liblinphone-sdk/apple-darwin/lib/libcrypto.a"; sourceTree = "<group>"; };
+		22E5AFC7133A2E3F0044EA25 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = "../../liblinphone-sdk/apple-darwin/lib/libssl.a"; sourceTree = "<group>"; };
+		22E5AFC8133A2E3F0044EA25 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = "../../liblinphone-sdk/apple-darwin/lib/libcrypto.a"; sourceTree = "<group>"; };
+		22E5AFCB133A2E5C0044EA25 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = "../../liblinphone-sdk/apple-darwin/lib/libssl.a"; sourceTree = "<group>"; };
+		22E5AFCC133A2E5C0044EA25 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = "../../liblinphone-sdk/apple-darwin/lib/libcrypto.a"; sourceTree = "<group>"; };
+		22E5AFCF133A2E760044EA25 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = "../../liblinphone-sdk/apple-darwin/lib/libssl.a"; sourceTree = "<group>"; };
+		22E5AFD0133A2E760044EA25 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = "../../liblinphone-sdk/apple-darwin/lib/libcrypto.a"; sourceTree = "<group>"; };
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		32CA4F630368D1EE00C91783 /* hello_world_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hello_world_Prefix.pch; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* helloworld-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "helloworld-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
@@ -117,6 +133,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				22E5AFC5133A2E260044EA25 /* libssl.a in Frameworks */,
+				22E5AFC6133A2E260044EA25 /* libcrypto.a in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */,
@@ -141,6 +159,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				22E5AFC9133A2E3F0044EA25 /* libssl.a in Frameworks */,
+				22E5AFCA133A2E3F0044EA25 /* libcrypto.a in Frameworks */,
 				2294996912A53FEE00D6CF48 /* Foundation.framework in Frameworks */,
 				2294996A12A53FEE00D6CF48 /* UIKit.framework in Frameworks */,
 				2294996B12A53FEE00D6CF48 /* CoreGraphics.framework in Frameworks */,
@@ -165,6 +185,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				22E5AFCD133A2E5C0044EA25 /* libssl.a in Frameworks */,
+				22E5AFCE133A2E5C0044EA25 /* libcrypto.a in Frameworks */,
 				229499A612A5417D00D6CF48 /* Foundation.framework in Frameworks */,
 				229499A712A5417D00D6CF48 /* UIKit.framework in Frameworks */,
 				229499A812A5417D00D6CF48 /* CoreGraphics.framework in Frameworks */,
@@ -189,6 +211,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				22E5AFD1133A2E760044EA25 /* libssl.a in Frameworks */,
+				22E5AFD2133A2E760044EA25 /* libcrypto.a in Frameworks */,
 				229499EB12A5433F00D6CF48 /* Foundation.framework in Frameworks */,
 				229499EC12A5433F00D6CF48 /* UIKit.framework in Frameworks */,
 				229499ED12A5433F00D6CF48 /* CoreGraphics.framework in Frameworks */,
@@ -233,6 +257,14 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				22E5AFCF133A2E760044EA25 /* libssl.a */,
+				22E5AFD0133A2E760044EA25 /* libcrypto.a */,
+				22E5AFCB133A2E5C0044EA25 /* libssl.a */,
+				22E5AFCC133A2E5C0044EA25 /* libcrypto.a */,
+				22E5AFC7133A2E3F0044EA25 /* libssl.a */,
+				22E5AFC8133A2E3F0044EA25 /* libcrypto.a */,
+				22E5AFC3133A2E260044EA25 /* libssl.a */,
+				22E5AFC4133A2E260044EA25 /* libcrypto.a */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
@@ -505,6 +537,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\\\"$(SRCROOT)/../../liblinphone-sdk/apple-darwin/lib\\\"",
+					"\"$(SRCROOT)/../../liblinphone-sdk/apple-darwin/lib\"",
 				);
 				PRODUCT_NAME = "hello-world";
 				SDKROOT = iphoneos;
@@ -523,6 +556,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\\\"$(SRCROOT)/../../liblinphone-sdk/apple-darwin/lib\\\"",
+					"\"$(SRCROOT)/../../liblinphone-sdk/apple-darwin/lib\"",
 				);
 				PRODUCT_NAME = "hello-world";
 				SDKROOT = iphoneos;
@@ -544,6 +578,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\\\\\\\"$(SRCROOT)/../../liblinphone-sdk/apple-darwin/lib\\\\\\\"",
+					"\"$(SRCROOT)/../../liblinphone-sdk/apple-darwin/lib\"",
 				);
 				PRODUCT_NAME = "hello-world";
 				SDKROOT = iphoneos;
@@ -562,6 +597,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\\\\\\\"$(SRCROOT)/../../liblinphone-sdk/apple-darwin/lib\\\\\\\"",
+					"\"$(SRCROOT)/../../liblinphone-sdk/apple-darwin/lib\"",
 				);
 				PRODUCT_NAME = "hello-world";
 				SDKROOT = iphoneos;
@@ -583,6 +619,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\\\\\\\\\\\\\\\"$(SRCROOT)/../../liblinphone-sdk/apple-darwin/lib\\\\\\\\\\\\\\\"",
+					"\"$(SRCROOT)/../../liblinphone-sdk/apple-darwin/lib\"",
 				);
 				PRODUCT_NAME = "hello-world";
 				SDKROOT = iphoneos;
@@ -601,6 +638,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\\\\\\\\\\\\\\\"$(SRCROOT)/../../liblinphone-sdk/apple-darwin/lib\\\\\\\\\\\\\\\"",
+					"\"$(SRCROOT)/../../liblinphone-sdk/apple-darwin/lib\"",
 				);
 				PRODUCT_NAME = "hello-world";
 				SDKROOT = iphoneos;

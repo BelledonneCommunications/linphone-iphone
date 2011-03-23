@@ -78,17 +78,17 @@ init:
 veryclean:
 	rm -rf $(BUILDER_BUILD_DIR)
 
-build-linphone: init build-openssl build-osip2 build-eXosip2  build-speex build-libgsm  $(LINPHONE_BUILD_DIR)/Makefile
+.NOTPARALLEL build-linphone: init build-openssl build-osip2 build-eXosip2  build-speex build-libgsm  $(LINPHONE_BUILD_DIR)/Makefile
 	cd $(LINPHONE_BUILD_DIR)  && PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) make newdate &&  make  && make install
 
-clean-linphone: clean-osip2 clean-eXosip2 clean-speex clean-libgsm  clean-msilbc clean-libilbc
+clean-linphone: clean-osip2 clean-eXosip2 clean-speex clean-libgsm  clean-msilbc clean-libilbc clean-openssl
 	cd  $(LINPHONE_BUILD_DIR) && make clean
 
-veryclean-linphone: clean-linphone veryclean-osip2 veryclean-eXosip2 veryclean-speex veryclean-libgsm  veryclean-msilbc veryclean-libilbc
+veryclean-linphone: clean-linphone veryclean-osip2 veryclean-eXosip2 veryclean-speex veryclean-libgsm  veryclean-msilbc veryclean-libilbc veryclean-openssl
 	cd $(LINPHONE_BUILD_DIR) && make distclean
 	cd $(LINPHONE_SRC_DIR) && rm -f configure
 
-clean-makefile-linphone: clean-makefile-osip2 clean-makefile-eXosip2 clean-makefile-speex clean-makefile-libilbc clean-makefile-msilbc
+clean-makefile-linphone: clean-makefile-osip2 clean-makefile-eXosip2 clean-makefile-speex clean-makefile-libilbc clean-makefile-msilbc clean-makefile-openssl
 	cd $(LINPHONE_BUILD_DIR) && rm -f Makefile && rm -f oRTP/Makefile && rm -f mediastreamer2/Makefile
 
 
@@ -182,7 +182,7 @@ veryclean-speex:
 	 cd $(BUILDER_BUILD_DIR)/$(speex_dir) && make distclean
 
 clean-makefile-speex:
-	 cd $(BUILDER_SRC_DIR)/$(speex_dir) && rm -f Makefile
+	 cd $(BUILDER_BUILD_DIR)/$(speex_dir) && rm -f Makefile
 
 #GSM
 
@@ -220,14 +220,14 @@ build-msilbc: build-libilbc $(MSILBC_BUILD_DIR)/Makefile
 	cd $(MSILBC_BUILD_DIR) && make  && make install
 
 clean-msilbc:
-	cd  $(MSILBC_BUILD_DIR) && make clean
+	cd  $(MSILBC_BUILD_DIR) && make  clean
 
 veryclean-msilbc:
 	cd $(MSILBC_BUILD_DIR) && make distclean
-	cd $(MSILBC_SRC_DIR) && rm configure
+	cd $(MSILBC_BUILD_DIR) && rm configure
 
 clean-makefile-msilbc:
-	cd $(MSILBC_SRC_DIR) && rm -f Makefile
+	cd $(MSILBC_BUILD_DIR) && rm -f Makefile
 
 # libilbc
 
@@ -248,7 +248,7 @@ clean-libilbc:
 
 veryclean-libilbc:
 	cd $(LIBILBC_BUILD_DIR) && make distclean
-	cd $(LIBILBC_SRC_DIR) && rm -f configure
+	cd $(LIBILBC_BUILD_DIR) && rm -f configure
 
 clean-makefile-libilbc:
 	cd $(LIBILBC_BUILD_DIR) && rm -f Makefile
@@ -264,11 +264,12 @@ multi-arch:
 	cp -rf $(prefix)/share  $(prefix)/../apple-darwin/. ; \
 	for archive in $$arm_archives ; do \
 	        i386_path=`echo $$archive | sed -e "s/armv6/i386/"` ;\
+	        armv7_path=`echo $$archive | sed -e "s/armv6/armv7/"` ;\
         	destpath=`echo $$archive | sed -e "s/armv6-//"` ;\
         	if test -f "$$i386_path"; then \
                 	echo "Mixing $$archive and $$i386_path into $$destpath"; \
                 	mkdir -p `dirname $$destpath` ; \
-                	lipo -create $$archive $$i386_path -output $$destpath; \
+                	lipo -create $$archive $$armv7_path $$i386_path -output $$destpath; \
         	else \
                 	echo "WARNING: archive `basename $$archive` exists in arm tree but does not exists in i386 tree."; \
         	fi \

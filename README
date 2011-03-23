@@ -15,7 +15,9 @@ You may update variable SDK_VERSION from file submodules/build/iphone-config.sit
   
 To generate the liblinphone dual arch sdk, once the above commands have been executed:
 	cd submodules/build
-	make -f  builder-iphone-simulator.mk  all &&  make -f  builder-iphone-os.mk  all &&make -f builder-iphone-os.mk delivery-sdk
+	make all 
+
+In case you upgrade your IOS SDK, you may force configure by using make targets <clean> and <clean-makefile>
 
 Libraries are available from liblinphone-sdk/
 
