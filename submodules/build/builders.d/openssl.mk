@@ -19,7 +19,7 @@ $(OPENSSL_BUILD_DIR)/Configure:
 $(OPENSSL_BUILD_DIR)/Makefile: $(OPENSSL_BUILD_DIR)/Configure
 	cd $(OPENSSL_BUILD_DIR) \
 	&&  host_alias=${host} . $(BUILDER_SRC_DIR)/build/$(config_site) \
-	&& ./Configure -openssldir=$(prefix) --cross-compile-prefix=$$SDK_BIN_PATH/ BSD-generic32 no-asm
+	&& ./Configure -openssldir=$(prefix) --cross-compile-prefix=$$SDK_BIN_PATH/ BSD-generic32 no-asm no-dso
 
 build-openssl: $(OPENSSL_BUILD_DIR)/Makefile
 	cd $(OPENSSL_BUILD_DIR) &&  host_alias=${host} . $(BUILDER_SRC_DIR)/build/$(config_site) \
