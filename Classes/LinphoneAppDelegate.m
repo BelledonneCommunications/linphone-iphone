@@ -43,7 +43,38 @@
 	[[LinphoneManager instance] becomeActive];
 }
 
+- (void)registerDefaultsFromSettingsBundle {
+	// source: http://stackoverflow.com/questions/510216/
+    NSString *settingsBundle = [[NSBundle mainBundle] pathForResource:@"Settings" ofType:@"bundle"];
+    if(!settingsBundle) {
+        NSLog(@"Could not find Settings.bundle");
+        return;
+    }
+
+    NSDictionary *settings = [NSDictionary dictionaryWithContentsOfFile:[settingsBundle stringByAppendingPathComponent:@"Root.plist"]];
+    NSArray *preferences = [settings objectForKey:@"PreferenceSpecifiers"];
+
+    NSMutableDictionary *defaultsToRegister = [[NSMutableDictionary alloc] initWithCapacity:[preferences count]];
+    for(NSDictionary *prefSpecification in preferences) {
+        NSString *key = [prefSpecification objectForKey:@"Key"];
+        if(key) {
+            [defaultsToRegister setObject:[prefSpecification objectForKey:@"DefaultValue"] forKey:key];
+        }
+    }
+
+    [[NSUserDefaults standardUserDefaults] registerDefaults:defaultsToRegister];
+    [defaultsToRegister release];
+}
+
 - (void) loadDefaultSettings {
+
+		// if this is the first launch after installing, we would like to load default settings values from Settings.bundle
+		NSObject *somePrefVal = [[NSUserDefaults standardUserDefaults] objectForKey:@"debugenable_preference"];
+		if(!somePrefVal) {
+			// has no value, so defaults have not been loaded yet
+			[self registerDefaultsFromSettingsBundle];
+		}
+
 		NSDictionary *appDefaults = [NSDictionary dictionaryWithObjectsAndKeys:
 									 @"NO", @"enable_first_login_view_preference", //
 									 nil];
