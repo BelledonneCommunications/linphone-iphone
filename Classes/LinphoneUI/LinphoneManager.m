@@ -401,8 +401,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		proxyReachability=SCNetworkReachabilityCreateWithName(nil, linphone_address_get_domain(addr));
 		
 	} else {
-		if (configCheckDisable == false 
-			&& (!domain  && !username)) {
+		if (configCheckDisable == false ) {
 			UIAlertView* error = [[UIAlertView alloc]	initWithTitle:@"Warning"
 															message:@"It seems you have not configured any proxy server from settings" 
 														   delegate:self
