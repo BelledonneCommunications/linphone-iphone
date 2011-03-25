@@ -1,3 +1,12 @@
+linphone-3.4.3 -- March 28, 2011
+	* Fully ported to mac os x with gtk-osx (menu integration, bundle generation with "make bundle", sound I/O improved) but still audio only
+	* Fix stupid warning "no response" that sometimes arrived at end of calls
+	* limit the size of the log window (to prevent memory drain)
+	* limit the size of the SDP message by removing unnecessary information (for well known codecs, for H264).
+	  This is to prevent SIP messages from being discarded by routers on the internet when they exceeds in size the internet MTU.
+	* other sip bugfixes
+	Requires mediastreamer-2.7.3
+
 linphone-3.4.2 -- March 3rd, 2011
 	* fix problems with webcams on windows
 	Requires mediastreamer-2.7.2
