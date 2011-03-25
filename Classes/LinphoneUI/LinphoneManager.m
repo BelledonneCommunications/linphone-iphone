@@ -234,7 +234,7 @@ static LinphoneCoreVTable linphonec_vtable;
 -(void) configurePayloadType:(const char*) type fromPrefKey: (NSString*)key withRate:(int)rate  {
 	if ([[NSUserDefaults standardUserDefaults] boolForKey:key]) { 		
 		PayloadType* pt;
-		if(pt = linphone_core_find_payload_type(theLinphoneCore,type,rate)) {
+		if((pt = linphone_core_find_payload_type(theLinphoneCore,type,rate))) {
 			linphone_core_enable_payload_type(theLinphoneCore,pt, TRUE);
 		}
 	} 
