@@ -61,6 +61,7 @@ case $target_os in
 	*darwin*)
 		dnl use macport installation
 		ACLOCAL_MACOS_FLAGS="-I /opt/local/share/aclocal"
+		build_macos=yes
 	;;
 esac
 
@@ -132,8 +133,9 @@ AC_ARG_ENABLE(gtk_ui,
 
 if test "$gtk_ui" = "true" ; then
 	PKG_CHECK_MODULES(LIBGTK, gtk+-2.0 >= 2.4.0 gthread-2.0)
-	AC_SUBST(LIBGTK_CFLAGS)
-	AC_SUBST(LIBGTK_LIBS)
+	if test "$build_macos" = "yes" ; then
+		PKG_CHECK_MODULES(LIBGTKMAC,[ige-mac-integration >= 0.9.7 ])
+	fi
 else
 	echo "GTK interface compilation is disabled."
 fi
@@ -159,13 +161,13 @@ AC_ARG_WITH( configdir,
 
 AC_DEFINE_UNQUOTED(LINPHONE_CONFIG_DIR,"$configdir",[Windows appdata subdir where linphonerc can be found])
 
-AC_ARG_ENABLE(manual,
-      [  --disable-manual    Do not attempt to build html linphone's user documentation],
+AC_ARG_ENABLE(relativeprefix,
+      [  --enable-relativeprefix    Build a linphone that finds its resources relatively to the directory where it is installed],
       [case "${enableval}" in
-        yes) build_manual=yes ;;
-        no)  build_manual=false ;;
-        *) AC_MSG_ERROR(bad value ${enableval} for --enable-manual) ;;
-      esac],[build_manual=yes])
+        yes) relativeprefix=yes ;;
+        no)  relativeprefix=no ;;
+        *) AC_MSG_ERROR(bad value ${enableval} for --enable-relativeprefix) ;;
+      esac],[relativeprefix=auto])
 
 AC_ARG_ENABLE(date,
       [  --enable-date    Use build date in internal version number],
@@ -232,9 +234,22 @@ else
 	package_prefix=${prefix}
 fi
 
-if test x$mingw_found = xyes ; then
-dnl allow binaries to install everywhere
-package_prefix="."
+
+
+if test "$relativeprefix" = "auto" ; then
+	case $target_os in
+		*darwin*)
+		relativeprefix=yes
+		;;
+		*mingw*)
+		relativeprefix=yes
+		;;
+	esac
+fi
+
+if test "$relativeprefix" = "yes" ; then
+	dnl allow binaries to install everywhere
+	package_prefix="."
 fi
 
 dnl Set PACKAGE_LOCALE_DIR in config.h.

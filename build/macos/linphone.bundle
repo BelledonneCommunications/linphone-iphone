@@ -80,7 +80,7 @@
   </binary>
 
   <binary>
-     ${prefix}/lib/gdk-pixbuf-2.0/*
+     ${prefix}/lib/gdk-pixbuf-2.0
   </binary>
 
   <!-- Copy in GTK+ theme engines. Note the use of the
@@ -108,8 +108,8 @@
        "dest" property. The destination must then start with the macro
        "${bundle}", which refers to the bundle root directory.
   -->
-  <data dest="${bundle}/Contents/Resources/share/linphone">
-    ${prefix:linphone}/share/*
+  <data>
+    ${prefix:linphone}/share
   </data>
 
   <!-- Copy in the themes data. You may want to trim this to save space
@@ -135,9 +135,9 @@
        theme of choice if they provide and example, or you can just
        change the source path. -->
 
-  <!--data dest="${bundle}/Contents/Resources/etc/${gtkdir}/gtkrc">
-    ${project}/src/gtkrc
-  </data-->
+  <data dest="${bundle}/Contents/Resources/etc/${gtkdir}/gtkrc">
+    ${project}/../../gtk/gtkrc.mac
+  </data>
 
   <data dest="${bundle}/Contents/Resources/share/sounds/linphone">
       ${prefix:linphone}/share/sounds/linphone/

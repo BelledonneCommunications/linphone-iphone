@@ -59,7 +59,7 @@ ISS_SCRIPT_PATH=$(shell cd $(top_srcdir) && pwd)/$(ISS_SCRIPT)
 #path to Inno Setup 5 compiler
 ISCC=ISCC.exe
 PACKAGE_WIN32_FILELIST=$(PACKAGE)-win32.filelist
-PACKAGE_BUNDLE_FILE=$(top_srcdir)/build/macos/reltime.bundle
+PACKAGE_BUNDLE_FILE=$(top_srcdir)/build/macos/$(PACKAGE).bundle
 
 EXTRA_DIST = config.rpath  BUGS linphone.kdevelop  \
 				intltool-extract.in	\
@@ -194,6 +194,7 @@ bundle:
 	LINPHONE_INSTALL_PREFIX=$(INSTALLDIR_WITH_PREFIX) \
 	LIBLINPHONE_INSTALL_PREFIX=$(INSTALLDIR_WITH_PREFIX) \
 	ige-mac-bundler $(PACKAGE_BUNDLE_FILE)
+	cd $$HOME/Desktop && zip -r Linphone-$(VERSION).app.zip Linphone.app
 
 
 
