@@ -19,8 +19,26 @@
 
 #import "UISpeakerButton.h"
 #import <AudioToolbox/AudioToolbox.h>
+#include "linphonecore.h"
 
 @implementation UISpeakerButton
+
+static void audioRouteChangeListenerCallback (
+                                       void                   *inUserData,                                 // 1
+                                       AudioSessionPropertyID inPropertyID,                                // 2
+                                       UInt32                 inPropertyValueSize,                         // 3
+                                       const void             *inPropertyValue                             // 4
+                                       ) {
+    if (inPropertyID != kAudioSessionProperty_AudioRouteChange) return; // 5
+    [(UISpeakerButton*)inUserData reset];  
+   
+}
+
+-(void) initWithOnImage:(UIImage*) onImage offImage:(UIImage*) offImage {
+   [super initWithOnImage:onImage offImage:offImage];
+   AudioSessionPropertyID routeChangeID = kAudioSessionProperty_AudioRouteChange;   
+   AudioSessionAddPropertyListener(routeChangeID, audioRouteChangeListenerCallback, self);
+}
 
 
 -(void) onOn {
@@ -38,13 +56,16 @@
 							 , &audioRouteOverride);
 }
 -(bool) isInitialStateOn {
-	UInt32 audioRouteOverride;
-	UInt32 size = sizeof (audioRouteOverride);
-	AudioSessionGetProperty (kAudioSessionProperty_OverrideAudioRoute
-							 , &size
-							 , (void*)(&audioRouteOverride));
-	return kAudioSessionOverrideAudioRoute_Speaker == audioRouteOverride;
-	
+    CFStringRef lNewRoute=CFSTR("Unknown");
+    UInt32 lNewRouteSize = sizeof(lNewRoute);
+    OSStatus lStatus = AudioSessionGetProperty(kAudioSessionProperty_AudioRoute
+                                                ,&lNewRouteSize
+                                                ,&lNewRoute);
+    if (!lStatus && CFStringGetLength(lNewRoute) > 0) {
+        ms_message("Current audio route is [%s]",CFStringGetCStringPtr(lNewRoute, kCFStringEncodingUTF8));
+        return (kCFCompareEqualTo == CFStringCompare (lNewRoute,CFSTR("Speaker"),0));
+    } else 
+        return false;
 }
 
 
