@@ -194,7 +194,7 @@ bundle:
 	LINPHONE_INSTALL_PREFIX=$(INSTALLDIR_WITH_PREFIX) \
 	LIBLINPHONE_INSTALL_PREFIX=$(INSTALLDIR_WITH_PREFIX) \
 	ige-mac-bundler $(PACKAGE_BUNDLE_FILE)
-	cd $$HOME/Desktop && zip -r Linphone-$(VERSION).app.zip $$HOME/Desktop/Linphone.app
+	cd $$HOME/Desktop && zip -r Linphone-$(VERSION).app.zip Linphone.app
 
 
 
