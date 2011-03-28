@@ -1,3 +1,3 @@
-EXTRA_DIST=linphone.bundle.in environment.sh
+EXTRA_DIST=linphone.bundle environment.sh Info-linphone.plist.in
 
 
