@@ -253,6 +253,8 @@ bool_t linphone_call_camera_enabled(const LinphoneCall *lc);
 int linphone_call_take_video_snapshot(LinphoneCall *call, const char *file);
 LinphoneReason linphone_call_get_reason(const LinphoneCall *call);
 const char *linphone_call_get_remote_user_agent(LinphoneCall *call);
+float linphone_call_get_play_volume(LinphoneCall *call);
+float linphone_call_get_record_volume(LinphoneCall *call);
 void *linphone_call_get_user_pointer(LinphoneCall *call);
 void linphone_call_set_user_pointer(LinphoneCall *call, void *user_pointer);
 /**
@@ -283,6 +285,10 @@ void linphone_call_enable_echo_limiter(LinphoneCall *call, bool_t val);
  * @ingroup media_parameters
 **/
 bool_t linphone_call_echo_limiter_enabled(const LinphoneCall *call);
+
+/*keep this in sync with mediastreamer2/msvolume.h*/
+#define LINPHONE_VOLUME_DB_LOWEST (-120) /**< Lowest measured that can be returned.*/
+
 /**
  * @addtogroup proxies
  * @{
