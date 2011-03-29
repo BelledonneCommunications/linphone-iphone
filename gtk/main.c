@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <sys/stat.h>
 #include <unistd.h>
 
-#ifdef __APPLE__
+#ifdef HAVE_GTK_OSX
 #include <gtkosxapplication.h>
 #endif
 
@@ -1182,7 +1182,7 @@ static void linphone_gtk_configure_main_window(){
 	if (title) {
 		gtk_window_set_title(GTK_WINDOW(w),title);
 #if GTK_CHECK_VERSION(2,16,0)
-#ifdef __APPLE__
+#ifdef HAVE_GTK_OSX
 		gtk_menu_item_set_label(GTK_MENU_ITEM(linphone_gtk_get_widget(w,"main_menu")),_("Windows"));
 #else
 		gtk_menu_item_set_label(GTK_MENU_ITEM(linphone_gtk_get_widget(w,"main_menu")),title);
@@ -1266,7 +1266,7 @@ gboolean linphone_gtk_close(GtkWidget *mw){
 		linphone_core_terminate_all_calls(lc);
 	}
 	linphone_core_enable_video_preview(lc,FALSE);
-#ifdef __APPLE__
+#ifdef HAVE_GTK_OSX
 	gtk_window_iconify(GTK_WINDOW(mw));
 #else
 	gtk_widget_hide(mw);
@@ -1295,7 +1295,7 @@ static void linphone_gtk_init_main_window(){
 	/*prevent the main window from being destroyed by a user click on WM controls, instead we hide it*/
 	g_signal_connect (G_OBJECT (main_window), "delete-event",
 		G_CALLBACK (linphone_gtk_close), main_window);
-#ifdef __APPLE__
+#ifdef HAVE_GTK_OSX
 	{
 		GtkWidget *menubar=linphone_gtk_get_widget(main_window,"menubar1");
 		gtk_widget_destroy(linphone_gtk_get_widget(main_window,"imagemenuitem5"));
@@ -1451,7 +1451,7 @@ int main(int argc, char *argv[]){
 	add_pixmap_directory("pixmaps");
 	add_pixmap_directory(PACKAGE_DATA_DIR "/pixmaps/linphone");
 
-#ifdef __APPLE__
+#ifdef HAVE_GTK_OSX
 	GtkOSXApplication *theMacApp = (GtkOSXApplication*)g_object_new(GTK_TYPE_OSX_APPLICATION, NULL);
 	g_signal_connect(G_OBJECT(theMacApp),"NSApplicationDidBecomeActive",(GCallback)linphone_gtk_show_main_window,NULL);
 	g_signal_connect(G_OBJECT(theMacApp),"NSApplicationWillTerminate",(GCallback)gtk_main_quit,NULL);
@@ -1472,7 +1472,7 @@ int main(int argc, char *argv[]){
 	gtk_timeout_add(30,(GtkFunction)linphone_gtk_iterate,(gpointer)linphone_gtk_get_core());
 	gtk_timeout_add(30,(GtkFunction)linphone_gtk_check_logs,(gpointer)NULL);
 	linphone_gtk_init_main_window();
-#ifndef __APPLE__
+#ifndef HAVE_GTK_OSX
 	linphone_gtk_init_status_icon();
 #endif
 	if (!iconified){
@@ -1486,7 +1486,7 @@ int main(int argc, char *argv[]){
 	gdk_threads_leave();
 	linphone_gtk_destroy_log_window();
 	linphone_core_destroy(the_core);
-#ifndef __APPLE__
+#ifndef HAVE_GTK_OSX
 	/*workaround a bug on win32 that makes status icon still present in the systray even after program exit.*/
 	gtk_status_icon_set_visible(icon,FALSE);
 #endif
