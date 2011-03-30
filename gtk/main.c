@@ -1455,6 +1455,8 @@ int main(int argc, char *argv[]){
 	GtkOSXApplication *theMacApp = (GtkOSXApplication*)g_object_new(GTK_TYPE_OSX_APPLICATION, NULL);
 	g_signal_connect(G_OBJECT(theMacApp),"NSApplicationDidBecomeActive",(GCallback)linphone_gtk_show_main_window,NULL);
 	g_signal_connect(G_OBJECT(theMacApp),"NSApplicationWillTerminate",(GCallback)gtk_main_quit,NULL);
+	/*never block termination:*/
+	g_signal_connect(G_OBJECT(theMacApp),"NSApplicationBlockTermination",(GCallback)gtk_false,NULL);
 #endif
 	
 	the_ui=linphone_gtk_create_window("main");
