@@ -54,7 +54,6 @@ static void toggle_video_preview(LinphoneCore *lc, bool_t val);
 
 extern SalCallbacks linphone_sal_callbacks;
 
-
 void lc_callback_obj_init(LCCallbackObj *obj,LinphoneCoreCbFunc func,void* ud)
 {
   obj->_func=func;
@@ -3671,6 +3670,11 @@ void linphone_core_stop_waiting(LinphoneCore *lc){
 void linphone_core_set_audio_transports(LinphoneCore *lc, RtpTransport *rtp, RtpTransport *rtcp){
 	lc->a_rtp=rtp;
 	lc->a_rtcp=rtcp;
+}
+
+void linphone_core_set_video_transports(LinphoneCore *lc, RtpTransport *rtp, RtpTransport *rtcp){
+	lc->v_rtp=rtp;
+	lc->v_rtcp=rtcp;
 }
 
 /**

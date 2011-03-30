@@ -663,11 +663,14 @@ void linphone_call_init_media_streams(LinphoneCall *call){
 		rtp_session_set_transports(audiostream->session,lc->a_rtp,lc->a_rtcp);
 
 #ifdef VIDEO_ENABLED
+
 	if ((lc->video_conf.display || lc->video_conf.capture) && md->streams[1].port>0){
 		call->videostream=video_stream_new(md->streams[1].port,linphone_core_ipv6_enabled(lc));
 	if( lc->video_conf.displaytype != NULL)
 		video_stream_set_display_filter_name(call->videostream,lc->video_conf.displaytype);
 	video_stream_set_event_callback(call->videostream,video_stream_event_cb, call);
+	if (lc->v_rtp)
+		rtp_session_set_transports(call->videostream->session,lc->v_rtp,lc->v_rtcp);
 #ifdef TEST_EXT_RENDERER
 		video_stream_set_render_callback(call->videostream,rendercb,NULL);
 #endif

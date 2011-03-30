@@ -981,6 +981,8 @@ void linphone_core_destroy(LinphoneCore *lc);
 
 /*for advanced users:*/
 void linphone_core_set_audio_transports(LinphoneCore *lc, RtpTransport *rtp, RtpTransport *rtcp);
+void linphone_core_set_video_transports(LinphoneCore *lc, RtpTransport *rtp, RtpTransport *rtcp);
+
 
 int linphone_core_get_current_call_stats(LinphoneCore *lc, rtp_stats_t *local, rtp_stats_t *remote);
 
