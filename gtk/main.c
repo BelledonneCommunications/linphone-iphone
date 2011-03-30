@@ -17,7 +17,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-//#define USE_LIBGLADE 1
 
 #define VIDEOSELFVIEW_DEFAULT 1
 
@@ -25,14 +24,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "lpconfig.h"
 
 
-
-#ifdef USE_LIBGLADE
-#include <glade/glade.h>
-#endif
-
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+
+#ifdef HAVE_GTK_OSX
+#include <gtkosxapplication.h>
+#endif
 
 #ifdef WIN32
 #define chdir _chdir
@@ -246,40 +244,6 @@ static void linphone_gtk_configure_window(GtkWidget *w, const char *window_name)
 	}
 }
 
-#ifdef USE_LIBGLADE
-
-GtkWidget *linphone_gtk_create_window(const char *window_name){
-	GtkWidget *w;
-	GladeXML *gxml;
-	char path[2048];
-	snprintf(path,sizeof(path),"%s/%s.glade",BUILD_TREE_XML_DIR,window_name);
-	if (access(path,F_OK)!=0){
-		snprintf(path,sizeof(path),"%s/%s.glade",INSTALLED_XML_DIR,window_name);
-		if (access(path,F_OK)!=0){
-			g_error("Could not locate neither %s/%s.glade and %s/%s.glade .",BUILD_TREE_XML_DIR,window_name,
-				INSTALLED_XML_DIR,window_name);
-			return NULL;
-		}
-	}
-	gxml=glade_xml_new(path,NULL,NULL);
-	glade_xml_signal_autoconnect(gxml);
-	w=glade_xml_get_widget(gxml,window_name);
-	if (w==NULL) g_error("Could not retrieve '%s' window from xml file",window_name);
-	linphone_gtk_configure_window(w,window_name);
-	return w;
-}
-
-GtkWidget *linphone_gtk_get_widget(GtkWidget *window, const char *name){
-	GtkWidget *w;
-	GladeXML *gxml=glade_get_widget_tree(window);
-	if (gxml==NULL) g_error("Could not retrieve XML tree of window %s",name);
-	w=glade_xml_get_widget(gxml,name);
-	if (w==NULL) g_error("Could not retrieve widget %s",name);
-	return GTK_WIDGET(w);
-}
-
-#else
-
 static int get_ui_file(const char *name, char *path, int pathsize){
 	snprintf(path,pathsize,"%s/%s.ui",BUILD_TREE_XML_DIR,name);
 	if (access(path,F_OK)!=0){
@@ -358,7 +322,6 @@ GtkWidget *linphone_gtk_get_widget(GtkWidget *window, const char *name){
 	return GTK_WIDGET(w);
 }
 
-#endif
 
 void linphone_gtk_display_something(GtkMessageType type,const gchar *message){
 	GtkWidget *dialog;
@@ -1219,7 +1182,11 @@ static void linphone_gtk_configure_main_window(){
 	if (title) {
 		gtk_window_set_title(GTK_WINDOW(w),title);
 #if GTK_CHECK_VERSION(2,16,0)
+#ifdef HAVE_GTK_OSX
+		gtk_menu_item_set_label(GTK_MENU_ITEM(linphone_gtk_get_widget(w,"main_menu")),_("Windows"));
+#else
 		gtk_menu_item_set_label(GTK_MENU_ITEM(linphone_gtk_get_widget(w,"main_menu")),title);
+#endif
 #endif
 	}
 	if (start_call_icon){
@@ -1299,7 +1266,11 @@ gboolean linphone_gtk_close(GtkWidget *mw){
 		linphone_core_terminate_all_calls(lc);
 	}
 	linphone_core_enable_video_preview(lc,FALSE);
+#ifdef HAVE_GTK_OSX
+	gtk_window_iconify(GTK_WINDOW(mw));
+#else
 	gtk_widget_hide(mw);
+#endif
 	return TRUE;
 }
 
@@ -1324,6 +1295,16 @@ static void linphone_gtk_init_main_window(){
 	/*prevent the main window from being destroyed by a user click on WM controls, instead we hide it*/
 	g_signal_connect (G_OBJECT (main_window), "delete-event",
 		G_CALLBACK (linphone_gtk_close), main_window);
+#ifdef HAVE_GTK_OSX
+	{
+		GtkWidget *menubar=linphone_gtk_get_widget(main_window,"menubar1");
+		gtk_widget_destroy(linphone_gtk_get_widget(main_window,"imagemenuitem5"));
+		GtkOSXApplication *theMacApp = (GtkOSXApplication*)g_object_new(GTK_TYPE_OSX_APPLICATION, NULL);
+		gtk_osxapplication_set_menu_bar(theMacApp,GTK_MENU_SHELL(menubar));
+		gtk_widget_hide(menubar);
+		gtk_osxapplication_ready(theMacApp);
+	}
+#endif
 }
 
 
@@ -1470,8 +1451,11 @@ int main(int argc, char *argv[]){
 	add_pixmap_directory("pixmaps");
 	add_pixmap_directory(PACKAGE_DATA_DIR "/pixmaps/linphone");
 
-	
-	
+#ifdef HAVE_GTK_OSX
+	GtkOSXApplication *theMacApp = (GtkOSXApplication*)g_object_new(GTK_TYPE_OSX_APPLICATION, NULL);
+	g_signal_connect(G_OBJECT(theMacApp),"NSApplicationDidBecomeActive",(GCallback)linphone_gtk_show_main_window,NULL);
+	g_signal_connect(G_OBJECT(theMacApp),"NSApplicationWillTerminate",(GCallback)gtk_main_quit,NULL);
+#endif
 	
 	the_ui=linphone_gtk_create_window("main");
 	
@@ -1488,7 +1472,9 @@ int main(int argc, char *argv[]){
 	gtk_timeout_add(30,(GtkFunction)linphone_gtk_iterate,(gpointer)linphone_gtk_get_core());
 	gtk_timeout_add(30,(GtkFunction)linphone_gtk_check_logs,(gpointer)NULL);
 	linphone_gtk_init_main_window();
+#ifndef HAVE_GTK_OSX
 	linphone_gtk_init_status_icon();
+#endif
 	if (!iconified){
 		linphone_gtk_show_main_window();
 		linphone_gtk_check_soundcards();
@@ -1500,8 +1486,10 @@ int main(int argc, char *argv[]){
 	gdk_threads_leave();
 	linphone_gtk_destroy_log_window();
 	linphone_core_destroy(the_core);
+#ifndef HAVE_GTK_OSX
 	/*workaround a bug on win32 that makes status icon still present in the systray even after program exit.*/
 	gtk_status_icon_set_visible(icon,FALSE);
+#endif
 	free(progpath);
 	return 0;
 }

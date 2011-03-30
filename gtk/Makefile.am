@@ -21,7 +21,8 @@ EXTRA_DIST=	$(PIXMAPS) \
 		linphone.iss \
 		$(LINPHONE_ICO_RC_FILE) \
 		$(LINPHONE_ICO_FILE)
-
+		gtkrc \
+		gtkrc.mac
 
 if BUILD_GTK_UI
 
@@ -48,7 +49,7 @@ linphone_SOURCES=	\
 linphone_LDADD=$(ORTP_LIBS) \
 		$(MEDIASTREAMER_LIBS) \
 		$(top_builddir)/coreapi/liblinphone.la \
-			$(LIBGTK_LIBS) $(INTLLIBS) 
+			$(LIBGTK_LIBS) $(LIBGTKMAC_LIBS) $(INTLLIBS) 
 
 
 if BUILD_WIN32
@@ -71,8 +72,7 @@ endif
 AM_CFLAGS= -DIN_LINPHONE -I$(top_srcdir)/coreapi/ \
 		$(MEDIASTREAMER_CFLAGS) \
 		$(ORTP_CFLAGS) \
-		$(STRICT_OPTIONS) $(LIBGTK_CFLAGS) $(IPV6_CFLAGS) \
-		$(OSIP_CFLAGS) 
+		$(STRICT_OPTIONS) $(LIBGTK_CFLAGS) $(LIBGTKMAC_CFLAGS) $(IPV6_CFLAGS)
 
 
 version_date.h: $(top_srcdir)/configure.ac

@@ -33,9 +33,10 @@ static void text_received(Sal *sal, eXosip_event_t *ev);
 
 void _osip_list_set_empty(osip_list_t *l, void (*freefunc)(void*)){
 	void *data;
-	while((data=osip_list_get(l,0))!=NULL){
+	while(!osip_list_eol(l,0)) {
+		data=osip_list_get(l,0);
 		osip_list_remove(l,0);
-		freefunc(data);
+		if (data) freefunc(data);
 	}
 }
 
@@ -171,6 +172,7 @@ SalOp * sal_op_new(Sal *sal){
 	op->masquerade_via=FALSE;
 	op->auto_answer_asked=FALSE;
 	op->auth_info=NULL;
+	op->terminated=FALSE;
 	return op;
 }
 
@@ -781,6 +783,7 @@ int sal_call_terminate(SalOp *h){
 	if (err!=0){
 		ms_warning("Exosip could not terminate the call: cid=%i did=%i", h->cid,h->did);
 	}
+	h->terminated=TRUE;
 	return 0;
 }
 
@@ -1007,6 +1010,7 @@ static int call_proceeding(Sal *sal, eXosip_event_t *ev){
 		eXosip_lock();
 		eXosip_call_terminate(ev->cid,ev->did);
 		eXosip_unlock();
+		op->terminated=TRUE;
 		return -1;
 	}
 	if (ev->did>0)
@@ -1083,6 +1087,7 @@ static void call_terminated(Sal *sal, eXosip_event_t *ev){
 	}
 	sal->callbacks.call_terminated(op,from!=NULL ? from : sal_op_get_from(op));
 	if (from) osip_free(from);
+	op->terminated=TRUE;
 }
 
 static void call_released(Sal *sal, eXosip_event_t *ev){
@@ -1091,7 +1096,7 @@ static void call_released(Sal *sal, eXosip_event_t *ev){
 		ms_warning("No op associated to this call_released()");
 		return;
 	}
-	if (ev->response==NULL){
+	if (!op->terminated){
 		/* no response received so far */
 		call_failure(sal,ev);
 	}
@@ -1874,8 +1879,14 @@ int sal_register(SalOp *h, const char *proxy, const char *from, int expires){
 	if (h->rid==-1){
 		eXosip_lock();
 		h->rid=eXosip_register_build_initial_register(from,proxy,NULL,expires,&msg);
-		if (contact) register_set_contact(msg,contact);
-		sal_add_register(h->base.root,h);
+		if (msg){
+			if (contact) register_set_contact(msg,contact);
+			sal_add_register(h->base.root,h);
+		}else{
+			ms_error("Could not build initial register.");
+			eXosip_unlock();
+			return -1;
+		}
 	}else{
 		eXosip_lock();
 		eXosip_register_build_register(h->rid,expires,&msg);	

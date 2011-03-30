@@ -763,10 +763,10 @@ void _linphone_core_configure_resolver(){
 /*bionic declares _res but does not define nor export it !!*/
 #ifdef ANDROID
 	/*timeout and attempts are the same as retrans and retry, but are android specific names.*/
-	setenv("RES_OPTIONS","timeout:1 attempts:2 retrans:1 retry:2",1);
+	setenv("RES_OPTIONS","timeout:2 attempts:2 retrans:2 retry:2",1);
 #else
 	res_init();
-	_res.retrans=1; /*retransmit every second*/
+	_res.retrans=2; /*retransmit every two seconds*/
 	_res.retry=2; /*only two times per DNS server*/
 #endif
 }

@@ -1082,3 +1082,33 @@ bool_t linphone_call_echo_limiter_enabled(const LinphoneCall *call){
 	}
 }
 
+/**
+ * Returns the measured sound volume played locally (received from remote)
+ * It is expressed in dbm0. 
+**/
+float linphone_call_get_play_volume(LinphoneCall *call){
+	AudioStream *st=call->audiostream;
+	if (st && st->volsend){
+		float vol=0;
+		ms_filter_call_method(st->volsend,MS_VOLUME_GET,&vol);
+		return vol;
+		
+	}
+	return LINPHONE_VOLUME_DB_LOWEST;
+}
+
+/**
+ * Returns the measured sound volume recorded locally (sent to remote)
+ * It is expressed in dbm0. 
+**/
+float linphone_call_get_record_volume(LinphoneCall *call){
+	AudioStream *st=call->audiostream;
+	if (st && st->volrecv){
+		float vol=0;
+		ms_filter_call_method(st->volrecv,MS_VOLUME_GET,&vol);
+		return vol;
+		
+	}
+	return LINPHONE_VOLUME_DB_LOWEST;
+}
+
