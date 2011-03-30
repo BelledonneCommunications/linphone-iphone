@@ -411,6 +411,7 @@ struct _LinphoneCore
 	VideoPreview *previewstream;
 	struct _MSEventQueue *msevq;
 	RtpTransport *a_rtp,*a_rtcp;
+	RtpTransport *v_rtp,*v_rtcp;
 	MSList *bl_reqs;
 	MSList *subscribers;	/* unknown subscribers */
 	int minutes_away;

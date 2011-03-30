@@ -83,11 +83,12 @@ LOCAL_STATIC_LIBRARIES := \
 	libgsm
 
 ifeq ($(LINPHONE_VIDEO),1)
-LOCAL_STATIC_LIBRARIES += \
+LOCAL_SHARED_LIBRARIES += \
 	libavcodec \
 	libswscale \
 	libavcore \
-	libavutil \
+	libavutil 
+LOCAL_STATIC_LIBRARIES += \
 	libmsx264 \
 	libx264
 endif
