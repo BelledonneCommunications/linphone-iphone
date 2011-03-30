@@ -787,7 +787,12 @@ int linphone_core_get_sip_port(LinphoneCore *lc);
 int linphone_core_set_sip_transports(LinphoneCore *lc, const LCSipTransports *transports);
 
 int linphone_core_get_sip_transports(LinphoneCore *lc, LCSipTransports *transports);
-
+/**
+ * @ingroup IOS
+ * Give access to the UDP sip socket. Can be useful to configure this socket as persistent I.E kCFStreamNetworkServiceType set to kCFStreamNetworkServiceTypeVoIP)
+ * @param lc #LinphoneCore
+ * @return socket file descriptor
+ */
 ortp_socket_t linphone_core_get_sip_socket(LinphoneCore *lc);
 
 void linphone_core_set_inc_timeout(LinphoneCore *lc, int seconds);
@@ -927,6 +932,7 @@ int linphone_core_get_mtu(const LinphoneCore *lc);
 void linphone_core_set_mtu(LinphoneCore *lc, int mtu);
 
 /**
+ * @ingroup network_parameters
  * This method is called by the application to notify the linphone core library when network is reachable.
  * Calling this method with true trigger linphone to initiate a registration process for all proxy
  * configuration with parameter register set to enable.
@@ -935,15 +941,18 @@ void linphone_core_set_mtu(LinphoneCore *lc, int mtu);
  */
 void linphone_core_set_network_reachable(LinphoneCore* lc,bool_t value);
 /**
+ * @ingroup network_parameters
  * return network state either as positioned by the application or by linphone
  */
 bool_t linphone_core_is_network_reachabled(LinphoneCore* lc);
 
 /**
+ *  @ingroup network_parameters
  *  enable signaling keep alive. small udp packet sent periodically to keep udp NAT association
  */
 void linphone_core_enable_keep_alive(LinphoneCore* lc,bool_t enable);
 /**
+ *  @ingroup network_parameters
  * Is signaling keep alive
  */
 bool_t linphone_core_keep_alive_enabled(LinphoneCore* lc);

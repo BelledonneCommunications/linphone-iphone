@@ -3583,7 +3583,11 @@ static MSFilter *get_dtmf_gen(LinphoneCore *lc){
 }
 
 /**
- * Plays a dtmf to the local user.
+ * @ingroup media_parameters
+ * Plays a dtmf sound to the local user.
+ * @param lc #LinphoneCore
+ * @param dtmf DTMF to play ['0'..'16'] | '#' | '#'
+ * @param duration_ms duration in ms, -1 means play until next further call to #linphone_core_stop_dtmf()
 **/
 void linphone_core_play_dtmf(LinphoneCore *lc, char dtmf, int duration_ms){
 	MSFilter *f=get_dtmf_gen(lc);
@@ -3598,6 +3602,8 @@ void linphone_core_play_dtmf(LinphoneCore *lc, char dtmf, int duration_ms){
 }
 
 /**
+ * @ingroup media_parameters
+ *
  * Stops playing a dtmf started by linphone_core_play_dtmf().
 **/
 void linphone_core_stop_dtmf(LinphoneCore *lc){
