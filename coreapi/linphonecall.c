@@ -859,7 +859,7 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 	{
 		const SalStreamDescription *stream=sal_media_description_find_stream(call->resultdesc,
 		    					SalProtoRtpAvp,SalAudio);
-		if (stream && stream->dir!=SalStreamInactive){
+		if (stream && stream->dir!=SalStreamInactive && stream->port!=0){
 			MSSndCard *playcard=lc->sound_conf.lsd_card ? 
 				lc->sound_conf.lsd_card : lc->sound_conf.play_sndcard;
 			MSSndCard *captcard=lc->sound_conf.capt_sndcard;
@@ -941,7 +941,7 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 			lc->previewstream=NULL;
 		}
 		call->current_params.has_video=FALSE;
-		if (vstream && vstream->dir!=SalStreamInactive) {
+		if (vstream && vstream->dir!=SalStreamInactive && vstream->port!=0) {
 			const char *addr=vstream->addr[0]!='\0' ? vstream->addr : call->resultdesc->addr;
 			call->video_profile=make_profile(call,call->resultdesc,vstream,&used_pt);
 			if (used_pt!=-1){

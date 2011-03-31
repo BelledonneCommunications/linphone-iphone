@@ -241,8 +241,14 @@ static void add_line(sdp_message_t *msg, int lineno, const SalStreamDescription 
 	if (desc->ptime>0) sdp_message_a_attribute_add(msg,lineno,osip_strdup("ptime"),
 	    			int_2char(desc->ptime));
 	strip_well_known_rtpmaps=ms_list_size(desc->payloads)>5;
-	for(elem=desc->payloads;elem!=NULL;elem=elem->next){
-		add_payload(msg, lineno, (PayloadType*)elem->data,strip_well_known_rtpmaps);
+	if (desc->payloads){
+		for(elem=desc->payloads;elem!=NULL;elem=elem->next){
+			add_payload(msg, lineno, (PayloadType*)elem->data,strip_well_known_rtpmaps);
+		}
+	}else{
+		/* to comply with SDP we cannot have an empty payload type number list */
+		/* as it happens only when mline is declined with a zero port, it does not matter to put whatever codec*/
+		sdp_message_m_payload_add (msg,lineno, int_2char (0));
 	}
 	switch(desc->dir){
 		case SalStreamSendRecv:
