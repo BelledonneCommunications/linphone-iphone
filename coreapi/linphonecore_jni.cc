@@ -24,7 +24,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifdef ANDROID
 #include <android/log.h>
 extern "C" void libmsilbc_init();
+#ifdef HAVE_X264
 extern "C" void libmsx264_init();
+#endif
 #endif /*ANDROID*/
 
 static JavaVM *jvm=0;
@@ -335,7 +337,7 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_newLinphoneCore(JNIEnv*
 #ifdef HAVE_ILBC
 	libmsilbc_init(); // requires an fpu
 #endif
-#ifdef VIDEO_ENABLED
+#ifdef HAVE_X264
 	libmsx264_init();
 #endif
 	jlong nativePtr = (jlong)linphone_core_new(	&ldata->vTable

@@ -59,10 +59,13 @@ LOCAL_CFLAGS += \
 
 LOCAL_CFLAGS += -DIN_LINPHONE
 
+
 ifeq ($(LINPHONE_VIDEO),1)
 LOCAL_CFLAGS += -DVIDEO_ENABLED
+ifeq ($(BUILD_X264),1)
+LOCAL_CFLAGS += -DHAVE_X264
 endif
-
+endif
 LOCAL_C_INCLUDES += \
 	$(LOCAL_PATH) \
 	$(LOCAL_PATH)/include \
@@ -82,14 +85,18 @@ LOCAL_STATIC_LIBRARIES := \
 	libosip2 \
 	libgsm
 
+
 ifeq ($(LINPHONE_VIDEO),1)
+ifeq ($(BUILD_X264),1)
+LOCAL_STATIC_LIBRARIES += \
+	libmsx264 \
+	libx264 
+endif
 LOCAL_STATIC_LIBRARIES += \
 	libavcodec \
 	libswscale \
 	libavcore \
-	libavutil \
-	libmsx264 \
-	libx264
+	libavutil
 endif
 
 LOCAL_STATIC_LIBRARIES += libspeex 
