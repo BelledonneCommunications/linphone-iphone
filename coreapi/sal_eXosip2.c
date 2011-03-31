@@ -24,9 +24,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "private.h"
 #include "offeranswer.h"
 
+#ifdef ANDROID
 // Necessary to make it linked
 static void for_linker() { eXosip_transport_hook_register(NULL); }
-
+#endif
 static bool_t call_failure(Sal *sal, eXosip_event_t *ev);
 
 static void text_received(Sal *sal, eXosip_event_t *ev);
