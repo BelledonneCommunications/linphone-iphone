@@ -107,7 +107,7 @@ static int copy_file(const char *from, const char *to);
 #endif /*_WIN32_WCE*/
 static int linphonec_parse_cmdline(int argc, char **argv);
 static int linphonec_init(int argc, char **argv);
-static int linphonec_main_loop (LinphoneCore * opm, char * sipAddr);
+static int linphonec_main_loop (LinphoneCore * opm);
 static int linphonec_idle_call (void);
 #ifdef HAVE_READLINE
 static int linphonec_initialize_readline(void);
@@ -161,7 +161,7 @@ static int trace_level = 0;
 static char *logfile_name = NULL;
 static char configfile_name[PATH_MAX];
 static const char *factory_configfile_name=NULL;
-static char *sipAddr = NULL; /* for autocall */
+static char *sip_addr_to_call = NULL; /* for autocall */
 static int window_id = 0; /* 0=standalone window, or window id for embedding video */
 #if !defined(_WIN32_WCE)
 static ortp_pipe_t client_sock=ORTP_PIPE_INVALID;
@@ -630,7 +630,7 @@ main (int argc, char *argv[]) {
 	
 	if (! linphonec_init(argc, argv) ) exit(EXIT_FAILURE);
 
-	linphonec_main_loop (linphonec, sipAddr);
+	linphonec_main_loop (linphonec);
 
 	linphonec_finish(EXIT_SUCCESS);
 
@@ -985,6 +985,14 @@ linphonec_idle_call ()
 		linphone_core_accept_call(opm,NULL);
 		answer_call=FALSE;
 	}
+	/* auto call handling */
+	if (sip_addr_to_call != NULL )
+	{
+		char buf[512];
+		snprintf (buf, sizeof(buf),"call %s", sip_addr_to_call);
+		sip_addr_to_call=NULL;
+		linphonec_parse_command_line(linphonec, buf);
+	}
 
 	if ( auth_stack.nitems )
 	{
@@ -1073,20 +1081,12 @@ static void print_prompt(LinphoneCore *opm){
 }
 
 static int
-linphonec_main_loop (LinphoneCore * opm, char * sipAddr)
+linphonec_main_loop (LinphoneCore * opm)
 {
-	char buf[LINE_MAX_LEN]; /* auto call handling */
 	char *input;
 
 	print_prompt(opm);
 
-
-	/* auto call handling */
-	if (sipAddr != NULL )
-	{
-		snprintf (buf, sizeof(buf),"call %s", sipAddr);
-		linphonec_parse_command_line(linphonec, buf);
-	}
 
 	while (linphonec_running && (input=linphonec_readline(prompt)))
 	{
@@ -1195,7 +1195,7 @@ linphonec_parse_cmdline(int argc, char **argv)
 		{
 			arg_num++;
 			if (arg_num < argc)
-				sipAddr = argv[arg_num];
+				sip_addr_to_call = argv[arg_num];
 		}
                 else if (strncmp ("-a", argv[arg_num], 2) == 0)
                 {
