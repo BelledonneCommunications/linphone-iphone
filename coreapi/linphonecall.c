@@ -649,10 +649,14 @@ void linphone_call_init_media_streams(LinphoneCall *call){
 	audio_stream_enable_gain_control(audiostream,TRUE);
 	if (linphone_core_echo_cancellation_enabled(lc)){
 		int len,delay,framesize;
+		const char *statestr=lp_config_get_string(lc->config,"sound","ec_state",NULL);
 		len=lp_config_get_int(lc->config,"sound","ec_tail_len",0);
 		delay=lp_config_get_int(lc->config,"sound","ec_delay",0);
 		framesize=lp_config_get_int(lc->config,"sound","ec_framesize",0);
 		audio_stream_set_echo_canceller_params(audiostream,len,delay,framesize);
+		if (statestr && audiostream->ec){
+			ms_filter_call_method(audiostream->ec,MS_ECHO_CANCELLER_SET_STATE_STRING,(void*)statestr);
+		}
 	}
 	audio_stream_enable_automatic_gain_control(audiostream,linphone_core_agc_enabled(lc));
 	{
@@ -1009,6 +1013,14 @@ static void linphone_call_log_fill_stats(LinphoneCallLog *log, AudioStream *st){
 
 void linphone_call_stop_media_streams(LinphoneCall *call){
 	if (call->audiostream!=NULL) {
+		if (call->audiostream->ec){
+			const char *state_str=NULL;
+			ms_filter_call_method(call->audiostream->ec,MS_ECHO_CANCELLER_GET_STATE_STRING,&state_str);
+			if (state_str){
+				ms_message("Writing echo canceller state, %i bytes",strlen(state_str));
+				lp_config_set_string(call->core->config,"sound","ec_state",state_str);
+			}
+		}
 		linphone_call_log_fill_stats (call->log,call->audiostream);
 		audio_stream_stop(call->audiostream);
 		call->audiostream=NULL;
