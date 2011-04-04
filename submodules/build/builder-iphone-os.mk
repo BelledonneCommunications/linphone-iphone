@@ -34,7 +34,7 @@ linphone_configure_controls=  --disable-video \
                               --with-gsm=$(prefix) \
                               SPEEX_CFLAGS="-I$(prefix)/include" \
                               SPEEXDSP_LIBS="-L$(prefix)/lib -lspeexdsp" \
-                              SPEEX_LIBS="$(SPEEXDSP_LIBS) -lspeex " \
+                              SPEEX_LIBS="-L$(prefix)/lib -lspeexdsp -lspeex " \
                               OPENSSL_CFLAGS="-I$(prefix)/include" \
                               OPENSSL_LIBS="-L$(prefix)/lib -lssl -lcrypto" 
 
