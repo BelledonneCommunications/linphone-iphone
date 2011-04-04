@@ -127,7 +127,7 @@ int sal_text_send(SalOp *op, const char *from, const char *to, const char *msg){
 
 /*presence Subscribe/notify*/
 int sal_subscribe_presence(SalOp *op, const char *from, const char *to){
-	osip_message_t *msg;
+	osip_message_t *msg=NULL;
 	if (from)
 		sal_op_set_from(op,from);
 	if (to)
@@ -136,6 +136,11 @@ int sal_subscribe_presence(SalOp *op, const char *from, const char *to){
 	eXosip_lock();
 	eXosip_subscribe_build_initial_request(&msg,sal_op_get_to(op),sal_op_get_from(op),
 	    	sal_op_get_route(op),"presence",600);
+	if (msg!=NULL){
+		ms_error("Could not build subscribe request to %s",to);
+		eXosip_unlock();
+		return -1;
+	}
 	if (op->base.contact){
 		_osip_list_set_empty(&msg->contacts,(void (*)(void*))osip_contact_free);
 		osip_message_set_contact(msg,op->base.contact);
@@ -168,9 +173,14 @@ int sal_unsubscribe(SalOp *op){
 }
 
 int sal_subscribe_accept(SalOp *op){
-	osip_message_t *msg;
+	osip_message_t *msg=NULL;
 	eXosip_lock();
 	eXosip_insubscription_build_answer(op->tid,202,&msg);
+	if (msg==NULL){
+		ms_error("Fail to build answer to subscribe.");
+		eXosip_unlock();
+		return -1;
+	}
 	if (op->base.contact){
 		_osip_list_set_empty(&msg->contacts,(void (*)(void*))osip_contact_free);
 		osip_message_set_contact(msg,op->base.contact);
@@ -558,7 +568,7 @@ static void add_presence_body(osip_message_t *notify, SalPresenceStatus online_s
 
 
 int sal_notify_presence(SalOp *op, SalPresenceStatus status, const char *status_message){
-	osip_message_t *msg;
+	osip_message_t *msg=NULL;
 	eXosip_ss_t ss=EXOSIP_SUBCRSTATE_ACTIVE;
 	if (op->nid==-1){
 		ms_warning("Cannot notify, subscription was closed.");

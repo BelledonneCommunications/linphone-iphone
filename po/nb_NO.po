@@ -1,0 +1,1505 @@
+# Copyright (C) 2011 Free Software Foundation, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Øyvind Sæther <oyvinds@everdot.org>, 2011.
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-02-07 10:59+0100\n"
+"PO-Revision-Date: 2011-03-17 00:10+0100\n"
+"Last-Translator: Øyvind Sæther <oyvinds@everdot.org>\n"
+"Language-Team: Norwegian Bokmål <i18n-nb@lister.ping.uio.no>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Lokalize 1.2\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+
+#: ../gtk/support.c:49 ../gtk/support.c:73 ../gtk/support.c:102
+#, c-format
+msgid "Couldn't find pixmap file: %s"
+msgstr " Fant ikke pixmap fli: %s"
+
+#: ../gtk/chat.c:27
+#, c-format
+msgid "Chat with %s"
+msgstr "Chat med %s"
+
+#: ../gtk/main.c:74
+msgid "log to stdout some debug information while running."
+msgstr "skriv logg-informasjon under kjøring"
+
+#: ../gtk/main.c:81
+msgid "Start only in the system tray, do not show the main interface."
+msgstr "Start skjult i systemkurven, ikke vis programbildet."
+
+#: ../gtk/main.c:88
+msgid "address to call right now"
+msgstr "address som skal ringes nå"
+
+#: ../gtk/main.c:95
+msgid "if set automatically answer incoming calls"
+msgstr "besvarer innkommende samtaler automatisk om valgt"
+
+#: ../gtk/main.c:103
+msgid ""
+"Specifiy a working directory (should be the base of the installation, eg: c:"
+"\\Program Files\\Linphone)"
+msgstr ""
+"Spesifiser arbeidsmappe (bør være base for installasjonen, f.eks: "
+"c:\\Programfiler\\Linphone)"
+
+#: ../gtk/main.c:479
+#, c-format
+msgid "Call with %s"
+msgstr "Ring med %s"
+
+#: ../gtk/main.c:862
+#, c-format
+msgid ""
+"%s would like to add you to his contact list.\n"
+"Would you allow him to see your presence status or add him to your contact "
+"list ?\n"
+"If you answer no, this person will be temporarily blacklisted."
+msgstr ""
+"&s vil legge deg til i hans/hennes kontaktliste.\n"
+"Vil du tillate vedkommende å se din tilstedestatus eller legge vedkommende i "
+"din kontaktliste?\n"
+"Hvis du svarer nei vil personen bli svartelyst midlertidig."
+
+#: ../gtk/main.c:940
+#, c-format
+msgid ""
+"Please enter your password for username <i>%s</i>\n"
+" at domain <i>%s</i>:"
+msgstr ""
+"Skriv inn ditt passord for brukernavn <i>%s</i>\n"
+" på domene <i>%s</i>:i>:"
+
+#: ../gtk/main.c:1076
+msgid "Website link"
+msgstr "Peker til nettsted"
+
+#: ../gtk/main.c:1112
+msgid "Linphone - a video internet phone"
+msgstr "Linphone - en video Internet telefon"
+
+#: ../gtk/main.c:1131
+#, c-format
+msgid "%s (Default)"
+msgstr "%s (Standard)"
+
+#: ../gtk/main.c:1382
+msgid ""
+"No sound cards have been detected on this computer.\n"
+"You won't be able to send or receive audio calls."
+msgstr ""
+"Klarte ikke å finne noe lydkort på denne datamaskinen.\n"
+"Du vil ikke kunne sende eller motta lydsamtaler."
+
+#: ../gtk/main.c:1441
+msgid "A free SIP video-phone"
+msgstr "En gratis SIP video-telefon"
+
+#: ../gtk/friendlist.c:192 ../gtk/propertybox.c:271
+msgid "Name"
+msgstr "Navn"
+
+#: ../gtk/friendlist.c:205
+msgid "Presence status"
+msgstr "Tilstedestatus"
+
+#: ../gtk/friendlist.c:242
+#, c-format
+msgid "Search in %s directory"
+msgstr "Søk i %s katalogen"
+
+#: ../gtk/friendlist.c:450
+msgid "Invalid sip contact !"
+msgstr "Ugyldig SIP kontakt !"
+
+#: ../gtk/friendlist.c:495
+#, c-format
+msgid "Call %s"
+msgstr "Ring %s"
+
+#: ../gtk/friendlist.c:496
+#, c-format
+msgid "Send text to %s"
+msgstr "Send tekst til %s"
+
+#: ../gtk/friendlist.c:497
+#, c-format
+msgid "Edit contact '%s'"
+msgstr "Rediger kontakt '%s'"
+
+#: ../gtk/friendlist.c:498
+#, c-format
+msgid "Delete contact '%s'"
+msgstr "Slett kontakt '%s'"
+
+#: ../gtk/friendlist.c:540
+#, c-format
+msgid "Add new contact from %s directory"
+msgstr "Legg til kontakt fra %s katalogen"
+
+#: ../gtk/propertybox.c:277
+msgid "Rate (Hz)"
+msgstr "Frekvens (Hz)"
+
+#: ../gtk/propertybox.c:283
+msgid "Status"
+msgstr "Status"
+
+#: ../gtk/propertybox.c:289
+msgid "Min bitrate (kbit/s)"
+msgstr "Min. datahastighet (kbit/s)"
+
+#: ../gtk/propertybox.c:296
+msgid "Parameters"
+msgstr "Parametere"
+
+#: ../gtk/propertybox.c:325 ../gtk/propertybox.c:464
+msgid "Enabled"
+msgstr "På"
+
+#: ../gtk/propertybox.c:326 ../gtk/propertybox.c:464
+msgid "Disabled"
+msgstr "Av"
+
+#: ../gtk/propertybox.c:509
+msgid "Account"
+msgstr "Konto"
+
+#: ../gtk/propertybox.c:649
+msgid "English"
+msgstr "Engelsk"
+
+#: ../gtk/propertybox.c:650
+msgid "French"
+msgstr "Fransk"
+
+#: ../gtk/propertybox.c:651
+msgid "Swedish"
+msgstr "Svensk"
+
+#: ../gtk/propertybox.c:652
+msgid "Italian"
+msgstr "Italisensk"
+
+#: ../gtk/propertybox.c:653
+msgid "Spanish"
+msgstr "Spansk"
+
+#: ../gtk/propertybox.c:654
+msgid "Brazilian Portugese"
+msgstr "Portugisisk"
+
+#: ../gtk/propertybox.c:655
+msgid "Polish"
+msgstr "Polsk"
+
+#: ../gtk/propertybox.c:656
+msgid "German"
+msgstr "Tysk"
+
+#: ../gtk/propertybox.c:657
+msgid "Russian"
+msgstr "Russisk"
+
+#: ../gtk/propertybox.c:658
+msgid "Japanese"
+msgstr "Japansk"
+
+#: ../gtk/propertybox.c:659
+msgid "Dutch"
+msgstr "Nederlandsk"
+
+#: ../gtk/propertybox.c:660
+msgid "Hungarian"
+msgstr "Ungarsk"
+
+#: ../gtk/propertybox.c:661
+msgid "Czech"
+msgstr "Tjekkisk"
+
+#: ../gtk/propertybox.c:662
+msgid "Chinese"
+msgstr "Kinesisk"
+
+#: ../gtk/propertybox.c:719
+msgid ""
+"You need to restart linphone for the new language selection to take effect."
+msgstr "Du må restarte linphone for at det nye språkvalget skal iverksettes."
+
+#: ../gtk/update.c:80
+#, c-format
+msgid ""
+"A more recent version is availalble from %s.\n"
+"Would you like to open a browser to download it ?"
+msgstr ""
+"En nyere utgave er tilgjengelig fra %s.\n"
+"Vil du åpne en nettleser og laste den ned ?"
+
+#: ../gtk/update.c:91
+msgid "You are running the lastest version."
+msgstr "Du kjører siste utgave."
+
+#: ../gtk/buddylookup.c:85
+msgid "Firstname, Lastname"
+msgstr "Fornavn, Etternavn"
+
+#: ../gtk/buddylookup.c:160
+msgid "Error communicating with server."
+msgstr "Feil med forbindelsen til serveren."
+
+#: ../gtk/buddylookup.c:164
+msgid "Connecting..."
+msgstr "Tilknytter..."
+
+#: ../gtk/buddylookup.c:168
+msgid "Connected"
+msgstr "Tilknyttet"
+
+#: ../gtk/buddylookup.c:172
+msgid "Receiving data..."
+msgstr "Mottar data..."
+
+#: ../gtk/buddylookup.c:180
+#, c-format
+msgid "Found %i contact"
+msgid_plural "Found %i contacts"
+msgstr[0] "Fant kontakt %i"
+msgstr[1] "Hittat kontakt %i"
+
+#: ../gtk/setupwizard.c:25
+msgid ""
+"Welcome !\n"
+"This assistant will help you to use a SIP account for your calls."
+msgstr ""
+"Velkommen\n"
+"Denne veiviseren vil hjelpe deg sette opp en SIP-konto for dine samtaler."
+
+#: ../gtk/setupwizard.c:34
+msgid "Create an account by choosing a username"
+msgstr "Lag en konto ved å velge ett brukernavn"
+
+#: ../gtk/setupwizard.c:35
+msgid "I have already an account and just want to use it"
+msgstr "Jeg har allerede en brukerkonto og vil bruke den."
+
+#: ../gtk/setupwizard.c:53
+msgid "Please choose a username:"
+msgstr "Velg ett brukernavn:"
+
+#: ../gtk/setupwizard.c:54
+msgid "Username:"
+msgstr "Brukernavn:"
+
+#: ../gtk/setupwizard.c:92
+#, c-format
+msgid "Checking if '%s' is available..."
+msgstr "Sjekker om %s' er tilgjengelig..."
+
+#: ../gtk/setupwizard.c:97 ../gtk/setupwizard.c:164
+msgid "Please wait..."
+msgstr "Vennligst vent..."
+
+#: ../gtk/setupwizard.c:101
+msgid "Sorry this username already exists. Please try a new one."
+msgstr "Beklager, brukernavnet er allerede tatt. Forsøk ett annet."
+
+#: ../gtk/setupwizard.c:103 ../gtk/setupwizard.c:168
+msgid "Ok !"
+msgstr "Ok !"
+
+#: ../gtk/setupwizard.c:106 ../gtk/setupwizard.c:171
+msgid "Communication problem, please try again later."
+msgstr "Kommunikasjonsproblem, forsøk igjen senere."
+
+#: ../gtk/setupwizard.c:134
+msgid "Thank you. Your account is now configured and ready for use."
+msgstr "Takk. Ditt konto er nå satt opp og klart til bruk."
+
+#: ../gtk/setupwizard.c:228
+msgid "Welcome to the account setup assistant"
+msgstr "Velkommen til brukerkontoveiviseren"
+
+#: ../gtk/setupwizard.c:232
+msgid "Account setup assistant"
+msgstr "Brukerkontoveiviser"
+
+#: ../gtk/setupwizard.c:236
+msgid "Choosing a username"
+msgstr "Velg ett brukernavn"
+
+#: ../gtk/setupwizard.c:240
+msgid "Verifying"
+msgstr "Verifiserer"
+
+#: ../gtk/setupwizard.c:244
+msgid "Confirmation"
+msgstr "Bekreftelse"
+
+#: ../gtk/setupwizard.c:249
+msgid "Creating your account"
+msgstr "Lager brukerkontoen din"
+
+#: ../gtk/setupwizard.c:253
+msgid "Now ready !"
+msgstr "Klar nå!"
+
+#: ../gtk/incall_view.c:113
+msgid "Transfer"
+msgstr "Overfører"
+
+#: ../gtk/incall_view.c:187
+msgid "<b>Calling...</b>"
+msgstr "<b>Ringer...</b>"
+
+#: ../gtk/incall_view.c:190 ../gtk/incall_view.c:246
+msgid "00::00::00"
+msgstr "00:00:00"
+
+#: ../gtk/incall_view.c:206
+msgid "<b>Incoming call</b>"
+msgstr "Innkommende samtale"
+
+#: ../gtk/incall_view.c:216
+msgid ""
+"Pause all calls\n"
+"and answer"
+msgstr ""
+"Pauser alle samtaler\n"
+"og svarer"
+
+#: ../gtk/incall_view.c:217
+msgid "Answer"
+msgstr "Svarer"
+
+#: ../gtk/incall_view.c:244
+msgid "<b>In call</b>"
+msgstr "<b>I samtale med</b>"
+
+#: ../gtk/incall_view.c:260
+msgid "<b>Paused call</b>"
+msgstr "<b>Pauset samtale</b>"
+
+#: ../gtk/incall_view.c:272
+#, c-format
+msgid "%02i::%02i::%02i"
+msgstr "%02i:%02i:%02i"
+
+#: ../gtk/incall_view.c:288
+msgid "<b>Call ended.</b>"
+msgstr "<b>Samtale avsluttet.</b>"
+
+#: ../gtk/incall_view.c:309
+msgid "Unmute"
+msgstr "Skru mikrofonen på"
+
+#: ../gtk/incall_view.c:316
+msgid "Mute"
+msgstr "Skru mikrofonen av"
+
+#: ../gtk/incall_view.c:340
+msgid "Resume"
+msgstr "Fortsett"
+
+#: ../gtk/incall_view.c:347
+msgid "Pause"
+msgstr "Pause"
+
+#: ../gtk/loginframe.c:93
+#, c-format
+msgid "Please enter login information for %s"
+msgstr "Skriv inn påloggingsinformasjon for %s:"
+
+#: ../coreapi/linphonecore.c:166
+#, c-format
+msgid "You have missed %i call."
+msgid_plural "You have missed %i calls."
+msgstr[0] "Du har %i ubesvarte anrop."
+msgstr[1] "Du har %i missade samtal"
+
+#: ../coreapi/linphonecore.c:207
+msgid "aborted"
+msgstr "avbrutt"
+
+#: ../coreapi/linphonecore.c:210
+msgid "completed"
+msgstr "Fullført"
+
+#: ../coreapi/linphonecore.c:213
+msgid "missed"
+msgstr "ubesvart"
+
+#: ../coreapi/linphonecore.c:218
+#, c-format
+msgid ""
+"%s at %s\n"
+"From: %s\n"
+"To: %s\n"
+"Status: %s\n"
+"Duration: %i mn %i sec\n"
+msgstr ""
+"%s på %s\n"
+"Fra: %s\n"
+"Til: %s\n"
+"Status: %s\n"
+"Lengde: %i min %i sek\n"
+
+#: ../coreapi/linphonecore.c:219
+msgid "Incoming call"
+msgstr "Innkommende samtale"
+
+#: ../coreapi/linphonecore.c:219
+msgid "Outgoing call"
+msgstr "Utgående samtale"
+
+#: ../coreapi/linphonecore.c:501
+msgid ""
+"Your machine appears to be connected to an IPv6 network. By default linphone "
+"always uses IPv4. Please update your configuration if you want to use IPv6"
+msgstr ""
+"Din dator er tilkoblet ett IPv6 nettverk. Linphone bruker IPv6 "
+"som standard. Oppdater oppsettet om du vil bruke IPv6. "
+
+#: ../coreapi/linphonecore.c:994
+msgid "Ready"
+msgstr "Klar"
+
+#: ../coreapi/linphonecore.c:1768
+msgid "Looking for telephone number destination..."
+msgstr "Ser etter telefonnummer for destinasjonen..."
+
+#: ../coreapi/linphonecore.c:1771
+msgid "Could not resolve this number."
+msgstr "Kan ikke nå dette nummeret."
+
+#: ../coreapi/linphonecore.c:1815
+msgid ""
+"Could not parse given sip address. A sip url usually looks like sip:"
+"user@domain"
+msgstr ""
+"Klarer ikke å tolke angitt SIP-adresse. En SIP-adresse er vanligvis ut som "
+"sip: "
+"brukernavn@domenenavn"
+
+#: ../coreapi/linphonecore.c:1962
+msgid "Contacting"
+msgstr "Tilknytter"
+
+#: ../coreapi/linphonecore.c:1969
+msgid "Could not call"
+msgstr "Kunne ikke ringe"
+
+#: ../coreapi/linphonecore.c:2076
+msgid "Sorry, you have to pause or stop the current call first !"
+msgstr "Beklager, du må pause eller avslutte den nåværende samtalen først !"
+
+#: ../coreapi/linphonecore.c:2081
+msgid "Sorry, we have reached the maximum number of simultaneous calls"
+msgstr "Beklager, du har nådd maksimalt antall samtidige samtaler"
+
+#: ../coreapi/linphonecore.c:2205
+msgid "Modifying call parameters..."
+msgstr "Endrer ringeparametre..."
+
+#: ../coreapi/linphonecore.c:2308
+msgid "Connected."
+msgstr "Tilkoblet"
+
+#: ../coreapi/linphonecore.c:2331
+msgid "Call aborted"
+msgstr "Samtale avbrutt"
+
+#: ../coreapi/linphonecore.c:2371
+msgid "Call ended"
+msgstr "Samtale avsluttet"
+
+#: ../coreapi/linphonecore.c:2453
+msgid "Could not pause the call"
+msgstr "Kunne ikke pause samtalen"
+
+#: ../coreapi/linphonecore.c:2457
+msgid "Pausing the current call..."
+msgstr "Pauser nåværende samtale"
+
+#: ../coreapi/linphonecore.c:2496
+msgid "There is already a call in process, pause or stop it first."
+msgstr "Det er allerede en samtale igang, pause eller avslutt den først."
+
+#: ../coreapi/misc.c:147
+msgid ""
+"Your computer appears to be using ALSA sound drivers.\n"
+"This is the best choice. However the pcm oss emulation module\n"
+"is missing and linphone needs it. Please execute\n"
+"'modprobe snd-pcm-oss' as root to load it."
+msgstr ""
+"Din datamaskin ser ut til å bruke ALSA drivere for lyd.\n"
+"Dette er det beste alternativet. Det ser ut til at pcm oss emulasjonsmodulen\n"
+"mangler og linphone trenger den. Vennligst kjør\n"
+"'modprobe snd-pcm-oss' som root for å laste den."
+
+#: ../coreapi/misc.c:150
+msgid ""
+"Your computer appears to be using ALSA sound drivers.\n"
+"This is the best choice. However the mixer oss emulation module\n"
+"is missing and linphone needs it. Please execute\n"
+" 'modprobe snd-mixer-oss' as root to load it."
+msgstr ""
+"Din datamaskin ser ut til å bruke ALSA drivere for lyd.\n"
+"Dette er det beste alternativet. Det ser ut til at mixermodulen for oss "
+"emulering\n"
+"mangler og linphone trenger den. Vennligst kjør\n"
+"'modprobe snd-mixer-oss' som root for å laste den."
+
+#: ../coreapi/misc.c:520
+msgid "Stun lookup in progress..."
+msgstr "STUN oppslag pågår..."
+
+#: ../coreapi/friend.c:33
+msgid "Online"
+msgstr "Tilknyttet"
+
+#: ../coreapi/friend.c:36
+msgid "Busy"
+msgstr "Opptatt"
+
+#: ../coreapi/friend.c:39
+msgid "Be right back"
+msgstr "Kommer plutselig tilbake"
+
+#: ../coreapi/friend.c:42
+msgid "Away"
+msgstr "Borte"
+
+#: ../coreapi/friend.c:45
+msgid "On the phone"
+msgstr "I telefonen"
+
+#: ../coreapi/friend.c:48
+msgid "Out to lunch"
+msgstr "Ute til lunsj"
+
+#: ../coreapi/friend.c:51
+msgid "Do not disturb"
+msgstr "Ikke forstyrr"
+
+#: ../coreapi/friend.c:54
+msgid "Moved"
+msgstr "Flyttet"
+
+#: ../coreapi/friend.c:57
+msgid "Using another messaging service"
+msgstr "Bruker en annen tjeneste"
+
+#: ../coreapi/friend.c:60
+msgid "Offline"
+msgstr "Frakoblet"
+
+#: ../coreapi/friend.c:63
+msgid "Pending"
+msgstr "Pågående"
+
+#: ../coreapi/friend.c:66
+msgid "Unknown-bug"
+msgstr "Ukjent feil"
+
+#: ../coreapi/proxy.c:187
+msgid ""
+"The sip proxy address you entered is invalid, it must start with \"sip:\" "
+"followed by a hostname."
+msgstr ""
+"SIP proxy adressen du har angitt er ugyldig, den må begynne med \"sip:\" "
+"etterfult av vertsnavn."
+
+#: ../coreapi/proxy.c:193
+msgid ""
+"The sip identity you entered is invalid.\n"
+"It should look like sip:username@proxydomain, such as sip:alice@example.net"
+msgstr ""
+"SIP adressen du har angitt er feil. Adressen bør se ut som sip: "
+"brukernavn@domenenavn, f.eks sip:ola@eksempel.no"
+
+#: ../coreapi/proxy.c:670
+#, c-format
+msgid "Could not login as %s"
+msgstr "Ikke ikke logge inn som %s"
+
+#: ../coreapi/callbacks.c:170
+msgid "is contacting you"
+msgstr "Kontakter deg."
+
+#: ../coreapi/callbacks.c:171
+msgid " and asked autoanswer."
+msgstr " og ba om autosvar."
+
+#: ../coreapi/callbacks.c:171
+msgid "."
+msgstr "."
+
+#: ../coreapi/callbacks.c:226
+msgid "Remote ringing."
+msgstr "Ringer hos motparten."
+
+#: ../coreapi/callbacks.c:251
+msgid "Early media."
+msgstr "Tidlig media"
+
+#: ../coreapi/callbacks.c:289
+#, c-format
+msgid "Call with %s is paused."
+msgstr "Samtalen med %s er pauset."
+
+#: ../coreapi/callbacks.c:300
+#, c-format
+msgid "Call answered by %s - on hold."
+msgstr "Samtale besvart av %s - på vent."
+
+#: ../coreapi/callbacks.c:315
+msgid "Call resumed."
+msgstr "Samtale gjenopptatt."
+
+#: ../coreapi/callbacks.c:320
+#, c-format
+msgid "Call answered by %s."
+msgstr "Samtale besvart av %s."
+
+#: ../coreapi/callbacks.c:381
+msgid "We are being paused..."
+msgstr "Vi er satt på vent..."
+
+#: ../coreapi/callbacks.c:385
+msgid "We have been resumed..."
+msgstr "Vi har blitt gjenopptatt..."
+
+#: ../coreapi/callbacks.c:422
+msgid "Call terminated."
+msgstr "Samtale avsluttet."
+
+#: ../coreapi/callbacks.c:429
+msgid "User is busy."
+msgstr "Brukeren er opptatt."
+
+#: ../coreapi/callbacks.c:430
+msgid "User is temporarily unavailable."
+msgstr "Brukeren er midlertidig ikke tilgjengelig."
+
+#. char *retrymsg=_("%s. Retry after %i minute(s).");
+#: ../coreapi/callbacks.c:432
+msgid "User does not want to be disturbed."
+msgstr "Brukeren vil ikke bli forstyrret."
+
+#: ../coreapi/callbacks.c:433
+msgid "Call declined."
+msgstr "Samtale avvist."
+
+#: ../coreapi/callbacks.c:445
+msgid "No response."
+msgstr "Ikke noe svar."
+
+#: ../coreapi/callbacks.c:449
+msgid "Protocol error."
+msgstr "Protokollfeil."
+
+#: ../coreapi/callbacks.c:465
+msgid "Redirected"
+msgstr "Omdirigert"
+
+#: ../coreapi/callbacks.c:475
+msgid "Not found"
+msgstr "Ikke funnet"
+
+#: ../coreapi/callbacks.c:485
+msgid "No common codecs"
+msgstr "Ingen felles kodek"
+
+#: ../coreapi/callbacks.c:491
+msgid "Call failed."
+msgstr "Samtale feilet."
+
+#: ../coreapi/callbacks.c:527
+msgid "Authentication failure"
+msgstr "Autorisering kreves"
+
+#: ../coreapi/callbacks.c:553
+#, c-format
+msgid "Registration on %s successful."
+msgstr "Registrering hos %s lykkes."
+
+#: ../coreapi/callbacks.c:554
+#, c-format
+msgid "Unregistration on %s done."
+msgstr "Avregistrering hos %s lykkes."
+
+#: ../coreapi/callbacks.c:570
+msgid "no response timeout"
+msgstr "ingen svar innen angitt tid"
+
+#: ../coreapi/callbacks.c:573
+#, c-format
+msgid "Registration on %s failed: %s"
+msgstr "Registrering hos %s mislykkes: %s"
+
+#: ../coreapi/callbacks.c:615
+#, c-format
+msgid "We are transferred to %s"
+msgstr "Vi er overført til %s"
+
+#: ../mediastreamer2/src/alaw.c:144 ../mediastreamer2/src/alaw.c:162
+msgid "ITU-G.711 alaw encoder"
+msgstr "ITU-G.711 alaw enkoder"
+
+#: ../mediastreamer2/src/alaw.c:194 ../mediastreamer2/src/alaw.c:211
+msgid "ITU-G.711 alaw decoder"
+msgstr "ITU-G.711 alaw dekoder"
+
+#: ../mediastreamer2/src/alsa.c:950
+msgid "Alsa sound source"
+msgstr "Alasa lydkilde"
+
+#: ../mediastreamer2/src/alsa.c:1054
+msgid "Alsa sound output"
+msgstr "alsa lydutgang"
+
+#: ../mediastreamer2/src/aqsnd.c:1008
+msgid "Sound capture filter for MacOS X Audio Queue Service"
+msgstr "Lydfangefilter for MacOS X Audio Queue Service"
+
+#: ../mediastreamer2/src/aqsnd.c:1032
+msgid "Sound playback filter for MacOS X Audio Queue Service"
+msgstr "Lydavspillingsfilter for MacOS X Audio Queue Service"
+
+#: ../mediastreamer2/src/dtmfgen.c:274 ../mediastreamer2/src/dtmfgen.c:293
+msgid "DTMF generator"
+msgstr "DTMF generator"
+
+#: ../mediastreamer2/src/gsm.c:120 ../mediastreamer2/src/gsm.c:138
+msgid "The GSM full-rate codec"
+msgstr "Høyhastighets GSM kodek"
+
+#: ../mediastreamer2/src/gsm.c:187 ../mediastreamer2/src/gsm.c:205
+msgid "The GSM codec"
+msgstr "GSM kodek"
+
+#: ../mediastreamer2/src/macsnd.c:1083
+msgid "Sound capture filter for MacOS X Core Audio drivers"
+msgstr "Lydfangefilter for MacOS X Core Audio drivere"
+
+#: ../mediastreamer2/src/macsnd.c:1098
+msgid "Sound playback filter for MacOS X Core Audio drivers"
+msgstr "Lydavspillingsfilter for MacOS X Core Audio drivere"
+
+#: ../mediastreamer2/src/msconf.c:787 ../mediastreamer2/src/msconf.c:805
+msgid "A filter to make conferencing"
+msgstr "Ett filter for telekonferanser"
+
+#: ../mediastreamer2/src/msfileplayer.c:311
+#: ../mediastreamer2/src/msfileplayer.c:329
+msgid "Raw files and wav reader"
+msgstr "Få filer og wav leser"
+
+#: ../mediastreamer2/src/msfilerec.c:170 ../mediastreamer2/src/msfilerec.c:188
+#: ../mediastreamer2/src/msfilerec_win.c:216
+#: ../mediastreamer2/src/msfilerec_win.c:234
+msgid "Wav file recorder"
+msgstr "WAV filopptaker"
+
+#: ../mediastreamer2/src/msjoin.c:45 ../mediastreamer2/src/msjoin.c:63
+msgid "A filter that send several inputs to one output."
+msgstr "Ett filer for å sende flere inn-kilder til en utgang"
+
+#: ../mediastreamer2/src/msresample.c:159
+#: ../mediastreamer2/src/msresample.c:177
+msgid "Audio resampler"
+msgstr "Lydomformer"
+
+#: ../mediastreamer2/src/msrtp.c:369 ../mediastreamer2/src/msrtp.c:387
+msgid "RTP output filter"
+msgstr "RTP ut-filter"
+
+#: ../mediastreamer2/src/msrtp.c:505 ../mediastreamer2/src/msrtp.c:523
+msgid "RTP input filter"
+msgstr "RTP inn-filter"
+
+#: ../mediastreamer2/src/msspeex.c:360 ../mediastreamer2/src/msspeex.c:378
+#: ../mediastreamer2/src/msspeex.c:548 ../mediastreamer2/src/msspeex.c:567
+msgid "The free and wonderful speex codec"
+msgstr "En fri og fantatisk speex kodek"
+
+#: ../mediastreamer2/src/msvolume.c:527 ../mediastreamer2/src/msvolume.c:542
+msgid "A filter that controls and measure sound volume"
+msgstr "Ett filer som kontrollerer og måler lydvolumet"
+
+#: ../mediastreamer2/src/msv4l.c:1012
+msgid "A video4linux compatible source filter to stream pictures."
+msgstr "Ett video4linux kompatiblet kildefilter for bildestrømmer."
+
+#: ../mediastreamer2/src/msv4l2.c:554
+msgid "A filter to grab pictures from Video4Linux2-powered cameras"
+msgstr "Ett filter for å fange bilder fra Video4Linux2-støttede kameraer"
+
+#: ../mediastreamer2/src/nowebcam.c:1854
+msgid "A filter that outputs a static image."
+msgstr "En filter som sender ett statisk bilde."
+
+#: ../mediastreamer2/src/pixconv.c:129 ../mediastreamer2/src/pixconv.c:147
+msgid "A pixel format converter"
+msgstr "En pixel format omformer"
+
+#: ../mediastreamer2/src/sizeconv.c:202
+msgid "A video size converter"
+msgstr "En videostørrelsesomformer"
+
+#: ../mediastreamer2/src/sizeconv.c:220
+msgid "a small video size converter"
+msgstr "En liten video størrelsesomformer"
+
+#: ../mediastreamer2/src/speexec.c:276 ../mediastreamer2/src/speexec.c:294
+msgid "Echo canceller using speex library"
+msgstr "Ekko fjerning ved hjelp av speex"
+
+#: ../mediastreamer2/src/tee.c:80 ../mediastreamer2/src/tee.c:98
+msgid "A filter that reads from input and copy to its multiple outputs."
+msgstr "Ett filter som leser innkoder og kopierer det til flere utganger"
+
+#: ../mediastreamer2/src/theora.c:375
+msgid "The theora video encoder from xiph.org"
+msgstr "En Theora videokoder fra xpih.org"
+
+#: ../mediastreamer2/src/theora.c:393
+msgid "The open-source and royalty-free 'theora' video codec from xiph.org"
+msgstr "Et åpen kildekode og betalingsfritt 'theora' video kodek fra xpih.org"
+
+#: ../mediastreamer2/src/theora.c:561 ../mediastreamer2/src/theora.c:579
+msgid "The theora video decoder from xiph.org"
+msgstr "Theora video dekoder fra xiph.org"
+
+#: ../mediastreamer2/src/ulaw.c:146 ../mediastreamer2/src/ulaw.c:164
+msgid "ITU-G.711 ulaw encoder"
+msgstr "ITU-G.711 ulaw enkoder"
+
+#: ../mediastreamer2/src/ulaw.c:196 ../mediastreamer2/src/ulaw.c:214
+msgid "ITU-G.711 ulaw decoder"
+msgstr "ITU-G.711 ulaw dekoder"
+
+#: ../mediastreamer2/src/videodec.c:713 ../mediastreamer2/src/videodec.c:729
+#: ../mediastreamer2/src/videodec.c:812 ../mediastreamer2/src/videodec.c:828
+msgid "A H.263 decoder using ffmpeg library"
+msgstr "En H.263 dekoder som bruker ffmpeg biblioteket"
+
+#: ../mediastreamer2/src/videodec.c:746
+msgid "A MPEG4 decoder using ffmpeg library"
+msgstr "En MPEG4 dekoder som bruker ffmpeg biblioteket"
+
+#: ../mediastreamer2/src/videodec.c:762
+msgid "A RTP/JPEG decoder using ffmpeg library"
+msgstr "En RTP/JPEG dekoder som bruker ffmpeg biblioteket"
+
+#: ../mediastreamer2/src/videodec.c:778
+msgid "A MJPEG decoder using ffmpeg library"
+msgstr "En MJPEG dekoder som bruker ffmpeg biblioteket"
+
+#: ../mediastreamer2/src/videodec.c:794
+msgid "A snow decoder using ffmpeg library"
+msgstr "En snow dekoder som bruker ffmpeg biblioteket"
+
+#: ../mediastreamer2/src/videoenc.c:908 ../mediastreamer2/src/videoenc.c:990
+msgid "A video H.263 encoder using ffmpeg library."
+msgstr "En H.263 videodekoder som bruker ffmpeg biblioteket"
+
+#: ../mediastreamer2/src/videoenc.c:924
+msgid ""
+"A video H.263 encoder using ffmpeg library. It is compliant with old RFC2190 "
+"spec."
+msgstr ""
+"En H.263 enkoder som bruker ffmpeg biblioteket. Den følger den eldre RFC2190 "
+"spesifikasjonen."
+
+#: ../mediastreamer2/src/videoenc.c:940 ../mediastreamer2/src/videoenc.c:1022
+msgid "A video MPEG4 encoder using ffmpeg library."
+msgstr "En video MPEG4 enkoder som bruker ffmpeg biblioteket."
+
+#: ../mediastreamer2/src/videoenc.c:956
+msgid "A video snow encoder using ffmpeg library."
+msgstr "En show video enkoder som bruker ffmpeg biblioteket."
+
+#: ../mediastreamer2/src/videoenc.c:972
+msgid "A RTP/MJPEG encoder using ffmpeg library."
+msgstr "En RTP/MJPEG enkoder som bruker ffmpeg biblioteket"
+
+#: ../mediastreamer2/src/videoenc.c:1006
+msgid ""
+"A video H.263 encoder using ffmpeg library, compliant with old RFC2190 spec."
+msgstr ""
+"En h.264 video enkoder som bruker ffmpeg biblioteket, kompatibelt med den "
+"eldre RFC2190 spesifikasjonen."
+
+#: ../mediastreamer2/src/videoenc.c:1038
+msgid ""
+"The snow codec is royalty-free and is open-source. \n"
+"It uses innovative techniques that makes it one of most promising video "
+"codec. It is implemented within the ffmpeg project.\n"
+"However it is under development, quite unstable and compatibility with other "
+"versions cannot be guaranteed."
+msgstr ""
+"Snow video-kodeksen har åpen kildekode og er vedelagsfri.\n"
+"Den bruker moderne teknikker som gjør den til en god video kodek. "
+"Den er implementert innen ffmpeg prosjektet.\n"
+"Den er under stadig utvikling, er ganske ustabil og kompatiblitet "
+"med andre utgaver kan ikke garanteres."
+
+#: ../mediastreamer2/src/videoenc.c:1058
+msgid "A MJPEG encoder using ffmpeg library."
+msgstr "En MJPEG enkoder som bruker ffmpeg biblioteket."
+
+#: ../mediastreamer2/src/videoout.c:933
+msgid "A SDL-based video display"
+msgstr "Ett SDL-basert video-bibliotek"
+
+#: ../mediastreamer2/src/wincevideods.c:969
+#: ../mediastreamer2/src/wincevideods.c:987
+#: ../mediastreamer2/src/winvideo.c:596 ../mediastreamer2/src/winvideo.c:614
+#: ../mediastreamer2/src/winvideods.c:1385
+#: ../mediastreamer2/src/winvideods.c:1403
+msgid "A video4windows compatible source filter to stream pictures."
+msgstr "Ett video4windows-kompatibelt kildefiler for bildestrømmer."
+
+#: ../mediastreamer2/src/winvideo2.c:436 ../mediastreamer2/src/winvideo2.c:454
+msgid "A video for windows (vfw.h) based source filter to grab pictures."
+msgstr ""
+
+#: ../mediastreamer2/src/ice.c:1349 ../mediastreamer2/src/ice.c:1367
+msgid "ICE filter"
+msgstr ""
+
+#: ../mediastreamer2/src/void.c:35 ../mediastreamer2/src/void.c:52
+msgid "A filter that trashes its input (useful for terminating some graphs)."
+msgstr ""
+
+#: ../mediastreamer2/src/equalizer.c:338 ../mediastreamer2/src/equalizer.c:356
+msgid "Parametric sound equalizer."
+msgstr ""
+
+#: ../mediastreamer2/src/msdscap-mingw.cc:1038
+msgid "A webcam grabber based on directshow."
+msgstr ""
+
+#: ../mediastreamer2/src/drawdib-display.c:552
+#: ../mediastreamer2/src/drawdib-display.c:570
+msgid "A video display based on windows DrawDib api"
+msgstr ""
+
+#: ../mediastreamer2/src/audiomixer.c:192
+#: ../mediastreamer2/src/audiomixer.c:211
+msgid "A filter that mixes down 16 bit sample audio streams"
+msgstr ""
+
+#: ../mediastreamer2/src/chanadapt.c:110 ../mediastreamer2/src/chanadapt.c:128
+msgid "A filter that converts from mono to stereo and vice versa."
+msgstr ""
+
+#: ../mediastreamer2/src/itc.c:97 ../mediastreamer2/src/itc.c:115
+#: ../mediastreamer2/src/itc.c:197 ../mediastreamer2/src/itc.c:215
+msgid "Inter ticker communication filter."
+msgstr ""
+
+#: ../mediastreamer2/src/extdisplay.c:62 ../mediastreamer2/src/extdisplay.c:79
+msgid "A display filter sending the buffers to draw to the upper layer"
+msgstr ""
+
+#: ../mediastreamer2/src/msiounit.c:619
+msgid "Sound capture filter for MacOS X Audio Unit Service"
+msgstr ""
+
+#: ../mediastreamer2/src/msiounit.c:633
+msgid "Sound playback filter for MacOS X Audio Unit Service"
+msgstr ""
+
+#: ../mediastreamer2/src/x11video.c:562
+msgid "A video display using X11+Xv"
+msgstr ""
+
+#. .id=
+#. .name=
+#. .text=
+#: ../mediastreamer2/src/msandroid.cpp:370
+msgid "Sound capture filter for Android"
+msgstr ""
+
+#. .id=
+#. .name=
+#. .text=
+#: ../mediastreamer2/src/msandroid.cpp:667
+msgid "Sound playback filter for Android"
+msgstr ""
+
+#: ../mediastreamer2/src/msandroidvideo.cpp:134
+msgid "A filter that captures Android video."
+msgstr ""
+
+#~ msgid "Incoming call from %s"
+#~ msgstr "Inkommande samtal från %s"
+
+#~ msgid "<b>Add contacts from directory</b>"
+#~ msgstr "<b>Lägg till kontakt ifrån katalogen</b>"
+
+#~ msgid "<b>Contact list</b>"
+#~ msgstr "<b>Kontaktlista</b>"
+
+#~ msgid "<b>Welcome !</b>"
+#~ msgstr "<b>Välkommen!</b>"
+
+#~ msgid ""
+#~ "ADSL\n"
+#~ "Fiber Channel"
+#~ msgstr ""
+#~ "ADSL\n"
+#~ "Fiber"
+
+#~ msgid ""
+#~ "All users\n"
+#~ "Online users"
+#~ msgstr ""
+#~ "Alla användare\n"
+#~ "Online användare"
+
+#~ msgid "Assistant"
+#~ msgstr "Assistent"
+
+#~ msgid "Audio & Video"
+#~ msgstr "Audio & Video"
+
+#~ msgid "Audio only"
+#~ msgstr "Enbart audio"
+
+#~ msgid "Automatically log me in"
+#~ msgstr "Logga mig automatiskt"
+
+#, fuzzy
+#~ msgid "Call Details"
+#~ msgstr "Ringer %s"
+
+#~ msgid "Call history"
+#~ msgstr "Samtalshistorik"
+
+#~ msgid "Check for updates"
+#~ msgstr "Letar efter uppdateringar"
+
+#, fuzzy
+#~ msgid "Contacts"
+#~ msgstr "Kontaktar"
+
+#~ msgid "Duration"
+#~ msgstr "Förlopp"
+
+#~ msgid "Duration:"
+#~ msgstr "Förlopp:"
+
+#~ msgid "Enable self-view"
+#~ msgstr "Själv bild"
+
+#~ msgid "Enter username, phone number, or full sip address"
+#~ msgstr "Mata in användarnamn, telefonnummer eller SIP adress"
+
+#~ msgid "Homepage"
+#~ msgstr "Hemsidan"
+
+#~ msgid "In call"
+#~ msgstr "I samtal"
+
+#~ msgid "Internet connection:"
+#~ msgstr "Internet förbindelse:"
+
+#~ msgid "Login information"
+#~ msgstr "Login information"
+
+#~ msgid "Lookup:"
+#~ msgstr "Sök:"
+
+#~ msgid "My current identity:"
+#~ msgstr "Min nuvarande identitet"
+
+#~ msgid "Password"
+#~ msgstr "Lösenord"
+
+#~ msgid "SIP address or phone number:"
+#~ msgstr "Användarnamn"
+
+#~ msgid "Search"
+#~ msgstr "Sök"
+
+#~ msgid "Show debug messages"
+#~ msgstr "Visa debugfönstret"
+
+#~ msgid "Start call"
+#~ msgstr "Ring"
+
+#~ msgid "Terminate call"
+#~ msgstr "Lägg på"
+
+#~ msgid "Username"
+#~ msgstr "Användarnamn"
+
+#~ msgid "_Linphone"
+#~ msgstr "_inphone"
+
+#~ msgid "_Modes"
+#~ msgstr "_Media"
+
+#~ msgid "in"
+#~ msgstr "i"
+
+#~ msgid "label"
+#~ msgstr "etikett"
+
+#~ msgid "About linphone"
+#~ msgstr "Apropå linphone"
+
+#~ msgid "An internet video phone using the standard SIP (rfc3261) protocol."
+#~ msgstr "En Internet video telefon baserat på SIP protokoll."
+
+#~ msgid "Created by Simon Morlat\n"
+#~ msgstr "Skapad av Simon Morlat\n"
+
+#~ msgid "<b>Contact information</b>"
+#~ msgstr "<b>Kontakt information</b>"
+
+#~ msgid "Allow this contact to see my presence status"
+#~ msgstr "Tillåt den här kontakten att se min närvarostatus"
+
+#~ msgid "SIP Address"
+#~ msgstr "SIP Adress"
+
+#~ msgid "Show this contact presence status"
+#~ msgstr "Visa kontaktens närvarostatus"
+
+#~ msgid "Linphone debug window"
+#~ msgstr "Linphone debug fönster"
+
+#~ msgid "Password:"
+#~ msgstr "Lösenord:"
+
+#~ msgid "Please enter the domain password"
+#~ msgstr "Mata in lösenordet för domänen"
+
+#~ msgid "UserID"
+#~ msgstr "AnvändarID"
+
+#~ msgid "Configure a SIP account"
+#~ msgstr "Konfigurera ett SIP konto"
+
+#~ msgid "Linphone - Configure a SIP account"
+#~ msgstr "Linphone - Konfigurera ett SIP konto"
+
+#~ msgid "Publish presence information"
+#~ msgstr "Publicera närvaro information"
+
+#~ msgid "Register at startup"
+#~ msgstr "Registrera vid start"
+
+#~ msgid "Registration duration (sec):"
+#~ msgstr "Registreringsfrekvens (sek.):"
+
+#~ msgid "Route (optional):"
+#~ msgstr "Route (tillval):"
+
+#~ msgid "SIP Proxy address:"
+#~ msgstr "SIP Proxy adress:"
+
+#~ msgid "Your SIP identity:"
+#~ msgstr "Din SIP identitet:"
+
+#~ msgid "sip:"
+#~ msgstr "sip:"
+
+#~ msgid "Send"
+#~ msgstr "Skicka"
+
+#~ msgid "Accept"
+#~ msgstr "Godkänn"
+
+#~ msgid "Decline"
+#~ msgstr "Avböj"
+
+#~ msgid "Incoming call from"
+#~ msgstr "Inkommande samtal från"
+
+#~ msgid "Linphone - Incoming call"
+#~ msgstr "Linphone - Inkommande samtal"
+
+#~ msgid "0 stands for \"unlimited\""
+#~ msgstr "0 står för \"utan begränsning\""
+
+#~ msgid "<b>Audio</b>"
+#~ msgstr "<b>Audio</b>"
+
+#~ msgid "<b>Bandwidth control</b>"
+#~ msgstr "<b>Bandbreddskontroll</b>"
+
+#~ msgid "<b>Codecs</b>"
+#~ msgstr "<b>Codecs</b>"
+
+#~ msgid "<b>Default identity</b>"
+#~ msgstr "<b>Default identitet</b>"
+
+#~ msgid "<b>Language</b>"
+#~ msgstr "<b>Språk</b>"
+
+#~ msgid "<b>Level</b>"
+#~ msgstr "<b>Nivå</b>"
+
+#~ msgid "<b>NAT and Firewall</b>"
+#~ msgstr "<b>NAT och Brandvägg</b>"
+
+#~ msgid "<b>Ports</b>"
+#~ msgstr "<b>Portar</b>"
+
+#~ msgid "<b>Privacy</b>"
+#~ msgstr "<b>Integritet</b>"
+
+#~ msgid "<b>Proxy accounts</b>"
+#~ msgstr "<b>Proxy konton</b>"
+
+#~ msgid "<b>Transport</b>"
+#~ msgstr "<b>Transport</b>"
+
+#~ msgid "<b>Video</b>"
+#~ msgstr "<b>Video</b>"
+
+#~ msgid "ALSA special device (optional):"
+#~ msgstr "ALSA speciell enhet (tillval):"
+
+#~ msgid "Add"
+#~ msgstr "Lägg till"
+
+#~ msgid ""
+#~ "Audio codecs\n"
+#~ "Video codecs"
+#~ msgstr ""
+#~ "Audio codecs\n"
+#~ "Video codecs"
+
+#~ msgid "Behind NAT / Firewall (specify gateway IP below)"
+#~ msgstr "Bakom en NAT / brandvägg (specificera gatewap IP adress nedan)"
+
+#~ msgid "Behind NAT / Firewall (use STUN to resolve)"
+#~ msgstr "Bakom en NAT / brandvägg (använd STUN för att avgöra adressen)"
+
+#~ msgid "Capture device:"
+#~ msgstr "Mikrofon enhet:"
+
+#~ msgid "Codecs"
+#~ msgstr "Codecs"
+
+#~ msgid "Direct connection to the Internet"
+#~ msgstr "Direkt förbindelse till Internet"
+
+#~ msgid "Disable"
+#~ msgstr "Inaktivera"
+
+#~ msgid "Done"
+#~ msgstr "Klar"
+
+#~ msgid "Download speed limit in Kbit/sec:"
+#~ msgstr "Max downstream bandbreddshastighet i kbit/sek:"
+
+#~ msgid "Edit"
+#~ msgstr "Editera"
+
+#~ msgid "Enable"
+#~ msgstr "Möjliggör"
+
+#~ msgid "Enable echo cancellation"
+#~ msgstr "Tillåta ekokancellering"
+
+#~ msgid "Erase all passwords"
+#~ msgstr "Glöm alla lösenord"
+
+#~ msgid "Manage SIP Accounts"
+#~ msgstr "Hantera SIP konton"
+
+#~ msgid "Multimedia settings"
+#~ msgstr "Multimedia inställningar"
+
+#~ msgid "Network settings"
+#~ msgstr "Nätverksinställningar"
+
+#~ msgid "Playback device:"
+#~ msgstr "Uppspelningsenhet:"
+
+#~ msgid "Prefered video resolution:"
+#~ msgstr "Video upplösning:"
+
+#~ msgid "Public IP address:"
+#~ msgstr "Publik IP adress:"
+
+#~ msgid ""
+#~ "Register to FONICS\n"
+#~ "virtual network !"
+#~ msgstr ""
+#~ "Registrera hos FONICS\n"
+#~ "virtuella nätverk!"
+
+#~ msgid "Remove"
+#~ msgstr "Ta bort"
+
+#~ msgid "Ring device:"
+#~ msgstr "Ringning enhet:"
+
+#~ msgid "Ring sound:"
+#~ msgstr "Ring signal:"
+
+#~ msgid "Send DTMFs as SIP info"
+#~ msgstr "Kicka DTMF koder som SIP info"
+
+#~ msgid "Set Maximum Transmission Unit:"
+#~ msgstr "Välj MTU (Maximum Transmission Unit):"
+
+#~ msgid "Settings"
+#~ msgstr "Inställningar"
+
+#~ msgid "Show advanced settings"
+#~ msgstr "Visa avancerade inställningar"
+
+#~ msgid "Stun server:"
+#~ msgstr "STUN server:"
+
+#~ msgid "This section defines your SIP address when not using a SIP account"
+#~ msgstr ""
+#~ "Denna sektion specificerar din SIP adress när du inte använder ett SIP "
+#~ "konto"
+
+#~ msgid "Upload speed limit in Kbit/sec:"
+#~ msgstr "Max upstream bandbreddshastighet i kbit/sek:"
+
+#~ msgid "Use IPv6 instead of IPv4"
+#~ msgstr "Använd IPv6 istället av IPv4"
+
+#~ msgid "User interface"
+#~ msgstr "Användarinterface"
+
+#~ msgid "Video input device:"
+#~ msgstr "Video ingångsenhet:"
+
+#~ msgid "Your display name (eg: John Doe):"
+#~ msgstr "Ditt synliga namn, e.g. Kalle Karlsson:"
+
+#~ msgid "Your resulting SIP address:"
+#~ msgstr "Din SIP adress:"
+
+#~ msgid "Your username:"
+#~ msgstr "Ditt användarnamn:"
+
+#~ msgid "a sound card\n"
+#~ msgstr "ett ljud kort\n"
+
+#~ msgid "default camera"
+#~ msgstr "default kamera"
+
+#~ msgid "default soundcard"
+#~ msgstr "default ljudkort"
+
+#~ msgid "default soundcard\n"
+#~ msgstr "default ljudkort\n"
+
+#~ msgid "<b>Search somebody</b>"
+#~ msgstr "<b>Sök efter kontakter</b>"
+
+#~ msgid "Add to my list"
+#~ msgstr "Lägg till min lista"
+
+#~ msgid "Search contacts in directory"
+#~ msgstr "Sök för kontakter i katalogen"
+
+#~ msgid "Linphone"
+#~ msgstr "Linphone"
+
+#~ msgid "Please wait"
+#~ msgstr "Vänta"
+
+#~ msgid ""
+#~ "Remote end seems to have disconnected, the call is going to be closed."
+#~ msgstr ""
+#~ "Motparten verkar ha avbrutit samtalet, samtalet kommer att avslutas."
+
+#~ msgid "Sorry, having multiple simultaneous calls is not supported yet !"
+#~ msgstr "Förlåt, men linphone stödjer inte flera samtliga samtal än!"
+
+#~ msgid "Could not reach destination."
+#~ msgstr "Kunde inte nå motparten."
+
+#~ msgid "Request Cancelled."
+#~ msgstr "Förfrågan avbruten."
+
+#~ msgid "Bad request"
+#~ msgstr "Fel förfråga."
+
+#~ msgid "User cannot be found at given address."
+#~ msgstr "Användaren kan inte hittas vid den angivna adressen."
+
+#~ msgid "Remote user cannot support any of proposed codecs."
+#~ msgstr "Motparten stödjer ingen av de föreslagna codecs."
+
+#~ msgid "Timeout."
+#~ msgstr "time out."
+
+#~ msgid "Remote host was found but refused connection."
+#~ msgstr "Motparten hittades men ville inte ta emot samtalet."
+
+#~ msgid ""
+#~ "User is not reachable at the moment but he invites you\n"
+#~ "to contact him using the following alternate resource:"
+#~ msgstr ""
+#~ "Användaren kan inte nås för tillfället men han/hon ber digatt kontakta "
+#~ "honom/henna vid följande resurs:"
+
+#~ msgid "Digits"
+#~ msgstr "Tangenter"
+
+#~ msgid "Main view"
+#~ msgstr "Huvud vy"
+
+#~ msgid "No nat/firewall address supplied !"
+#~ msgstr "Ingen NAT / brandväggs adress angiven!"
+
+#~ msgid "Invalid nat address '%s' : %s"
+#~ msgstr "Fel NAT adress '%s': %s"
+
+#~ msgid "Gone"
+#~ msgstr "Har gått"
+
+#~ msgid "Waiting for Approval"
+#~ msgstr "Väntar för godkännandet"
+
+#~ msgid "Be Right Back"
+#~ msgstr "Kommer strax tillbaka"
+
+#~ msgid "On The Phone"
+#~ msgstr "På telefon"
+
+#~ msgid "Out To Lunch"
+#~ msgstr "Lunchar"
+
+#~ msgid "Closed"
+#~ msgstr "Stängt"
+
+#~ msgid "Unknown"
+#~ msgstr "Okänd"
+
+#, fuzzy
+#~ msgid "gtk-connect"
+#~ msgstr "Kopplad"
+
+#~ msgid "SIP address"
+#~ msgstr "SIP Adress"
+
+#~ msgid "Bresilian"
+#~ msgstr "Brasiliansk"
+
+#~ msgid "_View"
+#~ msgstr "_Vy"
