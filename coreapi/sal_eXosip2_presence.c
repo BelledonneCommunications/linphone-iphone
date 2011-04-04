@@ -136,7 +136,7 @@ int sal_subscribe_presence(SalOp *op, const char *from, const char *to){
 	eXosip_lock();
 	eXosip_subscribe_build_initial_request(&msg,sal_op_get_to(op),sal_op_get_from(op),
 	    	sal_op_get_route(op),"presence",600);
-	if (msg!=NULL){
+	if (msg==NULL){
 		ms_error("Could not build subscribe request to %s",to);
 		eXosip_unlock();
 		return -1;

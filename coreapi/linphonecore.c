@@ -489,6 +489,8 @@ static void sip_config_read(LinphoneCore *lc)
 		sal_use_session_timers(lc->sal,200);
 	}
 
+	sal_use_rport(lc->sal,lp_config_get_int(lc->config,"sip","use_rport",1));
+
 	tmp=lp_config_get_int(lc->config,"sip","use_rfc2833",0);
 	linphone_core_set_use_rfc2833_for_dtmf(lc,tmp);
 
