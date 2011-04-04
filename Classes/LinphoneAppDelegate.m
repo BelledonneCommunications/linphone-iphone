@@ -64,6 +64,9 @@
     
     NSDictionary *appDefaults = [NSDictionary dictionaryWithObjectsAndKeys:
                                  @"NO", @"enable_first_login_view_preference", //
+#ifdef HAVE_AMR                                 
+                                 @"YES",@"amr_8k_preference", // enable amr by default if compiled with
+#endif
                                  nil];
     
     [defaultsToRegister addEntriesFromDictionary:appDefaults];
