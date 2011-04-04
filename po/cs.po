@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-3.4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-02-03 20:45+0100\n"
+"POT-Creation-Date: 2011-04-05 00:37+0200\n"
 "PO-Revision-Date: 2011-02-07 18:00+0100\n"
 "Last-Translator: Petr Pisar <petr.pisar@atlas.cz>\n"
 "Language-Team: Czech <translation-team-cs@lists.sourceforge.net>\n"
@@ -53,7 +53,7 @@ msgstr "zavolat právě teď na tuto adresu"
 msgid "if set automatically answer incoming calls"
 msgstr "je-li nastaveno, automaticky zvedne příchozí hovor"
 
-#: ../gtk/main.c:103
+#: ../gtk/main.c:102
 msgid ""
 "Specifiy a working directory (should be the base of the installation, eg: c:"
 "\\Program Files\\Linphone)"
@@ -61,12 +61,12 @@ msgstr ""
 "Zadejte pracovní adresář (měl by být základní instalační adresář, například "
 "c:\\Program Files\\Linphone)"
 
-#: ../gtk/main.c:479
+#: ../gtk/main.c:442
 #, c-format
 msgid "Call with %s"
 msgstr "Hovor s %s"
 
-#: ../gtk/main.c:862
+#: ../gtk/main.c:825
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
@@ -79,7 +79,7 @@ msgstr ""
 "do svého adresáře?\n"
 "Odpovíte-li ne, tato osobo bude dočasně blokována."
 
-#: ../gtk/main.c:940
+#: ../gtk/main.c:903
 #, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
@@ -88,20 +88,24 @@ msgstr ""
 "Prosím, zadejte heslo pro uživatele <i>%s</i>\n"
 "v doméně <i>%s</i>:"
 
-#: ../gtk/main.c:1076
+#: ../gtk/main.c:1039
 msgid "Website link"
 msgstr "Odkaz na webovou stránku"
 
-#: ../gtk/main.c:1112
+#: ../gtk/main.c:1075
 msgid "Linphone - a video internet phone"
 msgstr "Lipnhone – internetový videofon"
 
-#: ../gtk/main.c:1131
+#: ../gtk/main.c:1094
 #, c-format
 msgid "%s (Default)"
 msgstr "%s (Výchozí)"
 
-#: ../gtk/main.c:1382
+#: ../gtk/main.c:1186
+msgid "Windows"
+msgstr ""
+
+#: ../gtk/main.c:1363
 msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
@@ -109,11 +113,11 @@ msgstr ""
 "Na tomto počítači nebyla objevena žádná zvuková karta.\n"
 "Nebudete moci vytáčet a přijímat a zvukové hovory."
 
-#: ../gtk/main.c:1441
+#: ../gtk/main.c:1422
 msgid "A free SIP video-phone"
 msgstr "Volný SIP videofon"
 
-#: ../gtk/friendlist.c:192 ../gtk/propertybox.c:271
+#: ../gtk/friendlist.c:192 ../gtk/propertybox.c:271 ../gtk/contact.ui.h:3
 msgid "Name"
 msgstr "Jméno"
 
@@ -386,7 +390,7 @@ msgstr ""
 "Odložit všechny hovory\n"
 "a odpovědět"
 
-#: ../gtk/incall_view.c:217
+#: ../gtk/incall_view.c:217 ../gtk/main.ui.h:20
 msgid "Answer"
 msgstr "Odpovědět"
 
@@ -411,7 +415,7 @@ msgstr "<b>Hovor skončil.</b>"
 msgid "Unmute"
 msgstr "Nahlas"
 
-#: ../gtk/incall_view.c:316
+#: ../gtk/incall_view.c:316 ../gtk/main.ui.h:42
 msgid "Mute"
 msgstr "Ztlumit"
 
@@ -419,7 +423,7 @@ msgstr "Ztlumit"
 msgid "Resume"
 msgstr "Obnovit"
 
-#: ../gtk/incall_view.c:347
+#: ../gtk/incall_view.c:347 ../gtk/main.ui.h:46
 msgid "Pause"
 msgstr "Odložit"
 
@@ -428,7 +432,647 @@ msgstr "Odložit"
 msgid "Please enter login information for %s"
 msgstr "Prosím, zadejte své přihlašovací jméno pro %s:"
 
-#: ../coreapi/linphonecore.c:166
+#: ../gtk/main.ui.h:1
+msgid "#"
+msgstr "#"
+
+#: ../gtk/main.ui.h:2
+msgid "*"
+msgstr "*"
+
+#: ../gtk/main.ui.h:3
+msgid "0"
+msgstr "0"
+
+#: ../gtk/main.ui.h:4
+msgid "1"
+msgstr "1"
+
+#: ../gtk/main.ui.h:5
+msgid "2"
+msgstr "2"
+
+#: ../gtk/main.ui.h:6
+msgid "3"
+msgstr "3"
+
+#: ../gtk/main.ui.h:7
+msgid "4"
+msgstr "4"
+
+#: ../gtk/main.ui.h:8
+msgid "5"
+msgstr "5"
+
+#: ../gtk/main.ui.h:9
+msgid "6"
+msgstr "6"
+
+#: ../gtk/main.ui.h:10
+msgid "7"
+msgstr "7"
+
+#: ../gtk/main.ui.h:11
+msgid "8"
+msgstr "8"
+
+#: ../gtk/main.ui.h:12
+msgid "9"
+msgstr "9"
+
+#: ../gtk/main.ui.h:13
+msgid "<b>Add contacts from directory</b>"
+msgstr "<b>Přidat kontakty z adresáře</b>"
+
+#: ../gtk/main.ui.h:14
+msgid "<b>Contact list</b>"
+msgstr "<b>Seznam kontaktů</b>"
+
+#: ../gtk/main.ui.h:15
+msgid "<b>Welcome !</b>"
+msgstr "<b>Vítejte!</b>"
+
+#: ../gtk/main.ui.h:16
+msgid "A"
+msgstr "A"
+
+#: ../gtk/main.ui.h:17
+msgid "ADSL"
+msgstr ""
+
+#: ../gtk/main.ui.h:18
+#, fuzzy
+msgid "Add contact"
+msgstr "Nalezen %i kontakt"
+
+#: ../gtk/main.ui.h:19
+msgid "All users"
+msgstr ""
+
+#: ../gtk/main.ui.h:21
+#, fuzzy
+msgid "Audio & video"
+msgstr "Zvuk i obraz"
+
+#: ../gtk/main.ui.h:22
+msgid "Audio only"
+msgstr "Pouze zvuk"
+
+#: ../gtk/main.ui.h:23
+msgid "Automatically log me in"
+msgstr "Přihlašovat mě automaticky"
+
+#: ../gtk/main.ui.h:24
+msgid "B"
+msgstr "B"
+
+#: ../gtk/main.ui.h:25 ../gtk/parameters.ui.h:20
+msgid "C"
+msgstr "C"
+
+#: ../gtk/main.ui.h:26
+#, fuzzy
+msgid "Check _Updates"
+msgstr "Vyhledat aktualizace"
+
+#: ../gtk/main.ui.h:27
+msgid "Contacts"
+msgstr "Kontakty"
+
+#: ../gtk/main.ui.h:28
+msgid "D"
+msgstr "D"
+
+#: ../gtk/main.ui.h:29
+msgid "Decline"
+msgstr "Odmítnout"
+
+#: ../gtk/main.ui.h:30
+msgid "Default"
+msgstr "Výchozí"
+
+#: ../gtk/main.ui.h:31
+msgid "Duration"
+msgstr "Délka"
+
+#: ../gtk/main.ui.h:32
+msgid "Duration:"
+msgstr "Délka:"
+
+#: ../gtk/main.ui.h:33
+msgid "Enable self-view"
+msgstr "Zobrazovat sám sebe"
+
+#: ../gtk/main.ui.h:34
+msgid "Enter username, phone number, or full sip address"
+msgstr "Zadejte uživatelské jméno, telefonní číslo nebo plnou sipovou adresu"
+
+#: ../gtk/main.ui.h:35
+#, fuzzy
+msgid "Fiber Channel"
+msgstr ""
+"ADSL\n"
+"Fiber Channel"
+
+#: ../gtk/main.ui.h:36
+msgid "In call"
+msgstr "Telefonuje se"
+
+#: ../gtk/main.ui.h:37
+msgid "Initiate a new call"
+msgstr ""
+
+#: ../gtk/main.ui.h:38
+msgid "Internet connection:"
+msgstr "Připojení k Internetu:"
+
+#: ../gtk/main.ui.h:39
+msgid "Keypad"
+msgstr "Klávesnice"
+
+#: ../gtk/main.ui.h:40
+msgid "Login information"
+msgstr "Informace o přihlášení"
+
+#: ../gtk/main.ui.h:41
+msgid "Lookup:"
+msgstr "Hledat:"
+
+#: ../gtk/main.ui.h:43
+msgid "My current identity:"
+msgstr "Moje současná totožnost:"
+
+#: ../gtk/main.ui.h:44
+#, fuzzy
+msgid "Online users"
+msgstr ""
+"všech uživatelích\n"
+"připojených uživatelích"
+
+#: ../gtk/main.ui.h:45
+msgid "Password"
+msgstr "Heslo"
+
+#: ../gtk/main.ui.h:47
+msgid "SIP address or phone number:"
+msgstr "SIP adresa nebo telefonní číslo:"
+
+#: ../gtk/main.ui.h:48
+msgid "Search"
+msgstr "Hledat"
+
+#: ../gtk/main.ui.h:49
+#, fuzzy
+msgid "Show debug window"
+msgstr "Ladicí okno Linphonu"
+
+#: ../gtk/main.ui.h:50
+msgid "Username"
+msgstr "Uživatelské jméno"
+
+#: ../gtk/main.ui.h:51
+#, fuzzy
+msgid "_Help"
+msgstr "Nápověda"
+
+#: ../gtk/main.ui.h:52
+#, fuzzy
+msgid "_Homepage"
+msgstr "Domovská stránka"
+
+#: ../gtk/main.ui.h:53
+msgid "_Linphone"
+msgstr "_Linphone"
+
+#: ../gtk/main.ui.h:54
+msgid "_Options"
+msgstr ""
+
+#: ../gtk/main.ui.h:55
+msgid "in"
+msgstr "ve"
+
+#: ../gtk/main.ui.h:56
+msgid "label"
+msgstr ""
+
+#: ../gtk/about.ui.h:1
+msgid "(C) Belledonne Communications,2010\n"
+msgstr ""
+
+#: ../gtk/about.ui.h:3
+msgid "About linphone"
+msgstr "O Linphonu"
+
+# FIXME: standart
+#: ../gtk/about.ui.h:4
+msgid "An internet video phone using the standard SIP (rfc3261) protocol."
+msgstr "Internetový videofon používající standardní protokol SIP (RFC 3261)."
+
+#: ../gtk/about.ui.h:5
+msgid ""
+"fr: Simon Morlat\n"
+"en: Simon Morlat and Delphine Perreau\n"
+"it: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>\n"
+"de: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>\n"
+"sv: Daniel Nylander <po@danielnylander.se>\n"
+"es: Jesus Benitez <gnelson at inMail dot sk>\n"
+"ja: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\n"
+"pt_BR: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\n"
+"pl: Robert Nasiadek <darkone@darkone.pl>\n"
+"cs: Petr Pisar <petr.pisar@atlas.cz>\n"
+"hu: anonymous\n"
+msgstr ""
+"fr: Simon Morlat\n"
+"en: Simon Morlat a Delphine Perreau\n"
+"it: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>\n"
+"de: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>\n"
+"sv: Daniel Nylander <po@danielnylander.se>\n"
+"es: Jesus Benitez <gnelson at inMail dot sk>\n"
+"ja: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\n"
+"pt_BR: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\n"
+"pl: Robert Nasiadek <darkone@darkone.pl>\n"
+"cs: Petr Písař <petr.pisar@atlas.cz>\n"
+"hu: anonym\n"
+
+#: ../gtk/contact.ui.h:1
+msgid "<b>Contact information</b>"
+msgstr "<b>Informace o kontaktu</b>"
+
+#: ../gtk/contact.ui.h:2
+msgid "Allow this contact to see my presence status"
+msgstr "Dovolit tomuto kontaktu, aby viděl můj stav přítomnosti"
+
+#: ../gtk/contact.ui.h:4
+msgid "SIP Address"
+msgstr "SIP adresa"
+
+#: ../gtk/contact.ui.h:5
+msgid "Show this contact presence status"
+msgstr "U tohoto kontaktu zobrazovat stav přítomnosti"
+
+#: ../gtk/contact.ui.h:6 ../gtk/password.ui.h:5
+msgid "gtk-cancel"
+msgstr ""
+
+#: ../gtk/contact.ui.h:7 ../gtk/password.ui.h:6
+msgid "gtk-ok"
+msgstr ""
+
+#: ../gtk/log.ui.h:1
+msgid "Linphone debug window"
+msgstr "Ladicí okno Linphonu"
+
+#: ../gtk/password.ui.h:1
+msgid "Linphone - Authentication required"
+msgstr "Linphone – Ověření totožnosti vyžadováno"
+
+#: ../gtk/password.ui.h:2
+msgid "Password:"
+msgstr "Heslo:"
+
+#: ../gtk/password.ui.h:3
+msgid "Please enter the domain password"
+msgstr "Prosím, zadejte heslo pro doménu"
+
+#: ../gtk/password.ui.h:4
+msgid "UserID"
+msgstr "Identifikátor uživatele"
+
+#: ../gtk/call_logs.ui.h:1
+#, fuzzy
+msgid "Call back"
+msgstr "Volat komu: %s"
+
+#: ../gtk/call_logs.ui.h:2
+msgid "Call history"
+msgstr "Historie volání"
+
+#: ../gtk/call_logs.ui.h:3
+msgid "Clear all"
+msgstr ""
+
+#: ../gtk/sip_account.ui.h:1
+msgid "Configure a SIP account"
+msgstr "Nastavit SIP účet"
+
+#: ../gtk/sip_account.ui.h:2
+msgid "Linphone - Configure a SIP account"
+msgstr "Linphone – Nastav SIP účet"
+
+#: ../gtk/sip_account.ui.h:3
+msgid "Looks like sip:<proxy hostname>"
+msgstr ""
+
+#: ../gtk/sip_account.ui.h:4
+msgid "Looks like sip:<username>@<domain>"
+msgstr ""
+
+#: ../gtk/sip_account.ui.h:5
+msgid "Publish presence information"
+msgstr "Zveřejnit stav přítomnosti"
+
+#: ../gtk/sip_account.ui.h:6
+msgid "Register at startup"
+msgstr "Zaregistrovat při spuštění"
+
+#: ../gtk/sip_account.ui.h:7
+msgid "Registration duration (sec):"
+msgstr "Registrační období (s):"
+
+#: ../gtk/sip_account.ui.h:8
+msgid "Route (optional):"
+msgstr "Směrování (volitelné):"
+
+#: ../gtk/sip_account.ui.h:9
+msgid "SIP Proxy address:"
+msgstr "Adresa SIP proxy:"
+
+#: ../gtk/sip_account.ui.h:10
+msgid "Your SIP identity:"
+msgstr "Vaše SIP totožnost:"
+
+#: ../gtk/sip_account.ui.h:11
+msgid "sip:"
+msgstr "sip:"
+
+#: ../gtk/chatroom.ui.h:1
+msgid "Send"
+msgstr "Odeslat"
+
+#: ../gtk/chatroom.ui.h:2
+msgid "gtk-close"
+msgstr ""
+
+#: ../gtk/parameters.ui.h:1
+msgid "0 stands for \"unlimited\""
+msgstr "0 znamená „neomezeno“"
+
+#: ../gtk/parameters.ui.h:2
+msgid "<b>Audio</b>"
+msgstr "<b>Zvuk</b>"
+
+#: ../gtk/parameters.ui.h:3
+msgid "<b>Bandwidth control</b>"
+msgstr "<b>Využití šířky pásma</b>"
+
+#: ../gtk/parameters.ui.h:4
+msgid "<b>Codecs</b>"
+msgstr "<b>Kodeky</b>"
+
+#: ../gtk/parameters.ui.h:5
+msgid "<b>Default identity</b>"
+msgstr "<b>Implicitní totožnost</b>"
+
+#: ../gtk/parameters.ui.h:6
+msgid "<b>Language</b>"
+msgstr "<b>Jazyk</b>"
+
+#: ../gtk/parameters.ui.h:7
+msgid "<b>Level</b>"
+msgstr "<b>Úroveň</b>"
+
+#: ../gtk/parameters.ui.h:8
+msgid "<b>NAT and Firewall</b>"
+msgstr "<b>NAT a firewall</b>"
+
+#: ../gtk/parameters.ui.h:9
+msgid "<b>Ports</b>"
+msgstr "<b>Porty</b>"
+
+#: ../gtk/parameters.ui.h:10
+msgid "<b>Privacy</b>"
+msgstr "<b>Soukromí</b>"
+
+#: ../gtk/parameters.ui.h:11
+msgid "<b>Proxy accounts</b>"
+msgstr "<b>Proxy účty</b>"
+
+#: ../gtk/parameters.ui.h:12
+msgid "<b>Transport</b>"
+msgstr "<b>Přenos</b>"
+
+#: ../gtk/parameters.ui.h:13
+msgid "<b>Video</b>"
+msgstr "<b>Obraz</b>"
+
+#: ../gtk/parameters.ui.h:14
+msgid "ALSA special device (optional):"
+msgstr "Zvláštní ALSA zařízení (volitelné):"
+
+#: ../gtk/parameters.ui.h:15
+msgid "Add"
+msgstr "Přidat"
+
+#: ../gtk/parameters.ui.h:16
+msgid "Audio RTP/UDP:"
+msgstr "Zvukový RTP/UDP:"
+
+#: ../gtk/parameters.ui.h:17
+#, fuzzy
+msgid "Audio codecs"
+msgstr "Kodeky obrazu"
+
+#: ../gtk/parameters.ui.h:18
+msgid "Behind NAT / Firewall (specify gateway IP below)"
+msgstr "Za NAT/firewallem (adresu brány zadejte níže)"
+
+#: ../gtk/parameters.ui.h:19
+msgid "Behind NAT / Firewall (use STUN to resolve)"
+msgstr "Za NAT/firewallem (adresu určí STUN)"
+
+#: ../gtk/parameters.ui.h:21
+msgid "CIF"
+msgstr "CIF"
+
+#: ../gtk/parameters.ui.h:22
+msgid "Capture device:"
+msgstr "Zařízení pro nahrávání:"
+
+#: ../gtk/parameters.ui.h:23
+msgid "Codecs"
+msgstr "Kodeky"
+
+#: ../gtk/parameters.ui.h:24
+msgid "Direct connection to the Internet"
+msgstr "Přímé připojení do Internetu"
+
+#: ../gtk/parameters.ui.h:25
+msgid "Disable"
+msgstr "Zakázat"
+
+#: ../gtk/parameters.ui.h:26
+msgid "Done"
+msgstr "Hotovo"
+
+#: ../gtk/parameters.ui.h:27
+msgid "Download speed limit in Kbit/sec:"
+msgstr "Omezení příchozí rychlosti (kb/s):"
+
+#: ../gtk/parameters.ui.h:28
+msgid "Edit"
+msgstr "Upravit"
+
+#: ../gtk/parameters.ui.h:29
+msgid "Enable"
+msgstr "Povolit"
+
+#: ../gtk/parameters.ui.h:30
+msgid "Enable echo cancellation"
+msgstr "Zapnout potlačení ozvěny"
+
+#: ../gtk/parameters.ui.h:31
+msgid "Erase all passwords"
+msgstr "Vymazat všechna hesla"
+
+#: ../gtk/parameters.ui.h:32
+msgid "Manage SIP Accounts"
+msgstr "Nastavení SIP účtů"
+
+#: ../gtk/parameters.ui.h:33
+msgid "Multimedia settings"
+msgstr "Nastavení multimédií"
+
+#: ../gtk/parameters.ui.h:34
+msgid "Network settings"
+msgstr "Nastavení sítě"
+
+#: ../gtk/parameters.ui.h:35
+msgid "Playback device:"
+msgstr "Zařízení pro přehrávání:"
+
+#: ../gtk/parameters.ui.h:36
+msgid "Prefered video resolution:"
+msgstr "Upřednostňované rozlišení obrazu:"
+
+#: ../gtk/parameters.ui.h:37
+msgid "Public IP address:"
+msgstr "Veřejná IP adresa:"
+
+#: ../gtk/parameters.ui.h:38
+msgid ""
+"Register to FONICS\n"
+"virtual network !"
+msgstr ""
+"Zaregistrovat se do\n"
+"virtuální sítě FONICS!"
+
+#: ../gtk/parameters.ui.h:40
+msgid "Remove"
+msgstr "Odstranit"
+
+#: ../gtk/parameters.ui.h:41
+msgid "Ring device:"
+msgstr "Zařízení pro vyzvánění:"
+
+#: ../gtk/parameters.ui.h:42
+msgid "Ring sound:"
+msgstr "Vyzvánění:"
+
+#: ../gtk/parameters.ui.h:43
+#, fuzzy
+msgid "SIP (TCP):"
+msgstr "SIP (UDP):"
+
+#: ../gtk/parameters.ui.h:44
+msgid "SIP (UDP):"
+msgstr "SIP (UDP):"
+
+#: ../gtk/parameters.ui.h:45
+msgid "Send DTMFs as SIP info"
+msgstr "Odesílat tóny DTMF jako SIP INFO zprávy"
+
+#: ../gtk/parameters.ui.h:46
+msgid "Set Maximum Transmission Unit:"
+msgstr "Nastavit MTU (největší přenositelná zpráva):"
+
+#: ../gtk/parameters.ui.h:47
+msgid "Settings"
+msgstr "Nastavení"
+
+#: ../gtk/parameters.ui.h:48
+msgid "Show advanced settings"
+msgstr "Zobrazit podrobnější nastavení"
+
+#: ../gtk/parameters.ui.h:49
+msgid "Stun server:"
+msgstr "STUN server:"
+
+#: ../gtk/parameters.ui.h:50
+msgid "This section defines your SIP address when not using a SIP account"
+msgstr "Tento oddíl určuje vaši SIP adresu, když se nepoužívá žádný účet"
+
+#: ../gtk/parameters.ui.h:51
+msgid "Upload speed limit in Kbit/sec:"
+msgstr "Omezení odchozí rychlosti (kb/s):"
+
+#: ../gtk/parameters.ui.h:52
+msgid "Use IPv6 instead of IPv4"
+msgstr "Používat IPv6 místo IPv4"
+
+#: ../gtk/parameters.ui.h:53
+msgid "User interface"
+msgstr "Uživatelské rozhraní"
+
+#: ../gtk/parameters.ui.h:54
+msgid "Video RTP/UDP:"
+msgstr "Obrazový RTP/UDP:"
+
+#: ../gtk/parameters.ui.h:55
+#, fuzzy
+msgid "Video codecs"
+msgstr "Kodeky obrazu"
+
+#: ../gtk/parameters.ui.h:56
+msgid "Video input device:"
+msgstr "Vstupní zařízení obrazu:"
+
+#: ../gtk/parameters.ui.h:57
+msgid "Your display name (eg: John Doe):"
+msgstr "Vaše zobrazované jméno (např. Jan Novák):"
+
+#: ../gtk/parameters.ui.h:58
+msgid "Your resulting SIP address:"
+msgstr "Vaše výsledná SIP adresa:"
+
+#: ../gtk/parameters.ui.h:59
+msgid "Your username:"
+msgstr "Vaše uživatelské jméno:"
+
+#: ../gtk/parameters.ui.h:60
+#, fuzzy
+msgid "a sound card"
+msgstr "zvuková karta\n"
+
+#: ../gtk/parameters.ui.h:61
+msgid "default camera"
+msgstr "implicitní kamera"
+
+#: ../gtk/parameters.ui.h:62
+msgid "default soundcard"
+msgstr "implicitní zvuková karta"
+
+#: ../gtk/buddylookup.ui.h:1
+msgid "<b>Search somebody</b>"
+msgstr "<b>Hledat někoho</b>"
+
+#: ../gtk/buddylookup.ui.h:2
+msgid "Add to my list"
+msgstr "Přidat na svůj seznam"
+
+#: ../gtk/buddylookup.ui.h:3
+msgid "Search contacts in directory"
+msgstr "Hledat kontakty v adresáři"
+
+#: ../gtk/waiting.ui.h:1
+msgid "Linphone"
+msgstr "Linphone"
+
+#: ../gtk/waiting.ui.h:2
+msgid "Please wait"
+msgstr "Prosím, čekejte"
+
+#: ../coreapi/linphonecore.c:165
 #, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."
@@ -436,19 +1080,19 @@ msgstr[0] "Máte %i zmeškaný hovor."
 msgstr[1] "Máte %i zmeškané hovory."
 msgstr[2] "Máte %i zmeškaných hovorů."
 
-#: ../coreapi/linphonecore.c:207
+#: ../coreapi/linphonecore.c:206
 msgid "aborted"
 msgstr "přerušen"
 
-#: ../coreapi/linphonecore.c:210
+#: ../coreapi/linphonecore.c:209
 msgid "completed"
 msgstr "dokončen"
 
-#: ../coreapi/linphonecore.c:213
+#: ../coreapi/linphonecore.c:212
 msgid "missed"
 msgstr "promeškán"
 
-#: ../coreapi/linphonecore.c:218
+#: ../coreapi/linphonecore.c:217
 #, c-format
 msgid ""
 "%s at %s\n"
@@ -463,82 +1107,74 @@ msgstr ""
 "Stav: %s\n"
 "Délka: %i min %i s\n"
 
-#: ../coreapi/linphonecore.c:219
+#: ../coreapi/linphonecore.c:218
 msgid "Incoming call"
 msgstr "Příchozí hovor"
 
-#: ../coreapi/linphonecore.c:219
+#: ../coreapi/linphonecore.c:218
 msgid "Outgoing call"
 msgstr "Odchozí hovor"
 
-#: ../coreapi/linphonecore.c:501
-msgid ""
-"Your machine appears to be connected to an IPv6 network. By default linphone "
-"always uses IPv4. Please update your configuration if you want to use IPv6"
-msgstr ""
-"Zdá se, že váš počítač je připojen do IPv6 sítě. Standardně linphone používá "
-"pouze IPv4. Prosím, změňte nastavení programu, pokud chcete používat IPv6."
-
-#: ../coreapi/linphonecore.c:994
+#: ../coreapi/linphonecore.c:998
 msgid "Ready"
 msgstr "Připraven."
 
-#: ../coreapi/linphonecore.c:1768
+#: ../coreapi/linphonecore.c:1773
 msgid "Looking for telephone number destination..."
 msgstr "Vyhledává se umístění čísla…"
 
-#: ../coreapi/linphonecore.c:1771
+#: ../coreapi/linphonecore.c:1776
 msgid "Could not resolve this number."
 msgstr "Toto číslo nelze vyhledat."
 
-#: ../coreapi/linphonecore.c:1815
+#: ../coreapi/linphonecore.c:1820
 msgid ""
 "Could not parse given sip address. A sip url usually looks like sip:"
 "user@domain"
 msgstr ""
 "Špatně zadaná SIP adresa. Adresa má mít tento formát <sip:uživatel@doména>"
 
-#: ../coreapi/linphonecore.c:1962
+#: ../coreapi/linphonecore.c:1967
 msgid "Contacting"
 msgstr "Kontaktuji"
 
-#: ../coreapi/linphonecore.c:1969
+#: ../coreapi/linphonecore.c:1974
 msgid "Could not call"
 msgstr "Nelze volat"
 
-#: ../coreapi/linphonecore.c:2076
+#: ../coreapi/linphonecore.c:2081
 msgid "Sorry, you have to pause or stop the current call first !"
 msgstr "Je nám líto, ale nejprve musíte hovor odložit nebo ukončit!"
 
-#: ../coreapi/linphonecore.c:2081
+#: ../coreapi/linphonecore.c:2086
 msgid "Sorry, we have reached the maximum number of simultaneous calls"
 msgstr "Je nám líto, ale byl dosažen maximální počet současných hovorů."
 
-#: ../coreapi/linphonecore.c:2205
+#: ../coreapi/linphonecore.c:2208
 msgid "Modifying call parameters..."
 msgstr "Upravují se parametry hovoru…"
 
-#: ../coreapi/linphonecore.c:2308
+#: ../coreapi/linphonecore.c:2311
 msgid "Connected."
 msgstr "Připojeno."
 
-#: ../coreapi/linphonecore.c:2331
+#: ../coreapi/linphonecore.c:2334
 msgid "Call aborted"
 msgstr "Hovor přerušen"
 
-#: ../coreapi/linphonecore.c:2371
+#: ../coreapi/linphonecore.c:2374
 msgid "Call ended"
 msgstr "Hovor ukončen"
 
-#: ../coreapi/linphonecore.c:2453
+#: ../coreapi/linphonecore.c:2456
 msgid "Could not pause the call"
 msgstr "Hovor nebylo možné odložit"
 
-#: ../coreapi/linphonecore.c:2457
+#: ../coreapi/linphonecore.c:2460
 msgid "Pausing the current call..."
 msgstr "Současný hovor se odkládá…"
 
-#: ../coreapi/linphonecore.c:2496
+#: ../coreapi/linphonecore.c:2499
 msgid "There is already a call in process, pause or stop it first."
 msgstr "Již probíhá hovor, nejprve jej odložte nebo ukončete."
 
@@ -566,7 +1202,7 @@ msgstr ""
 "oss, který chybí. Prosím zadejte jako uživatel root příkaz\n"
 "'modprobe snd-mixer-oss', kterým modul zavede."
 
-#: ../coreapi/misc.c:520
+#: ../coreapi/misc.c:474
 msgid "Stun lookup in progress..."
 msgstr "Hledá se adresa pomocí STUN…"
 
@@ -634,7 +1270,7 @@ msgstr ""
 "SIP identita, kterou jste zadali, není platná.\n"
 "Měla by mít tvar sip:uživatel@proxydoména, například sip:alice@example.net"
 
-#: ../coreapi/proxy.c:670
+#: ../coreapi/proxy.c:671
 #, c-format
 msgid "Could not login as %s"
 msgstr "Nelze se přihlásit jako %s"
@@ -655,109 +1291,114 @@ msgstr "."
 msgid "Remote ringing."
 msgstr "Vyzvání na druhé straně."
 
-#: ../coreapi/callbacks.c:251
+#: ../coreapi/callbacks.c:242
+#, fuzzy
+msgid "Remote ringing..."
+msgstr "Vyzvání na druhé straně."
+
+#: ../coreapi/callbacks.c:253
 msgid "Early media."
 msgstr "Časná média."
 
-#: ../coreapi/callbacks.c:289
+#: ../coreapi/callbacks.c:291
 #, c-format
 msgid "Call with %s is paused."
 msgstr "Hovor s %s je odložen."
 
-#: ../coreapi/callbacks.c:300
+#: ../coreapi/callbacks.c:302
 #, c-format
 msgid "Call answered by %s - on hold."
 msgstr "Hovor přijat kým: %s – odložen."
 
-#: ../coreapi/callbacks.c:315
+#: ../coreapi/callbacks.c:317
 msgid "Call resumed."
 msgstr "Hovor obnoven."
 
-#: ../coreapi/callbacks.c:320
+#: ../coreapi/callbacks.c:322
 #, c-format
 msgid "Call answered by %s."
 msgstr "Hovor přijat kým: %s."
 
-#: ../coreapi/callbacks.c:381
+#: ../coreapi/callbacks.c:383
 msgid "We are being paused..."
 msgstr "Jsme odkládáni…"
 
-#: ../coreapi/callbacks.c:385
+#: ../coreapi/callbacks.c:387
 msgid "We have been resumed..."
 msgstr "Byli jsme obnoveni…"
 
-#: ../coreapi/callbacks.c:422
+#: ../coreapi/callbacks.c:424
 msgid "Call terminated."
 msgstr "Hovor ukončen."
 
-#: ../coreapi/callbacks.c:429
+#: ../coreapi/callbacks.c:431
 msgid "User is busy."
 msgstr "Uživatel je zaneprázdněn."
 
-#: ../coreapi/callbacks.c:430
+#: ../coreapi/callbacks.c:432
 msgid "User is temporarily unavailable."
 msgstr "Uživatel je dočasně nedostupný."
 
 #. char *retrymsg=_("%s. Retry after %i minute(s).");
-#: ../coreapi/callbacks.c:432
+#: ../coreapi/callbacks.c:434
 msgid "User does not want to be disturbed."
 msgstr "Uživatel si nepřeje být rušen."
 
-#: ../coreapi/callbacks.c:433
+#: ../coreapi/callbacks.c:435
 msgid "Call declined."
 msgstr "Volání odmítnuto."
 
-#: ../coreapi/callbacks.c:445
+#: ../coreapi/callbacks.c:447
 msgid "No response."
 msgstr "Žádná odpověď."
 
-#: ../coreapi/callbacks.c:449
+#: ../coreapi/callbacks.c:451
 msgid "Protocol error."
 msgstr "Chyba protokolu."
 
-#: ../coreapi/callbacks.c:465
+#: ../coreapi/callbacks.c:467
 msgid "Redirected"
 msgstr "Přesměrováno"
 
-#: ../coreapi/callbacks.c:475
+#: ../coreapi/callbacks.c:477
 msgid "Not found"
 msgstr "Nenalezeno"
 
-#: ../coreapi/callbacks.c:485
+#: ../coreapi/callbacks.c:487
 msgid "No common codecs"
 msgstr "Žádný společný formát"
 
-#: ../coreapi/callbacks.c:491
+#: ../coreapi/callbacks.c:493
 msgid "Call failed."
 msgstr "Volání se nezdařilo."
 
-#: ../coreapi/callbacks.c:527
-msgid "Authentication failure"
-msgstr "Selhání ověření"
-
-#: ../coreapi/callbacks.c:553
+#: ../coreapi/callbacks.c:557
 #, c-format
 msgid "Registration on %s successful."
 msgstr "Registrace na %s byla úspěšná."
 
-#: ../coreapi/callbacks.c:554
+#: ../coreapi/callbacks.c:558
 #, c-format
 msgid "Unregistration on %s done."
 msgstr "Odregistrování z %s hotovo."
 
-#: ../coreapi/callbacks.c:570
+#: ../coreapi/callbacks.c:574
 msgid "no response timeout"
 msgstr "odpověď nedorazila včas"
 
-#: ../coreapi/callbacks.c:573
+#: ../coreapi/callbacks.c:577
 #, c-format
 msgid "Registration on %s failed: %s"
 msgstr "Registrace na %s selhala: %s"
 
-#: ../coreapi/callbacks.c:615
+#: ../coreapi/callbacks.c:619
 #, c-format
 msgid "We are transferred to %s"
 msgstr "Byly jsme přepojeni na %s"
+
+#: ../coreapi/sal_eXosip2.c:814 ../coreapi/sal_eXosip2.c:816
+msgid "Authentication failure"
+msgstr "Selhání ověření"
 
 #: ../mediastreamer2/src/alaw.c:144 ../mediastreamer2/src/alaw.c:162
 msgid "ITU-G.711 alaw encoder"
@@ -767,48 +1408,50 @@ msgstr "Kodér a-law ITU-G.711"
 msgid "ITU-G.711 alaw decoder"
 msgstr "Dekodér a-law ITU-G.711"
 
-#: ../mediastreamer2/src/alsa.c:935
+#: ../mediastreamer2/src/alsa.c:950
 msgid "Alsa sound source"
 msgstr "Zdroj zvuku ALSA"
 
-#: ../mediastreamer2/src/alsa.c:1039
+#: ../mediastreamer2/src/alsa.c:1054
 msgid "Alsa sound output"
 msgstr "Zvukový výstup ALSA"
 
-#: ../mediastreamer2/src/aqsnd.c:1005
+#: ../mediastreamer2/src/aqsnd.c:1008
 msgid "Sound capture filter for MacOS X Audio Queue Service"
 msgstr "Filtr zachytávání zvuku přes MacOS X službu zvukové fronty"
 
-#: ../mediastreamer2/src/aqsnd.c:1029
+#: ../mediastreamer2/src/aqsnd.c:1032
 msgid "Sound playback filter for MacOS X Audio Queue Service"
 msgstr "Filtr přehrávání zvuku přes MacOS X službu zvukové fronty"
 
-#: ../mediastreamer2/src/dtmfgen.c:173 ../mediastreamer2/src/dtmfgen.c:191
+#: ../mediastreamer2/src/dtmfgen.c:287 ../mediastreamer2/src/dtmfgen.c:306
 msgid "DTMF generator"
 msgstr "Generátor DTMF"
 
-#: ../mediastreamer2/src/gsm.c:111 ../mediastreamer2/src/gsm.c:129
+#: ../mediastreamer2/src/gsm.c:120 ../mediastreamer2/src/gsm.c:138
 msgid "The GSM full-rate codec"
 msgstr "Kodek plnopásmového GSM"
 
-#: ../mediastreamer2/src/gsm.c:178 ../mediastreamer2/src/gsm.c:196
+#: ../mediastreamer2/src/gsm.c:187 ../mediastreamer2/src/gsm.c:205
 msgid "The GSM codec"
 msgstr "GSM kodek"
 
-#: ../mediastreamer2/src/macsnd.c:670
-msgid "Sound capture filter for MacOS X Core Audio drivers"
+#: ../mediastreamer2/src/macsnd.c:627
+#, fuzzy
+msgid "Sound capture filter for MacOS X Audio Unit"
 msgstr "Filtr zachytávání zvuku přes MacOS X ovladače Core Audio"
 
-#: ../mediastreamer2/src/macsnd.c:684
-msgid "Sound playback filter for MacOS X Core Audio drivers"
+#: ../mediastreamer2/src/macsnd.c:642
+#, fuzzy
+msgid "Sound playback filter for MacOS X Audio Unit"
 msgstr "Filtr přehrávání zvuku přes MacOS X ovladače Core Audio"
 
 #: ../mediastreamer2/src/msconf.c:787 ../mediastreamer2/src/msconf.c:805
 msgid "A filter to make conferencing"
 msgstr "Filtr pro vytváření konferencí"
 
-#: ../mediastreamer2/src/msfileplayer.c:295
-#: ../mediastreamer2/src/msfileplayer.c:313
+#: ../mediastreamer2/src/msfileplayer.c:311
+#: ../mediastreamer2/src/msfileplayer.c:329
 msgid "Raw files and wav reader"
 msgstr "Čtení syrových souborů a souborů WAV"
 
@@ -822,65 +1465,54 @@ msgstr "Nahrávání do souborů WAV"
 msgid "A filter that send several inputs to one output."
 msgstr "Filtr, který směšuje několik vstupů do jednoho výstupu."
 
-#: ../mediastreamer2/src/msresample.c:221
-#: ../mediastreamer2/src/msresample.c:239
-msgid "frequency resampler"
+#: ../mediastreamer2/src/msresample.c:159
+#: ../mediastreamer2/src/msresample.c:177
+#, fuzzy
+msgid "Audio resampler"
 msgstr "měnič frekvence"
 
-#: ../mediastreamer2/src/msrtp.c:358 ../mediastreamer2/src/msrtp.c:376
+#: ../mediastreamer2/src/msrtp.c:369 ../mediastreamer2/src/msrtp.c:387
 msgid "RTP output filter"
 msgstr "Filtr RTP výstupu"
 
-#: ../mediastreamer2/src/msrtp.c:493 ../mediastreamer2/src/msrtp.c:511
+#: ../mediastreamer2/src/msrtp.c:505 ../mediastreamer2/src/msrtp.c:523
 msgid "RTP input filter"
 msgstr "Filtr RTP vstupu"
 
-#: ../mediastreamer2/src/msspeex.c:359 ../mediastreamer2/src/msspeex.c:377
-#: ../mediastreamer2/src/msspeex.c:504 ../mediastreamer2/src/msspeex.c:522
+#: ../mediastreamer2/src/msspeex.c:360 ../mediastreamer2/src/msspeex.c:378
+#: ../mediastreamer2/src/msspeex.c:548 ../mediastreamer2/src/msspeex.c:567
 msgid "The free and wonderful speex codec"
 msgstr "Svobodný a úžasný kodek speex"
 
-#: ../mediastreamer2/src/msvolume.c:415 ../mediastreamer2/src/msvolume.c:430
+#: ../mediastreamer2/src/msvolume.c:528 ../mediastreamer2/src/msvolume.c:543
 msgid "A filter that controls and measure sound volume"
 msgstr "Filtr, který měří a řídí hlasitost zvuku"
 
-#: ../mediastreamer2/src/msv4l.c:1011
+#: ../mediastreamer2/src/msv4l.c:1012
 msgid "A video4linux compatible source filter to stream pictures."
 msgstr "Zdrojový filtr kompatibilní s Video4Linux proudující obrázky."
 
-#: ../mediastreamer2/src/msv4l2.c:470
+#: ../mediastreamer2/src/msv4l2.c:554
 msgid "A filter to grab pictures from Video4Linux2-powered cameras"
 msgstr "Filtr zachytávající obrázky z Video4Linux2 kamer"
 
-#: ../mediastreamer2/src/nowebcam.c:1836
+#: ../mediastreamer2/src/nowebcam.c:1854
 msgid "A filter that outputs a static image."
 msgstr "Filtr, který vydává nehybný obrázek."
 
-#: ../mediastreamer2/src/oss.c:567
-msgid "Sound capture filter for OSS drivers"
-msgstr "Zvukový zachytávací filtr pro ovladače OSS"
-
-#: ../mediastreamer2/src/oss.c:581
-msgid "Sound playback filter for OSS drivers"
-msgstr "Zvukový přehrávací filtr pro ovladače OSS"
-
-#: ../mediastreamer2/src/pixconv.c:177 ../mediastreamer2/src/pixconv.c:195
+#: ../mediastreamer2/src/pixconv.c:129 ../mediastreamer2/src/pixconv.c:147
 msgid "A pixel format converter"
 msgstr "Převodník formátu pixelů"
 
-#: ../mediastreamer2/src/sdlout.c:345 ../mediastreamer2/src/sdlout.c:363
-msgid "A video display window using SDL"
-msgstr "Zobrazovaní videa v SDL okně"
-
-#: ../mediastreamer2/src/sizeconv.c:204
+#: ../mediastreamer2/src/sizeconv.c:202
 msgid "A video size converter"
 msgstr "Převaděč velikosti videa"
 
-#: ../mediastreamer2/src/sizeconv.c:222
+#: ../mediastreamer2/src/sizeconv.c:220
 msgid "a small video size converter"
 msgstr "Převaděč velikosti malých videí"
 
-#: ../mediastreamer2/src/speexec.c:349 ../mediastreamer2/src/speexec.c:367
+#: ../mediastreamer2/src/speexec.c:449 ../mediastreamer2/src/speexec.c:467
 msgid "Echo canceller using speex library"
 msgstr "Potlačení ozvěny prostřednictvím knihovny speex"
 
@@ -910,32 +1542,32 @@ msgstr "Kodér µ-law ITU-G.711"
 msgid "ITU-G.711 ulaw decoder"
 msgstr "Dekodér µ-law ITU-G.711"
 
-#: ../mediastreamer2/src/videodec.c:669 ../mediastreamer2/src/videodec.c:685
-#: ../mediastreamer2/src/videodec.c:768 ../mediastreamer2/src/videodec.c:784
+#: ../mediastreamer2/src/videodec.c:713 ../mediastreamer2/src/videodec.c:729
+#: ../mediastreamer2/src/videodec.c:812 ../mediastreamer2/src/videodec.c:828
 msgid "A H.263 decoder using ffmpeg library"
 msgstr "Dekodér H.263 používající knihovnu ffmpeg"
 
-#: ../mediastreamer2/src/videodec.c:702
+#: ../mediastreamer2/src/videodec.c:746
 msgid "A MPEG4 decoder using ffmpeg library"
 msgstr "Dekodér MPEG4 používající knihovnu ffmpeg"
 
-#: ../mediastreamer2/src/videodec.c:718
+#: ../mediastreamer2/src/videodec.c:762
 msgid "A RTP/JPEG decoder using ffmpeg library"
 msgstr "Dekodér RTP/JPEG používající knihovnu ffmpeg"
 
-#: ../mediastreamer2/src/videodec.c:734
+#: ../mediastreamer2/src/videodec.c:778
 msgid "A MJPEG decoder using ffmpeg library"
 msgstr "Dekodér MPEG používající knihovnu ffmpeg"
 
-#: ../mediastreamer2/src/videodec.c:750
+#: ../mediastreamer2/src/videodec.c:794
 msgid "A snow decoder using ffmpeg library"
 msgstr "Dekodér snow používající knihovnu ffmpeg"
 
-#: ../mediastreamer2/src/videoenc.c:861 ../mediastreamer2/src/videoenc.c:943
+#: ../mediastreamer2/src/videoenc.c:908 ../mediastreamer2/src/videoenc.c:990
 msgid "A video H.263 encoder using ffmpeg library."
 msgstr "Kodér H.263 používající knihovnu ffmpeg."
 
-#: ../mediastreamer2/src/videoenc.c:877
+#: ../mediastreamer2/src/videoenc.c:924
 msgid ""
 "A video H.263 encoder using ffmpeg library. It is compliant with old RFC2190 "
 "spec."
@@ -943,26 +1575,26 @@ msgstr ""
 "Kodér H.263 videa používající knihovnu ffmpeg. Vyhovuje staré specifikaci "
 "RFC 2190."
 
-#: ../mediastreamer2/src/videoenc.c:893 ../mediastreamer2/src/videoenc.c:975
+#: ../mediastreamer2/src/videoenc.c:940 ../mediastreamer2/src/videoenc.c:1022
 msgid "A video MPEG4 encoder using ffmpeg library."
 msgstr "Kodér MPEG4 videa používající knihovnu ffmpeg."
 
-#: ../mediastreamer2/src/videoenc.c:909
+#: ../mediastreamer2/src/videoenc.c:956
 msgid "A video snow encoder using ffmpeg library."
 msgstr "Kodér snow videa používající knihovnu ffmpeg."
 
-#: ../mediastreamer2/src/videoenc.c:925
+#: ../mediastreamer2/src/videoenc.c:972
 msgid "A RTP/MJPEG encoder using ffmpeg library."
 msgstr "Kodér RTP/MJPEG používající knihovnu ffmpeg."
 
-#: ../mediastreamer2/src/videoenc.c:959
+#: ../mediastreamer2/src/videoenc.c:1006
 msgid ""
 "A video H.263 encoder using ffmpeg library, compliant with old RFC2190 spec."
 msgstr ""
 "Kodér H.263 videa používající knihovnu ffmpeg, vyhovuje staré specifikaci "
 "RFC 2190."
 
-#: ../mediastreamer2/src/videoenc.c:991
+#: ../mediastreamer2/src/videoenc.c:1038
 msgid ""
 "The snow codec is royalty-free and is open-source. \n"
 "It uses innovative techniques that makes it one of most promising video "
@@ -976,12 +1608,13 @@ msgstr ""
 "Avšak stále se vyvíjí, je trochu nestabilní a kompatibilita s ostatními "
 "verzemi není zaručena."
 
-#: ../mediastreamer2/src/videoenc.c:1011
+#: ../mediastreamer2/src/videoenc.c:1058
 msgid "A MJPEG encoder using ffmpeg library."
 msgstr "Kodér MJPEG používající knihovnu ffmpeg."
 
-#: ../mediastreamer2/src/videoout.c:1812 ../mediastreamer2/src/videoout.c:1830
-msgid "A generic video display"
+#: ../mediastreamer2/src/videoout.c:933
+#, fuzzy
+msgid "A SDL-based video display"
 msgstr "Obecné zobrazování videa"
 
 #: ../mediastreamer2/src/wincevideods.c:969
@@ -1010,9 +1643,81 @@ msgstr ""
 msgid "Parametric sound equalizer."
 msgstr "Parametrický ekvalizér zvuku."
 
-#: ../mediastreamer2/src/msdscap-mingw.cc:1003
+#: ../mediastreamer2/src/msdscap-mingw.cc:1038
 msgid "A webcam grabber based on directshow."
 msgstr "Snímač kamer postavený na directshow."
+
+#: ../mediastreamer2/src/drawdib-display.c:552
+#: ../mediastreamer2/src/drawdib-display.c:570
+#, fuzzy
+msgid "A video display based on windows DrawDib api"
+msgstr "Zobrazovaní videa v SDL okně"
+
+#: ../mediastreamer2/src/audiomixer.c:192
+#: ../mediastreamer2/src/audiomixer.c:211
+#, fuzzy
+msgid "A filter that mixes down 16 bit sample audio streams"
+msgstr "Filtr, který měří hlasitost na 16b zvukovém PCM proudu"
+
+#: ../mediastreamer2/src/chanadapt.c:110 ../mediastreamer2/src/chanadapt.c:128
+#, fuzzy
+msgid "A filter that converts from mono to stereo and vice versa."
+msgstr "Filtr, který měří a řídí hlasitost zvuku"
+
+#: ../mediastreamer2/src/itc.c:97 ../mediastreamer2/src/itc.c:115
+#: ../mediastreamer2/src/itc.c:197 ../mediastreamer2/src/itc.c:215
+#, fuzzy
+msgid "Inter ticker communication filter."
+msgstr "Chyba komunikace se serverem."
+
+#: ../mediastreamer2/src/extdisplay.c:62 ../mediastreamer2/src/extdisplay.c:79
+msgid "A display filter sending the buffers to draw to the upper layer"
+msgstr ""
+
+#: ../mediastreamer2/src/msiounit.c:650
+#, fuzzy
+msgid "Sound capture filter for MacOS X Audio Unit Service"
+msgstr "Filtr zachytávání zvuku přes MacOS X službu zvukové fronty"
+
+#: ../mediastreamer2/src/msiounit.c:664
+#, fuzzy
+msgid "Sound playback filter for MacOS X Audio Unit Service"
+msgstr "Filtr přehrávání zvuku přes MacOS X službu zvukové fronty"
+
+#: ../mediastreamer2/src/x11video.c:562
+#, fuzzy
+msgid "A video display using X11+Xv"
+msgstr "Zobrazovaní videa v SDL okně"
+
+#. .id=
+#. .name=
+#. .text=
+#: ../mediastreamer2/src/msandroid.cpp:370
+#, fuzzy
+msgid "Sound capture filter for Android"
+msgstr "Zvukový zachytávací filtr pro ovladače OSS"
+
+#. .id=
+#. .name=
+#. .text=
+#: ../mediastreamer2/src/msandroid.cpp:667
+#, fuzzy
+msgid "Sound playback filter for Android"
+msgstr "Zvukový přehrávací filtr pro ovladače OSS"
+
+#: ../mediastreamer2/src/msandroidvideo.cpp:134
+#, fuzzy
+msgid "A filter that captures Android video."
+msgstr "Filtr, který měří a řídí hlasitost zvuku"
+
+#~ msgid ""
+#~ "Your machine appears to be connected to an IPv6 network. By default "
+#~ "linphone always uses IPv4. Please update your configuration if you want "
+#~ "to use IPv6"
+#~ msgstr ""
+#~ "Zdá se, že váš počítač je připojen do IPv6 sítě. Standardně linphone "
+#~ "používá pouze IPv4. Prosím, změňte nastavení programu, pokud chcete "
+#~ "používat IPv6."
 
 #~ msgid "Call answered - connected."
 #~ msgstr "Hovoř přijat – spojen."
@@ -1020,146 +1725,11 @@ msgstr "Snímač kamer postavený na directshow."
 #~ msgid "Incoming call from %s"
 #~ msgstr "Příchozí hovor od %s"
 
-#~ msgid "#"
-#~ msgstr "#"
-
-#~ msgid "*"
-#~ msgstr "*"
-
-#~ msgid "0"
-#~ msgstr "0"
-
-#~ msgid "1"
-#~ msgstr "1"
-
-#~ msgid "2"
-#~ msgstr "2"
-
-#~ msgid "3"
-#~ msgstr "3"
-
-#~ msgid "4"
-#~ msgstr "4"
-
-#~ msgid "5"
-#~ msgstr "5"
-
-#~ msgid "6"
-#~ msgstr "6"
-
-#~ msgid "7"
-#~ msgstr "7"
-
-#~ msgid "8"
-#~ msgstr "8"
-
-#~ msgid "9"
-#~ msgstr "9"
-
-#~ msgid "<b>Add contacts from directory</b>"
-#~ msgstr "<b>Přidat kontakty z adresáře</b>"
-
-#~ msgid "<b>Contact list</b>"
-#~ msgstr "<b>Seznam kontaktů</b>"
-
-#~ msgid "<b>Welcome !</b>"
-#~ msgstr "<b>Vítejte!</b>"
-
-#~ msgid "A"
-#~ msgstr "A"
-
-#~ msgid ""
-#~ "ADSL\n"
-#~ "Fiber Channel"
-#~ msgstr ""
-#~ "ADSL\n"
-#~ "Fiber Channel"
-
-#~ msgid ""
-#~ "All users\n"
-#~ "Online users"
-#~ msgstr ""
-#~ "všech uživatelích\n"
-#~ "připojených uživatelích"
-
 #~ msgid "Assistant"
 #~ msgstr "Průvodce"
 
-#~ msgid "Audio & Video"
-#~ msgstr "Zvuk i obraz"
-
-#~ msgid "Audio only"
-#~ msgstr "Pouze zvuk"
-
-#~ msgid "Automatically log me in"
-#~ msgstr "Přihlašovat mě automaticky"
-
-#~ msgid "B"
-#~ msgstr "B"
-
-#~ msgid "C"
-#~ msgstr "C"
-
 #~ msgid "Call Details"
 #~ msgstr "Informace o hovoru"
-
-#~ msgid "Call history"
-#~ msgstr "Historie volání"
-
-#~ msgid "Check for updates"
-#~ msgstr "Vyhledat aktualizace"
-
-#~ msgid "Contacts"
-#~ msgstr "Kontakty"
-
-#~ msgid "D"
-#~ msgstr "D"
-
-#~ msgid "Default"
-#~ msgstr "Výchozí"
-
-#~ msgid "Duration"
-#~ msgstr "Délka"
-
-#~ msgid "Duration:"
-#~ msgstr "Délka:"
-
-#~ msgid "Enable self-view"
-#~ msgstr "Zobrazovat sám sebe"
-
-#~ msgid "Enter username, phone number, or full sip address"
-#~ msgstr ""
-#~ "Zadejte uživatelské jméno, telefonní číslo nebo plnou sipovou adresu"
-
-#~ msgid "Homepage"
-#~ msgstr "Domovská stránka"
-
-#~ msgid "In call"
-#~ msgstr "Telefonuje se"
-
-#~ msgid "Internet connection:"
-#~ msgstr "Připojení k Internetu:"
-
-#~ msgid "Keypad"
-#~ msgstr "Klávesnice"
-
-#~ msgid "Login information"
-#~ msgstr "Informace o přihlášení"
-
-#~ msgid "Lookup:"
-#~ msgstr "Hledat:"
-
-#~ msgid "My current identity:"
-#~ msgstr "Moje současná totožnost:"
-
-#~ msgid "Password"
-#~ msgstr "Heslo"
-
-#~ msgid "SIP address or phone number:"
-#~ msgstr "SIP adresa nebo telefonní číslo:"
-
-#~ msgid "Search"
-#~ msgstr "Hledat"
 
 #~ msgid "Show debug messages"
 #~ msgstr "Zobrazit ladicí zprávy"
@@ -1170,170 +1740,20 @@ msgstr "Snímač kamer postavený na directshow."
 #~ msgid "Terminate call"
 #~ msgstr "Ukončit hovor"
 
-#~ msgid "Username"
-#~ msgstr "Uživatelské jméno"
-
-#~ msgid "_Linphone"
-#~ msgstr "_Linphone"
-
 #~ msgid "_Modes"
 #~ msgstr "Reži_my"
-
-#~ msgid "in"
-#~ msgstr "ve"
-
-#~ msgid "About linphone"
-#~ msgstr "O Linphonu"
-
-# FIXME: standart
-#~ msgid "An internet video phone using the standard SIP (rfc3261) protocol."
-#~ msgstr ""
-#~ "Internetový videofon používající standardní protokol SIP (RFC 3261)."
 
 #~ msgid "Created by Simon Morlat\n"
 #~ msgstr "Vytvořil Simon Morlat\n"
 
-#~ msgid ""
-#~ "fr: Simon Morlat\n"
-#~ "en: Simon Morlat and Delphine Perreau\n"
-#~ "it: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>\n"
-#~ "de: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>\n"
-#~ "sv: Daniel Nylander <po@danielnylander.se>\n"
-#~ "es: Jesus Benitez <gnelson at inMail dot sk>\n"
-#~ "ja: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\n"
-#~ "pt_BR: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\n"
-#~ "pl: Robert Nasiadek <darkone@darkone.pl>\n"
-#~ "cs: Petr Pisar <petr.pisar@atlas.cz>\n"
-#~ "hu: anonymous\n"
-#~ msgstr ""
-#~ "fr: Simon Morlat\n"
-#~ "en: Simon Morlat a Delphine Perreau\n"
-#~ "it: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>\n"
-#~ "de: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>\n"
-#~ "sv: Daniel Nylander <po@danielnylander.se>\n"
-#~ "es: Jesus Benitez <gnelson at inMail dot sk>\n"
-#~ "ja: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\n"
-#~ "pt_BR: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\n"
-#~ "pl: Robert Nasiadek <darkone@darkone.pl>\n"
-#~ "cs: Petr Písař <petr.pisar@atlas.cz>\n"
-#~ "hu: anonym\n"
-
-#~ msgid "<b>Contact information</b>"
-#~ msgstr "<b>Informace o kontaktu</b>"
-
-#~ msgid "Allow this contact to see my presence status"
-#~ msgstr "Dovolit tomuto kontaktu, aby viděl můj stav přítomnosti"
-
-#~ msgid "SIP Address"
-#~ msgstr "SIP adresa"
-
-#~ msgid "Show this contact presence status"
-#~ msgstr "U tohoto kontaktu zobrazovat stav přítomnosti"
-
-#~ msgid "Linphone debug window"
-#~ msgstr "Ladicí okno Linphonu"
-
-#~ msgid "Linphone - Authentication required"
-#~ msgstr "Linphone – Ověření totožnosti vyžadováno"
-
-#~ msgid "Password:"
-#~ msgstr "Heslo:"
-
-#~ msgid "Please enter the domain password"
-#~ msgstr "Prosím, zadejte heslo pro doménu"
-
-#~ msgid "UserID"
-#~ msgstr "Identifikátor uživatele"
-
-#~ msgid "Configure a SIP account"
-#~ msgstr "Nastavit SIP účet"
-
-#~ msgid "Linphone - Configure a SIP account"
-#~ msgstr "Linphone – Nastav SIP účet"
-
-#~ msgid "Publish presence information"
-#~ msgstr "Zveřejnit stav přítomnosti"
-
-#~ msgid "Register at startup"
-#~ msgstr "Zaregistrovat při spuštění"
-
-#~ msgid "Registration duration (sec):"
-#~ msgstr "Registrační období (s):"
-
-#~ msgid "Route (optional):"
-#~ msgstr "Směrování (volitelné):"
-
-#~ msgid "SIP Proxy address:"
-#~ msgstr "Adresa SIP proxy:"
-
-#~ msgid "Your SIP identity:"
-#~ msgstr "Vaše SIP totožnost:"
-
-#~ msgid "sip:"
-#~ msgstr "sip:"
-
-#~ msgid "Send"
-#~ msgstr "Odeslat"
-
 #~ msgid "Accept"
 #~ msgstr "Přijmout"
-
-#~ msgid "Decline"
-#~ msgstr "Odmítnout"
 
 #~ msgid "Incoming call from"
 #~ msgstr "Příchozí hovor od"
 
 #~ msgid "Linphone - Incoming call"
 #~ msgstr "Linphone – Příchozí hovor"
-
-#~ msgid "0 stands for \"unlimited\""
-#~ msgstr "0 znamená „neomezeno“"
-
-#~ msgid "<b>Audio</b>"
-#~ msgstr "<b>Zvuk</b>"
-
-#~ msgid "<b>Bandwidth control</b>"
-#~ msgstr "<b>Využití šířky pásma</b>"
-
-#~ msgid "<b>Codecs</b>"
-#~ msgstr "<b>Kodeky</b>"
-
-#~ msgid "<b>Default identity</b>"
-#~ msgstr "<b>Implicitní totožnost</b>"
-
-#~ msgid "<b>Language</b>"
-#~ msgstr "<b>Jazyk</b>"
-
-#~ msgid "<b>Level</b>"
-#~ msgstr "<b>Úroveň</b>"
-
-#~ msgid "<b>NAT and Firewall</b>"
-#~ msgstr "<b>NAT a firewall</b>"
-
-#~ msgid "<b>Ports</b>"
-#~ msgstr "<b>Porty</b>"
-
-#~ msgid "<b>Privacy</b>"
-#~ msgstr "<b>Soukromí</b>"
-
-#~ msgid "<b>Proxy accounts</b>"
-#~ msgstr "<b>Proxy účty</b>"
-
-#~ msgid "<b>Transport</b>"
-#~ msgstr "<b>Přenos</b>"
-
-#~ msgid "<b>Video</b>"
-#~ msgstr "<b>Obraz</b>"
-
-#~ msgid "ALSA special device (optional):"
-#~ msgstr "Zvláštní ALSA zařízení (volitelné):"
-
-#~ msgid "Add"
-#~ msgstr "Přidat"
-
-#~ msgid "Audio RTP/UDP:"
-#~ msgstr "Zvukový RTP/UDP:"
 
 #~ msgid ""
 #~ "Audio codecs\n"
@@ -1342,150 +1762,8 @@ msgstr "Snímač kamer postavený na directshow."
 #~ "Kodeky zvuku\n"
 #~ "Kodeky obrazu"
 
-#~ msgid "Behind NAT / Firewall (specify gateway IP below)"
-#~ msgstr "Za NAT/firewallem (adresu brány zadejte níže)"
-
-#~ msgid "Behind NAT / Firewall (use STUN to resolve)"
-#~ msgstr "Za NAT/firewallem (adresu určí STUN)"
-
-#~ msgid "CIF"
-#~ msgstr "CIF"
-
-#~ msgid "Capture device:"
-#~ msgstr "Zařízení pro nahrávání:"
-
-#~ msgid "Codecs"
-#~ msgstr "Kodeky"
-
-#~ msgid "Direct connection to the Internet"
-#~ msgstr "Přímé připojení do Internetu"
-
-#~ msgid "Disable"
-#~ msgstr "Zakázat"
-
-#~ msgid "Done"
-#~ msgstr "Hotovo"
-
-#~ msgid "Download speed limit in Kbit/sec:"
-#~ msgstr "Omezení příchozí rychlosti (kb/s):"
-
-#~ msgid "Edit"
-#~ msgstr "Upravit"
-
-#~ msgid "Enable"
-#~ msgstr "Povolit"
-
-#~ msgid "Enable echo cancellation"
-#~ msgstr "Zapnout potlačení ozvěny"
-
-#~ msgid "Erase all passwords"
-#~ msgstr "Vymazat všechna hesla"
-
-#~ msgid "Manage SIP Accounts"
-#~ msgstr "Nastavení SIP účtů"
-
-#~ msgid "Multimedia settings"
-#~ msgstr "Nastavení multimédií"
-
-#~ msgid "Network settings"
-#~ msgstr "Nastavení sítě"
-
-#~ msgid "Playback device:"
-#~ msgstr "Zařízení pro přehrávání:"
-
-#~ msgid "Prefered video resolution:"
-#~ msgstr "Upřednostňované rozlišení obrazu:"
-
-#~ msgid "Public IP address:"
-#~ msgstr "Veřejná IP adresa:"
-
-#~ msgid ""
-#~ "Register to FONICS\n"
-#~ "virtual network !"
-#~ msgstr ""
-#~ "Zaregistrovat se do\n"
-#~ "virtuální sítě FONICS!"
-
-#~ msgid "Remove"
-#~ msgstr "Odstranit"
-
-#~ msgid "Ring device:"
-#~ msgstr "Zařízení pro vyzvánění:"
-
-#~ msgid "Ring sound:"
-#~ msgstr "Vyzvánění:"
-
-#~ msgid "SIP (UDP):"
-#~ msgstr "SIP (UDP):"
-
-#~ msgid "Send DTMFs as SIP info"
-#~ msgstr "Odesílat tóny DTMF jako SIP INFO zprávy"
-
-#~ msgid "Set Maximum Transmission Unit:"
-#~ msgstr "Nastavit MTU (největší přenositelná zpráva):"
-
-#~ msgid "Settings"
-#~ msgstr "Nastavení"
-
-#~ msgid "Show advanced settings"
-#~ msgstr "Zobrazit podrobnější nastavení"
-
-#~ msgid "Stun server:"
-#~ msgstr "STUN server:"
-
-#~ msgid "This section defines your SIP address when not using a SIP account"
-#~ msgstr "Tento oddíl určuje vaši SIP adresu, když se nepoužívá žádný účet"
-
-#~ msgid "Upload speed limit in Kbit/sec:"
-#~ msgstr "Omezení odchozí rychlosti (kb/s):"
-
-#~ msgid "Use IPv6 instead of IPv4"
-#~ msgstr "Používat IPv6 místo IPv4"
-
-#~ msgid "User interface"
-#~ msgstr "Uživatelské rozhraní"
-
-#~ msgid "Video RTP/UDP:"
-#~ msgstr "Obrazový RTP/UDP:"
-
-#~ msgid "Video input device:"
-#~ msgstr "Vstupní zařízení obrazu:"
-
-#~ msgid "Your display name (eg: John Doe):"
-#~ msgstr "Vaše zobrazované jméno (např. Jan Novák):"
-
-#~ msgid "Your resulting SIP address:"
-#~ msgstr "Vaše výsledná SIP adresa:"
-
-#~ msgid "Your username:"
-#~ msgstr "Vaše uživatelské jméno:"
-
-#~ msgid "a sound card\n"
-#~ msgstr "zvuková karta\n"
-
-#~ msgid "default camera"
-#~ msgstr "implicitní kamera"
-
-#~ msgid "default soundcard"
-#~ msgstr "implicitní zvuková karta"
-
 #~ msgid "default soundcard\n"
 #~ msgstr "implicitní zvuková karta\n"
-
-#~ msgid "<b>Search somebody</b>"
-#~ msgstr "<b>Hledat někoho</b>"
-
-#~ msgid "Add to my list"
-#~ msgstr "Přidat na svůj seznam"
-
-#~ msgid "Search contacts in directory"
-#~ msgstr "Hledat kontakty v adresáři"
-
-#~ msgid "Linphone"
-#~ msgstr "Linphone"
-
-#~ msgid "Please wait"
-#~ msgstr "Prosím, čekejte"
 
 #~ msgid ""
 #~ "Remote end seems to have disconnected, the call is going to be closed."
@@ -1567,9 +1845,6 @@ msgstr "Snímač kamer postavený na directshow."
 #~ msgid "_View"
 #~ msgstr "_Zobrazit"
 
-#~ msgid "A filter to make level measurements on 16 bits pcm audio stream"
-#~ msgstr "Filtr, který měří hlasitost na 16b zvukovém PCM proudu"
-
 #~ msgid "A video for macosx compatible source filter to stream pictures."
 #~ msgstr "Zdrojový filtr kompatibilní s MacOS X videem proudující obrázky."
 
@@ -1606,9 +1881,6 @@ msgstr "Snímač kamer postavený na directshow."
 
 #~ msgid "Exit"
 #~ msgstr "Ukončit"
-
-#~ msgid "Help"
-#~ msgstr "Nápověda"
 
 #~ msgid "Shows the address book"
 #~ msgstr "Zobrazit adresář"
@@ -1850,9 +2122,6 @@ msgstr "Snímač kamer postavený na directshow."
 
 #~ msgid "List of audio codecs, in order of preference:"
 #~ msgstr "Seznam audio kodeků podle preference:"
-
-#~ msgid "Video Codecs"
-#~ msgstr "Kodeky obrazu"
 
 #~ msgid ""
 #~ "Note: Codecs in red are not usable regarding to your connection type to "

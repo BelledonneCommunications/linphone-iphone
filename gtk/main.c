@@ -1431,8 +1431,11 @@ int main(int argc, char *argv[]){
 	g_object_set(settings, "gtk-menu-images", TRUE, NULL);
 	g_object_set(settings, "gtk-button-images", TRUE, NULL);
 
-	if (workingdir!=NULL)
-		chdir(workingdir);
+	if (workingdir!=NULL){
+		if (chdir(workingdir)==-1){
+			g_error("Could not change directory to %s : %s",workingdir,strerror(errno));
+		}
+	}
 
 	/* Now, look for the factory configuration file, we do it this late
 		 since we want to have had time to change directory and to parse

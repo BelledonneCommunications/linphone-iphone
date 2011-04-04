@@ -62,9 +62,6 @@ PACKAGE_WIN32_FILELIST=$(PACKAGE)-win32.filelist
 PACKAGE_BUNDLE_FILE=$(top_srcdir)/build/macos/$(PACKAGE).bundle
 
 EXTRA_DIST = config.rpath  BUGS linphone.kdevelop  \
-				intltool-extract.in	\
-				intltool-merge.in	\
-				intltool-update.in \
 				README.arm \
 				README.mingw \
 				README.macos \
@@ -75,7 +72,7 @@ EXTRA_DIST = config.rpath  BUGS linphone.kdevelop  \
 				$(LINPHONEDEPS_FILELIST) \
 				$(ISS_SCRIPT).in
 
-DISTCLEANFILES= intltool-extract intltool-merge intltool-update po/stamp-it po/.intltool-merge-cache $(ISS_SCRIPT) $(PACKAGE_WIN32_FILELIST)
+DISTCLEANFILES= $(ISS_SCRIPT) $(PACKAGE_WIN32_FILELIST)
 
 CLEANFILES=Portfile Portfile-devel
 

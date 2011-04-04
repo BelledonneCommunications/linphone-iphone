@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-02-07 10:59+0100\n"
+"POT-Creation-Date: 2011-04-05 00:37+0200\n"
 "PO-Revision-Date: 2009-02-17 15:22+0100\n"
 "Last-Translator: Emmanuel Frécon <emmanuel.frecon@myjoice.com>\n"
 "Language-Team: SWEDISH <SE@li.org>\n"
@@ -42,7 +42,7 @@ msgstr "Samtalsmottagare"
 msgid "if set automatically answer incoming calls"
 msgstr "Om på, besvara automatisk alla inkommande samtal"
 
-#: ../gtk/main.c:103
+#: ../gtk/main.c:102
 msgid ""
 "Specifiy a working directory (should be the base of the installation, eg: c:"
 "\\Program Files\\Linphone)"
@@ -50,12 +50,12 @@ msgstr ""
 "Välj en arbetskatalog som ska vara basen för installationen, såsom C:"
 "\\Program\\Linphone"
 
-#: ../gtk/main.c:479
+#: ../gtk/main.c:442
 #, c-format
 msgid "Call with %s"
 msgstr "Samtal med %s"
 
-#: ../gtk/main.c:862
+#: ../gtk/main.c:825
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
@@ -68,7 +68,7 @@ msgstr ""
 "henne till din kontaktlista?\n"
 "Om du svarar nej, personen kommer att vara bannlyst."
 
-#: ../gtk/main.c:940
+#: ../gtk/main.c:903
 #, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
@@ -77,30 +77,34 @@ msgstr ""
 "Mata in ditt lösenord för användaren <i>%s</i>\n"
 "vid domänen <i>%s</i>:"
 
-#: ../gtk/main.c:1076
+#: ../gtk/main.c:1039
 msgid "Website link"
 msgstr "Webbsajt"
 
-#: ../gtk/main.c:1112
+#: ../gtk/main.c:1075
 msgid "Linphone - a video internet phone"
 msgstr "Linphone - en video Internet telefon"
 
-#: ../gtk/main.c:1131
+#: ../gtk/main.c:1094
 #, c-format
 msgid "%s (Default)"
 msgstr "%s (Default)"
 
-#: ../gtk/main.c:1382
+#: ../gtk/main.c:1186
+msgid "Windows"
+msgstr ""
+
+#: ../gtk/main.c:1363
 msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
 msgstr ""
 
-#: ../gtk/main.c:1441
+#: ../gtk/main.c:1422
 msgid "A free SIP video-phone"
 msgstr "En gratis SIP video-telefon"
 
-#: ../gtk/friendlist.c:192 ../gtk/propertybox.c:271
+#: ../gtk/friendlist.c:192 ../gtk/propertybox.c:271 ../gtk/contact.ui.h:3
 msgid "Name"
 msgstr "Namn"
 
@@ -371,7 +375,7 @@ msgid ""
 "and answer"
 msgstr ""
 
-#: ../gtk/incall_view.c:217
+#: ../gtk/incall_view.c:217 ../gtk/main.ui.h:20
 msgid "Answer"
 msgstr ""
 
@@ -398,7 +402,7 @@ msgstr "<b>Samtalet slut.</b>"
 msgid "Unmute"
 msgstr "Mikrofon på"
 
-#: ../gtk/incall_view.c:316
+#: ../gtk/incall_view.c:316 ../gtk/main.ui.h:42
 msgid "Mute"
 msgstr "Mikrofon av"
 
@@ -406,7 +410,7 @@ msgstr "Mikrofon av"
 msgid "Resume"
 msgstr ""
 
-#: ../gtk/incall_view.c:347
+#: ../gtk/incall_view.c:347 ../gtk/main.ui.h:46
 msgid "Pause"
 msgstr ""
 
@@ -415,26 +419,662 @@ msgstr ""
 msgid "Please enter login information for %s"
 msgstr "Mata in ditt lösenord för domänen %s:"
 
-#: ../coreapi/linphonecore.c:166
+#: ../gtk/main.ui.h:1
+msgid "#"
+msgstr ""
+
+#: ../gtk/main.ui.h:2
+msgid "*"
+msgstr ""
+
+#: ../gtk/main.ui.h:3
+msgid "0"
+msgstr ""
+
+#: ../gtk/main.ui.h:4
+msgid "1"
+msgstr ""
+
+#: ../gtk/main.ui.h:5
+msgid "2"
+msgstr ""
+
+#: ../gtk/main.ui.h:6
+msgid "3"
+msgstr ""
+
+#: ../gtk/main.ui.h:7
+msgid "4"
+msgstr ""
+
+#: ../gtk/main.ui.h:8
+msgid "5"
+msgstr ""
+
+#: ../gtk/main.ui.h:9
+msgid "6"
+msgstr ""
+
+#: ../gtk/main.ui.h:10
+msgid "7"
+msgstr ""
+
+#: ../gtk/main.ui.h:11
+msgid "8"
+msgstr ""
+
+#: ../gtk/main.ui.h:12
+msgid "9"
+msgstr ""
+
+#: ../gtk/main.ui.h:13
+msgid "<b>Add contacts from directory</b>"
+msgstr "<b>Lägg till kontakt ifrån katalogen</b>"
+
+#: ../gtk/main.ui.h:14
+msgid "<b>Contact list</b>"
+msgstr "<b>Kontaktlista</b>"
+
+#: ../gtk/main.ui.h:15
+msgid "<b>Welcome !</b>"
+msgstr "<b>Välkommen!</b>"
+
+#: ../gtk/main.ui.h:16
+msgid "A"
+msgstr ""
+
+#: ../gtk/main.ui.h:17
+msgid "ADSL"
+msgstr ""
+
+#: ../gtk/main.ui.h:18
+#, fuzzy
+msgid "Add contact"
+msgstr "Hittat kontakt %i"
+
+#: ../gtk/main.ui.h:19
+msgid "All users"
+msgstr ""
+
+#: ../gtk/main.ui.h:21
+#, fuzzy
+msgid "Audio & video"
+msgstr "Audio & Video"
+
+#: ../gtk/main.ui.h:22
+msgid "Audio only"
+msgstr "Enbart audio"
+
+#: ../gtk/main.ui.h:23
+msgid "Automatically log me in"
+msgstr "Logga mig automatiskt"
+
+#: ../gtk/main.ui.h:24
+msgid "B"
+msgstr ""
+
+#: ../gtk/main.ui.h:25 ../gtk/parameters.ui.h:20
+msgid "C"
+msgstr ""
+
+#: ../gtk/main.ui.h:26
+#, fuzzy
+msgid "Check _Updates"
+msgstr "Letar efter uppdateringar"
+
+#: ../gtk/main.ui.h:27
+#, fuzzy
+msgid "Contacts"
+msgstr "Kontaktar"
+
+#: ../gtk/main.ui.h:28
+msgid "D"
+msgstr ""
+
+#: ../gtk/main.ui.h:29
+msgid "Decline"
+msgstr "Avböj"
+
+#: ../gtk/main.ui.h:30
+#, fuzzy
+msgid "Default"
+msgstr "%s (Default)"
+
+#: ../gtk/main.ui.h:31
+msgid "Duration"
+msgstr "Förlopp"
+
+#: ../gtk/main.ui.h:32
+msgid "Duration:"
+msgstr "Förlopp:"
+
+#: ../gtk/main.ui.h:33
+msgid "Enable self-view"
+msgstr "Själv bild"
+
+#: ../gtk/main.ui.h:34
+msgid "Enter username, phone number, or full sip address"
+msgstr "Mata in användarnamn, telefonnummer eller SIP adress"
+
+#: ../gtk/main.ui.h:35
+#, fuzzy
+msgid "Fiber Channel"
+msgstr ""
+"ADSL\n"
+"Fiber"
+
+#: ../gtk/main.ui.h:36
+msgid "In call"
+msgstr "I samtal"
+
+#: ../gtk/main.ui.h:37
+msgid "Initiate a new call"
+msgstr ""
+
+#: ../gtk/main.ui.h:38
+msgid "Internet connection:"
+msgstr "Internet förbindelse:"
+
+#: ../gtk/main.ui.h:39
+msgid "Keypad"
+msgstr ""
+
+#: ../gtk/main.ui.h:40
+msgid "Login information"
+msgstr "Login information"
+
+#: ../gtk/main.ui.h:41
+msgid "Lookup:"
+msgstr "Sök:"
+
+#: ../gtk/main.ui.h:43
+msgid "My current identity:"
+msgstr "Min nuvarande identitet"
+
+#: ../gtk/main.ui.h:44
+#, fuzzy
+msgid "Online users"
+msgstr ""
+"Alla användare\n"
+"Online användare"
+
+#: ../gtk/main.ui.h:45
+msgid "Password"
+msgstr "Lösenord"
+
+#: ../gtk/main.ui.h:47
+msgid "SIP address or phone number:"
+msgstr "Användarnamn"
+
+#: ../gtk/main.ui.h:48
+msgid "Search"
+msgstr "Sök"
+
+#: ../gtk/main.ui.h:49
+#, fuzzy
+msgid "Show debug window"
+msgstr "Linphone debug fönster"
+
+#: ../gtk/main.ui.h:50
+msgid "Username"
+msgstr "Användarnamn"
+
+#: ../gtk/main.ui.h:51
+msgid "_Help"
+msgstr ""
+
+#: ../gtk/main.ui.h:52
+#, fuzzy
+msgid "_Homepage"
+msgstr "Hemsidan"
+
+#: ../gtk/main.ui.h:53
+msgid "_Linphone"
+msgstr "_inphone"
+
+#: ../gtk/main.ui.h:54
+msgid "_Options"
+msgstr ""
+
+#: ../gtk/main.ui.h:55
+msgid "in"
+msgstr "i"
+
+#: ../gtk/main.ui.h:56
+msgid "label"
+msgstr "etikett"
+
+#: ../gtk/about.ui.h:1
+msgid "(C) Belledonne Communications,2010\n"
+msgstr ""
+
+#: ../gtk/about.ui.h:3
+msgid "About linphone"
+msgstr "Apropå linphone"
+
+#: ../gtk/about.ui.h:4
+msgid "An internet video phone using the standard SIP (rfc3261) protocol."
+msgstr "En Internet video telefon baserat på SIP protokoll."
+
+#: ../gtk/about.ui.h:5
+msgid ""
+"fr: Simon Morlat\n"
+"en: Simon Morlat and Delphine Perreau\n"
+"it: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>\n"
+"de: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>\n"
+"sv: Daniel Nylander <po@danielnylander.se>\n"
+"es: Jesus Benitez <gnelson at inMail dot sk>\n"
+"ja: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\n"
+"pt_BR: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\n"
+"pl: Robert Nasiadek <darkone@darkone.pl>\n"
+"cs: Petr Pisar <petr.pisar@atlas.cz>\n"
+"hu: anonymous\n"
+msgstr ""
+
+#: ../gtk/contact.ui.h:1
+msgid "<b>Contact information</b>"
+msgstr "<b>Kontakt information</b>"
+
+#: ../gtk/contact.ui.h:2
+msgid "Allow this contact to see my presence status"
+msgstr "Tillåt den här kontakten att se min närvarostatus"
+
+#: ../gtk/contact.ui.h:4
+msgid "SIP Address"
+msgstr "SIP Adress"
+
+#: ../gtk/contact.ui.h:5
+msgid "Show this contact presence status"
+msgstr "Visa kontaktens närvarostatus"
+
+#: ../gtk/contact.ui.h:6 ../gtk/password.ui.h:5
+#, fuzzy
+msgid "gtk-cancel"
+msgstr "Kopplad"
+
+#: ../gtk/contact.ui.h:7 ../gtk/password.ui.h:6
+msgid "gtk-ok"
+msgstr ""
+
+#: ../gtk/log.ui.h:1
+msgid "Linphone debug window"
+msgstr "Linphone debug fönster"
+
+#: ../gtk/password.ui.h:1
+#, fuzzy
+msgid "Linphone - Authentication required"
+msgstr "Linphone - Autentisering krävs"
+
+#: ../gtk/password.ui.h:2
+msgid "Password:"
+msgstr "Lösenord:"
+
+#: ../gtk/password.ui.h:3
+msgid "Please enter the domain password"
+msgstr "Mata in lösenordet för domänen"
+
+#: ../gtk/password.ui.h:4
+msgid "UserID"
+msgstr "AnvändarID"
+
+#: ../gtk/call_logs.ui.h:1
+#, fuzzy
+msgid "Call back"
+msgstr "Ringer %s"
+
+#: ../gtk/call_logs.ui.h:2
+msgid "Call history"
+msgstr "Samtalshistorik"
+
+#: ../gtk/call_logs.ui.h:3
+msgid "Clear all"
+msgstr ""
+
+#: ../gtk/sip_account.ui.h:1
+msgid "Configure a SIP account"
+msgstr "Konfigurera ett SIP konto"
+
+#: ../gtk/sip_account.ui.h:2
+msgid "Linphone - Configure a SIP account"
+msgstr "Linphone - Konfigurera ett SIP konto"
+
+#: ../gtk/sip_account.ui.h:3
+msgid "Looks like sip:<proxy hostname>"
+msgstr ""
+
+#: ../gtk/sip_account.ui.h:4
+msgid "Looks like sip:<username>@<domain>"
+msgstr ""
+
+#: ../gtk/sip_account.ui.h:5
+msgid "Publish presence information"
+msgstr "Publicera närvaro information"
+
+#: ../gtk/sip_account.ui.h:6
+msgid "Register at startup"
+msgstr "Registrera vid start"
+
+#: ../gtk/sip_account.ui.h:7
+msgid "Registration duration (sec):"
+msgstr "Registreringsfrekvens (sek.):"
+
+#: ../gtk/sip_account.ui.h:8
+msgid "Route (optional):"
+msgstr "Route (tillval):"
+
+#: ../gtk/sip_account.ui.h:9
+msgid "SIP Proxy address:"
+msgstr "SIP Proxy adress:"
+
+#: ../gtk/sip_account.ui.h:10
+msgid "Your SIP identity:"
+msgstr "Din SIP identitet:"
+
+#: ../gtk/sip_account.ui.h:11
+msgid "sip:"
+msgstr "sip:"
+
+#: ../gtk/chatroom.ui.h:1
+msgid "Send"
+msgstr "Skicka"
+
+#: ../gtk/chatroom.ui.h:2
+#, fuzzy
+msgid "gtk-close"
+msgstr "Kopplad"
+
+#: ../gtk/parameters.ui.h:1
+msgid "0 stands for \"unlimited\""
+msgstr "0 står för \"utan begränsning\""
+
+#: ../gtk/parameters.ui.h:2
+msgid "<b>Audio</b>"
+msgstr "<b>Audio</b>"
+
+#: ../gtk/parameters.ui.h:3
+msgid "<b>Bandwidth control</b>"
+msgstr "<b>Bandbreddskontroll</b>"
+
+#: ../gtk/parameters.ui.h:4
+msgid "<b>Codecs</b>"
+msgstr "<b>Codecs</b>"
+
+#: ../gtk/parameters.ui.h:5
+msgid "<b>Default identity</b>"
+msgstr "<b>Default identitet</b>"
+
+#: ../gtk/parameters.ui.h:6
+msgid "<b>Language</b>"
+msgstr "<b>Språk</b>"
+
+#: ../gtk/parameters.ui.h:7
+msgid "<b>Level</b>"
+msgstr "<b>Nivå</b>"
+
+#: ../gtk/parameters.ui.h:8
+msgid "<b>NAT and Firewall</b>"
+msgstr "<b>NAT och Brandvägg</b>"
+
+#: ../gtk/parameters.ui.h:9
+msgid "<b>Ports</b>"
+msgstr "<b>Portar</b>"
+
+#: ../gtk/parameters.ui.h:10
+msgid "<b>Privacy</b>"
+msgstr "<b>Integritet</b>"
+
+#: ../gtk/parameters.ui.h:11
+msgid "<b>Proxy accounts</b>"
+msgstr "<b>Proxy konton</b>"
+
+#: ../gtk/parameters.ui.h:12
+msgid "<b>Transport</b>"
+msgstr "<b>Transport</b>"
+
+#: ../gtk/parameters.ui.h:13
+msgid "<b>Video</b>"
+msgstr "<b>Video</b>"
+
+#: ../gtk/parameters.ui.h:14
+msgid "ALSA special device (optional):"
+msgstr "ALSA speciell enhet (tillval):"
+
+#: ../gtk/parameters.ui.h:15
+msgid "Add"
+msgstr "Lägg till"
+
+#: ../gtk/parameters.ui.h:16
+msgid "Audio RTP/UDP:"
+msgstr ""
+
+#: ../gtk/parameters.ui.h:17
+#, fuzzy
+msgid "Audio codecs"
+msgstr ""
+"Audio codecs\n"
+"Video codecs"
+
+#: ../gtk/parameters.ui.h:18
+msgid "Behind NAT / Firewall (specify gateway IP below)"
+msgstr "Bakom en NAT / brandvägg (specificera gatewap IP adress nedan)"
+
+#: ../gtk/parameters.ui.h:19
+msgid "Behind NAT / Firewall (use STUN to resolve)"
+msgstr "Bakom en NAT / brandvägg (använd STUN för att avgöra adressen)"
+
+#: ../gtk/parameters.ui.h:21
+msgid "CIF"
+msgstr ""
+
+#: ../gtk/parameters.ui.h:22
+msgid "Capture device:"
+msgstr "Mikrofon enhet:"
+
+#: ../gtk/parameters.ui.h:23
+msgid "Codecs"
+msgstr "Codecs"
+
+#: ../gtk/parameters.ui.h:24
+msgid "Direct connection to the Internet"
+msgstr "Direkt förbindelse till Internet"
+
+#: ../gtk/parameters.ui.h:25
+msgid "Disable"
+msgstr "Inaktivera"
+
+#: ../gtk/parameters.ui.h:26
+msgid "Done"
+msgstr "Klar"
+
+#: ../gtk/parameters.ui.h:27
+msgid "Download speed limit in Kbit/sec:"
+msgstr "Max downstream bandbreddshastighet i kbit/sek:"
+
+#: ../gtk/parameters.ui.h:28
+msgid "Edit"
+msgstr "Editera"
+
+#: ../gtk/parameters.ui.h:29
+msgid "Enable"
+msgstr "Möjliggör"
+
+#: ../gtk/parameters.ui.h:30
+msgid "Enable echo cancellation"
+msgstr "Tillåta ekokancellering"
+
+#: ../gtk/parameters.ui.h:31
+msgid "Erase all passwords"
+msgstr "Glöm alla lösenord"
+
+#: ../gtk/parameters.ui.h:32
+msgid "Manage SIP Accounts"
+msgstr "Hantera SIP konton"
+
+#: ../gtk/parameters.ui.h:33
+msgid "Multimedia settings"
+msgstr "Multimedia inställningar"
+
+#: ../gtk/parameters.ui.h:34
+msgid "Network settings"
+msgstr "Nätverksinställningar"
+
+#: ../gtk/parameters.ui.h:35
+msgid "Playback device:"
+msgstr "Uppspelningsenhet:"
+
+#: ../gtk/parameters.ui.h:36
+msgid "Prefered video resolution:"
+msgstr "Video upplösning:"
+
+#: ../gtk/parameters.ui.h:37
+msgid "Public IP address:"
+msgstr "Publik IP adress:"
+
+#: ../gtk/parameters.ui.h:38
+msgid ""
+"Register to FONICS\n"
+"virtual network !"
+msgstr ""
+"Registrera hos FONICS\n"
+"virtuella nätverk!"
+
+#: ../gtk/parameters.ui.h:40
+msgid "Remove"
+msgstr "Ta bort"
+
+#: ../gtk/parameters.ui.h:41
+msgid "Ring device:"
+msgstr "Ringning enhet:"
+
+#: ../gtk/parameters.ui.h:42
+msgid "Ring sound:"
+msgstr "Ring signal:"
+
+#: ../gtk/parameters.ui.h:43
+msgid "SIP (TCP):"
+msgstr ""
+
+#: ../gtk/parameters.ui.h:44
+msgid "SIP (UDP):"
+msgstr ""
+
+#: ../gtk/parameters.ui.h:45
+msgid "Send DTMFs as SIP info"
+msgstr "Kicka DTMF koder som SIP info"
+
+#: ../gtk/parameters.ui.h:46
+msgid "Set Maximum Transmission Unit:"
+msgstr "Välj MTU (Maximum Transmission Unit):"
+
+#: ../gtk/parameters.ui.h:47
+msgid "Settings"
+msgstr "Inställningar"
+
+#: ../gtk/parameters.ui.h:48
+msgid "Show advanced settings"
+msgstr "Visa avancerade inställningar"
+
+#: ../gtk/parameters.ui.h:49
+msgid "Stun server:"
+msgstr "STUN server:"
+
+#: ../gtk/parameters.ui.h:50
+msgid "This section defines your SIP address when not using a SIP account"
+msgstr ""
+"Denna sektion specificerar din SIP adress när du inte använder ett SIP konto"
+
+#: ../gtk/parameters.ui.h:51
+msgid "Upload speed limit in Kbit/sec:"
+msgstr "Max upstream bandbreddshastighet i kbit/sek:"
+
+#: ../gtk/parameters.ui.h:52
+msgid "Use IPv6 instead of IPv4"
+msgstr "Använd IPv6 istället av IPv4"
+
+#: ../gtk/parameters.ui.h:53
+msgid "User interface"
+msgstr "Användarinterface"
+
+#: ../gtk/parameters.ui.h:54
+msgid "Video RTP/UDP:"
+msgstr ""
+
+#: ../gtk/parameters.ui.h:55
+#, fuzzy
+msgid "Video codecs"
+msgstr ""
+"Audio codecs\n"
+"Video codecs"
+
+#: ../gtk/parameters.ui.h:56
+msgid "Video input device:"
+msgstr "Video ingångsenhet:"
+
+#: ../gtk/parameters.ui.h:57
+msgid "Your display name (eg: John Doe):"
+msgstr "Ditt synliga namn, e.g. Kalle Karlsson:"
+
+#: ../gtk/parameters.ui.h:58
+msgid "Your resulting SIP address:"
+msgstr "Din SIP adress:"
+
+#: ../gtk/parameters.ui.h:59
+msgid "Your username:"
+msgstr "Ditt användarnamn:"
+
+#: ../gtk/parameters.ui.h:60
+#, fuzzy
+msgid "a sound card"
+msgstr "ett ljud kort\n"
+
+#: ../gtk/parameters.ui.h:61
+msgid "default camera"
+msgstr "default kamera"
+
+#: ../gtk/parameters.ui.h:62
+msgid "default soundcard"
+msgstr "default ljudkort"
+
+#: ../gtk/buddylookup.ui.h:1
+msgid "<b>Search somebody</b>"
+msgstr "<b>Sök efter kontakter</b>"
+
+#: ../gtk/buddylookup.ui.h:2
+msgid "Add to my list"
+msgstr "Lägg till min lista"
+
+#: ../gtk/buddylookup.ui.h:3
+msgid "Search contacts in directory"
+msgstr "Sök för kontakter i katalogen"
+
+#: ../gtk/waiting.ui.h:1
+msgid "Linphone"
+msgstr "Linphone"
+
+#: ../gtk/waiting.ui.h:2
+msgid "Please wait"
+msgstr "Vänta"
+
+#: ../coreapi/linphonecore.c:165
 #, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."
 msgstr[0] "Du har %i missat samtal"
 msgstr[1] "Du har %i missade samtal"
 
-#: ../coreapi/linphonecore.c:207
+#: ../coreapi/linphonecore.c:206
 msgid "aborted"
 msgstr "avbrytade"
 
-#: ../coreapi/linphonecore.c:210
+#: ../coreapi/linphonecore.c:209
 msgid "completed"
 msgstr "avslutade"
 
-#: ../coreapi/linphonecore.c:213
+#: ../coreapi/linphonecore.c:212
 msgid "missed"
 msgstr "missade"
 
-#: ../coreapi/linphonecore.c:218
+#: ../coreapi/linphonecore.c:217
 #, c-format
 msgid ""
 "%s at %s\n"
@@ -449,35 +1089,27 @@ msgstr ""
 "Status: %s\n"
 "Längd: %i min %i sek\n"
 
-#: ../coreapi/linphonecore.c:219
+#: ../coreapi/linphonecore.c:218
 msgid "Incoming call"
 msgstr "Inkommande samtal"
 
-#: ../coreapi/linphonecore.c:219
+#: ../coreapi/linphonecore.c:218
 msgid "Outgoing call"
 msgstr "Utgående samtal"
 
-#: ../coreapi/linphonecore.c:501
-msgid ""
-"Your machine appears to be connected to an IPv6 network. By default linphone "
-"always uses IPv4. Please update your configuration if you want to use IPv6"
-msgstr ""
-"Din dator verkar vara kopplad till ett IPv6 nätverk. Default, använder "
-"linphone IPv4. Uppdatera din konfiguration om du vill använda IPv6."
-
-#: ../coreapi/linphonecore.c:994
+#: ../coreapi/linphonecore.c:998
 msgid "Ready"
 msgstr "Redo"
 
-#: ../coreapi/linphonecore.c:1768
+#: ../coreapi/linphonecore.c:1773
 msgid "Looking for telephone number destination..."
 msgstr "Leta efter telefonnummer för destinationen..."
 
-#: ../coreapi/linphonecore.c:1771
+#: ../coreapi/linphonecore.c:1776
 msgid "Could not resolve this number."
 msgstr "Kan inte nå dett nummer."
 
-#: ../coreapi/linphonecore.c:1815
+#: ../coreapi/linphonecore.c:1820
 msgid ""
 "Could not parse given sip address. A sip url usually looks like sip:"
 "user@domain"
@@ -485,51 +1117,51 @@ msgstr ""
 "Kan inte förstå angiven SIP adress. En SIP adress vanligen ser ut som sip:"
 "användare@domänen"
 
-#: ../coreapi/linphonecore.c:1962
+#: ../coreapi/linphonecore.c:1967
 msgid "Contacting"
 msgstr "Kontaktar"
 
-#: ../coreapi/linphonecore.c:1969
+#: ../coreapi/linphonecore.c:1974
 #, fuzzy
 msgid "Could not call"
 msgstr "Kunde inte ringa"
 
-#: ../coreapi/linphonecore.c:2076
+#: ../coreapi/linphonecore.c:2081
 msgid "Sorry, you have to pause or stop the current call first !"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:2081
+#: ../coreapi/linphonecore.c:2086
 msgid "Sorry, we have reached the maximum number of simultaneous calls"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:2205
+#: ../coreapi/linphonecore.c:2208
 msgid "Modifying call parameters..."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:2308
+#: ../coreapi/linphonecore.c:2311
 msgid "Connected."
 msgstr "Kopplad"
 
-#: ../coreapi/linphonecore.c:2331
+#: ../coreapi/linphonecore.c:2334
 #, fuzzy
 msgid "Call aborted"
 msgstr "avbrytade"
 
-#: ../coreapi/linphonecore.c:2371
+#: ../coreapi/linphonecore.c:2374
 msgid "Call ended"
 msgstr "Samtalet slut"
 
-#: ../coreapi/linphonecore.c:2453
+#: ../coreapi/linphonecore.c:2456
 #, fuzzy
 msgid "Could not pause the call"
 msgstr "Kunde inte ringa"
 
-#: ../coreapi/linphonecore.c:2457
+#: ../coreapi/linphonecore.c:2460
 #, fuzzy
 msgid "Pausing the current call..."
 msgstr "Nuvarande samtal"
 
-#: ../coreapi/linphonecore.c:2496
+#: ../coreapi/linphonecore.c:2499
 msgid "There is already a call in process, pause or stop it first."
 msgstr ""
 
@@ -557,7 +1189,7 @@ msgstr ""
 "saknas och linphone behöver ha det. Var god exekvera\n"
 "'modprobe snd-mixer-oss' som root för att ladda in den."
 
-#: ../coreapi/misc.c:520
+#: ../coreapi/misc.c:474
 msgid "Stun lookup in progress..."
 msgstr "STUN uppslagning pågår..."
 
@@ -625,7 +1257,7 @@ msgstr ""
 "SIP adressen som du matade in är inte rätt. Adressen borde se ut som sip:"
 "namn@domän, såsom sip:peter@exempel.se"
 
-#: ../coreapi/proxy.c:670
+#: ../coreapi/proxy.c:671
 #, c-format
 msgid "Could not login as %s"
 msgstr "Kunde inte logga in som %s"
@@ -647,114 +1279,119 @@ msgstr ""
 msgid "Remote ringing."
 msgstr "Ringer hos motparten."
 
-#: ../coreapi/callbacks.c:251
+#: ../coreapi/callbacks.c:242
+#, fuzzy
+msgid "Remote ringing..."
+msgstr "Ringer hos motparten."
+
+#: ../coreapi/callbacks.c:253
 msgid "Early media."
 msgstr "Tidig media"
 
-#: ../coreapi/callbacks.c:289
+#: ../coreapi/callbacks.c:291
 #, fuzzy, c-format
 msgid "Call with %s is paused."
 msgstr "Samtal med %s"
 
-#: ../coreapi/callbacks.c:300
+#: ../coreapi/callbacks.c:302
 #, c-format
 msgid "Call answered by %s - on hold."
 msgstr ""
 
-#: ../coreapi/callbacks.c:315
+#: ../coreapi/callbacks.c:317
 #, fuzzy
 msgid "Call resumed."
 msgstr "Samtalet slut"
 
-#: ../coreapi/callbacks.c:320
+#: ../coreapi/callbacks.c:322
 #, c-format
 msgid "Call answered by %s."
 msgstr ""
 
-#: ../coreapi/callbacks.c:381
+#: ../coreapi/callbacks.c:383
 msgid "We are being paused..."
 msgstr ""
 
-#: ../coreapi/callbacks.c:385
+#: ../coreapi/callbacks.c:387
 msgid "We have been resumed..."
 msgstr ""
 
-#: ../coreapi/callbacks.c:422
+#: ../coreapi/callbacks.c:424
 msgid "Call terminated."
 msgstr "Samtalet slut."
 
-#: ../coreapi/callbacks.c:429
+#: ../coreapi/callbacks.c:431
 msgid "User is busy."
 msgstr "Användare upptagen."
 
-#: ../coreapi/callbacks.c:430
+#: ../coreapi/callbacks.c:432
 msgid "User is temporarily unavailable."
 msgstr "Användaren temporärt inte tillgänglig."
 
 #. char *retrymsg=_("%s. Retry after %i minute(s).");
-#: ../coreapi/callbacks.c:432
+#: ../coreapi/callbacks.c:434
 msgid "User does not want to be disturbed."
 msgstr "Användaren vill inte bli störd."
 
-#: ../coreapi/callbacks.c:433
+#: ../coreapi/callbacks.c:435
 msgid "Call declined."
 msgstr "Samtalet avböjdes."
 
-#: ../coreapi/callbacks.c:445
+#: ../coreapi/callbacks.c:447
 #, fuzzy
 msgid "No response."
 msgstr "Inget svar inom angiven tid"
 
-#: ../coreapi/callbacks.c:449
+#: ../coreapi/callbacks.c:451
 msgid "Protocol error."
 msgstr ""
 
-#: ../coreapi/callbacks.c:465
+#: ../coreapi/callbacks.c:467
 #, fuzzy
 msgid "Redirected"
 msgstr "Omdirigerat till %s..."
 
-#: ../coreapi/callbacks.c:475
+#: ../coreapi/callbacks.c:477
 msgid "Not found"
 msgstr ""
 
-#: ../coreapi/callbacks.c:485
+#: ../coreapi/callbacks.c:487
 msgid "No common codecs"
 msgstr ""
 
-#: ../coreapi/callbacks.c:491
+#: ../coreapi/callbacks.c:493
 #, fuzzy
 msgid "Call failed."
 msgstr "Samtalet avböjdes."
 
-#: ../coreapi/callbacks.c:527
-#, fuzzy
-msgid "Authentication failure"
-msgstr "Linphone - Autentisering krävs"
-
-#: ../coreapi/callbacks.c:553
+#: ../coreapi/callbacks.c:557
 #, c-format
 msgid "Registration on %s successful."
 msgstr "Registrering hos %s lyckades."
 
-#: ../coreapi/callbacks.c:554
+#: ../coreapi/callbacks.c:558
 #, c-format
 msgid "Unregistration on %s done."
 msgstr "Avregistrering hos %s lyckades."
 
-#: ../coreapi/callbacks.c:570
+#: ../coreapi/callbacks.c:574
 msgid "no response timeout"
 msgstr "Inget svar inom angiven tid"
 
-#: ../coreapi/callbacks.c:573
+#: ../coreapi/callbacks.c:577
 #, c-format
 msgid "Registration on %s failed: %s"
 msgstr "Registrering hos %s mislyckades: %s"
 
-#: ../coreapi/callbacks.c:615
+#: ../coreapi/callbacks.c:619
 #, c-format
 msgid "We are transferred to %s"
 msgstr ""
+
+#: ../coreapi/sal_eXosip2.c:814 ../coreapi/sal_eXosip2.c:816
+#, fuzzy
+msgid "Authentication failure"
+msgstr "Linphone - Autentisering krävs"
 
 #: ../mediastreamer2/src/alaw.c:144 ../mediastreamer2/src/alaw.c:162
 msgid "ITU-G.711 alaw encoder"
@@ -780,7 +1417,7 @@ msgstr ""
 msgid "Sound playback filter for MacOS X Audio Queue Service"
 msgstr ""
 
-#: ../mediastreamer2/src/dtmfgen.c:274 ../mediastreamer2/src/dtmfgen.c:293
+#: ../mediastreamer2/src/dtmfgen.c:287 ../mediastreamer2/src/dtmfgen.c:306
 msgid "DTMF generator"
 msgstr "DTMF generare"
 
@@ -792,13 +1429,15 @@ msgstr "Hög hastighet GSM codec"
 msgid "The GSM codec"
 msgstr "GSM codec"
 
-#: ../mediastreamer2/src/macsnd.c:1083
-msgid "Sound capture filter for MacOS X Core Audio drivers"
-msgstr ""
+#: ../mediastreamer2/src/macsnd.c:627
+#, fuzzy
+msgid "Sound capture filter for MacOS X Audio Unit"
+msgstr "Fånga ljud med OSS drivrutiner"
 
-#: ../mediastreamer2/src/macsnd.c:1098
-msgid "Sound playback filter for MacOS X Core Audio drivers"
-msgstr ""
+#: ../mediastreamer2/src/macsnd.c:642
+#, fuzzy
+msgid "Sound playback filter for MacOS X Audio Unit"
+msgstr "Ljud utgång med OSS drivrutiner"
 
 #: ../mediastreamer2/src/msconf.c:787 ../mediastreamer2/src/msconf.c:805
 msgid "A filter to make conferencing"
@@ -837,7 +1476,7 @@ msgstr ""
 msgid "The free and wonderful speex codec"
 msgstr "Den fria speex codec"
 
-#: ../mediastreamer2/src/msvolume.c:527 ../mediastreamer2/src/msvolume.c:542
+#: ../mediastreamer2/src/msvolume.c:528 ../mediastreamer2/src/msvolume.c:543
 msgid "A filter that controls and measure sound volume"
 msgstr "Ett filter som kontrollerar och mäter ljudvolym"
 
@@ -865,7 +1504,7 @@ msgstr "En video storlek konverterare"
 msgid "a small video size converter"
 msgstr "En liten video storlek konverterare"
 
-#: ../mediastreamer2/src/speexec.c:276 ../mediastreamer2/src/speexec.c:294
+#: ../mediastreamer2/src/speexec.c:449 ../mediastreamer2/src/speexec.c:467
 msgid "Echo canceller using speex library"
 msgstr "Echo cancellering med hjälp av speex"
 
@@ -1024,12 +1663,12 @@ msgstr "Error med förbindelsen till servern."
 msgid "A display filter sending the buffers to draw to the upper layer"
 msgstr ""
 
-#: ../mediastreamer2/src/msiounit.c:619
+#: ../mediastreamer2/src/msiounit.c:650
 #, fuzzy
 msgid "Sound capture filter for MacOS X Audio Unit Service"
 msgstr "Fånga ljud med OSS drivrutiner"
 
-#: ../mediastreamer2/src/msiounit.c:633
+#: ../mediastreamer2/src/msiounit.c:664
 #, fuzzy
 msgid "Sound playback filter for MacOS X Audio Unit Service"
 msgstr "Ljud utgång med OSS drivrutiner"
@@ -1060,96 +1699,23 @@ msgstr "Ljud utgång med OSS drivrutiner"
 msgid "A filter that captures Android video."
 msgstr "Ett filter som kontrollerar och mäter ljudvolym"
 
+#~ msgid ""
+#~ "Your machine appears to be connected to an IPv6 network. By default "
+#~ "linphone always uses IPv4. Please update your configuration if you want "
+#~ "to use IPv6"
+#~ msgstr ""
+#~ "Din dator verkar vara kopplad till ett IPv6 nätverk. Default, använder "
+#~ "linphone IPv4. Uppdatera din konfiguration om du vill använda IPv6."
+
 #~ msgid "Incoming call from %s"
 #~ msgstr "Inkommande samtal från %s"
-
-#~ msgid "<b>Add contacts from directory</b>"
-#~ msgstr "<b>Lägg till kontakt ifrån katalogen</b>"
-
-#~ msgid "<b>Contact list</b>"
-#~ msgstr "<b>Kontaktlista</b>"
-
-#~ msgid "<b>Welcome !</b>"
-#~ msgstr "<b>Välkommen!</b>"
-
-#~ msgid ""
-#~ "ADSL\n"
-#~ "Fiber Channel"
-#~ msgstr ""
-#~ "ADSL\n"
-#~ "Fiber"
-
-#~ msgid ""
-#~ "All users\n"
-#~ "Online users"
-#~ msgstr ""
-#~ "Alla användare\n"
-#~ "Online användare"
 
 #~ msgid "Assistant"
 #~ msgstr "Assistent"
 
-#~ msgid "Audio & Video"
-#~ msgstr "Audio & Video"
-
-#~ msgid "Audio only"
-#~ msgstr "Enbart audio"
-
-#~ msgid "Automatically log me in"
-#~ msgstr "Logga mig automatiskt"
-
 #, fuzzy
 #~ msgid "Call Details"
 #~ msgstr "Ringer %s"
-
-#~ msgid "Call history"
-#~ msgstr "Samtalshistorik"
-
-#~ msgid "Check for updates"
-#~ msgstr "Letar efter uppdateringar"
-
-#, fuzzy
-#~ msgid "Contacts"
-#~ msgstr "Kontaktar"
-
-#~ msgid "Duration"
-#~ msgstr "Förlopp"
-
-#~ msgid "Duration:"
-#~ msgstr "Förlopp:"
-
-#~ msgid "Enable self-view"
-#~ msgstr "Själv bild"
-
-#~ msgid "Enter username, phone number, or full sip address"
-#~ msgstr "Mata in användarnamn, telefonnummer eller SIP adress"
-
-#~ msgid "Homepage"
-#~ msgstr "Hemsidan"
-
-#~ msgid "In call"
-#~ msgstr "I samtal"
-
-#~ msgid "Internet connection:"
-#~ msgstr "Internet förbindelse:"
-
-#~ msgid "Login information"
-#~ msgstr "Login information"
-
-#~ msgid "Lookup:"
-#~ msgstr "Sök:"
-
-#~ msgid "My current identity:"
-#~ msgstr "Min nuvarande identitet"
-
-#~ msgid "Password"
-#~ msgstr "Lösenord"
-
-#~ msgid "SIP address or phone number:"
-#~ msgstr "Användarnamn"
-
-#~ msgid "Search"
-#~ msgstr "Sök"
 
 #~ msgid "Show debug messages"
 #~ msgstr "Visa debugfönstret"
@@ -1160,89 +1726,14 @@ msgstr "Ett filter som kontrollerar och mäter ljudvolym"
 #~ msgid "Terminate call"
 #~ msgstr "Lägg på"
 
-#~ msgid "Username"
-#~ msgstr "Användarnamn"
-
-#~ msgid "_Linphone"
-#~ msgstr "_inphone"
-
 #~ msgid "_Modes"
 #~ msgstr "_Media"
-
-#~ msgid "in"
-#~ msgstr "i"
-
-#~ msgid "label"
-#~ msgstr "etikett"
-
-#~ msgid "About linphone"
-#~ msgstr "Apropå linphone"
-
-#~ msgid "An internet video phone using the standard SIP (rfc3261) protocol."
-#~ msgstr "En Internet video telefon baserat på SIP protokoll."
 
 #~ msgid "Created by Simon Morlat\n"
 #~ msgstr "Skapad av Simon Morlat\n"
 
-#~ msgid "<b>Contact information</b>"
-#~ msgstr "<b>Kontakt information</b>"
-
-#~ msgid "Allow this contact to see my presence status"
-#~ msgstr "Tillåt den här kontakten att se min närvarostatus"
-
-#~ msgid "SIP Address"
-#~ msgstr "SIP Adress"
-
-#~ msgid "Show this contact presence status"
-#~ msgstr "Visa kontaktens närvarostatus"
-
-#~ msgid "Linphone debug window"
-#~ msgstr "Linphone debug fönster"
-
-#~ msgid "Password:"
-#~ msgstr "Lösenord:"
-
-#~ msgid "Please enter the domain password"
-#~ msgstr "Mata in lösenordet för domänen"
-
-#~ msgid "UserID"
-#~ msgstr "AnvändarID"
-
-#~ msgid "Configure a SIP account"
-#~ msgstr "Konfigurera ett SIP konto"
-
-#~ msgid "Linphone - Configure a SIP account"
-#~ msgstr "Linphone - Konfigurera ett SIP konto"
-
-#~ msgid "Publish presence information"
-#~ msgstr "Publicera närvaro information"
-
-#~ msgid "Register at startup"
-#~ msgstr "Registrera vid start"
-
-#~ msgid "Registration duration (sec):"
-#~ msgstr "Registreringsfrekvens (sek.):"
-
-#~ msgid "Route (optional):"
-#~ msgstr "Route (tillval):"
-
-#~ msgid "SIP Proxy address:"
-#~ msgstr "SIP Proxy adress:"
-
-#~ msgid "Your SIP identity:"
-#~ msgstr "Din SIP identitet:"
-
-#~ msgid "sip:"
-#~ msgstr "sip:"
-
-#~ msgid "Send"
-#~ msgstr "Skicka"
-
 #~ msgid "Accept"
 #~ msgstr "Godkänn"
-
-#~ msgid "Decline"
-#~ msgstr "Avböj"
 
 #~ msgid "Incoming call from"
 #~ msgstr "Inkommande samtal från"
@@ -1250,195 +1741,8 @@ msgstr "Ett filter som kontrollerar och mäter ljudvolym"
 #~ msgid "Linphone - Incoming call"
 #~ msgstr "Linphone - Inkommande samtal"
 
-#~ msgid "0 stands for \"unlimited\""
-#~ msgstr "0 står för \"utan begränsning\""
-
-#~ msgid "<b>Audio</b>"
-#~ msgstr "<b>Audio</b>"
-
-#~ msgid "<b>Bandwidth control</b>"
-#~ msgstr "<b>Bandbreddskontroll</b>"
-
-#~ msgid "<b>Codecs</b>"
-#~ msgstr "<b>Codecs</b>"
-
-#~ msgid "<b>Default identity</b>"
-#~ msgstr "<b>Default identitet</b>"
-
-#~ msgid "<b>Language</b>"
-#~ msgstr "<b>Språk</b>"
-
-#~ msgid "<b>Level</b>"
-#~ msgstr "<b>Nivå</b>"
-
-#~ msgid "<b>NAT and Firewall</b>"
-#~ msgstr "<b>NAT och Brandvägg</b>"
-
-#~ msgid "<b>Ports</b>"
-#~ msgstr "<b>Portar</b>"
-
-#~ msgid "<b>Privacy</b>"
-#~ msgstr "<b>Integritet</b>"
-
-#~ msgid "<b>Proxy accounts</b>"
-#~ msgstr "<b>Proxy konton</b>"
-
-#~ msgid "<b>Transport</b>"
-#~ msgstr "<b>Transport</b>"
-
-#~ msgid "<b>Video</b>"
-#~ msgstr "<b>Video</b>"
-
-#~ msgid "ALSA special device (optional):"
-#~ msgstr "ALSA speciell enhet (tillval):"
-
-#~ msgid "Add"
-#~ msgstr "Lägg till"
-
-#~ msgid ""
-#~ "Audio codecs\n"
-#~ "Video codecs"
-#~ msgstr ""
-#~ "Audio codecs\n"
-#~ "Video codecs"
-
-#~ msgid "Behind NAT / Firewall (specify gateway IP below)"
-#~ msgstr "Bakom en NAT / brandvägg (specificera gatewap IP adress nedan)"
-
-#~ msgid "Behind NAT / Firewall (use STUN to resolve)"
-#~ msgstr "Bakom en NAT / brandvägg (använd STUN för att avgöra adressen)"
-
-#~ msgid "Capture device:"
-#~ msgstr "Mikrofon enhet:"
-
-#~ msgid "Codecs"
-#~ msgstr "Codecs"
-
-#~ msgid "Direct connection to the Internet"
-#~ msgstr "Direkt förbindelse till Internet"
-
-#~ msgid "Disable"
-#~ msgstr "Inaktivera"
-
-#~ msgid "Done"
-#~ msgstr "Klar"
-
-#~ msgid "Download speed limit in Kbit/sec:"
-#~ msgstr "Max downstream bandbreddshastighet i kbit/sek:"
-
-#~ msgid "Edit"
-#~ msgstr "Editera"
-
-#~ msgid "Enable"
-#~ msgstr "Möjliggör"
-
-#~ msgid "Enable echo cancellation"
-#~ msgstr "Tillåta ekokancellering"
-
-#~ msgid "Erase all passwords"
-#~ msgstr "Glöm alla lösenord"
-
-#~ msgid "Manage SIP Accounts"
-#~ msgstr "Hantera SIP konton"
-
-#~ msgid "Multimedia settings"
-#~ msgstr "Multimedia inställningar"
-
-#~ msgid "Network settings"
-#~ msgstr "Nätverksinställningar"
-
-#~ msgid "Playback device:"
-#~ msgstr "Uppspelningsenhet:"
-
-#~ msgid "Prefered video resolution:"
-#~ msgstr "Video upplösning:"
-
-#~ msgid "Public IP address:"
-#~ msgstr "Publik IP adress:"
-
-#~ msgid ""
-#~ "Register to FONICS\n"
-#~ "virtual network !"
-#~ msgstr ""
-#~ "Registrera hos FONICS\n"
-#~ "virtuella nätverk!"
-
-#~ msgid "Remove"
-#~ msgstr "Ta bort"
-
-#~ msgid "Ring device:"
-#~ msgstr "Ringning enhet:"
-
-#~ msgid "Ring sound:"
-#~ msgstr "Ring signal:"
-
-#~ msgid "Send DTMFs as SIP info"
-#~ msgstr "Kicka DTMF koder som SIP info"
-
-#~ msgid "Set Maximum Transmission Unit:"
-#~ msgstr "Välj MTU (Maximum Transmission Unit):"
-
-#~ msgid "Settings"
-#~ msgstr "Inställningar"
-
-#~ msgid "Show advanced settings"
-#~ msgstr "Visa avancerade inställningar"
-
-#~ msgid "Stun server:"
-#~ msgstr "STUN server:"
-
-#~ msgid "This section defines your SIP address when not using a SIP account"
-#~ msgstr ""
-#~ "Denna sektion specificerar din SIP adress när du inte använder ett SIP "
-#~ "konto"
-
-#~ msgid "Upload speed limit in Kbit/sec:"
-#~ msgstr "Max upstream bandbreddshastighet i kbit/sek:"
-
-#~ msgid "Use IPv6 instead of IPv4"
-#~ msgstr "Använd IPv6 istället av IPv4"
-
-#~ msgid "User interface"
-#~ msgstr "Användarinterface"
-
-#~ msgid "Video input device:"
-#~ msgstr "Video ingångsenhet:"
-
-#~ msgid "Your display name (eg: John Doe):"
-#~ msgstr "Ditt synliga namn, e.g. Kalle Karlsson:"
-
-#~ msgid "Your resulting SIP address:"
-#~ msgstr "Din SIP adress:"
-
-#~ msgid "Your username:"
-#~ msgstr "Ditt användarnamn:"
-
-#~ msgid "a sound card\n"
-#~ msgstr "ett ljud kort\n"
-
-#~ msgid "default camera"
-#~ msgstr "default kamera"
-
-#~ msgid "default soundcard"
-#~ msgstr "default ljudkort"
-
 #~ msgid "default soundcard\n"
 #~ msgstr "default ljudkort\n"
-
-#~ msgid "<b>Search somebody</b>"
-#~ msgstr "<b>Sök efter kontakter</b>"
-
-#~ msgid "Add to my list"
-#~ msgstr "Lägg till min lista"
-
-#~ msgid "Search contacts in directory"
-#~ msgstr "Sök för kontakter i katalogen"
-
-#~ msgid "Linphone"
-#~ msgstr "Linphone"
-
-#~ msgid "Please wait"
-#~ msgstr "Vänta"
 
 #~ msgid ""
 #~ "Remote end seems to have disconnected, the call is going to be closed."
@@ -1508,10 +1812,6 @@ msgstr "Ett filter som kontrollerar och mäter ljudvolym"
 
 #~ msgid "Unknown"
 #~ msgstr "Okänd"
-
-#, fuzzy
-#~ msgid "gtk-connect"
-#~ msgstr "Kopplad"
 
 #~ msgid "SIP address"
 #~ msgstr "SIP Adress"
