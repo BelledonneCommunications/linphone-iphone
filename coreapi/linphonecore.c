@@ -41,7 +41,7 @@ static const char *liblinphone_version=LIBLINPHONE_VERSION;
 static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t curtime);
 
 #include "enum.h"
-
+const char *linphone_core_get_nat_address_resolved(LinphoneCore *lc);
 void linphone_core_get_local_ip(LinphoneCore *lc, const char *dest, char *result);
 static void toggle_video_preview(LinphoneCore *lc, bool_t val);
 
@@ -358,6 +358,7 @@ static void net_config_read (LinphoneCore *lc)
 	const char *tmpstr;
 	LpConfig *config=lc->config;
 
+	lc->net_conf.nat_address_ip = NULL;
 	tmp=lp_config_get_int(config,"net","download_bw",0);
 	linphone_core_set_download_bandwidth(lc,tmp);
 	tmp=lp_config_get_int(config,"net","upload_bw",0);
@@ -1080,9 +1081,10 @@ int linphone_core_set_primary_contact(LinphoneCore *lc, const char *contact)
 
 /*result must be an array of chars at least LINPHONE_IPADDR_SIZE */
 void linphone_core_get_local_ip(LinphoneCore *lc, const char *dest, char *result){
+	const char *ip;
 	if (linphone_core_get_firewall_policy(lc)==LinphonePolicyUseNatAddress
-	    && linphone_core_get_nat_address(lc)!=NULL){
-		strncpy(result,linphone_core_get_nat_address(lc),LINPHONE_IPADDR_SIZE);
+	    && (ip=linphone_core_get_nat_address_resolved(lc))!=NULL){
+		strncpy(result,ip,LINPHONE_IPADDR_SIZE);
 		return;
 	}
 	if (linphone_core_get_local_ip_for(lc->sip_conf.ipv6_enabled ? AF_INET6 : AF_INET,dest,result)==0)
@@ -1894,7 +1896,7 @@ static char *get_fixed_contact(LinphoneCore *lc, LinphoneCall *call , LinphonePr
 	if (linphone_core_get_firewall_policy(lc)==LinphonePolicyUseNatAddress){
 		ctt=linphone_core_get_primary_contact_parsed(lc);
 		return ms_strdup_printf("sip:%s@%s",linphone_address_get_username(ctt),
-		    	linphone_core_get_nat_address(lc));
+		    	linphone_core_get_nat_address_resolved(lc));
 	}
 
 	/* if already choosed, don't change it */
@@ -3092,9 +3094,32 @@ void linphone_core_set_nat_address(LinphoneCore *lc, const char *addr)
 	if (lc->sip_conf.contact) update_primary_contact(lc);
 }
 
-const char *linphone_core_get_nat_address(const LinphoneCore *lc)
-{
+const char *linphone_core_get_nat_address(const LinphoneCore *lc) {
 	return lc->net_conf.nat_address;
+}
+
+const char *linphone_core_get_nat_address_resolved(LinphoneCore *lc)
+{
+	struct sockaddr_storage ss;
+	socklen_t ss_len;
+	int error;
+	char ipstring [INET6_ADDRSTRLEN];
+
+	if (parse_hostname_to_addr (lc->net_conf.nat_address, &ss, &ss_len)<0) {
+		return lc->net_conf.nat_address;
+	}
+
+	error = getnameinfo((struct sockaddr *)&ss, ss_len,
+		ipstring, sizeof(ipstring), NULL, 0, NI_NUMERICHOST);
+	if (error) {
+		return lc->net_conf.nat_address;
+	} 
+	
+	if (lc->net_conf.nat_address_ip!=NULL){
+		ms_free(lc->net_conf.nat_address_ip);
+	}
+	lc->net_conf.nat_address_ip = ms_strdup (ipstring);
+	return lc->net_conf.nat_address_ip;
 }
 
 void linphone_core_set_firewall_policy(LinphoneCore *lc, LinphoneFirewallPolicy pol){
@@ -3714,6 +3739,9 @@ void net_config_uninit(LinphoneCore *lc)
 	if (config->nat_address!=NULL){
 		lp_config_set_string(lc->config,"net","nat_address",config->nat_address);
 		ms_free(lc->net_conf.nat_address);
+	}
+	if (lc->net_conf.nat_address_ip !=NULL){
+		ms_free(lc->net_conf.nat_address_ip);
 	}
 	lp_config_set_int(lc->config,"net","firewall_policy",config->firewall_policy);
 	lp_config_set_int(lc->config,"net","mtu",config->mtu);	
