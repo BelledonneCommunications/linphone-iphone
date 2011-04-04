@@ -239,7 +239,9 @@ fi
 if test "$relativeprefix" = "auto" ; then
 	case $target_os in
 		*darwin*)
-		relativeprefix=yes
+		if test "$enable_x11" = "false" ; then
+			relativeprefix=yes
+		fi
 		;;
 		*mingw*)
 		relativeprefix=yes
