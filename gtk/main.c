@@ -1266,7 +1266,7 @@ gboolean linphone_gtk_close(GtkWidget *mw){
 		linphone_core_terminate_all_calls(lc);
 	}
 	linphone_core_enable_video_preview(lc,FALSE);
-#ifdef HAVE_GTK_OSX
+#ifdef __APPLE__ /*until with have a better option*/
 	gtk_window_iconify(GTK_WINDOW(mw));
 #else
 	gtk_widget_hide(mw);
