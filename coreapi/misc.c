@@ -205,7 +205,11 @@ int linphone_core_enable_payload_type(LinphoneCore *lc, PayloadType *pt, bool_t 
 const char *linphone_core_get_payload_type_description(LinphoneCore *lc, PayloadType *pt){
 	if (ms_filter_codec_supported(pt->mime_type)){
 		MSFilterDesc *desc=ms_filter_get_encoder(pt->mime_type);
-		return _(desc->text);
+#ifdef ENABLE_NLS
+		return dgettext("mediastreamer",desc->text);
+#else
+		return desc->text;
+#endif
 	}
 	return NULL;
 }

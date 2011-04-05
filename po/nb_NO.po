@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-04-05 00:37+0200\n"
-"PO-Revision-Date: 2011-03-17 00:10+0100\n"
+"PO-Revision-Date: 2011-04-05 01:56+0200\n"
 "Last-Translator: Øyvind Sæther <oyvinds@everdot.org>\n"
 "Language-Team: Norwegian Bokmål <i18n-nb@lister.ping.uio.no>\n"
 "Language: \n"
@@ -20,7 +20,7 @@ msgstr ""
 #: ../gtk/support.c:49 ../gtk/support.c:73 ../gtk/support.c:102
 #, c-format
 msgid "Couldn't find pixmap file: %s"
-msgstr " Fant ikke pixmap fli: %s"
+msgstr "Fant ikke pixmap fli: %s"
 
 #: ../gtk/chat.c:27
 #, c-format
@@ -93,7 +93,7 @@ msgstr "%s (Standard)"
 
 #: ../gtk/main.c:1186
 msgid "Windows"
-msgstr ""
+msgstr "Vinduer"
 
 #: ../gtk/main.c:1363
 msgid ""
@@ -423,220 +423,207 @@ msgstr "Skriv inn påloggingsinformasjon for %s:"
 
 #: ../gtk/main.ui.h:1
 msgid "#"
-msgstr ""
+msgstr "#"
 
 #: ../gtk/main.ui.h:2
 msgid "*"
-msgstr ""
+msgstr "*"
 
 #: ../gtk/main.ui.h:3
 msgid "0"
-msgstr ""
+msgstr "0"
 
 #: ../gtk/main.ui.h:4
 msgid "1"
-msgstr ""
+msgstr "1"
 
 #: ../gtk/main.ui.h:5
 msgid "2"
-msgstr ""
+msgstr "2"
 
 #: ../gtk/main.ui.h:6
 msgid "3"
-msgstr ""
+msgstr "3"
 
 #: ../gtk/main.ui.h:7
 msgid "4"
-msgstr ""
+msgstr "4"
 
 #: ../gtk/main.ui.h:8
 msgid "5"
-msgstr ""
+msgstr "5"
 
 #: ../gtk/main.ui.h:9
 msgid "6"
-msgstr ""
+msgstr "6"
 
 #: ../gtk/main.ui.h:10
 msgid "7"
-msgstr ""
+msgstr "7"
 
 #: ../gtk/main.ui.h:11
 msgid "8"
-msgstr ""
+msgstr "8"
 
 #: ../gtk/main.ui.h:12
 msgid "9"
-msgstr ""
+msgstr "9"
 
 #: ../gtk/main.ui.h:13
 msgid "<b>Add contacts from directory</b>"
-msgstr "<b>Lägg till kontakt ifrån katalogen</b>"
+msgstr "<b>Legg til kontakter fra katalogen</b>"
 
 #: ../gtk/main.ui.h:14
 msgid "<b>Contact list</b>"
-msgstr "<b>Kontaktlista</b>"
+msgstr "<b>Kontaktliste</b>"
 
 #: ../gtk/main.ui.h:15
 msgid "<b>Welcome !</b>"
-msgstr "<b>Välkommen!</b>"
+msgstr "<b>Velkommen!</b>"
 
 #: ../gtk/main.ui.h:16
 msgid "A"
-msgstr ""
+msgstr "A"
 
 #: ../gtk/main.ui.h:17
 msgid "ADSL"
-msgstr ""
+msgstr "ADSL"
 
 #: ../gtk/main.ui.h:18
-#, fuzzy
 msgid "Add contact"
-msgstr "Fant kontakt %i"
+msgstr "Legg til kontakt"
 
 #: ../gtk/main.ui.h:19
 msgid "All users"
-msgstr ""
+msgstr "Alle brukere"
 
 #: ../gtk/main.ui.h:21
-#, fuzzy
 msgid "Audio & video"
-msgstr "Audio & Video"
+msgstr "Lyd og Video"
 
 #: ../gtk/main.ui.h:22
 msgid "Audio only"
-msgstr "Enbart audio"
+msgstr "Kun lyd"
 
 #: ../gtk/main.ui.h:23
 msgid "Automatically log me in"
-msgstr "Logga mig automatiskt"
+msgstr "Logg meg på automatisk"
 
 #: ../gtk/main.ui.h:24
 msgid "B"
-msgstr ""
+msgstr "B"
 
 #: ../gtk/main.ui.h:25 ../gtk/parameters.ui.h:20
 msgid "C"
-msgstr ""
+msgstr "C"
 
 #: ../gtk/main.ui.h:26
-#, fuzzy
 msgid "Check _Updates"
-msgstr "Letar efter uppdateringar"
+msgstr "Sjekk _Oppdateringer"
 
 #: ../gtk/main.ui.h:27
-#, fuzzy
 msgid "Contacts"
-msgstr "Kontaktar"
+msgstr "Kontakter"
 
 #: ../gtk/main.ui.h:28
 msgid "D"
-msgstr ""
+msgstr "D"
 
 #: ../gtk/main.ui.h:29
 msgid "Decline"
-msgstr "Avböj"
+msgstr "Avvis"
 
 #: ../gtk/main.ui.h:30
-#, fuzzy
 msgid "Default"
-msgstr "%s (Standard)"
+msgstr "Standard"
 
 #: ../gtk/main.ui.h:31
 msgid "Duration"
-msgstr "Förlopp"
+msgstr "Varighet"
 
 #: ../gtk/main.ui.h:32
 msgid "Duration:"
-msgstr "Förlopp:"
+msgstr "Varighet:"
 
 #: ../gtk/main.ui.h:33
 msgid "Enable self-view"
-msgstr "Själv bild"
+msgstr "Vis video av deg selv"
 
 #: ../gtk/main.ui.h:34
 msgid "Enter username, phone number, or full sip address"
-msgstr "Mata in användarnamn, telefonnummer eller SIP adress"
+msgstr "Skriv inn brukernavn, telefonnummer eller full SIP-addresse"
 
 #: ../gtk/main.ui.h:35
-#, fuzzy
 msgid "Fiber Channel"
-msgstr ""
-"ADSL\n"
-"Fiber"
+msgstr "Fiber Kanal"
 
 #: ../gtk/main.ui.h:36
 msgid "In call"
-msgstr "I samtal"
+msgstr "I samtale"
 
 #: ../gtk/main.ui.h:37
 msgid "Initiate a new call"
-msgstr ""
+msgstr "Start en ny samtale"
 
 #: ../gtk/main.ui.h:38
 msgid "Internet connection:"
-msgstr "Internet förbindelse:"
+msgstr "Internet forbindelse:"
 
 #: ../gtk/main.ui.h:39
 msgid "Keypad"
-msgstr ""
+msgstr "Tastatur"
 
 #: ../gtk/main.ui.h:40
 msgid "Login information"
-msgstr "Login information"
+msgstr "Innlogginsinformasjon"
 
 #: ../gtk/main.ui.h:41
 msgid "Lookup:"
-msgstr "Sök:"
+msgstr "Slå opp:"
 
 #: ../gtk/main.ui.h:43
 msgid "My current identity:"
-msgstr "Min nuvarande identitet"
+msgstr "Min nåværende identitet:"
 
 #: ../gtk/main.ui.h:44
-#, fuzzy
 msgid "Online users"
-msgstr ""
-"Alla användare\n"
-"Online användare"
+msgstr "Tilkoblede brukere"
 
 #: ../gtk/main.ui.h:45
 msgid "Password"
-msgstr "Lösenord"
+msgstr "Passord"
 
 #: ../gtk/main.ui.h:47
 msgid "SIP address or phone number:"
-msgstr "Användarnamn"
+msgstr "Sip adresse eller telefonnummer:"
 
 #: ../gtk/main.ui.h:48
 msgid "Search"
-msgstr "Sök"
+msgstr "Søk"
 
 #: ../gtk/main.ui.h:49
-#, fuzzy
 msgid "Show debug window"
-msgstr "Linphone debug fönster"
+msgstr "Vis avlusningsvindu"
 
 #: ../gtk/main.ui.h:50
 msgid "Username"
-msgstr "Användarnamn"
+msgstr "Brukernavn"
 
 #: ../gtk/main.ui.h:51
 msgid "_Help"
-msgstr ""
+msgstr "_Hjelp"
 
 #: ../gtk/main.ui.h:52
-#, fuzzy
 msgid "_Homepage"
-msgstr "Hemsidan"
+msgstr "H_jemmeside"
 
 #: ../gtk/main.ui.h:53
 msgid "_Linphone"
-msgstr "_inphone"
+msgstr "_Linphone"
 
 #: ../gtk/main.ui.h:54
 msgid "_Options"
-msgstr ""
+msgstr "_Alternativer"
 
 #: ../gtk/main.ui.h:55
 msgid "in"
@@ -648,15 +635,17 @@ msgstr "etikett"
 
 #: ../gtk/about.ui.h:1
 msgid "(C) Belledonne Communications,2010\n"
-msgstr ""
+msgstr "(C) Belledonne Communications,2011\n"
 
 #: ../gtk/about.ui.h:3
 msgid "About linphone"
-msgstr "Apropå linphone"
+msgstr "Om Linphone"
 
 #: ../gtk/about.ui.h:4
 msgid "An internet video phone using the standard SIP (rfc3261) protocol."
-msgstr "En Internet video telefon baserat på SIP protokoll."
+msgstr ""
+"En Internet Videotelefon som bruker den standardiserte SIP-protokollen "
+"(rfc3261)."
 
 #: ../gtk/about.ui.h:5
 msgid ""
@@ -672,89 +661,97 @@ msgid ""
 "cs: Petr Pisar <petr.pisar@atlas.cz>\n"
 "hu: anonymous\n"
 msgstr ""
+"fr: Simon Morlat\n"
+"en: Simon Morlat og Delphine Perreau\n"
+"it: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>\n"
+"de: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>\n"
+"sv: Daniel Nylander <po@danielnylander.se>\n"
+"es: Jesus Benitez <gnelson at inMail dot sk>\n"
+"ja: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\n"
+"pt_BR: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\n"
+"pl: Robert Nasiadek <darkone@darkone.pl>\n"
+"cs: Petr Pisar <petr.pisar@atlas.cz>\n"
+"hu: anonym\n"
 
 #: ../gtk/contact.ui.h:1
 msgid "<b>Contact information</b>"
-msgstr "<b>Kontakt information</b>"
+msgstr "<b>Kontaktinformasjon</b>"
 
 #: ../gtk/contact.ui.h:2
 msgid "Allow this contact to see my presence status"
-msgstr "Tillåt den här kontakten att se min närvarostatus"
+msgstr "La denne kontakten se min tilstedestatus"
 
 #: ../gtk/contact.ui.h:4
 msgid "SIP Address"
-msgstr "SIP Adress"
+msgstr "SIP Addresse"
 
 #: ../gtk/contact.ui.h:5
 msgid "Show this contact presence status"
-msgstr "Visa kontaktens närvarostatus"
+msgstr "Vis kontaktens tilstedestatus"
 
 #: ../gtk/contact.ui.h:6 ../gtk/password.ui.h:5
-#, fuzzy
 msgid "gtk-cancel"
-msgstr "Kopplad"
+msgstr "gtk-avbryt"
 
 #: ../gtk/contact.ui.h:7 ../gtk/password.ui.h:6
 msgid "gtk-ok"
-msgstr ""
+msgstr "gtk-ok"
 
 #: ../gtk/log.ui.h:1
 msgid "Linphone debug window"
-msgstr "Linphone debug fönster"
+msgstr "Linphone avlusningsvindu"
 
 #: ../gtk/password.ui.h:1
-#, fuzzy
 msgid "Linphone - Authentication required"
-msgstr "Autorisering kreves"
+msgstr "Linphone - Autorisering kreves"
 
 #: ../gtk/password.ui.h:2
 msgid "Password:"
-msgstr "Lösenord:"
+msgstr "Passord:"
 
 #: ../gtk/password.ui.h:3
 msgid "Please enter the domain password"
-msgstr "Mata in lösenordet för domänen"
+msgstr "Skriv inn passordet for domenet"
 
 #: ../gtk/password.ui.h:4
 msgid "UserID"
-msgstr "AnvändarID"
+msgstr "BrukerID"
 
 #: ../gtk/call_logs.ui.h:1
-#, fuzzy
 msgid "Call back"
-msgstr "Ring %s"
+msgstr "Ring tilbake"
 
 #: ../gtk/call_logs.ui.h:2
 msgid "Call history"
-msgstr "Samtalshistorik"
+msgstr "Samtalehistorikk"
 
 #: ../gtk/call_logs.ui.h:3
 msgid "Clear all"
-msgstr ""
+msgstr "Fjern alle"
 
 #: ../gtk/sip_account.ui.h:1
 msgid "Configure a SIP account"
-msgstr "Konfigurera ett SIP konto"
+msgstr "Konfigurer en SIP konto"
 
 #: ../gtk/sip_account.ui.h:2
 msgid "Linphone - Configure a SIP account"
-msgstr "Linphone - Konfigurera ett SIP konto"
+msgstr "Linphone - Konfigurer en SIP konto"
 
 #: ../gtk/sip_account.ui.h:3
 msgid "Looks like sip:<proxy hostname>"
-msgstr ""
+msgstr "Ser ut som sip:<proxy hostname>"
 
 #: ../gtk/sip_account.ui.h:4
 msgid "Looks like sip:<username>@<domain>"
-msgstr ""
+msgstr "Ser ut som sip:<brukernavn>@<domene>"
 
 #: ../gtk/sip_account.ui.h:5
 msgid "Publish presence information"
-msgstr "Publicera närvaro information"
+msgstr "Publiser tilstedestatus"
 
 #: ../gtk/sip_account.ui.h:6
 msgid "Register at startup"
-msgstr "Registrera vid start"
+msgstr "Registrer ved oppstart"
 
 #: ../gtk/sip_account.ui.h:7
 msgid "Registration duration (sec):"
@@ -762,11 +759,11 @@ msgstr "Registreringsfrekvens (sek.):"
 
 #: ../gtk/sip_account.ui.h:8
 msgid "Route (optional):"
-msgstr "Route (tillval):"
+msgstr "Route (valgfritt):"
 
 #: ../gtk/sip_account.ui.h:9
 msgid "SIP Proxy address:"
-msgstr "SIP Proxy adress:"
+msgstr "SIP Proxy addresse:"
 
 #: ../gtk/sip_account.ui.h:10
 msgid "Your SIP identity:"
@@ -778,32 +775,31 @@ msgstr "sip:"
 
 #: ../gtk/chatroom.ui.h:1
 msgid "Send"
-msgstr "Skicka"
+msgstr "Send"
 
 #: ../gtk/chatroom.ui.h:2
-#, fuzzy
 msgid "gtk-close"
-msgstr "Kopplad"
+msgstr "gtk-lukk"
 
 #: ../gtk/parameters.ui.h:1
 msgid "0 stands for \"unlimited\""
-msgstr "0 står för \"utan begränsning\""
+msgstr "0 betyr \"ubegrenset\""
 
 #: ../gtk/parameters.ui.h:2
 msgid "<b>Audio</b>"
-msgstr "<b>Audio</b>"
+msgstr "<b>Lyd</b>"
 
 #: ../gtk/parameters.ui.h:3
 msgid "<b>Bandwidth control</b>"
-msgstr "<b>Bandbreddskontroll</b>"
+msgstr "<b>Båndbreddekontrol</b>"
 
 #: ../gtk/parameters.ui.h:4
 msgid "<b>Codecs</b>"
-msgstr "<b>Codecs</b>"
+msgstr "<b>Kodeker</b>"
 
 #: ../gtk/parameters.ui.h:5
 msgid "<b>Default identity</b>"
-msgstr "<b>Default identitet</b>"
+msgstr "<b>Standard identitet</b>"
 
 #: ../gtk/parameters.ui.h:6
 msgid "<b>Language</b>"
@@ -815,19 +811,19 @@ msgstr "<b>Nivå</b>"
 
 #: ../gtk/parameters.ui.h:8
 msgid "<b>NAT and Firewall</b>"
-msgstr "<b>NAT och Brandvägg</b>"
+msgstr "<b>NAT og Brannvegg</b>"
 
 #: ../gtk/parameters.ui.h:9
 msgid "<b>Ports</b>"
-msgstr "<b>Portar</b>"
+msgstr "<b>Porter</b>"
 
 #: ../gtk/parameters.ui.h:10
 msgid "<b>Privacy</b>"
-msgstr "<b>Integritet</b>"
+msgstr "<b>Personvern</b>"
 
 #: ../gtk/parameters.ui.h:11
 msgid "<b>Proxy accounts</b>"
-msgstr "<b>Proxy konton</b>"
+msgstr "<b>Proxy kontoer</b>"
 
 #: ../gtk/parameters.ui.h:12
 msgid "<b>Transport</b>"
@@ -839,215 +835,207 @@ msgstr "<b>Video</b>"
 
 #: ../gtk/parameters.ui.h:14
 msgid "ALSA special device (optional):"
-msgstr "ALSA speciell enhet (tillval):"
+msgstr "Spesiell ALSA enhet (valgfritt):"
 
 #: ../gtk/parameters.ui.h:15
 msgid "Add"
-msgstr "Lägg till"
+msgstr "Legg til"
 
 #: ../gtk/parameters.ui.h:16
 msgid "Audio RTP/UDP:"
-msgstr ""
+msgstr "Lyd RTP/UDP:"
 
 #: ../gtk/parameters.ui.h:17
-#, fuzzy
 msgid "Audio codecs"
-msgstr ""
-"Audio codecs\n"
-"Video codecs"
+msgstr "Lyd kodek"
 
 #: ../gtk/parameters.ui.h:18
 msgid "Behind NAT / Firewall (specify gateway IP below)"
-msgstr "Bakom en NAT / brandvägg (specificera gatewap IP adress nedan)"
+msgstr "Bak NAT / Brannmur (spesifiser gateway IP under)"
 
 #: ../gtk/parameters.ui.h:19
 msgid "Behind NAT / Firewall (use STUN to resolve)"
-msgstr "Bakom en NAT / brandvägg (använd STUN för att avgöra adressen)"
+msgstr "Bak NAT / Brannmur (bruk STUN for å avgjøre)"
 
 #: ../gtk/parameters.ui.h:21
 msgid "CIF"
-msgstr ""
+msgstr "CIF"
 
 #: ../gtk/parameters.ui.h:22
 msgid "Capture device:"
-msgstr "Mikrofon enhet:"
+msgstr "Mikrofonenhet:"
 
 #: ../gtk/parameters.ui.h:23
 msgid "Codecs"
-msgstr "Codecs"
+msgstr "Kodek"
 
 #: ../gtk/parameters.ui.h:24
 msgid "Direct connection to the Internet"
-msgstr "Direkt förbindelse till Internet"
+msgstr "Tilkoblet Internett direkte"
 
 #: ../gtk/parameters.ui.h:25
 msgid "Disable"
-msgstr "Inaktivera"
+msgstr "Deaktiver"
 
 #: ../gtk/parameters.ui.h:26
 msgid "Done"
-msgstr "Klar"
+msgstr "Ferdig"
 
 #: ../gtk/parameters.ui.h:27
 msgid "Download speed limit in Kbit/sec:"
-msgstr "Max downstream bandbreddshastighet i kbit/sek:"
+msgstr "Nedlastningsbegrensning i Kbit/sek:"
 
 #: ../gtk/parameters.ui.h:28
 msgid "Edit"
-msgstr "Editera"
+msgstr "Rediger"
 
 #: ../gtk/parameters.ui.h:29
 msgid "Enable"
-msgstr "Möjliggör"
+msgstr "Aktiver"
 
 #: ../gtk/parameters.ui.h:30
 msgid "Enable echo cancellation"
-msgstr "Tillåta ekokancellering"
+msgstr "Bruk ekko-kansellering"
 
 #: ../gtk/parameters.ui.h:31
 msgid "Erase all passwords"
-msgstr "Glöm alla lösenord"
+msgstr "Slett alle passord"
 
 #: ../gtk/parameters.ui.h:32
 msgid "Manage SIP Accounts"
-msgstr "Hantera SIP konton"
+msgstr "Behandle SIP-kontoer"
 
 #: ../gtk/parameters.ui.h:33
 msgid "Multimedia settings"
-msgstr "Multimedia inställningar"
+msgstr "Multimediainnstillinger"
 
 #: ../gtk/parameters.ui.h:34
 msgid "Network settings"
-msgstr "Nätverksinställningar"
+msgstr "Nettverksinnstillinger"
 
 #: ../gtk/parameters.ui.h:35
 msgid "Playback device:"
-msgstr "Uppspelningsenhet:"
+msgstr "Avspillingsenhet:"
 
 #: ../gtk/parameters.ui.h:36
 msgid "Prefered video resolution:"
-msgstr "Video upplösning:"
+msgstr "Foretrukke video-oppløsning:"
 
 #: ../gtk/parameters.ui.h:37
 msgid "Public IP address:"
-msgstr "Publik IP adress:"
+msgstr "Offentlig IP-addresse:"
 
 #: ../gtk/parameters.ui.h:38
 msgid ""
 "Register to FONICS\n"
 "virtual network !"
 msgstr ""
-"Registrera hos FONICS\n"
-"virtuella nätverk!"
+"Registrer hos FONICS\n"
+"virtuelle nettverk !"
 
 #: ../gtk/parameters.ui.h:40
 msgid "Remove"
-msgstr "Ta bort"
+msgstr "Fjern"
 
 #: ../gtk/parameters.ui.h:41
 msgid "Ring device:"
-msgstr "Ringning enhet:"
+msgstr "Ringe-enhet:"
 
 #: ../gtk/parameters.ui.h:42
 msgid "Ring sound:"
-msgstr "Ring signal:"
+msgstr "Ringelyd:"
 
 #: ../gtk/parameters.ui.h:43
 msgid "SIP (TCP):"
-msgstr ""
+msgstr "SIP (TCP):"
 
 #: ../gtk/parameters.ui.h:44
 msgid "SIP (UDP):"
-msgstr ""
+msgstr "SIP (UDP):"
 
 #: ../gtk/parameters.ui.h:45
 msgid "Send DTMFs as SIP info"
-msgstr "Kicka DTMF koder som SIP info"
+msgstr "Send DTMF som SIP-info"
 
 #: ../gtk/parameters.ui.h:46
 msgid "Set Maximum Transmission Unit:"
-msgstr "Välj MTU (Maximum Transmission Unit):"
+msgstr "Velg MTU (Maximum Transmission Unit):"
 
 #: ../gtk/parameters.ui.h:47
 msgid "Settings"
-msgstr "Inställningar"
+msgstr "Innstillinger"
 
 #: ../gtk/parameters.ui.h:48
 msgid "Show advanced settings"
-msgstr "Visa avancerade inställningar"
+msgstr "Vis avanserte innstillinger"
 
 #: ../gtk/parameters.ui.h:49
 msgid "Stun server:"
-msgstr "STUN server:"
+msgstr "STUN tjener:"
 
 #: ../gtk/parameters.ui.h:50
 msgid "This section defines your SIP address when not using a SIP account"
-msgstr ""
-"Denna sektion specificerar din SIP adress när du inte använder ett SIP konto"
+msgstr "Denne seksjonen velger SIP-addresse når du ikke bruker en SIP-konto"
 
 #: ../gtk/parameters.ui.h:51
 msgid "Upload speed limit in Kbit/sec:"
-msgstr "Max upstream bandbreddshastighet i kbit/sek:"
+msgstr "Maks opplastningshastighet i Kbit/sek:"
 
 #: ../gtk/parameters.ui.h:52
 msgid "Use IPv6 instead of IPv4"
-msgstr "Använd IPv6 istället av IPv4"
+msgstr "Bruk IPv6 istedet for IPv4"
 
 #: ../gtk/parameters.ui.h:53
 msgid "User interface"
-msgstr "Användarinterface"
+msgstr "Brukergrensesnitt"
 
 #: ../gtk/parameters.ui.h:54
 msgid "Video RTP/UDP:"
-msgstr ""
+msgstr "Video RTP/UDP:"
 
 #: ../gtk/parameters.ui.h:55
-#, fuzzy
 msgid "Video codecs"
-msgstr ""
-"Audio codecs\n"
-"Video codecs"
+msgstr "Video kodek"
 
 #: ../gtk/parameters.ui.h:56
 msgid "Video input device:"
-msgstr "Video ingångsenhet:"
+msgstr "Videoenhet:"
 
 #: ../gtk/parameters.ui.h:57
 msgid "Your display name (eg: John Doe):"
-msgstr "Ditt synliga namn, e.g. Kalle Karlsson:"
+msgstr "Vist navn (eks: Ola Nordmann):"
 
 #: ../gtk/parameters.ui.h:58
 msgid "Your resulting SIP address:"
-msgstr "Din SIP adress:"
+msgstr "Din resulterende SIP addresse:"
 
 #: ../gtk/parameters.ui.h:59
 msgid "Your username:"
-msgstr "Ditt användarnamn:"
+msgstr "Ditt brukernavn:"
 
 #: ../gtk/parameters.ui.h:60
-#, fuzzy
 msgid "a sound card"
-msgstr "ett ljud kort\n"
+msgstr "ett lydkort"
 
 #: ../gtk/parameters.ui.h:61
 msgid "default camera"
-msgstr "default kamera"
+msgstr "standard kamera"
 
 #: ../gtk/parameters.ui.h:62
 msgid "default soundcard"
-msgstr "default ljudkort"
+msgstr "standard lydkort"
 
 #: ../gtk/buddylookup.ui.h:1
 msgid "<b>Search somebody</b>"
-msgstr "<b>Sök efter kontakter</b>"
+msgstr "<b>Søk noen</b>"
 
 #: ../gtk/buddylookup.ui.h:2
 msgid "Add to my list"
-msgstr "Lägg till min lista"
+msgstr "Legg til listen min"
 
 #: ../gtk/buddylookup.ui.h:3
 msgid "Search contacts in directory"
-msgstr "Sök för kontakter i katalogen"
+msgstr "Søk kontakter i katalogen"
 
 #: ../gtk/waiting.ui.h:1
 msgid "Linphone"
@@ -1055,7 +1043,7 @@ msgstr "Linphone"
 
 #: ../gtk/waiting.ui.h:2
 msgid "Please wait"
-msgstr "Vänta"
+msgstr "Vennligst vent"
 
 #: ../coreapi/linphonecore.c:165
 #, c-format
@@ -1109,7 +1097,7 @@ msgstr "Ser etter telefonnummer for destinasjonen..."
 
 #: ../coreapi/linphonecore.c:1776
 msgid "Could not resolve this number."
-msgstr "Kan ikke nå dette nummeret."
+msgstr "Kan ikke tilkoble dette nummeret."
 
 #: ../coreapi/linphonecore.c:1820
 msgid ""
@@ -1610,76 +1598,77 @@ msgstr "Ett video4windows-kompatibelt kildefiler for bildestrømmer."
 
 #: ../mediastreamer2/src/winvideo2.c:436 ../mediastreamer2/src/winvideo2.c:454
 msgid "A video for windows (vfw.h) based source filter to grab pictures."
-msgstr ""
+msgstr "Ett video for vinduer (vfw.h) baserte kildefilter for å fange bilder"
 
 #: ../mediastreamer2/src/ice.c:1349 ../mediastreamer2/src/ice.c:1367
 msgid "ICE filter"
-msgstr ""
+msgstr "ICE filter"
 
 #: ../mediastreamer2/src/void.c:35 ../mediastreamer2/src/void.c:52
 msgid "A filter that trashes its input (useful for terminating some graphs)."
-msgstr ""
+msgstr "Ett filter som ødelegger input (nyttig for å terminere noen grafer)."
 
 #: ../mediastreamer2/src/equalizer.c:338 ../mediastreamer2/src/equalizer.c:356
 msgid "Parametric sound equalizer."
-msgstr ""
+msgstr "Parameterisk lyd-mixer"
 
 #: ../mediastreamer2/src/msdscap-mingw.cc:1038
 msgid "A webcam grabber based on directshow."
-msgstr ""
+msgstr "En webcam-fanger basert på directshow."
 
 #: ../mediastreamer2/src/drawdib-display.c:552
 #: ../mediastreamer2/src/drawdib-display.c:570
 msgid "A video display based on windows DrawDib api"
-msgstr ""
+msgstr "Videovisning basert på windows DrawDib api"
 
 #: ../mediastreamer2/src/audiomixer.c:192
 #: ../mediastreamer2/src/audiomixer.c:211
 msgid "A filter that mixes down 16 bit sample audio streams"
-msgstr ""
+msgstr "Ett filter som mixer ned til 16 bits lydstrømmer"
 
 #: ../mediastreamer2/src/chanadapt.c:110 ../mediastreamer2/src/chanadapt.c:128
 msgid "A filter that converts from mono to stereo and vice versa."
-msgstr ""
+msgstr "Ett filter som konverterer fra mono til stereo og motsatt."
 
 #: ../mediastreamer2/src/itc.c:97 ../mediastreamer2/src/itc.c:115
 #: ../mediastreamer2/src/itc.c:197 ../mediastreamer2/src/itc.c:215
 msgid "Inter ticker communication filter."
-msgstr ""
+msgstr "Inter ticker kommunikasjonsfilter."
 
 #: ../mediastreamer2/src/extdisplay.c:62 ../mediastreamer2/src/extdisplay.c:79
 msgid "A display filter sending the buffers to draw to the upper layer"
 msgstr ""
+"Et visningsfilter for å sende buffere for å tegne det oppdaterte nivået"
 
 #: ../mediastreamer2/src/msiounit.c:650
 msgid "Sound capture filter for MacOS X Audio Unit Service"
-msgstr ""
+msgstr "Lydfangefilter for MacOS X Audio Unit Service"
 
 #: ../mediastreamer2/src/msiounit.c:664
 msgid "Sound playback filter for MacOS X Audio Unit Service"
-msgstr ""
+msgstr "Lydavspillingsfilter for MacOS X Audio Unit Service"
 
 #: ../mediastreamer2/src/x11video.c:562
 msgid "A video display using X11+Xv"
-msgstr ""
+msgstr "En videovisning som bruker X11-Xv"
 
 #. .id=
 #. .name=
 #. .text=
 #: ../mediastreamer2/src/msandroid.cpp:370
 msgid "Sound capture filter for Android"
-msgstr ""
+msgstr "Lydfangefilter for Android"
 
 #. .id=
 #. .name=
 #. .text=
 #: ../mediastreamer2/src/msandroid.cpp:667
 msgid "Sound playback filter for Android"
-msgstr ""
+msgstr "Lydavspillingsfilter for Android"
 
 #: ../mediastreamer2/src/msandroidvideo.cpp:134
 msgid "A filter that captures Android video."
-msgstr ""
+msgstr "Ett filter som fanger Android video."
 
 #~ msgid ""
 #~ "Your machine appears to be connected to an IPv6 network. By default "

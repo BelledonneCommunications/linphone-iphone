@@ -321,6 +321,7 @@ static void linphone_gtk_show_codecs(GtkTreeView *listview, const MSList *codecl
 		gfloat bitrate; 
 		gchar *color;
 		const char *params="";
+
 		struct _PayloadType *pt=(struct _PayloadType *)elem->data;
 		if (linphone_core_payload_type_enabled(linphone_gtk_get_core(),pt)) status=_("Enabled");
 		else status=_("Disabled");

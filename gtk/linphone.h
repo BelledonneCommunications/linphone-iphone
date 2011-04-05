@@ -28,10 +28,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 #include "linphonecore.h"
 
-#include <libintl.h>
-#ifndef _
-#define _(String) gettext (String)
+#ifdef ENABLE_NLS
+# include <libintl.h>
+# undef _
+# define _(String) gettext (String)
+#else
+# define _(String) (String)
 #endif
+
+#undef N_
+#define N_(str) (str)
 
 #ifdef USE_BUILDDATE_VERSION
 #include "version_date.h"

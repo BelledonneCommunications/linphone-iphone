@@ -73,12 +73,7 @@ dnl localization tools
 IT_PROG_INTLTOOL([0.40], [no-xml])
 
 dnl Initialize libtool
-AC_LIBTOOL_WIN32_DLL
-AC_PROG_LIBTOOL
-AM_PROG_LIBTOOL
-AC_ENABLE_SHARED(yes)
-AC_ENABLE_STATIC(no)
-
+LT_INIT([win32-dll shared disable-static])
 
 AC_CONFIG_COMMANDS([libtool-hacking],[
 if test "$mingw_found" = "yes" ; then
@@ -407,7 +402,7 @@ AS_CASE($enable_external_mediastreamer,
 		[yes],[
 			PKG_CHECK_MODULES([MEDIASTREAMER], [mediastreamer])
 			MS2_VERSION=`$PKG_CONFIG --modversion mediastreamer`
-			AM_CONDITIONAL(EXTERNAL_MEDIASTREAMER, [true])],
+			],
 		[no],[
 			AC_CONFIG_SUBDIRS( mediastreamer2 )
 			MEDIASTREAMER_DIR=${top_srcdir}/mediastreamer2
@@ -417,12 +412,14 @@ dnl need to temporary change quotes to allow square brackets
 		 	changequote(<<, >>)
 			MS2_VERSION=`grep -e '^.C_INIT(' $MEDIASTREAMER_DIR/configure.ac | sed -e 's:\([^(]\+\)(\[mediastreamer\],\[\(.*\)\]):\2:g'`
 			changequote([, ])
-			AM_CONDITIONAL(EXTERNAL_MEDIASTREAMER, [false])],
+			MS2_DIR=mediastreamer2
+			],
         [AC_MSG_ERROR([bad value '${enable_external_mediastreamer}' for --enable-external-mediastreamer])])
 
 AC_SUBST(MEDIASTREAMER_CFLAGS)
 AC_SUBST(MEDIASTREAMER_LIBS)
 AC_SUBST([MS2_VERSION])
+AC_SUBST([MS2_DIR])
 
 dnl check for db2html (docbook) to generate html user manual
 AC_CHECK_PROG(have_sgmltools,sgmltools, yes, no)
@@ -462,6 +459,7 @@ else
 	if test x$ac_cv_c_bigendian = xyes ; then
 		ORTP_CFLAGS="$ORTP_CFLAGS -DORTP_BIGENDIAN"
 	fi
+	ORTP_DIR=oRTP
 	changequote(<<, >>)
 	ORTP_VERSION=`grep -E ^[AC]+_INIT ${top_srcdir}/oRTP/configure.ac | sed -e 's:^.*_INIT(.*,\[\(.*\)\]):\1:g'`
 	changequote([, ])
@@ -469,8 +467,7 @@ fi
 AC_SUBST(ORTP_CFLAGS)
 AC_SUBST(ORTP_LIBS)
 AC_SUBST([ORTP_VERSION])
-
-AM_CONDITIONAL(EXTERNAL_ORTP, [test "$external_ortp" = 'true'])
+AC_SUBST([ORTP_DIR])
 
 dnl ##################################################
 dnl # Check for doxygen
@@ -480,7 +477,7 @@ AC_PATH_PROG(DOXYGEN,doxygen,false)
 AM_CONDITIONAL(HAVE_DOXYGEN, test $DOXYGEN != false)
 
 
-AC_OUTPUT([ 
+AC_CONFIG_FILES([ 
 Makefile
 build/Makefile
 build/macos/Makefile
@@ -506,6 +503,8 @@ linphone.spec
 linphone.iss
 ])
 
+AC_OUTPUT
+
 echo "Linphone build configuration ended."
 
 if test x$gtk_ui = xtrue ; then
@@ -516,3 +515,4 @@ if test x$console_ui = xtrue ; then
 fi
 
 echo "Now type 'make' to compile, and then 'make install' as root to install it."
+

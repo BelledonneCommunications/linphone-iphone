@@ -93,7 +93,7 @@
                     </child>
                     <child>
                       <object class="GtkImageMenuItem" id="call_history_item">
-                        <property name="label">_Call history</property>
+                        <property name="label" translatable="yes">_Call history</property>
                         <property name="visible">True</property>
                         <property name="use_underline">True</property>
                         <property name="image">image2</property>

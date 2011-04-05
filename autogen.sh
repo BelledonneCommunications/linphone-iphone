@@ -42,8 +42,12 @@ autoheader
 $AUTOMAKE --force-missing --add-missing --copy
 autoconf
 
-echo "Generating build scripts in oRTP..."
-cd oRTP && ./autogen.sh && cd -
+if [ -x oRTP/autogen.sh ]; then
+	echo "Generating build scripts in oRTP..."
+	( cd oRTP && ./autogen.sh )
+fi
 
-echo "Generating build scripts in mediastreamer2..."
-cd mediastreamer2 && ./autogen.sh && cd -
+if [ -x mediastreamer2/autogen.sh ]; then
+	echo "Generating build scripts in mediastreamer2..."
+	( cd mediastreamer2 && ./autogen.sh )
+fi
