@@ -22,3 +22,9 @@
 [submodule "submodules/tunnel"]
 	path = submodules/tunnel
 	url = gitosis@git.linphone.org:tunnel.git
+[submodule "submodules/externals/opencore-amr"]
+	path = submodules/externals/opencore-amr
+	url = git://opencore-amr.git.sourceforge.net/gitroot/opencore-amr/opencore-amr
+[submodule "submodules/msamr"]
+	path = submodules/msamr
+	url = git://git.linphone.org/msamr.git

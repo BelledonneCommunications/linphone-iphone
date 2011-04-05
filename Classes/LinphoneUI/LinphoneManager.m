@@ -34,7 +34,9 @@ static LinphoneManager* theLinphoneManager=nil;
 static TunnelManager* sTunnelMgr=NULL;
 
 extern "C" void libmsilbc_init();
-
+#ifdef HAVE_AMR
+extern void libmsamr_init();
+#endif
 @implementation LinphoneManager
 @synthesize callDelegate;
 @synthesize registrationDelegate;
@@ -437,6 +439,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	//read codecs from setting  bundle and enable them one by one
 	[self configurePayloadType:"speex" fromPrefKey:@"speex_16k_preference" withRate:16000];
 	[self configurePayloadType:"speex" fromPrefKey:@"speex_8k_preference" withRate:8000];
+    [self configurePayloadType:"AMR" fromPrefKey:@"amr_8k_preference" withRate:8000];
 	[self configurePayloadType:"GSM" fromPrefKey:@"gsm_8k_preference" withRate:8000];
 	[self configurePayloadType:"iLBC" fromPrefKey:@"ilbc_preference" withRate:8000];
 	[self configurePayloadType:"PCMU" fromPrefKey:@"pcmu_preference" withRate:8000];
@@ -593,7 +596,9 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	
 	libmsilbc_init();
 	
-	/*
+#ifdef HAVE_AMR
+    libmsamr_init(); //load amr plugin if present from the liblinphone sdk
+#endif	/*
 	 * Initialize linphone core
 	 */
 	
