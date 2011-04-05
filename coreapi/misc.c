@@ -396,7 +396,7 @@ static int sendStunRequest(int sock, const struct sockaddr *server, socklen_t ad
 	return 0;
 }
 
-static int parse_stun_server_addr(const char *server, struct sockaddr_storage *ss, socklen_t *socklen){
+int parse_hostname_to_addr(const char *server, struct sockaddr_storage *ss, socklen_t *socklen){
 	struct addrinfo hints,*res=NULL;
 	int ret;
 	const char *port;
@@ -466,7 +466,7 @@ void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 		ac=&call->localdesc->streams[0].candidates[0];
 		vc=&call->localdesc->streams[1].candidates[0];
 		
-		if (parse_stun_server_addr(server,&ss,&ss_len)<0){
+		if (parse_hostname_to_addr(server,&ss,&ss_len)<0){
 			ms_error("Fail to parser stun server address: %s",server);
 			return;
 		}
@@ -596,7 +596,7 @@ int linphone_core_wake_up_possible_already_running_instance(
 		socklen_t sslen;
 		char tmp[100];
 		snprintf(tmp,sizeof(tmp),"127.0.0.1:%i",port);
-		if (parse_stun_server_addr(tmp,&ss,&sslen)==0){
+		if (parse_hostname_to_addr(tmp,&ss,&sslen)==0){
 			int locport=57123;
 			ortp_socket_t sock=create_socket(locport);
 			if (sock<0) sock=create_socket(++locport);

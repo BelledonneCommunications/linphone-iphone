@@ -42,6 +42,7 @@ struct Sal{
 	void *up;
 	bool_t one_matching_codec;
 	bool_t double_reg;
+	bool_t use_rports;
 };
 
 struct SalOp{

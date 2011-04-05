@@ -273,6 +273,7 @@ Sal * sal_init(){
 	sal=ms_new0(Sal,1);
 	sal->keepalive_period=30;
 	sal->double_reg=TRUE;
+	sal->use_rports=TRUE;
 	return sal;
 }
 
@@ -366,6 +367,7 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 	eXosip_set_option(13,&err); /*13=EXOSIP_OPT_SRV_WITH_NAPTR, as it is an enum value, we can't use it unless we are sure of the
 					version of eXosip, which is not the case*/
 	/*see if it looks like an IPv6 address*/
+	eXosip_set_option(EXOSIP_OPT_USE_RPORT,&ctx->use_rports);
 	ipv6=strchr(addr,':')!=NULL;
 	eXosip_enable_ipv6(ipv6);
 
@@ -409,6 +411,10 @@ MSList *sal_get_pending_auths(Sal *sal){
 
 void sal_use_double_registrations(Sal *ctx, bool_t enabled){
 	ctx->double_reg=enabled;
+}
+
+void sal_use_rport(Sal *ctx, bool_t use_rports){
+	ctx->use_rports=use_rports;
 }
 
 static int extract_received_rport(osip_message_t *msg, const char **received, int *rportval){

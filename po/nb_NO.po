@@ -1,60 +1,60 @@
-# translation of nl.po to Nederlands
-# Dutch translation of linphone.
-# Copyright (C) 2005 THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the linphone package.
-# Taco Witte <tcwitte@cs.uu.nl>, 2005.
-# Hendrik-Jan Heins <hjh@passys.nl>, 2005.
-# Hendrik-Jan Heins <hjh@passys.nl>, 2007.
+# Copyright (C) 2011 Free Software Foundation, Inc.
+# This file is distributed under the same license as the PACKAGE package.
 #
+# Øyvind Sæther <oyvinds@everdot.org>, 2011.
 msgid ""
 msgstr ""
-"Project-Id-Version: nl\n"
+"Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-04-05 00:37+0200\n"
-"PO-Revision-Date: 2007-09-05 10:40+0200\n"
-"Last-Translator: Hendrik-Jan Heins <hjheins@gmail.com>\n"
-"Language-Team: Nederlands <vertaling@nl.linux.org>\n"
+"PO-Revision-Date: 2011-03-17 00:10+0100\n"
+"Last-Translator: Øyvind Sæther <oyvinds@everdot.org>\n"
+"Language-Team: Norwegian Bokmål <i18n-nb@lister.ping.uio.no>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Lokalize 1.2\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
 
 #: ../gtk/support.c:49 ../gtk/support.c:73 ../gtk/support.c:102
 #, c-format
 msgid "Couldn't find pixmap file: %s"
-msgstr "Kon pixmap bestand %s niet vinden"
+msgstr " Fant ikke pixmap fli: %s"
 
 #: ../gtk/chat.c:27
 #, c-format
 msgid "Chat with %s"
-msgstr "Chat met %s"
+msgstr "Chat med %s"
 
 #: ../gtk/main.c:74
 msgid "log to stdout some debug information while running."
-msgstr ""
+msgstr "skriv logg-informasjon under kjøring"
 
 #: ../gtk/main.c:81
 msgid "Start only in the system tray, do not show the main interface."
-msgstr ""
+msgstr "Start skjult i systemkurven, ikke vis programbildet."
 
 #: ../gtk/main.c:88
 msgid "address to call right now"
-msgstr ""
+msgstr "address som skal ringes nå"
 
 #: ../gtk/main.c:95
 msgid "if set automatically answer incoming calls"
-msgstr ""
+msgstr "besvarer innkommende samtaler automatisk om valgt"
 
 #: ../gtk/main.c:102
 msgid ""
 "Specifiy a working directory (should be the base of the installation, eg: c:"
 "\\Program Files\\Linphone)"
 msgstr ""
+"Spesifiser arbeidsmappe (bør være base for installasjonen, f.eks: c:"
+"\\Programfiler\\Linphone)"
 
 #: ../gtk/main.c:442
-#, fuzzy, c-format
+#, c-format
 msgid "Call with %s"
-msgstr "Chat met %s"
+msgstr "Ring med %s"
 
 #: ../gtk/main.c:825
 #, c-format
@@ -64,6 +64,10 @@ msgid ""
 "list ?\n"
 "If you answer no, this person will be temporarily blacklisted."
 msgstr ""
+"&s vil legge deg til i hans/hennes kontaktliste.\n"
+"Vil du tillate vedkommende å se din tilstedestatus eller legge vedkommende i "
+"din kontaktliste?\n"
+"Hvis du svarer nei vil personen bli svartelyst midlertidig."
 
 #: ../gtk/main.c:903
 #, c-format
@@ -71,19 +75,21 @@ msgid ""
 "Please enter your password for username <i>%s</i>\n"
 " at domain <i>%s</i>:"
 msgstr ""
+"Skriv inn ditt passord for brukernavn <i>%s</i>\n"
+" på domene <i>%s</i>:i>:"
 
 #: ../gtk/main.c:1039
 msgid "Website link"
-msgstr ""
+msgstr "Peker til nettsted"
 
 #: ../gtk/main.c:1075
 msgid "Linphone - a video internet phone"
-msgstr ""
+msgstr "Linphone - en video Internet telefon"
 
 #: ../gtk/main.c:1094
 #, c-format
 msgid "%s (Default)"
-msgstr ""
+msgstr "%s (Standard)"
 
 #: ../gtk/main.c:1186
 msgid "Windows"
@@ -94,56 +100,58 @@ msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
 msgstr ""
+"Klarte ikke å finne noe lydkort på denne datamaskinen.\n"
+"Du vil ikke kunne sende eller motta lydsamtaler."
 
 #: ../gtk/main.c:1422
 msgid "A free SIP video-phone"
-msgstr "Een Vrije SIP video-telefoon"
+msgstr "En gratis SIP video-telefon"
 
 #: ../gtk/friendlist.c:192 ../gtk/propertybox.c:271 ../gtk/contact.ui.h:3
 msgid "Name"
-msgstr "Naam"
+msgstr "Navn"
 
 #: ../gtk/friendlist.c:205
 msgid "Presence status"
-msgstr "Aanwezigheidsstatus"
+msgstr "Tilstedestatus"
 
 #: ../gtk/friendlist.c:242
 #, c-format
 msgid "Search in %s directory"
-msgstr ""
+msgstr "Søk i %s katalogen"
 
 #: ../gtk/friendlist.c:450
 msgid "Invalid sip contact !"
-msgstr ""
+msgstr "Ugyldig SIP kontakt !"
 
 #: ../gtk/friendlist.c:495
-#, fuzzy, c-format
+#, c-format
 msgid "Call %s"
-msgstr "Oproepgeschiedenis"
+msgstr "Ring %s"
 
 #: ../gtk/friendlist.c:496
 #, c-format
 msgid "Send text to %s"
-msgstr ""
+msgstr "Send tekst til %s"
 
 #: ../gtk/friendlist.c:497
-#, fuzzy, c-format
+#, c-format
 msgid "Edit contact '%s'"
-msgstr "Bewerk contactgegevens"
+msgstr "Rediger kontakt '%s'"
 
 #: ../gtk/friendlist.c:498
 #, c-format
 msgid "Delete contact '%s'"
-msgstr ""
+msgstr "Slett kontakt '%s'"
 
 #: ../gtk/friendlist.c:540
 #, c-format
 msgid "Add new contact from %s directory"
-msgstr ""
+msgstr "Legg til kontakt fra %s katalogen"
 
 #: ../gtk/propertybox.c:277
 msgid "Rate (Hz)"
-msgstr "Frequentie (Hz)"
+msgstr "Frekvens (Hz)"
 
 #: ../gtk/propertybox.c:283
 msgid "Status"
@@ -151,84 +159,84 @@ msgstr "Status"
 
 #: ../gtk/propertybox.c:289
 msgid "Min bitrate (kbit/s)"
-msgstr "Minimale bitrate (kbit/s)"
+msgstr "Min. datahastighet (kbit/s)"
 
 #: ../gtk/propertybox.c:296
 msgid "Parameters"
-msgstr "Parameters"
+msgstr "Parametere"
 
 #: ../gtk/propertybox.c:325 ../gtk/propertybox.c:464
 msgid "Enabled"
-msgstr "Aan"
+msgstr "På"
 
 #: ../gtk/propertybox.c:326 ../gtk/propertybox.c:464
 msgid "Disabled"
-msgstr "Uit"
+msgstr "Av"
 
 #: ../gtk/propertybox.c:509
 msgid "Account"
-msgstr "Account"
+msgstr "Konto"
 
 #: ../gtk/propertybox.c:649
 msgid "English"
-msgstr ""
+msgstr "Engelsk"
 
 #: ../gtk/propertybox.c:650
 msgid "French"
-msgstr ""
+msgstr "Fransk"
 
 #: ../gtk/propertybox.c:651
 msgid "Swedish"
-msgstr ""
+msgstr "Svensk"
 
 #: ../gtk/propertybox.c:652
 msgid "Italian"
-msgstr ""
+msgstr "Italisensk"
 
 #: ../gtk/propertybox.c:653
 msgid "Spanish"
-msgstr ""
+msgstr "Spansk"
 
 #: ../gtk/propertybox.c:654
 msgid "Brazilian Portugese"
-msgstr ""
+msgstr "Portugisisk"
 
 #: ../gtk/propertybox.c:655
 msgid "Polish"
-msgstr ""
+msgstr "Polsk"
 
 #: ../gtk/propertybox.c:656
 msgid "German"
-msgstr ""
+msgstr "Tysk"
 
 #: ../gtk/propertybox.c:657
 msgid "Russian"
-msgstr ""
+msgstr "Russisk"
 
 #: ../gtk/propertybox.c:658
 msgid "Japanese"
-msgstr ""
+msgstr "Japansk"
 
 #: ../gtk/propertybox.c:659
 msgid "Dutch"
-msgstr ""
+msgstr "Nederlandsk"
 
 #: ../gtk/propertybox.c:660
 msgid "Hungarian"
-msgstr ""
+msgstr "Ungarsk"
 
 #: ../gtk/propertybox.c:661
 msgid "Czech"
-msgstr ""
+msgstr "Tjekkisk"
 
 #: ../gtk/propertybox.c:662
 msgid "Chinese"
-msgstr ""
+msgstr "Kinesisk"
 
 #: ../gtk/propertybox.c:719
 msgid ""
 "You need to restart linphone for the new language selection to take effect."
-msgstr ""
+msgstr "Du må restarte linphone for at det nye språkvalget skal iverksettes."
 
 #: ../gtk/update.c:80
 #, c-format
@@ -236,203 +244,198 @@ msgid ""
 "A more recent version is availalble from %s.\n"
 "Would you like to open a browser to download it ?"
 msgstr ""
+"En nyere utgave er tilgjengelig fra %s.\n"
+"Vil du åpne en nettleser og laste den ned ?"
 
 #: ../gtk/update.c:91
 msgid "You are running the lastest version."
-msgstr ""
+msgstr "Du kjører siste utgave."
 
 #: ../gtk/buddylookup.c:85
 msgid "Firstname, Lastname"
-msgstr ""
+msgstr "Fornavn, Etternavn"
 
 #: ../gtk/buddylookup.c:160
 msgid "Error communicating with server."
-msgstr ""
+msgstr "Feil med forbindelsen til serveren."
 
 #: ../gtk/buddylookup.c:164
-#, fuzzy
 msgid "Connecting..."
-msgstr "Verbinden"
+msgstr "Tilknytter..."
 
 #: ../gtk/buddylookup.c:168
-#, fuzzy
 msgid "Connected"
-msgstr "Verbonden."
+msgstr "Tilknyttet"
 
 #: ../gtk/buddylookup.c:172
 msgid "Receiving data..."
-msgstr ""
+msgstr "Mottar data..."
 
 #: ../gtk/buddylookup.c:180
 #, c-format
 msgid "Found %i contact"
 msgid_plural "Found %i contacts"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Fant kontakt %i"
+msgstr[1] "Hittat kontakt %i"
 
 #: ../gtk/setupwizard.c:25
 msgid ""
 "Welcome !\n"
 "This assistant will help you to use a SIP account for your calls."
 msgstr ""
+"Velkommen\n"
+"Denne veiviseren vil hjelpe deg sette opp en SIP-konto for dine samtaler."
 
 #: ../gtk/setupwizard.c:34
 msgid "Create an account by choosing a username"
-msgstr ""
+msgstr "Lag en konto ved å velge ett brukernavn"
 
 #: ../gtk/setupwizard.c:35
 msgid "I have already an account and just want to use it"
-msgstr ""
+msgstr "Jeg har allerede en brukerkonto og vil bruke den."
 
 #: ../gtk/setupwizard.c:53
 msgid "Please choose a username:"
-msgstr ""
+msgstr "Velg ett brukernavn:"
 
 #: ../gtk/setupwizard.c:54
-#, fuzzy
 msgid "Username:"
-msgstr "gebruikersnaam:"
+msgstr "Brukernavn:"
 
 #: ../gtk/setupwizard.c:92
 #, c-format
 msgid "Checking if '%s' is available..."
-msgstr ""
+msgstr "Sjekker om %s' er tilgjengelig..."
 
 #: ../gtk/setupwizard.c:97 ../gtk/setupwizard.c:164
 msgid "Please wait..."
-msgstr ""
+msgstr "Vennligst vent..."
 
 #: ../gtk/setupwizard.c:101
 msgid "Sorry this username already exists. Please try a new one."
-msgstr ""
+msgstr "Beklager, brukernavnet er allerede tatt. Forsøk ett annet."
 
 #: ../gtk/setupwizard.c:103 ../gtk/setupwizard.c:168
 msgid "Ok !"
-msgstr ""
+msgstr "Ok !"
 
 #: ../gtk/setupwizard.c:106 ../gtk/setupwizard.c:171
 msgid "Communication problem, please try again later."
-msgstr ""
+msgstr "Kommunikasjonsproblem, forsøk igjen senere."
 
 #: ../gtk/setupwizard.c:134
 msgid "Thank you. Your account is now configured and ready for use."
-msgstr ""
+msgstr "Takk. Ditt konto er nå satt opp og klart til bruk."
 
 #: ../gtk/setupwizard.c:228
 msgid "Welcome to the account setup assistant"
-msgstr ""
+msgstr "Velkommen til brukerkontoveiviseren"
 
 #: ../gtk/setupwizard.c:232
 msgid "Account setup assistant"
-msgstr ""
+msgstr "Brukerkontoveiviser"
 
 #: ../gtk/setupwizard.c:236
-#, fuzzy
 msgid "Choosing a username"
-msgstr "gebruikersnaam:"
+msgstr "Velg ett brukernavn"
 
 #: ../gtk/setupwizard.c:240
 msgid "Verifying"
-msgstr ""
+msgstr "Verifiserer"
 
 #: ../gtk/setupwizard.c:244
-#, fuzzy
 msgid "Confirmation"
-msgstr "Informatie"
+msgstr "Bekreftelse"
 
 #: ../gtk/setupwizard.c:249
 msgid "Creating your account"
-msgstr ""
+msgstr "Lager brukerkontoen din"
 
 #: ../gtk/setupwizard.c:253
 msgid "Now ready !"
-msgstr ""
+msgstr "Klar nå!"
 
 #: ../gtk/incall_view.c:113
 msgid "Transfer"
-msgstr ""
+msgstr "Overfører"
 
 #: ../gtk/incall_view.c:187
-#, fuzzy
 msgid "<b>Calling...</b>"
-msgstr "Contactlijst"
+msgstr "<b>Ringer...</b>"
 
 #: ../gtk/incall_view.c:190 ../gtk/incall_view.c:246
 msgid "00::00::00"
-msgstr ""
+msgstr "00:00:00"
 
 #: ../gtk/incall_view.c:206
-#, fuzzy
 msgid "<b>Incoming call</b>"
-msgstr "Inkomende oproep"
+msgstr "Innkommende samtale"
 
 #: ../gtk/incall_view.c:216
 msgid ""
 "Pause all calls\n"
 "and answer"
 msgstr ""
+"Pauser alle samtaler\n"
+"og svarer"
 
 #: ../gtk/incall_view.c:217 ../gtk/main.ui.h:20
 msgid "Answer"
-msgstr ""
+msgstr "Svarer"
 
 #: ../gtk/incall_view.c:244
-#, fuzzy
 msgid "<b>In call</b>"
-msgstr "Contactlijst"
+msgstr "<b>I samtale med</b>"
 
 #: ../gtk/incall_view.c:260
-#, fuzzy
 msgid "<b>Paused call</b>"
-msgstr "Contactlijst"
+msgstr "<b>Pauset samtale</b>"
 
 #: ../gtk/incall_view.c:272
 #, c-format
 msgid "%02i::%02i::%02i"
-msgstr ""
+msgstr "%02i:%02i:%02i"
 
 #: ../gtk/incall_view.c:288
-#, fuzzy
 msgid "<b>Call ended.</b>"
-msgstr "Oproep beeindigd"
+msgstr "<b>Samtale avsluttet.</b>"
 
 #: ../gtk/incall_view.c:309
-#, fuzzy
 msgid "Unmute"
-msgstr "Ongelimiteerd"
+msgstr "Skru mikrofonen på"
 
 #: ../gtk/incall_view.c:316 ../gtk/main.ui.h:42
 msgid "Mute"
-msgstr ""
+msgstr "Skru mikrofonen av"
 
 #: ../gtk/incall_view.c:340
 msgid "Resume"
-msgstr ""
+msgstr "Fortsett"
 
 #: ../gtk/incall_view.c:347 ../gtk/main.ui.h:46
 msgid "Pause"
-msgstr ""
+msgstr "Pause"
 
 #: ../gtk/loginframe.c:93
 #, c-format
 msgid "Please enter login information for %s"
-msgstr ""
+msgstr "Skriv inn påloggingsinformasjon for %s:"
 
 #: ../gtk/main.ui.h:1
 msgid "#"
-msgstr "#"
+msgstr ""
 
 #: ../gtk/main.ui.h:2
 msgid "*"
-msgstr "*"
+msgstr ""
 
 #: ../gtk/main.ui.h:3
 msgid "0"
-msgstr "0"
+msgstr ""
 
 #: ../gtk/main.ui.h:4
 msgid "1"
-msgstr "1"
+msgstr ""
 
 #: ../gtk/main.ui.h:5
 msgid "2"
@@ -448,7 +451,7 @@ msgstr ""
 
 #: ../gtk/main.ui.h:8
 msgid "5"
-msgstr "5"
+msgstr ""
 
 #: ../gtk/main.ui.h:9
 msgid "6"
@@ -467,19 +470,16 @@ msgid "9"
 msgstr ""
 
 #: ../gtk/main.ui.h:13
-#, fuzzy
 msgid "<b>Add contacts from directory</b>"
-msgstr "Contact informatie"
+msgstr "<b>Lägg till kontakt ifrån katalogen</b>"
 
 #: ../gtk/main.ui.h:14
-#, fuzzy
 msgid "<b>Contact list</b>"
-msgstr "Contactlijst"
+msgstr "<b>Kontaktlista</b>"
 
 #: ../gtk/main.ui.h:15
-#, fuzzy
 msgid "<b>Welcome !</b>"
-msgstr "Contactlijst"
+msgstr "<b>Välkommen!</b>"
 
 #: ../gtk/main.ui.h:16
 msgid "A"
@@ -492,7 +492,7 @@ msgstr ""
 #: ../gtk/main.ui.h:18
 #, fuzzy
 msgid "Add contact"
-msgstr "Bewerk contactgegevens"
+msgstr "Fant kontakt %i"
 
 #: ../gtk/main.ui.h:19
 msgid "All users"
@@ -501,17 +501,15 @@ msgstr ""
 #: ../gtk/main.ui.h:21
 #, fuzzy
 msgid "Audio & video"
-msgstr "Audio codecs"
+msgstr "Audio & Video"
 
 #: ../gtk/main.ui.h:22
-#, fuzzy
 msgid "Audio only"
-msgstr "Audio codecs"
+msgstr "Enbart audio"
 
 #: ../gtk/main.ui.h:23
-#, fuzzy
 msgid "Automatically log me in"
-msgstr "Automatisch een geldige hostnaam raden"
+msgstr "Logga mig automatiskt"
 
 #: ../gtk/main.ui.h:24
 msgid "B"
@@ -522,55 +520,54 @@ msgid "C"
 msgstr ""
 
 #: ../gtk/main.ui.h:26
+#, fuzzy
 msgid "Check _Updates"
-msgstr ""
+msgstr "Letar efter uppdateringar"
 
 #: ../gtk/main.ui.h:27
 #, fuzzy
 msgid "Contacts"
-msgstr "Verbinden"
+msgstr "Kontaktar"
 
 #: ../gtk/main.ui.h:28
 msgid "D"
 msgstr ""
 
 #: ../gtk/main.ui.h:29
-#, fuzzy
 msgid "Decline"
-msgstr "lijn"
+msgstr "Avböj"
 
 #: ../gtk/main.ui.h:30
 #, fuzzy
 msgid "Default"
-msgstr "SIP-identiteit:"
+msgstr "%s (Standard)"
 
 #: ../gtk/main.ui.h:31
-#, fuzzy
 msgid "Duration"
-msgstr "Informatie"
+msgstr "Förlopp"
 
 #: ../gtk/main.ui.h:32
-#, fuzzy
 msgid "Duration:"
-msgstr "Informatie"
+msgstr "Förlopp:"
 
 #: ../gtk/main.ui.h:33
-#, fuzzy
 msgid "Enable self-view"
-msgstr "Video aan"
+msgstr "Själv bild"
 
 #: ../gtk/main.ui.h:34
 msgid "Enter username, phone number, or full sip address"
-msgstr ""
+msgstr "Mata in användarnamn, telefonnummer eller SIP adress"
 
 #: ../gtk/main.ui.h:35
+#, fuzzy
 msgid "Fiber Channel"
 msgstr ""
+"ADSL\n"
+"Fiber"
 
 #: ../gtk/main.ui.h:36
-#, fuzzy
 msgid "In call"
-msgstr "Inkomende oproep"
+msgstr "I samtal"
 
 #: ../gtk/main.ui.h:37
 msgid "Initiate a new call"
@@ -578,67 +575,64 @@ msgstr ""
 
 #: ../gtk/main.ui.h:38
 msgid "Internet connection:"
-msgstr ""
+msgstr "Internet förbindelse:"
 
 #: ../gtk/main.ui.h:39
 msgid "Keypad"
 msgstr ""
 
 #: ../gtk/main.ui.h:40
-#, fuzzy
 msgid "Login information"
-msgstr "Contact informatie"
+msgstr "Login information"
 
 #: ../gtk/main.ui.h:41
 msgid "Lookup:"
-msgstr ""
+msgstr "Sök:"
 
 #: ../gtk/main.ui.h:43
-#, fuzzy
 msgid "My current identity:"
-msgstr "SIP-identiteit:"
+msgstr "Min nuvarande identitet"
 
 #: ../gtk/main.ui.h:44
 #, fuzzy
 msgid "Online users"
-msgstr "Aanwezig"
+msgstr ""
+"Alla användare\n"
+"Online användare"
 
 #: ../gtk/main.ui.h:45
-#, fuzzy
 msgid "Password"
-msgstr "wachtwoord:"
+msgstr "Lösenord"
 
 #: ../gtk/main.ui.h:47
-#, fuzzy
 msgid "SIP address or phone number:"
-msgstr "Geef het SIP adres of telefoonnummer in"
+msgstr "Användarnamn"
 
 #: ../gtk/main.ui.h:48
 msgid "Search"
-msgstr ""
+msgstr "Sök"
 
 #: ../gtk/main.ui.h:49
+#, fuzzy
 msgid "Show debug window"
-msgstr ""
+msgstr "Linphone debug fönster"
 
 #: ../gtk/main.ui.h:50
-#, fuzzy
 msgid "Username"
-msgstr "gebruikersnaam:"
+msgstr "Användarnamn"
 
 #: ../gtk/main.ui.h:51
-#, fuzzy
 msgid "_Help"
-msgstr "Help"
-
-#: ../gtk/main.ui.h:52
-msgid "_Homepage"
 msgstr ""
 
-#: ../gtk/main.ui.h:53
+#: ../gtk/main.ui.h:52
 #, fuzzy
+msgid "_Homepage"
+msgstr "Hemsidan"
+
+#: ../gtk/main.ui.h:53
 msgid "_Linphone"
-msgstr "linphone"
+msgstr "_inphone"
 
 #: ../gtk/main.ui.h:54
 msgid "_Options"
@@ -646,24 +640,23 @@ msgstr ""
 
 #: ../gtk/main.ui.h:55
 msgid "in"
-msgstr ""
+msgstr "i"
 
 #: ../gtk/main.ui.h:56
 msgid "label"
-msgstr ""
+msgstr "etikett"
 
 #: ../gtk/about.ui.h:1
 msgid "(C) Belledonne Communications,2010\n"
 msgstr ""
 
 #: ../gtk/about.ui.h:3
-#, fuzzy
 msgid "About linphone"
-msgstr "linphone"
+msgstr "Apropå linphone"
 
 #: ../gtk/about.ui.h:4
 msgid "An internet video phone using the standard SIP (rfc3261) protocol."
-msgstr ""
+msgstr "En Internet video telefon baserat på SIP protokoll."
 
 #: ../gtk/about.ui.h:5
 msgid ""
@@ -681,64 +674,59 @@ msgid ""
 msgstr ""
 
 #: ../gtk/contact.ui.h:1
-#, fuzzy
 msgid "<b>Contact information</b>"
-msgstr "Contact informatie"
+msgstr "<b>Kontakt information</b>"
 
 #: ../gtk/contact.ui.h:2
 msgid "Allow this contact to see my presence status"
-msgstr ""
+msgstr "Tillåt den här kontakten att se min närvarostatus"
 
 #: ../gtk/contact.ui.h:4
-#, fuzzy
 msgid "SIP Address"
-msgstr "Adres"
+msgstr "SIP Adress"
 
 #: ../gtk/contact.ui.h:5
 msgid "Show this contact presence status"
-msgstr ""
+msgstr "Visa kontaktens närvarostatus"
 
 #: ../gtk/contact.ui.h:6 ../gtk/password.ui.h:5
 #, fuzzy
 msgid "gtk-cancel"
-msgstr "Verbonden."
+msgstr "Kopplad"
 
 #: ../gtk/contact.ui.h:7 ../gtk/password.ui.h:6
-#, fuzzy
 msgid "gtk-ok"
-msgstr "Verwijderen"
+msgstr ""
 
 #: ../gtk/log.ui.h:1
 msgid "Linphone debug window"
-msgstr ""
+msgstr "Linphone debug fönster"
 
 #: ../gtk/password.ui.h:1
 #, fuzzy
 msgid "Linphone - Authentication required"
-msgstr "Authorisatie gevraagd"
+msgstr "Autorisering kreves"
 
 #: ../gtk/password.ui.h:2
-#, fuzzy
 msgid "Password:"
-msgstr "wachtwoord:"
+msgstr "Lösenord:"
 
 #: ../gtk/password.ui.h:3
 msgid "Please enter the domain password"
-msgstr ""
+msgstr "Mata in lösenordet för domänen"
 
 #: ../gtk/password.ui.h:4
 msgid "UserID"
-msgstr ""
+msgstr "AnvändarID"
 
 #: ../gtk/call_logs.ui.h:1
 #, fuzzy
 msgid "Call back"
-msgstr "Oproepgeschiedenis"
+msgstr "Ring %s"
 
 #: ../gtk/call_logs.ui.h:2
-#, fuzzy
 msgid "Call history"
-msgstr "Linphone - Oproepgeschiedenis"
+msgstr "Samtalshistorik"
 
 #: ../gtk/call_logs.ui.h:3
 msgid "Clear all"
@@ -746,11 +734,11 @@ msgstr ""
 
 #: ../gtk/sip_account.ui.h:1
 msgid "Configure a SIP account"
-msgstr ""
+msgstr "Konfigurera ett SIP konto"
 
 #: ../gtk/sip_account.ui.h:2
 msgid "Linphone - Configure a SIP account"
-msgstr ""
+msgstr "Linphone - Konfigurera ett SIP konto"
 
 #: ../gtk/sip_account.ui.h:3
 msgid "Looks like sip:<proxy hostname>"
@@ -761,118 +749,101 @@ msgid "Looks like sip:<username>@<domain>"
 msgstr ""
 
 #: ../gtk/sip_account.ui.h:5
-#, fuzzy
 msgid "Publish presence information"
-msgstr "Toon informatie over aanwezigheid:"
+msgstr "Publicera närvaro information"
 
 #: ../gtk/sip_account.ui.h:6
 msgid "Register at startup"
-msgstr ""
+msgstr "Registrera vid start"
 
 #: ../gtk/sip_account.ui.h:7
-#, fuzzy
 msgid "Registration duration (sec):"
-msgstr "Registratieperiode:"
+msgstr "Registreringsfrekvens (sek.):"
 
 #: ../gtk/sip_account.ui.h:8
 msgid "Route (optional):"
-msgstr "Route (optioneel):"
+msgstr "Route (tillval):"
 
 #: ../gtk/sip_account.ui.h:9
-#, fuzzy
 msgid "SIP Proxy address:"
-msgstr "SIP-proxy:"
+msgstr "SIP Proxy adress:"
 
 #: ../gtk/sip_account.ui.h:10
-#, fuzzy
 msgid "Your SIP identity:"
-msgstr "SIP-identiteit:"
+msgstr "Din SIP identitet:"
 
 #: ../gtk/sip_account.ui.h:11
 msgid "sip:"
 msgstr "sip:"
 
 #: ../gtk/chatroom.ui.h:1
-#, fuzzy
 msgid "Send"
-msgstr "Geluid"
+msgstr "Skicka"
 
 #: ../gtk/chatroom.ui.h:2
 #, fuzzy
 msgid "gtk-close"
-msgstr "Verbonden."
+msgstr "Kopplad"
 
 #: ../gtk/parameters.ui.h:1
 msgid "0 stands for \"unlimited\""
-msgstr ""
+msgstr "0 står för \"utan begränsning\""
 
 #: ../gtk/parameters.ui.h:2
-#, fuzzy
 msgid "<b>Audio</b>"
-msgstr "Contactlijst"
+msgstr "<b>Audio</b>"
 
 #: ../gtk/parameters.ui.h:3
 msgid "<b>Bandwidth control</b>"
-msgstr ""
+msgstr "<b>Bandbreddskontroll</b>"
 
 #: ../gtk/parameters.ui.h:4
-#, fuzzy
 msgid "<b>Codecs</b>"
-msgstr "Contactlijst"
+msgstr "<b>Codecs</b>"
 
 #: ../gtk/parameters.ui.h:5
-#, fuzzy
 msgid "<b>Default identity</b>"
-msgstr "SIP-identiteit:"
+msgstr "<b>Default identitet</b>"
 
 #: ../gtk/parameters.ui.h:6
-#, fuzzy
 msgid "<b>Language</b>"
-msgstr "Contactlijst"
+msgstr "<b>Språk</b>"
 
 #: ../gtk/parameters.ui.h:7
-#, fuzzy
 msgid "<b>Level</b>"
-msgstr "Contactlijst"
+msgstr "<b>Nivå</b>"
 
 #: ../gtk/parameters.ui.h:8
-#, fuzzy
 msgid "<b>NAT and Firewall</b>"
-msgstr "Contactlijst"
+msgstr "<b>NAT och Brandvägg</b>"
 
 #: ../gtk/parameters.ui.h:9
-#, fuzzy
 msgid "<b>Ports</b>"
-msgstr "Contactlijst"
+msgstr "<b>Portar</b>"
 
 #: ../gtk/parameters.ui.h:10
-#, fuzzy
 msgid "<b>Privacy</b>"
-msgstr "Contactlijst"
+msgstr "<b>Integritet</b>"
 
 #: ../gtk/parameters.ui.h:11
-#, fuzzy
 msgid "<b>Proxy accounts</b>"
-msgstr "Contactlijst"
+msgstr "<b>Proxy konton</b>"
 
 #: ../gtk/parameters.ui.h:12
-#, fuzzy
 msgid "<b>Transport</b>"
-msgstr "Contactlijst"
+msgstr "<b>Transport</b>"
 
 #: ../gtk/parameters.ui.h:13
-#, fuzzy
 msgid "<b>Video</b>"
-msgstr "Contactlijst"
+msgstr "<b>Video</b>"
 
 #: ../gtk/parameters.ui.h:14
 msgid "ALSA special device (optional):"
-msgstr ""
+msgstr "ALSA speciell enhet (tillval):"
 
 #: ../gtk/parameters.ui.h:15
-#, fuzzy
 msgid "Add"
-msgstr "Adres"
+msgstr "Lägg till"
 
 #: ../gtk/parameters.ui.h:16
 msgid "Audio RTP/UDP:"
@@ -881,110 +852,105 @@ msgstr ""
 #: ../gtk/parameters.ui.h:17
 #, fuzzy
 msgid "Audio codecs"
-msgstr "Video codecs"
+msgstr ""
+"Audio codecs\n"
+"Video codecs"
 
 #: ../gtk/parameters.ui.h:18
 msgid "Behind NAT / Firewall (specify gateway IP below)"
-msgstr ""
+msgstr "Bakom en NAT / brandvägg (specificera gatewap IP adress nedan)"
 
 #: ../gtk/parameters.ui.h:19
 msgid "Behind NAT / Firewall (use STUN to resolve)"
-msgstr ""
+msgstr "Bakom en NAT / brandvägg (använd STUN för att avgöra adressen)"
 
 #: ../gtk/parameters.ui.h:21
 msgid "CIF"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:22
-#, fuzzy
 msgid "Capture device:"
-msgstr "Geluidsapparaat gebruiken:"
+msgstr "Mikrofon enhet:"
 
 #: ../gtk/parameters.ui.h:23
-#, fuzzy
 msgid "Codecs"
 msgstr "Codecs"
 
 #: ../gtk/parameters.ui.h:24
 msgid "Direct connection to the Internet"
-msgstr ""
+msgstr "Direkt förbindelse till Internet"
 
 #: ../gtk/parameters.ui.h:25
 msgid "Disable"
-msgstr "Uit"
+msgstr "Inaktivera"
 
 #: ../gtk/parameters.ui.h:26
-#, fuzzy
 msgid "Done"
-msgstr "Weg"
+msgstr "Klar"
 
 #: ../gtk/parameters.ui.h:27
-#, fuzzy
 msgid "Download speed limit in Kbit/sec:"
-msgstr "Download bandbreedte (kbit/sec):"
+msgstr "Max downstream bandbreddshastighet i kbit/sek:"
 
 #: ../gtk/parameters.ui.h:28
 msgid "Edit"
-msgstr "Bewerken"
+msgstr "Editera"
 
 #: ../gtk/parameters.ui.h:29
 msgid "Enable"
-msgstr "Aan"
+msgstr "Möjliggör"
 
 #: ../gtk/parameters.ui.h:30
 msgid "Enable echo cancellation"
-msgstr ""
+msgstr "Tillåta ekokancellering"
 
 #: ../gtk/parameters.ui.h:31
 msgid "Erase all passwords"
-msgstr ""
+msgstr "Glöm alla lösenord"
 
 #: ../gtk/parameters.ui.h:32
 msgid "Manage SIP Accounts"
-msgstr ""
+msgstr "Hantera SIP konton"
 
 #: ../gtk/parameters.ui.h:33
 msgid "Multimedia settings"
-msgstr ""
+msgstr "Multimedia inställningar"
 
 #: ../gtk/parameters.ui.h:34
-#, fuzzy
 msgid "Network settings"
-msgstr "Netwerk"
+msgstr "Nätverksinställningar"
 
 #: ../gtk/parameters.ui.h:35
-#, fuzzy
 msgid "Playback device:"
-msgstr "Geluidsapparaat gebruiken:"
+msgstr "Uppspelningsenhet:"
 
 #: ../gtk/parameters.ui.h:36
 msgid "Prefered video resolution:"
-msgstr ""
+msgstr "Video upplösning:"
 
 #: ../gtk/parameters.ui.h:37
-#, fuzzy
 msgid "Public IP address:"
-msgstr "SIP-adres:"
+msgstr "Publik IP adress:"
 
 #: ../gtk/parameters.ui.h:38
 msgid ""
 "Register to FONICS\n"
 "virtual network !"
 msgstr ""
+"Registrera hos FONICS\n"
+"virtuella nätverk!"
 
 #: ../gtk/parameters.ui.h:40
 msgid "Remove"
-msgstr "Verwijderen"
+msgstr "Ta bort"
 
 #: ../gtk/parameters.ui.h:41
-#, fuzzy
 msgid "Ring device:"
-msgstr "Geluidsapparaat gebruiken:"
+msgstr "Ringning enhet:"
 
 #: ../gtk/parameters.ui.h:42
-#, fuzzy
 msgid "Ring sound:"
-msgstr "Belgeluid:"
+msgstr "Ring signal:"
 
 #: ../gtk/parameters.ui.h:43
 msgid "SIP (TCP):"
@@ -996,42 +962,40 @@ msgstr ""
 
 #: ../gtk/parameters.ui.h:45
 msgid "Send DTMFs as SIP info"
-msgstr ""
+msgstr "Kicka DTMF koder som SIP info"
 
 #: ../gtk/parameters.ui.h:46
 msgid "Set Maximum Transmission Unit:"
-msgstr ""
+msgstr "Välj MTU (Maximum Transmission Unit):"
 
 #: ../gtk/parameters.ui.h:47
 msgid "Settings"
-msgstr ""
+msgstr "Inställningar"
 
 #: ../gtk/parameters.ui.h:48
 msgid "Show advanced settings"
-msgstr ""
+msgstr "Visa avancerade inställningar"
 
 #: ../gtk/parameters.ui.h:49
-#, fuzzy
 msgid "Stun server:"
-msgstr "Geluidsapparaat"
+msgstr "STUN server:"
 
 #: ../gtk/parameters.ui.h:50
 msgid "This section defines your SIP address when not using a SIP account"
 msgstr ""
+"Denna sektion specificerar din SIP adress när du inte använder ett SIP konto"
 
 #: ../gtk/parameters.ui.h:51
-#, fuzzy
 msgid "Upload speed limit in Kbit/sec:"
-msgstr "Upload bandbreedte (kbit/sec):"
+msgstr "Max upstream bandbreddshastighet i kbit/sek:"
 
 #: ../gtk/parameters.ui.h:52
 msgid "Use IPv6 instead of IPv4"
-msgstr ""
+msgstr "Använd IPv6 istället av IPv4"
 
 #: ../gtk/parameters.ui.h:53
-#, fuzzy
 msgid "User interface"
-msgstr "gebruikersnaam:"
+msgstr "Användarinterface"
 
 #: ../gtk/parameters.ui.h:54
 msgid "Video RTP/UDP:"
@@ -1040,80 +1004,77 @@ msgstr ""
 #: ../gtk/parameters.ui.h:55
 #, fuzzy
 msgid "Video codecs"
-msgstr "Video codecs"
+msgstr ""
+"Audio codecs\n"
+"Video codecs"
 
 #: ../gtk/parameters.ui.h:56
-#, fuzzy
 msgid "Video input device:"
-msgstr "Geluidsapparaat"
+msgstr "Video ingångsenhet:"
 
 #: ../gtk/parameters.ui.h:57
 msgid "Your display name (eg: John Doe):"
-msgstr ""
+msgstr "Ditt synliga namn, e.g. Kalle Karlsson:"
 
 #: ../gtk/parameters.ui.h:58
-#, fuzzy
 msgid "Your resulting SIP address:"
-msgstr "Uw SIP-adres:"
+msgstr "Din SIP adress:"
 
 #: ../gtk/parameters.ui.h:59
-#, fuzzy
 msgid "Your username:"
-msgstr "gebruikersnaam:"
+msgstr "Ditt användarnamn:"
 
 #: ../gtk/parameters.ui.h:60
+#, fuzzy
 msgid "a sound card"
-msgstr ""
+msgstr "ett ljud kort\n"
 
 #: ../gtk/parameters.ui.h:61
 msgid "default camera"
-msgstr ""
+msgstr "default kamera"
 
 #: ../gtk/parameters.ui.h:62
 msgid "default soundcard"
-msgstr ""
+msgstr "default ljudkort"
 
 #: ../gtk/buddylookup.ui.h:1
-#, fuzzy
 msgid "<b>Search somebody</b>"
-msgstr "Contactlijst"
+msgstr "<b>Sök efter kontakter</b>"
 
 #: ../gtk/buddylookup.ui.h:2
 msgid "Add to my list"
-msgstr ""
+msgstr "Lägg till min lista"
 
 #: ../gtk/buddylookup.ui.h:3
-#, fuzzy
 msgid "Search contacts in directory"
-msgstr "Contact informatie"
+msgstr "Sök för kontakter i katalogen"
 
 #: ../gtk/waiting.ui.h:1
-#, fuzzy
 msgid "Linphone"
-msgstr "linphone"
+msgstr "Linphone"
 
 #: ../gtk/waiting.ui.h:2
 msgid "Please wait"
-msgstr ""
+msgstr "Vänta"
 
 #: ../coreapi/linphonecore.c:165
-#, fuzzy, c-format
+#, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."
-msgstr[0] "U heeft %i oproep(en) gemist."
-msgstr[1] "U heeft %i oproep(en) gemist."
+msgstr[0] "Du har %i ubesvarte anrop."
+msgstr[1] "Du har %i missade samtal"
 
 #: ../coreapi/linphonecore.c:206
 msgid "aborted"
-msgstr "afgebroken"
+msgstr "avbrutt"
 
 #: ../coreapi/linphonecore.c:209
 msgid "completed"
-msgstr "voltooid"
+msgstr "Fullført"
 
 #: ../coreapi/linphonecore.c:212
 msgid "missed"
-msgstr "gemist"
+msgstr "ubesvart"
 
 #: ../coreapi/linphonecore.c:217
 #, c-format
@@ -1124,87 +1085,83 @@ msgid ""
 "Status: %s\n"
 "Duration: %i mn %i sec\n"
 msgstr ""
-"%s op %s\n"
-"Van: %s\n"
-"Aan: %s\n"
+"%s på %s\n"
+"Fra: %s\n"
+"Til: %s\n"
 "Status: %s\n"
-"Tijdsduur: %i mins %i secs\n"
+"Lengde: %i min %i sek\n"
 
 #: ../coreapi/linphonecore.c:218
 msgid "Incoming call"
-msgstr "Inkomende oproep"
+msgstr "Innkommende samtale"
 
 #: ../coreapi/linphonecore.c:218
 msgid "Outgoing call"
-msgstr "Uitgaande oproep"
+msgstr "Utgående samtale"
 
 #: ../coreapi/linphonecore.c:998
 msgid "Ready"
-msgstr "Gereed."
+msgstr "Klar"
 
 #: ../coreapi/linphonecore.c:1773
 msgid "Looking for telephone number destination..."
-msgstr "Zoekt de lokatie van het telefoonnummer..."
+msgstr "Ser etter telefonnummer for destinasjonen..."
 
 #: ../coreapi/linphonecore.c:1776
 msgid "Could not resolve this number."
-msgstr "Kon dit nummer niet vinden."
+msgstr "Kan ikke nå dette nummeret."
 
 #: ../coreapi/linphonecore.c:1820
 msgid ""
 "Could not parse given sip address. A sip url usually looks like sip:"
 "user@domain"
 msgstr ""
-"Slecht geformuleerd SIP-adres. Een SIP-adres ziet er uit als sip:"
-"gebruikersnaam@domeinnaam"
+"Klarer ikke å tolke angitt SIP-adresse. En SIP-adresse er vanligvis ut som "
+"sip: brukernavn@domenenavn"
 
 #: ../coreapi/linphonecore.c:1967
 msgid "Contacting"
-msgstr "Verbinden"
+msgstr "Tilknytter"
 
 #: ../coreapi/linphonecore.c:1974
-#, fuzzy
 msgid "Could not call"
-msgstr "Kon niet oproepen"
+msgstr "Kunne ikke ringe"
 
 #: ../coreapi/linphonecore.c:2081
 msgid "Sorry, you have to pause or stop the current call first !"
-msgstr ""
+msgstr "Beklager, du må pause eller avslutte den nåværende samtalen først !"
 
 #: ../coreapi/linphonecore.c:2086
 msgid "Sorry, we have reached the maximum number of simultaneous calls"
-msgstr ""
+msgstr "Beklager, du har nådd maksimalt antall samtidige samtaler"
 
 #: ../coreapi/linphonecore.c:2208
 msgid "Modifying call parameters..."
-msgstr ""
+msgstr "Endrer ringeparametre..."
 
 #: ../coreapi/linphonecore.c:2311
 msgid "Connected."
-msgstr "Verbonden."
+msgstr "Tilkoblet"
 
 #: ../coreapi/linphonecore.c:2334
-#, fuzzy
 msgid "Call aborted"
-msgstr "afgebroken"
+msgstr "Samtale avbrutt"
 
 #: ../coreapi/linphonecore.c:2374
 msgid "Call ended"
-msgstr "Oproep beeindigd"
+msgstr "Samtale avsluttet"
 
 #: ../coreapi/linphonecore.c:2456
-#, fuzzy
 msgid "Could not pause the call"
-msgstr "Kon niet oproepen"
+msgstr "Kunne ikke pause samtalen"
 
 #: ../coreapi/linphonecore.c:2460
-#, fuzzy
 msgid "Pausing the current call..."
-msgstr "Kon niet oproepen"
+msgstr "Pauser nåværende samtale"
 
 #: ../coreapi/linphonecore.c:2499
 msgid "There is already a call in process, pause or stop it first."
-msgstr ""
+msgstr "Det er allerede en samtale igang, pause eller avslutt den først."
 
 #: ../coreapi/misc.c:147
 msgid ""
@@ -1213,10 +1170,11 @@ msgid ""
 "is missing and linphone needs it. Please execute\n"
 "'modprobe snd-pcm-oss' as root to load it."
 msgstr ""
-"Uw computer maakt schijnbaar gebruik van ALSA geluidsdrivers.\n"
-"Dit is de beste keuze. Maar de pcm oss emulatie module mist\n"
-"en linphone heeft deze nodig. Geeft u alstublieft het commando\n"
-"'modprobe snd-pcm-oss' als root om de module te laden."
+"Din datamaskin ser ut til å bruke ALSA drivere for lyd.\n"
+"Dette er det beste alternativet. Det ser ut til at pcm oss "
+"emulasjonsmodulen\n"
+"mangler og linphone trenger den. Vennligst kjør\n"
+"'modprobe snd-pcm-oss' som root for å laste den."
 
 #: ../coreapi/misc.c:150
 msgid ""
@@ -1225,402 +1183,400 @@ msgid ""
 "is missing and linphone needs it. Please execute\n"
 " 'modprobe snd-mixer-oss' as root to load it."
 msgstr ""
-"Uw computer maakt schijnbaar gebruik van ALSA geluidsdrivers.\n"
-"Dit is de beste keuze. Maar de mixer oss emulatie module mist\n"
-"en linphone heeft deze nodig. Geeft u alstublieft het commando\n"
-"'modprobe snd-mixer-oss' als root om de module te laden."
+"Din datamaskin ser ut til å bruke ALSA drivere for lyd.\n"
+"Dette er det beste alternativet. Det ser ut til at mixermodulen for oss "
+"emulering\n"
+"mangler og linphone trenger den. Vennligst kjør\n"
+"'modprobe snd-mixer-oss' som root for å laste den."
 
 #: ../coreapi/misc.c:474
 msgid "Stun lookup in progress..."
-msgstr "STUN adres wordt opgezocht..."
+msgstr "STUN oppslag pågår..."
 
 #: ../coreapi/friend.c:33
 msgid "Online"
-msgstr "Aanwezig"
+msgstr "Tilknyttet"
 
 #: ../coreapi/friend.c:36
 msgid "Busy"
-msgstr "Bezet"
+msgstr "Opptatt"
 
 #: ../coreapi/friend.c:39
-#, fuzzy
 msgid "Be right back"
-msgstr "Kom zo terug"
+msgstr "Kommer plutselig tilbake"
 
 #: ../coreapi/friend.c:42
 msgid "Away"
-msgstr "Afwezig"
+msgstr "Borte"
 
 #: ../coreapi/friend.c:45
-#, fuzzy
 msgid "On the phone"
-msgstr "Aan de telefoon"
+msgstr "I telefonen"
 
 #: ../coreapi/friend.c:48
-#, fuzzy
 msgid "Out to lunch"
-msgstr "Aan het lunchen"
+msgstr "Ute til lunsj"
 
 #: ../coreapi/friend.c:51
 msgid "Do not disturb"
-msgstr "Niet storen"
+msgstr "Ikke forstyrr"
 
 #: ../coreapi/friend.c:54
-#, fuzzy
 msgid "Moved"
-msgstr "Codecs"
+msgstr "Flyttet"
 
 #: ../coreapi/friend.c:57
 msgid "Using another messaging service"
-msgstr ""
+msgstr "Bruker en annen tjeneste"
 
 #: ../coreapi/friend.c:60
-#, fuzzy
 msgid "Offline"
-msgstr "Aanwezig"
+msgstr "Frakoblet"
 
 #: ../coreapi/friend.c:63
 msgid "Pending"
-msgstr ""
+msgstr "Pågående"
 
 #: ../coreapi/friend.c:66
 msgid "Unknown-bug"
-msgstr ""
+msgstr "Ukjent feil"
 
 #: ../coreapi/proxy.c:187
 msgid ""
 "The sip proxy address you entered is invalid, it must start with \"sip:\" "
 "followed by a hostname."
 msgstr ""
+"SIP proxy adressen du har angitt er ugyldig, den må begynne med \"sip:\" "
+"etterfult av vertsnavn."
 
 #: ../coreapi/proxy.c:193
 msgid ""
 "The sip identity you entered is invalid.\n"
 "It should look like sip:username@proxydomain, such as sip:alice@example.net"
 msgstr ""
+"SIP adressen du har angitt er feil. Adressen bør se ut som sip: "
+"brukernavn@domenenavn, f.eks sip:ola@eksempel.no"
 
 #: ../coreapi/proxy.c:671
-#, fuzzy, c-format
+#, c-format
 msgid "Could not login as %s"
-msgstr "Kon pixmap bestand %s niet vinden"
+msgstr "Ikke ikke logge inn som %s"
 
 #: ../coreapi/callbacks.c:170
-#, fuzzy
 msgid "is contacting you"
-msgstr "belt u."
+msgstr "Kontakter deg."
 
 #: ../coreapi/callbacks.c:171
 msgid " and asked autoanswer."
-msgstr ""
+msgstr " og ba om autosvar."
 
 #: ../coreapi/callbacks.c:171
 msgid "."
-msgstr ""
+msgstr "."
 
 #: ../coreapi/callbacks.c:226
-#, fuzzy
 msgid "Remote ringing."
-msgstr "Externe diensten"
+msgstr "Ringer hos motparten."
 
 #: ../coreapi/callbacks.c:242
 #, fuzzy
 msgid "Remote ringing..."
-msgstr "Externe diensten"
+msgstr "Ringer hos motparten."
 
 #: ../coreapi/callbacks.c:253
 msgid "Early media."
-msgstr ""
+msgstr "Tidlig media"
 
 #: ../coreapi/callbacks.c:291
-#, fuzzy, c-format
+#, c-format
 msgid "Call with %s is paused."
-msgstr "Chat met %s"
+msgstr "Samtalen med %s er pauset."
 
 #: ../coreapi/callbacks.c:302
 #, c-format
 msgid "Call answered by %s - on hold."
-msgstr ""
+msgstr "Samtale besvart av %s - på vent."
 
 #: ../coreapi/callbacks.c:317
-#, fuzzy
 msgid "Call resumed."
-msgstr "Oproep beeindigd"
+msgstr "Samtale gjenopptatt."
 
 #: ../coreapi/callbacks.c:322
-#, fuzzy, c-format
+#, c-format
 msgid "Call answered by %s."
-msgstr ""
-"Oproepen of\n"
-"beantwoorden"
+msgstr "Samtale besvart av %s."
 
 #: ../coreapi/callbacks.c:383
 msgid "We are being paused..."
-msgstr ""
+msgstr "Vi er satt på vent..."
 
 #: ../coreapi/callbacks.c:387
 msgid "We have been resumed..."
-msgstr ""
+msgstr "Vi har blitt gjenopptatt..."
 
 #: ../coreapi/callbacks.c:424
 msgid "Call terminated."
-msgstr "Oproep beeindigd."
+msgstr "Samtale avsluttet."
 
 #: ../coreapi/callbacks.c:431
 msgid "User is busy."
-msgstr "Gebruiker is bezet."
+msgstr "Brukeren er opptatt."
 
 #: ../coreapi/callbacks.c:432
 msgid "User is temporarily unavailable."
-msgstr "Gebruiker is tijdelijk niet beschikbaar."
+msgstr "Brukeren er midlertidig ikke tilgjengelig."
 
 #. char *retrymsg=_("%s. Retry after %i minute(s).");
 #: ../coreapi/callbacks.c:434
 msgid "User does not want to be disturbed."
-msgstr "De gebruiker wenst niet gestoord te worden."
+msgstr "Brukeren vil ikke bli forstyrret."
 
 #: ../coreapi/callbacks.c:435
 msgid "Call declined."
-msgstr "Oproep geweigerd."
+msgstr "Samtale avvist."
 
 #: ../coreapi/callbacks.c:447
 msgid "No response."
-msgstr ""
+msgstr "Ikke noe svar."
 
 #: ../coreapi/callbacks.c:451
 msgid "Protocol error."
-msgstr ""
+msgstr "Protokollfeil."
 
 #: ../coreapi/callbacks.c:467
-#, fuzzy
 msgid "Redirected"
-msgstr "Doorgeschakeld naar %s..."
+msgstr "Omdirigert"
 
 #: ../coreapi/callbacks.c:477
 msgid "Not found"
-msgstr ""
+msgstr "Ikke funnet"
 
 #: ../coreapi/callbacks.c:487
 msgid "No common codecs"
-msgstr ""
+msgstr "Ingen felles kodek"
 
 #: ../coreapi/callbacks.c:493
-#, fuzzy
 msgid "Call failed."
-msgstr "Oproep geannuleerd."
+msgstr "Samtale feilet."
 
 #: ../coreapi/callbacks.c:557
 #, c-format
 msgid "Registration on %s successful."
-msgstr "Registratie op %s gelukt."
+msgstr "Registrering hos %s lykkes."
 
 #: ../coreapi/callbacks.c:558
-#, fuzzy, c-format
+#, c-format
 msgid "Unregistration on %s done."
-msgstr "Registratie op %s gelukt."
+msgstr "Avregistrering hos %s lykkes."
 
 #: ../coreapi/callbacks.c:574
 msgid "no response timeout"
-msgstr ""
+msgstr "ingen svar innen angitt tid"
 
 #: ../coreapi/callbacks.c:577
-#, fuzzy, c-format
+#, c-format
 msgid "Registration on %s failed: %s"
-msgstr "Registratie op %s mislukt (time-out)."
+msgstr "Registrering hos %s mislykkes: %s"
 
 #: ../coreapi/callbacks.c:619
 #, c-format
 msgid "We are transferred to %s"
-msgstr ""
+msgstr "Vi er overført til %s"
 
 #: ../coreapi/sal_eXosip2.c:814 ../coreapi/sal_eXosip2.c:816
-#, fuzzy
 msgid "Authentication failure"
-msgstr "Authorisatie gegevens"
+msgstr "Autorisering kreves"
 
 #: ../mediastreamer2/src/alaw.c:144 ../mediastreamer2/src/alaw.c:162
 msgid "ITU-G.711 alaw encoder"
-msgstr ""
+msgstr "ITU-G.711 alaw enkoder"
 
 #: ../mediastreamer2/src/alaw.c:194 ../mediastreamer2/src/alaw.c:211
 msgid "ITU-G.711 alaw decoder"
-msgstr ""
+msgstr "ITU-G.711 alaw dekoder"
 
 #: ../mediastreamer2/src/alsa.c:950
 msgid "Alsa sound source"
-msgstr ""
+msgstr "Alasa lydkilde"
 
 #: ../mediastreamer2/src/alsa.c:1054
 msgid "Alsa sound output"
-msgstr ""
+msgstr "alsa lydutgang"
 
 #: ../mediastreamer2/src/aqsnd.c:1008
 msgid "Sound capture filter for MacOS X Audio Queue Service"
-msgstr ""
+msgstr "Lydfangefilter for MacOS X Audio Queue Service"
 
 #: ../mediastreamer2/src/aqsnd.c:1032
 msgid "Sound playback filter for MacOS X Audio Queue Service"
-msgstr ""
+msgstr "Lydavspillingsfilter for MacOS X Audio Queue Service"
 
 #: ../mediastreamer2/src/dtmfgen.c:287 ../mediastreamer2/src/dtmfgen.c:306
 msgid "DTMF generator"
-msgstr ""
+msgstr "DTMF generator"
 
 #: ../mediastreamer2/src/gsm.c:120 ../mediastreamer2/src/gsm.c:138
 msgid "The GSM full-rate codec"
-msgstr ""
+msgstr "Høyhastighets GSM kodek"
 
 #: ../mediastreamer2/src/gsm.c:187 ../mediastreamer2/src/gsm.c:205
 msgid "The GSM codec"
-msgstr ""
+msgstr "GSM kodek"
 
 #: ../mediastreamer2/src/macsnd.c:627
+#, fuzzy
 msgid "Sound capture filter for MacOS X Audio Unit"
-msgstr ""
+msgstr "Lydfangefilter for MacOS X Core Audio drivere"
 
 #: ../mediastreamer2/src/macsnd.c:642
+#, fuzzy
 msgid "Sound playback filter for MacOS X Audio Unit"
-msgstr ""
+msgstr "Lydavspillingsfilter for MacOS X Core Audio drivere"
 
 #: ../mediastreamer2/src/msconf.c:787 ../mediastreamer2/src/msconf.c:805
 msgid "A filter to make conferencing"
-msgstr ""
+msgstr "Ett filter for telekonferanser"
 
 #: ../mediastreamer2/src/msfileplayer.c:311
 #: ../mediastreamer2/src/msfileplayer.c:329
 msgid "Raw files and wav reader"
-msgstr ""
+msgstr "Få filer og wav leser"
 
 #: ../mediastreamer2/src/msfilerec.c:170 ../mediastreamer2/src/msfilerec.c:188
 #: ../mediastreamer2/src/msfilerec_win.c:216
 #: ../mediastreamer2/src/msfilerec_win.c:234
 msgid "Wav file recorder"
-msgstr ""
+msgstr "WAV filopptaker"
 
 #: ../mediastreamer2/src/msjoin.c:45 ../mediastreamer2/src/msjoin.c:63
 msgid "A filter that send several inputs to one output."
-msgstr ""
+msgstr "Ett filer for å sende flere inn-kilder til en utgang"
 
 #: ../mediastreamer2/src/msresample.c:159
 #: ../mediastreamer2/src/msresample.c:177
 msgid "Audio resampler"
-msgstr ""
+msgstr "Lydomformer"
 
 #: ../mediastreamer2/src/msrtp.c:369 ../mediastreamer2/src/msrtp.c:387
 msgid "RTP output filter"
-msgstr ""
+msgstr "RTP ut-filter"
 
 #: ../mediastreamer2/src/msrtp.c:505 ../mediastreamer2/src/msrtp.c:523
 msgid "RTP input filter"
-msgstr ""
+msgstr "RTP inn-filter"
 
 #: ../mediastreamer2/src/msspeex.c:360 ../mediastreamer2/src/msspeex.c:378
 #: ../mediastreamer2/src/msspeex.c:548 ../mediastreamer2/src/msspeex.c:567
 msgid "The free and wonderful speex codec"
-msgstr ""
+msgstr "En fri og fantatisk speex kodek"
 
 #: ../mediastreamer2/src/msvolume.c:528 ../mediastreamer2/src/msvolume.c:543
 msgid "A filter that controls and measure sound volume"
-msgstr ""
+msgstr "Ett filer som kontrollerer og måler lydvolumet"
 
 #: ../mediastreamer2/src/msv4l.c:1012
 msgid "A video4linux compatible source filter to stream pictures."
-msgstr ""
+msgstr "Ett video4linux kompatiblet kildefilter for bildestrømmer."
 
 #: ../mediastreamer2/src/msv4l2.c:554
 msgid "A filter to grab pictures from Video4Linux2-powered cameras"
-msgstr ""
+msgstr "Ett filter for å fange bilder fra Video4Linux2-støttede kameraer"
 
 #: ../mediastreamer2/src/nowebcam.c:1854
 msgid "A filter that outputs a static image."
-msgstr ""
+msgstr "En filter som sender ett statisk bilde."
 
 #: ../mediastreamer2/src/pixconv.c:129 ../mediastreamer2/src/pixconv.c:147
 msgid "A pixel format converter"
-msgstr ""
+msgstr "En pixel format omformer"
 
 #: ../mediastreamer2/src/sizeconv.c:202
 msgid "A video size converter"
-msgstr ""
+msgstr "En videostørrelsesomformer"
 
 #: ../mediastreamer2/src/sizeconv.c:220
 msgid "a small video size converter"
-msgstr ""
+msgstr "En liten video størrelsesomformer"
 
 #: ../mediastreamer2/src/speexec.c:449 ../mediastreamer2/src/speexec.c:467
 msgid "Echo canceller using speex library"
-msgstr ""
+msgstr "Ekko fjerning ved hjelp av speex"
 
 #: ../mediastreamer2/src/tee.c:80 ../mediastreamer2/src/tee.c:98
 msgid "A filter that reads from input and copy to its multiple outputs."
-msgstr ""
+msgstr "Ett filter som leser innkoder og kopierer det til flere utganger"
 
 #: ../mediastreamer2/src/theora.c:375
 msgid "The theora video encoder from xiph.org"
-msgstr ""
+msgstr "En Theora videokoder fra xpih.org"
 
 #: ../mediastreamer2/src/theora.c:393
 msgid "The open-source and royalty-free 'theora' video codec from xiph.org"
-msgstr ""
+msgstr "Et åpen kildekode og betalingsfritt 'theora' video kodek fra xpih.org"
 
 #: ../mediastreamer2/src/theora.c:561 ../mediastreamer2/src/theora.c:579
 msgid "The theora video decoder from xiph.org"
-msgstr ""
+msgstr "Theora video dekoder fra xiph.org"
 
 #: ../mediastreamer2/src/ulaw.c:146 ../mediastreamer2/src/ulaw.c:164
 msgid "ITU-G.711 ulaw encoder"
-msgstr ""
+msgstr "ITU-G.711 ulaw enkoder"
 
 #: ../mediastreamer2/src/ulaw.c:196 ../mediastreamer2/src/ulaw.c:214
 msgid "ITU-G.711 ulaw decoder"
-msgstr ""
+msgstr "ITU-G.711 ulaw dekoder"
 
 #: ../mediastreamer2/src/videodec.c:713 ../mediastreamer2/src/videodec.c:729
 #: ../mediastreamer2/src/videodec.c:812 ../mediastreamer2/src/videodec.c:828
 msgid "A H.263 decoder using ffmpeg library"
-msgstr ""
+msgstr "En H.263 dekoder som bruker ffmpeg biblioteket"
 
 #: ../mediastreamer2/src/videodec.c:746
 msgid "A MPEG4 decoder using ffmpeg library"
-msgstr ""
+msgstr "En MPEG4 dekoder som bruker ffmpeg biblioteket"
 
 #: ../mediastreamer2/src/videodec.c:762
 msgid "A RTP/JPEG decoder using ffmpeg library"
-msgstr ""
+msgstr "En RTP/JPEG dekoder som bruker ffmpeg biblioteket"
 
 #: ../mediastreamer2/src/videodec.c:778
 msgid "A MJPEG decoder using ffmpeg library"
-msgstr ""
+msgstr "En MJPEG dekoder som bruker ffmpeg biblioteket"
 
 #: ../mediastreamer2/src/videodec.c:794
 msgid "A snow decoder using ffmpeg library"
-msgstr ""
+msgstr "En snow dekoder som bruker ffmpeg biblioteket"
 
 #: ../mediastreamer2/src/videoenc.c:908 ../mediastreamer2/src/videoenc.c:990
 msgid "A video H.263 encoder using ffmpeg library."
-msgstr ""
+msgstr "En H.263 videodekoder som bruker ffmpeg biblioteket"
 
 #: ../mediastreamer2/src/videoenc.c:924
 msgid ""
 "A video H.263 encoder using ffmpeg library. It is compliant with old RFC2190 "
 "spec."
 msgstr ""
+"En H.263 enkoder som bruker ffmpeg biblioteket. Den følger den eldre RFC2190 "
+"spesifikasjonen."
 
 #: ../mediastreamer2/src/videoenc.c:940 ../mediastreamer2/src/videoenc.c:1022
 msgid "A video MPEG4 encoder using ffmpeg library."
-msgstr ""
+msgstr "En video MPEG4 enkoder som bruker ffmpeg biblioteket."
 
 #: ../mediastreamer2/src/videoenc.c:956
 msgid "A video snow encoder using ffmpeg library."
-msgstr ""
+msgstr "En show video enkoder som bruker ffmpeg biblioteket."
 
 #: ../mediastreamer2/src/videoenc.c:972
 msgid "A RTP/MJPEG encoder using ffmpeg library."
-msgstr ""
+msgstr "En RTP/MJPEG enkoder som bruker ffmpeg biblioteket"
 
 #: ../mediastreamer2/src/videoenc.c:1006
 msgid ""
 "A video H.263 encoder using ffmpeg library, compliant with old RFC2190 spec."
 msgstr ""
+"En h.264 video enkoder som bruker ffmpeg biblioteket, kompatibelt med den "
+"eldre RFC2190 spesifikasjonen."
 
 #: ../mediastreamer2/src/videoenc.c:1038
 msgid ""
@@ -1630,14 +1586,19 @@ msgid ""
 "However it is under development, quite unstable and compatibility with other "
 "versions cannot be guaranteed."
 msgstr ""
+"Snow video-kodeksen har åpen kildekode og er vedelagsfri.\n"
+"Den bruker moderne teknikker som gjør den til en god video kodek. Den er "
+"implementert innen ffmpeg prosjektet.\n"
+"Den er under stadig utvikling, er ganske ustabil og kompatiblitet med andre "
+"utgaver kan ikke garanteres."
 
 #: ../mediastreamer2/src/videoenc.c:1058
 msgid "A MJPEG encoder using ffmpeg library."
-msgstr ""
+msgstr "En MJPEG enkoder som bruker ffmpeg biblioteket."
 
 #: ../mediastreamer2/src/videoout.c:933
 msgid "A SDL-based video display"
-msgstr ""
+msgstr "Ett SDL-basert video-bibliotek"
 
 #: ../mediastreamer2/src/wincevideods.c:969
 #: ../mediastreamer2/src/wincevideods.c:987
@@ -1645,7 +1606,7 @@ msgstr ""
 #: ../mediastreamer2/src/winvideods.c:1385
 #: ../mediastreamer2/src/winvideods.c:1403
 msgid "A video4windows compatible source filter to stream pictures."
-msgstr ""
+msgstr "Ett video4windows-kompatibelt kildefiler for bildestrømmer."
 
 #: ../mediastreamer2/src/winvideo2.c:436 ../mediastreamer2/src/winvideo2.c:454
 msgid "A video for windows (vfw.h) based source filter to grab pictures."
@@ -1725,533 +1686,120 @@ msgstr ""
 #~ "linphone always uses IPv4. Please update your configuration if you want "
 #~ "to use IPv6"
 #~ msgstr ""
-#~ "Uw machine lijkt verbonden te zijn met een IPv6 netwerk. Standaard "
-#~ "gebruikt linphone altijd IPv4. Wijzig uw configuratie wanneer u IPv6 wilt "
-#~ "gebruiken."
+#~ "Din dator er tilkoblet ett IPv6 nettverk. Linphone bruker IPv6 som "
+#~ "standard. Oppdater oppsettet om du vil bruke IPv6. "
 
-#, fuzzy
 #~ msgid "Incoming call from %s"
-#~ msgstr "Inkomende oproep"
+#~ msgstr "Inkommande samtal från %s"
+
+#~ msgid "Assistant"
+#~ msgstr "Assistent"
 
 #, fuzzy
 #~ msgid "Call Details"
-#~ msgstr "Oproepgeschiedenis"
+#~ msgstr "Ringer %s"
 
-#, fuzzy
+#~ msgid "Show debug messages"
+#~ msgstr "Visa debugfönstret"
+
+#~ msgid "Start call"
+#~ msgstr "Ring"
+
+#~ msgid "Terminate call"
+#~ msgstr "Lägg på"
+
 #~ msgid "_Modes"
-#~ msgstr "Codecs"
+#~ msgstr "_Media"
+
+#~ msgid "Created by Simon Morlat\n"
+#~ msgstr "Skapad av Simon Morlat\n"
 
 #~ msgid "Accept"
-#~ msgstr "Accepteren"
+#~ msgstr "Godkänn"
 
-#, fuzzy
 #~ msgid "Incoming call from"
-#~ msgstr "Inkomende oproep"
+#~ msgstr "Inkommande samtal från"
 
-#, fuzzy
 #~ msgid "Linphone - Incoming call"
-#~ msgstr "Inkomende oproep"
+#~ msgstr "Linphone - Inkommande samtal"
 
-#, fuzzy
+#~ msgid "default soundcard\n"
+#~ msgstr "default ljudkort\n"
+
 #~ msgid ""
-#~ "Audio codecs\n"
-#~ "Video codecs"
-#~ msgstr "Audio en video codecs"
+#~ "Remote end seems to have disconnected, the call is going to be closed."
+#~ msgstr ""
+#~ "Motparten verkar ha avbrutit samtalet, samtalet kommer att avslutas."
 
 #~ msgid "Sorry, having multiple simultaneous calls is not supported yet !"
-#~ msgstr ""
-#~ "Helaas, meerdere gelijktijdige gesprekken wordt nog niet ondersteund!"
+#~ msgstr "Förlåt, men linphone stödjer inte flera samtliga samtal än!"
 
 #~ msgid "Could not reach destination."
-#~ msgstr "Kon bestemming niet bereiken."
+#~ msgstr "Kunde inte nå motparten."
 
 #~ msgid "Request Cancelled."
-#~ msgstr "Verzoek geannuleerd."
+#~ msgstr "Förfrågan avbruten."
 
 #~ msgid "Bad request"
-#~ msgstr "Slecht geformuleerd verzoek"
+#~ msgstr "Fel förfråga."
 
 #~ msgid "User cannot be found at given address."
-#~ msgstr "Gebruiker kan niet worden gevonden bij opgegeven adres."
+#~ msgstr "Användaren kan inte hittas vid den angivna adressen."
 
 #~ msgid "Remote user cannot support any of proposed codecs."
-#~ msgstr "De externe gebruiker ondersteunt geen van de voorgestelde codecs."
+#~ msgstr "Motparten stödjer ingen av de föreslagna codecs."
 
 #~ msgid "Timeout."
-#~ msgstr "Time-out."
+#~ msgstr "time out."
 
 #~ msgid "Remote host was found but refused connection."
-#~ msgstr "Externe machine is gevonden, maar verbinding is geweigerd."
+#~ msgstr "Motparten hittades men ville inte ta emot samtalet."
 
 #~ msgid ""
 #~ "User is not reachable at the moment but he invites you\n"
 #~ "to contact him using the following alternate resource:"
 #~ msgstr ""
-#~ "De gebruiker is op dit moment niet bereikbaar, maar hij nodigt u uit om\n"
-#~ "op de volgende, alternatieve, manier contact met hem op te nemen:"
+#~ "Användaren kan inte nås för tillfället men han/hon ber digatt kontakta "
+#~ "honom/henna vid följande resurs:"
+
+#~ msgid "Digits"
+#~ msgstr "Tangenter"
+
+#~ msgid "Main view"
+#~ msgstr "Huvud vy"
 
 #~ msgid "No nat/firewall address supplied !"
-#~ msgstr "Geen NAT/firewall adres opgegeven"
+#~ msgstr "Ingen NAT / brandväggs adress angiven!"
 
 #~ msgid "Invalid nat address '%s' : %s"
-#~ msgstr "Ongeldig NAT adres '%s' : %s"
+#~ msgstr "Fel NAT adress '%s': %s"
 
 #~ msgid "Gone"
-#~ msgstr "Weg"
+#~ msgstr "Har gått"
 
 #~ msgid "Waiting for Approval"
-#~ msgstr "Wachten op accoord"
+#~ msgstr "Väntar för godkännandet"
 
 #~ msgid "Be Right Back"
-#~ msgstr "Kom zo terug"
+#~ msgstr "Kommer strax tillbaka"
 
 #~ msgid "On The Phone"
-#~ msgstr "Aan de telefoon"
+#~ msgstr "På telefon"
 
 #~ msgid "Out To Lunch"
-#~ msgstr "Aan het lunchen"
+#~ msgstr "Lunchar"
 
 #~ msgid "Closed"
-#~ msgstr "Gesloten"
+#~ msgstr "Stängt"
 
-#, fuzzy
+#~ msgid "Unknown"
+#~ msgstr "Okänd"
+
 #~ msgid "SIP address"
-#~ msgstr "Adres"
+#~ msgstr "SIP Adress"
 
-#, fuzzy
+#~ msgid "Bresilian"
+#~ msgstr "Brasiliansk"
+
 #~ msgid "_View"
-#~ msgstr "Video"
-
-#, fuzzy
-#~ msgid "_Properties"
-#~ msgstr "RTP-eigenschappen"
-
-#, fuzzy
-#~ msgid "Show logs"
-#~ msgstr "Oproepen weergeven"
-
-#, fuzzy
-#~ msgid "_About"
-#~ msgstr "Account"
-
-#, fuzzy
-#~ msgid "Proxy in use"
-#~ msgstr "Te gebruiken proxy:"
-
-#~ msgid "Sound"
-#~ msgstr "Geluid"
-
-#, fuzzy
-#~ msgid "Proxy accounts"
-#~ msgstr "Te gebruiken proxy:"
-
-#~ msgid "Go"
-#~ msgstr "Ga"
-
-#~ msgid "Address book"
-#~ msgstr "Adresboek"
-
-#~ msgid "Exit"
-#~ msgstr "Einde"
-
-#~ msgid "Shows the address book"
-#~ msgstr "Het adresboek weergeven"
-
-#~ msgid "..."
-#~ msgstr "..."
-
-#~ msgid ""
-#~ "Hangup\n"
-#~ "or refuse"
-#~ msgstr ""
-#~ "Ophangen\n"
-#~ "of weigeren"
-
-#~ msgid "Or chat !"
-#~ msgstr "Of chat!"
-
-#~ msgid "Show more..."
-#~ msgstr "Meer weergeven..."
-
-#~ msgid "Playback level:"
-#~ msgstr "Geluidssterkte afspelen:"
-
-#~ msgid "Recording level:"
-#~ msgstr "Geluidssterkte opname:"
-
-#, fuzzy
-#~ msgid "Ring level:"
-#~ msgstr "Geluidssterkte opname:"
-
-#~ msgid "Controls"
-#~ msgstr "Functies"
-
-#~ msgid "Reachable"
-#~ msgstr "Bereikbaar"
-
-#~ msgid "Busy, I'll be back in "
-#~ msgstr "Bezig; ik ben terug over "
-
-#~ msgid "The other party will be informed that you'll be back in X minutes"
-#~ msgstr ""
-#~ "De andere partij zal worden geïnformeerd dat u over X minuten terug bent"
-
-#~ msgid "mn"
-#~ msgstr "min"
-
-#~ msgid "Moved temporarily"
-#~ msgstr "Tijdelijk verplaatst"
-
-#~ msgid "Alternative service"
-#~ msgstr "Alternatieve dienst"
-
-#~ msgid "URL:"
-#~ msgstr "URL:"
-
-#~ msgid "Presence"
-#~ msgstr "Aanwezigheid"
-
-#~ msgid "Press digits to send DTMFs."
-#~ msgstr "Druk op de cijfers om DTMF's te sturen"
-
-#~ msgid ""
-#~ "  3\n"
-#~ "def"
-#~ msgstr ""
-#~ "  3\n"
-#~ "def"
-
-#~ msgid ""
-#~ "  2\n"
-#~ "abc"
-#~ msgstr ""
-#~ "  2\n"
-#~ "abc"
-
-#~ msgid ""
-#~ "  4\n"
-#~ "ghi"
-#~ msgstr ""
-#~ "  4\n"
-#~ "ghi"
-
-#~ msgid ""
-#~ " 5\n"
-#~ "jkl"
-#~ msgstr ""
-#~ " 5\n"
-#~ "jkl"
-
-#~ msgid ""
-#~ "  6\n"
-#~ "mno"
-#~ msgstr ""
-#~ "  6\n"
-#~ "mno"
-
-#~ msgid ""
-#~ "   7\n"
-#~ "pqrs"
-#~ msgstr ""
-#~ "   7\n"
-#~ "pqrs"
-
-#~ msgid ""
-#~ "  8\n"
-#~ "tuv"
-#~ msgstr ""
-#~ "  8\n"
-#~ "tuv"
-
-#~ msgid ""
-#~ "   9\n"
-#~ "wxyz"
-#~ msgstr ""
-#~ "   9\n"
-#~ "wxyz"
-
-#~ msgid "DTMF"
-#~ msgstr "DTMF"
-
-#~ msgid "My online friends"
-#~ msgstr "Mijn online vrienden"
-
-#~ msgid ""
-#~ "C: 2001\n"
-#~ "Made in Old Europe"
-#~ msgstr ""
-#~ "C: 2001\n"
-#~ "Gemaakt in antiek Europa"
-
-#~ msgid ""
-#~ "Linphone is a web-phone.\n"
-#~ "It is compatible with SIP and RTP protocols."
-#~ msgstr ""
-#~ "Linphone is een webtelefoon.\n"
-#~ "Het werkt met de SIP- en RTP-protocollen."
-
-#~ msgid "http://www.linphone.org"
-#~ msgstr "http://www.linphone.org"
-
-#~ msgid "Use IPv6 network (if available)"
-#~ msgstr "Gebruik IPv6 netwerk (wanneer het beschikbaar is)"
-
-#~ msgid ""
-#~ "Toggle this if you are on an ipv6 network and you wish linphone to use it."
-#~ msgstr ""
-#~ "Wijzig dit wanneer u op een IPv6 netwerk zit en linphone daarop wilt "
-#~ "gebruiken."
-
-#~ msgid "Global"
-#~ msgstr "Globaal"
-
-#~ msgid ""
-#~ "These options is only for users in a private network, behind a gateway. "
-#~ "If you are not in this situation, then leave this empty."
-#~ msgstr ""
-#~ "Deze optie is alleen voor gebruikers in een lokaal netwerk, achter een "
-#~ "gateway: Wanneer u niet in deze situatie zit, laat dit dan leeg."
-
-#~ msgid "No firewall"
-#~ msgstr "Geen firewall"
-
-#~ msgid "Use this STUN server to guess firewall address :"
-#~ msgstr "Gebruik deze STUN server om het firewall adres te achterhalen"
-
-#~ msgid "Specify firewall address manually:"
-#~ msgstr "Geef het firewall adres handmatig op"
-
-#~ msgid "NAT traversal options (experimental)"
-#~ msgstr "NAT-doorstuur opties (experimenteel)"
-
-#~ msgid "Number of buffered miliseconds (jitter compensation):"
-#~ msgstr "Aantal gebufferde miliseconden (jitter compensatie):"
-
-#~ msgid "RTP port used for audio:"
-#~ msgstr "RTP-poort voor geluid:"
-
-#~ msgid "Use SIP INFO message instead of RTP rfc2833 for DTMF transmitting"
-#~ msgstr ""
-#~ "Gebruik SIP INFO bericht in plaats van RTP rfc2833 voor DTMF berichten"
-
-#~ msgid "RTP-RFC2833 is the recommended way."
-#~ msgstr "RTP-RFC2833 is de aanbevolen manier."
-
-#~ msgid "Other"
-#~ msgstr "Overige"
-
-#~ msgid "micro"
-#~ msgstr "microfoon"
-
-#~ msgid "Recording source:"
-#~ msgstr "Bron voor opname:"
-
-#~ msgid "Enable echo-canceler (cancels the echo heard by the remote party)"
-#~ msgstr ""
-#~ "Activeer de echo-onderdrukking (onderdrukt de echo die de andere partij "
-#~ "hoort)"
-
-#~ msgid "Choose file"
-#~ msgstr "Kies bestand"
-
-#~ msgid "Listen"
-#~ msgstr "Luisteren"
-
-#~ msgid "Sound properties"
-#~ msgstr "Geluidseigenschappen"
-
-#~ msgid "Run sip user agent on port:"
-#~ msgstr "Start SIP gebruikerssysteem op poort:"
-
-#~ msgid "It is strongly recommended to use port 5060."
-#~ msgstr "Het wordt sterk aangeraden om poort 5060 te gebruiken."
-
-#~ msgid "SIP port"
-#~ msgstr "SIP-poort"
-
-#~ msgid "@"
-#~ msgstr "@"
-
-#~ msgid "Identity"
-#~ msgstr "Identiteit"
-
-#~ msgid "Add proxy/registrar"
-#~ msgstr "Voeg proxy/registratieserver toe"
-
-#~ msgid "Clear all stored authentication information (username,password...)"
-#~ msgstr ""
-#~ "Schoon alle opgeslagen authorisatie gegevens op (gebruikersnaam, "
-#~ "wachtwoord...)"
-
-#~ msgid "SIP"
-#~ msgstr "SIP"
-
-#~ msgid "List of audio codecs, in order of preference:"
-#~ msgstr "Lijst met audio codecs, in volgorde van voorkeur:"
-
-#~ msgid ""
-#~ "Note: Codecs in red are not usable regarding to your connection type to "
-#~ "the internet."
-#~ msgstr ""
-#~ "Opmerking: Met rood weergegeven codecs zijn niet bruikbaar vanwege het "
-#~ "soort internetverbinding dat u heeft"
-
-#, fuzzy
-#~ msgid "No information availlable"
-#~ msgstr "Geen informatie beschikbaar"
-
-#~ msgid "Codec information"
-#~ msgstr "Codec informatie"
-
-#~ msgid "Address Book"
-#~ msgstr "Adresboek"
-
-#~ msgid "Select"
-#~ msgstr "Kiezen"
-
-#~ msgid ""
-#~ "User is not reachable at the moment but he invites you to contact him "
-#~ "using the following alternate ressource:"
-#~ msgstr ""
-#~ "De gebruiker is op dit moment niet bereikbaar, maar hij nodigt u uit op "
-#~ "de volgende, alternatieve, manier contact met hem op te nemen:"
-
-#~ msgid "None."
-#~ msgstr "Geen."
-
-#~ msgid "Proxy/Registrar configuration box"
-#~ msgstr "Proxy/registratieserver registratieveld"
-
-#~ msgid "Send registration:"
-#~ msgstr "Verstruur registratie:"
-
-#~ msgid "Name:"
-#~ msgstr "Naam:"
-
-#~ msgid "Subscribe policy:"
-#~ msgstr "Aanmeldbeleid:"
-
-#~ msgid "Send subscription (see person's online status)"
-#~ msgstr "Verstruur aanmelding (bekijk de online status van een persoon)"
-
-#~ msgid "New incoming subscription"
-#~ msgstr "Nieuwe inkomende aanmelding"
-
-#~ msgid "You have received a new subscription..."
-#~ msgstr "U heeft een nieuwe aanmelding ontvangen..."
-
-#~ msgid "Refuse"
-#~ msgstr "Weigeren"
-
-#~ msgid "Authentication required for realm"
-#~ msgstr "Authorisatie benodigd voor gebied"
-
-#~ msgid "userid:"
-#~ msgstr "gebruikersID:"
-
-#~ msgid "realm:"
-#~ msgstr "gebied:"
-
-#~ msgid "Chat Room"
-#~ msgstr "Chat box"
-
-#~ msgid "Text:"
-#~ msgstr "Tekst:"
-
-#~ msgid "The caller asks for resource reservation. Do you agree ?"
-#~ msgstr "De beller vraagt om reservering van bronnen. Gaat u accoord?"
-
-#~ msgid ""
-#~ "The caller doesn't use resource reservation. \t\t\t\t\tDo you wish to "
-#~ "continue anyway ?"
-#~ msgstr ""
-#~ "De beller gebruikt geen bron reservatie. \t\t\t\t\tWilt u toch doorgaan?"
-
-#~ msgid "linphone - receiving call from %s"
-#~ msgstr "Linphone - binnenkomend gesprek van %s"
-
-#~ msgid ""
-#~ "You have received a subscription from %s.This means that this person "
-#~ "wishes to be notified of your presence information (online, busy, "
-#~ "away...).\n"
-#~ "Do you agree ?"
-#~ msgstr ""
-#~ "U heeft een aanmelding ontvangen van %s. Dit betekent dat deze persoon "
-#~ "een melding wil ontvangen wat betreft uw status (online, bezig, weg...).\n"
-#~ "Gaat u accoord?"
-
-#~ msgid "Authentication required for realm %s"
-#~ msgstr "Authorisatie benodigd voor gebied %s"
-
-#~ msgid "None"
-#~ msgstr "Geen"
-
-#~ msgid "Wait"
-#~ msgstr "Wachten"
-
-#~ msgid "Deny"
-#~ msgstr "Weigeren"
-
-#~ msgid "Bad sip address: a sip address looks like sip:user@domain"
-#~ msgstr ""
-#~ "Slecht geformuleerd SIP-adres. Een SIP-adres ziet er uit als sip:"
-#~ "gebruikersnaam@domeinnaam"
-
-#~ msgid "Stun lookup done..."
-#~ msgstr "STUN adres gevonden..."
-
-#~ msgid "User manual"
-#~ msgstr "Handleiding"
-
-#~ msgid "Ring sound selection"
-#~ msgstr "Belgeluid keuze"
-
-#~ msgid "Communication ended."
-#~ msgstr "Communicatie beëindigd."
-
-#~ msgid "Firewall 's external ip address (in dot notations):"
-#~ msgstr "Extern IP adres van de firewall (in  x.x.x.x notatie):"
-
-#~ msgid "Index"
-#~ msgstr "Index"
-
-#~ msgid "Server address"
-#~ msgstr "Serveradres"
-
-#~ msgid "28k modem"
-#~ msgstr "28k modem"
-
-#~ msgid "56k modem"
-#~ msgstr "56k modem"
-
-#~ msgid "64k modem (numeris)"
-#~ msgstr "64k modem (ISDN)"
-
-#~ msgid "ADSL or Cable modem"
-#~ msgstr "ADSL- of kabelmodem"
-
-#~ msgid "Ethernet or equivalent"
-#~ msgstr "Ethernet of vergelijkbaar"
-
-#~ msgid "Connection type:"
-#~ msgstr "Soort verbinding:"
-
-#~ msgid ""
-#~ "Linphone could not open audio device %s. Check if your sound card is "
-#~ "fully configured and working."
-#~ msgstr ""
-#~ "Linphone kon het geluidsapparaat %s niet openen. Controleer of uw "
-#~ "geluidskaart goed is ingesteld en werkt."
-
-#~ msgid "Type here the sip address of the person you want to call."
-#~ msgstr "Geef hier het SIP-adres op van de persoon die u wilt bellen."
-
-#~ msgid ""
-#~ "Release or\n"
-#~ "Refuse"
-#~ msgstr ""
-#~ "Ophangen\n"
-#~ "of weigeren"
-
-#~ msgid "%s. Retry after %i minute(s)."
-#~ msgstr "%s. Opnieuw proberen na %i minu(u)t(en)."
+#~ msgstr "_Vy"

@@ -205,7 +205,7 @@ void text_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddre
  * @ingroup port
  *<br>
  <b>Multitasking</b>
- <br> liblinphone for IOS natively supports multitasking assuming application follows multitasking guides provided by Apple. First step is to declare application as multitasked. It means adding background mode for both audio and voip to Info.plist file.
+ <br> Liblinphone for IOS natively supports multitasking assuming application follows multitasking guides provided by Apple. First step is to declare application as multitasked. It means adding background mode for both audio and voip to Info.plist file.
  <br>
  \code
  	<key>UIBackgroundModes</key>
@@ -216,9 +216,9 @@ void text_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddre
 \endcode
 <br>
 <ul>
-<li><b>SIP socket </b> Recommanded mode is TCP, because UDP requires keep alives for maintaining NAT association at the IP router level. 
-Unfortunnatly, UDP keep alives are not possible on IOS. For TCP, liblinphone automatically configures SIP socket for voip  (I.E kCFStreamNetworkServiceType set to kCFStreamNetworkServiceTypeVoIP). 
-For UDP, it is the responsability of application to set this property of the UDP SIP socket before entering in background. For UDP, the application can access the SIP socket from method #linphone_core_get_sip_socket(). Note this property is only settable on a connected socket. As liblinphone UDP socket are not connected, application willing to enable UDP bacground mode  must first  connect the UDP sip socket before configuring the voip mode. Pseudo code belows show the different steps:
+<li><b>SIP socket </b><br>Recommended mode is SIP over TCP, because UDP usually requires frequent keep alives for maintaining NAT association at the IP router level. This can be as frequent as one UDP packet every 15 seconds to maintain the NAT association accross NAT routers. Doing such drains the battery very fast, and furthermore the iOS keep-alive designed by Apple to handle this task can only be called with a minimum of 10 minutes interval.<br>
+For TCP, liblinphone automatically configures SIP socket for voip  (I.E kCFStreamNetworkServiceType set to kCFStreamNetworkServiceTypeVoIP). <br>
+In the event that an application really wants to use UDP, it is the responsability of application to set this property to the UDP SIP socket before entering in background. It can access the SIP socket from method #linphone_core_get_sip_socket(). Note this property is only settable on a connected socket. As liblinphone UDP sockets are not connected, application willing to enable UDP background mode must first connect the UDP sip socket before configuring the voip mode. Pseudo code below shows the different steps:
 \code
 	//get sip socket
 	CFReadStreamRef mReadStream
@@ -254,10 +254,11 @@ For UDP, it is the responsability of application to set this property of the UDP
 
 \endcode
 <br> Note this operation has to be performed every time the application enters in background mode.
-<br> Anyway, for battery saving, UDP background mode is not recomnmanded
-<li><b>Entering bacground mode</b>
-<br> Before entering in background mode  \code - (void)applicationDidEnterBackground:(UIApplication *)application \endcode    The application must first refresh sip registration using function #linphone_core_refresh_registers();
-and register a Keep alive handler for periodically refreshing registration. The speudo code below show how to register a keep alive handler:
+<br> Anyway, for battery saving and interoperability with NAT routers reasons, <b>UDP background mode is not recomended</b>.<br>
+The choice between UDP and TCP transport for sip can be configured with linphone_core_set_sip_transports().
+<li><b>Entering background mode</b>
+<br> Before entering in background mode (through \code - (void)applicationDidEnterBackground:(UIApplication *)application \endcode  ), the application must first refresh sip registration using function #linphone_core_refresh_registers();
+and register a keep-alive handler for periodically refreshing the registration. The speudo code below shows how to register a keep alive handler:
 \code
 	//First refresh registration
 	linphone_core_refresh_registers(theLinphoneCore);
@@ -272,12 +273,12 @@ and register a Keep alive handler for periodically refreshing registration. The 
                                                        handler:^{
                                                                 //refresh sip registration
                                                                 linphone_core_refresh_registers(theLinphoneCore);
-                                                                //make sure sip REGISTER 
+                                                                //make sure sip REGISTER is sent
                                                                 linphone_core_iterate(theLinphoneCore);
                                                                  }];
 \endcode
 <li><b>Incoming call notification while in background mode</b>
-<br>Assuming application using liblinphone is well configured for multitasking, incoming calls arriving while liblinphone is in background mode will simply wakeup  liblinphone thread but not resume GUI. To wakeup GUI, it is recommanded  to send a Local Notification to the user from the #LinphoneCallStateCb. Here under a speudo code for this operation:
+<br>Assuming application using liblinphone is well configured for multitasking, incoming calls arriving while liblinphone is in background mode will simply wakeup liblinphone thread but not resume GUI. To wakeup GUI, it is recommended to send a Local Notification to the user from the #LinphoneCallStateCb. Here under a speudo code for this operation:
 \code
 	if ([UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground) {
 		// Create a new notification
@@ -295,7 +296,7 @@ and register a Keep alive handler for periodically refreshing registration. The 
 <b>Networking</b>
 <br>
 <ul><li><b>WWAN connection</b>
-<br>liblinphone relies on bsd socket for sip/rtp networking. On IOS, WWAN connection is supposed to automatically setup on any networking resquest issued by an application. At least on iPhone OS 3.x, BSD sockets do not automaticaly bring up the WWAN interface. So it is recommanded to add a special code to make sure the WWAN connection is properly setup. Speudo code belows describe a way to force WWAN connection.
+<br>Liblinphone relies on iOS's standard BSD socket layer for sip/rtp networking. On IOS, WWAN connection is supposed to automatically bring up on any networking resquest issued by an application. At least on iPhone OS 3.x, BSD sockets do not implement this behavior. So it is recomended to add a special code to make sure the WWAN connection is properly setup. Pseudo code below describes a way to force WWAN connection by setting up a dummy TCP connection.
 \code
 /*start a new thread to avoid blocking the main ui in case of peer host failure*/
 [NSThread detachNewThreadSelector:@selector(runNetworkConnection) toTarget:self withObject:nil];
@@ -310,9 +311,9 @@ and register a Keep alive handler for periodically refreshing registration. The 
 	CFWriteStreamClose (writeStream);
 }	
 \endcode  
-It is recommanded to perform this task each time the application is waked up, including keep alive handler.
+It is recommanded to perform this task each time the application is woken up, including keep alive handler.
 <li><b>Managing IP connection state</b>
-<br>liblinphone for IOS relies on the application to be informed of network changes. Network state change when the IP connection move from DOWN to UP, or from WIFI to WWAN. Applications using liblinphone must inform libliblinphone of this changes using function #linphone_core_set_network_reachable(). Usually this method is called from the IOS NetworkReachability callback. Here under a sample code:
+<br>Liblinphone for IOS relies on the application to be informed of network connectivity changes. Network state changes when the IP connection moves from DOWN to UP, or from WIFI to WWAN. Applications using liblinphone must inform libliblinphone of this changes using function #linphone_core_set_network_reachable(). Usually this method is called from the IOS NetworkReachability callback. Here under a sample code:
 \code
 //typical reachability callback
 void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void * info) {
@@ -339,7 +340,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 \endcode  
 </ul>
 <b>DTMF feebacks</b>
-<br>liblinphone provides  functions \link #linphone_core_play_dtmf() to play dtmf \endlink . Usually this is used to play a sound when the a user type a digit.  On IOS, libLinphone relies on Audio unit for interfacing with the audio system. Audio unit initialization is a quit long operation that may trigger a bad user experience if performed each time a DTMF is played. On IOS, liblinphone introduce 2 functions for \link linphone_core_start_dtmf_stream() preloading \endlink \link #linphone_core_start_dtmf_stream() unloading \endlink underlying  audio graph responsible of playing DTMFs.  
-<br> For application using function  #linphone_core_play_dtmf() , it is recommanded to call #linphone_core_start_dtmf_stream() when entering in foreground and #linphone_core_stop_dtmf_stream() upon entering background mode. 
+<br>Liblinphone provides functions \link #linphone_core_play_dtmf() to play dtmf \endlink to the local user. Usually this is used to play a sound when the user presses a digit, inside or outside of any call. On IOS, libLinphone relies on AudioUnits for interfacing with the audio system. Unfortunately the Audio Unit initialization is a quite long operation that may trigger a bad user experience if performed each time a DTMF is played, the sound being delayed half a second after the press. To solve this issue and thus insure real-time precision, liblinphone introduces 2 functions for \link linphone_core_start_dtmf_stream() preloading \endlink and \link #linphone_core_start_dtmf_stream() unloading \endlink the underlying audio graph responsible for playing DTMFs.  
+<br> For an application using function #linphone_core_play_dtmf(), it is recommanded to call #linphone_core_start_dtmf_stream() when entering in foreground and #linphone_core_stop_dtmf_stream() upon entering background mode. 
 */
 

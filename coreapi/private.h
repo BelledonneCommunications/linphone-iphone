@@ -311,7 +311,8 @@ typedef struct rtp_config
 
 typedef struct net_config
 {
-	char *nat_address;
+	char *nat_address; /* may be IP or host name */
+	char *nat_address_ip; /* ip translated from nat_address */
 	char *stun_server;
 	char *relay;
 	int download_bw;
