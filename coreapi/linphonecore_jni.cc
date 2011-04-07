@@ -1203,3 +1203,8 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setSignalingTransportPor
 	
 	linphone_core_set_sip_transports(lc, &tr); // tr will be copied
 }
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_enableIpv6(JNIEnv* env,jobject  thiz
+              ,jlong lc, jboolean enable) {
+              linphone_core_enable_ipv6((LinphoneCore*)lc,enable);
+}

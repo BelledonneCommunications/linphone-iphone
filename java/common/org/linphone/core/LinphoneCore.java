@@ -379,75 +379,75 @@ public interface LinphoneCore {
 	 *  Mutes or unmutes the local microphone.
 	 * @param isMuted
 	 */
-	public void muteMic(boolean isMuted);
+	void muteMic(boolean isMuted);
 	/**
 	 * 
 	 * @return true is mic is muted
 	 */
-	public boolean isMicMuted();
+	boolean isMicMuted();
 	
 	/**
 	 * Initiate a dtmf signal if in call
 	 * @param number
 	 */
-	public void sendDtmf(char number);
+	void sendDtmf(char number);
 	/**
 	 * Initiate a dtmf signal to the speaker if not in call.
 	 * Sending of the DTMF is done in another function.
 	 * @param number
 	 * @param duration in ms , -1 for unlimited
 	 */
-	public void playDtmf(char number,int duration);
+	void playDtmf(char number,int duration);
 	/**
 	 * stop current dtmf
 	 */
-	public void stopDtmf();
+	void stopDtmf();
 	
 	/**
 	 * remove all call logs
 	 */
-	public void clearCallLogs();
+	void clearCallLogs();
 	/***
 	 * get payload type  from mime type an clock rate
 	 * 
 	 * return null if not found
 	 */
-	public PayloadType findPayloadType(String mime,int clockRate); 
+	PayloadType findPayloadType(String mime,int clockRate); 
 	/**
 	 * not implemented yet
 	 * @param pt
 	 * @param enable
 	 * @throws LinphoneCoreException
 	 */
-	public void enablePayloadType(PayloadType pt, boolean enable) throws LinphoneCoreException;
+	void enablePayloadType(PayloadType pt, boolean enable) throws LinphoneCoreException;
 	/**
 	 * Enables or disable echo cancellation.
 	 * @param enable
 	 */
-	public void enableEchoCancellation(boolean enable);
+	void enableEchoCancellation(boolean enable);
 	/**
 	 * get EC status 
 	 * @return true if echo cancellation is enabled.
 	 */
-	public boolean isEchoCancellationEnabled();
+	boolean isEchoCancellationEnabled();
 	/**
 	 * @param transports used for signaling (TCP, UDP and TLS)
 	 */
-	public void setSignalingTransportPorts(Transports transports);
+	void setSignalingTransportPorts(Transports transports);
 	/**
 	 * @return transports used for signaling (TCP, UDP, TLS)
 	 */
-	public Transports getSignalingTransportPorts();
+	Transports getSignalingTransportPorts();
 	/**
 	 * not implemented
 	 * @param value
 	 */
-	public void enableSpeaker(boolean value);
+	void enableSpeaker(boolean value);
 	/**
 	 * not implemented
 	 * @return
 	 */
-	public boolean isSpeakerEnabled();
+	boolean isSpeakerEnabled();
 	/**
 	 * add a friend to the current buddy list, if subscription attribute is set, a SIP SUBSCRIBE message is sent.
 	 * @param lf LinphoenFriend to add
@@ -469,8 +469,8 @@ public interface LinphoneCore {
 	 */
 	LinphoneChatRoom createChatRoom(String to);
 	
-	public void setVideoWindow(Object w);
-	public void setPreviewWindow(Object w);
+	void setVideoWindow(Object w);
+	void setPreviewWindow(Object w);
 	/**
 	 * Enables video globally.
 	 *
@@ -494,49 +494,49 @@ public interface LinphoneCore {
 	 * Specify a STUN server to help firewall traversal.
 	 * @param stun_server Stun server address and port, such as stun.linphone.org or stun.linphone.org:3478
 	 */
-	public void setStunServer(String stun_server);
+	void setStunServer(String stun_server);
 	/**
 	 * @return stun server address if previously set.
 	 */
-	public String getStunServer();
+	String getStunServer();
 	
 	/**
 	 * Sets policy regarding workarounding NATs
 	 * @param pol one of the FirewallPolicy members.
 	**/
-	public void setFirewallPolicy(FirewallPolicy pol);
+	void setFirewallPolicy(FirewallPolicy pol);
 	/**
 	 * @return previously set firewall policy.
 	 */
-	public FirewallPolicy getFirewallPolicy();
+	FirewallPolicy getFirewallPolicy();
 
-	public LinphoneCall inviteAddressWithParams(LinphoneAddress destination, LinphoneCallParams params) throws LinphoneCoreException ;
+	LinphoneCall inviteAddressWithParams(LinphoneAddress destination, LinphoneCallParams params) throws LinphoneCoreException ;
 	
-	public int updateCall(LinphoneCall call, LinphoneCallParams params);
+	int updateCall(LinphoneCall call, LinphoneCallParams params);
 
-	public LinphoneCallParams createDefaultCallParameters();
+	LinphoneCallParams createDefaultCallParameters();
 
 	/**
 	 * Sets the path to a wav file used for ringing.
 	 *
 	 * @param path The file must be a wav 16bit linear. Local ring is disabled if null
 	 */
-	public void setRing(String path);
+	void setRing(String path);
 	/**
 	 * gets the path to a wav file used for ringing.
 	 *
 	 * @param null if not set
 	 */
-	public String getRing();
-	public void setUploadBandwidth(int bw);
+	String getRing();
+	void setUploadBandwidth(int bw);
 
-	public void setDownloadBandwidth(int bw);
+	void setDownloadBandwidth(int bw);
 
-	public void setPreferredVideoSize(VideoSize vSize);
+	void setPreferredVideoSize(VideoSize vSize);
 	
-	public VideoSize getPreferredVideoSize();
+	VideoSize getPreferredVideoSize();
 	
-	public PayloadType[] listVideoCodecs();
+	PayloadType[] listVideoCodecs();
 	/**
 	 * enable signaling keep alive. small udp packet sent periodically to keep udp NAT association
 	 */
@@ -553,4 +553,6 @@ public interface LinphoneCore {
 	 * @throws LinphoneCoreException if operation is still in progress;
 	**/
 	void startEchoCalibration(Object data) throws LinphoneCoreException;
+
+	void enableIpv6(boolean enable);
 }
