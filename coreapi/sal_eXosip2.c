@@ -367,7 +367,8 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 	eXosip_set_option(13,&err); /*13=EXOSIP_OPT_SRV_WITH_NAPTR, as it is an enum value, we can't use it unless we are sure of the
 					version of eXosip, which is not the case*/
 	/*see if it looks like an IPv6 address*/
-	eXosip_set_option(EXOSIP_OPT_USE_RPORT,&ctx->use_rports);
+	int use_rports = ctx->use_rports; // Copy char to int to avoid bad alignment
+	eXosip_set_option(EXOSIP_OPT_USE_RPORT,&use_rports);
 	ipv6=strchr(addr,':')!=NULL;
 	eXosip_enable_ipv6(ipv6);
 
