@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone 3.3.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-05 00:37+0200\n"
+"POT-Creation-Date: 2011-04-07 15:31+0200\n"
 "PO-Revision-Date: 2011-01-08 23:51+0800\n"
 "Last-Translator: Aron Xu <happyaron.xu@gmail.com>\n"
 "Language-Team: Chinese (simplified) <i18n-zh@googlegroups.com>\n"
-"Language: zh\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: zh\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: ../gtk/support.c:49 ../gtk/support.c:73 ../gtk/support.c:102
@@ -161,75 +161,75 @@ msgstr "最小比特率(kbit/s)"
 msgid "Parameters"
 msgstr "参数"
 
-#: ../gtk/propertybox.c:325 ../gtk/propertybox.c:464
+#: ../gtk/propertybox.c:326 ../gtk/propertybox.c:465
 msgid "Enabled"
 msgstr "启用"
 
-#: ../gtk/propertybox.c:326 ../gtk/propertybox.c:464
+#: ../gtk/propertybox.c:327 ../gtk/propertybox.c:465
 msgid "Disabled"
 msgstr "禁用"
 
-#: ../gtk/propertybox.c:509
+#: ../gtk/propertybox.c:510
 msgid "Account"
 msgstr "帐户"
 
-#: ../gtk/propertybox.c:649
+#: ../gtk/propertybox.c:650
 msgid "English"
 msgstr "英语"
 
-#: ../gtk/propertybox.c:650
+#: ../gtk/propertybox.c:651
 msgid "French"
 msgstr "法语"
 
-#: ../gtk/propertybox.c:651
+#: ../gtk/propertybox.c:652
 msgid "Swedish"
 msgstr "瑞典语"
 
-#: ../gtk/propertybox.c:652
+#: ../gtk/propertybox.c:653
 msgid "Italian"
 msgstr "意大利语"
 
-#: ../gtk/propertybox.c:653
+#: ../gtk/propertybox.c:654
 msgid "Spanish"
 msgstr "西班牙语"
 
-#: ../gtk/propertybox.c:654
+#: ../gtk/propertybox.c:655
 msgid "Brazilian Portugese"
 msgstr "巴西葡萄牙语"
 
-#: ../gtk/propertybox.c:655
+#: ../gtk/propertybox.c:656
 msgid "Polish"
 msgstr "波兰语"
 
-#: ../gtk/propertybox.c:656
+#: ../gtk/propertybox.c:657
 msgid "German"
 msgstr "德语"
 
-#: ../gtk/propertybox.c:657
+#: ../gtk/propertybox.c:658
 msgid "Russian"
 msgstr "俄语"
 
-#: ../gtk/propertybox.c:658
+#: ../gtk/propertybox.c:659
 msgid "Japanese"
 msgstr "日语"
 
-#: ../gtk/propertybox.c:659
+#: ../gtk/propertybox.c:660
 msgid "Dutch"
 msgstr "荷兰语"
 
-#: ../gtk/propertybox.c:660
+#: ../gtk/propertybox.c:661
 msgid "Hungarian"
 msgstr "匈牙利语"
 
-#: ../gtk/propertybox.c:661
+#: ../gtk/propertybox.c:662
 msgid "Czech"
 msgstr "捷克语"
 
-#: ../gtk/propertybox.c:662
+#: ../gtk/propertybox.c:663
 msgid "Chinese"
 msgstr "中文"
 
-#: ../gtk/propertybox.c:719
+#: ../gtk/propertybox.c:720
 msgid ""
 "You need to restart linphone for the new language selection to take effect."
 msgstr "您需要重启 linphone 以使语言选择生效。"
@@ -616,27 +616,32 @@ msgid "Username"
 msgstr "用户名"
 
 #: ../gtk/main.ui.h:51
+#, fuzzy
+msgid "_Call history"
+msgstr "呼叫历史"
+
+#: ../gtk/main.ui.h:52
 msgid "_Help"
 msgstr ""
 
-#: ../gtk/main.ui.h:52
+#: ../gtk/main.ui.h:53
 #, fuzzy
 msgid "_Homepage"
 msgstr "主页"
 
-#: ../gtk/main.ui.h:53
+#: ../gtk/main.ui.h:54
 msgid "_Linphone"
 msgstr "_Linphone"
 
-#: ../gtk/main.ui.h:54
+#: ../gtk/main.ui.h:55
 msgid "_Options"
 msgstr ""
 
-#: ../gtk/main.ui.h:55
+#: ../gtk/main.ui.h:56
 msgid "in"
 msgstr "于"
 
-#: ../gtk/main.ui.h:56
+#: ../gtk/main.ui.h:57
 msgid "label"
 msgstr "标签"
 
@@ -1191,7 +1196,7 @@ msgstr ""
 "ALSA 是最佳选择，然而 Linphone 必须的 Mixer OSS 模拟模块缺失。\n"
 "请以 root 用户运行 modprobe snd-mixer-oss 载入它。"
 
-#: ../coreapi/misc.c:474
+#: ../coreapi/misc.c:478
 msgid "Stun lookup in progress..."
 msgstr "正在进行 Stun 查找..."
 
@@ -1389,299 +1394,184 @@ msgstr ""
 msgid "Authentication failure"
 msgstr "Linphone - 需要认证"
 
-#: ../mediastreamer2/src/alaw.c:144 ../mediastreamer2/src/alaw.c:162
-msgid "ITU-G.711 alaw encoder"
-msgstr "ITU-G.711 alaw 编码器"
+#~ msgid "ITU-G.711 alaw encoder"
+#~ msgstr "ITU-G.711 alaw 编码器"
 
-#: ../mediastreamer2/src/alaw.c:194 ../mediastreamer2/src/alaw.c:211
-msgid "ITU-G.711 alaw decoder"
-msgstr "ITU-G.711 alaw 解码器"
+#~ msgid "ITU-G.711 alaw decoder"
+#~ msgstr "ITU-G.711 alaw 解码器"
 
-#: ../mediastreamer2/src/alsa.c:950
-msgid "Alsa sound source"
-msgstr "Alsa 音频源"
+#~ msgid "Alsa sound source"
+#~ msgstr "Alsa 音频源"
 
-#: ../mediastreamer2/src/alsa.c:1054
-msgid "Alsa sound output"
-msgstr "Alsa 音频输出"
+#~ msgid "Alsa sound output"
+#~ msgstr "Alsa 音频输出"
 
-#: ../mediastreamer2/src/aqsnd.c:1008
-msgid "Sound capture filter for MacOS X Audio Queue Service"
-msgstr "MacOS X 音频队列服务音频输入过滤器"
+#~ msgid "Sound capture filter for MacOS X Audio Queue Service"
+#~ msgstr "MacOS X 音频队列服务音频输入过滤器"
 
-#: ../mediastreamer2/src/aqsnd.c:1032
-msgid "Sound playback filter for MacOS X Audio Queue Service"
-msgstr "MacOS X 音频队列服务音频回放过滤器"
+#~ msgid "Sound playback filter for MacOS X Audio Queue Service"
+#~ msgstr "MacOS X 音频队列服务音频回放过滤器"
 
-#: ../mediastreamer2/src/dtmfgen.c:287 ../mediastreamer2/src/dtmfgen.c:306
-msgid "DTMF generator"
-msgstr "DTMF 生成器"
+#~ msgid "DTMF generator"
+#~ msgstr "DTMF 生成器"
 
-#: ../mediastreamer2/src/gsm.c:120 ../mediastreamer2/src/gsm.c:138
-msgid "The GSM full-rate codec"
-msgstr "GSM 全速编解码器"
+#~ msgid "The GSM full-rate codec"
+#~ msgstr "GSM 全速编解码器"
 
-#: ../mediastreamer2/src/gsm.c:187 ../mediastreamer2/src/gsm.c:205
-msgid "The GSM codec"
-msgstr "GSM 编解码器"
+#~ msgid "The GSM codec"
+#~ msgstr "GSM 编解码器"
 
-#: ../mediastreamer2/src/macsnd.c:627
 #, fuzzy
-msgid "Sound capture filter for MacOS X Audio Unit"
-msgstr "MacOS X 音频队列服务音频输入过滤器"
+#~ msgid "Sound capture filter for MacOS X Audio Unit"
+#~ msgstr "MacOS X 音频队列服务音频输入过滤器"
 
-#: ../mediastreamer2/src/macsnd.c:642
 #, fuzzy
-msgid "Sound playback filter for MacOS X Audio Unit"
-msgstr "MacOS X 音频队列服务音频回放过滤器"
+#~ msgid "Sound playback filter for MacOS X Audio Unit"
+#~ msgstr "MacOS X 音频队列服务音频回放过滤器"
 
-#: ../mediastreamer2/src/msconf.c:787 ../mediastreamer2/src/msconf.c:805
-msgid "A filter to make conferencing"
-msgstr ""
+#~ msgid "Raw files and wav reader"
+#~ msgstr "原始文件和 Wav 读取器"
 
-#: ../mediastreamer2/src/msfileplayer.c:311
-#: ../mediastreamer2/src/msfileplayer.c:329
-msgid "Raw files and wav reader"
-msgstr "原始文件和 Wav 读取器"
+#~ msgid "Wav file recorder"
+#~ msgstr "Wav 文件记录器"
 
-#: ../mediastreamer2/src/msfilerec.c:170 ../mediastreamer2/src/msfilerec.c:188
-#: ../mediastreamer2/src/msfilerec_win.c:216
-#: ../mediastreamer2/src/msfilerec_win.c:234
-msgid "Wav file recorder"
-msgstr "Wav 文件记录器"
+#~ msgid "A filter that send several inputs to one output."
+#~ msgstr "将多个输入发送至单个输出。"
 
-#: ../mediastreamer2/src/msjoin.c:45 ../mediastreamer2/src/msjoin.c:63
-msgid "A filter that send several inputs to one output."
-msgstr "将多个输入发送至单个输出。"
+#~ msgid "Audio resampler"
+#~ msgstr "音频重采样"
 
-#: ../mediastreamer2/src/msresample.c:159
-#: ../mediastreamer2/src/msresample.c:177
-msgid "Audio resampler"
-msgstr "音频重采样"
+#~ msgid "RTP output filter"
+#~ msgstr "RTP 输出过滤器"
 
-#: ../mediastreamer2/src/msrtp.c:369 ../mediastreamer2/src/msrtp.c:387
-msgid "RTP output filter"
-msgstr "RTP 输出过滤器"
+#~ msgid "RTP input filter"
+#~ msgstr "RTP 输入过滤器"
 
-#: ../mediastreamer2/src/msrtp.c:505 ../mediastreamer2/src/msrtp.c:523
-msgid "RTP input filter"
-msgstr "RTP 输入过滤器"
+#~ msgid "The free and wonderful speex codec"
+#~ msgstr "优秀的自由软件编解码器 Speex"
 
-#: ../mediastreamer2/src/msspeex.c:360 ../mediastreamer2/src/msspeex.c:378
-#: ../mediastreamer2/src/msspeex.c:548 ../mediastreamer2/src/msspeex.c:567
-msgid "The free and wonderful speex codec"
-msgstr "优秀的自由软件编解码器 Speex"
+#~ msgid "A filter that controls and measure sound volume"
+#~ msgstr "控制和调节音量的过滤器"
 
-#: ../mediastreamer2/src/msvolume.c:528 ../mediastreamer2/src/msvolume.c:543
-msgid "A filter that controls and measure sound volume"
-msgstr "控制和调节音量的过滤器"
+#~ msgid "A video4linux compatible source filter to stream pictures."
+#~ msgstr "用于图像流的 video4linux 兼容源过滤器"
 
-#: ../mediastreamer2/src/msv4l.c:1012
-msgid "A video4linux compatible source filter to stream pictures."
-msgstr "用于图像流的 video4linux 兼容源过滤器"
+#~ msgid "A filter to grab pictures from Video4Linux2-powered cameras"
+#~ msgstr "用于从 Video4Linux2 驱动的摄像头获取图像的过滤器"
 
-#: ../mediastreamer2/src/msv4l2.c:554
-msgid "A filter to grab pictures from Video4Linux2-powered cameras"
-msgstr "用于从 Video4Linux2 驱动的摄像头获取图像的过滤器"
+#~ msgid "A filter that outputs a static image."
+#~ msgstr "输出静态图像的过滤器"
 
-#: ../mediastreamer2/src/nowebcam.c:1854
-msgid "A filter that outputs a static image."
-msgstr "输出静态图像的过滤器"
+#~ msgid "A pixel format converter"
+#~ msgstr "像素格式转换器"
 
-#: ../mediastreamer2/src/pixconv.c:129 ../mediastreamer2/src/pixconv.c:147
-msgid "A pixel format converter"
-msgstr "像素格式转换器"
+#~ msgid "A video size converter"
+#~ msgstr "视频尺寸转换器"
 
-#: ../mediastreamer2/src/sizeconv.c:202
-msgid "A video size converter"
-msgstr "视频尺寸转换器"
+#~ msgid "a small video size converter"
+#~ msgstr "小的视频尺寸转换器"
 
-#: ../mediastreamer2/src/sizeconv.c:220
-msgid "a small video size converter"
-msgstr "小的视频尺寸转换器"
+#~ msgid "Echo canceller using speex library"
+#~ msgstr "使用 Speex 库的回声抑制器"
 
-#: ../mediastreamer2/src/speexec.c:449 ../mediastreamer2/src/speexec.c:467
-msgid "Echo canceller using speex library"
-msgstr "使用 Speex 库的回声抑制器"
+#~ msgid "A filter that reads from input and copy to its multiple outputs."
+#~ msgstr "用于读取输入并复制到多个输出的过滤器"
 
-#: ../mediastreamer2/src/tee.c:80 ../mediastreamer2/src/tee.c:98
-msgid "A filter that reads from input and copy to its multiple outputs."
-msgstr "用于读取输入并复制到多个输出的过滤器"
+#~ msgid "The theora video encoder from xiph.org"
+#~ msgstr "来自 xiph.org 的 Theora 视频编码器"
 
-#: ../mediastreamer2/src/theora.c:375
-msgid "The theora video encoder from xiph.org"
-msgstr "来自 xiph.org 的 Theora 视频编码器"
+#~ msgid "The open-source and royalty-free 'theora' video codec from xiph.org"
+#~ msgstr "来自 xiph.org 的开源的自由软件编解码器 Theora"
 
-#: ../mediastreamer2/src/theora.c:393
-msgid "The open-source and royalty-free 'theora' video codec from xiph.org"
-msgstr "来自 xiph.org 的开源的自由软件编解码器 Theora"
+#~ msgid "The theora video decoder from xiph.org"
+#~ msgstr "来自 xiph.org 的 Theora 视频解码器"
 
-#: ../mediastreamer2/src/theora.c:561 ../mediastreamer2/src/theora.c:579
-msgid "The theora video decoder from xiph.org"
-msgstr "来自 xiph.org 的 Theora 视频解码器"
+#~ msgid "ITU-G.711 ulaw encoder"
+#~ msgstr "ITU-G.711 ulaw 编码器"
 
-#: ../mediastreamer2/src/ulaw.c:146 ../mediastreamer2/src/ulaw.c:164
-msgid "ITU-G.711 ulaw encoder"
-msgstr "ITU-G.711 ulaw 编码器"
+#~ msgid "ITU-G.711 ulaw decoder"
+#~ msgstr "ITU-G.711 ulaw 解码器"
 
-#: ../mediastreamer2/src/ulaw.c:196 ../mediastreamer2/src/ulaw.c:214
-msgid "ITU-G.711 ulaw decoder"
-msgstr "ITU-G.711 ulaw 解码器"
+#~ msgid "A H.263 decoder using ffmpeg library"
+#~ msgstr "使用 ffmpeg 库的 H.263 解码器"
 
-#: ../mediastreamer2/src/videodec.c:713 ../mediastreamer2/src/videodec.c:729
-#: ../mediastreamer2/src/videodec.c:812 ../mediastreamer2/src/videodec.c:828
-msgid "A H.263 decoder using ffmpeg library"
-msgstr "使用 ffmpeg 库的 H.263 解码器"
+#~ msgid "A MPEG4 decoder using ffmpeg library"
+#~ msgstr "使用 ffmpeg 库的 MPEG4 解码器"
 
-#: ../mediastreamer2/src/videodec.c:746
-msgid "A MPEG4 decoder using ffmpeg library"
-msgstr "使用 ffmpeg 库的 MPEG4 解码器"
+#~ msgid "A RTP/JPEG decoder using ffmpeg library"
+#~ msgstr "使用 ffmpeg 库的 RTP/JPEG 解码器"
 
-#: ../mediastreamer2/src/videodec.c:762
-msgid "A RTP/JPEG decoder using ffmpeg library"
-msgstr "使用 ffmpeg 库的 RTP/JPEG 解码器"
+#~ msgid "A MJPEG decoder using ffmpeg library"
+#~ msgstr "使用 ffmpeg 库的 MJPEG 解码器"
 
-#: ../mediastreamer2/src/videodec.c:778
-msgid "A MJPEG decoder using ffmpeg library"
-msgstr "使用 ffmpeg 库的 MJPEG 解码器"
+#~ msgid "A snow decoder using ffmpeg library"
+#~ msgstr "使用 ffmpeg 库的 snow 解码器"
 
-#: ../mediastreamer2/src/videodec.c:794
-msgid "A snow decoder using ffmpeg library"
-msgstr "使用 ffmpeg 库的 snow 解码器"
+#~ msgid "A video H.263 encoder using ffmpeg library."
+#~ msgstr "使用 ffmpeg 库的 H.263 编码器"
 
-#: ../mediastreamer2/src/videoenc.c:908 ../mediastreamer2/src/videoenc.c:990
-msgid "A video H.263 encoder using ffmpeg library."
-msgstr "使用 ffmpeg 库的 H.263 编码器"
+#~ msgid ""
+#~ "A video H.263 encoder using ffmpeg library. It is compliant with old "
+#~ "RFC2190 spec."
+#~ msgstr "使用 ffmpeg 库的 H.263 视频编码器，符合旧的 RFC2190"
 
-#: ../mediastreamer2/src/videoenc.c:924
-msgid ""
-"A video H.263 encoder using ffmpeg library. It is compliant with old RFC2190 "
-"spec."
-msgstr "使用 ffmpeg 库的 H.263 视频编码器，符合旧的 RFC2190"
+#~ msgid "A video MPEG4 encoder using ffmpeg library."
+#~ msgstr "使用 ffmpeg 库的 MPEG4 视频编码器"
 
-#: ../mediastreamer2/src/videoenc.c:940 ../mediastreamer2/src/videoenc.c:1022
-msgid "A video MPEG4 encoder using ffmpeg library."
-msgstr "使用 ffmpeg 库的 MPEG4 视频编码器"
+#~ msgid "A video snow encoder using ffmpeg library."
+#~ msgstr "使用 ffmpeg 库的 snow 编码器"
 
-#: ../mediastreamer2/src/videoenc.c:956
-msgid "A video snow encoder using ffmpeg library."
-msgstr "使用 ffmpeg 库的 snow 编码器"
+#~ msgid "A RTP/MJPEG encoder using ffmpeg library."
+#~ msgstr "使用 ffmpeg 库的 RTP/MJPEG 编码器"
 
-#: ../mediastreamer2/src/videoenc.c:972
-msgid "A RTP/MJPEG encoder using ffmpeg library."
-msgstr "使用 ffmpeg 库的 RTP/MJPEG 编码器"
+#~ msgid ""
+#~ "A video H.263 encoder using ffmpeg library, compliant with old RFC2190 "
+#~ "spec."
+#~ msgstr "使用 ffmpeg 库的 H.263 编码器，符合旧的 RFC2190"
 
-#: ../mediastreamer2/src/videoenc.c:1006
-msgid ""
-"A video H.263 encoder using ffmpeg library, compliant with old RFC2190 spec."
-msgstr "使用 ffmpeg 库的 H.263 编码器，符合旧的 RFC2190"
+#~ msgid ""
+#~ "The snow codec is royalty-free and is open-source. \n"
+#~ "It uses innovative techniques that makes it one of most promising video "
+#~ "codec. It is implemented within the ffmpeg project.\n"
+#~ "However it is under development, quite unstable and compatibility with "
+#~ "other versions cannot be guaranteed."
+#~ msgstr ""
+#~ "Snow 编解码器是开源的自由软件。\n"
+#~ "创新科技使 Snow 成为当今最有希望的视频编解码器。它在 ffmpeg 项目内实现。\n"
+#~ "然而它仍处于开发中，稳定性和与其他版本的兼容性尚无法保证。"
 
-#: ../mediastreamer2/src/videoenc.c:1038
-msgid ""
-"The snow codec is royalty-free and is open-source. \n"
-"It uses innovative techniques that makes it one of most promising video "
-"codec. It is implemented within the ffmpeg project.\n"
-"However it is under development, quite unstable and compatibility with other "
-"versions cannot be guaranteed."
-msgstr ""
-"Snow 编解码器是开源的自由软件。\n"
-"创新科技使 Snow 成为当今最有希望的视频编解码器。它在 ffmpeg 项目内实现。\n"
-"然而它仍处于开发中，稳定性和与其他版本的兼容性尚无法保证。"
+#~ msgid "A MJPEG encoder using ffmpeg library."
+#~ msgstr "使用 ffmpeg 库的 MJPEG 编码器"
 
-#: ../mediastreamer2/src/videoenc.c:1058
-msgid "A MJPEG encoder using ffmpeg library."
-msgstr "使用 ffmpeg 库的 MJPEG 编码器"
-
-#: ../mediastreamer2/src/videoout.c:933
 #, fuzzy
-msgid "A SDL-based video display"
-msgstr "通用视频显示"
+#~ msgid "A SDL-based video display"
+#~ msgstr "通用视频显示"
 
-#: ../mediastreamer2/src/wincevideods.c:969
-#: ../mediastreamer2/src/wincevideods.c:987
-#: ../mediastreamer2/src/winvideo.c:596 ../mediastreamer2/src/winvideo.c:614
-#: ../mediastreamer2/src/winvideods.c:1385
-#: ../mediastreamer2/src/winvideods.c:1403
-msgid "A video4windows compatible source filter to stream pictures."
-msgstr ""
+#~ msgid "ICE filter"
+#~ msgstr "ICE 过滤器"
 
-#: ../mediastreamer2/src/winvideo2.c:436 ../mediastreamer2/src/winvideo2.c:454
-msgid "A video for windows (vfw.h) based source filter to grab pictures."
-msgstr ""
+#~ msgid "A webcam grabber based on directshow."
+#~ msgstr "使用 DirectShow 的摄像头抓取器"
 
-#: ../mediastreamer2/src/ice.c:1349 ../mediastreamer2/src/ice.c:1367
-msgid "ICE filter"
-msgstr "ICE 过滤器"
-
-#: ../mediastreamer2/src/void.c:35 ../mediastreamer2/src/void.c:52
-msgid "A filter that trashes its input (useful for terminating some graphs)."
-msgstr ""
-
-#: ../mediastreamer2/src/equalizer.c:338 ../mediastreamer2/src/equalizer.c:356
-msgid "Parametric sound equalizer."
-msgstr ""
-
-#: ../mediastreamer2/src/msdscap-mingw.cc:1038
-msgid "A webcam grabber based on directshow."
-msgstr "使用 DirectShow 的摄像头抓取器"
-
-#: ../mediastreamer2/src/drawdib-display.c:552
-#: ../mediastreamer2/src/drawdib-display.c:570
-msgid "A video display based on windows DrawDib api"
-msgstr ""
-
-#: ../mediastreamer2/src/audiomixer.c:192
-#: ../mediastreamer2/src/audiomixer.c:211
-msgid "A filter that mixes down 16 bit sample audio streams"
-msgstr ""
-
-#: ../mediastreamer2/src/chanadapt.c:110 ../mediastreamer2/src/chanadapt.c:128
-msgid "A filter that converts from mono to stereo and vice versa."
-msgstr ""
-
-#: ../mediastreamer2/src/itc.c:97 ../mediastreamer2/src/itc.c:115
-#: ../mediastreamer2/src/itc.c:197 ../mediastreamer2/src/itc.c:215
-msgid "Inter ticker communication filter."
-msgstr ""
-
-#: ../mediastreamer2/src/extdisplay.c:62 ../mediastreamer2/src/extdisplay.c:79
-msgid "A display filter sending the buffers to draw to the upper layer"
-msgstr ""
-
-#: ../mediastreamer2/src/msiounit.c:650
 #, fuzzy
-msgid "Sound capture filter for MacOS X Audio Unit Service"
-msgstr "MacOS X 音频队列服务音频输入过滤器"
+#~ msgid "Sound capture filter for MacOS X Audio Unit Service"
+#~ msgstr "MacOS X 音频队列服务音频输入过滤器"
 
-#: ../mediastreamer2/src/msiounit.c:664
 #, fuzzy
-msgid "Sound playback filter for MacOS X Audio Unit Service"
-msgstr "MacOS X 音频队列服务音频回放过滤器"
+#~ msgid "Sound playback filter for MacOS X Audio Unit Service"
+#~ msgstr "MacOS X 音频队列服务音频回放过滤器"
 
-#: ../mediastreamer2/src/x11video.c:562
-msgid "A video display using X11+Xv"
-msgstr ""
-
-#. .id=
-#. .name=
-#. .text=
-#: ../mediastreamer2/src/msandroid.cpp:370
 #, fuzzy
-msgid "Sound capture filter for Android"
-msgstr "OSS 驱动的音频输入过滤器"
+#~ msgid "Sound capture filter for Android"
+#~ msgstr "OSS 驱动的音频输入过滤器"
 
-#. .id=
-#. .name=
-#. .text=
-#: ../mediastreamer2/src/msandroid.cpp:667
 #, fuzzy
-msgid "Sound playback filter for Android"
-msgstr "OSS 驱动的音频回放过滤器"
+#~ msgid "Sound playback filter for Android"
+#~ msgstr "OSS 驱动的音频回放过滤器"
 
-#: ../mediastreamer2/src/msandroidvideo.cpp:134
 #, fuzzy
-msgid "A filter that captures Android video."
-msgstr "控制和调节音量的过滤器"
+#~ msgid "A filter that captures Android video."
+#~ msgstr "控制和调节音量的过滤器"
 
 #~ msgid ""
 #~ "Your machine appears to be connected to an IPv6 network. By default "
