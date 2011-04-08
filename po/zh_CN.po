@@ -3,19 +3,19 @@
 # Simon Morlat <linphone@free.fr>, 2001.
 # Jiang Honglei<jhonglei@gmail.com>, 2002.
 # Aron Xu <happyaron.xu@gmail.com>, 2011.
-#
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: linphone 3.3.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-07 15:31+0200\n"
+"POT-Creation-Date: 2011-04-08 22:32+0200\n"
 "PO-Revision-Date: 2011-01-08 23:51+0800\n"
 "Last-Translator: Aron Xu <happyaron.xu@gmail.com>\n"
 "Language-Team: Chinese (simplified) <i18n-zh@googlegroups.com>\n"
+"Language: zh\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: zh\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: ../gtk/support.c:49 ../gtk/support.c:73 ../gtk/support.c:102
@@ -55,7 +55,7 @@ msgstr "指定工作目录(应为安装目录例如 C:\\Program Files\\Linphone)
 msgid "Call with %s"
 msgstr "与 %s 通话"
 
-#: ../gtk/main.c:825
+#: ../gtk/main.c:826
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
@@ -67,31 +67,31 @@ msgstr ""
 "您是否允许他看到您的在线状态或者将它加为您的联系人允许?\n"
 "如果您回答否，则会将该人临时性的放入黑名单"
 
-#: ../gtk/main.c:903
+#: ../gtk/main.c:904
 #, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
 " at domain <i>%s</i>:"
 msgstr "请输入 %s@%s 的密码："
 
-#: ../gtk/main.c:1039
+#: ../gtk/main.c:1040
 msgid "Website link"
 msgstr "网站"
 
-#: ../gtk/main.c:1075
+#: ../gtk/main.c:1076
 msgid "Linphone - a video internet phone"
 msgstr "Linphone - 互联网视频电话"
 
-#: ../gtk/main.c:1094
+#: ../gtk/main.c:1095
 #, c-format
 msgid "%s (Default)"
 msgstr "%s (默认)"
 
-#: ../gtk/main.c:1186
+#: ../gtk/main.c:1187
 msgid "Windows"
 msgstr ""
 
-#: ../gtk/main.c:1363
+#: ../gtk/main.c:1364
 msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
@@ -99,7 +99,7 @@ msgstr ""
 "未在此计算机上检测到声卡。\n"
 "您无法发送或接收音频呼叫。"
 
-#: ../gtk/main.c:1422
+#: ../gtk/main.c:1423
 msgid "A free SIP video-phone"
 msgstr "免费的 SIP 视频电话"
 
@@ -349,6 +349,16 @@ msgstr "正在创建您的帐户"
 #: ../gtk/setupwizard.c:253
 msgid "Now ready !"
 msgstr "就绪！"
+
+#: ../gtk/incall_view.c:61
+#, fuzzy, c-format
+msgid "Call #%i"
+msgstr "呼叫 %s"
+
+#: ../gtk/incall_view.c:87
+#, c-format
+msgid "Transfer to call #%i with %s"
+msgstr ""
 
 #: ../gtk/incall_view.c:113
 msgid "Transfer"
@@ -700,11 +710,11 @@ msgstr "SIP 地址"
 msgid "Show this contact presence status"
 msgstr "显示该联系人的在线状态"
 
-#: ../gtk/contact.ui.h:6 ../gtk/password.ui.h:5
+#: ../gtk/contact.ui.h:6
 msgid "gtk-cancel"
 msgstr ""
 
-#: ../gtk/contact.ui.h:7 ../gtk/password.ui.h:6
+#: ../gtk/contact.ui.h:7
 msgid "gtk-ok"
 msgstr ""
 
@@ -1389,7 +1399,7 @@ msgstr "注册到 %s 失败: %s"
 msgid "We are transferred to %s"
 msgstr ""
 
-#: ../coreapi/sal_eXosip2.c:814 ../coreapi/sal_eXosip2.c:816
+#: ../coreapi/sal_eXosip2.c:815 ../coreapi/sal_eXosip2.c:817
 #, fuzzy
 msgid "Authentication failure"
 msgstr "Linphone - 需要认证"

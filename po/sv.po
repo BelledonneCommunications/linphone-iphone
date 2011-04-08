@@ -2,19 +2,19 @@
 # Copyright (C) YEAR Free Software Foundation, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-07 15:31+0200\n"
+"POT-Creation-Date: 2011-04-08 22:32+0200\n"
 "PO-Revision-Date: 2009-02-17 15:22+0100\n"
 "Last-Translator: Emmanuel Frécon <emmanuel.frecon@myjoice.com>\n"
 "Language-Team: SWEDISH <SE@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: \n"
 
 #: ../gtk/support.c:49 ../gtk/support.c:73 ../gtk/support.c:102
 #, c-format
@@ -55,7 +55,7 @@ msgstr ""
 msgid "Call with %s"
 msgstr "Samtal med %s"
 
-#: ../gtk/main.c:825
+#: ../gtk/main.c:826
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
@@ -68,7 +68,7 @@ msgstr ""
 "henne till din kontaktlista?\n"
 "Om du svarar nej, personen kommer att vara bannlyst."
 
-#: ../gtk/main.c:903
+#: ../gtk/main.c:904
 #, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
@@ -77,30 +77,30 @@ msgstr ""
 "Mata in ditt lösenord för användaren <i>%s</i>\n"
 "vid domänen <i>%s</i>:"
 
-#: ../gtk/main.c:1039
+#: ../gtk/main.c:1040
 msgid "Website link"
 msgstr "Webbsajt"
 
-#: ../gtk/main.c:1075
+#: ../gtk/main.c:1076
 msgid "Linphone - a video internet phone"
 msgstr "Linphone - en video Internet telefon"
 
-#: ../gtk/main.c:1094
+#: ../gtk/main.c:1095
 #, c-format
 msgid "%s (Default)"
 msgstr "%s (Default)"
 
-#: ../gtk/main.c:1186
+#: ../gtk/main.c:1187
 msgid "Windows"
 msgstr ""
 
-#: ../gtk/main.c:1363
+#: ../gtk/main.c:1364
 msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
 msgstr ""
 
-#: ../gtk/main.c:1422
+#: ../gtk/main.c:1423
 msgid "A free SIP video-phone"
 msgstr "En gratis SIP video-telefon"
 
@@ -351,6 +351,16 @@ msgstr "Skapar ditt konto"
 #: ../gtk/setupwizard.c:253
 msgid "Now ready !"
 msgstr "Klar nu!"
+
+#: ../gtk/incall_view.c:61
+#, fuzzy, c-format
+msgid "Call #%i"
+msgstr "Ringer %s"
+
+#: ../gtk/incall_view.c:87
+#, c-format
+msgid "Transfer to call #%i with %s"
+msgstr ""
 
 #: ../gtk/incall_view.c:113
 msgid "Transfer"
@@ -692,12 +702,12 @@ msgstr "SIP Adress"
 msgid "Show this contact presence status"
 msgstr "Visa kontaktens närvarostatus"
 
-#: ../gtk/contact.ui.h:6 ../gtk/password.ui.h:5
+#: ../gtk/contact.ui.h:6
 #, fuzzy
 msgid "gtk-cancel"
 msgstr "Kopplad"
 
-#: ../gtk/contact.ui.h:7 ../gtk/password.ui.h:6
+#: ../gtk/contact.ui.h:7
 msgid "gtk-ok"
 msgstr ""
 
@@ -1393,7 +1403,7 @@ msgstr "Registrering hos %s mislyckades: %s"
 msgid "We are transferred to %s"
 msgstr ""
 
-#: ../coreapi/sal_eXosip2.c:814 ../coreapi/sal_eXosip2.c:816
+#: ../coreapi/sal_eXosip2.c:815 ../coreapi/sal_eXosip2.c:817
 #, fuzzy
 msgid "Authentication failure"
 msgstr "Linphone - Autentisering krävs"

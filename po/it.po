@@ -1,19 +1,19 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR Free Software Foundation, Inc.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: Linphone 3.2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-07 15:31+0200\n"
+"POT-Creation-Date: 2011-04-08 22:32+0200\n"
 "PO-Revision-Date: 2002-10-15 HO:MI+ZONE\n"
 "Last-Translator: Matteo Piazza <matteo.piazza@trentinonetwork.it>\n"
 "Language-Team: it <it@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: \n"
 
 #: ../gtk/support.c:49 ../gtk/support.c:73 ../gtk/support.c:102
 #, c-format
@@ -52,7 +52,7 @@ msgstr ""
 msgid "Call with %s"
 msgstr "Chat con %s"
 
-#: ../gtk/main.c:825
+#: ../gtk/main.c:826
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
@@ -64,37 +64,37 @@ msgstr ""
 "veda il tuo stato o aggiungerlo alla tua lista dei contatti Se rispondi no "
 "questo utente sarà momentaneamente bloccato."
 
-#: ../gtk/main.c:903
+#: ../gtk/main.c:904
 #, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
 " at domain <i>%s</i>:"
 msgstr "Prego inserire la password per username <i>%s</i> e dominio <i>%s<i>"
 
-#: ../gtk/main.c:1039
+#: ../gtk/main.c:1040
 msgid "Website link"
 msgstr ""
 
-#: ../gtk/main.c:1075
+#: ../gtk/main.c:1076
 msgid "Linphone - a video internet phone"
 msgstr ""
 
-#: ../gtk/main.c:1094
+#: ../gtk/main.c:1095
 #, c-format
 msgid "%s (Default)"
 msgstr "%s (Default)"
 
-#: ../gtk/main.c:1186
+#: ../gtk/main.c:1187
 msgid "Windows"
 msgstr ""
 
-#: ../gtk/main.c:1363
+#: ../gtk/main.c:1364
 msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
 msgstr ""
 
-#: ../gtk/main.c:1422
+#: ../gtk/main.c:1423
 msgid "A free SIP video-phone"
 msgstr ""
 
@@ -345,6 +345,16 @@ msgstr "Creazione account"
 #: ../gtk/setupwizard.c:253
 msgid "Now ready !"
 msgstr "Pronto !"
+
+#: ../gtk/incall_view.c:61
+#, fuzzy, c-format
+msgid "Call #%i"
+msgstr "Chiamata %s"
+
+#: ../gtk/incall_view.c:87
+#, c-format
+msgid "Transfer to call #%i with %s"
+msgstr ""
 
 #: ../gtk/incall_view.c:113
 msgid "Transfer"
@@ -690,11 +700,11 @@ msgstr "Rubrica"
 msgid "Show this contact presence status"
 msgstr "Mostra lo stato di presenza del contatto"
 
-#: ../gtk/contact.ui.h:6 ../gtk/password.ui.h:5
+#: ../gtk/contact.ui.h:6
 msgid "gtk-cancel"
 msgstr ""
 
-#: ../gtk/contact.ui.h:7 ../gtk/password.ui.h:6
+#: ../gtk/contact.ui.h:7
 msgid "gtk-ok"
 msgstr ""
 
@@ -1390,7 +1400,7 @@ msgstr "Registrazione su %s fallita: %s"
 msgid "We are transferred to %s"
 msgstr ""
 
-#: ../coreapi/sal_eXosip2.c:814 ../coreapi/sal_eXosip2.c:816
+#: ../coreapi/sal_eXosip2.c:815 ../coreapi/sal_eXosip2.c:817
 #, fuzzy
 msgid "Authentication failure"
 msgstr "Linphone - Autenticazione richiesta"

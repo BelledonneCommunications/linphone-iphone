@@ -615,9 +615,10 @@ static void completion_add_text(GtkEntry *entry, const char *text){
 
 void linphone_gtk_call_terminated(LinphoneCall *call, const char *error){
 	GtkWidget *mw=linphone_gtk_get_main_window();
-	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"terminate_call"),FALSE);
-	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"start_call"),TRUE);
-	
+	if (linphone_core_get_calls(linphone_gtk_get_core())==NULL){
+	    gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"terminate_call"),FALSE);
+	    gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"start_call"),TRUE);
+	}
 	if (linphone_gtk_use_in_call_view() && call)
 		linphone_gtk_in_call_view_terminate(call,error);
 	update_video_title();

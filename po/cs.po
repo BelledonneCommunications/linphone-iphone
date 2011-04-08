@@ -3,27 +3,27 @@
 # Copyright (C) 2009 Simon Morlat (msgids)
 # Klara Cihlarova <koty@seznam.cz>, 2005.
 # Petr Pisar <petr.pisar@atlas.cz>, 2006, 2007, 2008, 2009, 2010, 2011.
-#
+# 
 # XXX: Don't translate gtk-* messages. They will be replaced from GTK+
 # catalogue.
-#
+# 
 # On hold → odložen
 # Pause call → odložit hovor
 # Resume call → obnovit hovor
 # Transfer → přepojit
-#
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: linphone-3.4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-07 15:31+0200\n"
+"POT-Creation-Date: 2011-04-08 22:32+0200\n"
 "PO-Revision-Date: 2011-02-07 18:00+0100\n"
 "Last-Translator: Petr Pisar <petr.pisar@atlas.cz>\n"
 "Language-Team: Czech <translation-team-cs@lists.sourceforge.net>\n"
+"Language: cs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: cs\n"
 "a4be9bcfe5ebee60493f7c439b5c6616a5c8b6e6\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
@@ -66,7 +66,7 @@ msgstr ""
 msgid "Call with %s"
 msgstr "Hovor s %s"
 
-#: ../gtk/main.c:825
+#: ../gtk/main.c:826
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
@@ -79,7 +79,7 @@ msgstr ""
 "do svého adresáře?\n"
 "Odpovíte-li ne, tato osobo bude dočasně blokována."
 
-#: ../gtk/main.c:903
+#: ../gtk/main.c:904
 #, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
@@ -88,24 +88,24 @@ msgstr ""
 "Prosím, zadejte heslo pro uživatele <i>%s</i>\n"
 "v doméně <i>%s</i>:"
 
-#: ../gtk/main.c:1039
+#: ../gtk/main.c:1040
 msgid "Website link"
 msgstr "Odkaz na webovou stránku"
 
-#: ../gtk/main.c:1075
+#: ../gtk/main.c:1076
 msgid "Linphone - a video internet phone"
 msgstr "Lipnhone – internetový videofon"
 
-#: ../gtk/main.c:1094
+#: ../gtk/main.c:1095
 #, c-format
 msgid "%s (Default)"
 msgstr "%s (Výchozí)"
 
-#: ../gtk/main.c:1186
+#: ../gtk/main.c:1187
 msgid "Windows"
 msgstr ""
 
-#: ../gtk/main.c:1363
+#: ../gtk/main.c:1364
 msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
@@ -113,7 +113,7 @@ msgstr ""
 "Na tomto počítači nebyla objevena žádná zvuková karta.\n"
 "Nebudete moci vytáčet a přijímat a zvukové hovory."
 
-#: ../gtk/main.c:1422
+#: ../gtk/main.c:1423
 msgid "A free SIP video-phone"
 msgstr "Volný SIP videofon"
 
@@ -365,6 +365,16 @@ msgstr "Vytváření účtu"
 #: ../gtk/setupwizard.c:253
 msgid "Now ready !"
 msgstr "Připraveno!"
+
+#: ../gtk/incall_view.c:61
+#, fuzzy, c-format
+msgid "Call #%i"
+msgstr "Volat komu: %s"
+
+#: ../gtk/incall_view.c:87
+#, c-format
+msgid "Transfer to call #%i with %s"
+msgstr ""
 
 #: ../gtk/incall_view.c:113
 msgid "Transfer"
@@ -716,11 +726,11 @@ msgstr "SIP adresa"
 msgid "Show this contact presence status"
 msgstr "U tohoto kontaktu zobrazovat stav přítomnosti"
 
-#: ../gtk/contact.ui.h:6 ../gtk/password.ui.h:5
+#: ../gtk/contact.ui.h:6
 msgid "gtk-cancel"
 msgstr ""
 
-#: ../gtk/contact.ui.h:7 ../gtk/password.ui.h:6
+#: ../gtk/contact.ui.h:7
 msgid "gtk-ok"
 msgstr ""
 
@@ -1401,7 +1411,7 @@ msgstr "Registrace na %s selhala: %s"
 msgid "We are transferred to %s"
 msgstr "Byly jsme přepojeni na %s"
 
-#: ../coreapi/sal_eXosip2.c:814 ../coreapi/sal_eXosip2.c:816
+#: ../coreapi/sal_eXosip2.c:815 ../coreapi/sal_eXosip2.c:817
 msgid "Authentication failure"
 msgstr "Selhání ověření"
 
