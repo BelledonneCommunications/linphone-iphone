@@ -3,28 +3,27 @@
 # Copyright (C) 2009 Simon Morlat (msgids)
 # Klara Cihlarova <koty@seznam.cz>, 2005.
 # Petr Pisar <petr.pisar@atlas.cz>, 2006, 2007, 2008, 2009, 2010, 2011.
-# 
+#
 # XXX: Don't translate gtk-* messages. They will be replaced from GTK+
 # catalogue.
-# 
+#
 # On hold → odložen
 # Pause call → odložit hovor
 # Resume call → obnovit hovor
 # Transfer → přepojit
-# 
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: linphone-3.4.0\n"
+"Project-Id-Version: linphone-3.4.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-08 22:32+0200\n"
-"PO-Revision-Date: 2011-02-07 18:00+0100\n"
+"POT-Creation-Date: 2011-04-10 19:56+0200\n"
+"PO-Revision-Date: 2011-04-10 20:11+0200\n"
 "Last-Translator: Petr Pisar <petr.pisar@atlas.cz>\n"
 "Language-Team: Czech <translation-team-cs@lists.sourceforge.net>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"a4be9bcfe5ebee60493f7c439b5c6616a5c8b6e6\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
 #: ../gtk/support.c:49 ../gtk/support.c:73 ../gtk/support.c:102
@@ -39,15 +38,15 @@ msgstr "Diskuze s %s"
 
 #: ../gtk/main.c:74
 msgid "log to stdout some debug information while running."
-msgstr "za běhu vypisovat některé ladicí informace na standardní výstup."
+msgstr "Za běhu vypisuje některé ladicí informace na standardní výstup."
 
 #: ../gtk/main.c:81
 msgid "Start only in the system tray, do not show the main interface."
-msgstr "Spouštět se pouze do systémové oblasti, nezobrazovat hlavní okno."
+msgstr "Spustí se pouze do systémové oblasti, nezobrazí hlavní okno."
 
 #: ../gtk/main.c:88
 msgid "address to call right now"
-msgstr "zavolat právě teď na tuto adresu"
+msgstr "Zavolá právě teď na tuto adresu"
 
 #: ../gtk/main.c:95
 msgid "if set automatically answer incoming calls"
@@ -103,7 +102,7 @@ msgstr "%s (Výchozí)"
 
 #: ../gtk/main.c:1187
 msgid "Windows"
-msgstr ""
+msgstr "Okna"
 
 #: ../gtk/main.c:1364
 msgid ""
@@ -161,7 +160,7 @@ msgstr "Přidat nový kontakt z adresáře %s"
 
 #: ../gtk/propertybox.c:277
 msgid "Rate (Hz)"
-msgstr "Rychlost (Hz)"
+msgstr "Kmitočet (Hz)"
 
 #: ../gtk/propertybox.c:283
 msgid "Status"
@@ -169,7 +168,7 @@ msgstr "Stav"
 
 #: ../gtk/propertybox.c:289
 msgid "Min bitrate (kbit/s)"
-msgstr "Min. rychlost (kbit/s)"
+msgstr "Min. rychlost (kb/s)"
 
 #: ../gtk/propertybox.c:296
 msgid "Parameters"
@@ -243,7 +242,15 @@ msgstr "čeština"
 msgid "Chinese"
 msgstr "čínština"
 
-#: ../gtk/propertybox.c:720
+#: ../gtk/propertybox.c:664
+msgid "Traditional Chinese"
+msgstr "tradiční čínština"
+
+#: ../gtk/propertybox.c:665
+msgid "Norwegian"
+msgstr "norština"
+
+#: ../gtk/propertybox.c:722
 msgid ""
 "You need to restart linphone for the new language selection to take effect."
 msgstr "Aby se projevil výběr nového jazyka, je nutné znovu spustit linphone."
@@ -367,14 +374,14 @@ msgid "Now ready !"
 msgstr "Připraveno!"
 
 #: ../gtk/incall_view.c:61
-#, fuzzy, c-format
+#, c-format
 msgid "Call #%i"
-msgstr "Volat komu: %s"
+msgstr "Hovor č. %i"
 
 #: ../gtk/incall_view.c:87
 #, c-format
 msgid "Transfer to call #%i with %s"
-msgstr ""
+msgstr "Přepojit hovor č. %i s %s"
 
 #: ../gtk/incall_view.c:113
 msgid "Transfer"
@@ -508,21 +515,19 @@ msgstr "A"
 
 #: ../gtk/main.ui.h:17
 msgid "ADSL"
-msgstr ""
+msgstr "ADSL"
 
 #: ../gtk/main.ui.h:18
-#, fuzzy
 msgid "Add contact"
-msgstr "Nalezen %i kontakt"
+msgstr "Přidat kontakt"
 
 #: ../gtk/main.ui.h:19
 msgid "All users"
-msgstr ""
+msgstr "všech uživatelích"
 
 #: ../gtk/main.ui.h:21
-#, fuzzy
 msgid "Audio & video"
-msgstr "Zvuk i obraz"
+msgstr "Zvuk a obraz"
 
 #: ../gtk/main.ui.h:22
 msgid "Audio only"
@@ -541,9 +546,8 @@ msgid "C"
 msgstr "C"
 
 #: ../gtk/main.ui.h:26
-#, fuzzy
 msgid "Check _Updates"
-msgstr "Vyhledat aktualizace"
+msgstr "Vyhledat akt_ualizace"
 
 #: ../gtk/main.ui.h:27
 msgid "Contacts"
@@ -578,11 +582,8 @@ msgid "Enter username, phone number, or full sip address"
 msgstr "Zadejte uživatelské jméno, telefonní číslo nebo plnou sipovou adresu"
 
 #: ../gtk/main.ui.h:35
-#, fuzzy
 msgid "Fiber Channel"
-msgstr ""
-"ADSL\n"
-"Fiber Channel"
+msgstr "Fiber Channel"
 
 #: ../gtk/main.ui.h:36
 msgid "In call"
@@ -590,7 +591,7 @@ msgstr "Telefonuje se"
 
 #: ../gtk/main.ui.h:37
 msgid "Initiate a new call"
-msgstr ""
+msgstr "Zahájit nový hovor"
 
 #: ../gtk/main.ui.h:38
 msgid "Internet connection:"
@@ -613,11 +614,8 @@ msgid "My current identity:"
 msgstr "Moje současná totožnost:"
 
 #: ../gtk/main.ui.h:44
-#, fuzzy
 msgid "Online users"
-msgstr ""
-"všech uživatelích\n"
-"připojených uživatelích"
+msgstr "připojených uživatelích"
 
 #: ../gtk/main.ui.h:45
 msgid "Password"
@@ -632,28 +630,24 @@ msgid "Search"
 msgstr "Hledat"
 
 #: ../gtk/main.ui.h:49
-#, fuzzy
 msgid "Show debug window"
-msgstr "Ladicí okno Linphonu"
+msgstr "Zobrazit ladicí okno"
 
 #: ../gtk/main.ui.h:50
 msgid "Username"
 msgstr "Uživatelské jméno"
 
 #: ../gtk/main.ui.h:51
-#, fuzzy
 msgid "_Call history"
-msgstr "Historie volání"
+msgstr "_Historie volání"
 
 #: ../gtk/main.ui.h:52
-#, fuzzy
 msgid "_Help"
-msgstr "Nápověda"
+msgstr "Nápo_věda"
 
 #: ../gtk/main.ui.h:53
-#, fuzzy
 msgid "_Homepage"
-msgstr "Domovská stránka"
+msgstr "_Domovská stránka"
 
 #: ../gtk/main.ui.h:54
 msgid "_Linphone"
@@ -661,7 +655,7 @@ msgstr "_Linphone"
 
 #: ../gtk/main.ui.h:55
 msgid "_Options"
-msgstr ""
+msgstr "V_olby"
 
 #: ../gtk/main.ui.h:56
 msgid "in"
@@ -673,13 +667,12 @@ msgstr ""
 
 #: ../gtk/about.ui.h:1
 msgid "(C) Belledonne Communications,2010\n"
-msgstr ""
+msgstr "© Belledonne Communications, 2010\n"
 
 #: ../gtk/about.ui.h:3
 msgid "About linphone"
 msgstr "O Linphonu"
 
-# FIXME: standart
 #: ../gtk/about.ui.h:4
 msgid "An internet video phone using the standard SIP (rfc3261) protocol."
 msgstr "Internetový videofon používající standardní protokol SIP (RFC 3261)."
@@ -755,9 +748,8 @@ msgid "UserID"
 msgstr "Identifikátor uživatele"
 
 #: ../gtk/call_logs.ui.h:1
-#, fuzzy
 msgid "Call back"
-msgstr "Volat komu: %s"
+msgstr "Zavolat zpátky"
 
 #: ../gtk/call_logs.ui.h:2
 msgid "Call history"
@@ -765,7 +757,7 @@ msgstr "Historie volání"
 
 #: ../gtk/call_logs.ui.h:3
 msgid "Clear all"
-msgstr ""
+msgstr "Vše smazat"
 
 #: ../gtk/sip_account.ui.h:1
 msgid "Configure a SIP account"
@@ -777,11 +769,11 @@ msgstr "Linphone – Nastav SIP účet"
 
 #: ../gtk/sip_account.ui.h:3
 msgid "Looks like sip:<proxy hostname>"
-msgstr ""
+msgstr "Vypadá jako sip:<název proxy>"
 
 #: ../gtk/sip_account.ui.h:4
 msgid "Looks like sip:<username>@<domain>"
-msgstr ""
+msgstr "Vypadá jako sip:<uživatel>@<doména>"
 
 #: ../gtk/sip_account.ui.h:5
 msgid "Publish presence information"
@@ -884,9 +876,8 @@ msgid "Audio RTP/UDP:"
 msgstr "Zvukový RTP/UDP:"
 
 #: ../gtk/parameters.ui.h:17
-#, fuzzy
 msgid "Audio codecs"
-msgstr "Kodeky obrazu"
+msgstr "Kodeky zvuku"
 
 #: ../gtk/parameters.ui.h:18
 msgid "Behind NAT / Firewall (specify gateway IP below)"
@@ -985,9 +976,8 @@ msgid "Ring sound:"
 msgstr "Vyzvánění:"
 
 #: ../gtk/parameters.ui.h:43
-#, fuzzy
 msgid "SIP (TCP):"
-msgstr "SIP (UDP):"
+msgstr "SIP (TCP):"
 
 #: ../gtk/parameters.ui.h:44
 msgid "SIP (UDP):"
@@ -1034,7 +1024,6 @@ msgid "Video RTP/UDP:"
 msgstr "Obrazový RTP/UDP:"
 
 #: ../gtk/parameters.ui.h:55
-#, fuzzy
 msgid "Video codecs"
 msgstr "Kodeky obrazu"
 
@@ -1055,9 +1044,8 @@ msgid "Your username:"
 msgstr "Vaše uživatelské jméno:"
 
 #: ../gtk/parameters.ui.h:60
-#, fuzzy
 msgid "a sound card"
-msgstr "zvuková karta\n"
+msgstr "zvuková karta"
 
 #: ../gtk/parameters.ui.h:61
 msgid "default camera"
@@ -1307,9 +1295,8 @@ msgid "Remote ringing."
 msgstr "Vyzvání na druhé straně."
 
 #: ../coreapi/callbacks.c:242
-#, fuzzy
 msgid "Remote ringing..."
-msgstr "Vyzvání na druhé straně."
+msgstr "Vyzvání na druhé straně…"
 
 #: ../coreapi/callbacks.c:253
 msgid "Early media."
@@ -1442,13 +1429,11 @@ msgstr "Selhání ověření"
 #~ msgid "The GSM codec"
 #~ msgstr "GSM kodek"
 
-#, fuzzy
 #~ msgid "Sound capture filter for MacOS X Audio Unit"
-#~ msgstr "Filtr zachytávání zvuku přes MacOS X ovladače Core Audio"
+#~ msgstr "Filtr zachytávání zvuku přes MacOS X ovladač Audio Unit"
 
-#, fuzzy
 #~ msgid "Sound playback filter for MacOS X Audio Unit"
-#~ msgstr "Filtr přehrávání zvuku přes MacOS X ovladače Core Audio"
+#~ msgstr "Filtr přehrávání zvuku přes MacOS X ovladač Core Audio"
 
 #~ msgid "A filter to make conferencing"
 #~ msgstr "Filtr pro vytváření konferencí"
@@ -1462,15 +1447,14 @@ msgstr "Selhání ověření"
 #~ msgid "A filter that send several inputs to one output."
 #~ msgstr "Filtr, který směšuje několik vstupů do jednoho výstupu."
 
-#, fuzzy
 #~ msgid "Audio resampler"
-#~ msgstr "měnič frekvence"
+#~ msgstr "Převzorkování zvuku"
 
 #~ msgid "RTP output filter"
-#~ msgstr "Filtr RTP výstupu"
+#~ msgstr "Filtr RTP výstupu"
 
 #~ msgid "RTP input filter"
-#~ msgstr "Filtr RTP vstupu"
+#~ msgstr "Filtr RTP vstupu"
 
 #~ msgid "The free and wonderful speex codec"
 #~ msgstr "Svobodný a úžasný kodek speex"
@@ -1576,9 +1560,8 @@ msgstr "Selhání ověření"
 #~ msgid "A MJPEG encoder using ffmpeg library."
 #~ msgstr "Kodér MJPEG používající knihovnu ffmpeg."
 
-#, fuzzy
 #~ msgid "A SDL-based video display"
-#~ msgstr "Obecné zobrazování videa"
+#~ msgstr "Zobrazování videa přes SDL"
 
 #~ msgid "A video4windows compatible source filter to stream pictures."
 #~ msgstr "Zdrojový filtr kompatibilní s video4windows proudující obrázky."
@@ -1602,45 +1585,38 @@ msgstr "Selhání ověření"
 #~ msgid "A webcam grabber based on directshow."
 #~ msgstr "Snímač kamer postavený na directshow."
 
-#, fuzzy
 #~ msgid "A video display based on windows DrawDib api"
-#~ msgstr "Zobrazovaní videa v SDL okně"
+#~ msgstr "Zobrazovaní videa přes API Windows DrawDib"
 
-#, fuzzy
 #~ msgid "A filter that mixes down 16 bit sample audio streams"
-#~ msgstr "Filtr, který měří hlasitost na 16b zvukovém PCM proudu"
+#~ msgstr "Filtr, který smísí 16b vzorkované zvukové proudy"
 
-#, fuzzy
 #~ msgid "A filter that converts from mono to stereo and vice versa."
-#~ msgstr "Filtr, který měří a řídí hlasitost zvuku"
+#~ msgstr "Filtr, který převádí mono na stereo a obráceně."
 
-#, fuzzy
 #~ msgid "Inter ticker communication filter."
-#~ msgstr "Chyba komunikace se serverem."
+#~ msgstr "Komunikační filtr mezitiku."
 
-#, fuzzy
+#~ msgid "A display filter sending the buffers to draw to the upper layer"
+#~ msgstr "Zobrazovací filtr odesílající buffery na vykreslení do vyšší vrstvy"
+
 #~ msgid "Sound capture filter for MacOS X Audio Unit Service"
-#~ msgstr "Filtr zachytávání zvuku přes MacOS X službu zvukové fronty"
+#~ msgstr "Filtr zachytávání zvuku přes MacOS X službu Audio Unit"
 
-#, fuzzy
 #~ msgid "Sound playback filter for MacOS X Audio Unit Service"
-#~ msgstr "Filtr přehrávání zvuku přes MacOS X službu zvukové fronty"
+#~ msgstr "Filtr přehrávání zvuku přes MacOS X službu Audio Unit"
 
-#, fuzzy
 #~ msgid "A video display using X11+Xv"
-#~ msgstr "Zobrazovaní videa v SDL okně"
+#~ msgstr "Zobrazovaní videa pomocí X11+Xv"
 
-#, fuzzy
 #~ msgid "Sound capture filter for Android"
-#~ msgstr "Zvukový zachytávací filtr pro ovladače OSS"
+#~ msgstr "Zvukový zachytávací filtr pro Android"
 
-#, fuzzy
 #~ msgid "Sound playback filter for Android"
-#~ msgstr "Zvukový přehrávací filtr pro ovladače OSS"
+#~ msgstr "Zvukový přehrávací filtr pro Android"
 
-#, fuzzy
 #~ msgid "A filter that captures Android video."
-#~ msgstr "Filtr, který měří a řídí hlasitost zvuku"
+#~ msgstr "Filtr, který zachytává obraz za Androidu."
 
 #~ msgid ""
 #~ "Your machine appears to be connected to an IPv6 network. By default "

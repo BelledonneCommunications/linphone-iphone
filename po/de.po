@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: linphone 0.7.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-04-08 22:32+0200\n"
-"PO-Revision-Date: 2011-04-06 23:32+0200\n"
+"PO-Revision-Date: 2011-04-10 02:35+0200\n"
 "Last-Translator: Gerhard Stengel <gstengel@gmx.net>\n"
 "Language-Team: German <kde-i18n-de@kde.org>\n"
 "Language: \n"
@@ -235,7 +235,15 @@ msgstr "Tschechisch"
 msgid "Chinese"
 msgstr "Chinesisch"
 
-#: ../gtk/propertybox.c:720
+#: ../gtk/propertybox.c:664
+msgid "Traditional Chinese"
+msgstr "Traditionelles Chinesisch"
+
+#: ../gtk/propertybox.c:665
+msgid "Norwegian"
+msgstr "Norwegisch"
+
+#: ../gtk/propertybox.c:722
 msgid ""
 "You need to restart linphone for the new language selection to take effect."
 msgstr ""
@@ -364,18 +372,18 @@ msgid "Now ready !"
 msgstr "Fertig!"
 
 #: ../gtk/incall_view.c:61
-#, fuzzy, c-format
+#, c-format
 msgid "Call #%i"
-msgstr "„%s“ anrufen"
+msgstr "Anruf #%i"
 
 #: ../gtk/incall_view.c:87
 #, c-format
 msgid "Transfer to call #%i with %s"
-msgstr ""
+msgstr "Vermittlung zum Anruf #%i mit %s"
 
 #: ../gtk/incall_view.c:113
 msgid "Transfer"
-msgstr "Übertragung"
+msgstr "Vermittlung"
 
 #: ../gtk/incall_view.c:187
 msgid "<b>Calling...</b>"
@@ -649,7 +657,7 @@ msgstr "_Optionen"
 
 #: ../gtk/main.ui.h:56
 msgid "in"
-msgstr ""
+msgstr "in"
 
 #: ../gtk/main.ui.h:57
 msgid "label"
