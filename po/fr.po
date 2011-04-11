@@ -1,19 +1,19 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2001 Free Software Foundation, Inc.
 # Simon Morlat <simon.morlat@linphone.org>, 2001.
-#
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: Linphone 0.9.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-07 15:31+0200\n"
+"POT-Creation-Date: 2011-04-08 22:32+0200\n"
 "PO-Revision-Date: 2002-12-06 17:33+0100\n"
 "Last-Translator: Simon Morlat <simon.morlat@linphone.org>\n"
 "Language-Team: french <fr@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: \n"
 
 #: ../gtk/support.c:49 ../gtk/support.c:73 ../gtk/support.c:102
 #, c-format
@@ -54,7 +54,7 @@ msgstr ""
 msgid "Call with %s"
 msgstr "Appel avec %s"
 
-#: ../gtk/main.c:825
+#: ../gtk/main.c:826
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
@@ -68,7 +68,7 @@ msgstr ""
 "Si vous répondez non, cette personne sera mise temporairement sur liste "
 "noire."
 
-#: ../gtk/main.c:903
+#: ../gtk/main.c:904
 #, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
@@ -77,24 +77,24 @@ msgstr ""
 "Entrez le mot de passe pour <i>%s</i>\n"
 " sur le domaine <i>%s</i>:"
 
-#: ../gtk/main.c:1039
+#: ../gtk/main.c:1040
 msgid "Website link"
 msgstr "Lien site web"
 
-#: ../gtk/main.c:1075
+#: ../gtk/main.c:1076
 msgid "Linphone - a video internet phone"
 msgstr "Linphone - un téléphone video pour l'internet"
 
-#: ../gtk/main.c:1094
+#: ../gtk/main.c:1095
 #, c-format
 msgid "%s (Default)"
 msgstr "%s (par défaut)"
 
-#: ../gtk/main.c:1186
+#: ../gtk/main.c:1187
 msgid "Windows"
 msgstr ""
 
-#: ../gtk/main.c:1363
+#: ../gtk/main.c:1364
 msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
@@ -102,7 +102,7 @@ msgstr ""
 "Aucune carte son n'a été détectée sur cet ordinateur.\n"
 "Vous ne pourrez pas effectuer d'appels audio."
 
-#: ../gtk/main.c:1422
+#: ../gtk/main.c:1423
 msgid "A free SIP video-phone"
 msgstr "Un visiophone libre"
 
@@ -352,6 +352,16 @@ msgstr ""
 
 #: ../gtk/setupwizard.c:253
 msgid "Now ready !"
+msgstr ""
+
+#: ../gtk/incall_view.c:61
+#, fuzzy, c-format
+msgid "Call #%i"
+msgstr "Appeler %s"
+
+#: ../gtk/incall_view.c:87
+#, c-format
+msgid "Transfer to call #%i with %s"
 msgstr ""
 
 #: ../gtk/incall_view.c:113
@@ -681,11 +691,11 @@ msgstr "Adresse SIP"
 msgid "Show this contact presence status"
 msgstr "Voir l'état de présence de ce contact"
 
-#: ../gtk/contact.ui.h:6 ../gtk/password.ui.h:5
+#: ../gtk/contact.ui.h:6
 msgid "gtk-cancel"
 msgstr ""
 
-#: ../gtk/contact.ui.h:7 ../gtk/password.ui.h:6
+#: ../gtk/contact.ui.h:7
 msgid "gtk-ok"
 msgstr ""
 
@@ -1363,6 +1373,6 @@ msgstr "Echec de l'enregistrement sur %s: %s"
 msgid "We are transferred to %s"
 msgstr "Transfert vers %s"
 
-#: ../coreapi/sal_eXosip2.c:814 ../coreapi/sal_eXosip2.c:816
+#: ../coreapi/sal_eXosip2.c:815 ../coreapi/sal_eXosip2.c:817
 msgid "Authentication failure"
 msgstr "Echec d'authentification"

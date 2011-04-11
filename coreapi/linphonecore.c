@@ -397,7 +397,7 @@ static void build_sound_devices_table(LinphoneCore *lc){
 
 static void sound_config_read(LinphoneCore *lc)
 {
-	/*int tmp;*/
+	int tmp;
 	const char *tmpbuf;
 	const char *devid;
 	float gain=0;
@@ -458,12 +458,13 @@ static void sound_config_read(LinphoneCore *lc)
 	linphone_core_set_play_file(lc,lp_config_get_string(lc->config,"sound","hold_music",PACKAGE_SOUND_DIR "/" HOLD_MUSIC));
 	check_sound_device(lc);
 	lc->sound_conf.latency=0;
-
-	linphone_core_enable_echo_cancellation(lc,
-	    lp_config_get_int(lc->config,"sound","echocancelation",0) |
-	    lp_config_get_int(lc->config,"sound","echocancellation",0)
-		);
-
+#if !defined(TARGET_OS_IPHONE) && !defined(ANDROID)
+    tmp=TRUE;
+#else 
+    tmp=FALSE;
+#endif
+    tmp=lp_config_get_int(lc->config,"sound","echocancellation",tmp);
+	linphone_core_enable_echo_cancellation(lc,tmp);
 	linphone_core_enable_echo_limiter(lc,
 		lp_config_get_int(lc->config,"sound","echolimiter",0));
 	linphone_core_enable_agc(lc,

@@ -58,7 +58,7 @@ static GtkWidget *make_tab_header(int number){
 	GtkWidget *w=gtk_hbox_new (FALSE,0);
 	GtkWidget *i=create_pixmap ("status-green.png");
 	GtkWidget *l;
-	gchar *text=g_strdup_printf("Call #%i",number);
+	gchar *text=g_strdup_printf(_("Call #%i"),number);
 	l=gtk_label_new (text);
 	gtk_box_pack_start (GTK_BOX(w),i,FALSE,FALSE,0);
 	gtk_box_pack_end(GTK_BOX(w),l,TRUE,TRUE,0);
@@ -84,7 +84,7 @@ static void transfer_button_clicked(GtkWidget *button, gpointer call_ref){
 		if (other_call!=call){
 			int call_index=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(call_view),"call_index"));
 			char *remote_uri=linphone_call_get_remote_address_as_string (other_call);
-			char *text=g_strdup_printf("Transfer to call #%i with %s",call_index,remote_uri);
+			char *text=g_strdup_printf(_("Transfer to call #%i with %s"),call_index,remote_uri);
 			menu_item=gtk_image_menu_item_new_with_label(text);
 			ms_free(remote_uri);
 			g_free(text);

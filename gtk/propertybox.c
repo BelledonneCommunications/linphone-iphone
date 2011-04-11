@@ -661,6 +661,8 @@ static LangCodes supported_langs[]={
 	{	"hu"	,	N_("Hungarian")	},
 	{	"cs"	,	N_("Czech")	},
 	{	"zh_CN" ,	N_("Chinese")	},
+	{	"zh_TW"	,	N_("Traditional Chinese")	},
+	{	"nb_NO"	,	N_("Norwegian")	},
 	{	NULL	,	NULL		}
 };
 
