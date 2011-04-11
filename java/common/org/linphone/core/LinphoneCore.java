@@ -555,4 +555,5 @@ public interface LinphoneCore {
 	void startEchoCalibration(Object data) throws LinphoneCoreException;
 
 	void enableIpv6(boolean enable);
+	void adjustSoftwareVolume(int i);
 }
