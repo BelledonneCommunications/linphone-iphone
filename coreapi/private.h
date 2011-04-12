@@ -429,6 +429,7 @@ struct _LinphoneCore
 	unsigned long preview_window_id;
 	time_t netup_time; /*time when network went reachable */
 	struct _EcCalibrator *ecc;
+	MSList *hooks;
 	bool_t use_files;
 	bool_t apply_nat_settings;
 	bool_t initial_subscribes_sent;
