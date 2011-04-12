@@ -12,7 +12,9 @@ $(TUNNEL_BUILD_DIR)/Makefile: $(TUNNEL_SRC_DIR)/configure
 	$(TUNNEL_SRC_DIR)/configure -prefix=$(prefix) --host=$(host) ${library_mode}
 
 build-tunnel: $(TUNNEL_BUILD_DIR)/Makefile
-	cd $(TUNNEL_BUILD_DIR)  && make  && make install
+	cd $(TUNNEL_BUILD_DIR) \
+	&& export OPENSSL_CFLAGS="-I$(prefix)/include" export OPENSSL_LIBS="-L$(prefix)/lib -lssl -lcrypto" export CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
+	&& make  && make install
 
 clean-tunnel:
 	cd  $(TUNNEL_BUILD_DIR)  && make clean

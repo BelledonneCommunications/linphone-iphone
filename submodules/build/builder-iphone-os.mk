@@ -27,7 +27,7 @@ linphone_configure_controls=  --disable-video \
                               --with-readline=none  \
                               --enable-gtk_ui=no \
                               --enable-ssl-hmac=no \
-                              --enable-ssl=yes \
+                              --enable-ssl=no \
                               --enable-macaqsnd=no \
 			      --enable-macsnd=no \
                               --enable-iounit=yes \
@@ -145,7 +145,7 @@ $(BUILDER_BUILD_DIR)/$(eXosip_dir)/Makefile: $(BUILDER_SRC_DIR)/$(eXosip_dir)/co
 	mkdir -p $(BUILDER_BUILD_DIR)/$(eXosip_dir)
 	cd $(BUILDER_BUILD_DIR)/$(eXosip_dir)/\
 	&& PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig  CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
-	$(BUILDER_SRC_DIR)/$(eXosip_dir)/configure -prefix=$(prefix) --host=$(host) ${library_mode} CFLAGS="-I$(prefix)/include -L$(prefix)/lib -lcrypto" --enable-openssl  --disable-tools 
+	$(BUILDER_SRC_DIR)/$(eXosip_dir)/configure -prefix=$(prefix) --host=$(host) ${library_mode} CFLAGS="-I$(prefix)/include -L$(prefix)/lib -lcrypto" --disable-openssl  --disable-tools 
 
 build-eXosip2: $(BUILDER_BUILD_DIR)/$(eXosip_dir)/Makefile
 	 cd $(BUILDER_BUILD_DIR)/$(eXosip_dir)  \
