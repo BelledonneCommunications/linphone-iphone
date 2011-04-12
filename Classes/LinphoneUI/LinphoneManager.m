@@ -391,9 +391,6 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		//set to default proxy
 		linphone_core_set_default_proxy(theLinphoneCore,proxyCfg);
 		
-		LinphoneAddress* addr=linphone_address_new(linphone_proxy_config_get_addr(proxyCfg));
-		proxyReachability=SCNetworkReachabilityCreateWithName(nil, linphone_address_get_domain(addr));
-		
 	} else {
 		if (configCheckDisable == false ) {
 			UIAlertView* error = [[UIAlertView alloc]	initWithTitle:@"Warning"
@@ -403,10 +400,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 												  otherButtonTitles:@"Never remind",nil];
 			[error show];
 		}
-		
-		proxyReachability=SCNetworkReachabilityCreateWithName(nil, "linphone.org");		
 	}		
-	proxyReachabilityContext.info=self;
 	//tunnel
 	BOOL lTunnelPrefEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"tunnel_enabled_preference"];
 	NSString* lTunnelPrefAddress = [[NSUserDefaults standardUserDefaults] stringForKey:@"tunnel_address_preference"];
@@ -421,8 +415,6 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	}
 	sTunnelMgr->enable(lTunnelPrefEnabled);
 	
-	SCNetworkReachabilitySetCallback(proxyReachability, (SCNetworkReachabilityCallBack)networkReachabilityCallBack,&proxyReachabilityContext);
-	SCNetworkReachabilityScheduleWithRunLoop(proxyReachability, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
 	
 	//Configure Codecs
 	
@@ -468,7 +460,10 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	if (theLinphoneCore != nil) { //just in case application terminate before linphone core initialization
 		linphone_core_destroy(theLinphoneCore);
 		theLinphoneCore = nil;
-	}
+        SCNetworkReachabilityUnscheduleFromRunLoop(proxyReachability, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+        CFRelease(proxyReachability);
+        proxyReachability=nil;
+ 	}
 	if (sTunnelMgr) {
 		delete sTunnelMgr;
 		sTunnelMgr=NULL;
@@ -624,6 +619,12 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	
 	[[NSUserDefaults standardUserDefaults] synchronize];//sync before loading config 
 	[ self doLinphoneConfiguration:nil];
+    
+    proxyReachability=SCNetworkReachabilityCreateWithName(nil, "linphone.org");		
+    proxyReachabilityContext.info=self;
+	SCNetworkReachabilitySetCallback(proxyReachability, (SCNetworkReachabilityCallBack)networkReachabilityCallBack,&proxyReachabilityContext);
+	SCNetworkReachabilityScheduleWithRunLoop(proxyReachability, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+
 	[[NSNotificationCenter defaultCenter]	addObserver:self
 											 selector:@selector(doLinphoneConfiguration:)
 												 name:NSUserDefaultsDidChangeNotification object:nil];
