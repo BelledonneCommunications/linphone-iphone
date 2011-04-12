@@ -24,7 +24,7 @@ SDK_BIN_PATH=/Developer/Platforms/iPhone${PLATFORM}.platform/Developer/usr/bin
 for SYSROOT_PATH in $SDK_PATH_LIST ; do echo $SYSROOT_PATH ; done ;
 echo "Selecting SDK path = ${SYSROOT_PATH}"
 CC="${SDK_BIN_PATH}/gcc-${GCC_VERSION} -std=c99 -arch ${ARCH} -isysroot ${SYSROOT_PATH} -miphoneos-version-min=${SDK_VERSION}"
-CXX="${SDK_BIN_PATH}/g++-${GCC_VERSION} -arch ${ARCH} -isysroot ${SYSROOT_PATH}"
+CXX="${SDK_BIN_PATH}/g++-${GCC_VERSION} -arch ${ARCH} -isysroot ${SYSROOT_PATH} -miphoneos-version-min=${SDK_VERSION}"
 LD="${SDK_BIN_PATH}/ld-${GCC_VERSION} -arch ${ARCH}"
 AR=${SDK_BIN_PATH}/ar
 RANLIB=${SDK_BIN_PATH}/ranlib
