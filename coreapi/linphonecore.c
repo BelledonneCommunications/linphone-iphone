@@ -39,6 +39,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 static const char *liblinphone_version=LIBLINPHONE_VERSION;
 static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t curtime);
+static void linphone_core_run_hooks(LinphoneCore *lc);
+static void linphone_core_free_hooks(LinphoneCore *lc);
 
 #include "enum.h"
 const char *linphone_core_get_nat_address_resolved(LinphoneCore *lc);
@@ -1735,6 +1737,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 	if (disconnected)
 		linphone_core_disconnected(lc,call);
 
+	linphone_core_run_hooks(lc);
 	linphone_core_do_plugin_tasks(lc);
 
 	if (lc->initial_subscribes_sent==FALSE && lc->netup_time!=0 &&
@@ -3902,6 +3905,7 @@ LpConfig *linphone_core_get_config(LinphoneCore *lc){
 
 static void linphone_core_uninit(LinphoneCore *lc)
 {
+	linphone_core_free_hooks(lc);
 	while(lc->calls)
 	{
 		LinphoneCall *the_call = lc->calls->data;
@@ -4148,7 +4152,7 @@ const char *linphone_error_to_string(LinphoneReason err){
 	return "unknown error";
 }
 /**
- * enable signaling keep alive
+ * Enables signaling keep alive
  */
 void linphone_core_enable_keep_alive(LinphoneCore* lc,bool_t enable) {
 	if (enable > 0) {
@@ -4158,7 +4162,7 @@ void linphone_core_enable_keep_alive(LinphoneCore* lc,bool_t enable) {
 	}
 }
 /**
- * Is signaling keep alive
+ * Is signaling keep alive enabled
  */
 bool_t linphone_core_keep_alive_enabled(LinphoneCore* lc) {
 	return sal_get_keepalive_period(lc->sal) > 0;
@@ -4172,6 +4176,49 @@ void linphone_core_start_dtmf_stream(LinphoneCore* lc) {
 void linphone_core_stop_dtmf_stream(LinphoneCore* lc) {
 	if (lc->ringstream) ring_stop(lc->ringstream);
 	lc->ringstream=NULL;
+}
+
+typedef struct Hook{
+	LinphoneCoreIterateHook fun;
+	void *data;
+}Hook;
+
+static Hook *hook_new(LinphoneCoreIterateHook hook, void *hook_data){
+	Hook *h=ms_new(Hook,1);
+	h->fun=hook;
+	h->data=hook_data;
+	return h;
+}
+
+static void hook_invoke(Hook *h){
+	h->fun(h->data);
+}
+
+void linphone_core_add_iterate_hook(LinphoneCore *lc, LinphoneCoreIterateHook hook, void *hook_data){
+	lc->hooks=ms_list_append(lc->hooks,hook_new(hook,hook_data));
+}
+
+static void linphone_core_run_hooks(LinphoneCore *lc){
+	ms_list_for_each(lc->hooks,(void (*)(void*))hook_invoke);
+}
+
+static void linphone_core_free_hooks(LinphoneCore *lc){
+	ms_list_for_each(lc->hooks,(void (*)(void*))ms_free);
+	ms_list_free(lc->hooks);
+	lc->hooks=NULL;
+}
+
+void linphone_core_remove_iterate_hook(LinphoneCore *lc, LinphoneCoreIterateHook hook, void *hook_data){
+	MSList *elem;
+	for(elem=lc->hooks;elem!=NULL;elem=elem->next){
+		Hook *h=(Hook*)elem->data;
+		if (h->fun==hook && h->data==hook_data){
+			ms_list_remove_link(lc->hooks,elem);
+			ms_free(h);
+			return;
+		}
+	}
+	ms_error("linphone_core_remove_iterate_hook(): No such hook found.");
 }
 
 
