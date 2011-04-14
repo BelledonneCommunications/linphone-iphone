@@ -663,6 +663,8 @@ int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call);
 
 int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *call);
 
+int linphone_core_redirect_call(LinphoneCore *lc, LinphoneCall *call, const char *redirect_uri);
+
 int linphone_core_terminate_all_calls(LinphoneCore *lc);
 
 int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call);

@@ -1883,7 +1883,7 @@ const char *linphone_core_find_best_identity(LinphoneCore *lc, const LinphoneAdd
 	if (cfg==NULL)
 		linphone_core_get_default_proxy (lc,&cfg);
 	if (cfg!=NULL){
-		*route=linphone_proxy_config_get_route(cfg);
+		if (route) *route=linphone_proxy_config_get_route(cfg);
 		return linphone_proxy_config_get_identity (cfg);
 	}
 	return linphone_core_get_primary_contact (lc);
@@ -2337,6 +2337,33 @@ int linphone_core_abort_call(LinphoneCore *lc, LinphoneCall *call, const char *e
 	return 0;
 }
 
+static void terminate_call(LinphoneCore *lc, LinphoneCall *call){
+	if (call->state==LinphoneCallIncomingReceived){
+		call->reason=LinphoneReasonDeclined;
+	}
+	/*stop ringing*/
+	if (lc->ringstream!=NULL) {
+		ring_stop(lc->ringstream);
+		lc->ringstream=NULL;
+	}
+	linphone_call_stop_media_streams(call);
+	if (lc->vtable.display_status!=NULL)
+		lc->vtable.display_status(lc,_("Call ended") );
+}
+
+int linphone_core_redirect_call(LinphoneCore *lc, LinphoneCall *call, const char *redirect_uri){
+	if (call->state==LinphoneCallIncomingReceived){
+		sal_call_decline(call->op,SalReasonRedirect,redirect_uri);
+		call->reason=LinphoneReasonDeclined;
+		terminate_call(lc,call);
+		linphone_call_set_state(call,LinphoneCallEnd,"Call terminated");
+	}else{
+		ms_error("Bad state for call redirection.");
+		return -1;
+    }
+	return 0;
+}
+
 
 /**
  * Terminates a call.
@@ -2362,17 +2389,8 @@ int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *the_call)
 		call = the_call;
 	}
 	sal_call_terminate(call->op);
-	if (call->state==LinphoneCallIncomingReceived){
-		call->reason=LinphoneReasonDeclined;
-	}
-	/*stop ringing*/
-	if (lc->ringstream!=NULL) {
-		ring_stop(lc->ringstream);
-		lc->ringstream=NULL;
-	}
-	linphone_call_stop_media_streams(call);
-	if (lc->vtable.display_status!=NULL)
-		lc->vtable.display_status(lc,_("Call ended") );
+	terminate_call(lc,call);
+	
 	linphone_call_set_state(call,LinphoneCallEnd,"Call terminated");
 	return 0;
 }
