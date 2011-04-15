@@ -71,6 +71,8 @@
 		22BFFF7C134F6AEA00997020 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22BFFF7A134F6AEA00997020 /* libcrypto.a */; };
 		22C755601317E59C007BC101 /* UIBluetoothButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22C7555F1317E59C007BC101 /* UIBluetoothButton.m */; };
 		22D1B68112A3E0BE001AE361 /* libresolv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 22D1B68012A3E0BE001AE361 /* libresolv.dylib */; };
+		22DA443F1354B3B6002CB522 /* Makefile.am in Resources */ = {isa = PBXBuildFile; fileRef = 22DA443B1354B3B6002CB522 /* Makefile.am */; };
+		22DA44401354B3B6002CB522 /* Makefile.in in Resources */ = {isa = PBXBuildFile; fileRef = 22DA443C1354B3B6002CB522 /* Makefile.in */; };
 		22E0A785111C1BA800B04932 /* Speaker-32-on.png in Resources */ = {isa = PBXBuildFile; fileRef = 22E0A783111C1BA800B04932 /* Speaker-32-on.png */; };
 		22E0A786111C1BA800B04932 /* Speaker-32-off.png in Resources */ = {isa = PBXBuildFile; fileRef = 22E0A784111C1BA800B04932 /* Speaker-32-off.png */; };
 		22E0A822111C44E100B04932 /* MoreViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E0A81C111C44E100B04932 /* MoreViewController.m */; };
@@ -255,8 +257,6 @@
 		22323035132A28AE00F10886 /* TunnelManager.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TunnelManager.hh; sourceTree = "<group>"; };
 		22323036132A28AE00F10886 /* TunnelManager.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TunnelManager.cc; sourceTree = "<group>"; };
 		22323039132A290F00F10886 /* eXosip_transport_hook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eXosip_transport_hook.h; sourceTree = "<group>"; };
-		22323045132A2F4400F10886 /* client.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = client.hh; sourceTree = "<group>"; };
-		22323046132A2F4400F10886 /* common.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = common.hh; sourceTree = "<group>"; };
 		2237D4081084D7A9001383EE /* oldphone-mono.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = "oldphone-mono.wav"; path = "liblinphone-sdk/apple-darwin/share/sounds/linphone/rings/oldphone-mono.wav"; sourceTree = "<group>"; };
 		2242D91410D66BF300E9963F /* in_call.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = in_call.png; path = Resources/in_call.png; sourceTree = "<group>"; };
 		2242D91510D66BF300E9963F /* out_call.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = out_call.png; path = Resources/out_call.png; sourceTree = "<group>"; };
@@ -376,6 +376,10 @@
 		22C7564A13265C6A007BC101 /* x509_vfy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x509_vfy.h; sourceTree = "<group>"; };
 		22C7564B13265C6A007BC101 /* x509v3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x509v3.h; sourceTree = "<group>"; };
 		22D1B68012A3E0BE001AE361 /* libresolv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libresolv.dylib; path = usr/lib/libresolv.dylib; sourceTree = SDKROOT; };
+		22DA44391354B3B6002CB522 /* client.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = client.hh; sourceTree = "<group>"; };
+		22DA443A1354B3B6002CB522 /* common.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = common.hh; sourceTree = "<group>"; };
+		22DA443B1354B3B6002CB522 /* Makefile.am */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile.am; sourceTree = "<group>"; };
+		22DA443C1354B3B6002CB522 /* Makefile.in */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile.in; sourceTree = "<group>"; };
 		22E0A783111C1BA800B04932 /* Speaker-32-on.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Speaker-32-on.png"; path = "Resources/Speaker-32-on.png"; sourceTree = "<group>"; };
 		22E0A784111C1BA800B04932 /* Speaker-32-off.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Speaker-32-off.png"; path = "Resources/Speaker-32-off.png"; sourceTree = "<group>"; };
 		22E0A81B111C44E100B04932 /* MoreViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MoreViewController.xib; sourceTree = "<group>"; };
@@ -473,7 +477,7 @@
 		220FAC77107654FC0068D98F /* include */ = {
 			isa = PBXGroup;
 			children = (
-				22323044132A2F4400F10886 /* tunnel */,
+				22DA44381354B3B6002CB522 /* tunnel */,
 				22C7560413265C6A007BC101 /* openssl */,
 				220FAC78107654FC0068D98F /* eXosip2 */,
 				220FAC82107654FC0068D98F /* gsm */,
@@ -701,15 +705,6 @@
 			path = submodules/tunnel/src;
 			sourceTree = "<group>";
 		};
-		22323044132A2F4400F10886 /* tunnel */ = {
-			isa = PBXGroup;
-			children = (
-				22323045132A2F4400F10886 /* client.hh */,
-				22323046132A2F4400F10886 /* common.hh */,
-			);
-			path = tunnel;
-			sourceTree = "<group>";
-		};
 		22A10D9F11F88C1F00373793 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -794,6 +789,18 @@
 				22C7564B13265C6A007BC101 /* x509v3.h */,
 			);
 			path = openssl;
+			sourceTree = "<group>";
+		};
+		22DA44381354B3B6002CB522 /* tunnel */ = {
+			isa = PBXGroup;
+			children = (
+				22DA44391354B3B6002CB522 /* client.hh */,
+				22DA443A1354B3B6002CB522 /* common.hh */,
+				22DA443B1354B3B6002CB522 /* Makefile.am */,
+				22DA443C1354B3B6002CB522 /* Makefile.in */,
+			);
+			name = tunnel;
+			path = ../../../submodules/tunnel/include/tunnel;
 			sourceTree = "<group>";
 		};
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
@@ -982,6 +989,8 @@
 				222A483412F7176F0075F07F /* IncallViewController.xib in Resources */,
 				2218A92612FBE1340088A667 /* FirstLoginViewController.xib in Resources */,
 				228B19AF130290C500F154D3 /* iTunesArtwork in Resources */,
+				22DA443F1354B3B6002CB522 /* Makefile.am in Resources */,
+				22DA44401354B3B6002CB522 /* Makefile.in in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
