@@ -536,7 +536,16 @@ public interface LinphoneCore {
 	
 	VideoSize getPreferredVideoSize();
 	
-	PayloadType[] listVideoCodecs();
+	/**
+	 * Returns the currently supported audio codecs, as PayloadType elements
+	 * @return
+	 */
+	PayloadType[] getAudioCodecs();
+	/**
+	 * Returns the currently supported video codecs, as PayloadType elements
+	 * @return
+	 */
+	PayloadType[] getVideoCodecs();
 	/**
 	 * enable signaling keep alive. small udp packet sent periodically to keep udp NAT association
 	 */
