@@ -190,7 +190,7 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 
 LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, SalOp *op){
 	LinphoneCall *call=ms_new0(LinphoneCall,1);
-	char *to_str;
+	char *from_str;
 
 	call->dir=LinphoneCallIncoming;
 	sal_op_set_user_pointer(op,call);
@@ -201,11 +201,11 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 		/*the following sends an option request back to the caller so that
 		 we get a chance to discover our nat'd address before answering.*/
 		call->ping_op=sal_op_new(lc->sal);
-		to_str=linphone_address_as_string(to);
+		from_str=linphone_address_as_string(from);
 		sal_op_set_route(call->ping_op,sal_op_get_network_origin(call->op));
 		sal_op_set_user_pointer(call->ping_op,call);
-		sal_ping(call->ping_op,to_str,linphone_core_find_best_identity(lc,from,NULL));
-		ms_free(to_str);
+		sal_ping(call->ping_op,linphone_core_find_best_identity(lc,from,NULL),from_str);
+		ms_free(from_str);
 	}
 	
 	linphone_address_clean(from);
