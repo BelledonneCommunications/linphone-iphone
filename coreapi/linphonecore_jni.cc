@@ -21,6 +21,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "mediastreamer2/msjava.h"
 
+#include <cpu-features.h>
+
 #ifdef ANDROID
 #include <android/log.h>
 extern "C" void libmsilbc_init();
@@ -1238,15 +1240,22 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_adjustSoftwareVolume(JNI
 	LinphoneCore *lc = (LinphoneCore *) ptr;
               
 	if (db == 0) {
-       	linphone_core_set_playback_gain_db(lc, 0);
-       	return;
+       		linphone_core_set_playback_gain_db(lc, 0);
+       		return;
 	}
               
-    float gain = linphone_core_get_playback_gain_db(lc) + db;
-    if (gain > 0) gain = 0;
+	float gain = linphone_core_get_playback_gain_db(lc) + db;
+	if (gain > 0) gain = 0;
 
 	linphone_core_set_playback_gain_db(lc, gain);
 }
 
+extern "C" jboolean Java_org_linphone_core_Version_nativeHasNeon(JNIEnv *env){
+	if (android_getCpuFamily() == ANDROID_CPU_FAMILY_ARM && (android_getCpuFeatures() & ANDROID_CPU_ARM_FEATURE_NEON) != 0)
+	{
+		return 1;
+	}
+	return 0;
+}
 
 

@@ -86,6 +86,7 @@ LOCAL_LDLIBS += -llog -ldl
 
 
 LOCAL_STATIC_LIBRARIES := \
+	cpufeatures \
 	libmediastreamer2 \
 	libortp \
 	libeXosip2 \
@@ -129,4 +130,7 @@ endif
 
 LOCAL_MODULE := liblinphone
 include $(BUILD_SHARED_LIBRARY)
+
+$(call import-module,android/cpufeatures)
+
 
