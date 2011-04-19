@@ -258,6 +258,7 @@
 		22323036132A28AE00F10886 /* TunnelManager.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TunnelManager.cc; sourceTree = "<group>"; };
 		22323039132A290F00F10886 /* eXosip_transport_hook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eXosip_transport_hook.h; sourceTree = "<group>"; };
 		2237D4081084D7A9001383EE /* oldphone-mono.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = "oldphone-mono.wav"; path = "liblinphone-sdk/apple-darwin/share/sounds/linphone/rings/oldphone-mono.wav"; sourceTree = "<group>"; };
+		2240EEE8135DE9A3006735F5 /* TunnelManager.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = TunnelManager.hh; path = "../../../../../../workspace-iphone-reltime/rtc320/submodules/linphone-iphone/submodules/tunnel/include/tunnel/TunnelManager.hh"; sourceTree = "<group>"; };
 		2242D91410D66BF300E9963F /* in_call.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = in_call.png; path = Resources/in_call.png; sourceTree = "<group>"; };
 		2242D91510D66BF300E9963F /* out_call.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = out_call.png; path = Resources/out_call.png; sourceTree = "<group>"; };
 		2242D91810D66C2100E9963F /* mic_active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = mic_active.png; path = "liblinphone-sdk/apple-darwin/share/pixmaps/linphone/mic_active.png"; sourceTree = "<group>"; };
@@ -794,6 +795,7 @@
 		22DA44381354B3B6002CB522 /* tunnel */ = {
 			isa = PBXGroup;
 			children = (
+				2240EEE8135DE9A3006735F5 /* TunnelManager.hh */,
 				22DA44391354B3B6002CB522 /* client.hh */,
 				22DA443A1354B3B6002CB522 /* common.hh */,
 				22DA443B1354B3B6002CB522 /* Makefile.am */,
@@ -1039,7 +1041,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = linphone_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = IN_LINPHONE;
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				HEADER_SEARCH_PATHS = (
 					submodules/linphone/coreapi,
 					submodules/linphone/mediastreamer2/include,
@@ -1106,7 +1108,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = linphone_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = IN_LINPHONE;
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				HEADER_SEARCH_PATHS = (
 					submodules/linphone/coreapi,
 					submodules/linphone/mediastreamer2/include,
@@ -1173,7 +1175,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = linphone_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = IN_LINPHONE;
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				HEADER_SEARCH_PATHS = (
 					submodules/linphone/coreapi,
 					submodules/linphone/mediastreamer2/include,

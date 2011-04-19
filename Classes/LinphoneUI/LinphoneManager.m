@@ -25,7 +25,7 @@
 #include <netdb.h>
 #import <AVFoundation/AVAudioSession.h>
 #import <AudioToolbox/AudioToolbox.h>
-#include "TunnelManager.hh"
+#include "tunnel/TunnelManager.hh"
 
 using namespace belledonnecomm;
 
