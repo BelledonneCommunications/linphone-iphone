@@ -1237,17 +1237,7 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_enableIpv6(JNIEnv* env,j
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_adjustSoftwareVolume(JNIEnv* env,jobject  thiz
               ,jlong ptr, jint db) {
-	LinphoneCore *lc = (LinphoneCore *) ptr;
-              
-	if (db == 0) {
-       		linphone_core_set_playback_gain_db(lc, 0);
-       		return;
-	}
-              
-	float gain = linphone_core_get_playback_gain_db(lc) + db;
-	if (gain > 0) gain = 0;
-
-	linphone_core_set_playback_gain_db(lc, gain);
+	linphone_core_set_playback_gain_db((LinphoneCore *) ptr, db);
 }
 
 extern "C" jboolean Java_org_linphone_core_Version_nativeHasNeon(JNIEnv *env){
@@ -1257,5 +1247,4 @@ extern "C" jboolean Java_org_linphone_core_Version_nativeHasNeon(JNIEnv *env){
 	}
 	return 0;
 }
-
 
