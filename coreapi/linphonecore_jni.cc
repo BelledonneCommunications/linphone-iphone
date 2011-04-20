@@ -1248,3 +1248,12 @@ extern "C" jboolean Java_org_linphone_core_Version_nativeHasNeon(JNIEnv *env){
 	return 0;
 }
 
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_pauseCall(JNIEnv *env,jobject thiz,jlong pCore, jlong pCall) {
+	return linphone_core_pause_call((LinphoneCore *) pCore, (LinphoneCall *) pCall);
+}
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_pauseAllCalls(JNIEnv *env,jobject thiz,jlong pCore) {
+	return linphone_core_pause_all_calls((LinphoneCore *) pCore);
+}
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_resumeCall(JNIEnv *env,jobject thiz,jlong pCore, jlong pCall) {
+	return linphone_core_resume_call((LinphoneCore *) pCore, (LinphoneCall *) pCall);
+}

@@ -565,4 +565,8 @@ public interface LinphoneCore {
 
 	void enableIpv6(boolean enable);
 	void adjustSoftwareVolume(int i);
+	
+	boolean pauseCall(LinphoneCall call);
+	boolean resumeCall(LinphoneCall call);
+	boolean pauseAllCalls();
 }
