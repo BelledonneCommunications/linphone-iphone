@@ -1121,3 +1121,61 @@ float linphone_call_get_record_volume(LinphoneCall *call){
 	return LINPHONE_VOLUME_DB_LOWEST;
 }
 
+
+static void display_bandwidth(RtpSession *as, RtpSession *vs){
+	ms_message("bandwidth usage: audio=[d=%.1f,u=%.1f] video=[d=%.1f,u=%.1f] kbit/sec",
+	(as!=NULL) ? (rtp_session_compute_recv_bandwidth(as)*1e-3) : 0,
+	(as!=NULL) ? (rtp_session_compute_send_bandwidth(as)*1e-3) : 0,
+	(vs!=NULL) ? (rtp_session_compute_recv_bandwidth(vs)*1e-3) : 0,
+	(vs!=NULL) ? (rtp_session_compute_send_bandwidth(vs)*1e-3) : 0);
+}
+
+static void linphone_core_disconnected(LinphoneCore *lc, LinphoneCall *call){
+	char temp[256];
+	char *from=NULL;
+	if(call)
+		from = linphone_call_get_remote_address_as_string(call);
+	if (from)
+	{
+		snprintf(temp,sizeof(temp),"Remote end %s seems to have disconnected, the call is going to be closed.",from);
+		free(from);
+	}		
+	else
+	{
+		snprintf(temp,sizeof(temp),"Remote end seems to have disconnected, the call is going to be closed.");
+	}
+	if (lc->vtable.display_warning!=NULL)
+		lc->vtable.display_warning(lc,temp);
+	linphone_core_terminate_call(lc,call);
+}
+
+void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapsed){
+	int disconnect_timeout = linphone_core_get_nortp_timeout(call->core);
+	bool_t disconnected=FALSE;
+	
+	if (call->state==LinphoneCallStreamsRunning && one_second_elapsed){
+		RtpSession *as=NULL,*vs=NULL;
+		float audio_load=0, video_load=0;
+		if (call->audiostream!=NULL){
+			as=call->audiostream->session;
+			if (call->audiostream->ticker)
+				audio_load=ms_ticker_get_average_load(call->audiostream->ticker);
+		}
+		if (call->videostream!=NULL){
+			if (call->videostream->ticker)
+				video_load=ms_ticker_get_average_load(call->videostream->ticker);
+			vs=call->videostream->session;
+		}
+		display_bandwidth(as,vs);
+		ms_message("Thread processing load: audio=%f\tvideo=%f",audio_load,video_load);
+	}
+#ifdef VIDEO_ENABLED
+	if (call->videostream!=NULL)
+		video_stream_iterate(call->videostream);
+#endif
+	if (one_second_elapsed && call->audiostream!=NULL && disconnect_timeout>0 )
+		disconnected=!audio_stream_alive(call->audiostream,disconnect_timeout);
+	if (disconnected)
+		linphone_core_disconnected(call->core,call);
+}
+

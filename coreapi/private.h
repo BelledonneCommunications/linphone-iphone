@@ -480,6 +480,8 @@ LinphoneEcCalibratorStatus ec_calibrator_get_status(EcCalibrator *ecc);
 
 void ec_calibrator_destroy(EcCalibrator *ecc);
 
+void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapsed);
+
 #define HOLD_OFF	(0)
 #define HOLD_ON		(1)
 
