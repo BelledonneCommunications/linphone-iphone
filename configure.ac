@@ -230,6 +230,15 @@ else
 fi
 
 
+AC_ARG_ENABLE(x11,
+			  [  --disable-x11    Disable X11 support],
+		 	  [case "${enableval}" in
+			  yes) enable_x11=true ;;
+			  no)  enable_x11=false ;;
+			  *) AC_MSG_ERROR(bad value ${enableval} for --disable-x11) ;;
+		  	  esac],[enable_x11=true])
+
+
 
 if test "$relativeprefix" = "auto" ; then
 	case $target_os in
@@ -309,14 +318,6 @@ AC_ARG_ENABLE(video,
 AC_ARG_WITH( ffmpeg,
 		[  --with-ffmpeg		Sets the installation prefix of ffmpeg, needed for video support. [default=/usr] ],
 		[ ffmpegdir=${withval}],[ ffmpegdir=/usr ])
-
-AC_ARG_ENABLE(x11,
-			  [  --disable-x11    Disable X11 support],
-		 	  [case "${enableval}" in
-			  yes) enable_x11=true ;;
-			  no)  enable_x11=false ;;
-			  *) AC_MSG_ERROR(bad value ${enableval} for --disable-x11) ;;
-		  	  esac],[enable_x11=true])
 
 if test "$video" = "true"; then
 	
