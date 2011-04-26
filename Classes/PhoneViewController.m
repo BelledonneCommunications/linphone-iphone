@@ -182,6 +182,9 @@
 	[hangup setEnabled:false];
 
 	[callDuration stop];
+    UIDevice *device = [UIDevice currentDevice];
+    device.proximityMonitoringEnabled = NO;
+
 	
 	[peerLabel setText:@""];
 	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"firstlogindone_preference" ] == true) {
@@ -192,7 +195,13 @@
 	
 }
 -(void) displayIncalViewforUser:(NSString*) username withDisplayName:(NSString*) displayName {
-	[hangup setEnabled:true];
+    UIDevice *device = [UIDevice currentDevice];
+    device.proximityMonitoringEnabled = YES;
+    if (device.proximityMonitoringEnabled == YES) {
+        ms_message("Ok this device support proximity, and I just enabled it");
+    }
+
+    [hangup setEnabled:true];
 	if (displayName && [displayName length]>0) {
 		[peerLabel setText:displayName];
 	} else {
