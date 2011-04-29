@@ -121,9 +121,7 @@
 	
 	[[LinphoneManager instance] setCallDelegate:myPhoneViewController];
 	[[LinphoneManager instance]	startLibLinphone];
-	
-	[ [UIDevice currentDevice] setProximityMonitoringEnabled:true];
-	
+		
 	
 	
 	return YES;
