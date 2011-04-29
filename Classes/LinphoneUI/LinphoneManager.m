@@ -349,9 +349,6 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	linphone_core_clear_all_auth_info(theLinphoneCore);
 	//clear existing proxy config
 	linphone_core_clear_proxy_config(theLinphoneCore);
-	if (proxyReachability !=nil) {
-		SCNetworkReachabilityUnscheduleFromRunLoop(proxyReachability,CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
-	}
 	if (username && [username length] >0 && domain && [domain length]>0) {
 		
 		
