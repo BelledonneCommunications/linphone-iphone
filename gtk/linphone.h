@@ -108,3 +108,7 @@ void linphone_gtk_enable_transfer_button(LinphoneCore *lc, gboolean value);
 void linphone_gtk_show_login_frame(LinphoneProxyConfig *cfg);
 void linphone_gtk_exit_login_frame(void);
 void linphone_gtk_set_ui_config(const char *key, const char *value);
+
+void linphone_gtk_log_uninit();
+
+

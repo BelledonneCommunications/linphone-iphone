@@ -64,6 +64,7 @@ static gchar * addr_to_call = NULL;
 static gboolean iconified=FALSE;
 static gchar *workingdir=NULL;
 static char *progpath=NULL;
+gchar *linphone_logfile=NULL;
 
 static GOptionEntry linphone_options[]={
 	{
@@ -72,6 +73,13 @@ static GOptionEntry linphone_options[]={
 		.arg=G_OPTION_ARG_NONE,
 		.arg_data= (gpointer)&verbose,
 		.description=N_("log to stdout some debug information while running.")
+	},
+	{
+	    .long_name = "logfile",
+	    .short_name = 'l',
+	    .arg = G_OPTION_ARG_STRING,
+	    .arg_data = &linphone_logfile,
+	    .description = N_("path to a file to write logs into.")
 	},
 	{
 		.long_name="iconified",
@@ -1492,6 +1500,7 @@ int main(int argc, char *argv[]){
 	gdk_threads_leave();
 	linphone_gtk_destroy_log_window();
 	linphone_core_destroy(the_core);
+	linphone_gtk_log_uninit();
 #ifndef HAVE_GTK_OSX
 	/*workaround a bug on win32 that makes status icon still present in the systray even after program exit.*/
 	gtk_status_icon_set_visible(icon,FALSE);

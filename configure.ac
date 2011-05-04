@@ -384,8 +384,9 @@ AC_ARG_ENABLE(strict,
 	strictness="${enableval}"],[strictness=yes]
 )
 
+STRICT_OPTIONS="-Wall "
+
 if test "$GCC$strictness" = "yesyes" ; then
-	STRICT_OPTIONS="-Wall "
 	STRICT_OPTIONS="$STRICT_OPTIONS -Werror"
 	CFLAGS="$CFLAGS -fno-strict-aliasing"
 fi
