@@ -1269,6 +1269,7 @@ static bool_t call_failure(Sal *sal, eXosip_event_t *ev){
 				sr=SalReasonUnknown;
 			}else error=SalErrorNoResponse;
 	}
+	op->terminated=TRUE;
 	sal->callbacks.call_failure(op,error,sr,reason,code);
 	if (computedReason != NULL){
 		ms_free(computedReason);

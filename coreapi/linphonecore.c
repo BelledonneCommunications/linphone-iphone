@@ -1487,32 +1487,6 @@ void linphone_core_enable_ipv6(LinphoneCore *lc, bool_t val){
 	}
 }
 
-static void display_bandwidth(RtpSession *as, RtpSession *vs){
-	ms_message("bandwidth usage: audio=[d=%.1f,u=%.1f] video=[d=%.1f,u=%.1f] kbit/sec",
-	(as!=NULL) ? (rtp_session_compute_recv_bandwidth(as)*1e-3) : 0,
-	(as!=NULL) ? (rtp_session_compute_send_bandwidth(as)*1e-3) : 0,
-	(vs!=NULL) ? (rtp_session_compute_recv_bandwidth(vs)*1e-3) : 0,
-	(vs!=NULL) ? (rtp_session_compute_send_bandwidth(vs)*1e-3) : 0);
-}
-
-static void linphone_core_disconnected(LinphoneCore *lc, LinphoneCall *call){
-	char temp[256];
-	char *from=NULL;
-	if(call)
-		from = linphone_call_get_remote_address_as_string(call);
-	if(from)
-	{
-		snprintf(temp,sizeof(temp),"Remote end %s seems to have disconnected, the call is going to be closed.",from);
-		free(from);
-	}		
-	else
-	{
-		snprintf(temp,sizeof(temp),"Remote end seems to have disconnected, the call is going to be closed.");
-	}
-	if (lc->vtable.display_warning!=NULL)
-		lc->vtable.display_warning(lc,temp);
-	linphone_core_terminate_call(lc,call);
-}
 
 static void monitor_network_state(LinphoneCore *lc, time_t curtime){
 	static time_t last_check=0;
@@ -1639,11 +1613,9 @@ static void linphone_core_do_plugin_tasks(LinphoneCore *lc){
 void linphone_core_iterate(LinphoneCore *lc){
 	MSList *calls;
 	LinphoneCall *call;
-	int disconnect_timeout = linphone_core_get_nortp_timeout(lc);
 	time_t curtime=time(NULL);
 	int elapsed;
 	bool_t one_second_elapsed=FALSE;
-	bool_t disconnected=FALSE;
 
 	if (curtime-lc->prevtime>=1){
 		lc->prevtime=curtime;
@@ -1706,24 +1678,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 	}
 	call = linphone_core_get_current_call(lc);
 	if(call)
-	{
-		if (call->state==LinphoneCallStreamsRunning && one_second_elapsed)
-		{
-			RtpSession *as=NULL,*vs=NULL;
-			lc->prevtime=curtime;
-			if (call->audiostream!=NULL)
-				as=call->audiostream->session;
-			if (call->videostream!=NULL)
-				vs=call->videostream->session;
-			display_bandwidth(as,vs);
-		}
-#ifdef VIDEO_ENABLED
-		if (call->videostream!=NULL)
-			video_stream_iterate(call->videostream);
-#endif
-		if (call->audiostream!=NULL && disconnect_timeout>0)
-			disconnected=!audio_stream_alive(call->audiostream,disconnect_timeout);
-	}
+		linphone_call_background_tasks(call,one_second_elapsed);
 	if (linphone_core_video_preview_enabled(lc)){
 		if (lc->previewstream==NULL && lc->calls==NULL)
 			toggle_video_preview(lc,TRUE);
@@ -1734,8 +1689,6 @@ void linphone_core_iterate(LinphoneCore *lc){
 		if (lc->previewstream!=NULL)
 			toggle_video_preview(lc,FALSE);
 	}
-	if (disconnected)
-		linphone_core_disconnected(lc,call);
 
 	linphone_core_run_hooks(lc);
 	linphone_core_do_plugin_tasks(lc);
