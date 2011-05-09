@@ -107,6 +107,14 @@ dnl AC_CHECK_LIB(intl,libintl_gettext)
 
 AC_CHECK_FUNCS([get_current_dir_name strndup stpcpy] )
 
+AC_ARG_ENABLE(x11,
+			  [  --disable-x11    Disable X11 support],
+		 	  [case "${enableval}" in
+			  yes) enable_x11=true ;;
+			  no)  enable_x11=false ;;
+			  *) AC_MSG_ERROR(bad value ${enableval} for --disable-x11) ;;
+		  	  esac],[enable_x11=true])
+
 dnl conditionnal build of console interface.
 AC_ARG_ENABLE(console_ui,
       [  --enable-console_ui=[yes/no]    Turn on or off compilation of console interface [default=yes]],
@@ -228,17 +236,6 @@ if test "x${prefix}" = "xNONE"; then
 else
 	package_prefix=${prefix}
 fi
-
-
-AC_ARG_ENABLE(x11,
-			  [  --disable-x11    Disable X11 support],
-		 	  [case "${enableval}" in
-			  yes) enable_x11=true ;;
-			  no)  enable_x11=false ;;
-			  *) AC_MSG_ERROR(bad value ${enableval} for --disable-x11) ;;
-		  	  esac],[enable_x11=true])
-
-
 
 if test "$relativeprefix" = "auto" ; then
 	case $target_os in
