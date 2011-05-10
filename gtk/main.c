@@ -1293,7 +1293,6 @@ static void linphone_gtk_init_main_window(){
 	linphone_gtk_set_my_presence(linphone_core_get_presence_info(linphone_gtk_get_core()));
 	linphone_gtk_show_friends();
 	linphone_gtk_connect_digits();
-	linphone_gtk_check_menu_items();
 	main_window=linphone_gtk_get_main_window();
 	linphone_gtk_enable_mute_button(GTK_BUTTON(linphone_gtk_get_widget(main_window,
 					"main_mute")),FALSE);
@@ -1314,6 +1313,7 @@ static void linphone_gtk_init_main_window(){
 		gtk_osxapplication_ready(theMacApp);
 	}
 #endif
+	linphone_gtk_check_menu_items();
 }
 
 

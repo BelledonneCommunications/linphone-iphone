@@ -752,7 +752,6 @@ static void codecs_config_read(LinphoneCore *lc)
 
 static void video_config_read(LinphoneCore *lc){
 	int capture, display, self_view;
-	int enabled;
 	const char *str;
 	int ndev;
 	const char **devices;
@@ -776,10 +775,9 @@ static void video_config_read(LinphoneCore *lc){
 	linphone_core_set_preferred_video_size_by_name(lc,
 		lp_config_get_string(lc->config,"video","size","cif"));
 
-	enabled=lp_config_get_int(lc->config,"video","enabled",1);
-	capture=lp_config_get_int(lc->config,"video","capture",enabled);
-	display=lp_config_get_int(lc->config,"video","display",enabled);
-	self_view=lp_config_get_int(lc->config,"video","self_view",enabled);
+	capture=lp_config_get_int(lc->config,"video","capture",1);
+	display=lp_config_get_int(lc->config,"video","display",1);
+	self_view=lp_config_get_int(lc->config,"video","self_view",1);
 	lc->video_conf.displaytype=lp_config_get_string(lc->config,"video","displaytype",NULL);
 	if(lc->video_conf.displaytype)
 		ms_message("we are using a specific display:%s\n",lc->video_conf.displaytype);
@@ -3807,7 +3805,6 @@ void sound_config_uninit(LinphoneCore *lc)
 
 void video_config_uninit(LinphoneCore *lc)
 {
-	lp_config_set_int(lc->config,"video","enabled",linphone_core_video_enabled(lc));
 	lp_config_set_string(lc->config,"video","size",video_size_get_name(linphone_core_get_preferred_video_size(lc)));
 	lp_config_set_int(lc->config,"video","display",lc->video_conf.display);
 	lp_config_set_int(lc->config,"video","capture",lc->video_conf.capture);
