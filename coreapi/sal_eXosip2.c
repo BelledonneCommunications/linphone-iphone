@@ -1921,6 +1921,12 @@ int sal_unregister(SalOp *h){
 SalAddress * sal_address_new(const char *uri){
 	osip_from_t *from;
 	osip_from_init(&from);
+
+	// Remove front spaces
+	while (uri[0]==' ') {
+		uri++;
+	}
+		
 	if (osip_from_parse(from,uri)!=0){
 		osip_from_free(from);
 		return NULL;
