@@ -249,6 +249,7 @@ struct _LinphoneAuthInfo
 	char *passwd;
 	char *ha1;
 	int usecount;
+	time_t last_use_time;
 	bool_t works;
 };
 
