@@ -624,19 +624,17 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 											  otherButtonTitles:nil ,nil];
 		[error show];
 	}
-	/*IOS specific*/
-	linphone_core_start_dtmf_stream(theLinphoneCore);
-	
+
 	
 }
 -(void) becomeActive {
-	if (theLinphoneCore == nil) {
+    /*IOS specific*/
+	linphone_core_start_dtmf_stream(theLinphoneCore);
+    if (theLinphoneCore == nil) {
 		//back from standby and background mode is disabled
 		[self	startLibLinphone];
-		
 	} else {
-		ms_message("becomming active, make sure we are registered");
-		linphone_core_start_dtmf_stream(theLinphoneCore);
+        ms_message("becomming active, make sure we are registered");
 		linphone_core_refresh_registers(theLinphoneCore);//just to make sure REGISTRATION is up to date
 		
 	}
