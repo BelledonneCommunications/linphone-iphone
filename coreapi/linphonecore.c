@@ -3946,12 +3946,11 @@ void linphone_core_refresh_registers(LinphoneCore* lc) {
 	for(;elem!=NULL;elem=elem->next){
 		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
 		if (linphone_proxy_config_register_enabled(cfg) ) {
-			cfg->registered=0;
-			cfg->commit=TRUE;
+			linphone_proxy_config_refresh_register(cfg);
 		}
 	}
-	
 }
+
 void linphone_core_set_network_reachable(LinphoneCore* lc,bool_t isReachable) {
 	//first disable automatic mode
 	if (lc->auto_net_state_mon) {

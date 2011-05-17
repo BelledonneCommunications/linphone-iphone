@@ -315,6 +315,7 @@ void sal_call_send_vfu_request(SalOp *h);
 
 /*Registration*/
 int sal_register(SalOp *op, const char *proxy, const char *from, int expires);
+int sal_register_refresh(SalOp *op, int expires);
 int sal_unregister(SalOp *h);
 
 /*Messaging */

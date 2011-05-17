@@ -290,6 +290,16 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
 	}
 }
 
+/**
+ * Refresh a proxy registration.
+ * This is useful if for example you resuming from suspend, thus IP address may have changed.
+**/
+void linphone_proxy_config_refresh_register(LinphoneProxyConfig *obj){
+	if (obj->reg_sendregister && obj->op){
+		sal_register_refresh(obj->op,obj->expires);
+	}
+}
+
 
 /**
  * Sets a dialing prefix to be automatically prepended when inviting a number with 
