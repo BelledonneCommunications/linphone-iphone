@@ -296,6 +296,7 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
 **/
 void linphone_proxy_config_refresh_register(LinphoneProxyConfig *obj){
 	if (obj->reg_sendregister && obj->op){
+		obj->registered=FALSE;
 		sal_register_refresh(obj->op,obj->expires);
 	}
 }
