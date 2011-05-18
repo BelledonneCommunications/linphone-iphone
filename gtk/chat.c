@@ -68,7 +68,12 @@ void linphone_gtk_push_text(GtkTextView *v, const char *from, const char *messag
 	gtk_text_buffer_get_end_iter(b,&iter);
 	gtk_text_buffer_insert(b,&iter,"\n",-1);
 	gtk_text_buffer_get_end_iter(b,&iter);
-	gtk_text_view_scroll_to_iter(v,&iter,0,FALSE,0,0);
+	
+	GtkTextMark *mark=gtk_text_buffer_create_mark(b,NULL,&iter,FALSE);
+	gtk_text_view_scroll_mark_onscreen(v,mark);
+	//gtk_text_buffer_get_end_iter(b,&iter);
+	//gtk_text_iter_forward_to_line_end(&iter);
+	//gtk_text_view_scroll_to_iter(v,&iter,0,TRUE,1.0,1.0);
 }
 
 const char* linphone_gtk_get_used_identity(){
