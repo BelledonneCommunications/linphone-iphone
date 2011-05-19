@@ -27,5 +27,6 @@ nortp_timeout=30
 playback_dev_id=AU: Audio Unit Receiver
 ringer_dev_id=AU: Audio Unit Speaker
 capture_dev_id=AU: Audio Unit Receiver
+echocancellation=0
 
 
