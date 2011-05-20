@@ -36,8 +36,12 @@ static void audioRouteChangeListenerCallback (
 
 -(void) initWithOnImage:(UIImage*) onImage offImage:(UIImage*) offImage {
    [super initWithOnImage:onImage offImage:offImage];
-   AudioSessionPropertyID routeChangeID = kAudioSessionProperty_AudioRouteChange;   
-   AudioSessionAddPropertyListener(routeChangeID, audioRouteChangeListenerCallback, self);
+   AudioSessionPropertyID routeChangeID = kAudioSessionProperty_AudioRouteChange;
+   AudioSessionInitialize(NULL, NULL, NULL, NULL);
+   OSStatus lStatus = AudioSessionAddPropertyListener(routeChangeID, audioRouteChangeListenerCallback, self);
+   if (lStatus) {
+       ms_error ("cannot register route change handler [%i]",lStatus);
+   }
 }
 
 
@@ -62,8 +66,11 @@ static void audioRouteChangeListenerCallback (
                                                 ,&lNewRouteSize
                                                 ,&lNewRoute);
     if (!lStatus && CFStringGetLength(lNewRoute) > 0) {
-        ms_message("Current audio route is [%s]",CFStringGetCStringPtr(lNewRoute, kCFStringEncodingUTF8));
-        return (kCFCompareEqualTo == CFStringCompare (lNewRoute,CFSTR("Speaker"),0));
+        char route[64];
+        CFStringGetCString(lNewRoute, route,sizeof(route), kCFStringEncodingUTF8);
+        ms_message("Current audio route is [%s]",route);
+        return (    kCFCompareEqualTo == CFStringCompare (lNewRoute,CFSTR("Speaker"),0) 
+                ||  kCFCompareEqualTo == CFStringCompare (lNewRoute,CFSTR("SpeakerAndMicrophone"),0));
     } else 
         return false;
 }
