@@ -215,7 +215,7 @@
 	[self displayIncalViewforUser:username
 				  withDisplayName:displayName];
 	[call setEnabled:false];
-	[callDuration setText:@"Calling..."];
+	[callDuration setText:NSLocalizedString(@"Calling...",nil)];
 	[speaker reset];
 }
 
@@ -244,17 +244,17 @@
 		if (notif)
 		{
 			notif.repeatInterval = 0;
-			notif.alertBody =[NSString  stringWithFormat:@" %@ is calling you",username];
+			notif.alertBody =[NSString  stringWithFormat:NSLocalizedString(@" %@ is calling you",nil),username];
 			notif.alertAction = @"Answer";
 			notif.soundName = @"oldphone-mono-30s.caf";
 			
 			[[UIApplication sharedApplication]  presentLocalNotificationNow:notif];
 		}
 	} else 	{
-		mIncomingCallActionSheet = [[UIActionSheet alloc] initWithTitle:[NSString  stringWithFormat:@" %@ is calling you",username]
+		mIncomingCallActionSheet = [[UIActionSheet alloc] initWithTitle:[NSString  stringWithFormat:NSLocalizedString(@" %@ is calling you",nil),username]
 															   delegate:self 
-													  cancelButtonTitle:@"Decline" 
-												 destructiveButtonTitle:@"Answer" 
+													  cancelButtonTitle:NSLocalizedString(@"Decline",nil) 
+												 destructiveButtonTitle:NSLocalizedString(@"Answer",nil) 
 													  otherButtonTitles:nil];
 		mIncomingCallActionSheet.actionSheetStyle = UIActionSheetStyleDefault;
 		[mIncomingCallActionSheet showInView:self.view];

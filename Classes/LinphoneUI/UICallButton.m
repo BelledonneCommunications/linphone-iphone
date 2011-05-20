@@ -24,10 +24,10 @@
 @implementation UICallButton
 -(void) touchUp:(id) sender {
 	if (!linphone_core_is_network_reachabled([LinphoneManager getLc])) {
-		UIAlertView* error = [[UIAlertView alloc]	initWithTitle:@"Network Error"
-														message:@"There is no network connection available, enable WIFI or WWAN prior to place a call" 
+		UIAlertView* error = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"Network Error",nil)
+														message:NSLocalizedString(@"There is no network connection available, enable WIFI or WWAN prior to place a call",nil) 
 													   delegate:nil 
-											  cancelButtonTitle:@"Continue" 
+											  cancelButtonTitle:NSLocalizedString(@"Continue",nil) 
 											  otherButtonTitles:nil];
 		[error show];
 		return;
@@ -41,10 +41,10 @@
 		if ([mAddress.text hasPrefix:@"sip:"]) {
 			linphone_core_invite([LinphoneManager getLc], [mAddress.text cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 		} else if ( proxyCfg==nil){
-			UIAlertView* error = [[UIAlertView alloc]	initWithTitle:@"Invalid sip address"
-															message:@"Either configure a SIP proxy server from settings prior to place a call or use a valid sip address (I.E sip:john@example.net)" 
+			UIAlertView* error = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"Invalid sip address",nil)
+															message:NSLocalizedString(@"Either configure a SIP proxy server from settings prior to place a call or use a valid sip address (I.E sip:john@example.net)",nil) 
 														   delegate:nil 
-												  cancelButtonTitle:@"Continue" 
+												  cancelButtonTitle:NSLocalizedString(@"Continue",nil) 
 												  otherButtonTitles:nil];
 			[error show];
 			

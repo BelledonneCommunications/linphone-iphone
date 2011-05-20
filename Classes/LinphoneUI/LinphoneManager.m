@@ -53,7 +53,7 @@ extern void libmsamr_init();
 
 -(void) onCall:(LinphoneCall*) currentCall StateChanged: (LinphoneCallState) new_state withMessage: (const char *)  message {
 	const char* lUserNameChars=linphone_address_get_username(linphone_call_get_remote_address(currentCall));
-	NSString* lUserName = lUserNameChars?[[NSString alloc] initWithCString:lUserNameChars]:@"Unknown";
+	NSString* lUserName = lUserNameChars?[[NSString alloc] initWithCString:lUserNameChars]:NSLocalizedString(@"Unknown",nil);
 	const char* lDisplayNameChars =  linphone_address_get_display_name(linphone_call_get_remote_address(currentCall));
 	NSString* lDisplayName = lDisplayNameChars?[[NSString alloc] initWithCString:lDisplayNameChars]:@"";
 	
@@ -88,21 +88,21 @@ extern void libmsamr_init();
 			//get default proxy
 			linphone_core_get_default_proxy([LinphoneManager getLc],&proxyCfg);
 			if (proxyCfg == nil) {
-				lMessage=@"Please make sure your device is connected to the internet and double check your SIP account configuration in the settings.";
+				lMessage=NSLocalizedString(@"Please make sure your device is connected to the internet and double check your SIP account configuration in the settings.",nil);
 			} else {
-				lMessage=[NSString stringWithFormat : @"Cannot call %@",lUserName];
+				lMessage=[NSString stringWithFormat : NSLocalizedString(@"Cannot call %@",nil),lUserName];
 
 			}
 			
 			if (message!=nil){
-				lMessage=[NSString stringWithFormat : @"%@\nReason was: %s",lMessage, message];
+				lMessage=[NSString stringWithFormat : NSLocalizedString(@"%@\nReason was: %s",nil),lMessage, message];
 			}
-			lTitle=@"Call failed";
+			lTitle=NSLocalizedString(@"Call failed",nil);
 			
 			UIAlertView* error = [[UIAlertView alloc] initWithTitle:lTitle
 															message:lMessage 
 														   delegate:nil 
-												  cancelButtonTitle:@"Dismiss" 
+												  cancelButtonTitle:NSLocalizedString(@"Dismiss",nil) 
 												  otherButtonTitles:nil];
 			[error show];
 			[callDelegate	displayDialerFromUI:mCurrentViewController
@@ -201,9 +201,9 @@ static void linphone_iphone_call_state(LinphoneCore *lc, LinphoneCall* call, Lin
 	} else 	if (state == LinphoneRegistrationFailed ) {
 		NSString* lErrorMessage=nil;
 		if (linphone_proxy_config_get_error(cfg) == LinphoneReasonBadCredentials) {
-			lErrorMessage = @"Bad credentials, check your account settings";
+			lErrorMessage = NSLocalizedString(@"Bad credentials, check your account settings",nil);
 		} else if (linphone_proxy_config_get_error(cfg) == LinphoneReasonNoResponse) {
-			lErrorMessage = @"SIP server unreachable";
+			lErrorMessage = NSLocalizedString(@"SIP server unreachable",nil);
 		} 
 		[registrationDelegate displayRegistrationFailedFromUI:mCurrentViewController
 											   forUser:lUserName
@@ -216,10 +216,10 @@ static void linphone_iphone_call_state(LinphoneCore *lc, LinphoneCall* call, Lin
 			&& linphone_proxy_config_get_error(cfg) != LinphoneReasonNoResponse) { //do not report network connection issue on registration
 			//default behavior if no registration delegates
 			
-			UIAlertView* error = [[UIAlertView alloc]	initWithTitle:@"Registration failure"
+			UIAlertView* error = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"Registration failure",nil)
 															message:lErrorMessage
 														   delegate:nil 
-												  cancelButtonTitle:@"Continue" 
+												  cancelButtonTitle:NSLocalizedString(@"Continue",nil) 
 												  otherButtonTitles:nil ,nil];
 			[error show];
 		}
@@ -390,11 +390,11 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		
 	} else {
 		if (configCheckDisable == false ) {
-			UIAlertView* error = [[UIAlertView alloc]	initWithTitle:@"Warning"
-															message:@"It seems you have not configured any proxy server from settings" 
+			UIAlertView* error = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"Warning",nil)
+															message:NSLocalizedString(@"It seems you have not configured any proxy server from settings",nil) 
 														   delegate:self
-												  cancelButtonTitle:@"Continue"
-												  otherButtonTitles:@"Never remind",nil];
+												  cancelButtonTitle:NSLocalizedString(@"Continue",nil)
+												  otherButtonTitles:NSLocalizedString(@"Never remind",nil),nil];
 			[error show];
 		}
 	}		
@@ -639,10 +639,10 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	BOOL bAudioInputAvailable= [audioSession inputIsAvailable];
 	
 	if(!bAudioInputAvailable){
-		UIAlertView* error = [[UIAlertView alloc]	initWithTitle:@"No microphone"
-														message:@"You need to plug a microphone to your device to use this application." 
+		UIAlertView* error = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"No microphone",nil)
+														message:NSLocalizedString(@"You need to plug a microphone to your device to use this application.",nil) 
 													   delegate:nil 
-											  cancelButtonTitle:@"Ok" 
+											  cancelButtonTitle:NSLocalizedString(@"Ok",nil) 
 											  otherButtonTitles:nil ,nil];
 		[error show];
 	}
