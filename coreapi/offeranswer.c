@@ -177,6 +177,7 @@ static void initiate_incoming(const SalStreamDescription *local_cap,
 	result->dir=compute_dir_incoming(local_cap->dir,remote_offer->dir);
 	if (result->payloads && !only_telephone_event(result->payloads)){
 		strcpy(result->addr,local_cap->addr);
+		memcpy(result->candidates,local_cap->candidates,sizeof(result->candidates));
 		result->port=local_cap->port;
 		result->bandwidth=local_cap->bandwidth;
 		result->ptime=local_cap->ptime;	
