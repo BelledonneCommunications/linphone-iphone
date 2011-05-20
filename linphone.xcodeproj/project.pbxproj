@@ -19,6 +19,7 @@
 		220FAD3810765B400068D98F /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD2F10765B400068D98F /* libspeex.a */; };
 		220FAD3910765B400068D98F /* libspeexdsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD3010765B400068D98F /* libspeexdsp.a */; };
 		220FAE4B10767A6A0068D98F /* PhoneMainView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 220FAE4A10767A6A0068D98F /* PhoneMainView.xib */; };
+		2214783D1386A2030020F8B8 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2214783B1386A2030020F8B8 /* Localizable.strings */; };
 		2214EB7A12F846B1002A5394 /* UICallButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2214EB7912F846B1002A5394 /* UICallButton.m */; };
 		2214EB8912F84EBB002A5394 /* UIHangUpButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2214EB8812F84EBB002A5394 /* UIHangUpButton.m */; };
 		2214EBDA12F8558F002A5394 /* UIToggleButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2214EBD912F8558F002A5394 /* UIToggleButton.m */; };
@@ -229,6 +230,7 @@
 		220FAD2F10765B400068D98F /* libspeex.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libspeex.a; path = "liblinphone-sdk/apple-darwin/lib/libspeex.a"; sourceTree = "<group>"; };
 		220FAD3010765B400068D98F /* libspeexdsp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libspeexdsp.a; path = "liblinphone-sdk/apple-darwin/lib/libspeexdsp.a"; sourceTree = "<group>"; };
 		220FAE4A10767A6A0068D98F /* PhoneMainView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PhoneMainView.xib; sourceTree = "<group>"; };
+		2214783C1386A2030020F8B8 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = Resources/en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		2214EB7812F846B1002A5394 /* UICallButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICallButton.h; sourceTree = "<group>"; };
 		2214EB7912F846B1002A5394 /* UICallButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICallButton.m; sourceTree = "<group>"; };
 		2214EB8712F84EBB002A5394 /* UIHangUpButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIHangUpButton.h; sourceTree = "<group>"; };
@@ -776,6 +778,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				2214783B1386A2030020F8B8 /* Localizable.strings */,
 				22A10D9E11F88C1F00373793 /* liblinphone.xcodeproj */,
 				223148E51178A09900637D6A /* libmsilbc.a */,
 				223148E31178A08200637D6A /* libilbc.a */,
@@ -899,6 +902,7 @@
 				Japanese,
 				French,
 				German,
+				en,
 			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
 			projectDirPath = "";
@@ -960,6 +964,7 @@
 				222A483412F7176F0075F07F /* IncallViewController.xib in Resources */,
 				2218A92612FBE1340088A667 /* FirstLoginViewController.xib in Resources */,
 				228B19AF130290C500F154D3 /* iTunesArtwork in Resources */,
+				2214783D1386A2030020F8B8 /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -993,6 +998,17 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		2214783B1386A2030020F8B8 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				2214783C1386A2030020F8B8 /* en */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		1D6058940D05DD3E006BFB54 /* Debug */ = {
