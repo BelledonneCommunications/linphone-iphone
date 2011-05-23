@@ -274,6 +274,7 @@ Sal * sal_init(){
 	sal->keepalive_period=30;
 	sal->double_reg=TRUE;
 	sal->use_rports=TRUE;
+	sal->use_101=TRUE;
 	return sal;
 }
 
@@ -369,6 +370,9 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 	/*see if it looks like an IPv6 address*/
 	int use_rports = ctx->use_rports; // Copy char to int to avoid bad alignment
 	eXosip_set_option(EXOSIP_OPT_USE_RPORT,&use_rports);
+	int dont_use_101 = !ctx->use_101; // Copy char to int to avoid bad alignment
+	eXosip_set_option(EXOSIP_OPT_DONT_SEND_101,&dont_use_101);
+
 	ipv6=strchr(addr,':')!=NULL;
 	eXosip_enable_ipv6(ipv6);
 
@@ -417,7 +421,9 @@ void sal_use_double_registrations(Sal *ctx, bool_t enabled){
 void sal_use_rport(Sal *ctx, bool_t use_rports){
 	ctx->use_rports=use_rports;
 }
-
+void sal_use_101(Sal *ctx, bool_t use_101){
+	ctx->use_101=use_101;
+}
 static int extract_received_rport(osip_message_t *msg, const char **received, int *rportval){
 	osip_via_t *via=NULL;
 	osip_generic_param_t *param=NULL;
