@@ -472,6 +472,7 @@ struct _EcCalibrator{
 	int sent_count;
 	int64_t acc;
 	int delay;
+	unsigned int rate;
 	LinphoneEcCalibratorStatus status;
 };
 
