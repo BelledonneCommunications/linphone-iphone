@@ -76,6 +76,7 @@
 		22E0A822111C44E100B04932 /* MoreViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E0A81C111C44E100B04932 /* MoreViewController.m */; };
 		22E0A823111C44E100B04932 /* ConsoleViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22E0A81E111C44E100B04932 /* ConsoleViewController.xib */; };
 		22E0A824111C44E100B04932 /* ConsoleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E0A81F111C44E100B04932 /* ConsoleViewController.m */; };
+		22E19E48138A67A000FBFE87 /* missed_call.png in Resources */ = {isa = PBXBuildFile; fileRef = 22E19E47138A67A000FBFE87 /* missed_call.png */; };
 		22E5B0AF133B5EA20044EA25 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22E5B0AD133B5EA20044EA25 /* libssl.a */; };
 		22E5B0B0133B5EA20044EA25 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22E5B0AE133B5EA20044EA25 /* libcrypto.a */; };
 		22F2508E107141E100AC9B3F /* PhoneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22F2508C107141E100AC9B3F /* PhoneViewController.m */; };
@@ -381,6 +382,7 @@
 		22E0A81E111C44E100B04932 /* ConsoleViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ConsoleViewController.xib; sourceTree = "<group>"; };
 		22E0A81F111C44E100B04932 /* ConsoleViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConsoleViewController.m; sourceTree = "<group>"; };
 		22E0A820111C44E100B04932 /* ConsoleViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConsoleViewController.h; sourceTree = "<group>"; };
+		22E19E47138A67A000FBFE87 /* missed_call.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = missed_call.png; path = Resources/missed_call.png; sourceTree = "<group>"; };
 		22E5B0AD133B5EA20044EA25 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = "liblinphone-sdk/apple-darwin/lib/libssl.a"; sourceTree = "<group>"; };
 		22E5B0AE133B5EA20044EA25 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = "liblinphone-sdk/apple-darwin/lib/libcrypto.a"; sourceTree = "<group>"; };
 		22F2508B107141E100AC9B3F /* PhoneViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoneViewController.h; sourceTree = "<group>"; };
@@ -830,6 +832,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				22E19E47138A67A000FBFE87 /* missed_call.png */,
 				228B19AE130290C500F154D3 /* iTunesArtwork */,
 				2242E312125235120061DDCE /* oldphone-mono-30s.caf */,
 				225CB2F911ABB76400628906 /* linphone-banner.png */,
@@ -965,6 +968,7 @@
 				2218A92612FBE1340088A667 /* FirstLoginViewController.xib in Resources */,
 				228B19AF130290C500F154D3 /* iTunesArtwork in Resources */,
 				2214783D1386A2030020F8B8 /* Localizable.strings in Resources */,
+				22E19E48138A67A000FBFE87 /* missed_call.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
