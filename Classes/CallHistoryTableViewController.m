@@ -125,7 +125,12 @@
 
 	NSString *path;
 	if (callLogs->dir == LinphoneCallIncoming) {
-		path = [[NSBundle mainBundle] pathForResource:@"in_call" ofType:@"png"];
+        if (callLogs->status == LinphoneCallSuccess) {
+            path = [[NSBundle mainBundle] pathForResource:@"in_call" ofType:@"png"];
+        } else {
+            //missed call
+            path = [[NSBundle mainBundle] pathForResource:@"missed_call" ofType:@"png"];
+        }
 		partyToDisplay=callLogs->from;
 		
 	} else {

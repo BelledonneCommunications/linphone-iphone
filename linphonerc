@@ -29,4 +29,6 @@ ringer_dev_id=AU: Audio Unit Speaker
 capture_dev_id=AU: Audio Unit Receiver
 echocancellation=0
 
+[misc]
+history_max_size=30
 
