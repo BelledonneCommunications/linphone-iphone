@@ -108,7 +108,7 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 
 /* private: */
 LinphoneCallLog * linphone_call_log_new(LinphoneCall *call, LinphoneAddress *local, LinphoneAddress * remote);
-void linphone_call_log_completed(LinphoneCallLog *calllog, LinphoneCall *call, LinphoneCallStatus status);
+void linphone_call_log_completed(LinphoneCall *call);
 void linphone_call_log_destroy(LinphoneCallLog *cl);
 
 void linphone_auth_info_write_config(struct _LpConfig *config, LinphoneAuthInfo *obj, int pos);
@@ -489,5 +489,5 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 #ifndef NB_MAX_CALLS
 #define NB_MAX_CALLS	(10)
 #endif
-
+void call_logs_write_to_config_file(LinphoneCore *lc);
 #endif /* _PRIVATE_H */
