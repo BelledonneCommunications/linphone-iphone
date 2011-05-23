@@ -32,10 +32,12 @@ http://sourceforge.net/apps/trac/gtk-osx/wiki/Bundle
  $ port install osip2
  $ port install eXosip2
 
+- Install libSDL and ffmpeg from their official git or hg repositories. At this date (2011/05/09) the macports version are too old and buggy.
+
 - Now you can compile linphone
 
 $ jhbuild shell
-$ PKG_CONFIG_PATH=$HOME/gtk/inst/lib/pkgconfig:/opt/local/lib/pkgconfig/ ./configure --disable-video --disable-strict --with-gsm=/opt/local
+$ PKG_CONFIG_PATH=$HOME/gtk/inst/lib/pkgconfig:/opt/local/lib/pkgconfig/ ./configure --disable-static --disable-strict --with-gsm=/opt/local --disable-x11
 #assuming you have gsm installed in /opt/local. However gsm is optional.
 $ make
 

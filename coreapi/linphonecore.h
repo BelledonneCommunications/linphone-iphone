@@ -364,6 +364,7 @@ bool_t linphone_proxy_config_publish_enabled(const LinphoneProxyConfig *obj);
 const char *linphone_proxy_config_get_addr(const LinphoneProxyConfig *obj);
 int linphone_proxy_config_get_expires(const LinphoneProxyConfig *obj);
 bool_t linphone_proxy_config_register_enabled(const LinphoneProxyConfig *obj);
+void linphone_proxy_config_refresh_register(LinphoneProxyConfig *obj);
 struct _LinphoneCore * linphone_proxy_config_get_core(const LinphoneProxyConfig *obj);
 
 bool_t linphone_proxy_config_get_dial_escape_plus(const LinphoneProxyConfig *cfg);
@@ -662,6 +663,8 @@ LinphoneCall *linphone_core_get_current_call(const LinphoneCore *lc);
 int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call);
 
 int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *call);
+
+int linphone_core_redirect_call(LinphoneCore *lc, LinphoneCall *call, const char *redirect_uri);
 
 int linphone_core_terminate_all_calls(LinphoneCore *lc);
 

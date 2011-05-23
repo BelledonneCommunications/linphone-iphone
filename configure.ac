@@ -86,7 +86,7 @@ fi
 
 dnl Add the languages which your application supports here.
 PKG_PROG_PKG_CONFIG
-ALL_LINGUAS="fr it de ja es pl cs nl sv pt_BR hu ru zh_CN nb_NO"
+ALL_LINGUAS="fr it de ja es pl cs nl sv pt_BR hu ru zh_CN nb_NO zh_TW"
 AC_SUBST(ALL_LINGUAS)
 AC_DEFINE_UNQUOTED(LINPHONE_ALL_LANGS, "$ALL_LINGUAS", [All supported languages])
 
@@ -106,6 +106,14 @@ AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE",[The name of the gettext 
 dnl AC_CHECK_LIB(intl,libintl_gettext)
 
 AC_CHECK_FUNCS([get_current_dir_name strndup stpcpy] )
+
+AC_ARG_ENABLE(x11,
+			  [  --disable-x11    Disable X11 support],
+		 	  [case "${enableval}" in
+			  yes) enable_x11=true ;;
+			  no)  enable_x11=false ;;
+			  *) AC_MSG_ERROR(bad value ${enableval} for --disable-x11) ;;
+		  	  esac],[enable_x11=true])
 
 dnl conditionnal build of console interface.
 AC_ARG_ENABLE(console_ui,
@@ -229,8 +237,6 @@ else
 	package_prefix=${prefix}
 fi
 
-
-
 if test "$relativeprefix" = "auto" ; then
 	case $target_os in
 		*darwin*)
@@ -310,14 +316,6 @@ AC_ARG_WITH( ffmpeg,
 		[  --with-ffmpeg		Sets the installation prefix of ffmpeg, needed for video support. [default=/usr] ],
 		[ ffmpegdir=${withval}],[ ffmpegdir=/usr ])
 
-AC_ARG_ENABLE(x11,
-			  [  --disable-x11    Disable X11 support],
-		 	  [case "${enableval}" in
-			  yes) enable_x11=true ;;
-			  no)  enable_x11=false ;;
-			  *) AC_MSG_ERROR(bad value ${enableval} for --disable-x11) ;;
-		  	  esac],[enable_x11=true])
-
 if test "$video" = "true"; then
 	
 	if test "$enable_x11" = "true"; then
@@ -384,8 +382,9 @@ AC_ARG_ENABLE(strict,
 	strictness="${enableval}"],[strictness=yes]
 )
 
+STRICT_OPTIONS="-Wall "
+
 if test "$GCC$strictness" = "yesyes" ; then
-	STRICT_OPTIONS="-Wall "
 	STRICT_OPTIONS="$STRICT_OPTIONS -Werror"
 	CFLAGS="$CFLAGS -fno-strict-aliasing"
 fi

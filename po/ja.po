@@ -2,13 +2,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # 山口善也 <yushiya@anet.ne.jp>, 2002.
-#
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: linphone 0.10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-05 00:37+0200\n"
+"POT-Creation-Date: 2011-04-08 22:32+0200\n"
 "PO-Revision-Date: 2003-01-21 00:05+9000\n"
 "Last-Translator: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\n"
 "Language-Team: <ja@li.org>\n"
@@ -54,7 +54,7 @@ msgstr ""
 msgid "Call with %s"
 msgstr ""
 
-#: ../gtk/main.c:825
+#: ../gtk/main.c:826
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
@@ -63,37 +63,37 @@ msgid ""
 "If you answer no, this person will be temporarily blacklisted."
 msgstr ""
 
-#: ../gtk/main.c:903
+#: ../gtk/main.c:904
 #, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
 " at domain <i>%s</i>:"
 msgstr ""
 
-#: ../gtk/main.c:1039
+#: ../gtk/main.c:1040
 msgid "Website link"
 msgstr ""
 
-#: ../gtk/main.c:1075
+#: ../gtk/main.c:1076
 msgid "Linphone - a video internet phone"
 msgstr ""
 
-#: ../gtk/main.c:1094
+#: ../gtk/main.c:1095
 #, c-format
 msgid "%s (Default)"
 msgstr ""
 
-#: ../gtk/main.c:1186
+#: ../gtk/main.c:1187
 msgid "Windows"
 msgstr ""
 
-#: ../gtk/main.c:1363
+#: ../gtk/main.c:1364
 msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
 msgstr ""
 
-#: ../gtk/main.c:1422
+#: ../gtk/main.c:1423
 msgid "A free SIP video-phone"
 msgstr ""
 
@@ -156,75 +156,75 @@ msgstr "最低限のビットレート (kbit/s)"
 msgid "Parameters"
 msgstr "パラメーター"
 
-#: ../gtk/propertybox.c:325 ../gtk/propertybox.c:464
+#: ../gtk/propertybox.c:326 ../gtk/propertybox.c:465
 msgid "Enabled"
 msgstr "使用する"
 
-#: ../gtk/propertybox.c:326 ../gtk/propertybox.c:464
+#: ../gtk/propertybox.c:327 ../gtk/propertybox.c:465
 msgid "Disabled"
 msgstr "使用しない"
 
-#: ../gtk/propertybox.c:509
+#: ../gtk/propertybox.c:510
 msgid "Account"
 msgstr ""
 
-#: ../gtk/propertybox.c:649
+#: ../gtk/propertybox.c:650
 msgid "English"
 msgstr ""
 
-#: ../gtk/propertybox.c:650
+#: ../gtk/propertybox.c:651
 msgid "French"
 msgstr "Français"
 
-#: ../gtk/propertybox.c:651
+#: ../gtk/propertybox.c:652
 msgid "Swedish"
 msgstr ""
 
-#: ../gtk/propertybox.c:652
+#: ../gtk/propertybox.c:653
 msgid "Italian"
 msgstr ""
 
-#: ../gtk/propertybox.c:653
+#: ../gtk/propertybox.c:654
 msgid "Spanish"
 msgstr ""
 
-#: ../gtk/propertybox.c:654
+#: ../gtk/propertybox.c:655
 msgid "Brazilian Portugese"
 msgstr ""
 
-#: ../gtk/propertybox.c:655
+#: ../gtk/propertybox.c:656
 msgid "Polish"
 msgstr ""
 
-#: ../gtk/propertybox.c:656
+#: ../gtk/propertybox.c:657
 msgid "German"
 msgstr ""
 
-#: ../gtk/propertybox.c:657
+#: ../gtk/propertybox.c:658
 msgid "Russian"
 msgstr ""
 
-#: ../gtk/propertybox.c:658
+#: ../gtk/propertybox.c:659
 msgid "Japanese"
 msgstr "日本語"
 
-#: ../gtk/propertybox.c:659
+#: ../gtk/propertybox.c:660
 msgid "Dutch"
 msgstr ""
 
-#: ../gtk/propertybox.c:660
+#: ../gtk/propertybox.c:661
 msgid "Hungarian"
 msgstr "Magyar"
 
-#: ../gtk/propertybox.c:661
+#: ../gtk/propertybox.c:662
 msgid "Czech"
 msgstr "čeština"
 
-#: ../gtk/propertybox.c:662
+#: ../gtk/propertybox.c:663
 msgid "Chinese"
 msgstr "简体中文"
 
-#: ../gtk/propertybox.c:719
+#: ../gtk/propertybox.c:720
 msgid ""
 "You need to restart linphone for the new language selection to take effect."
 msgstr ""
@@ -344,6 +344,16 @@ msgstr ""
 
 #: ../gtk/setupwizard.c:253
 msgid "Now ready !"
+msgstr ""
+
+#: ../gtk/incall_view.c:61
+#, fuzzy, c-format
+msgid "Call #%i"
+msgstr "通話はキャンセルされました。"
+
+#: ../gtk/incall_view.c:87
+#, c-format
+msgid "Transfer to call #%i with %s"
 msgstr ""
 
 #: ../gtk/incall_view.c:113
@@ -623,27 +633,31 @@ msgid "Username"
 msgstr "ユーザーマニュアル"
 
 #: ../gtk/main.ui.h:51
-msgid "_Help"
+msgid "_Call history"
 msgstr ""
 
 #: ../gtk/main.ui.h:52
-msgid "_Homepage"
+msgid "_Help"
 msgstr ""
 
 #: ../gtk/main.ui.h:53
+msgid "_Homepage"
+msgstr ""
+
+#: ../gtk/main.ui.h:54
 #, fuzzy
 msgid "_Linphone"
 msgstr "Linphone"
 
-#: ../gtk/main.ui.h:54
+#: ../gtk/main.ui.h:55
 msgid "_Options"
 msgstr ""
 
-#: ../gtk/main.ui.h:55
+#: ../gtk/main.ui.h:56
 msgid "in"
 msgstr ""
 
-#: ../gtk/main.ui.h:56
+#: ../gtk/main.ui.h:57
 msgid "label"
 msgstr ""
 
@@ -693,12 +707,12 @@ msgstr "アドレス"
 msgid "Show this contact presence status"
 msgstr ""
 
-#: ../gtk/contact.ui.h:6 ../gtk/password.ui.h:5
+#: ../gtk/contact.ui.h:6
 #, fuzzy
 msgid "gtk-cancel"
 msgstr "接続しました。"
 
-#: ../gtk/contact.ui.h:7 ../gtk/password.ui.h:6
+#: ../gtk/contact.ui.h:7
 #, fuzzy
 msgid "gtk-ok"
 msgstr "削除する"
@@ -1217,7 +1231,7 @@ msgstr ""
 "mixer ossエミュレーションモジュールが見つかりません。\n"
 "ロードするために、ルート権限で'modprobe snd-mixer-oss'を実行してください。"
 
-#: ../coreapi/misc.c:474
+#: ../coreapi/misc.c:478
 msgid "Stun lookup in progress..."
 msgstr ""
 
@@ -1418,293 +1432,10 @@ msgstr "登録しました。"
 msgid "We are transferred to %s"
 msgstr ""
 
-#: ../coreapi/sal_eXosip2.c:814 ../coreapi/sal_eXosip2.c:816
+#: ../coreapi/sal_eXosip2.c:815 ../coreapi/sal_eXosip2.c:817
 #, fuzzy
 msgid "Authentication failure"
 msgstr "コーデックの情報"
-
-#: ../mediastreamer2/src/alaw.c:144 ../mediastreamer2/src/alaw.c:162
-msgid "ITU-G.711 alaw encoder"
-msgstr ""
-
-#: ../mediastreamer2/src/alaw.c:194 ../mediastreamer2/src/alaw.c:211
-msgid "ITU-G.711 alaw decoder"
-msgstr ""
-
-#: ../mediastreamer2/src/alsa.c:950
-msgid "Alsa sound source"
-msgstr ""
-
-#: ../mediastreamer2/src/alsa.c:1054
-msgid "Alsa sound output"
-msgstr ""
-
-#: ../mediastreamer2/src/aqsnd.c:1008
-msgid "Sound capture filter for MacOS X Audio Queue Service"
-msgstr ""
-
-#: ../mediastreamer2/src/aqsnd.c:1032
-msgid "Sound playback filter for MacOS X Audio Queue Service"
-msgstr ""
-
-#: ../mediastreamer2/src/dtmfgen.c:287 ../mediastreamer2/src/dtmfgen.c:306
-msgid "DTMF generator"
-msgstr ""
-
-#: ../mediastreamer2/src/gsm.c:120 ../mediastreamer2/src/gsm.c:138
-msgid "The GSM full-rate codec"
-msgstr ""
-
-#: ../mediastreamer2/src/gsm.c:187 ../mediastreamer2/src/gsm.c:205
-msgid "The GSM codec"
-msgstr ""
-
-#: ../mediastreamer2/src/macsnd.c:627
-msgid "Sound capture filter for MacOS X Audio Unit"
-msgstr ""
-
-#: ../mediastreamer2/src/macsnd.c:642
-msgid "Sound playback filter for MacOS X Audio Unit"
-msgstr ""
-
-#: ../mediastreamer2/src/msconf.c:787 ../mediastreamer2/src/msconf.c:805
-msgid "A filter to make conferencing"
-msgstr ""
-
-#: ../mediastreamer2/src/msfileplayer.c:311
-#: ../mediastreamer2/src/msfileplayer.c:329
-msgid "Raw files and wav reader"
-msgstr ""
-
-#: ../mediastreamer2/src/msfilerec.c:170 ../mediastreamer2/src/msfilerec.c:188
-#: ../mediastreamer2/src/msfilerec_win.c:216
-#: ../mediastreamer2/src/msfilerec_win.c:234
-msgid "Wav file recorder"
-msgstr ""
-
-#: ../mediastreamer2/src/msjoin.c:45 ../mediastreamer2/src/msjoin.c:63
-msgid "A filter that send several inputs to one output."
-msgstr ""
-
-#: ../mediastreamer2/src/msresample.c:159
-#: ../mediastreamer2/src/msresample.c:177
-msgid "Audio resampler"
-msgstr ""
-
-#: ../mediastreamer2/src/msrtp.c:369 ../mediastreamer2/src/msrtp.c:387
-msgid "RTP output filter"
-msgstr ""
-
-#: ../mediastreamer2/src/msrtp.c:505 ../mediastreamer2/src/msrtp.c:523
-msgid "RTP input filter"
-msgstr ""
-
-#: ../mediastreamer2/src/msspeex.c:360 ../mediastreamer2/src/msspeex.c:378
-#: ../mediastreamer2/src/msspeex.c:548 ../mediastreamer2/src/msspeex.c:567
-msgid "The free and wonderful speex codec"
-msgstr ""
-
-#: ../mediastreamer2/src/msvolume.c:528 ../mediastreamer2/src/msvolume.c:543
-msgid "A filter that controls and measure sound volume"
-msgstr ""
-
-#: ../mediastreamer2/src/msv4l.c:1012
-msgid "A video4linux compatible source filter to stream pictures."
-msgstr ""
-
-#: ../mediastreamer2/src/msv4l2.c:554
-msgid "A filter to grab pictures from Video4Linux2-powered cameras"
-msgstr ""
-
-#: ../mediastreamer2/src/nowebcam.c:1854
-msgid "A filter that outputs a static image."
-msgstr ""
-
-#: ../mediastreamer2/src/pixconv.c:129 ../mediastreamer2/src/pixconv.c:147
-msgid "A pixel format converter"
-msgstr ""
-
-#: ../mediastreamer2/src/sizeconv.c:202
-msgid "A video size converter"
-msgstr ""
-
-#: ../mediastreamer2/src/sizeconv.c:220
-msgid "a small video size converter"
-msgstr ""
-
-#: ../mediastreamer2/src/speexec.c:449 ../mediastreamer2/src/speexec.c:467
-msgid "Echo canceller using speex library"
-msgstr ""
-
-#: ../mediastreamer2/src/tee.c:80 ../mediastreamer2/src/tee.c:98
-msgid "A filter that reads from input and copy to its multiple outputs."
-msgstr ""
-
-#: ../mediastreamer2/src/theora.c:375
-msgid "The theora video encoder from xiph.org"
-msgstr ""
-
-#: ../mediastreamer2/src/theora.c:393
-msgid "The open-source and royalty-free 'theora' video codec from xiph.org"
-msgstr ""
-
-#: ../mediastreamer2/src/theora.c:561 ../mediastreamer2/src/theora.c:579
-msgid "The theora video decoder from xiph.org"
-msgstr ""
-
-#: ../mediastreamer2/src/ulaw.c:146 ../mediastreamer2/src/ulaw.c:164
-msgid "ITU-G.711 ulaw encoder"
-msgstr ""
-
-#: ../mediastreamer2/src/ulaw.c:196 ../mediastreamer2/src/ulaw.c:214
-msgid "ITU-G.711 ulaw decoder"
-msgstr ""
-
-#: ../mediastreamer2/src/videodec.c:713 ../mediastreamer2/src/videodec.c:729
-#: ../mediastreamer2/src/videodec.c:812 ../mediastreamer2/src/videodec.c:828
-msgid "A H.263 decoder using ffmpeg library"
-msgstr ""
-
-#: ../mediastreamer2/src/videodec.c:746
-msgid "A MPEG4 decoder using ffmpeg library"
-msgstr ""
-
-#: ../mediastreamer2/src/videodec.c:762
-msgid "A RTP/JPEG decoder using ffmpeg library"
-msgstr ""
-
-#: ../mediastreamer2/src/videodec.c:778
-msgid "A MJPEG decoder using ffmpeg library"
-msgstr ""
-
-#: ../mediastreamer2/src/videodec.c:794
-msgid "A snow decoder using ffmpeg library"
-msgstr ""
-
-#: ../mediastreamer2/src/videoenc.c:908 ../mediastreamer2/src/videoenc.c:990
-msgid "A video H.263 encoder using ffmpeg library."
-msgstr ""
-
-#: ../mediastreamer2/src/videoenc.c:924
-msgid ""
-"A video H.263 encoder using ffmpeg library. It is compliant with old RFC2190 "
-"spec."
-msgstr ""
-
-#: ../mediastreamer2/src/videoenc.c:940 ../mediastreamer2/src/videoenc.c:1022
-msgid "A video MPEG4 encoder using ffmpeg library."
-msgstr ""
-
-#: ../mediastreamer2/src/videoenc.c:956
-msgid "A video snow encoder using ffmpeg library."
-msgstr ""
-
-#: ../mediastreamer2/src/videoenc.c:972
-msgid "A RTP/MJPEG encoder using ffmpeg library."
-msgstr ""
-
-#: ../mediastreamer2/src/videoenc.c:1006
-msgid ""
-"A video H.263 encoder using ffmpeg library, compliant with old RFC2190 spec."
-msgstr ""
-
-#: ../mediastreamer2/src/videoenc.c:1038
-msgid ""
-"The snow codec is royalty-free and is open-source. \n"
-"It uses innovative techniques that makes it one of most promising video "
-"codec. It is implemented within the ffmpeg project.\n"
-"However it is under development, quite unstable and compatibility with other "
-"versions cannot be guaranteed."
-msgstr ""
-
-#: ../mediastreamer2/src/videoenc.c:1058
-msgid "A MJPEG encoder using ffmpeg library."
-msgstr ""
-
-#: ../mediastreamer2/src/videoout.c:933
-msgid "A SDL-based video display"
-msgstr ""
-
-#: ../mediastreamer2/src/wincevideods.c:969
-#: ../mediastreamer2/src/wincevideods.c:987
-#: ../mediastreamer2/src/winvideo.c:596 ../mediastreamer2/src/winvideo.c:614
-#: ../mediastreamer2/src/winvideods.c:1385
-#: ../mediastreamer2/src/winvideods.c:1403
-msgid "A video4windows compatible source filter to stream pictures."
-msgstr ""
-
-#: ../mediastreamer2/src/winvideo2.c:436 ../mediastreamer2/src/winvideo2.c:454
-msgid "A video for windows (vfw.h) based source filter to grab pictures."
-msgstr ""
-
-#: ../mediastreamer2/src/ice.c:1349 ../mediastreamer2/src/ice.c:1367
-msgid "ICE filter"
-msgstr ""
-
-#: ../mediastreamer2/src/void.c:35 ../mediastreamer2/src/void.c:52
-msgid "A filter that trashes its input (useful for terminating some graphs)."
-msgstr ""
-
-#: ../mediastreamer2/src/equalizer.c:338 ../mediastreamer2/src/equalizer.c:356
-msgid "Parametric sound equalizer."
-msgstr ""
-
-#: ../mediastreamer2/src/msdscap-mingw.cc:1038
-msgid "A webcam grabber based on directshow."
-msgstr ""
-
-#: ../mediastreamer2/src/drawdib-display.c:552
-#: ../mediastreamer2/src/drawdib-display.c:570
-msgid "A video display based on windows DrawDib api"
-msgstr ""
-
-#: ../mediastreamer2/src/audiomixer.c:192
-#: ../mediastreamer2/src/audiomixer.c:211
-msgid "A filter that mixes down 16 bit sample audio streams"
-msgstr ""
-
-#: ../mediastreamer2/src/chanadapt.c:110 ../mediastreamer2/src/chanadapt.c:128
-msgid "A filter that converts from mono to stereo and vice versa."
-msgstr ""
-
-#: ../mediastreamer2/src/itc.c:97 ../mediastreamer2/src/itc.c:115
-#: ../mediastreamer2/src/itc.c:197 ../mediastreamer2/src/itc.c:215
-msgid "Inter ticker communication filter."
-msgstr ""
-
-#: ../mediastreamer2/src/extdisplay.c:62 ../mediastreamer2/src/extdisplay.c:79
-msgid "A display filter sending the buffers to draw to the upper layer"
-msgstr ""
-
-#: ../mediastreamer2/src/msiounit.c:650
-msgid "Sound capture filter for MacOS X Audio Unit Service"
-msgstr ""
-
-#: ../mediastreamer2/src/msiounit.c:664
-msgid "Sound playback filter for MacOS X Audio Unit Service"
-msgstr ""
-
-#: ../mediastreamer2/src/x11video.c:562
-msgid "A video display using X11+Xv"
-msgstr ""
-
-#. .id=
-#. .name=
-#. .text=
-#: ../mediastreamer2/src/msandroid.cpp:370
-msgid "Sound capture filter for Android"
-msgstr ""
-
-#. .id=
-#. .name=
-#. .text=
-#: ../mediastreamer2/src/msandroid.cpp:667
-msgid "Sound playback filter for Android"
-msgstr ""
-
-#: ../mediastreamer2/src/msandroidvideo.cpp:134
-msgid "A filter that captures Android video."
-msgstr ""
 
 #, fuzzy
 #~ msgid "_Modes"

@@ -794,11 +794,17 @@ linphonec_finish(int exit_status)
 int
 linphonec_prompt_for_auth_final(LinphoneCore *lc)
 {
+	static int reentrancy=0;
 	char *input, *iptr;
 	char auth_prompt[256];
 #ifdef HAVE_READLINE
 	rl_hook_func_t *old_event_hook;
 #endif
+
+	if (reentrancy!=0) return 0;
+	
+	reentrancy++;
+	
 	LinphoneAuthInfo *pending_auth=auth_stack.elem[auth_stack.nitems-1];
 
 	snprintf(auth_prompt, 256, "Password for %s on %s: ",

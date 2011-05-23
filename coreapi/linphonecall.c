@@ -190,7 +190,6 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 
 LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, SalOp *op){
 	LinphoneCall *call=ms_new0(LinphoneCall,1);
-	char *to_str;
 	char *from_str;
 
 	call->dir=LinphoneCallIncoming;
@@ -202,12 +201,10 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 		/*the following sends an option request back to the caller so that
 		 we get a chance to discover our nat'd address before answering.*/
 		call->ping_op=sal_op_new(lc->sal);
-		to_str=linphone_address_as_string(to);
 		from_str=linphone_address_as_string(from);
 		sal_op_set_route(call->ping_op,sal_op_get_network_origin(call->op));
 		sal_op_set_user_pointer(call->ping_op,call);
-		sal_ping(call->ping_op,to_str,from_str);
-		ms_free(to_str);
+		sal_ping(call->ping_op,linphone_core_find_best_identity(lc,from,NULL),from_str);
 		ms_free(from_str);
 	}
 	
@@ -231,19 +228,12 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 */
 
 static void linphone_call_set_terminated(LinphoneCall *call){
-	LinphoneCallStatus status=LinphoneCallAborted;
 	LinphoneCore *lc=call->core;
 	
 	linphone_core_update_allocated_audio_bandwidth(lc);
-	if (call->state==LinphoneCallEnd){
-		if (call->reason==LinphoneReasonDeclined){
-			status=LinphoneCallDeclined;
-		}
-		else status=LinphoneCallSuccess;
-		
-	}
+
 	call->owns_call_log=FALSE;
-	linphone_call_log_completed(call->log,call, status);
+	linphone_call_log_completed(call);
 	
 	
 	if (call == lc->current_call){
@@ -323,8 +313,14 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 			call->state=cstate;
 		}
 		if (cstate==LinphoneCallEnd || cstate==LinphoneCallError){
-			linphone_call_set_terminated (call);
+             if (call->reason==LinphoneReasonDeclined){
+                 call->log->status=LinphoneCallDeclined;
+             }
+            linphone_call_set_terminated (call);
 		}
+        if (cstate == LinphoneCallConnected) {
+            call->log->status=LinphoneCallSuccess;
+        }
 		
 		if (lc->vtable.call_state_changed)
 			lc->vtable.call_state_changed(lc,call,cstate,message);
@@ -1122,5 +1118,95 @@ float linphone_call_get_record_volume(LinphoneCall *call){
 		
 	}
 	return LINPHONE_VOLUME_DB_LOWEST;
+}
+
+
+static void display_bandwidth(RtpSession *as, RtpSession *vs){
+	ms_message("bandwidth usage: audio=[d=%.1f,u=%.1f] video=[d=%.1f,u=%.1f] kbit/sec",
+	(as!=NULL) ? (rtp_session_compute_recv_bandwidth(as)*1e-3) : 0,
+	(as!=NULL) ? (rtp_session_compute_send_bandwidth(as)*1e-3) : 0,
+	(vs!=NULL) ? (rtp_session_compute_recv_bandwidth(vs)*1e-3) : 0,
+	(vs!=NULL) ? (rtp_session_compute_send_bandwidth(vs)*1e-3) : 0);
+}
+
+static void linphone_core_disconnected(LinphoneCore *lc, LinphoneCall *call){
+	char temp[256];
+	char *from=NULL;
+	if(call)
+		from = linphone_call_get_remote_address_as_string(call);
+	if (from)
+	{
+		snprintf(temp,sizeof(temp),"Remote end %s seems to have disconnected, the call is going to be closed.",from);
+		free(from);
+	}		
+	else
+	{
+		snprintf(temp,sizeof(temp),"Remote end seems to have disconnected, the call is going to be closed.");
+	}
+	if (lc->vtable.display_warning!=NULL)
+		lc->vtable.display_warning(lc,temp);
+	linphone_core_terminate_call(lc,call);
+}
+
+void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapsed){
+	int disconnect_timeout = linphone_core_get_nortp_timeout(call->core);
+	bool_t disconnected=FALSE;
+	
+	if (call->state==LinphoneCallStreamsRunning && one_second_elapsed){
+		RtpSession *as=NULL,*vs=NULL;
+		float audio_load=0, video_load=0;
+		if (call->audiostream!=NULL){
+			as=call->audiostream->session;
+			if (call->audiostream->ticker)
+				audio_load=ms_ticker_get_average_load(call->audiostream->ticker);
+		}
+		if (call->videostream!=NULL){
+			if (call->videostream->ticker)
+				video_load=ms_ticker_get_average_load(call->videostream->ticker);
+			vs=call->videostream->session;
+		}
+		display_bandwidth(as,vs);
+		ms_message("Thread processing load: audio=%f\tvideo=%f",audio_load,video_load);
+	}
+#ifdef VIDEO_ENABLED
+	if (call->videostream!=NULL)
+		video_stream_iterate(call->videostream);
+#endif
+	if (one_second_elapsed && call->audiostream!=NULL && disconnect_timeout>0 )
+		disconnected=!audio_stream_alive(call->audiostream,disconnect_timeout);
+	if (disconnected)
+		linphone_core_disconnected(call->core,call);
+}
+
+void linphone_call_log_completed(LinphoneCall *call){
+	LinphoneCore *lc=call->core;
+	
+	call->log->duration=time(NULL)-call->start_time;
+	
+	if (call->log->status==LinphoneCallMissed){
+		char *info;
+		lc->missed_calls++;
+		info=ortp_strdup_printf(ngettext("You have missed %i call.",
+                                         "You have missed %i calls.", lc->missed_calls),
+                                lc->missed_calls);
+        if (lc->vtable.display_status!=NULL)
+            lc->vtable.display_status(lc,info);
+		ms_free(info);
+	}
+	lc->call_logs=ms_list_prepend(lc->call_logs,(void *)call->log);
+	if (ms_list_size(lc->call_logs)>lc->max_call_logs){
+		MSList *elem,*prevelem=NULL;
+		/*find the last element*/
+		for(elem=lc->call_logs;elem!=NULL;elem=elem->next){
+			prevelem=elem;
+		}
+		elem=prevelem;
+		linphone_call_log_destroy((LinphoneCallLog*)elem->data);
+		lc->call_logs=ms_list_remove_link(lc->call_logs,elem);
+	}
+	if (lc->vtable.call_log_updated!=NULL){
+		lc->vtable.call_log_updated(lc,call->log);
+	}
+	call_logs_write_to_config_file(lc);
 }
 

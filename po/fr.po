@@ -1,12 +1,12 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2001 Free Software Foundation, Inc.
 # Simon Morlat <simon.morlat@linphone.org>, 2001.
-#
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: Linphone 0.9.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-05 00:37+0200\n"
+"POT-Creation-Date: 2011-04-08 22:32+0200\n"
 "PO-Revision-Date: 2002-12-06 17:33+0100\n"
 "Last-Translator: Simon Morlat <simon.morlat@linphone.org>\n"
 "Language-Team: french <fr@li.org>\n"
@@ -45,26 +45,30 @@ msgstr "si positionné, répond automatiquement aux appels entrants"
 msgid ""
 "Specifiy a working directory (should be the base of the installation, eg: c:"
 "\\Program Files\\Linphone)"
-msgstr "Spécifie un répertoire de travail (qui devrait être le répertoire d'installation, par exemple c:"
-"\\Program Files\\Linphone)"
+msgstr ""
+"Spécifie un répertoire de travail (qui devrait être le répertoire "
+"d'installation, par exemple c:\\Program Files\\Linphone)"
 
 #: ../gtk/main.c:442
 #, c-format
 msgid "Call with %s"
 msgstr "Appel avec %s"
 
-#: ../gtk/main.c:825
+#: ../gtk/main.c:826
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
 "Would you allow him to see your presence status or add him to your contact "
 "list ?\n"
 "If you answer no, this person will be temporarily blacklisted."
-msgstr "%s souhaite vous ajouter à sa liste de contact.\n"
-"Souhaitez vous l'autoriser à voir votre information de présence et l'ajouter à votre liste également ?\n"
-"Si vous répondez non, cette personne sera mise temporairement sur liste noire."
+msgstr ""
+"%s souhaite vous ajouter à sa liste de contact.\n"
+"Souhaitez vous l'autoriser à voir votre information de présence et l'ajouter "
+"à votre liste également ?\n"
+"Si vous répondez non, cette personne sera mise temporairement sur liste "
+"noire."
 
-#: ../gtk/main.c:903
+#: ../gtk/main.c:904
 #, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
@@ -73,24 +77,24 @@ msgstr ""
 "Entrez le mot de passe pour <i>%s</i>\n"
 " sur le domaine <i>%s</i>:"
 
-#: ../gtk/main.c:1039
+#: ../gtk/main.c:1040
 msgid "Website link"
 msgstr "Lien site web"
 
-#: ../gtk/main.c:1075
+#: ../gtk/main.c:1076
 msgid "Linphone - a video internet phone"
 msgstr "Linphone - un téléphone video pour l'internet"
 
-#: ../gtk/main.c:1094
+#: ../gtk/main.c:1095
 #, c-format
 msgid "%s (Default)"
 msgstr "%s (par défaut)"
 
-#: ../gtk/main.c:1186
+#: ../gtk/main.c:1187
 msgid "Windows"
 msgstr ""
 
-#: ../gtk/main.c:1363
+#: ../gtk/main.c:1364
 msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
@@ -98,7 +102,7 @@ msgstr ""
 "Aucune carte son n'a été détectée sur cet ordinateur.\n"
 "Vous ne pourrez pas effectuer d'appels audio."
 
-#: ../gtk/main.c:1422
+#: ../gtk/main.c:1423
 msgid "A free SIP video-phone"
 msgstr "Un visiophone libre"
 
@@ -160,75 +164,75 @@ msgstr "Débit min. (kbit/s)"
 msgid "Parameters"
 msgstr "Paramètres"
 
-#: ../gtk/propertybox.c:325 ../gtk/propertybox.c:464
+#: ../gtk/propertybox.c:326 ../gtk/propertybox.c:465
 msgid "Enabled"
 msgstr "Activé"
 
-#: ../gtk/propertybox.c:326 ../gtk/propertybox.c:464
+#: ../gtk/propertybox.c:327 ../gtk/propertybox.c:465
 msgid "Disabled"
 msgstr "Désactivé"
 
-#: ../gtk/propertybox.c:509
+#: ../gtk/propertybox.c:510
 msgid "Account"
 msgstr "Compte"
 
-#: ../gtk/propertybox.c:649
+#: ../gtk/propertybox.c:650
 msgid "English"
 msgstr ""
 
-#: ../gtk/propertybox.c:650
+#: ../gtk/propertybox.c:651
 msgid "French"
 msgstr "Français"
 
-#: ../gtk/propertybox.c:651
+#: ../gtk/propertybox.c:652
 msgid "Swedish"
 msgstr ""
 
-#: ../gtk/propertybox.c:652
+#: ../gtk/propertybox.c:653
 msgid "Italian"
 msgstr ""
 
-#: ../gtk/propertybox.c:653
+#: ../gtk/propertybox.c:654
 msgid "Spanish"
 msgstr ""
 
-#: ../gtk/propertybox.c:654
+#: ../gtk/propertybox.c:655
 msgid "Brazilian Portugese"
 msgstr ""
 
-#: ../gtk/propertybox.c:655
+#: ../gtk/propertybox.c:656
 msgid "Polish"
 msgstr ""
 
-#: ../gtk/propertybox.c:656
+#: ../gtk/propertybox.c:657
 msgid "German"
 msgstr ""
 
-#: ../gtk/propertybox.c:657
+#: ../gtk/propertybox.c:658
 msgid "Russian"
 msgstr ""
 
-#: ../gtk/propertybox.c:658
+#: ../gtk/propertybox.c:659
 msgid "Japanese"
 msgstr "日本語"
 
-#: ../gtk/propertybox.c:659
+#: ../gtk/propertybox.c:660
 msgid "Dutch"
 msgstr ""
 
-#: ../gtk/propertybox.c:660
+#: ../gtk/propertybox.c:661
 msgid "Hungarian"
 msgstr ""
 
-#: ../gtk/propertybox.c:661
+#: ../gtk/propertybox.c:662
 msgid "Czech"
 msgstr ""
 
-#: ../gtk/propertybox.c:662
+#: ../gtk/propertybox.c:663
 msgid "Chinese"
 msgstr "简体中文"
 
-#: ../gtk/propertybox.c:719
+#: ../gtk/propertybox.c:720
 msgid ""
 "You need to restart linphone for the new language selection to take effect."
 msgstr ""
@@ -350,6 +354,16 @@ msgstr ""
 msgid "Now ready !"
 msgstr ""
 
+#: ../gtk/incall_view.c:61
+#, fuzzy, c-format
+msgid "Call #%i"
+msgstr "Appeler %s"
+
+#: ../gtk/incall_view.c:87
+#, c-format
+msgid "Transfer to call #%i with %s"
+msgstr ""
+
 #: ../gtk/incall_view.c:113
 msgid "Transfer"
 msgstr "Transfert"
@@ -370,7 +384,9 @@ msgstr "<b>Appel entrant</b>"
 msgid ""
 "Pause all calls\n"
 "and answer"
-msgstr "Pauser les appels en cours\net répondre"
+msgstr ""
+"Pauser les appels en cours\n"
+"et répondre"
 
 #: ../gtk/incall_view.c:217 ../gtk/main.ui.h:20
 msgid "Answer"
@@ -581,8 +597,7 @@ msgstr "Mon identité sip :"
 
 #: ../gtk/main.ui.h:44
 msgid "Online users"
-msgstr ""
-"En ligne"
+msgstr "En ligne"
 
 #: ../gtk/main.ui.h:45
 msgid "Password"
@@ -605,26 +620,31 @@ msgid "Username"
 msgstr "Nom d'utilisateur"
 
 #: ../gtk/main.ui.h:51
+#, fuzzy
+msgid "_Call history"
+msgstr "Historique des appels"
+
+#: ../gtk/main.ui.h:52
 msgid "_Help"
 msgstr "_Aide"
 
-#: ../gtk/main.ui.h:52
+#: ../gtk/main.ui.h:53
 msgid "_Homepage"
 msgstr "_Site web"
 
-#: ../gtk/main.ui.h:53
+#: ../gtk/main.ui.h:54
 msgid "_Linphone"
 msgstr "_Linphone"
 
-#: ../gtk/main.ui.h:54
+#: ../gtk/main.ui.h:55
 msgid "_Options"
 msgstr ""
 
-#: ../gtk/main.ui.h:55
+#: ../gtk/main.ui.h:56
 msgid "in"
 msgstr "dans"
 
-#: ../gtk/main.ui.h:56
+#: ../gtk/main.ui.h:57
 msgid "label"
 msgstr ""
 
@@ -671,11 +691,11 @@ msgstr "Adresse SIP"
 msgid "Show this contact presence status"
 msgstr "Voir l'état de présence de ce contact"
 
-#: ../gtk/contact.ui.h:6 ../gtk/password.ui.h:5
+#: ../gtk/contact.ui.h:6
 msgid "gtk-cancel"
 msgstr ""
 
-#: ../gtk/contact.ui.h:7 ../gtk/password.ui.h:6
+#: ../gtk/contact.ui.h:7
 msgid "gtk-ok"
 msgstr ""
 
@@ -829,9 +849,7 @@ msgstr ""
 
 #: ../gtk/parameters.ui.h:17
 msgid "Audio codecs"
-msgstr ""
-"Codecs audio"
-
+msgstr "Codecs audio"
 
 #: ../gtk/parameters.ui.h:18
 msgid "Behind NAT / Firewall (specify gateway IP below)"
@@ -979,8 +997,7 @@ msgstr ""
 
 #: ../gtk/parameters.ui.h:55
 msgid "Video codecs"
-msgstr ""
-"Codecs video"
+msgstr "Codecs video"
 
 #: ../gtk/parameters.ui.h:56
 msgid "Video input device:"
@@ -1133,7 +1150,9 @@ msgstr "Mise en attente de l'appel..."
 
 #: ../coreapi/linphonecore.c:2499
 msgid "There is already a call in process, pause or stop it first."
-msgstr "Il y a déjà un appel en cours, veuillez d'abord le mettre en attente ou le raccrocher."
+msgstr ""
+"Il y a déjà un appel en cours, veuillez d'abord le mettre en attente ou le "
+"raccrocher."
 
 #: ../coreapi/misc.c:147
 msgid ""
@@ -1160,7 +1179,7 @@ msgstr ""
 "a besoin. Veuillez s'il vous plait executer la commande\n"
 "'modprobe snd-mixer-oss' en tant que root afin de le charger."
 
-#: ../coreapi/misc.c:474
+#: ../coreapi/misc.c:478
 msgid "Stun lookup in progress..."
 msgstr "Découverte STUN en cours"
 
@@ -1354,7 +1373,6 @@ msgstr "Echec de l'enregistrement sur %s: %s"
 msgid "We are transferred to %s"
 msgstr "Transfert vers %s"
 
-#: ../coreapi/sal_eXosip2.c:814 ../coreapi/sal_eXosip2.c:816
+#: ../coreapi/sal_eXosip2.c:815 ../coreapi/sal_eXosip2.c:817
 msgid "Authentication failure"
 msgstr "Echec d'authentification"
-

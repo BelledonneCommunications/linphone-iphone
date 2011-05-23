@@ -80,8 +80,15 @@ void linphone_core_start_dtmf_stream(LinphoneCore* lc);
  */
 void linphone_core_stop_dtmf_stream(LinphoneCore* lc);
 
-	
+
+typedef bool_t (*LinphoneCoreIterateHook)(void *data);
+
+void linphone_core_add_iterate_hook(LinphoneCore *lc, LinphoneCoreIterateHook hook, void *hook_data);
+
+void linphone_core_remove_iterate_hook(LinphoneCore *lc, LinphoneCoreIterateHook hook, void *hook_data);
+
 #ifdef __cplusplus
 }
 #endif
 #endif
+

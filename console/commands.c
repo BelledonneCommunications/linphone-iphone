@@ -60,6 +60,7 @@ static int lpc_cmd_chat(LinphoneCore *, char *);
 static int lpc_cmd_answer(LinphoneCore *, char *);
 static int lpc_cmd_autoanswer(LinphoneCore *, char *);
 static int lpc_cmd_terminate(LinphoneCore *, char *);
+static int lpc_cmd_redirect(LinphoneCore *, char *);
 static int lpc_cmd_call_logs(LinphoneCore *, char *);
 static int lpc_cmd_ipv6(LinphoneCore *, char *);
 static int lpc_cmd_transfer(LinphoneCore *, char *);
@@ -336,6 +337,9 @@ static LPC_COMMAND advanced_commands[] = {
 	{ "ringback", lpc_cmd_ringback, "Specifies a ringback tone to be played to remote end during incoming calls",
 		"'ringback <path of mono .wav file>'\t: Specifies a ringback tone to be played to remote end during incoming calls\n"
 		"'ringback disable'\t: Disable playing of ringback tone to callers\n"
+	},
+	{ "redirect", lpc_cmd_redirect, "Redirect an incoming call",
+		"'redirect <redirect-uri>'\t: Redirect all pending incoming calls to the <redirect-uri>\n"
 	},
 	{	NULL,NULL,NULL,NULL}
 };
@@ -732,6 +736,30 @@ lpc_cmd_terminate(LinphoneCore *lc, char *args)
 	}
 	return 0;
 	
+}
+
+static int
+lpc_cmd_redirect(LinphoneCore *lc, char *args){
+	const MSList *elem;
+	int didit=0;
+	if (!args) return 0;
+	if ((elem=linphone_core_get_calls(lc))==NULL){
+		linphonec_out("No active calls.\n");
+		return 1;
+	}
+	while(elem!=NULL){
+		LinphoneCall *call=(LinphoneCall*)elem->data;
+		if (linphone_call_get_state(call)==LinphoneCallIncomingReceived){
+			linphone_core_redirect_call(lc,call,args);
+			didit=1;
+			/*as the redirection closes the call, we need to re-check the call list that is invalidated.*/
+			elem=linphone_core_get_calls(lc);
+		}else elem=elem->next;
+	}
+	if (didit==0){
+		linphonec_out("There is no pending incoming call to redirect.");
+	}
+	return 1;
 }
 
 static int

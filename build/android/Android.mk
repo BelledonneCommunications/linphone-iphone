@@ -56,10 +56,13 @@ endif
 LOCAL_CFLAGS += \
 	-D_BYTE_ORDER=_LITTLE_ENDIAN \
 	-DORTP_INET6 \
+        -DINET6 \
+        -DOSIP_MT \
 	-DENABLE_TRACE \
 	-DLINPHONE_VERSION=\"3.4.0\" \
 	-DLINPHONE_PLUGINS_DIR=\"\\tmp\" \
-	-DLOG_DOMAIN=$(MY_LOG_DOMAIN)
+	-DLOG_DOMAIN=$(MY_LOG_DOMAIN) \
+	-UNE_BONNE_PIPE_CA_FAIT_DU_BIEN
 
 LOCAL_CFLAGS += -DIN_LINPHONE
 
@@ -83,12 +86,21 @@ LOCAL_LDLIBS += -llog -ldl
 
 
 LOCAL_STATIC_LIBRARIES := \
+	cpufeatures \
 	libmediastreamer2 \
 	libortp \
 	libeXosip2 \
 	libosip2 \
-	libgsm
+	libgsm 
 
+
+ifneq ($(BUILD_AMR),0)
+LOCAL_CFLAGS += -DHAVE_AMR
+
+LOCAL_STATIC_LIBRARIES += \
+	libmsamr \
+	libopencoreamr 
+endif
 
 ifeq ($(LINPHONE_VIDEO),1)
 ifeq ($(BUILD_X264),1)
@@ -118,4 +130,7 @@ endif
 
 LOCAL_MODULE := liblinphone
 include $(BUILD_SHARED_LIBRARY)
+
+$(call import-module,android/cpufeatures)
+
 

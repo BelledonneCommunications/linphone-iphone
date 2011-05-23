@@ -21,11 +21,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "mediastreamer2/msjava.h"
 
+#include <cpu-features.h>
+
 #ifdef ANDROID
 #include <android/log.h>
 extern "C" void libmsilbc_init();
 #ifdef HAVE_X264
 extern "C" void libmsx264_init();
+#endif
+#ifdef HAVE_AMR
+extern "C" void libmsamr_init();
 #endif
 #endif /*ANDROID*/
 
@@ -340,6 +345,9 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_newLinphoneCore(JNIEnv*
 #ifdef HAVE_X264
 	libmsx264_init();
 #endif
+#ifdef HAVE_AMR
+	libmsamr_init();
+#endif
 	jlong nativePtr = (jlong)linphone_core_new(	&ldata->vTable
 			,userConfig
 			,factoryConfig
@@ -543,6 +551,24 @@ extern "C" jlongArray Java_org_linphone_core_LinphoneCoreImpl_listVideoPayloadTy
 																			,jobject  thiz
 																			,jlong lc) {
 	const MSList* codecs = linphone_core_get_video_codecs((LinphoneCore*)lc);
+	int codecsCount = ms_list_size(codecs);
+	jlongArray jCodecs = env->NewLongArray(codecsCount);
+	jlong *jInternalArray = env->GetLongArrayElements(jCodecs, NULL);
+
+	for (int i = 0; i < codecsCount; i++ ) {
+		jInternalArray[i] = (unsigned long) (codecs->data);
+		codecs = codecs->next;
+	}
+
+	env->ReleaseLongArrayElements(jCodecs, jInternalArray, 0);
+
+	return jCodecs;
+}
+
+extern "C" jlongArray Java_org_linphone_core_LinphoneCoreImpl_listAudioPayloadTypes(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc) {
+	const MSList* codecs = linphone_core_get_audio_codecs((LinphoneCore*)lc);
 	int codecsCount = ms_list_size(codecs);
 	jlongArray jCodecs = env->NewLongArray(codecsCount);
 	jlong *jInternalArray = env->GetLongArrayElements(jCodecs, NULL);
@@ -1202,4 +1228,32 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setSignalingTransportPor
 	tr.tls_port = tls;
 	
 	linphone_core_set_sip_transports(lc, &tr); // tr will be copied
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_enableIpv6(JNIEnv* env,jobject  thiz
+              ,jlong lc, jboolean enable) {
+              linphone_core_enable_ipv6((LinphoneCore*)lc,enable);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_adjustSoftwareVolume(JNIEnv* env,jobject  thiz
+              ,jlong ptr, jint db) {
+	linphone_core_set_playback_gain_db((LinphoneCore *) ptr, db);
+}
+
+extern "C" jboolean Java_org_linphone_core_Version_nativeHasNeon(JNIEnv *env){
+	if (android_getCpuFamily() == ANDROID_CPU_FAMILY_ARM && (android_getCpuFeatures() & ANDROID_CPU_ARM_FEATURE_NEON) != 0)
+	{
+		return 1;
+	}
+	return 0;
+}
+
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_pauseCall(JNIEnv *env,jobject thiz,jlong pCore, jlong pCall) {
+	return linphone_core_pause_call((LinphoneCore *) pCore, (LinphoneCall *) pCall);
+}
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_pauseAllCalls(JNIEnv *env,jobject thiz,jlong pCore) {
+	return linphone_core_pause_all_calls((LinphoneCore *) pCore);
+}
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_resumeCall(JNIEnv *env,jobject thiz,jlong pCore, jlong pCall) {
+	return linphone_core_resume_call((LinphoneCore *) pCore, (LinphoneCall *) pCall);
 }

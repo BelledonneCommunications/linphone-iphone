@@ -27,10 +27,21 @@ static void calibration_finished(LinphoneCore *lc, LinphoneEcCalibratorStatus st
 	if (status==LinphoneEcCalibratorDone) ms_message("Measured delay is %i",delay);
 }
 
+
+static char config_file[1024];
+void parse_args(int argc, char *argv[]){
+	if (argc != 3 || strncmp("-c",argv[1], 2) || access(argv[2],F_OK)!=0) {
+		printf("Usage: test_ecc [-c config_file] where config_file will be written with the detected value\n");
+		exit(-1);
+	}
+	strncpy(config_file,argv[2],1024);
+}
+
 int main(int argc, char *argv[]){
+	if (argc>1) parse_args(argc,argv);
 	int count=0;
 	LinphoneCoreVTable vtable={0};
-	LinphoneCore *lc=linphone_core_new(&vtable,NULL,NULL,NULL);
+	LinphoneCore *lc=linphone_core_new(&vtable,config_file,NULL,NULL);
 	
 	linphone_core_enable_logs(NULL);
 

@@ -367,7 +367,8 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 	eXosip_set_option(13,&err); /*13=EXOSIP_OPT_SRV_WITH_NAPTR, as it is an enum value, we can't use it unless we are sure of the
 					version of eXosip, which is not the case*/
 	/*see if it looks like an IPv6 address*/
-	eXosip_set_option(EXOSIP_OPT_USE_RPORT,&ctx->use_rports);
+	int use_rports = ctx->use_rports; // Copy char to int to avoid bad alignment
+	eXosip_set_option(EXOSIP_OPT_USE_RPORT,&use_rports);
 	ipv6=strchr(addr,':')!=NULL;
 	eXosip_enable_ipv6(ipv6);
 
@@ -439,7 +440,6 @@ static int extract_received_rport(osip_message_t *msg, const char **received, in
 	if (param) {
 		rport=param->gvalue;
 		if (rport && rport[0]!='\0') *rportval=atoi(rport);
-		else *rportval=5060;
 		*received=via->host;
 	}
 	param=NULL;
@@ -802,9 +802,7 @@ void sal_op_authenticate(SalOp *h, const SalAuthInfo *info){
 		eXosip_unlock();
 		ms_message("eXosip_default_action() done");
 		pop_auth_from_exosip();
-		eXosip_event_free(h->pending_auth);
-		sal_remove_pending_auth(sal_op_get_sal(h),h);
-		h->pending_auth=NULL;
+		
 		if (h->auth_info) sal_auth_info_delete(h->auth_info); /*if already exist*/
 		h->auth_info=sal_auth_info_clone(info); /*store auth info for subsequent request*/
 	}
@@ -1191,6 +1189,11 @@ static void authentication_ok(Sal *sal, eXosip_event_t *ev){
 		ms_warning("No operation associated with this authentication_ok!");
 		return ;
 	}
+	if (op->pending_auth){
+		eXosip_event_free(op->pending_auth);
+		sal_remove_pending_auth(sal,op);
+		op->pending_auth=NULL;
+	}
 	if (get_auth_data(ev,&realm,&username)==0){
 		sal->callbacks.auth_success(op,realm,username);
 	}
@@ -1269,6 +1272,7 @@ static bool_t call_failure(Sal *sal, eXosip_event_t *ev){
 				sr=SalReasonUnknown;
 			}else error=SalErrorNoResponse;
 	}
+	op->terminated=TRUE;
 	sal->callbacks.call_failure(op,error,sr,reason,code);
 	if (computedReason != NULL){
 		ms_free(computedReason);
@@ -1904,6 +1908,25 @@ int sal_register(SalOp *h, const char *proxy, const char *from, int expires){
 	return 0;
 }
 
+int sal_register_refresh(SalOp *op, int expires){
+	osip_message_t *msg=NULL;
+	const char *contact=sal_op_get_contact(op);
+	
+	if (op->rid==-1){
+		ms_error("Unexistant registration context, not possible to refresh.");
+		return -1;
+	}
+	eXosip_lock();
+	eXosip_register_build_register(op->rid,expires,&msg);
+	if (msg!=NULL){
+		if (contact) register_set_contact(msg,contact);
+		eXosip_register_send_register(op->rid,msg);
+	}else ms_error("Could not build REGISTER refresh message.");
+	eXosip_unlock();
+	return 0;
+}
+
+
 int sal_unregister(SalOp *h){
 	osip_message_t *msg=NULL;
 	eXosip_lock();
@@ -1917,6 +1940,12 @@ int sal_unregister(SalOp *h){
 SalAddress * sal_address_new(const char *uri){
 	osip_from_t *from;
 	osip_from_init(&from);
+
+	// Remove front spaces
+	while (uri[0]==' ') {
+		uri++;
+	}
+		
 	if (osip_from_parse(from,uri)!=0){
 		osip_from_free(from);
 		return NULL;

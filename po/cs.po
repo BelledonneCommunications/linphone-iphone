@@ -14,17 +14,16 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: linphone-3.4.0\n"
+"Project-Id-Version: linphone-3.4.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-05 00:37+0200\n"
-"PO-Revision-Date: 2011-02-07 18:00+0100\n"
+"POT-Creation-Date: 2011-04-10 19:56+0200\n"
+"PO-Revision-Date: 2011-04-10 20:11+0200\n"
 "Last-Translator: Petr Pisar <petr.pisar@atlas.cz>\n"
 "Language-Team: Czech <translation-team-cs@lists.sourceforge.net>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"a4be9bcfe5ebee60493f7c439b5c6616a5c8b6e6\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
 #: ../gtk/support.c:49 ../gtk/support.c:73 ../gtk/support.c:102
@@ -39,15 +38,15 @@ msgstr "Diskuze s %s"
 
 #: ../gtk/main.c:74
 msgid "log to stdout some debug information while running."
-msgstr "za běhu vypisovat některé ladicí informace na standardní výstup."
+msgstr "Za běhu vypisuje některé ladicí informace na standardní výstup."
 
 #: ../gtk/main.c:81
 msgid "Start only in the system tray, do not show the main interface."
-msgstr "Spouštět se pouze do systémové oblasti, nezobrazovat hlavní okno."
+msgstr "Spustí se pouze do systémové oblasti, nezobrazí hlavní okno."
 
 #: ../gtk/main.c:88
 msgid "address to call right now"
-msgstr "zavolat právě teď na tuto adresu"
+msgstr "Zavolá právě teď na tuto adresu"
 
 #: ../gtk/main.c:95
 msgid "if set automatically answer incoming calls"
@@ -66,7 +65,7 @@ msgstr ""
 msgid "Call with %s"
 msgstr "Hovor s %s"
 
-#: ../gtk/main.c:825
+#: ../gtk/main.c:826
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
@@ -79,7 +78,7 @@ msgstr ""
 "do svého adresáře?\n"
 "Odpovíte-li ne, tato osobo bude dočasně blokována."
 
-#: ../gtk/main.c:903
+#: ../gtk/main.c:904
 #, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
@@ -88,24 +87,24 @@ msgstr ""
 "Prosím, zadejte heslo pro uživatele <i>%s</i>\n"
 "v doméně <i>%s</i>:"
 
-#: ../gtk/main.c:1039
+#: ../gtk/main.c:1040
 msgid "Website link"
 msgstr "Odkaz na webovou stránku"
 
-#: ../gtk/main.c:1075
+#: ../gtk/main.c:1076
 msgid "Linphone - a video internet phone"
 msgstr "Lipnhone – internetový videofon"
 
-#: ../gtk/main.c:1094
+#: ../gtk/main.c:1095
 #, c-format
 msgid "%s (Default)"
 msgstr "%s (Výchozí)"
 
-#: ../gtk/main.c:1186
+#: ../gtk/main.c:1187
 msgid "Windows"
-msgstr ""
+msgstr "Okna"
 
-#: ../gtk/main.c:1363
+#: ../gtk/main.c:1364
 msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
@@ -113,7 +112,7 @@ msgstr ""
 "Na tomto počítači nebyla objevena žádná zvuková karta.\n"
 "Nebudete moci vytáčet a přijímat a zvukové hovory."
 
-#: ../gtk/main.c:1422
+#: ../gtk/main.c:1423
 msgid "A free SIP video-phone"
 msgstr "Volný SIP videofon"
 
@@ -161,7 +160,7 @@ msgstr "Přidat nový kontakt z adresáře %s"
 
 #: ../gtk/propertybox.c:277
 msgid "Rate (Hz)"
-msgstr "Rychlost (Hz)"
+msgstr "Kmitočet (Hz)"
 
 #: ../gtk/propertybox.c:283
 msgid "Status"
@@ -169,81 +168,89 @@ msgstr "Stav"
 
 #: ../gtk/propertybox.c:289
 msgid "Min bitrate (kbit/s)"
-msgstr "Min. rychlost (kbit/s)"
+msgstr "Min. rychlost (kb/s)"
 
 #: ../gtk/propertybox.c:296
 msgid "Parameters"
 msgstr "Parametry"
 
-#: ../gtk/propertybox.c:325 ../gtk/propertybox.c:464
+#: ../gtk/propertybox.c:326 ../gtk/propertybox.c:465
 msgid "Enabled"
 msgstr "Povoleno"
 
-#: ../gtk/propertybox.c:326 ../gtk/propertybox.c:464
+#: ../gtk/propertybox.c:327 ../gtk/propertybox.c:465
 msgid "Disabled"
 msgstr "Zakázáno"
 
-#: ../gtk/propertybox.c:509
+#: ../gtk/propertybox.c:510
 msgid "Account"
 msgstr "Účet"
 
-#: ../gtk/propertybox.c:649
+#: ../gtk/propertybox.c:650
 msgid "English"
 msgstr "angličtina"
 
-#: ../gtk/propertybox.c:650
+#: ../gtk/propertybox.c:651
 msgid "French"
 msgstr "francouzština"
 
-#: ../gtk/propertybox.c:651
+#: ../gtk/propertybox.c:652
 msgid "Swedish"
 msgstr "švédština"
 
-#: ../gtk/propertybox.c:652
+#: ../gtk/propertybox.c:653
 msgid "Italian"
 msgstr "italština"
 
-#: ../gtk/propertybox.c:653
+#: ../gtk/propertybox.c:654
 msgid "Spanish"
 msgstr "španělština"
 
-#: ../gtk/propertybox.c:654
+#: ../gtk/propertybox.c:655
 msgid "Brazilian Portugese"
 msgstr "brazilská portugalština"
 
-#: ../gtk/propertybox.c:655
+#: ../gtk/propertybox.c:656
 msgid "Polish"
 msgstr "polština"
 
-#: ../gtk/propertybox.c:656
+#: ../gtk/propertybox.c:657
 msgid "German"
 msgstr "němčina"
 
-#: ../gtk/propertybox.c:657
+#: ../gtk/propertybox.c:658
 msgid "Russian"
 msgstr "ruština"
 
-#: ../gtk/propertybox.c:658
+#: ../gtk/propertybox.c:659
 msgid "Japanese"
 msgstr "japonština"
 
-#: ../gtk/propertybox.c:659
+#: ../gtk/propertybox.c:660
 msgid "Dutch"
 msgstr "dánština"
 
-#: ../gtk/propertybox.c:660
+#: ../gtk/propertybox.c:661
 msgid "Hungarian"
 msgstr "maďarština"
 
-#: ../gtk/propertybox.c:661
+#: ../gtk/propertybox.c:662
 msgid "Czech"
 msgstr "čeština"
 
-#: ../gtk/propertybox.c:662
+#: ../gtk/propertybox.c:663
 msgid "Chinese"
 msgstr "čínština"
 
-#: ../gtk/propertybox.c:719
+#: ../gtk/propertybox.c:664
+msgid "Traditional Chinese"
+msgstr "tradiční čínština"
+
+#: ../gtk/propertybox.c:665
+msgid "Norwegian"
+msgstr "norština"
+
+#: ../gtk/propertybox.c:722
 msgid ""
 "You need to restart linphone for the new language selection to take effect."
 msgstr "Aby se projevil výběr nového jazyka, je nutné znovu spustit linphone."
@@ -365,6 +372,16 @@ msgstr "Vytváření účtu"
 #: ../gtk/setupwizard.c:253
 msgid "Now ready !"
 msgstr "Připraveno!"
+
+#: ../gtk/incall_view.c:61
+#, c-format
+msgid "Call #%i"
+msgstr "Hovor č. %i"
+
+#: ../gtk/incall_view.c:87
+#, c-format
+msgid "Transfer to call #%i with %s"
+msgstr "Přepojit hovor č. %i s %s"
 
 #: ../gtk/incall_view.c:113
 msgid "Transfer"
@@ -498,21 +515,19 @@ msgstr "A"
 
 #: ../gtk/main.ui.h:17
 msgid "ADSL"
-msgstr ""
+msgstr "ADSL"
 
 #: ../gtk/main.ui.h:18
-#, fuzzy
 msgid "Add contact"
-msgstr "Nalezen %i kontakt"
+msgstr "Přidat kontakt"
 
 #: ../gtk/main.ui.h:19
 msgid "All users"
-msgstr ""
+msgstr "všech uživatelích"
 
 #: ../gtk/main.ui.h:21
-#, fuzzy
 msgid "Audio & video"
-msgstr "Zvuk i obraz"
+msgstr "Zvuk a obraz"
 
 #: ../gtk/main.ui.h:22
 msgid "Audio only"
@@ -531,9 +546,8 @@ msgid "C"
 msgstr "C"
 
 #: ../gtk/main.ui.h:26
-#, fuzzy
 msgid "Check _Updates"
-msgstr "Vyhledat aktualizace"
+msgstr "Vyhledat akt_ualizace"
 
 #: ../gtk/main.ui.h:27
 msgid "Contacts"
@@ -568,11 +582,8 @@ msgid "Enter username, phone number, or full sip address"
 msgstr "Zadejte uživatelské jméno, telefonní číslo nebo plnou sipovou adresu"
 
 #: ../gtk/main.ui.h:35
-#, fuzzy
 msgid "Fiber Channel"
-msgstr ""
-"ADSL\n"
-"Fiber Channel"
+msgstr "Fiber Channel"
 
 #: ../gtk/main.ui.h:36
 msgid "In call"
@@ -580,7 +591,7 @@ msgstr "Telefonuje se"
 
 #: ../gtk/main.ui.h:37
 msgid "Initiate a new call"
-msgstr ""
+msgstr "Zahájit nový hovor"
 
 #: ../gtk/main.ui.h:38
 msgid "Internet connection:"
@@ -603,11 +614,8 @@ msgid "My current identity:"
 msgstr "Moje současná totožnost:"
 
 #: ../gtk/main.ui.h:44
-#, fuzzy
 msgid "Online users"
-msgstr ""
-"všech uživatelích\n"
-"připojených uživatelích"
+msgstr "připojených uživatelích"
 
 #: ../gtk/main.ui.h:45
 msgid "Password"
@@ -622,49 +630,49 @@ msgid "Search"
 msgstr "Hledat"
 
 #: ../gtk/main.ui.h:49
-#, fuzzy
 msgid "Show debug window"
-msgstr "Ladicí okno Linphonu"
+msgstr "Zobrazit ladicí okno"
 
 #: ../gtk/main.ui.h:50
 msgid "Username"
 msgstr "Uživatelské jméno"
 
 #: ../gtk/main.ui.h:51
-#, fuzzy
-msgid "_Help"
-msgstr "Nápověda"
+msgid "_Call history"
+msgstr "_Historie volání"
 
 #: ../gtk/main.ui.h:52
-#, fuzzy
-msgid "_Homepage"
-msgstr "Domovská stránka"
+msgid "_Help"
+msgstr "Nápo_věda"
 
 #: ../gtk/main.ui.h:53
+msgid "_Homepage"
+msgstr "_Domovská stránka"
+
+#: ../gtk/main.ui.h:54
 msgid "_Linphone"
 msgstr "_Linphone"
 
-#: ../gtk/main.ui.h:54
-msgid "_Options"
-msgstr ""
-
 #: ../gtk/main.ui.h:55
+msgid "_Options"
+msgstr "V_olby"
+
+#: ../gtk/main.ui.h:56
 msgid "in"
 msgstr "ve"
 
-#: ../gtk/main.ui.h:56
+#: ../gtk/main.ui.h:57
 msgid "label"
 msgstr ""
 
 #: ../gtk/about.ui.h:1
 msgid "(C) Belledonne Communications,2010\n"
-msgstr ""
+msgstr "© Belledonne Communications, 2010\n"
 
 #: ../gtk/about.ui.h:3
 msgid "About linphone"
 msgstr "O Linphonu"
 
-# FIXME: standart
 #: ../gtk/about.ui.h:4
 msgid "An internet video phone using the standard SIP (rfc3261) protocol."
 msgstr "Internetový videofon používající standardní protokol SIP (RFC 3261)."
@@ -711,11 +719,11 @@ msgstr "SIP adresa"
 msgid "Show this contact presence status"
 msgstr "U tohoto kontaktu zobrazovat stav přítomnosti"
 
-#: ../gtk/contact.ui.h:6 ../gtk/password.ui.h:5
+#: ../gtk/contact.ui.h:6
 msgid "gtk-cancel"
 msgstr ""
 
-#: ../gtk/contact.ui.h:7 ../gtk/password.ui.h:6
+#: ../gtk/contact.ui.h:7
 msgid "gtk-ok"
 msgstr ""
 
@@ -740,9 +748,8 @@ msgid "UserID"
 msgstr "Identifikátor uživatele"
 
 #: ../gtk/call_logs.ui.h:1
-#, fuzzy
 msgid "Call back"
-msgstr "Volat komu: %s"
+msgstr "Zavolat zpátky"
 
 #: ../gtk/call_logs.ui.h:2
 msgid "Call history"
@@ -750,7 +757,7 @@ msgstr "Historie volání"
 
 #: ../gtk/call_logs.ui.h:3
 msgid "Clear all"
-msgstr ""
+msgstr "Vše smazat"
 
 #: ../gtk/sip_account.ui.h:1
 msgid "Configure a SIP account"
@@ -762,11 +769,11 @@ msgstr "Linphone – Nastav SIP účet"
 
 #: ../gtk/sip_account.ui.h:3
 msgid "Looks like sip:<proxy hostname>"
-msgstr ""
+msgstr "Vypadá jako sip:<název proxy>"
 
 #: ../gtk/sip_account.ui.h:4
 msgid "Looks like sip:<username>@<domain>"
-msgstr ""
+msgstr "Vypadá jako sip:<uživatel>@<doména>"
 
 #: ../gtk/sip_account.ui.h:5
 msgid "Publish presence information"
@@ -869,9 +876,8 @@ msgid "Audio RTP/UDP:"
 msgstr "Zvukový RTP/UDP:"
 
 #: ../gtk/parameters.ui.h:17
-#, fuzzy
 msgid "Audio codecs"
-msgstr "Kodeky obrazu"
+msgstr "Kodeky zvuku"
 
 #: ../gtk/parameters.ui.h:18
 msgid "Behind NAT / Firewall (specify gateway IP below)"
@@ -970,9 +976,8 @@ msgid "Ring sound:"
 msgstr "Vyzvánění:"
 
 #: ../gtk/parameters.ui.h:43
-#, fuzzy
 msgid "SIP (TCP):"
-msgstr "SIP (UDP):"
+msgstr "SIP (TCP):"
 
 #: ../gtk/parameters.ui.h:44
 msgid "SIP (UDP):"
@@ -1019,7 +1024,6 @@ msgid "Video RTP/UDP:"
 msgstr "Obrazový RTP/UDP:"
 
 #: ../gtk/parameters.ui.h:55
-#, fuzzy
 msgid "Video codecs"
 msgstr "Kodeky obrazu"
 
@@ -1040,9 +1044,8 @@ msgid "Your username:"
 msgstr "Vaše uživatelské jméno:"
 
 #: ../gtk/parameters.ui.h:60
-#, fuzzy
 msgid "a sound card"
-msgstr "zvuková karta\n"
+msgstr "zvuková karta"
 
 #: ../gtk/parameters.ui.h:61
 msgid "default camera"
@@ -1202,7 +1205,7 @@ msgstr ""
 "oss, který chybí. Prosím zadejte jako uživatel root příkaz\n"
 "'modprobe snd-mixer-oss', kterým modul zavede."
 
-#: ../coreapi/misc.c:474
+#: ../coreapi/misc.c:478
 msgid "Stun lookup in progress..."
 msgstr "Hledá se adresa pomocí STUN…"
 
@@ -1292,9 +1295,8 @@ msgid "Remote ringing."
 msgstr "Vyzvání na druhé straně."
 
 #: ../coreapi/callbacks.c:242
-#, fuzzy
 msgid "Remote ringing..."
-msgstr "Vyzvání na druhé straně."
+msgstr "Vyzvání na druhé straně…"
 
 #: ../coreapi/callbacks.c:253
 msgid "Early media."
@@ -1396,319 +1398,225 @@ msgstr "Registrace na %s selhala: %s"
 msgid "We are transferred to %s"
 msgstr "Byly jsme přepojeni na %s"
 
-#: ../coreapi/sal_eXosip2.c:814 ../coreapi/sal_eXosip2.c:816
+#: ../coreapi/sal_eXosip2.c:815 ../coreapi/sal_eXosip2.c:817
 msgid "Authentication failure"
 msgstr "Selhání ověření"
 
-#: ../mediastreamer2/src/alaw.c:144 ../mediastreamer2/src/alaw.c:162
-msgid "ITU-G.711 alaw encoder"
-msgstr "Kodér a-law ITU-G.711"
+#~ msgid "ITU-G.711 alaw encoder"
+#~ msgstr "Kodér a-law ITU-G.711"
 
-#: ../mediastreamer2/src/alaw.c:194 ../mediastreamer2/src/alaw.c:211
-msgid "ITU-G.711 alaw decoder"
-msgstr "Dekodér a-law ITU-G.711"
+#~ msgid "ITU-G.711 alaw decoder"
+#~ msgstr "Dekodér a-law ITU-G.711"
 
-#: ../mediastreamer2/src/alsa.c:950
-msgid "Alsa sound source"
-msgstr "Zdroj zvuku ALSA"
+#~ msgid "Alsa sound source"
+#~ msgstr "Zdroj zvuku ALSA"
 
-#: ../mediastreamer2/src/alsa.c:1054
-msgid "Alsa sound output"
-msgstr "Zvukový výstup ALSA"
+#~ msgid "Alsa sound output"
+#~ msgstr "Zvukový výstup ALSA"
 
-#: ../mediastreamer2/src/aqsnd.c:1008
-msgid "Sound capture filter for MacOS X Audio Queue Service"
-msgstr "Filtr zachytávání zvuku přes MacOS X službu zvukové fronty"
+#~ msgid "Sound capture filter for MacOS X Audio Queue Service"
+#~ msgstr "Filtr zachytávání zvuku přes MacOS X službu zvukové fronty"
 
-#: ../mediastreamer2/src/aqsnd.c:1032
-msgid "Sound playback filter for MacOS X Audio Queue Service"
-msgstr "Filtr přehrávání zvuku přes MacOS X službu zvukové fronty"
+#~ msgid "Sound playback filter for MacOS X Audio Queue Service"
+#~ msgstr "Filtr přehrávání zvuku přes MacOS X službu zvukové fronty"
 
-#: ../mediastreamer2/src/dtmfgen.c:287 ../mediastreamer2/src/dtmfgen.c:306
-msgid "DTMF generator"
-msgstr "Generátor DTMF"
+#~ msgid "DTMF generator"
+#~ msgstr "Generátor DTMF"
 
-#: ../mediastreamer2/src/gsm.c:120 ../mediastreamer2/src/gsm.c:138
-msgid "The GSM full-rate codec"
-msgstr "Kodek plnopásmového GSM"
+#~ msgid "The GSM full-rate codec"
+#~ msgstr "Kodek plnopásmového GSM"
 
-#: ../mediastreamer2/src/gsm.c:187 ../mediastreamer2/src/gsm.c:205
-msgid "The GSM codec"
-msgstr "GSM kodek"
+#~ msgid "The GSM codec"
+#~ msgstr "GSM kodek"
 
-#: ../mediastreamer2/src/macsnd.c:627
-#, fuzzy
-msgid "Sound capture filter for MacOS X Audio Unit"
-msgstr "Filtr zachytávání zvuku přes MacOS X ovladače Core Audio"
+#~ msgid "Sound capture filter for MacOS X Audio Unit"
+#~ msgstr "Filtr zachytávání zvuku přes MacOS X ovladač Audio Unit"
 
-#: ../mediastreamer2/src/macsnd.c:642
-#, fuzzy
-msgid "Sound playback filter for MacOS X Audio Unit"
-msgstr "Filtr přehrávání zvuku přes MacOS X ovladače Core Audio"
+#~ msgid "Sound playback filter for MacOS X Audio Unit"
+#~ msgstr "Filtr přehrávání zvuku přes MacOS X ovladač Core Audio"
 
-#: ../mediastreamer2/src/msconf.c:787 ../mediastreamer2/src/msconf.c:805
-msgid "A filter to make conferencing"
-msgstr "Filtr pro vytváření konferencí"
+#~ msgid "A filter to make conferencing"
+#~ msgstr "Filtr pro vytváření konferencí"
 
-#: ../mediastreamer2/src/msfileplayer.c:311
-#: ../mediastreamer2/src/msfileplayer.c:329
-msgid "Raw files and wav reader"
-msgstr "Čtení syrových souborů a souborů WAV"
+#~ msgid "Raw files and wav reader"
+#~ msgstr "Čtení syrových souborů a souborů WAV"
 
-#: ../mediastreamer2/src/msfilerec.c:170 ../mediastreamer2/src/msfilerec.c:188
-#: ../mediastreamer2/src/msfilerec_win.c:216
-#: ../mediastreamer2/src/msfilerec_win.c:234
-msgid "Wav file recorder"
-msgstr "Nahrávání do souborů WAV"
+#~ msgid "Wav file recorder"
+#~ msgstr "Nahrávání do souborů WAV"
 
-#: ../mediastreamer2/src/msjoin.c:45 ../mediastreamer2/src/msjoin.c:63
-msgid "A filter that send several inputs to one output."
-msgstr "Filtr, který směšuje několik vstupů do jednoho výstupu."
+#~ msgid "A filter that send several inputs to one output."
+#~ msgstr "Filtr, který směšuje několik vstupů do jednoho výstupu."
 
-#: ../mediastreamer2/src/msresample.c:159
-#: ../mediastreamer2/src/msresample.c:177
-#, fuzzy
-msgid "Audio resampler"
-msgstr "měnič frekvence"
+#~ msgid "Audio resampler"
+#~ msgstr "Převzorkování zvuku"
 
-#: ../mediastreamer2/src/msrtp.c:369 ../mediastreamer2/src/msrtp.c:387
-msgid "RTP output filter"
-msgstr "Filtr RTP výstupu"
+#~ msgid "RTP output filter"
+#~ msgstr "Filtr RTP výstupu"
 
-#: ../mediastreamer2/src/msrtp.c:505 ../mediastreamer2/src/msrtp.c:523
-msgid "RTP input filter"
-msgstr "Filtr RTP vstupu"
+#~ msgid "RTP input filter"
+#~ msgstr "Filtr RTP vstupu"
 
-#: ../mediastreamer2/src/msspeex.c:360 ../mediastreamer2/src/msspeex.c:378
-#: ../mediastreamer2/src/msspeex.c:548 ../mediastreamer2/src/msspeex.c:567
-msgid "The free and wonderful speex codec"
-msgstr "Svobodný a úžasný kodek speex"
+#~ msgid "The free and wonderful speex codec"
+#~ msgstr "Svobodný a úžasný kodek speex"
 
-#: ../mediastreamer2/src/msvolume.c:528 ../mediastreamer2/src/msvolume.c:543
-msgid "A filter that controls and measure sound volume"
-msgstr "Filtr, který měří a řídí hlasitost zvuku"
+#~ msgid "A filter that controls and measure sound volume"
+#~ msgstr "Filtr, který měří a řídí hlasitost zvuku"
 
-#: ../mediastreamer2/src/msv4l.c:1012
-msgid "A video4linux compatible source filter to stream pictures."
-msgstr "Zdrojový filtr kompatibilní s Video4Linux proudující obrázky."
+#~ msgid "A video4linux compatible source filter to stream pictures."
+#~ msgstr "Zdrojový filtr kompatibilní s Video4Linux proudující obrázky."
 
-#: ../mediastreamer2/src/msv4l2.c:554
-msgid "A filter to grab pictures from Video4Linux2-powered cameras"
-msgstr "Filtr zachytávající obrázky z Video4Linux2 kamer"
+#~ msgid "A filter to grab pictures from Video4Linux2-powered cameras"
+#~ msgstr "Filtr zachytávající obrázky z Video4Linux2 kamer"
 
-#: ../mediastreamer2/src/nowebcam.c:1854
-msgid "A filter that outputs a static image."
-msgstr "Filtr, který vydává nehybný obrázek."
+#~ msgid "A filter that outputs a static image."
+#~ msgstr "Filtr, který vydává nehybný obrázek."
 
-#: ../mediastreamer2/src/pixconv.c:129 ../mediastreamer2/src/pixconv.c:147
-msgid "A pixel format converter"
-msgstr "Převodník formátu pixelů"
+#~ msgid "A pixel format converter"
+#~ msgstr "Převodník formátu pixelů"
 
-#: ../mediastreamer2/src/sizeconv.c:202
-msgid "A video size converter"
-msgstr "Převaděč velikosti videa"
+#~ msgid "A video size converter"
+#~ msgstr "Převaděč velikosti videa"
 
-#: ../mediastreamer2/src/sizeconv.c:220
-msgid "a small video size converter"
-msgstr "Převaděč velikosti malých videí"
+#~ msgid "a small video size converter"
+#~ msgstr "Převaděč velikosti malých videí"
 
-#: ../mediastreamer2/src/speexec.c:449 ../mediastreamer2/src/speexec.c:467
-msgid "Echo canceller using speex library"
-msgstr "Potlačení ozvěny prostřednictvím knihovny speex"
+#~ msgid "Echo canceller using speex library"
+#~ msgstr "Potlačení ozvěny prostřednictvím knihovny speex"
 
-#: ../mediastreamer2/src/tee.c:80 ../mediastreamer2/src/tee.c:98
-msgid "A filter that reads from input and copy to its multiple outputs."
-msgstr "Filtr, který čte vstup a kopíruje ho více výstupů."
+#~ msgid "A filter that reads from input and copy to its multiple outputs."
+#~ msgstr "Filtr, který čte vstup a kopíruje ho více výstupů."
 
-#: ../mediastreamer2/src/theora.c:375
-msgid "The theora video encoder from xiph.org"
-msgstr "Kodér videa do theory od xiph.org"
+#~ msgid "The theora video encoder from xiph.org"
+#~ msgstr "Kodér videa do theory od xiph.org"
 
-#: ../mediastreamer2/src/theora.c:393
-msgid "The open-source and royalty-free 'theora' video codec from xiph.org"
-msgstr ""
-"Kodek pro video „theora“ od xiph.org, který má otevřený zdrojový kód a je "
-"prostý licenčních poplatků"
+#~ msgid "The open-source and royalty-free 'theora' video codec from xiph.org"
+#~ msgstr ""
+#~ "Kodek pro video „theora“ od xiph.org, který má otevřený zdrojový kód a je "
+#~ "prostý licenčních poplatků"
 
-#: ../mediastreamer2/src/theora.c:561 ../mediastreamer2/src/theora.c:579
-msgid "The theora video decoder from xiph.org"
-msgstr "Dekodér theora videa od xiph.org"
+#~ msgid "The theora video decoder from xiph.org"
+#~ msgstr "Dekodér theora videa od xiph.org"
 
-#: ../mediastreamer2/src/ulaw.c:146 ../mediastreamer2/src/ulaw.c:164
-msgid "ITU-G.711 ulaw encoder"
-msgstr "Kodér µ-law ITU-G.711"
+#~ msgid "ITU-G.711 ulaw encoder"
+#~ msgstr "Kodér µ-law ITU-G.711"
 
-#: ../mediastreamer2/src/ulaw.c:196 ../mediastreamer2/src/ulaw.c:214
-msgid "ITU-G.711 ulaw decoder"
-msgstr "Dekodér µ-law ITU-G.711"
+#~ msgid "ITU-G.711 ulaw decoder"
+#~ msgstr "Dekodér µ-law ITU-G.711"
 
-#: ../mediastreamer2/src/videodec.c:713 ../mediastreamer2/src/videodec.c:729
-#: ../mediastreamer2/src/videodec.c:812 ../mediastreamer2/src/videodec.c:828
-msgid "A H.263 decoder using ffmpeg library"
-msgstr "Dekodér H.263 používající knihovnu ffmpeg"
+#~ msgid "A H.263 decoder using ffmpeg library"
+#~ msgstr "Dekodér H.263 používající knihovnu ffmpeg"
 
-#: ../mediastreamer2/src/videodec.c:746
-msgid "A MPEG4 decoder using ffmpeg library"
-msgstr "Dekodér MPEG4 používající knihovnu ffmpeg"
+#~ msgid "A MPEG4 decoder using ffmpeg library"
+#~ msgstr "Dekodér MPEG4 používající knihovnu ffmpeg"
 
-#: ../mediastreamer2/src/videodec.c:762
-msgid "A RTP/JPEG decoder using ffmpeg library"
-msgstr "Dekodér RTP/JPEG používající knihovnu ffmpeg"
+#~ msgid "A RTP/JPEG decoder using ffmpeg library"
+#~ msgstr "Dekodér RTP/JPEG používající knihovnu ffmpeg"
 
-#: ../mediastreamer2/src/videodec.c:778
-msgid "A MJPEG decoder using ffmpeg library"
-msgstr "Dekodér MPEG používající knihovnu ffmpeg"
+#~ msgid "A MJPEG decoder using ffmpeg library"
+#~ msgstr "Dekodér MPEG používající knihovnu ffmpeg"
 
-#: ../mediastreamer2/src/videodec.c:794
-msgid "A snow decoder using ffmpeg library"
-msgstr "Dekodér snow používající knihovnu ffmpeg"
+#~ msgid "A snow decoder using ffmpeg library"
+#~ msgstr "Dekodér snow používající knihovnu ffmpeg"
 
-#: ../mediastreamer2/src/videoenc.c:908 ../mediastreamer2/src/videoenc.c:990
-msgid "A video H.263 encoder using ffmpeg library."
-msgstr "Kodér H.263 používající knihovnu ffmpeg."
+#~ msgid "A video H.263 encoder using ffmpeg library."
+#~ msgstr "Kodér H.263 používající knihovnu ffmpeg."
 
-#: ../mediastreamer2/src/videoenc.c:924
-msgid ""
-"A video H.263 encoder using ffmpeg library. It is compliant with old RFC2190 "
-"spec."
-msgstr ""
-"Kodér H.263 videa používající knihovnu ffmpeg. Vyhovuje staré specifikaci "
-"RFC 2190."
+#~ msgid ""
+#~ "A video H.263 encoder using ffmpeg library. It is compliant with old "
+#~ "RFC2190 spec."
+#~ msgstr ""
+#~ "Kodér H.263 videa používající knihovnu ffmpeg. Vyhovuje staré specifikaci "
+#~ "RFC 2190."
 
-#: ../mediastreamer2/src/videoenc.c:940 ../mediastreamer2/src/videoenc.c:1022
-msgid "A video MPEG4 encoder using ffmpeg library."
-msgstr "Kodér MPEG4 videa používající knihovnu ffmpeg."
+#~ msgid "A video MPEG4 encoder using ffmpeg library."
+#~ msgstr "Kodér MPEG4 videa používající knihovnu ffmpeg."
 
-#: ../mediastreamer2/src/videoenc.c:956
-msgid "A video snow encoder using ffmpeg library."
-msgstr "Kodér snow videa používající knihovnu ffmpeg."
+#~ msgid "A video snow encoder using ffmpeg library."
+#~ msgstr "Kodér snow videa používající knihovnu ffmpeg."
 
-#: ../mediastreamer2/src/videoenc.c:972
-msgid "A RTP/MJPEG encoder using ffmpeg library."
-msgstr "Kodér RTP/MJPEG používající knihovnu ffmpeg."
+#~ msgid "A RTP/MJPEG encoder using ffmpeg library."
+#~ msgstr "Kodér RTP/MJPEG používající knihovnu ffmpeg."
 
-#: ../mediastreamer2/src/videoenc.c:1006
-msgid ""
-"A video H.263 encoder using ffmpeg library, compliant with old RFC2190 spec."
-msgstr ""
-"Kodér H.263 videa používající knihovnu ffmpeg, vyhovuje staré specifikaci "
-"RFC 2190."
+#~ msgid ""
+#~ "A video H.263 encoder using ffmpeg library, compliant with old RFC2190 "
+#~ "spec."
+#~ msgstr ""
+#~ "Kodér H.263 videa používající knihovnu ffmpeg, vyhovuje staré specifikaci "
+#~ "RFC 2190."
 
-#: ../mediastreamer2/src/videoenc.c:1038
-msgid ""
-"The snow codec is royalty-free and is open-source. \n"
-"It uses innovative techniques that makes it one of most promising video "
-"codec. It is implemented within the ffmpeg project.\n"
-"However it is under development, quite unstable and compatibility with other "
-"versions cannot be guaranteed."
-msgstr ""
-"Kodek snow není zatížen poplatky a má otevřený zdrojový kód.\n"
-"Využívá průkopnické techniky, které jej činí jedním z nejslibnějších video "
-"kodeků. Je implementován v projektu ffmpeg.\n"
-"Avšak stále se vyvíjí, je trochu nestabilní a kompatibilita s ostatními "
-"verzemi není zaručena."
+#~ msgid ""
+#~ "The snow codec is royalty-free and is open-source. \n"
+#~ "It uses innovative techniques that makes it one of most promising video "
+#~ "codec. It is implemented within the ffmpeg project.\n"
+#~ "However it is under development, quite unstable and compatibility with "
+#~ "other versions cannot be guaranteed."
+#~ msgstr ""
+#~ "Kodek snow není zatížen poplatky a má otevřený zdrojový kód.\n"
+#~ "Využívá průkopnické techniky, které jej činí jedním z nejslibnějších "
+#~ "video kodeků. Je implementován v projektu ffmpeg.\n"
+#~ "Avšak stále se vyvíjí, je trochu nestabilní a kompatibilita s ostatními "
+#~ "verzemi není zaručena."
 
-#: ../mediastreamer2/src/videoenc.c:1058
-msgid "A MJPEG encoder using ffmpeg library."
-msgstr "Kodér MJPEG používající knihovnu ffmpeg."
+#~ msgid "A MJPEG encoder using ffmpeg library."
+#~ msgstr "Kodér MJPEG používající knihovnu ffmpeg."
 
-#: ../mediastreamer2/src/videoout.c:933
-#, fuzzy
-msgid "A SDL-based video display"
-msgstr "Obecné zobrazování videa"
+#~ msgid "A SDL-based video display"
+#~ msgstr "Zobrazování videa přes SDL"
 
-#: ../mediastreamer2/src/wincevideods.c:969
-#: ../mediastreamer2/src/wincevideods.c:987
-#: ../mediastreamer2/src/winvideo.c:596 ../mediastreamer2/src/winvideo.c:614
-#: ../mediastreamer2/src/winvideods.c:1385
-#: ../mediastreamer2/src/winvideods.c:1403
-msgid "A video4windows compatible source filter to stream pictures."
-msgstr "Zdrojový filtr kompatibilní s video4windows proudující obrázky."
+#~ msgid "A video4windows compatible source filter to stream pictures."
+#~ msgstr "Zdrojový filtr kompatibilní s video4windows proudující obrázky."
 
-#: ../mediastreamer2/src/winvideo2.c:436 ../mediastreamer2/src/winvideo2.c:454
-msgid "A video for windows (vfw.h) based source filter to grab pictures."
-msgstr ""
-"Zdrojový filtr založený na videu pro windows (vwf.h) pro zachytávání obrázků."
+#~ msgid "A video for windows (vfw.h) based source filter to grab pictures."
+#~ msgstr ""
+#~ "Zdrojový filtr založený na videu pro windows (vwf.h) pro zachytávání "
+#~ "obrázků."
 
-#: ../mediastreamer2/src/ice.c:1349 ../mediastreamer2/src/ice.c:1367
-msgid "ICE filter"
-msgstr "Filtr ICE"
+#~ msgid "ICE filter"
+#~ msgstr "Filtr ICE"
 
-#: ../mediastreamer2/src/void.c:35 ../mediastreamer2/src/void.c:52
-msgid "A filter that trashes its input (useful for terminating some graphs)."
-msgstr ""
-"Filtr, který zahazuje svůj vstup (užitečné na zakončení některých grafů)."
+#~ msgid ""
+#~ "A filter that trashes its input (useful for terminating some graphs)."
+#~ msgstr ""
+#~ "Filtr, který zahazuje svůj vstup (užitečné na zakončení některých grafů)."
 
-#: ../mediastreamer2/src/equalizer.c:338 ../mediastreamer2/src/equalizer.c:356
-msgid "Parametric sound equalizer."
-msgstr "Parametrický ekvalizér zvuku."
+#~ msgid "Parametric sound equalizer."
+#~ msgstr "Parametrický ekvalizér zvuku."
 
-#: ../mediastreamer2/src/msdscap-mingw.cc:1038
-msgid "A webcam grabber based on directshow."
-msgstr "Snímač kamer postavený na directshow."
+#~ msgid "A webcam grabber based on directshow."
+#~ msgstr "Snímač kamer postavený na directshow."
 
-#: ../mediastreamer2/src/drawdib-display.c:552
-#: ../mediastreamer2/src/drawdib-display.c:570
-#, fuzzy
-msgid "A video display based on windows DrawDib api"
-msgstr "Zobrazovaní videa v SDL okně"
+#~ msgid "A video display based on windows DrawDib api"
+#~ msgstr "Zobrazovaní videa přes API Windows DrawDib"
 
-#: ../mediastreamer2/src/audiomixer.c:192
-#: ../mediastreamer2/src/audiomixer.c:211
-#, fuzzy
-msgid "A filter that mixes down 16 bit sample audio streams"
-msgstr "Filtr, který měří hlasitost na 16b zvukovém PCM proudu"
+#~ msgid "A filter that mixes down 16 bit sample audio streams"
+#~ msgstr "Filtr, který smísí 16b vzorkované zvukové proudy"
 
-#: ../mediastreamer2/src/chanadapt.c:110 ../mediastreamer2/src/chanadapt.c:128
-#, fuzzy
-msgid "A filter that converts from mono to stereo and vice versa."
-msgstr "Filtr, který měří a řídí hlasitost zvuku"
+#~ msgid "A filter that converts from mono to stereo and vice versa."
+#~ msgstr "Filtr, který převádí mono na stereo a obráceně."
 
-#: ../mediastreamer2/src/itc.c:97 ../mediastreamer2/src/itc.c:115
-#: ../mediastreamer2/src/itc.c:197 ../mediastreamer2/src/itc.c:215
-#, fuzzy
-msgid "Inter ticker communication filter."
-msgstr "Chyba komunikace se serverem."
+#~ msgid "Inter ticker communication filter."
+#~ msgstr "Komunikační filtr mezitiku."
 
-#: ../mediastreamer2/src/extdisplay.c:62 ../mediastreamer2/src/extdisplay.c:79
-msgid "A display filter sending the buffers to draw to the upper layer"
-msgstr ""
+#~ msgid "A display filter sending the buffers to draw to the upper layer"
+#~ msgstr "Zobrazovací filtr odesílající buffery na vykreslení do vyšší vrstvy"
 
-#: ../mediastreamer2/src/msiounit.c:650
-#, fuzzy
-msgid "Sound capture filter for MacOS X Audio Unit Service"
-msgstr "Filtr zachytávání zvuku přes MacOS X službu zvukové fronty"
+#~ msgid "Sound capture filter for MacOS X Audio Unit Service"
+#~ msgstr "Filtr zachytávání zvuku přes MacOS X službu Audio Unit"
 
-#: ../mediastreamer2/src/msiounit.c:664
-#, fuzzy
-msgid "Sound playback filter for MacOS X Audio Unit Service"
-msgstr "Filtr přehrávání zvuku přes MacOS X službu zvukové fronty"
+#~ msgid "Sound playback filter for MacOS X Audio Unit Service"
+#~ msgstr "Filtr přehrávání zvuku přes MacOS X službu Audio Unit"
 
-#: ../mediastreamer2/src/x11video.c:562
-#, fuzzy
-msgid "A video display using X11+Xv"
-msgstr "Zobrazovaní videa v SDL okně"
+#~ msgid "A video display using X11+Xv"
+#~ msgstr "Zobrazovaní videa pomocí X11+Xv"
 
-#. .id=
-#. .name=
-#. .text=
-#: ../mediastreamer2/src/msandroid.cpp:370
-#, fuzzy
-msgid "Sound capture filter for Android"
-msgstr "Zvukový zachytávací filtr pro ovladače OSS"
+#~ msgid "Sound capture filter for Android"
+#~ msgstr "Zvukový zachytávací filtr pro Android"
 
-#. .id=
-#. .name=
-#. .text=
-#: ../mediastreamer2/src/msandroid.cpp:667
-#, fuzzy
-msgid "Sound playback filter for Android"
-msgstr "Zvukový přehrávací filtr pro ovladače OSS"
+#~ msgid "Sound playback filter for Android"
+#~ msgstr "Zvukový přehrávací filtr pro Android"
 
-#: ../mediastreamer2/src/msandroidvideo.cpp:134
-#, fuzzy
-msgid "A filter that captures Android video."
-msgstr "Filtr, který měří a řídí hlasitost zvuku"
+#~ msgid "A filter that captures Android video."
+#~ msgstr "Filtr, který zachytává obraz za Androidu."
 
 #~ msgid ""
 #~ "Your machine appears to be connected to an IPv6 network. By default "

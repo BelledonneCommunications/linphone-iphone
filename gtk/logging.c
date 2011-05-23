@@ -24,10 +24,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <sys/types.h>
 #endif
 
+extern gchar *linphone_logfile;
 
 static GtkWidget *log_window=NULL;
 static GStaticMutex log_mutex=G_STATIC_MUTEX_INIT;
 static GList *log_queue=NULL;
+static const char *dateformat="%Y%m%d-%H:%M:%S";
 
 #define LOG_MAX_CHARS 1000000  /*1 mega bytes of traces*/
 
@@ -54,7 +56,7 @@ static FILE *_logfile = NULL;
 
 /* Called on exit, print out the marker, close the file and avoid to
    continue logging. */
-static void linphone_gtk_log_uninit()
+void linphone_gtk_log_uninit()
 {
 	if (_logfile != NULL) {
 		fprintf(_logfile, "%s\n", LOGFILE_MARKER_STOP);
@@ -72,10 +74,13 @@ static FILE *linphone_gtk_log_init()
 	static char _logdir[1024];
 	static char _logfname[1024];
 	static gboolean _log_init = FALSE;
-	const char *dst_fname;
+	const char *dst_fname=NULL;
 
 	if (!_log_init) {
-		dst_fname = linphone_gtk_get_ui_config("logfile",NULL);
+		if (linphone_gtk_get_core()!=NULL){
+			dst_fname = linphone_gtk_get_ui_config("logfile",NULL);
+			dateformat=linphone_gtk_get_ui_config("logfile_date_format",dateformat);
+		}
 		/* For anything to happen, we need a logfile configuration variable,
 		 this is our trigger */
 		if (dst_fname) {
@@ -101,51 +106,55 @@ static FILE *linphone_gtk_log_init()
 			}
 #define PATH_SEPARATOR '/'
 #endif
-			/* We have a directory, fix the path to the log file in it and
-			 open the file so that we will be appending to it. */
 			if (_logdir[0] != '\0') {
-				snprintf(_logfname, sizeof(_logfname), "%s%c%s",
-					_logdir, PATH_SEPARATOR, dst_fname);
-				/* If the constant LOGFILE_ROTATION is greater than zero, then
-				 we kick away a simple rotation that will ensure that there
-				 are never more than LOGFILE_ROTATION+1 old copies of the
-				 log file on the disk.  The oldest file is always rotated
-				 "away" as expected.  Rotated files have the same name as
-				 the main log file, though with a number 0..LOGFILE_ROTATION
-				 at the end, where the greater the number is, the older the
-				 file is. */
-				if (ortp_file_exist(_logfname)==0 && LOGFILE_ROTATION > 0) {
-					int i;
-					char old_fname[1024];
-					char new_fname[1024];
-
-					/* Rotate away existing files.  We make sure to remove the
-					 old files otherwise rename() would not work properly.  We
-					 have to loop in reverse here. */
-					for (i=LOGFILE_ROTATION-1;i>=0;i--) {
-						snprintf(old_fname, sizeof(old_fname), "%s%c%s.%d",
-							_logdir, PATH_SEPARATOR, dst_fname, i);
-						snprintf(new_fname, sizeof(new_fname), "%s%c%s.%d",
-							_logdir, PATH_SEPARATOR, dst_fname, i+1);
-						if (ortp_file_exist(old_fname)==0) {
-							if (ortp_file_exist(new_fname)==0)
-								unlink(new_fname);
-							rename(old_fname, new_fname);
-						}
-					}
-					/* Move current log file as the first of the rotation.  Make
-					 sure to remove the old .0 also, since otherwise rename()
-					 would not work as expected. */
-					snprintf(new_fname, sizeof(new_fname), "%s%c%s.%d",
-						_logdir, PATH_SEPARATOR, dst_fname, 0);
-					if (ortp_file_exist(new_fname)==0)
-						unlink(new_fname);
-					rename(_logfname, new_fname);
-				}
-				/* Start a new log file and mark that we have now initialised */
-				_logfile = fopen(_logfname, "w");
-				fprintf(_logfile, "%s\n", LOGFILE_MARKER_START);
+				/* We have a directory, fix the path to the log file in it and
+				 open the file so that we will be appending to it. */
+				snprintf(_logfname, sizeof(_logfname), "%s%c%s",_logdir, PATH_SEPARATOR, dst_fname);
 			}
+		}else if (linphone_logfile!=NULL){
+			snprintf(_logfname,sizeof(_logfname),"%s",linphone_logfile);
+		}
+		
+		if (_logfname[0]!='\0'){
+			/* If the constant LOGFILE_ROTATION is greater than zero, then
+			 we kick away a simple rotation that will ensure that there
+			 are never more than LOGFILE_ROTATION+1 old copies of the
+			 log file on the disk.  The oldest file is always rotated
+			 "away" as expected.  Rotated files have the same name as
+			 the main log file, though with a number 0..LOGFILE_ROTATION
+			 at the end, where the greater the number is, the older the
+			 file is. */
+			if (ortp_file_exist(_logfname)==0 && LOGFILE_ROTATION > 0) {
+				int i;
+				char old_fname[1024];
+				char new_fname[1024];
+
+				/* Rotate away existing files.  We make sure to remove the
+				 old files otherwise rename() would not work properly.  We
+				 have to loop in reverse here. */
+				for (i=LOGFILE_ROTATION-1;i>=0;i--) {
+					snprintf(old_fname, sizeof(old_fname), "%s%c%s.%d",
+						_logdir, PATH_SEPARATOR, dst_fname, i);
+					snprintf(new_fname, sizeof(new_fname), "%s%c%s.%d",
+						_logdir, PATH_SEPARATOR, dst_fname, i+1);
+					if (ortp_file_exist(old_fname)==0) {
+						if (ortp_file_exist(new_fname)==0)
+							unlink(new_fname);
+						rename(old_fname, new_fname);
+					}
+				}
+				/* Move current log file as the first of the rotation.  Make
+				 sure to remove the old .0 also, since otherwise rename()
+				 would not work as expected. */
+				snprintf(new_fname, sizeof(new_fname), "%s%c%s.%d",
+					_logdir, PATH_SEPARATOR, dst_fname, 0);
+				if (ortp_file_exist(new_fname)==0)
+					unlink(new_fname);
+				rename(_logfname, new_fname);
+			}
+			/* Start a new log file and mark that we have now initialised */
+			_logfile = fopen(_logfname, "w");
+			fprintf(_logfile, "%s\n", LOGFILE_MARKER_START);
 		}
 		_log_init = TRUE;
 	}
@@ -154,33 +163,18 @@ static FILE *linphone_gtk_log_init()
 
 static void linphone_gtk_log_file(OrtpLogLevel lev, const char *msg)
 {
-	LinphoneCore *lc;
 	time_t now;
 	FILE *outlog;
-
-	lc = linphone_gtk_get_core();
-	/* Nothing to do until the core has initialised */
-	if (lc == NULL)
-		return;
-
-	/* lc->config will turn NULL at exit, close the file to flush and
-	 return to stop logging */
-	if (linphone_core_get_config(lc) == NULL) {
-		linphone_gtk_log_uninit();
-		return;
-	}
 
 	outlog = linphone_gtk_log_init();
 	if (outlog != NULL) {
 		/* We have an opened file and we have initialised properly, it's
 		 time to write all these log messages. We convert the log level
 		 from oRTP into something readable and timestamp each log
-		 message.  The format of the timestamp can be controlled by
+		 message.  The format of the time	stamp can be controlled by
 		 logfile_date_format in the GtkUi section of the config file,
 		 but it defaults to something compact, but yet readable. */
 		const char *lname="undef";
-		const char *dateformat=linphone_gtk_get_ui_config("logfile_date_format",
-		    "%Y%m%d-%H:%M:%S");
 		char date[256];
 
 		/* Convert level constant to text */

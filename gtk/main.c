@@ -64,6 +64,7 @@ static gchar * addr_to_call = NULL;
 static gboolean iconified=FALSE;
 static gchar *workingdir=NULL;
 static char *progpath=NULL;
+gchar *linphone_logfile=NULL;
 
 static GOptionEntry linphone_options[]={
 	{
@@ -72,6 +73,13 @@ static GOptionEntry linphone_options[]={
 		.arg=G_OPTION_ARG_NONE,
 		.arg_data= (gpointer)&verbose,
 		.description=N_("log to stdout some debug information while running.")
+	},
+	{
+	    .long_name = "logfile",
+	    .short_name = 'l',
+	    .arg = G_OPTION_ARG_STRING,
+	    .arg_data = &linphone_logfile,
+	    .description = N_("path to a file to write logs into.")
 	},
 	{
 		.long_name="iconified",
@@ -615,9 +623,10 @@ static void completion_add_text(GtkEntry *entry, const char *text){
 
 void linphone_gtk_call_terminated(LinphoneCall *call, const char *error){
 	GtkWidget *mw=linphone_gtk_get_main_window();
-	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"terminate_call"),FALSE);
-	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"start_call"),TRUE);
-	
+	if (linphone_core_get_calls(linphone_gtk_get_core())==NULL){
+	    gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"terminate_call"),FALSE);
+	    gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"start_call"),TRUE);
+	}
 	if (linphone_gtk_use_in_call_view() && call)
 		linphone_gtk_in_call_view_terminate(call,error);
 	update_video_title();
@@ -1284,7 +1293,6 @@ static void linphone_gtk_init_main_window(){
 	linphone_gtk_set_my_presence(linphone_core_get_presence_info(linphone_gtk_get_core()));
 	linphone_gtk_show_friends();
 	linphone_gtk_connect_digits();
-	linphone_gtk_check_menu_items();
 	main_window=linphone_gtk_get_main_window();
 	linphone_gtk_enable_mute_button(GTK_BUTTON(linphone_gtk_get_widget(main_window,
 					"main_mute")),FALSE);
@@ -1305,6 +1313,7 @@ static void linphone_gtk_init_main_window(){
 		gtk_osxapplication_ready(theMacApp);
 	}
 #endif
+	linphone_gtk_check_menu_items();
 }
 
 
@@ -1491,6 +1500,7 @@ int main(int argc, char *argv[]){
 	gdk_threads_leave();
 	linphone_gtk_destroy_log_window();
 	linphone_core_destroy(the_core);
+	linphone_gtk_log_uninit();
 #ifndef HAVE_GTK_OSX
 	/*workaround a bug on win32 that makes status icon still present in the systray even after program exit.*/
 	gtk_status_icon_set_visible(icon,FALSE);

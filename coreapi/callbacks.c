@@ -517,6 +517,15 @@ static void auth_requested(SalOp *h, const char *realm, const char *username){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(h));
 	LinphoneAuthInfo *ai=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,realm,username);
 	ms_message("auth_requested() for realm=%s, username=%s",realm,username);
+
+	if (ai && ai->works==FALSE && ai->usecount>=3){
+		/*case we tried 3 times to authenticate, without success */
+		/*Better is to stop (implemeted below in else statement), and retry later*/
+		if (ms_time(NULL)-ai->last_use_time>30){
+			ai->usecount=0; /*so that we can allow to retry */
+		}
+	}
+	
 	if (ai && (ai->works || ai->usecount<3)){
 		SalAuthInfo sai;
 		sai.username=ai->username;
@@ -526,6 +535,7 @@ static void auth_requested(SalOp *h, const char *realm, const char *username){
 		ms_message("auth_requested(): authenticating realm=%s, username=%s",realm,username);
 		sal_op_authenticate(h,&sai);
 		ai->usecount++;
+		ai->last_use_time=ms_time(NULL);
 	}else{
 		if (ai && ai->works==FALSE) {
 			sal_op_cancel_authentication(h);
@@ -584,6 +594,13 @@ static void register_failure(SalOp *op, SalError error, SalReason reason, const 
 		linphone_proxy_config_set_error(cfg, LinphoneReasonNoResponse);
 	}
 	linphone_proxy_config_set_state(cfg,LinphoneRegistrationFailed,details);
+	if (error== SalErrorFailure && reason == SalReasonForbidden) {
+		const char *realm=NULL,*username=NULL;
+		if (sal_op_get_auth_requested(op,&realm,&username)==0){
+			if (lc->vtable.auth_info_requested)
+				lc->vtable.auth_info_requested(lc,realm,username);
+		}
+	}
 }
 
 static void vfu_request(SalOp *op){

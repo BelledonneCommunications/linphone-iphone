@@ -108,7 +108,7 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 
 /* private: */
 LinphoneCallLog * linphone_call_log_new(LinphoneCall *call, LinphoneAddress *local, LinphoneAddress * remote);
-void linphone_call_log_completed(LinphoneCallLog *calllog, LinphoneCall *call, LinphoneCallStatus status);
+void linphone_call_log_completed(LinphoneCall *call);
 void linphone_call_log_destroy(LinphoneCallLog *cl);
 
 void linphone_auth_info_write_config(struct _LpConfig *config, LinphoneAuthInfo *obj, int pos);
@@ -249,6 +249,7 @@ struct _LinphoneAuthInfo
 	char *passwd;
 	char *ha1;
 	int usecount;
+	time_t last_use_time;
 	bool_t works;
 };
 
@@ -429,6 +430,7 @@ struct _LinphoneCore
 	unsigned long preview_window_id;
 	time_t netup_time; /*time when network went reachable */
 	struct _EcCalibrator *ecc;
+	MSList *hooks;
 	bool_t use_files;
 	bool_t apply_nat_settings;
 	bool_t initial_subscribes_sent;
@@ -470,6 +472,7 @@ struct _EcCalibrator{
 	int sent_count;
 	int64_t acc;
 	int delay;
+	unsigned int rate;
 	LinphoneEcCalibratorStatus status;
 };
 
@@ -479,11 +482,13 @@ LinphoneEcCalibratorStatus ec_calibrator_get_status(EcCalibrator *ecc);
 
 void ec_calibrator_destroy(EcCalibrator *ecc);
 
+void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapsed);
+
 #define HOLD_OFF	(0)
 #define HOLD_ON		(1)
 
 #ifndef NB_MAX_CALLS
 #define NB_MAX_CALLS	(10)
 #endif
-
+void call_logs_write_to_config_file(LinphoneCore *lc);
 #endif /* _PRIVATE_H */
