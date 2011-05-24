@@ -998,8 +998,6 @@ LinphoneGlobalState linphone_core_get_global_state(const LinphoneCore *lc);
  */
 void linphone_core_refresh_registers(LinphoneCore* lc);	
 
-int parse_hostname_to_addr(const char *server, struct sockaddr_storage *ss, socklen_t *socklen);
-
 #ifdef __cplusplus
 }
 #endif

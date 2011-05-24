@@ -126,7 +126,7 @@ void linphone_friend_notify(LinphoneFriend *lf, LinphoneOnlineStatus os);
 LinphoneFriend *linphone_find_friend_by_inc_subscribe(MSList *l, SalOp *op);
 LinphoneFriend *linphone_find_friend_by_out_subscribe(MSList *l, SalOp *op);
 
-
+int parse_hostname_to_addr(const char *server, struct sockaddr_storage *ss, socklen_t *socklen);
 int set_lock_file();
 int get_lock_file();
 int remove_lock_file();
