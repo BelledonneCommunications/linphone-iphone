@@ -97,10 +97,11 @@ LinphoneCallLog * linphone_call_log_new(LinphoneCall *call, LinphoneAddress *fro
 	set_call_log_date(cl,&loctime);
 	cl->from=from;
 	cl->to=to;
+    cl->status=LinphoneCallAborted; /*default status*/
 	return cl;
 }
 
-static void call_logs_write_to_config_file(LinphoneCore *lc){
+void call_logs_write_to_config_file(LinphoneCore *lc){
 	MSList *elem;
 	char logsection[32];
 	int i;
@@ -156,37 +157,6 @@ static void call_logs_read_from_config_file(LinphoneCore *lc){
 }
 
 
-void linphone_call_log_completed(LinphoneCallLog *calllog, LinphoneCall *call, LinphoneCallStatus status){
-	LinphoneCore *lc=call->core;
-	
-	calllog->duration=time(NULL)-call->start_time;
-	
-	if (status==LinphoneCallMissed){
-		char *info;
-		lc->missed_calls++;
-		info=ortp_strdup_printf(ngettext("You have missed %i call.",
-                    "You have missed %i calls.", lc->missed_calls),
-                lc->missed_calls);
-				if (lc->vtable.display_status!=NULL)
-					lc->vtable.display_status(lc,info);
-		ms_free(info);
-	}else calllog->status=status;
-	lc->call_logs=ms_list_prepend(lc->call_logs,(void *)calllog);
-	if (ms_list_size(lc->call_logs)>lc->max_call_logs){
-		MSList *elem,*prevelem=NULL;
-		/*find the last element*/
-		for(elem=lc->call_logs;elem!=NULL;elem=elem->next){
-			prevelem=elem;
-		}
-		elem=prevelem;
-		linphone_call_log_destroy((LinphoneCallLog*)elem->data);
-		lc->call_logs=ms_list_remove_link(lc->call_logs,elem);
-	}
-	if (lc->vtable.call_log_updated!=NULL){
-		lc->vtable.call_log_updated(lc,calllog);
-	}
-	call_logs_write_to_config_file(lc);
-}
 
 /**
  * @addtogroup call_logs
@@ -494,6 +464,7 @@ static void sip_config_read(LinphoneCore *lc)
 	}
 
 	sal_use_rport(lc->sal,lp_config_get_int(lc->config,"sip","use_rport",1));
+	sal_use_101(lc->sal,lp_config_get_int(lc->config,"sip","use_101",1));
 
 	tmp=lp_config_get_int(lc->config,"sip","use_rfc2833",0);
 	linphone_core_set_use_rfc2833_for_dtmf(lc,tmp);
@@ -914,6 +885,10 @@ void linphone_core_set_state(LinphoneCore *lc, LinphoneGlobalState gstate, const
 		lc->vtable.global_state_changed(lc,gstate,message);
 	}
 }
+static void misc_config_read (LinphoneCore *lc) {
+	LpConfig *config=lc->config;
+    lc->max_call_logs=lp_config_get_int(config,"misc","history_max_size",15);
+}
 
 static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vtable, const char *config_path, 
     const char *factory_config_path, void * userdata)
@@ -993,7 +968,7 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	video_config_read(lc);
 	//autoreplier_config_init(&lc->autoreplier_conf);
 	lc->presence_mode=LinphoneStatusOnline;
-	lc->max_call_logs=15;
+	misc_config_read(lc);
 	ui_config_read(lc);
 	if (lc->vtable.display_status)
 		lc->vtable.display_status(lc,_("Ready"));

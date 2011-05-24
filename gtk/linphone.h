@@ -34,6 +34,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 # define _(String) gettext (String)
 #else
 # define _(String) (String)
+# define ngettext(singular,plural,number) ((number>1) ? (plural) : (singular) )
 #endif
 
 #undef N_

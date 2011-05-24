@@ -43,6 +43,7 @@ struct Sal{
 	bool_t one_matching_codec;
 	bool_t double_reg;
 	bool_t use_rports;
+	bool_t use_101;
 };
 
 struct SalOp{

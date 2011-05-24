@@ -23,15 +23,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/mstonedetector.h"
 #include "mediastreamer2/dtmfgen.h"
 
-
+#include "lpconfig.h"
 
 
 
 static void ecc_init_filters(EcCalibrator *ecc){
+	unsigned int rate;
 	ecc->ticker=ms_ticker_new();
 
 	ecc->sndread=ms_snd_card_create_reader(ecc->play_card);
+	ms_filter_call_method(ecc->sndread,MS_FILTER_SET_SAMPLE_RATE,&ecc->rate);
 	ecc->det=ms_filter_new(MS_TONE_DETECTOR_ID);
+	ms_filter_call_method(ecc->det,MS_FILTER_SET_SAMPLE_RATE,&ecc->rate);
 	ecc->rec=ms_filter_new(MS_FILE_REC_ID);
 
 	ms_filter_link(ecc->sndread,0,ecc->det,0);
@@ -39,14 +42,17 @@ static void ecc_init_filters(EcCalibrator *ecc){
 
 	ecc->play=ms_filter_new(MS_FILE_PLAYER_ID);
 	ecc->gen=ms_filter_new(MS_DTMF_GEN_ID);
+	ms_filter_call_method(ecc->gen,MS_FILTER_SET_SAMPLE_RATE,&ecc->rate);
 	ecc->resampler=ms_filter_new(MS_RESAMPLE_ID);
 	ecc->sndwrite=ms_snd_card_create_writer(ecc->capt_card);
 
 	ms_filter_link(ecc->play,0,ecc->gen,0);
 	ms_filter_link(ecc->gen,0,ecc->resampler,0);
 	ms_filter_link(ecc->resampler,0,ecc->sndwrite,0);
-	unsigned int rate;
+
+	ms_filter_call_method(ecc->sndwrite,MS_FILTER_SET_SAMPLE_RATE,&ecc->rate);
 	ms_filter_call_method(ecc->sndwrite,MS_FILTER_GET_SAMPLE_RATE,&rate);
+	ms_filter_call_method(ecc->resampler,MS_FILTER_SET_SAMPLE_RATE,&ecc->rate);
 	ms_filter_call_method(ecc->resampler,MS_FILTER_SET_OUTPUT_SAMPLE_RATE,&rate);
 
 	ms_ticker_attach(ecc->ticker,ecc->play);
@@ -149,9 +155,10 @@ static void  * ecc_thread(void *p){
 	return NULL;
 }
 
-EcCalibrator * ec_calibrator_new(MSSndCard *play_card, MSSndCard *capt_card, LinphoneEcCalibrationCallback cb, void *cb_data ){
+EcCalibrator * ec_calibrator_new(MSSndCard *play_card, MSSndCard *capt_card, unsigned int rate, LinphoneEcCalibrationCallback cb, void *cb_data ){
 	EcCalibrator *ecc=ms_new0(EcCalibrator,1);
 
+	ecc->rate=rate;
 	ecc->cb=cb;
 	ecc->cb_data=cb_data;
 	ecc->capt_card=capt_card;
@@ -174,6 +181,7 @@ int linphone_core_start_echo_calibration(LinphoneCore *lc, LinphoneEcCalibration
 		ms_error("Echo calibration is still on going !");
 		return -1;
 	}
-	lc->ecc=ec_calibrator_new(lc->sound_conf.play_sndcard,lc->sound_conf.capt_sndcard,cb,cb_data);
+	unsigned int rate = lp_config_get_int(lc->config,"sound","echo_cancellation_rate",8000);
+	lc->ecc=ec_calibrator_new(lc->sound_conf.play_sndcard,lc->sound_conf.capt_sndcard,rate,cb,cb_data);
 	return 0;
 }
