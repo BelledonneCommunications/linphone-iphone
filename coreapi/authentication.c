@@ -246,6 +246,7 @@ void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info)
 {
 	LinphoneAuthInfo *ai;
 	MSList *elem;
+	MSList *l;
 	
 	/* find if we are attempting to modify an existing auth info */
 	ai=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,info->realm,info->username);
@@ -255,7 +256,7 @@ void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info)
 	}
 	lc->auth_info=ms_list_append(lc->auth_info,linphone_auth_info_clone(info));
 	/* retry pending authentication operations */
-	for(elem=sal_get_pending_auths(lc->sal);elem!=NULL;elem=elem->next){
+	for(l=elem=sal_get_pending_auths(lc->sal);elem!=NULL;elem=elem->next){
 		const char *username,*realm;
 		SalOp *op=(SalOp*)elem->data;
 		LinphoneAuthInfo *ai;
@@ -271,6 +272,7 @@ void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info)
 			ai->usecount++;
 		}
 	}
+	ms_list_free(l);
 }
 
 

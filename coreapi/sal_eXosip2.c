@@ -1177,10 +1177,14 @@ static bool_t process_authentication(Sal *sal, eXosip_event_t *ev){
 		return TRUE;
 	}
 	if (get_auth_data(ev,&realm,&username)==0){
-		if (op->pending_auth!=NULL)
+		if (op->pending_auth!=NULL){
 			eXosip_event_free(op->pending_auth);
-		op->pending_auth=ev;
-		sal_add_pending_auth (sal,op);
+			op->pending_auth=ev;
+		}else{
+			op->pending_auth=ev;
+			sal_add_pending_auth(sal,op);
+		}
+		
 		sal->callbacks.auth_requested(op,realm,username);
 		return FALSE;
 	}
