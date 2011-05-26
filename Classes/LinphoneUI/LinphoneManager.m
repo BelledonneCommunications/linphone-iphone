@@ -25,14 +25,11 @@
 #include <netdb.h>
 #import <AVFoundation/AVAudioSession.h>
 #import <AudioToolbox/AudioToolbox.h>
-<<<<<<< HEAD
 #include "tunnel/TunnelManager.hh"
-
-using namespace belledonnecomm;
-=======
 #import <AddressBook/AddressBook.h>
 
->>>>>>> master
+
+using namespace belledonnecomm;
 
 static LinphoneCore* theLinphoneCore=nil;
 static LinphoneManager* theLinphoneManager=nil;
@@ -73,7 +70,7 @@ extern void libmsamr_init();
         ABMutableMultiValueRef lPhoneNumbers = ABRecordCopyValue((ABRecordRef)lContact, kABPersonPhoneProperty);
         for ( int i=0; i<ABMultiValueGetCount(lPhoneNumbers); i++) {
             CFStringRef lLabel = ABMultiValueCopyLabelAtIndex(lPhoneNumbers,i);
-            CFStringRef lValue = ABMultiValueCopyValueAtIndex(lPhoneNumbers,i);
+            CFStringRef lValue = (CFStringRef)ABMultiValueCopyValueAtIndex(lPhoneNumbers,i);
             CFStringRef lLocalizedLabel = ABAddressBookCopyLocalizedLabel(lLabel);    
             NSString* lNormalizedNumber =  [(NSString*)lValue stringByReplacingOccurrencesOfString:@" " withString:@""];
             lNormalizedNumber = [lNormalizedNumber stringByReplacingOccurrencesOfString:@"(" withString:@""];
