@@ -51,6 +51,12 @@
 		} else {
 			char normalizedUserName[256];
 			NSString* toUserName = [NSString stringWithString:[mAddress text]];
+            if ([mDisplayName.text length] <=0) {
+                NSString* lDisplayName = [[LinphoneManager instance] getDisplayNameFromAddressBook:toUserName andUpdateCallLog:nil];
+                if (lDisplayName) {
+                    mDisplayName.text = lDisplayName;
+                }
+            }
 			linphone_proxy_config_normalize_number(proxyCfg,[toUserName cStringUsingEncoding:[NSString defaultCStringEncoding]],normalizedUserName,sizeof(normalizedUserName));
 			LinphoneAddress* tmpAddress = linphone_address_new(linphone_core_get_identity([LinphoneManager getLc]));
 			linphone_address_set_username(tmpAddress,normalizedUserName);

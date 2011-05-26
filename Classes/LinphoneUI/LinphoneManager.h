@@ -54,6 +54,7 @@ typedef enum _Connectivity {
 -(void) enterBackgroundMode;
 -(void) becomeActive;
 -(void) kickOffNetworkConnection;
+-(NSString*) getDisplayNameFromAddressBook:(NSString*) number andUpdateCallLog:(LinphoneCallLog*)log; 
 
 @property (nonatomic, retain) id<LinphoneUICallDelegate> callDelegate;
 @property (nonatomic, retain) id<LinphoneUIRegistrationDelegate> registrationDelegate;
