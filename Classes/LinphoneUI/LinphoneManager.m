@@ -25,9 +25,14 @@
 #include <netdb.h>
 #import <AVFoundation/AVAudioSession.h>
 #import <AudioToolbox/AudioToolbox.h>
+<<<<<<< HEAD
 #include "tunnel/TunnelManager.hh"
 
 using namespace belledonnecomm;
+=======
+#import <AddressBook/AddressBook.h>
+
+>>>>>>> master
 
 static LinphoneCore* theLinphoneCore=nil;
 static LinphoneManager* theLinphoneManager=nil;
@@ -50,11 +55,87 @@ extern void libmsamr_init();
 	}
 	return theLinphoneManager;
 }
+-(NSString*) appendCountryCodeIfPossible:(NSString*) number {
+    if (![number hasPrefix:@"+"] && ![number hasPrefix:@"00"]) {
+        NSString* lCountryCode = [[NSUserDefaults standardUserDefaults] stringForKey:@"countrycode_preference"];
+        if (lCountryCode && [lCountryCode length]>0) {
+            //append country code
+            return [lCountryCode stringByAppendingString:number];
+        }
+    }
+    return number;
+}
 
+-(NSString*) getDisplayNameFromAddressBook:(NSString*) number andUpdateCallLog:(LinphoneCallLog*)log {
+    ABAddressBookRef lAddressBook = ABAddressBookCreate();
+    NSArray *lContacts = (NSArray *)ABAddressBookCopyArrayOfAllPeople(lAddressBook);
+    for (id lContact in lContacts) {
+        ABMutableMultiValueRef lPhoneNumbers = ABRecordCopyValue((ABRecordRef)lContact, kABPersonPhoneProperty);
+        for ( int i=0; i<ABMultiValueGetCount(lPhoneNumbers); i++) {
+            CFStringRef lLabel = ABMultiValueCopyLabelAtIndex(lPhoneNumbers,i);
+            CFStringRef lValue = ABMultiValueCopyValueAtIndex(lPhoneNumbers,i);
+            CFStringRef lLocalizedLabel = ABAddressBookCopyLocalizedLabel(lLabel);    
+            NSString* lNormalizedNumber =  [(NSString*)lValue stringByReplacingOccurrencesOfString:@" " withString:@""];
+            lNormalizedNumber = [lNormalizedNumber stringByReplacingOccurrencesOfString:@"(" withString:@""];
+            lNormalizedNumber = [lNormalizedNumber stringByReplacingOccurrencesOfString:@")" withString:@""];
+            lNormalizedNumber = [lNormalizedNumber stringByReplacingOccurrencesOfString:@"-" withString:@""];
+            lNormalizedNumber = [self appendCountryCodeIfPossible:lNormalizedNumber];
+            number = [self appendCountryCodeIfPossible:number];
+            
+            if([lNormalizedNumber isEqualToString:number]) {        
+                CFStringRef lDisplayName = ABRecordCopyCompositeName(lContact);
+                
+                if (log) {
+                    //add phone type
+                    char ltmpString[256];
+                    CFStringRef lFormatedString = CFStringCreateWithFormat(NULL,NULL,CFSTR("phone_type:%@;"),lLocalizedLabel);
+                    CFStringGetCString(lFormatedString, ltmpString,sizeof(ltmpString), kCFStringEncodingUTF8);
+                    linphone_call_log_set_ref_key(log, ltmpString);
+                    CFRelease(lFormatedString);
+                }
+                return (NSString*)lDisplayName;
+            }
+            CFRelease(lLabel);
+            CFRelease(lValue);
+            CFRelease(lLocalizedLabel);
+            
+        }
+        
+    }
+    return nil;
+}
+-(void) updateCallWithAddressBookData:(LinphoneCall*) call {
+    //1 copy adress book
+    LinphoneCallLog* lLog = linphone_call_get_call_log(call);
+    LinphoneAddress* lAddress;
+    if (lLog->dir == LinphoneCallIncoming) {
+        lAddress=lLog->from;
+    } else {
+        lAddress=lLog->to;
+    }
+    const char* lUserName = linphone_address_get_username(lAddress); 
+    if (!lUserName) {
+        //just return
+        return;
+    }
+    
+    NSString* lE164Number = [[NSString alloc] initWithCString:lUserName encoding:[NSString defaultCStringEncoding]];
+    NSString* lDisplayName = [self getDisplayNameFromAddressBook:lE164Number andUpdateCallLog:lLog];
+    
+    if(lDisplayName) {        
+        linphone_address_set_display_name(lAddress, [lDisplayName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+    } else {
+        ms_message("No contact entry found for  [%s] in address book",lUserName);
+    }
+    return;
+}
 -(void) onCall:(LinphoneCall*) currentCall StateChanged: (LinphoneCallState) new_state withMessage: (const char *)  message {
-	const char* lUserNameChars=linphone_address_get_username(linphone_call_get_remote_address(currentCall));
-	NSString* lUserName = lUserNameChars?[[NSString alloc] initWithCString:lUserNameChars]:NSLocalizedString(@"Unknown",nil);
-	const char* lDisplayNameChars =  linphone_address_get_display_name(linphone_call_get_remote_address(currentCall));
+    const char* lUserNameChars=linphone_address_get_username(linphone_call_get_remote_address(currentCall));
+    NSString* lUserName = lUserNameChars?[[NSString alloc] initWithCString:lUserNameChars]:NSLocalizedString(@"Unknown",nil);
+    if (new_state == LinphoneCallIncomingReceived) {
+       [self updateCallWithAddressBookData:currentCall]; // display name is updated 
+    }
+    const char* lDisplayNameChars =  linphone_address_get_display_name(linphone_call_get_remote_address(currentCall));        
 	NSString* lDisplayName = lDisplayNameChars?[[NSString alloc] initWithCString:lDisplayNameChars]:@"";
 	
 	switch (new_state) {
@@ -650,8 +731,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	
 }
 -(void) becomeActive {
-    /*IOS specific*/
-	linphone_core_start_dtmf_stream(theLinphoneCore);
+    
     if (theLinphoneCore == nil) {
 		//back from standby and background mode is disabled
 		[self	startLibLinphone];
@@ -660,7 +740,9 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		linphone_core_refresh_registers(theLinphoneCore);//just to make sure REGISTRATION is up to date
 		
 	}
-	
+	/*IOS specific*/
+	linphone_core_start_dtmf_stream(theLinphoneCore);
+    
 	LCSipTransports transportValue;
 	if (linphone_core_get_sip_transports(theLinphoneCore, &transportValue)) {
 		ms_error("cannot get current transport");	
@@ -684,4 +766,5 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 -(void) registerLogView:(id<LogView>) view {
 	mLogView = view;
 }
+
 @end
