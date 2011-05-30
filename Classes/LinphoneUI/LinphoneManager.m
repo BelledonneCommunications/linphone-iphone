@@ -25,9 +25,7 @@
 #include <netdb.h>
 #import <AVFoundation/AVAudioSession.h>
 #import <AudioToolbox/AudioToolbox.h>
-#import <AddressBook/AddressBook.h>
-
-
+#import "FastAddressBook.h"
 static LinphoneCore* theLinphoneCore=nil;
 static LinphoneManager* theLinphoneManager=nil;
 
@@ -40,12 +38,19 @@ extern void libmsamr_init();
 @synthesize registrationDelegate;
 @synthesize connectivity;
 
+-(id) init {
+    if ((self= [super init])) {
+        mFastAddressBook = [[FastAddressBook alloc] init];
+    }
+    return self;
+}
 +(LinphoneManager*) instance {
 	if (theLinphoneManager==nil) {
-		theLinphoneManager = [LinphoneManager alloc];
+		theLinphoneManager = [[LinphoneManager alloc] init];
 	}
 	return theLinphoneManager;
 }
+
 -(NSString*) appendCountryCodeIfPossible:(NSString*) number {
     if (![number hasPrefix:@"+"] && ![number hasPrefix:@"00"]) {
         NSString* lCountryCode = [[NSUserDefaults standardUserDefaults] stringForKey:@"countrycode_preference"];
@@ -58,41 +63,24 @@ extern void libmsamr_init();
 }
 
 -(NSString*) getDisplayNameFromAddressBook:(NSString*) number andUpdateCallLog:(LinphoneCallLog*)log {
-    ABAddressBookRef lAddressBook = ABAddressBookCreate();
-    NSArray *lContacts = (NSArray *)ABAddressBookCopyArrayOfAllPeople(lAddressBook);
-    for (id lContact in lContacts) {
-        ABMutableMultiValueRef lPhoneNumbers = ABRecordCopyValue((ABRecordRef)lContact, kABPersonPhoneProperty);
-        for ( int i=0; i<ABMultiValueGetCount(lPhoneNumbers); i++) {
-            CFStringRef lLabel = ABMultiValueCopyLabelAtIndex(lPhoneNumbers,i);
-            CFStringRef lValue = ABMultiValueCopyValueAtIndex(lPhoneNumbers,i);
-            CFStringRef lLocalizedLabel = ABAddressBookCopyLocalizedLabel(lLabel);    
-            NSString* lNormalizedNumber =  [(NSString*)lValue stringByReplacingOccurrencesOfString:@" " withString:@""];
-            lNormalizedNumber = [lNormalizedNumber stringByReplacingOccurrencesOfString:@"(" withString:@""];
-            lNormalizedNumber = [lNormalizedNumber stringByReplacingOccurrencesOfString:@")" withString:@""];
-            lNormalizedNumber = [lNormalizedNumber stringByReplacingOccurrencesOfString:@"-" withString:@""];
-            lNormalizedNumber = [self appendCountryCodeIfPossible:lNormalizedNumber];
-            number = [self appendCountryCodeIfPossible:number];
-            
-            if([lNormalizedNumber isEqualToString:number]) {        
-                CFStringRef lDisplayName = ABRecordCopyCompositeName(lContact);
-                
-                if (log) {
-                    //add phone type
-                    char ltmpString[256];
-                    CFStringRef lFormatedString = CFStringCreateWithFormat(NULL,NULL,CFSTR("phone_type:%@;"),lLocalizedLabel);
-                    CFStringGetCString(lFormatedString, ltmpString,sizeof(ltmpString), kCFStringEncodingUTF8);
-                    linphone_call_log_set_ref_key(log, ltmpString);
-                    CFRelease(lFormatedString);
-                }
-                return (NSString*)lDisplayName;
-            }
-            CFRelease(lLabel);
-            CFRelease(lValue);
-            CFRelease(lLocalizedLabel);
-            
-        }
+    //1 normalize
+    NSString* lNormalizedNumber = [FastAddressBook normalizePhoneNumber:number];
+    Contact* lContact = [mFastAddressBook getMatchingRecord:lNormalizedNumber];
+    if (lContact) {
+        CFStringRef lDisplayName = ABRecordCopyCompositeName(lContact.record);
         
+        if (log) {
+            //add phone type
+            char ltmpString[256];
+            CFStringRef lFormatedString = CFStringCreateWithFormat(NULL,NULL,CFSTR("phone_type:%@;"),lContact.numberType);
+            CFStringGetCString(lFormatedString, ltmpString,sizeof(ltmpString), kCFStringEncodingUTF8);
+            linphone_call_log_set_ref_key(log, ltmpString);
+            CFRelease(lFormatedString);
+        }
+        return (NSString*)lDisplayName;    
     }
+    //[number release];
+ 
     return nil;
 }
 -(void) updateCallWithAddressBookData:(LinphoneCall*) call {
@@ -443,6 +431,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		const char* proxy = [proxyAddress cStringUsingEncoding:[NSString defaultCStringEncoding]];
 		
 		NSString* prefix = [[NSUserDefaults standardUserDefaults] stringForKey:@"prefix_preference"];
+        bool substitute_plus_by_00 = [[NSUserDefaults standardUserDefaults] boolForKey:@"substitute_+_by_00_preference"];
 		//possible valid config detected
 		LinphoneProxyConfig* proxyCfg;	
 		proxyCfg = linphone_proxy_config_new();
@@ -467,7 +456,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		if ([prefix length]>0) {
 			linphone_proxy_config_set_dial_prefix(proxyCfg, [prefix cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 		}
-		linphone_proxy_config_set_dial_escape_plus(proxyCfg,TRUE);
+		linphone_proxy_config_set_dial_escape_plus(proxyCfg,substitute_plus_by_00);
 		
 		linphone_core_add_proxy_config(theLinphoneCore,proxyCfg);
 		//set to default proxy
