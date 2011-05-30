@@ -80,6 +80,7 @@
 		22E0A824111C44E100B04932 /* ConsoleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E0A81F111C44E100B04932 /* ConsoleViewController.m */; };
 		22E19E1E1386AFB900FBFE87 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 22E19E1C1386AFB900FBFE87 /* Localizable.strings */; };
 		22E19E5A138A89F800FBFE87 /* missed_call.png in Resources */ = {isa = PBXBuildFile; fileRef = 22E19E59138A89F800FBFE87 /* missed_call.png */; };
+		22E5AF6F1393F01800E4B43D /* FastAddressBook.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E5AF6D1393F01800E4B43D /* FastAddressBook.m */; };
 		22F2508E107141E100AC9B3F /* PhoneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22F2508C107141E100AC9B3F /* PhoneViewController.m */; };
 		22F2508F107141E100AC9B3F /* PhoneViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22F2508D107141E100AC9B3F /* PhoneViewController.xib */; };
 		22F254811073D99800AC9B3F /* ringback.wav in Resources */ = {isa = PBXBuildFile; fileRef = 22F254801073D99800AC9B3F /* ringback.wav */; };
@@ -393,6 +394,8 @@
 		22E0A820111C44E100B04932 /* ConsoleViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConsoleViewController.h; sourceTree = "<group>"; };
 		22E19E1D1386AFB900FBFE87 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = Resources/en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		22E19E59138A89F800FBFE87 /* missed_call.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = missed_call.png; path = Resources/missed_call.png; sourceTree = "<group>"; };
+		22E5AF6D1393F01800E4B43D /* FastAddressBook.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FastAddressBook.m; sourceTree = "<group>"; };
+		22E5AF6E1393F01800E4B43D /* FastAddressBook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FastAddressBook.h; sourceTree = "<group>"; };
 		22F2508B107141E100AC9B3F /* PhoneViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoneViewController.h; sourceTree = "<group>"; };
 		22F2508C107141E100AC9B3F /* PhoneViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneViewController.m; sourceTree = "<group>"; };
 		22F2508D107141E100AC9B3F /* PhoneViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PhoneViewController.xib; sourceTree = "<group>"; };
@@ -673,6 +676,8 @@
 		2214EB7012F84668002A5394 /* LinphoneUI */ = {
 			isa = PBXGroup;
 			children = (
+				22E5AF6D1393F01800E4B43D /* FastAddressBook.m */,
+				22E5AF6E1393F01800E4B43D /* FastAddressBook.h */,
 				22BB1D3413322A58005CD7AA /* UIEraseButton.m */,
 				22BB1D3513322A58005CD7AA /* UIEraseButton.h */,
 				2248E90C12F7E4CF00220D9C /* UIDigitButton.h */,
@@ -1032,6 +1037,7 @@
 				22C755601317E59C007BC101 /* UIBluetoothButton.m in Sources */,
 				22323037132A28AE00F10886 /* TunnelManager.cc in Sources */,
 				22BB1D3613322A58005CD7AA /* UIEraseButton.m in Sources */,
+				22E5AF6F1393F01800E4B43D /* FastAddressBook.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

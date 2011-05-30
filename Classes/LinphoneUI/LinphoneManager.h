@@ -27,8 +27,7 @@ typedef enum _Connectivity {
 	wwan
 	,none
 } Connectivity;
-
-
+@class FastAddressBook;
 @interface LinphoneManager : NSObject {
 @private
 	SCNetworkReachabilityContext proxyReachabilityContext;
@@ -42,6 +41,7 @@ typedef enum _Connectivity {
 	
 	UIViewController* mCurrentViewController;
 	Connectivity connectivity;
+    FastAddressBook* mFastAddressBook;
 	
 }
 +(LinphoneManager*) instance;
@@ -61,3 +61,5 @@ typedef enum _Connectivity {
 @property (nonatomic, retain) id<LinphoneUIRegistrationDelegate> registrationDelegate;
 @property Connectivity connectivity;
 @end
+
+
