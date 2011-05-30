@@ -216,7 +216,7 @@
 				  withDisplayName:displayName];
 	[call setEnabled:false];
 	[callDuration setText:NSLocalizedString(@"Calling...",nil)];
-	[speaker reset];
+	if ([speaker isOn]) [speaker toggle] ; //preset to off
 }
 
 -(void) displayIncallFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
@@ -226,7 +226,7 @@
 	if (linphone_call_get_dir(linphone_core_get_current_call([LinphoneManager getLc])) == LinphoneCallIncoming) {
 		[self displayIncalViewforUser:username
 					  withDisplayName:displayName];
-		[speaker reset];
+		if ([speaker isOn]) [speaker toggle] ; //preset to off;
 	} 
 }
 //status reporting
