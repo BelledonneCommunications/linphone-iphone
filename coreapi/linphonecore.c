@@ -239,7 +239,6 @@ void linphone_call_log_set_ref_key(LinphoneCallLog *cl, const char *refkey){
 		cl->refkey=NULL;
 	}
 	if (refkey) cl->refkey=ms_strdup(refkey);
-	call_logs_write_to_config_file(cl->lc);
 }
 
 /**
