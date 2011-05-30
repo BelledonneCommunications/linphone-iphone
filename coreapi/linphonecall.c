@@ -223,7 +223,6 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 /* this function is called internally to get rid of a call.
  It performs the following tasks:
  - remove the call from the internal list of calls
- - unref the LinphoneCall object
  - update the call logs accordingly
 */
 

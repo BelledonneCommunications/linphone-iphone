@@ -1015,13 +1015,12 @@ static void update_contact_from_response(SalOp *op, osip_message_t *response){
 
 static int call_proceeding(Sal *sal, eXosip_event_t *ev){
 	SalOp *op=find_op(sal,ev);
-	
-	if (op==NULL) {
+
+	if (op==NULL || op->terminated==TRUE) {
 		ms_warning("This call has been canceled.");
 		eXosip_lock();
 		eXosip_call_terminate(ev->cid,ev->did);
 		eXosip_unlock();
-		op->terminated=TRUE;
 		return -1;
 	}
 	if (ev->did>0)
@@ -1056,9 +1055,12 @@ static void call_accepted(Sal *sal, eXosip_event_t *ev){
 	SalOp *op=find_op(sal,ev);
 	const char *contact;
 	
-	if (op==NULL){
-		ms_error("A closed call is accepted ?");
-		return;
+	if (op==NULL || op->terminated==TRUE) {
+		ms_warning("This call has been already terminated.");
+		eXosip_lock();
+		eXosip_call_terminate(ev->cid,ev->did);
+		eXosip_unlock();
+		return ;
 	}
 
 	op->did=ev->did;
