@@ -96,7 +96,7 @@ static MSList *match_payloads(const MSList *local, const MSList *remote, bool_t 
 				 Indeed despite we must sent with the remote numbering, we must be able to receive with
 				 our local one.
 				*/
-				newp=payload_type_clone(matched);
+				newp=payload_type_clone(newp);
 				payload_type_set_number(newp,local_number);
 				res=ms_list_append(res,newp);
 			}

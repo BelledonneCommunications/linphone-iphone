@@ -49,7 +49,9 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 		/* we already started media: check if we really need to restart it*/
 		if (oldmd){
 			if (!media_parameters_changed(call,oldmd,new_md) && !call->playing_ringbacktone){
-				sal_media_description_unref(oldmd);
+				/*as nothing has changed, keep the oldmd */
+				call->resultdesc=oldmd;
+				sal_media_description_unref(new_md);
 				if (call->all_muted){
 					ms_message("Early media finished, unmuting inputs...");
 					/*we were in early media, now we want to enable real media */
