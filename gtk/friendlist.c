@@ -70,7 +70,7 @@ static GdkPixbuf *create_status_picture(LinphoneOnlineStatus ss){
 void linphone_gtk_set_friend_status(GtkWidget *friendlist , LinphoneFriend * fid, const gchar *url, const gchar *status, const gchar *img){
 	GtkTreeIter iter;
 	LinphoneFriend *tmp=0;
-	gboolean found=FALSE;
+
 	GtkTreeModel *model=gtk_tree_view_get_model(GTK_TREE_VIEW(friendlist));
 	if (gtk_tree_model_get_iter_first(model,&iter)) {
 		do{
@@ -81,10 +81,9 @@ void linphone_gtk_set_friend_status(GtkWidget *friendlist , LinphoneFriend * fid
 				gtk_list_store_set(GTK_LIST_STORE(model),&iter,FRIEND_PRESENCE_STATUS,status,-1);
 				pixbuf = create_pixbuf(img);
 				if (pixbuf)
-				  {
-				    gtk_list_store_set(GTK_LIST_STORE(model),&iter,FRIEND_PRESENCE_IMG, pixbuf,-1);
-				  }
-				  found=TRUE;
+				{
+					gtk_list_store_set(GTK_LIST_STORE(model),&iter,FRIEND_PRESENCE_IMG, pixbuf,-1);
+				}
 			}
 		}while(gtk_tree_model_iter_next(model,&iter));
 	}

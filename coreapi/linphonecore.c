@@ -1636,9 +1636,9 @@ void linphone_core_iterate(LinphoneCore *lc){
 		 linphone_core_start_invite() */
 		calls=calls->next;
 		if (call->state==LinphoneCallOutgoingInit && (curtime-call->start_time>=2)){
-				/*start the call even if the OPTIONS reply did not arrive*/
-				linphone_core_start_invite(lc,call,NULL);
-			}
+			/*start the call even if the OPTIONS reply did not arrive*/
+			linphone_core_start_invite(lc,call,NULL);
+		}
 		if (call->dir==LinphoneCallIncoming && call->state==LinphoneCallOutgoingRinging){
 			elapsed=curtime-call->start_time;
 			ms_message("incoming call ringing for %i seconds",elapsed);
@@ -1996,7 +1996,6 @@ LinphoneCall * linphone_core_invite_address(LinphoneCore *lc, const LinphoneAddr
 **/
 LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const LinphoneAddress *addr, const LinphoneCallParams *params)
 {
-	int err=0;
 	const char *route=NULL;
 	const char *from=NULL;
 	LinphoneProxyConfig *proxy=NULL;
@@ -2049,7 +2048,7 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	lc->current_call=call;
 	linphone_call_set_state (call,LinphoneCallOutgoingInit,"Starting outgoing call");
 	if (dest_proxy!=NULL || lc->sip_conf.ping_with_options==FALSE){
-		err=linphone_core_start_invite(lc,call,dest_proxy);
+		linphone_core_start_invite(lc,call,dest_proxy);
 	}else{
 		/*defer the start of the call after the OPTIONS ping*/
 		call->ping_op=sal_op_new(lc->sal);

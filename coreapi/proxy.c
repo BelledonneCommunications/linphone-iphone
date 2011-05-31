@@ -269,10 +269,6 @@ static char *guess_contact_for_register(LinphoneProxyConfig *obj){
 }
 
 static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
-	const char *id_str;
-
-	if (obj->reg_identity!=NULL) id_str=obj->reg_identity;
-	else id_str=linphone_core_get_primary_contact(obj->lc);
 	if (obj->reg_sendregister){
 		char *contact;
 		if (obj->op)
