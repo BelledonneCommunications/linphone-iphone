@@ -244,14 +244,14 @@
 		if (notif)
 		{
 			notif.repeatInterval = 0;
-			notif.alertBody =[NSString  stringWithFormat:NSLocalizedString(@" %@ is calling you",nil),displayName?displayName:username];
+			notif.alertBody =[NSString  stringWithFormat:NSLocalizedString(@" %@ is calling you",nil),[displayName length]>0?displayName:username];
 			notif.alertAction = @"Answer";
 			notif.soundName = @"oldphone-mono-30s.caf";
 			
 			[[UIApplication sharedApplication]  presentLocalNotificationNow:notif];
 		}
 	} else 	{
-		mIncomingCallActionSheet = [[UIActionSheet alloc] initWithTitle:[NSString  stringWithFormat:NSLocalizedString(@" %@ is calling you",nil),displayName?displayName:username]
+		mIncomingCallActionSheet = [[UIActionSheet alloc] initWithTitle:[NSString  stringWithFormat:NSLocalizedString(@" %@ is calling you",nil),[displayName length]>0?displayName:username]
 															   delegate:self 
 													  cancelButtonTitle:NSLocalizedString(@"Decline",nil) 
 												 destructiveButtonTitle:NSLocalizedString(@"Answer",nil) 
