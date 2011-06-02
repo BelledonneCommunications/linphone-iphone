@@ -358,7 +358,6 @@ static void linphonec_call_state_changed(LinphoneCore *lc, LinphoneCall *call, L
 		case LinphoneCallOutgoingInit:
 			linphonec_call_identify(call);
 			id=(long)linphone_call_get_user_pointer (call);
-			from=linphone_call_get_remote_address_as_string(call);
 			linphonec_out("Establishing call id to %s, assigned id %i\n", from,id);
 		break;
 		case LinphoneCallUpdatedByRemote:
