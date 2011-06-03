@@ -328,7 +328,7 @@ static void linphonec_call_state_changed(LinphoneCore *lc, LinphoneCall *call, L
 	long id=(long)linphone_call_get_user_pointer (call);
 	switch(st){
 		case LinphoneCallEnd:
-			linphonec_out("Call %i with %s ended.\n", id, from);
+			linphonec_out("Call %i with %s ended (%s).\n", id, from, linphone_reason_to_string(linphone_call_get_reason(call)));
 		break;
 		case LinphoneCallResuming:
 			linphonec_out("Resuming call %i with %s.\n", id, from);

@@ -4078,7 +4078,7 @@ LinphoneCallParams *linphone_core_create_default_call_parameters(LinphoneCore *l
 	return p;
 }
 
-const char *linphone_error_to_string(LinphoneReason err){
+const char *linphone_reason_to_string(LinphoneReason err){
 	switch(err){
 		case LinphoneReasonNone:
 			return "No error";
@@ -4090,6 +4090,10 @@ const char *linphone_error_to_string(LinphoneReason err){
 			return "Call declined";
 	}
 	return "unknown error";
+}
+
+const char *linphone_error_to_string(LinphoneReason err){
+	return linphone_reason_to_string(err);
 }
 /**
  * Enables signaling keep alive
