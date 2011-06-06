@@ -147,6 +147,7 @@ static void call_received(SalOp *h){
 	if (is_duplicate_call(lc,from_addr,to_addr)){
 		ms_warning("Receiving duplicated call, refusing this one.");
 		sal_call_decline(h,SalReasonBusy,NULL);
+		sal_op_release(h);
 		linphone_address_destroy(from_addr);
 		linphone_address_destroy(to_addr);
 		return;
