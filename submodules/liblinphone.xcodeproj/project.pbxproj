@@ -954,12 +954,12 @@
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					"_BYTE_ORDER=_LITTLE_ENDIAN\n",
+					"_BYTE_ORDER=_LITTLE_ENDIAN",
 					ORTP_INET6,
 					ENABLE_TRACE,
-					"LINPHONE_VERSION=\\\"Linphone-3.3.x\\\"",
+					"LINPHONE_VERSION=\\\"debug\\\"",
 					"LINPHONE_PLUGINS_DIR=\\\"\\\\tmp\\\"",
-					"LOG_DOMAIN=\\\"Linphone\\\"\n",
+					"LOG_DOMAIN=\\\"Linphone\\\"",
 					"ORTP_MAJOR_VERSION=0",
 					"ORTP_MICRO_VERSION=0",
 					"ORTP_MINOR_VERSION=15",
@@ -969,6 +969,7 @@
 					IN_LINPHONE,
 					__MACIOUNIT_ENABLED__,
 					HAVE_EXOSIP_GET_SOCKET,
+					MS2_INTERNAL,
 				);
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -984,7 +985,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PREBINDING = NO;
 				SDKROOT = iphoneos;
-				VALID_ARCHS = "armv6 armv7";
+				VALID_ARCHS = "armv6 armv7 i386";
 			};
 			name = Debug;
 		};
@@ -994,12 +995,12 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					"_BYTE_ORDER=_LITTLE_ENDIAN\n",
+					"_BYTE_ORDER=_LITTLE_ENDIAN",
 					ORTP_INET6,
 					ENABLE_TRACE,
-					"LINPHONE_VERSION=\\\"Linphone-3.3.x\\\"",
+					"LINPHONE_VERSION=\\\"debug\\\"",
 					"LINPHONE_PLUGINS_DIR=\\\"\\\\tmp\\\"",
-					"LOG_DOMAIN=\\\"Linphone\\\"\n",
+					"LOG_DOMAIN=\\\"Linphone\\\"",
 					"ORTP_MAJOR_VERSION=0",
 					"ORTP_MICRO_VERSION=0",
 					"ORTP_MINOR_VERSION=15",
@@ -1009,6 +1010,7 @@
 					IN_LINPHONE,
 					__MACIOUNIT_ENABLED__,
 					HAVE_EXOSIP_GET_SOCKET,
+					MS2_INTERNAL,
 				);
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -1024,7 +1026,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PREBINDING = NO;
 				SDKROOT = iphoneos;
-				VALID_ARCHS = "armv6 armv7";
+				VALID_ARCHS = "armv6 armv7 i386";
 			};
 			name = Release;
 		};
