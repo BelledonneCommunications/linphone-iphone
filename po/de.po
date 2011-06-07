@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: linphone 0.7.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-04-08 22:32+0200\n"
-"PO-Revision-Date: 2011-04-10 02:35+0200\n"
+"PO-Revision-Date: 2011-05-27 23:45+0200\n"
 "Last-Translator: Gerhard Stengel <gstengel@gmx.net>\n"
 "Language-Team: German <kde-i18n-de@kde.org>\n"
 "Language: \n"
@@ -573,7 +573,7 @@ msgstr "Dauer:"
 
 #: ../gtk/main.ui.h:33
 msgid "Enable self-view"
-msgstr "Selbstansicht einschalten"
+msgstr "Selbstansicht ein"
 
 #: ../gtk/main.ui.h:34
 msgid "Enter username, phone number, or full sip address"
@@ -1391,7 +1391,7 @@ msgstr "Abmeldung von %s ist erfolgt."
 
 #: ../coreapi/callbacks.c:574
 msgid "no response timeout"
-msgstr "keine Zeitüberschreitung bei der Antwort"
+msgstr "Zeitüberschreitung bei der Antwort"
 
 #: ../coreapi/callbacks.c:577
 #, c-format
