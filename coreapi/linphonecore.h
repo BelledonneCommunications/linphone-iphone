@@ -255,6 +255,8 @@ LinphoneReason linphone_call_get_reason(const LinphoneCall *call);
 const char *linphone_call_get_remote_user_agent(LinphoneCall *call);
 float linphone_call_get_play_volume(LinphoneCall *call);
 float linphone_call_get_record_volume(LinphoneCall *call);
+float linphone_call_get_current_quality(LinphoneCall *call);
+float linphone_call_get_average_quality(LinphoneCall *call);
 void *linphone_call_get_user_pointer(LinphoneCall *call);
 void linphone_call_set_user_pointer(LinphoneCall *call, void *user_pointer);
 /**

@@ -585,6 +585,17 @@ void linphone_call_params_set_audio_bandwidth_limit(LinphoneCallParams *cp, int 
 	cp->audio_bw=bandwidth;
 }
 
+#ifdef VIDEO_ENABLED
+/**
+ * Request remote side to send us a Video Fast Update.
+**/
+void linphone_call_send_vfu_request(LinphoneCall *call)
+{
+	if (LinphoneCallStreamsRunning == linphone_call_get_state(call))
+		sal_call_send_vfu_request(call->op);
+}
+#endif
+
 /**
  *
 **/
@@ -1040,16 +1051,7 @@ void linphone_call_stop_media_streams(LinphoneCall *call){
 	}
 }
 
-#ifdef VIDEO_ENABLED
-/**
- * Request remote side to send us VFU.
-**/
-void linphone_call_send_vfu_request(LinphoneCall *call)
-{
-	if (LinphoneCallStreamsRunning == linphone_call_get_state(call))
-		sal_call_send_vfu_request(call->op);
-}
-#endif
+
 
 void linphone_call_enable_echo_cancellation(LinphoneCall *call, bool_t enable) {
 	if (call!=NULL && call->audiostream!=NULL && call->audiostream->ec){
@@ -1090,6 +1092,11 @@ bool_t linphone_call_echo_limiter_enabled(const LinphoneCall *call){
 }
 
 /**
+ * @addtogroup call_misc
+ * @{
+**/ 
+
+/**
  * Returns the measured sound volume played locally (received from remote)
  * It is expressed in dbm0. 
 **/
@@ -1119,6 +1126,45 @@ float linphone_call_get_record_volume(LinphoneCall *call){
 	return LINPHONE_VOLUME_DB_LOWEST;
 }
 
+/**
+ * Obtain real-time quality rating of the call
+ *
+ * Based on local RTP statistics and RTCP feedback, a quality rating is computed and updated
+ * during all the duration of the call. This function returns its value at the time of the function call.
+ * It is expected that the rating is updated at least every 5 seconds or so.
+ * The rating is a floating point number comprised between 0 and 5.
+ *
+ * 4-5 = good quality <br>
+ * 3-4 = average quality <br>
+ * 2-3 = poor quality <br>
+ * 1-2 = very poor quality <br>
+ * 0-1 = can't be worse, mostly unusable <br>
+ *
+ * @returns The function returns -1 if no quality measurement is available, for example if no 
+ * active audio stream exist. Otherwise it returns the quality rating.
+**/
+float linphone_call_get_current_quality(LinphoneCall *call){
+	if (call->audiostream){
+		return audio_stream_get_quality_rating(call->audiostream);
+	}
+	return -1;
+}
+
+/**
+ * Returns call quality averaged over all the duration of the call.
+ *
+ * See linphone_call_get_current_quality() for more details about quality measurement.
+**/
+float linphone_call_get_average_quality(LinphoneCall *call){
+	if (call->audiostream){
+		return audio_stream_get_average_quality_rating(call->audiostream);
+	}
+	return -1;
+}
+
+/**
+ * @}
+**/
 
 static void display_bandwidth(RtpSession *as, RtpSession *vs){
 	ms_message("bandwidth usage: audio=[d=%.1f,u=%.1f] video=[d=%.1f,u=%.1f] kbit/sec",
@@ -1171,6 +1217,8 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 	if (call->videostream!=NULL)
 		video_stream_iterate(call->videostream);
 #endif
+	if (call->audiostream!=NULL)
+		audio_stream_iterate(call->audiostream);
 	if (one_second_elapsed && call->audiostream!=NULL && disconnect_timeout>0 )
 		disconnected=!audio_stream_alive(call->audiostream,disconnect_timeout);
 	if (disconnected)

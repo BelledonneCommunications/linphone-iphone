@@ -205,7 +205,6 @@ void linphone_gtk_in_call_view_set_incoming(LinphoneCall *call, bool_t with_paus
 
 	gtk_label_set_markup(GTK_LABEL(status),_("<b>Incoming call</b>"));
 	gtk_widget_show_all(linphone_gtk_get_widget(callview,"answer_decline_panel"));
-	gtk_widget_hide(linphone_gtk_get_widget(callview,"duration_frame"));
 	gtk_widget_hide(linphone_gtk_get_widget(callview,"mute_pause_buttons"));
 	display_peer_name_in_label(callee,linphone_call_get_remote_address (call));
 
@@ -228,6 +227,57 @@ void linphone_gtk_in_call_view_set_incoming(LinphoneCall *call, bool_t with_paus
 	}else gtk_image_set_from_stock(GTK_IMAGE(animation),GTK_STOCK_EXECUTE,GTK_ICON_SIZE_DIALOG);
 }
 
+static void rating_to_color(float rating, GdkColor *color){
+	const char *colorname="grey";
+	if (rating>=4.0)
+		colorname="green";
+	else if (rating>=3.0)
+		colorname="white";
+	else if (rating>=2.0)
+		colorname="yellow";
+	else if (rating>=1.0)
+		colorname="orange";
+	else if (rating>=0)
+		colorname="red";
+	if (!gdk_color_parse(colorname,color)){
+		g_warning("Fail to parse color %s",colorname);
+	}
+}
+
+static const char *rating_to_text(float rating){
+	if (rating>=4.0)
+		return _("good");
+	if (rating>=3.0)
+		return _("average");
+	if (rating>=2.0)
+		return _("poor");
+	if (rating>=1.0)
+		return _("very poor");
+	if (rating>=0)
+		return _("too bad");
+	return _("unavailable");
+}
+
+static gboolean linphone_gtk_in_call_view_refresh(LinphoneCall *call){
+	GtkWidget *callview=(GtkWidget*)linphone_call_get_user_pointer(call);
+	GtkWidget *qi=linphone_gtk_get_widget(callview,"quality_indicator");
+	float rating=linphone_call_get_current_quality(call);
+	GdkColor color;
+	gchar tmp[50];
+	linphone_gtk_in_call_view_update_duration(call);
+	if (rating>=0){
+		gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(qi),rating/5.0);
+		snprintf(tmp,sizeof(tmp),"%.1f (%s)",rating,rating_to_text(rating));
+		gtk_progress_bar_set_text(GTK_PROGRESS_BAR(qi),tmp);
+	}else{
+		gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(qi),0);
+		gtk_progress_bar_set_text(GTK_PROGRESS_BAR(qi),_("unavailable"));
+	}
+	rating_to_color(rating,&color);
+	gtk_widget_modify_bg(qi,GTK_STATE_NORMAL,&color);
+	return TRUE;
+}
+
 void linphone_gtk_in_call_view_set_in_call(LinphoneCall *call){
 	GtkWidget *callview=(GtkWidget*)linphone_call_get_user_pointer(call);
 	GtkWidget *status=linphone_gtk_get_widget(callview,"in_call_status");
@@ -235,10 +285,10 @@ void linphone_gtk_in_call_view_set_in_call(LinphoneCall *call){
 	GtkWidget *duration=linphone_gtk_get_widget(callview,"in_call_duration");
 	GtkWidget *animation=linphone_gtk_get_widget(callview,"in_call_animation");
 	GdkPixbufAnimation *pbuf=create_pixbuf_animation("incall_anim.gif");
+	guint taskid=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(callview),"taskid"));
 	
 	display_peer_name_in_label(callee,linphone_call_get_remote_address (call));
 
-	gtk_widget_show(linphone_gtk_get_widget(callview,"duration_frame"));
 	gtk_widget_show(linphone_gtk_get_widget(callview,"mute_pause_buttons"));
 	gtk_widget_hide(linphone_gtk_get_widget(callview,"answer_decline_panel"));
 	gtk_label_set_markup(GTK_LABEL(status),_("<b>In call</b>"));
@@ -250,6 +300,10 @@ void linphone_gtk_in_call_view_set_in_call(LinphoneCall *call){
 	}else gtk_image_set_from_stock(GTK_IMAGE(animation),GTK_STOCK_EXECUTE,GTK_ICON_SIZE_DIALOG);
 	linphone_gtk_enable_mute_button(
 					GTK_BUTTON(linphone_gtk_get_widget(callview,"incall_mute")),TRUE);
+	if (taskid==0){
+		taskid=g_timeout_add(250,(GSourceFunc)linphone_gtk_in_call_view_refresh,call);
+		g_object_set_data(G_OBJECT(callview),"taskid",GINT_TO_POINTER(taskid));
+	}
 }
 
 void linphone_gtk_in_call_view_set_paused(LinphoneCall *call){
@@ -283,6 +337,7 @@ void linphone_gtk_in_call_view_terminate(LinphoneCall *call, const char *error_m
 	GtkWidget *status=linphone_gtk_get_widget(callview,"in_call_status");
 	GtkWidget *animation=linphone_gtk_get_widget(callview,"in_call_animation");
 	GdkPixbuf *pbuf=create_pixbuf(linphone_gtk_get_ui_config("stop_call_icon","stopcall-red.png"));
+	guint taskid=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(callview),"taskid"));
 
 	if (error_msg==NULL)
 		gtk_label_set_markup(GTK_LABEL(status),_("<b>Call ended.</b>"));
@@ -299,6 +354,7 @@ void linphone_gtk_in_call_view_terminate(LinphoneCall *call, const char *error_m
 	linphone_gtk_enable_mute_button(
 		GTK_BUTTON(linphone_gtk_get_widget(callview,"incall_mute")),FALSE);
 	linphone_gtk_enable_hold_button(call,FALSE,TRUE);
+	if (taskid!=0) g_source_remove(taskid);
 	g_timeout_add_seconds(2,(GSourceFunc)in_call_view_terminated,call);
 }
 
