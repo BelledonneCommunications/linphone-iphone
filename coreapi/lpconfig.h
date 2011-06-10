@@ -87,6 +87,12 @@ void lp_config_set_string(LpConfig *lpconfig,const char *section, const char *ke
 **/
 void lp_config_set_int(LpConfig *lpconfig,const char *section, const char *key, int value);
 /**
+ * Sets a float config item
+ *
+ * @ingroup misc
+**/
+void lp_config_set_float(LpConfig *lpconfig,const char *section, const char *key, float value);	
+/**
  * Writes the config file to disk.
  * 
  * @ingroup misc

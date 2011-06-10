@@ -307,9 +307,14 @@ void lp_config_set_string(LpConfig *lpconfig,const char *section, const char *ke
 
 void lp_config_set_int(LpConfig *lpconfig,const char *section, const char *key, int value){
 	char tmp[30];
-	snprintf(tmp,30,"%i",value);
+	snprintf(tmp,sizeof(tmp),"%i",value);
 	lp_config_set_string(lpconfig,section,key,tmp);
-	lpconfig->modified++;
+}
+
+void lp_config_set_float(LpConfig *lpconfig,const char *section, const char *key, float value){
+	char tmp[30];
+	snprintf(tmp,sizeof(tmp),"%f",value);
+	lp_config_set_string(lpconfig,section,key,tmp);
 }
 
 void lp_item_write(LpItem *item, FILE *file){

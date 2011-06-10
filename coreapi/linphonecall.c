@@ -1015,6 +1015,7 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 
 static void linphone_call_log_fill_stats(LinphoneCallLog *log, AudioStream *st){
 	audio_stream_get_local_rtp_stats (st,&log->local_stats);
+	log->quality=audio_stream_get_average_quality_rating(st);
 }
 
 void linphone_call_stop_media_streams(LinphoneCall *call){
