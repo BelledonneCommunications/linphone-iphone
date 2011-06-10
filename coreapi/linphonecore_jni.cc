@@ -1023,6 +1023,18 @@ extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_getReplacedCall(	JNIEnv
 	return (jlong)linphone_call_get_replaced_call((LinphoneCall*)ptr);
 }
 
+extern "C" jfloat Java_org_linphone_core_LinphoneCallImpl_getCurrentQuality(	JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	return (jfloat)linphone_call_get_current_quality((LinphoneCall*)ptr);
+}
+
+extern "C" jfloat Java_org_linphone_core_LinphoneCallImpl_getAverageQuality(	JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	return (jfloat)linphone_call_get_average_quality((LinphoneCall*)ptr);
+}
+
 
 //LinphoneFriend
 extern "C" long Java_org_linphone_core_LinphoneFriendImpl_newLinphoneFriend(JNIEnv*  env
