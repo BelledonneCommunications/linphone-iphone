@@ -691,7 +691,9 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 											  otherButtonTitles:nil ,nil];
 		[error show];
 	}
-
+    ms_warning("Linphone [%s]  started on [%s]"
+               ,linphone_core_get_version()
+               ,[[UIDevice currentDevice].model cStringUsingEncoding:[NSString defaultCStringEncoding]] );
 	
 }
 -(void) becomeActive {

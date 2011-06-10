@@ -5,16 +5,22 @@ ffmpeg_configure_options=\
 	--disable-avfilter  --disable-network \
 	--disable-everything  --enable-decoder=mpeg4 --enable-encoder=mpeg4 \
 	--enable-decoder=h264 --disable-avformat --enable-armv6 --enable-armv6t2 \
-	--enable-armvfp --enable-neon \
+	--enable-armvfp \
 	--source-path=$(BUILDER_SRC_DIR)/$(ffmpeg_dir) \
 	--cross-prefix=$$SDK_BIN_PATH/ \
 	--sysroot=$$SYSROOT_PATH --arch=$$ARCH \
 	--enable-static   --disable-shared --target-os=darwin \
-	--cpu=cortex-a8 --extra-cflags="-arch $$ARCH " --extra-ldflags="-arch $$ARCH -Wl,-syslibroot,$$SYSROOT_PATH " \
+	--extra-cflags="-arch $$ARCH " --extra-ldflags="-arch $$ARCH -Wl,-syslibroot,$$SYSROOT_PATH " \
 #	--as=$(BUILDER_SRC_DIR)/externals/x264/extras/gas-preprocessor.pl
 
 #--sysinclude=PATH        location of cross-build system headers
+ifneq (,$(findstring armv6,$(host)))
+	ffmpeg_configure_options+= --cpu=arm1176jzf-s
+endif
 
+ifneq (,$(findstring armv7,$(host)))
+	ffmpeg_configure_options+= --enable-neon --cpu=cortex-a8 
+endif
 ffmpeg_dir?=externals/ffmpeg
 
 $(BUILDER_BUILD_DIR)/$(ffmpeg_dir)/Makefile: $(BUILDER_SRC_DIR)/$(ffmpeg_dir)/configure

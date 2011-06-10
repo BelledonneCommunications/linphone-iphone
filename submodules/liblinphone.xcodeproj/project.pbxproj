@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2203126F139F61990049A2ED /* ioscapture.m in Sources */ = {isa = PBXBuildFile; fileRef = 22D15AB3139F505400C7713A /* ioscapture.m */; };
 		222CA63211F6CF7600621220 /* allfilters.h in Headers */ = {isa = PBXBuildFile; fileRef = 222CA5BE11F6CF7600621220 /* allfilters.h */; };
 		222CA63311F6CF7600621220 /* dsptools.h in Headers */ = {isa = PBXBuildFile; fileRef = 222CA5BF11F6CF7600621220 /* dsptools.h */; };
 		222CA63411F6CF7600621220 /* dtmfgen.h in Headers */ = {isa = PBXBuildFile; fileRef = 222CA5C011F6CF7600621220 /* dtmfgen.h */; };
@@ -343,6 +344,8 @@
 		22A10B5411F84E2D00373793 /* toast.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = toast.h; sourceTree = "<group>"; };
 		22A10B5511F84E2D00373793 /* unproto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unproto.h; sourceTree = "<group>"; };
 		22A10EE711F8920F00373793 /* mswebcam.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mswebcam.c; path = linphone/mediastreamer2/src/mswebcam.c; sourceTree = SOURCE_ROOT; };
+		22D15AB3139F505400C7713A /* ioscapture.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ioscapture.m; sourceTree = "<group>"; };
+		22D15AB5139F579D00C7713A /* qtcapture.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = qtcapture.m; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* liblinphone_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = liblinphone_Prefix.pch; sourceTree = SOURCE_ROOT; };
 		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		D2AAC07E0554694100DB518D /* liblinphone.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = liblinphone.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -478,6 +481,8 @@
 		222CA5DC11F6CF7600621220 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				22D15AB5139F579D00C7713A /* qtcapture.m */,
+				22D15AB3139F505400C7713A /* ioscapture.m */,
 				2252935A12F6CA4700DD9BFB /* ec-calibrator.c */,
 				222CA5DD11F6CF7600621220 /* .gitignore */,
 				222CA5DE11F6CF7600621220 /* _kiss_fft_guts.h */,
@@ -909,6 +914,7 @@
 				22A10EE811F8920F00373793 /* mswebcam.c in Sources */,
 				225D355A124B1FF60008581C /* linphonecall.c in Sources */,
 				2252935B12F6CA4700DD9BFB /* ec-calibrator.c in Sources */,
+				2203126F139F61990049A2ED /* ioscapture.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

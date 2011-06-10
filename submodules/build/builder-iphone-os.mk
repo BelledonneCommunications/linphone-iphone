@@ -23,14 +23,14 @@
 host?=armv6-apple-darwin
 config_site:=iphone-config.site
 library_mode:= --disable-shared --enable-static
-linphone_configure_controls=  --disable-video \
+linphone_configure_controls=  \
                               --with-readline=none  \
                               --enable-gtk_ui=no \
                               --enable-ssl-hmac=no \
                               --enable-ssl=yes \
-                              --enable-macaqsnd=no \
-			      --enable-macsnd=no \
-                              --enable-iounit=yes \
+			      --disable-theora \
+			      --disable-sdl \
+			      --disable-x11 \
                               --with-gsm=$(prefix) \
                               SPEEX_CFLAGS="-I$(prefix)/include" \
                               SPEEXDSP_CFLAGS="-I$(prefix)/include" \
@@ -80,17 +80,17 @@ init:
 veryclean:
 	rm -rf $(BUILDER_BUILD_DIR)
 
-.NOTPARALLEL build-linphone: init build-openssl build-osip2 build-eXosip2  build-speex build-libgsm  $(LINPHONE_BUILD_DIR)/Makefile
+.NOTPARALLEL build-linphone: init build-openssl build-osip2 build-eXosip2  build-speex build-libgsm build-ffmpeg $(LINPHONE_BUILD_DIR)/Makefile
 	cd $(LINPHONE_BUILD_DIR)  && export PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig export CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) make newdate &&  make  && make install
 
-clean-linphone: clean-osip2 clean-eXosip2 clean-speex clean-libgsm  clean-msilbc clean-libilbc clean-openssl clean-msamr
+clean-linphone: clean-osip2 clean-eXosip2 clean-speex clean-libgsm  clean-msilbc clean-libilbc clean-openssl clean-msamr clean-ffmpeg
 	cd  $(LINPHONE_BUILD_DIR) && make clean
 
-veryclean-linphone: clean-linphone veryclean-osip2 veryclean-eXosip2 veryclean-speex veryclean-libgsm  veryclean-msilbc veryclean-libilbc veryclean-openssl veryclean-msamr
+veryclean-linphone: clean-linphone veryclean-osip2 veryclean-eXosip2 veryclean-speex veryclean-libgsm  veryclean-msilbc veryclean-libilbc veryclean-openssl veryclean-msamr 
 	cd $(LINPHONE_BUILD_DIR) && make distclean
 	cd $(LINPHONE_SRC_DIR) && rm -f configure
 
-clean-makefile-linphone: clean-makefile-osip2 clean-makefile-eXosip2 clean-makefile-speex clean-makefile-libilbc clean-makefile-msilbc clean-makefile-openssl clean-makefile-msamr
+clean-makefile-linphone: clean-makefile-osip2 clean-makefile-eXosip2 clean-makefile-speex clean-makefile-libilbc clean-makefile-msilbc clean-makefile-openssl clean-makefile-msamr clean-makefile-ffmpeg
 	cd $(LINPHONE_BUILD_DIR) && rm -f Makefile && rm -f oRTP/Makefile && rm -f mediastreamer2/Makefile
 
 
