@@ -190,4 +190,28 @@ public interface LinphoneCall {
 	 * @return call duration computed from media start
 	 */
 	int getDuration();
+	/**
+	 * Obtain real-time quality rating of the call
+	 *
+	 * Based on local RTP statistics and RTCP feedback, a quality rating is computed and updated
+	 * during all the duration of the call. This function returns its value at the time of the function call.
+	 * It is expected that the rating is updated at least every 5 seconds or so.
+	 * The rating is a floating point number comprised between 0 and 5.
+	 *
+	 * 4-5 = good quality <br>
+	 * 3-4 = average quality <br>
+	 * 2-3 = poor quality <br>
+	 * 1-2 = very poor quality <br>
+	 * 0-1 = can't be worse, mostly unusable <br>
+	 *
+	 * @returns The function returns -1 if no quality measurement is available, for example if no 
+	 * active audio stream exist. Otherwise it returns the quality rating.
+	 */
+	float getCurrentQuality();
+	/**
+	 * Returns call quality averaged over all the duration of the call.
+	 *
+	 * See getCurrentQuality() for more details about quality measurement.
+	 */
+	float getAverageQuality();
 }
