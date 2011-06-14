@@ -783,6 +783,26 @@ static void autoreplier_config_init(LinphoneCore *lc)
 */
 
 /**
+ * Enable adaptive rate control (experimental feature, audio-only).
+ *
+ * Adaptive rate control consists in using RTCP feedback provided information to dynamically
+ * control the output bitrate of the encoders, so that we can adapt to the network conditions and
+ * available bandwidth.
+**/
+void linphone_core_enable_adaptive_rate_control(LinphoneCore *lc, bool_t enabled){
+	lp_config_set_int(lc->config,"net","adaptive_rate_control",(int)enabled);
+}
+
+/**
+ * Returns whether adaptive rate control is enabled.
+ *
+ * See linphone_core_enable_adaptive_rate_control().
+**/
+bool_t linphone_core_adaptive_rate_control_enabled(const LinphoneCore *lc){
+	return lp_config_get_int(lc->config,"net","adaptive_rate_control",FALSE);
+}
+
+/**
  * Sets maximum available download bandwidth
  *
  * @ingroup media_parameters
