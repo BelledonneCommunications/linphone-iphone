@@ -32,6 +32,7 @@ const char* sal_transport_to_string(SalTransport transport) {
         case SalTransportDTLS:return "DTLS";
         default: {
             ms_fatal("Unexpected transport [%i]",transport);
+            return NULL;
         }
             
     }
