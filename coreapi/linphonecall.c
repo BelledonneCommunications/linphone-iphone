@@ -669,6 +669,7 @@ void linphone_call_init_media_streams(LinphoneCall *call){
 		int enabled=lp_config_get_int(lc->config,"sound","noisegate",0);
 		audio_stream_enable_noise_gate(audiostream,enabled);
 	}
+	
 	if (lc->a_rtp)
 		rtp_session_set_transports(audiostream->session,lc->a_rtp,lc->a_rtcp);
 
@@ -853,6 +854,7 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 	const SalStreamDescription *vstream=sal_media_description_find_stream(call->resultdesc,
 		    					SalProtoRtpAvp,SalVideo);
 #endif
+	bool_t use_arc=linphone_core_adaptive_rate_control_enabled(lc);
 	
 	if(call->audiostream == NULL)
 	{
@@ -876,7 +878,7 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 			const char *playfile=lc->play_file;
 			const char *recfile=lc->rec_file;
 			call->audio_profile=make_profile(call,call->resultdesc,stream,&used_pt);
-			bool_t use_ec;
+			bool_t use_ec,use_arc_audio=use_arc;
 
 			if (used_pt!=-1){
 				if (playcard==NULL) {
@@ -907,11 +909,17 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 					playcard=NULL;
 				}
 				use_ec=captcard==NULL ? FALSE : linphone_core_echo_cancellation_enabled(lc);
-#if defined(VIDEO_ENABLED) && defined(ANDROID)
-				/*On android we have to disable the echo canceller to preserve CPU for video codecs */
-				if (vstream && vstream->dir!=SalStreamInactive && vstream->payloads!=NULL)
+#if defined(VIDEO_ENABLED)
+				if (vstream && vstream->dir!=SalStreamInactive && vstream->payloads!=NULL){
+					/*when video is used, do not make adaptive rate control on audio, it is stupid.*/
+					use_arc_audio=FALSE;
+	#if defined(ANDROID)
+					/*On android we have to disable the echo canceller to preserve CPU for video codecs */
 					use_ec=FALSE;
+	#endif
+				}
 #endif
+				audio_stream_enable_adaptive_bitrate_control(call->audiostream,use_arc_audio);
 				audio_stream_start_full(
 					call->audiostream,
 					call->audio_profile,
