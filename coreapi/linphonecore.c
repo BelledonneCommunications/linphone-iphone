@@ -1375,13 +1375,13 @@ static int apply_transports(LinphoneCore *lc){
 
 	sal_unlisten_ports (sal);
 	if (tr->udp_port>0){
-		if (sal_listen_port (sal,anyaddr,tr->udp_port,SalTransportDatagram,FALSE)!=0){
+		if (sal_listen_port (sal,anyaddr,tr->udp_port,SalTransportUDP,FALSE)!=0){
 			transport_error(lc,"UDP",tr->udp_port);
 			return -1;
 		}
 	}
 	if (tr->tcp_port>0){
-		if (sal_listen_port (sal,anyaddr,tr->tcp_port,SalTransportStream,FALSE)!=0){
+		if (sal_listen_port (sal,anyaddr,tr->tcp_port,SalTransportTCP,FALSE)!=0){
 			transport_error(lc,"TCP",tr->tcp_port);
 		}
 	}

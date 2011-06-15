@@ -24,7 +24,26 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 **/
 
 #include "sal.h"
-
+const char* sal_transport_to_string(SalTransport transport) {
+    switch (transport) {
+        case SalTransportUDP:return "UDP";
+        case SalTransportTCP: return "TCP";
+        case SalTransportTLS:return "TLS";
+        case SalTransportDTLS:return "DTLS";
+        default: {
+            ms_fatal("Unexpected transport [%i]",transport);
+        }
+            
+    }
+}
+SalTransport sal_transport_parse(const char* param) {
+    if (strcasecmp("UDP",param)==0) return SalTransportUDP;
+    if (strcasecmp("TCP",param)==0) return SalTransportTCP;
+    if (strcasecmp("TLS",param)==0) return SalTransportTLS;
+    if (strcasecmp("DTLS",param)==0) return SalTransportDTLS;
+    ms_error("Unkown transport type[%s], returning UDP", param);
+    return SalTransportUDP;
+}
 SalMediaDescription *sal_media_description_new(){
 	SalMediaDescription *md=ms_new0(SalMediaDescription,1);
 	md->refcount=1;
