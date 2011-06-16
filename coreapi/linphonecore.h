@@ -720,6 +720,10 @@ void linphone_core_set_download_ptime(LinphoneCore *lc, int ptime);
  */
 int  linphone_core_get_download_ptime(LinphoneCore *lc);
 
+void linphone_core_set_upload_ptime(LinphoneCore *lc, int ptime);
+
+int linphone_core_get_upload_ptime(LinphoneCore *lc);
+
 /* returns a MSList of PayloadType */
 const MSList *linphone_core_get_audio_codecs(const LinphoneCore *lc);
 
