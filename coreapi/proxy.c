@@ -259,7 +259,7 @@ static char *guess_contact_for_register(LinphoneProxyConfig *obj){
 		
 		linphone_core_get_sip_transports(obj->lc,&tr);
 		if (tr.udp_port <= 0 && tr.tcp_port>0) {
-			sal_address_add_param(contact,"transport","tcp");
+			sal_address_set_param(contact,"transport","TCP");
 		}
 		ret=linphone_address_as_string(contact);
 		linphone_address_destroy(contact);

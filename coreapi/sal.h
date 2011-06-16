@@ -40,6 +40,15 @@ struct SalAddress;
 
 typedef struct SalAddress SalAddress;
 
+typedef enum {
+	SalTransportUDP, /*UDP*/
+	SalTransportTCP, /*TCP*/
+	SalTransportTLS, /*TLS*/
+	SalTransportDTLS /*DTLS*/
+}SalTransport;
+
+const char* sal_transport_to_string(SalTransport transport);
+SalTransport sal_transport_parse(const char*);
 /* Address manipulation API*/
 SalAddress * sal_address_new(const char *uri);
 SalAddress * sal_address_clone(const SalAddress *addr);
@@ -49,7 +58,8 @@ char *sal_address_get_display_name_unquoted(const SalAddress *addr);
 const char *sal_address_get_username(const SalAddress *addr);
 const char *sal_address_get_domain(const SalAddress *addr);
 const char * sal_address_get_port(const SalAddress *addr);
-int sal_address_get_port_int(const SalAddress *uri);
+int sal_address_get_port_int(const SalAddress *addr);
+SalTransport sal_address_get_transport(const SalAddress* addr);
 
 void sal_address_set_display_name(SalAddress *addr, const char *display_name);
 void sal_address_set_username(SalAddress *addr, const char *username);
@@ -60,8 +70,8 @@ void sal_address_clean(SalAddress *addr);
 char *sal_address_as_string(const SalAddress *u);
 char *sal_address_as_string_uri_only(const SalAddress *u);
 void sal_address_destroy(SalAddress *u);
-void sal_address_add_param(SalAddress *u,const char* name,const char* value);
-
+void sal_address_set_param(SalAddress *u,const char* name,const char* value);
+void sal_address_set_transport(SalAddress* addr,SalTransport transport);
 
 
 Sal * sal_init();
@@ -69,10 +79,6 @@ void sal_uninit(Sal* sal);
 void sal_set_user_pointer(Sal *sal, void *user_data);
 void *sal_get_user_pointer(const Sal *sal);
 
-typedef enum {
-	SalTransportDatagram,
-	SalTransportStream
-}SalTransport;
 
 typedef enum {
 	SalAudio,
