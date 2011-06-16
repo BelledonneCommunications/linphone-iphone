@@ -804,11 +804,15 @@ int sal_call_terminate(SalOp *h){
 void sal_op_authenticate(SalOp *h, const SalAuthInfo *info){
     if (h->pending_auth){
 		push_auth_to_exosip(info);
-		eXosip_lock();
+		
         /*FIXME exosip does not take into account this update register message*/
+	/*
         if (fix_message_contact(h, h->pending_auth->request,h->pending_auth->response)) {
-            update_contact_from_response(h,h->pending_auth->response);
+            
         };
+	*/
+		update_contact_from_response(h,h->pending_auth->response);
+		eXosip_lock();
 		eXosip_default_action(h->pending_auth);
 		eXosip_unlock();
 		ms_message("eXosip_default_action() done");
@@ -1003,7 +1007,7 @@ static void handle_ack(Sal *sal,  eXosip_event_t *ev){
 static void update_contact_from_response(SalOp *op, osip_message_t *response){
 	const char *received;
 	int rport;
-    SalTransport transport;
+	SalTransport transport;
 	if (extract_received_rport(response,&received,&rport,&transport)==0){
 		const char *contact=sal_op_get_contact(op);
 		if (!contact){
@@ -1015,7 +1019,7 @@ static void update_contact_from_response(SalOp *op, osip_message_t *response){
 			char *tmp;
 			sal_address_set_domain(addr,received);
 			sal_address_set_port_int(addr,rport);
-            sal_address_set_transport(addr,transport);
+			sal_address_set_transport(addr,transport);
 			tmp=sal_address_as_string(addr);
 			ms_message("Contact address updated to %s",tmp);
 			sal_op_set_contact(op,tmp);
@@ -1617,19 +1621,17 @@ static void masquerade_via(osip_message_t *msg, const char *ip, const char *port
 
 static bool_t fix_message_contact(SalOp *op, osip_message_t *request,osip_message_t *last_answer) {
 	osip_contact_t *ctt=NULL;
-    const char *received;
+	const char *received;
 	int rport;
-    SalTransport transport;
-    char port[20];
-    
-    if (extract_received_rport(last_answer,&received,&rport,&transport)==-1) return FALSE;
-	eXosip_lock();
-    osip_message_get_contact(request,0,&ctt);
-    if (ctt == NULL) {
-        /*nothing to update*/
-        eXosip_unlock();
-        return FALSE;
-    }
+	SalTransport transport;
+	char port[20];
+
+	if (extract_received_rport(last_answer,&received,&rport,&transport)==-1) return FALSE;
+	osip_message_get_contact(request,0,&ctt);
+	if (ctt == NULL) {
+		/*nothing to update*/
+		return FALSE;
+	}
 	if (ctt->url->host!=NULL){
 		osip_free(ctt->url->host);
 	}
@@ -1640,68 +1642,68 @@ static bool_t fix_message_contact(SalOp *op, osip_message_t *request,osip_messag
 	snprintf(port,sizeof(port),"%i",rport);
 	ctt->url->port=osip_strdup(port);
 	if (op->masquerade_via) masquerade_via(request,received,port);
-	
-    if (transport != SalTransportUDP) {
-       sal_address_set_param((SalAddress *)ctt, "transport", sal_transport_to_string(transport)); 
-        
-    }
-	eXosip_unlock();
-    return TRUE;
-    
+
+	if (transport != SalTransportUDP) {
+		sal_address_set_param((SalAddress *)ctt, "transport", sal_transport_to_string(transport)); 
+	}
+	return TRUE;    
 }
 
 static bool_t register_again_with_updated_contact(SalOp *op, osip_message_t *orig_request, osip_message_t *last_answer){
-    osip_contact_t *ctt=NULL;
-    SalAddress* ori_contact_address=NULL;
-    const char *received;
+	osip_contact_t *ctt=NULL;
+	SalAddress* ori_contact_address=NULL;
+	const char *received;
 	int rport;
-    SalTransport transport;
-    char* tmp;
-    osip_message_t *msg=NULL;
-    Sal* sal=op->base.root;
-    
-    if (sal->double_reg==FALSE ) return FALSE; 
-    
-    if (extract_received_rport(last_answer,&received,&rport,&transport)==-1) return FALSE;
-    osip_message_get_contact(orig_request,0,&ctt);
-	osip_contact_to_str(ctt,&tmp);
-    ori_contact_address = sal_address_new((const char*)tmp);
-    osip_free(tmp);
-    /*check if contact is up to date*/
-    if (strcmp(sal_address_get_domain(ori_contact_address),received) ==0 
-        && sal_address_get_port_int(ori_contact_address) == rport
-        && sal_address_get_transport(ori_contact_address) == transport) {
-        ms_message("Register has up to date contact, doing nothing.");        
-        return FALSE;
-    } else ms_message("contact do not match, need to update the register (%s with %s:%i;transport=%s)"
-                      ,tmp
-                      ,received
-                      ,rport
-                      ,sal_transport_to_string(transport));
-	
-    sal_address_destroy(ori_contact_address);
-    
-    if (transport == SalTransportUDP) {
-        eXosip_lock();
-        eXosip_register_build_register(op->rid,op->expires,&msg);
-        if (msg==NULL){
-            eXosip_unlock();
-            ms_warning("Fail to create a contact updated register.");
-            return FALSE;
-        }
-        if (fix_message_contact(op,msg,last_answer)) {
-            eXosip_register_send_register(op->rid,msg);   
-            ms_message("Resending new register with updated contact");
-            return TRUE;
-        } else {
-            ms_warning("Fail to send updated register.");
-            eXosip_unlock();
-            return FALSE;
-        }
-    }
+	SalTransport transport;
+	char* tmp;
+	osip_message_t *msg=NULL;
+	Sal* sal=op->base.root;
 
-    update_contact_from_response(op,last_answer);
-    return FALSE;
+	if (sal->double_reg==FALSE ) return FALSE; 
+
+	if (extract_received_rport(last_answer,&received,&rport,&transport)==-1) return FALSE;
+	osip_message_get_contact(orig_request,0,&ctt);
+	osip_contact_to_str(ctt,&tmp);
+	ori_contact_address = sal_address_new((const char*)tmp);
+	
+	/*check if contact is up to date*/
+	if (strcmp(sal_address_get_domain(ori_contact_address),received) ==0 
+	&& sal_address_get_port_int(ori_contact_address) == rport
+	&& sal_address_get_transport(ori_contact_address) == transport) {
+		ms_message("Register has up to date contact, doing nothing.");
+		osip_free(tmp);     
+		return FALSE;
+	} else ms_message("contact do not match, need to update the register (%s with %s:%i;transport=%s)"
+		      ,tmp
+		      ,received
+		      ,rport
+		      ,sal_transport_to_string(transport));
+	osip_free(tmp);
+	sal_address_destroy(ori_contact_address);
+
+	if (transport == SalTransportUDP) {
+		eXosip_lock();
+		eXosip_register_build_register(op->rid,op->expires,&msg);
+		if (msg==NULL){
+		    eXosip_unlock();
+		    ms_warning("Fail to create a contact updated register.");
+		    return FALSE;
+		}
+		if (fix_message_contact(op,msg,last_answer)) {
+			eXosip_register_send_register(op->rid,msg);
+			eXosip_unlock();  
+			ms_message("Resending new register with updated contact");
+			return TRUE;
+		} else {
+		    ms_warning("Fail to send updated register.");
+		    eXosip_unlock();
+		    return FALSE;
+		}
+		eXosip_unlock();
+	}
+
+	update_contact_from_response(op,last_answer);
+	return FALSE;
 }
 
 static void registration_success(Sal *sal, eXosip_event_t *ev){
