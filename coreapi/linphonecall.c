@@ -793,6 +793,7 @@ static RtpProfile *make_profile(LinphoneCall *call, const SalMediaDescription *m
 	bool_t first=TRUE;
 	int remote_bw=0;
 	LinphoneCore *lc=call->core;
+	int up_ptime=0;
 	*used_pt=-1;
 	
 	for(elem=desc->payloads;elem!=NULL;elem=elem->next){
@@ -802,6 +803,7 @@ static RtpProfile *make_profile(LinphoneCall *call, const SalMediaDescription *m
 		if (first) {
 			if (desc->type==SalAudio){
 				linphone_core_update_allocated_audio_bandwidth_in_call(call,pt);
+				up_ptime=linphone_core_get_upload_ptime(lc);
 			}
 			*used_pt=payload_type_get_number(pt);
 			first=FALSE;
@@ -823,8 +825,11 @@ static RtpProfile *make_profile(LinphoneCall *call, const SalMediaDescription *m
 			pt->normal_bitrate=-1;
 		}
 		if (desc->ptime>0){
+			up_ptime=desc->ptime;
+		}
+		if (up_ptime>0){
 			char tmp[40];
-			snprintf(tmp,sizeof(tmp),"ptime=%i",desc->ptime);
+			snprintf(tmp,sizeof(tmp),"ptime=%i",up_ptime);
 			payload_type_append_send_fmtp(pt,tmp);
 		}
 		number=payload_type_get_number(pt);
