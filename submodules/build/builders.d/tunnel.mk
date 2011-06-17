@@ -20,7 +20,7 @@ clean-tunnel:
 	cd  $(TUNNEL_BUILD_DIR)  && make clean
 
 veryclean-tunnel:
-	cd $(TUNNEL_BUILD_DIR) && make distclean
+	rm -f  $(TUNNEL_SRC_DIR)/configure 
 
 clean-makefile-tunnel:
 	cd $(TUNNEL_BUILD_DIR) && rm -f Makefile

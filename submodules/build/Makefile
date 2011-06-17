@@ -29,6 +29,11 @@ clean:
 	&&  make -f  builder-iphone-os.mk  clean clean-tunnel\
 	&&  make -f  builder-iphone-os.mk   host=armv7-apple-darwin clean clean-tunnel
 clean-makefile:
-	make -f  builder-iphone-simulator.mk  clean-makefile clean-makefile-tunnel\
-	&&  make -f  builder-iphone-os.mk  clean-makefile clean-makefile-tunnel\
-	&&  make -f  builder-iphone-os.mk   host=armv7-apple-darwin clean-makefile clean-makefile-tunnel
+	make -f  builder-iphone-simulator.mk  clean-makefile \
+	&&  make -f  builder-iphone-os.mk  clean-makefile \
+	&&  make -f  builder-iphone-os.mk   host=armv7-apple-darwin clean-makefile
+
+veryclean:
+	make -f  builder-iphone-simulator.mk  veryclean veryclean-tunnel\
+	&&  make -f  builder-iphone-os.mk  veryclean veryclean-tunnel\
+	&&  make -f  builder-iphone-os.mk  host=armv7-apple-darwin veryclean veryclean-tunnel 

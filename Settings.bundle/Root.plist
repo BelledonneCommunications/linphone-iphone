@@ -161,6 +161,8 @@
 		<dict>
 			<key>Title</key>
 			<string>Tunnel</string>
+            <key>Type</key>
+			<string>PSGroupSpecifier</string>
 		</dict>
 		<dict>
 			<key>Type</key>

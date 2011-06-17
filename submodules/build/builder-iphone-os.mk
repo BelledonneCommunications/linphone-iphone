@@ -77,7 +77,7 @@ init:
 	mkdir -p $(prefix)/include
 	mkdir -p $(prefix)/lib
 
-veryclean:
+veryclean: veryclean-linphone
 	rm -rf $(BUILDER_BUILD_DIR)
 
 .NOTPARALLEL build-linphone: init build-openssl build-osip2 build-eXosip2  build-speex build-libgsm  $(LINPHONE_BUILD_DIR)/Makefile
@@ -86,9 +86,9 @@ veryclean:
 clean-linphone: clean-osip2 clean-eXosip2 clean-speex clean-libgsm  clean-msilbc clean-libilbc clean-openssl clean-msamr
 	cd  $(LINPHONE_BUILD_DIR) && make clean
 
-veryclean-linphone: clean-linphone veryclean-osip2 veryclean-eXosip2 veryclean-speex veryclean-libgsm  veryclean-msilbc veryclean-libilbc veryclean-openssl veryclean-msamr
-	cd $(LINPHONE_BUILD_DIR) && make distclean
-	cd $(LINPHONE_SRC_DIR) && rm -f configure
+veryclean-linphone: veryclean-osip2 veryclean-eXosip2 veryclean-speex veryclean-libgsm  veryclean-msilbc veryclean-libilbc veryclean-openssl veryclean-msamr
+#-cd $(LINPHONE_BUILD_DIR) && make distclean
+	-cd $(LINPHONE_SRC_DIR) && rm -f configure
 
 clean-makefile-linphone: clean-makefile-osip2 clean-makefile-eXosip2 clean-makefile-speex clean-makefile-libilbc clean-makefile-msilbc clean-makefile-openssl clean-makefile-msamr
 	cd $(LINPHONE_BUILD_DIR) && rm -f Makefile && rm -f oRTP/Makefile && rm -f mediastreamer2/Makefile
@@ -132,8 +132,8 @@ clean-osip2:
 	 cd  $(BUILDER_BUILD_DIR)/$(osip_dir) && make clean
 
 veryclean-osip2:
-	 cd $(BUILDER_BUILD_DIR)/$(osip_dir) && make distclean
-	 cd $(BUILDER_SRC_DIR)/$(osip_dir) && rm -f configure
+#	 -cd $(BUILDER_BUILD_DIR)/$(osip_dir) && make distclean
+	 -cd $(BUILDER_SRC_DIR)/$(osip_dir) && rm -f configure
 
 clean-makefile-osip2:
 	 cd $(BUILDER_BUILD_DIR)/$(osip_dir) && rm -f Makefile
@@ -157,7 +157,8 @@ clean-eXosip2:
 	 cd  $(BUILDER_BUILD_DIR)/$(eXosip_dir)  && make clean
 
 veryclean-eXosip2:
-	 cd $(BUILDER_BUILD_DIR)/$(eXosip_dir) && make distclean
+#	-cd $(BUILDER_BUILD_DIR)/$(eXosip_dir) && make distclean
+	-rm -f $(BUILDER_SRC_DIR)/$(eXosip_dir)/configure
 
 clean-makefile-eXosip2:
 	 cd $(BUILDER_BUILD_DIR)/$(eXosip_dir) && rm -f Makefile
@@ -181,7 +182,8 @@ clean-speex:
 	 cd  $(BUILDER_BUILD_DIR)/$(speex_dir)  && make clean
 
 veryclean-speex:
-	 cd $(BUILDER_BUILD_DIR)/$(speex_dir) && make distclean
+#	-cd $(BUILDER_BUILD_DIR)/$(speex_dir) && make distclean
+	-rm -f $(BUILDER_SRC_DIR)/$(speex_dir)/configure
 
 clean-makefile-speex:
 	 cd $(BUILDER_BUILD_DIR)/$(speex_dir) && rm -f Makefile
@@ -201,8 +203,8 @@ clean-libgsm:
 	cd $(BUILDER_BUILD_DIR)/$(gsm_dir)\
 	&& make clean
 
-veryclean-libgsm: clean-libgsm
-	 cd $(BUILDER_BUILD_DIR)/$(gsm_dir)) \
+veryclean-libgsm: 
+	 -cd $(BUILDER_BUILD_DIR)/$(gsm_dir) \
 	&& make uninstall
 
 
@@ -225,8 +227,8 @@ clean-msilbc:
 	cd  $(MSILBC_BUILD_DIR) && make  clean
 
 veryclean-msilbc:
-	cd $(MSILBC_BUILD_DIR) && make distclean
-	cd $(MSILBC_BUILD_DIR) && rm configure
+#	-cd $(MSILBC_BUILD_DIR) && make distclean
+	-cd $(MSILBC_SRC_DIR) && rm configure
 
 clean-makefile-msilbc:
 	cd $(MSILBC_BUILD_DIR) && rm -f Makefile
@@ -249,8 +251,8 @@ clean-libilbc:
 	cd  $(LIBILBC_BUILD_DIR) && make clean
 
 veryclean-libilbc:
-	cd $(LIBILBC_BUILD_DIR) && make distclean
-	cd $(LIBILBC_BUILD_DIR) && rm -f configure
+#	-cd $(LIBILBC_BUILD_DIR) && make distclean
+	-cd $(MSILBC_SRC_DIR) && rm -f configure
 
 clean-makefile-libilbc:
 	cd $(LIBILBC_BUILD_DIR) && rm -f Makefile
