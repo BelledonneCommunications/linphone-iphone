@@ -835,7 +835,7 @@ void sal_op_cancel_authentication(SalOp *h) {
 static void set_network_origin(SalOp *op, osip_message_t *req){
 	const char *received=NULL;
 	int rport=5060;
-	char origin[64];
+	char origin[64]={0};
     SalTransport transport;
 	if (extract_received_rport(req,&received,&rport,&transport)!=0){
 		osip_via_t *via=NULL;
@@ -1019,7 +1019,8 @@ static void update_contact_from_response(SalOp *op, osip_message_t *response){
 			char *tmp;
 			sal_address_set_domain(addr,received);
 			sal_address_set_port_int(addr,rport);
-			sal_address_set_transport(addr,transport);
+			if (transport!=SalTransportUDP)
+				sal_address_set_transport(addr,transport);
 			tmp=sal_address_as_string(addr);
 			ms_message("Contact address updated to %s",tmp);
 			sal_op_set_contact(op,tmp);
