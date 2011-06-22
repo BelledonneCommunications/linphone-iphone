@@ -881,7 +881,7 @@ int linphone_core_get_download_ptime(LinphoneCore *lc) {
  *
 **/
 void linphone_core_set_upload_ptime(LinphoneCore *lc, int ptime){
-	lp_config_set_int(lc->config,"rtp","up_ptime",ptime);
+	lp_config_set_int(lc->config,"rtp","upload_ptime",ptime);
 }
 
 /**
@@ -890,7 +890,7 @@ void linphone_core_set_upload_ptime(LinphoneCore *lc, int ptime){
  *
 **/
 int linphone_core_get_upload_ptime(LinphoneCore *lc){
-	return lp_config_get_int(lc->config,"rtp","up_ptime",0);
+	return lp_config_get_int(lc->config,"rtp","upload_ptime",0);
 }
 
 

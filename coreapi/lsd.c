@@ -250,7 +250,6 @@ LinphoneSoundDaemon * linphone_sound_daemon_new(const char *cardname, int rate, 
 
 	lsd_player_init(&lsd->branches[0],mp,MS_ITC_SOURCE_ID,lsd);
 	ms_filter_set_notify_callback(lsd->branches[0].player,(MSFilterNotifyFunc)lsd_player_configure,&lsd->branches[0]);
-	ms_filter_enable_synchronous_notifcations (lsd->branches[0].player,TRUE);
 	for(i=1;i<MAX_BRANCHES;++i){
 		mp.pin=i;
 		lsd_player_init(&lsd->branches[i],mp,MS_FILE_PLAYER_ID,lsd);
