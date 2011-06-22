@@ -1206,6 +1206,15 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setDownloadBandwidth(JNI
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setUploadBandwidth(JNIEnv *env, jobject thiz, jlong lc, jint bw){
 	linphone_core_set_upload_bandwidth((LinphoneCore *)lc, (int) bw);
 }
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setDownloadPtime(JNIEnv *env, jobject thiz, jlong lc, jint ptime){
+	linphone_core_set_download_ptime((LinphoneCore *)lc, (int) ptime);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setUploadPtime(JNIEnv *env, jobject thiz, jlong lc, jint ptime){
+	linphone_core_set_upload_ptime((LinphoneCore *)lc, (int) ptime);
+}
+
 extern "C" int Java_org_linphone_core_LinphoneProxyConfigImpl_getState(JNIEnv*  env,jobject thiz,jlong ptr) {
 	return (int) linphone_proxy_config_get_state((const LinphoneProxyConfig *) ptr);
 }
