@@ -267,6 +267,7 @@ void sal_set_keepalive_period(Sal *ctx,unsigned int value);
 unsigned int sal_get_keepalive_period(Sal *ctx);
 void sal_use_session_timers(Sal *ctx, int expires);
 void sal_use_double_registrations(Sal *ctx, bool_t enabled);
+void sal_reuse_authorization(Sal *ctx, bool_t enabled);
 void sal_use_one_matching_codec_policy(Sal *ctx, bool_t one_matching_codec);
 void sal_use_rport(Sal *ctx, bool_t use_rports);
 void sal_use_101(Sal *ctx, bool_t use_101);

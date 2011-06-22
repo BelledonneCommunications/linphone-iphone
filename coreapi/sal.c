@@ -329,3 +329,4 @@ void sal_auth_info_delete(const SalAuthInfo* auth_info) {
 	if (auth_info->password) ms_free(auth_info->password);
 	ms_free((void*)auth_info);
 }
+
