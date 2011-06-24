@@ -193,6 +193,7 @@ void sal_op_release(SalOp *op){
 		eXosip_event_free(op->pending_auth);
 	if (op->rid!=-1){
 		sal_remove_register(op->base.root,op->rid);
+		eXosip_register_remove(op->rid);
 	}
 	if (op->cid!=-1){
 		ms_message("Cleaning cid %i",op->cid);
