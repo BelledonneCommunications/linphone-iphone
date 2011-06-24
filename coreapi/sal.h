@@ -319,6 +319,7 @@ int sal_call_send_dtmf(SalOp *h, char dtmf);
 int sal_call_terminate(SalOp *h);
 bool_t sal_call_autoanswer_asked(SalOp *op);
 void sal_call_send_vfu_request(SalOp *h);
+int sal_call_is_offerer(const SalOp *h);
 
 /*Registration*/
 int sal_register(SalOp *op, const char *proxy, const char *from, int expires);
@@ -342,6 +343,9 @@ int sal_publish(SalOp *op, const char *from, const char *to, SalPresenceStatus s
 
 /*ping: main purpose is to obtain its own contact address behind firewalls*/
 int sal_ping(SalOp *op, const char *from, const char *to);
+
+#define PAYLOAD_TYPE_FLAG_CAN_RECV	PAYLOAD_TYPE_USER_FLAG_1
+#define PAYLOAD_TYPE_FLAG_CAN_SEND	PAYLOAD_TYPE_USER_FLAG_2
 
 #define payload_type_set_number(pt,n)	(pt)->user_data=(void*)((long)n);
 #define payload_type_get_number(pt)		((int)(long)(pt)->user_data)

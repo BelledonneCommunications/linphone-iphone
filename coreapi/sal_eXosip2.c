@@ -509,6 +509,10 @@ static void sdp_process(SalOp *h){
 	
 }
 
+int sal_call_is_offerer(const SalOp *h){
+	return h->sdp_offering;
+}
+
 int sal_call_set_local_media_description(SalOp *h, SalMediaDescription *desc){
 	if (desc)
 		sal_media_description_ref(desc);

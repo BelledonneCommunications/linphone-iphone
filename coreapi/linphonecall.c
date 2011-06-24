@@ -783,9 +783,6 @@ static void post_configure_audio_streams(LinphoneCall*call){
 	}
 }
 
-
-
-
 static RtpProfile *make_profile(LinphoneCall *call, const SalMediaDescription *md, const SalStreamDescription *desc, int *used_pt){
 	int bw;
 	const MSList *elem;
@@ -800,7 +797,7 @@ static RtpProfile *make_profile(LinphoneCall *call, const SalMediaDescription *m
 		PayloadType *pt=(PayloadType*)elem->data;
 		int number;
 		
-		if (first) {
+		if ((pt->flags & PAYLOAD_TYPE_FLAG_CAN_SEND) && first) {
 			if (desc->type==SalAudio){
 				linphone_core_update_allocated_audio_bandwidth_in_call(call,pt);
 				up_ptime=linphone_core_get_upload_ptime(lc);

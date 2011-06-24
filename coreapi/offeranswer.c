@@ -61,7 +61,7 @@ static PayloadType * find_payload_type_best_match(const MSList *l, const Payload
 }
 
 static MSList *match_payloads(const MSList *local, const MSList *remote, bool_t reading_response, bool_t one_matching_codec){
-	const MSList *e2;
+	const MSList *e2,*e1;
 	MSList *res=NULL;
 	PayloadType *matched;
 	bool_t found_codec=FALSE;
@@ -85,6 +85,7 @@ static MSList *match_payloads(const MSList *local, const MSList *remote, bool_t 
 			newp=payload_type_clone(matched);
 			if (p2->send_fmtp)
 				payload_type_set_send_fmtp(newp,p2->send_fmtp);
+			newp->flags|=PAYLOAD_TYPE_FLAG_CAN_RECV|PAYLOAD_TYPE_FLAG_CAN_SEND;
 			res=ms_list_append(res,newp);
 			/* we should use the remote numbering even when parsing a response */
 			payload_type_set_number(newp,remote_number);
@@ -102,6 +103,26 @@ static MSList *match_payloads(const MSList *local, const MSList *remote, bool_t 
 			}
 		}else{
 			ms_message("No match for %s/%i",p2->mime_type,p2->clock_rate);
+		}
+	}
+	if (reading_response){
+		/* add remaning local payload as CAN_RECV only so that if we are in front of a non-compliant equipment we are still able to decode the RTP stream*/
+		for(e1=local;e1!=NULL;e1=e1->next){
+			PayloadType *p1=(PayloadType*)e1->data;
+			bool_t found=FALSE;
+			for(e2=res;e2!=NULL;e2=e2->next){
+				PayloadType *p2=(PayloadType*)e2->data;
+				if (payload_type_get_number(p2)==payload_type_get_number(p1)){
+					found=TRUE;
+					break;
+				}
+			}
+			if (!found){
+				ms_message("Adding %s/%i for compatibility, just in case.",p1->mime_type,p1->clock_rate);
+				p1=payload_type_clone(p1);
+				p1->flags|=PAYLOAD_TYPE_FLAG_CAN_RECV;
+				res=ms_list_append(res,p1);
+			}
 		}
 	}
 	return res;
