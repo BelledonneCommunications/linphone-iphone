@@ -466,6 +466,7 @@ static void sip_config_read(LinphoneCore *lc)
 
 	sal_use_rport(lc->sal,lp_config_get_int(lc->config,"sip","use_rport",1));
 	sal_use_101(lc->sal,lp_config_get_int(lc->config,"sip","use_101",1));
+	sal_reuse_authorization(lc->sal, lp_config_get_int(lc->config,"sip","reuse_authorization",0));
 
 	tmp=lp_config_get_int(lc->config,"sip","use_rfc2833",0);
 	linphone_core_set_use_rfc2833_for_dtmf(lc,tmp);

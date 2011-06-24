@@ -531,6 +531,18 @@ public interface LinphoneCore {
 	void setUploadBandwidth(int bw);
 
 	void setDownloadBandwidth(int bw);
+	
+	/**
+	 * Sets audio packetization interval suggested for remote end.
+	 * @param ptime packetization interval in milliseconds
+	 */
+	void setDownloadPtime(int ptime);
+	
+	/**
+	 * Sets audio packetization interval sent to remote end.
+	 * @param ptime packetization interval in milliseconds
+	 */
+	void setUploadPtime(int ptime);
 
 	void setPreferredVideoSize(VideoSize vSize);
 	

@@ -193,6 +193,7 @@ void sal_op_release(SalOp *op){
 		eXosip_event_free(op->pending_auth);
 	if (op->rid!=-1){
 		sal_remove_register(op->base.root,op->rid);
+		eXosip_register_remove(op->rid);
 	}
 	if (op->cid!=-1){
 		ms_message("Cleaning cid %i",op->cid);
@@ -279,6 +280,7 @@ Sal * sal_init(){
 	sal->double_reg=TRUE;
 	sal->use_rports=TRUE;
 	sal->use_101=TRUE;
+	sal->reuse_authorization=FALSE;
 	return sal;
 }
 
@@ -797,7 +799,7 @@ int sal_call_terminate(SalOp *h){
 	eXosip_lock();
 	err=eXosip_call_terminate(h->cid,h->did);
 	eXosip_unlock();
-	pop_auth_from_exosip();
+	if (!h->base.root->reuse_authorization) pop_auth_from_exosip();
 	if (err!=0){
 		ms_warning("Exosip could not terminate the call: cid=%i did=%i", h->cid,h->did);
 	}
@@ -820,7 +822,7 @@ void sal_op_authenticate(SalOp *h, const SalAuthInfo *info){
 		eXosip_default_action(h->pending_auth);
 		eXosip_unlock();
 		ms_message("eXosip_default_action() done");
-		pop_auth_from_exosip();
+		if (!h->base.root->reuse_authorization) pop_auth_from_exosip();
 		
 		if (h->auth_info) sal_auth_info_delete(h->auth_info); /*if already exist*/
 		h->auth_info=sal_auth_info_clone(info); /*store auth info for subsequent request*/
@@ -2210,4 +2212,7 @@ int sal_call_update(SalOp *h, const char *subject){
 	err = eXosip_call_send_request(h->did, reinvite);
 	eXosip_unlock();
 	return err;
+}
+void sal_reuse_authorization(Sal *ctx, bool_t value) {
+	ctx->reuse_authorization=value;
 }

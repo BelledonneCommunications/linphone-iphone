@@ -44,6 +44,7 @@ struct Sal{
 	bool_t double_reg;
 	bool_t use_rports;
 	bool_t use_101;
+	bool_t reuse_authorization;
 };
 
 struct SalOp{
