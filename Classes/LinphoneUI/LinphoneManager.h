@@ -27,6 +27,13 @@ typedef enum _Connectivity {
 	wwan
 	,none
 } Connectivity;
+typedef enum _TunnelMode {
+	off
+	,on
+	,wwan_only
+	,autodetect
+} TunnelMode;
+
 @class FastAddressBook;
 @interface LinphoneManager : NSObject {
 @private
@@ -42,6 +49,7 @@ typedef enum _Connectivity {
 	UIViewController* mCurrentViewController;
 	Connectivity connectivity;
     FastAddressBook* mFastAddressBook;
+	TunnelMode tunnelMode;
 	
 }
 +(LinphoneManager*) instance;
@@ -60,6 +68,7 @@ typedef enum _Connectivity {
 @property (nonatomic, retain) id<LinphoneUICallDelegate> callDelegate;
 @property (nonatomic, retain) id<LinphoneUIRegistrationDelegate> registrationDelegate;
 @property Connectivity connectivity;
+@property TunnelMode tunnelMode;
 @end
 
 

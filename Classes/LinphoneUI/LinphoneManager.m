@@ -44,10 +44,12 @@ extern void libmsamr_init();
 @synthesize callDelegate;
 @synthesize registrationDelegate;
 @synthesize connectivity;
+@synthesize tunnelMode;
 
 -(id) init {
     if ((self= [super init])) {
         mFastAddressBook = [[FastAddressBook alloc] init];
+		tunnelMode = off;
     }
     return self;
 }
@@ -339,6 +341,18 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 				linphone_core_set_network_reachable([LinphoneManager getLc],true);
 			}
 			lLinphoneMgr.connectivity=newConnectivity;
+			switch (lLinphoneMgr.tunnelMode) {
+				case wwan_only:
+					sTunnelMgr->enable(lLinphoneMgr.connectivity == wwan);	
+					break;
+				case autodetect: 
+					sTunnelMgr->autoDetect();
+					break;
+				default: 
+					//nothing to do
+					break;
+			}
+
 			ms_message("new network connectivity  of type [%s]",(newConnectivity==wifi?"wifi":"wwan"));
 		}
 		
@@ -468,7 +482,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		}
 	}		
 	//tunnel
-	BOOL lTunnelPrefEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"tunnel_enabled_preference"];
+	NSString* lTunnelPrefEnabled = [[NSUserDefaults standardUserDefaults] stringForKey:@"tunnel_enabled_preference"];
 	NSString* lTunnelPrefAddress = [[NSUserDefaults standardUserDefaults] stringForKey:@"tunnel_address_preference"];
 	NSString* lTunnelPrefPort = [[NSUserDefaults standardUserDefaults] stringForKey:@"tunnel_port_preference"];
 	int lTunnelPort = 443;
@@ -477,9 +491,36 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	}
 	if (lTunnelPrefAddress && [lTunnelPrefAddress length]) {
 		sTunnelMgr->cleanServers();
-		sTunnelMgr->addServer([lTunnelPrefAddress cStringUsingEncoding:[NSString defaultCStringEncoding]],lTunnelPort);
+		sTunnelMgr->addServer([lTunnelPrefAddress cStringUsingEncoding:[NSString defaultCStringEncoding]],lTunnelPort,12345/*default port*/,1000);
 	}
-	sTunnelMgr->enable(lTunnelPrefEnabled);
+	if ([lTunnelPrefEnabled isEqualToString:@"off"]) {
+		tunnelMode=off;
+	} else if ([lTunnelPrefEnabled isEqualToString:@"on"]) {
+		tunnelMode=on;
+	}else if ([lTunnelPrefEnabled isEqualToString:@"wwan"]) {
+		tunnelMode=wwan_only;
+	}else if ([lTunnelPrefEnabled isEqualToString:@"auto"]) {
+		tunnelMode=autodetect;
+	} else {
+		ms_error("Unexpected tunnel mode [%s]",[lTunnelPrefEnabled cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+	}
+	switch (tunnelMode) {
+		case off: 
+			sTunnelMgr->enable(false);
+			break;
+		case on:
+			sTunnelMgr->enable(true);
+			break;
+		case wwan_only:
+			if (connectivity != wwan) {
+				sTunnelMgr->enable(false);	
+			}
+			break;
+		case autodetect: 
+			sTunnelMgr->autoDetect();
+			break;
+			
+	}
 	
 	
 	//Configure Codecs
@@ -763,5 +804,4 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 -(void) registerLogView:(id<LogView>) view {
 	mLogView = view;
 }
-
 @end
