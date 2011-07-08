@@ -31,6 +31,11 @@
 		22226C181181986A000CA27B /* contact-orange.png in Resources */ = {isa = PBXBuildFile; fileRef = 22226C161181986A000CA27B /* contact-orange.png */; };
 		22226C191181986A000CA27B /* dialer-orange.png in Resources */ = {isa = PBXBuildFile; fileRef = 22226C171181986A000CA27B /* dialer-orange.png */; };
 		22226C1D11819B34000CA27B /* history-orange.png in Resources */ = {isa = PBXBuildFile; fileRef = 22226C1C11819B34000CA27B /* history-orange.png */; };
+		22276E8313C73D3100210156 /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22276E8013C73D3100210156 /* libavcodec.a */; };
+		22276E8413C73D3100210156 /* libavutil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22276E8113C73D3100210156 /* libavutil.a */; };
+		22276E8513C73D3100210156 /* libswscale.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22276E8213C73D3100210156 /* libswscale.a */; };
+		22276E8713C73D8A00210156 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22276E8613C73D8A00210156 /* CoreVideo.framework */; };
+		22276E8913C73DC000210156 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22276E8813C73DC000210156 /* CoreMedia.framework */; };
 		222A483412F7176F0075F07F /* IncallViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 222A483112F7176F0075F07F /* IncallViewController.xib */; };
 		223148E41178A08200637D6A /* libilbc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 223148E31178A08200637D6A /* libilbc.a */; };
 		223148E61178A09900637D6A /* libmsilbc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 223148E51178A09900637D6A /* libmsilbc.a */; };
@@ -71,6 +76,8 @@
 		22BB1A69132FF16A005CD7AA /* UIEraseButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22BB1A68132FF16A005CD7AA /* UIEraseButton.m */; };
 		22C755601317E59C007BC101 /* UIBluetoothButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22C7555F1317E59C007BC101 /* UIBluetoothButton.m */; };
 		22D1B68112A3E0BE001AE361 /* libresolv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 22D1B68012A3E0BE001AE361 /* libresolv.dylib */; };
+		22E028B713B4CCBD0068A713 /* VideoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E028B513B4CCBD0068A713 /* VideoViewController.m */; };
+		22E028B813B4CCBD0068A713 /* VideoViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22E028B613B4CCBD0068A713 /* VideoViewController.xib */; };
 		22E0A785111C1BA800B04932 /* Speaker-32-on.png in Resources */ = {isa = PBXBuildFile; fileRef = 22E0A783111C1BA800B04932 /* Speaker-32-on.png */; };
 		22E0A786111C1BA800B04932 /* Speaker-32-off.png in Resources */ = {isa = PBXBuildFile; fileRef = 22E0A784111C1BA800B04932 /* Speaker-32-off.png */; };
 		22E0A822111C44E100B04932 /* MoreViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E0A81C111C44E100B04932 /* MoreViewController.m */; };
@@ -93,6 +100,13 @@
 			proxyType = 2;
 			remoteGlobalIDString = D2AAC07E0554694100DB518D;
 			remoteInfo = liblinphone;
+		};
+		22DD19DE13A8D7FB0018ECD4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 22A10D9E11F88C1F00373793 /* liblinphone.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 22DD19BE13A8D7FA0018ECD4;
+			remoteInfo = mediastream;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -250,6 +264,11 @@
 		22226C161181986A000CA27B /* contact-orange.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "contact-orange.png"; path = "liblinphone-sdk/apple-darwin/share/pixmaps/linphone/contact-orange.png"; sourceTree = "<group>"; };
 		22226C171181986A000CA27B /* dialer-orange.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "dialer-orange.png"; path = "liblinphone-sdk/apple-darwin/share/pixmaps/linphone/dialer-orange.png"; sourceTree = "<group>"; };
 		22226C1C11819B34000CA27B /* history-orange.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "history-orange.png"; path = "liblinphone-sdk/apple-darwin/share/pixmaps/linphone/history-orange.png"; sourceTree = "<group>"; };
+		22276E8013C73D3100210156 /* libavcodec.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavcodec.a; path = "liblinphone-sdk/apple-darwin/lib/libavcodec.a"; sourceTree = "<group>"; };
+		22276E8113C73D3100210156 /* libavutil.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavutil.a; path = "liblinphone-sdk/apple-darwin/lib/libavutil.a"; sourceTree = "<group>"; };
+		22276E8213C73D3100210156 /* libswscale.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libswscale.a; path = "liblinphone-sdk/apple-darwin/lib/libswscale.a"; sourceTree = "<group>"; };
+		22276E8613C73D8A00210156 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		22276E8813C73DC000210156 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		222A483112F7176F0075F07F /* IncallViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = IncallViewController.xib; sourceTree = "<group>"; };
 		222A483212F7176F0075F07F /* IncallViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IncallViewController.m; sourceTree = "<group>"; };
 		222A483312F7176F0075F07F /* IncallViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IncallViewController.h; sourceTree = "<group>"; };
@@ -375,6 +394,9 @@
 		22C7564A13265C6A007BC101 /* x509_vfy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x509_vfy.h; sourceTree = "<group>"; };
 		22C7564B13265C6A007BC101 /* x509v3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x509v3.h; sourceTree = "<group>"; };
 		22D1B68012A3E0BE001AE361 /* libresolv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libresolv.dylib; path = usr/lib/libresolv.dylib; sourceTree = SDKROOT; };
+		22E028B413B4CCBD0068A713 /* VideoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoViewController.h; sourceTree = "<group>"; };
+		22E028B513B4CCBD0068A713 /* VideoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VideoViewController.m; sourceTree = "<group>"; };
+		22E028B613B4CCBD0068A713 /* VideoViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = VideoViewController.xib; sourceTree = "<group>"; };
 		22E0A783111C1BA800B04932 /* Speaker-32-on.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Speaker-32-on.png"; path = "Resources/Speaker-32-on.png"; sourceTree = "<group>"; };
 		22E0A784111C1BA800B04932 /* Speaker-32-off.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Speaker-32-off.png"; path = "Resources/Speaker-32-off.png"; sourceTree = "<group>"; };
 		22E0A81B111C44E100B04932 /* MoreViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MoreViewController.xib; sourceTree = "<group>"; };
@@ -402,6 +424,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				22276E8913C73DC000210156 /* CoreMedia.framework in Frameworks */,
+				22276E8713C73D8A00210156 /* CoreVideo.framework in Frameworks */,
+				22276E8313C73D3100210156 /* libavcodec.a in Frameworks */,
+				22276E8413C73D3100210156 /* libavutil.a in Frameworks */,
+				22276E8513C73D3100210156 /* libswscale.a in Frameworks */,
 				22E5B0AF133B5EA20044EA25 /* libssl.a in Frameworks */,
 				22E5B0B0133B5EA20044EA25 /* libcrypto.a in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
@@ -461,6 +488,9 @@
 				227BCDC110D4004600FBFD76 /* CallHistoryTableViewController.xib */,
 				2242D9C710D691F900E9963F /* GenericTabViewController.h */,
 				2242D9C810D691F900E9963F /* GenericTabViewController.m */,
+				22E028B413B4CCBD0068A713 /* VideoViewController.h */,
+				22E028B513B4CCBD0068A713 /* VideoViewController.m */,
+				22E028B613B4CCBD0068A713 /* VideoViewController.xib */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -697,6 +727,7 @@
 			isa = PBXGroup;
 			children = (
 				22A10DA311F88C1F00373793 /* liblinphone.a */,
+				22DD19DF13A8D7FB0018ECD4 /* mediastream.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -782,6 +813,11 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				22276E8813C73DC000210156 /* CoreMedia.framework */,
+				22276E8613C73D8A00210156 /* CoreVideo.framework */,
+				22276E8013C73D3100210156 /* libavcodec.a */,
+				22276E8113C73D3100210156 /* libavutil.a */,
+				22276E8213C73D3100210156 /* libswscale.a */,
 				2214783B1386A2030020F8B8 /* Localizable.strings */,
 				22A10D9E11F88C1F00373793 /* liblinphone.xcodeproj */,
 				223148E51178A09900637D6A /* libmsilbc.a */,
@@ -931,6 +967,13 @@
 			remoteRef = 22A10DA211F88C1F00373793 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		22DD19DF13A8D7FB0018ECD4 /* mediastream.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = mediastream.app;
+			remoteRef = 22DD19DE13A8D7FB0018ECD4 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
@@ -970,6 +1013,7 @@
 				228B19AF130290C500F154D3 /* iTunesArtwork in Resources */,
 				2214783D1386A2030020F8B8 /* Localizable.strings in Resources */,
 				22E19E48138A67A000FBFE87 /* missed_call.png in Resources */,
+				22E028B813B4CCBD0068A713 /* VideoViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1000,6 +1044,7 @@
 				22C755601317E59C007BC101 /* UIBluetoothButton.m in Sources */,
 				22BB1A69132FF16A005CD7AA /* UIEraseButton.m in Sources */,
 				223963171393CFAF001DE689 /* FastAddressBook.m in Sources */,
+				22E028B713B4CCBD0068A713 /* VideoViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

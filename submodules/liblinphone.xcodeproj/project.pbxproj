@@ -8,6 +8,30 @@
 
 /* Begin PBXBuildFile section */
 		2203126F139F61990049A2ED /* ioscapture.m in Sources */ = {isa = PBXBuildFile; fileRef = 22D15AB3139F505400C7713A /* ioscapture.m */; };
+		2203127213A247B50049A2ED /* iosdisplay.h in Headers */ = {isa = PBXBuildFile; fileRef = 2203127013A247B40049A2ED /* iosdisplay.h */; };
+		2203127313A247B50049A2ED /* iosdisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = 2203127113A247B40049A2ED /* iosdisplay.m */; };
+		2203127613A249F70049A2ED /* filter-template.c in Sources */ = {isa = PBXBuildFile; fileRef = 2203127413A249F70049A2ED /* filter-template.c */; };
+		220ED19A13A8F87700AC21E0 /* libspeexdsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220ED19713A8F87700AC21E0 /* libspeexdsp.a */; };
+		220ED19B13A8F87700AC21E0 /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220ED19813A8F87700AC21E0 /* libspeex.a */; };
+		220ED19C13A8F87700AC21E0 /* libortp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220ED19913A8F87700AC21E0 /* libortp.a */; };
+		220ED19D13A9033F00AC21E0 /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AAC07E0554694100DB518D /* liblinphone.a */; };
+		220ED19F13A9038F00AC21E0 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 220ED19E13A9038F00AC21E0 /* CoreVideo.framework */; };
+		220ED1A113A9039600AC21E0 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 220ED1A013A9039600AC21E0 /* CoreAudio.framework */; };
+		220ED1A313A903BF00AC21E0 /* libgsm.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220ED1A213A903BF00AC21E0 /* libgsm.a */; };
+		220ED1A713A9040700AC21E0 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 220ED1A613A9040700AC21E0 /* AudioToolbox.framework */; };
+		220ED1A913A9041800AC21E0 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 220ED1A813A9041800AC21E0 /* AVFoundation.framework */; };
+		220ED1AC13A9062600AC21E0 /* nowebcam.h in Headers */ = {isa = PBXBuildFile; fileRef = 220ED1AA13A9062500AC21E0 /* nowebcam.h */; };
+		220ED1AD13A9062600AC21E0 /* nowebcam.c in Sources */ = {isa = PBXBuildFile; fileRef = 220ED1AB13A9062500AC21E0 /* nowebcam.c */; };
+		221F589C13AB4FC500D603C9 /* msvideo.c in Sources */ = {isa = PBXBuildFile; fileRef = 221F589B13AB4FC500D603C9 /* msvideo.c */; };
+		221F58A013AB50F800D603C9 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 221F589F13AB50F800D603C9 /* CoreMedia.framework */; };
+		221F58A213AB6F8100D603C9 /* pixconv.c in Sources */ = {isa = PBXBuildFile; fileRef = 221F58A113AB6F8000D603C9 /* pixconv.c */; };
+		221F58A413AB708C00D603C9 /* alldescs.h in Headers */ = {isa = PBXBuildFile; fileRef = 221F58A313AB708C00D603C9 /* alldescs.h */; };
+		221F58A813AB716400D603C9 /* tonedetector.c in Sources */ = {isa = PBXBuildFile; fileRef = 221F58A513AB716300D603C9 /* tonedetector.c */; };
+		221F58A913AB716400D603C9 /* jpegwriter.c in Sources */ = {isa = PBXBuildFile; fileRef = 221F58A613AB716300D603C9 /* jpegwriter.c */; };
+		221F58AA13AB716400D603C9 /* h264dec.c in Sources */ = {isa = PBXBuildFile; fileRef = 221F58A713AB716300D603C9 /* h264dec.c */; };
+		221F58AC13AB71A400D603C9 /* sizeconv.c in Sources */ = {isa = PBXBuildFile; fileRef = 221F58AB13AB71A400D603C9 /* sizeconv.c */; };
+		221F58AE13ABA42800D603C9 /* scaler.c in Sources */ = {isa = PBXBuildFile; fileRef = 221F58AD13ABA42800D603C9 /* scaler.c */; };
+		221F58E413AF44B300D603C9 /* scaler.h in Headers */ = {isa = PBXBuildFile; fileRef = 221F58E313AF44B300D603C9 /* scaler.h */; };
 		222CA63211F6CF7600621220 /* allfilters.h in Headers */ = {isa = PBXBuildFile; fileRef = 222CA5BE11F6CF7600621220 /* allfilters.h */; };
 		222CA63311F6CF7600621220 /* dsptools.h in Headers */ = {isa = PBXBuildFile; fileRef = 222CA5BF11F6CF7600621220 /* dsptools.h */; };
 		222CA63411F6CF7600621220 /* dtmfgen.h in Headers */ = {isa = PBXBuildFile; fileRef = 222CA5C011F6CF7600621220 /* dtmfgen.h */; };
@@ -43,8 +67,6 @@
 		222CA65511F6CF7600621220 /* chanadapt.c in Sources */ = {isa = PBXBuildFile; fileRef = 222CA5E511F6CF7600621220 /* chanadapt.c */; };
 		222CA65711F6CF7600621220 /* dsptools.c in Sources */ = {isa = PBXBuildFile; fileRef = 222CA5E711F6CF7600621220 /* dsptools.c */; };
 		222CA65811F6CF7600621220 /* dtmfgen.c in Sources */ = {isa = PBXBuildFile; fileRef = 222CA5E811F6CF7600621220 /* dtmfgen.c */; };
-		222CA65911F6CF7600621220 /* dxfilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 222CA5E911F6CF7600621220 /* dxfilter.cpp */; };
-		222CA65A11F6CF7600621220 /* dxfilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 222CA5EA11F6CF7600621220 /* dxfilter.h */; };
 		222CA65B11F6CF7600621220 /* equalizer.c in Sources */ = {isa = PBXBuildFile; fileRef = 222CA5EB11F6CF7600621220 /* equalizer.c */; };
 		222CA65C11F6CF7600621220 /* eventqueue.c in Sources */ = {isa = PBXBuildFile; fileRef = 222CA5EC11F6CF7600621220 /* eventqueue.c */; };
 		222CA65D11F6CF7600621220 /* extdisplay.c in Sources */ = {isa = PBXBuildFile; fileRef = 222CA5ED11F6CF7600621220 /* extdisplay.c */; };
@@ -151,6 +173,13 @@
 		222CA78511F6CFB100621220 /* sipsetup.c in Sources */ = {isa = PBXBuildFile; fileRef = 222CA76311F6CFB100621220 /* sipsetup.c */; };
 		222CA78611F6CFB100621220 /* sipsetup.h in Headers */ = {isa = PBXBuildFile; fileRef = 222CA76411F6CFB100621220 /* sipsetup.h */; };
 		2252935B12F6CA4700DD9BFB /* ec-calibrator.c in Sources */ = {isa = PBXBuildFile; fileRef = 2252935A12F6CA4700DD9BFB /* ec-calibrator.c */; };
+		2258C44113A9377B0087A596 /* swscale.h in Headers */ = {isa = PBXBuildFile; fileRef = 2258C44013A9377B0087A596 /* swscale.h */; };
+		2258C44513A945520087A596 /* libswscale.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2258C44213A945520087A596 /* libswscale.a */; };
+		2258C44613A945520087A596 /* libavutil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2258C44313A945520087A596 /* libavutil.a */; };
+		2258C44713A945520087A596 /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2258C44413A945520087A596 /* libavcodec.a */; };
+		2258C44B13A946890087A596 /* videostream.c in Sources */ = {isa = PBXBuildFile; fileRef = 2258C44813A946890087A596 /* videostream.c */; };
+		2258C44C13A946890087A596 /* videoenc.c in Sources */ = {isa = PBXBuildFile; fileRef = 2258C44913A946890087A596 /* videoenc.c */; };
+		2258C44D13A946890087A596 /* videodec.c in Sources */ = {isa = PBXBuildFile; fileRef = 2258C44A13A946890087A596 /* videodec.c */; };
 		225D355A124B1FF60008581C /* linphonecall.c in Sources */ = {isa = PBXBuildFile; fileRef = 225D3559124B1FF60008581C /* linphonecall.c */; };
 		229B9D5913043EAB00EFCD1C /* linphonecore_utils.h in Headers */ = {isa = PBXBuildFile; fileRef = 229B9D5813043EAB00EFCD1C /* linphonecore_utils.h */; };
 		22A10B5611F84E2D00373793 /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = 22A10B4F11F84E2D00373793 /* config.h */; };
@@ -160,11 +189,59 @@
 		22A10B5A11F84E2D00373793 /* toast.h in Headers */ = {isa = PBXBuildFile; fileRef = 22A10B5411F84E2D00373793 /* toast.h */; };
 		22A10B5B11F84E2D00373793 /* unproto.h in Headers */ = {isa = PBXBuildFile; fileRef = 22A10B5511F84E2D00373793 /* unproto.h */; };
 		22A10EE811F8920F00373793 /* mswebcam.c in Sources */ = {isa = PBXBuildFile; fileRef = 22A10EE711F8920F00373793 /* mswebcam.c */; };
+		22B5106913B060E100CD87DA /* nowebcamCIF.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 22B5106813AFD37B00CD87DA /* nowebcamCIF.jpg */; };
+		22DD19C113A8D7FA0018ECD4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22DD19C013A8D7FA0018ECD4 /* UIKit.framework */; };
+		22DD19C213A8D7FA0018ECD4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
+		22DD19C413A8D7FA0018ECD4 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22DD19C313A8D7FA0018ECD4 /* CoreGraphics.framework */; };
+		22DD19F713A8DFA70018ECD4 /* mediastream.c in Sources */ = {isa = PBXBuildFile; fileRef = 22DD19E713A8D82C0018ECD4 /* mediastream.c */; };
+		22DD21AE13A8E3310018ECD4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 22DD21A113A8E3310018ECD4 /* InfoPlist.strings */; };
+		22DD21AF13A8E3310018ECD4 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22DD21A313A8E3310018ECD4 /* MainWindow.xib */; };
+		22DD21B013A8E3310018ECD4 /* mediastreamViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22DD21A513A8E3310018ECD4 /* mediastreamViewController.xib */; };
+		22DD21B213A8E3310018ECD4 /* mediastream-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 22DD21A813A8E3310018ECD4 /* mediastream-Info.plist */; };
+		22DD21B313A8E3310018ECD4 /* mediastreamAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 22DD21AB13A8E3310018ECD4 /* mediastreamAppDelegate.m */; };
+		22DD21B413A8E3310018ECD4 /* mediastreamViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22DD21AD13A8E3310018ECD4 /* mediastreamViewController.m */; };
 		AA747D9F0F9514B9006C5449 /* liblinphone_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* liblinphone_Prefix.pch */; };
 		AACBBE4A0F95108600F1A2B1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		220ED19513A8F82A00AC21E0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC07D0554694100DB518D;
+			remoteInfo = liblinphone;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		2203127013A247B40049A2ED /* iosdisplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iosdisplay.h; sourceTree = "<group>"; };
+		2203127113A247B40049A2ED /* iosdisplay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iosdisplay.m; sourceTree = "<group>"; };
+		2203127413A249F70049A2ED /* filter-template.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "filter-template.c"; sourceTree = "<group>"; };
+		220ED19713A8F87700AC21E0 /* libspeexdsp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libspeexdsp.a; path = "../liblinphone-sdk/apple-darwin/lib/libspeexdsp.a"; sourceTree = "<group>"; };
+		220ED19813A8F87700AC21E0 /* libspeex.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libspeex.a; path = "../liblinphone-sdk/apple-darwin/lib/libspeex.a"; sourceTree = "<group>"; };
+		220ED19913A8F87700AC21E0 /* libortp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libortp.a; path = "../liblinphone-sdk/apple-darwin/lib/libortp.a"; sourceTree = "<group>"; };
+		220ED19E13A9038F00AC21E0 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		220ED1A013A9039600AC21E0 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
+		220ED1A213A903BF00AC21E0 /* libgsm.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgsm.a; path = "../liblinphone-sdk/apple-darwin/lib/libgsm.a"; sourceTree = "<group>"; };
+		220ED1A413A903E100AC21E0 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
+		220ED1A613A9040700AC21E0 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		220ED1A813A9041800AC21E0 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		220ED1AA13A9062500AC21E0 /* nowebcam.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nowebcam.h; sourceTree = "<group>"; };
+		220ED1AB13A9062500AC21E0 /* nowebcam.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = nowebcam.c; sourceTree = "<group>"; };
+		221F589913AB4EEE00D603C9 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		221F589B13AB4FC500D603C9 /* msvideo.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = msvideo.c; sourceTree = "<group>"; };
+		221F589D13AB503F00D603C9 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		221F589F13AB50F800D603C9 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		221F58A113AB6F8000D603C9 /* pixconv.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = pixconv.c; sourceTree = "<group>"; };
+		221F58A313AB708C00D603C9 /* alldescs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = alldescs.h; path = build/iphone/alldescs.h; sourceTree = "<group>"; };
+		221F58A513AB716300D603C9 /* tonedetector.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = tonedetector.c; sourceTree = "<group>"; };
+		221F58A613AB716300D603C9 /* jpegwriter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = jpegwriter.c; sourceTree = "<group>"; };
+		221F58A713AB716300D603C9 /* h264dec.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = h264dec.c; sourceTree = "<group>"; };
+		221F58AB13AB71A400D603C9 /* sizeconv.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sizeconv.c; sourceTree = "<group>"; };
+		221F58AD13ABA42800D603C9 /* scaler.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = scaler.c; sourceTree = "<group>"; };
+		221F58E313AF44B300D603C9 /* scaler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scaler.h; sourceTree = "<group>"; };
+		22276E7F13C4637100210156 /* msandroidvideo.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = msandroidvideo.cpp; path = "../../../../../../workspace-iphone-port/linphone-iphone-tunnel/submodules/linphone/mediastreamer2/src/msandroidvideo.cpp"; sourceTree = "<group>"; };
 		222CA5B911F6CF7600621220 /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		222CA5BA11F6CF7600621220 /* Makefile.am */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile.am; sourceTree = "<group>"; };
 		222CA5BB11F6CF7600621220 /* Makefile.in */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile.in; sourceTree = "<group>"; };
@@ -207,8 +284,6 @@
 		222CA5E511F6CF7600621220 /* chanadapt.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = chanadapt.c; sourceTree = "<group>"; };
 		222CA5E711F6CF7600621220 /* dsptools.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dsptools.c; sourceTree = "<group>"; };
 		222CA5E811F6CF7600621220 /* dtmfgen.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dtmfgen.c; sourceTree = "<group>"; };
-		222CA5E911F6CF7600621220 /* dxfilter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dxfilter.cpp; sourceTree = "<group>"; };
-		222CA5EA11F6CF7600621220 /* dxfilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dxfilter.h; sourceTree = "<group>"; };
 		222CA5EB11F6CF7600621220 /* equalizer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = equalizer.c; sourceTree = "<group>"; };
 		222CA5EC11F6CF7600621220 /* eventqueue.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = eventqueue.c; sourceTree = "<group>"; };
 		222CA5ED11F6CF7600621220 /* extdisplay.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = extdisplay.c; sourceTree = "<group>"; };
@@ -334,6 +409,13 @@
 		222CA76311F6CFB100621220 /* sipsetup.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sipsetup.c; sourceTree = "<group>"; };
 		222CA76411F6CFB100621220 /* sipsetup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sipsetup.h; sourceTree = "<group>"; };
 		2252935A12F6CA4700DD9BFB /* ec-calibrator.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "ec-calibrator.c"; path = "linphone/coreapi/ec-calibrator.c"; sourceTree = SOURCE_ROOT; };
+		2258C44013A9377B0087A596 /* swscale.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = swscale.h; sourceTree = "<group>"; };
+		2258C44213A945520087A596 /* libswscale.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libswscale.a; path = "../liblinphone-sdk/apple-darwin/lib/libswscale.a"; sourceTree = "<group>"; };
+		2258C44313A945520087A596 /* libavutil.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavutil.a; path = "../liblinphone-sdk/apple-darwin/lib/libavutil.a"; sourceTree = "<group>"; };
+		2258C44413A945520087A596 /* libavcodec.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavcodec.a; path = "../liblinphone-sdk/apple-darwin/lib/libavcodec.a"; sourceTree = "<group>"; };
+		2258C44813A946890087A596 /* videostream.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = videostream.c; sourceTree = "<group>"; };
+		2258C44913A946890087A596 /* videoenc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = videoenc.c; sourceTree = "<group>"; };
+		2258C44A13A946890087A596 /* videodec.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = videodec.c; sourceTree = "<group>"; };
 		225D3559124B1FF60008581C /* linphonecall.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = linphonecall.c; sourceTree = "<group>"; };
 		229B9D5813043EAB00EFCD1C /* linphonecore_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linphonecore_utils.h; sourceTree = "<group>"; };
 		22A10B4F11F84E2D00373793 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
@@ -344,14 +426,51 @@
 		22A10B5411F84E2D00373793 /* toast.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = toast.h; sourceTree = "<group>"; };
 		22A10B5511F84E2D00373793 /* unproto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unproto.h; sourceTree = "<group>"; };
 		22A10EE711F8920F00373793 /* mswebcam.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mswebcam.c; path = linphone/mediastreamer2/src/mswebcam.c; sourceTree = SOURCE_ROOT; };
+		22B5106813AFD37B00CD87DA /* nowebcamCIF.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = nowebcamCIF.jpg; path = src/nowebcamCIF.jpg; sourceTree = "<group>"; };
 		22D15AB3139F505400C7713A /* ioscapture.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ioscapture.m; sourceTree = "<group>"; };
 		22D15AB5139F579D00C7713A /* qtcapture.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = qtcapture.m; sourceTree = "<group>"; };
+		22DD19BE13A8D7FA0018ECD4 /* mediastream.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = mediastream.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		22DD19C013A8D7FA0018ECD4 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		22DD19C313A8D7FA0018ECD4 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		22DD19E713A8D82C0018ECD4 /* mediastream.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = mediastream.c; sourceTree = "<group>"; };
+		22DD21A213A8E3310018ECD4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		22DD21A413A8E3310018ECD4 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainWindow.xib; sourceTree = "<group>"; };
+		22DD21A613A8E3310018ECD4 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/mediastreamViewController.xib; sourceTree = "<group>"; };
+		22DD21A813A8E3310018ECD4 /* mediastream-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "mediastream-Info.plist"; sourceTree = "<group>"; };
+		22DD21A913A8E3310018ECD4 /* mediastream-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "mediastream-Prefix.pch"; sourceTree = "<group>"; };
+		22DD21AA13A8E3310018ECD4 /* mediastreamAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mediastreamAppDelegate.h; sourceTree = "<group>"; };
+		22DD21AB13A8E3310018ECD4 /* mediastreamAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = mediastreamAppDelegate.m; sourceTree = "<group>"; };
+		22DD21AC13A8E3310018ECD4 /* mediastreamViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mediastreamViewController.h; sourceTree = "<group>"; };
+		22DD21AD13A8E3310018ECD4 /* mediastreamViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = mediastreamViewController.m; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* liblinphone_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = liblinphone_Prefix.pch; sourceTree = SOURCE_ROOT; };
 		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		D2AAC07E0554694100DB518D /* liblinphone.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = liblinphone.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		22DD19BB13A8D7FA0018ECD4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				221F58A013AB50F800D603C9 /* CoreMedia.framework in Frameworks */,
+				2258C44513A945520087A596 /* libswscale.a in Frameworks */,
+				2258C44613A945520087A596 /* libavutil.a in Frameworks */,
+				2258C44713A945520087A596 /* libavcodec.a in Frameworks */,
+				220ED1A913A9041800AC21E0 /* AVFoundation.framework in Frameworks */,
+				220ED1A713A9040700AC21E0 /* AudioToolbox.framework in Frameworks */,
+				220ED1A313A903BF00AC21E0 /* libgsm.a in Frameworks */,
+				220ED19F13A9038F00AC21E0 /* CoreVideo.framework in Frameworks */,
+				220ED1A113A9039600AC21E0 /* CoreAudio.framework in Frameworks */,
+				220ED19D13A9033F00AC21E0 /* liblinphone.a in Frameworks */,
+				220ED19A13A8F87700AC21E0 /* libspeexdsp.a in Frameworks */,
+				220ED19B13A8F87700AC21E0 /* libspeex.a in Frameworks */,
+				220ED19C13A8F87700AC21E0 /* libortp.a in Frameworks */,
+				22DD19C113A8D7FA0018ECD4 /* UIKit.framework in Frameworks */,
+				22DD19C213A8D7FA0018ECD4 /* Foundation.framework in Frameworks */,
+				22DD19C413A8D7FA0018ECD4 /* CoreGraphics.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D2AAC07C0554694100DB518D /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -366,7 +485,7 @@
 		034768DFFF38A50411DB9C8B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D2AAC07E0554694100DB518D /* liblinphone.a */,
+				22DD19BE13A8D7FA0018ECD4 /* mediastream.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -374,6 +493,22 @@
 		0867D691FE84028FC02AAC07 /* liblinphone */ = {
 			isa = PBXGroup;
 			children = (
+				221F589F13AB50F800D603C9 /* CoreMedia.framework */,
+				221F589D13AB503F00D603C9 /* CoreVideo.framework */,
+				221F589913AB4EEE00D603C9 /* CoreFoundation.framework */,
+				2258C44213A945520087A596 /* libswscale.a */,
+				2258C44313A945520087A596 /* libavutil.a */,
+				2258C44413A945520087A596 /* libavcodec.a */,
+				220ED1A813A9041800AC21E0 /* AVFoundation.framework */,
+				220ED1A613A9040700AC21E0 /* AudioToolbox.framework */,
+				220ED1A413A903E100AC21E0 /* AudioUnit.framework */,
+				220ED1A213A903BF00AC21E0 /* libgsm.a */,
+				220ED1A013A9039600AC21E0 /* CoreAudio.framework */,
+				220ED19E13A9038F00AC21E0 /* CoreVideo.framework */,
+				D2AAC07E0554694100DB518D /* liblinphone.a */,
+				220ED19713A8F87700AC21E0 /* libspeexdsp.a */,
+				220ED19813A8F87700AC21E0 /* libspeex.a */,
+				220ED19913A8F87700AC21E0 /* libortp.a */,
 				22A10B4C11F84DE300373793 /* externals */,
 				222CA4D011F6CF2D00621220 /* linphone */,
 				222CA4CF11F6CF2000621220 /* mediastreamer2 */,
@@ -390,6 +525,8 @@
 			isa = PBXGroup;
 			children = (
 				AACBBE490F95108600F1A2B1 /* Foundation.framework */,
+				22DD19C013A8D7FA0018ECD4 /* UIKit.framework */,
+				22DD19C313A8D7FA0018ECD4 /* CoreGraphics.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -414,6 +551,9 @@
 		222CA4CF11F6CF2000621220 /* mediastreamer2 */ = {
 			isa = PBXGroup;
 			children = (
+				22B5106813AFD37B00CD87DA /* nowebcamCIF.jpg */,
+				221F58A313AB708C00D603C9 /* alldescs.h */,
+				22DD19E013A8D82C0018ECD4 /* tests */,
 				222CA5B811F6CF7600621220 /* include */,
 				222CA5DC11F6CF7600621220 /* src */,
 			);
@@ -481,6 +621,20 @@
 		222CA5DC11F6CF7600621220 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				22276E7F13C4637100210156 /* msandroidvideo.cpp */,
+				221F58AD13ABA42800D603C9 /* scaler.c */,
+				221F58AB13AB71A400D603C9 /* sizeconv.c */,
+				221F58A513AB716300D603C9 /* tonedetector.c */,
+				221F58A613AB716300D603C9 /* jpegwriter.c */,
+				221F58A713AB716300D603C9 /* h264dec.c */,
+				221F58A113AB6F8000D603C9 /* pixconv.c */,
+				221F589B13AB4FC500D603C9 /* msvideo.c */,
+				2258C44813A946890087A596 /* videostream.c */,
+				2258C44913A946890087A596 /* videoenc.c */,
+				2258C44A13A946890087A596 /* videodec.c */,
+				2258C44013A9377B0087A596 /* swscale.h */,
+				220ED1AA13A9062500AC21E0 /* nowebcam.h */,
+				220ED1AB13A9062500AC21E0 /* nowebcam.c */,
 				22D15AB5139F579D00C7713A /* qtcapture.m */,
 				22D15AB3139F505400C7713A /* ioscapture.m */,
 				2252935A12F6CA4700DD9BFB /* ec-calibrator.c */,
@@ -492,8 +646,6 @@
 				222CA5E511F6CF7600621220 /* chanadapt.c */,
 				222CA5E711F6CF7600621220 /* dsptools.c */,
 				222CA5E811F6CF7600621220 /* dtmfgen.c */,
-				222CA5E911F6CF7600621220 /* dxfilter.cpp */,
-				222CA5EA11F6CF7600621220 /* dxfilter.h */,
 				222CA5EB11F6CF7600621220 /* equalizer.c */,
 				222CA5EC11F6CF7600621220 /* eventqueue.c */,
 				222CA5ED11F6CF7600621220 /* extdisplay.c */,
@@ -531,6 +683,10 @@
 				222CA62311F6CF7600621220 /* ulaw.c */,
 				222CA62411F6CF7600621220 /* vfw-missing.h */,
 				222CA62911F6CF7600621220 /* void.c */,
+				2203127013A247B40049A2ED /* iosdisplay.h */,
+				2203127113A247B40049A2ED /* iosdisplay.m */,
+				2203127413A249F70049A2ED /* filter-template.c */,
+				221F58E313AF44B300D603C9 /* scaler.h */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -693,6 +849,31 @@
 			path = externals/gsm/inc;
 			sourceTree = "<group>";
 		};
+		22DD19E013A8D82C0018ECD4 /* tests */ = {
+			isa = PBXGroup;
+			children = (
+				22DD21A013A8E3310018ECD4 /* ios */,
+				22DD19E713A8D82C0018ECD4 /* mediastream.c */,
+			);
+			path = tests;
+			sourceTree = "<group>";
+		};
+		22DD21A013A8E3310018ECD4 /* ios */ = {
+			isa = PBXGroup;
+			children = (
+				22DD21A113A8E3310018ECD4 /* InfoPlist.strings */,
+				22DD21A313A8E3310018ECD4 /* MainWindow.xib */,
+				22DD21A513A8E3310018ECD4 /* mediastreamViewController.xib */,
+				22DD21A813A8E3310018ECD4 /* mediastream-Info.plist */,
+				22DD21A913A8E3310018ECD4 /* mediastream-Prefix.pch */,
+				22DD21AA13A8E3310018ECD4 /* mediastreamAppDelegate.h */,
+				22DD21AB13A8E3310018ECD4 /* mediastreamAppDelegate.m */,
+				22DD21AC13A8E3310018ECD4 /* mediastreamViewController.h */,
+				22DD21AD13A8E3310018ECD4 /* mediastreamViewController.m */,
+			);
+			path = ios;
+			sourceTree = "<group>";
+		};
 		32C88DFF0371C24200C91783 /* Other Sources */ = {
 			isa = PBXGroup;
 			children = (
@@ -738,7 +919,6 @@
 				222CA64C11F6CF7600621220 /* rfc3984.h in Headers */,
 				222CA64D11F6CF7600621220 /* waveheader.h in Headers */,
 				222CA64E11F6CF7600621220 /* _kiss_fft_guts.h in Headers */,
-				222CA65A11F6CF7600621220 /* dxfilter.h in Headers */,
 				222CA65E11F6CF7600621220 /* ffmpeg-priv.h in Headers */,
 				222CA65F11F6CF7600621220 /* g711common.h in Headers */,
 				222CA66511F6CF7600621220 /* kiss_fft.h in Headers */,
@@ -781,12 +961,35 @@
 				22A10B5A11F84E2D00373793 /* toast.h in Headers */,
 				22A10B5B11F84E2D00373793 /* unproto.h in Headers */,
 				229B9D5913043EAB00EFCD1C /* linphonecore_utils.h in Headers */,
+				2203127213A247B50049A2ED /* iosdisplay.h in Headers */,
+				220ED1AC13A9062600AC21E0 /* nowebcam.h in Headers */,
+				2258C44113A9377B0087A596 /* swscale.h in Headers */,
+				221F58A413AB708C00D603C9 /* alldescs.h in Headers */,
+				221F58E413AF44B300D603C9 /* scaler.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		22DD19BD13A8D7FA0018ECD4 /* mediastream */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 22DD19DA13A8D7FA0018ECD4 /* Build configuration list for PBXNativeTarget "mediastream" */;
+			buildPhases = (
+				22DD19BA13A8D7FA0018ECD4 /* Sources */,
+				22DD19BB13A8D7FA0018ECD4 /* Frameworks */,
+				22DD19BC13A8D7FA0018ECD4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				220ED19613A8F82A00AC21E0 /* PBXTargetDependency */,
+			);
+			name = mediastream;
+			productName = mediastream;
+			productReference = 22DD19BE13A8D7FA0018ECD4 /* mediastream.app */;
+			productType = "com.apple.product-type.application";
+		};
 		D2AAC07D0554694100DB518D /* liblinphone */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1DEB921E08733DC00010E9CD /* Build configuration list for PBXNativeTarget "liblinphone" */;
@@ -818,6 +1021,7 @@
 				Japanese,
 				French,
 				German,
+				en,
 			);
 			mainGroup = 0867D691FE84028FC02AAC07 /* liblinphone */;
 			productRefGroup = 034768DFFF38A50411DB9C8B /* Products */;
@@ -825,11 +1029,37 @@
 			projectRoot = "";
 			targets = (
 				D2AAC07D0554694100DB518D /* liblinphone */,
+				22DD19BD13A8D7FA0018ECD4 /* mediastream */,
 			);
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		22DD19BC13A8D7FA0018ECD4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				22DD21AE13A8E3310018ECD4 /* InfoPlist.strings in Resources */,
+				22DD21AF13A8E3310018ECD4 /* MainWindow.xib in Resources */,
+				22DD21B013A8E3310018ECD4 /* mediastreamViewController.xib in Resources */,
+				22DD21B213A8E3310018ECD4 /* mediastream-Info.plist in Resources */,
+				22B5106913B060E100CD87DA /* nowebcamCIF.jpg in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
+		22DD19BA13A8D7FA0018ECD4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				22DD19F713A8DFA70018ECD4 /* mediastream.c in Sources */,
+				22DD21B313A8E3310018ECD4 /* mediastreamAppDelegate.m in Sources */,
+				22DD21B413A8E3310018ECD4 /* mediastreamViewController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D2AAC07B0554694100DB518D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -840,7 +1070,6 @@
 				222CA65511F6CF7600621220 /* chanadapt.c in Sources */,
 				222CA65711F6CF7600621220 /* dsptools.c in Sources */,
 				222CA65811F6CF7600621220 /* dtmfgen.c in Sources */,
-				222CA65911F6CF7600621220 /* dxfilter.cpp in Sources */,
 				222CA65B11F6CF7600621220 /* equalizer.c in Sources */,
 				222CA65C11F6CF7600621220 /* eventqueue.c in Sources */,
 				222CA65D11F6CF7600621220 /* extdisplay.c in Sources */,
@@ -915,10 +1144,58 @@
 				225D355A124B1FF60008581C /* linphonecall.c in Sources */,
 				2252935B12F6CA4700DD9BFB /* ec-calibrator.c in Sources */,
 				2203126F139F61990049A2ED /* ioscapture.m in Sources */,
+				2203127313A247B50049A2ED /* iosdisplay.m in Sources */,
+				2203127613A249F70049A2ED /* filter-template.c in Sources */,
+				220ED1AD13A9062600AC21E0 /* nowebcam.c in Sources */,
+				2258C44B13A946890087A596 /* videostream.c in Sources */,
+				2258C44C13A946890087A596 /* videoenc.c in Sources */,
+				2258C44D13A946890087A596 /* videodec.c in Sources */,
+				221F589C13AB4FC500D603C9 /* msvideo.c in Sources */,
+				221F58A213AB6F8100D603C9 /* pixconv.c in Sources */,
+				221F58A813AB716400D603C9 /* tonedetector.c in Sources */,
+				221F58A913AB716400D603C9 /* jpegwriter.c in Sources */,
+				221F58AA13AB716400D603C9 /* h264dec.c in Sources */,
+				221F58AC13AB71A400D603C9 /* sizeconv.c in Sources */,
+				221F58AE13ABA42800D603C9 /* scaler.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		220ED19613A8F82A00AC21E0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D2AAC07D0554694100DB518D /* liblinphone */;
+			targetProxy = 220ED19513A8F82A00AC21E0 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		22DD21A113A8E3310018ECD4 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				22DD21A213A8E3310018ECD4 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		22DD21A313A8E3310018ECD4 /* MainWindow.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				22DD21A413A8E3310018ECD4 /* en */,
+			);
+			name = MainWindow.xib;
+			sourceTree = "<group>";
+		};
+		22DD21A513A8E3310018ECD4 /* mediastreamViewController.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				22DD21A613A8E3310018ECD4 /* en */,
+			);
+			name = mediastreamViewController.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		1DEB921F08733DC00010E9CD /* Debug */ = {
@@ -934,6 +1211,39 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = liblinphone_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"_BYTE_ORDER=_LITTLE_ENDIAN",
+					ORTP_INET6,
+					ENABLE_TRACE,
+					"LINPHONE_VERSION=\\\"debug\\\"",
+					"LINPHONE_PLUGINS_DIR=\\\"\\\\tmp\\\"",
+					"LOG_DOMAIN=\\\"Linphone\\\"",
+					"ORTP_MAJOR_VERSION=0",
+					"ORTP_MICRO_VERSION=0",
+					"ORTP_MINOR_VERSION=15",
+					"ORTP_VERSION=\\\"0.15.0\\\"",
+					"PACKAGE=\\\"ortp\\\"",
+					"POSIXTIMER_INTERVAL=10000",
+					IN_LINPHONE,
+					__IOSIOUNIT_ENABLED__,
+					HAVE_EXOSIP_GET_SOCKET,
+					MS2_INTERNAL,
+					VIDEO_ENABLED,
+					HAVE_LIBAVCODEC_AVCODEC_H,
+					HAVE_LIBSWSCALE_SWSCALE_H,
+				);
+				HEADER_SEARCH_PATHS = (
+					linphone/mediastreamer2/build/iphone,
+					linphone/mediastreamer2/include,
+					linphone/oRTP/include,
+					externals/gsm/,
+					externals/osip/include,
+					externals/exosip/include,
+					externals/speex/include,
+					externals/ffmpeg,
+					external/ffmpeg/swscale,
+					"../liblinphone-sdk/apple-darwin/include",
+				);
 				INSTALL_PATH = /usr/local/lib;
 				PRODUCT_NAME = linphone;
 			};
@@ -948,6 +1258,39 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = liblinphone_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"_BYTE_ORDER=_LITTLE_ENDIAN",
+					ORTP_INET6,
+					ENABLE_TRACE,
+					"LINPHONE_VERSION=\\\"debug\\\"",
+					"LINPHONE_PLUGINS_DIR=\\\"\\\\tmp\\\"",
+					"LOG_DOMAIN=\\\"Linphone\\\"",
+					"ORTP_MAJOR_VERSION=0",
+					"ORTP_MICRO_VERSION=0",
+					"ORTP_MINOR_VERSION=15",
+					"ORTP_VERSION=\\\"0.15.0\\\"",
+					"PACKAGE=\\\"ortp\\\"",
+					"POSIXTIMER_INTERVAL=10000",
+					IN_LINPHONE,
+					__IOSIOUNIT_ENABLED__,
+					HAVE_EXOSIP_GET_SOCKET,
+					MS2_INTERNAL,
+					VIDEO_ENABLED,
+					HAVE_LIBAVCODEC_AVCODEC_H,
+					HAVE_LIBSWSCALE_SWSCALE_H,
+				);
+				HEADER_SEARCH_PATHS = (
+					linphone/mediastreamer2/build/iphone,
+					linphone/mediastreamer2/include,
+					linphone/oRTP/include,
+					externals/gsm/,
+					externals/osip/include,
+					externals/exosip/include,
+					externals/speex/include,
+					externals/ffmpeg,
+					external/ffmpeg/swscale,
+					"../liblinphone-sdk/apple-darwin/include",
+				);
 				INSTALL_PATH = /usr/local/lib;
 				PRODUCT_NAME = linphone;
 			};
@@ -1036,6 +1379,61 @@
 			};
 			name = Release;
 		};
+		22DD19DB13A8D7FA0018ECD4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "linphone/mediastreamer2/tests/ios/mediastream-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					MS2_INTERNAL,
+					VIDEO_ENABLED,
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				INFOPLIST_FILE = "linphone/mediastreamer2/tests/ios/mediastream-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../liblinphone-sdk/apple-darwin/lib\"",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		22DD19DC13A8D7FA0018ECD4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "linphone/mediastreamer2/tests/ios/mediastream-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					MS2_INTERNAL,
+					VIDEO_ENABLED,
+				);
+				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = "";
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				INFOPLIST_FILE = "linphone/mediastreamer2/tests/ios/mediastream-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../liblinphone-sdk/apple-darwin/lib\"",
+				);
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				VALIDATE_PRODUCT = YES;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1053,6 +1451,15 @@
 			buildConfigurations = (
 				1DEB922308733DC00010E9CD /* Debug */,
 				1DEB922408733DC00010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		22DD19DA13A8D7FA0018ECD4 /* Build configuration list for PBXNativeTarget "mediastream" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				22DD19DB13A8D7FA0018ECD4 /* Debug */,
+				22DD19DC13A8D7FA0018ECD4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

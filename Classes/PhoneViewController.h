@@ -24,7 +24,7 @@
 
 @class IncallViewController;
 @class FirstLoginViewController;
-
+@class VideoViewController;
 @interface PhoneViewController : UIViewController <UITextFieldDelegate,UIActionSheetDelegate,LinphoneUICallDelegate> {
 
 @private
@@ -66,6 +66,7 @@
 
 	UIActionSheet *mIncomingCallActionSheet;
 	FirstLoginViewController* myFirstLoginViewController;
+	VideoViewController* mVideoViewController;
 	
 }
 @property (nonatomic, retain) IBOutlet UIView* dialerView;

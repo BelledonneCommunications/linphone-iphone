@@ -22,7 +22,7 @@
 #import <AVFoundation/AVAudioSession.h>
 #import <AudioToolbox/AudioToolbox.h>
 #import "LinphoneManager.h"
-
+#import "VideoViewController.h"
 
 
 @implementation PhoneViewController
@@ -121,6 +121,8 @@
 	[mute initWithOnImage:[UIImage imageNamed:@"mic_muted.png"]  offImage:[UIImage imageNamed:@"mic_active.png"] ];
 	[speaker initWithOnImage:[UIImage imageNamed:@"Speaker-32-on.png"]  offImage:[UIImage imageNamed:@"Speaker-32-off.png"] ];
 	[erase initWithAddressField:address];
+	mVideoViewController = [[VideoViewController alloc]  initWithNibName:@"VideoViewController" 
+																  bundle:[NSBundle mainBundle]];
 	
 }
 
@@ -210,6 +212,7 @@
 	[address setHidden:true];
 	[incallView setHidden:false];
 	[dialerView setHidden:true];
+	
 }
 -(void) displayCallInProgressFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
 	[self displayIncalViewforUser:username
@@ -228,6 +231,10 @@
 					  withDisplayName:displayName];
 		if ([speaker isOn]) [speaker toggle] ; //preset to off;
 	} 
+}
+
+-(void) displayVideoCallFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
+	[self presentModalViewController:mVideoViewController animated:true];
 }
 //status reporting
 -(void) displayStatus:(NSString*) message {

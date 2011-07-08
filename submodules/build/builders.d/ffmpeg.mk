@@ -3,8 +3,8 @@ ffmpeg_configure_options=\
 	--enable-cross-compile \
 	--disable-ffprobe --disable-ffserver  --disable-avdevice \
 	--disable-avfilter  --disable-network \
-	--disable-everything  --enable-decoder=mpeg4 --enable-encoder=mpeg4 \
-	--enable-decoder=h264 --disable-avformat --enable-armv6 --enable-armv6t2 \
+	--disable-everything  --enable-decoder=mjpeg --enable-encoder=mjpeg --enable-decoder=mpeg4 --enable-encoder=mpeg4 \
+	--enable-decoder=h264 --disable-avformat --enable-armv5te --enable-armv6 --enable-armv6t2 \
 	--enable-armvfp \
 	--source-path=$(BUILDER_SRC_DIR)/$(ffmpeg_dir) \
 	--cross-prefix=$$SDK_BIN_PATH/ \
@@ -37,7 +37,6 @@ clean-ffmpeg:
 
 veryclean-ffmpeg:
 	cd $(BUILDER_BUILD_DIR)/$(ffmpeg_dir) && make distclean
-	cd $(BUILDER_SRC_DIR)/$(ffmpeg_dir) && rm -f configure
 
 clean-makefile-ffmpeg:
 	cd $(BUILDER_BUILD_DIR)/$(ffmpeg_dir) && rm -f Makefile

@@ -119,6 +119,15 @@ extern void libmsamr_init();
 	
 	switch (new_state) {
 			
+		case LinphoneCallStreamsRunning:
+			//check video
+			if (linphone_call_params_video_enabled(linphone_call_get_current_params(currentCall))) {
+				[callDelegate	displayVideoCallFromUI:mCurrentViewController
+											 forUser:lUserName 
+									 withDisplayName:lDisplayName];
+			}
+			break;
+					
 		case LinphoneCallIncomingReceived: 
 			[callDelegate	displayIncomingCallNotigicationFromUI:mCurrentViewController
 														forUser:lUserName 
