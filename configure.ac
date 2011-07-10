@@ -320,7 +320,11 @@ if test "$video" = "true"; then
 	
 	if test "$enable_x11" = "true"; then
 	  	AC_CHECK_HEADERS(X11/Xlib.h)
-		AC_CHECK_LIB(X11,XUnmapWindow, X11_LIBS="-lX11")
+		if test "$build_macos" = "yes"; then 
+			X11_LIBS="-L/usr/X11/lib -lX11"
+		else
+			AC_CHECK_LIB(X11,XUnmapWindow, X11_LIBS="-lX11")
+		fi
 		AC_SUBST(X11_LIBS)
 	fi
 	AC_DEFINE(VIDEO_ENABLED,1,[defined if video support is available])
