@@ -328,7 +328,7 @@ static void linphonec_call_state_changed(LinphoneCore *lc, LinphoneCall *call, L
 	long id=(long)linphone_call_get_user_pointer (call);
 	switch(st){
 		case LinphoneCallEnd:
-			linphonec_out("Call %i with %s ended.\n", id, from);
+			linphonec_out("Call %i with %s ended (%s).\n", id, from, linphone_reason_to_string(linphone_call_get_reason(call)));
 		break;
 		case LinphoneCallResuming:
 			linphonec_out("Resuming call %i with %s.\n", id, from);
@@ -358,7 +358,6 @@ static void linphonec_call_state_changed(LinphoneCore *lc, LinphoneCall *call, L
 		case LinphoneCallOutgoingInit:
 			linphonec_call_identify(call);
 			id=(long)linphone_call_get_user_pointer (call);
-			from=linphone_call_get_remote_address_as_string(call);
 			linphonec_out("Establishing call id to %s, assigned id %i\n", from,id);
 		break;
 		case LinphoneCallUpdatedByRemote:

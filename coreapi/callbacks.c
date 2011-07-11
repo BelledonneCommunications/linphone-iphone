@@ -49,7 +49,9 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 		/* we already started media: check if we really need to restart it*/
 		if (oldmd){
 			if (!media_parameters_changed(call,oldmd,new_md) && !call->playing_ringbacktone){
-				sal_media_description_unref(oldmd);
+				/*as nothing has changed, keep the oldmd */
+				call->resultdesc=oldmd;
+				sal_media_description_unref(new_md);
 				if (call->all_muted){
 					ms_message("Early media finished, unmuting inputs...");
 					/*we were in early media, now we want to enable real media */
@@ -145,6 +147,7 @@ static void call_received(SalOp *h){
 	if (is_duplicate_call(lc,from_addr,to_addr)){
 		ms_warning("Receiving duplicated call, refusing this one.");
 		sal_call_decline(h,SalReasonBusy,NULL);
+		sal_op_release(h);
 		linphone_address_destroy(from_addr);
 		linphone_address_destroy(to_addr);
 		return;

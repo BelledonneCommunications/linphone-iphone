@@ -632,15 +632,6 @@ void linphone_gtk_call_terminated(LinphoneCall *call, const char *error){
 	update_video_title();
 }
 
-static gboolean in_call_timer(){
-	LinphoneCall *call=linphone_core_get_current_call(linphone_gtk_get_core());
-	if (call){
-		linphone_gtk_in_call_view_update_duration(call);
-		return TRUE;
-	}
-	return FALSE;
-}
-
 static bool_t all_other_calls_paused(LinphoneCall *refcall, const MSList *calls){
 	for(;calls!=NULL;calls=calls->next){
 		LinphoneCall *call=(LinphoneCall*)calls->data;
@@ -961,7 +952,6 @@ static void linphone_gtk_call_state_changed(LinphoneCore *lc, LinphoneCall *call
 			linphone_gtk_enable_mute_button(
 				GTK_BUTTON(linphone_gtk_get_widget(linphone_gtk_get_main_window(),"main_mute")),
 			TRUE);
-			g_timeout_add(250,(GSourceFunc)in_call_timer,NULL);
 		break;
 		case LinphoneCallError:
 			linphone_gtk_in_call_view_terminate (call,msg);

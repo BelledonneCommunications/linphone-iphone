@@ -1023,6 +1023,18 @@ extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_getReplacedCall(	JNIEnv
 	return (jlong)linphone_call_get_replaced_call((LinphoneCall*)ptr);
 }
 
+extern "C" jfloat Java_org_linphone_core_LinphoneCallImpl_getCurrentQuality(	JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	return (jfloat)linphone_call_get_current_quality((LinphoneCall*)ptr);
+}
+
+extern "C" jfloat Java_org_linphone_core_LinphoneCallImpl_getAverageQuality(	JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	return (jfloat)linphone_call_get_average_quality((LinphoneCall*)ptr);
+}
+
 
 //LinphoneFriend
 extern "C" long Java_org_linphone_core_LinphoneFriendImpl_newLinphoneFriend(JNIEnv*  env
@@ -1194,6 +1206,15 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setDownloadBandwidth(JNI
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setUploadBandwidth(JNIEnv *env, jobject thiz, jlong lc, jint bw){
 	linphone_core_set_upload_bandwidth((LinphoneCore *)lc, (int) bw);
 }
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setDownloadPtime(JNIEnv *env, jobject thiz, jlong lc, jint ptime){
+	linphone_core_set_download_ptime((LinphoneCore *)lc, (int) ptime);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setUploadPtime(JNIEnv *env, jobject thiz, jlong lc, jint ptime){
+	linphone_core_set_upload_ptime((LinphoneCore *)lc, (int) ptime);
+}
+
 extern "C" int Java_org_linphone_core_LinphoneProxyConfigImpl_getState(JNIEnv*  env,jobject thiz,jlong ptr) {
 	return (int) linphone_proxy_config_get_state((const LinphoneProxyConfig *) ptr);
 }

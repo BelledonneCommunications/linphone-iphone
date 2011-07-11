@@ -124,6 +124,7 @@ void call_logs_write_to_config_file(LinphoneCore *lc){
 		lp_config_set_string(cfg,logsection,"start_date",cl->start_date);
 		lp_config_set_int(cfg,logsection,"duration",cl->duration);
 		if (cl->refkey) lp_config_set_string(cfg,logsection,"refkey",cl->refkey);
+		lp_config_set_float(cfg,logsection,"quality",cl->quality);
 	}
 	for(;i<lc->max_call_logs;++i){
 		snprintf(logsection,sizeof(logsection),"call_log_%i",i);
@@ -151,6 +152,7 @@ static void call_logs_read_from_config_file(LinphoneCore *lc){
 			cl->duration=lp_config_get_int(cfg,logsection,"duration",0);
 			tmp=lp_config_get_string(cfg,logsection,"refkey",NULL);
 			if (tmp) cl->refkey=ms_strdup(tmp);
+			cl->quality=lp_config_get_float(cfg,logsection,"quality",-1);
 			lc->call_logs=ms_list_append(lc->call_logs,cl);
 		}else break;	
 	}
@@ -464,6 +466,7 @@ static void sip_config_read(LinphoneCore *lc)
 
 	sal_use_rport(lc->sal,lp_config_get_int(lc->config,"sip","use_rport",1));
 	sal_use_101(lc->sal,lp_config_get_int(lc->config,"sip","use_101",1));
+	sal_reuse_authorization(lc->sal, lp_config_get_int(lc->config,"sip","reuse_authorization",0));
 
 	tmp=lp_config_get_int(lc->config,"sip","use_rfc2833",0);
 	linphone_core_set_use_rfc2833_for_dtmf(lc,tmp);
@@ -781,6 +784,26 @@ static void autoreplier_config_init(LinphoneCore *lc)
 */
 
 /**
+ * Enable adaptive rate control (experimental feature, audio-only).
+ *
+ * Adaptive rate control consists in using RTCP feedback provided information to dynamically
+ * control the output bitrate of the encoders, so that we can adapt to the network conditions and
+ * available bandwidth.
+**/
+void linphone_core_enable_adaptive_rate_control(LinphoneCore *lc, bool_t enabled){
+	lp_config_set_int(lc->config,"net","adaptive_rate_control",(int)enabled);
+}
+
+/**
+ * Returns whether adaptive rate control is enabled.
+ *
+ * See linphone_core_enable_adaptive_rate_control().
+**/
+bool_t linphone_core_adaptive_rate_control_enabled(const LinphoneCore *lc){
+	return lp_config_get_int(lc->config,"net","adaptive_rate_control",FALSE);
+}
+
+/**
  * Sets maximum available download bandwidth
  *
  * @ingroup media_parameters
@@ -839,15 +862,37 @@ int linphone_core_get_upload_bandwidth(const LinphoneCore *lc){
 	return lc->net_conf.upload_bw;
 }
 /**
- * set audio packetization time linphone expect to received from peer
+ * Set audio packetization time linphone expects to receive from peer
  */
 void linphone_core_set_download_ptime(LinphoneCore *lc, int ptime) {
 	lc->net_conf.down_ptime=ptime;
 }
 
-int  linphone_core_get_download_ptime(LinphoneCore *lc) {
+/**
+ * Get audio packetization time linphone expects to receive from peer
+ */
+int linphone_core_get_download_ptime(LinphoneCore *lc) {
 	return lc->net_conf.down_ptime;
 }
+
+/**
+ * Set audio packetization time linphone will send (in absence of requirement from peer)
+ * A value of 0 stands for the current codec default packetization time.
+ *
+**/
+void linphone_core_set_upload_ptime(LinphoneCore *lc, int ptime){
+	lp_config_set_int(lc->config,"rtp","upload_ptime",ptime);
+}
+
+/**
+ * Set audio packetization time linphone will send (in absence of requirement from peer)
+ * A value of 0 stands for the current codec default packetization time.
+ *
+**/
+int linphone_core_get_upload_ptime(LinphoneCore *lc){
+	return lp_config_get_int(lc->config,"rtp","upload_ptime",0);
+}
+
 
 
 /**
@@ -1373,13 +1418,13 @@ static int apply_transports(LinphoneCore *lc){
 
 	sal_unlisten_ports (sal);
 	if (tr->udp_port>0){
-		if (sal_listen_port (sal,anyaddr,tr->udp_port,SalTransportDatagram,FALSE)!=0){
+		if (sal_listen_port (sal,anyaddr,tr->udp_port,SalTransportUDP,FALSE)!=0){
 			transport_error(lc,"UDP",tr->udp_port);
 			return -1;
 		}
 	}
 	if (tr->tcp_port>0){
-		if (sal_listen_port (sal,anyaddr,tr->tcp_port,SalTransportStream,FALSE)!=0){
+		if (sal_listen_port (sal,anyaddr,tr->tcp_port,SalTransportTCP,FALSE)!=0){
 			transport_error(lc,"TCP",tr->tcp_port);
 		}
 	}
@@ -1636,9 +1681,9 @@ void linphone_core_iterate(LinphoneCore *lc){
 		 linphone_core_start_invite() */
 		calls=calls->next;
 		if (call->state==LinphoneCallOutgoingInit && (curtime-call->start_time>=2)){
-				/*start the call even if the OPTIONS reply did not arrive*/
-				linphone_core_start_invite(lc,call,NULL);
-			}
+			/*start the call even if the OPTIONS reply did not arrive*/
+			linphone_core_start_invite(lc,call,NULL);
+		}
 		if (call->dir==LinphoneCallIncoming && call->state==LinphoneCallOutgoingRinging){
 			elapsed=curtime-call->start_time;
 			ms_message("incoming call ringing for %i seconds",elapsed);
@@ -1996,7 +2041,6 @@ LinphoneCall * linphone_core_invite_address(LinphoneCore *lc, const LinphoneAddr
 **/
 LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const LinphoneAddress *addr, const LinphoneCallParams *params)
 {
-	int err=0;
 	const char *route=NULL;
 	const char *from=NULL;
 	LinphoneProxyConfig *proxy=NULL;
@@ -2049,7 +2093,7 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	lc->current_call=call;
 	linphone_call_set_state (call,LinphoneCallOutgoingInit,"Starting outgoing call");
 	if (dest_proxy!=NULL || lc->sip_conf.ping_with_options==FALSE){
-		err=linphone_core_start_invite(lc,call,dest_proxy);
+		linphone_core_start_invite(lc,call,dest_proxy);
 	}else{
 		/*defer the start of the call after the OPTIONS ping*/
 		call->ping_op=sal_op_new(lc->sal);
@@ -4079,7 +4123,7 @@ LinphoneCallParams *linphone_core_create_default_call_parameters(LinphoneCore *l
 	return p;
 }
 
-const char *linphone_error_to_string(LinphoneReason err){
+const char *linphone_reason_to_string(LinphoneReason err){
 	switch(err){
 		case LinphoneReasonNone:
 			return "No error";
@@ -4091,6 +4135,10 @@ const char *linphone_error_to_string(LinphoneReason err){
 			return "Call declined";
 	}
 	return "unknown error";
+}
+
+const char *linphone_error_to_string(LinphoneReason err){
+	return linphone_reason_to_string(err);
 }
 /**
  * Enables signaling keep alive

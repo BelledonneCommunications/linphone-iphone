@@ -28,6 +28,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "mediastreamer2/mscommon.h"
 
+/*Dirty hack, keep in sync with mediastreamer2/include/mediastream.h */
+#ifndef PAYLOAD_TYPE_FLAG_CAN_RECV
+#define PAYLOAD_TYPE_FLAG_CAN_RECV	PAYLOAD_TYPE_USER_FLAG_1
+#define PAYLOAD_TYPE_FLAG_CAN_SEND	PAYLOAD_TYPE_USER_FLAG_2
+#endif
 struct Sal;
 
 typedef struct Sal Sal;
@@ -40,6 +45,15 @@ struct SalAddress;
 
 typedef struct SalAddress SalAddress;
 
+typedef enum {
+	SalTransportUDP, /*UDP*/
+	SalTransportTCP, /*TCP*/
+	SalTransportTLS, /*TLS*/
+	SalTransportDTLS /*DTLS*/
+}SalTransport;
+
+const char* sal_transport_to_string(SalTransport transport);
+SalTransport sal_transport_parse(const char*);
 /* Address manipulation API*/
 SalAddress * sal_address_new(const char *uri);
 SalAddress * sal_address_clone(const SalAddress *addr);
@@ -49,7 +63,8 @@ char *sal_address_get_display_name_unquoted(const SalAddress *addr);
 const char *sal_address_get_username(const SalAddress *addr);
 const char *sal_address_get_domain(const SalAddress *addr);
 const char * sal_address_get_port(const SalAddress *addr);
-int sal_address_get_port_int(const SalAddress *uri);
+int sal_address_get_port_int(const SalAddress *addr);
+SalTransport sal_address_get_transport(const SalAddress* addr);
 
 void sal_address_set_display_name(SalAddress *addr, const char *display_name);
 void sal_address_set_username(SalAddress *addr, const char *username);
@@ -60,8 +75,8 @@ void sal_address_clean(SalAddress *addr);
 char *sal_address_as_string(const SalAddress *u);
 char *sal_address_as_string_uri_only(const SalAddress *u);
 void sal_address_destroy(SalAddress *u);
-void sal_address_add_param(SalAddress *u,const char* name,const char* value);
-
+void sal_address_set_param(SalAddress *u,const char* name,const char* value);
+void sal_address_set_transport(SalAddress* addr,SalTransport transport);
 
 
 Sal * sal_init();
@@ -69,10 +84,6 @@ void sal_uninit(Sal* sal);
 void sal_set_user_pointer(Sal *sal, void *user_data);
 void *sal_get_user_pointer(const Sal *sal);
 
-typedef enum {
-	SalTransportDatagram,
-	SalTransportStream
-}SalTransport;
 
 typedef enum {
 	SalAudio,
@@ -261,6 +272,7 @@ void sal_set_keepalive_period(Sal *ctx,unsigned int value);
 unsigned int sal_get_keepalive_period(Sal *ctx);
 void sal_use_session_timers(Sal *ctx, int expires);
 void sal_use_double_registrations(Sal *ctx, bool_t enabled);
+void sal_reuse_authorization(Sal *ctx, bool_t enabled);
 void sal_use_one_matching_codec_policy(Sal *ctx, bool_t one_matching_codec);
 void sal_use_rport(Sal *ctx, bool_t use_rports);
 void sal_use_101(Sal *ctx, bool_t use_101);
@@ -313,6 +325,7 @@ int sal_call_send_dtmf(SalOp *h, char dtmf);
 int sal_call_terminate(SalOp *h);
 bool_t sal_call_autoanswer_asked(SalOp *op);
 void sal_call_send_vfu_request(SalOp *h);
+int sal_call_is_offerer(const SalOp *h);
 
 /*Registration*/
 int sal_register(SalOp *op, const char *proxy, const char *from, int expires);
@@ -336,6 +349,8 @@ int sal_publish(SalOp *op, const char *from, const char *to, SalPresenceStatus s
 
 /*ping: main purpose is to obtain its own contact address behind firewalls*/
 int sal_ping(SalOp *op, const char *from, const char *to);
+
+
 
 #define payload_type_set_number(pt,n)	(pt)->user_data=(void*)((long)n);
 #define payload_type_get_number(pt)		((int)(long)(pt)->user_data)

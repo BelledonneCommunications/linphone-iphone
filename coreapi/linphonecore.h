@@ -152,6 +152,7 @@ typedef struct _LinphoneCallLog{
 	void *user_pointer;
 	rtp_stats_t local_stats;
 	rtp_stats_t remote_stats;
+	float quality;
 	struct _LinphoneCore *lc;
 } LinphoneCallLog;
 
@@ -255,6 +256,8 @@ LinphoneReason linphone_call_get_reason(const LinphoneCall *call);
 const char *linphone_call_get_remote_user_agent(LinphoneCall *call);
 float linphone_call_get_play_volume(LinphoneCall *call);
 float linphone_call_get_record_volume(LinphoneCall *call);
+float linphone_call_get_current_quality(LinphoneCall *call);
+float linphone_call_get_average_quality(LinphoneCall *call);
 void *linphone_call_get_user_pointer(LinphoneCall *call);
 void linphone_call_set_user_pointer(LinphoneCall *call, void *user_pointer);
 /**
@@ -702,17 +705,24 @@ void linphone_core_set_upload_bandwidth(LinphoneCore *lc, int bw);
 
 int linphone_core_get_download_bandwidth(const LinphoneCore *lc);
 int linphone_core_get_upload_bandwidth(const LinphoneCore *lc);
+
+void linphone_core_enable_adaptive_rate_control(LinphoneCore *lc, bool_t enabled);
+bool_t linphone_core_adaptive_rate_control_enabled(const LinphoneCore *lc);
 /**
- * set audio packetization time linphone expect to received from peer
+ * set audio packetization time linphone expect to receive from peer
  * @ingroup media_parameters
  *
  */
 void linphone_core_set_download_ptime(LinphoneCore *lc, int ptime);
 /**
- * get audio packetization time linphone expect to received from peer, 0 means unspecified
+ * get audio packetization time linphone expect to receive from peer, 0 means unspecified
  * @ingroup media_parameters
  */
 int  linphone_core_get_download_ptime(LinphoneCore *lc);
+
+void linphone_core_set_upload_ptime(LinphoneCore *lc, int ptime);
+
+int linphone_core_get_upload_ptime(LinphoneCore *lc);
 
 /* returns a MSList of PayloadType */
 const MSList *linphone_core_get_audio_codecs(const LinphoneCore *lc);

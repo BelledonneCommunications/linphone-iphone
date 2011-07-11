@@ -223,7 +223,6 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 /* this function is called internally to get rid of a call.
  It performs the following tasks:
  - remove the call from the internal list of calls
- - unref the LinphoneCall object
  - update the call logs accordingly
 */
 
@@ -586,6 +585,17 @@ void linphone_call_params_set_audio_bandwidth_limit(LinphoneCallParams *cp, int 
 	cp->audio_bw=bandwidth;
 }
 
+#ifdef VIDEO_ENABLED
+/**
+ * Request remote side to send us a Video Fast Update.
+**/
+void linphone_call_send_vfu_request(LinphoneCall *call)
+{
+	if (LinphoneCallStreamsRunning == linphone_call_get_state(call))
+		sal_call_send_vfu_request(call->op);
+}
+#endif
+
 /**
  *
 **/
@@ -659,6 +669,7 @@ void linphone_call_init_media_streams(LinphoneCall *call){
 		int enabled=lp_config_get_int(lc->config,"sound","noisegate",0);
 		audio_stream_enable_noise_gate(audiostream,enabled);
 	}
+	
 	if (lc->a_rtp)
 		rtp_session_set_transports(audiostream->session,lc->a_rtp,lc->a_rtcp);
 
@@ -772,9 +783,6 @@ static void post_configure_audio_streams(LinphoneCall*call){
 	}
 }
 
-
-
-
 static RtpProfile *make_profile(LinphoneCall *call, const SalMediaDescription *md, const SalStreamDescription *desc, int *used_pt){
 	int bw;
 	const MSList *elem;
@@ -782,15 +790,17 @@ static RtpProfile *make_profile(LinphoneCall *call, const SalMediaDescription *m
 	bool_t first=TRUE;
 	int remote_bw=0;
 	LinphoneCore *lc=call->core;
+	int up_ptime=0;
 	*used_pt=-1;
 	
 	for(elem=desc->payloads;elem!=NULL;elem=elem->next){
 		PayloadType *pt=(PayloadType*)elem->data;
 		int number;
 		
-		if (first) {
+		if ((pt->flags & PAYLOAD_TYPE_FLAG_CAN_SEND) && first) {
 			if (desc->type==SalAudio){
 				linphone_core_update_allocated_audio_bandwidth_in_call(call,pt);
+				up_ptime=linphone_core_get_upload_ptime(lc);
 			}
 			*used_pt=payload_type_get_number(pt);
 			first=FALSE;
@@ -812,8 +822,11 @@ static RtpProfile *make_profile(LinphoneCall *call, const SalMediaDescription *m
 			pt->normal_bitrate=-1;
 		}
 		if (desc->ptime>0){
+			up_ptime=desc->ptime;
+		}
+		if (up_ptime>0){
 			char tmp[40];
-			snprintf(tmp,sizeof(tmp),"ptime=%i",desc->ptime);
+			snprintf(tmp,sizeof(tmp),"ptime=%i",up_ptime);
 			payload_type_append_send_fmtp(pt,tmp);
 		}
 		number=payload_type_get_number(pt);
@@ -843,6 +856,7 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 	const SalStreamDescription *vstream=sal_media_description_find_stream(call->resultdesc,
 		    					SalProtoRtpAvp,SalVideo);
 #endif
+	bool_t use_arc=linphone_core_adaptive_rate_control_enabled(lc);
 	
 	if(call->audiostream == NULL)
 	{
@@ -866,7 +880,7 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 			const char *playfile=lc->play_file;
 			const char *recfile=lc->rec_file;
 			call->audio_profile=make_profile(call,call->resultdesc,stream,&used_pt);
-			bool_t use_ec;
+			bool_t use_ec,use_arc_audio=use_arc;
 
 			if (used_pt!=-1){
 				if (playcard==NULL) {
@@ -897,11 +911,17 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 					playcard=NULL;
 				}
 				use_ec=captcard==NULL ? FALSE : linphone_core_echo_cancellation_enabled(lc);
-#if defined(VIDEO_ENABLED) && defined(ANDROID)
-				/*On android we have to disable the echo canceller to preserve CPU for video codecs */
-				if (vstream && vstream->dir!=SalStreamInactive && vstream->payloads!=NULL)
+#if defined(VIDEO_ENABLED)
+				if (vstream && vstream->dir!=SalStreamInactive && vstream->payloads!=NULL){
+					/*when video is used, do not make adaptive rate control on audio, it is stupid.*/
+					use_arc_audio=FALSE;
+	#if defined(ANDROID)
+					/*On android we have to disable the echo canceller to preserve CPU for video codecs */
 					use_ec=FALSE;
+	#endif
+				}
 #endif
+				audio_stream_enable_adaptive_bitrate_control(call->audiostream,use_arc_audio);
 				audio_stream_start_full(
 					call->audiostream,
 					call->audio_profile,
@@ -1005,6 +1025,7 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 
 static void linphone_call_log_fill_stats(LinphoneCallLog *log, AudioStream *st){
 	audio_stream_get_local_rtp_stats (st,&log->local_stats);
+	log->quality=audio_stream_get_average_quality_rating(st);
 }
 
 void linphone_call_stop_media_streams(LinphoneCall *call){
@@ -1041,16 +1062,7 @@ void linphone_call_stop_media_streams(LinphoneCall *call){
 	}
 }
 
-#ifdef VIDEO_ENABLED
-/**
- * Request remote side to send us VFU.
-**/
-void linphone_call_send_vfu_request(LinphoneCall *call)
-{
-	if (LinphoneCallStreamsRunning == linphone_call_get_state(call))
-		sal_call_send_vfu_request(call->op);
-}
-#endif
+
 
 void linphone_call_enable_echo_cancellation(LinphoneCall *call, bool_t enable) {
 	if (call!=NULL && call->audiostream!=NULL && call->audiostream->ec){
@@ -1091,6 +1103,11 @@ bool_t linphone_call_echo_limiter_enabled(const LinphoneCall *call){
 }
 
 /**
+ * @addtogroup call_misc
+ * @{
+**/ 
+
+/**
  * Returns the measured sound volume played locally (received from remote)
  * It is expressed in dbm0. 
 **/
@@ -1120,6 +1137,45 @@ float linphone_call_get_record_volume(LinphoneCall *call){
 	return LINPHONE_VOLUME_DB_LOWEST;
 }
 
+/**
+ * Obtain real-time quality rating of the call
+ *
+ * Based on local RTP statistics and RTCP feedback, a quality rating is computed and updated
+ * during all the duration of the call. This function returns its value at the time of the function call.
+ * It is expected that the rating is updated at least every 5 seconds or so.
+ * The rating is a floating point number comprised between 0 and 5.
+ *
+ * 4-5 = good quality <br>
+ * 3-4 = average quality <br>
+ * 2-3 = poor quality <br>
+ * 1-2 = very poor quality <br>
+ * 0-1 = can't be worse, mostly unusable <br>
+ *
+ * @returns The function returns -1 if no quality measurement is available, for example if no 
+ * active audio stream exist. Otherwise it returns the quality rating.
+**/
+float linphone_call_get_current_quality(LinphoneCall *call){
+	if (call->audiostream){
+		return audio_stream_get_quality_rating(call->audiostream);
+	}
+	return -1;
+}
+
+/**
+ * Returns call quality averaged over all the duration of the call.
+ *
+ * See linphone_call_get_current_quality() for more details about quality measurement.
+**/
+float linphone_call_get_average_quality(LinphoneCall *call){
+	if (call->audiostream){
+		return audio_stream_get_average_quality_rating(call->audiostream);
+	}
+	return -1;
+}
+
+/**
+ * @}
+**/
 
 static void display_bandwidth(RtpSession *as, RtpSession *vs){
 	ms_message("bandwidth usage: audio=[d=%.1f,u=%.1f] video=[d=%.1f,u=%.1f] kbit/sec",
@@ -1172,6 +1228,8 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 	if (call->videostream!=NULL)
 		video_stream_iterate(call->videostream);
 #endif
+	if (call->audiostream!=NULL)
+		audio_stream_iterate(call->audiostream);
 	if (one_second_elapsed && call->audiostream!=NULL && disconnect_timeout>0 )
 		disconnected=!audio_stream_alive(call->audiostream,disconnect_timeout);
 	if (disconnected)
