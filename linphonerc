@@ -1,6 +1,6 @@
 [net]
-download_bw=128
-upload_bw=128
+download_bw=380
+upload_bw=380
 firewall_policy=0
 mtu=0
 
@@ -32,3 +32,9 @@ echocancellation=0
 [misc]
 history_max_size=30
 
+[video]
+display=1
+capture=1
+show_local=0
+enabled=1
+size=qvga-portrait

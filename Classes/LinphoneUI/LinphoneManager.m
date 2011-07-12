@@ -503,6 +503,16 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	[self configurePayloadType:"PCMU" fromPrefKey:@"pcmu_preference" withRate:8000];
 	[self configurePayloadType:"PCMA" fromPrefKey:@"pcma_preference" withRate:8000];
 	
+	//get video codecs from linphonerc
+	const MSList *videoCodecs=linphone_core_get_video_codecs(theLinphoneCore);
+	//disable video all codecs
+	for (elem=videoCodecs;elem!=NULL;elem=elem->next){
+		pt=(PayloadType*)elem->data;
+		linphone_core_enable_payload_type(theLinphoneCore,pt,FALSE);
+	}
+	[self configurePayloadType:"MP4V-ES" fromPrefKey:@"mp4v-es_preference" withRate:90000];
+
+	
 	UIDevice* device = [UIDevice currentDevice];
 	bool backgroundSupported = false;
 	if ([device respondsToSelector:@selector(isMultitaskingSupported)])

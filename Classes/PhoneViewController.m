@@ -170,6 +170,7 @@
 			mIncomingCallActionSheet=nil;
 		}
 	}
+	[self dismissModalViewControllerAnimated:TRUE];//just in case
 	
 	[address setHidden:false];
 	if (username) {
