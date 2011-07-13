@@ -49,7 +49,7 @@ liblinphone_la_LIBADD= \
 if BUILD_WIN32
 liblinphone_la_LIBADD+=$(top_builddir)/oRTP/src/libortp.la
 endif
-
+if BUILD_TESTS
 noinst_PROGRAMS=test_lsd test_ecc
 
 test_lsd_SOURCES=test_lsd.c
@@ -60,7 +60,7 @@ test_ecc_SOURCES=test_ecc.c
 
 test_ecc_LDADD=liblinphone.la $(liblinphone_la_LIBADD)
 
-
+endif
 
 AM_CFLAGS=$(STRICT_OPTIONS)  -DIN_LINPHONE \
 	$(ORTP_CFLAGS) \
