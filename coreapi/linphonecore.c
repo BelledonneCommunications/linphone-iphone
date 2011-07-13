@@ -3422,7 +3422,13 @@ unsigned long linphone_core_get_native_preview_window_id(const LinphoneCore *lc)
  * If not set the core will create its own window.
 **/
 void linphone_core_set_native_preview_window_id(LinphoneCore *lc, unsigned long id){
+#ifdef VIDEO_ENABLED
 	lc->preview_window_id=id;
+	LinphoneCall *call=linphone_core_get_current_call(lc);
+	if (call!=NULL && call->videostream){
+		video_stream_set_native_preview_window_id(call->videostream,id);
+	}
+#endif
 }
 
 /**
