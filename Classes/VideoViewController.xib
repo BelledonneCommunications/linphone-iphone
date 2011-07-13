@@ -110,7 +110,6 @@
 						<string key="NSFrame">{{240, 408}, {72, 37}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView"/>
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<int key="IBUIContentHorizontalAlignment">0</int>
@@ -173,6 +172,14 @@
 						<reference key="destination" ref="733070734"/>
 					</object>
 					<int key="connectionID">10</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">mPreview</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="955352536"/>
+					</object>
+					<int key="connectionID">11</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -280,7 +287,7 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">10</int>
+			<int key="maxID">11</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -319,12 +326,14 @@
 							<string>mDisplay</string>
 							<string>mHangUp</string>
 							<string>mMute</string>
+							<string>mPreview</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>UIImageView</string>
 							<string>UIHangUpButton</string>
 							<string>UIMuteButton</string>
+							<string>UIView</string>
 						</object>
 					</object>
 					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
@@ -334,6 +343,7 @@
 							<string>mDisplay</string>
 							<string>mHangUp</string>
 							<string>mMute</string>
+							<string>mPreview</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
@@ -348,6 +358,10 @@
 							<object class="IBToOneOutletInfo">
 								<string key="name">mMute</string>
 								<string key="candidateClassName">UIMuteButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">mPreview</string>
+								<string key="candidateClassName">UIView</string>
 							</object>
 						</object>
 					</object>

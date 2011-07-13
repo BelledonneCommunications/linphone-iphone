@@ -22,6 +22,7 @@
 
 @implementation VideoViewController
 @synthesize mDisplay;
+@synthesize mPreview;
 @synthesize mMute;
 @synthesize mHangUp;
 
@@ -64,6 +65,7 @@
 -(void) viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 	linphone_core_set_native_video_window_id([LinphoneManager getLc],(unsigned long)mDisplay);	
+	linphone_core_set_native_preview_window_id([LinphoneManager getLc],(unsigned long)mPreview);	
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation

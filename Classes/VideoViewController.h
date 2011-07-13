@@ -21,12 +21,14 @@
 
 @interface VideoViewController : UIViewController {
 	UIImageView* mDisplay;
+	UIView* mPreview;
 	UIMuteButton* mMute;
 	UIHangUpButton* mHangUp;
 
 }
 
 @property (nonatomic, retain) IBOutlet UIImageView* mDisplay;
+@property (nonatomic, retain) IBOutlet UIView* mPreview;
 @property (nonatomic, retain) IBOutlet UIMuteButton* mMute;
 @property (nonatomic, retain) IBOutlet UIHangUpButton* mHangUp;
 @end
