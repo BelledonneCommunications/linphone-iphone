@@ -91,6 +91,7 @@
 		22F2508E107141E100AC9B3F /* PhoneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22F2508C107141E100AC9B3F /* PhoneViewController.m */; };
 		22F2508F107141E100AC9B3F /* PhoneViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22F2508D107141E100AC9B3F /* PhoneViewController.xib */; };
 		22F254811073D99800AC9B3F /* ringback.wav in Resources */ = {isa = PBXBuildFile; fileRef = 22F254801073D99800AC9B3F /* ringback.wav */; };
+		22F3D57E13CCC89600A0DA02 /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22F3D57D13CCC89600A0DA02 /* liblinphone.a */; };
 		22F51EF6107FA66500F98953 /* untitled.plist in Resources */ = {isa = PBXBuildFile; fileRef = 22F51EF5107FA66500F98953 /* untitled.plist */; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
 /* End PBXBuildFile section */
@@ -110,7 +111,7 @@
 			remoteGlobalIDString = 22DD19BE13A8D7FA0018ECD4;
 			remoteInfo = mediastream;
 		};
-		22F3D55713CC3CFE00A0DA02 /* PBXContainerItemProxy */ = {
+		22F3D57B13CCC60500A0DA02 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 22A10D9E11F88C1F00373793 /* liblinphone.xcodeproj */;
 			proxyType = 1;
@@ -423,6 +424,7 @@
 		22F2508C107141E100AC9B3F /* PhoneViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneViewController.m; sourceTree = "<group>"; };
 		22F2508D107141E100AC9B3F /* PhoneViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PhoneViewController.xib; sourceTree = "<group>"; };
 		22F254801073D99800AC9B3F /* ringback.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = ringback.wav; path = "liblinphone-sdk/apple-darwin/share/sounds/linphone/ringback.wav"; sourceTree = "<group>"; };
+		22F3D57D13CCC89600A0DA02 /* liblinphone.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = liblinphone.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		22F51EF5107FA66500F98953 /* untitled.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = untitled.plist; sourceTree = "<group>"; };
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -435,6 +437,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				22F3D57E13CCC89600A0DA02 /* liblinphone.a in Frameworks */,
 				22276E8913C73DC000210156 /* CoreMedia.framework in Frameworks */,
 				22276E8713C73D8A00210156 /* CoreVideo.framework in Frameworks */,
 				22276E8313C73D3100210156 /* libavcodec.a in Frameworks */,
@@ -824,6 +827,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				22F3D57D13CCC89600A0DA02 /* liblinphone.a */,
 				22E1A9E713CAF4AA00219531 /* video.plist */,
 				226B563E13CAF1CD00921595 /* audio.plist */,
 				22276E8813C73DC000210156 /* CoreMedia.framework */,
@@ -935,7 +939,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				22F3D55813CC3CFE00A0DA02 /* PBXTargetDependency */,
+				22F3D57C13CCC60500A0DA02 /* PBXTargetDependency */,
 			);
 			name = linphone;
 			productName = linphone;
@@ -1067,10 +1071,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		22F3D55813CC3CFE00A0DA02 /* PBXTargetDependency */ = {
+		22F3D57C13CCC60500A0DA02 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = liblinphone;
-			targetProxy = 22F3D55713CC3CFE00A0DA02 /* PBXContainerItemProxy */;
+			targetProxy = 22F3D57B13CCC60500A0DA02 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1118,12 +1122,7 @@
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib\"",
 				);
-				OTHER_LDFLAGS = (
-					"-l",
-					linphone,
-					"-l",
-					mediastreamer,
-				);
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = linphone;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
@@ -1183,12 +1182,7 @@
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib\"",
 				);
-				OTHER_LDFLAGS = (
-					"-l",
-					linphone,
-					"-l",
-					mediastreamer,
-				);
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = linphone;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
@@ -1246,12 +1240,7 @@
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib\"",
 				);
-				OTHER_LDFLAGS = (
-					"-l",
-					linphone,
-					"-l",
-					mediastreamer,
-				);
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = linphone;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
@@ -1311,12 +1300,7 @@
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib\"",
 				);
-				OTHER_LDFLAGS = (
-					"-l",
-					linphone,
-					"-l",
-					mediastreamer,
-				);
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = linphone;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;

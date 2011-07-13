@@ -26,6 +26,7 @@ library_mode:= --disable-shared --enable-static
 linphone_configure_controls=  \
                               --with-readline=none  \
                               --enable-gtk_ui=no \
+			      --enable-console_ui=no \
                               --enable-ssl-hmac=no \
                               --enable-ssl=yes \
 			      --disable-theora \
