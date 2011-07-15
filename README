@@ -8,7 +8,9 @@ Linphone for iPhone depends on liblinphone sdk. To build this sdk, you must inst
 -intltool
 -wget
 -pkgconfig
--gas-preposessor.pl  (http://github.com/yuvi/gas-preprocessor/ )
+
+
+gas-preprosessor.pl  (http://github.com/yuvi/gas-preprocessor/ ) to be copied into /opt/local/bin
 
 Link macport libtoolize to glibtoolize (sudo ln -s /opt/local/bin/glibtoolize /opt/local/bin/libtoolize)
 
