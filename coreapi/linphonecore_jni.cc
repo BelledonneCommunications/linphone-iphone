@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include <jni.h>
 #include "linphonecore_utils.h"
+#include <ortp/zrtp.h>
 
 #include "mediastreamer2/msjava.h"
 
@@ -89,29 +90,39 @@ public:
 		vTable.global_state_changed = globalStateChange;
 		vTable.registration_state_changed = registrationStateChange;
 		vTable.call_state_changed = callStateChange;
+		//vTable.call_encryption_changed = callEncryptionChange;
 		vTable.text_received = text_received;
 		vTable.new_subscription_request = new_subscription_request;
 		vTable.notify_presence_recv = notify_presence_recv;
 
 		listernerClass = (jclass)env->NewGlobalRef(env->GetObjectClass( alistener));
+
 		/*displayStatus(LinphoneCore lc,String message);*/
 		displayStatusId = env->GetMethodID(listernerClass,"displayStatus","(Lorg/linphone/core/LinphoneCore;Ljava/lang/String;)V");
+
 		/*void generalState(LinphoneCore lc,int state); */
 		globalStateId = env->GetMethodID(listernerClass,"globalState","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCore$GlobalState;Ljava/lang/String;)V");
 		globalStateClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneCore$GlobalState"));
 		globalStateFromIntId = env->GetStaticMethodID(globalStateClass,"fromInt","(I)Lorg/linphone/core/LinphoneCore$GlobalState;");
+
 		/*registrationState(LinphoneCore lc, LinphoneProxyConfig cfg, LinphoneCore.RegistrationState cstate, String smessage);*/
 		registrationStateId = env->GetMethodID(listernerClass,"registrationState","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneProxyConfig;Lorg/linphone/core/LinphoneCore$RegistrationState;Ljava/lang/String;)V");
 		registrationStateClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneCore$RegistrationState"));
 		registrationStateFromIntId = env->GetStaticMethodID(registrationStateClass,"fromInt","(I)Lorg/linphone/core/LinphoneCore$RegistrationState;");
+
 		/*callState(LinphoneCore lc, LinphoneCall call, LinphoneCall.State cstate,String message);*/
 		callStateId = env->GetMethodID(listernerClass,"callState","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCall;Lorg/linphone/core/LinphoneCall$State;Ljava/lang/String;)V");
 		callStateClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneCall$State"));
 		callStateFromIntId = env->GetStaticMethodID(callStateClass,"fromInt","(I)Lorg/linphone/core/LinphoneCall$State;");
+
+		/*callEncryption(LinphoneCore lc, LinphoneCall call, boolean encrypted,String auth_token);*/
+		callEncryptionChangedId=env->GetMethodID(listernerClass,"callEncryptionChanged","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCall;ZLjava/lang/String;)V");
+
 		/*void ecCalibrationStatus(LinphoneCore.EcCalibratorStatus status, int delay_ms, Object data);*/
 		ecCalibrationStatusId = env->GetMethodID(listernerClass,"ecCalibrationStatus","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCore$EcCalibratorStatus;ILjava/lang/Object;)V");
 		ecCalibratorStatusClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneCore$EcCalibratorStatus"));
 		ecCalibratorStatusFromIntId = env->GetStaticMethodID(ecCalibratorStatusClass,"fromInt","(I)Lorg/linphone/core/LinphoneCore$EcCalibratorStatus;");
+
 		/*void newSubscriptionRequest(LinphoneCore lc, LinphoneFriend lf, String url)*/
 		newSubscriptionRequestId = env->GetMethodID(listernerClass,"newSubscriptionRequest","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneFriend;Ljava/lang/String;)V");
 
@@ -175,6 +186,8 @@ public:
 	jclass callStateClass;
 	jmethodID callStateId;
 	jmethodID callStateFromIntId;
+
+	jmethodID callEncryptionChangedId;
 
 	jclass ecCalibratorStatusClass;
 	jmethodID ecCalibrationStatusId;
@@ -262,6 +275,21 @@ public:
 							,env->NewObject(lcData->callClass,lcData->callCtrId,(jlong)call)
 							,env->CallStaticObjectMethod(lcData->callStateClass,lcData->callStateFromIntId,(jint)state),
 							message ? env->NewStringUTF(message) : NULL);
+	}
+	static void callEncryptionChange(LinphoneCore *lc, LinphoneCall* call, bool_t encrypted,const char* authentication_token) {
+		JNIEnv *env = 0;
+		jint result = jvm->AttachCurrentThread(&env,NULL);
+		if (result != 0) {
+			ms_error("cannot attach VM\n");
+			return;
+		}
+		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_get_user_data(lc);
+		env->CallVoidMethod(lcData->listener
+							,lcData->callEncryptionChangedId
+							,lcData->core
+							,env->NewObject(lcData->callClass,lcData->callCtrId,(jlong)call)
+							,encrypted
+							,authentication_token ? env->NewStringUTF(authentication_token) : NULL);
 	}
 	static void notify_presence_recv (LinphoneCore *lc,  LinphoneFriend *my_friend) {
 		JNIEnv *env = 0;
@@ -1268,6 +1296,9 @@ extern "C" jboolean Java_org_linphone_core_Version_nativeHasNeon(JNIEnv *env){
 	}
 	return 0;
 }
+extern "C" jboolean Java_org_linphone_core_Version_nativeHasZrtp(JNIEnv *env){
+	return ortp_zrtp_available();
+}
 
 extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_pauseCall(JNIEnv *env,jobject thiz,jlong pCore, jlong pCall) {
 	return linphone_core_pause_call((LinphoneCore *) pCore, (LinphoneCall *) pCall);
@@ -1277,4 +1308,28 @@ extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_pauseAllCalls(JNIEnv *en
 }
 extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_resumeCall(JNIEnv *env,jobject thiz,jlong pCore, jlong pCall) {
 	return linphone_core_resume_call((LinphoneCore *) pCore, (LinphoneCall *) pCall);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setZrtpSecretsCache(JNIEnv *env,jobject thiz,jlong pCore, jstring jFile) {
+	if (jFile) {
+		const char* cFile=env->GetStringUTFChars(jFile, NULL);
+		linphone_core_set_zrtp_secrets_file((LinphoneCore *) pCore,cFile);
+		env->ReleaseStringUTFChars(jFile, cFile);
+	} else {
+		linphone_core_set_zrtp_secrets_file((LinphoneCore *) pCore,NULL);
+	}
+}
+
+extern "C" jstring Java_org_linphone_core_LinphoneCallImpl_getAuthenticationToken(JNIEnv*  env,jobject thiz,jlong ptr) {
+	LinphoneCall *call = (LinphoneCall *) ptr;
+	const char* token = linphone_call_get_authentication_token(call);
+	if (token == NULL) return NULL;
+	return env->NewStringUTF(token);
+}
+extern "C" jboolean Java_org_linphone_core_LinphoneCallImpl_isAuthenticationTokenVerified(JNIEnv*  env,jobject thiz,jlong ptr) {
+	LinphoneCall *call = (LinphoneCall *) ptr;
+	return linphone_call_get_authentication_token_verified(call);
+}
+extern "C" jboolean Java_org_linphone_core_LinphoneCallImpl_areStreamsEncrypted(JNIEnv*  env,jobject thiz,jlong ptr) {
+	return linphone_call_are_all_streams_encrypted((LinphoneCall *) ptr);
 }

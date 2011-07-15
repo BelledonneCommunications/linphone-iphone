@@ -581,4 +581,7 @@ public interface LinphoneCore {
 	boolean pauseCall(LinphoneCall call);
 	boolean resumeCall(LinphoneCall call);
 	boolean pauseAllCalls();
+	
+	void setZrtpSecretsCache(String file);
+
 }

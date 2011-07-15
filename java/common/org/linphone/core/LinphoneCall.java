@@ -214,4 +214,9 @@ public interface LinphoneCall {
 	 * See getCurrentQuality() for more details about quality measurement.
 	 */
 	float getAverageQuality();
+	
+	
+	String getAuthenticationToken();
+	boolean isAuthenticationTokenVerified();
+	boolean areStreamsEncrypted();
 }

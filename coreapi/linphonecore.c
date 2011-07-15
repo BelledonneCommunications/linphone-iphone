@@ -4210,4 +4210,9 @@ void linphone_core_remove_iterate_hook(LinphoneCore *lc, LinphoneCoreIterateHook
 	ms_error("linphone_core_remove_iterate_hook(): No such hook found.");
 }
 
-
+void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file){
+	if (lc->zrtp_secrets_cache != NULL) {
+		ms_free(lc->zrtp_secrets_cache);
+	}
+	lc->zrtp_secrets_cache=file ? ms_strdup(file) : NULL;
+}
