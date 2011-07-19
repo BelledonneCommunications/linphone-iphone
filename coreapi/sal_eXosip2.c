@@ -362,6 +362,7 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 		eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE, &keepalive);	
 		break;
 	case SalTransportTCP:
+	case SalTransportTLS:
 		proto= IPPROTO_TCP;
 			keepalive=-1;	
 		eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE,&keepalive);	
@@ -382,11 +383,11 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 	ipv6=strchr(addr,':')!=NULL;
 	eXosip_enable_ipv6(ipv6);
 
-	if (is_secure){
-		ms_fatal("SIP over TLS or DTLS is not supported yet.");
+	if (is_secure && tr == SalTransportUDP){
+		ms_fatal("SIP over DTLS is not supported yet.");
 		return -1;
 	}
-	err=eXosip_listen_addr(proto, addr, port, ipv6 ?  PF_INET6 : PF_INET, 0);
+	err=eXosip_listen_addr(proto, addr, port, ipv6 ?  PF_INET6 : PF_INET, is_secure);
 #ifdef HAVE_EXOSIP_GET_SOCKET
 	ms_message("Exosip has socket number %i",eXosip_get_socket(proto));
 #endif

@@ -487,6 +487,11 @@ static void sip_config_read(LinphoneCore *lc)
 	} else {
 		tr.tcp_port=lp_config_get_int(lc->config,"sip","sip_tcp_port",0);
 	}
+	if (lp_config_get_int(lc->config,"sip","sip_tls_random_port",0)) {
+		tr.tls_port=(0xDFF&+random())+1024;
+	} else {
+		tr.tls_port=lp_config_get_int(lc->config,"sip","sip_tls_port",0);
+	}
 	/*start listening on ports*/
  	linphone_core_set_sip_transports(lc,&tr);
 
@@ -1358,7 +1363,7 @@ void linphone_core_set_use_rfc2833_for_dtmf(LinphoneCore *lc,bool_t use_rfc2833)
 int linphone_core_get_sip_port(LinphoneCore *lc)
 {
 	LCSipTransports *tr=&lc->sip_conf.transports;
-	return tr->udp_port>0 ? tr->udp_port : tr->tcp_port;
+	return tr->udp_port>0 ? tr->udp_port : (tr->tcp_port > 0 ? tr->tcp_port : tr->tls_port);
 }
 
 static char _ua_name[64]="Linphone";
@@ -1419,13 +1424,18 @@ static int apply_transports(LinphoneCore *lc){
 	sal_unlisten_ports (sal);
 	if (tr->udp_port>0){
 		if (sal_listen_port (sal,anyaddr,tr->udp_port,SalTransportUDP,FALSE)!=0){
-			transport_error(lc,"UDP",tr->udp_port);
+			transport_error(lc,"udp",tr->udp_port);
 			return -1;
 		}
 	}
 	if (tr->tcp_port>0){
 		if (sal_listen_port (sal,anyaddr,tr->tcp_port,SalTransportTCP,FALSE)!=0){
-			transport_error(lc,"TCP",tr->tcp_port);
+			transport_error(lc,"tcp",tr->tcp_port);
+		}
+	}
+	if (tr->tls_port>0){
+		if (sal_listen_port (sal,anyaddr,tr->tls_port,SalTransportTLS,TRUE)!=0){
+			transport_error(lc,"tls",tr->tls_port);
 		}
 	}
 	apply_user_agent(lc);
@@ -3746,6 +3756,7 @@ void sip_config_uninit(LinphoneCore *lc)
 	sip_config_t *config=&lc->sip_conf;
 	lp_config_set_int(lc->config,"sip","sip_port",config->transports.udp_port);
 	lp_config_set_int(lc->config,"sip","sip_tcp_port",config->transports.tcp_port);
+	lp_config_set_int(lc->config,"sip","sip_tls_port",config->transports.tls_port);
 	lp_config_set_int(lc->config,"sip","guess_hostname",config->guess_hostname);
 	lp_config_set_string(lc->config,"sip","contact",config->contact);
 	lp_config_set_int(lc->config,"sip","inc_timeout",config->inc_timeout);
