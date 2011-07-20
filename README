@@ -13,6 +13,7 @@ Linphone for iPhone depends on liblinphone sdk. To build this sdk, you must inst
 gas-preprosessor.pl  (http://github.com/yuvi/gas-preprocessor/ ) to be copied into /opt/local/bin
 
 Link macport libtoolize to glibtoolize (sudo ln -s /opt/local/bin/glibtoolize /opt/local/bin/libtoolize)
+Link host's strings to simulator SDK (ln -s  /usr/bin/strings /Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/strings)
 
 You may update variable SDK_VERSION from file submodules/build/iphone-config.site according to your iPhone SDK version. Current is 4.0
   

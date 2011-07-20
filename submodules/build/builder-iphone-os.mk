@@ -70,7 +70,7 @@ endif
 
 prefix?=$(BUILDER_SRC_DIR)/../liblinphone-sdk/$(host)
 
-all: build-linphone build-msilbc build-msamr
+all: build-linphone build-msilbc build-msamr build-msx264
 
 clean-makefile: clean-makefile-linphone
 clean: clean-linphone
@@ -84,10 +84,10 @@ veryclean:
 .NOTPARALLEL build-linphone: init build-openssl build-osip2 build-eXosip2  build-speex build-libgsm build-ffmpeg $(LINPHONE_BUILD_DIR)/Makefile
 	cd $(LINPHONE_BUILD_DIR)  && export PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig export CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) make newdate &&  make  && make install
 
-clean-linphone: clean-osip2 clean-eXosip2 clean-speex clean-libgsm  clean-msilbc clean-libilbc clean-openssl clean-msamr clean-ffmpeg
+clean-linphone: clean-osip2 clean-eXosip2 clean-speex clean-libgsm  clean-msilbc clean-libilbc clean-openssl clean-msamr clean-ffmpeg clean-msx264
 	cd  $(LINPHONE_BUILD_DIR) && make clean
 
-veryclean-linphone: clean-linphone veryclean-osip2 veryclean-eXosip2 veryclean-speex veryclean-libgsm  veryclean-msilbc veryclean-libilbc veryclean-openssl veryclean-msamr 
+veryclean-linphone: clean-linphone veryclean-osip2 veryclean-eXosip2 veryclean-speex veryclean-libgsm  veryclean-msilbc veryclean-libilbc veryclean-openssl veryclean-msamr  veryclean-msx264
 	cd $(LINPHONE_BUILD_DIR) && make distclean
 	cd $(LINPHONE_SRC_DIR) && rm -f configure
 

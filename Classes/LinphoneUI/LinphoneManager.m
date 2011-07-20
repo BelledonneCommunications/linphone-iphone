@@ -33,6 +33,10 @@ extern void libmsilbc_init();
 #ifdef HAVE_AMR
 extern void libmsamr_init();
 #endif
+#ifdef HAVE_X264
+extern void libmsx264_init();
+#endif
+
 @implementation LinphoneManager
 @synthesize callDelegate;
 @synthesize registrationDelegate;
@@ -511,6 +515,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		linphone_core_enable_payload_type(theLinphoneCore,pt,FALSE);
 	}
 	[self configurePayloadType:"MP4V-ES" fromPrefKey:@"mp4v-es_preference" withRate:90000];
+	[self configurePayloadType:"H264" fromPrefKey:@"h264_preference" withRate:90000];
 
 	
 	UIDevice* device = [UIDevice currentDevice];
@@ -669,9 +674,11 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	
 #ifdef HAVE_AMR
     libmsamr_init(); //load amr plugin if present from the liblinphone sdk
-#endif	/*
-	 * Initialize linphone core
-	 */
+#endif	
+#ifdef HAVE_X264
+	libmsx264_init(); //load x264 plugin if present from the liblinphone sdk
+#endif
+	/* Initialize linphone core*/
 	
 	theLinphoneCore = linphone_core_new (&linphonec_vtable
 										 , [confiFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]

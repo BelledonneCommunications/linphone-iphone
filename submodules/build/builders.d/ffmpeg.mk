@@ -23,13 +23,13 @@ ifneq (,$(findstring armv7,$(host)))
 endif
 ffmpeg_dir?=externals/ffmpeg
 
-$(BUILDER_BUILD_DIR)/$(ffmpeg_dir)/Makefile: $(BUILDER_SRC_DIR)/$(ffmpeg_dir)/configure
+$(BUILDER_BUILD_DIR)/$(ffmpeg_dir)/config.mak: 
 	mkdir -p $(BUILDER_BUILD_DIR)/$(ffmpeg_dir)
 	cd $(BUILDER_BUILD_DIR)/$(ffmpeg_dir)/ \
 	&&  host_alias=${host} . $(BUILDER_SRC_DIR)/build/$(config_site) \
 	&& $(BUILDER_SRC_DIR)/$(ffmpeg_dir)/configure --prefix=$(prefix) 	$(ffmpeg_configure_options)
 
-build-ffmpeg: $(BUILDER_BUILD_DIR)/$(ffmpeg_dir)/Makefile
+build-ffmpeg: $(BUILDER_BUILD_DIR)/$(ffmpeg_dir)/config.mak
 	cd $(BUILDER_BUILD_DIR)/$(ffmpeg_dir) && PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site)  make && make install
 
 clean-ffmpeg:
@@ -39,5 +39,5 @@ veryclean-ffmpeg:
 	cd $(BUILDER_BUILD_DIR)/$(ffmpeg_dir) && make distclean
 
 clean-makefile-ffmpeg:
-	cd $(BUILDER_BUILD_DIR)/$(ffmpeg_dir) && rm -f Makefile
+	cd $(BUILDER_BUILD_DIR)/$(ffmpeg_dir) && rm -f config.mak
 
