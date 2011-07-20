@@ -1240,7 +1240,7 @@
 					HAVE_LIBAVCODEC_AVCODEC_H,
 					HAVE_LIBSWSCALE_SWSCALE_H,
 				);
-				GCC_UNROLL_LOOPS = YES;
+				GCC_UNROLL_LOOPS = NO;
 				HEADER_SEARCH_PATHS = (
 					linphone/mediastreamer2/build/iphone,
 					linphone/mediastreamer2/include,
@@ -1288,7 +1288,7 @@
 					HAVE_LIBAVCODEC_AVCODEC_H,
 					HAVE_LIBSWSCALE_SWSCALE_H,
 				);
-				GCC_UNROLL_LOOPS = YES;
+				GCC_UNROLL_LOOPS = NO;
 				HEADER_SEARCH_PATHS = (
 					linphone/mediastreamer2/build/iphone,
 					linphone/mediastreamer2/include,
@@ -1371,6 +1371,7 @@
 					HAVE_EXOSIP_GET_SOCKET,
 					MS2_INTERNAL,
 				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
@@ -1463,6 +1464,7 @@
 					HAVE_LIBAVCODEC_AVCODEC_H,
 					HAVE_LIBSWSCALE_SWSCALE_H,
 				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				INFOPLIST_FILE = "linphone/mediastreamer2/tests/ios/mediastream-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
