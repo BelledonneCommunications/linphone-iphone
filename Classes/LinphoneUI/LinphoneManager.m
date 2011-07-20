@@ -462,6 +462,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		linphone_proxy_config_set_identity(proxyCfg,identity);
 		linphone_proxy_config_set_server_addr(proxyCfg,proxy);
 		linphone_proxy_config_enable_register(proxyCfg,true);
+		linphone_proxy_config_expires(proxyCfg, 600);
 		
 		if (isOutboundProxy)
 			linphone_proxy_config_set_route(proxyCfg,proxy);
@@ -686,19 +687,23 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 										 ,self);
 	
 	[[NSUserDefaults standardUserDefaults] synchronize];//sync before loading config 
-	[ self doLinphoneConfiguration:nil];
+	
     
     proxyReachability=SCNetworkReachabilityCreateWithName(nil, "linphone.org");		
     proxyReachabilityContext.info=self;
+	//initial state is network off should be done as soon as possible
+	SCNetworkReachabilityFlags flags;
+	SCNetworkReachabilityGetFlags(proxyReachability, &flags);
+	networkReachabilityCallBack(proxyReachability,flags,self);	
+
 	SCNetworkReachabilitySetCallback(proxyReachability, (SCNetworkReachabilityCallBack)networkReachabilityCallBack,&proxyReachabilityContext);
 	SCNetworkReachabilityScheduleWithRunLoop(proxyReachability, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
-
+	
+	[self doLinphoneConfiguration:nil];
 	[[NSNotificationCenter defaultCenter]	addObserver:self
 											 selector:@selector(doLinphoneConfiguration:)
 												 name:NSUserDefaultsDidChangeNotification object:nil];
 	
-	//initial state is network off should be done as soon as possible
-	linphone_core_set_network_reachable(theLinphoneCore,false);
 	// start scheduler
 	mIterateTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 
 													 target:self 
@@ -717,6 +722,12 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 											  otherButtonTitles:nil ,nil];
 		[error show];
 	}
+	if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)] 
+		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground) {
+		//go directly to bg mode
+		[self enterBackgroundMode];
+	}
+
     ms_warning("Linphone [%s]  started on [%s]"
                ,linphone_core_get_version()
                ,[[UIDevice currentDevice].model cStringUsingEncoding:[NSString defaultCStringEncoding]] );

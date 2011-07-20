@@ -32,3 +32,8 @@ clean-makefile:
 	make -f  builder-iphone-simulator.mk  clean-makefile \
 	&&  make -f  builder-iphone-os.mk  clean-makefile \
 	&&  make -f  builder-iphone-os.mk   host=armv7-apple-darwin clean-makefile
+
+veryclean:
+	make -f  builder-iphone-simulator.mk  veryclean \
+	&&  make -f  builder-iphone-os.mk  veryclean \
+	&&  make -f  builder-iphone-os.mk  host=armv7-apple-darwin veryclean 

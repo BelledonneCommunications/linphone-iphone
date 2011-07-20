@@ -36,7 +36,8 @@ clean-msamr: clean-opencore-amr
 	cd  $(BUILDER_BUILD_DIR)/$(msamr_dir) && make clean
 
 veryclean-msamr: veryclean-opencore-amr
-	cd $(BUILDER_BUILD_DIR)/$(msamr_dir) && make distclean && rm -f configure
+	-cd $(BUILDER_BUILD_DIR)/$(msamr_dir) && make distclean 
+	rm -f $(BUILDER_SRC_DIR)/$(msamr_dir)/configure
 
 clean-makefile-msamr: clean-makefile-opencore-amr
 	cd $(BUILDER_BUILD_DIR)/$(msamr_dir) && rm -f Makefile
