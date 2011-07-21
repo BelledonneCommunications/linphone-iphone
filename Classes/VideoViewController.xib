@@ -57,7 +57,7 @@
 					<object class="IBUIButton" id="477702441">
 						<reference key="NSNextResponder" ref="191373211"/>
 						<int key="NSvFlags">292</int>
-						<string key="NSFrame">{{13, 408}, {72, 37}}</string>
+						<string key="NSFrame">{{0, 398}, {106, 62}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="695487530"/>
@@ -82,11 +82,15 @@
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MC41AA</bytes>
 						</object>
+						<object class="NSCustomResource" key="IBUINormalBackgroundImage" id="861970554">
+							<string key="NSClassName">NSImage</string>
+							<string key="NSResourceName">clavier-01-108px.png</string>
+						</object>
 					</object>
 					<object class="IBUIButton" id="695487530">
 						<reference key="NSNextResponder" ref="191373211"/>
 						<int key="NSvFlags">292</int>
-						<string key="NSFrame">{{98, 408}, {129, 37}}</string>
+						<string key="NSFrame">{{107, 398}, {106, 63}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="383499753"/>
@@ -105,13 +109,15 @@
 							<string key="NSClassName">NSImage</string>
 							<string key="NSResourceName">stopcall-red.png</string>
 						</object>
+						<reference key="IBUINormalBackgroundImage" ref="861970554"/>
 					</object>
 					<object class="IBUIButton" id="383499753">
 						<reference key="NSNextResponder" ref="191373211"/>
 						<int key="NSvFlags">292</int>
-						<string key="NSFrame">{{240, 408}, {72, 37}}</string>
+						<string key="NSFrame">{{213, 398}, {106, 62}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView"/>
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<int key="IBUIContentHorizontalAlignment">0</int>
@@ -125,18 +131,19 @@
 							<bytes key="NSRGB">MC4xOTYwNzg0MzQ2IDAuMzA5ODAzOTMyOSAwLjUyMTU2ODY1NgA</bytes>
 						</object>
 						<reference key="IBUINormalTitleShadowColor" ref="19777660"/>
+						<reference key="IBUINormalBackgroundImage" ref="861970554"/>
 					</object>
 					<object class="IBUIView" id="955352536">
 						<reference key="NSNextResponder" ref="191373211"/>
 						<int key="NSvFlags">292</int>
-						<string key="NSFrame">{{210, 278}, {102, 114}}</string>
+						<string key="NSFrame">{{216, 263}, {96, 128}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="477702441"/>
 						<object class="NSColor" key="IBUIBackgroundColor">
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MQA</bytes>
-							<object class="NSColorSpace" key="NSCustomColorSpace" id="408460901">
+							<object class="NSColorSpace" key="NSCustomColorSpace">
 								<int key="NSID">2</int>
 							</object>
 						</object>
@@ -149,8 +156,7 @@
 				<reference key="NSNextKeyView" ref="733070734"/>
 				<object class="NSColor" key="IBUIBackgroundColor">
 					<int key="NSColorSpace">3</int>
-					<bytes key="NSWhite">MQA</bytes>
-					<reference key="NSCustomColorSpace" ref="408460901"/>
+					<bytes key="NSWhite">MC42NjY2NjY2NjY3AA</bytes>
 				</object>
 				<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics"/>
 				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -215,10 +221,10 @@
 						<object class="NSMutableArray" key="children">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<reference ref="733070734"/>
+							<reference ref="955352536"/>
 							<reference ref="477702441"/>
 							<reference ref="695487530"/>
 							<reference ref="383499753"/>
-							<reference ref="955352536"/>
 						</object>
 						<reference key="parent" ref="0"/>
 					</object>
@@ -427,8 +433,17 @@
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 		<object class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
-			<string key="NS.key.0">stopcall-red.png</string>
-			<string key="NS.object.0">{62, 54}</string>
+			<bool key="EncodedWithXMLCoder">YES</bool>
+			<object class="NSArray" key="dict.sortedKeys">
+				<bool key="EncodedWithXMLCoder">YES</bool>
+				<string>clavier-01-108px.png</string>
+				<string>stopcall-red.png</string>
+			</object>
+			<object class="NSMutableArray" key="dict.values">
+				<bool key="EncodedWithXMLCoder">YES</bool>
+				<string>{108, 60}</string>
+				<string>{62, 54}</string>
+			</object>
 		</object>
 		<string key="IBCocoaTouchPluginVersion">300</string>
 	</data>
