@@ -25,6 +25,7 @@
 @synthesize mPreview;
 @synthesize mMute;
 @synthesize mHangUp;
+@synthesize mCamSwitch;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -53,12 +54,14 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
+	[mMute initWithOnImage:[UIImage imageNamed:@"mic_muted.png"]  offImage:[UIImage imageNamed:@"mic_active.png"] ];
+	[mCamSwitch setPreview:mPreview];
 }
 
 - (void)viewDidUnload
 {
     [super viewDidUnload];
+	
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
 }

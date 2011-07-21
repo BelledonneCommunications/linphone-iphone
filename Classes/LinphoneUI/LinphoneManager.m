@@ -36,11 +36,15 @@ extern void libmsamr_init();
 #ifdef HAVE_X264
 extern void libmsx264_init();
 #endif
+#define FRONT_CAM_NAME "AV Capture: Front Camera"
+#define BACK_CAM_NAME "AV Capture: Back Camera"
 
 @implementation LinphoneManager
 @synthesize callDelegate;
 @synthesize registrationDelegate;
 @synthesize connectivity;
+@synthesize frontCamId;
+@synthesize backCamId;
 
 -(id) init {
     if ((self= [super init])) {
@@ -722,6 +726,21 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 											  otherButtonTitles:nil ,nil];
 		[error show];
 	}
+	/*DETECT cameras*/
+	frontCamId= backCamId=nil;
+	char** camlist = (char**)linphone_core_get_video_devices(theLinphoneCore);
+		for (char* cam = *camlist;*camlist!=NULL;cam=*++camlist) {
+			if (strcmp(FRONT_CAM_NAME, cam)==0) {
+				frontCamId = cam;
+				//great set default cam to front
+				linphone_core_set_video_device(theLinphoneCore, cam);
+			}
+			if (strcmp(BACK_CAM_NAME, cam)==0) {
+				backCamId = cam;
+			}
+			
+		}
+
 	if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)] 
 		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground) {
 		//go directly to bg mode
@@ -769,5 +788,6 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 -(void) registerLogView:(id<LogView>) view {
 	mLogView = view;
 }
+
 
 @end

@@ -1,4 +1,4 @@
-/* VideoViewController.h
+/* UICamSwitch.h
  *
  * Copyright (C) 2011  Belledonne Comunications, Grenoble, France
  *
@@ -15,22 +15,17 @@
  *  You should have received a copy of the GNU General Public License   
  *  along with this program; if not, write to the Free Software         
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */     
+ */       
+
 #import <UIKit/UIKit.h>
-#import "UILinphone.h"
 
-@interface VideoViewController : UIViewController {
-	UIImageView* mDisplay;
-	UIView* mPreview;
-	UIMuteButton* mMute;
-	UIHangUpButton* mHangUp;
-	UICamSwitch* mCamSwitch;
 
+@interface UICamSwitch : UIButton {
+  
+@private
+	char* currentCamId;
+	char* nextCamId;
+	UIView* preview;
 }
-
-@property (nonatomic, retain) IBOutlet UIImageView* mDisplay;
-@property (nonatomic, retain) IBOutlet UIView* mPreview;
-@property (nonatomic, retain) IBOutlet UIMuteButton* mMute;
-@property (nonatomic, retain) IBOutlet UIHangUpButton* mHangUp;
-@property (nonatomic, retain) IBOutlet UICamSwitch* mCamSwitch;
+@property (nonatomic, retain) IBOutlet UIView* preview;
 @end
