@@ -514,6 +514,8 @@ static void sip_config_read(LinphoneCore *lc)
 		ms_free(contact);
 	}
 
+	sal_root_ca(lc->sal, lp_config_get_string(lc->config,"sip","root_ca", "/etc/ssl/certs"));
+
 	tmp=lp_config_get_int(lc->config,"sip","guess_hostname",1);
 	linphone_core_set_guess_hostname(lc,tmp);
 
@@ -2896,6 +2898,18 @@ void linphone_core_set_ring(LinphoneCore *lc,const char *path){
 **/
 const char *linphone_core_get_ring(const LinphoneCore *lc){
 	return lc->sound_conf.local_ring;
+}
+
+/**
+ * Sets the path to a file or folder containing trusted root CAs (PEM format)
+ *
+ * @param path
+ * @param lc The LinphoneCore object
+ *
+ * @ingroup media_parameters
+**/
+void linphone_core_set_root_ca(LinphoneCore *lc,const char *path){
+	sal_root_ca(lc->sal, path);
 }
 
 static void notify_end_of_ring(void *ud, MSFilter *f, unsigned int event, void *arg){

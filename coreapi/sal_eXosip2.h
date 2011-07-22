@@ -45,6 +45,7 @@ struct Sal{
 	bool_t use_rports;
 	bool_t use_101;
 	bool_t reuse_authorization;
+	char* rootCa; /* File _or_ folder containing root CA */
 };
 
 struct SalOp{

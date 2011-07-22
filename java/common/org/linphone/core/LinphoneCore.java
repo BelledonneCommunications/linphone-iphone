@@ -528,6 +528,14 @@ public interface LinphoneCore {
 	 * @param null if not set
 	 */
 	String getRing();
+	
+	/**
+	 * Sets file or folder containing trusted root CAs
+	 *
+	 * @param path path to file with multiple PEM certif or to folder with multiple PEM files
+	 */	
+	void setRootCA(String path);
+	
 	void setUploadBandwidth(int bw);
 
 	void setDownloadBandwidth(int bw);

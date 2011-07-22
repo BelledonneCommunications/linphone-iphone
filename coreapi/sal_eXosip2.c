@@ -281,11 +281,14 @@ Sal * sal_init(){
 	sal->use_rports=TRUE;
 	sal->use_101=TRUE;
 	sal->reuse_authorization=FALSE;
+	sal->rootCa = 0;
 	return sal;
 }
 
 void sal_uninit(Sal* sal){
 	eXosip_quit();
+	if (sal->rootCa)
+		ms_free(sal->rootCa);
 	ms_free(sal);
 }
 
@@ -365,7 +368,14 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 	case SalTransportTLS:
 		proto= IPPROTO_TCP;
 			keepalive=-1;	
-		eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE,&keepalive);	
+		eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE,&keepalive);
+
+		if (ctx->rootCa) {
+			eXosip_tls_ctx_t tlsCtx;
+			memset(&tlsCtx, 0, sizeof(tlsCtx));
+			snprintf(tlsCtx.root_ca_cert, sizeof(tlsCtx.client.cert), "%s", ctx->rootCa);
+			eXosip_set_tls_ctx(&tlsCtx);
+		}
 		break;
 	default:
 		ms_warning("unexpected proto, using datagram");
@@ -430,6 +440,13 @@ void sal_use_rport(Sal *ctx, bool_t use_rports){
 }
 void sal_use_101(Sal *ctx, bool_t use_101){
 	ctx->use_101=use_101;
+}
+
+void sal_root_ca(Sal* ctx, const char* rootCa) {
+	if (ctx->rootCa)
+		ms_free(ctx->rootCa);
+	ctx->rootCa = ms_strdup(rootCa);
+	ms_error("YIPI : %s == %s\n", rootCa, ctx->rootCa);
 }
 
 static int extract_received_rport(osip_message_t *msg, const char **received, int *rportval,SalTransport* transport){
