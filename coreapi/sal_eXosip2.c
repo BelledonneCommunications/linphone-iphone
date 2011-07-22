@@ -446,7 +446,6 @@ void sal_root_ca(Sal* ctx, const char* rootCa) {
 	if (ctx->rootCa)
 		ms_free(ctx->rootCa);
 	ctx->rootCa = ms_strdup(rootCa);
-	ms_error("YIPI : %s == %s\n", rootCa, ctx->rootCa);
 }
 
 static int extract_received_rport(osip_message_t *msg, const char **received, int *rportval,SalTransport* transport){
