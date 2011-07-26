@@ -181,6 +181,12 @@
 		2258C44C13A946890087A596 /* videoenc.c in Sources */ = {isa = PBXBuildFile; fileRef = 2258C44913A946890087A596 /* videoenc.c */; };
 		2258C44D13A946890087A596 /* videodec.c in Sources */ = {isa = PBXBuildFile; fileRef = 2258C44A13A946890087A596 /* videodec.c */; };
 		225D355A124B1FF60008581C /* linphonecall.c in Sources */ = {isa = PBXBuildFile; fileRef = 225D3559124B1FF60008581C /* linphonecall.c */; };
+		229A614D13DDFE3500090183 /* g722_decode.c in Sources */ = {isa = PBXBuildFile; fileRef = 229A614913DDFE3500090183 /* g722_decode.c */; };
+		229A614E13DDFE3500090183 /* g722_encode.c in Sources */ = {isa = PBXBuildFile; fileRef = 229A614A13DDFE3500090183 /* g722_encode.c */; };
+		229A614F13DDFE3500090183 /* g722.h in Headers */ = {isa = PBXBuildFile; fileRef = 229A614B13DDFE3500090183 /* g722.h */; };
+		229A615013DDFE3500090183 /* msg722.c in Sources */ = {isa = PBXBuildFile; fileRef = 229A614C13DDFE3500090183 /* msg722.c */; };
+		229A615313DEE8A500090183 /* libx264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 229A615113DEE8A400090183 /* libx264.a */; };
+		229A615413DEE8A500090183 /* libmsx264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 229A615213DEE8A400090183 /* libmsx264.a */; };
 		229B9D5913043EAB00EFCD1C /* linphonecore_utils.h in Headers */ = {isa = PBXBuildFile; fileRef = 229B9D5813043EAB00EFCD1C /* linphonecore_utils.h */; };
 		22A10B5611F84E2D00373793 /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = 22A10B4F11F84E2D00373793 /* config.h */; };
 		22A10B5711F84E2D00373793 /* gsm.h in Headers */ = {isa = PBXBuildFile; fileRef = 22A10B5011F84E2D00373793 /* gsm.h */; };
@@ -243,7 +249,6 @@
 		221F58AB13AB71A400D603C9 /* sizeconv.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sizeconv.c; sourceTree = "<group>"; };
 		221F58AD13ABA42800D603C9 /* scaler.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = scaler.c; sourceTree = "<group>"; };
 		221F58E313AF44B300D603C9 /* scaler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scaler.h; sourceTree = "<group>"; };
-		22276E7F13C4637100210156 /* msandroidvideo.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = msandroidvideo.cpp; path = "../../../../../../workspace-iphone-port/linphone-iphone-tunnel/submodules/linphone/mediastreamer2/src/msandroidvideo.cpp"; sourceTree = "<group>"; };
 		222CA5B911F6CF7600621220 /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		222CA5BA11F6CF7600621220 /* Makefile.am */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile.am; sourceTree = "<group>"; };
 		222CA5BB11F6CF7600621220 /* Makefile.in */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile.in; sourceTree = "<group>"; };
@@ -419,6 +424,12 @@
 		2258C44913A946890087A596 /* videoenc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = videoenc.c; sourceTree = "<group>"; };
 		2258C44A13A946890087A596 /* videodec.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = videodec.c; sourceTree = "<group>"; };
 		225D3559124B1FF60008581C /* linphonecall.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = linphonecall.c; sourceTree = "<group>"; };
+		229A614913DDFE3500090183 /* g722_decode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = g722_decode.c; sourceTree = "<group>"; };
+		229A614A13DDFE3500090183 /* g722_encode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = g722_encode.c; sourceTree = "<group>"; };
+		229A614B13DDFE3500090183 /* g722.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = g722.h; sourceTree = "<group>"; };
+		229A614C13DDFE3500090183 /* msg722.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = msg722.c; sourceTree = "<group>"; };
+		229A615113DEE8A400090183 /* libx264.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libx264.a; path = "../liblinphone-sdk/apple-darwin/lib/libx264.a"; sourceTree = "<group>"; };
+		229A615213DEE8A400090183 /* libmsx264.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmsx264.a; path = "../liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmsx264.a"; sourceTree = "<group>"; };
 		229B9D5813043EAB00EFCD1C /* linphonecore_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linphonecore_utils.h; sourceTree = "<group>"; };
 		22A10B4F11F84E2D00373793 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
 		22A10B5011F84E2D00373793 /* gsm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gsm.h; sourceTree = "<group>"; };
@@ -456,6 +467,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				229A615313DEE8A500090183 /* libx264.a in Frameworks */,
+				229A615413DEE8A500090183 /* libmsx264.a in Frameworks */,
 				221F58A013AB50F800D603C9 /* CoreMedia.framework in Frameworks */,
 				2258C44513A945520087A596 /* libswscale.a in Frameworks */,
 				2258C44613A945520087A596 /* libavutil.a in Frameworks */,
@@ -497,6 +510,8 @@
 		0867D691FE84028FC02AAC07 /* liblinphone */ = {
 			isa = PBXGroup;
 			children = (
+				229A615113DEE8A400090183 /* libx264.a */,
+				229A615213DEE8A400090183 /* libmsx264.a */,
 				221F589F13AB50F800D603C9 /* CoreMedia.framework */,
 				221F589D13AB503F00D603C9 /* CoreVideo.framework */,
 				221F589913AB4EEE00D603C9 /* CoreFoundation.framework */,
@@ -625,9 +640,12 @@
 		222CA5DC11F6CF7600621220 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				229A614913DDFE3500090183 /* g722_decode.c */,
+				229A614A13DDFE3500090183 /* g722_encode.c */,
+				229A614B13DDFE3500090183 /* g722.h */,
+				229A614C13DDFE3500090183 /* msg722.c */,
 				22FC56A913CB6A4F002FD0F1 /* bitratecontrol.c */,
 				22FC56A713CB69FA002FD0F1 /* qualityindicator.c */,
-				22276E7F13C4637100210156 /* msandroidvideo.cpp */,
 				221F58AD13ABA42800D603C9 /* scaler.c */,
 				221F58AB13AB71A400D603C9 /* sizeconv.c */,
 				221F58A513AB716300D603C9 /* tonedetector.c */,
@@ -972,6 +990,7 @@
 				2258C44113A9377B0087A596 /* swscale.h in Headers */,
 				221F58A413AB708C00D603C9 /* alldescs.h in Headers */,
 				221F58E413AF44B300D603C9 /* scaler.h in Headers */,
+				229A614F13DDFE3500090183 /* g722.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1165,6 +1184,9 @@
 				221F58AE13ABA42800D603C9 /* scaler.c in Sources */,
 				22FC56A813CB69FB002FD0F1 /* qualityindicator.c in Sources */,
 				22FC56AA13CB6A4F002FD0F1 /* bitratecontrol.c in Sources */,
+				229A614D13DDFE3500090183 /* g722_decode.c in Sources */,
+				229A614E13DDFE3500090183 /* g722_encode.c in Sources */,
+				229A615013DDFE3500090183 /* msg722.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1420,6 +1442,7 @@
 					VIDEO_ENABLED,
 					HAVE_LIBAVCODEC_AVCODEC_H,
 					HAVE_LIBSWSCALE_SWSCALE_H,
+					HAVE_X264,
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_VERSION = com.apple.compilers.llvmgcc42;
@@ -1428,6 +1451,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../liblinphone-sdk/apple-darwin/lib\"",
+					"\"$(SRCROOT)/../liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
@@ -1463,6 +1487,7 @@
 					VIDEO_ENABLED,
 					HAVE_LIBAVCODEC_AVCODEC_H,
 					HAVE_LIBSWSCALE_SWSCALE_H,
+					HAVE_X264,
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_VERSION = com.apple.compilers.llvmgcc42;
@@ -1471,6 +1496,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../liblinphone-sdk/apple-darwin/lib\"",
+					"\"$(SRCROOT)/../liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
 				);
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				PRODUCT_NAME = "$(TARGET_NAME)";

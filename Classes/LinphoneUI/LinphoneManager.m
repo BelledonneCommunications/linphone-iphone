@@ -511,6 +511,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	[self configurePayloadType:"iLBC" fromPrefKey:@"ilbc_preference" withRate:8000];
 	[self configurePayloadType:"PCMU" fromPrefKey:@"pcmu_preference" withRate:8000];
 	[self configurePayloadType:"PCMA" fromPrefKey:@"pcma_preference" withRate:8000];
+	[self configurePayloadType:"G722" fromPrefKey:@"g722_preference" withRate:8000];
 	
 	//get video codecs from linphonerc
 	const MSList *videoCodecs=linphone_core_get_video_codecs(theLinphoneCore);

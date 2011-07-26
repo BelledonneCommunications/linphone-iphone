@@ -24,6 +24,26 @@
 			<key>DefaultValue</key>
 			<true/>
 			<key>Key</key>
+			<string>speex_8k_preference</string>
+			<key>Title</key>
+			<string>Speex 8Khz</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<true/>
+			<key>Key</key>
+			<string>g722_preference</string>
+			<key>Title</key>
+			<string>G722</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<true/>
+			<key>Key</key>
 			<string>gsm_8k_preference</string>
 			<key>Title</key>
 			<string>GSM</string>
