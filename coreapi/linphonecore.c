@@ -948,6 +948,7 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	linphone_core_assign_payload_type(&payload_type_pcmu8000,0,NULL);
 	linphone_core_assign_payload_type(&payload_type_gsm,3,NULL);
 	linphone_core_assign_payload_type(&payload_type_pcma8000,8,NULL);
+	linphone_core_assign_payload_type(&payload_type_g722,9,NULL);
 	linphone_core_assign_payload_type(&payload_type_lpc1015,115,NULL);
 	linphone_core_assign_payload_type(&payload_type_speex_nb,110,"vbr=on");
 	linphone_core_assign_payload_type(&payload_type_speex_wb,111,"vbr=on");
