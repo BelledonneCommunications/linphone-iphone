@@ -208,6 +208,12 @@
 		22DD21B413A8E3310018ECD4 /* mediastreamViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22DD21AD13A8E3310018ECD4 /* mediastreamViewController.m */; };
 		22FC56A813CB69FB002FD0F1 /* qualityindicator.c in Sources */ = {isa = PBXBuildFile; fileRef = 22FC56A713CB69FA002FD0F1 /* qualityindicator.c */; };
 		22FC56AA13CB6A4F002FD0F1 /* bitratecontrol.c in Sources */ = {isa = PBXBuildFile; fileRef = 22FC56A913CB6A4F002FD0F1 /* bitratecontrol.c */; };
+		70E542EE13E147C7002BA2C0 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542ED13E147C7002BA2C0 /* OpenGLES.framework */; };
+		70E542F113E147CE002BA2C0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F013E147CE002BA2C0 /* QuartzCore.framework */; };
+		70E542FA13E14816002BA2C0 /* shaders.h in Headers */ = {isa = PBXBuildFile; fileRef = 70E542F613E14816002BA2C0 /* shaders.h */; };
+		70E542FB13E14816002BA2C0 /* shaders.m in Sources */ = {isa = PBXBuildFile; fileRef = 70E542F713E14816002BA2C0 /* shaders.m */; };
+		70E542FC13E14816002BA2C0 /* yuv2rgb.fs.h in Headers */ = {isa = PBXBuildFile; fileRef = 70E542F813E14816002BA2C0 /* yuv2rgb.fs.h */; };
+		70E542FD13E14816002BA2C0 /* yuv2rgb.vs.h in Headers */ = {isa = PBXBuildFile; fileRef = 70E542F913E14816002BA2C0 /* yuv2rgb.vs.h */; };
 		AA747D9F0F9514B9006C5449 /* liblinphone_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* liblinphone_Prefix.pch */; };
 		AACBBE4A0F95108600F1A2B1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
 /* End PBXBuildFile section */
@@ -457,6 +463,12 @@
 		22DD21AD13A8E3310018ECD4 /* mediastreamViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = mediastreamViewController.m; sourceTree = "<group>"; };
 		22FC56A713CB69FA002FD0F1 /* qualityindicator.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = qualityindicator.c; sourceTree = "<group>"; };
 		22FC56A913CB6A4F002FD0F1 /* bitratecontrol.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = bitratecontrol.c; sourceTree = "<group>"; };
+		70E542ED13E147C7002BA2C0 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		70E542F013E147CE002BA2C0 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		70E542F613E14816002BA2C0 /* shaders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = shaders.h; sourceTree = "<group>"; };
+		70E542F713E14816002BA2C0 /* shaders.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = shaders.m; sourceTree = "<group>"; };
+		70E542F813E14816002BA2C0 /* yuv2rgb.fs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yuv2rgb.fs.h; sourceTree = "<group>"; };
+		70E542F913E14816002BA2C0 /* yuv2rgb.vs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yuv2rgb.vs.h; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* liblinphone_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = liblinphone_Prefix.pch; sourceTree = SOURCE_ROOT; };
 		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		D2AAC07E0554694100DB518D /* liblinphone.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = liblinphone.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -467,6 +479,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				70E542F113E147CE002BA2C0 /* QuartzCore.framework in Frameworks */,
+				70E542EE13E147C7002BA2C0 /* OpenGLES.framework in Frameworks */,
 				229A615313DEE8A500090183 /* libx264.a in Frameworks */,
 				229A615413DEE8A500090183 /* libmsx264.a in Frameworks */,
 				221F58A013AB50F800D603C9 /* CoreMedia.framework in Frameworks */,
@@ -510,6 +524,8 @@
 		0867D691FE84028FC02AAC07 /* liblinphone */ = {
 			isa = PBXGroup;
 			children = (
+				70E542F013E147CE002BA2C0 /* QuartzCore.framework */,
+				70E542ED13E147C7002BA2C0 /* OpenGLES.framework */,
 				229A615113DEE8A400090183 /* libx264.a */,
 				229A615213DEE8A400090183 /* libmsx264.a */,
 				221F589F13AB50F800D603C9 /* CoreMedia.framework */,
@@ -640,6 +656,10 @@
 		222CA5DC11F6CF7600621220 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				70E542F613E14816002BA2C0 /* shaders.h */,
+				70E542F713E14816002BA2C0 /* shaders.m */,
+				70E542F813E14816002BA2C0 /* yuv2rgb.fs.h */,
+				70E542F913E14816002BA2C0 /* yuv2rgb.vs.h */,
 				229A614913DDFE3500090183 /* g722_decode.c */,
 				229A614A13DDFE3500090183 /* g722_encode.c */,
 				229A614B13DDFE3500090183 /* g722.h */,
@@ -991,6 +1011,9 @@
 				221F58A413AB708C00D603C9 /* alldescs.h in Headers */,
 				221F58E413AF44B300D603C9 /* scaler.h in Headers */,
 				229A614F13DDFE3500090183 /* g722.h in Headers */,
+				70E542FA13E14816002BA2C0 /* shaders.h in Headers */,
+				70E542FC13E14816002BA2C0 /* yuv2rgb.fs.h in Headers */,
+				70E542FD13E14816002BA2C0 /* yuv2rgb.vs.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1187,6 +1210,7 @@
 				229A614D13DDFE3500090183 /* g722_decode.c in Sources */,
 				229A614E13DDFE3500090183 /* g722_encode.c in Sources */,
 				229A615013DDFE3500090183 /* msg722.c in Sources */,
+				70E542FB13E14816002BA2C0 /* shaders.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
