@@ -25,9 +25,9 @@ dnl check for eXosip2 libs
 LDFLAGS_save=$LDFLAGS
 LDFLAGS="$OSIP_LIBS $LDFLAGS $OPENSSL_LIBS"
 LIBS_save=$LIBS
-AC_CHECK_LIB([eXosip2],[eXosip_subscribe_remove],
+AC_CHECK_LIB([eXosip2],[eXosip_set_tls_ctx],
 	[],
-	[AC_MSG_ERROR([Could not find eXosip2 library with version >= 3.0.2 !])],
+	[AC_MSG_ERROR([Could not find eXosip2 library with version >= 3.5.0 !])],
 	[-losipparser2 -losip2 ])
 AC_CHECK_LIB([eXosip2],[eXosip_get_version],
 	[AC_DEFINE([HAVE_EXOSIP_GET_VERSION],[1],[Defined when eXosip_get_version is available])],
