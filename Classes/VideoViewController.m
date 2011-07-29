@@ -19,6 +19,7 @@
 
 #import "VideoViewController.h"
 #import "LinphoneManager.h"
+#import <AudioToolbox/AudioToolbox.h>
 
 @implementation VideoViewController
 @synthesize mDisplay;
@@ -68,7 +69,13 @@
 -(void) viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 	linphone_core_set_native_video_window_id([LinphoneManager getLc],(unsigned long)mDisplay);	
-	linphone_core_set_native_preview_window_id([LinphoneManager getLc],(unsigned long)mPreview);	
+	linphone_core_set_native_preview_window_id([LinphoneManager getLc],(unsigned long)mPreview);
+	
+    //redirect audio to speaker
+	UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;  
+	AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute
+							 , sizeof (audioRouteOverride)
+							 , &audioRouteOverride);
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
