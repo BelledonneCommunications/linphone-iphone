@@ -79,7 +79,7 @@ bool_t linphone_call_are_all_streams_encrypted(LinphoneCall *call) {
 	return TRUE;
 }
 
-static void propagate_encryption_changed(LinphoneCall *call){
+void propagate_encryption_changed(LinphoneCall *call){
 	if (call->core->vtable.call_encryption_changed == NULL) return;
 
 	if (!linphone_call_are_all_streams_encrypted(call)) {
@@ -115,10 +115,6 @@ static void linphone_call_audiostream_encryption_changed(void *data, bool_t encr
 		OrtpZrtpParams params;
 		params.zid=get_zrtp_identifier(call->core);
 		params.zid_file=NULL; //unused
-		OrtpZrtpUiCb cbs={0};
-		cbs.data=call;
-		cbs.encryption_changed=linphone_call_videostream_encryption_changed;
-		params.ui_cbs=&cbs;
 		video_stream_enable_zrtp(call->videostream,call->audiostream,&params);
 	}
 #endif
@@ -1117,11 +1113,6 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 		OrtpZrtpParams params;
 		params.zid=get_zrtp_identifier(lc);
 		params.zid_file=lc->zrtp_secrets_cache;
-		OrtpZrtpUiCb cbs={0};
-		cbs.data=call;
-		cbs.encryption_changed=linphone_call_audiostream_encryption_changed;
-		cbs.sas_ready=linphone_call_audiostream_auth_token_ready;
-		params.ui_cbs=&cbs;
 		audio_stream_enable_zrtp(call->audiostream,&params);
 	}
 
@@ -1333,11 +1324,38 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 		ms_message("Thread processing load: audio=%f\tvideo=%f",audio_load,video_load);
 	}
 #ifdef VIDEO_ENABLED
-	if (call->videostream!=NULL)
+	if (call->videostream!=NULL) {
+		if (call->videostream->evq){
+			OrtpEvent *ev=ortp_ev_queue_get(call->videostream->evq);
+			if (ev!=NULL){
+				OrtpEventType evt=ortp_event_get_type(ev);
+				if (evt == ORTP_EVENT_ZRTP_ENCRYPTION_CHANGED){
+					OrtpEventData *evd=ortp_event_get_data(ev);
+					linphone_call_videostream_encryption_changed(call, evd->info.zrtp_stream_encrypted);
+				}
+				ortp_event_destroy(ev);
+			}
+		}
 		video_stream_iterate(call->videostream);
+	}
 #endif
-	if (call->audiostream!=NULL)
+	if (call->audiostream!=NULL) {
+		if (call->audiostream->evq){
+			OrtpEvent *ev=ortp_ev_queue_get(call->audiostream->evq);
+			if (ev!=NULL){
+				OrtpEventType evt=ortp_event_get_type(ev);
+				if (evt == ORTP_EVENT_ZRTP_ENCRYPTION_CHANGED){
+					OrtpEventData *evd=ortp_event_get_data(ev);
+					linphone_call_audiostream_encryption_changed(call, evd->info.zrtp_stream_encrypted);
+				} else if (evt == ORTP_EVENT_ZRTP_SAS_READY) {
+					OrtpEventData *evd=ortp_event_get_data(ev);
+					linphone_call_audiostream_auth_token_ready(call, evd->info.zrtp_sas.sas, evd->info.zrtp_sas.verified);
+				}
+				ortp_event_destroy(ev);
+			}
+		}
 		audio_stream_iterate(call->audiostream);
+	}
 	if (one_second_elapsed && call->audiostream!=NULL && disconnect_timeout>0 )
 		disconnected=!audio_stream_alive(call->audiostream,disconnect_timeout);
 	if (disconnected)

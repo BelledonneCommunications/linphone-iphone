@@ -127,22 +127,26 @@ LOCAL_C_INCLUDES += $(LIBLINPHONE_EXTENDED_C_INCLUDES)
 endif
 
 ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
-	LOCAL_SHARED_LIBRARIES += \
-		liblinssl liblincrypto
+	LOCAL_SHARED_LIBRARIES += liblinssl liblincrypto
 	ifeq ($(BUILD_GPLV3_ZRTP),1)
-	LOCAL_SHARED_LIBRARIES += \
-		libzrtpcpp
+	LOCAL_SHARED_LIBRARIES += libzrtpcpp
 	endif
 
 	ifeq ($(BUILD_SRTP),1)
-	LOCAL_SHARED_LIBRARIES += \
-		libsrtp
+	LOCAL_SHARED_LIBRARIES += libsrtp
 	endif
 else
 	LOCAL_LDLIBS += -lz
 	#LOCAL_STATIC_LIBRARIES += libz libdl
 	LOCAL_STATIC_LIBRARIES += \
 		libssl-static libcrypto-static
+	ifeq ($(BUILD_GPLV3_ZRTP),1)
+		LOCAL_STATIC_LIBRARIES += libzrtpcpp-static
+	endif
+
+	ifeq ($(BUILD_SRTP),1)
+		LOCAL_STATIC_LIBRARIES += libsrtp-static
+	endif
 endif
 
 LOCAL_MODULE := liblinphone
