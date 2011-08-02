@@ -326,9 +326,10 @@ static void linphonec_call_updated(LinphoneCall *call){
 static void linphonec_call_encryption_changed(LinphoneCore *lc, LinphoneCall *call, bool_t encrypted, const char *auth_token) {
 	long id=(long)linphone_call_get_user_pointer (call);
 	if (!encrypted) {
-		linphonec_out("Call %i is not encrypted.\n", id);
+		linphonec_out("Call %i is not fully encrypted and auth token is %s.\n", id,
+				(auth_token != NULL) ? auth_token : "absent");
 	} else {
-		linphonec_out("Call %i is encrypted and auth token is %s.\n", id,
+		linphonec_out("Call %i is fully encrypted and auth token is %s.\n", id,
 				(auth_token != NULL) ? auth_token : "absent");
 	}
 }
