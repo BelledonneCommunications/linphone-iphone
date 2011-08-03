@@ -208,6 +208,8 @@
 		22DD21B413A8E3310018ECD4 /* mediastreamViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22DD21AD13A8E3310018ECD4 /* mediastreamViewController.m */; };
 		22FC56A813CB69FB002FD0F1 /* qualityindicator.c in Sources */ = {isa = PBXBuildFile; fileRef = 22FC56A713CB69FA002FD0F1 /* qualityindicator.c */; };
 		22FC56AA13CB6A4F002FD0F1 /* bitratecontrol.c in Sources */ = {isa = PBXBuildFile; fileRef = 22FC56A913CB6A4F002FD0F1 /* bitratecontrol.c */; };
+		7066FC0713E82A3600EFC6DC /* vp8.c in Sources */ = {isa = PBXBuildFile; fileRef = 7066FC0613E82A3600EFC6DC /* vp8.c */; };
+		7066FC0A13E830B800EFC6DC /* libvpx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7066FC0913E830B800EFC6DC /* libvpx.a */; };
 		70E542EE13E147C7002BA2C0 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542ED13E147C7002BA2C0 /* OpenGLES.framework */; };
 		70E542F113E147CE002BA2C0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F013E147CE002BA2C0 /* QuartzCore.framework */; };
 		70E542FA13E14816002BA2C0 /* shaders.h in Headers */ = {isa = PBXBuildFile; fileRef = 70E542F613E14816002BA2C0 /* shaders.h */; };
@@ -463,6 +465,8 @@
 		22DD21AD13A8E3310018ECD4 /* mediastreamViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = mediastreamViewController.m; sourceTree = "<group>"; };
 		22FC56A713CB69FA002FD0F1 /* qualityindicator.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = qualityindicator.c; sourceTree = "<group>"; };
 		22FC56A913CB6A4F002FD0F1 /* bitratecontrol.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = bitratecontrol.c; sourceTree = "<group>"; };
+		7066FC0613E82A3600EFC6DC /* vp8.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = vp8.c; sourceTree = "<group>"; };
+		7066FC0913E830B800EFC6DC /* libvpx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libvpx.a; path = "../liblinphone-sdk/apple-darwin/lib/libvpx.a"; sourceTree = "<group>"; };
 		70E542ED13E147C7002BA2C0 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		70E542F013E147CE002BA2C0 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		70E542F613E14816002BA2C0 /* shaders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = shaders.h; sourceTree = "<group>"; };
@@ -479,6 +483,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7066FC0A13E830B800EFC6DC /* libvpx.a in Frameworks */,
 				70E542F113E147CE002BA2C0 /* QuartzCore.framework in Frameworks */,
 				70E542EE13E147C7002BA2C0 /* OpenGLES.framework in Frameworks */,
 				229A615313DEE8A500090183 /* libx264.a in Frameworks */,
@@ -524,6 +529,7 @@
 		0867D691FE84028FC02AAC07 /* liblinphone */ = {
 			isa = PBXGroup;
 			children = (
+				7066FC0913E830B800EFC6DC /* libvpx.a */,
 				70E542F013E147CE002BA2C0 /* QuartzCore.framework */,
 				70E542ED13E147C7002BA2C0 /* OpenGLES.framework */,
 				229A615113DEE8A400090183 /* libx264.a */,
@@ -656,6 +662,7 @@
 		222CA5DC11F6CF7600621220 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				7066FC0613E82A3600EFC6DC /* vp8.c */,
 				70E542F613E14816002BA2C0 /* shaders.h */,
 				70E542F713E14816002BA2C0 /* shaders.m */,
 				70E542F813E14816002BA2C0 /* yuv2rgb.fs.h */,
@@ -1211,6 +1218,7 @@
 				229A614E13DDFE3500090183 /* g722_encode.c in Sources */,
 				229A615013DDFE3500090183 /* msg722.c in Sources */,
 				70E542FB13E14816002BA2C0 /* shaders.m in Sources */,
+				7066FC0713E82A3600EFC6DC /* vp8.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
