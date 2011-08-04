@@ -992,6 +992,7 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	linphone_core_assign_payload_type(&payload_type_mp4v,99,"profile-level-id=3");
 	linphone_core_assign_payload_type(&payload_type_x_snow,100,NULL);
 	linphone_core_assign_payload_type(&payload_type_h264,102,"profile-level-id=428014");
+	linphone_core_assign_payload_type(&payload_type_vp8,103,NULL);
 	/* due to limited space in SDP, we have to disable this h264 line which is normally no more necessary */
 	/* linphone_core_assign_payload_type(&payload_type_h264,103,"packetization-mode=1;profile-level-id=428014");*/
 #endif
