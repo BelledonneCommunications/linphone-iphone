@@ -9,7 +9,7 @@ ifneq (,$(findstring armv6,$(host)))
 else ifneq (,$(findstring armv7,$(host)))
 	libvpx_configure_options+= --target=armv7-darwin-gcc --cpu=cortex-a8 
 else
-	libvpx_configure_options+= --target=x86_64-darwin10-gcc
+	libvpx_configure_options+= --force-target=x86-darwin10-gcc
 endif
 libvpx_dir?=externals/libvpx
 
