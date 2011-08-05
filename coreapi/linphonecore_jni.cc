@@ -1341,3 +1341,13 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCallImpl_isAuthenticationToke
 extern "C" jboolean Java_org_linphone_core_LinphoneCallImpl_areStreamsEncrypted(JNIEnv*  env,jobject thiz,jlong ptr) {
 	return linphone_call_are_all_streams_encrypted((LinphoneCall *) ptr);
 }
+
+// Needed by Galaxy S (can't switch to/from speaker while playing and still keep mic working)
+// Implemented directly in msandroid.cpp (sound filters for Android).
+extern "C" void msandroid_hack_speaker_state(bool speakerOn);
+
+extern "C" void Java_org_linphone_LinphoneManager_hackSpeakerState(JNIEnv*  env,jobject thiz,jboolean speakerOn){
+	msandroid_hack_speaker_state(speakerOn);
+// End Galaxy S hack functions
+}
+
