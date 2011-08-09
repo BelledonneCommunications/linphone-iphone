@@ -102,10 +102,11 @@ LOCAL_STATIC_LIBRARIES += \
 endif
 
 ifeq ($(LINPHONE_VIDEO),1)
+LOCAL_STATIC_LIBRARIES += libvpx
 ifeq ($(BUILD_X264),1)
 LOCAL_STATIC_LIBRARIES += \
 	libmsx264 \
-	libx264 
+	libx264
 endif
 LOCAL_SHARED_LIBRARIES += \
 	libavcodec \
