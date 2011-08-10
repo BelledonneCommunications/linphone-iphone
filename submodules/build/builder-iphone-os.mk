@@ -24,6 +24,7 @@ host?=armv6-apple-darwin
 config_site:=iphone-config.site
 library_mode:= --disable-shared --enable-static
 linphone_configure_controls=  --disable-video \
+			      --disable-strict \
                               --with-readline=none  \
                               --enable-gtk_ui=no \
                               --enable-ssl-hmac=no \
