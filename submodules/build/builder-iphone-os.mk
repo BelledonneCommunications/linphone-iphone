@@ -25,6 +25,7 @@ config_site:=iphone-config.site
 library_mode:= --disable-shared --enable-static
 linphone_configure_controls=  --disable-video \
 			      --disable-strict \
+			      --disable-nls \
                               --with-readline=none  \
                               --enable-gtk_ui=no \
                               --enable-ssl-hmac=no \
