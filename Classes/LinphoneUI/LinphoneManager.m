@@ -522,6 +522,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	}
 	[self configurePayloadType:"MP4V-ES" fromPrefKey:@"mp4v-es_preference" withRate:90000];
 	[self configurePayloadType:"H264" fromPrefKey:@"h264_preference" withRate:90000];
+    [self configurePayloadType:"VP8-DRAFT-0-3-2" fromPrefKey:@"vp8_preference" withRate:90000];
 
 	
 	UIDevice* device = [UIDevice currentDevice];

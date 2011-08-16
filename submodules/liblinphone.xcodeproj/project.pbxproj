@@ -208,12 +208,16 @@
 		22DD21B413A8E3310018ECD4 /* mediastreamViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22DD21AD13A8E3310018ECD4 /* mediastreamViewController.m */; };
 		22FC56A813CB69FB002FD0F1 /* qualityindicator.c in Sources */ = {isa = PBXBuildFile; fileRef = 22FC56A713CB69FA002FD0F1 /* qualityindicator.c */; };
 		22FC56AA13CB6A4F002FD0F1 /* bitratecontrol.c in Sources */ = {isa = PBXBuildFile; fileRef = 22FC56A913CB6A4F002FD0F1 /* bitratecontrol.c */; };
+		7014533813FA7AEA00A01D86 /* opengles_display.c in Sources */ = {isa = PBXBuildFile; fileRef = 7014533513FA7AEA00A01D86 /* opengles_display.c */; };
+		7014533913FA7AEA00A01D86 /* opengles_display.h in Headers */ = {isa = PBXBuildFile; fileRef = 7014533613FA7AEA00A01D86 /* opengles_display.h */; };
+		7014533A13FA7AEA00A01D86 /* shaders.c in Sources */ = {isa = PBXBuildFile; fileRef = 7014533713FA7AEA00A01D86 /* shaders.c */; };
+		7014533C13FA7ECA00A01D86 /* zrtp.h in Headers */ = {isa = PBXBuildFile; fileRef = 7014533B13FA7ECA00A01D86 /* zrtp.h */; };
+		7014533E13FA841E00A01D86 /* zrtp.c in Sources */ = {isa = PBXBuildFile; fileRef = 7014533D13FA841E00A01D86 /* zrtp.c */; };
 		7066FC0713E82A3600EFC6DC /* vp8.c in Sources */ = {isa = PBXBuildFile; fileRef = 7066FC0613E82A3600EFC6DC /* vp8.c */; };
 		7066FC0A13E830B800EFC6DC /* libvpx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7066FC0913E830B800EFC6DC /* libvpx.a */; };
 		70E542EE13E147C7002BA2C0 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542ED13E147C7002BA2C0 /* OpenGLES.framework */; };
 		70E542F113E147CE002BA2C0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F013E147CE002BA2C0 /* QuartzCore.framework */; };
 		70E542FA13E14816002BA2C0 /* shaders.h in Headers */ = {isa = PBXBuildFile; fileRef = 70E542F613E14816002BA2C0 /* shaders.h */; };
-		70E542FB13E14816002BA2C0 /* shaders.m in Sources */ = {isa = PBXBuildFile; fileRef = 70E542F713E14816002BA2C0 /* shaders.m */; };
 		70E542FC13E14816002BA2C0 /* yuv2rgb.fs.h in Headers */ = {isa = PBXBuildFile; fileRef = 70E542F813E14816002BA2C0 /* yuv2rgb.fs.h */; };
 		70E542FD13E14816002BA2C0 /* yuv2rgb.vs.h in Headers */ = {isa = PBXBuildFile; fileRef = 70E542F913E14816002BA2C0 /* yuv2rgb.vs.h */; };
 		AA747D9F0F9514B9006C5449 /* liblinphone_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* liblinphone_Prefix.pch */; };
@@ -465,12 +469,16 @@
 		22DD21AD13A8E3310018ECD4 /* mediastreamViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = mediastreamViewController.m; sourceTree = "<group>"; };
 		22FC56A713CB69FA002FD0F1 /* qualityindicator.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = qualityindicator.c; sourceTree = "<group>"; };
 		22FC56A913CB6A4F002FD0F1 /* bitratecontrol.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = bitratecontrol.c; sourceTree = "<group>"; };
+		7014533513FA7AEA00A01D86 /* opengles_display.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = opengles_display.c; sourceTree = "<group>"; };
+		7014533613FA7AEA00A01D86 /* opengles_display.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = opengles_display.h; sourceTree = "<group>"; };
+		7014533713FA7AEA00A01D86 /* shaders.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = shaders.c; sourceTree = "<group>"; };
+		7014533B13FA7ECA00A01D86 /* zrtp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zrtp.h; sourceTree = "<group>"; };
+		7014533D13FA841E00A01D86 /* zrtp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zrtp.c; sourceTree = "<group>"; };
 		7066FC0613E82A3600EFC6DC /* vp8.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = vp8.c; sourceTree = "<group>"; };
 		7066FC0913E830B800EFC6DC /* libvpx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libvpx.a; path = "../liblinphone-sdk/apple-darwin/lib/libvpx.a"; sourceTree = "<group>"; };
 		70E542ED13E147C7002BA2C0 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		70E542F013E147CE002BA2C0 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		70E542F613E14816002BA2C0 /* shaders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = shaders.h; sourceTree = "<group>"; };
-		70E542F713E14816002BA2C0 /* shaders.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = shaders.m; sourceTree = "<group>"; };
 		70E542F813E14816002BA2C0 /* yuv2rgb.fs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yuv2rgb.fs.h; sourceTree = "<group>"; };
 		70E542F913E14816002BA2C0 /* yuv2rgb.vs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yuv2rgb.vs.h; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* liblinphone_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = liblinphone_Prefix.pch; sourceTree = SOURCE_ROOT; };
@@ -662,9 +670,11 @@
 		222CA5DC11F6CF7600621220 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				7014533513FA7AEA00A01D86 /* opengles_display.c */,
+				7014533613FA7AEA00A01D86 /* opengles_display.h */,
+				7014533713FA7AEA00A01D86 /* shaders.c */,
 				7066FC0613E82A3600EFC6DC /* vp8.c */,
 				70E542F613E14816002BA2C0 /* shaders.h */,
-				70E542F713E14816002BA2C0 /* shaders.m */,
 				70E542F813E14816002BA2C0 /* yuv2rgb.fs.h */,
 				70E542F913E14816002BA2C0 /* yuv2rgb.vs.h */,
 				229A614913DDFE3500090183 /* g722_decode.c */,
@@ -756,6 +766,7 @@
 		222CA6A311F6CF9F00621220 /* ortp */ = {
 			isa = PBXGroup;
 			children = (
+				7014533B13FA7ECA00A01D86 /* zrtp.h */,
 				222CA6A411F6CF9F00621220 /* .gitignore */,
 				222CA6A511F6CF9F00621220 /* b64.h */,
 				222CA6A611F6CF9F00621220 /* event.h */,
@@ -781,6 +792,7 @@
 		222CA6B611F6CF9F00621220 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				7014533D13FA841E00A01D86 /* zrtp.c */,
 				222CA6B711F6CF9F00621220 /* .gitignore */,
 				222CA6B811F6CF9F00621220 /* avprofile.c */,
 				222CA6B911F6CF9F00621220 /* b64.c */,
@@ -1021,6 +1033,8 @@
 				70E542FA13E14816002BA2C0 /* shaders.h in Headers */,
 				70E542FC13E14816002BA2C0 /* yuv2rgb.fs.h in Headers */,
 				70E542FD13E14816002BA2C0 /* yuv2rgb.vs.h in Headers */,
+				7014533913FA7AEA00A01D86 /* opengles_display.h in Headers */,
+				7014533C13FA7ECA00A01D86 /* zrtp.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1217,8 +1231,10 @@
 				229A614D13DDFE3500090183 /* g722_decode.c in Sources */,
 				229A614E13DDFE3500090183 /* g722_encode.c in Sources */,
 				229A615013DDFE3500090183 /* msg722.c in Sources */,
-				70E542FB13E14816002BA2C0 /* shaders.m in Sources */,
 				7066FC0713E82A3600EFC6DC /* vp8.c in Sources */,
+				7014533813FA7AEA00A01D86 /* opengles_display.c in Sources */,
+				7014533A13FA7AEA00A01D86 /* shaders.c in Sources */,
+				7014533E13FA841E00A01D86 /* zrtp.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1293,6 +1309,7 @@
 					VIDEO_ENABLED,
 					HAVE_LIBAVCODEC_AVCODEC_H,
 					HAVE_LIBSWSCALE_SWSCALE_H,
+					TARGET_OS_IPHONE,
 				);
 				GCC_UNROLL_LOOPS = NO;
 				HEADER_SEARCH_PATHS = (
@@ -1341,6 +1358,7 @@
 					VIDEO_ENABLED,
 					HAVE_LIBAVCODEC_AVCODEC_H,
 					HAVE_LIBSWSCALE_SWSCALE_H,
+					TARGET_OS_IPHONE,
 				);
 				GCC_UNROLL_LOOPS = NO;
 				HEADER_SEARCH_PATHS = (
@@ -1515,6 +1533,7 @@
 					VIDEO_ENABLED,
 					HAVE_LIBAVCODEC_AVCODEC_H,
 					HAVE_LIBSWSCALE_SWSCALE_H,
+					TARGET_OS_IPHONE,
 				);
 				GCC_UNROLL_LOOPS = NO;
 				HEADER_SEARCH_PATHS = (
@@ -1564,6 +1583,7 @@
 					HAVE_LIBAVCODEC_AVCODEC_H,
 					HAVE_LIBSWSCALE_SWSCALE_H,
 					HAVE_X264,
+					"TARGET_OS_IPHONE=1",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_VERSION = com.apple.compilers.llvmgcc42;
@@ -1612,6 +1632,7 @@
 					HAVE_LIBAVCODEC_AVCODEC_H,
 					HAVE_LIBSWSCALE_SWSCALE_H,
 					HAVE_X264,
+					"TARGET_OS_IPHONE=1",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_VERSION = com.apple.compilers.llvmgcc42;
@@ -1657,6 +1678,7 @@
 					HAVE_LIBAVCODEC_AVCODEC_H,
 					HAVE_LIBSWSCALE_SWSCALE_H,
 					HAVE_X264,
+					"TARGET_OS_IPHONE=1",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_VERSION = com.apple.compilers.llvmgcc42;
