@@ -527,6 +527,9 @@ const char *linphone_global_state_to_string(LinphoneGlobalState gs);
 typedef void (*LinphoneGlobalStateCb)(struct _LinphoneCore *lc, LinphoneGlobalState gstate, const char *message);
 /**Call state notification callback prototype*/
 typedef void (*LinphoneCallStateCb)(struct _LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *message);
+/**Call encryption changed callback prototype*/
+typedef void (*CallEncryptionChangedCb)(struct _LinphoneCore *lc, LinphoneCall *call, bool_t on, const char *authentication_token);
+
 /** @ingroup Proxies
  * Registration state notification callback prototype
  * */
@@ -600,6 +603,7 @@ typedef struct _LinphoneVTable{
 	DisplayMessageCb display_warning;/** Callback to display a warning to the user */
 	DisplayUrlCb display_url;
 	ShowInterfaceCb show; /**< Notifies the application that it should show up*/
+	CallEncryptionChangedCb call_encryption_changed; /**<Notifies on change in the encryption of call streams */
 } LinphoneCoreVTable;
 
 /**
@@ -853,6 +857,7 @@ char linphone_core_get_sound_source(LinphoneCore *lc);
 void linphone_core_set_sound_source(LinphoneCore *lc, char source);
 void linphone_core_set_ring(LinphoneCore *lc, const char *path);
 const char *linphone_core_get_ring(const LinphoneCore *lc);
+void linphone_core_set_root_ca(LinphoneCore *lc, const char *path);
 void linphone_core_set_ringback(LinphoneCore *lc, const char *path);
 const char * linphone_core_get_ringback(const LinphoneCore *lc);
 
@@ -1008,10 +1013,22 @@ LinphoneGlobalState linphone_core_get_global_state(const LinphoneCore *lc);
  */
 void linphone_core_refresh_registers(LinphoneCore* lc);	
 
+
+void linphone_call_send_vfu_request(LinphoneCall *call);
+
+/* Path to the file storing secrets cache */
+void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file);
+
+bool_t linphone_call_are_all_streams_encrypted(LinphoneCall *call);
+const char* linphone_call_get_authentication_token(LinphoneCall *call);
+bool_t linphone_call_get_authentication_token_verified(LinphoneCall *call);
+
+
+
+
 #ifdef __cplusplus
 }
 #endif
 
-void linphone_call_send_vfu_request(LinphoneCall *call);
 
 #endif

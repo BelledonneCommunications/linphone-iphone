@@ -90,6 +90,7 @@ static int lpc_cmd_pause(LinphoneCore *lc, char *args);
 static int lpc_cmd_resume(LinphoneCore *lc, char *args);
 static int lpc_cmd_mute_mic(LinphoneCore *lc, char *args);
 static int lpc_cmd_unmute_mic(LinphoneCore *lc, char *args);
+static int lpc_cmd_playback_gain(LinphoneCore *lc, char *args);
 static int lpc_cmd_rtp_no_xmit_on_audio_mute(LinphoneCore *lc, char *args);
 #ifdef VIDEO_ENABLED
 static int lpc_cmd_camera(LinphoneCore *lc, char *args);
@@ -192,6 +193,8 @@ static LPC_COMMAND commands[] = {
 #endif
 	{ "unmute", lpc_cmd_unmute_mic, 
 		  "Unmute microphone and resume voice transmission."},
+	{ "playbackgain", lpc_cmd_playback_gain, 
+		  "Adjust playback gain."},
 	{ "duration", lpc_cmd_duration, "Print duration in seconds of the last call.", NULL },
 	
 	{ "autoanswer", lpc_cmd_autoanswer, "Show/set auto-answer mode",
@@ -2301,6 +2304,15 @@ static int lpc_cmd_mute_mic(LinphoneCore *lc, char *args)
 static int lpc_cmd_unmute_mic(LinphoneCore *lc, char *args){
 	linphone_core_mute_mic(lc, 0);
 	return 1;
+}
+
+static int lpc_cmd_playback_gain(LinphoneCore *lc, char *args)
+{
+	if (args){
+	        linphone_core_set_playback_gain_db(lc, atof(args));
+        	return 1;
+	}
+	return 0;
 }
 
 static int lpc_cmd_rtp_no_xmit_on_audio_mute(LinphoneCore *lc, char *args)

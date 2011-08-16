@@ -1,0 +1,94 @@
+ZRTP guide
+
+== Downloads ==
+- SRTP
+http://sourceforge.net/projects/srtp/
+or "apt-get source libsrtp0" on Debian
+
+- ZRTP (libzrtpcpp-2.0)
+http://www.gnutelephony.org/index.php/GNU_ZRTP
+
+
+== Patch libzrtpcpp ==
+Index: src/ZIDFile.cpp
+===================================================================
+--- src/ZIDFile.cpp	(révision 754)
++++ src/ZIDFile.cpp	(copie de travail)
+@@ -78,10 +78,11 @@
+ 
+     // create save file name, rename and re-open
+     // if rename fails, just unlink old ZID file and create a brand new file
+-    // just a little inconnvenience for the user, need to verify new SAS
++    // just a little inconvenience for the user, need to verify new SAS
+     std::string fn = std::string(name) + std::string(".save");
+     if (rename(name, fn.c_str()) < 0) {
+-        unlink(name);
++	// unlink(name);
+         createZIDFile(name);
+         return;
+     }
+Index: src/libzrtpcpp/ZrtpCallback.h
+===================================================================
+--- src/libzrtpcpp/ZrtpCallback.h	(révision 754)
++++ src/libzrtpcpp/ZrtpCallback.h	(copie de travail)
+@@ -27,7 +27,7 @@
+ 
+ #include <string>
+ #include <stdint.h>
+-#include <commoncpp/config.h>
++//#include <commoncpp/config.h>
+ #include <libzrtpcpp/ZrtpCodes.h>
+ 
+ /**
+Index: src/libzrtpcpp/ZIDRecord.h
+===================================================================
+--- src/libzrtpcpp/ZIDRecord.h	(révision 754)
++++ src/libzrtpcpp/ZIDRecord.h	(copie de travail)
+@@ -33,7 +33,7 @@
+ 
+ #include <string.h>
+ #include <stdint.h>
+-#include <commoncpp/config.h>
++//#include <commoncpp/config.h>
+ 
+ #define IDENTIFIER_LEN  12
+ #define RS_LENGTH       32
+Index: CMakeLists.txt
+===================================================================
+--- CMakeLists.txt	(révision 754)
++++ CMakeLists.txt	(copie de travail)
+@@ -124,11 +124,15 @@
+ if(CMAKE_COMPILER_IS_GNUCXX)
+   add_definitions(-Wno-long-long -Wno-char-subscripts)
+   add_definitions(-Wall -ansi -pedantic)
++  add_definitions(-DNEW_STDCPP)
+ endif()
+ 
+ add_subdirectory(src)
+-add_subdirectory(demo)
+ 
++if (enable_ccrtp)
++	add_subdirectory(demo)
++endif()
++
+ if (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/package/)
+     MESSAGE(STATUS "package dir not found")
+     file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/package/)
+
+
+
+== Create simlinks or move folders ==
+submodules/external/srtp -> path_to_your_srtp_source
+submodules/external/libzrtpcpp -> path_to_your_patched_zrtpcpp_source
+
+
+
+== Compilation for Android ==
+ndk-build BUILD_GPLV3_ZRTP=1  -j5
+
+
+== Compilation for Desktop version ==
+First ortp: ./autogen.sh && ./configure --enable-zrtp && make -j5 && sudo make install
+Then mediastreamer2: ./autogen.sh && ./configure && make -j5 && sudo make install
+Finally linphone: ./autogen.sh && ./configure --enable-external-ortp && make -j5 && sudo make install
+

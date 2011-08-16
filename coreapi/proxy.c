@@ -258,8 +258,12 @@ static char *guess_contact_for_register(LinphoneProxyConfig *obj){
 		linphone_address_set_display_name(contact,NULL);
 		
 		linphone_core_get_sip_transports(obj->lc,&tr);
-		if (tr.udp_port <= 0 && tr.tcp_port>0) {
-			sal_address_set_param(contact,"transport","TCP");
+		if (tr.udp_port <= 0) {
+			if (tr.tcp_port>0) {
+				sal_address_set_param(contact,"transport","tcp");
+			} else if (tr.tls_port>0) {
+				sal_address_set_param(contact,"transport","tls");
+			}
 		}
 		ret=linphone_address_as_string(contact);
 		linphone_address_destroy(contact);

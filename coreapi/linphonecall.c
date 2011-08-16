@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "sipsetup.h"
 #include "lpconfig.h"
 #include "private.h"
+#include <ortp/event.h>
 
 
 #include "mediastreamer2/mediastream.h"
@@ -39,6 +40,100 @@ static MSWebCam *get_nowebcam_device(){
 	return ms_web_cam_manager_get_cam(ms_web_cam_manager_get(),"StaticImage: Static picture");
 }
 #endif
+
+static const char* get_zrtp_identifier(LinphoneCore *lc){
+	const char *confZid=lp_config_get_string(lc->config,"rtp","zid",NULL);
+	if (confZid != NULL) {
+		return confZid;
+	} else {
+		int32_t *zid=calloc(3,32);
+		int i=0;
+		for(;i<3;i++) {
+			zid[i]=rand();
+		}
+		lp_config_set_string(lc->config,"rtp","zid",(char*)zid);
+		return lp_config_get_string(lc->config,"rtp","zid",NULL);
+	}
+}
+
+const char* linphone_call_get_authentication_token(LinphoneCall *call){
+	return call->auth_token;
+}
+
+bool_t linphone_call_get_authentication_token_verified(LinphoneCall *call){
+	return call->auth_token_verified;
+}
+bool_t linphone_call_are_all_streams_encrypted(LinphoneCall *call) {
+	// Check ZRTP encryption in audiostream
+	if (!call->audiostream_encrypted) {
+		return FALSE;
+	}
+
+#ifdef VIDEO_ENABLED
+	// If video enabled, check ZRTP encryption in videostream
+	const LinphoneCallParams *params=linphone_call_get_current_params(call);
+	if (params->has_video && !call->videostream_encrypted) {
+		return FALSE;
+	}
+#endif
+
+	return TRUE;
+}
+
+void propagate_encryption_changed(LinphoneCall *call){
+	if (call->core->vtable.call_encryption_changed == NULL) return;
+
+	if (!linphone_call_are_all_streams_encrypted(call)) {
+		ms_message("Some streams are not encrypted");
+		call->core->vtable.call_encryption_changed(call->core, call, FALSE, call->auth_token);
+	} else {
+		ms_message("All streams are encrypted");
+		call->core->vtable.call_encryption_changed(call->core, call, TRUE, call->auth_token);
+	}
+}
+
+#ifdef VIDEO_ENABLED
+static void linphone_call_videostream_encryption_changed(void *data, bool_t encrypted){
+	ms_message("Video stream is %s", encrypted ? "encrypted" : "not encrypted");
+
+	LinphoneCall *call = (LinphoneCall *)data;
+	call->videostream_encrypted=encrypted;
+	propagate_encryption_changed(call);
+}
+#endif
+
+static void linphone_call_audiostream_encryption_changed(void *data, bool_t encrypted) {
+	ms_message("Audio stream is %s ", encrypted ? "encrypted" : "not encrypted");
+
+	LinphoneCall *call = (LinphoneCall *)data;
+	call->audiostream_encrypted=encrypted;
+	propagate_encryption_changed(call);
+
+
+#ifdef VIDEO_ENABLED
+	// Enable video encryption
+	const LinphoneCallParams *params=linphone_call_get_current_params(call);
+	if (params->has_video) {
+		ms_message("Trying to enable encryption on video stream");
+		OrtpZrtpParams params;
+		params.zid=get_zrtp_identifier(call->core);
+		params.zid_file=NULL; //unused
+		video_stream_enable_zrtp(call->videostream,call->audiostream,&params);
+	}
+#endif
+}
+
+
+static void linphone_call_audiostream_auth_token_ready(void *data, const char* auth_token, bool_t verified) {
+	LinphoneCall *call=(LinphoneCall *)data;
+	if (call->auth_token != NULL)
+		ms_free(call->auth_token);
+
+	call->auth_token=ms_strdup(auth_token);
+	call->auth_token_verified=verified;
+
+	ms_message("Authentication token is %s (%s)", auth_token, verified?"verified":"unverified");
+}
 
 
 static MSList *make_codec_list(LinphoneCore *lc, const MSList *codecs, int bandwidth_limit){
@@ -357,6 +452,10 @@ static void linphone_call_destroy(LinphoneCall *obj)
 	}
 	if (obj->owns_call_log)
 		linphone_call_log_destroy(obj->log);
+	if (obj->auth_token) {
+		ms_free(obj->auth_token);
+	}
+
 	ms_free(obj);
 }
 
@@ -673,6 +772,9 @@ void linphone_call_init_media_streams(LinphoneCall *call){
 	if (lc->a_rtp)
 		rtp_session_set_transports(audiostream->session,lc->a_rtp,lc->a_rtcp);
 
+	call->audiostream_app_evq = ortp_ev_queue_new();
+	rtp_session_register_event_queue(audiostream->session,call->audiostream_app_evq);
+
 #ifdef VIDEO_ENABLED
 
 	if ((lc->video_conf.display || lc->video_conf.capture) && md->streams[1].port>0){
@@ -682,6 +784,8 @@ void linphone_call_init_media_streams(LinphoneCall *call){
 	video_stream_set_event_callback(call->videostream,video_stream_event_cb, call);
 	if (lc->v_rtp)
 		rtp_session_set_transports(call->videostream->session,lc->v_rtp,lc->v_rtcp);
+	call->videostream_app_evq = ortp_ev_queue_new();
+	rtp_session_register_event_queue(call->videostream->session,call->videostream_app_evq);
 #ifdef TEST_EXT_RENDERER
 		video_stream_set_render_callback(call->videostream,rendercb,NULL);
 #endif
@@ -1017,6 +1121,13 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 	call->playing_ringbacktone=send_ringbacktone;
 	call->up_bw=linphone_core_get_upload_bandwidth(lc);
 	
+	if (ortp_zrtp_available()) {
+		OrtpZrtpParams params;
+		params.zid=get_zrtp_identifier(lc);
+		params.zid_file=lc->zrtp_secrets_cache;
+		audio_stream_enable_zrtp(call->audiostream,&params);
+	}
+
 	goto end;
 	end:
 		ms_free(cname);
@@ -1030,6 +1141,10 @@ static void linphone_call_log_fill_stats(LinphoneCallLog *log, AudioStream *st){
 
 void linphone_call_stop_media_streams(LinphoneCall *call){
 	if (call->audiostream!=NULL) {
+		rtp_session_unregister_event_queue(call->audiostream->session,call->audiostream_app_evq);
+		ortp_ev_queue_flush(call->audiostream_app_evq);
+		ortp_ev_queue_destroy(call->audiostream_app_evq);
+
 		if (call->audiostream->ec){
 			const char *state_str=NULL;
 			ms_filter_call_method(call->audiostream->ec,MS_ECHO_CANCELLER_GET_STATE_STRING,&state_str);
@@ -1042,8 +1157,13 @@ void linphone_call_stop_media_streams(LinphoneCall *call){
 		audio_stream_stop(call->audiostream);
 		call->audiostream=NULL;
 	}
+
+
 #ifdef VIDEO_ENABLED
 	if (call->videostream!=NULL){
+		rtp_session_unregister_event_queue(call->videostream->session,call->videostream_app_evq);
+		ortp_ev_queue_flush(call->videostream_app_evq);
+		ortp_ev_queue_destroy(call->videostream_app_evq);
 		video_stream_stop(call->videostream);
 		call->videostream=NULL;
 	}
@@ -1225,11 +1345,44 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 		ms_message("Thread processing load: audio=%f\tvideo=%f",audio_load,video_load);
 	}
 #ifdef VIDEO_ENABLED
-	if (call->videostream!=NULL)
+	if (call->videostream!=NULL) {
+		// Beware that the application queue should not depend on treatments fron the
+		// mediastreamer queue.
 		video_stream_iterate(call->videostream);
+
+		if (call->videostream_app_evq){
+			OrtpEvent *ev;
+			while (NULL != (ev=ortp_ev_queue_get(call->videostream_app_evq))){
+				OrtpEventType evt=ortp_event_get_type(ev);
+				if (evt == ORTP_EVENT_ZRTP_ENCRYPTION_CHANGED){
+					OrtpEventData *evd=ortp_event_get_data(ev);
+					linphone_call_videostream_encryption_changed(call, evd->info.zrtp_stream_encrypted);
+				}
+				ortp_event_destroy(ev);
+			}
+		}
+	}
 #endif
-	if (call->audiostream!=NULL)
+	if (call->audiostream!=NULL) {
+		// Beware that the application queue should not depend on treatments fron the
+		// mediastreamer queue.
 		audio_stream_iterate(call->audiostream);
+
+		if (call->audiostream->evq){
+			OrtpEvent *ev;
+			while (NULL != (ev=ortp_ev_queue_get(call->audiostream_app_evq))){
+				OrtpEventType evt=ortp_event_get_type(ev);
+				if (evt == ORTP_EVENT_ZRTP_ENCRYPTION_CHANGED){
+					OrtpEventData *evd=ortp_event_get_data(ev);
+					linphone_call_audiostream_encryption_changed(call, evd->info.zrtp_stream_encrypted);
+				} else if (evt == ORTP_EVENT_ZRTP_SAS_READY) {
+					OrtpEventData *evd=ortp_event_get_data(ev);
+					linphone_call_audiostream_auth_token_ready(call, evd->info.zrtp_sas.sas, evd->info.zrtp_sas.verified);
+				}
+				ortp_event_destroy(ev);
+			}
+		}
+	}
 	if (one_second_elapsed && call->audiostream!=NULL && disconnect_timeout>0 )
 		disconnected=!audio_stream_alive(call->audiostream,disconnect_timeout);
 	if (disconnected)
@@ -1267,4 +1420,5 @@ void linphone_call_log_completed(LinphoneCall *call){
 	}
 	call_logs_write_to_config_file(lc);
 }
+
 

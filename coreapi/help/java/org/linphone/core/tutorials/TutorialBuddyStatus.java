@@ -97,7 +97,7 @@ public class TutorialBuddyStatus implements LinphoneCoreListener {
 	public void textReceived(LinphoneCore lc, LinphoneChatRoom cr,LinphoneAddress from, String message) {}
 	public void callState(LinphoneCore lc, LinphoneCall call, State cstate, String msg) {}
 	public void ecCalibrationStatus(LinphoneCore lc, EcCalibratorStatus status,int delay_ms, Object data) {}
-
+	public void callEncryptionChanged(LinphoneCore lc, LinphoneCall call,boolean encrypted, String authenticationToken) {}
 
 
 	public static void main(String[] args) {
@@ -229,7 +229,6 @@ public class TutorialBuddyStatus implements LinphoneCoreListener {
 	private void write(String s) {
 		TutorialNotifier.notify(s);
 	}
-
 
 
 }

@@ -61,8 +61,7 @@ LOCAL_CFLAGS += \
 	-DENABLE_TRACE \
 	-DLINPHONE_VERSION=\"3.4.0\" \
 	-DLINPHONE_PLUGINS_DIR=\"\\tmp\" \
-	-DLOG_DOMAIN=$(MY_LOG_DOMAIN) \
-	-UNE_BONNE_PIPE_CA_FAIT_DU_BIEN
+	-DLOG_DOMAIN=$(MY_LOG_DOMAIN) 
 
 LOCAL_CFLAGS += -DIN_LINPHONE
 
@@ -103,10 +102,11 @@ LOCAL_STATIC_LIBRARIES += \
 endif
 
 ifeq ($(LINPHONE_VIDEO),1)
+LOCAL_STATIC_LIBRARIES += libvpx
 ifeq ($(BUILD_X264),1)
 LOCAL_STATIC_LIBRARIES += \
 	libmsx264 \
-	libx264 
+	libx264
 endif
 LOCAL_SHARED_LIBRARIES += \
 	libavcodec \
@@ -127,6 +127,29 @@ LOCAL_SRC_FILES  += $(LIBLINPHONE_EXTENDED_SRC_FILES)
 LOCAL_C_INCLUDES += $(LIBLINPHONE_EXTENDED_C_INCLUDES) 
 endif
 
+LOCAL_LDLIBS    += -lGLESv2
+ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
+	LOCAL_SHARED_LIBRARIES += liblinssl liblincrypto
+	ifeq ($(BUILD_GPLV3_ZRTP),1)
+	LOCAL_SHARED_LIBRARIES += libzrtpcpp
+	endif
+
+	ifeq ($(BUILD_SRTP),1)
+	LOCAL_SHARED_LIBRARIES += libsrtp
+	endif
+else
+	LOCAL_LDLIBS += -lz
+	#LOCAL_STATIC_LIBRARIES += libz libdl
+	LOCAL_STATIC_LIBRARIES += \
+		libssl-static libcrypto-static
+	ifeq ($(BUILD_GPLV3_ZRTP),1)
+		LOCAL_STATIC_LIBRARIES += libzrtpcpp-static
+	endif
+
+	ifeq ($(BUILD_SRTP),1)
+		LOCAL_STATIC_LIBRARIES += libsrtp-static
+	endif
+endif
 
 LOCAL_MODULE := liblinphone
 include $(BUILD_SHARED_LIBRARY)

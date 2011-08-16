@@ -99,6 +99,12 @@ struct _LinphoneCall
 	bool_t all_muted; /*this flag is set during early medias*/
 	bool_t playing_ringbacktone;
 	bool_t owns_call_log;
+	OrtpEvQueue *audiostream_app_evq;
+	bool_t audiostream_encrypted;
+	char *auth_token;
+	bool_t auth_token_verified;
+	OrtpEvQueue *videostream_app_evq;
+	bool_t videostream_encrypted;
 };
 
 
@@ -440,6 +446,7 @@ struct _LinphoneCore
 	bool_t network_reachable;
 	bool_t use_preview_window;
 	bool_t ringstream_autorelease;
+	char* zrtp_secrets_cache;
 };
 
 bool_t linphone_core_can_we_add_call(LinphoneCore *lc);

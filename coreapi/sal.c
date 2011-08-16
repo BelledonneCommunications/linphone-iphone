@@ -26,10 +26,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "sal.h"
 const char* sal_transport_to_string(SalTransport transport) {
     switch (transport) {
-        case SalTransportUDP:return "UDP";
-        case SalTransportTCP: return "TCP";
-        case SalTransportTLS:return "TLS";
-        case SalTransportDTLS:return "DTLS";
+        case SalTransportUDP:return "udp";
+        case SalTransportTCP: return "tcp";
+        case SalTransportTLS:return "tls";
+        case SalTransportDTLS:return "dtls";
         default: {
             ms_fatal("Unexpected transport [%i]",transport);
             return NULL;
@@ -38,10 +38,10 @@ const char* sal_transport_to_string(SalTransport transport) {
     }
 }
 SalTransport sal_transport_parse(const char* param) {
-    if (strcasecmp("UDP",param)==0) return SalTransportUDP;
-    if (strcasecmp("TCP",param)==0) return SalTransportTCP;
-    if (strcasecmp("TLS",param)==0) return SalTransportTLS;
-    if (strcasecmp("DTLS",param)==0) return SalTransportDTLS;
+    if (strcasecmp("udp",param)==0) return SalTransportUDP;
+    if (strcasecmp("tcp",param)==0) return SalTransportTCP;
+    if (strcasecmp("tls",param)==0) return SalTransportTLS;
+    if (strcasecmp("dtls",param)==0) return SalTransportDTLS;
     ms_error("Unkown transport type[%s], returning UDP", param);
     return SalTransportUDP;
 }

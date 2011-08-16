@@ -487,6 +487,11 @@ static void sip_config_read(LinphoneCore *lc)
 	} else {
 		tr.tcp_port=lp_config_get_int(lc->config,"sip","sip_tcp_port",0);
 	}
+	if (lp_config_get_int(lc->config,"sip","sip_tls_random_port",0)) {
+		tr.tls_port=(0xDFF&+random())+1024;
+	} else {
+		tr.tls_port=lp_config_get_int(lc->config,"sip","sip_tls_port",0);
+	}
 	/*start listening on ports*/
  	linphone_core_set_sip_transports(lc,&tr);
 
@@ -508,6 +513,8 @@ static void sip_config_read(LinphoneCore *lc)
 		linphone_core_set_primary_contact(lc,contact);
 		ms_free(contact);
 	}
+
+	sal_root_ca(lc->sal, lp_config_get_string(lc->config,"sip","root_ca", "/etc/ssl/certs"));
 
 	tmp=lp_config_get_int(lc->config,"sip","guess_hostname",1);
 	linphone_core_set_guess_hostname(lc,tmp);
@@ -986,6 +993,7 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	linphone_core_assign_payload_type(&payload_type_mp4v,99,"profile-level-id=3");
 	linphone_core_assign_payload_type(&payload_type_x_snow,100,NULL);
 	linphone_core_assign_payload_type(&payload_type_h264,102,"profile-level-id=428014");
+	linphone_core_assign_payload_type(&payload_type_vp8,103,NULL);
 	/* due to limited space in SDP, we have to disable this h264 line which is normally no more necessary */
 	/* linphone_core_assign_payload_type(&payload_type_h264,103,"packetization-mode=1;profile-level-id=428014");*/
 #endif
@@ -1359,7 +1367,7 @@ void linphone_core_set_use_rfc2833_for_dtmf(LinphoneCore *lc,bool_t use_rfc2833)
 int linphone_core_get_sip_port(LinphoneCore *lc)
 {
 	LCSipTransports *tr=&lc->sip_conf.transports;
-	return tr->udp_port>0 ? tr->udp_port : tr->tcp_port;
+	return tr->udp_port>0 ? tr->udp_port : (tr->tcp_port > 0 ? tr->tcp_port : tr->tls_port);
 }
 
 static char _ua_name[64]="Linphone";
@@ -1420,13 +1428,18 @@ static int apply_transports(LinphoneCore *lc){
 	sal_unlisten_ports (sal);
 	if (tr->udp_port>0){
 		if (sal_listen_port (sal,anyaddr,tr->udp_port,SalTransportUDP,FALSE)!=0){
-			transport_error(lc,"UDP",tr->udp_port);
+			transport_error(lc,"udp",tr->udp_port);
 			return -1;
 		}
 	}
 	if (tr->tcp_port>0){
 		if (sal_listen_port (sal,anyaddr,tr->tcp_port,SalTransportTCP,FALSE)!=0){
-			transport_error(lc,"TCP",tr->tcp_port);
+			transport_error(lc,"tcp",tr->tcp_port);
+		}
+	}
+	if (tr->tls_port>0){
+		if (sal_listen_port (sal,anyaddr,tr->tls_port,SalTransportTLS,TRUE)!=0){
+			transport_error(lc,"tls",tr->tls_port);
 		}
 	}
 	apply_user_agent(lc);
@@ -2891,6 +2904,18 @@ const char *linphone_core_get_ring(const LinphoneCore *lc){
 	return lc->sound_conf.local_ring;
 }
 
+/**
+ * Sets the path to a file or folder containing trusted root CAs (PEM format)
+ *
+ * @param path
+ * @param lc The LinphoneCore object
+ *
+ * @ingroup media_parameters
+**/
+void linphone_core_set_root_ca(LinphoneCore *lc,const char *path){
+	sal_root_ca(lc->sal, path);
+}
+
 static void notify_end_of_ring(void *ud, MSFilter *f, unsigned int event, void *arg){
 	LinphoneCore *lc=(LinphoneCore*)ud;
 	lc->preview_finished=1;
@@ -3755,6 +3780,7 @@ void sip_config_uninit(LinphoneCore *lc)
 	sip_config_t *config=&lc->sip_conf;
 	lp_config_set_int(lc->config,"sip","sip_port",config->transports.udp_port);
 	lp_config_set_int(lc->config,"sip","sip_tcp_port",config->transports.tcp_port);
+	lp_config_set_int(lc->config,"sip","sip_tls_port",config->transports.tls_port);
 	lp_config_set_int(lc->config,"sip","guess_hostname",config->guess_hostname);
 	lp_config_set_string(lc->config,"sip","contact",config->contact);
 	lp_config_set_int(lc->config,"sip","inc_timeout",config->inc_timeout);
@@ -4219,4 +4245,9 @@ void linphone_core_remove_iterate_hook(LinphoneCore *lc, LinphoneCoreIterateHook
 	ms_error("linphone_core_remove_iterate_hook(): No such hook found.");
 }
 
-
+void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file){
+	if (lc->zrtp_secrets_cache != NULL) {
+		ms_free(lc->zrtp_secrets_cache);
+	}
+	lc->zrtp_secrets_cache=file ? ms_strdup(file) : NULL;
+}

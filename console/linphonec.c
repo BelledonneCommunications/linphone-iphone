@@ -323,6 +323,17 @@ static void linphonec_call_updated(LinphoneCall *call){
 	}
 }
 
+static void linphonec_call_encryption_changed(LinphoneCore *lc, LinphoneCall *call, bool_t encrypted, const char *auth_token) {
+	long id=(long)linphone_call_get_user_pointer (call);
+	if (!encrypted) {
+		linphonec_out("Call %i is not fully encrypted and auth token is %s.\n", id,
+				(auth_token != NULL) ? auth_token : "absent");
+	} else {
+		linphonec_out("Call %i is fully encrypted and auth token is %s.\n", id,
+				(auth_token != NULL) ? auth_token : "absent");
+	}
+}
+
 static void linphonec_call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState st, const char *msg){
 	char *from=linphone_call_get_remote_address_as_string(call);
 	long id=(long)linphone_call_get_user_pointer (call);
@@ -626,6 +637,7 @@ main (int argc, char *argv[]) {
 	linphonec_vtable.dtmf_received=linphonec_dtmf_received;
 	linphonec_vtable.refer_received=linphonec_display_refer;
 	linphonec_vtable.notify_recv=linphonec_notify_received;
+	linphonec_vtable.call_encryption_changed=linphonec_call_encryption_changed;
 	
 	if (! linphonec_init(argc, argv) ) exit(EXIT_FAILURE);
 

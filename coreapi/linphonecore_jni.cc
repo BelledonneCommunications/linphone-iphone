@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include <jni.h>
 #include "linphonecore_utils.h"
+#include <ortp/zrtp.h>
 
 #include "mediastreamer2/msjava.h"
 
@@ -89,37 +90,47 @@ public:
 		vTable.global_state_changed = globalStateChange;
 		vTable.registration_state_changed = registrationStateChange;
 		vTable.call_state_changed = callStateChange;
+		vTable.call_encryption_changed = callEncryptionChange;
 		vTable.text_received = text_received;
 		vTable.new_subscription_request = new_subscription_request;
 		vTable.notify_presence_recv = notify_presence_recv;
 
-		listernerClass = (jclass)env->NewGlobalRef(env->GetObjectClass( alistener));
+		listenerClass = (jclass)env->NewGlobalRef(env->GetObjectClass( alistener));
+
 		/*displayStatus(LinphoneCore lc,String message);*/
-		displayStatusId = env->GetMethodID(listernerClass,"displayStatus","(Lorg/linphone/core/LinphoneCore;Ljava/lang/String;)V");
+		displayStatusId = env->GetMethodID(listenerClass,"displayStatus","(Lorg/linphone/core/LinphoneCore;Ljava/lang/String;)V");
+
 		/*void generalState(LinphoneCore lc,int state); */
-		globalStateId = env->GetMethodID(listernerClass,"globalState","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCore$GlobalState;Ljava/lang/String;)V");
+		globalStateId = env->GetMethodID(listenerClass,"globalState","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCore$GlobalState;Ljava/lang/String;)V");
 		globalStateClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneCore$GlobalState"));
 		globalStateFromIntId = env->GetStaticMethodID(globalStateClass,"fromInt","(I)Lorg/linphone/core/LinphoneCore$GlobalState;");
+
 		/*registrationState(LinphoneCore lc, LinphoneProxyConfig cfg, LinphoneCore.RegistrationState cstate, String smessage);*/
-		registrationStateId = env->GetMethodID(listernerClass,"registrationState","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneProxyConfig;Lorg/linphone/core/LinphoneCore$RegistrationState;Ljava/lang/String;)V");
+		registrationStateId = env->GetMethodID(listenerClass,"registrationState","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneProxyConfig;Lorg/linphone/core/LinphoneCore$RegistrationState;Ljava/lang/String;)V");
 		registrationStateClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneCore$RegistrationState"));
 		registrationStateFromIntId = env->GetStaticMethodID(registrationStateClass,"fromInt","(I)Lorg/linphone/core/LinphoneCore$RegistrationState;");
+
 		/*callState(LinphoneCore lc, LinphoneCall call, LinphoneCall.State cstate,String message);*/
-		callStateId = env->GetMethodID(listernerClass,"callState","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCall;Lorg/linphone/core/LinphoneCall$State;Ljava/lang/String;)V");
+		callStateId = env->GetMethodID(listenerClass,"callState","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCall;Lorg/linphone/core/LinphoneCall$State;Ljava/lang/String;)V");
 		callStateClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneCall$State"));
 		callStateFromIntId = env->GetStaticMethodID(callStateClass,"fromInt","(I)Lorg/linphone/core/LinphoneCall$State;");
+
+		/*callEncryption(LinphoneCore lc, LinphoneCall call, boolean encrypted,String auth_token);*/
+		callEncryptionChangedId=env->GetMethodID(listenerClass,"callEncryptionChanged","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCall;ZLjava/lang/String;)V");
+
 		/*void ecCalibrationStatus(LinphoneCore.EcCalibratorStatus status, int delay_ms, Object data);*/
-		ecCalibrationStatusId = env->GetMethodID(listernerClass,"ecCalibrationStatus","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCore$EcCalibratorStatus;ILjava/lang/Object;)V");
+		ecCalibrationStatusId = env->GetMethodID(listenerClass,"ecCalibrationStatus","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCore$EcCalibratorStatus;ILjava/lang/Object;)V");
 		ecCalibratorStatusClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneCore$EcCalibratorStatus"));
 		ecCalibratorStatusFromIntId = env->GetStaticMethodID(ecCalibratorStatusClass,"fromInt","(I)Lorg/linphone/core/LinphoneCore$EcCalibratorStatus;");
+
 		/*void newSubscriptionRequest(LinphoneCore lc, LinphoneFriend lf, String url)*/
-		newSubscriptionRequestId = env->GetMethodID(listernerClass,"newSubscriptionRequest","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneFriend;Ljava/lang/String;)V");
+		newSubscriptionRequestId = env->GetMethodID(listenerClass,"newSubscriptionRequest","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneFriend;Ljava/lang/String;)V");
 
 		/*void notifyPresenceReceived(LinphoneCore lc, LinphoneFriend lf);*/
-		notifyPresenceReceivedId = env->GetMethodID(listernerClass,"notifyPresenceReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneFriend;)V");
+		notifyPresenceReceivedId = env->GetMethodID(listenerClass,"notifyPresenceReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneFriend;)V");
 
 		/*void textReceived(LinphoneCore lc, LinphoneChatRoom cr,LinphoneAddress from,String message);*/
-		textReceivedId = env->GetMethodID(listernerClass,"textReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneChatRoom;Lorg/linphone/core/LinphoneAddress;Ljava/lang/String;)V");
+		textReceivedId = env->GetMethodID(listenerClass,"textReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneChatRoom;Lorg/linphone/core/LinphoneAddress;Ljava/lang/String;)V");
 
 		proxyClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneProxyConfigImpl"));
 		proxyCtrId = env->GetMethodID(proxyClass,"<init>", "(J)V");
@@ -144,7 +155,7 @@ public:
 		env->DeleteGlobalRef(core);
 		env->DeleteGlobalRef(listener);
 		if (userdata) env->DeleteGlobalRef(userdata);
-		env->DeleteGlobalRef(listernerClass);
+		env->DeleteGlobalRef(listenerClass);
 		env->DeleteGlobalRef(globalStateClass);
 		env->DeleteGlobalRef(registrationStateClass);
 		env->DeleteGlobalRef(callStateClass);
@@ -158,7 +169,7 @@ public:
 	jobject listener;
 	jobject userdata;
 
-	jclass listernerClass;
+	jclass listenerClass;
 	jmethodID displayStatusId;
 	jmethodID newSubscriptionRequestId;
 	jmethodID notifyPresenceReceivedId;
@@ -175,6 +186,8 @@ public:
 	jclass callStateClass;
 	jmethodID callStateId;
 	jmethodID callStateFromIntId;
+
+	jmethodID callEncryptionChangedId;
 
 	jclass ecCalibratorStatusClass;
 	jmethodID ecCalibrationStatusId;
@@ -262,6 +275,21 @@ public:
 							,env->NewObject(lcData->callClass,lcData->callCtrId,(jlong)call)
 							,env->CallStaticObjectMethod(lcData->callStateClass,lcData->callStateFromIntId,(jint)state),
 							message ? env->NewStringUTF(message) : NULL);
+	}
+	static void callEncryptionChange(LinphoneCore *lc, LinphoneCall* call, bool_t encrypted,const char* authentication_token) {
+		JNIEnv *env = 0;
+		jint result = jvm->AttachCurrentThread(&env,NULL);
+		if (result != 0) {
+			ms_error("cannot attach VM\n");
+			return;
+		}
+		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_get_user_data(lc);
+		env->CallVoidMethod(lcData->listener
+							,lcData->callEncryptionChangedId
+							,lcData->core
+							,env->NewObject(lcData->callClass,lcData->callCtrId,(jlong)call)
+							,encrypted
+							,authentication_token ? env->NewStringUTF(authentication_token) : NULL);
 	}
 	static void notify_presence_recv (LinphoneCore *lc,  LinphoneFriend *my_friend) {
 		JNIEnv *env = 0;
@@ -669,6 +697,14 @@ extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getRing(JNIEnv*  env
 	} else {
 		return NULL;
 	}
+}
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setRootCA(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			,jstring jpath) {
+	const char* path = jpath?env->GetStringUTFChars(jpath, NULL):NULL;
+	linphone_core_set_root_ca((LinphoneCore*)lc,path);
+	if (path) env->ReleaseStringUTFChars(jpath, path);
 }
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_enableKeepAlive(JNIEnv*  env
 																,jobject  thiz
@@ -1268,6 +1304,9 @@ extern "C" jboolean Java_org_linphone_core_Version_nativeHasNeon(JNIEnv *env){
 	}
 	return 0;
 }
+extern "C" jboolean Java_org_linphone_core_Version_nativeHasZrtp(JNIEnv *env){
+	return ortp_zrtp_available();
+}
 
 extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_pauseCall(JNIEnv *env,jobject thiz,jlong pCore, jlong pCall) {
 	return linphone_core_pause_call((LinphoneCore *) pCore, (LinphoneCall *) pCall);
@@ -1278,3 +1317,37 @@ extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_pauseAllCalls(JNIEnv *en
 extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_resumeCall(JNIEnv *env,jobject thiz,jlong pCore, jlong pCall) {
 	return linphone_core_resume_call((LinphoneCore *) pCore, (LinphoneCall *) pCall);
 }
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setZrtpSecretsCache(JNIEnv *env,jobject thiz,jlong pCore, jstring jFile) {
+	if (jFile) {
+		const char* cFile=env->GetStringUTFChars(jFile, NULL);
+		linphone_core_set_zrtp_secrets_file((LinphoneCore *) pCore,cFile);
+		env->ReleaseStringUTFChars(jFile, cFile);
+	} else {
+		linphone_core_set_zrtp_secrets_file((LinphoneCore *) pCore,NULL);
+	}
+}
+
+extern "C" jstring Java_org_linphone_core_LinphoneCallImpl_getAuthenticationToken(JNIEnv*  env,jobject thiz,jlong ptr) {
+	LinphoneCall *call = (LinphoneCall *) ptr;
+	const char* token = linphone_call_get_authentication_token(call);
+	if (token == NULL) return NULL;
+	return env->NewStringUTF(token);
+}
+extern "C" jboolean Java_org_linphone_core_LinphoneCallImpl_isAuthenticationTokenVerified(JNIEnv*  env,jobject thiz,jlong ptr) {
+	LinphoneCall *call = (LinphoneCall *) ptr;
+	return linphone_call_get_authentication_token_verified(call);
+}
+extern "C" jboolean Java_org_linphone_core_LinphoneCallImpl_areStreamsEncrypted(JNIEnv*  env,jobject thiz,jlong ptr) {
+	return linphone_call_are_all_streams_encrypted((LinphoneCall *) ptr);
+}
+
+// Needed by Galaxy S (can't switch to/from speaker while playing and still keep mic working)
+// Implemented directly in msandroid.cpp (sound filters for Android).
+extern "C" void msandroid_hack_speaker_state(bool speakerOn);
+
+extern "C" void Java_org_linphone_LinphoneManager_hackSpeakerState(JNIEnv*  env,jobject thiz,jboolean speakerOn){
+	msandroid_hack_speaker_state(speakerOn);
+// End Galaxy S hack functions
+}
+
