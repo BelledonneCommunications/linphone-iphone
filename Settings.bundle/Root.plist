@@ -169,6 +169,7 @@
 			<array>
 				<string>udp</string>
 				<string>tcp</string>
+				<string>tls</string>
 			</array>
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
@@ -176,6 +177,7 @@
 			<array>
 				<string>udp</string>
 				<string>tcp</string>
+				<string>tls</string>
 			</array>
 		</dict>
 		<dict>

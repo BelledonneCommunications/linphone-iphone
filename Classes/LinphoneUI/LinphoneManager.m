@@ -381,6 +381,12 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	else {
 		linphone_core_disable_logs();
 	}
+    
+    NSBundle* myBundle = [NSBundle mainBundle];
+    
+    const char* lRootCa = [[myBundle pathForResource:@"rootca"ofType:@"pem"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
+    linphone_core_set_root_ca(theLinphoneCore, lRootCa);
+    
 	NSString* transport = [[NSUserDefaults standardUserDefaults] stringForKey:@"transport_preference"];
 	
 
@@ -393,9 +399,15 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		if ([transport isEqualToString:@"tcp"]) {
 			if (transportValue.tcp_port == 0) transportValue.tcp_port=transportValue.udp_port;
 			transportValue.udp_port=0;
+            transportValue.tls_port=0;
 		} else if ([transport isEqualToString:@"udp"]){
 			if (transportValue.udp_port == 0) transportValue.udp_port=transportValue.tcp_port;
 			transportValue.tcp_port=0;
+            transportValue.tls_port=0;
+		} else if ([transport isEqualToString:@"tls"]){
+			if (transportValue.tls_port == 0) transportValue.tls_port=transportValue.udp_port;
+			transportValue.tcp_port=0;
+            transportValue.udp_port=0;
 		} else {
 			ms_error("unexpected trasnport [%s]",[transport cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 		}
@@ -404,17 +416,14 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		}
 	}
 	
-	
-	
-	
+
+
 	// Set audio assets
-	NSBundle* myBundle = [NSBundle mainBundle];
 	const char*  lRing = [[myBundle pathForResource:@"oldphone-mono"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
 	linphone_core_set_ring(theLinphoneCore, lRing );
 	const char*  lRingBack = [[myBundle pathForResource:@"ringback"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
 	linphone_core_set_ringback(theLinphoneCore, lRingBack);
- 	
-	
+
 	
 	
 	//configure sip account
@@ -452,7 +461,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		//possible valid config detected
 		LinphoneProxyConfig* proxyCfg;	
 		proxyCfg = linphone_proxy_config_new();
-		
+        
 		// add username password
 		LinphoneAddress *from = linphone_address_new(identity);
 		LinphoneAuthInfo *info;
