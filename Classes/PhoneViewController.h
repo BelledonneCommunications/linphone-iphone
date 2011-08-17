@@ -70,6 +70,7 @@
 	
 }
 @property (nonatomic, retain) IBOutlet UIView* dialerView;
+@property (nonatomic, retain) IBOutlet UIViewController* videoViewController;
 @property (nonatomic, retain) IBOutlet UITextField* address;
 @property (nonatomic, retain) IBOutlet UIButton* call;
 @property (nonatomic, retain) IBOutlet UIButton* hangup;

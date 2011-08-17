@@ -55,6 +55,7 @@
 
 @synthesize back;
 @synthesize myTabBarController;
+@synthesize videoViewController;
 
 
 //implements keypad behavior 
@@ -121,7 +122,7 @@
 	[mute initWithOnImage:[UIImage imageNamed:@"mic_muted.png"]  offImage:[UIImage imageNamed:@"mic_active.png"] ];
 	[speaker initWithOnImage:[UIImage imageNamed:@"Speaker-32-on.png"]  offImage:[UIImage imageNamed:@"Speaker-32-off.png"] ];
 	[erase initWithAddressField:address];
-	mVideoViewController = [[VideoViewController alloc]  initWithNibName:@"VideoViewController" 
+	self.videoViewController = [[VideoViewController alloc]  initWithNibName:@"VideoViewController" 
 																  bundle:[NSBundle mainBundle]];
 	
 }
@@ -153,7 +154,7 @@
         [address resignFirstResponder];
 		[mDisplayName setText:@""]; //display name only relefvant 
 		
-    }
+    } 
     return YES;
 }
 
@@ -170,7 +171,17 @@
 			mIncomingCallActionSheet=nil;
 		}
 	}
-	[self dismissModalViewControllerAnimated:TRUE];//just in case
+    UIViewController* modalVC = self.modalViewController;
+    
+    if (modalVC != nil) {
+        // clear previous native window ids
+        if (modalVC == self.videoViewController) {
+            linphone_core_set_native_video_window_id([LinphoneManager getLc],0);	
+            linphone_core_set_native_preview_window_id([LinphoneManager getLc],0);
+        }
+        
+        [self dismissModalViewControllerAnimated:TRUE];//just in case
+    }
 	
 	[address setHidden:false];
 	if (username) {
@@ -235,7 +246,7 @@
 }
 
 -(void) displayVideoCallFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
-	[self presentModalViewController:mVideoViewController animated:true];
+	[self presentModalViewController:self.videoViewController animated:true];
 }
 //status reporting
 -(void) displayStatus:(NSString*) message {
