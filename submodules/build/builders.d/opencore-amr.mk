@@ -26,7 +26,7 @@ endif
 opencore-amr_dir?=externals/opencore-amr
 
 $(BUILDER_SRC_DIR)/$(opencore-amr_dir)/configure: $(BUILDER_SRC_DIR)/$(opencore-amr_dir)/configure.ac
-        cd $(BUILDER_SRC_DIR)/$(opencore-amr_dir) && autoreconf
+	cd $(BUILDER_SRC_DIR)/$(opencore-amr_dir) && autoreconf
 
 $(BUILDER_BUILD_DIR)/$(opencore-amr_dir)/Makefile: $(BUILDER_SRC_DIR)/$(opencore-amr_dir)/configure
 	mkdir -p $(BUILDER_BUILD_DIR)/$(opencore-amr_dir)
