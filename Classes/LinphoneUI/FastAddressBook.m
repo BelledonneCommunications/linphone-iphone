@@ -10,7 +10,7 @@
  *  This program is distributed in the hope that it will be useful,     
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of      
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       
- *  GNU Library General Public License for more details.                
+ *  GNU General Public License for more details.                
  *                                                                      
  *  You should have received a copy of the GNU General Public License   
  *  along with this program; if not, write to the Free Software         
@@ -60,8 +60,8 @@ void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef info, void
                 Contact* lContact = [[Contact alloc] initWithRecord:lPerson ofType:(NSString *)lLocalizedLabel];
                 [lAddressBookMap setObject:lContact forKey:lNormalizedKey];
                 CFRelease(lValue);
-                CFRelease(lLabel);
-                CFRelease(lLocalizedLabel);
+                if (lLabel) CFRelease(lLabel);
+                if (lLocalizedLabel) CFRelease(lLocalizedLabel);
             }
             CFRelease(lPhoneNumbers);
         }
@@ -86,7 +86,7 @@ void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef info, void
 -(id) initWithRecord:(ABRecordRef) aRecord ofType:(NSString*) type {
      if ((self = [super init])) {
          record=CFRetain(aRecord);
-         numberType= [type retain];
+         numberType= type?[type retain]:@"unkown";
      }
     return self;
 }

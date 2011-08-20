@@ -71,21 +71,18 @@
 		22BFFF7C134F6AEA00997020 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22BFFF7A134F6AEA00997020 /* libcrypto.a */; };
 		22C755601317E59C007BC101 /* UIBluetoothButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22C7555F1317E59C007BC101 /* UIBluetoothButton.m */; };
 		22D1B68112A3E0BE001AE361 /* libresolv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 22D1B68012A3E0BE001AE361 /* libresolv.dylib */; };
-		22DA443F1354B3B6002CB522 /* Makefile.am in Resources */ = {isa = PBXBuildFile; fileRef = 22DA443B1354B3B6002CB522 /* Makefile.am */; };
-		22DA44401354B3B6002CB522 /* Makefile.in in Resources */ = {isa = PBXBuildFile; fileRef = 22DA443C1354B3B6002CB522 /* Makefile.in */; };
 		22E0A785111C1BA800B04932 /* Speaker-32-on.png in Resources */ = {isa = PBXBuildFile; fileRef = 22E0A783111C1BA800B04932 /* Speaker-32-on.png */; };
 		22E0A786111C1BA800B04932 /* Speaker-32-off.png in Resources */ = {isa = PBXBuildFile; fileRef = 22E0A784111C1BA800B04932 /* Speaker-32-off.png */; };
 		22E0A822111C44E100B04932 /* MoreViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E0A81C111C44E100B04932 /* MoreViewController.m */; };
 		22E0A823111C44E100B04932 /* ConsoleViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22E0A81E111C44E100B04932 /* ConsoleViewController.xib */; };
 		22E0A824111C44E100B04932 /* ConsoleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E0A81F111C44E100B04932 /* ConsoleViewController.m */; };
-		22E19E1E1386AFB900FBFE87 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 22E19E1C1386AFB900FBFE87 /* Localizable.strings */; };
-		22E19E5A138A89F800FBFE87 /* missed_call.png in Resources */ = {isa = PBXBuildFile; fileRef = 22E19E59138A89F800FBFE87 /* missed_call.png */; };
 		22E5AF6F1393F01800E4B43D /* FastAddressBook.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E5AF6D1393F01800E4B43D /* FastAddressBook.m */; };
 		22F2508E107141E100AC9B3F /* PhoneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22F2508C107141E100AC9B3F /* PhoneViewController.m */; };
 		22F2508F107141E100AC9B3F /* PhoneViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22F2508D107141E100AC9B3F /* PhoneViewController.xib */; };
 		22F254811073D99800AC9B3F /* ringback.wav in Resources */ = {isa = PBXBuildFile; fileRef = 22F254801073D99800AC9B3F /* ringback.wav */; };
 		22F51EF6107FA66500F98953 /* untitled.plist in Resources */ = {isa = PBXBuildFile; fileRef = 22F51EF5107FA66500F98953 /* untitled.plist */; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
+		70571E1A13FABCB000CDD3C2 /* rootca.pem in Resources */ = {isa = PBXBuildFile; fileRef = 70571E1913FABCB000CDD3C2 /* rootca.pem */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -393,7 +390,6 @@
 		22E0A81F111C44E100B04932 /* ConsoleViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConsoleViewController.m; sourceTree = "<group>"; };
 		22E0A820111C44E100B04932 /* ConsoleViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConsoleViewController.h; sourceTree = "<group>"; };
 		22E19E1D1386AFB900FBFE87 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = Resources/en.lproj/Localizable.strings; sourceTree = "<group>"; };
-		22E19E59138A89F800FBFE87 /* missed_call.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = missed_call.png; path = Resources/missed_call.png; sourceTree = "<group>"; };
 		22E5AF6D1393F01800E4B43D /* FastAddressBook.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FastAddressBook.m; sourceTree = "<group>"; };
 		22E5AF6E1393F01800E4B43D /* FastAddressBook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FastAddressBook.h; sourceTree = "<group>"; };
 		22F2508B107141E100AC9B3F /* PhoneViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoneViewController.h; sourceTree = "<group>"; };
@@ -404,6 +400,7 @@
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* linphone_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linphone_Prefix.pch; sourceTree = "<group>"; };
+		70571E1913FABCB000CDD3C2 /* rootca.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = rootca.pem; path = Resources/rootca.pem; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* linphone-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "linphone-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -868,7 +865,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				22E19E59138A89F800FBFE87 /* missed_call.png */,
+				70571E1913FABCB000CDD3C2 /* rootca.pem */,
 				228B19AE130290C500F154D3 /* iTunesArtwork */,
 				2242E312125235120061DDCE /* oldphone-mono-30s.caf */,
 				225CB2F911ABB76400628906 /* linphone-banner.png */,
@@ -1003,10 +1000,7 @@
 				222A483412F7176F0075F07F /* IncallViewController.xib in Resources */,
 				2218A92612FBE1340088A667 /* FirstLoginViewController.xib in Resources */,
 				228B19AF130290C500F154D3 /* iTunesArtwork in Resources */,
-				22DA443F1354B3B6002CB522 /* Makefile.am in Resources */,
-				22DA44401354B3B6002CB522 /* Makefile.in in Resources */,
-				22E19E1E1386AFB900FBFE87 /* Localizable.strings in Resources */,
-				22E19E5A138A89F800FBFE87 /* missed_call.png in Resources */,
+				70571E1A13FABCB000CDD3C2 /* rootca.pem in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
