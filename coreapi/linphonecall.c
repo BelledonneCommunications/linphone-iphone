@@ -103,10 +103,17 @@ static void linphone_call_videostream_encryption_changed(void *data, bool_t encr
 #endif
 
 static void linphone_call_audiostream_encryption_changed(void *data, bool_t encrypted) {
+	char status[255]={0};
 	ms_message("Audio stream is %s ", encrypted ? "encrypted" : "not encrypted");
 
 	LinphoneCall *call = (LinphoneCall *)data;
 	call->audiostream_encrypted=encrypted;
+
+	if (encrypted && call->core->vtable.display_status != NULL) {
+		snprintf(status,sizeof(status)-1,_("Authentication token is %s"),call->auth_token);
+		 call->core->vtable.display_status(call->core, status);
+	}
+
 	propagate_encryption_changed(call);
 
 
