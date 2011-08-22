@@ -17,8 +17,14 @@ distname              linphone-${version}
 
 checksums             md5 @LINPHONE_MD5@
 
-depends_lib           port:libglade2 \
+depends_lib           port:ffmpeg \
+		      port:readline \
                       port:speex-devel \
-                      port:libeXosip2 
+                      port:libeXosip2 \
+		      port:libsdl-devel \
+		      port:gtk2  \
+		      port:ige-mac-integration
 
-configure.args-append --disable-video --with-readline=none
+configure.args-append --disable-x11 --with-readline=/opt/local --disable-strict
+
+

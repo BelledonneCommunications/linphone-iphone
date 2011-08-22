@@ -15,6 +15,21 @@ You need:
  $ port install osip2
  $ port install eXosip2
  $ port install ffmpeg-devel
+
+- Install SDL (for video display)
+Unfortunately the current (august 2011) version of sdl in macports crashes all the time. Fortunately these bugs are fixed in the development branch of SDL.
+So we recommend to download SDL 1.3 with mercurial (hg) and compile it by yourself, like this:
+First, make sure you have mercurial:
+ $ sudo port install mercurial
+Fetch SDL:
+ $ hg clone http://hg.libsdl.org/SDL
+Compile:
+ $ cd SDL 
+ $ ./autogen.sh
+ $ ./configure --disable-video-dummy --disable-video-x11 && make -j4
+ $ sudo make install
+
+When this version will be integrated into macports, only this will be necessary:
  $ port install sdl-devel
 
 - Install gtk. It is recommended to use the quartz backend for better integration.
@@ -27,7 +42,7 @@ If you got the source code from git, run ./autogen.sh first.
 
 Then or otherwise, do:
 	
- $ ./configure --prefix=/opt/local --with-readline=/opt/local --disable-strict --disable-x11 && make
+ $ PKG_CONFIG_PATH=/usr/local/lib/pkgconfig ./configure --prefix=/opt/local --with-readline=/opt/local --disable-strict --disable-x11 && make
 
 Install to /opt/local
 

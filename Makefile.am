@@ -163,14 +163,19 @@ setup.exe: filelist
 newdate:
 	cd gtk && $(MAKE) newdate
 
+if HAVE_MD5SUM
+GEN_MD5=$(shell $(MD5SUM) linphone-$(VERSION).tar.gz | awk {'print $$4'})
+else
+GEN_MD5=$(shell $(MD5SUM) linphone-$(VERSION).tar.gz | awk {'print $$1'})
+endif
 
 Portfile:	$(top_srcdir)/scripts/Portfile.tmpl dist
 	sed -e 's/\@VERSION\@/$(LINPHONE_VERSION)/g' \
-	  -e 's/\@LINPHONE_MD5\@/$(shell md5sum linphone-$(VERSION).tar.gz | awk {'print $$1'})/' < $< > $@
+	  -e 's/\@LINPHONE_MD5\@/$(GEN_MD5)/' < $< > $@
 
 Portfile-devel:	$(top_srcdir)/scripts/Portfile-devel.tmpl dist
 	sed -e 's/\@VERSION\@/$(LINPHONE_VERSION)/g' \
-	  -e 's/\@LINPHONE_MD5\@/$(shell md5sum linphone-$(VERSION).tar.gz | awk {'print $$1'})/' < $< > $@
+	  -e 's/\@LINPHONE_MD5\@/$(GEN_MD5)/' < $< > $@
 
 bundle:
 	rm -rf $(INSTALLDIR)
