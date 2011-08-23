@@ -633,17 +633,18 @@ static bool_t get_codec(LpConfig *config, const char* type, int index, PayloadTy
 	return TRUE;
 }
 
+#define RANK_END 10000
 static const char *codec_pref_order[]={
 	"speex",
+	"iLBC",
+	"amr",
 	"gsm",
 	"pcmu",
 	"pcma",
+	"VP8-DRAFT-0-3-2"
 	"H264",
 	"MP4V-ES",
-	"theora",
 	"H263-1998",
-	"H263",
-	"x-snow",
 	NULL,
 };
 
@@ -651,9 +652,9 @@ static int find_codec_rank(const char *mime){
 	int i;
 	for(i=0;codec_pref_order[i]!=NULL;++i){
 		if (strcasecmp(codec_pref_order[i],mime)==0)
-			break;
+			return i;
 	}
-	return i;
+	return RANK_END;
 }
 
 static int codec_compare(const PayloadType *a, const PayloadType *b){
@@ -678,8 +679,8 @@ static MSList *add_missing_codecs(SalStreamType mtype, MSList *l){
 			}
 			if (pt && ms_filter_codec_supported(pt->mime_type)){
 				if (ms_list_find(l,pt)==NULL){
-					/*do not enable old or experimental codecs by default*/
-					if (strcasecmp(pt->mime_type,"H263")!=0 && strcasecmp(pt->mime_type,"x-snow")!=0){
+					/*unranked codecs are disabled by default*/
+					if (find_codec_rank(pt->mime_type)!=RANK_END){
 						payload_type_set_flag(pt,PAYLOAD_TYPE_ENABLED);
 					}
 					ms_message("Adding new codec %s/%i with fmtp %s",
@@ -912,22 +913,43 @@ const char * linphone_core_get_version(void){
 	return liblinphone_version;
 }
 
-
-static MSList *linphone_payload_types=NULL;
-
-static void linphone_core_assign_payload_type(PayloadType *const_pt, int number, const char *recv_fmtp){
+static void linphone_core_assign_payload_type(LinphoneCore *lc, PayloadType *const_pt, int number, const char *recv_fmtp){
 	PayloadType *pt;
 	pt=payload_type_clone(const_pt);
+	if (number==-1){
+		/*look for a free number */
+		MSList *elem;
+		int i;
+		for(i=lc->dyn_pt;i<=127;++i){
+			bool_t already_assigned=FALSE;
+			for(elem=lc->payload_types;elem!=NULL;elem=elem->next){
+				PayloadType *it=(PayloadType*)elem->data;
+				if (payload_type_get_number(it)==i){
+					already_assigned=TRUE;
+					break;
+				}
+			}
+			if (!already_assigned){
+				number=i;
+				lc->dyn_pt=i+1;
+				break;
+			}
+		}
+		if (number==-1){
+			ms_fatal("FIXME: too many codecs, no more free numbers.");
+		}
+	}
+	ms_message("assigning %s/%i payload type number %i",pt->mime_type,pt->clock_rate,number);
 	payload_type_set_number(pt,number);
 	if (recv_fmtp!=NULL) payload_type_set_recv_fmtp(pt,recv_fmtp);
 	rtp_profile_set_payload(&av_profile,number,pt);
-	linphone_payload_types=ms_list_append(linphone_payload_types,pt);
+	lc->payload_types=ms_list_append(lc->payload_types,pt);
 }
 
-static void linphone_core_free_payload_types(void){
-	ms_list_for_each(linphone_payload_types,(void (*)(void*))payload_type_destroy);
-	ms_list_free(linphone_payload_types);
-	linphone_payload_types=NULL;
+static void linphone_core_free_payload_types(LinphoneCore *lc){
+	ms_list_for_each(lc->payload_types,(void (*)(void*))payload_type_destroy);
+	ms_list_free(lc->payload_types);
+	lc->payload_types=NULL;
 }
 
 void linphone_core_set_state(LinphoneCore *lc, LinphoneGlobalState gstate, const char *message){
@@ -952,16 +974,14 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 
 	linphone_core_set_state(lc,LinphoneGlobalStartup,"Starting up");
 	ortp_init();
-	linphone_core_assign_payload_type(&payload_type_pcmu8000,0,NULL);
-	linphone_core_assign_payload_type(&payload_type_gsm,3,NULL);
-	linphone_core_assign_payload_type(&payload_type_pcma8000,8,NULL);
-	linphone_core_assign_payload_type(&payload_type_lpc1015,115,NULL);
-	linphone_core_assign_payload_type(&payload_type_speex_nb,110,"vbr=on");
-	linphone_core_assign_payload_type(&payload_type_speex_wb,111,"vbr=on");
-	linphone_core_assign_payload_type(&payload_type_speex_uwb,112,"vbr=on");
-	linphone_core_assign_payload_type(&payload_type_telephone_event,101,"0-11");
-	linphone_core_assign_payload_type(&payload_type_ilbc,113,"mode=30");
-	linphone_core_assign_payload_type(&payload_type_amr,114,"octet-align=1");
+	lc->dyn_pt=96;
+	linphone_core_assign_payload_type(lc,&payload_type_pcmu8000,0,NULL);
+	linphone_core_assign_payload_type(lc,&payload_type_gsm,3,NULL);
+	linphone_core_assign_payload_type(lc,&payload_type_pcma8000,8,NULL);
+	linphone_core_assign_payload_type(lc,&payload_type_speex_nb,110,"vbr=on");
+	linphone_core_assign_payload_type(lc,&payload_type_speex_wb,111,"vbr=on");
+	linphone_core_assign_payload_type(lc,&payload_type_speex_uwb,112,"vbr=on");
+	linphone_core_assign_payload_type(lc,&payload_type_telephone_event,101,"0-11");
 
 #if defined(ANDROID) || defined (__IPHONE_OS_VERSION_MIN_REQUIRED)
 	/*shorten the DNS lookup time and send more retransmissions on mobiles:
@@ -976,26 +996,37 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 		PayloadType *pt;
 		pt=payload_type_clone(&payload_type_gsm);
 		pt->clock_rate=11025;
-		rtp_profile_set_payload(&av_profile,114,pt);
-		linphone_payload_types=ms_list_append(linphone_payload_types,pt);
-		pt=payload_type_clone(&payload_type_gsm);
+		linphone_core_assign_payload_type(lc,pt,-1,NULL);
 		pt->clock_rate=22050;
-		rtp_profile_set_payload(&av_profile,115,pt);
-		linphone_payload_types=ms_list_append(linphone_payload_types,pt);
+		linphone_core_assign_payload_type(lc,pt,-1,NULL);
+		payload_type_destroy(pt);
 	}
 #endif
 
 #ifdef VIDEO_ENABLED
-	linphone_core_assign_payload_type(&payload_type_h263,34,NULL);
-	linphone_core_assign_payload_type(&payload_type_theora,97,NULL);
-	linphone_core_assign_payload_type(&payload_type_h263_1998,98,"CIF=1;QCIF=1");
-	linphone_core_assign_payload_type(&payload_type_mp4v,99,"profile-level-id=3");
-	linphone_core_assign_payload_type(&payload_type_x_snow,100,NULL);
-	linphone_core_assign_payload_type(&payload_type_h264,102,"profile-level-id=428014");
-	linphone_core_assign_payload_type(&payload_type_vp8,103,NULL);
+	linphone_core_assign_payload_type(lc,&payload_type_h263,34,NULL);
+	linphone_core_assign_payload_type(lc,&payload_type_theora,97,NULL);
+	linphone_core_assign_payload_type(lc,&payload_type_h263_1998,98,"CIF=1;QCIF=1");
+	linphone_core_assign_payload_type(lc,&payload_type_mp4v,99,"profile-level-id=3");
+	linphone_core_assign_payload_type(lc,&payload_type_h264,102,"profile-level-id=428014");
+	linphone_core_assign_payload_type(lc,&payload_type_vp8,103,NULL);
+	linphone_core_assign_payload_type(lc,&payload_type_x_snow,-1,NULL);
 	/* due to limited space in SDP, we have to disable this h264 line which is normally no more necessary */
-	/* linphone_core_assign_payload_type(&payload_type_h264,103,"packetization-mode=1;profile-level-id=428014");*/
+	/* linphone_core_assign_payload_type(&payload_type_h264,-1,"packetization-mode=1;profile-level-id=428014");*/
 #endif
+
+	/*add all payload type for which we don't care about the number */
+	linphone_core_assign_payload_type(lc,&payload_type_ilbc,-1,"mode=30");
+	linphone_core_assign_payload_type(lc,&payload_type_amr,-1,"octet-align=1");
+	linphone_core_assign_payload_type(lc,&payload_type_lpc1015,-1,NULL);
+	linphone_core_assign_payload_type(lc,&payload_type_g726_16,-1,NULL);
+	linphone_core_assign_payload_type(lc,&payload_type_g726_24,-1,NULL);
+	linphone_core_assign_payload_type(lc,&payload_type_g726_32,-1,NULL);
+	linphone_core_assign_payload_type(lc,&payload_type_g726_40,-1,NULL);
+	linphone_core_assign_payload_type(lc,&payload_type_aal2_g726_16,-1,NULL);
+	linphone_core_assign_payload_type(lc,&payload_type_aal2_g726_24,-1,NULL);
+	linphone_core_assign_payload_type(lc,&payload_type_aal2_g726_32,-1,NULL);
+	linphone_core_assign_payload_type(lc,&payload_type_aal2_g726_40,-1,NULL);
 
 	ms_init();
 	/* create a mediastreamer2 event queue and set it as global */
@@ -3957,7 +3988,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	ms_list_for_each(lc->call_logs,(void (*)(void*))linphone_call_log_destroy);
 	lc->call_logs=ms_list_free(lc->call_logs);
 
-	linphone_core_free_payload_types();
+	linphone_core_free_payload_types(lc);
 	ortp_exit();
 	linphone_core_set_state(lc,LinphoneGlobalOff,"Off");
 }
