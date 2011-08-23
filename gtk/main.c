@@ -65,6 +65,7 @@ static gboolean iconified=FALSE;
 static gchar *workingdir=NULL;
 static char *progpath=NULL;
 gchar *linphone_logfile=NULL;
+static gboolean app_terminated=FALSE;
 
 static GOptionEntry linphone_options[]={
 	{
@@ -1364,6 +1365,14 @@ static void linphone_gtk_check_soundcards(){
 	}
 }
 
+#ifdef HAVE_GTK_OSX
+static gboolean on_block_termination(void){
+	gtk_main_quit();
+	g_message("Block termination returning %i",!app_terminated);
+	return !app_terminated;
+}
+#endif
+
 int main(int argc, char *argv[]){
 #ifdef ENABLE_NLS
 	void *p;
@@ -1458,7 +1467,7 @@ int main(int argc, char *argv[]){
 	g_signal_connect(G_OBJECT(theMacApp),"NSApplicationDidBecomeActive",(GCallback)linphone_gtk_show_main_window,NULL);
 	g_signal_connect(G_OBJECT(theMacApp),"NSApplicationWillTerminate",(GCallback)gtk_main_quit,NULL);
 	/*never block termination:*/
-	g_signal_connect(G_OBJECT(theMacApp),"NSApplicationBlockTermination",(GCallback)gtk_false,NULL);
+	g_signal_connect(G_OBJECT(theMacApp),"NSApplicationBlockTermination",(GCallback)on_block_termination,NULL);
 #endif
 	
 	the_ui=linphone_gtk_create_window("main");
@@ -1491,6 +1500,7 @@ int main(int argc, char *argv[]){
 	linphone_gtk_destroy_log_window();
 	linphone_core_destroy(the_core);
 	linphone_gtk_log_uninit();
+	app_terminated=TRUE;
 #ifndef HAVE_GTK_OSX
 	/*workaround a bug on win32 that makes status icon still present in the systray even after program exit.*/
 	gtk_status_icon_set_visible(icon,FALSE);

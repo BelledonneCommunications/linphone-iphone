@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([linphone],[3.4.3],[linphone-developers@nongnu.org])
+AC_INIT([linphone],[3.4.99.1],[linphone-developers@nongnu.org])
 AC_CANONICAL_SYSTEM
 AC_CONFIG_SRCDIR([coreapi/linphonecore.c])
 
@@ -41,6 +41,8 @@ AC_C_INLINE
 AM_PROG_CC_STDC
 AC_HEADER_STDC
 AM_PROG_CC_C_O
+AC_CHECK_PROGS(MD5SUM,[md5sum md5])
+AM_CONDITIONAL(HAVE_MD5SUM,test -n $MD5SUM)
 
 case $target_os in
 	*mingw32ce)
