@@ -172,7 +172,7 @@ AC_ARG_ENABLE(relativeprefix,
         yes) relativeprefix=yes ;;
         no)  relativeprefix=no ;;
         *) AC_MSG_ERROR(bad value ${enableval} for --enable-relativeprefix) ;;
-      esac],[relativeprefix=auto])
+      esac],[relativeprefix=no])
 
 AC_ARG_ENABLE(date,
       [  --enable-date    Use build date in internal version number],
@@ -239,18 +239,6 @@ else
 	package_prefix=${prefix}
 fi
 
-if test "$relativeprefix" = "auto" ; then
-	case $target_os in
-		*darwin*)
-		if test "$enable_x11" = "false" ; then
-			relativeprefix=yes
-		fi
-		;;
-		*mingw*)
-		relativeprefix=yes
-		;;
-	esac
-fi
 
 if test "$relativeprefix" = "yes" ; then
 	dnl allow binaries to install everywhere
