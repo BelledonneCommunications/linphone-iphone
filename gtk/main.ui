@@ -135,28 +135,11 @@
                   <object class="GtkMenu" id="menu2">
                     <property name="visible">True</property>
                     <child>
-                      <object class="GtkRadioMenuItem" id="audio_only_item">
+                      <object class="GtkCheckMenuItem" id="enable_video_item">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">Audio only</property>
+                        <property name="label" translatable="yes">Enable video</property>
                         <property name="use_underline">True</property>
-                        <property name="draw_as_radio">True</property>
-                        <signal name="toggled" handler="linphone_gtk_set_audio_only"/>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkRadioMenuItem" id="video_item">
-                        <property name="visible">True</property>
-                        <property name="label" translatable="yes">Audio &amp; video</property>
-                        <property name="use_underline">True</property>
-                        <property name="active">True</property>
-                        <property name="draw_as_radio">True</property>
-                        <property name="group">audio_only_item</property>
-                        <signal name="toggled" handler="linphone_gtk_set_audio_video"/>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkSeparatorMenuItem" id="menuitem5">
-                        <property name="visible">True</property>
+                        <signal name="toggled" handler="linphone_gtk_enable_video"/>
                       </object>
                     </child>
                     <child>

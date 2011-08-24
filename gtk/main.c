@@ -756,15 +756,17 @@ void linphone_gtk_answer_clicked(GtkWidget *button){
 	}
 }
 
-void linphone_gtk_set_audio_video(){
-	linphone_core_enable_video(linphone_gtk_get_core(),TRUE,TRUE);
-	linphone_core_enable_video_preview(linphone_gtk_get_core(),
-	    linphone_gtk_get_ui_config_int("videoselfview",VIDEOSELFVIEW_DEFAULT));
-}
-
-void linphone_gtk_set_audio_only(){
-	linphone_core_enable_video(linphone_gtk_get_core(),FALSE,FALSE);
-	linphone_core_enable_video_preview(linphone_gtk_get_core(),FALSE);
+void linphone_gtk_enable_video(GtkWidget *w){
+	gboolean val=gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w));
+	GtkWidget *selfview_item=linphone_gtk_get_widget(linphone_gtk_get_main_window(),"selfview_item");
+	linphone_core_enable_video(linphone_gtk_get_core(),val,val);
+	gtk_widget_set_sensitive(selfview_item,val);
+	if (val){
+		linphone_core_enable_video_preview(linphone_gtk_get_core(),
+	    	linphone_gtk_get_ui_config_int("videoselfview",VIDEOSELFVIEW_DEFAULT));
+	}else{
+		linphone_core_enable_video_preview(linphone_gtk_get_core(),FALSE);
+	}
 }
 
 void linphone_gtk_enable_self_view(GtkWidget *w){
@@ -1133,13 +1135,14 @@ static void linphone_gtk_connect_digits(void){
 }
 
 static void linphone_gtk_check_menu_items(void){
-	bool_t audio_only=!linphone_core_video_enabled(linphone_gtk_get_core());
+	bool_t video_enabled=linphone_core_video_enabled(linphone_gtk_get_core());
 	bool_t selfview=linphone_gtk_get_ui_config_int("videoselfview",VIDEOSELFVIEW_DEFAULT);
+	GtkWidget *selfview_item=linphone_gtk_get_widget(
+					linphone_gtk_get_main_window(),"selfview_item");
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(linphone_gtk_get_widget(
-					linphone_gtk_get_main_window(),
-					audio_only ? "audio_only_item" : "video_item")), TRUE);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(linphone_gtk_get_widget(
-					linphone_gtk_get_main_window(),"selfview_item")),selfview);
+					linphone_gtk_get_main_window(),"enable_video_item")), video_enabled);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(selfview_item),selfview);
+	gtk_widget_set_sensitive(selfview_item,video_enabled);
 }
 
 static gboolean linphone_gtk_can_manage_accounts(){
