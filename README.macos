@@ -26,7 +26,7 @@ Fetch SDL:
 Compile:
  $ cd SDL 
  $ ./autogen.sh
- $ ./configure --disable-video-dummy --disable-video-x11 && make -j4
+ $ ./configure --prefix=/opt/local && make -j4
  $ sudo make install
 
 When this version will be integrated into macports, only this will be necessary:
@@ -35,6 +35,7 @@ When this version will be integrated into macports, only this will be necessary:
 - Install gtk. It is recommended to use the quartz backend for better integration.
  $ port install gtk2 +no_x11
  $ port install ige-mac-integration
+ $ port install hicolor-icon-theme
 
 - Compile linphone
 
@@ -50,6 +51,26 @@ Install to /opt/local
 
 Done.
 
+If you want to generate a portable bundle, then install ige-mac-bundler.
+The version in macports doesn't work at all.
+Use git:
+ $ git clone https://github.com/jralls/ige-mac-bundler.git
+ $ cd ige-mac-bundler && make install
+ $ export PATH=$PATH:~/.local/bin
 
+Then run, inside linphone source tree:
+ $ make bundle
+
+The resulting bundle is located in ~/Desktop, together with a zipped version.
+
+For a better appearance, you can install the gtk-quartz-engine (a gtk theme) that make gtk application more similar to other mac applications (but not perfect).
+
+ $ git clone https://github.com/jralls/gtk-quartz-engine.git
+ $ cd gtk-quartz-engine
+ $ autoreconf -i 
+ $ ./configure --prefix=/opt/local && make 
+ $ sudo make install
+
+Generate a new bundle to have it packaged.
 
 
