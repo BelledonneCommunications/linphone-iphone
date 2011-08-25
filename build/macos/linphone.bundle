@@ -16,6 +16,7 @@
     <prefix name="linphone">${env:LINPHONE_INSTALL_PREFIX}</prefix>
     <prefix name="liblinphone">${env:LINPHONE_INSTALL_PREFIX}</prefix>
     <prefix name="macports">/opt/local</prefix>
+    <prefix name="usrlocal">/usr/local</prefix>
     <!-- The project directory is the default location of the created
          app. If you leave out the path, the current directory is
          used. Note the usage of an environment variable here again.
@@ -71,6 +72,10 @@
     ${prefix:macports}/lib/libeXosip.*.dylib
   </binary>
 
+  <binary>
+    ${prefix:usrlocal}/lib/libSDLi-*.dylib
+  </binary>
+
   <!-- Copy in GTK+ modules.  Note the ${gtkdir} macro, which expands
        to the correct library subdirectory for the specified gtk
        version.
@@ -81,6 +86,10 @@
 
   <binary>
      ${prefix}/lib/gdk-pixbuf-2.0
+  </binary>
+
+  <binary>
+    ${prefix}/lib/pango/${pkg:pango:pango_module_version}/modules/*.so
   </binary>
 
   <!-- Copy in GTK+ theme engines. Note the use of the
