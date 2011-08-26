@@ -644,6 +644,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	NSString* factoryConfig = [myBundle pathForResource:@"linphonerc"ofType:nil] ;
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
 	NSString *confiFileName = [[paths objectAtIndex:0] stringByAppendingString:@"/.linphonerc"];
+	NSString *zrtpSecretsFileName = [[paths objectAtIndex:0] stringByAppendingString:@"/zrtp_secrets"];
 	connectivity=none;
 	signal(SIGPIPE, SIG_IGN);
 	//log management	
@@ -670,7 +671,8 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 										 ,self);
 	
 	[[NSUserDefaults standardUserDefaults] synchronize];//sync before loading config 
-	
+
+	linphone_core_set_zrtp_secrets_file(theLinphoneCore, [zrtpSecretsFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
     
     proxyReachability=SCNetworkReachabilityCreateWithName(nil, "linphone.org");		
     proxyReachabilityContext.info=self;

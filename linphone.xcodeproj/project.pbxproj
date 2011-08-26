@@ -85,6 +85,8 @@
 		22F51EF6107FA66500F98953 /* untitled.plist in Resources */ = {isa = PBXBuildFile; fileRef = 22F51EF5107FA66500F98953 /* untitled.plist */; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
 		70571E1A13FABCB000CDD3C2 /* rootca.pem in Resources */ = {isa = PBXBuildFile; fileRef = 70571E1913FABCB000CDD3C2 /* rootca.pem */; };
+		F0A486D91404FE53009EC0BE /* libsrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F0A486D71404FE53009EC0BE /* libsrtp.a */; };
+		F0A486DA1404FE53009EC0BE /* libzrtpcpp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F0A486D81404FE53009EC0BE /* libzrtpcpp.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -393,10 +395,13 @@
 		22F254801073D99800AC9B3F /* ringback.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = ringback.wav; path = "liblinphone-sdk/apple-darwin/share/sounds/linphone/ringback.wav"; sourceTree = "<group>"; };
 		22F51EF5107FA66500F98953 /* untitled.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = untitled.plist; sourceTree = "<group>"; };
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = main.m; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* linphone_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linphone_Prefix.pch; sourceTree = "<group>"; };
 		70571E1913FABCB000CDD3C2 /* rootca.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = rootca.pem; path = Resources/rootca.pem; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* linphone-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "linphone-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+		F0A486D71404FE53009EC0BE /* libsrtp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsrtp.a; path = "liblinphone-sdk/apple-darwin/lib/libsrtp.a"; sourceTree = "<group>"; };
+		F0A486D81404FE53009EC0BE /* libzrtpcpp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libzrtpcpp.a; path = "liblinphone-sdk/apple-darwin/lib/libzrtpcpp.a"; sourceTree = "<group>"; };
+		F0A486DB14050008009EC0BE /* libstdc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.dylib"; path = "usr/lib/gcc/arm-apple-darwin10/4.0.1/libstdc++.dylib"; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -429,6 +434,8 @@
 				226F2ED61344B0EF00F6EF27 /* libopencore-amrwb.a in Frameworks */,
 				226F2ED71344B0EF00F6EF27 /* libopencore-amrnb.a in Frameworks */,
 				226F2ED81344B0EF00F6EF27 /* libmsamr.a in Frameworks */,
+				F0A486D91404FE53009EC0BE /* libsrtp.a in Frameworks */,
+				F0A486DA1404FE53009EC0BE /* libzrtpcpp.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -784,6 +791,9 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				F0A486DB14050008009EC0BE /* libstdc++.dylib */,
+				F0A486D71404FE53009EC0BE /* libsrtp.a */,
+				F0A486D81404FE53009EC0BE /* libzrtpcpp.a */,
 				2214783B1386A2030020F8B8 /* Localizable.strings */,
 				22A10D9E11F88C1F00373793 /* liblinphone.xcodeproj */,
 				223148E51178A09900637D6A /* libmsilbc.a */,
@@ -1042,6 +1052,9 @@
 					submodules/externals/osip/include,
 					submodules/externals/exosip/include,
 					submodules/externals/speex/include,
+					submodules/externals/srtp/include,
+					submodules/externals/srtp/crypto/include,
+					submodules/externals/zrtpcpp/src,
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
@@ -1055,6 +1068,8 @@
 					linphone,
 					"-l",
 					mediastreamer,
+					"-l",
+					srtp,
 				);
 				PRODUCT_NAME = linphone;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -1104,6 +1119,9 @@
 					submodules/externals/osip/include,
 					submodules/externals/exosip/include,
 					submodules/externals/speex/include,
+					submodules/externals/srtp/include,
+					submodules/externals/srtp/crypto/include,
+					submodules/externals/zrtpcpp/src,
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
@@ -1117,6 +1135,8 @@
 					linphone,
 					"-l",
 					mediastreamer,
+					"-l",
+					srtp,
 				);
 				PRODUCT_NAME = linphone;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -1166,6 +1186,9 @@
 					submodules/externals/osip/include,
 					submodules/externals/exosip/include,
 					submodules/externals/speex/include,
+					submodules/externals/srtp/include,
+					submodules/externals/srtp/crypto/include,
+					submodules/externals/zrtpcpp/src,
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
@@ -1179,6 +1202,8 @@
 					linphone,
 					"-l",
 					mediastreamer,
+					"-l",
+					srtp,
 				);
 				PRODUCT_NAME = linphone;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
