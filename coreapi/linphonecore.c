@@ -641,7 +641,7 @@ static const char *codec_pref_order[]={
 	"gsm",
 	"pcmu",
 	"pcma",
-	"VP8-DRAFT-0-3-2"
+	"VP8-DRAFT-0-3-2",
 	"H264",
 	"MP4V-ES",
 	"H263-1998",
