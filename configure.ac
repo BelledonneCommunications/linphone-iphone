@@ -462,6 +462,15 @@ AC_SUBST(ORTP_LIBS)
 AC_SUBST([ORTP_VERSION])
 AC_SUBST([ORTP_DIR])
 
+AC_ARG_ENABLE(tests_enabled,
+      [  --disable-tests    Disable compilation of tests],
+      [case "${enableval}" in
+        yes) tests_enabled=true ;;
+        no)  tests_enabled=false ;;
+        *) AC_MSG_ERROR(bad value ${enableval} for --disable-tests) ;;
+      esac],[tests_enabled=false])
+AM_CONDITIONAL(ENABLE_TESTS, test x$tests_enabled = xyes)
+
 dnl ##################################################
 dnl # Check for doxygen
 dnl ##################################################
