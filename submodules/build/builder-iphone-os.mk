@@ -44,9 +44,9 @@ linphone_configure_controls=  --disable-video \
                               SPEEX_LIBS="-L$(prefix)/lib -lspeexdsp -lspeex " \
                               OPENSSL_CFLAGS="-I$(prefix)/include" \
                               OPENSSL_LIBS="-L$(prefix)/lib -lssl -lcrypto" 
-#ifeq ($(enable_zrtp),"yes")
+ifeq ($(enable_zrtp),yes)
 	linphone_configure_controls+= --with-srtp=$(prefix) --enable-zrtp=yes --disable-tests
-#endif
+endif
 
 
 #path

@@ -1,10 +1,10 @@
-srtp_version?="1.4.2"
-srtp_url?="http://srtp.sourceforge.net/srtp-$(srtp_version).tgz"
+srtp_version?=1.4.2
+srtp_url?=http://srtp.sourceforge.net/srtp-$(srtp_version).tgz
 
 
 $(BUILDER_SRC_DIR)/$(srtp_dir)/configure:
 	cd $(BUILDER_SRC_DIR)/externals \
-	&& wget $(stp_url) \
+	&& wget $(srtp_url) \
 	&& tar zxvf srtp-$(srtp_version).tgz
 
 $(BUILDER_BUILD_DIR)/$(srtp_dir)/Makefile: $(BUILDER_SRC_DIR)/$(srtp_dir)/configure
