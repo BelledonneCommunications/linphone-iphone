@@ -1769,6 +1769,22 @@ static bool_t registration_failure(Sal *sal, eXosip_event_t *ev){
 		case 407:
 			return process_authentication(sal,ev);
 			break;
+		case 423: /*interval too brief*/
+			{/*retry with greater interval */
+				osip_header_t *h=NULL;
+				osip_message_t *msg=NULL;
+				osip_message_header_get_byname(ev->response,"min-expires",0,&h);
+				if (h && h->hvalue && h->hvalue[0]!='\0'){
+					int val=atoi(h->hvalue);
+					if (val>op->expires)
+						op->expires=val;
+				}else op->expires*=2;
+				eXosip_lock();
+				eXosip_register_build_register(op->rid,op->expires,&msg);
+				eXosip_register_send_register(op->rid,msg);
+				eXosip_unlock();
+			}
+		break;
 		case 606: /*Not acceptable, workaround for proxies that don't like private addresses
 				 in vias, such as ekiga.net 
 				 On the opposite, freephonie.net bugs when via are masqueraded.
