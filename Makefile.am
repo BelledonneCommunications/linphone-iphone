@@ -192,7 +192,7 @@ bundle: $(LIBICONV_HACK)
 	LINPHONE_INSTALL_PREFIX=$(INSTALLDIR_WITH_PREFIX) \
 	LIBLINPHONE_INSTALL_PREFIX=$(INSTALLDIR_WITH_PREFIX) \
 	ige-mac-bundler $(PACKAGE_BUNDLE_FILE)
-	/bin/echo -n "[Pango]\nModuleFiles=./etc/pango/pango.modules" \
+	printf "[Pango]\nModuleFiles=./etc/pango/pango.modules\n" \
 	> $(BUNDLEDIR)/Contents/Resources/etc/pango/pangorc 
 	cp -f $(LIBICONV_HACK) $(BUNDLEDIR)/Contents/Resources/lib/.
 	cd $(BUNDLEDIR)/.. && zip -r $(PACKAGE)-$(VERSION).app.zip $(MACAPPNAME)
