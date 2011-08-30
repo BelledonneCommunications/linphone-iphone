@@ -43,7 +43,7 @@ If you got the source code from git, run ./autogen.sh first.
 
 Then or otherwise, do:
 	
- $ PKG_CONFIG_PATH=/usr/local/lib/pkgconfig ./configure --prefix=/opt/local --with-readline=/opt/local --disable-strict --disable-x11 && make
+ $ ./configure --prefix=/opt/local --with-readline=/opt/local --disable-strict --disable-x11 && make
 
 Install to /opt/local
 
@@ -52,13 +52,16 @@ Install to /opt/local
 Done.
 
 If you want to generate a portable bundle, then install ige-mac-bundler.
-The version in macports doesn't work at all.
+The macport package of ige-mac-bundler doesn't work at all.
 Use git:
  $ git clone https://github.com/jralls/ige-mac-bundler.git
  $ cd ige-mac-bundler && make install
  $ export PATH=$PATH:~/.local/bin
 
 Then run, inside linphone source tree:
+ 1. Run configure as told before but with "--enable-relativeprefix" appended.
+ 
+ $ make
  $ make bundle
 
 The resulting bundle is located in ~/Desktop, together with a zipped version.
@@ -71,6 +74,6 @@ For a better appearance, you can install the gtk-quartz-engine (a gtk theme) tha
  $ ./configure --prefix=/opt/local && make 
  $ sudo make install
 
-Generate a new bundle to have it packaged.
+Generate a new bundle to have it included.
 
 
