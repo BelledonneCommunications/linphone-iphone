@@ -11,7 +11,7 @@ You need:
  $ port install automake autoconf libtool intltool
 
 - Install some linphone dependencies with macports
- $ port install speex-dev
+ $ port install speex
  $ port install osip2
  $ port install eXosip2
  $ port install ffmpeg-devel
@@ -33,7 +33,7 @@ When this version will be integrated into macports, only this will be necessary:
  $ port install sdl-devel
 
 - Install gtk. It is recommended to use the quartz backend for better integration.
- $ port install gtk2 +no_x11
+ $ port install gtk2 +quartz +no_x11
  $ port install ige-mac-integration
  $ port install hicolor-icon-theme
 
