@@ -178,6 +178,7 @@ Portfile-devel:	$(top_srcdir)/scripts/Portfile-devel.tmpl dist
 	  -e 's/\@LINPHONE_MD5\@/$(GEN_MD5)/' < $< > $@
 
 MACAPPNAME=Linphone.app
+MACAPPZIP=$(PACKAGE)-$(VERSION).app.zip
 BUNDLEDIR=$(shell echo "$$HOME/Desktop/$(MACAPPNAME)")
 LIBICONV_HACK=$(top_builddir)/build/macos/libiconv.2.dylib
 
@@ -195,7 +196,7 @@ bundle: $(LIBICONV_HACK)
 	printf "[Pango]\nModuleFiles=./etc/pango/pango.modules\n" \
 	> $(BUNDLEDIR)/Contents/Resources/etc/pango/pangorc 
 	cp -f $(LIBICONV_HACK) $(BUNDLEDIR)/Contents/Resources/lib/.
-	cd $(BUNDLEDIR)/.. && zip -r $(PACKAGE)-$(VERSION).app.zip $(MACAPPNAME)
+	cd $(BUNDLEDIR)/.. && rm -f $(MACAPPZIP) && zip -r $(MACAPPZIP) $(MACAPPNAME)
 
 
 
