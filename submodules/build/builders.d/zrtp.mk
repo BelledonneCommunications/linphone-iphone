@@ -8,9 +8,16 @@ $(BUILDER_BUILD_DIR)/$(zrtpcpp_dir)/Makefile:
         && cmake $(BUILDER_SRC_DIR)/$(zrtpcpp_dir) -Denable-ccrtp=false $(TC) -LH -Wdev -DCMAKE_INSTALL_PREFIX=$(prefix) -DCMAKE_FIND_ROOT_PATH="$(prefix)"
 # Used toolchain: $(TC)
 
+ifeq ($(enable_zrtp),yes)
+
 build-zrtpcpp: $(BUILDER_BUILD_DIR)/$(zrtpcpp_dir)/Makefile build-openssl
 	echo "Build ZRTP - prefix $(prefix)"
 	cd $(BUILDER_BUILD_DIR)/$(zrtpcpp_dir) && make && make install
+
+else
+build-zrtpcpp:
+	echo "Build of zrtpcpp disabled"
+endif
 
 clean-zrtpcpp:
 	-cd $(BUILDER_BUILD_DIR)/$(zrtpcpp_dir) && make clean
@@ -18,5 +25,7 @@ clean-zrtpcpp:
 clean-makefile-zrtpcpp: clean-zrtpcpp
 	-rm -f $(BUILDER_BUILD_DIR)/$(zrtpcpp_dir)/Makefile
 	-rm -f $(BUILDER_BUILD_DIR)/$(zrtpcpp_dir)/CMakeCache.txt
+
+
 
 
