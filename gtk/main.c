@@ -114,6 +114,7 @@ static GOptionEntry linphone_options[]={
 };
 
 #define INSTALLED_XML_DIR PACKAGE_DATA_DIR "/linphone"
+#define RELATIVE_XML_DIR 
 #define BUILD_TREE_XML_DIR "gtk"
 
 #ifndef WIN32
@@ -258,7 +259,7 @@ static int get_ui_file(const char *name, char *path, int pathsize){
 	if (access(path,F_OK)!=0){
 		snprintf(path,pathsize,"%s/%s.ui",INSTALLED_XML_DIR,name);
 		if (access(path,F_OK)!=0){
-			g_error("Could not locate neither %s/%s.ui and %s/%s.ui .",BUILD_TREE_XML_DIR,name,
+			g_error("Could not locate neither %s/%s.ui nor %s/%s.ui",BUILD_TREE_XML_DIR,name,
 				INSTALLED_XML_DIR,name);
 			return -1;
 		}
@@ -1277,6 +1278,17 @@ gboolean linphone_gtk_close(GtkWidget *mw){
 	return TRUE;
 }
 
+static gboolean on_window_state_event(GtkWidget *w, GdkEventWindowState *event){
+        if ((event->new_window_state & GDK_WINDOW_STATE_ICONIFIED) ||(event->new_window_state & GDK_WINDOW_STATE_WITHDRAWN) ){
+                linphone_core_enable_video_preview(linphone_gtk_get_core(),FALSE);
+        }else{
+                linphone_core_enable_video_preview(linphone_gtk_get_core(),
+		linphone_gtk_get_ui_config_int("videoselfview",VIDEOSELFVIEW_DEFAULT));
+        }
+        return FALSE;
+}
+
+
 static void linphone_gtk_init_main_window(){
 	GtkWidget *main_window;
 
@@ -1306,6 +1318,7 @@ static void linphone_gtk_init_main_window(){
 		gtk_widget_hide(menubar);
 		gtk_osxapplication_ready(theMacApp);
 	}
+	g_signal_connect(G_OBJECT(main_window), "window-state-event",G_CALLBACK(on_window_state_event), NULL);
 #endif
 	linphone_gtk_check_menu_items();
 }

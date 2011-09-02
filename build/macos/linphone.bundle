@@ -12,11 +12,10 @@
          defined by jhbuild, so it you are not using jhbuild you can
          either define your own or just hardcode the path here.
     -->
-    <prefix name="default">${env:JHBUILD_PREFIX}</prefix>
+    <prefix name="default">/opt/local</prefix>
     <prefix name="linphone">${env:LINPHONE_INSTALL_PREFIX}</prefix>
     <prefix name="liblinphone">${env:LINPHONE_INSTALL_PREFIX}</prefix>
     <prefix name="macports">/opt/local</prefix>
-    <prefix name="usrlocal">/usr/local</prefix>
     <!-- The project directory is the default location of the created
          app. If you leave out the path, the current directory is
          used. Note the usage of an environment variable here again.
@@ -72,10 +71,6 @@
     ${prefix:macports}/lib/libeXosip.*.dylib
   </binary>
 
-  <binary>
-    ${prefix:usrlocal}/lib/libSDLi-*.dylib
-  </binary>
-
   <!-- Copy in GTK+ modules.  Note the ${gtkdir} macro, which expands
        to the correct library subdirectory for the specified gtk
        version.
@@ -86,6 +81,10 @@
 
   <binary>
      ${prefix}/lib/gdk-pixbuf-2.0
+  </binary>
+
+  <binary>
+    ${prefix}/share/mime/globs
   </binary>
 
   <binary>
