@@ -1278,6 +1278,7 @@ gboolean linphone_gtk_close(GtkWidget *mw){
 	return TRUE;
 }
 
+#ifdef HAVE_GTK_OSX
 static gboolean on_window_state_event(GtkWidget *w, GdkEventWindowState *event){
         if ((event->new_window_state & GDK_WINDOW_STATE_ICONIFIED) ||(event->new_window_state & GDK_WINDOW_STATE_WITHDRAWN) ){
                 linphone_core_enable_video_preview(linphone_gtk_get_core(),FALSE);
@@ -1287,6 +1288,7 @@ static gboolean on_window_state_event(GtkWidget *w, GdkEventWindowState *event){
         }
         return FALSE;
 }
+#endif
 
 
 static void linphone_gtk_init_main_window(){
