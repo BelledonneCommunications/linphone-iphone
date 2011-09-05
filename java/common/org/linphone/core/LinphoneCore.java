@@ -591,5 +591,6 @@ public interface LinphoneCore {
 	boolean pauseAllCalls();
 	
 	void setZrtpSecretsCache(String file);
+	public void enableEchoLimiter(boolean val);
 
 }
