@@ -21,7 +21,7 @@
 ############################################################################
  
 host?=armv6-apple-darwin
-enable_zrtp=no
+enable_zrtp=yes
 config_site:=iphone-config.site
 library_mode:= --disable-shared --enable-static
 linphone_configure_controls=  --disable-video \
@@ -38,6 +38,7 @@ linphone_configure_controls=  --disable-video \
                               --with-gsm=$(prefix) \
                               LIBZRTPCPP_CFLAGS="-I$(prefix)/include" \
 			      LIBZRTPCPP_LIBS="-L$(prefix)/lib -lzrtpcpp -lcrypto" \
+			      SRTP_LIBS="-L$(prefix)/lib -lsrtp -lcrypto" \
                               SPEEX_CFLAGS="-I$(prefix)/include" \
                               SPEEXDSP_CFLAGS="-I$(prefix)/include" \
 			      SPEEXDSP_LIBS="-L$(prefix)/lib -lspeexdsp" \
@@ -108,7 +109,7 @@ clean-makefile-linphone: clean-makefile-osip2 clean-makefile-eXosip2 clean-makef
 	cd $(LINPHONE_BUILD_DIR) && rm -f Makefile && rm -f oRTP/Makefile && rm -f mediastreamer2/Makefile
 
 
-$(LINPHONE_SRC_DIR)/configure: build-srtp
+$(LINPHONE_SRC_DIR)/configure:
 	cd $(LINPHONE_SRC_DIR) && ./autogen.sh
 
 $(LINPHONE_BUILD_DIR)/Makefile: $(LINPHONE_SRC_DIR)/configure

@@ -2,6 +2,7 @@
 #Thus the use of a toolchain file.
 TC = -DCMAKE_TOOLCHAIN_FILE=$(BUILDER_SRC_DIR)build/iphone-toolchain.cmake$(tc_proc)
 $(BUILDER_BUILD_DIR)/$(zrtpcpp_dir)/Makefile:
+	cp $(BUILDER_SRC_DIR)/build/builders.d/zrtpcpp.CMakeLists.txt $(BUILDER_SRC_DIR)/$(zrtpcpp_dir)/CMakeLists.txt
 	mkdir -p $(BUILDER_BUILD_DIR)/$(zrtpcpp_dir)
 	cd $(BUILDER_BUILD_DIR)/$(zrtpcpp_dir)/\
         && host_alias=$(host) . $(BUILDER_SRC_DIR)/build/$(config_site) \
@@ -10,7 +11,7 @@ $(BUILDER_BUILD_DIR)/$(zrtpcpp_dir)/Makefile:
 
 ifeq ($(enable_zrtp),yes)
 
-build-zrtpcpp: $(BUILDER_BUILD_DIR)/$(zrtpcpp_dir)/Makefile build-openssl
+build-zrtpcpp: $(BUILDER_BUILD_DIR)/$(zrtpcpp_dir)/Makefile
 	echo "Build ZRTP - prefix $(prefix)"
 	cd $(BUILDER_BUILD_DIR)/$(zrtpcpp_dir) && make && make install
 
