@@ -1283,7 +1283,7 @@ static gboolean on_window_state_event(GtkWidget *w, GdkEventWindowState *event){
                 linphone_core_enable_video_preview(linphone_gtk_get_core(),FALSE);
         }else{
                 linphone_core_enable_video_preview(linphone_gtk_get_core(),
-		linphone_gtk_get_ui_config_int("videoselfview",VIDEOSELFVIEW_DEFAULT));
+		linphone_gtk_get_ui_config_int("videoselfview",VIDEOSELFVIEW_DEFAULT) && linphone_core_video_enabled(linphone_gtk_get_core()));
         }
         return FALSE;
 }
