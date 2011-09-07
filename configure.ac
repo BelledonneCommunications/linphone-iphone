@@ -172,7 +172,7 @@ AC_ARG_ENABLE(relativeprefix,
         yes) relativeprefix=yes ;;
         no)  relativeprefix=no ;;
         *) AC_MSG_ERROR(bad value ${enableval} for --enable-relativeprefix) ;;
-      esac],[relativeprefix=no])
+      esac],[relativeprefix=guess])
 
 AC_ARG_ENABLE(date,
       [  --enable-date    Use build date in internal version number],
@@ -239,6 +239,11 @@ else
 	package_prefix=${prefix}
 fi
 
+if test "$relativeprefix" = "guess" ; then
+	if test "$mingw_found" = "yes" ; then
+		relativeprefix="yes"
+	fi
+fi
 
 if test "$relativeprefix" = "yes" ; then
 	dnl allow binaries to install everywhere
