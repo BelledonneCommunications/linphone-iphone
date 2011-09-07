@@ -186,18 +186,21 @@ public interface LinphoneCore {
 	static public class EcCalibratorStatus {
 		@SuppressWarnings("unchecked")
 		static private Vector values = new Vector();
+		public static final int IN_PROGRESS_STATUS=0;
+		public static final int DONE_STATUS=1;
+		public static final int FAILED_STATUS=2;
 		/**
 		 * Calibration in progress
 		 */
-		static public EcCalibratorStatus InProgress = new EcCalibratorStatus(0,"InProgress");       
+		static public EcCalibratorStatus InProgress = new EcCalibratorStatus(IN_PROGRESS_STATUS,"InProgress");       
 		/**
 		 * Calibration done
 		 */
-		static public EcCalibratorStatus Done  = new EcCalibratorStatus(1,"Done");
+		static public EcCalibratorStatus Done  = new EcCalibratorStatus(DONE_STATUS,"Done");
 		/**
 		 * Calibration in progress
 		 */
-		static public EcCalibratorStatus Failed = new EcCalibratorStatus(2,"Failed");
+		static public EcCalibratorStatus Failed = new EcCalibratorStatus(FAILED_STATUS,"Failed");
 
 		private final int mValue;
 		private final String mStringValue;
