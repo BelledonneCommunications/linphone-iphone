@@ -65,7 +65,6 @@ static gboolean iconified=FALSE;
 static gchar *workingdir=NULL;
 static char *progpath=NULL;
 gchar *linphone_logfile=NULL;
-static gboolean app_terminated=FALSE;
 
 static GOptionEntry linphone_options[]={
 	{
@@ -1284,7 +1283,7 @@ static gboolean on_window_state_event(GtkWidget *w, GdkEventWindowState *event){
                 linphone_core_enable_video_preview(linphone_gtk_get_core(),FALSE);
         }else{
                 linphone_core_enable_video_preview(linphone_gtk_get_core(),
-		linphone_gtk_get_ui_config_int("videoselfview",VIDEOSELFVIEW_DEFAULT));
+		linphone_gtk_get_ui_config_int("videoselfview",VIDEOSELFVIEW_DEFAULT) && linphone_core_video_enabled(linphone_gtk_get_core()));
         }
         return FALSE;
 }
@@ -1383,11 +1382,25 @@ static void linphone_gtk_check_soundcards(){
 	}
 }
 
+static void linphone_gtk_quit(void){
+	gdk_threads_leave();
+        linphone_gtk_destroy_log_window();
+        linphone_core_destroy(the_core);
+        linphone_gtk_log_uninit();
+}
+
 #ifdef HAVE_GTK_OSX
+/*
+This is not the correct way to implement block termination.
+The good way would be to call gtk_main_quit(), and return TRUE.
+Unfortunately this does not work, because if we return TRUE the NSApplication sometimes calls the CFRunLoop recursively, which prevents gtk_main() to exit.
+As a result the program cannot exit at all.
+As a workaround we do all the cleanup (unregistration and config save) within the handler.
+*/
 static gboolean on_block_termination(void){
 	gtk_main_quit();
-	g_message("Block termination returning %i",!app_terminated);
-	return !app_terminated;
+	linphone_gtk_quit();
+	return FALSE;
 }
 #endif
 
@@ -1514,11 +1527,7 @@ int main(int argc, char *argv[]){
 		linphone_gtk_check_for_new_version();
 
 	gtk_main();
-	gdk_threads_leave();
-	linphone_gtk_destroy_log_window();
-	linphone_core_destroy(the_core);
-	linphone_gtk_log_uninit();
-	app_terminated=TRUE;
+	linphone_gtk_quit();
 #ifndef HAVE_GTK_OSX
 	/*workaround a bug on win32 that makes status icon still present in the systray even after program exit.*/
 	gtk_status_icon_set_visible(icon,FALSE);

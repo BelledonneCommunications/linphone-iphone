@@ -185,3 +185,4 @@ int linphone_core_start_echo_calibration(LinphoneCore *lc, LinphoneEcCalibration
 	lc->ecc=ec_calibrator_new(lc->sound_conf.play_sndcard,lc->sound_conf.capt_sndcard,rate,cb,cb_data);
 	return 0;
 }
+

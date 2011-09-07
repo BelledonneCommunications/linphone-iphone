@@ -12,8 +12,8 @@ You need:
 
 - Install some linphone dependencies with macports
  $ port install speex
- $ port install osip2
- $ port install eXosip2
+ $ port install libosip2
+ $ port install libeXosip2
  $ port install ffmpeg-devel
 
 - Install SDL (for video display)
@@ -33,6 +33,8 @@ When this version will be integrated into macports, only this will be necessary:
  $ port install sdl-devel
 
 - Install gtk. It is recommended to use the quartz backend for better integration.
+ $ port install cairo +quartz +no_x11
+ $ port install pango +quartz +no_x11
  $ port install gtk2 +quartz +no_x11
  $ port install ige-mac-integration
  $ port install hicolor-icon-theme

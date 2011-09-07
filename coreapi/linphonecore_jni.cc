@@ -624,6 +624,12 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_enableEchoCancellation(J
 																			,jboolean enable) {
 	linphone_core_enable_echo_cancellation((LinphoneCore*)lc,enable);
 }
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_enableEchoLimiter(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			,jboolean enable) {
+	linphone_core_enable_echo_limiter((LinphoneCore*)lc,enable);
+}
 extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isEchoCancellationEnabled(JNIEnv*  env
 																			,jobject  thiz
 																			,jlong lc
