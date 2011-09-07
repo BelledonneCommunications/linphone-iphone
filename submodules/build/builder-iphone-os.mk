@@ -77,7 +77,6 @@ LIBILBC_BUILD_DIR:=$(BUILDER_BUILD_DIR)/libilbc-rfc3951
 ifneq (,$(findstring arm,$(host)))
 	SPEEX_CONFIGURE_OPTION := --enable-fixed-point --disable-float-api
 	#SPEEX_CONFIGURE_OPTION := --enable-arm5e-asm --enable-fixed-point
-else
 endif
 
 
