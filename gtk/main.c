@@ -1184,13 +1184,6 @@ static void linphone_gtk_configure_main_window(){
 	linphone_gtk_configure_window(w,"main_window");
 	if (title) {
 		gtk_window_set_title(GTK_WINDOW(w),title);
-#if GTK_CHECK_VERSION(2,16,0)
-#ifdef HAVE_GTK_OSX
-		gtk_menu_item_set_label(GTK_MENU_ITEM(linphone_gtk_get_widget(w,"main_menu")),_("Windows"));
-#else
-		gtk_menu_item_set_label(GTK_MENU_ITEM(linphone_gtk_get_widget(w,"main_menu")),title);
-#endif
-#endif
 	}
 	if (start_call_icon){
 		gtk_button_set_image(GTK_BUTTON(linphone_gtk_get_widget(w,"start_call")),
