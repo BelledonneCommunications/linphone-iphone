@@ -38,6 +38,7 @@ linphone_configure_controls=  --disable-video \
                               --with-gsm=$(prefix) \
                               LIBZRTPCPP_CFLAGS="-I$(prefix)/include" \
 			      LIBZRTPCPP_LIBS="-L$(prefix)/lib -lzrtpcpp -lcrypto" \
+			      SRTP_LIBS="-L$(prefix)/lib -lsrtp -lcrypto" \
                               SPEEX_CFLAGS="-I$(prefix)/include" \
                               SPEEXDSP_CFLAGS="-I$(prefix)/include" \
 			      SPEEXDSP_LIBS="-L$(prefix)/lib -lspeexdsp" \
@@ -99,7 +100,7 @@ veryclean: veryclean-linphone
 clean-linphone: clean-osip2 clean-eXosip2 clean-speex clean-libgsm  clean-srtp clean-zrtpcpp clean-msilbc clean-libilbc clean-openssl clean-msamr
 	cd  $(LINPHONE_BUILD_DIR) && make clean
 
-veryclean-linphone: veryclean-osip2 veryclean-eXosip2 veryclean-speex veryclean-srtp veryclean-libgsm veryclean-msilbc veryclean-libilbc veryclean-openssl veryclean-msamr
+veryclean-linphone: veryclean-osip2 veryclean-eXosip2 veryclean-speex veryclean-srtp veryclean-zrtpcpp veryclean-libgsm veryclean-msilbc veryclean-libilbc veryclean-openssl veryclean-msamr
 #-cd $(LINPHONE_BUILD_DIR) && make distclean
 	-cd $(LINPHONE_SRC_DIR) && rm -f configure
 
@@ -107,7 +108,7 @@ clean-makefile-linphone: clean-makefile-osip2 clean-makefile-eXosip2 clean-makef
 	cd $(LINPHONE_BUILD_DIR) && rm -f Makefile && rm -f oRTP/Makefile && rm -f mediastreamer2/Makefile
 
 
-$(LINPHONE_SRC_DIR)/configure: build-srtp
+$(LINPHONE_SRC_DIR)/configure:
 	cd $(LINPHONE_SRC_DIR) && ./autogen.sh
 
 $(LINPHONE_BUILD_DIR)/Makefile: $(LINPHONE_SRC_DIR)/configure
