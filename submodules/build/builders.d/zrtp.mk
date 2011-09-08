@@ -1,8 +1,12 @@
+$(BUILDER_SRC_DIR)/$(zrtpcpp_dir)/CMakeLists.txt.tracker_target: $(BUILDER_SRC_DIR)/build/builders.d/zrtpcpp.CMakeLists.txt $(BUILDER_SRC_DIR)/$(zrtpcpp_dir)/CMakeLists.txt.tracker
+	cp $(BUILDER_SRC_DIR)/build/builders.d/zrtpcpp.CMakeLists.txt $(BUILDER_SRC_DIR)/$(zrtpcpp_dir)/CMakeLists.txt
+	touch $(BUILDER_SRC_DIR)/$(zrtpcpp_dir)/CMakeLists.txt.tracker
+
+
 #I coudn't manage to crosscompile using only -D arguments to cmake
 #Thus the use of a toolchain file.
 TC = -DCMAKE_TOOLCHAIN_FILE=$(BUILDER_SRC_DIR)build/iphone-toolchain.cmake$(tc_proc)
-$(BUILDER_BUILD_DIR)/$(zrtpcpp_dir)/Makefile:
-	cp $(BUILDER_SRC_DIR)/build/builders.d/zrtpcpp.CMakeLists.txt $(BUILDER_SRC_DIR)/$(zrtpcpp_dir)/CMakeLists.txt
+$(BUILDER_BUILD_DIR)/$(zrtpcpp_dir)/Makefile: $(BUILDER_SRC_DIR)/$(zrtpcpp_dir)/CMakeLists.txt.tracker_target
 	mkdir -p $(BUILDER_BUILD_DIR)/$(zrtpcpp_dir)
 	cd $(BUILDER_BUILD_DIR)/$(zrtpcpp_dir)/\
         && host_alias=$(host) . $(BUILDER_SRC_DIR)/build/$(config_site) \
@@ -13,7 +17,7 @@ ifeq ($(enable_zrtp),yes)
 
 build-zrtpcpp: $(BUILDER_BUILD_DIR)/$(zrtpcpp_dir)/Makefile
 	echo "Build ZRTP - prefix $(prefix)"
-	cd $(BUILDER_BUILD_DIR)/$(zrtpcpp_dir) && make && make install
+	cd $(BUILDER_BUILD_DIR)/$(zrtpcpp_dir) && make VERBOSE=1 && make install
 
 else
 build-zrtpcpp:
@@ -27,6 +31,7 @@ clean-makefile-zrtpcpp: clean-zrtpcpp
 	-rm -f $(BUILDER_BUILD_DIR)/$(zrtpcpp_dir)/Makefile
 	-rm -f $(BUILDER_BUILD_DIR)/$(zrtpcpp_dir)/CMakeCache.txt
 
-
+veryclean-zrtpcpp:
+	-rm $(BUILDER_SRC_DIR)/$(zrtpcpp_dir)/CMakeLists.txt.tracker
 
 
