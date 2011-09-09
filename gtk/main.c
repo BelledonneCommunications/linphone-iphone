@@ -684,11 +684,7 @@ static void linphone_gtk_update_call_buttons(LinphoneCall *call){
 	gtk_widget_set_visible(button,add_call);
 	
 	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"terminate_call"),stop_active);
-	if (linphone_core_get_calls(lc)==NULL){
-		linphone_gtk_enable_mute_button(
-				GTK_BUTTON(linphone_gtk_get_widget(linphone_gtk_get_main_window(),"main_mute")),
-			FALSE);
-	}
+
 	linphone_gtk_enable_transfer_button(lc,call_list_size>1);
 	update_video_title();
 }
@@ -952,9 +948,6 @@ static void linphone_gtk_call_state_changed(LinphoneCore *lc, LinphoneCall *call
 		break;
 		case LinphoneCallStreamsRunning:
 			linphone_gtk_in_call_view_set_in_call(call);
-			linphone_gtk_enable_mute_button(
-				GTK_BUTTON(linphone_gtk_get_widget(linphone_gtk_get_main_window(),"main_mute")),
-			TRUE);
 		break;
 		case LinphoneCallError:
 			linphone_gtk_in_call_view_terminate (call,msg);
@@ -1294,11 +1287,7 @@ static void linphone_gtk_init_main_window(){
 	linphone_gtk_show_friends();
 	linphone_gtk_connect_digits();
 	main_window=linphone_gtk_get_main_window();
-	linphone_gtk_enable_mute_button(GTK_BUTTON(linphone_gtk_get_widget(main_window,
-					"main_mute")),FALSE);
-	if (!linphone_gtk_use_in_call_view()) {
-		gtk_widget_show(linphone_gtk_get_widget(main_window, "main_mute"));
-	}
+
 	linphone_gtk_update_call_buttons (NULL);
 	/*prevent the main window from being destroyed by a user click on WM controls, instead we hide it*/
 	g_signal_connect (G_OBJECT (main_window), "delete-event",
