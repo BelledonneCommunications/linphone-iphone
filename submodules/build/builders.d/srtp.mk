@@ -1,11 +1,15 @@
-srtp_version?=1.4.2
-srtp_url?=http://srtp.sourceforge.net/srtp-$(srtp_version).tgz
+srtp_version?=1.4.4
+#srtp_url?=http://srtp.sourceforge.net/srtp-$(srtp_version).tgz
+srtp_url=http://sourceforge.net/projects/srtp/files/srtp/$(srtp_version)/srtp-$(srtp_version).tgz/download
+srtp_tgz_file=srtp-$(srtp_version).tgz
 
-
-$(BUILDER_SRC_DIR)/$(srtp_dir)/configure:
+$(BUILDER_SRC_DIR)/externals/$(srtp_tgz_file):
 	cd $(BUILDER_SRC_DIR)/externals \
-	&& wget $(srtp_url) \
-	&& tar zxvf srtp-$(srtp_version).tgz \
+        && wget $(srtp_url) -O $(srtp_tgz_file) 
+
+$(BUILDER_SRC_DIR)/$(srtp_dir)/configure: $(BUILDER_SRC_DIR)/externals/$(srtp_tgz_file)
+	cd $(BUILDER_SRC_DIR)/externals \
+	&& tar zxvf $(srtp_tgz_file) \
 	&& cd srtp && patch -p0 < $(BUILDER_SRC_DIR)/build/builders.d/srtp.patch
 
 $(BUILDER_BUILD_DIR)/$(srtp_dir)/Makefile: $(BUILDER_SRC_DIR)/$(srtp_dir)/configure
