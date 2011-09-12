@@ -834,10 +834,7 @@ static void parametrize_equalizer(LinphoneCore *lc, AudioStream *st){
 	}
 }
 
-
-static void post_configure_audio_streams(LinphoneCall*call){
-	AudioStream *st=call->audiostream;
-	LinphoneCore *lc=call->core;
+static void _post_configure_audio_stream(AudioStream *st, LinphoneCore *lc, bool_t muted){
 	float mic_gain=lp_config_get_float(lc->config,"sound","mic_gain",1);
 	float thres = 0;
 	float recv_gain;
@@ -845,7 +842,7 @@ static void post_configure_audio_streams(LinphoneCall*call){
 	float ng_floorgain=lp_config_get_float(lc->config,"sound","ng_floorgain",0);
 	int dc_removal=lp_config_get_int(lc->config,"sound","dc_removal",0);
 	
-	if (!call->audio_muted)
+	if (!muted)
 		audio_stream_set_mic_gain(st,mic_gain);
 	else 
 		audio_stream_set_mic_gain(st,0);
@@ -884,6 +881,12 @@ static void post_configure_audio_streams(LinphoneCall*call){
 		ms_filter_call_method(st->volrecv,MS_VOLUME_SET_NOISE_GATE_FLOORGAIN,&floorgain);
 	}
 	parametrize_equalizer(lc,st);
+}
+
+static void post_configure_audio_streams(LinphoneCall*call){
+	AudioStream *st=call->audiostream;
+	LinphoneCore *lc=call->core;
+	_post_configure_audio_stream(st,lc,call->audio_muted);
 	if (lc->vtable.dtmf_received!=NULL){
 		/* replace by our default action*/
 		audio_stream_play_received_dtmfs(call->audiostream,FALSE);
@@ -953,18 +956,167 @@ static void setup_ring_player(LinphoneCore *lc, LinphoneCall *call){
 	ms_filter_call_method(call->audiostream->soundread,MS_FILE_PLAYER_LOOP,&pause_time);
 }
 
+#define LINPHONE_RTCP_SDES_TOOL "Linphone-" LINPHONE_VERSION
+
+static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cname, bool_t muted, bool_t send_ringbacktone, bool_t use_arc){
+	LinphoneCore *lc=call->core;
+	int jitt_comp=lc->rtp_conf.audio_jitt_comp;
+	int used_pt=-1;
+	const SalStreamDescription *stream=sal_media_description_find_stream(call->resultdesc,
+	    					SalProtoRtpAvp,SalAudio);
+	
+	if (stream && stream->dir!=SalStreamInactive && stream->port!=0){
+		MSSndCard *playcard=lc->sound_conf.lsd_card ? 
+			lc->sound_conf.lsd_card : lc->sound_conf.play_sndcard;
+		MSSndCard *captcard=lc->sound_conf.capt_sndcard;
+		const char *playfile=lc->play_file;
+		const char *recfile=lc->rec_file;
+		call->audio_profile=make_profile(call,call->resultdesc,stream,&used_pt);
+		bool_t use_ec;
+
+		if (used_pt!=-1){
+			if (playcard==NULL) {
+				ms_warning("No card defined for playback !");
+			}
+			if (captcard==NULL) {
+				ms_warning("No card defined for capture !");
+			}
+			/*Replace soundcard filters by inactive file players or recorders
+			 when placed in recvonly or sendonly mode*/
+			if (stream->port==0 || stream->dir==SalStreamRecvOnly){
+				captcard=NULL;
+				playfile=NULL;
+			}else if (stream->dir==SalStreamSendOnly){
+				playcard=NULL;
+				captcard=NULL;
+				recfile=NULL;
+				/*And we will eventually play "playfile" if set by the user*/
+				/*playfile=NULL;*/
+			}
+			if (send_ringbacktone){
+				captcard=NULL;
+				playfile=NULL;/* it is setup later*/
+			}
+			/*if playfile are supplied don't use soundcards*/
+			if (lc->use_files) {
+				captcard=NULL;
+				playcard=NULL;
+			}
+			if (call->params.in_conference){
+				/* first create the graph without soundcard resources*/
+				captcard=playcard=NULL;
+			}
+			use_ec=captcard==NULL ? FALSE : linphone_core_echo_cancellation_enabled(lc);
+
+			audio_stream_enable_adaptive_bitrate_control(call->audiostream,use_arc);
+			audio_stream_start_full(
+				call->audiostream,
+				call->audio_profile,
+				stream->addr[0]!='\0' ? stream->addr : call->resultdesc->addr,
+				stream->port,
+				stream->port+1,
+				used_pt,
+				jitt_comp,
+				playfile,
+				recfile,
+				playcard,
+				captcard,
+				use_ec
+				);
+			post_configure_audio_streams(call);
+			if (muted && !send_ringbacktone){
+				audio_stream_set_mic_gain(call->audiostream,0);
+			}
+			if (stream->dir==SalStreamSendOnly && playfile!=NULL){
+				int pause_time=500;
+				ms_filter_call_method(call->audiostream->soundread,MS_FILE_PLAYER_LOOP,&pause_time);
+			}
+			if (send_ringbacktone){
+				setup_ring_player(lc,call);
+			}
+			audio_stream_set_rtcp_information(call->audiostream, cname, LINPHONE_RTCP_SDES_TOOL);
+			if (call->params.in_conference){
+				/*transform the graph to connect it to the conference filter */
+				linphone_call_add_to_conf(call);
+			}
+		}else ms_warning("No audio stream accepted ?");
+	}	
+}
+
+static void linphone_call_start_video_stream(LinphoneCall *call, const char *cname,bool_t all_inputs_muted){
+#ifdef VIDEO_ENABLED
+	LinphoneCore *lc=call->core;
+	int used_pt=-1;
+	const SalStreamDescription *vstream=sal_media_description_find_stream(call->resultdesc,
+		    					SalProtoRtpAvp,SalVideo);
+	/* shutdown preview */
+	if (lc->previewstream!=NULL) {
+		video_preview_stop(lc->previewstream);
+		lc->previewstream=NULL;
+	}
+	call->current_params.has_video=FALSE;
+	if (vstream && vstream->dir!=SalStreamInactive && vstream->port!=0) {
+		const char *addr=vstream->addr[0]!='\0' ? vstream->addr : call->resultdesc->addr;
+		call->video_profile=make_profile(call,call->resultdesc,vstream,&used_pt);
+		if (used_pt!=-1){
+			VideoStreamDir dir=VideoStreamSendRecv;
+			MSWebCam *cam=lc->video_conf.device;
+			bool_t is_inactive=FALSE;
+
+			call->current_params.has_video=TRUE;
+			
+			video_stream_set_sent_video_size(call->videostream,linphone_core_get_preferred_video_size(lc));
+			video_stream_enable_self_view(call->videostream,lc->video_conf.selfview);
+			if (lc->video_window_id!=0)
+				video_stream_set_native_window_id(call->videostream,lc->video_window_id);
+			if (lc->preview_window_id!=0)
+				video_stream_set_native_preview_window_id (call->videostream,lc->preview_window_id);
+			video_stream_use_preview_video_window (call->videostream,lc->use_preview_window);
+			
+			if (vstream->dir==SalStreamSendOnly && lc->video_conf.capture ){
+				cam=get_nowebcam_device();
+				dir=VideoStreamSendOnly;
+			}else if (vstream->dir==SalStreamRecvOnly && lc->video_conf.display ){
+				dir=VideoStreamRecvOnly;
+			}else if (vstream->dir==SalStreamSendRecv){
+				if (lc->video_conf.display && lc->video_conf.capture)
+					dir=VideoStreamSendRecv;
+				else if (lc->video_conf.display)
+					dir=VideoStreamRecvOnly;
+				else
+					dir=VideoStreamSendOnly;
+			}else{
+				ms_warning("video stream is inactive.");
+				/*either inactive or incompatible with local capabilities*/
+				is_inactive=TRUE;
+			}
+			if (call->camera_active==FALSE || all_inputs_muted){
+				cam=get_nowebcam_device();
+			}
+			if (!is_inactive){
+				video_stream_set_direction (call->videostream, dir);
+				video_stream_start(call->videostream,
+					call->video_profile, addr, vstream->port,
+					vstream->port+1,
+					used_pt, lc->rtp_conf.audio_jitt_comp, cam);
+				video_stream_set_rtcp_information(call->videostream, cname,LINPHONE_RTCP_SDES_TOOL);
+			}
+		}else ms_warning("No video stream accepted.");
+	}else{
+		ms_warning("No valid video stream defined.");
+	}
+#endif
+}
 
 void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_muted, bool_t send_ringbacktone){
 	LinphoneCore *lc=call->core;
 	LinphoneAddress *me=linphone_core_get_primary_contact_parsed(lc);
-	const char *tool="linphone-" LINPHONE_VERSION;
 	char *cname;
-	int used_pt=-1;
+	bool_t use_arc;
 #ifdef VIDEO_ENABLED
 	const SalStreamDescription *vstream=sal_media_description_find_stream(call->resultdesc,
 		    					SalProtoRtpAvp,SalVideo);
 #endif
-	bool_t use_arc=linphone_core_adaptive_rate_control_enabled(lc);
 	
 	if(call->audiostream == NULL)
 	{
@@ -972,155 +1124,18 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 		return;
 	}
 	call->current_params = call->params;
-	/* adjust rtp jitter compensation. It must be at least the latency of the sound card */
-	int jitt_comp=MAX(lc->sound_conf.latency,lc->rtp_conf.audio_jitt_comp);
-
 	if (call->media_start_time==0) call->media_start_time=time(NULL);
-
 	cname=linphone_address_as_string_uri_only(me);
-	{
-		const SalStreamDescription *stream=sal_media_description_find_stream(call->resultdesc,
-		    					SalProtoRtpAvp,SalAudio);
-		if (stream && stream->dir!=SalStreamInactive && stream->port!=0){
-			MSSndCard *playcard=lc->sound_conf.lsd_card ? 
-				lc->sound_conf.lsd_card : lc->sound_conf.play_sndcard;
-			MSSndCard *captcard=lc->sound_conf.capt_sndcard;
-			const char *playfile=lc->play_file;
-			const char *recfile=lc->rec_file;
-			call->audio_profile=make_profile(call,call->resultdesc,stream,&used_pt);
-			bool_t use_ec,use_arc_audio=use_arc;
 
-			if (used_pt!=-1){
-				if (playcard==NULL) {
-					ms_warning("No card defined for playback !");
-				}
-				if (captcard==NULL) {
-					ms_warning("No card defined for capture !");
-				}
-				/*Replace soundcard filters by inactive file players or recorders
-				 when placed in recvonly or sendonly mode*/
-				if (stream->port==0 || stream->dir==SalStreamRecvOnly){
-					captcard=NULL;
-					playfile=NULL;
-				}else if (stream->dir==SalStreamSendOnly){
-					playcard=NULL;
-					captcard=NULL;
-					recfile=NULL;
-					/*And we will eventually play "playfile" if set by the user*/
-					/*playfile=NULL;*/
-				}
-				if (send_ringbacktone){
-					captcard=NULL;
-					playfile=NULL;/* it is setup later*/
-				}
-				/*if playfile are supplied don't use soundcards*/
-				if (lc->use_files) {
-					captcard=NULL;
-					playcard=NULL;
-				}
-				use_ec=captcard==NULL ? FALSE : linphone_core_echo_cancellation_enabled(lc);
 #if defined(VIDEO_ENABLED)
-				if (vstream && vstream->dir!=SalStreamInactive && vstream->payloads!=NULL){
-					/*when video is used, do not make adaptive rate control on audio, it is stupid.*/
-					use_arc_audio=FALSE;
-	#if defined(ANDROID)
-					/*On android we have to disable the echo canceller to preserve CPU for video codecs */
-					use_ec=FALSE;
-	#endif
-				}
-#endif
-				audio_stream_enable_adaptive_bitrate_control(call->audiostream,use_arc_audio);
-				audio_stream_start_full(
-					call->audiostream,
-					call->audio_profile,
-					stream->addr[0]!='\0' ? stream->addr : call->resultdesc->addr,
-					stream->port,
-					stream->port+1,
-					used_pt,
-					jitt_comp,
-					playfile,
-					recfile,
-					playcard,
-					captcard,
-					use_ec
-					);
-				post_configure_audio_streams(call);
-				if (all_inputs_muted && !send_ringbacktone){
-					audio_stream_set_mic_gain(call->audiostream,0);
-				}
-				if (stream->dir==SalStreamSendOnly && playfile!=NULL){
-					int pause_time=500;
-					ms_filter_call_method(call->audiostream->soundread,MS_FILE_PLAYER_LOOP,&pause_time);
-				}
-				if (send_ringbacktone){
-					setup_ring_player(lc,call);
-				}
-				audio_stream_set_rtcp_information(call->audiostream, cname, tool);
-			}else ms_warning("No audio stream accepted ?");
-		}
+	if (vstream && vstream->dir!=SalStreamInactive && vstream->payloads!=NULL){
+		/*when video is used, do not make adaptive rate control on audio, it is stupid.*/
+		use_arc=FALSE;
 	}
-#ifdef VIDEO_ENABLED
-	{
-		
-		used_pt=-1;
-		/* shutdown preview */
-		if (lc->previewstream!=NULL) {
-			video_preview_stop(lc->previewstream);
-			lc->previewstream=NULL;
-		}
-		call->current_params.has_video=FALSE;
-		if (vstream && vstream->dir!=SalStreamInactive && vstream->port!=0) {
-			const char *addr=vstream->addr[0]!='\0' ? vstream->addr : call->resultdesc->addr;
-			call->video_profile=make_profile(call,call->resultdesc,vstream,&used_pt);
-			if (used_pt!=-1){
-				VideoStreamDir dir=VideoStreamSendRecv;
-				MSWebCam *cam=lc->video_conf.device;
-				bool_t is_inactive=FALSE;
+#endif
+	linphone_call_start_audio_stream(call,cname,all_inputs_muted,send_ringbacktone,use_arc);
+	linphone_call_start_video_stream(call,cname,all_inputs_muted);
 
-				call->current_params.has_video=TRUE;
-				
-				video_stream_set_sent_video_size(call->videostream,linphone_core_get_preferred_video_size(lc));
-				video_stream_enable_self_view(call->videostream,lc->video_conf.selfview);
-				if (lc->video_window_id!=0)
-					video_stream_set_native_window_id(call->videostream,lc->video_window_id);
-				if (lc->preview_window_id!=0)
-					video_stream_set_native_preview_window_id (call->videostream,lc->preview_window_id);
-				video_stream_use_preview_video_window (call->videostream,lc->use_preview_window);
-				
-				if (vstream->dir==SalStreamSendOnly && lc->video_conf.capture ){
-					cam=get_nowebcam_device();
-					dir=VideoStreamSendOnly;
-				}else if (vstream->dir==SalStreamRecvOnly && lc->video_conf.display ){
-					dir=VideoStreamRecvOnly;
-				}else if (vstream->dir==SalStreamSendRecv){
-					if (lc->video_conf.display && lc->video_conf.capture)
-						dir=VideoStreamSendRecv;
-					else if (lc->video_conf.display)
-						dir=VideoStreamRecvOnly;
-					else
-						dir=VideoStreamSendOnly;
-				}else{
-					ms_warning("video stream is inactive.");
-					/*either inactive or incompatible with local capabilities*/
-					is_inactive=TRUE;
-				}
-				if (call->camera_active==FALSE || all_inputs_muted){
-					cam=get_nowebcam_device();
-				}
-				if (!is_inactive){
-					video_stream_set_direction (call->videostream, dir);
-					video_stream_start(call->videostream,
-						call->video_profile, addr, vstream->port,
-						vstream->port+1,
-						used_pt, jitt_comp, cam);
-					video_stream_set_rtcp_information(call->videostream, cname,tool);
-				}
-			}else ms_warning("No video stream accepted.");
-		}else{
-			ms_warning("No valid video stream defined.");
-		}
-	}
-#endif
 	call->all_muted=all_inputs_muted;
 	call->playing_ringbacktone=send_ringbacktone;
 	call->up_bw=linphone_core_get_upload_bandwidth(lc);
@@ -1158,6 +1173,9 @@ void linphone_call_stop_media_streams(LinphoneCall *call){
 			}
 		}
 		linphone_call_log_fill_stats (call->log,call->audiostream);
+		if (call->endpoint){
+			linphone_call_remove_from_conf(call);
+		}
 		audio_stream_stop(call->audiostream);
 		call->audiostream=NULL;
 	}

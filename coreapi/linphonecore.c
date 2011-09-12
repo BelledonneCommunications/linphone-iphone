@@ -2219,13 +2219,20 @@ bool_t linphone_core_inc_invite_pending(LinphoneCore*lc){
 int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params){
 	int err=0;
 	if (params!=NULL){
+		const char *subject;
 		call->params=*params;
 		update_local_media_description(lc,call,&call->localdesc);
 		call->camera_active=params->has_video;
+
+		if (params->in_conference){
+			subject="Conference";
+		}else{
+			subject="Media change";
+		}
 		if (lc->vtable.display_status)
 			lc->vtable.display_status(lc,_("Modifying call parameters..."));
 		sal_call_set_local_media_description (call->op,call->localdesc);
-		err=sal_call_update(call->op,"Media parameters update");
+		err=sal_call_update(call->op,subject);
 	}else{
 #ifdef VIDEO_ENABLED
 		if (call->videostream!=NULL){
@@ -2486,8 +2493,7 @@ int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *the_call)
 		ms_error("No reason to pause this call, it is already paused or inactive.");
 		return -1;
 	}
-	if (sal_call_update(call->op,subject) != 0)
-	{
+	if (sal_call_update(call->op,subject) != 0){
 		if (lc->vtable.display_warning)
 			lc->vtable.display_warning(lc,_("Could not pause the call"));
 	}
@@ -2524,6 +2530,7 @@ int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *the_call)
 {
 	char temp[255]={0};
 	LinphoneCall *call = the_call;
+	const char *subject="Call resuming";
 	
 	if(call->state!=LinphoneCallPaused ){
 		ms_warning("we cannot resume a call that has not been established and paused before");
@@ -2537,7 +2544,8 @@ int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *the_call)
 	}
 	ms_message("Resuming call %p",call);
 	sal_media_description_set_dir(call->localdesc,SalStreamSendRecv);
-	if(sal_call_update(call->op,"Call resuming") != 0){
+	if (call->params.in_conference) subject="Resuming conference";
+	if(sal_call_update(call->op,subject) != 0){
 		return -1;
 	}
 	linphone_call_set_state (call,LinphoneCallResuming,"Resuming");

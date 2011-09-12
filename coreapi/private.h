@@ -33,6 +33,7 @@
 #include "config.h"
 #endif
 #include "mediastreamer2/mediastream.h"
+#include "mediastreamer2/msconference.h"
 
 #ifndef LIBLINPHONE_VERSION 
 #define LIBLINPHONE_VERSION LINPHONE_VERSION
@@ -62,7 +63,8 @@ struct _LinphoneCallParams{
 	int audio_bw; /* bandwidth limit for audio stream */
 	bool_t has_video;
 	bool_t real_early_media; /*send real media even during early media (for outgoing calls)*/
-	bool_t pad[2];
+	bool_t in_conference; /*in conference mode */
+	bool_t pad;
 };
 
 struct _LinphoneCall
@@ -87,6 +89,7 @@ struct _LinphoneCall
 	int video_port;
 	struct _AudioStream *audiostream;  /**/
 	struct _VideoStream *videostream;
+	MSAudioEndpoint *endpoint; /*used for conferencing*/
 	char *refer_to;
 	LinphoneCallParams params;
 	LinphoneCallParams current_params;
@@ -99,12 +102,13 @@ struct _LinphoneCall
 	bool_t all_muted; /*this flag is set during early medias*/
 	bool_t playing_ringbacktone;
 	bool_t owns_call_log;
+	bool_t pad;
 	OrtpEvQueue *audiostream_app_evq;
-	bool_t audiostream_encrypted;
 	char *auth_token;
-	bool_t auth_token_verified;
 	OrtpEvQueue *videostream_app_evq;
 	bool_t videostream_encrypted;
+	bool_t audiostream_encrypted;
+	bool_t auth_token_verified;
 };
 
 
@@ -388,6 +392,13 @@ typedef struct autoreplier_config
 	const char *message;		/* the path of the file to be played */
 }autoreplier_config_t;
 
+struct _LinphoneConference{
+	MSAudioConference *conf;
+	AudioStream *local_participant;
+	MSAudioEndpoint *local_endpoint;
+};
+
+typedef struct _LinphoneConference LinphoneConference;
 
 struct _LinphoneCore
 {
@@ -439,6 +450,8 @@ struct _LinphoneCore
 	time_t netup_time; /*time when network went reachable */
 	struct _EcCalibrator *ecc;
 	MSList *hooks;
+	LinphoneConference conf_ctx;
+	char* zrtp_secrets_cache;
 	bool_t use_files;
 	bool_t apply_nat_settings;
 	bool_t initial_subscribes_sent;
@@ -448,7 +461,6 @@ struct _LinphoneCore
 	bool_t network_reachable;
 	bool_t use_preview_window;
 	bool_t ringstream_autorelease;
-	char* zrtp_secrets_cache;
 };
 
 bool_t linphone_core_can_we_add_call(LinphoneCore *lc);
@@ -492,6 +504,10 @@ LinphoneEcCalibratorStatus ec_calibrator_get_status(EcCalibrator *ecc);
 void ec_calibrator_destroy(EcCalibrator *ecc);
 
 void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapsed);
+
+/*conferencing subsystem*/
+void linphone_call_add_to_conf(LinphoneCall *call);
+void linphone_call_remove_from_conf(LinphoneCall *call);
 
 #define HOLD_OFF	(0)
 #define HOLD_ON		(1)
