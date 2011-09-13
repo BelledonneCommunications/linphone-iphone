@@ -147,7 +147,9 @@
 	// Release any retained subviews of the main view.
 	// e.g. self.myOutlet = nil;
 }
+- (void) viewWillAppear:(BOOL)animated {
 
+}
 
 - (BOOL)textFieldShouldReturn:(UITextField *)theTextField {
     if (theTextField == address) {
@@ -160,6 +162,7 @@
 
 
 -(void) displayDialerFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
+	
 	//cancel local notification, just in case
 	if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]  
 		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground ) {
@@ -179,8 +182,8 @@
             linphone_core_set_native_video_window_id([LinphoneManager getLc],0);	
             linphone_core_set_native_preview_window_id([LinphoneManager getLc],0);
         }
-        
-        [self dismissModalViewControllerAnimated:TRUE];//just in case
+		[[UIApplication sharedApplication] setStatusBarHidden:NO animated:NO]; 
+		[self dismissModalViewControllerAnimated:FALSE];//just in case
     }
 	
 	[address setHidden:false];
@@ -246,6 +249,7 @@
 }
 
 -(void) displayVideoCallFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
+	[[UIApplication sharedApplication] setStatusBarHidden:YES animated:NO];
 	[self presentModalViewController:self.videoViewController animated:true];
 }
 //status reporting
