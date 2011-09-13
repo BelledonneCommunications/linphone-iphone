@@ -681,6 +681,13 @@ bool_t linphone_call_params_early_media_sending_enabled(const LinphoneCallParams
 }
 
 /**
+ * Returns true if the call is part of the locally managed conference.
+**/
+bool_t linphone_call_params_local_conference_mode(const LinphoneCallParams *cp){
+	return cp->in_conference;
+}
+
+/**
  * Refine bandwidth settings for this call by setting a bandwidth limit for audio streams.
  * As a consequence, codecs whose bitrates are not compatible with this limit won't be used.
 **/
@@ -1405,7 +1412,7 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 			}
 		}
 	}
-	if (one_second_elapsed && call->audiostream!=NULL && disconnect_timeout>0 )
+	if (call->state==LinphoneCallStreamsRunning && one_second_elapsed && call->audiostream!=NULL && disconnect_timeout>0 )
 		disconnected=!audio_stream_alive(call->audiostream,disconnect_timeout);
 	if (disconnected)
 		linphone_core_disconnected(call->core,call);

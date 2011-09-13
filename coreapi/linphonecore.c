@@ -1725,6 +1725,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 		 we are going to examine is destroy and removed during
 		 linphone_core_start_invite() */
 		calls=calls->next;
+		linphone_call_background_tasks(call,one_second_elapsed);
 		if (call->state==LinphoneCallOutgoingInit && (curtime-call->start_time>=2)){
 			/*start the call even if the OPTIONS reply did not arrive*/
 			linphone_core_start_invite(lc,call,NULL);
@@ -1738,9 +1739,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 			}
 		}
 	}
-	call = linphone_core_get_current_call(lc);
-	if(call)
-		linphone_call_background_tasks(call,one_second_elapsed);
+		
 	if (linphone_core_video_preview_enabled(lc)){
 		if (lc->previewstream==NULL && lc->calls==NULL)
 			toggle_video_preview(lc,TRUE);
@@ -2536,13 +2535,15 @@ int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *the_call)
 		ms_warning("we cannot resume a call that has not been established and paused before");
 		return -1;
 	}
-	if(linphone_core_get_current_call(lc) != NULL){
-		ms_warning("There is already a call in process, pause or stop it first.");
-		if (lc->vtable.display_warning)
-			lc->vtable.display_warning(lc,_("There is already a call in process, pause or stop it first."));
-		return -1;
+	if (call->params.in_conference==FALSE){
+		if(linphone_core_get_current_call(lc) != NULL){
+			ms_warning("There is already a call in process, pause or stop it first.");
+			if (lc->vtable.display_warning)
+				lc->vtable.display_warning(lc,_("There is already a call in process, pause or stop it first."));
+			return -1;
+		}
+		ms_message("Resuming call %p",call);
 	}
-	ms_message("Resuming call %p",call);
 	sal_media_description_set_dir(call->localdesc,SalStreamSendRecv);
 	if (call->params.in_conference) subject="Resuming conference";
 	if(sal_call_update(call->op,subject) != 0){

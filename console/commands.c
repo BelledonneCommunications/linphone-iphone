@@ -102,6 +102,7 @@ static int lpc_cmd_vfureq(LinphoneCore *lc, char *arg);
 static int lpc_cmd_states(LinphoneCore *lc, char *args);
 static int lpc_cmd_identify(LinphoneCore *lc, char *args);
 static int lpc_cmd_ringback(LinphoneCore *lc, char *args);
+static int lpc_cmd_conference(LinphoneCore *lc, char *args);
 
 /* Command handler helpers */
 static void linphonec_proxy_add(LinphoneCore *lc);
@@ -122,7 +123,6 @@ static int linphonec_friend_delete(LinphoneCore *lc, int num);
 static void linphonec_codec_list(int type, LinphoneCore *lc);
 static void linphonec_codec_enable(int type, LinphoneCore *lc, int index);
 static void linphonec_codec_disable(int type, LinphoneCore *lc, int index);
-
 
 
 /* Command table management */
@@ -183,6 +183,10 @@ static LPC_COMMAND commands[] = {
 		"'transfer <sip-uri>' : transfers the current active call to the destination sip-uri\n"
 		"'transfer <call id> <sip-uri>': transfers the call with 'id' to the destination sip-uri\n"
 		"'transfer <call id1> --to-call <call id2>': transfers the call with 'id1' to the destination of call 'id2' (attended transfer)\n"
+	},
+	{ "conference", lpc_cmd_conference, "Create and manage an audio conference.",
+		"'conference add <call id> : join the call with id 'call id' into the audio conference."
+		"'conference rm <call id> : remove the call with id 'call id' from the audio conference."
 	},
 	{ "mute", lpc_cmd_mute_mic, 
 	  "Mute microphone and suspend voice transmission."},
@@ -1461,6 +1465,24 @@ static int lpc_cmd_resume(LinphoneCore *lc, char *args){
     
 }
 
+static int lpc_cmd_conference(LinphoneCore *lc, char *args){
+	long id;
+	char subcommand[32]={0};
+	int n;
+	if (args==NULL) return 0;
+	n=sscanf(args, "%31s %li", subcommand,&id);
+	if (n == 2){
+		LinphoneCall *call=linphonec_get_call(id);
+		if (call==NULL) return 1;
+		if (strcmp(subcommand,"add")==0){
+			linphone_core_add_to_conference(lc,call);
+		}else if (strcmp(subcommand,"rm")==0){
+			linphone_core_remove_from_conference(lc,call);
+		}
+	}
+	return 0;
+}
+
 /***************************************************************************
  *
  *  Commands helper functions
@@ -2411,9 +2433,11 @@ static void lpc_display_call_states(LinphoneCore *lc){
 	}else{
 		for(;elem!=NULL;elem=elem->next){
 			call=(LinphoneCall*)elem->data;
+			bool_t in_conference=linphone_call_params_local_conference_mode(linphone_call_get_current_params(call));
 			tmp=linphone_call_get_remote_address_as_string (call);
-			linphonec_out("%-2i | %-35s | %s\n",(int)(long)linphone_call_get_user_pointer(call),
-						  tmp,linphone_call_state_to_string(linphone_call_get_state(call)));
+			linphonec_out("%-2i | %-35s | %s %s\n",(int)(long)linphone_call_get_user_pointer(call),
+						  tmp,linphone_call_state_to_string(linphone_call_get_state(call)),
+			              in_conference ? "(conferencing)" : "");
 			ms_free(tmp);
 		}
 	}
