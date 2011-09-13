@@ -2095,7 +2095,7 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	
 	if (linphone_core_in_call(lc)){
 		if (lc->vtable.display_warning)
-			lc->vtable.display_warning(lc,_("Sorry, you have to pause or stop the current call first !"));
+			lc->vtable.display_warning(lc,_("Sorry, you have to pause or stop the current call or conference first !"));
 		return NULL;
 	}
 	if(!linphone_core_can_we_add_call(lc)){
@@ -2454,7 +2454,7 @@ const MSList *linphone_core_get_calls(LinphoneCore *lc)
  * @ingroup call_control
 **/
 bool_t linphone_core_in_call(const LinphoneCore *lc){
-	return linphone_core_get_current_call((LinphoneCore *)lc)!=NULL;
+	return linphone_core_get_current_call((LinphoneCore *)lc)!=NULL || linphone_core_is_in_conference(lc);
 }
 
 /**

@@ -841,7 +841,7 @@ static void parametrize_equalizer(LinphoneCore *lc, AudioStream *st){
 	}
 }
 
-static void _post_configure_audio_stream(AudioStream *st, LinphoneCore *lc, bool_t muted){
+void _post_configure_audio_stream(AudioStream *st, LinphoneCore *lc, bool_t muted){
 	float mic_gain=lp_config_get_float(lc->config,"sound","mic_gain",1);
 	float thres = 0;
 	float recv_gain;

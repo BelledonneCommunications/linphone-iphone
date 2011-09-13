@@ -32,9 +32,20 @@ static void conference_check_init(LinphoneConference *ctx){
 	}
 }
 
+static void remove_local_endpoint(LinphoneConference *ctx){
+	if (ctx->local_endpoint){
+		ms_audio_conference_remove_member(ctx->conf,ctx->local_endpoint);
+		ms_audio_endpoint_release_from_stream(ctx->local_endpoint);
+		ctx->local_endpoint=NULL;
+		audio_stream_stop(ctx->local_participant);
+		ctx->local_participant=NULL;
+	}
+}
+
 static void conference_check_uninit(LinphoneConference *ctx){
 	if (ctx->conf){
 		if (ctx->conf->nmembers==0){
+			remove_local_endpoint(ctx);
 			ms_audio_conference_destroy(ctx->conf);
 			ctx->conf=NULL;
 		}
@@ -61,8 +72,36 @@ void linphone_call_remove_from_conf(LinphoneCall *call){
 	conference_check_uninit(conf);
 }
 
+static void add_local_endpoint(LinphoneConference *conf,LinphoneCore *lc){
+	/*create a dummy audiostream in order to extract the local part of it */
+	/* network address and ports have no meaning and are not used here. */
+	AudioStream *st=audio_stream_new(65000,FALSE);
+	MSSndCard *playcard=lc->sound_conf.lsd_card ? 
+			lc->sound_conf.lsd_card : lc->sound_conf.play_sndcard;
+	MSSndCard *captcard=lc->sound_conf.capt_sndcard;
+	
+	audio_stream_start_full(st, &av_profile,
+				"127.0.0.1",
+				65000,
+				65001,
+				0,
+				40,
+				NULL,
+				NULL,
+				playcard,
+				captcard,
+				linphone_core_echo_cancellation_enabled(lc)
+				);
+	_post_configure_audio_stream(st,lc,FALSE);
+	conf->local_participant=st;
+	conf->local_endpoint=ms_audio_endpoint_get_from_stream(st,FALSE);
+	ms_audio_conference_add_member(conf->conf,conf->local_endpoint);
+}
+
 int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call){
 	LinphoneCallParams params;
+	LinphoneConference *conf=&lc->conf_ctx;
+	
 	if (call->current_params.in_conference){
 		ms_error("Already in conference");
 		return -1;
@@ -75,7 +114,10 @@ int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call){
 		linphone_core_resume_call(lc,call);
 	else if (call->state==LinphoneCallStreamsRunning){
 		/*this will trigger a reINVITE that will later redraw the streams */
+		if (call->audiostream || call->videostream)
+			linphone_call_stop_media_streams (call); /*free the audio & video local resources*/
 		linphone_core_update_call(lc,call,&params);
+		add_local_endpoint(conf,lc);
 	}else{
 		ms_error("Call is in state %s, it cannot be added to the conference.",linphone_call_state_to_string(call->state));
 		return -1;
@@ -97,12 +139,21 @@ int linphone_core_remove_from_conference(LinphoneCore *lc, LinphoneCall *call){
 	return linphone_core_pause_call(lc,call);
 }
 
-int linphone_core_pause_conference(LinphoneCore *lc){
+bool_t linphone_core_is_in_conference(const LinphoneCore *lc){
+	return lc->conf_ctx.local_participant!=NULL;
+}
+
+int linphone_core_leave_conference(LinphoneCore *lc){
+	LinphoneConference *conf=&lc->conf_ctx;
+	if (linphone_core_is_in_conference(lc))
+		remove_local_endpoint(conf);
 	return 0;
 }
 
 
-int linphone_core_resume_conference(LinphoneCore *lc){
+int linphone_core_enter_conference(LinphoneCore *lc){
+	LinphoneConference *conf=&lc->conf_ctx;
+	if (conf->local_participant==NULL) add_local_endpoint(conf,lc);
 	return 0;
 }
 

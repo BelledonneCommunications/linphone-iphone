@@ -1026,8 +1026,9 @@ bool_t linphone_call_get_authentication_token_verified(LinphoneCall *call);
 
 int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call);
 int linphone_core_remove_from_conference(LinphoneCore *lc, LinphoneCall *call);
-int linphone_core_pause_conference(LinphoneCore *lc);
-int linphone_core_resume_conference(LinphoneCore *lc);
+bool_t linphone_core_is_in_conference(const LinphoneCore *lc);
+int linphone_core_enter_conference(LinphoneCore *lc);
+int linphone_core_leave_conference(LinphoneCore *lc);
 
 
 #ifdef __cplusplus
