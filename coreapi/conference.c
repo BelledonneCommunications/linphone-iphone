@@ -157,3 +157,6 @@ int linphone_core_enter_conference(LinphoneCore *lc){
 	return 0;
 }
 
+int linphone_core_add_all_to_conference(LinphoneCore *lc) {return 0;}
+int linphone_core_terminate_conference(LinphoneCore *lc) {return 0;}
+int linphone_core_get_conference_size(LinphoneCore *lc) {return 0;}

@@ -1025,11 +1025,14 @@ const char* linphone_call_get_authentication_token(LinphoneCall *call);
 bool_t linphone_call_get_authentication_token_verified(LinphoneCall *call);
 
 int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call);
+int linphone_core_add_all_to_conference(LinphoneCore *lc);
 int linphone_core_remove_from_conference(LinphoneCore *lc, LinphoneCall *call);
 bool_t linphone_core_is_in_conference(const LinphoneCore *lc);
 int linphone_core_enter_conference(LinphoneCore *lc);
 int linphone_core_leave_conference(LinphoneCore *lc);
 
+int linphone_core_terminate_conference(LinphoneCore *lc);
+int linphone_core_get_conference_size(LinphoneCore *lc);
 
 #ifdef __cplusplus
 }

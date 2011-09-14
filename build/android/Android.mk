@@ -47,6 +47,7 @@ LOCAL_SRC_FILES := \
 	offeranswer.c \
 	callbacks.c \
 	linphonecall.c \
+	conference.c \
 	ec-calibrator.c
 
 ifndef MY_LOG_DOMAIN

@@ -34,6 +34,14 @@ public interface LinphoneCall {
 		@SuppressWarnings("unchecked")
 		static private Vector values = new Vector();
 		private final int mValue;
+		public final int value() {return mValue;}
+		public static final int ID_INCOMING_RECEIVED=1;
+		public static final int ID_OUTGOING_RINGING=4;
+		public static final int ID_STREAMS_RUNNING=7;
+		public static final int ID_PAUSED=9;
+		public static final int ID_CALL_END=13;
+		public static final int ID_PAUSED_BY_REMOTE=14;
+
 		private final String mStringValue;
 		/**
 		 * Idle
@@ -42,7 +50,7 @@ public interface LinphoneCall {
 		/**
 		 * Incoming call received.
 		 */
-		public final static State IncomingReceived = new State(1,"IncomingReceived");
+		public final static State IncomingReceived = new State(ID_INCOMING_RECEIVED,"IncomingReceived");
 		/**
 		 * Outgoing call initialiazed.
 		 */
@@ -54,7 +62,7 @@ public interface LinphoneCall {
 		/**
 		 * Outgoing call ringing.
 		 */
-		public final static State OutgoingRinging = new State(4,"OutgoingRinging");
+		public final static State OutgoingRinging = new State(ID_OUTGOING_RINGING,"OutgoingRinging");
 		/**
 		 * Outgoing call early media
 		 */
@@ -66,7 +74,7 @@ public interface LinphoneCall {
 		/**
 		 * Streams running
 		 */
-		public final static State StreamsRunning = new State(7,"StreamsRunning");
+		public final static State StreamsRunning = new State(ID_STREAMS_RUNNING,"StreamsRunning");
 		/**
 		 * Paussing
 		 */
@@ -74,7 +82,7 @@ public interface LinphoneCall {
 		/**
 		 * Paused
 		 */
-		public final static State Paused = new State(9,"Paused");
+		public final static State Paused = new State(ID_PAUSED,"Paused");
 		/**
 		 * Resuming
 		 */
@@ -90,12 +98,12 @@ public interface LinphoneCall {
 		/**
 		 * Call end
 		 */
-		public final static State CallEnd = new State(13,"CallEnd");
+		public final static State CallEnd = new State(ID_CALL_END,"CallEnd");
 		
 		/**
 		 * Paused by remote
 		 */
-		public final static State PausedByRemote = new State(14,"PausedByRemote");
+		public final static State PausedByRemote = new State(ID_PAUSED_BY_REMOTE,"PausedByRemote");
 		
 		/**
 		 * The call's parameters are updated, used for example when video is asked by remote
@@ -219,4 +227,5 @@ public interface LinphoneCall {
 	String getAuthenticationToken();
 	boolean isAuthenticationTokenVerified();
 	boolean areStreamsEncrypted();
+	boolean isInConference();
 }

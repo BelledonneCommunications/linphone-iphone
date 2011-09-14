@@ -594,6 +594,20 @@ public interface LinphoneCore {
 	boolean pauseAllCalls();
 	
 	void setZrtpSecretsCache(String file);
-	public void enableEchoLimiter(boolean val);
+	void enableEchoLimiter(boolean val);
 
+	boolean isInConference();
+	void enterConference();
+	void leaveConference();
+
+	void addToConference(LinphoneCall call);
+	void addAllToConference();
+	void removeFromConference(LinphoneCall call);
+
+	void terminateConference();
+	int getConferenceSize();
+	
+	void terminateAllCalls();
+	@SuppressWarnings("unchecked") List getCalls();
+	int getCallsNb();
 }

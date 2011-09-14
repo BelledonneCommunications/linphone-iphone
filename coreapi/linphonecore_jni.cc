@@ -1198,6 +1198,11 @@ extern "C" void Java_org_linphone_core_LinphoneCallParamsImpl_enableVideo(JNIEnv
 extern "C" jboolean Java_org_linphone_core_LinphoneCallParamsImpl_getVideoEnabled(JNIEnv *env, jobject thiz, jlong lcp){
 	return linphone_call_params_video_enabled((LinphoneCallParams*)lcp);
 }
+
+extern "C" jboolean Java_org_linphone_core_LinphoneCallParamsImpl_localConferenceMode(JNIEnv *env, jobject thiz, jlong lcp){
+	return linphone_call_params_local_conference_mode((LinphoneCallParams*)lcp);
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCallParamsImpl_destroy(JNIEnv *env, jobject thiz, jlong lc){
 	return linphone_call_params_destroy((LinphoneCallParams*)lc);
 }
@@ -1323,6 +1328,41 @@ extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_pauseAllCalls(JNIEnv *en
 extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_resumeCall(JNIEnv *env,jobject thiz,jlong pCore, jlong pCall) {
 	return linphone_core_resume_call((LinphoneCore *) pCore, (LinphoneCall *) pCall);
 }
+extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isInConference(JNIEnv *env,jobject thiz,jlong pCore) {
+	return linphone_core_is_in_conference((LinphoneCore *) pCore);
+}
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_enterConference(JNIEnv *env,jobject thiz,jlong pCore) {
+	linphone_core_enter_conference((LinphoneCore *) pCore);
+}
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_leaveConference(JNIEnv *env,jobject thiz,jlong pCore) {
+	linphone_core_leave_conference((LinphoneCore *) pCore);
+}
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_addAllToConference(JNIEnv *env,jobject thiz,jlong pCore) {
+	linphone_core_add_all_to_conference((LinphoneCore *) pCore);
+}
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_addToConference(JNIEnv *env,jobject thiz,jlong pCore, jlong pCall) {
+	linphone_core_add_to_conference((LinphoneCore *) pCore, (LinphoneCall *) pCall);
+}
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_removeFromConference(JNIEnv *env,jobject thiz,jlong pCore, jlong pCall) {
+	linphone_core_remove_from_conference((LinphoneCore *) pCore, (LinphoneCall *) pCall);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_terminateConference(JNIEnv *env,jobject thiz,jlong pCore) {
+	linphone_core_terminate_conference((LinphoneCore *) pCore);
+}
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getConferenceSize(JNIEnv *env,jobject thiz,jlong pCore) {
+	return linphone_core_get_conference_size((LinphoneCore *) pCore);
+}
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_terminateAllCalls(JNIEnv *env,jobject thiz,jlong pCore) {
+	linphone_core_terminate_all_calls((LinphoneCore *) pCore);
+}
+extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_getCall(JNIEnv *env,jobject thiz,jlong pCore,jint position) {
+	return (jlong)ms_list_nth_data(linphone_core_get_calls((LinphoneCore *) pCore),position);
+}
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getCallsNb(JNIEnv *env,jobject thiz,jlong pCore) {
+	return ms_list_size(linphone_core_get_calls((LinphoneCore *) pCore));
+}
+
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setZrtpSecretsCache(JNIEnv *env,jobject thiz,jlong pCore, jstring jFile) {
 	if (jFile) {
