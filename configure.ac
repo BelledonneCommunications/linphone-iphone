@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([linphone],[3.4.3],[linphone-developers@nongnu.org])
+AC_INIT([linphone],[3.4.99.1],[linphone-developers@nongnu.org])
 AC_CANONICAL_SYSTEM
 AC_CONFIG_SRCDIR([coreapi/linphonecore.c])
 
@@ -41,6 +41,8 @@ AC_C_INLINE
 AM_PROG_CC_STDC
 AC_HEADER_STDC
 AM_PROG_CC_C_O
+AC_CHECK_PROGS(MD5SUM,[md5sum md5])
+AM_CONDITIONAL(HAVE_MD5SUM,test -n $MD5SUM)
 
 case $target in
 	*mingw32ce)
@@ -178,7 +180,7 @@ AC_ARG_ENABLE(relativeprefix,
         yes) relativeprefix=yes ;;
         no)  relativeprefix=no ;;
         *) AC_MSG_ERROR(bad value ${enableval} for --enable-relativeprefix) ;;
-      esac],[relativeprefix=auto])
+      esac],[relativeprefix=guess])
 
 AC_ARG_ENABLE(date,
       [  --enable-date    Use build date in internal version number],
@@ -245,17 +247,10 @@ else
 	package_prefix=${prefix}
 fi
 
-if test "$relativeprefix" = "auto" ; then
-	case $target_os in
-		*darwin*)
-		if test "$enable_x11" = "false" ; then
-			relativeprefix=yes
-		fi
-		;;
-		*mingw*)
-		relativeprefix=yes
-		;;
-	esac
+if test "$relativeprefix" = "guess" ; then
+	if test "$mingw_found" = "yes" ; then
+		relativeprefix="yes"
+	fi
 fi
 
 if test "$relativeprefix" = "yes" ; then
@@ -479,6 +474,15 @@ AC_SUBST(ORTP_CFLAGS)
 AC_SUBST(ORTP_LIBS)
 AC_SUBST([ORTP_VERSION])
 AC_SUBST([ORTP_DIR])
+
+AC_ARG_ENABLE(tests_enabled,
+      [  --disable-tests    Disable compilation of tests],
+      [case "${enableval}" in
+        yes) tests_enabled=true ;;
+        no)  tests_enabled=false ;;
+        *) AC_MSG_ERROR(bad value ${enableval} for --disable-tests) ;;
+      esac],[tests_enabled=false])
+AM_CONDITIONAL(ENABLE_TESTS, test x$tests_enabled = xyes)
 
 dnl ##################################################
 dnl # Check for doxygen

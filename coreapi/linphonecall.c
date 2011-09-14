@@ -41,17 +41,14 @@ static MSWebCam *get_nowebcam_device(){
 }
 #endif
 
-static const char* get_zrtp_identifier(LinphoneCore *lc){
+static const char* get_hexa_zrtp_identifier(LinphoneCore *lc){
 	const char *confZid=lp_config_get_string(lc->config,"rtp","zid",NULL);
 	if (confZid != NULL) {
 		return confZid;
 	} else {
-		int32_t *zid=calloc(3,32);
-		int i=0;
-		for(;i<3;i++) {
-			zid[i]=rand();
-		}
-		lp_config_set_string(lc->config,"rtp","zid",(char*)zid);
+        char zidstr[128];
+        snprintf(zidstr,sizeof(zidstr),"%x-%x-%x",rand(),rand(),rand());
+		lp_config_set_string(lc->config,"rtp","zid",zidstr);
 		return lp_config_get_string(lc->config,"rtp","zid",NULL);
 	}
 }
@@ -103,10 +100,17 @@ static void linphone_call_videostream_encryption_changed(void *data, bool_t encr
 #endif
 
 static void linphone_call_audiostream_encryption_changed(void *data, bool_t encrypted) {
+	char status[255]={0};
 	ms_message("Audio stream is %s ", encrypted ? "encrypted" : "not encrypted");
 
 	LinphoneCall *call = (LinphoneCall *)data;
 	call->audiostream_encrypted=encrypted;
+
+	if (encrypted && call->core->vtable.display_status != NULL) {
+		snprintf(status,sizeof(status)-1,_("Authentication token is %s"),call->auth_token);
+		 call->core->vtable.display_status(call->core, status);
+	}
+
 	propagate_encryption_changed(call);
 
 
@@ -116,7 +120,7 @@ static void linphone_call_audiostream_encryption_changed(void *data, bool_t encr
 	if (params->has_video) {
 		ms_message("Trying to enable encryption on video stream");
 		OrtpZrtpParams params;
-		params.zid=get_zrtp_identifier(call->core);
+		params.zid=get_hexa_zrtp_identifier(call->core);
 		params.zid_file=NULL; //unused
 		video_stream_enable_zrtp(call->videostream,call->audiostream,&params);
 	}
@@ -1123,7 +1127,7 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 	
 	if (ortp_zrtp_available()) {
 		OrtpZrtpParams params;
-		params.zid=get_zrtp_identifier(lc);
+		params.zid=get_hexa_zrtp_identifier(lc);
 		params.zid_file=lc->zrtp_secrets_cache;
 		audio_stream_enable_zrtp(call->audiostream,&params);
 	}

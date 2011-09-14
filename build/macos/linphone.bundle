@@ -12,7 +12,7 @@
          defined by jhbuild, so it you are not using jhbuild you can
          either define your own or just hardcode the path here.
     -->
-    <prefix name="default">${env:JHBUILD_PREFIX}</prefix>
+    <prefix name="default">/opt/local</prefix>
     <prefix name="linphone">${env:LINPHONE_INSTALL_PREFIX}</prefix>
     <prefix name="liblinphone">${env:LINPHONE_INSTALL_PREFIX}</prefix>
     <prefix name="macports">/opt/local</prefix>
@@ -83,6 +83,14 @@
      ${prefix}/lib/gdk-pixbuf-2.0
   </binary>
 
+  <data>
+    ${prefix}/share/mime/globs
+  </data>
+
+  <binary>
+    ${prefix}/lib/pango/${pkg:pango:pango_module_version}/modules/*.so
+  </binary>
+
   <!-- Copy in GTK+ theme engines. Note the use of the
        "${pkg:module:variable}" macro, which evaluates to a pkg-config
        variable in the specified module. Note that any libraries that
@@ -109,7 +117,11 @@
        "${bundle}", which refers to the bundle root directory.
   -->
   <data>
-    ${prefix:linphone}/share
+    ${prefix:linphone}/share/linphone
+  </data>
+
+  <data>
+    ${prefix:linphone}/share/pixmaps/linphone
   </data>
 
   <!-- Copy in the themes data. You may want to trim this to save space
@@ -139,8 +151,12 @@
     ${project}/../../gtk/gtkrc.mac
   </data>
 
-  <data dest="${bundle}/Contents/Resources/share/sounds/linphone">
-      ${prefix:linphone}/share/sounds/linphone/
+  <data dest="${bundle}/Contents/Resources/share/sounds/linphone/rings/oldphone.wav">
+      ${prefix:linphone}/share/sounds/linphone/rings/oldphone.wav
+  </data>
+
+  <data dest="${bundle}/Contents/Resources/share/sounds/linphone/ringback.wav">
+      ${prefix:linphone}/share/sounds/linphone/ringback.wav
   </data>
 
   <!-- Icon themes to copy. The "icons" property can be either of

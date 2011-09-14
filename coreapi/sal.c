@@ -25,26 +25,27 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "sal.h"
 const char* sal_transport_to_string(SalTransport transport) {
-    switch (transport) {
-        case SalTransportUDP:return "udp";
-        case SalTransportTCP: return "tcp";
-        case SalTransportTLS:return "tls";
-        case SalTransportDTLS:return "dtls";
-        default: {
-            ms_fatal("Unexpected transport [%i]",transport);
-            return NULL;
-        }
-            
-    }
+	switch (transport) {
+		case SalTransportUDP:return "udp";
+		case SalTransportTCP: return "tcp";
+		case SalTransportTLS:return "tls";
+		case SalTransportDTLS:return "dtls";
+		default: {
+			ms_fatal("Unexpected transport [%i]",transport);
+			return NULL;
+		}    
+	}
 }
+
 SalTransport sal_transport_parse(const char* param) {
-    if (strcasecmp("udp",param)==0) return SalTransportUDP;
-    if (strcasecmp("tcp",param)==0) return SalTransportTCP;
-    if (strcasecmp("tls",param)==0) return SalTransportTLS;
-    if (strcasecmp("dtls",param)==0) return SalTransportDTLS;
-    ms_error("Unkown transport type[%s], returning UDP", param);
-    return SalTransportUDP;
+	if (strcasecmp("udp",param)==0) return SalTransportUDP;
+	if (strcasecmp("tcp",param)==0) return SalTransportTCP;
+	if (strcasecmp("tls",param)==0) return SalTransportTLS;
+	if (strcasecmp("dtls",param)==0) return SalTransportDTLS;
+	ms_error("Unknown transport type[%s], returning UDP", param);
+	return SalTransportUDP;
 }
+
 SalMediaDescription *sal_media_description_new(){
 	SalMediaDescription *md=ms_new0(SalMediaDescription,1);
 	md->refcount=1;
@@ -112,7 +113,8 @@ static bool_t has_dir(const SalMediaDescription *md, SalStreamDir stream_dir){
 	for(i=0;i<md->nstreams;++i){
 		const SalStreamDescription *ss=&md->streams[i];
 		if (ss->dir==stream_dir) return TRUE;
-		if (stream_dir==SalStreamSendOnly && (is_null_address(md->addr) || is_null_address(ss->addr)))
+		/*compatibility check for phones that only used the null address and no attributes */
+		if (ss->dir==SalStreamSendRecv && stream_dir==SalStreamSendOnly && (is_null_address(md->addr) || is_null_address(ss->addr)))
 			return TRUE;
 	}
 	return FALSE;

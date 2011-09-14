@@ -113,6 +113,7 @@ static GOptionEntry linphone_options[]={
 };
 
 #define INSTALLED_XML_DIR PACKAGE_DATA_DIR "/linphone"
+#define RELATIVE_XML_DIR 
 #define BUILD_TREE_XML_DIR "gtk"
 
 #ifndef WIN32
@@ -257,7 +258,7 @@ static int get_ui_file(const char *name, char *path, int pathsize){
 	if (access(path,F_OK)!=0){
 		snprintf(path,pathsize,"%s/%s.ui",INSTALLED_XML_DIR,name);
 		if (access(path,F_OK)!=0){
-			g_error("Could not locate neither %s/%s.ui and %s/%s.ui .",BUILD_TREE_XML_DIR,name,
+			g_error("Could not locate neither %s/%s.ui nor %s/%s.ui",BUILD_TREE_XML_DIR,name,
 				INSTALLED_XML_DIR,name);
 			return -1;
 		}
@@ -683,11 +684,7 @@ static void linphone_gtk_update_call_buttons(LinphoneCall *call){
 	gtk_widget_set_visible(button,add_call);
 	
 	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"terminate_call"),stop_active);
-	if (linphone_core_get_calls(lc)==NULL){
-		linphone_gtk_enable_mute_button(
-				GTK_BUTTON(linphone_gtk_get_widget(linphone_gtk_get_main_window(),"main_mute")),
-			FALSE);
-	}
+
 	linphone_gtk_enable_transfer_button(lc,call_list_size>1);
 	update_video_title();
 }
@@ -755,15 +752,17 @@ void linphone_gtk_answer_clicked(GtkWidget *button){
 	}
 }
 
-void linphone_gtk_set_audio_video(){
-	linphone_core_enable_video(linphone_gtk_get_core(),TRUE,TRUE);
-	linphone_core_enable_video_preview(linphone_gtk_get_core(),
-	    linphone_gtk_get_ui_config_int("videoselfview",VIDEOSELFVIEW_DEFAULT));
-}
-
-void linphone_gtk_set_audio_only(){
-	linphone_core_enable_video(linphone_gtk_get_core(),FALSE,FALSE);
-	linphone_core_enable_video_preview(linphone_gtk_get_core(),FALSE);
+void linphone_gtk_enable_video(GtkWidget *w){
+	gboolean val=gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w));
+	GtkWidget *selfview_item=linphone_gtk_get_widget(linphone_gtk_get_main_window(),"selfview_item");
+	linphone_core_enable_video(linphone_gtk_get_core(),val,val);
+	gtk_widget_set_sensitive(selfview_item,val);
+	if (val){
+		linphone_core_enable_video_preview(linphone_gtk_get_core(),
+	    	linphone_gtk_get_ui_config_int("videoselfview",VIDEOSELFVIEW_DEFAULT));
+	}else{
+		linphone_core_enable_video_preview(linphone_gtk_get_core(),FALSE);
+	}
 }
 
 void linphone_gtk_enable_self_view(GtkWidget *w){
@@ -949,9 +948,6 @@ static void linphone_gtk_call_state_changed(LinphoneCore *lc, LinphoneCall *call
 		break;
 		case LinphoneCallStreamsRunning:
 			linphone_gtk_in_call_view_set_in_call(call);
-			linphone_gtk_enable_mute_button(
-				GTK_BUTTON(linphone_gtk_get_widget(linphone_gtk_get_main_window(),"main_mute")),
-			TRUE);
 		break;
 		case LinphoneCallError:
 			linphone_gtk_in_call_view_terminate (call,msg);
@@ -1132,13 +1128,14 @@ static void linphone_gtk_connect_digits(void){
 }
 
 static void linphone_gtk_check_menu_items(void){
-	bool_t audio_only=!linphone_core_video_enabled(linphone_gtk_get_core());
+	bool_t video_enabled=linphone_core_video_enabled(linphone_gtk_get_core());
 	bool_t selfview=linphone_gtk_get_ui_config_int("videoselfview",VIDEOSELFVIEW_DEFAULT);
+	GtkWidget *selfview_item=linphone_gtk_get_widget(
+					linphone_gtk_get_main_window(),"selfview_item");
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(linphone_gtk_get_widget(
-					linphone_gtk_get_main_window(),
-					audio_only ? "audio_only_item" : "video_item")), TRUE);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(linphone_gtk_get_widget(
-					linphone_gtk_get_main_window(),"selfview_item")),selfview);
+					linphone_gtk_get_main_window(),"enable_video_item")), video_enabled);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(selfview_item),selfview);
+	gtk_widget_set_sensitive(selfview_item,video_enabled);
 }
 
 static gboolean linphone_gtk_can_manage_accounts(){
@@ -1180,13 +1177,6 @@ static void linphone_gtk_configure_main_window(){
 	linphone_gtk_configure_window(w,"main_window");
 	if (title) {
 		gtk_window_set_title(GTK_WINDOW(w),title);
-#if GTK_CHECK_VERSION(2,16,0)
-#ifdef HAVE_GTK_OSX
-		gtk_menu_item_set_label(GTK_MENU_ITEM(linphone_gtk_get_widget(w,"main_menu")),_("Windows"));
-#else
-		gtk_menu_item_set_label(GTK_MENU_ITEM(linphone_gtk_get_widget(w,"main_menu")),title);
-#endif
-#endif
 	}
 	if (start_call_icon){
 		gtk_button_set_image(GTK_BUTTON(linphone_gtk_get_widget(w,"start_call")),
@@ -1273,6 +1263,19 @@ gboolean linphone_gtk_close(GtkWidget *mw){
 	return TRUE;
 }
 
+#ifdef HAVE_GTK_OSX
+static gboolean on_window_state_event(GtkWidget *w, GdkEventWindowState *event){
+        if ((event->new_window_state & GDK_WINDOW_STATE_ICONIFIED) ||(event->new_window_state & GDK_WINDOW_STATE_WITHDRAWN) ){
+                linphone_core_enable_video_preview(linphone_gtk_get_core(),FALSE);
+        }else{
+                linphone_core_enable_video_preview(linphone_gtk_get_core(),
+		linphone_gtk_get_ui_config_int("videoselfview",VIDEOSELFVIEW_DEFAULT) && linphone_core_video_enabled(linphone_gtk_get_core()));
+        }
+        return FALSE;
+}
+#endif
+
+
 static void linphone_gtk_init_main_window(){
 	GtkWidget *main_window;
 
@@ -1284,11 +1287,7 @@ static void linphone_gtk_init_main_window(){
 	linphone_gtk_show_friends();
 	linphone_gtk_connect_digits();
 	main_window=linphone_gtk_get_main_window();
-	linphone_gtk_enable_mute_button(GTK_BUTTON(linphone_gtk_get_widget(main_window,
-					"main_mute")),FALSE);
-	if (!linphone_gtk_use_in_call_view()) {
-		gtk_widget_show(linphone_gtk_get_widget(main_window, "main_mute"));
-	}
+
 	linphone_gtk_update_call_buttons (NULL);
 	/*prevent the main window from being destroyed by a user click on WM controls, instead we hide it*/
 	g_signal_connect (G_OBJECT (main_window), "delete-event",
@@ -1302,6 +1301,7 @@ static void linphone_gtk_init_main_window(){
 		gtk_widget_hide(menubar);
 		gtk_osxapplication_ready(theMacApp);
 	}
+	g_signal_connect(G_OBJECT(main_window), "window-state-event",G_CALLBACK(on_window_state_event), NULL);
 #endif
 	linphone_gtk_check_menu_items();
 }
@@ -1363,6 +1363,28 @@ static void linphone_gtk_check_soundcards(){
 			    "You won't be able to send or receive audio calls."));
 	}
 }
+
+static void linphone_gtk_quit(void){
+	gdk_threads_leave();
+        linphone_gtk_destroy_log_window();
+        linphone_core_destroy(the_core);
+        linphone_gtk_log_uninit();
+}
+
+#ifdef HAVE_GTK_OSX
+/*
+This is not the correct way to implement block termination.
+The good way would be to call gtk_main_quit(), and return TRUE.
+Unfortunately this does not work, because if we return TRUE the NSApplication sometimes calls the CFRunLoop recursively, which prevents gtk_main() to exit.
+As a result the program cannot exit at all.
+As a workaround we do all the cleanup (unregistration and config save) within the handler.
+*/
+static gboolean on_block_termination(void){
+	gtk_main_quit();
+	linphone_gtk_quit();
+	return FALSE;
+}
+#endif
 
 int main(int argc, char *argv[]){
 #ifdef ENABLE_NLS
@@ -1458,7 +1480,7 @@ int main(int argc, char *argv[]){
 	g_signal_connect(G_OBJECT(theMacApp),"NSApplicationDidBecomeActive",(GCallback)linphone_gtk_show_main_window,NULL);
 	g_signal_connect(G_OBJECT(theMacApp),"NSApplicationWillTerminate",(GCallback)gtk_main_quit,NULL);
 	/*never block termination:*/
-	g_signal_connect(G_OBJECT(theMacApp),"NSApplicationBlockTermination",(GCallback)gtk_false,NULL);
+	g_signal_connect(G_OBJECT(theMacApp),"NSApplicationBlockTermination",(GCallback)on_block_termination,NULL);
 #endif
 	
 	the_ui=linphone_gtk_create_window("main");
@@ -1487,10 +1509,7 @@ int main(int argc, char *argv[]){
 		linphone_gtk_check_for_new_version();
 
 	gtk_main();
-	gdk_threads_leave();
-	linphone_gtk_destroy_log_window();
-	linphone_core_destroy(the_core);
-	linphone_gtk_log_uninit();
+	linphone_gtk_quit();
 #ifndef HAVE_GTK_OSX
 	/*workaround a bug on win32 that makes status icon still present in the systray even after program exit.*/
 	gtk_status_icon_set_visible(icon,FALSE);

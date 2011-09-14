@@ -918,6 +918,7 @@ static void x11_apply_video_params(VideoParams *params, Window window){
 	const char *dname=getenv("DISPLAY");
 
 	if (display==NULL && dname!=NULL){
+		XInitThreads();
 		display=XOpenDisplay(dname);
 	}
 

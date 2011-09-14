@@ -403,6 +403,8 @@ struct _LinphoneCore
 	codecs_config_t codecs_conf;
 	ui_config_t ui_conf;
 	autoreplier_config_t autoreplier_conf;
+	MSList *payload_types;
+	int dyn_pt;
 	LinphoneProxyConfig *default_proxy;
 	MSList *friends;
 	MSList *auth_info;

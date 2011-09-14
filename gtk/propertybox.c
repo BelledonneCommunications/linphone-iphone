@@ -306,6 +306,17 @@ static void linphone_gtk_init_codec_list(GtkTreeView *listview){
 	gtk_tree_selection_set_mode (select, GTK_SELECTION_SINGLE);
 }
 
+
+const char *get_codec_color(LinphoneCore *lc, PayloadType *pt){
+	const gchar *color;
+	if (linphone_core_check_payload_type_usability(lc,pt)) color="blue";
+		else color="red";
+	if (!linphone_core_payload_type_enabled(lc,pt)) {
+		color="grey";
+	}
+	return color;
+}
+
 static void linphone_gtk_show_codecs(GtkTreeView *listview, const MSList *codeclist)
 {
 	const MSList *elem;
@@ -319,14 +330,16 @@ static void linphone_gtk_show_codecs(GtkTreeView *listview, const MSList *codecl
 		gchar *status;
 		gint rate;
 		gfloat bitrate; 
-		gchar *color;
+		const gchar *color;
 		const char *params="";
 
 		struct _PayloadType *pt=(struct _PayloadType *)elem->data;
+
+		color=get_codec_color(linphone_gtk_get_core(),pt);
 		if (linphone_core_payload_type_enabled(linphone_gtk_get_core(),pt)) status=_("Enabled");
-		else status=_("Disabled");
-		if (linphone_core_check_payload_type_usability(linphone_gtk_get_core(),pt)) color="blue";
-		else color="red";
+		else {
+			status=_("Disabled");
+		}
 		/* get an iterator */
 		gtk_list_store_append(store,&iter);
 		bitrate=payload_type_get_bitrate(pt)/1000.0;
@@ -361,13 +374,12 @@ static void linphone_gtk_check_codec_bandwidth(GtkTreeView *v){
 	g_return_if_fail(gtk_tree_model_get_iter_first(model,&iter));
 	do{
 		PayloadType *pt=NULL;
-		const gchar *color;
+		
 		gfloat bitrate;
 		gtk_tree_model_get(model,&iter,CODEC_PRIVDATA,&pt,-1);
-		if (linphone_core_check_payload_type_usability(linphone_gtk_get_core(),pt)) color="blue";
-		else color="red";
+		
 		bitrate=payload_type_get_bitrate(pt)/1000.0;
-		gtk_list_store_set(GTK_LIST_STORE(model),&iter,CODEC_COLOR, (gpointer)color,
+		gtk_list_store_set(GTK_LIST_STORE(model),&iter,CODEC_COLOR, (gpointer)get_codec_color(linphone_gtk_get_core(),pt),
 					CODEC_BITRATE, bitrate,-1);
 	}while(gtk_tree_model_iter_next(model,&iter));
 }
@@ -462,7 +474,8 @@ static void linphone_gtk_codec_set_enable(GtkWidget *button, gboolean enabled){
 		store=GTK_LIST_STORE(mod);
 		gtk_tree_model_get(mod,&iter,CODEC_PRIVDATA,&pt,-1);
 		linphone_core_enable_payload_type(linphone_gtk_get_core(),pt,enabled);
-		gtk_list_store_set(store,&iter,CODEC_STATUS, enabled ? _("Enabled") : _("Disabled"), -1);
+		gtk_list_store_set(store,&iter,CODEC_STATUS, enabled ? _("Enabled") : _("Disabled"),
+		                   CODEC_COLOR,(gpointer)get_codec_color(linphone_gtk_get_core(),pt), -1);
 	}
 }
 

@@ -32,6 +32,7 @@ endif
 clean-local:
 	rm -rf doc
 
+if ENABLE_TESTS
 #tutorials
 if BUILD_TESTS
 noinst_PROGRAMS=helloworld registration buddy_status chatroom
@@ -57,6 +58,7 @@ chatroom_SOURCES=chatroom.c
 LINPHONE_TUTOS+=$(chatroom_SOURCES)
 
 chatroom_LDADD=$(helloworld_LDADD)
+endif
 												
 endif			
 

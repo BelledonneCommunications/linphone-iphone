@@ -163,23 +163,40 @@ setup.exe: filelist
 newdate:
 	cd gtk && $(MAKE) newdate
 
+if HAVE_MD5SUM
+GEN_MD5=$(shell $(MD5SUM) linphone-$(VERSION).tar.gz | awk {'print $$4'})
+else
+GEN_MD5=$(shell $(MD5SUM) linphone-$(VERSION).tar.gz | awk {'print $$1'})
+endif
 
 Portfile:	$(top_srcdir)/scripts/Portfile.tmpl dist
 	sed -e 's/\@VERSION\@/$(LINPHONE_VERSION)/g' \
-	  -e 's/\@LINPHONE_MD5\@/$(shell md5sum linphone-$(VERSION).tar.gz | awk {'print $$1'})/' < $< > $@
+	  -e 's/\@LINPHONE_MD5\@/$(GEN_MD5)/' < $< > $@
 
 Portfile-devel:	$(top_srcdir)/scripts/Portfile-devel.tmpl dist
 	sed -e 's/\@VERSION\@/$(LINPHONE_VERSION)/g' \
-	  -e 's/\@LINPHONE_MD5\@/$(shell md5sum linphone-$(VERSION).tar.gz | awk {'print $$1'})/' < $< > $@
+	  -e 's/\@LINPHONE_MD5\@/$(GEN_MD5)/' < $< > $@
 
-bundle:
+MACAPPNAME=Linphone.app
+MACAPPZIP=$(PACKAGE)-$(VERSION).app.zip
+BUNDLEDIR=$(shell echo "$$HOME/Desktop/$(MACAPPNAME)")
+LIBICONV_HACK=$(top_builddir)/build/macos/libiconv.2.dylib
+
+$(LIBICONV_HACK):
+	cd $(top_builddir)/build/macos && \
+	wget http://download-mirror.savannah.gnu.org/releases/linphone/misc/libiconv.2.dylib
+
+bundle: $(LIBICONV_HACK)
 	rm -rf $(INSTALLDIR)
 	mkdir -p $(INSTALLDIR)
 	make install DESTDIR=$(INSTALLDIR)
 	LINPHONE_INSTALL_PREFIX=$(INSTALLDIR_WITH_PREFIX) \
 	LIBLINPHONE_INSTALL_PREFIX=$(INSTALLDIR_WITH_PREFIX) \
 	ige-mac-bundler $(PACKAGE_BUNDLE_FILE)
-	cd $$HOME/Desktop && zip -r Linphone-$(VERSION).app.zip Linphone.app
+	printf "[Pango]\nModuleFiles=./etc/pango/pango.modules\n" \
+	> $(BUNDLEDIR)/Contents/Resources/etc/pango/pangorc 
+	cp -f $(LIBICONV_HACK) $(BUNDLEDIR)/Contents/Resources/lib/.
+	cd $(BUNDLEDIR)/.. && rm -f $(MACAPPZIP) && zip -r $(MACAPPZIP) $(MACAPPNAME)
 
 
 

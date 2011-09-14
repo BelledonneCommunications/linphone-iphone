@@ -59,8 +59,8 @@ test_lsd_LDADD=liblinphone.la $(liblinphone_la_LIBADD)
 test_ecc_SOURCES=test_ecc.c
 
 test_ecc_LDADD=liblinphone.la $(liblinphone_la_LIBADD)
-
 endif
+
 
 AM_CFLAGS=$(STRICT_OPTIONS)  -DIN_LINPHONE \
 	$(ORTP_CFLAGS) \
