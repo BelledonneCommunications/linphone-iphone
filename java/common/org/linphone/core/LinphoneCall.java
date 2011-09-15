@@ -39,7 +39,7 @@ public interface LinphoneCall {
 		 */
 		IncomingReceived(1, "IncomingReceived"),
 		/**
-		 * Outgoing call initialiazed.
+		 * Outgoing call initialized.
 		 */
 		OutgoingInit(2, "OutgoingInit"),
 		/**

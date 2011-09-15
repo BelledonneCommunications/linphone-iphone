@@ -20,8 +20,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "linphonecore_utils.h"
 #include <ortp/zrtp.h>
 
+extern "C" {
+#include "mediastreamer2/mediastream.h"
+}
 #include "mediastreamer2/msjava.h"
-
+#include "private.h"
 #include <cpu-features.h>
 
 #ifdef ANDROID
@@ -1164,6 +1167,20 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setVideoWindowId(JNIEnv*
 	linphone_core_set_native_video_window_id((LinphoneCore*)lc,(unsigned long)obj);
 }
 
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setPreviewWindowId(JNIEnv* env
+																		,jobject thiz
+																		,jlong lc
+																		,jobject obj) {
+	linphone_core_set_native_preview_window_id((LinphoneCore*)lc,(unsigned long)obj);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setDeviceRotation(JNIEnv* env
+																		,jobject thiz
+																		,jlong lc
+																		,jint rotation) {
+	linphone_core_set_device_rotation((LinphoneCore*)lc,rotation);
+}
+
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setFirewallPolicy(JNIEnv *env, jobject thiz, jlong lc, int enum_value){
 	linphone_core_set_firewall_policy((LinphoneCore*)lc,(LinphoneFirewallPolicy)enum_value);
@@ -1267,7 +1284,7 @@ extern "C" void Java_org_linphone_core_LinphoneProxyConfigImpl_setExpires(JNIEnv
 extern "C" jint Java_org_linphone_core_LinphoneCallImpl_getDuration(JNIEnv*  env,jobject thiz,jlong ptr) {
 	linphone_call_get_duration((LinphoneCall *) ptr);
 }
-	
+
 extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getSignalingTransportPort(JNIEnv* env,jobject thiz,jlong ptr, jint code) {
 	LCSipTransports tr;
 	linphone_core_get_sip_transports((LinphoneCore *) ptr, &tr);
@@ -1289,7 +1306,7 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setSignalingTransportPor
 	tr.udp_port = udp;
 	tr.tcp_port = tcp;
 	tr.tls_port = tls;
-	
+
 	linphone_core_set_sip_transports(lc, &tr); // tr will be copied
 }
 
@@ -1334,6 +1351,25 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setZrtpSecretsCache(JNIE
 	}
 }
 
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_setVideoDevice(JNIEnv *env,jobject thiz,jlong pCore,jint id) {
+	LinphoneCore* lc = (LinphoneCore *) pCore;
+	const char** devices = linphone_core_get_video_devices(lc);
+	if (devices == NULL) {
+		ms_error("No existing video devices\n");
+		return -1;
+	}
+	int i;
+	for(i=0; i<=id; i++) {
+		if (devices[i] == NULL)
+			break;
+		ms_message("Existing device %d : %s\n", i, devices[i]);
+		if (i==id) {
+			return linphone_core_set_video_device(lc, devices[i]);
+		}
+	}
+	return -1;
+}
+
 extern "C" jstring Java_org_linphone_core_LinphoneCallImpl_getAuthenticationToken(JNIEnv*  env,jobject thiz,jlong ptr) {
 	LinphoneCall *call = (LinphoneCall *) ptr;
 	const char* token = linphone_call_get_authentication_token(call);
@@ -1356,4 +1392,3 @@ extern "C" void Java_org_linphone_LinphoneManager_hackSpeakerState(JNIEnv*  env,
 	msandroid_hack_speaker_state(speakerOn);
 // End Galaxy S hack functions
 }
-
