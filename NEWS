@@ -1,3 +1,11 @@
+linphone-3.5.0 -- future date
+	* added VP-8 video codec
+	* UI: call history tab, menu simplified
+	* UI: cosmetics for incall views
+	* UI: integration with libnotify
+	* UI: show registered SIP accounts
+	* Fixes for MacOS X, and uses GtkQuartz engine
+
 linphone-3.4.3 -- March 28, 2011
 	* Fully ported to mac os x with gtk-osx (menu integration, bundle generation with "make bundle", sound I/O improved) but still audio only
 	* Fix stupid warning "no response" that sometimes arrived at end of calls

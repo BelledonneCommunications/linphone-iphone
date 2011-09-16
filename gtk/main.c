@@ -945,6 +945,7 @@ static void linphone_gtk_display_url(LinphoneCore *lc, const char *msg, const ch
 static void linphone_gtk_call_log_updated(LinphoneCore *lc, LinphoneCallLog *cl){
 	GtkWidget *w=(GtkWidget*)g_object_get_data(G_OBJECT(linphone_gtk_get_main_window()),"call_logs");
 	if (w) linphone_gtk_call_log_update(w);
+	linphone_gtk_call_log_update(linphone_gtk_get_main_window());
 }
 
 #ifdef HAVE_NOTIFY
@@ -1363,11 +1364,13 @@ static void linphone_gtk_configure_main_window(){
 		g_object_set_data(G_OBJECT(menu_item),"home",tmp);
 	}
 	{
+		/*
 		GdkPixbuf *pbuf=create_pixbuf("contact-orange.png");
 		if (pbuf) {
 			gtk_image_set_from_pixbuf(GTK_IMAGE(linphone_gtk_get_widget(w,"contact_tab_icon")),pbuf);
 			g_object_unref(G_OBJECT(pbuf));
 		}
+		*/
 	}
 	{
 		GdkPixbuf *pbuf=create_pixbuf("dialer-orange.png");
@@ -1442,7 +1445,8 @@ static void linphone_gtk_init_main_window(){
 	linphone_gtk_show_friends();
 	linphone_gtk_connect_digits();
 	main_window=linphone_gtk_get_main_window();
-
+	linphone_gtk_call_log_update(main_window);
+	
 	linphone_gtk_update_call_buttons (NULL);
 	/*prevent the main window from being destroyed by a user click on WM controls, instead we hide it*/
 	g_signal_connect (G_OBJECT (main_window), "delete-event",
