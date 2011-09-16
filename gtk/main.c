@@ -981,6 +981,46 @@ static void linphone_gtk_call_state_changed(LinphoneCore *lc, LinphoneCall *call
 	linphone_gtk_update_call_buttons (call);
 }
 
+static void update_registration_status(LinphoneProxyConfig *cfg, LinphoneRegistrationState rs){
+	GtkComboBox *box=GTK_COMBO_BOX(linphone_gtk_get_widget(linphone_gtk_get_main_window(),"identities"));
+	GtkTreeModel *model=gtk_combo_box_get_model(box);
+	GtkTreeIter iter;
+	gboolean found=FALSE;
+	const char *stock_id=NULL;
+	
+	if (gtk_tree_model_get_iter_first(model,&iter)){
+		gpointer p;
+		do{
+			gtk_tree_model_get(model,&iter,2,&p,-1);
+			if (p==cfg) {
+				found=TRUE;
+				break;
+			}
+		}while(gtk_tree_model_iter_next(model,&iter));
+	}
+	if (!found) {
+		g_warning("Could not find proxy config in combo box of identities.");
+		return;
+	}
+	switch (rs){
+		case LinphoneRegistrationOk:
+			stock_id=GTK_STOCK_YES;
+		break;
+		case LinphoneRegistrationProgress:
+			stock_id=GTK_STOCK_REFRESH;
+		break;
+		case LinphoneRegistrationCleared:
+			stock_id=NULL;
+		break;
+		case LinphoneRegistrationFailed:
+			stock_id=GTK_STOCK_DIALOG_WARNING;
+		break;
+		default:
+		break;
+	}
+	gtk_list_store_set(GTK_LIST_STORE(model),&iter,1,stock_id,-1);
+}
+
 static void linphone_gtk_registration_state_changed(LinphoneCore *lc, LinphoneProxyConfig *cfg, 
                                                     LinphoneRegistrationState rs, const char *msg){
 	switch (rs){
@@ -995,6 +1035,7 @@ static void linphone_gtk_registration_state_changed(LinphoneCore *lc, LinphonePr
 		default:
 		break;
 	}
+	update_registration_status(cfg,rs);
 }
 
 
@@ -1074,6 +1115,19 @@ static void linphone_gtk_init_status_icon(){
 	g_object_weak_ref(G_OBJECT(icon),(GWeakNotify)gtk_widget_destroy,menu);
 }
 
+static void init_identity_combo(GtkComboBox *box){
+	GtkListStore *store;
+	GtkCellRenderer *r1,*r2;
+	store=gtk_list_store_new(3,G_TYPE_STRING,G_TYPE_STRING,G_TYPE_POINTER);
+	gtk_cell_layout_clear(GTK_CELL_LAYOUT(box));
+	gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(box),(r1=gtk_cell_renderer_text_new()),TRUE);
+	gtk_cell_layout_pack_end(GTK_CELL_LAYOUT(box),(r2=gtk_cell_renderer_pixbuf_new()),FALSE);
+	gtk_cell_layout_add_attribute(GTK_CELL_LAYOUT(box),r1,"text",0);
+	gtk_cell_layout_add_attribute(GTK_CELL_LAYOUT(box),r2,"stock-id",1);
+	g_object_set(G_OBJECT(r1),"ellipsize",PANGO_ELLIPSIZE_END,NULL);
+	gtk_combo_box_set_model(box,GTK_TREE_MODEL(store));
+}
+
 void linphone_gtk_load_identities(void){
 	const MSList *elem;
 	GtkComboBox *box=GTK_COMBO_BOX(linphone_gtk_get_widget(linphone_gtk_get_main_window(),"identities"));
@@ -1081,19 +1135,28 @@ void linphone_gtk_load_identities(void){
 	LinphoneProxyConfig *def=NULL;
 	int def_index=0,i;
 	GtkListStore *store;
+	GtkTreeIter iter;
 
 	store=GTK_LIST_STORE(gtk_combo_box_get_model(box));
+	if (gtk_tree_model_get_n_columns(GTK_TREE_MODEL(store))==1){
+		/* model is empty, this is the first time we go here */
+		init_identity_combo(box);
+		store=GTK_LIST_STORE(gtk_combo_box_get_model(box));
+	}
 	gtk_list_store_clear(store);
-
 	linphone_core_get_default_proxy(linphone_gtk_get_core(),&def);
 	def_identity=g_strdup_printf(_("%s (Default)"),linphone_core_get_primary_contact(linphone_gtk_get_core()));
-	gtk_combo_box_append_text(box,def_identity);
+	gtk_list_store_append(store,&iter);
+	gtk_list_store_set(store,&iter,0,def_identity,1,NULL,2,NULL,-1);
 	g_free(def_identity);
 	for(i=1,elem=linphone_core_get_proxy_config_list(linphone_gtk_get_core());
 			elem!=NULL;
 			elem=ms_list_next(elem),i++){
 		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
-		gtk_combo_box_append_text(box,linphone_proxy_config_get_identity(cfg));
+		gtk_list_store_append(store,&iter);
+		gtk_list_store_set(store,&iter,0,linphone_proxy_config_get_identity(cfg),1,
+		                   linphone_proxy_config_is_registered(cfg) ? GTK_STOCK_YES : NULL,
+		                   2,cfg,-1);
 		if (cfg==def) {
 			def_index=i;
 		}

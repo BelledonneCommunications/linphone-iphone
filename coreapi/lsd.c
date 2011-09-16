@@ -215,7 +215,7 @@ bool_t lsd_player_loop_enabled(const LsdPlayer *p){
 void lsd_player_set_gain(LsdPlayer *p, float gain){
 	MSAudioMixerCtl gainctl;
 	gainctl.pin=p->mixer_pin;
-	gainctl.gain=gain;
+	gainctl.param.gain=gain;
 	ms_filter_call_method(p->lsd->mixer,MS_AUDIO_MIXER_SET_INPUT_GAIN,&gainctl);
 }
 

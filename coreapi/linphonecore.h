@@ -68,7 +68,7 @@ typedef struct _LCSipTransports LCSipTransports;
  * The LinphoneAddress has methods to extract and manipulate all parts of the address.
  * When some part of the address (for example the username) is empty, the accessor methods
  * return NULL.
- * 
+ *
  * @ingroup linphone_address
  * @var LinphoneAddress
  */
@@ -128,7 +128,7 @@ typedef enum _LinphoneCallDir LinphoneCallDir;
  * Enum representing the status of a call
  * @ingroup call_logs
 **/
-typedef enum _LinphoneCallStatus { 
+typedef enum _LinphoneCallStatus {
 	LinphoneCallSuccess, /**< The call was sucessful*/
 	LinphoneCallAborted, /**< The call was aborted */
 	LinphoneCallMissed, /**< The call was missed (unanswered)*/
@@ -139,7 +139,7 @@ typedef enum _LinphoneCallStatus {
  * Structure representing a call log.
  *
  * @ingroup call_logs
- * 
+ *
 **/
 typedef struct _LinphoneCallLog{
 	LinphoneCallDir dir; /**< The direction of the call*/
@@ -170,7 +170,7 @@ char * linphone_call_log_to_str(LinphoneCallLog *cl);
 
 /**
  * The LinphoneCallParams is an object containing various call related parameters.
- * It can be used to retrieve parameters from a currently running call or modify the call's characteristics 
+ * It can be used to retrieve parameters from a currently running call or modify the call's characteristics
  * dynamically.
 **/
 struct _LinphoneCallParams;
@@ -430,15 +430,15 @@ struct _LinphoneAuthInfo;
  * different SIP domains.
  *
  * Once created and filled, a LinphoneAuthInfo must be added to the LinphoneCore in
- * order to become known and used automatically when needed. 
+ * order to become known and used automatically when needed.
  * Use linphone_core_add_auth_info() for that purpose.
  *
  * The LinphoneCore object can take the initiative to request authentication information
  * when needed to the application through the auth_info_requested callback of the
  * LinphoneCoreVTable structure.
  *
- * The application can respond to this information request later using 
- * linphone_core_add_auth_info(). This will unblock all pending authentication 
+ * The application can respond to this information request later using
+ * linphone_core_add_auth_info(). This will unblock all pending authentication
  * transactions and retry them with authentication headers.
  *
 **/
@@ -833,7 +833,7 @@ const char * linphone_core_get_relay_addr(const LinphoneCore *lc);
 int linphone_core_set_relay_addr(LinphoneCore *lc, const char *addr);
 
 /* sound functions */
-/* returns a null terminated static array of string describing the sound devices */ 
+/* returns a null terminated static array of string describing the sound devices */
 const char**  linphone_core_get_sound_devices(LinphoneCore *lc);
 bool_t linphone_core_sound_device_can_capture(LinphoneCore *lc, const char *device);
 bool_t linphone_core_sound_device_can_playback(LinphoneCore *lc, const char *device);
@@ -914,7 +914,7 @@ void linphone_core_enable_self_view(LinphoneCore *lc, bool_t val);
 bool_t linphone_core_self_view_enabled(const LinphoneCore *lc);
 
 
-/* returns a null terminated static array of string describing the webcams */ 
+/* returns a null terminated static array of string describing the webcams */
 const char**  linphone_core_get_video_devices(const LinphoneCore *lc);
 int linphone_core_set_video_device(LinphoneCore *lc, const char *id);
 const char *linphone_core_get_video_device(const LinphoneCore *lc);
@@ -934,6 +934,7 @@ unsigned long linphone_core_get_native_preview_window_id(const LinphoneCore *lc)
 void linphone_core_set_native_preview_window_id(LinphoneCore *lc, unsigned long id);
 
 void linphone_core_use_preview_window(LinphoneCore *lc, bool_t yesno);
+void linphone_core_set_device_rotation(LinphoneCore *lc, int rotation);
 
 /*play/record support: use files instead of soundcard*/
 void linphone_core_use_files(LinphoneCore *lc, bool_t yesno);
@@ -1011,7 +1012,7 @@ LinphoneGlobalState linphone_core_get_global_state(const LinphoneCore *lc);
  * force registration refresh to be initiated upon next iterate
  * @ingroup proxies
  */
-void linphone_core_refresh_registers(LinphoneCore* lc);	
+void linphone_core_refresh_registers(LinphoneCore* lc);
 
 
 void linphone_call_send_vfu_request(LinphoneCall *call);

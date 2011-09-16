@@ -21,7 +21,7 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
- 
+
 #ifndef _PRIVATE_H
 #define _PRIVATE_H
 
@@ -34,11 +34,11 @@
 #endif
 #include "mediastreamer2/mediastream.h"
 
-#ifndef LIBLINPHONE_VERSION 
+#ifndef LIBLINPHONE_VERSION
 #define LIBLINPHONE_VERSION LINPHONE_VERSION
 #endif
 
-#ifndef PACKAGE_SOUND_DIR 
+#ifndef PACKAGE_SOUND_DIR
 #define PACKAGE_SOUND_DIR "."
 #endif
 
@@ -247,7 +247,7 @@ struct _LinphoneProxyConfig
 	LinphoneReason error;
 };
 
-struct _LinphoneAuthInfo 
+struct _LinphoneAuthInfo
 {
 	char *username;
 	char *realm;
@@ -280,7 +280,7 @@ struct _LinphoneFriend{
 	bool_t subscribe_active;
 	bool_t inc_subscribe_pending;
 	bool_t commit;
-};	
+};
 
 
 typedef struct sip_config
@@ -310,7 +310,7 @@ typedef struct rtp_config
 	int audio_jitt_comp;  /*jitter compensation*/
 	int video_jitt_comp;  /*jitter compensation*/
 	int nortp_timeout;
-	bool_t rtp_no_xmit_on_audio_mute;                              
+	bool_t rtp_no_xmit_on_audio_mute;
                               /* stop rtp xmit when audio muted */
 }rtp_config_t;
 
@@ -447,6 +447,7 @@ struct _LinphoneCore
 	bool_t auto_net_state_mon;
 	bool_t network_reachable;
 	bool_t use_preview_window;
+	int device_rotation;
 	bool_t ringstream_autorelease;
 	char* zrtp_secrets_cache;
 };

@@ -474,6 +474,11 @@ public interface LinphoneCore {
 	
 	void setVideoWindow(Object w);
 	void setPreviewWindow(Object w);
+	void setDeviceRotation(int rotation);
+	
+	void setVideoDevice(int id);
+	int getVideoDevice();
+	
 	/**
 	 * Enables video globally.
 	 *

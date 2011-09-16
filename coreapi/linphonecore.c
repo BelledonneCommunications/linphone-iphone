@@ -67,7 +67,7 @@ int lc_callback_obj_invoke(LCCallbackObj *obj, LinphoneCore *lc){
 	return 0;
 }
 
-		
+
 /*prevent a gcc bug with %c*/
 static size_t my_strftime(char *s, size_t max, const char  *fmt,  const struct tm *tm){
 #if !defined(_WIN32_WCE)
@@ -109,7 +109,7 @@ void call_logs_write_to_config_file(LinphoneCore *lc){
 	LpConfig *cfg=lc->config;
 
 	if (linphone_core_get_global_state (lc)==LinphoneGlobalStartup) return;
-	
+
 	for(i=0,elem=lc->call_logs;elem!=NULL;elem=elem->next,++i){
 		LinphoneCallLog *cl=(LinphoneCallLog*)elem->data;
 		snprintf(logsection,sizeof(logsection),"call_log_%i",i);
@@ -154,7 +154,7 @@ static void call_logs_read_from_config_file(LinphoneCore *lc){
 			if (tmp) cl->refkey=ms_strdup(tmp);
 			cl->quality=lp_config_get_float(cfg,logsection,"quality",-1);
 			lc->call_logs=ms_list_append(lc->call_logs,cl);
-		}else break;	
+		}else break;
 	}
 }
 
@@ -167,7 +167,7 @@ static void call_logs_read_from_config_file(LinphoneCore *lc){
 
 /**
  * Returns a human readable string describing the call.
- * 
+ *
  * @note: the returned char* must be freed by the application (use ms_free()).
 **/
 char * linphone_call_log_to_str(LinphoneCallLog *cl){
@@ -203,7 +203,7 @@ char * linphone_call_log_to_str(LinphoneCallLog *cl){
 
 /**
  * Returns RTP statistics computed locally regarding the call.
- * 
+ *
 **/
 const rtp_stats_t *linphone_call_log_get_local_stats(const LinphoneCallLog *cl){
 	return &cl->local_stats;
@@ -293,7 +293,7 @@ const LinphoneAddress *linphone_core_get_current_call_remote_address(struct _Lin
  * @ingroup misc
  *
  * @param file a C FILE* where to fprintf logs. If null stdout is used.
- * 
+ *
 **/
 void linphone_core_enable_logs(FILE *file){
 	if (file==NULL) file=stdout;
@@ -308,7 +308,7 @@ void linphone_core_enable_logs(FILE *file){
  *
  * @param logfunc The address of a OrtpLogFunc callback whose protoype is
  *            	  typedef void (*OrtpLogFunc)(OrtpLogLevel lev, const char *fmt, va_list args);
- * 
+ *
 **/
 void linphone_core_enable_logs_with_cb(OrtpLogFunc logfunc){
 	ortp_set_log_level_mask(ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
@@ -433,7 +433,7 @@ static void sound_config_read(LinphoneCore *lc)
 	lc->sound_conf.latency=0;
 #if !defined(TARGET_OS_IPHONE) && !defined(ANDROID)
     tmp=TRUE;
-#else 
+#else
     tmp=FALSE;
 #endif
     tmp=lp_config_get_int(lc->config,"sound","echocancellation",tmp);
@@ -546,7 +546,7 @@ static void sip_config_read(LinphoneCore *lc)
 			break;
 		}
 	}
-	
+
 	/*for tuning or test*/
 	lc->sip_conf.sdp_200_ack=lp_config_get_int(lc->config,"sip","sdp_200_ack",0);
 	lc->sip_conf.register_only_when_network_is_up=
@@ -581,7 +581,7 @@ static void rtp_config_read(LinphoneCore *lc)
 	nortp_timeout=lp_config_get_int(lc->config,"rtp","nortp_timeout",30);
 	linphone_core_set_nortp_timeout(lc,nortp_timeout);
 	rtp_no_xmit_on_audio_mute=lp_config_get_int(lc->config,"rtp","rtp_no_xmit_on_audio_mute",FALSE);
-	linphone_core_set_rtp_no_xmit_on_audio_mute(lc,rtp_no_xmit_on_audio_mute);	
+	linphone_core_set_rtp_no_xmit_on_audio_mute(lc,rtp_no_xmit_on_audio_mute);
 }
 
 static PayloadType * find_payload(RtpProfile *prof, const char *mime_type, int clock_rate, const char *recv_fmtp){
@@ -673,7 +673,7 @@ static MSList *add_missing_codecs(SalStreamType mtype, MSList *l){
 		if (pt){
 			if (mtype==SalVideo && pt->type!=PAYLOAD_VIDEO)
 				pt=NULL;
-			else if (mtype==SalAudio && (pt->type!=PAYLOAD_AUDIO_PACKETIZED 
+			else if (mtype==SalAudio && (pt->type!=PAYLOAD_AUDIO_PACKETIZED
 			    && pt->type!=PAYLOAD_AUDIO_CONTINUOUS)){
 				pt=NULL;
 			}
@@ -963,13 +963,13 @@ static void misc_config_read (LinphoneCore *lc) {
     lc->max_call_logs=lp_config_get_int(config,"misc","history_max_size",15);
 }
 
-static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vtable, const char *config_path, 
+static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vtable, const char *config_path,
     const char *factory_config_path, void * userdata)
 {
 	memset (lc, 0, sizeof (LinphoneCore));
 	lc->data=userdata;
 	lc->ringstream_autorelease=TRUE;
-	
+
 	memcpy(&lc->vtable,vtable,sizeof(LinphoneCoreVTable));
 
 	linphone_core_set_state(lc,LinphoneGlobalStartup,"Starting up");
@@ -1041,7 +1041,7 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	lc->sal=sal_init();
 	sal_set_user_pointer(lc->sal,lc);
 	sal_set_callbacks(lc->sal,&linphone_sal_callbacks);
-	
+
 	sip_setup_register_all();
 	sound_config_read(lc);
 	net_config_read(lc);
@@ -1062,7 +1062,7 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 /**
  * Instanciates a LinphoneCore object.
  * @ingroup initializing
- * 
+ *
  * The LinphoneCore object is the primary handle for doing all phone actions.
  * It should be unique within your application.
  * @param vtable a LinphoneCoreVTable structure holding your application callbacks
@@ -1070,13 +1070,13 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
  *        The config file is used to store all settings, call logs, friends, proxies... so that all these settings
  *	       become persistent over the life of the LinphoneCore object.
  *	       It is allowed to set a NULL config file. In that case LinphoneCore will not store any settings.
- * @param factory_config_path a path to a read-only config file that can be used to 
+ * @param factory_config_path a path to a read-only config file that can be used to
  *        to store hard-coded preference such as proxy settings or internal preferences.
  *        The settings in this factory file always override the one in the normal config file.
  *        It is OPTIONAL, use NULL if unneeded.
  * @param userdata an opaque user pointer that can be retrieved at any time (for example in
  *        callbacks) using linphone_core_get_user_data().
- * 
+ *
 **/
 LinphoneCore *linphone_core_new(const LinphoneCoreVTable *vtable,
 						const char *config_path, const char *factory_config_path, void * userdata)
@@ -1185,7 +1185,7 @@ static void update_primary_contact(LinphoneCore *lc){
 **/
 const char *linphone_core_get_primary_contact(LinphoneCore *lc){
 	char *identity;
-	
+
 	if (lc->sip_conf.guess_hostname){
 		if (lc->sip_conf.guessed_contact==NULL || lc->sip_conf.loopback_only){
 			update_primary_contact(lc);
@@ -1340,7 +1340,7 @@ void linphone_core_set_video_port(LinphoneCore *lc, int port){
 
 /**
  * Sets the no-rtp timeout value in seconds.
- * 
+ *
  * @ingroup media_parameters
  * See linphone_core_get_nortp_timeout() for details.
 **/
@@ -1485,11 +1485,11 @@ static int apply_transports(LinphoneCore *lc){
  * @ingroup network_parameters
 **/
 int linphone_core_set_sip_transports(LinphoneCore *lc, const LCSipTransports * tr){
-	
+
 	if (transports_unchanged(tr,&lc->sip_conf.transports))
 		return 0;
 	memcpy(&lc->sip_conf.transports,tr,sizeof(*tr));
-	
+
 	if (lc->sal==NULL) return 0;
 	return apply_transports(lc);
 }
@@ -1704,7 +1704,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 		lc_callback_obj_invoke(&lc->preview_finished_cb,lc);
 	}
 
-	if (lc->ringstream && lc->ringstream_autorelease && lc->dmfs_playing_start_time!=0 
+	if (lc->ringstream && lc->ringstream_autorelease && lc->dmfs_playing_start_time!=0
 	    && (curtime-lc->dmfs_playing_start_time)>5){
 		ring_stop(lc->ringstream);
 		lc->ringstream=NULL;
@@ -1776,7 +1776,7 @@ void linphone_core_iterate(LinphoneCore *lc){
  *   configuration, eventually escape the '+' by 00.
  * - if no domain part is supplied, append the domain name of the default proxy
  * - if no sip: is present, prepend it
- * 
+ *
  * The result is a syntaxically correct SIP address.
 **/
 
@@ -1786,7 +1786,7 @@ LinphoneAddress * linphone_core_interpret_url(LinphoneCore *lc, const char *url)
 	LinphoneProxyConfig *proxy=lc->default_proxy;;
 	char *tmpurl;
 	LinphoneAddress *uri;
-	
+
 	if (is_enum(url,&enum_domain)){
 		if (lc->vtable.display_status!=NULL)
 			lc->vtable.display_status(lc,_("Looking for telephone number destination..."));
@@ -1814,7 +1814,7 @@ LinphoneAddress * linphone_core_interpret_url(LinphoneCore *lc, const char *url)
 				return uri;
 			}
 		}
-		
+
 		if (proxy!=NULL){
 			/* append the proxy domain suffix */
 			const char *identity=linphone_proxy_config_get_identity(proxy);
@@ -1940,9 +1940,9 @@ static char *get_fixed_contact(LinphoneCore *lc, LinphoneCall *call , LinphonePr
 			return ms_strdup(fixed_contact);
 		}
 	}
-	
+
 	ctt=linphone_core_get_primary_contact_parsed(lc);
-	
+
 	if (ctt!=NULL){
 		char *ret;
 		/*otherwise use supllied localip*/
@@ -1961,17 +1961,17 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, LinphonePro
 	char *contact;
 	char *real_url,*barmsg;
 	char *from;
-	
+
 	/*try to be best-effort in giving real local or routable contact address */
 	contact=get_fixed_contact(lc,call,dest_proxy);
 	if (contact){
 		sal_op_set_contact(call->op, contact);
 		ms_free(contact);
 	}
-	
+
 	//TODO : should probably not be done here
 	linphone_call_init_media_streams(call);
-	if (!lc->sip_conf.sdp_200_ack){	
+	if (!lc->sip_conf.sdp_200_ack){
 		call->media_pending=TRUE;
 		sal_call_set_local_media_description(call->op,call->localdesc);
 	}
@@ -1987,7 +1987,7 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, LinphonePro
 	if (lc->vtable.display_status!=NULL)
 		lc->vtable.display_status(lc,barmsg);
 	ms_free(barmsg);
-	
+
 	if (err<0){
 		if (lc->vtable.display_status!=NULL)
 			lc->vtable.display_status(lc,_("Could not call"));
@@ -2052,7 +2052,7 @@ LinphoneCall * linphone_core_invite_with_params(LinphoneCore *lc, const char *ur
  * @ingroup call_control
  * @param lc the LinphoneCore object
  * @param addr the destination of the call (sip address).
- * 
+ *
  * The LinphoneAddress can be constructed directly using linphone_address_new(), or
  * created by linphone_core_interpret_url().
  * The application doesn't own a reference to the returned LinphoneCall object.
@@ -2076,7 +2076,7 @@ LinphoneCall * linphone_core_invite_address(LinphoneCore *lc, const LinphoneAddr
  * @param lc the LinphoneCore object
  * @param addr the destination of the call (sip address).
 	@param params call parameters
- * 
+ *
  * The LinphoneAddress can be constructed directly using linphone_address_new(), or
  * created by linphone_core_interpret_url().
  * The application doesn't own a reference to the returned LinphoneCall object.
@@ -2093,7 +2093,7 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	char *real_url=NULL;
 	LinphoneProxyConfig *dest_proxy=NULL;
 	LinphoneCall *call;
-	
+
 	if (linphone_core_in_call(lc)){
 		if (lc->vtable.display_warning)
 			lc->vtable.display_warning(lc,_("Sorry, you have to pause or stop the current call first !"));
@@ -2106,7 +2106,7 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	}
 	linphone_core_get_default_proxy(lc,&proxy);
 	route=linphone_core_get_route(lc);
-	
+
 	real_url=linphone_address_as_string(addr);
 	dest_proxy=linphone_core_lookup_known_proxy(lc,addr);
 
@@ -2127,7 +2127,7 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 
 	call=linphone_call_new_outgoing(lc,parsed_url2,linphone_address_clone(addr),params);
 	sal_op_set_route(call->op,route);
-	
+
 	if(linphone_core_add_call(lc,call)!= 0)
 	{
 		ms_warning("we had a problem in adding the call into the invite ... weird");
@@ -2146,7 +2146,7 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 		sal_op_set_user_pointer(call->ping_op,call);
 		call->start_time=time(NULL);
 	}
-	
+
 	if (real_url!=NULL) ms_free(real_url);
 	return call;
 }
@@ -2252,7 +2252,7 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
  * this method.
  * @param lc the LinphoneCore object
  * @param call the LinphoneCall object representing the call to be answered.
- * 
+ *
 **/
 int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call)
 {
@@ -2260,7 +2260,7 @@ int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call)
 	const char *contact=NULL;
 	SalOp *replaced;
 	SalMediaDescription *new_md;
-	
+
 	if (call==NULL){
 		//if just one call is present answer the only one ...
 		if(linphone_core_get_calls_nb (lc) != 1)
@@ -2273,7 +2273,7 @@ int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call)
 		/*call already accepted*/
 		return -1;
 	}
-	
+
 	/* check if this call is supposed to replace an already running one*/
 	replaced=sal_call_get_replaces(call->op);
 	if (replaced){
@@ -2289,7 +2289,7 @@ int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call)
 		ms_warning("Cannot accept this call, there is already one running.");
 		return -1;
 	}
-	
+
 	/*can accept a new call only if others are on hold */
 	{
 		MSList *elem;
@@ -2309,7 +2309,7 @@ int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call)
 		ms_message("ring stopped");
 		lc->ringstream=NULL;
 	}
-	
+
 	linphone_core_get_default_proxy(lc,&cfg);
 	dest_proxy=cfg;
 	dest_proxy=linphone_core_lookup_known_proxy(lc,call->log->to);
@@ -2325,7 +2325,7 @@ int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call)
 
 	if (call->audiostream==NULL)
 		linphone_call_init_media_streams(call);
-	
+
 	sal_call_accept(call->op);
 	if (lc->vtable.display_status!=NULL)
 		lc->vtable.display_status(lc,_("Connected."));
@@ -2336,7 +2336,7 @@ int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call)
 	if (new_md){
 		linphone_call_set_state(call,LinphoneCallStreamsRunning,"Connected (streams running)");
 	}else call->media_pending=TRUE;
-	
+
 	ms_message("call answered.");
 	return 0;
 }
@@ -2409,7 +2409,7 @@ int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *the_call)
 	}
 	sal_call_terminate(call->op);
 	terminate_call(lc,call);
-	
+
 	linphone_call_set_state(call,LinphoneCallEnd,"Call terminated");
 	return 0;
 }
@@ -2526,7 +2526,7 @@ int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *the_call)
 {
 	char temp[255]={0};
 	LinphoneCall *call = the_call;
-	
+
 	if(call->state!=LinphoneCallPaused ){
 		ms_warning("we cannot resume a call that has not been established and paused before");
 		return -1;
@@ -2544,7 +2544,7 @@ int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *the_call)
 	}
 	linphone_call_set_state (call,LinphoneCallResuming,"Resuming");
 	snprintf(temp,sizeof(temp)-1,"Resuming the call with %s",linphone_call_get_remote_address_as_string(call));
-	if (lc->vtable.display_status) 
+	if (lc->vtable.display_status)
 		lc->vtable.display_status(lc,temp);
 	return 0;
 }
@@ -2582,7 +2582,7 @@ int linphone_core_send_publish(LinphoneCore *lc,
  * Set the incoming call timeout in seconds.
  *
  * @ingroup call_control
- * If an incoming call isn't answered for this timeout period, it is 
+ * If an incoming call isn't answered for this timeout period, it is
  * automatically declined.
 **/
 void linphone_core_set_inc_timeout(LinphoneCore *lc, int seconds){
@@ -2604,7 +2604,7 @@ void linphone_core_set_presence_info(LinphoneCore *lc,int minutes_away,
 													LinphoneOnlineStatus presence_mode)
 {
 	if (minutes_away>0) lc->minutes_away=minutes_away;
-	
+
 	if (lc->alt_contact!=NULL) {
 		ms_free(lc->alt_contact);
 		lc->alt_contact=NULL;
@@ -3033,7 +3033,7 @@ void linphone_core_mute_mic(LinphoneCore *lc, bool_t val){
 	}
 	if (call->audiostream!=NULL){
 		audio_stream_set_mic_gain(call->audiostream,
-			(val==TRUE) ? 0 : lp_config_get_float(lc->config,"sound","mic_gain",1)); 
+			(val==TRUE) ? 0 : lp_config_get_float(lc->config,"sound","mic_gain",1));
 		if ( linphone_core_get_rtp_no_xmit_on_audio_mute(lc) ){
 			audio_stream_mute_rtp(call->audiostream,val);
 		}
@@ -3051,7 +3051,7 @@ bool_t linphone_core_is_mic_muted(LinphoneCore *lc) {
 }
 
 // returns rtp transmission status for an active stream
-// if audio is muted and config parameter rtp_no_xmit_on_audio_mute 
+// if audio is muted and config parameter rtp_no_xmit_on_audio_mute
 // was set on then rtp transmission is also muted
 bool_t linphone_core_is_rtp_muted(LinphoneCore *lc){
 	LinphoneCall *call=linphone_core_get_current_call(lc);
@@ -3163,8 +3163,8 @@ const char *linphone_core_get_nat_address_resolved(LinphoneCore *lc)
 		ipstring, sizeof(ipstring), NULL, 0, NI_NUMERICHOST);
 	if (error) {
 		return lc->net_conf.nat_address;
-	} 
-	
+	}
+
 	if (lc->net_conf.nat_address_ip!=NULL){
 		ms_free(lc->net_conf.nat_address_ip);
 	}
@@ -3392,7 +3392,7 @@ int linphone_core_set_static_picture_fps(LinphoneCore *lc, float fps) {
 	VideoStream *vs = NULL;
 
 	vs=get_active_video_stream(lc);
-	
+
 	/* If we have a video stream (either preview, either from call), we
 		 have a source and it is using the static picture filter, then
 		 force the filter to use that picture. */
@@ -3416,9 +3416,9 @@ float linphone_core_get_static_picture_fps(LinphoneCore *lc) {
 		 force the filter to use that picture. */
 	if (vs && vs->source) {
 		if (ms_filter_get_id(vs->source) == MS_STATIC_IMAGE_ID) {
-		  
+
 		        float fps;
-		  
+
 			ms_filter_call_method(vs->source, MS_FILTER_GET_FPS,(void *)&fps);
 			return fps;
 		}
@@ -3481,8 +3481,8 @@ unsigned long linphone_core_get_native_preview_window_id(const LinphoneCore *lc)
  * If not set the core will create its own window.
 **/
 void linphone_core_set_native_preview_window_id(LinphoneCore *lc, unsigned long id){
-#ifdef VIDEO_ENABLED
 	lc->preview_window_id=id;
+#ifdef VIDEO_ENABLED
 	LinphoneCall *call=linphone_core_get_current_call(lc);
 	if (call!=NULL && call->videostream){
 		video_stream_set_native_preview_window_id(call->videostream,id);
@@ -3497,6 +3497,24 @@ void linphone_core_set_native_preview_window_id(LinphoneCore *lc, unsigned long 
 **/
 void linphone_core_use_preview_window(LinphoneCore *lc, bool_t yesno){
 	lc->use_preview_window=yesno;
+}
+
+/**
+ * Tells the core the device current orientation. This can be used by capture filters
+ * on mobile devices to select between portrait/landscape mode and to produce properly
+ * orientated images. The exact meaning of the value in rotation if left to each device
+ * specific implementations.
+ *
+**/
+void linphone_core_set_device_rotation(LinphoneCore *lc, int rotation) {
+ms_message("%s : rotation=%d\n", __FUNCTION__, rotation);
+	lc->device_rotation = rotation;
+#ifdef VIDEO_ENABLED
+	LinphoneCall *call=linphone_core_get_current_call(lc);
+	if (call!=NULL && call->videostream){
+		video_stream_set_device_rotation(call->videostream,rotation);
+	}
+#endif
 }
 
 static MSVideoSizeDef supported_resolutions[]={
@@ -3606,7 +3624,7 @@ void linphone_core_use_files(LinphoneCore *lc, bool_t yesno){
 /**
  * Sets a wav file to be played when putting somebody on hold,
  * or when files are used instead of soundcards (see linphone_core_use_files()).
- * 
+ *
  * The file must be a 16 bit linear wav file.
 **/
 void linphone_core_set_play_file(LinphoneCore *lc, const char *file){
@@ -3626,7 +3644,7 @@ void linphone_core_set_play_file(LinphoneCore *lc, const char *file){
 /**
  * Sets a wav file where incoming stream is to be recorded,
  * when files are used instead of soundcards (see linphone_core_use_files()).
- * 
+ *
  * The file must be a 16 bit linear wav file.
 **/
 void linphone_core_set_record_file(LinphoneCore *lc, const char *file){
@@ -3769,7 +3787,7 @@ void linphone_core_set_video_transports(LinphoneCore *lc, RtpTransport *rtp, Rtp
  *
  * @returns 0 or -1 if no call is running.
 **/
- 
+
 int linphone_core_get_current_call_stats(LinphoneCore *lc, rtp_stats_t *local, rtp_stats_t *remote){
 	LinphoneCall *call=linphone_core_get_current_call (lc);
 	if (call!=NULL){
@@ -3800,7 +3818,7 @@ void net_config_uninit(LinphoneCore *lc)
 		ms_free(lc->net_conf.nat_address_ip);
 	}
 	lp_config_set_int(lc->config,"net","firewall_policy",config->firewall_policy);
-	lp_config_set_int(lc->config,"net","mtu",config->mtu);	
+	lp_config_set_int(lc->config,"net","mtu",config->mtu);
 }
 
 
@@ -3822,7 +3840,7 @@ void sip_config_uninit(LinphoneCore *lc)
 
 
 	lp_config_set_int(lc->config,"sip","default_proxy",linphone_core_get_default_proxy(lc,NULL));
-	
+
 	for(elem=config->proxies,i=0;elem!=NULL;elem=ms_list_next(elem),i++){
 		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)(elem->data);
 		linphone_proxy_config_write_to_config_file(lc->config,cfg,i);
@@ -3843,7 +3861,7 @@ void sip_config_uninit(LinphoneCore *lc)
 	ms_list_for_each(config->proxies,(void (*)(void*)) linphone_proxy_config_destroy);
 	ms_list_free(config->proxies);
 	config->proxies=NULL;
-	
+
 	linphone_proxy_config_write_to_config_file(lc->config,NULL,i);	/*mark the end */
 
 	for(elem=lc->auth_info,i=0;elem!=NULL;elem=ms_list_next(elem),i++){
@@ -3854,7 +3872,7 @@ void sip_config_uninit(LinphoneCore *lc)
 	ms_list_for_each(lc->auth_info,(void (*)(void*))linphone_auth_info_destroy);
 	ms_list_free(lc->auth_info);
 	lc->auth_info=NULL;
-	
+
 	sal_uninit(lc->sal);
 	lc->sal=NULL;
 
@@ -3862,7 +3880,7 @@ void sip_config_uninit(LinphoneCore *lc)
 		ms_free(lc->sip_conf.guessed_contact);
 	if (config->contact)
 		ms_free(config->contact);
-	
+
 }
 
 void rtp_config_uninit(LinphoneCore *lc)
@@ -3916,7 +3934,7 @@ void codecs_config_uninit(LinphoneCore *lc)
 	}
 	sprintf(key,"audio_codec_%i",index);
 	lp_config_clean_section (lc->config,key);
-	
+
 	index=0;
 	for(node=config->video_codecs;node!=NULL;node=ms_list_next(node)){
 		pt=(PayloadType*)(node->data);
@@ -3929,7 +3947,7 @@ void codecs_config_uninit(LinphoneCore *lc)
 	}
 	sprintf(key,"video_codec_%i",index);
 	lp_config_clean_section (lc->config,key);
-	
+
 	ms_list_free(lc->codecs_conf.audio_codecs);
 	ms_list_free(lc->codecs_conf.video_codecs);
 }
@@ -3947,9 +3965,9 @@ void ui_config_uninit(LinphoneCore* lc)
  * Returns the LpConfig object used to manage the storage (config) file.
  *
  * @ingroup misc
- * The application can use the LpConfig object to insert its own private 
+ * The application can use the LpConfig object to insert its own private
  * sections and pairs of key=value in the configuration file.
- * 
+ *
 **/
 LpConfig *linphone_core_get_config(LinphoneCore *lc){
 	return lc->config;
@@ -4096,9 +4114,9 @@ int linphone_core_del_call( LinphoneCore *lc, LinphoneCall *call)
 {
 	MSList *it;
 	MSList *the_calls = lc->calls;
-	
+
 	it=ms_list_find(the_calls,call);
-	if (it) 
+	if (it)
 	{
 		the_calls = ms_list_remove_link(the_calls,it);
 	}
@@ -4222,7 +4240,7 @@ void linphone_core_enable_keep_alive(LinphoneCore* lc,bool_t enable) {
 bool_t linphone_core_keep_alive_enabled(LinphoneCore* lc) {
 	return sal_get_keepalive_period(lc->sal) > 0;
 }
-	
+
 void linphone_core_start_dtmf_stream(LinphoneCore* lc) {
 	get_dtmf_gen(lc); /*make sure ring stream is started*/
 	lc->ringstream_autorelease=FALSE; /*disable autorelease mode*/
