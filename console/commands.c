@@ -102,6 +102,7 @@ static int lpc_cmd_vfureq(LinphoneCore *lc, char *arg);
 static int lpc_cmd_states(LinphoneCore *lc, char *args);
 static int lpc_cmd_identify(LinphoneCore *lc, char *args);
 static int lpc_cmd_ringback(LinphoneCore *lc, char *args);
+static int lpc_cmd_conference(LinphoneCore *lc, char *args);
 
 /* Command handler helpers */
 static void linphonec_proxy_add(LinphoneCore *lc);
@@ -122,8 +123,7 @@ static int linphonec_friend_delete(LinphoneCore *lc, int num);
 static void linphonec_codec_list(int type, LinphoneCore *lc);
 static void linphonec_codec_enable(int type, LinphoneCore *lc, int index);
 static void linphonec_codec_disable(int type, LinphoneCore *lc, int index);
-
-
+static void lpc_display_call_states(LinphoneCore *lc);
 
 /* Command table management */
 static LPC_COMMAND *lpc_find_command(const char *name);
@@ -183,6 +183,10 @@ static LPC_COMMAND commands[] = {
 		"'transfer <sip-uri>' : transfers the current active call to the destination sip-uri\n"
 		"'transfer <call id> <sip-uri>': transfers the call with 'id' to the destination sip-uri\n"
 		"'transfer <call id1> --to-call <call id2>': transfers the call with 'id1' to the destination of call 'id2' (attended transfer)\n"
+	},
+	{ "conference", lpc_cmd_conference, "Create and manage an audio conference.",
+		"'conference add <call id> : join the call with id 'call id' into the audio conference."
+		"'conference rm <call id> : remove the call with id 'call id' from the audio conference."
 	},
 	{ "mute", lpc_cmd_mute_mic, 
 	  "Mute microphone and suspend voice transmission."},
@@ -523,37 +527,6 @@ lpc_cmd_help(LinphoneCore *lc, char *arg)
 static char callee_name[256]={0};
 static char caller_name[256]={0};
 
-static const char *get_call_status(LinphoneCall *call){
-	switch(linphone_call_get_state(call)){
-		case LinphoneCallPaused:
-			if (linphone_call_get_refer_to (call)!=NULL){
-				return "Paused (transfered)";
-			}else{
-				return "Paused";
-			}
-		break;
-		case LinphoneCallPausedByRemote:
-			return "Paused by remote";
-		break;
-		case LinphoneCallIncomingReceived:
-			return "Pending";
-		break;
-		case LinphoneCallOutgoingInit:
-		case LinphoneCallOutgoingProgress:
-			return "Dialing out";
-		break;
-		case LinphoneCallOutgoingEarlyMedia:
-		case LinphoneCallOutgoingRinging:
-			return "Remote ringing";
-		break;
-		default:
-			if (linphone_call_has_transfer_pending(call)){
-				return "Running (transfer pending)";
-			}else
-				return "Running";
-	}
-	return "";
-}
 
 static int
 lpc_cmd_call(LinphoneCore *lc, char *args)
@@ -599,19 +572,7 @@ lpc_cmd_calls(LinphoneCore *lc, char *args){
 	const MSList *calls = linphone_core_get_calls(lc);
 	if(calls)
 	{
-		const MSList *p_calls = calls;
-		linphonec_out("ID\t\tDestination\t\t\t\tStatus\n---------------------------------------------------------------------\n");
-		while(p_calls != NULL)			
-		{
-			LinphoneCall *call=(LinphoneCall*)p_calls->data;
-			char *tmp=linphone_call_get_remote_address_as_string(call);
-			linphonec_out("%li\t%s\t\t\t%s\r\n",
-						  (long)linphone_call_get_user_pointer (call),
-					tmp,
-					get_call_status(call));
-			p_calls = p_calls->next;
-			ms_free(tmp);
-		}
+		lpc_display_call_states(lc);
 	}else
 	{
 		linphonec_out("No active call.\n");
@@ -1459,6 +1420,32 @@ static int lpc_cmd_resume(LinphoneCore *lc, char *args){
 	}
 	return 0;
     
+}
+
+static int lpc_cmd_conference(LinphoneCore *lc, char *args){
+	long id;
+	char subcommand[32]={0};
+	int n;
+	if (args==NULL) return 0;
+	n=sscanf(args, "%31s %li", subcommand,&id);
+	if (n == 2){
+		LinphoneCall *call=linphonec_get_call(id);
+		if (call==NULL) return 1;
+		if (strcmp(subcommand,"add")==0){
+			linphone_core_add_to_conference(lc,call);
+			return 1;
+		}else if (strcmp(subcommand,"rm")==0){
+			linphone_core_remove_from_conference(lc,call);
+			return 1;
+		}else if (strcmp(subcommand,"enter")==0){
+			linphone_core_enter_conference(lc);
+			return 1;
+		}else if (strcmp(subcommand,"leave")==0){
+			linphone_core_leave_conference(lc);
+			return 1;
+		}
+	}
+	return 0;
 }
 
 /***************************************************************************
@@ -2403,17 +2390,21 @@ static void lpc_display_call_states(LinphoneCore *lc){
 	const MSList *elem;
 	char *tmp;
 	linphonec_out("Call states\n"
-	              "Id |            Destination              |      State\n"
-	              "---------------------------------------------------------------\n");
+	              "Id |            Destination              |      State      |    Flags   |\n"
+	              "------------------------------------------------------------------------\n");
 	elem=linphone_core_get_calls(lc);
 	if (elem==NULL){
 		linphonec_out("(empty)\n");
 	}else{
 		for(;elem!=NULL;elem=elem->next){
+			const char *flag;
 			call=(LinphoneCall*)elem->data;
+			bool_t in_conference=linphone_call_params_local_conference_mode(linphone_call_get_current_params(call));
 			tmp=linphone_call_get_remote_address_as_string (call);
-			linphonec_out("%-2i | %-35s | %s\n",(int)(long)linphone_call_get_user_pointer(call),
-						  tmp,linphone_call_state_to_string(linphone_call_get_state(call)));
+			flag=in_conference ? "conferencing" : "";
+			flag=linphone_call_has_transfer_pending(call) ? "transfer pending" : flag;
+			linphonec_out("%-2i | %-35s | %-15s | %s\n",(int)(long)linphone_call_get_user_pointer(call),
+						  tmp,linphone_call_state_to_string(linphone_call_get_state(call))+strlen("LinphoneCall"),flag);
 			ms_free(tmp);
 		}
 	}

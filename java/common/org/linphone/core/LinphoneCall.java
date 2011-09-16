@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package org.linphone.core;
 
+import java.util.Vector;
 
 /**
  * Object representing a Call. calls are created using {@link LinphoneCore#invite(LinphoneAddress)} or passed to the application by listener {@link LinphoneCoreListener#callState(LinphoneCore, LinphoneCall, State, String)}
@@ -29,97 +30,113 @@ public interface LinphoneCall {
 	 * Linphone call states
 	 *
 	 */
-	enum State {
+	static class State {
+		@SuppressWarnings("unchecked")
+		static private Vector values = new Vector();
+		private final int mValue;
+		public final int value() {return mValue;}
+		public static final int ID_INCOMING_RECEIVED=1;
+		public static final int ID_OUTGOING_RINGING=4;
+		public static final int ID_STREAMS_RUNNING=7;
+		public static final int ID_PAUSED=9;
+		public static final int ID_CALL_END=13;
+		public static final int ID_PAUSED_BY_REMOTE=14;
+
+		private final String mStringValue;
 		/**
 		 * Idle
 		 */
-		Idle(0, "Idle"),
+		public final static State Idle = new State(0,"Idle");
 		/**
 		 * Incoming call received.
 		 */
-		IncomingReceived(1, "IncomingReceived"),
+		public final static State IncomingReceived = new State(ID_INCOMING_RECEIVED,"IncomingReceived");
 		/**
-		 * Outgoing call initialized.
+		 * Outgoing call initialiazed.
 		 */
-		OutgoingInit(2, "OutgoingInit"),
+		public final static State OutgoingInit = new State(2,"OutgoingInit");
 		/**
 		 * Outgoing call in progress. 
 		 */
-		OutgoingProgress(3, "OutgoingProgress"),
+		public final static State OutgoingProgress = new State(3,"OutgoingProgress");
 		/**
 		 * Outgoing call ringing.
 		 */
-		OutgoingRinging(4, "OutgoingRinging"),
+		public final static State OutgoingRinging = new State(ID_OUTGOING_RINGING,"OutgoingRinging");
 		/**
 		 * Outgoing call early media
 		 */
-		OutgoingEarlyMedia(5, "OutgoingEarlyMedia"),
+		public final static State OutgoingEarlyMedia = new State(5,"OutgoingEarlyMedia");
 		/**
 		 * Connected
 		 */
-		Connected(6, "Connected"),
+		public final static State Connected = new State(6,"Connected");
 		/**
 		 * Streams running
 		 */
-		StreamsRunning(7, "StreamsRunning"),
+		public final static State StreamsRunning = new State(ID_STREAMS_RUNNING,"StreamsRunning");
 		/**
 		 * Pausing
 		 */
-		Pausing(8, "Pausing"),
+		public final static State Pausing = new State(8,"Pausing");
 		/**
 		 * Paused
 		 */
-		Paused(9, "Paused"),
+		public final static State Paused = new State(ID_PAUSED,"Paused");
 		/**
 		 * Resuming
 		 */
-		Resuming(10, "Resuming"),
+		public final static State Resuming = new State(10,"Resuming");
 		/**
 		 * Refered
 		 */
-		Refered(11,"Refered"),
+		public final static State Refered = new State(11,"Refered");
 		/**
 		 * Error
 		 */
-		Error(12,"Error"),
+		public final static State Error = new State(12,"Error");
 		/**
 		 * Call end
 		 */
-		CallEnd(13,"CallEnd"),
+		public final static State CallEnd = new State(ID_CALL_END,"CallEnd");
+		
 		/**
 		 * Paused by remote
 		 */
-		PausedByRemote(14,"PausedByRemote"),
+		public final static State PausedByRemote = new State(ID_PAUSED_BY_REMOTE,"PausedByRemote");
+		
 		/**
 		 * The call's parameters are updated, used for example when video is asked by remote
 		 */
-		CallUpdatedByRemote(15, "CallUpdatedByRemote"),
+		public static final State CallUpdatedByRemote = new State(15, "CallUpdatedByRemote");
+
 		/**
 		 * We are proposing early media to an incoming call
 		 */
-		CallIncomingEarlyMedia(16,"CallIncomingEarlyMedia"),
+		public static final State CallIncomingEarlyMedia = new State(16,"CallIncomingEarlyMedia");
+
 		/**
 		 * The remote accepted the call update initiated by us
 		 */
-		CallUpdated(17, "CallUpdated"),
+		public static final State CallUpdated = new State(17, "CallUpdated");
+		
 		/**
 		 * The call object is now released.
 		 */
-		CallReleased(18,"CallReleased");
+		public static final State CallReleased = new State(18,"CallReleased");
 
-		
-		private final int mValue;
-		private final String mStringValue;
-		private State(int v, String desc) {
-			this.mValue = v;
-			this.mStringValue = desc;
+		@SuppressWarnings("unchecked")
+		private State(int value,String stringValue) {
+			mValue = value;
+			values.addElement(this);
+			mStringValue=stringValue;
 		}
 		
 		public static State fromInt(int value) {
-			State[] allStates = State.values();
-			for (int i=0; i<allStates.length;i++) {
-				if (allStates[i].mValue == value)
-					return allStates[i];
+
+			for (int i=0; i<values.size();i++) {
+				State state = (State) values.elementAt(i);
+				if (state.mValue == value) return state;
 			}
 			throw new RuntimeException("state not found ["+value+"]");
 		}
@@ -213,4 +230,5 @@ public interface LinphoneCall {
 	String getAuthenticationToken();
 	boolean isAuthenticationTokenVerified();
 	boolean areStreamsEncrypted();
+	boolean isInConference();
 }

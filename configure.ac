@@ -145,6 +145,28 @@ else
 	echo "GTK interface compilation is disabled."
 fi
 
+AC_ARG_ENABLE(notify,
+		[  --enable-notify=[yes/no]    Enable libnotify support [default=yes]],
+		[case "${enableval}" in
+		  yes) notify=true ;;
+		  no)  notify=false ;;
+		  *) AC_MSG_ERROR(bad value ${enableval} for --enable-notify) ;;
+		esac],[notify=true])
+
+dnl conditionnal build of the notify library
+if test "$gtk_ui" = "true" ; then
+	if test "$notify" = "true"; then
+		PKG_CHECK_MODULES([NOTIFY], [libnotify >= 0.7.0 ], [found_notify=yes], foo=bar)
+		case "$found_notify" in
+		  yes)
+				AC_SUBST(NOTIFY_CFLAGS)
+				AC_SUBST(NOTIFY_LIBS)
+				AC_DEFINE([HAVE_NOTIFY],[1],[NOTIFY support])
+		esac
+	else
+		echo "Libnotify support is disabled."
+	fi
+fi
 
 dnl os-specific problems not handled by existing macros.
 case "$host_os" in
