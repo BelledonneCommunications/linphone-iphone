@@ -1230,6 +1230,10 @@ extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_enableCamera(JNIEnv *en
 	linphone_call_enable_camera((LinphoneCall *)lc, (bool_t) b);
 }
 
+extern "C" jboolean Java_org_linphone_core_LinphoneCallImpl_cameraEnabled(JNIEnv *env, jobject thiz, jlong lc){
+	linphone_call_camera_enabled((LinphoneCall *)lc);
+}
+
 extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_inviteAddressWithParams(JNIEnv *env, jobject thiz, jlong lc, jlong addr, jlong params){
 	return (jlong) linphone_core_invite_address_with_params((LinphoneCore *)lc, (const LinphoneAddress *)addr, (const LinphoneCallParams *)params);
 }
@@ -1368,6 +1372,28 @@ extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_setVideoDevice(JNIEnv *e
 		}
 	}
 	return -1;
+}
+
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getVideoDevice(JNIEnv *env,jobject thiz,jlong pCore) {
+	LinphoneCore* lc = (LinphoneCore *) pCore;
+	const char** devices = linphone_core_get_video_devices(lc);
+	if (devices == NULL) {
+		ms_error("No existing video devices\n");
+		return -1;
+	}
+	const char* cam = linphone_core_get_video_device(lc);
+	if (cam == NULL) {
+		ms_error("No current video device\n");
+	} else {
+		int i=0;
+		while(devices[i] != NULL) {
+			if (strcmp(devices[i], cam) == 0)
+				return i;
+			i++;
+		}
+	}
+	ms_warning("Returning default (0) device\n");
+	return 0;
 }
 
 extern "C" jstring Java_org_linphone_core_LinphoneCallImpl_getAuthenticationToken(JNIEnv*  env,jobject thiz,jlong ptr) {

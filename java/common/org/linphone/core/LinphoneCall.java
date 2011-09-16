@@ -152,6 +152,8 @@ public interface LinphoneCall {
 	LinphoneCallParams getCurrentParamsCopy();
 	
 	void enableCamera(boolean enabled);
+	boolean cameraEnabled();
+	
 	/**
 	 * Enables or disable echo cancellation.
 	 * @param enable
