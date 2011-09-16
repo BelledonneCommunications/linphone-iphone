@@ -2313,7 +2313,6 @@ int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call)
 		ms_message("ring stopped");
 		lc->ringstream=NULL;
 	}
-	
 	linphone_core_get_default_proxy(lc,&cfg);
 	dest_proxy=cfg;
 	dest_proxy=linphone_core_lookup_known_proxy(lc,call->log->to);
@@ -2369,6 +2368,11 @@ static void terminate_call(LinphoneCore *lc, LinphoneCall *call){
 		ring_stop(lc->ringstream);
 		lc->ringstream=NULL;
 	}
+
+	/*stop any dtmf tone still playing */
+	ms_message("test");
+	linphone_core_stop_dtmf(lc);
+
 	linphone_call_stop_media_streams(call);
 	if (lc->vtable.display_status!=NULL)
 		lc->vtable.display_status(lc,_("Call ended") );
@@ -3682,6 +3686,25 @@ void linphone_core_play_dtmf(LinphoneCore *lc, char dtmf, int duration_ms){
 	if (duration_ms>0)
 		ms_filter_call_method(f, MS_DTMF_GEN_PLAY, &dtmf);
 	else ms_filter_call_method(f, MS_DTMF_GEN_START, &dtmf);
+}
+
+/**
+ * @ingroup media_parameters
+ * Plays a repeated tone to the local user until next further call to #linphone_core_stop_dtmf()
+ * @param lc #LinphoneCore
+**/
+void linphone_core_play_tone(LinphoneCore *lc){
+	MSFilter *f=get_dtmf_gen(lc);
+	MSDtmfGenCustomTone def;
+	if (f==NULL){
+		ms_error("No dtmf generator at this time !");
+		return;
+	}
+	def.duration=300;
+	def.frequency=500;
+	def.amplitude=1;
+	def.interval=800;
+	ms_filter_call_method(f, MS_DTMF_GEN_PLAY_CUSTOM,&def);
 }
 
 /**

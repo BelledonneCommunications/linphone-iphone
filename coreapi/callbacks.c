@@ -195,7 +195,8 @@ static void call_received(SalOp *h){
 			ms_message("the local ring is already started");
 		}
 	}else{
-		/*TODO : play a tone within the context of the current call */
+		/* play a tone within the context of the current call */
+		linphone_core_play_tone(lc);
 	}
 
 	
