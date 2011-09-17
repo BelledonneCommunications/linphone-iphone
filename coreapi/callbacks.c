@@ -682,12 +682,6 @@ static void subscribe_closed(SalOp *op, const char *from){
 	linphone_subscription_closed(lc,op);
 }
 
-static void internal_message(Sal *sal, const char *msg){
-	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal);
-	if (lc->vtable.show)
-		lc->vtable.show(lc);
-}
-
 static void ping_reply(SalOp *op){
 	LinphoneCall *call=(LinphoneCall*) sal_op_get_user_pointer(op);
 	ms_message("ping reply !");
@@ -723,7 +717,6 @@ SalCallbacks linphone_sal_callbacks={
 	notify_presence,
 	subscribe_received,
 	subscribe_closed,
-	internal_message,
 	ping_reply
 };
 

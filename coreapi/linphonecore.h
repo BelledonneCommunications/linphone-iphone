@@ -983,14 +983,6 @@ void *linphone_core_get_user_data(LinphoneCore *lc);
 the config file with your own sections */
 struct _LpConfig *linphone_core_get_config(LinphoneCore *lc);
 
-/* attempts to wake up another linphone engine already running.
-The "show" callback is called for the other linphone, causing gui to show up.
-call_addr is an optional sip-uri to call immediately after waking up.
-The method returns 0 if an already running linphone was found*/
-
-int linphone_core_wake_up_possible_already_running_instance(
-    const char * config_file, const char * call_addr);
-
 /*set a callback for some blocking operations, it takes you informed of the progress of the operation*/
 void linphone_core_set_waiting_callback(LinphoneCore *lc, LinphoneWaitingCallback cb, void *user_context);
 

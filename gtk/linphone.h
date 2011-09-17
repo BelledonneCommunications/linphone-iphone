@@ -72,8 +72,10 @@ void linphone_gtk_text_received(LinphoneCore *lc, LinphoneChatRoom *room, const 
 void linphone_gtk_call_log_update(GtkWidget *w);
 void linphone_gtk_create_log_window(void);
 void linphone_gtk_log_show(void);
+void linphone_gtk_show_main_window(void);
 void linphone_gtk_log_push(OrtpLogLevel lev, const char *fmt, va_list args);
 void linphone_gtk_destroy_log_window(void);
+void linphone_gtk_refer_received(LinphoneCore *lc, const char *refer_to);
 gboolean linphone_gtk_check_logs();
 void linphone_gtk_buddy_info_updated(LinphoneCore *lc, LinphoneFriend *lf);
 const gchar *linphone_gtk_get_ui_config(const char *key, const char *def);
@@ -112,4 +114,5 @@ void linphone_gtk_set_ui_config(const char *key, const char *value);
 
 void linphone_gtk_log_uninit();
 
-
+bool_t linphone_gtk_init_instance(const char *app_name, const char *addr_to_call);
+void linphone_gtk_uninit_instance(void);

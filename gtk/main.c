@@ -57,7 +57,6 @@ static void linphone_gtk_display_message(LinphoneCore *lc, const char *msg);
 static void linphone_gtk_display_warning(LinphoneCore *lc, const char *warning);
 static void linphone_gtk_display_url(LinphoneCore *lc, const char *msg, const char *url);
 static void linphone_gtk_call_log_updated(LinphoneCore *lc, LinphoneCallLog *cl);
-static void linphone_gtk_refer_received(LinphoneCore *lc, const char  *refer_to);
 static void linphone_gtk_call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cs, const char *msg);
 static gboolean linphone_gtk_auto_answer(LinphoneCall *call);
 static void linphone_gtk_status_icon_set_blinking(gboolean val);
@@ -628,7 +627,7 @@ static void completion_add_text(GtkEntry *entry, const char *text){
 }
 
 
-static void linphone_gtk_show_main_window(){
+void linphone_gtk_show_main_window(){
 	GtkWidget *w=linphone_gtk_get_main_window();
 	LinphoneCore *lc=linphone_gtk_get_core();
 	if (linphone_core_video_enabled(lc)){
@@ -1506,7 +1505,7 @@ void linphone_gtk_log_handler(OrtpLogLevel lev, const char *fmt, va_list args){
 }
 
 
-static void linphone_gtk_refer_received(LinphoneCore *lc, const char *refer_to){
+void linphone_gtk_refer_received(LinphoneCore *lc, const char *refer_to){
 	GtkEntry * uri_bar =GTK_ENTRY(linphone_gtk_get_widget(
 		linphone_gtk_get_main_window(), "uribar"));
 	char *text;
@@ -1526,6 +1525,7 @@ static void linphone_gtk_check_soundcards(){
 }
 
 static void linphone_gtk_quit(void){
+	linphone_gtk_uninit_instance();
 	gdk_threads_leave();
 	linphone_gtk_destroy_log_window();
 	linphone_core_destroy(the_core);
@@ -1559,6 +1559,7 @@ int main(int argc, char *argv[]){
 	const char *lang;
 	GtkSettings *settings;
 	GdkPixbuf *pbuf;
+	const char *app_name="Linphone";
 
 	g_thread_init(NULL);
 	gdk_threads_init();
@@ -1566,6 +1567,7 @@ int main(int argc, char *argv[]){
 	progpath = strdup(argv[0]);
 	
 	config_file=linphone_gtk_get_config_file();
+	
 
 #ifdef WIN32
 	/*workaround for windows: sometimes LANG is defined to an integer value, not understood by gtk */
@@ -1627,9 +1629,7 @@ int main(int argc, char *argv[]){
 		 the options, in case we needed to access the working directory */
 	factory_config_file = linphone_gtk_get_factory_config_file();
 
-	if (linphone_core_wake_up_possible_already_running_instance(
-		config_file, addr_to_call) == 0){
-		g_message("addr_to_call=%s",addr_to_call);
+	if (linphone_gtk_init_instance(app_name, addr_to_call) == FALSE){
 		g_warning("Another running instance of linphone has been detected. It has been woken-up.");
 		g_warning("This instance is going to exit now.");
 		gdk_threads_leave();
@@ -1654,7 +1654,7 @@ int main(int argc, char *argv[]){
 
 	linphone_gtk_init_liblinphone(config_file, factory_config_file);
 	
-	g_set_application_name(linphone_gtk_get_ui_config("title","Linphone"));
+	g_set_application_name(app_name);
 	pbuf=create_pixbuf(linphone_gtk_get_ui_config("icon",LINPHONE_ICON));
 	if (pbuf!=NULL) gtk_window_set_default_icon(pbuf);
 	
