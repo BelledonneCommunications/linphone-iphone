@@ -655,18 +655,6 @@ void linphone_gtk_call_terminated(LinphoneCall *call, const char *error){
 	update_video_title();
 }
 
-static bool_t all_other_calls_paused(LinphoneCall *refcall, const MSList *calls){
-	for(;calls!=NULL;calls=calls->next){
-		LinphoneCall *call=(LinphoneCall*)calls->data;
-		LinphoneCallState cs=linphone_call_get_state(call);
-		if (refcall!=call){
-			if (cs!=LinphoneCallPaused  && cs!=LinphoneCallPausing)
-				return FALSE;
-		}
-	}
-	return TRUE;
-}
-
 static void linphone_gtk_update_call_buttons(LinphoneCall *call){
 	LinphoneCore *lc=linphone_gtk_get_core();
 	GtkWidget *mw=linphone_gtk_get_main_window();
@@ -681,21 +669,9 @@ static void linphone_gtk_update_call_buttons(LinphoneCall *call){
 		start_active=TRUE;
 		stop_active=FALSE;
 	}else{
-		stop_active=TRUE;
-		if (all_other_calls_paused(NULL,calls)){
-			start_active=TRUE;
-			add_call=TRUE;
-		}else if (call!=NULL && linphone_call_get_state(call)==LinphoneCallIncomingReceived && all_other_calls_paused(call,calls)){
-			if (call_list_size>1){
-				start_active=TRUE;
-				add_call=TRUE;
-			}else{
-				start_active=TRUE;
-				add_call=FALSE;
-			}
-		}else{
-			start_active=FALSE;
-		}
+		stop_active=TRUE;	
+		start_active=TRUE;
+		add_call=TRUE;
 	}
 	button=linphone_gtk_get_widget(mw,"start_call");
 	gtk_widget_set_sensitive(button,start_active);
@@ -708,6 +684,7 @@ static void linphone_gtk_update_call_buttons(LinphoneCall *call){
 	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"terminate_call"),stop_active);
 
 	linphone_gtk_enable_transfer_button(lc,call_list_size>1);
+	linphone_gtk_enable_conference_button(lc,call_list_size>1);
 	update_video_title();
 }
 
@@ -737,7 +714,7 @@ void linphone_gtk_start_call(GtkWidget *w){
 	GtkWidget *mw=gtk_widget_get_toplevel(w);
 	GtkWidget *uri_bar=linphone_gtk_get_widget(mw,"uribar");
 
-	call=linphone_gtk_get_currently_displayed_call ();
+	call=linphone_gtk_get_currently_displayed_call();
 	if (call!=NULL && linphone_call_get_state(call)==LinphoneCallIncomingReceived){
 		linphone_core_accept_call(lc,call);
 	}else{
@@ -1015,7 +992,7 @@ static void linphone_gtk_call_state_changed(LinphoneCore *lc, LinphoneCall *call
 		break;
 		case LinphoneCallIncomingReceived:
 			linphone_gtk_create_in_call_view (call);
-			linphone_gtk_in_call_view_set_incoming(call,!all_other_calls_paused (call,linphone_core_get_calls(lc)));
+			linphone_gtk_in_call_view_set_incoming(call);
 			linphone_gtk_status_icon_set_blinking(TRUE);
 			if (auto_answer)  {
 				linphone_call_ref(call);

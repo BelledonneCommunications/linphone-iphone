@@ -2093,11 +2093,8 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	LinphoneProxyConfig *dest_proxy=NULL;
 	LinphoneCall *call;
 
-	if (linphone_core_in_call(lc)){
-		if (lc->vtable.display_warning)
-			lc->vtable.display_warning(lc,_("Sorry, you have to pause or stop the current call or conference first !"));
-		return NULL;
-	}
+	linphone_core_preempt_sound_resources(lc);
+	
 	if(!linphone_core_can_we_add_call(lc)){
 		if (lc->vtable.display_warning)
 			lc->vtable.display_warning(lc,_("Sorry, we have reached the maximum number of simultaneous calls"));
@@ -2287,25 +2284,12 @@ int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call)
 		if (rc){
 			ms_message("Call %p replaces call %p. This last one is going to be terminated automatically.",
 			           call,rc);
-			linphone_core_terminate_call (lc,rc);
+			linphone_core_terminate_call(lc,rc);
 		}
 	}
 
-	if (lc->current_call!=NULL && lc->current_call!=call){
-		ms_warning("Cannot accept this call, there is already one running.");
-		return -1;
-	}
-
-	/*can accept a new call only if others are on hold */
-	{
-		MSList *elem;
-		for(elem=lc->calls;elem!=NULL;elem=elem->next){
-			LinphoneCall *c=(LinphoneCall*)elem->data;
-			if (c!=call && (c->state!=LinphoneCallPaused && c->state!=LinphoneCallPausing)){
-				ms_warning("Cannot accept this call as another one is running, pause it before.");
-				return -1;
-			}
-		}
+	if (lc->current_call!=call){
+		linphone_core_preempt_sound_resources(lc);
 	}
 
 	/*stop ringing */
@@ -2527,6 +2511,19 @@ int linphone_core_pause_all_calls(LinphoneCore *lc){
 	return 0;
 }
 
+void linphone_core_preempt_sound_resources(LinphoneCore *lc){
+	LinphoneCall *current_call;
+	if (linphone_core_is_in_conference(lc)){
+		linphone_core_leave_conference(lc);
+		return;
+	}
+	current_call=linphone_core_get_current_call(lc);
+	if(current_call != NULL){
+		ms_message("Pausing automatically the current call.");
+		linphone_core_pause_call(lc,current_call);
+	}
+}
+
 /**
  * Resumes the call.
  *
@@ -2543,12 +2540,7 @@ int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *the_call)
 		return -1;
 	}
 	if (call->params.in_conference==FALSE){
-		if(linphone_core_get_current_call(lc) != NULL){
-			ms_warning("There is already a call in process, pause or stop it first.");
-			if (lc->vtable.display_warning)
-				lc->vtable.display_warning(lc,_("There is already a call in process, pause or stop it first."));
-			return -1;
-		}
+		linphone_core_preempt_sound_resources(lc);
 		ms_message("Resuming call %p",call);
 	}
 	sal_media_description_set_dir(call->localdesc,SalStreamSendRecv);

@@ -507,7 +507,7 @@ LinphoneEcCalibratorStatus ec_calibrator_get_status(EcCalibrator *ecc);
 void ec_calibrator_destroy(EcCalibrator *ecc);
 
 void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapsed);
-
+void linphone_core_preempt_sound_resources(LinphoneCore *lc);
 /*conferencing subsystem*/
 void _post_configure_audio_stream(AudioStream *st, LinphoneCore *lc, bool_t muted);
 void linphone_call_add_to_conf(LinphoneCall *call);

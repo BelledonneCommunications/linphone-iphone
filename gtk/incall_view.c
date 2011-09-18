@@ -126,6 +126,8 @@ static void transfer_button_clicked(GtkWidget *button, gpointer call_ref){
 	gtk_widget_show(menu);
 }
 
+
+
 void linphone_gtk_enable_transfer_button(LinphoneCore *lc, gboolean value){
 	const MSList *elem=linphone_core_get_calls(lc);
 	for(;elem!=NULL;elem=elem->next){
@@ -144,6 +146,31 @@ void linphone_gtk_enable_transfer_button(LinphoneCore *lc, gboolean value){
 			gtk_container_add(GTK_CONTAINER(box),button);
 		}
 		g_object_set_data(G_OBJECT(box),"transfer",button);
+	}
+}
+
+static void conference_button_clicked(GtkWidget *button, gpointer call_ref){
+
+}
+
+void linphone_gtk_enable_conference_button(LinphoneCore *lc, gboolean value){
+	const MSList *elem=linphone_core_get_calls(lc);
+	for(;elem!=NULL;elem=elem->next){
+		LinphoneCall *call=(LinphoneCall*)elem->data;
+		GtkWidget *call_view=(GtkWidget*)linphone_call_get_user_pointer(call);
+		GtkWidget *box=linphone_gtk_get_widget (call_view,"mute_pause_buttons");
+		GtkWidget *button=(GtkWidget*)g_object_get_data(G_OBJECT(box),"conference");
+		if (button && value==FALSE){
+			gtk_widget_destroy(button);
+			button=NULL;
+		}else if (!button && value==TRUE){
+			button=gtk_button_new_with_label (_("Conference"));
+			gtk_button_set_image(GTK_BUTTON(button),gtk_image_new_from_stock (GTK_STOCK_ADD,GTK_ICON_SIZE_BUTTON));
+			g_signal_connect(G_OBJECT(button),"clicked",(GCallback)conference_button_clicked,call);
+			gtk_widget_show_all(button);
+			gtk_container_add(GTK_CONTAINER(box),button);
+		}
+		g_object_set_data(G_OBJECT(box),"conference",button);
 	}
 }
 
@@ -216,7 +243,7 @@ void linphone_gtk_in_call_view_set_calling(LinphoneCall *call){
 	linphone_gtk_in_call_set_animation_spinner(callview);
 }
 
-void linphone_gtk_in_call_view_set_incoming(LinphoneCall *call, bool_t with_pause){
+void linphone_gtk_in_call_view_set_incoming(LinphoneCall *call){
 	GtkWidget *callview=(GtkWidget*)linphone_call_get_user_pointer(call);
 	GtkWidget *status=linphone_gtk_get_widget(callview,"in_call_status");
 	GtkWidget *callee=linphone_gtk_get_widget(callview,"in_call_uri");
@@ -230,10 +257,7 @@ void linphone_gtk_in_call_view_set_incoming(LinphoneCall *call, bool_t with_paus
 
 	answer_button=linphone_gtk_get_widget(callview,"accept_call");
 	image=create_pixmap (linphone_gtk_get_ui_config("start_call_icon","startcall-green.png"));
-	if (with_pause){
-		gtk_button_set_label(GTK_BUTTON(answer_button),
-		                     _("Pause all calls\nand answer"));
-	}else gtk_button_set_label(GTK_BUTTON(answer_button),_("Answer"));
+	gtk_button_set_label(GTK_BUTTON(answer_button),_("Answer"));
 	gtk_button_set_image(GTK_BUTTON(answer_button),image);
 	gtk_widget_show(image);
 	
