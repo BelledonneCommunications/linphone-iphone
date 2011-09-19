@@ -1177,7 +1177,7 @@ void linphone_call_stop_media_streams(LinphoneCall *call){
 			const char *state_str=NULL;
 			ms_filter_call_method(call->audiostream->ec,MS_ECHO_CANCELLER_GET_STATE_STRING,&state_str);
 			if (state_str){
-				ms_message("Writing echo canceller state, %i bytes",strlen(state_str));
+				ms_message("Writing echo canceller state, %i bytes",(int)strlen(state_str));
 				lp_config_set_string(call->core->config,"sound","ec_state",state_str);
 			}
 		}

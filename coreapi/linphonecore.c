@@ -1431,7 +1431,7 @@ void linphone_core_set_user_agent(const char *name, const char *ver){
 
 static void transport_error(LinphoneCore *lc, const char* transport, int port){
 	char *msg=ortp_strdup_printf("Could not start %s transport on port %i, maybe this port is already used.",transport,port);
-	ms_warning(msg);
+	ms_warning("%s",msg);
 	if (lc->vtable.display_warning)
 		lc->vtable.display_warning(lc,msg);
 	ms_free(msg);

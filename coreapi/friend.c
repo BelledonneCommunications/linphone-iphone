@@ -203,10 +203,6 @@ void linphone_core_interpret_friend_uri(LinphoneCore *lc, const char *uri, char 
 
 int linphone_friend_set_addr(LinphoneFriend *lf, const LinphoneAddress *addr){
 	LinphoneAddress *fr=linphone_address_clone(addr);
-	if (fr==NULL) {
-		ms_warning("Invalid friend sip uri: %s",addr);
-		return -1;
-	}
 	linphone_address_clean(fr);
 	if (lf->uri!=NULL) linphone_address_destroy(lf->uri);	
 	lf->uri=fr;
