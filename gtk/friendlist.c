@@ -342,6 +342,53 @@ void linphone_gtk_directory_search_button_clicked(GtkWidget *button){
 		linphone_gtk_get_widget(gtk_widget_get_toplevel(button),"directory_search_entry"));
 }
 
+static int get_friend_weight(const LinphoneFriend *lf){
+	int w=0;
+	switch(linphone_friend_get_status(lf)){
+		case LinphoneStatusOnline:
+			w+=1000;
+		break;
+		case LinphoneStatusOffline:
+			if (linphone_friend_get_send_subscribe(lf))
+				w+=100;
+		break;
+		default:
+			w+=500;
+		break;
+	}
+	return w;
+}
+
+static int friend_compare_func(const LinphoneFriend *lf1, const LinphoneFriend *lf2){
+	int w1,w2;
+	w1=get_friend_weight(lf1);
+	w2=get_friend_weight(lf2);
+	if (w1==w2){
+		const char *u1,*u2;
+		const LinphoneAddress *addr1,*addr2;
+		addr1=linphone_friend_get_address(lf1);
+		addr2=linphone_friend_get_address(lf2);
+		u1=linphone_address_get_username(addr1);
+		u2=linphone_address_get_username(addr2);
+		if (u1 && u2) return strcasecmp(u1,u2);
+		if (u1) return 1;
+		else return -1;
+	}
+	return w2-w1;
+}
+
+static MSList *sort_friend_list(const MSList *friends){
+	MSList *ret=NULL;
+	const MSList *elem;
+	LinphoneFriend *lf;
+
+	for(elem=friends;elem!=NULL;elem=elem->next){
+		lf=(LinphoneFriend*)elem->data;
+		ret=ms_list_insert_sorted(ret,lf,(MSCompareFunc)friend_compare_func);
+	}
+	return ret;
+}
+
 void linphone_gtk_show_friends(void){
 	GtkWidget *mw=linphone_gtk_get_main_window();
 	GtkWidget *friendlist=linphone_gtk_get_widget(mw,"contact_list");
@@ -353,6 +400,7 @@ void linphone_gtk_show_friends(void){
 	LinphoneCore *core=linphone_gtk_get_core();
 	const gchar *search=NULL;
 	gboolean online_only=FALSE,lookup=FALSE;
+	MSList *sorted;
 	
 	linphone_gtk_show_directory_search();
 
@@ -368,7 +416,9 @@ void linphone_gtk_show_friends(void){
 		lookup=FALSE;
 	else lookup=TRUE;
 
-	for(itf=linphone_core_get_friend_list(core);itf!=NULL;itf=ms_list_next(itf)){
+	sorted=sort_friend_list(linphone_core_get_friend_list(core));
+
+	for(itf=sorted;itf!=NULL;itf=ms_list_next(itf)){
 		LinphoneFriend *lf=(LinphoneFriend*)itf->data;
 		const LinphoneAddress *f_uri=linphone_friend_get_address(lf);
 		char *uri=linphone_address_as_string(f_uri);
@@ -407,6 +457,7 @@ void linphone_gtk_show_friends(void){
 		}
 		ms_free(uri);
 	}
+	ms_list_free(sorted);
 }
 
 void linphone_gtk_add_contact(){
