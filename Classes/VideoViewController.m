@@ -22,11 +22,19 @@
 #import <AudioToolbox/AudioToolbox.h>
 
 @implementation VideoViewController
+@synthesize mPortrait;
 @synthesize mDisplay;
 @synthesize mPreview;
 @synthesize mMute;
 @synthesize mHangUp;
 @synthesize mCamSwitch;
+
+@synthesize mLandscape;
+@synthesize mDisplayLand;
+@synthesize mPreviewLand;
+@synthesize mMuteLand;
+@synthesize mHangUpLand;
+@synthesize mCamSwitchLand;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -56,9 +64,29 @@
 {
     [super viewDidLoad];
 	[mMute initWithOnImage:[UIImage imageNamed:@"mic_muted.png"]  offImage:[UIImage imageNamed:@"mic_active.png"] ];
+	[mMuteLand initWithOnImage:[UIImage imageNamed:@"mic_muted.png"]  offImage:[UIImage imageNamed:@"mic_active.png"] ];
 	[mCamSwitch setPreview:mPreview];
+	[mCamSwitchLand setPreview:mPreviewLand];
+	isFirst=TRUE;
 }
 
+
+-(void) configureOrientation:(UIInterfaceOrientation) oritentation  {
+	
+	if (oritentation == UIInterfaceOrientationPortrait ) {
+		[self.view addSubview:mPortrait];
+		linphone_core_set_native_video_window_id([LinphoneManager getLc],(unsigned long)mDisplay);	
+		linphone_core_set_native_preview_window_id([LinphoneManager getLc],(unsigned long)mPreview);
+		linphone_core_set_device_rotation([LinphoneManager getLc], 0);
+		
+	} else if (oritentation == UIInterfaceOrientationLandscapeRight ) {
+		[self.view addSubview:mLandscape];
+		linphone_core_set_native_video_window_id([LinphoneManager getLc],(unsigned long)mDisplayLand);	
+		linphone_core_set_native_preview_window_id([LinphoneManager getLc],(unsigned long)mPreviewLand);
+		linphone_core_set_device_rotation([LinphoneManager getLc], 270);
+	}
+	
+}
 - (void)viewDidUnload
 {
     [super viewDidUnload];
@@ -72,8 +100,6 @@
 -(void) viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
     
-	linphone_core_set_native_video_window_id([LinphoneManager getLc],(unsigned long)mDisplay);	
-	linphone_core_set_native_preview_window_id([LinphoneManager getLc],(unsigned long)mPreview);
 	
     //redirect audio to speaker
 	UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;  
@@ -82,10 +108,19 @@
 							 , &audioRouteOverride);
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     // Return YES for supported orientations
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+    return  interfaceOrientation == UIInterfaceOrientationPortrait || interfaceOrientation == UIInterfaceOrientationLandscapeRight ;
 }
 
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+	[self configureOrientation:self.interfaceOrientation];
+	if (fromInterfaceOrientation !=self.interfaceOrientation) {
+		linphone_core_update_call([LinphoneManager getLc], linphone_core_get_current_call([LinphoneManager getLc]), NULL);
+	} 
+}
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+	[mLandscape removeFromSuperview];
+	[mPortrait removeFromSuperview];
+}
 @end

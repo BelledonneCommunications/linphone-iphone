@@ -20,17 +20,34 @@
 #import "UILinphone.h"
 
 @interface VideoViewController : UIViewController {
-	UIImageView* mDisplay;
+	UIView* mPortrait;
+	UIView* mDisplay;
 	UIView* mPreview;
 	UIMuteButton* mMute;
 	UIHangUpButton* mHangUp;
 	UICamSwitch* mCamSwitch;
+	
+	UIView* mLandscape;
+	UIView* mDisplayLand;
+	UIView* mPreviewLand;
+	UIMuteButton* mMuteLand;
+	UIHangUpButton* mHangUpLand;
+	UICamSwitch* mCamSwitchLand;
+	BOOL isFirst;
 
 }
 
-@property (nonatomic, retain) IBOutlet UIImageView* mDisplay;
+@property (nonatomic, retain) IBOutlet UIView* mPortrait;
+@property (nonatomic, retain) IBOutlet UIView* mDisplay;
 @property (nonatomic, retain) IBOutlet UIView* mPreview;
 @property (nonatomic, retain) IBOutlet UIMuteButton* mMute;
 @property (nonatomic, retain) IBOutlet UIHangUpButton* mHangUp;
 @property (nonatomic, retain) IBOutlet UICamSwitch* mCamSwitch;
+
+@property (nonatomic, retain) IBOutlet UIView* mLandscape;
+@property (nonatomic, retain) IBOutlet UIView* mDisplayLand;
+@property (nonatomic, retain) IBOutlet UIView* mPreviewLand;
+@property (nonatomic, retain) IBOutlet UIMuteButton* mMuteLand;
+@property (nonatomic, retain) IBOutlet UIHangUpButton* mHangUpLand;
+@property (nonatomic, retain) IBOutlet UICamSwitch* mCamSwitchLand;
 @end
