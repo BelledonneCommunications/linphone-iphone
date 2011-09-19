@@ -156,14 +156,23 @@ AC_ARG_ENABLE(notify,
 dnl conditionnal build of the notify library
 if test "$gtk_ui" = "true" ; then
 	if test "$notify" = "true"; then
-		PKG_CHECK_MODULES([NOTIFY], [libnotify >= 0.7.0 ], [found_notify=yes], foo=bar)
-		case "$found_notify" in
+		PKG_CHECK_MODULES([NOTIFY4], [libnotify >= 0.7.0 ], [found_notify4=yes], foo=bar)
+		case "$found_notify4" in
 		  yes)
-				AC_SUBST(NOTIFY_CFLAGS)
-				AC_SUBST(NOTIFY_LIBS)
-				AC_DEFINE([HAVE_NOTIFY],[1],[NOTIFY support])
+				AC_SUBST(NOTIFY4_CFLAGS)
+				AC_SUBST(NOTIFY4_LIBS)
+				AC_DEFINE([HAVE_NOTIFY4],[1],[NOTIFY4 support])
 		esac
+
+                PKG_CHECK_MODULES([NOTIFY1], [libnotify < 0.7.0], [found_notify1=yes], foo=bar)
+                case "$found_notify1" in
+                  yes)
+                                AC_SUBST(NOTIFY1_CFLAGS)
+                                AC_SUBST(NOTIFY1_LIBS)
+                                AC_DEFINE([HAVE_NOTIFY1],[1],[NOTIFY1 support])
+                esac
 	else
+				NotifyNotification *n;
 		echo "Libnotify support is disabled."
 	fi
 fi

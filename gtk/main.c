@@ -36,6 +36,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define chdir _chdir
 #endif
 
+#if defined HAVE_NOTIFY1 || defined HAVE_NOTIFIED4
+#define HAVE_NOTIFY
+#endif
+
 #ifdef HAVE_NOTIFY
 #include <libnotify/notify.h>
 #endif
@@ -925,11 +929,38 @@ static void linphone_gtk_call_log_updated(LinphoneCore *lc, LinphoneCallLog *cl)
 }
 
 #ifdef HAVE_NOTIFY
-static void make_notification(const char *title, const char *body){
-	NotifyNotification *n;
-	n = notify_notification_new(title,body,linphone_gtk_get_ui_config("icon",LINPHONE_ICON));
+static bool_t notify_actions_supported() {
+	bool_t accepts_actions = FALSE;
+	GList *capabilities = notify_get_server_caps();
+	GList *c;
+	if(capabilities != NULL) {
+		for(c = capabilities; c != NULL; c = c->next) {
+			if(strcmp((char*)c->data, "actions") == 0 ) {
+				accepts_actions = TRUE;
+				break;
+			}
+		}
+		g_list_foreach(capabilities, (GFunc)g_free, NULL);
+		g_list_free(capabilities);
+	}
+	return accepts_actions;
+}
+
+static NotifyNotification* build_notification(const char *title, const char *body){
+	 return notify_notification_new(title,body,linphone_gtk_get_ui_config("icon",LINPHONE_ICON)
+#ifdef HAVE_NOTIFY1
+        ,NULL
+#endif
+	);
+}
+
+static void show_notification(NotifyNotification* n){
 	if (n && !notify_notification_show(n,NULL))
-			ms_error("Failed to send notification.");
+		ms_error("Failed to send notification.");
+}
+
+static void make_notification(const char *title, const char *body){
+	show_notification(build_notification(title,body));
 }
 
 #endif
@@ -941,7 +972,11 @@ static void linphone_gtk_notify(LinphoneCall *call, const char *msg){
 #endif
 	if (!call) {
 #ifdef HAVE_NOTIFY
-		if (!notify_notification_show(notify_notification_new("Linphone",msg,NULL),NULL))
+		if (!notify_notification_show(notify_notification_new("Linphone",msg,NULL
+#ifdef HAVE_NOTIFY1
+	,NULL
+#endif
+),NULL))
 				ms_error("Failed to send notification.");
 #else
 		linphone_gtk_show_main_window();
@@ -950,6 +985,7 @@ static void linphone_gtk_notify(LinphoneCall *call, const char *msg){
 #ifdef HAVE_NOTIFY
 		char *body=NULL;
 		char *remote=call!=NULL ? linphone_call_get_remote_address_as_string(call) : NULL;
+		NotifyNotification *n;
 		switch(linphone_call_get_state(call)){
 			case LinphoneCallError:
 				make_notification(_("Call error"),body=g_markup_printf_escaped("<span size=\"large\">%s</span>\n%s",msg,remote));
@@ -958,10 +994,17 @@ static void linphone_gtk_notify(LinphoneCall *call, const char *msg){
 				make_notification(_("Call ended"),body=g_markup_printf_escaped("<span size=\"large\">%s</span>",remote));
 			break;
 			case LinphoneCallIncomingReceived:
-				make_notification(_("Incoming call"),body=g_markup_printf_escaped("<span size=\"large\">%s</span>",remote));
+				n=build_notification(_("Incoming call"),body=g_markup_printf_escaped("<span size=\"large\">%s</span>",remote));
+				if (notify_actions_supported()) {
+					notify_notification_add_action (n,"answer", _("Answer"),
+						NOTIFY_ACTION_CALLBACK(linphone_gtk_answer_clicked),NULL,NULL);
+					notify_notification_add_action (n,"decline",_("Decline"),
+						NOTIFY_ACTION_CALLBACK(linphone_gtk_decline_clicked),NULL,NULL);
+				}
+				show_notification(n);
 			break;
 			case LinphoneCallPausedByRemote:
-				make_notification(_("Call paused"),body=g_markup_printf_escaped("<span size=\"large\">by %s</span>",remote));
+				make_notification(_("Call paused"),body=g_markup_printf_escaped(_("<span size=\"large\">by %s</span>"),remote));
 			break;
 			default:
 			break;
@@ -1137,6 +1180,15 @@ static GtkWidget *create_icon_menu(){
 
 static GtkStatusIcon *icon=NULL;
 
+static void handle_icon_click() {
+	GtkWidget *mw=linphone_gtk_get_main_window();
+	if (!gtk_window_is_active((GtkWindow*)mw)) {
+		linphone_gtk_show_main_window();
+	} else {
+		gtk_widget_hide(mw);
+	}
+}
+
 static void linphone_gtk_init_status_icon(){
 	const char *icon_path=linphone_gtk_get_ui_config("icon",LINPHONE_ICON);
 	const char *call_icon_path=linphone_gtk_get_ui_config("start_call_icon","startcall-green.png");
@@ -1146,7 +1198,7 @@ static void linphone_gtk_init_status_icon(){
 	title=linphone_gtk_get_ui_config("title",_("Linphone - a video internet phone"));
 	icon=gtk_status_icon_new_from_pixbuf(pbuf);
 	gtk_status_icon_set_name(icon,title);
-	g_signal_connect_swapped(G_OBJECT(icon),"activate",(GCallback)linphone_gtk_show_main_window,linphone_gtk_get_main_window());
+	g_signal_connect_swapped(G_OBJECT(icon),"activate",(GCallback)handle_icon_click,NULL);
 	g_signal_connect(G_OBJECT(icon),"popup-menu",(GCallback)icon_popup_menu,NULL);
 	gtk_status_icon_set_tooltip(icon,title);
 	gtk_status_icon_set_visible(icon,TRUE);
