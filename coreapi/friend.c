@@ -438,13 +438,15 @@ static bool_t username_match(const char *u1, const char *u2){
 LinphoneFriend *linphone_core_get_friend_by_address(const LinphoneCore *lc, const char *uri){
 	LinphoneAddress *puri=linphone_address_new(uri);
 	const MSList *elem;
-	const char *username=linphone_address_get_username(puri);
-	const char *domain=linphone_address_get_domain(puri);
+	const char *username;
+	const char *domain;
 	LinphoneFriend *lf=NULL;
 		
 	if (puri==NULL){
 		return NULL;
 	}
+	username=linphone_address_get_username(puri);
+	domain=linphone_address_get_domain(puri);
 	for(elem=lc->friends;elem!=NULL;elem=ms_list_next(elem)){
 		lf=(LinphoneFriend*)elem->data;
 		const char *it_username=linphone_address_get_username(lf->uri);

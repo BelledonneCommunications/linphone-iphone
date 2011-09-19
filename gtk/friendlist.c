@@ -172,6 +172,70 @@ void linphone_gtk_my_presence_clicked(GtkWidget *button){
 	gtk_widget_show(menu);
 }
 
+static void icon_press_handler(GtkEntry *entry){
+	const char *text=gtk_entry_get_text(entry);
+	if (text && strlen(text)>0){
+		char *uri;
+		LinphoneFriend *lf;
+		linphone_core_interpret_friend_uri(linphone_gtk_get_core(),text,&uri);
+		if (uri==NULL){
+			return ;
+		}
+		lf=linphone_core_get_friend_by_address(linphone_gtk_get_core(),uri);
+		if (lf==NULL)
+			lf=linphone_friend_new_with_addr(uri);
+		if (lf!=NULL){
+			linphone_gtk_show_contact(lf);
+		}
+		ms_free(uri);
+	}
+}
+
+static void update_star(GtkEntry *entry, gboolean is_known){
+	GdkPixbuf *active,*starred,*unstarred;
+	active=gtk_entry_get_icon_pixbuf(entry,GTK_ENTRY_ICON_SECONDARY);
+	starred=g_object_get_data(G_OBJECT(entry),"starred_icon");
+	unstarred=g_object_get_data(G_OBJECT(entry),"unstarred_icon");
+	if (is_known && (active==unstarred)){
+		gtk_entry_set_icon_from_pixbuf(entry,GTK_ENTRY_ICON_SECONDARY,starred);
+	}else if ((!is_known) && (active==starred)){
+		gtk_entry_set_icon_from_pixbuf(entry,GTK_ENTRY_ICON_SECONDARY,unstarred);
+	}
+}
+
+static void check_contact(GtkEditable *editable, LinphoneCore *lc){
+	char *tmp=gtk_editable_get_chars(editable,0,-1);
+	if (tmp!=NULL){
+		if (strlen(tmp)>0){
+			char *uri=NULL;
+			linphone_core_interpret_friend_uri(lc,tmp,&uri);
+			if (uri){
+				LinphoneFriend *lf=linphone_core_get_friend_by_address(lc,uri);
+				ms_free(uri);
+				if (lf) {
+					update_star(GTK_ENTRY(editable),TRUE);
+					g_free(tmp);
+					return;
+				}
+			}
+		}
+		g_free(tmp);
+	}
+	update_star(GTK_ENTRY(editable),FALSE);
+}
+
+static void linphone_gtk_init_bookmark_icon(void){
+	GtkWidget *mw=linphone_gtk_get_main_window();
+	GtkWidget *entry=linphone_gtk_get_widget(mw,"uribar");
+	GdkPixbuf *pbuf=create_pixbuf("contact_unstarred.png");
+	gtk_entry_set_icon_from_pixbuf(GTK_ENTRY(entry),GTK_ENTRY_ICON_SECONDARY,pbuf);
+	g_object_set_data_full(G_OBJECT(entry),"unstarred_icon",pbuf,g_object_unref);
+	pbuf=create_pixbuf("contact_starred.png");
+	g_object_set_data_full(G_OBJECT(entry),"starred_icon",pbuf,g_object_unref);
+	gtk_entry_set_icon_activatable(GTK_ENTRY(entry),GTK_ENTRY_ICON_SECONDARY,TRUE);
+	g_signal_connect(G_OBJECT(entry),"icon-release",(GCallback)icon_press_handler,NULL);
+	g_signal_connect(G_OBJECT(GTK_EDITABLE(entry)),"changed",(GCallback)check_contact,linphone_gtk_get_core());
+}
 
 static void linphone_gtk_friend_list_init(GtkWidget *friendlist)
 {
@@ -179,7 +243,8 @@ static void linphone_gtk_friend_list_init(GtkWidget *friendlist)
 	GtkCellRenderer *renderer;
 	GtkTreeViewColumn *column;
 	GtkTreeSelection *select;
-	
+
+	linphone_gtk_init_bookmark_icon();
 	
 	store = gtk_list_store_new(FRIEND_LIST_NCOL, GDK_TYPE_PIXBUF, G_TYPE_STRING, G_TYPE_STRING,  G_TYPE_POINTER,
 					G_TYPE_STRING, GDK_TYPE_PIXBUF);
@@ -318,14 +383,15 @@ void linphone_gtk_show_friends(void){
 		}
 		if (!online_only || (linphone_friend_get_status(lf)!=LinphoneStatusOffline)){
 			BuddyInfo *bi;
+			gboolean send_subscribe=linphone_friend_get_send_subscribe(lf);
 			if (name==NULL || name[0]=='\0') display=uri;
 			gtk_list_store_append(store,&iter);
 			gtk_list_store_set(store,&iter,FRIEND_NAME, display,
-					FRIEND_PRESENCE_STATUS, linphone_online_status_to_string(linphone_friend_get_status(lf)),
-					FRIEND_ID,lf,-1);
-			gtk_list_store_set(store,&iter,
-				FRIEND_PRESENCE_IMG, create_status_picture(linphone_friend_get_status(lf)),
-				-1);
+					FRIEND_PRESENCE_STATUS, 
+			        send_subscribe ? linphone_online_status_to_string(linphone_friend_get_status(lf)) : "",
+					FRIEND_ID,lf,
+			        FRIEND_PRESENCE_IMG, send_subscribe ? create_status_picture(linphone_friend_get_status(lf)) : NULL,
+			        -1); 
 			escaped=g_markup_escape_text(uri,-1);
 			gtk_list_store_set(store,&iter,FRIEND_SIP_ADDRESS,escaped,-1);
 			g_free(escaped);
@@ -343,7 +409,7 @@ void linphone_gtk_show_friends(void){
 	}
 }
 
-void linphone_gtk_add_contact(void){
+void linphone_gtk_add_contact(){
 	GtkWidget *w=linphone_gtk_create_window("contact");
 	int presence_enabled=linphone_gtk_get_ui_config_int("use_subscribe_notify",1);
 	
