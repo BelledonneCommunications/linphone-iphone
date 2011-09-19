@@ -3498,7 +3498,12 @@ void linphone_core_set_native_preview_window_id(LinphoneCore *lc, unsigned long 
 void linphone_core_use_preview_window(LinphoneCore *lc, bool_t yesno){
 	lc->use_preview_window=yesno;
 }
-
+/**
+ *returns current device orientation
+ */
+int linphone_core_get_device_rotation(LinphoneCore *lc ) {
+	return lc->device_rotation;
+}
 /**
  * Tells the core the device current orientation. This can be used by capture filters
  * on mobile devices to select between portrait/landscape mode and to produce properly

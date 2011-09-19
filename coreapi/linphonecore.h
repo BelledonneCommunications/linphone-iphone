@@ -934,6 +934,7 @@ unsigned long linphone_core_get_native_preview_window_id(const LinphoneCore *lc)
 void linphone_core_set_native_preview_window_id(LinphoneCore *lc, unsigned long id);
 
 void linphone_core_use_preview_window(LinphoneCore *lc, bool_t yesno);
+int linphone_core_get_device_rotation(LinphoneCore *lc );
 void linphone_core_set_device_rotation(LinphoneCore *lc, int rotation);
 
 /*play/record support: use files instead of soundcard*/
