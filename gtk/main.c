@@ -1430,7 +1430,6 @@ static void linphone_gtk_init_main_window(){
 #ifdef HAVE_GTK_OSX
 	{
 		GtkWidget *menubar=linphone_gtk_get_widget(main_window,"menubar1");
-		gtk_widget_destroy(linphone_gtk_get_widget(main_window,"imagemenuitem5"));
 		GtkOSXApplication *theMacApp = (GtkOSXApplication*)g_object_new(GTK_TYPE_OSX_APPLICATION, NULL);
 		gtk_osxapplication_set_menu_bar(theMacApp,GTK_MENU_SHELL(menubar));
 		gtk_widget_hide(menubar);
