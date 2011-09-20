@@ -157,6 +157,30 @@ int linphone_core_enter_conference(LinphoneCore *lc){
 	return 0;
 }
 
-int linphone_core_add_all_to_conference(LinphoneCore *lc) {return 0;}
-int linphone_core_terminate_conference(LinphoneCore *lc) {return 0;}
-int linphone_core_get_conference_size(LinphoneCore *lc) {return 0;}
+int linphone_core_add_all_to_conference(LinphoneCore *lc) {
+	MSList *calls=lc->calls;
+	while (calls) {
+		LinphoneCall *call=(LinphoneCall*)calls->data;
+		calls=calls->next;
+		if (!call->current_params.in_conference) {
+			linphone_core_add_to_conference(lc, call);
+		}
+	}
+	return 0;
+}
+
+int linphone_core_terminate_conference(LinphoneCore *lc) {
+	MSList *calls=lc->calls;
+	while (calls) {
+		LinphoneCall *call=(LinphoneCall*)calls->data;
+		calls=calls->next;
+		if (call->current_params.in_conference) {
+			linphone_core_terminate_call(lc, call);
+		}
+	}
+	return 0;
+}
+
+int linphone_core_get_conference_size(LinphoneCore *lc) {
+	return ms_audio_conference_size(lc->conf_ctx.conf);
+}
