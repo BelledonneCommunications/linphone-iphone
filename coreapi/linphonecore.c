@@ -2416,13 +2416,13 @@ int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *the_call)
  * @param lc The LinphoneCore
 **/
 int linphone_core_terminate_all_calls(LinphoneCore *lc){
-	while(lc->calls)
-	{
-		LinphoneCall *the_call = lc->calls->data;
-		linphone_core_terminate_call(lc,the_call);
+	MSList *calls=lc->calls;
+	while(calls) {
+		LinphoneCall *c=(LinphoneCall*)calls->data;
+		calls=calls->next;
+		linphone_core_terminate_call(lc,c);
 	}
-	ms_list_free(lc->calls);
-	return -1;
+	return 0;
 }
 
 /**

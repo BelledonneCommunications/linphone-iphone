@@ -615,4 +615,8 @@ public interface LinphoneCore {
 	void terminateAllCalls();
 	@SuppressWarnings("unchecked") List getCalls();
 	int getCallsNb();
+
+
+	void transferCall(LinphoneCall call, String referTo);
+	void transferCallToAnother(LinphoneCall callToTransfer, LinphoneCall destination);
 }
