@@ -66,6 +66,33 @@ static GtkWidget *make_tab_header(int number){
 	return w;
 }
 
+static void linphone_gtk_in_call_set_animation_image(GtkWidget *callview, const char *image_name, gboolean is_stock){
+	GtkWidget *container=linphone_gtk_get_widget(callview,"in_call_animation");
+	GList *elem=gtk_container_get_children(GTK_CONTAINER(container));
+	GtkWidget *image;
+	if (!is_stock)
+		image=create_pixmap(image_name);
+	else
+		image=gtk_image_new_from_stock(image_name,GTK_ICON_SIZE_DIALOG);
+	if (elem)
+		gtk_widget_destroy((GtkWidget*)elem->data);
+	gtk_widget_show(image);
+	gtk_container_add(GTK_CONTAINER(container),image);
+	
+}
+
+static void linphone_gtk_in_call_set_animation_spinner(GtkWidget *callview){
+	GtkWidget *container=linphone_gtk_get_widget(callview,"in_call_animation");
+	GList *elem=gtk_container_get_children(GTK_CONTAINER(container));
+	GtkWidget *spinner=gtk_spinner_new();
+	if (elem)
+		gtk_widget_destroy((GtkWidget*)elem->data);
+	gtk_widget_show(spinner);
+	gtk_container_add(GTK_CONTAINER(container),spinner);
+	gtk_spinner_start(GTK_SPINNER(spinner));
+}
+
+
 static void linphone_gtk_transfer_call(LinphoneCall *dest_call){
 	LinphoneCall *call=linphone_gtk_get_currently_displayed_call();
 	linphone_core_transfer_call_to_another (linphone_gtk_get_core(),call,dest_call);
@@ -99,6 +126,8 @@ static void transfer_button_clicked(GtkWidget *button, gpointer call_ref){
 	gtk_widget_show(menu);
 }
 
+
+
 void linphone_gtk_enable_transfer_button(LinphoneCore *lc, gboolean value){
 	const MSList *elem=linphone_core_get_calls(lc);
 	for(;elem!=NULL;elem=elem->next){
@@ -117,6 +146,31 @@ void linphone_gtk_enable_transfer_button(LinphoneCore *lc, gboolean value){
 			gtk_container_add(GTK_CONTAINER(box),button);
 		}
 		g_object_set_data(G_OBJECT(box),"transfer",button);
+	}
+}
+
+static void conference_button_clicked(GtkWidget *button, gpointer call_ref){
+
+}
+
+void linphone_gtk_enable_conference_button(LinphoneCore *lc, gboolean value){
+	const MSList *elem=linphone_core_get_calls(lc);
+	for(;elem!=NULL;elem=elem->next){
+		LinphoneCall *call=(LinphoneCall*)elem->data;
+		GtkWidget *call_view=(GtkWidget*)linphone_call_get_user_pointer(call);
+		GtkWidget *box=linphone_gtk_get_widget (call_view,"mute_pause_buttons");
+		GtkWidget *button=(GtkWidget*)g_object_get_data(G_OBJECT(box),"conference");
+		if (button && value==FALSE){
+			gtk_widget_destroy(button);
+			button=NULL;
+		}else if (!button && value==TRUE){
+			button=gtk_button_new_with_label (_("Conference"));
+			gtk_button_set_image(GTK_BUTTON(button),gtk_image_new_from_stock (GTK_STOCK_ADD,GTK_ICON_SIZE_BUTTON));
+			g_signal_connect(G_OBJECT(button),"clicked",(GCallback)conference_button_clicked,call);
+			gtk_widget_show_all(button);
+			gtk_container_add(GTK_CONTAINER(box),button);
+		}
+		g_object_set_data(G_OBJECT(box),"conference",button);
 	}
 }
 
@@ -181,25 +235,18 @@ void linphone_gtk_in_call_view_set_calling(LinphoneCall *call){
 	GtkWidget *status=linphone_gtk_get_widget(callview,"in_call_status");
 	GtkWidget *callee=linphone_gtk_get_widget(callview,"in_call_uri");
 	GtkWidget *duration=linphone_gtk_get_widget(callview,"in_call_duration");
-	GtkWidget *animation=linphone_gtk_get_widget(callview,"in_call_animation");
-	GdkPixbufAnimation *pbuf=create_pixbuf_animation("calling_anim.gif");
 	
 	gtk_label_set_markup(GTK_LABEL(status),_("<b>Calling...</b>"));
 	display_peer_name_in_label(callee,linphone_call_get_remote_address (call));
 	
 	gtk_label_set_text(GTK_LABEL(duration),_("00::00::00"));
-	if (pbuf!=NULL){
-		gtk_image_set_from_animation(GTK_IMAGE(animation),pbuf);
-		g_object_unref(G_OBJECT(pbuf));
-	}else gtk_image_set_from_stock(GTK_IMAGE(animation),GTK_STOCK_FIND,GTK_ICON_SIZE_DIALOG);
+	linphone_gtk_in_call_set_animation_spinner(callview);
 }
 
-void linphone_gtk_in_call_view_set_incoming(LinphoneCall *call, bool_t with_pause){
+void linphone_gtk_in_call_view_set_incoming(LinphoneCall *call){
 	GtkWidget *callview=(GtkWidget*)linphone_call_get_user_pointer(call);
 	GtkWidget *status=linphone_gtk_get_widget(callview,"in_call_status");
 	GtkWidget *callee=linphone_gtk_get_widget(callview,"in_call_uri");
-	GtkWidget *animation=linphone_gtk_get_widget(callview,"in_call_animation");
-	GdkPixbufAnimation *pbuf=create_pixbuf_animation("calling_anim.gif");
 	GtkWidget *answer_button;
 	GtkWidget *image;
 
@@ -210,10 +257,7 @@ void linphone_gtk_in_call_view_set_incoming(LinphoneCall *call, bool_t with_paus
 
 	answer_button=linphone_gtk_get_widget(callview,"accept_call");
 	image=create_pixmap (linphone_gtk_get_ui_config("start_call_icon","startcall-green.png"));
-	if (with_pause){
-		gtk_button_set_label(GTK_BUTTON(answer_button),
-		                     _("Pause all calls\nand answer"));
-	}else gtk_button_set_label(GTK_BUTTON(answer_button),_("Answer"));
+	gtk_button_set_label(GTK_BUTTON(answer_button),_("Answer"));
 	gtk_button_set_image(GTK_BUTTON(answer_button),image);
 	gtk_widget_show(image);
 	
@@ -221,10 +265,7 @@ void linphone_gtk_in_call_view_set_incoming(LinphoneCall *call, bool_t with_paus
 	gtk_button_set_image(GTK_BUTTON(linphone_gtk_get_widget(callview,"decline_call")),image);
 	gtk_widget_show(image);
 	
-	if (pbuf!=NULL){
-		gtk_image_set_from_animation(GTK_IMAGE(animation),pbuf);
-		g_object_unref(G_OBJECT(pbuf));
-	}else gtk_image_set_from_stock(GTK_IMAGE(animation),GTK_STOCK_EXECUTE,GTK_ICON_SIZE_DIALOG);
+	linphone_gtk_in_call_set_animation_image(callview,GTK_STOCK_DIALOG_INFO,TRUE);
 }
 
 static void rating_to_color(float rating, GdkColor *color){
@@ -283,8 +324,6 @@ void linphone_gtk_in_call_view_set_in_call(LinphoneCall *call){
 	GtkWidget *status=linphone_gtk_get_widget(callview,"in_call_status");
 	GtkWidget *callee=linphone_gtk_get_widget(callview,"in_call_uri");
 	GtkWidget *duration=linphone_gtk_get_widget(callview,"in_call_duration");
-	GtkWidget *animation=linphone_gtk_get_widget(callview,"in_call_animation");
-	GdkPixbufAnimation *pbuf=create_pixbuf_animation("incall_anim.gif");
 	guint taskid=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(callview),"taskid"));
 	
 	display_peer_name_in_label(callee,linphone_call_get_remote_address (call));
@@ -294,10 +333,7 @@ void linphone_gtk_in_call_view_set_in_call(LinphoneCall *call){
 	gtk_label_set_markup(GTK_LABEL(status),_("<b>In call</b>"));
 
 	gtk_label_set_text(GTK_LABEL(duration),_("00::00::00"));
-	if (pbuf!=NULL){
-		gtk_image_set_from_animation(GTK_IMAGE(animation),pbuf);
-		g_object_unref(G_OBJECT(pbuf));
-	}else gtk_image_set_from_stock(GTK_IMAGE(animation),GTK_STOCK_EXECUTE,GTK_ICON_SIZE_DIALOG);
+	linphone_gtk_in_call_set_animation_image(callview,GTK_STOCK_MEDIA_PLAY,TRUE);
 	linphone_gtk_enable_mute_button(
 					GTK_BUTTON(linphone_gtk_get_widget(callview,"incall_mute")),TRUE);
 	if (taskid==0){
@@ -309,10 +345,9 @@ void linphone_gtk_in_call_view_set_in_call(LinphoneCall *call){
 void linphone_gtk_in_call_view_set_paused(LinphoneCall *call){
 	GtkWidget *callview=(GtkWidget*)linphone_call_get_user_pointer(call);
 	GtkWidget *status=linphone_gtk_get_widget(callview,"in_call_status");
-	GtkWidget *animation=linphone_gtk_get_widget(callview,"in_call_animation");
 	gtk_widget_hide(linphone_gtk_get_widget(callview,"answer_decline_panel"));
 	gtk_label_set_markup(GTK_LABEL(status),_("<b>Paused call</b>"));
-	gtk_image_set_from_stock(GTK_IMAGE(animation),GTK_STOCK_MEDIA_PAUSE,GTK_ICON_SIZE_DIALOG);
+	linphone_gtk_in_call_set_animation_image(callview,GTK_STOCK_MEDIA_PAUSE,TRUE);
 }
 
 void linphone_gtk_in_call_view_update_duration(LinphoneCall *call){
@@ -335,8 +370,6 @@ static gboolean in_call_view_terminated(LinphoneCall *call){
 void linphone_gtk_in_call_view_terminate(LinphoneCall *call, const char *error_msg){
 	GtkWidget *callview=(GtkWidget*)linphone_call_get_user_pointer(call);
 	GtkWidget *status=linphone_gtk_get_widget(callview,"in_call_status");
-	GtkWidget *animation=linphone_gtk_get_widget(callview,"in_call_animation");
-	GdkPixbuf *pbuf=create_pixbuf(linphone_gtk_get_ui_config("stop_call_icon","stopcall-red.png"));
 	guint taskid=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(callview),"taskid"));
 
 	if (error_msg==NULL)
@@ -346,10 +379,9 @@ void linphone_gtk_in_call_view_terminate(LinphoneCall *call, const char *error_m
 		gtk_label_set_markup(GTK_LABEL(status),msg);
 		g_free(msg);
 	}
-	if (pbuf!=NULL){
-		gtk_image_set_from_pixbuf(GTK_IMAGE(animation),pbuf);
-		g_object_unref(G_OBJECT(pbuf));
-	}
+	linphone_gtk_in_call_set_animation_image(callview,
+	           linphone_gtk_get_ui_config("stop_call_icon","stopcall-red.png"),FALSE);
+	
 	gtk_widget_hide(linphone_gtk_get_widget(callview,"answer_decline_panel"));
 	linphone_gtk_enable_mute_button(
 		GTK_BUTTON(linphone_gtk_get_widget(callview,"incall_mute")),FALSE);

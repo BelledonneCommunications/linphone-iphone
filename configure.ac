@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([linphone],[3.4.99.1],[linphone-developers@nongnu.org])
+AC_INIT([linphone],[3.4.99.2],[linphone-developers@nongnu.org])
 AC_CANONICAL_SYSTEM
 AC_CONFIG_SRCDIR([coreapi/linphonecore.c])
 
@@ -153,6 +153,37 @@ else
 	echo "GTK interface compilation is disabled."
 fi
 
+AC_ARG_ENABLE(notify,
+		[  --enable-notify=[yes/no]    Enable libnotify support [default=yes]],
+		[case "${enableval}" in
+		  yes) notify=true ;;
+		  no)  notify=false ;;
+		  *) AC_MSG_ERROR(bad value ${enableval} for --enable-notify) ;;
+		esac],[notify=true])
+
+dnl conditionnal build of the notify library
+if test "$gtk_ui" = "true" ; then
+	if test "$notify" = "true"; then
+		PKG_CHECK_MODULES([NOTIFY4], [libnotify >= 0.7.0 ], [found_notify4=yes], foo=bar)
+		case "$found_notify4" in
+		  yes)
+				AC_SUBST(NOTIFY4_CFLAGS)
+				AC_SUBST(NOTIFY4_LIBS)
+				AC_DEFINE([HAVE_NOTIFY4],[1],[NOTIFY4 support])
+		esac
+
+                PKG_CHECK_MODULES([NOTIFY1], [libnotify < 0.7.0], [found_notify1=yes], foo=bar)
+                case "$found_notify1" in
+                  yes)
+                                AC_SUBST(NOTIFY1_CFLAGS)
+                                AC_SUBST(NOTIFY1_LIBS)
+                                AC_DEFINE([HAVE_NOTIFY1],[1],[NOTIFY1 support])
+                esac
+	else
+				NotifyNotification *n;
+		echo "Libnotify support is disabled."
+	fi
+fi
 
 dnl os-specific problems not handled by existing macros.
 case "$host_os" in

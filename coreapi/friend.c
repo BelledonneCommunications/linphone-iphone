@@ -203,10 +203,6 @@ void linphone_core_interpret_friend_uri(LinphoneCore *lc, const char *uri, char 
 
 int linphone_friend_set_addr(LinphoneFriend *lf, const LinphoneAddress *addr){
 	LinphoneAddress *fr=linphone_address_clone(addr);
-	if (fr==NULL) {
-		ms_warning("Invalid friend sip uri: %s",addr);
-		return -1;
-	}
 	linphone_address_clean(fr);
 	if (lf->uri!=NULL) linphone_address_destroy(lf->uri);	
 	lf->uri=fr;
@@ -438,13 +434,15 @@ static bool_t username_match(const char *u1, const char *u2){
 LinphoneFriend *linphone_core_get_friend_by_address(const LinphoneCore *lc, const char *uri){
 	LinphoneAddress *puri=linphone_address_new(uri);
 	const MSList *elem;
-	const char *username=linphone_address_get_username(puri);
-	const char *domain=linphone_address_get_domain(puri);
+	const char *username;
+	const char *domain;
 	LinphoneFriend *lf=NULL;
 		
 	if (puri==NULL){
 		return NULL;
 	}
+	username=linphone_address_get_username(puri);
+	domain=linphone_address_get_domain(puri);
 	for(elem=lc->friends;elem!=NULL;elem=ms_list_next(elem)){
 		lf=(LinphoneFriend*)elem->data;
 		const char *it_username=linphone_address_get_username(lf->uri);

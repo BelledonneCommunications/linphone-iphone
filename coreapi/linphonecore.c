@@ -1431,7 +1431,7 @@ void linphone_core_set_user_agent(const char *name, const char *ver){
 
 static void transport_error(LinphoneCore *lc, const char* transport, int port){
 	char *msg=ortp_strdup_printf("Could not start %s transport on port %i, maybe this port is already used.",transport,port);
-	ms_warning(msg);
+	ms_warning("%s",msg);
 	if (lc->vtable.display_warning)
 		lc->vtable.display_warning(lc,msg);
 	ms_free(msg);
@@ -1725,6 +1725,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 		 we are going to examine is destroy and removed during
 		 linphone_core_start_invite() */
 		calls=calls->next;
+		linphone_call_background_tasks(call,one_second_elapsed);
 		if (call->state==LinphoneCallOutgoingInit && (curtime-call->start_time>=2)){
 			/*start the call even if the OPTIONS reply did not arrive*/
 			linphone_core_start_invite(lc,call,NULL);
@@ -1738,9 +1739,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 			}
 		}
 	}
-	call = linphone_core_get_current_call(lc);
-	if(call)
-		linphone_call_background_tasks(call,one_second_elapsed);
+		
 	if (linphone_core_video_preview_enabled(lc)){
 		if (lc->previewstream==NULL && lc->calls==NULL)
 			toggle_video_preview(lc,TRUE);
@@ -2094,11 +2093,8 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	LinphoneProxyConfig *dest_proxy=NULL;
 	LinphoneCall *call;
 
-	if (linphone_core_in_call(lc)){
-		if (lc->vtable.display_warning)
-			lc->vtable.display_warning(lc,_("Sorry, you have to pause or stop the current call first !"));
-		return NULL;
-	}
+	linphone_core_preempt_sound_resources(lc);
+	
 	if(!linphone_core_can_we_add_call(lc)){
 		if (lc->vtable.display_warning)
 			lc->vtable.display_warning(lc,_("Sorry, we have reached the maximum number of simultaneous calls"));
@@ -2219,20 +2215,27 @@ bool_t linphone_core_inc_invite_pending(LinphoneCore*lc){
 int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params){
 	int err=0;
 	if (params!=NULL){
+		const char *subject;
 		call->params=*params;
 		update_local_media_description(lc,call,&call->localdesc);
 		call->camera_active=params->has_video;
+
+		if (params->in_conference){
+			subject="Conference";
+		}else{
+			subject="Media change";
+		}
 		if (lc->vtable.display_status)
 			lc->vtable.display_status(lc,_("Modifying call parameters..."));
 		sal_call_set_local_media_description (call->op,call->localdesc);
-		err=sal_call_update(call->op,"Media parameters update");
+		err=sal_call_update(call->op,subject);
 	}else{
 #ifdef VIDEO_ENABLED
 		if (call->videostream!=NULL){
 			video_stream_set_sent_video_size(call->videostream,linphone_core_get_preferred_video_size(lc));
-			if (call->camera_active)
-				call->videostream->cam=lc->video_conf.device; /*to take into account eventual cam changes*/
-			video_stream_update_video_params (call->videostream);
+			if (call->camera_active && call->videostream->cam!=lc->video_conf.device){
+				video_stream_change_camera(call->videostream,lc->video_conf.device);
+			}else video_stream_update_video_params(call->videostream);
 		}
 #endif
 	}
@@ -2281,25 +2284,12 @@ int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call)
 		if (rc){
 			ms_message("Call %p replaces call %p. This last one is going to be terminated automatically.",
 			           call,rc);
-			linphone_core_terminate_call (lc,rc);
+			linphone_core_terminate_call(lc,rc);
 		}
 	}
 
-	if (lc->current_call!=NULL && lc->current_call!=call){
-		ms_warning("Cannot accept this call, there is already one running.");
-		return -1;
-	}
-
-	/*can accept a new call only if others are on hold */
-	{
-		MSList *elem;
-		for(elem=lc->calls;elem!=NULL;elem=elem->next){
-			LinphoneCall *c=(LinphoneCall*)elem->data;
-			if (c!=call && (c->state!=LinphoneCallPaused && c->state!=LinphoneCallPausing)){
-				ms_warning("Cannot accept this call as another one is running, pause it before.");
-				return -1;
-			}
-		}
+	if (lc->current_call!=call){
+		linphone_core_preempt_sound_resources(lc);
 	}
 
 	/*stop ringing */
@@ -2365,6 +2355,11 @@ static void terminate_call(LinphoneCore *lc, LinphoneCall *call){
 		ring_stop(lc->ringstream);
 		lc->ringstream=NULL;
 	}
+
+	/*stop any dtmf tone still playing */
+	ms_message("test");
+	linphone_core_stop_dtmf(lc);
+
 	linphone_call_stop_media_streams(call);
 	if (lc->vtable.display_status!=NULL)
 		lc->vtable.display_status(lc,_("Call ended") );
@@ -2421,13 +2416,13 @@ int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *the_call)
  * @param lc The LinphoneCore
 **/
 int linphone_core_terminate_all_calls(LinphoneCore *lc){
-	while(lc->calls)
-	{
-		LinphoneCall *the_call = lc->calls->data;
-		linphone_core_terminate_call(lc,the_call);
+	MSList *calls=lc->calls;
+	while(calls) {
+		LinphoneCall *c=(LinphoneCall*)calls->data;
+		calls=calls->next;
+		linphone_core_terminate_call(lc,c);
 	}
-	ms_list_free(lc->calls);
-	return -1;
+	return 0;
 }
 
 /**
@@ -2450,7 +2445,7 @@ const MSList *linphone_core_get_calls(LinphoneCore *lc)
  * @ingroup call_control
 **/
 bool_t linphone_core_in_call(const LinphoneCore *lc){
-	return linphone_core_get_current_call((LinphoneCore *)lc)!=NULL;
+	return linphone_core_get_current_call((LinphoneCore *)lc)!=NULL || linphone_core_is_in_conference(lc);
 }
 
 /**
@@ -2488,8 +2483,7 @@ int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *the_call)
 		ms_error("No reason to pause this call, it is already paused or inactive.");
 		return -1;
 	}
-	if (sal_call_update(call->op,subject) != 0)
-	{
+	if (sal_call_update(call->op,subject) != 0){
 		if (lc->vtable.display_warning)
 			lc->vtable.display_warning(lc,_("Could not pause the call"));
 	}
@@ -2517,6 +2511,19 @@ int linphone_core_pause_all_calls(LinphoneCore *lc){
 	return 0;
 }
 
+void linphone_core_preempt_sound_resources(LinphoneCore *lc){
+	LinphoneCall *current_call;
+	if (linphone_core_is_in_conference(lc)){
+		linphone_core_leave_conference(lc);
+		return;
+	}
+	current_call=linphone_core_get_current_call(lc);
+	if(current_call != NULL){
+		ms_message("Pausing automatically the current call.");
+		linphone_core_pause_call(lc,current_call);
+	}
+}
+
 /**
  * Resumes the call.
  *
@@ -2526,20 +2533,19 @@ int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *the_call)
 {
 	char temp[255]={0};
 	LinphoneCall *call = the_call;
-
+	const char *subject="Call resuming";
+	
 	if(call->state!=LinphoneCallPaused ){
 		ms_warning("we cannot resume a call that has not been established and paused before");
 		return -1;
 	}
-	if(linphone_core_get_current_call(lc) != NULL){
-		ms_warning("There is already a call in process, pause or stop it first.");
-		if (lc->vtable.display_warning)
-			lc->vtable.display_warning(lc,_("There is already a call in process, pause or stop it first."));
-		return -1;
+	if (call->params.in_conference==FALSE){
+		linphone_core_preempt_sound_resources(lc);
+		ms_message("Resuming call %p",call);
 	}
-	ms_message("Resuming call %p",call);
 	sal_media_description_set_dir(call->localdesc,SalStreamSendRecv);
-	if(sal_call_update(call->op,"Call resuming") != 0){
+	if (call->params.in_conference) subject="Resuming conference";
+	if(sal_call_update(call->op,subject) != 0){
 		return -1;
 	}
 	linphone_call_set_state (call,LinphoneCallResuming,"Resuming");
@@ -3704,6 +3710,25 @@ void linphone_core_play_dtmf(LinphoneCore *lc, char dtmf, int duration_ms){
 	if (duration_ms>0)
 		ms_filter_call_method(f, MS_DTMF_GEN_PLAY, &dtmf);
 	else ms_filter_call_method(f, MS_DTMF_GEN_START, &dtmf);
+}
+
+/**
+ * @ingroup media_parameters
+ * Plays a repeated tone to the local user until next further call to #linphone_core_stop_dtmf()
+ * @param lc #LinphoneCore
+**/
+void linphone_core_play_tone(LinphoneCore *lc){
+	MSFilter *f=get_dtmf_gen(lc);
+	MSDtmfGenCustomTone def;
+	if (f==NULL){
+		ms_error("No dtmf generator at this time !");
+		return;
+	}
+	def.duration=300;
+	def.frequency=500;
+	def.amplitude=1;
+	def.interval=800;
+	ms_filter_call_method(f, MS_DTMF_GEN_PLAY_CUSTOM,&def);
 }
 
 /**

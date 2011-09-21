@@ -398,7 +398,7 @@ msgstr "<b>Appel en cours</b>"
 
 #: ../gtk/incall_view.c:260
 msgid "<b>Paused call</b>"
-msgstr "<b>Appel en attente<b>"
+msgstr "<b>Appel en attente</b>"
 
 #: ../gtk/incall_view.c:272
 #, c-format

@@ -747,7 +747,7 @@ LinphoneAccountCreator *linphone_account_creator_new(struct _LinphoneCore *core,
 		return NULL;
 	}
 	if (!(sip_setup_get_capabilities(ss) & SIP_SETUP_CAP_ACCOUNT_MANAGER)){
-		ms_error("%s cannot manage accounts.");
+		ms_error("%s cannot manage accounts.",type);
 		return NULL;
 	}
 	obj=ms_new0(LinphoneAccountCreator,1);

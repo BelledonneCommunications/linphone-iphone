@@ -219,7 +219,6 @@ typedef void (*SalOnNotify)(SalOp *op, const char *from, const char *value);
 typedef void (*SalOnNotifyPresence)(SalOp *op, SalSubscribeState ss, SalPresenceStatus status, const char *msg);
 typedef void (*SalOnSubscribeReceived)(SalOp *salop, const char *from);
 typedef void (*SalOnSubscribeClosed)(SalOp *salop, const char *from);
-typedef void (*SalOnInternalMsg)(Sal *sal, const char *msg);
 typedef void (*SalOnPingReply)(SalOp *salop);
 
 typedef struct SalCallbacks{
@@ -243,7 +242,6 @@ typedef struct SalCallbacks{
 	SalOnNotifyPresence notify_presence;
 	SalOnSubscribeReceived subscribe_received;
 	SalOnSubscribeClosed subscribe_closed;
-	SalOnInternalMsg internal_message;
 	SalOnPingReply ping_reply;
 }SalCallbacks;
 

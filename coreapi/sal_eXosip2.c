@@ -338,8 +338,6 @@ void sal_set_callbacks(Sal *ctx, const SalCallbacks *cbs){
 		ctx->callbacks.subscribe_received=(SalOnSubscribeReceived)unimplemented_stub;
 	if (ctx->callbacks.text_received==NULL)
 		ctx->callbacks.text_received=(SalOnTextReceived)unimplemented_stub;
-	if (ctx->callbacks.internal_message==NULL)
-		ctx->callbacks.internal_message=(SalOnInternalMsg)unimplemented_stub;
 	if (ctx->callbacks.ping_reply==NULL)
 		ctx->callbacks.ping_reply=(SalOnPingReply)unimplemented_stub;
 }
@@ -1606,11 +1604,6 @@ static void other_request(Sal *sal, eXosip_event_t *ev){
 		eXosip_options_build_answer(ev->tid,200,&options);
 		fill_options_answer(options);
 		eXosip_options_send_answer(ev->tid,200,options);
-	}else if (strcmp(ev->request->sip_method,"WAKEUP")==0
-		&& comes_from_local_if(ev->request)) {
-		eXosip_message_send_answer(ev->tid,200,NULL);
-		ms_message("Receiving WAKEUP request !");
-		sal->callbacks.internal_message(sal,"WAKEUP");
 	}else if (strncmp(ev->request->sip_method, "REFER", 5) == 0){
 		ms_message("Receiving REFER request !");
 		if (comes_from_local_if(ev->request)) {

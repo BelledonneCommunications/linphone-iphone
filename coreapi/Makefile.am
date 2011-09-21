@@ -36,7 +36,8 @@ liblinphone_la_SOURCES=\
 	sipsetup.c sipsetup.h \
 	siplogin.c \
 	lsd.c linphonecore_utils.h \
-	ec-calibrator.c
+	ec-calibrator.c \
+	conference.c
 
 
 liblinphone_la_LDFLAGS= -version-info $(LIBLINPHONE_SO_VERSION) -no-undefined

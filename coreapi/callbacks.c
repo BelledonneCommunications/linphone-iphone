@@ -28,6 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 static void register_failure(SalOp *op, SalError error, SalReason reason, const char *details);
 
 static bool_t media_parameters_changed(LinphoneCall *call, SalMediaDescription *oldmd, SalMediaDescription *newmd){
+	if (call->params.in_conference!=call->current_params.in_conference) return TRUE;
 	return !sal_media_description_equals(oldmd,newmd)  || call->up_bw!=linphone_core_get_upload_bandwidth(call->core);
 }
 
@@ -194,7 +195,8 @@ static void call_received(SalOp *h){
 			ms_message("the local ring is already started");
 		}
 	}else{
-		/*TODO : play a tone within the context of the current call */
+		/* play a tone within the context of the current call */
+		linphone_core_play_tone(lc);
 	}
 
 	
@@ -680,12 +682,6 @@ static void subscribe_closed(SalOp *op, const char *from){
 	linphone_subscription_closed(lc,op);
 }
 
-static void internal_message(Sal *sal, const char *msg){
-	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal);
-	if (lc->vtable.show)
-		lc->vtable.show(lc);
-}
-
 static void ping_reply(SalOp *op){
 	LinphoneCall *call=(LinphoneCall*) sal_op_get_user_pointer(op);
 	ms_message("ping reply !");
@@ -721,7 +717,6 @@ SalCallbacks linphone_sal_callbacks={
 	notify_presence,
 	subscribe_received,
 	subscribe_closed,
-	internal_message,
 	ping_reply
 };
 

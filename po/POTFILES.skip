@@ -44,4 +44,5 @@ mediastreamer2/src/winvideo.c
 mediastreamer2/src/winvideo2.c
 mediastreamer2/src/winvideods.c
 mediastreamer2/src/x11video.c
+mediastreamer2/src/vp8.c
 

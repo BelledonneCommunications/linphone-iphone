@@ -30,4 +30,5 @@ coreapi/friend.c
 coreapi/proxy.c
 coreapi/callbacks.c
 coreapi/sal_eXosip2.c
+coreapi/linphonecall.c
 
