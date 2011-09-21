@@ -99,7 +99,7 @@
 }
 -(void) viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
-    
+    [[UIApplication sharedApplication] setIdleTimerDisabled:true];
 	
     //redirect audio to speaker
 	UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;  
