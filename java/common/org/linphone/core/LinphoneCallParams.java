@@ -30,6 +30,7 @@ public interface LinphoneCallParams {
 	boolean getVideoEnabled();
 	
 	/**
+	 * set audio bandwidth in kbits/s
 	 * @param value 0 to disable limitation
 	 */
 	void setAudioBandwidth(int value);
