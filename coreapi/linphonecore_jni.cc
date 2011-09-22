@@ -466,20 +466,22 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_iterate(	JNIEnv*  env
 		,jlong lc) {
 	linphone_core_iterate((LinphoneCore*)lc);
 }
-extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_invite(	JNIEnv*  env
+extern "C" jobject Java_org_linphone_core_LinphoneCoreImpl_invite(	JNIEnv*  env
 		,jobject  thiz
 		,jlong lc
 		,jstring juri) {
 	const char* uri = env->GetStringUTFChars(juri, NULL);
+	LinphoneCoreData *lcd=(LinphoneCoreData*)linphone_core_get_user_data((LinphoneCore*)lc);
 	LinphoneCall* lCall = linphone_core_invite((LinphoneCore*)lc,uri);
 	env->ReleaseStringUTFChars(juri, uri);
-	return (jlong)lCall;
+	return lcd->getCall(env,lCall);
 }
-extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_inviteAddress(	JNIEnv*  env
+extern "C" jobject Java_org_linphone_core_LinphoneCoreImpl_inviteAddress(	JNIEnv*  env
 		,jobject  thiz
 		,jlong lc
 		,jlong to) {
-	return (jlong) linphone_core_invite_address((LinphoneCore*)lc,(LinphoneAddress*)to);
+	LinphoneCoreData *lcd=(LinphoneCoreData*)linphone_core_get_user_data((LinphoneCore*)lc);
+	return lcd->getCall(env, linphone_core_invite_address((LinphoneCore*)lc,(LinphoneAddress*)to));
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_terminateCall(	JNIEnv*  env
@@ -1088,10 +1090,11 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCallImpl_isEchoLimiterEnabled
 	return linphone_call_echo_limiter_enabled((LinphoneCall*)ptr);
 }
 
-extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_getReplacedCall(	JNIEnv*  env
+extern "C" jobject Java_org_linphone_core_LinphoneCallImpl_getReplacedCall(	JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr) {
-	return (jlong)linphone_call_get_replaced_call((LinphoneCall*)ptr);
+	LinphoneCoreData *lcd=(LinphoneCoreData*)linphone_core_get_user_data(linphone_call_get_core((LinphoneCall*)ptr));	
+	return lcd->getCall(env,linphone_call_get_replaced_call((LinphoneCall*)ptr));
 }
 
 extern "C" jfloat Java_org_linphone_core_LinphoneCallImpl_getCurrentQuality(	JNIEnv*  env
@@ -1265,8 +1268,9 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCallImpl_cameraEnabled(JNIEnv
 	linphone_call_camera_enabled((LinphoneCall *)lc);
 }
 
-extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_inviteAddressWithParams(JNIEnv *env, jobject thiz, jlong lc, jlong addr, jlong params){
-	return (jlong) linphone_core_invite_address_with_params((LinphoneCore *)lc, (const LinphoneAddress *)addr, (const LinphoneCallParams *)params);
+extern "C" jobject Java_org_linphone_core_LinphoneCoreImpl_inviteAddressWithParams(JNIEnv *env, jobject thiz, jlong lc, jlong addr, jlong params){
+	LinphoneCoreData *lcd=(LinphoneCoreData*)linphone_core_get_user_data((LinphoneCore*)lc);
+	return  lcd->getCall(env,linphone_core_invite_address_with_params((LinphoneCore *)lc, (const LinphoneAddress *)addr, (const LinphoneCallParams *)params));
 }
 
 extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_updateAddressWithParams(JNIEnv *env, jobject thiz, jlong lc, jlong call, jlong params){

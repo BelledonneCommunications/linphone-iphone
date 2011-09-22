@@ -41,6 +41,10 @@ static MSWebCam *get_nowebcam_device(){
 }
 #endif
 
+LinphoneCore *linphone_call_get_core(const LinphoneCall *call){
+	return call->core;
+}
+
 static const char* get_hexa_zrtp_identifier(LinphoneCore *lc){
 	const char *confZid=lp_config_get_string(lc->config,"rtp","zid",NULL);
 	if (confZid != NULL) {

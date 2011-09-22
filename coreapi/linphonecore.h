@@ -235,7 +235,7 @@ typedef enum _LinphoneCallState{
 
 const char *linphone_call_state_to_string(LinphoneCallState cs);
 
-
+LinphoneCore *linphone_call_get_core(const LinphoneCall *call);
 LinphoneCallState linphone_call_get_state(const LinphoneCall *call);
 bool_t linphone_call_asked_to_autoanswer(LinphoneCall *call);
 const LinphoneAddress * linphone_core_get_current_call_remote_address(struct _LinphoneCore *lc);
