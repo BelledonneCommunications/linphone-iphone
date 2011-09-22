@@ -33,7 +33,7 @@ static void linphone_gtk_fill_combo_box(GtkWidget *combo, const char **devices, 
 	This dummy text needs to be removed first*/
 	gtk_combo_box_remove_text(GTK_COMBO_BOX(combo),0);
 	for(;*p!=NULL;++p){
-		if ( cap==CAP_IGNORE 
+		if ( cap==CAP_IGNORE
 			|| (cap==CAP_CAPTURE && linphone_core_sound_device_can_capture(linphone_gtk_get_core(),*p))
 			|| (cap==CAP_PLAYBACK && linphone_core_sound_device_can_playback(linphone_gtk_get_core(),*p)) ){
 			gtk_combo_box_append_text(GTK_COMBO_BOX(combo),*p);
@@ -87,6 +87,49 @@ void linphone_gtk_update_my_contact(GtkWidget *w){
 	linphone_gtk_load_identities();
 }
 
+void linphone_gtk_update_my_port(GtkWidget *w){
+    GtkWidget *pb=gtk_widget_get_toplevel(GTK_WIDGET(w));
+	LCSipTransports tr;
+	LinphoneCore *lc=linphone_gtk_get_core();
+    GtkComboBox *combo = GTK_COMBO_BOX(linphone_gtk_get_widget(pb, "proto_combo"));
+
+	gint port = (gint)gtk_spin_button_get_value(GTK_SPIN_BUTTON(w));
+    if (port == 1) { // We use default port if not specified
+        if (strcmp(gtk_combo_box_get_active_text(combo), "SIP (UDP)") == 0) {
+            gtk_spin_button_set_value(GTK_SPIN_BUTTON(w),
+				5060);
+        }
+        else if (strcmp(gtk_combo_box_get_active_text(combo), "SIP (TCP)") == 0) {
+            gtk_spin_button_set_value(GTK_SPIN_BUTTON(w),
+				5060);
+        }
+        else if (strcmp(gtk_combo_box_get_active_text(combo), "SIP (TLS)") == 0) {
+            gtk_spin_button_set_value(GTK_SPIN_BUTTON(w),
+				5061);
+        }
+    }
+
+	linphone_core_get_sip_transports(lc,&tr);
+    gchar *selected = gtk_combo_box_get_active_text(combo);
+	if (strcmp(selected, "SIP (TCP)") == 0) {
+		tr.tcp_port = (gint)gtk_spin_button_get_value(GTK_SPIN_BUTTON(w));
+		tr.udp_port = 0;
+		tr.tls_port = 0;
+	}
+	else if (strcmp(gtk_combo_box_get_active_text(GTK_COMBO_BOX(linphone_gtk_get_widget(pb, "proto_combo"))), "SIP (UDP)") == 0) {
+		tr.udp_port = (gint)gtk_spin_button_get_value(GTK_SPIN_BUTTON(w));
+        	tr.tcp_port = 0;
+		tr.tls_port = 0;
+	}
+	else if (strcmp(gtk_combo_box_get_active_text(GTK_COMBO_BOX(linphone_gtk_get_widget(pb, "proto_combo"))), "SIP (TLS)") == 0){
+		tr.udp_port = 0;
+        	tr.tcp_port = 0;
+		tr.tls_port = (gint)gtk_spin_button_get_value(GTK_SPIN_BUTTON(w));
+	}
+
+	linphone_core_set_sip_transports(lc,&tr);
+}
+
 void linphone_gtk_stun_server_changed(GtkWidget *w){
 	const gchar *addr=gtk_entry_get_text(GTK_ENTRY(w));
 	linphone_core_set_stun_server(linphone_gtk_get_core(),addr);
@@ -102,7 +145,7 @@ void linphone_gtk_ipv6_toggled(GtkWidget *w){
 				gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w)));
 }
 
-void linphone_gtk_udp_sip_port_changed(GtkWidget *w){
+/* void linphone_gtk_udp_sip_port_changed(GtkWidget *w){
 	LCSipTransports tr;
 	LinphoneCore *lc=linphone_gtk_get_core();
 
@@ -118,7 +161,7 @@ void linphone_gtk_tcp_sip_port_changed(GtkWidget *w){
 	linphone_core_get_sip_transports(lc,&tr);
 	tr.tcp_port = (gint)gtk_spin_button_get_value(GTK_SPIN_BUTTON(w));
 	linphone_core_set_sip_transports(lc,&tr);
-}
+} */
 
 void linphone_gtk_audio_port_changed(GtkWidget *w){
 	linphone_core_set_audio_port(linphone_gtk_get_core(),
@@ -329,7 +372,7 @@ static void linphone_gtk_show_codecs(GtkTreeView *listview, const MSList *codecl
 	for(elem=codeclist; elem!=NULL; elem=elem->next){
 		gchar *status;
 		gint rate;
-		gfloat bitrate; 
+		gfloat bitrate;
 		const gchar *color;
 		const char *params="";
 
@@ -355,9 +398,9 @@ static void linphone_gtk_show_codecs(GtkTreeView *listview, const MSList *codecl
 					CODEC_INFO,(gpointer)linphone_core_get_payload_type_description(linphone_gtk_get_core(),pt),
 					-1);
 	}
-	
-	
-	
+
+
+
 	/* Setup the selection handler */
 	selection = gtk_tree_view_get_selection (listview);
 	gtk_tree_selection_set_mode (selection, GTK_SELECTION_SINGLE);
@@ -374,10 +417,10 @@ static void linphone_gtk_check_codec_bandwidth(GtkTreeView *v){
 	g_return_if_fail(gtk_tree_model_get_iter_first(model,&iter));
 	do{
 		PayloadType *pt=NULL;
-		
+
 		gfloat bitrate;
 		gtk_tree_model_get(model,&iter,CODEC_PRIVDATA,&pt,-1);
-		
+
 		bitrate=payload_type_get_bitrate(pt)/1000.0;
 		gtk_list_store_set(GTK_LIST_STORE(model),&iter,CODEC_COLOR, (gpointer)get_codec_color(linphone_gtk_get_core(),pt),
 					CODEC_BITRATE, bitrate,-1);
@@ -397,7 +440,7 @@ static void linphone_gtk_select_codec(GtkTreeView *v, PayloadType *ref){
 		if (pt==ref){
 			gtk_tree_selection_select_iter(selection,&iter);
 		}
-		
+
 	}while(gtk_tree_model_iter_next(model,&iter));
 }
 
@@ -516,7 +559,7 @@ void linphone_gtk_show_sip_accounts(GtkWidget *w){
 		GtkTreeViewColumn *column;
 		/* create the proxy list */
 		store = gtk_list_store_new (PROXY_CONFIG_NCOL, G_TYPE_STRING, G_TYPE_POINTER);
-		
+
 		gtk_tree_view_set_model(v,GTK_TREE_MODEL(store));
 		g_object_unref(G_OBJECT(store));
 		renderer = gtk_cell_renderer_text_new ();
@@ -525,7 +568,7 @@ void linphone_gtk_show_sip_accounts(GtkWidget *w){
 							"text", PROXY_CONFIG_IDENTITY,
 							NULL);
 		gtk_tree_view_append_column (v, column);
-		
+
 		select = gtk_tree_view_get_selection (v);
 		gtk_tree_selection_set_mode (select, GTK_SELECTION_SINGLE);
 		model=GTK_TREE_MODEL(store);
@@ -712,7 +755,7 @@ static void linphone_gtk_fill_langs(GtkWidget *pb){
 		name=lang_get_name(code);
 		snprintf(text,sizeof(text)-1,"%s : %s",code,name!=NULL ? _(name) : code);
 		gtk_combo_box_append_text(GTK_COMBO_BOX(combo),text);
-		if (cur_lang_index==-1 && lang_equals(cur_lang,code)) 
+		if (cur_lang_index==-1 && lang_equals(cur_lang,code))
 			cur_lang_index=index;
 		index++;
 	}
@@ -741,6 +784,14 @@ void linphone_gtk_lang_changed(GtkComboBox *combo){
 			linphone_gtk_set_lang(code);
 		}
 	}
+}
+
+void linphone_gtk_proto_changed(GtkComboBox *combo){
+    GtkWidget *pb=gtk_widget_get_toplevel(GTK_WIDGET(combo));
+
+    GtkWidget *proto_port = linphone_gtk_get_widget(pb, "proto_port");
+    // When we change the network protocol, we call update_my_port to move the port number from the old protocol to the new one
+    linphone_gtk_update_my_port(proto_port);
 }
 
 static void linphone_gtk_ui_level_adapt(GtkWidget *top) {
@@ -781,14 +832,28 @@ void linphone_gtk_show_parameters(void){
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb,"ipv6_enabled")),
 				linphone_core_ipv6_enabled(lc));
 	linphone_core_get_sip_transports(lc,&tr);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb,"udp_sip_port")),
-				tr.udp_port);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb,"tcp_sip_port")),
+
+    if (tr.tcp_port > 0) {
+        gtk_combo_box_set_active(GTK_COMBO_BOX(linphone_gtk_get_widget(pb,"proto_combo")), 1);
+        gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb,"proto_port")),
 				tr.tcp_port);
+    }
+    else if (tr.tls_port > 0) {
+        gtk_combo_box_set_active(GTK_COMBO_BOX(linphone_gtk_get_widget(pb,"proto_combo")), 2);
+        gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb,"proto_port")),
+				tr.tls_port);
+    }
+    else {
+        gtk_combo_box_set_active(GTK_COMBO_BOX(linphone_gtk_get_widget(pb,"proto_combo")), 0);
+        gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb,"proto_port")),
+				tr.udp_port);
+    }
+
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb,"audio_rtp_port")),
 				linphone_core_get_audio_port(lc));
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb,"video_rtp_port")),
 				linphone_core_get_video_port(lc));
+
 	tmp=linphone_core_get_nat_address(lc);
 	if (tmp) gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(pb,"nat_address")),tmp);
 	tmp=linphone_core_get_stun_server(lc);
@@ -852,7 +917,7 @@ void linphone_gtk_show_parameters(void){
 				linphone_core_get_download_bandwidth(lc));
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb,"upload_bw")),
 				linphone_core_get_upload_bandwidth(lc));
-	
+
 
 	/* UI CONFIG */
 	linphone_gtk_fill_langs(pb);
