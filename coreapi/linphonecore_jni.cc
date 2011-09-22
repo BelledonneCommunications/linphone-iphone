@@ -276,8 +276,8 @@ public:
 			
 			if (up==NULL){
 				jobj=env->NewObject(callClass,callCtrId,(jlong)call);
+				jobj=env->NewGlobalRef(jobj);
 				linphone_call_set_user_pointer(call,(void*)jobj);
-				//env->NewGlobalRef(jobj);
 				linphone_call_ref(call);
 			}else{
 				jobj=(jobject)up;
@@ -289,6 +289,7 @@ public:
 	static void callStateChange(LinphoneCore *lc, LinphoneCall* call,LinphoneCallState state,const char* message) {
 		JNIEnv *env = 0;
 		jint result = jvm->AttachCurrentThread(&env,NULL);
+		jobject jcall;
 		if (result != 0) {
 			ms_error("cannot attach VM\n");
 			return;
@@ -297,9 +298,13 @@ public:
 		env->CallVoidMethod(lcData->listener
 							,lcData->callStateId
 							,lcData->core
-							,lcData->getCall(env,call)
+							,(jcall=lcData->getCall(env,call))
 							,env->CallStaticObjectMethod(lcData->callStateClass,lcData->callStateFromIntId,(jint)state),
 							message ? env->NewStringUTF(message) : NULL);
+		if (state==LinphoneCallReleased){
+			linphone_call_set_user_pointer(call,NULL);
+			env->DeleteGlobalRef(jcall);
+		}
 	}
 	static void callEncryptionChange(LinphoneCore *lc, LinphoneCall* call, bool_t encrypted,const char* authentication_token) {
 		JNIEnv *env = 0;
@@ -1032,14 +1037,7 @@ extern "C" jint Java_org_linphone_core_PayloadTypeImpl_getRate(JNIEnv*  env,jobj
 extern "C" void Java_org_linphone_core_LinphoneCallImpl_finalize(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr) {
-	LinphoneCall *call=(LinphoneCall*)ptr;	
-	jobject jobj=(jobject)linphone_call_get_user_pointer(call);
-	if (jobj==thiz){
-		//env->DeleteGlobalRef(jobj);
-	}else{
-		ms_error("Call being destroyed is inconsistent: thiz=%lu, jobj=%lu",(unsigned long)thiz,(unsigned long)jobj);
-	}
-	linphone_call_set_user_pointer(call,NULL);
+	LinphoneCall *call=(LinphoneCall*)ptr;
 	linphone_call_unref(call);
 }
 
