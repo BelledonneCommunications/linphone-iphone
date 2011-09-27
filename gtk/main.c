@@ -321,6 +321,7 @@ GtkWidget *linphone_gtk_create_widget(const char *filename, const char *widget_n
 		return NULL;
 	}
 	g_object_set_data(G_OBJECT(w),"builder",builder);
+	g_signal_connect_swapped(G_OBJECT(w),"destroy",(GCallback)g_object_unref,builder);
 	gtk_builder_connect_signals(builder,w);
 	return w;
 }
@@ -1554,13 +1555,13 @@ static void linphone_gtk_check_soundcards(){
 
 static void linphone_gtk_quit(void){
 	linphone_gtk_uninit_instance();
-	gdk_threads_leave();
 	linphone_gtk_destroy_log_window();
 	linphone_core_destroy(the_core);
 	linphone_gtk_log_uninit();
 #ifdef HAVE_NOTIFY
 	notify_uninit();
 #endif
+	gdk_threads_leave();
 }
 
 #ifdef HAVE_GTK_OSX
