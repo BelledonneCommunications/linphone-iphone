@@ -1112,6 +1112,13 @@ static void call_accepted(Sal *sal, eXosip_event_t *ev){
 		if (op->base.local_media) sdp_process(op);
 	}
 	eXosip_call_build_ack(ev->did,&msg);
+	if (msg==NULL) {
+		ms_warning("This call has been already terminated.");
+		eXosip_lock();
+		eXosip_call_terminate(ev->cid,ev->did);
+		eXosip_unlock();
+		return ;
+	}
 	contact=sal_op_get_contact(op);
 	if (contact) {
 		_osip_list_set_empty(&msg->contacts,(void (*)(void*))osip_contact_free);
