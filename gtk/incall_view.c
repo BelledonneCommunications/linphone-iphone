@@ -319,6 +319,67 @@ static gboolean linphone_gtk_in_call_view_refresh(LinphoneCall *call){
 	return TRUE;
 }
 
+typedef float (*get_volume_t)(void *data);
+
+typedef struct _volume_ctx{
+	GtkWidget *widget;
+	get_volume_t get_volume;
+	void *data;
+	float last_value;
+}volume_ctx_t;
+
+#define UNSIGNIFICANT_VOLUME (-26)
+#define SMOOTH 0.15
+
+static gboolean update_audio_meter(volume_ctx_t *ctx){
+	float volume_db=ctx->get_volume(ctx->data);
+	float frac=(volume_db-UNSIGNIFICANT_VOLUME)/(float)(-UNSIGNIFICANT_VOLUME+3.0);
+	if (frac<0) frac=0;
+	if (frac>1.0) frac=1.0;
+	if (frac<ctx->last_value){
+		frac=(frac*SMOOTH)+(ctx->last_value*(1-SMOOTH));
+	}
+	ctx->last_value=frac;
+	//g_message("volume_db=%f, frac=%f",volume_db,frac);
+	gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(ctx->widget),frac);
+	return TRUE;
+}
+
+static void on_audio_meter_destroy(guint task_id){
+	g_source_remove(task_id);
+}
+
+void linphone_gtk_init_audio_meter(GtkWidget *w, get_volume_t get_volume, void *data){
+	guint task_id=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(w),"task_id"));
+	if (task_id==0){
+		volume_ctx_t *ctx=g_new(volume_ctx_t,1);
+		ctx->widget=w;
+		ctx->get_volume=get_volume;
+		ctx->data=data;
+		ctx->last_value=0;
+		g_object_set_data_full(G_OBJECT(w),"ctx",ctx,g_free);
+		task_id=g_timeout_add(50,(GSourceFunc)update_audio_meter,ctx);
+		g_object_set_data_full(G_OBJECT(w),"task_id",GINT_TO_POINTER(task_id),(GDestroyNotify)on_audio_meter_destroy);
+	}
+}
+
+void linphone_gtk_in_call_view_enable_audio_view(LinphoneCall *call){
+	GtkWidget *callview=(GtkWidget*)linphone_call_get_user_pointer(call);
+	GtkWidget *audio_view=linphone_gtk_get_widget(callview,"incall_audioview");
+	//GtkWidget *mic=linphone_gtk_get_widget(callview,"incall_mic_icon");
+	GtkWidget *spk=linphone_gtk_get_widget(callview,"incall_spk_icon");
+	GtkWidget *mic_level=linphone_gtk_get_widget(callview,"mic_audiolevel");
+	GtkWidget *spk_level=linphone_gtk_get_widget(callview,"spk_audiolevel");
+	GdkPixbuf *pbuf;
+	//gtk_image_set_from_pixbuf(GTK_IMAGE(mic),(pbuf=create_pixbuf("mic_active.png")));
+	//g_object_unref(pbuf);
+	gtk_image_set_from_pixbuf(GTK_IMAGE(spk),(pbuf=create_pixbuf("speaker.png")));
+	g_object_unref(pbuf);
+	linphone_gtk_init_audio_meter(mic_level,(get_volume_t)linphone_call_get_record_volume,call);
+	linphone_gtk_init_audio_meter(spk_level,(get_volume_t)linphone_call_get_play_volume,call);
+	gtk_widget_show_all(audio_view);
+}
+
 void linphone_gtk_in_call_view_set_in_call(LinphoneCall *call){
 	GtkWidget *callview=(GtkWidget*)linphone_call_get_user_pointer(call);
 	GtkWidget *status=linphone_gtk_get_widget(callview,"in_call_status");
@@ -340,6 +401,7 @@ void linphone_gtk_in_call_view_set_in_call(LinphoneCall *call){
 		taskid=g_timeout_add(250,(GSourceFunc)linphone_gtk_in_call_view_refresh,call);
 		g_object_set_data(G_OBJECT(callview),"taskid",GINT_TO_POINTER(taskid));
 	}
+	linphone_gtk_in_call_view_enable_audio_view(call);
 }
 
 void linphone_gtk_in_call_view_set_paused(LinphoneCall *call){
@@ -383,6 +445,7 @@ void linphone_gtk_in_call_view_terminate(LinphoneCall *call, const char *error_m
 	           linphone_gtk_get_ui_config("stop_call_icon","stopcall-red.png"),FALSE);
 	
 	gtk_widget_hide(linphone_gtk_get_widget(callview,"answer_decline_panel"));
+	gtk_widget_hide(linphone_gtk_get_widget(callview,"incall_audioview"));
 	linphone_gtk_enable_mute_button(
 		GTK_BUTTON(linphone_gtk_get_widget(callview,"incall_mute")),FALSE);
 	linphone_gtk_enable_hold_button(call,FALSE,TRUE);
@@ -394,14 +457,14 @@ void linphone_gtk_draw_mute_button(GtkButton *button, gboolean active){
 	g_object_set_data(G_OBJECT(button),"active",GINT_TO_POINTER(active));
 	if (active){
 		GtkWidget *image=create_pixmap("mic_muted.png");
-		gtk_button_set_label(GTK_BUTTON(button),_("Unmute"));
+		/*gtk_button_set_label(GTK_BUTTON(button),_("Unmute"));*/
 		if (image!=NULL) {
 			gtk_button_set_image(GTK_BUTTON(button),image);
 			gtk_widget_show(image);
 		}
 	}else{
 		GtkWidget *image=create_pixmap("mic_active.png");
-		gtk_button_set_label(GTK_BUTTON(button),_("Mute"));
+		/*gtk_button_set_label(GTK_BUTTON(button),_("Mute"));*/
 		if (image!=NULL) {
 			gtk_button_set_image(GTK_BUTTON(button),image);
 			gtk_widget_show(image);
@@ -417,7 +480,8 @@ void linphone_gtk_mute_clicked(GtkButton *button){
 
 void linphone_gtk_enable_mute_button(GtkButton *button, gboolean sensitive)
 {
-	gtk_widget_set_sensitive(GTK_WIDGET(button),sensitive);
+	/*gtk_widget_set_sensitive(GTK_WIDGET(button),sensitive);*/
+	gtk_widget_set_visible(GTK_WIDGET(button),sensitive);
 	linphone_gtk_draw_mute_button(button,FALSE);
 }
 
@@ -459,5 +523,6 @@ void linphone_gtk_enable_hold_button(LinphoneCall *call, gboolean sensitive, gbo
 	g_return_if_fail(callview!=NULL);
 	button=linphone_gtk_get_widget(callview,"hold_call");
 	gtk_widget_set_sensitive(GTK_WIDGET(button),sensitive);
+	gtk_widget_set_visible(GTK_WIDGET(button),sensitive);
 	linphone_gtk_draw_hold_button(GTK_BUTTON(button),!holdon);
 }

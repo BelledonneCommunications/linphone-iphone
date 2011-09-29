@@ -198,7 +198,9 @@ static void update_star(GtkEntry *entry, gboolean is_known){
 	unstarred=g_object_get_data(G_OBJECT(entry),"unstarred_icon");
 	if (is_known && (active==unstarred)){
 		gtk_entry_set_icon_from_pixbuf(entry,GTK_ENTRY_ICON_SECONDARY,starred);
+		gtk_entry_set_icon_tooltip_text(GTK_ENTRY(entry),GTK_ENTRY_ICON_SECONDARY,NULL);
 	}else if ((!is_known) && (active==starred)){
+		gtk_entry_set_icon_tooltip_text(GTK_ENTRY(entry),GTK_ENTRY_ICON_SECONDARY,_("Add to addressbook"));
 		gtk_entry_set_icon_from_pixbuf(entry,GTK_ENTRY_ICON_SECONDARY,unstarred);
 	}
 }

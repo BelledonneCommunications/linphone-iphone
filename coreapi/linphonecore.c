@@ -982,6 +982,7 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	linphone_core_assign_payload_type(lc,&payload_type_speex_wb,111,"vbr=on");
 	linphone_core_assign_payload_type(lc,&payload_type_speex_uwb,112,"vbr=on");
 	linphone_core_assign_payload_type(lc,&payload_type_telephone_event,101,"0-11");
+	linphone_core_assign_payload_type(lc,&payload_type_g722,9,NULL);
 
 #if defined(ANDROID) || defined (__IPHONE_OS_VERSION_MIN_REQUIRED)
 	/*shorten the DNS lookup time and send more retransmissions on mobiles:
@@ -3161,6 +3162,8 @@ const char *linphone_core_get_nat_address_resolved(LinphoneCore *lc)
 	int error;
 	char ipstring [INET6_ADDRSTRLEN];
 
+	if (lc->net_conf.nat_address==NULL) return NULL;
+	
 	if (parse_hostname_to_addr (lc->net_conf.nat_address, &ss, &ss_len)<0) {
 		return lc->net_conf.nat_address;
 	}
