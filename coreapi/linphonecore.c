@@ -3162,6 +3162,8 @@ const char *linphone_core_get_nat_address_resolved(LinphoneCore *lc)
 	int error;
 	char ipstring [INET6_ADDRSTRLEN];
 
+	if (lc->net_conf.nat_address==NULL) return NULL;
+	
 	if (parse_hostname_to_addr (lc->net_conf.nat_address, &ss, &ss_len)<0) {
 		return lc->net_conf.nat_address;
 	}
