@@ -4328,3 +4328,22 @@ void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file){
 	}
 	lc->zrtp_secrets_cache=file ? ms_strdup(file) : NULL;
 }
+
+//				if (stringUri.equals(call.getRemoteAddress().asStringUriOnly())) {
+const LinphoneCall* linphone_core_find_call_from_uri(LinphoneCore *lc, const char *uri) {
+	if (uri == NULL) return NULL;
+	MSList *calls=lc->calls;
+	while(calls) {
+		const LinphoneCall *c=(LinphoneCall*)calls->data;
+		calls=calls->next;
+		const LinphoneAddress *address = linphone_call_get_remote_address(c);
+		char *current_uri=linphone_address_as_string_uri_only(address);
+		if (strcmp(uri,current_uri)==0) {
+			ms_free(current_uri);
+			return c;
+		} else {
+			ms_free(current_uri);
+		}
+	}
+	return NULL;
+}

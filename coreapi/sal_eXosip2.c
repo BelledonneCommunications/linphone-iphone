@@ -761,7 +761,7 @@ int sal_call_refer_with_replaces(SalOp *h, SalOp *other_call_h){
 }
 
 SalOp *sal_call_get_replaces(SalOp *h){
-	if (h->replaces!=NULL){
+	if (h!=NULL && h->replaces!=NULL){
 		int cid;
 		eXosip_lock();
 		cid=eXosip_call_find_by_replaces(h->replaces);
