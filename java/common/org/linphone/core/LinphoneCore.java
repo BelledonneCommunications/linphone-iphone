@@ -619,4 +619,6 @@ public interface LinphoneCore {
 
 	void transferCall(LinphoneCall call, String referTo);
 	void transferCallToAnother(LinphoneCall callToTransfer, LinphoneCall destination);
+
+	LinphoneCall findCallFromUri(String uri);
 }

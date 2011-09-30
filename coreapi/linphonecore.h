@@ -1017,6 +1017,8 @@ bool_t linphone_call_are_all_streams_encrypted(LinphoneCall *call);
 const char* linphone_call_get_authentication_token(LinphoneCall *call);
 bool_t linphone_call_get_authentication_token_verified(LinphoneCall *call);
 
+const LinphoneCall* linphone_core_find_call_from_uri(LinphoneCore *lc, const char *uri);
+
 int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call);
 int linphone_core_add_all_to_conference(LinphoneCore *lc);
 int linphone_core_remove_from_conference(LinphoneCore *lc, LinphoneCall *call);

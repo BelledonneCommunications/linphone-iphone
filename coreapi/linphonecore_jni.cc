@@ -1420,6 +1420,14 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setZrtpSecretsCache(JNIE
 	}
 }
 
+extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_findCallFromUri(JNIEnv *env,jobject thiz,jlong pCore, jstring jUri) {
+	const char* cUri=env->GetStringUTFChars(jUri, NULL);
+	const LinphoneCall *call=linphone_core_find_call_from_uri((LinphoneCore *) pCore,cUri);
+	env->ReleaseStringUTFChars(jUri, cUri);
+	return (jlong) call;
+}
+
+
 extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_setVideoDevice(JNIEnv *env,jobject thiz,jlong pCore,jint id) {
 	LinphoneCore* lc = (LinphoneCore *) pCore;
 	const char** devices = linphone_core_get_video_devices(lc);
