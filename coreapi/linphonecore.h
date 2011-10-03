@@ -156,7 +156,11 @@ typedef struct _LinphoneCallLog{
 	struct _LinphoneCore *lc;
 } LinphoneCallLog;
 
-
+enum LinphoneMediaEncryption {
+	LinphoneMediaEncryptionNone,
+	LinphoneMediaEncryptionSRTP,
+	LinphoneMediaEncryptionZRTP
+};
 
 /*public: */
 void linphone_call_log_set_user_pointer(LinphoneCallLog *cl, void *up);
@@ -1028,6 +1032,12 @@ int linphone_core_leave_conference(LinphoneCore *lc);
 
 int linphone_core_terminate_conference(LinphoneCore *lc);
 int linphone_core_get_conference_size(LinphoneCore *lc);
+
+void linphone_core_set_media_encryption_enabled(LinphoneCore *lc, enum LinphoneMediaEncryption menc);
+enum LinphoneMediaEncryption linphone_core_get_media_encryption(LinphoneCore *lc);
+
+bool_t linphone_core_is_media_encryption_mandatory(LinphoneCore *lc);
+void linphone_core_set_media_encryption_mandatory(LinphoneCore *lc, bool_t m);
 
 #ifdef __cplusplus
 }

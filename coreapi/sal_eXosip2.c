@@ -514,12 +514,18 @@ static void sdp_process(SalOp *h){
 		 It should contains media parameters constraint from the remote offer, not our response*/
 		strcpy(h->result->addr,h->base.remote_media->addr);
 		h->result->bandwidth=h->base.remote_media->bandwidth;
+		
+		//remplacer la cle
 		for(i=0;i<h->result->nstreams;++i){
 			if (h->result->streams[i].port>0){
 				strcpy(h->result->streams[i].addr,h->base.remote_media->streams[i].addr);
 				h->result->streams[i].ptime=h->base.remote_media->streams[i].ptime;
 				h->result->streams[i].bandwidth=h->base.remote_media->streams[i].bandwidth;
 				h->result->streams[i].port=h->base.remote_media->streams[i].port;
+				
+				if (h->result->streams[i].proto == SalProtoRtpSavp) {
+					h->result->streams[i].crypto[0] = h->base.remote_media->streams[i].crypto[0]; 
+				}
 			}
 		}
 	}
@@ -545,6 +551,8 @@ int sal_call(SalOp *h, const char *from, const char *to){
 	sal_op_set_from(h,from);
 	sal_op_set_to(h,to);
 	sal_exosip_fix_route(h);
+	
+	h->terminated = FALSE;
 	err=eXosip_call_build_initial_invite(&invite,to,from,sal_op_get_route(h),"Phone call");
 	if (err!=0){
 		ms_error("Could not create call.");

@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define sal_h
 
 #include "mediastreamer2/mscommon.h"
+#include "ortp/srtp.h"
 
 /*Dirty hack, keep in sync with mediastreamer2/include/mediastream.h */
 #ifndef PAYLOAD_TYPE_FLAG_CAN_RECV
@@ -111,6 +112,15 @@ typedef struct SalEndpointCandidate{
 
 #define SAL_ENDPOINT_CANDIDATE_MAX 2
 
+typedef struct SalSrtpCryptoAlgo {
+	unsigned int tag;
+	enum ortp_srtp_crypto_suite_t algo;
+	/* 41= 40 max(key_length for all algo) + '\0' */
+	char master_key[41];
+} SalSrtpCryptoAlgo;
+
+#define SAL_CRYPTO_ALGO_MAX 4
+
 typedef struct SalStreamDescription{
 	SalMediaProto proto;
 	SalStreamType type;
@@ -122,6 +132,7 @@ typedef struct SalStreamDescription{
 	int ptime;
 	SalEndpointCandidate candidates[SAL_ENDPOINT_CANDIDATE_MAX];
 	SalStreamDir dir;
+	SalSrtpCryptoAlgo crypto[SAL_CRYPTO_ALGO_MAX];
 } SalStreamDescription;
 
 #define SAL_MEDIA_DESCRIPTION_MAX_STREAMS 4

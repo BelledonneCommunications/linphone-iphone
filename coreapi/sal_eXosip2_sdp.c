@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
 #include "ortp/b64.h"
+#include "ortp/srtp.h"
 #include "sal.h"
 #include <eXosip2/eXosip.h>
 
@@ -233,9 +234,47 @@ static void add_line(sdp_message_t *msg, int lineno, const SalStreamDescription 
 			      osip_strdup ("IN"), inet6 ? osip_strdup ("IP6") : osip_strdup ("IP4"),
 			      osip_strdup (addr), NULL, NULL);
 	}
-	sdp_message_m_media_add (msg, osip_strdup (mt),
-				 int_2char (port), NULL,
-				 osip_strdup ("RTP/AVP"));
+	
+	if (desc->proto == SalProtoRtpSavp) {
+		int i;
+		
+		sdp_message_m_media_add (msg, osip_strdup (mt),
+					 int_2char (port), NULL,
+					 osip_strdup ("RTP/SAVP"));
+       
+		/* add crypto lines */
+		for(i=0; i<SAL_CRYPTO_ALGO_MAX; i++) {
+			char buffer[1024];
+			switch (desc->crypto[i].algo) {
+				case AES_128_SHA1_80:
+					snprintf(buffer, 1024, "%d %s inline:%s",
+						desc->crypto[i].tag, "AES_CM_128_HMAC_SHA1_80", desc->crypto[i].master_key);
+					sdp_message_a_attribute_add(msg, lineno, osip_strdup("crypto"),
+						osip_strdup(buffer));
+					break;
+				case AES_128_SHA1_32:
+					snprintf(buffer, 1024, "%d %s inline:%s",
+						desc->crypto[i].tag, "AES_CM_128_HMAC_SHA1_32", desc->crypto[i].master_key);
+					sdp_message_a_attribute_add(msg, lineno, osip_strdup("crypto"),
+						osip_strdup(buffer));
+					break;
+				case AES_128_NO_AUTH:
+					ms_warning("Unsupported crypto suite: AES_128_NO_AUTH");
+					break;
+				case NO_CIPHER_SHA1_80:
+					ms_warning("Unsupported crypto suite: NO_CIPHER_SHA1_80");
+					break; 
+				default:
+					i = SAL_CRYPTO_ALGO_MAX;
+			}
+		}
+		
+	} else {
+		sdp_message_m_media_add (msg, osip_strdup (mt),
+					 int_2char (port), NULL,
+					 osip_strdup ("RTP/AVP"));
+		
+	}
 	if (desc->bandwidth>0) sdp_message_b_bandwidth_add (msg, lineno, osip_strdup ("AS"),
 				     int_2char(desc->bandwidth));
 	if (desc->ptime>0) sdp_message_a_attribute_add(msg,lineno,osip_strdup("ptime"),
@@ -355,7 +394,7 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 		for(j=0;(sbw=sdp_message_bandwidth_get(msg,i,j))!=NULL;++j){
 			if (strcasecmp(sbw->b_bwtype,"AS")==0) stream->bandwidth=atoi(sbw->b_bandwidth);
 		}
-		stream->dir=_sdp_message_get_mline_dir(msg,i);
+		stream->dir=_sdp_message_get_mline_dir(msg,i);		
 		/* for each payload type */
 		for (j=0;((number=sdp_message_m_payload_get (msg, i,j)) != NULL); j++){
 			const char *rtpmap,*fmtp;
@@ -372,6 +411,49 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 				ms_message("Found payload %s/%i fmtp=%s",pt->mime_type,pt->clock_rate,
 					pt->send_fmtp ? pt->send_fmtp : "");
 			}
+		}
+		
+		/* read crypto lines if any */
+		if (stream->proto == SalProtoRtpSavp) {
+			int k, valid_count = 0;
+			sdp_attribute_t *attr;
+				
+			memset(&stream->crypto, 0, sizeof(stream->crypto));
+			for (k=0;valid_count < SAL_CRYPTO_ALGO_MAX && (attr=sdp_message_attribute_get(msg,i,k))!=NULL;k++){
+				char tmp[256], tmp2[256];
+				if (keywordcmp("crypto",attr->a_att_field)==0 && attr->a_att_value!=NULL){
+					int nb = sscanf(attr->a_att_value, "%d %256s inline:%256s",
+						&stream->crypto[valid_count].tag,
+						tmp,
+						tmp2);
+						ms_message("Found valid crypto line (tag:%d algo:'%s' key:'%s'", 
+								stream->crypto[valid_count].tag, 
+								tmp, 
+								tmp2);
+					if (nb == 3) {
+						if (strcmp(tmp, "AES_CM_128_HMAC_SHA1_80") == 0)
+							stream->crypto[valid_count].algo = AES_128_SHA1_80;
+						else if (strcmp(tmp, "AES_CM_128_HMAC_SHA1_32") == 0)
+							stream->crypto[valid_count].algo = AES_128_SHA1_32;
+						else {
+							ms_warning("Failed to parse crypto-algo: '%s'", tmp);
+							stream->crypto[valid_count].algo = 0;
+						}
+						if (stream->crypto[valid_count].algo) {
+							strncpy(stream->crypto[valid_count].master_key, tmp2, 41);
+							stream->crypto[valid_count].master_key[40] = '\0';
+							ms_message("Found valid crypto line (tag:%d algo:'%s' key:'%s'", 
+								stream->crypto[valid_count].tag, 
+								tmp, 
+								stream->crypto[valid_count].master_key);
+							valid_count++;
+						}
+					} else {
+						ms_warning("sdp has a strange a= line (%s) nb=%i",attr->a_att_value,nb);
+					}
+				}
+			}
+			ms_message("Found: %d valid crypto lines", valid_count);
 		}
 	}
 	desc->nstreams=i;

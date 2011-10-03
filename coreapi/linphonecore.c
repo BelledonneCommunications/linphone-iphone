@@ -35,6 +35,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 #endif
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 /*#define UNSTANDART_GSM_11K 1*/
 
 static const char *liblinphone_version=LIBLINPHONE_VERSION;
@@ -515,7 +519,7 @@ static void sip_config_read(LinphoneCore *lc)
 	}
 
 	sal_root_ca(lc->sal, lp_config_get_string(lc->config,"sip","root_ca", "/etc/ssl/certs"));
-
+	
 	tmp=lp_config_get_int(lc->config,"sip","guess_hostname",1);
 	linphone_core_set_guess_hostname(lc,tmp);
 
@@ -4231,7 +4235,9 @@ LinphoneGlobalState linphone_core_get_global_state(const LinphoneCore *lc){
 
 LinphoneCallParams *linphone_core_create_default_call_parameters(LinphoneCore *lc){
 	LinphoneCallParams *p=ms_new0(LinphoneCallParams,1);
-	p->has_video=linphone_core_video_enabled(lc);
+	p->has_video=linphone_core_video_enabled(lc); 
+	p->media_encryption=linphone_core_get_media_encryption(lc);
+	ms_message("%s : %d", __FUNCTION__, p->media_encryption);
 	return p;
 }
 
@@ -4346,4 +4352,38 @@ const LinphoneCall* linphone_core_find_call_from_uri(LinphoneCore *lc, const cha
 		}
 	}
 	return NULL;
+}
+
+void linphone_core_set_srtp_enabled(LinphoneCore *lc, bool_t enabled) {
+	lp_config_set_int(lc->config,"sip","srtp",(int)enabled);
+}
+
+void linphone_core_set_media_encryption_enabled(LinphoneCore *lc, enum LinphoneMediaEncryption menc) {
+	if (menc == LinphoneMediaEncryptionSRTP)
+		lp_config_set_string(lc->config,"sip","media_encryption","srtp");
+	else if (menc == LinphoneMediaEncryptionZRTP)
+		lp_config_set_string(lc->config,"sip","media_encryption","zrtp");
+	else
+		lp_config_set_string(lc->config,"sip","media_encryption","none");
+}
+
+enum LinphoneMediaEncryption linphone_core_get_media_encryption(LinphoneCore *lc) {
+	const char* menc = lp_config_get_string(lc->config, "sip", "media_encryption", NULL);
+	
+	if (menc == NULL)
+		return LinphoneMediaEncryptionNone;
+	else if (strcmp(menc, "srtp")==0)
+		return LinphoneMediaEncryptionSRTP;
+	else if (strcmp(menc, "zrtp")==0)
+		return LinphoneMediaEncryptionZRTP;
+	else
+		return LinphoneMediaEncryptionNone;
+}
+
+bool_t linphone_core_is_media_encryption_mandatory(LinphoneCore *lc) {
+	return (bool_t)lp_config_get_int(lc->config, "sip", "media_encryption_mandatory", 0);
+}
+
+void linphone_core_set_media_encryption_mandatory(LinphoneCore *lc, bool_t m) {
+	lp_config_set_int(lc->config, "sip", "media_encryption_mandatory", (int)m);
 }

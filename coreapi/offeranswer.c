@@ -128,6 +128,31 @@ static MSList *match_payloads(const MSList *local, const MSList *remote, bool_t 
 	return res;
 }
 
+static bool_t match_crypto_algo(const SalSrtpCryptoAlgo* local, const SalSrtpCryptoAlgo* remote, 
+	SalSrtpCryptoAlgo* result, bool_t use_local_key) {
+	int i,j;
+	for(i=0; i<SAL_CRYPTO_ALGO_MAX; i++) {
+		if (remote[i].algo == 0)
+			break;
+			
+		for(j=0; j<SAL_CRYPTO_ALGO_MAX; j++) {
+			if (remote[i].algo == local[j].algo) {
+				result->algo = remote[i].algo;
+				if (use_local_key) {
+					strncpy(result->master_key, local[j].master_key, 41);
+					result->tag = local[j].tag;
+				} else {
+					strncpy(result->master_key, remote[j].master_key, 41);
+					result->tag = remote[j].tag;
+				}
+				result->master_key[40] = '\0';
+				return TRUE;
+			}
+		}
+	}
+	return FALSE;
+}
+
 
 
 static SalStreamDir compute_dir_outgoing(SalStreamDir local, SalStreamDir answered){
@@ -174,7 +199,7 @@ static void initiate_outgoing(const SalStreamDescription *local_offer,
     					SalStreamDescription *result){
 	if (remote_answer->port!=0)
 		result->payloads=match_payloads(local_offer->payloads,remote_answer->payloads,TRUE,FALSE);
-	result->proto=local_offer->proto;
+	result->proto=remote_answer->proto;
 	result->type=local_offer->type;
 	result->dir=compute_dir_outgoing(local_offer->dir,remote_answer->dir);
 
@@ -186,6 +211,12 @@ static void initiate_outgoing(const SalStreamDescription *local_offer,
 	}else{
 		result->port=0;
 	}
+	if (result->proto == SalProtoRtpSavp) {
+		/* verify crypto algo */
+		memset(result->crypto, 0, sizeof(result->crypto));
+		if (!match_crypto_algo(local_offer->crypto, remote_answer->crypto, &result->crypto[0], FALSE))
+			result->port = 0;
+	}
 }
 
 
@@ -193,7 +224,7 @@ static void initiate_incoming(const SalStreamDescription *local_cap,
     					const SalStreamDescription *remote_offer,
     					SalStreamDescription *result, bool_t one_matching_codec){
 	result->payloads=match_payloads(local_cap->payloads,remote_offer->payloads, FALSE, one_matching_codec);
-	result->proto=local_cap->proto;
+	result->proto=remote_offer->proto;
 	result->type=local_cap->type;
 	result->dir=compute_dir_incoming(local_cap->dir,remote_offer->dir);
 	if (result->payloads && !only_telephone_event(result->payloads)){
@@ -205,6 +236,13 @@ static void initiate_incoming(const SalStreamDescription *local_cap,
 	}else{
 		result->port=0;
 	}
+	if (result->proto == SalProtoRtpSavp) {
+		/* select crypto algo */
+		memset(result->crypto, 0, sizeof(result->crypto));
+		if (!match_crypto_algo(local_cap->crypto, remote_offer->crypto, &result->crypto[0], TRUE))
+			result->port = 0; 
+		
+	}
 }
 
 /**
@@ -215,6 +253,7 @@ int offer_answer_initiate_outgoing(const SalMediaDescription *local_offer,
 									const SalMediaDescription *remote_answer,
     							SalMediaDescription *result){
     int i,j;
+    
 	const SalStreamDescription *ls,*rs;
     for(i=0,j=0;i<local_offer->nstreams;++i){
 		ms_message("Processing for stream %i",i);
@@ -246,10 +285,18 @@ int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities
     for(i=0;i<remote_offer->nstreams;++i){
 		rs=&remote_offer->streams[i];
 		ms_message("Processing for stream %i",i);
+		
 		ls=sal_media_description_find_stream((SalMediaDescription*)local_capabilities,rs->proto,rs->type);
+		ms_message("remote proto: %s => %p", (rs->proto == SalProtoRtpAvp)?"AVP":"SAVP", ls);
+		/* if matching failed, and remote proposes Avp only, ask for local Savp streams */ 
+		if (!ls && rs->proto == SalProtoRtpAvp) {
+			ls=sal_media_description_find_stream((SalMediaDescription*)local_capabilities,SalProtoRtpSavp,rs->type);
+			ms_message("retry with AVP => %p", ls);
+		}
 		if (ls){
     		initiate_incoming(ls,rs,&result->streams[i],one_matching_codec);
-		} else {
+		}
+		else {
 			/* create an inactive stream for the answer, as there where no matching stream a local capability */
 			result->streams[i].dir=SalStreamInactive;
 			result->streams[i].port=0;
