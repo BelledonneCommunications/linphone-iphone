@@ -12,7 +12,7 @@
 ##  This program is distributed in the hope that it will be useful,
 ##  but WITHOUT ANY WARRANTY; without even the implied warranty of
 ##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-##  GNU Library General Public License for more details.
+##  GNU General Public License for more details.
 ##
 ##  You should have received a copy of the GNU General Public License
 ##  along with this program; if not, write to the Free Software
@@ -123,13 +123,12 @@ LOCAL_STATIC_LIBRARIES += libspeex
 ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
 LOCAL_CFLAGS += -DHAVE_ILBC=1
 LOCAL_STATIC_LIBRARIES += libmsilbc
-LOCAL_C_INCLUDES += $(LIBLINPHONE_EXTENDED_C_INCLUDES) 
 endif
 
-LOCAL_STATIC_LIBRARIES += $(LIBLINPHONE_EXTENDED_STATIC_LIBS)
+LOCAL_C_INCLUDES += $(LIBLINPHONE_EXTENDED_C_INCLUDES) 
+LOCAL_WHOLE_STATIC_LIBRARIES += $(LIBLINPHONE_EXTENDED_STATIC_LIBS)
 LOCAL_SRC_FILES  += $(LIBLINPHONE_EXTENDED_SRC_FILES)
 
-LOCAL_LDLIBS    += -lGLESv2
 ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
 	LOCAL_SHARED_LIBRARIES += liblinssl liblincrypto
 	ifeq ($(BUILD_GPLV3_ZRTP),1)

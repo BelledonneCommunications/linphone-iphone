@@ -13,6 +13,7 @@ status-red.png \
 status-offline.png \
 contact-orange.png dialer-orange.png history-orange.png\
 startcall-green.png stopcall-red.png addcall-green.png linphone.icns \
-contact_starred.png contact_unstarred.png
+contact_starred.png contact_unstarred.png \
+speaker.png
 
 EXTRA_DIST=$(pixmap_DATA)

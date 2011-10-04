@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "linphone.h"
 
 static ms_thread_t pipe_thread;
-static ortp_pipe_t server_pipe=-1;
+static ortp_pipe_t server_pipe=(ortp_pipe_t)-1;
 static gboolean server_pipe_running=TRUE;
 static char *pipe_name;
 
@@ -38,7 +38,7 @@ static void * server_pipe_thread(void *pointer){
 	
 	do{
 		child=ortp_server_pipe_accept_client(server_pipe);
-		if (server_pipe_running && child!=-1){
+		if (server_pipe_running && child!=(ortp_pipe_t)-1){
 			char buf[256]={0};
 			if (ortp_pipe_read(child,(uint8_t*)buf,sizeof(buf))>0){
 				g_message("Received wakeup command with arg %s",buf);
@@ -56,7 +56,7 @@ static void * server_pipe_thread(void *pointer){
 static void linphone_gtk_init_pipe(const char *name){
 	pipe_name=g_strdup(name);
 	server_pipe=ortp_server_pipe_create(name);
-	if (server_pipe==-1){
+	if (server_pipe==(ortp_pipe_t)-1){
 		g_warning("Fail to create server pipe for name %s: %s",name,strerror(errno));
 	}
 	ms_thread_create(&pipe_thread,NULL,server_pipe_thread,NULL);
@@ -64,7 +64,7 @@ static void linphone_gtk_init_pipe(const char *name){
 
 bool_t linphone_gtk_init_instance(const char *app_name, const char *addr_to_call){
 	ortp_pipe_t p=ortp_client_pipe_connect(app_name);
-	if (p!=-1){
+	if (p!=(ortp_pipe_t)-1){
 		uint8_t buf[256]={0};
 		g_message("There is already a running instance.");
 		if (addr_to_call!=NULL){
@@ -84,7 +84,7 @@ bool_t linphone_gtk_init_instance(const char *app_name, const char *addr_to_call
 }
 
 void linphone_gtk_uninit_instance(void){
-	if (server_pipe!=-1){
+	if (server_pipe!=(ortp_pipe_t)-1){
 		ortp_pipe_t client;
 		server_pipe_running=FALSE;
 		/*this is to unblock the accept() of the server pipe*/
@@ -92,7 +92,7 @@ void linphone_gtk_uninit_instance(void){
 		ortp_pipe_write(client,(uint8_t*)" ",1);
 		ortp_client_pipe_close(client);
 		ms_thread_join(pipe_thread,NULL);
-		server_pipe=-1;
+		server_pipe=(ortp_pipe_t)-1;
 		g_free(pipe_name);
 		pipe_name=NULL;
 	}

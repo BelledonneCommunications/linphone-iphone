@@ -41,6 +41,10 @@ static MSWebCam *get_nowebcam_device(){
 }
 #endif
 
+LinphoneCore *linphone_call_get_core(const LinphoneCall *call){
+	return call->core;
+}
+
 static const char* get_hexa_zrtp_identifier(LinphoneCore *lc){
 	const char *confZid=lp_config_get_string(lc->config,"rtp","zid",NULL);
 	if (confZid != NULL) {
@@ -1264,9 +1268,9 @@ bool_t linphone_call_echo_limiter_enabled(const LinphoneCall *call){
 **/
 float linphone_call_get_play_volume(LinphoneCall *call){
 	AudioStream *st=call->audiostream;
-	if (st && st->volsend){
+	if (st && st->volrecv){
 		float vol=0;
-		ms_filter_call_method(st->volsend,MS_VOLUME_GET,&vol);
+		ms_filter_call_method(st->volrecv,MS_VOLUME_GET,&vol);
 		return vol;
 		
 	}
@@ -1279,9 +1283,9 @@ float linphone_call_get_play_volume(LinphoneCall *call){
 **/
 float linphone_call_get_record_volume(LinphoneCall *call){
 	AudioStream *st=call->audiostream;
-	if (st && st->volrecv){
+	if (st && st->volsend && !call->audio_muted && call->state==LinphoneCallStreamsRunning){
 		float vol=0;
-		ms_filter_call_method(st->volrecv,MS_VOLUME_GET,&vol);
+		ms_filter_call_method(st->volsend,MS_VOLUME_GET,&vol);
 		return vol;
 		
 	}

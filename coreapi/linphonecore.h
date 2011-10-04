@@ -235,7 +235,7 @@ typedef enum _LinphoneCallState{
 
 const char *linphone_call_state_to_string(LinphoneCallState cs);
 
-
+LinphoneCore *linphone_call_get_core(const LinphoneCall *call);
 LinphoneCallState linphone_call_get_state(const LinphoneCall *call);
 bool_t linphone_call_asked_to_autoanswer(LinphoneCall *call);
 const LinphoneAddress * linphone_core_get_current_call_remote_address(struct _LinphoneCore *lc);
@@ -1017,6 +1017,8 @@ void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file);
 bool_t linphone_call_are_all_streams_encrypted(LinphoneCall *call);
 const char* linphone_call_get_authentication_token(LinphoneCall *call);
 bool_t linphone_call_get_authentication_token_verified(LinphoneCall *call);
+
+const LinphoneCall* linphone_core_find_call_from_uri(LinphoneCore *lc, const char *uri);
 
 int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call);
 int linphone_core_add_all_to_conference(LinphoneCore *lc);
