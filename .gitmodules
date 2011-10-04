@@ -25,3 +25,6 @@
 [submodule "submodules/msamr"]
 	path = submodules/msamr
 	url = git://git.linphone.org/msamr.git
+[submodule "submodules/externals/zrtpcpp"]
+	path = submodules/externals/zrtpcpp
+	url = git://github.com/wernerd/ZRTPCPP.git
