@@ -4237,7 +4237,6 @@ LinphoneCallParams *linphone_core_create_default_call_parameters(LinphoneCore *l
 	LinphoneCallParams *p=ms_new0(LinphoneCallParams,1);
 	p->has_video=linphone_core_video_enabled(lc); 
 	p->media_encryption=linphone_core_get_media_encryption(lc);
-	ms_message("%s : %d", __FUNCTION__, p->media_encryption);
 	return p;
 }
 
@@ -4358,7 +4357,7 @@ void linphone_core_set_srtp_enabled(LinphoneCore *lc, bool_t enabled) {
 	lp_config_set_int(lc->config,"sip","srtp",(int)enabled);
 }
 
-void linphone_core_set_media_encryption_enabled(LinphoneCore *lc, enum LinphoneMediaEncryption menc) {
+void linphone_core_set_media_encryption(LinphoneCore *lc, enum LinphoneMediaEncryption menc) {
 	if (menc == LinphoneMediaEncryptionSRTP)
 		lp_config_set_string(lc->config,"sip","media_encryption","srtp");
 	else if (menc == LinphoneMediaEncryptionZRTP)

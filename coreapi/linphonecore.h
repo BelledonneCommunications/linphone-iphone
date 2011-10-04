@@ -263,6 +263,10 @@ float linphone_call_get_play_volume(LinphoneCall *call);
 float linphone_call_get_record_volume(LinphoneCall *call);
 float linphone_call_get_current_quality(LinphoneCall *call);
 float linphone_call_get_average_quality(LinphoneCall *call);
+bool_t linphone_call_are_all_streams_encrypted(LinphoneCall *call);
+const char* linphone_call_get_authentication_token(LinphoneCall *call);
+bool_t linphone_call_get_authentication_token_verified(LinphoneCall *call);
+void linphone_call_send_vfu_request(LinphoneCall *call);
 void *linphone_call_get_user_pointer(LinphoneCall *call);
 void linphone_call_set_user_pointer(LinphoneCall *call, void *user_pointer);
 /**
@@ -1011,15 +1015,9 @@ LinphoneGlobalState linphone_core_get_global_state(const LinphoneCore *lc);
  */
 void linphone_core_refresh_registers(LinphoneCore* lc);
 
-
-void linphone_call_send_vfu_request(LinphoneCall *call);
-
 /* Path to the file storing secrets cache */
 void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file);
 
-bool_t linphone_call_are_all_streams_encrypted(LinphoneCall *call);
-const char* linphone_call_get_authentication_token(LinphoneCall *call);
-bool_t linphone_call_get_authentication_token_verified(LinphoneCall *call);
 
 const LinphoneCall* linphone_core_find_call_from_uri(LinphoneCore *lc, const char *uri);
 
@@ -1033,7 +1031,7 @@ int linphone_core_leave_conference(LinphoneCore *lc);
 int linphone_core_terminate_conference(LinphoneCore *lc);
 int linphone_core_get_conference_size(LinphoneCore *lc);
 
-void linphone_core_set_media_encryption_enabled(LinphoneCore *lc, enum LinphoneMediaEncryption menc);
+void linphone_core_set_media_encryption(LinphoneCore *lc, enum LinphoneMediaEncryption menc);
 enum LinphoneMediaEncryption linphone_core_get_media_encryption(LinphoneCore *lc);
 
 bool_t linphone_core_is_media_encryption_mandatory(LinphoneCore *lc);
