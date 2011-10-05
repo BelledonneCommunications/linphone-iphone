@@ -1,6 +1,6 @@
 [submodule "oRTP"]
 	path = oRTP
-	url = git://git.linphone.org/ortp.git
+	url = gitosis@git.linphone.org:ortp-private
 [submodule "mediastreamer2"]
 	path = mediastreamer2
-	url = git://git.linphone.org/mediastreamer2.git
+	url = gitosis@git.linphone.org:mediastreamer2-private
