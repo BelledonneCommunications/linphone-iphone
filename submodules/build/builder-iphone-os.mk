@@ -38,6 +38,7 @@ linphone_configure_controls=  --disable-video \
                               --with-gsm=$(prefix) \
                               LIBZRTPCPP_CFLAGS="-I$(prefix)/include" \
 			      LIBZRTPCPP_LIBS="-L$(prefix)/lib -lzrtpcpp -lcrypto" \
+			      SRTP_CFLAGS="-I$(prefix)/include" \
 			      SRTP_LIBS="-L$(prefix)/lib -lsrtp -lcrypto" \
                               SPEEX_CFLAGS="-I$(prefix)/include" \
                               SPEEXDSP_CFLAGS="-I$(prefix)/include" \
