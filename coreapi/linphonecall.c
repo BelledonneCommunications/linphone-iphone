@@ -353,8 +353,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	linphone_address_clean(from);
 	linphone_core_get_local_ip(lc,linphone_address_get_domain(from),call->localip);
 	linphone_call_init_common(call, from, to);
-	call->params.has_video=linphone_core_video_enabled(lc);
-	call->params.media_encryption=linphone_core_get_media_encryption(lc);
+	linphone_core_init_default_params(lc, &call->params);
 	call->localdesc=create_local_media_description (lc,call);
 	call->camera_active=call->params.has_video;
 	if (linphone_core_get_firewall_policy(call->core)==LinphonePolicyUseStun)
@@ -712,6 +711,15 @@ void linphone_call_params_enable_video(LinphoneCallParams *cp, bool_t enabled){
 bool_t linphone_call_params_video_enabled(const LinphoneCallParams *cp){
 	return cp->has_video;
 }
+
+enum LinphoneMediaEncryption linphone_call_get_media_encryption(LinphoneCallParams *cp) {
+	return cp->media_encryption;
+}
+
+void linphone_call_params_set_media_encryption(LinphoneCallParams *cp, enum LinphoneMediaEncryption e) {
+	cp->media_encryption = e;
+}
+
 
 /**
  * Enable sending of real early media (during outgoing calls).

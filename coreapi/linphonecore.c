@@ -4235,8 +4235,7 @@ LinphoneGlobalState linphone_core_get_global_state(const LinphoneCore *lc){
 
 LinphoneCallParams *linphone_core_create_default_call_parameters(LinphoneCore *lc){
 	LinphoneCallParams *p=ms_new0(LinphoneCallParams,1);
-	p->has_video=linphone_core_video_enabled(lc); 
-	p->media_encryption=linphone_core_get_media_encryption(lc);
+	linphone_core_init_default_params(lc, p);
 	return p;
 }
 
@@ -4385,4 +4384,10 @@ bool_t linphone_core_is_media_encryption_mandatory(LinphoneCore *lc) {
 
 void linphone_core_set_media_encryption_mandatory(LinphoneCore *lc, bool_t m) {
 	lp_config_set_int(lc->config, "sip", "media_encryption_mandatory", (int)m);
+}
+
+void linphone_core_init_default_params(LinphoneCore*lc, LinphoneCallParams *params) {
+	params->has_video=linphone_core_video_enabled(lc);
+	params->media_encryption=linphone_core_get_media_encryption(lc);	
+	params->in_conference=FALSE;
 }

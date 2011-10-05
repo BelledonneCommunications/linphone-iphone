@@ -183,6 +183,8 @@ typedef struct _LinphoneCallParams LinphoneCallParams;
 LinphoneCallParams * linphone_call_params_copy(const LinphoneCallParams *cp);
 void linphone_call_params_enable_video(LinphoneCallParams *cp, bool_t enabled);
 bool_t linphone_call_params_video_enabled(const LinphoneCallParams *cp);
+enum LinphoneMediaEncryption linphone_call_get_media_encryption(LinphoneCallParams *cp);
+void linphone_call_params_set_media_encryption(LinphoneCallParams *cp, enum LinphoneMediaEncryption e);
 void linphone_call_params_enable_early_media_sending(LinphoneCallParams *cp, bool_t enabled);
 bool_t linphone_call_params_early_media_sending_enabled(const LinphoneCallParams *cp);
 bool_t linphone_call_params_local_conference_mode(const LinphoneCallParams *cp);
@@ -1031,11 +1033,23 @@ int linphone_core_leave_conference(LinphoneCore *lc);
 int linphone_core_terminate_conference(LinphoneCore *lc);
 int linphone_core_get_conference_size(LinphoneCore *lc);
 
+/**
+ * Choose media encryption policy to be used for RTP packets
+ */
 void linphone_core_set_media_encryption(LinphoneCore *lc, enum LinphoneMediaEncryption menc);
 enum LinphoneMediaEncryption linphone_core_get_media_encryption(LinphoneCore *lc);
 
 bool_t linphone_core_is_media_encryption_mandatory(LinphoneCore *lc);
+/**
+ * Defines Linphone behaviour when encryption parameters negociation fails on outoing call.
+ * If set to TRUE call will fail; if set to FALSE will resend an INVITE with encryption disabled
+ */
 void linphone_core_set_media_encryption_mandatory(LinphoneCore *lc, bool_t m);
+
+/**
+ * Init call params using LinphoneCore's current configuration
+ */
+void linphone_core_init_default_params(LinphoneCore*lc, LinphoneCallParams *params);
 
 #ifdef __cplusplus
 }
