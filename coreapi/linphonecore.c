@@ -3544,6 +3544,7 @@ static MSVideoSizeDef supported_resolutions[]={
 	{	{MS_VIDEO_SIZE_QVGA_H,MS_VIDEO_SIZE_QVGA_W}	,	"qvga-portrait"	},
 	{	{MS_VIDEO_SIZE_QCIF_W,MS_VIDEO_SIZE_QCIF_H}	,	"qcif"	},
 	{	{MS_VIDEO_SIZE_QCIF_H,MS_VIDEO_SIZE_QCIF_W}	,	"qcif-portrait"	},
+	{	{MS_VIDEO_SIZE_IOS_MEDIUM_H,MS_VIDEO_SIZE_IOS_MEDIUM_W}	,	"ios-medium"	},	
 	{	{0,0}			,	NULL	}
 };
 
