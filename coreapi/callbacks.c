@@ -333,7 +333,8 @@ static void call_accepted(SalOp *op){
 			}
 			linphone_core_update_streams (lc,call,md);
 			linphone_call_set_state(call, LinphoneCallStreamsRunning, "Streams running");
-			lc->current_call=call;
+			if (!call->current_params.in_conference)
+				lc->current_call=call;
 		}
 	}else{
 		/*send a bye*/
@@ -391,7 +392,8 @@ static void call_updating(SalOp *op){
 				if(lc->vtable.display_status)
 					lc->vtable.display_status(lc,_("We have been resumed..."));
 				linphone_call_set_state (call,LinphoneCallStreamsRunning,"Connected (streams running)");
-				lc->current_call=call;
+				if (!call->current_params.in_conference)
+					lc->current_call=call;
 			}else{
 				prevstate=call->state;
 				linphone_call_set_state(call, LinphoneCallUpdatedByRemote,"Call updated by remote");

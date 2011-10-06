@@ -36,7 +36,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define chdir _chdir
 #endif
 
-#if defined HAVE_NOTIFY1 || defined HAVE_NOTIFIED4
+#if defined(HAVE_NOTIFY1) || defined(HAVE_NOTIFY4)
 #define HAVE_NOTIFY
 #endif
 
