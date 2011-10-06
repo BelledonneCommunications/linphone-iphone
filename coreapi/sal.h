@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define sal_h
 
 #include "mediastreamer2/mscommon.h"
-#include "ortp/srtp.h"
+#include "ortp/ortp_srtp.h"
 
 /*Dirty hack, keep in sync with mediastreamer2/include/mediastream.h */
 #ifndef PAYLOAD_TYPE_FLAG_CAN_RECV

@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
 #include "ortp/b64.h"
-#include "ortp/srtp.h"
+#include "ortp/ortp_srtp.h"
 #include "sal.h"
 #include <eXosip2/eXosip.h>
 
