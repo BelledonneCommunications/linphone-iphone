@@ -1422,11 +1422,12 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setZrtpSecretsCache(JNIE
 	}
 }
 
-extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_findCallFromUri(JNIEnv *env,jobject thiz,jlong pCore, jstring jUri) {
+extern "C" jobject Java_org_linphone_core_LinphoneCoreImpl_findCallFromUri(JNIEnv *env,jobject thiz,jlong pCore, jstring jUri) {
 	const char* cUri=env->GetStringUTFChars(jUri, NULL);
-	const LinphoneCall *call=linphone_core_find_call_from_uri((LinphoneCore *) pCore,cUri);
+	LinphoneCall *call= (LinphoneCall *) linphone_core_find_call_from_uri((LinphoneCore *) pCore,cUri);
 	env->ReleaseStringUTFChars(jUri, cUri);
-	return (jlong) call;
+	LinphoneCoreData *lcdata=(LinphoneCoreData*)linphone_core_get_user_data((LinphoneCore*)pCore);
+	return (jobject) lcdata->getCall(env,call);
 }
 
 
