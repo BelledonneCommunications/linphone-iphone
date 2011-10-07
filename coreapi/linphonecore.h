@@ -242,7 +242,7 @@ const LinphoneAddress * linphone_core_get_current_call_remote_address(struct _Li
 const LinphoneAddress * linphone_call_get_remote_address(const LinphoneCall *call);
 char *linphone_call_get_remote_address_as_string(const LinphoneCall *call);
 LinphoneCallDir linphone_call_get_dir(const LinphoneCall *call);
-void linphone_call_ref(LinphoneCall *call);
+LinphoneCall * linphone_call_ref(LinphoneCall *call);
 void linphone_call_unref(LinphoneCall *call);
 LinphoneCallLog *linphone_call_get_call_log(const LinphoneCall *call);
 const char *linphone_call_get_refer_to(const LinphoneCall *call);
@@ -1025,6 +1025,7 @@ int linphone_core_remove_from_conference(LinphoneCore *lc, LinphoneCall *call);
 bool_t linphone_core_is_in_conference(const LinphoneCore *lc);
 int linphone_core_enter_conference(LinphoneCore *lc);
 int linphone_core_leave_conference(LinphoneCore *lc);
+float linphone_core_get_conference_local_input_volume(LinphoneCore *lc);
 
 int linphone_core_terminate_conference(LinphoneCore *lc);
 int linphone_core_get_conference_size(LinphoneCore *lc);

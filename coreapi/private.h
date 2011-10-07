@@ -226,6 +226,7 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, LinphonePro
 void linphone_core_start_refered_call(LinphoneCore *lc, LinphoneCall *call);
 extern SalCallbacks linphone_sal_callbacks;
 void linphone_proxy_config_set_error(LinphoneProxyConfig *cfg, LinphoneReason error);
+bool_t linphone_core_rtcp_enabled(const LinphoneCore *lc);
 
 struct _LinphoneProxyConfig
 {

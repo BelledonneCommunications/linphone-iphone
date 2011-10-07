@@ -45,6 +45,7 @@ linphone_SOURCES=	\
 			incall_view.c \
 			loginframe.c \
 			singleinstance.c \
+			conference.c \
 			linphone.h 
 
 linphone_LDADD=$(ORTP_LIBS) \

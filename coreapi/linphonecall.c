@@ -479,8 +479,9 @@ static void linphone_call_destroy(LinphoneCall *obj)
  * valid. Once the application no more needs this pointer,
  * it must call linphone_call_unref().
 **/
-void linphone_call_ref(LinphoneCall *obj){
+LinphoneCall * linphone_call_ref(LinphoneCall *obj){
 	obj->refcnt++;
+	return obj;
 }
 
 /**
@@ -1025,7 +1026,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cna
 				call->audio_profile,
 				stream->addr[0]!='\0' ? stream->addr : call->resultdesc->addr,
 				stream->port,
-				stream->port+1,
+				linphone_core_rtcp_enabled(lc) ? (stream->port+1) : 0,
 				used_pt,
 				jitt_comp,
 				playfile,
@@ -1110,7 +1111,7 @@ static void linphone_call_start_video_stream(LinphoneCall *call, const char *cna
 				video_stream_set_device_rotation(call->videostream, lc->device_rotation);
 				video_stream_start(call->videostream,
 					call->video_profile, addr, vstream->port,
-					vstream->port+1,
+					linphone_core_rtcp_enabled(lc) ? (vstream->port+1) : 0,
 					used_pt, lc->rtp_conf.audio_jitt_comp, cam);
 				video_stream_set_rtcp_information(call->videostream, cname,LINPHONE_RTCP_SDES_TOOL);
 			}

@@ -108,6 +108,10 @@ void linphone_gtk_enable_mute_button(GtkButton *button, gboolean sensitive);
 void linphone_gtk_enable_hold_button(LinphoneCall *call, gboolean sensitive, gboolean holdon);
 void linphone_gtk_enable_transfer_button(LinphoneCore *lc, gboolean value);
 void linphone_gtk_enable_conference_button(LinphoneCore *lc, gboolean value);
+void linphone_gtk_add_to_conference(LinphoneCall *call);
+void linphone_gtk_remove_from_conference(LinphoneCall *call);
+typedef float (*get_volume_t)(void *data);
+void linphone_gtk_init_audio_meter(GtkWidget *w, get_volume_t get_volume, void *data);
 
 void linphone_gtk_show_login_frame(LinphoneProxyConfig *cfg);
 void linphone_gtk_exit_login_frame(void);

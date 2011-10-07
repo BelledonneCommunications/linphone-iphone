@@ -811,6 +811,10 @@ bool_t linphone_core_adaptive_rate_control_enabled(const LinphoneCore *lc){
 	return lp_config_get_int(lc->config,"net","adaptive_rate_control",FALSE);
 }
 
+bool_t linphone_core_rtcp_enabled(const LinphoneCore *lc){
+	return lp_config_get_int(lc->config,"rtp","rtcp_enabled",TRUE);
+}
+
 /**
  * Sets maximum available download bandwidth
  *

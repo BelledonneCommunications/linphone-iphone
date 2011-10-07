@@ -25,6 +25,7 @@
  
 #include "private.h"
 
+#include "mediastreamer2/msvolume.h"
 
 static void conference_check_init(LinphoneConference *ctx){
 	if (ctx->conf==NULL){
@@ -96,6 +97,18 @@ static void add_local_endpoint(LinphoneConference *conf,LinphoneCore *lc){
 	conf->local_participant=st;
 	conf->local_endpoint=ms_audio_endpoint_get_from_stream(st,FALSE);
 	ms_audio_conference_add_member(conf->conf,conf->local_endpoint);
+}
+
+float linphone_core_get_conference_local_input_volume(LinphoneCore *lc){
+	LinphoneConference *conf=&lc->conf_ctx;
+	AudioStream *st=conf->local_participant;
+	if (st && st->volsend){
+		float vol=0;
+		ms_filter_call_method(st->volsend,MS_VOLUME_GET,&vol);
+		return vol;
+		
+	}
+	return LINPHONE_VOLUME_DB_LOWEST;
 }
 
 int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call){

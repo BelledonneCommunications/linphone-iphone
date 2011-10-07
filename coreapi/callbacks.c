@@ -94,13 +94,29 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 		linphone_call_start_media_streams(call,all_muted,send_ringbacktone);
 	}
 }
-
+#if 0
 static bool_t is_duplicate_call(LinphoneCore *lc, const LinphoneAddress *from, const LinphoneAddress *to){
 	MSList *elem;
 	for(elem=lc->calls;elem!=NULL;elem=elem->next){
 		LinphoneCall *call=(LinphoneCall*)elem->data;
 		if (linphone_address_weak_equal(call->log->from,from) &&
 		    linphone_address_weak_equal(call->log->to, to)){
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
+#endif
+
+static bool_t already_a_call_pending(LinphoneCore *lc){
+	MSList *elem;
+	for(elem=lc->calls;elem!=NULL;elem=elem->next){
+		LinphoneCall *call=(LinphoneCall*)elem->data;
+		if (call->state==LinphoneCallIncomingReceived
+		    || call->state==LinphoneCallOutgoingInit
+		    || call->state==LinphoneCallOutgoingProgress
+		    || call->state==LinphoneCallOutgoingEarlyMedia
+		    || call->state==LinphoneCallOutgoingRinging){
 			return TRUE;
 		}
 	}
@@ -145,8 +161,8 @@ static void call_received(SalOp *h){
 	from_addr=linphone_address_new(from);
 	to_addr=linphone_address_new(to);
 
-	if (is_duplicate_call(lc,from_addr,to_addr)){
-		ms_warning("Receiving duplicated call, refusing this one.");
+	if (already_a_call_pending(lc)){
+		ms_warning("Receiving another call while one is ringing or initiated, refusing this one with busy message.");
 		sal_call_decline(h,SalReasonBusy,NULL);
 		sal_op_release(h);
 		linphone_address_destroy(from_addr);
