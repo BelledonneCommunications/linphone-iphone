@@ -810,6 +810,7 @@ static void pop_auth_from_exosip() {
 
 int sal_call_terminate(SalOp *h){
 	int err;
+	if (h == NULL) return -1;
 	if (h->auth_info) push_auth_to_exosip(h->auth_info);
 	eXosip_lock();
 	err=eXosip_call_terminate(h->cid,h->did);
