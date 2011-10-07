@@ -1394,8 +1394,10 @@ extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getConferenceSize(JNIEnv
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_terminateAllCalls(JNIEnv *env,jobject thiz,jlong pCore) {
 	linphone_core_terminate_all_calls((LinphoneCore *) pCore);
 }
-extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_getCall(JNIEnv *env,jobject thiz,jlong pCore,jint position) {
-	return (jlong)ms_list_nth_data(linphone_core_get_calls((LinphoneCore *) pCore),position);
+extern "C" jobject Java_org_linphone_core_LinphoneCoreImpl_getCall(JNIEnv *env,jobject thiz,jlong pCore,jint position) {
+	LinphoneCoreData *lcd=(LinphoneCoreData*)linphone_core_get_user_data((LinphoneCore*)pCore);
+	LinphoneCall* lCall = (LinphoneCall*) ms_list_nth_data(linphone_core_get_calls((LinphoneCore *) pCore),position);
+	return lcd->getCall(env,lCall);
 }
 extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getCallsNb(JNIEnv *env,jobject thiz,jlong pCore) {
 	return ms_list_size(linphone_core_get_calls((LinphoneCore *) pCore));
