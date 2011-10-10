@@ -26,7 +26,8 @@ clean-libvpx:
 	cd  $(BUILDER_BUILD_DIR)/$(libvpx_dir) && make clean
 
 veryclean-libvpx:
-	cd $(BUILDER_BUILD_DIR)/$(libvpx_dir) && make distclean
+	-cd $(BUILDER_BUILD_DIR)/$(libvpx_dir) && make distclean
+	rm -rf $(BUILDER_BUILD_DIR)/$(libvpx_dir)
 
 clean-makefile-libvpx:
 	cd $(BUILDER_BUILD_DIR)/$(libvpx_dir) && rm -f config.mak
