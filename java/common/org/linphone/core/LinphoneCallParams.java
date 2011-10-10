@@ -35,4 +35,7 @@ public interface LinphoneCallParams {
 	 */
 	void setAudioBandwidth(int value);
 	
+	String getMediaEncryption();
+	void setMediaEnctyption(String menc);
+	
 }

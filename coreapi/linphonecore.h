@@ -183,7 +183,7 @@ typedef struct _LinphoneCallParams LinphoneCallParams;
 LinphoneCallParams * linphone_call_params_copy(const LinphoneCallParams *cp);
 void linphone_call_params_enable_video(LinphoneCallParams *cp, bool_t enabled);
 bool_t linphone_call_params_video_enabled(const LinphoneCallParams *cp);
-enum LinphoneMediaEncryption linphone_call_get_media_encryption(LinphoneCallParams *cp);
+enum LinphoneMediaEncryption linphone_call_params_get_media_encryption(LinphoneCallParams *cp);
 void linphone_call_params_set_media_encryption(LinphoneCallParams *cp, enum LinphoneMediaEncryption e);
 void linphone_call_params_enable_early_media_sending(LinphoneCallParams *cp, bool_t enabled);
 bool_t linphone_call_params_early_media_sending_enabled(const LinphoneCallParams *cp);

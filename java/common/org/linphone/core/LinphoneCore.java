@@ -621,4 +621,10 @@ public interface LinphoneCore {
 	void transferCallToAnother(LinphoneCall callToTransfer, LinphoneCall destination);
 
 	LinphoneCall findCallFromUri(String uri);
+	
+	void setMediaEncryption(String menc);
+	String getMediaEncryption();
+	
+	void setMediaEncryptionMandatory(boolean yesno);
+	boolean isMediaEncryptionMandatory();
 }

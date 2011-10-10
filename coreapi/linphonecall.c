@@ -712,7 +712,7 @@ bool_t linphone_call_params_video_enabled(const LinphoneCallParams *cp){
 	return cp->has_video;
 }
 
-enum LinphoneMediaEncryption linphone_call_get_media_encryption(LinphoneCallParams *cp) {
+enum LinphoneMediaEncryption linphone_call_params_get_media_encryption(LinphoneCallParams *cp) {
 	return cp->media_encryption;
 }
 
