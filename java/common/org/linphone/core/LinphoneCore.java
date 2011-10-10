@@ -622,9 +622,23 @@ public interface LinphoneCore {
 
 	LinphoneCall findCallFromUri(String uri);
 	
+	/**
+	 * set media encryption (rtp) to use
+	 * @params menc: 'none', 'srtp' or 'zrtp'
+	 */
 	void setMediaEncryption(String menc);
+	/**
+	 * return selected media encryption
+	 * @return 'none', 'srtp' or 'zrtp'
+	 */
 	String getMediaEncryption();
 	
+	/**
+	 * Set media encryption required for outgoing calls
+	 */
 	void setMediaEncryptionMandatory(boolean yesno);
+	/**
+	 * @return if media encryption is required for ougtoing calls
+	 */
 	boolean isMediaEncryptionMandatory();
 }
