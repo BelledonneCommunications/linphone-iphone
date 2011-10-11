@@ -3038,23 +3038,33 @@ bool_t linphone_core_echo_limiter_enabled(const LinphoneCore *lc){
 **/
 void linphone_core_mute_mic(LinphoneCore *lc, bool_t val){
 	LinphoneCall *call=linphone_core_get_current_call(lc);
-	if (call==NULL){
+	AudioStream *st=NULL;
+	if (linphone_core_is_in_conference(lc)){
+		lc->conf_ctx.local_muted=val;
+		st=lc->conf_ctx.local_participant;
+	}else if (call==NULL){
 		ms_warning("linphone_core_mute_mic(): No current call !");
 		return;
-	}
-	if (call->audiostream!=NULL){
-		audio_stream_set_mic_gain(call->audiostream,
-			(val==TRUE) ? 0 : lp_config_get_float(lc->config,"sound","mic_gain",1));
-		if ( linphone_core_get_rtp_no_xmit_on_audio_mute(lc) ){
-			audio_stream_mute_rtp(call->audiostream,val);
-		}
+	}else{
 		call->audio_muted=val;
 	}
+	if (st!=NULL){
+		audio_stream_set_mic_gain(st,
+			(val==TRUE) ? 0 : lp_config_get_float(lc->config,"sound","mic_gain",1));
+		if ( linphone_core_get_rtp_no_xmit_on_audio_mute(lc) ){
+			audio_stream_mute_rtp(st,val);
+		}
+		
+	}
 }
-
+/**
+ * Returns whether microphone is muted.
+**/
 bool_t linphone_core_is_mic_muted(LinphoneCore *lc) {
 	LinphoneCall *call=linphone_core_get_current_call(lc);
-	if (call==NULL){
+	if (linphone_core_is_in_conference(lc)){
+		return lc->conf_ctx.local_muted;
+	}else if (call==NULL){
 		ms_warning("linphone_core_is_mic_muted(): No current call !");
 		return FALSE;
 	}

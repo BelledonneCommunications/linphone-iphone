@@ -719,7 +719,7 @@ void linphone_gtk_start_call(GtkWidget *w){
 	GtkWidget *mw=gtk_widget_get_toplevel(w);
 	GtkWidget *uri_bar=linphone_gtk_get_widget(mw,"uribar");
 
-	call=linphone_gtk_get_currently_displayed_call();
+	call=linphone_gtk_get_currently_displayed_call(NULL);
 	if (call!=NULL && linphone_call_get_state(call)==LinphoneCallIncomingReceived){
 		linphone_core_accept_call(lc,call);
 	}else{
@@ -737,19 +737,23 @@ void linphone_gtk_uri_bar_activate(GtkWidget *w){
 
 
 void linphone_gtk_terminate_call(GtkWidget *button){
-	LinphoneCall *call=linphone_gtk_get_currently_displayed_call ();
-	if (call)
+	gboolean is_conf;
+	LinphoneCall *call=linphone_gtk_get_currently_displayed_call(&is_conf);
+	if (call){
 		linphone_core_terminate_call(linphone_gtk_get_core(),call);
+	}else if (is_conf){
+		linphone_core_terminate_conference(linphone_gtk_get_core());
+	}
 }
 
 void linphone_gtk_decline_clicked(GtkWidget *button){
-	LinphoneCall *call=linphone_gtk_get_currently_displayed_call ();
+	LinphoneCall *call=linphone_gtk_get_currently_displayed_call(NULL);
 	if (call)
 		linphone_core_terminate_call(linphone_gtk_get_core(),call);
 }
 
 void linphone_gtk_answer_clicked(GtkWidget *button){
-	LinphoneCall *call=linphone_gtk_get_currently_displayed_call ();
+	LinphoneCall *call=linphone_gtk_get_currently_displayed_call(NULL);
 	if (call){
 		linphone_core_pause_all_calls(linphone_gtk_get_core());
 		linphone_core_accept_call(linphone_gtk_get_core(),call);

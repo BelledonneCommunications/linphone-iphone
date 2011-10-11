@@ -228,6 +228,7 @@ extern SalCallbacks linphone_sal_callbacks;
 void linphone_proxy_config_set_error(LinphoneProxyConfig *cfg, LinphoneReason error);
 bool_t linphone_core_rtcp_enabled(const LinphoneCore *lc);
 
+
 struct _LinphoneProxyConfig
 {
 	struct _LinphoneCore *lc;
@@ -399,6 +400,7 @@ struct _LinphoneConference{
 	MSAudioConference *conf;
 	AudioStream *local_participant;
 	MSAudioEndpoint *local_endpoint;
+	bool_t local_muted;
 };
 
 typedef struct _LinphoneConference LinphoneConference;
@@ -513,6 +515,7 @@ void linphone_core_preempt_sound_resources(LinphoneCore *lc);
 void _post_configure_audio_stream(AudioStream *st, LinphoneCore *lc, bool_t muted);
 void linphone_call_add_to_conf(LinphoneCall *call);
 void linphone_call_remove_from_conf(LinphoneCall *call);
+void linphone_core_conference_check_uninit(LinphoneConference *ctx);
 
 #define HOLD_OFF	(0)
 #define HOLD_ON		(1)

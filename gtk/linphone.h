@@ -96,7 +96,7 @@ void linphone_gtk_show_directory_search(void);
 
 /*functions controlling the different views*/
 gboolean linphone_gtk_use_in_call_view();
-LinphoneCall *linphone_gtk_get_currently_displayed_call();
+LinphoneCall *linphone_gtk_get_currently_displayed_call(gboolean *is_conf);
 void linphone_gtk_create_in_call_view(LinphoneCall *call);
 void linphone_gtk_in_call_view_set_calling(LinphoneCall *call);
 void linphone_gtk_in_call_view_set_in_call(LinphoneCall *call);
@@ -104,12 +104,14 @@ void linphone_gtk_in_call_view_update_duration(LinphoneCall *call);
 void linphone_gtk_in_call_view_terminate(LinphoneCall *call, const char *error_msg);
 void linphone_gtk_in_call_view_set_incoming(LinphoneCall *call);
 void linphone_gtk_in_call_view_set_paused(LinphoneCall *call);
+void linphone_gtk_mute_clicked(GtkButton *button);
 void linphone_gtk_enable_mute_button(GtkButton *button, gboolean sensitive);
 void linphone_gtk_enable_hold_button(LinphoneCall *call, gboolean sensitive, gboolean holdon);
 void linphone_gtk_enable_transfer_button(LinphoneCore *lc, gboolean value);
 void linphone_gtk_enable_conference_button(LinphoneCore *lc, gboolean value);
-void linphone_gtk_add_to_conference(LinphoneCall *call);
-void linphone_gtk_remove_from_conference(LinphoneCall *call);
+void linphone_gtk_set_in_conference(LinphoneCall *call);
+void linphone_gtk_unset_from_conference(LinphoneCall *call);
+void linphone_gtk_terminate_conference_participant(LinphoneCall *call);
 typedef float (*get_volume_t)(void *data);
 void linphone_gtk_init_audio_meter(GtkWidget *w, get_volume_t get_volume, void *data);
 

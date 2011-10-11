@@ -43,10 +43,13 @@ static void remove_local_endpoint(LinphoneConference *ctx){
 	}
 }
 
-static void conference_check_uninit(LinphoneConference *ctx){
+void linphone_core_conference_check_uninit(LinphoneConference *ctx){
 	if (ctx->conf){
-		if (ctx->conf->nmembers==0){
+		ms_message("conference_check_uninit(): nmembers=%i",ctx->conf->nmembers);
+		if (ctx->conf->nmembers==1 && ctx->local_participant!=NULL){
 			remove_local_endpoint(ctx);
+		}
+		if (ctx->conf->nmembers==0){
 			ms_audio_conference_destroy(ctx->conf);
 			ctx->conf=NULL;
 		}
@@ -70,7 +73,6 @@ void linphone_call_remove_from_conf(LinphoneCall *call){
 	ms_audio_conference_remove_member(conf->conf,call->endpoint);
 	ms_audio_endpoint_release_from_stream(call->endpoint);
 	call->endpoint=NULL;
-	conference_check_uninit(conf);
 }
 
 static void add_local_endpoint(LinphoneConference *conf,LinphoneCore *lc){
@@ -102,7 +104,7 @@ static void add_local_endpoint(LinphoneConference *conf,LinphoneCore *lc){
 float linphone_core_get_conference_local_input_volume(LinphoneCore *lc){
 	LinphoneConference *conf=&lc->conf_ctx;
 	AudioStream *st=conf->local_participant;
-	if (st && st->volsend){
+	if (st && st->volsend && !conf->local_muted){
 		float vol=0;
 		ms_filter_call_method(st->volsend,MS_VOLUME_GET,&vol);
 		return vol;
@@ -139,6 +141,7 @@ int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call){
 }
 
 int linphone_core_remove_from_conference(LinphoneCore *lc, LinphoneCall *call){
+	int err=0;
 	if (!call->current_params.in_conference){
 		if (call->params.in_conference){
 			ms_warning("Not (yet) in conference, be patient");
@@ -149,7 +152,8 @@ int linphone_core_remove_from_conference(LinphoneCore *lc, LinphoneCall *call){
 		}
 	}
 	call->params.in_conference=FALSE;
-	return linphone_core_pause_call(lc,call);
+	err=linphone_core_pause_call(lc,call);
+	return err;
 }
 
 bool_t linphone_core_is_in_conference(const LinphoneCore *lc){
