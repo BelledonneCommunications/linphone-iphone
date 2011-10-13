@@ -2562,8 +2562,10 @@ int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *the_call)
 		linphone_core_preempt_sound_resources(lc);
 		ms_message("Resuming call %p",call);
 	}
+	update_local_media_description(lc,the_call,&call->localdesc);
+	sal_call_set_local_media_description(call->op,call->localdesc);
 	sal_media_description_set_dir(call->localdesc,SalStreamSendRecv);
-	if (call->params.in_conference) subject="Resuming conference";
+	if (call->params.in_conference && !call->current_params.in_conference) subject="Conference";
 	if(sal_call_update(call->op,subject) != 0){
 		return -1;
 	}

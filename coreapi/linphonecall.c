@@ -975,6 +975,13 @@ static void setup_ring_player(LinphoneCore *lc, LinphoneCall *call){
 
 #define LINPHONE_RTCP_SDES_TOOL "Linphone-" LINPHONE_VERSION
 
+static bool_t linphone_call_sound_resources_available(LinphoneCall *call){
+	LinphoneCore *lc=call->core;
+	LinphoneCall *current=linphone_core_get_current_call(lc);
+	return !linphone_core_is_in_conference(lc) && 
+		(current==NULL || current==call);
+}
+
 static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cname, bool_t muted, bool_t send_ringbacktone, bool_t use_arc){
 	LinphoneCore *lc=call->core;
 	int jitt_comp=lc->rtp_conf.audio_jitt_comp;
@@ -1021,6 +1028,10 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cna
 			}
 			if (call->params.in_conference){
 				/* first create the graph without soundcard resources*/
+				captcard=playcard=NULL;
+			}
+			if (!linphone_call_sound_resources_available(call)){
+				ms_message("Sound resources are used by another call, not using soundcard.");
 				captcard=playcard=NULL;
 			}
 			use_ec=captcard==NULL ? FALSE : linphone_core_echo_cancellation_enabled(lc);
