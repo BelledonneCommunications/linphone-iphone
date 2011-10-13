@@ -31,10 +31,15 @@ Copyright (C) 2000  Simon MORLAT (simon.morlat@linphone.org)
 void linphone_proxy_config_write_all_to_config_file(LinphoneCore *lc){
 	MSList *elem;
 	int i;
+	if (!linphone_core_ready(lc)) return;
+	
 	for(elem=lc->sip_conf.proxies,i=0;elem!=NULL;elem=ms_list_next(elem),i++){
 		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
 		linphone_proxy_config_write_to_config_file(lc->config,cfg,i);
 	}
+	/*to ensure removed configs are erased:*/
+	linphone_proxy_config_write_to_config_file(lc->config,NULL,i);
+	lp_config_set_int(lc->config,"sip","default_proxy",linphone_core_get_default_proxy(lc,NULL));
 }
 
 void linphone_proxy_config_init(LinphoneProxyConfig *obj){
@@ -536,6 +541,7 @@ void linphone_core_remove_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *cf
 	if (lc->default_proxy==cfg){
 		lc->default_proxy=NULL;
 	}
+	linphone_proxy_config_write_all_to_config_file(lc);
 }
 /**
  * Erase all proxies from config.
@@ -548,6 +554,7 @@ void linphone_core_clear_proxy_config(LinphoneCore *lc){
 		linphone_core_remove_proxy_config(lc,(LinphoneProxyConfig *)list->data);
 	}
 	ms_list_free(list);
+	linphone_proxy_config_write_all_to_config_file(lc);
 }
 /**
  * Sets the default proxy.
@@ -566,7 +573,8 @@ void linphone_core_set_default_proxy(LinphoneCore *lc, LinphoneProxyConfig *conf
 		}
 	}
 	lc->default_proxy=config;
-	
+	if (linphone_core_ready(lc))
+		lp_config_set_int(lc->config,"sip","default_proxy",linphone_core_get_default_proxy(lc,NULL));
 }	
 
 void linphone_core_set_default_proxy_index(LinphoneCore *lc, int index){

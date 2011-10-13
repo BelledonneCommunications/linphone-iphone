@@ -351,7 +351,10 @@ static void linphone_call_set_terminated(LinphoneCall *call){
 		linphone_core_notify_all_friends(lc,lc->presence_mode);
 
 	linphone_core_conference_check_uninit(&lc->conf_ctx);
-
+	if (call->ringing_beep){
+		linphone_core_stop_dtmf(lc);
+		call->ringing_beep=FALSE;
+	}
 }
 
 const char *linphone_call_state_to_string(LinphoneCallState cs){
@@ -1205,9 +1208,9 @@ void linphone_call_stop_media_streams(LinphoneCall *call){
 		video_stream_stop(call->videostream);
 		call->videostream=NULL;
 	}
-	ms_event_queue_skip(call->core->msevq);
-
 #endif
+	ms_event_queue_skip(call->core->msevq);
+	
 	if (call->audio_profile){
 		rtp_profile_clear_all(call->audio_profile);
 		rtp_profile_destroy(call->audio_profile);

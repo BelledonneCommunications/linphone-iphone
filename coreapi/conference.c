@@ -129,8 +129,12 @@ int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call){
 		linphone_core_resume_call(lc,call);
 	else if (call->state==LinphoneCallStreamsRunning){
 		/*this will trigger a reINVITE that will later redraw the streams */
-		if (call->audiostream || call->videostream)
+		if (call->audiostream || call->videostream){
 			linphone_call_stop_media_streams (call); /*free the audio & video local resources*/
+		}
+		if (call==lc->current_call){
+			lc->current_call=NULL;
+		}
 		linphone_core_update_call(lc,call,&params);
 		add_local_endpoint(conf,lc);
 	}else{
