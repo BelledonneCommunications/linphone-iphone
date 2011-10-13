@@ -433,10 +433,10 @@ static void sound_config_read(LinphoneCore *lc)
 	linphone_core_set_play_file(lc,lp_config_get_string(lc->config,"sound","hold_music",PACKAGE_SOUND_DIR "/" HOLD_MUSIC));
 	check_sound_device(lc);
 	lc->sound_conf.latency=0;
-#if !defined(TARGET_OS_IPHONE) && !defined(ANDROID)
+#ifndef __ios 
     tmp=TRUE;
 #else
-    tmp=FALSE;
+    tmp=FALSE; /* on iOS we have builtin echo cancellation.*/
 #endif
     tmp=lp_config_get_int(lc->config,"sound","echocancellation",tmp);
 	linphone_core_enable_echo_cancellation(lc,tmp);
