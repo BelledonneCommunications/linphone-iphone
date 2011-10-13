@@ -145,24 +145,6 @@ void linphone_gtk_ipv6_toggled(GtkWidget *w){
 				gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w)));
 }
 
-/* void linphone_gtk_udp_sip_port_changed(GtkWidget *w){
-	LCSipTransports tr;
-	LinphoneCore *lc=linphone_gtk_get_core();
-
-	linphone_core_get_sip_transports(lc,&tr);
-	tr.udp_port = (gint)gtk_spin_button_get_value(GTK_SPIN_BUTTON(w));
-	linphone_core_set_sip_transports(lc,&tr);
-}
-
-void linphone_gtk_tcp_sip_port_changed(GtkWidget *w){
-	LCSipTransports tr;
-	LinphoneCore *lc=linphone_gtk_get_core();
-
-	linphone_core_get_sip_transports(lc,&tr);
-	tr.tcp_port = (gint)gtk_spin_button_get_value(GTK_SPIN_BUTTON(w));
-	linphone_core_set_sip_transports(lc,&tr);
-} */
-
 void linphone_gtk_audio_port_changed(GtkWidget *w){
 	linphone_core_set_audio_port(linphone_gtk_get_core(),
 			(gint)gtk_spin_button_get_value(GTK_SPIN_BUTTON(w)));
