@@ -102,7 +102,7 @@ struct _LinphoneCall
 	bool_t all_muted; /*this flag is set during early medias*/
 	bool_t playing_ringbacktone;
 	bool_t owns_call_log;
-	bool_t pad;
+	bool_t ringing_beep; /* whether this call is ringing through an already existent current call*/
 	OrtpEvQueue *audiostream_app_evq;
 	char *auth_token;
 	OrtpEvQueue *videostream_app_evq;

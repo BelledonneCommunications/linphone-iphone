@@ -194,24 +194,27 @@ static void call_received(SalOp *h){
 	    lc->vtable.display_status(lc,barmesg);
 
 	/* play the ring if this is the only call*/
-	if (lc->sound_conf.ring_sndcard!=NULL && ms_list_size(lc->calls)==1){
+	if (ms_list_size(lc->calls)==1){
 		lc->current_call=call;
 		if (lc->ringstream && lc->dmfs_playing_start_time!=0){
 			ring_stop(lc->ringstream);
 			lc->ringstream=NULL;
 			lc->dmfs_playing_start_time=0;
 		}
-		if(lc->ringstream==NULL && lc->sound_conf.local_ring){
-			MSSndCard *ringcard=lc->sound_conf.lsd_card ?lc->sound_conf.lsd_card : lc->sound_conf.ring_sndcard;
-			ms_message("Starting local ring...");
-			lc->ringstream=ring_start(lc->sound_conf.local_ring,2000,ringcard);
-		}
-		else
-		{
-			ms_message("the local ring is already started");
+		if (lc->sound_conf.ring_sndcard!=NULL){
+			if(lc->ringstream==NULL && lc->sound_conf.local_ring){
+				MSSndCard *ringcard=lc->sound_conf.lsd_card ?lc->sound_conf.lsd_card : lc->sound_conf.ring_sndcard;
+				ms_message("Starting local ring...");
+				lc->ringstream=ring_start(lc->sound_conf.local_ring,2000,ringcard);
+			}
+			else
+			{
+				ms_message("the local ring is already started");
+			}
 		}
 	}else{
-		/* play a tone within the context of the current call */
+		/* else play a tone within the context of the current call */
+		call->ringing_beep=TRUE;
 		linphone_core_play_tone(lc);
 	}
 

@@ -237,6 +237,18 @@ const LinphoneAuthInfo *linphone_core_find_auth_info(LinphoneCore *lc, const cha
 	return ret;
 }
 
+static void write_auth_infos(LinphoneCore *lc){
+	MSList *elem;
+	int i;
+
+	if (!linphone_core_ready(lc)) return;
+	for(elem=lc->auth_info,i=0;elem!=NULL;elem=ms_list_next(elem),i++){
+		LinphoneAuthInfo *ai=(LinphoneAuthInfo*)(elem->data);
+		linphone_auth_info_write_config(lc->config,ai,i);
+	}
+	linphone_auth_info_write_config(lc->config,NULL,i); /* mark the end */
+}
+
 /**
  * Adds authentication information to the LinphoneCore.
  * 
@@ -273,6 +285,7 @@ void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info)
 		}
 	}
 	ms_list_free(l);
+	write_auth_infos(lc);
 }
 
 
@@ -287,18 +300,13 @@ void linphone_core_abort_authentication(LinphoneCore *lc,  LinphoneAuthInfo *inf
  * Removes an authentication information object.
 **/
 void linphone_core_remove_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info){
-	int i;
-	MSList *elem;
 	LinphoneAuthInfo *r;
 	r=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,info->realm,info->username);
 	if (r){
 		lc->auth_info=ms_list_remove(lc->auth_info,r);
 		/*printf("len=%i newlen=%i\n",len,newlen);*/
 		linphone_auth_info_destroy(r);
-		for (elem=lc->auth_info,i=0;elem!=NULL;elem=ms_list_next(elem),i++){
-			linphone_auth_info_write_config(lc->config,(LinphoneAuthInfo*)elem->data,i);
-		}
-		linphone_auth_info_write_config(lc->config,NULL,i);
+		write_auth_infos(lc);
 	}
 }
 

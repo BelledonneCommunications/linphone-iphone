@@ -755,7 +755,6 @@ void linphone_gtk_decline_clicked(GtkWidget *button){
 void linphone_gtk_answer_clicked(GtkWidget *button){
 	LinphoneCall *call=linphone_gtk_get_currently_displayed_call(NULL);
 	if (call){
-		linphone_core_pause_all_calls(linphone_gtk_get_core());
 		linphone_core_accept_call(linphone_gtk_get_core(),call);
 		linphone_gtk_show_main_window(); /* useful when the button is clicked on a notification */
 	}
