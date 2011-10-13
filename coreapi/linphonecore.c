@@ -514,7 +514,11 @@ static void sip_config_read(LinphoneCore *lc)
 		ms_free(contact);
 	}
 
+#ifdef HAVE_GTK_OSX
+	sal_root_ca(lc->sal, lp_config_get_string(lc->config,"sip","root_ca", "/opt/local/share/linphone/rootca.pem"));
+#else
 	sal_root_ca(lc->sal, lp_config_get_string(lc->config,"sip","root_ca", "/etc/ssl/certs"));
+#endif
 
 	tmp=lp_config_get_int(lc->config,"sip","guess_hostname",1);
 	linphone_core_set_guess_hostname(lc,tmp);
