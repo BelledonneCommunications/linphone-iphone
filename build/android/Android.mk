@@ -119,6 +119,9 @@ endif
 
 LOCAL_STATIC_LIBRARIES += libspeex 
 
+ifeq ($(BUILD_SRTP), 1)
+	LOCAL_C_INCLUDES += $(SRTP_C_INCLUDE)
+endif
 
 ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
 LOCAL_CFLAGS += -DHAVE_ILBC=1
