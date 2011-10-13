@@ -37,6 +37,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 /*#define UNSTANDART_GSM_11K 1*/
 
+#define ROOT_CA_FILE PACKAGE_DATA_DIR "/linphone/rootca.pem"
+
 static const char *liblinphone_version=LIBLINPHONE_VERSION;
 static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t curtime);
 static void linphone_core_run_hooks(LinphoneCore *lc);
@@ -514,10 +516,10 @@ static void sip_config_read(LinphoneCore *lc)
 		ms_free(contact);
 	}
 
-#ifdef HAVE_GTK_OSX
-	sal_root_ca(lc->sal, lp_config_get_string(lc->config,"sip","root_ca", "/opt/local/share/linphone/rootca.pem"));
-#else
+#ifdef __linux
 	sal_root_ca(lc->sal, lp_config_get_string(lc->config,"sip","root_ca", "/etc/ssl/certs"));
+#else
+	sal_root_ca(lc->sal, lp_config_get_string(lc->config,"sip","root_ca", ROOT_CA_FILE));
 #endif
 
 	tmp=lp_config_get_int(lc->config,"sip","guess_hostname",1);
