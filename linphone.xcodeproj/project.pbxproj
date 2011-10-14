@@ -89,6 +89,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		223136D814433FF50035C1F4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 22A10D9E11F88C1F00373793 /* liblinphone.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 22DD19BE13A8D7FA0018ECD4;
+			remoteInfo = mediastream;
+		};
 		22A10DA211F88C1F00373793 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 22A10D9E11F88C1F00373793 /* liblinphone.xcodeproj */;
@@ -703,6 +710,7 @@
 			isa = PBXGroup;
 			children = (
 				22A10DA311F88C1F00373793 /* liblinphone.a */,
+				223136D914433FF50035C1F4 /* mediastream.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -936,6 +944,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		223136D914433FF50035C1F4 /* mediastream.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = mediastream.app;
+			remoteRef = 223136D814433FF50035C1F4 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		22A10DA311F88C1F00373793 /* liblinphone.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -1042,6 +1057,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = linphone_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = IN_LINPHONE;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = (
 					submodules/linphone/coreapi,
 					submodules/linphone/mediastreamer2/include,
@@ -1109,6 +1125,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = linphone_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = IN_LINPHONE;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = (
 					submodules/linphone/coreapi,
 					submodules/linphone/mediastreamer2/include,
@@ -1176,6 +1193,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = linphone_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = IN_LINPHONE;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = (
 					submodules/linphone/coreapi,
 					submodules/linphone/mediastreamer2/include,

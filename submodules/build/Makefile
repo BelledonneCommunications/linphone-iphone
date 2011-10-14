@@ -21,7 +21,7 @@
 ############################################################################
 all:
 	make -f  builder-iphone-os.mk  all \
-	&& make -f  builder-iphone-simulator.mk tc_proc=.i386 all \
+	&& make -f  builder-iphone-simulator.mk all \
 	&& make -f  builder-iphone-os.mk   host=armv7-apple-darwin all \
 	&& make -f builder-iphone-os.mk delivery-sdk
 clean:
