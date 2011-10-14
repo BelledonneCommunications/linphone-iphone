@@ -592,8 +592,8 @@ msgid "Lookup:"
 msgstr "Rechercher:"
 
 #: ../gtk/main.ui.h:43
-msgid "My current identity:"
-msgstr "Mon identité sip :"
+msgid "My current default identity:"
+msgstr "Mon identité sip par défaut :"
 
 #: ../gtk/main.ui.h:44
 msgid "Online users"
