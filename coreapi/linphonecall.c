@@ -1083,7 +1083,7 @@ static void linphone_call_start_video_stream(LinphoneCall *call, const char *cna
 		lc->previewstream=NULL;
 	}
 	call->current_params.has_video=FALSE;
-	if (vstream && vstream->dir!=SalStreamInactive && vstream->port!=0) {
+	if (vstream!=NULL && vstream->dir!=SalStreamInactive && vstream->port!=0) {
 		const char *addr=vstream->addr[0]!='\0' ? vstream->addr : call->resultdesc->addr;
 		call->video_profile=make_profile(call,call->resultdesc,vstream,&used_pt);
 		if (used_pt!=-1){
@@ -1158,13 +1158,15 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 	cname=linphone_address_as_string_uri_only(me);
 
 #if defined(VIDEO_ENABLED)
-	if (vstream && vstream->dir!=SalStreamInactive && vstream->payloads!=NULL){
+	if (vstream!=NULL && vstream->dir!=SalStreamInactive && vstream->payloads!=NULL){
 		/*when video is used, do not make adaptive rate control on audio, it is stupid.*/
 		use_arc=FALSE;
 	}
 #endif
 	linphone_call_start_audio_stream(call,cname,all_inputs_muted,send_ringbacktone,use_arc);
-	if (call->videostream!=NULL) linphone_call_start_video_stream(call,cname,all_inputs_muted);
+	if (call->videostream!=NULL) {
+		linphone_call_start_video_stream(call,cname,all_inputs_muted);
+	}
 
 	call->all_muted=all_inputs_muted;
 	call->playing_ringbacktone=send_ringbacktone;
