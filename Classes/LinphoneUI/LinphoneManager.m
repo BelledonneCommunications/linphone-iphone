@@ -26,6 +26,8 @@
 #import <AVFoundation/AVAudioSession.h>
 #import <AudioToolbox/AudioToolbox.h>
 #import "FastAddressBook.h"
+#include <sys/sysctl.h>
+
 #include "tunnel/TunnelManager.hh"
 #import <AddressBook/AddressBook.h>
 
@@ -390,16 +392,17 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		if (linphone_core_get_sip_transports(theLinphoneCore, &transportValue)) {
 			ms_error("cannot get current transport");	
 		}
+		// Only one port can be set at one time, the others's value is 0
 		if ([transport isEqualToString:@"tcp"]) {
-			if (transportValue.tcp_port == 0) transportValue.tcp_port=transportValue.udp_port;
+			if (transportValue.tcp_port == 0) transportValue.tcp_port=transportValue.udp_port + transportValue.tls_port;
 			transportValue.udp_port=0;
             transportValue.tls_port=0;
 		} else if ([transport isEqualToString:@"udp"]){
-			if (transportValue.udp_port == 0) transportValue.udp_port=transportValue.tcp_port;
+			if (transportValue.udp_port == 0) transportValue.udp_port=transportValue.tcp_port + transportValue.tls_port;
 			transportValue.tcp_port=0;
             transportValue.tls_port=0;
 		} else if ([transport isEqualToString:@"tls"]){
-			if (transportValue.tls_port == 0) transportValue.tls_port=transportValue.udp_port;
+			if (transportValue.tls_port == 0) transportValue.tls_port=transportValue.udp_port + transportValue.tcp_port;
 			transportValue.tcp_port=0;
             transportValue.udp_port=0;
 		} else {
@@ -548,8 +551,14 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	}
 	
 	//read codecs from setting  bundle and enable them one by one
-	[self configurePayloadType:"speex" fromPrefKey:@"speex_16k_preference" withRate:16000];
-	[self configurePayloadType:"speex" fromPrefKey:@"speex_8k_preference" withRate:8000];
+    if ([self isNotIphone3G]) {
+        [self configurePayloadType:"speex" fromPrefKey:@"speex_16k_preference" withRate:16000];
+        [self configurePayloadType:"speex" fromPrefKey:@"speex_8k_preference" withRate:8000];
+    }
+    else
+    {
+        ms_message("SPEEX codecs deactivated");
+    }
     [self configurePayloadType:"AMR" fromPrefKey:@"amr_8k_preference" withRate:8000];
 	[self configurePayloadType:"GSM" fromPrefKey:@"gsm_8k_preference" withRate:8000];
 	[self configurePayloadType:"iLBC" fromPrefKey:@"ilbc_preference" withRate:8000];
@@ -568,6 +577,18 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	}
 	
 }
+- (BOOL)isNotIphone3G
+{
+    size_t size;
+    sysctlbyname("hw.machine", NULL, &size, NULL, 0);
+    char *machine = (char*)malloc(size);
+    sysctlbyname("hw.machine", machine, &size, NULL, 0);
+    NSString *platform = [NSString stringWithCString:machine];
+    free(machine);
+    
+    return ![platform isEqualToString:@"iPhone1,2"];
+}
+
 // no proxy configured alert 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (buttonIndex == 1) {
@@ -695,6 +716,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	NSString* factoryConfig = [myBundle pathForResource:@"linphonerc"ofType:nil] ;
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
 	NSString *confiFileName = [[paths objectAtIndex:0] stringByAppendingString:@"/.linphonerc"];
+	NSString *zrtpSecretsFileName = [[paths objectAtIndex:0] stringByAppendingString:@"/zrtp_secrets"];
 	connectivity=none;
 	
 	
@@ -737,7 +759,8 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	sTunnelMgr->enableLogs(linphone_iphone_log_handler);
 	
 	[[NSUserDefaults standardUserDefaults] synchronize];//sync before loading config 
-	
+
+	linphone_core_set_zrtp_secrets_file(theLinphoneCore, [zrtpSecretsFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
     
     proxyReachability=SCNetworkReachabilityCreateWithName(nil, "linphone.org");		
     proxyReachabilityContext.info=self;

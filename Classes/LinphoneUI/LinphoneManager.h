@@ -58,6 +58,7 @@ typedef enum _TunnelMode {
 -(void) registerLogView:(id<LogView>) view;
 
 -(void) startLibLinphone;
+-(BOOL) isNotIphone3G;
 -(void) destroyLibLinphone;
   
 -(void) enterBackgroundMode;

@@ -21,6 +21,7 @@
 ############################################################################
  
 host?=armv6-apple-darwin
+enable_zrtp=no
 config_site:=iphone-config.site
 library_mode:= --disable-shared --enable-static
 linphone_configure_controls=  --disable-video \
@@ -28,18 +29,24 @@ linphone_configure_controls=  --disable-video \
 			      --disable-nls \
                               --with-readline=none  \
                               --enable-gtk_ui=no \
+                              --enable-console_ui=no \
                               --enable-ssl-hmac=no \
-                              --enable-ssl=no \
-                              --enable-macaqsnd=no \
-			      --enable-macsnd=no \
-                              --enable-iounit=yes \
+                              --enable-ssl=yes \
                               --with-gsm=$(prefix) \
+			      --disable-tests \
+                              LIBZRTPCPP_CFLAGS="-I$(prefix)/include" \
+			      LIBZRTPCPP_LIBS="-L$(prefix)/lib -lzrtpcpp -lcrypto" \
+			      SRTP_LIBS="-L$(prefix)/lib -lsrtp -lcrypto" \
                               SPEEX_CFLAGS="-I$(prefix)/include" \
                               SPEEXDSP_CFLAGS="-I$(prefix)/include" \
 			      SPEEXDSP_LIBS="-L$(prefix)/lib -lspeexdsp" \
                               SPEEX_LIBS="-L$(prefix)/lib -lspeexdsp -lspeex " \
                               OPENSSL_CFLAGS="-I$(prefix)/include" \
                               OPENSSL_LIBS="-L$(prefix)/lib -lssl -lcrypto" 
+ifeq ($(enable_zrtp),yes)
+	linphone_configure_controls+= --with-srtp=$(prefix) --enable-zrtp=yes --disable-tests
+endif
+
 
 #path
 BUILDER_SRC_DIR?=$(shell pwd)/../
@@ -56,6 +63,10 @@ speex_dir?=externals/speex
 
 gsm_dir?=externals/gsm
 
+srtp_dir?=externals/srtp
+
+zrtpcpp_dir?=externals/zrtpcpp
+
 MSILBC_SRC_DIR:=$(BUILDER_SRC_DIR)/msilbc
 MSILBC_BUILD_DIR:=$(BUILDER_BUILD_DIR)/msilbc
 
@@ -65,7 +76,6 @@ LIBILBC_BUILD_DIR:=$(BUILDER_BUILD_DIR)/libilbc-rfc3951
 ifneq (,$(findstring arm,$(host)))
 	SPEEX_CONFIGURE_OPTION := --enable-fixed-point --disable-float-api
 	#SPEEX_CONFIGURE_OPTION := --enable-arm5e-asm --enable-fixed-point
-else
 endif
 
 
@@ -82,17 +92,17 @@ init:
 veryclean: veryclean-linphone
 	rm -rf $(BUILDER_BUILD_DIR)
 
-.NOTPARALLEL build-linphone: init build-openssl build-osip2 build-eXosip2  build-speex build-libgsm  $(LINPHONE_BUILD_DIR)/Makefile
+.NOTPARALLEL build-linphone: init build-openssl build-srtp build-zrtpcpp build-osip2 build-eXosip2  build-speex build-libgsm  $(LINPHONE_BUILD_DIR)/Makefile
 	cd $(LINPHONE_BUILD_DIR)  && export PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig export CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) make newdate &&  make  && make install
 
-clean-linphone: clean-osip2 clean-eXosip2 clean-speex clean-libgsm  clean-msilbc clean-libilbc clean-openssl clean-msamr
+clean-linphone: clean-osip2 clean-eXosip2 clean-speex clean-libgsm  clean-srtp clean-zrtpcpp clean-msilbc clean-libilbc clean-openssl clean-msamr
 	cd  $(LINPHONE_BUILD_DIR) && make clean
 
-veryclean-linphone: veryclean-osip2 veryclean-eXosip2 veryclean-speex veryclean-libgsm  veryclean-msilbc veryclean-libilbc veryclean-openssl veryclean-msamr
+veryclean-linphone: veryclean-osip2 veryclean-eXosip2 veryclean-speex veryclean-srtp veryclean-zrtpcpp veryclean-libgsm veryclean-msilbc veryclean-libilbc veryclean-openssl veryclean-msamr
 #-cd $(LINPHONE_BUILD_DIR) && make distclean
 	-cd $(LINPHONE_SRC_DIR) && rm -f configure
 
-clean-makefile-linphone: clean-makefile-osip2 clean-makefile-eXosip2 clean-makefile-speex clean-makefile-libilbc clean-makefile-msilbc clean-makefile-openssl clean-makefile-msamr
+clean-makefile-linphone: clean-makefile-osip2 clean-makefile-eXosip2 clean-makefile-speex clean-makefile-srtp clean-makefile-zrtpcpp clean-makefile-libilbc clean-makefile-msilbc clean-makefile-openssl clean-makefile-msamr
 	cd $(LINPHONE_BUILD_DIR) && rm -f Makefile && rm -f oRTP/Makefile && rm -f mediastreamer2/Makefile
 
 
@@ -101,6 +111,9 @@ $(LINPHONE_SRC_DIR)/configure:
 
 $(LINPHONE_BUILD_DIR)/Makefile: $(LINPHONE_SRC_DIR)/configure
 	mkdir -p $(LINPHONE_BUILD_DIR)
+	echo -e "\033[1mPKG_CONFIG_PATH=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
+        $(LINPHONE_SRC_DIR)/configure -prefix=$(prefix) --host=$(host) ${library_mode} \
+        ${linphone_configure_controls}\033[0m"
 	cd $(LINPHONE_BUILD_DIR) && \
 	PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
 	$(LINPHONE_SRC_DIR)/configure -prefix=$(prefix) --host=$(host) ${library_mode} \
@@ -177,18 +190,19 @@ $(BUILDER_BUILD_DIR)/$(speex_dir)/Makefile: $(BUILDER_SRC_DIR)/$(speex_dir)/conf
 	$(BUILDER_SRC_DIR)/$(speex_dir)/configure -prefix=$(prefix) --host=$(host) ${library_mode} --disable-oggtest $(SPEEX_CONFIGURE_OPTION)
 
 build-speex: $(BUILDER_BUILD_DIR)/$(speex_dir)/Makefile
-	 cd $(BUILDER_BUILD_DIR)/$(speex_dir)/libspeex && make  && make install
-	 cd $(BUILDER_BUILD_DIR)/$(speex_dir)/include  && make &&  make install
+	cd $(BUILDER_BUILD_DIR)/$(speex_dir)/libspeex && make  && make install
+	cd $(BUILDER_BUILD_DIR)/$(speex_dir)/include  && make &&  make install
 
 clean-speex:
-	 cd  $(BUILDER_BUILD_DIR)/$(speex_dir)  && make clean
+	cd  $(BUILDER_BUILD_DIR)/$(speex_dir)  && make clean
 
 veryclean-speex:
 #	-cd $(BUILDER_BUILD_DIR)/$(speex_dir) && make distclean
 	-rm -f $(BUILDER_SRC_DIR)/$(speex_dir)/configure
 
 clean-makefile-speex:
-	 cd $(BUILDER_BUILD_DIR)/$(speex_dir) && rm -f Makefile
+	cd $(BUILDER_BUILD_DIR)/$(speex_dir) && rm -f Makefile
+
 
 #GSM
 
@@ -260,6 +274,8 @@ clean-makefile-libilbc:
 	cd $(LIBILBC_BUILD_DIR) && rm -f Makefile
 
 #openssl
+#srtp
+#zrtp
 include builders.d/*.mk
 #sdk generation and distribution
 

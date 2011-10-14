@@ -86,6 +86,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		2233FEBB144885DC001824BF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 22A10D9E11F88C1F00373793 /* liblinphone.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 22DD19BE13A8D7FA0018ECD4;
+			remoteInfo = mediastream;
+		};
 		22A10DA211F88C1F00373793 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 22A10D9E11F88C1F00373793 /* liblinphone.xcodeproj */;
@@ -716,6 +723,7 @@
 			isa = PBXGroup;
 			children = (
 				22A10DA311F88C1F00373793 /* liblinphone.a */,
+				2233FEBC144885DC001824BF /* mediastream.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -956,6 +964,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		2233FEBC144885DC001824BF /* mediastream.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = mediastream.app;
+			remoteRef = 2233FEBB144885DC001824BF /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		22A10DA311F88C1F00373793 /* liblinphone.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;

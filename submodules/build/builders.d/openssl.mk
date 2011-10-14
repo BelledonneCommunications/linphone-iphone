@@ -14,7 +14,7 @@ $(OPENSSL_BUILD_DIR)/Configure:
 	&& tar xvzf  openssl-$(openssl_version).tar.gz \
 	&& rm -f openssl-$(openssl_version).tar.gz \
 	&& mv  openssl-$(openssl_version) openssl  \
-	&& cd openssl && patch -p0 < $(BUILDER_SRC_DIR)/build/openssl.patch
+	&& cd openssl && patch -p0 < $(BUILDER_SRC_DIR)/build/builders.d/openssl.patch
 
 $(OPENSSL_BUILD_DIR)/Makefile: $(OPENSSL_BUILD_DIR)/Configure
 	cd $(OPENSSL_BUILD_DIR) \
