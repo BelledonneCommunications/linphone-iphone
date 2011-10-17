@@ -1205,6 +1205,13 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setPreviewWindowId(JNIEn
 																		,jobject thiz
 																		,jlong lc
 																		,jobject obj) {
+	jobject oldWindow = (jobject) linphone_core_get_native_preview_window_id((LinphoneCore*)lc);
+	if (oldWindow != NULL) {
+		env->DeleteGlobalRef(oldWindow);
+	}
+	if (obj != NULL) {
+		obj = env->NewGlobalRef(obj);
+	}
 	linphone_core_set_native_preview_window_id((LinphoneCore*)lc,(unsigned long)obj);
 }
 
