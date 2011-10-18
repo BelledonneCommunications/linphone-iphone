@@ -1030,6 +1030,8 @@ float linphone_core_get_conference_local_input_volume(LinphoneCore *lc);
 int linphone_core_terminate_conference(LinphoneCore *lc);
 int linphone_core_get_conference_size(LinphoneCore *lc);
 
+int linphone_core_get_max_calls(LinphoneCore *lc);
+
 #ifdef __cplusplus
 }
 #endif

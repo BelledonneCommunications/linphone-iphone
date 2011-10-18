@@ -1506,5 +1506,10 @@ extern "C" void msandroid_hack_speaker_state(bool speakerOn);
 
 extern "C" void Java_org_linphone_LinphoneManager_hackSpeakerState(JNIEnv*  env,jobject thiz,jboolean speakerOn){
 	msandroid_hack_speaker_state(speakerOn);
+}
 // End Galaxy S hack functions
+
+
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getMaxCalls(JNIEnv *env,jobject thiz,jlong pCore) {
+	return (jint) linphone_core_get_max_calls((LinphoneCore *) pCore);
 }
