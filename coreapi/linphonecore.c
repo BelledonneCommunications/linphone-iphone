@@ -973,6 +973,7 @@ void linphone_core_set_state(LinphoneCore *lc, LinphoneGlobalState gstate, const
 static void misc_config_read (LinphoneCore *lc) {
 	LpConfig *config=lc->config;
     lc->max_call_logs=lp_config_get_int(config,"misc","history_max_size",15);
+    lc->max_calls=lp_config_get_int(config,"misc","max_calls",NB_MAX_CALLS);
 }
 
 static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vtable, const char *config_path,
@@ -4299,6 +4300,11 @@ void linphone_core_stop_dtmf_stream(LinphoneCore* lc) {
 	if (lc->ringstream) ring_stop(lc->ringstream);
 	lc->ringstream=NULL;
 }
+
+int linphone_core_get_max_calls(LinphoneCore *lc) {
+	return lc->max_calls;
+}
+
 
 typedef struct Hook{
 	LinphoneCoreIterateHook fun;
