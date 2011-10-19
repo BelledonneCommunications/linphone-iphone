@@ -383,6 +383,8 @@ static void sound_config_read(LinphoneCore *lc)
 		MSSndCard *card=ms_alsa_card_new_custom(devid,devid);
 		ms_snd_card_manager_add_card(ms_snd_card_manager_get(),card);
 	}
+	tmp=lp_config_get_int(lc->config,"sound","alsa_forced_rate",-1);
+	ms_alsa_card_set_forced_sample_rate(tmp);
 #endif
 	/* retrieve all sound devices */
 	build_sound_devices_table(lc);
