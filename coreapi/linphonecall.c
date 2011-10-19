@@ -853,6 +853,7 @@ static void parametrize_equalizer(LinphoneCore *lc, AudioStream *st){
 
 void _post_configure_audio_stream(AudioStream *st, LinphoneCore *lc, bool_t muted){
 	float mic_gain=lp_config_get_float(lc->config,"sound","mic_gain",1);
+	float spk_gain=lp_config_get_float(lc->config,"sound","speaker_gain",1);
 	float thres = 0;
 	float recv_gain;
 	float ng_thres=lp_config_get_float(lc->config,"sound","ng_thres",0.05);
@@ -868,6 +869,7 @@ void _post_configure_audio_stream(AudioStream *st, LinphoneCore *lc, bool_t mute
 	if (recv_gain != 0) {
 		linphone_core_set_playback_gain_db (lc,recv_gain);
 	}
+	
 	if (st->volsend){
 		ms_filter_call_method(st->volsend,MS_VOLUME_REMOVE_DC,&dc_removal);
 		float speed=lp_config_get_float(lc->config,"sound","el_speed",-1);
@@ -894,7 +896,10 @@ void _post_configure_audio_stream(AudioStream *st, LinphoneCore *lc, bool_t mute
 	if (st->volrecv){
 		/* parameters for a limited noise-gate effect, using echo limiter threshold */
 		float floorgain = 1/mic_gain;
-		ms_filter_call_method(st->volrecv,MS_VOLUME_SET_NOISE_GATE_THRESHOLD,&thres);
+		int spk_agc=lp_config_get_int(lc->config,"sound","speaker_agc_enabled",0);
+		ms_filter_call_method(st->volrecv, MS_VOLUME_ENABLE_AGC, &spk_agc);
+		ms_filter_call_method(st->volrecv, MS_VOLUME_SET_GAIN, &spk_gain);
+		ms_filter_call_method(st->volrecv,MS_VOLUME_SET_NOISE_GATE_THRESHOLD,&ng_thres);
 		ms_filter_call_method(st->volrecv,MS_VOLUME_SET_NOISE_GATE_FLOORGAIN,&floorgain);
 	}
 	parametrize_equalizer(lc,st);
