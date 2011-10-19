@@ -453,6 +453,11 @@ void linphone_gtk_upload_bw_changed(GtkWidget *w){
 	linphone_gtk_check_codec_bandwidth(v);
 }
 
+void linphone_gtk_adaptive_rate_control_toggled(GtkToggleButton *button){
+	gboolean active=gtk_toggle_button_get_active(button);
+	linphone_core_enable_adaptive_rate_control(linphone_gtk_get_core(),active);
+}
+
 static void linphone_gtk_codec_move(GtkWidget *button, int dir){
 	GtkTreeView *v=GTK_TREE_VIEW(linphone_gtk_get_widget(gtk_widget_get_toplevel(button),"codec_list"));
 	GtkTreeSelection *sel=gtk_tree_view_get_selection(v);
@@ -899,6 +904,8 @@ void linphone_gtk_show_parameters(void){
 				linphone_core_get_download_bandwidth(lc));
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb,"upload_bw")),
 				linphone_core_get_upload_bandwidth(lc));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb,"adaptive_rate_control")),
+	                         linphone_core_adaptive_rate_control_enabled(lc));
 
 
 	/* UI CONFIG */

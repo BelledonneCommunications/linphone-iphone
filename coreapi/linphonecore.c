@@ -814,7 +814,7 @@ void linphone_core_enable_adaptive_rate_control(LinphoneCore *lc, bool_t enabled
  * See linphone_core_enable_adaptive_rate_control().
 **/
 bool_t linphone_core_adaptive_rate_control_enabled(const LinphoneCore *lc){
-	return lp_config_get_int(lc->config,"net","adaptive_rate_control",FALSE);
+	return lp_config_get_int(lc->config,"net","adaptive_rate_control",TRUE);
 }
 
 bool_t linphone_core_rtcp_enabled(const LinphoneCore *lc){

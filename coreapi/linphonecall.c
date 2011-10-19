@@ -1092,7 +1092,9 @@ static void linphone_call_start_video_stream(LinphoneCall *call, const char *cna
 			bool_t is_inactive=FALSE;
 
 			call->current_params.has_video=TRUE;
-			
+
+			video_stream_enable_adaptive_bitrate_control(call->videostream,
+			                                          linphone_core_adaptive_rate_control_enabled(lc));
 			video_stream_set_sent_video_size(call->videostream,linphone_core_get_preferred_video_size(lc));
 			video_stream_enable_self_view(call->videostream,lc->video_conf.selfview);
 			if (lc->video_window_id!=0)
