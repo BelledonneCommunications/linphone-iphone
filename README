@@ -8,6 +8,7 @@ Linphone for iPhone depends on liblinphone sdk. To build this sdk, you must inst
 -intltool
 -wget
 -pkgconfig
+-cmake (for ZRTP support)
 
 
 gas-preprosessor.pl  (http://github.com/yuvi/gas-preprocessor/ ) to be copied into /opt/local/bin

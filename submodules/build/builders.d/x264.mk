@@ -39,7 +39,12 @@ ifneq (,$(findstring armv7,$(host)))
 endif
 
 x264_dir?=externals/x264
-$(BUILDER_BUILD_DIR)/$(x264_dir)/configure:
+$(BUILDER_SRC_DIR)/$(x264_dir)/patched :
+	cd $(BUILDER_SRC_DIR)/$(x264_dir) \
+	&& git apply $(BUILDER_SRC_DIR)/build/builders.d/x264.patch \
+	&& touch $(BUILDER_SRC_DIR)/$(x264_dir)/patched
+
+$(BUILDER_BUILD_DIR)/$(x264_dir)/configure: $(BUILDER_SRC_DIR)/$(x264_dir)/patched
 	mkdir -p $(BUILDER_BUILD_DIR)/$(x264_dir)
 	cd $(BUILDER_BUILD_DIR)/$(x264_dir)/ \
 	&& rsync -av --exclude ".git"  $(BUILDER_SRC_DIR)/$(x264_dir)/* . 

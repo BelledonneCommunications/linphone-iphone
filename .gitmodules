@@ -3,7 +3,7 @@
 	url = gitosis@git.linphone.org:linphone-private.git
 [submodule "submodules/externals/osip"]
 	path = submodules/externals/osip
-	url = git://git.savannah.gnu.org/osip.git
+	url = git://git.linphone.org/osip.git
 [submodule "submodules/externals/exosip"]
 	path = submodules/externals/exosip
 	url = git://git.linphone.org/exosip.git
@@ -37,3 +37,6 @@
 [submodule "submodules/externals/libvpx"]
 	path = submodules/externals/libvpx
 	url = http://git.chromium.org/webm/libvpx.git
+[submodule "submodules/externals/zrtpcpp"]
+        path = submodules/externals/zrtpcpp
+        url = git://github.com/wernerd/ZRTPCPP.git

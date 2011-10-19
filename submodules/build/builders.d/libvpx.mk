@@ -1,6 +1,7 @@
 libvpx_configure_options=\
-	--enable-static   --disable-shared\
-#	--extra-cflags="-arch $$ARCH"
+	--enable-static   --disable-shared \
+	--disable-examples 
+#	--extra-cflags="-isysroot $$SYSROOT_PATH "
 # -Wl,-syslibroot,$$SYSROOT_PATH " \
 	--enable-error-concealment --disable-examples
 
@@ -12,12 +13,16 @@ else
 	libvpx_configure_options+= --force-target=x86-darwin10-gcc
 endif
 libvpx_dir?=externals/libvpx
+$(BUILDER_SRC_DIR)/$(libvpx_dir)/patched :
+	cd $(BUILDER_SRC_DIR)/$(libvpx_dir) \
+	&& git apply $(BUILDER_SRC_DIR)/build/builders.d/libvpx.patch \
+	&& touch $(BUILDER_SRC_DIR)/$(libvpx_dir)/patched
 
-$(BUILDER_BUILD_DIR)/$(libvpx_dir)/config.mak: 
+$(BUILDER_BUILD_DIR)/$(libvpx_dir)/config.mak: $(BUILDER_SRC_DIR)/$(libvpx_dir)/patched
 	mkdir -p $(BUILDER_BUILD_DIR)/$(libvpx_dir)
 	cd $(BUILDER_BUILD_DIR)/$(libvpx_dir)/ \
 	&&  host_alias=${host} . $(BUILDER_SRC_DIR)/build/$(config_site) \
-	&& $(BUILDER_SRC_DIR)/$(libvpx_dir)/configure --prefix=$(prefix) 	$(libvpx_configure_options)
+	&& $(BUILDER_SRC_DIR)/$(libvpx_dir)/configure --prefix=$(prefix) $(libvpx_configure_options)
 
 build-libvpx: $(BUILDER_BUILD_DIR)/$(libvpx_dir)/config.mak
 	cd $(BUILDER_BUILD_DIR)/$(libvpx_dir) && PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site)  make && make install

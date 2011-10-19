@@ -1,0 +1,20 @@
+diff --git a/libavutil/arm/intmath.h b/libavutil/arm/intmath.h
+index 8f03d4b..0504b95 100644
+--- a/libavutil/arm/intmath.h
++++ b/libavutil/arm/intmath.h
+@@ -91,10 +91,12 @@ static av_always_inline av_const int FASTDIV(int a, int b)
+ static av_always_inline av_const int32_t av_clipl_int32_arm(int64_t a)
+ {
+     int x, y;
+-    __asm__ volatile ("adds   %1, %R2, %Q2, lsr #31  \n\t"
++    union { uint64_t a; uint32_t hl[2]; } tmp_a;
++    tmp_a.a=a;
++    __asm__ volatile ("adds   %1, %2, %3, lsr #31  \n\t"
+                       "mvnne  %1, #1<<31             \n\t"
+-                      "eorne  %0, %1,  %R2, asr #31  \n\t"
+-                      : "=r"(x), "=&r"(y) : "r"(a));
++                      "eorne  %0, %1,  %2, asr #31  \n\t"
++                      : "=r"(x), "=&r"(y) : "r"(tmp_a.hl[0]),"r"(tmp_a.hl[1]));
+     return x;
+ }
+ 
