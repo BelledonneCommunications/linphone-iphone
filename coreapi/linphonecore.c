@@ -4146,9 +4146,9 @@ int linphone_core_get_calls_nb(const LinphoneCore *lc){
 **/
 bool_t linphone_core_can_we_add_call(LinphoneCore *lc)
 {
-	if(linphone_core_get_calls_nb(lc) < NB_MAX_CALLS)
+	if(linphone_core_get_calls_nb(lc) < lc->max_calls)
 		return TRUE;
-	ms_error("Maximum amount of simultaneous calls reached !");
+	ms_message("Maximum amount of simultaneous calls reached !");
 	return FALSE;
 }
 
