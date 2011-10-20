@@ -23,13 +23,12 @@
 SILK_BUILD_DIR?=$(BUILDER_BUILD_DIR)/externals/silk
 
 ifneq (,$(findstring i386,$(host)))
-        make_options := TARGET_MTUNE=i386 TARGET_ARCH=i386 
-endif
-ifneq (,$(findstring armv6,$(host)))
-        make_options := TARGET_ARCH="-arch armv6" 
+        src := SILK_SDK_SRC_v1.0.8/SILK_SDK_SRC_FIX_v1.0.8
+else
+	src := SILK_SDK_SRC_v1.0.8/SILK_SDK_SRC_ARM_v1.0.8
 endif
 ifneq (,$(findstring armv7,$(host)))
-        make_options := USE_NEON=yes TARGET_ARCH="armv7 -mno-thumb" 
+        make_options := USE_NEON=yes  
 endif
 
 $(SILK_BUILD_DIR)/Makefile:
@@ -39,12 +38,12 @@ $(SILK_BUILD_DIR)/Makefile:
 	&& wget http://developer.skype.com/silk/SILK_SDK_SRC_v1.0.8.zip \
 	&& unzip  SILK_SDK_SRC_v1.0.8.zip \
 	&& rm -f SILK_SDK_SRC_v1.0.8.zip \
-	&& mv SILK_SDK_SRC_v1.0.8/SILK_SDK_SRC_ARM_v1.0.8 silk  \
+	&& mv ${src} silk  \
 	&& rm -rf SILK_SDK_SRC_v1.0.8
 
 build-silk: $(SILK_BUILD_DIR)/Makefile
 	cd $(SILK_BUILD_DIR) &&  host_alias=${host} . $(BUILDER_SRC_DIR)/build/$(config_site) \
-	&& make all TOOLCHAIN_PREFIX=$$SDK_BIN_PATH/ $(make_options)   ADDED_DEFINES+=IPHONE \
+	&& make all TOOLCHAIN_PREFIX=$$SDK_BIN_PATH/ CXX="$$CXX" CC="$$CC -mno-thumb -falign-functions=4" LD="$$LD" $(make_options)   ADDED_DEFINES+=IPHONE \
 	&& mkdir -p $(prefix)/include/silk \
 	&& cp -f $(SILK_BUILD_DIR)/interface/*  $(prefix)/include/silk \
 	&& cp -f lib*.a  $(prefix)/lib 
