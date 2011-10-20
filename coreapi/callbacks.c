@@ -400,6 +400,8 @@ static void call_updating(SalOp *op){
 	
 	if (md && !sal_media_description_empty(md))
 	{
+		linphone_core_update_streams (lc,call,md);
+
 		if (sal_media_description_has_dir(call->localdesc,SalStreamSendRecv)){
 			ms_message("Our local status is SalStreamSendRecv");
 			if (sal_media_description_has_dir (md,SalStreamRecvOnly) || sal_media_description_has_dir(md,SalStreamInactive)){
@@ -420,7 +422,7 @@ static void call_updating(SalOp *op){
 		}
 		/*accept the modification (sends a 200Ok)*/
 		sal_call_accept(op);
-		linphone_core_update_streams (lc,call,md);
+
 		if (prevstate!=LinphoneCallIdle){
 			linphone_call_set_state (call,prevstate,"Connected (streams running)");
 		}
