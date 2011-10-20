@@ -383,6 +383,8 @@ static void sound_config_read(LinphoneCore *lc)
 		MSSndCard *card=ms_alsa_card_new_custom(devid,devid);
 		ms_snd_card_manager_add_card(ms_snd_card_manager_get(),card);
 	}
+	tmp=lp_config_get_int(lc->config,"sound","alsa_forced_rate",-1);
+	ms_alsa_card_set_forced_sample_rate(tmp);
 #endif
 	/* retrieve all sound devices */
 	build_sound_devices_table(lc);
@@ -814,7 +816,7 @@ void linphone_core_enable_adaptive_rate_control(LinphoneCore *lc, bool_t enabled
  * See linphone_core_enable_adaptive_rate_control().
 **/
 bool_t linphone_core_adaptive_rate_control_enabled(const LinphoneCore *lc){
-	return lp_config_get_int(lc->config,"net","adaptive_rate_control",FALSE);
+	return lp_config_get_int(lc->config,"net","adaptive_rate_control",TRUE);
 }
 
 bool_t linphone_core_rtcp_enabled(const LinphoneCore *lc){
@@ -973,6 +975,7 @@ void linphone_core_set_state(LinphoneCore *lc, LinphoneGlobalState gstate, const
 static void misc_config_read (LinphoneCore *lc) {
 	LpConfig *config=lc->config;
     lc->max_call_logs=lp_config_get_int(config,"misc","history_max_size",15);
+    lc->max_calls=lp_config_get_int(config,"misc","max_calls",NB_MAX_CALLS);
 }
 
 static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vtable, const char *config_path,
@@ -4299,6 +4302,11 @@ void linphone_core_stop_dtmf_stream(LinphoneCore* lc) {
 	if (lc->ringstream) ring_stop(lc->ringstream);
 	lc->ringstream=NULL;
 }
+
+int linphone_core_get_max_calls(LinphoneCore *lc) {
+	return lc->max_calls;
+}
+
 
 typedef struct Hook{
 	LinphoneCoreIterateHook fun;

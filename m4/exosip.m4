@@ -4,9 +4,18 @@ AC_REQUIRE([AC_CANONICAL_HOST])
 AC_REQUIRE([LP_CHECK_OSIP2])
 
 
-case $target_os in
-	*darwin*)
-		OSIP_LIBS="$OSIP_LIBS  -framework CoreFoundation "
+case $host_alias in
+	i386-apple*)
+		OSIP_LIBS="$OSIP_LIBS  -framework CoreFoundation -framework CFNetwork"
+	;;
+	armv6-apple*)
+		OSIP_LIBS="$OSIP_LIBS  -framework CoreFoundation -framework CFNetwork"
+	;;
+	armv7-apple*)
+		OSIP_LIBS="$OSIP_LIBS  -framework CoreFoundation -framework CFNetwork"
+	;;
+	x86_64-apple*)
+		OSIP_LIBS="$OSIP_LIBS  -framework CoreFoundation"
 	;;
 esac
 

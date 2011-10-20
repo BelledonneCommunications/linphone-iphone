@@ -417,12 +417,17 @@ static void call_updating(SalOp *op){
 					lc->current_call=call;
 			}else{
 				prevstate=call->state;
+				if(lc->vtable.display_status)
+					lc->vtable.display_status(lc,_("Call has been updated by remote..."));
 				linphone_call_set_state(call, LinphoneCallUpdatedByRemote,"Call updated by remote");
 			}
 		}
 		/*accept the modification (sends a 200Ok)*/
 		sal_call_accept(op);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 949b3cd84135d234abab27a023885ad977f715c9
 		if (prevstate!=LinphoneCallIdle){
 			linphone_call_set_state (call,prevstate,"Connected (streams running)");
 		}

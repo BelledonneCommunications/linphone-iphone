@@ -853,6 +853,7 @@ static void parametrize_equalizer(LinphoneCore *lc, AudioStream *st){
 
 void _post_configure_audio_stream(AudioStream *st, LinphoneCore *lc, bool_t muted){
 	float mic_gain=lp_config_get_float(lc->config,"sound","mic_gain",1);
+	float spk_gain=lp_config_get_float(lc->config,"sound","speaker_gain",1);
 	float thres = 0;
 	float recv_gain;
 	float ng_thres=lp_config_get_float(lc->config,"sound","ng_thres",0.05);
@@ -868,6 +869,7 @@ void _post_configure_audio_stream(AudioStream *st, LinphoneCore *lc, bool_t mute
 	if (recv_gain != 0) {
 		linphone_core_set_playback_gain_db (lc,recv_gain);
 	}
+	
 	if (st->volsend){
 		ms_filter_call_method(st->volsend,MS_VOLUME_REMOVE_DC,&dc_removal);
 		float speed=lp_config_get_float(lc->config,"sound","el_speed",-1);
@@ -894,7 +896,10 @@ void _post_configure_audio_stream(AudioStream *st, LinphoneCore *lc, bool_t mute
 	if (st->volrecv){
 		/* parameters for a limited noise-gate effect, using echo limiter threshold */
 		float floorgain = 1/mic_gain;
-		ms_filter_call_method(st->volrecv,MS_VOLUME_SET_NOISE_GATE_THRESHOLD,&thres);
+		int spk_agc=lp_config_get_int(lc->config,"sound","speaker_agc_enabled",0);
+		ms_filter_call_method(st->volrecv, MS_VOLUME_ENABLE_AGC, &spk_agc);
+		ms_filter_call_method(st->volrecv, MS_VOLUME_SET_GAIN, &spk_gain);
+		ms_filter_call_method(st->volrecv,MS_VOLUME_SET_NOISE_GATE_THRESHOLD,&ng_thres);
 		ms_filter_call_method(st->volrecv,MS_VOLUME_SET_NOISE_GATE_FLOORGAIN,&floorgain);
 	}
 	parametrize_equalizer(lc,st);
@@ -1083,7 +1088,7 @@ static void linphone_call_start_video_stream(LinphoneCall *call, const char *cna
 		lc->previewstream=NULL;
 	}
 	call->current_params.has_video=FALSE;
-	if (vstream && vstream->dir!=SalStreamInactive && vstream->port!=0) {
+	if (vstream!=NULL && vstream->dir!=SalStreamInactive && vstream->port!=0) {
 		const char *addr=vstream->addr[0]!='\0' ? vstream->addr : call->resultdesc->addr;
 		call->video_profile=make_profile(call,call->resultdesc,vstream,&used_pt);
 		if (used_pt!=-1){
@@ -1092,7 +1097,9 @@ static void linphone_call_start_video_stream(LinphoneCall *call, const char *cna
 			bool_t is_inactive=FALSE;
 
 			call->current_params.has_video=TRUE;
-			
+
+			video_stream_enable_adaptive_bitrate_control(call->videostream,
+			                                          linphone_core_adaptive_rate_control_enabled(lc));
 			video_stream_set_sent_video_size(call->videostream,linphone_core_get_preferred_video_size(lc));
 			video_stream_enable_self_view(call->videostream,lc->video_conf.selfview);
 			if (lc->video_window_id!=0)
@@ -1158,13 +1165,15 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 	cname=linphone_address_as_string_uri_only(me);
 
 #if defined(VIDEO_ENABLED)
-	if (vstream && vstream->dir!=SalStreamInactive && vstream->payloads!=NULL){
+	if (vstream!=NULL && vstream->dir!=SalStreamInactive && vstream->payloads!=NULL){
 		/*when video is used, do not make adaptive rate control on audio, it is stupid.*/
 		use_arc=FALSE;
 	}
 #endif
 	linphone_call_start_audio_stream(call,cname,all_inputs_muted,send_ringbacktone,use_arc);
-	if (call->videostream!=NULL) linphone_call_start_video_stream(call,cname,all_inputs_muted);
+	if (call->videostream!=NULL) {
+		linphone_call_start_video_stream(call,cname,all_inputs_muted);
+	}
 
 	call->all_muted=all_inputs_muted;
 	call->playing_ringbacktone=send_ringbacktone;

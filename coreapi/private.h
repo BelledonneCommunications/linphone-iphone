@@ -467,6 +467,7 @@ struct _LinphoneCore
 	bool_t use_preview_window;
 	int device_rotation;
 	bool_t ringstream_autorelease;
+	int max_calls;
 };
 
 bool_t linphone_core_can_we_add_call(LinphoneCore *lc);
