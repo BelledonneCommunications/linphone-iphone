@@ -1048,7 +1048,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = (
-					"$(ARCHS_STANDARD_32_BIT)",
+					armv7,
 					armv6,
 				);
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -1058,7 +1058,10 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = linphone_Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = IN_LINPHONE;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					IN_LINPHONE,
+					HAVE_SILK,
+				);
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = (
 					submodules/linphone/coreapi,
@@ -1119,7 +1122,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = (
-					"$(ARCHS_STANDARD_32_BIT)",
+					armv7,
 					armv6,
 				);
 				CODE_SIGN_ENTITLEMENTS = untitled.plist;
@@ -1130,7 +1133,10 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = linphone_Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = IN_LINPHONE;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					IN_LINPHONE,
+					HAVE_SILK,
+				);
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = (
 					submodules/linphone/coreapi,
@@ -1191,7 +1197,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = (
-					"$(ARCHS_STANDARD_32_BIT)",
+					armv7,
 					armv6,
 				);
 				CODE_SIGN_ENTITLEMENTS = untitled.plist;
@@ -1202,7 +1208,10 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = linphone_Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = IN_LINPHONE;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					IN_LINPHONE,
+					HAVE_SILK,
+				);
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = (
 					submodules/linphone/coreapi,

@@ -35,6 +35,9 @@ extern void libmsilbc_init();
 #ifdef HAVE_AMR
 extern void libmsamr_init();
 #endif
+#if defined (HAVE_SILK)
+extern void libmssilk_init(); 
+#endif
 @implementation LinphoneManager
 @synthesize callDelegate;
 @synthesize registrationDelegate;
@@ -681,7 +684,9 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	}
 	
 	libmsilbc_init();
-	
+#if defined (HAVE_SILK)
+    libmssilk_init(); 
+#endif	
 #ifdef HAVE_AMR
     libmsamr_init(); //load amr plugin if present from the liblinphone sdk
 #endif	/*
