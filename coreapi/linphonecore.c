@@ -1043,7 +1043,11 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	linphone_core_assign_payload_type(lc,&payload_type_aal2_g726_24,-1,NULL);
 	linphone_core_assign_payload_type(lc,&payload_type_aal2_g726_32,-1,NULL);
 	linphone_core_assign_payload_type(lc,&payload_type_aal2_g726_40,-1,NULL);
-
+	linphone_core_assign_payload_type(lc,&payload_type_silk_nb,-1,NULL);
+	linphone_core_assign_payload_type(lc,&payload_type_silk_mb,-1,NULL);
+	linphone_core_assign_payload_type(lc,&payload_type_silk_wb,-1,NULL);
+	linphone_core_assign_payload_type(lc,&payload_type_silk_swb,-1,NULL);
+	
 	ms_init();
 	/* create a mediastreamer2 event queue and set it as global */
 	/* This allows to run event's callback in linphone_core_iterate() */
