@@ -61,6 +61,8 @@ void linphone_call_add_to_conf(LinphoneCall *call){
 	LinphoneCore *lc=call->core;
 	LinphoneConference *conf=&lc->conf_ctx;
 	MSAudioEndpoint *ep;
+	call->params.has_video = FALSE;
+	call->camera_active = FALSE;
 	ep=ms_audio_endpoint_get_from_stream(call->audiostream,TRUE);
 	ms_audio_conference_add_member(conf->conf,ep);
 	call->endpoint=ep;

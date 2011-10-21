@@ -424,6 +424,10 @@ static void call_updating(SalOp *op){
 		}
 		/*accept the modification (sends a 200Ok)*/
 		sal_call_accept(op);
+<<<<<<< HEAD
+
+=======
+>>>>>>> 949b3cd84135d234abab27a023885ad977f715c9
 		if (prevstate!=LinphoneCallIdle){
 			linphone_call_set_state (call,prevstate,"Connected (streams running)");
 		}
