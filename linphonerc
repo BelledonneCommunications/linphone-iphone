@@ -31,4 +31,4 @@ echocancellation=0
 
 [misc]
 history_max_size=30
-
+max_calls=1
