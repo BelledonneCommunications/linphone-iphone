@@ -47,6 +47,7 @@
 		2245F78A1201D38000C4179D /* MoreViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22E0A81B111C44E100B04932 /* MoreViewController.xib */; };
 		2248E90E12F7E4CF00220D9C /* UIDigitButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2248E90D12F7E4CF00220D9C /* UIDigitButton.m */; };
 		2248E99F12F801C200220D9C /* LinphoneManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2248E99E12F801C200220D9C /* LinphoneManager.m */; };
+		225AA31E14520E5400BA809B /* libSKP_SILK_SDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 225AA31D14520E5400BA809B /* libSKP_SILK_SDK.a */; };
 		225CB2EA11ABB51000628906 /* clavier-01-106px.png in Resources */ = {isa = PBXBuildFile; fileRef = 225CB2E811ABB51000628906 /* clavier-01-106px.png */; };
 		225CB2EB11ABB51000628906 /* clavier-01-108px.png in Resources */ = {isa = PBXBuildFile; fileRef = 225CB2E911ABB51000628906 /* clavier-01-108px.png */; };
 		225CB2EE11ABB65D00628906 /* clavier-01-160px.png in Resources */ = {isa = PBXBuildFile; fileRef = 225CB2ED11ABB65D00628906 /* clavier-01-160px.png */; };
@@ -281,6 +282,7 @@
 		2248E99D12F801C200220D9C /* LinphoneManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LinphoneManager.h; sourceTree = "<group>"; };
 		2248E99E12F801C200220D9C /* LinphoneManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LinphoneManager.m; sourceTree = "<group>"; };
 		2258633C11410BAC00C5A737 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
+		225AA31D14520E5400BA809B /* libSKP_SILK_SDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libSKP_SILK_SDK.a; path = "liblinphone-sdk/apple-darwin/lib/libSKP_SILK_SDK.a"; sourceTree = "<group>"; };
 		225CB2E811ABB51000628906 /* clavier-01-106px.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "clavier-01-106px.png"; path = "Resources/clavier-01-106px.png"; sourceTree = "<group>"; };
 		225CB2E911ABB51000628906 /* clavier-01-108px.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "clavier-01-108px.png"; path = "Resources/clavier-01-108px.png"; sourceTree = "<group>"; };
 		225CB2ED11ABB65D00628906 /* clavier-01-160px.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "clavier-01-160px.png"; path = "Resources/clavier-01-160px.png"; sourceTree = "<group>"; };
@@ -413,6 +415,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				225AA31E14520E5400BA809B /* libSKP_SILK_SDK.a in Frameworks */,
 				22E5B0AF133B5EA20044EA25 /* libssl.a in Frameworks */,
 				22E5B0B0133B5EA20044EA25 /* libcrypto.a in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
@@ -795,6 +798,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				225AA31D14520E5400BA809B /* libSKP_SILK_SDK.a */,
 				F0A486D71404FE53009EC0BE /* libsrtp.a */,
 				2214783B1386A2030020F8B8 /* Localizable.strings */,
 				22A10D9E11F88C1F00373793 /* liblinphone.xcodeproj */,
@@ -1062,7 +1066,7 @@
 					IN_LINPHONE,
 					HAVE_SILK,
 				);
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				HEADER_SEARCH_PATHS = (
 					submodules/linphone/coreapi,
 					submodules/linphone/mediastreamer2/include,
@@ -1137,7 +1141,7 @@
 					IN_LINPHONE,
 					HAVE_SILK,
 				);
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				HEADER_SEARCH_PATHS = (
 					submodules/linphone/coreapi,
 					submodules/linphone/mediastreamer2/include,
@@ -1212,7 +1216,7 @@
 					IN_LINPHONE,
 					HAVE_SILK,
 				);
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				HEADER_SEARCH_PATHS = (
 					submodules/linphone/coreapi,
 					submodules/linphone/mediastreamer2/include,

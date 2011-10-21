@@ -1217,6 +1217,7 @@
 				INSTALL_PATH = /usr/local/lib;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
 				PRODUCT_NAME = linphone;
+				USER_HEADER_SEARCH_PATHS = "linphone/mediastreamer2/build/iphone linphone/mediastreamer2/include linphone/oRTP/include externals/gsm/ externals/osip/include externals/exosip/include externals/speex/include externals/ffmpeg external/ffmpeg/swscale ../liblinphone-sdk/apple-darwin/include/";
 			};
 			name = Debug;
 		};
@@ -1267,6 +1268,7 @@
 				INSTALL_PATH = /usr/local/lib;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
 				PRODUCT_NAME = linphone;
+				USER_HEADER_SEARCH_PATHS = "linphone/mediastreamer2/build/iphone linphone/mediastreamer2/include linphone/oRTP/include externals/gsm/ externals/osip/include externals/exosip/include externals/speex/include externals/ffmpeg external/ffmpeg/swscale ../liblinphone-sdk/apple-darwin/include/";
 			};
 			name = Release;
 		};
@@ -1443,6 +1445,7 @@
 				INSTALL_PATH = /usr/local/lib;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
 				PRODUCT_NAME = linphone;
+				USER_HEADER_SEARCH_PATHS = "linphone/mediastreamer2/build/iphone linphone/mediastreamer2/include linphone/oRTP/include externals/gsm/ externals/osip/include externals/exosip/include externals/speex/include externals/ffmpeg external/ffmpeg/swscale ../liblinphone-sdk/apple-darwin/include/";
 			};
 			name = DistributionAdhoc;
 		};
