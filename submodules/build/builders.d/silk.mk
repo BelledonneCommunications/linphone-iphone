@@ -43,7 +43,7 @@ $(SILK_BUILD_DIR)/Makefile:
 
 build-silk: $(SILK_BUILD_DIR)/Makefile
 	cd $(SILK_BUILD_DIR) &&  host_alias=${host} . $(BUILDER_SRC_DIR)/build/$(config_site) \
-	&& make all TOOLCHAIN_PREFIX=$$SDK_BIN_PATH/ CXX="$$CXX" CC="$$CC -mno-thumb -falign-functions=4" LD="$$LD" $(make_options)   ADDED_DEFINES+=IPHONE \
+	&& make all TOOLCHAIN_PREFIX=$$SDK_BIN_PATH/ CXX="$$CXX" CC="$$CC -mno-thumb -g" LD="$$LD" $(make_options)   ADDED_DEFINES+=IPHONE \
 	&& mkdir -p $(prefix)/include/silk \
 	&& cp -f $(SILK_BUILD_DIR)/interface/*  $(prefix)/include/silk \
 	&& cp -f lib*.a  $(prefix)/lib 

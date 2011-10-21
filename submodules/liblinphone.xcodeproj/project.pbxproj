@@ -97,7 +97,6 @@
 		222CA6FB11F6CF9F00621220 /* rtpsession.h in Headers */ = {isa = PBXBuildFile; fileRef = 222CA6AE11F6CF9F00621220 /* rtpsession.h */; };
 		222CA6FC11F6CF9F00621220 /* rtpsignaltable.h in Headers */ = {isa = PBXBuildFile; fileRef = 222CA6AF11F6CF9F00621220 /* rtpsignaltable.h */; };
 		222CA6FD11F6CF9F00621220 /* sessionset.h in Headers */ = {isa = PBXBuildFile; fileRef = 222CA6B011F6CF9F00621220 /* sessionset.h */; };
-		222CA6FE11F6CF9F00621220 /* srtp.h in Headers */ = {isa = PBXBuildFile; fileRef = 222CA6B111F6CF9F00621220 /* srtp.h */; };
 		222CA6FF11F6CF9F00621220 /* str_utils.h in Headers */ = {isa = PBXBuildFile; fileRef = 222CA6B211F6CF9F00621220 /* str_utils.h */; };
 		222CA70011F6CF9F00621220 /* stun.h in Headers */ = {isa = PBXBuildFile; fileRef = 222CA6B311F6CF9F00621220 /* stun.h */; };
 		222CA70111F6CF9F00621220 /* stun_udp.h in Headers */ = {isa = PBXBuildFile; fileRef = 222CA6B411F6CF9F00621220 /* stun_udp.h */; };
@@ -163,6 +162,7 @@
 		225AA2E1144F1C6600BA809B /* bitratedriver.c in Sources */ = {isa = PBXBuildFile; fileRef = 225AA2E0144F1C6600BA809B /* bitratedriver.c */; };
 		225AA2E3144F1E3400BA809B /* qosanalyzer.c in Sources */ = {isa = PBXBuildFile; fileRef = 225AA2E2144F1E3400BA809B /* qosanalyzer.c */; };
 		225AA2E5144F2E0200BA809B /* msprivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 225AA2E4144F2E0200BA809B /* msprivate.h */; };
+		225AA2FD1451A95400BA809B /* conference.c in Sources */ = {isa = PBXBuildFile; fileRef = 225AA2FC1451A95400BA809B /* conference.c */; };
 		225D355A124B1FF60008581C /* linphonecall.c in Sources */ = {isa = PBXBuildFile; fileRef = 225D3559124B1FF60008581C /* linphonecall.c */; };
 		229A614D13DDFE3500090183 /* g722_decode.c in Sources */ = {isa = PBXBuildFile; fileRef = 229A614913DDFE3500090183 /* g722_decode.c */; };
 		229A614E13DDFE3500090183 /* g722_encode.c in Sources */ = {isa = PBXBuildFile; fileRef = 229A614A13DDFE3500090183 /* g722_encode.c */; };
@@ -315,7 +315,6 @@
 		222CA6AE11F6CF9F00621220 /* rtpsession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rtpsession.h; sourceTree = "<group>"; };
 		222CA6AF11F6CF9F00621220 /* rtpsignaltable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rtpsignaltable.h; sourceTree = "<group>"; };
 		222CA6B011F6CF9F00621220 /* sessionset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sessionset.h; sourceTree = "<group>"; };
-		222CA6B111F6CF9F00621220 /* srtp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = srtp.h; sourceTree = "<group>"; };
 		222CA6B211F6CF9F00621220 /* str_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = str_utils.h; sourceTree = "<group>"; };
 		222CA6B311F6CF9F00621220 /* stun.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stun.h; sourceTree = "<group>"; };
 		222CA6B411F6CF9F00621220 /* stun_udp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stun_udp.h; sourceTree = "<group>"; };
@@ -392,6 +391,7 @@
 		225AA2E0144F1C6600BA809B /* bitratedriver.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = bitratedriver.c; sourceTree = "<group>"; };
 		225AA2E2144F1E3400BA809B /* qosanalyzer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = qosanalyzer.c; sourceTree = "<group>"; };
 		225AA2E4144F2E0200BA809B /* msprivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = msprivate.h; sourceTree = "<group>"; };
+		225AA2FC1451A95400BA809B /* conference.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = conference.c; sourceTree = "<group>"; };
 		225D3559124B1FF60008581C /* linphonecall.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = linphonecall.c; sourceTree = "<group>"; };
 		229A614913DDFE3500090183 /* g722_decode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = g722_decode.c; sourceTree = "<group>"; };
 		229A614A13DDFE3500090183 /* g722_encode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = g722_encode.c; sourceTree = "<group>"; };
@@ -693,7 +693,6 @@
 				222CA6AE11F6CF9F00621220 /* rtpsession.h */,
 				222CA6AF11F6CF9F00621220 /* rtpsignaltable.h */,
 				222CA6B011F6CF9F00621220 /* sessionset.h */,
-				222CA6B111F6CF9F00621220 /* srtp.h */,
 				222CA6B211F6CF9F00621220 /* str_utils.h */,
 				222CA6B311F6CF9F00621220 /* stun.h */,
 				222CA6B411F6CF9F00621220 /* stun_udp.h */,
@@ -746,6 +745,7 @@
 		222CA72D11F6CFB100621220 /* coreapi */ = {
 			isa = PBXGroup;
 			children = (
+				225AA2FC1451A95400BA809B /* conference.c */,
 				229B9D5813043EAB00EFCD1C /* linphonecore_utils.h */,
 				225D3559124B1FF60008581C /* linphonecall.c */,
 				22A10EE711F8920F00373793 /* mswebcam.c */,
@@ -909,7 +909,6 @@
 				222CA6FB11F6CF9F00621220 /* rtpsession.h in Headers */,
 				222CA6FC11F6CF9F00621220 /* rtpsignaltable.h in Headers */,
 				222CA6FD11F6CF9F00621220 /* sessionset.h in Headers */,
-				222CA6FE11F6CF9F00621220 /* srtp.h in Headers */,
 				222CA6FF11F6CF9F00621220 /* str_utils.h in Headers */,
 				222CA70011F6CF9F00621220 /* stun.h in Headers */,
 				222CA70111F6CF9F00621220 /* stun_udp.h in Headers */,
@@ -1125,6 +1124,7 @@
 				225AA2DD144F077700BA809B /* silk_enc.c in Sources */,
 				225AA2E1144F1C6600BA809B /* bitratedriver.c in Sources */,
 				225AA2E3144F1E3400BA809B /* qosanalyzer.c in Sources */,
+				225AA2FD1451A95400BA809B /* conference.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1170,7 +1170,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = (
+					"$(ARCHS_STANDARD_32_BIT)",
+					armv6,
+				);
 				COPY_PHASE_STRIP = NO;
 				DSTROOT = /tmp/liblinphone.dst;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -1212,6 +1215,7 @@
 					"../liblinphone-sdk/apple-darwin/include/silk",
 				);
 				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
 				PRODUCT_NAME = linphone;
 			};
 			name = Debug;
@@ -1220,7 +1224,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = (
+					"$(ARCHS_STANDARD_32_BIT)",
+					armv6,
+				);
 				DSTROOT = /tmp/liblinphone.dst;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -1258,6 +1265,7 @@
 					"../liblinphone-sdk/apple-darwin/include/silk",
 				);
 				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
 				PRODUCT_NAME = linphone;
 			};
 			name = Release;
@@ -1392,7 +1400,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = (
+					"$(ARCHS_STANDARD_32_BIT)",
+					armv6,
+				);
 				DSTROOT = /tmp/liblinphone.dst;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -1430,6 +1441,7 @@
 					"../liblinphone-sdk/apple-darwin/include/silk",
 				);
 				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
 				PRODUCT_NAME = linphone;
 			};
 			name = DistributionAdhoc;
@@ -1438,6 +1450,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = (
+					"$(ARCHS_STANDARD_32_BIT)",
+					armv6,
+				);
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -1483,6 +1499,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = (
+					"$(ARCHS_STANDARD_32_BIT)",
+					armv6,
+				);
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -1527,6 +1547,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = (
+					"$(ARCHS_STANDARD_32_BIT)",
+					armv6,
+				);
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;

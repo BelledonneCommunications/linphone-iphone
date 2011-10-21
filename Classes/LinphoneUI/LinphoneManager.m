@@ -507,6 +507,8 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
     {
         ms_message("SPEEX codecs deactivated");
     }
+    [self configurePayloadType:"SILK" fromPrefKey:@"silk_24k_preference" withRate:24000];
+	[self configurePayloadType:"SILK" fromPrefKey:@"silk_16k_preference" withRate:16000];
     [self configurePayloadType:"AMR" fromPrefKey:@"amr_8k_preference" withRate:8000];
 	[self configurePayloadType:"GSM" fromPrefKey:@"gsm_8k_preference" withRate:8000];
 	[self configurePayloadType:"iLBC" fromPrefKey:@"ilbc_preference" withRate:8000];
