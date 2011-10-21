@@ -726,6 +726,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	//init audio session
 	AVAudioSession *audioSession = [AVAudioSession sharedInstance];
 	BOOL bAudioInputAvailable= [audioSession inputIsAvailable];
+    [audioSession setDelegate:self];
 	
 	if(!bAudioInputAvailable){
 		UIAlertView* error = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"No microphone",nil)
@@ -778,6 +779,22 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 }
 -(void) registerLogView:(id<LogView>) view {
 	mLogView = view;
+}
+
+-(void) beginInterruption {
+    LinphoneCall* c = linphone_core_get_current_call(theLinphoneCore);
+    ms_message("Sound interruption detected!");
+    if (c) {
+        linphone_core_pause_call(theLinphoneCore, c);
+    }
+}
+
+-(void) endInterruption {
+    const MSList* c = linphone_core_get_calls(theLinphoneCore);
+    ms_message("Sound interruption ended!");
+    if (c) {
+        linphone_core_resume_call(theLinphoneCore, (LinphoneCall*) c->data);
+    }    
 }
 
 @end
