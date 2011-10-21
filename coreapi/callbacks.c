@@ -397,6 +397,9 @@ static void call_updating(SalOp *op){
 	SalMediaDescription *md;
 	
 	md=sal_call_get_final_media_description(op);
+
+	/*accept the modification (sends a 200Ok)*/
+	sal_call_accept(op);
 	
 	if (md && !sal_media_description_empty(md))
 	{
@@ -422,12 +425,7 @@ static void call_updating(SalOp *op){
 				linphone_call_set_state(call, LinphoneCallUpdatedByRemote,"Call updated by remote");
 			}
 		}
-		/*accept the modification (sends a 200Ok)*/
-		sal_call_accept(op);
-<<<<<<< HEAD
 
-=======
->>>>>>> 949b3cd84135d234abab27a023885ad977f715c9
 		if (prevstate!=LinphoneCallIdle){
 			linphone_call_set_state (call,prevstate,"Connected (streams running)");
 		}
