@@ -51,6 +51,8 @@
 	
 }
 -(void) displayIncallFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
+    [self presentModalViewController:mIncallViewController animated:true];
+
 	[super displayIncallFromUI:viewCtrl
 					   forUser:username
 			   withDisplayName:displayName];
@@ -63,6 +65,12 @@
 -(void) displayStatus:(NSString*) message {
 	[super displayStatus:message];
 	[mIncallViewController displayStatus:message];
+}
+
+-(void) updateUIFromLinphoneState:(UIViewController*) viewCtrl {
+    [super updateUIFromLinphoneState:viewCtrl];
+    
+	[mIncallViewController updateUIFromLinphoneState:viewCtrl];
 }
 
 - (void)dealloc {

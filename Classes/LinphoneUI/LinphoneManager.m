@@ -790,11 +790,15 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 }
 
 -(void) endInterruption {
-    const MSList* c = linphone_core_get_calls(theLinphoneCore);
     ms_message("Sound interruption ended!");
+    const MSList* c = linphone_core_get_calls(theLinphoneCore);
+    
     if (c) {
+        ms_message("Auto resuming call");
         linphone_core_resume_call(theLinphoneCore, (LinphoneCall*) c->data);
-    }    
+    }
+    
+    [callDelegate updateUIFromLinphoneState:mCurrentViewController];
 }
 
 @end
