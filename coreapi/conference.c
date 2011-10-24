@@ -29,7 +29,9 @@
 
 static void conference_check_init(LinphoneConference *ctx){
 	if (ctx->conf==NULL){
-		ctx->conf=ms_audio_conference_new();
+		MSAudioConferenceParams params;
+		params.samplerate=16000;
+		ctx->conf=ms_audio_conference_new(&params);
 	}
 }
 
@@ -77,6 +79,14 @@ void linphone_call_remove_from_conf(LinphoneCall *call){
 	call->endpoint=NULL;
 }
 
+static RtpProfile *make_dummy_profile(int samplerate){
+	RtpProfile *prof=rtp_profile_new("dummy");
+	PayloadType *pt=payload_type_clone(&payload_type_l16_mono);
+	pt->clock_rate=samplerate;
+	rtp_profile_set_payload(prof,0,pt);
+	return prof;
+}
+
 static void add_local_endpoint(LinphoneConference *conf,LinphoneCore *lc){
 	/*create a dummy audiostream in order to extract the local part of it */
 	/* network address and ports have no meaning and are not used here. */
@@ -84,8 +94,10 @@ static void add_local_endpoint(LinphoneConference *conf,LinphoneCore *lc){
 	MSSndCard *playcard=lc->sound_conf.lsd_card ? 
 			lc->sound_conf.lsd_card : lc->sound_conf.play_sndcard;
 	MSSndCard *captcard=lc->sound_conf.capt_sndcard;
+	const MSAudioConferenceParams *params=ms_audio_conference_get_params(conf->conf);
+	RtpProfile *prof=make_dummy_profile(params->samplerate);
 	
-	audio_stream_start_full(st, &av_profile,
+	audio_stream_start_full(st, prof,
 				"127.0.0.1",
 				65000,
 				65001,
@@ -101,6 +113,8 @@ static void add_local_endpoint(LinphoneConference *conf,LinphoneCore *lc){
 	conf->local_participant=st;
 	conf->local_endpoint=ms_audio_endpoint_get_from_stream(st,FALSE);
 	ms_audio_conference_add_member(conf->conf,conf->local_endpoint);
+	/*normally and exceptionnaly, the profile is no more accessed past this point*/
+	rtp_profile_destroy(prof);
 }
 
 float linphone_core_get_conference_local_input_volume(LinphoneCore *lc){
