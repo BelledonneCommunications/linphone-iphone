@@ -395,6 +395,9 @@ static void call_updating(SalOp *op){
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
 	LinphoneCallState prevstate=LinphoneCallIdle;
 	SalMediaDescription *md;
+	SalMediaDescription *old_md=call->resultdesc;
+
+	sal_media_description_ref(old_md);
 	
 	md=sal_call_get_final_media_description(op);
 
@@ -412,12 +415,10 @@ static void call_updating(SalOp *op){
 				if(lc->vtable.display_status)
 					lc->vtable.display_status(lc,_("We are being paused..."));
 				linphone_call_set_state (call,LinphoneCallPausedByRemote,"Call paused by remote");
-			}else if (!sal_media_description_has_dir(call->resultdesc,SalStreamSendRecv) && sal_media_description_has_dir(md,SalStreamSendRecv)){
+			}else if (!sal_media_description_has_dir(old_md,SalStreamSendRecv) && sal_media_description_has_dir(md,SalStreamSendRecv)){
 				if(lc->vtable.display_status)
 					lc->vtable.display_status(lc,_("We have been resumed..."));
 				linphone_call_set_state (call,LinphoneCallStreamsRunning,"Connected (streams running)");
-				if (!call->current_params.in_conference)
-					lc->current_call=call;
 			}else{
 				prevstate=call->state;
 				if(lc->vtable.display_status)
@@ -430,6 +431,7 @@ static void call_updating(SalOp *op){
 			linphone_call_set_state (call,prevstate,"Connected (streams running)");
 		}
 	}
+	sal_media_description_unref(old_md);
 }
 
 static void call_terminated(SalOp *op, const char *from){
