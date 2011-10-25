@@ -916,5 +916,7 @@ void linphone_gtk_show_parameters(void){
 				ui_advanced);
 	linphone_gtk_ui_level_adapt(pb);
 
+	g_signal_connect(G_OBJECT(linphone_gtk_get_widget(pb,"proto_port")),"value-changed",(GCallback)linphone_gtk_update_my_port,NULL);
+	g_signal_connect(G_OBJECT(linphone_gtk_get_widget(pb,"proto_combo")),"changed",(GCallback)linphone_gtk_proto_changed,NULL);
 	gtk_widget_show(pb);
 }
