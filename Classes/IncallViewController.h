@@ -35,6 +35,7 @@
 	UIHangUpButton* endCtrl;
 	UIButton* dialer;
 	UIMuteButton* mute;
+    UIPauseResumeButton* pause;
 	UISpeakerButton* speaker;
 	UIButton* contacts;
 
@@ -74,6 +75,7 @@
 @property (nonatomic, retain) IBOutlet UIButton* endCtrl;
 @property (nonatomic, retain) IBOutlet UIButton* dialer;
 @property (nonatomic, retain) IBOutlet UIButton* mute;
+@property (nonatomic, retain) IBOutlet UIButton* pause;
 @property (nonatomic, retain) IBOutlet UIButton* speaker;
 @property (nonatomic, retain) IBOutlet UIButton* contacts;
 

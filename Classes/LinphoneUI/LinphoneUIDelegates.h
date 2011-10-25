@@ -25,6 +25,7 @@
 -(void) displayCallInProgressFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName;
 -(void) displayIncomingCallNotigicationFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName;
 -(void) displayIncallFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName;
+-(void) updateUIFromLinphoneState:(UIViewController*) viewCtrl;
 //status reporting
 -(void) displayStatus:(NSString*) message; 
 @end

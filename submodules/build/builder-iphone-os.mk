@@ -32,10 +32,8 @@ linphone_configure_controls=  --disable-video \
                               --enable-console_ui=no \
                               --enable-ssl-hmac=no \
                               --enable-ssl=yes \
-                              --enable-macaqsnd=no \
-			      --enable-macsnd=no \
-                              --enable-iounit=yes \
                               --with-gsm=$(prefix) \
+			      --disable-tests \
                               LIBZRTPCPP_CFLAGS="-I$(prefix)/include" \
 			      LIBZRTPCPP_LIBS="-L$(prefix)/lib -lzrtpcpp -lcrypto" \
 			      SRTP_CFLAGS="-I$(prefix)/include" \
@@ -46,6 +44,7 @@ linphone_configure_controls=  --disable-video \
                               SPEEX_LIBS="-L$(prefix)/lib -lspeexdsp -lspeex " \
                               OPENSSL_CFLAGS="-I$(prefix)/include" \
                               OPENSSL_LIBS="-L$(prefix)/lib -lssl -lcrypto" 
+				MSSILK_CFLAGS="-I$(prefix)/include/silk"
 ifeq ($(enable_zrtp),yes)
 	linphone_configure_controls+= --with-srtp=$(prefix) --enable-zrtp=yes --disable-tests
 endif
@@ -95,13 +94,13 @@ init:
 veryclean: veryclean-linphone
 	rm -rf $(BUILDER_BUILD_DIR)
 
-.NOTPARALLEL build-linphone: init build-openssl build-srtp build-zrtpcpp build-osip2 build-eXosip2  build-speex build-libgsm $(LINPHONE_BUILD_DIR)/Makefile
+.NOTPARALLEL build-linphone: init build-openssl build-srtp build-zrtpcpp build-osip2 build-eXosip2  build-speex build-libgsm  build-silk $(LINPHONE_BUILD_DIR)/Makefile
 	cd $(LINPHONE_BUILD_DIR)  && export PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig export CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) make newdate &&  make  && make install
 
-clean-linphone: clean-osip2 clean-eXosip2 clean-speex clean-libgsm  clean-srtp clean-zrtpcpp clean-msilbc clean-libilbc clean-openssl clean-msamr
+clean-linphone: clean-osip2 clean-eXosip2 clean-speex clean-libgsm  clean-srtp clean-zrtpcpp clean-msilbc clean-libilbc clean-openssl clean-msamr clean-silk
 	cd  $(LINPHONE_BUILD_DIR) && make clean
 
-veryclean-linphone: veryclean-osip2 veryclean-eXosip2 veryclean-speex veryclean-srtp veryclean-zrtpcpp veryclean-libgsm veryclean-msilbc veryclean-libilbc veryclean-openssl veryclean-msamr
+veryclean-linphone: veryclean-osip2 veryclean-eXosip2 veryclean-speex veryclean-srtp veryclean-zrtpcpp veryclean-libgsm veryclean-msilbc veryclean-libilbc veryclean-openssl veryclean-msamr veryclean-silk
 #-cd $(LINPHONE_BUILD_DIR) && make distclean
 	-cd $(LINPHONE_SRC_DIR) && rm -f configure
 
