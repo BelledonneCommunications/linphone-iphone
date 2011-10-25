@@ -444,6 +444,10 @@ LinphoneFriend *linphone_core_get_friend_by_address(const LinphoneCore *lc, cons
 	}
 	username=linphone_address_get_username(puri);
 	domain=linphone_address_get_domain(puri);
+	if (domain==NULL) {
+		linphone_address_destroy(puri);
+		return NULL;
+	}
 	for(elem=lc->friends;elem!=NULL;elem=ms_list_next(elem)){
 		lf=(LinphoneFriend*)elem->data;
 		const char *it_username=linphone_address_get_username(lf->uri);
