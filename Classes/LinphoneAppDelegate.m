@@ -51,12 +51,16 @@
         return;
     }
     
-    NSMutableDictionary *settings = [NSDictionary dictionaryWithContentsOfFile:[settingsBundle stringByAppendingPathComponent:@"Root.plist"]];
-	[settings addEntriesFromDictionary:[NSDictionary dictionaryWithContentsOfFile:[settingsBundle stringByAppendingPathComponent:@"audio.plist"]]];
-	[settings addEntriesFromDictionary:[NSDictionary dictionaryWithContentsOfFile:[settingsBundle stringByAppendingPathComponent:@"video.plist"]]];	
-    NSArray *preferences = [settings objectForKey:@"PreferenceSpecifiers"];
-    
+    NSMutableDictionary *rootSettings = [NSDictionary dictionaryWithContentsOfFile:[settingsBundle stringByAppendingPathComponent:@"Root.plist"]];
+	NSMutableDictionary *audioSettings = [NSDictionary dictionaryWithContentsOfFile:[settingsBundle stringByAppendingPathComponent:@"audio.plist"]];
+	NSMutableDictionary *videoSettings = [NSDictionary dictionaryWithContentsOfFile:[settingsBundle stringByAppendingPathComponent:@"video.plist"]];
+
+    NSMutableArray *preferences = [rootSettings objectForKey:@"PreferenceSpecifiers"];
+    [preferences addObjectsFromArray:[audioSettings objectForKey:@"PreferenceSpecifiers"]];
+    [preferences addObjectsFromArray:[videoSettings objectForKey:@"PreferenceSpecifiers"]];
+	
     NSMutableDictionary *defaultsToRegister = [[NSMutableDictionary alloc] initWithCapacity:[preferences count]];
+
     for(NSDictionary *prefSpecification in preferences) {
         NSString *key = [prefSpecification objectForKey:@"Key"];
         if(key && [prefSpecification objectForKey:@"DefaultValue"]) {
@@ -69,7 +73,8 @@
 #ifdef HAVE_AMR                                 
                                  @"YES",@"amr_8k_preference", // enable amr by default if compiled with
 #endif
-                                 //@"+33",@"countrycode_preference",
+                                 @"NO",@"debugenable_preference",
+								 //@"+33",@"countrycode_preference",
                                  nil];
     
     [defaultsToRegister addEntriesFromDictionary:appDefaults];
