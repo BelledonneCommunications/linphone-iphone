@@ -55,7 +55,7 @@ $(BUILDER_BUILD_DIR)/$(x264_dir)/config.mak: $(BUILDER_BUILD_DIR)/$(x264_dir)/co
 	&& ./configure --prefix=$(prefix)  ${x264-configure-option} 
 
 build-x264: $(BUILDER_BUILD_DIR)/$(x264_dir)/config.mak
-	cd $(BUILDER_BUILD_DIR)/$(x264_dir)  make && make install
+	cd $(BUILDER_BUILD_DIR)/$(x264_dir)  make && make install-lib-static
 
 clean-x264:
 	cd  $(BUILDER_BUILD_DIR)/$(x264_dir) && make clean
