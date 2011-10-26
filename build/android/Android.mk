@@ -73,6 +73,7 @@ ifeq ($(BUILD_X264),1)
 LOCAL_CFLAGS += -DHAVE_X264
 endif
 endif
+
 LOCAL_C_INCLUDES += \
 	$(LOCAL_PATH) \
 	$(LOCAL_PATH)/include \
@@ -100,6 +101,11 @@ LOCAL_CFLAGS += -DHAVE_AMR
 LOCAL_STATIC_LIBRARIES += \
 	libmsamr \
 	libopencoreamr 
+endif
+
+ifeq ($(BUILD_SILK),1)
+LOCAL_CFLAGS += -DHAVE_SILK
+LOCAL_STATIC_LIBRARIES += libmssilk
 endif
 
 ifeq ($(LINPHONE_VIDEO),1)
