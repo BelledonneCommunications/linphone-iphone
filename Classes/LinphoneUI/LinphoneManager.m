@@ -42,6 +42,9 @@ extern "C" void libmsilbc_init();
 #ifdef HAVE_AMR
 extern void libmsamr_init();
 #endif
+#if defined (HAVE_SILK)
+extern void libmssilk_init(); 
+#endif
 @implementation LinphoneManager
 @synthesize callDelegate;
 @synthesize registrationDelegate;
@@ -559,6 +562,8 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
     {
         ms_message("SPEEX codecs deactivated");
     }
+    [self configurePayloadType:"SILK" fromPrefKey:@"silk_24k_preference" withRate:24000];
+	[self configurePayloadType:"SILK" fromPrefKey:@"silk_16k_preference" withRate:16000];
     [self configurePayloadType:"AMR" fromPrefKey:@"amr_8k_preference" withRate:8000];
 	[self configurePayloadType:"GSM" fromPrefKey:@"gsm_8k_preference" withRate:8000];
 	[self configurePayloadType:"iLBC" fromPrefKey:@"ilbc_preference" withRate:8000];
@@ -731,7 +736,9 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	}
 	
 	libmsilbc_init();
-	
+#if defined (HAVE_SILK)
+    libmssilk_init(); 
+#endif	
 #ifdef HAVE_AMR
     libmsamr_init(); //load amr plugin if present from the liblinphone sdk
 #endif	/*
@@ -786,6 +793,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	//init audio session
 	AVAudioSession *audioSession = [AVAudioSession sharedInstance];
 	BOOL bAudioInputAvailable= [audioSession inputIsAvailable];
+    [audioSession setDelegate:self];
 	
 	if(!bAudioInputAvailable){
 		UIAlertView* error = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"No microphone",nil)
@@ -839,4 +847,25 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 -(void) registerLogView:(id<LogView>) view {
 	mLogView = view;
 }
+
+-(void) beginInterruption {
+    LinphoneCall* c = linphone_core_get_current_call(theLinphoneCore);
+    ms_message("Sound interruption detected!");
+    if (c) {
+        linphone_core_pause_call(theLinphoneCore, c);
+    }
+}
+
+-(void) endInterruption {
+    ms_message("Sound interruption ended!");
+    const MSList* c = linphone_core_get_calls(theLinphoneCore);
+    
+    if (c) {
+        ms_message("Auto resuming call");
+        linphone_core_resume_call(theLinphoneCore, (LinphoneCall*) c->data);
+    }
+    
+    [callDelegate updateUIFromLinphoneState:mCurrentViewController];
+}
+
 @end

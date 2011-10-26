@@ -18,6 +18,7 @@
  */              
 
 #import <Foundation/Foundation.h>
+#import <AVFoundation/AVAudioSession.h>
 #import <SystemConfiguration/SCNetworkReachability.h>
 #include "linphonecore.h"
 #import "LogView.h"
@@ -35,7 +36,7 @@ typedef enum _TunnelMode {
 } TunnelMode;
 
 @class FastAddressBook;
-@interface LinphoneManager : NSObject {
+@interface LinphoneManager : NSObject <AVAudioSessionDelegate> {
 @private
 	SCNetworkReachabilityContext proxyReachabilityContext;
 	SCNetworkReachabilityRef proxyReachability;

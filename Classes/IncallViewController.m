@@ -35,6 +35,7 @@
 @synthesize endCtrl;
 @synthesize close;
 @synthesize mute;
+@synthesize pause;
 @synthesize dialer;
 @synthesize speaker;
 @synthesize contacts;
@@ -70,6 +71,7 @@
     [super viewDidLoad];
 	//Controls
 	[mute initWithOnImage:[UIImage imageNamed:@"mic_muted.png"]  offImage:[UIImage imageNamed:@"mic_active.png"] ];
+    [pause initWithOnImage:[UIImage imageNamed:@"resumecall.png"]  offImage:[UIImage imageNamed:@"pausecall.png"] ];
 	[speaker initWithOnImage:[UIImage imageNamed:@"Speaker-32-on.png"]  offImage:[UIImage imageNamed:@"Speaker-32-off.png"] ];
 	
 
@@ -127,6 +129,11 @@
 	[callDuration stop];
 	[self dismissModalViewControllerAnimated:true];
 }
+-(void) updateUIFromLinphoneState:(UIViewController *)viewCtrl {
+    [mute reset];
+    [pause reset];
+}
+
 - (IBAction)doAction:(id)sender {
 	
 	if (sender == dialer) {
