@@ -623,5 +623,6 @@ public interface LinphoneCore {
 	LinphoneCall findCallFromUri(String uri);
 
 	int getMaxCalls();
+	boolean isMyself(String uri);
 
 }

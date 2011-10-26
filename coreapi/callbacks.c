@@ -108,6 +108,21 @@ static bool_t is_duplicate_call(LinphoneCore *lc, const LinphoneAddress *from, c
 }
 #endif
 
+static bool_t already_a_call_with_remote_address(const LinphoneCore *lc, const LinphoneAddress *remote) {
+	ms_warning(" searching for already_a_call_with_remote_address.");
+
+	MSList *elem;
+	for(elem=lc->calls;elem!=NULL;elem=elem->next){
+		const LinphoneCall *call=(LinphoneCall*)elem->data;
+		const LinphoneAddress *cRemote=linphone_call_get_remote_address(call);
+		if (linphone_address_weak_equal(cRemote,remote)) {
+			ms_warning("already_a_call_with_remote_address found.");
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
+
 static bool_t already_a_call_pending(LinphoneCore *lc){
 	MSList *elem;
 	for(elem=lc->calls;elem!=NULL;elem=elem->next){
@@ -161,7 +176,7 @@ static void call_received(SalOp *h){
 	from_addr=linphone_address_new(from);
 	to_addr=linphone_address_new(to);
 
-	if (already_a_call_pending(lc)){
+	if (already_a_call_with_remote_address(lc,from_addr) || already_a_call_pending(lc)){
 		ms_warning("Receiving another call while one is ringing or initiated, refusing this one with busy message.");
 		sal_call_decline(h,SalReasonBusy,NULL);
 		sal_op_release(h);
