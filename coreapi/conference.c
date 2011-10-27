@@ -189,7 +189,7 @@ int linphone_core_leave_conference(LinphoneCore *lc){
 
 
 int linphone_core_enter_conference(LinphoneCore *lc){
-	if (linphone_core_sound_resources_locked) {
+	if (linphone_core_sound_resources_locked(lc)) {
 		return -1;
 	}
 	LinphoneConference *conf=&lc->conf_ctx;
