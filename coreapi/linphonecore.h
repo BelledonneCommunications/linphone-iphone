@@ -1031,6 +1031,7 @@ int linphone_core_terminate_conference(LinphoneCore *lc);
 int linphone_core_get_conference_size(LinphoneCore *lc);
 
 int linphone_core_get_max_calls(LinphoneCore *lc);
+bool_t linphone_core_sound_resources_locked(LinphoneCore *lc);
 
 #ifdef __cplusplus
 }

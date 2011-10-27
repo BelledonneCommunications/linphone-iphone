@@ -4381,3 +4381,32 @@ const LinphoneCall* linphone_core_find_call_from_uri(LinphoneCore *lc, const cha
 	}
 	return NULL;
 }
+
+
+/**
+ * Check if a call will need the sound resources.
+ *
+ * @ingroup call_control
+ * @param lc The LinphoneCore
+**/
+bool_t linphone_core_sound_resources_locked(LinphoneCore *lc){
+	MSList *calls=lc->calls;
+	while(calls) {
+		LinphoneCall *c=(LinphoneCall*)calls->data;
+		calls=calls->next;
+		switch (c->state) {
+			case LinphoneCallOutgoingInit:
+			case LinphoneCallOutgoingProgress:
+			case LinphoneCallOutgoingRinging:
+			case LinphoneCallOutgoingEarlyMedia:
+			case LinphoneCallConnected:
+			case LinphoneCallRefered:
+			case LinphoneCallIncomingEarlyMedia:
+			case LinphoneCallUpdated:
+				return TRUE;
+			default:
+				break;
+		}
+	}
+	return FALSE;
+}

@@ -625,4 +625,13 @@ public interface LinphoneCore {
 	int getMaxCalls();
 	boolean isMyself(String uri);
 
+	/**
+	 * Use this method to check the calls state and forbid proposing actions
+	 * which could result in an active call.
+	 * Eg: don't start a new call if one is in outgoing ringing.
+	 * Eg: don't merge to conference either as it could result
+	 *     in two active calls (conference and accepted call). 
+	 * @return
+	 */
+	boolean soundResourcesLocked();
 }
