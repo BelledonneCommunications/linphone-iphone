@@ -51,7 +51,7 @@ rm /lib/libgcc.a /lib/libmingw32.a /lib/libmingwex.a
 rm /lib/libintl.dll.a
 rm /lib/libintl.la
 rm /lib/libintl.a
-rm /include/intl.h
+rm /include/libintl.h
 
 * Download and install Inno Setup Compiler (required only if you run 'make setup.exe'). Add it to your windows Path environment variable.
 
