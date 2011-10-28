@@ -44,7 +44,7 @@ AM_PROG_CC_C_O
 AC_CHECK_PROGS(MD5SUM,[md5sum md5])
 AM_CONDITIONAL(HAVE_MD5SUM,test -n $MD5SUM)
 
-case $target_os in
+case $target in
 	*mingw32ce)
        	CFLAGS="$CFLAGS -D_WIN32_WCE -DORTP_STATIC -D_WIN32_WINNT=0x0501"
        	CXXFLAGS="$CXXFLAGS -DORTP_STATIC -D_WIN32_WINNT=0x0501"
@@ -60,11 +60,18 @@ case $target_os in
 		CONSOLE_FLAGS="-mconsole"
 		mingw_found=yes
 	;;
-	*darwin*)
+       armv6-apple-darwin|armv7-apple-darwin|i386-apple-darwin)
+                CFLAGS="$CFLAGS -DTARGET_OS_IPHONE "
+                build_tests=no
+                ios_found=yes
+        ;;
+        x86_64-apple-darwin*|i686-apple-darwin*)
+                MSPLUGINS_CFLAGS=""
 		dnl use macport installation
 		ACLOCAL_MACOS_FLAGS="-I /opt/local/share/aclocal"
 		build_macos=yes
-	;;
+        ;;
+
 esac
 
 AC_SUBST(ACLOCAL_MACOS_FLAGS)
@@ -74,6 +81,7 @@ AC_SUBST(GUI_FLAGS)
 dnl localization tools
 IT_PROG_INTLTOOL([0.40], [no-xml])
 
+AM_CONDITIONAL(BUILD_TESTS,test x$build_tests != xno)
 dnl Initialize libtool
 LT_INIT([win32-dll shared disable-static])
 

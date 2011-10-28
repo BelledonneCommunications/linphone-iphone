@@ -34,7 +34,7 @@ clean-local:
 
 if ENABLE_TESTS
 #tutorials
-
+if BUILD_TESTS
 noinst_PROGRAMS=helloworld registration buddy_status chatroom
 
 helloworld_SOURCES=helloworld.c
@@ -60,7 +60,7 @@ LINPHONE_TUTOS+=$(chatroom_SOURCES)
 chatroom_LDADD=$(helloworld_LDADD)
 endif
 												
-				
+endif			
 
 INCLUDES=-I$(top_srcdir)/coreapi \
 		$(MEDIASTREAMER_CFLAGS)
