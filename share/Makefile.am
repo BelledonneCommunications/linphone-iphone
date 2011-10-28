@@ -29,8 +29,13 @@ linphone_fd_DATA= linphone.desktop
 pkgconfigdir=$(libdir)/pkgconfig
 pkgconfig_DATA=linphone.pc
 
+linphonedir=$(datadir)/linphone
+linphone_DATA=rootca.pem
+
 EXTRA_DIST = 					$(LINPHONE_SOUNDS) \
 								$(LINPHONE_RINGS) \
 						        linphone.desktop.in   \
 								linphone.pc.in \
-								Makefile.inc
+								Makefile.inc \
+								rootca.pem
+

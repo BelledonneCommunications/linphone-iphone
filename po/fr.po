@@ -423,7 +423,7 @@ msgstr "Reprendre"
 
 #: ../gtk/incall_view.c:347 ../gtk/main.ui.h:46
 msgid "Pause"
-msgstr "Mettre en attente"
+msgstr "Pause"
 
 #: ../gtk/loginframe.c:93
 #, c-format

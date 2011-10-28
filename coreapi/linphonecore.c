@@ -37,6 +37,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 /*#define UNSTANDART_GSM_11K 1*/
 
+#define ROOT_CA_FILE PACKAGE_DATA_DIR "/linphone/rootca.pem"
+
 static const char *liblinphone_version=LIBLINPHONE_VERSION;
 static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t curtime);
 static void linphone_core_run_hooks(LinphoneCore *lc);
@@ -381,6 +383,8 @@ static void sound_config_read(LinphoneCore *lc)
 		MSSndCard *card=ms_alsa_card_new_custom(devid,devid);
 		ms_snd_card_manager_add_card(ms_snd_card_manager_get(),card);
 	}
+	tmp=lp_config_get_int(lc->config,"sound","alsa_forced_rate",-1);
+	if (tmp>0) ms_alsa_card_set_forced_sample_rate(tmp);
 #endif
 	/* retrieve all sound devices */
 	build_sound_devices_table(lc);
@@ -431,10 +435,10 @@ static void sound_config_read(LinphoneCore *lc)
 	linphone_core_set_play_file(lc,lp_config_get_string(lc->config,"sound","hold_music",PACKAGE_SOUND_DIR "/" HOLD_MUSIC));
 	check_sound_device(lc);
 	lc->sound_conf.latency=0;
-#if !defined(TARGET_OS_IPHONE) && !defined(ANDROID)
+#ifndef __ios 
     tmp=TRUE;
 #else
-    tmp=FALSE;
+    tmp=FALSE; /* on iOS we have builtin echo cancellation.*/
 #endif
     tmp=lp_config_get_int(lc->config,"sound","echocancellation",tmp);
 	linphone_core_enable_echo_cancellation(lc,tmp);
@@ -514,7 +518,11 @@ static void sip_config_read(LinphoneCore *lc)
 		ms_free(contact);
 	}
 
+#ifdef __linux
 	sal_root_ca(lc->sal, lp_config_get_string(lc->config,"sip","root_ca", "/etc/ssl/certs"));
+#else
+	sal_root_ca(lc->sal, lp_config_get_string(lc->config,"sip","root_ca", ROOT_CA_FILE));
+#endif
 
 	tmp=lp_config_get_int(lc->config,"sip","guess_hostname",1);
 	linphone_core_set_guess_hostname(lc,tmp);
@@ -808,7 +816,11 @@ void linphone_core_enable_adaptive_rate_control(LinphoneCore *lc, bool_t enabled
  * See linphone_core_enable_adaptive_rate_control().
 **/
 bool_t linphone_core_adaptive_rate_control_enabled(const LinphoneCore *lc){
-	return lp_config_get_int(lc->config,"net","adaptive_rate_control",FALSE);
+	return lp_config_get_int(lc->config,"net","adaptive_rate_control",TRUE);
+}
+
+bool_t linphone_core_rtcp_enabled(const LinphoneCore *lc){
+	return lp_config_get_int(lc->config,"rtp","rtcp_enabled",TRUE);
 }
 
 /**
@@ -827,6 +839,7 @@ bool_t linphone_core_adaptive_rate_control_enabled(const LinphoneCore *lc){
  */
 void linphone_core_set_download_bandwidth(LinphoneCore *lc, int bw){
 	lc->net_conf.download_bw=bw;
+	if (linphone_core_ready(lc)) lp_config_set_int(lc->config,"net","download_bw",bw);
 }
 
 /**
@@ -844,6 +857,7 @@ void linphone_core_set_download_bandwidth(LinphoneCore *lc, int bw){
  */
 void linphone_core_set_upload_bandwidth(LinphoneCore *lc, int bw){
 	lc->net_conf.upload_bw=bw;
+	if (linphone_core_ready(lc)) lp_config_set_int(lc->config,"net","upload_bw",bw);
 }
 
 /**
@@ -961,6 +975,7 @@ void linphone_core_set_state(LinphoneCore *lc, LinphoneGlobalState gstate, const
 static void misc_config_read (LinphoneCore *lc) {
 	LpConfig *config=lc->config;
     lc->max_call_logs=lp_config_get_int(config,"misc","history_max_size",15);
+    lc->max_calls=lp_config_get_int(config,"misc","max_calls",NB_MAX_CALLS);
 }
 
 static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vtable, const char *config_path,
@@ -1028,7 +1043,11 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	linphone_core_assign_payload_type(lc,&payload_type_aal2_g726_24,-1,NULL);
 	linphone_core_assign_payload_type(lc,&payload_type_aal2_g726_32,-1,NULL);
 	linphone_core_assign_payload_type(lc,&payload_type_aal2_g726_40,-1,NULL);
-
+	linphone_core_assign_payload_type(lc,&payload_type_silk_nb,-1,NULL);
+	linphone_core_assign_payload_type(lc,&payload_type_silk_mb,-1,NULL);
+	linphone_core_assign_payload_type(lc,&payload_type_silk_wb,-1,NULL);
+	linphone_core_assign_payload_type(lc,&payload_type_silk_swb,-1,NULL);
+	
 	ms_init();
 	/* create a mediastreamer2 event queue and set it as global */
 	/* This allows to run event's callback in linphone_core_iterate() */
@@ -1490,6 +1509,12 @@ int linphone_core_set_sip_transports(LinphoneCore *lc, const LCSipTransports * t
 	if (transports_unchanged(tr,&lc->sip_conf.transports))
 		return 0;
 	memcpy(&lc->sip_conf.transports,tr,sizeof(*tr));
+
+	if (linphone_core_ready(lc)){
+		lp_config_set_int(lc->config,"sip","sip_port",tr->udp_port);
+		lp_config_set_int(lc->config,"sip","sip_tcp_port",tr->tcp_port);
+		lp_config_set_int(lc->config,"sip","sip_tls_port",tr->tls_port);
+	}
 
 	if (lc->sal==NULL) return 0;
 	return apply_transports(lc);
@@ -2300,6 +2325,10 @@ int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call)
 		ms_message("ring stopped");
 		lc->ringstream=NULL;
 	}
+	if (call->ringing_beep){
+		linphone_core_stop_dtmf(lc);
+		call->ringing_beep=FALSE;
+	}
 
 	linphone_core_get_default_proxy(lc,&cfg);
 	dest_proxy=cfg;
@@ -2356,10 +2385,6 @@ static void terminate_call(LinphoneCore *lc, LinphoneCall *call){
 		ring_stop(lc->ringstream);
 		lc->ringstream=NULL;
 	}
-
-	/*stop any dtmf tone still playing */
-	ms_message("test");
-	linphone_core_stop_dtmf(lc);
 
 	linphone_call_stop_media_streams(call);
 	if (lc->vtable.display_status!=NULL)
@@ -2544,8 +2569,10 @@ int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *the_call)
 		linphone_core_preempt_sound_resources(lc);
 		ms_message("Resuming call %p",call);
 	}
+	update_local_media_description(lc,the_call,&call->localdesc);
+	sal_call_set_local_media_description(call->op,call->localdesc);
 	sal_media_description_set_dir(call->localdesc,SalStreamSendRecv);
-	if (call->params.in_conference) subject="Resuming conference";
+	if (call->params.in_conference && !call->current_params.in_conference) subject="Conference";
 	if(sal_call_update(call->op,subject) != 0){
 		return -1;
 	}
@@ -3034,23 +3061,34 @@ bool_t linphone_core_echo_limiter_enabled(const LinphoneCore *lc){
 **/
 void linphone_core_mute_mic(LinphoneCore *lc, bool_t val){
 	LinphoneCall *call=linphone_core_get_current_call(lc);
-	if (call==NULL){
+	AudioStream *st=NULL;
+	if (linphone_core_is_in_conference(lc)){
+		lc->conf_ctx.local_muted=val;
+		st=lc->conf_ctx.local_participant;
+	}else if (call==NULL){
 		ms_warning("linphone_core_mute_mic(): No current call !");
 		return;
-	}
-	if (call->audiostream!=NULL){
-		audio_stream_set_mic_gain(call->audiostream,
-			(val==TRUE) ? 0 : lp_config_get_float(lc->config,"sound","mic_gain",1));
-		if ( linphone_core_get_rtp_no_xmit_on_audio_mute(lc) ){
-			audio_stream_mute_rtp(call->audiostream,val);
-		}
+	}else{
+		st=call->audiostream;
 		call->audio_muted=val;
 	}
+	if (st!=NULL){
+		audio_stream_set_mic_gain(st,
+			(val==TRUE) ? 0 : lp_config_get_float(lc->config,"sound","mic_gain",1));
+		if ( linphone_core_get_rtp_no_xmit_on_audio_mute(lc) ){
+			audio_stream_mute_rtp(st,val);
+		}
+		
+	}
 }
-
+/**
+ * Returns whether microphone is muted.
+**/
 bool_t linphone_core_is_mic_muted(LinphoneCore *lc) {
 	LinphoneCall *call=linphone_core_get_current_call(lc);
-	if (call==NULL){
+	if (linphone_core_is_in_conference(lc)){
+		return lc->conf_ctx.local_muted;
+	}else if (call==NULL){
 		ms_warning("linphone_core_is_mic_muted(): No current call !");
 		return FALSE;
 	}
@@ -3678,11 +3716,14 @@ void linphone_core_set_record_file(LinphoneCore *lc, const char *file){
 
 static MSFilter *get_dtmf_gen(LinphoneCore *lc){
 	LinphoneCall *call=linphone_core_get_current_call (lc);
+	AudioStream *stream=NULL;
 	if (call){
-		AudioStream *stream=call->audiostream;
-		if (stream){
-			return stream->dtmfgen;
-		}
+		stream=call->audiostream;
+	}else if (linphone_core_is_in_conference(lc)){
+		stream=lc->conf_ctx.local_participant;
+	}
+	if (stream){
+		return stream->dtmfgen;
 	}
 	if (lc->ringstream==NULL){
 		float amp=0.1;
@@ -3731,7 +3772,7 @@ void linphone_core_play_tone(LinphoneCore *lc){
 	def.duration=300;
 	def.frequency=500;
 	def.amplitude=1;
-	def.interval=800;
+	def.interval=2000;
 	ms_filter_call_method(f, MS_DTMF_GEN_PLAY_CUSTOM,&def);
 }
 
@@ -3837,8 +3878,6 @@ int linphone_core_get_current_call_stats(LinphoneCore *lc, rtp_stats_t *local, r
 void net_config_uninit(LinphoneCore *lc)
 {
 	net_config_t *config=&lc->net_conf;
-	lp_config_set_int(lc->config,"net","download_bw",config->download_bw);
-	lp_config_set_int(lc->config,"net","upload_bw",config->upload_bw);
 
 	if (config->stun_server!=NULL){
 		lp_config_set_string(lc->config,"net","stun_server",config->stun_server);
@@ -3861,9 +3900,7 @@ void sip_config_uninit(LinphoneCore *lc)
 	MSList *elem;
 	int i;
 	sip_config_t *config=&lc->sip_conf;
-	lp_config_set_int(lc->config,"sip","sip_port",config->transports.udp_port);
-	lp_config_set_int(lc->config,"sip","sip_tcp_port",config->transports.tcp_port);
-	lp_config_set_int(lc->config,"sip","sip_tls_port",config->transports.tls_port);
+	
 	lp_config_set_int(lc->config,"sip","guess_hostname",config->guess_hostname);
 	lp_config_set_string(lc->config,"sip","contact",config->contact);
 	lp_config_set_int(lc->config,"sip","inc_timeout",config->inc_timeout);
@@ -3873,15 +3910,12 @@ void sip_config_uninit(LinphoneCore *lc)
 	lp_config_set_int(lc->config,"sip","register_only_when_network_is_up",config->register_only_when_network_is_up);
 
 
-	lp_config_set_int(lc->config,"sip","default_proxy",linphone_core_get_default_proxy(lc,NULL));
+	
 
 	for(elem=config->proxies,i=0;elem!=NULL;elem=ms_list_next(elem),i++){
 		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)(elem->data);
-		linphone_proxy_config_write_to_config_file(lc->config,cfg,i);
 		linphone_proxy_config_edit(cfg);	/* to unregister */
 	}
-	/*to ensure remove configs are erased:*/
-	linphone_proxy_config_write_to_config_file(lc->config,NULL,i);
 
 	for (i=0;i<20;i++){
 		sal_iterate(lc->sal);
@@ -3898,11 +3932,6 @@ void sip_config_uninit(LinphoneCore *lc)
 
 	linphone_proxy_config_write_to_config_file(lc->config,NULL,i);	/*mark the end */
 
-	for(elem=lc->auth_info,i=0;elem!=NULL;elem=ms_list_next(elem),i++){
-		LinphoneAuthInfo *ai=(LinphoneAuthInfo*)(elem->data);
-		linphone_auth_info_write_config(lc->config,ai,i);
-	}
-	linphone_auth_info_write_config(lc->config,NULL,i); /* mark the end */
 	ms_list_for_each(lc->auth_info,(void (*)(void*))linphone_auth_info_destroy);
 	ms_list_free(lc->auth_info);
 	lc->auth_info=NULL;
@@ -4127,9 +4156,9 @@ int linphone_core_get_calls_nb(const LinphoneCore *lc){
 **/
 bool_t linphone_core_can_we_add_call(LinphoneCore *lc)
 {
-	if(linphone_core_get_calls_nb(lc) < NB_MAX_CALLS)
+	if(linphone_core_get_calls_nb(lc) < lc->max_calls)
 		return TRUE;
-	ms_error("Maximum amount of simultaneous calls reached !");
+	ms_message("Maximum amount of simultaneous calls reached !");
 	return FALSE;
 }
 
@@ -4284,6 +4313,11 @@ void linphone_core_stop_dtmf_stream(LinphoneCore* lc) {
 	if (lc->ringstream) ring_stop(lc->ringstream);
 	lc->ringstream=NULL;
 }
+
+int linphone_core_get_max_calls(LinphoneCore *lc) {
+	return lc->max_calls;
+}
+
 
 typedef struct Hook{
 	LinphoneCoreIterateHook fun;

@@ -67,7 +67,7 @@
  * Time between calls to linphonec_idle_call during main
  * input read loop in microseconds.
  */
-#define LPC_READLINE_TIMEOUT 1000000
+#define LPC_READLINE_TIMEOUT 10000
 
 /*
  * Filename of linphonec history

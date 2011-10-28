@@ -25,10 +25,13 @@
  
 #include "private.h"
 
+#include "mediastreamer2/msvolume.h"
 
 static void conference_check_init(LinphoneConference *ctx){
 	if (ctx->conf==NULL){
-		ctx->conf=ms_audio_conference_new();
+		MSAudioConferenceParams params;
+		params.samplerate=16000;
+		ctx->conf=ms_audio_conference_new(&params);
 	}
 }
 
@@ -42,10 +45,13 @@ static void remove_local_endpoint(LinphoneConference *ctx){
 	}
 }
 
-static void conference_check_uninit(LinphoneConference *ctx){
+void linphone_core_conference_check_uninit(LinphoneConference *ctx){
 	if (ctx->conf){
-		if (ctx->conf->nmembers==0){
+		ms_message("conference_check_uninit(): nmembers=%i",ctx->conf->nmembers);
+		if (ctx->conf->nmembers==1 && ctx->local_participant!=NULL){
 			remove_local_endpoint(ctx);
+		}
+		if (ctx->conf->nmembers==0){
 			ms_audio_conference_destroy(ctx->conf);
 			ctx->conf=NULL;
 		}
@@ -57,6 +63,8 @@ void linphone_call_add_to_conf(LinphoneCall *call){
 	LinphoneCore *lc=call->core;
 	LinphoneConference *conf=&lc->conf_ctx;
 	MSAudioEndpoint *ep;
+	call->params.has_video = FALSE;
+	call->camera_active = FALSE;
 	ep=ms_audio_endpoint_get_from_stream(call->audiostream,TRUE);
 	ms_audio_conference_add_member(conf->conf,ep);
 	call->endpoint=ep;
@@ -69,7 +77,14 @@ void linphone_call_remove_from_conf(LinphoneCall *call){
 	ms_audio_conference_remove_member(conf->conf,call->endpoint);
 	ms_audio_endpoint_release_from_stream(call->endpoint);
 	call->endpoint=NULL;
-	conference_check_uninit(conf);
+}
+
+static RtpProfile *make_dummy_profile(int samplerate){
+	RtpProfile *prof=rtp_profile_new("dummy");
+	PayloadType *pt=payload_type_clone(&payload_type_l16_mono);
+	pt->clock_rate=samplerate;
+	rtp_profile_set_payload(prof,0,pt);
+	return prof;
 }
 
 static void add_local_endpoint(LinphoneConference *conf,LinphoneCore *lc){
@@ -79,8 +94,10 @@ static void add_local_endpoint(LinphoneConference *conf,LinphoneCore *lc){
 	MSSndCard *playcard=lc->sound_conf.lsd_card ? 
 			lc->sound_conf.lsd_card : lc->sound_conf.play_sndcard;
 	MSSndCard *captcard=lc->sound_conf.capt_sndcard;
+	const MSAudioConferenceParams *params=ms_audio_conference_get_params(conf->conf);
+	RtpProfile *prof=make_dummy_profile(params->samplerate);
 	
-	audio_stream_start_full(st, &av_profile,
+	audio_stream_start_full(st, prof,
 				"127.0.0.1",
 				65000,
 				65001,
@@ -96,6 +113,20 @@ static void add_local_endpoint(LinphoneConference *conf,LinphoneCore *lc){
 	conf->local_participant=st;
 	conf->local_endpoint=ms_audio_endpoint_get_from_stream(st,FALSE);
 	ms_audio_conference_add_member(conf->conf,conf->local_endpoint);
+	/*normally and exceptionnaly, the profile is no more accessed past this point*/
+	rtp_profile_destroy(prof);
+}
+
+float linphone_core_get_conference_local_input_volume(LinphoneCore *lc){
+	LinphoneConference *conf=&lc->conf_ctx;
+	AudioStream *st=conf->local_participant;
+	if (st && st->volsend && !conf->local_muted){
+		float vol=0;
+		ms_filter_call_method(st->volsend,MS_VOLUME_GET,&vol);
+		return vol;
+		
+	}
+	return LINPHONE_VOLUME_DB_LOWEST;
 }
 
 int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call){
@@ -114,8 +145,12 @@ int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call){
 		linphone_core_resume_call(lc,call);
 	else if (call->state==LinphoneCallStreamsRunning){
 		/*this will trigger a reINVITE that will later redraw the streams */
-		if (call->audiostream || call->videostream)
+		if (call->audiostream || call->videostream){
 			linphone_call_stop_media_streams (call); /*free the audio & video local resources*/
+		}
+		if (call==lc->current_call){
+			lc->current_call=NULL;
+		}
 		linphone_core_update_call(lc,call,&params);
 		add_local_endpoint(conf,lc);
 	}else{
@@ -126,6 +161,7 @@ int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call){
 }
 
 int linphone_core_remove_from_conference(LinphoneCore *lc, LinphoneCall *call){
+	int err=0;
 	if (!call->current_params.in_conference){
 		if (call->params.in_conference){
 			ms_warning("Not (yet) in conference, be patient");
@@ -136,7 +172,8 @@ int linphone_core_remove_from_conference(LinphoneCore *lc, LinphoneCall *call){
 		}
 	}
 	call->params.in_conference=FALSE;
-	return linphone_core_pause_call(lc,call);
+	err=linphone_core_pause_call(lc,call);
+	return err;
 }
 
 bool_t linphone_core_is_in_conference(const LinphoneCore *lc){

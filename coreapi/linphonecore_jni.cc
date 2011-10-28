@@ -1191,6 +1191,13 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setVideoWindowId(JNIEnv*
 																		,jobject thiz
 																		,jlong lc
 																		,jobject obj) {
+	jobject oldWindow = (jobject) linphone_core_get_native_video_window_id((LinphoneCore*)lc);
+	if (oldWindow != NULL) {
+		env->DeleteGlobalRef(oldWindow);
+	}
+	if (obj != NULL) {
+		obj = env->NewGlobalRef(obj);
+	}
 	linphone_core_set_native_video_window_id((LinphoneCore*)lc,(unsigned long)obj);
 }
 
@@ -1198,6 +1205,13 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setPreviewWindowId(JNIEn
 																		,jobject thiz
 																		,jlong lc
 																		,jobject obj) {
+	jobject oldWindow = (jobject) linphone_core_get_native_preview_window_id((LinphoneCore*)lc);
+	if (oldWindow != NULL) {
+		env->DeleteGlobalRef(oldWindow);
+	}
+	if (obj != NULL) {
+		obj = env->NewGlobalRef(obj);
+	}
 	linphone_core_set_native_preview_window_id((LinphoneCore*)lc,(unsigned long)obj);
 }
 
@@ -1394,8 +1408,10 @@ extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getConferenceSize(JNIEnv
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_terminateAllCalls(JNIEnv *env,jobject thiz,jlong pCore) {
 	linphone_core_terminate_all_calls((LinphoneCore *) pCore);
 }
-extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_getCall(JNIEnv *env,jobject thiz,jlong pCore,jint position) {
-	return (jlong)ms_list_nth_data(linphone_core_get_calls((LinphoneCore *) pCore),position);
+extern "C" jobject Java_org_linphone_core_LinphoneCoreImpl_getCall(JNIEnv *env,jobject thiz,jlong pCore,jint position) {
+	LinphoneCoreData *lcd=(LinphoneCoreData*)linphone_core_get_user_data((LinphoneCore*)pCore);
+	LinphoneCall* lCall = (LinphoneCall*) ms_list_nth_data(linphone_core_get_calls((LinphoneCore *) pCore),position);
+	return lcd->getCall(env,lCall);
 }
 extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getCallsNb(JNIEnv *env,jobject thiz,jlong pCore) {
 	return ms_list_size(linphone_core_get_calls((LinphoneCore *) pCore));
@@ -1420,11 +1436,12 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setZrtpSecretsCache(JNIE
 	}
 }
 
-extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_findCallFromUri(JNIEnv *env,jobject thiz,jlong pCore, jstring jUri) {
+extern "C" jobject Java_org_linphone_core_LinphoneCoreImpl_findCallFromUri(JNIEnv *env,jobject thiz,jlong pCore, jstring jUri) {
 	const char* cUri=env->GetStringUTFChars(jUri, NULL);
-	const LinphoneCall *call=linphone_core_find_call_from_uri((LinphoneCore *) pCore,cUri);
+	LinphoneCall *call= (LinphoneCall *) linphone_core_find_call_from_uri((LinphoneCore *) pCore,cUri);
 	env->ReleaseStringUTFChars(jUri, cUri);
-	return (jlong) call;
+	LinphoneCoreData *lcdata=(LinphoneCoreData*)linphone_core_get_user_data((LinphoneCore*)pCore);
+	return (jobject) lcdata->getCall(env,call);
 }
 
 
@@ -1489,5 +1506,10 @@ extern "C" void msandroid_hack_speaker_state(bool speakerOn);
 
 extern "C" void Java_org_linphone_LinphoneManager_hackSpeakerState(JNIEnv*  env,jobject thiz,jboolean speakerOn){
 	msandroid_hack_speaker_state(speakerOn);
+}
 // End Galaxy S hack functions
+
+
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getMaxCalls(JNIEnv *env,jobject thiz,jlong pCore) {
+	return (jint) linphone_core_get_max_calls((LinphoneCore *) pCore);
 }

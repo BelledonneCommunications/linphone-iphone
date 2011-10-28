@@ -621,4 +621,7 @@ public interface LinphoneCore {
 	void transferCallToAnother(LinphoneCall callToTransfer, LinphoneCall destination);
 
 	LinphoneCall findCallFromUri(String uri);
+
+	int getMaxCalls();
+
 }

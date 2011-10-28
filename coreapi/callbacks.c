@@ -94,13 +94,29 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 		linphone_call_start_media_streams(call,all_muted,send_ringbacktone);
 	}
 }
-
+#if 0
 static bool_t is_duplicate_call(LinphoneCore *lc, const LinphoneAddress *from, const LinphoneAddress *to){
 	MSList *elem;
 	for(elem=lc->calls;elem!=NULL;elem=elem->next){
 		LinphoneCall *call=(LinphoneCall*)elem->data;
 		if (linphone_address_weak_equal(call->log->from,from) &&
 		    linphone_address_weak_equal(call->log->to, to)){
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
+#endif
+
+static bool_t already_a_call_pending(LinphoneCore *lc){
+	MSList *elem;
+	for(elem=lc->calls;elem!=NULL;elem=elem->next){
+		LinphoneCall *call=(LinphoneCall*)elem->data;
+		if (call->state==LinphoneCallIncomingReceived
+		    || call->state==LinphoneCallOutgoingInit
+		    || call->state==LinphoneCallOutgoingProgress
+		    || call->state==LinphoneCallOutgoingEarlyMedia
+		    || call->state==LinphoneCallOutgoingRinging){
 			return TRUE;
 		}
 	}
@@ -145,8 +161,8 @@ static void call_received(SalOp *h){
 	from_addr=linphone_address_new(from);
 	to_addr=linphone_address_new(to);
 
-	if (is_duplicate_call(lc,from_addr,to_addr)){
-		ms_warning("Receiving duplicated call, refusing this one.");
+	if (already_a_call_pending(lc)){
+		ms_warning("Receiving another call while one is ringing or initiated, refusing this one with busy message.");
 		sal_call_decline(h,SalReasonBusy,NULL);
 		sal_op_release(h);
 		linphone_address_destroy(from_addr);
@@ -178,24 +194,27 @@ static void call_received(SalOp *h){
 	    lc->vtable.display_status(lc,barmesg);
 
 	/* play the ring if this is the only call*/
-	if (lc->sound_conf.ring_sndcard!=NULL && ms_list_size(lc->calls)==1){
+	if (ms_list_size(lc->calls)==1){
 		lc->current_call=call;
 		if (lc->ringstream && lc->dmfs_playing_start_time!=0){
 			ring_stop(lc->ringstream);
 			lc->ringstream=NULL;
 			lc->dmfs_playing_start_time=0;
 		}
-		if(lc->ringstream==NULL && lc->sound_conf.local_ring){
-			MSSndCard *ringcard=lc->sound_conf.lsd_card ?lc->sound_conf.lsd_card : lc->sound_conf.ring_sndcard;
-			ms_message("Starting local ring...");
-			lc->ringstream=ring_start(lc->sound_conf.local_ring,2000,ringcard);
-		}
-		else
-		{
-			ms_message("the local ring is already started");
+		if (lc->sound_conf.ring_sndcard!=NULL){
+			if(lc->ringstream==NULL && lc->sound_conf.local_ring){
+				MSSndCard *ringcard=lc->sound_conf.lsd_card ?lc->sound_conf.lsd_card : lc->sound_conf.ring_sndcard;
+				ms_message("Starting local ring...");
+				lc->ringstream=ring_start(lc->sound_conf.local_ring,2000,ringcard);
+			}
+			else
+			{
+				ms_message("the local ring is already started");
+			}
 		}
 	}else{
-		/* play a tone within the context of the current call */
+		/* else play a tone within the context of the current call */
+		call->ringing_beep=TRUE;
 		linphone_core_play_tone(lc);
 	}
 
@@ -378,9 +397,14 @@ static void call_updating(SalOp *op){
 	SalMediaDescription *md;
 	
 	md=sal_call_get_final_media_description(op);
+
+	/*accept the modification (sends a 200Ok)*/
+	sal_call_accept(op);
 	
 	if (md && !sal_media_description_empty(md))
 	{
+		linphone_core_update_streams (lc,call,md);
+
 		if (sal_media_description_has_dir(call->localdesc,SalStreamSendRecv)){
 			ms_message("Our local status is SalStreamSendRecv");
 			if (sal_media_description_has_dir (md,SalStreamRecvOnly) || sal_media_description_has_dir(md,SalStreamInactive)){
@@ -396,12 +420,12 @@ static void call_updating(SalOp *op){
 					lc->current_call=call;
 			}else{
 				prevstate=call->state;
+				if(lc->vtable.display_status)
+					lc->vtable.display_status(lc,_("Call has been updated by remote..."));
 				linphone_call_set_state(call, LinphoneCallUpdatedByRemote,"Call updated by remote");
 			}
 		}
-		/*accept the modification (sends a 200Ok)*/
-		sal_call_accept(op);
-		linphone_core_update_streams (lc,call,md);
+
 		if (prevstate!=LinphoneCallIdle){
 			linphone_call_set_state (call,prevstate,"Connected (streams running)");
 		}

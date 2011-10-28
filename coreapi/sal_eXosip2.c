@@ -541,13 +541,16 @@ int sal_call_set_local_media_description(SalOp *h, SalMediaDescription *desc){
 
 int sal_call(SalOp *h, const char *from, const char *to){
 	int err;
+	const char *route;
 	osip_message_t *invite=NULL;
 	sal_op_set_from(h,from);
 	sal_op_set_to(h,to);
 	sal_exosip_fix_route(h);
-	err=eXosip_call_build_initial_invite(&invite,to,from,sal_op_get_route(h),"Phone call");
+	route = sal_op_get_route(h);
+	err=eXosip_call_build_initial_invite(&invite,to,from,route,"Phone call");
 	if (err!=0){
-		ms_error("Could not create call.");
+		ms_error("Could not create call. Error %d (from=%s to=%s route=%s)",
+				err, from, to, route);
 		return -1;
 	}
 	osip_message_set_allow(invite, "INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, NOTIFY, MESSAGE, SUBSCRIBE, INFO");
@@ -574,7 +577,7 @@ int sal_call(SalOp *h, const char *from, const char *to){
 	eXosip_unlock();
 	h->cid=err;
 	if (err<0){
-		ms_error("Fail to send invite !");
+		ms_error("Fail to send invite ! Error code %d", err);
 		return -1;
 	}else{
 		sal_add_call(h->base.root,h);
@@ -810,6 +813,7 @@ static void pop_auth_from_exosip() {
 
 int sal_call_terminate(SalOp *h){
 	int err;
+	if (h == NULL) return -1;
 	if (h->auth_info) push_auth_to_exosip(h->auth_info);
 	eXosip_lock();
 	err=eXosip_call_terminate(h->cid,h->did);

@@ -43,6 +43,10 @@
 #define PACKAGE_SOUND_DIR "."
 #endif
 
+#ifndef PACKAGE_DATA_DIR
+#define PACKAGE_DATA_DIR "."
+#endif
+
 #ifdef HAVE_GETTEXT
 #include <libintl.h>
 #ifndef _
@@ -102,7 +106,7 @@ struct _LinphoneCall
 	bool_t all_muted; /*this flag is set during early medias*/
 	bool_t playing_ringbacktone;
 	bool_t owns_call_log;
-	bool_t pad;
+	bool_t ringing_beep; /* whether this call is ringing through an already existent current call*/
 	OrtpEvQueue *audiostream_app_evq;
 	char *auth_token;
 	OrtpEvQueue *videostream_app_evq;
@@ -226,6 +230,8 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, LinphonePro
 void linphone_core_start_refered_call(LinphoneCore *lc, LinphoneCall *call);
 extern SalCallbacks linphone_sal_callbacks;
 void linphone_proxy_config_set_error(LinphoneProxyConfig *cfg, LinphoneReason error);
+bool_t linphone_core_rtcp_enabled(const LinphoneCore *lc);
+
 
 struct _LinphoneProxyConfig
 {
@@ -398,6 +404,7 @@ struct _LinphoneConference{
 	MSAudioConference *conf;
 	AudioStream *local_participant;
 	MSAudioEndpoint *local_endpoint;
+	bool_t local_muted;
 };
 
 typedef struct _LinphoneConference LinphoneConference;
@@ -464,6 +471,7 @@ struct _LinphoneCore
 	bool_t use_preview_window;
 	int device_rotation;
 	bool_t ringstream_autorelease;
+	int max_calls;
 };
 
 bool_t linphone_core_can_we_add_call(LinphoneCore *lc);
@@ -512,6 +520,8 @@ void linphone_core_preempt_sound_resources(LinphoneCore *lc);
 void _post_configure_audio_stream(AudioStream *st, LinphoneCore *lc, bool_t muted);
 void linphone_call_add_to_conf(LinphoneCall *call);
 void linphone_call_remove_from_conf(LinphoneCall *call);
+void linphone_core_conference_check_uninit(LinphoneConference *ctx);
+bool_t linphone_core_sound_resources_available(LinphoneCore *lc);
 
 #define HOLD_OFF	(0)
 #define HOLD_ON		(1)

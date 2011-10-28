@@ -553,7 +553,8 @@ char *linphonec_readline(char *prompt){
 		}
 	}else{
 #ifdef HAVE_READLINE
-		return readline(prompt);
+		char* ret=readline(prompt);
+		return ret;
 #endif
 	}
 }
