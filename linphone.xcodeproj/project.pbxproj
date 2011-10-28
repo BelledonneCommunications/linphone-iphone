@@ -33,7 +33,7 @@
 		22226C1D11819B34000CA27B /* history-orange.png in Resources */ = {isa = PBXBuildFile; fileRef = 22226C1C11819B34000CA27B /* history-orange.png */; };
 		222A483412F7176F0075F07F /* IncallViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 222A483112F7176F0075F07F /* IncallViewController.xib */; };
 		223148E41178A08200637D6A /* libilbc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 223148E31178A08200637D6A /* libilbc.a */; };
-		223148E61178A09900637D6A /* libmsilbc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 223148E51178A09900637D6A /* libmsilbc.a */; };
+		223148E61178A09900637D6A /* libmsilbc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 223148E51178A09900637D6A /* libmsilbc.a */; settings = {ATTRIBUTES = (Weak, ); }; };
 		2237D4091084D7A9001383EE /* oldphone-mono.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2237D4081084D7A9001383EE /* oldphone-mono.wav */; };
 		223963171393CFAF001DE689 /* FastAddressBook.m in Sources */ = {isa = PBXBuildFile; fileRef = 223963161393CFAF001DE689 /* FastAddressBook.m */; };
 		2242D91610D66BF300E9963F /* in_call.png in Resources */ = {isa = PBXBuildFile; fileRef = 2242D91410D66BF300E9963F /* in_call.png */; };
@@ -47,7 +47,6 @@
 		2245F78A1201D38000C4179D /* MoreViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22E0A81B111C44E100B04932 /* MoreViewController.xib */; };
 		2248E90E12F7E4CF00220D9C /* UIDigitButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2248E90D12F7E4CF00220D9C /* UIDigitButton.m */; };
 		2248E99F12F801C200220D9C /* LinphoneManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2248E99E12F801C200220D9C /* LinphoneManager.m */; };
-		225AA31E14520E5400BA809B /* libSKP_SILK_SDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 225AA31D14520E5400BA809B /* libSKP_SILK_SDK.a */; };
 		225CB2EA11ABB51000628906 /* clavier-01-106px.png in Resources */ = {isa = PBXBuildFile; fileRef = 225CB2E811ABB51000628906 /* clavier-01-106px.png */; };
 		225CB2EB11ABB51000628906 /* clavier-01-108px.png in Resources */ = {isa = PBXBuildFile; fileRef = 225CB2E911ABB51000628906 /* clavier-01-108px.png */; };
 		225CB2EE11ABB65D00628906 /* clavier-01-160px.png in Resources */ = {isa = PBXBuildFile; fileRef = 225CB2ED11ABB65D00628906 /* clavier-01-160px.png */; };
@@ -87,6 +86,7 @@
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
 		70571E1A13FABCB000CDD3C2 /* rootca.pem in Resources */ = {isa = PBXBuildFile; fileRef = 70571E1913FABCB000CDD3C2 /* rootca.pem */; };
 		F0A486D91404FE53009EC0BE /* libsrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F0A486D71404FE53009EC0BE /* libsrtp.a */; };
+		F0DDBA23145AE3F6000ABF7F /* libmssilk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F0DDBA22145AE3F6000ABF7F /* libmssilk.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -282,7 +282,6 @@
 		2248E99D12F801C200220D9C /* LinphoneManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LinphoneManager.h; sourceTree = "<group>"; };
 		2248E99E12F801C200220D9C /* LinphoneManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LinphoneManager.m; sourceTree = "<group>"; };
 		2258633C11410BAC00C5A737 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
-		225AA31D14520E5400BA809B /* libSKP_SILK_SDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libSKP_SILK_SDK.a; path = "liblinphone-sdk/apple-darwin/lib/libSKP_SILK_SDK.a"; sourceTree = "<group>"; };
 		225CB2E811ABB51000628906 /* clavier-01-106px.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "clavier-01-106px.png"; path = "Resources/clavier-01-106px.png"; sourceTree = "<group>"; };
 		225CB2E911ABB51000628906 /* clavier-01-108px.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "clavier-01-108px.png"; path = "Resources/clavier-01-108px.png"; sourceTree = "<group>"; };
 		225CB2ED11ABB65D00628906 /* clavier-01-160px.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "clavier-01-160px.png"; path = "Resources/clavier-01-160px.png"; sourceTree = "<group>"; };
@@ -408,6 +407,8 @@
 		70571E1913FABCB000CDD3C2 /* rootca.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = rootca.pem; path = Resources/rootca.pem; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* linphone-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "linphone-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 		F0A486D71404FE53009EC0BE /* libsrtp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsrtp.a; path = "liblinphone-sdk/apple-darwin/lib/libsrtp.a"; sourceTree = "<group>"; };
+		F0DDBA22145AE3F6000ABF7F /* libmssilk.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmssilk.a; path = "liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmssilk.a"; sourceTree = "<group>"; };
+		F0DDBA24145AE46C000ABF7F /* libmssilk.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmssilk.a; path = "liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmssilk.a"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -415,7 +416,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				225AA31E14520E5400BA809B /* libSKP_SILK_SDK.a in Frameworks */,
+				F0DDBA23145AE3F6000ABF7F /* libmssilk.a in Frameworks */,
 				22E5B0AF133B5EA20044EA25 /* libssl.a in Frameworks */,
 				22E5B0B0133B5EA20044EA25 /* libcrypto.a in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
@@ -798,7 +799,8 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				225AA31D14520E5400BA809B /* libSKP_SILK_SDK.a */,
+				F0DDBA24145AE46C000ABF7F /* libmssilk.a */,
+				F0DDBA22145AE3F6000ABF7F /* libmssilk.a */,
 				F0A486D71404FE53009EC0BE /* libsrtp.a */,
 				2214783B1386A2030020F8B8 /* Localizable.strings */,
 				22A10D9E11F88C1F00373793 /* liblinphone.xcodeproj */,
@@ -1054,6 +1056,7 @@
 				ARCHS = (
 					armv7,
 					armv6,
+					i386,
 				);
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
@@ -1128,6 +1131,7 @@
 				ARCHS = (
 					armv7,
 					armv6,
+					i386,
 				);
 				CODE_SIGN_ENTITLEMENTS = untitled.plist;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
@@ -1203,6 +1207,7 @@
 				ARCHS = (
 					armv7,
 					armv6,
+					i386,
 				);
 				CODE_SIGN_ENTITLEMENTS = untitled.plist;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
