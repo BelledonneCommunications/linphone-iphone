@@ -104,23 +104,23 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		22A10DA211F88C1F00373793 /* PBXContainerItemProxy */ = {
+		F4D9F24C145748E80035B0D0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 22A10D9E11F88C1F00373793 /* liblinphone.xcodeproj */;
+			containerPortal = F4D9F243145748E80035B0D0 /* liblinphone.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = D2AAC07E0554694100DB518D;
 			remoteInfo = liblinphone;
 		};
-		22DD19DE13A8D7FB0018ECD4 /* PBXContainerItemProxy */ = {
+		F4D9F24E145748E80035B0D0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 22A10D9E11F88C1F00373793 /* liblinphone.xcodeproj */;
+			containerPortal = F4D9F243145748E80035B0D0 /* liblinphone.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 22DD19BE13A8D7FA0018ECD4;
 			remoteInfo = mediastream;
 		};
-		22F3D57B13CCC60500A0DA02 /* PBXContainerItemProxy */ = {
+		F4D9F25C145829200035B0D0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 22A10D9E11F88C1F00373793 /* liblinphone.xcodeproj */;
+			containerPortal = F4D9F243145748E80035B0D0 /* liblinphone.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = D2AAC07D0554694100DB518D;
 			remoteInfo = liblinphone;
@@ -331,7 +331,6 @@
 		22968A5E12F875C600588287 /* UISpeakerButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UISpeakerButton.m; sourceTree = "<group>"; };
 		22968A8612F87C2000588287 /* UIDuration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDuration.h; sourceTree = "<group>"; };
 		22968A8712F87C2000588287 /* UIDuration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIDuration.m; sourceTree = "<group>"; };
-		22A10D9E11F88C1F00373793 /* liblinphone.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = liblinphone.xcodeproj; path = submodules/liblinphone.xcodeproj; sourceTree = "<group>"; };
 		22AA8AFB13D7125500B30535 /* libx264.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libx264.a; path = "liblinphone-sdk/apple-darwin/lib/libx264.a"; sourceTree = "<group>"; };
 		22AA8AFC13D7125500B30535 /* libmsx264.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmsx264.a; path = "liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmsx264.a"; sourceTree = "<group>"; };
 		22AA8AFF13D83F6300B30535 /* UICamSwitch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICamSwitch.h; sourceTree = "<group>"; };
@@ -445,6 +444,7 @@
 		70E542F213E147E3002BA2C0 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		70E542F413E147EB002BA2C0 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		8D1107310486CEB800E47090 /* linphone-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "linphone-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+		F4D9F243145748E80035B0D0 /* liblinphone.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = liblinphone.xcodeproj; path = submodules/liblinphone.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -759,15 +759,6 @@
 			path = LinphoneUI;
 			sourceTree = "<group>";
 		};
-		22A10D9F11F88C1F00373793 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				22A10DA311F88C1F00373793 /* liblinphone.a */,
-				22DD19DF13A8D7FB0018ECD4 /* mediastream.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		22C7560413265C6A007BC101 /* openssl */ = {
 			isa = PBXGroup;
 			children = (
@@ -849,6 +840,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				F4D9F243145748E80035B0D0 /* liblinphone.xcodeproj */,
 				7066FC0B13E830E400EFC6DC /* libvpx.a */,
 				70E542F413E147EB002BA2C0 /* QuartzCore.framework */,
 				70E542F213E147E3002BA2C0 /* OpenGLES.framework */,
@@ -863,7 +855,6 @@
 				22276E8113C73D3100210156 /* libavutil.a */,
 				22276E8213C73D3100210156 /* libswscale.a */,
 				2214783B1386A2030020F8B8 /* Localizable.strings */,
-				22A10D9E11F88C1F00373793 /* liblinphone.xcodeproj */,
 				223148E51178A09900637D6A /* libmsilbc.a */,
 				223148E31178A08200637D6A /* libilbc.a */,
 				220FAD2810765B400068D98F /* libeXosip2.a */,
@@ -952,6 +943,15 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		F4D9F244145748E80035B0D0 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F4D9F24D145748E80035B0D0 /* liblinphone.a */,
+				F4D9F24F145748E80035B0D0 /* mediastream.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -967,7 +967,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				22F3D57C13CCC60500A0DA02 /* PBXTargetDependency */,
+				F4D9F25D145829200035B0D0 /* PBXTargetDependency */,
 			);
 			name = linphone;
 			productName = linphone;
@@ -994,8 +994,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 22A10D9F11F88C1F00373793 /* Products */;
-					ProjectRef = 22A10D9E11F88C1F00373793 /* liblinphone.xcodeproj */;
+					ProductGroup = F4D9F244145748E80035B0D0 /* Products */;
+					ProjectRef = F4D9F243145748E80035B0D0 /* liblinphone.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -1006,18 +1006,18 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		22A10DA311F88C1F00373793 /* liblinphone.a */ = {
+		F4D9F24D145748E80035B0D0 /* liblinphone.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = liblinphone.a;
-			remoteRef = 22A10DA211F88C1F00373793 /* PBXContainerItemProxy */;
+			remoteRef = F4D9F24C145748E80035B0D0 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		22DD19DF13A8D7FB0018ECD4 /* mediastream.app */ = {
+		F4D9F24F145748E80035B0D0 /* mediastream.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
 			path = mediastream.app;
-			remoteRef = 22DD19DE13A8D7FB0018ECD4 /* PBXContainerItemProxy */;
+			remoteRef = F4D9F24E145748E80035B0D0 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -1101,10 +1101,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		22F3D57C13CCC60500A0DA02 /* PBXTargetDependency */ = {
+		F4D9F25D145829200035B0D0 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = liblinphone;
-			targetProxy = 22F3D57B13CCC60500A0DA02 /* PBXContainerItemProxy */;
+			targetProxy = F4D9F25C145829200035B0D0 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

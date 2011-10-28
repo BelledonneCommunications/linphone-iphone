@@ -19,8 +19,12 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #
 ############################################################################
+
+#--enable-static is mandatory otherwise the lib is not installed
+
 x264-configure-option= \
 			--host=$(host)\
+			--enable-static \
 			--cross-prefix=$$SDK_BIN_PATH/ \
 			--extra-ldflags="-arch $$ARCH -isysroot $$SYSROOT_PATH"
 
@@ -55,7 +59,7 @@ $(BUILDER_BUILD_DIR)/$(x264_dir)/config.mak: $(BUILDER_BUILD_DIR)/$(x264_dir)/co
 	&& ./configure --prefix=$(prefix)  ${x264-configure-option} 
 
 build-x264: $(BUILDER_BUILD_DIR)/$(x264_dir)/config.mak
-	cd $(BUILDER_BUILD_DIR)/$(x264_dir)  make && make install-lib-static
+	cd $(BUILDER_BUILD_DIR)/$(x264_dir)  make && make install
 
 clean-x264:
 	cd  $(BUILDER_BUILD_DIR)/$(x264_dir) && make clean

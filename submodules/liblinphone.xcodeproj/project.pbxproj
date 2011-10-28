@@ -139,7 +139,6 @@
 		222CA71711F6CF9F00621220 /* scheduler.c in Sources */ = {isa = PBXBuildFile; fileRef = 222CA6CF11F6CF9F00621220 /* scheduler.c */; };
 		222CA71811F6CF9F00621220 /* scheduler.h in Headers */ = {isa = PBXBuildFile; fileRef = 222CA6D011F6CF9F00621220 /* scheduler.h */; };
 		222CA71911F6CF9F00621220 /* sessionset.c in Sources */ = {isa = PBXBuildFile; fileRef = 222CA6D111F6CF9F00621220 /* sessionset.c */; };
-		222CA71A11F6CF9F00621220 /* srtp.c in Sources */ = {isa = PBXBuildFile; fileRef = 222CA6D211F6CF9F00621220 /* srtp.c */; };
 		222CA71B11F6CF9F00621220 /* str_utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 222CA6D311F6CF9F00621220 /* str_utils.c */; };
 		222CA71C11F6CF9F00621220 /* stun.c in Sources */ = {isa = PBXBuildFile; fileRef = 222CA6D411F6CF9F00621220 /* stun.c */; };
 		222CA71D11F6CF9F00621220 /* stun_udp.c in Sources */ = {isa = PBXBuildFile; fileRef = 222CA6D511F6CF9F00621220 /* stun_udp.c */; };
@@ -225,6 +224,10 @@
 		70E542FD13E14816002BA2C0 /* yuv2rgb.vs.h in Headers */ = {isa = PBXBuildFile; fileRef = 70E542F913E14816002BA2C0 /* yuv2rgb.vs.h */; };
 		AA747D9F0F9514B9006C5449 /* liblinphone_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* liblinphone_Prefix.pch */; };
 		AACBBE4A0F95108600F1A2B1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
+		F4D9F23F145710540035B0D0 /* netsim.c in Sources */ = {isa = PBXBuildFile; fileRef = F4D9F23D145710540035B0D0 /* netsim.c */; };
+		F4D9F240145710540035B0D0 /* ortp_srtp.c in Sources */ = {isa = PBXBuildFile; fileRef = F4D9F23E145710540035B0D0 /* ortp_srtp.c */; };
+		F4D9F26014583B580035B0D0 /* bitratedriver.c in Sources */ = {isa = PBXBuildFile; fileRef = F4D9F25E14583B580035B0D0 /* bitratedriver.c */; };
+		F4D9F26114583B580035B0D0 /* qosanalyzer.c in Sources */ = {isa = PBXBuildFile; fileRef = F4D9F25F14583B580035B0D0 /* qosanalyzer.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -390,7 +393,6 @@
 		222CA6CF11F6CF9F00621220 /* scheduler.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = scheduler.c; sourceTree = "<group>"; };
 		222CA6D011F6CF9F00621220 /* scheduler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scheduler.h; sourceTree = "<group>"; };
 		222CA6D111F6CF9F00621220 /* sessionset.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sessionset.c; sourceTree = "<group>"; };
-		222CA6D211F6CF9F00621220 /* srtp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = srtp.c; sourceTree = "<group>"; };
 		222CA6D311F6CF9F00621220 /* str_utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = str_utils.c; sourceTree = "<group>"; };
 		222CA6D411F6CF9F00621220 /* stun.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = stun.c; sourceTree = "<group>"; };
 		222CA6D511F6CF9F00621220 /* stun_udp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = stun_udp.c; sourceTree = "<group>"; };
@@ -493,6 +495,10 @@
 		AA747D9E0F9514B9006C5449 /* liblinphone_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = liblinphone_Prefix.pch; sourceTree = SOURCE_ROOT; };
 		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		D2AAC07E0554694100DB518D /* liblinphone.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = liblinphone.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		F4D9F23D145710540035B0D0 /* netsim.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = netsim.c; sourceTree = "<group>"; };
+		F4D9F23E145710540035B0D0 /* ortp_srtp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ortp_srtp.c; sourceTree = "<group>"; };
+		F4D9F25E14583B580035B0D0 /* bitratedriver.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = bitratedriver.c; sourceTree = "<group>"; };
+		F4D9F25F14583B580035B0D0 /* qosanalyzer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = qosanalyzer.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -679,6 +685,8 @@
 		222CA5DC11F6CF7600621220 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				F4D9F25E14583B580035B0D0 /* bitratedriver.c */,
+				F4D9F25F14583B580035B0D0 /* qosanalyzer.c */,
 				22313679143DED490035C1F4 /* msandroidvideo.cpp */,
 				229ECDEE143AEC2400D611B8 /* audioconference.c */,
 				229ECDEA143AEA6300D611B8 /* msvideo_neon.c */,
@@ -806,6 +814,8 @@
 		222CA6B611F6CF9F00621220 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				F4D9F23D145710540035B0D0 /* netsim.c */,
+				F4D9F23E145710540035B0D0 /* ortp_srtp.c */,
 				7014533D13FA841E00A01D86 /* zrtp.c */,
 				222CA6B711F6CF9F00621220 /* .gitignore */,
 				222CA6B811F6CF9F00621220 /* avprofile.c */,
@@ -833,7 +843,6 @@
 				222CA6CF11F6CF9F00621220 /* scheduler.c */,
 				222CA6D011F6CF9F00621220 /* scheduler.h */,
 				222CA6D111F6CF9F00621220 /* sessionset.c */,
-				222CA6D211F6CF9F00621220 /* srtp.c */,
 				222CA6D311F6CF9F00621220 /* str_utils.c */,
 				222CA6D411F6CF9F00621220 /* stun.c */,
 				222CA6D511F6CF9F00621220 /* stun_udp.c */,
@@ -1200,7 +1209,6 @@
 				222CA71511F6CF9F00621220 /* rtptimer.c in Sources */,
 				222CA71711F6CF9F00621220 /* scheduler.c in Sources */,
 				222CA71911F6CF9F00621220 /* sessionset.c in Sources */,
-				222CA71A11F6CF9F00621220 /* srtp.c in Sources */,
 				222CA71B11F6CF9F00621220 /* str_utils.c in Sources */,
 				222CA71C11F6CF9F00621220 /* stun.c in Sources */,
 				222CA71D11F6CF9F00621220 /* stun_udp.c in Sources */,
@@ -1253,6 +1261,10 @@
 				229ECDEB143AEA6300D611B8 /* msvideo_neon.c in Sources */,
 				229ECDED143AEBDA00D611B8 /* conference.c in Sources */,
 				229ECDEF143AEC2400D611B8 /* audioconference.c in Sources */,
+				F4D9F23F145710540035B0D0 /* netsim.c in Sources */,
+				F4D9F240145710540035B0D0 /* ortp_srtp.c in Sources */,
+				F4D9F26014583B580035B0D0 /* bitratedriver.c in Sources */,
+				F4D9F26114583B580035B0D0 /* qosanalyzer.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

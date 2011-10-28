@@ -87,6 +87,11 @@
 	}
 	
 }
+
+-(void) configureOrientation {
+    [self configureOrientation:self.interfaceOrientation]; 
+}
+
 - (void)viewDidUnload
 {
     [super viewDidUnload];
@@ -95,8 +100,9 @@
     // e.g. self.myOutlet = nil;
 }
 -(void) viewWillDisappear:(BOOL)animated {
-	
+	[[UIApplication sharedApplication] setIdleTimerDisabled:NO];
 }
+
 -(void) viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
     [[UIApplication sharedApplication] setIdleTimerDisabled:true];
@@ -106,6 +112,14 @@
 	AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute
 							 , sizeof (audioRouteOverride)
 							 , &audioRouteOverride);
+    
+    
+    [self performSelectorOnMainThread:@selector(configureOrientation)
+             						   withObject:nil 
+             						waitUntilDone:YES];
+    [mMute reset];
+    [mMuteLand reset];
+    [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
