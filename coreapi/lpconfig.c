@@ -22,7 +22,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#define MAX_LEN 32768
+#define MAX_LEN 4096
 
 #include "linphonecore.h"
 
@@ -138,14 +138,18 @@ LpItem *lp_section_find_item(LpSection *sec, const char *name){
 }
 
 void lp_config_parse(LpConfig *lpconfig, FILE *file){
-	char tmp[MAX_LEN];
+	ms_error("Entering lp_config_parse");
+	char tmp[MAX_LEN]= {'\0'};
 	LpSection *cur=NULL;
 
 	if (file==NULL) return;
 
+	ms_message("Entering While");
 	while(fgets(tmp,MAX_LEN,file)!=NULL){
+		tmp[sizeof(tmp) -1] = '\0';
 		char *pos1,*pos2;
 		pos1=strchr(tmp,'[');
+		ms_message("Pos1 = %s", pos1);
 		if (pos1!=NULL && is_first_char(tmp,pos1) ){
 			pos2=strchr(pos1,']');
 			if (pos2!=NULL){
