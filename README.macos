@@ -30,7 +30,7 @@ Compile:
  $ sudo make install
 
 When this version will be integrated into macports, only this will be necessary:
- $ port install sdl-devel
+ $ port install libsdl-devel
 
 - Install gtk. It is recommended to use the quartz backend for better integration.
  $ port install cairo +quartz +no_x11
