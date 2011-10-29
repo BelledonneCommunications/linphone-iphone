@@ -192,7 +192,7 @@ bundle: $(LIBICONV_HACK)
 	make install DESTDIR=$(INSTALLDIR)
 	LINPHONE_INSTALL_PREFIX=$(INSTALLDIR_WITH_PREFIX) \
 	LIBLINPHONE_INSTALL_PREFIX=$(INSTALLDIR_WITH_PREFIX) \
-	ige-mac-bundler $(PACKAGE_BUNDLE_FILE)
+	gtk-mac-bundler $(PACKAGE_BUNDLE_FILE)
 	printf "[Pango]\nModuleFiles=./etc/pango/pango.modules\n" \
 	> $(BUNDLEDIR)/Contents/Resources/etc/pango/pangorc 
 	cp -f $(LIBICONV_HACK) $(BUNDLEDIR)/Contents/Resources/lib/.

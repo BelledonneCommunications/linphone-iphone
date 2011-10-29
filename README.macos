@@ -53,11 +53,10 @@ Install to /opt/local
 
 Done.
 
-If you want to generate a portable bundle, then install ige-mac-bundler.
-The macport package of ige-mac-bundler doesn't work at all.
+If you want to generate a portable bundle, then install gtk-mac-bundler.
 Use git:
- $ git clone https://github.com/jralls/ige-mac-bundler.git
- $ cd ige-mac-bundler && make install
+ $ git clone https://github.com/jralls/gtk-mac-bundler.git 
+ $ cd gtk-mac-bundler && make install
  $ export PATH=$PATH:~/.local/bin
 
 Then run, inside linphone source tree:
