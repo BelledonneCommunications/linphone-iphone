@@ -1168,7 +1168,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: jehan monnier";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: jehan monnier (E8MYPN2NXL)";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -1177,7 +1177,7 @@
 				LIBRARY_SEARCH_PATHS = "";
 				LINK_WITH_STANDARD_LIBRARIES = YES;
 				PREBINDING = NO;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "5B8A949D-21D7-4FB1-B7C0-6438B7297840";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "DD608A20-B0EC-49C6-BFD1-815C97DF3844";
 				SDKROOT = iphoneos;
 			};
 			name = DistributionAdhoc;
@@ -1187,7 +1187,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_ENTITLEMENTS = untitled.plist;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -1246,7 +1246,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
@@ -1278,7 +1278,6 @@
 				);
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = linphone;
-				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
@@ -1309,7 +1308,6 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_ENTITLEMENTS = untitled.plist;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -1340,7 +1338,6 @@
 				);
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = linphone;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
 				TARGETED_DEVICE_FAMILY = 1;
