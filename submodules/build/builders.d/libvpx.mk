@@ -25,7 +25,7 @@ $(BUILDER_BUILD_DIR)/$(libvpx_dir)/config.mak: $(BUILDER_SRC_DIR)/$(libvpx_dir)/
 	&& $(BUILDER_SRC_DIR)/$(libvpx_dir)/configure --prefix=$(prefix) $(libvpx_configure_options)
 
 build-libvpx: $(BUILDER_BUILD_DIR)/$(libvpx_dir)/config.mak
-	cd $(BUILDER_BUILD_DIR)/$(libvpx_dir) && PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site)  make && make install
+	cd $(BUILDER_BUILD_DIR)/$(libvpx_dir) && PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site)  make -j1 && make -j1 install
 
 clean-libvpx:
 	cd  $(BUILDER_BUILD_DIR)/$(libvpx_dir) && make clean

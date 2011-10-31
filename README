@@ -2,6 +2,8 @@
 					******************************************
 
 Linphone for iPhone depends on liblinphone sdk. To build this sdk, you must install both xcode with iPhone OS SDK  and MacPorts (www.macports.org) with the following ports:
+-nawk
+-coreutils
 -automake 
 -autoconf
 -libtool
@@ -10,6 +12,7 @@ Linphone for iPhone depends on liblinphone sdk. To build this sdk, you must inst
 -pkgconfig
 -cmake (for ZRTP support)
 -yasm
+-doxygen
 
 
 gas-preprosessor.pl  (http://github.com/yuvi/gas-preprocessor/ ) to be copied into /opt/local/bin :
