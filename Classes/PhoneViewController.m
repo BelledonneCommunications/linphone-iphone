@@ -97,7 +97,7 @@
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
-	[[UIApplication sharedApplication] setIdleTimerDisabled:false];
+	if (!mVideoShown) [[UIApplication sharedApplication] setIdleTimerDisabled:false];
 }
 
 
@@ -124,7 +124,7 @@
 	[erase initWithAddressField:address];
 	self.videoViewController = [[VideoViewController alloc]  initWithNibName:@"VideoViewController" 
 																  bundle:[NSBundle mainBundle]];
-	
+	mVideoShown=FALSE;
 }
 
 
@@ -179,6 +179,7 @@
     if (modalVC != nil) {
         // clear previous native window ids
         if (modalVC == self.videoViewController) {
+            mVideoShown=FALSE;
             linphone_core_set_native_video_window_id([LinphoneManager getLc],0);	
             linphone_core_set_native_preview_window_id([LinphoneManager getLc],0);
         }
@@ -250,6 +251,7 @@
 
 -(void) displayVideoCallFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
 	[[UIApplication sharedApplication] setStatusBarHidden:YES animated:NO];
+    mVideoShown=TRUE;
 	[self presentModalViewController:self.videoViewController animated:true];
 }
 //status reporting

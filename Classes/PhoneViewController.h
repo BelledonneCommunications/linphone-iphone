@@ -67,8 +67,9 @@
 	UIActionSheet *mIncomingCallActionSheet;
 	FirstLoginViewController* myFirstLoginViewController;
 	VideoViewController* mVideoViewController;
-	
+    BOOL mVideoShown; 
 }
+
 @property (nonatomic, retain) IBOutlet UIView* dialerView;
 @property (nonatomic, retain) IBOutlet UIViewController* videoViewController;
 @property (nonatomic, retain) IBOutlet UITextField* address;

@@ -99,13 +99,16 @@
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
 }
+
 -(void) viewWillDisappear:(BOOL)animated {
-	[[UIApplication sharedApplication] setIdleTimerDisabled:NO];
+}
+
+-(void) viewDidDisappear:(BOOL)animated{
+    [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
 }
 
 -(void) viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
-    [[UIApplication sharedApplication] setIdleTimerDisabled:true];
 	
     //redirect audio to speaker
 	UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;  
@@ -119,6 +122,9 @@
              						waitUntilDone:YES];
     [mMute reset];
     [mMuteLand reset];
+}
+
+- (void) viewDidAppear:(BOOL)animated{
     [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
 }
 
