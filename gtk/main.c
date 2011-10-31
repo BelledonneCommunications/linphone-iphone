@@ -52,7 +52,6 @@ static LinphoneCore *the_core=NULL;
 static GtkWidget *the_ui=NULL;
 
 static void linphone_gtk_registration_state_changed(LinphoneCore *lc, LinphoneProxyConfig *cfg, LinphoneRegistrationState rs, const char *msg);
-static void linphone_gtk_show(LinphoneCore *lc);
 static void linphone_gtk_notify_recv(LinphoneCore *lc, LinphoneFriend * fid);
 static void linphone_gtk_new_unknown_subscriber(LinphoneCore *lc, LinphoneFriend *lf, const char *url);
 static void linphone_gtk_auth_info_requested(LinphoneCore *lc, const char *realm, const char *username);
@@ -210,7 +209,6 @@ static void linphone_gtk_init_liblinphone(const char *config_file,
 
 	vtable.call_state_changed=linphone_gtk_call_state_changed;
 	vtable.registration_state_changed=linphone_gtk_registration_state_changed;
-	vtable.show=linphone_gtk_show;
 	vtable.notify_presence_recv=linphone_gtk_notify_recv;
 	vtable.new_subscription_request=linphone_gtk_new_unknown_subscriber;
 	vtable.auth_info_requested=linphone_gtk_auth_info_requested;
@@ -643,12 +641,6 @@ void linphone_gtk_show_main_window(){
 	gtk_window_present(GTK_WINDOW(w));
 }
 
-static void linphone_gtk_show(LinphoneCore *lc){
-#ifndef HAVE_NOTIFY
-	linphone_gtk_show_main_window();
-#endif
-}
-
 void linphone_gtk_call_terminated(LinphoneCall *call, const char *error){
 	GtkWidget *mw=linphone_gtk_get_main_window();
 	if (linphone_core_get_calls(linphone_gtk_get_core())==NULL){
@@ -1038,7 +1030,7 @@ static void linphone_gtk_call_state_changed(LinphoneCore *lc, LinphoneCall *call
 			linphone_gtk_status_icon_set_blinking(FALSE);
 		break;
 		case LinphoneCallIncomingReceived:
-			linphone_gtk_create_in_call_view (call);
+			linphone_gtk_create_in_call_view(call);
 			linphone_gtk_in_call_view_set_incoming(call);
 			linphone_gtk_status_icon_set_blinking(TRUE);
 			if (auto_answer)  {
@@ -1123,12 +1115,6 @@ static void linphone_gtk_registration_state_changed(LinphoneCore *lc, LinphonePr
 	update_registration_status(cfg,rs);
 }
 
-
-static void icon_popup_menu(GtkStatusIcon *status_icon, guint button, guint activate_time, gpointer user_data){
-	GtkWidget *menu=(GtkWidget*)g_object_get_data(G_OBJECT(status_icon),"menu");
-	gtk_menu_popup(GTK_MENU(menu),NULL,NULL,gtk_status_icon_position_menu,status_icon,button,activate_time);
-}
-
 void linphone_gtk_open_browser(const char *url){
 	/*in gtk 2.16, gtk_show_uri does not work...*/
 #ifndef WIN32
@@ -1147,6 +1133,13 @@ void linphone_gtk_open_browser(const char *url){
 void linphone_gtk_link_to_website(GtkWidget *item){
 	const gchar *home=(const gchar*)g_object_get_data(G_OBJECT(item),"home");
 	linphone_gtk_open_browser(home);
+}
+
+#ifndef HAVE_GTK_OSX
+
+static void icon_popup_menu(GtkStatusIcon *status_icon, guint button, guint activate_time, gpointer user_data){
+	GtkWidget *menu=(GtkWidget*)g_object_get_data(G_OBJECT(status_icon),"menu");
+	gtk_menu_popup(GTK_MENU(menu),NULL,NULL,gtk_status_icon_position_menu,status_icon,button,activate_time);
 }
 
 static GtkWidget *create_icon_menu(){
@@ -1226,18 +1219,30 @@ static gboolean do_icon_blink(GtkStatusIcon *gi){
 	return TRUE;
 }
 
+#endif
+
 static void linphone_gtk_status_icon_set_blinking(gboolean val){
-	guint tout;
-	tout=(unsigned)GPOINTER_TO_INT(g_object_get_data(G_OBJECT(icon),"timeout"));
-	if (val && tout==0){
-		tout=g_timeout_add(500,(GSourceFunc)do_icon_blink,icon);
-		g_object_set_data(G_OBJECT(icon),"timeout",GINT_TO_POINTER(tout));
-	}else if (!val && tout!=0){
-		GdkPixbuf *normal_icon=g_object_get_data(G_OBJECT(icon),"icon");
-		g_source_remove(tout);
-		g_object_set_data(G_OBJECT(icon),"timeout",NULL);
-		gtk_status_icon_set_from_pixbuf(icon,normal_icon);
+#ifdef HAVE_GTK_OSX
+	static gint attention_id;
+	GtkOSXApplication *theMacApp=(GtkOSXApplication*)g_object_new(GTK_TYPE_OSX_APPLICATION, NULL);
+	if (val)
+		attention_id=gtk_osxapplication_attention_request(theMacApp,CRITICAL_REQUEST);
+	else gtk_osxapplication_cancel_attention_request(theMacApp,attention_id);
+#else
+	if (icon!=NULL){
+		guint tout;
+		tout=(unsigned)GPOINTER_TO_INT(g_object_get_data(G_OBJECT(icon),"timeout"));
+		if (val && tout==0){
+			tout=g_timeout_add(500,(GSourceFunc)do_icon_blink,icon);
+			g_object_set_data(G_OBJECT(icon),"timeout",GINT_TO_POINTER(tout));
+		}else if (!val && tout!=0){
+			GdkPixbuf *normal_icon=g_object_get_data(G_OBJECT(icon),"icon");
+			g_source_remove(tout);
+			g_object_set_data(G_OBJECT(icon),"timeout",NULL);
+			gtk_status_icon_set_from_pixbuf(icon,normal_icon);
+		}
 	}
+#endif
 }
 
 static void init_identity_combo(GtkComboBox *box){
