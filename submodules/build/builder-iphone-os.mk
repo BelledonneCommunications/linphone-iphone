@@ -47,6 +47,7 @@ linphone_configure_controls=  \
                               SPEEX_LIBS="-L$(prefix)/lib -lspeexdsp -lspeex " \
                               OPENSSL_CFLAGS="-I$(prefix)/include" \
                               OPENSSL_LIBS="-L$(prefix)/lib -lssl -lcrypto" 
+				MSSILK_CFLAGS="-I$(prefix)/include/silk"
 ifeq ($(enable_zrtp),yes)
 	linphone_configure_controls+= --with-srtp=$(prefix) --enable-zrtp=yes --disable-tests
 endif
@@ -96,13 +97,14 @@ init:
 veryclean: veryclean-linphone
 	rm -rf $(BUILDER_BUILD_DIR)
 
-.NOTPARALLEL build-linphone: init build-openssl build-srtp build-zrtpcpp build-osip2 build-eXosip2  build-speex build-libgsm build-ffmpeg build-libvpx $(LINPHONE_BUILD_DIR)/Makefile
+
+.NOTPARALLEL build-linphone: init build-openssl build-srtp build-zrtpcpp build-osip2 build-eXosip2  build-speex build-libgsm buils-silk build-ffmpeg build-libvpx $(LINPHONE_BUILD_DIR)/Makefile
 	cd $(LINPHONE_BUILD_DIR)  && export PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig export CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) make newdate &&  make  && make install
 
-clean-linphone: clean-osip2 clean-eXosip2 clean-speex clean-libgsm  clean-srtp clean-zrtpcpp clean-msilbc clean-libilbc clean-openssl clean-msamr clean-ffmpeg clean-libvpx clean-msx264
+clean-linphone: clean-osip2 clean-eXosip2 clean-speex clean-libgsm  clean-srtp clean-zrtpcpp clean-msilbc clean-libilbc clean-openssl clean-msamr clean-silk clean-ffmpeg clean-libvpx clean-msx264
 	cd  $(LINPHONE_BUILD_DIR) && make clean
 
-veryclean-linphone: veryclean-osip2 veryclean-eXosip2 veryclean-speex veryclean-srtp veryclean-zrtpcpp veryclean-libgsm veryclean-msilbc veryclean-libilbc veryclean-openssl veryclean-msamr  veryclean-msx264 
+veryclean-linphone: veryclean-osip2 veryclean-eXosip2 veryclean-speex veryclean-srtp veryclean-zrtpcpp veryclean-libgsm veryclean-msilbc veryclean-libilbc veryclean-openssl veryclean-msamr veryclean-silk veryclean-msx264 
 #-cd $(LINPHONE_BUILD_DIR) && make distclean
 	-cd $(LINPHONE_SRC_DIR) && rm -f configure
 
@@ -295,7 +297,7 @@ multi-arch:
         	if test -f "$$i386_path"; then \
                 	echo "Mixing $$archive and $$i386_path into $$destpath"; \
                 	mkdir -p `dirname $$destpath` ; \
-                	lipo -create $$archive $$armv7_path $$i386_path -output $$destpath; \
+                	lipo -create -arch armv6 $$archive -arch armv7 $$armv7_path -arch i386 $$i386_path -output $$destpath; \
         	else \
                 	echo "WARNING: archive `basename $$archive` exists in arm tree but does not exists in i386 tree."; \
         	fi \

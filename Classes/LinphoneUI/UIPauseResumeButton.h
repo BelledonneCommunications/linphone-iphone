@@ -1,4 +1,4 @@
-/* UILinphone.h
+/* UIMuteButton.h
  *
  * Copyright (C) 2011  Belledonne Comunications, Grenoble, France
  *
@@ -17,14 +17,12 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */       
 
-#import "UICallButton.h"
-#import "UIHangUpButton.h"
-#import "UIDigitButton.h"
+#import <UIKit/UIKit.h>
 #import "UIToggleButton.h"
-#import "UIMuteButton.h"
-#import "UISpeakerButton.h"
-#import "UIDuration.h"
-#import "UIEraseButton.h"
-#import "LinphoneUIDelegates.h"
-#import "UICamSwitch.h"
-#import "UIPauseResumeButton.h"
+
+
+@interface UIPauseResumeButton : UIToggleButton<UIToggleButtonDelegate> {
+
+}
+
+@end

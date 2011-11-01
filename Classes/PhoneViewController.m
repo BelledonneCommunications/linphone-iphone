@@ -259,6 +259,10 @@
 	[status setText:message];
 }
 
+-(void) updateUIFromLinphoneState:(UIViewController*) viewCtrl {
+	[mute reset];
+}
+
 
 -(void) displayIncomingCallNotigicationFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
 	
