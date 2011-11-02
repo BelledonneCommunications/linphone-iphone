@@ -98,7 +98,6 @@ other-cherrypick:
 		/mingw/bin/libstdc++-6.dll \
 		/mingw/bin/libintl-8.dll \
 		/mingw/bin/libiconv-2.dll \
-		/mingw/bin/libpthread-2.dll \
 		$(INSTALLDIR_WITH_PREFIX)/bin/.
 
 
