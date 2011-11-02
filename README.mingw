@@ -14,6 +14,7 @@ In mingw shell, run
 mingw-get install msys-zip
 mingw-get install msys-unzip
 mingw-get install msys-wget
+mingw-get install msys-libopenssl
 
 mkdir -p /opt/perl/bin
 cp /bin/perl /opt/perl/bin/.
