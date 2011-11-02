@@ -72,7 +72,7 @@
 
 
 -(void) configureOrientation:(UIInterfaceOrientation) oritentation  {
-	
+	int oldLinphoneOrientation = linphone_core_get_device_rotation([LinphoneManager getLc]);
 	if (oritentation == UIInterfaceOrientationPortrait ) {
 		[self.view addSubview:mPortrait];
 		linphone_core_set_native_video_window_id([LinphoneManager getLc],(unsigned long)mDisplay);	
@@ -86,6 +86,11 @@
 		linphone_core_set_device_rotation([LinphoneManager getLc], 270);
 	}
 	
+	if ((oldLinphoneOrientation != linphone_core_get_device_rotation([LinphoneManager getLc]))
+		&& linphone_core_get_current_call([LinphoneManager getLc])) {
+		//Orientation has change, must call update call
+		linphone_core_update_call([LinphoneManager getLc], linphone_core_get_current_call([LinphoneManager getLc]), NULL);
+	}
 }
 
 -(void) configureOrientation {
@@ -100,11 +105,10 @@
     // e.g. self.myOutlet = nil;
 }
 
--(void) viewWillDisappear:(BOOL)animated {
-}
 
 -(void) viewDidDisappear:(BOOL)animated{
-    [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
+    [super viewDidDisappear:animated];
+	[[UIApplication sharedApplication] setIdleTimerDisabled:NO];
 }
 
 -(void) viewWillAppear:(BOOL)animated {
@@ -125,7 +129,8 @@
 }
 
 - (void) viewDidAppear:(BOOL)animated{
-    [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
+    [super viewDidAppear:animated];
+	[[UIApplication sharedApplication] setIdleTimerDisabled:YES];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -135,9 +140,6 @@
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
 	[self configureOrientation:self.interfaceOrientation];
-	if (fromInterfaceOrientation !=self.interfaceOrientation) {
-		linphone_core_update_call([LinphoneManager getLc], linphone_core_get_current_call([LinphoneManager getLc]), NULL);
-	} 
 }
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
 	[mLandscape removeFromSuperview];

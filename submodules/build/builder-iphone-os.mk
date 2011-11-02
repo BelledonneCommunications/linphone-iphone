@@ -98,7 +98,7 @@ veryclean: veryclean-linphone
 	rm -rf $(BUILDER_BUILD_DIR)
 
 
-.NOTPARALLEL build-linphone: init build-openssl build-srtp build-zrtpcpp build-osip2 build-eXosip2  build-speex build-libgsm buils-silk build-ffmpeg build-libvpx $(LINPHONE_BUILD_DIR)/Makefile
+.NOTPARALLEL build-linphone: init build-openssl build-srtp build-zrtpcpp build-osip2 build-eXosip2  build-speex build-libgsm build-silk build-ffmpeg build-libvpx $(LINPHONE_BUILD_DIR)/Makefile
 	cd $(LINPHONE_BUILD_DIR)  && export PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig export CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) make newdate &&  make  && make install
 
 clean-linphone: clean-osip2 clean-eXosip2 clean-speex clean-libgsm  clean-srtp clean-zrtpcpp clean-msilbc clean-libilbc clean-openssl clean-msamr clean-silk clean-ffmpeg clean-libvpx clean-msx264
