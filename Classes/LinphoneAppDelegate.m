@@ -130,8 +130,8 @@
 	[[LinphoneManager instance] setCallDelegate:myPhoneViewController];
 	[[LinphoneManager instance]	startLibLinphone];
 		
-	
-	
+	[[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeSound];
+		
 	return YES;
 }
 
