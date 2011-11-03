@@ -21,7 +21,8 @@
 ############################################################################
  
 host?=armv6-apple-darwin
-enable_zrtp=no
+enable_zrtp?=no
+enable_silk?=no
 config_site:=iphone-config.site
 library_mode:= --disable-shared --enable-static
 linphone_configure_controls=  --disable-video \

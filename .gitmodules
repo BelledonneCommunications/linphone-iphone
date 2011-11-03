@@ -28,3 +28,6 @@
 [submodule "submodules/externals/zrtpcpp"]
 	path = submodules/externals/zrtpcpp
 	url = git://github.com/wernerd/ZRTPCPP.git
+[submodule "submodules/mssilk"]
+	path = submodules/mssilk
+	url = git://git.linphone.org/mssilk.git

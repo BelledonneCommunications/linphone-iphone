@@ -86,7 +86,6 @@
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
 		70571E1A13FABCB000CDD3C2 /* rootca.pem in Resources */ = {isa = PBXBuildFile; fileRef = 70571E1913FABCB000CDD3C2 /* rootca.pem */; };
 		F0A486D91404FE53009EC0BE /* libsrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F0A486D71404FE53009EC0BE /* libsrtp.a */; };
-		F0DDBA23145AE3F6000ABF7F /* libmssilk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F0DDBA22145AE3F6000ABF7F /* libmssilk.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -407,8 +406,6 @@
 		70571E1913FABCB000CDD3C2 /* rootca.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = rootca.pem; path = Resources/rootca.pem; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* linphone-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "linphone-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 		F0A486D71404FE53009EC0BE /* libsrtp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsrtp.a; path = "liblinphone-sdk/apple-darwin/lib/libsrtp.a"; sourceTree = "<group>"; };
-		F0DDBA22145AE3F6000ABF7F /* libmssilk.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmssilk.a; path = "liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmssilk.a"; sourceTree = "<group>"; };
-		F0DDBA24145AE46C000ABF7F /* libmssilk.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmssilk.a; path = "liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmssilk.a"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -416,7 +413,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F0DDBA23145AE3F6000ABF7F /* libmssilk.a in Frameworks */,
 				22E5B0AF133B5EA20044EA25 /* libssl.a in Frameworks */,
 				22E5B0B0133B5EA20044EA25 /* libcrypto.a in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
@@ -799,8 +795,6 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				F0DDBA24145AE46C000ABF7F /* libmssilk.a */,
-				F0DDBA22145AE3F6000ABF7F /* libmssilk.a */,
 				F0A486D71404FE53009EC0BE /* libsrtp.a */,
 				2214783B1386A2030020F8B8 /* Localizable.strings */,
 				22A10D9E11F88C1F00373793 /* liblinphone.xcodeproj */,
@@ -1058,17 +1052,13 @@
 					armv6,
 					i386,
 				);
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = linphone_Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					IN_LINPHONE,
-					HAVE_SILK,
-				);
+				GCC_PREPROCESSOR_DEFINITIONS = IN_LINPHONE;
 				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				HEADER_SEARCH_PATHS = (
 					submodules/linphone/coreapi,
@@ -1097,9 +1087,12 @@
 					mediastreamer,
 					"-l",
 					srtp,
+					"-l",
+					mssilk,
+					"-l",
+					SKP_SILK_SDK,
 				);
 				PRODUCT_NAME = linphone;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -1141,10 +1134,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = linphone_Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					IN_LINPHONE,
-					HAVE_SILK,
-				);
+				GCC_PREPROCESSOR_DEFINITIONS = IN_LINPHONE;
 				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				HEADER_SEARCH_PATHS = (
 					submodules/linphone/coreapi,
@@ -1173,6 +1163,10 @@
 					mediastreamer,
 					"-l",
 					srtp,
+					"-l",
+					mssilk,
+					"-l",
+					SKP_SILK_SDK,
 				);
 				PRODUCT_NAME = linphone;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -1217,10 +1211,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = linphone_Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					IN_LINPHONE,
-					HAVE_SILK,
-				);
+				GCC_PREPROCESSOR_DEFINITIONS = IN_LINPHONE;
 				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				HEADER_SEARCH_PATHS = (
 					submodules/linphone/coreapi,
@@ -1249,6 +1240,10 @@
 					mediastreamer,
 					"-l",
 					srtp,
+					"-l",
+					mssilk,
+					"-l",
+					SKP_SILK_SDK,
 				);
 				PRODUCT_NAME = linphone;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";

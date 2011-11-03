@@ -21,33 +21,40 @@
 ############################################################################
 mssilk_dir?=mssilk
 
-ifneq (,$(findstring arm,$(host)))
-	MSSILK_CONFIGURE_OPTION := --with-silk-flavour=ARM
-endif
-
 $(BUILDER_SRC_DIR)/$(mssilk_dir)/configure:
 	echo -e "\033[01;32m Running autogen for mssilk in $(BUILDER_SRC_DIR)/$(mssilk_dir) \033[0m"
 	cd $(BUILDER_SRC_DIR)/$(mssilk_dir) && ./autogen.sh
 
 $(BUILDER_BUILD_DIR)/$(mssilk_dir)/Makefile: $(BUILDER_SRC_DIR)/$(mssilk_dir)/configure
-	echo -e "\033[01;32m Running configure in $(BUILDER_BUILD_DIR)/$(mssilk_dir)  \033[0m"
+	echo -e "\033[01;32m Running configure in $(BUILDER_BUILD_DIR)/$(mssilk_dir) \033[0m"
 	mkdir -p $(BUILDER_BUILD_DIR)/$(mssilk_dir)
 	cd $(BUILDER_BUILD_DIR)/$(mssilk_dir)/ \
-	&& PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
-	$(BUILDER_SRC_DIR)/$(mssilk_dir)/configure -prefix=$(prefix) --host=$(host) ${library_mode} \
-	$(MSSILK_CONFIGURE_OPTION) --enable-static
+		&& PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
+		$(BUILDER_SRC_DIR)/$(mssilk_dir)/configure -prefix=$(prefix) --host=$(host) ${library_mode} \
+		--enable-static
 
+ifeq ($(enable_silk),yes)
 
 build-mssilk: $(BUILDER_BUILD_DIR)/$(mssilk_dir)/Makefile
 	echo -e "\033[01;32m building silk \033[0m"
-	cd $(BUILDER_BUILD_DIR)/$(mssilk_dir) && PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site)  make -j1 && make install
+	cd $(BUILDER_BUILD_DIR)/$(mssilk_dir) \
+		&& PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig \
+		CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
+		make -j1 && make install
+
+
+else
+build-mssilk:
+	echo "SILK is disabled"
+
+endif
 
 clean-mssilk: 
-	cd  $(BUILDER_BUILD_DIR)/$(mssilk_dir) && make clean
+	-cd  $(BUILDER_BUILD_DIR)/$(mssilk_dir) && make clean
 
 veryclean-mssilk: 
 	-cd $(BUILDER_BUILD_DIR)/$(mssilk_dir) && make distclean 
 	rm -f $(BUILDER_SRC_DIR)/$(mssilk_dir)/configure
 
 clean-makefile-mssilk: 
-	cd $(BUILDER_BUILD_DIR)/$(mssilk_dir) && rm -f Makefile
+	-cd $(BUILDER_BUILD_DIR)/$(mssilk_dir) && rm -f Makefile

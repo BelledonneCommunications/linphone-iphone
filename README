@@ -23,5 +23,11 @@ In case you upgrade your IOS SDK, you may force configure by using make targets 
 Libraries are available from liblinphone-sdk/
 
 AMR plugin
-liblinphone-sdk contains Linphone ARM pluging. As AMR may require to pay for patents, it is not enabled unless Linphone for iphone is compiled with gcc flag HAVE_AMR.
+liblinphone-sdk contains Linphone ARM plugin. As AMR may require to pay for patents, it is not enabled unless Linphone for iphone is compiled with gcc flag HAVE_AMR.
+
+SILK plugin
+liblinphone-sdk contains Linphone SILK plugin.
+As Skype requires that you accept its license, the plugin is not compiled and enabled unless:
+- you compile the SDK with enable_silk=yes flag;
+- you compile the UI with HAVE_SILK flag.
 
