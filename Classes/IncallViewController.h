@@ -23,7 +23,7 @@
 #include "UILinphone.h"
 
 
-@interface IncallViewController : UIViewController <ABPeoplePickerNavigationControllerDelegate,LinphoneUICallDelegate> {
+@interface IncallViewController : UIViewController <ABPeoplePickerNavigationControllerDelegate,LinphoneUICallDelegate, UITableViewDelegate, UITableViewDataSource> {
 	
 	
 	UIView* controlSubView;
@@ -38,6 +38,7 @@
     UIPauseResumeButton* pause;
 	UISpeakerButton* speaker;
 	UIButton* contacts;
+    UITableView* callTableView;
 
 	
 	//key pad
@@ -57,6 +58,10 @@
 	UIDigitButton* hash;
 	UIHangUpButton* endPad;
 	UIButton* close;
+    
+    bool dismissed;
+    
+    NSTimer *durationRefreasher;
 	
 	ABPeoplePickerNavigationController* myPeoplePickerController;
 }
@@ -78,6 +83,7 @@
 @property (nonatomic, retain) IBOutlet UIButton* pause;
 @property (nonatomic, retain) IBOutlet UIButton* speaker;
 @property (nonatomic, retain) IBOutlet UIButton* contacts;
+@property (nonatomic, retain) IBOutlet UITableView* callTableView;
 
 
 @property (nonatomic, retain) IBOutlet UIButton* one;

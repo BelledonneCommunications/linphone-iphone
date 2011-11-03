@@ -83,8 +83,13 @@
 		22F254811073D99800AC9B3F /* ringback.wav in Resources */ = {isa = PBXBuildFile; fileRef = 22F254801073D99800AC9B3F /* ringback.wav */; };
 		22F51EF6107FA66500F98953 /* untitled.plist in Resources */ = {isa = PBXBuildFile; fileRef = 22F51EF5107FA66500F98953 /* untitled.plist */; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
+		346A75C714619F1D005C9D07 /* AdvancedPhoneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 346A75C614619F1D005C9D07 /* AdvancedPhoneViewController.m */; };
+		346A75C814619F73005C9D07 /* IncallViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 222A483212F7176F0075F07F /* IncallViewController.m */; };
+		346A75CB14628DC6005C9D07 /* pausecall.png in Resources */ = {isa = PBXBuildFile; fileRef = 346A75C914628DC6005C9D07 /* pausecall.png */; };
+		346A75CC14628DC6005C9D07 /* resumecall.png in Resources */ = {isa = PBXBuildFile; fileRef = 346A75CA14628DC6005C9D07 /* resumecall.png */; };
+		346A75CF14628F02005C9D07 /* UIPauseResumeButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 346A75CE14628F02005C9D07 /* UIPauseResumeButton.m */; };
+		346A75D21462A786005C9D07 /* CallDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 346A75D11462A786005C9D07 /* CallDelegate.m */; };
 		70571E1A13FABCB000CDD3C2 /* rootca.pem in Resources */ = {isa = PBXBuildFile; fileRef = 70571E1913FABCB000CDD3C2 /* rootca.pem */; };
-		F0A486D91404FE53009EC0BE /* libsrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F0A486D71404FE53009EC0BE /* libsrtp.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -403,9 +408,16 @@
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = main.m; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* linphone_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linphone_Prefix.pch; sourceTree = "<group>"; };
+		346A75C514619F1D005C9D07 /* AdvancedPhoneViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AdvancedPhoneViewController.h; sourceTree = "<group>"; };
+		346A75C614619F1D005C9D07 /* AdvancedPhoneViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AdvancedPhoneViewController.m; sourceTree = "<group>"; };
+		346A75C914628DC6005C9D07 /* pausecall.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pausecall.png; path = submodules/linphone/pixmaps/pausecall.png; sourceTree = "<group>"; };
+		346A75CA14628DC6005C9D07 /* resumecall.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = resumecall.png; path = submodules/linphone/pixmaps/resumecall.png; sourceTree = "<group>"; };
+		346A75CD14628F02005C9D07 /* UIPauseResumeButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIPauseResumeButton.h; sourceTree = "<group>"; };
+		346A75CE14628F02005C9D07 /* UIPauseResumeButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIPauseResumeButton.m; sourceTree = "<group>"; };
+		346A75D01462A786005C9D07 /* CallDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallDelegate.h; sourceTree = "<group>"; };
+		346A75D11462A786005C9D07 /* CallDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallDelegate.m; sourceTree = "<group>"; };
 		70571E1913FABCB000CDD3C2 /* rootca.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = rootca.pem; path = Resources/rootca.pem; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* linphone-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "linphone-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
-		F0A486D71404FE53009EC0BE /* libsrtp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsrtp.a; path = "liblinphone-sdk/apple-darwin/lib/libsrtp.a"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -437,7 +449,6 @@
 				22D1B68112A3E0BE001AE361 /* libresolv.dylib in Frameworks */,
 				226F2ED71344B0EF00F6EF27 /* libopencore-amrnb.a in Frameworks */,
 				226F2ED81344B0EF00F6EF27 /* libmsamr.a in Frameworks */,
-				F0A486D91404FE53009EC0BE /* libsrtp.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -447,8 +458,8 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				22F9D6B51463EBDC00C6FEAF /* AdvancedPhoneViewController.m */,
-				22F9D6B61463EBDC00C6FEAF /* AdvancedPhoneViewController.h */,
+				346A75C514619F1D005C9D07 /* AdvancedPhoneViewController.h */,
+				346A75C614619F1D005C9D07 /* AdvancedPhoneViewController.m */,
 				2214EB7012F84668002A5394 /* LinphoneUI */,
 				2218A92212FBE1340088A667 /* FirstLoginViewController.h */,
 				2218A92312FBE1340088A667 /* FirstLoginViewController.m */,
@@ -474,6 +485,8 @@
 				227BCDC110D4004600FBFD76 /* CallHistoryTableViewController.xib */,
 				2242D9C710D691F900E9963F /* GenericTabViewController.h */,
 				2242D9C810D691F900E9963F /* GenericTabViewController.m */,
+				346A75D01462A786005C9D07 /* CallDelegate.h */,
+				346A75D11462A786005C9D07 /* CallDelegate.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -677,6 +690,8 @@
 		2214EB7012F84668002A5394 /* LinphoneUI */ = {
 			isa = PBXGroup;
 			children = (
+				346A75CD14628F02005C9D07 /* UIPauseResumeButton.h */,
+				346A75CE14628F02005C9D07 /* UIPauseResumeButton.m */,
 				2248E90C12F7E4CF00220D9C /* UIDigitButton.h */,
 				2248E90D12F7E4CF00220D9C /* UIDigitButton.m */,
 				2248E99D12F801C200220D9C /* LinphoneManager.h */,
@@ -847,6 +862,8 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				346A75C914628DC6005C9D07 /* pausecall.png */,
+				346A75CA14628DC6005C9D07 /* resumecall.png */,
 				70571E1913FABCB000CDD3C2 /* rootca.pem */,
 				22E19E47138A67A000FBFE87 /* missed_call.png */,
 				228B19AE130290C500F154D3 /* iTunesArtwork */,
@@ -996,6 +1013,8 @@
 				2214783D1386A2030020F8B8 /* Localizable.strings in Resources */,
 				22E19E48138A67A000FBFE87 /* missed_call.png in Resources */,
 				70571E1A13FABCB000CDD3C2 /* rootca.pem in Resources */,
+				346A75CB14628DC6005C9D07 /* pausecall.png in Resources */,
+				346A75CC14628DC6005C9D07 /* resumecall.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1026,6 +1045,10 @@
 				22C755601317E59C007BC101 /* UIBluetoothButton.m in Sources */,
 				22BB1A69132FF16A005CD7AA /* UIEraseButton.m in Sources */,
 				223963171393CFAF001DE689 /* FastAddressBook.m in Sources */,
+				346A75C714619F1D005C9D07 /* AdvancedPhoneViewController.m in Sources */,
+				346A75C814619F73005C9D07 /* IncallViewController.m in Sources */,
+				346A75CF14628F02005C9D07 /* UIPauseResumeButton.m in Sources */,
+				346A75D21462A786005C9D07 /* CallDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

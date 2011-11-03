@@ -20,12 +20,13 @@
 #import <Foundation/Foundation.h>
 #import "linphonecore.h"
 #import "UILinphone.h"
+#import "CallDelegate.h"
 
 
 @class IncallViewController;
 @class FirstLoginViewController;
 
-@interface PhoneViewController : UIViewController <UITextFieldDelegate,UIActionSheetDelegate,LinphoneUICallDelegate> {
+@interface PhoneViewController : UIViewController <UITextFieldDelegate,LinphoneUICallDelegate, UIActionSheetCustomDelegate> {
 
 @private
 	//UI definition
@@ -41,7 +42,7 @@
 	UILabel* peerLabel;
 		
 	
-	UICallButton* call;
+	UICallButton* __call;
 	UIHangUpButton* hangup;
 
 	UILabel* status;
@@ -70,7 +71,7 @@
 }
 @property (nonatomic, retain) IBOutlet UIView* dialerView;
 @property (nonatomic, retain) IBOutlet UITextField* address;
-@property (nonatomic, retain) IBOutlet UIButton* call;
+@property (nonatomic, retain) IBOutlet UIButton* __call;
 @property (nonatomic, retain) IBOutlet UIButton* hangup;
 @property (nonatomic, retain) IBOutlet UILabel* status;
 @property (nonatomic, retain) IBOutlet UIEraseButton* erase;

@@ -12,6 +12,7 @@
 		</object>
 		<object class="NSArray" key="IBDocument.IntegratedClassDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
+			<string>IBUITableView</string>
 			<string>IBUIViewController</string>
 			<string>IBUIButton</string>
 			<string>IBUIView</string>
@@ -42,9 +43,89 @@
 					<int key="NSvFlags">274</int>
 					<object class="NSMutableArray" key="NSSubviews">
 						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="IBUITableView" id="662692377">
+							<reference key="NSNextResponder" ref="858247959"/>
+							<int key="NSvFlags">274</int>
+							<string key="NSFrameSize">{320, 182}</string>
+							<reference key="NSSuperview" ref="858247959"/>
+							<reference key="NSWindow"/>
+							<string key="NSReuseIdentifierKey">_NS:418</string>
+							<object class="NSColor" key="IBUIBackgroundColor">
+								<int key="NSColorSpace">10</int>
+								<object class="NSImage" key="NSImage">
+									<int key="NSImageFlags">549453824</int>
+									<string key="NSSize">{512, 1}</string>
+									<object class="NSMutableArray" key="NSReps">
+										<bool key="EncodedWithXMLCoder">YES</bool>
+										<object class="NSArray">
+											<bool key="EncodedWithXMLCoder">YES</bool>
+											<integer value="0"/>
+											<object class="NSBitmapImageRep">
+												<object class="NSData" key="NSTIFFRepresentation">
+													<bytes key="NS.bytes">TU0AKgAACAjFzNT/xczU/8XM1P/FzNT/xczS/8vS2P/L0tj/xczU/8XM1P/FzNT/xczU/8XM0v/L0tj/
+y9LY/8XM1P/FzNT/xczU/8XM1P/FzNL/y9LY/8vS2P/FzNT/xczU/8XM1P/FzNT/xczS/8vS2P/L0tj/
+xczU/8XM1P/FzNT/xczU/8XM0v/L0tj/y9LY/8XM1P/FzNT/xczU/8XM1P/FzNL/y9LY/8vS2P/FzNT/
+xczU/8XM1P/FzNT/xczS/8vS2P/L0tj/xczU/8XM1P/FzNT/xczU/8XM0v/L0tj/y9LY/8XM1P/FzNT/
+xczU/8XM1P/FzNL/y9LY/8vS2P/FzNT/xczU/8XM1P/FzNT/xczS/8vS2P/L0tj/xczU/8XM1P/FzNT/
+xczU/8XM0v/L0tj/y9LY/8XM1P/FzNT/xczU/8XM1P/FzNL/y9LY/8vS2P/FzNT/xczU/8XM1P/FzNT/
+xczS/8vS2P/L0tj/xczU/8XM1P/FzNT/xczU/8XM0v/L0tj/y9LY/8XM1P/FzNT/xczU/8XM1P/FzNL/
+y9LY/8vS2P/FzNT/xczU/8XM1P/FzNT/xczS/8vS2P/L0tj/xczU/8XM1P/FzNT/xczU/8XM0v/L0tj/
+y9LY/8XM1P/FzNT/xczU/8XM1P/FzNL/y9LY/8vS2P/FzNT/xczU/8XM1P/FzNT/xczS/8vS2P/L0tj/
+xczU/8XM1P/FzNT/xczU/8XM0v/L0tj/y9LY/8XM1P/FzNT/xczU/8XM1P/FzNL/y9LY/8vS2P/FzNT/
+xczU/8XM1P/FzNT/xczS/8vS2P/L0tj/xczU/8XM1P/FzNT/xczU/8XM0v/L0tj/y9LY/8XM1P/FzNT/
+xczU/8XM1P/FzNL/y9LY/8vS2P/FzNT/xczU/8XM1P/FzNT/xczS/8vS2P/L0tj/xczU/8XM1P/FzNT/
+xczU/8XM0v/L0tj/y9LY/8XM1P/FzNT/xczU/8XM1P/FzNL/y9LY/8vS2P/FzNT/xczU/8XM1P/FzNT/
+xczS/8vS2P/L0tj/xczU/8XM1P/FzNT/xczU/8XM0v/L0tj/y9LY/8XM1P/FzNT/xczU/8XM1P/FzNL/
+y9LY/8vS2P/FzNT/xczU/8XM1P/FzNT/xczS/8vS2P/L0tj/xczU/8XM1P/FzNT/xczU/8XM0v/L0tj/
+y9LY/8XM1P/FzNT/xczU/8XM1P/FzNL/y9LY/8vS2P/FzNT/xczU/8XM1P/FzNT/xczS/8vS2P/L0tj/
+xczU/8XM1P/FzNT/xczU/8XM0v/L0tj/y9LY/8XM1P/FzNT/xczU/8XM1P/FzNL/y9LY/8vS2P/FzNT/
+xczU/8XM1P/FzNT/xczS/8vS2P/L0tj/xczU/8XM1P/FzNT/xczU/8XM0v/L0tj/y9LY/8XM1P/FzNT/
+xczU/8XM1P/FzNL/y9LY/8vS2P/FzNT/xczU/8XM1P/FzNT/xczS/8vS2P/L0tj/xczU/8XM1P/FzNT/
+xczU/8XM0v/L0tj/y9LY/8XM1P/FzNT/xczU/8XM1P/FzNL/y9LY/8vS2P/FzNT/xczU/8XM1P/FzNT/
+xczS/8vS2P/L0tj/xczU/8XM1P/FzNT/xczU/8XM0v/L0tj/y9LY/8XM1P/FzNT/xczU/8XM1P/FzNL/
+y9LY/8vS2P/FzNT/xczU/8XM1P/FzNT/xczS/8vS2P/L0tj/xczU/8XM1P/FzNT/xczU/8XM0v/L0tj/
+y9LY/8XM1P/FzNT/xczU/8XM1P/FzNL/y9LY/8vS2P/FzNT/xczU/8XM1P/FzNT/xczS/8vS2P/L0tj/
+xczU/8XM1P/FzNT/xczU/8XM0v/L0tj/y9LY/8XM1P/FzNT/xczU/8XM1P/FzNL/y9LY/8vS2P/FzNT/
+xczU/8XM1P/FzNT/xczS/8vS2P/L0tj/xczU/8XM1P/FzNT/xczU/8XM0v/L0tj/y9LY/8XM1P/FzNT/
+xczU/8XM1P/FzNL/y9LY/8vS2P/FzNT/xczU/8XM1P/FzNT/xczS/8vS2P/L0tj/xczU/8XM1P/FzNT/
+xczU/8XM0v/L0tj/y9LY/8XM1P/FzNT/xczU/8XM1P/FzNL/y9LY/8vS2P/FzNT/xczU/8XM1P/FzNT/
+xczS/8vS2P/L0tj/xczU/8XM1P/FzNT/xczU/8XM0v/L0tj/y9LY/8XM1P/FzNT/xczU/8XM1P/FzNL/
+y9LY/8vS2P/FzNT/xczU/8XM1P/FzNT/xczS/8vS2P/L0tj/xczU/8XM1P/FzNT/xczU/8XM0v/L0tj/
+y9LY/8XM1P/FzNT/xczU/8XM1P/FzNL/y9LY/8vS2P/FzNT/xczU/8XM1P/FzNT/xczS/8vS2P/L0tj/
+xczU/8XM1P/FzNT/xczU/8XM0v/L0tj/y9LY/8XM1P/FzNT/xczU/8XM1P/FzNL/y9LY/8vS2P/FzNT/
+xczU/8XM1P/FzNT/xczS/8vS2P/L0tj/xczU/8XM1P/FzNT/xczU/8XM0v/L0tj/y9LY/8XM1P/FzNT/
+xczU/8XM1P/FzNL/y9LY/8vS2P/FzNT/xczU/8XM1P/FzNT/xczS/8vS2P/L0tj/xczU/8XM1P/FzNT/
+xczU/8XM0v/L0tj/y9LY/8XM1P/FzNT/xczU/8XM1P/FzNL/y9LY/8vS2P/FzNT/xczU/8XM1P/FzNT/
+xczS/8vS2P/L0tj/xczU/wANAQAAAwAAAAECAAAAAQEAAwAAAAEAAQAAAQIAAwAAAAQAAAiqAQMAAwAA
+AAEAAQAAAQYAAwAAAAEAAgAAAREABAAAAAEAAAAIARIAAwAAAAEAAQAAARUAAwAAAAEABAAAARYAAwAA
+AAEAAQAAARcABAAAAAEAAAgAARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAQAAAiyAAAAAAAI
+AAgACAAIAAEAAQABAAE</bytes>
+												</object>
+											</object>
+										</object>
+									</object>
+									<object class="NSColor" key="NSColor">
+										<int key="NSColorSpace">3</int>
+										<bytes key="NSWhite">MCAwAA</bytes>
+									</object>
+								</object>
+								<string key="IBUIColorCocoaTouchKeyPath">groupTableViewBackgroundColor</string>
+							</object>
+							<bool key="IBUIClipsSubviews">YES</bool>
+							<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+							<bool key="IBUIAlwaysBounceVertical">YES</bool>
+							<bool key="IBUIShowsHorizontalScrollIndicator">NO</bool>
+							<int key="IBUIStyle">1</int>
+							<int key="IBUISeparatorStyle">2</int>
+							<int key="IBUISectionIndexMinimumDisplayRowCount">0</int>
+							<bool key="IBUIShowsSelectionImmediatelyOnTouchBegin">YES</bool>
+							<float key="IBUIRowHeight">44</float>
+							<float key="IBUISectionHeaderHeight">10</float>
+							<float key="IBUISectionFooterHeight">10</float>
+						</object>
 						<object class="IBUILabel" id="357639611">
 							<reference key="NSNextResponder" ref="858247959"/>
-							<int key="NSvFlags">292</int>
+							<int key="NSvFlags">-2147483356</int>
 							<string key="NSFrameSize">{320, 55}</string>
 							<reference key="NSSuperview" ref="858247959"/>
 							<reference key="NSWindow"/>
@@ -74,7 +155,7 @@
 						</object>
 						<object class="IBUILabel" id="671407802">
 							<reference key="NSNextResponder" ref="858247959"/>
-							<int key="NSvFlags">292</int>
+							<int key="NSvFlags">-2147483356</int>
 							<string key="NSFrame">{{31, 63}, {61, 21}}</string>
 							<reference key="NSSuperview" ref="858247959"/>
 							<reference key="NSWindow"/>
@@ -93,11 +174,11 @@
 						</object>
 						<object class="IBUILabel" id="983423469">
 							<reference key="NSNextResponder" ref="858247959"/>
-							<int key="NSvFlags">292</int>
+							<int key="NSvFlags">-2147483356</int>
 							<string key="NSFrame">{{239, 63}, {65, 21}}</string>
 							<reference key="NSSuperview" ref="858247959"/>
 							<reference key="NSWindow"/>
-							<reference key="NSNextKeyView" ref="585669622"/>
+							<reference key="NSNextKeyView" ref="759087764"/>
 							<bool key="IBUIOpaque">NO</bool>
 							<bool key="IBUIClipsSubviews">YES</bool>
 							<bool key="IBUIUserInteractionEnabled">NO</bool>
@@ -112,7 +193,7 @@
 						</object>
 						<object class="IBUILabel" id="620882994">
 							<reference key="NSNextResponder" ref="858247959"/>
-							<int key="NSvFlags">292</int>
+							<int key="NSvFlags">-2147483356</int>
 							<string key="NSFrame">{{31, 347}, {258, 21}}</string>
 							<reference key="NSSuperview" ref="858247959"/>
 							<reference key="NSWindow"/>
@@ -180,7 +261,7 @@
 									<string key="NSFrame">{{170, 266}, {72, 37}}</string>
 									<reference key="NSSuperview" ref="759087764"/>
 									<reference key="NSWindow"/>
-									<reference key="NSNextKeyView" ref="620882994"/>
+									<reference key="NSNextKeyView" ref="585669622"/>
 									<bool key="IBUIOpaque">NO</bool>
 									<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
 									<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -531,7 +612,7 @@
 									<string key="NSFrame">{{0, 121}, {82, 52}}</string>
 									<reference key="NSSuperview" ref="585669622"/>
 									<reference key="NSWindow"/>
-									<reference key="NSNextKeyView" ref="953411930"/>
+									<reference key="NSNextKeyView" ref="478667533"/>
 									<bool key="IBUIOpaque">NO</bool>
 									<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
 									<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -559,7 +640,7 @@
 									<string key="NSFrame">{{6, 261}, {258, 52}}</string>
 									<reference key="NSSuperview" ref="585669622"/>
 									<reference key="NSWindow"/>
-									<reference key="NSNextKeyView" ref="759087764"/>
+									<reference key="NSNextKeyView" ref="620882994"/>
 									<bool key="IBUIOpaque">NO</bool>
 									<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
 									<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -582,7 +663,7 @@
 									<string key="NSFrame">{{90, 115}, {82, 52}}</string>
 									<reference key="NSSuperview" ref="585669622"/>
 									<reference key="NSWindow"/>
-									<reference key="NSNextKeyView" ref="1031005817"/>
+									<reference key="NSNextKeyView" ref="953411930"/>
 									<bool key="IBUIOpaque">NO</bool>
 									<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
 									<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -632,7 +713,7 @@
 									<string key="NSFrame">{{181, 61}, {82, 52}}</string>
 									<reference key="NSSuperview" ref="585669622"/>
 									<reference key="NSWindow"/>
-									<reference key="NSNextKeyView" ref="478667533"/>
+									<reference key="NSNextKeyView" ref="1031005817"/>
 									<bool key="IBUIOpaque">NO</bool>
 									<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
 									<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -906,6 +987,14 @@
 					<int key="connectionID">105</int>
 				</object>
 				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">callTableView</string>
+						<reference key="source" ref="841351856"/>
+						<reference key="destination" ref="662692377"/>
+					</object>
+					<int key="connectionID">109</int>
+				</object>
+				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
 						<string key="label">doAction:</string>
 						<reference key="source" ref="478667533"/>
@@ -931,6 +1020,22 @@
 						<int key="IBEventType">7</int>
 					</object>
 					<int key="connectionID">101</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">dataSource</string>
+						<reference key="source" ref="662692377"/>
+						<reference key="destination" ref="841351856"/>
+					</object>
+					<int key="connectionID">107</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">delegate</string>
+						<reference key="source" ref="662692377"/>
+						<reference key="destination" ref="841351856"/>
+					</object>
+					<int key="connectionID">108</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -975,6 +1080,7 @@
 							<reference ref="983423469"/>
 							<reference ref="759087764"/>
 							<reference ref="620882994"/>
+							<reference ref="662692377"/>
 						</object>
 						<reference key="parent" ref="981679694"/>
 					</object>
@@ -1160,6 +1266,11 @@
 						<reference key="parent" ref="585669622"/>
 						<string key="objectName">pauseresume</string>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">106</int>
+						<reference key="object" ref="662692377"/>
+						<reference key="parent" ref="858247959"/>
+					</object>
 				</object>
 			</object>
 			<object class="NSMutableDictionary" key="flattenedProperties">
@@ -1173,6 +1284,7 @@
 					<string>10.IBPluginDependency</string>
 					<string>104.CustomClassName</string>
 					<string>104.IBPluginDependency</string>
+					<string>106.IBPluginDependency</string>
 					<string>11.IBPluginDependency</string>
 					<string>12.CustomClassName</string>
 					<string>12.IBPluginDependency</string>
@@ -1225,6 +1337,7 @@
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>UIPauseResumeButton</string>
+					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>UIDuration</string>
@@ -1283,7 +1396,7 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">105</int>
+			<int key="maxID">109</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -1307,6 +1420,7 @@
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>callDuration</string>
+							<string>callTableView</string>
 							<string>close</string>
 							<string>contacts</string>
 							<string>controlSubView</string>
@@ -1336,6 +1450,7 @@
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>UILabel</string>
+							<string>UITableView</string>
 							<string>UIButton</string>
 							<string>UIButton</string>
 							<string>UIView</string>
@@ -1368,6 +1483,7 @@
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>callDuration</string>
+							<string>callTableView</string>
 							<string>close</string>
 							<string>contacts</string>
 							<string>controlSubView</string>
@@ -1399,6 +1515,10 @@
 							<object class="IBToOneOutletInfo">
 								<string key="name">callDuration</string>
 								<string key="candidateClassName">UILabel</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">callTableView</string>
+								<string key="candidateClassName">UITableView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">close</string>

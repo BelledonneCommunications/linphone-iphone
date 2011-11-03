@@ -113,31 +113,36 @@ extern void libmssilk_init();
     }
     return;
 }
--(void) onCall:(LinphoneCall*) currentCall StateChanged: (LinphoneCallState) new_state withMessage: (const char *)  message {
-    const char* lUserNameChars=linphone_address_get_username(linphone_call_get_remote_address(currentCall));
+-(void) onCall:(LinphoneCall*) call StateChanged: (LinphoneCallState) new_state withMessage: (const char *)  message {
+    const char* lUserNameChars=linphone_address_get_username(linphone_call_get_remote_address(call));
     NSString* lUserName = lUserNameChars?[[NSString alloc] initWithCString:lUserNameChars]:NSLocalizedString(@"Unknown",nil);
     if (new_state == LinphoneCallIncomingReceived) {
-       [self updateCallWithAddressBookData:currentCall]; // display name is updated 
+       [self updateCallWithAddressBookData:call]; // display name is updated 
     }
-    const char* lDisplayNameChars =  linphone_address_get_display_name(linphone_call_get_remote_address(currentCall));        
+    const char* lDisplayNameChars =  linphone_address_get_display_name(linphone_call_get_remote_address(call));        
 	NSString* lDisplayName = lDisplayNameChars?[[NSString alloc] initWithCString:lDisplayNameChars]:@"";
+    
+    bool canHideInCallView = (linphone_core_get_calls([LinphoneManager getLc]) == NULL);
 	
 	switch (new_state) {
 			
 		case LinphoneCallIncomingReceived: 
-			[callDelegate	displayIncomingCallNotigicationFromUI:mCurrentViewController
+			[callDelegate	displayIncomingCall:call 
+                           NotificationFromUI:mCurrentViewController
 														forUser:lUserName 
 												withDisplayName:lDisplayName];
 			break;
 			
 		case LinphoneCallOutgoingInit: 
-			[callDelegate		displayCallInProgressFromUI:mCurrentViewController
+			[callDelegate		displayCall:call 
+                      InProgressFromUI:mCurrentViewController
 											   forUser:lUserName 
 									   withDisplayName:lDisplayName];
 			break;
 			
 		case LinphoneCallConnected:
-                [callDelegate	displayIncallFromUI:mCurrentViewController
+			[callDelegate	displayInCall: call 
+                                 FromUI:mCurrentViewController
 									  forUser:lUserName 
 							  withDisplayName:lDisplayName];
 			break;
@@ -170,15 +175,19 @@ extern void libmssilk_init();
 												  cancelButtonTitle:NSLocalizedString(@"Dismiss",nil) 
 												  otherButtonTitles:nil];
 			[error show];
-			[callDelegate	displayDialerFromUI:mCurrentViewController
+            if (canHideInCallView) {
+                [callDelegate	displayDialerFromUI:mCurrentViewController
 									  forUser:@"" 
 							  withDisplayName:@""];
+            }
 			break;
 		}
-		case LinphoneCallEnd: 
-			[callDelegate	displayDialerFromUI:mCurrentViewController
+		case LinphoneCallEnd:
+            if (canHideInCallView) {
+                [callDelegate	displayDialerFromUI:mCurrentViewController
 									  forUser:@"" 
 							  withDisplayName:@""];
+            }
 			break;
 		default:
 			break;
@@ -437,7 +446,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		const char* password = [accountPassword cStringUsingEncoding:[NSString defaultCStringEncoding]];
 		
 		NSString* proxyAddress = [[NSUserDefaults standardUserDefaults] stringForKey:@"proxy_preference"];
-		if ((!proxyAddress | [proxyAddress length] <1 ) && domain) {
+		if ((!proxyAddress || [proxyAddress length] <1 ) && domain) {
 			proxyAddress = [NSString stringWithFormat:@"sip:%@",domain] ;
 		} else {
 			proxyAddress = [NSString stringWithFormat:@"sip:%@",proxyAddress] ;
