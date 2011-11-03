@@ -18,7 +18,7 @@ $(BUILDER_SRC_DIR)/$(libvpx_dir)/patched :
 	&& git apply $(BUILDER_SRC_DIR)/build/builders.d/libvpx.patch \
 	&& touch $(BUILDER_SRC_DIR)/$(libvpx_dir)/patched
 
-$(BUILDER_BUILD_DIR)/$(libvpx_dir)/config.mak: $(BUILDER_SRC_DIR)/$(libvpx_dir)/patched
+$(BUILDER_BUILD_DIR)/$(libvpx_dir)/config.mk: $(BUILDER_SRC_DIR)/$(libvpx_dir)/patched
 	mkdir -p $(BUILDER_BUILD_DIR)/$(libvpx_dir)
 	cd $(BUILDER_BUILD_DIR)/$(libvpx_dir)/ \
 	&&  host_alias=${host} . $(BUILDER_SRC_DIR)/build/$(config_site) \
