@@ -40,6 +40,8 @@
 @synthesize speaker;
 @synthesize contacts;
 @synthesize callTableView;
+@synthesize addCall;
+@synthesize mergeCalls;
 
 @synthesize one;
 @synthesize two;
@@ -67,6 +69,23 @@
 */
 
 
+bool isInConference(LinphoneCall* call) {
+    return linphone_call_get_current_params(call)->in_conference;
+}
+
+int callCount(LinphoneCore* lc) {
+    int count = 0;
+    const MSList* calls = linphone_core_get_calls(lc);
+    
+    while (calls != 0) {
+        if (!isInConference((LinphoneCall*)calls->data)) {
+            count++;
+        }
+        calls = calls->next;
+    }
+    return count;
+}
+
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -91,8 +110,28 @@
 	[nine initWithNumber:'9'];
 	[star initWithNumber:'*'];
 	[hash initWithNumber:'#'];
-	
-	
+    
+    [addCall addTarget:self action:@selector(addCallPressed) forControlEvents:UIControlEventTouchDown];
+    [mergeCalls addTarget:self action:@selector(mergeCallsPressed) forControlEvents:UIControlEventTouchDown];  
+    
+    [mergeCalls setHidden:YES];
+}
+
+-(void) addCallPressed {
+    [self dismissModalViewControllerAnimated:true];
+}
+
+-(void) mergeCallsPressed {
+    LinphoneCore* lc = [LinphoneManager getLc];
+    const MSList* calls = linphone_core_get_calls(lc);
+    
+    while (calls != 0) {
+        LinphoneCall* call = (LinphoneCall*)calls->data;
+        if (!isInConference(call)) {
+            linphone_core_add_to_conference(lc, call);
+        }
+        calls = calls->next;
+    }
 }
 
 -(void)updateCallsDurations {
@@ -109,6 +148,7 @@
                                                             selector:@selector(updateCallsDurations) 
                                                             userInfo:nil 
                                                              repeats:YES];
+       selectedCell = nil;
     }
 }
 
@@ -116,6 +156,7 @@
     if (durationRefreasher != nil) {
         [durationRefreasher invalidate];
         durationRefreasher=nil;
+        selectedCell = nil;
     }
 }
 
@@ -156,9 +197,8 @@
 }
 
 -(void) displayInCall:(LinphoneCall*) call FromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
-	[callDuration start];
     dismissed = false;
-        [callTableView reloadData];
+    [callTableView reloadData];
 }
 -(void) displayDialerFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
 	[callDuration stop];
@@ -169,6 +209,14 @@
 -(void) updateUIFromLinphoneState:(UIViewController *)viewCtrl {
     [mute reset];
     [pause reset];
+    
+    if (callCount([LinphoneManager getLc]) > 1) {
+        [pause setHidden:YES];
+        [mergeCalls setHidden:NO];
+    } else {
+        [pause setHidden:NO];
+        [mergeCalls setHidden:YES];        
+    }
     
     [callTableView reloadData];
 }
@@ -214,23 +262,6 @@
 
 - (void)dealloc {
     [super dealloc];
-}
-
-bool isInConference(LinphoneCall* call) {
-    return linphone_call_get_current_params(call)->in_conference;
-}
-
-int callCount(LinphoneCore* lc) {
-    int count = 0;
-    const MSList* calls = linphone_core_get_calls(lc);
-    
-    while (calls != 0) {
-        if (!isInConference((LinphoneCall*)calls->data)) {
-            count++;
-        }
-        calls = calls->next;
-    }
-    return count;
 }
 
 -(LinphoneCall*) retrieveCallAtIndex: (NSInteger) index inConference:(bool) conf{
@@ -284,12 +315,19 @@ int callCount(LinphoneCore* lc) {
     }
     [cell.detailTextLabel setText:ms];
     
+    
     if (linphone_core_get_current_call([LinphoneManager getLc]) == call)
-        cell.accessoryType = UITableViewCellAccessoryCheckmark;
+        cell.backgroundColor = [UIColor colorWithRed:0 green:1 blue:0 alpha:0.5];
     else if (confActive && isInConference(call))
+       cell.backgroundColor = [UIColor colorWithRed:0 green:1 blue:0 alpha:0.5];
+    else
+       cell.backgroundColor = [UIColor colorWithRed:1 green:0.5 blue:0 alpha:0.5];
+     
+    
+    /*if (cell == selectedCell)
         cell.accessoryType = UITableViewCellAccessoryCheckmark;
     else
-        cell.accessoryType = UITableViewCellAccessoryNone;
+        cell.accessoryType = UITableViewCellAccessoryNone;*/
 }
 
 
@@ -300,8 +338,6 @@ int callCount(LinphoneCore* lc) {
         cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"MyIdentifier"] autorelease];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
     }
-    
-    ms_message("pouet");
     
     LinphoneCore* lc = [LinphoneManager getLc];
     if (indexPath.section == 0 && linphone_core_get_conference_size(lc) > 0)
@@ -363,5 +399,20 @@ int callCount(LinphoneCore* lc) {
     return nil;
 }
 
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    //selectedCell = [tableView cellForRowAtIndexPath:indexPath];
+    
+    bool inConf = (indexPath.section == 0 && linphone_core_get_conference_size([LinphoneManager getLc]) > 0);
+    
+    if (inConf) {
+        linphone_core_enter_conference([LinphoneManager getLc]);
+    } else {    
+        LinphoneCall* call = [self retrieveCallAtIndex:indexPath.row inConference:NO];
+        linphone_core_resume_call([LinphoneManager getLc], call);
+    }
+    
+    [self updateUIFromLinphoneState: nil];    
+}
 
 @end

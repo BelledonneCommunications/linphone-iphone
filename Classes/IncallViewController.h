@@ -39,6 +39,7 @@
 	UISpeakerButton* speaker;
 	UIButton* contacts;
     UITableView* callTableView;
+    UIButton* addCall, *mergeCalls;
 
 	
 	//key pad
@@ -64,6 +65,8 @@
     NSTimer *durationRefreasher;
 	
 	ABPeoplePickerNavigationController* myPeoplePickerController;
+    
+    UITableViewCell* selectedCell;
 }
 
 -(void)displayStatus:(NSString*) message;
@@ -84,6 +87,8 @@
 @property (nonatomic, retain) IBOutlet UIButton* speaker;
 @property (nonatomic, retain) IBOutlet UIButton* contacts;
 @property (nonatomic, retain) IBOutlet UITableView* callTableView;
+@property (nonatomic, retain) IBOutlet UIButton* addCall;
+@property (nonatomic, retain) IBOutlet UIButton* mergeCalls;
 
 
 @property (nonatomic, retain) IBOutlet UIButton* one;

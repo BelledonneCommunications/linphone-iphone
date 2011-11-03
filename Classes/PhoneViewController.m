@@ -200,7 +200,7 @@
 -(void) displayCall:(LinphoneCall*) call InProgressFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
 	[self displayInCall: call ViewforUser:username
 				  withDisplayName:displayName];
-	[__call setEnabled:false];
+	//[__call setEnabled:false];
 	[callDuration setText:NSLocalizedString(@"Calling...",nil)];
 	if ([speaker isOn]) [speaker toggle] ; //preset to off
 }
