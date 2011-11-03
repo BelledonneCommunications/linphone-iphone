@@ -69,5 +69,19 @@
 	[mOffImage release];
 }
 
+-(void) onOn {
+    [NSException raise:NSInternalInconsistencyException 
+                format:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)];
+}
+-(void) onOff {
+    [NSException raise:NSInternalInconsistencyException 
+                format:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)];
+}
+-(bool) isInitialStateOn {
+    [NSException raise:NSInternalInconsistencyException 
+                format:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)];
+    return false;
+}
+
 
 @end

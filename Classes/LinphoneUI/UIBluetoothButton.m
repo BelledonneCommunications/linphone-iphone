@@ -23,14 +23,14 @@
 
 @implementation UIBluetoothButton
 #define check_auresult(au,method) \
-if (au!=0) ms_error("UIBluetoothButton error for %s: ret=%i",method,au)
+if (au!=0) ms_error("UIBluetoothButton error for %s: ret=%ld",method,au)
 
 -(void) onOn {
 	//redirect audio to bluetooth
 
 	UInt32 size = sizeof(CFStringRef);
 	CFStringRef route="HeadsetBT";
-	OSStatus result = AudioSessionSetProperty(kAudioSessionProperty_AudioRoute, &size, &route);
+	OSStatus result = AudioSessionSetProperty(kAudioSessionProperty_AudioRoute, size, &route);
 	check_auresult(result,"set kAudioSessionProperty_AudioRoute HeadsetBT");
 	
 	int allowBluetoothInput = 1;
