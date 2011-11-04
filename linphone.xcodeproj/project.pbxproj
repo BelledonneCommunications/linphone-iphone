@@ -52,7 +52,6 @@
 		225CB2EE11ABB65D00628906 /* clavier-01-160px.png in Resources */ = {isa = PBXBuildFile; fileRef = 225CB2ED11ABB65D00628906 /* clavier-01-160px.png */; };
 		225CB2FA11ABB76400628906 /* linphone-banner.png in Resources */ = {isa = PBXBuildFile; fileRef = 225CB2F911ABB76400628906 /* linphone-banner.png */; };
 		2264B6D211200342002C2C53 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2264B6D111200342002C2C53 /* SystemConfiguration.framework */; };
-		226F2ED61344B0EF00F6EF27 /* libopencore-amrwb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226F2ED31344B0EF00F6EF27 /* libopencore-amrwb.a */; };
 		226F2ED71344B0EF00F6EF27 /* libopencore-amrnb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226F2ED41344B0EF00F6EF27 /* libopencore-amrnb.a */; };
 		226F2ED81344B0EF00F6EF27 /* libmsamr.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226F2ED51344B0EF00F6EF27 /* libmsamr.a */; };
 		2274401A106F31BD006EC466 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22744019106F31BD006EC466 /* CoreAudio.framework */; };
@@ -286,7 +285,6 @@
 		225CB2ED11ABB65D00628906 /* clavier-01-160px.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "clavier-01-160px.png"; path = "Resources/clavier-01-160px.png"; sourceTree = "<group>"; };
 		225CB2F911ABB76400628906 /* linphone-banner.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "linphone-banner.png"; path = "liblinphone-sdk/apple-darwin/share/pixmaps/linphone/linphone-banner.png"; sourceTree = "<group>"; };
 		2264B6D111200342002C2C53 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
-		226F2ED31344B0EF00F6EF27 /* libopencore-amrwb.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libopencore-amrwb.a"; path = "liblinphone-sdk/apple-darwin/lib/libopencore-amrwb.a"; sourceTree = "<group>"; };
 		226F2ED41344B0EF00F6EF27 /* libopencore-amrnb.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libopencore-amrnb.a"; path = "liblinphone-sdk/apple-darwin/lib/libopencore-amrnb.a"; sourceTree = "<group>"; };
 		226F2ED51344B0EF00F6EF27 /* libmsamr.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmsamr.a; path = "liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmsamr.a"; sourceTree = "<group>"; };
 		22744019106F31BD006EC466 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
@@ -400,6 +398,8 @@
 		22F2508D107141E100AC9B3F /* PhoneViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PhoneViewController.xib; sourceTree = "<group>"; };
 		22F254801073D99800AC9B3F /* ringback.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = ringback.wav; path = "liblinphone-sdk/apple-darwin/share/sounds/linphone/ringback.wav"; sourceTree = "<group>"; };
 		22F51EF5107FA66500F98953 /* untitled.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = untitled.plist; sourceTree = "<group>"; };
+		22F9D6B51463EBDC00C6FEAF /* AdvancedPhoneViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AdvancedPhoneViewController.m; sourceTree = "<group>"; };
+		22F9D6B61463EBDC00C6FEAF /* AdvancedPhoneViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AdvancedPhoneViewController.h; sourceTree = "<group>"; };
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = main.m; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* linphone_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linphone_Prefix.pch; sourceTree = "<group>"; };
@@ -435,7 +435,6 @@
 				228697C411AC29B800E9E0CA /* CFNetwork.framework in Frameworks */,
 				22A10F3B11F8960300373793 /* libortp.a in Frameworks */,
 				22D1B68112A3E0BE001AE361 /* libresolv.dylib in Frameworks */,
-				226F2ED61344B0EF00F6EF27 /* libopencore-amrwb.a in Frameworks */,
 				226F2ED71344B0EF00F6EF27 /* libopencore-amrnb.a in Frameworks */,
 				226F2ED81344B0EF00F6EF27 /* libmsamr.a in Frameworks */,
 				F0A486D91404FE53009EC0BE /* libsrtp.a in Frameworks */,
@@ -448,6 +447,8 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				22F9D6B51463EBDC00C6FEAF /* AdvancedPhoneViewController.m */,
+				22F9D6B61463EBDC00C6FEAF /* AdvancedPhoneViewController.h */,
 				2214EB7012F84668002A5394 /* LinphoneUI */,
 				2218A92212FBE1340088A667 /* FirstLoginViewController.h */,
 				2218A92312FBE1340088A667 /* FirstLoginViewController.m */,
@@ -807,7 +808,6 @@
 				220FAD2E10765B400068D98F /* libosipparser2.a */,
 				220FAD2F10765B400068D98F /* libspeex.a */,
 				220FAD3010765B400068D98F /* libspeexdsp.a */,
-				226F2ED31344B0EF00F6EF27 /* libopencore-amrwb.a */,
 				226F2ED41344B0EF00F6EF27 /* libopencore-amrnb.a */,
 				226F2ED51344B0EF00F6EF27 /* libmsamr.a */,
 				220FAC77107654FC0068D98F /* include */,
@@ -1085,8 +1085,6 @@
 					linphone,
 					"-l",
 					mediastreamer,
-					"-l",
-					srtp,
 				);
 				PRODUCT_NAME = linphone;
 				SDKROOT = iphoneos;
@@ -1157,8 +1155,6 @@
 					linphone,
 					"-l",
 					mediastreamer,
-					"-l",
-					srtp,
 				);
 				PRODUCT_NAME = linphone;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -1230,8 +1226,6 @@
 					linphone,
 					"-l",
 					mediastreamer,
-					"-l",
-					srtp,
 				);
 				PRODUCT_NAME = linphone;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";

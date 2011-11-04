@@ -51,7 +51,10 @@
 	
 }
 -(void) displayIncallFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
-    [self presentModalViewController:mIncallViewController animated:true];
+    
+	if (linphone_call_get_dir(currentCall)==LinphoneCallIncoming){    
+		[self presentModalViewController:mIncallViewController animated:true];
+	}
 
 	[super displayIncallFromUI:viewCtrl
 					   forUser:username

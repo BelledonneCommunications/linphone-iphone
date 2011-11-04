@@ -137,11 +137,9 @@ extern void libmssilk_init();
 			break;
 			
 		case LinphoneCallConnected:
-            if (linphone_call_get_dir(currentCall)==LinphoneCallIncoming){
                 [callDelegate	displayIncallFromUI:mCurrentViewController
 									  forUser:lUserName 
 							  withDisplayName:lDisplayName];
-            }
 			break;
 			
 		case LinphoneCallError: { 
