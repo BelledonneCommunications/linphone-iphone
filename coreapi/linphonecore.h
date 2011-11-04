@@ -1037,6 +1037,8 @@ int linphone_core_terminate_conference(LinphoneCore *lc);
 int linphone_core_get_conference_size(LinphoneCore *lc);
 
 int linphone_core_get_max_calls(LinphoneCore *lc);
+void linphone_core_set_max_calls(LinphoneCore *lc, int max);
+
 bool_t linphone_core_sound_resources_locked(LinphoneCore *lc);
 
 bool_t linphone_core_media_encryption_supported(const LinphoneCore *lc, LinphoneMediaEncryption menc);

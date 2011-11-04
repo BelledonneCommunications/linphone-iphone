@@ -4316,7 +4316,9 @@ void linphone_core_stop_dtmf_stream(LinphoneCore* lc) {
 int linphone_core_get_max_calls(LinphoneCore *lc) {
 	return lc->max_calls;
 }
-
+void linphone_core_set_max_calls(LinphoneCore *lc, int max) {
+	lc->max_calls=max;
+}
 
 typedef struct Hook{
 	LinphoneCoreIterateHook fun;

@@ -623,6 +623,7 @@ public interface LinphoneCore {
 	LinphoneCall findCallFromUri(String uri);
 
 	int getMaxCalls();
+	void setMaxCalls(int max);
 	boolean isMyself(String uri);
 
 	/**

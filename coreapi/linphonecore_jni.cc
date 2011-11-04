@@ -1598,3 +1598,6 @@ extern "C" void Java_org_linphone_LinphoneManager_hackSpeakerState(JNIEnv*  env,
 extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getMaxCalls(JNIEnv *env,jobject thiz,jlong pCore) {
 	return (jint) linphone_core_get_max_calls((LinphoneCore *) pCore);
 }
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setMaxCalls(JNIEnv *env,jobject thiz,jlong pCore, jint max) {
+	linphone_core_set_max_calls((LinphoneCore *) pCore, (int) max);
+}
