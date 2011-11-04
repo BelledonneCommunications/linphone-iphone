@@ -515,7 +515,6 @@ static void sdp_process(SalOp *h){
 		strcpy(h->result->addr,h->base.remote_media->addr);
 		h->result->bandwidth=h->base.remote_media->bandwidth;
 		
-		//remplacer la cle
 		for(i=0;i<h->result->nstreams;++i){
 			if (h->result->streams[i].port>0){
 				strcpy(h->result->streams[i].addr,h->base.remote_media->streams[i].addr);

@@ -325,7 +325,7 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 		linphone_core_run_stun_tests(call->core,call);
 	discover_mtu(lc,linphone_address_get_domain (to));
 	if (params->referer){
-		sal_call_set_referer (call->op,params->referer->op);
+		sal_call_set_referer(call->op,params->referer->op);
 	}
 	return call;
 }

@@ -537,6 +537,7 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 					!linphone_core_is_media_encryption_mandatory(lc)) {
 					int i;
 					ms_message("Outgoing call failed with SRTP (SAVP) enabled - retrying with AVP");
+					linphone_call_stop_media_streams(call);
 					/* clear SRTP local params */
 					call->params.media_encryption = LinphoneMediaEncryptionNone;
 					for(i=0; i<call->localdesc->nstreams; i++) {
