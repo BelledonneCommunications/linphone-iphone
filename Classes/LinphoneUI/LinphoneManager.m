@@ -146,7 +146,7 @@ extern void libmssilk_init();
 			break;
 			
 		case LinphoneCallConnected:
-			[callDelegate	displayIncallFromUI:mCurrentViewController
+                [callDelegate	displayIncallFromUI:mCurrentViewController
 									  forUser:lUserName 
 							  withDisplayName:lDisplayName];
 			break;

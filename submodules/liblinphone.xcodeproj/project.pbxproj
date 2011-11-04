@@ -158,7 +158,6 @@
 		2252935B12F6CA4700DD9BFB /* ec-calibrator.c in Sources */ = {isa = PBXBuildFile; fileRef = 2252935A12F6CA4700DD9BFB /* ec-calibrator.c */; };
 		225AA2DC144F077700BA809B /* silk_dec.c in Sources */ = {isa = PBXBuildFile; fileRef = 225AA2DA144F077600BA809B /* silk_dec.c */; };
 		225AA2DD144F077700BA809B /* silk_enc.c in Sources */ = {isa = PBXBuildFile; fileRef = 225AA2DB144F077700BA809B /* silk_enc.c */; };
-		225AA2DF144F0AA800BA809B /* libSKP_SILK_SDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 225AA2DE144F0AA800BA809B /* libSKP_SILK_SDK.a */; };
 		225AA2E1144F1C6600BA809B /* bitratedriver.c in Sources */ = {isa = PBXBuildFile; fileRef = 225AA2E0144F1C6600BA809B /* bitratedriver.c */; };
 		225AA2E3144F1E3400BA809B /* qosanalyzer.c in Sources */ = {isa = PBXBuildFile; fileRef = 225AA2E2144F1E3400BA809B /* qosanalyzer.c */; };
 		225AA2E5144F2E0200BA809B /* msprivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 225AA2E4144F2E0200BA809B /* msprivate.h */; };
@@ -387,7 +386,6 @@
 		2252935A12F6CA4700DD9BFB /* ec-calibrator.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "ec-calibrator.c"; path = "linphone/coreapi/ec-calibrator.c"; sourceTree = SOURCE_ROOT; };
 		225AA2DA144F077600BA809B /* silk_dec.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = silk_dec.c; sourceTree = "<group>"; };
 		225AA2DB144F077700BA809B /* silk_enc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = silk_enc.c; sourceTree = "<group>"; };
-		225AA2DE144F0AA800BA809B /* libSKP_SILK_SDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libSKP_SILK_SDK.a; path = "../liblinphone-sdk/apple-darwin/lib/libSKP_SILK_SDK.a"; sourceTree = "<group>"; };
 		225AA2E0144F1C6600BA809B /* bitratedriver.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = bitratedriver.c; sourceTree = "<group>"; };
 		225AA2E2144F1E3400BA809B /* qosanalyzer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = qosanalyzer.c; sourceTree = "<group>"; };
 		225AA2E4144F2E0200BA809B /* msprivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = msprivate.h; sourceTree = "<group>"; };
@@ -436,7 +434,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				225AA2DF144F0AA800BA809B /* libSKP_SILK_SDK.a in Frameworks */,
 				70E542F113E147CE002BA2C0 /* QuartzCore.framework in Frameworks */,
 				70E542EE13E147C7002BA2C0 /* OpenGLES.framework in Frameworks */,
 				221F58A013AB50F800D603C9 /* CoreMedia.framework in Frameworks */,
@@ -477,7 +474,6 @@
 		0867D691FE84028FC02AAC07 /* liblinphone */ = {
 			isa = PBXGroup;
 			children = (
-				225AA2DE144F0AA800BA809B /* libSKP_SILK_SDK.a */,
 				70E542F013E147CE002BA2C0 /* QuartzCore.framework */,
 				70E542ED13E147C7002BA2C0 /* OpenGLES.framework */,
 				221F589F13AB50F800D603C9 /* CoreMedia.framework */,

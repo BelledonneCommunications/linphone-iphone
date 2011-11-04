@@ -82,7 +82,6 @@
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
 		70571E1A13FABCB000CDD3C2 /* rootca.pem in Resources */ = {isa = PBXBuildFile; fileRef = 70571E1913FABCB000CDD3C2 /* rootca.pem */; };
 		F4D9F27B1458971C0035B0D0 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22BFFF79134F6AEA00997020 /* libssl.a */; };
-		F4D9F27E145897770035B0D0 /* libSKP_SILK_SDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F4D9F27C1458973C0035B0D0 /* libSKP_SILK_SDK.a */; };
 		F4D9F27F145897BB0035B0D0 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22BFFF7A134F6AEA00997020 /* libcrypto.a */; };
 		F4D9F2811458AC3B0035B0D0 /* libsrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F4D9F2801458AC3B0035B0D0 /* libsrtp.a */; };
 /* End PBXBuildFile section */
@@ -411,7 +410,6 @@
 		32CA4F630368D1EE00C91783 /* linphone_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linphone_Prefix.pch; sourceTree = "<group>"; };
 		70571E1913FABCB000CDD3C2 /* rootca.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = rootca.pem; path = Resources/rootca.pem; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* linphone-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "linphone-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
-		F4D9F27C1458973C0035B0D0 /* libSKP_SILK_SDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libSKP_SILK_SDK.a; path = "liblinphone-sdk/apple-darwin/lib/libSKP_SILK_SDK.a"; sourceTree = "<group>"; };
 		F4D9F2801458AC3B0035B0D0 /* libsrtp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsrtp.a; path = "liblinphone-sdk/apple-darwin/lib/libsrtp.a"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -422,7 +420,6 @@
 			files = (
 				F4D9F2811458AC3B0035B0D0 /* libsrtp.a in Frameworks */,
 				F4D9F27F145897BB0035B0D0 /* libcrypto.a in Frameworks */,
-				F4D9F27E145897770035B0D0 /* libSKP_SILK_SDK.a in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */,
@@ -829,7 +826,6 @@
 			isa = PBXGroup;
 			children = (
 				F4D9F2801458AC3B0035B0D0 /* libsrtp.a */,
-				F4D9F27C1458973C0035B0D0 /* libSKP_SILK_SDK.a */,
 				22E19E1C1386AFB900FBFE87 /* Localizable.strings */,
 				22BFFF79134F6AEA00997020 /* libssl.a */,
 				22BFFF7A134F6AEA00997020 /* libcrypto.a */,

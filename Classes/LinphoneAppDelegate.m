@@ -67,6 +67,10 @@
 #ifdef HAVE_AMR                                 
                                  @"YES",@"amr_8k_preference", // enable amr by default if compiled with
 #endif
+#ifdef HAVE_SILK                                 
+                                 @"YES",@"silk_16k_preference", // enable amr by default if compiled with
+                                 @"YES",@"silk_24k_preference", // enable amr by default if compiled with
+#endif
                                  //@"+33",@"countrycode_preference",
                                  nil];
     
@@ -123,8 +127,8 @@
 	[[LinphoneManager instance] setCallDelegate:myPhoneViewController];
 	[[LinphoneManager instance]	startLibLinphone];
 		
-	
-	
+	[[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeSound];
+		
 	return YES;
 }
 

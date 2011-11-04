@@ -100,26 +100,6 @@
 		</dict>
 		<dict>
 			<key>DefaultValue</key>
-			<false/>
-			<key>Key</key>
-			<string>silk_24k_preference</string>
-			<key>Title</key>
-			<string>Silk 24Khz</string>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-		</dict>
-		<dict>
-			<key>DefaultValue</key>
-			<false/>
-			<key>Key</key>
-			<string>silk_16k_preference</string>
-			<key>Title</key>
-			<string>Silk  16Khz</string>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-		</dict>
-		<dict>
-			<key>DefaultValue</key>
 			<true/>
 			<key>Key</key>
 			<string>speex_16k_preference</string>
