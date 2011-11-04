@@ -1087,10 +1087,6 @@
 					mediastreamer,
 					"-l",
 					srtp,
-					"-l",
-					mssilk,
-					"-l",
-					SKP_SILK_SDK,
 				);
 				PRODUCT_NAME = linphone;
 				SDKROOT = iphoneos;
@@ -1163,10 +1159,6 @@
 					mediastreamer,
 					"-l",
 					srtp,
-					"-l",
-					mssilk,
-					"-l",
-					SKP_SILK_SDK,
 				);
 				PRODUCT_NAME = linphone;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -1240,10 +1232,6 @@
 					mediastreamer,
 					"-l",
 					srtp,
-					"-l",
-					mssilk,
-					"-l",
-					SKP_SILK_SDK,
 				);
 				PRODUCT_NAME = linphone;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";

@@ -28,6 +28,7 @@ liblinphone-sdk contains Linphone ARM plugin. As AMR may require to pay for pate
 SILK plugin
 liblinphone-sdk contains Linphone SILK plugin.
 As Skype requires that you accept its license, the plugin is not compiled and enabled unless:
-- you compile the SDK with enable_silk=yes flag;
-- you compile the UI with HAVE_SILK flag.
+- you compile the SDK with enable_silk=yes flag (make);
+- you compile the UI with HAVE_SILK preprocessor macro (xcode). 
+- you compile add libmssilk.so to the list a library (xcode).
 
