@@ -803,6 +803,56 @@ void linphone_gtk_ui_level_toggled(GtkWidget *w) {
 	linphone_gtk_ui_level_adapt(top);
 }
 
+static void linphone_gtk_media_encryption_changed(GtkWidget *combo){
+	const char *selected=gtk_combo_box_get_active_text(GTK_COMBO_BOX(combo));
+	LinphoneCore *lc=linphone_gtk_get_core();
+	if (selected!=NULL){
+		if (strcasecmp(selected,"SRTP")==0)
+			linphone_core_set_media_encryption(lc,LinphoneMediaEncryptionSRTP);
+		else if (strcasecmp(selected,"ZRTP")==0)
+			linphone_core_set_media_encryption(lc,LinphoneMediaEncryptionZRTP);
+		else linphone_core_set_media_encryption(lc,LinphoneMediaEncryptionNone);
+	}else g_warning("gtk_combo_box_get_active_text() returned NULL");
+}
+
+static void linphone_gtk_show_media_encryption(GtkWidget *pb){
+	LinphoneCore *lc=linphone_gtk_get_core();
+	GtkWidget *combo=linphone_gtk_get_widget(pb,"media_encryption_combo");
+	bool_t no_enc=TRUE;
+	int srtp_id=-1,zrtp_id=-1;
+
+	if (linphone_core_media_encryption_supported(lc,LinphoneMediaEncryptionSRTP)){
+		gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo),_("SRTP"));
+		srtp_id=1;
+		no_enc=FALSE;
+	}
+	if (linphone_core_media_encryption_supported(lc,LinphoneMediaEncryptionZRTP)){
+		gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo),_("ZRTP"));
+		no_enc=FALSE;
+		if (srtp_id!=-1) zrtp_id=2;
+		else zrtp_id=1;
+	}
+	if (no_enc){
+		/*hide this setting*/
+		gtk_widget_hide(combo);
+		gtk_widget_hide(linphone_gtk_get_widget(pb,"media_encryption_label"));
+	}else{
+		LinphoneMediaEncryption menc=linphone_core_get_media_encryption(lc);
+		switch(menc){
+			case LinphoneMediaEncryptionNone:
+				gtk_combo_box_set_active(GTK_COMBO_BOX(combo),0);
+			break;
+			case LinphoneMediaEncryptionSRTP:
+				if (srtp_id!=-1) gtk_combo_box_set_active(GTK_COMBO_BOX(combo),srtp_id);
+			break;
+			case LinphoneMediaEncryptionZRTP:
+				if (zrtp_id!=-1) gtk_combo_box_set_active(GTK_COMBO_BOX(combo),zrtp_id);
+			break;
+		}
+		g_signal_connect(G_OBJECT(combo),"changed",(GCallback)linphone_gtk_media_encryption_changed,NULL);
+	}
+}
+
 void linphone_gtk_show_parameters(void){
 	GtkWidget *pb=linphone_gtk_create_window("parameters");
 	LinphoneCore *lc=linphone_gtk_get_core();
@@ -841,6 +891,8 @@ void linphone_gtk_show_parameters(void){
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb,"video_rtp_port")),
 				linphone_core_get_video_port(lc));
 
+	linphone_gtk_show_media_encryption(pb);
+	
 	tmp=linphone_core_get_nat_address(lc);
 	if (tmp) gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(pb,"nat_address")),tmp);
 	tmp=linphone_core_get_stun_server(lc);

@@ -57,7 +57,6 @@
 #endif
 #endif
 
-
 struct _LinphoneCallParams{
 	LinphoneCall *referer; /*in case this call creation is consecutive to an incoming transfer, this points to the original call */
 	int audio_bw; /* bandwidth limit for audio stream */
@@ -65,6 +64,7 @@ struct _LinphoneCallParams{
 	bool_t real_early_media; /*send real media even during early media (for outgoing calls)*/
 	bool_t in_conference; /*in conference mode */
 	bool_t pad;
+	enum LinphoneMediaEncryption media_encryption;
 };
 
 struct _LinphoneCall

@@ -35,4 +35,15 @@ public interface LinphoneCallParams {
 	 */
 	void setAudioBandwidth(int value);
 	
+	/**
+	 * return selected media encryption
+	 * @return 'none', 'srtp' or 'zrtp'
+	 */
+	String getMediaEncryption();
+	/**
+	 * set media encryption (rtp) to use
+	 * @params menc: 'none', 'srtp' or 'zrtp'
+	 */
+	void setMediaEnctyption(String menc);
+	
 }

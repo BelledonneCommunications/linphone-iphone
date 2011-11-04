@@ -140,6 +140,7 @@ int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call){
 	conference_check_init(&lc->conf_ctx);
 	call->params.in_conference=TRUE;
 	call->params.has_video=FALSE;
+	call->params.media_encryption=LinphoneMediaEncryptionNone;
 	params=call->params;
 	if (call->state==LinphoneCallPaused)
 		linphone_core_resume_call(lc,call);

@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "private.h"
 
 #include <ortp/telephonyevents.h>
+#include <ortp/zrtp.h>
 #include "mediastreamer2/mediastream.h"
 #include "mediastreamer2/mseventqueue.h"
 #include "mediastreamer2/msvolume.h"
@@ -33,6 +34,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef WIN32
 #include <netdb.h>
 #endif
+#endif
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
 #endif
 
 /*#define UNSTANDART_GSM_11K 1*/
@@ -523,7 +528,7 @@ static void sip_config_read(LinphoneCore *lc)
 #else
 	sal_root_ca(lc->sal, lp_config_get_string(lc->config,"sip","root_ca", ROOT_CA_FILE));
 #endif
-
+	
 	tmp=lp_config_get_int(lc->config,"sip","guess_hostname",1);
 	linphone_core_set_guess_hostname(lc,tmp);
 
@@ -4260,7 +4265,7 @@ LinphoneGlobalState linphone_core_get_global_state(const LinphoneCore *lc){
 
 LinphoneCallParams *linphone_core_create_default_call_parameters(LinphoneCore *lc){
 	LinphoneCallParams *p=ms_new0(LinphoneCallParams,1);
-	p->has_video=linphone_core_video_enabled(lc);
+	linphone_core_init_default_params(lc, p);
 	return p;
 }
 
@@ -4363,7 +4368,6 @@ void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file){
 	lc->zrtp_secrets_cache=file ? ms_strdup(file) : NULL;
 }
 
-//				if (stringUri.equals(call.getRemoteAddress().asStringUriOnly())) {
 const LinphoneCall* linphone_core_find_call_from_uri(LinphoneCore *lc, const char *uri) {
 	if (uri == NULL) return NULL;
 	MSList *calls=lc->calls;
@@ -4410,3 +4414,59 @@ bool_t linphone_core_sound_resources_locked(LinphoneCore *lc){
 	}
 	return FALSE;
 }
+
+void linphone_core_set_srtp_enabled(LinphoneCore *lc, bool_t enabled) {
+	lp_config_set_int(lc->config,"sip","srtp",(int)enabled);
+}
+
+/**
+ * Returns whether a media encryption scheme is supported by the LinphoneCore engine
+**/
+bool_t linphone_core_media_encryption_supported(const LinphoneCore *lc, LinphoneMediaEncryption menc){
+	switch(menc){
+		case LinphoneMediaEncryptionSRTP:
+			return ortp_srtp_supported();
+		case LinphoneMediaEncryptionZRTP:
+			return ortp_zrtp_available();
+		case LinphoneMediaEncryptionNone:
+			return TRUE;
+	}
+	return FALSE;
+}
+
+void linphone_core_set_media_encryption(LinphoneCore *lc, enum LinphoneMediaEncryption menc) {
+	if (menc == LinphoneMediaEncryptionSRTP)
+		lp_config_set_string(lc->config,"sip","media_encryption","srtp");
+	else if (menc == LinphoneMediaEncryptionZRTP)
+		lp_config_set_string(lc->config,"sip","media_encryption","zrtp");
+	else
+		lp_config_set_string(lc->config,"sip","media_encryption","none");
+}
+
+LinphoneMediaEncryption linphone_core_get_media_encryption(LinphoneCore *lc) {
+	const char* menc = lp_config_get_string(lc->config, "sip", "media_encryption", NULL);
+	
+	if (menc == NULL)
+		return LinphoneMediaEncryptionNone;
+	else if (strcmp(menc, "srtp")==0)
+		return LinphoneMediaEncryptionSRTP;
+	else if (strcmp(menc, "zrtp")==0)
+		return LinphoneMediaEncryptionZRTP;
+	else
+		return LinphoneMediaEncryptionNone;
+}
+
+bool_t linphone_core_is_media_encryption_mandatory(LinphoneCore *lc) {
+	return (bool_t)lp_config_get_int(lc->config, "sip", "media_encryption_mandatory", 0);
+}
+
+void linphone_core_set_media_encryption_mandatory(LinphoneCore *lc, bool_t m) {
+	lp_config_set_int(lc->config, "sip", "media_encryption_mandatory", (int)m);
+}
+
+void linphone_core_init_default_params(LinphoneCore*lc, LinphoneCallParams *params) {
+	params->has_video=linphone_core_video_enabled(lc);
+	params->media_encryption=linphone_core_get_media_encryption(lc);	
+	params->in_conference=FALSE;
+}
+

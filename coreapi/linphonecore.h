@@ -156,7 +156,13 @@ typedef struct _LinphoneCallLog{
 	struct _LinphoneCore *lc;
 } LinphoneCallLog;
 
+enum LinphoneMediaEncryption {
+	LinphoneMediaEncryptionNone,
+	LinphoneMediaEncryptionSRTP,
+	LinphoneMediaEncryptionZRTP
+};
 
+typedef enum LinphoneMediaEncryption LinphoneMediaEncryption;
 
 /*public: */
 void linphone_call_log_set_user_pointer(LinphoneCallLog *cl, void *up);
@@ -179,6 +185,8 @@ typedef struct _LinphoneCallParams LinphoneCallParams;
 LinphoneCallParams * linphone_call_params_copy(const LinphoneCallParams *cp);
 void linphone_call_params_enable_video(LinphoneCallParams *cp, bool_t enabled);
 bool_t linphone_call_params_video_enabled(const LinphoneCallParams *cp);
+enum LinphoneMediaEncryption linphone_call_params_get_media_encryption(LinphoneCallParams *cp);
+void linphone_call_params_set_media_encryption(LinphoneCallParams *cp, enum LinphoneMediaEncryption e);
 void linphone_call_params_enable_early_media_sending(LinphoneCallParams *cp, bool_t enabled);
 bool_t linphone_call_params_early_media_sending_enabled(const LinphoneCallParams *cp);
 bool_t linphone_call_params_local_conference_mode(const LinphoneCallParams *cp);
@@ -259,6 +267,10 @@ float linphone_call_get_play_volume(LinphoneCall *call);
 float linphone_call_get_record_volume(LinphoneCall *call);
 float linphone_call_get_current_quality(LinphoneCall *call);
 float linphone_call_get_average_quality(LinphoneCall *call);
+bool_t linphone_call_are_all_streams_encrypted(LinphoneCall *call);
+const char* linphone_call_get_authentication_token(LinphoneCall *call);
+bool_t linphone_call_get_authentication_token_verified(LinphoneCall *call);
+void linphone_call_send_vfu_request(LinphoneCall *call);
 void *linphone_call_get_user_pointer(LinphoneCall *call);
 void linphone_call_set_user_pointer(LinphoneCall *call, void *user_pointer);
 /**
@@ -1007,15 +1019,9 @@ LinphoneGlobalState linphone_core_get_global_state(const LinphoneCore *lc);
  */
 void linphone_core_refresh_registers(LinphoneCore* lc);
 
-
-void linphone_call_send_vfu_request(LinphoneCall *call);
-
 /* Path to the file storing secrets cache */
 void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file);
 
-bool_t linphone_call_are_all_streams_encrypted(LinphoneCall *call);
-const char* linphone_call_get_authentication_token(LinphoneCall *call);
-bool_t linphone_call_get_authentication_token_verified(LinphoneCall *call);
 
 const LinphoneCall* linphone_core_find_call_from_uri(LinphoneCore *lc, const char *uri);
 
@@ -1032,6 +1038,26 @@ int linphone_core_get_conference_size(LinphoneCore *lc);
 
 int linphone_core_get_max_calls(LinphoneCore *lc);
 bool_t linphone_core_sound_resources_locked(LinphoneCore *lc);
+
+bool_t linphone_core_media_encryption_supported(const LinphoneCore *lc, LinphoneMediaEncryption menc);
+
+/**
+ * Choose media encryption policy to be used for RTP packets
+ */
+void linphone_core_set_media_encryption(LinphoneCore *lc, enum LinphoneMediaEncryption menc);
+enum LinphoneMediaEncryption linphone_core_get_media_encryption(LinphoneCore *lc);
+
+bool_t linphone_core_is_media_encryption_mandatory(LinphoneCore *lc);
+/**
+ * Defines Linphone behaviour when encryption parameters negociation fails on outoing call.
+ * If set to TRUE call will fail; if set to FALSE will resend an INVITE with encryption disabled
+ */
+void linphone_core_set_media_encryption_mandatory(LinphoneCore *lc, bool_t m);
+
+/**
+ * Init call params using LinphoneCore's current configuration
+ */
+void linphone_core_init_default_params(LinphoneCore*lc, LinphoneCallParams *params);
 
 #ifdef __cplusplus
 }

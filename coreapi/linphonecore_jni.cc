@@ -775,7 +775,82 @@ extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_startEchoCalibration(JNI
 
 }
 
+static enum LinphoneMediaEncryption media_encryption_string_to_enum(const char* menc) {
+	if (menc==NULL)
+		return LinphoneMediaEncryptionNone;
+	else if (strcasecmp(menc, "none")==0)
+		return LinphoneMediaEncryptionNone;
+	else if (strcasecmp(menc, "srtp")==0)
+		return LinphoneMediaEncryptionSRTP;
+	else if (strcasecmp(menc, "zrtp")==0)
+		return LinphoneMediaEncryptionZRTP;
+	else
+		return LinphoneMediaEncryptionNone;
+}
 
+static jstring media_encryption_enum_to_jstring(JNIEnv*  env, enum LinphoneMediaEncryption enc) {
+	switch (enc) {
+		case LinphoneMediaEncryptionSRTP:
+			return env->NewStringUTF("srtp");
+		case LinphoneMediaEncryptionZRTP:
+			return env->NewStringUTF("zrtp");
+		case LinphoneMediaEncryptionNone:
+			return env->NewStringUTF("none");
+		default:
+			return NULL;
+	}
+}
+
+extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getMediaEncryption(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			) {
+	return media_encryption_enum_to_jstring(env,
+		linphone_core_get_media_encryption((LinphoneCore*)lc));
+}
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setMediaEncryption(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			,jstring jmenc) {
+	const char* menc = jmenc?env->GetStringUTFChars(jmenc, NULL):NULL;
+	
+	linphone_core_set_media_encryption((LinphoneCore*)lc,
+		media_encryption_string_to_enum(menc));
+
+	if (menc) env->ReleaseStringUTFChars(jmenc, menc);
+}
+
+extern "C" jstring Java_org_linphone_core_LinphoneCallParamsImpl_getMediaEncryption(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			) {
+	return media_encryption_enum_to_jstring(env,
+		linphone_call_params_get_media_encryption((LinphoneCallParams*)lc));
+}
+extern "C" void Java_org_linphone_core_LinphoneCallParamsImpl_setMediaEncryption(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			,jstring jmenc) {
+	const char* menc = jmenc?env->GetStringUTFChars(jmenc, NULL):NULL;
+	linphone_call_params_set_media_encryption((LinphoneCallParams*)lc,
+		media_encryption_string_to_enum(menc));
+	if (menc) env->ReleaseStringUTFChars(jmenc, menc);
+}
+
+extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_getMediaEncryptionMandatory(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			) {
+	return linphone_core_is_media_encryption_mandatory((LinphoneCore*)lc);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setMediaEncryptionMandatory(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			, jboolean yesno
+																			) {
+	linphone_core_set_media_encryption_mandatory((LinphoneCore*)lc, yesno);
+}
 
 //ProxyConfig
 

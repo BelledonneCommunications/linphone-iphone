@@ -532,6 +532,20 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 					lc->vtable.display_status(lc,msg600);
 			break;
 			case SalReasonMedia:
+			//media_encryption_mandatory
+				if (call->params.media_encryption == LinphoneMediaEncryptionSRTP && 
+					!linphone_core_is_media_encryption_mandatory(lc)) {
+					int i;
+					ms_message("Outgoing call failed with SRTP (SAVP) enabled - retrying with AVP");
+					/* clear SRTP local params */
+					call->params.media_encryption = LinphoneMediaEncryptionNone;
+					for(i=0; i<call->localdesc->nstreams; i++) {
+						call->localdesc->streams[i].proto = SalProtoRtpAvp;
+						memset(call->localdesc->streams[i].crypto, 0, sizeof(call->localdesc->streams[i].crypto));
+					}
+					linphone_core_start_invite(lc, call, NULL);
+					return;
+				}
 				msg=_("No common codecs");
 				if (lc->vtable.display_status)
 					lc->vtable.display_status(lc,msg);
