@@ -466,6 +466,7 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 		}
 		if (cstate == LinphoneCallConnected) {
 			call->log->status=LinphoneCallSuccess;
+			call->media_start_time=time(NULL);
 		}
 
 		if (lc->vtable.call_state_changed)
@@ -1241,7 +1242,6 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 		return;
 	}
 	call->current_params = call->params;
-	if (call->media_start_time==0) call->media_start_time=time(NULL);
 	cname=linphone_address_as_string_uri_only(me);
 
 #if defined(VIDEO_ENABLED)
