@@ -156,14 +156,12 @@
 		222CA78511F6CFB100621220 /* sipsetup.c in Sources */ = {isa = PBXBuildFile; fileRef = 222CA76311F6CFB100621220 /* sipsetup.c */; };
 		222CA78611F6CFB100621220 /* sipsetup.h in Headers */ = {isa = PBXBuildFile; fileRef = 222CA76411F6CFB100621220 /* sipsetup.h */; };
 		2252935B12F6CA4700DD9BFB /* ec-calibrator.c in Sources */ = {isa = PBXBuildFile; fileRef = 2252935A12F6CA4700DD9BFB /* ec-calibrator.c */; };
-		225AA2DC144F077700BA809B /* silk_dec.c in Sources */ = {isa = PBXBuildFile; fileRef = 225AA2DA144F077600BA809B /* silk_dec.c */; };
-		225AA2DD144F077700BA809B /* silk_enc.c in Sources */ = {isa = PBXBuildFile; fileRef = 225AA2DB144F077700BA809B /* silk_enc.c */; };
 		225AA2DF144F0AA800BA809B /* libSKP_SILK_SDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 225AA2DE144F0AA800BA809B /* libSKP_SILK_SDK.a */; };
 		225AA2E1144F1C6600BA809B /* bitratedriver.c in Sources */ = {isa = PBXBuildFile; fileRef = 225AA2E0144F1C6600BA809B /* bitratedriver.c */; };
 		225AA2E3144F1E3400BA809B /* qosanalyzer.c in Sources */ = {isa = PBXBuildFile; fileRef = 225AA2E2144F1E3400BA809B /* qosanalyzer.c */; };
-		225AA2E5144F2E0200BA809B /* msprivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 225AA2E4144F2E0200BA809B /* msprivate.h */; };
 		225AA2FD1451A95400BA809B /* conference.c in Sources */ = {isa = PBXBuildFile; fileRef = 225AA2FC1451A95400BA809B /* conference.c */; };
 		225D355A124B1FF60008581C /* linphonecall.c in Sources */ = {isa = PBXBuildFile; fileRef = 225D3559124B1FF60008581C /* linphonecall.c */; };
+		22985D9314643BEF005CA0B5 /* aqsnd.c in Sources */ = {isa = PBXBuildFile; fileRef = 22985D9214643BEF005CA0B5 /* aqsnd.c */; };
 		229A614D13DDFE3500090183 /* g722_decode.c in Sources */ = {isa = PBXBuildFile; fileRef = 229A614913DDFE3500090183 /* g722_decode.c */; };
 		229A614E13DDFE3500090183 /* g722_encode.c in Sources */ = {isa = PBXBuildFile; fileRef = 229A614A13DDFE3500090183 /* g722_encode.c */; };
 		229A614F13DDFE3500090183 /* g722.h in Headers */ = {isa = PBXBuildFile; fileRef = 229A614B13DDFE3500090183 /* g722.h */; };
@@ -385,14 +383,12 @@
 		222CA76311F6CFB100621220 /* sipsetup.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sipsetup.c; sourceTree = "<group>"; };
 		222CA76411F6CFB100621220 /* sipsetup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sipsetup.h; sourceTree = "<group>"; };
 		2252935A12F6CA4700DD9BFB /* ec-calibrator.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "ec-calibrator.c"; path = "linphone/coreapi/ec-calibrator.c"; sourceTree = SOURCE_ROOT; };
-		225AA2DA144F077600BA809B /* silk_dec.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = silk_dec.c; sourceTree = "<group>"; };
-		225AA2DB144F077700BA809B /* silk_enc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = silk_enc.c; sourceTree = "<group>"; };
 		225AA2DE144F0AA800BA809B /* libSKP_SILK_SDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libSKP_SILK_SDK.a; path = "../liblinphone-sdk/apple-darwin/lib/libSKP_SILK_SDK.a"; sourceTree = "<group>"; };
 		225AA2E0144F1C6600BA809B /* bitratedriver.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = bitratedriver.c; sourceTree = "<group>"; };
 		225AA2E2144F1E3400BA809B /* qosanalyzer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = qosanalyzer.c; sourceTree = "<group>"; };
-		225AA2E4144F2E0200BA809B /* msprivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = msprivate.h; sourceTree = "<group>"; };
 		225AA2FC1451A95400BA809B /* conference.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = conference.c; sourceTree = "<group>"; };
 		225D3559124B1FF60008581C /* linphonecall.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = linphonecall.c; sourceTree = "<group>"; };
+		22985D9214643BEF005CA0B5 /* aqsnd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = aqsnd.c; sourceTree = "<group>"; };
 		229A614913DDFE3500090183 /* g722_decode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = g722_decode.c; sourceTree = "<group>"; };
 		229A614A13DDFE3500090183 /* g722_encode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = g722_encode.c; sourceTree = "<group>"; };
 		229A614B13DDFE3500090183 /* g722.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = g722.h; sourceTree = "<group>"; };
@@ -605,11 +601,9 @@
 		222CA5DC11F6CF7600621220 /* src */ = {
 			isa = PBXGroup;
 			children = (
-				225AA2E4144F2E0200BA809B /* msprivate.h */,
+				22985D9214643BEF005CA0B5 /* aqsnd.c */,
 				225AA2E2144F1E3400BA809B /* qosanalyzer.c */,
 				225AA2E0144F1C6600BA809B /* bitratedriver.c */,
-				225AA2DA144F077600BA809B /* silk_dec.c */,
-				225AA2DB144F077700BA809B /* silk_enc.c */,
 				229A614913DDFE3500090183 /* g722_decode.c */,
 				229A614A13DDFE3500090183 /* g722_encode.c */,
 				229A614B13DDFE3500090183 /* g722.h */,
@@ -937,7 +931,6 @@
 				221F58A413AB708C00D603C9 /* alldescs.h in Headers */,
 				229A614F13DDFE3500090183 /* g722.h in Headers */,
 				7014533C13FA7ECA00A01D86 /* zrtp.h in Headers */,
-				225AA2E5144F2E0200BA809B /* msprivate.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1120,11 +1113,10 @@
 				229A614E13DDFE3500090183 /* g722_encode.c in Sources */,
 				229A615013DDFE3500090183 /* msg722.c in Sources */,
 				7014533E13FA841E00A01D86 /* zrtp.c in Sources */,
-				225AA2DC144F077700BA809B /* silk_dec.c in Sources */,
-				225AA2DD144F077700BA809B /* silk_enc.c in Sources */,
 				225AA2E1144F1C6600BA809B /* bitratedriver.c in Sources */,
 				225AA2E3144F1E3400BA809B /* qosanalyzer.c in Sources */,
 				225AA2FD1451A95400BA809B /* conference.c in Sources */,
+				22985D9314643BEF005CA0B5 /* aqsnd.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1183,6 +1175,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = liblinphone_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
+					__MAC_AQ_ENABLED__,
 					"_BYTE_ORDER=_LITTLE_ENDIAN",
 					ORTP_INET6,
 					ENABLE_TRACE,
@@ -1234,6 +1227,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = liblinphone_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
+					__MAC_AQ_ENABLED__,
 					"_BYTE_ORDER=_LITTLE_ENDIAN",
 					ORTP_INET6,
 					ENABLE_TRACE,
@@ -1411,6 +1405,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = liblinphone_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
+					__MAC_AQ_ENABLED__,
 					"_BYTE_ORDER=_LITTLE_ENDIAN",
 					ORTP_INET6,
 					ENABLE_TRACE,
