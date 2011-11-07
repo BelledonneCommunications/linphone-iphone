@@ -61,6 +61,7 @@ static void linphone_gtk_display_warning(LinphoneCore *lc, const char *warning);
 static void linphone_gtk_display_url(LinphoneCore *lc, const char *msg, const char *url);
 static void linphone_gtk_call_log_updated(LinphoneCore *lc, LinphoneCallLog *cl);
 static void linphone_gtk_call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cs, const char *msg);
+static void linphone_gtk_call_encryption_changed(LinphoneCore *lc, LinphoneCall *call, bool_t enabled, const char *token);
 static gboolean linphone_gtk_auto_answer(LinphoneCall *call);
 static void linphone_gtk_status_icon_set_blinking(gboolean val);
 
@@ -125,34 +126,35 @@ static GOptionEntry linphone_options[]={
 
 #ifndef WIN32
 #define CONFIG_FILE ".linphonerc"
+#define SECRETS_FILE ".linphone-zidcache"
 #else
 #define CONFIG_FILE "linphonerc"
+#define SECRETS_FILE "linphone-zidcache"
 #endif
 
 
-
-static char _config_file[1024];
-
-
-const char *linphone_gtk_get_config_file(){
+char *linphone_gtk_get_config_file(const char *filename){
+	const int path_max=1024;
+	char *config_file=g_malloc0(path_max);
+	if (filename==NULL) filename=CONFIG_FILE;
 	/*try accessing a local file first if exists*/
 	if (access(CONFIG_FILE,F_OK)==0){
-		snprintf(_config_file,sizeof(_config_file),"%s",CONFIG_FILE);
+		snprintf(config_file,path_max,"%s",CONFIG_FILE);
 	}else{
 #ifdef WIN32
 		const char *appdata=getenv("APPDATA");
 		if (appdata){
-			snprintf(_config_file,sizeof(_config_file),"%s\\%s",appdata,LINPHONE_CONFIG_DIR);
-			CreateDirectory(_config_file,NULL);
-			snprintf(_config_file,sizeof(_config_file),"%s\\%s",appdata,LINPHONE_CONFIG_DIR "\\" CONFIG_FILE);
+			snprintf(config_file,path_max,"%s\\%s",appdata,LINPHONE_CONFIG_DIR);
+			CreateDirectory(config_file,NULL);
+			snprintf(config_file,path_max,"%s\\%s\\%s",appdata,LINPHONE_CONFIG_DIR,filename);
 		}
 #else
 		const char *home=getenv("HOME");
 		if (home==NULL) home=".";
-		snprintf(_config_file,sizeof(_config_file),"%s/%s",home,CONFIG_FILE);
+		snprintf(config_file,path_max,"%s/%s",home,filename);
 #endif
 	}
-	return _config_file;
+	return config_file;
 }
 
 
@@ -206,6 +208,7 @@ static const char *linphone_gtk_get_factory_config_file(){
 static void linphone_gtk_init_liblinphone(const char *config_file,
 		const char *factory_config_file) {
 	LinphoneCoreVTable vtable={0};
+	gchar *secrets_file=linphone_gtk_get_config_file(SECRETS_FILE);
 
 	vtable.call_state_changed=linphone_gtk_call_state_changed;
 	vtable.registration_state_changed=linphone_gtk_registration_state_changed;
@@ -220,10 +223,13 @@ static void linphone_gtk_init_liblinphone(const char *config_file,
 	vtable.text_received=linphone_gtk_text_received;
 	vtable.refer_received=linphone_gtk_refer_received;
 	vtable.buddy_info_updated=linphone_gtk_buddy_info_updated;
+	vtable.call_encryption_changed=linphone_gtk_call_encryption_changed;
 
 	linphone_core_set_user_agent("Linphone", LINPHONE_VERSION);
 	the_core=linphone_core_new(&vtable,config_file,factory_config_file,NULL);
 	linphone_core_set_waiting_callback(the_core,linphone_gtk_wait,NULL);
+	linphone_core_set_zrtp_secrets_file(the_core,secrets_file);
+	g_free(secrets_file);
 }
 
 
@@ -1058,6 +1064,10 @@ static void linphone_gtk_call_state_changed(LinphoneCore *lc, LinphoneCall *call
 	linphone_gtk_update_call_buttons (call);
 }
 
+static void linphone_gtk_call_encryption_changed(LinphoneCore *lc, LinphoneCall *call, bool_t enabled, const char *token){
+	linphone_gtk_in_call_view_show_encryption(call);
+}
+
 static void update_registration_status(LinphoneProxyConfig *cfg, LinphoneRegistrationState rs){
 	GtkComboBox *box=GTK_COMBO_BOX(linphone_gtk_get_widget(linphone_gtk_get_main_window(),"identities"));
 	GtkTreeModel *model=gtk_combo_box_get_model(box);
@@ -1591,7 +1601,7 @@ int main(int argc, char *argv[]){
 #ifdef ENABLE_NLS
 	void *p;
 #endif
-	const char *config_file;
+	char *config_file;
 	const char *factory_config_file;
 	const char *lang;
 	GtkSettings *settings;
@@ -1603,7 +1613,7 @@ int main(int argc, char *argv[]){
 	
 	progpath = strdup(argv[0]);
 	
-	config_file=linphone_gtk_get_config_file();
+	config_file=linphone_gtk_get_config_file(NULL);
 	
 
 #ifdef WIN32

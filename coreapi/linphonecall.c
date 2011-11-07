@@ -108,6 +108,7 @@ void propagate_encryption_changed(LinphoneCall *call){
 	LinphoneCore *lc=call->core;
 	if (!linphone_call_are_all_streams_encrypted(call)) {
 		ms_message("Some streams are not encrypted");
+		call->current_params.media_encryption=LinphoneMediaEncryptionNone;
 		if (lc->vtable.call_encryption_changed)
 			lc->vtable.call_encryption_changed(call->core, call, FALSE, call->auth_token);
 	} else {
@@ -168,6 +169,21 @@ static void linphone_call_audiostream_auth_token_ready(void *data, const char* a
 	ms_message("Authentication token is %s (%s)", auth_token, verified?"verified":"unverified");
 }
 
+void linphone_call_set_authentication_token_verified(LinphoneCall *call, bool_t verified){
+	if (call->audiostream==NULL){
+		ms_error("linphone_call_set_authentication_token_verified(): No audio stream");
+	}
+	if (call->audiostream->ortpZrtpContext==NULL){
+		ms_error("linphone_call_set_authentication_token_verified(): No zrtp context.");
+	}
+	if (!call->auth_token_verified && verified){
+		ortp_zrtp_sas_verified(call->audiostream->ortpZrtpContext);
+	}else if (call->auth_token_verified && !verified){
+		ortp_zrtp_sas_reset_verified(call->audiostream->ortpZrtpContext);
+	}
+	call->auth_token_verified=verified;
+	propagate_encryption_changed(call);
+}
 
 static MSList *make_codec_list(LinphoneCore *lc, const MSList *codecs, int bandwidth_limit){
 	MSList *l=NULL;

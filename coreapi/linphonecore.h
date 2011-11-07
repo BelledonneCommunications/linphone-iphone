@@ -269,6 +269,7 @@ float linphone_call_get_current_quality(LinphoneCall *call);
 float linphone_call_get_average_quality(LinphoneCall *call);
 const char* linphone_call_get_authentication_token(LinphoneCall *call);
 bool_t linphone_call_get_authentication_token_verified(LinphoneCall *call);
+void linphone_call_set_authentication_token_verified(LinphoneCall *call, bool_t verified);
 void linphone_call_send_vfu_request(LinphoneCall *call);
 void *linphone_call_get_user_pointer(LinphoneCall *call);
 void linphone_call_set_user_pointer(LinphoneCall *call, void *user_pointer);
