@@ -103,6 +103,7 @@ static int lpc_cmd_states(LinphoneCore *lc, char *args);
 static int lpc_cmd_identify(LinphoneCore *lc, char *args);
 static int lpc_cmd_ringback(LinphoneCore *lc, char *args);
 static int lpc_cmd_conference(LinphoneCore *lc, char *args);
+static int lpc_cmd_zrtp_verified(LinphoneCore *lc, char *args);
 
 /* Command handler helpers */
 static void linphonec_proxy_add(LinphoneCore *lc);
@@ -347,6 +348,9 @@ static LPC_COMMAND advanced_commands[] = {
 	},
 	{ "redirect", lpc_cmd_redirect, "Redirect an incoming call",
 		"'redirect <redirect-uri>'\t: Redirect all pending incoming calls to the <redirect-uri>\n"
+	},
+	{ "zrtp-set-verified", lpc_cmd_zrtp_verified,"Set ZRTP SAS verified.",
+		"'Set ZRTP SAS verified'\n"
 	},
 	{	NULL,NULL,NULL,NULL}
 };
@@ -2549,6 +2553,14 @@ static int lpc_cmd_ringback(LinphoneCore *lc, char *args){
 	}
 	linphone_core_set_remote_ringback_tone (lc,args);
 	linphonec_out("Using %s as ringback tone to be played to callers.",args);
+	return 1;
+}
+
+static int lpc_cmd_zrtp_verified(LinphoneCore *lc, char *args){
+	LinphoneCall *call=linphone_core_get_current_call(lc);
+	if (linphone_call_params_get_media_encryption(linphone_call_get_current_params(call))==LinphoneMediaEncryptionZRTP){
+		linphone_call_set_authentication_token_verified(call,TRUE);
+	}
 	return 1;
 }
 
