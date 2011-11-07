@@ -23,11 +23,12 @@
 
 @implementation UIDigitButton
 
+@synthesize sendDtmfDuringCall;
 
 
 
 -(void) touchDown:(id) sender {
-	if (mAddress && !linphone_core_in_call([LinphoneManager getLc])) {
+	if (mAddress && (!sendDtmfDuringCall || !linphone_core_in_call([LinphoneManager getLc]))) {
 		NSString* newAddress = [NSString stringWithFormat:@"%@%c",mAddress.text,mDigit];
 		[mAddress setText:newAddress];	
 		linphone_core_play_dtmf([LinphoneManager getLc], mDigit, -1);
@@ -60,9 +61,10 @@
 }
 
 -(void) initWithNumber:(char)digit {
-	[self initWithNumber:digit addressField:nil];
+	[self initWithNumber:digit addressField:nil dtmf:true];
 }
--(void) initWithNumber:(char)digit  addressField:(UITextField*) address{
+-(void) initWithNumber:(char)digit  addressField:(UITextField*) address dtmf:(bool_t)sendDtmf{
+    sendDtmfDuringCall = sendDtmf;
 	mDigit=digit ;
 	mAddress=address?[address retain]:nil;
 	[self addTarget:self action:@selector(touchDown:) forControlEvents:UIControlEventTouchDown];

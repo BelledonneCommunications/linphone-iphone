@@ -91,18 +91,18 @@
     [super viewDidLoad];
 	
 	mDisplayName = [UILabel alloc];
-	[zero initWithNumber:'0'  addressField:address ];
-	[one initWithNumber:'1'  addressField:address ];
-	[two initWithNumber:'2'  addressField:address ];
-	[three initWithNumber:'3'  addressField:address ];
-	[four initWithNumber:'4'  addressField:address ];
-	[five initWithNumber:'5'  addressField:address ];
-	[six initWithNumber:'6'  addressField:address ];
-	[seven initWithNumber:'7'  addressField:address ];
-	[eight initWithNumber:'8'  addressField:address ];
-	[nine initWithNumber:'9'  addressField:address ];
-	[star initWithNumber:'*'  addressField:address ];
-	[hash initWithNumber:'#'  addressField:address ];
+	[zero initWithNumber:'0'  addressField:address dtmf:false];
+	[one initWithNumber:'1'  addressField:address dtmf:false];
+	[two initWithNumber:'2'  addressField:address dtmf:false];
+	[three initWithNumber:'3'  addressField:address dtmf:false];
+	[four initWithNumber:'4'  addressField:address dtmf:false];
+	[five initWithNumber:'5'  addressField:address dtmf:false];
+	[six initWithNumber:'6'  addressField:address dtmf:false];
+	[seven initWithNumber:'7'  addressField:address dtmf:false];
+	[eight initWithNumber:'8'  addressField:address dtmf:false];
+	[nine initWithNumber:'9'  addressField:address dtmf:false];
+	[star initWithNumber:'*'  addressField:address dtmf:false];
+	[hash initWithNumber:'#'  addressField:address dtmf:false];
 	[__call initWithAddress:address withDisplayName:mDisplayName];
 	[mute initWithOnImage:[UIImage imageNamed:@"mic_muted.png"]  offImage:[UIImage imageNamed:@"mic_active.png"] ];
 	[speaker initWithOnImage:[UIImage imageNamed:@"Speaker-32-on.png"]  offImage:[UIImage imageNamed:@"Speaker-32-off.png"] ];
@@ -201,7 +201,7 @@
 	} else {
 		[peerLabel setText:username?username:@""];
 	}
-	[incallView setHidden:false];
+	[incallView setHidden:NO];
 }
 -(void) displayCall:(LinphoneCall*) call InProgressFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
 	[self displayInCall: call ViewforUser:username
@@ -209,6 +209,8 @@
 	//[__call setEnabled:false];
 	[callDuration setText:NSLocalizedString(@"Calling...",nil)];
 	if ([speaker isOn]) [speaker toggle] ; //preset to off
+    
+	[incallView setHidden:NO];
 }
 
 -(void) displayInCall:(LinphoneCall*) call FromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
@@ -220,6 +222,8 @@
 					  withDisplayName:displayName];
 		if ([speaker isOn]) [speaker toggle] ; //preset to off;
 	} 
+    
+	[incallView setHidden:NO];
 }
 //status reporting
 -(void) displayStatus:(NSString*) message {

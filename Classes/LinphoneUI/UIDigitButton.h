@@ -23,9 +23,14 @@
 @private
 	char  mDigit;
 	UITextField* mAddress;
+    
+    bool_t sendDtmfDuringCall;
 
 }
 -(void) initWithNumber:(char)digit ;
--(void) initWithNumber:(char)digit addressField:(UITextField*) address;
+-(void) initWithNumber:(char)digit addressField:(UITextField*) address dtmf:(bool_t)send;
+
+
+@property bool_t sendDtmfDuringCall;
 
 @end

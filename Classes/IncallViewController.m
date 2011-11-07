@@ -115,7 +115,7 @@ int callCount(LinphoneCore* lc) {
     
     [mergeCalls setHidden:YES];
     
-    selectedCall = nil;
+    //selectedCall = nil;
 }
 
 -(void) addCallPressed {
@@ -157,7 +157,6 @@ int callCount(LinphoneCore* lc) {
     if (durationRefreasher != nil) {
         [durationRefreasher invalidate];
         durationRefreasher=nil;
-        selectedCall = nil;
     }
 }
 
@@ -188,7 +187,8 @@ int callCount(LinphoneCore* lc) {
 
 -(void) displayInCall:(LinphoneCall*) call FromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
     dismissed = false;
-    selectedCall = call;
+    if (call)
+        selectedCall = call;
     [self updateUIFromLinphoneState: nil]; 
 }
 -(void) displayDialerFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
@@ -299,8 +299,8 @@ int callCount(LinphoneCore* lc) {
 
 - (void) updateCell:(UITableViewCell*)cell at:(NSIndexPath*) path withCall:(LinphoneCall*) call conferenceActive:(bool)confActive{
     if (call == NULL) {
-        ms_error("UpdateCell called with null call");
-        [cell.textLabel setText:@"BUG IN APP - call is null"];
+        ms_warning("UpdateCell called with null call");
+        [cell.textLabel setText:@""];
         return;
     }
     const LinphoneAddress* addr = linphone_call_get_remote_address(call);
