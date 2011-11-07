@@ -38,13 +38,13 @@
 }
 -(bool) isInitialStateOn {
 	@try {
-        const MSList* c = linphone_core_get_calls([LinphoneManager getLc]);
+        LinphoneCall* c = linphone_core_get_current_call([LinphoneManager getLc]);
         
         if (c) {
-            return linphone_call_get_state((LinphoneCall*)c->data) == LinphoneCallPaused;
+            return linphone_call_get_state(c) == LinphoneCallPaused;
         } else {
-            
-            return false;
+            /* if current call is paused -> c == null */
+            return true;
         }
 	} @catch(NSException* e) {
 		//not ready yet

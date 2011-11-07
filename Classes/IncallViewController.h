@@ -26,20 +26,16 @@
 @interface IncallViewController : UIViewController <ABPeoplePickerNavigationControllerDelegate,LinphoneUICallDelegate, UITableViewDelegate, UITableViewDataSource> {
 	
 	
-	UIView* controlSubView;
+	UIView* controlSubView, *callControlSubView;
 	
-	UILabel* peerName;
-	UILabel* peerNumber;
-	UIDuration* callDuration;
-	UILabel* status;
-	UIHangUpButton* endCtrl;
+	UIButton* endCtrl;
 	UIButton* dialer;
 	UIMuteButton* mute;
     UIPauseResumeButton* pause;
 	UISpeakerButton* speaker;
 	UIButton* contacts;
     UITableView* callTableView;
-    UIButton* addCall, *mergeCalls;
+    UIButton* addCall, *mergeCalls, *addToConf;
 
 	
 	//key pad
@@ -57,7 +53,6 @@
 	UIDigitButton* star;
 	UIDigitButton* zero;
 	UIDigitButton* hash;
-	UIHangUpButton* endPad;
 	UIButton* close;
     
     bool dismissed;
@@ -66,20 +61,18 @@
 	
 	ABPeoplePickerNavigationController* myPeoplePickerController;
     
-    UITableViewCell* selectedCell;
+    LinphoneCall* selectedCall;
 }
 
 -(void)displayStatus:(NSString*) message;
 
 - (IBAction)doAction:(id)sender;
 
+
 @property (nonatomic, retain) IBOutlet UIView* controlSubView;
+@property (nonatomic, retain) IBOutlet UIView* callControlSubView;
 @property (nonatomic, retain) IBOutlet UIView* padSubView;
 
-@property (nonatomic, retain) IBOutlet UILabel* peerName;
-@property (nonatomic, retain) IBOutlet UILabel* peerNumber;
-@property (nonatomic, retain) IBOutlet UILabel* callDuration;
-@property (nonatomic, retain) IBOutlet UILabel* status;
 @property (nonatomic, retain) IBOutlet UIButton* endCtrl;
 @property (nonatomic, retain) IBOutlet UIButton* dialer;
 @property (nonatomic, retain) IBOutlet UIButton* mute;
@@ -89,7 +82,7 @@
 @property (nonatomic, retain) IBOutlet UITableView* callTableView;
 @property (nonatomic, retain) IBOutlet UIButton* addCall;
 @property (nonatomic, retain) IBOutlet UIButton* mergeCalls;
-
+@property (nonatomic, retain) IBOutlet UIButton* addToConf;
 
 @property (nonatomic, retain) IBOutlet UIButton* one;
 @property (nonatomic, retain) IBOutlet UIButton* two;
@@ -104,5 +97,4 @@
 @property (nonatomic, retain) IBOutlet UIButton* zero;
 @property (nonatomic, retain) IBOutlet UIButton* hash;
 @property (nonatomic, retain) IBOutlet UIButton* close;
-@property (nonatomic, retain) IBOutlet UIButton* endPad;
 @end

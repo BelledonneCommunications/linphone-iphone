@@ -694,7 +694,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	
 	libmsilbc_init();
 #if defined (HAVE_SILK)
-    libmssilk_init(); 
+    //libmssilk_init(); 
 #endif	
 #ifdef HAVE_AMR
     libmsamr_init(); //load amr plugin if present from the liblinphone sdk
