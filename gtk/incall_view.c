@@ -78,15 +78,19 @@ static void linphone_gtk_in_call_set_animation_image(GtkWidget *callview, const 
 	GtkWidget *container=linphone_gtk_get_widget(callview,"in_call_animation");
 	GList *elem=gtk_container_get_children(GTK_CONTAINER(container));
 	GtkWidget *image;
-	if (!is_stock)
+	
+	if (!is_stock){
+		if (image_name==NULL){
+			gtk_widget_hide(container);
+		}
 		image=create_pixmap(image_name);
-	else
+	}else
 		image=gtk_image_new_from_stock(image_name,GTK_ICON_SIZE_DIALOG);
 	if (elem)
 		gtk_widget_destroy((GtkWidget*)elem->data);
 	gtk_widget_show(image);
 	gtk_container_add(GTK_CONTAINER(container),image);
-	
+	gtk_widget_show_all(container);
 }
 
 static void linphone_gtk_in_call_set_animation_spinner(GtkWidget *callview){
@@ -97,6 +101,7 @@ static void linphone_gtk_in_call_set_animation_spinner(GtkWidget *callview){
 		gtk_widget_destroy((GtkWidget*)elem->data);
 	gtk_widget_show(spinner);
 	gtk_container_add(GTK_CONTAINER(container),spinner);
+	gtk_widget_set_size_request(spinner, 20,20);
 	gtk_spinner_start(GTK_SPINNER(spinner));
 }
 
@@ -421,6 +426,29 @@ void linphone_gtk_in_call_view_enable_audio_view(LinphoneCall *call, gboolean va
 	}
 }
 
+static void linphone_gtk_in_call_view_show_encryption(LinphoneCall *call){
+	GtkWidget *callview=(GtkWidget*)linphone_call_get_user_pointer(call);
+	GtkWidget *encryption_box=linphone_gtk_get_widget(callview,"encryption_box");
+	GtkWidget *label=linphone_gtk_get_widget(callview,"encryption_label");
+	LinphoneMediaEncryption me=linphone_call_params_get_media_encryption(linphone_call_get_current_params(call));
+	switch(me){
+		case LinphoneMediaEncryptionSRTP:
+			gtk_label_set_markup(GTK_LABEL(label),_("Secured by SRTP"));
+			gtk_widget_show_all(encryption_box);
+		break;
+		case LinphoneMediaEncryptionZRTP:
+		{
+			gchar *text=g_strdup_printf(_("Secured by ZRTP - [auth token: %s]"),linphone_call_get_authentication_token(call));
+			gtk_label_set_markup(GTK_LABEL(label),text);
+			g_free(text);
+			gtk_widget_show_all(encryption_box);
+		}	
+		break;
+		default:
+			gtk_widget_hide(encryption_box);
+	}
+}
+
 void linphone_gtk_in_call_view_set_in_call(LinphoneCall *call){
 	GtkWidget *callview=(GtkWidget*)linphone_call_get_user_pointer(call);
 	GtkWidget *status=linphone_gtk_get_widget(callview,"in_call_status");
@@ -444,6 +472,7 @@ void linphone_gtk_in_call_view_set_in_call(LinphoneCall *call){
 		g_object_set_data(G_OBJECT(callview),"taskid",GINT_TO_POINTER(taskid));
 	}
 	linphone_gtk_in_call_view_enable_audio_view(call, !in_conf);
+	linphone_gtk_in_call_view_show_encryption(call);
 	if (in_conf) linphone_gtk_set_in_conference(call);
 }
 
