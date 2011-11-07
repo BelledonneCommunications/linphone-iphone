@@ -33,7 +33,7 @@
 @synthesize  hangup;
 @synthesize status;
 @synthesize erase;
-
+@synthesize backToCallView;
 
 @synthesize incallView;
 @synthesize callDuration;
@@ -107,7 +107,15 @@
 	[mute initWithOnImage:[UIImage imageNamed:@"mic_muted.png"]  offImage:[UIImage imageNamed:@"mic_active.png"] ];
 	[speaker initWithOnImage:[UIImage imageNamed:@"Speaker-32-on.png"]  offImage:[UIImage imageNamed:@"Speaker-32-off.png"] ];
 	[erase initWithAddressField:address];
-	
+    
+    [backToCallView addTarget:self action:@selector(backToCallViewPressed) forControlEvents:UIControlEventTouchUpInside];
+}
+
+-(void) backToCallViewPressed {
+    [self	displayInCall: nil 
+                         FromUI:nil
+                        forUser:nil 
+                withDisplayName:nil];
 }
 
 
@@ -193,9 +201,7 @@
 	} else {
 		[peerLabel setText:username?username:@""];
 	}
-	[address setHidden:true];
 	[incallView setHidden:false];
-	[dialerView setHidden:true];
 }
 -(void) displayCall:(LinphoneCall*) call InProgressFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
 	[self displayInCall: call ViewforUser:username

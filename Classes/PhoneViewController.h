@@ -36,6 +36,7 @@
 	UIEraseButton* erase;
 	
 	UIView* incallView;
+    UIButton* backToCallView;
 	UIDuration* callDuration;
 	UIMuteButton* mute;
 	UISpeakerButton* speaker;	
@@ -82,6 +83,7 @@
 @property (nonatomic, retain) IBOutlet UIButton* speaker;	
 @property (nonatomic, retain) IBOutlet UILabel* peerLabel;
 
+@property (nonatomic, retain) IBOutlet UIButton* backToCallView;
 
 @property (nonatomic, retain) IBOutlet UIButton* one;
 @property (nonatomic, retain) IBOutlet UIButton* two;
