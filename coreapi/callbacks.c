@@ -148,6 +148,7 @@ static void call_received(SalOp *h){
 	LinphoneAddress *from_addr, *to_addr;
 	SalMediaDescription *md;
 	bool_t propose_early_media=lp_config_get_int(lc->config,"sip","incoming_calls_early_media",FALSE);
+	bool_t prevent_colliding_calls=lp_config_get_int(lc->config,"sip","prevent_colliding_calls",TRUE);
 	const char *ringback_tone=linphone_core_get_remote_ringback_tone (lc);
 	
 	/* first check if we can answer successfully to this invite */
@@ -176,7 +177,7 @@ static void call_received(SalOp *h){
 	from_addr=linphone_address_new(from);
 	to_addr=linphone_address_new(to);
 
-	if (already_a_call_with_remote_address(lc,from_addr) || already_a_call_pending(lc)){
+	if ((already_a_call_with_remote_address(lc,from_addr) && prevent_colliding_calls) || already_a_call_pending(lc)){
 		ms_warning("Receiving another call while one is ringing or initiated, refusing this one with busy message.");
 		sal_call_decline(h,SalReasonBusy,NULL);
 		sal_op_release(h);
