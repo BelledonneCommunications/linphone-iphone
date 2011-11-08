@@ -1577,9 +1577,6 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCallImpl_isAuthenticationToke
 	LinphoneCall *call = (LinphoneCall *) ptr;
 	return linphone_call_get_authentication_token_verified(call);
 }
-extern "C" jboolean Java_org_linphone_core_LinphoneCallImpl_areStreamsEncrypted(JNIEnv*  env,jobject thiz,jlong ptr) {
-	return linphone_call_are_all_streams_encrypted((LinphoneCall *) ptr);
-}
 
 extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_soundResourcesLocked(JNIEnv* env,jobject thiz,jlong ptr){
 	return linphone_core_sound_resources_locked((LinphoneCore *) ptr);

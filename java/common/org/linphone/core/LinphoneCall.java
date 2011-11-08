@@ -223,6 +223,5 @@ public interface LinphoneCall {
 	
 	String getAuthenticationToken();
 	boolean isAuthenticationTokenVerified();
-	boolean areStreamsEncrypted();
 	boolean isInConference();
 }
