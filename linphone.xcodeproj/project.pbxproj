@@ -83,6 +83,7 @@
 		22F254811073D99800AC9B3F /* ringback.wav in Resources */ = {isa = PBXBuildFile; fileRef = 22F254801073D99800AC9B3F /* ringback.wav */; };
 		22F51EF6107FA66500F98953 /* untitled.plist in Resources */ = {isa = PBXBuildFile; fileRef = 22F51EF5107FA66500F98953 /* untitled.plist */; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
+		3440A549146978BB0076355C /* libsrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3440A548146978BB0076355C /* libsrtp.a */; };
 		346A75C714619F1D005C9D07 /* AdvancedPhoneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 346A75C614619F1D005C9D07 /* AdvancedPhoneViewController.m */; };
 		346A75C814619F73005C9D07 /* IncallViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 222A483212F7176F0075F07F /* IncallViewController.m */; };
 		346A75CB14628DC6005C9D07 /* pausecall.png in Resources */ = {isa = PBXBuildFile; fileRef = 346A75C914628DC6005C9D07 /* pausecall.png */; };
@@ -406,6 +407,7 @@
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = main.m; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* linphone_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linphone_Prefix.pch; sourceTree = "<group>"; };
+		3440A548146978BB0076355C /* libsrtp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsrtp.a; path = "liblinphone-sdk/apple-darwin/lib/libsrtp.a"; sourceTree = "<group>"; };
 		346A75C514619F1D005C9D07 /* AdvancedPhoneViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AdvancedPhoneViewController.h; sourceTree = "<group>"; };
 		346A75C614619F1D005C9D07 /* AdvancedPhoneViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AdvancedPhoneViewController.m; sourceTree = "<group>"; };
 		346A75C914628DC6005C9D07 /* pausecall.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pausecall.png; path = submodules/linphone/pixmaps/pausecall.png; sourceTree = "<group>"; };
@@ -447,6 +449,7 @@
 				22D1B68112A3E0BE001AE361 /* libresolv.dylib in Frameworks */,
 				226F2ED71344B0EF00F6EF27 /* libopencore-amrnb.a in Frameworks */,
 				226F2ED81344B0EF00F6EF27 /* libmsamr.a in Frameworks */,
+				3440A549146978BB0076355C /* libsrtp.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -812,6 +815,7 @@
 				2214783B1386A2030020F8B8 /* Localizable.strings */,
 				22A10D9E11F88C1F00373793 /* liblinphone.xcodeproj */,
 				223148E51178A09900637D6A /* libmsilbc.a */,
+				3440A548146978BB0076355C /* libsrtp.a */,
 				223148E31178A08200637D6A /* libilbc.a */,
 				220FAD2810765B400068D98F /* libeXosip2.a */,
 				220FAD2910765B400068D98F /* libgsm.a */,

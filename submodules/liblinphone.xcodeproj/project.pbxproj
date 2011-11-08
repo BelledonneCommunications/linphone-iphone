@@ -187,6 +187,7 @@
 		22DD21B413A8E3310018ECD4 /* mediastreamViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22DD21AD13A8E3310018ECD4 /* mediastreamViewController.m */; };
 		22FC56A813CB69FB002FD0F1 /* qualityindicator.c in Sources */ = {isa = PBXBuildFile; fileRef = 22FC56A713CB69FA002FD0F1 /* qualityindicator.c */; };
 		22FC56AA13CB6A4F002FD0F1 /* bitratecontrol.c in Sources */ = {isa = PBXBuildFile; fileRef = 22FC56A913CB6A4F002FD0F1 /* bitratecontrol.c */; };
+		3440A54B14697B570076355C /* l16.c in Sources */ = {isa = PBXBuildFile; fileRef = 3440A54A14697B570076355C /* l16.c */; };
 		7014533C13FA7ECA00A01D86 /* zrtp.h in Headers */ = {isa = PBXBuildFile; fileRef = 7014533B13FA7ECA00A01D86 /* zrtp.h */; };
 		7014533E13FA841E00A01D86 /* zrtp.c in Sources */ = {isa = PBXBuildFile; fileRef = 7014533D13FA841E00A01D86 /* zrtp.c */; };
 		70E542EE13E147C7002BA2C0 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542ED13E147C7002BA2C0 /* OpenGLES.framework */; };
@@ -418,6 +419,7 @@
 		22DD21AD13A8E3310018ECD4 /* mediastreamViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = mediastreamViewController.m; sourceTree = "<group>"; };
 		22FC56A713CB69FA002FD0F1 /* qualityindicator.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = qualityindicator.c; sourceTree = "<group>"; };
 		22FC56A913CB6A4F002FD0F1 /* bitratecontrol.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = bitratecontrol.c; sourceTree = "<group>"; };
+		3440A54A14697B570076355C /* l16.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = l16.c; sourceTree = "<group>"; };
 		7014533B13FA7ECA00A01D86 /* zrtp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zrtp.h; sourceTree = "<group>"; };
 		7014533D13FA841E00A01D86 /* zrtp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zrtp.c; sourceTree = "<group>"; };
 		70E542ED13E147C7002BA2C0 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
@@ -601,6 +603,7 @@
 		222CA5DC11F6CF7600621220 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				3440A54A14697B570076355C /* l16.c */,
 				22985D9214643BEF005CA0B5 /* aqsnd.c */,
 				225AA2E2144F1E3400BA809B /* qosanalyzer.c */,
 				225AA2E0144F1C6600BA809B /* bitratedriver.c */,
@@ -1117,6 +1120,7 @@
 				225AA2E3144F1E3400BA809B /* qosanalyzer.c in Sources */,
 				225AA2FD1451A95400BA809B /* conference.c in Sources */,
 				22985D9314643BEF005CA0B5 /* aqsnd.c in Sources */,
+				3440A54B14697B570076355C /* l16.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
