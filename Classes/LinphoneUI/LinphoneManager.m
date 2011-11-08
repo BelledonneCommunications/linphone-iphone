@@ -791,6 +791,8 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 }
 
 -(void) beginInterruption {
+    if (!theLinphoneCore)
+        return;
     LinphoneCall* c = linphone_core_get_current_call(theLinphoneCore);
     ms_message("Sound interruption detected!");
     if (c) {
@@ -799,6 +801,8 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 }
 
 -(void) endInterruption {
+    if (!theLinphoneCore)
+        return;
     ms_message("Sound interruption ended!");
     const MSList* c = linphone_core_get_calls(theLinphoneCore);
     
