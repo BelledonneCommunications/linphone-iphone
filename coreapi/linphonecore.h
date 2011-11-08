@@ -1046,8 +1046,8 @@ bool_t linphone_core_media_encryption_supported(const LinphoneCore *lc, Linphone
 /**
  * Choose media encryption policy to be used for RTP packets
  */
-void linphone_core_set_media_encryption(LinphoneCore *lc, enum LinphoneMediaEncryption menc);
-enum LinphoneMediaEncryption linphone_core_get_media_encryption(LinphoneCore *lc);
+int linphone_core_set_media_encryption(LinphoneCore *lc, enum LinphoneMediaEncryption menc);
+LinphoneMediaEncryption linphone_core_get_media_encryption(LinphoneCore *lc);
 
 bool_t linphone_core_is_media_encryption_mandatory(LinphoneCore *lc);
 /**

@@ -804,7 +804,7 @@ void linphone_gtk_ui_level_toggled(GtkWidget *w) {
 }
 
 static void linphone_gtk_media_encryption_changed(GtkWidget *combo){
-	const char *selected=gtk_combo_box_get_active_text(GTK_COMBO_BOX(combo));
+	char *selected=gtk_combo_box_get_active_text(GTK_COMBO_BOX(combo));
 	LinphoneCore *lc=linphone_gtk_get_core();
 	if (selected!=NULL){
 		if (strcasecmp(selected,"SRTP")==0)
@@ -812,6 +812,7 @@ static void linphone_gtk_media_encryption_changed(GtkWidget *combo){
 		else if (strcasecmp(selected,"ZRTP")==0)
 			linphone_core_set_media_encryption(lc,LinphoneMediaEncryptionZRTP);
 		else linphone_core_set_media_encryption(lc,LinphoneMediaEncryptionNone);
+		g_free(selected);
 	}else g_warning("gtk_combo_box_get_active_text() returned NULL");
 }
 
@@ -820,14 +821,28 @@ static void linphone_gtk_show_media_encryption(GtkWidget *pb){
 	GtkWidget *combo=linphone_gtk_get_widget(pb,"media_encryption_combo");
 	bool_t no_enc=TRUE;
 	int srtp_id=-1,zrtp_id=-1;
-
+	GtkTreeModel *model;
+	GtkListStore *store;
+	GtkTreeIter iter;
+	GtkCellRenderer *renderer=gtk_cell_renderer_text_new();
+	
+	model=GTK_TREE_MODEL((store=gtk_list_store_new(1,G_TYPE_STRING)));
+	gtk_combo_box_set_model(GTK_COMBO_BOX(combo),model);
+	gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(combo),renderer,TRUE);
+	gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(combo),renderer,"text",0,NULL);
+	
+	gtk_list_store_append(store,&iter);
+	gtk_list_store_set(store,&iter,0,_("None"),-1);
+	
 	if (linphone_core_media_encryption_supported(lc,LinphoneMediaEncryptionSRTP)){
-		gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo),_("SRTP"));
+		gtk_list_store_append(store,&iter);
+		gtk_list_store_set(store,&iter,0,_("SRTP"),-1);
 		srtp_id=1;
 		no_enc=FALSE;
 	}
 	if (linphone_core_media_encryption_supported(lc,LinphoneMediaEncryptionZRTP)){
-		gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo),_("ZRTP"));
+		gtk_list_store_append(store,&iter);
+		gtk_list_store_set(store,&iter,0,_("ZRTP"),-1);
 		no_enc=FALSE;
 		if (srtp_id!=-1) zrtp_id=2;
 		else zrtp_id=1;
@@ -851,6 +866,7 @@ static void linphone_gtk_show_media_encryption(GtkWidget *pb){
 		}
 		g_signal_connect(G_OBJECT(combo),"changed",(GCallback)linphone_gtk_media_encryption_changed,NULL);
 	}
+	g_object_unref(G_OBJECT(model));
 }
 
 void linphone_gtk_show_parameters(void){

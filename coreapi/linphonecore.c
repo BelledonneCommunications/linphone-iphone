@@ -559,6 +559,8 @@ static void sip_config_read(LinphoneCore *lc)
 			break;
 		}
 	}
+	/*this is to filter out unsupported encryption schemes*/
+	linphone_core_set_media_encryption(lc,linphone_core_get_media_encryption(lc));
 
 	/*for tuning or test*/
 	lc->sip_conf.sdp_200_ack=lp_config_get_int(lc->config,"sip","sdp_200_ack",0);
@@ -4436,13 +4438,24 @@ bool_t linphone_core_media_encryption_supported(const LinphoneCore *lc, Linphone
 	return FALSE;
 }
 
-void linphone_core_set_media_encryption(LinphoneCore *lc, enum LinphoneMediaEncryption menc) {
-	if (menc == LinphoneMediaEncryptionSRTP)
-		lp_config_set_string(lc->config,"sip","media_encryption","srtp");
-	else if (menc == LinphoneMediaEncryptionZRTP)
-		lp_config_set_string(lc->config,"sip","media_encryption","zrtp");
-	else
-		lp_config_set_string(lc->config,"sip","media_encryption","none");
+int linphone_core_set_media_encryption(LinphoneCore *lc, enum LinphoneMediaEncryption menc) {
+	const char *type="none";
+	int ret=0;
+	if (menc == LinphoneMediaEncryptionSRTP){
+		if (!ortp_srtp_supported()){
+			ms_warning("SRTP not supported by library.");
+			type="none";
+			ret=-1;
+		}else type="srtp";
+	}else if (menc == LinphoneMediaEncryptionZRTP){
+		if (!ortp_zrtp_available()){
+			ms_warning("ZRTP not supported by library.");
+			type="none";
+			ret=-1;
+		}else type="zrtp";
+	}
+	lp_config_set_string(lc->config,"sip","media_encryption",type);
+	return ret;
 }
 
 LinphoneMediaEncryption linphone_core_get_media_encryption(LinphoneCore *lc) {

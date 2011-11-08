@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="gtk+" version="2.16"/>
+  <requires lib="gtk+" version="2.22"/>
   <object class="GtkAdjustment" id="adjustment1">
     <property name="lower">500</property>
     <property name="upper">3001</property>
@@ -53,6 +53,7 @@
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
   </object>
+  <object class="GtkListStore" id="liststore1"/>
   <object class="GtkListStore" id="model1">
     <columns>
       <!-- column-name gchararray -->
@@ -406,13 +407,10 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkComboBoxText" id="media_encryption_combo">
+                              <object class="GtkComboBox" id="media_encryption_combo">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="active">0</property>
-                                <items>
-                                  <item translatable="yes">None</item>
-                                </items>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
