@@ -364,13 +364,14 @@ AC_ARG_ENABLE(alsa,
         *) AC_MSG_ERROR(bad value ${enableval} for --enable-alsa) ;;
       esac],[alsa=true])
 
-AC_ARG_ENABLE(artsc,
-      [  --enable-artsc    Turn on artsc (kde) sound input/output (auto) ],
+AC_ARG_ENABLE(zrtp,
+      [  --enable-zrtp    Turn on zrtp support - UNFINISHED],
       [case "${enableval}" in
-        yes) artsc=true ;;
-        no)  artsc=false ;;
-        *) AC_MSG_ERROR(bad value ${enableval} for --enable-artsc) ;;
-      esac],[artsc=false])
+        yes) zrtp=true ;;
+        no)  zrtp=false ;;
+        *) AC_MSG_ERROR(bad value ${enableval} for --enable-zrtp) ;;
+      esac],[zrtp=false])
+
 
 AC_ARG_ENABLE(portaudio,
       [  --enable-portaudio    Turn on portaudio native support compiling],
@@ -387,6 +388,7 @@ AM_CONDITIONAL(ARMBUILD, test x$use_arm_toolchain = xyes)
 dnl compilation of gtk user interface
 AM_CONDITIONAL(BUILD_GTK_UI, [test x$gtk_ui = xtrue ] )
 AM_CONDITIONAL(BUILD_WIN32, test x$mingw_found = xyes )
+AM_CONDITIONAL(BUILD_ZRTP, test x$zrtp = xtrue)
 
 dnl check getenv
 AH_TEMPLATE([HAVE_GETENV])
