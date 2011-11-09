@@ -38,8 +38,6 @@
 		223963171393CFAF001DE689 /* FastAddressBook.m in Sources */ = {isa = PBXBuildFile; fileRef = 223963161393CFAF001DE689 /* FastAddressBook.m */; };
 		2242D91610D66BF300E9963F /* in_call.png in Resources */ = {isa = PBXBuildFile; fileRef = 2242D91410D66BF300E9963F /* in_call.png */; };
 		2242D91710D66BF300E9963F /* out_call.png in Resources */ = {isa = PBXBuildFile; fileRef = 2242D91510D66BF300E9963F /* out_call.png */; };
-		2242D91A10D66C2100E9963F /* mic_active.png in Resources */ = {isa = PBXBuildFile; fileRef = 2242D91810D66C2100E9963F /* mic_active.png */; };
-		2242D91B10D66C2100E9963F /* mic_muted.png in Resources */ = {isa = PBXBuildFile; fileRef = 2242D91910D66C2100E9963F /* mic_muted.png */; };
 		2242D9C910D691F900E9963F /* GenericTabViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2242D9C810D691F900E9963F /* GenericTabViewController.m */; };
 		2242E313125235120061DDCE /* oldphone-mono-30s.caf in Resources */ = {isa = PBXBuildFile; fileRef = 2242E312125235120061DDCE /* oldphone-mono-30s.caf */; };
 		2245671D107699F700F10948 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2245671C107699F700F10948 /* Settings.bundle */; };
@@ -70,8 +68,6 @@
 		22BB1A69132FF16A005CD7AA /* UIEraseButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22BB1A68132FF16A005CD7AA /* UIEraseButton.m */; };
 		22C755601317E59C007BC101 /* UIBluetoothButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22C7555F1317E59C007BC101 /* UIBluetoothButton.m */; };
 		22D1B68112A3E0BE001AE361 /* libresolv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 22D1B68012A3E0BE001AE361 /* libresolv.dylib */; };
-		22E0A785111C1BA800B04932 /* Speaker-32-on.png in Resources */ = {isa = PBXBuildFile; fileRef = 22E0A783111C1BA800B04932 /* Speaker-32-on.png */; };
-		22E0A786111C1BA800B04932 /* Speaker-32-off.png in Resources */ = {isa = PBXBuildFile; fileRef = 22E0A784111C1BA800B04932 /* Speaker-32-off.png */; };
 		22E0A822111C44E100B04932 /* MoreViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E0A81C111C44E100B04932 /* MoreViewController.m */; };
 		22E0A823111C44E100B04932 /* ConsoleViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22E0A81E111C44E100B04932 /* ConsoleViewController.xib */; };
 		22E0A824111C44E100B04932 /* ConsoleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E0A81F111C44E100B04932 /* ConsoleViewController.m */; };
@@ -86,10 +82,18 @@
 		3440A549146978BB0076355C /* libsrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3440A548146978BB0076355C /* libsrtp.a */; };
 		346A75C714619F1D005C9D07 /* AdvancedPhoneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 346A75C614619F1D005C9D07 /* AdvancedPhoneViewController.m */; };
 		346A75C814619F73005C9D07 /* IncallViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 222A483212F7176F0075F07F /* IncallViewController.m */; };
-		346A75CB14628DC6005C9D07 /* pausecall.png in Resources */ = {isa = PBXBuildFile; fileRef = 346A75C914628DC6005C9D07 /* pausecall.png */; };
-		346A75CC14628DC6005C9D07 /* resumecall.png in Resources */ = {isa = PBXBuildFile; fileRef = 346A75CA14628DC6005C9D07 /* resumecall.png */; };
 		346A75CF14628F02005C9D07 /* UIPauseResumeButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 346A75CE14628F02005C9D07 /* UIPauseResumeButton.m */; };
 		346A75D21462A786005C9D07 /* CallDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 346A75D11462A786005C9D07 /* CallDelegate.m */; };
+		34FD9BC0146ACC05004AB726 /* addcall-green.png in Resources */ = {isa = PBXBuildFile; fileRef = 34FD9BB7146ACC05004AB726 /* addcall-green.png */; };
+		34FD9BC1146ACC05004AB726 /* conf_merge.png in Resources */ = {isa = PBXBuildFile; fileRef = 34FD9BB8146ACC05004AB726 /* conf_merge.png */; };
+		34FD9BC2146ACC05004AB726 /* mic_active.png in Resources */ = {isa = PBXBuildFile; fileRef = 34FD9BB9146ACC05004AB726 /* mic_active.png */; };
+		34FD9BC3146ACC05004AB726 /* mic_muted.png in Resources */ = {isa = PBXBuildFile; fileRef = 34FD9BBA146ACC05004AB726 /* mic_muted.png */; };
+		34FD9BC4146ACC05004AB726 /* numpad.png in Resources */ = {isa = PBXBuildFile; fileRef = 34FD9BBB146ACC05004AB726 /* numpad.png */; };
+		34FD9BC5146ACC05004AB726 /* pausecall.png in Resources */ = {isa = PBXBuildFile; fileRef = 34FD9BBC146ACC05004AB726 /* pausecall.png */; };
+		34FD9BC6146ACC05004AB726 /* resumecall.png in Resources */ = {isa = PBXBuildFile; fileRef = 34FD9BBD146ACC05004AB726 /* resumecall.png */; };
+		34FD9BC7146ACC05004AB726 /* Speaker-32-off.png in Resources */ = {isa = PBXBuildFile; fileRef = 34FD9BBE146ACC05004AB726 /* Speaker-32-off.png */; };
+		34FD9BC8146ACC05004AB726 /* Speaker-32-on.png in Resources */ = {isa = PBXBuildFile; fileRef = 34FD9BBF146ACC05004AB726 /* Speaker-32-on.png */; };
+		34FD9BCA146ACD76004AB726 /* contact_orange.png in Resources */ = {isa = PBXBuildFile; fileRef = 34FD9BC9146ACD76004AB726 /* contact_orange.png */; };
 		70571E1A13FABCB000CDD3C2 /* rootca.pem in Resources */ = {isa = PBXBuildFile; fileRef = 70571E1913FABCB000CDD3C2 /* rootca.pem */; };
 /* End PBXBuildFile section */
 
@@ -274,8 +278,6 @@
 		223963161393CFAF001DE689 /* FastAddressBook.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FastAddressBook.m; sourceTree = "<group>"; };
 		2242D91410D66BF300E9963F /* in_call.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = in_call.png; path = Resources/in_call.png; sourceTree = "<group>"; };
 		2242D91510D66BF300E9963F /* out_call.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = out_call.png; path = Resources/out_call.png; sourceTree = "<group>"; };
-		2242D91810D66C2100E9963F /* mic_active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = mic_active.png; path = "liblinphone-sdk/apple-darwin/share/pixmaps/linphone/mic_active.png"; sourceTree = "<group>"; };
-		2242D91910D66C2100E9963F /* mic_muted.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = mic_muted.png; path = "liblinphone-sdk/apple-darwin/share/pixmaps/linphone/mic_muted.png"; sourceTree = "<group>"; };
 		2242D9C710D691F900E9963F /* GenericTabViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GenericTabViewController.h; sourceTree = "<group>"; };
 		2242D9C810D691F900E9963F /* GenericTabViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GenericTabViewController.m; sourceTree = "<group>"; };
 		2242E312125235120061DDCE /* oldphone-mono-30s.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "oldphone-mono-30s.caf"; path = "liblinphone-sdk/apple-darwin/share/sounds/linphone/rings/oldphone-mono-30s.caf"; sourceTree = "<group>"; };
@@ -388,8 +390,6 @@
 		22C7564A13265C6A007BC101 /* x509_vfy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x509_vfy.h; sourceTree = "<group>"; };
 		22C7564B13265C6A007BC101 /* x509v3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x509v3.h; sourceTree = "<group>"; };
 		22D1B68012A3E0BE001AE361 /* libresolv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libresolv.dylib; path = usr/lib/libresolv.dylib; sourceTree = SDKROOT; };
-		22E0A783111C1BA800B04932 /* Speaker-32-on.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Speaker-32-on.png"; path = "Resources/Speaker-32-on.png"; sourceTree = "<group>"; };
-		22E0A784111C1BA800B04932 /* Speaker-32-off.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Speaker-32-off.png"; path = "Resources/Speaker-32-off.png"; sourceTree = "<group>"; };
 		22E0A81B111C44E100B04932 /* MoreViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MoreViewController.xib; sourceTree = "<group>"; };
 		22E0A81C111C44E100B04932 /* MoreViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoreViewController.m; sourceTree = "<group>"; };
 		22E0A81D111C44E100B04932 /* MoreViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoreViewController.h; sourceTree = "<group>"; };
@@ -410,12 +410,20 @@
 		3440A548146978BB0076355C /* libsrtp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsrtp.a; path = "liblinphone-sdk/apple-darwin/lib/libsrtp.a"; sourceTree = "<group>"; };
 		346A75C514619F1D005C9D07 /* AdvancedPhoneViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AdvancedPhoneViewController.h; sourceTree = "<group>"; };
 		346A75C614619F1D005C9D07 /* AdvancedPhoneViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AdvancedPhoneViewController.m; sourceTree = "<group>"; };
-		346A75C914628DC6005C9D07 /* pausecall.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pausecall.png; path = submodules/linphone/pixmaps/pausecall.png; sourceTree = "<group>"; };
-		346A75CA14628DC6005C9D07 /* resumecall.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = resumecall.png; path = submodules/linphone/pixmaps/resumecall.png; sourceTree = "<group>"; };
 		346A75CD14628F02005C9D07 /* UIPauseResumeButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIPauseResumeButton.h; sourceTree = "<group>"; };
 		346A75CE14628F02005C9D07 /* UIPauseResumeButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIPauseResumeButton.m; sourceTree = "<group>"; };
 		346A75D01462A786005C9D07 /* CallDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallDelegate.h; sourceTree = "<group>"; };
 		346A75D11462A786005C9D07 /* CallDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallDelegate.m; sourceTree = "<group>"; };
+		34FD9BB7146ACC05004AB726 /* addcall-green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "addcall-green.png"; path = "Resources/addcall-green.png"; sourceTree = "<group>"; };
+		34FD9BB8146ACC05004AB726 /* conf_merge.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = conf_merge.png; path = Resources/conf_merge.png; sourceTree = "<group>"; };
+		34FD9BB9146ACC05004AB726 /* mic_active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = mic_active.png; path = Resources/mic_active.png; sourceTree = "<group>"; };
+		34FD9BBA146ACC05004AB726 /* mic_muted.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = mic_muted.png; path = Resources/mic_muted.png; sourceTree = "<group>"; };
+		34FD9BBB146ACC05004AB726 /* numpad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = numpad.png; path = Resources/numpad.png; sourceTree = "<group>"; };
+		34FD9BBC146ACC05004AB726 /* pausecall.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pausecall.png; path = Resources/pausecall.png; sourceTree = "<group>"; };
+		34FD9BBD146ACC05004AB726 /* resumecall.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = resumecall.png; path = Resources/resumecall.png; sourceTree = "<group>"; };
+		34FD9BBE146ACC05004AB726 /* Speaker-32-off.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Speaker-32-off.png"; path = "Resources/Speaker-32-off.png"; sourceTree = "<group>"; };
+		34FD9BBF146ACC05004AB726 /* Speaker-32-on.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Speaker-32-on.png"; path = "Resources/Speaker-32-on.png"; sourceTree = "<group>"; };
+		34FD9BC9146ACD76004AB726 /* contact_orange.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = contact_orange.png; path = Resources/contact_orange.png; sourceTree = "<group>"; };
 		70571E1913FABCB000CDD3C2 /* rootca.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = rootca.pem; path = Resources/rootca.pem; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* linphone-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "linphone-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -863,8 +871,16 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				346A75C914628DC6005C9D07 /* pausecall.png */,
-				346A75CA14628DC6005C9D07 /* resumecall.png */,
+				34FD9BC9146ACD76004AB726 /* contact_orange.png */,
+				34FD9BB7146ACC05004AB726 /* addcall-green.png */,
+				34FD9BB8146ACC05004AB726 /* conf_merge.png */,
+				34FD9BB9146ACC05004AB726 /* mic_active.png */,
+				34FD9BBA146ACC05004AB726 /* mic_muted.png */,
+				34FD9BBB146ACC05004AB726 /* numpad.png */,
+				34FD9BBC146ACC05004AB726 /* pausecall.png */,
+				34FD9BBD146ACC05004AB726 /* resumecall.png */,
+				34FD9BBE146ACC05004AB726 /* Speaker-32-off.png */,
+				34FD9BBF146ACC05004AB726 /* Speaker-32-on.png */,
 				70571E1913FABCB000CDD3C2 /* rootca.pem */,
 				22E19E47138A67A000FBFE87 /* missed_call.png */,
 				228B19AE130290C500F154D3 /* iTunesArtwork */,
@@ -880,10 +896,6 @@
 				22226C11118197C0000CA27B /* startcall-green.png */,
 				22058C70116E305000B08DDD /* icone-linphone-57.png */,
 				2237D4081084D7A9001383EE /* oldphone-mono.wav */,
-				22E0A783111C1BA800B04932 /* Speaker-32-on.png */,
-				22E0A784111C1BA800B04932 /* Speaker-32-off.png */,
-				2242D91810D66C2100E9963F /* mic_active.png */,
-				2242D91910D66C2100E9963F /* mic_muted.png */,
 				2242D91410D66BF300E9963F /* in_call.png */,
 				2242D91510D66BF300E9963F /* out_call.png */,
 				22F254801073D99800AC9B3F /* ringback.wav */,
@@ -991,10 +1003,6 @@
 				227BCDC310D4004600FBFD76 /* CallHistoryTableViewController.xib in Resources */,
 				2242D91610D66BF300E9963F /* in_call.png in Resources */,
 				2242D91710D66BF300E9963F /* out_call.png in Resources */,
-				2242D91A10D66C2100E9963F /* mic_active.png in Resources */,
-				2242D91B10D66C2100E9963F /* mic_muted.png in Resources */,
-				22E0A785111C1BA800B04932 /* Speaker-32-on.png in Resources */,
-				22E0A786111C1BA800B04932 /* Speaker-32-off.png in Resources */,
 				22E0A823111C44E100B04932 /* ConsoleViewController.xib in Resources */,
 				22058C71116E305000B08DDD /* icone-linphone-57.png in Resources */,
 				22226C12118197C0000CA27B /* startcall-green.png in Resources */,
@@ -1014,8 +1022,16 @@
 				2214783D1386A2030020F8B8 /* Localizable.strings in Resources */,
 				22E19E48138A67A000FBFE87 /* missed_call.png in Resources */,
 				70571E1A13FABCB000CDD3C2 /* rootca.pem in Resources */,
-				346A75CB14628DC6005C9D07 /* pausecall.png in Resources */,
-				346A75CC14628DC6005C9D07 /* resumecall.png in Resources */,
+				34FD9BC0146ACC05004AB726 /* addcall-green.png in Resources */,
+				34FD9BC1146ACC05004AB726 /* conf_merge.png in Resources */,
+				34FD9BC2146ACC05004AB726 /* mic_active.png in Resources */,
+				34FD9BC3146ACC05004AB726 /* mic_muted.png in Resources */,
+				34FD9BC4146ACC05004AB726 /* numpad.png in Resources */,
+				34FD9BC5146ACC05004AB726 /* pausecall.png in Resources */,
+				34FD9BC6146ACC05004AB726 /* resumecall.png in Resources */,
+				34FD9BC7146ACC05004AB726 /* Speaker-32-off.png in Resources */,
+				34FD9BC8146ACC05004AB726 /* Speaker-32-on.png in Resources */,
+				34FD9BCA146ACD76004AB726 /* contact_orange.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

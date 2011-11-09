@@ -143,9 +143,13 @@
 	[super dealloc];
 }
 
-
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
-	linphone_core_accept_call([LinphoneManager getLc],linphone_core_get_current_call([LinphoneManager getLc]));	
+    LinphoneCall* call = (LinphoneCall*)[notification.userInfo objectForKey:@"call"];
+    if (!call) {
+        ms_warning("Local notification received with nil call");
+        return;
+    }
+	linphone_core_accept_call([LinphoneManager getLc], call);	
 }
 
 

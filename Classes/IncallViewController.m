@@ -28,6 +28,7 @@
 @synthesize controlSubView;
 @synthesize callControlSubView;
 @synthesize padSubView;
+@synthesize hangUpView;
 
 @synthesize addToConf;
 @synthesize endCtrl;
@@ -67,6 +68,8 @@
 
 
 bool isInConference(LinphoneCall* call) {
+    if (!call)
+        return false;
     return linphone_call_get_current_params(call)->in_conference;
 }
 
@@ -88,10 +91,7 @@ int callCount(LinphoneCore* lc) {
     [super viewDidLoad];
 	//Controls
 	[mute initWithOnImage:[UIImage imageNamed:@"mic_muted.png"]  offImage:[UIImage imageNamed:@"mic_active.png"] ];
-    UIImage* rc = [UIImage imageNamed:@"resumecall.png"];
-    UIImage* pc = [UIImage imageNamed:@"pausecall.png"];
-    [pause initWithOnImage:rc  offImage:pc ];
-	[speaker initWithOnImage:[UIImage imageNamed:@"Speaker-32-on.png"]  offImage:[UIImage imageNamed:@"Speaker-32-off.png"] ];
+    [speaker initWithOnImage:[UIImage imageNamed:@"Speaker-32-on.png"]  offImage:[UIImage imageNamed:@"Speaker-32-off.png"] ];
 	
 
 	//Dialer init
@@ -112,6 +112,8 @@ int callCount(LinphoneCore* lc) {
     [mergeCalls addTarget:self action:@selector(mergeCallsPressed) forControlEvents:UIControlEventTouchDown];
     [endCtrl addTarget:self action:@selector(endCallPressed) forControlEvents:UIControlEventTouchUpInside];
     [addToConf addTarget:self action:@selector(addToConfCallPressed) forControlEvents:UIControlEventTouchUpInside];
+    [pause addTarget:self action:@selector(pauseCallPressed) forControlEvents:UIControlEventTouchUpInside];
+    
     
     [mergeCalls setHidden:YES];
     
@@ -134,6 +136,14 @@ int callCount(LinphoneCore* lc) {
     linphone_core_add_to_conference([LinphoneManager getLc], selectedCall);
 }
 
+-(void) pauseCallPressed {
+    if (!selectedCall)
+        return;
+    if (linphone_call_get_state(selectedCall) == LinphoneCallPaused)
+        linphone_core_resume_call([LinphoneManager getLc], selectedCall);
+    else
+        linphone_core_pause_call([LinphoneManager getLc], selectedCall);
+}
 
 
 -(void)updateCallsDurations {
@@ -150,6 +160,13 @@ int callCount(LinphoneCore* lc) {
                                                             selector:@selector(updateCallsDurations) 
                                                             userInfo:nil 
                                                              repeats:YES];
+        glowingTimer = [NSTimer	scheduledTimerWithTimeInterval:0.1 
+                                                              target:self 
+                                                            selector:@selector(updateGlow) 
+                                                            userInfo:nil 
+                                                             repeats:YES];
+        glow = 0;
+        
     }
 }
 
@@ -157,6 +174,8 @@ int callCount(LinphoneCore* lc) {
     if (durationRefreasher != nil) {
         [durationRefreasher invalidate];
         durationRefreasher=nil;
+        [glowingTimer invalidate];
+        glowingTimer = nil;
     }
 }
 
@@ -165,11 +184,15 @@ int callCount(LinphoneCore* lc) {
 	
 }
 
+
+
 -(void) displayStatus:(NSString*) message; {
     [self updateUIFromLinphoneState: nil]; 
 }
 
 -(void) displayPad:(bool) enable {
+    [callTableView setHidden:enable];
+    [hangUpView setHidden:enable];
 	[controlSubView setHidden:enable];
 	[padSubView setHidden:!enable];
 }
@@ -178,6 +201,8 @@ int callCount(LinphoneCore* lc) {
 	[self displayPad:false];
 	dismissed = false;
     
+    if (call)
+        selectedCall = call;
     [self updateUIFromLinphoneState: nil]; 
 }
 
@@ -198,7 +223,10 @@ int callCount(LinphoneCore* lc) {
 }
 -(void) updateUIFromLinphoneState:(UIViewController *)viewCtrl {
     [mute reset];
-    [pause reset];
+    
+    // if (
+    // [pause reset];
+
     
     LinphoneCore* lc;
     
@@ -225,8 +253,28 @@ int callCount(LinphoneCore* lc) {
         [addToConf setHidden:(linphone_core_get_conference_size(lc) == 0 ||
                             isInConference(selectedCall))];
     }
-    // hide pause/resume if in conference
-    [pause setHidden:linphone_core_is_in_conference(lc)];
+    int callsCount = linphone_core_get_calls_nb(lc);
+    // hide pause/resume if in conference    
+    if (selectedCall) {
+        if (linphone_core_is_in_conference(lc))
+            [pause setHidden:YES];
+        else if (linphone_call_get_state(selectedCall)==LinphoneCallPaused) {
+            [pause setHidden:NO];
+            //[pause setTitle:@"Resume" forState:UIControlStateNormal];
+            pause.selected = YES;
+            pause.highlighted = NO;
+        } else if (callCount(lc) == callsCount && callsCount == 1) {
+            [pause setHidden:NO];
+            //[pause setTitle:@"Pause" forState:UIControlStateNormal];
+            pause.selected = NO;
+            pause.highlighted = NO;
+        } else {
+            [pause setHidden:YES];
+        }
+    } else {
+        [pause setHidden:callsCount > 0];
+    }
+    [mergeCalls setHidden:!pause.hidden];
 }
 
 - (IBAction)doAction:(id)sender {
@@ -295,7 +343,42 @@ int callCount(LinphoneCore* lc) {
     }
 }
 
+-(void) updateActive:(bool_t)active cell:(UITableViewCell*) cell {
+    if (!active) {
+        
+        cell.backgroundColor = [UIColor colorWithRed:0.2 green:0.2 blue:0.2 alpha:0.2];
+        
+        UIColor* c = [[UIColor blackColor] colorWithAlphaComponent:0.5];
+        [cell.textLabel setTextColor:c];
+        [cell.detailTextLabel setTextColor:c];
+    } else {
+        cell.backgroundColor = [UIColor colorWithRed:0.4 green:0.4 blue:0.4 alpha:(0.7+sin(2*glow)*0.3)];
+        [cell.textLabel setTextColor:[UIColor whiteColor]];  
+        [cell.detailTextLabel setTextColor:[UIColor whiteColor]];
+    } 
+    [cell.textLabel setBackgroundColor:[UIColor clearColor]];
+    [cell.detailTextLabel setBackgroundColor:[UIColor clearColor]];
+    [cell.accessoryView setHidden:YES];
+    //[cell.backgroundView setBackgroundColor:cell.backgroundColor];
+}
 
+-(void) updateGlow {
+    glow += 0.1;
+    
+    NSIndexPath* path = [callTableView indexPathForSelectedRow];
+    if (path) {
+        UITableViewCell* cell = [callTableView cellForRowAtIndexPath:path];
+        [self updateActive:YES cell:cell];
+        [cell.backgroundView setNeedsDisplay];
+        [cell setNeedsDisplay];
+        [callTableView setNeedsDisplay];
+    }
+}
+
+-(void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    [self updateActive:(cell.accessoryType == UITableViewCellAccessoryCheckmark) cell:cell];
+    //cell.accessoryType = UITableViewCellAccessoryNone;
+}
 
 - (void) updateCell:(UITableViewCell*)cell at:(NSIndexPath*) path withCall:(LinphoneCall*) call conferenceActive:(bool)confActive{
     if (call == NULL) {
@@ -328,23 +411,29 @@ int callCount(LinphoneCore* lc) {
     }
     [cell.detailTextLabel setText:ms];
         
-    
+    /*
     if (linphone_core_get_current_call([LinphoneManager getLc]) == call) {
-        cell.backgroundColor = [UIColor colorWithRed:0 green:1 blue:0 alpha:0.5];
+        cell.backgroundColor = [UIColor colorWithRed:0 green:1 blue:0 alpha:1];
     } else if (confActive && isInConference(call)) {
-        cell.backgroundColor = [UIColor colorWithRed:0 green:0 blue:1 alpha:0.5];
+        cell.backgroundColor = [UIColor colorWithRed:0 green:0 blue:1 alpha:1];
     } else{
-        cell.backgroundColor = [UIColor colorWithRed:1 green:0.5 blue:0 alpha:0.5];
-    }
+        cell.backgroundColor = [UIColor colorWithRed:1 green:0.5 blue:0 alpha:1];
+    }*/
+    
+    
+    
     
     if (call == selectedCall) {
-        // [cell setSelected:YES animated:NO];
+        [cell setSelected:YES animated:NO];
+        [callTableView selectRowAtIndexPath:path animated:NO scrollPosition:UITableViewScrollPositionNone];
         cell.accessoryType = UITableViewCellAccessoryCheckmark;
     }else{
-        //[cell setSelected:NO animated:NO];
+        [cell setSelected:NO animated:NO];
+        [callTableView deselectRowAtIndexPath:path animated:NO];
         cell.accessoryType = UITableViewCellAccessoryNone;
     }
 }
+
 
 -(void) updateConferenceCell:(UITableViewCell*) cell at:(NSIndexPath*)indexPath {
     [cell.textLabel setText:@"Conference"];
@@ -352,6 +441,9 @@ int callCount(LinphoneCore* lc) {
     LinphoneCore* lc = [LinphoneManager getLc];
     
     cell.accessoryType = UITableViewCellAccessoryNone;
+    [self updateActive:NO cell:cell];
+    cell.selected = NO;
+    [callTableView deselectRowAtIndexPath:indexPath animated:NO];
     
     NSMutableString* ms = [[NSMutableString alloc] init ];
     const MSList* calls = linphone_core_get_calls(lc);
@@ -366,18 +458,23 @@ int callCount(LinphoneCore* lc) {
             else
                 [ms appendFormat:@"%s ", linphone_address_get_username(addr), nil];
             
-            
-            if (call == selectedCall)
-                cell.accessoryType = UITableViewCellAccessoryCheckmark;
+            //if (call == selectedCall)
+            //    [self updateActive:YES cell:cell];
+            if (call == selectedCall) {
+                [callTableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
+                cell.selected = YES;
+                 cell.accessoryType = UITableViewCellAccessoryCheckmark;
+                
+            }
         }
         calls = calls->next;
     }
     [cell.detailTextLabel setText:ms];
     
-    if (linphone_core_is_in_conference(lc))
-        cell.backgroundColor = [UIColor colorWithRed:0 green:1 blue:0 alpha:0.5];
+    /*if (linphone_core_is_in_conference(lc))
+        cell.backgroundColor = [UIColor colorWithRed:0 green:1 blue:0 alpha:1];
     else
-        cell.backgroundColor = [UIColor colorWithRed:1 green:0 blue:0 alpha:0.5];
+        cell.backgroundColor = [UIColor colorWithRed:1 green:0 blue:0 alpha:1];*/
 }
 
 
@@ -398,7 +495,7 @@ int callCount(LinphoneCore* lc) {
 
     cell.userInteractionEnabled = YES;
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+    //cell.selectionStyle = UITableViewCellSelectionStyleBlue;
     
     
     
@@ -445,6 +542,7 @@ int callCount(LinphoneCore* lc) {
 // UITableViewDataSource
 - (NSString*) tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
+    return nil;
     return @"Calls";
     if (section == 0 && linphone_core_get_conference_size([LinphoneManager getLc]) > 0)
         return @"Conference";

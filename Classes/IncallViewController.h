@@ -26,12 +26,12 @@
 @interface IncallViewController : UIViewController <ABPeoplePickerNavigationControllerDelegate,LinphoneUICallDelegate, UITableViewDelegate, UITableViewDataSource> {
 	
 	
-	UIView* controlSubView, *callControlSubView;
+	UIView* controlSubView, *callControlSubView, *hangUpView;
 	
 	UIButton* endCtrl;
 	UIButton* dialer;
 	UIMuteButton* mute;
-    UIPauseResumeButton* pause;
+    UIButton* pause;
 	UISpeakerButton* speaker;
 	UIButton* contacts;
     UITableView* callTableView;
@@ -58,6 +58,10 @@
     bool dismissed;
     
     NSTimer *durationRefreasher;
+    NSTimer * glowingTimer;
+    
+    float glow;
+    NSIndexPath* activePath;
 	
 	ABPeoplePickerNavigationController* myPeoplePickerController;
     
@@ -72,6 +76,8 @@
 @property (nonatomic, retain) IBOutlet UIView* controlSubView;
 @property (nonatomic, retain) IBOutlet UIView* callControlSubView;
 @property (nonatomic, retain) IBOutlet UIView* padSubView;
+@property (nonatomic, retain) IBOutlet UIView* hangUpView;
+
 
 @property (nonatomic, retain) IBOutlet UIButton* endCtrl;
 @property (nonatomic, retain) IBOutlet UIButton* dialer;

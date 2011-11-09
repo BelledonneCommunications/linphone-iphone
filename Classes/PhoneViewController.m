@@ -247,6 +247,7 @@
 			notif.alertBody =[NSString  stringWithFormat:NSLocalizedString(@" %@ is calling you",nil),[displayName length]>0?displayName:username];
 			notif.alertAction = @"Answer";
 			notif.soundName = @"oldphone-mono-30s.caf";
+            notif.userInfo = [NSDictionary dictionaryWithObject:call forKey:"call"];
 			
 			[[UIApplication sharedApplication]  presentLocalNotificationNow:notif];
 		}

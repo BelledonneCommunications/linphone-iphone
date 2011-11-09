@@ -47,9 +47,9 @@
 }
 
 -(void) initWithOnImage:(UIImage*) onImage offImage:(UIImage*) offImage {
-	mOnImage = [onImage retain];
-	mOffImage = [offImage retain];
-	mIsOn=false;
+    mOnImage = [onImage retain];
+    mOffImage = [offImage retain];
+    mIsOn=false;
 	[self reset];
 	[self addTarget:self action:@selector(touchUp:) forControlEvents:UIControlEventTouchUpInside];
 	
