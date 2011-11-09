@@ -675,6 +675,13 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isEchoCancellationEn
 	return linphone_core_echo_cancellation_enabled((LinphoneCore*)lc);
 }
 
+extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isEchoLimiterEnabled(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			) {
+	return linphone_core_echo_limiter_enabled((LinphoneCore*)lc);
+}
+
 extern "C" jobject Java_org_linphone_core_LinphoneCoreImpl_getCurrentCall(JNIEnv*  env
 																			,jobject  thiz
 																			,jlong lc
