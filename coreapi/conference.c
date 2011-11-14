@@ -43,6 +43,7 @@ static void remove_local_endpoint(LinphoneConference *ctx){
 		ctx->local_endpoint=NULL;
 		audio_stream_stop(ctx->local_participant);
 		ctx->local_participant=NULL;
+		rtp_profile_destroy(ctx->local_dummy_profile);
 	}
 }
 
@@ -96,9 +97,9 @@ static void add_local_endpoint(LinphoneConference *conf,LinphoneCore *lc){
 			lc->sound_conf.lsd_card : lc->sound_conf.play_sndcard;
 	MSSndCard *captcard=lc->sound_conf.capt_sndcard;
 	const MSAudioConferenceParams *params=ms_audio_conference_get_params(conf->conf);
-	RtpProfile *prof=make_dummy_profile(params->samplerate);
+	conf->local_dummy_profile=make_dummy_profile(params->samplerate);
 	
-	audio_stream_start_full(st, prof,
+	audio_stream_start_full(st, conf->local_dummy_profile,
 				"127.0.0.1",
 				65000,
 				65001,
@@ -114,8 +115,7 @@ static void add_local_endpoint(LinphoneConference *conf,LinphoneCore *lc){
 	conf->local_participant=st;
 	conf->local_endpoint=ms_audio_endpoint_get_from_stream(st,FALSE);
 	ms_audio_conference_add_member(conf->conf,conf->local_endpoint);
-	/*normally and exceptionnaly, the profile is no more accessed past this point*/
-	rtp_profile_destroy(prof);
+	
 }
 
 float linphone_core_get_conference_local_input_volume(LinphoneCore *lc){

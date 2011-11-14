@@ -405,6 +405,7 @@ struct _LinphoneConference{
 	MSAudioConference *conf;
 	AudioStream *local_participant;
 	MSAudioEndpoint *local_endpoint;
+	RtpProfile *local_dummy_profile;
 	bool_t local_muted;
 };
 
