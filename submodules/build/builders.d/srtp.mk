@@ -10,7 +10,7 @@ $(BUILDER_BUILD_DIR)/$(srtp_dir)/Makefile: $(BUILDER_SRC_DIR)/$(srtp_dir)/config
 	$(BUILDER_SRC_DIR)/$(srtp_dir)/configure -prefix=$(prefix) --host=$(host) ${library_mode}
 
 build-srtp: $(BUILDER_BUILD_DIR)/$(srtp_dir)/Makefile
-	cd $(BUILDER_BUILD_DIR)/$(srtp_dir) && make libsrtp.a && make uninstall install
+	cd $(BUILDER_BUILD_DIR)/$(srtp_dir) && make libsrtp.a && make uninstall && make install
 
 clean-srtp:
 	-cd $(BUILDER_BUILD_DIR)/$(srtp_dir)  && make clean
