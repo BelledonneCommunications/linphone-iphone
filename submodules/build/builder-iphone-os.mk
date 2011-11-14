@@ -65,8 +65,6 @@ speex_dir?=externals/speex
 
 gsm_dir?=externals/gsm
 
-srtp_dir?=externals/srtp
-
 zrtpcpp_dir?=externals/zrtpcpp
 
 MSILBC_SRC_DIR:=$(BUILDER_SRC_DIR)/msilbc
