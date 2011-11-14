@@ -291,7 +291,7 @@ multi-arch:
         	if test -f "$$i386_path"; then \
                 	echo "Mixing $$archive and $$i386_path into $$destpath"; \
                 	mkdir -p `dirname $$destpath` ; \
-                	lipo -create -arch armv6 $$archive -arch armv7 $$armv7_path -arch i386 $$i386_path -output $$destpath; \
+                	lipo -create $$archive $$armv7_path $$i386_path -output $$destpath; \
         	else \
                 	echo "WARNING: archive `basename $$archive` exists in arm tree but does not exists in i386 tree."; \
         	fi \
