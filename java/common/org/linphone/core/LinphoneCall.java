@@ -220,8 +220,24 @@ public interface LinphoneCall {
 	 */
 	float getAverageQuality();
 	
-	
+	/**
+	 * Used by ZRTP encryption mechanism.
+	 * @return SAS associated to the main stream [voice]
+	 */
 	String getAuthenticationToken();
+
+	/**
+	 * Used by ZRTP encryption mechanism.
+	 * SAS can be verified manually by the user or automatically using a previously shared secret.
+	 * @return true if the main stream [voice ]SAS was verified.
+	 */
 	boolean isAuthenticationTokenVerified();
+
+	/**
+	 * Used by ZRTP encryption mechanism.
+	 * @param verified true when displayed SAS is correct
+	 */
+	void setAuthenticationTokenVerified(boolean verified);
+
 	boolean isInConference();
 }
