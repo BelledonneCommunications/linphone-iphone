@@ -144,7 +144,8 @@
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
-    LinphoneCall* call = (LinphoneCall*)[notification.userInfo objectForKey:@"call"];
+    LinphoneCall* call;
+	[(NSData*)([notification.userInfo objectForKey:@"call"])  getBytes:&call];
     if (!call) {
         ms_warning("Local notification received with nil call");
         return;
