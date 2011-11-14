@@ -50,8 +50,7 @@ liblinphone_la_LIBADD= \
 if BUILD_WIN32
 liblinphone_la_LIBADD+=$(top_builddir)/oRTP/src/libortp.la
 endif
-
-if ENABLE_TESTS
+if BUILD_TESTS
 noinst_PROGRAMS=test_lsd test_ecc
 
 test_lsd_SOURCES=test_lsd.c

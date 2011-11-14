@@ -3552,7 +3552,12 @@ void linphone_core_set_native_preview_window_id(LinphoneCore *lc, unsigned long 
 void linphone_core_use_preview_window(LinphoneCore *lc, bool_t yesno){
 	lc->use_preview_window=yesno;
 }
-
+/**
+ *returns current device orientation
+ */
+int linphone_core_get_device_rotation(LinphoneCore *lc ) {
+	return lc->device_rotation;
+}
 /**
  * Tells the core the device current orientation. This can be used by capture filters
  * on mobile devices to select between portrait/landscape mode and to produce properly
@@ -3584,6 +3589,7 @@ static MSVideoSizeDef supported_resolutions[]={
 	{	{MS_VIDEO_SIZE_QVGA_H,MS_VIDEO_SIZE_QVGA_W}	,	"qvga-portrait"	},
 	{	{MS_VIDEO_SIZE_QCIF_W,MS_VIDEO_SIZE_QCIF_H}	,	"qcif"	},
 	{	{MS_VIDEO_SIZE_QCIF_H,MS_VIDEO_SIZE_QCIF_W}	,	"qcif-portrait"	},
+	{	{MS_VIDEO_SIZE_IOS_MEDIUM_H,MS_VIDEO_SIZE_IOS_MEDIUM_W}	,	"ios-medium"	},	
 	{	{0,0}			,	NULL	}
 };
 

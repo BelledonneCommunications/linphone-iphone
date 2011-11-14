@@ -43,6 +43,10 @@
 #define PACKAGE_SOUND_DIR "."
 #endif
 
+#ifndef PACKAGE_DATA_DIR
+#define PACKAGE_DATA_DIR "."
+#endif
+
 #ifdef HAVE_GETTEXT
 #include <libintl.h>
 #ifndef _
