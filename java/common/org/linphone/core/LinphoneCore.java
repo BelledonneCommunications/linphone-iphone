@@ -434,6 +434,11 @@ public interface LinphoneCore {
 	 */
 	boolean isEchoCancellationEnabled();
 	/**
+	 * Get echo limiter status (another method of doing echo suppressionn, more brute force)
+	 * @return true if echo limiter is enabled
+	 */
+	boolean isEchoLimiterEnabled();
+	/**
 	 * @param transports used for signaling (TCP, UDP and TLS)
 	 */
 	void setSignalingTransportPorts(Transports transports);
@@ -653,4 +658,5 @@ public interface LinphoneCore {
 	 * @return if media encryption is required for ougtoing calls
 	 */
 	boolean isMediaEncryptionMandatory();
+	
 }

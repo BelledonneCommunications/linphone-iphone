@@ -1,5 +1,6 @@
 # List of source files containing translatable strings.
 gtk/calllogs.c
+gtk/conference.c
 gtk/logging.c
 gtk/support.c
 gtk/chat.c

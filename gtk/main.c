@@ -139,7 +139,7 @@ char *linphone_gtk_get_config_file(const char *filename){
 	if (filename==NULL) filename=CONFIG_FILE;
 	/*try accessing a local file first if exists*/
 	if (access(CONFIG_FILE,F_OK)==0){
-		snprintf(config_file,path_max,"%s",CONFIG_FILE);
+		snprintf(config_file,path_max,"%s",filename);
 	}else{
 #ifdef WIN32
 		const char *appdata=getenv("APPDATA");

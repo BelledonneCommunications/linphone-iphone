@@ -23,7 +23,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 static ms_thread_t pipe_thread;
 static ortp_pipe_t server_pipe=(ortp_pipe_t)-1;
 static gboolean server_pipe_running=TRUE;
-static char *pipe_name;
+static char *pipe_name=NULL;
+
+gchar *make_name(const char *appname){
+	const char *username=getenv("USER");
+	if (username){
+		return g_strdup_printf("%s-%s",appname,username);
+	}
+	return g_strdup(appname);
+}
 
 static gboolean execute_wakeup(char *uri){
 	linphone_gtk_show_main_window();
@@ -54,7 +62,6 @@ static void * server_pipe_thread(void *pointer){
 }
 
 static void linphone_gtk_init_pipe(const char *name){
-	pipe_name=g_strdup(name);
 	server_pipe=ortp_server_pipe_create(name);
 	if (server_pipe==(ortp_pipe_t)-1){
 		g_warning("Fail to create server pipe for name %s: %s",name,strerror(errno));
@@ -63,7 +70,8 @@ static void linphone_gtk_init_pipe(const char *name){
 }
 
 bool_t linphone_gtk_init_instance(const char *app_name, const char *addr_to_call){
-	ortp_pipe_t p=ortp_client_pipe_connect(app_name);
+	pipe_name=make_name(app_name);
+	ortp_pipe_t p=ortp_client_pipe_connect(pipe_name);
 	if (p!=(ortp_pipe_t)-1){
 		uint8_t buf[256]={0};
 		g_message("There is already a running instance.");
@@ -78,7 +86,7 @@ bool_t linphone_gtk_init_instance(const char *app_name, const char *addr_to_call
 		ortp_client_pipe_close(p);
 		return FALSE;
 	}else{
-		linphone_gtk_init_pipe(app_name);
+		linphone_gtk_init_pipe(pipe_name);
 	}
 	return TRUE;
 }
