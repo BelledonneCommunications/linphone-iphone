@@ -17,6 +17,7 @@ clean-srtp:
 
 veryclean-srtp:
 	-cd $(BUILDER_BUILD_DIR)/$(srtp_dir) && make distclean
+	-rm -rf $(BUILDER_BUILD_DIR)/$(srtp_dir)
 	-rm -f $(BUILDER_SRC_DIR)/$(srtp_dir)/configure
 
 clean-makefile-srtp:
