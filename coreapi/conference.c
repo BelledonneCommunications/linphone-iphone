@@ -24,13 +24,14 @@
  */
  
 #include "private.h"
+#include "lpconfig.h"
 
 #include "mediastreamer2/msvolume.h"
 
-static void conference_check_init(LinphoneConference *ctx){
+static void conference_check_init(LinphoneConference *ctx, int samplerate){
 	if (ctx->conf==NULL){
 		MSAudioConferenceParams params;
-		params.samplerate=16000;
+		params.samplerate=samplerate;
 		ctx->conf=ms_audio_conference_new(&params);
 	}
 }
@@ -137,7 +138,7 @@ int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call){
 		ms_error("Already in conference");
 		return -1;
 	}
-	conference_check_init(&lc->conf_ctx);
+	conference_check_init(&lc->conf_ctx, lp_config_get_int(lc->config, "sound","conference_rate",16000));
 	call->params.in_conference=TRUE;
 	call->params.has_video=FALSE;
 	call->params.media_encryption=LinphoneMediaEncryptionNone;
