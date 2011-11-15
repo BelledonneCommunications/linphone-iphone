@@ -45,4 +45,5 @@ As Skype requires that you accept its license, the plugin is not compiled and en
 ZRTP
 liblinphone-sdk depends on the GNU LIBZRTPCPP extension for ZRTP support.
 As the license of this library is GPLv3+ it is not enabled unless the enable_zrtp=yes option is passed to the make command.
+Add liblinphone-sdk/lib/libzrtpcpp.a to XCode. Define sip property media_encryption to "zrtp" in linphonerc.
 Note that activiting ZRTP makes the license of the whole application GPLv3+.
