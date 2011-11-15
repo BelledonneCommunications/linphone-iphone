@@ -35,13 +35,23 @@ extern void libmsilbc_init();
 #ifdef HAVE_AMR
 extern void libmsamr_init();
 #endif
+
+#ifdef HAVE_X264
+extern void libmsx264_init();
+#endif
+#define FRONT_CAM_NAME "AV Capture: Front Camera"
+#define BACK_CAM_NAME "AV Capture: Back Camera"
+
 #if defined (HAVE_SILK)
 extern void libmssilk_init(); 
 #endif
+
 @implementation LinphoneManager
 @synthesize callDelegate;
 @synthesize registrationDelegate;
 @synthesize connectivity;
+@synthesize frontCamId;
+@synthesize backCamId;
 
 -(id) init {
     if ((self= [super init])) {
@@ -124,6 +134,15 @@ extern void libmssilk_init();
 	
 	switch (new_state) {
 			
+		case LinphoneCallStreamsRunning:
+			//check video
+			if (linphone_call_params_video_enabled(linphone_call_get_current_params(currentCall))) {
+				[callDelegate	displayVideoCallFromUI:mCurrentViewController
+											 forUser:lUserName 
+									 withDisplayName:lDisplayName];
+			}
+			break;
+					
 		case LinphoneCallIncomingReceived: 
 			[callDelegate	displayIncomingCallNotigicationFromUI:mCurrentViewController
 														forUser:lUserName 
@@ -517,6 +536,23 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	[self configurePayloadType:"iLBC" fromPrefKey:@"ilbc_preference" withRate:8000];
 	[self configurePayloadType:"PCMU" fromPrefKey:@"pcmu_preference" withRate:8000];
 	[self configurePayloadType:"PCMA" fromPrefKey:@"pcma_preference" withRate:8000];
+	[self configurePayloadType:"G722" fromPrefKey:@"g722_preference" withRate:8000];
+	
+	//get video codecs from linphonerc
+	const MSList *videoCodecs=linphone_core_get_video_codecs(theLinphoneCore);
+	//disable video all codecs
+	for (elem=videoCodecs;elem!=NULL;elem=elem->next){
+		pt=(PayloadType*)elem->data;
+		linphone_core_enable_payload_type(theLinphoneCore,pt,FALSE);
+	}
+	[self configurePayloadType:"MP4V-ES" fromPrefKey:@"mp4v-es_preference" withRate:90000];
+	[self configurePayloadType:"H264" fromPrefKey:@"h264_preference" withRate:90000];
+    [self configurePayloadType:"VP8-DRAFT-0-3-2" fromPrefKey:@"vp8_preference" withRate:90000];
+	
+	bool enableVideo = [[NSUserDefaults standardUserDefaults] boolForKey:@"enable_video_preference"];
+	linphone_core_enable_video(theLinphoneCore, enableVideo, enableVideo);
+	bool enableSrtp = [[NSUserDefaults standardUserDefaults] boolForKey:@"enable_srtp_preference"];
+	linphone_core_set_media_encryption(theLinphoneCore, enableSrtp?LinphoneMediaEncryptionSRTP:LinphoneMediaEncryptionNone);
 	
 	UIDevice* device = [UIDevice currentDevice];
 	bool backgroundSupported = false;
@@ -689,9 +725,11 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 #endif	
 #ifdef HAVE_AMR
     libmsamr_init(); //load amr plugin if present from the liblinphone sdk
-#endif	/*
-	 * Initialize linphone core
-	 */
+#endif	
+#ifdef HAVE_X264
+	libmsx264_init(); //load x264 plugin if present from the liblinphone sdk
+#endif
+	/* Initialize linphone core*/
 	
 	theLinphoneCore = linphone_core_new (&linphonec_vtable
 										 , [confiFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]
@@ -736,12 +774,30 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 											  otherButtonTitles:nil ,nil];
 		[error show];
 	}
+	/*DETECT cameras*/
+	frontCamId= backCamId=nil;
+	char** camlist = (char**)linphone_core_get_video_devices(theLinphoneCore);
+		for (char* cam = *camlist;*camlist!=NULL;cam=*++camlist) {
+			if (strcmp(FRONT_CAM_NAME, cam)==0) {
+				frontCamId = cam;
+				//great set default cam to front
+				linphone_core_set_video_device(theLinphoneCore, cam);
+			}
+			if (strcmp(BACK_CAM_NAME, cam)==0) {
+				backCamId = cam;
+			}
+			
+		}
+
 	if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)] 
 		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground) {
 		//go directly to bg mode
 		[self enterBackgroundMode];
 	}
 
+    ms_warning("Linphone [%s]  started on [%s]"
+               ,linphone_core_get_version()
+               ,[[UIDevice currentDevice].model cStringUsingEncoding:[NSString defaultCStringEncoding]] );
 	
 }
 -(void) becomeActive {
@@ -800,5 +856,6 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
     
     [callDelegate updateUIFromLinphoneState:mCurrentViewController];
 }
+
 
 @end

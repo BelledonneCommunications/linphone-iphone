@@ -43,6 +43,8 @@ typedef enum _Connectivity {
 	UIViewController* mCurrentViewController;
 	Connectivity connectivity;
     FastAddressBook* mFastAddressBook;
+	const char*  frontCamId;
+	const char*  backCamId;
 	
 }
 +(LinphoneManager*) instance;
@@ -59,9 +61,13 @@ typedef enum _Connectivity {
 -(void) kickOffNetworkConnection;
 -(NSString*) getDisplayNameFromAddressBook:(NSString*) number andUpdateCallLog:(LinphoneCallLog*)log; 
 
+
+
 @property (nonatomic, retain) id<LinphoneUICallDelegate> callDelegate;
 @property (nonatomic, retain) id<LinphoneUIRegistrationDelegate> registrationDelegate;
 @property Connectivity connectivity;
+@property (readonly) const char*  frontCamId;
+@property (readonly) const char*  backCamId;
 @end
 
 

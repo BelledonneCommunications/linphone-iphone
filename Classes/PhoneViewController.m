@@ -22,7 +22,7 @@
 #import <AVFoundation/AVAudioSession.h>
 #import <AudioToolbox/AudioToolbox.h>
 #import "LinphoneManager.h"
-
+#import "VideoViewController.h"
 
 
 @implementation PhoneViewController
@@ -55,6 +55,7 @@
 
 @synthesize back;
 @synthesize myTabBarController;
+@synthesize videoViewController;
 
 
 //implements keypad behavior 
@@ -96,7 +97,7 @@
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
-	[[UIApplication sharedApplication] setIdleTimerDisabled:false];
+	if (!mVideoShown) [[UIApplication sharedApplication] setIdleTimerDisabled:false];
 }
 
 
@@ -121,7 +122,9 @@
 	[mute initWithOnImage:[UIImage imageNamed:@"mic_muted.png"]  offImage:[UIImage imageNamed:@"mic_active.png"] ];
 	[speaker initWithOnImage:[UIImage imageNamed:@"Speaker-32-on.png"]  offImage:[UIImage imageNamed:@"Speaker-32-off.png"] ];
 	[erase initWithAddressField:address];
-	
+	self.videoViewController = [[VideoViewController alloc]  initWithNibName:@"VideoViewController" 
+																  bundle:[NSBundle mainBundle]];
+	mVideoShown=FALSE;
 }
 
 
@@ -144,19 +147,22 @@
 	// Release any retained subviews of the main view.
 	// e.g. self.myOutlet = nil;
 }
+- (void) viewWillAppear:(BOOL)animated {
 
+}
 
 - (BOOL)textFieldShouldReturn:(UITextField *)theTextField {
     if (theTextField == address) {
         [address resignFirstResponder];
 		[mDisplayName setText:@""]; //display name only relefvant 
 		
-    }
+    } 
     return YES;
 }
 
 
 -(void) displayDialerFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
+	
 	//cancel local notification, just in case
 	if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]  
 		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground ) {
@@ -168,6 +174,18 @@
 			mIncomingCallActionSheet=nil;
 		}
 	}
+    UIViewController* modalVC = self.modalViewController;
+    
+    if (modalVC != nil) {
+        // clear previous native window ids
+        if (modalVC == self.videoViewController) {
+            mVideoShown=FALSE;
+            linphone_core_set_native_video_window_id([LinphoneManager getLc],0);	
+            linphone_core_set_native_preview_window_id([LinphoneManager getLc],0);
+        }
+		[[UIApplication sharedApplication] setStatusBarHidden:NO animated:NO]; 
+		[self dismissModalViewControllerAnimated:FALSE];//just in case
+    }
 	
 	[address setHidden:false];
 	if (username) {
@@ -210,6 +228,7 @@
 	[address setHidden:true];
 	[incallView setHidden:false];
 	[dialerView setHidden:true];
+	
 }
 -(void) displayCallInProgressFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
 	[self displayIncalViewforUser:username
@@ -228,6 +247,12 @@
 					  withDisplayName:displayName];
 		if ([speaker isOn]) [speaker toggle] ; //preset to off;
 	} 
+}
+
+-(void) displayVideoCallFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
+	[[UIApplication sharedApplication] setStatusBarHidden:YES animated:NO];
+    mVideoShown=TRUE;
+	[self presentModalViewController:self.videoViewController animated:true];
 }
 //status reporting
 -(void) displayStatus:(NSString*) message {

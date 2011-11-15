@@ -94,69 +94,25 @@
 		</dict>
 		<dict>
 			<key>Title</key>
-			<string>Codecs</string>
+			<string>Media</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
 		<dict>
-			<key>DefaultValue</key>
-			<true/>
-			<key>Key</key>
-			<string>speex_16k_preference</string>
+			<key>File</key>
+			<string>audio</string>
 			<key>Title</key>
-			<string>Speex 16Khz</string>
+			<string>Audio</string>
 			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
+			<string>PSChildPaneSpecifier</string>
 		</dict>
 		<dict>
-			<key>DefaultValue</key>
-			<true/>
-			<key>Key</key>
-			<string>speex_8k_preference</string>
+			<key>File</key>
+			<string>video</string>
 			<key>Title</key>
-			<string>Speex 8Khz</string>
+			<string>Video</string>
 			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-		</dict>
-		<dict>
-			<key>DefaultValue</key>
-			<true/>
-			<key>Key</key>
-			<string>gsm_8k_preference</string>
-			<key>Title</key>
-			<string>GSM</string>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-		</dict>
-		<dict>
-			<key>DefaultValue</key>
-			<true/>
-			<key>Key</key>
-			<string>ilbc_preference</string>
-			<key>Title</key>
-			<string>ILBC</string>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-		</dict>
-		<dict>
-			<key>DefaultValue</key>
-			<true/>
-			<key>Key</key>
-			<string>pcmu_preference</string>
-			<key>Title</key>
-			<string>PCMU</string>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-		</dict>
-		<dict>
-			<key>DefaultValue</key>
-			<true/>
-			<key>Key</key>
-			<string>pcma_preference</string>
-			<key>Title</key>
-			<string>PCMA</string>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
+			<string>PSChildPaneSpecifier</string>
 		</dict>
 		<dict>
 			<key>Title</key>
@@ -223,6 +179,16 @@
 				<string>tcp</string>
 				<string>tls</string>
 			</array>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<false/>
+			<key>Key</key>
+			<string>enable_srtp_preference</string>
+			<key>Title</key>
+			<string>Secure rtp</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
 		</dict>
 		<dict>
 			<key>DefaultValue</key>

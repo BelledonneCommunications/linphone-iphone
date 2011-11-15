@@ -1,4 +1,4 @@
-/* UILinphone.h
+/* UICamSwitch.h
  *
  * Copyright (C) 2011  Belledonne Comunications, Grenoble, France
  *
@@ -10,21 +10,22 @@
  *  This program is distributed in the hope that it will be useful,     
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of      
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       
- *  GNU General Public License for more details.                
+ *  GNU Library General Public License for more details.                
  *                                                                      
  *  You should have received a copy of the GNU General Public License   
  *  along with this program; if not, write to the Free Software         
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */       
 
-#import "UICallButton.h"
-#import "UIHangUpButton.h"
-#import "UIDigitButton.h"
-#import "UIToggleButton.h"
-#import "UIMuteButton.h"
-#import "UISpeakerButton.h"
-#import "UIDuration.h"
-#import "UIEraseButton.h"
-#import "LinphoneUIDelegates.h"
-#import "UICamSwitch.h"
-#import "UIPauseResumeButton.h"
+#import <UIKit/UIKit.h>
+
+
+@interface UICamSwitch : UIButton {
+  
+@private
+	char* currentCamId;
+	char* nextCamId;
+	UIView* preview;
+}
+@property (nonatomic, retain) IBOutlet UIView* preview;
+@end
