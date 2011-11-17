@@ -104,6 +104,7 @@ static int lpc_cmd_identify(LinphoneCore *lc, char *args);
 static int lpc_cmd_ringback(LinphoneCore *lc, char *args);
 static int lpc_cmd_conference(LinphoneCore *lc, char *args);
 static int lpc_cmd_zrtp_verified(LinphoneCore *lc, char *args);
+static int lpc_cmd_zrtp_unverified(LinphoneCore *lc, char *args);
 
 /* Command handler helpers */
 static void linphonec_proxy_add(LinphoneCore *lc);
@@ -351,6 +352,9 @@ static LPC_COMMAND advanced_commands[] = {
 	},
 	{ "zrtp-set-verified", lpc_cmd_zrtp_verified,"Set ZRTP SAS verified.",
 		"'Set ZRTP SAS verified'\n"
+	},
+	{ "zrtp-set-unverified", lpc_cmd_zrtp_unverified,"Set ZRTP SAS not verified.",
+		"'Set ZRTP SAS not verified'\n"
 	},
 	{	NULL,NULL,NULL,NULL}
 };
@@ -2556,12 +2560,18 @@ static int lpc_cmd_ringback(LinphoneCore *lc, char *args){
 	return 1;
 }
 
-static int lpc_cmd_zrtp_verified(LinphoneCore *lc, char *args){
+static int zrtp_set_verified(LinphoneCore *lc, char *args, bool_t verified){
 	LinphoneCall *call=linphone_core_get_current_call(lc);
 	if (linphone_call_params_get_media_encryption(linphone_call_get_current_params(call))==LinphoneMediaEncryptionZRTP){
-		linphone_call_set_authentication_token_verified(call,TRUE);
+		linphone_call_set_authentication_token_verified(call,verified);
 	}
 	return 1;
+}
+static int lpc_cmd_zrtp_verified(LinphoneCore *lc, char *args){
+	return zrtp_set_verified(lc,args,TRUE);
+}
+static int lpc_cmd_zrtp_unverified(LinphoneCore *lc, char *args){
+	return zrtp_set_verified(lc,args,FALSE);
 }
 
 /***************************************************************************
