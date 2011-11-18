@@ -22,6 +22,9 @@
 		220ED1A913A9041800AC21E0 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 220ED1A813A9041800AC21E0 /* AVFoundation.framework */; };
 		220ED1AC13A9062600AC21E0 /* nowebcam.h in Headers */ = {isa = PBXBuildFile; fileRef = 220ED1AA13A9062500AC21E0 /* nowebcam.h */; };
 		220ED1AD13A9062600AC21E0 /* nowebcam.c in Sources */ = {isa = PBXBuildFile; fileRef = 220ED1AB13A9062500AC21E0 /* nowebcam.c */; };
+		2211DB9C1476539600DEE054 /* l16.c in Sources */ = {isa = PBXBuildFile; fileRef = 2211DB9B1476539600DEE054 /* l16.c */; };
+		2211DB9F14765CED00DEE054 /* libmssilk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DB9E14765CEC00DEE054 /* libmssilk.a */; };
+		2211DBA1147660BB00DEE054 /* libSKP_SILK_SDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DBA0147660BB00DEE054 /* libSKP_SILK_SDK.a */; };
 		221F589C13AB4FC500D603C9 /* msvideo.c in Sources */ = {isa = PBXBuildFile; fileRef = 221F589B13AB4FC500D603C9 /* msvideo.c */; };
 		221F58A013AB50F800D603C9 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 221F589F13AB50F800D603C9 /* CoreMedia.framework */; };
 		221F58A213AB6F8100D603C9 /* pixconv.c in Sources */ = {isa = PBXBuildFile; fileRef = 221F58A113AB6F8000D603C9 /* pixconv.c */; };
@@ -256,6 +259,9 @@
 		220ED1A813A9041800AC21E0 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		220ED1AA13A9062500AC21E0 /* nowebcam.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nowebcam.h; sourceTree = "<group>"; };
 		220ED1AB13A9062500AC21E0 /* nowebcam.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = nowebcam.c; sourceTree = "<group>"; };
+		2211DB9B1476539600DEE054 /* l16.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = l16.c; sourceTree = "<group>"; };
+		2211DB9E14765CEC00DEE054 /* libmssilk.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmssilk.a; path = "../liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmssilk.a"; sourceTree = "<group>"; };
+		2211DBA0147660BB00DEE054 /* libSKP_SILK_SDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libSKP_SILK_SDK.a; path = "../liblinphone-sdk/apple-darwin/lib/libSKP_SILK_SDK.a"; sourceTree = "<group>"; };
 		221F589913AB4EEE00D603C9 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		221F589B13AB4FC500D603C9 /* msvideo.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = msvideo.c; sourceTree = "<group>"; };
 		221F589D13AB503F00D603C9 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
@@ -508,6 +514,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2211DB9F14765CED00DEE054 /* libmssilk.a in Frameworks */,
 				7066FC0A13E830B800EFC6DC /* libvpx.a in Frameworks */,
 				70E542F113E147CE002BA2C0 /* QuartzCore.framework in Frameworks */,
 				70E542EE13E147C7002BA2C0 /* OpenGLES.framework in Frameworks */,
@@ -537,6 +544,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AACBBE4A0F95108600F1A2B1 /* Foundation.framework in Frameworks */,
+				2211DBA1147660BB00DEE054 /* libSKP_SILK_SDK.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -554,6 +562,8 @@
 		0867D691FE84028FC02AAC07 /* liblinphone */ = {
 			isa = PBXGroup;
 			children = (
+				2211DBA0147660BB00DEE054 /* libSKP_SILK_SDK.a */,
+				2211DB9E14765CEC00DEE054 /* libmssilk.a */,
 				7066FC0913E830B800EFC6DC /* libvpx.a */,
 				70E542F013E147CE002BA2C0 /* QuartzCore.framework */,
 				70E542ED13E147C7002BA2C0 /* OpenGLES.framework */,
@@ -687,6 +697,7 @@
 		222CA5DC11F6CF7600621220 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				2211DB9B1476539600DEE054 /* l16.c */,
 				22512698145F13CE0041FBF2 /* aqsnd.c */,
 				F4D9F25E14583B580035B0D0 /* bitratedriver.c */,
 				F4D9F25F14583B580035B0D0 /* qosanalyzer.c */,
@@ -1269,6 +1280,7 @@
 				F4D9F26014583B580035B0D0 /* bitratedriver.c in Sources */,
 				F4D9F26114583B580035B0D0 /* qosanalyzer.c in Sources */,
 				22512699145F13CE0041FBF2 /* aqsnd.c in Sources */,
+				2211DB9C1476539600DEE054 /* l16.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1346,6 +1358,7 @@
 					TARGET_OS_IPHONE,
 				);
 				GCC_UNROLL_LOOPS = NO;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				HEADER_SEARCH_PATHS = (
 					linphone/mediastreamer2/build/iphone,
 					linphone/mediastreamer2/include,
@@ -1359,6 +1372,10 @@
 					"../liblinphone-sdk/apple-darwin/include",
 				);
 				INSTALL_PATH = /usr/local/lib;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../liblinphone-sdk/apple-darwin/lib\"",
+				);
 				PRODUCT_NAME = linphone;
 				SKIP_INSTALL = YES;
 			};
@@ -1396,6 +1413,7 @@
 					TARGET_OS_IPHONE,
 				);
 				GCC_UNROLL_LOOPS = NO;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				HEADER_SEARCH_PATHS = (
 					linphone/mediastreamer2/build/iphone,
 					linphone/mediastreamer2/include,
@@ -1409,6 +1427,10 @@
 					"../liblinphone-sdk/apple-darwin/include",
 				);
 				INSTALL_PATH = /usr/local/lib;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../liblinphone-sdk/apple-darwin/lib\"",
+				);
 				PRODUCT_NAME = linphone;
 				SKIP_INSTALL = YES;
 			};
@@ -1572,6 +1594,7 @@
 					TARGET_OS_IPHONE,
 				);
 				GCC_UNROLL_LOOPS = NO;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				HEADER_SEARCH_PATHS = (
 					linphone/mediastreamer2/build/iphone,
 					linphone/mediastreamer2/include,
@@ -1585,6 +1608,10 @@
 					"../liblinphone-sdk/apple-darwin/include",
 				);
 				INSTALL_PATH = /usr/local/lib;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../liblinphone-sdk/apple-darwin/lib\"",
+				);
 				PRODUCT_NAME = linphone;
 				SKIP_INSTALL = YES;
 			};
@@ -1600,6 +1627,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "linphone/mediastreamer2/tests/ios/mediastream-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
+					HAVE_SILK,
 					"_BYTE_ORDER=_LITTLE_ENDIAN",
 					ORTP_INET6,
 					ENABLE_TRACE,
@@ -1613,7 +1641,6 @@
 					"PACKAGE=\\\"ortp\\\"",
 					"POSIXTIMER_INTERVAL=10000",
 					IN_LINPHONE,
-					__IOSIOUNIT_ENABLED__,
 					HAVE_EXOSIP_GET_SOCKET,
 					MS2_INTERNAL,
 					VIDEO_ENABLED,
@@ -1650,6 +1677,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "linphone/mediastreamer2/tests/ios/mediastream-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
+					HAVE_SILK,
 					"_BYTE_ORDER=_LITTLE_ENDIAN",
 					ORTP_INET6,
 					ENABLE_TRACE,
@@ -1663,7 +1691,6 @@
 					"PACKAGE=\\\"ortp\\\"",
 					"POSIXTIMER_INTERVAL=10000",
 					IN_LINPHONE,
-					__IOSIOUNIT_ENABLED__,
 					HAVE_EXOSIP_GET_SOCKET,
 					MS2_INTERNAL,
 					VIDEO_ENABLED,
@@ -1697,6 +1724,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "linphone/mediastreamer2/tests/ios/mediastream-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
+					HAVE_SILK,
 					"_BYTE_ORDER=_LITTLE_ENDIAN",
 					ORTP_INET6,
 					ENABLE_TRACE,
@@ -1710,7 +1738,6 @@
 					"PACKAGE=\\\"ortp\\\"",
 					"POSIXTIMER_INTERVAL=10000",
 					IN_LINPHONE,
-					__IOSIOUNIT_ENABLED__,
 					HAVE_EXOSIP_GET_SOCKET,
 					MS2_INTERNAL,
 					VIDEO_ENABLED,

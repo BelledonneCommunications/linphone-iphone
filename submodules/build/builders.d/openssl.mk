@@ -19,13 +19,15 @@ $(OPENSSL_BUILD_DIR)/Configure:
 $(OPENSSL_BUILD_DIR)/Makefile: $(OPENSSL_BUILD_DIR)/Configure
 	cd $(OPENSSL_BUILD_DIR) \
 	&&  host_alias=${host} . $(BUILDER_SRC_DIR)/build/$(config_site) \
-	&& ./Configure -openssldir=$(prefix) --cross-compile-prefix=$$SDK_BIN_PATH/ BSD-generic32 no-asm
+	&& ./Configure --prefix=$(prefix) --cross-compile-prefix=$$SDK_BIN_PATH/ BSD-generic32 no-asm
 
 build-openssl: $(OPENSSL_BUILD_DIR)/Makefile
 	cd $(OPENSSL_BUILD_DIR) &&  host_alias=${host} . $(BUILDER_SRC_DIR)/build/$(config_site) \
-	&& make CC="$$CC" build_crypto build_ssl \
+	&& make CC="$$CC" build_crypto build_ssl libcrypto.pc libssl.pc\
 	&& cp -r include  $(prefix)/ \
-	&& cp lib*.a  $(prefix)/lib 
+	&& cp lib*.a  $(prefix)/lib \
+	&& cp libcrypto.pc $(prefix)/lib/pkgconfig/. \
+	&& cp libssl.pc $(prefix)/lib/pkgconfig/. \
 
 clean-openssl:
 	cd  $(OPENSSL_BUILD_DIR)  && make clean

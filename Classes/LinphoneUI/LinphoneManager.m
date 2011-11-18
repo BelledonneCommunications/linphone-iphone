@@ -547,7 +547,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	}
 	[self configurePayloadType:"MP4V-ES" fromPrefKey:@"mp4v-es_preference" withRate:90000];
 	[self configurePayloadType:"H264" fromPrefKey:@"h264_preference" withRate:90000];
-    [self configurePayloadType:"VP8-DRAFT-0-3-2" fromPrefKey:@"vp8_preference" withRate:90000];
+    [self configurePayloadType:"VP8" fromPrefKey:@"vp8_preference" withRate:90000];
 	
 	bool enableVideo = [[NSUserDefaults standardUserDefaults] boolForKey:@"enable_video_preference"];
 	linphone_core_enable_video(theLinphoneCore, enableVideo, enableVideo);
@@ -564,7 +564,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	} else {
 		isbackgroundModeEnabled=false;
 	}
-	
+
 }
 - (BOOL)isNotIphone3G
 {
@@ -645,42 +645,11 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 			ms_error("cannot get current transport");	
 		}
 		
-		if (mReadStream == nil && transportValue.udp_port>0) { //only for udp
-			int sipsock = linphone_core_get_sip_socket(theLinphoneCore);	
-			//disable keepalive handler
-			linphone_core_enable_keep_alive(theLinphoneCore, false);
-			const char *port;
-			addr=linphone_address_new(linphone_proxy_config_get_addr(proxyCfg));
-			memset(&hints,0,sizeof(hints));
-			hints.ai_family=linphone_core_ipv6_enabled(theLinphoneCore) ? AF_INET6 : AF_INET;
-			port=linphone_address_get_port(addr);
-			if (port==NULL) port="5060";
-			err=getaddrinfo(linphone_address_get_domain(addr),port,&hints,&res);
-			if (err!=0){
-				ms_error("getaddrinfo() failed for %s: %s",linphone_address_get_domain(addr),gai_strerror(err));
-				linphone_address_destroy(addr);
-				return;
-			}
-			err=connect(sipsock,res->ai_addr,res->ai_addrlen);
-			if (err==-1){
-				ms_error("Connect failed: %s",strerror(errno));
-			}
-			freeaddrinfo(res);
-			
-			CFStreamCreatePairWithSocket(NULL, (CFSocketNativeHandle)sipsock, &mReadStream,nil);
-			
-			if (!CFReadStreamSetProperty(mReadStream, kCFStreamNetworkServiceType, kCFStreamNetworkServiceTypeVoIP)) {
-				ms_error("cannot set service type to voip for read stream");
-			}
-			
-			
-			if (!CFReadStreamOpen(mReadStream)) {
-				ms_error("cannot open read stream");
-			}		
-		}
 	}
 	else {
 		ms_warning("Entering lite bg mode");
+		AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+		[audioSession setDelegate:nil];
 		[self destroyLibLinphone];
 	}
 	
@@ -820,17 +789,6 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	if (transportValue.udp_port != 0) {
 		//enable sip keepalive 
 		linphone_core_enable_keep_alive(theLinphoneCore, true);
-	}
-	if (mReadStream !=nil) {
-		//unconnect
-		int socket = linphone_core_get_sip_socket(theLinphoneCore);
-		struct sockaddr hints;
-		memset(&hints,0,sizeof(hints));
-		hints.sa_family=AF_UNSPEC;
-		connect(socket,&hints,sizeof(hints));
-		CFReadStreamClose(mReadStream);
-		CFRelease(mReadStream);
-		mReadStream=nil;
 	}
 }
 -(void) registerLogView:(id<LogView>) view {

@@ -22,28 +22,35 @@ $ sudo mv gas-preprocessor.pl /opt/local/bin/.
 Link macport libtoolize to glibtoolize (sudo ln -s /opt/local/bin/glibtoolize /opt/local/bin/libtoolize)
 Link host's strings to simulator SDK (ln -s  /usr/bin/strings /Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/strings)
 
-You may update variable SDK_VERSION from file submodules/build/iphone-config.site according to your iPhone SDK version. Current is 4.0
-  
-To generate the liblinphone dual arch sdk, once the above commands have been executed:
+*******************************************
+*******GPL versus non GPL******************
+*******************************************
+This sdk can be generated in 2 flavors. Firt is GPL, it means liblinphone include GPL third parties like FFMPEG or x264. 
+If you choose this flavor, your final application must comply with GPL. This is the default mode.
+
+To generate the liblinphone multi arch sdkin GPL mode, once the above commands have been executed:
 	cd submodules/build
 	make all 
 
-In case you upgrade your IOS SDK, you may force configure by using make targets <clean> and <clean-makefile>
+ALTERNATIVELY, you can force liblinphone to use only non GPL code except for liblinphone, mediastremer2, ortp, exosip, osip.
+If you choose this flavor, your final application  is still subject to GPL except if you have an alternative license for liblinphone, mediastremer2, ortp, exosip, osip.
+
+To generate the liblinphone multi arch sdkin non GPL mode, once the above commands have been executed:
+	cd submodules/build
+	make all enable_gpl=no
+
+******************************************
+****Third party, subject to lincense*i****
+******************************************
+The liblinphone-sdk is compiled with third parties code that are subject to license, specially: AMR, SILK and  X264.
+Linphone activates/de-activates these codecs thanks to the preprocessor macros HAVE_SILK, HAVE_AMR, HAVE_X264 positioned in xcode.
+Before embeding these 3 codecs in the final application, make sure to have the right to do so.
+******************************************
+
+
+In case you upgrade your IOS SDK, you may force configure by using make targets <veryclean>
 
 Libraries are available from liblinphone-sdk/
 
-AMR plugin
-liblinphone-sdk contains Linphone ARM plugin. As AMR may require to pay for patents, it is not enabled unless Linphone for iphone is compiled with gcc flag HAVE_AMR.
+liblinphone xcode subproject: This subproject is just for debuggingi purpose, do not compile it until you know exactly what you are doing.
 
-SILK plugin
-liblinphone-sdk contains Linphone SILK plugin.
-As Skype requires that you accept its license, the plugin is not compiled and enabled unless:
-- you compile the SDK with enable_silk=yes flag (make);
-- you compile the UI with HAVE_SILK preprocessor macro (xcode). 
-- you compile add libmssilk.so to the list a library (xcode).
-
-ZRTP
-liblinphone-sdk depends on the GNU LIBZRTPCPP extension for ZRTP support.
-As the license of this library is GPLv3+ it is not enabled unless the enable_zrtp=yes option is passed to the make command.
-Add liblinphone-sdk/lib/libzrtpcpp.a to XCode. Define sip property media_encryption to "zrtp" in linphonerc.
-Note that activiting ZRTP makes the license of the whole application GPLv3+.

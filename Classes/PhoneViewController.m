@@ -265,9 +265,9 @@
 
 
 -(void) displayIncomingCallNotigicationFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
-	
+
 	if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)] 
-		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground) {
+		&& [UIApplication sharedApplication].applicationState !=  UIApplicationStateActive) {
 		// Create a new notification
 		UILocalNotification* notif = [[[UILocalNotification alloc] init] autorelease];
 		if (notif)

@@ -38,3 +38,4 @@ RANLIB=${SDK_BIN_PATH}/ranlib
 
 CPPFLAGS="-Dasm=__asm"
 LDFLAGS="-Wl,-syslibroot,${SYSROOT_PATH} -framework CFNetwork" 
+OBJCFLAGS="-x objective-c -fexceptions -fasm-blocks -gdwarf-2 -fobjc-abi-version=2 -fobjc-legacy-dispatch"

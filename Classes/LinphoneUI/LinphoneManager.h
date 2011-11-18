@@ -33,7 +33,6 @@ typedef enum _Connectivity {
 @private
 	SCNetworkReachabilityContext proxyReachabilityContext;
 	SCNetworkReachabilityRef proxyReachability;
-	CFReadStreamRef mReadStream;
 	NSTimer* mIterateTimer;
 	id<LogView> mLogView;	
 	bool isbackgroundModeEnabled;

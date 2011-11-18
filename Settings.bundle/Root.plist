@@ -192,7 +192,7 @@
 		</dict>
 		<dict>
 			<key>DefaultValue</key>
-			<false/>
+			<true/>
 			<key>Key</key>
 			<string>backgroundmode_preference</string>
 			<key>Title</key>

@@ -19,11 +19,33 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #
 ############################################################################
-all:
-	make -f  builder-iphone-os.mk  all \
-	&& make -f  builder-iphone-simulator.mk all \
-	&& make -f  builder-iphone-os.mk   host=armv7-apple-darwin all \
-	&& make -f builder-iphone-os.mk delivery-sdk
+enable_gpl=yes
+
+.NOTPARALLEL all: build warning
+ifeq ($(enable_gpl),yes)
+warning:
+	@echo 
+	@echo "*****************************************************************"
+	@echo "*****************************************************************"
+	@echo "*****CAUTION, this liblinphone SDK is built using GPL code ******"
+	@echo "*****To disable gpl code, use make enable_gpl=no    *************"
+	@echo "*****************************************************************"
+	@echo "*****************************************************************"
+else
+warning:
+	@echo 
+	@echo "*****************************************************************"
+	@echo "*****************************************************************"
+	@echo "*****linphone SDK without GPL code                         ******"
+	@echo "*****************************************************************"
+	@echo "*****************************************************************"
+endif
+
+build:
+	make -f  builder-iphone-os.mk  all enable_gpl=$(enable_gpl) \
+	&& make -f  builder-iphone-simulator.mk all enable_gpl=$(enable_gpl)\
+	&& make -f  builder-iphone-os.mk   host=armv7-apple-darwin all enable_gpl=$(enable_gpl)\
+	&& make -f builder-iphone-os.mk delivery-sdk 
 clean:
 	make -f  builder-iphone-simulator.mk  clean \
 	&&  make -f  builder-iphone-os.mk  clean \

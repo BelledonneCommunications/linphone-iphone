@@ -21,8 +21,6 @@
 ############################################################################
  
 host?=armv6-apple-darwin
-enable_zrtp?=no
-enable_silk?=no
 config_site:=iphone-config.site
 library_mode:= --disable-shared --enable-static
 linphone_configure_controls=  \
@@ -38,21 +36,11 @@ linphone_configure_controls=  \
 			      --disable-x11 \
                               --with-gsm=$(prefix) \
 			      --disable-tests \
-                              LIBZRTPCPP_CFLAGS="-I$(prefix)/include" \
-			      LIBZRTPCPP_LIBS="-L$(prefix)/lib -lzrtpcpp -lcrypto" \
-			      SRTP_LIBS="-L$(prefix)/lib -lsrtp -lcrypto" \
-			      SRTP_CFLAGS="-I$(prefix)/include" \
-                              --enable-vp8 \
+                              --with-srtp=$(prefix) \
                               SPEEX_CFLAGS="-I$(prefix)/include" \
                               SPEEXDSP_CFLAGS="-I$(prefix)/include" \
 			      SPEEXDSP_LIBS="-L$(prefix)/lib -lspeexdsp" \
-                              SPEEX_LIBS="-L$(prefix)/lib -lspeexdsp -lspeex " \
-                              OPENSSL_CFLAGS="-I$(prefix)/include" \
-                              OPENSSL_LIBS="-L$(prefix)/lib -lssl -lcrypto" 
-ifeq ($(enable_zrtp),yes)
-	linphone_configure_controls+= --with-srtp=$(prefix) --enable-zrtp=yes --disable-tests
-endif
-
+                              SPEEX_LIBS="-L$(prefix)/lib -lspeexdsp -lspeex " 
 
 #path
 BUILDER_SRC_DIR?=$(shell pwd)/../
@@ -61,15 +49,34 @@ BUILDER_BUILD_DIR?=$(shell pwd)/../build-$(host)
 LINPHONE_SRC_DIR=$(BUILDER_SRC_DIR)/linphone
 LINPHONE_BUILD_DIR=$(BUILDER_BUILD_DIR)/linphone
 
-osip_dir?=externals/osip
+all: build-linphone build-msilbc build-msamr build-msx264 build-mssilk
 
-eXosip_dir?=externals/exosip
+$(LINPHONE_BUILD_DIR)/enable_gpl: 
+	mkdir -p $(LINPHONE_BUILD_DIR)
+	touch $(LINPHONE_BUILD_DIR)/enable_gpl
+	rm -f $(LINPHONE_BUILD_DIR)/disable_gpl
+	cd $(LINPHONE_BUILD_DIR) && rm -f Makefile && rm -f oRTP/Makefile && rm -f mediastreamer2/Makefile 
 
-speex_dir?=externals/speex
+$(LINPHONE_BUILD_DIR)/disable_gpl: 
+	mkdir -p $(LINPHONE_BUILD_DIR)
+	touch $(LINPHONE_BUILD_DIR)/disable_gpl
+	rm -f $(LINPHONE_BUILD_DIR)/enable_gpl
+	cd $(LINPHONE_BUILD_DIR) && rm -f Makefile && rm -f oRTP/Makefile && rm -f mediastreamer2/Makefile 
 
-gsm_dir?=externals/gsm
+ifeq ($(enable_gpl),yes) 
+linphone_configure_controls+= --enable-ffmpeg --enable-zrtp
+detect_gpl_mode_switch: $(LINPHONE_BUILD_DIR)/enable_gpl
+	
+else
+linphone_configure_controls+= --disable-ffmpeg --disable-zrtp
+detect_gpl_mode_switch: $(LINPHONE_BUILD_DIR)/disable_gpl
+	
+endif
 
-zrtpcpp_dir?=externals/zrtpcpp
+osip_dir=externals/osip
+eXosip_dir=externals/exosip
+speex_dir=externals/speex
+gsm_dir=externals/gsm
 
 MSILBC_SRC_DIR:=$(BUILDER_SRC_DIR)/msilbc
 MSILBC_BUILD_DIR:=$(BUILDER_BUILD_DIR)/msilbc
@@ -85,7 +92,6 @@ endif
 
 prefix?=$(BUILDER_SRC_DIR)/../liblinphone-sdk/$(host)
 
-all: build-linphone build-msilbc build-msamr build-msx264 build-mssilk
 
 clean-makefile: clean-makefile-linphone
 clean: clean-linphone
@@ -97,7 +103,7 @@ veryclean: veryclean-linphone
 	rm -rf $(BUILDER_BUILD_DIR)
 
 
-.NOTPARALLEL build-linphone: init build-openssl build-srtp build-zrtpcpp build-osip2 build-eXosip2  build-speex build-libgsm build-ffmpeg build-libvpx $(LINPHONE_BUILD_DIR)/Makefile
+.NOTPARALLEL build-linphone: init build-openssl build-srtp build-zrtpcpp build-osip2 build-eXosip2  build-speex build-libgsm build-ffmpeg build-libvpx detect_gpl_mode_switch $(LINPHONE_BUILD_DIR)/Makefile
 	cd $(LINPHONE_BUILD_DIR)  && export PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig export CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) make newdate &&  make  && make install
 
 clean-linphone: clean-osip2 clean-eXosip2 clean-speex clean-libgsm  clean-srtp clean-zrtpcpp clean-msilbc clean-libilbc clean-openssl clean-msamr clean-mssilk clean-ffmpeg clean-libvpx clean-msx264 
@@ -166,7 +172,7 @@ $(BUILDER_BUILD_DIR)/$(eXosip_dir)/Makefile: $(BUILDER_SRC_DIR)/$(eXosip_dir)/co
 	mkdir -p $(BUILDER_BUILD_DIR)/$(eXosip_dir)
 	cd $(BUILDER_BUILD_DIR)/$(eXosip_dir)/\
 	&& PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig  CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
-	$(BUILDER_SRC_DIR)/$(eXosip_dir)/configure -prefix=$(prefix) --host=$(host) ${library_mode} CFLAGS="-I$(prefix)/include -L$(prefix)/lib -lcrypto" --enable-openssl  --disable-tools 
+	$(BUILDER_SRC_DIR)/$(eXosip_dir)/configure -prefix=$(prefix) --host=$(host) ${library_mode} CFLAGS="-I$(prefix)/include -L$(prefix)/lib -lcrypto -DMULTITASKING_ENABLED" --enable-openssl  --disable-tools 
 
 build-eXosip2: $(BUILDER_BUILD_DIR)/$(eXosip_dir)/Makefile
 	 cd $(BUILDER_BUILD_DIR)/$(eXosip_dir)  \
