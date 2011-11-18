@@ -84,6 +84,17 @@
 		346A75C814619F73005C9D07 /* IncallViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 222A483212F7176F0075F07F /* IncallViewController.m */; };
 		346A75CF14628F02005C9D07 /* UIPauseResumeButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 346A75CE14628F02005C9D07 /* UIPauseResumeButton.m */; };
 		346A75D21462A786005C9D07 /* CallDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 346A75D11462A786005C9D07 /* CallDelegate.m */; };
+		34AB0AA914714D8700CA32CC /* ajouter.png in Resources */ = {isa = PBXBuildFile; fileRef = 34AB0A9E14714D8700CA32CC /* ajouter.png */; };
+		34AB0AAA14714D8700CA32CC /* clavier.png in Resources */ = {isa = PBXBuildFile; fileRef = 34AB0A9F14714D8700CA32CC /* clavier.png */; };
+		34AB0AAB14714D8700CA32CC /* contact.png in Resources */ = {isa = PBXBuildFile; fileRef = 34AB0AA014714D8700CA32CC /* contact.png */; };
+		34AB0AAC14714D8700CA32CC /* effacer.png in Resources */ = {isa = PBXBuildFile; fileRef = 34AB0AA114714D8700CA32CC /* effacer.png */; };
+		34AB0AAD14714D8700CA32CC /* grouper.png in Resources */ = {isa = PBXBuildFile; fileRef = 34AB0AA214714D8700CA32CC /* grouper.png */; };
+		34AB0AAE14714D8700CA32CC /* HP_inverse.png in Resources */ = {isa = PBXBuildFile; fileRef = 34AB0AA314714D8700CA32CC /* HP_inverse.png */; };
+		34AB0AAF14714D8700CA32CC /* HP.png in Resources */ = {isa = PBXBuildFile; fileRef = 34AB0AA414714D8700CA32CC /* HP.png */; };
+		34AB0AB014714D8700CA32CC /* micro_inverse.png in Resources */ = {isa = PBXBuildFile; fileRef = 34AB0AA514714D8700CA32CC /* micro_inverse.png */; };
+		34AB0AB114714D8700CA32CC /* micro.png in Resources */ = {isa = PBXBuildFile; fileRef = 34AB0AA614714D8700CA32CC /* micro.png */; };
+		34AB0AB214714D8700CA32CC /* pause_inactif.png in Resources */ = {isa = PBXBuildFile; fileRef = 34AB0AA714714D8700CA32CC /* pause_inactif.png */; };
+		34AB0AB314714D8700CA32CC /* pause.png in Resources */ = {isa = PBXBuildFile; fileRef = 34AB0AA814714D8700CA32CC /* pause.png */; };
 		34FD9BC0146ACC05004AB726 /* addcall-green.png in Resources */ = {isa = PBXBuildFile; fileRef = 34FD9BB7146ACC05004AB726 /* addcall-green.png */; };
 		34FD9BC1146ACC05004AB726 /* conf_merge.png in Resources */ = {isa = PBXBuildFile; fileRef = 34FD9BB8146ACC05004AB726 /* conf_merge.png */; };
 		34FD9BC2146ACC05004AB726 /* mic_active.png in Resources */ = {isa = PBXBuildFile; fileRef = 34FD9BB9146ACC05004AB726 /* mic_active.png */; };
@@ -414,6 +425,17 @@
 		346A75CE14628F02005C9D07 /* UIPauseResumeButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIPauseResumeButton.m; sourceTree = "<group>"; };
 		346A75D01462A786005C9D07 /* CallDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallDelegate.h; sourceTree = "<group>"; };
 		346A75D11462A786005C9D07 /* CallDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallDelegate.m; sourceTree = "<group>"; };
+		34AB0A9E14714D8700CA32CC /* ajouter.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ajouter.png; path = Resources/ajouter.png; sourceTree = "<group>"; };
+		34AB0A9F14714D8700CA32CC /* clavier.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = clavier.png; path = Resources/clavier.png; sourceTree = "<group>"; };
+		34AB0AA014714D8700CA32CC /* contact.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = contact.png; path = Resources/contact.png; sourceTree = "<group>"; };
+		34AB0AA114714D8700CA32CC /* effacer.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = effacer.png; path = Resources/effacer.png; sourceTree = "<group>"; };
+		34AB0AA214714D8700CA32CC /* grouper.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = grouper.png; path = Resources/grouper.png; sourceTree = "<group>"; };
+		34AB0AA314714D8700CA32CC /* HP_inverse.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = HP_inverse.png; path = Resources/HP_inverse.png; sourceTree = "<group>"; };
+		34AB0AA414714D8700CA32CC /* HP.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = HP.png; path = Resources/HP.png; sourceTree = "<group>"; };
+		34AB0AA514714D8700CA32CC /* micro_inverse.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = micro_inverse.png; path = Resources/micro_inverse.png; sourceTree = "<group>"; };
+		34AB0AA614714D8700CA32CC /* micro.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = micro.png; path = Resources/micro.png; sourceTree = "<group>"; };
+		34AB0AA714714D8700CA32CC /* pause_inactif.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pause_inactif.png; path = Resources/pause_inactif.png; sourceTree = "<group>"; };
+		34AB0AA814714D8700CA32CC /* pause.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pause.png; path = Resources/pause.png; sourceTree = "<group>"; };
 		34FD9BB7146ACC05004AB726 /* addcall-green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "addcall-green.png"; path = "Resources/addcall-green.png"; sourceTree = "<group>"; };
 		34FD9BB8146ACC05004AB726 /* conf_merge.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = conf_merge.png; path = Resources/conf_merge.png; sourceTree = "<group>"; };
 		34FD9BB9146ACC05004AB726 /* mic_active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = mic_active.png; path = Resources/mic_active.png; sourceTree = "<group>"; };
@@ -871,6 +893,17 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				34AB0A9E14714D8700CA32CC /* ajouter.png */,
+				34AB0A9F14714D8700CA32CC /* clavier.png */,
+				34AB0AA014714D8700CA32CC /* contact.png */,
+				34AB0AA114714D8700CA32CC /* effacer.png */,
+				34AB0AA214714D8700CA32CC /* grouper.png */,
+				34AB0AA314714D8700CA32CC /* HP_inverse.png */,
+				34AB0AA414714D8700CA32CC /* HP.png */,
+				34AB0AA514714D8700CA32CC /* micro_inverse.png */,
+				34AB0AA614714D8700CA32CC /* micro.png */,
+				34AB0AA714714D8700CA32CC /* pause_inactif.png */,
+				34AB0AA814714D8700CA32CC /* pause.png */,
 				34FD9BC9146ACD76004AB726 /* contact_orange.png */,
 				34FD9BB7146ACC05004AB726 /* addcall-green.png */,
 				34FD9BB8146ACC05004AB726 /* conf_merge.png */,
@@ -1032,6 +1065,17 @@
 				34FD9BC7146ACC05004AB726 /* Speaker-32-off.png in Resources */,
 				34FD9BC8146ACC05004AB726 /* Speaker-32-on.png in Resources */,
 				34FD9BCA146ACD76004AB726 /* contact_orange.png in Resources */,
+				34AB0AA914714D8700CA32CC /* ajouter.png in Resources */,
+				34AB0AAA14714D8700CA32CC /* clavier.png in Resources */,
+				34AB0AAB14714D8700CA32CC /* contact.png in Resources */,
+				34AB0AAC14714D8700CA32CC /* effacer.png in Resources */,
+				34AB0AAD14714D8700CA32CC /* grouper.png in Resources */,
+				34AB0AAE14714D8700CA32CC /* HP_inverse.png in Resources */,
+				34AB0AAF14714D8700CA32CC /* HP.png in Resources */,
+				34AB0AB014714D8700CA32CC /* micro_inverse.png in Resources */,
+				34AB0AB114714D8700CA32CC /* micro.png in Resources */,
+				34AB0AB214714D8700CA32CC /* pause_inactif.png in Resources */,
+				34AB0AB314714D8700CA32CC /* pause.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

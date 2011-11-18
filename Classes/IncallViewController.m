@@ -90,8 +90,8 @@ int callCount(LinphoneCore* lc) {
 - (void)viewDidLoad {
     [super viewDidLoad];
 	//Controls
-	[mute initWithOnImage:[UIImage imageNamed:@"mic_muted.png"]  offImage:[UIImage imageNamed:@"mic_active.png"] ];
-    [speaker initWithOnImage:[UIImage imageNamed:@"Speaker-32-on.png"]  offImage:[UIImage imageNamed:@"Speaker-32-off.png"] ];
+	[mute initWithOnImage:[UIImage imageNamed:@"micro_inverse.png"]  offImage:[UIImage imageNamed:@"micro.png"] ];
+    [speaker initWithOnImage:[UIImage imageNamed:@"HP_inverse.png"]  offImage:[UIImage imageNamed:@"HP.png"] ];
 	
 
 	//Dialer init
@@ -139,10 +139,13 @@ int callCount(LinphoneCore* lc) {
 -(void) pauseCallPressed {
     if (!selectedCall)
         return;
-    if (linphone_call_get_state(selectedCall) == LinphoneCallPaused)
+    if (linphone_call_get_state(selectedCall) == LinphoneCallPaused) {
+        [pause setSelected:NO];
         linphone_core_resume_call([LinphoneManager getLc], selectedCall);
-    else
+    }else{
         linphone_core_pause_call([LinphoneManager getLc], selectedCall);
+        [pause setSelected:YES];
+    }
 }
 
 
@@ -261,12 +264,12 @@ int callCount(LinphoneCore* lc) {
         else if (linphone_call_get_state(selectedCall)==LinphoneCallPaused) {
             [pause setHidden:NO];
             //[pause setTitle:@"Resume" forState:UIControlStateNormal];
-            pause.selected = YES;
+            // pause.selected = YES;
             pause.highlighted = NO;
         } else if (callCount(lc) == callsCount && callsCount == 1) {
             [pause setHidden:NO];
             //[pause setTitle:@"Pause" forState:UIControlStateNormal];
-            pause.selected = NO;
+            // pause.selected = NO;
             pause.highlighted = NO;
         } else {
             [pause setHidden:YES];
@@ -493,7 +496,7 @@ int callCount(LinphoneCore* lc) {
         [self updateCell:cell at:indexPath withCall: [self retrieveCallAtIndex:indexPath.row inConference:NO]
             conferenceActive:linphone_core_is_in_conference(lc)];
 
-    cell.userInteractionEnabled = YES;
+    cell.userInteractionEnabled = YES; 
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     //cell.selectionStyle = UITableViewCellSelectionStyleBlue;
     
@@ -503,7 +506,7 @@ int callCount(LinphoneCore* lc) {
     UIImage *theImage = [UIImage imageWithContentsOfFile:path];
     cell.imageView.image = theImage;*/
     return cell;
-}
+} 
 
 
 // UITableViewDataSource (required)

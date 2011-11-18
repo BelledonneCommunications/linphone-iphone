@@ -156,7 +156,6 @@
 		222CA78511F6CFB100621220 /* sipsetup.c in Sources */ = {isa = PBXBuildFile; fileRef = 222CA76311F6CFB100621220 /* sipsetup.c */; };
 		222CA78611F6CFB100621220 /* sipsetup.h in Headers */ = {isa = PBXBuildFile; fileRef = 222CA76411F6CFB100621220 /* sipsetup.h */; };
 		2252935B12F6CA4700DD9BFB /* ec-calibrator.c in Sources */ = {isa = PBXBuildFile; fileRef = 2252935A12F6CA4700DD9BFB /* ec-calibrator.c */; };
-		225AA2DF144F0AA800BA809B /* libSKP_SILK_SDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 225AA2DE144F0AA800BA809B /* libSKP_SILK_SDK.a */; };
 		225AA2E1144F1C6600BA809B /* bitratedriver.c in Sources */ = {isa = PBXBuildFile; fileRef = 225AA2E0144F1C6600BA809B /* bitratedriver.c */; };
 		225AA2E3144F1E3400BA809B /* qosanalyzer.c in Sources */ = {isa = PBXBuildFile; fileRef = 225AA2E2144F1E3400BA809B /* qosanalyzer.c */; };
 		225AA2FD1451A95400BA809B /* conference.c in Sources */ = {isa = PBXBuildFile; fileRef = 225AA2FC1451A95400BA809B /* conference.c */; };
@@ -188,6 +187,7 @@
 		22FC56A813CB69FB002FD0F1 /* qualityindicator.c in Sources */ = {isa = PBXBuildFile; fileRef = 22FC56A713CB69FA002FD0F1 /* qualityindicator.c */; };
 		22FC56AA13CB6A4F002FD0F1 /* bitratecontrol.c in Sources */ = {isa = PBXBuildFile; fileRef = 22FC56A913CB6A4F002FD0F1 /* bitratecontrol.c */; };
 		3440A54B14697B570076355C /* l16.c in Sources */ = {isa = PBXBuildFile; fileRef = 3440A54A14697B570076355C /* l16.c */; };
+		34AB0AB814725C9900CA32CC /* ortp_srtp.c in Sources */ = {isa = PBXBuildFile; fileRef = 34AB0AB714725C9900CA32CC /* ortp_srtp.c */; };
 		7014533C13FA7ECA00A01D86 /* zrtp.h in Headers */ = {isa = PBXBuildFile; fileRef = 7014533B13FA7ECA00A01D86 /* zrtp.h */; };
 		7014533E13FA841E00A01D86 /* zrtp.c in Sources */ = {isa = PBXBuildFile; fileRef = 7014533D13FA841E00A01D86 /* zrtp.c */; };
 		70E542EE13E147C7002BA2C0 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542ED13E147C7002BA2C0 /* OpenGLES.framework */; };
@@ -384,7 +384,6 @@
 		222CA76311F6CFB100621220 /* sipsetup.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sipsetup.c; sourceTree = "<group>"; };
 		222CA76411F6CFB100621220 /* sipsetup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sipsetup.h; sourceTree = "<group>"; };
 		2252935A12F6CA4700DD9BFB /* ec-calibrator.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "ec-calibrator.c"; path = "linphone/coreapi/ec-calibrator.c"; sourceTree = SOURCE_ROOT; };
-		225AA2DE144F0AA800BA809B /* libSKP_SILK_SDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libSKP_SILK_SDK.a; path = "../liblinphone-sdk/apple-darwin/lib/libSKP_SILK_SDK.a"; sourceTree = "<group>"; };
 		225AA2E0144F1C6600BA809B /* bitratedriver.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = bitratedriver.c; sourceTree = "<group>"; };
 		225AA2E2144F1E3400BA809B /* qosanalyzer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = qosanalyzer.c; sourceTree = "<group>"; };
 		225AA2FC1451A95400BA809B /* conference.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = conference.c; sourceTree = "<group>"; };
@@ -420,6 +419,7 @@
 		22FC56A713CB69FA002FD0F1 /* qualityindicator.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = qualityindicator.c; sourceTree = "<group>"; };
 		22FC56A913CB6A4F002FD0F1 /* bitratecontrol.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = bitratecontrol.c; sourceTree = "<group>"; };
 		3440A54A14697B570076355C /* l16.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = l16.c; sourceTree = "<group>"; };
+		34AB0AB714725C9900CA32CC /* ortp_srtp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ortp_srtp.c; sourceTree = "<group>"; };
 		7014533B13FA7ECA00A01D86 /* zrtp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zrtp.h; sourceTree = "<group>"; };
 		7014533D13FA841E00A01D86 /* zrtp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zrtp.c; sourceTree = "<group>"; };
 		70E542ED13E147C7002BA2C0 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
@@ -434,7 +434,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				225AA2DF144F0AA800BA809B /* libSKP_SILK_SDK.a in Frameworks */,
 				70E542F113E147CE002BA2C0 /* QuartzCore.framework in Frameworks */,
 				70E542EE13E147C7002BA2C0 /* OpenGLES.framework in Frameworks */,
 				221F58A013AB50F800D603C9 /* CoreMedia.framework in Frameworks */,
@@ -475,7 +474,6 @@
 		0867D691FE84028FC02AAC07 /* liblinphone */ = {
 			isa = PBXGroup;
 			children = (
-				225AA2DE144F0AA800BA809B /* libSKP_SILK_SDK.a */,
 				70E542F013E147CE002BA2C0 /* QuartzCore.framework */,
 				70E542ED13E147C7002BA2C0 /* OpenGLES.framework */,
 				221F589F13AB50F800D603C9 /* CoreMedia.framework */,
@@ -701,6 +699,7 @@
 		222CA6B611F6CF9F00621220 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				34AB0AB714725C9900CA32CC /* ortp_srtp.c */,
 				7014533D13FA841E00A01D86 /* zrtp.c */,
 				222CA6B711F6CF9F00621220 /* .gitignore */,
 				222CA6B811F6CF9F00621220 /* avprofile.c */,
@@ -1121,6 +1120,7 @@
 				225AA2FD1451A95400BA809B /* conference.c in Sources */,
 				22985D9314643BEF005CA0B5 /* aqsnd.c in Sources */,
 				3440A54B14697B570076355C /* l16.c in Sources */,
+				34AB0AB814725C9900CA32CC /* ortp_srtp.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1199,6 +1199,7 @@
 					TARGET_OS_IPHONE,
 				);
 				GCC_UNROLL_LOOPS = NO;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				HEADER_SEARCH_PATHS = (
 					linphone/mediastreamer2/build/iphone,
 					linphone/mediastreamer2/include,
@@ -1251,6 +1252,7 @@
 					TARGET_OS_IPHONE,
 				);
 				GCC_UNROLL_LOOPS = NO;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				HEADER_SEARCH_PATHS = (
 					linphone/mediastreamer2/build/iphone,
 					linphone/mediastreamer2/include,
@@ -1429,6 +1431,7 @@
 					TARGET_OS_IPHONE,
 				);
 				GCC_UNROLL_LOOPS = NO;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				HEADER_SEARCH_PATHS = (
 					linphone/mediastreamer2/build/iphone,
 					linphone/mediastreamer2/include,
