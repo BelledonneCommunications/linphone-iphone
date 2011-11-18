@@ -59,7 +59,6 @@
 									<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 									<int key="IBUIContentHorizontalAlignment">0</int>
 									<int key="IBUIContentVerticalAlignment">0</int>
-									<string key="IBUINormalTitle">&lt;-</string>
 									<object class="NSColor" key="IBUIHighlightedTitleColor" id="923326808">
 										<int key="NSColorSpace">3</int>
 										<bytes key="NSWhite">MQA</bytes>
@@ -72,9 +71,9 @@
 										<int key="NSColorSpace">3</int>
 										<bytes key="NSWhite">MC41AA</bytes>
 									</object>
-									<object class="NSCustomResource" key="IBUINormalBackgroundImage" id="553476442">
+									<object class="NSCustomResource" key="IBUINormalImage">
 										<string key="NSClassName">NSImage</string>
-										<string key="NSResourceName">clavier-01-106px.png</string>
+										<string key="NSResourceName">effacer.png</string>
 									</object>
 									<object class="IBUIFontDescription" key="IBUIFontDescription" id="857420967">
 										<string key="name">Helvetica-Bold</string>
@@ -216,7 +215,10 @@
 								<bytes key="NSRGB">MC4xOTYwNzg0MyAwLjMwOTgwMzkzIDAuNTIxNTY4NjYAA</bytes>
 							</object>
 							<reference key="IBUINormalTitleShadowColor" ref="177190558"/>
-							<reference key="IBUINormalBackgroundImage" ref="553476442"/>
+							<object class="NSCustomResource" key="IBUINormalBackgroundImage" id="393925159">
+								<string key="NSClassName">NSImage</string>
+								<string key="NSResourceName">clavier-01-106px.png</string>
+							</object>
 							<reference key="IBUIFontDescription" ref="857420967"/>
 							<reference key="IBUIFont" ref="657314226"/>
 						</object>
@@ -239,7 +241,7 @@
 								<bytes key="NSRGB">MC4xOTYwNzg0MyAwLjMwOTgwMzkzIDAuNTIxNTY4NjYAA</bytes>
 							</object>
 							<reference key="IBUINormalTitleShadowColor" ref="177190558"/>
-							<reference key="IBUINormalBackgroundImage" ref="553476442"/>
+							<reference key="IBUINormalBackgroundImage" ref="393925159"/>
 							<reference key="IBUIFontDescription" ref="857420967"/>
 							<reference key="IBUIFont" ref="657314226"/>
 						</object>
@@ -288,7 +290,7 @@
 								<bytes key="NSRGB">MC4xOTYwNzg0MyAwLjMwOTgwMzkzIDAuNTIxNTY4NjYAA</bytes>
 							</object>
 							<reference key="IBUINormalTitleShadowColor" ref="177190558"/>
-							<reference key="IBUINormalBackgroundImage" ref="553476442"/>
+							<reference key="IBUINormalBackgroundImage" ref="393925159"/>
 							<reference key="IBUIFontDescription" ref="857420967"/>
 							<reference key="IBUIFont" ref="657314226"/>
 						</object>
@@ -311,7 +313,7 @@
 								<bytes key="NSRGB">MC4xOTYwNzg0MyAwLjMwOTgwMzkzIDAuNTIxNTY4NjYAA</bytes>
 							</object>
 							<reference key="IBUINormalTitleShadowColor" ref="177190558"/>
-							<reference key="IBUINormalBackgroundImage" ref="553476442"/>
+							<reference key="IBUINormalBackgroundImage" ref="393925159"/>
 							<reference key="IBUIFontDescription" ref="857420967"/>
 							<reference key="IBUIFont" ref="657314226"/>
 						</object>
@@ -334,7 +336,7 @@
 								<bytes key="NSRGB">MC4xOTYwNzg0MyAwLjMwOTgwMzkzIDAuNTIxNTY4NjYAA</bytes>
 							</object>
 							<reference key="IBUINormalTitleShadowColor" ref="177190558"/>
-							<reference key="IBUINormalBackgroundImage" ref="553476442"/>
+							<reference key="IBUINormalBackgroundImage" ref="393925159"/>
 							<reference key="IBUIFontDescription" ref="857420967"/>
 							<reference key="IBUIFont" ref="657314226"/>
 						</object>
@@ -384,7 +386,7 @@
 								<bytes key="NSRGB">MC4xOTYwNzg0MyAwLjMwOTgwMzkzIDAuNTIxNTY4NjYAA</bytes>
 							</object>
 							<reference key="IBUINormalTitleShadowColor" ref="177190558"/>
-							<reference key="IBUINormalBackgroundImage" ref="553476442"/>
+							<reference key="IBUINormalBackgroundImage" ref="393925159"/>
 							<reference key="IBUIFontDescription" ref="857420967"/>
 							<reference key="IBUIFont" ref="657314226"/>
 						</object>
@@ -407,7 +409,7 @@
 								<bytes key="NSRGB">MC4xOTYwNzg0MyAwLjMwOTgwMzkzIDAuNTIxNTY4NjYAA</bytes>
 							</object>
 							<reference key="IBUINormalTitleShadowColor" ref="177190558"/>
-							<reference key="IBUINormalBackgroundImage" ref="553476442"/>
+							<reference key="IBUINormalBackgroundImage" ref="393925159"/>
 							<reference key="IBUIFontDescription" ref="857420967"/>
 							<reference key="IBUIFont" ref="657314226"/>
 						</object>
@@ -453,7 +455,7 @@
 								<bytes key="NSRGB">MC4xOTYwNzg0MyAwLjMwOTgwMzkzIDAuNTIxNTY4NjYAA</bytes>
 							</object>
 							<reference key="IBUINormalTitleShadowColor" ref="177190558"/>
-							<reference key="IBUINormalBackgroundImage" ref="553476442"/>
+							<reference key="IBUINormalBackgroundImage" ref="393925159"/>
 							<reference key="IBUIFontDescription" ref="857420967"/>
 							<reference key="IBUIFont" ref="657314226"/>
 						</object>
@@ -1346,6 +1348,7 @@
 				<string>clavier-01-106px.png</string>
 				<string>clavier-01-108px.png</string>
 				<string>clavier-01-160px.png</string>
+				<string>effacer.png</string>
 				<string>startcall-green.png</string>
 				<string>stopcall-red.png</string>
 			</object>
@@ -1354,6 +1357,7 @@
 				<string>{106, 60}</string>
 				<string>{108, 60}</string>
 				<string>{160, 60}</string>
+				<string>{164, 104}</string>
 				<string>{60, 52}</string>
 				<string>{62, 54}</string>
 			</object>
