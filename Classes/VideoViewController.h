@@ -34,6 +34,7 @@
 	UIHangUpButton* mHangUpLand;
 	UICamSwitch* mCamSwitchLand;
 	BOOL isFirst;
+	int maxCall;
 
 }
 

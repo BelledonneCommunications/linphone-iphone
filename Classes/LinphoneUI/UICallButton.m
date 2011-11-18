@@ -32,7 +32,7 @@
 		[error show];
 		return;
 	}
-	if (!linphone_core_in_call([LinphoneManager getLc])) {
+	if (TRUE /*!linphone_core_in_call([LinphoneManager getLc])*/) {
 		LinphoneProxyConfig* proxyCfg;	
 		//get default proxy
 		linphone_core_get_default_proxy([LinphoneManager getLc],&proxyCfg);

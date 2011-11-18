@@ -18,7 +18,7 @@
  */          
 
 #import "AdvancedPhoneViewController.h"
-
+#import "IncallViewController.h"
 
 @implementation AdvancedPhoneViewController
 
@@ -38,29 +38,30 @@
 							   withDisplayName:displayName];
 	
 }
--(void) displayCallInProgressFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
+-(void) displayCall: (LinphoneCall*) call InProgressFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
 	/*[super displayCallInProgressFromUI:viewCtrl
 					   forUser:username
 			   withDisplayName:displayName];*/
 	
 	[self presentModalViewController:mIncallViewController animated:true];
 	
-	[mIncallViewController displayCallInProgressFromUI:viewCtrl
+	[mIncallViewController displayCall:call InProgressFromUI:viewCtrl
 									   forUser:username
 							   withDisplayName:displayName];
 	
 }
--(void) displayIncallFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
-    
-	if (linphone_call_get_dir(currentCall)==LinphoneCallIncoming){    
-		[self presentModalViewController:mIncallViewController animated:true];
-	}
 
-	[super displayIncallFromUI:viewCtrl
+-(void) displayInCall: (LinphoneCall*) call FromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
+    if (self.presentedViewController != mIncallViewController && (call == 0x0 ||
+        linphone_call_get_dir(call)==LinphoneCallIncoming)){
+                [self presentModalViewController:mIncallViewController animated:true];
+        }
+
+	[super displayInCall:call FromUI:viewCtrl
 					   forUser:username
 			   withDisplayName:displayName];
 	
-	[mIncallViewController displayIncallFromUI:viewCtrl
+	[mIncallViewController displayInCall:call FromUI:viewCtrl
 									   forUser:username
 							   withDisplayName:displayName];
 	
@@ -76,6 +77,11 @@
 	[mIncallViewController updateUIFromLinphoneState:viewCtrl];
 }
 
+-(void) displayVideoCall:(LinphoneCall*) call FromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName { 
+	[mIncallViewController  displayVideoCall:call FromUI:viewCtrl 
+									 forUser:username 
+							 withDisplayName:displayName];
+}
 - (void)dealloc {
     [mIncallViewController release];
 	[super dealloc];

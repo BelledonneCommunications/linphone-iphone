@@ -109,6 +109,7 @@
 -(void) viewDidDisappear:(BOOL)animated{
     [super viewDidDisappear:animated];
 	[[UIApplication sharedApplication] setIdleTimerDisabled:NO];
+	linphone_core_set_max_calls([LinphoneManager getLc], maxCall);
 }
 
 -(void) viewWillAppear:(BOOL)animated {
@@ -126,6 +127,8 @@
              						waitUntilDone:YES];
     [mMute reset];
     [mMuteLand reset];
+	maxCall = linphone_core_get_max_calls([LinphoneManager getLc]);
+	linphone_core_set_max_calls([LinphoneManager getLc], 1);
 }
 
 - (void) viewDidAppear:(BOOL)animated{

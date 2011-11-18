@@ -23,7 +23,13 @@
 @implementation UIHangUpButton
 
 -(void) touchUp:(id) sender {
-	linphone_core_terminate_call([LinphoneManager getLc],linphone_core_get_current_call([LinphoneManager getLc]));
+    LinphoneCore* lc = [LinphoneManager getLc];
+    if (!lc)
+        return;
+    LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
+    
+    if (call)
+        linphone_core_terminate_call(lc,call);
 }
 
 - (id)initWithFrame:(CGRect)frame {

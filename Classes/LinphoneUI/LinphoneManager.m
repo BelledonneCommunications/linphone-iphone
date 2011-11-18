@@ -123,40 +123,45 @@ extern void libmssilk_init();
     }
     return;
 }
--(void) onCall:(LinphoneCall*) currentCall StateChanged: (LinphoneCallState) new_state withMessage: (const char *)  message {
-    const char* lUserNameChars=linphone_address_get_username(linphone_call_get_remote_address(currentCall));
-    NSString* lUserName = lUserNameChars?[[NSString alloc] initWithCString:lUserNameChars]:NSLocalizedString(@"Unknown",nil);
+-(void) onCall:(LinphoneCall*) call StateChanged: (LinphoneCallState) new_state withMessage: (const char *)  message {
+    const char* lUserNameChars=linphone_address_get_username(linphone_call_get_remote_address(call));
+    NSString* lUserName = lUserNameChars?[[NSString alloc] initWithUTF8String:lUserNameChars]:NSLocalizedString(@"Unknown",nil);
     if (new_state == LinphoneCallIncomingReceived) {
-       [self updateCallWithAddressBookData:currentCall]; // display name is updated 
+       [self updateCallWithAddressBookData:call]; // display name is updated 
     }
-    const char* lDisplayNameChars =  linphone_address_get_display_name(linphone_call_get_remote_address(currentCall));        
-	NSString* lDisplayName = lDisplayNameChars?[[NSString alloc] initWithCString:lDisplayNameChars]:@"";
+    const char* lDisplayNameChars =  linphone_address_get_display_name(linphone_call_get_remote_address(call));        
+	NSString* lDisplayName = lDisplayNameChars?[[NSString alloc] initWithUTF8String:lDisplayNameChars]:@"";
+    
+    bool canHideInCallView = (linphone_core_get_calls([LinphoneManager getLc]) == NULL);
 	
 	switch (new_state) {
 			
 		case LinphoneCallStreamsRunning:
 			//check video
-			if (linphone_call_params_video_enabled(linphone_call_get_current_params(currentCall))) {
-				[callDelegate	displayVideoCallFromUI:mCurrentViewController
+			if (linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
+				[callDelegate	displayVideoCall:call FromUI:mCurrentViewController
 											 forUser:lUserName 
 									 withDisplayName:lDisplayName];
 			}
 			break;
 					
 		case LinphoneCallIncomingReceived: 
-			[callDelegate	displayIncomingCallNotigicationFromUI:mCurrentViewController
+			[callDelegate	displayIncomingCall:call 
+                           NotificationFromUI:mCurrentViewController
 														forUser:lUserName 
 												withDisplayName:lDisplayName];
 			break;
 			
 		case LinphoneCallOutgoingInit: 
-			[callDelegate		displayCallInProgressFromUI:mCurrentViewController
+			[callDelegate		displayCall:call 
+                      InProgressFromUI:mCurrentViewController
 											   forUser:lUserName 
 									   withDisplayName:lDisplayName];
 			break;
 			
 		case LinphoneCallConnected:
-                [callDelegate	displayIncallFromUI:mCurrentViewController
+			[callDelegate	displayInCall: call 
+                                 FromUI:mCurrentViewController
 									  forUser:lUserName 
 							  withDisplayName:lDisplayName];
 			break;
@@ -189,15 +194,19 @@ extern void libmssilk_init();
 												  cancelButtonTitle:NSLocalizedString(@"Dismiss",nil) 
 												  otherButtonTitles:nil];
 			[error show];
-			[callDelegate	displayDialerFromUI:mCurrentViewController
+            if (canHideInCallView) {
+                [callDelegate	displayDialerFromUI:mCurrentViewController
 									  forUser:@"" 
 							  withDisplayName:@""];
+            }
 			break;
 		}
-		case LinphoneCallEnd: 
-			[callDelegate	displayDialerFromUI:mCurrentViewController
+		case LinphoneCallEnd:
+            if (canHideInCallView) {
+                [callDelegate	displayDialerFromUI:mCurrentViewController
 									  forUser:@"" 
 							  withDisplayName:@""];
+            }
 			break;
 		default:
 			break;
@@ -264,9 +273,9 @@ static void linphone_iphone_call_state(LinphoneCore *lc, LinphoneCall* call, Lin
 
 -(void) onRegister:(LinphoneCore *)lc cfg:(LinphoneProxyConfig*) cfg state:(LinphoneRegistrationState) state message:(const char*) message {
 	LinphoneAddress* lAddress = linphone_address_new(linphone_proxy_config_get_identity(cfg));
-	NSString* lUserName = linphone_address_get_username(lAddress)? [[NSString alloc] initWithCString:linphone_address_get_username(lAddress) ]:@"";
-	NSString* lDisplayName = linphone_address_get_display_name(lAddress)? [[NSString alloc] initWithCString:linphone_address_get_display_name(lAddress) ]:@"";
-	NSString* lDomain = [[NSString alloc] initWithCString:linphone_address_get_domain(lAddress)];
+	NSString* lUserName = linphone_address_get_username(lAddress)? [[NSString alloc] initWithUTF8String:linphone_address_get_username(lAddress) ]:@"";
+	NSString* lDisplayName = linphone_address_get_display_name(lAddress)? [[NSString alloc] initWithUTF8String:linphone_address_get_display_name(lAddress) ]:@"";
+	NSString* lDomain = [[NSString alloc] initWithUTF8String:linphone_address_get_domain(lAddress)];
 	linphone_address_destroy(lAddress);
 	
 	if (state == LinphoneRegistrationOk) {
@@ -456,7 +465,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		const char* password = [accountPassword cStringUsingEncoding:[NSString defaultCStringEncoding]];
 		
 		NSString* proxyAddress = [[NSUserDefaults standardUserDefaults] stringForKey:@"proxy_preference"];
-		if ((!proxyAddress | [proxyAddress length] <1 ) && domain) {
+		if ((!proxyAddress || [proxyAddress length] <1 ) && domain) {
 			proxyAddress = [NSString stringWithFormat:@"sip:%@",domain] ;
 		} else {
 			proxyAddress = [NSString stringWithFormat:@"sip:%@",proxyAddress] ;
@@ -572,7 +581,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
     sysctlbyname("hw.machine", NULL, &size, NULL, 0);
     char *machine = malloc(size);
     sysctlbyname("hw.machine", machine, &size, NULL, 0);
-    NSString *platform = [NSString stringWithCString:machine];
+    NSString *platform = [[NSString alloc ] initWithUTF8String:machine];
     free(machine);
     
     return ![platform isEqualToString:@"iPhone1,2"];
@@ -586,6 +595,8 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 }
 -(void) destroyLibLinphone {
 	[mIterateTimer invalidate]; 
+	AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+	[audioSession setDelegate:nil];
 	if (theLinphoneCore != nil) { //just in case application terminate before linphone core initialization
 		linphone_core_destroy(theLinphoneCore);
 		theLinphoneCore = nil;
@@ -599,13 +610,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 
 //**********************BG mode management*************************///////////
 -(void) enterBackgroundMode {
-	
-	struct addrinfo hints;
-	struct addrinfo *res=NULL;
-	int err;
-	
 	LinphoneProxyConfig* proxyCfg;
-	LinphoneAddress *addr;
 	linphone_core_get_default_proxy(theLinphoneCore, &proxyCfg);	
 	linphone_core_stop_dtmf_stream(theLinphoneCore);
 	
@@ -648,8 +653,6 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	}
 	else {
 		ms_warning("Entering lite bg mode");
-		AVAudioSession *audioSession = [AVAudioSession sharedInstance];
-		[audioSession setDelegate:nil];
 		[self destroyLibLinphone];
 	}
 	

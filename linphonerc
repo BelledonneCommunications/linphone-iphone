@@ -31,7 +31,7 @@ echocancellation=0
 
 [misc]
 history_max_size=30
-max_calls=1
+max_calls=3
 
 [video]
 display=1
@@ -39,5 +39,4 @@ capture=1
 show_local=0
 enabled=1
 size=ios-medium
-
 

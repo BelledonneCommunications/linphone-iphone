@@ -20,12 +20,14 @@
 #import <Foundation/Foundation.h>
 #import "linphonecore.h"
 #import "UILinphone.h"
+#import "CallDelegate.h"
 
 
 @class IncallViewController;
 @class FirstLoginViewController;
-@class VideoViewController;
-@interface PhoneViewController : UIViewController <UITextFieldDelegate,UIActionSheetDelegate,LinphoneUICallDelegate> {
+
+
+@interface PhoneViewController : UIViewController <UITextFieldDelegate,LinphoneUICallDelegate, UIActionSheetCustomDelegate> {
 
 @private
 	//UI definition
@@ -35,13 +37,14 @@
 	UIEraseButton* erase;
 	
 	UIView* incallView;
+    UIButton* backToCallView;
 	UIDuration* callDuration;
 	UIMuteButton* mute;
 	UISpeakerButton* speaker;	
 	UILabel* peerLabel;
 		
 	
-	UICallButton* call;
+	UICallButton* __call;
 	UIHangUpButton* hangup;
 
 	UILabel* status;
@@ -66,14 +69,13 @@
 
 	UIActionSheet *mIncomingCallActionSheet;
 	FirstLoginViewController* myFirstLoginViewController;
-	VideoViewController* mVideoViewController;
-    BOOL mVideoShown; 
+
 }
 
 @property (nonatomic, retain) IBOutlet UIView* dialerView;
-@property (nonatomic, retain) IBOutlet UIViewController* videoViewController;
+
 @property (nonatomic, retain) IBOutlet UITextField* address;
-@property (nonatomic, retain) IBOutlet UIButton* call;
+@property (nonatomic, retain) IBOutlet UIButton* __call;
 @property (nonatomic, retain) IBOutlet UIButton* hangup;
 @property (nonatomic, retain) IBOutlet UILabel* status;
 @property (nonatomic, retain) IBOutlet UIEraseButton* erase;
@@ -84,6 +86,7 @@
 @property (nonatomic, retain) IBOutlet UIButton* speaker;	
 @property (nonatomic, retain) IBOutlet UILabel* peerLabel;
 
+@property (nonatomic, retain) IBOutlet UIButton* backToCallView;
 
 @property (nonatomic, retain) IBOutlet UIButton* one;
 @property (nonatomic, retain) IBOutlet UIButton* two;

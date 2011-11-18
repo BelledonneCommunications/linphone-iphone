@@ -24,6 +24,7 @@
 
 #import "ConsoleViewController.h"
 #import "MoreViewController.h"
+#include "CallHistoryTableViewController.h"
 
 #include "LinphoneManager.h"
 
@@ -149,9 +150,14 @@
 	[super dealloc];
 }
 
-
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
-	linphone_core_accept_call([LinphoneManager getLc],linphone_core_get_current_call([LinphoneManager getLc]));	
+    LinphoneCall* call;
+	[(NSData*)([notification.userInfo objectForKey:@"call"])  getBytes:&call];
+    if (!call) {
+        ms_warning("Local notification received with nil call");
+        return;
+    }
+	linphone_core_accept_call([LinphoneManager getLc], call);	
 }
 
 
