@@ -67,18 +67,6 @@ LinphoneCore *linphone_call_get_core(const LinphoneCall *call){
 	return call->core;
 }
 
-static const char* get_hexa_zrtp_identifier(LinphoneCore *lc){
-	const char *confZid=lp_config_get_string(lc->config,"rtp","zid",NULL);
-	if (confZid != NULL) {
-		return confZid;
-	} else {
-        char zidstr[128];
-        snprintf(zidstr,sizeof(zidstr),"%x-%x-%x",rand(),rand(),rand());
-		lp_config_set_string(lc->config,"rtp","zid",zidstr);
-		return lp_config_get_string(lc->config,"rtp","zid",NULL);
-	}
-}
-
 const char* linphone_call_get_authentication_token(LinphoneCall *call){
 	return call->auth_token;
 }
@@ -150,7 +138,6 @@ static void linphone_call_audiostream_encryption_changed(void *data, bool_t encr
 	if (params->has_video) {
 		ms_message("Trying to enable encryption on video stream");
 		OrtpZrtpParams params;
-		params.zid=get_hexa_zrtp_identifier(call->core);
 		params.zid_file=NULL; //unused
 		video_stream_enable_zrtp(call->videostream,call->audiostream,&params);
 	}
@@ -1283,7 +1270,6 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 		/*will be set later when zrtp is activated*/
 		call->current_params.media_encryption=LinphoneMediaEncryptionNone;
 		
-		params.zid=get_hexa_zrtp_identifier(lc);
 		params.zid_file=lc->zrtp_secrets_cache;
 		audio_stream_enable_zrtp(call->audiostream,&params);
 	}
