@@ -2235,13 +2235,14 @@ bool_t linphone_core_inc_invite_pending(LinphoneCore*lc){
 }
 
 /**
+ * @ingroup call_control
  * Updates a running call according to supplied call parameters or parameters changed in the LinphoneCore.
  *
  * In this version this is limited to the following use cases:
  * - setting up/down the video stream according to the video parameter of the LinphoneCallParams (see linphone_call_params_enable_video() ).
  * - changing the size of the transmitted video after calling linphone_core_set_preferred_video_size()
  *
- * In case no changes are requested through the LinphoneCallParams argument, then this argument can be ommitted and set to NULL.
+ * In case no changes are requested through the LinphoneCallParams argument, then this argument can be omitted and set to NULL.
  *
  * @return 0 if successful, -1 otherwise.
 **/
@@ -3499,7 +3500,7 @@ unsigned long linphone_core_get_native_video_window_id(const LinphoneCore *lc){
 	return lc->video_window_id;
 }
 
-/**
+/**@ingroup media_parameters
  * Set the native video window id where the video is to be displayed.
  * If not set the core will create its own window.
 **/
@@ -3530,6 +3531,7 @@ unsigned long linphone_core_get_native_preview_window_id(const LinphoneCore *lc)
 }
 
 /**
+ * @ingroup media_parameters
  * Set the native window id where the preview video (local camera) is to be displayed.
  * This has to be used in conjonction with linphone_core_use_preview_window().
  * If not set the core will create its own window.
@@ -3553,16 +3555,20 @@ void linphone_core_use_preview_window(LinphoneCore *lc, bool_t yesno){
 	lc->use_preview_window=yesno;
 }
 /**
+ * @ingroup media_parameters
  *returns current device orientation
  */
 int linphone_core_get_device_rotation(LinphoneCore *lc ) {
 	return lc->device_rotation;
 }
 /**
+ * @ingroup media_parameters
  * Tells the core the device current orientation. This can be used by capture filters
  * on mobile devices to select between portrait/landscape mode and to produce properly
- * orientated images. The exact meaning of the value in rotation if left to each device
+ * oriented images. The exact meaning of the value in rotation if left to each device
  * specific implementations.
+ *@param lc  object.
+ *@param rotation . IOS supported values are 0 for UIInterfaceOrientationPortrait and 270 for UIInterfaceOrientationLandscapeRight.
  *
 **/
 void linphone_core_set_device_rotation(LinphoneCore *lc, int rotation) {
