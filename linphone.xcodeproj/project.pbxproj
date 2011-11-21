@@ -19,8 +19,6 @@
 		220FAD3810765B400068D98F /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD2F10765B400068D98F /* libspeex.a */; };
 		220FAD3910765B400068D98F /* libspeexdsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD3010765B400068D98F /* libspeexdsp.a */; };
 		220FAE4B10767A6A0068D98F /* PhoneMainView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 220FAE4A10767A6A0068D98F /* PhoneMainView.xib */; };
-		2211DB90147555C800DEE054 /* libmediastreamer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DB8F147555C800DEE054 /* libmediastreamer.a */; };
-		2211DB921475562600DEE054 /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DB911475562600DEE054 /* liblinphone.a */; };
 		2211DB95147564B400DEE054 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2211DB94147564B400DEE054 /* Settings.bundle */; };
 		2211DBBC14769C8300DEE054 /* AdvancedPhoneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2211DBBA14769C8200DEE054 /* AdvancedPhoneViewController.m */; };
 		2211DBBD14769C8300DEE054 /* AdvancedPhoneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2211DBBA14769C8200DEE054 /* AdvancedPhoneViewController.m */; };
@@ -229,6 +227,8 @@
 		7066FC0C13E830E400EFC6DC /* libvpx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7066FC0B13E830E400EFC6DC /* libvpx.a */; };
 		70E542F313E147E3002BA2C0 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F213E147E3002BA2C0 /* OpenGLES.framework */; };
 		70E542F513E147EB002BA2C0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F413E147EB002BA2C0 /* QuartzCore.framework */; };
+		F476004B147AAF2800FFF19B /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DB911475562600DEE054 /* liblinphone.a */; };
+		F476004C147AAF4600FFF19B /* libmediastreamer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DB8F147555C800DEE054 /* libmediastreamer.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -584,8 +584,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2211DB921475562600DEE054 /* liblinphone.a in Frameworks */,
-				2211DB90147555C800DEE054 /* libmediastreamer.a in Frameworks */,
+				F476004C147AAF4600FFF19B /* libmediastreamer.a in Frameworks */,
+				F476004B147AAF2800FFF19B /* liblinphone.a in Frameworks */,
 				7066FC0C13E830E400EFC6DC /* libvpx.a in Frameworks */,
 				70E542F513E147EB002BA2C0 /* QuartzCore.framework in Frameworks */,
 				70E542F313E147E3002BA2C0 /* OpenGLES.framework in Frameworks */,
