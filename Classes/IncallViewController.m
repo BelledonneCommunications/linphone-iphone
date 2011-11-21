@@ -248,7 +248,7 @@ int callCount(LinphoneCore* lc) {
 		[self dismissModalViewControllerAnimated:FALSE];//just in case
     }
 
-	[self dismissModalViewControllerAnimated:true];
+	[self dismissModalViewControllerAnimated:FALSE]; //disable animation to avoid blanc bar just below status bar*/
     dismissed = true;
     [self updateUIFromLinphoneState: nil]; 
 }

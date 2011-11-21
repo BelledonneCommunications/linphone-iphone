@@ -143,6 +143,8 @@
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
 	[self configureOrientation:self.interfaceOrientation];
+	[mMute reset];
+    [mMuteLand reset];
 }
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
 	[mLandscape removeFromSuperview];

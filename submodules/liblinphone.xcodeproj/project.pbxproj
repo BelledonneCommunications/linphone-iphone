@@ -19,7 +19,7 @@
 		220ED1A113A9039600AC21E0 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 220ED1A013A9039600AC21E0 /* CoreAudio.framework */; };
 		220ED1A313A903BF00AC21E0 /* libgsm.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220ED1A213A903BF00AC21E0 /* libgsm.a */; };
 		220ED1A713A9040700AC21E0 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 220ED1A613A9040700AC21E0 /* AudioToolbox.framework */; };
-		220ED1A913A9041800AC21E0 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 220ED1A813A9041800AC21E0 /* AVFoundation.framework */; };
+		220ED1A913A9041800AC21E0 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 220ED1A813A9041800AC21E0 /* AVFoundation.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		220ED1AC13A9062600AC21E0 /* nowebcam.h in Headers */ = {isa = PBXBuildFile; fileRef = 220ED1AA13A9062500AC21E0 /* nowebcam.h */; };
 		220ED1AD13A9062600AC21E0 /* nowebcam.c in Sources */ = {isa = PBXBuildFile; fileRef = 220ED1AB13A9062500AC21E0 /* nowebcam.c */; };
 		2211DB9C1476539600DEE054 /* l16.c in Sources */ = {isa = PBXBuildFile; fileRef = 2211DB9B1476539600DEE054 /* l16.c */; };

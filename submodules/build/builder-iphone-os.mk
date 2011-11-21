@@ -36,11 +36,7 @@ linphone_configure_controls=  \
 			      --disable-x11 \
                               --with-gsm=$(prefix) \
 			      --disable-tests \
-                              --with-srtp=$(prefix) \
-                              SPEEX_CFLAGS="-I$(prefix)/include" \
-                              SPEEXDSP_CFLAGS="-I$(prefix)/include" \
-			      SPEEXDSP_LIBS="-L$(prefix)/lib -lspeexdsp" \
-                              SPEEX_LIBS="-L$(prefix)/lib -lspeexdsp -lspeex " 
+                              --with-srtp=$(prefix) 
 
 #path
 BUILDER_SRC_DIR?=$(shell pwd)/../
@@ -85,10 +81,13 @@ LIBILBC_SRC_DIR:=$(BUILDER_SRC_DIR)/libilbc-rfc3951
 LIBILBC_BUILD_DIR:=$(BUILDER_BUILD_DIR)/libilbc-rfc3951
 
 ifneq (,$(findstring arm,$(host)))
-	SPEEX_CONFIGURE_OPTION := --enable-fixed-point --disable-float-api
+	SPEEX_CONFIGURE_OPTION := --enable-fixed-point --disable-float-api 
 	#SPEEX_CONFIGURE_OPTION := --enable-arm5e-asm --enable-fixed-point
 endif
 
+ifneq (,$(findstring armv7,$(host)))
+	SPEEX_CONFIGURE_OPTION := --enable-fixed-point --disable-float-api 
+endif
 
 prefix?=$(BUILDER_SRC_DIR)/../liblinphone-sdk/$(host)
 
@@ -97,7 +96,7 @@ clean-makefile: clean-makefile-linphone
 clean: clean-linphone
 init:
 	mkdir -p $(prefix)/include
-	mkdir -p $(prefix)/lib
+	mkdir -p $(prefix)/lib/pkgconfig
 
 veryclean: veryclean-linphone
 	rm -rf $(BUILDER_BUILD_DIR)
@@ -198,11 +197,10 @@ $(BUILDER_BUILD_DIR)/$(speex_dir)/Makefile: $(BUILDER_SRC_DIR)/$(speex_dir)/conf
 	mkdir -p $(BUILDER_BUILD_DIR)/$(speex_dir)
 	cd $(BUILDER_BUILD_DIR)/$(speex_dir)/\
 	&& CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
-	$(BUILDER_SRC_DIR)/$(speex_dir)/configure -prefix=$(prefix) --host=$(host) ${library_mode} --disable-oggtest $(SPEEX_CONFIGURE_OPTION)
+	$(BUILDER_SRC_DIR)/$(speex_dir)/configure -prefix=$(prefix) --host=$(host) ${library_mode} --disable-ogg  $(SPEEX_CONFIGURE_OPTION)
 
 build-speex: $(BUILDER_BUILD_DIR)/$(speex_dir)/Makefile
-	cd $(BUILDER_BUILD_DIR)/$(speex_dir)/libspeex && make  && make install
-	cd $(BUILDER_BUILD_DIR)/$(speex_dir)/include  && make &&  make install
+	cd $(BUILDER_BUILD_DIR)/$(speex_dir) && make  && make install
 
 clean-speex:
 	cd  $(BUILDER_BUILD_DIR)/$(speex_dir)  && make clean

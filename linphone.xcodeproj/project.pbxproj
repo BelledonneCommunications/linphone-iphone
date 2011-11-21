@@ -28,6 +28,28 @@
 		2211DBBF14769C8300DEE054 /* CallDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2211DBBB14769C8200DEE054 /* CallDelegate.m */; };
 		2211DBC014769CB200DEE054 /* IncallViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 222A483212F7176F0075F07F /* IncallViewController.m */; };
 		2211DBC114769CB300DEE054 /* IncallViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 222A483212F7176F0075F07F /* IncallViewController.m */; };
+		2211DBD51476BE7300DEE054 /* ajouter.png in Resources */ = {isa = PBXBuildFile; fileRef = 2211DBCA1476BE7300DEE054 /* ajouter.png */; };
+		2211DBD61476BE7300DEE054 /* ajouter.png in Resources */ = {isa = PBXBuildFile; fileRef = 2211DBCA1476BE7300DEE054 /* ajouter.png */; };
+		2211DBD71476BE7300DEE054 /* clavier.png in Resources */ = {isa = PBXBuildFile; fileRef = 2211DBCB1476BE7300DEE054 /* clavier.png */; };
+		2211DBD81476BE7300DEE054 /* clavier.png in Resources */ = {isa = PBXBuildFile; fileRef = 2211DBCB1476BE7300DEE054 /* clavier.png */; };
+		2211DBD91476BE7300DEE054 /* contact.png in Resources */ = {isa = PBXBuildFile; fileRef = 2211DBCC1476BE7300DEE054 /* contact.png */; };
+		2211DBDA1476BE7300DEE054 /* contact.png in Resources */ = {isa = PBXBuildFile; fileRef = 2211DBCC1476BE7300DEE054 /* contact.png */; };
+		2211DBDB1476BE7300DEE054 /* effacer.png in Resources */ = {isa = PBXBuildFile; fileRef = 2211DBCD1476BE7300DEE054 /* effacer.png */; };
+		2211DBDC1476BE7300DEE054 /* effacer.png in Resources */ = {isa = PBXBuildFile; fileRef = 2211DBCD1476BE7300DEE054 /* effacer.png */; };
+		2211DBDD1476BE7300DEE054 /* grouper.png in Resources */ = {isa = PBXBuildFile; fileRef = 2211DBCE1476BE7300DEE054 /* grouper.png */; };
+		2211DBDE1476BE7300DEE054 /* grouper.png in Resources */ = {isa = PBXBuildFile; fileRef = 2211DBCE1476BE7300DEE054 /* grouper.png */; };
+		2211DBDF1476BE7300DEE054 /* HP_inverse.png in Resources */ = {isa = PBXBuildFile; fileRef = 2211DBCF1476BE7300DEE054 /* HP_inverse.png */; };
+		2211DBE01476BE7300DEE054 /* HP_inverse.png in Resources */ = {isa = PBXBuildFile; fileRef = 2211DBCF1476BE7300DEE054 /* HP_inverse.png */; };
+		2211DBE11476BE7300DEE054 /* HP.png in Resources */ = {isa = PBXBuildFile; fileRef = 2211DBD01476BE7300DEE054 /* HP.png */; };
+		2211DBE21476BE7300DEE054 /* HP.png in Resources */ = {isa = PBXBuildFile; fileRef = 2211DBD01476BE7300DEE054 /* HP.png */; };
+		2211DBE31476BE7300DEE054 /* micro_inverse.png in Resources */ = {isa = PBXBuildFile; fileRef = 2211DBD11476BE7300DEE054 /* micro_inverse.png */; };
+		2211DBE41476BE7300DEE054 /* micro_inverse.png in Resources */ = {isa = PBXBuildFile; fileRef = 2211DBD11476BE7300DEE054 /* micro_inverse.png */; };
+		2211DBE51476BE7300DEE054 /* micro.png in Resources */ = {isa = PBXBuildFile; fileRef = 2211DBD21476BE7300DEE054 /* micro.png */; };
+		2211DBE61476BE7300DEE054 /* micro.png in Resources */ = {isa = PBXBuildFile; fileRef = 2211DBD21476BE7300DEE054 /* micro.png */; };
+		2211DBE71476BE7300DEE054 /* pause_inactif.png in Resources */ = {isa = PBXBuildFile; fileRef = 2211DBD31476BE7300DEE054 /* pause_inactif.png */; };
+		2211DBE81476BE7300DEE054 /* pause_inactif.png in Resources */ = {isa = PBXBuildFile; fileRef = 2211DBD31476BE7300DEE054 /* pause_inactif.png */; };
+		2211DBE91476BE7300DEE054 /* pause.png in Resources */ = {isa = PBXBuildFile; fileRef = 2211DBD41476BE7300DEE054 /* pause.png */; };
+		2211DBEA1476BE7300DEE054 /* pause.png in Resources */ = {isa = PBXBuildFile; fileRef = 2211DBD41476BE7300DEE054 /* pause.png */; };
 		2214783D1386A2030020F8B8 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2214783B1386A2030020F8B8 /* Localizable.strings */; };
 		2214EB7A12F846B1002A5394 /* UICallButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2214EB7912F846B1002A5394 /* UICallButton.m */; };
 		2214EB8912F84EBB002A5394 /* UIHangUpButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2214EB8812F84EBB002A5394 /* UIHangUpButton.m */; };
@@ -43,8 +65,8 @@
 		22276E8313C73D3100210156 /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22276E8013C73D3100210156 /* libavcodec.a */; };
 		22276E8413C73D3100210156 /* libavutil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22276E8113C73D3100210156 /* libavutil.a */; };
 		22276E8513C73D3100210156 /* libswscale.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22276E8213C73D3100210156 /* libswscale.a */; };
-		22276E8713C73D8A00210156 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22276E8613C73D8A00210156 /* CoreVideo.framework */; };
-		22276E8913C73DC000210156 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22276E8813C73DC000210156 /* CoreMedia.framework */; };
+		22276E8713C73D8A00210156 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22276E8613C73D8A00210156 /* CoreVideo.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		22276E8913C73DC000210156 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22276E8813C73DC000210156 /* CoreMedia.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		222A483412F7176F0075F07F /* IncallViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 222A483112F7176F0075F07F /* IncallViewController.xib */; };
 		223148E41178A08200637D6A /* libilbc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 223148E31178A08200637D6A /* libilbc.a */; };
 		223148E61178A09900637D6A /* libmsilbc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 223148E51178A09900637D6A /* libmsilbc.a */; };
@@ -57,7 +79,7 @@
 		2242D9C910D691F900E9963F /* GenericTabViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2242D9C810D691F900E9963F /* GenericTabViewController.m */; };
 		2242E313125235120061DDCE /* oldphone-mono-30s.caf in Resources */ = {isa = PBXBuildFile; fileRef = 2242E312125235120061DDCE /* oldphone-mono-30s.caf */; };
 		2245671D107699F700F10948 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2245671C107699F700F10948 /* Settings.bundle */; };
-		224567C2107B968500F10948 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 224567C1107B968500F10948 /* AVFoundation.framework */; };
+		224567C2107B968500F10948 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 224567C1107B968500F10948 /* AVFoundation.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		2245F78A1201D38000C4179D /* MoreViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22E0A81B111C44E100B04932 /* MoreViewController.xib */; };
 		2248E90E12F7E4CF00220D9C /* UIDigitButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2248E90D12F7E4CF00220D9C /* UIDigitButton.m */; };
 		2248E99F12F801C200220D9C /* LinphoneManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2248E99E12F801C200220D9C /* LinphoneManager.m */; };
@@ -357,6 +379,17 @@
 		2211DB94147564B400DEE054 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Settings.bundle; path = nogpl/Settings.bundle; sourceTree = "<group>"; };
 		2211DBBA14769C8200DEE054 /* AdvancedPhoneViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AdvancedPhoneViewController.m; sourceTree = "<group>"; };
 		2211DBBB14769C8200DEE054 /* CallDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallDelegate.m; sourceTree = "<group>"; };
+		2211DBCA1476BE7300DEE054 /* ajouter.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ajouter.png; path = Resources/ajouter.png; sourceTree = "<group>"; };
+		2211DBCB1476BE7300DEE054 /* clavier.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = clavier.png; path = Resources/clavier.png; sourceTree = "<group>"; };
+		2211DBCC1476BE7300DEE054 /* contact.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = contact.png; path = Resources/contact.png; sourceTree = "<group>"; };
+		2211DBCD1476BE7300DEE054 /* effacer.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = effacer.png; path = Resources/effacer.png; sourceTree = "<group>"; };
+		2211DBCE1476BE7300DEE054 /* grouper.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = grouper.png; path = Resources/grouper.png; sourceTree = "<group>"; };
+		2211DBCF1476BE7300DEE054 /* HP_inverse.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = HP_inverse.png; path = Resources/HP_inverse.png; sourceTree = "<group>"; };
+		2211DBD01476BE7300DEE054 /* HP.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = HP.png; path = Resources/HP.png; sourceTree = "<group>"; };
+		2211DBD11476BE7300DEE054 /* micro_inverse.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = micro_inverse.png; path = Resources/micro_inverse.png; sourceTree = "<group>"; };
+		2211DBD21476BE7300DEE054 /* micro.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = micro.png; path = Resources/micro.png; sourceTree = "<group>"; };
+		2211DBD31476BE7300DEE054 /* pause_inactif.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pause_inactif.png; path = Resources/pause_inactif.png; sourceTree = "<group>"; };
+		2211DBD41476BE7300DEE054 /* pause.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pause.png; path = Resources/pause.png; sourceTree = "<group>"; };
 		2214783C1386A2030020F8B8 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = Resources/en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		2214EB7812F846B1002A5394 /* UICallButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICallButton.h; sourceTree = "<group>"; };
 		2214EB7912F846B1002A5394 /* UICallButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICallButton.m; sourceTree = "<group>"; };
@@ -514,7 +547,7 @@
 		22C7564A13265C6A007BC101 /* x509_vfy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x509_vfy.h; sourceTree = "<group>"; };
 		22C7564B13265C6A007BC101 /* x509v3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x509v3.h; sourceTree = "<group>"; };
 		22D1B68012A3E0BE001AE361 /* libresolv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libresolv.dylib; path = usr/lib/libresolv.dylib; sourceTree = SDKROOT; };
-		22D8F187147548E2008C97DB /* linphone-nogpl.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "linphone-nogpl.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		22D8F187147548E2008C97DB /* linphone-no-gpl-thirdparties.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "linphone-no-gpl-thirdparties.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		22D8F189147548E3008C97DB /* linphone copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "linphone copy-Info.plist"; path = "/Users/jehanmonnier/workspaces/workspace-iphone-port/linphone-iphone/linphone copy-Info.plist"; sourceTree = "<absolute>"; };
 		22E028B413B4CCBD0068A713 /* VideoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoViewController.h; sourceTree = "<group>"; };
 		22E028B513B4CCBD0068A713 /* VideoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VideoViewController.m; sourceTree = "<group>"; };
@@ -683,7 +716,7 @@
 			isa = PBXGroup;
 			children = (
 				1D6058910D05DD3D006BFB54 /* linphone.app */,
-				22D8F187147548E2008C97DB /* linphone-nogpl.app */,
+				22D8F187147548E2008C97DB /* linphone-no-gpl-thirdparties.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -876,12 +909,12 @@
 			path = speex;
 			sourceTree = "<group>";
 		};
-		2211DB9614764F6B00DEE054 /* nogpl */ = {
+		2211DB9614764F6B00DEE054 /* nogpl-thirdparties */ = {
 			isa = PBXGroup;
 			children = (
 				2211DB94147564B400DEE054 /* Settings.bundle */,
 			);
-			name = nogpl;
+			name = "nogpl-thirdparties";
 			sourceTree = "<group>";
 		};
 		2214EB7012F84668002A5394 /* LinphoneUI */ = {
@@ -999,7 +1032,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				2211DB9614764F6B00DEE054 /* nogpl */,
+				2211DB9614764F6B00DEE054 /* nogpl-thirdparties */,
 				2211DB911475562600DEE054 /* liblinphone.a */,
 				2211DB8F147555C800DEE054 /* libmediastreamer.a */,
 				226183AF147259670037138E /* libmssilk.a */,
@@ -1068,6 +1101,17 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				2211DBCA1476BE7300DEE054 /* ajouter.png */,
+				2211DBCB1476BE7300DEE054 /* clavier.png */,
+				2211DBCC1476BE7300DEE054 /* contact.png */,
+				2211DBCD1476BE7300DEE054 /* effacer.png */,
+				2211DBCE1476BE7300DEE054 /* grouper.png */,
+				2211DBCF1476BE7300DEE054 /* HP_inverse.png */,
+				2211DBD01476BE7300DEE054 /* HP.png */,
+				2211DBD11476BE7300DEE054 /* micro_inverse.png */,
+				2211DBD21476BE7300DEE054 /* micro.png */,
+				2211DBD31476BE7300DEE054 /* pause_inactif.png */,
+				2211DBD41476BE7300DEE054 /* pause.png */,
 				70571E1913FABCB000CDD3C2 /* rootca.pem */,
 				22E19E47138A67A000FBFE87 /* missed_call.png */,
 				228B19AE130290C500F154D3 /* iTunesArtwork */,
@@ -1128,9 +1172,9 @@
 			productReference = 1D6058910D05DD3D006BFB54 /* linphone.app */;
 			productType = "com.apple.product-type.application";
 		};
-		22D8F11D147548E2008C97DB /* linphone-nogpl */ = {
+		22D8F11D147548E2008C97DB /* linphone-no-gpl-thirdparties */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 22D8F182147548E2008C97DB /* Build configuration list for PBXNativeTarget "linphone-nogpl" */;
+			buildConfigurationList = 22D8F182147548E2008C97DB /* Build configuration list for PBXNativeTarget "linphone-no-gpl-thirdparties" */;
 			buildPhases = (
 				22D8F11E147548E2008C97DB /* Resources */,
 				22D8F143147548E2008C97DB /* Sources */,
@@ -1141,9 +1185,9 @@
 			);
 			dependencies = (
 			);
-			name = "linphone-nogpl";
+			name = "linphone-no-gpl-thirdparties";
 			productName = linphone;
-			productReference = 22D8F187147548E2008C97DB /* linphone-nogpl.app */;
+			productReference = 22D8F187147548E2008C97DB /* linphone-no-gpl-thirdparties.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -1167,7 +1211,7 @@
 			projectRoot = "";
 			targets = (
 				1D6058900D05DD3D006BFB54 /* linphone */,
-				22D8F11D147548E2008C97DB /* linphone-nogpl */,
+				22D8F11D147548E2008C97DB /* linphone-no-gpl-thirdparties */,
 			);
 		};
 /* End PBXProject section */
@@ -1213,6 +1257,17 @@
 				226B563F13CAF1CD00921595 /* audio.plist in Resources */,
 				22E1A9E813CAF4AA00219531 /* video.plist in Resources */,
 				70571E1A13FABCB000CDD3C2 /* rootca.pem in Resources */,
+				2211DBD51476BE7300DEE054 /* ajouter.png in Resources */,
+				2211DBD71476BE7300DEE054 /* clavier.png in Resources */,
+				2211DBD91476BE7300DEE054 /* contact.png in Resources */,
+				2211DBDB1476BE7300DEE054 /* effacer.png in Resources */,
+				2211DBDD1476BE7300DEE054 /* grouper.png in Resources */,
+				2211DBDF1476BE7300DEE054 /* HP_inverse.png in Resources */,
+				2211DBE11476BE7300DEE054 /* HP.png in Resources */,
+				2211DBE31476BE7300DEE054 /* micro_inverse.png in Resources */,
+				2211DBE51476BE7300DEE054 /* micro.png in Resources */,
+				2211DBE71476BE7300DEE054 /* pause_inactif.png in Resources */,
+				2211DBE91476BE7300DEE054 /* pause.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1256,6 +1311,17 @@
 				22D8F141147548E2008C97DB /* video.plist in Resources */,
 				22D8F142147548E2008C97DB /* rootca.pem in Resources */,
 				2211DB95147564B400DEE054 /* Settings.bundle in Resources */,
+				2211DBD61476BE7300DEE054 /* ajouter.png in Resources */,
+				2211DBD81476BE7300DEE054 /* clavier.png in Resources */,
+				2211DBDA1476BE7300DEE054 /* contact.png in Resources */,
+				2211DBDC1476BE7300DEE054 /* effacer.png in Resources */,
+				2211DBDE1476BE7300DEE054 /* grouper.png in Resources */,
+				2211DBE01476BE7300DEE054 /* HP_inverse.png in Resources */,
+				2211DBE21476BE7300DEE054 /* HP.png in Resources */,
+				2211DBE41476BE7300DEE054 /* micro_inverse.png in Resources */,
+				2211DBE61476BE7300DEE054 /* micro.png in Resources */,
+				2211DBE81476BE7300DEE054 /* pause_inactif.png in Resources */,
+				2211DBEA1476BE7300DEE054 /* pause.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1344,6 +1410,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = (
+					"$(ARCHS_STANDARD_32_BIT)",
+					armv6,
+				);
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
@@ -1407,6 +1477,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = (
+					"$(ARCHS_STANDARD_32_BIT)",
+					armv6,
+				);
 				CODE_SIGN_ENTITLEMENTS = untitled.plist;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				COPY_PHASE_STRIP = NO;
@@ -1453,6 +1527,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = (
+					"$(ARCHS_STANDARD_32_BIT)",
+					arm6,
+				);
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
@@ -1489,7 +1567,7 @@
 					"-l",
 					mediastreamer,
 				);
-				PRODUCT_NAME = "linphone-nogpl";
+				PRODUCT_NAME = "linphone-no-gpl-thirdparties";
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
@@ -1501,6 +1579,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = (
+					"$(ARCHS_STANDARD_32_BIT)",
+					arm6,
+				);
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
@@ -1538,7 +1620,7 @@
 					"-l",
 					mediastreamer,
 				);
-				PRODUCT_NAME = "linphone-nogpl";
+				PRODUCT_NAME = "linphone-no-gpl-thirdparties";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
@@ -1550,6 +1632,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = (
+					"$(ARCHS_STANDARD_32_BIT)",
+					arm6,
+				);
 				CODE_SIGN_ENTITLEMENTS = untitled.plist;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
@@ -1587,7 +1673,7 @@
 					"-l",
 					mediastreamer,
 				);
-				PRODUCT_NAME = "linphone-nogpl";
+				PRODUCT_NAME = "linphone-no-gpl-thirdparties";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
@@ -1599,6 +1685,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = (
+					"$(ARCHS_STANDARD_32_BIT)",
+					arm6,
+				);
 				CODE_SIGN_ENTITLEMENTS = untitled.plist;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				COPY_PHASE_STRIP = NO;
@@ -1636,7 +1726,7 @@
 					"-l",
 					mediastreamer,
 				);
-				PRODUCT_NAME = "linphone-nogpl";
+				PRODUCT_NAME = "linphone-no-gpl-thirdparties";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
@@ -1665,6 +1755,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = (
+					"$(ARCHS_STANDARD_32_BIT)",
+					armv6,
+				);
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
@@ -1729,6 +1823,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = (
+					"$(ARCHS_STANDARD_32_BIT)",
+					armv6,
+				);
 				CODE_SIGN_ENTITLEMENTS = untitled.plist;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
@@ -1802,7 +1900,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		22D8F182147548E2008C97DB /* Build configuration list for PBXNativeTarget "linphone-nogpl" */ = {
+		22D8F182147548E2008C97DB /* Build configuration list for PBXNativeTarget "linphone-no-gpl-thirdparties" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				22D8F183147548E2008C97DB /* Debug */,
