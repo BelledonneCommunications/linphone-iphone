@@ -2498,15 +2498,15 @@ LinphoneCall *linphone_core_get_current_call(const LinphoneCore *lc)
  *
  * @ingroup call_control
 **/
-int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *the_call)
+int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call)
 {
-	LinphoneCall *call = the_call;
 	const char *subject=NULL;
 
 	if (call->state!=LinphoneCallStreamsRunning && call->state!=LinphoneCallPausedByRemote){
 		ms_warning("Cannot pause this call, it is not active.");
 		return -1;
 	}
+	update_local_media_description(lc,call,&call->localdesc);
 	if (sal_media_description_has_dir(call->resultdesc,SalStreamSendRecv)){
 		sal_media_description_set_dir(call->localdesc,SalStreamSendOnly);
 		subject="Call on hold";
@@ -2517,6 +2517,7 @@ int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *the_call)
 		ms_error("No reason to pause this call, it is already paused or inactive.");
 		return -1;
 	}
+	sal_call_set_local_media_description(call->op,call->localdesc);
 	if (sal_call_update(call->op,subject) != 0){
 		if (lc->vtable.display_warning)
 			lc->vtable.display_warning(lc,_("Could not pause the call"));

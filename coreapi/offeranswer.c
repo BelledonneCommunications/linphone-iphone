@@ -301,6 +301,7 @@ int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities
 			result->streams[i].dir=SalStreamInactive;
 			result->streams[i].port=0;
 			result->streams[i].type=rs->type;
+			result->streams[i].proto=rs->proto;
 			if (rs->type==SalOther){
 				strncpy(result->streams[i].typeother,rs->typeother,sizeof(rs->typeother)-1);
 			}

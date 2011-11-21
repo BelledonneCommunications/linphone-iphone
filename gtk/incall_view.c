@@ -443,10 +443,10 @@ void linphone_gtk_in_call_view_show_encryption(LinphoneCall *call){
 	bool_t verified=linphone_call_get_authentication_token_verified(call);
 	switch(me){
 		case LinphoneMediaEncryptionSRTP:
+			gtk_widget_show_all(encryption_box);
 			gtk_label_set_markup(GTK_LABEL(label),_("Secured by SRTP"));
 			gtk_widget_hide(status_icon);
 			gtk_widget_hide(verify_button);
-			gtk_widget_show_all(encryption_box);
 		break;
 		case LinphoneMediaEncryptionZRTP:
 		{
@@ -461,7 +461,7 @@ void linphone_gtk_in_call_view_show_encryption(LinphoneCall *call){
 		}	
 		break;
 		default:
-			gtk_widget_hide(encryption_box);
+			gtk_widget_hide_all(encryption_box);
 	}
 }
 
