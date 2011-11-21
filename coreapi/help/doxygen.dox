@@ -224,45 +224,8 @@ void text_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddre
 <br>
 <ul>
 <li><b>SIP socket </b><br>Recommended mode is SIP over TCP, because UDP usually requires frequent keep alives for maintaining NAT association at the IP router level. This can be as frequent as one UDP packet every 15 seconds to maintain the NAT association accross NAT routers. Doing such drains the battery very fast, and furthermore the iOS keep-alive designed by Apple to handle this task can only be called with a minimum of 10 minutes interval.<br>
-For TCP, liblinphone automatically configures SIP socket for voip  (I.E kCFStreamNetworkServiceType set to kCFStreamNetworkServiceTypeVoIP). <br>
-In the event that an application really wants to use UDP, it is the responsability of application to set this property to the UDP SIP socket before entering in background. It can access the SIP socket from method #linphone_core_get_sip_socket(). Note this property is only settable on a connected socket. As liblinphone UDP sockets are not connected, application willing to enable UDP background mode must first connect the UDP sip socket before configuring the voip mode. Pseudo code below shows the different steps:
-\code
-	//get sip socket
-	CFReadStreamRef mReadStream
-	int sipsock = linphone_core_get_sip_socket(theLinphoneCore);	
-	//get address port of the sip proxy in order to connect the udp socket to this proxy
-	const char *port;
-	addr=linphone_address_new(linphone_proxy_config_get_addr(proxyCfg));
-	memset(&hints,0,sizeof(hints));
-	hints.ai_family=linphone_core_ipv6_enabled(theLinphoneCore) ? AF_INET6 : AF_INET;
-	port=linphone_address_get_port(addr);
-	if (port==NULL) port="5060";
-	err=getaddrinfo(linphone_address_get_domain(addr),port,&hints,&res);
-	if (err!=0){
-		ms_error("getaddrinfo() failed for %s: %s",linphone_address_get_domain(addr),gai_strerror(err));
-		linphone_address_destroy(addr);
-		return;
-	}
-	//connect the udp socket
-	err=connect(sipsock,res->ai_addr,res->ai_addrlen);
-	if (err==-1){
-		ms_error("Connect failed: %s",strerror(errno));
-	}
-	freeaddrinfo(res);
-	//create CFRead stream from the sip socket id
-	CFStreamCreatePairWithSocket(NULL, (CFSocketNativeHandle)sipsock, &mReadStream,nil);
-	//configure for persistante connection
-	if (!CFReadStreamSetProperty(mReadStream, kCFStreamNetworkServiceType, kCFStreamNetworkServiceTypeVoIP)) {
-		ms_error("cannot set service type to voip for read stream");
-	}
-	if (!CFReadStreamOpen(mReadStream)) {
-		ms_error("cannot open read stream");
-	}		
-
-\endcode
-<br> Note this operation has to be performed every time the application enters in background mode.
-<br> Anyway, for battery saving and interoperability with NAT routers reasons, <b>UDP background mode is not recomended</b>.<br>
-The choice between UDP and TCP transport for sip can be configured with linphone_core_set_sip_transports().
+For TCP, liblinphone automatically configures SIP socket for voip  (I.E kCFStreamNetworkServiceType set to kCFStreamNetworkServiceTypeVoIP). 
+<br><b>Since IOS > 4.1 Apple disabled voip mode for UDP sockets </b> 
 <li><b>Entering background mode</b>
 <br> Before entering in background mode (through \code - (void)applicationDidEnterBackground:(UIApplication *)application \endcode  ), the application must first refresh sip registration using function #linphone_core_refresh_registers();
 and register a keep-alive handler for periodically refreshing the registration. The speudo code below shows how to register a keep alive handler:
@@ -287,7 +250,7 @@ and register a keep-alive handler for periodically refreshing the registration. 
 <li><b>Incoming call notification while in background mode</b>
 <br>Assuming application using liblinphone is well configured for multitasking, incoming calls arriving while liblinphone is in background mode will simply wakeup liblinphone thread but not resume GUI. To wakeup GUI, it is recommended to send a Local Notification to the user from the #LinphoneCallStateCb. Here under a speudo code for this operation:
 \code
-	if ([UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground) {
+	if ([UIApplication sharedApplication].applicationState !=  UIApplicationStateActive) {
 		// Create a new notification
 		UILocalNotification* notif = [[[UILocalNotification alloc] init] autorelease];
 		if (notif) {
@@ -346,6 +309,47 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	
 \endcode  
 </ul>
+<b> Sound cards </b>
+<br> Since IOS 5.0, liblinphone supports 2 sound cards. <i>AU: Audio Unit Receiver</i> based on IO units for voice calls plus <i>AQ: Audio Queue Device</i> dedicated to rings. Here under the recommended settings (I.E default one)
+\code
+	linphone_core_set_playback_device(lc, "AU: Audio Unit Receiver");
+	linphone_core_set_ringer_device(lc, "AQ: Audio Queue Device");
+	linphone_core_set_capture_device(lc, "AU: Audio Unit Receiver");
+\endcode
+<b> Video </b>
+<br>Since 3.5 video support has been added to liblinphone for IOS. It requires the application to provide liblinphone with pointers to IOS's views hosting video display and video previous.
+<br> These 2 UIView objects must be passed to the core using functions  #linphone_core_set_native_video_window_id() and	#linphone_core_set_native_preview_window_id(). here under speudo code:
+\code
+	UIView* display = [[UIView alloc] init];
+	UIView* preview = [[UIView alloc] init];
+	linphone_core_set_native_video_window_id(lc,(unsigned long)display);	
+	linphone_core_set_native_preview_window_id(lc,(unsigned long)preview);
+\endcode
+<br> Screen rotations are also handled by liblinphone. 2 positions are currently supported, namely <i>UIInterfaceOrientationPortrait</i> and <i>UIInterfaceOrientationLandscapeRight</i>. Applications may invoke #linphone_core_set_device_rotation() followed by #linphone_core_update_call() to notify liblinphone of an orientation change. Here under a speudo code to handle orientation changes
+\code
+
+-(void) configureOrientation:(UIInterfaceOrientation) oritentation  {
+	int oldLinphoneOrientation = linphone_core_get_device_rotation(lc);
+	if (oritentation == UIInterfaceOrientationPortrait ) {
+		linphone_core_set_native_video_window_id(lc,(unsigned long)display-portrait);	
+		linphone_core_set_native_preview_window_id(lc,(unsigned long)preview-portrait);
+		linphone_core_set_device_rotation(lc, 0);
+		
+	} else if (oritentation == UIInterfaceOrientationLandscapeRight ) {
+		linphone_core_set_native_video_window_id(lc,(unsigned long)display-landscape);	
+		linphone_core_set_native_preview_window_id(lc,(unsigned long)preview-landscape);
+		linphone_core_set_device_rotation(lc, 270);
+	}
+	
+	if ((oldLinphoneOrientation != linphone_core_get_device_rotation(lc))
+		&& linphone_core_get_current_call(lc)) {
+		//Orientation has changed, must call update call
+		linphone_core_update_call(lc, linphone_core_get_current_call(lc), NULL);
+	}
+}
+
+\endcode
+
 <b>DTMF feebacks</b>
 <br>Liblinphone provides functions \link #linphone_core_play_dtmf() to play dtmf \endlink to the local user. Usually this is used to play a sound when the user presses a digit, inside or outside of any call. On IOS, libLinphone relies on AudioUnits for interfacing with the audio system. Unfortunately the Audio Unit initialization is a quite long operation that may trigger a bad user experience if performed each time a DTMF is played, the sound being delayed half a second after the press. To solve this issue and thus insure real-time precision, liblinphone introduces 2 functions for \link linphone_core_start_dtmf_stream() preloading \endlink and \link #linphone_core_start_dtmf_stream() unloading \endlink the underlying audio graph responsible for playing DTMFs.  
 <br> For an application using function #linphone_core_play_dtmf(), it is recommanded to call #linphone_core_start_dtmf_stream() when entering in foreground and #linphone_core_stop_dtmf_stream() upon entering background mode. 

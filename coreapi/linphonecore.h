@@ -818,7 +818,7 @@ int linphone_core_set_sip_transports(LinphoneCore *lc, const LCSipTransports *tr
 
 int linphone_core_get_sip_transports(LinphoneCore *lc, LCSipTransports *transports);
 /**
- * @ingroup IOS
+ *
  * Give access to the UDP sip socket. Can be useful to configure this socket as persistent I.E kCFStreamNetworkServiceType set to kCFStreamNetworkServiceTypeVoIP)
  * @param lc #LinphoneCore
  * @return socket file descriptor
