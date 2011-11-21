@@ -454,7 +454,10 @@ static int extract_received_rport(osip_message_t *msg, const char **received, in
 	*rportval=5060;
 	*received=NULL;
 	osip_message_get_via(msg,0,&via);
-	if (!via) return -1;
+	if (!via) {
+		ms_warning("extract_received_rport(): no via.");
+		return -1;
+	}
 
 	*transport = sal_transport_parse(via->protocol);
 	
@@ -471,7 +474,10 @@ static int extract_received_rport(osip_message_t *msg, const char **received, in
 	osip_via_param_get_byname(via,"received",&param);
 	if (param) *received=param->gvalue;
 
-	if (rport==NULL && *received==NULL) return -1;
+	if (rport==NULL && *received==NULL){
+		ms_warning("extract_received_rport(): no rport and no received parameters.");
+		return -1;
+	}
 	return 0;
 }
 
@@ -1665,7 +1671,7 @@ static bool_t fix_message_contact(SalOp *op, osip_message_t *request,osip_messag
 	if (extract_received_rport(last_answer,&received,&rport,&transport)==-1) return FALSE;
 	osip_message_get_contact(request,0,&ctt);
 	if (ctt == NULL) {
-		/*nothing to update*/
+		ms_warning("fix_message_contact(): no contact to update");
 		return FALSE;
 	}
 	if (ctt->url->host!=NULL){
@@ -1700,14 +1706,15 @@ static bool_t register_again_with_updated_contact(SalOp *op, osip_message_t *ori
 	if (extract_received_rport(last_answer,&received,&rport,&transport)==-1) return FALSE;
 	osip_message_get_contact(orig_request,0,&ctt);
 	osip_contact_to_str(ctt,&tmp);
-	ori_contact_address = sal_address_new((const char*)tmp);
+	ori_contact_address = sal_address_new(tmp);
 	
 	/*check if contact is up to date*/
 	if (strcmp(sal_address_get_domain(ori_contact_address),received) ==0 
 	&& sal_address_get_port_int(ori_contact_address) == rport
 	&& sal_address_get_transport(ori_contact_address) == transport) {
 		ms_message("Register has up to date contact, doing nothing.");
-		osip_free(tmp);     
+		osip_free(tmp);
+		sal_address_destroy(ori_contact_address);
 		return FALSE;
 	} else ms_message("contact do not match, need to update the register (%s with %s:%i;transport=%s)"
 		      ,tmp
