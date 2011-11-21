@@ -114,6 +114,8 @@
 		22BB1A69132FF16A005CD7AA /* UIEraseButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22BB1A68132FF16A005CD7AA /* UIEraseButton.m */; };
 		22C755601317E59C007BC101 /* UIBluetoothButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22C7555F1317E59C007BC101 /* UIBluetoothButton.m */; };
 		22D1B68112A3E0BE001AE361 /* libresolv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 22D1B68012A3E0BE001AE361 /* libresolv.dylib */; };
+		22D817AD147A9F33001CFB9C /* UIAddVideoButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22D817AC147A9F33001CFB9C /* UIAddVideoButton.m */; };
+		22D817AE147A9F33001CFB9C /* UIAddVideoButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22D817AC147A9F33001CFB9C /* UIAddVideoButton.m */; };
 		22D8F11F147548E2008C97DB /* linphonerc in Resources */ = {isa = PBXBuildFile; fileRef = 2274550710700509006EC466 /* linphonerc */; };
 		22D8F120147548E2008C97DB /* PhoneViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22F2508D107141E100AC9B3F /* PhoneViewController.xib */; };
 		22D8F121147548E2008C97DB /* ringback.wav in Resources */ = {isa = PBXBuildFile; fileRef = 22F254801073D99800AC9B3F /* ringback.wav */; };
@@ -547,6 +549,8 @@
 		22C7564A13265C6A007BC101 /* x509_vfy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x509_vfy.h; sourceTree = "<group>"; };
 		22C7564B13265C6A007BC101 /* x509v3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x509v3.h; sourceTree = "<group>"; };
 		22D1B68012A3E0BE001AE361 /* libresolv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libresolv.dylib; path = usr/lib/libresolv.dylib; sourceTree = SDKROOT; };
+		22D817AB147A9F33001CFB9C /* UIAddVideoButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIAddVideoButton.h; sourceTree = "<group>"; };
+		22D817AC147A9F33001CFB9C /* UIAddVideoButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIAddVideoButton.m; sourceTree = "<group>"; };
 		22D8F187147548E2008C97DB /* linphone-no-gpl-thirdparties.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "linphone-no-gpl-thirdparties.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		22D8F189147548E3008C97DB /* linphone copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "linphone copy-Info.plist"; path = "/Users/jehanmonnier/workspaces/workspace-iphone-port/linphone-iphone/linphone copy-Info.plist"; sourceTree = "<absolute>"; };
 		22E028B413B4CCBD0068A713 /* VideoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoViewController.h; sourceTree = "<group>"; };
@@ -947,6 +951,8 @@
 				223963161393CFAF001DE689 /* FastAddressBook.m */,
 				22AA8AFF13D83F6300B30535 /* UICamSwitch.h */,
 				22AA8B0013D83F6300B30535 /* UICamSwitch.m */,
+				22D817AB147A9F33001CFB9C /* UIAddVideoButton.h */,
+				22D817AC147A9F33001CFB9C /* UIAddVideoButton.m */,
 			);
 			path = LinphoneUI;
 			sourceTree = "<group>";
@@ -1357,6 +1363,7 @@
 				2211DBBC14769C8300DEE054 /* AdvancedPhoneViewController.m in Sources */,
 				2211DBBE14769C8300DEE054 /* CallDelegate.m in Sources */,
 				2211DBC014769CB200DEE054 /* IncallViewController.m in Sources */,
+				22D817AD147A9F33001CFB9C /* UIAddVideoButton.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1389,6 +1396,7 @@
 				2211DBBD14769C8300DEE054 /* AdvancedPhoneViewController.m in Sources */,
 				2211DBBF14769C8300DEE054 /* CallDelegate.m in Sources */,
 				2211DBC114769CB300DEE054 /* IncallViewController.m in Sources */,
+				22D817AE147A9F33001CFB9C /* UIAddVideoButton.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

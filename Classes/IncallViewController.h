@@ -34,6 +34,7 @@
     UIButton* pause;
 	UISpeakerButton* speaker;
 	UIButton* contacts;
+	UIButton* addVideo;
     UITableView* callTableView;
     UIButton* addCall, *mergeCalls, *addToConf;
 
@@ -89,6 +90,7 @@
 @property (nonatomic, retain) IBOutlet UIButton* pause;
 @property (nonatomic, retain) IBOutlet UIButton* speaker;
 @property (nonatomic, retain) IBOutlet UIButton* contacts;
+@property (nonatomic, retain) IBOutlet UIButton* addVideo;
 @property (nonatomic, retain) IBOutlet UITableView* callTableView;
 @property (nonatomic, retain) IBOutlet UIButton* addCall;
 @property (nonatomic, retain) IBOutlet UIButton* mergeCalls;

@@ -184,6 +184,24 @@ int callCount(LinphoneCore* lc) {
 				   withDisplayName:nil];
 			
 		}
+
+		
+		UIDevice* device = [UIDevice currentDevice];
+		if ([device respondsToSelector:@selector(isMultitaskingSupported)]
+			&& [device isMultitaskingSupported]) {
+			bool enableVideo = [[NSUserDefaults standardUserDefaults] boolForKey:@"enable_video_preference"];
+			bool startVideo = [[NSUserDefaults standardUserDefaults] boolForKey:@"start_video_preference"];
+				if (enableVideo && !startVideo) {
+					[addVideo setHidden:FALSE];
+					[contacts setHidden:TRUE];
+				} else {
+					[addVideo setHidden:TRUE];
+					[contacts setHidden:FALSE];				
+				}
+				
+		
+		}
+		
     }
 }
 
