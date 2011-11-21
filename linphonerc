@@ -6,6 +6,11 @@ mtu=0
 
 [sip]
 sip_random_port=1
+sip_port=5060
+sip_tcp_random_port=1
+sip_tcp_port=0
+sip_tls_random_port=1
+sip_tls_port=0
 guess_hostname=1
 contact=sip:toto@unknown-host
 inc_timeout=15
