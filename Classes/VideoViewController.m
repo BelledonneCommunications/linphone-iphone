@@ -63,8 +63,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	[mMute initWithOnImage:[UIImage imageNamed:@"mic_muted.png"]  offImage:[UIImage imageNamed:@"mic_active.png"] ];
-	[mMuteLand initWithOnImage:[UIImage imageNamed:@"mic_muted.png"]  offImage:[UIImage imageNamed:@"mic_active.png"] ];
+	[mMute initWithOnImage:[UIImage imageNamed:@"micro_inverse.png"]  offImage:[UIImage imageNamed:@"micro.png"] ];
+	[mMuteLand initWithOnImage:[UIImage imageNamed:@"micro_inverse.png"]  offImage:[UIImage imageNamed:@"micro.png"] ];
 	[mCamSwitch setPreview:mPreview];
 	[mCamSwitchLand setPreview:mPreviewLand];
 	isFirst=TRUE;

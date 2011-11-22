@@ -198,7 +198,12 @@ extern void libmssilk_init();
                 [callDelegate	displayDialerFromUI:mCurrentViewController
 									  forUser:@"" 
 							  withDisplayName:@""];
-            }
+            } else {
+				[callDelegate	displayInCall:call 
+									 FromUI:mCurrentViewController
+									forUser:lUserName 
+							withDisplayName:lDisplayName];	
+			}
 			break;
 		}
 		case LinphoneCallEnd:
@@ -208,9 +213,9 @@ extern void libmssilk_init();
 							  withDisplayName:@""];
             } else {
 				[callDelegate	displayInCall:call 
-							   FromUI:mCurrentViewController
-										  forUser:lUserName 
-								  withDisplayName:lDisplayName];	
+									 FromUI:mCurrentViewController
+									forUser:lUserName 
+							withDisplayName:lDisplayName];	
 			}
 			break;
 		default:
