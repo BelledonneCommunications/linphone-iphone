@@ -1241,7 +1241,7 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 	LinphoneCore *lc=call->core;
 	LinphoneAddress *me=linphone_core_get_primary_contact_parsed(lc);
 	char *cname;
-	bool_t use_arc;
+	bool_t use_arc=linphone_core_adaptive_rate_control_enabled(lc);
 #ifdef VIDEO_ENABLED
 	const SalStreamDescription *vstream=sal_media_description_find_stream(call->resultdesc,
 		    					SalProtoRtpAvp,SalVideo);
@@ -1527,7 +1527,7 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 		// mediastreamer queue.
 		audio_stream_iterate(call->audiostream);
 
-		if (call->audiostream->evq){
+		if (call->audiostream_app_evq){
 			OrtpEvent *ev;
 			while (NULL != (ev=ortp_ev_queue_get(call->audiostream_app_evq))){
 				OrtpEventType evt=ortp_event_get_type(ev);

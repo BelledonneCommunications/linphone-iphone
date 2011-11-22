@@ -499,7 +499,7 @@ static gboolean linphone_gtk_iterate(LinphoneCore *lc){
 	static unsigned long previd=0;
 	static unsigned long preview_previd=0;
 	static gboolean in_iterate=FALSE;
-	
+
 	/*avoid reentrancy*/
 	if (in_iterate) return TRUE;
 	in_iterate=TRUE;
@@ -1147,6 +1147,8 @@ void linphone_gtk_link_to_website(GtkWidget *item){
 
 #ifndef HAVE_GTK_OSX
 
+static GtkStatusIcon *icon=NULL;
+
 static void icon_popup_menu(GtkStatusIcon *status_icon, guint button, guint activate_time, gpointer user_data){
 	GtkWidget *menu=(GtkWidget*)g_object_get_data(G_OBJECT(status_icon),"menu");
 	gtk_menu_popup(GTK_MENU(menu),NULL,NULL,gtk_status_icon_position_menu,status_icon,button,activate_time);
@@ -1184,8 +1186,6 @@ static GtkWidget *create_icon_menu(){
 	gtk_widget_show(menu);
 	return menu;
 }
-
-static GtkStatusIcon *icon=NULL;
 
 static void handle_icon_click() {
 	GtkWidget *mw=linphone_gtk_get_main_window();
@@ -1252,6 +1252,13 @@ static void linphone_gtk_status_icon_set_blinking(gboolean val){
 			gtk_status_icon_set_from_pixbuf(icon,normal_icon);
 		}
 	}
+#endif
+}
+
+void linphone_gtk_options_activate(GtkWidget *item){
+#ifndef HAVE_GTK_OSX
+	gtk_widget_set_visible(linphone_gtk_get_widget(linphone_gtk_get_main_window(),"quit_item"),
+		icon && !gtk_status_icon_is_embedded(icon));
 #endif
 }
 
