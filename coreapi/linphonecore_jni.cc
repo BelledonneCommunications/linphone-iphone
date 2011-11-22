@@ -1471,8 +1471,8 @@ extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_resumeCall(JNIEnv *env,j
 extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isInConference(JNIEnv *env,jobject thiz,jlong pCore) {
 	return linphone_core_is_in_conference((LinphoneCore *) pCore);
 }
-extern "C" void Java_org_linphone_core_LinphoneCoreImpl_enterConference(JNIEnv *env,jobject thiz,jlong pCore) {
-	linphone_core_enter_conference((LinphoneCore *) pCore);
+extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_enterConference(JNIEnv *env,jobject thiz,jlong pCore) {
+	return 0 == linphone_core_enter_conference((LinphoneCore *) pCore);
 }
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_leaveConference(JNIEnv *env,jobject thiz,jlong pCore) {
 	linphone_core_leave_conference((LinphoneCore *) pCore);
