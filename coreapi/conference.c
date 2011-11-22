@@ -194,6 +194,9 @@ int linphone_core_enter_conference(LinphoneCore *lc){
 	if (linphone_core_sound_resources_locked(lc)) {
 		return -1;
 	}
+	if (lc->current_call != NULL) {
+		linphone_core_pause_call(lc, lc->current_call);
+	}
 	LinphoneConference *conf=&lc->conf_ctx;
 	if (conf->local_participant==NULL) add_local_endpoint(conf,lc);
 	return 0;

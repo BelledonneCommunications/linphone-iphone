@@ -607,7 +607,7 @@ public interface LinphoneCore {
 	void enableEchoLimiter(boolean val);
 
 	boolean isInConference();
-	void enterConference();
+	boolean enterConference();
 	void leaveConference();
 
 	void addToConference(LinphoneCall call);
