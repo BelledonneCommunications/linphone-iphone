@@ -163,7 +163,8 @@ int callCount(LinphoneCore* lc) {
 	
 }
 -(void)viewDidAppear:(BOOL)animated {
-    if (dismissed) {
+    [super viewDidAppear:animated];
+	if (dismissed) {
         [self dismissModalViewControllerAnimated:true];
     } else {
         [self updateCallsDurations];
@@ -215,6 +216,7 @@ int callCount(LinphoneCore* lc) {
         glowingTimer = nil;
     }
 	if (!mVideoShown) [[UIApplication sharedApplication] setIdleTimerDisabled:false];
+	mIncallViewIsReady=FALSE;
 }
 
 - (void)viewDidUnload {
