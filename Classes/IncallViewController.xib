@@ -241,7 +241,7 @@
 									<string key="NSFrame">{{213, 70}, {107, 66}}</string>
 									<reference key="NSSuperview" ref="585669622"/>
 									<reference key="NSWindow"/>
-									<reference key="NSNextKeyView" ref="481206195"/>
+									<reference key="NSNextKeyView" ref="484501311"/>
 									<reference key="IBUIBackgroundColor" ref="95762599"/>
 									<bool key="IBUIOpaque">NO</bool>
 									<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
@@ -264,7 +264,7 @@
 									<reference key="IBUIFontDescription" ref="974614377"/>
 									<reference key="IBUIFont" ref="773313654"/>
 								</object>
-								<object class="IBUIButton" id="481206195">
+								<object class="IBUIButton" id="484501311">
 									<reference key="NSNextResponder" ref="585669622"/>
 									<int key="NSvFlags">-2147483356</int>
 									<string key="NSFrame">{{213, 70}, {107, 66}}</string>
@@ -277,13 +277,18 @@
 									<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 									<int key="IBUIContentHorizontalAlignment">0</int>
 									<int key="IBUIContentVerticalAlignment">0</int>
+									<int key="IBUIButtonType">1</int>
 									<string key="IBUINormalTitle">video</string>
 									<reference key="IBUIHighlightedTitleColor" ref="816037173"/>
 									<object class="NSColor" key="IBUINormalTitleColor">
 										<int key="NSColorSpace">1</int>
 										<bytes key="NSRGB">MC4xOTYwNzg0MzE0IDAuMzA5ODAzOTIxNiAwLjUyMTU2ODYyNzUAA</bytes>
 									</object>
-									<reference key="IBUINormalTitleShadowColor" ref="920781842"/>
+									<reference key="IBUINormalTitleShadowColor" ref="785445938"/>
+									<object class="NSCustomResource" key="IBUINormalBackgroundImage">
+										<string key="NSClassName">NSImage</string>
+										<string key="NSResourceName">clavier-01-160px.png</string>
+									</object>
 									<reference key="IBUIFontDescription" ref="974614377"/>
 									<reference key="IBUIFont" ref="773313654"/>
 								</object>
@@ -935,7 +940,7 @@
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">addVideo</string>
 						<reference key="source" ref="841351856"/>
-						<reference key="destination" ref="481206195"/>
+						<reference key="destination" ref="484501311"/>
 					</object>
 					<int key="connectionID">125</int>
 				</object>
@@ -1158,7 +1163,7 @@
 							<reference ref="297000325"/>
 							<reference ref="861550739"/>
 							<reference ref="1031005817"/>
-							<reference ref="481206195"/>
+							<reference ref="484501311"/>
 						</object>
 						<reference key="parent" ref="858247959"/>
 						<string key="objectName">controls</string>
@@ -1207,7 +1212,7 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">123</int>
-						<reference key="object" ref="481206195"/>
+						<reference key="object" ref="484501311"/>
 						<reference key="parent" ref="585669622"/>
 						<string key="objectName">video</string>
 					</object>
@@ -1239,6 +1244,7 @@
 					<string>16.IBPluginDependency</string>
 					<string>16.IBUIButtonInspectorSelectedStateConfigurationMetadataKey</string>
 					<string>17.IBPluginDependency</string>
+					<string>18.CustomClassName</string>
 					<string>18.IBPluginDependency</string>
 					<string>2.IBPluginDependency</string>
 					<string>26.IBPluginDependency</string>
@@ -1283,18 +1289,19 @@
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<real value="0.0"/>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-					<real value="0.0"/>
+					<real value="1"/>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>UIAddVideoButton</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>UISpeakerButton</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-					<real value="2"/>
+					<real value="1"/>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>UIMuteButton</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<real value="2"/>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+					<string>UIHangUpButton</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -1784,6 +1791,7 @@
 				<string>HP_inverse.png</string>
 				<string>ajouter.png</string>
 				<string>clavier-01-106px.png</string>
+				<string>clavier-01-160px.png</string>
 				<string>clavier.png</string>
 				<string>conf_merge.png</string>
 				<string>contact.png</string>
@@ -1801,6 +1809,7 @@
 				<string>{164, 104}</string>
 				<string>{164, 104}</string>
 				<string>{106, 60}</string>
+				<string>{160, 60}</string>
 				<string>{164, 104}</string>
 				<string>{82, 75}</string>
 				<string>{164, 104}</string>

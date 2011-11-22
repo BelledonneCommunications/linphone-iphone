@@ -111,7 +111,7 @@ int callCount(LinphoneCore* lc) {
     
     [addCall addTarget:self action:@selector(addCallPressed) forControlEvents:UIControlEventTouchDown];
     [mergeCalls addTarget:self action:@selector(mergeCallsPressed) forControlEvents:UIControlEventTouchDown];
-    [endCtrl addTarget:self action:@selector(endCallPressed) forControlEvents:UIControlEventTouchUpInside];
+    //[endCtrl addTarget:self action:@selector(endCallPressed) forControlEvents:UIControlEventTouchUpInside];
     [addToConf addTarget:self action:@selector(addToConfCallPressed) forControlEvents:UIControlEventTouchUpInside];
     [pause addTarget:self action:@selector(pauseCallPressed) forControlEvents:UIControlEventTouchUpInside];
     [mergeCalls setHidden:YES];
@@ -134,13 +134,15 @@ int callCount(LinphoneCore* lc) {
 }
 
 -(void) addToConfCallPressed {
-    if (!selectedCall)
+    LinphoneCall* selectedCall = linphone_core_get_current_call([LinphoneManager getLc]);
+	if (!selectedCall)
         return;
     linphone_core_add_to_conference([LinphoneManager getLc], selectedCall);
 }
 
 -(void) pauseCallPressed {
-    if (!selectedCall)
+    LinphoneCall* selectedCall = linphone_core_get_current_call([LinphoneManager getLc]);
+	if (!selectedCall)
         return;
     if (linphone_call_get_state(selectedCall) == LinphoneCallPaused) {
         [pause setSelected:NO];
@@ -223,7 +225,7 @@ int callCount(LinphoneCore* lc) {
 
 
 -(void) displayStatus:(NSString*) message; {
-    [self updateUIFromLinphoneState: nil]; 
+
 }
 
 -(void) displayPad:(bool) enable {
@@ -236,9 +238,10 @@ int callCount(LinphoneCore* lc) {
 	//restaure view
 	[self displayPad:false];
 	dismissed = false;
-    
-    if (call)
-        selectedCall = call;
+	UIDevice *device = [UIDevice currentDevice];
+    device.proximityMonitoringEnabled = YES;
+	if ([speaker isOn]) 
+		[speaker toggle];
     [self updateUIFromLinphoneState: nil]; 
 }
 
@@ -246,15 +249,27 @@ int callCount(LinphoneCore* lc) {
     
 }
 
+-(void) dismissVideoView {
+	[[UIApplication sharedApplication] setStatusBarHidden:NO animated:NO]; 
+	[self dismissModalViewControllerAnimated:FALSE];//just in case
+	 mVideoShown=FALSE;
+}
 -(void) displayInCall:(LinphoneCall*) call FromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
     dismissed = false;
-    if (call)
-        selectedCall = call;
-    [self updateUIFromLinphoneState: nil]; 
+	UIDevice *device = [UIDevice currentDevice];
+    device.proximityMonitoringEnabled = YES;
+	if (call !=nil  && linphone_call_get_dir(call)==LinphoneCallIncoming) {
+		if ([speaker isOn]) [speaker toggle];
+	}
+    [self updateUIFromLinphoneState: nil];
+	if (self.presentedViewController == (UIViewController*)mVideoViewController) {
+		[self dismissVideoView];
+	}
 }
 -(void) displayDialerFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
 	UIViewController* modalVC = self.modalViewController;
-    
+	UIDevice *device = [UIDevice currentDevice];
+    device.proximityMonitoringEnabled = NO;
     if (modalVC != nil) {
         // clear previous native window ids
         if (modalVC == mVideoViewController) {
@@ -282,7 +297,6 @@ int callCount(LinphoneCore* lc) {
 }
 -(void) updateUIFromLinphoneState:(UIViewController *)viewCtrl {
     [mute reset];
-    
     // if (
     // [pause reset];
 
@@ -304,7 +318,7 @@ int callCount(LinphoneCore* lc) {
     } @catch (NSException* exc) {
         return;
     }
-    
+    LinphoneCall* selectedCall = linphone_core_get_current_call([LinphoneManager getLc]);
     // hide call control subview if no call selected
     [callControlSubView setHidden:(selectedCall == NULL)];
     // hide add to conf if no conf exist
@@ -320,13 +334,11 @@ int callCount(LinphoneCore* lc) {
         else if (linphone_call_get_state(selectedCall)==LinphoneCallPaused) {
             [pause setHidden:NO];
             //[pause setTitle:@"Resume" forState:UIControlStateNormal];
-            // pause.selected = YES;
-            pause.highlighted = NO;
+            pause.selected = YES;
         } else if (callCount(lc) == callsCount && callsCount == 1) {
             [pause setHidden:NO];
             //[pause setTitle:@"Pause" forState:UIControlStateNormal];
-            // pause.selected = NO;
-            pause.highlighted = NO;
+            pause.selected = NO;
         } else {
             [pause setHidden:YES];
         }
@@ -480,8 +492,7 @@ int callCount(LinphoneCore* lc) {
     }*/
     
     
-    
-    
+    LinphoneCall* selectedCall = linphone_core_get_current_call([LinphoneManager getLc]);
     if (call == selectedCall) {
         [cell setSelected:YES animated:NO];
         [callTableView selectRowAtIndexPath:path animated:NO scrollPosition:UITableViewScrollPositionNone];
@@ -519,6 +530,7 @@ int callCount(LinphoneCore* lc) {
             
             //if (call == selectedCall)
             //    [self updateActive:YES cell:cell];
+			LinphoneCall* selectedCall = linphone_core_get_current_call([LinphoneManager getLc]);
             if (call == selectedCall) {
                 [callTableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
                 cell.selected = YES;
@@ -625,7 +637,7 @@ int callCount(LinphoneCore* lc) {
         
     bool inConf = (indexPath.row == 0 && linphone_core_get_conference_size(lc) > 0);
     
-    selectedCall = [self retrieveCallAtIndex:indexPath.row inConference:inConf];
+    LinphoneCall* selectedCall = [self retrieveCallAtIndex:indexPath.row inConference:inConf];
     
     if (inConf) {
         if (linphone_core_is_in_conference(lc))
@@ -644,24 +656,5 @@ int callCount(LinphoneCore* lc) {
     [self updateUIFromLinphoneState: nil];    
 }
 
--(void) endCallPressed {
-    if (selectedCall == NULL) {
-        ms_error("No selected call");
-        return;
-    }
-    
-    LinphoneCore* lc = [LinphoneManager getLc];
-    if (isInConference(selectedCall)) {
-        linphone_core_terminate_conference(lc);
-        /*
-        linphone_core_remove_from_conference(lc, selectedCall);
-        if ((linphone_core_get_conference_size(lc) - (int)linphone_core_is_in_conference(lc)) == 0)
-            linphone_core_terminate_conference(lc);
-         */
-    } else {
-        linphone_core_terminate_call(lc, selectedCall);
-    }
-    selectedCall = NULL;
-}
 
 @end

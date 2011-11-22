@@ -30,6 +30,18 @@
     
     if (call)
         linphone_core_terminate_call(lc,call);
+	else if (linphone_core_is_in_conference(lc)) {
+		linphone_core_terminate_conference(lc);
+	} else {
+		const MSList* calls = linphone_core_get_calls(lc);
+		if (ms_list_size(calls) == 1 
+			&& !linphone_call_params_local_conference_mode(linphone_call_get_current_params((LinphoneCall*)(calls->data)))) {
+			//Only one call in the list, hangin up!
+			linphone_core_terminate_call(lc,(LinphoneCall*)(calls->data));
+		} else {
+			ms_message("Cannot make a decision on which call to terminate");
+		}
+	}
 }
 
 - (id)initWithFrame:(CGRect)frame {

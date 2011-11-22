@@ -35,18 +35,9 @@
 	UITextField* address;
 	UILabel* mDisplayName;
 	UIEraseButton* erase;
+	UICallButton* callShort;
+	UICallButton* callLarge;
 	
-	UIView* incallView;
-    UIButton* backToCallView;
-	UIDuration* callDuration;
-	UIMuteButton* mute;
-	UISpeakerButton* speaker;	
-	UILabel* peerLabel;
-		
-	
-	UICallButton* __call;
-	UIHangUpButton* hangup;
-
 	UILabel* status;
 
 	//key pad
@@ -64,29 +55,23 @@
 	UIDigitButton* hash;
 
 	UIButton* back;
+	UIButton* backToCallView;
 	
 	UITabBarController*  myTabBarController;
 
 	UIActionSheet *mIncomingCallActionSheet;
 	FirstLoginViewController* myFirstLoginViewController;
-
+	IncallViewController* mIncallViewController;
 }
 
 @property (nonatomic, retain) IBOutlet UIView* dialerView;
 
 @property (nonatomic, retain) IBOutlet UITextField* address;
-@property (nonatomic, retain) IBOutlet UIButton* __call;
+@property (nonatomic, retain) IBOutlet UIButton* callShort;
+@property (nonatomic, retain) IBOutlet UIButton* callLarge;
 @property (nonatomic, retain) IBOutlet UIButton* hangup;
 @property (nonatomic, retain) IBOutlet UILabel* status;
 @property (nonatomic, retain) IBOutlet UIEraseButton* erase;
-
-@property (nonatomic, retain) IBOutlet UIView* incallView;
-@property (nonatomic, retain) IBOutlet UILabel* callDuration;
-@property (nonatomic, retain) IBOutlet UIButton* mute;
-@property (nonatomic, retain) IBOutlet UIButton* speaker;	
-@property (nonatomic, retain) IBOutlet UILabel* peerLabel;
-
-@property (nonatomic, retain) IBOutlet UIButton* backToCallView;
 
 @property (nonatomic, retain) IBOutlet UIButton* one;
 @property (nonatomic, retain) IBOutlet UIButton* two;
@@ -102,7 +87,7 @@
 @property (nonatomic, retain) IBOutlet UIButton* hash;
 
 @property (nonatomic, retain) IBOutlet UIButton* back;
-
+@property (nonatomic, retain) IBOutlet UIButton* backToCallView;
 
 
 // method to handle keypad event

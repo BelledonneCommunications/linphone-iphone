@@ -66,7 +66,7 @@
 	
 	ABPeoplePickerNavigationController* myPeoplePickerController;
     
-    LinphoneCall* selectedCall;
+    
 	VideoViewController* mVideoViewController;
     BOOL mVideoShown;
 	BOOL mVideoIsPending;

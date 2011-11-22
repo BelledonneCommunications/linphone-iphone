@@ -206,7 +206,12 @@ extern void libmssilk_init();
                 [callDelegate	displayDialerFromUI:mCurrentViewController
 									  forUser:@"" 
 							  withDisplayName:@""];
-            }
+            } else {
+				[callDelegate	displayInCall:call 
+							   FromUI:mCurrentViewController
+										  forUser:lUserName 
+								  withDisplayName:lDisplayName];	
+			}
 			break;
 		default:
 			break;
@@ -816,7 +821,6 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
         linphone_core_resume_call(theLinphoneCore, (LinphoneCall*) c->data);
     }
     
-    [callDelegate updateUIFromLinphoneState:mCurrentViewController];
 }
 
 
