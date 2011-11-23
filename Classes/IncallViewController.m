@@ -145,15 +145,22 @@ int callCount(LinphoneCore* lc) {
 }
 
 -(void) pauseCallPressed {
-    LinphoneCall* selectedCall = linphone_core_get_current_call([LinphoneManager getLc]);
-	if (!selectedCall)
-        return;
-    if (linphone_call_get_state(selectedCall) == LinphoneCallPaused) {
-        [pause setSelected:NO];
-        linphone_core_resume_call([LinphoneManager getLc], selectedCall);
-    }else{
-        linphone_core_pause_call([LinphoneManager getLc], selectedCall);
-        [pause setSelected:YES];
+    LinphoneCore* lc = [LinphoneManager getLc];
+    
+    LinphoneCall* currentCall = linphone_core_get_current_call(lc);
+	if (currentCall) {
+        if (linphone_call_get_state(currentCall) == LinphoneCallStreamsRunning) {
+            [pause setSelected:NO];
+            linphone_core_pause_call(lc, currentCall);
+        }
+    } else {
+        if (linphone_core_get_calls_nb(lc) == 1) {
+            LinphoneCall* c = (LinphoneCall*) linphone_core_get_calls(lc)->data;
+            if (linphone_call_get_state(c) == LinphoneCallPaused) {
+                linphone_core_resume_call(lc, c);
+                [pause setSelected:YES];
+            }
+        }
     }
 }
 
@@ -331,19 +338,24 @@ int callCount(LinphoneCore* lc) {
     if (selectedCall) {
         if (linphone_core_is_in_conference(lc))
             [pause setHidden:YES];
-        else if (linphone_call_get_state(selectedCall)==LinphoneCallPaused) {
+        else if (callCount(lc) == callsCount && callsCount == 1) {
             [pause setHidden:NO];
-            //[pause setTitle:@"Resume" forState:UIControlStateNormal];
-            pause.selected = YES;
-        } else if (callCount(lc) == callsCount && callsCount == 1) {
-            [pause setHidden:NO];
-            //[pause setTitle:@"Pause" forState:UIControlStateNormal];
             pause.selected = NO;
         } else {
             [pause setHidden:YES];
         }
     } else {
-        [pause setHidden:callsCount > 0];
+        if (callsCount == 1) {
+            LinphoneCall* c = (LinphoneCall*)linphone_core_get_calls(lc)->data;
+            if (linphone_call_get_state(c) == LinphoneCallPaused ||
+                linphone_call_get_state(c) == LinphoneCallPausing) {
+                [pause setHidden:NO];
+                pause.selected = YES;                
+            }
+            [pause setHidden:NO];
+        } else {
+            [pause setHidden:YES];
+        }
     }
     [mergeCalls setHidden:!pause.hidden];
 }
