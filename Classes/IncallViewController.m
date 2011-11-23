@@ -480,7 +480,16 @@ int callCount(LinphoneCore* lc) {
         else
             [ms appendFormat:@"%02i sec", duration, nil];
     } else {
-        [ms appendFormat:@"%s", linphone_call_state_to_string(linphone_call_get_state(call)), nil];
+        switch (linphone_call_get_state(call)) {
+            case LinphoneCallPaused:
+                [ms appendFormat:@"%@", NSLocalizedString(@"Paused", nil), nil];
+                break;
+            case LinphoneCallOutgoingProgress:
+                [ms appendFormat:@"%@...", NSLocalizedString(@"In progress", nil), nil];
+                break;
+            default:
+                break;
+        }
     }
     [cell.detailTextLabel setText:ms];
         
