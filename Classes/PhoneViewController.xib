@@ -71,7 +71,7 @@
 										<int key="NSColorSpace">3</int>
 										<bytes key="NSWhite">MC41AA</bytes>
 									</object>
-									<object class="NSCustomResource" key="IBUINormalImage">
+									<object class="NSCustomResource" key="IBUINormalBackgroundImage">
 										<string key="NSClassName">NSImage</string>
 										<string key="NSResourceName">effacer.png</string>
 									</object>

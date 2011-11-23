@@ -65,7 +65,7 @@
 			linphone_address_set_display_name(tmpAddress,[mDisplayName.text length]>0?[mDisplayName.text cStringUsingEncoding:[NSString defaultCStringEncoding]]:nil);
 
 
-			linphone_call_params_enable_video(lcallParams,startVideo);
+			linphone_call_params_enable_video(lcallParams,startVideo&linphone_core_video_enabled([LinphoneManager getLc]));
 			linphone_core_invite_address_with_params([LinphoneManager getLc],tmpAddress,lcallParams) ;
 			
 			linphone_address_destroy(tmpAddress);

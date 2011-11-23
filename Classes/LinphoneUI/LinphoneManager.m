@@ -541,14 +541,13 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	
 	//read codecs from setting  bundle and enable them one by one
     if ([self isNotIphone3G]) {
-        [self configurePayloadType:"speex" fromPrefKey:@"speex_16k_preference" withRate:16000];
-        [self configurePayloadType:"speex" fromPrefKey:@"speex_8k_preference" withRate:8000];
+		[self configurePayloadType:"SILK" fromPrefKey:@"silk_24k_preference" withRate:24000];
     }
-    else
-    {
-        ms_message("SPEEX codecs deactivated");
+    else {
+        ms_message("SILK 24khz codec deactivated");
     }
-    [self configurePayloadType:"SILK" fromPrefKey:@"silk_24k_preference" withRate:24000];
+	[self configurePayloadType:"speex" fromPrefKey:@"speex_16k_preference" withRate:16000];
+	[self configurePayloadType:"speex" fromPrefKey:@"speex_8k_preference" withRate:8000];
 	[self configurePayloadType:"SILK" fromPrefKey:@"silk_16k_preference" withRate:16000];
     [self configurePayloadType:"AMR" fromPrefKey:@"amr_8k_preference" withRate:8000];
 	[self configurePayloadType:"GSM" fromPrefKey:@"gsm_8k_preference" withRate:8000];
@@ -568,9 +567,13 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	[self configurePayloadType:"H264" fromPrefKey:@"h264_preference" withRate:90000];
     [self configurePayloadType:"VP8" fromPrefKey:@"vp8_preference" withRate:90000];
 	
-	bool enableVideo = [[NSUserDefaults standardUserDefaults] boolForKey:@"enable_video_preference"];
-	linphone_core_enable_video(theLinphoneCore, enableVideo, enableVideo);
-	
+	if ([self isNotIphone3G]) {
+		bool enableVideo = [[NSUserDefaults standardUserDefaults] boolForKey:@"enable_video_preference"];
+		linphone_core_enable_video(theLinphoneCore, enableVideo, enableVideo);
+	} else {
+		linphone_core_enable_video(theLinphoneCore, FALSE, FALSE);
+		ms_warning("Disable video for phones prior to iPhone 3GS");
+	}
 	bool enableSrtp = [[NSUserDefaults standardUserDefaults] boolForKey:@"enable_srtp_preference"];
 	linphone_core_set_media_encryption(theLinphoneCore, enableSrtp?LinphoneMediaEncryptionSRTP:LinphoneMediaEncryptionNone);
 	
