@@ -441,7 +441,7 @@ int callCount(LinphoneCore* lc) {
     } 
     [cell.textLabel setBackgroundColor:[UIColor clearColor]];
     [cell.detailTextLabel setBackgroundColor:[UIColor clearColor]];
-    [cell.accessoryView setHidden:YES];
+    //[cell.accessoryView setHidden:YES];
     //[cell.backgroundView setBackgroundColor:cell.backgroundColor];
 }
 
@@ -519,6 +519,16 @@ int callCount(LinphoneCore* lc) {
     } else{
         cell.backgroundColor = [UIColor colorWithRed:1 green:0.5 blue:0 alpha:1];
     }*/
+    UIImageView* uiiv = ((UIImageView*)cell.accessoryView);
+    if (linphone_call_params_get_media_encryption(linphone_call_get_current_params(call)) !=
+        LinphoneMediaEncryptionNone) {
+        if (uiiv.image == nil)
+            uiiv.image = [UIImage imageNamed:@"secured.png"];
+    } else {
+        uiiv = nil;
+    }
+    
+    return;
     
     
     LinphoneCall* selectedCall = linphone_core_get_current_call([LinphoneManager getLc]);
@@ -542,6 +552,8 @@ int callCount(LinphoneCore* lc) {
     cell.accessoryType = UITableViewCellAccessoryNone;
     [self updateActive:NO cell:cell];
     cell.selected = NO;
+    
+    ((UIImageView*)cell.accessoryView).image = nil;
     [callTableView deselectRowAtIndexPath:indexPath animated:NO];
     
     NSMutableString* ms = [[NSMutableString alloc] init ];
@@ -588,7 +600,9 @@ int callCount(LinphoneCore* lc) {
         
         cell.textLabel.font = [UIFont systemFontOfSize:40];
         cell.textLabel.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+        cell.accessoryView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 28, 28)];
     }
+    ((UIImageView*)cell.accessoryView).image = nil;
     
     LinphoneCore* lc = [LinphoneManager getLc];
     if (indexPath.row == 0 && linphone_core_get_conference_size(lc) > 0)
@@ -666,7 +680,7 @@ int callCount(LinphoneCore* lc) {
 
     LinphoneCore* lc = [LinphoneManager getLc];
     
-    [[callTableView cellForRowAtIndexPath:indexPath] setSelected:YES animated:NO];
+    //[[callTableView cellForRowAtIndexPath:indexPath] setSelected:YES animated:NO];
         
     bool inConf = (indexPath.row == 0 && linphone_core_get_conference_size(lc) > 0);
     
