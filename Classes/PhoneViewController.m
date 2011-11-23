@@ -206,7 +206,7 @@
 													  otherButtonTitles:nil];
         
 		mIncomingCallActionSheet.actionSheetStyle = UIActionSheetStyleDefault;
-		[mIncomingCallActionSheet showInView:self.view];
+		[mIncomingCallActionSheet showInView:self.parentViewController.view];
 		[mIncomingCallActionSheet release];
 	}
 	
