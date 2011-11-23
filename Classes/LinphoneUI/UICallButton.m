@@ -53,16 +53,12 @@
 		} else {
 			char normalizedUserName[256];
 			NSString* toUserName = [NSString stringWithString:[mAddress text]];
-            if ([mDisplayName.text length] <=0) {
-                NSString* lDisplayName = [[LinphoneManager instance] getDisplayNameFromAddressBook:toUserName andUpdateCallLog:nil];
-                if (lDisplayName) {
-                    mDisplayName.text = lDisplayName;
-                }
-            }
+            NSString* lDisplayName = [[LinphoneManager instance] getDisplayNameFromAddressBook:toUserName andUpdateCallLog:nil];
+            
 			linphone_proxy_config_normalize_number(proxyCfg,[toUserName cStringUsingEncoding:[NSString defaultCStringEncoding]],normalizedUserName,sizeof(normalizedUserName));
 			LinphoneAddress* tmpAddress = linphone_address_new(linphone_core_get_identity([LinphoneManager getLc]));
 			linphone_address_set_username(tmpAddress,normalizedUserName);
-			linphone_address_set_display_name(tmpAddress,[mDisplayName.text length]>0?[mDisplayName.text cStringUsingEncoding:[NSString defaultCStringEncoding]]:nil);
+			linphone_address_set_display_name(tmpAddress,(lDisplayName)?[lDisplayName cStringUsingEncoding:[NSString defaultCStringEncoding]]:nil);
 
 
 			linphone_call_params_enable_video(lcallParams,startVideo&linphone_core_video_enabled([LinphoneManager getLc]));
@@ -85,9 +81,8 @@
  // Drawing code.
  }
  */
--(void) initWithAddress:(UITextField*) address withDisplayName:(UILabel*) displayName {
+-(void) initWithAddress:(UITextField*) address{
 	mAddress=[address retain];
-	mDisplayName = [displayName retain];
 	[self addTarget:self action:@selector(touchUp:) forControlEvents:UIControlEventTouchUpInside];
 }
 

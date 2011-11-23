@@ -92,8 +92,8 @@
 	[nine initWithNumber:'9'  addressField:address dtmf:false];
 	[star initWithNumber:'*'  addressField:address dtmf:false];
 	[hash initWithNumber:'#'  addressField:address dtmf:false];
-	[callShort initWithAddress:address withDisplayName:mDisplayName];
-	[callLarge initWithAddress:address withDisplayName:mDisplayName];
+	[callShort initWithAddress:address];
+	[callLarge initWithAddress:address];
 	[erase initWithAddressField:address];
     [backToCallView addTarget:self action:@selector(backToCallViewPressed) forControlEvents:UIControlEventTouchUpInside];
     mIncallViewController = [[IncallViewController alloc]  initWithNibName:@"IncallViewController" 
