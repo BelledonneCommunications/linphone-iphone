@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package org.linphone.core;
-
+import org.linphone.core.LinphoneCore.MediaEncryption;
 /**
  * The LinphoneCallParams is an object containing various call related parameters.
  * It can be used to retrieve parameters from a currently running call or modify the call's characteristics
@@ -37,13 +37,13 @@ public interface LinphoneCallParams {
 	
 	/**
 	 * return selected media encryption
-	 * @return 'none', 'srtp' or 'zrtp'
+	 * @return MediaEncryption.None MediaEncryption.SRTP or MediaEncryption.ZRTP
 	 */
-	String getMediaEncryption();
+	MediaEncryption getMediaEncryption();
 	/**
 	 * set media encryption (rtp) to use
-	 * @params menc: 'none', 'srtp' or 'zrtp'
+	 * @params menc: MediaEncryption.None, MediaEncryption.SRTP or MediaEncryption.ZRTP
 	 */
-	void setMediaEnctyption(String menc);
+	void setMediaEnctyption(MediaEncryption menc);
 	
 }

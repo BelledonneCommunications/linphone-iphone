@@ -181,6 +181,46 @@ public interface LinphoneCore {
 		}
 	}
 	/**
+	 * Media (RTP) encryption enum-like.
+	 *
+	 */
+	static public class MediaEncryption {
+		@SuppressWarnings("unchecked")
+		static private Vector values = new Vector();
+		/**
+		 * None
+		 */
+		static public MediaEncryption None = new MediaEncryption(0,"None");       
+		/**
+		 * SRTP
+		 */
+		static public MediaEncryption SRTP = new MediaEncryption(1,"SRTP");
+		/**
+		 * ZRTP
+		 */
+		static public MediaEncryption ZRTP = new MediaEncryption(2,"ZRTP");
+		protected final int mValue;
+		private final String mStringValue;
+
+		@SuppressWarnings("unchecked")
+		private MediaEncryption(int value,String stringValue) {
+			mValue = value;
+			values.addElement(this);
+			mStringValue=stringValue;
+		}
+		public static MediaEncryption fromInt(int value) {
+
+			for (int i=0; i<values.size();i++) {
+				MediaEncryption menc = (MediaEncryption) values.elementAt(i);
+				if (menc.mValue == value) return menc;
+			}
+			throw new RuntimeException("MediaEncryption not found ["+value+"]");
+		}
+		public String toString() {
+			return mStringValue;
+		}
+	}
+	/**
 	 * 	EC Calibrator Status
 	 */
 	static public class EcCalibratorStatus {
@@ -641,15 +681,19 @@ public interface LinphoneCore {
 	 */
 	boolean soundResourcesLocked();
 	/**
-	 * set media encryption (rtp) to use
-	 * @params menc: 'none', 'srtp' or 'zrtp'
+	 * Returns whether given media encryption is supported by liblinphone.
 	 */
-	void setMediaEncryption(String menc);
+	boolean mediaEncryptionSupported(MediaEncryption menc);
+	/**
+	 * set media encryption (rtp) to use
+	 * @params menc: MediaEncryption.None, MediaEncryption.SRTP or MediaEncryption.ZRTP
+	 */
+	void setMediaEncryption(MediaEncryption menc);
 	/**
 	 * return selected media encryption
-	 * @return 'none', 'srtp' or 'zrtp'
+	 * @return MediaEncryption.None, MediaEncryption.SRTP or MediaEncryption.ZRTP
 	 */
-	String getMediaEncryption();
+	MediaEncryption getMediaEncryption();
 /**
 	 * Set media encryption required for outgoing calls
 	 */
