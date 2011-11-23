@@ -20,6 +20,8 @@
 #import "FastAddressBook.h"
 @implementation FastAddressBook
 
+@synthesize addressBook;
+
  -(Contact*) getMatchingRecord:(NSString*) number {
      @synchronized (mAddressBookMap){
       return (Contact*) [mAddressBookMap objectForKey:number];   
@@ -71,9 +73,9 @@ void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef info, void
 -(FastAddressBook*) init {
     if ((self = [super init])) {
         mAddressBookMap  = [[NSMutableDictionary alloc] init];
-        ABAddressBookRef lAddressBook = ABAddressBookCreate();
-        ABAddressBookRegisterExternalChangeCallback (lAddressBook,sync_address_book,mAddressBookMap);
-        sync_address_book(lAddressBook,nil,mAddressBookMap);
+        addressBook = ABAddressBookCreate();
+        ABAddressBookRegisterExternalChangeCallback (addressBook,sync_address_book,mAddressBookMap);
+        sync_address_book(addressBook,nil,mAddressBookMap);
     }
     return self;
 }

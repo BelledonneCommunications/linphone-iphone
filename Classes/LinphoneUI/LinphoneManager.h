@@ -59,6 +59,7 @@ typedef enum _Connectivity {
 -(void) becomeActive;
 -(void) kickOffNetworkConnection;
 -(NSString*) getDisplayNameFromAddressBook:(NSString*) number andUpdateCallLog:(LinphoneCallLog*)log; 
+-(UIImage*) getImageFromAddressBook:(NSString*) number;
 
 
 

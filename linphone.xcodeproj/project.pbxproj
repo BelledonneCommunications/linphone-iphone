@@ -223,6 +223,7 @@
 		22F254811073D99800AC9B3F /* ringback.wav in Resources */ = {isa = PBXBuildFile; fileRef = 22F254801073D99800AC9B3F /* ringback.wav */; };
 		22F51EF6107FA66500F98953 /* untitled.plist in Resources */ = {isa = PBXBuildFile; fileRef = 22F51EF5107FA66500F98953 /* untitled.plist */; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
+		34F2F678147D2E1C00A2D5E3 /* contact_vide.png in Resources */ = {isa = PBXBuildFile; fileRef = 34F2F677147D2E1C00A2D5E3 /* contact_vide.png */; };
 		70571E1A13FABCB000CDD3C2 /* rootca.pem in Resources */ = {isa = PBXBuildFile; fileRef = 70571E1913FABCB000CDD3C2 /* rootca.pem */; };
 		7066FC0C13E830E400EFC6DC /* libvpx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7066FC0B13E830E400EFC6DC /* libvpx.a */; };
 		70E542F313E147E3002BA2C0 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F213E147E3002BA2C0 /* OpenGLES.framework */; };
@@ -573,6 +574,7 @@
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* linphone_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linphone_Prefix.pch; sourceTree = "<group>"; };
+		34F2F677147D2E1C00A2D5E3 /* contact_vide.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = contact_vide.png; path = Resources/contact_vide.png; sourceTree = "<group>"; };
 		70571E1913FABCB000CDD3C2 /* rootca.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = rootca.pem; path = Resources/rootca.pem; sourceTree = "<group>"; };
 		7066FC0B13E830E400EFC6DC /* libvpx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libvpx.a; path = "liblinphone-sdk/apple-darwin/lib/libvpx.a"; sourceTree = "<group>"; };
 		70E542F213E147E3002BA2C0 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
@@ -1103,6 +1105,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				34F2F677147D2E1C00A2D5E3 /* contact_vide.png */,
 				2211DBCA1476BE7300DEE054 /* ajouter.png */,
 				2211DBCB1476BE7300DEE054 /* clavier.png */,
 				2211DBCC1476BE7300DEE054 /* contact.png */,
@@ -1270,6 +1273,7 @@
 				2211DBE51476BE7300DEE054 /* micro.png in Resources */,
 				2211DBE71476BE7300DEE054 /* pause_inactif.png in Resources */,
 				2211DBE91476BE7300DEE054 /* pause.png in Resources */,
+				34F2F678147D2E1C00A2D5E3 /* contact_vide.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

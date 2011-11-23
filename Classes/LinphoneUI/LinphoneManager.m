@@ -98,6 +98,28 @@ extern void libmssilk_init();
  
     return nil;
 }
+
+-(UIImage*) getImageFromAddressBook:(NSString *)number {
+    NSString* lNormalizedNumber = [FastAddressBook normalizePhoneNumber:number];
+    Contact* lContact = [mFastAddressBook getMatchingRecord:lNormalizedNumber];
+    if (lContact) {
+        ABRecordRef person = ABAddressBookGetPersonWithRecordID(mFastAddressBook.addressBook, ABRecordGetRecordID(lContact.record));            
+        if (ABPersonHasImageData(person)) {
+            NSData* d;
+            // ios 4.1+
+            if ( &ABPersonCopyImageDataWithFormat != nil) {
+                d = (NSData*)ABPersonCopyImageDataWithFormat(person, kABPersonImageFormatThumbnail);
+            } else {
+                d = (NSData*)ABPersonCopyImageData(person);
+            }
+            return [UIImage imageWithData:d];
+        }
+    }
+    /* return default image */
+    return [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"contact_vide" ofType:@"png"]];
+    //return nil;
+}
+
 -(void) updateCallWithAddressBookData:(LinphoneCall*) call {
     //1 copy adress book
     LinphoneCallLog* lLog = linphone_call_get_call_log(call);

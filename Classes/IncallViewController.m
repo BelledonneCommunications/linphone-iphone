@@ -18,6 +18,7 @@
  */              
 #import "IncallViewController.h"
 #import <AudioToolbox/AudioToolbox.h>
+#import <AddressBook/AddressBook.h>
 #import "linphonecore.h"
 #include "LinphoneManager.h"
 #include "private.h"
@@ -161,15 +162,15 @@ int callCount(LinphoneCore* lc) {
     [self updateUIFromLinphoneState: nil]; 
 }
 
--(void) viewWillAppear:(BOOL)animated {
-}
+-(void) viewWillAppear:(BOOL)animated {}
+
 -(void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
 	if (dismissed) {
         [self dismissModalViewControllerAnimated:true];
     } else {
         [self updateCallsDurations];
-        durationRefreasher = [NSTimer	scheduledTimerWithTimeInterval:1 
+        durationRefreasher = [NSTimer	scheduledTimerWithTimeInterval:1
                                                               target:self 
                                                             selector:@selector(updateCallsDurations) 
                                                             userInfo:nil 
@@ -457,17 +458,25 @@ int callCount(LinphoneCore* lc) {
         return;
     }
     const LinphoneAddress* addr = linphone_call_get_remote_address(call);
+    
     if (addr) {
         NSMutableString* mss = [[NSMutableString alloc] init];
-        
+        /* contact name */
         const char* n = linphone_address_get_display_name(addr);
         if (n) 
             [mss appendFormat:@"%s", n, nil];
         else
             [mss appendFormat:@"%s", linphone_address_get_username(addr), nil];
-        [cell.textLabel setText:mss];
-    } else
+        
+        if ([mss compare:cell.textLabel.text] != 0 || cell.imageView.image == nil) {
+            [cell.textLabel setText:mss];
+        
+            cell.imageView.image = [[LinphoneManager instance] getImageFromAddressBook:[NSString stringWithCString:linphone_address_get_username(addr) encoding: [NSString defaultCStringEncoding]]];
+        }
+    } else {
         [cell.textLabel setText:@"plop"];
+        cell.imageView.image = nil;
+    }
     
     NSMutableString* ms = [[NSMutableString alloc] init ];
     if (linphone_call_get_state(call) == LinphoneCallStreamsRunning) {
@@ -549,6 +558,7 @@ int callCount(LinphoneCore* lc) {
         calls = calls->next;
     }
     [cell.detailTextLabel setText:ms];
+    cell.imageView.image = nil;
     
     /*if (linphone_core_is_in_conference(lc))
         cell.backgroundColor = [UIColor colorWithRed:0 green:1 blue:0 alpha:1];
@@ -664,7 +674,7 @@ int callCount(LinphoneCore* lc) {
         linphone_core_resume_call([LinphoneManager getLc], selectedCall);
     }
     
-    [self updateUIFromLinphoneState: nil];    
+    [self updateUIFromLinphoneState: nil];
 }
 
 
