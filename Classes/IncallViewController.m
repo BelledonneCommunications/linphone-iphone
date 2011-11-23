@@ -121,6 +121,9 @@ int callCount(LinphoneCore* lc) {
 	mIncallViewIsReady=FALSE;
 	mVideoIsPending=FALSE;
     //selectedCall = nil;
+    
+    callTableView.rowHeight = 80;
+    
 }
 
 -(void) addCallPressed {
@@ -159,8 +162,6 @@ int callCount(LinphoneCore* lc) {
 }
 
 -(void) viewWillAppear:(BOOL)animated {
-
-	
 }
 -(void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
@@ -201,11 +202,7 @@ int callCount(LinphoneCore* lc) {
 					[addVideo setHidden:TRUE];
 					[contacts setHidden:FALSE];				
 				}
-				
-		
-		}
-		
-    }
+		}    }
 }
 
 - (void) viewDidDisappear:(BOOL)animated {
@@ -566,6 +563,9 @@ int callCount(LinphoneCore* lc) {
     if (cell == nil) {
         cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"MyIdentifier"] autorelease];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        
+        cell.textLabel.font = [UIFont systemFontOfSize:40];
+        cell.textLabel.autoresizingMask = UIViewAutoresizingFlexibleHeight;
     }
     
     LinphoneCore* lc = [LinphoneManager getLc];
