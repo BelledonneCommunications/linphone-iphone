@@ -558,6 +558,7 @@ int callCount(LinphoneCore* lc) {
     
     NSMutableString* ms = [[NSMutableString alloc] init ];
     const MSList* calls = linphone_core_get_calls(lc);
+    bool isFirst = true;
     while (calls) {
         LinphoneCall* call = (LinphoneCall*)calls->data;
         if (isInConference(call)) {
@@ -565,9 +566,9 @@ int callCount(LinphoneCore* lc) {
             
             const char* n = linphone_address_get_display_name(addr);
             if (n) 
-                [ms appendFormat:@"%s ", n, nil];
+                [ms appendFormat:(isFirst?@"%s":@", %s"), n, nil];
             else
-                [ms appendFormat:@"%s ", linphone_address_get_username(addr), nil];
+                [ms appendFormat:(isFirst?@"%s":@", %s"), linphone_address_get_username(addr), nil];
             
             //if (call == selectedCall)
             //    [self updateActive:YES cell:cell];
@@ -578,6 +579,7 @@ int callCount(LinphoneCore* lc) {
                  cell.accessoryType = UITableViewCellAccessoryCheckmark;
                 
             }
+            isFirst = false;
         }
         calls = calls->next;
     }
