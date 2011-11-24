@@ -2525,10 +2525,10 @@ int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call)
 		if (lc->vtable.display_warning)
 			lc->vtable.display_warning(lc,_("Could not pause the call"));
 	}
+	lc->current_call=NULL;
 	linphone_call_set_state(call,LinphoneCallPausing,"Pausing call");
 	if (lc->vtable.display_status)
 		lc->vtable.display_status(lc,_("Pausing the current call..."));
-	lc->current_call=NULL;
 	if (call->audiostream || call->videostream)
 		linphone_call_stop_media_streams (call);
 	return 0;
