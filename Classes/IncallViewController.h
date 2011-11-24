@@ -66,6 +66,7 @@
 	
 	ABPeoplePickerNavigationController* myPeoplePickerController;
     
+    UITableViewCell* activeCallCell;
     
 	VideoViewController* mVideoViewController;
     BOOL mVideoShown;

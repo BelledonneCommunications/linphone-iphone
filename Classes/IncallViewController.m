@@ -110,8 +110,8 @@ int callCount(LinphoneCore* lc) {
 	[star initWithNumber:'*'];
 	[hash initWithNumber:'#'];
     
-    [addCall addTarget:self action:@selector(addCallPressed) forControlEvents:UIControlEventTouchDown];
-    [mergeCalls addTarget:self action:@selector(mergeCallsPressed) forControlEvents:UIControlEventTouchDown];
+    [addCall addTarget:self action:@selector(addCallPressed) forControlEvents:UIControlEventTouchUpInside];
+    [mergeCalls addTarget:self action:@selector(mergeCallsPressed) forControlEvents:UIControlEventTouchUpInside];
     //[endCtrl addTarget:self action:@selector(endCallPressed) forControlEvents:UIControlEventTouchUpInside];
     [addToConf addTarget:self action:@selector(addToConfCallPressed) forControlEvents:UIControlEventTouchUpInside];
     [pause addTarget:self action:@selector(pauseCallPressed) forControlEvents:UIControlEventTouchUpInside];
@@ -131,9 +131,9 @@ int callCount(LinphoneCore* lc) {
     [self dismissModalViewControllerAnimated:true];
 }
 
+
 -(void) mergeCallsPressed {
     LinphoneCore* lc = [LinphoneManager getLc];
-    
     linphone_core_add_all_to_conference(lc);
 }
 
@@ -303,6 +303,7 @@ int callCount(LinphoneCore* lc) {
 	}
 }
 -(void) updateUIFromLinphoneState:(UIViewController *)viewCtrl {
+    activeCallCell = nil;
     [mute reset];
     // if (
     // [pause reset];
@@ -446,20 +447,19 @@ int callCount(LinphoneCore* lc) {
 }
 
 -(void) updateGlow {
-    glow += 0.1;
+    if (!activeCallCell)
+        return;
     
-    NSIndexPath* path = [callTableView indexPathForSelectedRow];
-    if (path) {
-        UITableViewCell* cell = [callTableView cellForRowAtIndexPath:path];
-        [self updateActive:YES cell:cell];
-        [cell.backgroundView setNeedsDisplay];
-        [cell setNeedsDisplay];
-        [callTableView setNeedsDisplay];
-    }
+    glow += 0.1;
+
+    [self updateActive:YES cell:activeCallCell];
+    [activeCallCell.backgroundView setNeedsDisplay];
+    [activeCallCell setNeedsDisplay];
+    [callTableView setNeedsDisplay];
 }
 
 -(void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-    [self updateActive:(cell.accessoryType == UITableViewCellAccessoryCheckmark) cell:cell];
+    [self updateActive:(cell == activeCallCell) cell:cell];
     //cell.accessoryType = UITableViewCellAccessoryNone;
 }
 
@@ -605,12 +605,18 @@ int callCount(LinphoneCore* lc) {
     ((UIImageView*)cell.accessoryView).image = nil;
     
     LinphoneCore* lc = [LinphoneManager getLc];
-    if (indexPath.row == 0 && linphone_core_get_conference_size(lc) > 0)
+    if (indexPath.row == 0 && linphone_core_get_conference_size(lc) > 0) {
         [self updateConferenceCell:cell at:indexPath];
-    else
-        [self updateCell:cell at:indexPath withCall: [self retrieveCallAtIndex:indexPath.row inConference:NO]
+        if (linphone_core_is_in_conference(lc))
+            activeCallCell = cell;
+    } else {
+        LinphoneCall* call = [self retrieveCallAtIndex:indexPath.row inConference:NO];
+        [self updateCell:cell at:indexPath withCall: call
             conferenceActive:linphone_core_is_in_conference(lc)];
-
+        if (linphone_core_get_current_call(lc) == call)
+            activeCallCell = cell;
+    }
+    
     cell.userInteractionEnabled = YES; 
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     //cell.selectionStyle = UITableViewCellSelectionStyleBlue;
