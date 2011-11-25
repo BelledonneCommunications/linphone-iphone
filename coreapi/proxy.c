@@ -780,6 +780,18 @@ void linphone_account_creator_set_domain(LinphoneAccountCreator *obj, const char
 	set_string(&obj->domain,domain);
 }
 
+void linphone_account_creator_set_route(LinphoneAccountCreator *obj, const char *route) {
+	set_string(&obj->route,route);
+}
+
+void linphone_account_creator_set_email(LinphoneAccountCreator *obj, const char *email) {
+	set_string(&obj->email,email);
+}
+
+void linphone_account_creator_set_suscribe(LinphoneAccountCreator *obj, int suscribe) {
+	obj->suscribe = suscribe;
+}
+
 const char * linphone_account_creator_get_username(LinphoneAccountCreator *obj){
 	return obj->username;
 }
@@ -796,10 +808,16 @@ int linphone_account_creator_test_existence(LinphoneAccountCreator *obj){
 	return err;
 }
 
+int linphone_account_creator_test_validation(LinphoneAccountCreator *obj) {
+	SipSetupContext *ssctx=obj->ssctx;
+	int err=sip_setup_context_account_validated(ssctx,obj->username);
+	return err;
+}
+
 LinphoneProxyConfig * linphone_account_creator_validate(LinphoneAccountCreator *obj){
 	SipSetupContext *ssctx=obj->ssctx;
 	char *uri=ms_strdup_printf("%s@%s",obj->username,obj->domain);
-	int err=sip_setup_context_create_account(ssctx,uri,obj->password);
+	int err=sip_setup_context_create_account(ssctx, uri, obj->password, obj->email, obj->suscribe);
 	ms_free(uri);
 	if (err==0) {
 		obj->succeeded=TRUE;

@@ -56,6 +56,7 @@ GdkPixbuf *_gdk_pixbuf_new_from_memory_at_scale(const void *data, gint len, gint
 GtkWidget *linphone_gtk_create_window(const char *window_name);
 GtkWidget *linphone_gtk_get_widget(GtkWidget *window, const char *name);
 GtkWidget *linphone_gtk_create_widget(const char *filename, const char *widget_name);
+GtkWidget * linphone_gtk_create_assistant(void);
 
 LinphoneCore *linphone_gtk_get_core(void);
 GtkWidget *linphone_gtk_get_main_window();

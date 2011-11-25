@@ -35,6 +35,7 @@ liblinphone_la_SOURCES=\
 	linphonecall.c \
 	sipsetup.c sipsetup.h \
 	siplogin.c \
+	sipwizard.c \
 	lsd.c linphonecore_utils.h \
 	ec-calibrator.c \
 	conference.c
@@ -45,7 +46,8 @@ liblinphone_la_LDFLAGS= -version-info $(LIBLINPHONE_SO_VERSION) -no-undefined
 liblinphone_la_LIBADD= \
 		$(EXOSIP_LIBS) \
 		$(MEDIASTREAMER_LIBS) \
-		$(ORTP_LIBS) $(OPENSSL_LIBS)
+		$(ORTP_LIBS) $(OPENSSL_LIBS) \
+		$(LIBSOUP_LIBS)
 
 if BUILD_WIN32
 liblinphone_la_LIBADD+=$(top_builddir)/oRTP/src/libortp.la
@@ -69,8 +71,9 @@ AM_CFLAGS=$(STRICT_OPTIONS)  -DIN_LINPHONE \
 	$(OSIP_CFLAGS) \
 	$(MEDIASTREAMER_CFLAGS) \
 	$(EXOSIP_CFLAGS) \
+	$(LIBSOUP_CFLAGS) \
 	-DENABLE_TRACE 	\
 	-DLOG_DOMAIN=\"LinphoneCore\" \
 	 $(IPV6_CFLAGS) \
 	 -DORTP_INET6 \
-	 $(VIDEO_CFLAGS) 
+	 $(VIDEO_CFLAGS)

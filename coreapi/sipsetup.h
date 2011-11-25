@@ -97,7 +97,7 @@ struct _SipSetup{
 	void (*init_instance)(SipSetupContext *ctx);
 	void (*uninit_instance)(SipSetupContext *ctx);
 	int (*account_exists)(SipSetupContext *ctx, const char *uri);
-	int (*create_account)(SipSetupContext *ctx, const char *uri, const char *passwd);
+	int (*create_account)(SipSetupContext *ctx, const char *uri, const char *passwd, const char *email, int suscribe);
 	int (*login_account)(SipSetupContext *ctx, const char *uri, const char *passwd);
 	int (*get_proxy)(SipSetupContext *ctx, const char *domain, char *proxy, size_t sz);
 	int (*get_stun_servers)(SipSetupContext *ctx, char *stun1, char *stun2, size_t size);
@@ -106,6 +106,7 @@ struct _SipSetup{
 	const char ** (*get_domains)(SipSetupContext *ctx);
 	int (*logout_account)(SipSetupContext *ctx);
 	BuddyLookupFuncs *buddy_lookup_funcs;
+	int (*account_validated)(SipSetupContext *ctx, const char *uri);
 };
 
 typedef struct _SipSetup SipSetup;
@@ -131,7 +132,8 @@ unsigned int sip_setup_get_capabilities(SipSetup *s);
 
 SipSetupContext * sip_setup_context_new(SipSetup *s, struct _LinphoneProxyConfig *cfg);
 int sip_setup_context_account_exists(SipSetupContext *ctx, const char *uri);
-int sip_setup_context_create_account(SipSetupContext *ctx, const char *uri, const char *passwd);
+int sip_setup_context_account_validated(SipSetupContext *ctx, const char *uri);
+int sip_setup_context_create_account(SipSetupContext *ctx, const char *uri, const char *passwd, const char *email, int suscribe);
 int sip_setup_context_get_capabilities(SipSetupContext *ctx);
 int sip_setup_context_login_account(SipSetupContext * ctx, const char *uri, const char *passwd);
 int sip_setup_context_get_proxy(SipSetupContext *ctx, const char *domain, char *proxy, size_t sz);

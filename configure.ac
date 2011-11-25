@@ -401,6 +401,11 @@ if test "$has_sighandler_t" = "yes" ; then
     AC_DEFINE( HAVE_SIGHANDLER_T, 1, [Define if sighandler_t available] )
 fi
 
+dnl check libsoup (needed for wizard)
+PKG_CHECK_MODULES(LIBSOUP, [libsoup-2.4 >= 2.26])
+AC_SUBST(LIBSOUP_CFLAGS)
+AC_SUBST(LIBSOUP_LIBS)
+
 ##################################################
 # Stricter build options (after external packages)
 ##################################################

@@ -24,9 +24,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "linphonecore.h"
 
 extern SipSetup linphone_sip_login;
+extern SipSetup linphone_sip_wizard;
 
 static SipSetup *all_sip_setups[]={
 	&linphone_sip_login,
+	&linphone_sip_wizard,
 	NULL
 };
 
@@ -123,15 +125,21 @@ int sip_setup_context_get_capabilities(SipSetupContext *ctx){
 	return ctx->funcs->capabilities;
 }
 
-int sip_setup_context_create_account(SipSetupContext * ctx, const char *uri, const char *passwd){
+int sip_setup_context_create_account(SipSetupContext * ctx, const char *uri, const char *passwd, const char *email, int suscribe){
 	if (ctx->funcs->create_account)
-		return ctx->funcs->create_account(ctx,uri, passwd);
+		return ctx->funcs->create_account(ctx, uri, passwd, email, suscribe);
 	else return -1;
 }
 
 int sip_setup_context_account_exists(SipSetupContext *ctx, const char *uri){
 	if (ctx->funcs->account_exists)
 		return ctx->funcs->account_exists(ctx,uri);
+	return -1;
+}
+
+int sip_setup_context_account_validated(SipSetupContext *ctx, const char *uri){
+	if (ctx->funcs->account_validated)
+		return ctx->funcs->account_validated(ctx,uri);
 	return -1;
 }
 
