@@ -174,9 +174,6 @@
 		22D8F15D147548E2008C97DB /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F213E147E3002BA2C0 /* OpenGLES.framework */; };
 		22D8F15E147548E2008C97DB /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22276E8813C73DC000210156 /* CoreMedia.framework */; };
 		22D8F15F147548E2008C97DB /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22276E8613C73D8A00210156 /* CoreVideo.framework */; };
-		22D8F160147548E2008C97DB /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22276E8013C73D3100210156 /* libavcodec.a */; };
-		22D8F161147548E2008C97DB /* libavutil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22276E8113C73D3100210156 /* libavutil.a */; };
-		22D8F162147548E2008C97DB /* libswscale.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22276E8213C73D3100210156 /* libswscale.a */; };
 		22D8F163147548E2008C97DB /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22E5B0AD133B5EA20044EA25 /* libssl.a */; };
 		22D8F164147548E2008C97DB /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22E5B0AE133B5EA20044EA25 /* libcrypto.a */; };
 		22D8F165147548E2008C97DB /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
@@ -202,8 +199,6 @@
 		22D8F179147548E2008C97DB /* libopencore-amrwb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226F2ED31344B0EF00F6EF27 /* libopencore-amrwb.a */; };
 		22D8F17A147548E2008C97DB /* libopencore-amrnb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226F2ED41344B0EF00F6EF27 /* libopencore-amrnb.a */; };
 		22D8F17B147548E2008C97DB /* libmsamr.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226F2ED51344B0EF00F6EF27 /* libmsamr.a */; };
-		22D8F17C147548E2008C97DB /* libx264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22AA8AFB13D7125500B30535 /* libx264.a */; };
-		22D8F17D147548E2008C97DB /* libmsx264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22AA8AFC13D7125500B30535 /* libmsx264.a */; };
 		22D8F17E147548E2008C97DB /* libSKP_SILK_SDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226183AA1472527D0037138E /* libSKP_SILK_SDK.a */; };
 		22D8F17F147548E2008C97DB /* libsrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226183AB1472527D0037138E /* libsrtp.a */; };
 		22D8F180147548E2008C97DB /* libmssilk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226183AF147259670037138E /* libmssilk.a */; };
@@ -641,9 +636,6 @@
 				22D8F15D147548E2008C97DB /* OpenGLES.framework in Frameworks */,
 				22D8F15E147548E2008C97DB /* CoreMedia.framework in Frameworks */,
 				22D8F15F147548E2008C97DB /* CoreVideo.framework in Frameworks */,
-				22D8F160147548E2008C97DB /* libavcodec.a in Frameworks */,
-				22D8F161147548E2008C97DB /* libavutil.a in Frameworks */,
-				22D8F162147548E2008C97DB /* libswscale.a in Frameworks */,
 				22D8F163147548E2008C97DB /* libssl.a in Frameworks */,
 				22D8F164147548E2008C97DB /* libcrypto.a in Frameworks */,
 				22D8F165147548E2008C97DB /* Foundation.framework in Frameworks */,
@@ -669,8 +661,6 @@
 				22D8F179147548E2008C97DB /* libopencore-amrwb.a in Frameworks */,
 				22D8F17A147548E2008C97DB /* libopencore-amrnb.a in Frameworks */,
 				22D8F17B147548E2008C97DB /* libmsamr.a in Frameworks */,
-				22D8F17C147548E2008C97DB /* libx264.a in Frameworks */,
-				22D8F17D147548E2008C97DB /* libmsx264.a in Frameworks */,
 				22D8F17E147548E2008C97DB /* libSKP_SILK_SDK.a in Frameworks */,
 				22D8F17F147548E2008C97DB /* libsrtp.a in Frameworks */,
 				22D8F180147548E2008C97DB /* libmssilk.a in Frameworks */,

@@ -22,13 +22,13 @@ $ sudo mv gas-preprocessor.pl /opt/local/bin/.
 Link macport libtoolize to glibtoolize (sudo ln -s /opt/local/bin/glibtoolize /opt/local/bin/libtoolize)
 Link host's strings to simulator SDK (ln -s  /usr/bin/strings /Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/strings)
 
-*******************************************
-*******GPL versus non GPL******************
-*******************************************
-This sdk can be generated in 2 flavors. Firt is GPL, it means liblinphone include GPL third parties like FFMPEG or x264. 
-If you choose this flavor, your final application must comply with GPL. This is the default mode.
+***********************************************************************
+*******GPL third parties versus non GPL third parties******************
+***********************************************************************
+This sdk can be generated in 2 flavors. Firt is with GPL third parties, it means liblinphone includes GPL third parties like FFMPEG or x264. 
+If you choose this flavor, your final application must comply with GPL in any case. This is the default mode.
 
-To generate the liblinphone multi arch sdkin GPL mode, once the above commands have been executed:
+To generate the liblinphone multi arch sdk in GPL mode, once the above commands have been executed:
 	cd submodules/build
 	make all 
 
@@ -37,7 +37,7 @@ If you choose this flavor, your final application  is still subject to GPL excep
 
 To generate the liblinphone multi arch sdkin non GPL mode, once the above commands have been executed:
 	cd submodules/build
-	make all enable_gpl=no
+	make all enable_gpl_third_parties=no
 
 ******************************************
 ****Third party, subject to lincense*i****
@@ -52,5 +52,4 @@ In case you upgrade your IOS SDK, you may force configure by using make targets 
 
 Libraries are available from liblinphone-sdk/
 
-liblinphone xcode subproject: This subproject is just for debuggingi purpose, do not compile it until you know exactly what you are doing.
 

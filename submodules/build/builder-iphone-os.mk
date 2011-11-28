@@ -47,25 +47,25 @@ LINPHONE_BUILD_DIR=$(BUILDER_BUILD_DIR)/linphone
 
 all: build-linphone build-msilbc build-msamr build-msx264 build-mssilk
 
-$(LINPHONE_BUILD_DIR)/enable_gpl: 
+$(LINPHONE_BUILD_DIR)/enable_gpl_third_parties: 
 	mkdir -p $(LINPHONE_BUILD_DIR)
-	touch $(LINPHONE_BUILD_DIR)/enable_gpl
-	rm -f $(LINPHONE_BUILD_DIR)/disable_gpl
+	touch $(LINPHONE_BUILD_DIR)/enable_gpl_third_parties
+	rm -f $(LINPHONE_BUILD_DIR)/disable_gpl_third_parties
 	cd $(LINPHONE_BUILD_DIR) && rm -f Makefile && rm -f oRTP/Makefile && rm -f mediastreamer2/Makefile 
 
-$(LINPHONE_BUILD_DIR)/disable_gpl: 
+$(LINPHONE_BUILD_DIR)/disable_gpl_third_parties: 
 	mkdir -p $(LINPHONE_BUILD_DIR)
-	touch $(LINPHONE_BUILD_DIR)/disable_gpl
-	rm -f $(LINPHONE_BUILD_DIR)/enable_gpl
+	touch $(LINPHONE_BUILD_DIR)/disable_gpl_third_parties
+	rm -f $(LINPHONE_BUILD_DIR)/enable_gpl_third_parties
 	cd $(LINPHONE_BUILD_DIR) && rm -f Makefile && rm -f oRTP/Makefile && rm -f mediastreamer2/Makefile 
 
-ifeq ($(enable_gpl),yes) 
+ifeq ($(enable_gpl_third_parties),yes) 
 linphone_configure_controls+= --enable-ffmpeg --enable-zrtp
-detect_gpl_mode_switch: $(LINPHONE_BUILD_DIR)/enable_gpl
+detect_gpl_mode_switch: $(LINPHONE_BUILD_DIR)/enable_gpl_third_parties
 	
 else
 linphone_configure_controls+= --disable-ffmpeg --disable-zrtp
-detect_gpl_mode_switch: $(LINPHONE_BUILD_DIR)/disable_gpl
+detect_gpl_mode_switch: $(LINPHONE_BUILD_DIR)/disable_gpl_third_parties
 	
 endif
 
@@ -172,7 +172,7 @@ $(BUILDER_BUILD_DIR)/$(eXosip_dir)/Makefile: $(BUILDER_SRC_DIR)/$(eXosip_dir)/co
 	mkdir -p $(BUILDER_BUILD_DIR)/$(eXosip_dir)
 	cd $(BUILDER_BUILD_DIR)/$(eXosip_dir)/\
 	&& PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig  CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
-	$(BUILDER_SRC_DIR)/$(eXosip_dir)/configure -prefix=$(prefix) --host=$(host) ${library_mode} CFLAGS="-I$(prefix)/include -L$(prefix)/lib -lcrypto -DMULTITASKING_ENABLED" --enable-openssl  --disable-tools 
+	$(BUILDER_SRC_DIR)/$(eXosip_dir)/configure -prefix=$(prefix) --host=$(host) ${library_mode} CFLAGS="-I$(prefix)/include -L$(prefix)/lib -lcrypto" --enable-openssl  --disable-tools 
 
 build-eXosip2: $(BUILDER_BUILD_DIR)/$(eXosip_dir)/Makefile
 	 cd $(BUILDER_BUILD_DIR)/$(eXosip_dir)  \
