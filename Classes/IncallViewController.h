@@ -19,6 +19,7 @@
 #import <UIKit/UIKit.h>
 #import "linphonecore.h"
 #import "PhoneViewController.h"
+#import "ConferenceCallDetailView.h"
 #import <AddressBookUI/ABPeoplePickerNavigationController.h>
 #include "UILinphone.h"
 @class VideoViewController;
@@ -69,6 +70,7 @@
     UITableViewCell* activeCallCell;
     
 	VideoViewController* mVideoViewController;
+    ConferenceCallDetailView* conferenceDetail;
     BOOL mVideoShown;
 	BOOL mVideoIsPending;
 	BOOL mIncallViewIsReady;
@@ -78,11 +80,14 @@
 
 - (IBAction)doAction:(id)sender;
 
++(LinphoneCall*) retrieveCallAtIndex: (NSInteger) index inConference:(bool) conf;
++ (void) updateCellImageView:(UIImageView*)imageView Label:(UILabel*)label DetailLabel:(UILabel*)detailLabel AndAccessoryView:(UIImageView*)accessoryView withCall:(LinphoneCall*) call;
 
 @property (nonatomic, retain) IBOutlet UIView* controlSubView;
 @property (nonatomic, retain) IBOutlet UIView* callControlSubView;
 @property (nonatomic, retain) IBOutlet UIView* padSubView;
 @property (nonatomic, retain) IBOutlet UIView* hangUpView;
+@property (nonatomic, retain) IBOutlet UIViewController* conferenceDetail;
 
 
 @property (nonatomic, retain) IBOutlet UIButton* endCtrl;

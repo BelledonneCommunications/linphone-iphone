@@ -223,6 +223,12 @@
 		22F254811073D99800AC9B3F /* ringback.wav in Resources */ = {isa = PBXBuildFile; fileRef = 22F254801073D99800AC9B3F /* ringback.wav */; };
 		22F51EF6107FA66500F98953 /* untitled.plist in Resources */ = {isa = PBXBuildFile; fileRef = 22F51EF5107FA66500F98953 /* untitled.plist */; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
+		344ABD72147FC438007420B6 /* ConferenceCallDetailView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 344ABD71147FC438007420B6 /* ConferenceCallDetailView.xib */; };
+		344ABD73147FC438007420B6 /* ConferenceCallDetailView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 344ABD71147FC438007420B6 /* ConferenceCallDetailView.xib */; };
+		344ABD77147FCB68007420B6 /* ConferenceCallDetailView.m in Sources */ = {isa = PBXBuildFile; fileRef = 344ABD76147FCB68007420B6 /* ConferenceCallDetailView.m */; };
+		344ABD78147FCB68007420B6 /* ConferenceCallDetailView.m in Sources */ = {isa = PBXBuildFile; fileRef = 344ABD76147FCB68007420B6 /* ConferenceCallDetailView.m */; };
+		344ABD7A147FD32B007420B6 /* ConferenceCallDetailCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 344ABD79147FD32B007420B6 /* ConferenceCallDetailCell.xib */; };
+		344ABD7B147FD32B007420B6 /* ConferenceCallDetailCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 344ABD79147FD32B007420B6 /* ConferenceCallDetailCell.xib */; };
 		34957F3F147D3FBF00DD7A09 /* secured.png in Resources */ = {isa = PBXBuildFile; fileRef = 34957F3E147D3FBF00DD7A09 /* secured.png */; };
 		34F2F678147D2E1C00A2D5E3 /* contact_vide.png in Resources */ = {isa = PBXBuildFile; fileRef = 34F2F677147D2E1C00A2D5E3 /* contact_vide.png */; };
 		70571E1A13FABCB000CDD3C2 /* rootca.pem in Resources */ = {isa = PBXBuildFile; fileRef = 70571E1913FABCB000CDD3C2 /* rootca.pem */; };
@@ -575,6 +581,10 @@
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* linphone_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linphone_Prefix.pch; sourceTree = "<group>"; };
+		344ABD71147FC438007420B6 /* ConferenceCallDetailView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ConferenceCallDetailView.xib; sourceTree = "<group>"; };
+		344ABD75147FCB68007420B6 /* ConferenceCallDetailView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConferenceCallDetailView.h; sourceTree = "<group>"; };
+		344ABD76147FCB68007420B6 /* ConferenceCallDetailView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConferenceCallDetailView.m; sourceTree = "<group>"; };
+		344ABD79147FD32B007420B6 /* ConferenceCallDetailCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ConferenceCallDetailCell.xib; sourceTree = "<group>"; };
 		34957F3E147D3FBF00DD7A09 /* secured.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = secured.png; path = Resources/secured.png; sourceTree = "<group>"; };
 		34F2F677147D2E1C00A2D5E3 /* contact_vide.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = contact_vide.png; path = Resources/contact_vide.png; sourceTree = "<group>"; };
 		70571E1913FABCB000CDD3C2 /* rootca.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = rootca.pem; path = Resources/rootca.pem; sourceTree = "<group>"; };
@@ -712,6 +722,10 @@
 				22E028B413B4CCBD0068A713 /* VideoViewController.h */,
 				22E028B513B4CCBD0068A713 /* VideoViewController.m */,
 				22E028B613B4CCBD0068A713 /* VideoViewController.xib */,
+				344ABD71147FC438007420B6 /* ConferenceCallDetailView.xib */,
+				344ABD75147FCB68007420B6 /* ConferenceCallDetailView.h */,
+				344ABD76147FCB68007420B6 /* ConferenceCallDetailView.m */,
+				344ABD79147FD32B007420B6 /* ConferenceCallDetailCell.xib */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -1278,6 +1292,8 @@
 				2211DBE91476BE7300DEE054 /* pause.png in Resources */,
 				34F2F678147D2E1C00A2D5E3 /* contact_vide.png in Resources */,
 				34957F3F147D3FBF00DD7A09 /* secured.png in Resources */,
+				344ABD72147FC438007420B6 /* ConferenceCallDetailView.xib in Resources */,
+				344ABD7A147FD32B007420B6 /* ConferenceCallDetailCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1332,6 +1348,8 @@
 				2211DBE61476BE7300DEE054 /* micro.png in Resources */,
 				2211DBE81476BE7300DEE054 /* pause_inactif.png in Resources */,
 				2211DBEA1476BE7300DEE054 /* pause.png in Resources */,
+				344ABD73147FC438007420B6 /* ConferenceCallDetailView.xib in Resources */,
+				344ABD7B147FD32B007420B6 /* ConferenceCallDetailCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1367,6 +1385,7 @@
 				2211DBBE14769C8300DEE054 /* CallDelegate.m in Sources */,
 				2211DBC014769CB200DEE054 /* IncallViewController.m in Sources */,
 				22D817AD147A9F33001CFB9C /* UIAddVideoButton.m in Sources */,
+				344ABD77147FCB68007420B6 /* ConferenceCallDetailView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1399,6 +1418,7 @@
 				2211DBBF14769C8300DEE054 /* CallDelegate.m in Sources */,
 				2211DBC114769CB300DEE054 /* IncallViewController.m in Sources */,
 				22D817AE147A9F33001CFB9C /* UIAddVideoButton.m in Sources */,
+				344ABD78147FCB68007420B6 /* ConferenceCallDetailView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
