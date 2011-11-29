@@ -1,6 +1,6 @@
 /*
-linphone
-Copyright (C) 2011  Simon MORLAT (simon.morlat@linphone.org)
+sipwizard.c
+Copyright (C) 2011 Belledonne Communication, Grenoble, France
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -30,9 +30,9 @@ typedef struct _BLReq{
 	ortp_thread_t th;
 }BLReq;
 
-const int XMLRPC_FAILED = -1;
-const int XMLRPC_OK = 0;
-const char *XMLRPC_URL = "https://www.linphone.org/wizard.php";
+static const int XMLRPC_FAILED = -1;
+static const int XMLRPC_OK = 0;
+static const char *XMLRPC_URL = "https://www.linphone.org/wizard.php";
 
 static void sip_wizard_init_instance(SipSetupContext *ctx){
 	LinphoneProxyConfig *cfg=sip_setup_context_get_proxy_config(ctx);
@@ -40,65 +40,12 @@ static void sip_wizard_init_instance(SipSetupContext *ctx){
 	linphone_proxy_config_enable_register(cfg,FALSE);
 }
 
-const char ** sip_wizard_get_domains(SipSetupContext *ctx) {
+static const char ** sip_wizard_get_domains(SipSetupContext *ctx) {
 	LinphoneProxyConfig *cfg=sip_setup_context_get_proxy_config(ctx);
 	const char **domains = (const char**) &cfg->reg_proxy;
 	return domains;
 }
 
-static SoupMessage * build_xmlrpc_check_account_request(const char *identity){
-	SoupMessage * msg;
-
-	msg=soup_xmlrpc_request_new(XMLRPC_URL,
-				"check_account",
-				G_TYPE_STRING, identity,
-				G_TYPE_INVALID);
-	if (!msg){
-		ms_error("Fail to create SoupMessage !");
-	}else{
-		SoupBuffer *sb=soup_message_body_flatten(msg->request_body);
-		ms_message("This is the XML-RPC request we are going to send:\n%s\n",sb->data);
-		soup_buffer_free(sb);
-	}
-	return msg;
-}
-
-static SoupMessage * build_xmlrpc_check_account_validated(const char *identity){
-	SoupMessage * msg;
-
-	msg=soup_xmlrpc_request_new(XMLRPC_URL,
-				"check_account_validated",
-				G_TYPE_STRING, identity,
-				G_TYPE_INVALID);
-	if (!msg){
-		ms_error("Fail to create SoupMessage !");
-	}else{
-		SoupBuffer *sb=soup_message_body_flatten(msg->request_body);
-		ms_message("This is the XML-RPC request we are going to send:\n%s\n",sb->data);
-		soup_buffer_free(sb);
-	}
-	return msg;
-}
-
-static SoupMessage * build_xmlrpc_create_account_request(const char *identity, const char *passwd, const char *email, int suscribe){
-	SoupMessage * msg;
-
-	msg=soup_xmlrpc_request_new(XMLRPC_URL,
-				"create_account",
-				G_TYPE_STRING, identity,
-				G_TYPE_STRING, passwd,
-				G_TYPE_STRING, email,
-				G_TYPE_INT, suscribe,
-				G_TYPE_INVALID);
-	if (!msg){
-		ms_error("Fail to create SoupMessage !");
-	}else{
-		SoupBuffer *sb=soup_message_body_flatten(msg->request_body);
-		ms_message("This is the XML-RPC request we are going to send:\n%s\n",sb->data);
-		soup_buffer_free(sb);
-	}
-	return msg;
-}
 
 static int xml_rpc_parse_response(BLReq *blreq, SoupMessage *sm){
 	SoupBuffer *sb;
@@ -149,7 +96,6 @@ static void * process_xml_rpc_request(void *up){
 #endif
 	code=soup_session_send_message(blreq->session,sm);
 	if (code==200){
-		ms_message("Got a response from server, yeah !");
 		xml_rpc_parse_response(blreq,sm);
 	}else{
 		ms_error("request failed, error-code=%i (%s)",code,soup_status_get_phrase(code));
@@ -161,72 +107,78 @@ static void * process_xml_rpc_request(void *up){
 	return NULL;
 }
 
-int sip_wizard_account_exists(SipSetupContext *ctx, const char *uri) {
-	/*
-	 * Return 1 if account already exists
-	 * 0 if account doesn't exists
-	 * -1 if information isn't available
-	 */
-	SoupMessage *sm;
-	BLReq *req=ms_new0(BLReq, 1);
-	req->session=soup_session_sync_new();
-	sm=build_xmlrpc_check_account_request(uri);
-	req->msg=sm;
-	process_xml_rpc_request(req);
 
-	if (req->status == XMLRPC_OK) {
-		return req->result;
-	} else {
+static int do_simple_xmlrpc_request(SoupMessage *msg) {
+        int ret=-1;
+        BLReq *req;
+
+	if (!msg){
+		ms_error("Fail to create SoupMessage !");
 		return -1;
+	}else{
+		SoupBuffer *sb=soup_message_body_flatten(msg->request_body);
+		ms_message("This is the XML-RPC request we are going to send:\n%s\n",sb->data);
+		soup_buffer_free(sb);
 	}
+
+	req=ms_new0(BLReq, 1);
+        req->session=soup_session_sync_new();
+        req->msg=msg;
+
+        process_xml_rpc_request(req);
+
+        if (req->status == XMLRPC_OK) {
+                ret=req->result;
+        }
+
+	// Freeing allocated structures lead to a crash (why?)
+	//g_free(req->session);
+	//g_free(msg);
+        ms_free(req);
+
+        return ret;
 }
 
-int sip_wizard_account_validated(SipSetupContext *ctx, const char *uri) {
-	/*
-	 * Return 1 if account already exists
-	 * 0 if account doesn't exists
-	 * -1 if information isn't available
-	 */
-	SoupMessage *sm;
-	BLReq *req=ms_new0(BLReq, 1);
-	req->session=soup_session_sync_new();
-	sm=build_xmlrpc_check_account_validated(uri);
-	req->msg=sm;
-	process_xml_rpc_request(req);
-
-	if (req->status == XMLRPC_OK) {
-		return req->result;
-	} else {
-		return -1;
-	}
+/*
+ * Return 1 if account already exists
+ * 0 if account doesn't exists
+ * -1 if information isn't available
+ */
+static int sip_wizard_account_exists(SipSetupContext *ctx, const char *identity) {
+	SoupMessage *msg=soup_xmlrpc_request_new(XMLRPC_URL,
+                                "check_account",
+                                G_TYPE_STRING, identity,
+                                G_TYPE_INVALID);
+	return do_simple_xmlrpc_request(msg);
 }
 
-int sip_wizard_create_account(SipSetupContext *ctx, const char *uri, const char *passwd, const char *email, int suscribe) {
-	/*
-	 * Return 0 if account successfully created
-	 * Else return -1
-	 */
-	SoupMessage *sm;
-	BLReq *req=ms_new0(BLReq, 1);
-	req->session=soup_session_sync_new();
-	sm=build_xmlrpc_create_account_request(uri, passwd, email, suscribe);
-	req->msg=sm;
-	process_xml_rpc_request(req);
+static int sip_wizard_account_validated(SipSetupContext *ctx, const char *identity) {
+	SoupMessage *msg=soup_xmlrpc_request_new(XMLRPC_URL,
+                                "check_account_validated",
+                                G_TYPE_STRING, identity,
+                                G_TYPE_INVALID);
+        return do_simple_xmlrpc_request(msg);
+}
 
-	if (req->status == XMLRPC_OK) {
-		return req->result;
-	} else {
-		return -1;
-	}
+static int sip_wizard_create_account(SipSetupContext *ctx, const char *identity, const char *passwd, const char *email, int suscribe) {
+	SoupMessage *msg=soup_xmlrpc_request_new(XMLRPC_URL,
+				"create_account",
+				G_TYPE_STRING, identity,
+				G_TYPE_STRING, passwd,
+				G_TYPE_STRING, email,
+				G_TYPE_INT, suscribe,
+				G_TYPE_INVALID);
+	return do_simple_xmlrpc_request(msg);
 }
 
 static void guess_display_name(LinphoneAddress *from){
-	char *dn=(char*)ms_malloc(strlen(linphone_address_get_username(from))+3);
+	const char *username=linphone_address_get_username(from);
+	char *dn=(char*)ms_malloc(strlen(username)+1);
 	const char *it;
 	char *wptr=dn;
 	bool_t begin=TRUE;
-	bool_t surname=0;
-	for(it=linphone_address_get_username(from);*it!='\0';++it){
+	bool_t surname=FALSE;
+	for(it=username;*it!='\0';++it){
 		if (begin){
 			*wptr=toupper(*it);
 			begin=FALSE;
@@ -235,9 +187,12 @@ static void guess_display_name(LinphoneAddress *from){
 			*wptr=' ';
 			begin=TRUE;
 			surname=TRUE;
-		}else *wptr=*it;
+		}else {
+			*wptr=*it;
+		}
 		wptr++;
 	}
+	*wptr='\0';
 	linphone_address_set_display_name(from,dn);
 	ms_free(dn);
 }

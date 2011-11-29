@@ -20,16 +20,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "linphone.h"
 #include <glib.h>
 #include <glib/gprintf.h>
-LinphoneAccountCreator *linphone_gtk_assistant_get_creator(GtkWidget*w);
+static LinphoneAccountCreator *linphone_gtk_assistant_get_creator(GtkWidget*w);
 
-const int PASSWORD_MIN_SIZE = 6;
-const int LOGIN_MIN_SIZE = 4;
-int is_username_available = 0;
-int is_email_correct = 0;
-int is_password_correct = 0;
+static const int PASSWORD_MIN_SIZE = 6;
+static const int LOGIN_MIN_SIZE = 4;
+static int is_username_available = 0;
+static int is_email_correct = 0;
+static int is_password_correct = 0;
 
-GdkPixbuf *ok;
-GdkPixbuf *notok;
+static GdkPixbuf *ok;
+static GdkPixbuf *notok;
 
 static GtkWidget *create_intro(){
 	GtkWidget *vbox=gtk_vbox_new(FALSE,2);
@@ -75,7 +75,7 @@ static void account_informations_changed(GtkEntry *entry, GtkWidget *w) {
 
 	const gchar *needle = "@";
 	if (entry == username && g_strrstr(gtk_entry_get_text(username), needle) != NULL) {
-		gtk_entry_set_text(domain, g_strrstr(gtk_entry_get_text(username), "@")+1);
+		gtk_entry_set_text(domain, g_strrstr(gtk_entry_get_text(username), needle)+1);
 	}
 
 	gtk_assistant_set_page_complete(GTK_ASSISTANT(assistant),w,
@@ -92,7 +92,7 @@ static void linphone_account_informations_changed(GtkEntry *entry, GtkWidget *w)
 
 static GtkWidget *create_linphone_account_informations_page() {
 	GtkWidget *vbox=gtk_table_new(3, 2, TRUE);
-	GtkWidget *label=gtk_label_new(_("Enter your linphone.org's username"));
+	GtkWidget *label=gtk_label_new(_("Enter your linphone.org username"));
 
 	GdkColor color;
 	gdk_color_parse ("red", &color);
@@ -129,12 +129,12 @@ static GtkWidget *create_account_informations_page() {
 	gtk_widget_modify_fg(labelEmpty, GTK_STATE_NORMAL, &color);
 
 	GtkWidget *labelUsername=gtk_label_new(_("Identity:"));
-	GtkWidget *labelUsernameExemple=gtk_label_new(_("exemple: user@sip.linphone.org"));
+	GtkWidget *labelUsernameExemple=gtk_label_new(_("example: user@sip.linphone.org"));
 	GtkWidget *labelPassword=gtk_label_new(_("Password:"));
 	GtkWidget *entryPassword=gtk_entry_new();
 	gtk_entry_set_visibility(GTK_ENTRY(entryPassword), FALSE);
 	GtkWidget *labelDomain=gtk_label_new(_("Proxy:"));
-	GtkWidget *labelDomainExemple=gtk_label_new(_("exemple: sip.linphone.org"));
+	GtkWidget *labelDomainExemple=gtk_label_new(_("example: sip.linphone.org"));
 	GtkWidget *labelRoute=gtk_label_new(_("Route (optional):"));
 	GtkWidget *entryUsername=gtk_entry_new();
 	GtkWidget *entryDomain=gtk_entry_new();
@@ -179,7 +179,7 @@ static int create_account(GtkWidget *page) {
 	if (res) {
 		if (!g_regex_match_simple("^sip:[a-zA-Z]+[a-zA-Z0-9.\\-_]{2,}@sip.linphone.org$",creator->username, 0, 0)) {
 			gchar identity[128];
-			g_sprintf(identity, "sip:%s@sip.linphone.org", creator->username);
+			g_snprintf(identity, sizeof(identity), "sip:%s@sip.linphone.org", creator->username);
 			linphone_account_creator_set_username(creator, identity);
 			linphone_account_creator_set_domain(creator, "sip:sip.linphone.org");
 		}
@@ -354,7 +354,7 @@ static GtkWidget *wait_for_activation() {
 	return vbox;
 }
 
-int is_account_validated(GtkWidget *page) {
+static int is_account_validated(GtkWidget *page) {
 	LinphoneAccountCreator *creator=linphone_gtk_assistant_get_creator(gtk_widget_get_toplevel(page));
 	return linphone_account_creator_test_validation(creator);
 }
@@ -383,8 +383,9 @@ static void linphone_gtk_assistant_prepare(GtkWidget *assistant, GtkWidget *page
 		const gchar *needle = "@";
 		username = g_strndup(username, (g_strrstr(username, needle) - username));
 		gchar domain[128];
-		g_sprintf(domain, "\"%s\"", creator->domain + 4);
+		g_snprintf(domain, sizeof(domain), "\"%s\"", creator->domain + 4);
 		LinphoneAuthInfo *info=linphone_auth_info_new(username, username, creator->password, NULL, domain);
+		g_free(username);
 		linphone_core_add_auth_info(linphone_gtk_get_core(),info);
 
 		if (linphone_core_add_proxy_config(linphone_gtk_get_core(),cfg)==-1)
@@ -417,7 +418,7 @@ static int linphone_gtk_assistant_forward(int curpage, gpointer data){
 		LinphoneAccountCreator *c=linphone_gtk_assistant_get_creator(w);
 		if (!g_regex_match_simple("^sip:[a-z0-9]+([_\\.-][a-z0-9]+)*@([a-z0-9]+([\\.-][a-z0-9]+)*)+\\.[a-z]{2,}$", gtk_entry_get_text(GTK_ENTRY(g_object_get_data(G_OBJECT(box),"username"))), 0, 0)) {
 			gchar identity[128];
-			g_sprintf(identity, "sip:%s", gtk_entry_get_text(GTK_ENTRY(g_object_get_data(G_OBJECT(box),"username"))));
+			g_snprintf(identity, sizeof(identity), "sip:%s", gtk_entry_get_text(GTK_ENTRY(g_object_get_data(G_OBJECT(box),"username"))));
 			linphone_account_creator_set_username(c, identity);
 		} else {
 			linphone_account_creator_set_username(c, gtk_entry_get_text(GTK_ENTRY(g_object_get_data(G_OBJECT(box),"username"))));
@@ -425,7 +426,7 @@ static int linphone_gtk_assistant_forward(int curpage, gpointer data){
 
 		if (!g_regex_match_simple("^sip:([a-z0-9]+([\\.-][a-z0-9]+)*)+\\.[a-z]{2,}$", gtk_entry_get_text(GTK_ENTRY(g_object_get_data(G_OBJECT(box),"domain"))), 0, 0)) {
 			gchar proxy[128];
-			g_sprintf(proxy, "sip:%s", gtk_entry_get_text(GTK_ENTRY(g_object_get_data(G_OBJECT(box),"domain"))));
+			g_snprintf(proxy, sizeof(proxy), "sip:%s", gtk_entry_get_text(GTK_ENTRY(g_object_get_data(G_OBJECT(box),"domain"))));
 			linphone_account_creator_set_domain(c, proxy);
 		} else {
 			linphone_account_creator_set_domain(c, gtk_entry_get_text(GTK_ENTRY(g_object_get_data(G_OBJECT(box),"domain"))));
@@ -437,7 +438,7 @@ static int linphone_gtk_assistant_forward(int curpage, gpointer data){
 	else if (curpage == 3) { // Linphone Account's informations entered
 		LinphoneAccountCreator *c=linphone_gtk_assistant_get_creator(w);
 		gchar identity[128];
-		g_sprintf(identity, "sip:%s@sip.linphone.org", gtk_entry_get_text(GTK_ENTRY(g_object_get_data(G_OBJECT(box),"username"))));
+		g_snprintf(identity, sizeof(identity), "sip:%s@sip.linphone.org", gtk_entry_get_text(GTK_ENTRY(g_object_get_data(G_OBJECT(box),"username"))));
 		linphone_account_creator_set_username(c, identity);
 		linphone_account_creator_set_domain(c, "sip:sip.linphone.org");
 		linphone_account_creator_set_password(c,gtk_entry_get_text(GTK_ENTRY(g_object_get_data(G_OBJECT(box),"password"))));
@@ -482,7 +483,7 @@ static LinphoneAccountCreator * linphone_gtk_assistant_init(GtkWidget *w){
 	return NULL;
 }
 
-LinphoneAccountCreator *linphone_gtk_assistant_get_creator(GtkWidget*w){
+static LinphoneAccountCreator *linphone_gtk_assistant_get_creator(GtkWidget*w){
 	return (LinphoneAccountCreator*)g_object_get_data(G_OBJECT(w),"creator");
 }
 
