@@ -95,7 +95,9 @@ int callCount(LinphoneCore* lc) {
 	//Controls
 	[mute initWithOnImage:[UIImage imageNamed:@"micro_inverse.png"]  offImage:[UIImage imageNamed:@"micro.png"] ];
     [speaker initWithOnImage:[UIImage imageNamed:@"HP_inverse.png"]  offImage:[UIImage imageNamed:@"HP.png"] ];
-	
+    
+    verified = [[UIImage imageNamed:@"secured.png"] retain];
+    unverified = [[UIImage imageNamed:@"unverified.png"] retain];
 
 	//Dialer init
 	[zero initWithNumber:'0'];
@@ -218,6 +220,12 @@ int callCount(LinphoneCore* lc) {
 		}    }
 }
 
+-(void) viewWillDisappear:(BOOL)animated {
+    if (zrtpVerificationSheet != nil) {
+        [zrtpVerificationSheet dismissWithClickedButtonIndex:2 animated:NO];
+    }
+}
+
 - (void) viewDidDisappear:(BOOL)animated {
     if (durationRefreasher != nil) {
         [durationRefreasher invalidate];
@@ -230,8 +238,8 @@ int callCount(LinphoneCore* lc) {
 }
 
 - (void)viewDidUnload {
-
-	
+    [verified release];
+    [unverified release];
 }
 
 
@@ -473,7 +481,7 @@ int callCount(LinphoneCore* lc) {
     [self updateActive:(cell == activeCallCell) cell:cell];
 }
 
-+ (void) updateCellImageView:(UIImageView*)imageView Label:(UILabel*)label DetailLabel:(UILabel*)detailLabel AndAccessoryView:(UIImageView*)accessoryView withCall:(LinphoneCall*) call {
++ (void) updateCellImageView:(UIImageView*)imageView Label:(UILabel*)label DetailLabel:(UILabel*)detailLabel AndAccessoryView:(UIButton*)accessoryView withCall:(LinphoneCall*) call {
     if (call == NULL) {
         ms_warning("UpdateCell called with null call");
         [label setText:@""];
@@ -524,13 +532,19 @@ int callCount(LinphoneCore* lc) {
     }
 
     if (accessoryView != nil) {
-        if (linphone_call_params_get_media_encryption(linphone_call_get_current_params(call)) !=
-            LinphoneMediaEncryptionNone) {
-            if (accessoryView.image == nil)
-                accessoryView.image = [UIImage imageNamed:@"secured.png"];
+        /*
+        LinphoneMediaEncryption enc = linphone_call_params_get_media_encryption(linphone_call_get_current_params(call));
+        if (enc != LinphoneMediaEncryptionNone) {
+            if (accessoryView.imageView.image == nil) {
+                if (enc == LinphoneMediaEncryptionSRTP || linphone_call_get_authentication_token_verified(call)) {
+                    [accessoryView setImage: verified forState:UIControlStateNormal];
+                } else {
+                    [accessoryView setImage: unverified forState:UIControlStateNormal];
+                }
+            }
         } else {
-            accessoryView.image = nil;
-        }
+            [accessoryView setImage: (UIImage*)nil forState:UIControlStateNormal];
+        }*/
     }
 }
 
@@ -559,9 +573,7 @@ int callCount(LinphoneCore* lc) {
             else
                 [ms appendFormat:(isFirst?@"%s":@", %s"), linphone_address_get_username(addr), nil];
             
-            //if (call == selectedCall)
-            //    [self updateActive:YES cell:cell];
-			LinphoneCall* selectedCall = linphone_core_get_current_call([LinphoneManager getLc]);
+            LinphoneCall* selectedCall = linphone_core_get_current_call([LinphoneManager getLc]);
             if (call == selectedCall) {
                 [callTableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
                 cell.selected = YES;
@@ -573,11 +585,6 @@ int callCount(LinphoneCore* lc) {
     }
     [cell.detailTextLabel setText:ms];
     cell.imageView.image = nil;
-    
-    /*if (linphone_core_is_in_conference(lc))
-        cell.backgroundColor = [UIColor colorWithRed:0 green:1 blue:0 alpha:1];
-    else
-        cell.backgroundColor = [UIColor colorWithRed:1 green:0 blue:0 alpha:1];*/
 }
 
 -(void) tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
@@ -597,8 +604,6 @@ int callCount(LinphoneCore* lc) {
         cell.textLabel.font = [UIFont systemFontOfSize:40];
         cell.textLabel.autoresizingMask = UIViewAutoresizingFlexibleHeight;
     }
-    if (cell.accessoryView != nil)
-        ((UIImageView*)cell.accessoryView).image = nil;
     
     LinphoneCore* lc = [LinphoneManager getLc];
     if (indexPath.row == 0 && linphone_core_get_conference_size(lc) > 0) {
@@ -611,27 +616,79 @@ int callCount(LinphoneCore* lc) {
         else
             cell.accessoryType = UITableViewCellAccessoryNone;
     } else {
+        if (cell.accessoryView == nil) {
+            UIButton* b = [UIButton buttonWithType:UIButtonTypeCustom];
+            [b setFrame:CGRectMake(0, 0, 28, 28)];
+            [b setImage:nil forState:UIControlStateNormal];
+            b.backgroundColor = [UIColor clearColor];
+            b.userInteractionEnabled = YES;
+            cell.accessoryView = b;
+        }
         LinphoneCall* call = [IncallViewController retrieveCallAtIndex:indexPath.row inConference:NO];
-        [IncallViewController updateCellImageView:cell.imageView Label:cell.textLabel DetailLabel:cell.detailTextLabel AndAccessoryView:(UIImageView*)cell.accessoryView withCall:call];
+        [IncallViewController updateCellImageView:cell.imageView Label:cell.textLabel DetailLabel:cell.detailTextLabel AndAccessoryView:(UIButton*)cell.accessoryView withCall:call];
         if (linphone_core_get_current_call(lc) == call)
             activeCallCell = cell;
         cell.accessoryType = UITableViewCellAccessoryNone;
-        if (cell.accessoryView == nil)            
-            cell.accessoryView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 28, 28)];
+        
+        LinphoneMediaEncryption enc = linphone_call_params_get_media_encryption(linphone_call_get_current_params(call));
+    
+        UIButton* accessoryBtn = (UIButton*) cell.accessoryView;
+        if (enc != LinphoneMediaEncryptionNone) {
+            if (enc == LinphoneMediaEncryptionSRTP || linphone_call_get_authentication_token_verified(call)) {
+                [accessoryBtn setImage: verified forState:UIControlStateNormal];
+            } else {
+                [accessoryBtn setImage: unverified forState:UIControlStateNormal];
+            }
+        } else {
+            [accessoryBtn setImage: (UIImage*)nil forState:UIControlStateNormal];
+        }
+        
+        if (((UIButton*)cell.accessoryView).imageView.image != nil && linphone_call_params_get_media_encryption(linphone_call_get_current_params(call)) == LinphoneMediaEncryptionZRTP) {
+            [((UIButton*)cell.accessoryView) addTarget:self action:@selector(secureIconPressed:withEvent:) forControlEvents:UIControlEventTouchUpInside];
+        }
     }
     
     cell.userInteractionEnabled = YES; 
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    //cell.selectionStyle = UITableViewCellSelectionStyleBlue;
-    
-    
-    
-    /*NSString *path = [[NSBundle mainBundle] pathForResource:[item objectForKey:@"imageKey"] ofType:@"png"];
-    UIImage *theImage = [UIImage imageWithContentsOfFile:path];
-    cell.imageView.image = theImage;*/
     return cell;
 } 
 
+-(void) secureIconPressed:(UIControl*) button withEvent: (UIEvent*) evt {
+    NSSet* touches = [evt allTouches];
+    UITouch* touch = [touches anyObject];
+    CGPoint currentTouchPos = [touch locationInView:self.callTableView];
+    NSIndexPath *path = [self.callTableView indexPathForRowAtPoint:currentTouchPos];
+    if (path) {
+        LinphoneCall* call = [IncallViewController retrieveCallAtIndex:path.row inConference:NO];
+        // start action sheet to validate/unvalidate zrtp code
+        CallDelegate* cd = [[CallDelegate alloc] init];
+        cd.delegate = self;
+        cd.call = call;
+        
+        [(UIButton*)[callTableView cellForRowAtIndexPath:path].accessoryView setImage:nil forState:UIControlStateNormal];
+            
+		zrtpVerificationSheet = [[UIActionSheet alloc] initWithTitle:[NSString  stringWithFormat:NSLocalizedString(@" Mark auth token '%s' as:",nil),linphone_call_get_authentication_token(call)]
+                                                    delegate:cd 
+                                                    cancelButtonTitle:NSLocalizedString(@"Unverified",nil) 
+                                                    destructiveButtonTitle:NSLocalizedString(@"Verified",nil) 
+                                                    otherButtonTitles:nil];
+        
+		zrtpVerificationSheet.actionSheetStyle = UIActionSheetStyleDefault;
+		[zrtpVerificationSheet showInView:self.view];
+		[zrtpVerificationSheet release];
+    }
+}
+
+-(void) actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex withUserDatas:(void *)datas {
+    LinphoneCall* call = (LinphoneCall*)datas;
+    // maybe we could verify call validity
+    
+    if (buttonIndex == 0)
+        linphone_call_set_authentication_token_verified(call, YES);
+    else if (buttonIndex == 1)
+        linphone_call_set_authentication_token_verified(call, NO);
+    zrtpVerificationSheet = nil;
+}
 
 // UITableViewDataSource (required)
 - (NSInteger) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section

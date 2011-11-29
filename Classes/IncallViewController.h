@@ -24,7 +24,7 @@
 #include "UILinphone.h"
 @class VideoViewController;
 
-@interface IncallViewController : UIViewController <ABPeoplePickerNavigationControllerDelegate,LinphoneUICallDelegate, UITableViewDelegate, UITableViewDataSource> {
+@interface IncallViewController : UIViewController <ABPeoplePickerNavigationControllerDelegate,LinphoneUICallDelegate, UITableViewDelegate, UITableViewDataSource, UIActionSheetCustomDelegate> {
 	
 	
 	UIView* controlSubView, *callControlSubView, *hangUpView;
@@ -74,6 +74,9 @@
     BOOL mVideoShown;
 	BOOL mVideoIsPending;
 	BOOL mIncallViewIsReady;
+    
+    UIImage* verified, *unverified;
+    UIActionSheet* zrtpVerificationSheet;
 }
 
 -(void)displayStatus:(NSString*) message;
@@ -81,7 +84,7 @@
 - (IBAction)doAction:(id)sender;
 
 +(LinphoneCall*) retrieveCallAtIndex: (NSInteger) index inConference:(bool) conf;
-+ (void) updateCellImageView:(UIImageView*)imageView Label:(UILabel*)label DetailLabel:(UILabel*)detailLabel AndAccessoryView:(UIImageView*)accessoryView withCall:(LinphoneCall*) call;
++ (void) updateCellImageView:(UIImageView*)imageView Label:(UILabel*)label DetailLabel:(UILabel*)detailLabel AndAccessoryView:(UIButton*)accessoryView withCall:(LinphoneCall*) call;
 
 @property (nonatomic, retain) IBOutlet UIView* controlSubView;
 @property (nonatomic, retain) IBOutlet UIView* callControlSubView;

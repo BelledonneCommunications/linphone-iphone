@@ -229,6 +229,11 @@
 		344ABD78147FCB68007420B6 /* ConferenceCallDetailView.m in Sources */ = {isa = PBXBuildFile; fileRef = 344ABD76147FCB68007420B6 /* ConferenceCallDetailView.m */; };
 		344ABD7A147FD32B007420B6 /* ConferenceCallDetailCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 344ABD79147FD32B007420B6 /* ConferenceCallDetailCell.xib */; };
 		344ABD7B147FD32B007420B6 /* ConferenceCallDetailCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 344ABD79147FD32B007420B6 /* ConferenceCallDetailCell.xib */; };
+		344ABDE51483E596007420B6 /* unverified.png in Resources */ = {isa = PBXBuildFile; fileRef = 344ABDE41483E596007420B6 /* unverified.png */; };
+		344ABDE61483E596007420B6 /* unverified.png in Resources */ = {isa = PBXBuildFile; fileRef = 344ABDE41483E596007420B6 /* unverified.png */; };
+		344ABDE81484E723007420B6 /* libzrtpcpp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDE71484E723007420B6 /* libzrtpcpp.a */; };
+		344ABDF114850AE9007420B6 /* libc++.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDEF14850AE9007420B6 /* libc++.1.dylib */; };
+		344ABDF214850AE9007420B6 /* libstdc++.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDF014850AE9007420B6 /* libstdc++.6.dylib */; };
 		34957F3F147D3FBF00DD7A09 /* secured.png in Resources */ = {isa = PBXBuildFile; fileRef = 34957F3E147D3FBF00DD7A09 /* secured.png */; };
 		34F2F678147D2E1C00A2D5E3 /* contact_vide.png in Resources */ = {isa = PBXBuildFile; fileRef = 34F2F677147D2E1C00A2D5E3 /* contact_vide.png */; };
 		70571E1A13FABCB000CDD3C2 /* rootca.pem in Resources */ = {isa = PBXBuildFile; fileRef = 70571E1913FABCB000CDD3C2 /* rootca.pem */; };
@@ -242,7 +247,7 @@
 /* Begin PBXCopyFilesBuildPhase section */
 		2247673A129C3B9C002B94B4 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 12;
 			dstPath = "";
 			dstSubfolderSpec = 11;
 			files = (
@@ -585,6 +590,10 @@
 		344ABD75147FCB68007420B6 /* ConferenceCallDetailView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConferenceCallDetailView.h; sourceTree = "<group>"; };
 		344ABD76147FCB68007420B6 /* ConferenceCallDetailView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConferenceCallDetailView.m; sourceTree = "<group>"; };
 		344ABD79147FD32B007420B6 /* ConferenceCallDetailCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ConferenceCallDetailCell.xib; sourceTree = "<group>"; };
+		344ABDE41483E596007420B6 /* unverified.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = unverified.png; path = Resources/unverified.png; sourceTree = "<group>"; };
+		344ABDE71484E723007420B6 /* libzrtpcpp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libzrtpcpp.a; path = "liblinphone-sdk/apple-darwin/lib/libzrtpcpp.a"; sourceTree = "<group>"; };
+		344ABDEF14850AE9007420B6 /* libc++.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.1.dylib"; path = "usr/lib/libc++.1.dylib"; sourceTree = SDKROOT; };
+		344ABDF014850AE9007420B6 /* libstdc++.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.6.dylib"; path = "usr/lib/libstdc++.6.dylib"; sourceTree = SDKROOT; };
 		34957F3E147D3FBF00DD7A09 /* secured.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = secured.png; path = Resources/secured.png; sourceTree = "<group>"; };
 		34F2F677147D2E1C00A2D5E3 /* contact_vide.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = contact_vide.png; path = Resources/contact_vide.png; sourceTree = "<group>"; };
 		70571E1913FABCB000CDD3C2 /* rootca.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = rootca.pem; path = Resources/rootca.pem; sourceTree = "<group>"; };
@@ -599,6 +608,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				344ABDF114850AE9007420B6 /* libc++.1.dylib in Frameworks */,
+				344ABDF214850AE9007420B6 /* libstdc++.6.dylib in Frameworks */,
+				344ABDE81484E723007420B6 /* libzrtpcpp.a in Frameworks */,
 				F476004C147AAF4600FFF19B /* libmediastreamer.a in Frameworks */,
 				F476004B147AAF2800FFF19B /* liblinphone.a in Frameworks */,
 				7066FC0C13E830E400EFC6DC /* libvpx.a in Frameworks */,
@@ -1052,6 +1064,9 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				344ABDEF14850AE9007420B6 /* libc++.1.dylib */,
+				344ABDF014850AE9007420B6 /* libstdc++.6.dylib */,
+				344ABDE71484E723007420B6 /* libzrtpcpp.a */,
 				2211DB9614764F6B00DEE054 /* nogpl-thirdparties */,
 				2211DB911475562600DEE054 /* liblinphone.a */,
 				2211DB8F147555C800DEE054 /* libmediastreamer.a */,
@@ -1121,6 +1136,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				344ABDE41483E596007420B6 /* unverified.png */,
 				34957F3E147D3FBF00DD7A09 /* secured.png */,
 				34F2F677147D2E1C00A2D5E3 /* contact_vide.png */,
 				2211DBCA1476BE7300DEE054 /* ajouter.png */,
@@ -1294,6 +1310,7 @@
 				34957F3F147D3FBF00DD7A09 /* secured.png in Resources */,
 				344ABD72147FC438007420B6 /* ConferenceCallDetailView.xib in Resources */,
 				344ABD7A147FD32B007420B6 /* ConferenceCallDetailCell.xib in Resources */,
+				344ABDE51483E596007420B6 /* unverified.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1350,6 +1367,7 @@
 				2211DBEA1476BE7300DEE054 /* pause.png in Resources */,
 				344ABD73147FC438007420B6 /* ConferenceCallDetailView.xib in Resources */,
 				344ABD7B147FD32B007420B6 /* ConferenceCallDetailCell.xib in Resources */,
+				344ABDE61483E596007420B6 /* unverified.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
