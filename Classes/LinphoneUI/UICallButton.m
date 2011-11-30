@@ -38,6 +38,7 @@
 		linphone_core_get_default_proxy([LinphoneManager getLc],&proxyCfg);
 		bool startVideo = [[NSUserDefaults standardUserDefaults] boolForKey:@"start_video_preference"];
 		LinphoneCallParams* lcallParams = linphone_core_create_default_call_parameters([LinphoneManager getLc]);
+		linphone_call_params_enable_video(lcallParams,startVideo&linphone_core_video_enabled([LinphoneManager getLc]));
 		
 		if ([mAddress.text length] == 0) return; //just return
 		if ([mAddress.text hasPrefix:@"sip:"]) {
@@ -61,7 +62,7 @@
 			linphone_address_set_display_name(tmpAddress,(lDisplayName)?[lDisplayName cStringUsingEncoding:[NSString defaultCStringEncoding]]:nil);
 
 
-			linphone_call_params_enable_video(lcallParams,startVideo&linphone_core_video_enabled([LinphoneManager getLc]));
+			
 			linphone_core_invite_address_with_params([LinphoneManager getLc],tmpAddress,lcallParams) ;
 			
 			linphone_address_destroy(tmpAddress);
