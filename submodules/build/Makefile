@@ -19,16 +19,16 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #
 ############################################################################
-enable_gpl=yes
+enable_gpl_third_parties=yes
 
 .NOTPARALLEL all: build warning
-ifeq ($(enable_gpl),yes)
+ifeq ($(enable_gpl_third_parties),yes)
 warning:
 	@echo 
 	@echo "*****************************************************************"
 	@echo "*****************************************************************"
 	@echo "*****CAUTION, this liblinphone SDK is built using GPL code ******"
-	@echo "*****To disable gpl code, use make enable_gpl=no    *************"
+	@echo "*****To disable gpl code, use make enable_gpl_third_parties=no***"
 	@echo "*****************************************************************"
 	@echo "*****************************************************************"
 else
@@ -42,9 +42,9 @@ warning:
 endif
 
 build:
-	make -f  builder-iphone-os.mk  all enable_gpl=$(enable_gpl) \
-	&& make -f  builder-iphone-simulator.mk all enable_gpl=$(enable_gpl)\
-	&& make -f  builder-iphone-os.mk   host=armv7-apple-darwin all enable_gpl=$(enable_gpl)\
+	make -f  builder-iphone-os.mk  all enable_gpl_third_parties=$(enable_gpl_third_parties) \
+	&& make -f  builder-iphone-simulator.mk all enable_gpl_third_parties=$(enable_gpl_third_parties)\
+	&& make -f  builder-iphone-os.mk   host=armv7-apple-darwin all enable_gpl_third_parties=$(enable_gpl_third_parties)\
 	&& make -f builder-iphone-os.mk delivery-sdk 
 clean:
 	make -f  builder-iphone-simulator.mk  clean \
