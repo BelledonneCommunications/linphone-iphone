@@ -22,6 +22,7 @@
 #import "linphonecore.h"
 #include "LinphoneManager.h"
 #include "private.h"
+#import "ContactPickerDelegate.h"Òß
 
 @implementation IncallViewController
 
@@ -390,7 +391,7 @@ int callCount(LinphoneCore* lc) {
 	} else if (sender == contacts) {
 		// start people picker
 		myPeoplePickerController = [[[ABPeoplePickerNavigationController alloc] init] autorelease];
-		[myPeoplePickerController setPeoplePickerDelegate:self];
+		[myPeoplePickerController setPeoplePickerDelegate:[[ContactPickerDelegate alloc] init] /*self*/];
 		
 		[self presentModalViewController: myPeoplePickerController animated:true]; 
 	} else if (sender == close) {

@@ -153,9 +153,16 @@
 	} //else keep previous
 	
 	[mDisplayName setText:displayName];
-	[callLarge setHidden:FALSE];
-	[callShort setHidden:TRUE];
-	[backToCallView setHidden:TRUE];
+    // disable call button if != Paused
+    if (linphone_core_get_calls_nb([LinphoneManager getLc]) == 0) {
+        [callLarge setHidden:FALSE];
+        [callShort setHidden:TRUE];
+        [backToCallView setHidden:TRUE];
+    } else {
+        [callLarge setHidden:TRUE];
+        [callShort setHidden:FALSE];
+        [backToCallView setHidden:FALSE];        
+    }
 
 	
 	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"firstlogindone_preference" ] == true) {
