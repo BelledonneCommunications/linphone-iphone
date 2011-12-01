@@ -141,19 +141,7 @@
             [callShort setHidden:TRUE];
             [backToCallView setHidden:TRUE];
         } else {
-            bool areAllCallPausedOrInConference = true;
-            const MSList* calls = linphone_core_get_calls([LinphoneManager getLc]);
-            while (calls) {
-                LinphoneCall* call = (LinphoneCall*)calls->data;
-                if (!linphone_call_get_current_params(call)->in_conference 
-                    && (linphone_call_get_state(call) != LinphoneCallPaused)) {
-                    areAllCallPausedOrInConference = false;
-                    break;
-                } else {
-                    calls = calls->next;
-                }
-            }
-            [callShort setEnabled:areAllCallPausedOrInConference];
+            [callShort setEnabled:!linphone_core_sound_resources_locked([LinphoneManager getLc])];
             [callLarge setHidden:TRUE];
             [callShort setHidden:FALSE];
             [backToCallView setHidden:FALSE];        
