@@ -42,10 +42,6 @@
 }
 - (void)applicationDidBecomeActive:(UIApplication *)application {
 	[[LinphoneManager instance] becomeActive];
-    
-    if (myPhoneViewController != nil) {
-        [myPhoneViewController updateCallAndBackButtons];
-    }
 }
 
 - (void) loadDefaultSettings {
