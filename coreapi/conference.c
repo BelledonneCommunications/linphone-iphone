@@ -60,8 +60,7 @@ void linphone_core_conference_check_uninit(LinphoneConference *ctx){
 	}
 }
 
-
-void linphone_call_add_to_conf(LinphoneCall *call){
+void linphone_call_add_to_conf(LinphoneCall *call, bool_t muted){
 	LinphoneCore *lc=call->core;
 	LinphoneConference *conf=&lc->conf_ctx;
 	MSAudioEndpoint *ep;
@@ -69,6 +68,7 @@ void linphone_call_add_to_conf(LinphoneCall *call){
 	call->camera_active = FALSE;
 	ep=ms_audio_endpoint_get_from_stream(call->audiostream,TRUE);
 	ms_audio_conference_add_member(conf->conf,ep);
+	ms_audio_conference_mute_member(conf->conf,ep,muted);
 	call->endpoint=ep;
 }
 

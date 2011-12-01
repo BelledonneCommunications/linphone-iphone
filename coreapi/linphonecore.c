@@ -2581,6 +2581,11 @@ int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *the_call)
 		linphone_core_preempt_sound_resources(lc);
 		ms_message("Resuming call %p",call);
 	}
+
+	// Stop playing music immediately. If remote side is a conference it
+	// prevents the participants to hear it while the 200OK comes back.
+	audio_stream_play(call->audiostream, NULL);
+
 	update_local_media_description(lc,the_call,&call->localdesc);
 	sal_call_set_local_media_description(call->op,call->localdesc);
 	sal_media_description_set_dir(call->localdesc,SalStreamSendRecv);

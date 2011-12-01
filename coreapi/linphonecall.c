@@ -1140,7 +1140,8 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cna
 			}else call->audiostream_encrypted=FALSE;
 			if (call->params.in_conference){
 				/*transform the graph to connect it to the conference filter */
-				linphone_call_add_to_conf(call);
+				bool_t mute=stream->dir==SalStreamRecvOnly;
+				linphone_call_add_to_conf(call, mute);
 			}
 			call->current_params.in_conference=call->params.in_conference;
 		}else ms_warning("No audio stream accepted ?");

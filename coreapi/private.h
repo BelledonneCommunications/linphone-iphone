@@ -520,7 +520,11 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 void linphone_core_preempt_sound_resources(LinphoneCore *lc);
 /*conferencing subsystem*/
 void _post_configure_audio_stream(AudioStream *st, LinphoneCore *lc, bool_t muted);
-void linphone_call_add_to_conf(LinphoneCall *call);
+/* When a conference participant pause the conference he may send a music.
+ * We don't want to hear that music or to send it to the other participants.
+ * Use muted=yes to handle this case.
+ */
+void linphone_call_add_to_conf(LinphoneCall *call, bool_t muted);
 void linphone_call_remove_from_conf(LinphoneCall *call);
 void linphone_core_conference_check_uninit(LinphoneConference *ctx);
 bool_t linphone_core_sound_resources_available(LinphoneCore *lc);
