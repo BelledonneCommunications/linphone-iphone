@@ -23,7 +23,8 @@
 #import <AudioToolbox/AudioToolbox.h>
 #import "LinphoneManager.h"
 #include "FirstLoginViewController.h"
-
+#include "linphonecore.h"
+#include "private.h"
 
 @implementation PhoneViewController
 @synthesize  dialerView ;
@@ -133,6 +134,41 @@
     return YES;
 }
 
+-(void) updateCallAndBackButtons {
+    @try {
+        if (linphone_core_get_calls_nb([LinphoneManager getLc]) == 0) {
+            [callLarge setHidden:FALSE];
+            [callShort setHidden:TRUE];
+            [backToCallView setHidden:TRUE];
+        } else {
+            bool areAllCallPausedOrInConference = true;
+            const MSList* calls = linphone_core_get_calls([LinphoneManager getLc]);
+            while (calls) {
+                LinphoneCall* call = (LinphoneCall*)calls->data;
+                if (!linphone_call_get_current_params(call)->in_conference 
+                    && (linphone_call_get_state(call) != LinphoneCallPaused)) {
+                    areAllCallPausedOrInConference = false;
+                    break;
+                } else {
+                    calls = calls->next;
+                }
+            }
+            [callShort setEnabled:areAllCallPausedOrInConference];
+            [callLarge setHidden:TRUE];
+            [callShort setHidden:FALSE];
+            [backToCallView setHidden:FALSE];        
+        }
+    } @catch (NSException* exc) {
+        // R.A.S: linphone core si simply not ready...
+        ms_warning("Exception %s: %s", 
+                   [exc.name cStringUsingEncoding:[NSString defaultCStringEncoding]], 
+                   [exc.reason cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+    }
+}
+
+-(void)viewWillAppear:(BOOL)animated {
+    [self updateCallAndBackButtons];
+}
 
 -(void) displayDialerFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
 	
@@ -153,18 +189,9 @@
 	} //else keep previous
 	
 	[mDisplayName setText:displayName];
-    // disable call button if != Paused
-    if (linphone_core_get_calls_nb([LinphoneManager getLc]) == 0) {
-        [callLarge setHidden:FALSE];
-        [callShort setHidden:TRUE];
-        [backToCallView setHidden:TRUE];
-    } else {
-        [callLarge setHidden:TRUE];
-        [callShort setHidden:FALSE];
-        [backToCallView setHidden:FALSE];        
-    }
 
-	
+    [self updateCallAndBackButtons];
+
 	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"firstlogindone_preference" ] == true) {
 		//first login case, dismmis first login view																		 
 		[self dismissModalViewControllerAnimated:true];
