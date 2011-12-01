@@ -48,6 +48,7 @@ typedef enum _Connectivity {
 }
 +(LinphoneManager*) instance;
 +(LinphoneCore*) getLc;
++(BOOL) audioSessionInterrupted;
 
 -(void) registerLogView:(id<LogView>) view;
 

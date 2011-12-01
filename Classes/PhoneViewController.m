@@ -164,6 +164,12 @@
                    [exc.name cStringUsingEncoding:[NSString defaultCStringEncoding]], 
                    [exc.reason cStringUsingEncoding:[NSString defaultCStringEncoding]]);
     }
+    
+    /* if audio session is unavailable -> disable call buttons */
+    if ([LinphoneManager audioSessionInterrupted]) {
+        [callShort setEnabled:NO];
+        [callLarge setEnabled:NO];
+    }
 }
 
 -(void)viewWillAppear:(BOOL)animated {
@@ -212,7 +218,13 @@
 
 
 -(void) displayIncomingCall:(LinphoneCall*) call NotificationFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
-	
+    if ([LinphoneManager audioSessionInterrupted]) {
+        // TODO: should we notify the user and let him cancel the call (without letting him accept it) ?
+        ms_message("Call refused: audio session is not available");
+        linphone_core_terminate_call([LinphoneManager getLc], call);
+        return;
+    }
+    
 	if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)] 
 		&& [UIApplication sharedApplication].applicationState !=  UIApplicationStateActive) {
 		// Create a new notification
@@ -233,17 +245,16 @@
         cd.delegate = self;
         cd.call = call;
         
-		mIncomingCallActionSheet = [[UIActionSheet alloc] initWithTitle:[NSString  stringWithFormat:NSLocalizedString(@" %@ is calling you",nil),[displayName length]>0?displayName:username]
-															   delegate:cd 
-													  cancelButtonTitle:NSLocalizedString(@"Decline",nil) 
+        mIncomingCallActionSheet = [[UIActionSheet alloc] initWithTitle:[NSString  stringWithFormat:NSLocalizedString(@" %@ is calling you",nil),[displayName length]>0?displayName:username]
+                                                            delegate:cd 
+                                                    cancelButtonTitle:NSLocalizedString(@"Decline",nil) 
 												 destructiveButtonTitle:NSLocalizedString(@"Answer",nil) 
-													  otherButtonTitles:nil];
-        
+                                            otherButtonTitles:nil];
+    
 		mIncomingCallActionSheet.actionSheetStyle = UIActionSheetStyleDefault;
 		[mIncomingCallActionSheet showInView:self.parentViewController.view];
 		[mIncomingCallActionSheet release];
 	}
-	
 }
 
 -(void) backToCallViewPressed {
@@ -292,7 +303,7 @@
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex withUserDatas:(void *)datas{
     LinphoneCall* call = (LinphoneCall*)datas;
-	if (buttonIndex == 0 ) {
+	if (buttonIndex == actionSheet.destructiveButtonIndex  ) {
 		linphone_core_accept_call([LinphoneManager getLc],call);	
 	} else {
 		linphone_core_terminate_call ([LinphoneManager getLc], call);

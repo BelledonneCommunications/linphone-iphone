@@ -22,7 +22,7 @@
 #import "linphonecore.h"
 #include "LinphoneManager.h"
 #include "private.h"
-#import "ContactPickerDelegate.h"Òß
+#import "ContactPickerDelegate.h"
 
 @implementation IncallViewController
 

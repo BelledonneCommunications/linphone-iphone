@@ -64,6 +64,8 @@
 	IncallViewController* mIncallViewController;
 }
 
+-(void) updateCallAndBackButtons;
+
 @property (nonatomic, retain) IBOutlet UIView* dialerView;
 
 @property (nonatomic, retain) IBOutlet UITextField* address;

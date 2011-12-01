@@ -30,6 +30,7 @@
 
 static LinphoneCore* theLinphoneCore=nil;
 static LinphoneManager* theLinphoneManager=nil;
+static BOOL audioSessionInterrupted = NO;
 
 extern void libmsilbc_init();
 #ifdef HAVE_AMR
@@ -835,6 +836,8 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 }
 
 -(void) beginInterruption {
+    audioSessionInterrupted = YES;
+    
     LinphoneCall* c = linphone_core_get_current_call(theLinphoneCore);
     ms_message("Sound interruption detected!");
     if (c) {
@@ -850,7 +853,12 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
         ms_message("Auto resuming call");
         linphone_core_resume_call(theLinphoneCore, (LinphoneCall*) c->data);
     }
-    
+ 
+    audioSessionInterrupted = NO;
+}
+
++(BOOL) audioSessionInterrupted {
+    return audioSessionInterrupted;
 }
 
 
