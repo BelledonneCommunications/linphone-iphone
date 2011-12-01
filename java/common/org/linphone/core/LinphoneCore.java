@@ -699,8 +699,13 @@ public interface LinphoneCore {
 	 */
 	void setMediaEncryptionMandatory(boolean yesno);
 	/**
-	 * @return if media encryption is required for ougtoing calls
+	 * @return if media encryption is required for outgoing calls
 	 */
 	boolean isMediaEncryptionMandatory();
+
+	/**
+	 * @param path path to music file played to remote side when on hold.
+	 */
+	void setPlayFile(String path);
 	
 }

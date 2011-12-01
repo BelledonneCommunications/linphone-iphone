@@ -732,6 +732,14 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isVideoEnabled(JNIEn
 																			,jlong lc) {
 	return linphone_core_video_enabled((LinphoneCore*)lc);
 }
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setPlayFile(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			,jstring jpath) {
+	const char* path = jpath?env->GetStringUTFChars(jpath, NULL):NULL;
+	linphone_core_set_play_file((LinphoneCore*)lc,path);
+	if (path) env->ReleaseStringUTFChars(jpath, path);
+}
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setRing(JNIEnv*  env
 																			,jobject  thiz
 																			,jlong lc
