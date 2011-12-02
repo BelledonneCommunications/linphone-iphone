@@ -384,7 +384,7 @@
 		220FAE4A10767A6A0068D98F /* PhoneMainView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PhoneMainView.xib; sourceTree = "<group>"; };
 		2211DB8F147555C800DEE054 /* libmediastreamer.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmediastreamer.a; path = "liblinphone-sdk/apple-darwin/lib/libmediastreamer.a"; sourceTree = "<group>"; };
 		2211DB911475562600DEE054 /* liblinphone.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblinphone.a; path = "liblinphone-sdk/apple-darwin/lib/liblinphone.a"; sourceTree = "<group>"; };
-		2211DB94147564B400DEE054 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Settings.bundle; path = nogpl/Settings.bundle; sourceTree = "<group>"; };
+		2211DB94147564B400DEE054 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Settings.bundle; path = "nogpl-thirdparties/Settings.bundle"; sourceTree = "<group>"; };
 		2211DBBB14769C8200DEE054 /* CallDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallDelegate.m; sourceTree = "<group>"; };
 		2211DBCA1476BE7300DEE054 /* ajouter.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ajouter.png; path = Resources/ajouter.png; sourceTree = "<group>"; };
 		2211DBCB1476BE7300DEE054 /* clavier.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = clavier.png; path = Resources/clavier.png; sourceTree = "<group>"; };
