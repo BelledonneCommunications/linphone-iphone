@@ -520,7 +520,7 @@ int callCount(LinphoneCore* lc) {
         } else {
             switch (linphone_call_get_state(call)) {
                 case LinphoneCallPaused:
-                    [ms appendFormat:@"%@", NSLocalizedString(@"Paused", nil), nil];
+                    [ms appendFormat:@"%@", NSLocalizedString(@"Paused (tap to resume)", nil), nil];
                     break;
                 case LinphoneCallOutgoingProgress:
                     [ms appendFormat:@"%@...", NSLocalizedString(@"In progress", nil), nil];
@@ -551,40 +551,24 @@ int callCount(LinphoneCore* lc) {
 
 
 -(void) updateConferenceCell:(UITableViewCell*) cell at:(NSIndexPath*)indexPath {
-    [cell.textLabel setText:@"Conference"];
-    
     LinphoneCore* lc = [LinphoneManager getLc];
+    
+    NSString* t= [NSString stringWithFormat:
+                  NSLocalizedString(@"Conference", nil), 
+                  linphone_core_get_conference_size(lc) - linphone_core_is_in_conference(lc)];
+    [cell.textLabel setText:t];
     
     [self updateActive:NO cell:cell];
     cell.selected = NO;
     
     [callTableView deselectRowAtIndexPath:indexPath animated:NO];
     
-    NSMutableString* ms = [[NSMutableString alloc] init ];
-    const MSList* calls = linphone_core_get_calls(lc);
-    bool isFirst = true;
-    while (calls) {
-        LinphoneCall* call = (LinphoneCall*)calls->data;
-        if (isInConference(call)) {
-             const LinphoneAddress* addr = linphone_call_get_remote_address(call);
-            
-            const char* n = linphone_address_get_display_name(addr);
-            if (n) 
-                [ms appendFormat:(isFirst?@"%s":@", %s"), n, nil];
-            else
-                [ms appendFormat:(isFirst?@"%s":@", %s"), linphone_address_get_username(addr), nil];
-            
-            LinphoneCall* selectedCall = linphone_core_get_current_call([LinphoneManager getLc]);
-            if (call == selectedCall) {
-                [callTableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
-                cell.selected = YES;
-                
-            }
-            isFirst = false;
-        }
-        calls = calls->next;
-    }
-    [cell.detailTextLabel setText:ms];
+    if (!linphone_core_is_in_conference(lc)) {
+        [cell.detailTextLabel setText:NSLocalizedString(@"(tap to enter conference)", nil)];
+    } else {
+        [cell.detailTextLabel setText:
+         [NSString stringWithFormat:NSLocalizedString(@"(me + %d participants)", nil), linphone_core_get_conference_size(lc) - linphone_core_is_in_conference(lc)]];
+    }	
     cell.imageView.image = nil;
 }
 
@@ -626,6 +610,8 @@ int callCount(LinphoneCore* lc) {
             cell.accessoryView = b;
         }
         LinphoneCall* call = [IncallViewController retrieveCallAtIndex:indexPath.row inConference:NO];
+        if (call == nil)
+            return nil;
         [IncallViewController updateCellImageView:cell.imageView Label:cell.textLabel DetailLabel:cell.detailTextLabel AndAccessoryView:(UIButton*)cell.accessoryView withCall:call];
         if (linphone_core_get_current_call(lc) == call)
             activeCallCell = cell;
