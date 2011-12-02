@@ -1009,7 +1009,7 @@
                                 </child>
                                 <child>
                                   <object class="GtkButton" id="call_back_button">
-                                    <property name="label" translatable="yes">Call back</property>
+                                    <property name="label" translatable="yes">Call</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
