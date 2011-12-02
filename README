@@ -39,8 +39,10 @@ To generate the liblinphone multi arch sdkin non GPL mode, once the above comman
 	cd submodules/build
 	make all enable_gpl_third_parties=no
 
+Note: simulator build does not work with this flavor.
+
 ******************************************
-****Third party, subject to lincense*i****
+****Third party, subject to lincense*****
 ******************************************
 The liblinphone-sdk is compiled with third parties code that are subject to license, specially: AMR, SILK and  X264.
 Linphone activates/de-activates these codecs thanks to the preprocessor macros HAVE_SILK, HAVE_AMR, HAVE_X264 positioned in xcode.
