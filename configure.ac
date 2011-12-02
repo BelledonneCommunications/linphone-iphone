@@ -136,7 +136,7 @@ AC_ARG_ENABLE(gtk_ui,
       esac],[gtk_ui=true])
 
 if test "$gtk_ui" = "true" ; then
-	PKG_CHECK_MODULES(LIBGTK, gtk+-2.0 >= 2.4.0 gthread-2.0)
+	PKG_CHECK_MODULES(LIBGTK, gtk+-2.0 >= 2.22.0 gthread-2.0)
 	if test "$enable_x11" = "false" ; then
 		PKG_CHECK_MODULES(LIBGTKMAC,[ige-mac-integration >= 0.9.7 ])
 		AC_DEFINE([HAVE_GTK_OSX],[1],[Defined when gtk osx is used])
