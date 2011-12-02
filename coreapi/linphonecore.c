@@ -501,6 +501,13 @@ static void sip_config_read(LinphoneCore *lc)
 	} else {
 		tr.tls_port=lp_config_get_int(lc->config,"sip","sip_tls_port",0);
 	}
+
+#ifdef __linux
+	sal_set_root_ca(lc->sal, lp_config_get_string(lc->config,"sip","root_ca", "/etc/ssl/certs"));
+#else
+	sal_set_root_ca(lc->sal, lp_config_get_string(lc->config,"sip","root_ca", ROOT_CA_FILE));
+#endif
+	linphone_core_verify_server_certificates(lc,lp_config_get_int(lc->config,"sip","verify_server_certs",TRUE));
 	/*start listening on ports*/
  	linphone_core_set_sip_transports(lc,&tr);
 
@@ -523,12 +530,6 @@ static void sip_config_read(LinphoneCore *lc)
 		ms_free(contact);
 	}
 
-#ifdef __linux
-	sal_root_ca(lc->sal, lp_config_get_string(lc->config,"sip","root_ca", "/etc/ssl/certs"));
-#else
-	sal_root_ca(lc->sal, lp_config_get_string(lc->config,"sip","root_ca", ROOT_CA_FILE));
-#endif
-	
 	tmp=lp_config_get_int(lc->config,"sip","guess_hostname",1);
 	linphone_core_set_guess_hostname(lc,tmp);
 
@@ -1480,12 +1481,15 @@ static int apply_transports(LinphoneCore *lc){
 	const char *anyaddr;
 	LCSipTransports *tr=&lc->sip_conf.transports;
 
+	/*first of all invalidate all current registrations so that we can register again with new transports*/
+	__linphone_core_invalidate_registers(lc);
+	
 	if (lc->sip_conf.ipv6_enabled)
 		anyaddr="::0";
 	else
 		anyaddr="0.0.0.0";
 
-	sal_unlisten_ports (sal);
+	sal_unlisten_ports(sal);
 	if (tr->udp_port>0){
 		if (sal_listen_port (sal,anyaddr,tr->udp_port,SalTransportUDP,FALSE)!=0){
 			transport_error(lc,"udp",tr->udp_port);
@@ -2995,7 +2999,14 @@ const char *linphone_core_get_ring(const LinphoneCore *lc){
  * @ingroup media_parameters
 **/
 void linphone_core_set_root_ca(LinphoneCore *lc,const char *path){
-	sal_root_ca(lc->sal, path);
+	sal_set_root_ca(lc->sal, path);
+}
+
+/**
+ * Specify whether the tls server certificate must be verified when connecting to a SIP/TLS server.
+**/
+void linphone_core_verify_server_certificates(LinphoneCore *lc, bool_t yesno){
+	sal_verify_server_certificates(lc->sal,yesno);
 }
 
 static void notify_end_of_ring(void *ud, MSFilter *f, unsigned int event, void *arg){
@@ -4126,12 +4137,24 @@ static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t cu
 	}
 
 }
+
 void linphone_core_refresh_registers(LinphoneCore* lc) {
 	const MSList *elem=linphone_core_get_proxy_config_list(lc);
 	for(;elem!=NULL;elem=elem->next){
 		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
 		if (linphone_proxy_config_register_enabled(cfg) ) {
 			linphone_proxy_config_refresh_register(cfg);
+		}
+	}
+}
+
+void __linphone_core_invalidate_registers(LinphoneCore* lc){
+	const MSList *elem=linphone_core_get_proxy_config_list(lc);
+	for(;elem!=NULL;elem=elem->next){
+		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
+		if (linphone_proxy_config_register_enabled(cfg) ) {
+			linphone_proxy_config_edit(cfg);
+			linphone_proxy_config_done(cfg);
 		}
 	}
 }

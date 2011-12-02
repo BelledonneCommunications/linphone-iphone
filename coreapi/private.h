@@ -529,6 +529,8 @@ void linphone_call_remove_from_conf(LinphoneCall *call);
 void linphone_core_conference_check_uninit(LinphoneConference *ctx);
 bool_t linphone_core_sound_resources_available(LinphoneCore *lc);
 
+void __linphone_core_invalidate_registers(LinphoneCore* lc);
+
 #define HOLD_OFF	(0)
 #define HOLD_ON		(1)
 

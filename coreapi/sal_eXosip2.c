@@ -282,6 +282,7 @@ Sal * sal_init(){
 	sal->use_101=TRUE;
 	sal->reuse_authorization=FALSE;
 	sal->rootCa = 0;
+	sal->verify_server_certs=TRUE;
 	return sal;
 }
 
@@ -374,6 +375,7 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 			snprintf(tlsCtx.root_ca_cert, sizeof(tlsCtx.client.cert), "%s", ctx->rootCa);
 			eXosip_set_tls_ctx(&tlsCtx);
 		}
+		eXosip_tls_verify_certificate(ctx->verify_server_certs);
 		break;
 	default:
 		ms_warning("unexpected proto, using datagram");
@@ -440,10 +442,15 @@ void sal_use_101(Sal *ctx, bool_t use_101){
 	ctx->use_101=use_101;
 }
 
-void sal_root_ca(Sal* ctx, const char* rootCa) {
+void sal_set_root_ca(Sal* ctx, const char* rootCa) {
 	if (ctx->rootCa)
 		ms_free(ctx->rootCa);
 	ctx->rootCa = ms_strdup(rootCa);
+}
+
+void sal_verify_server_certificates(Sal *ctx, bool_t verify){
+	ctx->verify_server_certs=verify;
+	eXosip_tls_verify_certificate(verify);
 }
 
 static int extract_received_rport(osip_message_t *msg, const char **received, int *rportval,SalTransport* transport){
