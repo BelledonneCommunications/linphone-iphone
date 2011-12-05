@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Linphone 0.9.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-02 16:47+0100\n"
+"POT-Creation-Date: 2011-12-05 12:41+0100\n"
 "PO-Revision-Date: 2002-12-06 17:33+0100\n"
 "Last-Translator: Simon Morlat <simon.morlat@linphone.org>\n"
 "Language-Team: french <fr@li.org>\n"
@@ -16,6 +16,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ../gtk/calllogs.c:71
+#, c-format
+msgid "%i minute"
+msgid_plural "%i minutes"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../gtk/calllogs.c:74
+#, c-format
+msgid "%i second"
+msgid_plural "%i seconds"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../gtk/calllogs.c:77
+#, c-format
+msgid ""
+"<big><b>%s</b></big>\t<small><i>%s</i>\t<i>Quality: %s</i></small>\n"
+"%s\t%s %s\t"
+msgstr ""
+
+#: ../gtk/calllogs.c:79
 msgid "n/a"
 msgstr "inconnu"
 
@@ -912,7 +933,10 @@ msgstr "<b>Video</b>"
 msgid ""
 "<i>Adaptive rate control is a technique to dynamically guess the available "
 "bandwidth during a call.</i>"
-msgstr "<i>Le control de débit adaptatif est une technique pour adapter la qualité de l'audio et de la video en fonction de la bande passante disponible, durant l'appel.</i>"
+msgstr ""
+"<i>Le control de débit adaptatif est une technique pour adapter la qualité "
+"de l'audio et de la video en fonction de la bande passante disponible, "
+"durant l'appel.</i>"
 
 #: ../gtk/parameters.ui.h:15
 msgid "ALSA special device (optional):"

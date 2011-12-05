@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone 0.7.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-02 16:47+0100\n"
+"POT-Creation-Date: 2011-12-05 12:41+0100\n"
 "PO-Revision-Date: 2003-08-22 12:50+0200\n"
 "Last-Translator: Robert Nasiadek <darkone@darkone.pl>\n"
 "Language-Team: Polski <pl@li.org>\n"
@@ -16,6 +16,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8-bit\n"
 
 #: ../gtk/calllogs.c:71
+#, c-format
+msgid "%i minute"
+msgid_plural "%i minutes"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../gtk/calllogs.c:74
+#, c-format
+msgid "%i second"
+msgid_plural "%i seconds"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../gtk/calllogs.c:77
+#, c-format
+msgid ""
+"<big><b>%s</b></big>\t<small><i>%s</i>\t<i>Quality: %s</i></small>\n"
+"%s\t%s %s\t"
+msgstr ""
+
+#: ../gtk/calllogs.c:79
 msgid "n/a"
 msgstr ""
 

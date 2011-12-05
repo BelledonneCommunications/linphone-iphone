@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-3.4.99.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-02 16:47+0100\n"
+"POT-Creation-Date: 2011-12-05 12:41+0100\n"
 "PO-Revision-Date: 2011-11-04 22:30+0100\n"
 "Last-Translator: Petr Pisar <petr.pisar@atlas.cz>\n"
 "Language-Team: Czech <translation-team-cs@lists.sourceforge.net>\n"
@@ -28,6 +28,29 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
 #: ../gtk/calllogs.c:71
+#, c-format
+msgid "%i minute"
+msgid_plural "%i minutes"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#: ../gtk/calllogs.c:74
+#, c-format
+msgid "%i second"
+msgid_plural "%i seconds"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#: ../gtk/calllogs.c:77
+#, c-format
+msgid ""
+"<big><b>%s</b></big>\t<small><i>%s</i>\t<i>Quality: %s</i></small>\n"
+"%s\t%s %s\t"
+msgstr ""
+
+#: ../gtk/calllogs.c:79
 msgid "n/a"
 msgstr "–"
 

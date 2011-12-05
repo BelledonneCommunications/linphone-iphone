@@ -55,7 +55,7 @@ void linphone_gtk_call_log_update(GtkWidget *w){
 		LinphoneAddress *la=cl->dir==LinphoneCallIncoming ? cl->from : cl->to;
 		char *addr= linphone_address_as_string_uri_only (la);
 		const char *display;
-		gchar *logtxt;
+		gchar *logtxt, *minutes, *seconds;
 		gchar quality[20];
 		
 		display=linphone_address_get_display_name (la);
@@ -67,10 +67,19 @@ void linphone_gtk_call_log_update(GtkWidget *w){
 		if (cl->quality!=-1){
 			snprintf(quality,sizeof(quality),"%.1f",cl->quality);
 		}
-		logtxt=g_markup_printf_escaped("<big><b>%s</b></big>\t<small><i>%s</i>\t<i>Quality: %s</i></small>\n"
-		                               "%s\t%i minutes %i seconds\t",display, addr, cl->quality!=-1 ? quality : _("n/a"),
-		                               cl->start_date,
-		                               cl->duration/60,cl->duration%60);
+		minutes=g_markup_printf_escaped(
+			ngettext("%i minute", "%i minutes", cl->duration/60),
+			cl->duration/60);
+		seconds=g_markup_printf_escaped(
+			ngettext("%i second", "%i seconds", cl->duration%60),
+			cl->duration%60);
+		logtxt=g_markup_printf_escaped(
+				_("<big><b>%s</b></big>\t<small><i>%s</i>\t"
+					"<i>Quality: %s</i></small>\n%s\t%s %s\t"),
+				display, addr, cl->quality!=-1 ? quality : _("n/a"),
+				cl->start_date, minutes, seconds);
+		g_free(minutes);
+		g_free(seconds);
 		gtk_list_store_append (store,&iter);
 		gtk_list_store_set (store,&iter,
 		               0, cl->dir==LinphoneCallOutgoing ? GTK_STOCK_GO_UP : GTK_STOCK_GO_DOWN,
