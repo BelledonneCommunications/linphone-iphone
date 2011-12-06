@@ -752,11 +752,17 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
     proxyReachabilityContext.info=self;
 	//initial state is network off should be done as soon as possible
 	SCNetworkReachabilityFlags flags;
-	SCNetworkReachabilityGetFlags(proxyReachability, &flags);
+	if (!SCNetworkReachabilityGetFlags(proxyReachability, &flags)) {
+		ms_error("Cannot get reachability flags");
+	};
 	networkReachabilityCallBack(proxyReachability,flags,self);	
 
-	SCNetworkReachabilitySetCallback(proxyReachability, (SCNetworkReachabilityCallBack)networkReachabilityCallBack,&proxyReachabilityContext);
-	SCNetworkReachabilityScheduleWithRunLoop(proxyReachability, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+	if (!SCNetworkReachabilitySetCallback(proxyReachability, (SCNetworkReachabilityCallBack)networkReachabilityCallBack,&proxyReachabilityContext)){
+		ms_error("Cannot register reachability cb");
+	};
+	if(!SCNetworkReachabilityScheduleWithRunLoop(proxyReachability, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode)){
+		ms_error("Cannot register schedule reachability cb");
+	};
 	
 	[self doLinphoneConfiguration:nil];
 	[[NSNotificationCenter defaultCenter]	addObserver:self
