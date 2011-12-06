@@ -164,6 +164,7 @@ int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call){
 
 int linphone_core_remove_from_conference(LinphoneCore *lc, LinphoneCall *call){
 	int err=0;
+
 	if (!call->current_params.in_conference){
 		if (call->params.in_conference){
 			ms_warning("Not (yet) in conference, be patient");
