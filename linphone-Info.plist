@@ -26,6 +26,8 @@
 	<string>1.1.0.1</string>
 	<key>NSMainNibFile</key>
 	<string>PhoneMainView</string>
+	<key>NSMainNibFile~ipad</key>
+	<string>MainScreenWithVideoPreview</string>
 	<key>UIApplicationExitsOnSuspend</key>
 	<false/>
 	<key>UIBackgroundModes</key>

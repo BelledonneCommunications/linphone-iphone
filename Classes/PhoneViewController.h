@@ -22,7 +22,7 @@
 #import "UILinphone.h"
 #import "CallDelegate.h"
 
-
+@class MainScreenWithVideoPreview;
 @class IncallViewController;
 @class FirstLoginViewController;
 
@@ -54,7 +54,6 @@
 	UIDigitButton* zero;
 	UIDigitButton* hash;
 
-	UIButton* back;
 	UIButton* backToCallView;
 	
 	UITabBarController*  myTabBarController;
@@ -62,6 +61,9 @@
 	UIActionSheet *mIncomingCallActionSheet;
 	FirstLoginViewController* myFirstLoginViewController;
 	IncallViewController* mIncallViewController;
+    MainScreenWithVideoPreview* mMainScreenWithVideoPreview;
+    
+    UIButton* switchCamera;
 }
 
 @property (nonatomic, retain) IBOutlet UIView* dialerView;
@@ -69,7 +71,6 @@
 @property (nonatomic, retain) IBOutlet UITextField* address;
 @property (nonatomic, retain) IBOutlet UIButton* callShort;
 @property (nonatomic, retain) IBOutlet UIButton* callLarge;
-@property (nonatomic, retain) IBOutlet UIButton* hangup;
 @property (nonatomic, retain) IBOutlet UILabel* status;
 @property (nonatomic, retain) IBOutlet UIEraseButton* erase;
 
@@ -86,8 +87,9 @@
 @property (nonatomic, retain) IBOutlet UIButton* zero;
 @property (nonatomic, retain) IBOutlet UIButton* hash;
 
-@property (nonatomic, retain) IBOutlet UIButton* back;
 @property (nonatomic, retain) IBOutlet UIButton* backToCallView;
+
+@property (nonatomic, retain) IBOutlet UIButton* switchCamera;
 
 
 // method to handle keypad event
@@ -95,4 +97,5 @@
 
 
 @property (nonatomic, retain) IBOutlet UITabBarController*  myTabBarController;
+@property (nonatomic, retain) IBOutlet MainScreenWithVideoPreview*  mMainScreenWithVideoPreview;
 @end

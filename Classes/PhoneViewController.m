@@ -23,6 +23,7 @@
 #import <AudioToolbox/AudioToolbox.h>
 #import "LinphoneManager.h"
 #include "FirstLoginViewController.h"
+#include "MainScreenWithVideoPreview.h"
 #include "linphonecore.h"
 #include "private.h"
 
@@ -31,7 +32,6 @@
 @synthesize  address ;
 @synthesize  callShort;
 @synthesize  callLarge;
-@synthesize  hangup;
 @synthesize status;
 @synthesize erase;
 
@@ -48,13 +48,15 @@
 @synthesize zero;
 @synthesize hash;
 
-@synthesize back;
 @synthesize myTabBarController;
+@synthesize mMainScreenWithVideoPreview;
 @synthesize backToCallView;
+
+@synthesize switchCamera;
 
 
 //implements keypad behavior 
--(IBAction) doKeyPad:(id)sender {
+/*-(IBAction) doKeyPad:(id)sender {
 	if (sender == back) {
 		if ([address.text length] >0) {
 			NSString* newAddress; 
@@ -63,7 +65,7 @@
 		} 
 	} 	
 	
-}
+}*/
 
 - (void)viewDidAppear:(BOOL)animated {
 	[[UIApplication sharedApplication] setIdleTimerDisabled:true];
@@ -73,6 +75,13 @@
 		[[LinphoneManager instance] setRegistrationDelegate:myFirstLoginViewController];
 		[self presentModalViewController:myFirstLoginViewController animated:true];
 	}; 
+    
+    [mMainScreenWithVideoPreview showPreview:YES];
+    [self updateCallAndBackButtons];
+}
+
+-(void) viewWillDisappear:(BOOL)animated {
+    [mMainScreenWithVideoPreview showPreview:NO];    
 }
 
 
@@ -97,7 +106,8 @@
 	[callLarge initWithAddress:address];
 	[erase initWithAddressField:address];
     [backToCallView addTarget:self action:@selector(backToCallViewPressed) forControlEvents:UIControlEventTouchUpInside];
-    mIncallViewController = [[IncallViewController alloc]  initWithNibName:@"IncallViewController" 
+    
+    mIncallViewController = [[IncallViewController alloc]  initWithNibName:[LinphoneManager runningOnIpad]?@"InCallViewController-ipad":@"IncallViewController" 
 																	bundle:[NSBundle mainBundle]];
 
 }
@@ -189,6 +199,8 @@
 							   withDisplayName:displayName];
 	
 	[myTabBarController setSelectedIndex:DIALER_TAB_INDEX];
+    
+    [mMainScreenWithVideoPreview showPreview:YES];
 	
 }
 
@@ -232,6 +244,7 @@
 		[mIncomingCallActionSheet release];
 	}
 	
+    [mMainScreenWithVideoPreview showPreview:NO];
 }
 
 -(void) backToCallViewPressed {
@@ -248,6 +261,8 @@
 	[mIncallViewController displayCall:call InProgressFromUI:viewCtrl
 							   forUser:username
 					   withDisplayName:displayName];
+    
+    [mMainScreenWithVideoPreview showPreview:NO];
 	
 }
 
@@ -274,6 +289,8 @@
 	[mIncallViewController  displayVideoCall:call FromUI:viewCtrl 
 									 forUser:username 
 							 withDisplayName:displayName];
+    
+    [mMainScreenWithVideoPreview showPreview:NO];
 }
 
 
@@ -294,7 +311,6 @@
 	[dialerView dealloc];
 	[callShort dealloc];
 	[callLarge dealloc];
-	[hangup dealloc];
 	[status dealloc];
 	[one dealloc];
 	[two dealloc];
@@ -308,7 +324,6 @@
 	[star dealloc];
 	[zero dealloc];
 	[hash dealloc];
-	[back dealloc];
 	[myTabBarController release];
 	[mIncallViewController release];
 	[super dealloc];

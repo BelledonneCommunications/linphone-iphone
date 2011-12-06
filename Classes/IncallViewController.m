@@ -28,12 +28,10 @@
 
 
 @synthesize controlSubView;
-@synthesize callControlSubView;
 @synthesize padSubView;
 @synthesize hangUpView;
 @synthesize conferenceDetail;
 
-@synthesize addToConf;
 @synthesize endCtrl;
 @synthesize close;
 @synthesize mute;
@@ -117,11 +115,17 @@ int callCount(LinphoneCore* lc) {
     [addCall addTarget:self action:@selector(addCallPressed) forControlEvents:UIControlEventTouchUpInside];
     [mergeCalls addTarget:self action:@selector(mergeCallsPressed) forControlEvents:UIControlEventTouchUpInside];
     //[endCtrl addTarget:self action:@selector(endCallPressed) forControlEvents:UIControlEventTouchUpInside];
-    [addToConf addTarget:self action:@selector(addToConfCallPressed) forControlEvents:UIControlEventTouchUpInside];
     [pause addTarget:self action:@selector(pauseCallPressed) forControlEvents:UIControlEventTouchUpInside];
     [mergeCalls setHidden:YES];
-	mVideoViewController =  [[VideoViewController alloc]  initWithNibName:@"VideoViewController" 
+    
+    if ([LinphoneManager runningOnIpad]) {
+        ms_message("Running on iPad");
+        mVideoViewController =  [[VideoViewController alloc]  initWithNibName:@"VideoViewController-ipad" 
+                                                                       bundle:[NSBundle mainBundle]];
+    } else {
+        mVideoViewController =  [[VideoViewController alloc]  initWithNibName:@"VideoViewController" 
 																							 bundle:[NSBundle mainBundle]];
+    }
 	
     conferenceDetail = [[ConferenceCallDetailView alloc]  initWithNibName:@"ConferenceCallDetailView" 
 																	bundle:[NSBundle mainBundle]];
@@ -143,13 +147,6 @@ int callCount(LinphoneCore* lc) {
 -(void) mergeCallsPressed {
     LinphoneCore* lc = [LinphoneManager getLc];
     linphone_core_add_all_to_conference(lc);
-}
-
--(void) addToConfCallPressed {
-    LinphoneCall* selectedCall = linphone_core_get_current_call([LinphoneManager getLc]);
-	if (!selectedCall)
-        return;
-    linphone_core_add_to_conference([LinphoneManager getLc], selectedCall);
 }
 
 -(void) pauseCallPressed {
@@ -341,13 +338,6 @@ int callCount(LinphoneCore* lc) {
         return;
     }
     LinphoneCall* selectedCall = linphone_core_get_current_call([LinphoneManager getLc]);
-    // hide call control subview if no call selected
-    [callControlSubView setHidden:(selectedCall == NULL)];
-    // hide add to conf if no conf exist
-    if (!callControlSubView.hidden) {
-        [addToConf setHidden:(linphone_core_get_conference_size(lc) == 0 ||
-                            isInConference(selectedCall))];
-    }
     int callsCount = linphone_core_get_calls_nb(lc);
     // hide pause/resume if in conference    
     if (selectedCall) {

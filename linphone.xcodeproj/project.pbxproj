@@ -218,6 +218,12 @@
 		22F254811073D99800AC9B3F /* ringback.wav in Resources */ = {isa = PBXBuildFile; fileRef = 22F254801073D99800AC9B3F /* ringback.wav */; };
 		22F51EF6107FA66500F98953 /* untitled.plist in Resources */ = {isa = PBXBuildFile; fileRef = 22F51EF5107FA66500F98953 /* untitled.plist */; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
+		341FCA8E149798210084BC26 /* linphonerc-ipad in Resources */ = {isa = PBXBuildFile; fileRef = 341FCA8D149798210084BC26 /* linphonerc-ipad */; };
+		341FCA8F149798210084BC26 /* linphonerc-ipad in Resources */ = {isa = PBXBuildFile; fileRef = 341FCA8D149798210084BC26 /* linphonerc-ipad */; };
+		3422AA5014975EC9000D4E8A /* InCallViewController-ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3422AA4F14975EC9000D4E8A /* InCallViewController-ipad.xib */; };
+		3422AA5114975EC9000D4E8A /* InCallViewController-ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3422AA4F14975EC9000D4E8A /* InCallViewController-ipad.xib */; };
+		3422AA5314978352000D4E8A /* PhoneViewController-ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3422AA5214978352000D4E8A /* PhoneViewController-ipad.xib */; };
+		3422AA5414978352000D4E8A /* PhoneViewController-ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3422AA5214978352000D4E8A /* PhoneViewController-ipad.xib */; };
 		344ABD72147FC438007420B6 /* ConferenceCallDetailView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 344ABD71147FC438007420B6 /* ConferenceCallDetailView.xib */; };
 		344ABD73147FC438007420B6 /* ConferenceCallDetailView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 344ABD71147FC438007420B6 /* ConferenceCallDetailView.xib */; };
 		344ABD77147FCB68007420B6 /* ConferenceCallDetailView.m in Sources */ = {isa = PBXBuildFile; fileRef = 344ABD76147FCB68007420B6 /* ConferenceCallDetailView.m */; };
@@ -230,6 +236,12 @@
 		344ABDF114850AE9007420B6 /* libc++.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDEF14850AE9007420B6 /* libc++.1.dylib */; settings = {ATTRIBUTES = (Weak, ); }; };
 		344ABDF214850AE9007420B6 /* libstdc++.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDF014850AE9007420B6 /* libstdc++.6.dylib */; settings = {ATTRIBUTES = (Weak, ); }; };
 		34957F3F147D3FBF00DD7A09 /* secured.png in Resources */ = {isa = PBXBuildFile; fileRef = 34957F3E147D3FBF00DD7A09 /* secured.png */; };
+		34CA852F148F646700503C01 /* MainScreenWithVideoPreview.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34CA852E148F646700503C01 /* MainScreenWithVideoPreview.xib */; };
+		34CA8530148F646700503C01 /* MainScreenWithVideoPreview.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34CA852E148F646700503C01 /* MainScreenWithVideoPreview.xib */; };
+		34CA8535148F669900503C01 /* VideoViewController-ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34CA8534148F669900503C01 /* VideoViewController-ipad.xib */; };
+		34CA8536148F669900503C01 /* VideoViewController-ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34CA8534148F669900503C01 /* VideoViewController-ipad.xib */; };
+		34CA8539148F692A00503C01 /* MainScreenWithVideoPreview.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CA8538148F692A00503C01 /* MainScreenWithVideoPreview.m */; };
+		34CA853A148F692A00503C01 /* MainScreenWithVideoPreview.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CA8538148F692A00503C01 /* MainScreenWithVideoPreview.m */; };
 		34F2F678147D2E1C00A2D5E3 /* contact_vide.png in Resources */ = {isa = PBXBuildFile; fileRef = 34F2F677147D2E1C00A2D5E3 /* contact_vide.png */; };
 		70571E1A13FABCB000CDD3C2 /* rootca.pem in Resources */ = {isa = PBXBuildFile; fileRef = 70571E1913FABCB000CDD3C2 /* rootca.pem */; };
 		7066FC0C13E830E400EFC6DC /* libvpx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7066FC0B13E830E400EFC6DC /* libvpx.a */; };
@@ -581,6 +593,9 @@
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* linphone_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linphone_Prefix.pch; sourceTree = "<group>"; };
+		341FCA8D149798210084BC26 /* linphonerc-ipad */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "linphonerc-ipad"; sourceTree = "<group>"; };
+		3422AA4F14975EC9000D4E8A /* InCallViewController-ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "InCallViewController-ipad.xib"; sourceTree = "<group>"; };
+		3422AA5214978352000D4E8A /* PhoneViewController-ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "PhoneViewController-ipad.xib"; sourceTree = "<group>"; };
 		344ABD71147FC438007420B6 /* ConferenceCallDetailView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ConferenceCallDetailView.xib; sourceTree = "<group>"; };
 		344ABD75147FCB68007420B6 /* ConferenceCallDetailView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConferenceCallDetailView.h; sourceTree = "<group>"; };
 		344ABD76147FCB68007420B6 /* ConferenceCallDetailView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConferenceCallDetailView.m; sourceTree = "<group>"; };
@@ -590,6 +605,10 @@
 		344ABDEF14850AE9007420B6 /* libc++.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.1.dylib"; path = "usr/lib/libc++.1.dylib"; sourceTree = SDKROOT; };
 		344ABDF014850AE9007420B6 /* libstdc++.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.6.dylib"; path = "usr/lib/libstdc++.6.dylib"; sourceTree = SDKROOT; };
 		34957F3E147D3FBF00DD7A09 /* secured.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = secured.png; path = Resources/secured.png; sourceTree = "<group>"; };
+		34CA852E148F646700503C01 /* MainScreenWithVideoPreview.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainScreenWithVideoPreview.xib; sourceTree = "<group>"; };
+		34CA8534148F669900503C01 /* VideoViewController-ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "VideoViewController-ipad.xib"; sourceTree = "<group>"; };
+		34CA8537148F692A00503C01 /* MainScreenWithVideoPreview.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainScreenWithVideoPreview.h; sourceTree = "<group>"; };
+		34CA8538148F692A00503C01 /* MainScreenWithVideoPreview.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainScreenWithVideoPreview.m; sourceTree = "<group>"; };
 		34F2F677147D2E1C00A2D5E3 /* contact_vide.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = contact_vide.png; path = Resources/contact_vide.png; sourceTree = "<group>"; };
 		70571E1913FABCB000CDD3C2 /* rootca.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = rootca.pem; path = Resources/rootca.pem; sourceTree = "<group>"; };
 		7066FC0B13E830E400EFC6DC /* libvpx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libvpx.a; path = "liblinphone-sdk/apple-darwin/lib/libvpx.a"; sourceTree = "<group>"; };
@@ -701,6 +720,7 @@
 				2218A92312FBE1340088A667 /* FirstLoginViewController.m */,
 				2218A92412FBE1340088A667 /* FirstLoginViewController.xib */,
 				222A483112F7176F0075F07F /* IncallViewController.xib */,
+				3422AA4F14975EC9000D4E8A /* InCallViewController-ipad.xib */,
 				222A483212F7176F0075F07F /* IncallViewController.m */,
 				222A483312F7176F0075F07F /* IncallViewController.h */,
 				22E0A81B111C44E100B04932 /* MoreViewController.xib */,
@@ -714,6 +734,7 @@
 				22F2508B107141E100AC9B3F /* PhoneViewController.h */,
 				22F2508C107141E100AC9B3F /* PhoneViewController.m */,
 				22F2508D107141E100AC9B3F /* PhoneViewController.xib */,
+				3422AA5214978352000D4E8A /* PhoneViewController-ipad.xib */,
 				22B5EFE310CE5E5800777D97 /* ContactPickerDelegate.h */,
 				22B5EFE410CE5E5800777D97 /* ContactPickerDelegate.m */,
 				227BCDBF10D4004600FBFD76 /* CallHistoryTableViewController.h */,
@@ -724,10 +745,14 @@
 				22E028B413B4CCBD0068A713 /* VideoViewController.h */,
 				22E028B513B4CCBD0068A713 /* VideoViewController.m */,
 				22E028B613B4CCBD0068A713 /* VideoViewController.xib */,
+				34CA8534148F669900503C01 /* VideoViewController-ipad.xib */,
 				344ABD71147FC438007420B6 /* ConferenceCallDetailView.xib */,
 				344ABD75147FCB68007420B6 /* ConferenceCallDetailView.h */,
 				344ABD76147FCB68007420B6 /* ConferenceCallDetailView.m */,
 				344ABD79147FD32B007420B6 /* ConferenceCallDetailCell.xib */,
+				34CA8537148F692A00503C01 /* MainScreenWithVideoPreview.h */,
+				34CA8538148F692A00503C01 /* MainScreenWithVideoPreview.m */,
+				34CA852E148F646700503C01 /* MainScreenWithVideoPreview.xib */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -1164,6 +1189,7 @@
 				22F254801073D99800AC9B3F /* ringback.wav */,
 				8D1107310486CEB800E47090 /* linphone-Info.plist */,
 				2274550710700509006EC466 /* linphonerc */,
+				341FCA8D149798210084BC26 /* linphonerc-ipad */,
 				220FAE4A10767A6A0068D98F /* PhoneMainView.xib */,
 			);
 			name = Resources;
@@ -1301,6 +1327,11 @@
 				344ABD72147FC438007420B6 /* ConferenceCallDetailView.xib in Resources */,
 				344ABD7A147FD32B007420B6 /* ConferenceCallDetailCell.xib in Resources */,
 				344ABDE51483E596007420B6 /* unverified.png in Resources */,
+				34CA852F148F646700503C01 /* MainScreenWithVideoPreview.xib in Resources */,
+				34CA8535148F669900503C01 /* VideoViewController-ipad.xib in Resources */,
+				3422AA5014975EC9000D4E8A /* InCallViewController-ipad.xib in Resources */,
+				3422AA5314978352000D4E8A /* PhoneViewController-ipad.xib in Resources */,
+				341FCA8E149798210084BC26 /* linphonerc-ipad in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1358,6 +1389,11 @@
 				344ABD73147FC438007420B6 /* ConferenceCallDetailView.xib in Resources */,
 				344ABD7B147FD32B007420B6 /* ConferenceCallDetailCell.xib in Resources */,
 				344ABDE61483E596007420B6 /* unverified.png in Resources */,
+				34CA8530148F646700503C01 /* MainScreenWithVideoPreview.xib in Resources */,
+				34CA8536148F669900503C01 /* VideoViewController-ipad.xib in Resources */,
+				3422AA5114975EC9000D4E8A /* InCallViewController-ipad.xib in Resources */,
+				3422AA5414978352000D4E8A /* PhoneViewController-ipad.xib in Resources */,
+				341FCA8F149798210084BC26 /* linphonerc-ipad in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1394,6 +1430,7 @@
 				2211DBC014769CB200DEE054 /* IncallViewController.m in Sources */,
 				22D817AD147A9F33001CFB9C /* UIAddVideoButton.m in Sources */,
 				344ABD77147FCB68007420B6 /* ConferenceCallDetailView.m in Sources */,
+				34CA8539148F692A00503C01 /* MainScreenWithVideoPreview.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1427,6 +1464,7 @@
 				2211DBC114769CB300DEE054 /* IncallViewController.m in Sources */,
 				22D817AE147A9F33001CFB9C /* UIAddVideoButton.m in Sources */,
 				344ABD78147FCB68007420B6 /* ConferenceCallDetailView.m in Sources */,
+				34CA853A148F692A00503C01 /* MainScreenWithVideoPreview.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1477,7 +1515,7 @@
 					submodules/externals/speex/include,
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				LIBRARY_SEARCH_PATHS = (
 					"$(BUILT_PRODUCTS_DIR)",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
@@ -1489,7 +1527,7 @@
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -1545,7 +1583,7 @@
 					submodules/externals/speex/include,
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				LIBRARY_SEARCH_PATHS = (
 					"$(BUILT_PRODUCTS_DIR)",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
@@ -1557,7 +1595,7 @@
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = DistributionAdhoc;
 		};
@@ -1823,7 +1861,7 @@
 					submodules/externals/speex/include,
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				LIBRARY_SEARCH_PATHS = (
 					"$(BUILT_PRODUCTS_DIR)",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
@@ -1835,7 +1873,7 @@
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -1891,7 +1929,7 @@
 					submodules/externals/speex/include,
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				LIBRARY_SEARCH_PATHS = (
 					"$(BUILT_PRODUCTS_DIR)",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
@@ -1903,7 +1941,7 @@
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "075921BC-C7D8-42E1-B864-F05FD9BF841C";
 				SDKROOT = iphoneos;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Distribution;
 		};

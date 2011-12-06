@@ -711,7 +711,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	
 	//get default config from bundle
 	NSBundle* myBundle = [NSBundle mainBundle];
-	NSString* factoryConfig = [myBundle pathForResource:@"linphonerc"ofType:nil] ;
+	NSString* factoryConfig = [myBundle pathForResource:[LinphoneManager runningOnIpad]?@"linphonerc-ipad":@"linphonerc" ofType:nil] ;
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
 	NSString *confiFileName = [[paths objectAtIndex:0] stringByAppendingString:@"/.linphonerc"];
 	NSString *zrtpSecretsFileName = [[paths objectAtIndex:0] stringByAppendingString:@"/zrtp_secrets"];
@@ -851,6 +851,12 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
         linphone_core_resume_call(theLinphoneCore, (LinphoneCall*) c->data);
     }
     
+}
++(BOOL) runningOnIpad {
+#ifdef UI_USER_INTERFACE_IDIOM
+    return (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad);
+#endif
+    return NO;
 }
 
 

@@ -27,7 +27,7 @@
 @interface IncallViewController : UIViewController <ABPeoplePickerNavigationControllerDelegate,LinphoneUICallDelegate, UITableViewDelegate, UITableViewDataSource, UIActionSheetCustomDelegate> {
 	
 	
-	UIView* controlSubView, *callControlSubView, *hangUpView;
+	UIView* controlSubView, *hangUpView;
 	
 	UIButton* endCtrl;
 	UIButton* dialer;
@@ -37,7 +37,7 @@
 	UIButton* contacts;
 	UIButton* addVideo;
     UITableView* callTableView;
-    UIButton* addCall, *mergeCalls, *addToConf;
+    UIButton* addCall, *mergeCalls;
 
 	
 	//key pad
@@ -87,7 +87,6 @@
 + (void) updateCellImageView:(UIImageView*)imageView Label:(UILabel*)label DetailLabel:(UILabel*)detailLabel AndAccessoryView:(UIButton*)accessoryView withCall:(LinphoneCall*) call;
 
 @property (nonatomic, retain) IBOutlet UIView* controlSubView;
-@property (nonatomic, retain) IBOutlet UIView* callControlSubView;
 @property (nonatomic, retain) IBOutlet UIView* padSubView;
 @property (nonatomic, retain) IBOutlet UIView* hangUpView;
 @property (nonatomic, retain) IBOutlet UIViewController* conferenceDetail;
@@ -103,7 +102,6 @@
 @property (nonatomic, retain) IBOutlet UITableView* callTableView;
 @property (nonatomic, retain) IBOutlet UIButton* addCall;
 @property (nonatomic, retain) IBOutlet UIButton* mergeCalls;
-@property (nonatomic, retain) IBOutlet UIButton* addToConf;
 
 @property (nonatomic, retain) IBOutlet UIButton* one;
 @property (nonatomic, retain) IBOutlet UIButton* two;
