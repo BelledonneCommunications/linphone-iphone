@@ -491,19 +491,23 @@ int callCount(LinphoneCore* lc) {
     const LinphoneAddress* addr = linphone_call_get_remote_address(call);
     
     if (addr) {
+		const char* lUserNameChars=linphone_address_get_username(addr);
+		NSString* lUserName = lUserNameChars?[[NSString alloc] initWithUTF8String:lUserNameChars]:NSLocalizedString(@"Unknown",nil);
         NSMutableString* mss = [[NSMutableString alloc] init];
         /* contact name */
         const char* n = linphone_address_get_display_name(addr);
         if (n) 
             [mss appendFormat:@"%s", n, nil];
         else
-            [mss appendFormat:@"%s", linphone_address_get_username(addr), nil];
+            [mss appendFormat:@"%@",lUserName , nil];
         
         if ([mss compare:label.text] != 0 || imageView.image == nil) {
             [label setText:mss];
         
-            imageView.image = [[LinphoneManager instance] getImageFromAddressBook:[NSString stringWithCString:linphone_address_get_username(addr) encoding: [NSString defaultCStringEncoding]]];
+            imageView.image = [[LinphoneManager instance] getImageFromAddressBook:lUserName];
         }
+		[mss release];
+		[lUserName release];
     } else {
         [label setText:@"plop"];
         imageView.image = nil;
@@ -530,6 +534,7 @@ int callCount(LinphoneCore* lc) {
             }
         }
         [detailLabel setText:ms];
+		[ms release];
     }
 
     if (accessoryView != nil) {
