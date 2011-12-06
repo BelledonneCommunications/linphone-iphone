@@ -774,6 +774,8 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	BOOL bAudioInputAvailable= [audioSession inputIsAvailable];
     [audioSession setDelegate:self];
 	
+	NSError* err;
+	[audioSession setActive:NO error: &err]; 
 	if(!bAudioInputAvailable){
 		UIAlertView* error = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"No microphone",nil)
 														message:NSLocalizedString(@"You need to plug a microphone to your device to use this application.",nil) 
