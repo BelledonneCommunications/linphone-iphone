@@ -47,9 +47,21 @@ static void remove_local_endpoint(LinphoneConference *ctx){
 	}
 }
 
-void linphone_core_conference_check_uninit(LinphoneConference *ctx){
+static int remote_participants_count(LinphoneConference *ctx) {
+	if (!ctx->conf || ctx->conf->nmembers==0) return 0;
+	if (!ctx->local_participant) return ctx->conf->nmembers;
+	return ctx->conf->nmembers -1;
+}
+
+static int convert_conference_to_call(LinphoneCore *lc);
+void linphone_core_conference_check_uninit(LinphoneCore *lc){
+	LinphoneConference *ctx=&lc->conf_ctx;
 	if (ctx->conf){
 		ms_message("conference_check_uninit(): nmembers=%i",ctx->conf->nmembers);
+		if (remote_participants_count(ctx)==1){
+			convert_conference_to_call(lc);
+		}
+		if (ctx->conf->nmembers==1)
 		if (ctx->conf->nmembers==1 && ctx->local_participant!=NULL){
 			remove_local_endpoint(ctx);
 		}
@@ -162,7 +174,7 @@ int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call){
 	return 0;
 }
 
-int linphone_core_remove_from_conference(LinphoneCore *lc, LinphoneCall *call){
+static int remove_from_conference(LinphoneCore *lc, LinphoneCall *call, bool_t active){
 	int err=0;
 
 	if (!call->current_params.in_conference){
@@ -175,7 +187,64 @@ int linphone_core_remove_from_conference(LinphoneCore *lc, LinphoneCall *call){
 		}
 	}
 	call->params.in_conference=FALSE;
-	err=linphone_core_pause_call(lc,call);
+
+	char *str=linphone_call_get_remote_address_as_string(call);
+	ms_message("%s will be removed from conference", str);
+	ms_free(str);
+	if (active){
+		// reconnect local audio with this call
+		if (linphone_core_is_in_conference(lc)){
+			ms_message("Leaving conference for reconnecting with unique call.");
+			linphone_core_leave_conference(lc);
+		}
+		ms_message("Updating call to actually remove from conference");
+		err=linphone_core_update_call(lc,call,&call->params);
+	} else{
+		ms_message("Pausing call to actually remove from conference");
+		err=linphone_core_pause_call(lc,call);
+	}
+
+	return err;
+}
+
+static int convert_conference_to_call(LinphoneCore *lc){
+	int err=0;
+	MSList *calls=lc->calls;
+
+	if (remote_participants_count(&lc->conf_ctx)!=1){
+		ms_error("No unique call remaining in conference.");
+		return -1;
+	}
+
+	while (calls) {
+		LinphoneCall *rc=(LinphoneCall*)calls->data;
+		calls=calls->next;
+		if (rc->params.in_conference) { // not using current_param
+			bool_t active_after_removed=linphone_core_is_in_conference(lc);
+			err=remove_from_conference(lc, rc, active_after_removed);
+			break;
+		}
+	}
+	return err;
+}
+
+
+int linphone_core_remove_from_conference(LinphoneCore *lc, LinphoneCall *call){
+	char * str=linphone_call_get_remote_address_as_string(call);
+	ms_message("Removing call %s from the conference", str);
+	ms_free(str);
+	int err=remove_from_conference(lc,call, FALSE);
+	if (err){
+		ms_error("Error removing participant from conference.");
+		return err;
+	}
+
+	if (remote_participants_count(&lc->conf_ctx)==1){
+		ms_message("conference size is 1: need to be converted to plain call");
+		err=convert_conference_to_call(lc);
+	} else {
+		ms_message("the conference need not to be converted as size is %i", remote_participants_count(&lc->conf_ctx));
+	}
 	return err;
 }
 
@@ -212,6 +281,7 @@ int linphone_core_add_all_to_conference(LinphoneCore *lc) {
 			linphone_core_add_to_conference(lc, call);
 		}
 	}
+	linphone_core_enter_conference(lc);
 	return 0;
 }
 

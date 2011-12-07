@@ -395,7 +395,7 @@ static void linphone_call_set_terminated(LinphoneCall *call){
 	if (ms_list_size(lc->calls)==0)
 		linphone_core_notify_all_friends(lc,lc->presence_mode);
 
-	linphone_core_conference_check_uninit(&lc->conf_ctx);
+	linphone_core_conference_check_uninit(lc);
 	if (call->ringing_beep){
 		linphone_core_stop_dtmf(lc);
 		call->ringing_beep=FALSE;
