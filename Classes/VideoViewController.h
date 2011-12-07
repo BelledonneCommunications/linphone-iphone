@@ -27,12 +27,19 @@
 	UIHangUpButton* mHangUp;
 	UICamSwitch* mCamSwitch;
 	
-	UIView* mLandscape;
-	UIView* mDisplayLand;
-	UIView* mPreviewLand;
-	UIMuteButton* mMuteLand;
-	UIHangUpButton* mHangUpLand;
-	UICamSwitch* mCamSwitchLand;
+	UIView* mLandscapeRight;
+	UIView* mDisplayLandRight;
+	UIView* mPreviewLandRight;
+	UIMuteButton* mMuteLandRight;
+	UIHangUpButton* mHangUpLandRight;
+	UICamSwitch* mCamSwitchLandRight;
+	
+	UIView* mLandscapeLeft;
+	UIView* mDisplayLandLeft;
+	UIView* mPreviewLandLeft;
+	UIMuteButton* mMuteLandLeft;
+	UIHangUpButton* mHangUpLandLeft;
+	UICamSwitch* mCamSwitchLandLeft;
 	BOOL isFirst;
 	int maxCall;
 
@@ -45,10 +52,17 @@
 @property (nonatomic, retain) IBOutlet UIHangUpButton* mHangUp;
 @property (nonatomic, retain) IBOutlet UICamSwitch* mCamSwitch;
 
-@property (nonatomic, retain) IBOutlet UIView* mLandscape;
-@property (nonatomic, retain) IBOutlet UIView* mDisplayLand;
-@property (nonatomic, retain) IBOutlet UIView* mPreviewLand;
-@property (nonatomic, retain) IBOutlet UIMuteButton* mMuteLand;
-@property (nonatomic, retain) IBOutlet UIHangUpButton* mHangUpLand;
-@property (nonatomic, retain) IBOutlet UICamSwitch* mCamSwitchLand;
+@property (nonatomic, retain) IBOutlet UIView* mLandscapeRight;
+@property (nonatomic, retain) IBOutlet UIView* mDisplayLandRight;
+@property (nonatomic, retain) IBOutlet UIView* mPreviewLandRight;
+@property (nonatomic, retain) IBOutlet UIMuteButton* mMuteLandRight;
+@property (nonatomic, retain) IBOutlet UIHangUpButton* mHangUpLandRight;
+@property (nonatomic, retain) IBOutlet UICamSwitch* mCamSwitchLandRight;
+
+@property (nonatomic, retain) IBOutlet UIView* mLandscapeLeft;
+@property (nonatomic, retain) IBOutlet UIView* mDisplayLandLeft;
+@property (nonatomic, retain) IBOutlet UIView* mPreviewLandLeft;
+@property (nonatomic, retain) IBOutlet UIMuteButton* mMuteLandLeft;
+@property (nonatomic, retain) IBOutlet UIHangUpButton* mHangUpLandLeft;
+@property (nonatomic, retain) IBOutlet UICamSwitch* mCamSwitchLandLeft;
 @end

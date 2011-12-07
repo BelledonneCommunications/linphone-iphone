@@ -29,12 +29,19 @@
 @synthesize mHangUp;
 @synthesize mCamSwitch;
 
-@synthesize mLandscape;
-@synthesize mDisplayLand;
-@synthesize mPreviewLand;
-@synthesize mMuteLand;
-@synthesize mHangUpLand;
-@synthesize mCamSwitchLand;
+@synthesize mLandscapeRight;
+@synthesize mDisplayLandRight;
+@synthesize mPreviewLandRight;
+@synthesize mMuteLandRight;
+@synthesize mHangUpLandRight;
+@synthesize mCamSwitchLandRight;
+
+@synthesize mLandscapeLeft;
+@synthesize mDisplayLandLeft;
+@synthesize mPreviewLandLeft;
+@synthesize mMuteLandLeft;
+@synthesize mHangUpLandLeft;
+@synthesize mCamSwitchLandLeft;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -64,9 +71,11 @@
 {
     [super viewDidLoad];
 	[mMute initWithOnImage:[UIImage imageNamed:@"micro_inverse.png"]  offImage:[UIImage imageNamed:@"micro.png"] ];
-	[mMuteLand initWithOnImage:[UIImage imageNamed:@"micro_inverse.png"]  offImage:[UIImage imageNamed:@"micro.png"] ];
+	[mMuteLandRight initWithOnImage:[UIImage imageNamed:@"micro_inverse.png"]  offImage:[UIImage imageNamed:@"micro.png"] ];
+	[mMuteLandLeft initWithOnImage:[UIImage imageNamed:@"micro_inverse.png"]  offImage:[UIImage imageNamed:@"micro.png"] ];
 	[mCamSwitch setPreview:mPreview];
-	[mCamSwitchLand setPreview:mPreviewLand];
+	[mCamSwitchLandRight setPreview:mPreviewLandRight];
+	[mCamSwitchLandLeft setPreview:mPreviewLandLeft];
 	isFirst=TRUE;
 }
 
@@ -78,14 +87,19 @@
 		linphone_core_set_native_video_window_id([LinphoneManager getLc],(unsigned long)mDisplay);	
 		linphone_core_set_native_preview_window_id([LinphoneManager getLc],(unsigned long)mPreview);
 		linphone_core_set_device_rotation([LinphoneManager getLc], 0);
-		
+
 	} else if (oritentation == UIInterfaceOrientationLandscapeRight ) {
-		[self.view addSubview:mLandscape];
-		linphone_core_set_native_video_window_id([LinphoneManager getLc],(unsigned long)mDisplayLand);	
-		linphone_core_set_native_preview_window_id([LinphoneManager getLc],(unsigned long)mPreviewLand);
+		[self.view addSubview:mLandscapeRight];
+		linphone_core_set_native_video_window_id([LinphoneManager getLc],(unsigned long)mDisplayLandRight);	
+		linphone_core_set_native_preview_window_id([LinphoneManager getLc],(unsigned long)mPreviewLandRight);
 		linphone_core_set_device_rotation([LinphoneManager getLc], 270);
-	}
-	
+
+	} else if (oritentation == UIInterfaceOrientationLandscapeLeft ) {
+		[self.view addSubview:mLandscapeLeft];
+		linphone_core_set_native_video_window_id([LinphoneManager getLc],(unsigned long)mDisplayLandLeft);	
+		linphone_core_set_native_preview_window_id([LinphoneManager getLc],(unsigned long)mPreviewLandLeft);
+		linphone_core_set_device_rotation([LinphoneManager getLc], 90);
+	}	
 	if ((oldLinphoneOrientation != linphone_core_get_device_rotation([LinphoneManager getLc]))
 		&& linphone_core_get_current_call([LinphoneManager getLc])) {
 		//Orientation has change, must call update call
@@ -126,7 +140,8 @@
              						   withObject:nil 
              						waitUntilDone:YES];
     [mMute reset];
-    [mMuteLand reset];
+    [mMuteLandRight reset];
+	[mMuteLandLeft reset];
 	maxCall = linphone_core_get_max_calls([LinphoneManager getLc]);
 	linphone_core_set_max_calls([LinphoneManager getLc], 1);
 }
@@ -138,16 +153,20 @@
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     // Return YES for supported orientations
-    return  interfaceOrientation == UIInterfaceOrientationPortrait || interfaceOrientation == UIInterfaceOrientationLandscapeRight ;
+    return  interfaceOrientation == UIInterfaceOrientationPortrait 
+			|| interfaceOrientation == UIInterfaceOrientationLandscapeRight 
+			|| interfaceOrientation == UIInterfaceOrientationLandscapeLeft;
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
 	[self configureOrientation:self.interfaceOrientation];
 	[mMute reset];
-    [mMuteLand reset];
+    [mMuteLandRight reset];
+	[mMuteLandLeft reset];
 }
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-	[mLandscape removeFromSuperview];
+	[mLandscapeLeft removeFromSuperview];
+	[mLandscapeRight removeFromSuperview];
 	[mPortrait removeFromSuperview];
 }
 @end

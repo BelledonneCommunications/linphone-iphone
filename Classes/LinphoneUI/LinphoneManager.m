@@ -829,14 +829,6 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	/*IOS specific*/
 	linphone_core_start_dtmf_stream(theLinphoneCore);
     
-	LCSipTransports transportValue;
-	if (linphone_core_get_sip_transports(theLinphoneCore, &transportValue)) {
-		ms_error("cannot get current transport");	
-	}
-	if (transportValue.udp_port != 0) {
-		//enable sip keepalive 
-		linphone_core_enable_keep_alive(theLinphoneCore, true);
-	}
 }
 -(void) registerLogView:(id<LogView>) view {
 	mLogView = view;

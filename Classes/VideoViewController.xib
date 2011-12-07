@@ -41,7 +41,6 @@
 				<string key="NSFrameSize">{320, 460}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
-				<reference key="NSNextKeyView"/>
 				<object class="NSColor" key="IBUIBackgroundColor">
 					<int key="NSColorSpace">1</int>
 					<bytes key="NSRGB">MCAwIDAAA</bytes>
@@ -134,7 +133,6 @@
 						<string key="NSFrame">{{211, 418}, {108, 62}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView"/>
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<int key="IBUIContentHorizontalAlignment">0</int>
@@ -203,7 +201,7 @@
 						<string key="NSFrame">{{420, 0}, {60, 108}}</string>
 						<reference key="NSSuperview" ref="977413659"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="124303267"/>
+						<reference key="NSNextKeyView" ref="335958099"/>
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<int key="IBUIContentHorizontalAlignment">0</int>
@@ -214,9 +212,9 @@
 							<bytes key="NSRGB">MC4xOTYwNzg0MzQ2IDAuMzA5ODAzOTMyOSAwLjUyMTU2ODY1NgA</bytes>
 						</object>
 						<reference key="IBUINormalTitleShadowColor" ref="19777660"/>
-						<object class="NSCustomResource" key="IBUINormalImage">
+						<object class="NSCustomResource" key="IBUINormalImage" id="229347943">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">mic_active.png</string>
+							<string key="NSResourceName">micro.png</string>
 						</object>
 						<object class="NSCustomResource" key="IBUINormalBackgroundImage" id="1036362337">
 							<string key="NSClassName">NSImage</string>
@@ -231,7 +229,7 @@
 						<string key="NSFrame">{{420, 107}, {60, 106}}</string>
 						<reference key="NSSuperview" ref="977413659"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="676617489"/>
+						<reference key="NSNextKeyView" ref="124303267"/>
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<int key="IBUIContentHorizontalAlignment">0</int>
@@ -253,7 +251,6 @@
 						<string key="NSFrame">{{420, 212}, {60, 108}}</string>
 						<reference key="NSSuperview" ref="977413659"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView"/>
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<int key="IBUIContentHorizontalAlignment">0</int>
@@ -275,7 +272,7 @@
 						<string key="NSFrame">{{308, 233}, {106, 80}}</string>
 						<reference key="NSSuperview" ref="977413659"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="335958099"/>
+						<reference key="NSNextKeyView" ref="676617489"/>
 						<object class="NSColor" key="IBUIBackgroundColor">
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MQA</bytes>
@@ -288,6 +285,120 @@
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
 				<reference key="NSNextKeyView" ref="858597805"/>
+				<object class="NSColor" key="IBUIBackgroundColor">
+					<int key="NSColorSpace">3</int>
+					<bytes key="NSWhite">MQA</bytes>
+					<reference key="NSCustomColorSpace" ref="409833800"/>
+				</object>
+				<object class="IBUISimulatedOrientationMetrics" key="IBUISimulatedOrientationMetrics">
+					<int key="IBUIInterfaceOrientation">3</int>
+					<int key="interfaceOrientation">3</int>
+				</object>
+				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+			</object>
+			<object class="IBUIView" id="738244138">
+				<reference key="NSNextResponder"/>
+				<int key="NSvFlags">292</int>
+				<object class="NSMutableArray" key="NSSubviews">
+					<bool key="EncodedWithXMLCoder">YES</bool>
+					<object class="IBUIView" id="774090532">
+						<reference key="NSNextResponder" ref="738244138"/>
+						<int key="NSvFlags">274</int>
+						<string key="NSFrame">{{60, 0}, {420, 320}}</string>
+						<reference key="NSSuperview" ref="738244138"/>
+						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView" ref="689882425"/>
+						<object class="NSColor" key="IBUIBackgroundColor">
+							<int key="NSColorSpace">3</int>
+							<bytes key="NSWhite">MQA</bytes>
+							<reference key="NSCustomColorSpace" ref="409833800"/>
+						</object>
+						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+					</object>
+					<object class="IBUIButton" id="689882425">
+						<reference key="NSNextResponder" ref="738244138"/>
+						<int key="NSvFlags">292</int>
+						<string key="NSFrameSize">{60, 108}</string>
+						<reference key="NSSuperview" ref="738244138"/>
+						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView" ref="93544236"/>
+						<bool key="IBUIOpaque">NO</bool>
+						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+						<int key="IBUIContentHorizontalAlignment">0</int>
+						<int key="IBUIContentVerticalAlignment">0</int>
+						<reference key="IBUIHighlightedTitleColor" ref="770254705"/>
+						<object class="NSColor" key="IBUINormalTitleColor">
+							<int key="NSColorSpace">1</int>
+							<bytes key="NSRGB">MC4xOTYwNzg0MzQ2IDAuMzA5ODAzOTMyOSAwLjUyMTU2ODY1NgA</bytes>
+						</object>
+						<reference key="IBUINormalTitleShadowColor" ref="19777660"/>
+						<reference key="IBUINormalImage" ref="229347943"/>
+						<reference key="IBUINormalBackgroundImage" ref="1036362337"/>
+						<reference key="IBUIFontDescription" ref="72440633"/>
+						<reference key="IBUIFont" ref="996800421"/>
+					</object>
+					<object class="IBUIButton" id="93544236">
+						<reference key="NSNextResponder" ref="738244138"/>
+						<int key="NSvFlags">292</int>
+						<string key="NSFrame">{{0, 107}, {60, 106}}</string>
+						<reference key="NSSuperview" ref="738244138"/>
+						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView" ref="81113981"/>
+						<bool key="IBUIOpaque">NO</bool>
+						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+						<int key="IBUIContentHorizontalAlignment">0</int>
+						<int key="IBUIContentVerticalAlignment">0</int>
+						<reference key="IBUIHighlightedTitleColor" ref="770254705"/>
+						<object class="NSColor" key="IBUINormalTitleColor">
+							<int key="NSColorSpace">1</int>
+							<bytes key="NSRGB">MC4xOTYwNzg0MzQ2IDAuMzA5ODAzOTMyOSAwLjUyMTU2ODY1NgA</bytes>
+						</object>
+						<reference key="IBUINormalTitleShadowColor" ref="19777660"/>
+						<reference key="IBUINormalImage" ref="758660083"/>
+						<reference key="IBUINormalBackgroundImage" ref="1036362337"/>
+						<reference key="IBUIFontDescription" ref="72440633"/>
+						<reference key="IBUIFont" ref="996800421"/>
+					</object>
+					<object class="IBUIButton" id="898336236">
+						<reference key="NSNextResponder" ref="738244138"/>
+						<int key="NSvFlags">292</int>
+						<string key="NSFrame">{{0, 212}, {60, 108}}</string>
+						<reference key="NSSuperview" ref="738244138"/>
+						<reference key="NSWindow"/>
+						<bool key="IBUIOpaque">NO</bool>
+						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+						<int key="IBUIContentHorizontalAlignment">0</int>
+						<int key="IBUIContentVerticalAlignment">0</int>
+						<string key="IBUINormalTitle">Switch</string>
+						<reference key="IBUIHighlightedTitleColor" ref="770254705"/>
+						<object class="NSColor" key="IBUINormalTitleColor">
+							<int key="NSColorSpace">1</int>
+							<bytes key="NSRGB">MC4xOTYwNzg0MzQ2IDAuMzA5ODAzOTMyOSAwLjUyMTU2ODY1NgA</bytes>
+						</object>
+						<reference key="IBUINormalTitleShadowColor" ref="19777660"/>
+						<reference key="IBUINormalBackgroundImage" ref="1036362337"/>
+						<reference key="IBUIFontDescription" ref="72440633"/>
+						<reference key="IBUIFont" ref="996800421"/>
+					</object>
+					<object class="IBUIView" id="81113981">
+						<reference key="NSNextResponder" ref="738244138"/>
+						<int key="NSvFlags">274</int>
+						<string key="NSFrame">{{360, 233}, {106, 80}}</string>
+						<reference key="NSSuperview" ref="738244138"/>
+						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView" ref="898336236"/>
+						<object class="NSColor" key="IBUIBackgroundColor">
+							<int key="NSColorSpace">3</int>
+							<bytes key="NSWhite">MQA</bytes>
+							<reference key="NSCustomColorSpace" ref="409833800"/>
+						</object>
+						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+					</object>
+				</object>
+				<string key="NSFrameSize">{480, 320}</string>
+				<reference key="NSSuperview"/>
+				<reference key="NSWindow"/>
+				<reference key="NSNextKeyView" ref="774090532"/>
 				<object class="NSColor" key="IBUIBackgroundColor">
 					<int key="NSColorSpace">3</int>
 					<bytes key="NSWhite">MQA</bytes>
@@ -345,51 +456,11 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">mLandscape</string>
-						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="977413659"/>
-					</object>
-					<int key="connectionID">22</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">mDisplayLand</string>
-						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="858597805"/>
-					</object>
-					<int key="connectionID">23</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">mHangUp</string>
 						<reference key="source" ref="372490531"/>
 						<reference key="destination" ref="695487530"/>
 					</object>
 					<int key="connectionID">26</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">mMuteLand</string>
-						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="1050670507"/>
-					</object>
-					<int key="connectionID">27</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">mHangUpLand</string>
-						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="335958099"/>
-					</object>
-					<int key="connectionID">28</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">mCamSwitchLand</string>
-						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="676617489"/>
-					</object>
-					<int key="connectionID">29</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
@@ -401,11 +472,99 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">mPreviewLand</string>
+						<string key="label">mMuteLandRight</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="1050670507"/>
+					</object>
+					<int key="connectionID">40</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">mHangUpLandRight</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="335958099"/>
+					</object>
+					<int key="connectionID">41</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">mCamSwitchLandRight</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="676617489"/>
+					</object>
+					<int key="connectionID">42</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">mLandscapeRight</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="977413659"/>
+					</object>
+					<int key="connectionID">43</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">mDisplayLandRight</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="858597805"/>
+					</object>
+					<int key="connectionID">44</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">mPreviewLandRight</string>
 						<reference key="source" ref="372490531"/>
 						<reference key="destination" ref="124303267"/>
 					</object>
-					<int key="connectionID">24</int>
+					<int key="connectionID">45</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">mDisplayLandLeft</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="774090532"/>
+					</object>
+					<int key="connectionID">46</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">mMuteLandLeft</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="689882425"/>
+					</object>
+					<int key="connectionID">47</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">mHangUpLandLeft</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="93544236"/>
+					</object>
+					<int key="connectionID">48</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">mCamSwitchLandLeft</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="898336236"/>
+					</object>
+					<int key="connectionID">49</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">mPreviewLandLeft</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="81113981"/>
+					</object>
+					<int key="connectionID">50</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">mLandscapeLeft</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="738244138"/>
+					</object>
+					<int key="connectionID">51</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -493,7 +652,7 @@
 							<reference ref="124303267"/>
 						</object>
 						<reference key="parent" ref="0"/>
-						<string key="objectName">landscape</string>
+						<string key="objectName">landscape-right</string>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">19</int>
@@ -528,6 +687,50 @@
 						<reference key="parent" ref="977413659"/>
 						<string key="objectName">preview</string>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">34</int>
+						<reference key="object" ref="738244138"/>
+						<object class="NSMutableArray" key="children">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<reference ref="81113981"/>
+							<reference ref="898336236"/>
+							<reference ref="93544236"/>
+							<reference ref="689882425"/>
+							<reference ref="774090532"/>
+						</object>
+						<reference key="parent" ref="0"/>
+						<string key="objectName">landscape-left</string>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">35</int>
+						<reference key="object" ref="81113981"/>
+						<reference key="parent" ref="738244138"/>
+						<string key="objectName">preview</string>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">36</int>
+						<reference key="object" ref="898336236"/>
+						<reference key="parent" ref="738244138"/>
+						<string key="objectName">Cam Switch</string>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">37</int>
+						<reference key="object" ref="93544236"/>
+						<reference key="parent" ref="738244138"/>
+						<string key="objectName">HangHup</string>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">38</int>
+						<reference key="object" ref="689882425"/>
+						<reference key="parent" ref="738244138"/>
+						<string key="objectName">Mute</string>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">39</int>
+						<reference key="object" ref="774090532"/>
+						<reference key="parent" ref="738244138"/>
+						<string key="objectName">display</string>
+					</object>
 				</object>
 			</object>
 			<object class="NSMutableDictionary" key="flattenedProperties">
@@ -549,6 +752,15 @@
 					<string>19.CustomClassName</string>
 					<string>19.IBPluginDependency</string>
 					<string>31.IBPluginDependency</string>
+					<string>34.IBPluginDependency</string>
+					<string>35.IBPluginDependency</string>
+					<string>36.CustomClassName</string>
+					<string>36.IBPluginDependency</string>
+					<string>37.CustomClassName</string>
+					<string>37.IBPluginDependency</string>
+					<string>38.CustomClassName</string>
+					<string>38.IBPluginDependency</string>
+					<string>39.IBPluginDependency</string>
 					<string>5.IBPluginDependency</string>
 					<string>6.CustomClassName</string>
 					<string>6.IBPluginDependency</string>
@@ -576,6 +788,15 @@
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+					<string>UICamSwitch</string>
+					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+					<string>UIHangUpButton</string>
+					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+					<string>UIMuteButton</string>
+					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>UIMuteButton</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>UIHangUpButton</string>
@@ -597,7 +818,7 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">33</int>
+			<int key="maxID">51</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -653,29 +874,41 @@
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>mCamSwitch</string>
-							<string>mCamSwitchLand</string>
+							<string>mCamSwitchLandLeft</string>
+							<string>mCamSwitchLandRight</string>
 							<string>mDisplay</string>
-							<string>mDisplayLand</string>
+							<string>mDisplayLandLeft</string>
+							<string>mDisplayLandRight</string>
 							<string>mHangUp</string>
-							<string>mHangUpLand</string>
-							<string>mLandscape</string>
+							<string>mHangUpLandLeft</string>
+							<string>mHangUpLandRight</string>
+							<string>mLandscapeLeft</string>
+							<string>mLandscapeRight</string>
 							<string>mMute</string>
-							<string>mMuteLand</string>
+							<string>mMuteLandLeft</string>
+							<string>mMuteLandRight</string>
 							<string>mPortrait</string>
 							<string>mPreview</string>
-							<string>mPreviewLand</string>
+							<string>mPreviewLandLeft</string>
+							<string>mPreviewLandRight</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>UICamSwitch</string>
 							<string>UICamSwitch</string>
+							<string>UICamSwitch</string>
+							<string>UIView</string>
 							<string>UIView</string>
 							<string>UIView</string>
 							<string>UIHangUpButton</string>
 							<string>UIHangUpButton</string>
+							<string>UIHangUpButton</string>
+							<string>UIView</string>
 							<string>UIView</string>
 							<string>UIMuteButton</string>
 							<string>UIMuteButton</string>
+							<string>UIMuteButton</string>
+							<string>UIView</string>
 							<string>UIView</string>
 							<string>UIView</string>
 							<string>UIView</string>
@@ -686,17 +919,23 @@
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>mCamSwitch</string>
-							<string>mCamSwitchLand</string>
+							<string>mCamSwitchLandLeft</string>
+							<string>mCamSwitchLandRight</string>
 							<string>mDisplay</string>
-							<string>mDisplayLand</string>
+							<string>mDisplayLandLeft</string>
+							<string>mDisplayLandRight</string>
 							<string>mHangUp</string>
-							<string>mHangUpLand</string>
-							<string>mLandscape</string>
+							<string>mHangUpLandLeft</string>
+							<string>mHangUpLandRight</string>
+							<string>mLandscapeLeft</string>
+							<string>mLandscapeRight</string>
 							<string>mMute</string>
-							<string>mMuteLand</string>
+							<string>mMuteLandLeft</string>
+							<string>mMuteLandRight</string>
 							<string>mPortrait</string>
 							<string>mPreview</string>
-							<string>mPreviewLand</string>
+							<string>mPreviewLandLeft</string>
+							<string>mPreviewLandRight</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
@@ -705,7 +944,11 @@
 								<string key="candidateClassName">UICamSwitch</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">mCamSwitchLand</string>
+								<string key="name">mCamSwitchLandLeft</string>
+								<string key="candidateClassName">UICamSwitch</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">mCamSwitchLandRight</string>
 								<string key="candidateClassName">UICamSwitch</string>
 							</object>
 							<object class="IBToOneOutletInfo">
@@ -713,7 +956,11 @@
 								<string key="candidateClassName">UIView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">mDisplayLand</string>
+								<string key="name">mDisplayLandLeft</string>
+								<string key="candidateClassName">UIView</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">mDisplayLandRight</string>
 								<string key="candidateClassName">UIView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
@@ -721,11 +968,19 @@
 								<string key="candidateClassName">UIHangUpButton</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">mHangUpLand</string>
+								<string key="name">mHangUpLandLeft</string>
 								<string key="candidateClassName">UIHangUpButton</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">mLandscape</string>
+								<string key="name">mHangUpLandRight</string>
+								<string key="candidateClassName">UIHangUpButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">mLandscapeLeft</string>
+								<string key="candidateClassName">UIView</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">mLandscapeRight</string>
 								<string key="candidateClassName">UIView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
@@ -733,7 +988,11 @@
 								<string key="candidateClassName">UIMuteButton</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">mMuteLand</string>
+								<string key="name">mMuteLandLeft</string>
+								<string key="candidateClassName">UIMuteButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">mMuteLandRight</string>
 								<string key="candidateClassName">UIMuteButton</string>
 							</object>
 							<object class="IBToOneOutletInfo">
@@ -745,7 +1004,11 @@
 								<string key="candidateClassName">UIView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">mPreviewLand</string>
+								<string key="name">mPreviewLandLeft</string>
+								<string key="candidateClassName">UIView</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">mPreviewLandRight</string>
 								<string key="candidateClassName">UIView</string>
 							</object>
 						</object>
@@ -771,14 +1034,14 @@
 				<bool key="EncodedWithXMLCoder">YES</bool>
 				<string>clavier-01-106px.png</string>
 				<string>clavier-01-108px.png</string>
-				<string>mic_active.png</string>
+				<string>micro.png</string>
 				<string>stopcall-red.png</string>
 			</object>
 			<object class="NSMutableArray" key="dict.values">
 				<bool key="EncodedWithXMLCoder">YES</bool>
 				<string>{106, 60}</string>
 				<string>{108, 60}</string>
-				<string>{20, 20}</string>
+				<string>{107, 67}</string>
 				<string>{62, 54}</string>
 			</object>
 		</object>
