@@ -49,7 +49,7 @@ static void init_local_participant(GtkWidget *participant){
 static GtkWidget *get_conference_tab(GtkWidget *mw){
 	GtkWidget *box=(GtkWidget*)g_object_get_data(G_OBJECT(mw),"conference_tab");
 	if (box==NULL){
-		GtkWidget *box=gtk_vbox_new(FALSE,0);
+		box=gtk_vbox_new(FALSE,0);
 		GtkWidget *participant=linphone_gtk_create_widget("main","callee_frame");
 		gtk_box_set_homogeneous(GTK_BOX(box),TRUE);
 		init_local_participant(participant);
@@ -124,13 +124,15 @@ void linphone_gtk_terminate_conference_participant(LinphoneCall *call){
 void linphone_gtk_unset_from_conference(LinphoneCall *call){
 	GtkWidget *mw=linphone_gtk_get_main_window();
 	GtkWidget *box=(GtkWidget*)g_object_get_data(G_OBJECT(mw),"conference_tab");
-	GtkWidget *frame=find_conferencee_from_call(call);
+	GtkWidget *frame;
+	if (box==NULL) return; /*conference tab already destroyed*/
+	frame=find_conferencee_from_call(call);
 	GList *children;
 	if (frame){
 		gtk_widget_destroy(frame);
 	}
 	children=gtk_container_get_children(GTK_CONTAINER(box));
-	if (g_list_length(children)==1){
+	if (g_list_length(children)==2){
 		/*the conference is terminated */
 		gtk_widget_destroy(box);
 		g_object_set_data(G_OBJECT(mw),"conference_tab",NULL);
