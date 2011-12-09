@@ -231,7 +231,7 @@ static void account_password_changed(GtkEntry *entry, GtkWidget *w) {
 	}
 	else {
 		if (gtk_entry_get_text_length(password) < PASSWORD_MIN_SIZE) {
-			gtk_label_set_text(passwordError, "Password too short !");
+			gtk_label_set_text(passwordError, "Password is too short !");
 		}
 		else if (!g_ascii_strcasecmp(gtk_entry_get_text(password), gtk_entry_get_text(password_confirm)) == 0) {
 			gtk_label_set_text(passwordError, "Passwords don't match !");
@@ -253,21 +253,25 @@ static void account_username_changed(GtkEntry *entry, GtkWidget *w) {
 
 	LinphoneAccountCreator *creator=linphone_gtk_assistant_get_creator(assistant);
 	linphone_account_creator_set_username(creator, gtk_entry_get_text(username));
-	int account_existing = linphone_account_creator_test_existence(creator);
-	if (g_regex_match_simple("^[a-zA-Z]+[a-zA-Z0-9.\\-_]{4,}$", gtk_entry_get_text(username), 0, 0)
-	&& account_existing == 0) {
-		is_username_available = 1;
-		gtk_image_set_from_pixbuf(isUsernameOk, ok);
-		gtk_label_set_text(usernameError, "");
+
+	if (g_regex_match_simple("^[a-zA-Z]+[a-zA-Z0-9.\\-_]{3,}$", gtk_entry_get_text(username), 0, 0)) {
+		int account_existing = linphone_account_creator_test_existence(creator);
+		if (account_existing == 0) {
+			is_username_available = 1;
+			gtk_image_set_from_pixbuf(isUsernameOk, ok);
+			gtk_label_set_text(usernameError, "");
+		}
+		else {
+			gtk_label_set_text(usernameError, "Username is already in use !");
+			is_username_available = 0;
+			gtk_image_set_from_pixbuf(isUsernameOk, notok);
+		}
 	}
 	else {
-		if (account_existing == 1) {
-			gtk_label_set_text(usernameError, "Username already in use !");
+		if (gtk_entry_get_text_length(username) < LOGIN_MIN_SIZE) {
+			gtk_label_set_text(usernameError, "Username is too short");
 		}
-		else if (gtk_entry_get_text_length(username) < LOGIN_MIN_SIZE) {
-			gtk_label_set_text(usernameError, "Username too short");
-		}
-		else if (!g_regex_match_simple("^[a-zA-Z]+[a-zA-Z0-9.\\-_]{4,}$", gtk_entry_get_text(username), 0, 0)) {
+		else if (!g_regex_match_simple("^[a-zA-Z]+[a-zA-Z0-9.\\-_]{3,}$", gtk_entry_get_text(username), 0, 0)) {
 			gtk_label_set_text(usernameError, "Unauthorized username");
 		}
 		is_username_available = 0;
