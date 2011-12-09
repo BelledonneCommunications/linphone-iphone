@@ -221,13 +221,21 @@ static void account_password_changed(GtkEntry *entry, GtkWidget *w) {
 	GtkImage* isPasswordOk = GTK_IMAGE(g_object_get_data(G_OBJECT(w),"passwordOk"));
 	GtkEntry* password_confirm = GTK_ENTRY(g_object_get_data(G_OBJECT(w),"password_confirm"));
 	GtkWidget *assistant=gtk_widget_get_toplevel(w);
+	GtkLabel* passwordError = GTK_LABEL(g_object_get_data(G_OBJECT(w),"error"));
 
 	if (gtk_entry_get_text_length(password) >= PASSWORD_MIN_SIZE &&
 	g_ascii_strcasecmp(gtk_entry_get_text(password), gtk_entry_get_text(password_confirm)) == 0) {
 		is_password_correct = 1;
 		gtk_image_set_from_pixbuf(isPasswordOk, ok);
+		gtk_label_set_text(passwordError, "");
 	}
 	else {
+		if (gtk_entry_get_text_length(password) < PASSWORD_MIN_SIZE) {
+			gtk_label_set_text(passwordError, "Password too short !");
+		}
+		else if (!g_ascii_strcasecmp(gtk_entry_get_text(password), gtk_entry_get_text(password_confirm)) == 0) {
+			gtk_label_set_text(passwordError, "Passwords don't match !");
+		}
 		is_password_correct = 0;
 		gtk_image_set_from_pixbuf(isPasswordOk, notok);
 	}
@@ -241,15 +249,27 @@ static void account_username_changed(GtkEntry *entry, GtkWidget *w) {
 	GtkWidget *assistant=gtk_widget_get_toplevel(w);
 	GtkEntry* username = GTK_ENTRY(g_object_get_data(G_OBJECT(w),"username"));
 	GtkImage* isUsernameOk = GTK_IMAGE(g_object_get_data(G_OBJECT(w),"usernameOk"));
+	GtkLabel* usernameError = GTK_LABEL(g_object_get_data(G_OBJECT(w),"error"));
 
 	LinphoneAccountCreator *creator=linphone_gtk_assistant_get_creator(assistant);
 	linphone_account_creator_set_username(creator, gtk_entry_get_text(username));
-	if (g_regex_match_simple("^[a-zA-Z]+[a-zA-Z0-9.\\-_]{2,}$", gtk_entry_get_text(username), 0, 0)
-	&& linphone_account_creator_test_existence(creator) == 0) {
+	int account_existing = linphone_account_creator_test_existence(creator);
+	if (g_regex_match_simple("^[a-zA-Z]+[a-zA-Z0-9.\\-_]{4,}$", gtk_entry_get_text(username), 0, 0)
+	&& account_existing == 0) {
 		is_username_available = 1;
 		gtk_image_set_from_pixbuf(isUsernameOk, ok);
+		gtk_label_set_text(usernameError, "");
 	}
 	else {
+		if (account_existing == 1) {
+			gtk_label_set_text(usernameError, "Username already in use !");
+		}
+		else if (gtk_entry_get_text_length(username) < LOGIN_MIN_SIZE) {
+			gtk_label_set_text(usernameError, "Username too short");
+		}
+		else if (!g_regex_match_simple("^[a-zA-Z]+[a-zA-Z0-9.\\-_]{4,}$", gtk_entry_get_text(username), 0, 0)) {
+			gtk_label_set_text(usernameError, "Unauthorized username");
+		}
 		is_username_available = 0;
 		gtk_image_set_from_pixbuf(isUsernameOk, notok);
 	}
@@ -277,6 +297,11 @@ static GtkWidget *create_account_information_page() {
 	gtk_entry_set_visibility(GTK_ENTRY(entryPassword2), FALSE);
 	GtkWidget *checkNewsletter=gtk_check_button_new_with_label("Keep me informed with linphone updates");
 
+	GdkColor color;
+	gdk_color_parse ("red", &color);
+	GtkWidget *labelError=gtk_label_new(NULL);
+	gtk_widget_modify_fg(labelError, GTK_STATE_NORMAL, &color);
+
 	GtkWidget *passwordVbox1=gtk_vbox_new(FALSE,2);
 	GtkWidget *passwordVbox2=gtk_vbox_new(FALSE,2);
 	gtk_box_pack_start (GTK_BOX (passwordVbox1), labelPassword, TRUE, FALSE, 2);
@@ -294,7 +319,8 @@ static GtkWidget *create_account_information_page() {
 	gtk_table_attach_defaults(GTK_TABLE(vbox), passwordVbox1, 0, 1, 3, 4);
 	gtk_table_attach_defaults(GTK_TABLE(vbox), passwordVbox2, 1, 2, 3, 4);
 	gtk_table_attach_defaults(GTK_TABLE(vbox), isPasswordOk, 2, 3, 3, 4);
-	gtk_table_attach_defaults(GTK_TABLE(vbox), checkNewsletter, 0, 3, 5, 6);
+	gtk_table_attach_defaults(GTK_TABLE(vbox), labelError, 1, 2, 5, 6);
+	gtk_table_attach_defaults(GTK_TABLE(vbox), checkNewsletter, 0, 3, 6, 7);
 
 	gtk_widget_show_all(vbox);
 	g_object_set_data(G_OBJECT(vbox),"username",entryUsername);
@@ -305,6 +331,7 @@ static GtkWidget *create_account_information_page() {
 	g_object_set_data(G_OBJECT(vbox),"emailOk",isEmailOk);
 	g_object_set_data(G_OBJECT(vbox),"password_confirm",entryPassword2);
 	g_object_set_data(G_OBJECT(vbox),"newsletter",checkNewsletter);
+	g_object_set_data(G_OBJECT(vbox),"error",labelError);
 	g_signal_connect(G_OBJECT(entryUsername),"changed",(GCallback)account_username_changed,vbox);
 	g_signal_connect(G_OBJECT(entryPassword),"changed",(GCallback)account_password_changed,vbox);
 	g_signal_connect(G_OBJECT(entryEmail),"changed",(GCallback)account_email_changed,vbox);
