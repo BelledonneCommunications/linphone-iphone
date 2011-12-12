@@ -40,7 +40,7 @@ static void audioRouteChangeListenerCallback (
    AudioSessionInitialize(NULL, NULL, NULL, NULL);
    OSStatus lStatus = AudioSessionAddPropertyListener(routeChangeID, audioRouteChangeListenerCallback, self);
    if (lStatus) {
-       ms_error ("cannot register route change handler [%i]",lStatus);
+       ms_error ("cannot register route change handler [%ld]",lStatus);
    }
 }
 

@@ -28,8 +28,9 @@ SDK_PATH_LIST=`ls -drt /Developer/Platforms/iPhone${PLATFORM}.platform/Developer
 SDK_BIN_PATH=/Developer/Platforms/iPhone${PLATFORM}.platform/Developer/usr/bin     
 for SYSROOT_PATH in $SDK_PATH_LIST ; do echo $SYSROOT_PATH ; done ;
 echo "Selecting SDK path = ${SYSROOT_PATH}"
-COMMON_FLAGS=" -arch ${ARCH} ${MCPU} -isysroot ${SYSROOT_PATH} -miphoneos-version-min=${SDK_VERSION} -DTARGET_OS_IPHONE -D__IOS"
+COMMON_FLAGS=" -arch ${ARCH} ${MCPU} -isysroot ${SYSROOT_PATH} -miphoneos-version-min=${SDK_VERSION} -DTARGET_OS_IPHONE=1 -D__IOS"
 CC="${SDK_BIN_PATH}/gcc -std=c99 $COMMON_FLAGS"
+OBJC="${SDK_BIN_PATH}/gcc -std=c99 $COMMON_FLAGS"
 CXX="${SDK_BIN_PATH}/g++ $COMMON_FLAGS"
 LD="${SDK_BIN_PATH}/ld -arch ${ARCH}"
 AR=${SDK_BIN_PATH}/ar
@@ -37,3 +38,4 @@ RANLIB=${SDK_BIN_PATH}/ranlib
 
 CPPFLAGS="-Dasm=__asm"
 LDFLAGS="-Wl,-syslibroot,${SYSROOT_PATH} -framework CFNetwork" 
+OBJCFLAGS="-x objective-c -fexceptions -gdwarf-2 -fobjc-abi-version=2 -fobjc-legacy-dispatch"

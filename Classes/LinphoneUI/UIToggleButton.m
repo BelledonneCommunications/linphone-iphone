@@ -47,9 +47,9 @@
 }
 
 -(void) initWithOnImage:(UIImage*) onImage offImage:(UIImage*) offImage {
-	mOnImage = [onImage retain];
-	mOffImage = [offImage retain];
-	mIsOn=false;
+    mOnImage = [onImage retain];
+    mOffImage = [offImage retain];
+    mIsOn=false;
 	[self reset];
 	[self addTarget:self action:@selector(touchUp:) forControlEvents:UIControlEventTouchUpInside];
 	
@@ -67,6 +67,20 @@
     [super dealloc];
 	[mOffImage release];
 	[mOffImage release];
+}
+
+-(void) onOn {
+    [NSException raise:NSInternalInconsistencyException 
+                format:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)];
+}
+-(void) onOff {
+    [NSException raise:NSInternalInconsistencyException 
+                format:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)];
+}
+-(bool) isInitialStateOn {
+    [NSException raise:NSInternalInconsistencyException 
+                format:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)];
+    return false;
 }
 
 

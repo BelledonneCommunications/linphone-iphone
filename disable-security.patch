@@ -1,0 +1,35 @@
+diff --git a/Settings.bundle/Root.plist b/Settings.bundle/Root.plist
+index 5bc0378..9d011f1 100644
+--- a/Settings.bundle/Root.plist
++++ b/Settings.bundle/Root.plist
+@@ -169,7 +169,7 @@
+ 			<array>
+ 				<string>udp</string>
+ 				<string>tcp</string>
+-				<string>tls</string>
++				<!--string>tls</string-->
+ 			</array>
+ 			<key>Type</key>
+ 			<string>PSMultiValueSpecifier</string>
+@@ -177,10 +177,10 @@
+ 			<array>
+ 				<string>udp</string>
+ 				<string>tcp</string>
+-				<string>tls</string>
++				<!--string>tls</string-->
+ 			</array>
+ 		</dict>
+-		<dict>
++		<!--dict>
+ 			<key>DefaultValue</key>
+ 			<false/>
+ 			<key>Key</key>
+@@ -189,7 +189,7 @@
+ 			<string>Secure rtp</string>
+ 			<key>Type</key>
+ 			<string>PSToggleSwitchSpecifier</string>
+-		</dict>
++		</dict-->
+ 		<dict>
+ 			<key>DefaultValue</key>
+ 			<true/>

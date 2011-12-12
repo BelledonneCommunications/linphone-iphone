@@ -1,4 +1,4 @@
-/* UIHangUpButton.h
+/* UILinphone.h
  *
  * Copyright (C) 2011  Belledonne Comunications, Grenoble, France
  *
@@ -26,4 +26,5 @@
 #import "UIDuration.h"
 #import "UIEraseButton.h"
 #import "LinphoneUIDelegates.h"
+#import "UICamSwitch.h"
 #import "UIPauseResumeButton.h"

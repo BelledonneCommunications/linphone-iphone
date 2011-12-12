@@ -40,7 +40,6 @@ typedef enum _TunnelMode {
 @private
 	SCNetworkReachabilityContext proxyReachabilityContext;
 	SCNetworkReachabilityRef proxyReachability;
-	CFReadStreamRef mReadStream;
 	NSTimer* mIterateTimer;
 	id<LogView> mLogView;	
 	bool isbackgroundModeEnabled;
@@ -51,7 +50,8 @@ typedef enum _TunnelMode {
 	Connectivity connectivity;
     FastAddressBook* mFastAddressBook;
 	TunnelMode tunnelMode;
-	
+	const char*  frontCamId;
+	const char*  backCamId;
 }
 +(LinphoneManager*) instance;
 +(LinphoneCore*) getLc;
@@ -66,11 +66,17 @@ typedef enum _TunnelMode {
 -(void) becomeActive;
 -(void) kickOffNetworkConnection;
 -(NSString*) getDisplayNameFromAddressBook:(NSString*) number andUpdateCallLog:(LinphoneCallLog*)log; 
+-(UIImage*) getImageFromAddressBook:(NSString*) number;
+
+
 
 @property (nonatomic, retain) id<LinphoneUICallDelegate> callDelegate;
 @property (nonatomic, retain) id<LinphoneUIRegistrationDelegate> registrationDelegate;
 @property Connectivity connectivity;
 @property TunnelMode tunnelMode;
+@property (readonly) const char*  frontCamId;
+@property (readonly) const char*  backCamId;
+
 @end
 
 

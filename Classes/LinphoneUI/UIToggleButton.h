@@ -24,6 +24,7 @@
 	-(void) onOff;
 	-(bool) isInitialStateOn;
 @end
+
 @interface UIToggleButton : UIButton <UIToggleButtonDelegate> {
 @private
 	UIImage* mOnImage;

@@ -20,6 +20,7 @@
 #
 ############################################################################
 mssilk_dir?=mssilk
+enable_silk?=yes
 
 $(BUILDER_SRC_DIR)/$(mssilk_dir)/configure:
 	echo -e "\033[01;32m Running autogen for mssilk in $(BUILDER_SRC_DIR)/$(mssilk_dir) \033[0m"

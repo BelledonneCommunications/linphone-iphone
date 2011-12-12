@@ -1,11 +1,16 @@
 [net]
-download_bw=128
-upload_bw=128
+download_bw=380
+upload_bw=380
 firewall_policy=0
 mtu=0
 
 [sip]
 sip_random_port=1
+sip_port=5060
+sip_tcp_random_port=1
+sip_tcp_port=0
+sip_tls_random_port=1
+sip_tls_port=0
 guess_hostname=1
 contact=sip:toto@unknown-host
 inc_timeout=15
@@ -31,4 +36,12 @@ echocancellation=0
 
 [misc]
 history_max_size=30
-max_calls=1
+max_calls=3
+
+[video]
+display=1
+capture=1
+show_local=0
+enabled=1
+size=ios-medium
+

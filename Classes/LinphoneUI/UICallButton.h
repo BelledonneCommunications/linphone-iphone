@@ -24,7 +24,6 @@
 @private
 	char  mDigit;
 	UITextField* mAddress;
-	UILabel* mDisplayName;
 }
--(void) initWithAddress:(UITextField*) address withDisplayName:(UILabel*) displayName;
+-(void) initWithAddress:(UITextField*) address;
 @end

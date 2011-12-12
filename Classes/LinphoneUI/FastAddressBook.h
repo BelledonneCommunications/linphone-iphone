@@ -30,12 +30,16 @@
 @end
 
 @interface FastAddressBook :  NSObject {
-    NSMutableDictionary* mAddressBookMap;    
+    NSMutableDictionary* mAddressBookMap;  
+    
+    ABAddressBookRef addressBook;
 }
 
 -(Contact*) getMatchingRecord:(NSString*) number ;
 +(NSString*) appendCountryCodeIfPossible:(NSString*) number ;
 +(NSString*) normalizePhoneNumber:(NSString*) number ;
 -(id) init ;
+
+@property (nonatomic, readonly) ABAddressBookRef addressBook;
 
 @end
