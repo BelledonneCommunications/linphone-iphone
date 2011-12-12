@@ -116,6 +116,52 @@
 		</dict>
 		<dict>
 			<key>Title</key>
+			<string>Tunnel</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>Key</key>
+			<string>tunnel_address_preference</string>
+			<key>Title</key>
+			<string>Address</string>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+		</dict>
+		<dict>
+			<key>Key</key>
+			<string>tunnel_port_preference</string>
+			<key>Title</key>
+			<string>port</string>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<string>off</string>
+			<key>Titles</key>
+			<array>
+				<string>off</string>
+				<string>on</string>
+				<string>wwan</string>
+				<string>auto</string>
+			</array>
+			<key>Key</key>
+			<string>tunnel_enabled_preference</string>
+			<key>Title</key>
+			<string>Enable</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Values</key>
+			<array>
+				<string>off</string>
+				<string>on</string>
+				<string>wwan</string>
+				<string>auto</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Title</key>
 			<string>Advanced</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
