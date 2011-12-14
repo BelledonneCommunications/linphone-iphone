@@ -382,8 +382,7 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 	}
 
 	err=0;
-	eXosip_set_option(13,&err); /*13=EXOSIP_OPT_SRV_WITH_NAPTR, as it is an enum value, we can't use it unless we are sure of the
-					version of eXosip, which is not the case*/
+	eXosip_set_option(EXOSIP_OPT_DNS_CAPABILITIES,&err); /*0=no NAPTR */
 	/*see if it looks like an IPv6 address*/
 	int use_rports = ctx->use_rports; // Copy char to int to avoid bad alignment
 	eXosip_set_option(EXOSIP_OPT_USE_RPORT,&use_rports);
@@ -2007,16 +2006,31 @@ static void register_set_contact(osip_message_t *msg, const char *contact){
 	osip_uri_uparam_add(ct->url,osip_strdup("line"),line);
 }
 
+static void sal_register_add_route(osip_message_t *msg, const char *proxy){
+	char tmp[256]={0};
+	snprintf(tmp,sizeof(tmp)-1,"<%s;lr>",proxy);
+	osip_message_set_route(msg,tmp);
+}
+
 int sal_register(SalOp *h, const char *proxy, const char *from, int expires){
 	osip_message_t *msg;
 	const char *contact=sal_op_get_contact(h);
-	
+
 	sal_op_set_route(h,proxy);
 	if (h->rid==-1){
+		SalAddress *from_parsed=sal_address_new(from);
+		char domain[256];
+		if (from_parsed==NULL) {
+			ms_warning("sal_register() bad from %s",from);
+			return -1;
+		}
+		snprintf(domain,sizeof(domain),"sip:%s",sal_address_get_domain(from_parsed));
+		sal_address_destroy(from_parsed);
 		eXosip_lock();
-		h->rid=eXosip_register_build_initial_register(from,proxy,NULL,expires,&msg);
+		h->rid=eXosip_register_build_initial_register(from,domain,NULL,expires,&msg);
 		if (msg){
 			if (contact) register_set_contact(msg,contact);
+			sal_register_add_route(msg,proxy);
 			sal_add_register(h->base.root,h);
 		}else{
 			ms_error("Could not build initial register.");
@@ -2025,7 +2039,8 @@ int sal_register(SalOp *h, const char *proxy, const char *from, int expires){
 		}
 	}else{
 		eXosip_lock();
-		eXosip_register_build_register(h->rid,expires,&msg);	
+		eXosip_register_build_register(h->rid,expires,&msg);
+		sal_register_add_route(msg,proxy);
 	}
 	eXosip_register_send_register(h->rid,msg);
 	eXosip_unlock();
@@ -2045,6 +2060,7 @@ int sal_register_refresh(SalOp *op, int expires){
 	eXosip_register_build_register(op->rid,expires,&msg);
 	if (msg!=NULL){
 		if (contact) register_set_contact(msg,contact);
+		sal_register_add_route(msg,sal_op_get_route(op));
 		eXosip_register_send_register(op->rid,msg);
 	}else ms_error("Could not build REGISTER refresh message.");
 	eXosip_unlock();
