@@ -380,9 +380,11 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 	default:
 		ms_warning("unexpected proto, using datagram");
 	}
-
+#if 0
+	/* it does not work, exosip does not implement this option correctly*/
 	err=0;
 	eXosip_set_option(EXOSIP_OPT_DNS_CAPABILITIES,&err); /*0=no NAPTR */
+#endif
 	/*see if it looks like an IPv6 address*/
 	int use_rports = ctx->use_rports; // Copy char to int to avoid bad alignment
 	eXosip_set_option(EXOSIP_OPT_USE_RPORT,&use_rports);
