@@ -1,8 +1,21 @@
+diff --git a/build/make/ads2gas_apple.pl b/build/make/ads2gas_apple.pl
+index 78f4a97..dfceebd 100755
+--- a/build/make/ads2gas_apple.pl
++++ b/build/make/ads2gas_apple.pl
+@@ -132,7 +132,7 @@ while (<STDIN>)
+     # Make function visible to linker, and make additional symbol with
+     # prepended underscore
+     s/EXPORT\s+\|([\$\w]*)\|/.globl _$1\n\t.globl $1/;
+-    s/IMPORT\s+\|([\$\w]*)\|/.globl $1/;
++    s/IMPORT\s+\|([\$\w]*)\|/.globl _$1/;
+ 
+     # No vertical bars required; make additional symbol with prepended
+     # underscore
 diff --git a/build/make/configure.sh b/build/make/configure.sh
-index 009a6c4..1cd1ea8 100755
+index 1279f78..b7f0c99 100755
 --- a/build/make/configure.sh
 +++ b/build/make/configure.sh
-@@ -729,7 +729,7 @@ process_common_toolchain() {
+@@ -732,7 +732,7 @@ process_common_toolchain() {
              TOOLCHAIN_PATH=${SDK_PATH}/usr/bin
              CC=${TOOLCHAIN_PATH}/gcc
              AR=${TOOLCHAIN_PATH}/ar
@@ -11,7 +24,7 @@ index 009a6c4..1cd1ea8 100755
              AS=${TOOLCHAIN_PATH}/as
              STRIP=${TOOLCHAIN_PATH}/strip
              NM=${TOOLCHAIN_PATH}/nm
-@@ -741,9 +741,9 @@ process_common_toolchain() {
+@@ -744,9 +744,9 @@ process_common_toolchain() {
              ASFLAGS="-version -arch ${tgt_isa} -g"
  
              add_cflags -arch ${tgt_isa}
@@ -23,3 +36,55 @@ index 009a6c4..1cd1ea8 100755
  
              # This should be overridable
              alt_libc=${SDK_PATH}/SDKs/iPhoneOS4.3.sdk
+diff --git a/vp8/encoder/arm/armv5te/boolhuff_armv5te.asm b/vp8/encoder/arm/armv5te/boolhuff_armv5te.asm
+index 5b7e8f6..0dccf66 100644
+--- a/vp8/encoder/arm/armv5te/boolhuff_armv5te.asm
++++ b/vp8/encoder/arm/armv5te/boolhuff_armv5te.asm
+@@ -33,7 +33,7 @@
+     ldr  r3, [r0, #vp8_writer_error]
+     mov  r1, $pos
+     mov  r0, $start
+-    bl   vp8_validate_buffer_arm
++    bl   _vp8_validate_buffer_arm
+     pop  {r0-r3, r12, lr}
+     MEND
+ 
+diff --git a/vp8/encoder/arm/armv5te/vp8_packtokens_armv5.asm b/vp8/encoder/arm/armv5te/vp8_packtokens_armv5.asm
+index a1cd467..29819ba 100644
+--- a/vp8/encoder/arm/armv5te/vp8_packtokens_armv5.asm
++++ b/vp8/encoder/arm/armv5te/vp8_packtokens_armv5.asm
+@@ -31,7 +31,7 @@
+     ldr  r3, [r0, #vp8_writer_error]
+     mov  r1, $pos
+     mov  r0, $start
+-    bl   vp8_validate_buffer_arm
++    bl   _vp8_validate_buffer_arm
+     pop  {r0-r3, r12, lr}
+     MEND
+ 
+diff --git a/vp8/encoder/arm/armv5te/vp8_packtokens_mbrow_armv5.asm b/vp8/encoder/arm/armv5te/vp8_packtokens_mbrow_armv5.asm
+index 1fa5e6c..69f297f 100644
+--- a/vp8/encoder/arm/armv5te/vp8_packtokens_mbrow_armv5.asm
++++ b/vp8/encoder/arm/armv5te/vp8_packtokens_mbrow_armv5.asm
+@@ -31,7 +31,7 @@
+     ldr  r3, [r0, #vp8_writer_error]
+     mov  r1, $pos
+     mov  r0, $start
+-    bl   vp8_validate_buffer_arm
++    bl   _vp8_validate_buffer_arm
+     pop  {r0-r3, r12, lr}
+     MEND
+ 
+diff --git a/vp8/encoder/arm/armv5te/vp8_packtokens_partitions_armv5.asm b/vp8/encoder/arm/armv5te/vp8_packtokens_partitions_armv5.asm
+index 3a183aa..4289f0a 100644
+--- a/vp8/encoder/arm/armv5te/vp8_packtokens_partitions_armv5.asm
++++ b/vp8/encoder/arm/armv5te/vp8_packtokens_partitions_armv5.asm
+@@ -30,7 +30,7 @@
+     ldr  r3, [r0, #vp8_writer_error]
+     mov  r1, $pos
+     mov  r0, $start
+-    bl   vp8_validate_buffer_arm
++    bl   _vp8_validate_buffer_arm
+     pop  {r0-r3, r12, lr}
+     MEND
+ 
