@@ -810,7 +810,12 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		//go directly to bg mode
 		[self enterBackgroundMode];
 	}
-
+    
+    if ([LinphoneManager runningOnIpad])
+        ms_set_cpu_count(2);
+    else
+        ms_set_cpu_count(1);
+    
     ms_warning("Linphone [%s]  started on [%s]"
                ,linphone_core_get_version()
                ,[[UIDevice currentDevice].model cStringUsingEncoding:[NSString defaultCStringEncoding]] );
