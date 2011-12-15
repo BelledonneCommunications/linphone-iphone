@@ -810,6 +810,14 @@ static void autoreplier_config_init(LinphoneCore *lc)
 }
 */
 
+bool_t linphone_core_tunnel_available(){
+#ifdef TUNNEL_ENABLED
+	return TRUE;
+#else
+	return FALSE;
+#endif
+}
+
 /**
  * Enable adaptive rate control (experimental feature, audio-only).
  *
@@ -989,6 +997,36 @@ static void misc_config_read (LinphoneCore *lc) {
     lc->max_calls=lp_config_get_int(config,"misc","max_calls",NB_MAX_CALLS);
 }
 
+#ifdef TUNNEL_ENABLED
+static void tunnel_add_servers_from_config(LinphoneTunnelManager *tunnel, const char* confaddress){
+	char *addresses=(char*)ms_strdup(confaddress);
+	char *str1;
+	for(str1=addresses;;str1=NULL){
+		char *port;
+		char *address=strtok(str1," "); // Not thread safe
+		if (!address) break;
+		port=strchr(address, ':');
+		if (!port) ms_fatal("Bad tunnel address %s", address);
+		*port++='\0';
+		linphone_tunnel_add_server(tunnel, address, atoi(port));
+	}
+	ms_free(addresses);
+}
+#endif
+
+void linphone_core_update_tunnel(LinphoneCore *lc){
+#ifdef TUNNEL_ENABLED
+	bool_t enabled;
+	const char* addresses=linphone_tunnel_get_server_addresses(lc->tunnel);
+	if (addresses){
+		linphone_tunnel_clean_servers(lc->tunnel);
+		tunnel_add_servers_from_config(lc->tunnel,addresses);
+	}
+	enabled=linphone_tunnel_get_state(lc->tunnel)==LinphoneTunnelEnabled && addresses!=NULL;
+	linphone_tunnel_enable(lc->tunnel, enabled);
+#endif
+}
+
 static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vtable, const char *config_path,
     const char *factory_config_path, void * userdata)
 {
@@ -1084,6 +1122,10 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	lc->presence_mode=LinphoneStatusOnline;
 	misc_config_read(lc);
 	ui_config_read(lc);
+#ifdef TUNNEL_ENABLED
+	lc->tunnel=linphone_core_tunnel_new(lc);
+	linphone_core_update_tunnel(lc);
+#endif
 	if (lc->vtable.display_status)
 		lc->vtable.display_status(lc,_("Ready"));
 	lc->auto_net_state_mon=lc->sip_conf.auto_net_state_mon;
@@ -3874,14 +3916,8 @@ void linphone_core_stop_waiting(LinphoneCore *lc){
 	}
 }
 
-void linphone_core_set_audio_transports(LinphoneCore *lc, RtpTransport *rtp, RtpTransport *rtcp){
-	lc->a_rtp=rtp;
-	lc->a_rtcp=rtcp;
-}
-
-void linphone_core_set_video_transports(LinphoneCore *lc, RtpTransport *rtp, RtpTransport *rtcp){
-	lc->v_rtp=rtp;
-	lc->v_rtcp=rtcp;
+void linphone_core_set_rtp_transport_factories(LinphoneCore* lc, LinphoneRtpTransportFactories *factories){
+	lc->rtptf=factories;
 }
 
 /**

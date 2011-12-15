@@ -41,4 +41,15 @@ Specfile
 .anjuta_sym_db.db
 gtk-glade/version_date.h
 share/linphone.desktop
+Debug/
+build/macos/Info-linphone.plist
+coreapi/help/Doxyfile
+coreapi/help/buddy_status
+coreapi/help/chatroom
+coreapi/help/doc/
+coreapi/help/helloworld
+coreapi/help/registration
+coreapi/test_ecc
+coreapi/test_lsd
+gtk/version_date.h
 

@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "linphone.h"
+#include "linphone_tunnel_manager.h"
 
 typedef enum {
 	CAP_IGNORE,
@@ -986,5 +987,88 @@ void linphone_gtk_show_parameters(void){
 
 	g_signal_connect(G_OBJECT(linphone_gtk_get_widget(pb,"proto_port")),"value-changed",(GCallback)linphone_gtk_update_my_port,NULL);
 	g_signal_connect(G_OBJECT(linphone_gtk_get_widget(pb,"proto_combo")),"changed",(GCallback)linphone_gtk_proto_changed,NULL);
+
+
+	if (linphone_core_tunnel_available(lc)){
+		gtk_widget_set_visible(GTK_WIDGET(linphone_gtk_get_widget(pb,"tunnel_edit_button")), TRUE);
+		gtk_widget_set_visible(GTK_WIDGET(linphone_gtk_get_widget(pb,"tunnel_label")), TRUE);
+	}
+
 	gtk_widget_show(pb);
+}
+
+
+void linphone_gtk_edit_tunnel_closed(GtkWidget *button){
+        GtkWidget *pb=gtk_widget_get_toplevel(button);
+        gtk_widget_destroy(pb);
+}
+
+#ifdef TUNNEL_ENABLED
+static void tunnel_get_server_host_and_port(LinphoneTunnelManager *tunnel, char *host, int size, int *port){
+	char *colon;
+        char *addresses=(char*)ms_strdup(linphone_tunnel_get_server_addresses(tunnel));
+	char *str1=addresses;
+        char *address=strtok(str1," "); // Not thread safe
+        if (!address) return;
+        colon=strchr(address, ':');
+        if (!colon) return;
+        *colon++='\0';
+	*port=atoi(colon);
+	memcpy(host,address,size);
+        ms_free(addresses);
+}
+#endif
+
+void linphone_gtk_edit_tunnel(GtkButton *button){
+#ifdef TUNNEL_ENABLED
+	LinphoneCore *lc=linphone_gtk_get_core();
+	GtkWidget *w=linphone_gtk_create_window("tunnel_config");
+	LinphoneTunnelManager *tunnel=linphone_tunnel_get(lc);
+	char host[50]={'\0'};
+	int port=0;
+	tunnel_get_server_host_and_port(tunnel, host, sizeof(host), &port);
+	LinphoneTunnelState state=linphone_tunnel_get_state(tunnel);
+
+	gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(w,"host")),host);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(w,"port")), port);
+
+	if (state == LinphoneTunnelEnabled){
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"radio_enable")),1);
+	} else{
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"radio_disable")),1);
+	}
+
+	g_object_weak_ref(G_OBJECT(w),(GWeakNotify)linphone_gtk_edit_tunnel_closed,w);
+
+    gtk_widget_show(w);
+#endif
+}
+
+void linphone_gtk_tunnel_ok(GtkButton *button){
+#ifdef TUNNEL_ENABLED
+	// Save information to config file
+	LinphoneCore *lc=linphone_gtk_get_core();
+	GtkWidget *w=gtk_widget_get_toplevel(GTK_WIDGET(button));
+	char address[50]={'\0'};
+	LinphoneTunnelManager *tunnel=linphone_tunnel_get(lc);
+
+	gint port = (gint)gtk_spin_button_get_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(w,"port")));
+	gboolean enabled=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"radio_enable")));
+	const char *host=gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(w,"host")));
+
+	snprintf(address, sizeof address, "%s:%i", host, port);
+	linphone_tunnel_set_server_addresses(tunnel, address);
+	if (enabled){
+		linphone_tunnel_set_state(tunnel, LinphoneTunnelEnabled);
+	} else{
+		linphone_tunnel_set_state(tunnel,LinphoneTunnelDisabled);
+	}
+	linphone_core_update_tunnel(lc);
+	gtk_widget_destroy(w);
+#endif
+}
+
+
+void linphone_gtk_tunnel_cancel(GtkButton *button){
+
 }

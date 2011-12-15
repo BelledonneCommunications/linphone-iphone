@@ -37,6 +37,7 @@ AC_CONFIG_MACRO_DIR([m4])
 AC_SUBST([mkdir_p])
 AC_ISC_POSIX
 AC_PROG_CC
+AC_PROG_CXX
 AC_C_INLINE
 AM_PROG_CC_STDC
 AC_HEADER_STDC
@@ -460,6 +461,32 @@ AC_SUBST(MEDIASTREAMER_LIBS)
 AC_SUBST([MS2_VERSION])
 AC_SUBST([MS2_DIR])
 
+
+
+AC_ARG_ENABLE(tunnel,
+      [  --enable-tunnel=[yes/no]    Turn on compilation of tunnel support [default=no]],
+      [case "${enableval}" in
+        yes) enable_tunnel=true ;;
+        no)  enable_tunnel=false ;;
+        *) AC_MSG_ERROR(bad value ${enableval} for --enable-tunnel) ;;
+      esac],[enable_tunnel=false])
+AM_CONDITIONAL(BUILD_TUNNEL, test x$enable_tunnel = xtrue)
+if test x$enable_tunnel = xtrue; then
+     PKG_CHECK_MODULES(TUNNEL, tunnel >= 0.3.1)
+     TUNNEL_CFLAGS+="-DTUNNEL_ENABLED"
+     AC_SUBST(TUNNEL_CFLAGS)
+     AC_SUBST(TUNNEL_LIBS)
+fi
+
+
+
+
+
+
+
+
+
+
 dnl check for db2html (docbook) to generate html user manual
 AC_CHECK_PROG(have_sgmltools,sgmltools, yes, no)
 AM_CONDITIONAL(ENABLE_MANUAL, test x$have_sgmltools$build_manual = xyesyes )
@@ -516,6 +543,8 @@ AC_ARG_ENABLE(tests_enabled,
         *) AC_MSG_ERROR(bad value ${enableval} for --disable-tests) ;;
       esac],[tests_enabled=false])
 AM_CONDITIONAL(ENABLE_TESTS, test x$tests_enabled = xyes)
+
+
 
 dnl ##################################################
 dnl # Check for doxygen

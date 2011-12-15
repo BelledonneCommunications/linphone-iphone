@@ -66,7 +66,6 @@ LOCAL_CFLAGS += \
 
 LOCAL_CFLAGS += -DIN_LINPHONE
 
-
 ifeq ($(LINPHONE_VIDEO),1)
 LOCAL_CFLAGS += -DVIDEO_ENABLED
 ifeq ($(BUILD_X264),1)
@@ -93,6 +92,18 @@ LOCAL_STATIC_LIBRARIES := \
 	libeXosip2 \
 	libosip2 \
 	libgsm 
+
+ifeq ($(BUILD_TUNNEL),1)
+LOCAL_CFLAGS +=-DTUNNEL_ENABLED
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../tunnel/include
+LOCAL_SRC_FILES += linphone_tunnel_manager.cc TunnelManager.cc
+ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
+LOCAL_SHARED_LIBRARIES += libtunnelclient
+else
+LOCAL_STATIC_LIBRARIES += libtunnelclient
+endif
+endif
+
 
 
 ifneq ($(BUILD_AMR),0)

@@ -707,5 +707,17 @@ public interface LinphoneCore {
 	 * @param path path to music file played to remote side when on hold.
 	 */
 	void setPlayFile(String path);
-	
+	void tunnelEnable(boolean enable);
+	void tunnelAutoDetect();
+	void tunnelEnableLogs(boolean enable);
+	void tunnelCleanServers();
+	/**
+	 * @param host tunnel server ip address
+	 * @param port tunnel server tls port, recommended value is 443
+	 * @param udpMirrorPort remote port on the tunnel server side  used to test udp reachability
+	 * @param roundTripDelay udp packet round trip delay in ms considered as acceptable. recommended value is 1000 ms
+	 */
+	void tunnelAddServerAndMirror(String host, int port, int udpMirrorPort, int roundTripDelay);
+
+	boolean isTunnelAvailable();
 }

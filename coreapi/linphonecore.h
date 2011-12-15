@@ -344,6 +344,16 @@ typedef enum _LinphoneRegistrationState{
  */
 const char *linphone_registration_state_to_string(LinphoneRegistrationState cs);
 
+/**
+ * True if tunnel support was compiled.
+ */
+bool_t linphone_core_tunnel_available();
+
+/**
+ * Update tunnel using configuration.
+ */
+void linphone_core_update_tunnel(LinphoneCore *lc);
+
 LinphoneProxyConfig *linphone_proxy_config_new(void);
 int linphone_proxy_config_set_server_addr(LinphoneProxyConfig *obj, const char *server_addr);
 int linphone_proxy_config_set_identity(LinphoneProxyConfig *obj, const char *identity);
@@ -1006,9 +1016,20 @@ const MSList * linphone_core_get_sip_setups(LinphoneCore *lc);
 void linphone_core_destroy(LinphoneCore *lc);
 
 /*for advanced users:*/
-void linphone_core_set_audio_transports(LinphoneCore *lc, RtpTransport *rtp, RtpTransport *rtcp);
-void linphone_core_set_video_transports(LinphoneCore *lc, RtpTransport *rtp, RtpTransport *rtcp);
+typedef RtpTransport * (*LinphoneRtpTransportFactoryFunc)(void *data, int port);
+struct _LinphoneRtpTransportFactories{
+	LinphoneRtpTransportFactoryFunc audio_rtp_func;
+	void *audio_rtp_func_data;
+	LinphoneRtpTransportFactoryFunc audio_rtcp_func;
+	void *audio_rtcp_func_data;
+	LinphoneRtpTransportFactoryFunc video_rtp_func;
+	void *video_rtp_func_data;
+	LinphoneRtpTransportFactoryFunc video_rtcp_func;
+	void *video_rtcp_func_data;
+};
+typedef struct _LinphoneRtpTransportFactories LinphoneRtpTransportFactories;
 
+void linphone_core_set_rtp_transport_factories(LinphoneCore* lc, LinphoneRtpTransportFactories *factories);
 
 int linphone_core_get_current_call_stats(LinphoneCore *lc, rtp_stats_t *local, rtp_stats_t *remote);
 

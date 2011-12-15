@@ -845,8 +845,11 @@ void linphone_call_init_media_streams(LinphoneCall *call){
 		audio_stream_enable_noise_gate(audiostream,enabled);
 	}
 
-	if (lc->a_rtp)
-		rtp_session_set_transports(audiostream->session,lc->a_rtp,lc->a_rtcp);
+	if (lc->rtptf){
+		RtpTransport *artp=lc->rtptf->audio_rtp_func(lc->rtptf->audio_rtp_func_data, call->audio_port);
+		RtpTransport *artcp=lc->rtptf->audio_rtcp_func(lc->rtptf->audio_rtcp_func_data, call->audio_port+1);
+		rtp_session_set_transports(audiostream->session,artp,artcp);
+	}
 
 	call->audiostream_app_evq = ortp_ev_queue_new();
 	rtp_session_register_event_queue(audiostream->session,call->audiostream_app_evq);
@@ -858,8 +861,11 @@ void linphone_call_init_media_streams(LinphoneCall *call){
 	if( lc->video_conf.displaytype != NULL)
 		video_stream_set_display_filter_name(call->videostream,lc->video_conf.displaytype);
 	video_stream_set_event_callback(call->videostream,video_stream_event_cb, call);
-	if (lc->v_rtp)
-		rtp_session_set_transports(call->videostream->session,lc->v_rtp,lc->v_rtcp);
+	if (lc->rtptf){
+		RtpTransport *vrtp=lc->rtptf->video_rtp_func(lc->rtptf->video_rtp_func_data, call->video_port);
+		RtpTransport *vrtcp=lc->rtptf->video_rtcp_func(lc->rtptf->video_rtcp_func_data, call->video_port+1);
+		rtp_session_set_transports(call->videostream->session,vrtp,vrtcp);
+	}
 	call->videostream_app_evq = ortp_ev_queue_new();
 	rtp_session_register_event_queue(call->videostream->session,call->videostream_app_evq);
 #ifdef TEST_EXT_RENDERER
@@ -1039,7 +1045,7 @@ static bool_t linphone_call_sound_resources_available(LinphoneCall *call){
 	return !linphone_core_is_in_conference(lc) && 
 		(current==NULL || current==call);
 }
-static int find_crypto_index_from_tag(SalSrtpCryptoAlgo crypto[],unsigned char tag) {
+static int find_crypto_index_from_tag(const SalSrtpCryptoAlgo crypto[],unsigned char tag) {
 	int i;
 	for(i=0; i<SAL_CRYPTO_ALGO_MAX; i++) {
 		if (crypto[i].tag == tag) {
@@ -1313,7 +1319,7 @@ void linphone_call_stop_media_streams(LinphoneCall *call){
 			const char *state_str=NULL;
 			ms_filter_call_method(call->audiostream->ec,MS_ECHO_CANCELLER_GET_STATE_STRING,&state_str);
 			if (state_str){
-				ms_message("Writing echo canceller state, %i bytes",(int)strlen(state_str));
+				ms_message("Writing echo canceler state, %i bytes",(int)strlen(state_str));
 				lp_config_set_string(call->core->config,"sound","ec_state",state_str);
 			}
 		}
