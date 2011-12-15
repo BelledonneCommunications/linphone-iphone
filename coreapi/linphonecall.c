@@ -1039,7 +1039,15 @@ static bool_t linphone_call_sound_resources_available(LinphoneCall *call){
 	return !linphone_core_is_in_conference(lc) && 
 		(current==NULL || current==call);
 }
-
+static int find_crypto_index_from_tag(SalSrtpCryptoAlgo crypto[],unsigned char tag) {
+	int i;
+	for(i=0; i<SAL_CRYPTO_ALGO_MAX; i++) {
+		if (crypto[i].tag == tag) {
+			return i;
+		}
+	}
+	return -1;
+}
 static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cname, bool_t muted, bool_t send_ringbacktone, bool_t use_arc){
 	LinphoneCore *lc=call->core;
 	int jitt_comp=lc->rtp_conf.audio_jitt_comp;
@@ -1130,11 +1138,10 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cna
 			if (stream->proto == SalProtoRtpSavp) {
 				const SalStreamDescription *local_st_desc=sal_media_description_find_stream(call->localdesc,
 	    					SalProtoRtpSavp,SalAudio);
-	    					
 				audio_stream_enable_strp(
 					call->audiostream, 
 					stream->crypto[0].algo,
-					local_st_desc->crypto[0].master_key,
+					local_st_desc->crypto[find_crypto_index_from_tag(local_st_desc->crypto,stream->crypto[0].tag)].master_key,
 					stream->crypto[0].master_key);
 				call->audiostream_encrypted=TRUE;
 			}else call->audiostream_encrypted=FALSE;

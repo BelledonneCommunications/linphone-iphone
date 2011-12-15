@@ -142,8 +142,8 @@ static bool_t match_crypto_algo(const SalSrtpCryptoAlgo* local, const SalSrtpCry
 					strncpy(result->master_key, local[j].master_key, 41);
 					result->tag = local[j].tag;
 				} else {
-					strncpy(result->master_key, remote[j].master_key, 41);
-					result->tag = remote[j].tag;
+					strncpy(result->master_key, remote[i].master_key, 41);
+					result->tag = remote[i].tag;
 				}
 				result->master_key[40] = '\0';
 				return TRUE;
