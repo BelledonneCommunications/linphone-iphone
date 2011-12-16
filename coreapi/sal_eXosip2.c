@@ -722,6 +722,7 @@ int sal_ping(SalOp *op, const char *from, const char *to){
 	
 	sal_op_set_from(op,from);
 	sal_op_set_to(op,to);
+
 	/*bug here: eXosip2 does not honor the route argument*/
 	eXosip_options_build_request (&options, sal_op_get_to(op),
 			sal_op_get_from(op),sal_op_get_route(op));
