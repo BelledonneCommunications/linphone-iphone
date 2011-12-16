@@ -4148,6 +4148,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	linphone_core_free_payload_types(lc);
 	ortp_exit();
 	linphone_core_set_state(lc,LinphoneGlobalOff,"Off");
+	if (lc->tunnel) linphone_tunnel_destroy(lc->tunnel);
 }
 
 static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t curtime){
