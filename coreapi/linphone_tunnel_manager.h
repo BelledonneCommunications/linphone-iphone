@@ -34,6 +34,8 @@ extern "C"
 #endif
 
 typedef struct LinphoneTunnelManager LinphoneTunnelManager;
+typedef void (*LogHandler)(int log_level, const char *str, va_list l);
+
 
 LinphoneTunnelManager *linphone_tunnel_get(LinphoneCore *lc);
 void linphone_tunnel_destroy(LinphoneTunnelManager *tunnel);
@@ -43,6 +45,8 @@ void linphone_tunnel_clean_servers(LinphoneTunnelManager *tunnel);
 void linphone_tunnel_enable(LinphoneTunnelManager *tunnel, bool_t enabled);
 bool_t linphone_tunnel_enabled(LinphoneTunnelManager *tunnel);
 void linphone_tunnel_enable_logs(LinphoneTunnelManager *tunnel, bool_t enabled);
+void linphone_tunnel_enable_logs_with_handler(LinphoneTunnelManager *tunnel, bool_t enabled, LogHandler logHandler);
+void linphone_tunnel_reconnect(LinphoneTunnelManager *tunnel);
 void linphone_tunnel_auto_detect(LinphoneTunnelManager *tunnel);
 
 

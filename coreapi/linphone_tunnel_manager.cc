@@ -71,6 +71,14 @@ void linphone_tunnel_enable_logs(LinphoneTunnelManager *tunnel, bool_t enabled){
 	bcTunnel(tunnel)->enableLogs(enabled);
 }
 
+void linphone_tunnel_enable_logs_with_handler(LinphoneTunnelManager *tunnel, bool_t enabled, LogHandler logHandler){
+	bcTunnel(tunnel)->enableLogs(enabled, logHandler);
+}
+
+void linphone_tunnel_reconnect(LinphoneTunnelManager *tunnel){
+	bcTunnel(tunnel)->reconnect();
+}
+
 void linphone_tunnel_auto_detect(LinphoneTunnelManager *tunnel){
 	bcTunnel(tunnel)->autoDetect();
 }
