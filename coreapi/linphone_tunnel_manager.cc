@@ -75,6 +75,10 @@ void linphone_tunnel_enable_logs_with_handler(LinphoneTunnelManager *tunnel, boo
 	bcTunnel(tunnel)->enableLogs(enabled, logHandler);
 }
 
+void linphone_tunnel_set_http_proxy_auth_info(LinphoneTunnelManager *tunnel, const char* username,const char* passwd){
+	bcTunnel(tunnel)->setHttpProxyAuthInfo(username, passwd);
+}
+
 void linphone_tunnel_reconnect(LinphoneTunnelManager *tunnel){
 	bcTunnel(tunnel)->reconnect();
 }

@@ -48,7 +48,7 @@ void linphone_tunnel_enable_logs(LinphoneTunnelManager *tunnel, bool_t enabled);
 void linphone_tunnel_enable_logs_with_handler(LinphoneTunnelManager *tunnel, bool_t enabled, LogHandler logHandler);
 void linphone_tunnel_reconnect(LinphoneTunnelManager *tunnel);
 void linphone_tunnel_auto_detect(LinphoneTunnelManager *tunnel);
-
+void linphone_tunnel_set_http_proxy_auth_info(const char* username,const char* passwd);
 
 
 /**
