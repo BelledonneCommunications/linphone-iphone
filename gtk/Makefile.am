@@ -8,6 +8,7 @@ UI_FILES=	about.ui \
 		call_logs.ui \
 		log.ui \
 		buddylookup.ui \
+		tunnel_config.ui \
 		waiting.ui
 
 PIXMAPS=	\
@@ -74,7 +75,8 @@ endif
 AM_CFLAGS= -DIN_LINPHONE -I$(top_srcdir)/coreapi/ \
 		$(MEDIASTREAMER_CFLAGS) \
 		$(ORTP_CFLAGS) \
-		$(STRICT_OPTIONS) $(LIBGTK_CFLAGS) $(LIBGTKMAC_CFLAGS) $(IPV6_CFLAGS)
+		$(STRICT_OPTIONS) $(LIBGTK_CFLAGS) $(LIBGTKMAC_CFLAGS) $(IPV6_CFLAGS) \
+		$(TUNNEL_CFLAGS)
 
 
 version_date.h: $(top_srcdir)/configure.ac

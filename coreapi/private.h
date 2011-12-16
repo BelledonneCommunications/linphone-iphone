@@ -24,8 +24,11 @@
 
 #ifndef _PRIVATE_H
 #define _PRIVATE_H
-
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include "linphonecore.h"
+#include "linphone_tunnel_manager.h"
 #include "linphonecore_utils.h"
 #include "sal.h"
 
@@ -442,8 +445,7 @@ struct _LinphoneCore
 	int missed_calls;
 	VideoPreview *previewstream;
 	struct _MSEventQueue *msevq;
-	RtpTransport *a_rtp,*a_rtcp;
-	RtpTransport *v_rtp,*v_rtcp;
+	LinphoneRtpTransportFactories *rtptf;
 	MSList *bl_reqs;
 	MSList *subscribers;	/* unknown subscribers */
 	int minutes_away;
@@ -474,7 +476,10 @@ struct _LinphoneCore
 	int device_rotation;
 	bool_t ringstream_autorelease;
 	int max_calls;
+	LinphoneTunnelManager *tunnel;
 };
+
+LinphoneTunnelManager *linphone_core_tunnel_new(LinphoneCore *lc);
 
 bool_t linphone_core_can_we_add_call(LinphoneCore *lc);
 int linphone_core_add_call( LinphoneCore *lc, LinphoneCall *call);
@@ -538,4 +543,9 @@ void __linphone_core_invalidate_registers(LinphoneCore* lc);
 #define NB_MAX_CALLS	(10)
 #endif
 void call_logs_write_to_config_file(LinphoneCore *lc);
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif /* _PRIVATE_H */

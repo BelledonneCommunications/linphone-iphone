@@ -1,0 +1,435 @@
+/*
+ *  C Implementation: tunnel
+ *
+ * Description: 
+ *
+ *
+ * Author: Simon Morlat <simon.morlat@linphone.org>, (C) 2009
+ *
+ * Copyright (C) 2010  Belledonne Comunications, Grenoble, France
+ *
+ */
+
+
+#include "TunnelManager.hh"
+
+#include "ortp/rtpsession.h"
+#include "linphonecore.h"
+#include "linphonecore_utils.h"
+#include "eXosip2/eXosip_transport_hook.h"
+#include "tunnel/udp_mirror.hh"
+
+#ifdef ANDROID
+#include <android/log.h>
+#endif
+
+#ifdef recvfrom 
+#undef recvfrom
+#endif
+#ifdef sendto 
+#undef sendto
+#endif
+#ifdef select 
+#undef select
+#endif
+
+using namespace belledonnecomm;
+
+Mutex TunnelManager::sMutex;
+
+int TunnelManager::eXosipSendto(int fd,const void *buf, size_t len, int flags, const struct sockaddr *to, socklen_t tolen,void* userdata){
+	TunnelManager* lTunnelMgr=(TunnelManager*)userdata;
+	int err;
+	sMutex.lock();
+	if (lTunnelMgr->mSipSocket==NULL){
+		sMutex.unlock();
+		return len;//let ignore the error
+	}
+	err=lTunnelMgr->mSipSocket->sendto(buf,len,to,tolen);
+	sMutex.unlock();
+	return err;
+}
+
+int TunnelManager::eXosipRecvfrom(int fd, void *buf, size_t len, int flags, struct sockaddr *from, socklen_t *fromlen,void* userdata){
+	TunnelManager* lTunnelMgr=(TunnelManager*)userdata;
+	int err;
+	sMutex.lock();
+	if (lTunnelMgr->mSipSocket==NULL){
+		sMutex.unlock();
+		return 0;//let ignore the error
+	}
+	err=lTunnelMgr->mSipSocket->recvfrom(buf,len,from,*fromlen);
+	sMutex.unlock();
+	return err;
+}
+
+int TunnelManager::eXosipSelect(int max_fds, fd_set *s1, fd_set *s2, fd_set *s3, struct timeval *tv,void* userdata){
+	struct timeval begin,cur;
+	TunnelManager* lTunnelMgr=(TunnelManager*)userdata;
+	if (tv!=0 && tv->tv_sec){
+		/*this is the select from udp.c, the one that is interesting to us*/
+		unsigned int i;
+		fd_set tmp;
+		int udp_fd=eXosip_get_udp_socket();
+		int controlfd=-1;
+
+		/*
+			Find the udp fd and the control fd
+		*/
+		for(i=0;i<max_fds;++i){
+			if (FD_ISSET(i,s1) && i!=udp_fd){
+				controlfd=i;
+				break;
+			}
+		}
+		if (controlfd==-1){
+			ms_error("Could not find control fd !");
+			return -1;
+		}
+		FD_ZERO(s1);		
+		gettimeofday(&begin,NULL);
+		do{
+			struct timeval abit;
+
+			abit.tv_sec=0;
+			abit.tv_usec=20000;
+			sMutex.lock();
+			if (lTunnelMgr->mSipSocket!=NULL){
+				if (lTunnelMgr->mSipSocket->hasData()) {
+					sMutex.unlock();
+					/* we make exosip believe that it has udp data to read*/
+					FD_SET(udp_fd,s1);
+					return 1;
+				}
+			}
+			sMutex.unlock();
+			gettimeofday(&cur,NULL);
+			if (cur.tv_sec-begin.tv_sec>tv->tv_sec) {
+				FD_SET(controlfd,s1);
+				FD_SET(udp_fd,s1);
+				return 0;
+			}
+			FD_ZERO(s1);
+			FD_SET(controlfd,s1);
+			if (select(max_fds,s1,s2,s3,&abit)==1) {
+				return 1;
+			}
+		}while(1);
+		
+	}else{
+		/*select called from other places, only the control fd is present */
+		return select(max_fds,s1,s2,s3,tv);
+	}
+}
+
+
+void TunnelManager::addServer(const char *ip, int port,unsigned int udpMirrorPort,unsigned int delay) {
+	addServer(ip,port);
+	mUdpMirrorClients.push_back(UdpMirrorClient(ServerAddr(ip,udpMirrorPort),delay));
+}
+
+void TunnelManager::addServer(const char *ip, int port) {
+	mServerAddrs.push_back(ServerAddr(ip,port));
+	if (mTunnelClient) mTunnelClient->addServer(ip,port);
+}
+
+void TunnelManager::cleanServers() {
+	mServerAddrs.clear();
+
+	UdpMirrorClientList::iterator it;
+	mAutoDetectStarted=false;
+	for (it = mUdpMirrorClients.begin(); it != mUdpMirrorClients.end();) {
+		UdpMirrorClient& s=*it++;
+		s.stop();
+	}
+	mUdpMirrorClients.clear();
+	if (mTunnelClient) mTunnelClient->cleanServers();
+}
+
+void TunnelManager::reconnect(){
+	if (mTunnelClient)
+		mTunnelClient->reconnect();
+}
+
+void TunnelManager::setCallback(StateCallback cb, void *userdata) {
+	mCallback=cb;
+	mCallbackData=userdata;
+}
+
+static void sCloseRtpTransport(void *userData, RtpTransport *t){
+	((TunnelManager::TunnelManager *) userData)->closeRtpTransport(t);
+}
+void TunnelManager::closeRtpTransport(RtpTransport *t){
+	TunnelSocket *socket=(TunnelSocket *) t->data;
+	mTransports.remove(t);
+	mTunnelClient->closeSocket(socket);
+	ms_free(t);
+}
+
+static RtpTransport *sCreateRtpTransport(void* userData, int port){
+	return ((TunnelManager::TunnelManager *) userData)->createRtpTransport(port);
+}
+
+RtpTransport *TunnelManager::createRtpTransport(int port){
+	RtpTransport *t=ms_new0(RtpTransport,1);
+	t->data=mTunnelClient->createSocket(port);
+	t->t_getsocket=NULL;
+	t->t_recvfrom=customRecvfrom;
+	t->t_sendto=customSendto;
+	t->close_fn=sCloseRtpTransport;
+	t->close_data=this;
+	mTransports.push_back(t);
+	return t;
+}
+
+void TunnelManager::start() {
+	if (!mTunnelClient) {
+		mTunnelClient = new TunnelClient();
+		mTunnelClient->setCallback((StateCallback)tunnelCallback,this);
+		std::list<ServerAddr>::iterator it;
+		for(it=mServerAddrs.begin();it!=mServerAddrs.end();++it){
+			const ServerAddr &addr=*it;
+			mTunnelClient->addServer(addr.mAddr.c_str(), addr.mPort);
+		}
+	}
+	mTunnelClient->start();
+
+	if (mSipSocket == NULL) mSipSocket =mTunnelClient->createSocket(5060);
+}
+
+bool TunnelManager::isStarted() {
+	return mTunnelClient != 0 && mTunnelClient->isStarted();
+}
+
+bool TunnelManager::isReady() const {
+	return mTunnelClient && mTunnelClient->isReady();
+}
+
+int TunnelManager::customSendto(struct _RtpTransport *t, mblk_t *msg , int flags, const struct sockaddr *to, socklen_t tolen){
+	int size;
+	msgpullup(msg,-1);
+	size=msgdsize(msg);
+	((TunnelSocket*)t->data)->sendto(msg->b_rptr,size,to,tolen);
+	return size;
+}
+
+int TunnelManager::customRecvfrom(struct _RtpTransport *t, mblk_t *msg, int flags, struct sockaddr *from, socklen_t *fromlen){
+	int err=((TunnelSocket*)t->data)->recvfrom(msg->b_wptr,msg->b_datap->db_lim-msg->b_datap->db_base,from,*fromlen);
+	if (err>0) return err;
+	return 0;
+}
+
+
+TunnelManager::TunnelManager(LinphoneCore* lc) :TunnelClientController()
+,mCore(lc)
+,mEnabled(false)
+,mSipSocket(NULL)
+,mCallback(NULL)
+,mTunnelClient(NULL)
+,mAutoDetectStarted(false) {
+
+	mExosipTransport.data=this;
+	mExosipTransport.recvfrom=eXosipRecvfrom;
+	mExosipTransport.sendto=eXosipSendto;
+	mExosipTransport.select=eXosipSelect;
+	mStateChanged=false;
+	linphone_core_add_iterate_hook(mCore,(LinphoneCoreIterateHook)sOnIterate,this);
+	mTransportFactories.audio_rtcp_func=sCreateRtpTransport;
+	mTransportFactories.audio_rtcp_func_data=this;
+	mTransportFactories.audio_rtp_func=sCreateRtpTransport;
+	mTransportFactories.audio_rtp_func_data=this;
+	mTransportFactories.video_rtcp_func=sCreateRtpTransport;
+	mTransportFactories.video_rtcp_func_data=this;
+	mTransportFactories.video_rtp_func=sCreateRtpTransport;
+	mTransportFactories.video_rtp_func_data=this;
+}
+
+TunnelManager::~TunnelManager(){
+	stopClient();
+}
+
+void TunnelManager::stopClient(){
+	eXosip_transport_hook_register(NULL);
+	if (mSipSocket != NULL){
+		sMutex.lock();
+		mTunnelClient->closeSocket(mSipSocket);
+		mSipSocket = NULL;
+		sMutex.unlock();
+	}
+	if (mTunnelClient){
+		delete mTunnelClient;
+		mTunnelClient=NULL;
+	}
+}
+
+void TunnelManager::processTunnelEvent(){
+	LinphoneProxyConfig* lProxy;
+	linphone_core_get_default_proxy(mCore, &lProxy);
+
+	if (mEnabled && mTunnelClient->isReady()){
+		ms_message("Tunnel is up, registering now");		
+		linphone_core_set_rtp_transport_factories(mCore,&mTransportFactories);
+		eXosip_transport_hook_register(&mExosipTransport);
+		//force transport to udp
+		LCSipTransports lTransport;
+		
+		lTransport.udp_port=15060;
+		lTransport.tcp_port=0;
+		lTransport.tls_port=0;
+		lTransport.dtls_port=0;
+		
+		linphone_core_set_sip_transports(mCore, &lTransport);		
+		//register
+		if (lProxy) {
+			linphone_proxy_config_done(lProxy);
+		}
+	}else if (mEnabled && !mTunnelClient->isReady()){
+		/* we got disconnected from the tunnel */
+		if (lProxy && linphone_proxy_config_is_registered(lProxy)) {
+			/*forces de-registration so that we register again when the tunnel is up*/
+			linphone_proxy_config_edit(lProxy);
+			linphone_core_iterate(mCore);
+		}
+	}
+}
+
+void TunnelManager::enable(bool isEnable) {
+	ms_message("Turning tunnel [%s]",(isEnable?"on":"off"));
+	if (isEnable && !mEnabled){
+		mEnabled=true;
+		//1 save transport 
+		linphone_core_get_sip_transports(mCore, &mRegularTransport);
+		//2 unregister
+		LinphoneProxyConfig* lProxy;
+		linphone_core_get_default_proxy(mCore, &lProxy);
+		if (lProxy) {
+			linphone_proxy_config_edit(lProxy);
+			//make sure unregister is sent
+			linphone_core_iterate(mCore); 
+		}
+		//3 insert tunnel
+		start();
+	}else if (!isEnable && mEnabled){
+		mEnabled=false;
+		stopClient();
+		//1 unregister
+		LinphoneProxyConfig* lProxy;
+		linphone_core_get_default_proxy(mCore, &lProxy);
+		if (lProxy) {
+			linphone_proxy_config_edit(lProxy);
+			//make sure unregister is sent
+			linphone_core_iterate(mCore); 
+		}
+		
+		//make sure unregister is sent
+		linphone_core_iterate(mCore); 
+		
+		linphone_core_set_rtp_transport_factories(mCore,NULL);
+
+		eXosip_transport_hook_register(NULL);
+		//Restore transport
+		linphone_core_set_sip_transports(mCore, &mRegularTransport);
+		//register
+		if (lProxy) {
+			linphone_proxy_config_done(lProxy);
+		}
+
+	}
+}
+
+void TunnelManager::tunnelCallback(bool connected, TunnelManager *zis){
+	zis->mStateChanged=true;
+}
+
+/*invoked from linphone_core_iterate() */
+void TunnelManager::sOnIterate(TunnelManager *zis){
+	if (zis->mStateChanged){
+		zis->mStateChanged=false;
+		zis->processTunnelEvent();
+	}
+}
+
+#ifdef ANDROID
+static void linphone_android_log_handler(int lev, const char *fmt, va_list args){
+	int prio;
+	switch(lev){
+	case TUNNEL_DEBUG:	prio = ANDROID_LOG_DEBUG;	break;
+	case TUNNEL_INFO:	prio = ANDROID_LOG_INFO;	break;
+	case TUNNEL_NOTICE:	prio = ANDROID_LOG_INFO;	break;
+	case TUNNEL_WARN:	prio = ANDROID_LOG_WARN;	break;
+	case TUNNEL_ERROR:	prio = ANDROID_LOG_ERROR;	break;
+	default:			prio = ANDROID_LOG_DEFAULT;	break;
+	}
+	__android_log_vprint(prio, LOG_DOMAIN, fmt, args);
+}
+#endif /*ANDROID*/
+
+void TunnelManager::enableLogs(bool value) {
+	enableLogs(value,NULL);
+}
+
+void TunnelManager::enableLogs(bool isEnabled,LogHandler logHandler) {
+	if (logHandler != NULL)	SetLogHandler(logHandler);
+#ifdef ANDROID
+	else SetLogHandler(linphone_android_log_handler);
+#else
+	else SetLogHandler(default_log_handler);
+#endif
+
+	if (isEnabled) {
+		SetLogLevel(TUNNEL_ERROR|TUNNEL_WARN|TUNNEL_INFO);
+	} else {
+		SetLogLevel(TUNNEL_ERROR|TUNNEL_WARN);
+	}
+}
+	
+
+bool TunnelManager::isEnabled() {
+	return mEnabled;
+}
+void TunnelManager::UdpMirrorClientListener(bool isUdpAvailable, void* data) {
+	TunnelManager* thiz = (TunnelManager*)data;
+	if (isUdpAvailable) {
+		LOGI("Tunnel is not required, disabling");
+		thiz->enable(false);
+		thiz->mAutoDetectStarted = false;
+	} else {
+		if (++thiz->mCurrentUdpMirrorClient !=thiz->mUdpMirrorClients.end()) {
+			//1 enable tunnable but also try backup server
+			LOGI("Tunnel is required, enabling; Trying backup udp mirror");
+			
+			UdpMirrorClient &lUdpMirrorClient=*thiz->mCurrentUdpMirrorClient;
+			lUdpMirrorClient.start(TunnelManager::UdpMirrorClientListener,(void*)thiz);
+		} else {
+			LOGI("Tunnel is required, enabling; no backup udp mirror available");
+			thiz->mAutoDetectStarted = false;
+		}
+		thiz->enable(true);
+	}
+	return;
+}
+
+void TunnelManager::autoDetect() {
+	// first check if udp mirrors was provisionned
+	if (mUdpMirrorClients.empty()) {
+		LOGE("No UDP mirror server configured aborting auto detection");
+		return;
+	}
+	if (mAutoDetectStarted) {
+		LOGE("auto detection already in progress, restarting");
+		(*mCurrentUdpMirrorClient).stop();
+	}
+	mAutoDetectStarted=true;
+	mCurrentUdpMirrorClient =mUdpMirrorClients.begin();
+	UdpMirrorClient &lUdpMirrorClient=*mCurrentUdpMirrorClient;
+	lUdpMirrorClient.start(TunnelManager::UdpMirrorClientListener,(void*)this);
+	
+}
+
+void TunnelManager::setHttpProxyAuthInfo(const char* username,const char* passwd) {
+	mTunnelClient->setHttpProxyAuthInfo(username,passwd);
+}
+
+LinphoneCore *TunnelManager::getLinphoneCore(){
+	return mCore;
+}

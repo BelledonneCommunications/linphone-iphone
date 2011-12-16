@@ -10,7 +10,8 @@ linphone_include_HEADERS=linphonecore.h linphonefriend.h linphonecore_utils.h ..
 
 INCLUDES = \
 	-I$(top_srcdir)\
-	$(MEDIASTREAMER_CFLAGS)
+	$(MEDIASTREAMER_CFLAGS)\
+	$(TUNNEL_CFLAGS)
 
 
 lib_LTLIBRARIES=liblinphone.la
@@ -37,7 +38,13 @@ liblinphone_la_SOURCES=\
 	siplogin.c \
 	lsd.c linphonecore_utils.h \
 	ec-calibrator.c \
-	conference.c
+	conference.c \
+	linphone_tunnel_manager.h
+
+if BUILD_TUNNEL
+liblinphone_la_SOURCES+=TunnelManager.cc TunnelManager.hh linphone_tunnel_manager.c
+endif
+
 
 
 liblinphone_la_LDFLAGS= -version-info $(LIBLINPHONE_SO_VERSION) -no-undefined
@@ -45,7 +52,8 @@ liblinphone_la_LDFLAGS= -version-info $(LIBLINPHONE_SO_VERSION) -no-undefined
 liblinphone_la_LIBADD= \
 		$(EXOSIP_LIBS) \
 		$(MEDIASTREAMER_LIBS) \
-		$(ORTP_LIBS) $(OPENSSL_LIBS)
+		$(ORTP_LIBS) $(OPENSSL_LIBS) \
+		$(TUNNEL_LIBS)
 
 if BUILD_WIN32
 liblinphone_la_LIBADD+=$(top_builddir)/oRTP/src/libortp.la
@@ -70,6 +78,8 @@ AM_CFLAGS=$(STRICT_OPTIONS)  -DIN_LINPHONE \
 	$(EXOSIP_CFLAGS) \
 	-DENABLE_TRACE 	\
 	-DLOG_DOMAIN=\"LinphoneCore\" \
-	 $(IPV6_CFLAGS) \
-	 -DORTP_INET6 \
-	 $(VIDEO_CFLAGS) 
+	$(IPV6_CFLAGS) \
+	-DORTP_INET6 \
+	$(VIDEO_CFLAGS) \
+	$(TUNNEL_CFLAGS)
+
