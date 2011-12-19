@@ -12,12 +12,8 @@ else
 	libvpx_configure_options+= --target=x86-darwin10-gcc
 endif
 libvpx_dir?=externals/libvpx
-$(BUILDER_SRC_DIR)/$(libvpx_dir)/patched :
-	cd $(BUILDER_SRC_DIR)/$(libvpx_dir) \
-	&& git apply $(BUILDER_SRC_DIR)/build/builders.d/libvpx.patch \
-	&& touch $(BUILDER_SRC_DIR)/$(libvpx_dir)/patched
 
-$(BUILDER_BUILD_DIR)/$(libvpx_dir)/config.mk: $(BUILDER_SRC_DIR)/$(libvpx_dir)/patched
+$(BUILDER_BUILD_DIR)/$(libvpx_dir)/config.mk:
 	mkdir -p $(BUILDER_BUILD_DIR)/$(libvpx_dir)
 	cd $(BUILDER_BUILD_DIR)/$(libvpx_dir)/ \
 	&&  host_alias=${host} . $(BUILDER_SRC_DIR)/build/$(config_site) \
