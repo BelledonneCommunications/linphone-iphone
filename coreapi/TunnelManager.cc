@@ -69,7 +69,6 @@ int TunnelManager::eXosipSelect(int max_fds, fd_set *s1, fd_set *s2, fd_set *s3,
 	if (tv!=0 && tv->tv_sec){
 		/*this is the select from udp.c, the one that is interesting to us*/
 		unsigned int i;
-		fd_set tmp;
 		int udp_fd=eXosip_get_udp_socket();
 		int controlfd=-1;
 
@@ -222,9 +221,9 @@ int TunnelManager::customRecvfrom(struct _RtpTransport *t, mblk_t *msg, int flag
 
 TunnelManager::TunnelManager(LinphoneCore* lc) :TunnelClientController()
 ,mCore(lc)
-,mEnabled(false)
 ,mSipSocket(NULL)
 ,mCallback(NULL)
+,mEnabled(false)
 ,mTunnelClient(NULL)
 ,mAutoDetectStarted(false) {
 
