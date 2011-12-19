@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "linphone.h"
 #include <glib.h>
 #include <glib/gprintf.h>
+#include <pthread.h>
 static LinphoneAccountCreator *linphone_gtk_assistant_get_creator(GtkWidget*w);
 
 static const int PASSWORD_MIN_SIZE = 6;
@@ -61,7 +62,7 @@ static int all_account_information_entered(GtkWidget *w) {
 
 	if (gtk_entry_get_text_length(username) > 0 &&
 	gtk_entry_get_text_length(domain) > 0 &&
-	g_regex_match_simple("^(sip:)?[a-z0-9]+([_\\.-][a-z0-9]+)*@([a-z0-9]+([\\.-][a-z0-9]+)*)+\\.[a-z]{2,}$", gtk_entry_get_text(username), 0, 0) &&
+	g_regex_match_simple("^[a-zA-Z]+[a-zA-Z0-9.\\-_]{2,}$", gtk_entry_get_text(username), 0, 0) &&
 	g_regex_match_simple("^(sip:)?([a-z0-9]+([\\.-][a-z0-9]+)*)+\\.[a-z]{2,}$", gtk_entry_get_text(domain), 0, 0)) {
 		return 1;
 	}
@@ -70,14 +71,6 @@ static int all_account_information_entered(GtkWidget *w) {
 
 static void account_informations_changed(GtkEntry *entry, GtkWidget *w) {
 	GtkWidget *assistant=gtk_widget_get_toplevel(w);
-	GtkEntry* username = GTK_ENTRY(g_object_get_data(G_OBJECT(w),"username"));
-	GtkEntry* domain = GTK_ENTRY(g_object_get_data(G_OBJECT(w),"domain"));
-
-	const gchar *needle = "@";
-	if (entry == username && g_strrstr(gtk_entry_get_text(username), needle) != NULL) {
-		gtk_entry_set_text(domain, g_strrstr(gtk_entry_get_text(username), needle)+1);
-	}
-
 	gtk_assistant_set_page_complete(GTK_ASSISTANT(assistant),w,
 		all_account_information_entered(w)>0);
 }
@@ -128,35 +121,24 @@ static GtkWidget *create_account_informations_page() {
 	GtkWidget *labelEmpty=gtk_label_new(NULL);
 	gtk_widget_modify_fg(labelEmpty, GTK_STATE_NORMAL, &color);
 
-	GtkWidget *labelUsername=gtk_label_new(_("Identity:"));
-	GtkWidget *labelUsernameExemple=gtk_label_new(_("example: user@sip.linphone.org"));
-	GtkWidget *labelPassword=gtk_label_new(_("Password:"));
+	GtkWidget *labelUsername=gtk_label_new(_("Username*"));
+	GtkWidget *labelPassword=gtk_label_new(_("Password*"));
 	GtkWidget *entryPassword=gtk_entry_new();
 	gtk_entry_set_visibility(GTK_ENTRY(entryPassword), FALSE);
-	GtkWidget *labelDomain=gtk_label_new(_("Proxy:"));
-	GtkWidget *labelDomainExemple=gtk_label_new(_("example: sip.linphone.org"));
-	GtkWidget *labelRoute=gtk_label_new(_("Route (optional):"));
+	GtkWidget *labelDomain=gtk_label_new(_("Domain*"));
+	GtkWidget *labelProxy=gtk_label_new(_("Proxy"));
 	GtkWidget *entryUsername=gtk_entry_new();
 	GtkWidget *entryDomain=gtk_entry_new();
 	GtkWidget *entryRoute=gtk_entry_new();
 
-	GtkWidget *vbox1=gtk_vbox_new(FALSE, 1);
-	gtk_box_pack_start (GTK_BOX (vbox1), entryUsername, TRUE, TRUE, 1);
-	gtk_box_pack_start (GTK_BOX (vbox1), labelUsernameExemple, TRUE, TRUE, 1);
-	GtkWidget *vbox2=gtk_vbox_new(FALSE, 1);
-	gtk_box_pack_start (GTK_BOX (vbox2), entryDomain, TRUE, TRUE, 1);
-	gtk_box_pack_start (GTK_BOX (vbox2), labelDomainExemple, TRUE, TRUE, 1);
-	gtk_table_set_row_spacing(GTK_TABLE(vbox), 1, 10);
-	gtk_table_set_row_spacing(GTK_TABLE(vbox), 3, 5);
-
 	gtk_table_attach_defaults(GTK_TABLE(vbox), label, 0, 2, 0, 1);
 	gtk_table_attach_defaults(GTK_TABLE(vbox), labelUsername, 0, 1, 1, 2);
-	gtk_table_attach_defaults(GTK_TABLE(vbox), vbox1, 1, 2, 1, 2);
+	gtk_table_attach_defaults(GTK_TABLE(vbox), entryUsername, 1, 2, 1, 2);
 	gtk_table_attach_defaults(GTK_TABLE(vbox), labelPassword, 0, 1, 2, 3);
 	gtk_table_attach_defaults(GTK_TABLE(vbox), entryPassword, 1, 2, 2, 3);
 	gtk_table_attach_defaults(GTK_TABLE(vbox), labelDomain, 0, 1, 3, 4);
-	gtk_table_attach_defaults(GTK_TABLE(vbox), vbox2, 1, 2, 3, 4);
-	gtk_table_attach_defaults(GTK_TABLE(vbox), labelRoute, 0, 1, 4, 5);
+	gtk_table_attach_defaults(GTK_TABLE(vbox), entryDomain, 1, 2, 3, 4);
+	gtk_table_attach_defaults(GTK_TABLE(vbox), labelProxy, 0, 1, 4, 5);
 	gtk_table_attach_defaults(GTK_TABLE(vbox), entryRoute, 1, 2, 4, 5);
 	gtk_table_attach_defaults(GTK_TABLE(vbox), labelEmpty, 0, 2, 5, 6);
 	gtk_widget_show_all(vbox);
@@ -164,7 +146,7 @@ static GtkWidget *create_account_informations_page() {
 	g_object_set_data(G_OBJECT(vbox),"username",entryUsername);
 	g_object_set_data(G_OBJECT(vbox),"password",entryPassword);
 	g_object_set_data(G_OBJECT(vbox),"domain",entryDomain);
-	g_object_set_data(G_OBJECT(vbox),"route",entryRoute);
+	g_object_set_data(G_OBJECT(vbox),"proxy",entryRoute);
 	g_object_set_data(G_OBJECT(vbox),"errorstring",labelEmpty);
 	g_signal_connect(G_OBJECT(entryUsername),"changed",(GCallback)account_informations_changed,vbox);
 	g_signal_connect(G_OBJECT(entryDomain),"changed",(GCallback)account_informations_changed,vbox);
@@ -243,10 +225,8 @@ static void account_password_changed(GtkEntry *entry, GtkWidget *w) {
 			is_account_information_correct(w)>0);
 }
 
-static void account_username_changed(GtkEntry *entry, GtkWidget *w) {
-	// Verifying if username choosed is available, and if form is correctly filled, let the user go next page
-
-	GtkWidget *assistant=gtk_widget_get_toplevel(w);
+void* check_username_availability(void* w) {
+	GtkWidget *assistant=gtk_widget_get_toplevel(GTK_WIDGET(w));
 	GtkEntry* username = GTK_ENTRY(g_object_get_data(G_OBJECT(w),"username"));
 	GtkImage* isUsernameOk = GTK_IMAGE(g_object_get_data(G_OBJECT(w),"usernameOk"));
 	GtkLabel* usernameError = GTK_LABEL(g_object_get_data(G_OBJECT(w),"error"));
@@ -280,6 +260,14 @@ static void account_username_changed(GtkEntry *entry, GtkWidget *w) {
 
 	gtk_assistant_set_page_complete(GTK_ASSISTANT(assistant),w,
 			is_account_information_correct(w)>0);
+
+	return NULL;
+}
+
+static void account_username_changed(GtkEntry *entry, GtkWidget *w) {
+	// Verifying if username choosed is available, and if form is correctly filled, let the user go next page
+	pthread_t thread;
+	pthread_create(&thread, NULL, check_username_availability, (void*)w);
 }
 
 static GtkWidget *create_account_information_page() {
@@ -323,7 +311,7 @@ static GtkWidget *create_account_information_page() {
 	gtk_table_attach_defaults(GTK_TABLE(vbox), passwordVbox1, 0, 1, 3, 4);
 	gtk_table_attach_defaults(GTK_TABLE(vbox), passwordVbox2, 1, 2, 3, 4);
 	gtk_table_attach_defaults(GTK_TABLE(vbox), isPasswordOk, 2, 3, 3, 4);
-	gtk_table_attach_defaults(GTK_TABLE(vbox), labelError, 1, 2, 5, 6);
+	gtk_table_attach_defaults(GTK_TABLE(vbox), labelError, 1, 4, 5, 6);
 	gtk_table_attach_defaults(GTK_TABLE(vbox), checkNewsletter, 0, 3, 6, 7);
 
 	gtk_widget_show_all(vbox);
@@ -447,22 +435,15 @@ static int linphone_gtk_assistant_forward(int curpage, gpointer data){
 	}
 	else if (curpage == 2) { // Account's informations entered
 		LinphoneAccountCreator *c=linphone_gtk_assistant_get_creator(w);
-		if (!g_regex_match_simple("^sip:[a-z0-9]+([_\\.-][a-z0-9]+)*@([a-z0-9]+([\\.-][a-z0-9]+)*)+\\.[a-z]{2,}$", gtk_entry_get_text(GTK_ENTRY(g_object_get_data(G_OBJECT(box),"username"))), 0, 0)) {
-			gchar identity[128];
-			g_snprintf(identity, sizeof(identity), "sip:%s", gtk_entry_get_text(GTK_ENTRY(g_object_get_data(G_OBJECT(box),"username"))));
-			linphone_account_creator_set_username(c, identity);
-		} else {
-			linphone_account_creator_set_username(c, gtk_entry_get_text(GTK_ENTRY(g_object_get_data(G_OBJECT(box),"username"))));
-		}
+		gchar identity[128];
+		g_snprintf(identity, sizeof(identity), "sip:%s@%s", gtk_entry_get_text(GTK_ENTRY(g_object_get_data(G_OBJECT(box),"username"))), gtk_entry_get_text(GTK_ENTRY(g_object_get_data(G_OBJECT(box),"domain"))));
 
-		if (!g_regex_match_simple("^sip:([a-z0-9]+([\\.-][a-z0-9]+)*)+\\.[a-z]{2,}$", gtk_entry_get_text(GTK_ENTRY(g_object_get_data(G_OBJECT(box),"domain"))), 0, 0)) {
-			gchar proxy[128];
-			g_snprintf(proxy, sizeof(proxy), "sip:%s", gtk_entry_get_text(GTK_ENTRY(g_object_get_data(G_OBJECT(box),"domain"))));
-			linphone_account_creator_set_domain(c, proxy);
-		} else {
-			linphone_account_creator_set_domain(c, gtk_entry_get_text(GTK_ENTRY(g_object_get_data(G_OBJECT(box),"domain"))));
-		}
-		linphone_account_creator_set_route(c, gtk_entry_get_text(GTK_ENTRY(g_object_get_data(G_OBJECT(box),"route"))));
+		gchar proxy[128];
+		g_snprintf(proxy, sizeof(proxy), "sip:%s", gtk_entry_get_text(GTK_ENTRY(g_object_get_data(G_OBJECT(box),"domain"))));
+
+		linphone_account_creator_set_username(c, identity);
+		linphone_account_creator_set_domain(c, proxy);
+		linphone_account_creator_set_route(c, gtk_entry_get_text(GTK_ENTRY(g_object_get_data(G_OBJECT(box),"proxy"))));
 		linphone_account_creator_set_password(c,gtk_entry_get_text(GTK_ENTRY(g_object_get_data(G_OBJECT(box),"password"))));
 		curpage = gtk_assistant_get_n_pages(GTK_ASSISTANT(w)) - 1; // Going to the last page
 	}
