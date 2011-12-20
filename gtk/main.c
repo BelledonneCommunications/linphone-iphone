@@ -681,7 +681,11 @@ static void linphone_gtk_update_call_buttons(LinphoneCall *call){
 	gtk_widget_set_visible(button,!add_call);
 	
 	button=linphone_gtk_get_widget(mw,"add_call");
-	gtk_widget_set_sensitive(button,start_active);
+	if (linphone_core_sound_resources_locked(lc) || (call && linphone_call_get_state(call)==LinphoneCallIncomingReceived)) {
+		gtk_widget_set_sensitive(button,FALSE);
+	} else {
+		gtk_widget_set_sensitive(button,start_active);
+	}
 	gtk_widget_set_visible(button,add_call);
 	
 	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"terminate_call"),stop_active);
