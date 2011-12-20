@@ -4,3 +4,6 @@
 [submodule "mediastreamer2"]
 	path = mediastreamer2
 	url = git://git.linphone.org/mediastreamer2.git
+[submodule "tunnel"]
+	path = tunnel
+	url = gitosis@git.linphone.org:tunnel.git
