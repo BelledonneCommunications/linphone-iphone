@@ -43,21 +43,21 @@ warning:
 endif
 
 build:
-	make -f  builder-iphone-os.mk  all build-tunnel enable_gpl_third_parties=$(enable_gpl_third_parties) \
-	&& make -f  builder-iphone-simulator.mk all build-tunnel enable_gpl_third_parties=$(enable_gpl_third_parties)\
-	&& make -f  builder-iphone-os.mk   host=armv7-apple-darwin all build-tunnel enable_gpl_third_parties=$(enable_gpl_third_parties)\
+	make -f  builder-iphone-os.mk  all enable_gpl_third_parties=$(enable_gpl_third_parties) \
+	&& make -f  builder-iphone-simulator.mk all enable_gpl_third_parties=$(enable_gpl_third_parties)\
+	&& make -f  builder-iphone-os.mk   host=armv7-apple-darwin all enable_gpl_third_parties=$(enable_gpl_third_parties)\
 	&& make -f builder-iphone-os.mk delivery-sdk 
 
 clean:
-	make -f  builder-iphone-simulator.mk  clean clean-tunnel\
-	&&  make -f  builder-iphone-os.mk  clean clean-tunnel\
-	&&  make -f  builder-iphone-os.mk   host=armv7-apple-darwin clean clean-tunnel
+	make -f  builder-iphone-simulator.mk  clean\
+	&&  make -f  builder-iphone-os.mk  clean\
+	&&  make -f  builder-iphone-os.mk   host=armv7-apple-darwin clean
 clean-makefile:
 	make -f  builder-iphone-simulator.mk  clean-makefile \
 	&&  make -f  builder-iphone-os.mk  clean-makefile \
 	&&  make -f  builder-iphone-os.mk   host=armv7-apple-darwin clean-makefile
 
 veryclean:
-	make -f  builder-iphone-simulator.mk  veryclean veryclean-tunnel\
-	&&  make -f  builder-iphone-os.mk  veryclean veryclean-tunnel\
-	&&  make -f  builder-iphone-os.mk  host=armv7-apple-darwin veryclean veryclean-tunnel 
+	make -f  builder-iphone-simulator.mk  veryclean\
+	&&  make -f  builder-iphone-os.mk  veryclean\
+	&&  make -f  builder-iphone-os.mk  host=armv7-apple-darwin veryclean 

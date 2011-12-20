@@ -28,17 +28,14 @@
 #import "FastAddressBook.h"
 #include <sys/sysctl.h>
 
-#include "tunnel/TunnelManager.hh"
+#include "linphone_tunnel_manager.h"
 #import <AddressBook/AddressBook.h>
 
 
-using namespace belledonnecomm;
-
 static LinphoneCore* theLinphoneCore=nil;
 static LinphoneManager* theLinphoneManager=nil;
-static TunnelManager* sTunnelMgr=NULL;
 
-extern "C" void libmsilbc_init();
+extern void libmsilbc_init();
 #ifdef HAVE_AMR
 extern void libmsamr_init();
 #endif
@@ -397,12 +394,13 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 			linphone_core_set_network_reachable([LinphoneManager getLc],false);
 			((LinphoneManager*)info).connectivity = none;
 		} else {
+            LinphoneTunnelManager *tunnel=linphone_tunnel_get([LinphoneManager getLc]);
 			Connectivity  newConnectivity = flags & kSCNetworkReachabilityFlagsIsWWAN ? wwan:wifi;
 			if (lLinphoneMgr.connectivity == none) {
 				linphone_core_set_network_reachable([LinphoneManager getLc],true);
 			} else if (lLinphoneMgr.connectivity != newConnectivity) {
 				// connectivity has changed
-				if (sTunnelMgr) sTunnelMgr->reconnect(); //the reconnection will trigger re-registrations automatically
+				if (tunnel) linphone_tunnel_reconnect(tunnel);
 				else {
 					linphone_core_set_network_reachable([LinphoneManager getLc],false);
 					linphone_core_set_network_reachable([LinphoneManager getLc],true);
@@ -411,10 +409,10 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 			lLinphoneMgr.connectivity=newConnectivity;
 			switch (lLinphoneMgr.tunnelMode) {
 				case wwan_only:
-					sTunnelMgr->enable(lLinphoneMgr.connectivity == wwan);	
+					linphone_tunnel_enable(tunnel,lLinphoneMgr.connectivity == wwan);	
 					break;
 				case autodetect: 
-					sTunnelMgr->autoDetect();
+					linphone_tunnel_auto_detect(tunnel);
 					break;
 				default: 
 					//nothing to do
@@ -563,13 +561,16 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	NSString* lTunnelPrefEnabled = [[NSUserDefaults standardUserDefaults] stringForKey:@"tunnel_enabled_preference"];
 	NSString* lTunnelPrefAddress = [[NSUserDefaults standardUserDefaults] stringForKey:@"tunnel_address_preference"];
 	NSString* lTunnelPrefPort = [[NSUserDefaults standardUserDefaults] stringForKey:@"tunnel_port_preference"];
+    LinphoneTunnelManager *tunnel=linphone_tunnel_get([LinphoneManager getLc]);
 	int lTunnelPort = 443;
 	if (lTunnelPrefPort && [lTunnelPrefPort length] > 0  && [lTunnelPrefPort intValue]) {
 		lTunnelPort = [lTunnelPrefPort intValue];
 	}
 	if (lTunnelPrefAddress && [lTunnelPrefAddress length]) {
-		sTunnelMgr->cleanServers();
-		sTunnelMgr->addServer([lTunnelPrefAddress cStringUsingEncoding:[NSString defaultCStringEncoding]],lTunnelPort,12345/*default port*/,1000);
+		linphone_tunnel_clean_servers(tunnel);
+		linphone_tunnel_add_server_and_mirror(tunnel,
+                                              [lTunnelPrefAddress cStringUsingEncoding:[NSString defaultCStringEncoding]],
+                                              lTunnelPort,12345/*default port*/,1000);
 	}
 	if ([lTunnelPrefEnabled isEqualToString:@"off"]) {
 		tunnelMode=off;
@@ -583,19 +584,19 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		ms_error("Unexpected tunnel mode [%s]",[lTunnelPrefEnabled cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 	}
 	switch (tunnelMode) {
-		case off: 
-			sTunnelMgr->enable(false);
+		case off:
+            linphone_tunnel_enable(tunnel, false);
 			break;
 		case on:
-			sTunnelMgr->enable(true);
+            linphone_tunnel_enable(tunnel, true);
 			break;
 		case wwan_only:
 			if (connectivity != wwan) {
-				sTunnelMgr->enable(false);	
+                linphone_tunnel_enable(tunnel, false);
 			}
 			break;
 		case autodetect: 
-			sTunnelMgr->autoDetect();
+            linphone_tunnel_auto_detect(tunnel);
 			break;
 			
 	}
@@ -692,10 +693,6 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
         CFRelease(proxyReachability);
         proxyReachability=nil;
  	}
-	if (sTunnelMgr) {
-		delete sTunnelMgr;
-		sTunnelMgr=NULL;
-	}
 }
 
 //**********************BG mode management*************************///////////
@@ -808,8 +805,8 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 										 , [confiFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]
 										 , [factoryConfig cStringUsingEncoding:[NSString defaultCStringEncoding]]
 										 ,self);
-	sTunnelMgr = LinphoneCoreExtensionFactory::instance()->createTunnelManager(theLinphoneCore);
-	sTunnelMgr->enableLogs(linphone_iphone_log_handler);
+
+	linphone_tunnel_enable_logs_with_handler(linphone_tunnel_get(theLinphoneCore),true,linphone_iphone_log_handler);
 	
 	[[NSUserDefaults standardUserDefaults] synchronize];//sync before loading config 
 
