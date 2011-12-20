@@ -68,8 +68,7 @@ int TunnelManager::eXosipSelect(int max_fds, fd_set *s1, fd_set *s2, fd_set *s3,
 	TunnelManager* lTunnelMgr=(TunnelManager*)userdata;
 	if (tv!=0 && tv->tv_sec){
 		/*this is the select from udp.c, the one that is interesting to us*/
-		unsigned int i;
-		fd_set tmp;
+		int i;
 		int udp_fd=eXosip_get_udp_socket();
 		int controlfd=-1;
 
@@ -156,13 +155,13 @@ void TunnelManager::setCallback(StateCallback cb, void *userdata) {
 	mCallbackData=userdata;
 }
 
-static void sCloseRtpTransport(void *userData, RtpTransport *t){
-	((TunnelManager::TunnelManager *) userData)->closeRtpTransport(t);
+static void sCloseRtpTransport(RtpTransport *t, void *userData){
+	TunnelSocket *s=(TunnelSocket*)userData;
+	TunnelManager::TunnelManager *manager=(TunnelManager::TunnelManager*)s->getUserPointer();
+	manager->closeRtpTransport(t, s);
 }
-void TunnelManager::closeRtpTransport(RtpTransport *t){
-	TunnelSocket *socket=(TunnelSocket *) t->data;
-	mTransports.remove(t);
-	mTunnelClient->closeSocket(socket);
+void TunnelManager::closeRtpTransport(RtpTransport *t, TunnelSocket *s){
+	mTunnelClient->closeSocket(s);
 	ms_free(t);
 }
 
@@ -171,14 +170,14 @@ static RtpTransport *sCreateRtpTransport(void* userData, int port){
 }
 
 RtpTransport *TunnelManager::createRtpTransport(int port){
+	TunnelSocket *socket=mTunnelClient->createSocket(port);
+	socket->setUserPointer(this);
 	RtpTransport *t=ms_new0(RtpTransport,1);
-	t->data=mTunnelClient->createSocket(port);
 	t->t_getsocket=NULL;
 	t->t_recvfrom=customRecvfrom;
 	t->t_sendto=customSendto;
-	t->close_fn=sCloseRtpTransport;
-	t->close_data=this;
-	mTransports.push_back(t);
+	t->t_close=sCloseRtpTransport;
+	t->data=socket;
 	return t;
 }
 
@@ -222,9 +221,9 @@ int TunnelManager::customRecvfrom(struct _RtpTransport *t, mblk_t *msg, int flag
 
 TunnelManager::TunnelManager(LinphoneCore* lc) :TunnelClientController()
 ,mCore(lc)
-,mEnabled(false)
 ,mSipSocket(NULL)
 ,mCallback(NULL)
+,mEnabled(false)
 ,mTunnelClient(NULL)
 ,mAutoDetectStarted(false) {
 

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk+" version="2.22"/>
+  <!-- interface-naming-policy toplevel-contextual -->
   <object class="GtkWindow" id="dummy_conf_window">
     <property name="can_focus">False</property>
     <child>
@@ -651,6 +652,8 @@
                                     <property name="invisible_char">●</property>
                                     <property name="primary_icon_activatable">False</property>
                                     <property name="secondary_icon_activatable">False</property>
+                                    <property name="primary_icon_sensitive">True</property>
+                                    <property name="secondary_icon_sensitive">True</property>
                                     <signal name="activate" handler="linphone_gtk_uri_bar_activate" swapped="no"/>
                                   </object>
                                   <packing>
@@ -742,6 +745,8 @@
                                     <property name="invisible_char_set">True</property>
                                     <property name="primary_icon_activatable">False</property>
                                     <property name="secondary_icon_activatable">False</property>
+                                    <property name="primary_icon_sensitive">True</property>
+                                    <property name="secondary_icon_sensitive">True</property>
                                     <signal name="changed" handler="linphone_gtk_show_friends" swapped="no"/>
                                   </object>
                                   <packing>
@@ -807,9 +812,6 @@
                                     <signal name="cursor-changed" handler="linphone_gtk_contact_clicked" swapped="no"/>
                                     <signal name="row-activated" handler="linphone_gtk_contact_activated" swapped="no"/>
                                     <signal name="popup-menu" handler="linphone_gtk_popup_contact_menu" swapped="no"/>
-                                    <child internal-child="selection">
-                                      <object class="GtkTreeSelection" id="treeview-selection1"/>
-                                    </child>
                                   </object>
                                 </child>
                               </object>
@@ -835,6 +837,8 @@
                                         <property name="invisible_char_set">True</property>
                                         <property name="primary_icon_activatable">False</property>
                                         <property name="secondary_icon_activatable">False</property>
+                                        <property name="primary_icon_sensitive">True</property>
+                                        <property name="secondary_icon_sensitive">True</property>
                                         <signal name="activate" handler="linphone_gtk_directory_search_activate" swapped="no"/>
                                         <signal name="icon-press" handler="linphone_gtk_directory_search_activate" swapped="no"/>
                                         <signal name="focus-in-event" handler="linphone_gtk_directory_search_focus_in" swapped="no"/>
@@ -1008,19 +1012,7 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkButton" id="call_back_button">
-                                    <property name="label" translatable="yes">Call</property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">True</property>
-                                    <property name="use_action_appearance">False</property>
-                                    <signal name="clicked" handler="linphone_gtk_call_log_callback" swapped="no"/>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">False</property>
-                                    <property name="position">1</property>
-                                  </packing>
+                                  <placeholder/>
                                 </child>
                                 <child>
                                   <placeholder/>
@@ -1043,10 +1035,8 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="headers_visible">False</property>
+                                    <signal name="cursor-changed" handler="linphone_gtk_history_row_selected" swapped="no"/>
                                     <signal name="row-activated" handler="linphone_gtk_history_row_activated" swapped="no"/>
-                                    <child internal-child="selection">
-                                      <object class="GtkTreeSelection" id="treeview-selection2"/>
-                                    </child>
                                   </object>
                                 </child>
                               </object>
@@ -1550,6 +1540,8 @@
                                         <property name="invisible_char">●</property>
                                         <property name="primary_icon_activatable">False</property>
                                         <property name="secondary_icon_activatable">False</property>
+                                        <property name="primary_icon_sensitive">True</property>
+                                        <property name="secondary_icon_sensitive">True</property>
                                       </object>
                                       <packing>
                                         <property name="left_attach">1</property>
@@ -1564,6 +1556,8 @@
                                         <property name="invisible_char">●</property>
                                         <property name="primary_icon_activatable">False</property>
                                         <property name="secondary_icon_activatable">False</property>
+                                        <property name="primary_icon_sensitive">True</property>
+                                        <property name="secondary_icon_sensitive">True</property>
                                       </object>
                                       <packing>
                                         <property name="left_attach">1</property>

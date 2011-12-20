@@ -115,7 +115,7 @@ class UdpMirrorClient;
 		/**
 		 * Destroy the given RtpTransport.
 		 */
-		void closeRtpTransport(RtpTransport *t);
+		void closeRtpTransport(RtpTransport *t, TunnelSocket *s);
 
 		/**
 		 * Create an RtpTransport.
@@ -128,7 +128,6 @@ class UdpMirrorClient;
 		LinphoneCore *getLinphoneCore();
 	private:
 		typedef std::list<UdpMirrorClient> UdpMirrorClientList;
-		typedef std::list<RtpTransport*> RtpTransportList;
 		virtual bool isStarted();
 		virtual bool isReady() const;
 		static int customSendto(struct _RtpTransport *t, mblk_t *msg , int flags, const struct sockaddr *to, socklen_t tolen);
@@ -156,7 +155,6 @@ class UdpMirrorClient;
 		void stopClient();
 		static Mutex sMutex;
 		bool mAutoDetectStarted;
-		RtpTransportList mTransports;
 		LinphoneRtpTransportFactories mTransportFactories;
 	};
 

@@ -9,9 +9,7 @@ linphone_includedir=$(includedir)/linphone
 linphone_include_HEADERS=linphonecore.h linphonefriend.h linphonecore_utils.h ../config.h lpconfig.h sipsetup.h
 
 INCLUDES = \
-	-I$(top_srcdir)\
-	$(MEDIASTREAMER_CFLAGS)\
-	$(TUNNEL_CFLAGS)
+	-I$(top_srcdir)
 
 
 lib_LTLIBRARIES=liblinphone.la
@@ -42,7 +40,7 @@ liblinphone_la_SOURCES=\
 	linphone_tunnel_manager.h
 
 if BUILD_TUNNEL
-liblinphone_la_SOURCES+=TunnelManager.cc TunnelManager.hh linphone_tunnel_manager.c
+liblinphone_la_SOURCES+=TunnelManager.cc TunnelManager.hh linphone_tunnel_manager.cc
 endif
 
 
@@ -83,3 +81,4 @@ AM_CFLAGS=$(STRICT_OPTIONS)  -DIN_LINPHONE \
 	$(VIDEO_CFLAGS) \
 	$(TUNNEL_CFLAGS)
 
+AM_CXXFLAGS=$(AM_CFLAGS)
