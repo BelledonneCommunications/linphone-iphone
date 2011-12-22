@@ -1,5 +1,9 @@
-linphone-3.5.0 -- future date
+linphone-3.5.0 -- December 22, 2011
 	* added VP-8 video codec
+	* added G722 audio codec
+	* added SIP/TCP and SIP/TLS
+	* added SRTP media encryption
+	* Audio conferencing
 	* UI: call history tab, menu simplified
 	* UI: cosmetics for incall views
 	* UI: integration with libnotify
