@@ -998,7 +998,7 @@ static void misc_config_read (LinphoneCore *lc) {
 }
 
 #ifdef TUNNEL_ENABLED
-static void tunnel_add_servers_from_config(LinphoneTunnelManager *tunnel, const char* confaddress){
+static void tunnel_add_servers_from_config(LinphoneTunnel *tunnel, const char* confaddress){
 	char *addresses=(char*)ms_strdup(confaddress);
 	char *str1;
 	for(str1=addresses;;str1=NULL){

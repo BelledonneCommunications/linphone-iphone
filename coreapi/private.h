@@ -476,11 +476,12 @@ struct _LinphoneCore
 	int device_rotation;
 	bool_t ringstream_autorelease;
 	int max_calls;
-	LinphoneTunnelManager *tunnel;
+	LinphoneTunnel *tunnel;
 };
 
-LinphoneTunnelManager *linphone_core_tunnel_new(LinphoneCore *lc);
-
+LinphoneTunnel *linphone_core_tunnel_new(LinphoneCore *lc);
+void linphone_tunnel_destroy(LinphoneTunnel *tunnel);
+	
 bool_t linphone_core_can_we_add_call(LinphoneCore *lc);
 int linphone_core_add_call( LinphoneCore *lc, LinphoneCall *call);
 int linphone_core_del_call( LinphoneCore *lc, LinphoneCall *call);
@@ -543,6 +544,8 @@ void __linphone_core_invalidate_registers(LinphoneCore* lc);
 #define NB_MAX_CALLS	(10)
 #endif
 void call_logs_write_to_config_file(LinphoneCore *lc);
+
+
 
 #ifdef __cplusplus
 }
