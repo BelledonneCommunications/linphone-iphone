@@ -184,6 +184,8 @@
 		2258C44C13A946890087A596 /* videoenc.c in Sources */ = {isa = PBXBuildFile; fileRef = 2258C44913A946890087A596 /* videoenc.c */; };
 		2258C44D13A946890087A596 /* videodec.c in Sources */ = {isa = PBXBuildFile; fileRef = 2258C44A13A946890087A596 /* videodec.c */; };
 		225D355A124B1FF60008581C /* linphonecall.c in Sources */ = {isa = PBXBuildFile; fileRef = 225D3559124B1FF60008581C /* linphonecall.c */; };
+		2295130614A1FBE30007EE98 /* linphone_tunnel_manager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2295130414A1FBE30007EE98 /* linphone_tunnel_manager.cc */; };
+		2295130714A1FBE30007EE98 /* TunnelManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2295130514A1FBE30007EE98 /* TunnelManager.cc */; };
 		229A614D13DDFE3500090183 /* g722_decode.c in Sources */ = {isa = PBXBuildFile; fileRef = 229A614913DDFE3500090183 /* g722_decode.c */; };
 		229A614E13DDFE3500090183 /* g722_encode.c in Sources */ = {isa = PBXBuildFile; fileRef = 229A614A13DDFE3500090183 /* g722_encode.c */; };
 		229A614F13DDFE3500090183 /* g722.h in Headers */ = {isa = PBXBuildFile; fileRef = 229A614B13DDFE3500090183 /* g722.h */; };
@@ -452,6 +454,8 @@
 		2258C44913A946890087A596 /* videoenc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = videoenc.c; sourceTree = "<group>"; };
 		2258C44A13A946890087A596 /* videodec.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = videodec.c; sourceTree = "<group>"; };
 		225D3559124B1FF60008581C /* linphonecall.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = linphonecall.c; sourceTree = "<group>"; };
+		2295130414A1FBE30007EE98 /* linphone_tunnel_manager.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = linphone_tunnel_manager.cc; sourceTree = "<group>"; };
+		2295130514A1FBE30007EE98 /* TunnelManager.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TunnelManager.cc; sourceTree = "<group>"; };
 		229A614913DDFE3500090183 /* g722_decode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = g722_decode.c; sourceTree = "<group>"; };
 		229A614A13DDFE3500090183 /* g722_encode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = g722_encode.c; sourceTree = "<group>"; };
 		229A614B13DDFE3500090183 /* g722.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = g722.h; sourceTree = "<group>"; };
@@ -871,6 +875,8 @@
 		222CA72D11F6CFB100621220 /* coreapi */ = {
 			isa = PBXGroup;
 			children = (
+				2295130414A1FBE30007EE98 /* linphone_tunnel_manager.cc */,
+				2295130514A1FBE30007EE98 /* TunnelManager.cc */,
 				229ECDEC143AEBDA00D611B8 /* conference.c */,
 				229B9D5813043EAB00EFCD1C /* linphonecore_utils.h */,
 				225D3559124B1FF60008581C /* linphonecall.c */,
@@ -1281,6 +1287,8 @@
 				F4D9F26114583B580035B0D0 /* qosanalyzer.c in Sources */,
 				22512699145F13CE0041FBF2 /* aqsnd.c in Sources */,
 				2211DB9C1476539600DEE054 /* l16.c in Sources */,
+				2295130614A1FBE30007EE98 /* linphone_tunnel_manager.cc in Sources */,
+				2295130714A1FBE30007EE98 /* TunnelManager.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1339,6 +1347,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = liblinphone_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
+					TUNNEL_ENABLED,
 					"_BYTE_ORDER=_LITTLE_ENDIAN",
 					ORTP_INET6,
 					ENABLE_TRACE,
@@ -1397,6 +1406,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = liblinphone_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
+					TUNNEL_ENABLED,
 					"_BYTE_ORDER=_LITTLE_ENDIAN",
 					ORTP_INET6,
 					ENABLE_TRACE,
@@ -1581,6 +1591,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = liblinphone_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
+					TUNNEL_ENABLED,
 					"_BYTE_ORDER=_LITTLE_ENDIAN",
 					ORTP_INET6,
 					ENABLE_TRACE,

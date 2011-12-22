@@ -20,7 +20,7 @@
 #
 ############################################################################
 
-enable_gpl_third_parties=yes
+enable_gpl_third_parties=no
 
 .NOTPARALLEL all: build warning
 ifeq ($(enable_gpl_third_parties),yes)

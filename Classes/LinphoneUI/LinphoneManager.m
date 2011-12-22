@@ -28,7 +28,7 @@
 #import "FastAddressBook.h"
 #include <sys/sysctl.h>
 
-#include "linphone_tunnel_manager.h"
+#include "linphone_tunnel.h"
 #import <AddressBook/AddressBook.h>
 
 
@@ -394,7 +394,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 			linphone_core_set_network_reachable([LinphoneManager getLc],false);
 			((LinphoneManager*)info).connectivity = none;
 		} else {
-            LinphoneTunnelManager *tunnel=linphone_tunnel_get([LinphoneManager getLc]);
+            LinphoneTunnel *tunnel=linphone_core_get_tunnel([LinphoneManager getLc]);
 			Connectivity  newConnectivity = flags & kSCNetworkReachabilityFlagsIsWWAN ? wwan:wifi;
 			if (lLinphoneMgr.connectivity == none) {
 				linphone_core_set_network_reachable([LinphoneManager getLc],true);
@@ -561,7 +561,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	NSString* lTunnelPrefEnabled = [[NSUserDefaults standardUserDefaults] stringForKey:@"tunnel_enabled_preference"];
 	NSString* lTunnelPrefAddress = [[NSUserDefaults standardUserDefaults] stringForKey:@"tunnel_address_preference"];
 	NSString* lTunnelPrefPort = [[NSUserDefaults standardUserDefaults] stringForKey:@"tunnel_port_preference"];
-    LinphoneTunnelManager *tunnel=linphone_tunnel_get([LinphoneManager getLc]);
+    LinphoneTunnel *tunnel=linphone_core_get_tunnel([LinphoneManager getLc]);
 	int lTunnelPort = 443;
 	if (lTunnelPrefPort && [lTunnelPrefPort length] > 0  && [lTunnelPrefPort intValue]) {
 		lTunnelPort = [lTunnelPrefPort intValue];
@@ -806,7 +806,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 										 , [factoryConfig cStringUsingEncoding:[NSString defaultCStringEncoding]]
 										 ,self);
 
-	linphone_tunnel_enable_logs_with_handler(linphone_tunnel_get(theLinphoneCore),true,linphone_iphone_log_handler);
+	linphone_tunnel_enable_logs_with_handler(linphone_core_get_tunnel(theLinphoneCore),true,linphone_iphone_log_handler);
 	
 	[[NSUserDefaults standardUserDefaults] synchronize];//sync before loading config 
 
