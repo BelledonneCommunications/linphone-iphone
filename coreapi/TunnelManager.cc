@@ -190,6 +190,9 @@ void TunnelManager::start() {
 			const ServerAddr &addr=*it;
 			mTunnelClient->addServer(addr.mAddr.c_str(), addr.mPort);
 		}
+		if(!mHttpUserName.empty()) {
+			mTunnelClient->setHttpProxyAuthInfo(mHttpUserName.c_str(), mHttpPasswd.c_str());
+		}
 	}
 	mTunnelClient->start();
 
@@ -426,7 +429,9 @@ void TunnelManager::autoDetect() {
 }
 
 void TunnelManager::setHttpProxyAuthInfo(const char* username,const char* passwd) {
-	mTunnelClient->setHttpProxyAuthInfo(username,passwd);
+	mHttpUserName=username?username:"";
+	mHttpPasswd=passwd?passwd:"";
+	if (mTunnelClient) mTunnelClient->setHttpProxyAuthInfo(username,passwd);
 }
 
 LinphoneCore *TunnelManager::getLinphoneCore(){

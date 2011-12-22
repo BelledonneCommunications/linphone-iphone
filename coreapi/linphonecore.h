@@ -344,16 +344,6 @@ typedef enum _LinphoneRegistrationState{
  */
 const char *linphone_registration_state_to_string(LinphoneRegistrationState cs);
 
-/**
- * True if tunnel support was compiled.
- */
-bool_t linphone_core_tunnel_available();
-
-/**
- * Update tunnel using configuration.
- */
-void linphone_core_update_tunnel(LinphoneCore *lc);
-
 LinphoneProxyConfig *linphone_proxy_config_new(void);
 int linphone_proxy_config_set_server_addr(LinphoneProxyConfig *obj, const char *server_addr);
 int linphone_proxy_config_set_identity(LinphoneProxyConfig *obj, const char *identity);
@@ -1083,6 +1073,21 @@ void linphone_core_set_media_encryption_mandatory(LinphoneCore *lc, bool_t m);
  * Init call params using LinphoneCore's current configuration
  */
 void linphone_core_init_default_params(LinphoneCore*lc, LinphoneCallParams *params);
+
+/**
+ * True if tunnel support was compiled.
+ */
+bool_t linphone_core_tunnel_available();
+
+/**
+ * Update tunnel using configuration.
+ */
+void linphone_core_update_tunnel(LinphoneCore *lc);
+typedef struct LinphoneTunnel LinphoneTunnel;
+/**
+* get tunnel instance if available
+*/
+LinphoneTunnel *linphone_core_get_tunnel(LinphoneCore *lc);
 
 #ifdef __cplusplus
 }

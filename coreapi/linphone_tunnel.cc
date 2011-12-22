@@ -1,5 +1,5 @@
 /***************************************************************************
- *            linphone_tunnel_manager.cc
+ *            linphone_tunnel.cc
  *
  *  Fri Dec 9, 2011
  *  Copyright  2011  Belledonne Communications
@@ -24,7 +24,7 @@
  */
 
 
-#include "linphone_tunnel_manager.h"
+#include "linphone_tunnel.h"
 #include "TunnelManager.hh"
 #include "linphonecore.h"
 #include "private.h"
@@ -39,7 +39,7 @@ extern "C" LinphoneTunnel* linphone_core_tunnel_new(LinphoneCore *lc){
 	return tunnel;
 }
 
-LinphoneTunnel* linphone_tunnel_get(LinphoneCore *lc){
+LinphoneTunnel* linphone_core_get_tunnel(LinphoneCore *lc){
 	return lc->tunnel;
 }
 
