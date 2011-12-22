@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "linphone.h"
-#include "linphone_tunnel_manager.h"
+#include "linphone_tunnel.h"
 
 typedef enum {
 	CAP_IGNORE,
@@ -1004,7 +1004,7 @@ void linphone_gtk_edit_tunnel_closed(GtkWidget *button){
 }
 
 #ifdef TUNNEL_ENABLED
-static void tunnel_get_server_host_and_port(LinphoneTunnelManager *tunnel, char *host, int size, int *port){
+static void tunnel_get_server_host_and_port(LinphoneTunnel *tunnel, char *host, int size, int *port){
 	char *colon;
         char *addresses=(char*)ms_strdup(linphone_tunnel_get_server_addresses(tunnel));
 	char *str1=addresses;
@@ -1023,7 +1023,7 @@ void linphone_gtk_edit_tunnel(GtkButton *button){
 #ifdef TUNNEL_ENABLED
 	LinphoneCore *lc=linphone_gtk_get_core();
 	GtkWidget *w=linphone_gtk_create_window("tunnel_config");
-	LinphoneTunnelManager *tunnel=linphone_tunnel_get(lc);
+	LinphoneTunnel *tunnel=linphone_core_get_tunnel(lc);
 	char host[50]={'\0'};
 	int port=0;
 	tunnel_get_server_host_and_port(tunnel, host, sizeof(host), &port);
@@ -1050,7 +1050,7 @@ void linphone_gtk_tunnel_ok(GtkButton *button){
 	LinphoneCore *lc=linphone_gtk_get_core();
 	GtkWidget *w=gtk_widget_get_toplevel(GTK_WIDGET(button));
 	char address[50]={'\0'};
-	LinphoneTunnelManager *tunnel=linphone_tunnel_get(lc);
+	LinphoneTunnel *tunnel=linphone_core_get_tunnel(lc);
 
 	gint port = (gint)gtk_spin_button_get_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(w,"port")));
 	gboolean enabled=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"radio_enable")));

@@ -6,7 +6,11 @@ EXTRA_DIST=linphonecore_jni.cc
 ## Process this file with automake to produce Makefile.in
 linphone_includedir=$(includedir)/linphone
 
-linphone_include_HEADERS=linphonecore.h linphonefriend.h linphonecore_utils.h ../config.h lpconfig.h sipsetup.h
+linphone_include_HEADERS=linphonecore.h linphonefriend.h linphonecore_utils.h ../config.h lpconfig.h sipsetup.h 
+
+if BUILD_TUNNEL
+linphone_include_HEADERS+=linphone_tunnel.h
+endif
 
 INCLUDES = \
 	-I$(top_srcdir)
@@ -36,11 +40,10 @@ liblinphone_la_SOURCES=\
 	siplogin.c \
 	lsd.c linphonecore_utils.h \
 	ec-calibrator.c \
-	conference.c \
-	linphone_tunnel_manager.h
+	conference.c 
 
 if BUILD_TUNNEL
-liblinphone_la_SOURCES+=TunnelManager.cc TunnelManager.hh linphone_tunnel_manager.cc
+liblinphone_la_SOURCES+=TunnelManager.cc TunnelManager.hh linphone_tunnel.cc
 endif
 
 

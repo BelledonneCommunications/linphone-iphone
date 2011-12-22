@@ -1,5 +1,5 @@
 /***************************************************************************
- *            linphone_tunnel_manager.h
+ *            linphone_tunnel.h
  *
  *  Fri Dec 9, 2011
  *  Copyright  2011  Belledonne Communications
@@ -33,22 +33,18 @@ extern "C"
 {
 #endif
 
-typedef struct LinphoneTunnelManager LinphoneTunnelManager;
 typedef void (*LogHandler)(int log_level, const char *str, va_list l);
 
-
-LinphoneTunnelManager *linphone_tunnel_get(LinphoneCore *lc);
-void linphone_tunnel_destroy(LinphoneTunnelManager *tunnel);
-void linphone_tunnel_add_server(LinphoneTunnelManager *tunnel, const char *host, int port);
-void linphone_tunnel_add_server_and_mirror(LinphoneTunnelManager *tunnel, const char *host, int port, int remote_udp_mirror, int delay);
-void linphone_tunnel_clean_servers(LinphoneTunnelManager *tunnel);
-void linphone_tunnel_enable(LinphoneTunnelManager *tunnel, bool_t enabled);
-bool_t linphone_tunnel_enabled(LinphoneTunnelManager *tunnel);
-void linphone_tunnel_enable_logs(LinphoneTunnelManager *tunnel, bool_t enabled);
-void linphone_tunnel_enable_logs_with_handler(LinphoneTunnelManager *tunnel, bool_t enabled, LogHandler logHandler);
-void linphone_tunnel_reconnect(LinphoneTunnelManager *tunnel);
-void linphone_tunnel_auto_detect(LinphoneTunnelManager *tunnel);
-void linphone_tunnel_set_http_proxy_auth_info(const char* username,const char* passwd);
+void linphone_tunnel_add_server(LinphoneTunnel *tunnel, const char *host, int port);
+void linphone_tunnel_add_server_and_mirror(LinphoneTunnel *tunnel, const char *host, int port, int remote_udp_mirror, int delay);
+void linphone_tunnel_clean_servers(LinphoneTunnel *tunnel);
+void linphone_tunnel_enable(LinphoneTunnel *tunnel, bool_t enabled);
+bool_t linphone_tunnel_enabled(LinphoneTunnel *tunnel);
+void linphone_tunnel_enable_logs(LinphoneTunnel *tunnel, bool_t enabled);
+void linphone_tunnel_enable_logs_with_handler(LinphoneTunnel *tunnel, bool_t enabled, LogHandler logHandler);
+void linphone_tunnel_reconnect(LinphoneTunnel *tunnel);
+void linphone_tunnel_auto_detect(LinphoneTunnel *tunnel);
+void linphone_tunnel_set_http_proxy_auth_info(LinphoneTunnel*tunnel, const char* username,const char* passwd);
 
 
 /**
@@ -63,22 +59,22 @@ typedef enum _LinphoneTunnelState{
 /**
  * Set tunnel addresses.
 **/
-void linphone_tunnel_set_server_addresses(LinphoneTunnelManager *tunnel, const char *lists);
+void linphone_tunnel_set_server_addresses(LinphoneTunnel *tunnel, const char *lists);
 
 /**
  * Get tunnel addresses.
 **/
-const char *linphone_tunnel_get_server_addresses(LinphoneTunnelManager *tunnel);
+const char *linphone_tunnel_get_server_addresses(LinphoneTunnel *tunnel);
 
 /**
  * Set tunnel state.
 **/
-void linphone_tunnel_set_state(LinphoneTunnelManager *tunnel, LinphoneTunnelState state);
+void linphone_tunnel_set_state(LinphoneTunnel *tunnel, LinphoneTunnelState state);
 
 /**
  * Get tunnel state.
 **/
-LinphoneTunnelState linphone_tunnel_get_state(LinphoneTunnelManager *tunnel);
+LinphoneTunnelState linphone_tunnel_get_state(LinphoneTunnel *tunnel);
 
 
 #ifdef __cplusplus

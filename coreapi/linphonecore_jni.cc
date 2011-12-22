@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <ortp/zrtp.h>
 
 #ifdef TUNNEL_ENABLED
-#include "linphone_tunnel_manager.h"
+#include "linphone_tunnel.h"
 #endif
 
 extern "C" {
@@ -1599,7 +1599,7 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setMaxCalls(JNIEnv *env,
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_tunnelAddServerAndMirror(JNIEnv *env,jobject thiz,jlong pCore,
 		jstring jHost, jint port, jint mirror, jint delay) {
 #ifdef TUNNEL_ENABLED
-	LinphoneTunnelManager *tunnel=((LinphoneCore *) pCore)->tunnel; if (!tunnel) return;
+	LinphoneTunnel *tunnel=((LinphoneCore *) pCore)->tunnel; if (!tunnel) return;
 	const char* cHost=env->GetStringUTFChars(jHost, NULL);
 	linphone_tunnel_add_server_and_mirror(tunnel, cHost, port, mirror, delay);
 	env->ReleaseStringUTFChars(jHost, cHost);
@@ -1608,28 +1608,28 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_tunnelAddServerAndMirror
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_tunnelAutoDetect(JNIEnv *env,jobject thiz,jlong pCore) {
 #ifdef TUNNEL_ENABLED
-	LinphoneTunnelManager *tunnel=((LinphoneCore *) pCore)->tunnel; if (!tunnel) return;
+	LinphoneTunnel *tunnel=((LinphoneCore *) pCore)->tunnel; if (!tunnel) return;
 	linphone_tunnel_auto_detect(tunnel);
 #endif
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_tunnelCleanServers(JNIEnv *env,jobject thiz,jlong pCore) {
 #ifdef TUNNEL_ENABLED
-	LinphoneTunnelManager *tunnel=((LinphoneCore *) pCore)->tunnel; if (!tunnel) return;
+	LinphoneTunnel *tunnel=((LinphoneCore *) pCore)->tunnel; if (!tunnel) return;
 	linphone_tunnel_clean_servers(tunnel);
 #endif
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_tunnelEnable(JNIEnv *env,jobject thiz,jlong pCore, jboolean enable) {
 #ifdef TUNNEL_ENABLED
-	LinphoneTunnelManager *tunnel=((LinphoneCore *) pCore)->tunnel; if (!tunnel) return;
+	LinphoneTunnel *tunnel=((LinphoneCore *) pCore)->tunnel; if (!tunnel) return;
 	linphone_tunnel_enable(tunnel, enable);
 #endif
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_tunnelEnableLogs(JNIEnv *env,jobject thiz,jlong pCore, jboolean enable) {
 #ifdef TUNNEL_ENABLED
-	LinphoneTunnelManager *tunnel=((LinphoneCore *) pCore)->tunnel; if (!tunnel) return;
+	LinphoneTunnel *tunnel=((LinphoneCore *) pCore)->tunnel; if (!tunnel) return;
 	linphone_tunnel_enable_logs(tunnel, enable);
 #endif
 }
