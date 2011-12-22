@@ -11,6 +11,7 @@
 #ifndef __TUNNEL_CLIENT_MANAGER_H__
 #define __TUNNEL_CLIENT_MANAGER_H__
 #include <list>
+#include <string>
 #include "linphonecore.h"
 #include "tunnel/client.hh"
 extern "C" {
@@ -156,6 +157,8 @@ class UdpMirrorClient;
 		static Mutex sMutex;
 		bool mAutoDetectStarted;
 		LinphoneRtpTransportFactories mTransportFactories;
+		std::string mHttpUserName;
+		std::string mHttpPasswd;		
 	};
 
 /**

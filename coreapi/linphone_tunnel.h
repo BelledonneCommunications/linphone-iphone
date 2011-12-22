@@ -1,5 +1,5 @@
 /***************************************************************************
- *            linphone_tunnel_manager.h
+ *            linphone_tunnel.h
  *
  *  Fri Dec 9, 2011
  *  Copyright  2011  Belledonne Communications
@@ -33,11 +33,7 @@ extern "C"
 {
 #endif
 
-typedef struct LinphoneTunnel LinphoneTunnel;
 typedef void (*LogHandler)(int log_level, const char *str, va_list l);
-
-
-LinphoneTunnel *linphone_tunnel_get(LinphoneCore *lc);
 
 void linphone_tunnel_add_server(LinphoneTunnel *tunnel, const char *host, int port);
 void linphone_tunnel_add_server_and_mirror(LinphoneTunnel *tunnel, const char *host, int port, int remote_udp_mirror, int delay);
@@ -48,7 +44,7 @@ void linphone_tunnel_enable_logs(LinphoneTunnel *tunnel, bool_t enabled);
 void linphone_tunnel_enable_logs_with_handler(LinphoneTunnel *tunnel, bool_t enabled, LogHandler logHandler);
 void linphone_tunnel_reconnect(LinphoneTunnel *tunnel);
 void linphone_tunnel_auto_detect(LinphoneTunnel *tunnel);
-void linphone_tunnel_set_http_proxy_auth_info(const char* username,const char* passwd);
+void linphone_tunnel_set_http_proxy_auth_info(LinphoneTunnel*tunnel, const char* username,const char* passwd);
 
 
 /**

@@ -28,7 +28,7 @@
 extern "C" {
 #endif
 #include "linphonecore.h"
-#include "linphone_tunnel_manager.h"
+#include "linphone_tunnel.h"
 #include "linphonecore_utils.h"
 #include "sal.h"
 

@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <ortp/zrtp.h>
 
 #ifdef TUNNEL_ENABLED
-#include "linphone_tunnel_manager.h"
+#include "linphone_tunnel.h"
 #endif
 
 extern "C" {
