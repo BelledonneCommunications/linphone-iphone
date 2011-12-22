@@ -998,7 +998,7 @@ static void misc_config_read (LinphoneCore *lc) {
 }
 
 #ifdef TUNNEL_ENABLED
-static void tunnel_add_servers_from_config(LinphoneTunnelManager *tunnel, const char* confaddress){
+static void tunnel_add_servers_from_config(LinphoneTunnel *tunnel, const char* confaddress){
 	char *addresses=(char*)ms_strdup(confaddress);
 	char *str1;
 	for(str1=addresses;;str1=NULL){
@@ -3801,6 +3801,9 @@ static MSFilter *get_dtmf_gen(LinphoneCore *lc){
 	if (lc->ringstream==NULL){
 		float amp=0.1;
 		MSSndCard *ringcard=lc->sound_conf.lsd_card ?lc->sound_conf.lsd_card : lc->sound_conf.ring_sndcard;
+		if (ringcard == NULL)
+			return NULL;
+
 		lc->ringstream=ring_start(NULL,0,ringcard);
 		ms_filter_call_method(lc->ringstream->gendtmf,MS_DTMF_GEN_SET_DEFAULT_AMPLITUDE,&amp);
 		lc->dmfs_playing_start_time=time(NULL);

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone 0.7.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-05 12:41+0100\n"
-"PO-Revision-Date: 2011-11-27 23:42+0100\n"
+"POT-Creation-Date: 2011-12-10 01:18+0100\n"
+"PO-Revision-Date: 2011-12-10 01:28+0100\n"
 "Last-Translator: Gerhard Stengel <gstengel@gmx.net>\n"
 "Language-Team: German <kde-i18n-de@kde.org>\n"
 "Language: \n"
@@ -21,15 +21,15 @@ msgstr ""
 #, c-format
 msgid "%i minute"
 msgid_plural "%i minutes"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%i Minute"
+msgstr[1] "%i Minuten"
 
 #: ../gtk/calllogs.c:74
 #, c-format
 msgid "%i second"
 msgid_plural "%i seconds"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%i Sekunde"
+msgstr[1] "%i Sekunden"
 
 #: ../gtk/calllogs.c:77
 #, c-format
@@ -37,6 +37,8 @@ msgid ""
 "<big><b>%s</b></big>\t<small><i>%s</i>\t<i>Quality: %s</i></small>\n"
 "%s\t%s %s\t"
 msgstr ""
+"<big><b>%s</b></big>\t<small><i>%s</i>\t<i>Qualität: %s</i></small>\n"
+"%s\t%s %s\t"
 
 #: ../gtk/calllogs.c:79
 msgid "n/a"
@@ -644,9 +646,8 @@ msgid "C"
 msgstr ""
 
 #: ../gtk/main.ui.h:24
-#, fuzzy
 msgid "Call"
-msgstr "„%s“ anrufen"
+msgstr "Anrufen"
 
 #: ../gtk/main.ui.h:25
 msgid "Call quality rating"

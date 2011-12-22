@@ -28,6 +28,8 @@
 
 #include "mediastreamer2/msvolume.h"
 
+static int convert_conference_to_call(LinphoneCore *lc);
+
 static void conference_check_init(LinphoneConference *ctx, int samplerate){
 	if (ctx->conf==NULL){
 		MSAudioConferenceParams params;
@@ -48,24 +50,22 @@ static void remove_local_endpoint(LinphoneConference *ctx){
 }
 
 static int remote_participants_count(LinphoneConference *ctx) {
-	if (!ctx->conf || ctx->conf->nmembers==0) return 0;
-	if (!ctx->local_participant) return ctx->conf->nmembers;
-	return ctx->conf->nmembers -1;
+	if (!ctx->conf || ms_audio_conference_get_size(ctx->conf)==0) return 0;
+	if (!ctx->local_participant) return ms_audio_conference_get_size(ctx->conf);
+	return ms_audio_conference_get_size(ctx->conf) -1;
 }
 
-static int convert_conference_to_call(LinphoneCore *lc);
 void linphone_core_conference_check_uninit(LinphoneCore *lc){
 	LinphoneConference *ctx=&lc->conf_ctx;
 	if (ctx->conf){
-		ms_message("conference_check_uninit(): nmembers=%i",ctx->conf->nmembers);
+		ms_message("conference_check_uninit(): nmembers=%i",ms_audio_conference_get_size(ctx->conf));
 		if (remote_participants_count(ctx)==1){
 			convert_conference_to_call(lc);
 		}
-		if (ctx->conf->nmembers==1)
-		if (ctx->conf->nmembers==1 && ctx->local_participant!=NULL){
+		if (ms_audio_conference_get_size(ctx->conf)==1 && ctx->local_participant!=NULL){
 			remove_local_endpoint(ctx);
 		}
-		if (ctx->conf->nmembers==0){
+		if (ms_audio_conference_get_size(ctx->conf)==0){
 			ms_audio_conference_destroy(ctx->conf);
 			ctx->conf=NULL;
 		}
@@ -298,5 +298,5 @@ int linphone_core_terminate_conference(LinphoneCore *lc) {
 }
 
 int linphone_core_get_conference_size(LinphoneCore *lc) {
-	return ms_audio_conference_size(lc->conf_ctx.conf);
+	return ms_audio_conference_get_size(lc->conf_ctx.conf);
 }
