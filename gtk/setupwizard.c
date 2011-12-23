@@ -404,7 +404,6 @@ static void linphone_gtk_assistant_prepare(GtkWidget *assistant, GtkWidget *page
 		gchar domain[128];
 		g_snprintf(domain, sizeof(domain), "\"%s\"", creator->domain + 4);
 		LinphoneAuthInfo *info=linphone_auth_info_new(username, username, creator->password, NULL, domain);
-		g_free(username);
 		linphone_core_add_auth_info(linphone_gtk_get_core(),info);
 
 		if (linphone_core_add_proxy_config(linphone_gtk_get_core(),cfg)==-1)
@@ -412,6 +411,18 @@ static void linphone_gtk_assistant_prepare(GtkWidget *assistant, GtkWidget *page
 
 		linphone_core_set_default_proxy(linphone_gtk_get_core(),cfg);
 		linphone_gtk_load_identities();
+
+		// If account created on sip.linphone.org, we configure linphone to use TLS by default
+		g_warning("Domain : %s", creator->domain);
+		if (strcmp(creator->domain, "sip:sip.linphone.org") == 0) {
+			LCSipTransports tr;
+			LinphoneCore* lc = linphone_gtk_get_core();
+			linphone_core_get_sip_transports(lc,&tr);
+			tr.tls_port = tr.udp_port + tr.tcp_port + tr.tls_port;
+			tr.udp_port = 0;
+			tr.tcp_port = 0;
+			linphone_core_set_sip_transports(lc,&tr);
+		}
 	}
 }
 

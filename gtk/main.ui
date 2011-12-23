@@ -960,19 +960,7 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkButton" id="call_back_button">
-                                    <property name="label" translatable="yes">Call back</property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">True</property>
-                                    <property name="use_action_appearance">False</property>
-                                    <signal name="clicked" handler="linphone_gtk_call_log_callback" swapped="no"/>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">False</property>
-                                    <property name="position">1</property>
-                                  </packing>
+                                  <placeholder/>
                                 </child>
                                 <child>
                                   <placeholder/>
