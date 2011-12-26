@@ -298,5 +298,8 @@ int linphone_core_terminate_conference(LinphoneCore *lc) {
 }
 
 int linphone_core_get_conference_size(LinphoneCore *lc) {
+	if (lc->conf_ctx.conf == NULL) {
+		return 0;
+	}
 	return ms_audio_conference_get_size(lc->conf_ctx.conf);
 }
