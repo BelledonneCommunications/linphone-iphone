@@ -22,6 +22,7 @@
 #import "ConferenceCallDetailView.h"
 #import <AddressBookUI/ABPeoplePickerNavigationController.h>
 #include "UILinphone.h"
+
 @class VideoViewController;
 
 @interface IncallViewController : UIViewController <ABPeoplePickerNavigationControllerDelegate,LinphoneUICallDelegate, UITableViewDelegate, UITableViewDataSource, UIActionSheetCustomDelegate> {
@@ -76,21 +77,27 @@
 	BOOL mIncallViewIsReady;
     
     UIImage* verified, *unverified;
+	UIImage* stat_sys_signal_0, *stat_sys_signal_1, *stat_sys_signal_2, *stat_sys_signal_3, *stat_sys_signal_4;
     UIActionSheet* zrtpVerificationSheet;
 }
+
++ (UIImage*) stat_sys_signal_0;
++ (UIImage*) stat_sys_signal_1;
++ (UIImage*) stat_sys_signal_2;
++ (UIImage*) stat_sys_signal_3;
++ (UIImage*) stat_sys_signal_4;
 
 -(void)displayStatus:(NSString*) message;
 
 - (IBAction)doAction:(id)sender;
 
 +(LinphoneCall*) retrieveCallAtIndex: (NSInteger) index inConference:(bool) conf;
-+ (void) updateCellImageView:(UIImageView*)imageView Label:(UILabel*)label DetailLabel:(UILabel*)detailLabel AndAccessoryView:(UIButton*)accessoryView withCall:(LinphoneCall*) call;
++ (void) updateCellImageView:(UIImageView*)imageView Label:(UILabel*)label DetailLabel:(UILabel*)detailLabel AndAccessoryView:(UIView*)accessoryView withCall:(LinphoneCall*) call;
 
 @property (nonatomic, retain) IBOutlet UIView* controlSubView;
 @property (nonatomic, retain) IBOutlet UIView* padSubView;
 @property (nonatomic, retain) IBOutlet UIView* hangUpView;
 @property (nonatomic, retain) IBOutlet UIViewController* conferenceDetail;
-
 
 @property (nonatomic, retain) IBOutlet UIButton* endCtrl;
 @property (nonatomic, retain) IBOutlet UIButton* dialer;
