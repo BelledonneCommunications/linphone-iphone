@@ -7,6 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1AE0A49814AC5C64002C99BD /* mic_active.png in Resources */ = {isa = PBXBuildFile; fileRef = 1AE0A49214AC5C64002C99BD /* mic_active.png */; };
+		1AE0A49914AC5C64002C99BD /* mic_active.png in Resources */ = {isa = PBXBuildFile; fileRef = 1AE0A49214AC5C64002C99BD /* mic_active.png */; };
+		1AE0A49A14AC5C64002C99BD /* stat_sys_signal_0.png in Resources */ = {isa = PBXBuildFile; fileRef = 1AE0A49314AC5C64002C99BD /* stat_sys_signal_0.png */; };
+		1AE0A49B14AC5C64002C99BD /* stat_sys_signal_0.png in Resources */ = {isa = PBXBuildFile; fileRef = 1AE0A49314AC5C64002C99BD /* stat_sys_signal_0.png */; };
+		1AE0A49C14AC5C64002C99BD /* stat_sys_signal_1.png in Resources */ = {isa = PBXBuildFile; fileRef = 1AE0A49414AC5C64002C99BD /* stat_sys_signal_1.png */; };
+		1AE0A49D14AC5C64002C99BD /* stat_sys_signal_1.png in Resources */ = {isa = PBXBuildFile; fileRef = 1AE0A49414AC5C64002C99BD /* stat_sys_signal_1.png */; };
+		1AE0A49E14AC5C64002C99BD /* stat_sys_signal_2.png in Resources */ = {isa = PBXBuildFile; fileRef = 1AE0A49514AC5C64002C99BD /* stat_sys_signal_2.png */; };
+		1AE0A49F14AC5C64002C99BD /* stat_sys_signal_2.png in Resources */ = {isa = PBXBuildFile; fileRef = 1AE0A49514AC5C64002C99BD /* stat_sys_signal_2.png */; };
+		1AE0A4A014AC5C64002C99BD /* stat_sys_signal_3.png in Resources */ = {isa = PBXBuildFile; fileRef = 1AE0A49614AC5C64002C99BD /* stat_sys_signal_3.png */; };
+		1AE0A4A114AC5C64002C99BD /* stat_sys_signal_3.png in Resources */ = {isa = PBXBuildFile; fileRef = 1AE0A49614AC5C64002C99BD /* stat_sys_signal_3.png */; };
+		1AE0A4A214AC5C64002C99BD /* stat_sys_signal_4.png in Resources */ = {isa = PBXBuildFile; fileRef = 1AE0A49714AC5C64002C99BD /* stat_sys_signal_4.png */; };
+		1AE0A4A314AC5C64002C99BD /* stat_sys_signal_4.png in Resources */ = {isa = PBXBuildFile; fileRef = 1AE0A49714AC5C64002C99BD /* stat_sys_signal_4.png */; };
 		1D3623260D0F684500981E51 /* LinphoneAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* LinphoneAppDelegate.m */; };
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
@@ -273,6 +285,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1AE0A49214AC5C64002C99BD /* mic_active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = mic_active.png; path = Resources/mic_active.png; sourceTree = "<group>"; };
+		1AE0A49314AC5C64002C99BD /* stat_sys_signal_0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = stat_sys_signal_0.png; path = Resources/stat_sys_signal_0.png; sourceTree = "<group>"; };
+		1AE0A49414AC5C64002C99BD /* stat_sys_signal_1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = stat_sys_signal_1.png; path = Resources/stat_sys_signal_1.png; sourceTree = "<group>"; };
+		1AE0A49514AC5C64002C99BD /* stat_sys_signal_2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = stat_sys_signal_2.png; path = Resources/stat_sys_signal_2.png; sourceTree = "<group>"; };
+		1AE0A49614AC5C64002C99BD /* stat_sys_signal_3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = stat_sys_signal_3.png; path = Resources/stat_sys_signal_3.png; sourceTree = "<group>"; };
+		1AE0A49714AC5C64002C99BD /* stat_sys_signal_4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = stat_sys_signal_4.png; path = Resources/stat_sys_signal_4.png; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D3623240D0F684500981E51 /* LinphoneAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LinphoneAppDelegate.h; sourceTree = "<group>"; };
 		1D3623250D0F684500981E51 /* LinphoneAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LinphoneAppDelegate.m; sourceTree = "<group>"; };
@@ -1151,6 +1169,12 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				1AE0A49214AC5C64002C99BD /* mic_active.png */,
+				1AE0A49314AC5C64002C99BD /* stat_sys_signal_0.png */,
+				1AE0A49414AC5C64002C99BD /* stat_sys_signal_1.png */,
+				1AE0A49514AC5C64002C99BD /* stat_sys_signal_2.png */,
+				1AE0A49614AC5C64002C99BD /* stat_sys_signal_3.png */,
+				1AE0A49714AC5C64002C99BD /* stat_sys_signal_4.png */,
 				344ABDE41483E596007420B6 /* unverified.png */,
 				34957F3E147D3FBF00DD7A09 /* secured.png */,
 				34F2F677147D2E1C00A2D5E3 /* contact_vide.png */,
@@ -1332,6 +1356,12 @@
 				3422AA5014975EC9000D4E8A /* InCallViewController-ipad.xib in Resources */,
 				3422AA5314978352000D4E8A /* PhoneViewController-ipad.xib in Resources */,
 				341FCA8E149798210084BC26 /* linphonerc-ipad in Resources */,
+				1AE0A49814AC5C64002C99BD /* mic_active.png in Resources */,
+				1AE0A49A14AC5C64002C99BD /* stat_sys_signal_0.png in Resources */,
+				1AE0A49C14AC5C64002C99BD /* stat_sys_signal_1.png in Resources */,
+				1AE0A49E14AC5C64002C99BD /* stat_sys_signal_2.png in Resources */,
+				1AE0A4A014AC5C64002C99BD /* stat_sys_signal_3.png in Resources */,
+				1AE0A4A214AC5C64002C99BD /* stat_sys_signal_4.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1394,6 +1424,12 @@
 				3422AA5114975EC9000D4E8A /* InCallViewController-ipad.xib in Resources */,
 				3422AA5414978352000D4E8A /* PhoneViewController-ipad.xib in Resources */,
 				341FCA8F149798210084BC26 /* linphonerc-ipad in Resources */,
+				1AE0A49914AC5C64002C99BD /* mic_active.png in Resources */,
+				1AE0A49B14AC5C64002C99BD /* stat_sys_signal_0.png in Resources */,
+				1AE0A49D14AC5C64002C99BD /* stat_sys_signal_1.png in Resources */,
+				1AE0A49F14AC5C64002C99BD /* stat_sys_signal_2.png in Resources */,
+				1AE0A4A114AC5C64002C99BD /* stat_sys_signal_3.png in Resources */,
+				1AE0A4A314AC5C64002C99BD /* stat_sys_signal_4.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

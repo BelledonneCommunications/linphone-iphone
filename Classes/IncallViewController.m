@@ -615,10 +615,11 @@ int callCount(LinphoneCore* lc) {
             cell.accessoryType = UITableViewCellAccessoryNone;
     } else {
         LinphoneCall* call = [IncallViewController retrieveCallAtIndex:indexPath.row inConference:NO];
+		LinphoneMediaEncryption enc = linphone_call_params_get_media_encryption(linphone_call_get_current_params(call));
         if (call == nil)
             return nil;
 		if (cell.accessoryView == nil) {
-			UIView *containerView = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, 60, 28)] autorelease];
+			UIView *containerView = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, 28, 28)] autorelease];
 			cell.accessoryView = containerView;
 		}
 		else {
@@ -649,10 +650,9 @@ int callCount(LinphoneCore* lc) {
 		else {
 			[callquality setImage: [IncallViewController stat_sys_signal_0]];
 		}
-		[cell.accessoryView addSubview:callquality];
 		
-		LinphoneMediaEncryption enc = linphone_call_params_get_media_encryption(linphone_call_get_current_params(call));
         if (enc != LinphoneMediaEncryptionNone) {
+			cell.accessoryView = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, 60, 28)] autorelease];
 			UIButton* accessoryBtn = [UIButton buttonWithType:UIButtonTypeCustom];
 			[accessoryBtn setFrame:CGRectMake(30, 0, 28, 28)];
 			[accessoryBtn setImage:nil forState:UIControlStateNormal];
@@ -670,6 +670,8 @@ int callCount(LinphoneCore* lc) {
 				[((UIButton*)accessoryBtn) addTarget:self action:@selector(secureIconPressed:withEvent:) forControlEvents:UIControlEventTouchUpInside];
 			}
         } 
+		
+		[cell.accessoryView addSubview:callquality];
     }
     
     cell.userInteractionEnabled = YES; 
