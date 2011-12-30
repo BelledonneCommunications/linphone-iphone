@@ -635,20 +635,26 @@ int callCount(LinphoneCore* lc) {
 		// Call Quality Indicator
 		UIImageView* callquality = [UIImageView new];
 		[callquality setFrame:CGRectMake(0, 0, 28, 28)];
-		if (linphone_call_get_average_quality(call) >= 4) {
-			[callquality setImage: [IncallViewController stat_sys_signal_4]];
-		}
-		else if (linphone_call_get_average_quality(call) >= 3) {
-			[callquality setImage: [IncallViewController stat_sys_signal_3]];
-		}
-		else if (linphone_call_get_average_quality(call) >= 2) {
-			[callquality setImage: [IncallViewController stat_sys_signal_2]];
-		}
-		else if (linphone_call_get_average_quality(call) >= 1) {
-			[callquality setImage: [IncallViewController stat_sys_signal_1]];
+		if (call->state == LinphoneCallStreamsRunning) 
+		{
+			if (linphone_call_get_average_quality(call) >= 4) {
+				[callquality setImage: [IncallViewController stat_sys_signal_4]];
+			}
+			else if (linphone_call_get_average_quality(call) >= 3) {
+				[callquality setImage: [IncallViewController stat_sys_signal_3]];
+			}
+			else if (linphone_call_get_average_quality(call) >= 2) {
+				[callquality setImage: [IncallViewController stat_sys_signal_2]];
+			}
+			else if (linphone_call_get_average_quality(call) >= 1) {
+				[callquality setImage: [IncallViewController stat_sys_signal_1]];
+			}
+			else {
+				[callquality setImage: [IncallViewController stat_sys_signal_0]];
+			}
 		}
 		else {
-			[callquality setImage: [IncallViewController stat_sys_signal_0]];
+			[callquality setImage:nil];
 		}
 		
         if (enc != LinphoneMediaEncryptionNone) {

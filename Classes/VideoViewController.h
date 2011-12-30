@@ -51,6 +51,7 @@
 @property (nonatomic, retain) IBOutlet UIMuteButton* mMute;
 @property (nonatomic, retain) IBOutlet UIHangUpButton* mHangUp;
 @property (nonatomic, retain) IBOutlet UICamSwitch* mCamSwitch;
+@property (nonatomic, retain) IBOutlet UIImageView *mCallQuality;
 
 @property (nonatomic, retain) IBOutlet UIView* mLandscapeRight;
 @property (nonatomic, retain) IBOutlet UIView* mDisplayLandRight;
@@ -65,4 +66,9 @@
 @property (nonatomic, retain) IBOutlet UIMuteButton* mMuteLandLeft;
 @property (nonatomic, retain) IBOutlet UIHangUpButton* mHangUpLandLeft;
 @property (nonatomic, retain) IBOutlet UICamSwitch* mCamSwitchLandLeft;
+
+- (void) updateCallQualityIndicator;
+
+- (void) waitBeforeUpdatingCallQualityIndicator;
+
 @end

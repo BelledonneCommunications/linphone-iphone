@@ -28,6 +28,7 @@
 @synthesize mMute;
 @synthesize mHangUp;
 @synthesize mCamSwitch;
+@synthesize mCallQuality;
 
 @synthesize mLandscapeRight;
 @synthesize mDisplayLandRight;
@@ -54,6 +55,7 @@
 
 - (void)dealloc
 {
+	[mCallQuality release];
     [super dealloc];
 }
 
@@ -76,7 +78,37 @@
 	[mCamSwitch setPreview:mPreview];
 	[mCamSwitchLandRight setPreview:mPreviewLandRight];
 	[mCamSwitchLandLeft setPreview:mPreviewLandLeft];
+	
+	[self performSelector:@selector(waitBeforeUpdatingCallQualityIndicator) withObject:nil afterDelay:1];
 	isFirst=TRUE;
+}
+	 
+- (void) waitBeforeUpdatingCallQualityIndicator
+{
+	[self performSelectorOnMainThread:@selector(updateCallQualityIndicator) withObject:nil waitUntilDone:YES];
+	
+	[self performSelector:@selector(waitBeforeUpdatingCallQualityIndicator) withObject:nil afterDelay:1];
+}
+
+- (void) updateCallQualityIndicator
+{
+	LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
+	
+	if (linphone_call_get_average_quality(call) >= 4) {
+		[mCallQuality setImage: [[UIImage imageNamed:@"stat_sys_signal_4.png"] retain]];
+	}
+	else if (linphone_call_get_average_quality(call) >= 3) {
+		[mCallQuality setImage: [[UIImage imageNamed:@"stat_sys_signal_3.png"] retain]];
+	}
+	else if (linphone_call_get_average_quality(call) >= 2) {
+		[mCallQuality setImage: [[UIImage imageNamed:@"stat_sys_signal_2.png"] retain]];
+	}
+	else if (linphone_call_get_average_quality(call) >= 1) {
+		[mCallQuality setImage: [[UIImage imageNamed:@"stat_sys_signal_1.png"] retain]];
+	}
+	else {
+		[mCallQuality setImage: [[UIImage imageNamed:@"stat_sys_signal_0.png"] retain]];
+	}
 }
 
 
@@ -113,6 +145,8 @@
 
 - (void)viewDidUnload
 {
+	[mCallQuality release];
+	mCallQuality = nil;
     [super viewDidUnload];
 	
     // Release any retained subviews of the main view.
