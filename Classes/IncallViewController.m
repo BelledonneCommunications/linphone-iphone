@@ -24,6 +24,8 @@
 #include "private.h"
 #import "ContactPickerDelegate.h"
 
+const NSInteger SECURE_BUTTON_TAG=5;
+
 @implementation IncallViewController
 
 @synthesize controlSubView;
@@ -658,12 +660,13 @@ int callCount(LinphoneCore* lc) {
 		}
 		
         if (enc != LinphoneMediaEncryptionNone) {
-			cell.accessoryView = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, 60, 28)] autorelease];
-			UIButton* accessoryBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-			[accessoryBtn setFrame:CGRectMake(30, 0, 28, 28)];
-			[accessoryBtn setImage:nil forState:UIControlStateNormal];
-			accessoryBtn.backgroundColor = [UIColor clearColor];
-			accessoryBtn.userInteractionEnabled = YES;
+            cell.accessoryView = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, 60, 28)] autorelease];
+            UIButton* accessoryBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+            [accessoryBtn setFrame:CGRectMake(30, 0, 28, 28)];
+            [accessoryBtn setImage:nil forState:UIControlStateNormal];
+            [accessoryBtn setTag:SECURE_BUTTON_TAG];
+            accessoryBtn.backgroundColor = [UIColor clearColor];
+            accessoryBtn.userInteractionEnabled = YES;
 			
             if (enc == LinphoneMediaEncryptionSRTP || linphone_call_get_authentication_token_verified(call)) {
                 [accessoryBtn setImage: verified forState:UIControlStateNormal];
@@ -696,8 +699,9 @@ int callCount(LinphoneCore* lc) {
         CallDelegate* cd = [[CallDelegate alloc] init];
         cd.delegate = self;
         cd.call = call;
-        
-        [(UIButton*)[callTableView cellForRowAtIndexPath:path].accessoryView setImage:nil forState:UIControlStateNormal];
+        UIView* container=(UIView*)[callTableView cellForRowAtIndexPath:path].accessoryView;
+        UIButton *button=(UIButton*)[container viewWithTag:SECURE_BUTTON_TAG];
+        [button setImage:nil forState:UIControlStateNormal];
             
 		zrtpVerificationSheet = [[UIActionSheet alloc] initWithTitle:[NSString  stringWithFormat:NSLocalizedString(@" Mark auth token '%s' as:",nil),linphone_call_get_authentication_token(call)]
                                                     delegate:cd 
