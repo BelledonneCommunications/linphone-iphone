@@ -36,6 +36,7 @@
 @synthesize mMuteLandRight;
 @synthesize mHangUpLandRight;
 @synthesize mCamSwitchLandRight;
+@synthesize mCallQualityLandRight;
 
 @synthesize mLandscapeLeft;
 @synthesize mDisplayLandLeft;
@@ -43,6 +44,7 @@
 @synthesize mMuteLandLeft;
 @synthesize mHangUpLandLeft;
 @synthesize mCamSwitchLandLeft;
+@synthesize mCallQualityLandLeft;
 
 NSTimer *callQualityRefresher;
 
@@ -58,6 +60,8 @@ NSTimer *callQualityRefresher;
 - (void)dealloc
 {
 	[mCallQuality release];
+	[mCallQualityLandRight release];
+	[mCallQualityLandLeft release];
     [super dealloc];
 }
 
@@ -90,18 +94,28 @@ NSTimer *callQualityRefresher;
 	
 	if (linphone_call_get_average_quality(call) >= 4) {
 		[mCallQuality setImage: [UIImage imageNamed:@"stat_sys_signal_4.png"]];
+		[mCallQualityLandRight setImage: [UIImage imageNamed:@"stat_sys_signal_4.png"]];
+		[mCallQualityLandLeft setImage: [UIImage imageNamed:@"stat_sys_signal_4.png"]];
 	}
 	else if (linphone_call_get_average_quality(call) >= 3) {
 		[mCallQuality setImage: [UIImage imageNamed:@"stat_sys_signal_3.png"]];
+		[mCallQualityLandRight setImage: [UIImage imageNamed:@"stat_sys_signal_3.png"]];
+		[mCallQualityLandLeft setImage: [UIImage imageNamed:@"stat_sys_signal_3.png"]];
 	}
 	else if (linphone_call_get_average_quality(call) >= 2) {
 		[mCallQuality setImage: [UIImage imageNamed:@"stat_sys_signal_2.png"]];
+		[mCallQualityLandRight setImage: [UIImage imageNamed:@"stat_sys_signal_2.png"]];
+		[mCallQualityLandLeft setImage: [UIImage imageNamed:@"stat_sys_signal_2.png"]];
 	}
 	else if (linphone_call_get_average_quality(call) >= 1) {
 		[mCallQuality setImage: [UIImage imageNamed:@"stat_sys_signal_1.png"]];
+		[mCallQualityLandRight setImage: [UIImage imageNamed:@"stat_sys_signal_1.png"]];
+		[mCallQualityLandLeft setImage: [UIImage imageNamed:@"stat_sys_signal_1.png"]];
 	}
 	else {
 		[mCallQuality setImage: [UIImage imageNamed:@"stat_sys_signal_0.png"]];
+		[mCallQualityLandRight setImage: [UIImage imageNamed:@"stat_sys_signal_0.png"]];
+		[mCallQualityLandLeft setImage: [UIImage imageNamed:@"stat_sys_signal_0.png"]];
 	}
 }
 
@@ -141,6 +155,8 @@ NSTimer *callQualityRefresher;
 {
 	[mCallQuality release];
 	mCallQuality = nil;
+	[self setMCallQualityLandRight:nil];
+	[self setMCallQualityLandLeft:nil];
     [super viewDidUnload];
 	
     // Release any retained subviews of the main view.
