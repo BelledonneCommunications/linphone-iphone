@@ -93,6 +93,7 @@ NSTimer *callQualityRefresher;
 }
 
 -(void) updateCallQuality {
+	[table reloadData];
 	[table setNeedsDisplay];
 }
 

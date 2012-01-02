@@ -89,19 +89,19 @@ NSTimer *callQualityRefresher;
 	LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
 	
 	if (linphone_call_get_average_quality(call) >= 4) {
-		[mCallQuality setImage: [[UIImage imageNamed:@"stat_sys_signal_4.png"] retain]];
+		[mCallQuality setImage: [UIImage imageNamed:@"stat_sys_signal_4.png"]];
 	}
 	else if (linphone_call_get_average_quality(call) >= 3) {
-		[mCallQuality setImage: [[UIImage imageNamed:@"stat_sys_signal_3.png"] retain]];
+		[mCallQuality setImage: [UIImage imageNamed:@"stat_sys_signal_3.png"]];
 	}
 	else if (linphone_call_get_average_quality(call) >= 2) {
-		[mCallQuality setImage: [[UIImage imageNamed:@"stat_sys_signal_2.png"] retain]];
+		[mCallQuality setImage: [UIImage imageNamed:@"stat_sys_signal_2.png"]];
 	}
 	else if (linphone_call_get_average_quality(call) >= 1) {
-		[mCallQuality setImage: [[UIImage imageNamed:@"stat_sys_signal_1.png"] retain]];
+		[mCallQuality setImage: [UIImage imageNamed:@"stat_sys_signal_1.png"]];
 	}
 	else {
-		[mCallQuality setImage: [[UIImage imageNamed:@"stat_sys_signal_0.png"] retain]];
+		[mCallQuality setImage: [UIImage imageNamed:@"stat_sys_signal_0.png"]];
 	}
 }
 
