@@ -29,4 +29,6 @@
 @property (nonatomic, retain) IBOutlet UITableView* table;
 
 @property (nonatomic, assign) IBOutlet UITableViewCell* conferenceDetailCell;
+
+-(void) updateCallQuality;
 @end

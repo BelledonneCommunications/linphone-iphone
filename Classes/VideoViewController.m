@@ -44,6 +44,8 @@
 @synthesize mHangUpLandLeft;
 @synthesize mCamSwitchLandLeft;
 
+NSTimer *callQualityRefresher;
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -79,15 +81,7 @@
 	[mCamSwitchLandRight setPreview:mPreviewLandRight];
 	[mCamSwitchLandLeft setPreview:mPreviewLandLeft];
 	
-	[self performSelector:@selector(waitBeforeUpdatingCallQualityIndicator) withObject:nil afterDelay:1];
 	isFirst=TRUE;
-}
-	 
-- (void) waitBeforeUpdatingCallQualityIndicator
-{
-	[self performSelectorOnMainThread:@selector(updateCallQualityIndicator) withObject:nil waitUntilDone:YES];
-	
-	[self performSelector:@selector(waitBeforeUpdatingCallQualityIndicator) withObject:nil afterDelay:1];
 }
 
 - (void) updateCallQualityIndicator
@@ -158,6 +152,11 @@
     [super viewDidDisappear:animated];
 	[[UIApplication sharedApplication] setIdleTimerDisabled:NO];
 	linphone_core_set_max_calls([LinphoneManager getLc], maxCall);
+	
+	if (callQualityRefresher != nil) {
+        [callQualityRefresher invalidate];
+        callQualityRefresher=nil;
+	}
 }
 
 -(void) viewWillAppear:(BOOL)animated {
@@ -183,6 +182,12 @@
 - (void) viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
 	[[UIApplication sharedApplication] setIdleTimerDisabled:YES];
+	
+	callQualityRefresher = [NSTimer scheduledTimerWithTimeInterval:1
+															target:self 
+														  selector:@selector(updateCallQualityIndicator) 
+														  userInfo:nil 
+														   repeats:YES];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {

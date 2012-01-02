@@ -21,6 +21,8 @@
 
 @synthesize conferenceDetailCell;
 
+NSTimer *callQualityRefresher;
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -75,6 +77,25 @@
     [speaker reset];
 }
 
+-(void) viewDidAppear:(BOOL)animated {
+	callQualityRefresher = [NSTimer scheduledTimerWithTimeInterval:1
+							target:self 
+							selector:@selector(updateCallQuality) 
+							userInfo:nil 
+							repeats:YES];
+}
+
+-(void) viewDidDisappear:(BOOL)animated {
+	if (callQualityRefresher != nil) {
+        [callQualityRefresher invalidate];
+        callQualityRefresher=nil;
+	}
+}
+
+-(void) updateCallQuality {
+	[table setNeedsDisplay];
+}
+
 #pragma mark - UITableView delegates
 -(void) tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.row % 2)
@@ -97,9 +118,38 @@
     UILabel* label = (UILabel*) [cell viewWithTag:2];
     
     /* update cell content */
-    LinphoneCall* call = [IncallViewController retrieveCallAtIndex:indexPath.row inConference:YES];
+	LinphoneCall* call = [IncallViewController retrieveCallAtIndex:indexPath.row inConference:YES];
     [IncallViewController updateCellImageView:image Label:label DetailLabel:nil AndAccessoryView:nil withCall:call];
     
+	cell.accessoryType = UITableViewCellAccessoryNone;
+	if (cell.accessoryView == nil) {
+		UIView *containerView = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, 28, 28)] autorelease];
+		cell.accessoryView = containerView;
+	}
+	else {
+		for (UIView *view in cell.accessoryView.subviews) {
+			[view removeFromSuperview];
+		}
+	}
+	UIImageView* callquality = [UIImageView new];
+	[callquality setFrame:CGRectMake(0, 0, 28, 28)];
+	if (linphone_call_get_average_quality(call) >= 4) {
+		[callquality setImage: [IncallViewController stat_sys_signal_4]];
+	}
+	else if (linphone_call_get_average_quality(call) >= 3) {
+		[callquality setImage: [IncallViewController stat_sys_signal_3]];
+	}
+	else if (linphone_call_get_average_quality(call) >= 2) {
+		[callquality setImage: [IncallViewController stat_sys_signal_2]];
+	}
+	else if (linphone_call_get_average_quality(call) >= 1) {
+		[callquality setImage: [IncallViewController stat_sys_signal_1]];
+	}
+	else {
+		[callquality setImage: [IncallViewController stat_sys_signal_0]];
+	}
+	[cell.accessoryView addSubview:callquality];
+	
     tableView.rowHeight = 80;//cell.bounds.size.height;
     
     return cell;
