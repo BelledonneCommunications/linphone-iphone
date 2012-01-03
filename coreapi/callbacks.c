@@ -374,7 +374,7 @@ static void call_accepted(SalOp *op){
 	}else{
 		/*send a bye*/
 		ms_error("Incompatible SDP offer received in 200Ok, need to abort the call");
-		linphone_core_abort_call(lc,call,"No codec intersection");
+		linphone_core_abort_call(lc,call,_("Incompatible, check codecs..."));
 	}
 }
 
