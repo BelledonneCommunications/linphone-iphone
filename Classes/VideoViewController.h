@@ -71,6 +71,4 @@
 
 - (void) updateCallQualityIndicator;
 
-- (void) waitBeforeUpdatingCallQualityIndicator;
-
 @end

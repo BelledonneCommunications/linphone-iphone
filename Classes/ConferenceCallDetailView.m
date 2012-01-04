@@ -18,6 +18,7 @@
 @synthesize back;
 @synthesize hangup;
 @synthesize table;
+@synthesize addCall;
 
 @synthesize conferenceDetailCell;
 

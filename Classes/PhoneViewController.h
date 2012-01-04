@@ -91,11 +91,6 @@
 
 @property (nonatomic, retain) IBOutlet UIButton* switchCamera;
 
-
-// method to handle keypad event
-- (IBAction)doKeyPad:(id)sender;
-
-
 @property (nonatomic, retain) IBOutlet UITabBarController*  myTabBarController;
 @property (nonatomic, retain) IBOutlet MainScreenWithVideoPreview*  mMainScreenWithVideoPreview;
 @end

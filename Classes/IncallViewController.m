@@ -17,6 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */              
 #import "IncallViewController.h"
+#import "VideoViewController.h"
 #import <AudioToolbox/AudioToolbox.h>
 #import <AddressBook/AddressBook.h>
 #import "linphonecore.h"
@@ -58,16 +59,8 @@ const NSInteger SECURE_BUTTON_TAG=5;
 @synthesize hash;
 @synthesize videoViewController;
 
-/*
-// The designated initializer.  Override if you create the controller programmatically and want to perform customization that is not appropriate for viewDidLoad.
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
-    if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
-        // Custom initialization
+@synthesize addVideo;
 
-    }
-    return self;
-}
-*/
 
 + (UIImage*) stat_sys_signal_0 {
 	return [[UIImage imageNamed:@"stat_sys_signal_0.png"] retain];
@@ -106,6 +99,63 @@ int callCount(LinphoneCore* lc) {
         calls = calls->next;
     }
     return count;
+}
+
+-(void) updateUIFromLinphoneState:(UIViewController *)viewCtrl {
+    activeCallCell = nil;
+    [mute reset];
+    
+    LinphoneCore* lc;
+    
+    @try {
+        lc = [LinphoneManager getLc];
+        
+        if (callCount([LinphoneManager getLc]) > 1) {
+            [pause setHidden:YES];
+            [mergeCalls setHidden:NO];
+        } else {
+            [pause setHidden:NO];
+            [mergeCalls setHidden:YES];        
+        }
+        
+        [callTableView reloadData];       
+    } @catch (NSException* exc) {
+        return;
+    }
+    LinphoneCall* selectedCall = linphone_core_get_current_call([LinphoneManager getLc]);
+    int callsCount = linphone_core_get_calls_nb(lc);
+    // hide pause/resume if in conference    
+    if (selectedCall) {
+        if (linphone_core_is_in_conference(lc))
+            [pause setHidden:YES];
+        else if (callCount(lc) == callsCount && callsCount == 1) {
+            [pause setHidden:NO];
+            pause.selected = NO;
+        } else {
+            [pause setHidden:YES];
+        }
+    } else {
+        if (callsCount == 1) {
+            LinphoneCall* c = (LinphoneCall*)linphone_core_get_calls(lc)->data;
+            if (linphone_call_get_state(c) == LinphoneCallPaused ||
+                linphone_call_get_state(c) == LinphoneCallPausing) {
+                [pause setHidden:NO];
+                pause.selected = YES;                
+            }
+            [pause setHidden:NO];
+        } else {
+            [pause setHidden:YES];
+        }
+    }
+    [mergeCalls setHidden:!pause.hidden];
+    
+    // update conference details view if diaplsyed
+    if (self.presentedViewController == conferenceDetail) {
+        if (!linphone_core_is_in_conference(lc))
+            [self dismissModalViewControllerAnimated:YES];
+        else
+            [conferenceDetail.table reloadData];
+    }
 }
 
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
@@ -288,7 +338,7 @@ int callCount(LinphoneCore* lc) {
 }
 
 -(void) dismissVideoView {
-	[[UIApplication sharedApplication] setStatusBarHidden:NO animated:NO]; 
+	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone]; 
 	[self dismissModalViewControllerAnimated:FALSE];//just in case
 	 mVideoShown=FALSE;
 }
@@ -315,7 +365,7 @@ int callCount(LinphoneCore* lc) {
             linphone_core_set_native_video_window_id([LinphoneManager getLc],0);	
             linphone_core_set_native_preview_window_id([LinphoneManager getLc],0);
         }
-		[[UIApplication sharedApplication] setStatusBarHidden:NO animated:NO]; 
+		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone]; 
 		[self dismissModalViewControllerAnimated:FALSE];//just in case
     }
 
@@ -325,72 +375,13 @@ int callCount(LinphoneCore* lc) {
 }
 -(void) displayVideoCall:(LinphoneCall*) call FromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName { 
 	if (mIncallViewIsReady) {
-	[[UIApplication sharedApplication] setStatusBarHidden:YES animated:NO];
+	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
 	mVideoShown=TRUE;
 	[self presentModalViewController:mVideoViewController animated:true];
 	} else {
 		//postepone presentation
 		mVideoIsPending=TRUE;
 	}
-}
--(void) updateUIFromLinphoneState:(UIViewController *)viewCtrl {
-    activeCallCell = nil;
-    [mute reset];
-    // if (
-    // [pause reset];
-
-    
-    LinphoneCore* lc;
-    
-    @try {
-        lc = [LinphoneManager getLc];
-        
-        if (callCount([LinphoneManager getLc]) > 1) {
-            [pause setHidden:YES];
-            [mergeCalls setHidden:NO];
-        } else {
-            [pause setHidden:NO];
-            [mergeCalls setHidden:YES];        
-        }
-        
-        [callTableView reloadData];       
-    } @catch (NSException* exc) {
-        return;
-    }
-    LinphoneCall* selectedCall = linphone_core_get_current_call([LinphoneManager getLc]);
-    int callsCount = linphone_core_get_calls_nb(lc);
-    // hide pause/resume if in conference    
-    if (selectedCall) {
-        if (linphone_core_is_in_conference(lc))
-            [pause setHidden:YES];
-        else if (callCount(lc) == callsCount && callsCount == 1) {
-            [pause setHidden:NO];
-            pause.selected = NO;
-        } else {
-            [pause setHidden:YES];
-        }
-    } else {
-        if (callsCount == 1) {
-            LinphoneCall* c = (LinphoneCall*)linphone_core_get_calls(lc)->data;
-            if (linphone_call_get_state(c) == LinphoneCallPaused ||
-                linphone_call_get_state(c) == LinphoneCallPausing) {
-                [pause setHidden:NO];
-                pause.selected = YES;                
-            }
-            [pause setHidden:NO];
-        } else {
-            [pause setHidden:YES];
-        }
-    }
-    [mergeCalls setHidden:!pause.hidden];
-    
-    // update conference details view if diaplsyed
-    if (self.presentedViewController == conferenceDetail) {
-        if (!linphone_core_is_in_conference(lc))
-            [self dismissModalViewControllerAnimated:YES];
-        else
-            [conferenceDetail.table reloadData];
-    }
 }
 
 - (IBAction)doAction:(id)sender {

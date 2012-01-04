@@ -19,6 +19,7 @@
 
 #import "PhoneViewController.h"
 #import "linphoneAppDelegate.h"
+#import "IncallViewController.h"
 #import <AVFoundation/AVAudioSession.h>
 #import <AudioToolbox/AudioToolbox.h>
 #import "LinphoneManager.h"
@@ -55,17 +56,25 @@
 @synthesize switchCamera;
 
 
-//implements keypad behavior 
-/*-(IBAction) doKeyPad:(id)sender {
-	if (sender == back) {
-		if ([address.text length] >0) {
-			NSString* newAddress; 
-			newAddress = [address.text substringToIndex: [address.text length]-1];
-			[address setText:newAddress];
-		} 
-	} 	
-	
-}*/
+-(void) updateCallAndBackButtons {
+    @try {
+        if (linphone_core_get_calls_nb([LinphoneManager getLc]) == 0) {
+            [callLarge setHidden:FALSE];
+            [callShort setHidden:TRUE];
+            [backToCallView setHidden:TRUE];
+        } else {
+            [callShort setEnabled:!linphone_core_sound_resources_locked([LinphoneManager getLc])];
+            [callLarge setHidden:TRUE];
+            [callShort setHidden:FALSE];
+            [backToCallView setHidden:FALSE];        
+        }
+    } @catch (NSException* exc) {
+        // R.A.S: linphone core si simply not ready...
+        ms_warning("Exception %s: %s", 
+                   [exc.name cStringUsingEncoding:[NSString defaultCStringEncoding]], 
+                   [exc.reason cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+    }
+}
 
 - (void)viewDidAppear:(BOOL)animated {
 	[[UIApplication sharedApplication] setIdleTimerDisabled:true];
@@ -109,19 +118,7 @@
     
     mIncallViewController = [[IncallViewController alloc]  initWithNibName:[LinphoneManager runningOnIpad]?@"InCallViewController-ipad":@"IncallViewController" 
 																	bundle:[NSBundle mainBundle]];
-
 }
-
-
-
-
-/*
- // Override to allow orientations other than the default portrait orientation.
- - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
- // Return YES for supported orientations
- return (interfaceOrientation == UIInterfaceOrientationPortrait);
- }
- */
 
 - (void)didReceiveMemoryWarning {
 	// Releases the view if it doesn't have a superview.
@@ -142,26 +139,6 @@
 		
     } 
     return YES;
-}
-
--(void) updateCallAndBackButtons {
-    @try {
-        if (linphone_core_get_calls_nb([LinphoneManager getLc]) == 0) {
-            [callLarge setHidden:FALSE];
-            [callShort setHidden:TRUE];
-            [backToCallView setHidden:TRUE];
-        } else {
-            [callShort setEnabled:!linphone_core_sound_resources_locked([LinphoneManager getLc])];
-            [callLarge setHidden:TRUE];
-            [callShort setHidden:FALSE];
-            [backToCallView setHidden:FALSE];        
-        }
-    } @catch (NSException* exc) {
-        // R.A.S: linphone core si simply not ready...
-        ms_warning("Exception %s: %s", 
-                   [exc.name cStringUsingEncoding:[NSString defaultCStringEncoding]], 
-                   [exc.reason cStringUsingEncoding:[NSString defaultCStringEncoding]]);
-    }
 }
 
 -(void)viewWillAppear:(BOOL)animated {
