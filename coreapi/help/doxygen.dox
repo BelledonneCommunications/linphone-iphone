@@ -316,6 +316,38 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	linphone_core_set_ringer_device(lc, "AQ: Audio Queue Device");
 	linphone_core_set_capture_device(lc, "AU: Audio Unit Receiver");
 \endcode
+<b> GSM call interaction </b>
+<br> To ensure gentle interaction with GSM calls, it is recommended to register an AudioSession delegate. This allows the application to be notified when its audio session is interrupted/resumed (presumably by a GSM call).
+\code
+    // declare a class handling the AVAudioSessionDelegate protocol
+    @interface MyClass : NSObject <AVAudioSessionDelegate> { [...] }
+    // implement 2 methods : here's an example implementation
+    -(void) beginInterruption {
+        LinphoneCall* c = linphone_core_get_current_call(theLinphoneCore);
+        ms_message("Sound interruption detected!");
+        if (c) {
+            linphone_core_pause_call(theLinphoneCore, c);
+        }
+    }
+
+    -(void) endInterruption {
+        ms_message("Sound interruption ended!");
+        const MSList* c = linphone_core_get_calls(theLinphoneCore);
+    
+        if (c) {
+            ms_message("Auto resuming call");
+            linphone_core_resume_call(theLinphoneCore, (LinphoneCall*) c->data);
+        }
+    }
+\endcode
+@see http://developer.apple.com/library/ios/#documentation/AVFoundation/Reference/AVAudioSessionDelegate_ProtocolReference/Reference/Reference.html
+
+<br> Declare an instance of your class as AudioSession's delegate :
+\code
+    [audioSession setDelegate:myClassInstance];
+\endcode
+@see http://developer.apple.com/library/ios/#documentation/AVFoundation/Reference/AVAudioSession_ClassReference/Reference/Reference.html
+
 <b> Video </b>
 <br>Since 3.5 video support has been added to liblinphone for IOS. It requires the application to provide liblinphone with pointers to IOS's views hosting video display and video previous.
 <br> These 2 UIView objects must be passed to the core using functions  #linphone_core_set_native_video_window_id() and	#linphone_core_set_native_preview_window_id(). here under speudo code:
