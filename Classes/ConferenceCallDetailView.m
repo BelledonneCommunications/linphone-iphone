@@ -76,6 +76,7 @@ NSTimer *callQualityRefresher;
     [table reloadData];
     [mute reset];
     [speaker reset];
+    [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
 }
 
 -(void) viewDidAppear:(BOOL)animated {
@@ -87,6 +88,8 @@ NSTimer *callQualityRefresher;
 }
 
 -(void) viewDidDisappear:(BOOL)animated {
+    [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
+    
 	if (callQualityRefresher != nil) {
         [callQualityRefresher invalidate];
         callQualityRefresher=nil;

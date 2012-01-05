@@ -77,7 +77,6 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-	[[UIApplication sharedApplication] setIdleTimerDisabled:true];
 	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"enable_first_login_view_preference"] == true) {
 		myFirstLoginViewController = [[FirstLoginViewController alloc]  initWithNibName:@"FirstLoginViewController" 
 																				 bundle:[NSBundle mainBundle]];

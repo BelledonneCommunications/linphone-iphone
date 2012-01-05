@@ -247,6 +247,7 @@ int callCount(LinphoneCore* lc) {
 -(void) viewWillAppear:(BOOL)animated {}
 
 -(void)viewDidAppear:(BOOL)animated {
+    [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
     [super viewDidAppear:animated];
 	if (dismissed) {
         [self dismissModalViewControllerAnimated:true];
