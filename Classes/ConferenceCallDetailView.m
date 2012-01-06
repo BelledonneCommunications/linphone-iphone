@@ -156,6 +156,7 @@ NSTimer *callQualityRefresher;
 	[cell.accessoryView addSubview:callquality];
 	
     tableView.rowHeight = 80;//cell.bounds.size.height;
+    [callquality release];
     
     return cell;
 }

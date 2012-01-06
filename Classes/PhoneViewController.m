@@ -93,10 +93,11 @@
 }
 
 
-// Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
+// Implement viewDidLoad to do additional setup after loading the view, typically from a nib : called twice (?!)
 - (void)viewDidLoad {
     [super viewDidLoad];
 	
+    [mDisplayName release];
 	mDisplayName = [UILabel alloc];
 	[zero initWithNumber:'0'  addressField:address dtmf:false];
 	[one initWithNumber:'1'  addressField:address dtmf:false];

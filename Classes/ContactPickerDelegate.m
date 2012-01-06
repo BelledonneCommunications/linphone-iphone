@@ -38,7 +38,9 @@
 	NSString *phoneNumber = (NSString *)ABMultiValueCopyValueAtIndex(multiValue, valueIdx);
 	[[LinphoneManager instance].callDelegate displayDialerFromUI:nil 
 														 forUser:phoneNumber 
-												 withDisplayName:(NSString*)ABRecordCopyCompositeName(person)];
+												 withDisplayName:[(NSString*)ABRecordCopyCompositeName(person) autorelease]];
+    [phoneNumber release];
+    CFRelease(multiValue);
 	return false;
 }
 

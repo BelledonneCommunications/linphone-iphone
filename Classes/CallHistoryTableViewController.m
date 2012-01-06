@@ -43,6 +43,7 @@
 									target:self 
 									action:@selector(doAction:)]; 
 	[self.navigationItem setRightBarButtonItem:clearButton];
+    [clearButton release];
 }
 
 /*
@@ -144,15 +145,21 @@
 	
 	const char* username = linphone_address_get_username(partyToDisplay)!=0?linphone_address_get_username(partyToDisplay):"";
 	const char* displayName = linphone_address_get_display_name(partyToDisplay);
+    // explicit release are needed to avoid mem leaks : NSString are created with retainCount == 1. 
+    // Assigning them to a textLabel.text property (which has 'retain' flag) bumps it to 2. So we set them back to 1.
 	if (displayName) {
-		[cell.textLabel setText:[[NSString alloc] initWithCString:displayName encoding:[NSString defaultCStringEncoding]]];
-		[cell.detailTextLabel setText:[NSString stringWithFormat:@"%s"/* [%s]"*/,username/*,callLogs->start_date*/]];
-	} else {
-		[cell.textLabel setText:[[NSString alloc] initWithCString:username encoding:[NSString defaultCStringEncoding]]];
-		[cell.detailTextLabel setText:nil];
-	}
-	
-
+        NSString* str1 = [[NSString alloc] initWithCString:displayName encoding:[NSString defaultCStringEncoding]];
+		[cell.textLabel setText:str1];
+        NSString* str2 = [NSString stringWithFormat:@"%s"/* [%s]"*/,username/*,callLogs->start_date*/];
+		[cell.detailTextLabel setText:str2];
+        [str1 release];
+        assert(str1.retainCount == 1);
+    } else {
+        NSString* str1 = [[NSString alloc] initWithCString:username encoding:[NSString defaultCStringEncoding]];
+        [cell.textLabel setText:str1];
+        [cell.detailTextLabel setText:nil];
+        [str1 release];
+    }
 	
     return cell;
 }
@@ -191,8 +198,8 @@
 	}
 	[[LinphoneManager instance].callDelegate displayDialerFromUI:self 
 														 forUser:phoneNumber 
-												 withDisplayName:[[NSString alloc] initWithCString:displayName encoding:[NSString defaultCStringEncoding]]];
-	
+												 withDisplayName:[[[NSString alloc] initWithCString:displayName encoding:[NSString defaultCStringEncoding]] autorelease]];
+	[phoneNumber release];
 }
 
 

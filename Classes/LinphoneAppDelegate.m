@@ -112,6 +112,7 @@
 	//more tab 
 	MoreViewController *moreViewController = [[MoreViewController alloc] initWithNibName:@"MoreViewController" bundle:[NSBundle mainBundle]];
 	UINavigationController *aNavigationController = [[UINavigationController alloc] initWithRootViewController:moreViewController];
+    [moreViewController release];
 	//copy tab bar item
 	aNavigationController.tabBarItem = [(UIViewController*)[myTabBarController.viewControllers objectAtIndex:MORE_TAB_INDEX] tabBarItem]; 
 	
@@ -119,7 +120,9 @@
 	NSMutableArray* newArray = [NSMutableArray arrayWithArray:self.myTabBarController.viewControllers];
 	[newArray replaceObjectAtIndex:CONTACTS_TAB_INDEX withObject:myPeoplePickerController];
 	[newArray replaceObjectAtIndex:MORE_TAB_INDEX withObject:aNavigationController];
+    [aNavigationController release];
 	[newArray replaceObjectAtIndex:HISTORY_TAB_INDEX withObject:aCallHistNavigationController];
+    [aCallHistNavigationController release];
 	
 	[myTabBarController setSelectedIndex:DIALER_TAB_INDEX];
 	[myTabBarController setViewControllers:newArray animated:NO];

@@ -62,6 +62,7 @@ void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef info, void
                 Contact* lContact = [[Contact alloc] initWithRecord:lPerson ofType:(NSString *)lLocalizedLabel];
                 [lAddressBookMap setObject:lContact forKey:lNormalizedKey];
                 CFRelease(lValue);
+                [lContact release];
                 if (lLabel) CFRelease(lLabel);
                 if (lLocalizedLabel) CFRelease(lLocalizedLabel);
             }

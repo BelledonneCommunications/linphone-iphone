@@ -63,23 +63,23 @@ const NSInteger SECURE_BUTTON_TAG=5;
 
 
 + (UIImage*) stat_sys_signal_0 {
-	return [[UIImage imageNamed:@"stat_sys_signal_0.png"] retain];
+	return [UIImage imageNamed:@"stat_sys_signal_0.png"];
 }
 
 + (UIImage*) stat_sys_signal_1 {
-	return [[UIImage imageNamed:@"stat_sys_signal_1.png"] retain];
+	return [UIImage imageNamed:@"stat_sys_signal_1.png"];
 }
 
 + (UIImage*) stat_sys_signal_2 {
-	return [[UIImage imageNamed:@"stat_sys_signal_2.png"] retain];
+	return [UIImage imageNamed:@"stat_sys_signal_2.png"];
 }
 
 + (UIImage*) stat_sys_signal_3 {
-	return [[UIImage imageNamed:@"stat_sys_signal_3.png"] retain];
+	return [UIImage imageNamed:@"stat_sys_signal_3.png"];
 }
 
 + (UIImage*) stat_sys_signal_4 {
-	return [[UIImage imageNamed:@"stat_sys_signal_4.png"] retain];;
+	return [UIImage imageNamed:@"stat_sys_signal_4.png"];
 }
 
 bool isInConference(LinphoneCall* call) {
@@ -393,7 +393,7 @@ int callCount(LinphoneCore* lc) {
 	} else if (sender == contacts) {
 		// start people picker
 		myPeoplePickerController = [[[ABPeoplePickerNavigationController alloc] init] autorelease];
-		[myPeoplePickerController setPeoplePickerDelegate:[[ContactPickerDelegate alloc] init] /*self*/];
+		[myPeoplePickerController setPeoplePickerDelegate:[[[ContactPickerDelegate alloc] init] autorelease]];
 		
 		[self presentModalViewController: myPeoplePickerController animated:true]; 
 	} else if (sender == close) {
@@ -494,7 +494,7 @@ int callCount(LinphoneCore* lc) {
     
     if (addr) {
 		const char* lUserNameChars=linphone_address_get_username(addr);
-		NSString* lUserName = lUserNameChars?[[NSString alloc] initWithUTF8String:lUserNameChars]:NSLocalizedString(@"Unknown",nil);
+		NSString* lUserName = lUserNameChars?[[[NSString alloc] initWithUTF8String:lUserNameChars] autorelease]:NSLocalizedString(@"Unknown",nil);
         NSMutableString* mss = [[NSMutableString alloc] init];
         /* contact name */
         const char* n = linphone_address_get_display_name(addr);
@@ -509,7 +509,6 @@ int callCount(LinphoneCore* lc) {
             imageView.image = [[LinphoneManager instance] getImageFromAddressBook:lUserName];
         }
 		[mss release];
-		[lUserName release];
     } else {
         [label setText:@"plop"];
         imageView.image = nil;
@@ -673,6 +672,7 @@ int callCount(LinphoneCore* lc) {
         } 
 		
 		[cell.accessoryView addSubview:callquality];
+        [callquality release];
     }
     
     cell.userInteractionEnabled = YES; 

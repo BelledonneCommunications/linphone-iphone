@@ -29,7 +29,6 @@
 @private
 	UIImage* mOnImage;
 	UIImage* mOffImage;
-	id<UIToggleButtonDelegate> mActionHandler;
 	bool mIsOn;
 	
 	

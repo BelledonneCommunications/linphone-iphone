@@ -22,7 +22,6 @@
 
 @interface UICallButton : UIButton {
 @private
-	char  mDigit;
 	UITextField* mAddress;
 }
 -(void) initWithAddress:(UITextField*) address;

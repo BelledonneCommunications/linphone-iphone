@@ -92,7 +92,7 @@ extern void libmssilk_init();
             linphone_call_log_set_ref_key(log, ltmpString);
             CFRelease(lFormatedString);
         }
-        return (NSString*)lDisplayName;    
+        return [(NSString*)lDisplayName autorelease];   
     }
     //[number release];
  
@@ -112,7 +112,7 @@ extern void libmssilk_init();
             } else {
                 d = (NSData*)ABPersonCopyImageData(person);
             }
-            return [UIImage imageWithData:d];
+            return [UIImage imageWithData:[d autorelease]];
         }
     }
     /* return default image */
@@ -143,16 +143,18 @@ extern void libmssilk_init();
     } else {
         ms_message("No contact entry found for  [%s] in address book",lUserName);
     }
+    
+    [lE164Number release];
     return;
 }
 -(void) onCall:(LinphoneCall*) call StateChanged: (LinphoneCallState) new_state withMessage: (const char *)  message {
     const char* lUserNameChars=linphone_address_get_username(linphone_call_get_remote_address(call));
-    NSString* lUserName = lUserNameChars?[[NSString alloc] initWithUTF8String:lUserNameChars]:NSLocalizedString(@"Unknown",nil);
+    NSString* lUserName = lUserNameChars?[[[NSString alloc] initWithUTF8String:lUserNameChars] autorelease]:NSLocalizedString(@"Unknown",nil);
     if (new_state == LinphoneCallIncomingReceived) {
        [self updateCallWithAddressBookData:call]; // display name is updated 
     }
     const char* lDisplayNameChars =  linphone_address_get_display_name(linphone_call_get_remote_address(call));        
-	NSString* lDisplayName = lDisplayNameChars?[[NSString alloc] initWithUTF8String:lDisplayNameChars]:@"";
+	NSString* lDisplayName = [lDisplayNameChars?[[NSString alloc] initWithUTF8String:lDisplayNameChars]:@"" autorelease];
     
     bool canHideInCallView = (linphone_core_get_calls([LinphoneManager getLc]) == NULL);
 	
@@ -216,6 +218,7 @@ extern void libmssilk_init();
 												  cancelButtonTitle:NSLocalizedString(@"Dismiss",nil) 
 												  otherButtonTitles:nil];
 			[error show];
+            [error release];
             if (canHideInCallView) {
                 [callDelegate	displayDialerFromUI:mCurrentViewController
 									  forUser:@"" 
@@ -277,7 +280,9 @@ static void linphone_iphone_log(struct _LinphoneCore * lc, const char * message)
 }
 //status 
 static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char * message) {
-	[(LinphoneManager*)linphone_core_get_user_data(lc)  displayStatus:[[NSString alloc] initWithCString:message encoding:[NSString defaultCStringEncoding]]];
+    NSString* status = [[NSString alloc] initWithCString:message encoding:[NSString defaultCStringEncoding]];
+	[(LinphoneManager*)linphone_core_get_user_data(lc)  displayStatus:status];
+    [status release];
 }
 
 static void linphone_iphone_call_state(LinphoneCore *lc, LinphoneCall* call, LinphoneCallState state,const char* message) {
@@ -350,6 +355,10 @@ static void linphone_iphone_call_state(LinphoneCore *lc, LinphoneCall* call, Lin
 		}
 		
 	}
+    
+    [lUserName release];
+    [lDisplayName release];
+    [lDomain release];
 	
 }
 static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyConfig* cfg, LinphoneRegistrationState state,const char* message) {
@@ -491,8 +500,6 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	//clear existing proxy config
 	linphone_core_clear_proxy_config(theLinphoneCore);
 	if (username && [username length] >0 && domain && [domain length]>0) {
-		
-		
 		const char* identity = [[NSString stringWithFormat:@"sip:%@@%@",username,domain] cStringUsingEncoding:[NSString defaultCStringEncoding]];
 		const char* password = [accountPassword cStringUsingEncoding:[NSString defaultCStringEncoding]];
 		
@@ -546,6 +553,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 												  cancelButtonTitle:NSLocalizedString(@"Continue",nil)
 												  otherButtonTitles:NSLocalizedString(@"Never remind",nil),nil];
 			[error show];
+            [error release];
 		}
 	}		
 	
@@ -620,7 +628,10 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
     NSString *platform = [[NSString alloc ] initWithUTF8String:machine];
     free(machine);
     
-    return ![platform isEqualToString:@"iPhone1,2"];
+    BOOL result = ![platform isEqualToString:@"iPhone1,2"];
+    
+    [platform release];
+    return result;
 }
 
 // no proxy configured alert 
@@ -789,6 +800,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 											  cancelButtonTitle:NSLocalizedString(@"Ok",nil) 
 											  otherButtonTitles:nil ,nil];
 		[error show];
+        [error release];
 	}
 	/*DETECT cameras*/
 	frontCamId= backCamId=nil;

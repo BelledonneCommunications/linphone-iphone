@@ -41,10 +41,10 @@ NSMutableString* MoreViewController_logs;
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
     [super viewDidLoad];
-	UIBarButtonItem* clear = [[UIBarButtonItem alloc] 
+	UIBarButtonItem* clear = [[[UIBarButtonItem alloc] 
 							  initWithBarButtonSystemItem:UIBarButtonSystemItemTrash 
 							  target:self 
-							  action:@selector(doAction)]; 
+							  action:@selector(doAction)] autorelease]; 
 		[self.navigationItem setRightBarButtonItem:clear];
 }
 

@@ -30,6 +30,7 @@
 											  cancelButtonTitle:NSLocalizedString(@"Continue",nil) 
 											  otherButtonTitles:nil];
 		[error show];
+        [error release];
 		return;
 	}
 	if (TRUE /*!linphone_core_in_call([LinphoneManager getLc])*/) {
@@ -50,7 +51,7 @@
 												  cancelButtonTitle:NSLocalizedString(@"Continue",nil) 
 												  otherButtonTitles:nil];
 			[error show];
-			
+			[error release];
 		} else {
 			char normalizedUserName[256];
 			NSString* toUserName = [NSString stringWithString:[mAddress text]];
