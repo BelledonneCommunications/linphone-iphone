@@ -876,5 +876,16 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
     return NO;
 }
 
++(void) set:(UIView*)view hidden: (BOOL) hidden withName:(const char*)name andReason:(const char*) reason{
+    if (view.hidden != hidden) {
+        ms_message("UI - '%s' is now '%s' ('%s')", name, hidden ? "HIDDEN" : "SHOWN", reason);
+        [view setHidden:hidden];
+    }
+}
+
++(void) logUIElementPressed:(const char*) name {
+    ms_message("UI - '%s' pressed", name);
+}
+
 
 @end

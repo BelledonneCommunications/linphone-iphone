@@ -49,6 +49,8 @@ typedef enum _Connectivity {
 +(LinphoneManager*) instance;
 +(LinphoneCore*) getLc;
 +(BOOL) runningOnIpad;
++(void) set:(UIView*)view hidden: (BOOL) hidden withName:(const char*)name andReason:(const char*) reason;
++(void) logUIElementPressed:(const char*) name;
 
 -(void) registerLogView:(id<LogView>) view;
 

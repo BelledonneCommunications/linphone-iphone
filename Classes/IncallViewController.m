@@ -25,6 +25,10 @@
 #include "private.h"
 #import "ContactPickerDelegate.h"
 
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+#define AT __FILE__ ":" TOSTRING(__LINE__)
+
 const NSInteger SECURE_BUTTON_TAG=5;
 
 @implementation IncallViewController
@@ -109,15 +113,10 @@ int callCount(LinphoneCore* lc) {
     
     @try {
         lc = [LinphoneManager getLc];
-        
-        if (callCount([LinphoneManager getLc]) > 1) {
-            [pause setHidden:YES];
-            [mergeCalls setHidden:NO];
-        } else {
-            [pause setHidden:NO];
-            [mergeCalls setHidden:YES];        
-        }
-        
+
+        [LinphoneManager set:pause hidden:(callCount([LinphoneManager getLc]) > 1) withName:"PAUSE button" andReason:"call count"];
+        [LinphoneManager set:mergeCalls hidden:!pause.hidden withName:"MERGE button" andReason:"call count"];
+
         [callTableView reloadData];       
     } @catch (NSException* exc) {
         return;
@@ -126,28 +125,28 @@ int callCount(LinphoneCore* lc) {
     int callsCount = linphone_core_get_calls_nb(lc);
     // hide pause/resume if in conference    
     if (selectedCall) {
-        if (linphone_core_is_in_conference(lc))
-            [pause setHidden:YES];
+        if (linphone_core_is_in_conference(lc)) {
+            [LinphoneManager set:pause hidden:YES withName:"PAUSE button" andReason:"is in conference"];
+        }
         else if (callCount(lc) == callsCount && callsCount == 1) {
-            [pause setHidden:NO];
+            [LinphoneManager set:pause hidden:NO withName:"PAUSE button" andReason:"call count == 1"];
             pause.selected = NO;
         } else {
-            [pause setHidden:YES];
+            [LinphoneManager set:pause hidden:YES withName:"PAUSE button" andReason:AT];
         }
     } else {
         if (callsCount == 1) {
             LinphoneCall* c = (LinphoneCall*)linphone_core_get_calls(lc)->data;
             if (linphone_call_get_state(c) == LinphoneCallPaused ||
                 linphone_call_get_state(c) == LinphoneCallPausing) {
-                [pause setHidden:NO];
                 pause.selected = YES;                
             }
-            [pause setHidden:NO];
+            [LinphoneManager set:pause hidden:NO withName:"PAUSE button" andReason:AT];
         } else {
-            [pause setHidden:YES];
+            [LinphoneManager set:pause hidden:YES withName:"PAUSE button" andReason:AT];
         }
     }
-    [mergeCalls setHidden:!pause.hidden];
+    [LinphoneManager set:mergeCalls hidden:!pause.hidden withName:"MERGE button" andReason:AT];
     
     // update conference details view if diaplsyed
     if (self.presentedViewController == conferenceDetail) {
@@ -184,9 +183,8 @@ int callCount(LinphoneCore* lc) {
     
     [addCall addTarget:self action:@selector(addCallPressed) forControlEvents:UIControlEventTouchUpInside];
     [mergeCalls addTarget:self action:@selector(mergeCallsPressed) forControlEvents:UIControlEventTouchUpInside];
-    //[endCtrl addTarget:self action:@selector(endCallPressed) forControlEvents:UIControlEventTouchUpInside];
     [pause addTarget:self action:@selector(pauseCallPressed) forControlEvents:UIControlEventTouchUpInside];
-    [mergeCalls setHidden:YES];
+    [LinphoneManager set:mergeCalls hidden:YES withName:"MERGE button" andReason:"initialisation"];
     
     if ([LinphoneManager runningOnIpad]) {
         ms_message("Running on iPad");
@@ -210,16 +208,19 @@ int callCount(LinphoneCore* lc) {
 }
 
 -(void) addCallPressed {
+    [LinphoneManager logUIElementPressed:"CALL button"];
     [self dismissModalViewControllerAnimated:true];
 }
 
 
 -(void) mergeCallsPressed {
+    [LinphoneManager logUIElementPressed:"MERGE button"];
     LinphoneCore* lc = [LinphoneManager getLc];
     linphone_core_add_all_to_conference(lc);
 }
 
 -(void) pauseCallPressed {
+    [LinphoneManager logUIElementPressed:"PAUSE button"];
     LinphoneCore* lc = [LinphoneManager getLc];
     
     LinphoneCall* currentCall = linphone_core_get_current_call(lc);
@@ -279,14 +280,11 @@ int callCount(LinphoneCore* lc) {
 			&& [device isMultitaskingSupported]) {
 			bool enableVideo = [[NSUserDefaults standardUserDefaults] boolForKey:@"enable_video_preference"];
 			bool startVideo = [[NSUserDefaults standardUserDefaults] boolForKey:@"start_video_preference"];
-				if (enableVideo && !startVideo) {
-					[addVideo setHidden:FALSE];
-					[contacts setHidden:TRUE];
-				} else {
-					[addVideo setHidden:TRUE];
-					[contacts setHidden:FALSE];				
-				}
-		}    }
+            
+            [LinphoneManager set:contacts hidden:(enableVideo && !startVideo) withName:"CONTACT button" andReason:AT];
+            [LinphoneManager set:addVideo hidden:!contacts.hidden withName:"ADD_VIDEO button" andReason:AT];
+		}    
+    }
 }
 
 -(void) viewWillDisappear:(BOOL)animated {
@@ -318,10 +316,10 @@ int callCount(LinphoneCore* lc) {
 }
 
 -(void) displayPad:(bool) enable {
-    [callTableView setHidden:enable];
-    [hangUpView setHidden:enable];
-	[controlSubView setHidden:enable];
-	[padSubView setHidden:!enable];
+    [LinphoneManager set:callTableView hidden:enable withName:"CALL_TABLE view" andReason:AT];
+    [LinphoneManager set:hangUpView hidden:enable withName:"HANG_UP view" andReason:AT];
+    [LinphoneManager set:controlSubView hidden:enable withName:"CONTROL view" andReason:AT];
+    [LinphoneManager set:padSubView hidden:!enable withName:"PAD view" andReason:AT];
 }
 -(void) displayCall:(LinphoneCall*) call InProgressFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
 	//restaure view
@@ -537,21 +535,6 @@ int callCount(LinphoneCore* lc) {
         [detailLabel setText:ms];
 		[ms release];
     }
-	/*
-    if (accessoryView != nil) {
-        LinphoneMediaEncryption enc = linphone_call_params_get_media_encryption(linphone_call_get_current_params(call));
-        if (enc != LinphoneMediaEncryptionNone) {
-            if (accessoryView.imageView.image == nil) {
-                if (enc == LinphoneMediaEncryptionSRTP || linphone_call_get_authentication_token_verified(call)) {
-                    [accessoryView setImage: verified forState:UIControlStateNormal];
-                } else {
-                    [accessoryView setImage: unverified forState:UIControlStateNormal];
-                }
-            }
-        } else {
-            [accessoryView setImage: (UIImage*)nil forState:UIControlStateNormal];
-        }
-    }*/
 }
 
 
@@ -747,19 +730,9 @@ int callCount(LinphoneCore* lc) {
 }
 
 // UITableViewDataSource
-//- (NSArray*) sectionIndexTitlesForTableView:(UITableView *)tableView {
-//   return [NSArray arrayWithObjects:@"Conf", @"Calls", nil ];
-//}
-
-// UITableViewDataSource
 - (NSString*) tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
     return nil;
-    return @"Calls";
-    if (section == 0 && linphone_core_get_conference_size([LinphoneManager getLc]) > 0)
-        return @"Conference";
-    else
-        return @"Calls";
 }
 
 // UITableViewDataSource
@@ -773,9 +746,7 @@ int callCount(LinphoneCore* lc) {
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
 
     LinphoneCore* lc = [LinphoneManager getLc];
-    
-    //[[callTableView cellForRowAtIndexPath:indexPath] setSelected:YES animated:NO];
-        
+
     bool inConf = (indexPath.row == 0 && linphone_core_get_conference_size(lc) > 0);
     
     LinphoneCall* selectedCall = [IncallViewController retrieveCallAtIndex:indexPath.row inConference:inConf];

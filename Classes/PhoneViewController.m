@@ -58,16 +58,14 @@
 
 -(void) updateCallAndBackButtons {
     @try {
-        if (linphone_core_get_calls_nb([LinphoneManager getLc]) == 0) {
-            [callLarge setHidden:FALSE];
-            [callShort setHidden:TRUE];
-            [backToCallView setHidden:TRUE];
-        } else {
+        bool zeroCall = (linphone_core_get_calls_nb([LinphoneManager getLc]) == 0);
+        
+        [LinphoneManager set:callLarge hidden:!zeroCall withName:"CALL_LARGE button" andReason:__FUNCTION__];
+        [LinphoneManager set:callShort hidden:zeroCall withName:"CALL_SHORT button" andReason:__FUNCTION__];
+        [LinphoneManager set:backToCallView hidden:zeroCall withName:"BACK button" andReason:__FUNCTION__];
+        
+        if (!callShort.hidden)
             [callShort setEnabled:!linphone_core_sound_resources_locked([LinphoneManager getLc])];
-            [callLarge setHidden:TRUE];
-            [callShort setHidden:FALSE];
-            [backToCallView setHidden:FALSE];        
-        }
     } @catch (NSException* exc) {
         // R.A.S: linphone core si simply not ready...
         ms_warning("Exception %s: %s", 
@@ -249,16 +247,14 @@
 		[self presentModalViewController:(UIViewController*)mIncallViewController animated:true];
 		
 	}
-	
-
-	
+    
 	[mIncallViewController displayInCall:call FromUI:viewCtrl
 								 forUser:username
 						 withDisplayName:displayName];
-	[callLarge setHidden:TRUE];
-	[callShort setHidden:FALSE];
-	[backToCallView setHidden:FALSE];
-	
+    
+    [LinphoneManager set:callLarge hidden:YES withName:"CALL_LARGE button" andReason:__FUNCTION__];
+    [LinphoneManager set:callShort hidden:NO withName:"CALL_SHORT button" andReason:__FUNCTION__];
+    [LinphoneManager set:backToCallView hidden:NO withName:"CALL_BACK button" andReason:__FUNCTION__];
 } 
 
 
