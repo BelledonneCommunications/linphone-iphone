@@ -1077,7 +1077,7 @@ void linphone_core_init_default_params(LinphoneCore*lc, LinphoneCallParams *para
 /**
  * True if tunnel support was compiled.
  */
-bool_t linphone_core_tunnel_available();
+bool_t linphone_core_tunnel_available(void);
 
 /**
  * Update tunnel using configuration.
