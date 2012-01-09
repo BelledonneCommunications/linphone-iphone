@@ -42,6 +42,10 @@ AC_CHECK_LIB([eXosip2],[eXosip_get_version],
 	[AC_DEFINE([HAVE_EXOSIP_GET_VERSION],[1],[Defined when eXosip_get_version is available])],
 	[],
 	[-losipparser2 -losip2 ])
+AC_CHECK_LIB([eXosip2],[eXosip_tls_verify_certificate],
+	[AC_DEFINE([HAVE_EXOSIP_TLS_VERIFY_CERTIFICATE],[1],[Defined when eXosip_tls_verify_certificate is available])],
+	[AC_MSG_WARN([Could not find eXosip_tls_verify_certificate in eXosip2 !])],
+	[-losipparser2 -losip2 ])
 AC_CHECK_LIB([eXosip2],[eXosip_get_socket],
 	[AC_DEFINE([HAVE_EXOSIP_GET_SOCKET],[1],[Defined when eXosip_get_socket is available])],
 	[AC_MSG_WARN([Could not find eXosip_get_socket in eXosip2 !])],
