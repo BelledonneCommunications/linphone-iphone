@@ -161,8 +161,8 @@ int callCount(LinphoneCore* lc) {
 - (void)viewDidLoad {
     [super viewDidLoad];
 	//Controls
-	[mute initWithOnImage:[UIImage imageNamed:@"micro_inverse.png"]  offImage:[UIImage imageNamed:@"micro.png"] ];
-    [speaker initWithOnImage:[UIImage imageNamed:@"HP_inverse.png"]  offImage:[UIImage imageNamed:@"HP.png"] ];
+	[mute initWithOnImage:[UIImage imageNamed:@"micro_inverse.png"]  offImage:[UIImage imageNamed:@"micro.png"] debugName:"MUTE button"];
+    [speaker initWithOnImage:[UIImage imageNamed:@"HP_inverse.png"]  offImage:[UIImage imageNamed:@"HP.png"] debugName:"SPEAKER button"];
     
     verified = [[UIImage imageNamed:@"secured.png"] retain];
     unverified = [[UIImage imageNamed:@"unverified.png"] retain];
