@@ -1208,7 +1208,9 @@ static void linphone_gtk_init_status_icon(){
 	const char *title;
 	title=linphone_gtk_get_ui_config("title",_("Linphone - a video internet phone"));
 	icon=gtk_status_icon_new_from_pixbuf(pbuf);
+#if GTK_CHECK_VERSION(2,20,0)
 	gtk_status_icon_set_name(icon,title);
+#endif
 	g_signal_connect_swapped(G_OBJECT(icon),"activate",(GCallback)handle_icon_click,NULL);
 	g_signal_connect(G_OBJECT(icon),"popup-menu",(GCallback)icon_popup_menu,NULL);
 	gtk_status_icon_set_tooltip(icon,title);

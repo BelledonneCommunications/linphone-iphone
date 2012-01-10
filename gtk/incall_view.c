@@ -94,6 +94,7 @@ static void linphone_gtk_in_call_set_animation_image(GtkWidget *callview, const 
 }
 
 static void linphone_gtk_in_call_set_animation_spinner(GtkWidget *callview){
+#if GTK_CHECK_VERSION(2,20,0)
 	GtkWidget *container=linphone_gtk_get_widget(callview,"in_call_animation");
 	GList *elem=gtk_container_get_children(GTK_CONTAINER(container));
 	GtkWidget *spinner=gtk_spinner_new();
@@ -103,6 +104,7 @@ static void linphone_gtk_in_call_set_animation_spinner(GtkWidget *callview){
 	gtk_container_add(GTK_CONTAINER(container),spinner);
 	gtk_widget_set_size_request(spinner, 20,20);
 	gtk_spinner_start(GTK_SPINNER(spinner));
+#endif
 }
 
 
