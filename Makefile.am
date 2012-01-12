@@ -53,6 +53,7 @@ EXTRA_DIST = config.rpath  BUGS linphone.kdevelop  \
 				README.mingw \
 				README.macos \
 				autogen.sh \
+				linphone.spec \
 				linphone.spec.in \
 				$(GTK_FILELIST) \
 				gen-gtkfilelist.sh \
@@ -69,19 +70,23 @@ all-local: linphone.spec linphone.iss
 
 linphone.spec: linphone.spec.in
 
-.phony: rpm
-rpm:
+.phony: rpm rpm-novideo rpm-base
+rpm-base:
 	$(MAKE) dist
-	cd oRTP && $(MAKE) dist && mv -f ortp*.tar.gz ../
-	cd mediastreamer2 && $(MAKE) dist && mv -f mediastreamer*.tar.gz ../
-# Create "Specfile" at the same level as the tarball content
 	-rm -f $(PACKAGE)-$(VERSION).tar
 	gunzip $(PACKAGE)-$(VERSION).tar.gz
-	cp $(PACKAGE).spec Specfile
-	tar --append --file=$(PACKAGE)-$(VERSION).tar Specfile
+#remove ms2 and ortp spec file to make sure linphone spec file is used bu rpmbuild
+	tar --delete --file=$(PACKAGE)-$(VERSION).tar $(PACKAGE)-$(VERSION)/mediastreamer2/mediastreamer2.spec
+	tar --delete --file=$(PACKAGE)-$(VERSION).tar $(PACKAGE)-$(VERSION)/oRTP/ortp.spec
 	gzip $(PACKAGE)-$(VERSION).tar
+
+rpm: rpm-base
 # <https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=2068410>
 	TAR_OPTIONS=--wildcards rpmbuild -ta --clean --rmsource --rmspec $(PACKAGE)-$(VERSION).tar.gz
+
+rpm-novideo: rpm-base
+# <https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=2068410>
+	TAR_OPTIONS=--wildcards rpmbuild -ta --clean --rmsource --rmspec $(PACKAGE)-$(VERSION).tar.gz --without video
 
 #a zip containing win32 binaries, suitable to generate an installer
 
