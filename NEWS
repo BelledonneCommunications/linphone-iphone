@@ -1,3 +1,6 @@
+linphone-3.5.1 -- ??
+	* gtk - implement friend search by typing into the friendlist, and friend sorting
+
 linphone-3.5.0 -- December 22, 2011
 	* added VP-8 video codec
 	* added G722 audio codec
