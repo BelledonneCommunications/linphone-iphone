@@ -523,7 +523,6 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 					lc->vtable.display_status(lc,msg480);
 			break;
 			case SalReasonNotFound:
-				msg=_("Not found");
 				if (lc->vtable.display_status)
 					lc->vtable.display_status(lc,msg);
 			break;
@@ -563,10 +562,14 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 		lc->ringstream=NULL;
 	}
 	linphone_call_stop_media_streams (call);
-	if (sr!=SalReasonDeclined) linphone_call_set_state(call,LinphoneCallError,msg);
-	else{
+	if (sr == SalReasonDeclined) {
 		call->reason=LinphoneReasonDeclined;
 		linphone_call_set_state(call,LinphoneCallEnd,"Call declined.");
+	} else if (sr == SalReasonNotFound) {
+		call->reason=LinphoneReasonNotFound;
+		linphone_call_set_state(call,LinphoneCallError,"User not found.");
+	} else {
+		linphone_call_set_state(call,LinphoneCallError,msg);
 	}
 }
 

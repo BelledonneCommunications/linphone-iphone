@@ -4365,6 +4365,8 @@ const char *linphone_reason_to_string(LinphoneReason err){
 			return "Bad credentials";
 		case LinphoneReasonDeclined:
 			return "Call declined";
+		case LinphoneReasonNotFound:
+			return "User not found";
 	}
 	return "unknown error";
 }

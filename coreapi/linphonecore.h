@@ -202,6 +202,7 @@ enum _LinphoneReason{
 	LinphoneReasonNoResponse, /**<No response received from remote*/
 	LinphoneReasonBadCredentials, /**<Authentication failed due to bad or missing credentials*/
 	LinphoneReasonDeclined, /**<The call has been declined*/
+	LinphoneReasonNotFound,
 };
 
 typedef enum _LinphoneReason LinphoneReason;
