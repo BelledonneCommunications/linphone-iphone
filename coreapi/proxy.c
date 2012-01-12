@@ -84,7 +84,7 @@ void linphone_proxy_config_destroy(LinphoneProxyConfig *obj){
  * Returns a boolean indicating that the user is sucessfully registered on the proxy.
 **/
 bool_t linphone_proxy_config_is_registered(const LinphoneProxyConfig *obj){
-	return obj->registered;
+	return obj->state == LinphoneRegistrationOk;
 }
 
 /**
@@ -232,9 +232,8 @@ void linphone_proxy_config_enable_publish(LinphoneProxyConfig *obj, bool_t val){
 void linphone_proxy_config_edit(LinphoneProxyConfig *obj){
 	if (obj->reg_sendregister){
 		/* unregister */
-		if (obj->registered) {
+		if (obj->state != LinphoneRegistrationNone && obj->state != LinphoneRegistrationCleared) {
 			sal_unregister(obj->op);
-			obj->registered=FALSE;
 		}
 	}
 }
@@ -301,7 +300,7 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
 **/
 void linphone_proxy_config_refresh_register(LinphoneProxyConfig *obj){
 	if (obj->reg_sendregister && obj->op){
-		obj->registered=FALSE;
+		linphone_proxy_config_set_state(obj,LinphoneRegistrationProgress, "Refresh registration");
 		sal_register_refresh(obj->op,obj->expires);
 	}
 }

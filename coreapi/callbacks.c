@@ -623,12 +623,11 @@ static void register_success(SalOp *op, bool_t registered){
 	LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)sal_op_get_user_pointer(op);
 	char *msg;
 	
-	cfg->registered=registered;
 	linphone_proxy_config_set_error(cfg,LinphoneReasonNone);
 	linphone_proxy_config_set_state(cfg, registered ? LinphoneRegistrationOk : LinphoneRegistrationCleared ,
 	                                registered ? "Registration sucessful" : "Unregistration done");
 	if (lc->vtable.display_status){
-		if (cfg->registered) msg=ms_strdup_printf(_("Registration on %s successful."),sal_op_get_proxy(op));
+		if (registered) msg=ms_strdup_printf(_("Registration on %s successful."),sal_op_get_proxy(op));
 		else msg=ms_strdup_printf(_("Unregistration on %s done."),sal_op_get_proxy(op));
 		lc->vtable.display_status(lc,msg);
 		ms_free(msg);
