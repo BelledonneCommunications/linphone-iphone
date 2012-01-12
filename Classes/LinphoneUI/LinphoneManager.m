@@ -204,12 +204,15 @@ extern void libmssilk_init();
 				lMessage=NSLocalizedString(@"Please make sure your device is connected to the internet and double check your SIP account configuration in the settings.",nil);
 			} else {
 				lMessage=[NSString stringWithFormat : NSLocalizedString(@"Cannot call %@",nil),lUserName];
-
 			}
 			
-			if (message!=nil){
-				lMessage=[NSString stringWithFormat : NSLocalizedString(@"%@\nReason was: %s",nil),lMessage, message];
-			}
+            if (linphone_call_get_reason(call) == LinphoneReasonNotFound) {
+                lMessage=[NSString stringWithFormat : NSLocalizedString(@"'%@' not registered to Service",nil), lUserName];
+            } else {
+                if (message!=nil){
+                    lMessage=[NSString stringWithFormat : NSLocalizedString(@"%@\nReason was: %s",nil),lMessage, message];
+                }
+            }
 			lTitle=NSLocalizedString(@"Call failed",nil);
 			
 			UIAlertView* error = [[UIAlertView alloc] initWithTitle:lTitle
