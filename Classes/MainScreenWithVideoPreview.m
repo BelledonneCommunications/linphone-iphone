@@ -39,18 +39,10 @@
 }
 */
 
-// Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-                        
+-(void) initVideoPreview {
     session = [[AVCaptureSession alloc] init];
     
-   
-    
     currentCamera = 0;
-    
-
     
     AVCaptureVideoPreviewLayer* previewLayer = [AVCaptureVideoPreviewLayer layerWithSession:session];
     
@@ -62,7 +54,19 @@
     [session setSessionPreset:AVCaptureSessionPresetHigh];
     [session commitConfiguration];
     
-    [self useCameraAtIndex:0 startSession:NO];
+    [self useCameraAtIndex:0 startSession:NO];    
+}
+
+// Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+                        
+    bool enableVideo = [[NSUserDefaults standardUserDefaults] boolForKey:@"enable_video_preference"];
+    
+    if (enableVideo) {
+        [self initVideoPreview ];
+    }
 }
 
 -(void) switchCameraPressed {
@@ -94,18 +98,31 @@
 
 
 -(void) showPreview:(BOOL) show {
-    if (show && !session.running) {
-        [window addSubview:self.view];
-        [window sendSubviewToBack:self.view];
-        [session startRunning];
-    } else if (!show && session.running) {
+    bool enableVideo = [[NSUserDefaults standardUserDefaults] boolForKey:@"enable_video_preference"];
+    
+    if (enableVideo) {
+        if (session == nil) {
+            [self initVideoPreview];
+        }
+        
+        if (show && !session.running) {
+            [window addSubview:self.view];
+            [window sendSubviewToBack:self.view];
+            [session startRunning];
+        } else if (!show && session.running) {
+            [self.view removeFromSuperview];
+            [session stopRunning];
+        }
+    } else {
+        if (session != nil)
+            [session stopRunning];
         [self.view removeFromSuperview];
-        [session stopRunning];
     }
 }
 
 -(void) viewDidAppear:(BOOL)animated {
     [phoneMainView.switchCamera addTarget:self action:@selector(switchCameraPressed) forControlEvents:UIControlEventTouchUpInside];
+    
 }
 
 -(void) viewDidDisappear:(BOOL)animated {
