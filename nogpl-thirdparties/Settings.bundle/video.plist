@@ -14,6 +14,16 @@
 			<key>DefaultValue</key>
 			<true/>
 		</dict>
+<dict>
+			<key>Type</key>
+						<string>PSToggleSwitchSpecifier</string>
+									<key>Title</key>
+												<string>Automatically start video</string>
+															<key>Key</key>
+																		<string>start_video_preference</string>
+																					<key>DefaultValue</key>
+																								<true/>
+																										</dict>
 		<dict>
 			<key>Title</key>
 			<string>Codecs</string>
