@@ -204,7 +204,7 @@
 			[[UIApplication sharedApplication]  presentLocalNotificationNow:notif];
 		}
 	} else 	{
-        CallDelegate* cd = [[[CallDelegate alloc] init] autorelease];
+        CallDelegate* cd = [[CallDelegate alloc] init];
         cd.delegate = self;
         cd.call = call;
         
