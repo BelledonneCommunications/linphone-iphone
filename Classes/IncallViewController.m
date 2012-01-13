@@ -394,7 +394,7 @@ int callCount(LinphoneCore* lc) {
 	} else if (sender == contacts) {
 		// start people picker
 		myPeoplePickerController = [[[ABPeoplePickerNavigationController alloc] init] autorelease];
-		[myPeoplePickerController setPeoplePickerDelegate:[[[ContactPickerDelegate alloc] init] autorelease]];
+		[myPeoplePickerController setPeoplePickerDelegate:[[ContactPickerDelegate alloc] init] ];
 		
 		[self presentModalViewController: myPeoplePickerController animated:true]; 
 	} else if (sender == close) {
