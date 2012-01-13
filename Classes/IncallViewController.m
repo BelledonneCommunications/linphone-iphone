@@ -190,14 +190,17 @@ int callCount(LinphoneCore* lc) {
         ms_message("Running on iPad");
         mVideoViewController =  [[VideoViewController alloc]  initWithNibName:@"VideoViewController-ipad" 
                                                                        bundle:[NSBundle mainBundle]];
+        conferenceDetail = [[ConferenceCallDetailView alloc]  initWithNibName:@"ConferenceCallDetailView-ipad" 
+                                                                       bundle:[NSBundle mainBundle]];
+
     } else {
         mVideoViewController =  [[VideoViewController alloc]  initWithNibName:@"VideoViewController" 
 																							 bundle:[NSBundle mainBundle]];
-    }
-	
-    conferenceDetail = [[ConferenceCallDetailView alloc]  initWithNibName:@"ConferenceCallDetailView" 
-																	bundle:[NSBundle mainBundle]];
+        conferenceDetail = [[ConferenceCallDetailView alloc]  initWithNibName:@"ConferenceCallDetailView" 
+                                                                       bundle:[NSBundle mainBundle]];
 
+    }
+    
     mVideoShown=FALSE;
 	mIncallViewIsReady=FALSE;
 	mVideoIsPending=FALSE;

@@ -230,6 +230,8 @@
 		22F254811073D99800AC9B3F /* ringback.wav in Resources */ = {isa = PBXBuildFile; fileRef = 22F254801073D99800AC9B3F /* ringback.wav */; };
 		22F51EF6107FA66500F98953 /* untitled.plist in Resources */ = {isa = PBXBuildFile; fileRef = 22F51EF5107FA66500F98953 /* untitled.plist */; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
+		340A75B014C0670B006AA708 /* ConferenceCallDetailView-ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 340A75AF14C0670A006AA708 /* ConferenceCallDetailView-ipad.xib */; };
+		340A75B114C0670B006AA708 /* ConferenceCallDetailView-ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 340A75AF14C0670A006AA708 /* ConferenceCallDetailView-ipad.xib */; };
 		341FCA8E149798210084BC26 /* linphonerc-ipad in Resources */ = {isa = PBXBuildFile; fileRef = 341FCA8D149798210084BC26 /* linphonerc-ipad */; };
 		341FCA8F149798210084BC26 /* linphonerc-ipad in Resources */ = {isa = PBXBuildFile; fileRef = 341FCA8D149798210084BC26 /* linphonerc-ipad */; };
 		3422AA5014975EC9000D4E8A /* InCallViewController-ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3422AA4F14975EC9000D4E8A /* InCallViewController-ipad.xib */; };
@@ -611,6 +613,7 @@
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* linphone_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linphone_Prefix.pch; sourceTree = "<group>"; };
+		340A75AF14C0670A006AA708 /* ConferenceCallDetailView-ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "ConferenceCallDetailView-ipad.xib"; sourceTree = "<group>"; };
 		341FCA8D149798210084BC26 /* linphonerc-ipad */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "linphonerc-ipad"; sourceTree = "<group>"; };
 		3422AA4F14975EC9000D4E8A /* InCallViewController-ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "InCallViewController-ipad.xib"; sourceTree = "<group>"; };
 		3422AA5214978352000D4E8A /* PhoneViewController-ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "PhoneViewController-ipad.xib"; sourceTree = "<group>"; };
@@ -765,6 +768,7 @@
 				22E028B613B4CCBD0068A713 /* VideoViewController.xib */,
 				34CA8534148F669900503C01 /* VideoViewController-ipad.xib */,
 				344ABD71147FC438007420B6 /* ConferenceCallDetailView.xib */,
+				340A75AF14C0670A006AA708 /* ConferenceCallDetailView-ipad.xib */,
 				344ABD75147FCB68007420B6 /* ConferenceCallDetailView.h */,
 				344ABD76147FCB68007420B6 /* ConferenceCallDetailView.m */,
 				344ABD79147FD32B007420B6 /* ConferenceCallDetailCell.xib */,
@@ -1362,6 +1366,7 @@
 				1AE0A49E14AC5C64002C99BD /* stat_sys_signal_2.png in Resources */,
 				1AE0A4A014AC5C64002C99BD /* stat_sys_signal_3.png in Resources */,
 				1AE0A4A214AC5C64002C99BD /* stat_sys_signal_4.png in Resources */,
+				340A75B014C0670B006AA708 /* ConferenceCallDetailView-ipad.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1430,6 +1435,7 @@
 				1AE0A49F14AC5C64002C99BD /* stat_sys_signal_2.png in Resources */,
 				1AE0A4A114AC5C64002C99BD /* stat_sys_signal_3.png in Resources */,
 				1AE0A4A314AC5C64002C99BD /* stat_sys_signal_4.png in Resources */,
+				340A75B114C0670B006AA708 /* ConferenceCallDetailView-ipad.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
