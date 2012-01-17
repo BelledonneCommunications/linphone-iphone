@@ -29,6 +29,13 @@ typedef enum _Connectivity {
 	,none
 } Connectivity;
 @class FastAddressBook;
+
+/* Application specific call context */
+typedef struct _CallContext {
+    LinphoneCall* call;
+    bool_t cameraIsEnabled;
+} CallContext;
+
 @interface LinphoneManager : NSObject <AVAudioSessionDelegate> {
 @private
 	SCNetworkReachabilityContext proxyReachabilityContext;
@@ -44,7 +51,9 @@ typedef enum _Connectivity {
     FastAddressBook* mFastAddressBook;
 	const char*  frontCamId;
 	const char*  backCamId;
-	
+    
+@public
+    CallContext currentCallContextBeforeGoingBackground;
 }
 +(LinphoneManager*) instance;
 +(LinphoneCore*) getLc;
