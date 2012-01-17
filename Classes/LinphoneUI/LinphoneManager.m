@@ -805,6 +805,14 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		[error show];
         [error release];
 	}
+    
+    NSString* path = [myBundle pathForResource:@"nowebcamCIF" ofType:@"jpg"];
+    if (path) {
+        const char* imagePath = [path cStringUsingEncoding:[NSString defaultCStringEncoding]];
+        ms_message("Using '%s' as source image for no webcam", imagePath);
+        linphone_core_set_static_picture(theLinphoneCore, imagePath);
+    }
+    
 	/*DETECT cameras*/
 	frontCamId= backCamId=nil;
 	char** camlist = (char**)linphone_core_get_video_devices(theLinphoneCore);
