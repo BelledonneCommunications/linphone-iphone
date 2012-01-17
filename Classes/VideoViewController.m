@@ -91,7 +91,9 @@ NSTimer *callQualityRefresher;
 - (void) updateCallQualityIndicator
 {
 	LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
-	
+	if (!call)
+        return;
+    
 	if (linphone_call_get_average_quality(call) >= 4) {
 		[mCallQuality setImage: [UIImage imageNamed:@"stat_sys_signal_4.png"]];
 		[mCallQualityLandRight setImage: [UIImage imageNamed:@"stat_sys_signal_4.png"]];
