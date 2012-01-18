@@ -312,6 +312,8 @@ static void linphone_iphone_call_state(LinphoneCore *lc, LinphoneCall* call, Lin
 }
 
 -(void) onRegister:(LinphoneCore *)lc cfg:(LinphoneProxyConfig*) cfg state:(LinphoneRegistrationState) state message:(const char*) message {
+    NSLog(@"NEW REGISTRATION STATE: '%s' (message: '%s')", linphone_registration_state_to_string(state), message);
+    
 	LinphoneAddress* lAddress = linphone_address_new(linphone_proxy_config_get_identity(cfg));
 	NSString* lUserName = linphone_address_get_username(lAddress)? [[NSString alloc] initWithUTF8String:linphone_address_get_username(lAddress) ]:@"";
 	NSString* lDisplayName = linphone_address_get_display_name(lAddress)? [[NSString alloc] initWithUTF8String:linphone_address_get_display_name(lAddress) ]:@"";
@@ -345,7 +347,6 @@ static void linphone_iphone_call_state(LinphoneCore *lc, LinphoneCall* call, Lin
 												forReason:lErrorMessage];
 		
 		if (lErrorMessage != nil 
-			&& registrationDelegate==nil
 			&& linphone_proxy_config_get_error(cfg) != LinphoneReasonNoResponse) { //do not report network connection issue on registration
 			//default behavior if no registration delegates
 			

@@ -49,12 +49,54 @@
 @synthesize zero;
 @synthesize hash;
 
+@synthesize statusViewHolder;
+
 @synthesize myTabBarController;
 @synthesize mMainScreenWithVideoPreview;
 @synthesize backToCallView;
 
 @synthesize switchCamera;
 
+-(void) updateStatusSubView {
+    LinphoneCore* lc = 0;
+    @try {
+        lc = [LinphoneManager getLc];
+    } @catch (NSException* exc) {
+        return;
+    }
+    
+    if (!lc)
+        return;
+    
+    BOOL enableCallButtons;
+    LinphoneProxyConfig* config;
+    linphone_core_get_default_proxy([LinphoneManager getLc], &config);
+    
+    LinphoneRegistrationState s;
+    NSString* m = nil;
+    
+    if (config == NULL) {
+        s = LinphoneRegistrationNone;
+        m = @"No SIP account configured";
+    } else {
+        s = linphone_proxy_config_get_state(config);
+    
+        switch (s) {
+            case LinphoneRegistrationOk: m = @"Registered"; break;
+            case LinphoneRegistrationNone: m=@"Not registered"; break;
+            case LinphoneRegistrationFailed: m = @"Registration failed"; break;
+            case LinphoneRegistrationProgress: m = @"Registration in progress"; break;
+            case LinphoneRegistrationCleared: m= @"No SIP account"; break;
+            default: break;
+        }
+    }
+    
+    enableCallButtons = [statusSubViewController updateWithRegistrationState:s message:m];
+    
+    [callLarge setEnabled:enableCallButtons];
+    [callShort setEnabled:enableCallButtons];   
+    [backToCallView setEnabled:enableCallButtons];
+}
 
 -(void) updateCallAndBackButtons {
     @try {
@@ -72,15 +114,18 @@
                    [exc.name cStringUsingEncoding:[NSString defaultCStringEncoding]], 
                    [exc.reason cStringUsingEncoding:[NSString defaultCStringEncoding]]);
     }
+    
+    [self updateStatusSubView];
 }
+
 
 - (void)viewDidAppear:(BOOL)animated {
 	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"enable_first_login_view_preference"] == true) {
 		myFirstLoginViewController = [[FirstLoginViewController alloc]  initWithNibName:@"FirstLoginViewController" 
 																				 bundle:[NSBundle mainBundle]];
-		[[LinphoneManager instance] setRegistrationDelegate:myFirstLoginViewController];
 		[self presentModalViewController:myFirstLoginViewController animated:true];
-	}; 
+	}
+    [[LinphoneManager instance] setRegistrationDelegate:self];
     
     [mMainScreenWithVideoPreview showPreview:YES];
     [self updateCallAndBackButtons];
@@ -91,10 +136,10 @@
 }
 
 
-// Implement viewDidLoad to do additional setup after loading the view, typically from a nib : called twice (?!)
+// Implement viewDidLoad to do additional setup after loading the view, typically from a nib : may be called twice
 - (void)viewDidLoad {
     [super viewDidLoad];
-	
+    
     [mDisplayName release];
 	mDisplayName = [UILabel alloc];
 	[zero initWithNumber:'0'  addressField:address dtmf:false];
@@ -114,8 +159,17 @@
 	[erase initWithAddressField:address];
     [backToCallView addTarget:self action:@selector(backToCallViewPressed) forControlEvents:UIControlEventTouchUpInside];
     
-    mIncallViewController = [[IncallViewController alloc]  initWithNibName:[LinphoneManager runningOnIpad]?@"InCallViewController-ipad":@"IncallViewController" 
+    if (mIncallViewController == nil)
+        mIncallViewController = [[IncallViewController alloc]  initWithNibName:[LinphoneManager runningOnIpad]?@"InCallViewController-ipad":@"IncallViewController" 
 																	bundle:[NSBundle mainBundle]];
+    
+    if (statusSubViewController == nil) {
+        statusSubViewController = [[StatusSubViewController alloc]  initWithNibName:@"StatusSubViewController" 
+                                                                         bundle:[NSBundle mainBundle]];
+        [statusViewHolder addSubview:statusSubViewController.view];
+    }
+    
+    [self updateCallAndBackButtons];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -180,8 +234,7 @@
 }
 
 //status reporting
--(void) displayStatus:(NSString*) message {
-	[status setText:message];
+-(void) displayStatus:(NSString*) message {     
 	[mIncallViewController displayStatus:message];
 }
 
@@ -300,6 +353,32 @@
 	[myTabBarController release];
 	[mIncallViewController release];
 	[super dealloc];
+}
+
+-(void) displayRegisteredFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName onDomain:(NSString*)domain {    
+    if (myFirstLoginViewController != nil && self.modalViewController == myFirstLoginViewController) {
+        [myFirstLoginViewController displayRegisteredFromUI:viewCtrl forUser:username withDisplayName:displayName onDomain:domain];
+    }
+    [self updateStatusSubView];
+}
+-(void) displayRegisteringFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName onDomain:(NSString*)domain {
+    if (myFirstLoginViewController != nil && self.modalViewController == myFirstLoginViewController) {
+        [myFirstLoginViewController displayRegisteringFromUI:viewCtrl forUser:username withDisplayName:displayName onDomain:domain];
+    }
+    [self updateStatusSubView];
+}
+-(void) displayRegistrationFailedFromUI:(UIViewController*) viewCtrl forUser:(NSString*) user withDisplayName:(NSString*) displayName onDomain:(NSString*)domain forReason:(NSString*) reason {
+    if (myFirstLoginViewController != nil && self.modalViewController == myFirstLoginViewController) {
+        [myFirstLoginViewController displayRegistrationFailedFromUI:viewCtrl forUser:user withDisplayName:displayName onDomain:domain forReason:reason];
+    }
+    [self updateStatusSubView];
+}
+
+-(void) displayNotRegisteredFromUI:(UIViewController*) viewCtrl { 
+    if (myFirstLoginViewController != nil && self.modalViewController == myFirstLoginViewController) {
+        [myFirstLoginViewController displayNotRegisteredFromUI:viewCtrl];
+    }
+    [self updateStatusSubView];
 }
 
 

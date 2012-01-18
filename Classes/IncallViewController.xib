@@ -150,10 +150,6 @@
 										<bytes key="NSRGB">MC4xOTYwNzg0MzE0IDAuMzA5ODAzOTIxNiAwLjUyMTU2ODYyNzUAA</bytes>
 									</object>
 									<reference key="IBUINormalTitleShadowColor" ref="785445938"/>
-									<object class="NSCustomResource" key="IBUIDisabledImage">
-										<string key="NSClassName">NSImage</string>
-										<string key="NSResourceName">conf_merge.png</string>
-									</object>
 									<object class="NSCustomResource" key="IBUINormalImage">
 										<string key="NSClassName">NSImage</string>
 										<string key="NSResourceName">grouper.png</string>
@@ -1284,7 +1280,7 @@
 					<string>UIResponder</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-					<real value="0.0"/>
+					<real value="3"/>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<real value="0.0"/>
@@ -1376,6 +1372,7 @@
 							<string>callControlSubView</string>
 							<string>callTableView</string>
 							<string>close</string>
+							<string>conferenceDetail</string>
 							<string>contacts</string>
 							<string>controlSubView</string>
 							<string>dialer</string>
@@ -1408,6 +1405,7 @@
 							<string>UIView</string>
 							<string>UITableView</string>
 							<string>UIButton</string>
+							<string>UIViewController</string>
 							<string>UIButton</string>
 							<string>UIView</string>
 							<string>UIButton</string>
@@ -1443,6 +1441,7 @@
 							<string>callControlSubView</string>
 							<string>callTableView</string>
 							<string>close</string>
+							<string>conferenceDetail</string>
 							<string>contacts</string>
 							<string>controlSubView</string>
 							<string>dialer</string>
@@ -1492,6 +1491,10 @@
 							<object class="IBToOneOutletInfo">
 								<string key="name">close</string>
 								<string key="candidateClassName">UIButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">conferenceDetail</string>
+								<string key="candidateClassName">UIViewController</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">contacts</string>
@@ -1666,30 +1669,60 @@
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>mCallQuality</string>
+							<string>mCallQualityLandLeft</string>
+							<string>mCallQualityLandRight</string>
 							<string>mCamSwitch</string>
 							<string>mCamSwitchLand</string>
+							<string>mCamSwitchLandLeft</string>
+							<string>mCamSwitchLandRight</string>
 							<string>mDisplay</string>
 							<string>mDisplayLand</string>
+							<string>mDisplayLandLeft</string>
+							<string>mDisplayLandRight</string>
 							<string>mHangUp</string>
 							<string>mHangUpLand</string>
+							<string>mHangUpLandLeft</string>
+							<string>mHangUpLandRight</string>
 							<string>mLandscape</string>
+							<string>mLandscapeLeft</string>
+							<string>mLandscapeRight</string>
 							<string>mMute</string>
 							<string>mMuteLand</string>
+							<string>mMuteLandLeft</string>
+							<string>mMuteLandRight</string>
 							<string>mPortrait</string>
 							<string>mPreview</string>
 							<string>mPreviewLand</string>
+							<string>mPreviewLandLeft</string>
+							<string>mPreviewLandRight</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>UIImageView</string>
+							<string>UIImageView</string>
+							<string>UIImageView</string>
+							<string>UICamSwitch</string>
+							<string>UICamSwitch</string>
 							<string>UICamSwitch</string>
 							<string>UICamSwitch</string>
 							<string>UIView</string>
 							<string>UIView</string>
+							<string>UIView</string>
+							<string>UIView</string>
+							<string>UIHangUpButton</string>
+							<string>UIHangUpButton</string>
 							<string>UIHangUpButton</string>
 							<string>UIHangUpButton</string>
 							<string>UIView</string>
+							<string>UIView</string>
+							<string>UIView</string>
 							<string>UIMuteButton</string>
 							<string>UIMuteButton</string>
+							<string>UIMuteButton</string>
+							<string>UIMuteButton</string>
+							<string>UIView</string>
+							<string>UIView</string>
 							<string>UIView</string>
 							<string>UIView</string>
 							<string>UIView</string>
@@ -1699,27 +1732,62 @@
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>mCallQuality</string>
+							<string>mCallQualityLandLeft</string>
+							<string>mCallQualityLandRight</string>
 							<string>mCamSwitch</string>
 							<string>mCamSwitchLand</string>
+							<string>mCamSwitchLandLeft</string>
+							<string>mCamSwitchLandRight</string>
 							<string>mDisplay</string>
 							<string>mDisplayLand</string>
+							<string>mDisplayLandLeft</string>
+							<string>mDisplayLandRight</string>
 							<string>mHangUp</string>
 							<string>mHangUpLand</string>
+							<string>mHangUpLandLeft</string>
+							<string>mHangUpLandRight</string>
 							<string>mLandscape</string>
+							<string>mLandscapeLeft</string>
+							<string>mLandscapeRight</string>
 							<string>mMute</string>
 							<string>mMuteLand</string>
+							<string>mMuteLandLeft</string>
+							<string>mMuteLandRight</string>
 							<string>mPortrait</string>
 							<string>mPreview</string>
 							<string>mPreviewLand</string>
+							<string>mPreviewLandLeft</string>
+							<string>mPreviewLandRight</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<object class="IBToOneOutletInfo">
+								<string key="name">mCallQuality</string>
+								<string key="candidateClassName">UIImageView</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">mCallQualityLandLeft</string>
+								<string key="candidateClassName">UIImageView</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">mCallQualityLandRight</string>
+								<string key="candidateClassName">UIImageView</string>
+							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">mCamSwitch</string>
 								<string key="candidateClassName">UICamSwitch</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">mCamSwitchLand</string>
+								<string key="candidateClassName">UICamSwitch</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">mCamSwitchLandLeft</string>
+								<string key="candidateClassName">UICamSwitch</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">mCamSwitchLandRight</string>
 								<string key="candidateClassName">UICamSwitch</string>
 							</object>
 							<object class="IBToOneOutletInfo">
@@ -1731,6 +1799,14 @@
 								<string key="candidateClassName">UIView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
+								<string key="name">mDisplayLandLeft</string>
+								<string key="candidateClassName">UIView</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">mDisplayLandRight</string>
+								<string key="candidateClassName">UIView</string>
+							</object>
+							<object class="IBToOneOutletInfo">
 								<string key="name">mHangUp</string>
 								<string key="candidateClassName">UIHangUpButton</string>
 							</object>
@@ -1739,7 +1815,23 @@
 								<string key="candidateClassName">UIHangUpButton</string>
 							</object>
 							<object class="IBToOneOutletInfo">
+								<string key="name">mHangUpLandLeft</string>
+								<string key="candidateClassName">UIHangUpButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">mHangUpLandRight</string>
+								<string key="candidateClassName">UIHangUpButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
 								<string key="name">mLandscape</string>
+								<string key="candidateClassName">UIView</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">mLandscapeLeft</string>
+								<string key="candidateClassName">UIView</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">mLandscapeRight</string>
 								<string key="candidateClassName">UIView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
@@ -1748,6 +1840,14 @@
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">mMuteLand</string>
+								<string key="candidateClassName">UIMuteButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">mMuteLandLeft</string>
+								<string key="candidateClassName">UIMuteButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">mMuteLandRight</string>
 								<string key="candidateClassName">UIMuteButton</string>
 							</object>
 							<object class="IBToOneOutletInfo">
@@ -1760,6 +1860,14 @@
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">mPreviewLand</string>
+								<string key="candidateClassName">UIView</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">mPreviewLandLeft</string>
+								<string key="candidateClassName">UIView</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">mPreviewLandRight</string>
 								<string key="candidateClassName">UIView</string>
 							</object>
 						</object>
@@ -1793,7 +1901,6 @@
 				<string>clavier-01-106px.png</string>
 				<string>clavier-01-160px.png</string>
 				<string>clavier.png</string>
-				<string>conf_merge.png</string>
 				<string>contact.png</string>
 				<string>grouper.png</string>
 				<string>mic_active.png</string>
@@ -1805,20 +1912,19 @@
 			</object>
 			<object class="NSMutableArray" key="dict.values">
 				<bool key="EncodedWithXMLCoder">YES</bool>
-				<string>{164, 104}</string>
-				<string>{164, 104}</string>
-				<string>{164, 104}</string>
+				<string>{107, 67}</string>
+				<string>{107, 67}</string>
+				<string>{107, 67}</string>
 				<string>{106, 60}</string>
 				<string>{160, 60}</string>
-				<string>{164, 104}</string>
-				<string>{82, 75}</string>
-				<string>{164, 104}</string>
-				<string>{164, 104}</string>
-				<string>{20, 20}</string>
-				<string>{164, 104}</string>
-				<string>{164, 104}</string>
-				<string>{164, 104}</string>
-				<string>{164, 104}</string>
+				<string>{106, 67}</string>
+				<string>{107, 67}</string>
+				<string>{106, 67}</string>
+				<string>{82, 82}</string>
+				<string>{107, 67}</string>
+				<string>{107, 67}</string>
+				<string>{106, 67}</string>
+				<string>{106, 67}</string>
 				<string>{62, 54}</string>
 			</object>
 		</object>

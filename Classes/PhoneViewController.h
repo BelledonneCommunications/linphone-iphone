@@ -21,13 +21,14 @@
 #import "linphonecore.h"
 #import "UILinphone.h"
 #import "CallDelegate.h"
+#import "StatusSubViewController.h"
 
 @class MainScreenWithVideoPreview;
 @class IncallViewController;
 @class FirstLoginViewController;
 
 
-@interface PhoneViewController : UIViewController <UITextFieldDelegate,LinphoneUICallDelegate, UIActionSheetCustomDelegate> {
+@interface PhoneViewController : UIViewController <UITextFieldDelegate,LinphoneUICallDelegate, UIActionSheetCustomDelegate, LinphoneUIRegistrationDelegate> {
 
 @private
 	//UI definition
@@ -55,6 +56,7 @@
 	UIDigitButton* hash;
 
 	UIButton* backToCallView;
+    UIView* statusViewHolder;
 	
 	UITabBarController*  myTabBarController;
 
@@ -62,6 +64,7 @@
 	FirstLoginViewController* myFirstLoginViewController;
 	IncallViewController* mIncallViewController;
     MainScreenWithVideoPreview* mMainScreenWithVideoPreview;
+    StatusSubViewController* statusSubViewController;
     
     UIButton* switchCamera;
 }
@@ -86,6 +89,8 @@
 @property (nonatomic, retain) IBOutlet UIButton* star;
 @property (nonatomic, retain) IBOutlet UIButton* zero;
 @property (nonatomic, retain) IBOutlet UIButton* hash;
+
+@property (nonatomic, retain) IBOutlet UIView* statusViewHolder;
 
 @property (nonatomic, retain) IBOutlet UIButton* backToCallView;
 

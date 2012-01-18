@@ -234,6 +234,22 @@
 		340A75B114C0670B006AA708 /* ConferenceCallDetailView-ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 340A75AF14C0670A006AA708 /* ConferenceCallDetailView-ipad.xib */; };
 		3418843714C58BB100EA48C7 /* nowebcamCIF.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 3418843614C58BB100EA48C7 /* nowebcamCIF.jpg */; };
 		3418843814C58BB100EA48C7 /* nowebcamCIF.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 3418843614C58BB100EA48C7 /* nowebcamCIF.jpg */; };
+		3418844814C6CAD300EA48C7 /* StatusSubViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3418844614C6CAD300EA48C7 /* StatusSubViewController.m */; };
+		3418844914C6CAD300EA48C7 /* StatusSubViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3418844614C6CAD300EA48C7 /* StatusSubViewController.m */; };
+		3418844A14C6CAD300EA48C7 /* StatusSubViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3418844714C6CAD300EA48C7 /* StatusSubViewController.xib */; };
+		3418844B14C6CAD300EA48C7 /* StatusSubViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3418844714C6CAD300EA48C7 /* StatusSubViewController.xib */; };
+		3418844D14C6D1CE00EA48C7 /* startcall-gray.png in Resources */ = {isa = PBXBuildFile; fileRef = 3418844C14C6D1CE00EA48C7 /* startcall-gray.png */; };
+		3418844E14C6D1CE00EA48C7 /* startcall-gray.png in Resources */ = {isa = PBXBuildFile; fileRef = 3418844C14C6D1CE00EA48C7 /* startcall-gray.png */; };
+		3418845314C6F66F00EA48C7 /* status_green.png in Resources */ = {isa = PBXBuildFile; fileRef = 3418844F14C6F66E00EA48C7 /* status_green.png */; };
+		3418845414C6F66F00EA48C7 /* status_green.png in Resources */ = {isa = PBXBuildFile; fileRef = 3418844F14C6F66E00EA48C7 /* status_green.png */; };
+		3418845514C6F66F00EA48C7 /* status_offline.png in Resources */ = {isa = PBXBuildFile; fileRef = 3418845014C6F66F00EA48C7 /* status_offline.png */; };
+		3418845614C6F66F00EA48C7 /* status_offline.png in Resources */ = {isa = PBXBuildFile; fileRef = 3418845014C6F66F00EA48C7 /* status_offline.png */; };
+		3418845714C6F66F00EA48C7 /* status_orange.png in Resources */ = {isa = PBXBuildFile; fileRef = 3418845114C6F66F00EA48C7 /* status_orange.png */; };
+		3418845814C6F66F00EA48C7 /* status_orange.png in Resources */ = {isa = PBXBuildFile; fileRef = 3418845114C6F66F00EA48C7 /* status_orange.png */; };
+		3418845914C6F66F00EA48C7 /* status_red.png in Resources */ = {isa = PBXBuildFile; fileRef = 3418845214C6F66F00EA48C7 /* status_red.png */; };
+		3418845A14C6F66F00EA48C7 /* status_red.png in Resources */ = {isa = PBXBuildFile; fileRef = 3418845214C6F66F00EA48C7 /* status_red.png */; };
+		3418845C14C7077400EA48C7 /* status_gray.png in Resources */ = {isa = PBXBuildFile; fileRef = 3418845B14C7077400EA48C7 /* status_gray.png */; };
+		3418845D14C7077400EA48C7 /* status_gray.png in Resources */ = {isa = PBXBuildFile; fileRef = 3418845B14C7077400EA48C7 /* status_gray.png */; };
 		341FCA8E149798210084BC26 /* linphonerc-ipad in Resources */ = {isa = PBXBuildFile; fileRef = 341FCA8D149798210084BC26 /* linphonerc-ipad */; };
 		341FCA8F149798210084BC26 /* linphonerc-ipad in Resources */ = {isa = PBXBuildFile; fileRef = 341FCA8D149798210084BC26 /* linphonerc-ipad */; };
 		3422AA5014975EC9000D4E8A /* InCallViewController-ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3422AA4F14975EC9000D4E8A /* InCallViewController-ipad.xib */; };
@@ -617,6 +633,15 @@
 		32CA4F630368D1EE00C91783 /* linphone_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linphone_Prefix.pch; sourceTree = "<group>"; };
 		340A75AF14C0670A006AA708 /* ConferenceCallDetailView-ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "ConferenceCallDetailView-ipad.xib"; sourceTree = "<group>"; };
 		3418843614C58BB100EA48C7 /* nowebcamCIF.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = nowebcamCIF.jpg; path = submodules/linphone/mediastreamer2/src/nowebcamCIF.jpg; sourceTree = "<group>"; };
+		3418844514C6CAD300EA48C7 /* StatusSubViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StatusSubViewController.h; sourceTree = "<group>"; };
+		3418844614C6CAD300EA48C7 /* StatusSubViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StatusSubViewController.m; sourceTree = "<group>"; };
+		3418844714C6CAD300EA48C7 /* StatusSubViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = StatusSubViewController.xib; sourceTree = "<group>"; };
+		3418844C14C6D1CE00EA48C7 /* startcall-gray.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "startcall-gray.png"; path = "Resources/startcall-gray.png"; sourceTree = "<group>"; };
+		3418844F14C6F66E00EA48C7 /* status_green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = status_green.png; path = Resources/status_green.png; sourceTree = "<group>"; };
+		3418845014C6F66F00EA48C7 /* status_offline.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = status_offline.png; path = Resources/status_offline.png; sourceTree = "<group>"; };
+		3418845114C6F66F00EA48C7 /* status_orange.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = status_orange.png; path = Resources/status_orange.png; sourceTree = "<group>"; };
+		3418845214C6F66F00EA48C7 /* status_red.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = status_red.png; path = Resources/status_red.png; sourceTree = "<group>"; };
+		3418845B14C7077400EA48C7 /* status_gray.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = status_gray.png; path = Resources/status_gray.png; sourceTree = "<group>"; };
 		341FCA8D149798210084BC26 /* linphonerc-ipad */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "linphonerc-ipad"; sourceTree = "<group>"; };
 		3422AA4F14975EC9000D4E8A /* InCallViewController-ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "InCallViewController-ipad.xib"; sourceTree = "<group>"; };
 		3422AA5214978352000D4E8A /* PhoneViewController-ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "PhoneViewController-ipad.xib"; sourceTree = "<group>"; };
@@ -778,6 +803,9 @@
 				34CA8537148F692A00503C01 /* MainScreenWithVideoPreview.h */,
 				34CA8538148F692A00503C01 /* MainScreenWithVideoPreview.m */,
 				34CA852E148F646700503C01 /* MainScreenWithVideoPreview.xib */,
+				3418844514C6CAD300EA48C7 /* StatusSubViewController.h */,
+				3418844614C6CAD300EA48C7 /* StatusSubViewController.m */,
+				3418844714C6CAD300EA48C7 /* StatusSubViewController.xib */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -1176,6 +1204,12 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				3418845B14C7077400EA48C7 /* status_gray.png */,
+				3418844F14C6F66E00EA48C7 /* status_green.png */,
+				3418845014C6F66F00EA48C7 /* status_offline.png */,
+				3418845114C6F66F00EA48C7 /* status_orange.png */,
+				3418845214C6F66F00EA48C7 /* status_red.png */,
+				3418844C14C6D1CE00EA48C7 /* startcall-gray.png */,
 				3418843614C58BB100EA48C7 /* nowebcamCIF.jpg */,
 				1AE0A49214AC5C64002C99BD /* mic_active.png */,
 				1AE0A49314AC5C64002C99BD /* stat_sys_signal_0.png */,
@@ -1372,6 +1406,13 @@
 				1AE0A4A214AC5C64002C99BD /* stat_sys_signal_4.png in Resources */,
 				340A75B014C0670B006AA708 /* ConferenceCallDetailView-ipad.xib in Resources */,
 				3418843714C58BB100EA48C7 /* nowebcamCIF.jpg in Resources */,
+				3418844A14C6CAD300EA48C7 /* StatusSubViewController.xib in Resources */,
+				3418844D14C6D1CE00EA48C7 /* startcall-gray.png in Resources */,
+				3418845314C6F66F00EA48C7 /* status_green.png in Resources */,
+				3418845514C6F66F00EA48C7 /* status_offline.png in Resources */,
+				3418845714C6F66F00EA48C7 /* status_orange.png in Resources */,
+				3418845914C6F66F00EA48C7 /* status_red.png in Resources */,
+				3418845C14C7077400EA48C7 /* status_gray.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1442,6 +1483,13 @@
 				1AE0A4A314AC5C64002C99BD /* stat_sys_signal_4.png in Resources */,
 				340A75B114C0670B006AA708 /* ConferenceCallDetailView-ipad.xib in Resources */,
 				3418843814C58BB100EA48C7 /* nowebcamCIF.jpg in Resources */,
+				3418844B14C6CAD300EA48C7 /* StatusSubViewController.xib in Resources */,
+				3418844E14C6D1CE00EA48C7 /* startcall-gray.png in Resources */,
+				3418845414C6F66F00EA48C7 /* status_green.png in Resources */,
+				3418845614C6F66F00EA48C7 /* status_offline.png in Resources */,
+				3418845814C6F66F00EA48C7 /* status_orange.png in Resources */,
+				3418845A14C6F66F00EA48C7 /* status_red.png in Resources */,
+				3418845D14C7077400EA48C7 /* status_gray.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1479,6 +1527,7 @@
 				22D817AD147A9F33001CFB9C /* UIAddVideoButton.m in Sources */,
 				344ABD77147FCB68007420B6 /* ConferenceCallDetailView.m in Sources */,
 				34CA8539148F692A00503C01 /* MainScreenWithVideoPreview.m in Sources */,
+				3418844814C6CAD300EA48C7 /* StatusSubViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1513,6 +1562,7 @@
 				22D817AE147A9F33001CFB9C /* UIAddVideoButton.m in Sources */,
 				344ABD78147FCB68007420B6 /* ConferenceCallDetailView.m in Sources */,
 				34CA853A148F692A00503C01 /* MainScreenWithVideoPreview.m in Sources */,
+				3418844914C6CAD300EA48C7 /* StatusSubViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -11,7 +11,6 @@
 			<string key="NS.object.0">933</string>
 		</object>
 		<array key="IBDocument.IntegratedClassDependencies">
-			<string>IBUILabel</string>
 			<string>IBUIViewController</string>
 			<string>IBUIButton</string>
 			<string>IBUIView</string>
@@ -158,7 +157,7 @@
 									<string key="NSFrame">{{573, 112.5}, {160, 231}}</string>
 									<reference key="NSSuperview" ref="28417277"/>
 									<reference key="NSWindow"/>
-									<reference key="NSNextKeyView" ref="754042657"/>
+									<reference key="NSNextKeyView" ref="732842198"/>
 									<bool key="IBUIOpaque">NO</bool>
 									<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
 									<string key="targetRuntimeIdentifier">IBIPadFramework</string>
@@ -234,39 +233,6 @@
 									<reference key="IBUINormalBackgroundImage" ref="24209450"/>
 									<reference key="IBUIFontDescription" ref="478302615"/>
 									<reference key="IBUIFont" ref="1024978874"/>
-								</object>
-								<object class="IBUILabel" id="754042657">
-									<reference key="NSNextResponder" ref="28417277"/>
-									<int key="NSvFlags">292</int>
-									<string key="NSFrame">{{415, 346}, {320, 29}}</string>
-									<reference key="NSSuperview" ref="28417277"/>
-									<reference key="NSWindow"/>
-									<reference key="NSNextKeyView"/>
-									<object class="NSColor" key="IBUIBackgroundColor" id="115596650">
-										<int key="NSColorSpace">3</int>
-										<bytes key="NSWhite">MCAwAA</bytes>
-									</object>
-									<bool key="IBUIOpaque">NO</bool>
-									<bool key="IBUIClipsSubviews">YES</bool>
-									<bool key="IBUIUserInteractionEnabled">NO</bool>
-									<string key="targetRuntimeIdentifier">IBIPadFramework</string>
-									<string key="IBUIText">status</string>
-									<object class="NSColor" key="IBUITextColor">
-										<int key="NSColorSpace">1</int>
-										<bytes key="NSRGB">MCAwIDAAA</bytes>
-									</object>
-									<nil key="IBUIHighlightedColor"/>
-									<int key="IBUIBaselineAdjustment">1</int>
-									<float key="IBUIMinimumFontSize">10</float>
-									<object class="IBUIFontDescription" key="IBUIFontDescription">
-										<int key="type">1</int>
-										<double key="pointSize">17</double>
-									</object>
-									<object class="NSFont" key="IBUIFont">
-										<string key="NSName">Helvetica</string>
-										<double key="NSSize">17</double>
-										<int key="NSfFlags">16</int>
-									</object>
 								</object>
 								<object class="IBUIButton" id="512488983">
 									<reference key="NSNextResponder" ref="28417277"/>
@@ -551,6 +517,20 @@
 									<reference key="IBUIFontDescription" ref="478302615"/>
 									<reference key="IBUIFont" ref="1024978874"/>
 								</object>
+								<object class="IBUIView" id="732842198">
+									<reference key="NSNextResponder" ref="28417277"/>
+									<int key="NSvFlags">292</int>
+									<string key="NSFrame">{{415, 351}, {320, 20}}</string>
+									<reference key="NSSuperview" ref="28417277"/>
+									<reference key="NSWindow"/>
+									<reference key="NSNextKeyView"/>
+									<string key="NSReuseIdentifierKey">_NS:212</string>
+									<object class="NSColor" key="IBUIBackgroundColor" id="115596650">
+										<int key="NSColorSpace">3</int>
+										<bytes key="NSWhite">MCAwAA</bytes>
+									</object>
+									<string key="targetRuntimeIdentifier">IBIPadFramework</string>
+								</object>
 							</array>
 							<string key="NSFrame">{{0, 569}, {768, 386}}</string>
 							<reference key="NSSuperview" ref="403758226"/>
@@ -739,11 +719,11 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">status</string>
+						<string key="label">statusViewHolder</string>
 						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="754042657"/>
+						<reference key="destination" ref="732842198"/>
 					</object>
-					<int key="connectionID">55</int>
+					<int key="connectionID">62</int>
 				</object>
 			</array>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -798,12 +778,12 @@
 							<reference ref="874090106"/>
 							<reference ref="730768748"/>
 							<reference ref="853449854"/>
-							<reference ref="754042657"/>
 							<reference ref="230248043"/>
 							<reference ref="969318046"/>
 							<reference ref="454029686"/>
 							<reference ref="889625182"/>
 							<reference ref="708298572"/>
+							<reference ref="732842198"/>
 						</array>
 						<reference key="parent" ref="403758226"/>
 					</object>
@@ -903,9 +883,10 @@
 						<string key="objectName">Call-large</string>
 					</object>
 					<object class="IBObjectRecord">
-						<int key="objectID">21</int>
-						<reference key="object" ref="754042657"/>
+						<int key="objectID">61</int>
+						<reference key="object" ref="732842198"/>
 						<reference key="parent" ref="28417277"/>
+						<string key="objectName">status_holder</string>
 					</object>
 				</array>
 			</object>
@@ -919,7 +900,6 @@
 				<string key="19.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="20.CustomClassName">UICallButton</string>
 				<string key="20.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-				<string key="21.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="22.CustomClassName">UIEraseButton</string>
 				<string key="22.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="23.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -951,12 +931,13 @@
 				<string key="36.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="38.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="4.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<string key="61.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 			</dictionary>
 			<dictionary class="NSMutableDictionary" key="unlocalizedProperties"/>
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">60</int>
+			<int key="maxID">62</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -985,17 +966,6 @@
 				<object class="IBPartialClassDescription">
 					<string key="className">PhoneViewController</string>
 					<string key="superclassName">UIViewController</string>
-					<object class="NSMutableDictionary" key="actions">
-						<string key="NS.key.0">doKeyPad:</string>
-						<string key="NS.object.0">id</string>
-					</object>
-					<object class="NSMutableDictionary" key="actionInfosByName">
-						<string key="NS.key.0">doKeyPad:</string>
-						<object class="IBActionInfo" key="NS.object.0">
-							<string key="name">doKeyPad:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-					</object>
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="address">UITextField</string>
 						<string key="backToCallView">UIButton</string>
@@ -1015,6 +985,7 @@
 						<string key="six">UIButton</string>
 						<string key="star">UIButton</string>
 						<string key="status">UILabel</string>
+						<string key="statusViewHolder">UIView</string>
 						<string key="switchCamera">UIButton</string>
 						<string key="three">UIButton</string>
 						<string key="two">UIButton</string>
@@ -1092,6 +1063,10 @@
 						<object class="IBToOneOutletInfo" key="status">
 							<string key="name">status</string>
 							<string key="candidateClassName">UILabel</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="statusViewHolder">
+							<string key="name">statusViewHolder</string>
+							<string key="candidateClassName">UIView</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="switchCamera">
 							<string key="name">switchCamera</string>
