@@ -145,20 +145,16 @@
 	
 	const char* username = linphone_address_get_username(partyToDisplay)!=0?linphone_address_get_username(partyToDisplay):"";
 	const char* displayName = linphone_address_get_display_name(partyToDisplay);
-    // explicit release are needed to avoid mem leaks : NSString are created with retainCount == 1. 
-    // Assigning them to a textLabel.text property (which has 'retain' flag) bumps it to 2. So we set them back to 1.
+
 	if (displayName) {
-        NSString* str1 = [[NSString alloc] initWithCString:displayName encoding:[NSString defaultCStringEncoding]];
+        NSString* str1 = [NSString stringWithCString:displayName encoding:[NSString defaultCStringEncoding]];
 		[cell.textLabel setText:str1];
         NSString* str2 = [NSString stringWithFormat:@"%s"/* [%s]"*/,username/*,callLogs->start_date*/];
 		[cell.detailTextLabel setText:str2];
-        [str1 release];
-        assert(str1.retainCount == 1);
     } else {
-        NSString* str1 = [[NSString alloc] initWithCString:username encoding:[NSString defaultCStringEncoding]];
+        NSString* str1 = [NSString stringWithCString:username encoding:[NSString defaultCStringEncoding]];
         [cell.textLabel setText:str1];
         [cell.detailTextLabel setText:nil];
-        [str1 release];
     }
 	
     return cell;

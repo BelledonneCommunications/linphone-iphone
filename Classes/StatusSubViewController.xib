@@ -49,7 +49,7 @@
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<object class="NSCustomResource" key="IBUIImage">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">status_orange.png</string>
+							<string key="NSResourceName">status_gray.png</string>
 						</object>
 					</object>
 					<object class="IBUIActivityIndicatorView" id="665185352">
@@ -70,7 +70,6 @@
 						<string key="NSFrame">{{28, 0}, {280, 21}}</string>
 						<reference key="NSSuperview" ref="848661322"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:328</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<bool key="IBUIClipsSubviews">YES</bool>
@@ -245,7 +244,7 @@
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 		<object class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
-			<string key="NS.key.0">status_orange.png</string>
+			<string key="NS.key.0">status_gray.png</string>
 			<string key="NS.object.0">{25, 23}</string>
 		</object>
 		<string key="IBCocoaTouchPluginVersion">933</string>
