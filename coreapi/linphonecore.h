@@ -202,6 +202,7 @@ enum _LinphoneReason{
 	LinphoneReasonNoResponse, /**<No response received from remote*/
 	LinphoneReasonBadCredentials, /**<Authentication failed due to bad or missing credentials*/
 	LinphoneReasonDeclined, /**<The call has been declined*/
+	LinphoneReasonNotFound,
 };
 
 typedef enum _LinphoneReason LinphoneReason;
@@ -1077,7 +1078,7 @@ void linphone_core_init_default_params(LinphoneCore*lc, LinphoneCallParams *para
 /**
  * True if tunnel support was compiled.
  */
-bool_t linphone_core_tunnel_available();
+bool_t linphone_core_tunnel_available(void);
 
 /**
  * Update tunnel using configuration.

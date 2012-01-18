@@ -374,17 +374,14 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 			memset(&tlsCtx, 0, sizeof(tlsCtx));
 			snprintf(tlsCtx.root_ca_cert, sizeof(tlsCtx.client.cert), "%s", ctx->rootCa);
 			eXosip_set_tls_ctx(&tlsCtx);
-		}
+		}                       
+#ifdef HAVE_EXOSIP_TLS_VERIFY_CERTIFICATE
 		eXosip_tls_verify_certificate(ctx->verify_server_certs);
+#endif
 		break;
 	default:
 		ms_warning("unexpected proto, using datagram");
 	}
-#if 0
-	/* it does not work, exosip does not implement this option correctly*/
-	err=0;
-	eXosip_set_option(EXOSIP_OPT_DNS_CAPABILITIES,&err); /*0=no NAPTR */
-#endif
 	/*see if it looks like an IPv6 address*/
 	int use_rports = ctx->use_rports; // Copy char to int to avoid bad alignment
 	eXosip_set_option(EXOSIP_OPT_USE_RPORT,&use_rports);
@@ -399,10 +396,6 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 		return -1;
 	}
 	err=eXosip_listen_addr(proto, addr, port, ipv6 ?  PF_INET6 : PF_INET, is_secure);
-#ifdef HAVE_EXOSIP_GET_SOCKET
-	ms_message("Exosip has socket number %i",eXosip_get_socket(proto));
-#endif
-	
 	ctx->running=TRUE;
 	return err;
 }
@@ -451,7 +444,9 @@ void sal_set_root_ca(Sal* ctx, const char* rootCa) {
 
 void sal_verify_server_certificates(Sal *ctx, bool_t verify){
 	ctx->verify_server_certs=verify;
+#ifdef HAVE_EXOSIP_TLS_VERIFY_CERTIFICATE
 	eXosip_tls_verify_certificate(verify);
+#endif
 }
 
 static int extract_received_rport(osip_message_t *msg, const char **received, int *rportval,SalTransport* transport){

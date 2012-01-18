@@ -1208,7 +1208,9 @@ static void linphone_gtk_init_status_icon(){
 	const char *title;
 	title=linphone_gtk_get_ui_config("title",_("Linphone - a video internet phone"));
 	icon=gtk_status_icon_new_from_pixbuf(pbuf);
+#if GTK_CHECK_VERSION(2,20,0)
 	gtk_status_icon_set_name(icon,title);
+#endif
 	g_signal_connect_swapped(G_OBJECT(icon),"activate",(GCallback)handle_icon_click,NULL);
 	g_signal_connect(G_OBJECT(icon),"popup-menu",(GCallback)icon_popup_menu,NULL);
 	gtk_status_icon_set_tooltip(icon,title);
@@ -1583,14 +1585,19 @@ static void linphone_gtk_check_soundcards(){
 }
 
 static void linphone_gtk_quit(void){
-	linphone_gtk_uninit_instance();
-	linphone_gtk_destroy_log_window();
-	linphone_core_destroy(the_core);
-	linphone_gtk_log_uninit();
+	static gboolean quit_done=FALSE;
+	if (!quit_done){
+		quit_done=TRUE;
+		g_source_remove_by_user_data(linphone_gtk_get_core());
+		linphone_gtk_uninit_instance();
+		linphone_gtk_destroy_log_window();
+		linphone_core_destroy(the_core);
+		linphone_gtk_log_uninit();
 #ifdef HAVE_NOTIFY
-	notify_uninit();
+		notify_uninit();
 #endif
-	gdk_threads_leave();
+		gdk_threads_leave();
+	}
 }
 
 #ifdef HAVE_GTK_OSX

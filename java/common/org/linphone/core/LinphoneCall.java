@@ -240,4 +240,6 @@ public interface LinphoneCall {
 	void setAuthenticationTokenVerified(boolean verified);
 
 	boolean isInConference();
+	
+	float getPlayVolume();
 }

@@ -239,6 +239,119 @@ static void linphone_gtk_init_bookmark_icon(void){
 	g_signal_connect(G_OBJECT(GTK_EDITABLE(entry)),"changed",(GCallback)check_contact,linphone_gtk_get_core());
 }
 
+static gboolean friend_search_func(GtkTreeModel *model, gint column,
+                                                         const gchar *key,
+                                                         GtkTreeIter *iter,
+                                                         gpointer search_data){
+	char *name=NULL;
+	gboolean ret=TRUE;
+	gtk_tree_model_get(model,iter,FRIEND_NAME,&name,-1);
+	if (name!=NULL){
+		ret=strstr(name,key)==NULL;
+		g_free(name);
+	}
+	return ret;
+}
+
+static gint friend_sort(GtkTreeModel *model, GtkTreeIter *a,GtkTreeIter *b,gpointer user_data){
+	char *n1=NULL,*n2=NULL;
+	int ret;
+	gtk_tree_model_get(model,a,FRIEND_NAME,&n1,-1);
+	gtk_tree_model_get(model,b,FRIEND_NAME,&n2,-1);
+	if (n1 && n2) {
+		ret=strcmp(n1,n2);
+		g_free(n1);
+		g_free(n2);
+	}else if (n1){
+		g_free(n1);
+		ret=-1;
+	}else if (n2){
+		g_free(n2);
+		ret=1;
+	}else ret=0;
+	return ret;
+}
+
+static void on_name_column_clicked(GtkTreeModel *model){
+	GtkSortType st;
+	gint column;
+	
+	gtk_tree_sortable_get_sort_column_id(GTK_TREE_SORTABLE(model),&column,&st);
+	if (column==FRIEND_NAME){
+		if (st==GTK_SORT_ASCENDING) st=GTK_SORT_DESCENDING;
+		else st=GTK_SORT_ASCENDING;
+	}else st=GTK_SORT_ASCENDING;
+	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(model),FRIEND_NAME,st);
+}
+
+
+static int get_friend_weight(const LinphoneFriend *lf){
+	int w=0;
+	switch(linphone_friend_get_status(lf)){
+		case LinphoneStatusOnline:
+			w+=1000;
+		break;
+		case LinphoneStatusOffline:
+			if (linphone_friend_get_send_subscribe(lf))
+				w+=100;
+		break;
+		default:
+			w+=500;
+		break;
+	}
+	return w;
+}
+
+static int friend_compare_func(const LinphoneFriend *lf1, const LinphoneFriend *lf2){
+	int w1,w2;
+	w1=get_friend_weight(lf1);
+	w2=get_friend_weight(lf2);
+	if (w1==w2){
+		const char *u1,*u2;
+		const LinphoneAddress *addr1,*addr2;
+		addr1=linphone_friend_get_address(lf1);
+		addr2=linphone_friend_get_address(lf2);
+		u1=linphone_address_get_username(addr1);
+		u2=linphone_address_get_username(addr2);
+		if (u1 && u2) return strcasecmp(u1,u2);
+		if (u1) return 1;
+		else return -1;
+	}
+	return w2-w1;
+}
+
+static gint friend_sort_with_presence(GtkTreeModel *model, GtkTreeIter *a,GtkTreeIter *b,gpointer user_data){
+	LinphoneFriend *lf1=NULL,*lf2=NULL;
+	gtk_tree_model_get(model,a,FRIEND_ID,&lf1,-1);
+	gtk_tree_model_get(model,b,FRIEND_ID,&lf2,-1);
+	return friend_compare_func(lf1,lf2);
+}
+
+
+static MSList *sort_friend_list(const MSList *friends){
+	MSList *ret=NULL;
+	const MSList *elem;
+	LinphoneFriend *lf;
+
+	for(elem=friends;elem!=NULL;elem=elem->next){
+		lf=(LinphoneFriend*)elem->data;
+		ret=ms_list_insert_sorted(ret,lf,(MSCompareFunc)friend_compare_func);
+	}
+	return ret;
+}
+
+static void on_presence_column_clicked(GtkTreeModel *model){
+	GtkSortType st;
+	gint column;
+	
+	gtk_tree_sortable_get_sort_column_id(GTK_TREE_SORTABLE(model),&column,&st);
+	if (column==FRIEND_ID){
+		if (st==GTK_SORT_ASCENDING) st=GTK_SORT_DESCENDING;
+		else st=GTK_SORT_ASCENDING;
+	}else st=GTK_SORT_ASCENDING;
+	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(model),FRIEND_ID,st);
+}
+
 static void linphone_gtk_friend_list_init(GtkWidget *friendlist)
 {
 	GtkListStore *store;
@@ -254,12 +367,21 @@ static void linphone_gtk_friend_list_init(GtkWidget *friendlist)
 	gtk_tree_view_set_model(GTK_TREE_VIEW(friendlist),GTK_TREE_MODEL(store));
 	g_object_unref(G_OBJECT(store));
 
+	gtk_tree_view_set_search_equal_func(GTK_TREE_VIEW(friendlist),friend_search_func,NULL,NULL);
+	gtk_tree_view_set_search_column(GTK_TREE_VIEW(friendlist),FRIEND_NAME);
+
+	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(store),FRIEND_NAME,friend_sort,NULL,NULL);
+	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(store),FRIEND_ID,friend_sort_with_presence,NULL,NULL);
+	
 	renderer = gtk_cell_renderer_pixbuf_new ();
 	column = gtk_tree_view_column_new_with_attributes (_("Name"),
                                                    renderer,
                                                    "pixbuf", FRIEND_ICON,
                                                    NULL);
 	g_object_set (G_OBJECT(column), "resizable", TRUE, NULL);
+	g_signal_connect_swapped(G_OBJECT(column),"clicked",(GCallback)on_name_column_clicked,GTK_TREE_MODEL(store));
+	gtk_tree_view_column_set_clickable(column,TRUE);
+	
 	renderer = gtk_cell_renderer_text_new ();
 	gtk_tree_view_column_pack_start(column,renderer,FALSE);
 	gtk_tree_view_column_add_attribute  (column,renderer,
@@ -273,6 +395,8 @@ static void linphone_gtk_friend_list_init(GtkWidget *friendlist)
                                                    "text", FRIEND_PRESENCE_STATUS,
                                                    NULL);
 	g_object_set (G_OBJECT(column), "resizable", TRUE, NULL);
+	g_signal_connect_swapped(G_OBJECT(column),"clicked",(GCallback)on_presence_column_clicked,GTK_TREE_MODEL(store));
+	gtk_tree_view_column_set_clickable(column,TRUE);
 	gtk_tree_view_column_set_visible(column,linphone_gtk_get_ui_config_int("friendlist_status",1));
 	
 	renderer = gtk_cell_renderer_pixbuf_new();
@@ -344,52 +468,6 @@ void linphone_gtk_directory_search_button_clicked(GtkWidget *button){
 		linphone_gtk_get_widget(gtk_widget_get_toplevel(button),"directory_search_entry"));
 }
 
-static int get_friend_weight(const LinphoneFriend *lf){
-	int w=0;
-	switch(linphone_friend_get_status(lf)){
-		case LinphoneStatusOnline:
-			w+=1000;
-		break;
-		case LinphoneStatusOffline:
-			if (linphone_friend_get_send_subscribe(lf))
-				w+=100;
-		break;
-		default:
-			w+=500;
-		break;
-	}
-	return w;
-}
-
-static int friend_compare_func(const LinphoneFriend *lf1, const LinphoneFriend *lf2){
-	int w1,w2;
-	w1=get_friend_weight(lf1);
-	w2=get_friend_weight(lf2);
-	if (w1==w2){
-		const char *u1,*u2;
-		const LinphoneAddress *addr1,*addr2;
-		addr1=linphone_friend_get_address(lf1);
-		addr2=linphone_friend_get_address(lf2);
-		u1=linphone_address_get_username(addr1);
-		u2=linphone_address_get_username(addr2);
-		if (u1 && u2) return strcasecmp(u1,u2);
-		if (u1) return 1;
-		else return -1;
-	}
-	return w2-w1;
-}
-
-static MSList *sort_friend_list(const MSList *friends){
-	MSList *ret=NULL;
-	const MSList *elem;
-	LinphoneFriend *lf;
-
-	for(elem=friends;elem!=NULL;elem=elem->next){
-		lf=(LinphoneFriend*)elem->data;
-		ret=ms_list_insert_sorted(ret,lf,(MSCompareFunc)friend_compare_func);
-	}
-	return ret;
-}
 
 void linphone_gtk_show_friends(void){
 	GtkWidget *mw=linphone_gtk_get_main_window();

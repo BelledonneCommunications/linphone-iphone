@@ -48,11 +48,8 @@ rm /include/stdint.h /include/inttypes.h
 #Remove libgcc specific libraries, only needed for MSVC:
 rm /lib/libgcc.a /lib/libmingw32.a /lib/libmingwex.a
 
-#Remove libintl from gtk, we don't need it and it conflicts with the one supplied by mingw.
-rm /lib/libintl.dll.a
-rm /lib/libintl.la
-rm /lib/libintl.a
-rm /include/libintl.h
+#To get the translations working, remove from C:/MinGW/lib :
+libintl.a libintl.la libintl.dll.a
 
 * Download and install Inno Setup Compiler (required only if you run 'make setup.exe'). Add it to your windows Path environment variable.
 

@@ -989,7 +989,7 @@ void linphone_gtk_show_parameters(void){
 	g_signal_connect(G_OBJECT(linphone_gtk_get_widget(pb,"proto_combo")),"changed",(GCallback)linphone_gtk_proto_changed,NULL);
 
 
-	if (linphone_core_tunnel_available(lc)){
+	if (linphone_core_tunnel_available()){
 		gtk_widget_set_visible(GTK_WIDGET(linphone_gtk_get_widget(pb,"tunnel_edit_button")), TRUE);
 		gtk_widget_set_visible(GTK_WIDGET(linphone_gtk_get_widget(pb,"tunnel_label")), TRUE);
 	}

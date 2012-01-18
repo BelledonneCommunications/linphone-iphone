@@ -374,7 +374,7 @@ static void call_accepted(SalOp *op){
 	}else{
 		/*send a bye*/
 		ms_error("Incompatible SDP offer received in 200Ok, need to abort the call");
-		linphone_core_abort_call(lc,call,"No codec intersection");
+		linphone_core_abort_call(lc,call,_("Incompatible, check codecs..."));
 	}
 }
 
@@ -523,7 +523,6 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 					lc->vtable.display_status(lc,msg480);
 			break;
 			case SalReasonNotFound:
-				msg=_("Not found");
 				if (lc->vtable.display_status)
 					lc->vtable.display_status(lc,msg);
 			break;
@@ -563,10 +562,14 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 		lc->ringstream=NULL;
 	}
 	linphone_call_stop_media_streams (call);
-	if (sr!=SalReasonDeclined) linphone_call_set_state(call,LinphoneCallError,msg);
-	else{
+	if (sr == SalReasonDeclined) {
 		call->reason=LinphoneReasonDeclined;
 		linphone_call_set_state(call,LinphoneCallEnd,"Call declined.");
+	} else if (sr == SalReasonNotFound) {
+		call->reason=LinphoneReasonNotFound;
+		linphone_call_set_state(call,LinphoneCallError,"User not found.");
+	} else {
+		linphone_call_set_state(call,LinphoneCallError,msg);
 	}
 }
 
@@ -623,12 +626,11 @@ static void register_success(SalOp *op, bool_t registered){
 	LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)sal_op_get_user_pointer(op);
 	char *msg;
 	
-	cfg->registered=registered;
 	linphone_proxy_config_set_error(cfg,LinphoneReasonNone);
 	linphone_proxy_config_set_state(cfg, registered ? LinphoneRegistrationOk : LinphoneRegistrationCleared ,
 	                                registered ? "Registration sucessful" : "Unregistration done");
 	if (lc->vtable.display_status){
-		if (cfg->registered) msg=ms_strdup_printf(_("Registration on %s successful."),sal_op_get_proxy(op));
+		if (registered) msg=ms_strdup_printf(_("Registration on %s successful."),sal_op_get_proxy(op));
 		else msg=ms_strdup_printf(_("Unregistration on %s done."),sal_op_get_proxy(op));
 		lc->vtable.display_status(lc,msg);
 		ms_free(msg);

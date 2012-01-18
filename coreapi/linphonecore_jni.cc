@@ -1574,6 +1574,10 @@ extern "C" void Java_org_linphone_core_LinphoneCallImpl_setAuthenticationTokenVe
 	linphone_call_set_authentication_token_verified(call, verified);
 }
 
+extern "C" jfloat Java_org_linphone_core_LinphoneCallImpl_getPlayVolume(JNIEnv* env, jobject thiz, jlong ptr) {
+	LinphoneCall *call = (LinphoneCall *) ptr;
+	return linphone_call_get_play_volume(call);
+}
 
 extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_soundResourcesLocked(JNIEnv* env,jobject thiz,jlong ptr){
 	return linphone_core_sound_resources_locked((LinphoneCore *) ptr);

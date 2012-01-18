@@ -23,10 +23,9 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:	i686
 %endif
 
-BuildRequires:  gnome-panel-devel libgnomeui-devel glib2-devel alsa-lib-devel
-BuildRequires:  libosip2-devel speex-devel gettext desktop-file-utils
-BuildRequires:	readline-devel ncurses-devel
-BuildRequires:  intltool gettext-devel
+BuildRequires: gtk2-devel 
+BuildRequires: libeXosip2-devel speex-devel gettext 
+BuildRequires: intltool gettext-devel 
 %if %{video}
 BuildRequires:	ffmpeg-devel SDL-devel
 %endif
@@ -40,57 +39,11 @@ Summary:        Development libraries for linphone
 Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
 Requires:	ortp-devel = @ORTP_VERSION@
+Requires:	mediastreamer2-devel = @MS2_VERSION@
 Requires:	glib2-devel
 
 %description    devel
 Libraries and headers required to develop software with linphone.
-
-%package -n ortp
-Summary:        A C library implementing the RTP protocol (rfc1889)
-Group:          System Environment/Libraries
-Version:        @ORTP_VERSION@
-
-%description -n ortp
-oRTP is a LGPL licensed C library implementing the RTP protocol (rfc1889). It
-is available for most *nix clones (primilarly Linux and HP-UX), and Win32.
-
-%package -n ortp-devel
-Summary:        Development libraries for ortp
-Group:          Development/Libraries
-Version:        @ORTP_VERSION@
-Requires:	ortp = @ORTP_VERSION@
-
-%description -n ortp-devel
-oRTP is a LGPL licensed C library implementing the RTP protocol (rfc1889). It
-is available for most *nix clones (primilarly Linux and HP-UX), and Win32.
-
-This package contains header files and development libraries needed to
-develop programs using the oRTP library.
-
-%package -n mediastreamer2
-Summary:        Audio/Video real-time streaming
-Group:          Development/Libraries
-Version:        @MS2_VERSION@
-
-%description -n mediastreamer2
-Mediastreamer2 is a GPL licensed library to make audio and video
-real-time streaming and processing. Written in pure C, it is based
-upon the oRTP library.
-
-%package -n mediastreamer2-devel
-Summary:        Headers, libraries and docs for the mediastreamer2 library
-Group:          Development/Libraries
-Version:        @MS2_VERSION@
-Requires:	mediastreamer2 = @MS2_VERSION@
-Requires:	ortp-devel = @ORTP_VERSION@
-
-%description -n mediastreamer2-devel
-Mediastreamer2 is a GPL licensed library to make audio and video
-real-time streaming and processing. Written in pure C, it is based
-upon the ortp library.
-
-This package contains header files and development libraries needed to
-develop programs using the mediastreamer2 library.
 
 %prep
 %setup -q
@@ -100,25 +53,19 @@ develop programs using the mediastreamer2 library.
 
 %build
 %configure \
-	--with-osip=/usr \
-	--with-speex=/usr \
-	--with-readline=/usr \
-%if %{video}
-	--enable-video \
-	--with-ffmpeg=/usr \
-	--with-sdl=/usr \
+%if !%{video}
+	--disable-video \
 %endif
-	--enable-ipv6
+	--docdir=%{_docdir} --enable-ipv6 --enable-static --enable-external-mediastreamer --enable-external-ortp
 %__make %{?_smp_mflags}
 
 
 %install
 rm -rf $RPM_BUILD_ROOT
 make install DESTDIR=$RPM_BUILD_ROOT
-install -p -m 0644 pixmaps/linphone2.png $RPM_BUILD_ROOT%{_datadir}/pixmaps
+install -p -m 0644 pixmaps/linphone.png $RPM_BUILD_ROOT%{_datadir}/pixmaps
 %find_lang %{name}
-rm $RPM_BUILD_ROOT%{_datadir}/gnome/apps/Internet/linphone.desktop
-desktop-file-install --vendor=fedora \
+desktop-file-install \
   --delete-original \
   --dir $RPM_BUILD_ROOT%{_datadir}/applications \
   --add-category X-Fedora \
@@ -133,28 +80,17 @@ rm -rf $RPM_BUILD_ROOT
 
 %postun -p /sbin/ldconfig
 
-%post -n ortp -p /sbin/ldconfig
-
-%postun -n ortp -p /sbin/ldconfig
-
-%post -n mediastreamer2 -p /sbin/ldconfig
-
-%postun -n mediastreamer2 -p /sbin/ldconfig
 
 %files -f %{name}.lang
 %defattr(-,root,root)
 %doc AUTHORS ChangeLog COPYING NEWS README TODO
 %{_bindir}/*
-%{_libdir}/bonobo/servers/*.server
 %{_libdir}/liblinphone.so.*
-%exclude %{_libdir}/libortp*
-%{_libexecdir}/*
 %{_mandir}/*
-%{_datadir}/applications/*%{name}.desktop
-%{_datadir}/gnome/help/linphone
-%{_datadir}/gnome-2.0/ui/*.xml
+%{_datadir}/applications/%{name}.desktop
 %{_datadir}/pixmaps/linphone
-%{_datadir}/pixmaps/linphone2.png
+%{_datadir}/linphone
+%{_datadir}/pixmaps/linphone.png
 %{_datadir}/sounds/linphone
 
 %files devel
@@ -164,33 +100,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/liblinphone.la
 %{_libdir}/liblinphone.so
 %{_libdir}/pkgconfig/linphone.pc
-
-%files -n ortp
-%defattr(-,root,root)
-%doc oRTP/AUTHORS oRTP/ChangeLog oRTP/COPYING oRTP/NEWS oRTP/README oRTP/TODO
-%{_libdir}/libortp.so.*
-%exclude %{_libdir}/liblinphone*
-
-%files -n ortp-devel
-%defattr(-,root,root)
-%{_includedir}/ortp
-%{_libdir}/pkgconfig/ortp.pc
-%{_libdir}/libortp.a
-%{_libdir}/libortp.la
-%{_libdir}/libortp.so
-%{_datadir}/gtk-doc/html/ortp
-
-%files -n mediastreamer2
-%defattr(-,root,root)
-%doc mediastreamer2/AUTHORS mediastreamer2/ChangeLog mediastreamer2/COPYING
-%doc mediastreamer2/NEWS mediastreamer2/README
-%{_libdir}/libmediastreamer.so.*
-
-%files -n mediastreamer2-devel
-%{_includedir}/mediastreamer2
-%{_libdir}/pkgconfig/mediastreamer.pc
-%{_libdir}/libmediastreamer.so
-%{_libdir}/libmediastreamer.*a
+%{_docdir}
 
 %changelog
 * Wed Sep 28 2005 Francois-Xavier 'FiX' KOWALSKI <francois-xavier.kowalski@hp.com> - 1.2.0pre3

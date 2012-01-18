@@ -4164,7 +4164,7 @@ static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t cu
 		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
 		if (linphone_proxy_config_register_enabled(cfg) ) {
 			if (!isReachable) {
-				cfg->registered=0;
+				linphone_proxy_config_set_state(cfg, LinphoneRegistrationNone,"Registration impossible (network down)");
 			}else{
 				cfg->commit=TRUE;
 			}
@@ -4365,6 +4365,8 @@ const char *linphone_reason_to_string(LinphoneReason err){
 			return "Bad credentials";
 		case LinphoneReasonDeclined:
 			return "Call declined";
+		case LinphoneReasonNotFound:
+			return "User not found";
 	}
 	return "unknown error";
 }

@@ -255,7 +255,6 @@ struct _LinphoneProxyConfig
 	SalOp *publish_op;
 	bool_t commit;
 	bool_t reg_sendregister;
-	bool_t registered;
 	bool_t publish;
 	bool_t dial_escape_plus;
 	void* user_data;

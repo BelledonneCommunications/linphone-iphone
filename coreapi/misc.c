@@ -461,6 +461,7 @@ void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 		struct sockaddr_storage ss;
 		socklen_t ss_len;
 		ortp_socket_t sock1=-1, sock2=-1;
+		int loops=0;
 		bool_t video_enabled=linphone_core_video_enabled(lc);
 		bool_t got_audio,got_video;
 		bool_t cone_audio=FALSE,cone_video=FALSE;
@@ -479,16 +480,10 @@ void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 
 		/*create the two audio and video RTP sockets, and send STUN message to our stun server */
 		sock1=create_socket(call->audio_port);
-		if (sock1<0) return;
+		if (sock1==-1) return;
 		if (video_enabled){
 			sock2=create_socket(call->video_port);
-			if (sock2<0) return ;
-		}
-		sendStunRequest(sock1,(struct sockaddr*)&ss,ss_len,11,TRUE);
-		sendStunRequest(sock1,(struct sockaddr*)&ss,ss_len,1,FALSE);
-		if (sock2>=0){
-			sendStunRequest(sock2,(struct sockaddr*)&ss,ss_len,22,TRUE);
-			sendStunRequest(sock2,(struct sockaddr*)&ss,ss_len,2,FALSE);
+			if (sock2==-1) return ;
 		}
 		got_audio=FALSE;
 		got_video=FALSE;
@@ -496,6 +491,15 @@ void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 		do{
 			double elapsed;
 			int id;
+			if (loops%20==0){
+				ms_message("Sending stun requests...");
+				sendStunRequest(sock1,(struct sockaddr*)&ss,ss_len,11,TRUE);
+				sendStunRequest(sock1,(struct sockaddr*)&ss,ss_len,1,FALSE);
+				if (sock2!=-1){
+					sendStunRequest(sock2,(struct sockaddr*)&ss,ss_len,22,TRUE);
+					sendStunRequest(sock2,(struct sockaddr*)&ss,ss_len,2,FALSE);
+				}
+			}
 #ifdef WIN32
 			Sleep(10);
 #else
@@ -522,29 +526,25 @@ void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 			}
 			gettimeofday(&cur,NULL);
 			elapsed=((cur.tv_sec-init.tv_sec)*1000.0) +  ((cur.tv_usec-init.tv_usec)/1000.0);
-			if (elapsed>2000)  break;
-		}while(!(got_audio && (got_video||sock2<0)  ) );
+			if (elapsed>2000)  {
+				ms_message("Stun responses timeout, going ahead.");
+				break;
+			}
+			loops++;
+		}while(!(got_audio && (got_video||sock2==-1)  ) );
 		if (!got_audio){
 			ms_error("No stun server response for audio port.");
 		}else{
 			if (!cone_audio) {
-				ms_warning("NAT is symmetric for audio port");
-				/*
-				ac->addr[0]='\0';
-				ac->port=0;
-				*/
+				ms_message("NAT is symmetric for audio port");
 			}
 		}
-		if (sock2>=0){
+		if (sock2!=-1){
 			if (!got_video){
 				ms_error("No stun server response for video port.");
 			}else{
 				if (!cone_video) {
-					ms_warning("NAT is symmetric for video port.");
-					/*
-					vc->addr[0]='\0';
-					vc->port=0;
-					*/
+					ms_message("NAT is symmetric for video port.");
 				}
 			}
 		}
@@ -553,7 +553,7 @@ void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 			strcpy(call->localdesc->addr,ac->addr);
 		}
 		close_socket(sock1);
-		if (sock2>=0) close_socket(sock2);
+		if (sock2!=-1) close_socket(sock2);
 	}
 }
 
