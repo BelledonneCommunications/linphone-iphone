@@ -361,6 +361,7 @@ int callCount(LinphoneCore* lc) {
 	UIDevice *device = [UIDevice currentDevice];
     device.proximityMonitoringEnabled = NO;
     if (modalVC != nil) {
+        mVideoIsPending=FALSE;
         // clear previous native window ids
         if (modalVC == mVideoViewController) {
             mVideoShown=FALSE;
@@ -377,9 +378,12 @@ int callCount(LinphoneCore* lc) {
 }
 -(void) displayVideoCall:(LinphoneCall*) call FromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName { 
 	if (mIncallViewIsReady) {
-	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
-	mVideoShown=TRUE;
-	[self presentModalViewController:mVideoViewController animated:true];
+        [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
+        mVideoShown=TRUE;
+        if (self.modalViewController != mVideoViewController)
+            [self presentModalViewController:mVideoViewController animated:true];
+        else
+            ms_message("Do not present again videoViewController");
 	} else {
 		//postepone presentation
 		mVideoIsPending=TRUE;
