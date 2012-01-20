@@ -349,13 +349,17 @@ static void linphone_iphone_call_state(LinphoneCore *lc, LinphoneCall* call, Lin
 		if (lErrorMessage != nil 
 			&& linphone_proxy_config_get_error(cfg) != LinphoneReasonNoResponse) { //do not report network connection issue on registration
 			//default behavior if no registration delegates
-			
-			UIAlertView* error = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"Registration failure",nil)
+			UIApplicationState s = [UIApplication sharedApplication].applicationState;
+            
+            // do not stack error message when going to backgroud
+            if (s != UIApplicationStateBackground) {
+                UIAlertView* error = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"Registration failure",nil)
 															message:lErrorMessage
 														   delegate:nil 
 												  cancelButtonTitle:NSLocalizedString(@"Continue",nil) 
 												  otherButtonTitles:nil ,nil];
-			[error show];
+                [error show];
+            }
 		}
 		
 	}
@@ -469,6 +473,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
             int i=0;
             while (linphone_proxy_config_get_state(proxyCfg)!=LinphoneRegistrationNone &&
                    linphone_proxy_config_get_state(proxyCfg)!=LinphoneRegistrationCleared && 
+                    linphone_proxy_config_get_state(proxyCfg)!=LinphoneRegistrationFailed && 
                    i++<40 ) {
                 linphone_core_iterate(theLinphoneCore);
                 usleep(100000);
