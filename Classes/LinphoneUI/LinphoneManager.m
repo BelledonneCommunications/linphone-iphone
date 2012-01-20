@@ -457,6 +457,25 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
     
     NSBundle* myBundle = [NSBundle mainBundle];
     
+    /* unregister before modifying any settings */
+    {
+        LinphoneProxyConfig* proxyCfg;
+        linphone_core_get_default_proxy(theLinphoneCore, &proxyCfg);
+        
+        if (proxyCfg) {
+            // this will force unregister WITHOUT destorying the proxyCfg object
+            linphone_proxy_config_edit(proxyCfg);
+            
+            int i=0;
+            while (linphone_proxy_config_get_state(proxyCfg)!=LinphoneRegistrationNone &&
+                   linphone_proxy_config_get_state(proxyCfg)!=LinphoneRegistrationCleared && 
+                   i++<40 ) {
+                linphone_core_iterate(theLinphoneCore);
+                usleep(100000);
+            }
+        }
+    }
+    
     const char* lRootCa = [[myBundle pathForResource:@"rootca"ofType:@"pem"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
     linphone_core_set_root_ca(theLinphoneCore, lRootCa);
     
@@ -511,8 +530,8 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	
 	//clear auth info list
 	linphone_core_clear_all_auth_info(theLinphoneCore);
-	//clear existing proxy config
-	linphone_core_clear_proxy_config(theLinphoneCore);
+    //clear existing proxy config
+    linphone_core_clear_proxy_config(theLinphoneCore);
 	if (username && [username length] >0 && domain && [domain length]>0) {
 		const char* identity = [[NSString stringWithFormat:@"sip:%@@%@",username,domain] cStringUsingEncoding:[NSString defaultCStringEncoding]];
 		const char* password = [accountPassword cStringUsingEncoding:[NSString defaultCStringEncoding]];
