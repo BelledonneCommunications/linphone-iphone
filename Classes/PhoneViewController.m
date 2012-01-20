@@ -268,7 +268,14 @@
 													  otherButtonTitles:nil];
         
 		mIncomingCallActionSheet.actionSheetStyle = UIActionSheetStyleDefault;
-		[mIncomingCallActionSheet showInView:self.parentViewController.view];
+        if ([LinphoneManager runningOnIpad]) {
+            if (self.modalViewController != nil)
+                [mIncomingCallActionSheet showInView:[self.modalViewController view]];
+            else
+                [mIncomingCallActionSheet showInView:self.parentViewController.view];
+        } else {
+            [mIncomingCallActionSheet showInView:self.parentViewController.view];
+        }
 		[mIncomingCallActionSheet release];
 	}
 	
