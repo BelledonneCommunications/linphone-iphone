@@ -52,6 +52,8 @@ typedef struct _CallContext {
 	const char*  frontCamId;
 	const char*  backCamId;
     
+    NSDictionary* currentSettings;
+    
 @public
     CallContext currentCallContextBeforeGoingBackground;
 }
@@ -73,7 +75,7 @@ typedef struct _CallContext {
 -(NSString*) getDisplayNameFromAddressBook:(NSString*) number andUpdateCallLog:(LinphoneCallLog*)log; 
 -(UIImage*) getImageFromAddressBook:(NSString*) number;
 
-
+-(BOOL) reconfigureLinphoneIfNeeded:(NSDictionary *)oldSettings;
 
 @property (nonatomic, retain) id<LinphoneUICallDelegate> callDelegate;
 @property (nonatomic, retain) id<LinphoneUIRegistrationDelegate> registrationDelegate;

@@ -81,6 +81,7 @@
 	} else {
 		[[NSUserDefaults standardUserDefaults] setObject:username.text forKey:@"username_preference"];
 		[[NSUserDefaults standardUserDefaults] setObject:passwd.text forKey:@"password_preference"];
+        [[LinphoneManager instance] reconfigureLinphoneIfNeeded:nil];
 		[self.activityIndicator setHidden:false];
 	};
 	

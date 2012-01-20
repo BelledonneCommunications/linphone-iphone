@@ -429,12 +429,24 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	}
 }
 
--(void) doLinphoneConfiguration:(NSNotification *)notification {
-	ms_message("Configuring Linphone");
+-(BOOL) reconfigureLinphoneIfNeeded:(NSDictionary *)settings {
 	if (theLinphoneCore==nil) {
 		ms_warning("cannot configure linphone beacause not initialized yet");
-		return;
+		return NO;
 	}
+    
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    NSDictionary* newSettings = [[NSUserDefaults standardUserDefaults] dictionaryRepresentation];
+    if (settings != nil) {
+        /* reconfigure only if newSettings != settings */
+        if ([newSettings isEqualToDictionary:settings]) {
+            ms_message("Same settings: no need to reconfigure linphone");
+            return NO;
+        }
+    }
+    NSLog(@"Configuring Linphone (new settings)");
+    
+    
 	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"debugenable_preference"]) {
 		//redirect all traces to the iphone log framework
 		linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
@@ -449,9 +461,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
     linphone_core_set_root_ca(theLinphoneCore, lRootCa);
     
 	NSString* transport = [[NSUserDefaults standardUserDefaults] stringForKey:@"transport_preference"];
-	
-
-	
+		
 	LCSipTransports transportValue;
 	if (transport!=nil) {
 		if (linphone_core_get_sip_transports(theLinphoneCore, &transportValue)) {
@@ -622,6 +632,11 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		isbackgroundModeEnabled=false;
 	}
 
+    [currentSettings release];
+    currentSettings = newSettings;
+    [currentSettings retain];
+    
+    return YES;
 }
 - (BOOL)isNotIphone3G
 {
@@ -779,10 +794,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		ms_error("Cannot register schedule reachability cb");
 	};
 	
-	[self doLinphoneConfiguration:nil];
-	[[NSNotificationCenter defaultCenter]	addObserver:self
-											 selector:@selector(doLinphoneConfiguration:)
-												 name:NSUserDefaultsDidChangeNotification object:nil];
+	[self reconfigureLinphoneIfNeeded:nil];
 	
 	// start scheduler
 	mIterateTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 
@@ -851,8 +863,10 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		//back from standby and background mode is disabled
 		[self	startLibLinphone];
 	} else {
-        ms_message("becomming active, make sure we are registered");
-		linphone_core_refresh_registers(theLinphoneCore);//just to make sure REGISTRATION is up to date
+        if (![self reconfigureLinphoneIfNeeded:currentSettings]) {
+            ms_message("becomming active with no config modification, make sure we are registered");
+            linphone_core_refresh_registers(theLinphoneCore);//just to make sure REGISTRATION is up to date
+        }
 		
 	}
 	/*IOS specific*/
