@@ -229,6 +229,10 @@
 										<bytes key="NSRGB">MC4xOTYwNzg0MyAwLjMwOTgwMzkzIDAuNTIxNTY4NjYAA</bytes>
 									</object>
 									<reference key="IBUINormalTitleShadowColor" ref="127676390"/>
+									<object class="NSCustomResource" key="IBUIDisabledImage">
+										<string key="NSClassName">NSImage</string>
+										<string key="NSResourceName">startcall-gray.png</string>
+									</object>
 									<reference key="IBUINormalImage" ref="811309393"/>
 									<reference key="IBUINormalBackgroundImage" ref="24209450"/>
 									<reference key="IBUIFontDescription" ref="478302615"/>
@@ -523,7 +527,6 @@
 									<string key="NSFrame">{{415, 351}, {320, 20}}</string>
 									<reference key="NSSuperview" ref="28417277"/>
 									<reference key="NSWindow"/>
-									<reference key="NSNextKeyView"/>
 									<string key="NSReuseIdentifierKey">_NS:212</string>
 									<object class="NSColor" key="IBUIBackgroundColor" id="115596650">
 										<int key="NSColorSpace">3</int>
@@ -900,6 +903,7 @@
 				<string key="19.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="20.CustomClassName">UICallButton</string>
 				<string key="20.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<real value="3" key="20.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="22.CustomClassName">UIEraseButton</string>
 				<string key="22.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="23.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -1125,6 +1129,7 @@
 			<string key="clavier-01-108px.png">{108, 60}</string>
 			<string key="clavier-01-160px.png">{160, 60}</string>
 			<string key="effacer.png">{66, 65}</string>
+			<string key="startcall-gray.png">{60, 52}</string>
 			<string key="startcall-green.png">{60, 52}</string>
 		</dictionary>
 		<string key="IBCocoaTouchPluginVersion">933</string>
