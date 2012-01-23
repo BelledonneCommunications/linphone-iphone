@@ -966,6 +966,8 @@ static void lpc_apply_video_params(){
 #ifdef HAVE_X11_XLIB_H
 		if (lpc_video_params.wid==0){  // do not manage window if embedded
 			x11_apply_video_params(&lpc_video_params,wid);
+		} else {
+		        linphone_core_show_video(linphonec, lpc_video_params.show);
 		}
 #endif
 	}
@@ -1265,6 +1267,7 @@ linphonec_parse_cmdline(int argc, char **argv)
 			if (arg_num < argc) {
 				char *tmp;
 				window_id = strtol( argv[arg_num], &tmp, 0 );
+				lpc_video_params.wid = window_id;
 			}
 		}
 		else if (old_arg_num == arg_num)

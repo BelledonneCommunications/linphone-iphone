@@ -3609,6 +3609,19 @@ void linphone_core_set_native_preview_window_id(LinphoneCore *lc, unsigned long 
 }
 
 /**
+ * Can be used to disable video showing to free XV port
+**/
+void linphone_core_show_video(LinphoneCore *lc, bool_t show){
+#ifdef VIDEO_ENABLED
+	ms_error("linphone_core_show_video %d", show);
+	LinphoneCall *call=linphone_core_get_current_call(lc);
+	if (call!=NULL && call->videostream){
+		video_stream_show_video(call->videostream,show);
+	}
+#endif
+}
+
+/**
  * Tells the core to use a separate window for local camera preview video, instead of
  * inserting local view within the remote video window.
  *
