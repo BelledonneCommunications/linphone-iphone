@@ -250,6 +250,9 @@
 		344ABDF114850AE9007420B6 /* libc++.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDEF14850AE9007420B6 /* libc++.1.dylib */; settings = {ATTRIBUTES = (Weak, ); }; };
 		344ABDF214850AE9007420B6 /* libstdc++.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDF014850AE9007420B6 /* libstdc++.6.dylib */; settings = {ATTRIBUTES = (Weak, ); }; };
 		34957F3F147D3FBF00DD7A09 /* secured.png in Resources */ = {isa = PBXBuildFile; fileRef = 34957F3E147D3FBF00DD7A09 /* secured.png */; };
+		34C7646914CD51CD008E9607 /* contact_vide.png in Resources */ = {isa = PBXBuildFile; fileRef = 34C7646814CD51CD008E9607 /* contact_vide.png */; };
+		34C7646C14CD5585008E9607 /* dialer-orange.png in Resources */ = {isa = PBXBuildFile; fileRef = 34C7646A14CD5585008E9607 /* dialer-orange.png */; };
+		34C7646D14CD5585008E9607 /* history-orange.png in Resources */ = {isa = PBXBuildFile; fileRef = 34C7646B14CD5585008E9607 /* history-orange.png */; };
 		34CA852F148F646700503C01 /* MainScreenWithVideoPreview.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34CA852E148F646700503C01 /* MainScreenWithVideoPreview.xib */; };
 		34CA8530148F646700503C01 /* MainScreenWithVideoPreview.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34CA852E148F646700503C01 /* MainScreenWithVideoPreview.xib */; };
 		34CA8535148F669900503C01 /* VideoViewController-ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34CA8534148F669900503C01 /* VideoViewController-ipad.xib */; };
@@ -626,6 +629,9 @@
 		344ABDEF14850AE9007420B6 /* libc++.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.1.dylib"; path = "usr/lib/libc++.1.dylib"; sourceTree = SDKROOT; };
 		344ABDF014850AE9007420B6 /* libstdc++.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.6.dylib"; path = "usr/lib/libstdc++.6.dylib"; sourceTree = SDKROOT; };
 		34957F3E147D3FBF00DD7A09 /* secured.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = secured.png; path = Resources/secured.png; sourceTree = "<group>"; };
+		34C7646814CD51CD008E9607 /* contact_vide.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = contact_vide.png; path = Resources/contact_vide.png; sourceTree = "<group>"; };
+		34C7646A14CD5585008E9607 /* dialer-orange.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "dialer-orange.png"; path = "submodules/linphone/pixmaps/dialer-orange.png"; sourceTree = "<group>"; };
+		34C7646B14CD5585008E9607 /* history-orange.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "history-orange.png"; path = "submodules/linphone/pixmaps/history-orange.png"; sourceTree = "<group>"; };
 		34CA852E148F646700503C01 /* MainScreenWithVideoPreview.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainScreenWithVideoPreview.xib; sourceTree = "<group>"; };
 		34CA8534148F669900503C01 /* VideoViewController-ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "VideoViewController-ipad.xib"; sourceTree = "<group>"; };
 		34CA8537148F692A00503C01 /* MainScreenWithVideoPreview.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainScreenWithVideoPreview.h; sourceTree = "<group>"; };
@@ -1175,6 +1181,9 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				34C7646A14CD5585008E9607 /* dialer-orange.png */,
+				34C7646B14CD5585008E9607 /* history-orange.png */,
+				34C7646814CD51CD008E9607 /* contact_vide.png */,
 				3418845B14C7077400EA48C7 /* status_gray.png */,
 				3418844F14C6F66E00EA48C7 /* status_green.png */,
 				3418845114C6F66F00EA48C7 /* status_orange.png */,
@@ -1364,6 +1373,9 @@
 				3418845714C6F66F00EA48C7 /* status_orange.png in Resources */,
 				3418845914C6F66F00EA48C7 /* status_red.png in Resources */,
 				3418845C14C7077400EA48C7 /* status_gray.png in Resources */,
+				34C7646914CD51CD008E9607 /* contact_vide.png in Resources */,
+				34C7646C14CD5585008E9607 /* dialer-orange.png in Resources */,
+				34C7646D14CD5585008E9607 /* history-orange.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

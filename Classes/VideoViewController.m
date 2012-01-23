@@ -209,10 +209,11 @@ NSTimer *callQualityRefresher;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    // Return YES for supported orientations
-    return  interfaceOrientation == UIInterfaceOrientationPortrait 
+    BOOL result = interfaceOrientation == UIInterfaceOrientationPortrait 
 			|| interfaceOrientation == UIInterfaceOrientationLandscapeRight 
 			|| interfaceOrientation == UIInterfaceOrientationLandscapeLeft;
+    
+    return result;
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
