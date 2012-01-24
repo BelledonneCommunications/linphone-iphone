@@ -8,8 +8,11 @@
 	<string>Linphone</string>
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
-	<key>CFBundleIconFile</key>
-	<string>icone-linphone-57.png</string>
+	<key>CFBundleIconFiles</key>
+	<array>
+		<string>icone-linphone-57.png</string>
+		<string>icone-linphone-72.png</string>
+	</array>
 	<key>CFBundleIdentifier</key>
 	<string>org.linphone.phone</string>
 	<key>CFBundleInfoDictionaryVersion</key>
