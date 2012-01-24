@@ -1966,6 +1966,16 @@ void linphone_core_start_refered_call(LinphoneCore *lc, LinphoneCall *call){
 LinphoneProxyConfig * linphone_core_lookup_known_proxy(LinphoneCore *lc, const LinphoneAddress *uri){
 	const MSList *elem;
 	LinphoneProxyConfig *found_cfg=NULL;
+	LinphoneProxyConfig *default_cfg=lc->default_proxy;
+
+	/*always prefer the default proxy if it is matching the destination uri*/
+	if (default_cfg){
+		const char *domain=linphone_proxy_config_get_domain(default_cfg);
+		if (strcmp(domain,linphone_address_get_domain(uri))==0)
+			return default_cfg;
+	}
+
+	/*otherwise iterate through the other proxy config and return the first matching*/
 	for (elem=linphone_core_get_proxy_config_list(lc);elem!=NULL;elem=elem->next){
 		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
 		const char *domain=linphone_proxy_config_get_domain(cfg);
