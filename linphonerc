@@ -44,5 +44,5 @@ display=1
 capture=1
 show_local=0
 enabled=1
-size=ios-medium
+size=qvga
 
