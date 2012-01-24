@@ -952,6 +952,9 @@ void linphone_core_use_preview_window(LinphoneCore *lc, bool_t yesno);
 int linphone_core_get_device_rotation(LinphoneCore *lc );
 void linphone_core_set_device_rotation(LinphoneCore *lc, int rotation);
 
+/* start or stop streaming video in case of embedded window */
+void linphone_core_show_video(LinphoneCore *lc, bool_t show);
+
 /*play/record support: use files instead of soundcard*/
 void linphone_core_use_files(LinphoneCore *lc, bool_t yesno);
 void linphone_core_set_play_file(LinphoneCore *lc, const char *file);

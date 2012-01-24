@@ -2007,6 +2007,8 @@ static void register_set_contact(osip_message_t *msg, const char *contact){
 static void sal_register_add_route(osip_message_t *msg, const char *proxy){
 	char tmp[256]={0};
 	snprintf(tmp,sizeof(tmp)-1,"<%s;lr>",proxy);
+	
+	osip_list_special_free(&msg->routes,(void (*)(void*))osip_route_free);
 	osip_message_set_route(msg,tmp);
 }
 

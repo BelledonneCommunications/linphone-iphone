@@ -1,4 +1,5 @@
 # List of source files containing translatable strings.
+gtk/tunnel_config.ui
 gtk/calllogs.c
 gtk/conference.c
 gtk/logging.c
