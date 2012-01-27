@@ -21,6 +21,7 @@ register_only_when_network_is_up=1
 auto_net_state_mon=0
 keepalive_period=30000
 media_encryption=zrtp
+incoming_calls_early_media=1
 
 [rtp]
 audio_rtp_port=7076
@@ -37,11 +38,11 @@ echocancellation=0
 
 [misc]
 history_max_size=30
-max_calls=3
+max_calls=1
 
 [video]
 display=1
-capture=1
+capture=0
 show_local=0
 enabled=1
 size=qvga

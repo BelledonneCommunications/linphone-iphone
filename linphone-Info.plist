@@ -16,7 +16,7 @@
 		<string>icone-linphone-72.png</string>
 	</array>
 	<key>CFBundleIdentifier</key>
-	<string>de.busch-jaeger</string>
+	<string>de.busch-jaeger.phone</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -24,13 +24,13 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>3.5.0</string>
+	<string>0.1.1</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>1.1.1</string>
+	<string>0.1.1</string>
 	<key>NSMainNibFile</key>
-	<string>PhoneMainView</string>
+	<string>BuschJaegerMainView</string>
 	<key>NSMainNibFile~ipad</key>
 	<string>MainScreenWithVideoPreview</string>
 	<key>UIApplicationExitsOnSuspend</key>

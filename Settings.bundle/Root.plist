@@ -84,46 +84,6 @@
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 		</dict>
-		<dict>
-			<key>DefaultValue</key>
-			<false/>
-			<key>Key</key>
-			<string>outbound_proxy_preference</string>
-			<key>Title</key>
-			<string>Outbound proxy</string>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-		</dict>
-		<dict>
-			<key>Title</key>
-			<string></string>
-			<key>Type</key>
-			<string>PSGroupSpecifier</string>
-		</dict>
-		<dict>
-			<key>File</key>
-			<string>audio</string>
-			<key>Title</key>
-			<string>Audio Codecs</string>
-			<key>Type</key>
-			<string>PSChildPaneSpecifier</string>
-		</dict>
-		<dict>
-			<key>File</key>
-			<string>video</string>
-			<key>Title</key>
-			<string>Video</string>
-			<key>Type</key>
-			<string>PSChildPaneSpecifier</string>
-		</dict>
-		<dict>
-			<key>File</key>
-			<string>Advanced</string>
-			<key>Title</key>
-			<string>Advanced</string>
-			<key>Type</key>
-			<string>PSChildPaneSpecifier</string>
-		</dict>
 	</array>
 	<key>StringsTable</key>
 	<string>Root</string>

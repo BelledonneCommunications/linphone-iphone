@@ -251,6 +251,21 @@
 		344ABDF214850AE9007420B6 /* libstdc++.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDF014850AE9007420B6 /* libstdc++.6.dylib */; settings = {ATTRIBUTES = (Weak, ); }; };
 		34957F3F147D3FBF00DD7A09 /* secured.png in Resources */ = {isa = PBXBuildFile; fileRef = 34957F3E147D3FBF00DD7A09 /* secured.png */; };
 		34A6ECEB14CF13CB00460C04 /* icone-linphone-72.png in Resources */ = {isa = PBXBuildFile; fileRef = 34A6ECEA14CF13CB00460C04 /* icone-linphone-72.png */; };
+		34A6ECF714D0179C00460C04 /* BuschJaegerMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A6ECF514D0179C00460C04 /* BuschJaegerMainView.m */; };
+		34A6ECF814D0179C00460C04 /* BuschJaegerMainView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34A6ECF614D0179C00460C04 /* BuschJaegerMainView.xib */; };
+		34A6ED0614D1440300460C04 /* BuschJaegerAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A6ED0514D1440300460C04 /* BuschJaegerAppDelegate.m */; };
+		34ACD08214D2DBE000EE0B0A /* 06_001_68_68_des_light-0.png in Resources */ = {isa = PBXBuildFile; fileRef = 34ACD07614D2DBE000EE0B0A /* 06_001_68_68_des_light-0.png */; };
+		34ACD08314D2DBE000EE0B0A /* 06_001_68_68_des_light-2.png in Resources */ = {isa = PBXBuildFile; fileRef = 34ACD07714D2DBE000EE0B0A /* 06_001_68_68_des_light-2.png */; };
+		34ACD08414D2DBE000EE0B0A /* 06_002_84_84_des_light_glow.png in Resources */ = {isa = PBXBuildFile; fileRef = 34ACD07814D2DBE000EE0B0A /* 06_002_84_84_des_light_glow.png */; };
+		34ACD08514D2DBE000EE0B0A /* 06_003_68_68_des_open-0.png in Resources */ = {isa = PBXBuildFile; fileRef = 34ACD07914D2DBE000EE0B0A /* 06_003_68_68_des_open-0.png */; };
+		34ACD08614D2DBE000EE0B0A /* 06_003_68_68_des_open-1.png in Resources */ = {isa = PBXBuildFile; fileRef = 34ACD07A14D2DBE000EE0B0A /* 06_003_68_68_des_open-1.png */; };
+		34ACD08714D2DBE000EE0B0A /* 06_003_68_68_des_open-2.png in Resources */ = {isa = PBXBuildFile; fileRef = 34ACD07B14D2DBE000EE0B0A /* 06_003_68_68_des_open-2.png */; };
+		34ACD08814D2DBE000EE0B0A /* 06_004_68_68_des_call-0.png in Resources */ = {isa = PBXBuildFile; fileRef = 34ACD07C14D2DBE000EE0B0A /* 06_004_68_68_des_call-0.png */; };
+		34ACD08914D2DBE000EE0B0A /* 06_004_68_68_des_call-1.png in Resources */ = {isa = PBXBuildFile; fileRef = 34ACD07D14D2DBE000EE0B0A /* 06_004_68_68_des_call-1.png */; };
+		34ACD08A14D2DBE000EE0B0A /* 06_004_68_68_des_call-2.png in Resources */ = {isa = PBXBuildFile; fileRef = 34ACD07E14D2DBE000EE0B0A /* 06_004_68_68_des_call-2.png */; };
+		34ACD08B14D2DBE000EE0B0A /* 06_005_68_68_des_mute-0.png in Resources */ = {isa = PBXBuildFile; fileRef = 34ACD07F14D2DBE000EE0B0A /* 06_005_68_68_des_mute-0.png */; };
+		34ACD08C14D2DBE000EE0B0A /* 06_005_68_68_des_mute-1.png in Resources */ = {isa = PBXBuildFile; fileRef = 34ACD08014D2DBE000EE0B0A /* 06_005_68_68_des_mute-1.png */; };
+		34ACD08D14D2DBE000EE0B0A /* 06_005_68_68_des_mute-2.png in Resources */ = {isa = PBXBuildFile; fileRef = 34ACD08114D2DBE000EE0B0A /* 06_005_68_68_des_mute-2.png */; };
 		34C7646914CD51CD008E9607 /* contact_vide.png in Resources */ = {isa = PBXBuildFile; fileRef = 34C7646814CD51CD008E9607 /* contact_vide.png */; };
 		34C7646C14CD5585008E9607 /* dialer-orange.png in Resources */ = {isa = PBXBuildFile; fileRef = 34C7646A14CD5585008E9607 /* dialer-orange.png */; };
 		34C7646D14CD5585008E9607 /* history-orange.png in Resources */ = {isa = PBXBuildFile; fileRef = 34C7646B14CD5585008E9607 /* history-orange.png */; };
@@ -630,6 +645,23 @@
 		344ABDF014850AE9007420B6 /* libstdc++.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.6.dylib"; path = "usr/lib/libstdc++.6.dylib"; sourceTree = SDKROOT; };
 		34957F3E147D3FBF00DD7A09 /* secured.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = secured.png; path = Resources/secured.png; sourceTree = "<group>"; };
 		34A6ECEA14CF13CB00460C04 /* icone-linphone-72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icone-linphone-72.png"; path = "Resources/icone-linphone-72.png"; sourceTree = "<group>"; };
+		34A6ECF414D0179C00460C04 /* BuschJaegerMainView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuschJaegerMainView.h; sourceTree = "<group>"; };
+		34A6ECF514D0179C00460C04 /* BuschJaegerMainView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BuschJaegerMainView.m; sourceTree = "<group>"; };
+		34A6ECF614D0179C00460C04 /* BuschJaegerMainView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BuschJaegerMainView.xib; sourceTree = "<group>"; };
+		34A6ED0414D1440300460C04 /* BuschJaegerAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuschJaegerAppDelegate.h; sourceTree = "<group>"; };
+		34A6ED0514D1440300460C04 /* BuschJaegerAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BuschJaegerAppDelegate.m; sourceTree = "<group>"; };
+		34ACD07614D2DBE000EE0B0A /* 06_001_68_68_des_light-0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "06_001_68_68_des_light-0.png"; path = "Resources/06_001_68_68_des_light-0.png"; sourceTree = "<group>"; };
+		34ACD07714D2DBE000EE0B0A /* 06_001_68_68_des_light-2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "06_001_68_68_des_light-2.png"; path = "Resources/06_001_68_68_des_light-2.png"; sourceTree = "<group>"; };
+		34ACD07814D2DBE000EE0B0A /* 06_002_84_84_des_light_glow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = 06_002_84_84_des_light_glow.png; path = Resources/06_002_84_84_des_light_glow.png; sourceTree = "<group>"; };
+		34ACD07914D2DBE000EE0B0A /* 06_003_68_68_des_open-0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "06_003_68_68_des_open-0.png"; path = "Resources/06_003_68_68_des_open-0.png"; sourceTree = "<group>"; };
+		34ACD07A14D2DBE000EE0B0A /* 06_003_68_68_des_open-1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "06_003_68_68_des_open-1.png"; path = "Resources/06_003_68_68_des_open-1.png"; sourceTree = "<group>"; };
+		34ACD07B14D2DBE000EE0B0A /* 06_003_68_68_des_open-2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "06_003_68_68_des_open-2.png"; path = "Resources/06_003_68_68_des_open-2.png"; sourceTree = "<group>"; };
+		34ACD07C14D2DBE000EE0B0A /* 06_004_68_68_des_call-0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "06_004_68_68_des_call-0.png"; path = "Resources/06_004_68_68_des_call-0.png"; sourceTree = "<group>"; };
+		34ACD07D14D2DBE000EE0B0A /* 06_004_68_68_des_call-1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "06_004_68_68_des_call-1.png"; path = "Resources/06_004_68_68_des_call-1.png"; sourceTree = "<group>"; };
+		34ACD07E14D2DBE000EE0B0A /* 06_004_68_68_des_call-2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "06_004_68_68_des_call-2.png"; path = "Resources/06_004_68_68_des_call-2.png"; sourceTree = "<group>"; };
+		34ACD07F14D2DBE000EE0B0A /* 06_005_68_68_des_mute-0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "06_005_68_68_des_mute-0.png"; path = "Resources/06_005_68_68_des_mute-0.png"; sourceTree = "<group>"; };
+		34ACD08014D2DBE000EE0B0A /* 06_005_68_68_des_mute-1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "06_005_68_68_des_mute-1.png"; path = "Resources/06_005_68_68_des_mute-1.png"; sourceTree = "<group>"; };
+		34ACD08114D2DBE000EE0B0A /* 06_005_68_68_des_mute-2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "06_005_68_68_des_mute-2.png"; path = "Resources/06_005_68_68_des_mute-2.png"; sourceTree = "<group>"; };
 		34C7646814CD51CD008E9607 /* contact_vide.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = contact_vide.png; path = Resources/contact_vide.png; sourceTree = "<group>"; };
 		34C7646A14CD5585008E9607 /* dialer-orange.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "dialer-orange.png"; path = "submodules/linphone/pixmaps/dialer-orange.png"; sourceTree = "<group>"; };
 		34C7646B14CD5585008E9607 /* history-orange.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "history-orange.png"; path = "submodules/linphone/pixmaps/history-orange.png"; sourceTree = "<group>"; };
@@ -741,6 +773,7 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				34A6ECF214D0176400460C04 /* BuschJaeger */,
 				2211DBBB14769C8200DEE054 /* CallDelegate.m */,
 				2214EB7012F84668002A5394 /* LinphoneUI */,
 				2218A92212FBE1340088A667 /* FirstLoginViewController.h */,
@@ -1181,6 +1214,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				34ACD07414D2DBB300EE0B0A /* BuschJaeger */,
 				34A6ECEA14CF13CB00460C04 /* icone-linphone-72.png */,
 				34C7646A14CD5585008E9607 /* dialer-orange.png */,
 				34C7646B14CD5585008E9607 /* history-orange.png */,
@@ -1240,6 +1274,37 @@
 				288765FC0DF74451002DB57D /* CoreGraphics.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		34A6ECF214D0176400460C04 /* BuschJaeger */ = {
+			isa = PBXGroup;
+			children = (
+				34A6ECF414D0179C00460C04 /* BuschJaegerMainView.h */,
+				34A6ECF514D0179C00460C04 /* BuschJaegerMainView.m */,
+				34A6ECF614D0179C00460C04 /* BuschJaegerMainView.xib */,
+				34A6ED0414D1440300460C04 /* BuschJaegerAppDelegate.h */,
+				34A6ED0514D1440300460C04 /* BuschJaegerAppDelegate.m */,
+			);
+			name = BuschJaeger;
+			sourceTree = "<group>";
+		};
+		34ACD07414D2DBB300EE0B0A /* BuschJaeger */ = {
+			isa = PBXGroup;
+			children = (
+				34ACD07614D2DBE000EE0B0A /* 06_001_68_68_des_light-0.png */,
+				34ACD07714D2DBE000EE0B0A /* 06_001_68_68_des_light-2.png */,
+				34ACD07814D2DBE000EE0B0A /* 06_002_84_84_des_light_glow.png */,
+				34ACD07914D2DBE000EE0B0A /* 06_003_68_68_des_open-0.png */,
+				34ACD07A14D2DBE000EE0B0A /* 06_003_68_68_des_open-1.png */,
+				34ACD07B14D2DBE000EE0B0A /* 06_003_68_68_des_open-2.png */,
+				34ACD07C14D2DBE000EE0B0A /* 06_004_68_68_des_call-0.png */,
+				34ACD07D14D2DBE000EE0B0A /* 06_004_68_68_des_call-1.png */,
+				34ACD07E14D2DBE000EE0B0A /* 06_004_68_68_des_call-2.png */,
+				34ACD07F14D2DBE000EE0B0A /* 06_005_68_68_des_mute-0.png */,
+				34ACD08014D2DBE000EE0B0A /* 06_005_68_68_des_mute-1.png */,
+				34ACD08114D2DBE000EE0B0A /* 06_005_68_68_des_mute-2.png */,
+			);
+			name = BuschJaeger;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1378,6 +1443,19 @@
 				34C7646C14CD5585008E9607 /* dialer-orange.png in Resources */,
 				34C7646D14CD5585008E9607 /* history-orange.png in Resources */,
 				34A6ECEB14CF13CB00460C04 /* icone-linphone-72.png in Resources */,
+				34A6ECF814D0179C00460C04 /* BuschJaegerMainView.xib in Resources */,
+				34ACD08214D2DBE000EE0B0A /* 06_001_68_68_des_light-0.png in Resources */,
+				34ACD08314D2DBE000EE0B0A /* 06_001_68_68_des_light-2.png in Resources */,
+				34ACD08414D2DBE000EE0B0A /* 06_002_84_84_des_light_glow.png in Resources */,
+				34ACD08514D2DBE000EE0B0A /* 06_003_68_68_des_open-0.png in Resources */,
+				34ACD08614D2DBE000EE0B0A /* 06_003_68_68_des_open-1.png in Resources */,
+				34ACD08714D2DBE000EE0B0A /* 06_003_68_68_des_open-2.png in Resources */,
+				34ACD08814D2DBE000EE0B0A /* 06_004_68_68_des_call-0.png in Resources */,
+				34ACD08914D2DBE000EE0B0A /* 06_004_68_68_des_call-1.png in Resources */,
+				34ACD08A14D2DBE000EE0B0A /* 06_004_68_68_des_call-2.png in Resources */,
+				34ACD08B14D2DBE000EE0B0A /* 06_005_68_68_des_mute-0.png in Resources */,
+				34ACD08C14D2DBE000EE0B0A /* 06_005_68_68_des_mute-1.png in Resources */,
+				34ACD08D14D2DBE000EE0B0A /* 06_005_68_68_des_mute-2.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1484,6 +1562,8 @@
 				344ABD77147FCB68007420B6 /* ConferenceCallDetailView.m in Sources */,
 				34CA8539148F692A00503C01 /* MainScreenWithVideoPreview.m in Sources */,
 				3418844814C6CAD300EA48C7 /* StatusSubViewController.m in Sources */,
+				34A6ECF714D0179C00460C04 /* BuschJaegerMainView.m in Sources */,
+				34A6ED0614D1440300460C04 /* BuschJaegerAppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
