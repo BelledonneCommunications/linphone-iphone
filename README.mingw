@@ -14,7 +14,6 @@ In mingw shell, run
 mingw-get install msys-zip
 mingw-get install msys-unzip
 mingw-get install msys-wget
-mingw-get install msys-libopenssl
 
 mkdir -p /opt/perl/bin
 cp /bin/perl /opt/perl/bin/.
@@ -40,13 +39,6 @@ unzip <path to linphone-deps>
 cd /share/themes
 wget http://art.gnome.org/download/themes/gtk2/1122/GTK2-Outcrop.tar.gz
 tar -xvzf GTK2-Outcrop.tar.gz
-
-#Remove the special stdint.h and inttypes.h included in linphone-deps: it is for MSVC only.
-#Mingw will use the one in /mingw/include
-rm /include/stdint.h /include/inttypes.h
-
-#Remove libgcc specific libraries, only needed for MSVC:
-rm /lib/libgcc.a /lib/libmingw32.a /lib/libmingwex.a
 
 #To get the translations working, remove from C:/MinGW/lib :
 libintl.a libintl.la libintl.dll.a
