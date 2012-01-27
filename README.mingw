@@ -73,6 +73,8 @@ WARNING: During the build, windows might slow down suddenly. Using ctl+alt+del t
  you might see a process 'LVpSRV.exe' or something like this that eats 90% of cpu.
 Kill it. Don't know what it is, but once killed, windows runs normally.
 
+#Compile and install tunnel
+cd tunnel && ./autogen.sh && ./configure --prefix=/opt/linphone && make && make install
 #run autogen.sh after a git checkout or update
 ./autogen.sh
 ./configure --prefix=/opt/linphone --enable-shared --disable-static

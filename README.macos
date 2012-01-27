@@ -31,6 +31,15 @@ When this version will be integrated into macports, only this will be necessary:
  $ port install ige-mac-integration
  $ port install hicolor-icon-theme
 
+- Compile and install the tunnel
+
+If you got the source code from git, run ./autogen.sh first
+
+Then or otherwise, do:
+
+ $ ./configure --prefix=/opt/local && make && sudo make install
+
+
 - Compile linphone
 
 If you got the source code from git, run ./autogen.sh first.
