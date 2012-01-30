@@ -1,6 +1,6 @@
 [submodule "submodules/linphone"]
 	path = submodules/linphone
-	url = gitosis@:git.linphone.org:linphone-private.git
+	url = gitosis@git.linphone.org:linphone-private.git
 [submodule "submodules/externals/osip"]
 	path = submodules/externals/osip
 	url = git://git.linphone.org/osip.git
