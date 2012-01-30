@@ -51,8 +51,8 @@ void linphone_tunnel_set_http_proxy_auth_info(LinphoneTunnel*tunnel, const char*
  * LinphoneTunnelState describes the tunnel activation states.
  */
 typedef enum _LinphoneTunnelState{
-	LinphoneTunnelDisabled, /**<The tunnel is always on */
-	LinphoneTunnelEnabled, /**<The tunnel is always off */
+	LinphoneTunnelDisabled, /**<The tunnel is always off */
+	LinphoneTunnelEnabled, /**<The tunnel is always on */
 	LinphoneTunnelAuto /**<The tunnel is active if needed */
 }LinphoneTunnelState;
 
@@ -76,6 +76,10 @@ void linphone_tunnel_set_state(LinphoneTunnel *tunnel, LinphoneTunnelState state
 **/
 LinphoneTunnelState linphone_tunnel_get_state(LinphoneTunnel *tunnel);
 
+/**
+ * Update tunnel connection after setting new server addresses.
+**/
+void linphone_tunnel_update(LinphoneTunnel *tunnel);
 
 #ifdef __cplusplus
 }

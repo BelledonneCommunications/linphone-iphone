@@ -1083,10 +1083,6 @@ void linphone_core_init_default_params(LinphoneCore*lc, LinphoneCallParams *para
  */
 bool_t linphone_core_tunnel_available(void);
 
-/**
- * Update tunnel using configuration.
- */
-void linphone_core_update_tunnel(LinphoneCore *lc);
 typedef struct LinphoneTunnel LinphoneTunnel;
 /**
 * get tunnel instance if available

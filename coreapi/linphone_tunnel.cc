@@ -135,3 +135,35 @@ LinphoneTunnelState linphone_tunnel_get_state(LinphoneTunnel *tunnel){
 		return LinphoneTunnelDisabled;
 	}
 }
+
+static void tunnel_add_servers_from_config(LinphoneTunnel *tunnel, const char* confaddress){
+	char *addresses=(char*)ms_strdup(confaddress);
+	char *str1;
+	for(str1=addresses;;str1=NULL){
+		char *port;
+		char *address=strtok(str1," "); // Not thread safe
+		if (!address) break;
+		port=strchr(address, ':');
+		if (!port) ms_fatal("Bad tunnel address %s", address);
+		*port++='\0';
+		linphone_tunnel_add_server(tunnel, address, atoi(port));
+	}
+	ms_free(addresses);
+}
+
+/**
+ * Update tunnel using configuration.
+ */
+void linphone_tunnel_update(LinphoneTunnel *tunnel){
+	bool_t enabled;
+	const char* addresses=linphone_tunnel_get_server_addresses(tunnel);
+	linphone_tunnel_clean_servers(tunnel);
+	if (addresses){
+		tunnel_add_servers_from_config(tunnel,addresses);
+	}
+	enabled=linphone_tunnel_get_state(tunnel)==LinphoneTunnelEnabled && addresses!=NULL;
+	linphone_tunnel_enable(tunnel, enabled);
+}
+
+
+

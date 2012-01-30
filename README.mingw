@@ -55,7 +55,7 @@ It is recommended that you create a directory somewhere with a path without any 
 c:\sources\
 Within msys-git bash, do
 cd /c/sources
-git clone git://git.savannah.nongnu.org/linphone.git --recursive
+git clone git://git.linphone.org/linphone.git --recursive
 
 
 Building

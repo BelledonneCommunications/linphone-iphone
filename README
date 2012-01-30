@@ -18,8 +18,6 @@ This is Linphone, a free (GPL) video softphone based on the SIP protocol.
 
 with their corresponding -dev or -devel package if you don't use source packages.
 
-Note that you need to build and install the tunnel library PRIOR to build linphone.
-
 For windows compilation see README.mingw.
 For macOS X, see README.macos
 
