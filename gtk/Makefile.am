@@ -58,7 +58,7 @@ linphone_LDADD=$(ORTP_LIBS) \
 if BUILD_WIN32
 
 linphone.res:	$(LINPHONE_ICO_RC_FILE) $(LINPHONE_ICO_FILE)
-	windres $(LINPHONE_ICO_RC_FILE) -O coff -o linphone.res
+	windres $(srcdir)/$(LINPHONE_ICO_RC_FILE) -O coff -o linphone.res
 
 linphone_LDADD+=linphone.res -lwininet
 linphone_LDFLAGS=-Wl,--export-all-symbols -mwindows

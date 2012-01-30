@@ -105,14 +105,27 @@ endif
 endif
 
 
-
-ifneq ($(BUILD_AMR),0)
-LOCAL_CFLAGS += -DHAVE_AMR
-
-LOCAL_STATIC_LIBRARIES += \
-	libmsamr \
-	libopencoreamr 
+_BUILD_AMR=0
+ifneq ($(BUILD_AMRNB), 0)
+_BUILD_AMR=1
 endif
+
+ifneq ($(BUILD_AMRWB), 0)
+_BUILD_AMR=1
+endif
+
+ifneq ($(_BUILD_AMR), 0)
+LOCAL_CFLAGS += -DHAVE_AMR
+LOCAL_STATIC_LIBRARIES += \
+        libmsamr \
+        libopencoreamr
+endif
+
+ifneq ($(BUILD_AMRWB), 0)
+LOCAL_STATIC_LIBRARIES += \
+	libvoamrwbenc
+endif
+
 
 ifeq ($(BUILD_SILK),1)
 LOCAL_CFLAGS += -DHAVE_SILK
