@@ -56,9 +56,6 @@ liblinphone_la_LIBADD= \
 		$(ORTP_LIBS) $(OPENSSL_LIBS) \
 		$(TUNNEL_LIBS)
 
-if BUILD_WIN32
-liblinphone_la_LIBADD+=$(top_builddir)/oRTP/src/libortp.la
-endif
 if BUILD_TESTS
 noinst_PROGRAMS=test_lsd test_ecc
 

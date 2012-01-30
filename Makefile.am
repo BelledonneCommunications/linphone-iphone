@@ -94,6 +94,10 @@ if BUILD_ZRTP
 WINBINDIST_FILES+=./bin/libzrtpcpp.dll ./bin/msys-1.0.dll ./bin/msys-crypto-1.0.0.dll
 endif
 
+if BUILD_TUNNEL
+WINBINDIST_FILES+=./bin/libtunnel-0.dll
+endif
+
 other-cherrypick:
 	cd $(GTK_PREFIX) && \
 	for file in $(WINBINDIST_FILES) ; do \

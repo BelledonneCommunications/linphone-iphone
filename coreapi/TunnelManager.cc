@@ -68,23 +68,9 @@ int TunnelManager::eXosipSelect(int max_fds, fd_set *s1, fd_set *s2, fd_set *s3,
 	TunnelManager* lTunnelMgr=(TunnelManager*)userdata;
 	if (tv!=0 && tv->tv_sec){
 		/*this is the select from udp.c, the one that is interesting to us*/
-		int i;
-		int udp_fd=eXosip_get_udp_socket();
-		int controlfd=-1;
+		NativeSocket udp_fd=(NativeSocket)eXosip_get_udp_socket();
+		NativeSocket controlfd=(NativeSocket)eXosip_get_control_fd();
 
-		/*
-			Find the udp fd and the control fd
-		*/
-		for(i=0;i<max_fds;++i){
-			if (FD_ISSET(i,s1) && i!=udp_fd){
-				controlfd=i;
-				break;
-			}
-		}
-		if (controlfd==-1){
-			ms_error("Could not find control fd !");
-			return -1;
-		}
 		FD_ZERO(s1);		
 		gettimeofday(&begin,NULL);
 		do{
@@ -157,7 +143,7 @@ void TunnelManager::setCallback(StateCallback cb, void *userdata) {
 
 static void sCloseRtpTransport(RtpTransport *t, void *userData){
 	TunnelSocket *s=(TunnelSocket*)userData;
-	TunnelManager::TunnelManager *manager=(TunnelManager::TunnelManager*)s->getUserPointer();
+	TunnelManager *manager=(TunnelManager*)s->getUserPointer();
 	manager->closeRtpTransport(t, s);
 }
 void TunnelManager::closeRtpTransport(RtpTransport *t, TunnelSocket *s){
@@ -166,7 +152,7 @@ void TunnelManager::closeRtpTransport(RtpTransport *t, TunnelSocket *s){
 }
 
 static RtpTransport *sCreateRtpTransport(void* userData, int port){
-	return ((TunnelManager::TunnelManager *) userData)->createRtpTransport(port);
+	return ((TunnelManager *) userData)->createRtpTransport(port);
 }
 
 RtpTransport *TunnelManager::createRtpTransport(int port){

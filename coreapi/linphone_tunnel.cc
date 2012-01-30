@@ -23,9 +23,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-
-#include "linphone_tunnel.h"
 #include "TunnelManager.hh"
+#include "linphone_tunnel.h"
 #include "linphonecore.h"
 #include "private.h"
 #include "lpconfig.h"
