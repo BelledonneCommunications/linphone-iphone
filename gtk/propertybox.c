@@ -1003,19 +1003,16 @@ void linphone_gtk_edit_tunnel_closed(GtkWidget *button){
         gtk_widget_destroy(pb);
 }
 
-
+#ifdef TUNNEL_ENABLED
 static void tunnel_get_server_host_and_port(LinphoneTunnel *tunnel, char *host, int size, int *port){
 	char *colon;
 	char *addresses;
 	char *str1;
 	char *address;
 	const char* configured_addresses;
-        
-#ifdef TUNNEL_ENABLED
+
 	configured_addresses=linphone_tunnel_get_server_addresses(tunnel);
-#else
-	configured_addresses=NULL;
-#endif
+
 	if (configured_addresses==NULL){
 		host[0]=0;
 		*port=0;
@@ -1033,10 +1030,12 @@ static void tunnel_get_server_host_and_port(LinphoneTunnel *tunnel, char *host, 
 	ms_free(addresses);
 }
 
+#endif
 
 void linphone_gtk_edit_tunnel(GtkButton *button){
-	LinphoneCore *lc=linphone_gtk_get_core();
 	GtkWidget *w=linphone_gtk_create_window("tunnel_config");
+#ifdef TUNNEL_ENABLED
+	LinphoneCore *lc=linphone_gtk_get_core();
 	LinphoneTunnel *tunnel=linphone_core_get_tunnel(lc);
 	char host[128]={'\0'};
 	int port=0;
@@ -1054,23 +1053,25 @@ void linphone_gtk_edit_tunnel(GtkButton *button){
 	}
 
 	g_object_weak_ref(G_OBJECT(w),(GWeakNotify)linphone_gtk_edit_tunnel_closed,w);
-
+#endif
 	gtk_widget_show(w);
 }
 
 void linphone_gtk_tunnel_ok(GtkButton *button){
-	// Save information to config file
-	LinphoneCore *lc=linphone_gtk_get_core();
 	GtkWidget *w=gtk_widget_get_toplevel(GTK_WIDGET(button));
+	// Save information to config file
+#ifdef TUNNEL_ENABLED
+	LinphoneCore *lc=linphone_gtk_get_core();
 	char address[128]={'\0'};
 	LinphoneTunnel *tunnel=linphone_core_get_tunnel(lc);
 
 	gint port = (gint)gtk_spin_button_get_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(w,"port")));
 	gboolean enabled=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"radio_enable")));
 	const char *host=gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(w,"host")));
-
+	
+	if (tunnel==NULL) return;
+	
 	snprintf(address, sizeof address, "%s:%i", host, port);
-#ifdef TUNNEL_ENABLED
 	linphone_tunnel_set_server_addresses(tunnel, address);
 	if (enabled){
 		linphone_tunnel_set_state(tunnel, LinphoneTunnelEnabled);
