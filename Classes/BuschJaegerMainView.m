@@ -25,6 +25,7 @@
 @synthesize imageView;
 @synthesize startCall;
 @synthesize stopCall;
+@synthesize declineCall;
 @synthesize mute;
 @synthesize lights;
 @synthesize openDoor;
@@ -42,7 +43,7 @@
     [super viewDidLoad];
     
     [openDoor initWithNumber:'1'];
-    [lights initWithNumber:'2'];
+    [lights initWithOnImage:[UIImage imageNamed:@"icon5"] offImage:[UIImage imageNamed:@"icon6"] debugName:"LIGHT_BTN"];
 }
 
 - (void)viewDidUnload
@@ -60,19 +61,24 @@
 
 - (void) viewDidAppear:(BOOL)animated {
     [[LinphoneManager instance] setRegistrationDelegate:self];
+    [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
 }
 
 - (void) displayCall:(LinphoneCall *)call InProgressFromUI:(UIViewController *)viewCtrl forUser:(NSString *)username withDisplayName:(NSString *)displayName {
     /* nothing */
-
+    [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
 }
 
 - (void) displayDialerFromUI:(UIViewController *)viewCtrl forUser:(NSString *)username withDisplayName:(NSString *)displayName {
     [LinphoneManager set:stopCall hidden:YES withName:"STOP_CALL_BTN" andReason:__FUNCTION__];
     [LinphoneManager set:startCall hidden:NO withName:"START_CALL_BTN" andReason:__FUNCTION__];
     [LinphoneManager set:videoView hidden:YES withName:"VIDEO_VIEW" andReason:__FUNCTION__];
-    [LinphoneManager set:imageView hidden:NO withName:"IMAGE_VIEW" andReason:__FUNCTION__];
+    [LinphoneManager set:declineCall hidden:YES withName:"DECLINE_BTN" andReason:__FUNCTION__];
+    [LinphoneManager set:mute hidden:NO withName:"MUTE_BTN" andReason:__FUNCTION__];
+    
+    // [LinphoneManager set:imageView hidden:NO withName:"IMAGE_VIEW" andReason:__FUNCTION__];
     [startCall setEnabled:NO];
+    [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
 }
 
 - (void) displayInCall:(LinphoneCall *)call FromUI:(UIViewController *)viewCtrl forUser:(NSString *)username withDisplayName:(NSString *)displayName {
@@ -87,7 +93,7 @@
         if (notif)
         {
             notif.repeatInterval = 0;
-            notif.alertBody = NSLocalizedString(@" Ding Dong ! Guess who it is ?",nil);
+            notif.alertBody = NSLocalizedString(@" Ding Dong ! Guess who is at the door ?",nil);
             notif.alertAction = @"See the answer";
             notif.soundName = @"oldphone-mono-30s.caf";
             NSData *callData = [NSData dataWithBytes:&call length:sizeof(call)];
@@ -100,7 +106,8 @@
     [LinphoneManager set:stopCall hidden:YES withName:"STOP_CALL_BTN" andReason:__FUNCTION__];
     [LinphoneManager set:startCall hidden:NO withName:"START_CALL_BTN" andReason:__FUNCTION__];
     [LinphoneManager set:videoView hidden:NO withName:"VIDEO_VIEW" andReason:__FUNCTION__];
-    [LinphoneManager set:imageView hidden:YES withName:"IMAGE_VIEW" andReason:__FUNCTION__];
+    [LinphoneManager set:declineCall hidden:NO withName:"DECLINE_BTN" andReason:__FUNCTION__];
+    [LinphoneManager set:mute hidden:YES withName:"MUTE_BTN" andReason:__FUNCTION__];
     
     linphone_call_enable_camera(call, FALSE);
     
@@ -111,7 +118,8 @@
     [LinphoneManager set:stopCall hidden:NO withName:"STOP_CALL_BTN" andReason:__FUNCTION__];
     [LinphoneManager set:startCall hidden:YES withName:"START_CALL_BTN" andReason:__FUNCTION__];
     [LinphoneManager set:videoView hidden:NO withName:"VIDEO_VIEW" andReason:__FUNCTION__];
-    [LinphoneManager set:imageView hidden:YES withName:"IMAGE_VIEW" andReason:__FUNCTION__];
+    [LinphoneManager set:declineCall hidden:YES withName:"DECLINE_BTN" andReason:__FUNCTION__];
+    [LinphoneManager set:mute hidden:NO withName:"MUTE_BTN" andReason:__FUNCTION__];
 }
 
 - (void) displayStatus:(NSString *)message {

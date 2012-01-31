@@ -23,6 +23,7 @@
 #import "UILinphone.h"
 #import "CallDelegate.h"
 #import "LinphoneManager.h"
+#import "UILightButton.h"
 
 @interface BuschJaegerMainView : UIViewController<LinphoneUICallDelegate, UIActionSheetCustomDelegate, LinphoneUIRegistrationDelegate> {
 @private
@@ -30,8 +31,9 @@
     UIImageView* imageView;
     UIButton* startCall;
     UIHangUpButton* stopCall;
+    UIHangUpButton* declineCall;
     UIToggleButton* mute;
-    UIDigitButton* lights;
+    UILightButton* lights;
     UIDigitButton* openDoor;
 }
 
@@ -39,8 +41,9 @@
 @property (nonatomic, retain) IBOutlet UIImageView* imageView;
 @property (nonatomic, retain) IBOutlet UIButton* startCall;
 @property (nonatomic, retain) IBOutlet UIHangUpButton* stopCall;
+@property (nonatomic, retain) IBOutlet UIHangUpButton* declineCall;
 @property (nonatomic, retain) IBOutlet UIToggleButton* mute;
-@property (nonatomic, retain) IBOutlet UIDigitButton* lights;
+@property (nonatomic, retain) IBOutlet UILightButton* lights;
 @property (nonatomic, retain) IBOutlet UIDigitButton* openDoor;
 
 - (IBAction)acceptCall:(id)sender;

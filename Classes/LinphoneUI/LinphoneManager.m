@@ -684,6 +684,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	}
 }
 -(void) destroyLibLinphone {
+    NSLog(@"destroyLibLinphone");
 	[mIterateTimer invalidate]; 
 	AVAudioSession *audioSession = [AVAudioSession sharedInstance];
 	[audioSession setDelegate:nil];

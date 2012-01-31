@@ -28,18 +28,7 @@
 
 
 -(void) touchDown:(id) sender {
-	if (mAddress && (!sendDtmfDuringCall || !linphone_core_in_call([LinphoneManager getLc]))) {
-		NSString* newAddress = [NSString stringWithFormat:@"%@%c",mAddress.text,mDigit];
-		[mAddress setText:newAddress];	
-		linphone_core_play_dtmf([LinphoneManager getLc], mDigit, -1);
-		if (mDigit == '0') {
-			//start timer for +
-			[self performSelector:@selector(doKeyZeroLongPress) withObject:nil afterDelay:0.5];
-		}
-	} else {
-		linphone_core_send_dtmf([LinphoneManager getLc],mDigit);
-		linphone_core_play_dtmf([LinphoneManager getLc], mDigit, 100);
-	}
+    linphone_core_send_dtmf([LinphoneManager getLc],mDigit);
 }
 
 -(void) touchUp:(id) sender {

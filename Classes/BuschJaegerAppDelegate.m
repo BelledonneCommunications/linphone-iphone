@@ -55,6 +55,8 @@
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions{
+    [[UIApplication sharedApplication] setStatusBarHidden:YES];
+    
     [self loadDefaultSettings];
     
 	[window addSubview:buschJaegerMainView.view];
