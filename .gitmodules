@@ -1,6 +1,6 @@
 [submodule "submodules/linphone"]
 	path = submodules/linphone
-	url = gitosis@git.linphone.org:linphone-private.git
+	url = git://git.linphone.org/linphone.git
 [submodule "submodules/externals/osip"]
 	path = submodules/externals/osip
 	url = git://git.linphone.org/osip.git
@@ -46,3 +46,6 @@
 [submodule "submodules/externals/srtp"]
 	path = submodules/externals/srtp
 	url = git://git.linphone.org/srtp.git
+[submodule "submodules/tunnel"]
+	path = submodules/tunnel
+	url = gitosis@git.linphone.org:tunnel

@@ -1,5 +1,5 @@
-TUNNEL_SRC_DIR?=$(BUILDER_SRC_DIR)/linphone/tunnel
-TUNNEL_BUILD_DIR?=$(BUILDER_BUILD_DIR)/linphone/tunnel
+TUNNEL_SRC_DIR?=$(BUILDER_SRC_DIR)/tunnel
+TUNNEL_BUILD_DIR?=$(BUILDER_BUILD_DIR)/tunnel
 
 #############################TUNNEL############################
 $(TUNNEL_SRC_DIR)/configure:
