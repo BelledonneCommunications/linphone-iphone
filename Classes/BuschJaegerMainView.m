@@ -93,7 +93,7 @@
         if (notif)
         {
             notif.repeatInterval = 0;
-            notif.alertBody = NSLocalizedString(@" Ding Dong ! Guess who is at the door ?",nil);
+            notif.alertBody = NSLocalizedString(@" Ding Dong ! Guess who's at the door ?",nil);
             notif.alertAction = @"See the answer";
             notif.soundName = @"oldphone-mono-30s.caf";
             NSData *callData = [NSData dataWithBytes:&call length:sizeof(call)];
