@@ -18,6 +18,7 @@
  */    
 
 #import "BuschJaegerMainView.h"
+#include "linphonecore.h"
 
 @implementation BuschJaegerMainView
 
@@ -77,7 +78,6 @@
     [LinphoneManager set:mute hidden:NO withName:"MUTE_BTN" andReason:__FUNCTION__];
     
     // [LinphoneManager set:imageView hidden:NO withName:"IMAGE_VIEW" andReason:__FUNCTION__];
-    [startCall setEnabled:NO];
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
 }
 
@@ -93,7 +93,7 @@
         if (notif)
         {
             notif.repeatInterval = 0;
-            notif.alertBody = NSLocalizedString(@" Ding Dong ! Guess who's at the door ?",nil);
+            notif.alertBody = NSLocalizedString(@" Ding Dong !",nil);
             notif.alertAction = @"See the answer";
             notif.soundName = @"oldphone-mono-30s.caf";
             NSData *callData = [NSData dataWithBytes:&call length:sizeof(call)];
@@ -110,8 +110,6 @@
     [LinphoneManager set:mute hidden:YES withName:"MUTE_BTN" andReason:__FUNCTION__];
     
     linphone_call_enable_camera(call, FALSE);
-    
-    [startCall setEnabled:YES];
 }
 
 - (void) displayVideoCall:(LinphoneCall *)call FromUI:(UIViewController *)viewCtrl forUser:(NSString *)username withDisplayName:(NSString *)displayName {
@@ -153,10 +151,24 @@
         LinphoneCall* c = (LinphoneCall*) calls->data;
         if (linphone_call_get_state(c) == LinphoneCallIncoming || linphone_call_get_state(c) == LinphoneCallIncomingEarlyMedia) {
             linphone_core_accept_call([LinphoneManager getLc], c);
+            return;
         }
         calls = calls->next;
     }
     
+    // no pending call, call adapter
+    NSString* s = [NSString stringWithFormat:@"sip:100000001@%@", [[NSUserDefaults standardUserDefaults] stringForKey:@"adapter_ip_preference"]];
+    const char* adapter = [s cStringUsingEncoding:[NSString defaultCStringEncoding]];
+    ms_message("Calling ADAPTER '%s'", adapter);
+    LinphoneCallParams* lcallParams = linphone_core_create_default_call_parameters([LinphoneManager getLc]);
+    linphone_call_params_enable_video(lcallParams, true);
+    LinphoneCall* lc = linphone_core_invite_with_params([LinphoneManager getLc], adapter,lcallParams);
+    if (!lc) {
+        ms_error("Failed to start a new call");
+        return;
+    }
+    linphone_call_enable_camera(lc, false);  
+    linphone_call_params_destroy(lcallParams);
 }
 
 @end

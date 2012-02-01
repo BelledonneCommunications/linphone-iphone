@@ -86,7 +86,6 @@
 							</object>
 							<bool key="IBUIOpaque">NO</bool>
 							<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-							<bool key="IBUIEnabled">NO</bool>
 							<int key="IBUIContentHorizontalAlignment">0</int>
 							<int key="IBUIContentVerticalAlignment">0</int>
 							<object class="NSColor" key="IBUIHighlightedTitleColor" id="684165454">
@@ -1003,7 +1002,7 @@
 			<string key="icon2.png">{155, 96}</string>
 			<string key="icon3.png">{155, 96}</string>
 			<string key="icon4.png">{155, 96}</string>
-			<string key="icon5.png">{16, 16}</string>
+			<string key="icon5.png">{153, 96}</string>
 			<string key="icon6.png">{153, 96}</string>
 			<string key="icon7.png">{153, 96}</string>
 		</dictionary>
