@@ -417,6 +417,9 @@ typedef struct _LinphoneAccountCreator{
 	char *username;
 	char *password;
 	char *domain;
+	char *route;
+	char *email;
+	int suscribe;
 	bool_t succeeded;
 }LinphoneAccountCreator;
 
@@ -424,9 +427,13 @@ LinphoneAccountCreator *linphone_account_creator_new(struct _LinphoneCore *core,
 void linphone_account_creator_set_username(LinphoneAccountCreator *obj, const char *username);
 void linphone_account_creator_set_password(LinphoneAccountCreator *obj, const char *password);
 void linphone_account_creator_set_domain(LinphoneAccountCreator *obj, const char *domain);
+void linphone_account_creator_set_route(LinphoneAccountCreator *obj, const char *route);
+void linphone_account_creator_set_email(LinphoneAccountCreator *obj, const char *email);
+void linphone_account_creator_set_suscribe(LinphoneAccountCreator *obj, int suscribre);
 const char * linphone_account_creator_get_username(LinphoneAccountCreator *obj);
 const char * linphone_account_creator_get_domain(LinphoneAccountCreator *obj);
 int linphone_account_creator_test_existence(LinphoneAccountCreator *obj);
+int linphone_account_creator_test_validation(LinphoneAccountCreator *obj);
 LinphoneProxyConfig * linphone_account_creator_validate(LinphoneAccountCreator *obj);
 void linphone_account_creator_destroy(LinphoneAccountCreator *obj);
 

@@ -145,7 +145,7 @@ AC_ARG_ENABLE(gtk_ui,
       esac],[gtk_ui=true])
 
 if test "$gtk_ui" = "true" ; then
-	PKG_CHECK_MODULES(LIBGTK, gtk+-2.0 >= 2.4.0 gthread-2.0)
+	PKG_CHECK_MODULES(LIBGTK, gtk+-2.0 >= 2.22.0 gthread-2.0)
 	if test "$enable_x11" = "false" ; then
 		PKG_CHECK_MODULES(LIBGTKMAC,[ige-mac-integration >= 0.9.7 ])
 		AC_DEFINE([HAVE_GTK_OSX],[1],[Defined when gtk osx is used])
@@ -411,6 +411,11 @@ AC_MSG_RESULT($has_sighandler_t)
 if test "$has_sighandler_t" = "yes" ; then
     AC_DEFINE( HAVE_SIGHANDLER_T, 1, [Define if sighandler_t available] )
 fi
+
+dnl check libsoup (needed for wizard)
+PKG_CHECK_MODULES(LIBSOUP, [libsoup-2.4 >= 2.26])
+AC_SUBST(LIBSOUP_CFLAGS)
+AC_SUBST(LIBSOUP_LIBS)
 
 ##################################################
 # Stricter build options (after external packages)

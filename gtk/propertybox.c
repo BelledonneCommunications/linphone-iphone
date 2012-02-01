@@ -119,12 +119,12 @@ void linphone_gtk_update_my_port(GtkWidget *w){
 	}
 	else if (strcmp(gtk_combo_box_get_active_text(GTK_COMBO_BOX(linphone_gtk_get_widget(pb, "proto_combo"))), "SIP (UDP)") == 0) {
 		tr.udp_port = (gint)gtk_spin_button_get_value(GTK_SPIN_BUTTON(w));
-        	tr.tcp_port = 0;
+        tr.tcp_port = 0;
 		tr.tls_port = 0;
 	}
 	else if (strcmp(gtk_combo_box_get_active_text(GTK_COMBO_BOX(linphone_gtk_get_widget(pb, "proto_combo"))), "SIP (TLS)") == 0){
 		tr.udp_port = 0;
-        	tr.tcp_port = 0;
+        tr.tcp_port = 0;
 		tr.tls_port = (gint)gtk_spin_button_get_value(GTK_SPIN_BUTTON(w));
 	}
 

@@ -50,6 +50,7 @@ const char *this_program_ident_string="linphone_ident_string=" LINPHONE_VERSION;
 
 static LinphoneCore *the_core=NULL;
 static GtkWidget *the_ui=NULL;
+GtkWidget *the_wizard=NULL;
 
 static void linphone_gtk_registration_state_changed(LinphoneCore *lc, LinphoneProxyConfig *cfg, LinphoneRegistrationState rs, const char *msg);
 static void linphone_gtk_notify_recv(LinphoneCore *lc, LinphoneFriend * fid);
@@ -1439,8 +1440,9 @@ static void linphone_gtk_configure_main_window(){
 			g_object_unref(G_OBJECT(pbuf));
 		}
 	}
-	if (linphone_gtk_can_manage_accounts())
+	if (linphone_gtk_can_manage_accounts()) {
 		gtk_widget_show(linphone_gtk_get_widget(w,"assistant_item"));
+	}
 	if (update_check_menu){
 		gtk_widget_show(linphone_gtk_get_widget(w,"versioncheck_item"));
 	}
@@ -1581,6 +1583,13 @@ static void linphone_gtk_check_soundcards(){
 		linphone_gtk_display_something(GTK_MESSAGE_WARNING,
 			_("No sound cards have been detected on this computer.\n"
 				"You won't be able to send or receive audio calls."));
+	}
+}
+
+// Display the account wizard
+void linphone_gtk_display_wizard() {
+	if (the_wizard == NULL || !gtk_widget_get_visible(the_wizard)) { // Only one instance of the wizard at the same time
+		the_wizard = linphone_gtk_create_assistant();
 	}
 }
 
@@ -1727,6 +1736,12 @@ int main(int argc, char *argv[]){
 	gtk_timeout_add(30,(GtkFunction)linphone_gtk_iterate,(gpointer)linphone_gtk_get_core());
 	gtk_timeout_add(30,(GtkFunction)linphone_gtk_check_logs,(gpointer)NULL);
 	linphone_gtk_init_main_window();
+
+	// Veryfing if at least one sip account is configured. If not, show wizard
+	if (linphone_core_get_proxy_config_list(linphone_gtk_get_core()) == NULL) {
+		linphone_gtk_display_wizard();
+	}
+
 #ifndef HAVE_GTK_OSX
 	linphone_gtk_init_status_icon();
 #endif

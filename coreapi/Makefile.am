@@ -38,6 +38,7 @@ liblinphone_la_SOURCES=\
 	linphonecall.c \
 	sipsetup.c sipsetup.h \
 	siplogin.c \
+	sipwizard.c \
 	lsd.c linphonecore_utils.h \
 	ec-calibrator.c \
 	conference.c 
@@ -54,7 +55,8 @@ liblinphone_la_LIBADD= \
 		$(EXOSIP_LIBS) \
 		$(MEDIASTREAMER_LIBS) \
 		$(ORTP_LIBS) $(OPENSSL_LIBS) \
-		$(TUNNEL_LIBS)
+		$(TUNNEL_LIBS) \
+		$(LIBSOUP_LIBS)
 
 if BUILD_TESTS
 noinst_PROGRAMS=test_lsd test_ecc
@@ -74,11 +76,10 @@ AM_CFLAGS=$(STRICT_OPTIONS)  -DIN_LINPHONE \
 	$(MEDIASTREAMER_CFLAGS) \
 	$(OSIP_CFLAGS) \
 	$(EXOSIP_CFLAGS) \
+	$(LIBSOUP_CFLAGS) \
 	-DENABLE_TRACE 	\
 	-DLOG_DOMAIN=\"LinphoneCore\" \
 	$(IPV6_CFLAGS) \
 	-DORTP_INET6 \
 	$(VIDEO_CFLAGS) \
 	$(TUNNEL_CFLAGS)
-
-AM_CXXFLAGS=$(AM_CFLAGS)
