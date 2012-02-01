@@ -30,22 +30,27 @@
     UIView* videoView;
     UIImageView* imageView;
     UIButton* startCall;
-    UIHangUpButton* stopCall;
-    UIHangUpButton* declineCall;
+    UIButton* takeCall;
+    UIHangUpButton* decline;
+    UIHangUpButton* endOrRejectCall;
     UIToggleButton* mute;
-    UILightButton* lights;
+    UIDigitButton* lights;
     UIDigitButton* openDoor;
 }
 
 @property (nonatomic, retain) IBOutlet UIView* videoView;
 @property (nonatomic, retain) IBOutlet UIImageView* imageView;
 @property (nonatomic, retain) IBOutlet UIButton* startCall;
-@property (nonatomic, retain) IBOutlet UIHangUpButton* stopCall;
-@property (nonatomic, retain) IBOutlet UIHangUpButton* declineCall;
+@property (nonatomic, retain) IBOutlet UIButton* takeCall;
+@property (nonatomic, retain) IBOutlet UIHangUpButton* decline;
+@property (nonatomic, retain) IBOutlet UIHangUpButton* endOrRejectCall;
 @property (nonatomic, retain) IBOutlet UIToggleButton* mute;
-@property (nonatomic, retain) IBOutlet UILightButton* lights;
+@property (nonatomic, retain) IBOutlet UIDigitButton* lights;
 @property (nonatomic, retain) IBOutlet UIDigitButton* openDoor;
+@property (nonatomic, retain) IBOutlet UIView* dialerControls;
+@property (nonatomic, retain) IBOutlet UIView* incallControls;
 
-- (IBAction)acceptCall:(id)sender;
+- (IBAction)takeCall:(id)sender;
+- (IBAction)startCall:(id)sender;
 
 @end

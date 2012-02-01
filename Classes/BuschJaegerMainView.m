@@ -19,14 +19,16 @@
 
 #import "BuschJaegerMainView.h"
 #include "linphonecore.h"
+#import <QuartzCore/QuartzCore.h>
 
 @implementation BuschJaegerMainView
 
 @synthesize videoView;
 @synthesize imageView;
 @synthesize startCall;
-@synthesize stopCall;
-@synthesize declineCall;
+@synthesize takeCall;
+@synthesize decline;
+@synthesize endOrRejectCall;
 @synthesize mute;
 @synthesize lights;
 @synthesize openDoor;
@@ -39,12 +41,43 @@
 
 #pragma mark - View lifecycle
 
+-(void) createGradientForButton:(UIButton*) button withTopColor:(UIColor*)topColor bottomColor:(UIColor*)bottomColor {
+    CAGradientLayer* gradient = [CAGradientLayer layer];
+    gradient.frame = button.bounds;
+    gradient.colors = [NSArray arrayWithObjects:topColor.CGColor, bottomColor.CGColor, nil];
+    [button.layer insertSublayer:gradient below:button.imageView.layer];   
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
     [openDoor initWithNumber:'1'];
-    [lights initWithOnImage:[UIImage imageNamed:@"icon5"] offImage:[UIImage imageNamed:@"icon6"] debugName:"LIGHT_BTN"];
+    [lights initWithNumber:'2'];
+    
+    /* init gradients */
+    {
+        UIColor* col1 = [UIColor colorWithRed:32.0/255 green:45.0/255 blue:62.0/255 alpha:1.0];
+        UIColor* col2 = [UIColor colorWithRed:18.0/255 green:26.0/255 blue:41.0/255 alpha:1.0];
+    
+        [self createGradientForButton:startCall withTopColor:col1 bottomColor:col2];
+        [self createGradientForButton:openDoor withTopColor:col1 bottomColor:col2];
+        [self createGradientForButton:lights withTopColor:col1 bottomColor:col2];
+        [self createGradientForButton:mute withTopColor:col1 bottomColor:col2];
+    }
+    {
+        UIColor* col1 = [UIColor colorWithRed:153.0/255 green:48.0/255 blue:48.0/255 alpha:1.0];
+        UIColor* col2 = [UIColor colorWithRed:66.0/255 green:15.0/255 blue:15.0/255 alpha:1.0];
+        
+        [self createGradientForButton:endOrRejectCall withTopColor:col1 bottomColor:col2];
+        [self createGradientForButton:decline withTopColor:col1 bottomColor:col2];
+    }
+    {
+        UIColor* col1 = [UIColor colorWithRed:91.0/255 green:161.0/255 blue:89.0/255 alpha:1.0];
+        UIColor* col2 = [UIColor colorWithRed:25.0/255 green:54.0/255 blue:24.0/255 alpha:1.0];
+        
+        [self createGradientForButton:takeCall withTopColor:col1 bottomColor:col2];
+    }
 }
 
 - (void)viewDidUnload
@@ -63,6 +96,12 @@
 - (void) viewDidAppear:(BOOL)animated {
     [[LinphoneManager instance] setRegistrationDelegate:self];
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
+    
+    [LinphoneManager set:startCall hidden:NO withName:"START_CALL_BTN" andReason:__FUNCTION__];
+    [LinphoneManager set:takeCall hidden:YES withName:"START_CALL_BTN" andReason:__FUNCTION__];
+    [LinphoneManager set:mute hidden:NO withName:"MUTE_BTN" andReason:__FUNCTION__];
+    [LinphoneManager set:decline hidden:YES withName:"DECLINE_BTN" andReason:__FUNCTION__];
+    [LinphoneManager set:endOrRejectCall hidden:YES withName:"END_BTN" andReason:__FUNCTION__];
 }
 
 - (void) displayCall:(LinphoneCall *)call InProgressFromUI:(UIViewController *)viewCtrl forUser:(NSString *)username withDisplayName:(NSString *)displayName {
@@ -71,21 +110,30 @@
 }
 
 - (void) displayDialerFromUI:(UIViewController *)viewCtrl forUser:(NSString *)username withDisplayName:(NSString *)displayName {
-    [LinphoneManager set:stopCall hidden:YES withName:"STOP_CALL_BTN" andReason:__FUNCTION__];
     [LinphoneManager set:startCall hidden:NO withName:"START_CALL_BTN" andReason:__FUNCTION__];
-    [LinphoneManager set:videoView hidden:YES withName:"VIDEO_VIEW" andReason:__FUNCTION__];
-    [LinphoneManager set:declineCall hidden:YES withName:"DECLINE_BTN" andReason:__FUNCTION__];
+    [LinphoneManager set:takeCall hidden:YES withName:"START_CALL_BTN" andReason:__FUNCTION__];
     [LinphoneManager set:mute hidden:NO withName:"MUTE_BTN" andReason:__FUNCTION__];
-    
-    // [LinphoneManager set:imageView hidden:NO withName:"IMAGE_VIEW" andReason:__FUNCTION__];
+    [LinphoneManager set:decline hidden:YES withName:"DECLINE_BTN" andReason:__FUNCTION__];
+    [LinphoneManager set:endOrRejectCall hidden:YES withName:"END_BTN" andReason:__FUNCTION__];
+
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
 }
 
 - (void) displayInCall:(LinphoneCall *)call FromUI:(UIViewController *)viewCtrl forUser:(NSString *)username withDisplayName:(NSString *)displayName {
-    
+    [LinphoneManager set:startCall hidden:YES withName:"START_CALL_BTN" andReason:__FUNCTION__];
+    [LinphoneManager set:takeCall hidden:YES withName:"START_CALL_BTN" andReason:__FUNCTION__];
+    [LinphoneManager set:mute hidden:NO withName:"MUTE_BTN" andReason:__FUNCTION__];
+    [LinphoneManager set:decline hidden:YES withName:"DECLINE_BTN" andReason:__FUNCTION__];
+    [LinphoneManager set:endOrRejectCall hidden:NO withName:"END_BTN" andReason:__FUNCTION__];
 }
 
 - (void) displayIncomingCall:(LinphoneCall *)call NotificationFromUI:(UIViewController *)viewCtrl forUser:(NSString *)username withDisplayName:(NSString *)displayName {
+    [LinphoneManager set:startCall hidden:YES withName:"START_CALL_BTN" andReason:__FUNCTION__];
+    [LinphoneManager set:takeCall hidden:NO withName:"START_CALL_BTN" andReason:__FUNCTION__];
+    [LinphoneManager set:mute hidden:YES withName:"MUTE_BTN" andReason:__FUNCTION__];
+    [LinphoneManager set:decline hidden:NO withName:"DECLINE_BTN" andReason:__FUNCTION__];
+    [LinphoneManager set:endOrRejectCall hidden:YES withName:"END_BTN" andReason:__FUNCTION__];
+    
     if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)] 
         && [UIApplication sharedApplication].applicationState !=  UIApplicationStateActive) {
         // Create a new notification
@@ -102,22 +150,16 @@
             [[UIApplication sharedApplication]  presentLocalNotificationNow:notif];
         }
     }
-        
-    [LinphoneManager set:stopCall hidden:YES withName:"STOP_CALL_BTN" andReason:__FUNCTION__];
-    [LinphoneManager set:startCall hidden:NO withName:"START_CALL_BTN" andReason:__FUNCTION__];
-    [LinphoneManager set:videoView hidden:NO withName:"VIDEO_VIEW" andReason:__FUNCTION__];
-    [LinphoneManager set:declineCall hidden:NO withName:"DECLINE_BTN" andReason:__FUNCTION__];
-    [LinphoneManager set:mute hidden:YES withName:"MUTE_BTN" andReason:__FUNCTION__];
-    
+
     linphone_call_enable_camera(call, FALSE);
 }
 
 - (void) displayVideoCall:(LinphoneCall *)call FromUI:(UIViewController *)viewCtrl forUser:(NSString *)username withDisplayName:(NSString *)displayName {
-    [LinphoneManager set:stopCall hidden:NO withName:"STOP_CALL_BTN" andReason:__FUNCTION__];
     [LinphoneManager set:startCall hidden:YES withName:"START_CALL_BTN" andReason:__FUNCTION__];
-    [LinphoneManager set:videoView hidden:NO withName:"VIDEO_VIEW" andReason:__FUNCTION__];
-    [LinphoneManager set:declineCall hidden:YES withName:"DECLINE_BTN" andReason:__FUNCTION__];
+    [LinphoneManager set:takeCall hidden:YES withName:"START_CALL_BTN" andReason:__FUNCTION__];
     [LinphoneManager set:mute hidden:NO withName:"MUTE_BTN" andReason:__FUNCTION__];
+    [LinphoneManager set:decline hidden:YES withName:"DECLINE_BTN" andReason:__FUNCTION__];
+    [LinphoneManager set:endOrRejectCall hidden:NO withName:"END_BTN" andReason:__FUNCTION__];
 }
 
 - (void) displayStatus:(NSString *)message {
@@ -144,7 +186,7 @@
     
 }
 
-- (IBAction)acceptCall:(id)sender {
+- (IBAction)takeCall:(id)sender {
     const MSList* calls = linphone_core_get_calls([LinphoneManager getLc]);	
     
     while(calls) {
@@ -155,7 +197,9 @@
         }
         calls = calls->next;
     }
-    
+}
+
+- (IBAction)startCall:(id)sender {
     // no pending call, call adapter
     NSString* s = [NSString stringWithFormat:@"sip:100000001@%@", [[NSUserDefaults standardUserDefaults] stringForKey:@"adapter_ip_preference"]];
     const char* adapter = [s cStringUsingEncoding:[NSString defaultCStringEncoding]];
