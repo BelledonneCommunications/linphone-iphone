@@ -249,6 +249,15 @@
 		344ABDE81484E723007420B6 /* libzrtpcpp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDE71484E723007420B6 /* libzrtpcpp.a */; };
 		344ABDF114850AE9007420B6 /* libc++.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDEF14850AE9007420B6 /* libc++.1.dylib */; settings = {ATTRIBUTES = (Weak, ); }; };
 		344ABDF214850AE9007420B6 /* libstdc++.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDF014850AE9007420B6 /* libstdc++.6.dylib */; settings = {ATTRIBUTES = (Weak, ); }; };
+		348848E014D98859005B0B54 /* bj_decline.png in Resources */ = {isa = PBXBuildFile; fileRef = 348848D714D98859005B0B54 /* bj_decline.png */; };
+		348848E114D98859005B0B54 /* bj_door_hl.png in Resources */ = {isa = PBXBuildFile; fileRef = 348848D814D98859005B0B54 /* bj_door_hl.png */; };
+		348848E214D98859005B0B54 /* bj_door.png in Resources */ = {isa = PBXBuildFile; fileRef = 348848D914D98859005B0B54 /* bj_door.png */; };
+		348848E314D98859005B0B54 /* bj_end_call.png in Resources */ = {isa = PBXBuildFile; fileRef = 348848DA14D98859005B0B54 /* bj_end_call.png */; };
+		348848E414D98859005B0B54 /* bj_light_hl.png in Resources */ = {isa = PBXBuildFile; fileRef = 348848DB14D98859005B0B54 /* bj_light_hl.png */; };
+		348848E514D98859005B0B54 /* bj_light.png in Resources */ = {isa = PBXBuildFile; fileRef = 348848DC14D98859005B0B54 /* bj_light.png */; };
+		348848E614D98859005B0B54 /* bj_mute_off.png in Resources */ = {isa = PBXBuildFile; fileRef = 348848DD14D98859005B0B54 /* bj_mute_off.png */; };
+		348848E714D98859005B0B54 /* bj_mute_on.png in Resources */ = {isa = PBXBuildFile; fileRef = 348848DE14D98859005B0B54 /* bj_mute_on.png */; };
+		348848E814D98859005B0B54 /* bj_start_call.png in Resources */ = {isa = PBXBuildFile; fileRef = 348848DF14D98859005B0B54 /* bj_start_call.png */; };
 		34957F3F147D3FBF00DD7A09 /* secured.png in Resources */ = {isa = PBXBuildFile; fileRef = 34957F3E147D3FBF00DD7A09 /* secured.png */; };
 		34A6ECEB14CF13CB00460C04 /* icone-linphone-72.png in Resources */ = {isa = PBXBuildFile; fileRef = 34A6ECEA14CF13CB00460C04 /* icone-linphone-72.png */; };
 		34A6ECF714D0179C00460C04 /* BuschJaegerMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A6ECF514D0179C00460C04 /* BuschJaegerMainView.m */; };
@@ -256,20 +265,6 @@
 		34A6ED0614D1440300460C04 /* BuschJaegerAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A6ED0514D1440300460C04 /* BuschJaegerAppDelegate.m */; };
 		34ACD0AC14D80D4100EE0B0A /* UILightButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 34ACD0AB14D80D4100EE0B0A /* UILightButton.m */; };
 		34ACD0AD14D80D4100EE0B0A /* UILightButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 34ACD0AB14D80D4100EE0B0A /* UILightButton.m */; };
-		34ACD0B514D8315D00EE0B0A /* icon1.png in Resources */ = {isa = PBXBuildFile; fileRef = 34ACD0AE14D8315D00EE0B0A /* icon1.png */; };
-		34ACD0B614D8315D00EE0B0A /* icon1.png in Resources */ = {isa = PBXBuildFile; fileRef = 34ACD0AE14D8315D00EE0B0A /* icon1.png */; };
-		34ACD0B714D8315D00EE0B0A /* icon2.png in Resources */ = {isa = PBXBuildFile; fileRef = 34ACD0AF14D8315D00EE0B0A /* icon2.png */; };
-		34ACD0B814D8315D00EE0B0A /* icon2.png in Resources */ = {isa = PBXBuildFile; fileRef = 34ACD0AF14D8315D00EE0B0A /* icon2.png */; };
-		34ACD0B914D8315D00EE0B0A /* icon3.png in Resources */ = {isa = PBXBuildFile; fileRef = 34ACD0B014D8315D00EE0B0A /* icon3.png */; };
-		34ACD0BA14D8315D00EE0B0A /* icon3.png in Resources */ = {isa = PBXBuildFile; fileRef = 34ACD0B014D8315D00EE0B0A /* icon3.png */; };
-		34ACD0BB14D8315D00EE0B0A /* icon4.png in Resources */ = {isa = PBXBuildFile; fileRef = 34ACD0B114D8315D00EE0B0A /* icon4.png */; };
-		34ACD0BC14D8315D00EE0B0A /* icon4.png in Resources */ = {isa = PBXBuildFile; fileRef = 34ACD0B114D8315D00EE0B0A /* icon4.png */; };
-		34ACD0BD14D8315D00EE0B0A /* icon5.png in Resources */ = {isa = PBXBuildFile; fileRef = 34ACD0B214D8315D00EE0B0A /* icon5.png */; };
-		34ACD0BE14D8315D00EE0B0A /* icon5.png in Resources */ = {isa = PBXBuildFile; fileRef = 34ACD0B214D8315D00EE0B0A /* icon5.png */; };
-		34ACD0BF14D8315D00EE0B0A /* icon6.png in Resources */ = {isa = PBXBuildFile; fileRef = 34ACD0B314D8315D00EE0B0A /* icon6.png */; };
-		34ACD0C014D8315D00EE0B0A /* icon6.png in Resources */ = {isa = PBXBuildFile; fileRef = 34ACD0B314D8315D00EE0B0A /* icon6.png */; };
-		34ACD0C114D8315D00EE0B0A /* icon7.png in Resources */ = {isa = PBXBuildFile; fileRef = 34ACD0B414D8315D00EE0B0A /* icon7.png */; };
-		34ACD0C214D8315D00EE0B0A /* icon7.png in Resources */ = {isa = PBXBuildFile; fileRef = 34ACD0B414D8315D00EE0B0A /* icon7.png */; };
 		34C7646914CD51CD008E9607 /* contact_vide.png in Resources */ = {isa = PBXBuildFile; fileRef = 34C7646814CD51CD008E9607 /* contact_vide.png */; };
 		34C7646C14CD5585008E9607 /* dialer-orange.png in Resources */ = {isa = PBXBuildFile; fileRef = 34C7646A14CD5585008E9607 /* dialer-orange.png */; };
 		34C7646D14CD5585008E9607 /* history-orange.png in Resources */ = {isa = PBXBuildFile; fileRef = 34C7646B14CD5585008E9607 /* history-orange.png */; };
@@ -647,6 +642,15 @@
 		344ABDE71484E723007420B6 /* libzrtpcpp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libzrtpcpp.a; path = "liblinphone-sdk/apple-darwin/lib/libzrtpcpp.a"; sourceTree = "<group>"; };
 		344ABDEF14850AE9007420B6 /* libc++.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.1.dylib"; path = "usr/lib/libc++.1.dylib"; sourceTree = SDKROOT; };
 		344ABDF014850AE9007420B6 /* libstdc++.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.6.dylib"; path = "usr/lib/libstdc++.6.dylib"; sourceTree = SDKROOT; };
+		348848D714D98859005B0B54 /* bj_decline.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_decline.png; path = Resources/160/bj_decline.png; sourceTree = "<group>"; };
+		348848D814D98859005B0B54 /* bj_door_hl.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_door_hl.png; path = Resources/160/bj_door_hl.png; sourceTree = "<group>"; };
+		348848D914D98859005B0B54 /* bj_door.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_door.png; path = Resources/160/bj_door.png; sourceTree = "<group>"; };
+		348848DA14D98859005B0B54 /* bj_end_call.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_end_call.png; path = Resources/160/bj_end_call.png; sourceTree = "<group>"; };
+		348848DB14D98859005B0B54 /* bj_light_hl.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_light_hl.png; path = Resources/160/bj_light_hl.png; sourceTree = "<group>"; };
+		348848DC14D98859005B0B54 /* bj_light.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_light.png; path = Resources/160/bj_light.png; sourceTree = "<group>"; };
+		348848DD14D98859005B0B54 /* bj_mute_off.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_mute_off.png; path = Resources/160/bj_mute_off.png; sourceTree = "<group>"; };
+		348848DE14D98859005B0B54 /* bj_mute_on.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_mute_on.png; path = Resources/160/bj_mute_on.png; sourceTree = "<group>"; };
+		348848DF14D98859005B0B54 /* bj_start_call.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_start_call.png; path = Resources/160/bj_start_call.png; sourceTree = "<group>"; };
 		34957F3E147D3FBF00DD7A09 /* secured.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = secured.png; path = Resources/secured.png; sourceTree = "<group>"; };
 		34A6ECEA14CF13CB00460C04 /* icone-linphone-72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icone-linphone-72.png"; path = "Resources/icone-linphone-72.png"; sourceTree = "<group>"; };
 		34A6ECF414D0179C00460C04 /* BuschJaegerMainView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuschJaegerMainView.h; sourceTree = "<group>"; };
@@ -656,13 +660,6 @@
 		34A6ED0514D1440300460C04 /* BuschJaegerAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BuschJaegerAppDelegate.m; sourceTree = "<group>"; };
 		34ACD0AA14D80D4100EE0B0A /* UILightButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UILightButton.h; sourceTree = "<group>"; };
 		34ACD0AB14D80D4100EE0B0A /* UILightButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UILightButton.m; sourceTree = "<group>"; };
-		34ACD0AE14D8315D00EE0B0A /* icon1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon1.png; path = Resources/icon1.png; sourceTree = "<group>"; };
-		34ACD0AF14D8315D00EE0B0A /* icon2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon2.png; path = Resources/icon2.png; sourceTree = "<group>"; };
-		34ACD0B014D8315D00EE0B0A /* icon3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon3.png; path = Resources/icon3.png; sourceTree = "<group>"; };
-		34ACD0B114D8315D00EE0B0A /* icon4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon4.png; path = Resources/icon4.png; sourceTree = "<group>"; };
-		34ACD0B214D8315D00EE0B0A /* icon5.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon5.png; path = Resources/icon5.png; sourceTree = "<group>"; };
-		34ACD0B314D8315D00EE0B0A /* icon6.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon6.png; path = Resources/icon6.png; sourceTree = "<group>"; };
-		34ACD0B414D8315D00EE0B0A /* icon7.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon7.png; path = Resources/icon7.png; sourceTree = "<group>"; };
 		34C7646814CD51CD008E9607 /* contact_vide.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = contact_vide.png; path = Resources/contact_vide.png; sourceTree = "<group>"; };
 		34C7646A14CD5585008E9607 /* dialer-orange.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "dialer-orange.png"; path = "submodules/linphone/pixmaps/dialer-orange.png"; sourceTree = "<group>"; };
 		34C7646B14CD5585008E9607 /* history-orange.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "history-orange.png"; path = "submodules/linphone/pixmaps/history-orange.png"; sourceTree = "<group>"; };
@@ -1294,13 +1291,15 @@
 		34ACD07414D2DBB300EE0B0A /* BuschJaeger */ = {
 			isa = PBXGroup;
 			children = (
-				34ACD0AE14D8315D00EE0B0A /* icon1.png */,
-				34ACD0AF14D8315D00EE0B0A /* icon2.png */,
-				34ACD0B014D8315D00EE0B0A /* icon3.png */,
-				34ACD0B114D8315D00EE0B0A /* icon4.png */,
-				34ACD0B214D8315D00EE0B0A /* icon5.png */,
-				34ACD0B314D8315D00EE0B0A /* icon6.png */,
-				34ACD0B414D8315D00EE0B0A /* icon7.png */,
+				348848D714D98859005B0B54 /* bj_decline.png */,
+				348848D814D98859005B0B54 /* bj_door_hl.png */,
+				348848D914D98859005B0B54 /* bj_door.png */,
+				348848DA14D98859005B0B54 /* bj_end_call.png */,
+				348848DB14D98859005B0B54 /* bj_light_hl.png */,
+				348848DC14D98859005B0B54 /* bj_light.png */,
+				348848DD14D98859005B0B54 /* bj_mute_off.png */,
+				348848DE14D98859005B0B54 /* bj_mute_on.png */,
+				348848DF14D98859005B0B54 /* bj_start_call.png */,
 			);
 			name = BuschJaeger;
 			sourceTree = "<group>";
@@ -1442,13 +1441,15 @@
 				34C7646D14CD5585008E9607 /* history-orange.png in Resources */,
 				34A6ECEB14CF13CB00460C04 /* icone-linphone-72.png in Resources */,
 				34A6ECF814D0179C00460C04 /* BuschJaegerMainView.xib in Resources */,
-				34ACD0B514D8315D00EE0B0A /* icon1.png in Resources */,
-				34ACD0B714D8315D00EE0B0A /* icon2.png in Resources */,
-				34ACD0B914D8315D00EE0B0A /* icon3.png in Resources */,
-				34ACD0BB14D8315D00EE0B0A /* icon4.png in Resources */,
-				34ACD0BD14D8315D00EE0B0A /* icon5.png in Resources */,
-				34ACD0BF14D8315D00EE0B0A /* icon6.png in Resources */,
-				34ACD0C114D8315D00EE0B0A /* icon7.png in Resources */,
+				348848E014D98859005B0B54 /* bj_decline.png in Resources */,
+				348848E114D98859005B0B54 /* bj_door_hl.png in Resources */,
+				348848E214D98859005B0B54 /* bj_door.png in Resources */,
+				348848E314D98859005B0B54 /* bj_end_call.png in Resources */,
+				348848E414D98859005B0B54 /* bj_light_hl.png in Resources */,
+				348848E514D98859005B0B54 /* bj_light.png in Resources */,
+				348848E614D98859005B0B54 /* bj_mute_off.png in Resources */,
+				348848E714D98859005B0B54 /* bj_mute_on.png in Resources */,
+				348848E814D98859005B0B54 /* bj_start_call.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1517,13 +1518,6 @@
 				3418845814C6F66F00EA48C7 /* status_orange.png in Resources */,
 				3418845A14C6F66F00EA48C7 /* status_red.png in Resources */,
 				3418845D14C7077400EA48C7 /* status_gray.png in Resources */,
-				34ACD0B614D8315D00EE0B0A /* icon1.png in Resources */,
-				34ACD0B814D8315D00EE0B0A /* icon2.png in Resources */,
-				34ACD0BA14D8315D00EE0B0A /* icon3.png in Resources */,
-				34ACD0BC14D8315D00EE0B0A /* icon4.png in Resources */,
-				34ACD0BE14D8315D00EE0B0A /* icon5.png in Resources */,
-				34ACD0C014D8315D00EE0B0A /* icon6.png in Resources */,
-				34ACD0C214D8315D00EE0B0A /* icon7.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

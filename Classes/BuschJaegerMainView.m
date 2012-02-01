@@ -54,6 +54,7 @@
     
     [openDoor initWithNumber:'1'];
     [lights initWithNumber:'2'];
+    [mute initWithOnImage:[UIImage imageNamed:@"bj_mute_on.png"] offImage:[UIImage imageNamed:@"bj_mute_off.png"] debugName:"MUTE_BTN"];
     
     /* init gradients */
     {
