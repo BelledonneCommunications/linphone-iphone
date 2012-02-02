@@ -720,4 +720,6 @@ public interface LinphoneCore {
 	void tunnelAddServerAndMirror(String host, int port, int udpMirrorPort, int roundTripDelay);
 
 	boolean isTunnelAvailable();
+	
+	LinphoneProxyConfig[] getProxyConfigList();
 }

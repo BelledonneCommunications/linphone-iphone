@@ -455,6 +455,22 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_getDefaultProxyConfig(	
 	return (jlong)config;
 }
 
+extern "C" jlongArray Java_org_linphone_core_LinphoneCoreImpl_getProxyConfigList(JNIEnv* env, jobject thiz, jlong lc) {
+	const MSList* proxies = linphone_core_get_proxy_config_list((LinphoneCore*)lc);
+	int proxyCount = ms_list_size(proxies);
+	jlongArray jProxies = env->NewLongArray(proxyCount);
+	jlong *jInternalArray = env->GetLongArrayElements(jProxies, NULL);
+
+	for (int i = 0; i < proxyCount; i++ ) {
+		jInternalArray[i] = (unsigned long) (proxies->data);
+		proxies = proxies->next;
+	}
+
+	env->ReleaseLongArrayElements(jProxies, jInternalArray, 0);
+
+	return jProxies;
+}
+
 extern "C" int Java_org_linphone_core_LinphoneCoreImpl_addProxyConfig(	JNIEnv*  env
 		,jobject  thiz
 		,jobject jproxyCfg
