@@ -24,13 +24,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "linphonecore.h"
 
 extern SipSetup linphone_sip_login;
+#if defined(ANDROID) || defined(IOS)
+static SipSetup *all_sip_setups[]={
+	&linphone_sip_login,
+	NULL
+};
+#else
 extern SipSetup linphone_sip_wizard;
-
 static SipSetup *all_sip_setups[]={
 	&linphone_sip_login,
 	&linphone_sip_wizard,
 	NULL
 };
+#endif
 
 static MSList *registered_sip_setups=NULL;
 
