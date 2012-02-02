@@ -23,8 +23,6 @@ You need:
  $ cd srtp && autoconf && ./configure --prefix=/opt/local && make libsrtp.a
  $ sudo make install
 
-When this version will be integrated into macports, only this will be necessary:
- $ port install libsdl-devel
 
 - Install gtk. It is recommended to use the quartz backend for better integration.
  $ port install gtk2 +quartz +no_x11
