@@ -45,6 +45,7 @@
                                  @"tcp", @"transport_preference",
                                  @"NO", @"enable_srtp_preference",
                                  @"YES", @"backgroundmode_preference",
+                                 @"YES", @"outbound_proxy_preference",
                                  nil];
     
     [defaultsToRegister addEntriesFromDictionary:appDefaults];
@@ -71,12 +72,7 @@
     linphone_core_set_device_rotation([LinphoneManager getLc], 0);
     linphone_core_set_video_device([LinphoneManager getLc], "DummyImage: Dummy (no) picture");
     
-    NSLog(@"linphone state: %d", linphone_core_get_global_state([LinphoneManager getLc]));		
-    NSBundle* myBundle = [NSBundle mainBundle];
-    const char*  lRing = [[myBundle pathForResource:@"01"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
-	linphone_core_set_ring([LinphoneManager getLc], lRing );
-	const char*  lRingBack = [[myBundle pathForResource:@"01"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
-	linphone_core_set_ringback([LinphoneManager getLc], lRingBack);
+	linphone_core_set_ring([LinphoneManager getLc], NULL );
 
     return YES;
 }
@@ -89,7 +85,7 @@
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
-    ms_message("Kikoo");
+
 }
 
 @end
