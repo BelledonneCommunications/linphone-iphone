@@ -515,9 +515,9 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 
 
 	// Set audio assets
-	const char*  lRing = [[myBundle pathForResource:@"oldphone-mono"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
+	const char*  lRing = [[myBundle pathForResource:@"01"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
 	linphone_core_set_ring(theLinphoneCore, lRing );
-	const char*  lRingBack = [[myBundle pathForResource:@"ringback"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
+	const char*  lRingBack = [[myBundle pathForResource:@"01"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
 	linphone_core_set_ringback(theLinphoneCore, lRingBack);
 
 	

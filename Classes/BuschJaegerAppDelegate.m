@@ -59,19 +59,25 @@
     
     [self loadDefaultSettings];
     
-	[window addSubview:buschJaegerMainView.view];
-	
-	[window makeKeyAndVisible];
-	
 	[[LinphoneManager instance] setCallDelegate:buschJaegerMainView];
 	[[LinphoneManager instance]	startLibLinphone];
     
+	[window addSubview:buschJaegerMainView.view];
+	[window makeKeyAndVisible];
+    
 	[[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeSound];
     
-    linphone_core_set_native_video_window_id([LinphoneManager getLc],(unsigned long)buschJaegerMainView.videoView);	
-    linphone_core_set_device_rotation([LinphoneManager getLc], 0);
-    linphone_core_set_capture_device([LinphoneManager getLc], "Static picture");
     
+    linphone_core_set_device_rotation([LinphoneManager getLc], 0);
+    linphone_core_set_video_device([LinphoneManager getLc], "DummyImage: Dummy (no) picture");
+    
+    NSLog(@"linphone state: %d", linphone_core_get_global_state([LinphoneManager getLc]));		
+    NSBundle* myBundle = [NSBundle mainBundle];
+    const char*  lRing = [[myBundle pathForResource:@"01"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
+	linphone_core_set_ring([LinphoneManager getLc], lRing );
+	const char*  lRingBack = [[myBundle pathForResource:@"01"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
+	linphone_core_set_ringback([LinphoneManager getLc], lRingBack);
+
     return YES;
 }
 

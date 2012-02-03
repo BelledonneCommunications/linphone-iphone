@@ -47,8 +47,6 @@
 @property (nonatomic, retain) IBOutlet UIToggleButton* mute;
 @property (nonatomic, retain) IBOutlet UIDigitButton* lights;
 @property (nonatomic, retain) IBOutlet UIDigitButton* openDoor;
-@property (nonatomic, retain) IBOutlet UIView* dialerControls;
-@property (nonatomic, retain) IBOutlet UIView* incallControls;
 
 - (IBAction)takeCall:(id)sender;
 - (IBAction)startCall:(id)sender;
