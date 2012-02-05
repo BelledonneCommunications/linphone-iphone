@@ -30,10 +30,14 @@ static SipSetup *all_sip_setups[]={
 	NULL
 };
 #else
+#ifdef BUILD_WIZARD
 extern SipSetup linphone_sip_wizard;
+#endif
 static SipSetup *all_sip_setups[]={
 	&linphone_sip_login,
+#ifdef BUILD_WIZARD
 	&linphone_sip_wizard,
+#endif
 	NULL
 };
 #endif

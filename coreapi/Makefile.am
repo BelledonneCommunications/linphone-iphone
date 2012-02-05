@@ -38,10 +38,12 @@ liblinphone_la_SOURCES=\
 	linphonecall.c \
 	sipsetup.c sipsetup.h \
 	siplogin.c \
-	sipwizard.c \
 	lsd.c linphonecore_utils.h \
 	ec-calibrator.c \
 	conference.c 
+if BUILD_WIZARD
+	liblinphone_la_SOURCES+=sipwizard.c 
+endif
 
 if BUILD_TUNNEL
 liblinphone_la_SOURCES+=TunnelManager.cc TunnelManager.hh linphone_tunnel.cc
@@ -83,3 +85,7 @@ AM_CFLAGS=$(STRICT_OPTIONS)  -DIN_LINPHONE \
 	-DORTP_INET6 \
 	$(VIDEO_CFLAGS) \
 	$(TUNNEL_CFLAGS)
+
+if BUILD_WIZARD
+AM_CFLAGS+= -DBUILD_WIZARD 
+endif

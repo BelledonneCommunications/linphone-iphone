@@ -413,9 +413,10 @@ if test "$has_sighandler_t" = "yes" ; then
 fi
 
 dnl check libsoup (needed for wizard)
-PKG_CHECK_MODULES(LIBSOUP, [libsoup-2.4 >= 2.26])
+PKG_CHECK_MODULES(LIBSOUP, [libsoup-2.4 >= 2.26],[build_wizard=true],foo=bar)
 AC_SUBST(LIBSOUP_CFLAGS)
 AC_SUBST(LIBSOUP_LIBS)
+AM_CONDITIONAL(BUILD_WIZARD, test x$build_wizard = xtrue)
 
 ##################################################
 # Stricter build options (after external packages)
