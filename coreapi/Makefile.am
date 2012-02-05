@@ -42,7 +42,7 @@ liblinphone_la_SOURCES=\
 	ec-calibrator.c \
 	conference.c 
 if BUILD_WIZARD
-	liblinphone_la_SOURCES+=sipwizard.c 
+liblinphone_la_SOURCES+=sipwizard.c 
 endif
 
 if BUILD_TUNNEL
