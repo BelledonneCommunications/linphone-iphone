@@ -239,18 +239,12 @@ void linphone_gtk_log_show(void){
 	gtk_window_present(GTK_WINDOW(log_window));
 }
 
-static void linphone_gtk_display_log(OrtpLogLevel lev, const char *msg){
+static void linphone_gtk_display_log(GtkTextView *v, OrtpLogLevel lev, const char *msg){
 	GtkTextIter iter,begin;
 	int off;
-	static GtkTextView *v=NULL;
 	GtkTextBuffer *b;
 	const char *lname="undef";
 
-	if (log_window==NULL) {
-		return;
-	}
-
-	if (v==NULL) v=GTK_TEXT_VIEW(linphone_gtk_get_widget(log_window,"textview"));
 	b=gtk_text_view_get_buffer(v);
 	switch(lev){
 		case ORTP_DEBUG:
@@ -285,10 +279,7 @@ static void linphone_gtk_display_log(OrtpLogLevel lev, const char *msg){
 	gtk_text_buffer_get_iter_at_offset(b,&begin,off);
 	if (lev==ORTP_ERROR || lev==ORTP_FATAL) gtk_text_buffer_apply_tag_by_name(b,"red",&begin,&iter);
 	else if (lev==ORTP_WARNING) gtk_text_buffer_apply_tag_by_name(b,"orange",&begin,&iter);
-	/*
-	gtk_text_buffer_get_end_iter(b,&iter);
-	gtk_text_view_scroll_to_iter(v,&iter,0,FALSE,0,0);
-	*/
+	
 	while(gtk_text_buffer_get_char_count(b)>LOG_MAX_CHARS){
 		GtkTextIter iter_line_after;
 		gtk_text_buffer_get_start_iter(b,&iter);
@@ -297,23 +288,50 @@ static void linphone_gtk_display_log(OrtpLogLevel lev, const char *msg){
 			gtk_text_buffer_delete(b,&iter,&iter_line_after);
 		}
 	}
+	
 }
 
+static void stick_to_end(GtkTextView *v){
+	GtkTextBuffer *b;
+	GtkTextIter iter;
+	b=gtk_text_view_get_buffer(v);
+	gtk_text_buffer_get_end_iter(b,&iter);
+	gtk_text_view_scroll_to_iter(v,&iter,0,FALSE,1.0,0);
+}
+
+void linphone_gtk_log_scroll_to_end(GtkToggleButton *button){
+	if (gtk_toggle_button_get_active(button)){
+		GtkTextView *v=GTK_TEXT_VIEW(linphone_gtk_get_widget(log_window,"textview"));
+		stick_to_end(v);
+	}
+}
+
+/*
+ * called from Gtk main loop.
+**/
 gboolean linphone_gtk_check_logs(){
 	GList *elem;
+	GtkTextView *v=NULL;
+	if (log_window) v=GTK_TEXT_VIEW(linphone_gtk_get_widget(log_window,"textview"));
 	g_static_mutex_lock(&log_mutex);
 	for(elem=log_queue;elem!=NULL;elem=elem->next){
 		LinphoneGtkLog *lgl=(LinphoneGtkLog*)elem->data;
-		linphone_gtk_display_log(lgl->lev,lgl->msg);
+		if (v) linphone_gtk_display_log(v,lgl->lev,lgl->msg);
 		g_free(lgl->msg);
 		g_free(lgl);
 	}
 	if (log_queue) g_list_free(log_queue);
 	log_queue=NULL;
 	g_static_mutex_unlock(&log_mutex);
+	if (v)
+		linphone_gtk_log_scroll_to_end(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(log_window,"scroll_to_end")));
 	return TRUE;
 }
 
+
+/*
+ * Called from any linphone thread.
+ */
 void linphone_gtk_log_push(OrtpLogLevel lev, const char *fmt, va_list args){
 	gchar *msg=g_strdup_vprintf(fmt,args);
 	LinphoneGtkLog *lgl=g_new(LinphoneGtkLog,1);
@@ -324,4 +342,18 @@ void linphone_gtk_log_push(OrtpLogLevel lev, const char *fmt, va_list args){
 	linphone_gtk_log_file(lev, msg);
 	g_static_mutex_unlock(&log_mutex);
 }
+
+void linphone_gtk_log_clear(void){
+	if (log_window){
+		GtkTextIter end,begin;
+		GtkTextView *v;
+		GtkTextBuffer *b;
+		v=GTK_TEXT_VIEW(linphone_gtk_get_widget(log_window,"textview"));
+		b=gtk_text_view_get_buffer(v);
+		gtk_text_buffer_get_start_iter(b,&begin);
+		gtk_text_buffer_get_end_iter(b,&end);
+		gtk_text_buffer_delete(b,&begin,&end);
+	}
+}
+
 
