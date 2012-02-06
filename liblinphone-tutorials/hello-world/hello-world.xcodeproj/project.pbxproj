@@ -9,34 +9,12 @@
 /* Begin PBXBuildFile section */
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
-		2220D597127844C9008F2C2E /* helloworld.c in Sources */ = {isa = PBXBuildFile; fileRef = 2220D596127844C9008F2C2E /* helloworld.c */; };
-		2220D5BE127845EE008F2C2E /* libeXosip2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5BD127845EE008F2C2E /* libeXosip2.a */; };
-		2220D5C0127845EE008F2C2E /* libgsm.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5BF127845EE008F2C2E /* libgsm.a */; };
-		2220D5C2127845EE008F2C2E /* libilbc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5C1127845EE008F2C2E /* libilbc.a */; };
-		2220D5C4127845EE008F2C2E /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5C3127845EE008F2C2E /* liblinphone.a */; };
-		2220D5C6127845EE008F2C2E /* libmediastreamer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5C5127845EE008F2C2E /* libmediastreamer.a */; };
-		2220D5C8127845EE008F2C2E /* libortp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5C7127845EE008F2C2E /* libortp.a */; };
-		2220D5CA127845EE008F2C2E /* libosip2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5C9127845EE008F2C2E /* libosip2.a */; };
-		2220D5CC127845EE008F2C2E /* libosipparser2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5CB127845EE008F2C2E /* libosipparser2.a */; };
-		2220D5CE127845EE008F2C2E /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5CD127845EE008F2C2E /* libspeex.a */; };
-		2220D5D0127845EE008F2C2E /* libspeexdsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5CF127845EE008F2C2E /* libspeexdsp.a */; };
 		2220D5D81278461C008F2C2E /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5D71278461C008F2C2E /* CFNetwork.framework */; };
 		2220D5DA1278461C008F2C2E /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5D91278461C008F2C2E /* CoreAudio.framework */; };
 		2220D5EA12784672008F2C2E /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5E912784672008F2C2E /* AudioToolbox.framework */; };
-		2294996712A53FEE00D6CF48 /* registration.c in Sources */ = {isa = PBXBuildFile; fileRef = 2294995712A53FD800D6CF48 /* registration.c */; };
 		2294996912A53FEE00D6CF48 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		2294996A12A53FEE00D6CF48 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		2294996B12A53FEE00D6CF48 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
-		2294996C12A53FEE00D6CF48 /* libeXosip2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5BD127845EE008F2C2E /* libeXosip2.a */; };
-		2294996D12A53FEE00D6CF48 /* libgsm.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5BF127845EE008F2C2E /* libgsm.a */; };
-		2294996E12A53FEE00D6CF48 /* libilbc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5C1127845EE008F2C2E /* libilbc.a */; };
-		2294996F12A53FEE00D6CF48 /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5C3127845EE008F2C2E /* liblinphone.a */; };
-		2294997012A53FEE00D6CF48 /* libmediastreamer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5C5127845EE008F2C2E /* libmediastreamer.a */; };
-		2294997112A53FEE00D6CF48 /* libortp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5C7127845EE008F2C2E /* libortp.a */; };
-		2294997212A53FEE00D6CF48 /* libosip2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5C9127845EE008F2C2E /* libosip2.a */; };
-		2294997312A53FEE00D6CF48 /* libosipparser2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5CB127845EE008F2C2E /* libosipparser2.a */; };
-		2294997412A53FEE00D6CF48 /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5CD127845EE008F2C2E /* libspeex.a */; };
-		2294997512A53FEE00D6CF48 /* libspeexdsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5CF127845EE008F2C2E /* libspeexdsp.a */; };
 		2294997612A53FEE00D6CF48 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5D71278461C008F2C2E /* CFNetwork.framework */; };
 		2294997712A53FEE00D6CF48 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5D91278461C008F2C2E /* CoreAudio.framework */; };
 		2294997812A53FEE00D6CF48 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5E912784672008F2C2E /* AudioToolbox.framework */; };
@@ -44,40 +22,18 @@
 		229499A612A5417D00D6CF48 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		229499A712A5417D00D6CF48 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		229499A812A5417D00D6CF48 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
-		229499A912A5417D00D6CF48 /* libeXosip2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5BD127845EE008F2C2E /* libeXosip2.a */; };
-		229499AA12A5417D00D6CF48 /* libgsm.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5BF127845EE008F2C2E /* libgsm.a */; };
-		229499AB12A5417D00D6CF48 /* libilbc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5C1127845EE008F2C2E /* libilbc.a */; };
-		229499AC12A5417D00D6CF48 /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5C3127845EE008F2C2E /* liblinphone.a */; };
-		229499AD12A5417D00D6CF48 /* libmediastreamer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5C5127845EE008F2C2E /* libmediastreamer.a */; };
-		229499AE12A5417D00D6CF48 /* libortp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5C7127845EE008F2C2E /* libortp.a */; };
-		229499AF12A5417D00D6CF48 /* libosip2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5C9127845EE008F2C2E /* libosip2.a */; };
-		229499B012A5417D00D6CF48 /* libosipparser2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5CB127845EE008F2C2E /* libosipparser2.a */; };
-		229499B112A5417D00D6CF48 /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5CD127845EE008F2C2E /* libspeex.a */; };
-		229499B212A5417D00D6CF48 /* libspeexdsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5CF127845EE008F2C2E /* libspeexdsp.a */; };
 		229499B312A5417D00D6CF48 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5D71278461C008F2C2E /* CFNetwork.framework */; };
 		229499B412A5417D00D6CF48 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5D91278461C008F2C2E /* CoreAudio.framework */; };
 		229499B512A5417D00D6CF48 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5E912784672008F2C2E /* AudioToolbox.framework */; };
 		229499B612A5417D00D6CF48 /* libresolv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 22D1B6A012A3E159001AE361 /* libresolv.dylib */; };
-		229499BD12A5419500D6CF48 /* chatroom.c in Sources */ = {isa = PBXBuildFile; fileRef = 2294995612A53FD800D6CF48 /* chatroom.c */; };
 		229499EB12A5433F00D6CF48 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		229499EC12A5433F00D6CF48 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		229499ED12A5433F00D6CF48 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
-		229499EE12A5433F00D6CF48 /* libeXosip2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5BD127845EE008F2C2E /* libeXosip2.a */; };
-		229499EF12A5433F00D6CF48 /* libgsm.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5BF127845EE008F2C2E /* libgsm.a */; };
-		229499F012A5433F00D6CF48 /* libilbc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5C1127845EE008F2C2E /* libilbc.a */; };
-		229499F112A5433F00D6CF48 /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5C3127845EE008F2C2E /* liblinphone.a */; };
-		229499F212A5433F00D6CF48 /* libmediastreamer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5C5127845EE008F2C2E /* libmediastreamer.a */; };
-		229499F312A5433F00D6CF48 /* libortp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5C7127845EE008F2C2E /* libortp.a */; };
-		229499F412A5433F00D6CF48 /* libosip2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5C9127845EE008F2C2E /* libosip2.a */; };
-		229499F512A5433F00D6CF48 /* libosipparser2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5CB127845EE008F2C2E /* libosipparser2.a */; };
-		229499F612A5433F00D6CF48 /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5CD127845EE008F2C2E /* libspeex.a */; };
-		229499F712A5433F00D6CF48 /* libspeexdsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5CF127845EE008F2C2E /* libspeexdsp.a */; };
 		229499F812A5433F00D6CF48 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5D71278461C008F2C2E /* CFNetwork.framework */; };
 		229499F912A5433F00D6CF48 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5D91278461C008F2C2E /* CoreAudio.framework */; };
 		229499FA12A5433F00D6CF48 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2220D5E912784672008F2C2E /* AudioToolbox.framework */; };
 		229499FB12A5433F00D6CF48 /* libresolv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 22D1B6A012A3E159001AE361 /* libresolv.dylib */; };
 		22D1B6A112A3E159001AE361 /* libresolv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 22D1B6A012A3E159001AE361 /* libresolv.dylib */; };
-		22DF2B1612A65892007C6B74 /* buddy_status.c in Sources */ = {isa = PBXBuildFile; fileRef = 2294995512A53FD800D6CF48 /* buddy_status.c */; };
 		22E5AFC5133A2E260044EA25 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22E5AFC3133A2E260044EA25 /* libssl.a */; };
 		22E5AFC6133A2E260044EA25 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22E5AFC4133A2E260044EA25 /* libcrypto.a */; };
 		22E5AFC9133A2E3F0044EA25 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22E5AFC7133A2E3F0044EA25 /* libssl.a */; };
@@ -87,30 +43,85 @@
 		22E5AFD1133A2E760044EA25 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22E5AFCF133A2E760044EA25 /* libssl.a */; };
 		22E5AFD2133A2E760044EA25 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22E5AFD0133A2E760044EA25 /* libcrypto.a */; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
+		34F9DFE914C418B600E1BC69 /* helloworld.c in Sources */ = {isa = PBXBuildFile; fileRef = 34F9DFE514C418B600E1BC69 /* helloworld.c */; };
+		34F9DFF514C41EBA00E1BC69 /* libeXosip2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9DFEB14C41EBA00E1BC69 /* libeXosip2.a */; };
+		34F9DFF614C41EBA00E1BC69 /* libgsm.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9DFEC14C41EBA00E1BC69 /* libgsm.a */; };
+		34F9DFF714C41EBA00E1BC69 /* libilbc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9DFED14C41EBA00E1BC69 /* libilbc.a */; };
+		34F9DFF814C41EBA00E1BC69 /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9DFEE14C41EBA00E1BC69 /* liblinphone.a */; };
+		34F9DFF914C41EBA00E1BC69 /* libmediastreamer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9DFEF14C41EBA00E1BC69 /* libmediastreamer.a */; };
+		34F9DFFA14C41EBA00E1BC69 /* libortp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9DFF014C41EBA00E1BC69 /* libortp.a */; };
+		34F9DFFB14C41EBA00E1BC69 /* libosip2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9DFF114C41EBA00E1BC69 /* libosip2.a */; };
+		34F9DFFC14C41EBA00E1BC69 /* libosipparser2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9DFF214C41EBA00E1BC69 /* libosipparser2.a */; };
+		34F9DFFD14C41EBA00E1BC69 /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9DFF314C41EBA00E1BC69 /* libspeex.a */; };
+		34F9DFFE14C41EBA00E1BC69 /* libspeexdsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9DFF414C41EBA00E1BC69 /* libspeexdsp.a */; };
+		34F9DFFF14C41F4900E1BC69 /* buddy_status.c in Sources */ = {isa = PBXBuildFile; fileRef = 34F9DFE314C418B600E1BC69 /* buddy_status.c */; };
+		34F9E00014C41F4E00E1BC69 /* chatroom.c in Sources */ = {isa = PBXBuildFile; fileRef = 34F9DFE414C418B600E1BC69 /* chatroom.c */; };
+		34F9E00114C41F5300E1BC69 /* registration.c in Sources */ = {isa = PBXBuildFile; fileRef = 34F9DFE614C418B600E1BC69 /* registration.c */; };
+		34F9E00314C41FB400E1BC69 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9E00214C41FB400E1BC69 /* OpenGLES.framework */; };
+		34F9E00614C41FCF00E1BC69 /* libsrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9E00414C41FCF00E1BC69 /* libsrtp.a */; };
+		34F9E00714C41FCF00E1BC69 /* libvpx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9E00514C41FCF00E1BC69 /* libvpx.a */; };
+		34F9E00B14C4202100E1BC69 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9E00A14C4202100E1BC69 /* QuartzCore.framework */; };
+		34F9E00C14C4203900E1BC69 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9E00214C41FB400E1BC69 /* OpenGLES.framework */; };
+		34F9E00D14C4203900E1BC69 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9E00A14C4202100E1BC69 /* QuartzCore.framework */; };
+		34F9E00E14C4204600E1BC69 /* libsrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9E00414C41FCF00E1BC69 /* libsrtp.a */; };
+		34F9E00F14C4204600E1BC69 /* libvpx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9E00514C41FCF00E1BC69 /* libvpx.a */; };
+		34F9E01014C4207700E1BC69 /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9DFEE14C41EBA00E1BC69 /* liblinphone.a */; };
+		34F9E01114C4208C00E1BC69 /* libeXosip2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9DFEB14C41EBA00E1BC69 /* libeXosip2.a */; };
+		34F9E01214C4208C00E1BC69 /* libmediastreamer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9DFEF14C41EBA00E1BC69 /* libmediastreamer.a */; };
+		34F9E01314C4208C00E1BC69 /* libortp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9DFF014C41EBA00E1BC69 /* libortp.a */; };
+		34F9E01414C420A200E1BC69 /* libosip2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9DFF114C41EBA00E1BC69 /* libosip2.a */; };
+		34F9E01514C420A200E1BC69 /* libosipparser2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9DFF214C41EBA00E1BC69 /* libosipparser2.a */; };
+		34F9E01614C420B800E1BC69 /* libgsm.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9DFEC14C41EBA00E1BC69 /* libgsm.a */; };
+		34F9E01714C420B800E1BC69 /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9DFF314C41EBA00E1BC69 /* libspeex.a */; };
+		34F9E01814C420B800E1BC69 /* libspeexdsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9DFF414C41EBA00E1BC69 /* libspeexdsp.a */; };
+		34F9E01914C420DD00E1BC69 /* libeXosip2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9DFEB14C41EBA00E1BC69 /* libeXosip2.a */; };
+		34F9E01A14C420DD00E1BC69 /* libgsm.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9DFEC14C41EBA00E1BC69 /* libgsm.a */; };
+		34F9E01B14C420DD00E1BC69 /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9DFEE14C41EBA00E1BC69 /* liblinphone.a */; };
+		34F9E01C14C420DD00E1BC69 /* libortp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9DFF014C41EBA00E1BC69 /* libortp.a */; };
+		34F9E01D14C420DD00E1BC69 /* libosip2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9DFF114C41EBA00E1BC69 /* libosip2.a */; };
+		34F9E01E14C420DD00E1BC69 /* libosipparser2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9DFF214C41EBA00E1BC69 /* libosipparser2.a */; };
+		34F9E01F14C420DD00E1BC69 /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9DFF314C41EBA00E1BC69 /* libspeex.a */; };
+		34F9E02014C420DD00E1BC69 /* libspeexdsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9DFF414C41EBA00E1BC69 /* libspeexdsp.a */; };
+		34F9E02114C420F000E1BC69 /* libmediastreamer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9DFEF14C41EBA00E1BC69 /* libmediastreamer.a */; };
+		34F9E02214C420FA00E1BC69 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9E00A14C4202100E1BC69 /* QuartzCore.framework */; };
+		34F9E02314C4210100E1BC69 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9E00214C41FB400E1BC69 /* OpenGLES.framework */; };
+		34F9E02414C4211000E1BC69 /* libsrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9E00414C41FCF00E1BC69 /* libsrtp.a */; };
+		34F9E02514C4211000E1BC69 /* libvpx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9E00514C41FCF00E1BC69 /* libvpx.a */; };
+		34F9E02614C4212F00E1BC69 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9E00214C41FB400E1BC69 /* OpenGLES.framework */; };
+		34F9E02714C4212F00E1BC69 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9E00A14C4202100E1BC69 /* QuartzCore.framework */; };
+		34F9E02814C4214500E1BC69 /* libeXosip2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9DFEB14C41EBA00E1BC69 /* libeXosip2.a */; };
+		34F9E02914C4214500E1BC69 /* libgsm.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9DFEC14C41EBA00E1BC69 /* libgsm.a */; };
+		34F9E02A14C4214500E1BC69 /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9DFEE14C41EBA00E1BC69 /* liblinphone.a */; };
+		34F9E02B14C4214500E1BC69 /* libmediastreamer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9DFEF14C41EBA00E1BC69 /* libmediastreamer.a */; };
+		34F9E02C14C4214500E1BC69 /* libortp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9DFF014C41EBA00E1BC69 /* libortp.a */; };
+		34F9E02D14C4214500E1BC69 /* libosip2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9DFF114C41EBA00E1BC69 /* libosip2.a */; };
+		34F9E02E14C4214500E1BC69 /* libosipparser2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9DFF214C41EBA00E1BC69 /* libosipparser2.a */; };
+		34F9E02F14C4214500E1BC69 /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9DFF314C41EBA00E1BC69 /* libspeex.a */; };
+		34F9E03014C4214500E1BC69 /* libspeexdsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9DFF414C41EBA00E1BC69 /* libspeexdsp.a */; };
+		34F9E03114C4214500E1BC69 /* libsrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9E00414C41FCF00E1BC69 /* libsrtp.a */; };
+		34F9E03214C4214500E1BC69 /* libvpx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9E00514C41FCF00E1BC69 /* libvpx.a */; };
+		34F9E03414C4247A00E1BC69 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9E03314C4247A00E1BC69 /* AVFoundation.framework */; };
+		34F9E03514C4249600E1BC69 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9E00814C41FE900E1BC69 /* CoreVideo.framework */; };
+		34F9E03714C424AF00E1BC69 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9E03614C424AF00E1BC69 /* CoreMedia.framework */; };
+		34F9E03814C4250B00E1BC69 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9E03314C4247A00E1BC69 /* AVFoundation.framework */; };
+		34F9E03914C4250B00E1BC69 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9E03614C424AF00E1BC69 /* CoreMedia.framework */; };
+		34F9E03A14C4250B00E1BC69 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9E00814C41FE900E1BC69 /* CoreVideo.framework */; };
+		34F9E03B14C4251B00E1BC69 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9E03314C4247A00E1BC69 /* AVFoundation.framework */; };
+		34F9E03C14C4251B00E1BC69 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9E03614C424AF00E1BC69 /* CoreMedia.framework */; };
+		34F9E03D14C4251B00E1BC69 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9E00814C41FE900E1BC69 /* CoreVideo.framework */; };
+		34F9E03E14C4252600E1BC69 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9E03314C4247A00E1BC69 /* AVFoundation.framework */; };
+		34F9E03F14C4253300E1BC69 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9E03614C424AF00E1BC69 /* CoreMedia.framework */; };
+		34F9E04014C4253300E1BC69 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9E00814C41FE900E1BC69 /* CoreVideo.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D6058910D05DD3D006BFB54 /* hello-world.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "hello-world.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
-		2220D596127844C9008F2C2E /* helloworld.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = helloworld.c; path = "../../liblinphone-sdk/apple-darwin/share/tutorials/linphone/helloworld.c"; sourceTree = SOURCE_ROOT; };
-		2220D5BD127845EE008F2C2E /* libeXosip2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libeXosip2.a; path = "/Users/jehanmonnier/workspaces/workspace-iphone-port/linphone-iphone/liblinphone-sdk/apple-darwin/lib/libeXosip2.a"; sourceTree = "<absolute>"; };
-		2220D5BF127845EE008F2C2E /* libgsm.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgsm.a; path = "/Users/jehanmonnier/workspaces/workspace-iphone-port/linphone-iphone/liblinphone-sdk/apple-darwin/lib/libgsm.a"; sourceTree = "<absolute>"; };
-		2220D5C1127845EE008F2C2E /* libilbc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libilbc.a; path = "/Users/jehanmonnier/workspaces/workspace-iphone-port/linphone-iphone/liblinphone-sdk/apple-darwin/lib/libilbc.a"; sourceTree = "<absolute>"; };
-		2220D5C3127845EE008F2C2E /* liblinphone.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblinphone.a; path = "/Users/jehanmonnier/workspaces/workspace-iphone-port/linphone-iphone/liblinphone-sdk/apple-darwin/lib/liblinphone.a"; sourceTree = "<absolute>"; };
-		2220D5C5127845EE008F2C2E /* libmediastreamer.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmediastreamer.a; path = "/Users/jehanmonnier/workspaces/workspace-iphone-port/linphone-iphone/liblinphone-sdk/apple-darwin/lib/libmediastreamer.a"; sourceTree = "<absolute>"; };
-		2220D5C7127845EE008F2C2E /* libortp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libortp.a; path = "/Users/jehanmonnier/workspaces/workspace-iphone-port/linphone-iphone/liblinphone-sdk/apple-darwin/lib/libortp.a"; sourceTree = "<absolute>"; };
-		2220D5C9127845EE008F2C2E /* libosip2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libosip2.a; path = "/Users/jehanmonnier/workspaces/workspace-iphone-port/linphone-iphone/liblinphone-sdk/apple-darwin/lib/libosip2.a"; sourceTree = "<absolute>"; };
-		2220D5CB127845EE008F2C2E /* libosipparser2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libosipparser2.a; path = "/Users/jehanmonnier/workspaces/workspace-iphone-port/linphone-iphone/liblinphone-sdk/apple-darwin/lib/libosipparser2.a"; sourceTree = "<absolute>"; };
-		2220D5CD127845EE008F2C2E /* libspeex.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libspeex.a; path = "/Users/jehanmonnier/workspaces/workspace-iphone-port/linphone-iphone/liblinphone-sdk/apple-darwin/lib/libspeex.a"; sourceTree = "<absolute>"; };
-		2220D5CF127845EE008F2C2E /* libspeexdsp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libspeexdsp.a; path = "/Users/jehanmonnier/workspaces/workspace-iphone-port/linphone-iphone/liblinphone-sdk/apple-darwin/lib/libspeexdsp.a"; sourceTree = "<absolute>"; };
 		2220D5D51278461C008F2C2E /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
 		2220D5D71278461C008F2C2E /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		2220D5D91278461C008F2C2E /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		2220D5E912784672008F2C2E /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
-		2294995512A53FD800D6CF48 /* buddy_status.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = buddy_status.c; path = "../../liblinphone-sdk/apple-darwin/share/tutorials/linphone/buddy_status.c"; sourceTree = SOURCE_ROOT; };
-		2294995612A53FD800D6CF48 /* chatroom.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = chatroom.c; path = "../../liblinphone-sdk/apple-darwin/share/tutorials/linphone/chatroom.c"; sourceTree = SOURCE_ROOT; };
-		2294995712A53FD800D6CF48 /* registration.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = registration.c; path = "../../liblinphone-sdk/apple-darwin/share/tutorials/linphone/registration.c"; sourceTree = SOURCE_ROOT; };
 		2294997D12A53FEE00D6CF48 /* hello-world.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "hello-world.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		229499BA12A5417D00D6CF48 /* hello-world.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "hello-world.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		229499FF12A5433F00D6CF48 /* hello-world.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "hello-world.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -125,6 +136,27 @@
 		22E5AFD0133A2E760044EA25 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = "../../liblinphone-sdk/apple-darwin/lib/libcrypto.a"; sourceTree = "<group>"; };
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		32CA4F630368D1EE00C91783 /* hello_world_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hello_world_Prefix.pch; sourceTree = "<group>"; };
+		34F9DFE314C418B600E1BC69 /* buddy_status.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = buddy_status.c; path = ../../submodules/linphone/coreapi/help/buddy_status.c; sourceTree = "<group>"; };
+		34F9DFE414C418B600E1BC69 /* chatroom.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = chatroom.c; path = ../../submodules/linphone/coreapi/help/chatroom.c; sourceTree = "<group>"; };
+		34F9DFE514C418B600E1BC69 /* helloworld.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = helloworld.c; path = ../../submodules/linphone/coreapi/help/helloworld.c; sourceTree = "<group>"; };
+		34F9DFE614C418B600E1BC69 /* registration.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = registration.c; path = ../../submodules/linphone/coreapi/help/registration.c; sourceTree = "<group>"; };
+		34F9DFEB14C41EBA00E1BC69 /* libeXosip2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libeXosip2.a; path = "../../liblinphone-sdk/apple-darwin/lib/libeXosip2.a"; sourceTree = "<group>"; };
+		34F9DFEC14C41EBA00E1BC69 /* libgsm.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgsm.a; path = "../../liblinphone-sdk/apple-darwin/lib/libgsm.a"; sourceTree = "<group>"; };
+		34F9DFED14C41EBA00E1BC69 /* libilbc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libilbc.a; path = "../../liblinphone-sdk/apple-darwin/lib/libilbc.a"; sourceTree = "<group>"; };
+		34F9DFEE14C41EBA00E1BC69 /* liblinphone.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblinphone.a; path = "../../liblinphone-sdk/apple-darwin/lib/liblinphone.a"; sourceTree = "<group>"; };
+		34F9DFEF14C41EBA00E1BC69 /* libmediastreamer.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmediastreamer.a; path = "../../liblinphone-sdk/apple-darwin/lib/libmediastreamer.a"; sourceTree = "<group>"; };
+		34F9DFF014C41EBA00E1BC69 /* libortp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libortp.a; path = "../../liblinphone-sdk/apple-darwin/lib/libortp.a"; sourceTree = "<group>"; };
+		34F9DFF114C41EBA00E1BC69 /* libosip2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libosip2.a; path = "../../liblinphone-sdk/apple-darwin/lib/libosip2.a"; sourceTree = "<group>"; };
+		34F9DFF214C41EBA00E1BC69 /* libosipparser2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libosipparser2.a; path = "../../liblinphone-sdk/apple-darwin/lib/libosipparser2.a"; sourceTree = "<group>"; };
+		34F9DFF314C41EBA00E1BC69 /* libspeex.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libspeex.a; path = "../../liblinphone-sdk/apple-darwin/lib/libspeex.a"; sourceTree = "<group>"; };
+		34F9DFF414C41EBA00E1BC69 /* libspeexdsp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libspeexdsp.a; path = "../../liblinphone-sdk/apple-darwin/lib/libspeexdsp.a"; sourceTree = "<group>"; };
+		34F9E00214C41FB400E1BC69 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		34F9E00414C41FCF00E1BC69 /* libsrtp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsrtp.a; path = "../../liblinphone-sdk/apple-darwin/lib/libsrtp.a"; sourceTree = "<group>"; };
+		34F9E00514C41FCF00E1BC69 /* libvpx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libvpx.a; path = "../../liblinphone-sdk/apple-darwin/lib/libvpx.a"; sourceTree = "<group>"; };
+		34F9E00814C41FE900E1BC69 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		34F9E00A14C4202100E1BC69 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		34F9E03314C4247A00E1BC69 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		34F9E03614C424AF00E1BC69 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		8D1107310486CEB800E47090 /* helloworld-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "helloworld-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -133,21 +165,28 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				34F9E03714C424AF00E1BC69 /* CoreMedia.framework in Frameworks */,
+				34F9E03514C4249600E1BC69 /* CoreVideo.framework in Frameworks */,
+				34F9E03414C4247A00E1BC69 /* AVFoundation.framework in Frameworks */,
+				34F9E00B14C4202100E1BC69 /* QuartzCore.framework in Frameworks */,
+				34F9E00614C41FCF00E1BC69 /* libsrtp.a in Frameworks */,
+				34F9E00714C41FCF00E1BC69 /* libvpx.a in Frameworks */,
+				34F9E00314C41FB400E1BC69 /* OpenGLES.framework in Frameworks */,
+				34F9DFF514C41EBA00E1BC69 /* libeXosip2.a in Frameworks */,
+				34F9DFF614C41EBA00E1BC69 /* libgsm.a in Frameworks */,
+				34F9DFF714C41EBA00E1BC69 /* libilbc.a in Frameworks */,
+				34F9DFF814C41EBA00E1BC69 /* liblinphone.a in Frameworks */,
+				34F9DFF914C41EBA00E1BC69 /* libmediastreamer.a in Frameworks */,
+				34F9DFFA14C41EBA00E1BC69 /* libortp.a in Frameworks */,
+				34F9DFFB14C41EBA00E1BC69 /* libosip2.a in Frameworks */,
+				34F9DFFC14C41EBA00E1BC69 /* libosipparser2.a in Frameworks */,
+				34F9DFFD14C41EBA00E1BC69 /* libspeex.a in Frameworks */,
+				34F9DFFE14C41EBA00E1BC69 /* libspeexdsp.a in Frameworks */,
 				22E5AFC5133A2E260044EA25 /* libssl.a in Frameworks */,
 				22E5AFC6133A2E260044EA25 /* libcrypto.a in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */,
-				2220D5BE127845EE008F2C2E /* libeXosip2.a in Frameworks */,
-				2220D5C0127845EE008F2C2E /* libgsm.a in Frameworks */,
-				2220D5C2127845EE008F2C2E /* libilbc.a in Frameworks */,
-				2220D5C4127845EE008F2C2E /* liblinphone.a in Frameworks */,
-				2220D5C6127845EE008F2C2E /* libmediastreamer.a in Frameworks */,
-				2220D5C8127845EE008F2C2E /* libortp.a in Frameworks */,
-				2220D5CA127845EE008F2C2E /* libosip2.a in Frameworks */,
-				2220D5CC127845EE008F2C2E /* libosipparser2.a in Frameworks */,
-				2220D5CE127845EE008F2C2E /* libspeex.a in Frameworks */,
-				2220D5D0127845EE008F2C2E /* libspeexdsp.a in Frameworks */,
 				2220D5D81278461C008F2C2E /* CFNetwork.framework in Frameworks */,
 				2220D5DA1278461C008F2C2E /* CoreAudio.framework in Frameworks */,
 				2220D5EA12784672008F2C2E /* AudioToolbox.framework in Frameworks */,
@@ -159,21 +198,27 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				34F9E03F14C4253300E1BC69 /* CoreMedia.framework in Frameworks */,
+				34F9E04014C4253300E1BC69 /* CoreVideo.framework in Frameworks */,
+				34F9E03E14C4252600E1BC69 /* AVFoundation.framework in Frameworks */,
+				34F9E01614C420B800E1BC69 /* libgsm.a in Frameworks */,
+				34F9E01714C420B800E1BC69 /* libspeex.a in Frameworks */,
+				34F9E01814C420B800E1BC69 /* libspeexdsp.a in Frameworks */,
+				34F9E01414C420A200E1BC69 /* libosip2.a in Frameworks */,
+				34F9E01514C420A200E1BC69 /* libosipparser2.a in Frameworks */,
+				34F9E01114C4208C00E1BC69 /* libeXosip2.a in Frameworks */,
+				34F9E01214C4208C00E1BC69 /* libmediastreamer.a in Frameworks */,
+				34F9E01314C4208C00E1BC69 /* libortp.a in Frameworks */,
+				34F9E01014C4207700E1BC69 /* liblinphone.a in Frameworks */,
+				34F9E00E14C4204600E1BC69 /* libsrtp.a in Frameworks */,
+				34F9E00F14C4204600E1BC69 /* libvpx.a in Frameworks */,
+				34F9E00C14C4203900E1BC69 /* OpenGLES.framework in Frameworks */,
+				34F9E00D14C4203900E1BC69 /* QuartzCore.framework in Frameworks */,
 				22E5AFC9133A2E3F0044EA25 /* libssl.a in Frameworks */,
 				22E5AFCA133A2E3F0044EA25 /* libcrypto.a in Frameworks */,
 				2294996912A53FEE00D6CF48 /* Foundation.framework in Frameworks */,
 				2294996A12A53FEE00D6CF48 /* UIKit.framework in Frameworks */,
 				2294996B12A53FEE00D6CF48 /* CoreGraphics.framework in Frameworks */,
-				2294996C12A53FEE00D6CF48 /* libeXosip2.a in Frameworks */,
-				2294996D12A53FEE00D6CF48 /* libgsm.a in Frameworks */,
-				2294996E12A53FEE00D6CF48 /* libilbc.a in Frameworks */,
-				2294996F12A53FEE00D6CF48 /* liblinphone.a in Frameworks */,
-				2294997012A53FEE00D6CF48 /* libmediastreamer.a in Frameworks */,
-				2294997112A53FEE00D6CF48 /* libortp.a in Frameworks */,
-				2294997212A53FEE00D6CF48 /* libosip2.a in Frameworks */,
-				2294997312A53FEE00D6CF48 /* libosipparser2.a in Frameworks */,
-				2294997412A53FEE00D6CF48 /* libspeex.a in Frameworks */,
-				2294997512A53FEE00D6CF48 /* libspeexdsp.a in Frameworks */,
 				2294997612A53FEE00D6CF48 /* CFNetwork.framework in Frameworks */,
 				2294997712A53FEE00D6CF48 /* CoreAudio.framework in Frameworks */,
 				2294997812A53FEE00D6CF48 /* AudioToolbox.framework in Frameworks */,
@@ -185,21 +230,27 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				34F9E03B14C4251B00E1BC69 /* AVFoundation.framework in Frameworks */,
+				34F9E03C14C4251B00E1BC69 /* CoreMedia.framework in Frameworks */,
+				34F9E03D14C4251B00E1BC69 /* CoreVideo.framework in Frameworks */,
+				34F9E02414C4211000E1BC69 /* libsrtp.a in Frameworks */,
+				34F9E02514C4211000E1BC69 /* libvpx.a in Frameworks */,
+				34F9E02314C4210100E1BC69 /* OpenGLES.framework in Frameworks */,
+				34F9E02214C420FA00E1BC69 /* QuartzCore.framework in Frameworks */,
+				34F9E02114C420F000E1BC69 /* libmediastreamer.a in Frameworks */,
+				34F9E01914C420DD00E1BC69 /* libeXosip2.a in Frameworks */,
+				34F9E01A14C420DD00E1BC69 /* libgsm.a in Frameworks */,
+				34F9E01B14C420DD00E1BC69 /* liblinphone.a in Frameworks */,
+				34F9E01C14C420DD00E1BC69 /* libortp.a in Frameworks */,
+				34F9E01D14C420DD00E1BC69 /* libosip2.a in Frameworks */,
+				34F9E01E14C420DD00E1BC69 /* libosipparser2.a in Frameworks */,
+				34F9E01F14C420DD00E1BC69 /* libspeex.a in Frameworks */,
+				34F9E02014C420DD00E1BC69 /* libspeexdsp.a in Frameworks */,
 				22E5AFCD133A2E5C0044EA25 /* libssl.a in Frameworks */,
 				22E5AFCE133A2E5C0044EA25 /* libcrypto.a in Frameworks */,
 				229499A612A5417D00D6CF48 /* Foundation.framework in Frameworks */,
 				229499A712A5417D00D6CF48 /* UIKit.framework in Frameworks */,
 				229499A812A5417D00D6CF48 /* CoreGraphics.framework in Frameworks */,
-				229499A912A5417D00D6CF48 /* libeXosip2.a in Frameworks */,
-				229499AA12A5417D00D6CF48 /* libgsm.a in Frameworks */,
-				229499AB12A5417D00D6CF48 /* libilbc.a in Frameworks */,
-				229499AC12A5417D00D6CF48 /* liblinphone.a in Frameworks */,
-				229499AD12A5417D00D6CF48 /* libmediastreamer.a in Frameworks */,
-				229499AE12A5417D00D6CF48 /* libortp.a in Frameworks */,
-				229499AF12A5417D00D6CF48 /* libosip2.a in Frameworks */,
-				229499B012A5417D00D6CF48 /* libosipparser2.a in Frameworks */,
-				229499B112A5417D00D6CF48 /* libspeex.a in Frameworks */,
-				229499B212A5417D00D6CF48 /* libspeexdsp.a in Frameworks */,
 				229499B312A5417D00D6CF48 /* CFNetwork.framework in Frameworks */,
 				229499B412A5417D00D6CF48 /* CoreAudio.framework in Frameworks */,
 				229499B512A5417D00D6CF48 /* AudioToolbox.framework in Frameworks */,
@@ -211,21 +262,27 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				34F9E03814C4250B00E1BC69 /* AVFoundation.framework in Frameworks */,
+				34F9E03914C4250B00E1BC69 /* CoreMedia.framework in Frameworks */,
+				34F9E03A14C4250B00E1BC69 /* CoreVideo.framework in Frameworks */,
+				34F9E02814C4214500E1BC69 /* libeXosip2.a in Frameworks */,
+				34F9E02914C4214500E1BC69 /* libgsm.a in Frameworks */,
+				34F9E02A14C4214500E1BC69 /* liblinphone.a in Frameworks */,
+				34F9E02B14C4214500E1BC69 /* libmediastreamer.a in Frameworks */,
+				34F9E02C14C4214500E1BC69 /* libortp.a in Frameworks */,
+				34F9E02D14C4214500E1BC69 /* libosip2.a in Frameworks */,
+				34F9E02E14C4214500E1BC69 /* libosipparser2.a in Frameworks */,
+				34F9E02F14C4214500E1BC69 /* libspeex.a in Frameworks */,
+				34F9E03014C4214500E1BC69 /* libspeexdsp.a in Frameworks */,
+				34F9E03114C4214500E1BC69 /* libsrtp.a in Frameworks */,
+				34F9E03214C4214500E1BC69 /* libvpx.a in Frameworks */,
+				34F9E02614C4212F00E1BC69 /* OpenGLES.framework in Frameworks */,
+				34F9E02714C4212F00E1BC69 /* QuartzCore.framework in Frameworks */,
 				22E5AFD1133A2E760044EA25 /* libssl.a in Frameworks */,
 				22E5AFD2133A2E760044EA25 /* libcrypto.a in Frameworks */,
 				229499EB12A5433F00D6CF48 /* Foundation.framework in Frameworks */,
 				229499EC12A5433F00D6CF48 /* UIKit.framework in Frameworks */,
 				229499ED12A5433F00D6CF48 /* CoreGraphics.framework in Frameworks */,
-				229499EE12A5433F00D6CF48 /* libeXosip2.a in Frameworks */,
-				229499EF12A5433F00D6CF48 /* libgsm.a in Frameworks */,
-				229499F012A5433F00D6CF48 /* libilbc.a in Frameworks */,
-				229499F112A5433F00D6CF48 /* liblinphone.a in Frameworks */,
-				229499F212A5433F00D6CF48 /* libmediastreamer.a in Frameworks */,
-				229499F312A5433F00D6CF48 /* libortp.a in Frameworks */,
-				229499F412A5433F00D6CF48 /* libosip2.a in Frameworks */,
-				229499F512A5433F00D6CF48 /* libosipparser2.a in Frameworks */,
-				229499F612A5433F00D6CF48 /* libspeex.a in Frameworks */,
-				229499F712A5433F00D6CF48 /* libspeexdsp.a in Frameworks */,
 				229499F812A5433F00D6CF48 /* CFNetwork.framework in Frameworks */,
 				229499F912A5433F00D6CF48 /* CoreAudio.framework in Frameworks */,
 				229499FA12A5433F00D6CF48 /* AudioToolbox.framework in Frameworks */,
@@ -257,6 +314,23 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				34F9E03614C424AF00E1BC69 /* CoreMedia.framework */,
+				34F9E03314C4247A00E1BC69 /* AVFoundation.framework */,
+				34F9E00A14C4202100E1BC69 /* QuartzCore.framework */,
+				34F9E00814C41FE900E1BC69 /* CoreVideo.framework */,
+				34F9E00414C41FCF00E1BC69 /* libsrtp.a */,
+				34F9E00514C41FCF00E1BC69 /* libvpx.a */,
+				34F9E00214C41FB400E1BC69 /* OpenGLES.framework */,
+				34F9DFEB14C41EBA00E1BC69 /* libeXosip2.a */,
+				34F9DFEC14C41EBA00E1BC69 /* libgsm.a */,
+				34F9DFED14C41EBA00E1BC69 /* libilbc.a */,
+				34F9DFEE14C41EBA00E1BC69 /* liblinphone.a */,
+				34F9DFEF14C41EBA00E1BC69 /* libmediastreamer.a */,
+				34F9DFF014C41EBA00E1BC69 /* libortp.a */,
+				34F9DFF114C41EBA00E1BC69 /* libosip2.a */,
+				34F9DFF214C41EBA00E1BC69 /* libosipparser2.a */,
+				34F9DFF314C41EBA00E1BC69 /* libspeex.a */,
+				34F9DFF414C41EBA00E1BC69 /* libspeexdsp.a */,
 				22E5AFCF133A2E760044EA25 /* libssl.a */,
 				22E5AFD0133A2E760044EA25 /* libcrypto.a */,
 				22E5AFCB133A2E5C0044EA25 /* libssl.a */,
@@ -270,16 +344,6 @@
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
-				2220D5BD127845EE008F2C2E /* libeXosip2.a */,
-				2220D5BF127845EE008F2C2E /* libgsm.a */,
-				2220D5C1127845EE008F2C2E /* libilbc.a */,
-				2220D5C3127845EE008F2C2E /* liblinphone.a */,
-				2220D5C5127845EE008F2C2E /* libmediastreamer.a */,
-				2220D5C7127845EE008F2C2E /* libortp.a */,
-				2220D5C9127845EE008F2C2E /* libosip2.a */,
-				2220D5CB127845EE008F2C2E /* libosipparser2.a */,
-				2220D5CD127845EE008F2C2E /* libspeex.a */,
-				2220D5CF127845EE008F2C2E /* libspeexdsp.a */,
 				2220D5D51278461C008F2C2E /* AudioUnit.framework */,
 				2220D5D71278461C008F2C2E /* CFNetwork.framework */,
 				2220D5D91278461C008F2C2E /* CoreAudio.framework */,
@@ -292,10 +356,10 @@
 		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
 			isa = PBXGroup;
 			children = (
-				2294995512A53FD800D6CF48 /* buddy_status.c */,
-				2294995612A53FD800D6CF48 /* chatroom.c */,
-				2294995712A53FD800D6CF48 /* registration.c */,
-				2220D596127844C9008F2C2E /* helloworld.c */,
+				34F9DFE314C418B600E1BC69 /* buddy_status.c */,
+				34F9DFE414C418B600E1BC69 /* chatroom.c */,
+				34F9DFE514C418B600E1BC69 /* helloworld.c */,
+				34F9DFE614C418B600E1BC69 /* registration.c */,
 				32CA4F630368D1EE00C91783 /* hello_world_Prefix.pch */,
 			);
 			name = "Other Sources";
@@ -453,7 +517,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2220D597127844C9008F2C2E /* helloworld.c in Sources */,
+				34F9DFE914C418B600E1BC69 /* helloworld.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -461,7 +525,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2294996712A53FEE00D6CF48 /* registration.c in Sources */,
+				34F9E00114C41F5300E1BC69 /* registration.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -469,7 +533,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				229499BD12A5419500D6CF48 /* chatroom.c in Sources */,
+				34F9E00014C41F4E00E1BC69 /* chatroom.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -477,7 +541,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				22DF2B1612A65892007C6B74 /* buddy_status.c in Sources */,
+				34F9DFFF14C41F4900E1BC69 /* buddy_status.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -493,6 +557,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = hello_world_Prefix.pch;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				INFOPLIST_FILE = "helloworld-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
 				LIBRARY_SEARCH_PATHS = (
@@ -511,6 +576,7 @@
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = hello_world_Prefix.pch;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				INFOPLIST_FILE = "helloworld-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
 				LIBRARY_SEARCH_PATHS = (
@@ -532,6 +598,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = hello_world_Prefix.pch;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				INFOPLIST_FILE = "helloworld-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
 				LIBRARY_SEARCH_PATHS = (
@@ -551,6 +618,7 @@
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = hello_world_Prefix.pch;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				INFOPLIST_FILE = "helloworld-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
 				LIBRARY_SEARCH_PATHS = (
@@ -573,6 +641,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = hello_world_Prefix.pch;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				INFOPLIST_FILE = "helloworld-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
 				LIBRARY_SEARCH_PATHS = (
@@ -592,6 +661,7 @@
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = hello_world_Prefix.pch;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				INFOPLIST_FILE = "helloworld-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
 				LIBRARY_SEARCH_PATHS = (
@@ -614,6 +684,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = hello_world_Prefix.pch;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				INFOPLIST_FILE = "helloworld-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
 				LIBRARY_SEARCH_PATHS = (
@@ -633,6 +704,7 @@
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = hello_world_Prefix.pch;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				INFOPLIST_FILE = "helloworld-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
 				LIBRARY_SEARCH_PATHS = (

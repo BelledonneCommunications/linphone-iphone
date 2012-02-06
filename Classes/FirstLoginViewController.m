@@ -77,9 +77,11 @@
 								 cancelButtonTitle:NSLocalizedString(@"Continue",nil) 
 								 otherButtonTitles:nil];
 		[error show];
+        [error release];
 	} else {
 		[[NSUserDefaults standardUserDefaults] setObject:username.text forKey:@"username_preference"];
 		[[NSUserDefaults standardUserDefaults] setObject:passwd.text forKey:@"password_preference"];
+        [[LinphoneManager instance] reconfigureLinphoneIfNeeded:nil];
 		[self.activityIndicator setHidden:false];
 	};
 	
@@ -89,7 +91,6 @@
 	[[NSUserDefaults standardUserDefaults] setBool:false forKey:@"enable_first_login_view_preference"]; 
 	[self.parentViewController dismissModalViewControllerAnimated:true];
 	[self.activityIndicator setHidden:true];
-	[[LinphoneManager instance] setRegistrationDelegate:nil]; 
 }
 -(void) displayRegisteringFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName onDomain:(NSString*)domain {
 	[self.activityIndicator setHidden:false];
@@ -104,6 +105,7 @@
 										  cancelButtonTitle:@"Continue" 
 										  otherButtonTitles:nil ,nil];
 	[error show];
+    [error release];
 	//erase uername passwd
 	[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"username_preference"];
 	[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"password_preference"];

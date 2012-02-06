@@ -43,6 +43,7 @@
 									target:self 
 									action:@selector(doAction:)]; 
 	[self.navigationItem setRightBarButtonItem:clearButton];
+    [clearButton release];
 }
 
 /*
@@ -144,15 +145,17 @@
 	
 	const char* username = linphone_address_get_username(partyToDisplay)!=0?linphone_address_get_username(partyToDisplay):"";
 	const char* displayName = linphone_address_get_display_name(partyToDisplay);
-	if (displayName) {
-		[cell.textLabel setText:[[NSString alloc] initWithCString:displayName encoding:[NSString defaultCStringEncoding]]];
-		[cell.detailTextLabel setText:[NSString stringWithFormat:@"%s"/* [%s]"*/,username/*,callLogs->start_date*/]];
-	} else {
-		[cell.textLabel setText:[[NSString alloc] initWithCString:username encoding:[NSString defaultCStringEncoding]]];
-		[cell.detailTextLabel setText:nil];
-	}
-	
 
+	if (displayName) {
+        NSString* str1 = [NSString stringWithCString:displayName encoding:[NSString defaultCStringEncoding]];
+		[cell.textLabel setText:str1];
+        NSString* str2 = [NSString stringWithFormat:@"%s"/* [%s]"*/,username/*,callLogs->start_date*/];
+		[cell.detailTextLabel setText:str2];
+    } else {
+        NSString* str1 = [NSString stringWithCString:username encoding:[NSString defaultCStringEncoding]];
+        [cell.textLabel setText:str1];
+        [cell.detailTextLabel setText:nil];
+    }
 	
     return cell;
 }
@@ -189,10 +192,14 @@
 	} else {
 		phoneNumber = [[NSString alloc] initWithCString:linphone_address_as_string_uri_only(partyToCall) encoding:[NSString defaultCStringEncoding]];
 	}
+    
+    NSString* dispName = [[NSString alloc] initWithCString:displayName encoding:[NSString defaultCStringEncoding]];
+    
 	[[LinphoneManager instance].callDelegate displayDialerFromUI:self 
 														 forUser:phoneNumber 
-												 withDisplayName:[[NSString alloc] initWithCString:displayName encoding:[NSString defaultCStringEncoding]]];
-	
+												 withDisplayName:dispName];
+	[phoneNumber release];
+    [dispName release];
 }
 
 

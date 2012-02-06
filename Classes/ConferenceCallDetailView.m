@@ -1,10 +1,21 @@
-//
-//  ConferenceCallDetailView.m
-//  linphone
-//
-//  Created by Pierre-Eric Pelloux-Prayer on 25/11/11.
-//  Copyright (c) 2011 Belledonne Communications. All rights reserved.
-//
+/* ConferenceCallDetailView.m
+ *
+ * Copyright (C) 2011  Belledonne Comunications, Grenoble, France
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or   
+ *  (at your option) any later version.                                 
+ *                                                                      
+ *  This program is distributed in the hope that it will be useful,     
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of      
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       
+ *  GNU Library General Public License for more details.                
+ *                                                                      
+ *  You should have received a copy of the GNU General Public License   
+ *  along with this program; if not, write to the Free Software         
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */     
 
 #import "ConferenceCallDetailView.h"
 #import "linphonecore.h"
@@ -18,8 +29,11 @@
 @synthesize back;
 @synthesize hangup;
 @synthesize table;
+@synthesize addCall;
 
 @synthesize conferenceDetailCell;
+
+NSTimer *callQualityRefresher;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -48,8 +62,8 @@
     
     table.rowHeight = 80;
     
-    [mute initWithOnImage:[UIImage imageNamed:@"micro_inverse.png"]  offImage:[UIImage imageNamed:@"micro.png"] ];
-    [speaker initWithOnImage:[UIImage imageNamed:@"HP_inverse.png"]  offImage:[UIImage imageNamed:@"HP.png"] ];
+    [mute initWithOnImage:[UIImage imageNamed:@"micro_inverse.png"]  offImage:[UIImage imageNamed:@"micro.png"] debugName:"MUTE button"];
+    [speaker initWithOnImage:[UIImage imageNamed:@"HP_inverse.png"]  offImage:[UIImage imageNamed:@"HP.png"] debugName:"SPEAKER button"];
 }
 
 -(void) backButtonPressed {
@@ -73,6 +87,29 @@
     [table reloadData];
     [mute reset];
     [speaker reset];
+    [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
+}
+
+-(void) viewDidAppear:(BOOL)animated {
+	callQualityRefresher = [NSTimer scheduledTimerWithTimeInterval:1
+							target:self 
+							selector:@selector(updateCallQuality) 
+							userInfo:nil 
+							repeats:YES];
+}
+
+-(void) viewDidDisappear:(BOOL)animated {
+    [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
+    
+	if (callQualityRefresher != nil) {
+        [callQualityRefresher invalidate];
+        callQualityRefresher=nil;
+	}
+}
+
+-(void) updateCallQuality {
+	[table reloadData];
+	[table setNeedsDisplay];
 }
 
 #pragma mark - UITableView delegates
@@ -97,10 +134,36 @@
     UILabel* label = (UILabel*) [cell viewWithTag:2];
     
     /* update cell content */
-    LinphoneCall* call = [IncallViewController retrieveCallAtIndex:indexPath.row inConference:YES];
+	LinphoneCall* call = [IncallViewController retrieveCallAtIndex:indexPath.row inConference:YES];
     [IncallViewController updateCellImageView:image Label:label DetailLabel:nil AndAccessoryView:nil withCall:call];
     
-    tableView.rowHeight = 80;//cell.bounds.size.height;
+	cell.accessoryType = UITableViewCellAccessoryNone;
+	if (cell.accessoryView == nil) {
+		UIView *containerView = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, 28, 28)] autorelease];
+		cell.accessoryView = containerView;
+	}
+	else {
+		for (UIView *view in cell.accessoryView.subviews) {
+			[view removeFromSuperview];
+		}
+	}
+	UIImageView* callquality = (UIImageView*) [cell viewWithTag:3];
+	if (linphone_call_get_average_quality(call) >= 4) {
+		[callquality setImage: [IncallViewController stat_sys_signal_4]];
+	}
+	else if (linphone_call_get_average_quality(call) >= 3) {
+		[callquality setImage: [IncallViewController stat_sys_signal_3]];
+	}
+	else if (linphone_call_get_average_quality(call) >= 2) {
+		[callquality setImage: [IncallViewController stat_sys_signal_2]];
+	}
+	else if (linphone_call_get_average_quality(call) >= 1) {
+		[callquality setImage: [IncallViewController stat_sys_signal_1]];
+	}
+	else {
+		[callquality setImage: [IncallViewController stat_sys_signal_0]];
+	}
+    tableView.rowHeight = 80;
     
     return cell;
 }

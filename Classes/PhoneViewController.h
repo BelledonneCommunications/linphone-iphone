@@ -21,13 +21,14 @@
 #import "linphonecore.h"
 #import "UILinphone.h"
 #import "CallDelegate.h"
+#import "StatusSubViewController.h"
 
-
+@class MainScreenWithVideoPreview;
 @class IncallViewController;
 @class FirstLoginViewController;
 
 
-@interface PhoneViewController : UIViewController <UITextFieldDelegate,LinphoneUICallDelegate, UIActionSheetCustomDelegate> {
+@interface PhoneViewController : UIViewController <UITextFieldDelegate,LinphoneUICallDelegate, UIActionSheetCustomDelegate, LinphoneUIRegistrationDelegate> {
 
 @private
 	//UI definition
@@ -54,14 +55,18 @@
 	UIDigitButton* zero;
 	UIDigitButton* hash;
 
-	UIButton* back;
 	UIButton* backToCallView;
+    UIView* statusViewHolder;
 	
 	UITabBarController*  myTabBarController;
 
 	UIActionSheet *mIncomingCallActionSheet;
 	FirstLoginViewController* myFirstLoginViewController;
 	IncallViewController* mIncallViewController;
+    MainScreenWithVideoPreview* mMainScreenWithVideoPreview;
+    StatusSubViewController* statusSubViewController;
+    
+    UIButton* switchCamera;
 }
 
 @property (nonatomic, retain) IBOutlet UIView* dialerView;
@@ -69,7 +74,6 @@
 @property (nonatomic, retain) IBOutlet UITextField* address;
 @property (nonatomic, retain) IBOutlet UIButton* callShort;
 @property (nonatomic, retain) IBOutlet UIButton* callLarge;
-@property (nonatomic, retain) IBOutlet UIButton* hangup;
 @property (nonatomic, retain) IBOutlet UILabel* status;
 @property (nonatomic, retain) IBOutlet UIEraseButton* erase;
 
@@ -86,13 +90,12 @@
 @property (nonatomic, retain) IBOutlet UIButton* zero;
 @property (nonatomic, retain) IBOutlet UIButton* hash;
 
-@property (nonatomic, retain) IBOutlet UIButton* back;
+@property (nonatomic, retain) IBOutlet UIView* statusViewHolder;
+
 @property (nonatomic, retain) IBOutlet UIButton* backToCallView;
 
-
-// method to handle keypad event
-- (IBAction)doKeyPad:(id)sender;
-
+@property (nonatomic, retain) IBOutlet UIButton* switchCamera;
 
 @property (nonatomic, retain) IBOutlet UITabBarController*  myTabBarController;
+@property (nonatomic, retain) IBOutlet MainScreenWithVideoPreview*  mMainScreenWithVideoPreview;
 @end

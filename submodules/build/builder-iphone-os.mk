@@ -128,7 +128,7 @@ $(LINPHONE_BUILD_DIR)/Makefile: $(LINPHONE_SRC_DIR)/configure
         ${linphone_configure_controls}\033[0m"
 	cd $(LINPHONE_BUILD_DIR) && \
 	PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
-	$(LINPHONE_SRC_DIR)/configure -prefix=$(prefix) --host=$(host) ${library_mode} \
+	CFLAGS="$(CFLAGS) -DMS2_MINIMAL_SIZE" $(LINPHONE_SRC_DIR)/configure -prefix=$(prefix) --host=$(host) ${library_mode} \
 	${linphone_configure_controls}
 	
 

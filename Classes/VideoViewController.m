@@ -28,6 +28,7 @@
 @synthesize mMute;
 @synthesize mHangUp;
 @synthesize mCamSwitch;
+@synthesize mCallQuality;
 
 @synthesize mLandscapeRight;
 @synthesize mDisplayLandRight;
@@ -35,6 +36,7 @@
 @synthesize mMuteLandRight;
 @synthesize mHangUpLandRight;
 @synthesize mCamSwitchLandRight;
+@synthesize mCallQualityLandRight;
 
 @synthesize mLandscapeLeft;
 @synthesize mDisplayLandLeft;
@@ -42,6 +44,9 @@
 @synthesize mMuteLandLeft;
 @synthesize mHangUpLandLeft;
 @synthesize mCamSwitchLandLeft;
+@synthesize mCallQualityLandLeft;
+
+NSTimer *callQualityRefresher;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -54,6 +59,9 @@
 
 - (void)dealloc
 {
+	[mCallQuality release];
+	[mCallQualityLandRight release];
+	[mCallQualityLandLeft release];
     [super dealloc];
 }
 
@@ -70,13 +78,47 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	[mMute initWithOnImage:[UIImage imageNamed:@"micro_inverse.png"]  offImage:[UIImage imageNamed:@"micro.png"] ];
-	[mMuteLandRight initWithOnImage:[UIImage imageNamed:@"micro_inverse.png"]  offImage:[UIImage imageNamed:@"micro.png"] ];
-	[mMuteLandLeft initWithOnImage:[UIImage imageNamed:@"micro_inverse.png"]  offImage:[UIImage imageNamed:@"micro.png"] ];
+	[mMute initWithOnImage:[UIImage imageNamed:@"micro_inverse.png"]  offImage:[UIImage imageNamed:@"micro.png"] debugName:"MUTE button"];
+	[mMuteLandRight initWithOnImage:[UIImage imageNamed:@"micro_inverse.png"]  offImage:[UIImage imageNamed:@"micro.png"] debugName:"MUTE2 button"];
+	[mMuteLandLeft initWithOnImage:[UIImage imageNamed:@"micro_inverse.png"]  offImage:[UIImage imageNamed:@"micro.png"] debugName:"MUTE3 button"];
 	[mCamSwitch setPreview:mPreview];
 	[mCamSwitchLandRight setPreview:mPreviewLandRight];
 	[mCamSwitchLandLeft setPreview:mPreviewLandLeft];
+	
 	isFirst=TRUE;
+}
+
+- (void) updateCallQualityIndicator
+{
+	LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
+	if (!call)
+        return;
+    
+	if (linphone_call_get_average_quality(call) >= 4) {
+		[mCallQuality setImage: [UIImage imageNamed:@"stat_sys_signal_4.png"]];
+		[mCallQualityLandRight setImage: [UIImage imageNamed:@"stat_sys_signal_4.png"]];
+		[mCallQualityLandLeft setImage: [UIImage imageNamed:@"stat_sys_signal_4.png"]];
+	}
+	else if (linphone_call_get_average_quality(call) >= 3) {
+		[mCallQuality setImage: [UIImage imageNamed:@"stat_sys_signal_3.png"]];
+		[mCallQualityLandRight setImage: [UIImage imageNamed:@"stat_sys_signal_3.png"]];
+		[mCallQualityLandLeft setImage: [UIImage imageNamed:@"stat_sys_signal_3.png"]];
+	}
+	else if (linphone_call_get_average_quality(call) >= 2) {
+		[mCallQuality setImage: [UIImage imageNamed:@"stat_sys_signal_2.png"]];
+		[mCallQualityLandRight setImage: [UIImage imageNamed:@"stat_sys_signal_2.png"]];
+		[mCallQualityLandLeft setImage: [UIImage imageNamed:@"stat_sys_signal_2.png"]];
+	}
+	else if (linphone_call_get_average_quality(call) >= 1) {
+		[mCallQuality setImage: [UIImage imageNamed:@"stat_sys_signal_1.png"]];
+		[mCallQualityLandRight setImage: [UIImage imageNamed:@"stat_sys_signal_1.png"]];
+		[mCallQualityLandLeft setImage: [UIImage imageNamed:@"stat_sys_signal_1.png"]];
+	}
+	else {
+		[mCallQuality setImage: [UIImage imageNamed:@"stat_sys_signal_0.png"]];
+		[mCallQualityLandRight setImage: [UIImage imageNamed:@"stat_sys_signal_0.png"]];
+		[mCallQualityLandLeft setImage: [UIImage imageNamed:@"stat_sys_signal_0.png"]];
+	}
 }
 
 
@@ -113,6 +155,10 @@
 
 - (void)viewDidUnload
 {
+	[mCallQuality release];
+	mCallQuality = nil;
+	[self setMCallQualityLandRight:nil];
+	[self setMCallQualityLandLeft:nil];
     [super viewDidUnload];
 	
     // Release any retained subviews of the main view.
@@ -124,6 +170,11 @@
     [super viewDidDisappear:animated];
 	[[UIApplication sharedApplication] setIdleTimerDisabled:NO];
 	linphone_core_set_max_calls([LinphoneManager getLc], maxCall);
+	
+	if (callQualityRefresher != nil) {
+        [callQualityRefresher invalidate];
+        callQualityRefresher=nil;
+	}
 }
 
 -(void) viewWillAppear:(BOOL)animated {
@@ -149,13 +200,20 @@
 - (void) viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
 	[[UIApplication sharedApplication] setIdleTimerDisabled:YES];
+	
+	callQualityRefresher = [NSTimer scheduledTimerWithTimeInterval:1
+															target:self 
+														  selector:@selector(updateCallQualityIndicator) 
+														  userInfo:nil 
+														   repeats:YES];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    // Return YES for supported orientations
-    return  interfaceOrientation == UIInterfaceOrientationPortrait 
+    BOOL result = interfaceOrientation == UIInterfaceOrientationPortrait 
 			|| interfaceOrientation == UIInterfaceOrientationLandscapeRight 
 			|| interfaceOrientation == UIInterfaceOrientationLandscapeLeft;
+    
+    return result;
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {

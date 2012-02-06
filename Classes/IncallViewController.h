@@ -22,12 +22,13 @@
 #import "ConferenceCallDetailView.h"
 #import <AddressBookUI/ABPeoplePickerNavigationController.h>
 #include "UILinphone.h"
+
 @class VideoViewController;
 
 @interface IncallViewController : UIViewController <ABPeoplePickerNavigationControllerDelegate,LinphoneUICallDelegate, UITableViewDelegate, UITableViewDataSource, UIActionSheetCustomDelegate> {
 	
 	
-	UIView* controlSubView, *callControlSubView, *hangUpView;
+	UIView* controlSubView, *hangUpView;
 	
 	UIButton* endCtrl;
 	UIButton* dialer;
@@ -37,7 +38,7 @@
 	UIButton* contacts;
 	UIButton* addVideo;
     UITableView* callTableView;
-    UIButton* addCall, *mergeCalls, *addToConf;
+    UIButton* addCall, *mergeCalls;
 
 	
 	//key pad
@@ -76,22 +77,27 @@
 	BOOL mIncallViewIsReady;
     
     UIImage* verified, *unverified;
+	UIImage* stat_sys_signal_0, *stat_sys_signal_1, *stat_sys_signal_2, *stat_sys_signal_3, *stat_sys_signal_4;
     UIActionSheet* zrtpVerificationSheet;
 }
+
++ (UIImage*) stat_sys_signal_0;
++ (UIImage*) stat_sys_signal_1;
++ (UIImage*) stat_sys_signal_2;
++ (UIImage*) stat_sys_signal_3;
++ (UIImage*) stat_sys_signal_4;
 
 -(void)displayStatus:(NSString*) message;
 
 - (IBAction)doAction:(id)sender;
 
 +(LinphoneCall*) retrieveCallAtIndex: (NSInteger) index inConference:(bool) conf;
-+ (void) updateCellImageView:(UIImageView*)imageView Label:(UILabel*)label DetailLabel:(UILabel*)detailLabel AndAccessoryView:(UIButton*)accessoryView withCall:(LinphoneCall*) call;
++ (void) updateCellImageView:(UIImageView*)imageView Label:(UILabel*)label DetailLabel:(UILabel*)detailLabel AndAccessoryView:(UIView*)accessoryView withCall:(LinphoneCall*) call;
 
 @property (nonatomic, retain) IBOutlet UIView* controlSubView;
-@property (nonatomic, retain) IBOutlet UIView* callControlSubView;
 @property (nonatomic, retain) IBOutlet UIView* padSubView;
 @property (nonatomic, retain) IBOutlet UIView* hangUpView;
 @property (nonatomic, retain) IBOutlet UIViewController* conferenceDetail;
-
 
 @property (nonatomic, retain) IBOutlet UIButton* endCtrl;
 @property (nonatomic, retain) IBOutlet UIButton* dialer;
@@ -103,7 +109,6 @@
 @property (nonatomic, retain) IBOutlet UITableView* callTableView;
 @property (nonatomic, retain) IBOutlet UIButton* addCall;
 @property (nonatomic, retain) IBOutlet UIButton* mergeCalls;
-@property (nonatomic, retain) IBOutlet UIButton* addToConf;
 
 @property (nonatomic, retain) IBOutlet UIButton* one;
 @property (nonatomic, retain) IBOutlet UIButton* two;

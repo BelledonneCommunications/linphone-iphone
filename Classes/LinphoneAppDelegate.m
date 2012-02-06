@@ -27,7 +27,7 @@
 #include "CallHistoryTableViewController.h"
 
 #include "LinphoneManager.h"
-
+#include "linphonecore.h"
 
 @implementation linphoneAppDelegate
 
@@ -37,11 +37,44 @@
 @synthesize myPhoneViewController;
 
 
+-(void)applicationWillResignActive:(UIApplication *)application {
+    LinphoneCore* lc = [LinphoneManager getLc];
+    LinphoneCall* call = linphone_core_get_current_call(lc);
+    if (call == NULL)
+        return;
+    
+    /* save call context */
+    LinphoneManager* instance = [LinphoneManager instance];
+    instance->currentCallContextBeforeGoingBackground.call = call;
+    instance->currentCallContextBeforeGoingBackground.cameraIsEnabled = linphone_call_camera_enabled(call);
+    
+    const LinphoneCallParams* params = linphone_call_get_current_params(call);
+    if (linphone_call_params_video_enabled(params)) {
+        linphone_call_enable_camera(call, false);
+    }
+    
+}
 - (void)applicationDidEnterBackground:(UIApplication *)application {
 	[[LinphoneManager instance] enterBackgroundMode];
 }
 - (void)applicationDidBecomeActive:(UIApplication *)application {
 	[[LinphoneManager instance] becomeActive];
+    
+    LinphoneCore* lc = [LinphoneManager getLc];
+    LinphoneCall* call = linphone_core_get_current_call(lc);
+    if (call == NULL)
+        return;
+    
+    LinphoneManager* instance = [LinphoneManager instance];
+    if (call == instance->currentCallContextBeforeGoingBackground.call) {
+        const LinphoneCallParams* params = linphone_call_get_current_params(call);
+        if (linphone_call_params_video_enabled(params)) {
+            linphone_call_enable_camera(
+                                        call, 
+                                        instance->currentCallContextBeforeGoingBackground.cameraIsEnabled);
+        }
+        instance->currentCallContextBeforeGoingBackground.call = 0;
+    }
 }
 
 - (void) loadDefaultSettings {
@@ -112,6 +145,7 @@
 	//more tab 
 	MoreViewController *moreViewController = [[MoreViewController alloc] initWithNibName:@"MoreViewController" bundle:[NSBundle mainBundle]];
 	UINavigationController *aNavigationController = [[UINavigationController alloc] initWithRootViewController:moreViewController];
+    [moreViewController release];
 	//copy tab bar item
 	aNavigationController.tabBarItem = [(UIViewController*)[myTabBarController.viewControllers objectAtIndex:MORE_TAB_INDEX] tabBarItem]; 
 	
@@ -119,7 +153,9 @@
 	NSMutableArray* newArray = [NSMutableArray arrayWithArray:self.myTabBarController.viewControllers];
 	[newArray replaceObjectAtIndex:CONTACTS_TAB_INDEX withObject:myPeoplePickerController];
 	[newArray replaceObjectAtIndex:MORE_TAB_INDEX withObject:aNavigationController];
+    [aNavigationController release];
 	[newArray replaceObjectAtIndex:HISTORY_TAB_INDEX withObject:aCallHistNavigationController];
+    [aCallHistNavigationController release];
 	
 	[myTabBarController setSelectedIndex:DIALER_TAB_INDEX];
 	[myTabBarController setViewControllers:newArray animated:NO];

@@ -98,7 +98,7 @@ extern void libmssilk_init();
             linphone_call_log_set_ref_key(log, ltmpString);
             CFRelease(lFormatedString);
         }
-        return (NSString*)lDisplayName;    
+        return [(NSString*)lDisplayName autorelease];   
     }
     //[number release];
  
@@ -118,7 +118,7 @@ extern void libmssilk_init();
             } else {
                 d = (NSData*)ABPersonCopyImageData(person);
             }
-            return [UIImage imageWithData:d];
+            return [UIImage imageWithData:[d autorelease]];
         }
     }
     /* return default image */
@@ -149,16 +149,18 @@ extern void libmssilk_init();
     } else {
         ms_message("No contact entry found for  [%s] in address book",lUserName);
     }
+    
+    [lE164Number release];
     return;
 }
 -(void) onCall:(LinphoneCall*) call StateChanged: (LinphoneCallState) new_state withMessage: (const char *)  message {
     const char* lUserNameChars=linphone_address_get_username(linphone_call_get_remote_address(call));
-    NSString* lUserName = lUserNameChars?[[NSString alloc] initWithUTF8String:lUserNameChars]:NSLocalizedString(@"Unknown",nil);
+    NSString* lUserName = lUserNameChars?[[[NSString alloc] initWithUTF8String:lUserNameChars] autorelease]:NSLocalizedString(@"Unknown",nil);
     if (new_state == LinphoneCallIncomingReceived) {
        [self updateCallWithAddressBookData:call]; // display name is updated 
     }
     const char* lDisplayNameChars =  linphone_address_get_display_name(linphone_call_get_remote_address(call));        
-	NSString* lDisplayName = lDisplayNameChars?[[NSString alloc] initWithUTF8String:lDisplayNameChars]:@"";
+	NSString* lDisplayName = [lDisplayNameChars?[[NSString alloc] initWithUTF8String:lDisplayNameChars]:@"" autorelease];
     
     bool canHideInCallView = (linphone_core_get_calls([LinphoneManager getLc]) == NULL);
 	
@@ -208,12 +210,15 @@ extern void libmssilk_init();
 				lMessage=NSLocalizedString(@"Please make sure your device is connected to the internet and double check your SIP account configuration in the settings.",nil);
 			} else {
 				lMessage=[NSString stringWithFormat : NSLocalizedString(@"Cannot call %@",nil),lUserName];
-
 			}
 			
-			if (message!=nil){
-				lMessage=[NSString stringWithFormat : NSLocalizedString(@"%@\nReason was: %s",nil),lMessage, message];
-			}
+            if (linphone_call_get_reason(call) == LinphoneReasonNotFound) {
+                lMessage=[NSString stringWithFormat : NSLocalizedString(@"'%@' not registered to Service",nil), lUserName];
+            } else {
+                if (message!=nil){
+                    lMessage=[NSString stringWithFormat : NSLocalizedString(@"%@\nReason was: %s",nil),lMessage, message];
+                }
+            }
 			lTitle=NSLocalizedString(@"Call failed",nil);
 			
 			UIAlertView* error = [[UIAlertView alloc] initWithTitle:lTitle
@@ -222,6 +227,7 @@ extern void libmssilk_init();
 												  cancelButtonTitle:NSLocalizedString(@"Dismiss",nil) 
 												  otherButtonTitles:nil];
 			[error show];
+            [error release];
             if (canHideInCallView) {
                 [callDelegate	displayDialerFromUI:mCurrentViewController
 									  forUser:@"" 
@@ -283,7 +289,9 @@ static void linphone_iphone_log(struct _LinphoneCore * lc, const char * message)
 }
 //status 
 static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char * message) {
-	[(LinphoneManager*)linphone_core_get_user_data(lc)  displayStatus:[[NSString alloc] initWithCString:message encoding:[NSString defaultCStringEncoding]]];
+    NSString* status = [[NSString alloc] initWithCString:message encoding:[NSString defaultCStringEncoding]];
+	[(LinphoneManager*)linphone_core_get_user_data(lc)  displayStatus:status];
+    [status release];
 }
 
 static void linphone_iphone_call_state(LinphoneCore *lc, LinphoneCall* call, LinphoneCallState state,const char* message) {
@@ -310,6 +318,8 @@ static void linphone_iphone_call_state(LinphoneCore *lc, LinphoneCall* call, Lin
 }
 
 -(void) onRegister:(LinphoneCore *)lc cfg:(LinphoneProxyConfig*) cfg state:(LinphoneRegistrationState) state message:(const char*) message {
+    NSLog(@"NEW REGISTRATION STATE: '%s' (message: '%s')", linphone_registration_state_to_string(state), message);
+    
 	LinphoneAddress* lAddress = linphone_address_new(linphone_proxy_config_get_identity(cfg));
 	NSString* lUserName = linphone_address_get_username(lAddress)? [[NSString alloc] initWithUTF8String:linphone_address_get_username(lAddress) ]:@"";
 	NSString* lDisplayName = linphone_address_get_display_name(lAddress)? [[NSString alloc] initWithUTF8String:linphone_address_get_display_name(lAddress) ]:@"";
@@ -343,19 +353,26 @@ static void linphone_iphone_call_state(LinphoneCore *lc, LinphoneCall* call, Lin
 												forReason:lErrorMessage];
 		
 		if (lErrorMessage != nil 
-			&& registrationDelegate==nil
 			&& linphone_proxy_config_get_error(cfg) != LinphoneReasonNoResponse) { //do not report network connection issue on registration
 			//default behavior if no registration delegates
-			
-			UIAlertView* error = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"Registration failure",nil)
+			UIApplicationState s = [UIApplication sharedApplication].applicationState;
+            
+            // do not stack error message when going to backgroud
+            if (s != UIApplicationStateBackground) {
+                UIAlertView* error = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"Registration failure",nil)
 															message:lErrorMessage
 														   delegate:nil 
 												  cancelButtonTitle:NSLocalizedString(@"Continue",nil) 
 												  otherButtonTitles:nil ,nil];
-			[error show];
+                [error show];
+            }
 		}
 		
 	}
+    
+    [lUserName release];
+    [lDisplayName release];
+    [lDomain release];
 	
 }
 static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyConfig* cfg, LinphoneRegistrationState state,const char* message) {
@@ -425,12 +442,24 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	}
 }
 
--(void) doLinphoneConfiguration:(NSNotification *)notification {
-	ms_message("Configuring Linphone");
+-(BOOL) reconfigureLinphoneIfNeeded:(NSDictionary *)settings {
 	if (theLinphoneCore==nil) {
 		ms_warning("cannot configure linphone beacause not initialized yet");
-		return;
+		return NO;
 	}
+    
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    NSDictionary* newSettings = [[NSUserDefaults standardUserDefaults] dictionaryRepresentation];
+    if (settings != nil) {
+        /* reconfigure only if newSettings != settings */
+        if ([newSettings isEqualToDictionary:settings]) {
+            ms_message("Same settings: no need to reconfigure linphone");
+            return NO;
+        }
+    }
+    NSLog(@"Configuring Linphone (new settings)");
+    
+    
 	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"debugenable_preference"]) {
 		//redirect all traces to the iphone log framework
 		linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
@@ -441,13 +470,31 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
     
     NSBundle* myBundle = [NSBundle mainBundle];
     
+    /* unregister before modifying any settings */
+    {
+        LinphoneProxyConfig* proxyCfg;
+        linphone_core_get_default_proxy(theLinphoneCore, &proxyCfg);
+        
+        if (proxyCfg) {
+            // this will force unregister WITHOUT destorying the proxyCfg object
+            linphone_proxy_config_edit(proxyCfg);
+            
+            int i=0;
+            while (linphone_proxy_config_get_state(proxyCfg)!=LinphoneRegistrationNone &&
+                   linphone_proxy_config_get_state(proxyCfg)!=LinphoneRegistrationCleared && 
+                    linphone_proxy_config_get_state(proxyCfg)!=LinphoneRegistrationFailed && 
+                   i++<40 ) {
+                linphone_core_iterate(theLinphoneCore);
+                usleep(100000);
+            }
+        }
+    }
+    
     const char* lRootCa = [[myBundle pathForResource:@"rootca"ofType:@"pem"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
     linphone_core_set_root_ca(theLinphoneCore, lRootCa);
     
 	NSString* transport = [[NSUserDefaults standardUserDefaults] stringForKey:@"transport_preference"];
-	
-
-	
+		
 	LCSipTransports transportValue;
 	if (transport!=nil) {
 		if (linphone_core_get_sip_transports(theLinphoneCore, &transportValue)) {
@@ -497,11 +544,9 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	
 	//clear auth info list
 	linphone_core_clear_all_auth_info(theLinphoneCore);
-	//clear existing proxy config
-	linphone_core_clear_proxy_config(theLinphoneCore);
+    //clear existing proxy config
+    linphone_core_clear_proxy_config(theLinphoneCore);
 	if (username && [username length] >0 && domain && [domain length]>0) {
-		
-		
 		const char* identity = [[NSString stringWithFormat:@"sip:%@@%@",username,domain] cStringUsingEncoding:[NSString defaultCStringEncoding]];
 		const char* password = [accountPassword cStringUsingEncoding:[NSString defaultCStringEncoding]];
 		
@@ -555,6 +600,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 												  cancelButtonTitle:NSLocalizedString(@"Continue",nil)
 												  otherButtonTitles:NSLocalizedString(@"Never remind",nil),nil];
 			[error show];
+            [error release];
 		}
 	}		
 	//tunnel
@@ -650,7 +696,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		ms_warning("Disable video for phones prior to iPhone 3GS");
 	}
 	bool enableSrtp = [[NSUserDefaults standardUserDefaults] boolForKey:@"enable_srtp_preference"];
-	linphone_core_set_media_encryption(theLinphoneCore, enableSrtp?LinphoneMediaEncryptionSRTP:LinphoneMediaEncryptionNone);
+	linphone_core_set_media_encryption(theLinphoneCore, enableSrtp?LinphoneMediaEncryptionSRTP:LinphoneMediaEncryptionZRTP);
 	
 	UIDevice* device = [UIDevice currentDevice];
 	bool backgroundSupported = false;
@@ -663,6 +709,11 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		isbackgroundModeEnabled=false;
 	}
 
+    [currentSettings release];
+    currentSettings = newSettings;
+    [currentSettings retain];
+    
+    return YES;
 }
 - (BOOL)isNotIphone3G
 {
@@ -673,7 +724,10 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
     NSString *platform = [[NSString alloc ] initWithUTF8String:machine];
     free(machine);
     
-    return ![platform isEqualToString:@"iPhone1,2"];
+    BOOL result = ![platform isEqualToString:@"iPhone1,2"];
+    
+    [platform release];
+    return result;
 }
 
 // no proxy configured alert 
@@ -759,7 +813,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	
 	//get default config from bundle
 	NSBundle* myBundle = [NSBundle mainBundle];
-	NSString* factoryConfig = [myBundle pathForResource:@"linphonerc"ofType:nil] ;
+	NSString* factoryConfig = [myBundle pathForResource:[LinphoneManager runningOnIpad]?@"linphonerc-ipad":@"linphonerc" ofType:nil] ;
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
 	NSString *confiFileName = [[paths objectAtIndex:0] stringByAppendingString:@"/.linphonerc"];
 	NSString *zrtpSecretsFileName = [[paths objectAtIndex:0] stringByAppendingString:@"/zrtp_secrets"];
@@ -828,10 +882,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		ms_error("Cannot register schedule reachability cb");
 	};
 	
-	[self doLinphoneConfiguration:nil];
-	[[NSNotificationCenter defaultCenter]	addObserver:self
-											 selector:@selector(doLinphoneConfiguration:)
-												 name:NSUserDefaultsDidChangeNotification object:nil];
+	[self reconfigureLinphoneIfNeeded:nil];
 	
 	// start scheduler
 	mIterateTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 
@@ -853,7 +904,16 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 											  cancelButtonTitle:NSLocalizedString(@"Ok",nil) 
 											  otherButtonTitles:nil ,nil];
 		[error show];
+        [error release];
 	}
+    
+    NSString* path = [myBundle pathForResource:@"nowebcamCIF" ofType:@"jpg"];
+    if (path) {
+        const char* imagePath = [path cStringUsingEncoding:[NSString defaultCStringEncoding]];
+        ms_message("Using '%s' as source image for no webcam", imagePath);
+        linphone_core_set_static_picture(theLinphoneCore, imagePath);
+    }
+    
 	/*DETECT cameras*/
 	frontCamId= backCamId=nil;
 	char** camlist = (char**)linphone_core_get_video_devices(theLinphoneCore);
@@ -874,7 +934,12 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		//go directly to bg mode
 		[self enterBackgroundMode];
 	}
-
+    
+    if ([LinphoneManager runningOnIpad])
+        ms_set_cpu_count(2);
+    else
+        ms_set_cpu_count(1);
+    
     ms_warning("Linphone [%s]  started on [%s]"
                ,linphone_core_get_version()
                ,[[UIDevice currentDevice].model cStringUsingEncoding:[NSString defaultCStringEncoding]] );
@@ -886,8 +951,10 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		//back from standby and background mode is disabled
 		[self	startLibLinphone];
 	} else {
-        ms_message("becomming active, make sure we are registered");
-		linphone_core_refresh_registers(theLinphoneCore);//just to make sure REGISTRATION is up to date
+        if (![self reconfigureLinphoneIfNeeded:currentSettings]) {
+            ms_message("becomming active with no config modification, make sure we are registered");
+            linphone_core_refresh_registers(theLinphoneCore);//just to make sure REGISTRATION is up to date
+        }
 		
 	}
 	/*IOS specific*/
@@ -915,6 +982,23 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
         linphone_core_resume_call(theLinphoneCore, (LinphoneCall*) c->data);
     }
     
+}
++(BOOL) runningOnIpad {
+#ifdef UI_USER_INTERFACE_IDIOM
+    return (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad);
+#endif
+    return NO;
+}
+
++(void) set:(UIView*)view hidden: (BOOL) hidden withName:(const char*)name andReason:(const char*) reason{
+    if (view.hidden != hidden) {
+        ms_message("UI - '%s' is now '%s' ('%s')", name, hidden ? "HIDDEN" : "SHOWN", reason);
+        [view setHidden:hidden];
+    }
+}
+
++(void) logUIElementPressed:(const char*) name {
+    ms_message("UI - '%s' pressed", name);
 }
 
 

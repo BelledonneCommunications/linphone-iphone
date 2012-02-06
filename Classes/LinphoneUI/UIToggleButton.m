@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */       
 #import "UIToggleButton.h"
-
+#include "linphonecore.h"
 
 @implementation UIToggleButton
 
@@ -28,6 +28,8 @@
 	return mIsOn;
 }
 -(bool) toggle {
+    ms_message("UI - Toggle button '%s' state change %d -> %d",
+               debugName, mIsOn, !mIsOn);
 	if (mIsOn) {
 		[self setImage:mOffImage forState:UIControlStateNormal];
 		mIsOn=!mIsOn;
@@ -46,10 +48,11 @@
 	return mIsOn;
 }
 
--(void) initWithOnImage:(UIImage*) onImage offImage:(UIImage*) offImage {
+-(void) initWithOnImage:(UIImage*) onImage offImage:(UIImage*) offImage debugName:(const char *)name{
     mOnImage = [onImage retain];
     mOffImage = [offImage retain];
     mIsOn=false;
+    debugName = name;
 	[self reset];
 	[self addTarget:self action:@selector(touchUp:) forControlEvents:UIControlEventTouchUpInside];
 	

@@ -29,7 +29,7 @@ if (au!=0) ms_error("UIBluetoothButton error for %s: ret=%ld",method,au)
 	//redirect audio to bluetooth
 
 	UInt32 size = sizeof(CFStringRef);
-	CFStringRef route="HeadsetBT";
+	CFStringRef route=CFSTR("HeadsetBT");
 	OSStatus result = AudioSessionSetProperty(kAudioSessionProperty_AudioRoute, size, &route);
 	check_auresult(result,"set kAudioSessionProperty_AudioRoute HeadsetBT");
 	
@@ -52,8 +52,8 @@ if (au!=0) ms_error("UIBluetoothButton error for %s: ret=%ld",method,au)
 							 );	
 	check_auresult(result,"set kAudioSessionProperty_OverrideCategoryEnableBluetoothInput 0");
 	UInt32 size = sizeof(CFStringRef);
-	CFStringRef route="ReceiverAndMicrophone";
-	result = AudioSessionSetProperty(kAudioSessionProperty_AudioRoute, &size, &route);
+	CFStringRef route=CFSTR("ReceiverAndMicrophone");
+	result = AudioSessionSetProperty(kAudioSessionProperty_AudioRoute, size, &route);
 	check_auresult(result,"set kAudioSessionProperty_AudioRoute ReceiverAndMicrophone");
 
 	

@@ -29,12 +29,12 @@
 @private
 	UIImage* mOnImage;
 	UIImage* mOffImage;
-	id<UIToggleButtonDelegate> mActionHandler;
 	bool mIsOn;
+    const char* debugName;
 	
 	
 }
--(void) initWithOnImage:(UIImage*) onImage offImage:(UIImage*) offImage;
+-(void) initWithOnImage:(UIImage*) onImage offImage:(UIImage*) offImage debugName:(const char*) name;
 -(bool) reset;
 -(bool) isOn;
 -(bool) toggle;

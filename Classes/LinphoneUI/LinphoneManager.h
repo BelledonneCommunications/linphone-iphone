@@ -36,6 +36,13 @@ typedef enum _TunnelMode {
 } TunnelMode;
 
 @class FastAddressBook;
+
+/* Application specific call context */
+typedef struct _CallContext {
+    LinphoneCall* call;
+    bool_t cameraIsEnabled;
+} CallContext;
+
 @interface LinphoneManager : NSObject <AVAudioSessionDelegate> {
 @private
 	SCNetworkReachabilityContext proxyReachabilityContext;
@@ -52,9 +59,15 @@ typedef enum _TunnelMode {
 	TunnelMode tunnelMode;
 	const char*  frontCamId;
 	const char*  backCamId;
+    NSDictionary* currentSettings;
+@public
+    CallContext currentCallContextBeforeGoingBackground;
 }
 +(LinphoneManager*) instance;
 +(LinphoneCore*) getLc;
++(BOOL) runningOnIpad;
++(void) set:(UIView*)view hidden: (BOOL) hidden withName:(const char*)name andReason:(const char*) reason;
++(void) logUIElementPressed:(const char*) name;
 
 -(void) registerLogView:(id<LogView>) view;
 
@@ -68,7 +81,7 @@ typedef enum _TunnelMode {
 -(NSString*) getDisplayNameFromAddressBook:(NSString*) number andUpdateCallLog:(LinphoneCallLog*)log; 
 -(UIImage*) getImageFromAddressBook:(NSString*) number;
 
-
+-(BOOL) reconfigureLinphoneIfNeeded:(NSDictionary *)oldSettings;
 
 @property (nonatomic, retain) id<LinphoneUICallDelegate> callDelegate;
 @property (nonatomic, retain) id<LinphoneUIRegistrationDelegate> registrationDelegate;

@@ -9,7 +9,12 @@
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleIconFile</key>
-	<string>icone-linphone-57.png</string>
+	<string></string>
+	<key>CFBundleIconFiles</key>
+	<array>
+		<string>icone-linphone-57.png</string>
+		<string>icone-linphone-72.png</string>
+	</array>
 	<key>CFBundleIdentifier</key>
 	<string>org.linphone.phone</string>
 	<key>CFBundleInfoDictionaryVersion</key>
@@ -19,13 +24,15 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>3.4.11</string>
+	<string>3.5.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>1.1.0.1</string>
+	<string>1.1.1</string>
 	<key>NSMainNibFile</key>
 	<string>PhoneMainView</string>
+	<key>NSMainNibFile~ipad</key>
+	<string>MainScreenWithVideoPreview</string>
 	<key>UIApplicationExitsOnSuspend</key>
 	<false/>
 	<key>UIBackgroundModes</key>

@@ -32,7 +32,8 @@
 		linphone_core_update_call([LinphoneManager getLc]
 								  , linphone_core_get_current_call([LinphoneManager getLc])
 								  ,NULL);
-		linphone_core_set_native_preview_window_id([LinphoneManager getLc],preview);
+		linphone_core_set_native_preview_window_id([LinphoneManager getLc],
+                                                   (unsigned long)preview);
 	}
 }
 

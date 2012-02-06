@@ -34,8 +34,8 @@ static void audioRouteChangeListenerCallback (
    
 }
 
--(void) initWithOnImage:(UIImage*) onImage offImage:(UIImage*) offImage {
-   [super initWithOnImage:onImage offImage:offImage];
+-(void) initWithOnImage:(UIImage*) onImage offImage:(UIImage*) offImage debugName:(const char *)name{
+   [super initWithOnImage:onImage offImage:offImage debugName:name];
    AudioSessionPropertyID routeChangeID = kAudioSessionProperty_AudioRouteChange;
    AudioSessionInitialize(NULL, NULL, NULL, NULL);
    OSStatus lStatus = AudioSessionAddPropertyListener(routeChangeID, audioRouteChangeListenerCallback, self);

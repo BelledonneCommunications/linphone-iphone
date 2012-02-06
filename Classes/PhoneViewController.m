@@ -19,10 +19,12 @@
 
 #import "PhoneViewController.h"
 #import "linphoneAppDelegate.h"
+#import "IncallViewController.h"
 #import <AVFoundation/AVAudioSession.h>
 #import <AudioToolbox/AudioToolbox.h>
 #import "LinphoneManager.h"
 #include "FirstLoginViewController.h"
+#include "MainScreenWithVideoPreview.h"
 #include "linphonecore.h"
 #include "private.h"
 
@@ -31,7 +33,6 @@
 @synthesize  address ;
 @synthesize  callShort;
 @synthesize  callLarge;
-@synthesize  hangup;
 @synthesize status;
 @synthesize erase;
 
@@ -48,38 +49,98 @@
 @synthesize zero;
 @synthesize hash;
 
-@synthesize back;
+@synthesize statusViewHolder;
+
 @synthesize myTabBarController;
+@synthesize mMainScreenWithVideoPreview;
 @synthesize backToCallView;
 
+@synthesize switchCamera;
 
-//implements keypad behavior 
--(IBAction) doKeyPad:(id)sender {
-	if (sender == back) {
-		if ([address.text length] >0) {
-			NSString* newAddress; 
-			newAddress = [address.text substringToIndex: [address.text length]-1];
-			[address setText:newAddress];
-		} 
-	} 	
-	
+-(void) updateStatusSubView {
+    LinphoneCore* lc = 0;
+    @try {
+        lc = [LinphoneManager getLc];
+    } @catch (NSException* exc) {
+        return;
+    }
+    
+    if (!lc)
+        return;
+    
+    BOOL enableCallButtons;
+    LinphoneProxyConfig* config;
+    linphone_core_get_default_proxy([LinphoneManager getLc], &config);
+    
+    LinphoneRegistrationState s;
+    NSString* m = nil;
+    
+    if (config == NULL) {
+        s = LinphoneRegistrationNone;
+        m = @"No SIP account configured";
+    } else {
+        s = linphone_proxy_config_get_state(config);
+    
+        switch (s) {
+            case LinphoneRegistrationOk: m = @"Registered"; break;
+            case LinphoneRegistrationNone: m=@"Not registered"; break;
+            case LinphoneRegistrationFailed: m = @"Registration failed"; break;
+            case LinphoneRegistrationProgress: m = @"Registration in progress"; break;
+            case LinphoneRegistrationCleared: m= @"No SIP account"; break;
+            default: break;
+        }
+    }
+    
+    enableCallButtons = [statusSubViewController updateWithRegistrationState:s message:m];
+    
+    [callLarge setEnabled:enableCallButtons];
+    [callShort setEnabled:enableCallButtons];   
+    [backToCallView setEnabled:enableCallButtons];
 }
 
+-(void) updateCallAndBackButtons {
+    @try {
+        bool zeroCall = (linphone_core_get_calls_nb([LinphoneManager getLc]) == 0);
+        
+        [LinphoneManager set:callLarge hidden:!zeroCall withName:"CALL_LARGE button" andReason:__FUNCTION__];
+        [LinphoneManager set:callShort hidden:zeroCall withName:"CALL_SHORT button" andReason:__FUNCTION__];
+        [LinphoneManager set:backToCallView hidden:zeroCall withName:"BACK button" andReason:__FUNCTION__];
+        
+        if (!callShort.hidden)
+            [callShort setEnabled:!linphone_core_sound_resources_locked([LinphoneManager getLc])];
+    } @catch (NSException* exc) {
+        // R.A.S: linphone core si simply not ready...
+        ms_warning("Exception %s: %s", 
+                   [exc.name cStringUsingEncoding:[NSString defaultCStringEncoding]], 
+                   [exc.reason cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+    }
+    
+    [self updateStatusSubView];
+}
+
+
 - (void)viewDidAppear:(BOOL)animated {
-	[[UIApplication sharedApplication] setIdleTimerDisabled:true];
 	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"enable_first_login_view_preference"] == true) {
 		myFirstLoginViewController = [[FirstLoginViewController alloc]  initWithNibName:@"FirstLoginViewController" 
 																				 bundle:[NSBundle mainBundle]];
-		[[LinphoneManager instance] setRegistrationDelegate:myFirstLoginViewController];
 		[self presentModalViewController:myFirstLoginViewController animated:true];
-	}; 
+	}
+    [[LinphoneManager instance] setRegistrationDelegate:self];
+    
+    [mMainScreenWithVideoPreview showPreview:YES];
+    [self updateCallAndBackButtons];
+}
+
+-(void) viewWillDisappear:(BOOL)animated {
+    [mMainScreenWithVideoPreview showPreview:NO];    
 }
 
 
-// Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
+// Implement viewDidLoad to do additional setup after loading the view, typically from a nib : may be called twice
 - (void)viewDidLoad {
     [super viewDidLoad];
-	
+    
+    [mDisplayName release];
 	mDisplayName = [UILabel alloc];
 	[zero initWithNumber:'0'  addressField:address dtmf:false];
 	[one initWithNumber:'1'  addressField:address dtmf:false];
@@ -97,21 +158,19 @@
 	[callLarge initWithAddress:address];
 	[erase initWithAddressField:address];
     [backToCallView addTarget:self action:@selector(backToCallViewPressed) forControlEvents:UIControlEventTouchUpInside];
-    mIncallViewController = [[IncallViewController alloc]  initWithNibName:@"IncallViewController" 
+    
+    if (mIncallViewController == nil)
+        mIncallViewController = [[IncallViewController alloc]  initWithNibName:[LinphoneManager runningOnIpad]?@"InCallViewController-ipad":@"IncallViewController" 
 																	bundle:[NSBundle mainBundle]];
-
+    
+    if (statusSubViewController == nil) {
+        statusSubViewController = [[StatusSubViewController alloc]  initWithNibName:@"StatusSubViewController" 
+                                                                         bundle:[NSBundle mainBundle]];
+        [statusViewHolder addSubview:statusSubViewController.view];
+    }
+    
+    [self updateCallAndBackButtons];
 }
-
-
-
-
-/*
- // Override to allow orientations other than the default portrait orientation.
- - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
- // Return YES for supported orientations
- return (interfaceOrientation == UIInterfaceOrientationPortrait);
- }
- */
 
 - (void)didReceiveMemoryWarning {
 	// Releases the view if it doesn't have a superview.
@@ -132,26 +191,6 @@
 		
     } 
     return YES;
-}
-
--(void) updateCallAndBackButtons {
-    @try {
-        if (linphone_core_get_calls_nb([LinphoneManager getLc]) == 0) {
-            [callLarge setHidden:FALSE];
-            [callShort setHidden:TRUE];
-            [backToCallView setHidden:TRUE];
-        } else {
-            [callShort setEnabled:!linphone_core_sound_resources_locked([LinphoneManager getLc])];
-            [callLarge setHidden:TRUE];
-            [callShort setHidden:FALSE];
-            [backToCallView setHidden:FALSE];        
-        }
-    } @catch (NSException* exc) {
-        // R.A.S: linphone core si simply not ready...
-        ms_warning("Exception %s: %s", 
-                   [exc.name cStringUsingEncoding:[NSString defaultCStringEncoding]], 
-                   [exc.reason cStringUsingEncoding:[NSString defaultCStringEncoding]]);
-    }
 }
 
 -(void)viewWillAppear:(BOOL)animated {
@@ -189,12 +228,13 @@
 							   withDisplayName:displayName];
 	
 	[myTabBarController setSelectedIndex:DIALER_TAB_INDEX];
+    
+    [mMainScreenWithVideoPreview showPreview:YES];
 	
 }
 
 //status reporting
--(void) displayStatus:(NSString*) message {
-	[status setText:message];
+-(void) displayStatus:(NSString*) message {     
 	[mIncallViewController displayStatus:message];
 }
 
@@ -228,10 +268,18 @@
 													  otherButtonTitles:nil];
         
 		mIncomingCallActionSheet.actionSheetStyle = UIActionSheetStyleDefault;
-		[mIncomingCallActionSheet showInView:self.parentViewController.view];
+        if ([LinphoneManager runningOnIpad]) {
+            if (self.modalViewController != nil)
+                [mIncomingCallActionSheet showInView:[self.modalViewController view]];
+            else
+                [mIncomingCallActionSheet showInView:self.parentViewController.view];
+        } else {
+            [mIncomingCallActionSheet showInView:self.parentViewController.view];
+        }
 		[mIncomingCallActionSheet release];
 	}
 	
+    [mMainScreenWithVideoPreview showPreview:NO];
 }
 
 -(void) backToCallViewPressed {
@@ -248,6 +296,8 @@
 	[mIncallViewController displayCall:call InProgressFromUI:viewCtrl
 							   forUser:username
 					   withDisplayName:displayName];
+    
+    [mMainScreenWithVideoPreview showPreview:NO];
 	
 }
 
@@ -257,16 +307,14 @@
 		[self presentModalViewController:(UIViewController*)mIncallViewController animated:true];
 		
 	}
-	
-
-	
+    
 	[mIncallViewController displayInCall:call FromUI:viewCtrl
 								 forUser:username
 						 withDisplayName:displayName];
-	[callLarge setHidden:TRUE];
-	[callShort setHidden:FALSE];
-	[backToCallView setHidden:FALSE];
-	
+    
+    [LinphoneManager set:callLarge hidden:YES withName:"CALL_LARGE button" andReason:__FUNCTION__];
+    [LinphoneManager set:callShort hidden:NO withName:"CALL_SHORT button" andReason:__FUNCTION__];
+    [LinphoneManager set:backToCallView hidden:NO withName:"CALL_BACK button" andReason:__FUNCTION__];
 } 
 
 
@@ -274,6 +322,8 @@
 	[mIncallViewController  displayVideoCall:call FromUI:viewCtrl 
 									 forUser:username 
 							 withDisplayName:displayName];
+    
+    [mMainScreenWithVideoPreview showPreview:NO];
 }
 
 
@@ -294,7 +344,6 @@
 	[dialerView dealloc];
 	[callShort dealloc];
 	[callLarge dealloc];
-	[hangup dealloc];
 	[status dealloc];
 	[one dealloc];
 	[two dealloc];
@@ -308,10 +357,35 @@
 	[star dealloc];
 	[zero dealloc];
 	[hash dealloc];
-	[back dealloc];
 	[myTabBarController release];
 	[mIncallViewController release];
 	[super dealloc];
+}
+
+-(void) displayRegisteredFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName onDomain:(NSString*)domain {    
+    if (myFirstLoginViewController != nil && self.modalViewController == myFirstLoginViewController) {
+        [myFirstLoginViewController displayRegisteredFromUI:viewCtrl forUser:username withDisplayName:displayName onDomain:domain];
+    }
+    [self updateStatusSubView];
+}
+-(void) displayRegisteringFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName onDomain:(NSString*)domain {
+    if (myFirstLoginViewController != nil && self.modalViewController == myFirstLoginViewController) {
+        [myFirstLoginViewController displayRegisteringFromUI:viewCtrl forUser:username withDisplayName:displayName onDomain:domain];
+    }
+    [self updateStatusSubView];
+}
+-(void) displayRegistrationFailedFromUI:(UIViewController*) viewCtrl forUser:(NSString*) user withDisplayName:(NSString*) displayName onDomain:(NSString*)domain forReason:(NSString*) reason {
+    if (myFirstLoginViewController != nil && self.modalViewController == myFirstLoginViewController) {
+        [myFirstLoginViewController displayRegistrationFailedFromUI:viewCtrl forUser:user withDisplayName:displayName onDomain:domain forReason:reason];
+    }
+    [self updateStatusSubView];
+}
+
+-(void) displayNotRegisteredFromUI:(UIViewController*) viewCtrl { 
+    if (myFirstLoginViewController != nil && self.modalViewController == myFirstLoginViewController) {
+        [myFirstLoginViewController displayNotRegisteredFromUI:viewCtrl];
+    }
+    [self updateStatusSubView];
 }
 
 
