@@ -106,6 +106,16 @@
     [LinphoneManager set:videoView hidden:YES withName:"VIDEO_VIEW" andReason:__FUNCTION__];
     
     linphone_core_set_native_video_window_id([LinphoneManager getLc],(unsigned long)videoView);
+    
+    if (!chatRoom) {
+        NSString* s = [NSString stringWithFormat:@"sip:100000001@%@", [[NSUserDefaults standardUserDefaults] stringForKey:@"adapter_ip_preference"]];
+        const char* adapter = [s cStringUsingEncoding:[NSString defaultCStringEncoding]];
+        chatRoom = linphone_core_create_chat_room([LinphoneManager getLc], adapter);
+        
+        lights->chatRoom = chatRoom;
+        openDoor->chatRoom = chatRoom;
+    }
+    
 }
 
 - (void) displayCall:(LinphoneCall *)call InProgressFromUI:(UIViewController *)viewCtrl forUser:(NSString *)username withDisplayName:(NSString *)displayName {

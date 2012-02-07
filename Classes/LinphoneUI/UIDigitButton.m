@@ -28,7 +28,12 @@
 
 
 -(void) touchDown:(id) sender {
-    linphone_core_send_dtmf([LinphoneManager getLc],mDigit);
+    if (linphone_core_get_current_call([LinphoneManager getLc])) {
+        linphone_core_send_dtmf([LinphoneManager getLc],mDigit);
+    } else if (chatRoom) {
+        char msg[] = {mDigit, '\0'};
+        linphone_chat_room_send_message(chatRoom, msg);
+    }
 }
 
 -(void) touchUp:(id) sender {

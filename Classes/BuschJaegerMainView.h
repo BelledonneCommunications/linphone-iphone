@@ -36,6 +36,8 @@
     UIToggleButton* mute;
     UIDigitButton* lights;
     UIDigitButton* openDoor;
+    
+    LinphoneChatRoom * chatRoom;
 }
 
 @property (nonatomic, retain) IBOutlet UIView* videoView;

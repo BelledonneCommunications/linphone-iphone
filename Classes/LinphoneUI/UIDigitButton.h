@@ -25,6 +25,9 @@
 	UITextField* mAddress;
     
     bool_t sendDtmfDuringCall;
+    
+@public
+    LinphoneChatRoom* chatRoom;
 
 }
 -(void) initWithNumber:(char)digit ;
