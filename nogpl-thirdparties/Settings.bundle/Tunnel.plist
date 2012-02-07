@@ -16,7 +16,7 @@
 			<key>Key</key>
 			<string>tunnel_port_preference</string>
 			<key>Title</key>
-			<string>port</string>
+			<string>Port</string>
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 		</dict>
