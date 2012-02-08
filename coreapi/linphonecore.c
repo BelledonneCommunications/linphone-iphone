@@ -4179,7 +4179,12 @@ static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t cu
 }
 
 void linphone_core_refresh_registers(LinphoneCore* lc) {
-	const MSList *elem=linphone_core_get_proxy_config_list(lc);
+	const MSList *elem;
+	if (!lc->network_reachable) {
+		ms_warning("Refresh register operation not available (network unreachable)");
+		return;
+	}
+	elem=linphone_core_get_proxy_config_list(lc);
 	for(;elem!=NULL;elem=elem->next){
 		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
 		if (linphone_proxy_config_register_enabled(cfg) ) {
