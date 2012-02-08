@@ -20,14 +20,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "linphone.h"
 #include <glib.h>
 #include <glib/gprintf.h>
-#include <pthread.h>
 static LinphoneAccountCreator *linphone_gtk_assistant_get_creator(GtkWidget*w);
 
 static const int PASSWORD_MIN_SIZE = 6;
 static const int LOGIN_MIN_SIZE = 4;
-static int is_username_available = 0;
-static int is_email_correct = 0;
-static int is_password_correct = 0;
 
 static GdkPixbuf *ok;
 static GdkPixbuf *notok;
@@ -171,6 +167,10 @@ static int create_account(GtkWidget *page) {
 }
 
 static int is_account_information_correct(GtkWidget *w) {
+	int is_username_available = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(w),"is_username_available"));
+	int is_email_correct = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(w),"is_email_correct"));
+	int is_password_correct = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(w),"is_password_correct"));
+
 	if (is_username_available == 1 && is_email_correct == 1 && is_password_correct == 1) {
 		return 1;
 	}
@@ -185,11 +185,11 @@ static void account_email_changed(GtkEntry *entry, GtkWidget *w) {
 	GtkWidget *assistant=gtk_widget_get_toplevel(w);
 
 	if (g_regex_match_simple("^[a-z0-9]+([_\\.-][a-z0-9]+)*@([a-z0-9]+([\\.-][a-z0-9]+)*)+\\.[a-z]{2,}$", gtk_entry_get_text(email), 0, 0)) {
-		is_email_correct = 1;
+		g_object_set_data(G_OBJECT(w),"is_email_correct",GINT_TO_POINTER(1));
 		gtk_image_set_from_pixbuf(isEmailOk, ok);
 	}
 	else {
-		is_email_correct = 0;
+		g_object_set_data(G_OBJECT(w),"is_email_correct",GINT_TO_POINTER(0));
 		gtk_image_set_from_pixbuf(isEmailOk, notok);
 	}
 	gtk_assistant_set_page_complete(GTK_ASSISTANT(assistant),w,
@@ -207,7 +207,7 @@ static void account_password_changed(GtkEntry *entry, GtkWidget *w) {
 
 	if (gtk_entry_get_text_length(password) >= PASSWORD_MIN_SIZE &&
 	g_ascii_strcasecmp(gtk_entry_get_text(password), gtk_entry_get_text(password_confirm)) == 0) {
-		is_password_correct = 1;
+		g_object_set_data(G_OBJECT(w),"is_password_correct",GINT_TO_POINTER(1));
 		gtk_image_set_from_pixbuf(isPasswordOk, ok);
 		gtk_label_set_text(passwordError, "");
 	}
@@ -218,7 +218,7 @@ static void account_password_changed(GtkEntry *entry, GtkWidget *w) {
 		else if (!g_ascii_strcasecmp(gtk_entry_get_text(password), gtk_entry_get_text(password_confirm)) == 0) {
 			gtk_label_set_text(passwordError, "Passwords don't match !");
 		}
-		is_password_correct = 0;
+		g_object_set_data(G_OBJECT(w),"is_password_correct",GINT_TO_POINTER(0));
 		gtk_image_set_from_pixbuf(isPasswordOk, notok);
 	}
 	gtk_assistant_set_page_complete(GTK_ASSISTANT(assistant),w,
@@ -226,6 +226,7 @@ static void account_password_changed(GtkEntry *entry, GtkWidget *w) {
 }
 
 void* check_username_availability(void* w) {
+	//gdk_threads_enter();
 	GtkWidget *assistant=gtk_widget_get_toplevel(GTK_WIDGET(w));
 	GtkEntry* username = GTK_ENTRY(g_object_get_data(G_OBJECT(w),"username"));
 	GtkImage* isUsernameOk = GTK_IMAGE(g_object_get_data(G_OBJECT(w),"usernameOk"));
@@ -237,13 +238,13 @@ void* check_username_availability(void* w) {
 	if (g_regex_match_simple("^[a-zA-Z]+[a-zA-Z0-9.\\-_]{3,}$", gtk_entry_get_text(username), 0, 0)) {
 		int account_existing = linphone_account_creator_test_existence(creator);
 		if (account_existing == 0) {
-			is_username_available = 1;
+			g_object_set_data(G_OBJECT(w),"is_username_available",GINT_TO_POINTER(1));
 			gtk_image_set_from_pixbuf(isUsernameOk, ok);
 			gtk_label_set_text(usernameError, "");
 		}
 		else {
 			gtk_label_set_text(usernameError, "Username is already in use !");
-			is_username_available = 0;
+			g_object_set_data(G_OBJECT(w),"is_username_available",GINT_TO_POINTER(0));
 			gtk_image_set_from_pixbuf(isUsernameOk, notok);
 		}
 	}
@@ -254,20 +255,20 @@ void* check_username_availability(void* w) {
 		else if (!g_regex_match_simple("^[a-zA-Z]+[a-zA-Z0-9.\\-_]{3,}$", gtk_entry_get_text(username), 0, 0)) {
 			gtk_label_set_text(usernameError, "Unauthorized username");
 		}
-		is_username_available = 0;
+		g_object_set_data(G_OBJECT(w),"is_username_available",GINT_TO_POINTER(0));
 		gtk_image_set_from_pixbuf(isUsernameOk, notok);
 	}
 
 	gtk_assistant_set_page_complete(GTK_ASSISTANT(assistant),w,
 			is_account_information_correct(w)>0);
+	//gdk_threads_leave();
 
 	return NULL;
 }
 
 static void account_username_changed(GtkEntry *entry, GtkWidget *w) {
 	// Verifying if username choosed is available, and if form is correctly filled, let the user go next page
-	pthread_t thread;
-	pthread_create(&thread, NULL, check_username_availability, (void*)w);
+	g_thread_create(check_username_availability, (void*)w, FALSE, NULL);
 }
 
 static GtkWidget *create_account_information_page() {
@@ -516,6 +517,9 @@ GtkWidget * linphone_gtk_create_assistant(void){
 
 	ok = create_pixbuf(linphone_gtk_get_ui_config("ok","ok.png"));
 	notok = create_pixbuf(linphone_gtk_get_ui_config("notok","notok.png"));
+
+	g_thread_init (NULL);
+	gdk_threads_init ();
 
 	GtkWidget *p1=create_intro();
 	GtkWidget *p2=create_setup_signin_choice();
