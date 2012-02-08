@@ -225,9 +225,43 @@ static void account_password_changed(GtkEntry *entry, GtkWidget *w) {
 			is_account_information_correct(w)>0);
 }
 
+gboolean update_interface_with_username_availability(gpointer *w) {
+	GtkWidget *assistant = gtk_widget_get_toplevel(GTK_WIDGET(w));
+	GtkImage* isUsernameOk = GTK_IMAGE(g_object_get_data(G_OBJECT(w),"usernameOk"));
+	GtkLabel* usernameError = GTK_LABEL(g_object_get_data(G_OBJECT(w),"error"));
+	int account_existing = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(w),"is_username_used"));
+
+	if (account_existing == 0) {
+		g_object_set_data(G_OBJECT(w),"is_username_available",GINT_TO_POINTER(1));
+		gtk_image_set_from_pixbuf(isUsernameOk, ok);
+		gtk_label_set_text(usernameError, "");
+	}
+	else {
+		gtk_label_set_text(usernameError, "Username is already in use !");
+		g_object_set_data(G_OBJECT(w),"is_username_available",GINT_TO_POINTER(0));
+		gtk_image_set_from_pixbuf(isUsernameOk, notok);
+	}
+
+	gtk_assistant_set_page_complete(GTK_ASSISTANT(assistant),GTK_WIDGET(w),
+				is_account_information_correct(GTK_WIDGET(w))>0);
+
+	return FALSE;
+}
+
 void* check_username_availability(void* w) {
-	//gdk_threads_enter();
-	GtkWidget *assistant=gtk_widget_get_toplevel(GTK_WIDGET(w));
+	LinphoneAccountCreator *creator=linphone_gtk_assistant_get_creator(gtk_widget_get_toplevel(GTK_WIDGET(w)));
+
+	int account_existing = linphone_account_creator_test_existence(creator);
+
+	g_object_set_data(G_OBJECT(w),"is_username_used",GINT_TO_POINTER(account_existing));
+	gdk_threads_add_idle((GSourceFunc)update_interface_with_username_availability, (void*)w);
+
+	return NULL;
+}
+
+static void account_username_changed(GtkEntry *entry, GtkWidget *w) {
+	// Verifying if username choosed is available, and if form is correctly filled, let the user go next page
+	GtkWidget *assistant = gtk_widget_get_toplevel(GTK_WIDGET(w));
 	GtkEntry* username = GTK_ENTRY(g_object_get_data(G_OBJECT(w),"username"));
 	GtkImage* isUsernameOk = GTK_IMAGE(g_object_get_data(G_OBJECT(w),"usernameOk"));
 	GtkLabel* usernameError = GTK_LABEL(g_object_get_data(G_OBJECT(w),"error"));
@@ -236,17 +270,7 @@ void* check_username_availability(void* w) {
 	linphone_account_creator_set_username(creator, gtk_entry_get_text(username));
 
 	if (g_regex_match_simple("^[a-zA-Z]+[a-zA-Z0-9.\\-_]{3,}$", gtk_entry_get_text(username), 0, 0)) {
-		int account_existing = linphone_account_creator_test_existence(creator);
-		if (account_existing == 0) {
-			g_object_set_data(G_OBJECT(w),"is_username_available",GINT_TO_POINTER(1));
-			gtk_image_set_from_pixbuf(isUsernameOk, ok);
-			gtk_label_set_text(usernameError, "");
-		}
-		else {
-			gtk_label_set_text(usernameError, "Username is already in use !");
-			g_object_set_data(G_OBJECT(w),"is_username_available",GINT_TO_POINTER(0));
-			gtk_image_set_from_pixbuf(isUsernameOk, notok);
-		}
+		g_thread_create(check_username_availability, (void*)w, FALSE, NULL);
 	}
 	else {
 		if (gtk_entry_get_text_length(username) < LOGIN_MIN_SIZE) {
@@ -257,18 +281,10 @@ void* check_username_availability(void* w) {
 		}
 		g_object_set_data(G_OBJECT(w),"is_username_available",GINT_TO_POINTER(0));
 		gtk_image_set_from_pixbuf(isUsernameOk, notok);
+
+		gtk_assistant_set_page_complete(GTK_ASSISTANT(assistant),w,
+				is_account_information_correct(w)>0);
 	}
-
-	gtk_assistant_set_page_complete(GTK_ASSISTANT(assistant),w,
-			is_account_information_correct(w)>0);
-	//gdk_threads_leave();
-
-	return NULL;
-}
-
-static void account_username_changed(GtkEntry *entry, GtkWidget *w) {
-	// Verifying if username choosed is available, and if form is correctly filled, let the user go next page
-	gdk_threads_add_idle((GSourceFunc)check_username_availability, (void*)w);
 }
 
 static GtkWidget *create_account_information_page() {
