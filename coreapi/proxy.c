@@ -514,8 +514,12 @@ struct _LinphoneCore * linphone_proxy_config_get_core(const LinphoneProxyConfig 
  * This will start registration on the proxy, if registration is enabled.
 **/
 int linphone_core_add_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *cfg){
-	if (!linphone_proxy_config_check(lc,cfg)) return -1;
+	if (!linphone_proxy_config_check(lc,cfg)) {
+		linphone_proxy_config_destroy(cfg);
+		return -1;
+	}
 	if (ms_list_find(lc->sip_conf.proxies,cfg)!=NULL){
+		linphone_proxy_config_destroy(cfg);
 		ms_warning("ProxyConfig already entered, ignored.");
 		return 0;
 	}
@@ -549,10 +553,11 @@ void linphone_core_remove_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *cf
 **/
 void linphone_core_clear_proxy_config(LinphoneCore *lc){
 	MSList* list=ms_list_copy(linphone_core_get_proxy_config_list((const LinphoneCore*)lc));
+	MSList* copy=list;
 	for(;list!=NULL;list=list->next){
 		linphone_core_remove_proxy_config(lc,(LinphoneProxyConfig *)list->data);
 	}
-	ms_list_free(list);
+	ms_list_free(copy);
 	linphone_proxy_config_write_all_to_config_file(lc);
 }
 /**
