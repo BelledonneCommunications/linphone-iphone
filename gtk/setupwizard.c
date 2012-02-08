@@ -268,7 +268,7 @@ void* check_username_availability(void* w) {
 
 static void account_username_changed(GtkEntry *entry, GtkWidget *w) {
 	// Verifying if username choosed is available, and if form is correctly filled, let the user go next page
-	g_thread_create(check_username_availability, (void*)w, FALSE, NULL);
+	gdk_threads_add_idle((GSourceFunc)check_username_availability, (void*)w);
 }
 
 static GtkWidget *create_account_information_page() {
