@@ -6,6 +6,11 @@
 ./bin/libogg-0.dll
 ./bin/libtheora-0.dll
 ./bin/libxml2-2.dll
-./bin/libosip2-7.dll
+./bin/libosip2-7.
 ./bin/libosipparser2-7.dll
 ./bin/swscale-2.dll
+./bin/libsoup-2.4-1.dll
+./bin/libgcrypt-11.dll
+./bin/libgpg-error-0.dll
+./bin/libgnutls-26.dll
+./bin/libtasn1-3.dll
