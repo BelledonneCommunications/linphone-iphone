@@ -300,8 +300,9 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
 **/
 void linphone_proxy_config_refresh_register(LinphoneProxyConfig *obj){
 	if (obj->reg_sendregister && obj->op){
-		linphone_proxy_config_set_state(obj,LinphoneRegistrationProgress, "Refresh registration");
-		sal_register_refresh(obj->op,obj->expires);
+		if (sal_register_refresh(obj->op,obj->expires) == 0) {
+			linphone_proxy_config_set_state(obj,LinphoneRegistrationProgress, "Refresh registration");
+		}
 	}
 }
 

@@ -2042,16 +2042,17 @@ int sal_register(SalOp *h, const char *proxy, const char *from, int expires){
 		eXosip_register_build_register(h->rid,expires,&msg);
 		sal_register_add_route(msg,proxy);
 	}
-	eXosip_register_send_register(h->rid,msg);
+	if (msg)
+		eXosip_register_send_register(h->rid,msg);
 	eXosip_unlock();
 	h->expires=expires;
-	return 0;
+	return (msg != NULL) ? 0 : -1;
 }
 
 int sal_register_refresh(SalOp *op, int expires){
 	osip_message_t *msg=NULL;
 	const char *contact=sal_op_get_contact(op);
-	
+
 	if (op->rid==-1){
 		ms_error("Unexistant registration context, not possible to refresh.");
 		return -1;
@@ -2064,7 +2065,7 @@ int sal_register_refresh(SalOp *op, int expires){
 		eXosip_register_send_register(op->rid,msg);
 	}else ms_error("Could not build REGISTER refresh message.");
 	eXosip_unlock();
-	return 0;
+	return (msg != NULL) ? 0 : -1;
 }
 
 
