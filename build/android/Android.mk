@@ -95,8 +95,8 @@ LOCAL_STATIC_LIBRARIES := \
 
 ifeq ($(BUILD_TUNNEL),1)
 LOCAL_CFLAGS +=-DTUNNEL_ENABLED
-LOCAL_C_INCLUDES += $(LOCAL_PATH)/../tunnel/include
-LOCAL_SRC_FILES += linphone_tunnel_manager.cc TunnelManager.cc
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../tunnel/include $(LOCAL_PATH)/../../tunnel/src
+LOCAL_SRC_FILES += linphone_tunnel.cc TunnelManager.cc
 ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
 LOCAL_SHARED_LIBRARIES += libtunnelclient
 else
