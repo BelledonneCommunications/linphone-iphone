@@ -172,16 +172,20 @@ int linphone_proxy_config_set_route(LinphoneProxyConfig *obj, const char *route)
 		obj->reg_route=NULL;
 	}
 	if (route!=NULL){
-		LinphoneAddress *addr;
+		SalAddress *addr;
+		char *tmp;
 		/*try to prepend 'sip:' */
 		if (strstr(route,"sip:")==NULL){
-			obj->reg_route=ms_strdup_printf("sip:%s",route);
-		}else obj->reg_route=ms_strdup(route);
-		addr=linphone_address_new(obj->reg_route);
-		if (addr==NULL){
-			ms_free(obj->reg_route);
-			obj->reg_route=NULL;
-		}else linphone_address_destroy(addr);
+			tmp=ms_strdup_printf("sip:%s",route);
+		}else tmp=ms_strdup(route);
+		addr=sal_address_new(tmp);
+		if (addr!=NULL){
+			sal_address_destroy(addr);
+		}else{
+			ms_free(tmp);
+			tmp=NULL;
+		}
+		obj->reg_route=tmp;
 	}
 	return 0;
 }
