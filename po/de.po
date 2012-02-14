@@ -1,13 +1,13 @@
 # SIP Telephony Application.
 # Copyright (C) 2001, 2002 Free Software Foundation, Inc.
 # Simon Morlat <linphone@free.fr>, 2001.
-# Gerhard Stengel <gstengel@gmx.net>, 2011.
+# Gerhard Stengel <gstengel@gmx.net>, 2011, 2012.
 msgid ""
 msgstr ""
 "Project-Id-Version: linphone 0.7.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-12-10 01:18+0100\n"
-"PO-Revision-Date: 2011-12-10 01:28+0100\n"
+"PO-Revision-Date: 2012-01-15 23:21+0100\n"
 "Last-Translator: Gerhard Stengel <gstengel@gmx.net>\n"
 "Language-Team: German <kde-i18n-de@kde.org>\n"
 "Language: \n"
@@ -876,7 +876,7 @@ msgstr "Anwesenheitsstatus veröffentlichen"
 
 #: ../gtk/sip_account.ui.h:6
 msgid "Register"
-msgstr ""
+msgstr "Registrieren"
 
 #: ../gtk/sip_account.ui.h:7
 msgid "Registration duration (sec):"
