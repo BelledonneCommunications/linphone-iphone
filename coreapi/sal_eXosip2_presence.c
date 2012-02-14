@@ -92,6 +92,7 @@ int sal_text_send(SalOp *op, const char *from, const char *to, const char *msg){
 		if (to)
 			sal_op_set_to(op,to);
 
+		sal_exosip_fix_route(op);
 		eXosip_lock();
 		eXosip_message_build_request(&sip,"MESSAGE",sal_op_get_to(op),
 			sal_op_get_from(op),sal_op_get_route(op));

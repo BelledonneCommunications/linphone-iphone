@@ -1630,18 +1630,17 @@ static void monitor_network_state(LinphoneCore *lc, time_t curtime){
 }
 
 static void proxy_update(LinphoneCore *lc){
+	MSList *elem,*next;
 	ms_list_for_each(lc->sip_conf.proxies,(void (*)(void*))&linphone_proxy_config_update);
-	MSList* list=ms_list_copy(lc->sip_conf.deleted_proxies);
-	MSList* copy=list;
-	for(;list!=NULL;list=list->next){
-		LinphoneProxyConfig* cfg = (LinphoneProxyConfig*) list->data;
+	for(elem=lc->sip_conf.deleted_proxies;elem!=NULL;elem=next){
+		LinphoneProxyConfig* cfg = (LinphoneProxyConfig*)elem->data;
+		next=elem->next;
 		if (ms_time(NULL) - cfg->deletion_date > 5) {
-			lc->sip_conf.deleted_proxies =ms_list_remove(lc->sip_conf.deleted_proxies,(void *)cfg);
+			lc->sip_conf.deleted_proxies =ms_list_remove_link(lc->sip_conf.deleted_proxies,elem);
 			ms_message("clearing proxy config for [%s]",linphone_proxy_config_get_addr(cfg));
 			linphone_proxy_config_destroy(cfg);
 		}
 	}
-	ms_list_free(copy);
 }
 
 static void assign_buddy_info(LinphoneCore *lc, BuddyInfo *info){

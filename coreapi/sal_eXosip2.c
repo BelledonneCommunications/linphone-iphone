@@ -717,8 +717,8 @@ int sal_ping(SalOp *op, const char *from, const char *to){
 	
 	sal_op_set_from(op,from);
 	sal_op_set_to(op,to);
+	sal_exosip_fix_route(op);
 
-	/*bug here: eXosip2 does not honor the route argument*/
 	eXosip_options_build_request (&options, sal_op_get_to(op),
 			sal_op_get_from(op),sal_op_get_route(op));
 	if (options){
@@ -2216,10 +2216,10 @@ void sal_address_set_param(SalAddress *u,const char* name,const char* value) {
 	osip_uri_param_t *param=NULL;
     osip_uri_uparam_get_byname(((osip_from_t*)u)->url,(char*)name,&param);
     if (param == NULL){
-        osip_uri_uparam_add	(((osip_from_t*)u)->url,ms_strdup(name),ms_strdup(value));
+        osip_uri_uparam_add	(((osip_from_t*)u)->url,ms_strdup(name),value ? ms_strdup(value) : NULL);
     } else {
         osip_free(param->gvalue);
-        param->gvalue=osip_strdup(value);
+        param->gvalue=value ? osip_strdup(value) : NULL;
     }
     
 }
