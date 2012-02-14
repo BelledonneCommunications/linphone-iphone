@@ -164,6 +164,9 @@ filelist: zip
 		fi \
 	done
 
+
+### WINDOWS
+
 setup.exe: filelist
 	cp $(ISS_SCRIPT) $(INSTALLDIR_WITH_PREFIX)/.
 	cd $(INSTALLDIR_WITH_PREFIX) && \
@@ -172,6 +175,8 @@ setup.exe: filelist
 	rm -rf $(INSTALLDIR_WITH_PREFIX)/Output
 	rm -f $(INSTALLDIR_WITH_PREFIX)/$(PACKAGE_WIN32_FILELIST)
 	rm -f $(INSTALLDIR_WITH_PREFIX)/$(ISS_SCRIPT)
+
+###
 
 newdate:
 	cd gtk && $(MAKE) newdate
@@ -190,9 +195,13 @@ Portfile-devel:	$(top_srcdir)/scripts/Portfile-devel.tmpl dist
 	sed -e 's/\@VERSION\@/$(LINPHONE_VERSION)/g' \
 	  -e 's/\@LINPHONE_MD5\@/$(GEN_MD5)/' < $< > $@
 
+
+### MAC
+
 MACAPPNAME=Linphone.app
 MACAPPZIP=$(PACKAGE)-$(VERSION).app.zip
-BUNDLEDIR=$(shell echo "$$HOME/Desktop/$(MACAPPNAME)")
+BUNDLEPREFIX=./
+BUNDLEDIR=$(BUNDLEPREFIX)$(MACAPPNAME)
 LIBICONV_HACK=$(top_builddir)/build/macos/libiconv.2.dylib
 
 $(LIBICONV_HACK):
@@ -203,13 +212,17 @@ bundle: $(LIBICONV_HACK)
 	rm -rf $(INSTALLDIR)
 	mkdir -p $(INSTALLDIR)
 	make install DESTDIR=$(INSTALLDIR)
+	BUNDLE_PREFIX=$(BUNDLEPREFIX) \
 	LINPHONE_INSTALL_PREFIX=$(INSTALLDIR_WITH_PREFIX) \
 	LIBLINPHONE_INSTALL_PREFIX=$(INSTALLDIR_WITH_PREFIX) \
 	gtk-mac-bundler $(PACKAGE_BUNDLE_FILE)
 	printf "[Pango]\nModuleFiles=./etc/pango/pango.modules\n" \
 	> $(BUNDLEDIR)/Contents/Resources/etc/pango/pangorc 
 	cp -f $(LIBICONV_HACK) $(BUNDLEDIR)/Contents/Resources/lib/.
-	cd $(BUNDLEDIR)/.. && rm -f $(MACAPPZIP) && zip -r $(MACAPPZIP) $(MACAPPNAME)
+	cd $(BUNDLEDIR)/.. && rm -f $(MACAPPZIP) && zip -r $(MACAPPZIP) $(MACAPPNAME) && cd -
 
+###
+### CLEAN
 
-
+clean-local:
+	rm -rf $(BUNDLEDIR)
