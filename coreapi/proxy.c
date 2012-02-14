@@ -516,11 +516,9 @@ struct _LinphoneCore * linphone_proxy_config_get_core(const LinphoneProxyConfig 
 **/
 int linphone_core_add_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *cfg){
 	if (!linphone_proxy_config_check(lc,cfg)) {
-		linphone_proxy_config_destroy(cfg);
 		return -1;
 	}
 	if (ms_list_find(lc->sip_conf.proxies,cfg)!=NULL){
-		linphone_proxy_config_destroy(cfg);
 		ms_warning("ProxyConfig already entered, ignored.");
 		return 0;
 	}
