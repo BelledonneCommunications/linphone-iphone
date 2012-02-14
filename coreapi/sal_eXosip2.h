@@ -65,13 +65,13 @@ struct SalOp{
 	 			to retrieve the operation when receiving a response*/
 	char *replaces;
 	char *referred_by;
+	const SalAuthInfo *auth_info;
 	bool_t supports_session_timers;
 	bool_t sdp_offering;
 	bool_t reinvite;
 	bool_t masquerade_via;
 	bool_t auto_answer_asked;
 	bool_t terminated;
-	const SalAuthInfo *auth_info;
 };
 
 void sal_remove_out_subscribe(Sal *sal, SalOp *op);

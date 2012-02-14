@@ -259,6 +259,7 @@ bool_t linphone_call_has_transfer_pending(const LinphoneCall *call);
 LinphoneCall *linphone_call_get_replaced_call(LinphoneCall *call);
 int linphone_call_get_duration(const LinphoneCall *call);
 const LinphoneCallParams * linphone_call_get_current_params(const LinphoneCall *call);
+const LinphoneCallParams * linphone_call_get_remote_params(LinphoneCall *call);
 void linphone_call_enable_camera(LinphoneCall *lc, bool_t enabled);
 bool_t linphone_call_camera_enabled(const LinphoneCall *lc);
 int linphone_call_take_video_snapshot(LinphoneCall *call, const char *file);
@@ -690,6 +691,8 @@ LinphoneCall *linphone_core_get_current_call(const LinphoneCore *lc);
 
 int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call);
 
+int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params);
+
 int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *call);
 
 int linphone_core_redirect_call(LinphoneCore *lc, LinphoneCall *call, const char *redirect_uri);
@@ -703,6 +706,10 @@ int linphone_core_pause_all_calls(LinphoneCore *lc);
 int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *call);
 
 int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params);
+
+int linphone_core_defer_call_update(LinphoneCore *lc, LinphoneCall *call);
+
+int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params);
 
 LinphoneCallParams *linphone_core_create_default_call_parameters(LinphoneCore *lc);
 

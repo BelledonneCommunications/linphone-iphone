@@ -101,6 +101,7 @@ struct _LinphoneCall
 	char *refer_to;
 	LinphoneCallParams params;
 	LinphoneCallParams current_params;
+	LinphoneCallParams remote_params;
 	int up_bw; /*upload bandwidth setting at the time the call is started. Used to detect if it changes during a call */
 	int audio_bw;	/*upload bandwidth used by audio */
 	bool_t refer_pending;
@@ -117,6 +118,7 @@ struct _LinphoneCall
 	bool_t videostream_encrypted;
 	bool_t audiostream_encrypted;
 	bool_t auth_token_verified;
+	bool_t defer_update;
 };
 
 
@@ -468,12 +470,15 @@ struct _LinphoneCore
 	bool_t apply_nat_settings;
 	bool_t initial_subscribes_sent;
 	bool_t bl_refresh;
+	
 	bool_t preview_finished;
 	bool_t auto_net_state_mon;
 	bool_t network_reachable;
 	bool_t use_preview_window;
-	int device_rotation;
+	
 	bool_t ringstream_autorelease;
+	bool_t pad[3];
+	int device_rotation;
 	int max_calls;
 	LinphoneTunnel *tunnel;
 };
@@ -492,7 +497,7 @@ int linphone_core_get_calls_nb(const LinphoneCore *lc);
 void linphone_core_set_state(LinphoneCore *lc, LinphoneGlobalState gstate, const char *message);
 
 SalMediaDescription *create_local_media_description(LinphoneCore *lc, LinphoneCall *call);
-void update_local_media_description(LinphoneCore *lc, LinphoneCall *call, SalMediaDescription **md);
+void update_local_media_description(LinphoneCore *lc, LinphoneCall *call);
 
 void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMediaDescription *new_md);
 

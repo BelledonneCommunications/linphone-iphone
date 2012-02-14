@@ -508,7 +508,7 @@ static void set_sdp_from_desc(osip_message_t *sip, const SalMediaDescription *de
 }
 
 static void sdp_process(SalOp *h){
-	ms_message("Doing SDP offer/answer process");
+	ms_message("Doing SDP offer/answer process of type %s",h->sdp_offering ? "outgoing" : "incoming");
 	if (h->result){
 		sal_media_description_unref(h->result);
 	}
@@ -517,6 +517,9 @@ static void sdp_process(SalOp *h){
 		offer_answer_initiate_outgoing(h->base.local_media,h->base.remote_media,h->result);
 	}else{
 		int i;
+		if (h->sdp_answer){
+			sdp_message_free(h->sdp_answer);
+		}
 		offer_answer_initiate_incoming(h->base.local_media,h->base.remote_media,h->result,h->base.root->one_matching_codec);
 		h->sdp_answer=media_description_to_sdp(h->result);
 		/*once we have generated the SDP answer, we modify the result description for processing by the upper layer.
@@ -550,6 +553,15 @@ int sal_call_set_local_media_description(SalOp *h, SalMediaDescription *desc){
 	if (h->base.local_media)
 		sal_media_description_unref(h->base.local_media);
 	h->base.local_media=desc;
+	if (h->base.remote_media){
+		/*case of an incoming call where we modify the local capabilities between the time
+		 * the call is ringing and it is accepted (for example if you want to accept without video*/
+		/*reset the sdp answer so that it is computed again*/
+		if (h->sdp_answer){
+			sdp_message_free(h->sdp_answer);
+			h->sdp_answer=NULL;
+		}
+	}
 	return 0;
 }
 
@@ -606,18 +618,19 @@ int sal_call_notify_ringing(SalOp *h, bool_t early_media){
 	osip_message_t *msg;
 	
 	/*if early media send also 180 and 183 */
-	if (early_media && h->sdp_answer){
+	if (early_media){
 		msg=NULL;
 		eXosip_lock();
 		eXosip_call_build_answer(h->tid,180,&msg);
-		if (msg){
-			set_sdp(msg,h->sdp_answer);
-			eXosip_call_send_answer(h->tid,180,msg);
-		}
-		msg=NULL;
+		
 		eXosip_call_build_answer(h->tid,183,&msg);
 		if (msg){
-			set_sdp(msg,h->sdp_answer);
+			sdp_process(h);
+			if (h->sdp_answer){
+				set_sdp(msg,h->sdp_answer);
+				sdp_message_free(h->sdp_answer);
+				h->sdp_answer=NULL;
+			}
 			eXosip_call_send_answer(h->tid,183,msg);
 		}
 		eXosip_unlock();
@@ -652,6 +665,7 @@ int sal_call_accept(SalOp * h){
 		if (h->sdp_offering) {
 			set_sdp_from_desc(msg,h->base.local_media);
 		}else{
+			if (h->sdp_answer==NULL) sdp_process(h);
 			if (h->sdp_answer){
 				set_sdp(msg,h->sdp_answer);
 				sdp_message_free(h->sdp_answer);
@@ -695,6 +709,10 @@ int sal_call_decline(SalOp *h, SalReason reason, const char *redirect){
 		eXosip_unlock();
 	}else sal_call_terminate(h);
 	return 0;
+}
+
+SalMediaDescription * sal_call_get_remote_media_description(SalOp *h){
+	return h->base.remote_media;
 }
 
 SalMediaDescription * sal_call_get_final_media_description(SalOp *h){
@@ -1032,15 +1050,19 @@ static void handle_ack(Sal *sal,  eXosip_event_t *ev){
 		ms_warning("ack for non-existing call !");
 		return;
 	}
-	sdp=eXosip_get_sdp_info(ev->ack);
-	if (sdp){
-		op->base.remote_media=sal_media_description_new();
-		sdp_to_media_description(sdp,op->base.remote_media);
-		sdp_process(op);
-		sdp_message_free(sdp);
+	
+	if (op->sdp_offering){
+		sdp=eXosip_get_sdp_info(ev->ack);
+		if (sdp){
+			if (op->base.remote_media)
+				sal_media_description_unref(op->base.remote_media);
+			op->base.remote_media=sal_media_description_new();
+			sdp_to_media_description(sdp,op->base.remote_media);
+			sdp_process(op);
+			sdp_message_free(sdp);
+		}
 	}
 	if (op->reinvite){
-		if (sdp) sal->callbacks.call_updating(op);
 		op->reinvite=FALSE;
 	}else{
 		sal->callbacks.call_ack(op);

@@ -2285,9 +2285,8 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 	if (params!=NULL){
 		const char *subject;
 		call->params=*params;
-		update_local_media_description(lc,call,&call->localdesc);
-		call->camera_active=params->has_video;
-
+		update_local_media_description(lc,call);
+		
 		if (params->in_conference){
 			subject="Conference";
 		}else{
@@ -2311,6 +2310,50 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 	return err;
 }
 
+/**
+ * When receiving a LinphoneCallUpdatedByRemote state notification, prevent LinphoneCore from performing an automatic answer.
+ * 
+ * When receiving a LinphoneCallUpdatedByRemote state notification (ie an incoming reINVITE), the default behaviour of
+ * LinphoneCore is to automatically answer the reINIVTE with call parameters unchanged.
+ * However when for example when the remote party updated the call to propose a video stream, it can be useful
+ * to prompt the user before answering. This can be achieved by calling linphone_core_defer_call_update() during 
+ * the call state notifiacation, to deactivate the automatic answer that would just confirm the audio but reject the video.
+ * Then, when the user responds to dialog prompt, it becomes possible to call linphone_core_accept_call_update() to answer
+ * the reINVITE, with eventually video enabled in the LinphoneCallParams argument.
+ * 
+ * @Returns 0 if successful, -1 if the linphone_core_defer_call_update() was done outside a LinphoneCallUpdatedByRemote notification, which is illegal.
+**/
+int linphone_core_defer_call_update(LinphoneCore *lc, LinphoneCall *call){
+	if (call->state==LinphoneCallUpdatedByRemote){
+		call->defer_update=TRUE;
+		return 0;
+	}
+	ms_error("linphone_core_defer_call_update() not done in state LinphoneCallUpdatedByRemote");
+	return -1;
+}
+
+/**
+ * 
+**/
+int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params){
+	SalMediaDescription *md;
+	if (call->state!=LinphoneCallUpdatedByRemote){
+		ms_error("linphone_core_accept_update(): invalid state %s to call this function.",
+		         linphone_call_state_to_string(call->state));
+		return -1;
+	}
+	if (params){
+		call->params=*params;
+		update_local_media_description(lc,call);
+		sal_call_set_local_media_description(call->op,call->localdesc);
+	}
+	sal_call_accept(call->op);
+	md=sal_call_get_final_media_description(call->op);
+	if (md && !sal_media_description_empty(md))
+		linphone_core_update_streams (lc,call,md);
+	linphone_call_set_state(call,LinphoneCallStreamsRunning,"Connected (streams running)");
+	return 0;
+}
 
 /**
  * Accept an incoming call.
@@ -2325,7 +2368,25 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
  * @param call the LinphoneCall object representing the call to be answered.
  *
 **/
-int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call)
+int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call){
+	return linphone_core_accept_call_with_params(lc,call,NULL);
+}
+
+/**
+ * Accept an incoming call, with parameters.
+ *
+ * @ingroup call_control
+ * Basically the application is notified of incoming calls within the
+ * call_state_changed callback of the #LinphoneCoreVTable structure, where it will receive
+ * a LinphoneCallIncoming event with the associated LinphoneCall object.
+ * The application can later accept the call using
+ * this method.
+ * @param lc the LinphoneCore object
+ * @param call the LinphoneCall object representing the call to be answered.
+ * @param params the specific parameters for this call, for example whether video is accepted or not. Use NULL to use default parameters.
+ *
+**/
+int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params)
 {
 	LinphoneProxyConfig *cfg=NULL,*dest_proxy=NULL;
 	const char *contact=NULL;
@@ -2388,6 +2449,12 @@ int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call)
 	if (call->audiostream==NULL)
 		linphone_call_init_media_streams(call);
 
+	if (params){
+		call->params=*params;
+		update_local_media_description(lc,call);
+		sal_call_set_local_media_description(call->op,call->localdesc);
+	}
+	
 	sal_call_accept(call->op);
 	if (lc->vtable.display_status!=NULL)
 		lc->vtable.display_status(lc,_("Connected."));
@@ -2540,7 +2607,7 @@ int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call)
 		ms_warning("Cannot pause this call, it is not active.");
 		return -1;
 	}
-	update_local_media_description(lc,call,&call->localdesc);
+	update_local_media_description(lc,call);
 	if (sal_media_description_has_dir(call->resultdesc,SalStreamSendRecv)){
 		sal_media_description_set_dir(call->localdesc,SalStreamSendOnly);
 		subject="Call on hold";
@@ -2613,11 +2680,11 @@ int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *the_call)
 		ms_message("Resuming call %p",call);
 	}
 
-	// Stop playing music immediately. If remote side is a conference it
-	// prevents the participants to hear it while the 200OK comes back.
-	audio_stream_play(call->audiostream, NULL);
+	/* Stop playing music immediately. If remote side is a conference it
+	 prevents the participants to hear it while the 200OK comes back.*/
+	if (call->audiostream) audio_stream_play(call->audiostream, NULL);
 
-	update_local_media_description(lc,the_call,&call->localdesc);
+	update_local_media_description(lc,the_call);
 	sal_call_set_local_media_description(call->op,call->localdesc);
 	sal_media_description_set_dir(call->localdesc,SalStreamSendRecv);
 	if (call->params.in_conference && !call->current_params.in_conference) subject="Conference";
