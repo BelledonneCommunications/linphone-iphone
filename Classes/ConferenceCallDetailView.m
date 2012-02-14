@@ -147,8 +147,7 @@ NSTimer *callQualityRefresher;
 			[view removeFromSuperview];
 		}
 	}
-	UIImageView* callquality = [UIImageView new];
-	[callquality setFrame:CGRectMake(0, 0, 28, 28)];
+	UIImageView* callquality = (UIImageView*) [cell viewWithTag:3];
 	if (linphone_call_get_average_quality(call) >= 4) {
 		[callquality setImage: [IncallViewController stat_sys_signal_4]];
 	}
@@ -164,10 +163,7 @@ NSTimer *callQualityRefresher;
 	else {
 		[callquality setImage: [IncallViewController stat_sys_signal_0]];
 	}
-	[cell.accessoryView addSubview:callquality];
-	
-    tableView.rowHeight = 80;//cell.bounds.size.height;
-    [callquality release];
+    tableView.rowHeight = 80;
     
     return cell;
 }

@@ -532,8 +532,15 @@ int callCount(LinphoneCore* lc) {
                 case LinphoneCallPaused:
                     [ms appendFormat:@"%@", NSLocalizedString(@"Paused (tap to resume)", nil), nil];
                     break;
+                case LinphoneCallOutgoingInit:
                 case LinphoneCallOutgoingProgress:
                     [ms appendFormat:@"%@...", NSLocalizedString(@"In progress", nil), nil];
+                    break;
+                case LinphoneCallOutgoingRinging:
+                    [ms appendFormat:@"%@...", NSLocalizedString(@"Ringing...", nil), nil];
+                    break;
+                case LinphoneCallPausedByRemote:
+                    [ms appendFormat:@"%@...", NSLocalizedString(@"Paused by remote", nil), nil];
                     break;
                 default:
                     break;
