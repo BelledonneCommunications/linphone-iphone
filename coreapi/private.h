@@ -480,6 +480,8 @@ struct _LinphoneCore
 
 LinphoneTunnel *linphone_core_tunnel_new(LinphoneCore *lc);
 void linphone_tunnel_destroy(LinphoneTunnel *tunnel);
+void linphone_tunnel_configure(LinphoneTunnel *tunnel);
+void linphone_tunnel_enable_logs_with_handler(LinphoneTunnel *tunnel, bool_t enabled, OrtpLogFunc logHandler);
 	
 bool_t linphone_core_can_we_add_call(LinphoneCore *lc);
 int linphone_core_add_call( LinphoneCore *lc, LinphoneCall *call);

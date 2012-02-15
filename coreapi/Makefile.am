@@ -40,13 +40,15 @@ liblinphone_la_SOURCES=\
 	siplogin.c \
 	lsd.c linphonecore_utils.h \
 	ec-calibrator.c \
-	conference.c 
+	conference.c \
+	linphone_tunnel.cc
+	
 if BUILD_WIZARD
 liblinphone_la_SOURCES+=sipwizard.c 
 endif
 
 if BUILD_TUNNEL
-liblinphone_la_SOURCES+=TunnelManager.cc TunnelManager.hh linphone_tunnel.cc
+liblinphone_la_SOURCES+=TunnelManager.cc TunnelManager.hh 
 endif
 
 
@@ -89,3 +91,6 @@ AM_CFLAGS=$(STRICT_OPTIONS)  -DIN_LINPHONE \
 if BUILD_WIZARD
 AM_CFLAGS+= -DBUILD_WIZARD 
 endif
+
+AM_CXXFLAGS=$(AM_CFLAGS)
+

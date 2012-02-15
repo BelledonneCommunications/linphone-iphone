@@ -810,7 +810,7 @@ static void autoreplier_config_init(LinphoneCore *lc)
 }
 */
 
-bool_t linphone_core_tunnel_available(){
+bool_t linphone_core_tunnel_available(void){
 #ifdef TUNNEL_ENABLED
 	return TRUE;
 #else
@@ -1099,7 +1099,7 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	ui_config_read(lc);
 #ifdef TUNNEL_ENABLED
 	lc->tunnel=linphone_core_tunnel_new(lc);
-	if (lc->tunnel) linphone_tunnel_update(lc->tunnel);
+	if (lc->tunnel) linphone_tunnel_configure(lc->tunnel);
 #endif
 	if (lc->vtable.display_status)
 		lc->vtable.display_status(lc,_("Ready"));

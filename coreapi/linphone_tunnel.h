@@ -28,58 +28,28 @@
 
 #include "linphonecore.h"
 
+/*
+ * Linphone VoIP tunnel extension API
+**/
+
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-typedef void (*LogHandler)(int log_level, const char *str, va_list l);
 
 void linphone_tunnel_add_server(LinphoneTunnel *tunnel, const char *host, int port);
 void linphone_tunnel_add_server_and_mirror(LinphoneTunnel *tunnel, const char *host, int port, int remote_udp_mirror, int delay);
+/*returns a string of space separated list of host:port of tunnel server addresses*/
+char *linphone_tunnel_get_servers(LinphoneTunnel *tunnel);
 void linphone_tunnel_clean_servers(LinphoneTunnel *tunnel);
 void linphone_tunnel_enable(LinphoneTunnel *tunnel, bool_t enabled);
 bool_t linphone_tunnel_enabled(LinphoneTunnel *tunnel);
-void linphone_tunnel_enable_logs(LinphoneTunnel *tunnel, bool_t enabled);
-void linphone_tunnel_enable_logs_with_handler(LinphoneTunnel *tunnel, bool_t enabled, LogHandler logHandler);
 void linphone_tunnel_reconnect(LinphoneTunnel *tunnel);
 void linphone_tunnel_auto_detect(LinphoneTunnel *tunnel);
+void linphone_tunnel_set_http_proxy(LinphoneTunnel *tunnel, const char *host, int port, const char* username,const char* passwd);
 void linphone_tunnel_set_http_proxy_auth_info(LinphoneTunnel*tunnel, const char* username,const char* passwd);
 
-
-/**
- * LinphoneTunnelState describes the tunnel activation states.
- */
-typedef enum _LinphoneTunnelState{
-	LinphoneTunnelDisabled, /**<The tunnel is always off */
-	LinphoneTunnelEnabled, /**<The tunnel is always on */
-	LinphoneTunnelAuto /**<The tunnel is active if needed */
-}LinphoneTunnelState;
-
-/**
- * Set tunnel addresses.
-**/
-void linphone_tunnel_set_server_addresses(LinphoneTunnel *tunnel, const char *lists);
-
-/**
- * Get tunnel addresses.
-**/
-const char *linphone_tunnel_get_server_addresses(LinphoneTunnel *tunnel);
-
-/**
- * Set tunnel state.
-**/
-void linphone_tunnel_set_state(LinphoneTunnel *tunnel, LinphoneTunnelState state);
-
-/**
- * Get tunnel state.
-**/
-LinphoneTunnelState linphone_tunnel_get_state(LinphoneTunnel *tunnel);
-
-/**
- * Update tunnel connection after setting new server addresses.
-**/
-void linphone_tunnel_update(LinphoneTunnel *tunnel);
 
 #ifdef __cplusplus
 }
@@ -87,3 +57,4 @@ void linphone_tunnel_update(LinphoneTunnel *tunnel);
 
 
 #endif
+

@@ -1003,7 +1003,7 @@ void linphone_gtk_edit_tunnel_closed(GtkWidget *button){
         gtk_widget_destroy(pb);
 }
 
-#ifdef TUNNEL_ENABLED
+
 static void tunnel_get_server_host_and_port(LinphoneTunnel *tunnel, char *host, int size, int *port){
 	char *colon;
 	char *addresses;
@@ -1011,7 +1011,7 @@ static void tunnel_get_server_host_and_port(LinphoneTunnel *tunnel, char *host, 
 	char *address;
 	const char* configured_addresses;
 
-	configured_addresses=linphone_tunnel_get_server_addresses(tunnel);
+	configured_addresses=linphone_tunnel_get_servers(tunnel);
 
 	if (configured_addresses==NULL){
 		host[0]=0;
@@ -1030,39 +1030,35 @@ static void tunnel_get_server_host_and_port(LinphoneTunnel *tunnel, char *host, 
 	ms_free(addresses);
 }
 
-#endif
 
 void linphone_gtk_edit_tunnel(GtkButton *button){
 	GtkWidget *w=linphone_gtk_create_window("tunnel_config");
-#ifdef TUNNEL_ENABLED
 	LinphoneCore *lc=linphone_gtk_get_core();
 	LinphoneTunnel *tunnel=linphone_core_get_tunnel(lc);
 	char host[128]={'\0'};
 	int port=0;
+	
+	if (!tunnel) return;
+	
 	tunnel_get_server_host_and_port(tunnel, host, sizeof(host), &port);
-	LinphoneTunnelState state=linphone_tunnel_get_state(tunnel);
 
 	gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(w,"host")),host);
 	if (port==0) port=443;
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(w,"port")), port);
 
-	if (state == LinphoneTunnelEnabled){
+	if (linphone_tunnel_enabled(tunnel)){
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"radio_enable")),1);
 	} else{
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"radio_disable")),1);
 	}
 
 	g_object_weak_ref(G_OBJECT(w),(GWeakNotify)linphone_gtk_edit_tunnel_closed,w);
-#endif
 	gtk_widget_show(w);
 }
 
 void linphone_gtk_tunnel_ok(GtkButton *button){
 	GtkWidget *w=gtk_widget_get_toplevel(GTK_WIDGET(button));
-	// Save information to config file
-#ifdef TUNNEL_ENABLED
 	LinphoneCore *lc=linphone_gtk_get_core();
-	char address[128]={'\0'};
 	LinphoneTunnel *tunnel=linphone_core_get_tunnel(lc);
 
 	gint port = (gint)gtk_spin_button_get_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(w,"port")));
@@ -1070,16 +1066,10 @@ void linphone_gtk_tunnel_ok(GtkButton *button){
 	const char *host=gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(w,"host")));
 	
 	if (tunnel==NULL) return;
-	
-	snprintf(address, sizeof address, "%s:%i", host, port);
-	linphone_tunnel_set_server_addresses(tunnel, address);
-	if (enabled){
-		linphone_tunnel_set_state(tunnel, LinphoneTunnelEnabled);
-	} else{
-		linphone_tunnel_set_state(tunnel,LinphoneTunnelDisabled);
-	}
-	linphone_tunnel_update(tunnel);
-#endif
+	if (host && *host=='\0') host=NULL;
+	linphone_tunnel_clean_servers(tunnel);
+	linphone_tunnel_add_server(tunnel,host,port);
+	linphone_tunnel_enable(tunnel,enabled);
 	gtk_widget_destroy(w);
 }
 

@@ -128,6 +128,7 @@ class UdpMirrorClient;
 		 * Get associated Linphone Core.
 		 */
 		LinphoneCore *getLinphoneCore();
+		virtual void setHttpProxy(const char *host,int port, const char *username, const char *passwd);
 	private:
 		typedef std::list<UdpMirrorClient> UdpMirrorClientList;
 		virtual bool isStarted();
@@ -140,7 +141,7 @@ class UdpMirrorClient;
 		static void tunnelCallback(bool connected, TunnelManager *zis);
 		static void sOnIterate(TunnelManager *zis);
 		static void UdpMirrorClientListener(bool result, void* data);
-
+		void waitUnRegistration();
 		void processTunnelEvent();
 		LinphoneCore* mCore;
 		LCSipTransports mRegularTransport;
@@ -159,7 +160,9 @@ class UdpMirrorClient;
 		bool mAutoDetectStarted;
 		LinphoneRtpTransportFactories mTransportFactories;
 		std::string mHttpUserName;
-		std::string mHttpPasswd;		
+		std::string mHttpPasswd;
+		std::string mHttpProxyHost;
+		int mHttpProxyPort;		
 	};
 
 /**

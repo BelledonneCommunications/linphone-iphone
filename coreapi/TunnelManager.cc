@@ -23,15 +23,6 @@
 #include <android/log.h>
 #endif
 
-#ifdef recvfrom 
-#undef recvfrom
-#endif
-#ifdef sendto 
-#undef sendto
-#endif
-#ifdef select 
-#undef select
-#endif
 
 using namespace belledonnecomm;
 
@@ -176,9 +167,7 @@ void TunnelManager::start() {
 			const ServerAddr &addr=*it;
 			mTunnelClient->addServer(addr.mAddr.c_str(), addr.mPort);
 		}
-		if(!mHttpUserName.empty()) {
-			mTunnelClient->setHttpProxyAuthInfo(mHttpUserName.c_str(), mHttpPasswd.c_str());
-		}
+		mTunnelClient->setHttpProxy(mHttpProxyHost.c_str(), mHttpProxyPort, mHttpUserName.c_str(), mHttpPasswd.c_str());
 	}
 	mTunnelClient->start();
 
@@ -214,7 +203,8 @@ TunnelManager::TunnelManager(LinphoneCore* lc) :TunnelClientController()
 ,mCallback(NULL)
 ,mEnabled(false)
 ,mTunnelClient(NULL)
-,mAutoDetectStarted(false) {
+,mAutoDetectStarted(false)
+,mHttpProxyPort(0){
 
 	mExosipTransport.data=this;
 	mExosipTransport.recvfrom=eXosipRecvfrom;
@@ -281,6 +271,25 @@ void TunnelManager::processTunnelEvent(){
 	}
 }
 
+void TunnelManager::waitUnRegistration(){
+	LinphoneProxyConfig* lProxy;
+	linphone_core_get_default_proxy(mCore, &lProxy);
+	if (lProxy && linphone_proxy_config_get_state(lProxy)==LinphoneRegistrationOk) {
+		int i;
+		linphone_proxy_config_edit(lProxy);
+		//make sure unregister is sent and authenticated
+		do{
+			linphone_core_iterate(mCore);
+			ms_usleep(20000);
+			if (i>100){
+				ms_message("tunnel: timeout for unregistration expired, giving up");
+				break;
+			}
+			i++;
+		}while(linphone_proxy_config_get_state(lProxy)!=LinphoneRegistrationCleared);
+	}	
+}
+
 void TunnelManager::enable(bool isEnable) {
 	ms_message("Turning tunnel [%s]",(isEnable?"on":"off"));
 	if (isEnable && !mEnabled){
@@ -288,29 +297,15 @@ void TunnelManager::enable(bool isEnable) {
 		//1 save transport 
 		linphone_core_get_sip_transports(mCore, &mRegularTransport);
 		//2 unregister
-		LinphoneProxyConfig* lProxy;
-		linphone_core_get_default_proxy(mCore, &lProxy);
-		if (lProxy) {
-			linphone_proxy_config_edit(lProxy);
-			//make sure unregister is sent
-			linphone_core_iterate(mCore); 
-		}
+		waitUnRegistration();
 		//3 insert tunnel
 		start();
 	}else if (!isEnable && mEnabled){
+		//1 unregister
+		waitUnRegistration();
+		
 		mEnabled=false;
 		stopClient();
-		//1 unregister
-		LinphoneProxyConfig* lProxy;
-		linphone_core_get_default_proxy(mCore, &lProxy);
-		if (lProxy) {
-			linphone_proxy_config_edit(lProxy);
-			//make sure unregister is sent
-			linphone_core_iterate(mCore); 
-		}
-		
-		//make sure unregister is sent
-		linphone_core_iterate(mCore); 
 		
 		linphone_core_set_rtp_transport_factories(mCore,NULL);
 
@@ -318,6 +313,8 @@ void TunnelManager::enable(bool isEnable) {
 		//Restore transport
 		linphone_core_set_sip_transports(mCore, &mRegularTransport);
 		//register
+		LinphoneProxyConfig* lProxy;
+		linphone_core_get_default_proxy(mCore, &lProxy);
 		if (lProxy) {
 			linphone_proxy_config_done(lProxy);
 		}
@@ -418,6 +415,14 @@ void TunnelManager::setHttpProxyAuthInfo(const char* username,const char* passwd
 	mHttpUserName=username?username:"";
 	mHttpPasswd=passwd?passwd:"";
 	if (mTunnelClient) mTunnelClient->setHttpProxyAuthInfo(username,passwd);
+}
+
+void TunnelManager::setHttpProxy(const char *host,int port, const char *username, const char *passwd){
+	mHttpUserName=username?username:"";
+	mHttpPasswd=passwd?passwd:"";
+	mHttpProxyPort=(port>0) ? port : 0;
+	mHttpProxyHost=host ? host : "";
+	if (mTunnelClient) mTunnelClient->setHttpProxy(host, port, username, passwd);
 }
 
 LinphoneCore *TunnelManager::getLinphoneCore(){
