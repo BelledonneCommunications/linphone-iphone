@@ -326,7 +326,7 @@ delivery:
 	-x linphone-iphone/build\* \
 	-x \*.git\*
 
-ipa: all
+ipa:
 	cd $(BUILDER_SRC_DIR)/../ \
 	&& xcodebuild  -configuration DistributionAdhoc \
 	&& xcrun -sdk iphoneos PackageApplication -v build/DistributionAdhoc-iphoneos/linphone.app -o $(BUILDER_SRC_DIR)/../linphone-iphone.ipa
