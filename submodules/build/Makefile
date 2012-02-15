@@ -46,10 +46,17 @@ build:
 	&& make -f  builder-iphone-simulator.mk all enable_gpl_third_parties=$(enable_gpl_third_parties)\
 	&& make -f  builder-iphone-os.mk   host=armv7-apple-darwin all enable_gpl_third_parties=$(enable_gpl_third_parties)\
 	&& make -f builder-iphone-os.mk delivery-sdk 
+
+ipa:
+	make -f  builder-iphone-simulator.mk  ipa \
+	&&  make -f  builder-iphone-os.mk  ipa \
+	&&  make -f  builder-iphone-os.mk   host=armv7-apple-darwin ipa
+
 clean:
 	make -f  builder-iphone-simulator.mk  clean \
 	&&  make -f  builder-iphone-os.mk  clean \
 	&&  make -f  builder-iphone-os.mk   host=armv7-apple-darwin clean
+
 clean-makefile:
 	make -f  builder-iphone-simulator.mk  clean-makefile \
 	&&  make -f  builder-iphone-os.mk  clean-makefile \
