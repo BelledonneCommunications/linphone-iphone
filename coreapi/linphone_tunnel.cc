@@ -23,8 +23,10 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#ifdef TUNNEL_ENABLED
 #include "TunnelManager.hh"
 #include "linphone_tunnel.h"
+#endif
 #include "linphonecore.h"
 #include "private.h"
 #include "lpconfig.h"
