@@ -42,12 +42,15 @@ linphone_SOURCES=	\
 			update.c \
 			buddylookup.c \
 			utils.c \
-			setupwizard.c\
 			incall_view.c \
 			loginframe.c \
 			singleinstance.c \
 			conference.c \
 			linphone.h 
+if BUILD_WIZARD
+linphone_SOURCES+=	\
+			setupwizard.c
+endif
 
 linphone_LDADD=$(ORTP_LIBS) \
 		$(MEDIASTREAMER_LIBS) \

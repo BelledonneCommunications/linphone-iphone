@@ -145,7 +145,7 @@ AC_ARG_ENABLE(gtk_ui,
       esac],[gtk_ui=true])
 
 if test "$gtk_ui" = "true" ; then
-	PKG_CHECK_MODULES(LIBGTK, gtk+-2.0 >= 2.22.0 gthread-2.0)
+	PKG_CHECK_MODULES(LIBGTK, gtk+-2.0 >= 2.18.0 gthread-2.0)
 	if test "$enable_x11" = "false" ; then
 		PKG_CHECK_MODULES(LIBGTKMAC,[ige-mac-integration >= 0.9.7 ])
 		AC_DEFINE([HAVE_GTK_OSX],[1],[Defined when gtk osx is used])
@@ -417,6 +417,9 @@ PKG_CHECK_MODULES(LIBSOUP, [libsoup-2.4 >= 2.26],[build_wizard=true],foo=bar)
 AC_SUBST(LIBSOUP_CFLAGS)
 AC_SUBST(LIBSOUP_LIBS)
 AM_CONDITIONAL(BUILD_WIZARD, test x$build_wizard = xtrue)
+if test "$build_wizard" = "true" ; then
+   AC_DEFINE( BUILD_WIZARD, 1, [Define if wizard enabled] ) 
+fi
 
 ##################################################
 # Stricter build options (after external packages)

@@ -1586,12 +1586,14 @@ static void linphone_gtk_check_soundcards(){
 	}
 }
 
+#ifdef BUILD_WIZARD
 // Display the account wizard
 void linphone_gtk_display_wizard() {
 	if (the_wizard == NULL || !gtk_widget_get_visible(the_wizard)) { // Only one instance of the wizard at the same time
 		the_wizard = linphone_gtk_create_assistant();
 	}
 }
+#endif
 
 static void linphone_gtk_quit(void){
 	static gboolean quit_done=FALSE;
@@ -1737,10 +1739,12 @@ int main(int argc, char *argv[]){
 	gtk_timeout_add(30,(GtkFunction)linphone_gtk_check_logs,(gpointer)NULL);
 	linphone_gtk_init_main_window();
 
+#ifdef BUILD_WIZARD
 	// Veryfing if at least one sip account is configured. If not, show wizard
 	if (linphone_core_get_proxy_config_list(linphone_gtk_get_core()) == NULL) {
 		linphone_gtk_display_wizard();
 	}
+#endif
 
 #ifndef HAVE_GTK_OSX
 	linphone_gtk_init_status_icon();
