@@ -25,8 +25,8 @@
 
 #ifdef TUNNEL_ENABLED
 #include "TunnelManager.hh"
-#include "linphone_tunnel.h"
 #endif
+#include "linphone_tunnel.h"
 #include "linphonecore.h"
 #include "private.h"
 #include "lpconfig.h"
