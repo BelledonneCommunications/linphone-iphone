@@ -46,6 +46,9 @@ extern void libmsx264_init();
 extern void libmssilk_init(); 
 #endif
 
+#if HAVE_G729
+extern  void libmsbcg729_init();
+#endif
 @implementation LinphoneManager
 @synthesize callDelegate;
 @synthesize registrationDelegate;
@@ -623,6 +626,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	[self configurePayloadType:"PCMU" fromPrefKey:@"pcmu_preference" withRate:8000];
 	[self configurePayloadType:"PCMA" fromPrefKey:@"pcma_preference" withRate:8000];
 	[self configurePayloadType:"G722" fromPrefKey:@"g722_preference" withRate:8000];
+	[self configurePayloadType:"G729" fromPrefKey:@"g729_preference" withRate:8000];
 	
 	//get video codecs from linphonerc
 	const MSList *videoCodecs=linphone_core_get_video_codecs(theLinphoneCore);
@@ -790,6 +794,10 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 #endif	
 #ifdef HAVE_X264
 	libmsx264_init(); //load x264 plugin if present from the liblinphone sdk
+#endif
+
+#if HAVE_G729
+	libmsbcg729_init(); // load g729 plugin
 #endif
 	/* Initialize linphone core*/
 	

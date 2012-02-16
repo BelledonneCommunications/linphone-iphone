@@ -107,7 +107,9 @@
 #ifdef HAVE_AMR                                 
                                  @"YES",@"amr_8k_preference", // enable amr by default if compiled with
 #endif
-                                 @"NO",@"debugenable_preference",
+#ifdef HAVE_G729                                 
+                                 @"YES",@"g729_preference", // enable amr by default if compiled with
+#endif                                 @"NO",@"debugenable_preference",
 								 //@"+33",@"countrycode_preference",
                                  nil];
     
