@@ -60,6 +60,10 @@
   </binary>
   
   <binary>
+    ${prefix:macports}/lib/libzrtpcpp.*.dylib
+  </binary>
+  
+  <binary>
     ${prefix:macports}/lib/libspeex.*.dylib
   </binary>
   
