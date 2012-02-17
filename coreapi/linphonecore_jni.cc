@@ -43,6 +43,9 @@ extern "C" void libmsamr_init();
 #ifdef HAVE_SILK
 extern "C" void libmssilk_init();
 #endif
+#ifdef HAVE_G729
+extern "C" void libmsbcg729_init();
+#endif
 #endif /*ANDROID*/
 
 static JavaVM *jvm=0;
@@ -415,6 +418,9 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_newLinphoneCore(JNIEnv*
 #endif
 #ifdef HAVE_SILK
 	libmssilk_init();
+#endif
+#ifdef HAVE_G729
+	libmsbcg729_init();
 #endif
 	jlong nativePtr = (jlong)linphone_core_new(	&ldata->vTable
 			,userConfig
