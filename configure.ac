@@ -374,7 +374,7 @@ AC_ARG_ENABLE(alsa,
       esac],[alsa=true])
 
 AC_ARG_ENABLE(zrtp,
-      [  --enable-zrtp    Turn on zrtp support - UNFINISHED],
+      [  --enable-zrtp    Turn on zrtp support ],
       [case "${enableval}" in
         yes) zrtp=true ;;
         no)  zrtp=false ;;
