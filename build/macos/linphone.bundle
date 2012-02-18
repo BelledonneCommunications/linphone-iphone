@@ -112,6 +112,10 @@
   <binary>
     ${prefix}/lib/${gtkdir}/${pkg:${gtk}:gtk_binary_version}/engines/*.so
   </binary>
+  <!-- Copy GIO modules, required for https access for wizard-->
+  <binary>
+     ${prefix}/lib/gio/modules/libgiognutls.so
+  </binary>
 
   <!-- Translation filenames, one for each program or library that you
        want to copy in to the bundle. The "dest" attribute is
