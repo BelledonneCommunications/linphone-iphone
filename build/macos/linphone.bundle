@@ -15,6 +15,7 @@
     <prefix name="default">/opt/local</prefix>
     <prefix name="linphone">${env:LINPHONE_INSTALL_PREFIX}</prefix>
     <prefix name="liblinphone">${env:LIBLINPHONE_INSTALL_PREFIX}</prefix>
+    <prefix name="ms2plugins">${env:MS2_PLUGINS_INSTALL_PREFIX}</prefix>
     <prefix name="macports">/opt/local</prefix>
     <!-- The project directory is the default location of the created
          app. If you leave out the path, the current directory is
@@ -79,8 +80,8 @@
     ${prefix:macports}/lib/libsoup-2.4*.dylib
   </binary>
 
-  <binary dest="${bundle}/Contents/Resources/lib/liblinphone/plugins/libmssilk.so">
-    ${prefix}/lib/mediastreamer/plugins/libmssilk.so
+  <binary >
+    ${prefix:ms2plugins}/lib/mediastreamer/plugins/*.so
   </binary>
 
   <!-- Copy in GTK+ modules.  Note the ${gtkdir} macro, which expands

@@ -66,7 +66,7 @@ Then run, inside linphone source tree:
  $ make
  $ make bundle
 
-The resulting bundle is located in ~/Desktop, together with a zipped version.
+The resulting bundle is located in linphone build directory, together with a zipped version.
 
 For a better appearance, you can install the gtk-quartz-engine (a gtk theme) that make gtk application more similar to other mac applications (but not perfect).
 

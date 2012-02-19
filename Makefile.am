@@ -215,6 +215,7 @@ bundle: $(LIBICONV_HACK)
 	BUNDLE_PREFIX=$(BUNDLEPREFIX) \
 	LINPHONE_INSTALL_PREFIX=$(INSTALLDIR_WITH_PREFIX) \
 	LIBLINPHONE_INSTALL_PREFIX=$(INSTALLDIR_WITH_PREFIX) \
+	MS2_PLUGINS_INSTALL_PREFIX=$(prefix) \
 	gtk-mac-bundler $(PACKAGE_BUNDLE_FILE)
 	printf "[Pango]\nModuleFiles=./etc/pango/pango.modules\n" \
 	> $(BUNDLEDIR)/Contents/Resources/etc/pango/pangorc 
