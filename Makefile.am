@@ -227,3 +227,6 @@ bundle: $(LIBICONV_HACK)
 
 clean-local:
 	rm -rf $(BUNDLEDIR)
+discovery:
+	touch specs.cpp
+	$(CC) $(CFLAGS) $(ANTLR_CFLAGS) $(CUNIT_CFLAGS) -E -P -v -dD specs.cpp
