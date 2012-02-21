@@ -14,7 +14,6 @@
     -->
     <prefix name="default">/opt/local</prefix>
     <prefix name="linphone">${env:LINPHONE_INSTALL_PREFIX}</prefix>
-    <prefix name="liblinphone">${env:LIBLINPHONE_INSTALL_PREFIX}</prefix>
     <prefix name="ms2plugins">${env:MS2_PLUGINS_INSTALL_PREFIX}</prefix>
     <prefix name="macports">/opt/local</prefix>
     <!-- The project directory is the default location of the created
@@ -54,31 +53,6 @@
   <plist>${project}/Info-linphone.plist</plist>
 
   <main-binary>${prefix:linphone}/bin/linphone</main-binary>
-
-  <!-- Liblinphone shared libraries -->
-  <binary>
-	${prefix:liblinphone}/lib/*.*.dylib
-  </binary>
-  
-  <binary>
-    ${prefix:macports}/lib/libzrtpcpp.*.dylib
-  </binary>
-  
-  <binary>
-    ${prefix:macports}/lib/libspeex.*.dylib
-  </binary>
-  
-  <binary>
-    ${prefix:macports}/lib/libosip.*.dylib
-  </binary>
-  
-  <binary>
-    ${prefix:macports}/lib/libeXosip.*.dylib
-  </binary>
-
-  <binary>
-    ${prefix:macports}/lib/libsoup-2.4*.dylib
-  </binary>
 
   <binary >
     ${prefix:ms2plugins}/lib/mediastreamer/plugins/*.so
