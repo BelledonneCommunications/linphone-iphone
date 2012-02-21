@@ -1436,7 +1436,13 @@ static void linphone_gtk_configure_main_window(){
 	{
 		GdkPixbuf *pbuf=create_pixbuf("dialer-orange.png");
 		if (pbuf) {
-			gtk_image_set_from_pixbuf(GTK_IMAGE(linphone_gtk_get_widget(w,"keypad_tab_icon")),pbuf);
+			GtkImage *img=GTK_IMAGE(linphone_gtk_get_widget(w,"keypad_tab_icon"));
+			int w,h;
+			GdkPixbuf *scaled;
+			gtk_icon_size_lookup(GTK_ICON_SIZE_MENU,&w,&h);
+			scaled=gdk_pixbuf_scale_simple(pbuf,w,h,GDK_INTERP_BILINEAR);
+			gtk_image_set_from_pixbuf(img,scaled);
+			g_object_unref(G_OBJECT(scaled));
 			g_object_unref(G_OBJECT(pbuf));
 		}
 	}

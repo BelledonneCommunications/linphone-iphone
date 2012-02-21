@@ -970,6 +970,7 @@
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="stock">gtk-directory</property>
+                            <property name="icon-size">1</property>
                           </object>
                           <packing>
                             <property name="expand">True</property>
@@ -1083,6 +1084,7 @@
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="stock">gtk-refresh</property>
+                            <property name="icon-size">1</property>
                           </object>
                           <packing>
                             <property name="expand">True</property>
@@ -1398,6 +1400,7 @@
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="stock">gtk-missing-image</property>
+                            <property name="icon-size">1</property>
                           </object>
                           <packing>
                             <property name="expand">True</property>

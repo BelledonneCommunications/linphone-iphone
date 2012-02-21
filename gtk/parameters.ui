@@ -667,6 +667,7 @@
                     <property name="can_focus">False</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                     <property name="stock">gtk-network</property>
+                    <property name="icon-size">1</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -1064,6 +1065,7 @@
                     <property name="can_focus">False</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                     <property name="stock">gtk-media-play</property>
+                    <property name="icon-size">1</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -2042,6 +2044,7 @@ virtual network !</property>
                     <property name="can_focus">False</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                     <property name="stock">gtk-execute</property>
+                    <property name="icon-size">1</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -2167,7 +2170,7 @@ virtual network !</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="stock">gtk-properties</property>
-                    <property name="icon-size">3</property>
+                    <property name="icon-size">1</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
