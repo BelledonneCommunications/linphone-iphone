@@ -1265,7 +1265,7 @@ static void linphone_gtk_status_icon_set_blinking(gboolean val){
 void linphone_gtk_options_activate(GtkWidget *item){
 #ifndef HAVE_GTK_OSX
 	gtk_widget_set_visible(linphone_gtk_get_widget(linphone_gtk_get_main_window(),"quit_item"),
-		icon && !gtk_status_icon_is_embedded(icon));
+		TRUE);
 #endif
 }
 
