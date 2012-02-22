@@ -466,6 +466,7 @@ struct _LinphoneCore
 	MSList *hooks;
 	LinphoneConference conf_ctx;
 	char* zrtp_secrets_cache;
+	LinphoneVideoPolicy video_policy;
 	bool_t use_files;
 	bool_t apply_nat_settings;
 	bool_t initial_subscribes_sent;

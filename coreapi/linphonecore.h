@@ -210,6 +210,17 @@ typedef enum _LinphoneReason LinphoneReason;
 const char *linphone_reason_to_string(LinphoneReason err);
 
 /**
+ * Structure describing policy regarding video streams establishments.
+**/
+struct _LinphoneVideoPolicy{
+	bool_t automatically_initiate; /**<Whether video shall be automatically proposed for outgoing calls.*/ 
+	bool_t automatically_accept; /**<Whether video shall be automatically accepted for incoming calls*/
+	bool_t unused[2];
+};
+
+typedef struct _LinphoneVideoPolicy LinphoneVideoPolicy;
+
+/**
  * The LinphoneCall object represents a call issued or received by the LinphoneCore
 **/
 struct _LinphoneCall;
@@ -923,8 +934,11 @@ const MSList * linphone_core_get_call_logs(LinphoneCore *lc);
 void linphone_core_clear_call_logs(LinphoneCore *lc);
 
 /* video support */
+bool_t linphone_core_video_supported(LinphoneCore *lc);
 void linphone_core_enable_video(LinphoneCore *lc, bool_t vcap_enabled, bool_t display_enabled);
 bool_t linphone_core_video_enabled(LinphoneCore *lc);
+void linphone_core_set_video_policy(LinphoneCore *lc, const LinphoneVideoPolicy *policy);
+const LinphoneVideoPolicy *linphone_core_get_video_policy(LinphoneCore *lc);
 
 typedef struct MSVideoSizeDef{
 	MSVideoSize vsize;

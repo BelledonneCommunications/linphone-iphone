@@ -756,6 +756,7 @@ static void video_config_read(LinphoneCore *lc){
 	const char **devices;
 	const MSList *elem;
 	int i;
+	LinphoneVideoPolicy vpol;
 
 	/* retrieve all video devices */
 	elem=ms_web_cam_manager_get_list(ms_web_cam_manager_get());
@@ -778,12 +779,15 @@ static void video_config_read(LinphoneCore *lc){
 	capture=lp_config_get_int(lc->config,"video","capture",1);
 	display=lp_config_get_int(lc->config,"video","display",1);
 	self_view=lp_config_get_int(lc->config,"video","self_view",1);
+	vpol.automatically_initiate=lp_config_get_int(lc->config,"video","automatically_initiate",1);
+	vpol.automatically_accept=lp_config_get_int(lc->config,"video","automatically_accept",1);
 	lc->video_conf.displaytype=lp_config_get_string(lc->config,"video","displaytype",NULL);
 	if(lc->video_conf.displaytype)
 		ms_message("we are using a specific display:%s\n",lc->video_conf.displaytype);
 
 	linphone_core_enable_video(lc,capture,display);
 	linphone_core_enable_self_view(lc,self_view);
+	linphone_core_set_video_policy(lc,&vpol);
 #endif
 }
 
@@ -1930,6 +1934,7 @@ const char * linphone_core_get_route(LinphoneCore *lc){
 void linphone_core_start_refered_call(LinphoneCore *lc, LinphoneCall *call){
 	if (call->refer_pending){
 		LinphoneCallParams *cp=linphone_core_create_default_call_parameters(lc);
+		cp->has_video &= !!lc->video_policy.automatically_initiate;
 		cp->referer=call;
 		ms_message("Starting new call to refered address %s",call->refer_to);
 		call->refer_pending=FALSE;
@@ -2082,6 +2087,7 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, LinphonePro
 LinphoneCall * linphone_core_invite(LinphoneCore *lc, const char *url){
 	LinphoneCall *call;
 	LinphoneCallParams *p=linphone_core_create_default_call_parameters (lc);
+	p->has_video &= !!lc->video_policy.automatically_initiate;
 	call=linphone_core_invite_with_params(lc,url,p);
 	linphone_call_params_destroy(p);
 	return call;
@@ -2128,7 +2134,8 @@ LinphoneCall * linphone_core_invite_with_params(LinphoneCore *lc, const char *ur
 **/
 LinphoneCall * linphone_core_invite_address(LinphoneCore *lc, const LinphoneAddress *addr){
 	LinphoneCall *call;
-	LinphoneCallParams *p=linphone_core_create_default_call_parameters (lc);
+	LinphoneCallParams *p=linphone_core_create_default_call_parameters(lc);
+	p->has_video &= !!lc->video_policy.automatically_initiate;
 	call=linphone_core_invite_address_with_params (lc,addr,p);
 	linphone_call_params_destroy(p);
 	return call;
@@ -3421,12 +3428,42 @@ void linphone_core_enable_video(LinphoneCore *lc, bool_t vcap_enabled, bool_t di
 		linphone_core_get_upload_bandwidth(lc));
 }
 
+bool_t linphone_core_video_supported(LinphoneCore *lc){
+#ifdef VIDEO_ENABLED
+	return TRUE;
+#else
+	return FALSE;
+#endif
+}
+
 /**
  * Returns TRUE if video is enabled, FALSE otherwise.
  * @ingroup media_parameters
 **/
 bool_t linphone_core_video_enabled(LinphoneCore *lc){
 	return (lc->video_conf.display || lc->video_conf.capture);
+}
+
+/**
+ * Sets the default policy for video.
+ * This policy defines whether:
+ * - video shall be initiated by default for outgoing calls
+ * - video shall be accepter by default for incoming calls
+**/
+void linphone_core_set_video_policy(LinphoneCore *lc, const LinphoneVideoPolicy *policy){
+	lc->video_policy=*policy;
+	if (linphone_core_ready(lc)){
+		lp_config_set_int(lc->config,"video","automatically_initiate",policy->automatically_initiate);
+		lp_config_set_int(lc->config,"video","automatically_accept",policy->automatically_accept);
+	}
+}
+
+/**
+ * Get the default policy for video.
+ * See linphone_core_set_video_policy() for more details.
+**/
+const LinphoneVideoPolicy *linphone_core_get_video_policy(LinphoneCore *lc){
+	return &lc->video_policy;
 }
 
 /**
