@@ -330,13 +330,17 @@ fi
 
 AC_WORDS_BIGENDIAN
 
-dnl normaly this should only by done by mediastreamer2/configure.ac
-dnl but to workaround bugs when cross-compiling for arm-linux,
-dnl we need to have SPEEX_LIBS defined
-dnl Furthermore it is good to repeat here all mediastreamer2 toggles
-dnl since top-level configure --help will not print them.
-
-PKG_CHECK_MODULES(SPEEX, speex >= 1.1.6, build_speex=yes)
+AC_ARG_ENABLE([speex],
+	      AS_HELP_STRING([--disable-speex], [Disable speex support]),
+	      [], [enable_speex=yes])
+if test "x$enable_speex" = "xyes"; then
+	dnl normaly this should only by done by mediastreamer2/configure.ac
+	dnl but to workaround bugs when cross-compiling for arm-linux,
+	dnl we need to have SPEEX_LIBS defined
+	dnl Furthermore it is good to repeat here all mediastreamer2 toggles
+	dnl since top-level configure --help will not print them.
+	PKG_CHECK_MODULES(SPEEX, speex >= 1.1.6, build_speex=yes)
+fi
 
 dnl conditionnal build of video support
 AC_ARG_ENABLE(video,
