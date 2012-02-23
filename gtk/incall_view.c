@@ -231,9 +231,11 @@ static void video_button_clicked(GtkWidget *button, LinphoneCall *call){
 
 void linphone_gtk_update_video_button(LinphoneCall *call){
 	GtkWidget *call_view=(GtkWidget*)linphone_call_get_user_pointer(call);
-	GtkWidget *button=linphone_gtk_get_widget(call_view,"video_button");
+	GtkWidget *button;
 	const LinphoneCallParams *params=linphone_call_get_current_params(call);
 	gboolean has_video=linphone_call_params_video_enabled(params);
+	if (call_view==NULL) return;
+	button=linphone_gtk_get_widget(call_view,"video_button");
 
 	gtk_button_set_image(GTK_BUTTON(button),
 	   gtk_image_new_from_stock(has_video ? GTK_STOCK_REMOVE : GTK_STOCK_ADD,GTK_ICON_SIZE_BUTTON));

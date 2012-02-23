@@ -1218,7 +1218,7 @@ static void linphone_call_start_video_stream(LinphoneCall *call, const char *cna
 		video_preview_stop(lc->previewstream);
 		lc->previewstream=NULL;
 	}
-	call->current_params.has_video=FALSE;
+	
 	if (vstream!=NULL && vstream->dir!=SalStreamInactive && vstream->port!=0) {
 		const char *addr=vstream->addr[0]!='\0' ? vstream->addr : call->resultdesc->addr;
 		call->video_profile=make_profile(call,call->resultdesc,vstream,&used_pt);
@@ -1315,6 +1315,7 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 	}
 #endif
 	linphone_call_start_audio_stream(call,cname,all_inputs_muted,send_ringbacktone,use_arc);
+	call->current_params.has_video=FALSE;
 	if (call->videostream!=NULL) {
 		linphone_call_start_video_stream(call,cname,all_inputs_muted);
 	}

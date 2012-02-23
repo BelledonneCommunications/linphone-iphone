@@ -2294,6 +2294,7 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 	if (params!=NULL){
 		const char *subject;
 		call->params=*params;
+		call->camera_active=call->params.has_video;
 		update_local_media_description(lc,call);
 		
 		if (params->in_conference){
@@ -2370,6 +2371,7 @@ int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const
 	}
 	if (params){
 		call->params=*params;
+		call->camera_active=call->params.has_video;
 		update_local_media_description(lc,call);
 		sal_call_set_local_media_description(call->op,call->localdesc);
 	}
@@ -2476,6 +2478,7 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 
 	if (params){
 		call->params=*params;
+		call->camera_active=call->params.has_video;
 		update_local_media_description(lc,call);
 		sal_call_set_local_media_description(call->op,call->localdesc);
 	}
