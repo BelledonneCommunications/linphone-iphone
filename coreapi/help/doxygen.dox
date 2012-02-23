@@ -10,8 +10,9 @@
  * video calls into any applications. All variants of linphone are directly based
  * on it:
  * - linphone (gtk interface)
- *
  * - linphonec (console interface)
+ * - linphone for iOS
+ * - linphone for Android
  *
  * Liblinphone is GPL (see COPYING file). Please understand the licencing details
  * before using it!

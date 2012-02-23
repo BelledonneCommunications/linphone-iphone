@@ -2284,7 +2284,9 @@ bool_t linphone_core_inc_invite_pending(LinphoneCore*lc){
  * - changing the size of the transmitted video after calling linphone_core_set_preferred_video_size()
  *
  * In case no changes are requested through the LinphoneCallParams argument, then this argument can be omitted and set to NULL.
- *
+ * @param lc the core
+ * @param call the call to be updated
+ * @param params the new call parameters to use. (may be NULL)
  * @return 0 if successful, -1 otherwise.
 **/
 int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params){
@@ -2318,9 +2320,10 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 }
 
 /**
- * When receiving a LinphoneCallUpdatedByRemote state notification, prevent LinphoneCore from performing an automatic answer.
+ * @ingroup call_control
+ * When receiving a #LinphoneCallUpdatedByRemote state notification, prevent LinphoneCore from performing an automatic answer.
  * 
- * When receiving a LinphoneCallUpdatedByRemote state notification (ie an incoming reINVITE), the default behaviour of
+ * When receiving a #LinphoneCallUpdatedByRemote state notification (ie an incoming reINVITE), the default behaviour of
  * LinphoneCore is to automatically answer the reINIVTE with call parameters unchanged.
  * However when for example when the remote party updated the call to propose a video stream, it can be useful
  * to prompt the user before answering. This can be achieved by calling linphone_core_defer_call_update() during 
@@ -2328,7 +2331,7 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
  * Then, when the user responds to dialog prompt, it becomes possible to call linphone_core_accept_call_update() to answer
  * the reINVITE, with eventually video enabled in the LinphoneCallParams argument.
  * 
- * @Returns 0 if successful, -1 if the linphone_core_defer_call_update() was done outside a LinphoneCallUpdatedByRemote notification, which is illegal.
+ * @Returns 0 if successful, -1 if the linphone_core_defer_call_update() was done outside a #LinphoneCallUpdatedByRemote notification, which is illegal.
 **/
 int linphone_core_defer_call_update(LinphoneCore *lc, LinphoneCall *call){
 	if (call->state==LinphoneCallUpdatedByRemote){
@@ -2340,7 +2343,23 @@ int linphone_core_defer_call_update(LinphoneCore *lc, LinphoneCall *call){
 }
 
 /**
+ * @ingroup call_control
+ * Accept call modifications initiated by other end.
  * 
+ * This call may be performed in response to a #LinphoneCallUpdatedByRemote state notification.
+ * When such notification arrives, the application can decide to call linphone_core_defer_update_call() so that it can
+ * have the time to prompt the user. linphone_call_get_remote_params() can be used to get information about the call parameters
+ * requested by the other party, such as whether a video stream is requested.
+ * 
+ * When the user accepts or refuse the change, linphone_core_accept_update() can be done to answer to the other party.
+ * If params is NULL, then the same call parameters established before the update request will continue to be used (no change).
+ * If params is not NULL, then the update will be accepted according to the parameters passed.
+ * Typical example is when a user accepts to start video, then params should indicate that video stream should be used 
+ * (see linphone_call_params_enable_video()).
+ * @param lc the linphone core object.
+ * @param call the LinphoneCall object
+ * @param params a LinphoneCallParams object describing the call parameters to accept.
+ * @Returns 0 if sucessful, -1 otherwise (actually when this function call is performed outside ot #LinphoneCallUpdatedByRemote state).
 **/
 int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params){
 	SalMediaDescription *md;
@@ -2369,8 +2388,7 @@ int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const
  * Basically the application is notified of incoming calls within the
  * call_state_changed callback of the #LinphoneCoreVTable structure, where it will receive
  * a LinphoneCallIncoming event with the associated LinphoneCall object.
- * The application can later accept the call using
- * this method.
+ * The application can later accept the call using this method.
  * @param lc the LinphoneCore object
  * @param call the LinphoneCall object representing the call to be answered.
  *
