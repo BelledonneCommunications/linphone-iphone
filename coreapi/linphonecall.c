@@ -246,14 +246,13 @@ static SalMediaDescription *_create_local_media_description(LinphoneCore *lc, Li
 	return md;
 }
 
-void update_local_media_description(LinphoneCore *lc, LinphoneCall *call, SalMediaDescription **md){
-	if (*md == NULL) {
-		*md = _create_local_media_description(lc,call,0,0);
+void update_local_media_description(LinphoneCore *lc, LinphoneCall *call){
+	SalMediaDescription *md=call->localdesc;
+	if (md== NULL) {
+		call->localdesc = create_local_media_description(lc,call);
 	} else {
-		unsigned int id = (*md)->session_id;
-		unsigned int ver = (*md)->session_ver+1;
-		sal_media_description_unref(*md);
-		*md = _create_local_media_description(lc,call,id,ver);
+		call->localdesc = _create_local_media_description(lc,call,md->session_id,md->session_ver+1);
+		sal_media_description_unref(md);
 	}
 }
 
@@ -360,6 +359,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	linphone_core_get_local_ip(lc,linphone_address_get_domain(from),call->localip);
 	linphone_call_init_common(call, from, to);
 	linphone_core_init_default_params(lc, &call->params);
+	call->params.has_video &= !!lc->video_policy.automatically_accept;
 	call->localdesc=create_local_media_description (lc,call);
 	call->camera_active=call->params.has_video;
 	if (linphone_core_get_firewall_policy(call->core)==LinphonePolicyUseStun)
@@ -400,6 +400,11 @@ static void linphone_call_set_terminated(LinphoneCall *call){
 		linphone_core_stop_dtmf(lc);
 		call->ringing_beep=FALSE;
 	}
+}
+
+void linphone_call_fix_call_parameters(LinphoneCall *call){
+	call->params.has_video=call->current_params.has_video;
+	call->params.media_encryption=call->current_params.media_encryption;
 }
 
 const char *linphone_call_state_to_string(LinphoneCallState cs){
@@ -551,6 +556,41 @@ void linphone_call_unref(LinphoneCall *obj){
 **/
 const LinphoneCallParams * linphone_call_get_current_params(const LinphoneCall *call){
 	return &call->current_params;
+}
+
+static bool_t is_video_active(const SalStreamDescription *sd){
+	return sd->port!=0 && sd->dir!=SalStreamInactive;
+}
+
+/**
+ * Returns call parameters proposed by remote.
+ * 
+ * This is useful when receiving an incoming call, to know whether the remote party
+ * supports video, encryption or whatever.
+**/
+const LinphoneCallParams * linphone_call_get_remote_params(LinphoneCall *call){
+	LinphoneCallParams *cp=&call->remote_params;
+	memset(cp,0,sizeof(*cp));
+	if (call->op){
+		SalMediaDescription *md=sal_call_get_remote_media_description(call->op);
+		if (md){
+			SalStreamDescription *asd,*vsd,*secure_asd,*secure_vsd;
+
+			asd=sal_media_description_find_stream(md,SalProtoRtpAvp,SalAudio);
+			vsd=sal_media_description_find_stream(md,SalProtoRtpAvp,SalVideo);
+			secure_asd=sal_media_description_find_stream(md,SalProtoRtpSavp,SalAudio);
+			secure_vsd=sal_media_description_find_stream(md,SalProtoRtpSavp,SalVideo);
+			if (secure_vsd){
+				cp->has_video=is_video_active(secure_vsd);
+				if (secure_asd || asd==NULL)
+					cp->media_encryption=LinphoneMediaEncryptionSRTP;
+			}else if (vsd){
+				cp->has_video=is_video_active(vsd);
+			}
+			return cp;
+		}
+	}
+	return NULL;
 }
 
 /**
@@ -1293,10 +1333,11 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 	}else if (call->params.media_encryption==LinphoneMediaEncryptionSRTP){
 		call->current_params.media_encryption=linphone_call_are_all_streams_encrypted(call) ?
 			LinphoneMediaEncryptionSRTP : LinphoneMediaEncryptionNone;
-		/*also reflect the change if the "wished" params, in order to avoid to propose SAVP again
-		 * further in the call, for example during pause,resume, conferencing reINVITEs*/
-		call->params.media_encryption=call->current_params.media_encryption;
 	}
+
+	/*also reflect the change if the "wished" params, in order to avoid to propose SAVP or video again
+	 * further in the call, for example during pause,resume, conferencing reINVITEs*/
+	linphone_call_fix_call_parameters(call);
 
 	goto end;
 	end:

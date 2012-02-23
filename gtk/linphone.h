@@ -114,6 +114,7 @@ void linphone_gtk_set_in_conference(LinphoneCall *call);
 void linphone_gtk_unset_from_conference(LinphoneCall *call);
 void linphone_gtk_terminate_conference_participant(LinphoneCall *call);
 void linphone_gtk_in_call_view_show_encryption(LinphoneCall *call);
+void linphone_gtk_update_video_button(LinphoneCall *call);
 typedef float (*get_volume_t)(void *data);
 void linphone_gtk_init_audio_meter(GtkWidget *w, get_volume_t get_volume, void *data);
 

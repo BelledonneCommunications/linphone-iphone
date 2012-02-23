@@ -1,4 +1,10 @@
-linphone-3.5.1 -- ??
+linphone-3.5.2 -- February 22, 2012
+	* updated oRTP to 0.20.0
+	* updated mediastreamer2 to 2.8.2
+	* added ZRTP media encryption
+	* added SILK audio codec
+
+linphone-3.5.1 -- February 17, 2012
 	* gtk - implement friend search by typing into the friendlist, and friend sorting
 
 linphone-3.5.0 -- December 22, 2011

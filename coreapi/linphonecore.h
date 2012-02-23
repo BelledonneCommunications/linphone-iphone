@@ -210,6 +210,17 @@ typedef enum _LinphoneReason LinphoneReason;
 const char *linphone_reason_to_string(LinphoneReason err);
 
 /**
+ * Structure describing policy regarding video streams establishments.
+**/
+struct _LinphoneVideoPolicy{
+	bool_t automatically_initiate; /**<Whether video shall be automatically proposed for outgoing calls.*/ 
+	bool_t automatically_accept; /**<Whether video shall be automatically accepted for incoming calls*/
+	bool_t unused[2];
+};
+
+typedef struct _LinphoneVideoPolicy LinphoneVideoPolicy;
+
+/**
  * The LinphoneCall object represents a call issued or received by the LinphoneCore
 **/
 struct _LinphoneCall;
@@ -259,6 +270,7 @@ bool_t linphone_call_has_transfer_pending(const LinphoneCall *call);
 LinphoneCall *linphone_call_get_replaced_call(LinphoneCall *call);
 int linphone_call_get_duration(const LinphoneCall *call);
 const LinphoneCallParams * linphone_call_get_current_params(const LinphoneCall *call);
+const LinphoneCallParams * linphone_call_get_remote_params(LinphoneCall *call);
 void linphone_call_enable_camera(LinphoneCall *lc, bool_t enabled);
 bool_t linphone_call_camera_enabled(const LinphoneCall *lc);
 int linphone_call_take_video_snapshot(LinphoneCall *call, const char *file);
@@ -690,6 +702,8 @@ LinphoneCall *linphone_core_get_current_call(const LinphoneCore *lc);
 
 int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call);
 
+int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params);
+
 int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *call);
 
 int linphone_core_redirect_call(LinphoneCore *lc, LinphoneCall *call, const char *redirect_uri);
@@ -703,6 +717,10 @@ int linphone_core_pause_all_calls(LinphoneCore *lc);
 int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *call);
 
 int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params);
+
+int linphone_core_defer_call_update(LinphoneCore *lc, LinphoneCall *call);
+
+int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params);
 
 LinphoneCallParams *linphone_core_create_default_call_parameters(LinphoneCore *lc);
 
@@ -916,8 +934,11 @@ const MSList * linphone_core_get_call_logs(LinphoneCore *lc);
 void linphone_core_clear_call_logs(LinphoneCore *lc);
 
 /* video support */
+bool_t linphone_core_video_supported(LinphoneCore *lc);
 void linphone_core_enable_video(LinphoneCore *lc, bool_t vcap_enabled, bool_t display_enabled);
 bool_t linphone_core_video_enabled(LinphoneCore *lc);
+void linphone_core_set_video_policy(LinphoneCore *lc, const LinphoneVideoPolicy *policy);
+const LinphoneVideoPolicy *linphone_core_get_video_policy(LinphoneCore *lc);
 
 typedef struct MSVideoSizeDef{
 	MSVideoSize vsize;

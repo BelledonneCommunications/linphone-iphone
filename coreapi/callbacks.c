@@ -404,50 +404,62 @@ static void call_ack(SalOp *op){
 	}
 }
 
+static void call_accept_update(LinphoneCore *lc, LinphoneCall *call){
+	SalMediaDescription *md;
+	sal_call_accept(call->op);
+	md=sal_call_get_final_media_description(call->op);
+	if (md && !sal_media_description_empty(md))
+		linphone_core_update_streams(lc,call,md);
+}
+
+static void call_resumed(LinphoneCore *lc, LinphoneCall *call){
+	call_accept_update(lc,call);
+	if(lc->vtable.display_status)
+		lc->vtable.display_status(lc,_("We have been resumed."));
+	linphone_call_set_state(call,LinphoneCallStreamsRunning,"Connected (streams running)");
+}
+
+static void call_paused_by_remote(LinphoneCore *lc, LinphoneCall *call){
+	call_accept_update(lc,call);
+	/* we are being paused */
+	if(lc->vtable.display_status)
+		lc->vtable.display_status(lc,_("We are paused by other party."));
+	linphone_call_set_state (call,LinphoneCallPausedByRemote,"Call paused by remote");
+}
+
+static void call_updated_by_remote(LinphoneCore *lc, LinphoneCall *call){
+	if(lc->vtable.display_status)
+		lc->vtable.display_status(lc,_("Call is updated by remote."));
+	call->defer_update=FALSE;
+	linphone_call_set_state(call, LinphoneCallUpdatedByRemote,"Call updated by remote");
+	if (call->defer_update==FALSE){
+		linphone_core_accept_call_update(lc,call,NULL);
+	}
+}
 
 /* this callback is called when an incoming re-INVITE modifies the session*/
 static void call_updating(SalOp *op){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
-	LinphoneCallState prevstate=LinphoneCallIdle;
-	SalMediaDescription *md;
-	SalMediaDescription *old_md=call->resultdesc;
+	SalMediaDescription *rmd=sal_call_get_remote_media_description(op);
 
-	sal_media_description_ref(old_md);
-	
-	md=sal_call_get_final_media_description(op);
-
-	/*accept the modification (sends a 200Ok)*/
-	sal_call_accept(op);
-	
-	if (md && !sal_media_description_empty(md))
-	{
-		linphone_core_update_streams (lc,call,md);
-
-		if (sal_media_description_has_dir(call->localdesc,SalStreamSendRecv)){
-			ms_message("Our local status is SalStreamSendRecv");
-			if (sal_media_description_has_dir (md,SalStreamRecvOnly) || sal_media_description_has_dir(md,SalStreamInactive)){
-				/* we are being paused */
-				if(lc->vtable.display_status)
-					lc->vtable.display_status(lc,_("We are being paused..."));
-				linphone_call_set_state (call,LinphoneCallPausedByRemote,"Call paused by remote");
-			}else if (!sal_media_description_has_dir(old_md,SalStreamSendRecv) && sal_media_description_has_dir(md,SalStreamSendRecv)){
-				if(lc->vtable.display_status)
-					lc->vtable.display_status(lc,_("We have been resumed..."));
-				linphone_call_set_state (call,LinphoneCallStreamsRunning,"Connected (streams running)");
-			}else{
-				prevstate=call->state;
-				if(lc->vtable.display_status)
-					lc->vtable.display_status(lc,_("Call has been updated by remote..."));
-				linphone_call_set_state(call, LinphoneCallUpdatedByRemote,"Call updated by remote");
+	switch(call->state){
+		case LinphoneCallPausedByRemote:
+			if (sal_media_description_has_dir(rmd,SalStreamSendRecv) || sal_media_description_has_dir(rmd,SalStreamRecvOnly)){
+				call_resumed(lc,call);
 			}
-		}
-
-		if (prevstate!=LinphoneCallIdle){
-			linphone_call_set_state (call,prevstate,"Connected (streams running)");
-		}
+		break;
+		case LinphoneCallStreamsRunning:
+		case LinphoneCallConnected:
+			if (sal_media_description_has_dir(rmd,SalStreamSendOnly) || sal_media_description_has_dir(rmd,SalStreamInactive)){
+				call_paused_by_remote(lc,call);
+			}else{
+				call_updated_by_remote(lc,call);
+			}
+		break;
+		default:
+			call_accept_update(lc,call);
 	}
-	sal_media_description_unref(old_md);
 }
 
 static void call_terminated(SalOp *op, const char *from){
