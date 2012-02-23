@@ -1643,7 +1643,9 @@ int main(int argc, char *argv[]){
 	GdkPixbuf *pbuf;
 	const char *app_name="Linphone";
 
+#if !GLIB_CHECK_VERSION(2, 31, 0)
 	g_thread_init(NULL);
+#endif
 	gdk_threads_init();
 	
 	progpath = strdup(argv[0]);

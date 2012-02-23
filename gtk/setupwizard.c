@@ -270,7 +270,11 @@ static void account_username_changed(GtkEntry *entry, GtkWidget *w) {
 	linphone_account_creator_set_username(creator, gtk_entry_get_text(username));
 
 	if (g_regex_match_simple("^[a-zA-Z]+[a-zA-Z0-9.\\-_]{3,}$", gtk_entry_get_text(username), 0, 0)) {
+#if !GLIB_CHECK_VERSION(2, 31, 0)
 		g_thread_create(check_username_availability, (void*)w, FALSE, NULL);
+#else
+		g_thread_new(NULL, check_username_availability, w);
+#endif
 	}
 	else {
 		if (gtk_entry_get_text_length(username) < LOGIN_MIN_SIZE) {
@@ -534,7 +538,9 @@ GtkWidget * linphone_gtk_create_assistant(void){
 	ok = create_pixbuf(linphone_gtk_get_ui_config("ok","ok.png"));
 	notok = create_pixbuf(linphone_gtk_get_ui_config("notok","notok.png"));
 
+#if !GLIB_CHECK_VERSION(2, 31, 0)
 	g_thread_init (NULL);
+#endif
 	gdk_threads_init ();
 
 	GtkWidget *p1=create_intro();
