@@ -553,6 +553,30 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_acceptCall(	JNIEnv*  env
 	linphone_core_accept_call((LinphoneCore*)lc,(LinphoneCall*)call);
 }
 
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_acceptCallWithParams(JNIEnv *env,
+		jobject thiz,
+		jlong lc,
+		jlong call,
+		jlong params){
+	linphone_core_accept_call_with_params((LinphoneCore*)lc,(LinphoneCall*)call, (LinphoneCallParams*)params);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_acceptCallUpdate(JNIEnv *env,
+		jobject thiz,
+		jlong lc,
+		jlong call,
+		jlong params){
+	linphone_core_accept_call_update((LinphoneCore*)lc,(LinphoneCall*)call, (LinphoneCallParams*)params);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_deferCallUpdate(JNIEnv *env,
+		jobject thiz,
+		jlong lc,
+		jlong call,
+		jlong params){
+	linphone_core_defer_call_update((LinphoneCore*)lc,(LinphoneCall*)call);
+}
+
 extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_getCallLog(	JNIEnv*  env
 		,jobject  thiz
 		,jlong lc
@@ -1361,6 +1385,10 @@ extern "C" void Java_org_linphone_core_LinphoneCallParamsImpl_destroy(JNIEnv *en
 }
 extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_createDefaultCallParams(JNIEnv *env, jobject thiz, jlong lc){
 	return (jlong) linphone_core_create_default_call_parameters((LinphoneCore*)lc);
+}
+
+extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_getRemoteParams(JNIEnv *env, jobject thiz, jlong lc){
+	return (jlong) linphone_call_params_copy(linphone_call_get_remote_params((linphone_call_params_copy*)lc));
 }
 
 extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_getCurrentParamsCopy(JNIEnv *env, jobject thiz, jlong lc){
