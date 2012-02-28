@@ -252,19 +252,19 @@ static void initiate_incoming(const SalStreamDescription *local_cap,
 int offer_answer_initiate_outgoing(const SalMediaDescription *local_offer,
 									const SalMediaDescription *remote_answer,
     							SalMediaDescription *result){
-    int i,j;
+    	int i,j;
     
 	const SalStreamDescription *ls,*rs;
-    for(i=0,j=0;i<local_offer->nstreams;++i){
+	for(i=0,j=0;i<local_offer->nstreams;++i){
 		ms_message("Processing for stream %i",i);
 		ls=&local_offer->streams[i];
 		rs=sal_media_description_find_stream((SalMediaDescription*)remote_answer,ls->proto,ls->type);
-    	if (rs) {
+	if (rs) {
 			initiate_outgoing(ls,rs,&result->streams[j]);
 			++j;
 		}
 		else ms_warning("No matching stream for %i",i);
-    }
+	}
 	result->nstreams=j;
 	result->bandwidth=remote_answer->bandwidth;
 	strcpy(result->addr,remote_answer->addr);
@@ -279,22 +279,20 @@ int offer_answer_initiate_outgoing(const SalMediaDescription *local_offer,
 int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities,
 						const SalMediaDescription *remote_offer,
     					SalMediaDescription *result, bool_t one_matching_codec){
-    int i;
+	int i;
 	const SalStreamDescription *ls,*rs;
 							
-    for(i=0;i<remote_offer->nstreams;++i){
+	for(i=0;i<remote_offer->nstreams;++i){
 		rs=&remote_offer->streams[i];
-		ms_message("Processing for stream %i",i);
-		
-		ls=sal_media_description_find_stream((SalMediaDescription*)local_capabilities,rs->proto,rs->type);
-		ms_message("remote proto: %s => %p", (rs->proto == SalProtoRtpAvp)?"AVP":"SAVP", ls);
-		/* if matching failed, and remote proposes Avp only, ask for local Savp streams */ 
-		if (!ls && rs->proto == SalProtoRtpAvp) {
-			ls=sal_media_description_find_stream((SalMediaDescription*)local_capabilities,SalProtoRtpSavp,rs->type);
-			ms_message("retry with AVP => %p", ls);
-		}
+		if (rs->proto!=SalProtoUnknown){
+			ls=sal_media_description_find_stream((SalMediaDescription*)local_capabilities,rs->proto,rs->type);
+			/* if matching failed, and remote proposes Avp only, ask for local Savp streams */ 
+			if (!ls && rs->proto == SalProtoRtpAvp) {
+				ls=sal_media_description_find_stream((SalMediaDescription*)local_capabilities,SalProtoRtpSavp,rs->type);
+			}
+		}else ms_warning("Unknown protocol for mline %i, declining",i);
 		if (ls){
-    		initiate_incoming(ls,rs,&result->streams[i],one_matching_codec);
+			initiate_incoming(ls,rs,&result->streams[i],one_matching_codec);
 		}
 		else {
 			/* create an inactive stream for the answer, as there where no matching stream a local capability */
@@ -306,7 +304,7 @@ int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities
 				strncpy(result->streams[i].typeother,rs->typeother,sizeof(rs->typeother)-1);
 			}
 		}
-    }
+	}
 	result->nstreams=i;
 	strcpy(result->username, local_capabilities->username);
 	strcpy(result->addr,local_capabilities->addr);
