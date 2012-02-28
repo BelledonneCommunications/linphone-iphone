@@ -416,8 +416,23 @@ if test "$has_sighandler_t" = "yes" ; then
     AC_DEFINE( HAVE_SIGHANDLER_T, 1, [Define if sighandler_t available] )
 fi
 
+AC_ARG_ENABLE(assistant,
+      [  --enable-assistant    Turn on assistant compiling],
+      [case "${enableval}" in
+        yes) build_wizard=true ;;
+        no)  build_wizard=false ;;
+        *) AC_MSG_ERROR(bad value ${enableval} for --enable-assistant) ;;
+      esac],[build_wizard=check])
+
 dnl check libsoup (needed for wizard)
-PKG_CHECK_MODULES(LIBSOUP, [libsoup-2.4 >= 2.26],[build_wizard=true],foo=bar)
+if test "$build_wizard" != "false" ; then
+	PKG_CHECK_MODULES(LIBSOUP, [libsoup-2.4 >= 2.26],[build_wizard=true],
+	[
+		if test "$build_wizard" = "true" ; then
+			AC_MSG_ERROR([Could not found libsoup, assistant cannot be compiled.])
+		fi
+	])
+fi
 AC_SUBST(LIBSOUP_CFLAGS)
 AC_SUBST(LIBSOUP_LIBS)
 AM_CONDITIONAL(BUILD_WIZARD, test x$build_wizard = xtrue)
