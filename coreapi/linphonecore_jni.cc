@@ -875,17 +875,6 @@ extern "C" void Java_org_linphone_core_LinphoneCallParamsImpl_setMediaEncryption
 	linphone_call_params_set_media_encryption((LinphoneCallParams*)cp,(LinphoneMediaEncryption)jmenc);
 }
 
-extern "C" void Java_org_linphone_core_LinphoneCallImpl_setState(JNIEnv*  env,
-																jobject  thiz,
-																jlong call,
-																int state,
-																jstring message) {
-
-	const char* jmessage = env->GetStringUTFChars(message, NULL);
-	linphone_call_set_state((LinphoneCall*)call, (LinphoneCallState)state, jmessage);
-	env->ReleaseStringUTFChars(message, jmessage);
-}
-
 extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_getMediaEncryptionMandatory(JNIEnv*  env
 																			,jobject  thiz
 																			,jlong lc

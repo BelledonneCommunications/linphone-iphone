@@ -244,6 +244,4 @@ public interface LinphoneCall {
 	boolean isInConference();
 	
 	float getPlayVolume();
-	
-	void setState(State state, String message);
 }
