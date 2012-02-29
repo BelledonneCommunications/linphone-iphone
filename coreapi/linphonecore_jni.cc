@@ -882,7 +882,7 @@ extern "C" void Java_org_linphone_core_LinphoneCallImpl_setState(JNIEnv*  env,
 																jstring message) {
 
 	const char* jmessage = env->GetStringUTFChars(message, NULL);
-	linphone_call_set_state(call, state, jmessage);
+	linphone_call_set_state((LinphoneCall*)call, (LinphoneCallState)state, jmessage);
 	env->ReleaseStringUTFChars(message, jmessage);
 }
 
