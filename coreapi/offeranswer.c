@@ -280,7 +280,7 @@ int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities
 						const SalMediaDescription *remote_offer,
     					SalMediaDescription *result, bool_t one_matching_codec){
 	int i;
-	const SalStreamDescription *ls,*rs;
+	const SalStreamDescription *ls=NULL,*rs;
 							
 	for(i=0;i<remote_offer->nstreams;++i){
 		rs=&remote_offer->streams[i];
