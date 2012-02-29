@@ -22,6 +22,8 @@ package org.linphone.core;
 import java.util.List;
 import java.util.Vector;
 
+import org.linphone.core.LinphoneCallParams;
+
 /**
  * Linphone core main object created by method {@link LinphoneCoreFactory#createLinphoneCore(LinphoneCoreListener, String, String, Object)}.	
  *
@@ -372,6 +374,39 @@ public interface LinphoneCore {
 	 */
 	public void acceptCall(LinphoneCall aCall) throws LinphoneCoreException;
 	
+	/**
+	 * Accept an incoming call.
+	 *
+	 * Basically the application is notified of incoming calls within the
+	 * {@link LinphoneCoreListener#inviteReceived(LinphoneCore, String)} listener.
+	 * The application can later respond positively to the call using
+	 * this method.
+	 * @throws LinphoneCoreException 
+	 */
+	public void acceptCallWithParams(LinphoneCall aCall, LinphoneCallParams params) throws LinphoneCoreException;
+	
+	/**
+	 * Accept call modifications initiated by other end.
+	 *
+	 * Basically the application is notified of incoming calls within the
+	 * {@link LinphoneCoreListener#inviteReceived(LinphoneCore, String)} listener.
+	 * The application can later respond positively to the call using
+	 * this method.
+	 * @throws LinphoneCoreException 
+	 */
+	public void acceptCallUpdate(LinphoneCall aCall, LinphoneCallParams params) throws LinphoneCoreException;
+	
+	
+	/**
+	 * Prevent LinphoneCore from performing an automatic answer
+	 *
+	 * Basically the application is notified of incoming calls within the
+	 * {@link LinphoneCoreListener#inviteReceived(LinphoneCore, String)} listener.
+	 * The application can later respond positively to the call using
+	 * this method.
+	 * @throws LinphoneCoreException 
+	 */
+	public void deferCallUpdate(LinphoneCall aCall, LinphoneCallParams params) throws LinphoneCoreException;
 	
 	/**
 	 * @return a list of LinphoneCallLog 

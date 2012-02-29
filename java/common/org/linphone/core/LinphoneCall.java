@@ -159,6 +159,8 @@ public interface LinphoneCall {
 	 * @Return LinphoneCallLog
 	**/
 	LinphoneCallLog getCallLog();
+	
+	LinphoneCallParams getRemoteParams();
 
 	LinphoneCallParams getCurrentParamsCopy();
 	
