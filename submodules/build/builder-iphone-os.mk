@@ -45,7 +45,7 @@ BUILDER_BUILD_DIR?=$(shell pwd)/../build-$(host)
 LINPHONE_SRC_DIR=$(BUILDER_SRC_DIR)/linphone
 LINPHONE_BUILD_DIR=$(BUILDER_BUILD_DIR)/linphone
 
-all: build-linphone build-msilbc build-msamr build-msx264 build-mssilk
+all: build-linphone build-msilbc build-msamr build-msx264 build-mssilk build-msbcg729
 
 $(LINPHONE_BUILD_DIR)/enable_gpl_third_parties: 
 	mkdir -p $(LINPHONE_BUILD_DIR)
@@ -93,13 +93,13 @@ endif
 prefix?=$(BUILDER_SRC_DIR)/../liblinphone-sdk/$(host)
 
 
-clean-makefile: clean-makefile-linphone
-clean: clean-linphone
+clean-makefile: clean-makefile-linphone clean-makefile-msbcg729
+clean: clean-linphone clean-msbcg729
 init:
 	mkdir -p $(prefix)/include
 	mkdir -p $(prefix)/lib/pkgconfig
 
-veryclean: veryclean-linphone
+veryclean: veryclean-linphone veryclean-msbcg729
 	rm -rf $(BUILDER_BUILD_DIR)
 
 
@@ -326,4 +326,8 @@ delivery:
 	-x linphone-iphone/build\* \
 	-x \*.git\*
 
+ipa:
+	cd $(BUILDER_SRC_DIR)/../ \
+	&& xcodebuild  -configuration DistributionAdhoc \
+	&& xcrun -sdk iphoneos PackageApplication -v build/DistributionAdhoc-iphoneos/linphone.app -o $(BUILDER_SRC_DIR)/../linphone-iphone.ipa
 

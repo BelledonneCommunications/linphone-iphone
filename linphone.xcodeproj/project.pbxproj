@@ -93,6 +93,8 @@
 		226183B0147259670037138E /* libmssilk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226183AF147259670037138E /* libmssilk.a */; };
 		2264B6D211200342002C2C53 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2264B6D111200342002C2C53 /* SystemConfiguration.framework */; };
 		226B563F13CAF1CD00921595 /* audio.plist in Resources */ = {isa = PBXBuildFile; fileRef = 226B563E13CAF1CD00921595 /* audio.plist */; };
+		226CDADF14E2D0B800513B67 /* libbcg729.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226CDADD14E2D0B800513B67 /* libbcg729.a */; };
+		226CDAE014E2D0B800513B67 /* libmsbcg729.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226CDADE14E2D0B800513B67 /* libmsbcg729.a */; };
 		226F2ED61344B0EF00F6EF27 /* libopencore-amrwb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226F2ED31344B0EF00F6EF27 /* libopencore-amrwb.a */; };
 		226F2ED71344B0EF00F6EF27 /* libopencore-amrnb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226F2ED41344B0EF00F6EF27 /* libopencore-amrnb.a */; };
 		226F2ED81344B0EF00F6EF27 /* libmsamr.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226F2ED51344B0EF00F6EF27 /* libmsamr.a */; };
@@ -482,6 +484,8 @@
 		226183AF147259670037138E /* libmssilk.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmssilk.a; path = "liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmssilk.a"; sourceTree = "<group>"; };
 		2264B6D111200342002C2C53 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		226B563E13CAF1CD00921595 /* audio.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = audio.plist; path = Settings.bundle/audio.plist; sourceTree = "<group>"; };
+		226CDADD14E2D0B800513B67 /* libbcg729.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbcg729.a; path = "liblinphone-sdk/apple-darwin/lib/libbcg729.a"; sourceTree = "<group>"; };
+		226CDADE14E2D0B800513B67 /* libmsbcg729.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmsbcg729.a; path = "liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmsbcg729.a"; sourceTree = "<group>"; };
 		226F2ED31344B0EF00F6EF27 /* libopencore-amrwb.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libopencore-amrwb.a"; path = "liblinphone-sdk/apple-darwin/lib/libopencore-amrwb.a"; sourceTree = "<group>"; };
 		226F2ED41344B0EF00F6EF27 /* libopencore-amrnb.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libopencore-amrnb.a"; path = "liblinphone-sdk/apple-darwin/lib/libopencore-amrnb.a"; sourceTree = "<group>"; };
 		226F2ED51344B0EF00F6EF27 /* libmsamr.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmsamr.a; path = "liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmsamr.a"; sourceTree = "<group>"; };
@@ -649,6 +653,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				226CDADF14E2D0B800513B67 /* libbcg729.a in Frameworks */,
+				226CDAE014E2D0B800513B67 /* libmsbcg729.a in Frameworks */,
 				344ABDF114850AE9007420B6 /* libc++.1.dylib in Frameworks */,
 				344ABDF214850AE9007420B6 /* libstdc++.6.dylib in Frameworks */,
 				344ABDE81484E723007420B6 /* libzrtpcpp.a in Frameworks */,
@@ -1110,6 +1116,8 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				226CDADD14E2D0B800513B67 /* libbcg729.a */,
+				226CDADE14E2D0B800513B67 /* libmsbcg729.a */,
 				344ABDEF14850AE9007420B6 /* libc++.1.dylib */,
 				344ABDF014850AE9007420B6 /* libstdc++.6.dylib */,
 				344ABDE71484E723007420B6 /* libzrtpcpp.a */,

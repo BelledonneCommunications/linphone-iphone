@@ -2,7 +2,7 @@
 download_bw=512
 upload_bw=512
 firewall_policy=0
-mtu=0
+mtu=1300
 
 [sip]
 sip_random_port=1
