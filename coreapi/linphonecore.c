@@ -2369,12 +2369,13 @@ int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const
 		         linphone_call_state_to_string(call->state));
 		return -1;
 	}
-	if (params){
+	if (params==NULL){
+		call->params.has_video=lc->video_policy.automatically_accept;
+	}else
 		call->params=*params;
-		call->camera_active=call->params.has_video;
-		update_local_media_description(lc,call);
-		sal_call_set_local_media_description(call->op,call->localdesc);
-	}
+	call->camera_active=call->params.has_video;
+	update_local_media_description(lc,call);
+	sal_call_set_local_media_description(call->op,call->localdesc);
 	sal_call_accept(call->op);
 	md=sal_call_get_final_media_description(call->op);
 	if (md && !sal_media_description_empty(md))
