@@ -1691,3 +1691,10 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_tunnelEnableLogs(JNIEnv 
 extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isTunnelAvailable(JNIEnv *env,jobject thiz){
 	return linphone_core_tunnel_available();
 }
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setVideoPolicy(JNIEnv *env, jobject thiz, jlong lc, jboolean autoInitiate, jboolean autoAccept){
+	LinphoneVideoPolicy vpol;
+	vpol.automatically_initiate = autoInitiate;
+	vpol.automatically_accept = autoAccept;
+	linphone_core_set_video_policy((LinphoneCore *)lc, &vpol);
+}

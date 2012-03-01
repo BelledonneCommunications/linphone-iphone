@@ -757,4 +757,6 @@ public interface LinphoneCore {
 	boolean isTunnelAvailable();
 	
 	LinphoneProxyConfig[] getProxyConfigList();
+	
+	void setVideoPolicy(boolean autoInitiate, boolean autoAccept);
 }
