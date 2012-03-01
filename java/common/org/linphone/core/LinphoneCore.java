@@ -406,7 +406,7 @@ public interface LinphoneCore {
 	 * this method.
 	 * @throws LinphoneCoreException 
 	 */
-	public void deferCallUpdate(LinphoneCall aCall, LinphoneCallParams params) throws LinphoneCoreException;
+	public void deferCallUpdate(LinphoneCall aCall) throws LinphoneCoreException;
 	
 	/**
 	 * @return a list of LinphoneCallLog 

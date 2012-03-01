@@ -572,8 +572,7 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_acceptCallUpdate(JNIEnv 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_deferCallUpdate(JNIEnv *env,
 		jobject thiz,
 		jlong lc,
-		jlong call,
-		jlong params){
+		jlong call){
 	linphone_core_defer_call_update((LinphoneCore*)lc,(LinphoneCall*)call);
 }
 
