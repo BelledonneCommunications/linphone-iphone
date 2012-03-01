@@ -67,7 +67,7 @@ case $target in
                 ios_found=yes
         ;;
         x86_64-apple-darwin*|i686-apple-darwin*)
-                MSPLUGINS_CFLAGS=""
+        MSPLUGINS_CFLAGS=""
 		dnl use macport installation
 		ACLOCAL_MACOS_FLAGS="-I /opt/local/share/aclocal"
 		build_macos=yes
@@ -453,7 +453,7 @@ AC_ARG_ENABLE(strict,
 
 STRICT_OPTIONS="-Wall "
 
-if test "$GCC$strictness" = "yesyes" ; then
+if test "$strictness" = "yes" ; then
 	STRICT_OPTIONS="$STRICT_OPTIONS -Werror"
 	CFLAGS="$CFLAGS -fno-strict-aliasing"
 fi

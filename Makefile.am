@@ -229,4 +229,4 @@ clean-local:
 	rm -rf $(BUNDLEDIR)
 discovery:
 	touch specs.cpp
-	$(CC) $(CFLAGS) $(ANTLR_CFLAGS) $(CUNIT_CFLAGS) -E -P -v -dD specs.cpp
+	$(CC) $(CFLAGS) $(MEDIASTREAMER2_CFLAGS) $(ORTP_CFLAGS) -E -P -v -dD specs.cpp
