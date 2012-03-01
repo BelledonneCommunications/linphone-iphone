@@ -50,7 +50,7 @@ If you got the source code from git, run ./autogen.sh first.
 
 Then or otherwise, do:
 	
- $ ./configure --prefix=/opt/local --with-readline=/opt/local --disable-strict --disable-x11 --with-srtp=/opt/local --with-gsm=/opt/local --enable-zrtp && make
+ $ ./configure --prefix=/opt/local --with-readline=/opt/local --disable-x11 --with-srtp=/opt/local --with-gsm=/opt/local --enable-zrtp && make
 
 Install to /opt/local
 
