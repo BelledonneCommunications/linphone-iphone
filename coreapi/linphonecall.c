@@ -1086,13 +1086,13 @@ static bool_t linphone_call_sound_resources_available(LinphoneCall *call){
 		(current==NULL || current==call);
 }
 static int find_crypto_index_from_tag(const SalSrtpCryptoAlgo crypto[],unsigned char tag) {
-	int i;
-	for(i=0; i<SAL_CRYPTO_ALGO_MAX; i++) {
-		if (crypto[i].tag == tag) {
-			return i;
-		}
-	}
-	return -1;
+    int i;
+    for(i=0; i<SAL_CRYPTO_ALGO_MAX; i++) {
+        if (crypto[i].tag == tag) {
+            return i;
+        }
+    }
+    return -1;
 }
 static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cname, bool_t muted, bool_t send_ringbacktone, bool_t use_arc){
 	LinphoneCore *lc=call->core;
@@ -1181,15 +1181,23 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cna
 			}
 			audio_stream_set_rtcp_information(call->audiostream, cname, LINPHONE_RTCP_SDES_TOOL);
 			
+            /* valid local tags are > 0 */
 			if (stream->proto == SalProtoRtpSavp) {
-				const SalStreamDescription *local_st_desc=sal_media_description_find_stream(call->localdesc,
-	    					SalProtoRtpSavp,SalAudio);
-				audio_stream_enable_strp(
-					call->audiostream, 
-					stream->crypto[0].algo,
-					local_st_desc->crypto[find_crypto_index_from_tag(local_st_desc->crypto,stream->crypto[0].tag)].master_key,
-					stream->crypto[0].master_key);
-				call->audiostream_encrypted=TRUE;
+                const SalStreamDescription *local_st_desc=sal_media_description_find_stream(call->localdesc,
+                                                                                            SalProtoRtpSavp,SalAudio);
+                int crypto_idx = find_crypto_index_from_tag(local_st_desc->crypto, stream->crypto_local_tag);
+                
+                if (crypto_idx >= 0) {
+                    audio_stream_enable_strp(
+                                             call->audiostream, 
+                                             stream->crypto[0].algo,
+                                             local_st_desc->crypto[crypto_idx].master_key,
+                                             stream->crypto[0].master_key);
+                    call->audiostream_encrypted=TRUE;
+                } else {
+                    ms_warning("Failed to find local crypto algo with tag: %d", stream->crypto_local_tag);
+                    call->audiostream_encrypted=FALSE;
+                }
 			}else call->audiostream_encrypted=FALSE;
 			if (call->params.in_conference){
 				/*transform the graph to connect it to the conference filter */

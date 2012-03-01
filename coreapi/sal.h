@@ -133,6 +133,7 @@ typedef struct SalStreamDescription{
 	SalEndpointCandidate candidates[SAL_ENDPOINT_CANDIDATE_MAX];
 	SalStreamDir dir;
 	SalSrtpCryptoAlgo crypto[SAL_CRYPTO_ALGO_MAX];
+	unsigned int crypto_local_tag;
 } SalStreamDescription;
 
 #define SAL_MEDIA_DESCRIPTION_MAX_STREAMS 4

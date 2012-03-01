@@ -129,21 +129,27 @@ static MSList *match_payloads(const MSList *local, const MSList *remote, bool_t 
 }
 
 static bool_t match_crypto_algo(const SalSrtpCryptoAlgo* local, const SalSrtpCryptoAlgo* remote, 
-	SalSrtpCryptoAlgo* result, bool_t use_local_key) {
+	SalSrtpCryptoAlgo* result, unsigned int* choosen_local_tag, bool_t use_local_key) {
 	int i,j;
 	for(i=0; i<SAL_CRYPTO_ALGO_MAX; i++) {
 		if (remote[i].algo == 0)
 			break;
-			
+
+        /* Look for a local enabled crypto algo that matches one of the proposed by remote */
 		for(j=0; j<SAL_CRYPTO_ALGO_MAX; j++) {
 			if (remote[i].algo == local[j].algo) {
 				result->algo = remote[i].algo;
+            /* We're answering an SDP offer. Supply our master key, associated with the remote supplied tag */
 				if (use_local_key) {
 					strncpy(result->master_key, local[j].master_key, 41);
-					result->tag = local[j].tag;
-				} else {
-					strncpy(result->master_key, remote[i].master_key, 41);
 					result->tag = remote[i].tag;
+                    *choosen_local_tag = local[j].tag;
+				}
+				/* We received an answer to our SDP crypto proposal. Copy matching algo remote master key to result, and memorize local tag */
+            else {
+					strncpy(result->master_key, remote[i].master_key, 41);
+					result->tag = local[j].tag;
+                    *choosen_local_tag = local[j].tag;
 				}
 				result->master_key[40] = '\0';
 				return TRUE;
@@ -214,7 +220,7 @@ static void initiate_outgoing(const SalStreamDescription *local_offer,
 	if (result->proto == SalProtoRtpSavp) {
 		/* verify crypto algo */
 		memset(result->crypto, 0, sizeof(result->crypto));
-		if (!match_crypto_algo(local_offer->crypto, remote_answer->crypto, &result->crypto[0], FALSE))
+		if (!match_crypto_algo(local_offer->crypto, remote_answer->crypto, &result->crypto[0], &result->crypto_local_tag, FALSE))
 			result->port = 0;
 	}
 }
@@ -239,7 +245,7 @@ static void initiate_incoming(const SalStreamDescription *local_cap,
 	if (result->proto == SalProtoRtpSavp) {
 		/* select crypto algo */
 		memset(result->crypto, 0, sizeof(result->crypto));
-		if (!match_crypto_algo(local_cap->crypto, remote_offer->crypto, &result->crypto[0], TRUE))
+		if (!match_crypto_algo(local_cap->crypto, remote_offer->crypto, &result->crypto[0], &result->crypto_local_tag, TRUE))
 			result->port = 0; 
 		
 	}
