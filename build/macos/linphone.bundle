@@ -57,6 +57,10 @@
   <binary >
     ${prefix:ms2plugins}/lib/mediastreamer/plugins/*.so
   </binary>
+  
+  <binary >
+    ${prefix:linphone}/lib/*.dylib
+  </binary>
 
   <!-- Copy in GTK+ modules.  Note the ${gtkdir} macro, which expands
        to the correct library subdirectory for the specified gtk
