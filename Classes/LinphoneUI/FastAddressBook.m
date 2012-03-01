@@ -89,7 +89,7 @@ void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef info, void
 -(id) initWithRecord:(ABRecordRef) aRecord ofType:(NSString*) type {
      if ((self = [super init])) {
          record=CFRetain(aRecord);
-         numberType= type?[type retain]:@"unkown";
+         numberType= [type?type:@"unknown" retain];
      }
     return self;
 }
