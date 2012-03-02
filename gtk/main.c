@@ -638,10 +638,15 @@ static void completion_add_text(GtkEntry *entry, const char *text){
 }
 
 
+bool_t linphone_gtk_video_enabled(void){
+	const LinphoneVideoPolicy *vpol=linphone_core_get_video_policy(linphone_gtk_get_core());
+	return vpol->automatically_accept && vpol->automatically_initiate;
+}
+
 void linphone_gtk_show_main_window(){
 	GtkWidget *w=linphone_gtk_get_main_window();
 	LinphoneCore *lc=linphone_gtk_get_core();
-	if (linphone_core_video_enabled(lc)){
+	if (linphone_gtk_video_enabled()){
 		linphone_core_enable_video_preview(lc,linphone_gtk_get_ui_config_int("videoselfview",
 	    	VIDEOSELFVIEW_DEFAULT));
 	}
@@ -1400,8 +1405,7 @@ static void linphone_gtk_connect_digits(void){
 }
 
 static void linphone_gtk_check_menu_items(void){
-	const LinphoneVideoPolicy *pol=linphone_core_get_video_policy(linphone_gtk_get_core());
-	bool_t video_enabled=pol->automatically_accept && pol->automatically_initiate;
+	bool_t video_enabled=linphone_gtk_video_enabled();
 	bool_t selfview=linphone_gtk_get_ui_config_int("videoselfview",VIDEOSELFVIEW_DEFAULT);
 	GtkWidget *selfview_item=linphone_gtk_get_widget(
 					linphone_gtk_get_main_window(),"selfview_item");
@@ -1547,11 +1551,12 @@ gboolean linphone_gtk_close(GtkWidget *mw){
 
 #ifdef HAVE_GTK_OSX
 static gboolean on_window_state_event(GtkWidget *w, GdkEventWindowState *event){
+	bool_t video_enabled=linphone_gtk_video_enabled();
 	if ((event->new_window_state & GDK_WINDOW_STATE_ICONIFIED) ||(event->new_window_state & GDK_WINDOW_STATE_WITHDRAWN) ){
 		linphone_core_enable_video_preview(linphone_gtk_get_core(),FALSE);
 	}else{
 		linphone_core_enable_video_preview(linphone_gtk_get_core(),
-		linphone_gtk_get_ui_config_int("videoselfview",VIDEOSELFVIEW_DEFAULT) && linphone_core_video_enabled(linphone_gtk_get_core()));
+		linphone_gtk_get_ui_config_int("videoselfview",VIDEOSELFVIEW_DEFAULT) && video_enabled);
 	}
 	return FALSE;
 }
