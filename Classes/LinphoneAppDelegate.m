@@ -29,6 +29,13 @@
 #include "LinphoneManager.h"
 #include "linphonecore.h"
 
+#if __clang__ && TARGET_OS_IPHONE
+extern int __divsi3(int a, int b);
+int __aeabi_idiv(int a, int b) {
+	return __divsi3(a,b);
+}
+#endif
+
 @implementation linphoneAppDelegate
 
 @synthesize window;
