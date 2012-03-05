@@ -430,6 +430,8 @@ if test "$build_wizard" != "false" ; then
 	[
 		if test "$build_wizard" = "true" ; then
 			AC_MSG_ERROR([Could not found libsoup, assistant cannot be compiled.])
+		else
+			build_wizard=false
 		fi
 	])
 fi
@@ -611,12 +613,15 @@ linphone.iss
 AC_OUTPUT
 
 echo "Linphone build configuration ended."
+echo "Summary of build options:"
+printf "* Video support\t\t\t%s\n" $video
+printf "* GTK interface\t\t\t%s\n" $gtk_ui
+printf "* Account assistant\t\t%s\n" $build_wizard
+printf "* Console interface\t\t%s\n" $console_ui
+printf "* zRTP encryption (GPLv3)\t%s\n" $zrtp
 
-if test x$gtk_ui = xtrue ; then
-	echo "* GTK interface will be compiled."
-fi
-if test x$console_ui = xtrue ; then
-	echo "* Console interface will be compiled."
+if test "$enable_tunnel" = "true" ; then
+	printf "* Tunnel support\t\ttrue\n"
 fi
 
 echo "Now type 'make' to compile, and then 'make install' as root to install it."

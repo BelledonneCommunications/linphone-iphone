@@ -2003,9 +2003,18 @@ int sal_iterate(Sal *sal){
 		if (process_event(sal,ev))
 			eXosip_event_free(ev);
 	}
+#ifdef HAVE_EXOSIP_TRYLOCK
+	if (eXosip_trylock()==0){
+		eXosip_automatic_refresh();
+		eXosip_unlock();
+	}else{
+		ms_warning("eXosip_trylock busy.");
+	}
+#else
 	eXosip_lock();
 	eXosip_automatic_refresh();
 	eXosip_unlock();
+#endif
 	return 0;
 }
 
