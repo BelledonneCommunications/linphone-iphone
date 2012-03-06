@@ -1669,7 +1669,7 @@
 					"$(ARCHS_STANDARD_32_BIT)",
 					arm6,
 				);
-				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -1706,6 +1706,7 @@
 					mediastreamer,
 				);
 				PRODUCT_NAME = "linphone-no-gpl-thirdparties";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1720,8 +1721,7 @@
 					"$(ARCHS_STANDARD_32_BIT)",
 					arm6,
 				);
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -1758,7 +1758,7 @@
 					mediastreamer,
 				);
 				PRODUCT_NAME = "linphone-no-gpl-thirdparties";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1774,7 +1774,7 @@
 					arm6,
 				);
 				CODE_SIGN_ENTITLEMENTS = untitled.plist;
-				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: jehan monnier";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -1811,6 +1811,7 @@
 					mediastreamer,
 				);
 				PRODUCT_NAME = "linphone-no-gpl-thirdparties";
+				PROVISIONING_PROFILE = "075921BC-C7D8-42E1-B864-F05FD9BF841C";
 				SDKROOT = iphoneos;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1826,7 +1827,7 @@
 					arm6,
 				);
 				CODE_SIGN_ENTITLEMENTS = untitled.plist;
-				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: jehan monnier";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -1863,6 +1864,7 @@
 					mediastreamer,
 				);
 				PRODUCT_NAME = "linphone-no-gpl-thirdparties";
+				PROVISIONING_PROFILE = "7EBE410C-11B9-4346-9977-2C3BEE43ED16";
 				SDKROOT = iphoneos;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
 				TARGETED_DEVICE_FAMILY = "1,2";
