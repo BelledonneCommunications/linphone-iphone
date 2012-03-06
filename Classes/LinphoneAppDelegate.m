@@ -22,6 +22,9 @@
 #import "ContactPickerDelegate.h"
 #import "AddressBook/ABPerson.h"
 
+#import "CoreTelephony/CTCallCenter.h"
+#import "CoreTelephony/CTCall.h"
+
 #import "ConsoleViewController.h"
 #import "MoreViewController.h"
 #include "CallHistoryTableViewController.h"
@@ -175,9 +178,44 @@ int __aeabi_idiv(int a, int b) {
 	
 	[[LinphoneManager instance] setCallDelegate:myPhoneViewController];
 	[[LinphoneManager instance]	startLibLinphone];
-		
+
 	[[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeSound];
-		
+
+    UIDevice* device = [UIDevice currentDevice];
+    BOOL backgroundSupported = false;
+    if ([device respondsToSelector:@selector(isMultitaskingSupported)]){
+        backgroundSupported = device.multitaskingSupported;
+    }
+    if(backgroundSupported){
+        [[LinphoneManager instance] kickOffBackgroundTCPConnection];
+        NSLog(@"We are using my method");
+    }
+
+	CTCallCenter* ct = [[CTCallCenter alloc] init];
+    ct.callEventHandler = ^(CTCall* call) {
+        @synchronized([LinphoneManager instance]) {
+            if (call.callState == CTCallStateDisconnected) {
+                NSLog(@"GSM call disconnected");
+                if ([ct.currentCalls count] > 0) {
+                    NSLog(@"There are still some ongoing GSM call: disable SIP calls");
+                    linphone_core_set_max_calls([LinphoneManager getLc], 0);
+                } else {
+                    NSLog(@"Re-enabling SIP calls");
+                    linphone_core_set_max_calls([LinphoneManager getLc], 3);
+                }
+            } else {
+                NSLog(@"GSM call existing");
+                /* pause current call, if any */
+                LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
+                if (call) {
+                    NSLog(@"Pausing SIP call");
+                    linphone_core_pause_call([LinphoneManager getLc], call);
+                }
+                NSLog(@"Disabling SIP calls");
+                linphone_core_set_max_calls([LinphoneManager getLc], 0);
+            }
+        }
+    };
 	return YES;
 }
 
