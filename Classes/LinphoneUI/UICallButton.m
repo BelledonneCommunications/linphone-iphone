@@ -19,6 +19,7 @@
 
 #import "UICallButton.h"
 #import "LinphoneManager.h"
+#import "CoreTelephony/CTCallCenter.h"
 
 
 @implementation UICallButton
@@ -33,6 +34,20 @@
         [error release];
 		return;
 	}
+    
+    CTCallCenter* ct = [[CTCallCenter alloc] init];
+    if ([ct.currentCalls count] > 0) {
+        ms_error("GSM call in progress, cancelling outgoing SIP call request");
+		UIAlertView* error = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"Cannot make call",nil)
+														message:NSLocalizedString(@"Please terminate GSM call",nil) 
+													   delegate:nil 
+											  cancelButtonTitle:NSLocalizedString(@"Continue",nil) 
+											  otherButtonTitles:nil];
+		[error show];
+        [error release];
+		return;
+    }
+    
 	if (TRUE /*!linphone_core_in_call([LinphoneManager getLc])*/) {
 		LinphoneProxyConfig* proxyCfg;	
 		//get default proxy
