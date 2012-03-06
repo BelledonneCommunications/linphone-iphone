@@ -94,8 +94,8 @@ void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef info, void
     return self;
 }
 - (void)dealloc {
-    [super dealloc];
     CFRelease(record);
     [numberType release];
+    [super dealloc];
 }
 @end
