@@ -119,7 +119,8 @@ int __aeabi_idiv(int a, int b) {
 #endif
 #ifdef HAVE_G729                                 
                                  @"YES",@"g729_preference", // enable amr by default if compiled with
-#endif                                 @"NO",@"debugenable_preference",
+#endif                                 
+                                 @"NO",@"debugenable_preference",
 								 //@"+33",@"countrycode_preference",
                                  nil];
     
@@ -180,16 +181,6 @@ int __aeabi_idiv(int a, int b) {
 	[[LinphoneManager instance]	startLibLinphone];
 
 	[[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeSound];
-
-    UIDevice* device = [UIDevice currentDevice];
-    BOOL backgroundSupported = false;
-    if ([device respondsToSelector:@selector(isMultitaskingSupported)]){
-        backgroundSupported = device.multitaskingSupported;
-    }
-    if(backgroundSupported){
-        [[LinphoneManager instance] kickOffBackgroundTCPConnection];
-        NSLog(@"We are using my method");
-    }
 
 	CTCallCenter* ct = [[CTCallCenter alloc] init];
     ct.callEventHandler = ^(CTCall* call) {

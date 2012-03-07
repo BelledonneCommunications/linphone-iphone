@@ -362,6 +362,7 @@ static void linphone_iphone_call_state(LinphoneCore *lc, LinphoneCall* call, Lin
 												  cancelButtonTitle:NSLocalizedString(@"Continue",nil) 
 												  otherButtonTitles:nil ,nil];
                 [error show];
+                [error release];
             }
 		}
 		
