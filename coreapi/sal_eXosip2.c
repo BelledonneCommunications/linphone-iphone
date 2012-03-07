@@ -1006,7 +1006,6 @@ static void inc_new_call(Sal *sal, eXosip_event_t *ev){
 static void handle_reinvite(Sal *sal,  eXosip_event_t *ev){
 	SalOp *op=find_op(sal,ev);
 	sdp_message_t *sdp;
-	osip_message_t *msg=NULL;
 
 	if (op==NULL) {
 		ms_warning("Reinvite for non-existing operation !");
@@ -1028,18 +1027,11 @@ static void handle_reinvite(Sal *sal,  eXosip_event_t *ev){
 		op->base.remote_media=sal_media_description_new();
 		sdp_to_media_description(sdp,op->base.remote_media);
 		sdp_message_free(sdp);
-		sal->callbacks.call_updating(op);
+		
 	}else {
 		op->sdp_offering=TRUE;
-		eXosip_lock();
-		eXosip_call_build_answer(ev->tid,200,&msg);
-		if (msg!=NULL){
-			set_sdp_from_desc(msg,op->base.local_media);
-			eXosip_call_send_answer(ev->tid,200,msg);
-		}
-		eXosip_unlock();
 	}
-	
+	sal->callbacks.call_updating(op);
 }
 
 static void handle_ack(Sal *sal,  eXosip_event_t *ev){
@@ -1064,9 +1056,8 @@ static void handle_ack(Sal *sal,  eXosip_event_t *ev){
 	}
 	if (op->reinvite){
 		op->reinvite=FALSE;
-	}else{
-		sal->callbacks.call_ack(op);
 	}
+	sal->callbacks.call_ack(op);
 }
 
 static void update_contact_from_response(SalOp *op, osip_message_t *response){

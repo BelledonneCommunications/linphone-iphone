@@ -443,6 +443,13 @@ static void call_updating(SalOp *op){
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
 	SalMediaDescription *rmd=sal_call_get_remote_media_description(op);
 
+	if (rmd==NULL){
+		/* case of a reINVITE without SDP */
+		call_accept_update(lc,call);
+		call->media_pending=TRUE;
+		return;
+	}
+
 	switch(call->state){
 		case LinphoneCallPausedByRemote:
 			if (sal_media_description_has_dir(rmd,SalStreamSendRecv) || sal_media_description_has_dir(rmd,SalStreamRecvOnly)){
