@@ -69,7 +69,7 @@ typedef struct _CallContext {
 -(BOOL) isNotIphone3G;
 -(void) destroyLibLinphone;
   
--(void) enterBackgroundMode;
+-(BOOL) enterBackgroundMode;
 -(void) becomeActive;
 -(void) kickOffNetworkConnection;
 -(NSString*) getDisplayNameFromAddressBook:(NSString*) number andUpdateCallLog:(LinphoneCallLog*)log; 

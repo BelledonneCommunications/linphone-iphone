@@ -693,6 +693,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	AVAudioSession *audioSession = [AVAudioSession sharedInstance];
 	[audioSession setDelegate:nil];
 	if (theLinphoneCore != nil) { //just in case application terminate before linphone core initialization
+        NSLog(@"Destroy linphonecore");
 		linphone_core_destroy(theLinphoneCore);
 		theLinphoneCore = nil;
         SCNetworkReachabilityUnscheduleFromRunLoop(proxyReachability, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
@@ -704,7 +705,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 }
 
 //**********************BG mode management*************************///////////
--(void) enterBackgroundMode {
+-(BOOL) enterBackgroundMode {
 	LinphoneProxyConfig* proxyCfg;
 	linphone_core_get_default_proxy(theLinphoneCore, &proxyCfg);	
 	linphone_core_stop_dtmf_stream(theLinphoneCore);
@@ -744,11 +745,12 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		if (linphone_core_get_sip_transports(theLinphoneCore, &transportValue)) {
 			ms_error("cannot get current transport");	
 		}
-		
+		return YES;
 	}
 	else {
 		ms_warning("Entering lite bg mode");
 		[self destroyLibLinphone];
+        return NO;
 	}
 	
 }
@@ -802,6 +804,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 #endif
 	/* Initialize linphone core*/
 	
+    NSLog(@"Create linphonecore");
 	theLinphoneCore = linphone_core_new (&linphonec_vtable
 										 , [confiFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]
 										 , [factoryConfig cStringUsingEncoding:[NSString defaultCStringEncoding]]
@@ -891,13 +894,12 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	
 }
 -(void) becomeActive {
-    
     if (theLinphoneCore == nil) {
 		//back from standby and background mode is disabled
 		[self	startLibLinphone];
 	} else {
         if (![self reconfigureLinphoneIfNeeded:currentSettings]) {
-            ms_message("becomming active with no config modification, make sure we are registered");
+            ms_message("becoming active with no config modification, make sure we are registered");
             linphone_core_refresh_registers(theLinphoneCore);//just to make sure REGISTRATION is up to date
         }
 		
