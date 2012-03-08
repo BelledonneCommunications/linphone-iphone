@@ -621,8 +621,6 @@ int sal_call_notify_ringing(SalOp *h, bool_t early_media){
 	if (early_media){
 		msg=NULL;
 		eXosip_lock();
-		eXosip_call_build_answer(h->tid,180,&msg);
-		
 		eXosip_call_build_answer(h->tid,183,&msg);
 		if (msg){
 			sdp_process(h);
