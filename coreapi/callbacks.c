@@ -602,6 +602,16 @@ static void call_released(SalOp *op){
 static void auth_requested(SalOp *h, const char *realm, const char *username){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(h));
 	LinphoneAuthInfo *ai=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,realm,username);
+	LinphoneCall *call=is_a_linphone_call(sal_op_get_user_pointer(h));
+
+	if (call && call->ping_op==h){
+		/*don't request authentication for ping requests. Their purpose is just to get any
+		 * answer to get the Via's received and rport parameters.
+		 */
+		ms_message("auth_requested(): ignored for ping request.");
+		return;
+	}
+	
 	ms_message("auth_requested() for realm=%s, username=%s",realm,username);
 
 	if (ai && ai->works==FALSE && ai->usecount>=3){

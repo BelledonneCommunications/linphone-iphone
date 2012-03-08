@@ -75,8 +75,11 @@ struct _LinphoneCallParams{
 	
 };
 
+static const int linphone_call_magic=0x3343;
+
 struct _LinphoneCall
 {
+	int magic; /*used to distinguish from proxy config*/
 	struct _LinphoneCore *core;
 	SalMediaDescription *localdesc;
 	SalMediaDescription *resultdesc;
@@ -238,9 +241,14 @@ extern SalCallbacks linphone_sal_callbacks;
 void linphone_proxy_config_set_error(LinphoneProxyConfig *cfg, LinphoneReason error);
 bool_t linphone_core_rtcp_enabled(const LinphoneCore *lc);
 
+LinphoneCall * is_a_linphone_call(void *user_pointer);
+LinphoneProxyConfig * is_a_linphone_proxy_config(void *user_pointer);
+
+static const int linphone_proxy_config_magic=0x7979;
 
 struct _LinphoneProxyConfig
 {
+	int magic;
 	struct _LinphoneCore *lc;
 	char *reg_proxy;
 	char *reg_identity;

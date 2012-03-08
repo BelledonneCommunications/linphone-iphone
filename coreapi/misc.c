@@ -557,6 +557,19 @@ void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 	}
 }
 
+LinphoneCall * is_a_linphone_call(void *user_pointer){
+	LinphoneCall *call=(LinphoneCall*)user_pointer;
+	if (call==NULL) return NULL;
+	return call->magic==linphone_call_magic ? call : NULL;
+}
+
+LinphoneProxyConfig * is_a_linphone_proxy_config(void *user_pointer){
+	LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)user_pointer;
+	if (cfg==NULL) return NULL;
+	return cfg->magic==linphone_proxy_config_magic ? cfg : NULL;
+}
+
+
 #ifdef HAVE_GETIFADDRS
 
 #include <ifaddrs.h>
