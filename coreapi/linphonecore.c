@@ -651,6 +651,7 @@ static bool_t get_codec(LpConfig *config, const char* type, int index, PayloadTy
 
 #define RANK_END 10000
 static const char *codec_pref_order[]={
+	"SILK",
 	"speex",
 	"iLBC",
 	"amr",
