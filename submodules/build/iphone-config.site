@@ -24,8 +24,15 @@ else
 fi
 echo "Loading config.site for iPhone platform=${PLATFORM} version=${SDK_VERSION}"
 
-SDK_PATH_LIST=`ls -drt /Developer/Platforms/iPhone${PLATFORM}.platform/Developer/SDKs/iPhone${PLATFORM}*`
-SDK_BIN_PATH=/Developer/Platforms/iPhone${PLATFORM}.platform/Developer/usr/bin     
+#new path with Xcode 4.3:
+if test -d /Applications/Xcode.app/Contents/Developer/Platforms/iPhone${PLATFORM}.platform/Developer/SDKs ; then
+	SDK_PATH_LIST=`ls -drt /Applications/Xcode.app/Contents/Developer/Platforms/iPhone${PLATFORM}.platform/Developer/SDKs/iPhone${PLATFORM}*`
+	SDK_BIN_PATH=/Applications/Xcode.app/Contents/Developer/Platforms/iPhone${PLATFORM}.platform/Developer/usr/bin  
+else
+	SDK_PATH_LIST=`ls -drt /Developer/Platforms/iPhone${PLATFORM}.platform/Developer/SDKs/iPhone${PLATFORM}*`
+	SDK_BIN_PATH=/Developer/Platforms/iPhone${PLATFORM}.platform/Developer/usr/bin  
+fi
+   
 for SYSROOT_PATH in $SDK_PATH_LIST ; do echo $SYSROOT_PATH ; done ;
 echo "Selecting SDK path = ${SYSROOT_PATH}"
 COMMON_FLAGS=" -arch ${ARCH} ${MCPU} -isysroot ${SYSROOT_PATH} -miphoneos-version-min=${SDK_VERSION} -DTARGET_OS_IPHONE=1 -D__IOS"
