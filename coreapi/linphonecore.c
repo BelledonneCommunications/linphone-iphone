@@ -2353,7 +2353,7 @@ int linphone_core_defer_call_update(LinphoneCore *lc, LinphoneCall *call){
  * have the time to prompt the user. linphone_call_get_remote_params() can be used to get information about the call parameters
  * requested by the other party, such as whether a video stream is requested.
  * 
- * When the user accepts or refuse the change, linphone_core_accept_update() can be done to answer to the other party.
+ * When the user accepts or refuse the change, linphone_core_accept_call_update() can be done to answer to the other party.
  * If params is NULL, then the same call parameters established before the update request will continue to be used (no change).
  * If params is not NULL, then the update will be accepted according to the parameters passed.
  * Typical example is when a user accepts to start video, then params should indicate that video stream should be used 

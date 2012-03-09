@@ -287,6 +287,7 @@ static int find_port_offset(LinphoneCore *lc){
 
 static void linphone_call_init_common(LinphoneCall *call, LinphoneAddress *from, LinphoneAddress *to){
 	int port_offset;
+	call->magic=linphone_call_magic;
 	call->refcnt=1;
 	call->state=LinphoneCallIdle;
 	call->start_time=time(NULL);

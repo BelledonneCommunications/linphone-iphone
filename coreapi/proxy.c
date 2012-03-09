@@ -44,6 +44,7 @@ void linphone_proxy_config_write_all_to_config_file(LinphoneCore *lc){
 
 void linphone_proxy_config_init(LinphoneProxyConfig *obj){
 	memset(obj,0,sizeof(LinphoneProxyConfig));
+	obj->magic=linphone_proxy_config_magic;
 	obj->expires=3600;
 }
 
