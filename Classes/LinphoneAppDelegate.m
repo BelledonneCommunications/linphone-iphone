@@ -29,7 +29,7 @@
 #include "LinphoneManager.h"
 #include "linphonecore.h"
 
-#if __clang__ && TARGET_OS_IPHONE
+#if __clang__ && __arm__
 extern int __divsi3(int a, int b);
 int __aeabi_idiv(int a, int b) {
 	return __divsi3(a,b);
@@ -116,7 +116,8 @@ int __aeabi_idiv(int a, int b) {
 #endif
 #ifdef HAVE_G729                                 
                                  @"YES",@"g729_preference", // enable amr by default if compiled with
-#endif                                 @"NO",@"debugenable_preference",
+#endif                                 
+                                 @"NO",@"debugenable_preference",
 								 //@"+33",@"countrycode_preference",
                                  nil];
     

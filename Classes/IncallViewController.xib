@@ -42,6 +42,51 @@
 					<int key="NSvFlags">274</int>
 					<object class="NSMutableArray" key="NSSubviews">
 						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="IBUIView" id="1009068048">
+							<reference key="NSNextResponder" ref="858247959"/>
+							<int key="NSvFlags">292</int>
+							<object class="NSMutableArray" key="NSSubviews">
+								<bool key="EncodedWithXMLCoder">YES</bool>
+								<object class="IBUIView" id="1017044170">
+									<reference key="NSNextResponder" ref="1009068048"/>
+									<int key="NSvFlags">292</int>
+									<string key="NSFrameSize">{320, 480}</string>
+									<reference key="NSSuperview" ref="1009068048"/>
+									<reference key="NSWindow"/>
+									<reference key="NSNextKeyView" ref="673568144"/>
+									<string key="NSReuseIdentifierKey">_NS:196</string>
+									<object class="NSColor" key="IBUIBackgroundColor" id="95762599">
+										<int key="NSColorSpace">3</int>
+										<bytes key="NSWhite">MCAwAA</bytes>
+									</object>
+									<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+								</object>
+								<object class="IBUIView" id="673568144">
+									<reference key="NSNextResponder" ref="1009068048"/>
+									<int key="NSvFlags">292</int>
+									<string key="NSFrame">{{240, 354}, {80, 106}}</string>
+									<reference key="NSSuperview" ref="1009068048"/>
+									<reference key="NSWindow"/>
+									<reference key="NSNextKeyView" ref="662692377"/>
+									<object class="NSColor" key="IBUIBackgroundColor">
+										<int key="NSColorSpace">3</int>
+										<bytes key="NSWhite">MQA</bytes>
+										<object class="NSColorSpace" key="NSCustomColorSpace">
+											<int key="NSID">2</int>
+										</object>
+									</object>
+									<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+								</object>
+							</object>
+							<string key="NSFrameSize">{320, 460}</string>
+							<reference key="NSSuperview" ref="858247959"/>
+							<reference key="NSWindow"/>
+							<reference key="NSNextKeyView" ref="1017044170"/>
+							<string key="NSReuseIdentifierKey">_NS:196</string>
+							<reference key="IBUIBackgroundColor" ref="95762599"/>
+							<bool key="IBUIAutoresizesSubviews">NO</bool>
+							<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+						</object>
 						<object class="IBUITableView" id="662692377">
 							<reference key="NSNextResponder" ref="858247959"/>
 							<int key="NSvFlags">274</int>
@@ -50,10 +95,7 @@
 							<reference key="NSWindow"/>
 							<reference key="NSNextKeyView" ref="759087764"/>
 							<string key="NSReuseIdentifierKey">_NS:418</string>
-							<object class="NSColor" key="IBUIBackgroundColor" id="95762599">
-								<int key="NSColorSpace">3</int>
-								<bytes key="NSWhite">MCAwAA</bytes>
-							</object>
+							<reference key="IBUIBackgroundColor" ref="95762599"/>
 							<bool key="IBUIClipsSubviews">YES</bool>
 							<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 							<bool key="IBUIAlwaysBounceVertical">YES</bool>
@@ -707,7 +749,7 @@
 					<string key="NSFrame">{{0, 20}, {320, 460}}</string>
 					<reference key="NSSuperview"/>
 					<reference key="NSWindow"/>
-					<reference key="NSNextKeyView" ref="662692377"/>
+					<reference key="NSNextKeyView" ref="1009068048"/>
 					<reference key="IBUIBackgroundColor" ref="392721472"/>
 					<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
 					<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -941,6 +983,30 @@
 					<int key="connectionID">125</int>
 				</object>
 				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">videoGroup</string>
+						<reference key="source" ref="841351856"/>
+						<reference key="destination" ref="1009068048"/>
+					</object>
+					<int key="connectionID">129</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">videoPreview</string>
+						<reference key="source" ref="841351856"/>
+						<reference key="destination" ref="673568144"/>
+					</object>
+					<int key="connectionID">130</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">videoView</string>
+						<reference key="source" ref="841351856"/>
+						<reference key="destination" ref="1017044170"/>
+					</object>
+					<int key="connectionID">133</int>
+				</object>
+				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
 						<string key="label">doAction:</string>
 						<reference key="source" ref="478667533"/>
@@ -1024,6 +1090,7 @@
 							<reference ref="759087764"/>
 							<reference ref="662692377"/>
 							<reference ref="585669622"/>
+							<reference ref="1009068048"/>
 						</object>
 						<reference key="parent" ref="981679694"/>
 					</object>
@@ -1035,6 +1102,7 @@
 							<reference ref="953411930"/>
 						</object>
 						<reference key="parent" ref="858247959"/>
+						<string key="objectName">hangupview</string>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">18</int>
@@ -1212,6 +1280,29 @@
 						<reference key="parent" ref="585669622"/>
 						<string key="objectName">video</string>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">126</int>
+						<reference key="object" ref="1009068048"/>
+						<object class="NSMutableArray" key="children">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<reference ref="673568144"/>
+							<reference ref="1017044170"/>
+						</object>
+						<reference key="parent" ref="858247959"/>
+						<string key="objectName">video</string>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">127</int>
+						<reference key="object" ref="673568144"/>
+						<reference key="parent" ref="1009068048"/>
+						<string key="objectName">preview</string>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">132</int>
+						<reference key="object" ref="1017044170"/>
+						<reference key="parent" ref="1009068048"/>
+						<string key="objectName">display</string>
+					</object>
 				</object>
 			</object>
 			<object class="NSMutableDictionary" key="flattenedProperties">
@@ -1232,9 +1323,12 @@
 					<string>120.IBPluginDependency</string>
 					<string>123.CustomClassName</string>
 					<string>123.IBPluginDependency</string>
+					<string>126.IBPluginDependency</string>
+					<string>127.IBPluginDependency</string>
 					<string>13.CustomClassName</string>
 					<string>13.IBPluginDependency</string>
 					<string>13.IBUIButtonInspectorSelectedStateConfigurationMetadataKey</string>
+					<string>132.IBPluginDependency</string>
 					<string>15.IBPluginDependency</string>
 					<string>16.CustomClassName</string>
 					<string>16.IBPluginDependency</string>
@@ -1289,9 +1383,12 @@
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>UIAddVideoButton</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>UISpeakerButton</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<real value="1"/>
+					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>UIMuteButton</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -1343,7 +1440,7 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">125</int>
+			<int key="maxID">133</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -1367,9 +1464,7 @@
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>addCall</string>
-							<string>addToConf</string>
 							<string>addVideo</string>
-							<string>callControlSubView</string>
 							<string>callTableView</string>
 							<string>close</string>
 							<string>conferenceDetail</string>
@@ -1394,6 +1489,9 @@
 							<string>star</string>
 							<string>three</string>
 							<string>two</string>
+							<string>videoGroup</string>
+							<string>videoPreview</string>
+							<string>videoView</string>
 							<string>videoViewController</string>
 							<string>zero</string>
 						</object>
@@ -1401,8 +1499,6 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>UIButton</string>
 							<string>UIButton</string>
-							<string>UIButton</string>
-							<string>UIView</string>
 							<string>UITableView</string>
 							<string>UIButton</string>
 							<string>UIViewController</string>
@@ -1427,6 +1523,9 @@
 							<string>UIButton</string>
 							<string>UIButton</string>
 							<string>UIButton</string>
+							<string>UIView</string>
+							<string>UIView</string>
+							<string>UIView</string>
 							<string>VideoViewController</string>
 							<string>UIButton</string>
 						</object>
@@ -1436,9 +1535,7 @@
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>addCall</string>
-							<string>addToConf</string>
 							<string>addVideo</string>
-							<string>callControlSubView</string>
 							<string>callTableView</string>
 							<string>close</string>
 							<string>conferenceDetail</string>
@@ -1463,6 +1560,9 @@
 							<string>star</string>
 							<string>three</string>
 							<string>two</string>
+							<string>videoGroup</string>
+							<string>videoPreview</string>
+							<string>videoView</string>
 							<string>videoViewController</string>
 							<string>zero</string>
 						</object>
@@ -1473,16 +1573,8 @@
 								<string key="candidateClassName">UIButton</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">addToConf</string>
-								<string key="candidateClassName">UIButton</string>
-							</object>
-							<object class="IBToOneOutletInfo">
 								<string key="name">addVideo</string>
 								<string key="candidateClassName">UIButton</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">callControlSubView</string>
-								<string key="candidateClassName">UIView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">callTableView</string>
@@ -1581,6 +1673,18 @@
 								<string key="candidateClassName">UIButton</string>
 							</object>
 							<object class="IBToOneOutletInfo">
+								<string key="name">videoGroup</string>
+								<string key="candidateClassName">UIView</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">videoPreview</string>
+								<string key="candidateClassName">UIView</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">videoView</string>
+								<string key="candidateClassName">UIView</string>
+							</object>
+							<object class="IBToOneOutletInfo">
 								<string key="name">videoViewController</string>
 								<string key="candidateClassName">VideoViewController</string>
 							</object>
@@ -1673,27 +1777,21 @@
 							<string>mCallQualityLandLeft</string>
 							<string>mCallQualityLandRight</string>
 							<string>mCamSwitch</string>
-							<string>mCamSwitchLand</string>
 							<string>mCamSwitchLandLeft</string>
 							<string>mCamSwitchLandRight</string>
 							<string>mDisplay</string>
-							<string>mDisplayLand</string>
 							<string>mDisplayLandLeft</string>
 							<string>mDisplayLandRight</string>
 							<string>mHangUp</string>
-							<string>mHangUpLand</string>
 							<string>mHangUpLandLeft</string>
 							<string>mHangUpLandRight</string>
-							<string>mLandscape</string>
 							<string>mLandscapeLeft</string>
 							<string>mLandscapeRight</string>
 							<string>mMute</string>
-							<string>mMuteLand</string>
 							<string>mMuteLandLeft</string>
 							<string>mMuteLandRight</string>
 							<string>mPortrait</string>
 							<string>mPreview</string>
-							<string>mPreviewLand</string>
 							<string>mPreviewLandLeft</string>
 							<string>mPreviewLandRight</string>
 						</object>
@@ -1705,23 +1803,17 @@
 							<string>UICamSwitch</string>
 							<string>UICamSwitch</string>
 							<string>UICamSwitch</string>
-							<string>UICamSwitch</string>
-							<string>UIView</string>
 							<string>UIView</string>
 							<string>UIView</string>
 							<string>UIView</string>
 							<string>UIHangUpButton</string>
 							<string>UIHangUpButton</string>
 							<string>UIHangUpButton</string>
-							<string>UIHangUpButton</string>
-							<string>UIView</string>
 							<string>UIView</string>
 							<string>UIView</string>
 							<string>UIMuteButton</string>
 							<string>UIMuteButton</string>
 							<string>UIMuteButton</string>
-							<string>UIMuteButton</string>
-							<string>UIView</string>
 							<string>UIView</string>
 							<string>UIView</string>
 							<string>UIView</string>
@@ -1736,27 +1828,21 @@
 							<string>mCallQualityLandLeft</string>
 							<string>mCallQualityLandRight</string>
 							<string>mCamSwitch</string>
-							<string>mCamSwitchLand</string>
 							<string>mCamSwitchLandLeft</string>
 							<string>mCamSwitchLandRight</string>
 							<string>mDisplay</string>
-							<string>mDisplayLand</string>
 							<string>mDisplayLandLeft</string>
 							<string>mDisplayLandRight</string>
 							<string>mHangUp</string>
-							<string>mHangUpLand</string>
 							<string>mHangUpLandLeft</string>
 							<string>mHangUpLandRight</string>
-							<string>mLandscape</string>
 							<string>mLandscapeLeft</string>
 							<string>mLandscapeRight</string>
 							<string>mMute</string>
-							<string>mMuteLand</string>
 							<string>mMuteLandLeft</string>
 							<string>mMuteLandRight</string>
 							<string>mPortrait</string>
 							<string>mPreview</string>
-							<string>mPreviewLand</string>
 							<string>mPreviewLandLeft</string>
 							<string>mPreviewLandRight</string>
 						</object>
@@ -1779,10 +1865,6 @@
 								<string key="candidateClassName">UICamSwitch</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">mCamSwitchLand</string>
-								<string key="candidateClassName">UICamSwitch</string>
-							</object>
-							<object class="IBToOneOutletInfo">
 								<string key="name">mCamSwitchLandLeft</string>
 								<string key="candidateClassName">UICamSwitch</string>
 							</object>
@@ -1792,10 +1874,6 @@
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">mDisplay</string>
-								<string key="candidateClassName">UIView</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">mDisplayLand</string>
 								<string key="candidateClassName">UIView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
@@ -1811,20 +1889,12 @@
 								<string key="candidateClassName">UIHangUpButton</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">mHangUpLand</string>
-								<string key="candidateClassName">UIHangUpButton</string>
-							</object>
-							<object class="IBToOneOutletInfo">
 								<string key="name">mHangUpLandLeft</string>
 								<string key="candidateClassName">UIHangUpButton</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">mHangUpLandRight</string>
 								<string key="candidateClassName">UIHangUpButton</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">mLandscape</string>
-								<string key="candidateClassName">UIView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">mLandscapeLeft</string>
@@ -1836,10 +1906,6 @@
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">mMute</string>
-								<string key="candidateClassName">UIMuteButton</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">mMuteLand</string>
 								<string key="candidateClassName">UIMuteButton</string>
 							</object>
 							<object class="IBToOneOutletInfo">
@@ -1856,10 +1922,6 @@
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">mPreview</string>
-								<string key="candidateClassName">UIView</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">mPreviewLand</string>
 								<string key="candidateClassName">UIView</string>
 							</object>
 							<object class="IBToOneOutletInfo">

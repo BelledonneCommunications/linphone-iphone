@@ -24,6 +24,10 @@
 #include "LinphoneManager.h"
 #include "private.h"
 #import "ContactPickerDelegate.h"
+#import <QuartzCore/CAAnimation.h>
+#import <QuartzCore/QuartzCore.h>
+#import <OpenGLES/EAGL.h>
+#import <OpenGLES/EAGLDrawable.h>
 
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
@@ -62,6 +66,10 @@ const NSInteger SECURE_BUTTON_TAG=5;
 @synthesize zero;
 @synthesize hash;
 @synthesize videoViewController;
+
+@synthesize videoGroup;
+@synthesize videoView;
+@synthesize videoPreview;
 
 @synthesize addVideo;
 
@@ -103,6 +111,76 @@ int callCount(LinphoneCore* lc) {
         calls = calls->next;
     }
     return count;
+}
+
+
+
+void addAnimationFadeTransition(UIView* view, float duration) {
+    CATransition* animation = [CATransition animation];
+    animation.type = kCATransitionFromBottom; // kCATransitionFade;
+    animation.duration = duration;
+    [view.layer addAnimation:animation forKey:nil];
+}
+
+-(void) showControls:(id)sender {
+    if (hideControlsTimer) {
+        [hideControlsTimer invalidate];
+        hideControlsTimer = nil;
+    }
+    // show controls    
+    addAnimationFadeTransition(controlSubView, 0.2);
+    controlSubView.hidden = FALSE;
+    
+    addAnimationFadeTransition(hangUpView, 0.2);
+    hangUpView.hidden = FALSE;
+    
+    // hide controls in 5 sec
+    hideControlsTimer = [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(hideControls:) userInfo:nil repeats:NO];
+}
+
+-(void) hideControls:(id)sender {
+    addAnimationFadeTransition(controlSubView, 0.4);
+    controlSubView.hidden = TRUE;
+    addAnimationFadeTransition(hangUpView, 0.4);
+    hangUpView.hidden = TRUE;
+    
+    hideControlsTimer = nil;
+}
+
+-(void) enableVideoDisplay {
+    [videoGroup setHidden:FALSE];
+    [controlSubView setHidden:TRUE];
+    [hangUpView setHidden:TRUE];
+    [callTableView setHidden:TRUE];
+    
+    linphone_core_set_native_video_window_id([LinphoneManager getLc],(unsigned long)videoView);	
+    linphone_core_set_native_preview_window_id([LinphoneManager getLc],(unsigned long)videoPreview);
+    linphone_core_set_device_rotation([LinphoneManager getLc], 0);
+    
+    [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
+    
+    static bool done = false;
+    if (!done) {
+        NSLog(@"old center: %f %f", videoView.center.x, videoView.center.y);
+        videoView.center = CGPointMake(videoView.center.x, videoView.center.y + (self.view.frame.size.height - videoView.window.frame.size.height));
+        NSLog(@"new center: %f %f", videoView.center.x, videoView.center.y);
+        done = true;
+    }
+    
+}
+
+-(void) disableVideoDisplay {
+    [videoGroup setHidden:TRUE];
+    [controlSubView setHidden:FALSE];
+    [hangUpView setHidden:FALSE];
+    [callTableView setHidden:FALSE];
+    
+    if (hideControlsTimer != nil) {
+        [hideControlsTimer invalidate];
+        hideControlsTimer = nil;
+    }
+
+    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone]; 
 }
 
 -(void) updateUIFromLinphoneState:(UIViewController *)viewCtrl {
@@ -201,12 +279,20 @@ int callCount(LinphoneCore* lc) {
 
     }
     
+    UITapGestureRecognizer* singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showControls:)];
+    [videoGroup addGestureRecognizer:singleFingerTap];
+    [singleFingerTap release];
+    
     mVideoShown=FALSE;
 	mIncallViewIsReady=FALSE;
 	mVideoIsPending=FALSE;
     //selectedCall = nil;
     
     callTableView.rowHeight = 80;
+    
+    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orientationChanged:) name:UIDeviceOrientationDidChangeNotification object:nil];
+
     
 }
 
@@ -231,6 +317,9 @@ int callCount(LinphoneCore* lc) {
         if (linphone_call_get_state(currentCall) == LinphoneCallStreamsRunning) {
             [pause setSelected:NO];
             linphone_core_pause_call(lc, currentCall);
+            
+            // hide video view
+            [self disableVideoDisplay];
         }
     } else {
         if (linphone_core_get_calls_nb(lc) == 1) {
@@ -238,6 +327,11 @@ int callCount(LinphoneCore* lc) {
             if (linphone_call_get_state(c) == LinphoneCallPaused) {
                 linphone_core_resume_call(lc, c);
                 [pause setSelected:YES];
+                
+                const LinphoneCallParams* p = linphone_call_get_current_params(c);
+                if (linphone_call_params_video_enabled(p)) {
+                    [self enableVideoDisplay];
+                }
             }
         }
     }
@@ -248,7 +342,32 @@ int callCount(LinphoneCore* lc) {
     [self updateUIFromLinphoneState: nil]; 
 }
 
--(void) viewWillAppear:(BOOL)animated {}
+-(void) orientationChanged: (NSNotification*) notif {   
+    int oldLinphoneOrientation = linphone_core_get_device_rotation([LinphoneManager getLc]);
+    UIDeviceOrientation orientation = [UIDevice currentDevice].orientation;
+    switch (orientation) {
+        case UIInterfaceOrientationPortrait:
+            linphone_core_set_device_rotation([LinphoneManager getLc], 0);
+            break;
+        case UIInterfaceOrientationLandscapeRight:
+            linphone_core_set_device_rotation([LinphoneManager getLc], 270);
+            break;
+        case UIInterfaceOrientationLandscapeLeft:
+            linphone_core_set_device_rotation([LinphoneManager getLc], 90);
+            break;
+    }
+    if ((oldLinphoneOrientation != linphone_core_get_device_rotation([LinphoneManager getLc]))
+        && linphone_core_get_current_call([LinphoneManager getLc])) {
+        linphone_core_set_native_video_window_id([LinphoneManager getLc],(unsigned long)videoView);
+        //Orientation has change, must call update call
+        linphone_core_update_call([LinphoneManager getLc], linphone_core_get_current_call([LinphoneManager getLc]), NULL);
+    }    
+}
+
+-(void) awakeFromNib
+{
+   
+}
 
 -(void)viewDidAppear:(BOOL)animated {
     [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
@@ -319,13 +438,14 @@ int callCount(LinphoneCore* lc) {
 }
 
 -(void) displayPad:(bool) enable {
-    [LinphoneManager set:callTableView hidden:enable withName:"CALL_TABLE view" andReason:AT];
+    if (videoView.hidden)
+        [LinphoneManager set:callTableView hidden:enable withName:"CALL_TABLE view" andReason:AT];
     [LinphoneManager set:hangUpView hidden:enable withName:"HANG_UP view" andReason:AT];
     [LinphoneManager set:controlSubView hidden:enable withName:"CONTROL view" andReason:AT];
     [LinphoneManager set:padSubView hidden:!enable withName:"PAD view" andReason:AT];
 }
 -(void) displayCall:(LinphoneCall*) call InProgressFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
-	//restaure view
+	//restore view
 	[self displayPad:false];
 	dismissed = false;
 	UIDevice *device = [UIDevice currentDevice];
@@ -352,11 +472,14 @@ int callCount(LinphoneCore* lc) {
 		if ([speaker isOn]) [speaker toggle];
 	}
     [self updateUIFromLinphoneState: nil];
-	if (self.presentedViewController == (UIViewController*)mVideoViewController) {
+    
+    [self disableVideoDisplay];
+	/*if (self.presentedViewController == (UIViewController*)mVideoViewController) {
 		[self dismissVideoView];
-	}
+	}*/
 }
 -(void) displayDialerFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
+    [self disableVideoDisplay];
 	UIViewController* modalVC = self.modalViewController;
 	UIDevice *device = [UIDevice currentDevice];
     device.proximityMonitoringEnabled = NO;
@@ -377,6 +500,10 @@ int callCount(LinphoneCore* lc) {
     [self updateUIFromLinphoneState: nil]; 
 }
 -(void) displayVideoCall:(LinphoneCall*) call FromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName { 
+    
+    [self enableVideoDisplay];
+    return;
+    
 	if (mIncallViewIsReady) {
         [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
         mVideoShown=TRUE;

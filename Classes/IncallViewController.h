@@ -58,6 +58,10 @@
 	UIDigitButton* hash;
 	UIButton* close;
     
+    UIView* videoGroup;
+    UIView* videoView;
+    UIView* videoPreview;
+    
     bool dismissed;
     
     NSTimer *durationRefreasher;
@@ -79,6 +83,8 @@
     UIImage* verified, *unverified;
 	UIImage* stat_sys_signal_0, *stat_sys_signal_1, *stat_sys_signal_2, *stat_sys_signal_3, *stat_sys_signal_4;
     UIActionSheet* zrtpVerificationSheet;
+    
+    NSTimer* hideControlsTimer;
 }
 
 + (UIImage*) stat_sys_signal_0;
@@ -124,4 +130,8 @@
 @property (nonatomic, retain) IBOutlet UIButton* hash;
 @property (nonatomic, retain) IBOutlet UIButton* close;
 @property (nonatomic, retain) IBOutlet VideoViewController* videoViewController;
+
+@property (nonatomic, retain) IBOutlet UIView* videoGroup;
+@property (nonatomic, retain) IBOutlet UIView* videoView;
+@property (nonatomic, retain) IBOutlet UIView* videoPreview;
 @end
