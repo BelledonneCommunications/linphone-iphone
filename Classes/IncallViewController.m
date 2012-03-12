@@ -122,6 +122,61 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     [view.layer addAnimation:animation forKey:nil];
 }
 
+-(void) orientationChanged: (NSNotification*) notif {   
+    int oldLinphoneOrientation = linphone_core_get_device_rotation([LinphoneManager getLc]);
+    UIDeviceOrientation orientation = [UIDevice currentDevice].orientation;
+    switch (orientation) {
+        case UIInterfaceOrientationPortrait:
+            linphone_core_set_device_rotation([LinphoneManager getLc], 0);
+            break;
+        case UIInterfaceOrientationLandscapeRight:
+            linphone_core_set_device_rotation([LinphoneManager getLc], 270);
+            break;
+        case UIInterfaceOrientationLandscapeLeft:
+            linphone_core_set_device_rotation([LinphoneManager getLc], 90);
+            break;
+        default:
+            break;
+    }
+    if (oldLinphoneOrientation != linphone_core_get_device_rotation([LinphoneManager getLc])) {
+        linphone_core_set_native_video_window_id([LinphoneManager getLc],(unsigned long)videoView);
+        
+        LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
+        if (call && linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
+            //Orientation has change, must call update call
+            linphone_core_update_call([LinphoneManager getLc], call, NULL);
+        
+        
+            /* animate button images rotation */
+#define degreesToRadians(x) (M_PI * x / 180.0)
+            CGAffineTransform transform = CGAffineTransformIdentity;
+            switch (orientation) {
+                case UIInterfaceOrientationLandscapeRight:
+                    transform = CGAffineTransformMakeRotation(degreesToRadians(90));
+                    break;
+                case UIInterfaceOrientationLandscapeLeft:
+                    transform = CGAffineTransformMakeRotation(degreesToRadians(-90));
+                    break;
+                default:
+                    transform = CGAffineTransformIdentity;
+                    break;
+            }
+        
+            [UIView beginAnimations:nil context:NULL];
+            [UIView setAnimationDuration:0.2f];
+            endCtrl.imageView.transform = transform;
+            mute.imageView.transform = transform;
+            speaker.imageView.transform = transform;
+            pause.imageView.transform = transform;
+            contacts.imageView.transform = transform;
+            addCall.imageView.transform = transform;
+            addVideo.imageView.transform = transform;
+            dialer.imageView.transform = transform;
+            [UIView commitAnimations];
+        }
+    }    
+}
+
 -(void) showControls:(id)sender {
     if (hideControlsTimer) {
         [hideControlsTimer invalidate];
@@ -148,6 +203,8 @@ void addAnimationFadeTransition(UIView* view, float duration) {
 }
 
 -(void) enableVideoDisplay {
+    [self orientationChanged:nil];
+    
     [videoGroup setHidden:FALSE];
     [controlSubView setHidden:TRUE];
     [hangUpView setHidden:TRUE];
@@ -155,7 +212,6 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     
     linphone_core_set_native_video_window_id([LinphoneManager getLc],(unsigned long)videoView);	
     linphone_core_set_native_preview_window_id([LinphoneManager getLc],(unsigned long)videoPreview);
-    linphone_core_set_device_rotation([LinphoneManager getLc], 0);
     
     [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
     
@@ -180,6 +236,15 @@ void addAnimationFadeTransition(UIView* view, float duration) {
         hideControlsTimer = nil;
     }
 
+    /* restore buttons orientation */
+    endCtrl.imageView.transform = CGAffineTransformIdentity;
+    mute.imageView.transform = CGAffineTransformIdentity;
+    speaker.imageView.transform = CGAffineTransformIdentity;
+    pause.imageView.transform = CGAffineTransformIdentity;
+    contacts.imageView.transform = CGAffineTransformIdentity;
+    addCall.imageView.transform = CGAffineTransformIdentity;
+    dialer.imageView.transform = CGAffineTransformIdentity;
+    
     [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone]; 
 }
 
@@ -211,6 +276,12 @@ void addAnimationFadeTransition(UIView* view, float duration) {
             pause.selected = NO;
         } else {
             [LinphoneManager set:pause hidden:YES withName:"PAUSE button" andReason:AT];
+        }
+        
+        if (linphone_call_params_video_enabled(linphone_call_get_current_params(selectedCall))) {
+            addVideo.titleLabel.text = NSLocalizedString(@"-video", nil);
+        } else {
+            addVideo.titleLabel.text = NSLocalizedString(@"+video", nil);
         }
     } else {
         if (callsCount == 1) {
@@ -342,28 +413,6 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     [self updateUIFromLinphoneState: nil]; 
 }
 
--(void) orientationChanged: (NSNotification*) notif {   
-    int oldLinphoneOrientation = linphone_core_get_device_rotation([LinphoneManager getLc]);
-    UIDeviceOrientation orientation = [UIDevice currentDevice].orientation;
-    switch (orientation) {
-        case UIInterfaceOrientationPortrait:
-            linphone_core_set_device_rotation([LinphoneManager getLc], 0);
-            break;
-        case UIInterfaceOrientationLandscapeRight:
-            linphone_core_set_device_rotation([LinphoneManager getLc], 270);
-            break;
-        case UIInterfaceOrientationLandscapeLeft:
-            linphone_core_set_device_rotation([LinphoneManager getLc], 90);
-            break;
-    }
-    if ((oldLinphoneOrientation != linphone_core_get_device_rotation([LinphoneManager getLc]))
-        && linphone_core_get_current_call([LinphoneManager getLc])) {
-        linphone_core_set_native_video_window_id([LinphoneManager getLc],(unsigned long)videoView);
-        //Orientation has change, must call update call
-        linphone_core_update_call([LinphoneManager getLc], linphone_core_get_current_call([LinphoneManager getLc]), NULL);
-    }    
-}
-
 -(void) awakeFromNib
 {
    
@@ -403,15 +452,15 @@ void addAnimationFadeTransition(UIView* view, float duration) {
 			bool enableVideo = [[NSUserDefaults standardUserDefaults] boolForKey:@"enable_video_preference"];
 			bool startVideo = [[NSUserDefaults standardUserDefaults] boolForKey:@"start_video_preference"];
             
-            [LinphoneManager set:contacts hidden:(enableVideo && !startVideo) withName:"CONTACT button" andReason:AT];
+            [LinphoneManager set:contacts hidden:enableVideo withName:"CONTACT button" andReason:AT];
             [LinphoneManager set:addVideo hidden:!contacts.hidden withName:"ADD_VIDEO button" andReason:AT];
 		}    
     }
 }
 
 -(void) viewWillDisappear:(BOOL)animated {
-    if (zrtpVerificationSheet != nil) {
-        [zrtpVerificationSheet dismissWithClickedButtonIndex:2 animated:NO];
+    if (visibleActionSheet != nil) {
+        [visibleActionSheet dismissWithClickedButtonIndex:visibleActionSheet.cancelButtonIndex animated:NO];
     }
 }
 
@@ -459,11 +508,6 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     
 }
 
--(void) dismissVideoView {
-	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone]; 
-	[self dismissModalViewControllerAnimated:FALSE];//just in case
-	 mVideoShown=FALSE;
-}
 -(void) displayInCall:(LinphoneCall*) call FromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
     dismissed = false;
 	UIDevice *device = [UIDevice currentDevice];
@@ -474,9 +518,6 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     [self updateUIFromLinphoneState: nil];
     
     [self disableVideoDisplay];
-	/*if (self.presentedViewController == (UIViewController*)mVideoViewController) {
-		[self dismissVideoView];
-	}*/
 }
 -(void) displayDialerFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
     [self disableVideoDisplay];
@@ -512,9 +553,44 @@ void addAnimationFadeTransition(UIView* view, float duration) {
         else
             ms_message("Do not present again videoViewController");
 	} else {
-		//postepone presentation
+		//postpone presentation
 		mVideoIsPending=TRUE;
 	}
+}
+
+-(void) dismissActionSheet: (id)o {
+    if (visibleActionSheet != nil) {
+        [visibleActionSheet dismissWithClickedButtonIndex:visibleActionSheet.cancelButtonIndex animated:TRUE];
+        visibleActionSheet = nil;
+    }
+}
+
+-(void) displayAskToEnableVideoCall:(LinphoneCall*) call forUser:(NSString*) username withDisplayName:(NSString*) displayName {
+    if (linphone_core_get_video_policy([LinphoneManager getLc])->automatically_accept)
+        return;
+    
+    // ask the user if he agrees
+    CallDelegate* cd = [[CallDelegate alloc] init];
+    cd.eventType = CD_VIDEO_UPDATE;
+    cd.delegate = self;
+    cd.call = call;
+    
+    if (visibleActionSheet != nil) {
+        [visibleActionSheet dismissWithClickedButtonIndex:visibleActionSheet.cancelButtonIndex animated:TRUE];
+    }
+    NSString* title = [NSString stringWithFormat : NSLocalizedString(@"'%@' would like to enable video",nil), ([displayName length] > 0) ?displayName:username];
+    visibleActionSheet = [[UIActionSheet alloc] initWithTitle:title
+                                                    delegate:cd 
+                                           cancelButtonTitle:NSLocalizedString(@"Decline",nil) 
+                                      destructiveButtonTitle:NSLocalizedString(@"Accept",nil) 
+                                           otherButtonTitles:nil];
+    
+    visibleActionSheet.actionSheetStyle = UIActionSheetStyleDefault;
+    [visibleActionSheet showInView:self.view];
+    
+    /* start cancel timer */
+    cd.timeout = [NSTimer scheduledTimerWithTimeInterval:30 target:self selector:@selector(dismissActionSheet:) userInfo:nil repeats:NO];
+    [visibleActionSheet release];
 }
 
 - (IBAction)doAction:(id)sender {
@@ -813,33 +889,60 @@ void addAnimationFadeTransition(UIView* view, float duration) {
         LinphoneCall* call = [IncallViewController retrieveCallAtIndex:path.row inConference:NO];
         // start action sheet to validate/unvalidate zrtp code
         CallDelegate* cd = [[CallDelegate alloc] init];
+        cd.eventType = CD_ZRTP;
         cd.delegate = self;
         cd.call = call;
         UIView* container=(UIView*)[callTableView cellForRowAtIndexPath:path].accessoryView;
         UIButton *button=(UIButton*)[container viewWithTag:SECURE_BUTTON_TAG];
         [button setImage:nil forState:UIControlStateNormal];
             
-		zrtpVerificationSheet = [[UIActionSheet alloc] initWithTitle:[NSString  stringWithFormat:NSLocalizedString(@" Mark auth token '%s' as:",nil),linphone_call_get_authentication_token(call)]
+        if (visibleActionSheet != nil) {
+            [visibleActionSheet dismissWithClickedButtonIndex:visibleActionSheet.cancelButtonIndex animated:TRUE];
+        }
+		visibleActionSheet = [[UIActionSheet alloc] initWithTitle:[NSString  stringWithFormat:NSLocalizedString(@" Mark auth token '%s' as:",nil),linphone_call_get_authentication_token(call)]
                                                     delegate:cd 
                                                     cancelButtonTitle:NSLocalizedString(@"Unverified",nil) 
                                                     destructiveButtonTitle:NSLocalizedString(@"Verified",nil) 
                                                     otherButtonTitles:nil];
         
-		zrtpVerificationSheet.actionSheetStyle = UIActionSheetStyleDefault;
-		[zrtpVerificationSheet showInView:self.view];
-		[zrtpVerificationSheet release];
+		visibleActionSheet.actionSheetStyle = UIActionSheetStyleDefault;
+		[visibleActionSheet showInView:self.view];
+		[visibleActionSheet release];
     }
 }
 
--(void) actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex withUserDatas:(void *)datas {
+-(void) actionSheet:(UIActionSheet *)actionSheet ofType:(enum CallDelegateType)type clickedButtonAtIndex:(NSInteger)buttonIndex withUserDatas:(void *)datas {
     LinphoneCall* call = (LinphoneCall*)datas;
     // maybe we could verify call validity
-    
-    if (buttonIndex == 0)
-        linphone_call_set_authentication_token_verified(call, YES);
-    else if (buttonIndex == 1)
-        linphone_call_set_authentication_token_verified(call, NO);
-    zrtpVerificationSheet = nil;
+
+    switch (type) {
+        case CD_ZRTP: {
+            if (buttonIndex == 0)
+                linphone_call_set_authentication_token_verified(call, YES);
+            else if (buttonIndex == 1)
+                linphone_call_set_authentication_token_verified(call, NO);
+            visibleActionSheet = nil;
+            break;
+        }
+        case CD_VIDEO_UPDATE: {
+            LinphoneCall* call = (LinphoneCall*)datas;
+            LinphoneCallParams* paramsCopy = linphone_call_params_copy(linphone_call_get_current_params(call));
+            if ([visibleActionSheet destructiveButtonIndex] == buttonIndex) {
+                // accept video
+                linphone_call_params_enable_video(paramsCopy, TRUE);
+                linphone_core_accept_call_update([LinphoneManager getLc], call, paramsCopy);
+            } else {
+                // decline video
+                ms_message("User declined video proposal");
+                linphone_core_accept_call_update([LinphoneManager getLc], call, NULL);
+            }
+            linphone_call_params_destroy(paramsCopy);
+            visibleActionSheet = nil;
+            break;
+        }
+        default:
+            ms_error("Unhandled CallDelegate event of type: %d received - ignoring", type);
+    }
 }
 
 // UITableViewDataSource (required)

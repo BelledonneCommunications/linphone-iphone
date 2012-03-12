@@ -258,6 +258,7 @@
 		}
 	} else 	{
         CallDelegate* cd = [[CallDelegate alloc] init];
+        cd.eventType = CD_NEW_CALL;
         cd.delegate = self;
         cd.call = call;
         
@@ -326,9 +327,16 @@
     [mMainScreenWithVideoPreview showPreview:NO];
 }
 
+-(void) displayAskToEnableVideoCall:(LinphoneCall*) call forUser:(NSString*) username withDisplayName:(NSString*) displayName {
+	[mIncallViewController  displayAskToEnableVideoCall:call forUser:username withDisplayName:displayName];
+}
 
 
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex withUserDatas:(void *)datas{
+
+- (void)actionSheet:(UIActionSheet *)actionSheet ofType:(enum CallDelegateType)type clickedButtonAtIndex:(NSInteger)buttonIndex withUserDatas:(void *)datas {
+    if (type != CD_NEW_CALL)
+        return;
+    
     LinphoneCall* call = (LinphoneCall*)datas;
 	if (buttonIndex == actionSheet.destructiveButtonIndex ) {
 		linphone_core_accept_call([LinphoneManager getLc],call);	

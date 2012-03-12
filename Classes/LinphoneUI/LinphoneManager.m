@@ -150,6 +150,7 @@ extern  void libmsbcg729_init();
     [lE164Number release];
     return;
 }
+
 -(void) onCall:(LinphoneCall*) call StateChanged: (LinphoneCallState) new_state withMessage: (const char *)  message {
     const char* lUserNameChars=linphone_address_get_username(linphone_call_get_remote_address(call));
     NSString* lUserName = lUserNameChars?[[[NSString alloc] initWithUTF8String:lUserNameChars] autorelease]:NSLocalizedString(@"Unknown",nil);
@@ -169,7 +170,9 @@ extern  void libmsbcg729_init();
 				[callDelegate	displayVideoCall:call FromUI:mCurrentViewController
 											 forUser:lUserName 
 									 withDisplayName:lDisplayName];
-			}
+			} else {
+                [callDelegate displayInCall:call FromUI:mCurrentViewController forUser:lUserName withDisplayName:lDisplayName];
+            }
 			break;
 					
 		case LinphoneCallIncomingReceived: 
@@ -192,7 +195,31 @@ extern  void libmsbcg729_init();
 									  forUser:lUserName 
 							  withDisplayName:lDisplayName];
 			break;
-			
+        case LinphoneCallUpdatedByRemote:
+        {
+            const LinphoneCallParams* current = linphone_call_get_current_params(call);
+            const LinphoneCallParams* remote = linphone_call_get_remote_params(call);
+
+            /* remote wants to add video */
+            if (!linphone_call_params_video_enabled(current) && linphone_call_params_video_enabled(remote) && !linphone_core_get_video_policy(theLinphoneCore)->automatically_accept) {
+                linphone_core_defer_call_update(theLinphoneCore, call);
+                [callDelegate displayAskToEnableVideoCall:call forUser:lUserName withDisplayName:lDisplayName];
+            } else if (linphone_call_params_video_enabled(current) && !linphone_call_params_video_enabled(remote)) {
+                [callDelegate displayInCall:call FromUI:mCurrentViewController forUser:lUserName withDisplayName:lDisplayName];
+            }
+            break;
+        }
+        case LinphoneCallUpdated:
+        {
+            const LinphoneCallParams* current = linphone_call_get_current_params(call);
+            if (linphone_call_params_video_enabled(current)) {
+                [callDelegate displayVideoCall:call FromUI:mCurrentViewController forUser:lUserName withDisplayName:lDisplayName];
+            } else {
+                [callDelegate displayInCall:call FromUI:mCurrentViewController forUser:lUserName withDisplayName:lDisplayName];
+            }
+            break;
+            
+        }
 		case LinphoneCallError: { 
 			/*
 			 NSString* lTitle= state->message!=nil?[NSString stringWithCString:state->message length:strlen(state->message)]: @"Error";
@@ -649,6 +676,11 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	bool enableSrtp = [[NSUserDefaults standardUserDefaults] boolForKey:@"enable_srtp_preference"];
 	linphone_core_set_media_encryption(theLinphoneCore, enableSrtp?LinphoneMediaEncryptionSRTP:LinphoneMediaEncryptionZRTP);
 	
+    LinphoneVideoPolicy policy;
+    policy.automatically_accept = [[NSUserDefaults standardUserDefaults] boolForKey:@"start_video_preference"];;
+    policy.automatically_initiate = [[NSUserDefaults standardUserDefaults] boolForKey:@"start_video_preference"];
+    linphone_core_set_video_policy(theLinphoneCore, &policy);
+    
 	UIDevice* device = [UIDevice currentDevice];
 	bool backgroundSupported = false;
 	if ([device respondsToSelector:@selector(isMultitaskingSupported)])

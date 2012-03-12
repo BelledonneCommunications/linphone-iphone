@@ -1,4 +1,4 @@
-/* UIAddVideoButton.h
+/* UIToggleVideoButton.h
  *
  * Copyright (C) 2011  Belledonne Comunications, Grenoble, France
  *
@@ -19,6 +19,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface UIAddVideoButton : UIButton
+@interface UIToggleVideoButton : UIButton
 - (id)initWithCoder:(NSCoder *)decoder;
 @end

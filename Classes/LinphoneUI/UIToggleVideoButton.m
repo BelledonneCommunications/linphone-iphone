@@ -1,4 +1,4 @@
-/* UIAddVideoButton.m
+/* UIToggleVideoButton.m
  *
  * Copyright (C) 2011  Belledonne Comunications, Grenoble, France
  *
@@ -17,21 +17,31 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */       
 
-#import "UIAddVideoButton.h"
+#import "UIToggleVideoButton.h"
 #include "LinphoneManager.h"
 
-@implementation UIAddVideoButton
+@implementation UIToggleVideoButton
 
 -(void) touchUp:(id) sender {
 	LinphoneCore* lc = [LinphoneManager getLc];
+    
+    if (!linphone_core_video_enabled(lc))
+        return;
+    
     LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
 	if (call) { 
 		LinphoneCallParams* call_params =  linphone_call_params_copy(linphone_call_get_current_params(call));
-		linphone_call_params_enable_video(call_params, TRUE);
+        if (linphone_call_params_video_enabled(call_params)) {
+            ms_message("Disabling video");
+            linphone_call_params_enable_video(call_params, FALSE);
+        } else {
+            ms_message("Enabling video");
+            linphone_call_params_enable_video(call_params, TRUE);
+        }
 		linphone_core_update_call(lc, call, call_params);
 		linphone_call_params_destroy(call_params);
-	} {
-		ms_warning("Cannot add video, because no current call");
+	} else {
+		ms_warning("Cannot toggle video, because no current call");
 	}
 }
 

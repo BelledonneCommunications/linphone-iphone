@@ -23,6 +23,7 @@
 #include "linphonecore.h"
 #import "LogView.h"
 #import "LinphoneUIDelegates.h"
+
 typedef enum _Connectivity {
 	wifi,
 	wwan

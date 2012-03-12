@@ -82,7 +82,7 @@
     
     UIImage* verified, *unverified;
 	UIImage* stat_sys_signal_0, *stat_sys_signal_1, *stat_sys_signal_2, *stat_sys_signal_3, *stat_sys_signal_4;
-    UIActionSheet* zrtpVerificationSheet;
+    UIActionSheet* visibleActionSheet;
     
     NSTimer* hideControlsTimer;
 }
