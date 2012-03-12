@@ -442,6 +442,9 @@ if test "$build_wizard" = "true" ; then
    AC_DEFINE( BUILD_WIZARD, 1, [Define if wizard enabled] ) 
 fi
 
+AC_CHECK_HEADERS(libudev.h)
+AC_CHECK_LIB(udev,udev_new)
+
 ##################################################
 # Stricter build options (after external packages)
 ##################################################

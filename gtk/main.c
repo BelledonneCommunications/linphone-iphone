@@ -1666,6 +1666,7 @@ static void linphone_gtk_quit(void){
 	static gboolean quit_done=FALSE;
 	if (!quit_done){
 		quit_done=TRUE;
+		linphone_gtk_unmonitor_usb();
 		g_source_remove_by_user_data(linphone_gtk_get_core());
 		linphone_gtk_uninit_instance();
 		linphone_gtk_destroy_log_window();
@@ -1824,6 +1825,7 @@ int main(int argc, char *argv[]){
 	}
 	if (linphone_gtk_get_ui_config_int("update_check_menu",0)==0)
 		linphone_gtk_check_for_new_version();
+	linphone_gtk_monitor_usb();
 
 	gtk_main();
 	linphone_gtk_quit();

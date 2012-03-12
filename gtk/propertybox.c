@@ -870,17 +870,48 @@ static void linphone_gtk_show_media_encryption(GtkWidget *pb){
 	g_object_unref(G_OBJECT(model));
 }
 
-void linphone_gtk_show_parameters(void){
-	GtkWidget *pb=linphone_gtk_create_window("parameters");
+void linphone_gtk_parameters_destroyed(GtkWidget *pb){
+	GtkWidget *mw=linphone_gtk_get_main_window();
+	g_object_set_data(G_OBJECT(mw),"parameters",NULL);
+}
+
+void linphone_gtk_fill_soundcards(GtkWidget *pb){
 	LinphoneCore *lc=linphone_gtk_get_core();
 	const char **sound_devices=linphone_core_get_sound_devices(lc);
+	linphone_gtk_fill_combo_box(linphone_gtk_get_widget(pb,"playback_device"), sound_devices,
+					linphone_core_get_playback_device(lc),CAP_PLAYBACK);
+	linphone_gtk_fill_combo_box(linphone_gtk_get_widget(pb,"ring_device"), sound_devices,
+					linphone_core_get_ringer_device(lc),CAP_PLAYBACK);
+	linphone_gtk_fill_combo_box(linphone_gtk_get_widget(pb,"capture_device"), sound_devices,
+					linphone_core_get_capture_device(lc), CAP_CAPTURE);
+}
+
+void linphone_gtk_fill_webcams(GtkWidget *pb){
+	LinphoneCore *lc=linphone_gtk_get_core();
+	linphone_gtk_fill_combo_box(linphone_gtk_get_widget(pb,"webcams"),linphone_core_get_video_devices(lc),
+					linphone_core_get_video_device(lc),CAP_IGNORE);
+}
+
+void linphone_gtk_show_parameters(void){
+	GtkWidget *mw=linphone_gtk_get_main_window();
+	GtkWidget *pb=(GtkWidget*)g_object_get_data(G_OBJECT(mw),"parameters");
+	LinphoneCore *lc=linphone_gtk_get_core();
 	const char *tmp;
 	LinphoneAddress *contact;
 	LinphoneFirewallPolicy pol;
-	GtkWidget *codec_list=linphone_gtk_get_widget(pb,"codec_list");
+	GtkWidget *codec_list;
 	int mtu;
 	int ui_advanced;
 	LCSipTransports tr;
+
+	if (pb==NULL) {
+		pb=linphone_gtk_create_window("parameters");
+		g_object_set_data(G_OBJECT(mw),"parameters",pb);
+	}else {
+		gtk_widget_show(pb);
+		return;
+	}
+	codec_list=linphone_gtk_get_widget(pb,"codec_list");
 
 	/* NETWORK CONFIG */
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb,"ipv6_enabled")),
@@ -939,14 +970,9 @@ void linphone_gtk_show_parameters(void){
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb,"dtmf_sipinfo")),
 					linphone_core_get_use_info_for_dtmf(lc));
 	/* MUTIMEDIA CONFIG */
-	linphone_gtk_fill_combo_box(linphone_gtk_get_widget(pb,"playback_device"), sound_devices,
-					linphone_core_get_playback_device(lc),CAP_PLAYBACK);
-	linphone_gtk_fill_combo_box(linphone_gtk_get_widget(pb,"ring_device"), sound_devices,
-					linphone_core_get_ringer_device(lc),CAP_PLAYBACK);
-	linphone_gtk_fill_combo_box(linphone_gtk_get_widget(pb,"capture_device"), sound_devices,
-					linphone_core_get_capture_device(lc), CAP_CAPTURE);
-	linphone_gtk_fill_combo_box(linphone_gtk_get_widget(pb,"webcams"),linphone_core_get_video_devices(lc),
-					linphone_core_get_video_device(lc),CAP_IGNORE);
+	linphone_gtk_fill_soundcards(pb);
+	linphone_gtk_fill_webcams(pb);
+
 	linphone_gtk_fill_video_sizes(linphone_gtk_get_widget(pb,"video_size"));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb,"echo_cancelation")),
 					linphone_core_echo_cancellation_enabled(lc));

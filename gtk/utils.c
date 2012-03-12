@@ -97,3 +97,70 @@ GtkWidget * _gtk_image_new_from_memory_at_scale(const void *data, gint len, gint
 	g_object_unref(G_OBJECT(pbuf));
 	return image;
 }
+
+void linphone_gtk_reload_sound_devices(void){
+	GtkWidget *mw=linphone_gtk_get_main_window();
+	GtkWidget *pb=(GtkWidget*)g_object_get_data(G_OBJECT(mw),"parameters");
+	linphone_core_reload_sound_devices(linphone_gtk_get_core());
+	linphone_gtk_fill_soundcards(pb);
+}
+
+void linphone_gtk_reload_video_devices(void){
+	GtkWidget *mw=linphone_gtk_get_main_window();
+	GtkWidget *pb=(GtkWidget*)g_object_get_data(G_OBJECT(mw),"parameters");
+	linphone_core_reload_video_devices(linphone_gtk_get_core());
+	linphone_gtk_fill_webcams(pb);
+}
+
+#ifdef HAVE_LIBUDEV_H
+
+static struct udev *udevroot=NULL;
+static struct udev_monitor *monitor=NULL;
+static GIOChannel *monitor_channel=NULL;
+static guint monitor_src_id;
+
+#include <libudev.h>
+
+static gboolean on_monitor_data(GIOChannel *chan, GIOCondition cond, void *userdata){
+	struct udev_device *dev=udev_monitor_receive_device(monitor);
+	const char *subsys=udev_device_get_subsystem(dev);
+	const char *type=udev_device_get_action(dev);
+	g_message("USB event arrived for class %s of action type %s",subsys,type);
+	if (strcmp(subsys,"sound")==0) linphone_gtk_reload_sound_devices();
+	if (strcmp(subsys,"video4linux")==0) linphone_gtk_reload_video_devices();
+	udev_device_unref(dev);
+	return TRUE;
+}
+
+void linphone_gtk_monitor_usb(void){
+	int fd;
+	udevroot=udev_new();
+	if (!udevroot) return;
+	monitor=udev_monitor_new_from_netlink(udevroot,"udev");
+	udev_monitor_filter_add_match_subsystem_devtype(monitor,"sound",NULL);
+	udev_monitor_filter_add_match_subsystem_devtype(monitor,"video4linux",NULL);
+	fd=udev_monitor_get_fd(monitor);
+	monitor_channel=g_io_channel_unix_new(fd);
+	monitor_src_id=g_io_add_watch(monitor_channel,G_IO_IN,on_monitor_data,NULL);
+	udev_monitor_enable_receiving(monitor);
+}
+
+void linphone_gtk_unmonitor_usb(void){
+	if (monitor) udev_monitor_unref(monitor);
+	if (udevroot) udev_unref(udevroot);
+	if (monitor_channel) {
+		g_source_remove(monitor_src_id);
+		g_io_channel_unref(monitor_channel);
+	}
+}
+
+#else
+
+void linphone_gtk_monitor_usb(void){
+}
+void linphone_gtk_unmonitor_usb(void){
+}
+
+#endif
+
+

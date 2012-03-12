@@ -67,6 +67,8 @@ void linphone_gtk_show_friends(void);
 void linphone_gtk_show_contact(LinphoneFriend *lf);
 void linphone_gtk_set_my_presence(LinphoneOnlineStatus ss);
 void linphone_gtk_show_parameters(void);
+void linphone_gtk_fill_soundcards(GtkWidget *pb);
+void linphone_gtk_fill_webcams(GtkWidget *pb);
 void linphone_gtk_load_identities(void);
 void linphone_gtk_create_chatroom(const char *with);
 void linphone_gtk_text_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from, const char *message);
@@ -126,3 +128,6 @@ void linphone_gtk_log_uninit();
 
 bool_t linphone_gtk_init_instance(const char *app_name, const char *addr_to_call);
 void linphone_gtk_uninit_instance(void);
+void linphone_gtk_monitor_usb(void);
+void linphone_gtk_unmonitor_usb(void);
+

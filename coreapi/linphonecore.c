@@ -748,17 +748,13 @@ static void codecs_config_read(LinphoneCore *lc)
 	linphone_core_update_allocated_audio_bandwidth(lc);
 }
 
-static void video_config_read(LinphoneCore *lc){
-#ifdef VIDEO_ENABLED
-	int capture, display, self_view;
-#endif
-	const char *str;
-	int ndev;
-	const char **devices;
+static void build_video_devices_table(LinphoneCore *lc){
 	const MSList *elem;
 	int i;
-	LinphoneVideoPolicy vpol;
-
+	int ndev;
+	const char **devices;
+	if (lc->video_conf.cams)
+		ms_free(lc->video_conf.cams);
 	/* retrieve all video devices */
 	elem=ms_web_cam_manager_get_list(ms_web_cam_manager_get());
 	ndev=ms_list_size(elem);
@@ -768,6 +764,16 @@ static void video_config_read(LinphoneCore *lc){
 	}
 	devices[ndev]=NULL;
 	lc->video_conf.cams=devices;
+}
+
+static void video_config_read(LinphoneCore *lc){
+#ifdef VIDEO_ENABLED
+	int capture, display, self_view;
+#endif
+	const char *str;	
+	LinphoneVideoPolicy vpol;
+
+	build_video_devices_table(lc);
 
 	str=lp_config_get_string(lc->config,"video","device",NULL);
 	if (str && str[0]==0) str=NULL;
@@ -3049,7 +3055,6 @@ const char * linphone_core_get_capture_device(LinphoneCore *lc)
  * @param lc The LinphoneCore object
 **/
 const char**  linphone_core_get_sound_devices(LinphoneCore *lc){
-	build_sound_devices_table(lc);
 	return lc->sound_conf.cards;
 }
 
@@ -3061,6 +3066,38 @@ const char**  linphone_core_get_sound_devices(LinphoneCore *lc){
 **/
 const char**  linphone_core_get_video_devices(const LinphoneCore *lc){
 	return lc->video_conf.cams;
+}
+
+/**
+ * Update detection of sound devices.
+ * 
+ * Use this function when the application is notified of USB plug events, so that
+ * list of available hardwares for sound playback and capture is updated.
+ **/
+void linphone_core_reload_sound_devices(LinphoneCore *lc){
+	const char *ringer,*playback,*capture;
+	ringer=linphone_core_get_ringer_device(lc);
+	playback=linphone_core_get_playback_device(lc);
+	capture=linphone_core_get_capture_device(lc);
+	ms_snd_card_manager_reload(ms_snd_card_manager_get());
+	build_sound_devices_table(lc);
+	linphone_core_set_ringer_device(lc,ringer);
+	linphone_core_set_playback_device(lc,playback);
+	linphone_core_set_capture_device(lc,capture);
+}
+
+/**
+ * Update detection of camera devices.
+ * 
+ * Use this function when the application is notified of USB plug events, so that
+ * list of available hardwares for video capture is updated.
+ **/
+void linphone_core_reload_video_devices(LinphoneCore *lc){
+	const char *devid;
+	devid=linphone_core_get_video_device(lc);
+	ms_web_cam_manager_reload(ms_web_cam_manager_get());
+	build_video_devices_table(lc);
+	linphone_core_set_video_device(lc,devid);
 }
 
 char linphone_core_get_sound_source(LinphoneCore *lc)

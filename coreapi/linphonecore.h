@@ -874,6 +874,7 @@ int linphone_core_set_relay_addr(LinphoneCore *lc, const char *addr);
 /* sound functions */
 /* returns a null terminated static array of string describing the sound devices */
 const char**  linphone_core_get_sound_devices(LinphoneCore *lc);
+void linphone_core_reload_sound_devices(LinphoneCore *lc);
 bool_t linphone_core_sound_device_can_capture(LinphoneCore *lc, const char *device);
 bool_t linphone_core_sound_device_can_playback(LinphoneCore *lc, const char *device);
 int linphone_core_get_ring_level(LinphoneCore *lc);
@@ -958,6 +959,7 @@ bool_t linphone_core_self_view_enabled(const LinphoneCore *lc);
 
 
 /* returns a null terminated static array of string describing the webcams */
+void linphone_core_reload_video_devices(LinphoneCore *lc);
 const char**  linphone_core_get_video_devices(const LinphoneCore *lc);
 int linphone_core_set_video_device(LinphoneCore *lc, const char *id);
 const char *linphone_core_get_video_device(const LinphoneCore *lc);
