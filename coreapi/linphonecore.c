@@ -4733,7 +4733,7 @@ void linphone_core_set_media_encryption_mandatory(LinphoneCore *lc, bool_t m) {
 }
 
 void linphone_core_init_default_params(LinphoneCore*lc, LinphoneCallParams *params) {
-	params->has_video=linphone_core_video_enabled(lc);
+	params->has_video=linphone_core_video_enabled(lc) && lc->video_policy.automatically_initiate;
 	params->media_encryption=linphone_core_get_media_encryption(lc);	
 	params->in_conference=FALSE;
 }
