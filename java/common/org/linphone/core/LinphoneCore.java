@@ -759,4 +759,6 @@ public interface LinphoneCore {
 	LinphoneProxyConfig[] getProxyConfigList();
 	
 	void setVideoPolicy(boolean autoInitiate, boolean autoAccept);
+	
+	void setUserAgent(String name, String version);
 }
