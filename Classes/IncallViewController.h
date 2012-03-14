@@ -62,6 +62,7 @@
     UIView* videoView;
     UIView* videoPreview;
     UIImageView* videoCallQuality;
+    UICamSwitch* videoCameraSwitch;
     
     bool dismissed;
     
@@ -131,4 +132,5 @@
 @property (nonatomic, retain) IBOutlet UIView* videoView;
 @property (nonatomic, retain) IBOutlet UIView* videoPreview;
 @property (nonatomic, retain) IBOutlet UIImageView* videoCallQuality;
+@property (nonatomic, retain) IBOutlet UICamSwitch* videoCameraSwitch;
 @end

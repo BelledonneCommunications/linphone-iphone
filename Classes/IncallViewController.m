@@ -71,6 +71,7 @@ const NSInteger SECURE_BUTTON_TAG=5;
 @synthesize videoView;
 @synthesize videoPreview;
 @synthesize videoCallQuality;
+@synthesize videoCameraSwitch;
 
 @synthesize addVideo;
 
@@ -183,6 +184,10 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     [UIView setAnimationDuration:0.3];
     [controlSubView setAlpha:1.0];
     [hangUpView setAlpha:1.0];
+    if ([LinphoneManager instance].frontCamId !=nil ) {
+        // only show camera switch button if we have more than 1 camera
+        [videoCameraSwitch setAlpha:1.0];
+    }
     [UIView commitAnimations];
     
     // hide controls in 5 sec
@@ -194,6 +199,7 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     [UIView setAnimationDuration:0.3];
     [controlSubView setAlpha:0.0];
     [hangUpView setAlpha:0.0];
+    [videoCameraSwitch setAlpha:0.0];
     [UIView commitAnimations];
     
     hideControlsTimer = nil;
@@ -232,6 +238,7 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     [controlSubView setAlpha:1.0];
     [hangUpView setAlpha:1.0];
     [callTableView setAlpha:1.0];
+    [videoCameraSwitch setAlpha:0.0];
     [UIView commitAnimations];
     
     if (hideControlsTimer != nil) {
@@ -376,7 +383,7 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orientationChanged:) name:UIDeviceOrientationDidChangeNotification object:nil];
 
-    
+    [videoCameraSwitch setPreview:videoPreview];
 }
 
 -(void) addCallPressed {
