@@ -183,21 +183,22 @@ void addAnimationFadeTransition(UIView* view, float duration) {
         hideControlsTimer = nil;
     }
     // show controls    
-    addAnimationFadeTransition(controlSubView, 0.2);
-    controlSubView.hidden = FALSE;
-    
-    addAnimationFadeTransition(hangUpView, 0.2);
-    hangUpView.hidden = FALSE;
+    [UIView beginAnimations:nil context:nil];
+    [UIView setAnimationDuration:0.3];
+    [controlSubView setAlpha:1.0];
+    [hangUpView setAlpha:1.0];
+    [UIView commitAnimations];
     
     // hide controls in 5 sec
     hideControlsTimer = [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(hideControls:) userInfo:nil repeats:NO];
 }
 
 -(void) hideControls:(id)sender {
-    addAnimationFadeTransition(controlSubView, 0.4);
-    controlSubView.hidden = TRUE;
-    addAnimationFadeTransition(hangUpView, 0.4);
-    hangUpView.hidden = TRUE;
+    [UIView beginAnimations:nil context:nil];
+    [UIView setAnimationDuration:0.3];
+    [controlSubView setAlpha:0.0];
+    [hangUpView setAlpha:0.0];
+    [UIView commitAnimations];
     
     hideControlsTimer = nil;
 }
@@ -205,10 +206,13 @@ void addAnimationFadeTransition(UIView* view, float duration) {
 -(void) enableVideoDisplay {
     [self orientationChanged:nil];
     
-    [videoGroup setHidden:FALSE];
-    [controlSubView setHidden:TRUE];
-    [hangUpView setHidden:TRUE];
-    [callTableView setHidden:TRUE];
+    [UIView beginAnimations:nil context:nil];
+    [UIView setAnimationDuration:1.0];
+    [videoGroup setAlpha:1.0];
+    [controlSubView setAlpha:0.0];
+    [hangUpView setAlpha:0.0];
+    [callTableView setAlpha:0.0];
+    [UIView commitAnimations];
     
     linphone_core_set_native_video_window_id([LinphoneManager getLc],(unsigned long)videoView);	
     linphone_core_set_native_preview_window_id([LinphoneManager getLc],(unsigned long)videoPreview);
@@ -226,10 +230,13 @@ void addAnimationFadeTransition(UIView* view, float duration) {
 }
 
 -(void) disableVideoDisplay {
-    [videoGroup setHidden:TRUE];
-    [controlSubView setHidden:FALSE];
-    [hangUpView setHidden:FALSE];
-    [callTableView setHidden:FALSE];
+    [UIView beginAnimations:nil context:nil];
+    [UIView setAnimationDuration:1.0];
+    [videoGroup setAlpha:0.0];
+    [controlSubView setAlpha:1.0];
+    [hangUpView setAlpha:1.0];
+    [callTableView setAlpha:1.0];
+    [UIView commitAnimations];
     
     if (hideControlsTimer != nil) {
         [hideControlsTimer invalidate];
@@ -278,10 +285,15 @@ void addAnimationFadeTransition(UIView* view, float duration) {
             [LinphoneManager set:pause hidden:YES withName:"PAUSE button" andReason:AT];
         }
         
-        if (linphone_call_params_video_enabled(linphone_call_get_current_params(selectedCall))) {
-            addVideo.titleLabel.text = NSLocalizedString(@"-video", nil);
+        if (linphone_call_get_state(selectedCall) == LinphoneCallStreamsRunning) {
+            if (linphone_call_params_video_enabled(linphone_call_get_current_params(selectedCall))) {
+                [addVideo setTitle:NSLocalizedString(@"-video", nil) forState:UIControlStateNormal];
+            } else {
+                [addVideo setTitle:NSLocalizedString(@"+video", nil) forState:UIControlStateNormal];
+            }
+            [addVideo setEnabled:YES];
         } else {
-            addVideo.titleLabel.text = NSLocalizedString(@"+video", nil);
+            [addVideo setEnabled:NO];
         }
     } else {
         if (callsCount == 1) {
@@ -294,6 +306,7 @@ void addAnimationFadeTransition(UIView* view, float duration) {
         } else {
             [LinphoneManager set:pause hidden:YES withName:"PAUSE button" andReason:AT];
         }
+        [addVideo setEnabled:NO];
     }
     [LinphoneManager set:mergeCalls hidden:!pause.hidden withName:"MERGE button" andReason:AT];
     
@@ -450,8 +463,7 @@ void addAnimationFadeTransition(UIView* view, float duration) {
 		if ([device respondsToSelector:@selector(isMultitaskingSupported)]
 			&& [device isMultitaskingSupported]) {
 			bool enableVideo = [[NSUserDefaults standardUserDefaults] boolForKey:@"enable_video_preference"];
-			bool startVideo = [[NSUserDefaults standardUserDefaults] boolForKey:@"start_video_preference"];
-            
+
             [LinphoneManager set:contacts hidden:enableVideo withName:"CONTACT button" andReason:AT];
             [LinphoneManager set:addVideo hidden:!contacts.hidden withName:"ADD_VIDEO button" andReason:AT];
 		}    

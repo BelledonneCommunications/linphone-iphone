@@ -188,7 +188,7 @@ extern  void libmsbcg729_init();
 											   forUser:lUserName 
 									   withDisplayName:lDisplayName];
 			break;
-			
+        case LinphoneCallPausedByRemote:
 		case LinphoneCallConnected:
 			[callDelegate	displayInCall: call 
                                  FromUI:mCurrentViewController
