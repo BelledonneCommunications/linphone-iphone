@@ -70,28 +70,23 @@ const NSInteger SECURE_BUTTON_TAG=5;
 @synthesize videoGroup;
 @synthesize videoView;
 @synthesize videoPreview;
+@synthesize videoCallQuality;
 
 @synthesize addVideo;
 
 
-+ (UIImage*) stat_sys_signal_0 {
-	return [UIImage imageNamed:@"stat_sys_signal_0.png"];
-}
-
-+ (UIImage*) stat_sys_signal_1 {
-	return [UIImage imageNamed:@"stat_sys_signal_1.png"];
-}
-
-+ (UIImage*) stat_sys_signal_2 {
-	return [UIImage imageNamed:@"stat_sys_signal_2.png"];
-}
-
-+ (UIImage*) stat_sys_signal_3 {
-	return [UIImage imageNamed:@"stat_sys_signal_3.png"];
-}
-
-+ (UIImage*) stat_sys_signal_4 {
-	return [UIImage imageNamed:@"stat_sys_signal_4.png"];
++(void) updateIndicator:(UIImageView*) indicator withCallQuality:(float) quality {
+    if (quality >= 4 || quality < 0) {
+        [indicator setImage:[UIImage imageNamed:@"stat_sys_signal_4.png"]];
+    } else if (quality >= 3) {
+        [indicator setImage:[UIImage imageNamed:@"stat_sys_signal_3.png"]];
+    } else if (quality >= 2) {
+        [indicator setImage:[UIImage imageNamed:@"stat_sys_signal_2.png"]];
+    } else if (quality >= 1) {
+        [indicator setImage:[UIImage imageNamed:@"stat_sys_signal_1.png"]];
+    } else {
+        [indicator setImage:[UIImage imageNamed:@"stat_sys_signal_0.png"]];
+    }
 }
 
 bool isInConference(LinphoneCall* call) {
@@ -172,6 +167,7 @@ void addAnimationFadeTransition(UIView* view, float duration) {
             addCall.imageView.transform = transform;
             addVideo.imageView.transform = transform;
             dialer.imageView.transform = transform;
+            videoCallQuality.transform = transform;
             [UIView commitAnimations];
         }
     }    
@@ -251,6 +247,7 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     contacts.imageView.transform = CGAffineTransformIdentity;
     addCall.imageView.transform = CGAffineTransformIdentity;
     dialer.imageView.transform = CGAffineTransformIdentity;
+    videoCallQuality.transform = CGAffineTransformIdentity;
     
     [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone]; 
 }
@@ -288,12 +285,14 @@ void addAnimationFadeTransition(UIView* view, float duration) {
         if (linphone_call_get_state(selectedCall) == LinphoneCallStreamsRunning) {
             if (linphone_call_params_video_enabled(linphone_call_get_current_params(selectedCall))) {
                 [addVideo setTitle:NSLocalizedString(@"-video", nil) forState:UIControlStateNormal];
+                [IncallViewController updateIndicator: videoCallQuality withCallQuality:linphone_call_get_average_quality(selectedCall)];
             } else {
                 [addVideo setTitle:NSLocalizedString(@"+video", nil) forState:UIControlStateNormal];
             }
             [addVideo setEnabled:YES];
         } else {
             [addVideo setEnabled:NO];
+            [videoCallQuality setImage:nil];
         }
     } else {
         if (callsCount == 1) {
@@ -842,21 +841,7 @@ void addAnimationFadeTransition(UIView* view, float duration) {
 		[callquality setFrame:CGRectMake(0, 0, 28, 28)];
 		if (call->state == LinphoneCallStreamsRunning) 
 		{
-			if (linphone_call_get_average_quality(call) >= 4) {
-				[callquality setImage: [IncallViewController stat_sys_signal_4]];
-			}
-			else if (linphone_call_get_average_quality(call) >= 3) {
-				[callquality setImage: [IncallViewController stat_sys_signal_3]];
-			}
-			else if (linphone_call_get_average_quality(call) >= 2) {
-				[callquality setImage: [IncallViewController stat_sys_signal_2]];
-			}
-			else if (linphone_call_get_average_quality(call) >= 1) {
-				[callquality setImage: [IncallViewController stat_sys_signal_1]];
-			}
-			else {
-				[callquality setImage: [IncallViewController stat_sys_signal_0]];
-			}
+            [IncallViewController   updateIndicator: callquality withCallQuality:linphone_call_get_average_quality(call)];
 		}
 		else {
 			[callquality setImage:nil];

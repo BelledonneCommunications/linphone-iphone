@@ -12,6 +12,7 @@
 		</object>
 		<object class="NSArray" key="IBDocument.IntegratedClassDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
+			<string>IBUIImageView</string>
 			<string>IBUIViewController</string>
 			<string>IBUIButton</string>
 			<string>IBUIView</string>
@@ -53,7 +54,7 @@
 									<string key="NSFrameSize">{320, 480}</string>
 									<reference key="NSSuperview" ref="1009068048"/>
 									<reference key="NSWindow"/>
-									<reference key="NSNextKeyView" ref="673568144"/>
+									<reference key="NSNextKeyView" ref="358633022"/>
 									<string key="NSReuseIdentifierKey">_NS:196</string>
 									<object class="NSColor" key="IBUIBackgroundColor" id="95762599">
 										<int key="NSColorSpace">3</int>
@@ -75,6 +76,17 @@
 											<int key="NSID">2</int>
 										</object>
 									</object>
+									<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+								</object>
+								<object class="IBUIImageView" id="358633022">
+									<reference key="NSNextResponder" ref="1009068048"/>
+									<int key="NSvFlags">292</int>
+									<string key="NSFrame">{{4, 428}, {28, 28}}</string>
+									<reference key="NSSuperview" ref="1009068048"/>
+									<reference key="NSWindow"/>
+									<reference key="NSNextKeyView" ref="673568144"/>
+									<string key="NSReuseIdentifierKey">_NS:567</string>
+									<bool key="IBUIUserInteractionEnabled">NO</bool>
 									<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								</object>
 							</object>
@@ -874,14 +886,6 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">eight</string>
-						<reference key="source" ref="841351856"/>
-						<reference key="destination" ref="175014683"/>
-					</object>
-					<int key="connectionID">75</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">six</string>
 						<reference key="source" ref="841351856"/>
 						<reference key="destination" ref="673101328"/>
@@ -1007,6 +1011,22 @@
 						<reference key="destination" ref="1017044170"/>
 					</object>
 					<int key="connectionID">133</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">eight</string>
+						<reference key="source" ref="841351856"/>
+						<reference key="destination" ref="175014683"/>
+					</object>
+					<int key="connectionID">75</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">videoCallQuality</string>
+						<reference key="source" ref="841351856"/>
+						<reference key="destination" ref="358633022"/>
+					</object>
+					<int key="connectionID">138</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
@@ -1147,12 +1167,6 @@
 						<string key="objectName">1</string>
 					</object>
 					<object class="IBObjectRecord">
-						<int key="objectID">33</int>
-						<reference key="object" ref="175014683"/>
-						<reference key="parent" ref="759087764"/>
-						<string key="objectName">8</string>
-					</object>
-					<object class="IBObjectRecord">
 						<int key="objectID">40</int>
 						<reference key="object" ref="323385706"/>
 						<reference key="parent" ref="759087764"/>
@@ -1287,8 +1301,9 @@
 						<reference key="object" ref="1009068048"/>
 						<object class="NSMutableArray" key="children">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<reference ref="673568144"/>
 							<reference ref="1017044170"/>
+							<reference ref="673568144"/>
+							<reference ref="358633022"/>
 						</object>
 						<reference key="parent" ref="858247959"/>
 						<string key="objectName">video</string>
@@ -1296,6 +1311,9 @@
 					<object class="IBObjectRecord">
 						<int key="objectID">127</int>
 						<reference key="object" ref="673568144"/>
+						<object class="NSMutableArray" key="children">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+						</object>
 						<reference key="parent" ref="1009068048"/>
 						<string key="objectName">preview</string>
 					</object>
@@ -1304,6 +1322,18 @@
 						<reference key="object" ref="1017044170"/>
 						<reference key="parent" ref="1009068048"/>
 						<string key="objectName">display</string>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">137</int>
+						<reference key="object" ref="358633022"/>
+						<reference key="parent" ref="1009068048"/>
+						<string key="objectName">videocallquality</string>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">33</int>
+						<reference key="object" ref="175014683"/>
+						<reference key="parent" ref="759087764"/>
+						<string key="objectName">8</string>
 					</object>
 				</object>
 			</object>
@@ -1332,6 +1362,7 @@
 					<string>13.IBPluginDependency</string>
 					<string>13.IBUIButtonInspectorSelectedStateConfigurationMetadataKey</string>
 					<string>132.IBPluginDependency</string>
+					<string>137.IBPluginDependency</string>
 					<string>15.IBPluginDependency</string>
 					<string>16.CustomClassName</string>
 					<string>16.IBPluginDependency</string>
@@ -1394,6 +1425,7 @@
 					<real value="1"/>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>UIMuteButton</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<real value="2"/>
@@ -1444,7 +1476,7 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">136</int>
+			<int key="maxID">138</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -1493,6 +1525,7 @@
 							<string>star</string>
 							<string>three</string>
 							<string>two</string>
+							<string>videoCallQuality</string>
 							<string>videoGroup</string>
 							<string>videoPreview</string>
 							<string>videoView</string>
@@ -1527,6 +1560,7 @@
 							<string>UIButton</string>
 							<string>UIButton</string>
 							<string>UIButton</string>
+							<string>UIImageView</string>
 							<string>UIView</string>
 							<string>UIView</string>
 							<string>UIView</string>
@@ -1564,6 +1598,7 @@
 							<string>star</string>
 							<string>three</string>
 							<string>two</string>
+							<string>videoCallQuality</string>
 							<string>videoGroup</string>
 							<string>videoPreview</string>
 							<string>videoView</string>
@@ -1675,6 +1710,10 @@
 							<object class="IBToOneOutletInfo">
 								<string key="name">two</string>
 								<string key="candidateClassName">UIButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">videoCallQuality</string>
+								<string key="candidateClassName">UIImageView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">videoGroup</string>

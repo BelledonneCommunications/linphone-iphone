@@ -61,6 +61,7 @@
     UIView* videoGroup;
     UIView* videoView;
     UIView* videoPreview;
+    UIImageView* videoCallQuality;
     
     bool dismissed;
     
@@ -87,18 +88,13 @@
     NSTimer* hideControlsTimer;
 }
 
-+ (UIImage*) stat_sys_signal_0;
-+ (UIImage*) stat_sys_signal_1;
-+ (UIImage*) stat_sys_signal_2;
-+ (UIImage*) stat_sys_signal_3;
-+ (UIImage*) stat_sys_signal_4;
-
 -(void)displayStatus:(NSString*) message;
 
 - (IBAction)doAction:(id)sender;
 
 +(LinphoneCall*) retrieveCallAtIndex: (NSInteger) index inConference:(bool) conf;
 + (void) updateCellImageView:(UIImageView*)imageView Label:(UILabel*)label DetailLabel:(UILabel*)detailLabel AndAccessoryView:(UIView*)accessoryView withCall:(LinphoneCall*) call;
++(void) updateIndicator:(UIImageView*) indicator withCallQuality:(float) quality;
 
 @property (nonatomic, retain) IBOutlet UIView* controlSubView;
 @property (nonatomic, retain) IBOutlet UIView* padSubView;
@@ -134,4 +130,5 @@
 @property (nonatomic, retain) IBOutlet UIView* videoGroup;
 @property (nonatomic, retain) IBOutlet UIView* videoView;
 @property (nonatomic, retain) IBOutlet UIView* videoPreview;
+@property (nonatomic, retain) IBOutlet UIImageView* videoCallQuality;
 @end
