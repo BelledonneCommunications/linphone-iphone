@@ -899,6 +899,7 @@ void linphone_call_init_media_streams(LinphoneCall *call){
 
 	if ((lc->video_conf.display || lc->video_conf.capture) && md->streams[1].port>0){
 		call->videostream=video_stream_new(md->streams[1].port,linphone_core_ipv6_enabled(lc));
+        video_stream_enable_display_filter_auto_rotate(call->videostream, lp_config_get_int(lc->config,"video","display_filter_auto_rotate",0));
 	if( lc->video_conf.displaytype != NULL)
 		video_stream_set_display_filter_name(call->videostream,lc->video_conf.displaytype);
 	video_stream_set_event_callback(call->videostream,video_stream_event_cb, call);
