@@ -2381,7 +2381,7 @@ int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const
 	}else
 		call->params=*params;
 
-	if (call->current_params->in_conference) {
+	if (call->current_params.in_conference) {
 		ms_warning("Video isn't supported in conference");
 		call->params.has_video = FALSE;
 	}
