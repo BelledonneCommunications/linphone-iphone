@@ -2380,6 +2380,11 @@ int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const
 		call->params.has_video=lc->video_policy.automatically_accept;
 	}else
 		call->params=*params;
+
+	if (call->current_params->in_conference) {
+		ms_warning("Video isn't supported in conference");
+		call->params.has_video = FALSE;
+	}
 	call->camera_active=call->params.has_video;
 	update_local_media_description(lc,call);
 	sal_call_set_local_media_description(call->op,call->localdesc);
