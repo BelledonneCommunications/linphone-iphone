@@ -60,7 +60,7 @@
 }
 
 -(BOOL) updateWithRegistrationState:(LinphoneRegistrationState)state message:(NSString*) message {
-    
+    label.hidden = NO;
     switch(state) {
         case LinphoneRegistrationCleared:
             image.hidden = NO;

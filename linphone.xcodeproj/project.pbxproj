@@ -133,6 +133,7 @@
 		34CA8530148F646700503C01 /* MainScreenWithVideoPreview.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34CA852E148F646700503C01 /* MainScreenWithVideoPreview.xib */; };
 		34CA8536148F669900503C01 /* VideoViewController-ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34CA8534148F669900503C01 /* VideoViewController-ipad.xib */; };
 		34CA853A148F692A00503C01 /* MainScreenWithVideoPreview.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CA8538148F692A00503C01 /* MainScreenWithVideoPreview.m */; };
+		57D8FE5F15137F69006BB25F /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57D8FE5E15137F69006BB25F /* CoreTelephony.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -490,6 +491,7 @@
 		34CA8534148F669900503C01 /* VideoViewController-ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "VideoViewController-ipad.xib"; sourceTree = "<group>"; };
 		34CA8537148F692A00503C01 /* MainScreenWithVideoPreview.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainScreenWithVideoPreview.h; sourceTree = "<group>"; };
 		34CA8538148F692A00503C01 /* MainScreenWithVideoPreview.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainScreenWithVideoPreview.m; sourceTree = "<group>"; };
+		57D8FE5E15137F69006BB25F /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		70571E1913FABCB000CDD3C2 /* rootca.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = rootca.pem; path = Resources/rootca.pem; sourceTree = "<group>"; };
 		7066FC0B13E830E400EFC6DC /* libvpx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libvpx.a; path = "liblinphone-sdk/apple-darwin/lib/libvpx.a"; sourceTree = "<group>"; };
 		70E542F213E147E3002BA2C0 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
@@ -503,6 +505,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				57D8FE5F15137F69006BB25F /* CoreTelephony.framework in Frameworks */,
 				22D8F15B147548E2008C97DB /* libvpx.a in Frameworks */,
 				22D8F15C147548E2008C97DB /* QuartzCore.framework in Frameworks */,
 				22D8F15D147548E2008C97DB /* OpenGLES.framework in Frameworks */,
@@ -917,6 +920,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				57D8FE5E15137F69006BB25F /* CoreTelephony.framework */,
 				F07EBD1C149F40A5006F61D2 /* libtunnel.a */,
 				344ABDF014850AE9007420B6 /* libstdc++.6.dylib */,
 				2211DB9614764F6B00DEE054 /* nogpl-thirdparties */,

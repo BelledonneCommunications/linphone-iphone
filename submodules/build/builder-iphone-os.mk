@@ -46,7 +46,7 @@ BUILDER_BUILD_DIR?=$(shell pwd)/../build-$(host)
 LINPHONE_SRC_DIR=$(BUILDER_SRC_DIR)/linphone
 LINPHONE_BUILD_DIR=$(BUILDER_BUILD_DIR)/linphone
 
-all: build-linphone build-msilbc build-msamr build-msx264 build-mssilk
+all: build-linphone build-msilbc build-msamr build-msx264 build-mssilk build-msbcg729
 
 $(LINPHONE_BUILD_DIR)/enable_gpl_third_parties: 
 	mkdir -p $(LINPHONE_BUILD_DIR)
@@ -94,18 +94,20 @@ endif
 prefix?=$(BUILDER_SRC_DIR)/../liblinphone-sdk/$(host)
 
 
-clean-makefile: clean-makefile-linphone
-clean: clean-linphone
+clean-makefile: clean-makefile-linphone clean-makefile-msbcg729
+clean: clean-linphone clean-msbcg729
 init:
 	mkdir -p $(prefix)/include
 	mkdir -p $(prefix)/lib/pkgconfig
 
-veryclean: veryclean-linphone
+veryclean: veryclean-linphone veryclean-msbcg729
 	rm -rf $(BUILDER_BUILD_DIR)
 
 
+
 .NOTPARALLEL build-linphone: init build-openssl build-tunnel build-srtp build-zrtpcpp build-osip2 build-eXosip2  build-speex build-libgsm build-ffmpeg build-libvpx detect_gpl_mode_switch $(LINPHONE_BUILD_DIR)/Makefile
-	cd $(LINPHONE_BUILD_DIR)  && export PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig export CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) make newdate &&  make  && make install
+	cd $(LINPHONE_BUILD_DIR)  && export PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig export CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) make newdate && make && make install
+
 
 clean-linphone: clean-osip2 clean-eXosip2 clean-speex clean-libgsm  clean-srtp clean-zrtpcpp clean-msilbc clean-libilbc clean-tunnel clean-openssl clean-msamr clean-mssilk clean-ffmpeg clean-libvpx clean-msx264 
 	cd  $(LINPHONE_BUILD_DIR) && make clean
@@ -123,18 +125,18 @@ $(LINPHONE_SRC_DIR)/configure:
 
 $(LINPHONE_BUILD_DIR)/Makefile: $(LINPHONE_SRC_DIR)/configure
 	mkdir -p $(LINPHONE_BUILD_DIR)
-	echo -e "\033[1mPKG_CONFIG_PATH=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
+	echo -e "\033[1mPKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
         $(LINPHONE_SRC_DIR)/configure -prefix=$(prefix) --host=$(host) ${library_mode} \
         ${linphone_configure_controls}\033[0m"
 	cd $(LINPHONE_BUILD_DIR) && \
-	PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
+	PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
 	CFLAGS="$(CFLAGS) -DMS2_MINIMAL_SIZE" $(LINPHONE_SRC_DIR)/configure -prefix=$(prefix) --host=$(host) ${library_mode} \
 	${linphone_configure_controls}
 	
 
 #libphone only (asume dependencies are met)
 build-liblinphone: $(LINPHONE_BUILD_DIR)/Makefile 
-	cd $(LINPHONE_BUILD_DIR)  && export PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig export CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) make newdate &&  make  && make install
+	cd $(LINPHONE_BUILD_DIR)  && export PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig export CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) make newdate &&  make  && make install
 
 clean-makefile-liblinphone:  
 	 cd $(LINPHONE_BUILD_DIR) && rm -f Makefile && rm -f oRTP/Makefile && rm -f mediastreamer2/Makefile	 
@@ -153,7 +155,7 @@ $(BUILDER_BUILD_DIR)/$(osip_dir)/Makefile: $(BUILDER_SRC_DIR)/$(osip_dir)/config
 	$(BUILDER_SRC_DIR)/$(osip_dir)/configure -prefix=$(prefix) --host=$(host) ${library_mode}  
 
 build-osip2: $(BUILDER_BUILD_DIR)/$(osip_dir)/Makefile
-	 cd $(BUILDER_BUILD_DIR)/$(osip_dir) && PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site)  make && make install
+	 cd $(BUILDER_BUILD_DIR)/$(osip_dir) && PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site)  make && make install
 
 clean-osip2:
 	 cd  $(BUILDER_BUILD_DIR)/$(osip_dir) && make clean
@@ -172,12 +174,12 @@ $(BUILDER_SRC_DIR)/$(eXosip_dir)/configure:
 $(BUILDER_BUILD_DIR)/$(eXosip_dir)/Makefile: $(BUILDER_SRC_DIR)/$(eXosip_dir)/configure 
 	mkdir -p $(BUILDER_BUILD_DIR)/$(eXosip_dir)
 	cd $(BUILDER_BUILD_DIR)/$(eXosip_dir)/\
-	&& PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig  CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
-	$(BUILDER_SRC_DIR)/$(eXosip_dir)/configure -prefix=$(prefix) --host=$(host) ${library_mode} CFLAGS="-I$(prefix)/include -L$(prefix)/lib -lcrypto" --disable-openssl  --disable-tools 
+	&& PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig  CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
+	$(BUILDER_SRC_DIR)/$(eXosip_dir)/configure -prefix=$(prefix) --host=$(host) ${library_mode} CFLAGS="-I$(prefix)/include -L$(prefix)/lib -lcrypto" --enable-openssl  --disable-tools 
 
 build-eXosip2: $(BUILDER_BUILD_DIR)/$(eXosip_dir)/Makefile
 	 cd $(BUILDER_BUILD_DIR)/$(eXosip_dir)  \
-	&& PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
+	&& PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
 	make  DEFS="-DHAVE_CONFIG_H -include $(BUILDER_SRC_DIR)/$(eXosip_dir)/include/eXosip2/eXosip_transport_hook.h" && make install
 
 clean-eXosip2:
@@ -244,7 +246,7 @@ $(MSILBC_SRC_DIR)/configure:
 $(MSILBC_BUILD_DIR)/Makefile: $(MSILBC_SRC_DIR)/configure
 	mkdir -p $(MSILBC_BUILD_DIR)
 	cd $(MSILBC_BUILD_DIR) && \
-	PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
+	PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
 	$(MSILBC_SRC_DIR)/configure -prefix=$(prefix) --host=$(host) $(library_mode)
 
 build-msilbc: build-libilbc $(MSILBC_BUILD_DIR)/Makefile
@@ -268,7 +270,7 @@ $(LIBILBC_SRC_DIR)/configure:
 $(LIBILBC_BUILD_DIR)/Makefile: $(LIBILBC_SRC_DIR)/configure
 	mkdir -p $(LIBILBC_BUILD_DIR)
 	cd $(LIBILBC_BUILD_DIR) && \
-	PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
+	PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
 	$(LIBILBC_SRC_DIR)/configure -prefix=$(prefix) --host=$(host) $(library_mode)
 
 build-libilbc: $(LIBILBC_BUILD_DIR)/Makefile
@@ -327,4 +329,8 @@ delivery:
 	-x linphone-iphone/build\* \
 	-x \*.git\*
 
+ipa:
+	cd $(BUILDER_SRC_DIR)/../ \
+	&& xcodebuild  -configuration DistributionAdhoc \
+	&& xcrun -sdk iphoneos PackageApplication -v build/DistributionAdhoc-iphoneos/linphone.app -o $(BUILDER_SRC_DIR)/../linphone-iphone.ipa
 
