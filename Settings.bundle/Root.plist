@@ -98,6 +98,20 @@
 			<key>KeyboardType</key>
 			<string>NumbersAndPunctuation</string>
 		</dict>
+        <dict>
+			<key>Key</key>
+			<string>stun_preference</string>
+			<key>Title</key>
+			<string>Stun server</string>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>AutocapitalizationType</key>
+			<string>None</string>
+			<key>AutocorrectionType</key>
+			<string>No</string>
+			<key>DefaultValue</key>
+			<string></string>
+		</dict>
 	</array>
 	<key>StringsTable</key>
 	<string>Root</string>

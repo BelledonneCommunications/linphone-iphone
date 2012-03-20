@@ -275,6 +275,7 @@
 		34CA8539148F692A00503C01 /* MainScreenWithVideoPreview.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CA8538148F692A00503C01 /* MainScreenWithVideoPreview.m */; };
 		34CA853A148F692A00503C01 /* MainScreenWithVideoPreview.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CA8538148F692A00503C01 /* MainScreenWithVideoPreview.m */; };
 		34E28E7A14D98F6D00D84BDD /* 01.wav in Resources */ = {isa = PBXBuildFile; fileRef = 34E28E7914D98F6D00D84BDD /* 01.wav */; };
+		5749FCB21518D6C100F0712D /* App_Apple_Icon_DES_57.png in Resources */ = {isa = PBXBuildFile; fileRef = 5749FCB11518D6C100F0712D /* App_Apple_Icon_DES_57.png */; };
 		70571E1A13FABCB000CDD3C2 /* rootca.pem in Resources */ = {isa = PBXBuildFile; fileRef = 70571E1913FABCB000CDD3C2 /* rootca.pem */; };
 		7066FC0C13E830E400EFC6DC /* libvpx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7066FC0B13E830E400EFC6DC /* libvpx.a */; };
 		70E542F313E147E3002BA2C0 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F213E147E3002BA2C0 /* OpenGLES.framework */; };
@@ -670,6 +671,7 @@
 		34CA8537148F692A00503C01 /* MainScreenWithVideoPreview.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainScreenWithVideoPreview.h; sourceTree = "<group>"; };
 		34CA8538148F692A00503C01 /* MainScreenWithVideoPreview.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainScreenWithVideoPreview.m; sourceTree = "<group>"; };
 		34E28E7914D98F6D00D84BDD /* 01.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = 01.wav; path = Resources/01.wav; sourceTree = "<group>"; };
+		5749FCB11518D6C100F0712D /* App_Apple_Icon_DES_57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = App_Apple_Icon_DES_57.png; path = Resources/App_Apple_Icon_DES_57.png; sourceTree = "<group>"; };
 		70571E1913FABCB000CDD3C2 /* rootca.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = rootca.pem; path = Resources/rootca.pem; sourceTree = "<group>"; };
 		7066FC0B13E830E400EFC6DC /* libvpx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libvpx.a; path = "liblinphone-sdk/apple-darwin/lib/libvpx.a"; sourceTree = "<group>"; };
 		70E542F213E147E3002BA2C0 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
@@ -1222,6 +1224,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				5749FCB11518D6C100F0712D /* App_Apple_Icon_DES_57.png */,
 				34E28E7914D98F6D00D84BDD /* 01.wav */,
 				34ACD07414D2DBB300EE0B0A /* BuschJaeger */,
 				34A6ECEA14CF13CB00460C04 /* icone-linphone-72.png */,
@@ -1461,6 +1464,7 @@
 				348848E714D98859005B0B54 /* bj_mute_on.png in Resources */,
 				348848E814D98859005B0B54 /* bj_start_call.png in Resources */,
 				34E28E7A14D98F6D00D84BDD /* 01.wav in Resources */,
+				5749FCB21518D6C100F0712D /* App_Apple_Icon_DES_57.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

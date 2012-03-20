@@ -12,8 +12,7 @@
 	<string></string>
 	<key>CFBundleIconFiles</key>
 	<array>
-		<string>icone-linphone-57.png</string>
-		<string>icone-linphone-72.png</string>
+		<string>App_Apple_Icon_DES_57.png</string>
 	</array>
 	<key>CFBundleIdentifier</key>
 	<string>de.busch-jaeger.phone</string>
