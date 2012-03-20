@@ -640,7 +640,7 @@ lpc_cmd_transfer(LinphoneCore *lc, char *args)
 		char arg1[256]={0};
 		char arg2[266]={0};
 		long id2=0;
-		int n=sscanf(args,"%s %s %li",arg1,arg2,&id2);
+		int n=sscanf(args,"%255s %265s %li",arg1,arg2,&id2);
 		if (n==1 || isalpha(*arg1)){
 			call=linphone_core_get_current_call(lc);
 			if (call==NULL && ms_list_size(linphone_core_get_calls(lc))==1){
@@ -1898,7 +1898,7 @@ static int lpc_cmd_register(LinphoneCore *lc, char *args){
     		return 1;
     	}
 	passwd[0]=proxy[0]=identity[0]='\0';
-	sscanf(args,"%s %s %s",identity,proxy,passwd);
+	sscanf(args,"%511s %511s %511s",identity,proxy,passwd);
 	if (proxy[0]=='\0' || identity[0]=='\0'){
 		linphonec_out("Missing parameters, see help register\n");
 		return 1;
@@ -2054,7 +2054,7 @@ static int lpc_cmd_param(LinphoneCore *lc, char *args)
 	if (args == NULL) {
 		return 0;
 	}
-	switch (sscanf(args,"%s %s %s",section,param,value)) {
+	switch (sscanf(args,"%19s %19s %49s",section,param,value)) {
 		// case 1 might show all current settings under a section
 		case 2:
 			string = lp_config_get_string(linphone_core_get_config(lc), section, param, "(undef)");
@@ -2086,7 +2086,7 @@ static int lpc_cmd_speak(LinphoneCore *lc, char *args){
 	
     if (!args) return 0;
 	memset(voice,0,sizeof(voice));
-	sscanf(args,"%s63",voice);
+	sscanf(args,"%63s",voice);
 	sentence=args+strlen(voice);
 	wavfile=tempnam("/tmp/","linphonec-espeak-");
 	snprintf(cl,sizeof(cl),"espeak -v %s -s 100 -w %s --stdin",voice,wavfile);
@@ -2337,7 +2337,7 @@ static int _lpc_cmd_video_window(LinphoneCore *lc, char *args, bool_t is_preview
 	VideoParams *params=is_preview ? &lpc_preview_params : &lpc_video_params;
 
 	if (!args) return 0;
-	err=sscanf(args,"%s %i %i",subcommand,&a,&b);
+	err=sscanf(args,"%63s %i %i",subcommand,&a,&b);
 	if (err>=1){
 		if (strcmp(subcommand,"pos")==0){
 			if (err<3) return 0;

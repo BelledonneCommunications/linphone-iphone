@@ -4041,6 +4041,10 @@ void *linphone_core_get_user_data(LinphoneCore *lc){
 	return lc->data;
 }
 
+void linphone_core_set_user_data(LinphoneCore *lc, void *userdata){
+	lc->data=userdata;
+}
+
 int linphone_core_get_mtu(const LinphoneCore *lc){
 	return lc->net_conf.mtu;
 }
