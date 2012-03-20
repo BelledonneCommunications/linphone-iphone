@@ -81,7 +81,7 @@ class Daemon{
 	friend class DaemonCommand;
 	public:
 		typedef Response::Status Status;
-		Daemon(const char *config_path, bool using_pipes);
+		Daemon(const char *config_path, bool using_pipes, bool display_video, bool capture_video);
 		~Daemon();
 		int run();
 		void quit();
@@ -136,7 +136,7 @@ class CallCommand : public DaemonCommand{
 
 class TerminateCommand : public DaemonCommand{
 	public:
-		TerminateCommand() : DaemonCommand("terminate", "call <call id>","Terminate a call."){
+		TerminateCommand() : DaemonCommand("terminate", "terminate <call id>","Terminate a call."){
 		}
 		virtual void exec(Daemon *app, const char *args){
 			LinphoneCall *call = NULL;
@@ -148,10 +148,11 @@ class TerminateCommand : public DaemonCommand{
 					app->sendResponse(Response("No call with such id."));
 					return;
 				}
-			}
-			elem=linphone_core_get_calls(app->getCore());
-			if (elem!=NULL && elem->next==NULL){
-				call=(LinphoneCall*)elem->data;
+			} else {
+				elem=linphone_core_get_calls(app->getCore());
+				if (elem!=NULL && elem->next==NULL){
+					call=(LinphoneCall*)elem->data;
+				}
 			}
 			if (call==NULL){
 				app->sendResponse(Response("No active call."));
@@ -190,6 +191,63 @@ class HelpCommand : public DaemonCommand{
 		}
 };
 
+class RegisterCommand : public DaemonCommand{
+	public:
+		RegisterCommand() : DaemonCommand("register", "register <identity> <proxy-address> <password>","Register the daemon to a SIP proxy"){
+		}
+		virtual void exec(Daemon *app, const char *args){
+			LinphoneCore *lc=app->getCore();
+			if (!args || args[0]=='\0')
+		    	{
+		    		/* it means that you want to register the default proxy */
+		    		LinphoneProxyConfig *cfg=NULL;
+		    		linphone_core_get_default_proxy(lc,&cfg);
+		    		if (cfg)
+		    		{
+		    			if(!linphone_proxy_config_is_registered(cfg)) {
+						linphone_proxy_config_enable_register(cfg,TRUE);
+						linphone_proxy_config_done(cfg);
+					}else{
+						app->sendResponse(Response("default proxy already registered"));
+					}
+		    		}else{
+		    			app->sendResponse(Response("we do not have a default proxy"));
+		    			return;
+		    		}
+		    		return;
+		    	}
+
+			char proxy[256]={0}, identity[128]={0}, password[64]={0};
+			if (sscanf(args,"%255s %127s %63s", identity, proxy, password) >= 2){
+				LinphoneProxyConfig *cfg = linphone_proxy_config_new();
+				if (password[0]!='\0'){
+				        LinphoneAddress *from = linphone_address_new(identity);
+				        if(from!=NULL) {
+				        	LinphoneAuthInfo *info =linphone_auth_info_new(linphone_address_get_username(from),NULL,password, NULL,NULL); /*create authentication structure from identity*/
+						linphone_core_add_auth_info(lc,info); /*add authentication info to LinphoneCore*/
+						linphone_address_destroy(from);
+						linphone_auth_info_destroy(info);
+				        }
+				}
+				const MSList * elem=linphone_core_get_proxy_config_list(lc);
+				if (elem) {
+					cfg=(LinphoneProxyConfig*)elem->data;
+					linphone_proxy_config_edit(cfg);
+				}
+				else cfg=linphone_proxy_config_new();
+				linphone_proxy_config_set_identity(cfg,identity);
+				linphone_proxy_config_set_server_addr(cfg,proxy);
+				linphone_proxy_config_enable_register(cfg,TRUE);
+				if (elem) linphone_proxy_config_done(cfg);
+				else linphone_core_add_proxy_config(lc,cfg);
+				linphone_core_set_default_proxy(lc,cfg);
+			        app->sendResponse(Response());
+			} else {
+				app->sendResponse(Response("Missing parameters"));
+			}
+		}
+};
+
 class PopEventCommand :public DaemonCommand{
 	public:
 		PopEventCommand() : DaemonCommand("pop-event", "pop-event","Pop an event from event queue and display it."){
@@ -201,18 +259,37 @@ class PopEventCommand :public DaemonCommand{
 
 class AnswerCommand :public DaemonCommand{
 	public:
-		AnswerCommand() : DaemonCommand("answer", "answer","Answer an incoming call."){
+		AnswerCommand() : DaemonCommand("answer", "answer <call id>","Answer an incoming call."){
 		}
 		virtual void exec(Daemon *app, const char *args){
 			LinphoneCore *lc=app->getCore();
-			const MSList* elem=linphone_core_get_calls(lc);
-			for(;elem!=NULL;elem=elem->next){
-				LinphoneCall *call=(LinphoneCall*)elem->data;
-				LinphoneCallState cstate=linphone_call_get_state(call);
-				if (cstate==LinphoneCallIncomingReceived || cstate==LinphoneCallIncomingEarlyMedia){
-					if (linphone_core_accept_call(lc,call)==0){
-						app->sendResponse(Response());
-						return;
+			int cid;
+			LinphoneCall *call;
+			if (sscanf(args,"%i",&cid)==1){
+				call=app->findCall(cid);
+				if (call==NULL){
+					app->sendResponse(Response("No call with such id."));
+					return;
+				} else {
+					LinphoneCallState cstate=linphone_call_get_state(call);
+					if (cstate==LinphoneCallIncomingReceived || cstate==LinphoneCallIncomingEarlyMedia){
+						if (linphone_core_accept_call(lc,call)==0){
+							app->sendResponse(Response());
+							return;
+						}
+					}
+					app->sendResponse(Response("Can't accept this call."));
+					return;
+				}
+			} else {
+				for(const MSList* elem=linphone_core_get_calls(lc); elem!=NULL;elem=elem->next){
+					call=(LinphoneCall*)elem->data;
+					LinphoneCallState cstate=linphone_call_get_state(call);
+					if (cstate==LinphoneCallIncomingReceived || cstate==LinphoneCallIncomingEarlyMedia){
+						if (linphone_core_accept_call(lc,call)==0){
+							app->sendResponse(Response());
+							return;
+						}
 					}
 				}
 			}
@@ -240,24 +317,21 @@ bool DaemonCommand::matches(const char *name)const{
 Daemon * Daemon::sZis=NULL;
 int Daemon::sCallIds=0;
 
-Daemon::Daemon(const char *config_path, bool using_pipes){
+Daemon::Daemon(const char *config_path, bool using_pipes, bool display_video, bool capture_video){
 	sZis=this;
 	mServerFd=-1;
 	mChildFd=-1;
 	if (!using_pipes){
 		initReadline();	
 	}else{
-		mServerFd=ortp_server_pipe_create("ha-linphone");
+		mServerFd=ortp_server_pipe_create("linphone-daemon");
 		listen(mServerFd,2);
 		fprintf(stdout,"Server unix socket created, fd=%i\n",mServerFd);
 	}
 	LinphoneCoreVTable vtable={0};
 	vtable.call_state_changed=callStateChanged;
 	mLc=linphone_core_new(&vtable,NULL,config_path,this);
-	linphone_core_enable_video(mLc,false,false);
-	linphone_core_set_playback_device(mLc,"HEADACOUSTICS");
-	linphone_core_set_ringer_device(mLc,"HEADACOUSTICS");
-	linphone_core_set_capture_device(mLc,"HEADACOUSTICS");
+	linphone_core_enable_video(mLc,display_video,capture_video);
 	linphone_core_enable_echo_cancellation(mLc,false);
 	initCommands();
 }
@@ -285,6 +359,7 @@ LinphoneCall * Daemon::findCall(int id){
 }
 
 void Daemon::initCommands(){
+	mCommands.push_back(new RegisterCommand());
 	mCommands.push_back(new CallCommand());
 	mCommands.push_back(new TerminateCommand());
 	mCommands.push_back(new PopEventCommand());
@@ -353,7 +428,7 @@ int Daemon::readlineHook(){
 void Daemon::initReadline()
 {
 	const char *homedir=getenv("HOME");
-	rl_readline_name = "ha";
+	rl_readline_name = "daemon";
 
 	rl_set_keyboard_input_timeout(20000);
 	rl_event_hook=readlineHook;
@@ -367,7 +442,7 @@ void Daemon::initReadline()
 void Daemon::execCommand(const char *cl){
 	char args[sLineSize]={0};
 	char name[sLineSize]={0};
-	sscanf(cl,"%s %s",name,args);
+	sscanf(cl,"%511s %511[^\n]",name,args); //Read the rest of line in args
 	list<DaemonCommand*>::iterator it=find_if(mCommands.begin(),mCommands.end(),bind2nd(mem_fun(&DaemonCommand::matches),name));
 	if (it!=mCommands.end()){
 		(*it)->exec(this,args);
@@ -439,15 +514,17 @@ char *Daemon::readPipe(char *buffer, int buflen){
 }
 
 static void printHelp(){
-	fprintf(stdout,"ha-linphone [<options>]\n"
+	fprintf(stdout,"daemon-linphone [<options>]\n"
 			"where options are :\n"
 			"\t--help\t\tPrint this notice.\n"
 			"\t--pipe\t\tCreate an unix server socket to receive commands.\n"
-			"\t--config <path>\tSupply a linphonerc style config file to start with.\n");
+			"\t--config <path>\tSupply a linphonerc style config file to start with.\n"
+			"\t-C\t\tenable video capture.\n"
+			"\t-D\t\tenable video display.\n");
 }
 
 int Daemon::run(){
-	char line[sLineSize]="ha-linphone>";
+	char line[sLineSize]="daemon-linphone>";
 	char *ret;
 	mRunning=true;
 	while(mRunning){
@@ -484,6 +561,8 @@ Daemon::~Daemon(){
 int main(int argc, char *argv[]){
 	const char *config_path=NULL;
 	bool using_pipes=false;
+	bool capture_video=false;
+	bool display_video=false;
 	int i;
 
 	for(i=1;i<argc;++i){
@@ -494,9 +573,13 @@ int main(int argc, char *argv[]){
 			using_pipes=true;		
 		}else if (strcmp(argv[i],"--config")==0){
 			config_path=argv[i+1];
+		}else if (strcmp(argv[i],"-C")==0){
+			capture_video=true;
+		}else if (strcmp(argv[i],"-D")==0){
+			display_video=true;
 		}
 	}
-	Daemon app(config_path,using_pipes);
+	Daemon app(config_path,using_pipes,display_video,capture_video);
 	return app.run();
 };
 
