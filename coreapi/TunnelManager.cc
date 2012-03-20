@@ -162,7 +162,7 @@ void TunnelManager::start() {
 	if (!mTunnelClient) {
 		mTunnelClient = new TunnelClient();
 		mTunnelClient->setCallback((StateCallback)tunnelCallback,this);
-		std::list<ServerAddr>::iterator it;
+		list<ServerAddr>::iterator it;
 		for(it=mServerAddrs.begin();it!=mServerAddrs.end();++it){
 			const ServerAddr &addr=*it;
 			mTunnelClient->addServer(addr.mAddr.c_str(), addr.mPort);

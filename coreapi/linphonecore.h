@@ -1026,6 +1026,7 @@ void linphone_core_enable_keep_alive(LinphoneCore* lc,bool_t enable);
 bool_t linphone_core_keep_alive_enabled(LinphoneCore* lc);
 
 void *linphone_core_get_user_data(LinphoneCore *lc);
+void linphone_core_set_user_data(LinphoneCore *lc, void *userdata);
 
 /* returns LpConfig object to read/write to the config file: usefull if you wish to extend
 the config file with your own sections */

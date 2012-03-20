@@ -243,6 +243,7 @@ static void call_received(SalOp *h){
 
 		if (propose_early_media || ringback_tone!=NULL){
 			linphone_call_set_state(call,LinphoneCallIncomingEarlyMedia,"Incoming call early media");
+			md=sal_call_get_final_media_description(h);
 			linphone_core_update_streams(lc,call,md);
 		}
 		if (sal_call_get_replaces(call->op)!=NULL && lp_config_get_int(lc->config,"sip","auto_answer_replacing_calls",1)){
