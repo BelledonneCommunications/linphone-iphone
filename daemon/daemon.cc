@@ -40,7 +40,12 @@ class Response{
 		}
 		Response() : mStatus(Ok){
 		}
-		Response(const char *errormsg) : mStatus(Error), mReason(errormsg){
+		Response(const char *msg, Status status = Error) : mStatus(status){
+			if(status == Ok) {
+				mBody = msg;
+			} else {
+				mReason = msg;
+			}
 		}
 		void setStatus(Status st){
 			mStatus=st;
@@ -89,9 +94,12 @@ class Daemon{
 		LinphoneCore *getCore();
 		const list<DaemonCommand*> &getCommandList()const;
 		LinphoneCall *findCall(int id);
+		LinphoneProxyConfig *findProxy(int id);
 		bool pullEvent();
 		static int getCallId(LinphoneCall *call);
-		void setCallId(LinphoneCall *call);
+		int setCallId(LinphoneCall *call);
+		static int getProxyId(LinphoneProxyConfig *proxy);
+		int setProxyId(LinphoneProxyConfig *proxy);
 	private:
 		
 		static void callStateChanged(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState state, const char *msg);
@@ -111,6 +119,7 @@ class Daemon{
 		bool mRunning;
 		static Daemon *sZis;
 		static int sCallIds;
+		static int sProxyIds;
 		static const int sLineSize=512;
 };
 
@@ -126,8 +135,7 @@ class CallCommand : public DaemonCommand{
 			}else{
 				Response resp;
 				ostringstream ostr;
-				app->setCallId(call);
-				ostr<<"Id: "<<Daemon::getCallId(call)<<"\n";
+				ostr<<"Id: "<< app->setCallId(call)<<"\n";
 				resp.setBody(ostr.str().c_str());
 				app->sendResponse(resp);
 			}
@@ -193,30 +201,10 @@ class HelpCommand : public DaemonCommand{
 
 class RegisterCommand : public DaemonCommand{
 	public:
-		RegisterCommand() : DaemonCommand("register", "register <identity> <proxy-address> <password>","Register the daemon to a SIP proxy"){
+		RegisterCommand() : DaemonCommand("register", "register <identity> <proxy-address> <password>","Register the daemon to a default SIP proxy"){
 		}
 		virtual void exec(Daemon *app, const char *args){
 			LinphoneCore *lc=app->getCore();
-			if (!args || args[0]=='\0')
-		    	{
-		    		/* it means that you want to register the default proxy */
-		    		LinphoneProxyConfig *cfg=NULL;
-		    		linphone_core_get_default_proxy(lc,&cfg);
-		    		if (cfg)
-		    		{
-		    			if(!linphone_proxy_config_is_registered(cfg)) {
-						linphone_proxy_config_enable_register(cfg,TRUE);
-						linphone_proxy_config_done(cfg);
-					}else{
-						app->sendResponse(Response("default proxy already registered"));
-					}
-		    		}else{
-		    			app->sendResponse(Response("we do not have a default proxy"));
-		    			return;
-		    		}
-		    		return;
-		    	}
-
 			char proxy[256]={0}, identity[128]={0}, password[64]={0};
 			if (sscanf(args,"%255s %127s %63s", identity, proxy, password) >= 2){
 				LinphoneProxyConfig *cfg = linphone_proxy_config_new();
@@ -229,22 +217,40 @@ class RegisterCommand : public DaemonCommand{
 						linphone_auth_info_destroy(info);
 				        }
 				}
-				const MSList * elem=linphone_core_get_proxy_config_list(lc);
-				if (elem) {
-					cfg=(LinphoneProxyConfig*)elem->data;
-					linphone_proxy_config_edit(cfg);
-				}
-				else cfg=linphone_proxy_config_new();
 				linphone_proxy_config_set_identity(cfg,identity);
 				linphone_proxy_config_set_server_addr(cfg,proxy);
 				linphone_proxy_config_enable_register(cfg,TRUE);
-				if (elem) linphone_proxy_config_done(cfg);
-				else linphone_core_add_proxy_config(lc,cfg);
-				linphone_core_set_default_proxy(lc,cfg);
-			        app->sendResponse(Response());
+				app->setProxyId(cfg);
+				ostringstream ostr;
+				ostr<<"Id: "<<Daemon::getProxyId(cfg)<<"\n";
+				linphone_core_add_proxy_config(lc,cfg);
+			        app->sendResponse(Response(ostr.str().c_str(), Response::Ok));
 			} else {
-				app->sendResponse(Response("Missing parameters"));
+				app->sendResponse(Response("Missing/Incorrect parameter(s)."));
 			}
+		}
+};
+
+class UnregisterCommand : public DaemonCommand{
+	public:
+	UnregisterCommand() : DaemonCommand("unregister", "unregister <register_id>","Unregister from default proxy"){
+		}
+		virtual void exec(Daemon *app, const char *args){
+			LinphoneCore *lc=app->getCore();
+			LinphoneProxyConfig *cfg = NULL;
+			int pid;
+			if (sscanf(args,"%i",&pid)==1){
+				cfg=app->findProxy(pid);
+				if (cfg==NULL){
+					app->sendResponse(Response("No register with such id."));
+					return;
+				}
+			} else {
+				app->sendResponse(Response("Missing/Incorrect parameter(s)."));
+				return;
+			}
+			linphone_core_remove_proxy_config(lc, cfg);
+			app->sendResponse(Response());
 		}
 };
 
@@ -254,6 +260,64 @@ class PopEventCommand :public DaemonCommand{
 		}
 		virtual void exec(Daemon *app, const char *args){
 			app->pullEvent();
+		}
+};
+
+class StatusCommand :public DaemonCommand{
+	public:
+	StatusCommand() : DaemonCommand("status", "status <call id>","Return status of a call."){
+		}
+		virtual void exec(Daemon *app, const char *args){
+			LinphoneCore *lc=app->getCore();
+			int cid;
+			LinphoneCall *call = NULL;
+			if (sscanf(args,"%i",&cid)==1){
+				call=app->findCall(cid);
+				if(call == NULL) {
+					app->sendResponse(Response("No call with such id."));
+					return;
+				}
+			} else {
+				call = linphone_core_get_current_call (lc);
+				if(call == NULL) {
+					app->sendResponse(Response("No current call available."));
+					return;
+				}
+			}
+
+			LinphoneCallState call_state=LinphoneCallIdle;
+			call_state=linphone_call_get_state(call);
+			const LinphoneAddress *remoteAddress=linphone_call_get_remote_address(call);
+			char buffer[512] = {0};
+			switch(call_state){
+				case LinphoneCallOutgoingInit:
+					snprintf(buffer, sizeof(buffer) - 1, "outgoing_init sip:%s", linphone_address_as_string(remoteAddress));
+					break;
+				case LinphoneCallOutgoingProgress:
+					snprintf(buffer, sizeof(buffer) - 1, "dialing sip:%s", linphone_address_as_string(remoteAddress));
+					break;
+				case LinphoneCallOutgoingRinging:
+					snprintf(buffer, sizeof(buffer) - 1, "ringing sip:%s", linphone_address_as_string(remoteAddress));
+					break;
+				case LinphoneCallPaused:
+					snprintf(buffer, sizeof(buffer) - 1, "paused sip:%s", linphone_address_as_string(remoteAddress));
+					break;
+				case LinphoneCallIdle:
+					snprintf(buffer, sizeof(buffer) - 1, "offhook");
+					break;
+				case LinphoneCallStreamsRunning:
+				case LinphoneCallConnected:
+					snprintf(buffer, sizeof(buffer) - 1, "running %s sip:%s, duration=%i",
+							linphone_call_get_dir(call)==LinphoneCallOutgoing?"out":"in",
+							linphone_address_as_string(remoteAddress), linphone_call_get_duration(call));
+					break;
+				case LinphoneCallIncomingReceived:
+					snprintf(buffer, sizeof(buffer) - 1, "incoming sip:%s", linphone_address_as_string(remoteAddress));
+					break;
+				default:
+					break;
+				}
+			app->sendResponse(Response(buffer, Response::Ok));
 		}
 };
 
@@ -316,6 +380,7 @@ bool DaemonCommand::matches(const char *name)const{
 
 Daemon * Daemon::sZis=NULL;
 int Daemon::sCallIds=0;
+int Daemon::sProxyIds=0;
 
 Daemon::Daemon(const char *config_path, bool using_pipes, bool display_video, bool capture_video){
 	sZis=this;
@@ -344,8 +409,9 @@ LinphoneCore * Daemon::getCore(){
 	return mLc;
 }
 
-void Daemon::setCallId(LinphoneCall *call){
+int Daemon::setCallId(LinphoneCall *call){
 	linphone_call_set_user_pointer(call,(void*)(long)++sCallIds);
+	return sCallIds;
 }
 
 LinphoneCall * Daemon::findCall(int id){
@@ -358,12 +424,29 @@ LinphoneCall * Daemon::findCall(int id){
 	return NULL;
 }
 
+int Daemon::setProxyId(LinphoneProxyConfig *cfg){
+	linphone_proxy_config_set_user_data(cfg,(void*)(long)++sProxyIds);
+	return sProxyIds;
+}
+
+LinphoneProxyConfig * Daemon::findProxy(int id){
+	const MSList *elem=linphone_core_get_proxy_config_list(mLc);
+	for (;elem!=NULL;elem=elem->next){
+		LinphoneProxyConfig *proxy=(LinphoneProxyConfig *)elem->data;
+		if (linphone_proxy_config_get_user_data(proxy)==(void*)(long)id)
+			return proxy;
+	}
+	return NULL;
+}
+
 void Daemon::initCommands(){
 	mCommands.push_back(new RegisterCommand());
+	mCommands.push_back(new UnregisterCommand());
 	mCommands.push_back(new CallCommand());
 	mCommands.push_back(new TerminateCommand());
 	mCommands.push_back(new PopEventCommand());
 	mCommands.push_back(new AnswerCommand());
+	mCommands.push_back(new StatusCommand());
 	mCommands.push_back(new QuitCommand());
 	mCommands.push_back(new HelpCommand());
 	
@@ -384,6 +467,10 @@ bool Daemon::pullEvent(){
 
 int Daemon::getCallId(LinphoneCall *call){
 	return (int)(long)linphone_call_get_user_pointer(call);
+}
+
+int Daemon::getProxyId(LinphoneProxyConfig *proxy){
+	return (int)(long)linphone_proxy_config_get_user_data(proxy);
 }
 
 void Daemon::callStateChanged(LinphoneCall *call, LinphoneCallState state, const char *msg){
