@@ -600,6 +600,7 @@ coreapi/help/Makefile
 coreapi/help/Doxyfile
 gtk/Makefile
 console/Makefile
+daemon/Makefile
 share/Makefile
 share/C/Makefile
 share/fr/Makefile
