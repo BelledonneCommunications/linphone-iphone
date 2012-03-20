@@ -649,6 +649,15 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	}
 	bool enableSrtp = [[NSUserDefaults standardUserDefaults] boolForKey:@"enable_srtp_preference"];
 	linphone_core_set_media_encryption(theLinphoneCore, enableSrtp?LinphoneMediaEncryptionSRTP:LinphoneMediaEncryptionZRTP);
+    
+    NSString* stun_server = [[NSUserDefaults standardUserDefaults] stringForKey:@"stun_preference"];
+    if ([stun_server length]>0){
+        linphone_core_set_stun_server(theLinphoneCore,[stun_server cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+        linphone_core_set_firewall_policy(theLinphoneCore, LinphonePolicyUseStun);
+    }else{
+        linphone_core_set_stun_server(theLinphoneCore, NULL);
+        linphone_core_set_firewall_policy(theLinphoneCore, LinphonePolicyNoFirewall);
+    }
 	
 	UIDevice* device = [UIDevice currentDevice];
 	bool backgroundSupported = false;
