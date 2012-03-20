@@ -47,7 +47,7 @@
 				<object class="NSPSMatrix" key="NSFrameMatrix"/>
 				<string key="NSFrameSize">{320, 480}</string>
 				<reference key="NSSuperview"/>
-				<reference key="NSWindow"/>
+				<reference key="NSNextKeyView"/>
 				<object class="NSColor" key="IBUIBackgroundColor">
 					<int key="NSColorSpace">1</int>
 					<bytes key="NSRGB">MSAxIDEAA</bytes>
@@ -75,7 +75,6 @@
 							<string key="NSResourceName">history-orange.png</string>
 						</object>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-						<reference key="IBUITabBar" ref="995238651"/>
 					</object>
 					<reference key="IBUIParentViewController" ref="952473143"/>
 					<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics"/>
@@ -97,7 +96,6 @@
 								<string key="NSResourceName">dialer-orange.png</string>
 							</object>
 							<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-							<reference key="IBUITabBar" ref="995238651"/>
 						</object>
 						<reference key="IBUIParentViewController" ref="952473143"/>
 						<string key="IBUINibName">PhoneViewController</string>
@@ -112,7 +110,6 @@
 					<object class="IBUIViewController" id="383050823">
 						<object class="IBUITabBarItem" key="IBUITabBarItem" id="672878446">
 							<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-							<reference key="IBUITabBar" ref="995238651"/>
 							<int key="IBUISystemItemIdentifier">5</int>
 						</object>
 						<reference key="IBUIParentViewController" ref="952473143"/>
@@ -127,7 +124,6 @@
 						<object class="IBUITabBarItem" key="IBUITabBarItem" id="534357631">
 							<string key="IBUITitle"/>
 							<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-							<reference key="IBUITabBar" ref="995238651"/>
 							<int key="IBUISystemItemIdentifier">0</int>
 						</object>
 						<reference key="IBUIParentViewController" ref="952473143"/>
@@ -145,21 +141,13 @@
 					<int key="NSvFlags">266</int>
 					<string key="NSFrame">{{0, 431}, {320, 49}}</string>
 					<reference key="NSSuperview"/>
-					<reference key="NSWindow"/>
+					<reference key="NSNextKeyView"/>
 					<object class="NSColor" key="IBUIBackgroundColor">
 						<int key="NSColorSpace">3</int>
 						<bytes key="NSWhite">MCAwAA</bytes>
 					</object>
 					<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
 					<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-					<object class="NSMutableArray" key="IBUIItems">
-						<bool key="EncodedWithXMLCoder">YES</bool>
-						<reference ref="1041279701"/>
-						<reference ref="64474689"/>
-						<reference ref="672878446"/>
-						<reference ref="534357631"/>
-					</object>
-					<reference key="IBUISelectedItem" ref="1041279701"/>
 				</object>
 			</object>
 		</object>

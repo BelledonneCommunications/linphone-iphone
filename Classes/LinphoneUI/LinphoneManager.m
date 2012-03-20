@@ -46,6 +46,9 @@ extern void libmsx264_init();
 extern void libmssilk_init(); 
 #endif
 
+#if HAVE_G729
+extern  void libmsbcg729_init();
+#endif
 @implementation LinphoneManager
 @synthesize callDelegate;
 @synthesize registrationDelegate;
@@ -359,6 +362,7 @@ static void linphone_iphone_call_state(LinphoneCore *lc, LinphoneCall* call, Lin
 												  cancelButtonTitle:NSLocalizedString(@"Continue",nil) 
 												  otherButtonTitles:nil ,nil];
                 [error show];
+                [error release];
             }
 		}
 		
@@ -623,6 +627,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	[self configurePayloadType:"PCMU" fromPrefKey:@"pcmu_preference" withRate:8000];
 	[self configurePayloadType:"PCMA" fromPrefKey:@"pcma_preference" withRate:8000];
 	[self configurePayloadType:"G722" fromPrefKey:@"g722_preference" withRate:8000];
+	[self configurePayloadType:"G729" fromPrefKey:@"g729_preference" withRate:8000];
 	
 	//get video codecs from linphonerc
 	const MSList *videoCodecs=linphone_core_get_video_codecs(theLinphoneCore);
@@ -689,6 +694,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	AVAudioSession *audioSession = [AVAudioSession sharedInstance];
 	[audioSession setDelegate:nil];
 	if (theLinphoneCore != nil) { //just in case application terminate before linphone core initialization
+        NSLog(@"Destroy linphonecore");
 		linphone_core_destroy(theLinphoneCore);
 		theLinphoneCore = nil;
         SCNetworkReachabilityUnscheduleFromRunLoop(proxyReachability, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
@@ -700,7 +706,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 }
 
 //**********************BG mode management*************************///////////
--(void) enterBackgroundMode {
+-(BOOL) enterBackgroundMode {
 	LinphoneProxyConfig* proxyCfg;
 	linphone_core_get_default_proxy(theLinphoneCore, &proxyCfg);	
 	linphone_core_stop_dtmf_stream(theLinphoneCore);
@@ -740,11 +746,12 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		if (linphone_core_get_sip_transports(theLinphoneCore, &transportValue)) {
 			ms_error("cannot get current transport");	
 		}
-		
+		return YES;
 	}
 	else {
 		ms_warning("Entering lite bg mode");
 		[self destroyLibLinphone];
+        return NO;
 	}
 	
 }
@@ -792,8 +799,13 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 #ifdef HAVE_X264
 	libmsx264_init(); //load x264 plugin if present from the liblinphone sdk
 #endif
+
+#if HAVE_G729
+	libmsbcg729_init(); // load g729 plugin
+#endif
 	/* Initialize linphone core*/
 	
+    NSLog(@"Create linphonecore");
 	theLinphoneCore = linphone_core_new (&linphonec_vtable
 										 , [confiFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]
 										 , [factoryConfig cStringUsingEncoding:[NSString defaultCStringEncoding]]
@@ -883,13 +895,12 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	
 }
 -(void) becomeActive {
-    
     if (theLinphoneCore == nil) {
 		//back from standby and background mode is disabled
 		[self	startLibLinphone];
 	} else {
         if (![self reconfigureLinphoneIfNeeded:currentSettings]) {
-            ms_message("becomming active with no config modification, make sure we are registered");
+            ms_message("becoming active with no config modification, make sure we are registered");
             linphone_core_refresh_registers(theLinphoneCore);//just to make sure REGISTRATION is up to date
         }
 		

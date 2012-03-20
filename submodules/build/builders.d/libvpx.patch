@@ -1,0 +1,42 @@
+diff --git a/build/make/configure.sh b/build/make/configure.sh
+index 0426f92..24fa04e 100755
+--- a/build/make/configure.sh
++++ b/build/make/configure.sh
+@@ -624,6 +624,9 @@ process_common_toolchain() {
+     if [ -d "/Developer/SDKs/MacOSX10.7.sdk" ]; then
+         osx_sdk_dir="/Developer/SDKs/MacOSX10.7.sdk"
+     fi
++    if test -n "$SYSROOT_PATH" ; then
++        osx_sdk_dir=$SYSROOT_PATH
++    fi
+ 
+     case ${toolchain} in
+         *-darwin8-*)
+@@ -743,6 +746,14 @@ process_common_toolchain() {
+         darwin*)
+             SDK_PATH=/Developer/Platforms/iPhoneOS.platform/Developer
+             TOOLCHAIN_PATH=${SDK_PATH}/usr/bin
++            if test -n "$SYSROOT_PATH" ; then
++               SDK_FULL_PATH=$SYSROOT_PATH
++            else
++               SDK_FULL_PATH="${SDK_PATH}/SDKs/iPhoneOS5.0.sdk"
++            fi
++            if test -n "$SDK_BIN_PATH" ; then
++                TOOLCHAIN_PATH=$SDK_BIN_PATH
++            fi
+             CC=${TOOLCHAIN_PATH}/gcc
+             AR=${TOOLCHAIN_PATH}/ar
+             LD=${TOOLCHAIN_PATH}/arm-apple-darwin10-llvm-gcc-4.2
+@@ -759,10 +770,10 @@ process_common_toolchain() {
+             add_cflags -arch ${tgt_isa}
+             add_ldflags -arch_only ${tgt_isa}
+ 
+-            add_cflags  "-isysroot ${SDK_PATH}/SDKs/iPhoneOS5.0.sdk"
++            add_cflags  "-isysroot $SDK_FULL_PATH"
+ 
+             # This should be overridable
+-            alt_libc=${SDK_PATH}/SDKs/iPhoneOS5.0.sdk
++            alt_libc=$SDK_FULL_PATH
+ 
+             # Add the paths for the alternate libc
+             for d in usr/include; do

@@ -13,11 +13,16 @@ else
 endif
 libvpx_dir?=externals/libvpx
 
-$(BUILDER_BUILD_DIR)/$(libvpx_dir)/config.mk:
+$(BUILDER_SRC_DIR)/$(libvpx_dir)/patched.stamp:
+	cd $(BUILDER_SRC_DIR)/$(libvpx_dir) \
+	&& git apply $(BUILDER_SRC_DIR)/build/builders.d/libvpx.patch \
+	&& touch $@
+
+$(BUILDER_BUILD_DIR)/$(libvpx_dir)/config.mk: $(BUILDER_SRC_DIR)/$(libvpx_dir)/patched.stamp
 	mkdir -p $(BUILDER_BUILD_DIR)/$(libvpx_dir)
 	cd $(BUILDER_BUILD_DIR)/$(libvpx_dir)/ \
 	&&  host_alias=${host} . $(BUILDER_SRC_DIR)/build/$(config_site) \
-	&& $(BUILDER_SRC_DIR)/$(libvpx_dir)/configure --prefix=$(prefix) $(libvpx_configure_options)
+	&& SYSROOT_PATH=$$SYSROOT_PATH SDK_BIN_PATH=$$SDK_BIN_PATH $(BUILDER_SRC_DIR)/$(libvpx_dir)/configure --prefix=$(prefix) $(libvpx_configure_options)
 
 build-libvpx: $(BUILDER_BUILD_DIR)/$(libvpx_dir)/config.mk
 	cd $(BUILDER_BUILD_DIR)/$(libvpx_dir) && PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site)  make  && make install
