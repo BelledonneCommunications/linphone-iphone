@@ -20,6 +20,7 @@
 #import "BuschJaegerMainView.h"
 #include "linphonecore.h"
 #import <QuartzCore/QuartzCore.h>
+#import <AudioToolbox/AudioToolbox.h>
 
 @implementation BuschJaegerMainView
 
@@ -105,7 +106,6 @@
     [LinphoneManager set:endOrRejectCall hidden:YES withName:"END_BTN" andReason:__FUNCTION__];
     [LinphoneManager set:videoView hidden:YES withName:"VIDEO_VIEW" andReason:__FUNCTION__];
     
-    linphone_core_set_native_video_window_id([LinphoneManager getLc],(unsigned long)videoView);
     
     if (!chatRoom) {
         NSString* s = [NSString stringWithFormat:@"sip:100000001@%@", [[NSUserDefaults standardUserDefaults] stringForKey:@"adapter_ip_preference"]];
@@ -115,6 +115,19 @@
         lights->chatRoom = chatRoom;
         openDoor->chatRoom = chatRoom;
     }
+}
+
+- (void) activateVideoView:(BOOL)value{
+    if (value){
+        linphone_core_set_native_video_window_id([LinphoneManager getLc],(unsigned long)videoView);
+    }else{
+        linphone_core_set_native_video_window_id([LinphoneManager getLc],0);	
+        linphone_core_set_native_preview_window_id([LinphoneManager getLc],0);
+    }
+
+}
+
+- (void) viewDidDisappear:(BOOL)animated{
     
 }
 
@@ -160,15 +173,38 @@
             notif.repeatInterval = 0;
             notif.alertBody = NSLocalizedString(@" Ding Dong !",nil);
             notif.alertAction = @"See the answer";
-            notif.soundName = @"01.wav";
+            notif.soundName = @BJ_RING_FILE ".wav";
             NSData *callData = [NSData dataWithBytes:&call length:sizeof(call)];
             notif.userInfo = [NSDictionary dictionaryWithObject:callData forKey:@"call"];
             
             [[UIApplication sharedApplication]  presentLocalNotificationNow:notif];
         }
+    }else{
+        NSBundle* myBundle = [NSBundle mainBundle];
+        
+        NSString* path = [myBundle pathForResource:@BJ_RING_FILE ofType:@"wav"];
+        if (path) {
+            const char* soundfile = [path cStringUsingEncoding:[NSString defaultCStringEncoding]];
+            ms_message("Using '%s' as ring file", soundfile);
+            SystemSoundID sid;
+            NSURL *pathURL = [NSURL fileURLWithPath : path];
+            NSError *setCategoryError = nil;
+            [[AVAudioSession sharedInstance]
+             setCategory: AVAudioSessionCategoryAmbient
+             error: &setCategoryError];
+            //redirect audio to speaker
+            UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;  
+            AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute
+                                     , sizeof (audioRouteOverride)
+                                     , &audioRouteOverride);
+
+            AudioServicesCreateSystemSoundID((CFURLRef) pathURL, &sid);
+            AudioServicesPlaySystemSound(sid);
+        }
+
     }
 
-    //linphone_call_enable_camera(call, FALSE);
+    linphone_call_enable_camera(call, FALSE);
 }
 
 - (void) displayVideoCall:(LinphoneCall *)call FromUI:(UIViewController *)viewCtrl forUser:(NSString *)username withDisplayName:(NSString *)displayName {
@@ -178,6 +214,7 @@
     [LinphoneManager set:decline hidden:YES withName:"DECLINE_BTN" andReason:__FUNCTION__];
     [LinphoneManager set:endOrRejectCall hidden:NO withName:"END_BTN" andReason:__FUNCTION__];
     [LinphoneManager set:videoView hidden:NO withName:"VIDEO_VIEW" andReason:__FUNCTION__];
+        
 }
 
 - (void) displayStatus:(NSString *)message {
@@ -229,7 +266,7 @@
         ms_error("Failed to start a new call");
         return;
     }
-    //linphone_call_enable_camera(lc, false);  
+    linphone_call_enable_camera(lc, false);  
     linphone_call_params_destroy(lcallParams);
 }
 

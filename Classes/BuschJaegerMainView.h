@@ -25,6 +25,8 @@
 #import "LinphoneManager.h"
 #import "UILightButton.h"
 
+#define BJ_RING_FILE "01"
+
 @interface BuschJaegerMainView : UIViewController<LinphoneUICallDelegate, UIActionSheetCustomDelegate, LinphoneUIRegistrationDelegate> {
 @private
     UIView* videoView;
@@ -52,5 +54,6 @@
 
 - (IBAction)takeCall:(id)sender;
 - (IBAction)startCall:(id)sender;
+-(void) activateVideoView:(BOOL) value;
 
 @end

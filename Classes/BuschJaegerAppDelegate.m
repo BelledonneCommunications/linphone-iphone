@@ -72,16 +72,19 @@
     linphone_core_set_device_rotation([LinphoneManager getLc], 0);
     linphone_core_set_video_device([LinphoneManager getLc], "DummyImage: Dummy (no) picture");
     
-	linphone_core_set_ring([LinphoneManager getLc], NULL );
-
+    linphone_core_set_ring([LinphoneManager getLc], NULL ); //so that we don't attempt to play ring by the core
     return YES;
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
+    
+    [buschJaegerMainView activateVideoView:FALSE];
 	[[LinphoneManager instance] enterBackgroundMode];
 }
+
 - (void)applicationDidBecomeActive:(UIApplication *)application {
 	[[LinphoneManager instance] becomeActive];
+    [buschJaegerMainView activateVideoView:TRUE];
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
