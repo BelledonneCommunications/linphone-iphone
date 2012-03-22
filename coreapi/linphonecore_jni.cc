@@ -1705,3 +1705,7 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setVideoPolicy(JNIEnv *e
 	vpol.automatically_accept = autoAccept;
 	linphone_core_set_video_policy((LinphoneCore *)lc, &vpol);
 }
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setCpuCount(JNIEnv *env, jobject thiz, jint count) {
+	ms_set_cpu_count(count);
+}
