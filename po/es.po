@@ -578,7 +578,7 @@ msgstr "4"
 
 #: ../gtk/main.ui.h:8
 msgid "5"
-msgstr "10"
+msgstr "5"
 
 #: ../gtk/main.ui.h:9
 msgid "6"
