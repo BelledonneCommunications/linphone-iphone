@@ -22,11 +22,17 @@
 
 @implementation UIToggleVideoButton
 
+@synthesize  videoUpdateIndicator;
+
 -(void) touchUp:(id) sender {
 	LinphoneCore* lc = [LinphoneManager getLc];
     
     if (!linphone_core_video_enabled(lc))
         return;
+    
+    [videoUpdateIndicator startAnimating];
+    videoUpdateIndicator.hidden = NO;
+    self.enabled = NO;
     
     LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
 	if (call) { 

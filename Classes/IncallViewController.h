@@ -22,6 +22,7 @@
 #import "ConferenceCallDetailView.h"
 #import <AddressBookUI/ABPeoplePickerNavigationController.h>
 #include "UILinphone.h"
+#import "UIToggleVideoButton.h"
 
 @class VideoViewController;
 
@@ -36,7 +37,7 @@
     UIButton* pause;
 	UISpeakerButton* speaker;
 	UIButton* contacts;
-	UIButton* addVideo;
+	UIToggleVideoButton* addVideo;
     UITableView* callTableView;
     UIButton* addCall, *mergeCalls;
 
@@ -63,6 +64,7 @@
     UIView* videoPreview;
     UIImageView* videoCallQuality;
     UICamSwitch* videoCameraSwitch;
+    UIActivityIndicatorView* videoUpdateIndicator;
     
     bool dismissed;
     
@@ -108,7 +110,7 @@
 @property (nonatomic, retain) IBOutlet UIButton* pause;
 @property (nonatomic, retain) IBOutlet UIButton* speaker;
 @property (nonatomic, retain) IBOutlet UIButton* contacts;
-@property (nonatomic, retain) IBOutlet UIButton* addVideo;
+@property (nonatomic, retain) IBOutlet UIToggleVideoButton* addVideo;
 @property (nonatomic, retain) IBOutlet UITableView* callTableView;
 @property (nonatomic, retain) IBOutlet UIButton* addCall;
 @property (nonatomic, retain) IBOutlet UIButton* mergeCalls;
@@ -133,4 +135,5 @@
 @property (nonatomic, retain) IBOutlet UIView* videoPreview;
 @property (nonatomic, retain) IBOutlet UIImageView* videoCallQuality;
 @property (nonatomic, retain) IBOutlet UICamSwitch* videoCameraSwitch;
+@property (nonatomic, retain) IBOutlet UIActivityIndicatorView* videoUpdateIndicator;
 @end

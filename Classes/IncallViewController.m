@@ -72,6 +72,7 @@ const NSInteger SECURE_BUTTON_TAG=5;
 @synthesize videoPreview;
 @synthesize videoCallQuality;
 @synthesize videoCameraSwitch;
+@synthesize videoUpdateIndicator;
 
 @synthesize addVideo;
 
@@ -261,7 +262,7 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone]; 
 }
 
--(void) updateUIFromLinphoneState:(UIViewController *)viewCtrl {
+-(void) updateUIFromLinphoneState:(BOOL) fullUpdate {
     activeCallCell = nil;
     [mute reset];
     
@@ -291,17 +292,21 @@ void addAnimationFadeTransition(UIView* view, float duration) {
             [LinphoneManager set:pause hidden:YES withName:"PAUSE button" andReason:AT];
         }
         
-        if (linphone_call_get_state(selectedCall) == LinphoneCallStreamsRunning) {
-            if (linphone_call_params_video_enabled(linphone_call_get_current_params(selectedCall))) {
-                [addVideo setTitle:NSLocalizedString(@"-video", nil) forState:UIControlStateNormal];
-                [IncallViewController updateIndicator: videoCallQuality withCallQuality:linphone_call_get_average_quality(selectedCall)];
+        if (fullUpdate) {
+            videoUpdateIndicator.hidden = YES;
+            LinphoneCallState state = linphone_call_get_state(selectedCall);
+            if (state == LinphoneCallStreamsRunning || state == LinphoneCallUpdated || state == LinphoneCallUpdatedByRemote) {
+                if (linphone_call_params_video_enabled(linphone_call_get_current_params(selectedCall))) {
+                    [addVideo setTitle:NSLocalizedString(@"-video", nil) forState:UIControlStateNormal];
+                    [IncallViewController updateIndicator: videoCallQuality withCallQuality:linphone_call_get_average_quality(selectedCall)];
+                } else {
+                    [addVideo setTitle:NSLocalizedString(@"+video", nil) forState:UIControlStateNormal];
+                }
+                [addVideo setEnabled:YES];
             } else {
-                [addVideo setTitle:NSLocalizedString(@"+video", nil) forState:UIControlStateNormal];
+                [addVideo setEnabled:NO];
+                [videoCallQuality setImage:nil];
             }
-            [addVideo setEnabled:YES];
-        } else {
-            [addVideo setEnabled:NO];
-            [videoCallQuality setImage:nil];
         }
     } else {
         if (callsCount == 1) {
@@ -388,6 +393,7 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orientationChanged:) name:UIDeviceOrientationDidChangeNotification object:nil];
 
     [videoCameraSwitch setPreview:videoPreview];
+    addVideo.videoUpdateIndicator = videoUpdateIndicator;
 }
 
 -(void) addCallPressed {
@@ -433,7 +439,7 @@ void addAnimationFadeTransition(UIView* view, float duration) {
 
 
 -(void)updateCallsDurations {
-    [self updateUIFromLinphoneState: nil]; 
+    [self updateUIFromLinphoneState: NO]; 
 }
 
 -(void) awakeFromNib
@@ -523,7 +529,7 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     device.proximityMonitoringEnabled = YES;
 	if ([speaker isOn]) 
 		[speaker toggle];
-    [self updateUIFromLinphoneState: nil]; 
+    [self updateUIFromLinphoneState: YES]; 
 }
 
 -(void) displayIncomingCall:(LinphoneCall *)call NotificationFromUI:(UIViewController *)viewCtrl forUser:(NSString *)username withDisplayName:(NSString *)displayName {
@@ -537,7 +543,7 @@ void addAnimationFadeTransition(UIView* view, float duration) {
 	if (call !=nil  && linphone_call_get_dir(call)==LinphoneCallIncoming) {
 		if ([speaker isOn]) [speaker toggle];
 	}
-    [self updateUIFromLinphoneState: nil];
+    [self updateUIFromLinphoneState: YES];
     
     [self disableVideoDisplay];
 }
@@ -560,11 +566,12 @@ void addAnimationFadeTransition(UIView* view, float duration) {
 
 	[self dismissModalViewControllerAnimated:FALSE]; //disable animation to avoid blanc bar just below status bar*/
     dismissed = true;
-    [self updateUIFromLinphoneState: nil]; 
+    [self updateUIFromLinphoneState: YES]; 
 }
 -(void) displayVideoCall:(LinphoneCall*) call FromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName { 
     
     [self enableVideoDisplay];
+    [self updateUIFromLinphoneState: YES];
     return;
     
 	if (mIncallViewIsReady) {
@@ -1017,7 +1024,7 @@ void addAnimationFadeTransition(UIView* view, float duration) {
         linphone_core_resume_call([LinphoneManager getLc], selectedCall);
     }
     
-    [self updateUIFromLinphoneState: nil];
+    [self updateUIFromLinphoneState: YES];
 }
 
 

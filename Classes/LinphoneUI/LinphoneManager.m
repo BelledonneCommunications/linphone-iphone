@@ -162,19 +162,7 @@ extern  void libmsbcg729_init();
     
     bool canHideInCallView = (linphone_core_get_calls([LinphoneManager getLc]) == NULL);
 	
-	switch (new_state) {
-			
-		case LinphoneCallStreamsRunning:
-			//check video
-			if (linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
-				[callDelegate	displayVideoCall:call FromUI:mCurrentViewController
-											 forUser:lUserName 
-									 withDisplayName:lDisplayName];
-			} else {
-                [callDelegate displayInCall:call FromUI:mCurrentViewController forUser:lUserName withDisplayName:lDisplayName];
-            }
-			break;
-					
+	switch (new_state) {					
 		case LinphoneCallIncomingReceived: 
 			[callDelegate	displayIncomingCall:call 
                            NotificationFromUI:mCurrentViewController
@@ -276,8 +264,18 @@ extern  void libmsbcg729_init();
 							withDisplayName:lDisplayName];	
 			}
 			break;
-		default:
+		case LinphoneCallStreamsRunning:
+			//check video
+			if (linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
+				[callDelegate	displayVideoCall:call FromUI:mCurrentViewController
+                                       forUser:lUserName 
+                               withDisplayName:lDisplayName];
+			} else {
+                [callDelegate displayInCall:call FromUI:mCurrentViewController forUser:lUserName withDisplayName:lDisplayName];
+            }
 			break;
+        default:
+            break;
 	}
 	
 }

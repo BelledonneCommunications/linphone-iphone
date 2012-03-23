@@ -19,6 +19,12 @@
 
 #import <UIKit/UIKit.h>
 
-@interface UIToggleVideoButton : UIButton
+@interface UIToggleVideoButton : UIButton {
+    UIActivityIndicatorView* videoUpdateIndicator;
+}
+
 - (id)initWithCoder:(NSCoder *)decoder;
+
+@property (nonatomic, retain) IBOutlet UIActivityIndicatorView* videoUpdateIndicator;
+
 @end
