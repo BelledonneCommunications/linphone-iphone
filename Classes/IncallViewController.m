@@ -394,6 +394,17 @@ void addAnimationFadeTransition(UIView* view, float duration) {
 
     [videoCameraSwitch setPreview:videoPreview];
     addVideo.videoUpdateIndicator = videoUpdateIndicator;
+    
+    // prevent buttons resizing
+    /*
+    endCtrl.imageView.contentMode = UIViewContentModeCenter;
+    mute.imageView.contentMode = UIViewContentModeCenter;
+    speaker.imageView.contentMode = UIViewContentModeCenter;
+    pause.imageView.contentMode = UIViewContentModeCenter;
+    contacts.imageView.contentMode = UIViewContentModeCenter;
+    addCall.imageView.contentMode = UIViewContentModeCenter;
+    dialer.imageView.contentMode = UIViewContentModeCenter;
+     */
 }
 
 -(void) addCallPressed {
