@@ -216,6 +216,9 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     [callTableView setAlpha:0.0];
     [UIView commitAnimations];
     
+    videoView.alpha = 1.0;
+    videoView.hidden = FALSE;
+    
     linphone_core_set_native_video_window_id([LinphoneManager getLc],(unsigned long)videoView);	
     linphone_core_set_native_preview_window_id([LinphoneManager getLc],(unsigned long)videoPreview);
     
@@ -228,7 +231,6 @@ void addAnimationFadeTransition(UIView* view, float duration) {
         NSLog(@"new center: %f %f", videoView.center.x, videoView.center.y);
         done = true;
     }
-    
 }
 
 -(void) disableVideoDisplay {
@@ -371,6 +373,8 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     
     UITapGestureRecognizer* singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showControls:)];
     [videoGroup addGestureRecognizer:singleFingerTap];
+    videoGroup.alpha = 0;
+    
     [singleFingerTap release];
     
     mVideoShown=FALSE;
