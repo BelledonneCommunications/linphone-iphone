@@ -104,8 +104,6 @@ veryclean: veryclean-linphone veryclean-msbcg729
 
 
 .NOTPARALLEL build-linphone: init build-openssl build-srtp build-zrtpcpp build-osip2 build-eXosip2  build-speex build-libgsm build-ffmpeg build-libvpx detect_gpl_mode_switch $(LINPHONE_BUILD_DIR)/Makefile
-	# patch MTU
-	sed -i.bak 's/UDP_MAX_SIZE/65535/' $(LINPHONE_SRC_DIR)/mediastreamer2/src/videostream.c
 	cd $(LINPHONE_BUILD_DIR)  && export PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig export CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) make newdate && make && make install
 
 clean-linphone: clean-osip2 clean-eXosip2 clean-speex clean-libgsm  clean-srtp clean-zrtpcpp clean-msilbc clean-libilbc clean-openssl clean-msamr clean-mssilk clean-ffmpeg clean-libvpx clean-msx264 

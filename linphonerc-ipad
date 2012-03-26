@@ -44,4 +44,5 @@ capture=1
 show_local=0
 enabled=1
 size=vga
+recv_buf_size=65535
 

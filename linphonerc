@@ -46,4 +46,5 @@ capture=0
 show_local=0
 enabled=1
 size=qvga
+recv_buf_size=65535
 
