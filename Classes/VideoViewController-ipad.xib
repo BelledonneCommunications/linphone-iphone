@@ -60,20 +60,12 @@
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 					</object>
-					<object class="IBUIImageView" id="901145609">
-						<reference key="NSNextResponder" ref="25193021"/>
-						<int key="NSvFlags">292</int>
-						<string key="NSFrame">{{20, 956}, {28, 28}}</string>
-						<reference key="NSSuperview" ref="25193021"/>
-						<string key="NSReuseIdentifierKey">_NS:567</string>
-						<bool key="IBUIUserInteractionEnabled">NO</bool>
-						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
-					</object>
 					<object class="IBUIButton" id="897140295">
 						<reference key="NSNextResponder" ref="25193021"/>
 						<int key="NSvFlags">292</int>
 						<string key="NSFrame">{{329, 962}, {108, 62}}</string>
 						<reference key="NSSuperview" ref="25193021"/>
+						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="509323940"/>
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
@@ -116,6 +108,7 @@
 						<int key="NSvFlags">292</int>
 						<string key="NSFrame">{{223, 962}, {108, 62}}</string>
 						<reference key="NSSuperview" ref="25193021"/>
+						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="897140295"/>
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
@@ -152,6 +145,7 @@
 						<int key="NSvFlags">292</int>
 						<string key="NSFrame">{{436, 962}, {108, 62}}</string>
 						<reference key="NSSuperview" ref="25193021"/>
+						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="679593526"/>
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
@@ -183,6 +177,7 @@
 				</array>
 				<string key="NSFrameSize">{768, 1024}</string>
 				<reference key="NSSuperview"/>
+				<reference key="NSWindow"/>
 				<reference key="NSNextKeyView" ref="873033834"/>
 				<string key="NSReuseIdentifierKey">_NS:212</string>
 				<object class="NSColor" key="IBUIBackgroundColor">
@@ -200,6 +195,7 @@
 						<int key="NSvFlags">292</int>
 						<string key="NSFrameSize">{1024, 768}</string>
 						<reference key="NSSuperview" ref="763566492"/>
+						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="637528292"/>
 						<string key="NSReuseIdentifierKey">_NS:569</string>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
@@ -210,6 +206,7 @@
 						<int key="NSvFlags">292</int>
 						<string key="NSFrame">{{799, 598}, {225, 170}}</string>
 						<reference key="NSSuperview" ref="763566492"/>
+						<reference key="NSWindow"/>
 						<object class="NSColor" key="IBUIBackgroundColor">
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MQA</bytes>
@@ -222,6 +219,7 @@
 						<int key="NSvFlags">292</int>
 						<string key="NSFrame">{{351, 706}, {108, 62}}</string>
 						<reference key="NSSuperview" ref="763566492"/>
+						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="303730267"/>
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
@@ -242,6 +240,7 @@
 						<int key="NSvFlags">292</int>
 						<string key="NSFrame">{{458, 706}, {108, 62}}</string>
 						<reference key="NSSuperview" ref="763566492"/>
+						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="499714887"/>
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
@@ -263,6 +262,7 @@
 						<int key="NSvFlags">292</int>
 						<string key="NSFrame">{{565, 706}, {108, 62}}</string>
 						<reference key="NSSuperview" ref="763566492"/>
+						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="756580344"/>
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
@@ -285,6 +285,7 @@
 						<int key="NSvFlags">292</int>
 						<string key="NSFrame">{{20, 720}, {28, 28}}</string>
 						<reference key="NSSuperview" ref="763566492"/>
+						<reference key="NSWindow"/>
 						<string key="NSReuseIdentifierKey">_NS:567</string>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
@@ -292,6 +293,7 @@
 				</array>
 				<string key="NSFrameSize">{1024, 768}</string>
 				<reference key="NSSuperview"/>
+				<reference key="NSWindow"/>
 				<reference key="NSNextKeyView" ref="696525010"/>
 				<string key="NSReuseIdentifierKey">_NS:212</string>
 				<object class="NSColor" key="IBUIBackgroundColor">
@@ -313,6 +315,7 @@
 						<int key="NSvFlags">292</int>
 						<string key="NSFrameSize">{1024, 768}</string>
 						<reference key="NSSuperview" ref="79829529"/>
+						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="243148779"/>
 						<string key="NSReuseIdentifierKey">_NS:569</string>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
@@ -323,6 +326,7 @@
 						<int key="NSvFlags">292</int>
 						<string key="NSFrame">{{799, 598}, {225, 170}}</string>
 						<reference key="NSSuperview" ref="79829529"/>
+						<reference key="NSWindow"/>
 						<object class="NSColor" key="IBUIBackgroundColor">
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MQA</bytes>
@@ -335,6 +339,7 @@
 						<int key="NSvFlags">292</int>
 						<string key="NSFrame">{{351, 706}, {108, 62}}</string>
 						<reference key="NSSuperview" ref="79829529"/>
+						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="796028571"/>
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
@@ -355,6 +360,7 @@
 						<int key="NSvFlags">292</int>
 						<string key="NSFrame">{{458, 706}, {108, 62}}</string>
 						<reference key="NSSuperview" ref="79829529"/>
+						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="551257366"/>
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
@@ -376,6 +382,7 @@
 						<int key="NSvFlags">292</int>
 						<string key="NSFrame">{{565, 706}, {108, 62}}</string>
 						<reference key="NSSuperview" ref="79829529"/>
+						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="799261982"/>
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
@@ -398,6 +405,7 @@
 						<int key="NSvFlags">292</int>
 						<string key="NSFrame">{{20, 720}, {28, 28}}</string>
 						<reference key="NSSuperview" ref="79829529"/>
+						<reference key="NSWindow"/>
 						<string key="NSReuseIdentifierKey">_NS:567</string>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
@@ -405,6 +413,7 @@
 				</array>
 				<string key="NSFrameSize">{1024, 768}</string>
 				<reference key="NSSuperview"/>
+				<reference key="NSWindow"/>
 				<reference key="NSNextKeyView" ref="97794255"/>
 				<string key="NSReuseIdentifierKey">_NS:212</string>
 				<object class="NSColor" key="IBUIBackgroundColor">
@@ -807,7 +816,170 @@
 			<nil key="sourceID"/>
 			<int key="maxID">53</int>
 		</object>
-		<object class="IBClassDescriber" key="IBDocument.Classes"/>
+		<object class="IBClassDescriber" key="IBDocument.Classes">
+			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
+				<object class="IBPartialClassDescription">
+					<string key="className">UICamSwitch</string>
+					<string key="superclassName">UIButton</string>
+					<object class="NSMutableDictionary" key="outlets">
+						<string key="NS.key.0">preview</string>
+						<string key="NS.object.0">UIView</string>
+					</object>
+					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<string key="NS.key.0">preview</string>
+						<object class="IBToOneOutletInfo" key="NS.object.0">
+							<string key="name">preview</string>
+							<string key="candidateClassName">UIView</string>
+						</object>
+					</object>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/UICamSwitch.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">UIHangUpButton</string>
+					<string key="superclassName">UIButton</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/UIHangUpButton.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">UIMuteButton</string>
+					<string key="superclassName">UIToggleButton</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/UIMuteButton.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">UIToggleButton</string>
+					<string key="superclassName">UIButton</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/UIToggleButton.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">VideoViewController</string>
+					<string key="superclassName">UIViewController</string>
+					<dictionary class="NSMutableDictionary" key="outlets">
+						<string key="mCallQuality">UIImageView</string>
+						<string key="mCallQualityLandLeft">UIImageView</string>
+						<string key="mCallQualityLandRight">UIImageView</string>
+						<string key="mCamSwitch">UICamSwitch</string>
+						<string key="mCamSwitchLandLeft">UICamSwitch</string>
+						<string key="mCamSwitchLandRight">UICamSwitch</string>
+						<string key="mDisplay">UIView</string>
+						<string key="mDisplayLandLeft">UIView</string>
+						<string key="mDisplayLandRight">UIView</string>
+						<string key="mHangUp">UIHangUpButton</string>
+						<string key="mHangUpLandLeft">UIHangUpButton</string>
+						<string key="mHangUpLandRight">UIHangUpButton</string>
+						<string key="mLandscapeLeft">UIView</string>
+						<string key="mLandscapeRight">UIView</string>
+						<string key="mMute">UIMuteButton</string>
+						<string key="mMuteLandLeft">UIMuteButton</string>
+						<string key="mMuteLandRight">UIMuteButton</string>
+						<string key="mPortrait">UIView</string>
+						<string key="mPreview">UIView</string>
+						<string key="mPreviewLandLeft">UIView</string>
+						<string key="mPreviewLandRight">UIView</string>
+					</dictionary>
+					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<object class="IBToOneOutletInfo" key="mCallQuality">
+							<string key="name">mCallQuality</string>
+							<string key="candidateClassName">UIImageView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="mCallQualityLandLeft">
+							<string key="name">mCallQualityLandLeft</string>
+							<string key="candidateClassName">UIImageView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="mCallQualityLandRight">
+							<string key="name">mCallQualityLandRight</string>
+							<string key="candidateClassName">UIImageView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="mCamSwitch">
+							<string key="name">mCamSwitch</string>
+							<string key="candidateClassName">UICamSwitch</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="mCamSwitchLandLeft">
+							<string key="name">mCamSwitchLandLeft</string>
+							<string key="candidateClassName">UICamSwitch</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="mCamSwitchLandRight">
+							<string key="name">mCamSwitchLandRight</string>
+							<string key="candidateClassName">UICamSwitch</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="mDisplay">
+							<string key="name">mDisplay</string>
+							<string key="candidateClassName">UIView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="mDisplayLandLeft">
+							<string key="name">mDisplayLandLeft</string>
+							<string key="candidateClassName">UIView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="mDisplayLandRight">
+							<string key="name">mDisplayLandRight</string>
+							<string key="candidateClassName">UIView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="mHangUp">
+							<string key="name">mHangUp</string>
+							<string key="candidateClassName">UIHangUpButton</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="mHangUpLandLeft">
+							<string key="name">mHangUpLandLeft</string>
+							<string key="candidateClassName">UIHangUpButton</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="mHangUpLandRight">
+							<string key="name">mHangUpLandRight</string>
+							<string key="candidateClassName">UIHangUpButton</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="mLandscapeLeft">
+							<string key="name">mLandscapeLeft</string>
+							<string key="candidateClassName">UIView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="mLandscapeRight">
+							<string key="name">mLandscapeRight</string>
+							<string key="candidateClassName">UIView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="mMute">
+							<string key="name">mMute</string>
+							<string key="candidateClassName">UIMuteButton</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="mMuteLandLeft">
+							<string key="name">mMuteLandLeft</string>
+							<string key="candidateClassName">UIMuteButton</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="mMuteLandRight">
+							<string key="name">mMuteLandRight</string>
+							<string key="candidateClassName">UIMuteButton</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="mPortrait">
+							<string key="name">mPortrait</string>
+							<string key="candidateClassName">UIView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="mPreview">
+							<string key="name">mPreview</string>
+							<string key="candidateClassName">UIView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="mPreviewLandLeft">
+							<string key="name">mPreviewLandLeft</string>
+							<string key="candidateClassName">UIView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="mPreviewLandRight">
+							<string key="name">mPreviewLandRight</string>
+							<string key="candidateClassName">UIView</string>
+						</object>
+					</dictionary>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/VideoViewController.h</string>
+					</object>
+				</object>
+			</array>
+		</object>
 		<int key="IBDocument.localizationMode">0</int>
 		<string key="IBDocument.TargetRuntimeIdentifier">IBIPadFramework</string>
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
