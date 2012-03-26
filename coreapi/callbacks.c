@@ -368,9 +368,9 @@ static void call_accepted(SalOp *op){
 				}
 			}
 			linphone_core_update_streams (lc,call,md);
-			linphone_call_set_state(call, LinphoneCallStreamsRunning, "Streams running");
 			if (!call->current_params.in_conference)
 				lc->current_call=call;
+			linphone_call_set_state(call, LinphoneCallStreamsRunning, "Streams running");
 		}
 	}else{
 		/*send a bye*/
