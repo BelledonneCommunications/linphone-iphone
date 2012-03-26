@@ -613,7 +613,9 @@ typedef void (*DtmfReceived)(struct _LinphoneCore* lc, LinphoneCall *call, int d
 typedef void (*ReferReceived)(struct _LinphoneCore *lc, const char *refer_to);
 /** Callback prototype */
 typedef void (*BuddyInfoUpdated)(struct _LinphoneCore *lc, LinphoneFriend *lf);
-
+/** Callback prototype */
+typedef void (*CallFirstVideoFrameCb)(struct _LinphoneCore *lc, LinphoneCall *call);
+    
 /**
  * This structure holds all callbacks that the application should implement.
  *  None is mandatory.
@@ -637,6 +639,7 @@ typedef struct _LinphoneVTable{
 	DisplayUrlCb display_url;
 	ShowInterfaceCb show; /**< Notifies the application that it should show up*/
 	CallEncryptionChangedCb call_encryption_changed; /**<Notifies on change in the encryption of call streams */
+    CallFirstVideoFrameCb call_first_video_frame; /** Notifies on first successful video frame decoding */
 } LinphoneCoreVTable;
 
 /**

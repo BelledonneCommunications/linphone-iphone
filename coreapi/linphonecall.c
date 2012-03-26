@@ -842,12 +842,18 @@ static void rendercb(void *data, const MSPicture *local, const MSPicture *remote
 
 #ifdef VIDEO_ENABLED
 static void video_stream_event_cb(void *user_pointer, const MSFilter *f, const unsigned int event_id, const void *args){
+    LinphoneCall* call = (LinphoneCall*) user_pointer;
 	ms_warning("In linphonecall.c: video_stream_event_cb");
 	switch (event_id) {
 		case MS_VIDEO_DECODER_DECODING_ERRORS:
 			ms_warning("Case is MS_VIDEO_DECODER_DECODING_ERRORS");
-			linphone_call_send_vfu_request((LinphoneCall*) user_pointer);
+			linphone_call_send_vfu_request(call);
 			break;
+        case MS_VIDEO_DECODER_FIRST_IMAGE_DECODED:
+            ms_message("First video frame decoded successfully");
+            if (call->core->vtable.call_first_video_frame != NULL)
+                call->core->vtable.call_first_video_frame(call->core, call);
+            break;
 		default:
 			ms_warning("Unhandled event %i", event_id);
 			break;
