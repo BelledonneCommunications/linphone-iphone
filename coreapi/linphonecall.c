@@ -898,17 +898,21 @@ void linphone_call_init_media_streams(LinphoneCall *call){
 #ifdef VIDEO_ENABLED
 
 	if ((lc->video_conf.display || lc->video_conf.capture) && md->streams[1].port>0){
+		int video_recv_buf_size=lp_config_get_int(lc->config,"video","recv_buf_size",0);
 		call->videostream=video_stream_new(md->streams[1].port,linphone_core_ipv6_enabled(lc));
-	if( lc->video_conf.displaytype != NULL)
-		video_stream_set_display_filter_name(call->videostream,lc->video_conf.displaytype);
-	video_stream_set_event_callback(call->videostream,video_stream_event_cb, call);
-	if (lc->rtptf){
-		RtpTransport *vrtp=lc->rtptf->video_rtp_func(lc->rtptf->video_rtp_func_data, call->video_port);
-		RtpTransport *vrtcp=lc->rtptf->video_rtcp_func(lc->rtptf->video_rtcp_func_data, call->video_port+1);
-		rtp_session_set_transports(call->videostream->session,vrtp,vrtcp);
-	}
-	call->videostream_app_evq = ortp_ev_queue_new();
-	rtp_session_register_event_queue(call->videostream->session,call->videostream_app_evq);
+		video_stream_enable_display_filter_auto_rotate(call->videostream, lp_config_get_int(lc->config,"video","display_filter_auto_rotate",0));
+		if (video_recv_buf_size>0) rtp_session_set_recv_buf_size(call->videostream->session,video_recv_buf_size);
+          
+		if( lc->video_conf.displaytype != NULL)
+			video_stream_set_display_filter_name(call->videostream,lc->video_conf.displaytype);
+		video_stream_set_event_callback(call->videostream,video_stream_event_cb, call);
+		if (lc->rtptf){
+			RtpTransport *vrtp=lc->rtptf->video_rtp_func(lc->rtptf->video_rtp_func_data, call->video_port);
+			RtpTransport *vrtcp=lc->rtptf->video_rtcp_func(lc->rtptf->video_rtcp_func_data, call->video_port+1);
+			rtp_session_set_transports(call->videostream->session,vrtp,vrtcp);
+		}
+		call->videostream_app_evq = ortp_ev_queue_new();
+		rtp_session_register_event_queue(call->videostream->session,call->videostream_app_evq);
 #ifdef TEST_EXT_RENDERER
 		video_stream_set_render_callback(call->videostream,rendercb,NULL);
 #endif

@@ -761,4 +761,6 @@ public interface LinphoneCore {
 	void setVideoPolicy(boolean autoInitiate, boolean autoAccept);
 	
 	void setUserAgent(String name, String version);
+	
+	void setCpuCount(int count);
 }
