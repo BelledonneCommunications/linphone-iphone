@@ -57,14 +57,16 @@ extern  void libmsbcg729_init();
 @synthesize backCamId;
 
 -(id) init {
+    assert (!theLinphoneManager);
     if ((self= [super init])) {
         mFastAddressBook = [[FastAddressBook alloc] init];
+        theLinphoneManager = self;
     }
     return self;
 }
 +(LinphoneManager*) instance {
 	if (theLinphoneManager==nil) {
-		theLinphoneManager = [[LinphoneManager alloc] init];
+		[[LinphoneManager alloc] init];
 	}
 	return theLinphoneManager;
 }
@@ -413,16 +415,21 @@ static LinphoneCoreVTable linphonec_vtable = {
 	CFWriteStreamClose (writeStream);
 }	
 
-void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void * info) {
+void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void* nilCtx) {
 	ms_message("Network connection flag [%x]",flags);
-	LinphoneManager* lLinphoneMgr = (LinphoneManager*)info;
+	LinphoneManager* lLinphoneMgr = [LinphoneManager instance];
 	if ([LinphoneManager getLc] != nil) {
+        struct NetworkReachabilityContext* ctx = nilCtx ? ((struct NetworkReachabilityContext*)nilCtx) : 0;
 		if ((flags == 0) | (flags & (kSCNetworkReachabilityFlagsConnectionRequired |kSCNetworkReachabilityFlagsConnectionOnTraffic))) {
 			[[LinphoneManager instance] kickOffNetworkConnection];
 			linphone_core_set_network_reachable([LinphoneManager getLc],false);
-			((LinphoneManager*)info).connectivity = none;
+			lLinphoneMgr.connectivity = none;
 		} else {
-			Connectivity  newConnectivity = flags & kSCNetworkReachabilityFlagsIsWWAN ? wwan:wifi;
+			Connectivity  newConnectivity;
+            if (!ctx || ctx->testWWan)
+                newConnectivity = flags & kSCNetworkReachabilityFlagsIsWWAN ? wwan:wifi;
+            else
+                newConnectivity = wifi;
 			if (lLinphoneMgr.connectivity == none) {
 				linphone_core_set_network_reachable([LinphoneManager getLc],true);
 			} else if (lLinphoneMgr.connectivity != newConnectivity) {
@@ -433,7 +440,9 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 			lLinphoneMgr.connectivity=newConnectivity;
 			ms_message("new network connectivity  of type [%s]",(newConnectivity==wifi?"wifi":"wwan"));
 		}
-		
+		if (ctx && ctx->networkStateChanged) {
+            (*ctx->networkStateChanged)(lLinphoneMgr.connectivity);
+        }
 	}
 }
 
@@ -649,7 +658,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	}
 	bool enableSrtp = [[NSUserDefaults standardUserDefaults] boolForKey:@"enable_srtp_preference"];
 	linphone_core_set_media_encryption(theLinphoneCore, enableSrtp?LinphoneMediaEncryptionSRTP:LinphoneMediaEncryptionZRTP);
-    
+
     NSString* stun_server = [[NSUserDefaults standardUserDefaults] stringForKey:@"stun_preference"];
     if ([stun_server length]>0){
         linphone_core_set_stun_server(theLinphoneCore,[stun_server cStringUsingEncoding:[NSString defaultCStringEncoding]]);
@@ -707,7 +716,8 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		linphone_core_destroy(theLinphoneCore);
 		theLinphoneCore = nil;
         SCNetworkReachabilityUnscheduleFromRunLoop(proxyReachability, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
-        CFRelease(proxyReachability);
+        if (proxyReachability)
+            CFRelease(proxyReachability);
         proxyReachability=nil;
         
     }
@@ -762,7 +772,6 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		[self destroyLibLinphone];
         return NO;
 	}
-	
 }
 
 
@@ -772,7 +781,30 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 }
 
 
-
+-(void) setupNetworkReachabilityCallback: (const char*) nodeName withContext:(SCNetworkReachabilityContext*) ctx {
+    if (proxyReachability) {
+        ms_message("Cancel old network reachability check");
+        SCNetworkReachabilityUnscheduleFromRunLoop(proxyReachability, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+        CFRelease(proxyReachability);
+        proxyReachability = nil;
+    }
+    
+    proxyReachability = SCNetworkReachabilityCreateWithName(nil, nodeName);
+    
+	//initial state is network off should be done as soon as possible
+	SCNetworkReachabilityFlags flags;
+	if (!SCNetworkReachabilityGetFlags(proxyReachability, &flags)) {
+		ms_error("Cannot get reachability flags");
+	};
+	networkReachabilityCallBack(proxyReachability, flags, ctx ? ctx->info : 0);	
+    
+	if (!SCNetworkReachabilitySetCallback(proxyReachability, (SCNetworkReachabilityCallBack)networkReachabilityCallBack, ctx)){
+		ms_error("Cannot register reachability cb");
+	};
+	if(!SCNetworkReachabilityScheduleWithRunLoop(proxyReachability, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode)){
+		ms_error("Cannot register schedule reachability cb");
+	};
+}
 
 
 /*************
@@ -824,22 +856,8 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 
 	linphone_core_set_zrtp_secrets_file(theLinphoneCore, [zrtpSecretsFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
     
-    proxyReachability=SCNetworkReachabilityCreateWithName(nil, "linphone.org");		
-    proxyReachabilityContext.info=self;
-	//initial state is network off should be done as soon as possible
-	SCNetworkReachabilityFlags flags;
-	if (!SCNetworkReachabilityGetFlags(proxyReachability, &flags)) {
-		ms_error("Cannot get reachability flags");
-	};
-	networkReachabilityCallBack(proxyReachability,flags,self);	
+    [self setupNetworkReachabilityCallback: "linphone.org" withContext:nil];
 
-	if (!SCNetworkReachabilitySetCallback(proxyReachability, (SCNetworkReachabilityCallBack)networkReachabilityCallBack,&proxyReachabilityContext)){
-		ms_error("Cannot register reachability cb");
-	};
-	if(!SCNetworkReachabilityScheduleWithRunLoop(proxyReachability, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode)){
-		ms_error("Cannot register schedule reachability cb");
-	};
-	
 	[self reconfigureLinphoneIfNeeded:nil];
 	
 	// start scheduler

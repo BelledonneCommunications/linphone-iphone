@@ -36,10 +36,16 @@ typedef struct _CallContext {
     bool_t cameraIsEnabled;
 } CallContext;
 
+struct NetworkReachabilityContext {
+    bool_t testWifi, testWWan;
+    void (*networkStateChanged) (Connectivity newConnectivity);
+};
+
+
 @interface LinphoneManager : NSObject <AVAudioSessionDelegate> {
-@private
-	SCNetworkReachabilityContext proxyReachabilityContext;
+@protected
 	SCNetworkReachabilityRef proxyReachability;
+@private
 	NSTimer* mIterateTimer;
 	id<LogView> mLogView;	
 	bool isbackgroundModeEnabled;
@@ -76,6 +82,7 @@ typedef struct _CallContext {
 -(UIImage*) getImageFromAddressBook:(NSString*) number;
 
 -(BOOL) reconfigureLinphoneIfNeeded:(NSDictionary *)oldSettings;
+-(void) setupNetworkReachabilityCallback: (const char*) nodeName withContext:(SCNetworkReachabilityContext*) ctx;
 
 @property (nonatomic, retain) id<LinphoneUICallDelegate> callDelegate;
 @property (nonatomic, retain) id<LinphoneUIRegistrationDelegate> registrationDelegate;
@@ -83,5 +90,4 @@ typedef struct _CallContext {
 @property (readonly) const char*  frontCamId;
 @property (readonly) const char*  backCamId;
 @end
-
 

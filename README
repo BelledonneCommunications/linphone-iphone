@@ -36,19 +36,24 @@ BUILDING THE SDK
 
  * GPL third parties versus non GPL third parties
 
-This sdk can be generated in 2 flavors. Firt is with GPL third parties, it means liblinphone includes GPL third parties like FFMPEG or x264. 
-If you choose this flavor, your final application must comply with GPL in any case. This is the default mode.
+ This sdk can be generated in 2 flavors. Firt is with GPL third parties, it means liblinphone includes GPL third parties like FFMPEG or x264. 
+ If you choose this flavor, your final application must comply with GPL in any case. This is the default mode.
 
-To generate the liblinphone multi arch sdk in GPL mode, do:
+ To generate the liblinphone multi arch sdk in GPL mode, do:
 	$ cd submodules/build
 	$ make all 
 
-ALTERNATIVELY, you can force liblinphone to use only non GPL code except for liblinphone, mediastremer2, ortp, exosip, osip.
-If you choose this flavor, your final application  is still subject to GPL except if you have a commercial license for liblinphone, mediastremer2, ortp, exosip, osip.
+ ALTERNATIVELY, you can force liblinphone to use only non GPL code except for liblinphone, mediastremer2, ortp, exosip, osip.
+ If you choose this flavor, your final application  is still subject to GPL except if you have a commercial license for liblinphone, mediastremer2, ortp, exosip, osip.
 
-To generate the liblinphone multi arch sdkin non GPL mode, do:
+ To generate the liblinphone multi arch sdkin non GPL mode, do:
 	$ cd submodules/build
 	$ make all enable_gpl_third_parties=no
+
+ * ZRTP support
+
+ You can enable ZRTP support in GPL mode only, by adding "enable_zrtp=yes" to the make command, for example:
+ 	$ make all enable_gpl_third_parties=yes enable_zrtp=yes
 	
 
 The resulting sdk is in liblinphone-sdk/ directory.
