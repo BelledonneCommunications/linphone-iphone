@@ -45,8 +45,10 @@
 											  otherButtonTitles:nil];
 		[error show];
         [error release];
+        [ct release];
 		return;
     }
+    [ct release];
     
 	if (TRUE /*!linphone_core_in_call([LinphoneManager getLc])*/) {
 		LinphoneProxyConfig* proxyCfg;	

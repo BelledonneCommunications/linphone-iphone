@@ -22,6 +22,9 @@
 #import "ContactPickerDelegate.h"
 #import "AddressBook/ABPerson.h"
 
+#import "CoreTelephony/CTCallCenter.h"
+#import "CoreTelephony/CTCall.h"
+
 #import "ConsoleViewController.h"
 #import "MoreViewController.h"
 #include "CallHistoryTableViewController.h"
@@ -43,6 +46,24 @@ int __aeabi_idiv(int a, int b) {
 @synthesize myPeoplePickerController;
 @synthesize myPhoneViewController;
 
+-(void) handleGSMCallInteration: (id) cCenter {
+    CTCallCenter* ct = (CTCallCenter*) cCenter;
+    
+    int callCount = [ct.currentCalls count];
+    if (!callCount) {
+        NSLog(@"No GSM call -> enabling SIP calls");
+        linphone_core_set_max_calls([LinphoneManager getLc], 3);
+    } else {
+        NSLog(@"%d GSM call(s) -> disabling SIP calls", callCount);
+        /* pause current call, if any */
+        LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
+        if (call) {
+            NSLog(@"Pausing SIP call");
+            linphone_core_pause_call([LinphoneManager getLc], call);
+        }
+        linphone_core_set_max_calls([LinphoneManager getLc], 0);
+    }
+}
 
 -(void)applicationWillResignActive:(UIApplication *)application {
     LinphoneCore* lc = [LinphoneManager getLc];
@@ -62,10 +83,30 @@ int __aeabi_idiv(int a, int b) {
     
 }
 - (void)applicationDidEnterBackground:(UIApplication *)application {
-	[[LinphoneManager instance] enterBackgroundMode];
+    if (![[LinphoneManager instance] enterBackgroundMode]) {
+        // destroying eventHandler if app cannot go in background.
+        // Otherwise if a GSM call happen and Linphone is resumed,
+        // the handler will be called before LinphoneCore is built.
+        // Then handler will be restored in appDidBecomeActive cb
+        callCenter.callEventHandler = nil;
+        [callCenter release];
+        callCenter = nil;
+    }
 }
 - (void)applicationDidBecomeActive:(UIApplication *)application {
 	[[LinphoneManager instance] becomeActive];
+    
+    if (callCenter == nil) {
+        callCenter = [[CTCallCenter alloc] init];
+        callCenter.callEventHandler = ^(CTCall* call) {
+            // post on main thread
+            [self performSelectorOnMainThread:@selector(handleGSMCallInteration:)
+                                   withObject:callCenter
+                                waitUntilDone:YES];
+        };
+    }
+    // check call state at startup
+    [self handleGSMCallInteration:callCenter];
     
     LinphoneCore* lc = [LinphoneManager getLc];
     LinphoneCall* call = linphone_core_get_current_call(lc);
@@ -84,7 +125,7 @@ int __aeabi_idiv(int a, int b) {
     }
 }
 
-- (void) loadDefaultSettings {
+- (void) loadDefaultSettings:(NSDictionary *) appDefaults {
     
     NSString *settingsBundle = [[NSBundle mainBundle] pathForResource:@"Settings" ofType:@"bundle"];
     if(!settingsBundle) {
@@ -108,32 +149,14 @@ int __aeabi_idiv(int a, int b) {
             [defaultsToRegister setObject:[prefSpecification objectForKey:@"DefaultValue"] forKey:key];
         }
     }
-    
-    NSDictionary *appDefaults = [NSDictionary dictionaryWithObjectsAndKeys:
-                                 @"NO", @"enable_first_login_view_preference", //
-#ifdef HAVE_AMR                                 
-                                 @"YES",@"amr_8k_preference", // enable amr by default if compiled with
-#endif
-#ifdef HAVE_G729                                 
-                                 @"YES",@"g729_preference", // enable amr by default if compiled with
-#endif                                 
-                                 @"NO",@"debugenable_preference",
-								 //@"+33",@"countrycode_preference",
-                                 nil];
-    
     [defaultsToRegister addEntriesFromDictionary:appDefaults];
     [[NSUserDefaults standardUserDefaults] registerDefaults:defaultsToRegister];
     [defaultsToRegister release];
     [[NSUserDefaults standardUserDefaults] synchronize];
-	
 }
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions{    
-	
-	/*
-	 *Custumization
-	 */
-	[self loadDefaultSettings];
-	//as defined in PhoneMainView.xib		
+
+-(void) setupUI {
+    //as defined in PhoneMainView.xib		
 	//dialer
 	myPhoneViewController = (PhoneViewController*) [myTabBarController.viewControllers objectAtIndex: DIALER_TAB_INDEX];
 	myPhoneViewController.myTabBarController =  myTabBarController;
@@ -175,10 +198,44 @@ int __aeabi_idiv(int a, int b) {
 	[window makeKeyAndVisible];
 	
 	[[LinphoneManager instance] setCallDelegate:myPhoneViewController];
+}
+
+-(void) setupGSMInteraction {
+	callCenter = [[CTCallCenter alloc] init];
+    callCenter.callEventHandler = ^(CTCall* call) {
+        // post on main thread
+        [self performSelectorOnMainThread:@selector(handleGSMCallInteration:)
+                               withObject:callCenter
+                            waitUntilDone:YES];
+    };    
+}
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions{    
+    NSDictionary *appDefaults = [NSDictionary dictionaryWithObjectsAndKeys:
+                                 @"NO", @"enable_first_login_view_preference", //
+#ifdef HAVE_AMR                                 
+                                 @"YES",@"amr_8k_preference", // enable amr by default if compiled with
+#endif
+#ifdef HAVE_G729                                 
+                                 @"YES",@"g729_preference", // enable amr by default if compiled with
+#endif                                 
+								 //@"+33",@"countrycode_preference",
+                                 nil];	
+
+    /* explicitely instanciate LinphoneManager */
+    LinphoneManager* lm = [[LinphoneManager alloc] init];
+    assert(lm == [LinphoneManager instance]);
+    
+	[self loadDefaultSettings: appDefaults];
+    
+    [self setupUI];
+	
 	[[LinphoneManager instance]	startLibLinphone];
-		
+
 	[[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeSound];
-		
+    
+    [self setupGSMInteraction];
+
 	return YES;
 }
 
