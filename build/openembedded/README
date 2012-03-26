@@ -1,0 +1,51 @@
+Recipes for open embedded: http://www.openembedded.org
+
+
+Documentations:
+http://docs.openembedded.org/usermanual/
+http://bitbake.berlios.de/manual/
+
+
+
+Instructions for compilation from sources: (requires 10 Go of free space)
+- Choose a distribution and build it.
+  For example, to build Angstrom follow the guide at http://www.angstrom-distribution.org/building-angstrom
+  For IGEPv2 use environment variable MACHINE=igep0020
+
+- Add recipes to the pool with an higher priority).
+  See http://bitbake.berlios.de/manual/ch04s02.html#id870544 Example 4.8. Using “bbfile collections”
+  Example:
+  BBFILES = "/Data/work/angstrom/angstrom-setup-scripts/sources/openembedded/recipes/*/*.bb /home/guillaume/dev/linphone-daemon/build/openembedded/*.bb"
+  BBFILE_COLLECTIONS = "upstream local"
+  BBFILE_PATTERN_upstream = "^/Data/"
+  BBFILE_PATTERN_local = "^/home/"
+  BBFILE_PRIORITY_upstream = "5"
+  BBFILE_PRIORITY_local = "10"
+
+- Prepare compilation
+  Source appropriate environment with "~/.oe/enviro*"  
+  Change directory to where you launched Angstrom install script.
+
+- Compile linphone / linphonec
+  bitbake -c clean linphone
+  bitbake linphone
+
+
+- Find the generated packages "*.ipk"
+  Example: /Data/work/angstrom/angstrom-setup-scripts/build/tmp-angstrom_2008_1/deploy/glibc/ipk/armv7a/
+
+
+
+ 
+Installation
+- check network connectivity
+	* ping linphone.org
+	* see "route -n"
+	* see "/etc/resolv.conf"
+- update package list
+	* opkg update
+- copy ipk files to install to /tmp
+- eventually remove previously installed packages
+- install with "opkg install libortp*.ipk libmediastreamer*.ipk liblinphone*.ipk linphonec*.ipk"
+
+

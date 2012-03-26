@@ -1,0 +1,13 @@
+--- linphone/mediastreamer2/src/alsa.c_orig	2011-05-24 12:39:33.824600109 +0200
++++ linphone/mediastreamer2/src/alsa.c	2011-05-24 12:40:04.760407404 +0200
+@@ -32,8 +32,8 @@
+ /*in case of troubles with a particular driver, try incrementing ALSA_PERIOD_SIZE
+ to 512, 1024, 2048, 4096...
+ then try incrementing the number of periods*/
+-#define ALSA_PERIODS 8
+-#define ALSA_PERIOD_SIZE 256
++#define ALSA_PERIODS 4
++#define ALSA_PERIOD_SIZE 512
+ 
+ /*uncomment the following line if you have problems with an alsa driver
+ having sound quality trouble:*/
