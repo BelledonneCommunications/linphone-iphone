@@ -29,6 +29,7 @@
 //status reporting
 -(void) displayStatus:(NSString*) message; 
 -(void) displayAskToEnableVideoCall:(LinphoneCall*) call forUser:(NSString*) username withDisplayName:(NSString*) displayName;
+-(void) firstVideoFrameDecoded:(LinphoneCall*) call;
 @end
 
 

@@ -65,6 +65,7 @@
     UIImageView* videoCallQuality;
     UICamSwitch* videoCameraSwitch;
     UIActivityIndicatorView* videoUpdateIndicator;
+    UIActivityIndicatorView* videoWaitingForFirstImage;
     
     bool dismissed;
     
@@ -136,4 +137,6 @@
 @property (nonatomic, retain) IBOutlet UIImageView* videoCallQuality;
 @property (nonatomic, retain) IBOutlet UICamSwitch* videoCameraSwitch;
 @property (nonatomic, retain) IBOutlet UIActivityIndicatorView* videoUpdateIndicator;
+@property (nonatomic, retain) IBOutlet UIActivityIndicatorView* videoWaitingForFirstImage;
+
 @end

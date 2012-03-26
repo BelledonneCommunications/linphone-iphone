@@ -73,6 +73,7 @@ const NSInteger SECURE_BUTTON_TAG=5;
 @synthesize videoCallQuality;
 @synthesize videoCameraSwitch;
 @synthesize videoUpdateIndicator;
+@synthesize videoWaitingForFirstImage;
 
 @synthesize addVideo;
 
@@ -583,6 +584,7 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     
     [self enableVideoDisplay];
     [self updateUIFromLinphoneState: YES];
+    videoWaitingForFirstImage.hidden = NO;
     return;
     
 	if (mIncallViewIsReady) {
@@ -631,6 +633,11 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     /* start cancel timer */
     cd.timeout = [NSTimer scheduledTimerWithTimeInterval:30 target:self selector:@selector(dismissActionSheet:) userInfo:nil repeats:NO];
     [visibleActionSheet release];
+}
+
+-(void) firstVideoFrameDecoded: (LinphoneCall*) call {
+    // hide video in progress view indicator
+    videoWaitingForFirstImage.hidden = TRUE;
 }
 
 - (IBAction)doAction:(id)sender {
@@ -1037,6 +1044,5 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     
     [self updateUIFromLinphoneState: YES];
 }
-
 
 @end

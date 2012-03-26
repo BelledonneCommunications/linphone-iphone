@@ -84,6 +84,19 @@
 									<bool key="IBUIUserInteractionEnabled">NO</bool>
 									<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								</object>
+								<object class="IBUIActivityIndicatorView" id="69034748">
+									<reference key="NSNextResponder" ref="1009068048"/>
+									<int key="NSvFlags">292</int>
+									<string key="NSFrame">{{141, 212}, {37, 37}}</string>
+									<reference key="NSSuperview" ref="1009068048"/>
+									<reference key="NSWindow"/>
+									<string key="NSReuseIdentifierKey">_NS:1030</string>
+									<bool key="IBUIOpaque">NO</bool>
+									<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+									<bool key="IBUIHidesWhenStopped">NO</bool>
+									<bool key="IBUIAnimating">YES</bool>
+									<int key="IBUIStyle">0</int>
+								</object>
 							</object>
 							<string key="NSFrameSize">{320, 460}</string>
 							<reference key="NSSuperview" ref="858247959"/>
@@ -346,7 +359,7 @@
 									<string key="NSFrame">{{213, 70}, {107, 66}}</string>
 									<reference key="NSSuperview" ref="585669622"/>
 									<reference key="NSWindow"/>
-									<reference key="NSNextKeyView" ref="285340834"/>
+									<reference key="NSNextKeyView" ref="9119926"/>
 									<reference key="IBUIBackgroundColor" ref="95762599"/>
 									<bool key="IBUIOpaque">NO</bool>
 									<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
@@ -373,7 +386,7 @@
 									<reference key="IBUIFontDescription" ref="974614377"/>
 									<reference key="IBUIFont" ref="773313654"/>
 								</object>
-								<object class="IBUIActivityIndicatorView" id="285340834">
+								<object class="IBUIActivityIndicatorView" id="9119926">
 									<reference key="NSNextResponder" ref="585669622"/>
 									<int key="NSvFlags">-2147483356</int>
 									<string key="NSFrame">{{247.5, 84.5}, {37, 37}}</string>
@@ -1080,9 +1093,17 @@
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">videoUpdateIndicator</string>
 						<reference key="source" ref="841351856"/>
-						<reference key="destination" ref="285340834"/>
+						<reference key="destination" ref="9119926"/>
 					</object>
 					<int key="connectionID">143</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">videoWaitingForFirstImage</string>
+						<reference key="source" ref="841351856"/>
+						<reference key="destination" ref="69034748"/>
+					</object>
+					<int key="connectionID">145</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
@@ -1181,6 +1202,7 @@
 							<reference ref="1017044170"/>
 							<reference ref="673568144"/>
 							<reference ref="386053478"/>
+							<reference ref="69034748"/>
 						</object>
 						<reference key="parent" ref="858247959"/>
 						<string key="objectName">video</string>
@@ -1216,7 +1238,7 @@
 							<reference ref="861550739"/>
 							<reference ref="1031005817"/>
 							<reference ref="484501311"/>
-							<reference ref="285340834"/>
+							<reference ref="9119926"/>
 						</object>
 						<reference key="parent" ref="858247959"/>
 						<string key="objectName">controls</string>
@@ -1398,9 +1420,14 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">142</int>
-						<reference key="object" ref="285340834"/>
+						<reference key="object" ref="9119926"/>
 						<reference key="parent" ref="585669622"/>
 						<string key="objectName">video_update_indicator</string>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">144</int>
+						<reference key="object" ref="69034748"/>
+						<reference key="parent" ref="1009068048"/>
 					</object>
 				</object>
 			</object>
@@ -1433,6 +1460,7 @@
 					<string>140.CustomClassName</string>
 					<string>140.IBPluginDependency</string>
 					<string>142.IBPluginDependency</string>
+					<string>144.IBPluginDependency</string>
 					<string>15.IBPluginDependency</string>
 					<string>16.CustomClassName</string>
 					<string>16.IBPluginDependency</string>
@@ -1499,6 +1527,7 @@
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>UIMuteButton</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<real value="2"/>
@@ -1549,7 +1578,7 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">143</int>
+			<int key="maxID">145</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -1605,6 +1634,7 @@
 							<string>videoUpdateIndicator</string>
 							<string>videoView</string>
 							<string>videoViewController</string>
+							<string>videoWaitingForFirstImage</string>
 							<string>zero</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
@@ -1642,6 +1672,7 @@
 							<string>UIActivityIndicatorView</string>
 							<string>UIView</string>
 							<string>VideoViewController</string>
+							<string>UIActivityIndicatorView</string>
 							<string>UIButton</string>
 						</object>
 					</object>
@@ -1682,6 +1713,7 @@
 							<string>videoUpdateIndicator</string>
 							<string>videoView</string>
 							<string>videoViewController</string>
+							<string>videoWaitingForFirstImage</string>
 							<string>zero</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
@@ -1817,6 +1849,10 @@
 							<object class="IBToOneOutletInfo">
 								<string key="name">videoViewController</string>
 								<string key="candidateClassName">VideoViewController</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">videoWaitingForFirstImage</string>
+								<string key="candidateClassName">UIActivityIndicatorView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">zero</string>

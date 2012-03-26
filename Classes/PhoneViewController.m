@@ -396,5 +396,9 @@
     [self updateStatusSubView];
 }
 
+-(void) firstVideoFrameDecoded: (LinphoneCall*) call {
+    [mIncallViewController firstVideoFrameDecoded:call];
+}
+
 
 @end

@@ -400,6 +400,15 @@ static void linphone_iphone_call_state(LinphoneCore *lc, LinphoneCall* call, Lin
 static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyConfig* cfg, LinphoneRegistrationState state,const char* message) {
 	[(LinphoneManager*)linphone_core_get_user_data(lc) onRegister:lc cfg:cfg state:state message:message];
 }
+
+-(void) call_video_first_image_decoded:(LinphoneCall*) call {
+    [callDelegate firstVideoFrameDecoded: call];
+}
+
+static void linphone_call_first_video_frame(LinphoneCore* lc, LinphoneCall* call) {
+    [[LinphoneManager instance] call_video_first_image_decoded: call];
+}
+
 static LinphoneCoreVTable linphonec_vtable = {
 	.show =NULL,
 	.call_state_changed =(LinphoneCallStateCb)linphone_iphone_call_state,
@@ -412,7 +421,8 @@ static LinphoneCoreVTable linphonec_vtable = {
 	.display_warning=linphone_iphone_log,
 	.display_url=NULL,
 	.text_received=NULL,
-	.dtmf_received=NULL
+	.dtmf_received=NULL,
+    .call_first_video_frame=linphone_call_first_video_frame
 };
 
 
