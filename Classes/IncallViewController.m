@@ -404,8 +404,8 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     pause.imageView.contentMode = UIViewContentModeCenter;
     contacts.imageView.contentMode = UIViewContentModeCenter;
     addCall.imageView.contentMode = UIViewContentModeCenter;
-    dialer.imageView.contentMode = UIViewContentModeCenter;
-     */
+    dialer.imageView.contentMode = UIViewContentModeCenter;*/
+     
 }
 
 -(void) addCallPressed {
@@ -585,6 +585,7 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     [self enableVideoDisplay];
     [self updateUIFromLinphoneState: YES];
     videoWaitingForFirstImage.hidden = NO;
+    [videoWaitingForFirstImage startAnimating];
     return;
     
 	if (mIncallViewIsReady) {
@@ -746,6 +747,8 @@ void addAnimationFadeTransition(UIView* view, float duration) {
         return;
     }
     const LinphoneAddress* addr = linphone_call_get_remote_address(call);
+    
+    label.adjustsFontSizeToFitWidth = YES;
     
     if (addr) {
 		const char* lUserNameChars=linphone_address_get_username(addr);
