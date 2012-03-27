@@ -94,6 +94,15 @@ int __aeabi_idiv(int a, int b) {
     }
 }
 - (void)applicationDidBecomeActive:(UIApplication *)application {
+    if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)] 
+		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground 
+        && [[NSUserDefaults standardUserDefaults] boolForKey:@"disable_autoboot_preference"]) {
+		// autoboot disabled, doing nothing
+        return;
+    } else if ([LinphoneManager instance] == nil) {
+        [self startApplication];
+    }
+    
 	[[LinphoneManager instance] becomeActive];
     
     if (callCenter == nil) {
@@ -223,22 +232,30 @@ int __aeabi_idiv(int a, int b) {
                                  nil];
     
     [self loadDefaultSettings: appDefaults];
+    
+    if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)] 
+		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground 
+        && [[NSUserDefaults standardUserDefaults] boolForKey:@"disable_autoboot_preference"]) {
+		// autoboot disabled, doing nothing
+	} else {
+        [self startApplication];
+    }
 
+    return YES;
+}
+
+-(void) startApplication {
     /* explicitely instanciate LinphoneManager */
     LinphoneManager* lm = [[LinphoneManager alloc] init];
     assert(lm == [LinphoneManager instance]);
     
-	
-    
     [self setupUI];
-	
+
 	[[LinphoneManager instance]	startLibLinphone];
 
 	[[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeSound];
     
     [self setupGSMInteraction];
-
-	return YES;
 }
 
 

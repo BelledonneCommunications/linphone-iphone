@@ -65,9 +65,6 @@ extern  void libmsbcg729_init();
     return self;
 }
 +(LinphoneManager*) instance {
-	if (theLinphoneManager==nil) {
-		[[LinphoneManager alloc] init];
-	}
 	return theLinphoneManager;
 }
 
