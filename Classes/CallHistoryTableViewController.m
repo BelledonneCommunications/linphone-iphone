@@ -147,12 +147,12 @@
 	const char* displayName = linphone_address_get_display_name(partyToDisplay);
 
 	if (displayName) {
-        NSString* str1 = [NSString stringWithCString:displayName encoding:[NSString defaultCStringEncoding]];
+        NSString* str1 = [NSString stringWithFormat:@"%s%s", displayName, callLogs->video_enabled?" (video)":""];
 		[cell.textLabel setText:str1];
         NSString* str2 = [NSString stringWithFormat:@"%s"/* [%s]"*/,username/*,callLogs->start_date*/];
 		[cell.detailTextLabel setText:str2];
     } else {
-        NSString* str1 = [NSString stringWithCString:username encoding:[NSString defaultCStringEncoding]];
+        NSString* str1 = [NSString stringWithFormat:@"%s%s", username, callLogs->video_enabled?" (video)":""];
         [cell.textLabel setText:str1];
         [cell.detailTextLabel setText:nil];
     }
