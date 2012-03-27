@@ -220,13 +220,15 @@ int __aeabi_idiv(int a, int b) {
                                  @"YES",@"g729_preference", // enable amr by default if compiled with
 #endif                                 
 								 //@"+33",@"countrycode_preference",
-                                 nil];	
+                                 nil];
+    
+    [self loadDefaultSettings: appDefaults];
 
     /* explicitely instanciate LinphoneManager */
     LinphoneManager* lm = [[LinphoneManager alloc] init];
     assert(lm == [LinphoneManager instance]);
     
-	[self loadDefaultSettings: appDefaults];
+	
     
     [self setupUI];
 	

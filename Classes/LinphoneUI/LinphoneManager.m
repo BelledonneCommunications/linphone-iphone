@@ -71,17 +71,6 @@ extern  void libmsbcg729_init();
 	return theLinphoneManager;
 }
 
--(NSString*) appendCountryCodeIfPossible:(NSString*) number {
-    if (![number hasPrefix:@"+"] && ![number hasPrefix:@"00"]) {
-        NSString* lCountryCode = [[NSUserDefaults standardUserDefaults] stringForKey:@"countrycode_preference"];
-        if (lCountryCode && [lCountryCode length]>0) {
-            //append country code
-            return [lCountryCode stringByAppendingString:number];
-        }
-    }
-    return number;
-}
-
 -(NSString*) getDisplayNameFromAddressBook:(NSString*) number andUpdateCallLog:(LinphoneCallLog*)log {
     //1 normalize
     NSString* lNormalizedNumber = [FastAddressBook normalizePhoneNumber:number];
@@ -342,7 +331,7 @@ static void linphone_iphone_call_state(LinphoneCore *lc, LinphoneCall* call, Lin
 }
 
 -(void) onRegister:(LinphoneCore *)lc cfg:(LinphoneProxyConfig*) cfg state:(LinphoneRegistrationState) state message:(const char*) message {
-    NSLog(@"NEW REGISTRATION STATE: '%s' (message: '%s')", linphone_registration_state_to_string(state), message);
+    ms_warning("NEW REGISTRATION STATE: '%s' (message: '%s')", linphone_registration_state_to_string(state), message);
     
 	LinphoneAddress* lAddress = linphone_address_new(linphone_proxy_config_get_identity(cfg));
 	NSString* lUserName = linphone_address_get_username(lAddress)? [[NSString alloc] initWithUTF8String:linphone_address_get_username(lAddress) ]:@"";
@@ -483,7 +472,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 
 -(BOOL) reconfigureLinphoneIfNeeded:(NSDictionary *)settings {
 	if (theLinphoneCore==nil) {
-		ms_warning("cannot configure linphone beacause not initialized yet");
+		ms_warning("cannot configure linphone because not initialized yet");
 		return NO;
 	}
     
@@ -553,7 +542,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 			transportValue.tcp_port=0;
             transportValue.udp_port=0;
 		} else {
-			ms_error("unexpected trasnport [%s]",[transport cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+			ms_error("unexpected transport [%s]",[transport cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 		}
 		if (linphone_core_set_sip_transports(theLinphoneCore, &transportValue)) {
 			ms_error("cannot set transport");	
