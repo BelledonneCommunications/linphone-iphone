@@ -207,6 +207,8 @@ int __aeabi_idiv(int a, int b) {
 	[window makeKeyAndVisible];
 	
 	[[LinphoneManager instance] setCallDelegate:myPhoneViewController];
+    
+    [UIDevice currentDevice].batteryMonitoringEnabled = YES;
 }
 
 -(void) setupGSMInteraction {

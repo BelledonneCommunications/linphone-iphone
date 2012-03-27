@@ -207,6 +207,38 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     hideControlsTimer = nil;
 }
 
+-(void) batteryLevelChanged: (NSNotification*) notif {
+    LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
+    if (!call || !linphone_call_params_video_enabled(linphone_call_get_current_params(call)))
+        return;
+    LinphoneCallAppData* appData = (LinphoneCallAppData*) linphone_call_get_user_pointer(call);
+    if ([UIDevice currentDevice].batteryState == UIDeviceBatteryStateUnplugged) {
+        float level = [UIDevice currentDevice].batteryLevel;
+        ms_message("Video call is running. Battery level: %.2f", level);
+        if (level < 0.1 && !appData->batteryWarningShown) {
+            // notify user
+            CallDelegate* cd = [[CallDelegate alloc] init];
+            cd.eventType = CD_STOP_VIDEO_ON_LOW_BATTERY;
+            cd.delegate = self;
+            cd.call = call;
+            
+            if (visibleActionSheet != nil) {
+                [visibleActionSheet dismissWithClickedButtonIndex:visibleActionSheet.cancelButtonIndex animated:TRUE];
+            }
+            NSString* title = NSLocalizedString(@"Battery is running low. Stop video ?",nil);
+            visibleActionSheet = [[UIActionSheet alloc] initWithTitle:title
+                                                             delegate:cd 
+                                                    cancelButtonTitle:NSLocalizedString(@"Continue video",nil) 
+                                               destructiveButtonTitle:NSLocalizedString(@"Stop video",nil) 
+                                                    otherButtonTitles:nil];
+            
+            visibleActionSheet.actionSheetStyle = UIActionSheetStyleDefault;
+            [visibleActionSheet showInView:self.view];
+            appData->batteryWarningShown = TRUE;
+        }
+    }
+}
+
 -(void) enableVideoDisplay {
     [self orientationChanged:nil];
     
@@ -233,6 +265,8 @@ void addAnimationFadeTransition(UIView* view, float duration) {
         NSLog(@"new center: %f %f", videoView.center.x, videoView.center.y);
         done = true;
     }
+    
+    [self batteryLevelChanged:nil];
 }
 
 -(void) disableVideoDisplay {
@@ -392,7 +426,9 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     
     [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orientationChanged:) name:UIDeviceOrientationDidChangeNotification object:nil];
-
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(batteryLevelChanged:) name:UIDeviceBatteryLevelDidChangeNotification object:nil];
+    
+    
     [videoCameraSwitch setPreview:videoPreview];
     addVideo.videoUpdateIndicator = videoUpdateIndicator;
     
@@ -974,6 +1010,16 @@ void addAnimationFadeTransition(UIView* view, float duration) {
             }
             linphone_call_params_destroy(paramsCopy);
             visibleActionSheet = nil;
+            break;
+        }
+        case CD_STOP_VIDEO_ON_LOW_BATTERY: {
+            LinphoneCall* call = (LinphoneCall*)datas;
+            LinphoneCallParams* paramsCopy = linphone_call_params_copy(linphone_call_get_current_params(call));
+            if ([visibleActionSheet destructiveButtonIndex] == buttonIndex) {
+                // stop video
+                linphone_call_params_enable_video(paramsCopy, FALSE);
+                linphone_core_update_call([LinphoneManager getLc], call, paramsCopy);
+            }
             break;
         }
         default:

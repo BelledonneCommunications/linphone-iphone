@@ -150,6 +150,12 @@ extern  void libmsbcg729_init();
     
     bool canHideInCallView = (linphone_core_get_calls([LinphoneManager getLc]) == NULL);
 	
+    if (!linphone_call_get_user_pointer(call)) {
+        LinphoneCallAppData* data = (LinphoneCallAppData*) malloc(sizeof(LinphoneCallAppData));
+        data->batteryWarningShown = FALSE;
+        linphone_call_set_user_pointer(call, data);
+    }
+    
 	switch (new_state) {					
 		case LinphoneCallIncomingReceived: 
 			[callDelegate	displayIncomingCall:call 
@@ -262,6 +268,9 @@ extern  void libmsbcg729_init();
                 [callDelegate displayInCall:call FromUI:mCurrentViewController forUser:lUserName withDisplayName:lDisplayName];
             }
 			break;
+        case LinphoneCallReleased:
+            free (linphone_call_get_user_pointer(call));
+            break;
         default:
             break;
 	}

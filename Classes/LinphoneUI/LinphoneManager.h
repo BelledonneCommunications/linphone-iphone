@@ -42,6 +42,10 @@ struct NetworkReachabilityContext {
     void (*networkStateChanged) (Connectivity newConnectivity);
 };
 
+typedef struct _LinphoneCallAppData {
+    bool_t batteryWarningShown;
+} LinphoneCallAppData;
+
 
 @interface LinphoneManager : NSObject <AVAudioSessionDelegate> {
 @protected
