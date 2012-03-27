@@ -1337,6 +1337,7 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 	call->current_params.has_video=FALSE;
 	if (call->videostream!=NULL) {
 		linphone_call_start_video_stream(call,cname,all_inputs_muted);
+        call->log->video_enabled = TRUE;
 	}
 
 	call->all_muted=all_inputs_muted;

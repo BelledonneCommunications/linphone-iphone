@@ -132,6 +132,7 @@ void call_logs_write_to_config_file(LinphoneCore *lc){
 		lp_config_set_int(cfg,logsection,"duration",cl->duration);
 		if (cl->refkey) lp_config_set_string(cfg,logsection,"refkey",cl->refkey);
 		lp_config_set_float(cfg,logsection,"quality",cl->quality);
+        lp_config_set_int(cfg,logsection,"video_enabled", cl->video_enabled);
 	}
 	for(;i<lc->max_call_logs;++i){
 		snprintf(logsection,sizeof(logsection),"call_log_%i",i);
@@ -160,6 +161,7 @@ static void call_logs_read_from_config_file(LinphoneCore *lc){
 			tmp=lp_config_get_string(cfg,logsection,"refkey",NULL);
 			if (tmp) cl->refkey=ms_strdup(tmp);
 			cl->quality=lp_config_get_float(cfg,logsection,"quality",-1);
+            cl->video_enabled=lp_config_get_int(cfg,logsection,"video_enabled",0);
 			lc->call_logs=ms_list_append(lc->call_logs,cl);
 		}else break;
 	}

@@ -153,6 +153,7 @@ typedef struct _LinphoneCallLog{
 	rtp_stats_t local_stats;
 	rtp_stats_t remote_stats;
 	float quality;
+    int video_enabled;
 	struct _LinphoneCore *lc;
 } LinphoneCallLog;
 
