@@ -1943,12 +1943,20 @@ const char * linphone_core_get_route(LinphoneCore *lc){
 void linphone_core_start_refered_call(LinphoneCore *lc, LinphoneCall *call){
 	if (call->refer_pending){
 		LinphoneCallParams *cp=linphone_core_create_default_call_parameters(lc);
+		LinphoneCall *newcall;
 		cp->has_video &= !!lc->video_policy.automatically_initiate;
 		cp->referer=call;
 		ms_message("Starting new call to refered address %s",call->refer_to);
 		call->refer_pending=FALSE;
-		linphone_core_invite_with_params(lc,call->refer_to,cp);
+		newcall=linphone_core_invite_with_params(lc,call->refer_to,cp);
 		linphone_call_params_destroy(cp);
+		if (newcall) linphone_core_notify_refer_state(lc,call,newcall);
+	}
+}
+
+void linphone_core_notify_refer_state(LinphoneCore *lc, LinphoneCall *referer, LinphoneCall *newcall){
+	if (referer->op!=NULL){
+		sal_call_notify_refer_state(referer->op,newcall ? newcall->op : NULL);
 	}
 }
 

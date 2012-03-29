@@ -332,6 +332,7 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 	discover_mtu(lc,linphone_address_get_domain (to));
 	if (params->referer){
 		sal_call_set_referer(call->op,params->referer->op);
+		call->referer=linphone_call_ref(params->referer);
 	}
 	return call;
 }
@@ -400,6 +401,10 @@ static void linphone_call_set_terminated(LinphoneCall *call){
 	if (call->ringing_beep){
 		linphone_core_stop_dtmf(lc);
 		call->ringing_beep=FALSE;
+	}
+	if (call->referer){
+		linphone_call_unref(call->referer);
+		call->referer=NULL;
 	}
 }
 

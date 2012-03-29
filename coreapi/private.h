@@ -84,6 +84,7 @@ struct _LinphoneCall
 	SalMediaDescription *localdesc;
 	SalMediaDescription *resultdesc;
 	LinphoneCallDir dir;
+	LinphoneCall *referer; /*when this call is the result of a transfer, referer is set to the original call that caused the transfer*/
 	struct _RtpProfile *audio_profile;
 	struct _RtpProfile *video_profile;
 	struct _LinphoneCallLog *log;
@@ -122,6 +123,7 @@ struct _LinphoneCall
 	bool_t audiostream_encrypted;
 	bool_t auth_token_verified;
 	bool_t defer_update;
+	bool_t was_automatically_paused;
 };
 
 
@@ -193,7 +195,7 @@ SalPresenceStatus linphone_online_status_to_sal(LinphoneOnlineStatus os);
 void linphone_process_authentication(LinphoneCore* lc, SalOp *op);
 void linphone_authentication_ok(LinphoneCore *lc, SalOp *op);
 void linphone_subscription_new(LinphoneCore *lc, SalOp *op, const char *from);
-void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeState ss, SalPresenceStatus status);
+void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeStatus ss, SalPresenceStatus status);
 void linphone_proxy_config_process_authentication_failure(LinphoneCore *lc, SalOp *op);
 
 void linphone_subscription_answered(LinphoneCore *lc, SalOp *op);
@@ -549,6 +551,7 @@ void linphone_call_add_to_conf(LinphoneCall *call, bool_t muted);
 void linphone_call_remove_from_conf(LinphoneCall *call);
 void linphone_core_conference_check_uninit(LinphoneCore *lc);
 bool_t linphone_core_sound_resources_available(LinphoneCore *lc);
+void linphone_core_notify_refer_state(LinphoneCore *lc, LinphoneCall *referer, LinphoneCall *newcall);
 
 void __linphone_core_invalidate_registers(LinphoneCore* lc);
 

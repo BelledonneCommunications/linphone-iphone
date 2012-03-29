@@ -728,6 +728,45 @@ int sal_call_set_referer(SalOp *h, SalOp *refered_call){
 	return 0;
 }
 
+static int send_notify_for_refer(int did, const char *sipfrag){
+	osip_message_t *msg;
+	eXosip_lock();
+	eXosip_call_build_notify(did,EXOSIP_SUBCRSTATE_ACTIVE,&msg);
+	if (msg==NULL){
+		eXosip_unlock();
+		ms_error("Could not build NOTIFY for refer.");
+		return -1;
+	}
+	osip_message_set_content_type(msg,"message/sipfrag");
+	osip_message_set_header(msg,"Event","refer");
+	osip_message_set_body(msg,sipfrag,strlen(sipfrag));
+	eXosip_call_send_request(did,msg);
+	eXosip_unlock();
+	return 0;
+}
+
+/* currently only support to notify trying and 200Ok*/
+int sal_call_notify_refer_state(SalOp *h, SalOp *newcall){
+	if (newcall==NULL){
+		/* in progress*/
+		send_notify_for_refer(h->did,"SIP/2.0 100 Trying\r\n");
+	}
+	else if (newcall->cid!=-1){
+		if (newcall->did==-1){
+			/* not yet established*/
+			if (!newcall->terminated){
+				/* in progress*/
+				send_notify_for_refer(h->did,"SIP/2.0 100 Trying\r\n");
+			}
+		}else{
+			if (!newcall->terminated){
+				send_notify_for_refer(h->did,"SIP/2.0 200 Ok\r\n");
+			}
+		}
+	}
+	return 0;
+}
+
 int sal_ping(SalOp *op, const char *from, const char *to){
 	osip_message_t *options=NULL;
 	
@@ -746,26 +785,6 @@ int sal_ping(SalOp *op, const char *from, const char *to){
 		return eXosip_options_send_request(options);
 	}
 	return -1;
-}
-
-int sal_call_accept_refer(SalOp *op){
-	osip_message_t *msg=NULL;
-	int err=0;
-	eXosip_lock();
-	err = eXosip_call_build_notify(op->did,EXOSIP_SUBCRSTATE_ACTIVE,&msg);
-	if(msg != NULL)
-	{
-		osip_message_set_header(msg,(const char *)"event","refer");
-		osip_message_set_content_type(msg,"message/sipfrag");
-		osip_message_set_body(msg,"SIP/2.0 100 Trying",sizeof("SIP/2.0 100 Trying"));
-		eXosip_call_send_request(op->did,msg);
-	}
-	else
-	{
-		ms_error("could not get a notify built\n");
-	}
-	eXosip_unlock();
-	return err;
 }
 
 int sal_call_refer(SalOp *h, const char *refer_to){
@@ -1517,6 +1536,51 @@ static void process_refer(Sal *sal, SalOp *op, eXosip_event_t *ev){
 	}
 }
 
+void process_notify(Sal *sal, eXosip_event_t *ev){
+	osip_header_t *h=NULL;
+	char *from=NULL;
+	SalOp *op=find_op(sal,ev);
+	osip_message_t *ans=NULL;
+
+	ms_message("Receiving NOTIFY request !");
+	osip_from_to_str(ev->request->from,&from);
+	osip_message_header_get_byname(ev->request,"Event",0,&h);
+	if(h){
+		osip_body_t *body=NULL;
+		//osip_content_type_t *ct=NULL;
+		osip_message_get_body(ev->request,0,&body);
+		//ct=osip_message_get_content_type(ev->request);
+		if (h->hvalue && strcasecmp(h->hvalue,"refer")==0){
+			/*special handling of refer events*/
+			if (body && body->body){
+				osip_message_t *msg;
+				osip_message_init(&msg);
+				if (osip_message_parse_sipfrag(msg,body->body,strlen(body->body))==0){
+					int code=osip_message_get_status_code(msg);
+					if (code==100){
+						sal->callbacks.notify_refer(op,SalReferTrying);
+					}else if (code==200){
+						sal->callbacks.notify_refer(op,SalReferSuccess);
+					}else if (code>=400){
+						sal->callbacks.notify_refer(op,SalReferFailed);
+					}
+				}
+				osip_message_free(msg);
+			}
+		}else{
+			/*generic handling*/
+			sal->callbacks.notify(op,from,h->hvalue);
+		}
+	}
+	/*answer that we received the notify*/
+	eXosip_lock();
+	eXosip_call_build_answer(ev->tid,200,&ans);
+	if (ans)
+		eXosip_call_send_answer(ev->tid,200,ans);
+	eXosip_unlock();
+	osip_free(from);
+}
+
 static void call_message_new(Sal *sal, eXosip_event_t *ev){
 	osip_message_t *ans=NULL;
 	if (ev->request){
@@ -1559,22 +1623,7 @@ static void call_message_new(Sal *sal, eXosip_event_t *ev){
 			ms_message("Receiving REFER request !");
 			process_refer(sal,op,ev);
 		}else if(MSG_IS_NOTIFY(ev->request)){
-			osip_header_t *h=NULL;
-			char *from=NULL;
-			SalOp *op=find_op(sal,ev);
-
-			ms_message("Receiving NOTIFY request !");
-			osip_from_to_str(ev->request->from,&from);
-			osip_message_header_get_byname(ev->request,"Event",0,&h);
-			if(h)
-				sal->callbacks.notify(op,from,h->hvalue);
-			/*answer that we received the notify*/
-			eXosip_lock();
-			eXosip_call_build_answer(ev->tid,200,&ans);
-			if (ans)
-				eXosip_call_send_answer(ev->tid,200,ans);
-			eXosip_unlock();
-			osip_free(from);
+			process_notify(sal,ev);
 		}else if (MSG_IS_OPTIONS(ev->request)){
 			eXosip_lock();
 			eXosip_call_build_answer(ev->tid,200,&ans);

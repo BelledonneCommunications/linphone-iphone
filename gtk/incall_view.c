@@ -579,6 +579,28 @@ void linphone_gtk_in_call_view_terminate(LinphoneCall *call, const char *error_m
 		linphone_gtk_terminate_conference_participant(call);
 }
 
+void linphone_gtk_in_call_view_set_transfer_status(LinphoneCall *call,LinphoneCallState cstate){
+	GtkWidget *callview=(GtkWidget*)linphone_call_get_user_pointer(call);
+	if (callview){
+		GtkWidget *duration=linphone_gtk_get_widget(callview,"in_call_duration");
+		const char *transfer_status="unknown";
+		switch(cstate){
+			case LinphoneCallOutgoingProgress:
+				transfer_status=_("Transfer in progress");
+			break;
+			case LinphoneCallConnected:
+				transfer_status=_("Transfer done.");
+			break;
+			case LinphoneCallError:
+				transfer_status=_("Transfer failed.");
+			break;
+			default:
+			break;
+		}
+		gtk_label_set_text(GTK_LABEL(duration),transfer_status);
+	}
+}
+
 void linphone_gtk_draw_mute_button(GtkButton *button, gboolean active){
 	g_object_set_data(G_OBJECT(button),"active",GINT_TO_POINTER(active));
 	if (active){

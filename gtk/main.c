@@ -63,6 +63,7 @@ static void linphone_gtk_display_url(LinphoneCore *lc, const char *msg, const ch
 static void linphone_gtk_call_log_updated(LinphoneCore *lc, LinphoneCallLog *cl);
 static void linphone_gtk_call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cs, const char *msg);
 static void linphone_gtk_call_encryption_changed(LinphoneCore *lc, LinphoneCall *call, bool_t enabled, const char *token);
+static void linphone_gtk_transfer_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate);
 static gboolean linphone_gtk_auto_answer(LinphoneCall *call);
 static void linphone_gtk_status_icon_set_blinking(gboolean val);
 
@@ -225,6 +226,7 @@ static void linphone_gtk_init_liblinphone(const char *config_file,
 	vtable.refer_received=linphone_gtk_refer_received;
 	vtable.buddy_info_updated=linphone_gtk_buddy_info_updated;
 	vtable.call_encryption_changed=linphone_gtk_call_encryption_changed;
+	vtable.transfer_state_changed=linphone_gtk_transfer_state_changed;
 
 	linphone_core_set_user_agent("Linphone", LINPHONE_VERSION);
 	the_core=linphone_core_new(&vtable,config_file,factory_config_file,NULL);
@@ -1131,6 +1133,10 @@ static void linphone_gtk_call_state_changed(LinphoneCore *lc, LinphoneCall *call
 
 static void linphone_gtk_call_encryption_changed(LinphoneCore *lc, LinphoneCall *call, bool_t enabled, const char *token){
 	linphone_gtk_in_call_view_show_encryption(call);
+}
+
+static void linphone_gtk_transfer_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate){
+	linphone_gtk_in_call_view_set_transfer_status(call,cstate);
 }
 
 static void update_registration_status(LinphoneProxyConfig *cfg, LinphoneRegistrationState rs){

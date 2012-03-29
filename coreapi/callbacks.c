@@ -323,6 +323,7 @@ static void call_accepted(SalOp *op){
 	    call->state==LinphoneCallOutgoingRinging ||
 	    call->state==LinphoneCallOutgoingEarlyMedia){
 		linphone_call_set_state(call,LinphoneCallConnected,"Connected");
+		if (call->referer) linphone_core_notify_refer_state(lc,call->referer,call);
 	}
 	if (md && !sal_media_description_empty(md)){
 		if (sal_media_description_has_dir(md,SalStreamSendOnly) ||
@@ -591,6 +592,10 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 	} else {
 		linphone_call_set_state(call,LinphoneCallError,msg);
 	}
+	if (call->referer && linphone_call_get_state(call->referer)==LinphoneCallPaused && call->referer->was_automatically_paused){
+		/*resume to the call that send us the refer automatically*/
+		linphone_core_resume_call(lc,call->referer);
+	}
 }
 
 static void call_released(SalOp *op){
@@ -744,12 +749,11 @@ static void refer_received(Sal *sal, SalOp *op, const char *referto){
 		if (call->state!=LinphoneCallPaused){
 			ms_message("Automatically pausing current call to accept transfer.");
 			linphone_core_pause_call(lc,call);
+			call->was_automatically_paused=TRUE;
 		}
 		linphone_core_start_refered_call(lc,call);
-		sal_call_accept_refer(op);
 	}else if (lc->vtable.refer_received){
 		lc->vtable.refer_received(lc,referto);
-		sal_call_accept_refer(op);
 	}
 }
 
@@ -766,7 +770,7 @@ static void notify(SalOp *op, const char *from, const char *msg){
 		lc->vtable.notify_recv(lc,call,from,msg);
 }
 
-static void notify_presence(SalOp *op, SalSubscribeState ss, SalPresenceStatus status, const char *msg){
+static void notify_presence(SalOp *op, SalSubscribeStatus ss, SalPresenceStatus status, const char *msg){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	linphone_notify_recv(lc,op,ss,status);
 }
@@ -795,6 +799,35 @@ static void ping_reply(SalOp *op){
 	}
 }
 
+static void notify_refer(SalOp *op, SalReferStatus status){
+	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
+	LinphoneCall *call=(LinphoneCall*) sal_op_get_user_pointer(op);
+	LinphoneCallState cstate;
+	if (call==NULL) {
+		ms_warning("Receiving notify_refer for unknown call.");
+		return ;
+	}
+	switch(status){
+		case SalReferTrying:
+			cstate=LinphoneCallOutgoingProgress;
+		break;
+		case SalReferSuccess:
+			cstate=LinphoneCallConnected;
+		break;
+		case SalReferFailed:
+			cstate=LinphoneCallError;
+		break;
+		default:
+			cstate=LinphoneCallError;
+	}
+	if (lc->vtable.transfer_state_changed)
+		lc->vtable.transfer_state_changed(lc,call,cstate);
+	if (cstate==LinphoneCallConnected){
+		/*automatically terminate the call as the transfer is complete.*/
+		linphone_core_terminate_call(lc,call);
+	}
+}
+
 SalCallbacks linphone_sal_callbacks={
 	call_received,
 	call_ringing,
@@ -814,6 +847,7 @@ SalCallbacks linphone_sal_callbacks={
 	text_received,
 	notify,
 	notify_presence,
+	notify_refer,
 	subscribe_received,
 	subscribe_closed,
 	ping_reply

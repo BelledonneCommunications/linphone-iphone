@@ -616,7 +616,9 @@ typedef void (*ReferReceived)(struct _LinphoneCore *lc, const char *refer_to);
 typedef void (*BuddyInfoUpdated)(struct _LinphoneCore *lc, LinphoneFriend *lf);
 /** Callback prototype */
 typedef void (*CallFirstVideoFrameCb)(struct _LinphoneCore *lc, LinphoneCall *call);
-    
+/** Callback prototype for in progress transfers. The new_call_state is the state of the call resulting of the transfer, at the other party. */
+typedef void (*LinphoneTransferStateChanged)(struct _LinphoneCore *lc, LinphoneCall *transfered, LinphoneCallState new_call_state);
+
 /**
  * This structure holds all callbacks that the application should implement.
  *  None is mandatory.
@@ -632,6 +634,9 @@ typedef struct _LinphoneVTable{
 	TextMessageReceived text_received; /**< A text message has been received */
 	DtmfReceived dtmf_received; /**< A dtmf has been received received */
 	ReferReceived refer_received; /**< An out of call refer was received */
+	CallEncryptionChangedCb call_encryption_changed; /**<Notifies on change in the encryption of call streams */
+    CallFirstVideoFrameCb call_first_video_frame; /**<Notifies on first successful video frame decoding */
+	LinphoneTransferStateChanged transfer_state_changed; /**<Notifies when a transfer is in progress */
 	BuddyInfoUpdated buddy_info_updated; /**< a LinphoneFriend's BuddyInfo has changed*/
 	NotifyReceivedCb notify_recv; /**< Other notifications*/
 	DisplayStatusCb display_status; /**< Callback that notifies various events with human readable text.*/
@@ -639,8 +644,6 @@ typedef struct _LinphoneVTable{
 	DisplayMessageCb display_warning;/** Callback to display a warning to the user */
 	DisplayUrlCb display_url;
 	ShowInterfaceCb show; /**< Notifies the application that it should show up*/
-	CallEncryptionChangedCb call_encryption_changed; /**<Notifies on change in the encryption of call streams */
-    CallFirstVideoFrameCb call_first_video_frame; /** Notifies on first successful video frame decoding */
 } LinphoneCoreVTable;
 
 /**
