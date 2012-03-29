@@ -102,9 +102,13 @@ AC_SUBST(ALL_LINGUAS)
 AC_DEFINE_UNQUOTED(LINPHONE_ALL_LANGS, "$ALL_LINGUAS", [All supported languages])
 
 if test "$mingw_found" != "yes" ; then
-dnl gettext macro does not work properly under mingw. And we want to use the one provided by GTK.
-AM_GNU_GETTEXT([external])
-LIBS="$LIBS $LIBINTL"
+	dnl gettext macro does not work properly under mingw. And we want to use the one provided by GTK.
+	
+	dnl AM_GNU_GETTEXT pollutes CPPFLAGS: workaround this.
+	CPPFLAGS_save=$CPPFLAGS
+	AM_GNU_GETTEXT([external])
+	CPPFLAGS=$CPPFLAGS_save
+	LIBS="$LIBS $LIBINTL"
 else
 	AC_DEFINE(ENABLE_NLS,1,[Tells whether localisation is possible])
 	AC_DEFINE(HAVE_GETTEXT,1,[Tells wheter localisation is possible])
