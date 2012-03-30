@@ -52,15 +52,20 @@
 void linphone_chat_room_send_message(LinphoneChatRoom *cr, const char *msg){
 	const char *route=NULL;
 	const char *identity=linphone_core_find_best_identity(cr->lc,cr->peer_url,&route);
-	SalOp *op;
+	SalOp *op=NULL;
 	LinphoneCall *call;
-	if((call = linphone_core_get_call_by_remote_address(cr->lc,cr->peer))!=NULL)
-	{
-		ms_message("send SIP message into the call\n");
-		op = call->op;
+	if((call = linphone_core_get_call_by_remote_address(cr->lc,cr->peer))!=NULL){
+		if (call->state==LinphoneCallConnected ||
+		    call->state==LinphoneCallStreamsRunning ||
+		    call->state==LinphoneCallPaused ||
+		    call->state==LinphoneCallPausing ||
+		    call->state==LinphoneCallPausedByRemote){
+			ms_message("send SIP message through the existing call.");
+			op = call->op;
+		}
 	}
-	else
-	{
+	if (op==NULL){
+		/*sending out of calls*/
 		op = sal_op_new(cr->lc->sal);
 		sal_op_set_route(op,route);
 		if (cr->op!=NULL){
