@@ -136,10 +136,12 @@ int __aeabi_idiv(int a, int b) {
     NSMutableDictionary *rootSettings = [NSDictionary dictionaryWithContentsOfFile:[settingsBundle stringByAppendingPathComponent:@"Root.plist"]];
 	NSMutableDictionary *audioSettings = [NSDictionary dictionaryWithContentsOfFile:[settingsBundle stringByAppendingPathComponent:@"audio.plist"]];
 	NSMutableDictionary *videoSettings = [NSDictionary dictionaryWithContentsOfFile:[settingsBundle stringByAppendingPathComponent:@"video.plist"]];
+    NSMutableDictionary *advancedSettings = [NSDictionary dictionaryWithContentsOfFile:[settingsBundle stringByAppendingPathComponent:@"Advanced.plist"]];
 
     NSMutableArray *preferences = [rootSettings objectForKey:@"PreferenceSpecifiers"];
     [preferences addObjectsFromArray:[audioSettings objectForKey:@"PreferenceSpecifiers"]];
     [preferences addObjectsFromArray:[videoSettings objectForKey:@"PreferenceSpecifiers"]];
+    [preferences addObjectsFromArray:[advancedSettings objectForKey:@"PreferenceSpecifiers"]];
 	
     NSMutableDictionary *defaultsToRegister = [[NSMutableDictionary alloc] initWithCapacity:[preferences count]];
 
