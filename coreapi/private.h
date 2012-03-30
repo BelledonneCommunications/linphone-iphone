@@ -74,6 +74,12 @@ struct _LinphoneCallParams{
 	bool_t pad;
 	
 };
+    
+typedef struct _CallCallbackObj
+{
+    LinphoneCallCbFunc _func;
+    void * _user_data;
+}CallCallbackObj;
 
 static const int linphone_call_magic=0x3343;
 
@@ -124,6 +130,7 @@ struct _LinphoneCall
 	bool_t auth_token_verified;
 	bool_t defer_update;
 	bool_t was_automatically_paused;
+    CallCallbackObj nextVideoFrameDecoded;
 };
 
 

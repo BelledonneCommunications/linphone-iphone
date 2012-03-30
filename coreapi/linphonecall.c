@@ -856,8 +856,8 @@ static void video_stream_event_cb(void *user_pointer, const MSFilter *f, const u
 			break;
         case MS_VIDEO_DECODER_FIRST_IMAGE_DECODED:
             ms_message("First video frame decoded successfully");
-            if (call->core->vtable.call_first_video_frame != NULL)
-                call->core->vtable.call_first_video_frame(call->core, call);
+            if (call->nextVideoFrameDecoded._func != NULL)
+                call->nextVideoFrameDecoded._func(call, call->nextVideoFrameDecoded._user_data);
             break;
 		default:
 			ms_warning("Unhandled event %i", event_id);
@@ -865,6 +865,14 @@ static void video_stream_event_cb(void *user_pointer, const MSFilter *f, const u
 	}
 }
 #endif
+
+void linphone_call_set_next_video_frame_decoded_callback(LinphoneCall *call, LinphoneCallCbFunc cb, void* user_data) {
+    call->nextVideoFrameDecoded._func = cb;
+    call->nextVideoFrameDecoded._user_data = user_data;
+#ifdef VIDEO_ENABLED
+    ms_filter_call_method_noarg(call->videostream->decoder, MS_VIDEO_DECODER_RESET_FIRST_IMAGE_NOTIFICATION);
+#endif
+}
 
 void linphone_call_init_media_streams(LinphoneCall *call){
 	LinphoneCore *lc=call->core;
@@ -1284,6 +1292,7 @@ static void linphone_call_start_video_stream(LinphoneCall *call, const char *cna
 				cam=get_nowebcam_device();
 			}
 			if (!is_inactive){
+                call->log->video_enabled = TRUE;
 				video_stream_set_direction (call->videostream, dir);
 				ms_message("%s lc rotation:%d\n", __FUNCTION__, lc->device_rotation);
 				video_stream_set_device_rotation(call->videostream, lc->device_rotation);
@@ -1342,7 +1351,6 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 	call->current_params.has_video=FALSE;
 	if (call->videostream!=NULL) {
 		linphone_call_start_video_stream(call,cname,all_inputs_muted);
-        call->log->video_enabled = TRUE;
 	}
 
 	call->all_muted=all_inputs_muted;
