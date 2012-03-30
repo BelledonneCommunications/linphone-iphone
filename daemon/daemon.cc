@@ -201,7 +201,7 @@ class HelpCommand : public DaemonCommand{
 
 class RegisterCommand : public DaemonCommand{
 	public:
-		RegisterCommand() : DaemonCommand("register", "register <identity> <proxy-address> <password>","Register the daemon to a default SIP proxy"){
+		RegisterCommand() : DaemonCommand("register", "register <identity> <proxy-address> <password>","Register the daemon to a SIP proxy."){
 		}
 		virtual void exec(Daemon *app, const char *args){
 			LinphoneCore *lc=app->getCore();
@@ -233,7 +233,7 @@ class RegisterCommand : public DaemonCommand{
 
 class UnregisterCommand : public DaemonCommand{
 	public:
-	UnregisterCommand() : DaemonCommand("unregister", "unregister <register_id>","Unregister from default proxy"){
+	UnregisterCommand() : DaemonCommand("unregister", "unregister <register_id>","Unregister the daemon from proxy."){
 		}
 		virtual void exec(Daemon *app, const char *args){
 			LinphoneCore *lc=app->getCore();

@@ -10,7 +10,7 @@
 static int running=1;
 
 int main(int argc, char *argv[]){
-	int fd=ortp_client_pipe_connect("ha-linphone");
+	int fd=ortp_client_pipe_connect("linphone-daemon");
 	struct pollfd pfds[2]={{0}};
 	char buf[4096];
 
