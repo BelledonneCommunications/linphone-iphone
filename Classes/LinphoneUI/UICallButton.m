@@ -23,6 +23,17 @@
 
 
 @implementation UICallButton
+
+static BOOL transferMode = NO;
+
++(void) enableTransforMode:(BOOL) enable {
+    transferMode = enable;
+}
+
++(BOOL) transforModeEnabled {
+    return transferMode;
+}
+
 -(void) touchUp:(id) sender {
 	if (!linphone_core_is_network_reachabled([LinphoneManager getLc])) {
 		UIAlertView* error = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"Network Error",nil)
@@ -58,7 +69,12 @@
 		
 		if ([mAddress.text length] == 0) return; //just return
 		if ([mAddress.text hasPrefix:@"sip:"]) {
-			linphone_core_invite_with_params([LinphoneManager getLc],[mAddress.text cStringUsingEncoding:[NSString defaultCStringEncoding]],lcallParams);
+            if (transferMode) {
+                linphone_core_transfer_call([LinphoneManager getLc], linphone_core_get_current_call([LinphoneManager getLc]), [mAddress.text cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+            } else {
+                linphone_core_invite_with_params([LinphoneManager getLc],[mAddress.text cStringUsingEncoding:[NSString defaultCStringEncoding]],lcallParams);
+            }
+            [UICallButton enableTransforMode:NO];
 		} else if ( proxyCfg==nil){
 			UIAlertView* error = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"Invalid sip address",nil)
 															message:NSLocalizedString(@"Either configure a SIP proxy server from settings prior to place a call or use a valid sip address (I.E sip:john@example.net)",nil) 
@@ -78,12 +94,16 @@
 			linphone_address_set_display_name(tmpAddress,(lDisplayName)?[lDisplayName cStringUsingEncoding:[NSString defaultCStringEncoding]]:nil);
 
 
-			
-			linphone_core_invite_address_with_params([LinphoneManager getLc],tmpAddress,lcallParams) ;
+			if (transferMode) {
+                linphone_core_transfer_call([LinphoneManager getLc], linphone_core_get_current_call([LinphoneManager getLc]), normalizedUserName);
+            } else {
+                linphone_core_invite_address_with_params([LinphoneManager getLc],tmpAddress,lcallParams) ;
+            }
 			
 			linphone_address_destroy(tmpAddress);
 		}
 		linphone_call_params_destroy(lcallParams);
+        [UICallButton enableTransforMode:NO];
 	} else if (linphone_core_inc_invite_pending([LinphoneManager getLc])) {
 		linphone_core_accept_call([LinphoneManager getLc],linphone_core_get_current_call([LinphoneManager getLc]));
 	}
@@ -100,6 +120,7 @@
  */
 -(void) initWithAddress:(UITextField*) address{
 	mAddress=[address retain];
+    transferMode = NO;
 	[self addTarget:self action:@selector(touchUp:) forControlEvents:UIControlEventTouchUpInside];
 }
 

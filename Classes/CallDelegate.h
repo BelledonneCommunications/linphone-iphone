@@ -25,7 +25,8 @@ enum CallDelegateType {
     CD_NEW_CALL,
     CD_ZRTP,
     CD_VIDEO_UPDATE,
-    CD_STOP_VIDEO_ON_LOW_BATTERY
+    CD_STOP_VIDEO_ON_LOW_BATTERY,
+    CD_TRANSFER_CALL
 };
 
 @protocol UIActionSheetCustomDelegate 

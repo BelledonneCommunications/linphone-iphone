@@ -52,6 +52,7 @@ const NSInteger SECURE_BUTTON_TAG=5;
 @synthesize callTableView;
 @synthesize addCall;
 @synthesize mergeCalls;
+@synthesize transfer;
 
 @synthesize one;
 @synthesize two;
@@ -432,6 +433,8 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     [videoCameraSwitch setPreview:videoPreview];
     addVideo.videoUpdateIndicator = videoUpdateIndicator;
     
+    [transfer addTarget:self action:@selector(transferPressed) forControlEvents:UIControlEventTouchUpInside];
+    
     // prevent buttons resizing
     /*
     endCtrl.imageView.contentMode = UIViewContentModeCenter;
@@ -444,9 +447,49 @@ void addAnimationFadeTransition(UIView* view, float duration) {
      
 }
 
+-(void) transferPressed {
+    /* allow only if call is active */
+    if (!linphone_core_get_current_call([LinphoneManager getLc]))
+        return;
+    
+    /* build UIActionSheet */
+    if (visibleActionSheet != nil) {
+        [visibleActionSheet dismissWithClickedButtonIndex:visibleActionSheet.cancelButtonIndex animated:TRUE];
+    }
+    
+    CallDelegate* cd = [[CallDelegate alloc] init];
+    cd.eventType = CD_TRANSFER_CALL;
+    cd.delegate = self;
+    cd.call = linphone_core_get_current_call([LinphoneManager getLc]);
+    NSString* title = NSLocalizedString(@"Transfer call to:",nil);
+    visibleActionSheet = [[UIActionSheet alloc] initWithTitle:title
+                                                     delegate:cd 
+                                            cancelButtonTitle:NSLocalizedString(@"Cancel",nil) 
+                                       destructiveButtonTitle:NSLocalizedString(@"A new call",nil)
+                                            otherButtonTitles:nil];
+    
+    // add button for each trasnfer-to valid call
+    const MSList* calls = linphone_core_get_calls([LinphoneManager getLc]);
+    while (calls) {
+        LinphoneCall* call = (LinphoneCall*) calls->data;
+        LinphoneCallAppData* data = ((LinphoneCallAppData*)linphone_call_get_user_pointer(call));
+        if (call != cd.call && !linphone_call_get_current_params(call)->in_conference) {
+            const LinphoneAddress* addr = linphone_call_get_remote_address(call);
+            NSString* btnTitle = [NSString stringWithFormat : NSLocalizedString(@"%s",nil), (linphone_address_get_display_name(addr) ?linphone_address_get_display_name(addr):linphone_address_get_username(addr))];
+            data->transferButtonIndex = [visibleActionSheet addButtonWithTitle:btnTitle];
+        } else {
+            data->transferButtonIndex = -1;
+        }
+        calls = calls->next;
+    }
+    
+    visibleActionSheet.actionSheetStyle = UIActionSheetStyleDefault;
+    [visibleActionSheet showInView:self.view];    
+}
+
 -(void) addCallPressed {
     [LinphoneManager logUIElementPressed:"CALL button"];
-    [self dismissModalViewControllerAnimated:true];
+    [[LinphoneManager instance] displayDialer];
 }
 
 
@@ -549,6 +592,7 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     }
 	if (!mVideoShown) [[UIApplication sharedApplication] setIdleTimerDisabled:false];
 	mIncallViewIsReady=FALSE;
+    dismissed = false;
 }
 
 - (void)viewDidUnload {
@@ -600,6 +644,7 @@ void addAnimationFadeTransition(UIView* view, float duration) {
 	UIViewController* modalVC = self.modalViewController;
 	UIDevice *device = [UIDevice currentDevice];
     device.proximityMonitoringEnabled = NO;
+    dismissed = true;
     if (modalVC != nil) {
         mVideoIsPending=FALSE;
         // clear previous native window ids
@@ -613,15 +658,33 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     }
 
 	[self dismissModalViewControllerAnimated:FALSE]; //disable animation to avoid blanc bar just below status bar*/
-    dismissed = true;
     [self updateUIFromLinphoneState: YES]; 
 }
+
+static void hideSpinner(LinphoneCall* lc, void* user_data);
+
+-(void) hideSpinnerIndicator: (LinphoneCall*)call {
+    if (!videoWaitingForFirstImage.hidden) {
+        videoWaitingForFirstImage.hidden = TRUE;
+    } /*else {
+        linphone_call_set_next_video_frame_decoded_callback(call, hideSpinner, self);
+    }*/
+}
+
+static void hideSpinner(LinphoneCall* call, void* user_data) {
+    IncallViewController* thiz = (IncallViewController*) user_data;
+    [thiz hideSpinnerIndicator:call];
+}
+
 -(void) displayVideoCall:(LinphoneCall*) call FromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName { 
     
     [self enableVideoDisplay];
+
     [self updateUIFromLinphoneState: YES];
     videoWaitingForFirstImage.hidden = NO;
     [videoWaitingForFirstImage startAnimating];
+    
+    linphone_call_set_next_video_frame_decoded_callback(call, hideSpinner, self);
     return;
     
 	if (mIncallViewIsReady) {
@@ -1019,6 +1082,27 @@ void addAnimationFadeTransition(UIView* view, float duration) {
                 // stop video
                 linphone_call_params_enable_video(paramsCopy, FALSE);
                 linphone_core_update_call([LinphoneManager getLc], call, paramsCopy);
+            }
+            break;
+        }
+        case CD_TRANSFER_CALL: {
+            LinphoneCall* call = (LinphoneCall*)datas;
+            if (buttonIndex == actionSheet.destructiveButtonIndex) {
+                // transfer to a new call: enable transfer mode and hide incallview
+                [UICallButton enableTransforMode:YES];
+                [[LinphoneManager instance] displayDialer];
+            } else {
+                // browse existing call and trasnfer to the one matching the btn id
+                const MSList* calls = linphone_core_get_calls([LinphoneManager getLc]);
+                while (calls) {
+                    LinphoneCall* call2 = (LinphoneCall*) calls->data;
+                    LinphoneCallAppData* data = ((LinphoneCallAppData*)linphone_call_get_user_pointer(call2));
+                    if (data->transferButtonIndex == buttonIndex) {
+                        linphone_core_transfer_call_to_another([LinphoneManager getLc], call, call2);
+                    }
+                    data->transferButtonIndex = -1;
+                    calls = calls->next;
+                }
             }
             break;
         }

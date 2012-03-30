@@ -44,6 +44,7 @@ struct NetworkReachabilityContext {
 
 typedef struct _LinphoneCallAppData {
     bool_t batteryWarningShown;
+    int transferButtonIndex;
 } LinphoneCallAppData;
 
 
@@ -73,6 +74,8 @@ typedef struct _LinphoneCallAppData {
 +(BOOL) runningOnIpad;
 +(void) set:(UIView*)view hidden: (BOOL) hidden withName:(const char*)name andReason:(const char*) reason;
 +(void) logUIElementPressed:(const char*) name;
+
+-(void) displayDialer;
 
 -(void) registerLogView:(id<LogView>) view;
 

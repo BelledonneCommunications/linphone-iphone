@@ -40,6 +40,7 @@
 	UIToggleVideoButton* addVideo;
     UITableView* callTableView;
     UIButton* addCall, *mergeCalls;
+    UIButton* transfer;
 
 	
 	//key pad
@@ -115,6 +116,7 @@
 @property (nonatomic, retain) IBOutlet UITableView* callTableView;
 @property (nonatomic, retain) IBOutlet UIButton* addCall;
 @property (nonatomic, retain) IBOutlet UIButton* mergeCalls;
+@property (nonatomic, retain) IBOutlet UIButton* transfer;
 
 @property (nonatomic, retain) IBOutlet UIButton* one;
 @property (nonatomic, retain) IBOutlet UIButton* two;

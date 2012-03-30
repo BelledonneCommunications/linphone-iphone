@@ -106,6 +106,8 @@
         [LinphoneManager set:callShort hidden:zeroCall withName:"CALL_SHORT button" andReason:__FUNCTION__];
         [LinphoneManager set:backToCallView hidden:zeroCall withName:"BACK button" andReason:__FUNCTION__];
         
+        [callShort setTitle:[UICallButton transforModeEnabled] ? @"transfer":@"call" forState:UIControlStateNormal];
+        
         if (!callShort.hidden)
             [callShort setEnabled:!linphone_core_sound_resources_locked([LinphoneManager getLc])];
     } @catch (NSException* exc) {
@@ -230,7 +232,6 @@
 	[myTabBarController setSelectedIndex:DIALER_TAB_INDEX];
     
     [mMainScreenWithVideoPreview showPreview:YES];
-	
 }
 
 //status reporting
@@ -284,10 +285,19 @@
 }
 
 -(void) backToCallViewPressed {
-    [self	displayInCall: nil
+    [UICallButton enableTransforMode:NO];
+    [self presentModalViewController:(UIViewController*)mIncallViewController animated:true];
+
+    LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
+    
+    if (!call || !linphone_call_params_video_enabled(linphone_call_get_current_params(call)) || linphone_call_get_state(call) != LinphoneCallStreamsRunning) {
+        [self	displayInCall: call
 				 FromUI:nil
 				forUser:nil 
 		withDisplayName:nil];
+    } else {
+        [self displayVideoCall:call FromUI:nil forUser:nil withDisplayName:nil];
+    }
 }
 
 -(void) displayCall: (LinphoneCall*) call InProgressFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
@@ -316,6 +326,8 @@
     [LinphoneManager set:callLarge hidden:YES withName:"CALL_LARGE button" andReason:__FUNCTION__];
     [LinphoneManager set:callShort hidden:NO withName:"CALL_SHORT button" andReason:__FUNCTION__];
     [LinphoneManager set:backToCallView hidden:NO withName:"CALL_BACK button" andReason:__FUNCTION__];
+    
+    [self updateCallAndBackButtons];
 } 
 
 
@@ -325,6 +337,7 @@
 							 withDisplayName:displayName];
     
     [mMainScreenWithVideoPreview showPreview:NO];
+    [self updateCallAndBackButtons];
 }
 
 -(void) displayAskToEnableVideoCall:(LinphoneCall*) call forUser:(NSString*) username withDisplayName:(NSString*) displayName {
