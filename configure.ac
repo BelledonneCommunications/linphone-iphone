@@ -511,14 +511,28 @@ if test x$enable_tunnel = xtrue; then
      AC_SUBST(TUNNEL_LIBS)
 fi
 
+SIPSTACK_CFLAGS=
+SIPSTACK_LIBS=
+
+AC_ARG_ENABLE([bellesip],
+	AS_HELP_STRING([--enable-bellesip], [Build with bellesip]))
+	
+PKG_CHECK_MODULES(BELLESIP, [belle-sip],[bellesip_found=yes],foo=bar)
+
+AM_CONDITIONAL([USE_BELLESIP], [test "x$enable_bellesip" != "xno" && test "x$bellesip_found" == "xyes"])
 
 
+if test $USE_BELLESIP_TRUE !='#' ; then
+	SIPSTACK_CFLAGS=$BELLESIP_CFLAGS
+	SIPSTACK_LIBS=$BELLESIP_LIBS
+	AC_DEFINE(USE_BELLESIP,1,[Defined when bellesip is used])
+else
+	SIPSTACK_CFLAGS=$EXOSIP_CFLAGS $OSIP_CFLAGS
+	SIPSTACK_LIBS=$EXOSIP_LIBS $OSIP_LIBS
+fi
 
-
-
-
-
-
+AC_SUBST(SIPSTACK_CFLAGS)
+AC_SUBST(SIPSTACK_LIBS)
 
 dnl check for db2html (docbook) to generate html user manual
 AC_CHECK_PROG(have_sgmltools,sgmltools, yes, no)
@@ -568,14 +582,28 @@ AC_SUBST(ORTP_LIBS)
 AC_SUBST([ORTP_VERSION])
 AC_SUBST([ORTP_DIR])
 
-AC_ARG_ENABLE(tests_enabled,
-      [  --disable-tests    Disable compilation of tests],
-      [case "${enableval}" in
-        yes) tests_enabled=true ;;
-        no)  tests_enabled=false ;;
-        *) AC_MSG_ERROR(bad value ${enableval} for --disable-tests) ;;
-      esac],[tests_enabled=false])
-AM_CONDITIONAL(ENABLE_TESTS, test x$tests_enabled = xyes)
+AC_ARG_ENABLE([tests],
+	AS_HELP_STRING([--disable-tests], [Disable the tests]))
+	AM_CONDITIONAL([ENABLE_TESTS], [test "x$enable_tests" != "xno"])
+
+PKG_CHECK_MODULES(CUNIT, cunit, [found_cunit=yes],[found_cunit=no])
+
+if test "$found_cunit" = "no" ; then
+	AC_CHECK_HEADERS(CUnit/CUnit.h,
+		[
+			found_cunit=yes
+			CUNIT_LIBS="-lcunit"
+		])
+fi
+
+
+case "$target_os" in
+	*darwin*)
+		#hack for macport
+		CUNIT_LIBS+=" -lncurses"
+	;;
+esac
+AM_CONDITIONAL([BUILD_CUNIT_TESTS], [test x$found_cunit = xyes && test x$enable_tests != xno])
 
 
 
@@ -596,6 +624,7 @@ m4/Makefile
 po/Makefile.in
 pixmaps/Makefile
 coreapi/Makefile
+tester/Makefile
 coreapi/help/Makefile
 coreapi/help/Doxyfile
 gtk/Makefile
@@ -625,6 +654,11 @@ printf "* zRTP encryption (GPLv3)\t%s\n" $zrtp
 
 if test "$enable_tunnel" = "true" ; then
 	printf "* Tunnel support\t\ttrue\n"
+fi
+if test $USE_BELLESIP_TRUE !='#' ; then
+	printf "* bellesip stack\t\ttrue\n"
+else
+	printf "* eXosip stack\t\ttrue\n"
 fi
 
 echo "Now type 'make' to compile, and then 'make install' as root to install it."

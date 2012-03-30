@@ -38,6 +38,7 @@ const char* sal_transport_to_string(SalTransport transport) {
 }
 
 SalTransport sal_transport_parse(const char* param) {
+	if (!param) return SalTransportUDP;
 	if (strcasecmp("udp",param)==0) return SalTransportUDP;
 	if (strcasecmp("tcp",param)==0) return SalTransportTCP;
 	if (strcasecmp("tls",param)==0) return SalTransportTLS;

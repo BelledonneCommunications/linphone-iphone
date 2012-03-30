@@ -60,7 +60,7 @@ SalAddress * sal_address_new(const char *uri);
 SalAddress * sal_address_clone(const SalAddress *addr);
 const char *sal_address_get_scheme(const SalAddress *addr);
 const char *sal_address_get_display_name(const SalAddress* addr);
-char *sal_address_get_display_name_unquoted(const SalAddress *addr);
+const char *sal_address_get_display_name_unquoted(const SalAddress *addr);
 const char *sal_address_get_username(const SalAddress *addr);
 const char *sal_address_get_domain(const SalAddress *addr);
 const char * sal_address_get_port(const SalAddress *addr);
@@ -371,6 +371,8 @@ int sal_ping(SalOp *op, const char *from, const char *to);
 /*misc*/
 void sal_get_default_local_ip(Sal *sal, int address_family, char *ip, size_t iplen);
 
+void sal_enable_logs();
+void sal_disable_logs();
 
 /*internal API */
 void __sal_op_init(SalOp *b, Sal *sal);

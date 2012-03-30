@@ -22,9 +22,6 @@ liblinphone_la_SOURCES=\
 	linphonecore.c linphonecore.h private.h\
 	offeranswer.c offeranswer.h\
 	sal.c sal.h \
-	sal_eXosip2.c sal_eXosip2.h\
-	sal_eXosip2_sdp.c \
-	sal_eXosip2_presence.c \
 	callbacks.c \
 	misc.c  \
 	address.c \
@@ -42,7 +39,13 @@ liblinphone_la_SOURCES=\
 	ec-calibrator.c \
 	conference.c \
 	linphone_tunnel.cc
-	
+if USE_BELLESIP
+liblinphone_la_SOURCES+= 	sal_bellesip.c 
+else
+liblinphone_la_SOURCES+= 	sal_eXosip2.c sal_eXosip2.h\
+							sal_eXosip2_sdp.c \
+							sal_eXosip2_presence.c 	
+endif
 if BUILD_WIZARD
 liblinphone_la_SOURCES+=sipwizard.c 
 endif
@@ -56,7 +59,7 @@ endif
 liblinphone_la_LDFLAGS= -version-info $(LIBLINPHONE_SO_VERSION) -no-undefined
 
 liblinphone_la_LIBADD= \
-		$(EXOSIP_LIBS) \
+		$(SIPSTACK_LIBS) \
 		$(MEDIASTREAMER_LIBS) \
 		$(ORTP_LIBS) $(OPENSSL_LIBS) \
 		$(TUNNEL_LIBS) \
@@ -78,8 +81,7 @@ endif
 AM_CFLAGS=$(STRICT_OPTIONS)  -DIN_LINPHONE \
 	$(ORTP_CFLAGS) \
 	$(MEDIASTREAMER_CFLAGS) \
-	$(OSIP_CFLAGS) \
-	$(EXOSIP_CFLAGS) \
+	$(SIPSTACK_CFLAGS) \
 	$(LIBSOUP_CFLAGS) \
 	-DENABLE_TRACE 	\
 	-DLOG_DOMAIN=\"LinphoneCore\" \

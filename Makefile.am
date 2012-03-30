@@ -4,7 +4,7 @@
 ACLOCAL_AMFLAGS = -I m4 $(ACLOCAL_MACOS_FLAGS)
 
 SUBDIRS = build m4 pixmaps po @ORTP_DIR@ @MS2_DIR@ \
-		coreapi console gtk share scripts
+		coreapi console gtk share scripts tester
 
 
 
@@ -229,4 +229,4 @@ clean-local:
 	rm -rf $(BUNDLEDIR)
 discovery:
 	touch specs.cpp
-	$(CC) $(CFLAGS) $(MEDIASTREAMER2_CFLAGS) $(ORTP_CFLAGS) -E -P -v -dD specs.cpp
+	$(CC) $(CFLAGS) -include $(top_builddir)/config.h $(MEDIASTREAMER2_CFLAGS) $(ORTP_CFLAGS) $(SIPSTACK_CFLAGS) $(CUNIT_CFLAGS)-E -P -v -dD specs.cpp

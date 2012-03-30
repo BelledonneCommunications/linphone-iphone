@@ -306,6 +306,7 @@ void linphone_core_enable_logs(FILE *file){
 	if (file==NULL) file=stdout;
 	ortp_set_log_file(file);
 	ortp_set_log_level_mask(ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
+	sal_enable_logs();
 }
 
 /**
@@ -320,6 +321,7 @@ void linphone_core_enable_logs(FILE *file){
 void linphone_core_enable_logs_with_cb(OrtpLogFunc logfunc){
 	ortp_set_log_level_mask(ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
 	ortp_set_log_handler(logfunc);
+	sal_enable_logs();
 }
 
 /**
@@ -329,6 +331,7 @@ void linphone_core_enable_logs_with_cb(OrtpLogFunc logfunc){
 **/
 void linphone_core_disable_logs(){
 	ortp_set_log_level_mask(ORTP_ERROR|ORTP_FATAL);
+	sal_disable_logs();
 }
 
 
@@ -1462,14 +1465,14 @@ int linphone_core_get_sip_port(LinphoneCore *lc)
 static char _ua_name[64]="Linphone";
 static char _ua_version[64]=LINPHONE_VERSION;
 
-#ifdef HAVE_EXOSIP_GET_VERSION
+#if HAVE_EXOSIP_GET_VERSION && !USE_BELLESIP
 extern const char *eXosip_get_version();
 #endif
 
 static void apply_user_agent(LinphoneCore *lc){
 	char ua_string[256];
 	snprintf(ua_string,sizeof(ua_string)-1,"%s/%s (eXosip2/%s)",_ua_name,_ua_version,
-#ifdef HAVE_EXOSIP_GET_VERSION
+#if HAVE_EXOSIP_GET_VERSION && !USE_BELLESIP
 		 eXosip_get_version()
 #else
 		 "unknown"
