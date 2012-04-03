@@ -420,6 +420,7 @@ static void call_resumed(LinphoneCore *lc, LinphoneCall *call){
 	if(lc->vtable.display_status)
 		lc->vtable.display_status(lc,_("We have been resumed."));
 	linphone_call_set_state(call,LinphoneCallStreamsRunning,"Connected (streams running)");
+	linphone_call_set_transfer_state(call, LinphoneCallIdle);
 }
 
 static void call_paused_by_remote(LinphoneCore *lc, LinphoneCall *call){
@@ -821,8 +822,7 @@ static void notify_refer(SalOp *op, SalReferStatus status){
 		default:
 			cstate=LinphoneCallError;
 	}
-	if (lc->vtable.transfer_state_changed)
-		lc->vtable.transfer_state_changed(lc,call,cstate);
+	linphone_call_set_transfer_state(call, cstate);
 	if (cstate==LinphoneCallConnected){
 		/*automatically terminate the call as the transfer is complete.*/
 		linphone_core_terminate_call(lc,call);

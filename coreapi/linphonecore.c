@@ -2262,6 +2262,7 @@ int linphone_core_transfer_call(LinphoneCore *lc, LinphoneCall *call, const char
 	sal_call_refer(call->op,real_url);
 	ms_free(real_url);
 	linphone_address_destroy(real_parsed_url);
+	linphone_call_set_transfer_state(call, LinphoneCallOutgoingInit);
 	return 0;
 }
 
@@ -2278,7 +2279,9 @@ int linphone_core_transfer_call(LinphoneCore *lc, LinphoneCall *call, const char
  * close the call with us (the 'dest' call).
 **/
 int linphone_core_transfer_call_to_another(LinphoneCore *lc, LinphoneCall *call, LinphoneCall *dest){
-	return sal_call_refer_with_replaces (call->op,dest->op);
+	int result = sal_call_refer_with_replaces (call->op,dest->op);
+	linphone_call_set_transfer_state(call, LinphoneCallOutgoingInit);
+	return result;
 }
 
 bool_t linphone_core_inc_invite_pending(LinphoneCore*lc){

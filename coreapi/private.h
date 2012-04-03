@@ -100,6 +100,7 @@ struct _LinphoneCall
 	time_t start_time; /*time at which the call was initiated*/
 	time_t media_start_time; /*time at which it was accepted, media streams established*/
 	LinphoneCallState	state;
+	LinphoneCallState transfer_state; /*idle if no transfer*/
 	LinphoneReason reason;
 	int refcnt;
 	void * user_pointer;
@@ -142,6 +143,7 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 LinphoneCallLog * linphone_call_log_new(LinphoneCall *call, LinphoneAddress *local, LinphoneAddress * remote);
 void linphone_call_log_completed(LinphoneCall *call);
 void linphone_call_log_destroy(LinphoneCallLog *cl);
+void linphone_call_set_transfer_state(LinphoneCall* call, LinphoneCallState state);
 
 void linphone_auth_info_write_config(struct _LpConfig *config, LinphoneAuthInfo *obj, int pos);
 

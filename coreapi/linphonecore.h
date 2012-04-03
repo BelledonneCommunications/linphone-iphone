@@ -291,6 +291,7 @@ void linphone_call_send_vfu_request(LinphoneCall *call);
 void *linphone_call_get_user_pointer(LinphoneCall *call);
 void linphone_call_set_user_pointer(LinphoneCall *call, void *user_pointer);
 void linphone_call_set_next_video_frame_decoded_callback(LinphoneCall *call, LinphoneCallCbFunc cb, void* user_data);
+LinphoneCallState linphone_call_get_transfer_state(LinphoneCall *call);
     
 /**
  * Enables or disable echo cancellation for this call

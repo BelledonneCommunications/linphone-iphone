@@ -295,6 +295,7 @@ static void linphone_call_init_common(LinphoneCall *call, LinphoneAddress *from,
 	call->magic=linphone_call_magic;
 	call->refcnt=1;
 	call->state=LinphoneCallIdle;
+	call->transfer_state = LinphoneCallIdle;
 	call->start_time=time(NULL);
 	call->media_start_time=0;
 	call->log=linphone_call_log_new(call, from, to);
@@ -1675,4 +1676,16 @@ void linphone_call_log_completed(LinphoneCall *call){
 	call_logs_write_to_config_file(lc);
 }
 
+LinphoneCallState linphone_call_get_transfer_state(LinphoneCall *call) {
+	return call->transfer_state;
+}
+
+void linphone_call_set_transfer_state(LinphoneCall* call, LinphoneCallState state) {
+	if (state != call->transfer_state) {
+		LinphoneCore* lc = call->core;
+		call->transfer_state = state;
+		if (lc->vtable.transfer_state_changed)
+			lc->vtable.transfer_state_changed(lc, call, state);
+	}
+}
 
