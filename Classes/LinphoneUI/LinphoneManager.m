@@ -337,9 +337,14 @@ static void linphone_iphone_call_state(LinphoneCore *lc, LinphoneCall* call, Lin
 	 LinphoneCallPausedByRemote
 	 */
 	[(LinphoneManager*)linphone_core_get_user_data(lc) onCall:call StateChanged: state withMessage:  message];
-	
-	
-	
+}
+
+static void linphone_iphone_transfer_state_changed(LinphoneCore* lc, LinphoneCall* call, LinphoneCallState state) {
+    /*
+     LinhoneCallOutgoingProgress -> SalReferTrying
+     LinphoneCallConnected -> SalReferSuccess
+     LinphoneCallError -> SalReferFailed | *
+     */
 }
 
 -(void) onRegister:(LinphoneCore *)lc cfg:(LinphoneProxyConfig*) cfg state:(LinphoneRegistrationState) state message:(const char*) message {
@@ -417,7 +422,8 @@ static LinphoneCoreVTable linphonec_vtable = {
 	.display_warning=linphone_iphone_log,
 	.display_url=NULL,
 	.text_received=NULL,
-	.dtmf_received=NULL
+	.dtmf_received=NULL,
+    .transfer_state_changed=linphone_iphone_transfer_state_changed
 };
 
 

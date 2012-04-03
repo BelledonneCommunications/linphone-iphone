@@ -44,6 +44,7 @@ struct NetworkReachabilityContext {
 
 typedef struct _LinphoneCallAppData {
     bool_t batteryWarningShown;
+    // transfer data
     int transferButtonIndex;
 } LinphoneCallAppData;
 

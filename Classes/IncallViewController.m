@@ -892,10 +892,27 @@ static void hideSpinner(LinphoneCall* call, void* user_data) {
                     [ms appendFormat:@"%@...", NSLocalizedString(@"Ringing...", nil), nil];
                     break;
                 case LinphoneCallPausedByRemote:
-                    [ms appendFormat:@"%@...", NSLocalizedString(@"Paused by remote", nil), nil];
+                {
+                    switch (linphone_call_get_transfer_state(call)) {
+                        case LinphoneCallOutgoingInit:
+                        case LinphoneCallOutgoingProgress:
+                            [ms appendFormat:@"%@...", NSLocalizedString(@"Transfer in progress", nil), nil];
+                            break;
+                        case LinphoneCallConnected:
+                            [ms appendFormat:@"%@", NSLocalizedString(@"Transfer successful", nil), nil];
+                            break;
+                        case LinphoneCallError:
+                            [ms appendFormat:@"%@", NSLocalizedString(@"Transfer failed", nil), nil];
+                            break;
+                        case LinphoneCallIdle:
+                        default:
+                            [ms appendFormat:@"%@...", NSLocalizedString(@"Paused by remote", nil), nil];
+                            break;
+                    }
                     break;
                 default:
                     break;
+                }
             }
         }
         [detailLabel setText:ms];
