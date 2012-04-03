@@ -35,6 +35,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/msfileplayer.h"
 #include "mediastreamer2/msjpegwriter.h"
 #include "mediastreamer2/mseventqueue.h"
+#include "mediastreamer2/mssndcard.h"
 
 #ifdef VIDEO_ENABLED
 static MSWebCam *get_nowebcam_device(){
@@ -172,9 +173,10 @@ void linphone_call_set_authentication_token_verified(LinphoneCall *call, bool_t 
 	propagate_encryption_changed(call);
 }
 
-static MSList *make_codec_list(LinphoneCore *lc, const MSList *codecs, int bandwidth_limit){
+static MSList *make_codec_list(LinphoneCore *lc, const MSList *codecs, int bandwidth_limit,int* max_sample_rate){
 	MSList *l=NULL;
 	const MSList *it;
+	if (max_sample_rate) *max_sample_rate=0;
 	for(it=codecs;it!=NULL;it=it->next){
 		PayloadType *pt=(PayloadType*)it->data;
 		if (pt->flags & PAYLOAD_TYPE_ENABLED){
@@ -184,6 +186,7 @@ static MSList *make_codec_list(LinphoneCore *lc, const MSList *codecs, int bandw
 			}
 			if (linphone_core_check_payload_type_usability(lc,pt)){
 				l=ms_list_append(l,payload_type_clone(pt));
+				if (max_sample_rate && payload_type_get_rate(pt)>*max_sample_rate) *max_sample_rate=payload_type_get_rate(pt);
 			}
 		}
 	}
@@ -199,6 +202,7 @@ static SalMediaDescription *_create_local_media_description(LinphoneCore *lc, Li
 	const char *username=linphone_address_get_username (addr);
 	SalMediaDescription *md=sal_media_description_new();
 
+
 	md->session_id=session_id;
 	md->session_ver=session_ver;
 	md->nstreams=1;
@@ -213,10 +217,11 @@ static SalMediaDescription *_create_local_media_description(LinphoneCore *lc, Li
 		SalProtoRtpSavp : SalProtoRtpAvp;
 	md->streams[0].type=SalAudio;
 	md->streams[0].ptime=lc->net_conf.down_ptime;
-	l=make_codec_list(lc,lc->codecs_conf.audio_codecs,call->params.audio_bw);
+	l=make_codec_list(lc,lc->codecs_conf.audio_codecs,call->params.audio_bw,&md->streams[0].max_rate);
 	pt=payload_type_clone(rtp_profile_get_payload_from_mime(&av_profile,"telephone-event"));
 	l=ms_list_append(l,pt);
 	md->streams[0].payloads=l;
+	
 
 
 	if (call->params.has_video){
@@ -224,7 +229,7 @@ static SalMediaDescription *_create_local_media_description(LinphoneCore *lc, Li
 		md->streams[1].port=call->video_port;
 		md->streams[1].proto=md->streams[0].proto;
 		md->streams[1].type=SalVideo;
-		l=make_codec_list(lc,lc->codecs_conf.video_codecs,0);
+		l=make_codec_list(lc,lc->codecs_conf.video_codecs,0,NULL);
 		md->streams[1].payloads=l;
 	}
 	
@@ -1176,7 +1181,8 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cna
 				captcard=playcard=NULL;
 			}
 			use_ec=captcard==NULL ? FALSE : linphone_core_echo_cancellation_enabled(lc);
-
+			if (playcard &&  stream->max_rate>0) ms_snd_card_set_preferred_sample_rate(playcard, stream->max_rate);
+			if (captcard &&  stream->max_rate>0) ms_snd_card_set_preferred_sample_rate(captcard, stream->max_rate);
 			audio_stream_enable_adaptive_bitrate_control(call->audiostream,use_arc);
 			audio_stream_start_full(
 				call->audiostream,
