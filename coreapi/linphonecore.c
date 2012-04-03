@@ -4583,8 +4583,10 @@ void linphone_core_start_dtmf_stream(LinphoneCore* lc) {
 }
 
 void linphone_core_stop_dtmf_stream(LinphoneCore* lc) {
-	if (lc->ringstream) ring_stop(lc->ringstream);
-	lc->ringstream=NULL;
+	if (lc->ringstream && dmfs_playing_start_time!=0) {
+		ring_stop(lc->ringstream);
+		lc->ringstream=NULL;
+	}
 }
 
 int linphone_core_get_max_calls(LinphoneCore *lc) {
