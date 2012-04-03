@@ -22,6 +22,7 @@
 enable_gpl_third_parties=yes
 enable_zrtp=no
 
+.NOTPARALLEL all: check_options build warning
 ifeq ($(enable_gpl_third_parties)$(enable_zrtp),noyes)
 check_options:
 	@echo "ZRTP is not available in non-gpl build."
@@ -31,7 +32,6 @@ check_options:
 
 endif
 
-.NOTPARALLEL all: check_options build warning
 ifeq ($(enable_gpl_third_parties),yes)
 warning:
 	@echo 
