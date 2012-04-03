@@ -585,6 +585,10 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 		lc->ringstream=NULL;
 	}
 	linphone_call_stop_media_streams (call);
+	if (call->referer && linphone_call_get_state(call->referer)==LinphoneCallPaused && call->referer->was_automatically_paused){
+		/*resume to the call that send us the refer automatically*/
+		linphone_core_resume_call(lc,call->referer);
+	}
 	if (sr == SalReasonDeclined) {
 		call->reason=LinphoneReasonDeclined;
 		linphone_call_set_state(call,LinphoneCallEnd,"Call declined.");
@@ -593,10 +597,6 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 		linphone_call_set_state(call,LinphoneCallError,"User not found.");
 	} else {
 		linphone_call_set_state(call,LinphoneCallError,msg);
-	}
-	if (call->referer && linphone_call_get_state(call->referer)==LinphoneCallPaused && call->referer->was_automatically_paused){
-		/*resume to the call that send us the refer automatically*/
-		linphone_core_resume_call(lc,call->referer);
 	}
 }
 
