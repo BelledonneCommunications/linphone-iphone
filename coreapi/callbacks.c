@@ -276,6 +276,7 @@ static void call_ringing(SalOp *h){
 		if (lc->ringstream!=NULL) return;	/*already ringing !*/
 		if (lc->sound_conf.play_sndcard!=NULL){
 			MSSndCard *ringcard=lc->sound_conf.lsd_card ? lc->sound_conf.lsd_card : lc->sound_conf.play_sndcard;
+			if (call->localdesc->streams[0].max_rate>0) ms_snd_card_set_preferred_sample_rate(ringcard, call->localdesc->streams[0].max_rate);
 			lc->ringstream=ring_start(lc->sound_conf.remote_ring,2000,ringcard);
 		}
 		ms_message("Remote ringing...");
