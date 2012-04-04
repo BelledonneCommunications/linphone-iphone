@@ -28,7 +28,8 @@
 
 
 -(void) touchDown:(id) sender {
-    if (linphone_core_get_current_call([LinphoneManager getLc])) {
+    LinphoneCall *call=linphone_core_get_current_call([LinphoneManager getLc]);
+    if (call && linphone_call_get_state(call)==LinphoneCallStreamsRunning) {
         linphone_core_send_dtmf([LinphoneManager getLc],mDigit);
     } else if (chatRoom) {
         char msg[] = {mDigit, '\0'};

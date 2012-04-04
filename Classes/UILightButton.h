@@ -7,11 +7,16 @@
 //
 
 #import "UIToggleButton.h"
+#include "linphonecore.h"
 
 
 @interface UILightButton : UIToggleButton<UIToggleButtonDelegate> {
+@public
+    LinphoneChatRoom* chatRoom;
     
 }
+
+-(void) send;
 
 @end
 
