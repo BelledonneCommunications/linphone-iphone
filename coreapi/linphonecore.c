@@ -1800,7 +1800,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 			/*start the call even if the OPTIONS reply did not arrive*/
 			linphone_core_start_invite(lc,call,NULL);
 		}
-		if (call->dir==LinphoneCallIncoming && call->state==LinphoneCallOutgoingRinging){
+		if (call->state==LinphoneCallIncomingReceived){
 			elapsed=curtime-call->start_time;
 			ms_message("incoming call ringing for %i seconds",elapsed);
 			if (elapsed>lc->sip_conf.inc_timeout){
