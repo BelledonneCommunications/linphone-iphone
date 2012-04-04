@@ -464,7 +464,7 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     NSString* title = NSLocalizedString(@"Transfer call to:",nil);
     visibleActionSheet = [[UIActionSheet alloc] initWithTitle:title
                                                      delegate:cd 
-                                            cancelButtonTitle:NSLocalizedString(@"Cancel",nil) 
+                                            cancelButtonTitle:[LinphoneManager runningOnIpad] ? nil : NSLocalizedString(@"Cancel",nil) 
                                        destructiveButtonTitle:NSLocalizedString(@"A new call",nil)
                                             otherButtonTitles:nil];
     
@@ -484,7 +484,10 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     }
     
     visibleActionSheet.actionSheetStyle = UIActionSheetStyleDefault;
-    [visibleActionSheet showInView:self.view];    
+    if ([LinphoneManager runningOnIpad])
+        [visibleActionSheet showFromRect:transfer.bounds inView:transfer animated:NO];
+    else
+        [visibleActionSheet showInView:self.view];
 }
 
 -(void) addCallPressed {

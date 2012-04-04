@@ -93,6 +93,10 @@
     
     NSAutoreleasePool* pool = [[NSAutoreleasePool alloc]init];
     NSArray* array = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
+    if ( [array count] == 0) {
+        ms_warning("No camera available (running on simulator ?");
+        return;
+    }
     currentCamera = camIndex % [array count];
     AVCaptureDevice* device =  (AVCaptureDevice*) [array objectAtIndex:currentCamera];
     input = [[AVCaptureDeviceInput deviceInputWithDevice:device
