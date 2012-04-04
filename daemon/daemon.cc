@@ -1,4 +1,5 @@
-#include "linphonecore.h"
+#include <linphonecore.h>
+#include <mediastreamer2/mediastream.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 
@@ -8,6 +9,7 @@
 #include <sstream>
 #include <algorithm>
 #include <list>
+#include <map>
 #include <queue>
 
 using namespace std;
@@ -103,11 +105,13 @@ public:
 	const list<DaemonCommand*> &getCommandList() const;
 	LinphoneCall *findCall(int id);
 	LinphoneProxyConfig *findProxy(int id);
+	AudioStream *findAudioStream(int id);
 	bool pullEvent();
 	static int getCallId(LinphoneCall *call);
 	int setCallId(LinphoneCall *call);
 	static int getProxyId(LinphoneProxyConfig *proxy);
 	int setProxyId(LinphoneProxyConfig *proxy);
+	int setAudioStreamId(AudioStream *audio_stream);
 private:
 
 	static void callStateChanged(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState state, const char *msg);
@@ -129,7 +133,9 @@ private:
 	static Daemon *sZis;
 	static int sCallIds;
 	static int sProxyIds;
+	static int sAudioStreamIds;
 	static const int sLineSize = 512;
+	std::map<int, AudioStream*> mAudioStreams;
 };
 
 class CallCommand: public DaemonCommand {
@@ -279,6 +285,62 @@ public:
 	}
 };
 
+class AudioStreamStartCommand: public DaemonCommand {
+public:
+	AudioStreamStartCommand() :
+			DaemonCommand("audio-stream-start", "audio-stream-start <remote ip> <remote port> <codec mime>", "Start an audio stream.") {
+	}
+	virtual void exec(Daemon *app, const char *args) {
+		char addr[256];
+		int port;
+		char mime[64];
+		if (sscanf(args, "%255s %d %63s", addr, &port, mime) == 3) {
+			int local_port = linphone_core_get_audio_port(app->getCore());
+			const int jitt = linphone_core_get_audio_jittcomp(app->getCore());
+			const bool_t echo_canceller = linphone_core_echo_cancellation_enabled(app->getCore());
+			MSSndCardManager *manager = ms_snd_card_manager_get();
+			MSSndCard *capture_card = ms_snd_card_manager_get_card(manager, linphone_core_get_capture_device(app->getCore()));
+			MSSndCard *play_card = ms_snd_card_manager_get_card(manager, linphone_core_get_playback_device(app->getCore()));
+			int payload_type = rtp_profile_get_payload_number_from_mime(&av_profile, mime);
+			if (payload_type < 0) {
+				app->sendResponse(Response("Payload not found"));
+				return;
+			}
+
+			AudioStream *stream = audio_stream_new(local_port, false);
+			if (audio_stream_start_now(stream, &av_profile, addr, port, port + 1, payload_type, jitt, play_card, capture_card, echo_canceller) != 0) {
+				app->sendResponse(Response("Error during audio stream creation."));
+			}
+			ostringstream ostr;
+			ostr << "Id: " << app->setAudioStreamId(stream) << "\n";
+			app->sendResponse(Response(ostr.str().c_str(), Response::Ok));
+		} else {
+			app->sendResponse(Response("Missing/Incorrect parameter(s)."));
+		}
+	}
+};
+
+class AudioStreamStopCommand: public DaemonCommand {
+public:
+	AudioStreamStopCommand() :
+			DaemonCommand("audio-stream-stop", "audio-stream-stop <audio stream id>", "Stop an audio stream.") {
+	}
+	virtual void exec(Daemon *app, const char *args) {
+		int id;
+		if (sscanf(args, "%d", &id) == 1) {
+			AudioStream *stream = app->findAudioStream(id);
+			if (stream == NULL) {
+				app->sendResponse(Response("No Audio Stream with such id."));
+				return;
+			}
+			audio_stream_stop(stream);
+			app->sendResponse(Response());
+		} else {
+			app->sendResponse(Response("Missing/Incorrect parameter(s)."));
+		}
+	}
+};
+
 class RegisterStatusCommand: public DaemonCommand {
 public:
 	RegisterStatusCommand() :
@@ -364,7 +426,7 @@ public:
 	virtual void exec(Daemon *app, const char *args) {
 		int ms;
 		int ret = sscanf(args, "%d", &ms);
-		if(ret <= 0) {
+		if (ret <= 0) {
 			ostringstream ostr;
 			ms = linphone_core_get_upload_ptime(app->getCore());
 			ostr << "Ptime: " << ms << "\n";
@@ -387,8 +449,8 @@ public:
 			DaemonCommand("audio-codec-get", "audio-codec-get <codec-mime>", "Get an audio codec if codec-mime is defined, otherwise return the audio codec list.") {
 	}
 	virtual void exec(Daemon *app, const char *args) {
-		char mime[256];
-		bool list = sscanf(args, "%255s", mime) != 1;
+		char mime[64];
+		bool list = sscanf(args, "%63s", mime) != 1;
 		bool find = list;
 		int index = 0;
 		for (const MSList *node = linphone_core_get_audio_codecs(app->getCore()); node != NULL; node = ms_list_next(node)) {
@@ -414,9 +476,9 @@ public:
 			DaemonCommand("audio-codec-move", "audio-codec-move <codec-mime> <index>", "Move a codec to the an index.") {
 	}
 	virtual void exec(Daemon *app, const char *args) {
-		char mime[256];
+		char mime[64];
 		int index;
-		if (sscanf(args, "%255s %d", mime, &index) == 2 && index >= 0) {
+		if (sscanf(args, "%63s %d", mime, &index) == 2 && index >= 0) {
 			PayloadType *selected_payload = NULL;
 			for (const MSList *node = linphone_core_get_audio_codecs(app->getCore()); node != NULL; node = ms_list_next(node)) {
 				PayloadType *payload = reinterpret_cast<PayloadType*>(node->data);
@@ -461,8 +523,8 @@ public:
 			DaemonCommand("audio-codec-enable", "audio-codec-enable <codec-mime>", "Enable an audio codec.") {
 	}
 	virtual void exec(Daemon *app, const char *args) {
-		char mime[256];
-		if (sscanf(args, "%255s", mime) == 1) {
+		char mime[64];
+		if (sscanf(args, "%63s", mime) == 1) {
 			int index = 0;
 			for (const MSList *node = linphone_core_get_audio_codecs(app->getCore()); node != NULL; node = ms_list_next(node)) {
 				PayloadType *payload = reinterpret_cast<PayloadType*>(node->data);
@@ -486,8 +548,8 @@ public:
 			DaemonCommand("audio-codec-disable", "audio-codec-disable <codec-mime>", "Disable an audio codec.") {
 	}
 	virtual void exec(Daemon *app, const char *args) {
-		char mime[256];
-		if (sscanf(args, "%255s", mime) == 1) {
+		char mime[64];
+		if (sscanf(args, "%63s", mime) == 1) {
 			int index = 0;
 			for (const MSList *node = linphone_core_get_audio_codecs(app->getCore()); node != NULL; node = ms_list_next(node)) {
 				PayloadType *payload = reinterpret_cast<PayloadType*>(node->data);
@@ -583,6 +645,7 @@ bool DaemonCommand::matches(const char *name) const {
 Daemon * Daemon::sZis = NULL;
 int Daemon::sCallIds = 0;
 int Daemon::sProxyIds = 0;
+int Daemon::sAudioStreamIds = 0;
 
 Daemon::Daemon(const char *config_path, bool using_pipes, bool display_video, bool capture_video) {
 	sZis = this;
@@ -610,8 +673,12 @@ const list<DaemonCommand*> &Daemon::getCommandList() const {
 	return mCommands;
 }
 
-LinphoneCore * Daemon::getCore() {
+LinphoneCore *Daemon::getCore() {
 	return mLc;
+}
+
+int Daemon::getCallId(LinphoneCall *call) {
+	return (int) (long) linphone_call_get_user_pointer(call);
 }
 
 int Daemon::setCallId(LinphoneCall *call) {
@@ -619,7 +686,7 @@ int Daemon::setCallId(LinphoneCall *call) {
 	return sCallIds;
 }
 
-LinphoneCall * Daemon::findCall(int id) {
+LinphoneCall *Daemon::findCall(int id) {
 	const MSList *elem = linphone_core_get_calls(mLc);
 	for (; elem != NULL; elem = elem->next) {
 		LinphoneCall *call = (LinphoneCall *) elem->data;
@@ -629,18 +696,35 @@ LinphoneCall * Daemon::findCall(int id) {
 	return NULL;
 }
 
+int Daemon::getProxyId(LinphoneProxyConfig *proxy) {
+	return (int) (long) linphone_proxy_config_get_user_data(proxy);
+}
+
 int Daemon::setProxyId(LinphoneProxyConfig *cfg) {
 	linphone_proxy_config_set_user_data(cfg, (void*) (long) ++sProxyIds);
 	return sProxyIds;
 }
 
-LinphoneProxyConfig * Daemon::findProxy(int id) {
+LinphoneProxyConfig *Daemon::findProxy(int id) {
 	const MSList *elem = linphone_core_get_proxy_config_list(mLc);
 	for (; elem != NULL; elem = elem->next) {
 		LinphoneProxyConfig *proxy = (LinphoneProxyConfig *) elem->data;
 		if (linphone_proxy_config_get_user_data(proxy) == (void*) (long) id)
 			return proxy;
 	}
+	return NULL;
+}
+
+int Daemon::setAudioStreamId(AudioStream *audio_stream) {
+	++sProxyIds;
+	mAudioStreams.insert(std::pair<int, AudioStream*>(sProxyIds, audio_stream));
+	return sProxyIds;
+}
+
+AudioStream *Daemon::findAudioStream(int id) {
+	std::map<int, AudioStream*>::iterator it = mAudioStreams.find(id);
+	if (it != mAudioStreams.end())
+		return it->second;
 	return NULL;
 }
 
@@ -657,6 +741,8 @@ void Daemon::initCommands() {
 	mCommands.push_back(new AudioCodecEnableCommand());
 	mCommands.push_back(new AudioCodecDisableCommand());
 	mCommands.push_back(new AudioCodecMoveCommand());
+	mCommands.push_back(new AudioStreamStartCommand());
+	mCommands.push_back(new AudioStreamStopCommand());
 	mCommands.push_back(new PtimeCommand());
 	mCommands.push_back(new QuitCommand());
 	mCommands.push_back(new HelpCommand());
@@ -683,14 +769,6 @@ bool Daemon::pullEvent() {
 	ostr << "Size: " << mEventQueue.size();
 	sendResponse(Response(ostr.str().c_str(), Response::Ok));
 	return status;
-}
-
-int Daemon::getCallId(LinphoneCall *call) {
-	return (int) (long) linphone_call_get_user_pointer(call);
-}
-
-int Daemon::getProxyId(LinphoneProxyConfig *proxy) {
-	return (int) (long) linphone_proxy_config_get_user_data(proxy);
 }
 
 void Daemon::callStateChanged(LinphoneCall *call, LinphoneCallState state, const char *msg) {
@@ -859,6 +937,11 @@ void Daemon::quit() {
 
 Daemon::~Daemon() {
 	uninitCommands();
+
+	for (std::map<int, AudioStream *>::iterator it = mAudioStreams.begin(); it != mAudioStreams.end();) {
+		audio_stream_stop(it->second);
+	}
+
 	linphone_core_destroy(mLc);
 	if (mChildFd != -1) {
 		close(mChildFd);
