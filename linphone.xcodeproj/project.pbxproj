@@ -253,6 +253,8 @@
 		344ABDE81484E723007420B6 /* libzrtpcpp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDE71484E723007420B6 /* libzrtpcpp.a */; };
 		344ABDF114850AE9007420B6 /* libc++.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDEF14850AE9007420B6 /* libc++.1.dylib */; settings = {ATTRIBUTES = (Weak, ); }; };
 		344ABDF214850AE9007420B6 /* libstdc++.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDF014850AE9007420B6 /* libstdc++.6.dylib */; settings = {ATTRIBUTES = (Weak, ); }; };
+		3485649F152C423F003FE041 /* in_call_video.png in Resources */ = {isa = PBXBuildFile; fileRef = 3485649D152C423F003FE041 /* in_call_video.png */; };
+		348564A0152C423F003FE041 /* out_call_video.png in Resources */ = {isa = PBXBuildFile; fileRef = 3485649E152C423F003FE041 /* out_call_video.png */; };
 		34957F3F147D3FBF00DD7A09 /* secured.png in Resources */ = {isa = PBXBuildFile; fileRef = 34957F3E147D3FBF00DD7A09 /* secured.png */; };
 		34A6ECEB14CF13CB00460C04 /* icone-linphone-72.png in Resources */ = {isa = PBXBuildFile; fileRef = 34A6ECEA14CF13CB00460C04 /* icone-linphone-72.png */; };
 		34C7646914CD51CD008E9607 /* contact_vide.png in Resources */ = {isa = PBXBuildFile; fileRef = 34C7646814CD51CD008E9607 /* contact_vide.png */; };
@@ -636,6 +638,8 @@
 		344ABDE71484E723007420B6 /* libzrtpcpp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libzrtpcpp.a; path = "liblinphone-sdk/apple-darwin/lib/libzrtpcpp.a"; sourceTree = "<group>"; };
 		344ABDEF14850AE9007420B6 /* libc++.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.1.dylib"; path = "usr/lib/libc++.1.dylib"; sourceTree = SDKROOT; };
 		344ABDF014850AE9007420B6 /* libstdc++.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.6.dylib"; path = "usr/lib/libstdc++.6.dylib"; sourceTree = SDKROOT; };
+		3485649D152C423F003FE041 /* in_call_video.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = in_call_video.png; path = Resources/in_call_video.png; sourceTree = "<group>"; };
+		3485649E152C423F003FE041 /* out_call_video.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = out_call_video.png; path = Resources/out_call_video.png; sourceTree = "<group>"; };
 		34957F3E147D3FBF00DD7A09 /* secured.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = secured.png; path = Resources/secured.png; sourceTree = "<group>"; };
 		34A6ECEA14CF13CB00460C04 /* icone-linphone-72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icone-linphone-72.png"; path = "Resources/icone-linphone-72.png"; sourceTree = "<group>"; };
 		34C7646814CD51CD008E9607 /* contact_vide.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = contact_vide.png; path = Resources/contact_vide.png; sourceTree = "<group>"; };
@@ -1197,6 +1201,8 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				3485649D152C423F003FE041 /* in_call_video.png */,
+				3485649E152C423F003FE041 /* out_call_video.png */,
 				34A6ECEA14CF13CB00460C04 /* icone-linphone-72.png */,
 				34C7646A14CD5585008E9607 /* dialer-orange.png */,
 				34C7646B14CD5585008E9607 /* history-orange.png */,
@@ -1397,6 +1403,8 @@
 				34C7646C14CD5585008E9607 /* dialer-orange.png in Resources */,
 				34C7646D14CD5585008E9607 /* history-orange.png in Resources */,
 				34A6ECEB14CF13CB00460C04 /* icone-linphone-72.png in Resources */,
+				3485649F152C423F003FE041 /* in_call_video.png in Resources */,
+				348564A0152C423F003FE041 /* out_call_video.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

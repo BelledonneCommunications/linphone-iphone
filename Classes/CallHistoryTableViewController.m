@@ -116,7 +116,8 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
         cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] autorelease];
-		
+		[cell.textLabel setTextColor:[UIColor colorWithRed:0.7 green:0.745 blue:0.78 alpha:1.0]];
+        [cell.detailTextLabel setTextColor:cell.textLabel.textColor];
     }
     
     // Set up the cell...
@@ -127,7 +128,7 @@
 	NSString *path;
 	if (callLogs->dir == LinphoneCallIncoming) {
         if (callLogs->status == LinphoneCallSuccess) {
-            path = [[NSBundle mainBundle] pathForResource:@"in_call" ofType:@"png"];
+            path = [[NSBundle mainBundle] pathForResource:callLogs->video_enabled?@"in_call_video":@"in_call" ofType:@"png"];
         } else {
             //missed call
             path = [[NSBundle mainBundle] pathForResource:@"missed_call" ofType:@"png"];
@@ -135,7 +136,7 @@
 		partyToDisplay=callLogs->from;
 		
 	} else {
-		path = [[NSBundle mainBundle] pathForResource:@"out_call" ofType:@"png"];
+		path = [[NSBundle mainBundle] pathForResource:callLogs->video_enabled?@"out_call_video":@"out_call" ofType:@"png"];
 		partyToDisplay=callLogs->to;
 		
 	}
@@ -147,12 +148,12 @@
 	const char* displayName = linphone_address_get_display_name(partyToDisplay);
 
 	if (displayName) {
-        NSString* str1 = [NSString stringWithFormat:@"%s%s", displayName, callLogs->video_enabled?" (video)":""];
+        NSString* str1 = [NSString stringWithFormat:@"%s", displayName];
 		[cell.textLabel setText:str1];
         NSString* str2 = [NSString stringWithFormat:@"%s"/* [%s]"*/,username/*,callLogs->start_date*/];
 		[cell.detailTextLabel setText:str2];
     } else {
-        NSString* str1 = [NSString stringWithFormat:@"%s%s", username, callLogs->video_enabled?" (video)":""];
+        NSString* str1 = [NSString stringWithFormat:@"%s", username];
         [cell.textLabel setText:str1];
         [cell.detailTextLabel setText:nil];
     }
