@@ -356,6 +356,31 @@ public:
 	}
 };
 
+class PtimeCommand: public DaemonCommand {
+public:
+	PtimeCommand() :
+			DaemonCommand("ptime", "ptime <ms>", "Set the if ms is defined, otherwise return the ptime.") {
+	}
+	virtual void exec(Daemon *app, const char *args) {
+		int ms;
+		int ret = sscanf(args, "%d", &ms);
+		if(ret <= 0) {
+			ostringstream ostr;
+			ms = linphone_core_get_upload_ptime(app->getCore());
+			ostr << "Ptime: " << ms << "\n";
+			app->sendResponse(Response(ostr.str().c_str(), Response::Ok));
+		} else if (ret == 1) {
+			ostringstream ostr;
+			linphone_core_set_upload_ptime(app->getCore(), ms);
+			ms = linphone_core_get_upload_ptime(app->getCore());
+			ostr << "Ptime: " << ms << "\n";
+			app->sendResponse(Response(ostr.str().c_str(), Response::Ok));
+		} else {
+			app->sendResponse(Response("Missing/Incorrect parameter(s)."));
+		}
+	}
+};
+
 class AudioCodecGetCommand: public DaemonCommand {
 public:
 	AudioCodecGetCommand() :
@@ -408,11 +433,14 @@ public:
 			MSList *mslist = NULL;
 			for (const MSList *node = linphone_core_get_audio_codecs(app->getCore()); node != NULL; node = ms_list_next(node)) {
 				PayloadType *payload = reinterpret_cast<PayloadType*>(node->data);
-				if (i == index)
+				if (i == index) {
 					mslist = ms_list_append(mslist, selected_payload);
-				if (selected_payload != payload)
+					++i;
+				}
+				if (selected_payload != payload) {
 					mslist = ms_list_append(mslist, payload);
-				++i;
+					++i;
+				}
 			}
 			if (i <= index) {
 				index = i;
@@ -629,6 +657,7 @@ void Daemon::initCommands() {
 	mCommands.push_back(new AudioCodecEnableCommand());
 	mCommands.push_back(new AudioCodecDisableCommand());
 	mCommands.push_back(new AudioCodecMoveCommand());
+	mCommands.push_back(new PtimeCommand());
 	mCommands.push_back(new QuitCommand());
 	mCommands.push_back(new HelpCommand());
 
