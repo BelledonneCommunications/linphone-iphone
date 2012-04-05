@@ -792,6 +792,8 @@ int linphone_core_enable_payload_type(LinphoneCore *lc, PayloadType *pt, bool_t 
 
 PayloadType* linphone_core_find_payload_type(LinphoneCore* lc, const char* type, int rate) ;
 
+int linphone_core_get_payload_type_number(LinphoneCore *lc, PayloadType *pt);
+
 const char *linphone_core_get_payload_type_description(LinphoneCore *lc, PayloadType *pt);
 
 bool_t linphone_core_check_payload_type_usability(LinphoneCore *lc, PayloadType *pt);
