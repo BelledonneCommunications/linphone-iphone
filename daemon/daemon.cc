@@ -288,25 +288,19 @@ public:
 class AudioStreamStartCommand: public DaemonCommand {
 public:
 	AudioStreamStartCommand() :
-			DaemonCommand("audio-stream-start", "audio-stream-start <remote ip> <remote port> <codec mime>", "Start an audio stream.") {
+			DaemonCommand("audio-stream-start", "audio-stream-start <remote ip> <remote port> <payload type number>", "Start an audio stream.") {
 	}
 	virtual void exec(Daemon *app, const char *args) {
 		char addr[256];
 		int port;
-		char mime[64];
-		if (sscanf(args, "%255s %d %63s", addr, &port, mime) == 3) {
+		int payload_type;
+		if (sscanf(args, "%255s %d %d", addr, &port, &payload_type) == 3) {
 			int local_port = linphone_core_get_audio_port(app->getCore());
 			const int jitt = linphone_core_get_audio_jittcomp(app->getCore());
 			const bool_t echo_canceller = linphone_core_echo_cancellation_enabled(app->getCore());
 			MSSndCardManager *manager = ms_snd_card_manager_get();
 			MSSndCard *capture_card = ms_snd_card_manager_get_card(manager, linphone_core_get_capture_device(app->getCore()));
 			MSSndCard *play_card = ms_snd_card_manager_get_card(manager, linphone_core_get_playback_device(app->getCore()));
-			int payload_type = rtp_profile_get_payload_number_from_mime(&av_profile, mime);
-			if (payload_type < 0) {
-				app->sendResponse(Response("Payload not found"));
-				return;
-			}
-
 			AudioStream *stream = audio_stream_new(local_port, false);
 			if (audio_stream_start_now(stream, &av_profile, addr, port, port + 1, payload_type, jitt, play_card, capture_card, echo_canceller) != 0) {
 				app->sendResponse(Response("Error during audio stream creation."));
@@ -446,26 +440,30 @@ public:
 class AudioCodecGetCommand: public DaemonCommand {
 public:
 	AudioCodecGetCommand() :
-			DaemonCommand("audio-codec-get", "audio-codec-get <codec-mime>", "Get an audio codec if codec-mime is defined, otherwise return the audio codec list.") {
+			DaemonCommand("audio-codec-get", "audio-codec-get <payload type number>", "Get an audio codec if codec-mime is defined, otherwise return the audio codec list.") {
 	}
 	virtual void exec(Daemon *app, const char *args) {
-		char mime[64];
-		bool list = sscanf(args, "%63s", mime) != 1;
+		int payload_type;
+		bool list = sscanf(args, "%d", &payload_type) != 1;
 		bool find = list;
 		int index = 0;
+		ostringstream ostr;
 		for (const MSList *node = linphone_core_get_audio_codecs(app->getCore()); node != NULL; node = ms_list_next(node)) {
 			PayloadType *payload = reinterpret_cast<PayloadType*>(node->data);
 			if (list) {
-				app->sendResponse(PayloadTypeResponse(app->getCore(), payload, index));
-			} else if (strcmp(mime, payload->mime_type) == 0) {
-				app->sendResponse(PayloadTypeResponse(app->getCore(), payload, index));
+				ostr << PayloadTypeResponse(app->getCore(), payload, index).getBody() << "\n";
+			} else if (payload_type == linphone_core_get_payload_type_number(app->getCore(), payload)) {
+				ostr << PayloadTypeResponse(app->getCore(), payload, index).getBody();
 				find = true;
 				break;
 			}
 			++index;
 		}
+
 		if (!find) {
 			app->sendResponse(Response("Audio codec not found."));
+		} else {
+			app->sendResponse(Response(ostr.str().c_str(), Response::Ok));
 		}
 	}
 };
@@ -473,16 +471,16 @@ public:
 class AudioCodecMoveCommand: public DaemonCommand {
 public:
 	AudioCodecMoveCommand() :
-			DaemonCommand("audio-codec-move", "audio-codec-move <codec-mime> <index>", "Move a codec to the an index.") {
+			DaemonCommand("audio-codec-move", "audio-codec-move <payload type number> <index>", "Move a codec to the an index.") {
 	}
 	virtual void exec(Daemon *app, const char *args) {
-		char mime[64];
+		int payload_type;
 		int index;
-		if (sscanf(args, "%63s %d", mime, &index) == 2 && index >= 0) {
+		if (sscanf(args, "%d %d", &payload_type, &index) == 2 && index >= 0) {
 			PayloadType *selected_payload = NULL;
 			for (const MSList *node = linphone_core_get_audio_codecs(app->getCore()); node != NULL; node = ms_list_next(node)) {
 				PayloadType *payload = reinterpret_cast<PayloadType*>(node->data);
-				if (strcmp(mime, payload->mime_type) == 0) {
+				if (payload_type == linphone_core_get_payload_type_number(app->getCore(), payload)) {
 					selected_payload = payload;
 					break;
 				}
@@ -520,15 +518,15 @@ public:
 class AudioCodecEnableCommand: public DaemonCommand {
 public:
 	AudioCodecEnableCommand() :
-			DaemonCommand("audio-codec-enable", "audio-codec-enable <codec-mime>", "Enable an audio codec.") {
+			DaemonCommand("audio-codec-enable", "audio-codec-enable <payload type number>", "Enable an audio codec.") {
 	}
 	virtual void exec(Daemon *app, const char *args) {
-		char mime[64];
-		if (sscanf(args, "%63s", mime) == 1) {
+		int payload_type;
+		if (sscanf(args, "%d", &payload_type) == 1) {
 			int index = 0;
 			for (const MSList *node = linphone_core_get_audio_codecs(app->getCore()); node != NULL; node = ms_list_next(node)) {
 				PayloadType *payload = reinterpret_cast<PayloadType*>(node->data);
-				if (strcmp(mime, payload->mime_type) == 0) {
+				if (payload_type == linphone_core_get_payload_type_number(app->getCore(), payload)) {
 					linphone_core_enable_payload_type(app->getCore(), payload, true);
 					app->sendResponse(PayloadTypeResponse(app->getCore(), payload, index));
 					return;
@@ -621,15 +619,13 @@ EventResponse::EventResponse(LinphoneCall *call, LinphoneCallState state) {
 PayloadTypeResponse::PayloadTypeResponse(LinphoneCore *core, PayloadType *payloadType, int index) {
 	ostringstream ostr;
 	ostr << "Index: " << index << "\n";
-	ostr << "Type: " << payloadType->type << "\n";
+	ostr << "Payload-type-number: " << linphone_core_get_payload_type_number(core, payloadType) << "\n";
 	ostr << "Clock-rate: " << payloadType->clock_rate << "\n";
-	ostr << "Bits-per-sample: " << (int) payloadType->bits_per_sample << "\n";
 	ostr << "Bitrate: " << payloadType->normal_bitrate << "\n";
 	ostr << "Mime: " << payloadType->mime_type << "\n";
 	ostr << "Channels: " << payloadType->channels << "\n";
 	ostr << "Recv-fmtp: " << ((payloadType->recv_fmtp) ? payloadType->recv_fmtp : "") << "\n";
 	ostr << "Send-fmtp: " << ((payloadType->send_fmtp) ? payloadType->send_fmtp : "") << "\n";
-	ostr << "Flags: " << payloadType->flags << "\n";
 	ostr << "Enabled: " << (linphone_core_payload_type_enabled(core, payloadType) == TRUE ? "true" : "false") << "\n";
 	setBody(ostr.str().c_str());
 }
@@ -758,15 +754,15 @@ void Daemon::uninitCommands() {
 
 bool Daemon::pullEvent() {
 	bool status = false;
+	ostringstream ostr;
 	if (!mEventQueue.empty()) {
 		Response *r = mEventQueue.front();
 		mEventQueue.pop();
-		sendResponse(*r);
+		ostr << r->getBody() << "\n";
 		delete r;
 		status = true;
 	}
-	ostringstream ostr;
-	ostr << "Size: " << mEventQueue.size();
+	ostr << "Size: " << mEventQueue.size() << "\n";
 	sendResponse(Response(ostr.str().c_str(), Response::Ok));
 	return status;
 }
