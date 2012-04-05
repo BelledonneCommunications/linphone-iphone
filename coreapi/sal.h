@@ -134,6 +134,7 @@ typedef struct SalStreamDescription{
 	SalStreamDir dir;
 	SalSrtpCryptoAlgo crypto[SAL_CRYPTO_ALGO_MAX];
 	unsigned int crypto_local_tag;
+	int max_rate;
 } SalStreamDescription;
 
 #define SAL_MEDIA_DESCRIPTION_MAX_STREAMS 4
@@ -206,10 +207,16 @@ typedef enum SalPresenceStatus{
 	SalPresenceAltService,
 }SalPresenceStatus;
 
-typedef enum SalSubscribeState{
+typedef enum SalReferStatus{
+	SalReferTrying,
+	SalReferSuccess,
+	SalReferFailed
+}SalReferStatus;
+
+typedef enum SalSubscribeStatus{
 	SalSubscribeActive,
 	SalSubscribeTerminated
-}SalSubscribeState;
+}SalSubscribeStatus;
 
 typedef void (*SalOnCallReceived)(SalOp *op);
 typedef void (*SalOnCallRinging)(SalOp *op);
@@ -227,8 +234,9 @@ typedef void (*SalOnVfuRequest)(SalOp *op);
 typedef void (*SalOnDtmfReceived)(SalOp *op, char dtmf);
 typedef void (*SalOnRefer)(Sal *sal, SalOp *op, const char *referto);
 typedef void (*SalOnTextReceived)(Sal *sal, const char *from, const char *msg);
-typedef void (*SalOnNotify)(SalOp *op, const char *from, const char *value);
-typedef void (*SalOnNotifyPresence)(SalOp *op, SalSubscribeState ss, SalPresenceStatus status, const char *msg);
+typedef void (*SalOnNotify)(SalOp *op, const char *from, const char *event);
+typedef void (*SalOnNotifyRefer)(SalOp *op, SalReferStatus state);
+typedef void (*SalOnNotifyPresence)(SalOp *op, SalSubscribeStatus ss, SalPresenceStatus status, const char *msg);
 typedef void (*SalOnSubscribeReceived)(SalOp *salop, const char *from);
 typedef void (*SalOnSubscribeClosed)(SalOp *salop, const char *from);
 typedef void (*SalOnPingReply)(SalOp *salop);
@@ -252,6 +260,7 @@ typedef struct SalCallbacks{
 	SalOnTextReceived text_received;
 	SalOnNotify notify;
 	SalOnNotifyPresence notify_presence;
+	SalOnNotifyRefer notify_refer;
 	SalOnSubscribeReceived subscribe_received;
 	SalOnSubscribeClosed subscribe_closed;
 	SalOnPingReply ping_reply;
@@ -339,6 +348,7 @@ int sal_call_terminate(SalOp *h);
 bool_t sal_call_autoanswer_asked(SalOp *op);
 void sal_call_send_vfu_request(SalOp *h);
 int sal_call_is_offerer(const SalOp *h);
+int sal_call_notify_refer_state(SalOp *h, SalOp *newcall);
 
 /*Registration*/
 int sal_register(SalOp *op, const char *proxy, const char *from, int expires);

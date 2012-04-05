@@ -276,6 +276,7 @@ static void call_ringing(SalOp *h){
 		if (lc->ringstream!=NULL) return;	/*already ringing !*/
 		if (lc->sound_conf.play_sndcard!=NULL){
 			MSSndCard *ringcard=lc->sound_conf.lsd_card ? lc->sound_conf.lsd_card : lc->sound_conf.play_sndcard;
+			if (call->localdesc->streams[0].max_rate>0) ms_snd_card_set_preferred_sample_rate(ringcard, call->localdesc->streams[0].max_rate);
 			lc->ringstream=ring_start(lc->sound_conf.remote_ring,2000,ringcard);
 		}
 		ms_message("Remote ringing...");
@@ -323,6 +324,7 @@ static void call_accepted(SalOp *op){
 	    call->state==LinphoneCallOutgoingRinging ||
 	    call->state==LinphoneCallOutgoingEarlyMedia){
 		linphone_call_set_state(call,LinphoneCallConnected,"Connected");
+		if (call->referer) linphone_core_notify_refer_state(lc,call->referer,call);
 	}
 	if (md && !sal_media_description_empty(md)){
 		if (sal_media_description_has_dir(md,SalStreamSendOnly) ||
@@ -368,9 +370,9 @@ static void call_accepted(SalOp *op){
 				}
 			}
 			linphone_core_update_streams (lc,call,md);
-			linphone_call_set_state(call, LinphoneCallStreamsRunning, "Streams running");
 			if (!call->current_params.in_conference)
 				lc->current_call=call;
+			linphone_call_set_state(call, LinphoneCallStreamsRunning, "Streams running");
 		}
 	}else{
 		/*send a bye*/
@@ -418,6 +420,7 @@ static void call_resumed(LinphoneCore *lc, LinphoneCall *call){
 	if(lc->vtable.display_status)
 		lc->vtable.display_status(lc,_("We have been resumed."));
 	linphone_call_set_state(call,LinphoneCallStreamsRunning,"Connected (streams running)");
+	linphone_call_set_transfer_state(call, LinphoneCallIdle);
 }
 
 static void call_paused_by_remote(LinphoneCore *lc, LinphoneCall *call){
@@ -558,16 +561,18 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 					int i;
 					ms_message("Outgoing call failed with SRTP (SAVP) enabled - retrying with AVP");
 					linphone_call_stop_media_streams(call);
-					/* clear SRTP local params */
-					call->params.media_encryption = LinphoneMediaEncryptionNone;
-					for(i=0; i<call->localdesc->nstreams; i++) {
-						call->localdesc->streams[i].proto = SalProtoRtpAvp;
-						memset(call->localdesc->streams[i].crypto, 0, sizeof(call->localdesc->streams[i].crypto));
+					if (call->state==LinphoneCallOutgoingInit || call->state==LinphoneCallOutgoingProgress){
+						/* clear SRTP local params */
+						call->params.media_encryption = LinphoneMediaEncryptionNone;
+						for(i=0; i<call->localdesc->nstreams; i++) {
+							call->localdesc->streams[i].proto = SalProtoRtpAvp;
+							memset(call->localdesc->streams[i].crypto, 0, sizeof(call->localdesc->streams[i].crypto));
+						}
+						linphone_core_start_invite(lc, call, NULL);
 					}
-					linphone_core_start_invite(lc, call, NULL);
 					return;
 				}
-				msg=_("No common codecs");
+				msg=_("Incompatible media parameters.");
 				if (lc->vtable.display_status)
 					lc->vtable.display_status(lc,msg);
 			break;
@@ -582,6 +587,10 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 		lc->ringstream=NULL;
 	}
 	linphone_call_stop_media_streams (call);
+	if (call->referer && linphone_call_get_state(call->referer)==LinphoneCallPaused && call->referer->was_automatically_paused){
+		/*resume to the call that send us the refer automatically*/
+		linphone_core_resume_call(lc,call->referer);
+	}
 	if (sr == SalReasonDeclined) {
 		call->reason=LinphoneReasonDeclined;
 		linphone_call_set_state(call,LinphoneCallEnd,"Call declined.");
@@ -744,12 +753,11 @@ static void refer_received(Sal *sal, SalOp *op, const char *referto){
 		if (call->state!=LinphoneCallPaused){
 			ms_message("Automatically pausing current call to accept transfer.");
 			linphone_core_pause_call(lc,call);
+			call->was_automatically_paused=TRUE;
 		}
 		linphone_core_start_refered_call(lc,call);
-		sal_call_accept_refer(op);
 	}else if (lc->vtable.refer_received){
 		lc->vtable.refer_received(lc,referto);
-		sal_call_accept_refer(op);
 	}
 }
 
@@ -766,7 +774,7 @@ static void notify(SalOp *op, const char *from, const char *msg){
 		lc->vtable.notify_recv(lc,call,from,msg);
 }
 
-static void notify_presence(SalOp *op, SalSubscribeState ss, SalPresenceStatus status, const char *msg){
+static void notify_presence(SalOp *op, SalSubscribeStatus ss, SalPresenceStatus status, const char *msg){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	linphone_notify_recv(lc,op,ss,status);
 }
@@ -795,6 +803,34 @@ static void ping_reply(SalOp *op){
 	}
 }
 
+static void notify_refer(SalOp *op, SalReferStatus status){
+	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
+	LinphoneCall *call=(LinphoneCall*) sal_op_get_user_pointer(op);
+	LinphoneCallState cstate;
+	if (call==NULL) {
+		ms_warning("Receiving notify_refer for unknown call.");
+		return ;
+	}
+	switch(status){
+		case SalReferTrying:
+			cstate=LinphoneCallOutgoingProgress;
+		break;
+		case SalReferSuccess:
+			cstate=LinphoneCallConnected;
+		break;
+		case SalReferFailed:
+			cstate=LinphoneCallError;
+		break;
+		default:
+			cstate=LinphoneCallError;
+	}
+	linphone_call_set_transfer_state(call, cstate);
+	if (cstate==LinphoneCallConnected){
+		/*automatically terminate the call as the transfer is complete.*/
+		linphone_core_terminate_call(lc,call);
+	}
+}
+
 SalCallbacks linphone_sal_callbacks={
 	call_received,
 	call_ringing,
@@ -814,6 +850,7 @@ SalCallbacks linphone_sal_callbacks={
 	text_received,
 	notify,
 	notify_presence,
+	notify_refer,
 	subscribe_received,
 	subscribe_closed,
 	ping_reply

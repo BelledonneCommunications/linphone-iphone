@@ -17,7 +17,7 @@ if test "$LINPHONE_EXTRA_VERSION" != "" ;then
 	LINPHONE_VERSION=$LINPHONE_VERSION.${LINPHONE_EXTRA_VERSION}
 fi
 
-LIBLINPHONE_SO_CURRENT=4 dnl increment this number when you add/change/remove an interface
+LIBLINPHONE_SO_CURRENT=5 dnl increment this number when you add/change/remove an interface
 LIBLINPHONE_SO_REVISION=0 dnl increment this number when you change source code, without changing interfaces; set to 0 when incrementing CURRENT
 LIBLINPHONE_SO_AGE=0 dnl increment this number when you add an interface, set to 0 if you remove an interface
 
@@ -102,9 +102,13 @@ AC_SUBST(ALL_LINGUAS)
 AC_DEFINE_UNQUOTED(LINPHONE_ALL_LANGS, "$ALL_LINGUAS", [All supported languages])
 
 if test "$mingw_found" != "yes" ; then
-dnl gettext macro does not work properly under mingw. And we want to use the one provided by GTK.
-AM_GNU_GETTEXT([external])
-LIBS="$LIBS $LIBINTL"
+	dnl gettext macro does not work properly under mingw. And we want to use the one provided by GTK.
+	
+	dnl AM_GNU_GETTEXT pollutes CPPFLAGS: workaround this.
+	CPPFLAGS_save=$CPPFLAGS
+	AM_GNU_GETTEXT([external])
+	CPPFLAGS=$CPPFLAGS_save
+	LIBS="$LIBS $LIBINTL"
 else
 	AC_DEFINE(ENABLE_NLS,1,[Tells whether localisation is possible])
 	AC_DEFINE(HAVE_GETTEXT,1,[Tells wheter localisation is possible])

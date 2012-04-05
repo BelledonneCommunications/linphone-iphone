@@ -153,6 +153,7 @@ typedef struct _LinphoneCallLog{
 	rtp_stats_t local_stats;
 	rtp_stats_t remote_stats;
 	float quality;
+    int video_enabled;
 	struct _LinphoneCore *lc;
 } LinphoneCallLog;
 
@@ -225,6 +226,9 @@ typedef struct _LinphoneVideoPolicy LinphoneVideoPolicy;
 **/
 struct _LinphoneCall;
 typedef struct _LinphoneCall LinphoneCall;
+    
+/** Callback prototype */
+typedef void (*LinphoneCallCbFunc)(struct _LinphoneCall *call,void * user_data);
 
 /**
  * LinphoneCallState enum represents the different state a call can reach into.
@@ -286,6 +290,9 @@ void linphone_call_set_authentication_token_verified(LinphoneCall *call, bool_t 
 void linphone_call_send_vfu_request(LinphoneCall *call);
 void *linphone_call_get_user_pointer(LinphoneCall *call);
 void linphone_call_set_user_pointer(LinphoneCall *call, void *user_pointer);
+void linphone_call_set_next_video_frame_decoded_callback(LinphoneCall *call, LinphoneCallCbFunc cb, void* user_data);
+LinphoneCallState linphone_call_get_transfer_state(LinphoneCall *call);
+    
 /**
  * Enables or disable echo cancellation for this call
  * @param call
@@ -613,6 +620,8 @@ typedef void (*DtmfReceived)(struct _LinphoneCore* lc, LinphoneCall *call, int d
 typedef void (*ReferReceived)(struct _LinphoneCore *lc, const char *refer_to);
 /** Callback prototype */
 typedef void (*BuddyInfoUpdated)(struct _LinphoneCore *lc, LinphoneFriend *lf);
+/** Callback prototype for in progress transfers. The new_call_state is the state of the call resulting of the transfer, at the other party. */
+typedef void (*LinphoneTransferStateChanged)(struct _LinphoneCore *lc, LinphoneCall *transfered, LinphoneCallState new_call_state);
 
 /**
  * This structure holds all callbacks that the application should implement.
@@ -629,6 +638,8 @@ typedef struct _LinphoneVTable{
 	TextMessageReceived text_received; /**< A text message has been received */
 	DtmfReceived dtmf_received; /**< A dtmf has been received received */
 	ReferReceived refer_received; /**< An out of call refer was received */
+	CallEncryptionChangedCb call_encryption_changed; /**<Notifies on change in the encryption of call streams */
+    LinphoneTransferStateChanged transfer_state_changed; /**<Notifies when a transfer is in progress */
 	BuddyInfoUpdated buddy_info_updated; /**< a LinphoneFriend's BuddyInfo has changed*/
 	NotifyReceivedCb notify_recv; /**< Other notifications*/
 	DisplayStatusCb display_status; /**< Callback that notifies various events with human readable text.*/
@@ -636,7 +647,6 @@ typedef struct _LinphoneVTable{
 	DisplayMessageCb display_warning;/** Callback to display a warning to the user */
 	DisplayUrlCb display_url;
 	ShowInterfaceCb show; /**< Notifies the application that it should show up*/
-	CallEncryptionChangedCb call_encryption_changed; /**<Notifies on change in the encryption of call streams */
 } LinphoneCoreVTable;
 
 /**
@@ -781,6 +791,8 @@ bool_t linphone_core_payload_type_enabled(LinphoneCore *lc, PayloadType *pt);
 int linphone_core_enable_payload_type(LinphoneCore *lc, PayloadType *pt, bool_t enable);
 
 PayloadType* linphone_core_find_payload_type(LinphoneCore* lc, const char* type, int rate) ;
+
+int linphone_core_get_payload_type_number(LinphoneCore *lc, PayloadType *pt);
 
 const char *linphone_core_get_payload_type_description(LinphoneCore *lc, PayloadType *pt);
 

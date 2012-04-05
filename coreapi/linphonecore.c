@@ -132,6 +132,7 @@ void call_logs_write_to_config_file(LinphoneCore *lc){
 		lp_config_set_int(cfg,logsection,"duration",cl->duration);
 		if (cl->refkey) lp_config_set_string(cfg,logsection,"refkey",cl->refkey);
 		lp_config_set_float(cfg,logsection,"quality",cl->quality);
+        lp_config_set_int(cfg,logsection,"video_enabled", cl->video_enabled);
 	}
 	for(;i<lc->max_call_logs;++i){
 		snprintf(logsection,sizeof(logsection),"call_log_%i",i);
@@ -160,6 +161,7 @@ static void call_logs_read_from_config_file(LinphoneCore *lc){
 			tmp=lp_config_get_string(cfg,logsection,"refkey",NULL);
 			if (tmp) cl->refkey=ms_strdup(tmp);
 			cl->quality=lp_config_get_float(cfg,logsection,"quality",-1);
+            cl->video_enabled=lp_config_get_int(cfg,logsection,"video_enabled",0);
 			lc->call_logs=ms_list_append(lc->call_logs,cl);
 		}else break;
 	}
@@ -1798,7 +1800,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 			/*start the call even if the OPTIONS reply did not arrive*/
 			linphone_core_start_invite(lc,call,NULL);
 		}
-		if (call->dir==LinphoneCallIncoming && call->state==LinphoneCallOutgoingRinging){
+		if (call->state==LinphoneCallIncomingReceived){
 			elapsed=curtime-call->start_time;
 			ms_message("incoming call ringing for %i seconds",elapsed);
 			if (elapsed>lc->sip_conf.inc_timeout){
@@ -1941,12 +1943,20 @@ const char * linphone_core_get_route(LinphoneCore *lc){
 void linphone_core_start_refered_call(LinphoneCore *lc, LinphoneCall *call){
 	if (call->refer_pending){
 		LinphoneCallParams *cp=linphone_core_create_default_call_parameters(lc);
+		LinphoneCall *newcall;
 		cp->has_video &= !!lc->video_policy.automatically_initiate;
 		cp->referer=call;
 		ms_message("Starting new call to refered address %s",call->refer_to);
 		call->refer_pending=FALSE;
-		linphone_core_invite_with_params(lc,call->refer_to,cp);
+		newcall=linphone_core_invite_with_params(lc,call->refer_to,cp);
 		linphone_call_params_destroy(cp);
+		if (newcall) linphone_core_notify_refer_state(lc,call,newcall);
+	}
+}
+
+void linphone_core_notify_refer_state(LinphoneCore *lc, LinphoneCall *referer, LinphoneCall *newcall){
+	if (referer->op!=NULL){
+		sal_call_notify_refer_state(referer->op,newcall ? newcall->op : NULL);
 	}
 }
 
@@ -2252,6 +2262,7 @@ int linphone_core_transfer_call(LinphoneCore *lc, LinphoneCall *call, const char
 	sal_call_refer(call->op,real_url);
 	ms_free(real_url);
 	linphone_address_destroy(real_parsed_url);
+	linphone_call_set_transfer_state(call, LinphoneCallOutgoingInit);
 	return 0;
 }
 
@@ -2268,7 +2279,9 @@ int linphone_core_transfer_call(LinphoneCore *lc, LinphoneCall *call, const char
  * close the call with us (the 'dest' call).
 **/
 int linphone_core_transfer_call_to_another(LinphoneCore *lc, LinphoneCall *call, LinphoneCall *dest){
-	return sal_call_refer_with_replaces (call->op,dest->op);
+	int result = sal_call_refer_with_replaces (call->op,dest->op);
+	linphone_call_set_transfer_state(call, LinphoneCallOutgoingInit);
+	return result;
 }
 
 bool_t linphone_core_inc_invite_pending(LinphoneCore*lc){
@@ -4573,8 +4586,10 @@ void linphone_core_start_dtmf_stream(LinphoneCore* lc) {
 }
 
 void linphone_core_stop_dtmf_stream(LinphoneCore* lc) {
-	if (lc->ringstream) ring_stop(lc->ringstream);
-	lc->ringstream=NULL;
+	if (lc->ringstream && lc->dmfs_playing_start_time!=0) {
+		ring_stop(lc->ringstream);
+		lc->ringstream=NULL;
+	}
 }
 
 int linphone_core_get_max_calls(LinphoneCore *lc) {

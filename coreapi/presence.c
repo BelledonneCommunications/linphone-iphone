@@ -101,7 +101,7 @@ void linphone_subscription_new(LinphoneCore *lc, SalOp *op, const char *from){
 	ms_free(tmp);
 }
 
-void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeState ss, SalPresenceStatus sal_status){
+void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeStatus ss, SalPresenceStatus sal_status){
 	char *tmp;
 	LinphoneFriend *lf;
 	LinphoneAddress *friend=NULL;
