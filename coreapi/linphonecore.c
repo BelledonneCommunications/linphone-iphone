@@ -992,6 +992,19 @@ static void linphone_core_assign_payload_type(LinphoneCore *lc, PayloadType *con
 	lc->payload_types=ms_list_append(lc->payload_types,pt);
 }
 
+static void linphone_core_handle_static_payloads(LinphoneCore *lc){
+	RtpProfile *prof=&av_profile;
+	int i;
+	for(i=0;i<128;++i){
+		PayloadType *pt=rtp_profile_get_payload(prof,i);
+		if (pt){
+			if (payload_type_get_number(pt)!=i){
+				linphone_core_assign_payload_type(lc,pt,i,NULL);
+			}
+		}
+	}
+}
+
 static void linphone_core_free_payload_types(LinphoneCore *lc){
 	ms_list_for_each(lc->payload_types,(void (*)(void*))payload_type_destroy);
 	ms_list_free(lc->payload_types);
@@ -1069,7 +1082,7 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	/*add all payload type for which we don't care about the number */
 	linphone_core_assign_payload_type(lc,&payload_type_ilbc,-1,"mode=30");
 	linphone_core_assign_payload_type(lc,&payload_type_amr,-1,"octet-align=1");
-        linphone_core_assign_payload_type(lc,&payload_type_amrwb,-1,"octet-align=1");
+	linphone_core_assign_payload_type(lc,&payload_type_amrwb,-1,"octet-align=1");
 	linphone_core_assign_payload_type(lc,&payload_type_lpc1015,-1,NULL);
 	linphone_core_assign_payload_type(lc,&payload_type_g726_16,-1,NULL);
 	linphone_core_assign_payload_type(lc,&payload_type_g726_24,-1,NULL);
@@ -1084,6 +1097,7 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	linphone_core_assign_payload_type(lc,&payload_type_silk_wb,-1,NULL);
 	linphone_core_assign_payload_type(lc,&payload_type_silk_swb,-1,NULL);
 	linphone_core_assign_payload_type(lc,&payload_type_g729,18,"annexb=no");
+	linphone_core_handle_static_payloads(lc);
 	
 	ms_init();
 	/* create a mediastreamer2 event queue and set it as global */
