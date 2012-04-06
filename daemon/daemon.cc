@@ -546,12 +546,12 @@ public:
 			DaemonCommand("audio-codec-disable", "audio-codec-disable <codec-mime>", "Disable an audio codec.") {
 	}
 	virtual void exec(Daemon *app, const char *args) {
-		char mime[64];
-		if (sscanf(args, "%63s", mime) == 1) {
+		int payload_type;
+		if (sscanf(args, "%d", &payload_type) == 1) {
 			int index = 0;
 			for (const MSList *node = linphone_core_get_audio_codecs(app->getCore()); node != NULL; node = ms_list_next(node)) {
 				PayloadType *payload = reinterpret_cast<PayloadType*>(node->data);
-				if (strcmp(mime, payload->mime_type) == 0) {
+				if (payload_type == linphone_core_get_payload_type_number(app->getCore(), payload)) {
 					linphone_core_enable_payload_type(app->getCore(), payload, false);
 					app->sendResponse(PayloadTypeResponse(app->getCore(), payload, index));
 					return;
