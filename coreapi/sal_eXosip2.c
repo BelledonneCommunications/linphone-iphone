@@ -1788,26 +1788,24 @@ static bool_t register_again_with_updated_contact(SalOp *op, osip_message_t *ori
 	osip_free(tmp);
 	sal_address_destroy(ori_contact_address);
 
-	if (transport == SalTransportUDP) {
-		eXosip_lock();
-		eXosip_register_build_register(op->rid,op->expires,&msg);
-		if (msg==NULL){
-		    eXosip_unlock();
-		    ms_warning("Fail to create a contact updated register.");
-		    return FALSE;
-		}
-		if (fix_message_contact(op,msg,last_answer)) {
-			eXosip_register_send_register(op->rid,msg);
-			eXosip_unlock();  
-			ms_message("Resending new register with updated contact");
-			return TRUE;
-		} else {
-		    ms_warning("Fail to send updated register.");
-		    eXosip_unlock();
-		    return FALSE;
-		}
-		eXosip_unlock();
+	eXosip_lock();
+	eXosip_register_build_register(op->rid,op->expires,&msg);
+	if (msg==NULL){
+	    eXosip_unlock();
+	    ms_warning("Fail to create a contact updated register.");
+	    return FALSE;
 	}
+	if (fix_message_contact(op,msg,last_answer)) {
+		eXosip_register_send_register(op->rid,msg);
+		eXosip_unlock();  
+		ms_message("Resending new register with updated contact");
+		return TRUE;
+	} else {
+	    ms_warning("Fail to send updated register.");
+	    eXosip_unlock();
+	    return FALSE;
+	}
+	eXosip_unlock();
 
 	update_contact_from_response(op,last_answer);
 	return FALSE;
