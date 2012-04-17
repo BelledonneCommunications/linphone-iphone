@@ -2071,8 +2071,9 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, LinphonePro
 		ms_free(contact);
 	}
 
-	//TODO : should probably not be done here
 	linphone_call_init_media_streams(call);
+	if (lc->ringstream==NULL)
+		audio_stream_prepare_sound(call->audiostream,lc->sound_conf.play_sndcard,lc->sound_conf.capt_sndcard);
 	if (!lc->sip_conf.sdp_200_ack){
 		call->media_pending=TRUE;
 		sal_call_set_local_media_description(call->op,call->localdesc);
@@ -2459,6 +2460,7 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 	const char *contact=NULL;
 	SalOp *replaced;
 	SalMediaDescription *new_md;
+	bool_t was_ringing=FALSE;
 
 	if (call==NULL){
 		//if just one call is present answer the only one ...
@@ -2494,6 +2496,7 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 		ring_stop(lc->ringstream);
 		ms_message("ring stopped");
 		lc->ringstream=NULL;
+		was_ringing=TRUE;
 	}
 	if (call->ringing_beep){
 		linphone_core_stop_dtmf(lc);
@@ -2515,6 +2518,9 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 
 	if (call->audiostream==NULL)
 		linphone_call_init_media_streams(call);
+	if (!was_ringing && call->audiostream->ticker==NULL){
+		audio_stream_prepare_sound(call->audiostream,lc->sound_conf.play_sndcard,lc->sound_conf.capt_sndcard);
+	}
 
 	if (params){
 		call->params=*params;

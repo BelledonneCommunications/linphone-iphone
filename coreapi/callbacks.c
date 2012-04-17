@@ -277,6 +277,9 @@ static void call_ringing(SalOp *h){
 		if (lc->sound_conf.play_sndcard!=NULL){
 			MSSndCard *ringcard=lc->sound_conf.lsd_card ? lc->sound_conf.lsd_card : lc->sound_conf.play_sndcard;
 			if (call->localdesc->streams[0].max_rate>0) ms_snd_card_set_preferred_sample_rate(ringcard, call->localdesc->streams[0].max_rate);
+			/*we release sound before playing ringback tone*/
+			if (call->audiostream)
+				audio_stream_unprepare_sound(call->audiostream);
 			lc->ringstream=ring_start(lc->sound_conf.remote_ring,2000,ringcard);
 		}
 		ms_message("Remote ringing...");
@@ -285,7 +288,7 @@ static void call_ringing(SalOp *h){
 		linphone_call_set_state(call,LinphoneCallOutgoingRinging,"Remote ringing");
 	}else{
 		/*accept early media */
-		if (call->audiostream && call->audiostream->ticker!=NULL){
+		if (call->audiostream && audio_stream_started(call->audiostream)){
 			/*streams already started */
 			ms_message("Early media already started.");
 			return;
@@ -299,7 +302,7 @@ static void call_ringing(SalOp *h){
 			lc->ringstream=NULL;
 		}
 		ms_message("Doing early media...");
-		linphone_core_update_streams (lc,call,md);
+		linphone_core_update_streams(lc,call,md);
 	}
 }
 
