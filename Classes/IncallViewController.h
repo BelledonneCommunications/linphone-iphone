@@ -91,6 +91,7 @@
     UIActionSheet* visibleActionSheet;
     
     NSTimer* hideControlsTimer;
+    float zoomLevel, cx, cy;
 }
 
 -(void)displayStatus:(NSString*) message;
