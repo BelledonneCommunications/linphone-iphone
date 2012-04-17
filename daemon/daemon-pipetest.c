@@ -10,7 +10,13 @@
 static int running=1;
 
 int main(int argc, char *argv[]){
-	int fd=ortp_client_pipe_connect("linphone-daemon");
+	/* handle args */
+	if (argc < 2) {
+		ortp_error("Usage: %s pipename", argv[0]);
+		return 1;
+	}
+
+	int fd=ortp_client_pipe_connect(argv[1]);
 	struct pollfd pfds[2]={{0}};
 	char buf[4096];
 

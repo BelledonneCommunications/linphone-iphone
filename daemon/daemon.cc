@@ -96,7 +96,7 @@ class Daemon {
 	friend class DaemonCommand;
 public:
 	typedef Response::Status Status;
-	Daemon(const char *config_path, bool using_pipes, bool display_video, bool capture_video);
+	Daemon(const char *config_path, const char *pipe_name, bool display_video, bool capture_video);
 	~Daemon();
 	int run();
 	void quit();
@@ -643,16 +643,16 @@ int Daemon::sCallIds = 0;
 int Daemon::sProxyIds = 0;
 int Daemon::sAudioStreamIds = 0;
 
-Daemon::Daemon(const char *config_path, bool using_pipes, bool display_video, bool capture_video) {
+Daemon::Daemon(const char *config_path, const char *pipe_name, bool display_video, bool capture_video) {
 	sZis = this;
 	mServerFd = -1;
 	mChildFd = -1;
-	if (!using_pipes) {
+	if (pipe_name == NULL) {
 		initReadline();
 	} else {
-		mServerFd = ortp_server_pipe_create("linphone-daemon");
+		mServerFd = ortp_server_pipe_create(pipe_name);
 		listen(mServerFd, 2);
-		fprintf(stdout, "Server unix socket created, fd=%i\n", mServerFd);
+		fprintf(stdout, "Server unix socket created, name=%s fd=%i\n", pipe_name, mServerFd);
 	}
 
 	linphone_core_disable_logs();
@@ -898,7 +898,7 @@ static void printHelp() {
 	fprintf(stdout, "daemon-linphone [<options>]\n"
 			"where options are :\n"
 			"\t--help\t\tPrint this notice.\n"
-			"\t--pipe\t\tCreate an unix server socket to receive commands.\n"
+			"\t--pipe <pipename>\t\tCreate an unix server socket to receive commands.\n"
 			"\t--config <path>\tSupply a linphonerc style config file to start with.\n"
 			"\t-C\t\tenable video capture.\n"
 			"\t-D\t\tenable video display.\n");
@@ -951,7 +951,7 @@ Daemon::~Daemon() {
 
 int main(int argc, char *argv[]) {
 	const char *config_path = NULL;
-	bool using_pipes = false;
+	const char *pipe_name = NULL;
 	bool capture_video = false;
 	bool display_video = false;
 	int i;
@@ -961,7 +961,11 @@ int main(int argc, char *argv[]) {
 			printHelp();
 			return 0;
 		} else if (strcmp(argv[i], "--pipe") == 0) {
-			using_pipes = true;
+			if(i + 1 >= argc) {
+				fprintf(stderr, "no pipe name specify after --pipe");
+				return -1;
+			}
+			pipe_name = argv[++i];
 		} else if (strcmp(argv[i], "--config") == 0) {
 			config_path = argv[i + 1];
 		} else if (strcmp(argv[i], "-C") == 0) {
@@ -970,7 +974,7 @@ int main(int argc, char *argv[]) {
 			display_video = true;
 		}
 	}
-	Daemon app(config_path, using_pipes, display_video, capture_video);
+	Daemon app(config_path, pipe_name, display_video, capture_video);
 	return app.run();
 }
 ;
