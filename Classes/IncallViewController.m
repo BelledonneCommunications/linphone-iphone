@@ -124,20 +124,19 @@ void addAnimationFadeTransition(UIView* view, float duration) {
 -(void) orientationChanged: (NSNotification*) notif {   
     int oldLinphoneOrientation = linphone_core_get_device_rotation([LinphoneManager getLc]);
     UIDeviceOrientation orientation = [UIDevice currentDevice].orientation;
+    int newRotation = 0;
     switch (orientation) {
-        case UIInterfaceOrientationPortrait:
-            linphone_core_set_device_rotation([LinphoneManager getLc], 0);
-            break;
         case UIInterfaceOrientationLandscapeRight:
-            linphone_core_set_device_rotation([LinphoneManager getLc], 270);
+            newRotation = 270;
             break;
         case UIInterfaceOrientationLandscapeLeft:
-            linphone_core_set_device_rotation([LinphoneManager getLc], 90);
+            newRotation = 90;
             break;
         default:
-            break;
+            newRotation = 0;
     }
-    if (oldLinphoneOrientation != linphone_core_get_device_rotation([LinphoneManager getLc])) {
+    if (oldLinphoneOrientation != newRotation) {
+        linphone_core_set_device_rotation([LinphoneManager getLc], newRotation);
         linphone_core_set_native_video_window_id([LinphoneManager getLc],(unsigned long)videoView);
         
         LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
@@ -561,11 +560,19 @@ void addAnimationFadeTransition(UIView* view, float duration) {
         calls = calls->next;
     }
     
-    visibleActionSheet.actionSheetStyle = UIActionSheetStyleDefault;
-    if ([LinphoneManager runningOnIpad])
-        [visibleActionSheet showFromRect:transfer.bounds inView:transfer animated:NO];
-    else
-        [visibleActionSheet showInView:self.view];
+    if (visibleActionSheet.numberOfButtons == ([LinphoneManager runningOnIpad] ? 1 : 2)) {
+        [visibleActionSheet release];
+        visibleActionSheet = nil;
+        
+        [UICallButton enableTransforMode:YES];
+        [[LinphoneManager instance] displayDialer];
+    } else {
+        visibleActionSheet.actionSheetStyle = UIActionSheetStyleDefault;
+        if ([LinphoneManager runningOnIpad])
+            [visibleActionSheet showFromRect:transfer.bounds inView:transfer animated:NO];
+        else
+            [visibleActionSheet showInView:self.view];
+    }
 }
 
 -(void) addCallPressed {
