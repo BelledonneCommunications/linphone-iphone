@@ -103,6 +103,7 @@
         bool zeroCall = (linphone_core_get_calls_nb([LinphoneManager getLc]) == 0);
         
         [LinphoneManager set:callLarge hidden:!zeroCall withName:"CALL_LARGE button" andReason:__FUNCTION__];
+        [LinphoneManager set:switchCamera hidden:!zeroCall withName:"SWITCH_CAM button" andReason:__FUNCTION__];
         [LinphoneManager set:callShort hidden:zeroCall withName:"CALL_SHORT button" andReason:__FUNCTION__];
         [LinphoneManager set:backToCallView hidden:zeroCall withName:"BACK button" andReason:__FUNCTION__];
         
@@ -122,6 +123,7 @@
 
 
 - (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
 	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"enable_first_login_view_preference"] == true) {
 		myFirstLoginViewController = [[FirstLoginViewController alloc]  initWithNibName:@"FirstLoginViewController" 
 																				 bundle:[NSBundle mainBundle]];
@@ -197,6 +199,7 @@
 
 -(void)viewWillAppear:(BOOL)animated {
     [self updateCallAndBackButtons];
+    [super viewWillAppear:animated];
 }
 
 -(void) displayDialerFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
@@ -324,6 +327,7 @@
 						 withDisplayName:displayName];
     
     [LinphoneManager set:callLarge hidden:YES withName:"CALL_LARGE button" andReason:__FUNCTION__];
+    [LinphoneManager set:switchCamera hidden:YES withName:"SWITCH_CAMERA button" andReason:__FUNCTION__];
     [LinphoneManager set:callShort hidden:NO withName:"CALL_SHORT button" andReason:__FUNCTION__];
     [LinphoneManager set:backToCallView hidden:NO withName:"CALL_BACK button" andReason:__FUNCTION__];
     

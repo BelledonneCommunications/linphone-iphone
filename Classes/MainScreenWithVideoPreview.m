@@ -18,6 +18,7 @@
  */     
 #import "MainScreenWithVideoPreview.h"
 #import <AVFoundation/AVFoundation.h>
+#import "LinphoneUI/LinphoneManager.h"
 
 @implementation MainScreenWithVideoPreview
 @synthesize window;
@@ -115,6 +116,11 @@
     bool enableVideo = [[NSUserDefaults standardUserDefaults] boolForKey:@"enable_video_preference"];
     
     if (enableVideo) {
+        LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
+        if (show && call && linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
+            return;
+        }
+        
         if (session == nil) {
             [self initVideoPreview];
         }
@@ -135,6 +141,7 @@
 }
 
 -(void) viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
     [phoneMainView.switchCamera addTarget:self action:@selector(switchCameraPressed) forControlEvents:UIControlEventTouchUpInside];
     
 }

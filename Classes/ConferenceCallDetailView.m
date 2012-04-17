@@ -88,9 +88,11 @@ NSTimer *callQualityRefresher;
     [mute reset];
     [speaker reset];
     [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
+    [super viewWillAppear:animated];
 }
 
 -(void) viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
 	callQualityRefresher = [NSTimer scheduledTimerWithTimeInterval:1
 							target:self 
 							selector:@selector(updateCallQuality) 

@@ -180,6 +180,7 @@
 									<string key="NSFrame">{{0, 1}, {320, 66}}</string>
 									<reference key="NSSuperview" ref="677109388"/>
 									<reference key="NSWindow"/>
+									<reference key="NSNextKeyView"/>
 									<object class="NSColor" key="IBUIBackgroundColor">
 										<int key="NSColorSpace">1</int>
 										<bytes key="NSRGB">MSAwIDAuMDgyMzIwMjU5MDQgMC4xOAA</bytes>
@@ -392,7 +393,6 @@
 									<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 									<int key="IBUIContentHorizontalAlignment">0</int>
 									<int key="IBUIContentVerticalAlignment">0</int>
-									<int key="IBUIButtonType">1</int>
 									<string key="IBUINormalTitle">transfer</string>
 									<reference key="IBUIHighlightedTitleColor" ref="912196478"/>
 									<object class="NSColor" key="IBUINormalTitleColor">
