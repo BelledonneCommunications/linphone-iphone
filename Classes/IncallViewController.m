@@ -538,11 +538,11 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     cd.eventType = CD_TRANSFER_CALL;
     cd.delegate = self;
     cd.call = linphone_core_get_current_call([LinphoneManager getLc]);
-    NSString* title = NSLocalizedString(@"Transfer call to:",nil);
+    NSString* title = NSLocalizedString(@"Transfer to ...",nil);
     visibleActionSheet = [[UIActionSheet alloc] initWithTitle:title
                                                      delegate:cd 
-                                            cancelButtonTitle:[LinphoneManager runningOnIpad] ? nil : NSLocalizedString(@"Cancel",nil) 
-                                       destructiveButtonTitle:NSLocalizedString(@"A new call",nil)
+                                            cancelButtonTitle:nil  
+                                       destructiveButtonTitle:nil // NSLocalizedString(@"Other...",nil)
                                             otherButtonTitles:nil];
     
     // add button for each trasnfer-to valid call
@@ -560,13 +560,21 @@ void addAnimationFadeTransition(UIView* view, float duration) {
         calls = calls->next;
     }
     
-    if (visibleActionSheet.numberOfButtons == ([LinphoneManager runningOnIpad] ? 1 : 2)) {
+    if (visibleActionSheet.numberOfButtons == 0) {
         [visibleActionSheet release];
         visibleActionSheet = nil;
         
         [UICallButton enableTransforMode:YES];
         [[LinphoneManager instance] displayDialer];
     } else {
+        // add 'Other' option
+        [visibleActionSheet addButtonWithTitle:NSLocalizedString(@"Other...",nil)];
+        
+        // add cancel button on iphone
+        if (![LinphoneManager runningOnIpad]) {
+            [visibleActionSheet addButtonWithTitle:NSLocalizedString(@"Cancel",nil)];
+        }
+
         visibleActionSheet.actionSheetStyle = UIActionSheetStyleDefault;
         if ([LinphoneManager runningOnIpad])
             [visibleActionSheet showFromRect:transfer.bounds inView:transfer animated:NO];
@@ -1192,23 +1200,26 @@ static void hideSpinner(LinphoneCall* call, void* user_data) {
         }
         case CD_TRANSFER_CALL: {
             LinphoneCall* call = (LinphoneCall*)datas;
-            if (buttonIndex == actionSheet.destructiveButtonIndex) {
-                // transfer to a new call: enable transfer mode and hide incallview
-                [UICallButton enableTransforMode:YES];
-                [[LinphoneManager instance] displayDialer];
-            } else {
-                // browse existing call and trasnfer to the one matching the btn id
-                const MSList* calls = linphone_core_get_calls([LinphoneManager getLc]);
-                while (calls) {
-                    LinphoneCall* call2 = (LinphoneCall*) calls->data;
-                    LinphoneCallAppData* data = ((LinphoneCallAppData*)linphone_call_get_user_pointer(call2));
-                    if (data->transferButtonIndex == buttonIndex) {
-                        linphone_core_transfer_call_to_another([LinphoneManager getLc], call, call2);
-                    }
-                    data->transferButtonIndex = -1;
-                    calls = calls->next;
+            // browse existing call and trasnfer to the one matching the btn id
+            const MSList* calls = linphone_core_get_calls([LinphoneManager getLc]);
+            while (calls) {
+                LinphoneCall* call2 = (LinphoneCall*) calls->data;
+                LinphoneCallAppData* data = ((LinphoneCallAppData*)linphone_call_get_user_pointer(call2));
+                if (data->transferButtonIndex == buttonIndex) {
+                    linphone_core_transfer_call_to_another([LinphoneManager getLc], call, call2);
+                    return;
                 }
+                data->transferButtonIndex = -1;
+                calls = calls->next;
             }
+            if (![LinphoneManager runningOnIpad] && buttonIndex == (actionSheet.numberOfButtons - 1)) {
+                // cancel button
+                return;
+            }
+            // user must jhave pressed 'other...' button as we did not find a call
+            // with the correct indice
+            [UICallButton enableTransforMode:YES];
+            [[LinphoneManager instance] displayDialer];
             break;
         }
         default:
