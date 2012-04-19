@@ -117,7 +117,7 @@
     
     if (enableVideo) {
         LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
-          v        if (show && call && linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
+        if (show && call && linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
             return;
         }
         
