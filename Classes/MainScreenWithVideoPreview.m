@@ -72,6 +72,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [phoneMainView.switchCamera addTarget:self action:@selector(switchCameraPressed) forControlEvents:UIControlEventTouchUpInside];
 }
 
 -(void) switchCameraPressed {
@@ -140,8 +141,6 @@
 
 -(void) viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    [phoneMainView.switchCamera addTarget:self action:@selector(switchCameraPressed) forControlEvents:UIControlEventTouchUpInside];
-    
 }
 
 -(void) viewDidDisappear:(BOOL)animated {
