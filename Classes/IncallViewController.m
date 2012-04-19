@@ -261,11 +261,13 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     
     [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
     
+    // This is a bit hacky: take into account toolbar removal (only once).
+    // It's probably possible to do this from the Xib file (?)
     static bool done = false;
     if (!done) {
-        NSLog(@"old center: %f %f", videoView.center.x, videoView.center.y);
+        ms_message("old center: %f %f", videoView.center.x, videoView.center.y);
         videoView.center = CGPointMake(videoView.center.x, videoView.center.y + (self.view.frame.size.height - videoView.window.frame.size.height));
-        NSLog(@"new center: %f %f", videoView.center.x, videoView.center.y);
+        ms_message("new center: %f %f", videoView.center.x, videoView.center.y);
         done = true;
     }
     
@@ -300,26 +302,30 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone]; 
 }
 
+/* Update in call view buttons (visibility, state, ...) and call duration text.
+ This is called periodically. The fullUpdate boolean is set when called after an event (call state change for instance) */
 -(void) updateUIFromLinphoneState:(BOOL) fullUpdate {
     activeCallCell = nil;
-    [mute reset];
-    
-    LinphoneCore* lc;
-    
+
+    // check LinphoneCore is initialized
+    LinphoneCore* lc = nil;
     @try {
         lc = [LinphoneManager getLc];
-
-        [LinphoneManager set:pause hidden:(callCount([LinphoneManager getLc]) > 1) withName:"PAUSE button" andReason:"call count"];
-        [LinphoneManager set:mergeCalls hidden:!pause.hidden withName:"MERGE button" andReason:"call count"];
-
-        [callTableView reloadData];       
     } @catch (NSException* exc) {
         return;
     }
-    LinphoneCall* selectedCall = linphone_core_get_current_call([LinphoneManager getLc]);
+    // 1 call: show pause button, otherwise show merge btn
+    [LinphoneManager set:pause hidden:(callCount(lc) > 1) withName:"PAUSE button" andReason:"call count"];
+    [LinphoneManager set:mergeCalls hidden:!pause.hidden withName:"MERGE button" andReason:"call count"];
+    // reload table (glow update + call duration)
+    [callTableView reloadData];       
+
+    LinphoneCall* currentCall = linphone_core_get_current_call([LinphoneManager getLc]);
     int callsCount = linphone_core_get_calls_nb(lc);
+
     // hide pause/resume if in conference    
-    if (selectedCall) {
+    if (currentCall) {
+        [mute reset];
         if (linphone_core_is_in_conference(lc)) {
             [LinphoneManager set:pause hidden:YES withName:"PAUSE button" andReason:"is in conference"];
         }
@@ -332,11 +338,11 @@ void addAnimationFadeTransition(UIView* view, float duration) {
         
         if (fullUpdate) {
             videoUpdateIndicator.hidden = YES;
-            LinphoneCallState state = linphone_call_get_state(selectedCall);
+            LinphoneCallState state = linphone_call_get_state(currentCall);
             if (state == LinphoneCallStreamsRunning || state == LinphoneCallUpdated || state == LinphoneCallUpdatedByRemote) {
-                if (linphone_call_params_video_enabled(linphone_call_get_current_params(selectedCall))) {
+                if (linphone_call_params_video_enabled(linphone_call_get_current_params(currentCall))) {
                     [addVideo setTitle:NSLocalizedString(@"-video", nil) forState:UIControlStateNormal];
-                    [IncallViewController updateIndicator: videoCallQuality withCallQuality:linphone_call_get_average_quality(selectedCall)];
+                    [IncallViewController updateIndicator: videoCallQuality withCallQuality:linphone_call_get_average_quality(currentCall)];
                 } else {
                     [addVideo setTitle:NSLocalizedString(@"+video", nil) forState:UIControlStateNormal];
                 }
@@ -361,7 +367,7 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     }
     [LinphoneManager set:mergeCalls hidden:!pause.hidden withName:"MERGE button" andReason:AT];
     
-    // update conference details view if diaplsyed
+    // update conference details view if displayed
     if (self.presentedViewController == conferenceDetail) {
         if (!linphone_core_is_in_conference(lc))
             [self dismissModalViewControllerAnimated:YES];
@@ -409,7 +415,7 @@ void addAnimationFadeTransition(UIView* view, float duration) {
 
 -(void) pinch:(UIPinchGestureRecognizer*) reco {
     float s = zoomLevel;
-    CGPoint point = [reco locationInView:videoGroup];
+    // CGPoint point = [reco locationInView:videoGroup];
     // float ccx = cx + (point.x / videoGroup.frame.size.width - 0.5) / s;
     // float ccy = cy - (point.y / videoGroup.frame.size.height - 0.5) / s;
     if ([reco state] == UIGestureRecognizerStateEnded) {
