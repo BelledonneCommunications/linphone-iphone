@@ -1799,6 +1799,7 @@ static bool_t register_again_with_updated_contact(SalOp *op, osip_message_t *ori
 		eXosip_register_send_register(op->rid,msg);
 		eXosip_unlock();  
 		ms_message("Resending new register with updated contact");
+		update_contact_from_response(op,last_answer);
 		return TRUE;
 	} else {
 	    ms_warning("Fail to send updated register.");
@@ -1806,8 +1807,6 @@ static bool_t register_again_with_updated_contact(SalOp *op, osip_message_t *ori
 	    return FALSE;
 	}
 	eXosip_unlock();
-
-	update_contact_from_response(op,last_answer);
 	return FALSE;
 }
 
