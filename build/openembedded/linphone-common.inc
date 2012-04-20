@@ -52,7 +52,7 @@ EXTRA_OECONF = " \
 		"
 
 PACKAGES_gtk = "${PN}-dbg ${PN} ${PN}-doc ${PN}-dev ${PN}-locale ${PN}c linphone-rings liblinphone libmediastreamer-bin libmediastreamer libortp ${PN}-utils"
-PACKAGES = "${PN}c linphone-rings liblinphone libmediastreamer-bin libmediastreamer libortp ${PN}-utils"
+PACKAGES = "${PN}-dbg ${PN}-dev ${PN}c linphone-rings liblinphone libmediastreamer-bin libmediastreamer libortp ${PN}-utils"
 
 FILES_${PN} = " \ 
 	    ${bindir}/linphone \
