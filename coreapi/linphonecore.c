@@ -2070,7 +2070,7 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, LinphonePro
 		sal_op_set_contact(call->op, contact);
 		ms_free(contact);
 	}
-
+	linphone_core_stop_dtmf_stream(lc);
 	linphone_call_init_media_streams(call);
 	if (lc->ringstream==NULL)
 		audio_stream_prepare_sound(call->audiostream,lc->sound_conf.play_sndcard,lc->sound_conf.capt_sndcard);
