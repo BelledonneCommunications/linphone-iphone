@@ -27,7 +27,7 @@ import java.util.Vector;
  */
 
 public class OnlineStatus {
-	@SuppressWarnings("unchecked")
+	
 	static private Vector values = new Vector();
 	/**
 	 * Offline
@@ -77,7 +77,7 @@ public class OnlineStatus {
 	protected final int mValue;
 	private final String mStringValue;
 
-	@SuppressWarnings("unchecked")
+	
 	private OnlineStatus(int value,String stringValue) {
 		mValue = value;
 		values.addElement(this);

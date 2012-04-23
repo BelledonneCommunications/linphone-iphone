@@ -36,7 +36,7 @@ abstract public class LinphoneCoreFactory {
 		factoryName = className;
 	}
 	
-	@SuppressWarnings("unchecked")
+	
 	public static final synchronized LinphoneCoreFactory instance() {
 		try {
 			if (theLinphoneCoreFactory == null) {
