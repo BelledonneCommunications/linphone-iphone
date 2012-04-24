@@ -141,7 +141,7 @@ void addAnimationFadeTransition(UIView* view, float duration) {
         
         LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
         if (call && linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
-            //Orientation has change, must call update call
+            //Orientation has changed, must call update call
             linphone_core_update_call([LinphoneManager getLc], call, NULL);
         
         
