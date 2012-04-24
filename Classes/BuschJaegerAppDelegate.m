@@ -60,8 +60,12 @@
     
     [self loadDefaultSettings];
     
-	[[LinphoneManager instance] setCallDelegate:buschJaegerMainView];
+    /* explicitely instanciate LinphoneManager */
+    LinphoneManager* lm = [[LinphoneManager alloc] init];
+    assert(lm == [LinphoneManager instance]);
+    
 	[[LinphoneManager instance]	startLibLinphone];
+    [[LinphoneManager instance] setCallDelegate:buschJaegerMainView];
     
 	[window addSubview:buschJaegerMainView.view];
 	[window makeKeyAndVisible];
