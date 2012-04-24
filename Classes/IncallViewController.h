@@ -22,6 +22,7 @@
 #import "ConferenceCallDetailView.h"
 #import <AddressBookUI/ABPeoplePickerNavigationController.h>
 #include "UILinphone.h"
+#import "UIToggleVideoButton.h"
 
 @class VideoViewController;
 
@@ -36,9 +37,10 @@
     UIButton* pause;
 	UISpeakerButton* speaker;
 	UIButton* contacts;
-	UIButton* addVideo;
+	UIToggleVideoButton* addVideo;
     UITableView* callTableView;
     UIButton* addCall, *mergeCalls;
+    UIButton* transfer;
 
 	
 	//key pad
@@ -57,6 +59,14 @@
 	UIDigitButton* zero;
 	UIDigitButton* hash;
 	UIButton* close;
+    
+    UIView* videoGroup;
+    UIView* videoView;
+    UIView* videoPreview;
+    UIImageView* videoCallQuality;
+    UICamSwitch* videoCameraSwitch;
+    UIActivityIndicatorView* videoUpdateIndicator;
+    UIActivityIndicatorView* videoWaitingForFirstImage;
     
     bool dismissed;
     
@@ -78,14 +88,11 @@
     
     UIImage* verified, *unverified;
 	UIImage* stat_sys_signal_0, *stat_sys_signal_1, *stat_sys_signal_2, *stat_sys_signal_3, *stat_sys_signal_4;
-    UIActionSheet* zrtpVerificationSheet;
+    UIActionSheet* visibleActionSheet;
+    
+    NSTimer* hideControlsTimer;
+    float zoomLevel, cx, cy;
 }
-
-+ (UIImage*) stat_sys_signal_0;
-+ (UIImage*) stat_sys_signal_1;
-+ (UIImage*) stat_sys_signal_2;
-+ (UIImage*) stat_sys_signal_3;
-+ (UIImage*) stat_sys_signal_4;
 
 -(void)displayStatus:(NSString*) message;
 
@@ -93,6 +100,7 @@
 
 +(LinphoneCall*) retrieveCallAtIndex: (NSInteger) index inConference:(bool) conf;
 + (void) updateCellImageView:(UIImageView*)imageView Label:(UILabel*)label DetailLabel:(UILabel*)detailLabel AndAccessoryView:(UIView*)accessoryView withCall:(LinphoneCall*) call;
++(void) updateIndicator:(UIImageView*) indicator withCallQuality:(float) quality;
 
 @property (nonatomic, retain) IBOutlet UIView* controlSubView;
 @property (nonatomic, retain) IBOutlet UIView* padSubView;
@@ -105,10 +113,11 @@
 @property (nonatomic, retain) IBOutlet UIButton* pause;
 @property (nonatomic, retain) IBOutlet UIButton* speaker;
 @property (nonatomic, retain) IBOutlet UIButton* contacts;
-@property (nonatomic, retain) IBOutlet UIButton* addVideo;
+@property (nonatomic, retain) IBOutlet UIToggleVideoButton* addVideo;
 @property (nonatomic, retain) IBOutlet UITableView* callTableView;
 @property (nonatomic, retain) IBOutlet UIButton* addCall;
 @property (nonatomic, retain) IBOutlet UIButton* mergeCalls;
+@property (nonatomic, retain) IBOutlet UIButton* transfer;
 
 @property (nonatomic, retain) IBOutlet UIButton* one;
 @property (nonatomic, retain) IBOutlet UIButton* two;
@@ -124,4 +133,13 @@
 @property (nonatomic, retain) IBOutlet UIButton* hash;
 @property (nonatomic, retain) IBOutlet UIButton* close;
 @property (nonatomic, retain) IBOutlet VideoViewController* videoViewController;
+
+@property (nonatomic, retain) IBOutlet UIView* videoGroup;
+@property (nonatomic, retain) IBOutlet UIView* videoView;
+@property (nonatomic, retain) IBOutlet UIView* videoPreview;
+@property (nonatomic, retain) IBOutlet UIImageView* videoCallQuality;
+@property (nonatomic, retain) IBOutlet UICamSwitch* videoCameraSwitch;
+@property (nonatomic, retain) IBOutlet UIActivityIndicatorView* videoUpdateIndicator;
+@property (nonatomic, retain) IBOutlet UIActivityIndicatorView* videoWaitingForFirstImage;
+
 @end

@@ -18,6 +18,7 @@
  */     
 #import "MainScreenWithVideoPreview.h"
 #import <AVFoundation/AVFoundation.h>
+#import "LinphoneUI/LinphoneManager.h"
 
 @implementation MainScreenWithVideoPreview
 @synthesize window;
@@ -71,12 +72,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-                        
-    bool enableVideo = [[NSUserDefaults standardUserDefaults] boolForKey:@"enable_video_preference"];
-    
-    if (enableVideo) {
-        [self initVideoPreview ];
-    }
+    [phoneMainView.switchCamera addTarget:self action:@selector(switchCameraPressed) forControlEvents:UIControlEventTouchUpInside];
 }
 
 -(void) switchCameraPressed {
@@ -93,6 +89,10 @@
     
     NSAutoreleasePool* pool = [[NSAutoreleasePool alloc]init];
     NSArray* array = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
+    if ( [array count] == 0) {
+        ms_warning("No camera available (running on simulator ?");
+        return;
+    }
     currentCamera = camIndex % [array count];
     AVCaptureDevice* device =  (AVCaptureDevice*) [array objectAtIndex:currentCamera];
     input = [[AVCaptureDeviceInput deviceInputWithDevice:device
@@ -106,19 +106,28 @@
         [session startRunning];
 }
 
+-(void) startPreview:(id) a {
+    [window addSubview:self.view];
+    [window sendSubviewToBack:self.view];
+    [session startRunning];
+}
+
 
 -(void) showPreview:(BOOL) show {
     bool enableVideo = [[NSUserDefaults standardUserDefaults] boolForKey:@"enable_video_preference"];
     
     if (enableVideo) {
+        LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
+        if (show && call && linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
+            return;
+        }
+        
         if (session == nil) {
             [self initVideoPreview];
         }
         
         if (show && !session.running) {
-            [window addSubview:self.view];
-            [window sendSubviewToBack:self.view];
-            [session startRunning];
+            [self performSelectorInBackground:@selector(startPreview:) withObject:nil];
         } else if (!show && session.running) {
             [self.view removeFromSuperview];
             [session stopRunning];
@@ -131,8 +140,7 @@
 }
 
 -(void) viewDidAppear:(BOOL)animated {
-    [phoneMainView.switchCamera addTarget:self action:@selector(switchCameraPressed) forControlEvents:UIControlEventTouchUpInside];
-    
+    [super viewDidAppear:animated];
 }
 
 -(void) viewDidDisappear:(BOOL)animated {

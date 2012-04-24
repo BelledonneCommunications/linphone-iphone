@@ -88,9 +88,11 @@ NSTimer *callQualityRefresher;
     [mute reset];
     [speaker reset];
     [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
+    [super viewWillAppear:animated];
 }
 
 -(void) viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
 	callQualityRefresher = [NSTimer scheduledTimerWithTimeInterval:1
 							target:self 
 							selector:@selector(updateCallQuality) 
@@ -148,21 +150,7 @@ NSTimer *callQualityRefresher;
 		}
 	}
 	UIImageView* callquality = (UIImageView*) [cell viewWithTag:3];
-	if (linphone_call_get_average_quality(call) >= 4) {
-		[callquality setImage: [IncallViewController stat_sys_signal_4]];
-	}
-	else if (linphone_call_get_average_quality(call) >= 3) {
-		[callquality setImage: [IncallViewController stat_sys_signal_3]];
-	}
-	else if (linphone_call_get_average_quality(call) >= 2) {
-		[callquality setImage: [IncallViewController stat_sys_signal_2]];
-	}
-	else if (linphone_call_get_average_quality(call) >= 1) {
-		[callquality setImage: [IncallViewController stat_sys_signal_1]];
-	}
-	else {
-		[callquality setImage: [IncallViewController stat_sys_signal_0]];
-	}
+    [IncallViewController updateIndicator:callquality withCallQuality:linphone_call_get_average_quality(call)];
     tableView.rowHeight = 80;
     
     return cell;

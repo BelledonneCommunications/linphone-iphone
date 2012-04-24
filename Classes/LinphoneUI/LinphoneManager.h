@@ -23,6 +23,7 @@
 #include "linphonecore.h"
 #import "LogView.h"
 #import "LinphoneUIDelegates.h"
+
 typedef enum _Connectivity {
 	wifi,
 	wwan
@@ -40,6 +41,12 @@ struct NetworkReachabilityContext {
     bool_t testWifi, testWWan;
     void (*networkStateChanged) (Connectivity newConnectivity);
 };
+
+typedef struct _LinphoneCallAppData {
+    bool_t batteryWarningShown;
+    // transfer data
+    int transferButtonIndex;
+} LinphoneCallAppData;
 
 
 @interface LinphoneManager : NSObject <AVAudioSessionDelegate> {
@@ -68,6 +75,8 @@ struct NetworkReachabilityContext {
 +(BOOL) runningOnIpad;
 +(void) set:(UIView*)view hidden: (BOOL) hidden withName:(const char*)name andReason:(const char*) reason;
 +(void) logUIElementPressed:(const char*) name;
+
+-(void) displayDialer;
 
 -(void) registerLogView:(id<LogView>) view;
 

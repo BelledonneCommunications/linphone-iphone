@@ -48,6 +48,8 @@
 -(void) setupUI;
 -(void) setupGSMInteraction;
 
+-(void) startApplication;
+
 @property (nonatomic, retain) IBOutlet UIWindow *window;
 @property (nonatomic, retain) IBOutlet UITabBarController*  myTabBarController;
 @property (nonatomic, retain) ABPeoplePickerNavigationController* myPeoplePickerController;
