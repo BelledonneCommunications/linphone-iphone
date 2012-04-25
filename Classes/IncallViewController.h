@@ -23,7 +23,7 @@
 #import <AddressBookUI/ABPeoplePickerNavigationController.h>
 #include "UILinphone.h"
 #import "UIToggleVideoButton.h"
-
+#import "VideoZoomHandler.h"
 @class VideoViewController;
 
 @interface IncallViewController : UIViewController <ABPeoplePickerNavigationControllerDelegate,LinphoneUICallDelegate, UITableViewDelegate, UITableViewDataSource, UIActionSheetCustomDelegate> {
@@ -89,9 +89,9 @@
     UIImage* verified, *unverified;
 	UIImage* stat_sys_signal_0, *stat_sys_signal_1, *stat_sys_signal_2, *stat_sys_signal_3, *stat_sys_signal_4;
     UIActionSheet* visibleActionSheet;
-    
+
     NSTimer* hideControlsTimer;
-    float zoomLevel, cx, cy;
+    VideoZoomHandler* videoZoomHandler;
 }
 
 -(void)displayStatus:(NSString*) message;

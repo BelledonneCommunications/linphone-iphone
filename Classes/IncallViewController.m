@@ -242,8 +242,7 @@ void addAnimationFadeTransition(UIView* view, float duration) {
 -(void) enableVideoDisplay {
     [self orientationChanged:nil];
     
-    zoomLevel = 1;
-    cx = cy = 0.5;
+    [videoZoomHandler resetZoom];
     
     [UIView beginAnimations:nil context:nil];
     [UIView setAnimationDuration:1.0];
@@ -376,66 +375,6 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     }
 }
 
--(void) zoomInOut:(UITapGestureRecognizer*) reco {
-    if (zoomLevel != 1)
-        zoomLevel = 1;
-    else
-        zoomLevel = 2;
-
-    if (zoomLevel != 1) {
-        CGPoint point = [reco locationInView:videoGroup];
-        cx = point.x / videoGroup.frame.size.width;
-        cy = 1 - point.y / videoGroup.frame.size.height;
-    } else {
-        cx = cy = 0.5;
-    }
-    linphone_call_zoom_video(linphone_core_get_current_call([LinphoneManager getLc]), zoomLevel, cx, cy);
-}
-
--(void) videoPan:(UIPanGestureRecognizer*) reco {
-    if (zoomLevel <= 1.0)
-        return;
-    
-    float x,y;
-    CGPoint translation = [reco translationInView:videoGroup];
-    if ([reco state] == UIGestureRecognizerStateEnded) {
-        cx -= translation.x / videoGroup.frame.size.width;
-        cy += translation.y / videoGroup.frame.size.height; 
-        x = cx;
-        y = cy;
-    } else if ([reco state] == UIGestureRecognizerStateChanged) {
-        x = cx - translation.x / videoGroup.frame.size.width;
-        y = cy + translation.y / videoGroup.frame.size.height; 
-    } else {
-        return;
-    }
-
-    linphone_call_zoom_video(linphone_core_get_current_call([LinphoneManager getLc]), zoomLevel, x, y);
-}
-
--(void) pinch:(UIPinchGestureRecognizer*) reco {
-    float s = zoomLevel;
-    // CGPoint point = [reco locationInView:videoGroup];
-    // float ccx = cx + (point.x / videoGroup.frame.size.width - 0.5) / s;
-    // float ccy = cy - (point.y / videoGroup.frame.size.height - 0.5) / s;
-    if ([reco state] == UIGestureRecognizerStateEnded) {
-        zoomLevel = MAX(MIN(zoomLevel * reco.scale, 3.0), 1.0);
-        s = zoomLevel;
-        // cx = ccx;
-        // cy = ccy;
-    } else if ([reco state] == UIGestureRecognizerStateChanged) {
-        s = zoomLevel * reco.scale;
-        s = MAX(MIN(s, 3.0), 1.0);
-    } else if ([reco state] == UIGestureRecognizerStateBegan) {
-        
-    } else {
-        return;
-    }
-    
-    
-    linphone_call_zoom_video(linphone_core_get_current_call([LinphoneManager getLc]), s, cx, cy);
-}
-
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -483,23 +422,11 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     UITapGestureRecognizer* singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showControls:)];
     [singleFingerTap setNumberOfTapsRequired:1];
     [videoGroup addGestureRecognizer:singleFingerTap];
-    
-    UITapGestureRecognizer* doubleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(zoomInOut:)];
-    [doubleFingerTap setNumberOfTapsRequired:2];
-    [doubleFingerTap setNumberOfTouchesRequired:1];
-    [videoGroup addGestureRecognizer:doubleFingerTap];
-    
-    UIPanGestureRecognizer* pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(videoPan:)];
-    [videoGroup addGestureRecognizer:pan];
-    UIPinchGestureRecognizer* pinchReco = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(pinch:)];
-    [videoGroup addGestureRecognizer:pinchReco];    
-    videoGroup.alpha = 0;
-    
     [singleFingerTap release];
-    [doubleFingerTap release];
-    [pan release];
-    [pinchReco release];
-    cx = cy = 0.5;
+    
+    videoZoomHandler = [[VideoZoomHandler alloc] init];
+    [videoZoomHandler setup:videoGroup];
+    videoGroup.alpha = 0;
     
     mVideoShown=FALSE;
 	mIncallViewIsReady=FALSE;

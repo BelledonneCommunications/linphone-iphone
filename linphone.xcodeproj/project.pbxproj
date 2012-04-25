@@ -238,6 +238,8 @@
 		3418845D14C7077400EA48C7 /* status_gray.png in Resources */ = {isa = PBXBuildFile; fileRef = 3418845B14C7077400EA48C7 /* status_gray.png */; };
 		341FCA8E149798210084BC26 /* linphonerc-ipad in Resources */ = {isa = PBXBuildFile; fileRef = 341FCA8D149798210084BC26 /* linphonerc-ipad */; };
 		341FCA8F149798210084BC26 /* linphonerc-ipad in Resources */ = {isa = PBXBuildFile; fileRef = 341FCA8D149798210084BC26 /* linphonerc-ipad */; };
+		34216F401547EBCD00EA9777 /* VideoZoomHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 34216F3F1547EBCD00EA9777 /* VideoZoomHandler.m */; };
+		34216F411547EBCD00EA9777 /* VideoZoomHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 34216F3F1547EBCD00EA9777 /* VideoZoomHandler.m */; };
 		3422AA5014975EC9000D4E8A /* InCallViewController-ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3422AA4F14975EC9000D4E8A /* InCallViewController-ipad.xib */; };
 		3422AA5114975EC9000D4E8A /* InCallViewController-ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3422AA4F14975EC9000D4E8A /* InCallViewController-ipad.xib */; };
 		3422AA5314978352000D4E8A /* PhoneViewController-ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3422AA5214978352000D4E8A /* PhoneViewController-ipad.xib */; };
@@ -628,6 +630,8 @@
 		3418845214C6F66F00EA48C7 /* status_red.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = status_red.png; path = Resources/status_red.png; sourceTree = "<group>"; };
 		3418845B14C7077400EA48C7 /* status_gray.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = status_gray.png; path = Resources/status_gray.png; sourceTree = "<group>"; };
 		341FCA8D149798210084BC26 /* linphonerc-ipad */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "linphonerc-ipad"; sourceTree = "<group>"; };
+		34216F3E1547EBCD00EA9777 /* VideoZoomHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VideoZoomHandler.h; path = LinphoneUI/VideoZoomHandler.h; sourceTree = "<group>"; };
+		34216F3F1547EBCD00EA9777 /* VideoZoomHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = VideoZoomHandler.m; path = LinphoneUI/VideoZoomHandler.m; sourceTree = "<group>"; };
 		3422AA4F14975EC9000D4E8A /* InCallViewController-ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "InCallViewController-ipad.xib"; sourceTree = "<group>"; };
 		3422AA5214978352000D4E8A /* PhoneViewController-ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "PhoneViewController-ipad.xib"; sourceTree = "<group>"; };
 		344ABD71147FC438007420B6 /* ConferenceCallDetailView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ConferenceCallDetailView.xib; sourceTree = "<group>"; };
@@ -801,6 +805,8 @@
 				3418844514C6CAD300EA48C7 /* StatusSubViewController.h */,
 				3418844614C6CAD300EA48C7 /* StatusSubViewController.m */,
 				3418844714C6CAD300EA48C7 /* StatusSubViewController.xib */,
+				34216F3E1547EBCD00EA9777 /* VideoZoomHandler.h */,
+				34216F3F1547EBCD00EA9777 /* VideoZoomHandler.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -1511,6 +1517,7 @@
 				34CA8539148F692A00503C01 /* MainScreenWithVideoPreview.m in Sources */,
 				3418844814C6CAD300EA48C7 /* StatusSubViewController.m in Sources */,
 				340751E7150F38FD00B89C47 /* UIToggleVideoButton.m in Sources */,
+				34216F401547EBCD00EA9777 /* VideoZoomHandler.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1546,6 +1553,7 @@
 				34CA853A148F692A00503C01 /* MainScreenWithVideoPreview.m in Sources */,
 				3418844914C6CAD300EA48C7 /* StatusSubViewController.m in Sources */,
 				340751E8150F38FD00B89C47 /* UIToggleVideoButton.m in Sources */,
+				34216F411547EBCD00EA9777 /* VideoZoomHandler.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
