@@ -1,3 +1,7 @@
+linphone-3.xxx --
+	* fix bug in zRTP support (upgrade required)
+	*
+
 linphone-3.5.2 -- February 22, 2012
 	* updated oRTP to 0.20.0
 	* updated mediastreamer2 to 2.8.2

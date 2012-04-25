@@ -181,12 +181,12 @@ static void payload_type_set_enable(PayloadType *pt,int value)
 	else payload_type_unset_flag(pt,PAYLOAD_TYPE_ENABLED);
 }
 
-static bool_t payload_type_enabled(PayloadType *pt) {
+static bool_t payload_type_enabled(const PayloadType *pt) {
 	return (((pt)->flags & PAYLOAD_TYPE_ENABLED)!=0);
 }
 
-bool_t linphone_core_payload_type_enabled(LinphoneCore *lc, PayloadType *pt){
-	if (ms_list_find(lc->codecs_conf.audio_codecs,pt) || ms_list_find(lc->codecs_conf.video_codecs,pt)){
+bool_t linphone_core_payload_type_enabled(LinphoneCore *lc, const PayloadType *pt){
+	if (ms_list_find(lc->codecs_conf.audio_codecs, (PayloadType*) pt) || ms_list_find(lc->codecs_conf.video_codecs, (PayloadType*)pt)){
 		return payload_type_enabled(pt);
 	}
 	ms_error("Getting enablement status of codec not in audio or video list of PayloadType !");
@@ -202,7 +202,7 @@ int linphone_core_enable_payload_type(LinphoneCore *lc, PayloadType *pt, bool_t 
 	return -1;
 }
 
-int linphone_core_get_payload_type_number(LinphoneCore *lc, PayloadType *pt){
+int linphone_core_get_payload_type_number(LinphoneCore *lc, const PayloadType *pt){
        return payload_type_get_number(pt);
 }
 

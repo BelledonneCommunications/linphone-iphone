@@ -992,6 +992,19 @@ static void linphone_core_assign_payload_type(LinphoneCore *lc, PayloadType *con
 	lc->payload_types=ms_list_append(lc->payload_types,pt);
 }
 
+static void linphone_core_handle_static_payloads(LinphoneCore *lc){
+	RtpProfile *prof=&av_profile;
+	int i;
+	for(i=0;i<128;++i){
+		PayloadType *pt=rtp_profile_get_payload(prof,i);
+		if (pt){
+			if (payload_type_get_number(pt)!=i){
+				linphone_core_assign_payload_type(lc,pt,i,NULL);
+			}
+		}
+	}
+}
+
 static void linphone_core_free_payload_types(LinphoneCore *lc){
 	ms_list_for_each(lc->payload_types,(void (*)(void*))payload_type_destroy);
 	ms_list_free(lc->payload_types);
@@ -1069,7 +1082,7 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	/*add all payload type for which we don't care about the number */
 	linphone_core_assign_payload_type(lc,&payload_type_ilbc,-1,"mode=30");
 	linphone_core_assign_payload_type(lc,&payload_type_amr,-1,"octet-align=1");
-        linphone_core_assign_payload_type(lc,&payload_type_amrwb,-1,"octet-align=1");
+	linphone_core_assign_payload_type(lc,&payload_type_amrwb,-1,"octet-align=1");
 	linphone_core_assign_payload_type(lc,&payload_type_lpc1015,-1,NULL);
 	linphone_core_assign_payload_type(lc,&payload_type_g726_16,-1,NULL);
 	linphone_core_assign_payload_type(lc,&payload_type_g726_24,-1,NULL);
@@ -1084,6 +1097,7 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	linphone_core_assign_payload_type(lc,&payload_type_silk_wb,-1,NULL);
 	linphone_core_assign_payload_type(lc,&payload_type_silk_swb,-1,NULL);
 	linphone_core_assign_payload_type(lc,&payload_type_g729,18,"annexb=no");
+	linphone_core_handle_static_payloads(lc);
 	
 	ms_init();
 	/* create a mediastreamer2 event queue and set it as global */
@@ -2056,9 +2070,10 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, LinphonePro
 		sal_op_set_contact(call->op, contact);
 		ms_free(contact);
 	}
-
-	//TODO : should probably not be done here
+	linphone_core_stop_dtmf_stream(lc);
 	linphone_call_init_media_streams(call);
+	if (lc->ringstream==NULL)
+		audio_stream_prepare_sound(call->audiostream,lc->sound_conf.play_sndcard,lc->sound_conf.capt_sndcard);
 	if (!lc->sip_conf.sdp_200_ack){
 		call->media_pending=TRUE;
 		sal_call_set_local_media_description(call->op,call->localdesc);
@@ -2445,6 +2460,7 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 	const char *contact=NULL;
 	SalOp *replaced;
 	SalMediaDescription *new_md;
+	bool_t was_ringing=FALSE;
 
 	if (call==NULL){
 		//if just one call is present answer the only one ...
@@ -2480,6 +2496,7 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 		ring_stop(lc->ringstream);
 		ms_message("ring stopped");
 		lc->ringstream=NULL;
+		was_ringing=TRUE;
 	}
 	if (call->ringing_beep){
 		linphone_core_stop_dtmf(lc);
@@ -2501,6 +2518,9 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 
 	if (call->audiostream==NULL)
 		linphone_call_init_media_streams(call);
+	if (!was_ringing && call->audiostream->ticker==NULL){
+		audio_stream_prepare_sound(call->audiostream,lc->sound_conf.play_sndcard,lc->sound_conf.capt_sndcard);
+	}
 
 	if (params){
 		call->params=*params;
@@ -4760,5 +4780,28 @@ void linphone_core_init_default_params(LinphoneCore*lc, LinphoneCallParams *para
 	params->has_video=linphone_core_video_enabled(lc) && lc->video_policy.automatically_initiate;
 	params->media_encryption=linphone_core_get_media_encryption(lc);	
 	params->in_conference=FALSE;
+}
+
+void linphone_call_zoom_video(LinphoneCall* call, float zoom_factor, float cx, float cy) {
+    VideoStream* vstream = call->videostream;
+    float zoom[3];
+    
+    if (zoom_factor < 1)
+        zoom_factor = 1;
+    float halfsize = 0.5 * 1.0 / zoom_factor;
+    
+    if ((cx - halfsize) < 0)
+        cx = 0 + halfsize;
+    if ((cx + halfsize) > 1)
+        cx = 1 - halfsize;
+    if ((cy - halfsize) < 0)
+        cy = 0 + halfsize;
+    if ((cy + halfsize) > 1)
+        cy = 1 - halfsize;
+    
+    zoom[0] = zoom_factor;
+    zoom[1] = cx;
+    zoom[2] = cy;
+    ms_filter_call_method(vstream->output, MS_VIDEO_DISPLAY_ZOOM, &zoom);
 }
 

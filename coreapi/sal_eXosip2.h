@@ -66,6 +66,7 @@ struct SalOp{
 	char *replaces;
 	char *referred_by;
 	const SalAuthInfo *auth_info;
+	const char *sipfrag_pending;
 	bool_t supports_session_timers;
 	bool_t sdp_offering;
 	bool_t reinvite;
