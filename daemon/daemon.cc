@@ -88,7 +88,7 @@ private:
 
 class PayloadTypeResponse: public Response {
 public:
-	PayloadTypeResponse(LinphoneCore *core, PayloadType *payloadType, int index);
+	PayloadTypeResponse(LinphoneCore *core, const PayloadType *payloadType, int index = -1, const string &prefix = string(), bool enabled_status = true);
 private:
 };
 
@@ -359,6 +359,52 @@ public:
 	}
 };
 
+class CallStatsCommand: public DaemonCommand {
+public:
+	CallStatsCommand() :
+			DaemonCommand("call-stats", "call-stats <call id>", "Return all stats of a call.") {
+	}
+	virtual void exec(Daemon *app, const char *args) {
+		LinphoneCore *lc = app->getCore();
+		int cid;
+		LinphoneCall *call = NULL;
+		if (sscanf(args, "%i", &cid) == 1) {
+			call = app->findCall(cid);
+			if (call == NULL) {
+				app->sendResponse(Response("No call with such id."));
+				return;
+			}
+		} else {
+			call = linphone_core_get_current_call(lc);
+			if (call == NULL) {
+				app->sendResponse(Response("No current call available."));
+				return;
+			}
+		}
+
+		LinphoneCallState call_state = LinphoneCallIdle;
+		call_state = linphone_call_get_state(call);
+		const LinphoneCallParams *callParams = linphone_call_get_current_params(call);
+		const PayloadType *audioCodec = linphone_call_params_get_used_audio_codec(callParams);
+		const PayloadType *videoCodec = linphone_call_params_get_used_video_codec(callParams);
+		ostringstream ostr;
+		ostr << linphone_call_state_to_string(call_state) << "\n";
+
+		switch (call_state) {
+		case LinphoneCallStreamsRunning:
+		case LinphoneCallConnected:
+			if (audioCodec != NULL)
+				ostr << PayloadTypeResponse(app->getCore(), audioCodec, -1, "Audio-", false).getBody() << "\n";
+			if (videoCodec != NULL)
+				ostr << PayloadTypeResponse(app->getCore(), videoCodec, -1, "Audio-", false).getBody() << "\n";
+			break;
+		default:
+			break;
+		}
+		app->sendResponse(Response(ostr.str().c_str(), Response::Ok));
+	}
+};
+
 class CallStatusCommand: public DaemonCommand {
 public:
 	CallStatusCommand() :
@@ -406,6 +452,7 @@ public:
 		case LinphoneCallConnected:
 			ostr << "Direction: " << ((linphone_call_get_dir(call) == LinphoneCallOutgoing) ? "out" : "in") << "\n";
 			ostr << "Duration: " << linphone_call_get_duration(call) << "\n";
+			break;
 		default:
 			break;
 		}
@@ -544,7 +591,7 @@ public:
 class AudioCodecDisableCommand: public DaemonCommand {
 public:
 	AudioCodecDisableCommand() :
-			DaemonCommand("audio-codec-disable", "audio-codec-disable <codec-mime>", "Disable an audio codec.") {
+			DaemonCommand("audio-codec-disable", "audio-codec-disable <payload type number>", "Disable an audio codec.") {
 	}
 	virtual void exec(Daemon *app, const char *args) {
 		int payload_type;
@@ -617,18 +664,22 @@ EventResponse::EventResponse(LinphoneCall *call, LinphoneCallState state) {
 	ms_free(remote);
 }
 
-PayloadTypeResponse::PayloadTypeResponse(LinphoneCore *core, PayloadType *payloadType, int index) {
+PayloadTypeResponse::PayloadTypeResponse(LinphoneCore *core, const PayloadType *payloadType, int index, const string &prefix, bool enabled_status) {
 	ostringstream ostr;
-	ostr << "Index: " << index << "\n";
-	ostr << "Payload-type-number: " << linphone_core_get_payload_type_number(core, payloadType) << "\n";
-	ostr << "Clock-rate: " << payloadType->clock_rate << "\n";
-	ostr << "Bitrate: " << payloadType->normal_bitrate << "\n";
-	ostr << "Mime: " << payloadType->mime_type << "\n";
-	ostr << "Channels: " << payloadType->channels << "\n";
-	ostr << "Recv-fmtp: " << ((payloadType->recv_fmtp) ? payloadType->recv_fmtp : "") << "\n";
-	ostr << "Send-fmtp: " << ((payloadType->send_fmtp) ? payloadType->send_fmtp : "") << "\n";
-	ostr << "Enabled: " << (linphone_core_payload_type_enabled(core, payloadType) == TRUE ? "true" : "false") << "\n";
-	setBody(ostr.str().c_str());
+	if (payloadType != NULL) {
+		if (index >= 0)
+			ostr << prefix << "Index: " << index << "\n";
+		ostr << prefix << "Payload-type-number: " << linphone_core_get_payload_type_number(core, payloadType) << "\n";
+		ostr << prefix << "Clock-rate: " << payloadType->clock_rate << "\n";
+		ostr << prefix << "Bitrate: " << payloadType->normal_bitrate << "\n";
+		ostr << prefix << "Mime: " << payloadType->mime_type << "\n";
+		ostr << prefix << "Channels: " << payloadType->channels << "\n";
+		ostr << prefix << "Recv-fmtp: " << ((payloadType->recv_fmtp) ? payloadType->recv_fmtp : "") << "\n";
+		ostr << prefix << "Send-fmtp: " << ((payloadType->send_fmtp) ? payloadType->send_fmtp : "") << "\n";
+		if (enabled_status)
+			ostr << prefix << "Enabled: " << (linphone_core_payload_type_enabled(core, payloadType) == TRUE ? "true" : "false") << "\n";
+		setBody(ostr.str().c_str());
+	}
 }
 
 DaemonCommand::DaemonCommand(const char *name, const char *proto, const char *help) :
@@ -740,6 +791,7 @@ void Daemon::initCommands() {
 	mCommands.push_back(new PopEventCommand());
 	mCommands.push_back(new AnswerCommand());
 	mCommands.push_back(new CallStatusCommand());
+	mCommands.push_back(new CallStatsCommand());
 	mCommands.push_back(new AudioCodecGetCommand());
 	mCommands.push_back(new AudioCodecEnableCommand());
 	mCommands.push_back(new AudioCodecDisableCommand());
