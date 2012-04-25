@@ -770,6 +770,14 @@ void linphone_call_params_enable_video(LinphoneCallParams *cp, bool_t enabled){
 	cp->has_video=enabled;
 }
 
+const PayloadType* linphone_call_params_get_used_audio_codec(const LinphoneCallParams *cp) {
+	return cp->audio_codec;
+}
+
+const PayloadType* linphone_call_params_get_used_video_codec(const LinphoneCallParams *cp) {
+	return cp->video_codec;
+}
+
 /**
  * Returns whether video is enabled.
 **/
@@ -1146,6 +1154,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cna
 		bool_t use_ec;
 
 		if (used_pt!=-1){
+			call->current_params.audio_codec = rtp_profile_get_payload(call->audio_profile, used_pt);
 			if (playcard==NULL) {
 				ms_warning("No card defined for playback !");
 			}
@@ -1262,6 +1271,7 @@ static void linphone_call_start_video_stream(LinphoneCall *call, const char *cna
 		const char *addr=vstream->addr[0]!='\0' ? vstream->addr : call->resultdesc->addr;
 		call->video_profile=make_profile(call,call->resultdesc,vstream,&used_pt);
 		if (used_pt!=-1){
+			call->current_params.video_codec = rtp_profile_get_payload(call->video_profile, used_pt);
 			VideoStreamDir dir=VideoStreamSendRecv;
 			MSWebCam *cam=lc->video_conf.device;
 			bool_t is_inactive=FALSE;
@@ -1333,6 +1343,10 @@ static void linphone_call_start_video_stream(LinphoneCall *call, const char *cna
 
 void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_muted, bool_t send_ringbacktone){
 	LinphoneCore *lc=call->core;
+
+	call->current_params.audio_codec = NULL;
+	call->current_params.video_codec = NULL;
+
 	LinphoneAddress *me=linphone_core_get_primary_contact_parsed(lc);
 	char *cname;
 	bool_t use_arc=linphone_core_adaptive_rate_control_enabled(lc);
