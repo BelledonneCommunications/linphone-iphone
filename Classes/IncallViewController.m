@@ -713,7 +713,9 @@ static void hideSpinner(LinphoneCall* call, void* user_data) {
     videoWaitingForFirstImage.hidden = NO;
     [videoWaitingForFirstImage startAnimating];
     
-    linphone_call_set_next_video_frame_decoded_callback(call, hideSpinner, self);
+    if (call->videostream) {
+        linphone_call_set_next_video_frame_decoded_callback(call, hideSpinner, self);
+    }
     return;
     
 	if (mIncallViewIsReady) {
@@ -1003,10 +1005,10 @@ static void hideSpinner(LinphoneCall* call, void* user_data) {
             cell.accessoryType = UITableViewCellAccessoryNone;
     } else {
         LinphoneCall* call = [IncallViewController retrieveCallAtIndex:indexPath.row inConference:NO];
+		if (call == nil)
+            return cell; // return dummy cell
 		LinphoneMediaEncryption enc = linphone_call_params_get_media_encryption(linphone_call_get_current_params(call));
-        if (call == nil)
-            return nil;
-		if (cell.accessoryView == nil) {
+        if (cell.accessoryView == nil) {
 			UIView *containerView = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, 28, 28)] autorelease];
 			cell.accessoryView = containerView;
 		}
