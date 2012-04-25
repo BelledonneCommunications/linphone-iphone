@@ -106,10 +106,23 @@
         [session startRunning];
 }
 
+-(void) stopPreview:(id) a {
+    @synchronized (self) {
+        if (!session.running)
+            return;
+        [self.view removeFromSuperview];
+        [session stopRunning];
+    }
+}
+
 -(void) startPreview:(id) a {
-    [window addSubview:self.view];
-    [window sendSubviewToBack:self.view];
-    [session startRunning];
+    @synchronized (self) {
+        if (session.running)
+            return;
+        [window addSubview:self.view];
+        [window sendSubviewToBack:self.view];
+        [session startRunning];
+    }
 }
 
 
@@ -129,13 +142,10 @@
         if (show && !session.running) {
             [self performSelectorInBackground:@selector(startPreview:) withObject:nil];
         } else if (!show && session.running) {
-            [self.view removeFromSuperview];
-            [session stopRunning];
+            [self performSelectorInBackground:@selector(stopPreview:) withObject:nil];
         }
     } else {
-        if (session != nil)
-            [session stopRunning];
-        [self.view removeFromSuperview];
+        [self stopPreview:nil];
     }
 }
 
