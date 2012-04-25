@@ -96,7 +96,7 @@ class Daemon {
 	friend class DaemonCommand;
 public:
 	typedef Response::Status Status;
-	Daemon(const char *config_path, const char *pipe_name, bool display_video, bool capture_video);
+	Daemon(const char *config_path, const char *factory_config_path, const char *log_file, const char *pipe_name, bool display_video, bool capture_video);
 	~Daemon();
 	int run();
 	void quit();
@@ -130,6 +130,7 @@ private:
 	int mChildFd;
 	string mHistfile;
 	bool mRunning;
+	FILE *mLogFile;
 	static Daemon *sZis;
 	static int sCallIds;
 	static int sProxyIds;
@@ -643,7 +644,8 @@ int Daemon::sCallIds = 0;
 int Daemon::sProxyIds = 0;
 int Daemon::sAudioStreamIds = 0;
 
-Daemon::Daemon(const char *config_path, const char *pipe_name, bool display_video, bool capture_video) {
+Daemon::Daemon(const char *config_path, const char *factory_config_path, const char *log_file, const char *pipe_name, bool display_video, bool capture_video) :
+		mLogFile(NULL) {
 	sZis = this;
 	mServerFd = -1;
 	mChildFd = -1;
@@ -655,11 +657,16 @@ Daemon::Daemon(const char *config_path, const char *pipe_name, bool display_vide
 		fprintf(stdout, "Server unix socket created, name=%s fd=%i\n", pipe_name, mServerFd);
 	}
 
-	linphone_core_disable_logs();
+	if (log_file != NULL) {
+		mLogFile = fopen(log_file, "a+");
+		linphone_core_enable_logs(mLogFile);
+	} else {
+		linphone_core_disable_logs();
+	}
 
 	LinphoneCoreVTable vtable = { 0 };
 	vtable.call_state_changed = callStateChanged;
-	mLc = linphone_core_new(&vtable, NULL, config_path, this);
+	mLc = linphone_core_new(&vtable, config_path, factory_config_path, this);
 	linphone_core_enable_video(mLc, display_video, capture_video);
 	linphone_core_enable_echo_cancellation(mLc, false);
 	initCommands();
@@ -897,11 +904,13 @@ char *Daemon::readPipe(char *buffer, int buflen) {
 static void printHelp() {
 	fprintf(stdout, "daemon-linphone [<options>]\n"
 			"where options are :\n"
-			"\t--help\t\tPrint this notice.\n"
-			"\t--pipe <pipename>\t\tCreate an unix server socket to receive commands.\n"
-			"\t--config <path>\tSupply a linphonerc style config file to start with.\n"
-			"\t-C\t\tenable video capture.\n"
-			"\t-D\t\tenable video display.\n");
+			"\t--help\t\t\tPrint this notice.\n"
+			"\t--pipe <pipename>\tCreate an unix server socket to receive commands.\n"
+			"\t--log <path>\t\tSupply a file where the log will be saved\n"
+			"\t--factory-config <path>\tSupply a readonly linphonerc style config file to start with.\n"
+			"\t--config <path>\t\tSupply a linphonerc style config file to start with.\n"
+			"\t-C\t\t\tenable video capture.\n"
+			"\t-D\t\t\tenable video display.\n");
 }
 
 int Daemon::run() {
@@ -945,13 +954,20 @@ Daemon::~Daemon() {
 	if (mServerFd != -1) {
 		ortp_server_pipe_close(mServerFd);
 	}
+	if (mLogFile != NULL) {
+		linphone_core_enable_logs(NULL);
+		fclose(mLogFile);
+	}
+
 	stifle_history(30);
 	write_history(mHistfile.c_str());
 }
 
 int main(int argc, char *argv[]) {
 	const char *config_path = NULL;
+	const char *factory_config_path = NULL;
 	const char *pipe_name = NULL;
+	const char *log_file = NULL;
 	bool capture_video = false;
 	bool display_video = false;
 	int i;
@@ -961,20 +977,39 @@ int main(int argc, char *argv[]) {
 			printHelp();
 			return 0;
 		} else if (strcmp(argv[i], "--pipe") == 0) {
-			if(i + 1 >= argc) {
+			if (i + 1 >= argc) {
 				fprintf(stderr, "no pipe name specify after --pipe");
 				return -1;
 			}
 			pipe_name = argv[++i];
+		} else if (strcmp(argv[i], "--factory-config") == 0) {
+			if (i + 1 >= argc) {
+				fprintf(stderr, "no file specify after --factory-config");
+				return -1;
+			}
+			factory_config_path = argv[i + 1];
+			i++;
 		} else if (strcmp(argv[i], "--config") == 0) {
+			if (i + 1 >= argc) {
+				fprintf(stderr, "no file specify after  --config");
+				return -1;
+			}
 			config_path = argv[i + 1];
+			i++;
+		} else if (strcmp(argv[i], "--log") == 0) {
+			if (i + 1 >= argc) {
+				fprintf(stderr, "no file specify after --log");
+				return -1;
+			}
+			log_file = argv[i + 1];
+			i++;
 		} else if (strcmp(argv[i], "-C") == 0) {
 			capture_video = true;
 		} else if (strcmp(argv[i], "-D") == 0) {
 			display_video = true;
 		}
 	}
-	Daemon app(config_path, pipe_name, display_video, capture_video);
+	Daemon app(config_path, factory_config_path, log_file, pipe_name, display_video, capture_video);
 	return app.run();
 }
 ;
