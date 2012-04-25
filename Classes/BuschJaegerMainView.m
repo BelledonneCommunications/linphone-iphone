@@ -80,6 +80,9 @@
         
         [self createGradientForButton:takeCall withTopColor:col1 bottomColor:col2];
     }
+    
+    videoZoomHandler = [[VideoZoomHandler alloc] init];
+    [videoZoomHandler setup:videoView];
 }
 
 - (void)viewDidUnload

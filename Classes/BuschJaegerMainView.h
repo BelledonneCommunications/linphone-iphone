@@ -24,6 +24,7 @@
 #import "CallDelegate.h"
 #import "LinphoneManager.h"
 #import "UILightButton.h"
+#import "VideoZoomHandler.h"
 
 #define BJ_RING_FILE "01"
 
@@ -40,6 +41,7 @@
     UIDigitButton* openDoor;
     
     LinphoneChatRoom * chatRoom;
+    VideoZoomHandler* videoZoomHandler;
 }
 
 @property (nonatomic, retain) IBOutlet UIView* videoView;
