@@ -65,21 +65,7 @@ extern  void libmsbcg729_init();
     return self;
 }
 +(LinphoneManager*) instance {
-	if (theLinphoneManager==nil) {
-		[[LinphoneManager alloc] init];
-	}
 	return theLinphoneManager;
-}
-
--(NSString*) appendCountryCodeIfPossible:(NSString*) number {
-    if (![number hasPrefix:@"+"] && ![number hasPrefix:@"00"]) {
-        NSString* lCountryCode = [[NSUserDefaults standardUserDefaults] stringForKey:@"countrycode_preference"];
-        if (lCountryCode && [lCountryCode length]>0) {
-            //append country code
-            return [lCountryCode stringByAppendingString:number];
-        }
-    }
-    return number;
 }
 
 -(NSString*) getDisplayNameFromAddressBook:(NSString*) number andUpdateCallLog:(LinphoneCallLog*)log {
@@ -152,6 +138,7 @@ extern  void libmsbcg729_init();
     [lE164Number release];
     return;
 }
+
 -(void) onCall:(LinphoneCall*) call StateChanged: (LinphoneCallState) new_state withMessage: (const char *)  message {
     const char* lUserNameChars=linphone_address_get_username(linphone_call_get_remote_address(call));
     NSString* lUserName = lUserNameChars?[[[NSString alloc] initWithUTF8String:lUserNameChars] autorelease]:NSLocalizedString(@"Unknown",nil);
@@ -163,17 +150,13 @@ extern  void libmsbcg729_init();
     
     bool canHideInCallView = (linphone_core_get_calls([LinphoneManager getLc]) == NULL);
 	
-	switch (new_state) {
-			
-		case LinphoneCallStreamsRunning:
-			//check video
-			if (linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
-				[callDelegate	displayVideoCall:call FromUI:mCurrentViewController
-											 forUser:lUserName 
-									 withDisplayName:lDisplayName];
-			}
-			break;
-					
+    if (!linphone_call_get_user_pointer(call)) {
+        LinphoneCallAppData* data = (LinphoneCallAppData*) malloc(sizeof(LinphoneCallAppData));
+        data->batteryWarningShown = FALSE;
+        linphone_call_set_user_pointer(call, data);
+    }
+    
+	switch (new_state) {					
 		case LinphoneCallIncomingReceived: 
 			[callDelegate	displayIncomingCall:call 
                            NotificationFromUI:mCurrentViewController
@@ -187,14 +170,38 @@ extern  void libmsbcg729_init();
 											   forUser:lUserName 
 									   withDisplayName:lDisplayName];
 			break;
-			
+        case LinphoneCallPausedByRemote:
 		case LinphoneCallConnected:
 			[callDelegate	displayInCall: call 
                                  FromUI:mCurrentViewController
 									  forUser:lUserName 
 							  withDisplayName:lDisplayName];
 			break;
-			
+        case LinphoneCallUpdatedByRemote:
+        {
+            const LinphoneCallParams* current = linphone_call_get_current_params(call);
+            const LinphoneCallParams* remote = linphone_call_get_remote_params(call);
+
+            /* remote wants to add video */
+            if (!linphone_call_params_video_enabled(current) && linphone_call_params_video_enabled(remote) && !linphone_core_get_video_policy(theLinphoneCore)->automatically_accept) {
+                linphone_core_defer_call_update(theLinphoneCore, call);
+                [callDelegate displayAskToEnableVideoCall:call forUser:lUserName withDisplayName:lDisplayName];
+            } else if (linphone_call_params_video_enabled(current) && !linphone_call_params_video_enabled(remote)) {
+                [callDelegate displayInCall:call FromUI:mCurrentViewController forUser:lUserName withDisplayName:lDisplayName];
+            }
+            break;
+        }
+        case LinphoneCallUpdated:
+        {
+            const LinphoneCallParams* current = linphone_call_get_current_params(call);
+            if (linphone_call_params_video_enabled(current)) {
+                [callDelegate displayVideoCall:call FromUI:mCurrentViewController forUser:lUserName withDisplayName:lDisplayName];
+            } else {
+                [callDelegate displayInCall:call FromUI:mCurrentViewController forUser:lUserName withDisplayName:lDisplayName];
+            }
+            break;
+            
+        }
 		case LinphoneCallError: { 
 			/*
 			 NSString* lTitle= state->message!=nil?[NSString stringWithCString:state->message length:strlen(state->message)]: @"Error";
@@ -251,10 +258,29 @@ extern  void libmsbcg729_init();
 							withDisplayName:lDisplayName];	
 			}
 			break;
-		default:
+		case LinphoneCallStreamsRunning:
+			//check video
+			if (linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
+				[callDelegate	displayVideoCall:call FromUI:mCurrentViewController
+                                       forUser:lUserName 
+                               withDisplayName:lDisplayName];
+			} else {
+                [callDelegate displayInCall:call FromUI:mCurrentViewController forUser:lUserName withDisplayName:lDisplayName];
+            }
 			break;
+        case LinphoneCallReleased:
+            free (linphone_call_get_user_pointer(call));
+            break;
+        default:
+            break;
 	}
 	
+}
+
+-(void) displayDialer {
+    [callDelegate	displayDialerFromUI:mCurrentViewController
+                              forUser:@"" 
+                      withDisplayName:@""];
 }
 
 +(LinphoneCore*) getLc {
@@ -311,13 +337,18 @@ static void linphone_iphone_call_state(LinphoneCore *lc, LinphoneCall* call, Lin
 	 LinphoneCallPausedByRemote
 	 */
 	[(LinphoneManager*)linphone_core_get_user_data(lc) onCall:call StateChanged: state withMessage:  message];
-	
-	
-	
+}
+
+static void linphone_iphone_transfer_state_changed(LinphoneCore* lc, LinphoneCall* call, LinphoneCallState state) {
+    /*
+     LinhoneCallOutgoingProgress -> SalReferTrying
+     LinphoneCallConnected -> SalReferSuccess
+     LinphoneCallError -> SalReferFailed | *
+     */
 }
 
 -(void) onRegister:(LinphoneCore *)lc cfg:(LinphoneProxyConfig*) cfg state:(LinphoneRegistrationState) state message:(const char*) message {
-    NSLog(@"NEW REGISTRATION STATE: '%s' (message: '%s')", linphone_registration_state_to_string(state), message);
+    ms_warning("NEW REGISTRATION STATE: '%s' (message: '%s')", linphone_registration_state_to_string(state), message);
     
 	LinphoneAddress* lAddress = linphone_address_new(linphone_proxy_config_get_identity(cfg));
 	NSString* lUserName = linphone_address_get_username(lAddress)? [[NSString alloc] initWithUTF8String:linphone_address_get_username(lAddress) ]:@"";
@@ -378,6 +409,7 @@ static void linphone_iphone_call_state(LinphoneCore *lc, LinphoneCall* call, Lin
 static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyConfig* cfg, LinphoneRegistrationState state,const char* message) {
 	[(LinphoneManager*)linphone_core_get_user_data(lc) onRegister:lc cfg:cfg state:state message:message];
 }
+
 static LinphoneCoreVTable linphonec_vtable = {
 	.show =NULL,
 	.call_state_changed =(LinphoneCallStateCb)linphone_iphone_call_state,
@@ -390,7 +422,8 @@ static LinphoneCoreVTable linphonec_vtable = {
 	.display_warning=linphone_iphone_log,
 	.display_url=NULL,
 	.text_received=NULL,
-	.dtmf_received=NULL
+	.dtmf_received=NULL,
+    .transfer_state_changed=linphone_iphone_transfer_state_changed
 };
 
 
@@ -448,7 +481,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 
 -(BOOL) reconfigureLinphoneIfNeeded:(NSDictionary *)settings {
 	if (theLinphoneCore==nil) {
-		ms_warning("cannot configure linphone beacause not initialized yet");
+		ms_warning("cannot configure linphone because not initialized yet");
 		return NO;
 	}
     
@@ -518,7 +551,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 			transportValue.tcp_port=0;
             transportValue.udp_port=0;
 		} else {
-			ms_error("unexpected trasnport [%s]",[transport cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+			ms_error("unexpected transport [%s]",[transport cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 		}
 		if (linphone_core_set_sip_transports(theLinphoneCore, &transportValue)) {
 			ms_error("cannot set transport");	
@@ -668,6 +701,11 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
         linphone_core_set_firewall_policy(theLinphoneCore, LinphonePolicyNoFirewall);
     }
 	
+    LinphoneVideoPolicy policy;
+    policy.automatically_accept = [[NSUserDefaults standardUserDefaults] boolForKey:@"start_video_preference"];;
+    policy.automatically_initiate = [[NSUserDefaults standardUserDefaults] boolForKey:@"start_video_preference"];
+    linphone_core_set_video_policy(theLinphoneCore, &policy);
+    
 	UIDevice* device = [UIDevice currentDevice];
 	bool backgroundSupported = false;
 	if ([device respondsToSelector:@selector(isMultitaskingSupported)])

@@ -90,6 +90,16 @@
 		</dict>
 		<dict>
 			<key>DefaultValue</key>
+			<false/>
+			<key>Key</key>
+			<string>disable_autoboot_preference</string>
+			<key>Title</key>
+			<string>Disable application autostart</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
 			<true/>
 			<key>Key</key>
 			<string>backgroundmode_preference</string>

@@ -163,7 +163,6 @@
 									<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 									<int key="IBUIContentHorizontalAlignment">0</int>
 									<int key="IBUIContentVerticalAlignment">0</int>
-									<int key="IBUIButtonType">1</int>
 									<string key="IBUINormalTitle">Back</string>
 									<reference key="IBUIHighlightedTitleColor" ref="839360217"/>
 									<object class="NSColor" key="IBUINormalTitleColor">

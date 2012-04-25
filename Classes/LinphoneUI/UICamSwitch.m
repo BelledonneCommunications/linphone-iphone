@@ -25,7 +25,7 @@
 @synthesize preview;
 -(void) touchUp:(id) sender {
 	if (nextCamId!=currentCamId) {
-		ms_message("Swithcing from [%s] to [%s]",currentCamId,nextCamId);
+		ms_message("Switching from [%s] to [%s]",currentCamId,nextCamId);
 		linphone_core_set_video_device([LinphoneManager getLc], nextCamId);
 		nextCamId=currentCamId;
 		currentCamId = linphone_core_get_video_device([LinphoneManager getLc]);

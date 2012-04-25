@@ -58,6 +58,7 @@ NSMutableString* MoreViewController_logs;
 */
 
 -(void) viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
 	[logs setText:MoreViewController_logs];
 }
 

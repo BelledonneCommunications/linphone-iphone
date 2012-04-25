@@ -94,6 +94,15 @@ int __aeabi_idiv(int a, int b) {
     }
 }
 - (void)applicationDidBecomeActive:(UIApplication *)application {
+    if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)] 
+		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground 
+        && [[NSUserDefaults standardUserDefaults] boolForKey:@"disable_autoboot_preference"]) {
+		// autoboot disabled, doing nothing
+        return;
+    } else if ([LinphoneManager instance] == nil) {
+        [self startApplication];
+    }
+    
 	[[LinphoneManager instance] becomeActive];
     
     if (callCenter == nil) {
@@ -151,7 +160,6 @@ int __aeabi_idiv(int a, int b) {
             [defaultsToRegister setObject:[prefSpecification objectForKey:@"DefaultValue"] forKey:key];
         }
     }
-
     [defaultsToRegister addEntriesFromDictionary:appDefaults];
     [[NSUserDefaults standardUserDefaults] registerDefaults:defaultsToRegister];
     [defaultsToRegister release];
@@ -201,6 +209,8 @@ int __aeabi_idiv(int a, int b) {
 	[window makeKeyAndVisible];
 	
 	[[LinphoneManager instance] setCallDelegate:myPhoneViewController];
+    
+    [UIDevice currentDevice].batteryMonitoringEnabled = YES;
 }
 
 -(void) setupGSMInteraction {
@@ -223,23 +233,33 @@ int __aeabi_idiv(int a, int b) {
                                  @"YES",@"g729_preference", // enable amr by default if compiled with
 #endif                                 
 								 //@"+33",@"countrycode_preference",
-                                 nil];	
+                                 nil];
+    
+    [self loadDefaultSettings: appDefaults];
+    
+    if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)] 
+		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground 
+        && [[NSUserDefaults standardUserDefaults] boolForKey:@"disable_autoboot_preference"]) {
+		// autoboot disabled, doing nothing
+	} else {
+        [self startApplication];
+    }
 
+    return YES;
+}
+
+-(void) startApplication {
     /* explicitely instanciate LinphoneManager */
     LinphoneManager* lm = [[LinphoneManager alloc] init];
     assert(lm == [LinphoneManager instance]);
     
-	[self loadDefaultSettings: appDefaults];
-    
     [self setupUI];
-	
+
 	[[LinphoneManager instance]	startLibLinphone];
 
 	[[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeSound];
     
     [self setupGSMInteraction];
-
-	return YES;
 }
 
 

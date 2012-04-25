@@ -22,7 +22,11 @@
 
 @interface UICallButton : UIButton {
 @private
-	UITextField* mAddress;
+	UITextField* mAddress;    
 }
 -(void) initWithAddress:(UITextField*) address;
+
++(void) enableTransforMode:(BOOL) enable;
++(BOOL) transforModeEnabled;
+
 @end
