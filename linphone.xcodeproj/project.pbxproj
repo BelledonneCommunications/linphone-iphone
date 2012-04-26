@@ -251,6 +251,8 @@
 		344ABDE81484E723007420B6 /* libzrtpcpp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDE71484E723007420B6 /* libzrtpcpp.a */; };
 		344ABDF114850AE9007420B6 /* libc++.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDEF14850AE9007420B6 /* libc++.1.dylib */; settings = {ATTRIBUTES = (Weak, ); }; };
 		344ABDF214850AE9007420B6 /* libstdc++.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDF014850AE9007420B6 /* libstdc++.6.dylib */; settings = {ATTRIBUTES = (Weak, ); }; };
+		3485649F152C423F003FE041 /* in_call_video.png in Resources */ = {isa = PBXBuildFile; fileRef = 3485649D152C423F003FE041 /* in_call_video.png */; };
+		348564A0152C423F003FE041 /* out_call_video.png in Resources */ = {isa = PBXBuildFile; fileRef = 3485649E152C423F003FE041 /* out_call_video.png */; };
 		348848E014D98859005B0B54 /* bj_decline.png in Resources */ = {isa = PBXBuildFile; fileRef = 348848D714D98859005B0B54 /* bj_decline.png */; };
 		348848E114D98859005B0B54 /* bj_door_hl.png in Resources */ = {isa = PBXBuildFile; fileRef = 348848D814D98859005B0B54 /* bj_door_hl.png */; };
 		348848E214D98859005B0B54 /* bj_door.png in Resources */ = {isa = PBXBuildFile; fileRef = 348848D914D98859005B0B54 /* bj_door.png */; };
@@ -260,8 +262,6 @@
 		348848E614D98859005B0B54 /* bj_mute_off.png in Resources */ = {isa = PBXBuildFile; fileRef = 348848DD14D98859005B0B54 /* bj_mute_off.png */; };
 		348848E714D98859005B0B54 /* bj_mute_on.png in Resources */ = {isa = PBXBuildFile; fileRef = 348848DE14D98859005B0B54 /* bj_mute_on.png */; };
 		348848E814D98859005B0B54 /* bj_start_call.png in Resources */ = {isa = PBXBuildFile; fileRef = 348848DF14D98859005B0B54 /* bj_start_call.png */; };
-		3485649F152C423F003FE041 /* in_call_video.png in Resources */ = {isa = PBXBuildFile; fileRef = 3485649D152C423F003FE041 /* in_call_video.png */; };
-		348564A0152C423F003FE041 /* out_call_video.png in Resources */ = {isa = PBXBuildFile; fileRef = 3485649E152C423F003FE041 /* out_call_video.png */; };
 		34957F3F147D3FBF00DD7A09 /* secured.png in Resources */ = {isa = PBXBuildFile; fileRef = 34957F3E147D3FBF00DD7A09 /* secured.png */; };
 		34A6ECEB14CF13CB00460C04 /* icone-linphone-72.png in Resources */ = {isa = PBXBuildFile; fileRef = 34A6ECEA14CF13CB00460C04 /* icone-linphone-72.png */; };
 		34A6ECF714D0179C00460C04 /* BuschJaegerMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A6ECF514D0179C00460C04 /* BuschJaegerMainView.m */; };
@@ -284,6 +284,7 @@
 		7066FC0C13E830E400EFC6DC /* libvpx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7066FC0B13E830E400EFC6DC /* libvpx.a */; };
 		70E542F313E147E3002BA2C0 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F213E147E3002BA2C0 /* OpenGLES.framework */; };
 		70E542F513E147EB002BA2C0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F413E147EB002BA2C0 /* QuartzCore.framework */; };
+		D2E1B2E21549A88D007B0B0D /* App_Apple_Icon_DES_114.png in Resources */ = {isa = PBXBuildFile; fileRef = D2E1B2E11549A88D007B0B0D /* App_Apple_Icon_DES_114.png */; };
 		F476004B147AAF2800FFF19B /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DB911475562600DEE054 /* liblinphone.a */; };
 		F476004C147AAF4600FFF19B /* libmediastreamer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DB8F147555C800DEE054 /* libmediastreamer.a */; };
 /* End PBXBuildFile section */
@@ -652,6 +653,8 @@
 		344ABDE71484E723007420B6 /* libzrtpcpp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libzrtpcpp.a; path = "liblinphone-sdk/apple-darwin/lib/libzrtpcpp.a"; sourceTree = "<group>"; };
 		344ABDEF14850AE9007420B6 /* libc++.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.1.dylib"; path = "usr/lib/libc++.1.dylib"; sourceTree = SDKROOT; };
 		344ABDF014850AE9007420B6 /* libstdc++.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.6.dylib"; path = "usr/lib/libstdc++.6.dylib"; sourceTree = SDKROOT; };
+		3485649D152C423F003FE041 /* in_call_video.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = in_call_video.png; path = Resources/in_call_video.png; sourceTree = "<group>"; };
+		3485649E152C423F003FE041 /* out_call_video.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = out_call_video.png; path = Resources/out_call_video.png; sourceTree = "<group>"; };
 		348848D714D98859005B0B54 /* bj_decline.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_decline.png; path = Resources/160/bj_decline.png; sourceTree = "<group>"; };
 		348848D814D98859005B0B54 /* bj_door_hl.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_door_hl.png; path = Resources/160/bj_door_hl.png; sourceTree = "<group>"; };
 		348848D914D98859005B0B54 /* bj_door.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_door.png; path = Resources/160/bj_door.png; sourceTree = "<group>"; };
@@ -661,8 +664,6 @@
 		348848DD14D98859005B0B54 /* bj_mute_off.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_mute_off.png; path = Resources/160/bj_mute_off.png; sourceTree = "<group>"; };
 		348848DE14D98859005B0B54 /* bj_mute_on.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_mute_on.png; path = Resources/160/bj_mute_on.png; sourceTree = "<group>"; };
 		348848DF14D98859005B0B54 /* bj_start_call.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_start_call.png; path = Resources/160/bj_start_call.png; sourceTree = "<group>"; };
-		3485649D152C423F003FE041 /* in_call_video.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = in_call_video.png; path = Resources/in_call_video.png; sourceTree = "<group>"; };
-		3485649E152C423F003FE041 /* out_call_video.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = out_call_video.png; path = Resources/out_call_video.png; sourceTree = "<group>"; };
 		34957F3E147D3FBF00DD7A09 /* secured.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = secured.png; path = Resources/secured.png; sourceTree = "<group>"; };
 		34A6ECEA14CF13CB00460C04 /* icone-linphone-72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icone-linphone-72.png"; path = "Resources/icone-linphone-72.png"; sourceTree = "<group>"; };
 		34A6ECF414D0179C00460C04 /* BuschJaegerMainView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuschJaegerMainView.h; sourceTree = "<group>"; };
@@ -686,6 +687,7 @@
 		70E542F213E147E3002BA2C0 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		70E542F413E147EB002BA2C0 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		8D1107310486CEB800E47090 /* linphone-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "linphone-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+		D2E1B2E11549A88D007B0B0D /* App_Apple_Icon_DES_114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = App_Apple_Icon_DES_114.png; path = Resources/App_Apple_Icon_DES_114.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1236,6 +1238,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				D2E1B2E11549A88D007B0B0D /* App_Apple_Icon_DES_114.png */,
 				5749FCB11518D6C100F0712D /* App_Apple_Icon_DES_57.png */,
 				34E28E7914D98F6D00D84BDD /* 01.wav */,
 				34ACD07414D2DBB300EE0B0A /* BuschJaeger */,
@@ -1481,6 +1484,7 @@
 				5749FCB21518D6C100F0712D /* App_Apple_Icon_DES_57.png in Resources */,
 				3485649F152C423F003FE041 /* in_call_video.png in Resources */,
 				348564A0152C423F003FE041 /* out_call_video.png in Resources */,
+				D2E1B2E21549A88D007B0B0D /* App_Apple_Icon_DES_114.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
