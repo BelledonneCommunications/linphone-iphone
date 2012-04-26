@@ -38,13 +38,18 @@
 }
 
 -(void) actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex {
+	
+		
     if (timeout) {
         [timeout invalidate];
         timeout = nil;
     }
+	if (buttonIndex != actionSheet.cancelButtonIndex) return;
+	
     if (eventType == CD_UNDEFINED) {
         ms_error("Incorrect usage of CallDelegate/ActionSheet: eventType must be set");
     }
+	
     [delegate actionSheet:actionSheet ofType:eventType clickedButtonAtIndex:buttonIndex withUserDatas:call];    
 }
 

@@ -988,13 +988,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 
 -(void) endInterruption {
     ms_message("Sound interruption ended!");
-    const MSList* c = linphone_core_get_calls(theLinphoneCore);
-    
-    if (c) {
-        ms_message("Auto resuming call");
-        linphone_core_resume_call(theLinphoneCore, (LinphoneCall*) c->data);
-    }
-    
+    //let the user resume the call manually.
 }
 +(BOOL) runningOnIpad {
 #ifdef UI_USER_INTERFACE_IDIOM
