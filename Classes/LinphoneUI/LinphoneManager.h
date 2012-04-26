@@ -23,6 +23,7 @@
 #include "linphonecore.h"
 #import "LogView.h"
 #import "LinphoneUIDelegates.h"
+
 typedef enum _Connectivity {
 	wifi,
 	wwan
@@ -43,10 +44,22 @@ typedef struct _CallContext {
     bool_t cameraIsEnabled;
 } CallContext;
 
+struct NetworkReachabilityContext {
+    bool_t testWifi, testWWan;
+    void (*networkStateChanged) (Connectivity newConnectivity);
+};
+
+typedef struct _LinphoneCallAppData {
+    bool_t batteryWarningShown;
+    // transfer data
+    int transferButtonIndex;
+} LinphoneCallAppData;
+
+
 @interface LinphoneManager : NSObject <AVAudioSessionDelegate> {
-@private
-	SCNetworkReachabilityContext proxyReachabilityContext;
+@protected
 	SCNetworkReachabilityRef proxyReachability;
+@private
 	NSTimer* mIterateTimer;
 	id<LogView> mLogView;	
 	bool isbackgroundModeEnabled;
@@ -69,6 +82,8 @@ typedef struct _CallContext {
 +(void) set:(UIView*)view hidden: (BOOL) hidden withName:(const char*)name andReason:(const char*) reason;
 +(void) logUIElementPressed:(const char*) name;
 
+-(void) displayDialer;
+
 -(void) registerLogView:(id<LogView>) view;
 
 -(void) startLibLinphone;
@@ -82,6 +97,7 @@ typedef struct _CallContext {
 -(UIImage*) getImageFromAddressBook:(NSString*) number;
 
 -(BOOL) reconfigureLinphoneIfNeeded:(NSDictionary *)oldSettings;
+-(void) setupNetworkReachabilityCallback: (const char*) nodeName withContext:(SCNetworkReachabilityContext*) ctx;
 
 @property (nonatomic, retain) id<LinphoneUICallDelegate> callDelegate;
 @property (nonatomic, retain) id<LinphoneUIRegistrationDelegate> registrationDelegate;
@@ -91,5 +107,4 @@ typedef struct _CallContext {
 @property (readonly) const char*  backCamId;
 
 @end
-
 

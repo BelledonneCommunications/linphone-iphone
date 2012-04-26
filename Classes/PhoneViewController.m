@@ -77,7 +77,7 @@
     
     if (config == NULL) {
         s = LinphoneRegistrationNone;
-        m = @"No SIP account configured";
+        m = linphone_core_is_network_reachabled([LinphoneManager getLc]) ? NSLocalizedString(@"No SIP account configured", nil) : NSLocalizedString(@"Network down", nil);
     } else {
         s = linphone_proxy_config_get_state(config);
     
@@ -103,8 +103,11 @@
         bool zeroCall = (linphone_core_get_calls_nb([LinphoneManager getLc]) == 0);
         
         [LinphoneManager set:callLarge hidden:!zeroCall withName:"CALL_LARGE button" andReason:__FUNCTION__];
+        [LinphoneManager set:switchCamera hidden:!zeroCall withName:"SWITCH_CAM button" andReason:__FUNCTION__];
         [LinphoneManager set:callShort hidden:zeroCall withName:"CALL_SHORT button" andReason:__FUNCTION__];
         [LinphoneManager set:backToCallView hidden:zeroCall withName:"BACK button" andReason:__FUNCTION__];
+        
+        [callShort setTitle:[UICallButton transforModeEnabled] ? @"transfer":@"call" forState:UIControlStateNormal];
         
         if (!callShort.hidden)
             [callShort setEnabled:!linphone_core_sound_resources_locked([LinphoneManager getLc])];
@@ -120,6 +123,7 @@
 
 
 - (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
 	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"enable_first_login_view_preference"] == true) {
 		myFirstLoginViewController = [[FirstLoginViewController alloc]  initWithNibName:@"FirstLoginViewController" 
 																				 bundle:[NSBundle mainBundle]];
@@ -131,8 +135,8 @@
     [self updateCallAndBackButtons];
 }
 
--(void) viewWillDisappear:(BOOL)animated {
-    [mMainScreenWithVideoPreview showPreview:NO];    
+-(void) viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
 }
 
 
@@ -195,6 +199,7 @@
 
 -(void)viewWillAppear:(BOOL)animated {
     [self updateCallAndBackButtons];
+    [super viewWillAppear:animated];
 }
 
 -(void) displayDialerFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
@@ -230,7 +235,6 @@
 	[myTabBarController setSelectedIndex:DIALER_TAB_INDEX];
     
     [mMainScreenWithVideoPreview showPreview:YES];
-	
 }
 
 //status reporting
@@ -240,7 +244,7 @@
 
 
 -(void) displayIncomingCall:(LinphoneCall*) call NotificationFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
-	
+	[mMainScreenWithVideoPreview showPreview:NO]; 
 	if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)] 
 		&& [UIApplication sharedApplication].applicationState !=  UIApplicationStateActive) {
 		// Create a new notification
@@ -258,6 +262,7 @@
 		}
 	} else 	{
         CallDelegate* cd = [[CallDelegate alloc] init];
+        cd.eventType = CD_NEW_CALL;
         cd.delegate = self;
         cd.call = call;
         
@@ -283,13 +288,23 @@
 }
 
 -(void) backToCallViewPressed {
-    [self	displayInCall: nil
+    [UICallButton enableTransforMode:NO];
+    [self presentModalViewController:(UIViewController*)mIncallViewController animated:true];
+
+    LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
+    
+    if (!call || !linphone_call_params_video_enabled(linphone_call_get_current_params(call)) || linphone_call_get_state(call) != LinphoneCallStreamsRunning) {
+        [self	displayInCall: call
 				 FromUI:nil
 				forUser:nil 
 		withDisplayName:nil];
+    } else {
+        [self displayVideoCall:call FromUI:nil forUser:nil withDisplayName:nil];
+    }
 }
 
 -(void) displayCall: (LinphoneCall*) call InProgressFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
+    [mMainScreenWithVideoPreview showPreview:NO]; 
 	if (self.presentedViewController != (UIViewController*)mIncallViewController) {
 		[self presentModalViewController:(UIViewController*)mIncallViewController animated:true];
 	}
@@ -302,6 +317,7 @@
 }
 
 -(void) displayInCall: (LinphoneCall*) call FromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
+    [mMainScreenWithVideoPreview showPreview:NO]; 
     if (self.presentedViewController != (UIViewController*)mIncallViewController && (call == 0x0 ||
 																  linphone_call_get_dir(call)==LinphoneCallIncoming)){
 		[self presentModalViewController:(UIViewController*)mIncallViewController animated:true];
@@ -313,22 +329,34 @@
 						 withDisplayName:displayName];
     
     [LinphoneManager set:callLarge hidden:YES withName:"CALL_LARGE button" andReason:__FUNCTION__];
+    [LinphoneManager set:switchCamera hidden:YES withName:"SWITCH_CAMERA button" andReason:__FUNCTION__];
     [LinphoneManager set:callShort hidden:NO withName:"CALL_SHORT button" andReason:__FUNCTION__];
     [LinphoneManager set:backToCallView hidden:NO withName:"CALL_BACK button" andReason:__FUNCTION__];
+    
+    [self updateCallAndBackButtons];
 } 
 
 
 -(void) displayVideoCall:(LinphoneCall*) call FromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName { 
+    [mMainScreenWithVideoPreview showPreview:NO]; 
 	[mIncallViewController  displayVideoCall:call FromUI:viewCtrl 
 									 forUser:username 
 							 withDisplayName:displayName];
     
     [mMainScreenWithVideoPreview showPreview:NO];
+    [self updateCallAndBackButtons];
+}
+
+-(void) displayAskToEnableVideoCall:(LinphoneCall*) call forUser:(NSString*) username withDisplayName:(NSString*) displayName {
+	[mIncallViewController  displayAskToEnableVideoCall:call forUser:username withDisplayName:displayName];
 }
 
 
 
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex withUserDatas:(void *)datas{
+- (void)actionSheet:(UIActionSheet *)actionSheet ofType:(enum CallDelegateType)type clickedButtonAtIndex:(NSInteger)buttonIndex withUserDatas:(void *)datas {
+    if (type != CD_NEW_CALL)
+        return;
+    
     LinphoneCall* call = (LinphoneCall*)datas;
 	if (buttonIndex == actionSheet.destructiveButtonIndex ) {
 		linphone_core_accept_call([LinphoneManager getLc],call);	
@@ -386,6 +414,10 @@
         [myFirstLoginViewController displayNotRegisteredFromUI:viewCtrl];
     }
     [self updateStatusSubView];
+}
+
+-(void) firstVideoFrameDecoded: (LinphoneCall*) call {
+    [mIncallViewController firstVideoFrameDecoded:call];
 }
 
 

@@ -94,6 +94,15 @@ int __aeabi_idiv(int a, int b) {
     }
 }
 - (void)applicationDidBecomeActive:(UIApplication *)application {
+    if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)] 
+		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground 
+        && [[NSUserDefaults standardUserDefaults] boolForKey:@"disable_autoboot_preference"]) {
+		// autoboot disabled, doing nothing
+        return;
+    } else if ([LinphoneManager instance] == nil) {
+        [self startApplication];
+    }
+    
 	[[LinphoneManager instance] becomeActive];
     
     if (callCenter == nil) {
@@ -125,7 +134,7 @@ int __aeabi_idiv(int a, int b) {
     }
 }
 
-- (void) loadDefaultSettings {
+- (void) loadDefaultSettings:(NSDictionary *) appDefaults {
     
     NSString *settingsBundle = [[NSBundle mainBundle] pathForResource:@"Settings" ofType:@"bundle"];
     if(!settingsBundle) {
@@ -136,10 +145,12 @@ int __aeabi_idiv(int a, int b) {
     NSMutableDictionary *rootSettings = [NSDictionary dictionaryWithContentsOfFile:[settingsBundle stringByAppendingPathComponent:@"Root.plist"]];
 	NSMutableDictionary *audioSettings = [NSDictionary dictionaryWithContentsOfFile:[settingsBundle stringByAppendingPathComponent:@"audio.plist"]];
 	NSMutableDictionary *videoSettings = [NSDictionary dictionaryWithContentsOfFile:[settingsBundle stringByAppendingPathComponent:@"video.plist"]];
+    NSMutableDictionary *advancedSettings = [NSDictionary dictionaryWithContentsOfFile:[settingsBundle stringByAppendingPathComponent:@"Advanced.plist"]];
 
     NSMutableArray *preferences = [rootSettings objectForKey:@"PreferenceSpecifiers"];
     [preferences addObjectsFromArray:[audioSettings objectForKey:@"PreferenceSpecifiers"]];
     [preferences addObjectsFromArray:[videoSettings objectForKey:@"PreferenceSpecifiers"]];
+    [preferences addObjectsFromArray:[advancedSettings objectForKey:@"PreferenceSpecifiers"]];
 	
     NSMutableDictionary *defaultsToRegister = [[NSMutableDictionary alloc] initWithCapacity:[preferences count]];
 
@@ -149,33 +160,14 @@ int __aeabi_idiv(int a, int b) {
             [defaultsToRegister setObject:[prefSpecification objectForKey:@"DefaultValue"] forKey:key];
         }
     }
-    
-    NSDictionary *appDefaults = [NSDictionary dictionaryWithObjectsAndKeys:
-                                 @"NO", @"enable_first_login_view_preference", //
-#ifdef HAVE_AMR                                 
-                                 @"YES",@"amr_8k_preference", // enable amr by default if compiled with
-#endif
-#ifdef HAVE_G729                                 
-                                 @"YES",@"g729_preference", // enable amr by default if compiled with
-#endif                                 
-                                 @"NO",@"debugenable_preference",
-								 //@"+33",@"countrycode_preference",
-                                 nil];
-    
     [defaultsToRegister addEntriesFromDictionary:appDefaults];
     [[NSUserDefaults standardUserDefaults] registerDefaults:defaultsToRegister];
     [defaultsToRegister release];
     [[NSUserDefaults standardUserDefaults] synchronize];
-	
 }
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions{    
-	
-	/*
-	 *Custumization
-	 */
-	[self loadDefaultSettings];
-	//as defined in PhoneMainView.xib		
+-(void) setupUI {
+    //as defined in PhoneMainView.xib		
 	//dialer
 	myPhoneViewController = (PhoneViewController*) [myTabBarController.viewControllers objectAtIndex: DIALER_TAB_INDEX];
 	myPhoneViewController.myTabBarController =  myTabBarController;
@@ -217,18 +209,57 @@ int __aeabi_idiv(int a, int b) {
 	[window makeKeyAndVisible];
 	
 	[[LinphoneManager instance] setCallDelegate:myPhoneViewController];
-	[[LinphoneManager instance]	startLibLinphone];
+    
+    [UIDevice currentDevice].batteryMonitoringEnabled = YES;
+}
 
-	[[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeSound];
-
+-(void) setupGSMInteraction {
 	callCenter = [[CTCallCenter alloc] init];
     callCenter.callEventHandler = ^(CTCall* call) {
         // post on main thread
         [self performSelectorOnMainThread:@selector(handleGSMCallInteration:)
                                withObject:callCenter
                             waitUntilDone:YES];
-    };
-	return YES;
+    };    
+}
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions{    
+    NSDictionary *appDefaults = [NSDictionary dictionaryWithObjectsAndKeys:
+                                 @"NO", @"enable_first_login_view_preference", //
+#ifdef HAVE_AMR                                 
+                                 @"YES",@"amr_8k_preference", // enable amr by default if compiled with
+#endif
+#ifdef HAVE_G729                                 
+                                 @"YES",@"g729_preference", // enable amr by default if compiled with
+#endif                                 
+								 //@"+33",@"countrycode_preference",
+                                 nil];
+    
+    [self loadDefaultSettings: appDefaults];
+    
+    if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)] 
+		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground 
+        && [[NSUserDefaults standardUserDefaults] boolForKey:@"disable_autoboot_preference"]) {
+		// autoboot disabled, doing nothing
+	} else {
+        [self startApplication];
+    }
+
+    return YES;
+}
+
+-(void) startApplication {
+    /* explicitely instanciate LinphoneManager */
+    LinphoneManager* lm = [[LinphoneManager alloc] init];
+    assert(lm == [LinphoneManager instance]);
+    
+    [self setupUI];
+
+	[[LinphoneManager instance]	startLibLinphone];
+
+	[[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeSound];
+    
+    [self setupGSMInteraction];
 }
 
 

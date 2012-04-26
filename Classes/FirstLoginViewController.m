@@ -89,8 +89,8 @@
 }
 -(void) displayRegisteredFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName onDomain:(NSString*)domain {
 	[[NSUserDefaults standardUserDefaults] setBool:false forKey:@"enable_first_login_view_preference"]; 
-	[self.parentViewController dismissModalViewControllerAnimated:true];
 	[self.activityIndicator setHidden:true];
+	[self dismissModalViewControllerAnimated:YES];
 }
 -(void) displayRegisteringFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName onDomain:(NSString*)domain {
 	[self.activityIndicator setHidden:false];
@@ -99,13 +99,13 @@
 	[self.activityIndicator setHidden:true];
 	//default behavior if no registration delegates
 	
-	UIAlertView* error = [[UIAlertView alloc]	initWithTitle:[NSString stringWithFormat:@"Registration failure for user %@",user]
-													message:reason
-												   delegate:nil 
-										  cancelButtonTitle:@"Continue" 
-										  otherButtonTitles:nil ,nil];
-	[error show];
-    [error release];
+	//UIAlertView* error = [[UIAlertView alloc]	initWithTitle:[NSString stringWithFormat:@"Registration failure for user %@",user]
+	//												message:reason
+	//											   delegate:nil 
+	//									  cancelButtonTitle:@"Continue" 
+	//									  otherButtonTitles:nil ,nil];
+	//[error show];
+    //[error release];
 	//erase uername passwd
 	[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"username_preference"];
 	[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"password_preference"];

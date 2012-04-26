@@ -21,8 +21,19 @@
 ############################################################################
 
 enable_gpl_third_parties=no
+enable_zrtp=no
 
-.NOTPARALLEL all: build warning
+.NOTPARALLEL all: check_options build warning
+ifeq ($(enable_gpl_third_parties)$(enable_zrtp),noyes)
+check_options:
+	@echo "ZRTP is not available in non-gpl build."
+	@exit -1
+else
+check_options:
+
+endif
+
+
 ifeq ($(enable_gpl_third_parties),yes)
 warning:
 	@echo 
@@ -42,10 +53,12 @@ warning:
 	@echo "*****************************************************************"
 endif
 
+LINPHONE_OPTIONS=enable_gpl_third_parties=$(enable_gpl_third_parties) enable_zrtp=$(enable_zrtp)
+
 build:
-	make -f  builder-iphone-os.mk  all enable_gpl_third_parties=$(enable_gpl_third_parties) \
-	&& make -f  builder-iphone-simulator.mk all enable_gpl_third_parties=$(enable_gpl_third_parties)\
-	&& make -f  builder-iphone-os.mk   host=armv7-apple-darwin all enable_gpl_third_parties=$(enable_gpl_third_parties)\
+	make -f  builder-iphone-os.mk  $(LINPHONE_OPTIONS) all  \
+	&& make -f  builder-iphone-simulator.mk $(LINPHONE_OPTIONS) all  \
+	&& make -f  builder-iphone-os.mk   host=armv7-apple-darwin $(LINPHONE_OPTIONS) all \
 	&& make -f builder-iphone-os.mk delivery-sdk 
 
 ipa: build
@@ -68,3 +81,4 @@ veryclean:
 	make -f  builder-iphone-simulator.mk  veryclean\
 	&&  make -f  builder-iphone-os.mk  veryclean\
 	&&  make -f  builder-iphone-os.mk  host=armv7-apple-darwin veryclean 
+

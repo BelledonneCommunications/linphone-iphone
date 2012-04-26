@@ -39,6 +39,12 @@ linphone_configure_controls=  \
                               --enable-tunnel \
                               --with-srtp=$(prefix) 
 
+ifeq ($(enable_zrtp),yes)
+	linphone_configure_controls+= --enable-zrtp
+else
+	linphone_configure_controls+= --disable-zrtp
+endif
+                              
 #path
 BUILDER_SRC_DIR?=$(shell pwd)/../
 BUILDER_BUILD_DIR?=$(shell pwd)/../build-$(host)
@@ -61,11 +67,11 @@ $(LINPHONE_BUILD_DIR)/disable_gpl_third_parties:
 	cd $(LINPHONE_BUILD_DIR) && rm -f Makefile && rm -f oRTP/Makefile && rm -f mediastreamer2/Makefile 
 
 ifeq ($(enable_gpl_third_parties),yes) 
-linphone_configure_controls+= --enable-ffmpeg --enable-zrtp
+linphone_configure_controls+= --enable-ffmpeg 
 detect_gpl_mode_switch: $(LINPHONE_BUILD_DIR)/enable_gpl_third_parties
 	
 else
-linphone_configure_controls+= --disable-ffmpeg --disable-zrtp
+linphone_configure_controls+= --disable-ffmpeg 
 detect_gpl_mode_switch: $(LINPHONE_BUILD_DIR)/disable_gpl_third_parties
 	
 endif

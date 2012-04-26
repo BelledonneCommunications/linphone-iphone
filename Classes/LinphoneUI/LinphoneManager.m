@@ -62,28 +62,16 @@ extern  void libmsbcg729_init();
 @synthesize backCamId;
 
 -(id) init {
+    assert (!theLinphoneManager);
     if ((self= [super init])) {
         mFastAddressBook = [[FastAddressBook alloc] init];
 		tunnelMode = off;
+        theLinphoneManager = self;
     }
     return self;
 }
 +(LinphoneManager*) instance {
-	if (theLinphoneManager==nil) {
-		theLinphoneManager = [[LinphoneManager alloc] init];
-	}
 	return theLinphoneManager;
-}
-
--(NSString*) appendCountryCodeIfPossible:(NSString*) number {
-    if (![number hasPrefix:@"+"] && ![number hasPrefix:@"00"]) {
-        NSString* lCountryCode = [[NSUserDefaults standardUserDefaults] stringForKey:@"countrycode_preference"];
-        if (lCountryCode && [lCountryCode length]>0) {
-            //append country code
-            return [lCountryCode stringByAppendingString:number];
-        }
-    }
-    return number;
 }
 
 -(NSString*) getDisplayNameFromAddressBook:(NSString*) number andUpdateCallLog:(LinphoneCallLog*)log {
@@ -156,6 +144,7 @@ extern  void libmsbcg729_init();
     [lE164Number release];
     return;
 }
+
 -(void) onCall:(LinphoneCall*) call StateChanged: (LinphoneCallState) new_state withMessage: (const char *)  message {
     const char* lUserNameChars=linphone_address_get_username(linphone_call_get_remote_address(call));
     NSString* lUserName = lUserNameChars?[[[NSString alloc] initWithUTF8String:lUserNameChars] autorelease]:NSLocalizedString(@"Unknown",nil);
@@ -167,17 +156,13 @@ extern  void libmsbcg729_init();
     
     bool canHideInCallView = (linphone_core_get_calls([LinphoneManager getLc]) == NULL);
 	
-	switch (new_state) {
-			
-		case LinphoneCallStreamsRunning:
-			//check video
-			if (linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
-				[callDelegate	displayVideoCall:call FromUI:mCurrentViewController
-											 forUser:lUserName 
-									 withDisplayName:lDisplayName];
-			}
-			break;
-					
+    if (!linphone_call_get_user_pointer(call)) {
+        LinphoneCallAppData* data = (LinphoneCallAppData*) malloc(sizeof(LinphoneCallAppData));
+        data->batteryWarningShown = FALSE;
+        linphone_call_set_user_pointer(call, data);
+    }
+    
+	switch (new_state) {					
 		case LinphoneCallIncomingReceived: 
 			[callDelegate	displayIncomingCall:call 
                            NotificationFromUI:mCurrentViewController
@@ -191,14 +176,38 @@ extern  void libmsbcg729_init();
 											   forUser:lUserName 
 									   withDisplayName:lDisplayName];
 			break;
-			
+        case LinphoneCallPausedByRemote:
 		case LinphoneCallConnected:
 			[callDelegate	displayInCall: call 
                                  FromUI:mCurrentViewController
 									  forUser:lUserName 
 							  withDisplayName:lDisplayName];
 			break;
-			
+        case LinphoneCallUpdatedByRemote:
+        {
+            const LinphoneCallParams* current = linphone_call_get_current_params(call);
+            const LinphoneCallParams* remote = linphone_call_get_remote_params(call);
+
+            /* remote wants to add video */
+            if (!linphone_call_params_video_enabled(current) && linphone_call_params_video_enabled(remote) && !linphone_core_get_video_policy(theLinphoneCore)->automatically_accept) {
+                linphone_core_defer_call_update(theLinphoneCore, call);
+                [callDelegate displayAskToEnableVideoCall:call forUser:lUserName withDisplayName:lDisplayName];
+            } else if (linphone_call_params_video_enabled(current) && !linphone_call_params_video_enabled(remote)) {
+                [callDelegate displayInCall:call FromUI:mCurrentViewController forUser:lUserName withDisplayName:lDisplayName];
+            }
+            break;
+        }
+        case LinphoneCallUpdated:
+        {
+            const LinphoneCallParams* current = linphone_call_get_current_params(call);
+            if (linphone_call_params_video_enabled(current)) {
+                [callDelegate displayVideoCall:call FromUI:mCurrentViewController forUser:lUserName withDisplayName:lDisplayName];
+            } else {
+                [callDelegate displayInCall:call FromUI:mCurrentViewController forUser:lUserName withDisplayName:lDisplayName];
+            }
+            break;
+            
+        }
 		case LinphoneCallError: { 
 			/*
 			 NSString* lTitle= state->message!=nil?[NSString stringWithCString:state->message length:strlen(state->message)]: @"Error";
@@ -255,10 +264,29 @@ extern  void libmsbcg729_init();
 							withDisplayName:lDisplayName];	
 			}
 			break;
-		default:
+		case LinphoneCallStreamsRunning:
+			//check video
+			if (linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
+				[callDelegate	displayVideoCall:call FromUI:mCurrentViewController
+                                       forUser:lUserName 
+                               withDisplayName:lDisplayName];
+			} else {
+                [callDelegate displayInCall:call FromUI:mCurrentViewController forUser:lUserName withDisplayName:lDisplayName];
+            }
 			break;
+        case LinphoneCallReleased:
+            free (linphone_call_get_user_pointer(call));
+            break;
+        default:
+            break;
 	}
 	
+}
+
+-(void) displayDialer {
+    [callDelegate	displayDialerFromUI:mCurrentViewController
+                              forUser:@"" 
+                      withDisplayName:@""];
 }
 
 +(LinphoneCore*) getLc {
@@ -315,13 +343,18 @@ static void linphone_iphone_call_state(LinphoneCore *lc, LinphoneCall* call, Lin
 	 LinphoneCallPausedByRemote
 	 */
 	[(LinphoneManager*)linphone_core_get_user_data(lc) onCall:call StateChanged: state withMessage:  message];
-	
-	
-	
+}
+
+static void linphone_iphone_transfer_state_changed(LinphoneCore* lc, LinphoneCall* call, LinphoneCallState state) {
+    /*
+     LinhoneCallOutgoingProgress -> SalReferTrying
+     LinphoneCallConnected -> SalReferSuccess
+     LinphoneCallError -> SalReferFailed | *
+     */
 }
 
 -(void) onRegister:(LinphoneCore *)lc cfg:(LinphoneProxyConfig*) cfg state:(LinphoneRegistrationState) state message:(const char*) message {
-    NSLog(@"NEW REGISTRATION STATE: '%s' (message: '%s')", linphone_registration_state_to_string(state), message);
+    ms_warning("NEW REGISTRATION STATE: '%s' (message: '%s')", linphone_registration_state_to_string(state), message);
     
 	LinphoneAddress* lAddress = linphone_address_new(linphone_proxy_config_get_identity(cfg));
 	NSString* lUserName = linphone_address_get_username(lAddress)? [[NSString alloc] initWithUTF8String:linphone_address_get_username(lAddress) ]:@"";
@@ -383,6 +416,23 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
 	[(LinphoneManager*)linphone_core_get_user_data(lc) onRegister:lc cfg:cfg state:state message:message];
 }
 
+
+static LinphoneCoreVTable linphonec_vtable = {
+	.show =NULL,
+	.call_state_changed =(LinphoneCallStateCb)linphone_iphone_call_state,
+	.registration_state_changed = linphone_iphone_registration_state,
+	.notify_recv = NULL,
+	.new_subscription_request = NULL,
+	.auth_info_requested = NULL,
+	.display_status = linphone_iphone_display_status,
+	.display_message=linphone_iphone_log,
+	.display_warning=linphone_iphone_log,
+	.display_url=NULL,
+	.text_received=NULL,
+	.dtmf_received=NULL,
+    .transfer_state_changed=linphone_iphone_transfer_state_changed
+};
+
 static LinphoneCoreVTable linphonec_vtable; 
 
 -(void) configurePayloadType:(const char*) type fromPrefKey: (NSString*)key withRate:(int)rate  {
@@ -406,17 +456,23 @@ static LinphoneCoreVTable linphonec_vtable;
 	CFWriteStreamClose (writeStream);
 }	
 
-void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void * info) {
+void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void* nilCtx) {
 	ms_message("Network connection flag [%x]",flags);
-	LinphoneManager* lLinphoneMgr = (LinphoneManager*)info;
+	LinphoneManager* lLinphoneMgr = [LinphoneManager instance];
 	if ([LinphoneManager getLc] != nil) {
+        struct NetworkReachabilityContext* ctx = nilCtx ? ((struct NetworkReachabilityContext*)nilCtx) : 0;
 		if ((flags == 0) | (flags & (kSCNetworkReachabilityFlagsConnectionRequired |kSCNetworkReachabilityFlagsConnectionOnTraffic))) {
 			[[LinphoneManager instance] kickOffNetworkConnection];
 			linphone_core_set_network_reachable([LinphoneManager getLc],false);
-			((LinphoneManager*)info).connectivity = none;
+			lLinphoneMgr.connectivity = none;
 		} else {
             LinphoneTunnel *tunnel=linphone_core_get_tunnel([LinphoneManager getLc]);
-			Connectivity  newConnectivity = flags & kSCNetworkReachabilityFlagsIsWWAN ? wwan:wifi;
+			Connectivity  newConnectivity;
+            if (!ctx || ctx->testWWan)
+                newConnectivity = flags & kSCNetworkReachabilityFlagsIsWWAN ? wwan:wifi;
+            else
+                newConnectivity = wifi;
+
 			if (lLinphoneMgr.connectivity == none) {
 				linphone_core_set_network_reachable([LinphoneManager getLc],true);
 			} else if (lLinphoneMgr.connectivity != newConnectivity) {
@@ -442,13 +498,15 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 
 			ms_message("new network connectivity  of type [%s]",(newConnectivity==wifi?"wifi":"wwan"));
 		}
-		
+		if (ctx && ctx->networkStateChanged) {
+            (*ctx->networkStateChanged)(lLinphoneMgr.connectivity);
+        }
 	}
 }
 
 -(BOOL) reconfigureLinphoneIfNeeded:(NSDictionary *)settings {
 	if (theLinphoneCore==nil) {
-		ms_warning("cannot configure linphone beacause not initialized yet");
+		ms_warning("cannot configure linphone because not initialized yet");
 		return NO;
 	}
     
@@ -518,7 +576,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 			transportValue.tcp_port=0;
             transportValue.udp_port=0;
 		} else {
-			ms_error("unexpected trasnport [%s]",[transport cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+			ms_error("unexpected transport [%s]",[transport cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 		}
 		if (linphone_core_set_sip_transports(theLinphoneCore, &transportValue)) {
 			ms_error("cannot set transport");	
@@ -702,7 +760,21 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	}
 	bool enableSrtp = [[NSUserDefaults standardUserDefaults] boolForKey:@"enable_srtp_preference"];
 	linphone_core_set_media_encryption(theLinphoneCore, enableSrtp?LinphoneMediaEncryptionSRTP:LinphoneMediaEncryptionZRTP);
+
+    NSString* stun_server = [[NSUserDefaults standardUserDefaults] stringForKey:@"stun_preference"];
+    if ([stun_server length]>0){
+        linphone_core_set_stun_server(theLinphoneCore,[stun_server cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+        linphone_core_set_firewall_policy(theLinphoneCore, LinphonePolicyUseStun);
+    }else{
+        linphone_core_set_stun_server(theLinphoneCore, NULL);
+        linphone_core_set_firewall_policy(theLinphoneCore, LinphonePolicyNoFirewall);
+    }
 	
+    LinphoneVideoPolicy policy;
+    policy.automatically_accept = [[NSUserDefaults standardUserDefaults] boolForKey:@"start_video_preference"];;
+    policy.automatically_initiate = [[NSUserDefaults standardUserDefaults] boolForKey:@"start_video_preference"];
+    linphone_core_set_video_policy(theLinphoneCore, &policy);
+    
 	UIDevice* device = [UIDevice currentDevice];
 	bool backgroundSupported = false;
 	if ([device respondsToSelector:@selector(isMultitaskingSupported)])
@@ -750,7 +822,8 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		linphone_core_destroy(theLinphoneCore);
 		theLinphoneCore = nil;
         SCNetworkReachabilityUnscheduleFromRunLoop(proxyReachability, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
-        CFRelease(proxyReachability);
+        if (proxyReachability)
+            CFRelease(proxyReachability);
         proxyReachability=nil;
  	}
 }
@@ -803,7 +876,6 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		[self destroyLibLinphone];
         return NO;
 	}
-	
 }
 
 
@@ -812,6 +884,32 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	linphone_core_iterate(theLinphoneCore);
 }
 
+
+
+-(void) setupNetworkReachabilityCallback: (const char*) nodeName withContext:(SCNetworkReachabilityContext*) ctx {
+    if (proxyReachability) {
+        ms_message("Cancel old network reachability check");
+        SCNetworkReachabilityUnscheduleFromRunLoop(proxyReachability, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+        CFRelease(proxyReachability);
+        proxyReachability = nil;
+    }
+    
+    proxyReachability = SCNetworkReachabilityCreateWithName(nil, nodeName);
+    
+	//initial state is network off should be done as soon as possible
+	SCNetworkReachabilityFlags flags;
+	if (!SCNetworkReachabilityGetFlags(proxyReachability, &flags)) {
+		ms_error("Cannot get reachability flags");
+	};
+	networkReachabilityCallBack(proxyReachability, flags, ctx ? ctx->info : 0);	
+    
+	if (!SCNetworkReachabilitySetCallback(proxyReachability, (SCNetworkReachabilityCallBack)networkReachabilityCallBack, ctx)){
+		ms_error("Cannot register reachability cb");
+	};
+	if(!SCNetworkReachabilityScheduleWithRunLoop(proxyReachability, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode)){
+		ms_error("Cannot register schedule reachability cb");
+	};
+}
 
 /*************
  *lib linphone init method
@@ -878,22 +976,8 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 
 	linphone_core_set_zrtp_secrets_file(theLinphoneCore, [zrtpSecretsFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
     
-    proxyReachability=SCNetworkReachabilityCreateWithName(nil, "linphone.org");		
-    proxyReachabilityContext.info=self;
-	//initial state is network off should be done as soon as possible
-	SCNetworkReachabilityFlags flags;
-	if (!SCNetworkReachabilityGetFlags(proxyReachability, &flags)) {
-		ms_error("Cannot get reachability flags");
-	};
-	networkReachabilityCallBack(proxyReachability,flags,self);	
+    [self setupNetworkReachabilityCallback: "linphone.org" withContext:nil];
 
-	if (!SCNetworkReachabilitySetCallback(proxyReachability, (SCNetworkReachabilityCallBack)networkReachabilityCallBack,&proxyReachabilityContext)){
-		ms_error("Cannot register reachability cb");
-	};
-	if(!SCNetworkReachabilityScheduleWithRunLoop(proxyReachability, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode)){
-		ms_error("Cannot register schedule reachability cb");
-	};
-	
 	[self reconfigureLinphoneIfNeeded:nil];
 	
 	// start scheduler
@@ -986,13 +1070,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 
 -(void) endInterruption {
     ms_message("Sound interruption ended!");
-    const MSList* c = linphone_core_get_calls(theLinphoneCore);
-    
-    if (c) {
-        ms_message("Auto resuming call");
-        linphone_core_resume_call(theLinphoneCore, (LinphoneCall*) c->data);
-    }
-    
+    //let the user resume the call manually.
 }
 +(BOOL) runningOnIpad {
 #ifdef UI_USER_INTERFACE_IDIOM
