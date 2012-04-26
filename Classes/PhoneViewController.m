@@ -135,8 +135,8 @@
     [self updateCallAndBackButtons];
 }
 
--(void) viewWillDisappear:(BOOL)animated {
-    [mMainScreenWithVideoPreview showPreview:NO];    
+-(void) viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
 }
 
 
@@ -244,7 +244,7 @@
 
 
 -(void) displayIncomingCall:(LinphoneCall*) call NotificationFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
-	
+	[mMainScreenWithVideoPreview showPreview:NO]; 
 	if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)] 
 		&& [UIApplication sharedApplication].applicationState !=  UIApplicationStateActive) {
 		// Create a new notification
@@ -304,6 +304,7 @@
 }
 
 -(void) displayCall: (LinphoneCall*) call InProgressFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
+    [mMainScreenWithVideoPreview showPreview:NO]; 
 	if (self.presentedViewController != (UIViewController*)mIncallViewController) {
 		[self presentModalViewController:(UIViewController*)mIncallViewController animated:true];
 	}
@@ -316,6 +317,7 @@
 }
 
 -(void) displayInCall: (LinphoneCall*) call FromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
+    [mMainScreenWithVideoPreview showPreview:NO]; 
     if (self.presentedViewController != (UIViewController*)mIncallViewController && (call == 0x0 ||
 																  linphone_call_get_dir(call)==LinphoneCallIncoming)){
 		[self presentModalViewController:(UIViewController*)mIncallViewController animated:true];
@@ -336,6 +338,7 @@
 
 
 -(void) displayVideoCall:(LinphoneCall*) call FromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName { 
+    [mMainScreenWithVideoPreview showPreview:NO]; 
 	[mIncallViewController  displayVideoCall:call FromUI:viewCtrl 
 									 forUser:username 
 							 withDisplayName:displayName];

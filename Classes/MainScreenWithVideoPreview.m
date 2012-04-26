@@ -72,7 +72,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    [phoneMainView.switchCamera addTarget:self action:@selector(switchCameraPressed) forControlEvents:UIControlEventTouchUpInside];
 }
 
 -(void) switchCameraPressed {
@@ -80,36 +79,51 @@
 }
 
 -(void) useCameraAtIndex:(NSInteger)camIndex startSession:(BOOL)start {
-    [session stopRunning];
+    @synchronized (self) {
+        [session stopRunning];
     
-    if (input != nil)
-        [session removeInput:input];
+        if (input != nil)
+            [session removeInput:input];
     
-    NSError* error;
+        NSError* error;
     
-    NSAutoreleasePool* pool = [[NSAutoreleasePool alloc]init];
-    NSArray* array = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
-    if ( [array count] == 0) {
-        ms_warning("No camera available (running on simulator ?");
-        return;
-    }
-    currentCamera = camIndex % [array count];
-    AVCaptureDevice* device =  (AVCaptureDevice*) [array objectAtIndex:currentCamera];
-    input = [[AVCaptureDeviceInput deviceInputWithDevice:device
+        NSAutoreleasePool* pool = [[NSAutoreleasePool alloc]init];
+        NSArray* array = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
+        if ( [array count] == 0) {
+            ms_warning("No camera available (running on simulator ?");
+            return;
+        }
+        currentCamera = camIndex % [array count];
+        AVCaptureDevice* device =  (AVCaptureDevice*) [array objectAtIndex:currentCamera];
+        input = [[AVCaptureDeviceInput deviceInputWithDevice:device
                                                 error:&error] retain];  
     
-    [session addInput:input];
+        [session addInput:input];
     
-    [pool drain];
+        [pool drain];
     
-    if (start)
-        [session startRunning];
+        if (start)
+            [session startRunning];
+    }
+}
+
+-(void) stopPreview:(id) a {
+    @synchronized (self) {
+        if (!session.running)
+            return;
+        [self.view removeFromSuperview];
+        [session stopRunning];
+    }
 }
 
 -(void) startPreview:(id) a {
-    [window addSubview:self.view];
-    [window sendSubviewToBack:self.view];
-    [session startRunning];
+    @synchronized (self) {
+        if (session.running)
+            return;
+        [window addSubview:self.view];
+        [window sendSubviewToBack:self.view];
+        [session startRunning];
+    }
 }
 
 
@@ -129,18 +143,16 @@
         if (show && !session.running) {
             [self performSelectorInBackground:@selector(startPreview:) withObject:nil];
         } else if (!show && session.running) {
-            [self.view removeFromSuperview];
-            [session stopRunning];
+            [self performSelectorInBackground:@selector(stopPreview:) withObject:nil];
         }
     } else {
-        if (session != nil)
-            [session stopRunning];
-        [self.view removeFromSuperview];
+        [self stopPreview:nil];
     }
 }
 
 -(void) viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+    [phoneMainView.switchCamera addTarget:self action:@selector(switchCameraPressed) forControlEvents:UIControlEventTouchUpInside];
 }
 
 -(void) viewDidDisappear:(BOOL)animated {
