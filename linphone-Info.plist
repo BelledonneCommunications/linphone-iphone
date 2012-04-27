@@ -28,7 +28,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>1.1.1</string>
+	<string>1.1.2</string>
 	<key>NSMainNibFile</key>
 	<string>PhoneMainView</string>
 	<key>NSMainNibFile~ipad</key>
