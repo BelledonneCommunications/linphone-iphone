@@ -49,6 +49,7 @@ static gboolean do_login_noprompt(LinphoneProxyConfig *cfg){
 	tmp=linphone_address_as_string (addr);
 	do_login(ssctx,tmp,NULL);
 	linphone_address_destroy(addr);
+	linphone_gtk_load_identities();
 	return FALSE;
 }
 
