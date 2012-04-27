@@ -268,6 +268,8 @@
 		34CA8536148F669900503C01 /* VideoViewController-ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34CA8534148F669900503C01 /* VideoViewController-ipad.xib */; };
 		34CA8539148F692A00503C01 /* MainScreenWithVideoPreview.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CA8538148F692A00503C01 /* MainScreenWithVideoPreview.m */; };
 		34CA853A148F692A00503C01 /* MainScreenWithVideoPreview.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CA8538148F692A00503C01 /* MainScreenWithVideoPreview.m */; };
+		57282931154AF1460076F540 /* history-orange.png in Resources */ = {isa = PBXBuildFile; fileRef = 34C7646B14CD5585008E9607 /* history-orange.png */; };
+		57282933154AF14D0076F540 /* dialer-orange.png in Resources */ = {isa = PBXBuildFile; fileRef = 34C7646A14CD5585008E9607 /* dialer-orange.png */; };
 		70571E1A13FABCB000CDD3C2 /* rootca.pem in Resources */ = {isa = PBXBuildFile; fileRef = 70571E1913FABCB000CDD3C2 /* rootca.pem */; };
 		7066FC0C13E830E400EFC6DC /* libvpx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7066FC0B13E830E400EFC6DC /* libvpx.a */; };
 		70E542F313E147E3002BA2C0 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F213E147E3002BA2C0 /* OpenGLES.framework */; };
@@ -1479,6 +1481,8 @@
 				3418845814C6F66F00EA48C7 /* status_orange.png in Resources */,
 				3418845A14C6F66F00EA48C7 /* status_red.png in Resources */,
 				3418845D14C7077400EA48C7 /* status_gray.png in Resources */,
+				57282931154AF1460076F540 /* history-orange.png in Resources */,
+				57282933154AF14D0076F540 /* dialer-orange.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
