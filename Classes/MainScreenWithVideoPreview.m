@@ -128,10 +128,18 @@
 
 
 -(void) showPreview:(BOOL) show {
+    LinphoneCore* lc;
+    @try {
+        lc = [LinphoneManager getLc];
+    }
+    @catch (NSException *exception) {
+        return;
+    }
+    
     bool enableVideo = [[NSUserDefaults standardUserDefaults] boolForKey:@"enable_video_preference"];
     
     if (enableVideo) {
-        LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
+        LinphoneCall* call = linphone_core_get_current_call(lc);
         if (show && call && linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
             return;
         }
