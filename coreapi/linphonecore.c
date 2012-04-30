@@ -4393,7 +4393,7 @@ void linphone_core_refresh_registers(LinphoneCore* lc) {
 	elem=linphone_core_get_proxy_config_list(lc);
 	for(;elem!=NULL;elem=elem->next){
 		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
-		if (linphone_proxy_config_register_enabled(cfg) ) {
+		if (linphone_proxy_config_register_enabled(cfg) && linphone_proxy_config_get_expires(cfg)>0) {
 			linphone_proxy_config_refresh_register(cfg);
 		}
 	}
@@ -4403,7 +4403,7 @@ void __linphone_core_invalidate_registers(LinphoneCore* lc){
 	const MSList *elem=linphone_core_get_proxy_config_list(lc);
 	for(;elem!=NULL;elem=elem->next){
 		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
-		if (linphone_proxy_config_register_enabled(cfg) ) {
+		if (linphone_proxy_config_register_enabled(cfg)) {
 			linphone_proxy_config_edit(cfg);
 			linphone_proxy_config_done(cfg);
 		}
