@@ -1134,7 +1134,7 @@ typedef struct LinphoneTunnel LinphoneTunnel;
 */
 LinphoneTunnel *linphone_core_get_tunnel(LinphoneCore *lc);
     
-    void linphone_call_zoom_video(LinphoneCall* call, float zoom_factor, float cx, float cy);
+void linphone_call_zoom_video(LinphoneCall* call, float zoom_factor, float* cx, float* cy);
 
 #ifdef __cplusplus
 }
