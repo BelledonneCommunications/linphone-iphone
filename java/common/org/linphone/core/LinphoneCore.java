@@ -409,7 +409,7 @@ public interface LinphoneCore {
 	/**
 	 * @return a list of LinphoneCallLog 
 	 */
-	public Vector getCallLogs();
+	public LinphoneCallLog[] getCallLogs();
 	
 	/**
 	 * This method is called by the application to notify the Linphone core library when network is reachable.
@@ -690,7 +690,7 @@ public interface LinphoneCore {
 	int getConferenceSize();
 	
 	void terminateAllCalls();
-	Vector getCalls();
+	LinphoneCall[] getCalls();
 	int getCallsNb();
 
 
