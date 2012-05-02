@@ -1,10 +1,9 @@
 srtp_dir?=externals/srtp
 
-$(BUILDER_SRC_DIR)/$(srtp_dir)/configure: 
+$(BUILDER_SRC_DIR)/$(srtp_dir)/configure:  $(BUILDER_SRC_DIR)/$(srtp_dir)/configure.in
 	cd $(BUILDER_SRC_DIR)/$(srtp_dir) \
 	&& autoconf
-
-$(BUILDER_BUILD_DIR)/$(srtp_dir)/Makefile: $(BUILDER_SRC_DIR)/$(srtp_dir)/configure
+$(BUILDER_BUILD_DIR)/$(srtp_dir)/Makefile: $(BUILDER_SRC_DIR)/$(srtp_dir)/configure $(BUILDER_SRC_DIR)/$(srtp_dir)/Makefile.in
 	mkdir -p $(BUILDER_BUILD_DIR)/$(srtp_dir)
 	cd $(BUILDER_BUILD_DIR)/$(srtp_dir)/\
 	&& CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \

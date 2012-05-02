@@ -41,7 +41,7 @@ extern void libmsx264_init();
 #endif
 #define FRONT_CAM_NAME "AV Capture: Front Camera"
 #define BACK_CAM_NAME "AV Capture: Back Camera"
-
+#define DEFAULT_EXPIRES 600
 #if defined (HAVE_SILK)
 extern void libmssilk_init(); 
 #endif
@@ -451,23 +451,42 @@ static LinphoneCoreVTable linphonec_vtable = {
 void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void* nilCtx) {
 	ms_message("Network connection flag [%x]",flags);
 	LinphoneManager* lLinphoneMgr = [LinphoneManager instance];
+	SCNetworkReachabilityFlags networkDownFlags=kSCNetworkReachabilityFlagsConnectionRequired |kSCNetworkReachabilityFlagsConnectionOnTraffic;
+
 	if ([LinphoneManager getLc] != nil) {
+		LinphoneProxyConfig* proxy;
+		linphone_core_get_default_proxy([LinphoneManager getLc], &proxy);
+
         struct NetworkReachabilityContext* ctx = nilCtx ? ((struct NetworkReachabilityContext*)nilCtx) : 0;
-		if ((flags == 0) | (flags & (kSCNetworkReachabilityFlagsConnectionRequired |kSCNetworkReachabilityFlagsConnectionOnTraffic))) {
+		if ((flags == 0) | (flags & networkDownFlags)) {
 			[[LinphoneManager instance] kickOffNetworkConnection];
 			linphone_core_set_network_reachable([LinphoneManager getLc],false);
 			lLinphoneMgr.connectivity = none;
 		} else {
 			Connectivity  newConnectivity;
+			BOOL isWifiOnly = [[NSUserDefaults standardUserDefaults] boolForKey:@"wifi_only_preference"];
             if (!ctx || ctx->testWWan)
                 newConnectivity = flags & kSCNetworkReachabilityFlagsIsWWAN ? wwan:wifi;
             else
                 newConnectivity = wifi;
+
+			if (newConnectivity == wwan 
+				&& proxy 
+				&& isWifiOnly 
+				&& (lLinphoneMgr.connectivity == newConnectivity || lLinphoneMgr.connectivity == none)) {
+				linphone_proxy_config_expires(proxy, 0);
+			} else if (proxy){
+				linphone_proxy_config_expires(proxy, DEFAULT_EXPIRES); //might be better to save the previous value
+			}
+			
 			if (lLinphoneMgr.connectivity == none) {
 				linphone_core_set_network_reachable([LinphoneManager getLc],true);
 			} else if (lLinphoneMgr.connectivity != newConnectivity) {
 				// connectivity has changed
 				linphone_core_set_network_reachable([LinphoneManager getLc],false);
+				if (newConnectivity == wwan && proxy && isWifiOnly) {
+					linphone_proxy_config_expires(proxy, 0);
+				} 
 				linphone_core_set_network_reachable([LinphoneManager getLc],true);
 			}
 			lLinphoneMgr.connectivity=newConnectivity;
@@ -615,7 +634,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		linphone_proxy_config_set_identity(proxyCfg,identity);
 		linphone_proxy_config_set_server_addr(proxyCfg,proxy);
 		linphone_proxy_config_enable_register(proxyCfg,true);
-		linphone_proxy_config_expires(proxyCfg, 600);
+		linphone_proxy_config_expires(proxyCfg, DEFAULT_EXPIRES);
 		
 		if (isOutboundProxy)
 			linphone_proxy_config_set_route(proxyCfg,proxy);

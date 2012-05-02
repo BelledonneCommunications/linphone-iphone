@@ -83,10 +83,12 @@
     
         switch (s) {
             case LinphoneRegistrationOk: m = @"Registered"; break;
-            case LinphoneRegistrationNone: m=@"Not registered"; break;
+            case LinphoneRegistrationNone: 
+			case LinphoneRegistrationCleared:
+				m=@"Not registered"; break;
             case LinphoneRegistrationFailed: m = @"Registration failed"; break;
             case LinphoneRegistrationProgress: m = @"Registration in progress"; break;
-            case LinphoneRegistrationCleared: m= @"No SIP account"; break;
+            //case LinphoneRegistrationCleared: m= @"No SIP account"; break;
             default: break;
         }
     }
