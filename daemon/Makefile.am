@@ -2,7 +2,26 @@
 
 bin_PROGRAMS=linphone-daemon linphone-daemon-pipetest
 
-linphone_daemon_SOURCES=daemon.cc
+linphone_daemon_SOURCES=daemon.cc \
+			commands/answer.cc \
+			commands/audio-codec-disable.cc \
+			commands/audio-codec-enable.cc \
+			commands/audio-codec-get.cc \
+			commands/audio-codec-move.cc \
+			commands/audio-stream-start.cc \
+			commands/audio-stream-stop.cc \
+			commands/call.cc \
+			commands/call-stats.cc \
+			commands/call-status.cc \
+			commands/help.cc \
+			commands/pop-event.cc \
+			commands/ptime.cc \
+			commands/register.cc \
+			commands/register-status.cc \
+			commands/terminate.cc \
+			commands/unregister.cc \
+			commands/quit.cc
+
 
 linphone_daemon_pipetest_SOURCES=daemon-pipetest.c
 
