@@ -5,7 +5,7 @@
 using namespace std;
 
 AudioCodecSetCommand::AudioCodecSetCommand() :
-		DaemonCommand("audio-codec-set", "audio-codec-set <payload type number> <param> <value>", "Set a property of a codec") {
+		DaemonCommand("audio-codec-set", "audio-codec-set <payload type number> <param> <value>", "Set a property(clock_rate, recv_fmtp, send_fmtp) of a codec") {
 }
 void AudioCodecSetCommand::exec(Daemon *app, const char *args) {
 	int payload_type;
