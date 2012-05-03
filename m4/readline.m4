@@ -22,15 +22,15 @@ if test "$readline_prefix" != "none"; then
 	AC_CHECK_HEADERS(readline.h readline/readline.h, readline_h_found=yes)
 	AC_CHECK_HEADERS(history.h readline/history.h)
 	
-	AC_CHECK_LIB(readline, readline, [readline_libs_found=yes],[],[-lncurses])
+	AC_CHECK_LIB(readline, readline, [readline_libs_found=yes],[],[])
 	
 	LIBS=$LIBS_save
 	CPPFLAGS=$CPPFLAGS_save
 	
 	if test "$readline_libs_found$readline_h_found" != "yesyes" ; then
-		AC_MSG_WARN("Could not find libreadline headers or library, linphonec will have limited prompt features")
+		AC_MSG_WARN([Could not find libreadline headers or library, linphonec will have limited prompt features])
 	else
-		READLINE_LIBS="$READLINE_LIBS -lreadline -lncurses"
+		READLINE_LIBS="$READLINE_LIBS -lreadline "
 	fi
 	
 	
