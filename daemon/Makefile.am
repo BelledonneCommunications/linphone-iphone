@@ -21,8 +21,27 @@ linphone_daemon_SOURCES=daemon.cc \
 			commands/register-status.cc \
 			commands/terminate.cc \
 			commands/unregister.cc \
-			commands/quit.cc
-
+			commands/quit.cc \
+			daemon.h \
+                        commands/answer.h \
+                        commands/audio-codec-disable.h \
+                        commands/audio-codec-enable.h \
+                        commands/audio-codec-get.h \
+                        commands/audio-codec-move.h \
+                        commands/audio-codec-set.h \
+                        commands/audio-stream-start.h \
+                        commands/audio-stream-stop.h \
+                        commands/call.h \
+                        commands/call-stats.h \
+                        commands/call-status.h \
+                        commands/help.h \
+                        commands/pop-event.h \
+                        commands/ptime.h \
+                        commands/register.h \
+                        commands/register-status.h \
+                        commands/terminate.h \
+                        commands/unregister.h \
+                        commands/quit.h
 
 linphone_daemon_pipetest_SOURCES=daemon-pipetest.c
 
