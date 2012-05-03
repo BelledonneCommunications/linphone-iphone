@@ -63,11 +63,11 @@
     label.hidden = NO;
     switch(state) {
         case LinphoneRegistrationCleared:
-            image.hidden = NO;
+/*            image.hidden = NO;
             [image setImage:[UIImage imageNamed:@"status_orange.png"]];
             [spinner stopAnimating];
             [label setText:message != nil ? message : NSLocalizedString(@"No SIP account defined", nil)];
-            return YES;
+            return YES;*/
         case LinphoneRegistrationFailed:
             image.hidden = NO;
             [image setImage:[UIImage imageNamed:@"status_red.png"]];

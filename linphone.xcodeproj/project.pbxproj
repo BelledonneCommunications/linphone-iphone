@@ -1551,6 +1551,8 @@
 				3418845814C6F66F00EA48C7 /* status_orange.png in Resources */,
 				3418845A14C6F66F00EA48C7 /* status_red.png in Resources */,
 				3418845D14C7077400EA48C7 /* status_gray.png in Resources */,
+				57282931154AF1460076F540 /* history-orange.png in Resources */,
+				57282933154AF14D0076F540 /* dialer-orange.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,5 +1,8 @@
 openssl_version=1.0.0a
+openssl_site=http://www.openssl.org/source
 OPENSSL_BUILD_DIR?=$(BUILDER_BUILD_DIR)/externals/openssl
+
+
 
 ifneq (,$(findstring mingw,$(host)))
         CONFIGURE_OPTION := mingw
@@ -10,7 +13,7 @@ $(OPENSSL_BUILD_DIR)/Configure:
 	mkdir -p $(BUILDER_BUILD_DIR)/externals \
 	&& cd $(BUILDER_BUILD_DIR)/externals \
 	&& rm -rf openssl \
-	&& wget ftp://sunsite.cnlab-switch.ch/mirror/openssl/source/openssl-$(openssl_version).tar.gz \
+	&& wget $(openssl_site)/openssl-$(openssl_version).tar.gz \
 	&& tar xvzf  openssl-$(openssl_version).tar.gz \
 	&& rm -f openssl-$(openssl_version).tar.gz \
 	&& mv  openssl-$(openssl_version) openssl  \

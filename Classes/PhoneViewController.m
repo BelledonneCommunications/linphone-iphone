@@ -83,10 +83,12 @@
     
         switch (s) {
             case LinphoneRegistrationOk: m = @"Registered"; break;
-            case LinphoneRegistrationNone: m=@"Not registered"; break;
+            case LinphoneRegistrationNone: 
+			case LinphoneRegistrationCleared:
+				m=@"Not registered"; break;
             case LinphoneRegistrationFailed: m = @"Registration failed"; break;
             case LinphoneRegistrationProgress: m = @"Registration in progress"; break;
-            case LinphoneRegistrationCleared: m= @"No SIP account"; break;
+            //case LinphoneRegistrationCleared: m= @"No SIP account"; break;
             default: break;
         }
     }
@@ -113,7 +115,7 @@
             [callShort setEnabled:!linphone_core_sound_resources_locked([LinphoneManager getLc])];
     } @catch (NSException* exc) {
         // R.A.S: linphone core si simply not ready...
-        ms_warning("Exception %s: %s", 
+        ms_warning("Catched exception %s: %s", 
                    [exc.name cStringUsingEncoding:[NSString defaultCStringEncoding]], 
                    [exc.reason cStringUsingEncoding:[NSString defaultCStringEncoding]]);
     }
