@@ -600,7 +600,7 @@ static void call_released(SalOp *op){
 	}else ms_error("call_released() for already destroyed call ?");
 }
 
-static void auth_requested(SalOp *h, const char *realm, const char *username){
+static void auth_requested_legacy(SalOp *h, const char *realm, const char *username){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(h));
 	LinphoneAuthInfo *ai=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,realm,username);
 	LinphoneCall *call=is_a_linphone_call(sal_op_get_user_pointer(h));
@@ -794,7 +794,19 @@ static void ping_reply(SalOp *op){
 		ms_warning("ping reply without call attached...");
 	}
 }
-
+static bool_t auth_requested(SalOp*op, SalAuthInfo* sai) {
+	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
+	LinphoneAuthInfo *ai=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,sai->realm,sai->username);
+	if (ai) {
+		sai->userid=ai->userid?ai->userid:ai->username;
+		sai->password=ai->passwd;
+		ai->usecount++;
+		ai->last_use_time=ms_time(NULL);
+		return TRUE;
+	} else {
+		return FALSE;
+	}
+}
 SalCallbacks linphone_sal_callbacks={
 	call_received,
 	call_ringing,
@@ -804,7 +816,7 @@ SalCallbacks linphone_sal_callbacks={
 	call_terminated,
 	call_failure,
 	call_released,
-	auth_requested,
+	auth_requested_legacy,
 	auth_success,
 	register_success,
 	register_failure,
@@ -816,7 +828,8 @@ SalCallbacks linphone_sal_callbacks={
 	notify_presence,
 	subscribe_received,
 	subscribe_closed,
-	ping_reply
+	ping_reply,
+	auth_requested
 };
 
 

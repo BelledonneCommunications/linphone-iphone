@@ -164,6 +164,7 @@ typedef struct SalOpBase{
 	Sal *root;
 	char *route; /*or request-uri for REGISTER*/
 	char *contact;
+	SalAddress* contact_address;
 	char *from;
 	char *to;
 	char *origin;
@@ -211,6 +212,14 @@ typedef enum SalSubscribeState{
 	SalSubscribeTerminated
 }SalSubscribeState;
 
+typedef struct SalAuthInfo{
+	char *username;
+	char *userid;
+	char *password;
+	char *realm;
+	char *ha1;
+}SalAuthInfo;
+
 typedef void (*SalOnCallReceived)(SalOp *op);
 typedef void (*SalOnCallRinging)(SalOp *op);
 typedef void (*SalOnCallAccepted)(SalOp *op);
@@ -219,7 +228,8 @@ typedef void (*SalOnCallUpdating)(SalOp *op);/*< Called when a reINVITE is recei
 typedef void (*SalOnCallTerminated)(SalOp *op, const char *from);
 typedef void (*SalOnCallFailure)(SalOp *op, SalError error, SalReason reason, const char *details, int code);
 typedef void (*SalOnCallReleased)(SalOp *salop);
-typedef void (*SalOnAuthRequested)(SalOp *op, const char *realm, const char *username);
+typedef void (*SalOnAuthRequestedLegacy)(SalOp *op, const char *realm, const char *username);
+typedef bool_t (*SalOnAuthRequested)(SalOp *salop,SalAuthInfo* info);
 typedef void (*SalOnAuthSuccess)(SalOp *op, const char *realm, const char *username);
 typedef void (*SalOnRegisterSuccess)(SalOp *op, bool_t registered);
 typedef void (*SalOnRegisterFailure)(SalOp *op, SalError error, SalReason reason, const char *details);
@@ -232,6 +242,9 @@ typedef void (*SalOnNotifyPresence)(SalOp *op, SalSubscribeState ss, SalPresence
 typedef void (*SalOnSubscribeReceived)(SalOp *salop, const char *from);
 typedef void (*SalOnSubscribeClosed)(SalOp *salop, const char *from);
 typedef void (*SalOnPingReply)(SalOp *salop);
+/*allows sal implementation to access auth info if available, return TRUE if found*/
+
+
 
 typedef struct SalCallbacks{
 	SalOnCallReceived call_received;
@@ -242,7 +255,7 @@ typedef struct SalCallbacks{
 	SalOnCallTerminated call_terminated;
 	SalOnCallFailure call_failure;
 	SalOnCallReleased call_released;
-	SalOnAuthRequested auth_requested;
+	SalOnAuthRequestedLegacy auth_requested_legacy;
 	SalOnAuthSuccess auth_success;
 	SalOnRegisterSuccess register_success;
 	SalOnRegisterFailure register_failure;
@@ -255,14 +268,10 @@ typedef struct SalCallbacks{
 	SalOnSubscribeReceived subscribe_received;
 	SalOnSubscribeClosed subscribe_closed;
 	SalOnPingReply ping_reply;
+	SalOnAuthRequested auth_requested;
 }SalCallbacks;
 
-typedef struct SalAuthInfo{
-	char *username;
-	char *userid;
-	char *password;
-	char *realm;
-}SalAuthInfo;
+
 
 SalAuthInfo* sal_auth_info_new();
 SalAuthInfo* sal_auth_info_clone(const SalAuthInfo* auth_info);
@@ -298,6 +307,7 @@ SalOp * sal_op_new(Sal *sal);
 /*generic SalOp API, working for all operations */
 Sal *sal_op_get_sal(const SalOp *op);
 void sal_op_set_contact(SalOp *op, const char *contact);
+void sal_op_set_contact_address(SalOp *op, const SalAddress* address);
 void sal_op_set_route(SalOp *op, const char *route);
 void sal_op_set_from(SalOp *op, const char *from);
 void sal_op_set_to(SalOp *op, const char *to);
@@ -309,6 +319,7 @@ int sal_op_get_auth_requested(SalOp *h, const char **realm, const char **usernam
 const char *sal_op_get_from(const SalOp *op);
 const char *sal_op_get_to(const SalOp *op);
 const char *sal_op_get_contact(const SalOp *op);
+const SalAddress *sal_op_get_contact_address(const SalOp *op);
 const char *sal_op_get_route(const SalOp *op);
 const char *sal_op_get_proxy(const SalOp *op);
 /*for incoming requests, returns the origin of the packet as a sip uri*/

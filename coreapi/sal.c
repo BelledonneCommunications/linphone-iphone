@@ -203,6 +203,14 @@ bool_t sal_media_description_equals(const SalMediaDescription *md1, const SalMed
 	}
 	return TRUE;
 }
+static void assign_address(SalAddress** address, const char *value){
+	if (*address){
+		sal_address_destroy(*address);
+		*address=NULL;
+	}
+	if (value)
+		*address=sal_address_new(value);
+}
 
 static void assign_string(char **str, const char *arg){
 	if (*str){
@@ -212,9 +220,22 @@ static void assign_string(char **str, const char *arg){
 	if (arg)
 		*str=ms_strdup(arg);
 }
-
+void sal_op_set_contact_address(SalOp *op, const SalAddress *address){
+	char* address_string=sal_address_as_string(address); /*can probably be optimized*/
+	sal_op_set_contact(op,address_string);
+	ms_free(address_string);
+}
+const SalAddress* sal_op_get_contact_address(const SalOp *op) {
+	return ((SalOpBase*)op)->contact_address;
+}
 void sal_op_set_contact(SalOp *op, const char *contact){
-	assign_string(&((SalOpBase*)op)->contact,contact);
+	char* contact_string=NULL;
+	assign_address(&((SalOpBase*)op)->contact_address,contact);
+	if (((SalOpBase*)op)->contact_address) {
+		contact_string=sal_address_as_string(((SalOpBase*)op)->contact_address);
+	}
+	assign_string(&((SalOpBase*)op)->contact,contact_string);
+	if(contact_string) ms_free(contact_string);
 }
 
 void sal_op_set_route(SalOp *op, const char *route){

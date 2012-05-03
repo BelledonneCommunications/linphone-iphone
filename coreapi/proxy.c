@@ -237,7 +237,7 @@ void linphone_proxy_config_enable_publish(LinphoneProxyConfig *obj, bool_t val){
 void linphone_proxy_config_edit(LinphoneProxyConfig *obj){
 	if (obj->reg_sendregister){
 		/* unregister */
-		if (obj->state != LinphoneRegistrationNone && obj->state != LinphoneRegistrationCleared) {
+		if (obj->state == LinphoneRegistrationOk) {
 			sal_unregister(obj->op);
 		}
 	}

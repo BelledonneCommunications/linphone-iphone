@@ -1621,13 +1621,13 @@ void linphone_core_enable_ipv6(LinphoneCore *lc, bool_t val){
 
 
 static void monitor_network_state(LinphoneCore *lc, time_t curtime){
-	static time_t last_check=0;
-	static bool_t last_status=FALSE;
+	static time_t last_check=0; /*shared beetwen multi linphonecore*/
+	bool_t last_status=linphone_core_is_network_reachabled(lc);
 	char result[LINPHONE_IPADDR_SIZE];
 	bool_t new_status=last_status;
 
 	/* only do the network up checking every five seconds */
-	if (last_check==0 || (curtime-last_check)>=5){
+	if (lc->netup_time==0 || (curtime-last_check)>=5){
 		linphone_core_get_local_ip_for(lc->sip_conf.ipv6_enabled ? AF_INET6 : AF_INET,NULL,result);
 		if (strcmp(result,"::1")!=0 && strcmp(result,"127.0.0.1")!=0){
 			new_status=TRUE;
@@ -4144,6 +4144,7 @@ void sip_config_uninit(LinphoneCore *lc)
 	MSList *elem;
 	int i;
 	sip_config_t *config=&lc->sip_conf;
+	bool_t all_unregistered=FALSE;
 	
 	lp_config_set_int(lc->config,"sip","guess_hostname",config->guess_hostname);
 	lp_config_set_string(lc->config,"sip","contact",config->contact);
@@ -4156,13 +4157,17 @@ void sip_config_uninit(LinphoneCore *lc)
 
 	
 
-	for(elem=config->proxies,i=0;elem!=NULL;elem=ms_list_next(elem),i++){
+	for(elem=config->proxies;elem!=NULL;elem=ms_list_next(elem)){
 		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)(elem->data);
 		linphone_proxy_config_edit(cfg);	/* to unregister */
 	}
 
-	for (i=0;i<20;i++){
+	for (i=0;i<20&&!all_unregistered;i++){
 		sal_iterate(lc->sal);
+		for(elem=config->proxies;elem!=NULL;elem=ms_list_next(elem)){
+			LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)(elem->data);
+			all_unregistered|=!linphone_proxy_config_is_registered(cfg);
+		}
 #ifndef WIN32
 		usleep(100000);
 #else
