@@ -634,7 +634,12 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		linphone_proxy_config_set_identity(proxyCfg,identity);
 		linphone_proxy_config_set_server_addr(proxyCfg,proxy);
 		linphone_proxy_config_enable_register(proxyCfg,true);
-		linphone_proxy_config_expires(proxyCfg, DEFAULT_EXPIRES);
+		BOOL isWifiOnly = [[NSUserDefaults standardUserDefaults] boolForKey:@"wifi_only_preference"];
+		if (isWifiOnly) {
+			linphone_proxy_config_expires(proxyCfg, 0);
+		} else {
+			linphone_proxy_config_expires(proxyCfg, DEFAULT_EXPIRES);
+		}
 		
 		if (isOutboundProxy)
 			linphone_proxy_config_set_route(proxyCfg,proxy);
