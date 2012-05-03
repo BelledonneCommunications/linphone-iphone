@@ -27,6 +27,7 @@
 #import <AudioToolbox/AudioToolbox.h>
 #import "FastAddressBook.h"
 #include <sys/sysctl.h>
+#include <SystemConfiguration/SystemConfiguration.h>
 
 static LinphoneCore* theLinphoneCore=nil;
 static LinphoneManager* theLinphoneManager=nil;
@@ -864,7 +865,6 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	linphone_core_iterate(theLinphoneCore);
 }
 
-
 -(void) setupNetworkReachabilityCallback: (const char*) nodeName withContext:(SCNetworkReachabilityContext*) ctx {
     if (proxyReachability) {
         ms_message("Cancel old network reachability check");
@@ -878,19 +878,19 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	//initial state is network off should be done as soon as possible
 	SCNetworkReachabilityFlags flags;
 	if (!SCNetworkReachabilityGetFlags(proxyReachability, &flags)) {
-		ms_error("Cannot get reachability flags");
+		ms_error("Cannot get reachability flags: %s", SCErrorString(SCError()));
 		return;
-	};
-	networkReachabilityCallBack(proxyReachability, flags, ctx ? ctx->info : 0);	
-    
+	}
+	networkReachabilityCallBack(proxyReachability, flags, ctx ? ctx->info : 0);
+
 	if (!SCNetworkReachabilitySetCallback(proxyReachability, (SCNetworkReachabilityCallBack)networkReachabilityCallBack, ctx)){
-		ms_error("Cannot register reachability cb");
+		ms_error("Cannot register reachability cb: %s", SCErrorString(SCError()));
 		return;
-	};
+	}
 	if(!SCNetworkReachabilityScheduleWithRunLoop(proxyReachability, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode)){
-		ms_error("Cannot register schedule reachability cb");
+		ms_error("Cannot register schedule reachability cb: %s", SCErrorString(SCError()));
 		return;
-	};
+	}
 }
 
 
