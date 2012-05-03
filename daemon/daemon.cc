@@ -13,6 +13,7 @@
 #include "commands/audio-codec-move.h"
 #include "commands/audio-codec-enable.h"
 #include "commands/audio-codec-disable.h"
+#include "commands/audio-codec-set.h"
 #include "commands/audio-stream-start.h"
 #include "commands/audio-stream-stop.h"
 #include "commands/call.h"
@@ -171,6 +172,7 @@ void Daemon::initCommands() {
 	mCommands.push_back(new AudioCodecEnableCommand());
 	mCommands.push_back(new AudioCodecDisableCommand());
 	mCommands.push_back(new AudioCodecMoveCommand());
+	mCommands.push_back(new AudioCodecSetCommand());
 	mCommands.push_back(new AudioStreamStartCommand());
 	mCommands.push_back(new AudioStreamStopCommand());
 	mCommands.push_back(new PtimeCommand());

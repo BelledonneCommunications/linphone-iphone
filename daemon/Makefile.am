@@ -8,6 +8,7 @@ linphone_daemon_SOURCES=daemon.cc \
 			commands/audio-codec-enable.cc \
 			commands/audio-codec-get.cc \
 			commands/audio-codec-move.cc \
+			commands/audio-codec-set.cc \
 			commands/audio-stream-start.cc \
 			commands/audio-stream-stop.cc \
 			commands/call.cc \
