@@ -332,6 +332,8 @@ int sal_register(SalOp *op, const char *proxy, const char *from, int expires){
 	belle_sip_uri_t* contact_uri;
 	sal_op_set_from(op,from);
 	sal_op_set_to(op,from);
+	belle_sip_uri_t* route_uri=NULL;
+	belle_sip_header_route_t* route_header;
 	char token[10];
 	if (expires<0) goto error;
 	from_header = belle_sip_header_from_create(from,belle_sip_random_token(token,sizeof(token)));
@@ -349,7 +351,9 @@ int sal_register(SalOp *op, const char *proxy, const char *from, int expires){
 	belle_sip_header_address_set_uri((belle_sip_header_address_t*)contact_header,contact_uri);
 	sal_op_set_route(op,proxy);
 	/*FIXME use route info if needed*/
-
+	if (proxy) {
+		route_uri=belle_sip_uri_parse(proxy);
+	}
 
 	req=belle_sip_request_create(
 							req_uri,
@@ -363,6 +367,16 @@ int sal_register(SalOp *op, const char *proxy, const char *from, int expires){
 
 
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(contact_header));
+
+	if (route_uri && !belle_sip_uri_equals(req_uri,route_uri)) {
+		route_header = belle_sip_header_route_new();
+		belle_sip_uri_set_lr_param(route_uri,1);
+		belle_sip_header_address_set_uri(BELLE_SIP_HEADER_ADDRESS(route_header),route_uri);
+		belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(route_header));
+	} else if (route_uri){
+		belle_sip_object_unref(route_uri);
+		route_uri=NULL;
+	}
 	send_register_request_with_expires(op,req,expires);
 
 return 0;
@@ -371,6 +385,7 @@ error:
 	if (contact_header) belle_sip_object_unref(contact_header);
 	if (from_header) belle_sip_object_unref(from_header);
 	if (to_header) belle_sip_object_unref(to_header);
+	if (route_uri) belle_sip_object_unref(route_uri);
 	return -1;
 }
 

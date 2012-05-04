@@ -111,10 +111,15 @@ static void register_with_refresh(LinphoneCore* lc, bool_t refresh,const char* d
 
 	linphone_proxy_config_set_identity(proxy_cfg,linphone_address_as_string(from));
 	const char* server_addr = linphone_address_get_domain(from);
-	linphone_proxy_config_set_server_addr(proxy_cfg,server_addr);
+
 	linphone_proxy_config_enable_register(proxy_cfg,TRUE);
 	linphone_proxy_config_expires(proxy_cfg,30);
-	if (route) linphone_proxy_config_set_route(proxy_cfg,route);
+	if (route) {
+		linphone_proxy_config_set_route(proxy_cfg,route);
+		linphone_proxy_config_set_server_addr(proxy_cfg,route);
+	} else {
+		linphone_proxy_config_set_server_addr(proxy_cfg,server_addr);
+	}
 	linphone_address_destroy(from);
 
 	linphone_core_add_proxy_config(lc,proxy_cfg);
@@ -153,6 +158,17 @@ static void simple_register(){
 	register_with_refresh(create_lc(),FALSE,NULL,NULL);
 	CU_ASSERT_EQUAL(number_of_auth_info_requested,0);
 }
+static void simple_tcp_register(){
+	char route[256];
+	sprintf(route,"sip:%s;transport=tcp",test_domain);
+	register_with_refresh(create_lc(),FALSE,NULL,route);
+}
+static void simple_tls_register(){
+	char route[256];
+	sprintf(route,"sip:%s;transport=tls",test_domain);
+	register_with_refresh(create_lc(),FALSE,NULL,route);
+}
+
 static void simple_authenticated_register(){
 	LinphoneCore* lc = create_lc();
 	LinphoneAuthInfo *info=linphone_auth_info_new(test_username,NULL,test_password,NULL,auth_domain); /*create authentication structure from identity*/
@@ -216,6 +232,12 @@ CU_pSuite pSuite = CU_add_suite("liblinphone init test suite", init, uninit);
 		return CU_get_error();
 	}
 	if (NULL == CU_add_test(pSuite, "simple register tester", simple_register)) {
+		return CU_get_error();
+	}
+	if (NULL == CU_add_test(pSuite, "tcp register tester", simple_tcp_register)) {
+		return CU_get_error();
+	}
+	if (NULL == CU_add_test(pSuite, "tls register tester", simple_tls_register)) {
 		return CU_get_error();
 	}
 	if (NULL == CU_add_test(pSuite, "simple register with digest auth tester", simple_authenticated_register)) {
