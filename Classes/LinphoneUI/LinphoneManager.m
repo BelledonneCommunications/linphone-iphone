@@ -635,7 +635,8 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		linphone_proxy_config_set_server_addr(proxyCfg,proxy);
 		linphone_proxy_config_enable_register(proxyCfg,true);
 		BOOL isWifiOnly = [[NSUserDefaults standardUserDefaults] boolForKey:@"wifi_only_preference"];
-		if (isWifiOnly) {
+		LinphoneManager* lLinphoneMgr = [LinphoneManager instance];
+		if (isWifiOnly && lLinphoneMgr.connectivity == wwan) {
 			linphone_proxy_config_expires(proxyCfg, 0);
 		} else {
 			linphone_proxy_config_expires(proxyCfg, DEFAULT_EXPIRES);
