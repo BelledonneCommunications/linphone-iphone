@@ -88,19 +88,12 @@ static void registration_state_changed(struct _LinphoneCore *lc, LinphoneProxyCo
 
 }
 
-static void auth_info_requested(LinphoneCore *lc, const char *realm, const char *username) {
-	ms_message("Auth info requested  for user id [%s] at realm [%s]\n"
-					,username
-					,realm);
-	number_of_auth_info_requested++;
 
-}
 static LinphoneCore* create_lc() {
 	LinphoneCoreVTable v_table;
 
 	memset (&v_table,0,sizeof(v_table));
 	v_table.registration_state_changed=registration_state_changed;
-	v_table.auth_info_requested=auth_info_requested;
 	return linphone_core_new(&v_table,NULL,NULL,NULL);
 }
 static void register_with_refresh(LinphoneCore* lc, bool_t refresh,const char* domain,const char* route) {
@@ -161,14 +154,57 @@ static void simple_register(){
 	CU_ASSERT_EQUAL(number_of_auth_info_requested,0);
 }
 static void simple_authenticated_register(){
-	number_of_auth_info_requested=0;
 	LinphoneCore* lc = create_lc();
 	LinphoneAuthInfo *info=linphone_auth_info_new(test_username,NULL,test_password,NULL,auth_domain); /*create authentication structure from identity*/
 	linphone_core_add_auth_info(lc,info); /*add authentication info to LinphoneCore*/
 
 	register_with_refresh(lc,FALSE,auth_domain,NULL);
+	CU_ASSERT_EQUAL(number_of_auth_info_requested,0);
+}
+
+static void auth_info_requested(LinphoneCore *lc, const char *realm, const char *username) {
+	ms_message("Auth info requested  for user id [%s] at realm [%s]\n"
+					,username
+					,realm);
+	number_of_auth_info_requested++;
+	LinphoneAuthInfo *info=linphone_auth_info_new(test_username,NULL,test_password,NULL,auth_domain); /*create authentication structure from identity*/
+	linphone_core_add_auth_info(lc,info); /*add authentication info to LinphoneCore*/
+
+}
+
+static void authenticated_register_with_no_initial_credentials(){
+	number_of_auth_info_requested=0;
+	LinphoneCoreVTable v_table;
+	LinphoneCore* lc;
+	memset (&v_table,0,sizeof(v_table));
+	v_table.registration_state_changed=registration_state_changed;
+	v_table.auth_info_requested=auth_info_requested;
+	lc =  linphone_core_new(&v_table,NULL,NULL,NULL);
+
+	register_with_refresh(lc,FALSE,auth_domain,NULL);
 	CU_ASSERT_EQUAL(number_of_auth_info_requested,1);
 }
+
+
+static void multiple_proxy(){
+	LinphoneCoreVTable v_table;
+	LinphoneCore* lc;
+	int retry=0;
+	memset (&v_table,0,sizeof(v_table));
+	reset_counters();
+	v_table.registration_state_changed=registration_state_changed;
+	lc =  linphone_core_new(&v_table,NULL,"./multi_account_lrc",NULL);
+
+	CU_ASSERT_EQUAL(ms_list_size(linphone_core_get_proxy_config_list(lc)),3);
+
+	while (number_of_LinphoneRegistrationOk<3 && retry++ <20) {
+			linphone_core_iterate(lc);
+			ms_usleep(100000);
+	}
+	CU_ASSERT_EQUAL(number_of_LinphoneRegistrationOk,3);
+	linphone_core_destroy(lc);
+}
+
 int init_test_suite () {
 
 CU_pSuite pSuite = CU_add_suite("liblinphone init test suite", init, uninit);
@@ -183,6 +219,12 @@ CU_pSuite pSuite = CU_add_suite("liblinphone init test suite", init, uninit);
 		return CU_get_error();
 	}
 	if (NULL == CU_add_test(pSuite, "simple register with digest auth tester", simple_authenticated_register)) {
+		return CU_get_error();
+	}
+	if (NULL == CU_add_test(pSuite, "register with digest auth tester without initial credentials", authenticated_register_with_no_initial_credentials)) {
+		return CU_get_error();
+	}
+	if (NULL == CU_add_test(pSuite, "multi account", multiple_proxy)) {
 		return CU_get_error();
 	}
 	return 0;

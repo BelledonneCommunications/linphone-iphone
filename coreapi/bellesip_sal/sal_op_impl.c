@@ -272,7 +272,7 @@ static void register_response_event(void *user_ctx, const belle_sip_response_eve
 			if (op->registration_refresh_timer>0) {
 				belle_sip_main_loop_cancel_source(belle_sip_stack_get_main_loop(op->base.root->stack),op->registration_refresh_timer);
 			}
-			op->registration_refresh_timer = belle_sip_main_loop_add_timeout(belle_sip_stack_get_main_loop(op->base.root->stack),(belle_sip_source_func_t)register_refresh,op,belle_sip_header_expires_get_expires(expires_header)*1000);
+			op->registration_refresh_timer = belle_sip_main_loop_add_timeout(belle_sip_stack_get_main_loop(op->base.root->stack),(belle_sip_source_func_t)register_refresh,op,expires*1000);
 		}
 		sal_remove_pending_auth(op->base.root,op);/*just in case*/
 		break;

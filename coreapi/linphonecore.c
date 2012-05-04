@@ -4144,7 +4144,7 @@ void sip_config_uninit(LinphoneCore *lc)
 	MSList *elem;
 	int i;
 	sip_config_t *config=&lc->sip_conf;
-	bool_t all_unregistered=FALSE;
+	bool_t still_registered=TRUE;
 	
 	lp_config_set_int(lc->config,"sip","guess_hostname",config->guess_hostname);
 	lp_config_set_string(lc->config,"sip","contact",config->contact);
@@ -4162,11 +4162,12 @@ void sip_config_uninit(LinphoneCore *lc)
 		linphone_proxy_config_edit(cfg);	/* to unregister */
 	}
 
-	for (i=0;i<20&&!all_unregistered;i++){
+	for (i=0;i<20&&still_registered;i++){
+		still_registered=FALSE;
 		sal_iterate(lc->sal);
 		for(elem=config->proxies;elem!=NULL;elem=ms_list_next(elem)){
 			LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)(elem->data);
-			all_unregistered|=!linphone_proxy_config_is_registered(cfg);
+			still_registered|=linphone_proxy_config_is_registered(cfg);
 		}
 #ifndef WIN32
 		usleep(100000);

@@ -794,7 +794,8 @@ static void ping_reply(SalOp *op){
 		ms_warning("ping reply without call attached...");
 	}
 }
-static bool_t auth_requested(SalOp*op, SalAuthInfo* sai) {
+
+static bool_t fill_auth_info(SalOp*op, SalAuthInfo* sai) {
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneAuthInfo *ai=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,sai->realm,sai->username);
 	if (ai) {
@@ -804,6 +805,20 @@ static bool_t auth_requested(SalOp*op, SalAuthInfo* sai) {
 		ai->last_use_time=ms_time(NULL);
 		return TRUE;
 	} else {
+		return FALSE;
+	}
+}
+static bool_t auth_requested(SalOp*op, SalAuthInfo* sai) {
+	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
+	if (fill_auth_info(op,sai)) {
+		return TRUE;
+	} else {
+		if (lc->vtable.auth_info_requested) {
+			lc->vtable.auth_info_requested(lc,sai->realm,sai->username);
+			if (fill_auth_info(op,sai)) {
+				return TRUE;
+			}
+		}
 		return FALSE;
 	}
 }
