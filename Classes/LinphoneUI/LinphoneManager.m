@@ -448,20 +448,41 @@ static LinphoneCoreVTable linphonec_vtable = {
 	CFWriteStreamClose (writeStream);
 }	
 
-void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void* nilCtx) {
-	ms_message("Network connection flag [%x]",flags);
+static void showNetworkFlags(SCNetworkReachabilityFlags flags){
+	ms_message("Network connection flags:");
+	if (flags==0) ms_message("no flags.");
+	if (flags & kSCNetworkReachabilityFlagsTransientConnection)
+		ms_message("kSCNetworkReachabilityFlagsTransientConnection");
+	if (flags & kSCNetworkReachabilityFlagsReachable)
+		ms_message("kSCNetworkReachabilityFlagsReachable");
+	if (flags & kSCNetworkReachabilityFlagsConnectionRequired)
+		ms_message("kSCNetworkReachabilityFlagsConnectionRequired");
+	if (flags & kSCNetworkReachabilityFlagsConnectionOnTraffic)
+		ms_message("kSCNetworkReachabilityFlagsConnectionOnTraffic");
+	if (flags & kSCNetworkReachabilityFlagsConnectionOnDemand)
+		ms_message("kSCNetworkReachabilityFlagsConnectionOnDemand");
+	if (flags & kSCNetworkReachabilityFlagsIsLocalAddress)
+		ms_message("kSCNetworkReachabilityFlagsIsLocalAddress");
+	if (flags & kSCNetworkReachabilityFlagsIsDirect)
+		ms_message("kSCNetworkReachabilityFlagsIsDirect");
+	if (flags & kSCNetworkReachabilityFlagsIsWWAN)
+		ms_message("kSCNetworkReachabilityFlagsIsWWAN");
+}
+
+void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void* nilCtx){
+	showNetworkFlags(flags);
 	LinphoneManager* lLinphoneMgr = [LinphoneManager instance];
-	SCNetworkReachabilityFlags networkDownFlags=kSCNetworkReachabilityFlagsConnectionRequired |kSCNetworkReachabilityFlagsConnectionOnTraffic;
+	SCNetworkReachabilityFlags networkDownFlags=kSCNetworkReachabilityFlagsConnectionRequired |kSCNetworkReachabilityFlagsConnectionOnTraffic | kSCNetworkReachabilityFlagsConnectionOnDemand;
 
 	if ([LinphoneManager getLc] != nil) {
 		LinphoneProxyConfig* proxy;
 		linphone_core_get_default_proxy([LinphoneManager getLc], &proxy);
 
         struct NetworkReachabilityContext* ctx = nilCtx ? ((struct NetworkReachabilityContext*)nilCtx) : 0;
-		if ((flags == 0) | (flags & networkDownFlags)) {
-			[[LinphoneManager instance] kickOffNetworkConnection];
+		if ((flags == 0) || (flags & networkDownFlags)) {
 			linphone_core_set_network_reachable([LinphoneManager getLc],false);
 			lLinphoneMgr.connectivity = none;
+			[[LinphoneManager instance] kickOffNetworkConnection];
 		} else {
 			Connectivity  newConnectivity;
 			BOOL isWifiOnly = [[NSUserDefaults standardUserDefaults] boolForKey:@"wifi_only_preference"];
@@ -481,6 +502,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 			
 			if (lLinphoneMgr.connectivity == none) {
 				linphone_core_set_network_reachable([LinphoneManager getLc],true);
+				
 			} else if (lLinphoneMgr.connectivity != newConnectivity) {
 				// connectivity has changed
 				linphone_core_set_network_reachable([LinphoneManager getLc],false);
@@ -488,9 +510,9 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 					linphone_proxy_config_expires(proxy, 0);
 				} 
 				linphone_core_set_network_reachable([LinphoneManager getLc],true);
+				ms_message("Network connectivity changed to type [%s]",(newConnectivity==wifi?"wifi":"wwan"));
 			}
 			lLinphoneMgr.connectivity=newConnectivity;
-			ms_message("new network connectivity  of type [%s]",(newConnectivity==wifi?"wifi":"wwan"));
 		}
 		if (ctx && ctx->networkStateChanged) {
             (*ctx->networkStateChanged)(lLinphoneMgr.connectivity);
@@ -808,18 +830,18 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 														   handler:^{
 															   ms_warning("keepalive handler");
 															   if (theLinphoneCore == nil) {
-																   ms_warning("It seam that Linphone BG mode was deacticated, just skipping");
+																   ms_warning("It seems that Linphone BG mode was deactivated, just skipping");
 																   return;
 															   }
 															   //kick up network cnx, just in case
 															   [self kickOffNetworkConnection];
-															   linphone_core_refresh_registers(theLinphoneCore);
+															   [self refreshRegisters];
 															   linphone_core_iterate(theLinphoneCore);
 														   }
 			 ]) {
 			
 			
-			ms_warning("keepalive handler succesfully registered"); 
+			ms_message("keepalive handler succesfully registered"); 
 		} else {
 			ms_warning("keepalive handler cannot be registered");
 		}
@@ -830,7 +852,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		return YES;
 	}
 	else {
-		ms_warning("Entering lite bg mode");
+		ms_message("Entering lite bg mode");
 		[self destroyLibLinphone];
         return NO;
 	}
@@ -857,14 +879,17 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	SCNetworkReachabilityFlags flags;
 	if (!SCNetworkReachabilityGetFlags(proxyReachability, &flags)) {
 		ms_error("Cannot get reachability flags");
+		return;
 	};
 	networkReachabilityCallBack(proxyReachability, flags, ctx ? ctx->info : 0);	
     
 	if (!SCNetworkReachabilitySetCallback(proxyReachability, (SCNetworkReachabilityCallBack)networkReachabilityCallBack, ctx)){
 		ms_error("Cannot register reachability cb");
+		return;
 	};
 	if(!SCNetworkReachabilityScheduleWithRunLoop(proxyReachability, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode)){
 		ms_error("Cannot register schedule reachability cb");
+		return;
 	};
 }
 
@@ -983,6 +1008,19 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
                ,[[UIDevice currentDevice].model cStringUsingEncoding:[NSString defaultCStringEncoding]] );
 	
 }
+
+-(void) refreshRegisters{
+	/*first check if network is available*/
+	if (proxyReachability){
+		SCNetworkReachabilityFlags flags=0;
+		if (!SCNetworkReachabilityGetFlags(proxyReachability, &flags)) {
+			ms_error("Cannot get reachability flags");
+		}else
+			networkReachabilityCallBack(proxyReachability, flags, 0);	
+	}else ms_error("No proxy reachability context created !");
+	linphone_core_refresh_registers(theLinphoneCore);//just to make sure REGISTRATION is up to date
+}
+
 -(void) becomeActive {
     if (theLinphoneCore == nil) {
 		//back from standby and background mode is disabled
@@ -990,9 +1028,8 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	} else {
         if (![self reconfigureLinphoneIfNeeded:currentSettings]) {
             ms_message("becoming active with no config modification, make sure we are registered");
-            linphone_core_refresh_registers(theLinphoneCore);//just to make sure REGISTRATION is up to date
+			[self refreshRegisters];
         }
-		
 	}
 	/*IOS specific*/
 	linphone_core_start_dtmf_stream(theLinphoneCore);
