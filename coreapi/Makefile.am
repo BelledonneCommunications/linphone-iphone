@@ -42,7 +42,8 @@ liblinphone_la_SOURCES=\
 if USE_BELLESIP
 liblinphone_la_SOURCES+= 	bellesip_sal/sal_address_impl.c \
 							bellesip_sal/sal_impl.c \
-							bellesip_sal/sal_op_impl.c 
+							bellesip_sal/sal_op_impl.c \
+							bellesip_sal/sal_sdp.c 
 else
 liblinphone_la_SOURCES+= 	sal_eXosip2.c sal_eXosip2.h\
 							sal_eXosip2_sdp.c \

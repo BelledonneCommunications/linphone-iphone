@@ -248,7 +248,7 @@ void linphone_proxy_config_apply(LinphoneProxyConfig *obj,LinphoneCore *lc)
 	obj->lc=lc;
 	linphone_proxy_config_done(obj);
 }
-
+#ifndef USE_BELLESIP
 static char *guess_contact_for_register(LinphoneProxyConfig *obj){
 	LinphoneAddress *proxy=linphone_address_new(obj->reg_proxy);
 	char *ret=NULL;
@@ -280,16 +280,20 @@ static char *guess_contact_for_register(LinphoneProxyConfig *obj){
 	linphone_address_destroy (proxy);
 	return ret;
 }
-
+#endif
 static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
 	if (obj->reg_sendregister){
+#ifndef USE_BELLESIP
 		char *contact;
+#endif
 		if (obj->op)
 			sal_op_release(obj->op);
 		obj->op=sal_op_new(obj->lc->sal);
+#ifndef USE_BELLESIP /*contact is automatically guessed by belle-sip*/
 		contact=guess_contact_for_register(obj);
 		sal_op_set_contact(obj->op,contact);
 		ms_free(contact);
+#endif
 		sal_op_set_user_pointer(obj->op,obj);
 		if (sal_register(obj->op,obj->reg_proxy,obj->reg_identity,obj->expires)==0) {
 			linphone_proxy_config_set_state(obj,LinphoneRegistrationProgress,"Registration in progress");

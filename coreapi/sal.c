@@ -220,6 +220,8 @@ static void assign_string(char **str, const char *arg){
 	if (arg)
 		*str=ms_strdup(arg);
 }
+
+
 void sal_op_set_contact_address(SalOp *op, const SalAddress *address){
 	char* address_string=sal_address_as_string(address); /*can probably be optimized*/
 	sal_op_set_contact(op,address_string);
@@ -228,20 +230,31 @@ void sal_op_set_contact_address(SalOp *op, const SalAddress *address){
 const SalAddress* sal_op_get_contact_address(const SalOp *op) {
 	return ((SalOpBase*)op)->contact_address;
 }
+
+#define SET_PARAM(op,name) \
+		char* name##_string=NULL; \
+		assign_address(&((SalOpBase*)op)->name##_address,name); \
+		if (((SalOpBase*)op)->name##_address) { \
+			name##_string=sal_address_as_string(((SalOpBase*)op)->name##_address); \
+		}\
+		assign_string(&((SalOpBase*)op)->name,name##_string); \
+		if(name##_string) ms_free(name##_string);
+
 void sal_op_set_contact(SalOp *op, const char *contact){
-	char* contact_string=NULL;
-	assign_address(&((SalOpBase*)op)->contact_address,contact);
-	if (((SalOpBase*)op)->contact_address) {
-		contact_string=sal_address_as_string(((SalOpBase*)op)->contact_address);
-	}
-	assign_string(&((SalOpBase*)op)->contact,contact_string);
-	if(contact_string) ms_free(contact_string);
+	SET_PARAM(op,contact);
 }
 
 void sal_op_set_route(SalOp *op, const char *route){
-	assign_string(&((SalOpBase*)op)->route,route);
+	SET_PARAM(op,route);
 }
-
+const SalAddress* sal_op_get_route_address(const SalOp *op) {
+	return ((SalOpBase*)op)->route_address;
+}
+void sal_op_set_route_address(SalOp *op, const SalAddress *address){
+	char* address_string=sal_address_as_string(address); /*can probably be optimized*/
+	sal_op_set_route(op,address_string);
+	ms_free(address_string);
+}
 void sal_op_set_from(SalOp *op, const char *from){
 	assign_string(&((SalOpBase*)op)->from,from);
 }
@@ -354,3 +367,29 @@ void sal_auth_info_delete(const SalAuthInfo* auth_info) {
 	ms_free((void*)auth_info);
 }
 
+const char* sal_stream_type_to_string(SalStreamType type) {
+	switch (type) {
+	case SalAudio:return "audio";
+	case SalVideo:return "video";
+	default: return "other";
+	}
+}
+
+const char* sal_media_proto_to_string(SalMediaProto type) {
+	switch (type) {
+	case SalProtoRtpAvp:return "RTP/AVP";
+	case SalProtoRtpSavp:return "RTP/SAVP";
+	default: return "unknown";
+	}
+}
+
+
+const char* sal_stream_dir_to_string(SalStreamDir type) {
+	switch (type) {
+	case SalStreamSendRecv:return "sendrecv";
+	case SalStreamSendOnly:return "sendonly";
+	case SalStreamRecvOnly:return "recvonly";
+	case SalStreamInactive:return "inative";
+	default: return "unknown";
+	}
+}

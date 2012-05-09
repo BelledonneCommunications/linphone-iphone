@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define SAL_IMPL_H_
 #include "sal.h"
 #include "belle-sip/belle-sip.h"
+#include "belle-sip/belle-sdp.h"
 
 struct Sal{
 	SalCallbacks callbacks;
@@ -40,6 +41,9 @@ struct SalOp{
 	SalAuthInfo auth_info;
 	unsigned long int  registration_refresh_timer;
 };
+
+belle_sdp_session_description_t * media_description_to_sdp(const SalMediaDescription *sal);
+int sdp_to_media_description(belle_sdp_session_description_t  *sdp, SalMediaDescription *desc);
 
 
 #endif /* SAL_IMPL_H_ */

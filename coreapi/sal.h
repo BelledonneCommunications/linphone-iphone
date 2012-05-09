@@ -91,12 +91,14 @@ typedef enum {
 	SalVideo,
 	SalOther
 } SalStreamType;
+const char* sal_stream_type_to_string(SalStreamType type);
 
 typedef enum{
 	SalProtoUnknown,
 	SalProtoRtpAvp,
 	SalProtoRtpSavp
 }SalMediaProto;
+const char* sal_media_proto_to_string(SalMediaProto type);
 
 typedef enum{
 	SalStreamSendRecv,
@@ -104,6 +106,7 @@ typedef enum{
 	SalStreamRecvOnly,
 	SalStreamInactive
 }SalStreamDir;
+const char* sal_stream_dir_to_string(SalStreamDir type);
 
 typedef struct SalEndpointCandidate{
 	char addr[64];
@@ -163,6 +166,7 @@ void sal_media_description_set_dir(SalMediaDescription *md, SalStreamDir stream_
 typedef struct SalOpBase{
 	Sal *root;
 	char *route; /*or request-uri for REGISTER*/
+	SalAddress* route_address;
 	char *contact;
 	SalAddress* contact_address;
 	char *from;
@@ -309,6 +313,7 @@ Sal *sal_op_get_sal(const SalOp *op);
 void sal_op_set_contact(SalOp *op, const char *contact);
 void sal_op_set_contact_address(SalOp *op, const SalAddress* address);
 void sal_op_set_route(SalOp *op, const char *route);
+void sal_op_set_route_address(SalOp *op, const SalAddress* address);
 void sal_op_set_from(SalOp *op, const char *from);
 void sal_op_set_to(SalOp *op, const char *to);
 void sal_op_release(SalOp *h);
@@ -321,6 +326,7 @@ const char *sal_op_get_to(const SalOp *op);
 const char *sal_op_get_contact(const SalOp *op);
 const SalAddress *sal_op_get_contact_address(const SalOp *op);
 const char *sal_op_get_route(const SalOp *op);
+const SalAddress* sal_op_get_route_address(const SalOp *op);
 const char *sal_op_get_proxy(const SalOp *op);
 /*for incoming requests, returns the origin of the packet as a sip uri*/
 const char *sal_op_get_network_origin(const SalOp *op);
