@@ -75,7 +75,9 @@ const NSInteger SECURE_BUTTON_TAG=5;
 @synthesize videoCameraSwitch;
 @synthesize videoUpdateIndicator;
 @synthesize videoWaitingForFirstImage;
+#ifdef TEST_VIDEO_VIEW_CHANGE
 @synthesize testVideoView;
+#endif
 
 @synthesize addVideo;
 
