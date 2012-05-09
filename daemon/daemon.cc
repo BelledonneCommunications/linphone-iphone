@@ -40,6 +40,16 @@ EventResponse::EventResponse(LinphoneCall *call, LinphoneCallState state) {
 	ms_free(remote);
 }
 
+DtmfResponse::DtmfResponse(LinphoneCall *call, int dtmf) {
+	ostringstream ostr;
+	char *remote = linphone_call_get_remote_address_as_string(call);
+	ostr << "Event-type: receiving-tone\nTone: " << (char) dtmf << "\n";
+	ostr << "From: " << remote << "\n";
+	ostr << "Id: " << Daemon::getCallId(call) << "\n";
+	setBody(ostr.str().c_str());
+	ms_free(remote);
+}
+
 PayloadTypeResponse::PayloadTypeResponse(LinphoneCore *core, const PayloadType *payloadType, int index, const string &prefix, bool enabled_status) {
 	ostringstream ostr;
 	if (payloadType != NULL) {
@@ -93,6 +103,7 @@ Daemon::Daemon(const char *config_path, const char *factory_config_path, const c
 
 	LinphoneCoreVTable vtable = { 0 };
 	vtable.call_state_changed = callStateChanged;
+	vtable.dtmf_received = dtmfReceived;
 	mLc = linphone_core_new(&vtable, config_path, factory_config_path, this);
 	linphone_core_enable_video(mLc, display_video, capture_video);
 	linphone_core_enable_echo_cancellation(mLc, false);
@@ -219,9 +230,17 @@ void Daemon::callStateChanged(LinphoneCall *call, LinphoneCallState state, const
 	}
 }
 
+void Daemon::dtmfReceived(LinphoneCall *call, int dtmf) {
+	mEventQueue.push(new DtmfResponse(call, dtmf));
+}
+
 void Daemon::callStateChanged(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState state, const char *msg) {
 	Daemon *app = (Daemon*) linphone_core_get_user_data(lc);
 	app->callStateChanged(call, state, msg);
+}
+void Daemon::dtmfReceived(LinphoneCore *lc, LinphoneCall *call, int dtmf) {
+	Daemon *app = (Daemon*) linphone_core_get_user_data(lc);
+	app->dtmfReceived(call, dtmf);
 }
 
 void Daemon::iterate() {

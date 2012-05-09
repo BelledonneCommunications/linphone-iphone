@@ -84,6 +84,12 @@ public:
 private:
 };
 
+class DtmfResponse: public Response {
+public:
+	DtmfResponse(LinphoneCall *call, int dtmf);
+private:
+};
+
 class PayloadTypeResponse: public Response {
 public:
 	PayloadTypeResponse(LinphoneCore *core, const PayloadType *payloadType, int index = -1, const std::string &prefix = std::string(), bool enabled_status = true);
@@ -113,8 +119,10 @@ public:
 private:
 
 	static void callStateChanged(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState state, const char *msg);
+	static void dtmfReceived(LinphoneCore *lc, LinphoneCall *call, int dtmf);
 	static int readlineHook();
 	void callStateChanged(LinphoneCall *call, LinphoneCallState state, const char *msg);
+	void dtmfReceived(LinphoneCall *call, int dtmf);
 	void execCommand(const char *cl);
 	void initReadline();
 	char *readPipe(char *buffer, int buflen);
@@ -123,7 +131,7 @@ private:
 	void uninitCommands();
 	LinphoneCore *mLc;
 	std::list<DaemonCommand*> mCommands;
-	std::queue<EventResponse*> mEventQueue;
+	std::queue<Response*> mEventQueue;
 	int mServerFd;
 	int mChildFd;
 	std::string mHistfile;
