@@ -63,6 +63,9 @@
     UIView* videoGroup;
     UIView* videoView;
     UIView* videoPreview;
+#ifdef TEST_VIDEO_VIEW_CHANGE
+    UIView* testVideoView;
+#endif
     UIImageView* videoCallQuality;
     UICamSwitch* videoCameraSwitch;
     UIActivityIndicatorView* videoUpdateIndicator;
@@ -136,6 +139,9 @@
 
 @property (nonatomic, retain) IBOutlet UIView* videoGroup;
 @property (nonatomic, retain) IBOutlet UIView* videoView;
+#ifdef TEST_VIDEO_VIEW_CHANGE
+@property (nonatomic, retain) IBOutlet UIView* testVideoView;
+#endif
 @property (nonatomic, retain) IBOutlet UIView* videoPreview;
 @property (nonatomic, retain) IBOutlet UIImageView* videoCallQuality;
 @property (nonatomic, retain) IBOutlet UICamSwitch* videoCameraSwitch;
