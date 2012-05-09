@@ -49,6 +49,7 @@ static gboolean do_login_noprompt(LinphoneProxyConfig *cfg){
 	tmp=linphone_address_as_string (addr);
 	do_login(ssctx,tmp,NULL);
 	linphone_address_destroy(addr);
+	linphone_gtk_load_identities();
 	return FALSE;
 }
 
@@ -62,14 +63,14 @@ void linphone_gtk_show_login_frame(LinphoneProxyConfig *cfg){
 	int nettype;
 	const char *passwd=NULL;
 
-
+	
 	if (linphone_core_get_download_bandwidth(lc)==512 &&
 		linphone_core_get_upload_bandwidth(lc)==512)
 		nettype=NetworkKindOpticalFiber;
 	else nettype=NetworkKindAdsl;
 	gtk_combo_box_set_active(GTK_COMBO_BOX(linphone_gtk_get_widget(mw,"login_internet_kind")),nettype);
-	gtk_combo_box_set_active(GTK_COMBO_BOX(linphone_gtk_get_widget(mw,"internet_kind")),nettype);
-
+	//gtk_combo_box_set_active(GTK_COMBO_BOX(linphone_gtk_get_widget(mw,"internet_kind")),nettype);
+	
 	if (linphone_gtk_get_ui_config_int("automatic_login",0) ){
 		g_timeout_add(250,(GSourceFunc)do_login_noprompt,cfg);
 		return;
@@ -88,7 +89,6 @@ void linphone_gtk_show_login_frame(LinphoneProxyConfig *cfg){
 	gtk_widget_hide(linphone_gtk_get_widget(mw,"disconnect_item"));
 	gtk_widget_hide(linphone_gtk_get_widget(mw,"main_frame"));
 	gtk_widget_show(linphone_gtk_get_widget(mw,"login_frame"));
-	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"main_menu"),FALSE);
 	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"options_menu"),FALSE);
 	str=g_strdup_printf(_("Please enter login information for %s"),linphone_proxy_config_get_domain(cfg));
 	gtk_label_set_text(GTK_LABEL(label),str);
@@ -118,7 +118,6 @@ void linphone_gtk_exit_login_frame(void){
 	GtkWidget *mw=linphone_gtk_get_main_window();
 	gtk_widget_show(linphone_gtk_get_widget(mw,"main_frame"));
 	gtk_widget_hide(linphone_gtk_get_widget(mw,"login_frame"));
-	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"main_menu"),TRUE);
 	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"options_menu"),TRUE);
 	gtk_widget_show(linphone_gtk_get_widget(mw,"disconnect_item"));
 }

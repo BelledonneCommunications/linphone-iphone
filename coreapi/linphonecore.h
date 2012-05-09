@@ -183,6 +183,8 @@ char * linphone_call_log_to_str(LinphoneCallLog *cl);
 struct _LinphoneCallParams;
 typedef struct _LinphoneCallParams LinphoneCallParams;
 
+const PayloadType* linphone_call_params_get_used_audio_codec(const LinphoneCallParams *cp);
+const PayloadType* linphone_call_params_get_used_video_codec(const LinphoneCallParams *cp);
 LinphoneCallParams * linphone_call_params_copy(const LinphoneCallParams *cp);
 void linphone_call_params_enable_video(LinphoneCallParams *cp, bool_t enabled);
 bool_t linphone_call_params_video_enabled(const LinphoneCallParams *cp);
@@ -786,13 +788,13 @@ const MSList *linphone_core_get_video_codecs(const LinphoneCore *lc);
 
 int linphone_core_set_video_codecs(LinphoneCore *lc, MSList *codecs);
 
-bool_t linphone_core_payload_type_enabled(LinphoneCore *lc, PayloadType *pt);
+bool_t linphone_core_payload_type_enabled(LinphoneCore *lc, const PayloadType *pt);
 
 int linphone_core_enable_payload_type(LinphoneCore *lc, PayloadType *pt, bool_t enable);
 
 PayloadType* linphone_core_find_payload_type(LinphoneCore* lc, const char* type, int rate) ;
 
-int linphone_core_get_payload_type_number(LinphoneCore *lc, PayloadType *pt);
+int linphone_core_get_payload_type_number(LinphoneCore *lc, const PayloadType *pt);
 
 const char *linphone_core_get_payload_type_description(LinphoneCore *lc, PayloadType *pt);
 
@@ -1132,7 +1134,7 @@ typedef struct LinphoneTunnel LinphoneTunnel;
 */
 LinphoneTunnel *linphone_core_get_tunnel(LinphoneCore *lc);
     
-    void linphone_call_zoom_video(LinphoneCall* call, float zoom_factor, float cx, float cy);
+void linphone_call_zoom_video(LinphoneCall* call, float zoom_factor, float* cx, float* cy);
 
 #ifdef __cplusplus
 }

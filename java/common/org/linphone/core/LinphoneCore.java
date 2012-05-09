@@ -18,8 +18,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package org.linphone.core;
 
-
-import java.util.List;
 import java.util.Vector;
 
 import org.linphone.core.LinphoneCallParams;
@@ -34,7 +32,7 @@ public interface LinphoneCore {
 	 * linphone core states
 	 */
 	static public class GlobalState {
-		@SuppressWarnings("unchecked")
+		
 		static private Vector values = new Vector();
 		/**
 		 * Off
@@ -56,7 +54,7 @@ public interface LinphoneCore {
 		private final int mValue;
 		private final String mStringValue;
 
-		@SuppressWarnings("unchecked")
+		
 		private GlobalState(int value,String stringValue) {
 			mValue = value;
 			values.addElement(this);
@@ -79,7 +77,7 @@ public interface LinphoneCore {
 	 *
 	 */
 	static public class RegistrationState {
-		@SuppressWarnings("unchecked")
+		
 		private static Vector values = new Vector();
 		/**
 		 * None
@@ -104,7 +102,7 @@ public interface LinphoneCore {
 		private final int mValue;
 		private final String mStringValue;
 
-		@SuppressWarnings("unchecked")
+		
 		private RegistrationState(int value,String stringValue) {
 			mValue = value;
 			values.addElement(this);
@@ -127,7 +125,7 @@ public interface LinphoneCore {
 	 *
 	 */
 	static public class FirewallPolicy {
-		@SuppressWarnings("unchecked")
+		
 		static private Vector values = new Vector();
 		/**
 		 * No firewall is assumed.
@@ -145,7 +143,7 @@ public interface LinphoneCore {
 		private final int mValue;
 		private final String mStringValue;
 
-		@SuppressWarnings("unchecked")
+		
 		private FirewallPolicy(int value,String stringValue) {
 			mValue = value;
 			values.addElement(this);
@@ -187,7 +185,7 @@ public interface LinphoneCore {
 	 *
 	 */
 	static public class MediaEncryption {
-		@SuppressWarnings("unchecked")
+		
 		static private Vector values = new Vector();
 		/**
 		 * None
@@ -204,7 +202,7 @@ public interface LinphoneCore {
 		protected final int mValue;
 		private final String mStringValue;
 
-		@SuppressWarnings("unchecked")
+		
 		private MediaEncryption(int value,String stringValue) {
 			mValue = value;
 			values.addElement(this);
@@ -226,7 +224,7 @@ public interface LinphoneCore {
 	 * 	EC Calibrator Status
 	 */
 	static public class EcCalibratorStatus {
-		@SuppressWarnings("unchecked")
+		
 		static private Vector values = new Vector();
 		public static final int IN_PROGRESS_STATUS=0;
 		public static final int DONE_STATUS=1;
@@ -247,7 +245,7 @@ public interface LinphoneCore {
 		private final int mValue;
 		private final String mStringValue;
 
-		@SuppressWarnings("unchecked")
+		
 		private EcCalibratorStatus(int value,String stringValue) {
 			mValue = value;
 			values.addElement(this);
@@ -411,8 +409,7 @@ public interface LinphoneCore {
 	/**
 	 * @return a list of LinphoneCallLog 
 	 */
-	@SuppressWarnings("unchecked")
-	public List getCallLogs();
+	public LinphoneCallLog[] getCallLogs();
 	
 	/**
 	 * This method is called by the application to notify the Linphone core library when network is reachable.
@@ -693,7 +690,7 @@ public interface LinphoneCore {
 	int getConferenceSize();
 	
 	void terminateAllCalls();
-	@SuppressWarnings("unchecked") List getCalls();
+	LinphoneCall[] getCalls();
 	int getCallsNb();
 
 

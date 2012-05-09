@@ -774,13 +774,12 @@ void linphone_gtk_answer_clicked(GtkWidget *button){
 
 void linphone_gtk_enable_video(GtkWidget *w){
 	gboolean val=gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w));
-	GtkWidget *selfview_item=linphone_gtk_get_widget(linphone_gtk_get_main_window(),"selfview_item");
+	//GtkWidget *selfview_item=linphone_gtk_get_widget(linphone_gtk_get_main_window(),"selfview_item");
 	LinphoneVideoPolicy policy={0};
 	policy.automatically_initiate=policy.automatically_accept=val;
 	linphone_core_enable_video(linphone_gtk_get_core(),TRUE,TRUE);
 	linphone_core_set_video_policy(linphone_gtk_get_core(),&policy);
 	
-	gtk_widget_set_sensitive(selfview_item,val);
 	if (val){
 		linphone_core_enable_video_preview(linphone_gtk_get_core(),
 		linphone_gtk_get_ui_config_int("videoselfview",VIDEOSELFVIEW_DEFAULT));
@@ -1418,7 +1417,6 @@ static void linphone_gtk_check_menu_items(void){
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(linphone_gtk_get_widget(
 					linphone_gtk_get_main_window(),"enable_video_item")), video_enabled);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(selfview_item),selfview);
-	gtk_widget_set_sensitive(selfview_item,video_enabled);
 }
 
 static gboolean linphone_gtk_can_manage_accounts(){

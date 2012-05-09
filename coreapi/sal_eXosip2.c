@@ -734,7 +734,7 @@ static int send_notify_for_refer(int did, const char *sipfrag){
 	eXosip_call_build_notify(did,EXOSIP_SUBCRSTATE_ACTIVE,&msg);
 	if (msg==NULL){
 		eXosip_unlock();
-		ms_error("Could not build NOTIFY for refer.");
+		ms_warning("Could not build NOTIFY for refer.");
 		return -1;
 	}
 	osip_message_set_content_type(msg,"message/sipfrag");
@@ -760,7 +760,10 @@ int sal_call_notify_refer_state(SalOp *h, SalOp *newcall){
 			}
 		}else{
 			if (!newcall->terminated){
-				send_notify_for_refer(h->did,"SIP/2.0 200 Ok\r\n");
+				if (send_notify_for_refer(h->did,"SIP/2.0 200 Ok\r\n")==-1){
+					/* we need previous notify transaction to complete, so buffer the request for later*/
+					h->sipfrag_pending="SIP/2.0 200 Ok\r\n";
+				}
 			}
 		}
 	}
@@ -1536,7 +1539,7 @@ static void process_refer(Sal *sal, SalOp *op, eXosip_event_t *ev){
 	}
 }
 
-void process_notify(Sal *sal, eXosip_event_t *ev){
+static void process_notify(Sal *sal, eXosip_event_t *ev){
 	osip_header_t *h=NULL;
 	char *from=NULL;
 	SalOp *op=find_op(sal,ev);
@@ -1900,6 +1903,18 @@ static void other_request_reply(Sal *sal,eXosip_event_t *ev){
 	}
 }
 
+static void process_in_call_reply(Sal *sal, eXosip_event_t *ev){
+	SalOp *op=find_op(sal,ev);
+	if (ev->response){
+		if (ev->request && strcmp(osip_message_get_method(ev->request),"NOTIFY")==0){
+			if (op->sipfrag_pending){
+				send_notify_for_refer(op->did,op->sipfrag_pending);
+				op->sipfrag_pending=NULL;
+			}
+		}
+	}
+}
+
 static bool_t process_event(Sal *sal, eXosip_event_t *ev){
 	ms_message("linphone process event get a message %d\n",ev->type);
 	switch(ev->type){
@@ -1961,6 +1976,10 @@ static bool_t process_event(Sal *sal, eXosip_event_t *ev){
 				 return process_authentication(sal,ev);
 			}
 			break;
+		case EXOSIP_CALL_MESSAGE_ANSWERED:
+			ms_message("EXOSIP_CALL_MESSAGE_ANSWERED ");
+			process_in_call_reply(sal,ev);
+		break;
 		case EXOSIP_IN_SUBSCRIPTION_NEW:
 			ms_message("CALL_IN_SUBSCRIPTION_NEW ");
 			sal_exosip_subscription_recv(sal,ev);

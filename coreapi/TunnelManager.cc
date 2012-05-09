@@ -25,6 +25,7 @@
 
 
 using namespace belledonnecomm;
+using namespace ::std;
 
 Mutex TunnelManager::sMutex;
 

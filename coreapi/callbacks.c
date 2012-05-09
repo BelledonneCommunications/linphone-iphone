@@ -341,6 +341,8 @@ static void call_accepted(SalOp *op){
 			}
 			linphone_core_update_streams (lc,call,md);
 			linphone_call_set_state(call,LinphoneCallPaused,"Call paused");
+			if (call->refer_pending)
+				linphone_core_start_refered_call(lc,call);
 		}else if (sal_media_description_has_dir(md,SalStreamRecvOnly)){
 			/*we are put on hold when the call is initially accepted */
 			if (lc->vtable.display_status){
@@ -757,8 +759,10 @@ static void refer_received(Sal *sal, SalOp *op, const char *referto){
 			ms_message("Automatically pausing current call to accept transfer.");
 			linphone_core_pause_call(lc,call);
 			call->was_automatically_paused=TRUE;
-		}
-		linphone_core_start_refered_call(lc,call);
+			/*then we will start the refered when the pause is accepted, in order to serialize transactions within the dialog.
+			 * Indeed we need to avoid to send a NOTIFY to inform about of state of the refered call while the pause isn't completed.
+			**/
+		}else linphone_core_start_refered_call(lc,call);
 	}else if (lc->vtable.refer_received){
 		lc->vtable.refer_received(lc,referto);
 	}
