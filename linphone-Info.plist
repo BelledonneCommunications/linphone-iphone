@@ -31,6 +31,8 @@
 	<string>0.1.5</string>
 	<key>NSMainNibFile</key>
 	<string>BuschJaegerMainView</string>
+	<key>NSMainNibFile~ipad</key>
+	<string>BuschJaegerMainView-ipad</string>
 	<key>UIApplicationExitsOnSuspend</key>
 	<false/>
 	<key>UIBackgroundModes</key>

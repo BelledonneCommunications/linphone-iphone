@@ -48,7 +48,11 @@
     gradient.colors = [NSArray arrayWithObjects:topColor.CGColor, bottomColor.CGColor, nil];
     [button.layer insertSublayer:gradient below:button.imageView.layer];   
 }
-
+// 59x47
+// 54
+// 54 -> 67
+// 59 -> 73 x 58
+// 257
 - (void)viewDidLoad
 {
     [super viewDidLoad];
