@@ -287,6 +287,7 @@
 		70E542F313E147E3002BA2C0 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F213E147E3002BA2C0 /* OpenGLES.framework */; };
 		70E542F513E147EB002BA2C0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F413E147EB002BA2C0 /* QuartzCore.framework */; };
 		D2E1B2E21549A88D007B0B0D /* App_Apple_Icon_DES_114.png in Resources */ = {isa = PBXBuildFile; fileRef = D2E1B2E11549A88D007B0B0D /* App_Apple_Icon_DES_114.png */; };
+		D2E7F40E155CD5AB00970BDF /* App_Apple_Icon_DES_72.png in Resources */ = {isa = PBXBuildFile; fileRef = D2E7F40D155CD5AB00970BDF /* App_Apple_Icon_DES_72.png */; };
 		F476004B147AAF2800FFF19B /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DB911475562600DEE054 /* liblinphone.a */; };
 		F476004C147AAF4600FFF19B /* libmediastreamer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DB8F147555C800DEE054 /* libmediastreamer.a */; };
 /* End PBXBuildFile section */
@@ -691,6 +692,7 @@
 		70E542F413E147EB002BA2C0 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		8D1107310486CEB800E47090 /* linphone-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "linphone-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 		D2E1B2E11549A88D007B0B0D /* App_Apple_Icon_DES_114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = App_Apple_Icon_DES_114.png; path = Resources/App_Apple_Icon_DES_114.png; sourceTree = "<group>"; };
+		D2E7F40D155CD5AB00970BDF /* App_Apple_Icon_DES_72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = App_Apple_Icon_DES_72.png; path = Resources/App_Apple_Icon_DES_72.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1243,6 +1245,7 @@
 			children = (
 				D2E1B2E11549A88D007B0B0D /* App_Apple_Icon_DES_114.png */,
 				5749FCB11518D6C100F0712D /* App_Apple_Icon_DES_57.png */,
+				D2E7F40D155CD5AB00970BDF /* App_Apple_Icon_DES_72.png */,
 				34E28E7914D98F6D00D84BDD /* 01.wav */,
 				34ACD07414D2DBB300EE0B0A /* BuschJaeger */,
 				3485649D152C423F003FE041 /* in_call_video.png */,
@@ -1490,6 +1493,7 @@
 				348564A0152C423F003FE041 /* out_call_video.png in Resources */,
 				D2E1B2E21549A88D007B0B0D /* App_Apple_Icon_DES_114.png in Resources */,
 				34151F96155BF75500205A0E /* BuschJaegerMainView-ipad.xib in Resources */,
+				D2E7F40E155CD5AB00970BDF /* App_Apple_Icon_DES_72.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1556,8 +1560,6 @@
 				3418845814C6F66F00EA48C7 /* status_orange.png in Resources */,
 				3418845A14C6F66F00EA48C7 /* status_red.png in Resources */,
 				3418845D14C7077400EA48C7 /* status_gray.png in Resources */,
-				57282931154AF1460076F540 /* history-orange.png in Resources */,
-				57282933154AF14D0076F540 /* dialer-orange.png in Resources */,
 				34151F97155BF75500205A0E /* BuschJaegerMainView-ipad.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

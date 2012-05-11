@@ -14,6 +14,7 @@
 	<array>
 		<string>App_Apple_Icon_DES_57.png</string>
 		<string>App_Apple_Icon_DES_114.png</string>
+		<string>App_Apple_Icon_DES_72.png</string>
 	</array>
 	<key>CFBundleIdentifier</key>
 	<string>de.busch-jaeger.phone</string>
