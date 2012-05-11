@@ -24,6 +24,41 @@ void sal_enable_logs(){
 void sal_disable_logs() {
 	belle_sip_set_log_level(BELLE_SIP_LOG_ERROR);
 }
+static void sal_add_pending_auth(Sal *sal, SalOp *op){
+	sal->pending_auths=ms_list_append(sal->pending_auths,op);
+}
+
+ void sal_remove_pending_auth(Sal *sal, SalOp *op){
+	sal->pending_auths=ms_list_remove(sal->pending_auths,op);
+}
+
+static void process_authentication(SalOp *op, belle_sip_message_t *response) {
+	/*only process a single header for now*/
+	belle_sip_header_www_authenticate_t* authenticate;
+	belle_sip_header_address_t* from = BELLE_SIP_HEADER_ADDRESS(belle_sip_message_get_header(response,BELLE_SIP_FROM));
+	belle_sip_uri_t* uri = belle_sip_header_address_get_uri(from);
+	authenticate = BELLE_SIP_HEADER_WWW_AUTHENTICATE(belle_sip_message_get_header(response,BELLE_SIP_WWW_AUTHENTICATE));
+	if (!authenticate) {
+		/*search for proxy authenticate*/
+		authenticate = BELLE_SIP_HEADER_WWW_AUTHENTICATE(belle_sip_message_get_header(response,BELLE_SIP_PROXY_AUTHENTICATE));
+
+	}
+
+
+	op->auth_info.realm=(char*)belle_sip_header_www_authenticate_get_realm(authenticate);
+	op->auth_info.username=(char*)belle_sip_uri_get_user(uri);
+	if (authenticate) {
+		if (op->base.root->callbacks.auth_requested(op,&op->auth_info)) {
+			sal_op_authenticate(op,&op->auth_info);
+		} else {
+			ms_message("No auth info found for [%s] at [%s]",op->auth_info.username,op->auth_info.realm);
+			sal_add_pending_auth(op->base.root,op);
+		}
+	} else {
+		ms_error(" missing authenticate header");
+	}
+
+}
 static void process_dialog_terminated(void *user_ctx, const belle_sip_dialog_terminated_event_t *event){
 	ms_error("process_dialog_terminated not implemented yet");
 }
@@ -31,7 +66,9 @@ static void process_io_error(void *user_ctx, const belle_sip_io_error_event_t *e
 	ms_error("process_io_error not implemented yet");
 }
 static void process_request_event(void *user_ctx, const belle_sip_request_event_t *event) {
-	ms_error("process_request_event not implemented yet");
+	belle_sip_server_transaction_t* server_transaction = belle_sip_request_event_get_server_transaction(event);
+	SalOp* op = (SalOp*)belle_sip_transaction_get_application_data(BELLE_SIP_TRANSACTION(server_transaction));
+	ms_error("sal process_request_event not implemented yet");
 }
 
 static void process_response_event(void *user_ctx, const belle_sip_response_event_t *event){
@@ -46,6 +83,9 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 	int rport;
 	bool_t contact_updated=FALSE;
 	char* new_contact;
+	belle_sip_request_t* old_request=NULL;;
+	belle_sip_response_t* old_response=NULL;;
+	int response_code = belle_sip_response_get_status_code(response);
 
 	if (op->callbacks.process_response_event) {
 		/*Fix contact if needed*/
@@ -76,6 +116,31 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 				belle_sip_object_unref(contact_address);
 			}
 
+		}
+		/*update request/response
+		 * maybe only the transaction should be kept*/
+		old_request=op->request;
+		op->request=belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(client_transaction));
+		belle_sip_object_ref(op->request);
+		if (old_request) belle_sip_object_unref(old_request);
+
+		old_response=op->response;
+		op->response=response; /*kept for use at authorization time*/
+		belle_sip_object_ref(op->response);
+		if (old_response) belle_sip_object_unref(old_response);
+
+		/*handle authozation*/
+		switch (response_code) {
+		case 200: {
+			sal_remove_pending_auth(op->base.root,op);/*just in case*/
+			break;
+		}
+		case 401:
+		case 407:{
+
+			process_authentication(op,BELLE_SIP_MESSAGE(response));
+			return;
+		}
 		}
 		op->callbacks.process_response_event(op,event);
 	} else {
@@ -221,7 +286,7 @@ unsigned int sal_get_keepalive_period(Sal *ctx){
 	return -1;
 }
 void sal_use_session_timers(Sal *ctx, int expires){
-	ms_error("sal_use_session_timers not implemented yet");
+	ctx->session_expires=expires;
 	return ;
 }
 void sal_use_double_registrations(Sal *ctx, bool_t enabled){

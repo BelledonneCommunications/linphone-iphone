@@ -2,6 +2,7 @@
 sip_port=5072
 sip_tcp_port=5072
 sip_tls_port=5073
+default_proxy=0
 
 [auth_info_0]
 username=liblinphone_tester
@@ -10,28 +11,34 @@ passwd=secret
 realm="auth.example.org"
 
 [auth_info_1]
-username=liblinphone_tester
-userid=liblinphone_tester
+username=pauline
+userid=pauline
 passwd=secret
-realm="auth1.example.org"
+realm="auth.example.org"
 
 [auth_info_2]
 username=liblinphone_tester
 userid=liblinphone_tester
 passwd=secret
-realm="auth2.example.org"
+realm="auth1.example.org"
+
+[auth_info_3]
+username=marie
+userid=marie
+passwd=secret
+realm="auth.example.org"
 
 [proxy_0]
-reg_proxy=auth.example.org
-reg_identity=sip:liblinphone_tester@auth.example.org
+reg_proxy=auth.example.org;transport=tls
+reg_identity=sip:pauline@auth.example.org
 reg_expires=3600
 reg_sendregister=1
 publish=0
 dial_escape_plus=0
 
 [proxy_1]
-reg_proxy=auth.example.org
-reg_identity=sip:liblinphone_tester@auth1.example.org
+reg_proxy=auth.example.org;transport=tcp
+reg_identity=sip:marie@auth.example.org
 reg_expires=3600
 reg_sendregister=1
 publish=0
@@ -39,7 +46,7 @@ dial_escape_plus=0
 
 [proxy_2]
 reg_proxy=auth.example.org
-reg_identity=sip:liblinphone_tester@auth2.example.org
+reg_identity=sip:liblinphone_tester@auth1.example.org
 reg_expires=3600
 reg_sendregister=1
 publish=0

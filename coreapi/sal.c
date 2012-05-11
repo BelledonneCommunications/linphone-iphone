@@ -256,11 +256,20 @@ void sal_op_set_route_address(SalOp *op, const SalAddress *address){
 	ms_free(address_string);
 }
 void sal_op_set_from(SalOp *op, const char *from){
-	assign_string(&((SalOpBase*)op)->from,from);
+	SET_PARAM(op,from);
 }
-
+void sal_op_set_from_address(SalOp *op, const SalAddress *from){
+	char* address_string=sal_address_as_string(from); /*can probably be optimized*/
+	sal_op_set_from(op,address_string);
+	ms_free(address_string);
+}
 void sal_op_set_to(SalOp *op, const char *to){
-	assign_string(&((SalOpBase*)op)->to,to);
+	SET_PARAM(op,to);
+}
+void sal_op_set_to_address(SalOp *op, const SalAddress *to){
+	char* address_string=sal_address_as_string(to); /*can probably be optimized*/
+	sal_op_set_to(op,address_string);
+	ms_free(address_string);
 }
 
 void sal_op_set_user_pointer(SalOp *op, void *up){
@@ -274,11 +283,17 @@ Sal *sal_op_get_sal(const SalOp *op){
 const char *sal_op_get_from(const SalOp *op){
 	return ((SalOpBase*)op)->from;
 }
+const SalAddress *sal_op_get_from_address(const SalOp *op){
+	return ((SalOpBase*)op)->from_address;
+}
 
 const char *sal_op_get_to(const SalOp *op){
 	return ((SalOpBase*)op)->to;
 }
 
+const SalAddress *sal_op_get_to_address(const SalOp *op){
+	return ((SalOpBase*)op)->to_address;
+}
 const char *sal_op_get_contact(const SalOp *op){
 	return ((SalOpBase*)op)->contact;
 }
@@ -392,4 +407,5 @@ const char* sal_stream_dir_to_string(SalStreamDir type) {
 	case SalStreamInactive:return "inative";
 	default: return "unknown";
 	}
+
 }

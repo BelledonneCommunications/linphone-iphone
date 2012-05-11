@@ -73,7 +73,7 @@ belle_sdp_session_description_t * media_description_to_sdp(const SalMediaDescrip
 		for (pt_it=desc->streams[i].payloads;pt_it!=NULL;pt_it=pt_it->next) {
 			pt=(PayloadType*)pt_it->data;
 			mime_param= belle_sdp_mime_parameter_create(pt->mime_type
-														, pt->type
+														, payload_type_get_number(pt)
 														, pt->clock_rate
 														,desc->streams[i].type==SalAudio?1:-1);
 			belle_sdp_mime_parameter_set_parameters(mime_param,pt->recv_fmtp);

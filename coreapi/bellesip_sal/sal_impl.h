@@ -30,20 +30,22 @@ struct Sal{
 	belle_sip_stack_t* stack;
 	belle_sip_provider_t *prov;
 	void *up; /*user pointer*/
+	int session_expires;
 };
 
 
 struct SalOp{
 	SalOpBase base;
 	belle_sip_listener_callbacks_t callbacks;
-	belle_sip_request_t* register_request;
-	belle_sip_response_t* register_response;
+	belle_sip_request_t* request;
+	belle_sip_response_t* response;
 	SalAuthInfo auth_info;
 	unsigned long int  registration_refresh_timer;
+	bool_t sdp_offering;
 };
 
 belle_sdp_session_description_t * media_description_to_sdp(const SalMediaDescription *sal);
 int sdp_to_media_description(belle_sdp_session_description_t  *sdp, SalMediaDescription *desc);
-
+belle_sip_request_t* sal_op_build_request(SalOp *op,const char* method);
 
 #endif /* SAL_IMPL_H_ */
