@@ -120,6 +120,7 @@ belle_sip_request_t* sal_op_build_request(SalOp *op,const char* method) {
 		                    belle_sip_header_via_new(),
 		                    70);
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(contact_header));
+	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(op->base.root->user_agent));
 	return req;
 }
 

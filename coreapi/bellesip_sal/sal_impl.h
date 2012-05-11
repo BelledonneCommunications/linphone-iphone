@@ -29,6 +29,7 @@ struct Sal{
 	belle_sip_listener_callbacks_t listener_callbacks;
 	belle_sip_stack_t* stack;
 	belle_sip_provider_t *prov;
+	belle_sip_header_user_agent_t* user_agent;
 	void *up; /*user pointer*/
 	int session_expires;
 };

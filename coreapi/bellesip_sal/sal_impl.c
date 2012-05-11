@@ -17,7 +17,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 #include "sal_impl.h"
-
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 void sal_enable_logs(){
 	belle_sip_set_log_level(BELLE_SIP_LOG_MESSAGE);
 }
@@ -66,8 +68,8 @@ static void process_io_error(void *user_ctx, const belle_sip_io_error_event_t *e
 	ms_error("process_io_error not implemented yet");
 }
 static void process_request_event(void *user_ctx, const belle_sip_request_event_t *event) {
-	belle_sip_server_transaction_t* server_transaction = belle_sip_request_event_get_server_transaction(event);
-	SalOp* op = (SalOp*)belle_sip_transaction_get_application_data(BELLE_SIP_TRANSACTION(server_transaction));
+	/*belle_sip_server_transaction_t* server_transaction = belle_sip_request_event_get_server_transaction(event);
+	SalOp* op = (SalOp*)belle_sip_transaction_get_application_data(BELLE_SIP_TRANSACTION(server_transaction));*/
 	ms_error("sal process_request_event not implemented yet");
 }
 
@@ -168,7 +170,13 @@ static void process_transaction_terminated(void *user_ctx, const belle_sip_trans
 }
 
 Sal * sal_init(){
+	char stack_string[64];
 	Sal * sal=ms_new0(Sal,1);
+	snprintf(stack_string,sizeof(stack_string)-1,"(belle-sip/%s)",belle_sip_version_to_string());
+	sal->user_agent=belle_sip_header_user_agent_new();
+	belle_sip_header_user_agent_add_product(sal->user_agent, PACKAGE_NAME "/" LINPHONE_VERSION);
+	belle_sip_header_user_agent_add_product(sal->user_agent,stack_string);
+	belle_sip_object_ref(sal->user_agent);
 	sal->stack = belle_sip_stack_new(NULL);
 	sal->prov = belle_sip_stack_create_provider(sal->stack,NULL);
 	sal->listener_callbacks.process_dialog_terminated=process_dialog_terminated;
@@ -235,6 +243,7 @@ void sal_set_callbacks(Sal *ctx, const SalCallbacks *cbs){
 
 
 void sal_uninit(Sal* sal){
+	belle_sip_object_unref(sal->user_agent);
 	belle_sip_object_unref(sal->prov);
 	belle_sip_object_unref(sal->stack);
 	ms_free(sal);
@@ -269,7 +278,8 @@ ortp_socket_t sal_get_socket(Sal *ctx){
 	return -1;
 }
 void sal_set_user_agent(Sal *ctx, const char *user_agent){
-	ms_error("sal_set_user_agent not implemented yet");
+	belle_sip_header_user_agent_set_products(ctx->user_agent,NULL);
+	belle_sip_header_user_agent_add_product(ctx->user_agent,user_agent);
 	return ;
 }
 /*keepalive period in ms*/

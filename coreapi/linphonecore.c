@@ -1470,15 +1470,17 @@ extern const char *eXosip_get_version();
 #endif
 
 static void apply_user_agent(LinphoneCore *lc){
+#if !USE_BELLESIP /*default user agent is handled at sal level*/
 	char ua_string[256];
 	snprintf(ua_string,sizeof(ua_string)-1,"%s/%s (eXosip2/%s)",_ua_name,_ua_version,
-#if HAVE_EXOSIP_GET_VERSION && !USE_BELLESIP
+#if HAVE_EXOSIP_GET_VERSION
 		 eXosip_get_version()
 #else
 		 "unknown"
 #endif
 	);
 	if (lc->sal) sal_set_user_agent(lc->sal,ua_string);
+#endif
 }
 
 /**
@@ -1537,7 +1539,9 @@ static int apply_transports(LinphoneCore *lc){
 			transport_error(lc,"tls",tr->tls_port);
 		}
 	}
+
 	apply_user_agent(lc);
+
 	return 0;
 }
 
