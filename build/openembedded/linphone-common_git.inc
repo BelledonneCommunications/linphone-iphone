@@ -1,5 +1,5 @@
 
-SRCREV = "c65a7ee79d66ee2c0eb19cde129221be650c07ca"
+SRCREV = "d6ef1b93955a457a68139f4b058fd8a41a3dc480"
 L_GIT_SRC_URI = "gitosis@git.linphone.org:linphone-daemon"
 PR_append = "+gitr${SRCREV}"
 
