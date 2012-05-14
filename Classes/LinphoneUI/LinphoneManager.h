@@ -98,6 +98,7 @@ typedef struct _LinphoneCallAppData {
 
 -(BOOL) reconfigureLinphoneIfNeeded:(NSDictionary *)oldSettings;
 -(void) setupNetworkReachabilityCallback: (const char*) nodeName withContext:(SCNetworkReachabilityContext*) ctx;
+-(void) refreshRegisters;
 
 @property (nonatomic, retain) id<LinphoneUICallDelegate> callDelegate;
 @property (nonatomic, retain) id<LinphoneUIRegistrationDelegate> registrationDelegate;

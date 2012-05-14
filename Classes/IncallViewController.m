@@ -75,6 +75,9 @@ const NSInteger SECURE_BUTTON_TAG=5;
 @synthesize videoCameraSwitch;
 @synthesize videoUpdateIndicator;
 @synthesize videoWaitingForFirstImage;
+#ifdef TEST_VIDEO_VIEW_CHANGE
+@synthesize testVideoView;
+#endif
 
 @synthesize addVideo;
 
@@ -239,6 +242,19 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     }
 }
 
+#ifdef TEST_VIDEO_VIEW_CHANGE
+// Define TEST_VIDEO_VIEW_CHANGE in IncallViewController.h to enable video view switching testing
+-(void) _debugChangeVideoView {
+    static bool normalView = false;
+    if (normalView) {
+        linphone_core_set_native_video_window_id([LinphoneManager getLc], (unsigned long)videoView);
+    } else {
+        linphone_core_set_native_video_window_id([LinphoneManager getLc], (unsigned long)testVideoView);
+    }
+    normalView = !normalView;
+}
+#endif
+
 -(void) enableVideoDisplay {
     [self orientationChanged:nil];
     
@@ -270,6 +286,9 @@ void addAnimationFadeTransition(UIView* view, float duration) {
         done = true;
     }
     
+#ifdef TEST_VIDEO_VIEW_CHANGE
+    [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(_debugChangeVideoView) userInfo:nil repeats:YES];
+#endif
     [self batteryLevelChanged:nil];
 }
 
