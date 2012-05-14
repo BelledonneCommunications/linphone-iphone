@@ -260,15 +260,6 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     
     [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
     
-    // This is a bit hacky: take into account toolbar removal (only once).
-    // It's probably possible to do this from the Xib file (?)
-    static bool done = false;
-    if (!done) {
-        ms_message("old center: %f %f", videoView.center.x, videoView.center.y);
-        videoView.center = CGPointMake(videoView.center.x, videoView.center.y + (self.view.frame.size.height - videoView.window.frame.size.height));
-        ms_message("new center: %f %f", videoView.center.x, videoView.center.y);
-        done = true;
-    }
     
     [self batteryLevelChanged:nil];
 }
