@@ -806,6 +806,18 @@ void linphone_gtk_used_identity_changed(GtkWidget *w){
 	if (sel) g_free(sel);
 }
 
+
+void on_proxy_refresh_button_clicked(GtkWidget *w){
+	LinphoneCore *lc=linphone_gtk_get_core();
+	MSList const *item=linphone_core_get_proxy_config_list(lc);
+	while (item != NULL) {
+		LinphoneProxyConfig *lpc=(LinphoneProxyConfig*)item->data;
+		linphone_proxy_config_edit(lpc);
+		linphone_proxy_config_done(lpc);
+		item = item->next;
+	}
+}
+
 static void linphone_gtk_notify_recv(LinphoneCore *lc, LinphoneFriend * fid){
 	linphone_gtk_show_friends();
 }
