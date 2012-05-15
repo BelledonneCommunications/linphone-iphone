@@ -1062,6 +1062,10 @@ static void handle_ack(Sal *sal,  eXosip_event_t *ev){
 		ms_warning("ack for non-existing call !");
 		return;
 	}
+	if (op->terminated) {
+		ms_warning("ack for terminated call, ignoring");
+		return;
+	}
 	
 	if (op->sdp_offering){
 		sdp=eXosip_get_sdp_info(ev->ack);
