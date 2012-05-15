@@ -245,6 +245,24 @@ if test x$ipv6 = xtrue ; then
 fi
 AC_SUBST(IPV6_CFLAGS)
 
+dnl enable timestamp support
+AC_ARG_ENABLE(rtp-timestamp,
+      [  --enable-rtp-timestamp Turn on RTP packet timestamp],
+      [case "${enableval}" in
+        yes)  rtptimestamp=true;;
+        no)   rtptimestamp=false;;
+        *) AC_MSG_ERROR(bad value ${enableval} for --enable-rtp-timestamp) ;;
+      esac],[rtptimestamp=false])
+
+AC_ARG_ENABLE(debug,
+                        [  --enable-debug=[yes/no]   enables the display of traces showing the execution of the library. [default=yes]],
+                        [case "${enableval}" in
+                                yes) debug_enabled=yes;;
+                                no) debug_enabled=no;;
+                                *) AC_MSG_ERROR("Bad value for --enable-debug");;
+                        esac],
+                        [debug_enabled=no])
+
 dnl enable truespeech codec support
 AC_ARG_ENABLE(truespeech,
       [  --enable-truespeech    Turn on TrueSpeech support (x86 only)],
@@ -561,6 +579,9 @@ else
 	ORTP_LIBS="\$(top_builddir)/oRTP/src/libortp.la"
 	if test x$ac_cv_c_bigendian = xyes ; then
 		ORTP_CFLAGS="$ORTP_CFLAGS -DORTP_BIGENDIAN"
+	fi
+	if test x$rtptimestamp = xtrue ; then
+        	ORTP_CFLAGS="$ORTP_CFLAGS -DORTP_TIMESTAMP"
 	fi
 	ORTP_DIR=oRTP
 	changequote(<<, >>)
