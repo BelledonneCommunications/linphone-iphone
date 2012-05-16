@@ -246,13 +246,13 @@ fi
 AC_SUBST(IPV6_CFLAGS)
 
 dnl enable timestamp support
-AC_ARG_ENABLE(rtp-timestamp,
-      [  --enable-rtp-timestamp Turn on RTP packet timestamp],
+AC_ARG_ENABLE(ntp-timestamp,
+      [  --enable-ntp-timestamp Turn on NTP timestamping on received packet],
       [case "${enableval}" in
-        yes)  rtptimestamp=true;;
-        no)   rtptimestamp=false;;
-        *) AC_MSG_ERROR(bad value ${enableval} for --enable-rtp-timestamp) ;;
-      esac],[rtptimestamp=false])
+        yes)  ntptimestamp=true;;
+        no)   ntptimestamp=false;;
+        *) AC_MSG_ERROR(bad value ${enableval} for --enable-ntp-timestamp) ;;
+      esac],[ntptimestamp=false])
 
 AC_ARG_ENABLE(debug,
                         [  --enable-debug=[yes/no]   enables the display of traces showing the execution of the library. [default=yes]],
