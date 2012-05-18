@@ -196,7 +196,6 @@ void linphone_tunnel_configure(LinphoneTunnel *tunnel){
 	linphone_tunnel_enable(tunnel, enabled);
 }
 
-
 #else
 
 /*stubs to avoid to have #ifdef TUNNEL_ENABLED in upper layers*/
@@ -225,8 +224,6 @@ bool_t linphone_tunnel_enabled(LinphoneTunnel *tunnel){
 	return FALSE;
 }
 
-void linphone_tunnel_enable_logs(LinphoneTunnel *tunnel, bool_t enabled){
-}
 
 void linphone_tunnel_enable_logs_with_handler(LinphoneTunnel *tunnel, bool_t enabled, OrtpLogFunc logHandler){
 }
