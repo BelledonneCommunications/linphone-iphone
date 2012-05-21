@@ -318,7 +318,7 @@ static void linphone_call_init_common(LinphoneCall *call, LinphoneAddress *from,
 }
 
 void linphone_call_init_stats(LinphoneCallStats *stats, int type) {
-	stats->type = LINPHONE_CALL_STATS_AUDIO;
+	stats->type = type;
 	stats->received_rtcp = NULL;
 	stats->sent_rtcp = NULL;
 }
