@@ -477,7 +477,7 @@ const char *linphone_proxy_config_get_route(const LinphoneProxyConfig *obj){
 /**
  * Returns the SIP identity that belongs to this proxy configuration.
  *
- * The SIP identity is a SIP address (Display Name <sip:username@domain> )
+ * The SIP identity is a SIP address (Display Name <sip:username@@domain> )
 **/
 const char *linphone_proxy_config_get_identity(const LinphoneProxyConfig *obj){
 	return obj->reg_identity;

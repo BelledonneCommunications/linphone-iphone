@@ -52,7 +52,7 @@ extern "C"
  * Add a tunnel server. At least one should be provided to be able to connect.
  * When several addresses are provided, the tunnel client may try each of them until it gets connected.
  * @param  tunnel object
- * @param ip server ip address
+ * @param host server ip address
  * @param port tunnel server tls port, recommended value is 443
  */
 void linphone_tunnel_add_server(LinphoneTunnel *tunnel, const char *host, int port);
@@ -60,7 +60,7 @@ void linphone_tunnel_add_server(LinphoneTunnel *tunnel, const char *host, int po
  *Add tunnel server with auto detection capabilities
  *
  * @param  tunnel object
- * @param ip tunnel server ip address
+ * @param host tunnel server ip address
  * @param port tunnel server tls port, recommended value is 443
  * @param remote_udp_mirror remote port on the tunnel server side  used to test udp reachability
  * @param delay udp packet round trip delay in ms considered as acceptable. recommended value is 1000 ms.
@@ -79,7 +79,7 @@ void linphone_tunnel_clean_servers(LinphoneTunnel *tunnel);
 /**
  * Sets whether tunneling of SIP and RTP is required.
  * @param  tunnel object
- * @param isEnabled If true enter in tunneled mode, if false exits from tunneled mode.
+ * @param enabled If true enter in tunneled mode, if false exits from tunneled mode.
  * The TunnelManager takes care of refreshing SIP registration when switching on or off the tunneled mode.
  *
 **/
@@ -108,6 +108,10 @@ void linphone_tunnel_set_http_proxy(LinphoneTunnel *tunnel, const char *host, in
 void linphone_tunnel_set_http_proxy_auth_info(LinphoneTunnel*tunnel, const char* username,const char* passwd);
 
 void linphone_tunnel_enable_logs(LinphoneTunnel *tunnel, bool_t enabled);
+
+/**
+ * @}
+**/
 
 #ifdef __cplusplus
 }

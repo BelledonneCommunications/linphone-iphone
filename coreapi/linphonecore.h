@@ -227,6 +227,9 @@ typedef struct _LinphoneVideoPolicy LinphoneVideoPolicy;
  * The LinphoneCall object represents a call issued or received by the LinphoneCore
 **/
 struct _LinphoneCall;
+/**
+ * The LinphoneCall object represents a call issued or received by the LinphoneCore
+**/
 typedef struct _LinphoneCall LinphoneCall;
     
 /** Callback prototype */

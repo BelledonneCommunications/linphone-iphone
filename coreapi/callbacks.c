@@ -463,7 +463,7 @@ static void call_updating(SalOp *op){
 		case LinphoneCallPausedByRemote:
 			if (sal_media_description_has_dir(rmd,SalStreamSendRecv) || sal_media_description_has_dir(rmd,SalStreamRecvOnly)){
 				call_resumed(lc,call);
-			}
+			}else call_paused_by_remote(lc,call);
 		break;
 		case LinphoneCallStreamsRunning:
 		case LinphoneCallConnected:
