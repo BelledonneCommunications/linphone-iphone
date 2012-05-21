@@ -580,7 +580,7 @@ else
 	if test x$ac_cv_c_bigendian = xyes ; then
 		ORTP_CFLAGS="$ORTP_CFLAGS -DORTP_BIGENDIAN"
 	fi
-	if test x$rtptimestamp = xtrue ; then
+	if test x$ntptimestamp = xtrue ; then
         	ORTP_CFLAGS="$ORTP_CFLAGS -DORTP_TIMESTAMP"
 	fi
 	ORTP_DIR=oRTP
