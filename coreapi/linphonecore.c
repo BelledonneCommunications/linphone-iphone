@@ -2367,7 +2367,7 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
  * Then, when the user responds to dialog prompt, it becomes possible to call linphone_core_accept_call_update() to answer
  * the reINVITE, with eventually video enabled in the LinphoneCallParams argument.
  * 
- * @Returns 0 if successful, -1 if the linphone_core_defer_call_update() was done outside a #LinphoneCallUpdatedByRemote notification, which is illegal.
+ * @return 0 if successful, -1 if the linphone_core_defer_call_update() was done outside a #LinphoneCallUpdatedByRemote notification, which is illegal.
 **/
 int linphone_core_defer_call_update(LinphoneCore *lc, LinphoneCall *call){
 	if (call->state==LinphoneCallUpdatedByRemote){
@@ -2395,7 +2395,7 @@ int linphone_core_defer_call_update(LinphoneCore *lc, LinphoneCall *call){
  * @param lc the linphone core object.
  * @param call the LinphoneCall object
  * @param params a LinphoneCallParams object describing the call parameters to accept.
- * @Returns 0 if sucessful, -1 otherwise (actually when this function call is performed outside ot #LinphoneCallUpdatedByRemote state).
+ * @return 0 if sucessful, -1 otherwise (actually when this function call is performed outside ot #LinphoneCallUpdatedByRemote state).
 **/
 int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params){
 	SalMediaDescription *md;
