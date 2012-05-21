@@ -741,7 +741,6 @@ public interface LinphoneCore {
 	void setPlayFile(String path);
 	void tunnelEnable(boolean enable);
 	void tunnelAutoDetect();
-	void tunnelEnableLogs(boolean enable);
 	void tunnelCleanServers();
 	/**
 	 * @param host tunnel server ip address

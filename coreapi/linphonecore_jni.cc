@@ -1680,12 +1680,6 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_tunnelEnable(JNIEnv *env
 #endif
 }
 
-extern "C" void Java_org_linphone_core_LinphoneCoreImpl_tunnelEnableLogs(JNIEnv *env,jobject thiz,jlong pCore, jboolean enable) {
-#ifdef TUNNEL_ENABLED
-	LinphoneTunnel *tunnel=((LinphoneCore *) pCore)->tunnel; if (!tunnel) return;
-	linphone_tunnel_enable_logs(tunnel, enable);
-#endif
-}
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setUserAgent(JNIEnv *env,jobject thiz,jlong pCore, jstring name, jstring version){
 	const char* cname=env->GetStringUTFChars(name, NULL);
