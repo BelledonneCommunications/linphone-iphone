@@ -644,7 +644,7 @@ typedef void (*BuddyInfoUpdated)(struct _LinphoneCore *lc, LinphoneFriend *lf);
 /** Callback prototype for in progress transfers. The new_call_state is the state of the call resulting of the transfer, at the other party. */
 typedef void (*LinphoneTransferStateChanged)(struct _LinphoneCore *lc, LinphoneCall *transfered, LinphoneCallState new_call_state);
 /** Callback prototype */
-typedef void (*CallStatsUpdated)(struct _LinphoneCore *lc, LinphoneCall *call, LinphoneCallStats *stats);
+typedef void (*CallStatsUpdated)(struct _LinphoneCore *lc, LinphoneCall *call, const LinphoneCallStats *stats);
 
 /**
  * This structure holds all callbacks that the application should implement.
