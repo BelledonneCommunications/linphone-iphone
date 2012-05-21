@@ -667,8 +667,8 @@ void addAnimationFadeTransition(UIView* view, float duration) {
 	dismissed = false;
 	UIDevice *device = [UIDevice currentDevice];
     device.proximityMonitoringEnabled = YES;
-	if ([speaker isOn]) 
-		[speaker toggle];
+	//if ([speaker isOn]) 
+	//	[speaker toggle];
     [self updateUIFromLinphoneState: YES]; 
 }
 
@@ -681,7 +681,7 @@ void addAnimationFadeTransition(UIView* view, float duration) {
 	UIDevice *device = [UIDevice currentDevice];
     device.proximityMonitoringEnabled = YES;
 	if (call !=nil  && linphone_call_get_dir(call)==LinphoneCallIncoming) {
-		if ([speaker isOn]) [speaker toggle];
+		//if ([speaker isOn]) [speaker toggle];
 	}
     [self updateUIFromLinphoneState: YES];
     
