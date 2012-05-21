@@ -25,24 +25,8 @@ void CallStatsCommand::exec(Daemon *app, const char *args) {
 		}
 	}
 
-	LinphoneCallState call_state = LinphoneCallIdle;
-	call_state = linphone_call_get_state(call);
-	const LinphoneCallParams *callParams = linphone_call_get_current_params(call);
-	const PayloadType *audioCodec = linphone_call_params_get_used_audio_codec(callParams);
-	const PayloadType *videoCodec = linphone_call_params_get_used_video_codec(callParams);
 	ostringstream ostr;
-	ostr << linphone_call_state_to_string(call_state) << "\n";
-
-	switch (call_state) {
-	case LinphoneCallStreamsRunning:
-	case LinphoneCallConnected:
-		if (audioCodec != NULL)
-			ostr << PayloadTypeResponse(app->getCore(), audioCodec, -1, "Audio-", false).getBody() << "\n";
-		if (videoCodec != NULL)
-			ostr << PayloadTypeResponse(app->getCore(), videoCodec, -1, "Audio-", false).getBody() << "\n";
-		break;
-	default:
-		break;
-	}
+	ostr << CallStatsResponse(call, linphone_call_get_audio_stats(call), false).getBody();
+	ostr << CallStatsResponse(call, linphone_call_get_video_stats(call), false).getBody();
 	app->sendResponse(Response(ostr.str().c_str(), Response::Ok));
 }

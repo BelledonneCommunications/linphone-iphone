@@ -84,6 +84,12 @@ public:
 private:
 };
 
+class CallStatsResponse: public Response {
+public:
+	CallStatsResponse(LinphoneCall *call, const LinphoneCallStats *stats, bool unique);
+private:
+};
+
 class DtmfResponse: public Response {
 public:
 	DtmfResponse(LinphoneCall *call, int dtmf);
@@ -119,9 +125,11 @@ public:
 private:
 
 	static void callStateChanged(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState state, const char *msg);
+	static void callStatsUpdated(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallStats *stats);
 	static void dtmfReceived(LinphoneCore *lc, LinphoneCall *call, int dtmf);
 	static int readlineHook();
 	void callStateChanged(LinphoneCall *call, LinphoneCallState state, const char *msg);
+	void callStatsUpdated(LinphoneCall *call, const LinphoneCallStats *stats);
 	void dtmfReceived(LinphoneCall *call, int dtmf);
 	void execCommand(const char *cl);
 	void initReadline();

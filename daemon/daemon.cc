@@ -50,6 +50,89 @@ DtmfResponse::DtmfResponse(LinphoneCall *call, int dtmf) {
 	ms_free(remote);
 }
 
+CallStatsResponse::CallStatsResponse(LinphoneCall *call, const LinphoneCallStats *stats, bool event) {
+	LinphoneCallState call_state = LinphoneCallIdle;
+	call_state = linphone_call_get_state(call);
+	const LinphoneCallParams *callParams = linphone_call_get_current_params(call);
+	const char *prefix = "";
+
+	ostringstream ostr;
+	if (event) {
+		ostr << "Event-type: call-stats\n";
+		ostr << "Id: " << Daemon::getCallId(call) << "\n";
+		ostr << "Type: ";
+		if (stats->type == LINPHONE_CALL_STATS_AUDIO) {
+			ostr << "Audio";
+		} else {
+			ostr << "Video";
+		}
+		ostr << "\n";
+	} else {
+		prefix = ((stats->type == LINPHONE_CALL_STATS_AUDIO) ? "Audio-" : "Video-");
+	}
+	ostr << prefix << "RoundTripDelay: " << stats->round_trip_delay << "\n";
+	ostr << prefix << "Jitter: " << stats->jitter_stats.jitter << "\n";
+//	ostr << prefix << "MaxJitter: " << stats->jitter_stats.max_jitter << "\n";
+//	ostr << prefix << "SumJitter: " << stats->jitter_stats.sum_jitter << "\n";
+//	ostr << prefix << "MaxJitterTs: " << stats->jitter_stats.max_jitter_ts << "\n";
+	ostr << prefix << "JitterBufferSizeMs: " << stats->jitter_stats.jitter_buffer_size_ms << "\n";
+
+	const report_block_t *rrb = NULL;
+	if (stats->received_rtcp != NULL) {
+		if (stats->received_rtcp->b_cont != NULL)
+			msgpullup(stats->received_rtcp, -1);
+		if (rtcp_is_SR(stats->received_rtcp)) {
+			rrb = rtcp_SR_get_report_block(stats->received_rtcp, 0);
+		} else if (rtcp_is_RR(stats->received_rtcp)) {
+			rrb = rtcp_RR_get_report_block(stats->received_rtcp, 0);
+		}
+	}
+	if (rrb) {
+		unsigned int ij;
+		float flost;
+		ij = report_block_get_interarrival_jitter(rrb);
+		flost = (float) (100.0 * report_block_get_fraction_lost(rrb) / 256.0);
+		ostr << prefix << "Received-InterarrivalJitter: " << ij << "\n";
+		ostr << prefix << "Received-FractionLost: " << flost << "\n";
+	}
+
+	const report_block_t *srb = NULL;
+	if (stats->sent_rtcp != NULL) {
+		if (stats->sent_rtcp->b_cont != NULL)
+			msgpullup(stats->sent_rtcp, -1);
+		if (rtcp_is_SR(stats->sent_rtcp)) {
+			srb = rtcp_SR_get_report_block(stats->sent_rtcp, 0);
+		} else if (rtcp_is_RR(stats->sent_rtcp)) {
+			srb = rtcp_RR_get_report_block(stats->sent_rtcp, 0);
+		}
+	}
+	if (srb) {
+		unsigned int ij;
+		float flost;
+		ij = report_block_get_interarrival_jitter(srb);
+		flost = (float) (100.0 * report_block_get_fraction_lost(srb) / 256.0);
+		ostr << prefix << "Sent-InterarrivalJitter: " << ij << "\n";
+		ostr << prefix << "Sent-FractionLost: " << flost << "\n";
+	}
+
+	switch (call_state) {
+	case LinphoneCallStreamsRunning:
+	case LinphoneCallConnected:
+		if (stats->type == LINPHONE_CALL_STATS_AUDIO) {
+			const PayloadType *audioCodec = linphone_call_params_get_used_audio_codec(callParams);
+			ostr << PayloadTypeResponse(linphone_call_get_core(call), audioCodec, -1, prefix, false).getBody() << "\n";
+		} else {
+			const PayloadType *videoCodec = linphone_call_params_get_used_video_codec(callParams);
+			ostr << PayloadTypeResponse(linphone_call_get_core(call), videoCodec, -1, prefix, false).getBody() << "\n";
+		}
+		break;
+	default:
+		break;
+	}
+
+	setBody(ostr.str().c_str());
+}
+
 PayloadTypeResponse::PayloadTypeResponse(LinphoneCore *core, const PayloadType *payloadType, int index, const string &prefix, bool enabled_status) {
 	ostringstream ostr;
 	if (payloadType != NULL) {
@@ -103,6 +186,7 @@ Daemon::Daemon(const char *config_path, const char *factory_config_path, const c
 
 	LinphoneCoreVTable vtable = { 0 };
 	vtable.call_state_changed = callStateChanged;
+	vtable.call_stats_updated = callStatsUpdated;
 	vtable.dtmf_received = dtmfReceived;
 	mLc = linphone_core_new(&vtable, config_path, factory_config_path, this);
 	linphone_core_enable_video(mLc, display_video, capture_video);
@@ -230,6 +314,10 @@ void Daemon::callStateChanged(LinphoneCall *call, LinphoneCallState state, const
 	}
 }
 
+void Daemon::callStatsUpdated(LinphoneCall *call, const LinphoneCallStats *stats) {
+	mEventQueue.push(new CallStatsResponse(call, stats, true));
+}
+
 void Daemon::dtmfReceived(LinphoneCall *call, int dtmf) {
 	mEventQueue.push(new DtmfResponse(call, dtmf));
 }
@@ -237,6 +325,10 @@ void Daemon::dtmfReceived(LinphoneCall *call, int dtmf) {
 void Daemon::callStateChanged(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState state, const char *msg) {
 	Daemon *app = (Daemon*) linphone_core_get_user_data(lc);
 	app->callStateChanged(call, state, msg);
+}
+void Daemon::callStatsUpdated(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallStats *stats) {
+	Daemon *app = (Daemon*) linphone_core_get_user_data(lc);
+	app->callStatsUpdated(call, stats);
 }
 void Daemon::dtmfReceived(LinphoneCore *lc, LinphoneCall *call, int dtmf) {
 	Daemon *app = (Daemon*) linphone_core_get_user_data(lc);
