@@ -68,6 +68,14 @@ LinphoneCore *linphone_call_get_core(const LinphoneCall *call){
 	return call->core;
 }
 
+const LinphoneCallStats *linphone_call_get_audio_stats(const LinphoneCall *call) {
+	return &call->stats[LINPHONE_CALL_STATS_AUDIO];
+}
+
+const LinphoneCallStats *linphone_call_get_video_stats(const LinphoneCall *call) {
+	return &call->stats[LINPHONE_CALL_STATS_VIDEO];
+}
+
 const char* linphone_call_get_authentication_token(LinphoneCall *call){
 	return call->auth_token;
 }
@@ -305,7 +313,14 @@ static void linphone_call_init_common(LinphoneCall *call, LinphoneAddress *from,
 	if (port_offset==-1) return;
 	call->audio_port=linphone_core_get_audio_port(call->core)+port_offset;
 	call->video_port=linphone_core_get_video_port(call->core)+port_offset;
+	linphone_call_init_stats(&call->stats[LINPHONE_CALL_STATS_AUDIO], LINPHONE_CALL_STATS_AUDIO);
+	linphone_call_init_stats(&call->stats[LINPHONE_CALL_STATS_VIDEO], LINPHONE_CALL_STATS_VIDEO);
+}
 
+void linphone_call_init_stats(LinphoneCallStats *stats, int type) {
+	stats->type = LINPHONE_CALL_STATS_AUDIO;
+	stats->received_rtcp = NULL;
+	stats->sent_rtcp = NULL;
 }
 
 static void discover_mtu(LinphoneCore *lc, const char *remote){
@@ -1594,6 +1609,7 @@ static void linphone_core_disconnected(LinphoneCore *lc, LinphoneCall *call){
 }
 
 void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapsed){
+	LinphoneCore* lc = call->core;
 	int disconnect_timeout = linphone_core_get_nortp_timeout(call->core);
 	bool_t disconnected=FALSE;
 
@@ -1623,9 +1639,25 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 			OrtpEvent *ev;
 			while (NULL != (ev=ortp_ev_queue_get(call->videostream_app_evq))){
 				OrtpEventType evt=ortp_event_get_type(ev);
+				OrtpEventData *evd=ortp_event_get_data(ev);
 				if (evt == ORTP_EVENT_ZRTP_ENCRYPTION_CHANGED){
-					OrtpEventData *evd=ortp_event_get_data(ev);
 					linphone_call_videostream_encryption_changed(call, evd->info.zrtp_stream_encrypted);
+				} else if (evt == ORTP_EVENT_RTCP_PACKET_RECEIVED) {
+					call->stats[LINPHONE_CALL_STATS_VIDEO].round_trip_delay = rtp_session_get_round_trip_propagation(call->videostream->session);
+					if(call->stats[LINPHONE_CALL_STATS_VIDEO].received_rtcp != NULL)
+						freemsg(call->stats[LINPHONE_CALL_STATS_VIDEO].received_rtcp);
+					call->stats[LINPHONE_CALL_STATS_VIDEO].received_rtcp = evd->packet;
+					evd->packet = NULL;
+					if (lc->vtable.call_stats_updated)
+						lc->vtable.call_stats_updated(lc, call, &call->stats[LINPHONE_CALL_STATS_VIDEO]);
+				} else if (evt == ORTP_EVENT_RTCP_PACKET_EMITTED) {
+					memcpy(&call->stats[LINPHONE_CALL_STATS_VIDEO].jitter_stats, rtp_session_get_jitter_stats(call->videostream->session), sizeof(jitter_stats_t));
+					if(call->stats[LINPHONE_CALL_STATS_VIDEO].sent_rtcp != NULL)
+						freemsg(call->stats[LINPHONE_CALL_STATS_VIDEO].sent_rtcp);
+					call->stats[LINPHONE_CALL_STATS_VIDEO].sent_rtcp = evd->packet;
+					evd->packet = NULL;
+					if (lc->vtable.call_stats_updated)
+						lc->vtable.call_stats_updated(lc, call, &call->stats[LINPHONE_CALL_STATS_VIDEO]);
 				}
 				ortp_event_destroy(ev);
 			}
@@ -1641,12 +1673,27 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 			OrtpEvent *ev;
 			while (NULL != (ev=ortp_ev_queue_get(call->audiostream_app_evq))){
 				OrtpEventType evt=ortp_event_get_type(ev);
+				OrtpEventData *evd=ortp_event_get_data(ev);
 				if (evt == ORTP_EVENT_ZRTP_ENCRYPTION_CHANGED){
-					OrtpEventData *evd=ortp_event_get_data(ev);
 					linphone_call_audiostream_encryption_changed(call, evd->info.zrtp_stream_encrypted);
 				} else if (evt == ORTP_EVENT_ZRTP_SAS_READY) {
-					OrtpEventData *evd=ortp_event_get_data(ev);
 					linphone_call_audiostream_auth_token_ready(call, evd->info.zrtp_sas.sas, evd->info.zrtp_sas.verified);
+				} else if (evt == ORTP_EVENT_RTCP_PACKET_RECEIVED) {
+					call->stats[LINPHONE_CALL_STATS_AUDIO].round_trip_delay = rtp_session_get_round_trip_propagation(call->audiostream->session);
+					if(call->stats[LINPHONE_CALL_STATS_AUDIO].received_rtcp != NULL)
+						freemsg(call->stats[LINPHONE_CALL_STATS_AUDIO].received_rtcp);
+					call->stats[LINPHONE_CALL_STATS_AUDIO].received_rtcp = evd->packet;
+					evd->packet = NULL;
+					if (lc->vtable.call_stats_updated)
+						lc->vtable.call_stats_updated(lc, call, &call->stats[LINPHONE_CALL_STATS_AUDIO]);
+				} else if (evt == ORTP_EVENT_RTCP_PACKET_EMITTED) {
+					memcpy(&call->stats[LINPHONE_CALL_STATS_AUDIO].jitter_stats, rtp_session_get_jitter_stats(call->audiostream->session), sizeof(jitter_stats_t));
+					if(call->stats[LINPHONE_CALL_STATS_AUDIO].sent_rtcp != NULL)
+						freemsg(call->stats[LINPHONE_CALL_STATS_AUDIO].sent_rtcp);
+					call->stats[LINPHONE_CALL_STATS_AUDIO].sent_rtcp = evd->packet;
+					evd->packet = NULL;
+					if (lc->vtable.call_stats_updated)
+						lc->vtable.call_stats_updated(lc, call, &call->stats[LINPHONE_CALL_STATS_AUDIO]);
 				}
 				ortp_event_destroy(ev);
 			}

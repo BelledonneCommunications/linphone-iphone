@@ -133,7 +133,8 @@ struct _LinphoneCall
 	bool_t auth_token_verified;
 	bool_t defer_update;
 	bool_t was_automatically_paused;
-    CallCallbackObj nextVideoFrameDecoded;
+	CallCallbackObj nextVideoFrameDecoded;
+	LinphoneCallStats stats[2];
 };
 
 
@@ -237,6 +238,8 @@ int linphone_proxy_config_normalize_number(LinphoneProxyConfig *cfg, const char 
 void linphone_core_text_received(LinphoneCore *lc, const char *from, const char *msg);
 
 void linphone_core_play_tone(LinphoneCore *lc);
+
+void linphone_call_init_stats(LinphoneCallStats *stats, int type);
 
 void linphone_call_init_media_streams(LinphoneCall *call);
 void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_muted, bool_t send_ringbacktone);
