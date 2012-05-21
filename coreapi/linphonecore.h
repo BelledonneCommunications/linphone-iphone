@@ -228,7 +228,23 @@ typedef struct _LinphoneVideoPolicy LinphoneVideoPolicy;
 **/
 struct _LinphoneCall;
 typedef struct _LinphoneCall LinphoneCall;
-    
+
+
+#define LINPHONE_CALL_STATS_AUDIO 0
+#define LINPHONE_CALL_STATS_VIDEO 1
+
+typedef struct _LinphoneCallStats {
+	int		type;
+	jitter_stats_t	jitter_stats;
+	mblk_t*		received_rtcp;
+	mblk_t*		sent_rtcp;
+	float		round_trip_delay;
+} LinphoneCallStats;
+
+const LinphoneCallStats *linphone_call_get_audio_stats(const LinphoneCall *call);
+const LinphoneCallStats *linphone_call_get_video_stats(const LinphoneCall *call);
+
+
 /** Callback prototype */
 typedef void (*LinphoneCallCbFunc)(struct _LinphoneCall *call,void * user_data);
 
@@ -624,6 +640,8 @@ typedef void (*ReferReceived)(struct _LinphoneCore *lc, const char *refer_to);
 typedef void (*BuddyInfoUpdated)(struct _LinphoneCore *lc, LinphoneFriend *lf);
 /** Callback prototype for in progress transfers. The new_call_state is the state of the call resulting of the transfer, at the other party. */
 typedef void (*LinphoneTransferStateChanged)(struct _LinphoneCore *lc, LinphoneCall *transfered, LinphoneCallState new_call_state);
+/** Callback prototype */
+typedef void (*CallStatsUpdated)(struct _LinphoneCore *lc, LinphoneCall *call, LinphoneCallStats *stats);
 
 /**
  * This structure holds all callbacks that the application should implement.
@@ -641,9 +659,10 @@ typedef struct _LinphoneVTable{
 	DtmfReceived dtmf_received; /**< A dtmf has been received received */
 	ReferReceived refer_received; /**< An out of call refer was received */
 	CallEncryptionChangedCb call_encryption_changed; /**<Notifies on change in the encryption of call streams */
-    LinphoneTransferStateChanged transfer_state_changed; /**<Notifies when a transfer is in progress */
+	LinphoneTransferStateChanged transfer_state_changed; /**<Notifies when a transfer is in progress */
 	BuddyInfoUpdated buddy_info_updated; /**< a LinphoneFriend's BuddyInfo has changed*/
 	NotifyReceivedCb notify_recv; /**< Other notifications*/
+	CallStatsUpdated call_stats_updated; /**<Notifies on change in the stats of call */
 	DisplayStatusCb display_status; /**< Callback that notifies various events with human readable text.*/
 	DisplayMessageCb display_message;/**< Callback to display a message to the user */
 	DisplayMessageCb display_warning;/** Callback to display a warning to the user */
