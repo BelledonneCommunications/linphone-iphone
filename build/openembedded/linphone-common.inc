@@ -28,6 +28,8 @@ export PKG_CONFIG=${STAGING_BINDIR_NATIVE}/pkg-config
 LINPHONE_OE_ENABLE_TESTS = "--disable-tests"
 LINPHONE_OE_ENABLE_VIDEO = "--disable-video"
 LINPHONE_OE_ENABLE_VIDEO_video = "--with-ffmpeg=${STAGING_DIR_HOST}${layout_exec_prefix} --enable-video"
+LINPHONE_OE_ENABLE_X11 = "--disable-x11 --disable-xv"
+LINPHONE_OE_ENABLE_X11_x11 = ""
 
 LINPHONE_OE_ENABLE_CONSOLE_UI = "no"
 LINPHONE_OE_ENABLE_CONSOLE_UI_console = "yes"
@@ -42,6 +44,7 @@ do_install_append(){
 EXTRA_OECONF = " \
 		${LINPHONE_OE_ENABLE_TESTS} \
                 ${LINPHONE_OE_ENABLE_VIDEO} \
+		${LINPHONE_OE_ENABLE_X11} \
                 --enable-alsa \
                 --with-osip=${STAGING_DIR_HOST}${layout_exec_prefix} \
                 --with-readline=${STAGING_DIR_HOST}${layout_exec_prefix} \
@@ -51,6 +54,8 @@ EXTRA_OECONF = " \
 		--enable-gtk_ui=${LINPHONE_OE_ENABLE_GTK_UI} \
 		--with-realprefix=/usr \
 		"
+
+EXTRA_OEMAKE = " V=1"
 
 PACKAGES_gtk = "${PN}-dbg ${PN} ${PN}-doc ${PN}-dev ${PN}-locale ${PN}c linphone-rings liblinphone libmediastreamer-bin libmediastreamer libortp ${PN}-utils"
 PACKAGES = "${PN}-dbg ${PN}-dev ${PN}c linphone-rings liblinphone libmediastreamer-bin libmediastreamer libortp ${PN}-utils"
