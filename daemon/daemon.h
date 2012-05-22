@@ -80,19 +80,19 @@ private:
 
 class EventResponse: public Response {
 public:
-	EventResponse(LinphoneCall *call, LinphoneCallState state);
+	EventResponse(Daemon *daemon, LinphoneCall *call, LinphoneCallState state);
 private:
 };
 
 class CallStatsResponse: public Response {
 public:
-	CallStatsResponse(LinphoneCall *call, const LinphoneCallStats *stats, bool unique);
+	CallStatsResponse(Daemon *daemon, LinphoneCall *call, const LinphoneCallStats *stats, bool unique);
 private:
 };
 
 class DtmfResponse: public Response {
 public:
-	DtmfResponse(LinphoneCall *call, int dtmf);
+	DtmfResponse(Daemon *daemon, LinphoneCall *call, int dtmf);
 private:
 };
 
@@ -117,13 +117,10 @@ public:
 	LinphoneProxyConfig *findProxy(int id);
 	AudioStream *findAudioStream(int id);
 	bool pullEvent();
-	static int getCallId(LinphoneCall *call);
-	int setCallId(LinphoneCall *call);
-	static int getProxyId(LinphoneProxyConfig *proxy);
-	int setProxyId(LinphoneProxyConfig *proxy);
-	int setAudioStreamId(AudioStream *audio_stream);
+	int updateCallId(LinphoneCall *call);
+	int updateProxyId(LinphoneProxyConfig *proxy);
+	int updateAudioStreamId(AudioStream *audio_stream);
 private:
-
 	static void callStateChanged(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState state, const char *msg);
 	static void callStatsUpdated(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallStats *stats);
 	static void dtmfReceived(LinphoneCore *lc, LinphoneCall *call, int dtmf);

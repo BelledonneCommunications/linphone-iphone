@@ -16,7 +16,7 @@ void CallCommand::exec(Daemon *app, const char *args) {
 	} else {
 		Response resp;
 		ostringstream ostr;
-		ostr << "Id: " << app->setCallId(call) << "\n";
+		ostr << "Id: " << app->updateCallId(call) << "\n";
 		resp.setBody(ostr.str().c_str());
 		app->sendResponse(resp);
 	}

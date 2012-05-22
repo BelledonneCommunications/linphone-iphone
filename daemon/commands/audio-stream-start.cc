@@ -24,7 +24,7 @@ void AudioStreamStartCommand::exec(Daemon *app, const char *args) {
 			app->sendResponse(Response("Error during audio stream creation."));
 		}
 		ostringstream ostr;
-		ostr << "Id: " << app->setAudioStreamId(stream) << "\n";
+		ostr << "Id: " << app->updateAudioStreamId(stream) << "\n";
 		app->sendResponse(Response(ostr.str().c_str(), Response::Ok));
 	} else {
 		app->sendResponse(Response("Missing/Incorrect parameter(s)."));

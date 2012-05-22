@@ -30,36 +30,34 @@
 
 using namespace std;
 
-EventResponse::EventResponse(LinphoneCall *call, LinphoneCallState state) {
+EventResponse::EventResponse(Daemon *daemon, LinphoneCall *call, LinphoneCallState state) {
 	ostringstream ostr;
 	char *remote = linphone_call_get_remote_address_as_string(call);
 	ostr << "Event-type: call-state-changed\nEvent: " << linphone_call_state_to_string(state) << "\n";
 	ostr << "From: " << remote << "\n";
-	ostr << "Id: " << Daemon::getCallId(call) << "\n";
+	ostr << "Id: " << daemon->updateCallId(call) << "\n";
 	setBody(ostr.str().c_str());
 	ms_free(remote);
 }
 
-DtmfResponse::DtmfResponse(LinphoneCall *call, int dtmf) {
+DtmfResponse::DtmfResponse(Daemon *daemon, LinphoneCall *call, int dtmf) {
 	ostringstream ostr;
 	char *remote = linphone_call_get_remote_address_as_string(call);
 	ostr << "Event-type: receiving-tone\nTone: " << (char) dtmf << "\n";
 	ostr << "From: " << remote << "\n";
-	ostr << "Id: " << Daemon::getCallId(call) << "\n";
+	ostr << "Id: " << daemon->updateCallId(call) << "\n";
 	setBody(ostr.str().c_str());
 	ms_free(remote);
 }
 
-CallStatsResponse::CallStatsResponse(LinphoneCall *call, const LinphoneCallStats *stats, bool event) {
-	LinphoneCallState call_state = LinphoneCallIdle;
-	call_state = linphone_call_get_state(call);
+CallStatsResponse::CallStatsResponse(Daemon *daemon, LinphoneCall *call, const LinphoneCallStats *stats, bool event) {
 	const LinphoneCallParams *callParams = linphone_call_get_current_params(call);
 	const char *prefix = "";
 
 	ostringstream ostr;
 	if (event) {
 		ostr << "Event-type: call-stats\n";
-		ostr << "Id: " << Daemon::getCallId(call) << "\n";
+		ostr << "Id: " << daemon->updateCallId(call) << "\n";
 		ostr << "Type: ";
 		if (stats->type == LINPHONE_CALL_STATS_AUDIO) {
 			ostr << "Audio";
@@ -70,6 +68,7 @@ CallStatsResponse::CallStatsResponse(LinphoneCall *call, const LinphoneCallStats
 	} else {
 		prefix = ((stats->type == LINPHONE_CALL_STATS_AUDIO) ? "Audio-" : "Video-");
 	}
+
 	ostr << prefix << "RoundTripDelay: " << stats->round_trip_delay << "\n";
 	ostr << prefix << "Jitter: " << stats->jitter_stats.jitter << "\n";
 //	ostr << prefix << "MaxJitter: " << stats->jitter_stats.max_jitter << "\n";
@@ -115,19 +114,12 @@ CallStatsResponse::CallStatsResponse(LinphoneCall *call, const LinphoneCallStats
 		ostr << prefix << "Sent-FractionLost: " << flost << "\n";
 	}
 
-	switch (call_state) {
-	case LinphoneCallStreamsRunning:
-	case LinphoneCallConnected:
-		if (stats->type == LINPHONE_CALL_STATS_AUDIO) {
-			const PayloadType *audioCodec = linphone_call_params_get_used_audio_codec(callParams);
-			ostr << PayloadTypeResponse(linphone_call_get_core(call), audioCodec, -1, prefix, false).getBody() << "\n";
-		} else {
-			const PayloadType *videoCodec = linphone_call_params_get_used_video_codec(callParams);
-			ostr << PayloadTypeResponse(linphone_call_get_core(call), videoCodec, -1, prefix, false).getBody() << "\n";
-		}
-		break;
-	default:
-		break;
+	if (stats->type == LINPHONE_CALL_STATS_AUDIO) {
+		const PayloadType *audioCodec = linphone_call_params_get_used_audio_codec(callParams);
+		ostr << PayloadTypeResponse(linphone_call_get_core(call), audioCodec, -1, prefix, false).getBody() << "\n";
+	} else {
+		const PayloadType *videoCodec = linphone_call_params_get_used_video_codec(callParams);
+		ostr << PayloadTypeResponse(linphone_call_get_core(call), videoCodec, -1, prefix, false).getBody() << "\n";
 	}
 
 	setBody(ostr.str().c_str());
@@ -189,6 +181,7 @@ Daemon::Daemon(const char *config_path, const char *factory_config_path, const c
 	vtable.call_stats_updated = callStatsUpdated;
 	vtable.dtmf_received = dtmfReceived;
 	mLc = linphone_core_new(&vtable, config_path, factory_config_path, this);
+	linphone_core_set_user_data(mLc, this);
 	linphone_core_enable_video(mLc, display_video, capture_video);
 	linphone_core_enable_echo_cancellation(mLc, false);
 	initCommands();
@@ -202,13 +195,13 @@ LinphoneCore *Daemon::getCore() {
 	return mLc;
 }
 
-int Daemon::getCallId(LinphoneCall *call) {
-	return (int) (long) linphone_call_get_user_pointer(call);
-}
-
-int Daemon::setCallId(LinphoneCall *call) {
-	linphone_call_set_user_pointer(call, (void*) (long) ++sCallIds);
-	return sCallIds;
+int Daemon::updateCallId(LinphoneCall *call) {
+	int val = (int) (long) linphone_call_get_user_pointer(call);
+	if (val == 0) {
+		linphone_call_set_user_pointer(call, (void*) (long) ++sCallIds);
+		return sCallIds;
+	}
+	return val;
 }
 
 LinphoneCall *Daemon::findCall(int id) {
@@ -221,13 +214,13 @@ LinphoneCall *Daemon::findCall(int id) {
 	return NULL;
 }
 
-int Daemon::getProxyId(LinphoneProxyConfig *proxy) {
-	return (int) (long) linphone_proxy_config_get_user_data(proxy);
-}
-
-int Daemon::setProxyId(LinphoneProxyConfig *cfg) {
-	linphone_proxy_config_set_user_data(cfg, (void*) (long) ++sProxyIds);
-	return sProxyIds;
+int Daemon::updateProxyId(LinphoneProxyConfig *cfg) {
+	int val = (int) (long) linphone_proxy_config_get_user_data(cfg);
+	if (val == 0) {
+		linphone_proxy_config_set_user_data(cfg, (void*) (long) ++sProxyIds);
+		return sProxyIds;
+	}
+	return val;
 }
 
 LinphoneProxyConfig *Daemon::findProxy(int id) {
@@ -240,7 +233,12 @@ LinphoneProxyConfig *Daemon::findProxy(int id) {
 	return NULL;
 }
 
-int Daemon::setAudioStreamId(AudioStream *audio_stream) {
+int Daemon::updateAudioStreamId(AudioStream *audio_stream) {
+	for (std::map<int, AudioStream*>::iterator it = mAudioStreams.begin(); it != mAudioStreams.end(); ++it) {
+		if (it->second == audio_stream)
+			return it->first;
+	}
+
 	++sProxyIds;
 	mAudioStreams.insert(std::pair<int, AudioStream*>(sProxyIds, audio_stream));
 	return sProxyIds;
@@ -307,7 +305,7 @@ void Daemon::callStateChanged(LinphoneCall *call, LinphoneCallState state, const
 	case LinphoneCallStreamsRunning:
 	case LinphoneCallError:
 	case LinphoneCallEnd:
-		mEventQueue.push(new EventResponse(call, state));
+		mEventQueue.push(new EventResponse(this, call, state));
 		break;
 	default:
 		break;
@@ -315,11 +313,11 @@ void Daemon::callStateChanged(LinphoneCall *call, LinphoneCallState state, const
 }
 
 void Daemon::callStatsUpdated(LinphoneCall *call, const LinphoneCallStats *stats) {
-	mEventQueue.push(new CallStatsResponse(call, stats, true));
+	mEventQueue.push(new CallStatsResponse(this, call, stats, true));
 }
 
 void Daemon::dtmfReceived(LinphoneCall *call, int dtmf) {
-	mEventQueue.push(new DtmfResponse(call, dtmf));
+	mEventQueue.push(new DtmfResponse(this, call, dtmf));
 }
 
 void Daemon::callStateChanged(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState state, const char *msg) {
