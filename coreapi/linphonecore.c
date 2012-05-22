@@ -773,8 +773,9 @@ static void video_config_read(LinphoneCore *lc){
 	int capture, display, self_view;
 #endif
 	const char *str;	
+#ifdef VIDEO_ENABLED	
 	LinphoneVideoPolicy vpol;
-
+#endif
 	build_video_devices_table(lc);
 
 	str=lp_config_get_string(lc->config,"video","device",NULL);
