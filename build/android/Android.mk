@@ -26,7 +26,14 @@ include $(CLEAR_VARS)
 
 include $(linphone-root-dir)/submodules/linphone/build/android/common.mk
 
+LOCAL_SHARED_LIBRARIES += \
+	libavcodec \
+	libswscale \
+	libavcore \
+	libavutil
+
 LOCAL_MODULE := liblinphone
+
 include $(BUILD_SHARED_LIBRARY)
 
 $(call import-module,android/cpufeatures)

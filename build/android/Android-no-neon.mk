@@ -28,11 +28,15 @@ include $(linphone-root-dir)/submodules/linphone/build/android/common.mk
 
 LOCAL_SHARED_LIBRARIES += \
 	libavcodecnoneon \
-	libswscalenoneon \
-	libavcorenoneon \
-	libavutilnoneon
+	libswscale \
+	libavcore \
+	libavutil
 
 LOCAL_MODULE := liblinphonenoneon
+ifeq ($(TARGET_ARCH_ABI),armeabi)
+LOCAL_MODULE_FILENAME := liblinphonearmv5
+endif
+
 include $(BUILD_SHARED_LIBRARY)
 
 $(call import-module,android/cpufeatures)
