@@ -1,7 +1,5 @@
 #include "audio-stream-start.h"
 
-#include <sstream>
-
 using namespace std;
 
 AudioStreamStartCommand::AudioStreamStartCommand() :

@@ -1,7 +1,5 @@
 #include "audio-codec-move.h"
 
-#include <sstream>
-
 using namespace std;
 
 AudioCodecMoveCommand::AudioCodecMoveCommand() :

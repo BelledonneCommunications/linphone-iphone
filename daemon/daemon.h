@@ -3,11 +3,34 @@
 
 #include <linphonecore.h>
 #include <mediastreamer2/mediastream.h>
+#include <mediastreamer2/mscommon.h>
 
 #include <string>
 #include <list>
 #include <queue>
 #include <map>
+#include <sstream>
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#ifdef HAVE_READLINE_H
+#include <readline.h>
+#define HAVE_READLINE
+#else
+#ifdef HAVE_READLINE_READLINE_H
+#include <readline/readline.h>
+#define HAVE_READLINE
+#endif
+#endif
+#ifdef HAVE_HISTORY_H
+#include <history.h>
+#else
+#ifdef HAVE_READLINE_HISTORY_H
+#include <readline/history.h>
+#endif
+#endif
 
 class Daemon;
 
@@ -121,17 +144,19 @@ public:
 	int updateProxyId(LinphoneProxyConfig *proxy);
 	int updateAudioStreamId(AudioStream *audio_stream);
 private:
+	static void* iterateThread(void *arg);
 	static void callStateChanged(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState state, const char *msg);
 	static void callStatsUpdated(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallStats *stats);
 	static void dtmfReceived(LinphoneCore *lc, LinphoneCall *call, int dtmf);
-	static int readlineHook();
 	void callStateChanged(LinphoneCall *call, LinphoneCallState state, const char *msg);
 	void callStatsUpdated(LinphoneCall *call, const LinphoneCallStats *stats);
 	void dtmfReceived(LinphoneCall *call, int dtmf);
 	void execCommand(const char *cl);
-	void initReadline();
+	char *readLine(const char *);
 	char *readPipe(char *buffer, int buflen);
 	void iterate();
+	void startThread();
+	void stopThread();
 	void initCommands();
 	void uninitCommands();
 	LinphoneCore *mLc;
@@ -142,10 +167,11 @@ private:
 	std::string mHistfile;
 	bool mRunning;
 	FILE *mLogFile;
-	static Daemon *sZis;
-	static int sCallIds;
-	static int sProxyIds;
-	static int sAudioStreamIds;
+	int mCallIds;
+	int mProxyIds;
+	int mAudioStreamIds;
+	ms_thread_t mThread;
+	ms_mutex_t mMutex;
 	static const int sLineSize = 512;
 	std::map<int, AudioStream*> mAudioStreams;
 };

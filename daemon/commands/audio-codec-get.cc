@@ -1,7 +1,5 @@
 #include "audio-codec-get.h"
 
-#include <sstream>
-
 using namespace std;
 
 AudioCodecGetCommand::AudioCodecGetCommand() :

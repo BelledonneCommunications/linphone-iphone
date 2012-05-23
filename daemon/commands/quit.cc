@@ -1,7 +1,5 @@
 #include "quit.h"
 
-#include <sstream>
-
 using namespace std;
 
 QuitCommand::QuitCommand() :

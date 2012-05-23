@@ -1,7 +1,5 @@
 #include "call-status.h"
 
-#include <sstream>
-
 using namespace std;
 
 CallStatusCommand::CallStatusCommand() :

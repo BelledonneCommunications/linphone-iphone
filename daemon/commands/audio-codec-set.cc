@@ -1,7 +1,5 @@
 #include "audio-codec-set.h"
 
-#include <sstream>
-
 using namespace std;
 
 AudioCodecSetCommand::AudioCodecSetCommand() :

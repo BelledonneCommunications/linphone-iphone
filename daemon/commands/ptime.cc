@@ -1,7 +1,5 @@
 #include "ptime.h"
 
-#include <sstream>
-
 using namespace std;
 
 PtimeCommand::PtimeCommand() :

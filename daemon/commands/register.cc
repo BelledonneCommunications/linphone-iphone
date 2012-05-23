@@ -1,7 +1,5 @@
 #include "register.h"
 
-#include <sstream>
-
 using namespace std;
 
 RegisterCommand::RegisterCommand() :

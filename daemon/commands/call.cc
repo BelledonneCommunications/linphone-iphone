@@ -1,7 +1,5 @@
 #include "call.h"
 
-#include <sstream>
-
 using namespace std;
 
 CallCommand::CallCommand() :

@@ -2,8 +2,10 @@
 #include <sstream>
 #include <algorithm>
 
+#ifdef HAVE_READLINE
 #include <readline/readline.h>
 #include <readline/history.h>
+#endif
 
 #include <poll.h>
 
@@ -29,6 +31,31 @@
 #include "commands/quit.h"
 
 using namespace std;
+
+#ifndef WIN32
+#else
+#include <windows.h>
+void usleep(int waitTime) {
+	Sleep(waitTime/1000);
+}
+#endif
+
+#ifdef HAVE_READLINE
+#define LICENCE_GPL
+#else
+#define LICENCE_COMMERCIAL
+#endif
+
+void *Daemon::iterateThread(void *arg) {
+	Daemon *daemon = (Daemon *) arg;
+	while (daemon->mRunning) {
+		ms_mutex_lock(&daemon->mMutex);
+		daemon->iterate();
+		ms_mutex_unlock(&daemon->mMutex);
+		usleep(20000);
+	}
+	return 0;
+}
 
 EventResponse::EventResponse(Daemon *daemon, LinphoneCall *call, LinphoneCallState state) {
 	ostringstream ostr;
@@ -151,18 +178,21 @@ bool DaemonCommand::matches(const char *name) const {
 	return strcmp(name, mName.c_str()) == 0;
 }
 
-Daemon * Daemon::sZis = NULL;
-int Daemon::sCallIds = 0;
-int Daemon::sProxyIds = 0;
-int Daemon::sAudioStreamIds = 0;
-
 Daemon::Daemon(const char *config_path, const char *factory_config_path, const char *log_file, const char *pipe_name, bool display_video, bool capture_video) :
-		mLogFile(NULL) {
-	sZis = this;
+		mLogFile(NULL), mCallIds(0), mProxyIds(0), mAudioStreamIds(0) {
+	ms_mutex_init(&mMutex, NULL);
 	mServerFd = -1;
 	mChildFd = -1;
 	if (pipe_name == NULL) {
-		initReadline();
+#ifdef HAVE_READLINE
+		const char *homedir = getenv("HOME");
+		rl_readline_name = "daemon";
+		if (homedir == NULL)
+			homedir = ".";
+		mHistfile = string(homedir) + string("/.linphone_history");
+		read_history(mHistfile.c_str());
+		setlinebuf(stdout);
+#endif
 	} else {
 		mServerFd = ortp_server_pipe_create(pipe_name);
 		listen(mServerFd, 2);
@@ -198,8 +228,8 @@ LinphoneCore *Daemon::getCore() {
 int Daemon::updateCallId(LinphoneCall *call) {
 	int val = (int) (long) linphone_call_get_user_pointer(call);
 	if (val == 0) {
-		linphone_call_set_user_pointer(call, (void*) (long) ++sCallIds);
-		return sCallIds;
+		linphone_call_set_user_pointer(call, (void*) (long) ++mCallIds);
+		return mCallIds;
 	}
 	return val;
 }
@@ -217,8 +247,8 @@ LinphoneCall *Daemon::findCall(int id) {
 int Daemon::updateProxyId(LinphoneProxyConfig *cfg) {
 	int val = (int) (long) linphone_proxy_config_get_user_data(cfg);
 	if (val == 0) {
-		linphone_proxy_config_set_user_data(cfg, (void*) (long) ++sProxyIds);
-		return sProxyIds;
+		linphone_proxy_config_set_user_data(cfg, (void*) (long) ++mProxyIds);
+		return mProxyIds;
 	}
 	return val;
 }
@@ -239,9 +269,9 @@ int Daemon::updateAudioStreamId(AudioStream *audio_stream) {
 			return it->first;
 	}
 
-	++sProxyIds;
-	mAudioStreams.insert(std::pair<int, AudioStream*>(sProxyIds, audio_stream));
-	return sProxyIds;
+	++mProxyIds;
+	mAudioStreams.insert(std::pair<int, AudioStream*>(mProxyIds, audio_stream));
+	return mProxyIds;
 }
 
 AudioStream *Daemon::findAudioStream(int id) {
@@ -346,32 +376,15 @@ void Daemon::iterate() {
 	}
 }
 
-int Daemon::readlineHook() {
-	sZis->iterate();
-	return 0;
-}
-
-void Daemon::initReadline() {
-	const char *homedir = getenv("HOME");
-	rl_readline_name = "daemon";
-
-	rl_set_keyboard_input_timeout(20000);
-	rl_event_hook = readlineHook;
-
-	if (homedir == NULL)
-		homedir = ".";
-	mHistfile = string(homedir) + string("/.linphone_history");
-	read_history(mHistfile.c_str());
-	setlinebuf(stdout);
-}
-
 void Daemon::execCommand(const char *cl) {
 	char args[sLineSize] = { 0 };
 	char name[sLineSize] = { 0 };
 	sscanf(cl, "%511s %511[^\n]", name, args); //Read the rest of line in args
 	list<DaemonCommand*>::iterator it = find_if(mCommands.begin(), mCommands.end(), bind2nd(mem_fun(&DaemonCommand::matches), name));
 	if (it != mCommands.end()) {
+		ms_mutex_lock(&mMutex);
 		(*it)->exec(this, args);
+		ms_mutex_unlock(&mMutex);
 	} else {
 		sendResponse(Response("Unknown command."));
 	}
@@ -441,6 +454,17 @@ char *Daemon::readPipe(char *buffer, int buflen) {
 
 static void printHelp() {
 	fprintf(stdout, "daemon-linphone [<options>]\n"
+#if defined(LICENCE_GPL) || defined(LICENCE_COMMERCIAL)
+			"Licence: "
+#ifdef LICENCE_GPL
+			"GPL"
+#endif
+#ifdef LICENCE_COMMERCIAL
+			"Commercial"
+#endif
+			"\n"
+#endif
+
 			"where options are :\n"
 			"\t--help\t\t\tPrint this notice.\n"
 			"\t--pipe <pipename>\tCreate an unix server socket to receive commands.\n"
@@ -451,15 +475,33 @@ static void printHelp() {
 			"\t-D\t\t\tenable video display.\n");
 }
 
+void Daemon::startThread() {
+	ms_thread_create(&this->mThread, NULL, Daemon::iterateThread, this);
+}
+
+char *Daemon::readLine(const char *prompt) {
+#ifdef HAVE_READLINE
+	return readline(prompt);
+#else
+	cout << prompt;
+	char *buff = (char *) malloc(sLineSize);
+	cin.getline(buff, sLineSize);
+	return buff;
+#endif
+}
+
 int Daemon::run() {
 	char line[sLineSize] = "daemon-linphone>";
 	char *ret;
 	mRunning = true;
+	startThread();
 	while (mRunning) {
 		if (mServerFd == -1) {
-			ret = readline(line);
+			ret = readLine(line);
 			if (ret && ret[0] != '\0') {
+#ifdef HAVE_READLINE
 				add_history(ret);
+#endif
 			}
 		} else {
 			ret = readPipe(line, sLineSize);
@@ -467,11 +509,17 @@ int Daemon::run() {
 		if (ret && ret[0] != '\0') {
 			execCommand(ret);
 		}
-		if (mServerFd == -1) {
+		if (mServerFd == -1 && ret != NULL) {
 			free(ret);
 		}
 	}
+	stopThread();
 	return 0;
+}
+
+void Daemon::stopThread() {
+	void *ret;
+	ms_thread_join(mThread, &ret);
 }
 
 void Daemon::quit() {
@@ -497,8 +545,12 @@ Daemon::~Daemon() {
 		fclose(mLogFile);
 	}
 
+	ms_mutex_destroy(&mMutex);
+
+#ifdef HAVE_READLINE
 	stifle_history(30);
 	write_history(mHistfile.c_str());
+#endif
 }
 
 int main(int argc, char *argv[]) {

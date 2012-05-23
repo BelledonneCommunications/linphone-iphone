@@ -1,7 +1,5 @@
 #include "call-stats.h"
 
-#include <sstream>
-
 using namespace std;
 
 CallStatsCommand::CallStatsCommand() :
