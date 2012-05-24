@@ -21,11 +21,13 @@
 #import <UIKit/UIKit.h>
 #import <AddressBookUI/ABPeoplePickerNavigationController.h>
 #import "CoreTelephony/CTCallCenter.h"
+#import "IASKAppSettingsViewController.h"
 
+#define HISTORY_TAB_INDEX 0
 #define DIALER_TAB_INDEX 1
 #define CONTACTS_TAB_INDEX 2
-#define HISTORY_TAB_INDEX 0
-#define MORE_TAB_INDEX 3
+#define SETTINGS_TAB_INDEX 3
+#define MORE_TAB_INDEX 4
 
 @class ContactPickerDelegate;
 @class IncallViewController;
@@ -38,6 +40,8 @@
 	IBOutlet UITabBarController*  myTabBarController;
 	IBOutlet ABPeoplePickerNavigationController* myPeoplePickerController;
 	IBOutlet PhoneViewController* myPhoneViewController;
+    IBOutlet UINavigationController* moreNavigationController;
+    IBOutlet IASKAppSettingsViewController* settingsController;
 	CallHistoryTableViewController* myCallHistoryTableViewController;
 	ContactPickerDelegate* myContactPickerDelegate;
     
@@ -53,8 +57,9 @@
 @property (nonatomic, retain) IBOutlet UIWindow *window;
 @property (nonatomic, retain) IBOutlet UITabBarController*  myTabBarController;
 @property (nonatomic, retain) ABPeoplePickerNavigationController* myPeoplePickerController;
+@property (nonatomic, retain) IBOutlet UINavigationController* moreNavigationController;
 @property (nonatomic, retain) IBOutlet PhoneViewController* myPhoneViewController;
-
+@property (nonatomic, retain) IBOutlet IASKAppSettingsViewController* settingsController;
 
 @end
 

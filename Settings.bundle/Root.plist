@@ -95,6 +95,16 @@
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>
 		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Enable video</string>
+			<key>Key</key>
+			<string>enable_video_preference</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
 			<key>Title</key>
 			<string></string>
 			<key>Type</key>

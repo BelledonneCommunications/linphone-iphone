@@ -56,6 +56,7 @@ extern  void libmsbcg729_init();
 @synthesize connectivity;
 @synthesize frontCamId;
 @synthesize backCamId;
+@synthesize isbackgroundModeEnabled;
 
 -(id) init {
     assert (!theLinphoneManager);
@@ -1068,6 +1069,54 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 +(void) logUIElementPressed:(const char*) name {
     ms_message("UI - '%s' pressed", name);
 }
+
+-(void) settingsViewControllerDidEnd:(IASKAppSettingsViewController *)sender {
+    [self reconfigureLinphoneIfNeeded: currentSettings];
+}
+
+-(NSDictionary*) filterPreferenceSpecifier:(NSDictionary *)specifier {
+    if (!theLinphoneCore) {
+        // LinphoneCore not ready: do not filter
+        return specifier;
+    }
+    NSString* identifier = [specifier objectForKey:@"Identifier"];
+    if (identifier == nil) {
+        identifier = [specifier objectForKey:@"Key"];
+    }
+    if (!identifier) {
+        // child pane maybe
+        NSString* title = [specifier objectForKey:@"Title"];
+        if ([title isEqualToString:@"Video"]) {
+            if (!linphone_core_video_enabled(theLinphoneCore))
+                return nil;
+        }
+        return specifier;
+    }
+    // NSLog(@"Specifier received: %@", identifier);
+    if ([identifier isEqualToString:@"srtp_preference"]) {
+        if (!ortp_srtp_supported())
+            return nil;
+    } else if ([identifier hasPrefix:@"silk"]) {
+        if ([identifier isEqualToString:@"speex_24k_preference"]) {
+            if (linphone_core_find_payload_type(theLinphoneCore, "SILK", 24000)) return nil;
+        } else if ([identifier isEqualToString:@"speex_16k_preference"]) {
+            if (linphone_core_find_payload_type(theLinphoneCore, "SILK", 16000)) return nil;
+        } else if ([identifier isEqualToString:@"speex_8k_preference"]) {
+            if (linphone_core_find_payload_type(theLinphoneCore, "SILK", 8000)) return nil;
+        }
+    } else if ([identifier isEqualToString:@"backgroundmode_preference"]) {
+        UIDevice* device = [UIDevice currentDevice];
+        if ([device respondsToSelector:@selector(isMultitaskingSupported)]) {
+            if ([device isMultitaskingSupported]) {
+                return specifier;
+            }
+        }
+        // hide setting if bg mode not supported
+        return nil;
+    }
+    return specifier;
+}
+
 
 
 @end

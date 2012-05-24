@@ -23,6 +23,8 @@
 #include "linphonecore.h"
 #import "LogView.h"
 #import "LinphoneUIDelegates.h"
+#import "IASKSettingsReader.h"
+#import "IASKAppSettingsViewController.h"
 
 typedef enum _Connectivity {
 	wifi,
@@ -49,7 +51,7 @@ typedef struct _LinphoneCallAppData {
 } LinphoneCallAppData;
 
 
-@interface LinphoneManager : NSObject <AVAudioSessionDelegate> {
+@interface LinphoneManager : NSObject <AVAudioSessionDelegate, IASKSettingsReaderFilterDelegate, IASKSettingsDelegate> {
 @protected
 	SCNetworkReachabilityRef proxyReachability;
 @private
@@ -99,5 +101,6 @@ typedef struct _LinphoneCallAppData {
 @property Connectivity connectivity;
 @property (readonly) const char*  frontCamId;
 @property (readonly) const char*  backCamId;
+@property (nonatomic) bool isbackgroundModeEnabled;
 @end
 

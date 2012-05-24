@@ -45,6 +45,8 @@ int __aeabi_idiv(int a, int b) {
 @synthesize myTabBarController;
 @synthesize myPeoplePickerController;
 @synthesize myPhoneViewController;
+@synthesize moreNavigationController;
+@synthesize settingsController;
 
 -(void) handleGSMCallInteration: (id) cCenter {
     CTCallCenter* ct = (CTCallCenter*) cCenter;
@@ -167,43 +169,20 @@ int __aeabi_idiv(int a, int b) {
 }
 
 -(void) setupUI {
-    //as defined in PhoneMainView.xib		
-	//dialer
-	myPhoneViewController = (PhoneViewController*) [myTabBarController.viewControllers objectAtIndex: DIALER_TAB_INDEX];
-	myPhoneViewController.myTabBarController =  myTabBarController;
-	//Call history
-	myCallHistoryTableViewController = [[CallHistoryTableViewController alloc]  initWithNibName:@"CallHistoryTableViewController" 
-																						 bundle:[NSBundle mainBundle]];
-	UINavigationController *aCallHistNavigationController = [[UINavigationController alloc] initWithRootViewController:myCallHistoryTableViewController];
-	aCallHistNavigationController.tabBarItem = [(UIViewController*)[myTabBarController.viewControllers objectAtIndex:HISTORY_TAB_INDEX] tabBarItem];
-	
-	//people picker delegates
+    // Contacts
 	myContactPickerDelegate = [[ContactPickerDelegate alloc] init];
-	//people picker
-	myPeoplePickerController = [[[ABPeoplePickerNavigationController alloc] init] autorelease];
-	[myPeoplePickerController setDisplayedProperties:[NSArray arrayWithObject:[NSNumber numberWithInt:kABPersonPhoneProperty]]];
-	[myPeoplePickerController setPeoplePickerDelegate:myContactPickerDelegate];
-	//copy tab bar item
-	myPeoplePickerController.tabBarItem = [(UIViewController*)[myTabBarController.viewControllers objectAtIndex:CONTACTS_TAB_INDEX] tabBarItem]; 
-	
-	//more tab 
-	MoreViewController *moreViewController = [[MoreViewController alloc] initWithNibName:@"MoreViewController" bundle:[NSBundle mainBundle]];
-	UINavigationController *aNavigationController = [[UINavigationController alloc] initWithRootViewController:moreViewController];
-    [moreViewController release];
-	//copy tab bar item
-	aNavigationController.tabBarItem = [(UIViewController*)[myTabBarController.viewControllers objectAtIndex:MORE_TAB_INDEX] tabBarItem]; 
-	
-	//insert contact controller
-	NSMutableArray* newArray = [NSMutableArray arrayWithArray:self.myTabBarController.viewControllers];
-	[newArray replaceObjectAtIndex:CONTACTS_TAB_INDEX withObject:myPeoplePickerController];
-	[newArray replaceObjectAtIndex:MORE_TAB_INDEX withObject:aNavigationController];
-    [aNavigationController release];
-	[newArray replaceObjectAtIndex:HISTORY_TAB_INDEX withObject:aCallHistNavigationController];
-    [aCallHistNavigationController release];
-	
-	[myTabBarController setSelectedIndex:DIALER_TAB_INDEX];
-	[myTabBarController setViewControllers:newArray animated:NO];
-	
+    //people picker
+    myPeoplePickerController = [[[ABPeoplePickerNavigationController alloc] init] autorelease];
+    [myPeoplePickerController setDisplayedProperties:[NSArray arrayWithObject:[NSNumber numberWithInt:kABPersonPhoneProperty]]];
+    [myPeoplePickerController setPeoplePickerDelegate:myContactPickerDelegate];
+    //copy tab bar item
+    myPeoplePickerController.tabBarItem = [(UIViewController*)[myTabBarController.viewControllers objectAtIndex:CONTACTS_TAB_INDEX] tabBarItem];
+    
+    NSMutableArray* newArray = [NSMutableArray arrayWithArray:self.myTabBarController.viewControllers];
+    [newArray replaceObjectAtIndex:CONTACTS_TAB_INDEX withObject:myPeoplePickerController];
+    [myTabBarController setViewControllers:newArray animated:NO];
+    
+    [myTabBarController setSelectedIndex:DIALER_TAB_INDEX];
 	[window addSubview:myTabBarController.view];
 	
 	[window makeKeyAndVisible];
@@ -257,6 +236,12 @@ int __aeabi_idiv(int a, int b) {
 
 	[[LinphoneManager instance]	startLibLinphone];
 
+    // Settings, setup delegate
+    settingsController.delegate = [LinphoneManager instance];
+    settingsController.settingsReader.delegate = [LinphoneManager instance];
+    [settingsController.settingsReader init];
+    
+    
 	[[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeSound];
     
     [self setupGSMInteraction];
@@ -281,7 +266,5 @@ int __aeabi_idiv(int a, int b) {
     }
 	linphone_core_accept_call([LinphoneManager getLc], call);	
 }
-
-
 
 @end
