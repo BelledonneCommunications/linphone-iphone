@@ -883,6 +883,7 @@ int sal_call_terminate(SalOp *h){
 }
 
 void sal_op_authenticate(SalOp *h, const SalAuthInfo *info){
+	if (h->terminated) return;
     if (h->pending_auth){
 		push_auth_to_exosip(info);
 		
@@ -1969,6 +1970,7 @@ static bool_t process_event(Sal *sal, eXosip_event_t *ev){
 		case EXOSIP_CALL_RINGING:
 			ms_message("CALL_RINGING");
 			call_ringing(sal,ev);
+			authentication_ok(sal,ev);
 			break;
 		case EXOSIP_CALL_MESSAGE_NEW:
 			ms_message("EXOSIP_CALL_MESSAGE_NEW");
