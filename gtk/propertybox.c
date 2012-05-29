@@ -1077,6 +1077,19 @@ void linphone_gtk_edit_tunnel(GtkButton *button){
 	} else{
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"radio_disable")),1);
 	}
+	{
+		const char *proxy=NULL,*username=NULL,*password=NULL;
+		port=0;
+		linphone_tunnel_get_http_proxy(tunnel,&proxy,&port,&username,&password);
+		if (proxy)
+			gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(w,"http_host")),proxy);
+		if (port>0)
+			gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(w,"http_port")), port);
+		if (username)
+			gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(w,"username")),username);
+		if (password)
+			gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(w,"password")),password);
+	}
 
 	g_object_weak_ref(G_OBJECT(w),(GWeakNotify)linphone_gtk_edit_tunnel_closed,w);
 	gtk_widget_show(w);
@@ -1090,12 +1103,19 @@ void linphone_gtk_tunnel_ok(GtkButton *button){
 	gint port = (gint)gtk_spin_button_get_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(w,"port")));
 	gboolean enabled=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"radio_enable")));
 	const char *host=gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(w,"host")));
+	const char *http_host=gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(w,"http_host")));
+	gint http_port = (gint)gtk_spin_button_get_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(w,"http_port")));
+	const char *username=gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(w,"username")));
+	const char *password=gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(w,"password")));
 	
 	if (tunnel==NULL) return;
 	if (host && *host=='\0') host=NULL;
+	if (http_port==0) http_port=8080;
 	linphone_tunnel_clean_servers(tunnel);
 	linphone_tunnel_add_server(tunnel,host,port);
 	linphone_tunnel_enable(tunnel,enabled);
+	linphone_tunnel_set_http_proxy(tunnel,http_host,http_port,username,password);
+	
 	gtk_widget_destroy(w);
 }
 

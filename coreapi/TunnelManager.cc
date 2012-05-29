@@ -276,7 +276,7 @@ void TunnelManager::waitUnRegistration(){
 	LinphoneProxyConfig* lProxy;
 	linphone_core_get_default_proxy(mCore, &lProxy);
 	if (lProxy && linphone_proxy_config_get_state(lProxy)==LinphoneRegistrationOk) {
-		int i;
+		int i=0;
 		linphone_proxy_config_edit(lProxy);
 		//make sure unregister is sent and authenticated
 		do{
