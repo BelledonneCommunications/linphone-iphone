@@ -106,6 +106,7 @@ void linphone_tunnel_reconnect(LinphoneTunnel *tunnel);
 void linphone_tunnel_auto_detect(LinphoneTunnel *tunnel);
 void linphone_tunnel_set_http_proxy(LinphoneTunnel *tunnel, const char *host, int port, const char* username,const char* passwd);
 void linphone_tunnel_set_http_proxy_auth_info(LinphoneTunnel*tunnel, const char* username,const char* passwd);
+void linphone_tunnel_get_http_proxy(LinphoneTunnel*tunnel,const char **host, int *port, const char **username, const char **passwd);
 
 void linphone_tunnel_enable_logs(LinphoneTunnel *tunnel, bool_t enabled);
 

@@ -152,6 +152,17 @@ void linphone_tunnel_set_http_proxy_auth_info(LinphoneTunnel *tunnel, const char
 
 void linphone_tunnel_set_http_proxy(LinphoneTunnel*tunnel, const char *host, int port, const char* username,const char* passwd){
 	bcTunnel(tunnel)->setHttpProxy(host, port, username, passwd);
+	lp_config_set_string(config(tunnel),"tunnel","http_proxy_host",host);
+	lp_config_set_int(config(tunnel),"tunnel","http_proxy_port",port);
+	lp_config_set_string(config(tunnel),"tunnel","http_proxy_username",username);
+	lp_config_set_string(config(tunnel),"tunnel","http_proxy_password",passwd);
+}
+
+void linphone_tunnel_get_http_proxy(LinphoneTunnel*tunnel,const char **host, int *port, const char **username, const char **passwd){
+	if (host) *host=lp_config_get_string(config(tunnel),"tunnel","http_proxy_host",NULL);
+	if (port) *port=lp_config_get_int(config(tunnel),"tunnel","http_proxy_port",0);
+	if (username) *username=lp_config_get_string(config(tunnel),"tunnel","http_proxy_username",NULL);
+	if (passwd) *passwd=lp_config_get_string(config(tunnel),"tunnel","http_proxy_password",NULL);
 }
 
 void linphone_tunnel_reconnect(LinphoneTunnel *tunnel){
@@ -162,19 +173,17 @@ void linphone_tunnel_auto_detect(LinphoneTunnel *tunnel){
 	bcTunnel(tunnel)->autoDetect();
 }
 
-static void tunnel_add_servers_from_config(LinphoneTunnel *tunnel, const char* confaddress){
-	char *addresses=(char*)ms_strdup(confaddress);
+static void tunnel_add_servers_from_config(LinphoneTunnel *tunnel, char* confaddress){
 	char *str1;
-	for(str1=addresses;;str1=NULL){
+	for(str1=confaddress;;str1=NULL){
 		char *port;
 		char *address=strtok(str1," "); // Not thread safe
 		if (!address) break;
 		port=strchr(address, ':');
-		if (!port) ms_fatal("Bad tunnel address %s", address);
+		if (!port) ms_fatal("Bad tunnel address %s",confaddress);
 		*port++='\0';
 		linphone_tunnel_add_server(tunnel, address, atoi(port));
 	}
-	ms_free(addresses);
 }
 
 static void my_ortp_logv(OrtpLogLevel level, const char *fmt, va_list args){
@@ -188,10 +197,12 @@ static void my_ortp_logv(OrtpLogLevel level, const char *fmt, va_list args){
 void linphone_tunnel_configure(LinphoneTunnel *tunnel){
 	bool_t enabled=(bool_t)lp_config_get_int(config(tunnel),"tunnel","enabled",FALSE);
 	const char* addresses=lp_config_get_string(config(tunnel),"tunnel","server_addresses", NULL);
+	char *copy=addresses ? ms_strdup(addresses) : NULL;
 	linphone_tunnel_enable_logs_with_handler(tunnel,TRUE,my_ortp_logv);
 	linphone_tunnel_clean_servers(tunnel);
-	if (addresses){
-		tunnel_add_servers_from_config(tunnel,addresses);
+	if (copy){
+		tunnel_add_servers_from_config(tunnel,copy);
+		ms_free(copy);
 	}
 	linphone_tunnel_enable(tunnel, enabled);
 }
@@ -232,6 +243,9 @@ void linphone_tunnel_set_http_proxy_auth_info(LinphoneTunnel *tunnel, const char
 }
 
 void linphone_tunnel_set_http_proxy(LinphoneTunnel*tunnel, const char *host, int port, const char* username,const char* passwd){
+}
+
+void linphone_tunnel_get_http_proxy(LinphoneTunnel*tunnel,const char **host, int *port, const char **username, const char **passwd){
 }
 
 void linphone_tunnel_reconnect(LinphoneTunnel *tunnel){

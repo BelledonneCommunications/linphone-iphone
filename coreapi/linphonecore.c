@@ -4784,25 +4784,27 @@ void linphone_core_init_default_params(LinphoneCore*lc, LinphoneCallParams *para
 }
 
 void linphone_call_zoom_video(LinphoneCall* call, float zoom_factor, float* cx, float* cy) {
-    VideoStream* vstream = call->videostream;
-    float zoom[3];
-    
-    if (zoom_factor < 1)
-        zoom_factor = 1;
-    float halfsize = 0.5 * 1.0 / zoom_factor;
-    
-    if ((*cx - halfsize) < 0)
-        *cx = 0 + halfsize;
-    if ((*cx + halfsize) > 1)
-        *cx = 1 - halfsize;
-    if ((*cy - halfsize) < 0)
-        *cy = 0 + halfsize;
-    if ((*cy + halfsize) > 1)
-        *cy = 1 - halfsize;
-    
-    zoom[0] = zoom_factor;
-    zoom[1] = *cx;
-    zoom[2] = *cy;
-    ms_filter_call_method(vstream->output, MS_VIDEO_DISPLAY_ZOOM, &zoom);
+	VideoStream* vstream = call->videostream;
+	if (vstream) {
+		float zoom[3];
+		
+		if (zoom_factor < 1)
+			zoom_factor = 1;
+		float halfsize = 0.5 * 1.0 / zoom_factor;
+
+		if ((*cx - halfsize) < 0)
+			*cx = 0 + halfsize;
+		if ((*cx + halfsize) > 1)
+			*cx = 1 - halfsize;
+		if ((*cy - halfsize) < 0)
+			*cy = 0 + halfsize;
+		if ((*cy + halfsize) > 1)
+			*cy = 1 - halfsize;
+	
+		zoom[0] = zoom_factor;
+		zoom[1] = *cx;
+		zoom[2] = *cy;
+        	ms_filter_call_method(vstream->output, MS_VIDEO_DISPLAY_ZOOM, &zoom);
+	}else ms_warning("Could not apply zoom: video output wasn't activated.");
 }
 
