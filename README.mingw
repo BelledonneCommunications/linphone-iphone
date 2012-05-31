@@ -26,7 +26,7 @@ Download lastest linphone-deps-win32 zip from
 http://download.savannah.gnu.org/releases-noredirect/linphone/misc
 using your browser. 
 
-Download lastest gtk+ win32 bundle from http://www.gtk.org 
+Download lastest gtk+2 win32 bundle from http://www.gtk.org 
 
 Install all these three package in /:
 
@@ -65,19 +65,37 @@ WARNING: During the build, windows might slow down suddenly. Using ctl+alt+del t
  you might see a process 'LVpSRV.exe' or something like this that eats 90% of cpu.
 Kill it. Don't know what it is, but once killed, windows runs normally.
 
-#Compile and install tunnel
-cd tunnel && ./autogen.sh && ./configure --prefix=/opt/linphone && make && make install
+#Compile and install tunnel (optional, available under proprietary licensing)
+
+cd tunnel && ./autogen.sh && ./configure --prefix=/usr --enable-shared --disable-static  && make && make install
+
+#Build linphone itself:
 #run autogen.sh after a git checkout or update
+
 ./autogen.sh
+
 ./configure --prefix=/opt/linphone --enable-shared --disable-static
+#note: in order to use the tunnel, append --enable-tunnel to the configure line above.
+
+#compile:
+
 make
-#will install to /opt/linphone, required for compilation of plugins.
+
+#now install to /opt/linphone, required for compilation of plugins.
+
 make install
+
 #make a binary zip of linphone
+
 make zip
+
 #additionally you can make binary installer if you have Inno Setup 5 installed in its default path
+
 make setup.exe
+
 #now you're done, you have a fresh linphone windows installer in the current directory.
+
+
 
 #build plugins
 cd mediastreamer2/plugins/msx264
