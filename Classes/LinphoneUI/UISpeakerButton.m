@@ -22,6 +22,7 @@
 #include "linphonecore.h"
 
 @implementation UISpeakerButton
+static AudioSessionPropertyID routeChangeID = kAudioSessionProperty_AudioRouteChange;
 
 static void audioRouteChangeListenerCallback (
                                        void                   *inUserData,                                 // 1
@@ -36,7 +37,7 @@ static void audioRouteChangeListenerCallback (
 
 -(void) initWithOnImage:(UIImage*) onImage offImage:(UIImage*) offImage debugName:(const char *)name{
    [super initWithOnImage:onImage offImage:offImage debugName:name];
-   AudioSessionPropertyID routeChangeID = kAudioSessionProperty_AudioRouteChange;
+   
    AudioSessionInitialize(NULL, NULL, NULL, NULL);
    OSStatus lStatus = AudioSessionAddPropertyListener(routeChangeID, audioRouteChangeListenerCallback, self);
    if (lStatus) {
@@ -85,7 +86,11 @@ static void audioRouteChangeListenerCallback (
  */
 
 - (void)dealloc {
-    [super dealloc];
+    OSStatus lStatus = AudioSessionRemovePropertyListenerWithUserData(routeChangeID, audioRouteChangeListenerCallback, self);
+	if (lStatus) {
+		ms_error ("cannot un register route change handler [%ld]",lStatus);
+	}
+	[super dealloc];
 }
 
 
