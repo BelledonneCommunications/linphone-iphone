@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 
-#define VIDEOSELFVIEW_DEFAULT 1
+#define VIDEOSELFVIEW_DEFAULT 0
 
 #include "linphone.h"
 #include "lpconfig.h"
@@ -66,11 +66,13 @@ static void linphone_gtk_call_encryption_changed(LinphoneCore *lc, LinphoneCall 
 static void linphone_gtk_transfer_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate);
 static gboolean linphone_gtk_auto_answer(LinphoneCall *call);
 static void linphone_gtk_status_icon_set_blinking(gboolean val);
+void _linphone_gtk_enable_video(gboolean val);
 
 
 static gboolean verbose=0;
 static gboolean auto_answer = 0;
 static gchar * addr_to_call = NULL;
+static gboolean no_video=FALSE;
 static gboolean iconified=FALSE;
 static gchar *workingdir=NULL;
 static char *progpath=NULL;
@@ -90,6 +92,13 @@ static GOptionEntry linphone_options[]={
 	    .arg = G_OPTION_ARG_STRING,
 	    .arg_data = &linphone_logfile,
 	    .description = N_("path to a file to write logs into.")
+	},
+	{
+	    .long_name = "no-video",
+	    .short_name = '\0',
+	    .arg = G_OPTION_ARG_NONE,
+	    .arg_data = (gpointer)&no_video,
+	    .description = N_("Start linphone with video disabled.")
 	},
 	{
 		.long_name="iconified",
@@ -234,6 +243,10 @@ static void linphone_gtk_init_liblinphone(const char *config_file,
 	linphone_core_set_zrtp_secrets_file(the_core,secrets_file);
 	g_free(secrets_file);
 	linphone_core_enable_video(the_core,TRUE,TRUE);
+	if (no_video) {
+		_linphone_gtk_enable_video(FALSE);
+		linphone_gtk_set_ui_config_int("videoselfview",0);
+	}
 }
 
 
@@ -648,10 +661,8 @@ bool_t linphone_gtk_video_enabled(void){
 void linphone_gtk_show_main_window(){
 	GtkWidget *w=linphone_gtk_get_main_window();
 	LinphoneCore *lc=linphone_gtk_get_core();
-	if (linphone_gtk_video_enabled()){
-		linphone_core_enable_video_preview(lc,linphone_gtk_get_ui_config_int("videoselfview",
+	linphone_core_enable_video_preview(lc,linphone_gtk_get_ui_config_int("videoselfview",
 	    	VIDEOSELFVIEW_DEFAULT));
-	}
 	gtk_widget_show(w);
 	gtk_window_present(GTK_WINDOW(w));
 }
@@ -772,9 +783,7 @@ void linphone_gtk_answer_clicked(GtkWidget *button){
 	}
 }
 
-void linphone_gtk_enable_video(GtkWidget *w){
-	gboolean val=gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w));
-	//GtkWidget *selfview_item=linphone_gtk_get_widget(linphone_gtk_get_main_window(),"selfview_item");
+void _linphone_gtk_enable_video(gboolean val){
 	LinphoneVideoPolicy policy={0};
 	policy.automatically_initiate=policy.automatically_accept=val;
 	linphone_core_enable_video(linphone_gtk_get_core(),TRUE,TRUE);
@@ -786,6 +795,12 @@ void linphone_gtk_enable_video(GtkWidget *w){
 	}else{
 		linphone_core_enable_video_preview(linphone_gtk_get_core(),FALSE);
 	}
+}
+
+void linphone_gtk_enable_video(GtkWidget *w){
+	gboolean val=gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w));
+	//GtkWidget *selfview_item=linphone_gtk_get_widget(linphone_gtk_get_main_window(),"selfview_item");
+	_linphone_gtk_enable_video(val);
 }
 
 void linphone_gtk_enable_self_view(GtkWidget *w){
