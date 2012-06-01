@@ -8,19 +8,25 @@
 
 #import "LinphoneCoreSettingsStore.h"
 
-
+// linphone_core_enable_logs_with_cb - linphone_core_disable_logs
 debugenable_preference
+
+// on change: edit/create linphone_core_get_default_proxy()
 transport_preference
 username_preference
 domain_preference
 password_preference
-check_config_disable_preference
 outbound_proxy_preference
 proxy_preference
 prefix_preference
 substitute_+_by_00_preference
-wifi_only_preference
 
+// app internal setting
+check_config_disable_preference
+wifi_only_preference
+backgroundmode_preference
+
+// linphone_core_enable_payload_type
 silk_24k_preference
 speex_16k_preference
 speex_8k_preference
@@ -33,15 +39,24 @@ pcma_preference
 g722_preferenceg
 g729_preference
 
+// linphone_core_enable_payload_type
 mp4v-es_preference
 h264_preference
 vp8_preference
 
+// linphone_core_enable_video
 enable_video_preference
+
+// linphone_core_set_media_encryption
 enable_srtp_preference
+
+// linphone_core_set_stun_server
+// linphone_core_set_firewall_policy
 stun_preference
+
+// linphone_core_set_video_policy
 start_video_preference
-backgroundmode_preference
+
 
 @implementation LinphoneCoreSettingsStore
 
