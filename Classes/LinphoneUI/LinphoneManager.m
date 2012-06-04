@@ -865,9 +865,12 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	linphone_core_iterate(theLinphoneCore);
 }
 
--(void) setupNetworkReachabilityCallback: (const char*) nodeName withContext:(SCNetworkReachabilityContext*) ctx {
+-(void) setupNetworkReachabilityCallback {
+	SCNetworkReachabilityContext *ctx=NULL;
+	const char *nodeName="linphone.org";
+	
     if (proxyReachability) {
-        ms_message("Cancel old network reachability check");
+        ms_message("Cancelling old network reachability");
         SCNetworkReachabilityUnscheduleFromRunLoop(proxyReachability, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
         CFRelease(proxyReachability);
         proxyReachability = nil;
@@ -943,7 +946,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 
 	linphone_core_set_zrtp_secrets_file(theLinphoneCore, [zrtpSecretsFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
     
-    [self setupNetworkReachabilityCallback: "linphone.org" withContext:nil];
+    [self setupNetworkReachabilityCallback];
 
 	[self reconfigureLinphoneIfNeeded:nil];
 	
@@ -1014,9 +1017,16 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	if (proxyReachability){
 		SCNetworkReachabilityFlags flags=0;
 		if (!SCNetworkReachabilityGetFlags(proxyReachability, &flags)) {
-			ms_error("Cannot get reachability flags");
-		}else
-			networkReachabilityCallBack(proxyReachability, flags, 0);	
+			ms_error("Cannot get reachability flags, re-creating reachability context.");
+			[self setupNetworkReachabilityCallback];
+		}else{
+			networkReachabilityCallBack(proxyReachability, flags, 0);
+			if (flags==0){
+				/*workaround iOS bug: reachability API cease to work after some time.*/
+				/*when flags==0, either we have no network, or the reachability object lies. To workaround, create a new one*/
+				[self setupNetworkReachabilityCallback];
+			}
+		}
 	}else ms_error("No proxy reachability context created !");
 	linphone_core_refresh_registers(theLinphoneCore);//just to make sure REGISTRATION is up to date
 }
