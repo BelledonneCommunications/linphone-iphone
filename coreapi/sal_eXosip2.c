@@ -162,7 +162,7 @@ void sal_exosip_fix_route(SalOp *op){
 }
 
 SalOp * sal_op_new(Sal *sal){
-	SalOp *op=ms_new(SalOp,1);
+	SalOp *op=ms_new0(SalOp,1);
 	__sal_op_init(op,sal);
 	op->cid=op->did=op->tid=op->rid=op->nid=op->sid=-1;
 	op->result=NULL;
