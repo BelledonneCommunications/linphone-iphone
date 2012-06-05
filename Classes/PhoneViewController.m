@@ -270,9 +270,9 @@
         
 		mIncomingCallActionSheet = [[UIActionSheet alloc] initWithTitle:[NSString  stringWithFormat:NSLocalizedString(@" %@ is calling you",nil),[displayName length]>0?displayName:username]
 															   delegate:cd 
-													  cancelButtonTitle:NSLocalizedString(@"Decline",nil) 
+													  cancelButtonTitle:nil 
 												 destructiveButtonTitle:NSLocalizedString(@"Answer",nil) 
-													  otherButtonTitles:nil];
+													  otherButtonTitles:NSLocalizedString(@"Decline",nil),nil];
         
 		mIncomingCallActionSheet.actionSheetStyle = UIActionSheetStyleDefault;
         if ([LinphoneManager runningOnIpad]) {
