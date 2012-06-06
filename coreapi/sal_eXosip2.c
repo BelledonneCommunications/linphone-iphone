@@ -33,7 +33,7 @@ static bool_t call_failure(Sal *sal, eXosip_event_t *ev);
 static void text_received(Sal *sal, eXosip_event_t *ev);
 
 static void masquerade_via(osip_message_t *msg, const char *ip, const char *port);
-static bool_t fix_message_contact(SalOp *op, osip_message_t *request,osip_message_t *last_answer);
+static bool_t fix_message_contact(SalOp *op, osip_message_t *request,osip_message_t *last_answer, bool_t expire_last_contact);
 static void update_contact_from_response(SalOp *op, osip_message_t *response);
 
 void _osip_list_set_empty(osip_list_t *l, void (*freefunc)(void*)){
@@ -283,6 +283,7 @@ Sal * sal_init(){
 	sal->reuse_authorization=FALSE;
 	sal->rootCa = 0;
 	sal->verify_server_certs=TRUE;
+	sal->expire_old_contact=FALSE;
 	return sal;
 }
 
@@ -427,6 +428,10 @@ MSList *sal_get_pending_auths(Sal *sal){
 
 void sal_use_double_registrations(Sal *ctx, bool_t enabled){
 	ctx->double_reg=enabled;
+}
+
+void sal_expire_old_registration_contacts(Sal *ctx, bool_t enabled){
+	ctx->expire_old_contact=enabled;
 }
 
 void sal_use_rport(Sal *ctx, bool_t use_rports){
@@ -1733,7 +1738,7 @@ static void masquerade_via(osip_message_t *msg, const char *ip, const char *port
 }
 
 
-static bool_t fix_message_contact(SalOp *op, osip_message_t *request,osip_message_t *last_answer) {
+static bool_t fix_message_contact(SalOp *op, osip_message_t *request,osip_message_t *last_answer, bool_t expire_last_contact) {
 	osip_contact_t *ctt=NULL;
 	const char *received;
 	int rport;
@@ -1745,6 +1750,20 @@ static bool_t fix_message_contact(SalOp *op, osip_message_t *request,osip_messag
 	if (ctt == NULL) {
 		ms_warning("fix_message_contact(): no contact to update");
 		return FALSE;
+	}
+	if (expire_last_contact){
+		osip_contact_t *oldct=ctt;
+		osip_generic_param_t *param=NULL;
+		ctt=NULL;
+		osip_contact_clone(oldct,&ctt);
+		osip_list_add(&request->contacts,ctt,0);
+		osip_contact_param_get_byname(oldct,"expires",&param);
+		if (param){
+			if (param->gvalue) osip_free(param->gvalue);
+			param->gvalue=osip_strdup("0");
+		}else{
+			osip_contact_param_add(oldct,osip_strdup("expires"),osip_strdup("0"));
+		}
 	}
 	if (ctt->url->host!=NULL){
 		osip_free(ctt->url->host);
@@ -1772,29 +1791,35 @@ static bool_t register_again_with_updated_contact(SalOp *op, osip_message_t *ori
 	char* tmp;
 	osip_message_t *msg=NULL;
 	Sal* sal=op->base.root;
+	int i=0;
+	bool_t found_valid_contact=FALSE;
 
 	if (sal->double_reg==FALSE ) return FALSE; 
 
 	if (extract_received_rport(last_answer,&received,&rport,&transport)==-1) return FALSE;
-	osip_message_get_contact(orig_request,0,&ctt);
-	osip_contact_to_str(ctt,&tmp);
-	ori_contact_address = sal_address_new(tmp);
+	do{
+		ctt=NULL;
+		osip_message_get_contact(last_answer,i,&ctt);
+		if (ctt==NULL) osip_message_get_contact(orig_request,0,&ctt);
+		if (ctt){
+			osip_contact_to_str(ctt,&tmp);
+			ori_contact_address = sal_address_new(tmp);
 	
-	/*check if contact is up to date*/
-	if (strcmp(sal_address_get_domain(ori_contact_address),received) ==0 
-	&& sal_address_get_port_int(ori_contact_address) == rport
-	&& sal_address_get_transport(ori_contact_address) == transport) {
-		ms_message("Register has up to date contact, doing nothing.");
-		osip_free(tmp);
-		sal_address_destroy(ori_contact_address);
-		return FALSE;
-	} else ms_message("contact do not match, need to update the register (%s with %s:%i;transport=%s)"
-		      ,tmp
-		      ,received
-		      ,rport
-		      ,sal_transport_to_string(transport));
-	osip_free(tmp);
-	sal_address_destroy(ori_contact_address);
+			/*check if contact is up to date*/
+			if (strcmp(sal_address_get_domain(ori_contact_address),received) ==0 
+				&& sal_address_get_port_int(ori_contact_address) == rport
+			&& sal_address_get_transport(ori_contact_address) == transport) {
+				ms_message("Register response has up to date contact, doing nothing.");
+				found_valid_contact=TRUE;
+			}
+			osip_free(tmp);
+			sal_address_destroy(ori_contact_address);
+		}else break;
+		i++;
+	}while(!found_valid_contact);
+	if (!found_valid_contact)
+		ms_message("Contact do not match, resending register.");
+	else return FALSE;
 
 	eXosip_lock();
 	eXosip_register_build_register(op->rid,op->expires,&msg);
@@ -1803,7 +1828,7 @@ static bool_t register_again_with_updated_contact(SalOp *op, osip_message_t *ori
 	    ms_warning("Fail to create a contact updated register.");
 	    return FALSE;
 	}
-	if (fix_message_contact(op,msg,last_answer)) {
+	if (fix_message_contact(op,msg,last_answer,op->base.root->expire_old_contact)) {
 		eXosip_register_send_register(op->rid,msg);
 		eXosip_unlock();  
 		ms_message("Resending new register with updated contact");
