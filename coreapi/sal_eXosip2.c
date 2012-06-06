@@ -1800,7 +1800,7 @@ static bool_t register_again_with_updated_contact(SalOp *op, osip_message_t *ori
 	do{
 		ctt=NULL;
 		osip_message_get_contact(last_answer,i,&ctt);
-		if (ctt==NULL) osip_message_get_contact(orig_request,0,&ctt);
+		if (i==0 && ctt==NULL) osip_message_get_contact(orig_request,0,&ctt);
 		if (ctt){
 			osip_contact_to_str(ctt,&tmp);
 			ori_contact_address = sal_address_new(tmp);
