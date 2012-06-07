@@ -40,7 +40,7 @@
 	IBOutlet PhoneViewController* myPhoneViewController;
 	CallHistoryTableViewController* myCallHistoryTableViewController;
 	ContactPickerDelegate* myContactPickerDelegate;
-    
+    UIView *myContentView;
     CTCallCenter* callCenter;
 }
 
@@ -54,7 +54,7 @@
 @property (nonatomic, retain) IBOutlet UITabBarController*  myTabBarController;
 @property (nonatomic, retain) ABPeoplePickerNavigationController* myPeoplePickerController;
 @property (nonatomic, retain) IBOutlet PhoneViewController* myPhoneViewController;
-
+@property (nonatomic, retain) IBOutlet UIView* myContentView;
 
 @end
 

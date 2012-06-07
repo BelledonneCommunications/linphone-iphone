@@ -45,6 +45,7 @@ int __aeabi_idiv(int a, int b) {
 @synthesize myTabBarController;
 @synthesize myPeoplePickerController;
 @synthesize myPhoneViewController;
+@synthesize myContentView;
 
 -(void) handleGSMCallInteration: (id) cCenter {
     CTCallCenter* ct = (CTCallCenter*) cCenter;
@@ -203,9 +204,12 @@ int __aeabi_idiv(int a, int b) {
 	
 	[myTabBarController setSelectedIndex:DIALER_TAB_INDEX];
 	[myTabBarController setViewControllers:newArray animated:NO];
-	
-	[window addSubview:myTabBarController.view];
-	
+	//[window addSubview: myTabBarController.view];
+    [myCallHistoryTableViewController loadView];
+    [myContentView addSubview:myCallHistoryTableViewController.view];
+	//[window addSubview: myContentView];
+   // [myContentViewController addChildViewController:myCallHistoryTableViewController];
+
 	[window makeKeyAndVisible];
 	
 	[[LinphoneManager instance] setCallDelegate:myPhoneViewController];
