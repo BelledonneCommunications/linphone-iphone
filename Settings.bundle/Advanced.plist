@@ -58,13 +58,13 @@
 		</dict>
 		<dict>
 			<key>DefaultValue</key>
-                        <false/>
-                        <key>Key</key>
-                        <string>wifi_only_preference</string>
-                        <key>Title</key>
-                        <string>Wifi only</string>
-                        <key>Type</key>
-                        <string>PSToggleSwitchSpecifier</string>
+			<false/>
+			<key>Key</key>
+			<string>wifi_only_preference</string>
+			<key>Title</key>
+			<string>Wifi only</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
 		</dict>
 		<dict>
 			<key>DefaultValue</key>
@@ -90,21 +90,33 @@
 		</dict>
 		<dict>
 			<key>DefaultValue</key>
-			<false/>
+			<string>None</string>
 			<key>Key</key>
-			<string>enable_srtp_preference</string>
+			<string>media_encryption_preference</string>
 			<key>Title</key>
-			<string>Secure rtp</string>
+			<string>Media Encryption</string>
+			<key>Titles</key>
+			<array>
+				<string>None</string>
+				<string>SRTP</string>
+				<string>ZRTP</string>
+			</array>
 			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
+			<string>PSMultiValueSpecifier</string>
+			<key>Values</key>
+			<array>
+				<string>None</string>
+				<string>SRTP</string>
+				<string>ZRTP</string>
+			</array>
 		</dict>
 		<dict>
 			<key>DefaultValue</key>
-			<false/>
+			<true/>
 			<key>Key</key>
-			<string>disable_autoboot_preference</string>
+			<string>start_at_boot_preference</string>
 			<key>Title</key>
-			<string>Disable application autostart</string>
+			<string>Start at boot</string>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>

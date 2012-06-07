@@ -28,6 +28,7 @@
 #import "ConsoleViewController.h"
 #import "MoreViewController.h"
 #include "CallHistoryTableViewController.h"
+#import "LinphoneCoreSettingsStore.h"
 
 #include "LinphoneManager.h"
 #include "linphonecore.h"
@@ -239,6 +240,7 @@ int __aeabi_idiv(int a, int b) {
     // Settings, setup delegate
     settingsController.delegate = [LinphoneManager instance];
     settingsController.settingsReader.delegate = [LinphoneManager instance];
+	settingsController.settingsStore=[[LinphoneCoreSettingsStore alloc] init];
     [settingsController.settingsReader init];
     
     

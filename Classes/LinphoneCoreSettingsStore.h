@@ -9,7 +9,13 @@
 #import <Foundation/Foundation.h>
 #import "IASKSettingsStore.h"
 
+#import "LinphoneManager.h"
+
 @interface LinphoneCoreSettingsStore : IASKAbstractSettingsStore {
+	NSDictionary *dict;
 }
+
+- (void) enableCodecWithName: (const char*) name andRate: (int) rate to:(id)value;
+-(void) transformLinphoneCoreToKeys;
 
 @end
