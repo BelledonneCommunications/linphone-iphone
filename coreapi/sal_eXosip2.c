@@ -1752,11 +1752,14 @@ static bool_t fix_message_contact(SalOp *op, osip_message_t *request,osip_messag
 		return FALSE;
 	}
 	if (expire_last_contact){
-		osip_contact_t *oldct=ctt;
+		osip_contact_t *oldct=NULL,*prevct;
 		osip_generic_param_t *param=NULL;
-		ctt=NULL;
-		osip_contact_clone(oldct,&ctt);
-		osip_list_add(&request->contacts,ctt,0);
+		osip_contact_clone(ctt,&oldct);
+		while ((prevct=(osip_contact_t*)osip_list_get(&request->contacts,1))!=NULL){
+			osip_contact_free(prevct);
+			osip_list_remove(&request->contacts,1);
+		}
+		osip_list_add(&request->contacts,oldct,1);
 		osip_contact_param_get_byname(oldct,"expires",&param);
 		if (param){
 			if (param->gvalue) osip_free(param->gvalue);
@@ -1793,6 +1796,7 @@ static bool_t register_again_with_updated_contact(SalOp *op, osip_message_t *ori
 	Sal* sal=op->base.root;
 	int i=0;
 	bool_t found_valid_contact=FALSE;
+	bool_t from_request=FALSE;
 
 	if (sal->double_reg==FALSE ) return FALSE; 
 
@@ -1800,7 +1804,10 @@ static bool_t register_again_with_updated_contact(SalOp *op, osip_message_t *ori
 	do{
 		ctt=NULL;
 		osip_message_get_contact(last_answer,i,&ctt);
-		if (i==0 && ctt==NULL) osip_message_get_contact(orig_request,0,&ctt);
+		if (!from_request && ctt==NULL) {
+			osip_message_get_contact(orig_request,0,&ctt);
+			from_request=TRUE;
+		}
 		if (ctt){
 			osip_contact_to_str(ctt,&tmp);
 			ori_contact_address = sal_address_new(tmp);
@@ -1809,7 +1816,12 @@ static bool_t register_again_with_updated_contact(SalOp *op, osip_message_t *ori
 			if (strcmp(sal_address_get_domain(ori_contact_address),received) ==0 
 				&& sal_address_get_port_int(ori_contact_address) == rport
 			&& sal_address_get_transport(ori_contact_address) == transport) {
-				ms_message("Register response has up to date contact, doing nothing.");
+				if (!from_request){
+					ms_message("Register response has up to date contact, doing nothing.");
+				}else {
+					ms_warning("Register response does not have up to date contact, but last request had."
+						"Stupid registrar detected, giving up.");
+				}
 				found_valid_contact=TRUE;
 			}
 			osip_free(tmp);
