@@ -320,8 +320,8 @@
 
 -(void) displayInCall: (LinphoneCall*) call FromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
     [mMainScreenWithVideoPreview showPreview:NO]; 
-    if (self.presentedViewController != (UIViewController*)mIncallViewController && (call == 0x0 ||
-																  linphone_call_get_dir(call)==LinphoneCallIncoming)){
+    if (self.presentedViewController != (UIViewController*)mIncallViewController /*&& (call == 0x0 ||
+																  linphone_call_get_dir(call)==LinphoneCallIncoming)*/){
 		[self presentModalViewController:(UIViewController*)mIncallViewController animated:true];
 		
 	}
