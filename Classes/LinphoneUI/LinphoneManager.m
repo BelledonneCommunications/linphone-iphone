@@ -141,6 +141,14 @@ extern  void libmsbcg729_init();
 }
 
 -(void) onCall:(LinphoneCall*) call StateChanged: (LinphoneCallState) new_state withMessage: (const char *)  message {
+    if(new_state == LinphoneCallReleased) {
+        if(linphone_call_get_user_pointer(call) != NULL) {
+            free (linphone_call_get_user_pointer(call));
+            linphone_call_set_user_pointer(call, NULL);
+        }
+        return;
+    }
+    
     const char* lUserNameChars=linphone_address_get_username(linphone_call_get_remote_address(call));
     NSString* lUserName = lUserNameChars?[[[NSString alloc] initWithUTF8String:lUserNameChars] autorelease]:NSLocalizedString(@"Unknown",nil);
     if (new_state == LinphoneCallIncomingReceived) {
@@ -269,9 +277,6 @@ extern  void libmsbcg729_init();
                 [callDelegate displayInCall:call FromUI:mCurrentViewController forUser:lUserName withDisplayName:lDisplayName];
             }
 			break;
-        case LinphoneCallReleased:
-            free (linphone_call_get_user_pointer(call));
-            break;
         default:
             break;
 	}
