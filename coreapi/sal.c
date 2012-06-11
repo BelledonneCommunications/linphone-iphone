@@ -324,9 +324,14 @@ void __sal_op_init(SalOp *b, Sal *sal){
 }
 
 void __sal_op_set_network_origin(SalOp *op, const char *origin){
-	assign_string(&((SalOpBase*)op)->origin,origin);
+	SET_PARAM(op,origin);
 }
 
+void __sal_op_set_network_origin_address(SalOp *op, SalAddress *origin){
+	char* address_string=sal_address_as_string(origin); /*can probably be optimized*/
+	__sal_op_set_network_origin(op,address_string);
+	ms_free(address_string);
+}
 
 void __sal_op_free(SalOp *op){
 	SalOpBase *b=(SalOpBase *)op;

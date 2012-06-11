@@ -27,11 +27,11 @@ SalOp * sal_op_new(Sal *sal){
 }
 
 void sal_op_release(SalOp *op){
-	__sal_op_free(op);
 	if (op->request) belle_sip_object_unref(op->request);
 	if (op->registration_refresh_timer>0) {
 		belle_sip_main_loop_cancel_source(belle_sip_stack_get_main_loop(op->base.root->stack),op->registration_refresh_timer);
 	}
+	__sal_op_free(op);
 	return ;
 }
 void sal_op_authenticate(SalOp *op, const SalAuthInfo *info){
@@ -70,7 +70,7 @@ void sal_op_authenticate(SalOp *op, const SalAuthInfo *info){
 		goto error;
 	}
 	belle_sip_message_set_header(BELLE_SIP_MESSAGE(op->request),BELLE_SIP_HEADER(authorization));
-	sal_register_refresh(op,-1);
+	sal_op_resend_request(op,op->request);
 	return;
 
 error:
@@ -78,6 +78,7 @@ error:
 
 	return ;
 }
+
 void sal_op_cancel_authentication(SalOp *h){
 	ms_fatal("sal_op_cancel_authentication not implemented yet");
 	return ;
@@ -170,4 +171,29 @@ int sal_ping(SalOp *op, const char *from, const char *to){
 	return -1;
 }
 
+void sal_op_set_remote_ua(SalOp*op,belle_sip_message_t* message) {
+	belle_sip_header_user_agent_t* user_agent=belle_sip_message_get_header_by_type(message,belle_sip_header_user_agent_t);
+	char user_agent_string[256];
+	if(belle_sip_header_user_agent_get_products_as_string(user_agent,user_agent_string,sizeof(user_agent_string))>0) {
+		op->base.remote_ua=ms_strdup(user_agent_string);
+	}
+}
 
+void sal_op_resend_request(SalOp* op, belle_sip_request_t* request) {
+	belle_sip_header_cseq_t* cseq=(belle_sip_header_cseq_t*)belle_sip_message_get_header(BELLE_SIP_MESSAGE(op->request),BELLE_SIP_CSEQ);
+	belle_sip_header_cseq_set_seq_number(cseq,belle_sip_header_cseq_get_seq_number(cseq)+1);
+	sal_op_send_request(op,request);
+}
+void sal_op_send_request(SalOp* op, belle_sip_request_t* request) {
+	belle_sip_client_transaction_t* client_transaction;
+	belle_sip_provider_t* prov=op->base.root->prov;
+	belle_sip_header_route_t* route_header;
+	if (sal_op_get_route_address(op)) {
+		route_header = belle_sip_header_route_create(BELLE_SIP_HEADER_ADDRESS(sal_op_get_route_address(op)));
+		belle_sip_message_add_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_HEADER(route_header));
+	}
+	client_transaction = belle_sip_provider_create_client_transaction(prov,request);
+	belle_sip_transaction_set_application_data(BELLE_SIP_TRANSACTION(client_transaction),op);
+	belle_sip_client_transaction_send_request(client_transaction);
+
+}

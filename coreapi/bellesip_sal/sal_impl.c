@@ -45,8 +45,6 @@ static void process_authentication(SalOp *op, belle_sip_message_t *response) {
 		authenticate = BELLE_SIP_HEADER_WWW_AUTHENTICATE(belle_sip_message_get_header(response,BELLE_SIP_PROXY_AUTHENTICATE));
 
 	}
-
-
 	op->auth_info.realm=(char*)belle_sip_header_www_authenticate_get_realm(authenticate);
 	op->auth_info.username=(char*)belle_sip_uri_get_user(uri);
 	if (authenticate) {
@@ -67,10 +65,55 @@ static void process_dialog_terminated(void *user_ctx, const belle_sip_dialog_ter
 static void process_io_error(void *user_ctx, const belle_sip_io_error_event_t *event){
 	ms_error("process_io_error not implemented yet");
 }
-static void process_request_event(void *user_ctx, const belle_sip_request_event_t *event) {
-	/*belle_sip_server_transaction_t* server_transaction = belle_sip_request_event_get_server_transaction(event);
-	SalOp* op = (SalOp*)belle_sip_transaction_get_application_data(BELLE_SIP_TRANSACTION(server_transaction));*/
-	ms_error("sal process_request_event not implemented yet");
+static void process_request_event(void *sal, const belle_sip_request_event_t *event) {
+	SalOp* op;
+	belle_sip_request_t* req = belle_sip_request_event_get_request(event);
+	belle_sip_dialog_t* dialog=belle_sip_request_event_get_dialog(event);
+	belle_sip_header_address_t* origin_address;
+	belle_sip_header_address_t* address;
+	belle_sip_header_from_t* from;
+	belle_sip_header_to_t* to;
+
+	if (dialog) {
+		op=(SalOp*)belle_sip_dialog_get_application_data(dialog);
+	} else if (strcmp("INVITE",belle_sip_request_get_method(req))==0) {
+		op=sal_op_new((Sal*)sal);
+		sal_op_call_fill_cbs(op);
+	} else {
+		ms_error("sal process_request_event not implemented yet for method [%s]",belle_sip_request_get_method(req));
+	}
+
+	if (!op->base.from_address)  {
+		from=belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_from_t);
+		address=belle_sip_header_address_create(belle_sip_header_address_get_displayname(BELLE_SIP_HEADER_ADDRESS(from))
+												,belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(from)));
+		sal_op_set_from_address(op,(SalAddress*)address);
+		belle_sip_object_unref(address);
+	}
+	if (!op->base.to_address) {
+		to=belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_to_t);
+		address=belle_sip_header_address_create(belle_sip_header_address_get_displayname(BELLE_SIP_HEADER_ADDRESS(to))
+												,belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(to)));
+		sal_op_set_to_address(op,(SalAddress*)address);
+		belle_sip_object_unref(address);
+	}
+
+	if (!op->base.origin) {
+		/*set origin uri*/
+		origin_address=belle_sip_header_address_create(NULL,belle_sip_request_extract_origin(req));
+		__sal_op_set_network_origin_address(op,(SalAddress*)origin_address);
+		belle_sip_object_unref(origin_address);
+	}
+	if (!op->base.remote_ua) {
+		sal_op_set_remote_ua(op,BELLE_SIP_MESSAGE(req));
+	}
+
+	if (op->callbacks.process_request_event) {
+		op->callbacks.process_request_event(op,event);
+	} else {
+		ms_error("sal process_request_event not implemented yet");
+	}
+
 }
 
 static void process_response_event(void *user_ctx, const belle_sip_response_event_t *event){

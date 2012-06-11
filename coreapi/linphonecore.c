@@ -2585,6 +2585,7 @@ int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *the_call)
 	{
 		call = the_call;
 	}
+
 	sal_call_terminate(call->op);
 	terminate_call(lc,call);
 
@@ -4179,7 +4180,7 @@ void sip_config_uninit(LinphoneCore *lc)
 		Sleep(100);
 #endif
 	}
-
+	if (i>=20) ms_warning("Cannot complete unregistration, giving up");
 	ms_list_for_each(config->proxies,(void (*)(void*)) linphone_proxy_config_destroy);
 	ms_list_free(config->proxies);
 	config->proxies=NULL;

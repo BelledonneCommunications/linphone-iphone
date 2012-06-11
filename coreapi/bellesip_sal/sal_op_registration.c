@@ -20,8 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
 
-static void send_register_request(SalOp* op, belle_sip_request_t* request);
-
 static void register_process_io_error(void *user_ctx, const belle_sip_io_error_event_t *event){
 	ms_error("process_io_error not implemented yet");
 }
@@ -30,7 +28,7 @@ static void register_refresh(SalOp* op) {
 	op->registration_refresh_timer=0;
 	belle_sip_header_cseq_t* cseq=(belle_sip_header_cseq_t*)belle_sip_message_get_header(BELLE_SIP_MESSAGE(op->request),BELLE_SIP_CSEQ);
 	belle_sip_header_cseq_set_seq_number(cseq,belle_sip_header_cseq_get_seq_number(cseq)+1);
-	send_register_request(op,op->request);
+	sal_op_send_request(op,op->request);
 }
 static bool_t is_contact_equal(belle_sip_header_contact_t* a,belle_sip_header_contact_t* b) {
 	if (!a | !b) return FALSE;
@@ -74,10 +72,12 @@ static void register_response_event(void *user_ctx, const belle_sip_response_eve
 		}
 
 		op->base.root->callbacks.register_success(op,expires_header&&expires>=0);
+		/*always cancel pending refresh if any*/
+		if (op->registration_refresh_timer>0) {
+			belle_sip_main_loop_cancel_source(belle_sip_stack_get_main_loop(op->base.root->stack),op->registration_refresh_timer);
+			op->registration_refresh_timer=0;
+		}
 		if (expires>0) {
-			if (op->registration_refresh_timer>0) {
-				belle_sip_main_loop_cancel_source(belle_sip_stack_get_main_loop(op->base.root->stack),op->registration_refresh_timer);
-			}
 			op->registration_refresh_timer = belle_sip_main_loop_add_timeout(belle_sip_stack_get_main_loop(op->base.root->stack),(belle_sip_source_func_t)register_refresh,op,expires*1000);
 		}
 
@@ -100,31 +100,15 @@ static void register_process_transaction_terminated(void *user_ctx, const belle_
 
 
 
-static void send_register_request(SalOp* op, belle_sip_request_t* request) {
-	belle_sip_client_transaction_t* client_transaction;
-	belle_sip_provider_t* prov=op->base.root->prov;
-	op->callbacks.process_io_error=register_process_io_error;
-	op->callbacks.process_response_event=register_response_event;
-	op->callbacks.process_timeout=register_process_timeout;
-	op->callbacks.process_transaction_terminated=register_process_transaction_terminated;
-	client_transaction = belle_sip_provider_create_client_transaction(prov,request);
-	belle_sip_transaction_set_application_data(BELLE_SIP_TRANSACTION(client_transaction),op);
-	belle_sip_client_transaction_send_request(client_transaction);
-
-}
 /*if expire = -1, does not change expires*/
 static void send_register_request_with_expires(SalOp* op, belle_sip_request_t* request,int expires) {
 	belle_sip_header_expires_t* expires_header=(belle_sip_header_expires_t*)belle_sip_message_get_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_EXPIRES);
-	belle_sip_header_route_t* route_header;
-	if (sal_op_get_route_address(op)) {
-		route_header = belle_sip_header_route_create(BELLE_SIP_HEADER_ADDRESS(sal_op_get_route_address(op)));
-		belle_sip_message_add_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_HEADER(route_header));
-	}
-	if (!expires_header) {
+
+	if (!expires_header && expires>=0) {
 		belle_sip_message_add_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_HEADER(expires_header=belle_sip_header_expires_new()));
+		belle_sip_header_expires_set_expires(expires_header,expires);
 	}
-	if (expires>=0) belle_sip_header_expires_set_expires(expires_header,expires);
-	send_register_request(op,request);
+	sal_op_send_request(op,request);
 }
 
 
@@ -134,6 +118,10 @@ int sal_register(SalOp *op, const char *proxy, const char *from, int expires){
 	sal_op_set_from(op,from);
 	sal_op_set_to(op,from);
 	sal_op_set_route(op,proxy);
+	op->callbacks.process_io_error=register_process_io_error;
+	op->callbacks.process_response_event=register_response_event;
+	op->callbacks.process_timeout=register_process_timeout;
+	op->callbacks.process_transaction_terminated=register_process_transaction_terminated;
 
 	req = sal_op_build_request(op,"REGISTER");
 	belle_sip_uri_t* req_uri = belle_sip_request_get_uri(req);

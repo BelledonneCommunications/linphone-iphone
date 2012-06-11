@@ -244,7 +244,7 @@ static LinphoneCore* configure_lc(LinphoneCoreVTable* v_table) {
 
 	LinphoneCore* lc;
 	int retry=0;
-	memset (v_table,0,sizeof(LinphoneCoreVTable));
+
 	reset_counters();
 	lc =  linphone_core_new(v_table,NULL,"./multi_account_lrc",NULL);
 
@@ -260,6 +260,7 @@ static LinphoneCore* configure_lc(LinphoneCoreVTable* v_table) {
 static void multiple_proxy(){
 	LinphoneCoreVTable v_table;
 	LinphoneCore* lc;
+	memset (&v_table,0,sizeof(LinphoneCoreVTable));
 	v_table.registration_state_changed=registration_state_changed;
 	lc=configure_lc(&v_table);
 	linphone_core_destroy(lc);
@@ -296,6 +297,7 @@ static void simple_call_declined() {
 	LinphoneCore* lc;
 	int retry=0;
 
+	memset (&v_table,0,sizeof(LinphoneCoreVTable));
 	v_table.registration_state_changed=registration_state_changed;
 	v_table.call_state_changed=call_state_changed;
 	lc=configure_lc(&v_table);
@@ -314,6 +316,7 @@ static void simple_call_declined() {
 int init_test_suite () {
 
 CU_pSuite pSuite = CU_add_suite("liblinphone init test suite", init, uninit);
+
 	if (NULL == CU_add_test(pSuite, "simple call declined", simple_call_declined)) {
 			return CU_get_error();
 	}
@@ -341,9 +344,8 @@ CU_pSuite pSuite = CU_add_suite("liblinphone init test suite", init, uninit);
 	if (NULL == CU_add_test(pSuite, "multi account", multiple_proxy)) {
 		return CU_get_error();
 	}
-	if (NULL == CU_add_test(pSuite, "simple call declined", simple_call_declined)) {
-			return CU_get_error();
-	}
+
+
 	return 0;
 }
 int main (int argc, char *argv[]) {

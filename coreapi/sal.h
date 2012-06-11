@@ -174,6 +174,7 @@ typedef struct SalOpBase{
 	char *to;
 	SalAddress* to_address;
 	char *origin;
+	SalAddress* origin_address;
 	char *remote_ua;
 	SalMediaDescription *local_media;
 	SalMediaDescription *remote_media;
@@ -336,6 +337,7 @@ const SalAddress* sal_op_get_route_address(const SalOp *op);
 const char *sal_op_get_proxy(const SalOp *op);
 /*for incoming requests, returns the origin of the packet as a sip uri*/
 const char *sal_op_get_network_origin(const SalOp *op);
+const SalAddress *sal_op_get_network_origin_address(const SalOp *op);
 /*returns far-end "User-Agent" string */
 const char *sal_op_get_remote_ua(const SalOp *op);
 void *sal_op_get_user_pointer(const SalOp *op);
@@ -400,6 +402,7 @@ void sal_disable_logs();
 /*internal API */
 void __sal_op_init(SalOp *b, Sal *sal);
 void __sal_op_set_network_origin(SalOp *op, const char *origin /*a sip uri*/);
+void __sal_op_set_network_origin_address(SalOp *op, SalAddress *origin);
 void __sal_op_free(SalOp *b);
 
 #endif

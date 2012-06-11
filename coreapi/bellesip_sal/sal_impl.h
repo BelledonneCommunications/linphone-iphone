@@ -40,13 +40,24 @@ struct SalOp{
 	belle_sip_listener_callbacks_t callbacks;
 	belle_sip_request_t* request;
 	belle_sip_response_t* response;
+	belle_sip_server_transaction_t* pending_server_trans;
 	SalAuthInfo auth_info;
 	unsigned long int  registration_refresh_timer;
 	bool_t sdp_offering;
+	belle_sip_dialog_t* dialog;
+	belle_sip_header_address_t *replaces;
+	belle_sip_header_address_t *referred_by;
+	bool_t auto_answer_asked;
 };
 
 belle_sdp_session_description_t * media_description_to_sdp(const SalMediaDescription *sal);
 int sdp_to_media_description(belle_sdp_session_description_t  *sdp, SalMediaDescription *desc);
 belle_sip_request_t* sal_op_build_request(SalOp *op,const char* method);
 
+
+void sal_op_call_fill_cbs(SalOp*op);
+
+void sal_op_set_remote_ua(SalOp*op,belle_sip_message_t* message);
+void sal_op_send_request(SalOp* op, belle_sip_request_t* request);
+void sal_op_resend_request(SalOp* op, belle_sip_request_t* request);
 #endif /* SAL_IMPL_H_ */
