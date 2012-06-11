@@ -17,6 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */                                                                           
 
+#import "PhoneMainView.h"
 #import "PhoneViewController.h"
 #import "linphoneAppDelegate.h"
 #import "ContactPickerDelegate.h"
@@ -168,7 +169,8 @@ int __aeabi_idiv(int a, int b) {
 }
 
 -(void) setupUI {
-    //as defined in PhoneMainView.xib		
+    
+    /*//as defined in PhoneMainView.xib		
 	//dialer
 	myPhoneViewController = (PhoneViewController*) [myTabBarController.viewControllers objectAtIndex: DIALER_TAB_INDEX];
 	myPhoneViewController.myTabBarController =  myTabBarController;
@@ -206,7 +208,7 @@ int __aeabi_idiv(int a, int b) {
 	[myTabBarController setViewControllers:newArray animated:NO];
 	//[window addSubview: myTabBarController.view];
     [myCallHistoryTableViewController loadView];
-    [myContentView addSubview:myCallHistoryTableViewController.view];
+  //  [myContentView addSubview:myCallHistoryTableViewController.view];
 	//[window addSubview: myContentView];
    // [myContentViewController addChildViewController:myCallHistoryTableViewController];
 
@@ -214,7 +216,11 @@ int __aeabi_idiv(int a, int b) {
 	
 	[[LinphoneManager instance] setCallDelegate:myPhoneViewController];
     
-    [UIDevice currentDevice].batteryMonitoringEnabled = YES;
+    [UIDevice currentDevice].batteryMonitoringEnabled = YES;*/
+/*
+    PhoneMainView *mainView = [[PhoneMainView alloc] initWithNibName:@"PhoneMainView" bundle:[NSBundle mainBundle]];
+    [self.window addSubview:mainView.view];
+    [self.window makeKeyAndVisible];*/
 }
 
 -(void) setupGSMInteraction {
@@ -271,7 +277,7 @@ int __aeabi_idiv(int a, int b) {
 }
 
 - (void)dealloc {
-	[window release];
+	//[window release];
 	[myPeoplePickerController release];
 	[super dealloc];
 }

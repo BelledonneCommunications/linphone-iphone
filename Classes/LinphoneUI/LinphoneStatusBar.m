@@ -1,6 +1,6 @@
-/* main.c
+/* LinphoneStatusBar.m
  *
- * Copyright (C) 2009  Belledonne Comunications, Grenoble, France
+ * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -10,23 +10,25 @@
  *  This program is distributed in the hope that it will be useful,     
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of      
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       
- *  GNU General Public License for more details.                
+ *  GNU Library General Public License for more details.                
  *                                                                      
  *  You should have received a copy of the GNU General Public License   
  *  along with this program; if not, write to the Free Software         
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */               
+ */       
 
-#import <UIKit/UIKit.h>
-#import "LinphoneAppDelegate.h"
+#import "LinphoneStatusBar.h"
 
-
-int main(int argc, char *argv[]) {
+@implementation LinphoneStatusBar
+@synthesize test;
+- (id) awakeAfterUsingCoder:(NSCoder*)aDecoder {
+    NSArray *arrayOfViews = [[NSBundle mainBundle] loadNibNamed:@"LinphoneStatusBar"
+                                                          owner:nil
+                                                        options:nil];
     
-	
-    NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
-    int retVal = UIApplicationMain(argc, argv, nil, nil);
-	[pool release];
-    return retVal;
+    if ([arrayOfViews count] >= 1){
+        [self addSubview:[[arrayOfViews objectAtIndex:0] retain]];
+    }
+    return self;
 }
-
+@end
