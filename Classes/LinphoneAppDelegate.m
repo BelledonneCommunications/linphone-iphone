@@ -239,9 +239,11 @@ int __aeabi_idiv(int a, int b) {
 
     // Settings, setup delegate
     settingsController.delegate = [LinphoneManager instance];
-    settingsController.settingsReader.delegate = [LinphoneManager instance];
+    settingsController.settingsReaderDelegate = [LinphoneManager instance];
 	settingsController.settingsStore=[[LinphoneCoreSettingsStore alloc] init];
-    [settingsController.settingsReader init];
+	//settingsController.file=@"settings/Inappsettings.bundle";
+	settingsController.showCreditsFooter=FALSE;
+    //[settingsController.settingsReader init];
     
     
 	[[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeSound];

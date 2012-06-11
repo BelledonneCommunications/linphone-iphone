@@ -63,11 +63,12 @@ CGRect IASKCGRectSwap(CGRect rect);
 @synthesize showCreditsFooter = _showCreditsFooter;
 @synthesize showDoneButton = _showDoneButton;
 @synthesize settingsStore = _settingsStore;
+@synthesize settingsReaderDelegate = _settingsReaderDelegate;
 
 #pragma mark accessors
 - (IASKSettingsReader*)settingsReader {
 	if (!_settingsReader) {
-		_settingsReader = [[IASKSettingsReader alloc] initWithFile:self.file];
+		_settingsReader = [[IASKSettingsReader alloc] initWithFile:self.file andDelegate:self.settingsReaderDelegate];
 	}
 	return _settingsReader;
 }
@@ -267,7 +268,7 @@ CGRect IASKCGRectSwap(CGRect rect);
 		[self.delegate settingsViewControllerDidEnd:self];
 	}
     // reload
-    [self.settingsReader initWithFile:self.file];
+    [self.settingsReader initWithFile:self.file andDelegate:self.settingsReaderDelegate];
     [self.tableView reloadData];
 }
 
@@ -620,9 +621,9 @@ CGRect IASKCGRectSwap(CGRect rect);
             // load the view controll back in to push it
             targetViewController = [[self.viewList objectAtIndex:kIASKSpecifierChildViewControllerIndex] objectForKey:@"viewController"];
         }
+		targetViewController.settingsReaderDelegate = self.settingsReaderDelegate;
 		targetViewController.file = specifier.file; // changes settingsReader
-        targetViewController.settingsReader.delegate = self.settingsReader.delegate;
-        [targetViewController.settingsReader initWithFile:specifier.file];
+		
 		targetViewController.title = specifier.title;
         targetViewController.showCreditsFooter = NO;
         [[self navigationController] pushViewController:targetViewController animated:YES];

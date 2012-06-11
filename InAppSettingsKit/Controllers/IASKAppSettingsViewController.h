@@ -17,6 +17,7 @@
 #import <UIKit/UIKit.h>
 #import <MessageUI/MessageUI.h>
 
+#import "IASKSettingsReader.h"
 #import "IASKSettingsStore.h"
 #import "IASKViewController.h"
 
@@ -64,6 +65,7 @@
     NSMutableArray          *_viewList;
 	
 	IASKSettingsReader		*_settingsReader;
+	id<IASKSettingsReaderFilterDelegate> _settingsReaderDelegate;
     id<IASKSettingsStore>  _settingsStore;
 	NSString				*_file;
 	
@@ -75,6 +77,7 @@
 
 @property (nonatomic, assign) IBOutlet id delegate;
 @property (nonatomic, copy) NSString *file;
+@property (nonatomic, assign) id<IASKSettingsReaderFilterDelegate> settingsReaderDelegate;
 @property (nonatomic, assign) BOOL showCreditsFooter;
 @property (nonatomic, assign) BOOL showDoneButton;
 

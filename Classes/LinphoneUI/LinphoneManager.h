@@ -66,9 +66,7 @@ typedef struct _LinphoneCallAppData {
     FastAddressBook* mFastAddressBook;
 	const char*  frontCamId;
 	const char*  backCamId;
-    
-    NSDictionary* currentSettings;
-    
+        
 @public
     CallContext currentCallContextBeforeGoingBackground;
 }
@@ -92,13 +90,13 @@ typedef struct _LinphoneCallAppData {
 -(NSString*) getDisplayNameFromAddressBook:(NSString*) number andUpdateCallLog:(LinphoneCallLog*)log; 
 -(UIImage*) getImageFromAddressBook:(NSString*) number;
 
--(BOOL) reconfigureLinphoneIfNeeded:(NSDictionary *)oldSettings;
 -(void) setupNetworkReachabilityCallback: (const char*) nodeName withContext:(SCNetworkReachabilityContext*) ctx;
 -(void) refreshRegisters;
 
 @property (nonatomic, retain) id<LinphoneUICallDelegate> callDelegate;
 @property (nonatomic, retain) id<LinphoneUIRegistrationDelegate> registrationDelegate;
 @property Connectivity connectivity;
+@property (nonatomic) int defaultExpires;
 @property (readonly) const char*  frontCamId;
 @property (readonly) const char*  backCamId;
 @property (nonatomic) bool isbackgroundModeEnabled;

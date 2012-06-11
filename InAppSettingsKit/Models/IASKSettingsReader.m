@@ -32,13 +32,13 @@ localizationTable=_localizationTable,
 bundlePath=_bundlePath,
 settingsBundle=_settingsBundle, 
 dataSource=_dataSource;
-@synthesize delegate;
+
 
 - (id)init {
-	return [self initWithFile:@"Root"];
+	return [self initWithFile:@"Root" andDelegate:nil];
 }
 
-- (id)initWithFile:(NSString*)file {
+- (id)initWithFile:(NSString*)file andDelegate:(id<IASKSettingsReaderFilterDelegate>)delegate{
 	if ((self=[super init])) {
 
 
@@ -61,7 +61,7 @@ dataSource=_dataSource;
 				self.localizationTable = @"Root";
 			}
 		}
-
+		_delegate=delegate;
 		if (_settingsBundle) {
 			[self _reinterpretBundle:_settingsBundle];
 		}
@@ -86,8 +86,8 @@ dataSource=_dataSource;
 	NSMutableArray *dataSource		= [[[NSMutableArray alloc] init] autorelease];
 	
 	for (NSDictionary *specifier in preferenceSpecifiers) {
-        if (delegate != nil) {
-            specifier = [delegate filterPreferenceSpecifier:specifier];
+        if (_delegate != nil) {
+            specifier = [_delegate filterPreferenceSpecifier:specifier];
             if (specifier == nil) {
                 // skip
                 continue;
@@ -127,7 +127,8 @@ dataSource=_dataSource;
 
 - (NSInteger)numberOfRowsForSection:(NSInteger)section {
 	int headingCorrection = [self _sectionHasHeading:section] ? 1 : 0;
-	return [(NSArray*)[[self dataSource] objectAtIndex:section] count] - headingCorrection;
+	NSInteger ret= [(NSArray*)[[self dataSource] objectAtIndex:section] count] - headingCorrection;
+	return ret;
 }
 
 - (IASKSpecifier*)specifierForIndexPath:(NSIndexPath*)indexPath {

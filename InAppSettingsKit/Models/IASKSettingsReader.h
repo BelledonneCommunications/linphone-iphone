@@ -125,10 +125,10 @@ __VA_ARGS__ \
     NSDictionary    *_settingsBundle;
     NSArray         *_dataSource;
     NSBundle        *_bundle;
-    id<IASKSettingsReaderFilterDelegate> delegate;
+    id<IASKSettingsReaderFilterDelegate> _delegate;
 }
 
-- (id)initWithFile:(NSString*)file;
+- (id)initWithFile:(NSString*)file andDelegate:(id<IASKSettingsReaderFilterDelegate>)delegate;
 - (NSInteger)numberOfSections;
 - (NSInteger)numberOfRowsForSection:(NSInteger)section;
 - (IASKSpecifier*)specifierForIndexPath:(NSIndexPath*)indexPath;
@@ -145,5 +145,5 @@ __VA_ARGS__ \
 @property (nonatomic, retain) NSString      *bundlePath;
 @property (nonatomic, retain) NSDictionary  *settingsBundle;
 @property (nonatomic, retain) NSArray       *dataSource;
-@property (nonatomic, retain) id<IASKSettingsReaderFilterDelegate> delegate;
+
 @end

@@ -78,7 +78,6 @@
 		2242D91710D66BF300E9963F /* out_call.png in Resources */ = {isa = PBXBuildFile; fileRef = 2242D91510D66BF300E9963F /* out_call.png */; };
 		2242D9C910D691F900E9963F /* GenericTabViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2242D9C810D691F900E9963F /* GenericTabViewController.m */; };
 		2242E313125235120061DDCE /* oldphone-mono-30s.caf in Resources */ = {isa = PBXBuildFile; fileRef = 2242E312125235120061DDCE /* oldphone-mono-30s.caf */; };
-		2245671D107699F700F10948 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2245671C107699F700F10948 /* Settings.bundle */; };
 		224567C2107B968500F10948 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 224567C1107B968500F10948 /* AVFoundation.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		2245F78A1201D38000C4179D /* MoreViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22E0A81B111C44E100B04932 /* MoreViewController.xib */; };
 		2248E90E12F7E4CF00220D9C /* UIDigitButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2248E90D12F7E4CF00220D9C /* UIDigitButton.m */; };
@@ -312,7 +311,8 @@
 		57282931154AF1460076F540 /* history-orange.png in Resources */ = {isa = PBXBuildFile; fileRef = 34C7646B14CD5585008E9607 /* history-orange.png */; };
 		57282933154AF14D0076F540 /* dialer-orange.png in Resources */ = {isa = PBXBuildFile; fileRef = 34C7646A14CD5585008E9607 /* dialer-orange.png */; };
 		57D2B457157E4580002EA69B /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3415205B1563ABEB00205A0E /* MessageUI.framework */; };
-		57D2B45B1580FF58002EA69B /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 57D2B45A1580FF58002EA69B /* Settings.bundle */; };
+		57D2B47C1586384E002EA69B /* Inappsettings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 57D2B47B15863820002EA69B /* Inappsettings.bundle */; };
+		57D2B47D1586384F002EA69B /* Inappsettings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 57D2B47B15863820002EA69B /* Inappsettings.bundle */; };
 		70571E1A13FABCB000CDD3C2 /* rootca.pem in Resources */ = {isa = PBXBuildFile; fileRef = 70571E1913FABCB000CDD3C2 /* rootca.pem */; };
 		7066FC0C13E830E400EFC6DC /* libvpx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7066FC0B13E830E400EFC6DC /* libvpx.a */; };
 		70E542F313E147E3002BA2C0 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F213E147E3002BA2C0 /* OpenGLES.framework */; };
@@ -518,7 +518,6 @@
 		2242D9C710D691F900E9963F /* GenericTabViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GenericTabViewController.h; sourceTree = "<group>"; };
 		2242D9C810D691F900E9963F /* GenericTabViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GenericTabViewController.m; sourceTree = "<group>"; };
 		2242E312125235120061DDCE /* oldphone-mono-30s.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "oldphone-mono-30s.caf"; path = "liblinphone-sdk/apple-darwin/share/sounds/linphone/rings/oldphone-mono-30s.caf"; sourceTree = "<group>"; };
-		2245671C107699F700F10948 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		224567C1107B968500F10948 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		2248E90C12F7E4CF00220D9C /* UIDigitButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDigitButton.h; sourceTree = "<group>"; };
 		2248E90D12F7E4CF00220D9C /* UIDigitButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIDigitButton.m; sourceTree = "<group>"; };
@@ -736,7 +735,7 @@
 		34CA8534148F669900503C01 /* VideoViewController-ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "VideoViewController-ipad.xib"; sourceTree = "<group>"; };
 		34CA8537148F692A00503C01 /* MainScreenWithVideoPreview.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainScreenWithVideoPreview.h; sourceTree = "<group>"; };
 		34CA8538148F692A00503C01 /* MainScreenWithVideoPreview.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainScreenWithVideoPreview.m; sourceTree = "<group>"; };
-		57D2B45A1580FF58002EA69B /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
+		57D2B47B15863820002EA69B /* Inappsettings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Inappsettings.bundle; sourceTree = "<group>"; };
 		70571E1913FABCB000CDD3C2 /* rootca.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = rootca.pem; path = Resources/rootca.pem; sourceTree = "<group>"; };
 		7066FC0B13E830E400EFC6DC /* libvpx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libvpx.a; path = "liblinphone-sdk/apple-darwin/lib/libvpx.a"; sourceTree = "<group>"; };
 		70E542F213E147E3002BA2C0 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
@@ -1213,7 +1212,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				57D2B45A1580FF58002EA69B /* Settings.bundle */,
+				57D2B47A15863820002EA69B /* settings */,
 				3415205B1563ABEB00205A0E /* MessageUI.framework */,
 				34151FB61563A8D800205A0E /* InAppSettingsKit */,
 				340751961506459A00B89C47 /* CoreTelephony.framework */,
@@ -1260,7 +1259,6 @@
 				2274402E106F335E006EC466 /* AudioToolbox.framework */,
 				22744043106F33FC006EC466 /* Security.framework */,
 				22744056106F9BC9006EC466 /* CoreFoundation.framework */,
-				2245671C107699F700F10948 /* Settings.bundle */,
 				224567C1107B968500F10948 /* AVFoundation.framework */,
 				22F51EF5107FA66500F98953 /* untitled.plist */,
 				22B5EFA210CE50BD00777D97 /* AddressBookUI.framework */,
@@ -1427,6 +1425,14 @@
 			path = Xibs;
 			sourceTree = "<group>";
 		};
+		57D2B47A15863820002EA69B /* settings */ = {
+			isa = PBXGroup;
+			children = (
+				57D2B47B15863820002EA69B /* Inappsettings.bundle */,
+			);
+			path = settings;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1504,7 +1510,6 @@
 				22F2508F107141E100AC9B3F /* PhoneViewController.xib in Resources */,
 				22F254811073D99800AC9B3F /* ringback.wav in Resources */,
 				220FAE4B10767A6A0068D98F /* PhoneMainView.xib in Resources */,
-				2245671D107699F700F10948 /* Settings.bundle in Resources */,
 				22F51EF6107FA66500F98953 /* untitled.plist in Resources */,
 				2237D4091084D7A9001383EE /* oldphone-mono.wav in Resources */,
 				227BCDC310D4004600FBFD76 /* CallHistoryTableViewController.xib in Resources */,
@@ -1573,6 +1578,7 @@
 				34151FF31563A8D800205A0E /* IASKPSToggleSwitchSpecifierViewCell.xib in Resources */,
 				34151FF41563A8D800205A0E /* IASKSpecifierValuesView.xib in Resources */,
 				3415205A1563AA8F00205A0E /* 20-gear2.png in Resources */,
+				57D2B47C1586384E002EA69B /* Inappsettings.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1580,7 +1586,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				57D2B45B1580FF58002EA69B /* Settings.bundle in Resources */,
 				22D8F11F147548E2008C97DB /* linphonerc in Resources */,
 				22D8F120147548E2008C97DB /* PhoneViewController.xib in Resources */,
 				22D8F121147548E2008C97DB /* ringback.wav in Resources */,
@@ -1647,6 +1652,7 @@
 				341520081563A93B00205A0E /* IASKPSTextFieldSpecifierViewCell.xib in Resources */,
 				341520091563A93B00205A0E /* IASKPSToggleSwitchSpecifierViewCell.xib in Resources */,
 				3415200A1563A93B00205A0E /* IASKSpecifierValuesView.xib in Resources */,
+				57D2B47D1586384F002EA69B /* Inappsettings.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -15,7 +15,6 @@
 	NSDictionary *dict;
 }
 
-- (void) enableCodecWithName: (const char*) name andRate: (int) rate to:(id)value;
 -(void) transformLinphoneCoreToKeys;
 
 @end
