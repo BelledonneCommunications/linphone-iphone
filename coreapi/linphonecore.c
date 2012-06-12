@@ -467,6 +467,7 @@ static void sip_config_read(LinphoneCore *lc)
 	LCSipTransports tr;
 	int i,tmp;
 	int ipv6;
+	int random_port;
 
 	tmp=lp_config_get_int(lc->config,"sip","use_info",0);
 	linphone_core_set_use_info_for_dtmf(lc,tmp);
@@ -489,21 +490,26 @@ static void sip_config_read(LinphoneCore *lc)
 	}
 	linphone_core_enable_ipv6(lc,ipv6);
 	memset(&tr,0,sizeof(tr));
-	if (lp_config_get_int(lc->config,"sip","sip_random_port",0)) {
-		tr.udp_port=(0xDFF&+random())+1024;
-	} else {
-		tr.udp_port=lp_config_get_int(lc->config,"sip","sip_port",5060);
-	}
-	if (lp_config_get_int(lc->config,"sip","sip_tcp_random_port",0)) {
-		tr.tcp_port=(0xDFF&+random())+1024;
-	} else {
-		tr.tcp_port=lp_config_get_int(lc->config,"sip","sip_tcp_port",0);
-	}
-	if (lp_config_get_int(lc->config,"sip","sip_tls_random_port",0)) {
-		tr.tls_port=(0xDFF&+random())+1024;
-	} else {
-		tr.tls_port=lp_config_get_int(lc->config,"sip","sip_tls_port",0);
-	}
+	
+	tr.udp_port=lp_config_get_int(lc->config,"sip","sip_port",0);
+	tr.tcp_port=lp_config_get_int(lc->config,"sip","sip_tcp_port",0);
+	tr.tls_port=lp_config_get_int(lc->config,"sip","sip_tls_port",0);
+	
+	if (lp_config_get_int(lc->config,"sip","sip_random_port",0)==1)
+		random_port=(0xDFFF&random())+1024;
+	else random_port=0;
+	
+	if (tr.udp_port==0 && tr.tcp_port==0 && tr.tls_port==0){
+		tr.udp_port=5060;
+	}	
+	
+	if (tr.udp_port>0 && random_port){
+		tr.udp_port=random_port;
+	}else if (tr.tcp_port>0 && random_port){
+		tr.tcp_port=random_port;
+	}else if (tr.tls_port>0 && random_port){
+		tr.tls_port=random_port;
+	} 
 
 #ifdef __linux
 	sal_set_root_ca(lc->sal, lp_config_get_string(lc->config,"sip","root_ca", "/etc/ssl/certs"));
