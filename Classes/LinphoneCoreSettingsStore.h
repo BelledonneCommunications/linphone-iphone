@@ -13,6 +13,7 @@
 
 @interface LinphoneCoreSettingsStore : IASKAbstractSettingsStore {
 	NSDictionary *dict;
+	NSDictionary *changedDict;
 }
 
 -(void) transformLinphoneCoreToKeys;

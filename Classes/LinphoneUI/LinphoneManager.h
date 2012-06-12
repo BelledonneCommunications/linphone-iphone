@@ -24,6 +24,7 @@
 #import "LogView.h"
 #import "LinphoneUIDelegates.h"
 #import "IASKSettingsReader.h"
+#import "IASKSettingsStore.h"
 #import "IASKAppSettingsViewController.h"
 
 typedef enum _Connectivity {
@@ -66,7 +67,7 @@ typedef struct _LinphoneCallAppData {
     FastAddressBook* mFastAddressBook;
 	const char*  frontCamId;
 	const char*  backCamId;
-        
+	id<IASKSettingsStore> settingsStore;
 @public
     CallContext currentCallContextBeforeGoingBackground;
 }
@@ -75,6 +76,7 @@ typedef struct _LinphoneCallAppData {
 +(BOOL) runningOnIpad;
 +(void) set:(UIView*)view hidden: (BOOL) hidden withName:(const char*)name andReason:(const char*) reason;
 +(void) logUIElementPressed:(const char*) name;
++ (NSString *) getPrefForCodec: (const char*) name withRate: (int) rate;
 
 -(void) displayDialer;
 
@@ -95,10 +97,11 @@ typedef struct _LinphoneCallAppData {
 
 @property (nonatomic, retain) id<LinphoneUICallDelegate> callDelegate;
 @property (nonatomic, retain) id<LinphoneUIRegistrationDelegate> registrationDelegate;
+@property (nonatomic, retain) id<IASKSettingsStore> settingsStore;
 @property Connectivity connectivity;
 @property (nonatomic) int defaultExpires;
 @property (readonly) const char*  frontCamId;
 @property (readonly) const char*  backCamId;
-@property (nonatomic) bool isbackgroundModeEnabled;
+
 @end
 

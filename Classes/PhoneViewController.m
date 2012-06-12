@@ -101,8 +101,9 @@
 }
 
 -(void) updateCallAndBackButtons {
-    @try {
-        bool zeroCall = (linphone_core_get_calls_nb([LinphoneManager getLc]) == 0);
+	LinphoneCore *lc=[LinphoneManager getLc];
+    if (lc){
+        bool zeroCall = (linphone_core_get_calls_nb(lc) == 0);
         
         [LinphoneManager set:callLarge hidden:!zeroCall withName:"CALL_LARGE button" andReason:__FUNCTION__];
         [LinphoneManager set:switchCamera hidden:!zeroCall withName:"SWITCH_CAM button" andReason:__FUNCTION__];
@@ -112,14 +113,8 @@
         [callShort setTitle:[UICallButton transforModeEnabled] ? @"transfer":@"call" forState:UIControlStateNormal];
         
         if (!callShort.hidden)
-            [callShort setEnabled:!linphone_core_sound_resources_locked([LinphoneManager getLc])];
-    } @catch (NSException* exc) {
-        // R.A.S: linphone core si simply not ready...
-        ms_warning("Catched exception %s: %s", 
-                   [exc.name cStringUsingEncoding:[NSString defaultCStringEncoding]], 
-                   [exc.reason cStringUsingEncoding:[NSString defaultCStringEncoding]]);
-    }
-    
+            [callShort setEnabled:!linphone_core_sound_resources_locked(lc)];
+    }     
     [self updateStatusSubView];
 }
 

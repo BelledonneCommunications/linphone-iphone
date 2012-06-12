@@ -57,8 +57,41 @@ extern  void libmsbcg729_init();
 @synthesize connectivity;
 @synthesize frontCamId;
 @synthesize backCamId;
-@synthesize isbackgroundModeEnabled;
 @synthesize defaultExpires;
+@synthesize settingsStore;
+
+struct codec_name_pref_table{
+const char *name;
+int rate;
+NSString *prefname;
+};
+
+struct codec_name_pref_table codec_pref_table[]={
+	{ "speex", 8000, @"speex_8k_preference" },
+	{ "speex", 16000, @"speex_16k_preference" },
+	{ "silk", 24000, @"silk_24k_preference" },
+	{ "silk", 16000, @"silk_16k_preference" },
+	{ "amr", 8000, @"amr_8k_preference" },
+	{ "ilbc", 8000, @"ilbc_preference"},
+	{ "pcmu", 8000, @"pcmu_preference"},
+	{ "pcma", 8000, @"pcma_preference"},
+	{ "g722", 8000, @"g722_preference"},
+	{ "g729", 8000, @"g729_preference"},
+	{ "mp4v-es", 90000, @"mp4v-es_preference"},
+	{ "h264", 90000, @"h264_preference"},
+	{ "vp8", 90000, @"vp8_preference"},
+	{ NULL,0,Nil }
+};
+
++ (NSString *) getPrefForCodec: (const char*) name withRate: (int) rate{
+	int i;
+	for(i=0;codec_pref_table[i].name!=NULL;++i){
+		if (strcasecmp(codec_pref_table[i].name,name)==0 && codec_pref_table[i].rate==rate)
+			return codec_pref_table[i].prefname;
+	}
+	return Nil;
+}
+
 
 -(id) init {
     assert (!theLinphoneManager);
@@ -289,9 +322,12 @@ extern  void libmsbcg729_init();
 }
 
 +(LinphoneCore*) getLc {
+#if 0
 	if (theLinphoneCore==nil) {
 		@throw([NSException exceptionWithName:@"LinphoneCoreException" reason:@"Linphone core not initialized yet" userInfo:nil]);
 	}
+#else
+#endif
 	return theLinphoneCore;
 }
 
@@ -302,7 +338,7 @@ extern  void libmsbcg729_init();
 	[callDelegate displayStatus:message];
 }
 //generic log handler for debug version
-static void linphone_iphone_log_handler(int lev, const char *fmt, va_list args){
+void linphone_iphone_log_handler(int lev, const char *fmt, va_list args){
 	NSString* format = [[NSString alloc] initWithCString:fmt encoding:[NSString defaultCStringEncoding]];
 	NSLogv(format,args);
 	NSString* formatedString = [[NSString alloc] initWithFormat:format arguments:args];
@@ -564,7 +600,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	linphone_core_get_default_proxy(theLinphoneCore, &proxyCfg);	
 	linphone_core_stop_dtmf_stream(theLinphoneCore);
 	
-	if (isbackgroundModeEnabled && proxyCfg) {
+	if (proxyCfg && lp_config_get_int(linphone_core_get_config(theLinphoneCore),"app","backgroundmode_preference",0)) {
 		//For registration register
 		linphone_core_refresh_registers(theLinphoneCore);
 		
@@ -594,10 +630,6 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 			ms_message("keepalive handler succesfully registered"); 
 		} else {
 			ms_warning("keepalive handler cannot be registered");
-		}
-		LCSipTransports transportValue;
-		if (linphone_core_get_sip_transports(theLinphoneCore, &transportValue)) {
-			ms_error("cannot get current transport");	
 		}
 		return YES;
 	}
@@ -820,7 +852,16 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 }
 
 -(void) settingsViewControllerDidEnd:(IASKAppSettingsViewController *)sender {
-    NSLog(@"settingsViewControllerDidEnd");
+}
+
+-(BOOL) codecSupported:(NSString *) prefName{
+	int i;
+	for(i=0;codec_pref_table[i].name!=NULL;++i){
+		if ([prefName compare:codec_pref_table[i].prefname]==0){
+			return linphone_core_find_payload_type(theLinphoneCore,codec_pref_table[i].name, codec_pref_table[i].rate)!=NULL;
+		}
+	}
+	return TRUE;
 }
 
 -(NSDictionary*) filterPreferenceSpecifier:(NSDictionary *)specifier {
@@ -842,16 +883,11 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
         return specifier;
     }
     // NSLog(@"Specifier received: %@", identifier);
-    if ([identifier hasPrefix:@"silk"]) {
-		if (linphone_core_find_payload_type(theLinphoneCore,"SILK",8000)==NULL){
+	if ([identifier isEqualToString:@"silk_24k_preference"]) {
+		if (![self isNotIphone3G])
 			return nil;
-		}
-		if ([identifier isEqualToString:@"silk_24k_preference"]) {
-			if (![self isNotIphone3G])
-				return nil;
-		}
-		
-    } else if ([identifier isEqualToString:@"backgroundmode_preference"]) {
+	}
+    if ([identifier isEqualToString:@"backgroundmode_preference"]) {
         UIDevice* device = [UIDevice currentDevice];
         if ([device respondsToSelector:@selector(isMultitaskingSupported)]) {
             if ([device isMultitaskingSupported]) {
@@ -861,6 +897,8 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
         // hide setting if bg mode not supported
         return nil;
     }
+	if (![self codecSupported:identifier])
+		return Nil;
     return specifier;
 }
 

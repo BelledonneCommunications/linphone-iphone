@@ -33,12 +33,10 @@
 
 - (void)viewDidAppear:(BOOL)animated { 
     [super viewDidAppear:animated];
-	//[username setText:[[NSUserDefaults standardUserDefaults] stringForKey:@"username_preference"]];
-	//[passwd setText:[[NSUserDefaults standardUserDefaults] stringForKey:@"password_preference"]];
 }
 
 -(void) viewDidLoad {
-	NSString* siteUrl = [[NSUserDefaults standardUserDefaults] stringForKey:@"firt_login_view_url"];
+	NSString* siteUrl = [[NSUserDefaults standardUserDefaults] stringForKey:@"first_login_view_url"];
 	if (siteUrl==nil) {
 		siteUrl=@"http://www.linphone.org";
 	}
@@ -79,9 +77,8 @@
 		[error show];
         [error release];
 	} else {
-		[[NSUserDefaults standardUserDefaults] setObject:username.text forKey:@"username_preference"];
-		[[NSUserDefaults standardUserDefaults] setObject:passwd.text forKey:@"password_preference"];
-        [[LinphoneManager instance] reconfigureLinphoneIfNeeded:nil];
+		[[LinphoneManager instance].settingsStore setObject:username.text forKey:@"username_preference"];
+		[[LinphoneManager instance].settingsStore setObject:passwd.text forKey:@"password_preference"];
 		[self.activityIndicator setHidden:false];
 	};
 	
@@ -106,9 +103,9 @@
 	//									  otherButtonTitles:nil ,nil];
 	//[error show];
     //[error release];
-	//erase uername passwd
-	[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"username_preference"];
-	[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"password_preference"];
+	//erase username passwd
+	[[LinphoneManager instance].settingsStore setObject:Nil forKey:@"username_preference"];
+	[[LinphoneManager instance].settingsStore setObject:Nil forKey:@"password_preference"];
 }
 -(void) displayNotRegisteredFromUI:(UIViewController*) viewCtrl { 
 	[self.activityIndicator setHidden:true];	

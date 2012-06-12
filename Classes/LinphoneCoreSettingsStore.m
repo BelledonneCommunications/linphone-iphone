@@ -11,44 +11,33 @@
 #include "lpconfig.h"
 
 
-struct codec_name_pref_table{
-	const char *name;
-	int rate;
-	NSString *prefname;
-};
+extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 
-struct codec_name_pref_table codec_pref_table[]={
-	{ "speex", 8000, @"speex_8k_preference" },
-	{ "speex", 16000, @"speex_16k_preference" },
-	{ "silk", 24000, @"silk_24k_preference" },
-	{ "silk", 16000, @"silk_16k_preference" },
-	{ "amr", 8000, @"amr_8k_preference" },
-	{ "ilbc", 8000, @"ilbc_preference"},
-	{ "pcmu", 8000, @"pcmu_preference"},
-	{ "pcma", 8000, @"pcma_preference"},
-	{ "g722", 8000, @"g722_preference"},
-	{ "g729", 8000, @"g729_preference"},
-	{ "mp4v-es", 90000, @"mp4v-es_preference"},
-	{ "h264", 90000, @"h264_preference"},
-	{ "vp8", 90000, @"vp8_preference"},
-	{ NULL,0,Nil }
-};
-
-static NSString *getPrefForCodec(const char *name, int rate){
-	int i;
-	for(i=0;codec_pref_table[i].name!=NULL;++i){
-		if (strcasecmp(codec_pref_table[i].name,name)==0 && codec_pref_table[i].rate==rate)
-			return codec_pref_table[i].prefname;
-	}
-	return Nil;
-}
 
 @implementation LinphoneCoreSettingsStore
+
+-(void) handleMigration{
+	
+	NSUserDefaults *oldconfig=[NSUserDefaults standardUserDefaults];
+	NSArray *allkeys=[[oldconfig dictionaryRepresentation] allKeys];
+	for(NSString* key in allkeys){
+		NSLog(@"Migrating old config item %@ to in app settings.",key);
+		[self setObject:[oldconfig objectForKey:key] forKey:key];
+	}
+	[self synchronize];
+	NSLog(@"Migration done");
+}
 
 -(id) init{
 	self = [super init];
 	if (self){
 		dict=[[NSMutableDictionary alloc] init];
+		changedDict=[[NSMutableDictionary alloc] init];
+		LinphoneCore *lc=[LinphoneManager getLc];
+		if (lp_config_get_int(linphone_core_get_config(lc),"app","config_migrated",0)==0){
+			[self handleMigration];
+			lp_config_set_int(linphone_core_get_config(lc),"app","config_migrated",1);
+		}
 		[self transformLinphoneCoreToKeys];
 	}
 	return self;
@@ -57,6 +46,7 @@ static NSString *getPrefForCodec(const char *name, int rate){
 -(void) dealloc{
 	[super dealloc];
 	[dict release];
+	[changedDict release];
 }
 
 -(void) transformKeysToLinphoneCore{
@@ -79,7 +69,7 @@ static NSString *getPrefForCodec(const char *name, int rate){
 	const MSList *elem=codecs;
 	for(;elem!=NULL;elem=elem->next){
 		PayloadType *pt=(PayloadType*)elem->data;
-		NSString *pref=getPrefForCodec(pt->mime_type,pt->clock_rate);
+		NSString *pref=[LinphoneManager getPrefForCodec:pt->mime_type withRate:pt->clock_rate];
 		if (pref){
 			[self setBool: linphone_core_payload_type_enabled(lc,pt) forKey: pref];
 		}else{
@@ -163,7 +153,14 @@ static NSString *getPrefForCodec(const char *name, int rate){
 	[self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","check_config_disable_preference",0) forKey:@"check_config_disable_preference"];
 	[self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","wifi_only_preference",0) forKey:@"wifi_only_preference"];
 	[self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","backgroundmode_preference",TRUE) forKey:@"backgroundmode_preference"];
-	[self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","start_at_boot_preference",TRUE) forKey:@"disable_autoboot_preference"];
+	/*keep this one also in the standardUserDefaults so that it can be read before starting liblinphone*/
+	BOOL start_at_boot;
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"start_at_boot_preference"]==Nil)
+		start_at_boot=TRUE;
+	else start_at_boot=[[NSUserDefaults standardUserDefaults]  boolForKey:@"start_at_boot_preference"];
+	[self setBool: start_at_boot forKey:@"start_at_boot_preference"];
+	
+	
 
 	if (linphone_core_tunnel_available()){
 		/*FIXME: enhance linphonecore API to handle tunnel more easily in applications */
@@ -178,30 +175,32 @@ static NSString *getPrefForCodec(const char *name, int rate){
 		pol=linphone_core_get_video_policy(lc);
 		[self setBool:(pol->automatically_accept && pol->automatically_initiate) forKey:@"start_video_preference"];
 	}
+	if (lp_config_get_int(linphone_core_get_config(lc),"app","debugenable_preference",0))
+		linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
+	
+	[changedDict release];
+	changedDict=[[NSMutableDictionary alloc] init];
 }
 
 -(void) setObject:(id)value forKey:(NSString *)key {
 	[dict setValue:value forKey:key];
-	NSString *changed_value=[[NSString alloc] initWithFormat:@"%@_changed", key];
-	[dict setValue:[NSNumber numberWithBool:TRUE] forKey:changed_value];
-	[changed_value release];
+	[changedDict setValue:[NSNumber numberWithBool:TRUE] forKey:key];
 }
 
 - (id)objectForKey:(NSString*)key {
     return [dict valueForKey:key];
 }
 
-- (BOOL)synchronize {
+- (BOOL)valueChangedForKey:(NSString*)key{
+	return [ [changedDict valueForKey:key] boolValue];
+}
+
+- (void) synchronizeAccount{
 	LinphoneCore *lc=[LinphoneManager getLc];
 	LinphoneManager* lLinphoneMgr = [LinphoneManager instance];
-	
-	NSLog(@"Called in SettingsStore synchronize");
-	if ([self boolForKey:@"username_preference_changed"])
-		NSLog(@"username_preference_changed !!");
-	return YES;
+	LinphoneProxyConfig* proxyCfg=NULL;
 	/* unregister before modifying any settings */
     {
-        LinphoneProxyConfig* proxyCfg;
         linphone_core_get_default_proxy(lc, &proxyCfg);
         
         if (proxyCfg) {
@@ -221,7 +220,7 @@ static NSString *getPrefForCodec(const char *name, int rate){
     
 	NSString* transport = [self stringForKey:@"transport_preference"];
 	
-	LCSipTransports transportValue;
+	LCSipTransports transportValue={0};
 	if (transport!=nil) {
 		if (linphone_core_get_sip_transports(lc, &transportValue)) {
 			ms_error("cannot get current transport");	
@@ -266,7 +265,7 @@ static NSString *getPrefForCodec(const char *name, int rate){
 		const char* identity = [[NSString stringWithFormat:@"sip:%@@%@",username,domain] cStringUsingEncoding:[NSString defaultCStringEncoding]];
 		const char* password = [accountPassword cStringUsingEncoding:[NSString defaultCStringEncoding]];
 		
-		NSString* proxyAddress = [[NSUserDefaults standardUserDefaults] stringForKey:@"proxy_preference"];
+		NSString* proxyAddress = [self stringForKey:@"proxy_preference"];
 		if ((!proxyAddress || [proxyAddress length] <1 ) && domain) {
 			proxyAddress = [NSString stringWithFormat:@"sip:%@",domain] ;
 		} else {
@@ -275,10 +274,10 @@ static NSString *getPrefForCodec(const char *name, int rate){
 		
 		const char* proxy = [proxyAddress cStringUsingEncoding:[NSString defaultCStringEncoding]];
 		
-		NSString* prefix = [[NSUserDefaults standardUserDefaults] stringForKey:@"prefix_preference"];
-        bool substitute_plus_by_00 = [[NSUserDefaults standardUserDefaults] boolForKey:@"substitute_+_by_00_preference"];
+		NSString* prefix = [self stringForKey:@"prefix_preference"];
+        bool substitute_plus_by_00 = [self boolForKey:@"substitute_+_by_00_preference"];
 		//possible valid config detected
-		LinphoneProxyConfig* proxyCfg;	
+		
 		proxyCfg = linphone_proxy_config_new();
         
 		// add username password
@@ -314,20 +313,41 @@ static NSString *getPrefForCodec(const char *name, int rate){
 		//set to default proxy
 		linphone_core_set_default_proxy(lc,proxyCfg);
 		
-	}		
+	}
+}
+
+- (BOOL)synchronize {
+	LinphoneCore *lc=[LinphoneManager getLc];
 	
+	if (lc==NULL) return YES;
+	BOOL account_changed;
+	
+	account_changed=[self valueChangedForKey:@"username_preference"] 
+				|| [self valueChangedForKey:@"password_preference"] 
+				|| [self valueChangedForKey:@"domain_preference"] 
+				|| [self valueChangedForKey:@"proxy_preference"]
+				|| [self valueChangedForKey:@"outbound_proxy_preference"]
+				|| [self valueChangedForKey:@"transport_preference"]
+				|| [self valueChangedForKey:@"prefix_preference"]
+				|| [self valueChangedForKey:@"substitute_+_by_00_preference"];
+	
+	if (account_changed)
+		[self synchronizeAccount];
+			
 	//Configure Codecs
 	
 	PayloadType *pt;
 	const MSList *elem;
-	//disable all codecs
+	
 	for (elem=linphone_core_get_audio_codecs(lc);elem!=NULL;elem=elem->next){
 		pt=(PayloadType*)elem->data;
-		linphone_core_enable_payload_type(lc,pt,[self boolForKey: getPrefForCodec(pt->mime_type,pt->clock_rate)]);
+		NSString *pref=[LinphoneManager getPrefForCodec:pt->mime_type withRate:pt->clock_rate];
+		linphone_core_enable_payload_type(lc,pt,[self boolForKey: pref]);
 	}
 	for (elem=linphone_core_get_video_codecs(lc);elem!=NULL;elem=elem->next){
 		pt=(PayloadType*)elem->data;
-		linphone_core_enable_payload_type(lc,pt,[self boolForKey: getPrefForCodec(pt->mime_type,pt->clock_rate)]);
+		NSString *pref=[LinphoneManager getPrefForCodec:pt->mime_type withRate:pt->clock_rate];
+		linphone_core_enable_payload_type(lc,pt,[self boolForKey: pref]);
 	}
 	
 	bool enableVideo = [self boolForKey:@"enable_video_preference"];
@@ -364,7 +384,19 @@ static NSString *getPrefForCodec(const char *name, int rate){
 	} else {
 		isbackgroundModeEnabled=false;
 	}
-	lp_config_set_int(linphone_core_get_config(lc),"app","backgroundmode_preference",backgroundSupported);
+	lp_config_set_int(linphone_core_get_config(lc),"app","backgroundmode_preference",isbackgroundModeEnabled);
+	
+	BOOL debugmode=[self boolForKey:@"debugenable_preference"];
+	lp_config_set_int(linphone_core_get_config(lc),"app","debugenable_preference",debugmode);
+	if (debugmode) linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
+	else linphone_core_disable_logs();
+	
+	/*keep this one also in the standardUserDefaults so that it can be read before starting liblinphone*/
+	BOOL start_at_boot=[self  boolForKey:@"start_at_boot_preference"];
+	[[NSUserDefaults standardUserDefaults] setBool: start_at_boot forKey:@"start_at_boot_preference"];
+	
+	[changedDict release];
+	changedDict=[[NSMutableDictionary alloc] init];
     return YES;
 }
 

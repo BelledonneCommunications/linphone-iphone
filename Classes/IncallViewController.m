@@ -617,7 +617,7 @@ void addAnimationFadeTransition(UIView* view, float duration) {
 		UIDevice* device = [UIDevice currentDevice];
 		if ([device respondsToSelector:@selector(isMultitaskingSupported)]
 			&& [device isMultitaskingSupported]) {
-			bool enableVideo = [[NSUserDefaults standardUserDefaults] boolForKey:@"enable_video_preference"];
+			bool enableVideo = linphone_core_video_enabled([LinphoneManager getLc]);
 
             [LinphoneManager set:contacts hidden:enableVideo withName:"CONTACT button" andReason:AT];
             [LinphoneManager set:addVideo hidden:!contacts.hidden withName:"ADD_VIDEO button" andReason:AT];
