@@ -1119,6 +1119,11 @@ extern "C" jlong Java_org_linphone_core_LinphoneCallLogImpl_getFrom(JNIEnv*  env
 																		,jlong ptr) {
 	return (jlong)((LinphoneCallLog*)ptr)->from;
 }
+extern "C" int Java_org_linphone_core_LinphoneCallLogImpl_getStatus(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	return (jlong)((LinphoneCallLog*)ptr)->status;
+}
 extern "C" jlong Java_org_linphone_core_LinphoneCallLogImpl_getTo(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr) {
