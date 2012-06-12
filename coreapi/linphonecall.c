@@ -497,8 +497,14 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 			call->state=cstate;
 		}
 		if (cstate==LinphoneCallEnd || cstate==LinphoneCallError){
-             if (call->reason==LinphoneReasonDeclined){
-				call->log->status=LinphoneCallDeclined;
+             switch(call->reason){
+				case LinphoneReasonDeclined:
+					call->log->status=LinphoneCallDeclined;
+				case LinphoneReasonNotAnswered:
+					call->log->status=LinphoneCallMissed;
+				break;
+				default:
+				break;
 			}
 			linphone_call_set_terminated (call);
 		}

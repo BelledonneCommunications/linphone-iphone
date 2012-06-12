@@ -568,6 +568,7 @@ bool_t linphone_core_sound_resources_available(LinphoneCore *lc);
 void linphone_core_notify_refer_state(LinphoneCore *lc, LinphoneCall *referer, LinphoneCall *newcall);
 
 void __linphone_core_invalidate_registers(LinphoneCore* lc);
+void _linphone_core_codec_config_write(LinphoneCore *lc);
 
 #define HOLD_OFF	(0)
 #define HOLD_ON		(1)
