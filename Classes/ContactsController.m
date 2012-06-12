@@ -1,6 +1,6 @@
-/* GenericTabViewController.c
+/* HistoryController.m
  *
- * Copyright (C) 2009  Belledonne Comunications, Grenoble, France
+ * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -15,31 +15,50 @@
  *  You should have received a copy of the GNU General Public License   
  *  along with this program; if not, write to the Free Software         
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */     
-
-#import "GenericTabViewController.h"
+ */              
 
 
-@implementation GenericTabViewController
-@synthesize header;
+#import "ContactsController.h"
+#import "AddressBook/ABPerson.h"
+
+@implementation ContactsController
+
+@synthesize tableController;
+@synthesize allButton;
+@synthesize linphoneButton;
+
+typedef enum _HistoryView {
+    History_All,
+    History_Linphone,
+    History_MAX
+} HistoryView;
 
 
-- (void)viewDidLoad {
+- (void) changeView: (HistoryView) view {
+    if(view == History_All) {
+        allButton.selected = TRUE;
+    } else {
+        allButton.selected = FALSE;
+    }
+    
+    if(view == History_Linphone) {
+        linphoneButton.selected = TRUE;
+    } else {
+        linphoneButton.selected = FALSE;
+    }
+}
+
+- (void) viewDidLoad {
     [super viewDidLoad];
-	self.tableView.tableHeaderView=header;
+    [self changeView: History_All];
 }
 
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-	[self.tableView reloadData];
+-(IBAction) onAllClick: (id) event {
+    [self changeView: History_All];
 }
 
-
-
-- (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath {
-	
-	[self tableView:tableView didSelectRowAtIndexPath:indexPath];
+-(IBAction) onLinphoneClick: (id) event {
+    [self changeView: History_Linphone];
 }
 
 @end
-

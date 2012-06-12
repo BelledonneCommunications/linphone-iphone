@@ -1,6 +1,6 @@
-/* CallHistoryTableViewController.h
+/* ContactTableViewController.h
  *
- * Copyright (C) 2009  Belledonne Comunications, Grenoble, France
+ * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,7 +18,13 @@
  */     
 
 #import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
+#import <AddressBook/AddressBook.h>
 
-@interface CallHistoryTableViewController : UITableViewController {
+@interface ContactTableViewController : UITableViewController {
+    NSMutableDictionary* addressBookMap;  
+    
+    ABAddressBookRef addressBook;
 }
+
 @end

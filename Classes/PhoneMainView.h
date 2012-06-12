@@ -20,8 +20,11 @@
 #import <UIKit/UIKit.h>
 
 typedef enum _PhoneView {
-    PhoneView_Main,
-    PhoneView_CallHistory,
+    PhoneView_Dialer,
+    PhoneView_History,
+    PhoneView_Settings,
+    PhoneView_Chat,
+    PhoneView_Contacts,
     PhoneView_END
 } PhoneView;
 
@@ -35,7 +38,8 @@ typedef enum _PhoneView {
     NSMutableDictionary *viewDescriptions;
     NSArray *views;
     UIView *callTabBar;
-    UIViewController *mainTabBar;
+    UIViewController *statusBarController;
+    UIViewController *mainTabBarController;
     UIView *incomingTabBar;
     UIView *addCallTabBar;
     
@@ -45,7 +49,8 @@ typedef enum _PhoneView {
 @property (nonatomic, retain) IBOutlet UIView* tabBarView;
 
 @property (nonatomic, retain) IBOutlet UIView* callTabBar;
-@property (nonatomic, retain) IBOutlet UIViewController* mainTabBar;
+@property (nonatomic, retain) IBOutlet UIViewController* statusBarController;
+@property (nonatomic, retain) IBOutlet UIViewController* mainTabBarController;
 @property (nonatomic, retain) IBOutlet UIView* incomingTabBar;
 @property (nonatomic, retain) IBOutlet UIView* addCallTabBar;
 

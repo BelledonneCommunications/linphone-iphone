@@ -40,7 +40,7 @@
 				<int key="NSvFlags">292</int>
 				<object class="NSMutableArray" key="NSSubviews">
 					<bool key="EncodedWithXMLCoder">YES</bool>
-					<object class="IBUIView" id="414272317">
+					<object class="IBUIView" id="512515388">
 						<reference key="NSNextResponder" ref="891400674"/>
 						<int key="NSvFlags">274</int>
 						<string key="NSFrameSize">{320, 23}</string>
@@ -79,7 +79,6 @@
 						<string key="NSFrame">{{0, 400}, {320, 60}}</string>
 						<reference key="NSSuperview" ref="891400674"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<object class="NSColor" key="IBUIBackgroundColor">
 							<int key="NSColorSpace">1</int>
@@ -92,7 +91,7 @@
 				<string key="NSFrameSize">{320, 460}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
-				<reference key="NSNextKeyView" ref="414272317"/>
+				<reference key="NSNextKeyView" ref="512515388"/>
 				<string key="NSReuseIdentifierKey">_NS:9</string>
 				<object class="NSColor" key="IBUIBackgroundColor">
 					<int key="NSColorSpace">3</int>
@@ -346,7 +345,6 @@
 						<string key="NSFrame">{{215, 67}, {105, 68}}</string>
 						<reference key="NSSuperview" ref="424220416"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
@@ -446,7 +444,6 @@
 						<string key="NSFrame">{{160, 0}, {160, 77}}</string>
 						<reference key="NSSuperview" ref="591517680"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
@@ -545,7 +542,6 @@
 						<string key="NSFrame">{{192, 0}, {128, 72}}</string>
 						<reference key="NSSuperview" ref="909644813"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
@@ -592,7 +588,7 @@
 							<bytes key="NSRGB">MC4xOTYwNzg0MzQ2IDAuMzA5ODAzOTMyOSAwLjUyMTU2ODY1NgA</bytes>
 						</object>
 						<reference key="IBUINormalTitleShadowColor" ref="308826858"/>
-						<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage" id="205574330">
+						<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage" id="754280770">
 							<string key="NSClassName">NSImage</string>
 							<string key="NSResourceName">dialer-over.png</string>
 						</object>
@@ -600,7 +596,7 @@
 							<string key="NSClassName">NSImage</string>
 							<string key="NSResourceName">dialer-actif.png</string>
 						</object>
-						<reference key="IBUINormalBackgroundImage" ref="205574330"/>
+						<reference key="IBUINormalBackgroundImage" ref="754280770"/>
 						<reference key="IBUIFontDescription" ref="9235248"/>
 						<reference key="IBUIFont" ref="112538520"/>
 					</object>
@@ -617,7 +613,17 @@
 				<bool key="IBUIAutoresizesSubviews">NO</bool>
 				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 			</object>
-			<object class="IBUIViewController" id="71936266">
+			<object class="IBUIViewController" id="334571927">
+				<bool key="IBUIAutoresizesArchivedViewToFullSize">NO</bool>
+				<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics"/>
+				<object class="IBUISimulatedOrientationMetrics" key="IBUISimulatedOrientationMetrics">
+					<int key="IBUIInterfaceOrientation">1</int>
+					<int key="interfaceOrientation">1</int>
+				</object>
+				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+				<bool key="IBUIHorizontal">NO</bool>
+			</object>
+			<object class="IBUIViewController" id="210198832">
 				<bool key="IBUIAutoresizesArchivedViewToFullSize">NO</bool>
 				<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics"/>
 				<object class="IBUISimulatedOrientationMetrics" key="IBUISimulatedOrientationMetrics">
@@ -683,17 +689,25 @@
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">statusBarView</string>
 						<reference key="source" ref="841351856"/>
-						<reference key="destination" ref="414272317"/>
+						<reference key="destination" ref="512515388"/>
 					</object>
 					<int key="connectionID">176</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">mainTabBar</string>
+						<string key="label">mainTabBarController</string>
 						<reference key="source" ref="841351856"/>
-						<reference key="destination" ref="71936266"/>
+						<reference key="destination" ref="334571927"/>
 					</object>
-					<int key="connectionID">180</int>
+					<int key="connectionID">192</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">statusBarController</string>
+						<reference key="source" ref="841351856"/>
+						<reference key="destination" ref="210198832"/>
+					</object>
+					<int key="connectionID">193</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -827,7 +841,7 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<reference ref="565712161"/>
 							<reference ref="813768660"/>
-							<reference ref="414272317"/>
+							<reference ref="512515388"/>
 						</object>
 						<reference key="parent" ref="0"/>
 						<string key="objectName">root</string>
@@ -885,15 +899,21 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">175</int>
-						<reference key="object" ref="414272317"/>
+						<reference key="object" ref="512515388"/>
 						<reference key="parent" ref="891400674"/>
 						<string key="objectName">statusBar</string>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">178</int>
-						<reference key="object" ref="71936266"/>
+						<reference key="object" ref="334571927"/>
 						<reference key="parent" ref="0"/>
-						<string key="objectName">LinphoneMainBar</string>
+						<string key="objectName">mainBarController</string>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">190</int>
+						<reference key="object" ref="210198832"/>
+						<reference key="parent" ref="0"/>
+						<string key="objectName">statusBarController</string>
 					</object>
 				</object>
 			</object>
@@ -937,10 +957,11 @@
 					<string>169.IBPluginDependency</string>
 					<string>170.IBPluginDependency</string>
 					<string>172.IBPluginDependency</string>
-					<string>175.CustomClassName</string>
 					<string>175.IBPluginDependency</string>
 					<string>178.CustomClassName</string>
 					<string>178.IBPluginDependency</string>
+					<string>190.CustomClassName</string>
+					<string>190.IBPluginDependency</string>
 					<string>53.IBPluginDependency</string>
 				</object>
 				<object class="NSArray" key="dict.values">
@@ -981,9 +1002,10 @@
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-					<string>LinphoneStatusBar</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>LinphoneMainBar</string>
+					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+					<string>LinphoneStatusBar</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				</object>
@@ -1000,7 +1022,7 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">181</int>
+			<int key="maxID">193</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -1008,15 +1030,74 @@
 				<object class="IBPartialClassDescription">
 					<string key="className">LinphoneMainBar</string>
 					<string key="superclassName">UIViewController</string>
+					<object class="NSMutableDictionary" key="actions">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>onChatClick:</string>
+							<string>onContactsClick:</string>
+							<string>onDialerClick:</string>
+							<string>onHistoryClick:</string>
+							<string>onSettingsClick:</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>id</string>
+							<string>id</string>
+							<string>id</string>
+							<string>id</string>
+							<string>id</string>
+						</object>
+					</object>
+					<object class="NSMutableDictionary" key="actionInfosByName">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>onChatClick:</string>
+							<string>onContactsClick:</string>
+							<string>onDialerClick:</string>
+							<string>onHistoryClick:</string>
+							<string>onSettingsClick:</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<object class="IBActionInfo">
+								<string key="name">onChatClick:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">onContactsClick:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">onDialerClick:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">onHistoryClick:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">onSettingsClick:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+						</object>
+					</object>
 					<object class="NSMutableDictionary" key="outlets">
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>chatButton</string>
+							<string>contactsButton</string>
 							<string>dialerButton</string>
 							<string>historyButton</string>
+							<string>settingsButton</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>UIButton</string>
+							<string>UIButton</string>
+							<string>UIButton</string>
 							<string>UIButton</string>
 							<string>UIButton</string>
 						</object>
@@ -1025,17 +1106,32 @@
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>chatButton</string>
+							<string>contactsButton</string>
 							<string>dialerButton</string>
 							<string>historyButton</string>
+							<string>settingsButton</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<object class="IBToOneOutletInfo">
+								<string key="name">chatButton</string>
+								<string key="candidateClassName">UIButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">contactsButton</string>
+								<string key="candidateClassName">UIButton</string>
+							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">dialerButton</string>
 								<string key="candidateClassName">UIButton</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">historyButton</string>
+								<string key="candidateClassName">UIButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">settingsButton</string>
 								<string key="candidateClassName">UIButton</string>
 							</object>
 						</object>
@@ -1047,16 +1143,44 @@
 				</object>
 				<object class="IBPartialClassDescription">
 					<string key="className">LinphoneStatusBar</string>
-					<string key="superclassName">UIView</string>
+					<string key="superclassName">UIViewController</string>
 					<object class="NSMutableDictionary" key="outlets">
-						<string key="NS.key.0">test</string>
-						<string key="NS.object.0">UIView</string>
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>image</string>
+							<string>label</string>
+							<string>spinner</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>UIImageView</string>
+							<string>UILabel</string>
+							<string>UIActivityIndicatorView</string>
+						</object>
 					</object>
 					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<string key="NS.key.0">test</string>
-						<object class="IBToOneOutletInfo" key="NS.object.0">
-							<string key="name">test</string>
-							<string key="candidateClassName">UIView</string>
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>image</string>
+							<string>label</string>
+							<string>spinner</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<object class="IBToOneOutletInfo">
+								<string key="name">image</string>
+								<string key="candidateClassName">UIImageView</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">label</string>
+								<string key="candidateClassName">UILabel</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">spinner</string>
+								<string key="candidateClassName">UIActivityIndicatorView</string>
+							</object>
 						</object>
 					</object>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
@@ -1075,7 +1199,8 @@
 							<string>callTabBar</string>
 							<string>contentView</string>
 							<string>incomingTabBar</string>
-							<string>mainTabBar</string>
+							<string>mainTabBarController</string>
+							<string>statusBarController</string>
 							<string>statusBarView</string>
 							<string>tabBarView</string>
 						</object>
@@ -1085,6 +1210,7 @@
 							<string>UIView</string>
 							<string>UIView</string>
 							<string>UIView</string>
+							<string>UIViewController</string>
 							<string>UIViewController</string>
 							<string>UIView</string>
 							<string>UIView</string>
@@ -1098,7 +1224,8 @@
 							<string>callTabBar</string>
 							<string>contentView</string>
 							<string>incomingTabBar</string>
-							<string>mainTabBar</string>
+							<string>mainTabBarController</string>
+							<string>statusBarController</string>
 							<string>statusBarView</string>
 							<string>tabBarView</string>
 						</object>
@@ -1121,7 +1248,11 @@
 								<string key="candidateClassName">UIView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">mainTabBar</string>
+								<string key="name">mainTabBarController</string>
+								<string key="candidateClassName">UIViewController</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">statusBarController</string>
 								<string key="candidateClassName">UIViewController</string>
 							</object>
 							<object class="IBToOneOutletInfo">

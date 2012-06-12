@@ -28,7 +28,6 @@
 
 #import "ConsoleViewController.h"
 #import "MoreViewController.h"
-#include "CallHistoryTableViewController.h"
 
 #include "LinphoneManager.h"
 #include "linphonecore.h"

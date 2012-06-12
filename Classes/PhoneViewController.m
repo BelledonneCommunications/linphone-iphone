@@ -93,7 +93,9 @@
         }
     }
     
-    enableCallButtons = [statusSubViewController updateWithRegistrationState:s message:m];
+    // Change to registration state
+    NSDictionary* dict = [[NSDictionary alloc] initWithObjectsAndKeys: [NSNumber numberWithInt:s], @"state", m, @"message", nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneRegistrationStatusChange" object:self userInfo:dict];
     
     [callLarge setEnabled:enableCallButtons];
     [callShort setEnabled:enableCallButtons];   
@@ -169,11 +171,11 @@
         mIncallViewController = [[IncallViewController alloc]  initWithNibName:[LinphoneManager runningOnIpad]?@"InCallViewController-ipad":@"IncallViewController" 
 																	bundle:[NSBundle mainBundle]];
     
-    if (statusSubViewController == nil) {
+    /*if (statusSubViewController == nil) {
         statusSubViewController = [[StatusSubViewController alloc]  initWithNibName:@"StatusSubViewController" 
                                                                          bundle:[NSBundle mainBundle]];
         [statusViewHolder addSubview:statusSubViewController.view];
-    }
+    }*/
     
     [self updateCallAndBackButtons];
 }

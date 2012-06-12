@@ -1,6 +1,6 @@
-/* StatusSubViewController.h
+/* HistoryController.h
  *
- * Copyright (C) 2011  Belledonne Comunications, Grenoble, France
+ * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -10,25 +10,23 @@
  *  This program is distributed in the hope that it will be useful,     
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of      
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       
- *  GNU Library General Public License for more details.                
+ *  GNU General Public License for more details.                
  *                                                                      
  *  You should have received a copy of the GNU General Public License   
  *  along with this program; if not, write to the Free Software         
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */     
+ */              
+
 #import <UIKit/UIKit.h>
-#include "linphonecore.h"
 
-@interface StatusSubViewController : UIViewController {
-    UIImageView* image;
-    UIActivityIndicatorView* spinner;
-    UILabel* label;
+@interface ContactsController : UIViewController {
+    UITableViewController *tableController;
+    UIButton *allButton;
+    UIButton *linphoneButton;
 }
-
-@property (nonatomic, retain) IBOutlet UIImageView* image;
-@property (nonatomic, retain) IBOutlet UIActivityIndicatorView* spinner;
-@property (nonatomic, retain) IBOutlet UILabel* label;
-
--(BOOL) updateWithRegistrationState:(LinphoneRegistrationState)state message:(NSString*) message;
-
+@property (nonatomic, retain) IBOutlet UITableViewController* tableController;
+@property (nonatomic, retain) IBOutlet UIButton* allButton;
+@property (nonatomic, retain) IBOutlet UIButton* linphoneButton;
+-(IBAction) onAllClick: (id) event;
+-(IBAction) onLinphoneClick: (id) event;
 @end

@@ -18,7 +18,10 @@
  */   
 
 #import "PhoneMainView.h"
-#import "CallHistoryTableViewController.h"
+#import "PhoneViewController.h"
+#import "HistoryController.h"
+#import "ContactsController.h"
+
 typedef enum _TabBar {
     TabBar_Main,
     TabBar_END
@@ -42,23 +45,27 @@ typedef enum _TabBar {
 @synthesize tabBarView;
 
 @synthesize callTabBar;
-@synthesize mainTabBar;
+@synthesize statusBarController;
+@synthesize mainTabBarController;
 @synthesize incomingTabBar;
 @synthesize addCallTabBar;
 
 - (void) changeView: (NSNotification*) notif {   
     PhoneView view = [[notif.userInfo objectForKey: @"PhoneView"] intValue];
     ViewsDescription *description = [viewDescriptions objectForKey:[NSNumber numberWithInt: view]];
+    
     for (UIView *view in contentView.subviews) {
         [view removeFromSuperview];
     }
     for (UIView *view in tabBarView.subviews) {
         [view removeFromSuperview];
     }
+    if(description == nil)
+        return;
     
     [contentView addSubview: description->content.view];
     
- CGRect contentFrame = contentView.frame;
+    CGRect contentFrame = contentView.frame;
     if(description->statusEnabled) {
         statusBarView.hidden = false;
         contentFrame.origin.y = statusBarView.frame.size.height + statusBarView.frame.origin.y;
@@ -80,11 +87,11 @@ typedef enum _TabBar {
     for (UIView *view in description->tabBar.view.subviews) {
         if(view.tag == -1) {
             contentFrame.size.height = tabFrame.origin.y - contentFrame.origin.y + view.frame.origin.y;
+            break;
         }
     }
     
-    
-   // contentView.frame = contentFrame;
+    contentView.frame = contentFrame;
     [tabBarView addSubview: description->tabBar.view];
 }
 
@@ -96,40 +103,62 @@ typedef enum _TabBar {
     viewDescriptions = [[NSMutableDictionary alloc] init];
     
     // Load Bars
-    dumb = mainTabBar.view;
+    dumb = mainTabBarController.view;
+    
+    // Status Bar
+    [statusBarView addSubview: statusBarController.view];
     
     // Main View
     PhoneViewController* myPhoneViewController = [[PhoneViewController alloc]  
         initWithNibName:@"PhoneViewController" 
         bundle:[NSBundle mainBundle]];
-    [myPhoneViewController loadView];
+    //[myPhoneViewController loadView];
     ViewsDescription *mainViewDescription = [ViewsDescription alloc];
     mainViewDescription->content = myPhoneViewController;
-    mainViewDescription->tabBar = mainTabBar;
+    mainViewDescription->tabBar = mainTabBarController;
     mainViewDescription->statusEnabled = true;
-    [viewDescriptions setObject:mainViewDescription forKey:[NSNumber numberWithInt: PhoneView_Main]];
+    [viewDescriptions setObject:mainViewDescription forKey:[NSNumber numberWithInt: PhoneView_Dialer]];
+    
+    // Contacts View
+    ContactsController* myContactsController = [[ContactsController alloc]
+                                              initWithNibName:@"ContactsController" 
+                                              bundle:[NSBundle mainBundle]];
+    //[myContactsController loadView];
+    ViewsDescription *contactsDescription = [ViewsDescription alloc];
+    contactsDescription->content = myContactsController;
+    contactsDescription->tabBar = mainTabBarController;
+    contactsDescription->statusEnabled = false;
+    [viewDescriptions setObject:contactsDescription forKey:[NSNumber numberWithInt: PhoneView_Contacts]];
     
     // Call History View
-    CallHistoryTableViewController* myCallHistoryTableViewController = [[CallHistoryTableViewController alloc]
-        initWithNibName:@"CallHistoryTableViewController" 
+    HistoryController* myHistoryController = [[HistoryController alloc]
+        initWithNibName:@"HistoryController" 
         bundle:[NSBundle mainBundle]];
-    [myCallHistoryTableViewController loadView];
-    ViewsDescription *callHistoryDescription = [ViewsDescription alloc];
-    callHistoryDescription->content = myCallHistoryTableViewController;
-    callHistoryDescription->tabBar = mainTabBar;
-    callHistoryDescription->statusEnabled = true;
-    [viewDescriptions setObject:callHistoryDescription forKey:[NSNumber numberWithInt: PhoneView_CallHistory]];
+    //[myHistoryController loadView];
+    ViewsDescription *historyDescription = [ViewsDescription alloc];
+    historyDescription->content = myHistoryController;
+    historyDescription->tabBar = mainTabBarController;
+    historyDescription->statusEnabled = false;
+    [viewDescriptions setObject:historyDescription forKey:[NSNumber numberWithInt: PhoneView_History]];
     
     // Set observer
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeView:) name:@"LinphoneMainViewChange" object:nil];
     
     // Change to default view
-    NSDictionary* dict = [NSDictionary dictionaryWithObject: [NSNumber numberWithInt:PhoneView_Main] forKey:@"PhoneView"];
+    NSDictionary* dict = [NSDictionary dictionaryWithObject: [NSNumber numberWithInt:PhoneView_Dialer] forKey:@"PhoneView"];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneMainViewChange" object:self userInfo:dict];
 }
      
-- (void)dealloc {
+- (void) viewDidUnload {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void) dealloc {
     [super dealloc];
+    [viewDescriptions dealloc];
+    [statusBarView dealloc];
+    [statusBarController dealloc];
+    [mainTabBarController dealloc];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 @end

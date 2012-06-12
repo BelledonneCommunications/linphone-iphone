@@ -1,6 +1,6 @@
-/* GenericTabViewController.h
+/* HistoryController.h
  *
- * Copyright (C) 2009  Belledonne Comunications, Grenoble, France
+ * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -15,17 +15,19 @@
  *  You should have received a copy of the GNU General Public License   
  *  along with this program; if not, write to the Free Software         
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */     
+ */              
 
 #import <UIKit/UIKit.h>
-#include "linphonecore.h"
-#import "PhoneViewController.h"
-#import "linphoneAppDelegate.h"
+#import "CallHistoryTableViewController.h"
 
-@interface GenericTabViewController : UITableViewController {
-	LinphoneCore* myLinphoneCore;
-	IBOutlet UIView* header; 
+@interface HistoryController : UIViewController {
+    CallHistoryTableViewController *tableController;
+    UIButton *allButton;
+    UIButton *missedButton;
 }
-@property (nonatomic, retain) IBOutlet UIView* header;
+@property (nonatomic, retain) IBOutlet CallHistoryTableViewController* tableController;
+@property (nonatomic, retain) IBOutlet UIButton* allButton;
+@property (nonatomic, retain) IBOutlet UIButton* missedButton;
+-(IBAction) onAllClick: (id) event;
+-(IBAction) onMissedClick: (id) event;
 @end
-

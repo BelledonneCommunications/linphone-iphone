@@ -23,8 +23,10 @@
 @implementation LinphoneMainBar
 
 @synthesize historyButton;
+@synthesize contactsButton;
 @synthesize dialerButton;
-
+@synthesize settingsButton;
+@synthesize chatButton;
 
 - (void) viewDidLoad {
    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveLinphoneMainViewChangeEvent:) name:@"LinphoneMainViewChange" object:nil];
@@ -32,26 +34,64 @@
 
 - (void) receiveLinphoneMainViewChangeEvent: (NSNotification*) notif {   
     PhoneView view = [[notif.userInfo objectForKey: @"PhoneView"] intValue];
-    if(view == PhoneView_Main) {
-        dialerButton.selected = TRUE;
-    } else {
-        dialerButton.selected = FALSE;
-    }
-    if(view == PhoneView_CallHistory) {
+    if(view == PhoneView_History) {
         historyButton.selected = TRUE;
     } else {
         historyButton.selected = FALSE;
     }
+    if(view == PhoneView_Contacts) {
+        contactsButton.selected = TRUE;
+    } else {
+        contactsButton.selected = FALSE;
+    }
+    if(view == PhoneView_Dialer) {
+        dialerButton.selected = TRUE;
+    } else {
+        dialerButton.selected = FALSE;
+    }
+    if(view == PhoneView_Settings) {
+        settingsButton.selected = TRUE;
+    } else {
+        settingsButton.selected = FALSE;
+    }
+    if(view == PhoneView_Chat) {
+        chatButton.selected = TRUE;
+    } else {
+        chatButton.selected = FALSE;
+    }
+}
+
+- (void) viewDidUnload {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void) dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
     [super dealloc];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (IBAction) onHistoryClick: (id) sender {
-    // Change to default view
-    NSDictionary* dict = [NSDictionary dictionaryWithObject: [NSNumber numberWithInt:PhoneView_CallHistory] forKey:@"PhoneView"];
+    NSDictionary* dict = [NSDictionary dictionaryWithObject: [NSNumber numberWithInt:PhoneView_History] forKey:@"PhoneView"];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneMainViewChange" object:self userInfo:dict];
+}
+
+-(IBAction) onContactsClick: (id) event {
+    NSDictionary* dict = [NSDictionary dictionaryWithObject: [NSNumber numberWithInt:PhoneView_Contacts] forKey:@"PhoneView"];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneMainViewChange" object:self userInfo:dict];
+}
+
+-(IBAction) onDialerClick: (id) event {
+    NSDictionary* dict = [NSDictionary dictionaryWithObject: [NSNumber numberWithInt:PhoneView_Dialer] forKey:@"PhoneView"];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneMainViewChange" object:self userInfo:dict];
+}
+
+-(IBAction) onSettingsClick: (id) event {
+    NSDictionary* dict = [NSDictionary dictionaryWithObject: [NSNumber numberWithInt:PhoneView_Settings] forKey:@"PhoneView"];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneMainViewChange" object:self userInfo:dict];
+}
+
+-(IBAction) onChatClick: (id) event {
+    NSDictionary* dict = [NSDictionary dictionaryWithObject: [NSNumber numberWithInt:PhoneView_Chat] forKey:@"PhoneView"];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneMainViewChange" object:self userInfo:dict];
 }
 

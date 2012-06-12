@@ -22,9 +22,6 @@
 
 
 @implementation CallHistoryTableViewController
-
-@synthesize clear;
-
 /*
 - (id)initWithStyle:(UITableViewStyle)style {
     // Override initWithStyle: if you create the controller programmatically and want to perform customization that is not appropriate for viewDidLoad.
@@ -33,19 +30,11 @@
     return self;
 }
 */
-
-
+/*
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-	UIBarButtonItem* clearButton = [[UIBarButtonItem alloc] 
-									initWithBarButtonSystemItem:UIBarButtonSystemItemTrash 
-									target:self 
-									action:@selector(doAction:)]; 
-	[self.navigationItem setRightBarButtonItem:clearButton];
-    [clearButton release];
 }
-
+*/
 /*
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
@@ -242,7 +231,6 @@
     return YES;
 }
 */
-
 
 - (void)dealloc {
     [super dealloc];

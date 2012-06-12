@@ -21,7 +21,6 @@
 #import "linphonecore.h"
 #import "UILinphone.h"
 #import "CallDelegate.h"
-#import "StatusSubViewController.h"
 
 @class MainScreenWithVideoPreview;
 @class IncallViewController;
@@ -64,7 +63,6 @@
 	FirstLoginViewController* myFirstLoginViewController;
 	IncallViewController* mIncallViewController;
     MainScreenWithVideoPreview* mMainScreenWithVideoPreview;
-    StatusSubViewController* statusSubViewController;
     
     UIButton* switchCamera;
 }
