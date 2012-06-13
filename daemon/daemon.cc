@@ -416,7 +416,6 @@ char *Daemon::readPipe(char *buffer, int buflen) {
 		pfd[1].fd = mChildFd;
 		nfds++;
 	}
-	iterate();
 	int err = poll(pfd, nfds, 50);
 	if (err > 0) {
 		if (mServerFd != -1 && (pfd[0].revents & POLLIN)) {
