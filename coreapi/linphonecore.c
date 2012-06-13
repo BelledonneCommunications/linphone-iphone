@@ -1319,6 +1319,7 @@ int linphone_core_set_audio_codecs(LinphoneCore *lc, MSList *codecs)
 {
 	if (lc->codecs_conf.audio_codecs!=NULL) ms_list_free(lc->codecs_conf.audio_codecs);
 	lc->codecs_conf.audio_codecs=codecs;
+	_linphone_core_codec_config_write(lc);
 	return 0;
 }
 
@@ -1333,6 +1334,7 @@ int linphone_core_set_video_codecs(LinphoneCore *lc, MSList *codecs)
 {
 	if (lc->codecs_conf.video_codecs!=NULL) ms_list_free(lc->codecs_conf.video_codecs);
 	lc->codecs_conf.video_codecs=codecs;
+	_linphone_core_codec_config_write(lc);
 	return 0;
 }
 
@@ -1827,6 +1829,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 			ms_message("incoming call ringing for %i seconds",elapsed);
 			if (elapsed>lc->sip_conf.inc_timeout){
 				call->log->status=LinphoneCallMissed;
+				call->reason=LinphoneReasonNotAnswered;
 				linphone_core_terminate_call(lc,call);
 			}
 		}
@@ -2569,7 +2572,8 @@ int linphone_core_abort_call(LinphoneCore *lc, LinphoneCall *call, const char *e
 
 static void terminate_call(LinphoneCore *lc, LinphoneCall *call){
 	if (call->state==LinphoneCallIncomingReceived){
-		call->reason=LinphoneReasonDeclined;
+		if (call->reason!=LinphoneReasonNotAnswered)
+			call->reason=LinphoneReasonDeclined;
 	}
 	/*stop ringing*/
 	if (lc->ringstream!=NULL) {
@@ -4269,38 +4273,43 @@ void video_config_uninit(LinphoneCore *lc)
 		ms_free(lc->video_conf.cams);
 }
 
-void codecs_config_uninit(LinphoneCore *lc)
-{
-	PayloadType *pt;
-	codecs_config_t *config=&lc->codecs_conf;
-	MSList *node;
-	char key[50];
-	int index;
-	index=0;
-	for(node=config->audio_codecs;node!=NULL;node=ms_list_next(node)){
-		pt=(PayloadType*)(node->data);
+void _linphone_core_codec_config_write(LinphoneCore *lc){
+	if (linphone_core_ready(lc)){
+		PayloadType *pt;
+		codecs_config_t *config=&lc->codecs_conf;
+		MSList *node;
+		char key[50];
+		int index;
+		index=0;
+		for(node=config->audio_codecs;node!=NULL;node=ms_list_next(node)){
+			pt=(PayloadType*)(node->data);
+			sprintf(key,"audio_codec_%i",index);
+			lp_config_set_string(lc->config,key,"mime",pt->mime_type);
+			lp_config_set_int(lc->config,key,"rate",pt->clock_rate);
+			lp_config_set_int(lc->config,key,"enabled",linphone_core_payload_type_enabled(lc,pt));
+			index++;
+		}
 		sprintf(key,"audio_codec_%i",index);
-		lp_config_set_string(lc->config,key,"mime",pt->mime_type);
-		lp_config_set_int(lc->config,key,"rate",pt->clock_rate);
-		lp_config_set_int(lc->config,key,"enabled",linphone_core_payload_type_enabled(lc,pt));
-		index++;
-	}
-	sprintf(key,"audio_codec_%i",index);
-	lp_config_clean_section (lc->config,key);
+		lp_config_clean_section (lc->config,key);
 
-	index=0;
-	for(node=config->video_codecs;node!=NULL;node=ms_list_next(node)){
-		pt=(PayloadType*)(node->data);
+		index=0;
+		for(node=config->video_codecs;node!=NULL;node=ms_list_next(node)){
+			pt=(PayloadType*)(node->data);
+			sprintf(key,"video_codec_%i",index);
+			lp_config_set_string(lc->config,key,"mime",pt->mime_type);
+			lp_config_set_int(lc->config,key,"rate",pt->clock_rate);
+			lp_config_set_int(lc->config,key,"enabled",linphone_core_payload_type_enabled(lc,pt));
+			lp_config_set_string(lc->config,key,"recv_fmtp",pt->recv_fmtp);
+			index++;
+		}
 		sprintf(key,"video_codec_%i",index);
-		lp_config_set_string(lc->config,key,"mime",pt->mime_type);
-		lp_config_set_int(lc->config,key,"rate",pt->clock_rate);
-		lp_config_set_int(lc->config,key,"enabled",linphone_core_payload_type_enabled(lc,pt));
-		lp_config_set_string(lc->config,key,"recv_fmtp",pt->recv_fmtp);
-		index++;
+		lp_config_clean_section (lc->config,key);
 	}
-	sprintf(key,"video_codec_%i",index);
-	lp_config_clean_section (lc->config,key);
+}
 
+static void codecs_config_uninit(LinphoneCore *lc)
+{
+	_linphone_core_codec_config_write(lc);
 	ms_list_free(lc->codecs_conf.audio_codecs);
 	ms_list_free(lc->codecs_conf.video_codecs);
 }
@@ -4592,6 +4601,8 @@ const char *linphone_reason_to_string(LinphoneReason err){
 			return "Call declined";
 		case LinphoneReasonNotFound:
 			return "User not found";
+		case LinphoneReasonNotAnswered:
+			return "Not answered";
 	}
 	return "unknown error";
 }

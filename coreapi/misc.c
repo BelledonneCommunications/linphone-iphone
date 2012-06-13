@@ -196,6 +196,7 @@ bool_t linphone_core_payload_type_enabled(LinphoneCore *lc, const PayloadType *p
 int linphone_core_enable_payload_type(LinphoneCore *lc, PayloadType *pt, bool_t enabled){
 	if (ms_list_find(lc->codecs_conf.audio_codecs,pt) || ms_list_find(lc->codecs_conf.video_codecs,pt)){
 		payload_type_set_enable(pt,enabled);
+		_linphone_core_codec_config_write(lc);
 		return 0;
 	}
 	ms_error("Enabling codec not in audio or video list of PayloadType !");
