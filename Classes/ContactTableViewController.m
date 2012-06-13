@@ -18,26 +18,21 @@
  */     
 
 #include "ContactTableViewController.h"
-#import "LinphoneManager.h"
 #import "FastAddressBook.h"
 #import "ContactCell.h"
 
 @implementation ContactTableViewController
 
 #pragma mark Table view methods
-NSString *contactTOC = @"ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 void sync_toc_address_book (ABAddressBookRef addressBook, CFDictionaryRef info, void *context) {
     ContactTableViewController* controller = (ContactTableViewController*)context;
-    NSMutableDictionary* lAddressBookMap = controller->addressBookMap;
+    OrderedDictionary* lAddressBookMap = controller->addressBookMap;
     @synchronized (lAddressBookMap) {
         
         // Reset Address book
+        
         [lAddressBookMap removeAllObjects];
-
-        for(int i = 0; i < [contactTOC length]; i++) {
-            [lAddressBookMap setObject: [[NSMutableDictionary alloc] init] forKey:[contactTOC substringWithRange:NSMakeRange(i, 1)]];
-        }
          
         NSArray *lContacts = (NSArray *)ABAddressBookCopyArrayOfAllPeople(addressBook);
         for (id lPerson in lContacts) {
@@ -46,34 +41,34 @@ void sync_toc_address_book (ABAddressBookRef addressBook, CFDictionaryRef info, 
                 
             // Put in correct subDic
             NSString *firstChar = [[(NSString *)lLocalizedLabel substringToIndex:1] uppercaseString];
-            NSMutableDictionary *subDic =[lAddressBookMap objectForKey: firstChar];
+            OrderedDictionary *subDic =[lAddressBookMap objectForKey: firstChar];
             if(subDic == nil) {
-                subDic = [[NSMutableDictionary alloc] init];
-                [lAddressBookMap setObject: subDic forKey:firstChar];
+                subDic = [[OrderedDictionary alloc] init];
+                [lAddressBookMap insertObject:subDic forKey:firstChar selector:@selector(caseInsensitiveCompare:)];
             }
-            [subDic setObject:lPerson forKey:[(NSString *)lLocalizedLabel retain]];
+            [subDic insertObject:lPerson forKey:[(NSString *)lLocalizedLabel retain] selector:@selector(caseInsensitiveCompare:)];
                 
             if (lLocalizedLabel) CFRelease(lLocalizedLabel);
             CFRelease(lValue);
         }
         CFRelease(lContacts);
     }
-    [controller.view reloadData];
+    [(UITableView *)controller.view reloadData];
 }
 
 - (void) viewDidLoad {
-    addressBookMap  = [[NSMutableDictionary alloc] init];
+    addressBookMap  = [[OrderedDictionary alloc] init];
     addressBook = ABAddressBookCreate();
     ABAddressBookRegisterExternalChangeCallback (addressBook, sync_toc_address_book, self);
     sync_toc_address_book(addressBook, nil, self);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return [contactTOC length];
+    return [addressBookMap count];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [(NSMutableDictionary *)[addressBookMap objectForKey: [contactTOC substringWithRange:NSMakeRange(section, 1)]] count];
+    return [(OrderedDictionary *)[addressBookMap objectForKey: [addressBookMap keyAtIndex: section]] count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -82,17 +77,19 @@ void sync_toc_address_book (ABAddressBookRef addressBook, CFDictionaryRef info, 
         cell = [[ContactCell alloc] init];
     }
     
-    NSMutableDictionary *subDic = [addressBookMap objectForKey: [contactTOC substringWithRange:NSMakeRange([indexPath section], 1)]]; 
+    OrderedDictionary *subDic = [addressBookMap objectForKey: [addressBookMap keyAtIndex: [indexPath section]]]; 
     
     [cell.label setText: (NSString *)[[subDic allKeys] objectAtIndex:[indexPath row]]];
     return cell;
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-    return [contactTOC substringWithRange:NSMakeRange(section, 1)];
+    return [addressBookMap keyAtIndex: section];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    OrderedDictionary *subDic = [addressBookMap objectForKey: [addressBookMap keyAtIndex: [indexPath section]]]; 
+    ABRecordRef lPerson = [subDic objectForKey: [subDic keyAtIndex:[indexPath row]]];
 }
 
 - (void)dealloc {

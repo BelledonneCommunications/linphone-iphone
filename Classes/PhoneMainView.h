@@ -18,15 +18,7 @@
  */   
 
 #import <UIKit/UIKit.h>
-
-typedef enum _PhoneView {
-    PhoneView_Dialer,
-    PhoneView_History,
-    PhoneView_Settings,
-    PhoneView_Chat,
-    PhoneView_Contacts,
-    PhoneView_END
-} PhoneView;
+#import "LinphoneManager.h"
 
 @interface PhoneMainView : UIViewController {
     UIView *statusBarView;
@@ -37,10 +29,9 @@ typedef enum _PhoneView {
     @private
     NSMutableDictionary *viewDescriptions;
     NSArray *views;
-    UIView *callTabBar;
+    UIViewController *callTabBarController;
     UIViewController *statusBarController;
     UIViewController *mainTabBarController;
-    UIView *incomingTabBar;
     UIView *addCallTabBar;
     
 }
@@ -48,10 +39,9 @@ typedef enum _PhoneView {
 @property (nonatomic, retain) IBOutlet UIView* contentView;
 @property (nonatomic, retain) IBOutlet UIView* tabBarView;
 
-@property (nonatomic, retain) IBOutlet UIView* callTabBar;
+@property (nonatomic, retain) IBOutlet UIViewController* callTabBarController;
 @property (nonatomic, retain) IBOutlet UIViewController* statusBarController;
 @property (nonatomic, retain) IBOutlet UIViewController* mainTabBarController;
-@property (nonatomic, retain) IBOutlet UIView* incomingTabBar;
 @property (nonatomic, retain) IBOutlet UIView* addCallTabBar;
 
 -(void) changeView: (NSNotification*) notif;

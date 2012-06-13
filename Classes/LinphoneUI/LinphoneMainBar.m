@@ -33,7 +33,7 @@
 }
 
 - (void) receiveLinphoneMainViewChangeEvent: (NSNotification*) notif {   
-    PhoneView view = [[notif.userInfo objectForKey: @"PhoneView"] intValue];
+    PhoneView view = [[notif.userInfo objectForKey: @"view"] intValue];
     if(view == PhoneView_History) {
         historyButton.selected = TRUE;
     } else {
@@ -71,28 +71,23 @@
 }
 
 - (IBAction) onHistoryClick: (id) sender {
-    NSDictionary* dict = [NSDictionary dictionaryWithObject: [NSNumber numberWithInt:PhoneView_History] forKey:@"PhoneView"];
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneMainViewChange" object:self userInfo:dict];
+    [[LinphoneManager instance] changeView:PhoneView_History];
 }
 
 -(IBAction) onContactsClick: (id) event {
-    NSDictionary* dict = [NSDictionary dictionaryWithObject: [NSNumber numberWithInt:PhoneView_Contacts] forKey:@"PhoneView"];
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneMainViewChange" object:self userInfo:dict];
+    [[LinphoneManager instance] changeView:PhoneView_Contacts];
 }
 
 -(IBAction) onDialerClick: (id) event {
-    NSDictionary* dict = [NSDictionary dictionaryWithObject: [NSNumber numberWithInt:PhoneView_Dialer] forKey:@"PhoneView"];
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneMainViewChange" object:self userInfo:dict];
+    [[LinphoneManager instance] changeView:PhoneView_Dialer];
 }
 
 -(IBAction) onSettingsClick: (id) event {
-    NSDictionary* dict = [NSDictionary dictionaryWithObject: [NSNumber numberWithInt:PhoneView_Settings] forKey:@"PhoneView"];
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneMainViewChange" object:self userInfo:dict];
+    [[LinphoneManager instance] changeView:PhoneView_Settings];
 }
 
 -(IBAction) onChatClick: (id) event {
-    NSDictionary* dict = [NSDictionary dictionaryWithObject: [NSNumber numberWithInt:PhoneView_Chat] forKey:@"PhoneView"];
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneMainViewChange" object:self userInfo:dict];
+    [[LinphoneManager instance] changeView:PhoneView_Chat];
 }
 
 

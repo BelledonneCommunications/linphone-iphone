@@ -24,6 +24,16 @@
 #import "LogView.h"
 #import "LinphoneUIDelegates.h"
 
+typedef enum _PhoneView {
+    PhoneView_Dialer,
+    PhoneView_History,
+    PhoneView_Settings,
+    PhoneView_Chat,
+    PhoneView_Contacts,
+    PhoneView_InCall,
+    PhoneView_END
+} PhoneView;
+
 typedef enum _Connectivity {
 	wifi,
 	wwan
@@ -57,13 +67,14 @@ typedef struct _LinphoneCallAppData {
 	id<LogView> mLogView;	
 	bool isbackgroundModeEnabled;
 	id<LinphoneUICallDelegate> callDelegate;
-	id<LinphoneUIRegistrationDelegate> registrationDelegate;
 	
 	UIViewController* mCurrentViewController;
 	Connectivity connectivity;
     FastAddressBook* mFastAddressBook;
 	const char*  frontCamId;
 	const char*  backCamId;
+    
+    PhoneView currentView;
     
     NSDictionary* currentSettings;
     
@@ -94,8 +105,10 @@ typedef struct _LinphoneCallAppData {
 -(void) setupNetworkReachabilityCallback;
 -(void) refreshRegisters;
 
+-(void) changeView:(PhoneView) view;
+-(PhoneView) currentView;
+
 @property (nonatomic, retain) id<LinphoneUICallDelegate> callDelegate;
-@property (nonatomic, retain) id<LinphoneUIRegistrationDelegate> registrationDelegate;
 @property Connectivity connectivity;
 @property (readonly) const char*  frontCamId;
 @property (readonly) const char*  backCamId;

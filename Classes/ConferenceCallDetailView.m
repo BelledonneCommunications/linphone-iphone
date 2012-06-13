@@ -136,8 +136,8 @@ NSTimer *callQualityRefresher;
     UILabel* label = (UILabel*) [cell viewWithTag:2];
     
     /* update cell content */
-	LinphoneCall* call = [IncallViewController retrieveCallAtIndex:indexPath.row inConference:YES];
-    [IncallViewController updateCellImageView:image Label:label DetailLabel:nil AndAccessoryView:nil withCall:call];
+	LinphoneCall* call = [InCallViewController retrieveCallAtIndex:indexPath.row inConference:YES];
+    [InCallViewController updateCellImageView:image Label:label DetailLabel:nil AndAccessoryView:nil withCall:call];
     
 	cell.accessoryType = UITableViewCellAccessoryNone;
 	if (cell.accessoryView == nil) {
@@ -150,7 +150,7 @@ NSTimer *callQualityRefresher;
 		}
 	}
 	UIImageView* callquality = (UIImageView*) [cell viewWithTag:3];
-    [IncallViewController updateIndicator:callquality withCallQuality:linphone_call_get_average_quality(call)];
+    [InCallViewController updateIndicator:callquality withCallQuality:linphone_call_get_average_quality(call)];
     tableView.rowHeight = 80;
     
     return cell;

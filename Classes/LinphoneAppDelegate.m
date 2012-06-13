@@ -1,4 +1,4 @@
-/* linphoneAppDelegate.m
+/* LinphoneAppDelegate.m
  *
  * Copyright (C) 2009  Belledonne Comunications, Grenoble, France
  *
@@ -39,15 +39,11 @@ int __aeabi_idiv(int a, int b) {
 }
 #endif
 
-@implementation linphoneAppDelegate
+@implementation LinphoneAppDelegate
 
 @synthesize window;
-@synthesize myTabBarController;
-@synthesize myPeoplePickerController;
-@synthesize myPhoneViewController;
-@synthesize myContentView;
 
--(void) handleGSMCallInteration: (id) cCenter {
+- (void)handleGSMCallInteration: (id) cCenter {
     CTCallCenter* ct = (CTCallCenter*) cCenter;
     
     int callCount = [ct.currentCalls count];
@@ -66,7 +62,7 @@ int __aeabi_idiv(int a, int b) {
     }
 }
 
--(void)applicationWillResignActive:(UIApplication *)application {
+- (void)applicationWillResignActive:(UIApplication *)application {
     LinphoneCore* lc = [LinphoneManager getLc];
     LinphoneCall* call = linphone_core_get_current_call(lc);
     if (call == NULL)
@@ -135,7 +131,7 @@ int __aeabi_idiv(int a, int b) {
     }
 }
 
-- (void) loadDefaultSettings:(NSDictionary *) appDefaults {
+- (void)loadDefaultSettings:(NSDictionary *) appDefaults {
     
     NSString *settingsBundle = [[NSBundle mainBundle] pathForResource:@"Settings" ofType:@"bundle"];
     if(!settingsBundle) {
@@ -167,62 +163,13 @@ int __aeabi_idiv(int a, int b) {
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
--(void) setupUI {
+- (void)setupUI {
     
-    /*//as defined in PhoneMainView.xib		
-	//dialer
-	myPhoneViewController = (PhoneViewController*) [myTabBarController.viewControllers objectAtIndex: DIALER_TAB_INDEX];
-	myPhoneViewController.myTabBarController =  myTabBarController;
-	//Call history
-	myCallHistoryTableViewController = [[CallHistoryTableViewController alloc]  initWithNibName:@"CallHistoryTableViewController" 
-																						 bundle:[NSBundle mainBundle]];
-	UINavigationController *aCallHistNavigationController = [[UINavigationController alloc] initWithRootViewController:myCallHistoryTableViewController];
-	aCallHistNavigationController.tabBarItem = [(UIViewController*)[myTabBarController.viewControllers objectAtIndex:HISTORY_TAB_INDEX] tabBarItem];
-	
-	//people picker delegates
-	myContactPickerDelegate = [[ContactPickerDelegate alloc] init];
-	//people picker
-	myPeoplePickerController = [[[ABPeoplePickerNavigationController alloc] init] autorelease];
-	[myPeoplePickerController setDisplayedProperties:[NSArray arrayWithObject:[NSNumber numberWithInt:kABPersonPhoneProperty]]];
-	[myPeoplePickerController setPeoplePickerDelegate:myContactPickerDelegate];
-	//copy tab bar item
-	myPeoplePickerController.tabBarItem = [(UIViewController*)[myTabBarController.viewControllers objectAtIndex:CONTACTS_TAB_INDEX] tabBarItem]; 
-	
-	//more tab 
-	MoreViewController *moreViewController = [[MoreViewController alloc] initWithNibName:@"MoreViewController" bundle:[NSBundle mainBundle]];
-	UINavigationController *aNavigationController = [[UINavigationController alloc] initWithRootViewController:moreViewController];
-    [moreViewController release];
-	//copy tab bar item
-	aNavigationController.tabBarItem = [(UIViewController*)[myTabBarController.viewControllers objectAtIndex:MORE_TAB_INDEX] tabBarItem]; 
-	
-	//insert contact controller
-	NSMutableArray* newArray = [NSMutableArray arrayWithArray:self.myTabBarController.viewControllers];
-	[newArray replaceObjectAtIndex:CONTACTS_TAB_INDEX withObject:myPeoplePickerController];
-	[newArray replaceObjectAtIndex:MORE_TAB_INDEX withObject:aNavigationController];
-    [aNavigationController release];
-	[newArray replaceObjectAtIndex:HISTORY_TAB_INDEX withObject:aCallHistNavigationController];
-    [aCallHistNavigationController release];
-	
-	[myTabBarController setSelectedIndex:DIALER_TAB_INDEX];
-	[myTabBarController setViewControllers:newArray animated:NO];
-	//[window addSubview: myTabBarController.view];
-    [myCallHistoryTableViewController loadView];
-  //  [myContentView addSubview:myCallHistoryTableViewController.view];
-	//[window addSubview: myContentView];
-   // [myContentViewController addChildViewController:myCallHistoryTableViewController];
-
-	[window makeKeyAndVisible];
-	
-	[[LinphoneManager instance] setCallDelegate:myPhoneViewController];
-    
-    [UIDevice currentDevice].batteryMonitoringEnabled = YES;*/
-/*
-    PhoneMainView *mainView = [[PhoneMainView alloc] initWithNibName:@"PhoneMainView" bundle:[NSBundle mainBundle]];
-    [self.window addSubview:mainView.view];
-    [self.window makeKeyAndVisible];*/
+    // Change to default view
+    [[LinphoneManager instance] changeView: PhoneView_Dialer];
 }
 
--(void) setupGSMInteraction {
+- (void)setupGSMInteraction {
 	callCenter = [[CTCallCenter alloc] init];
     callCenter.callEventHandler = ^(CTCall* call) {
         // post on main thread
@@ -257,7 +204,7 @@ int __aeabi_idiv(int a, int b) {
     return YES;
 }
 
--(void) startApplication {
+- (void)startApplication {
     /* explicitely instanciate LinphoneManager */
     LinphoneManager* lm = [[LinphoneManager alloc] init];
     assert(lm == [LinphoneManager instance]);
@@ -276,8 +223,7 @@ int __aeabi_idiv(int a, int b) {
 }
 
 - (void)dealloc {
-	//[window release];
-	[myPeoplePickerController release];
+	[window release];
 	[super dealloc];
 }
 
@@ -290,7 +236,5 @@ int __aeabi_idiv(int a, int b) {
     }
 	linphone_core_accept_call([LinphoneManager getLc], call);	
 }
-
-
 
 @end

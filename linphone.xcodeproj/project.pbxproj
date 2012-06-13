@@ -258,6 +258,12 @@
 		7066FC0C13E830E400EFC6DC /* libvpx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7066FC0B13E830E400EFC6DC /* libvpx.a */; };
 		70E542F313E147E3002BA2C0 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F213E147E3002BA2C0 /* OpenGLES.framework */; };
 		70E542F513E147EB002BA2C0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F413E147EB002BA2C0 /* QuartzCore.framework */; };
+		D326483815887D5200930C67 /* OrderedDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = D326483715887D5200930C67 /* OrderedDictionary.m */; };
+		D326483915887D5200930C67 /* OrderedDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = D326483715887D5200930C67 /* OrderedDictionary.m */; };
+		D326483E1588950F00930C67 /* LinphoneCallBar.m in Sources */ = {isa = PBXBuildFile; fileRef = D326483C1588950F00930C67 /* LinphoneCallBar.m */; };
+		D326483F1588950F00930C67 /* LinphoneCallBar.m in Sources */ = {isa = PBXBuildFile; fileRef = D326483C1588950F00930C67 /* LinphoneCallBar.m */; };
+		D32648401588950F00930C67 /* LinphoneCallBar.xib in Resources */ = {isa = PBXBuildFile; fileRef = D326483D1588950F00930C67 /* LinphoneCallBar.xib */; };
+		D32648411588950F00930C67 /* LinphoneCallBar.xib in Resources */ = {isa = PBXBuildFile; fileRef = D326483D1588950F00930C67 /* LinphoneCallBar.xib */; };
 		D347347A1580DDF1003C7B8C /* PhoneMainView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D34734791580DDF1003C7B8C /* PhoneMainView.xib */; };
 		D347347E1580E5F8003C7B8C /* history-actif.png in Resources */ = {isa = PBXBuildFile; fileRef = D347347C1580E5F8003C7B8C /* history-actif.png */; };
 		D347347F1580E5F8003C7B8C /* history-selectionne.png in Resources */ = {isa = PBXBuildFile; fileRef = D347347D1580E5F8003C7B8C /* history-selectionne.png */; };
@@ -831,6 +837,11 @@
 		70E542F213E147E3002BA2C0 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		70E542F413E147EB002BA2C0 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		8D1107310486CEB800E47090 /* linphone-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "linphone-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+		D326483615887D5200930C67 /* OrderedDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OrderedDictionary.h; path = Utils/OrderedDictionary.h; sourceTree = "<group>"; };
+		D326483715887D5200930C67 /* OrderedDictionary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OrderedDictionary.m; path = Utils/OrderedDictionary.m; sourceTree = "<group>"; };
+		D326483B1588950F00930C67 /* LinphoneCallBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LinphoneCallBar.h; sourceTree = "<group>"; };
+		D326483C1588950F00930C67 /* LinphoneCallBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LinphoneCallBar.m; sourceTree = "<group>"; };
+		D326483D1588950F00930C67 /* LinphoneCallBar.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LinphoneCallBar.xib; sourceTree = "<group>"; };
 		D34734791580DDF1003C7B8C /* PhoneMainView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PhoneMainView.xib; sourceTree = "<group>"; };
 		D347347C1580E5F8003C7B8C /* history-actif.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "history-actif.png"; path = "Resources/history-actif.png"; sourceTree = "<group>"; };
 		D347347D1580E5F8003C7B8C /* history-selectionne.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "history-selectionne.png"; path = "Resources/history-selectionne.png"; sourceTree = "<group>"; };
@@ -1050,6 +1061,7 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				D326483415887D4400930C67 /* Utils */,
 				340751E4150E4D0200B89C47 /* CallDelegate.h */,
 				2211DBBB14769C8200DEE054 /* CallDelegate.m */,
 				D3ED3EA41587334B006C0DE4 /* CallHistoryTableViewController.h */,
@@ -1319,6 +1331,9 @@
 				D3A55FBE15877E69003FD403 /* ContactCell.xib */,
 				223963151393CFAE001DE689 /* FastAddressBook.h */,
 				223963161393CFAF001DE689 /* FastAddressBook.m */,
+				D326483B1588950F00930C67 /* LinphoneCallBar.h */,
+				D326483C1588950F00930C67 /* LinphoneCallBar.m */,
+				D326483D1588950F00930C67 /* LinphoneCallBar.xib */,
 				D3ED3E841586291B006C0DE4 /* LinphoneMainBar.h */,
 				D3ED3E851586291B006C0DE4 /* LinphoneMainBar.m */,
 				D3ED3E861586291C006C0DE4 /* LinphoneMainBar.xib */,
@@ -1663,6 +1678,15 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		D326483415887D4400930C67 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				D326483615887D5200930C67 /* OrderedDictionary.h */,
+				D326483715887D5200930C67 /* OrderedDictionary.m */,
+			);
+			name = Utils;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1898,6 +1922,7 @@
 				D354981C15876FE7000081D8 /* bouton-detail-contact-over.png in Resources */,
 				D35498231587716B000081D8 /* LinphoneStatusBar.xib in Resources */,
 				D3A55FBF15877E69003FD403 /* ContactCell.xib in Resources */,
+				D32648401588950F00930C67 /* LinphoneCallBar.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2047,6 +2072,7 @@
 				D354981D15876FE7000081D8 /* bouton-detail-contact-over.png in Resources */,
 				D35498241587716B000081D8 /* LinphoneStatusBar.xib in Resources */,
 				D3A55FC015877E69003FD403 /* ContactCell.xib in Resources */,
+				D32648411588950F00930C67 /* LinphoneCallBar.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2091,6 +2117,8 @@
 				D3549816158761D0000081D8 /* ContactTableViewController.m in Sources */,
 				D35498211587716B000081D8 /* LinphoneStatusBar.m in Sources */,
 				D3A55FBC15877E5E003FD403 /* ContactCell.m in Sources */,
+				D326483815887D5200930C67 /* OrderedDictionary.m in Sources */,
+				D326483E1588950F00930C67 /* LinphoneCallBar.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2132,6 +2160,8 @@
 				D3549817158761D0000081D8 /* ContactTableViewController.m in Sources */,
 				D35498221587716B000081D8 /* LinphoneStatusBar.m in Sources */,
 				D3A55FBD15877E5E003FD403 /* ContactCell.m in Sources */,
+				D326483915887D5200930C67 /* OrderedDictionary.m in Sources */,
+				D326483F1588950F00930C67 /* LinphoneCallBar.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

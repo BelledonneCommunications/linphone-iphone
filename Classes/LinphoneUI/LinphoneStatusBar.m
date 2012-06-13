@@ -18,6 +18,7 @@
  */     
 
 #import "LinphoneStatusBar.h"
+#import "LinphoneManager.h"
 
 @implementation LinphoneStatusBar
 
@@ -30,7 +31,7 @@
     [super viewDidLoad];
     
     // Set observer
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(registrationStateChange:) name:@"LinphoneRegistrationStateChange" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(registrationUpdate:) name:@"LinphoneRegistrationUpdate" object:nil];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -38,9 +39,34 @@
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
-- (void) registrationStateChange: (NSNotification*) notif {  
-    LinphoneRegistrationState state = [[notif.userInfo objectForKey: @"state"] intValue];
-    NSString* message = [notif.userInfo objectForKey: @"message"];
+- (void)registrationUpdate: (NSNotification*) notif {  
+    LinphoneProxyConfig* config;
+    linphone_core_get_default_proxy([LinphoneManager getLc], &config);
+    
+    LinphoneRegistrationState state;
+    NSString* message = nil;
+    
+    if (config == NULL) {
+        state = LinphoneRegistrationNone;
+        message = linphone_core_is_network_reachabled([LinphoneManager getLc]) ? NSLocalizedString(@"No SIP account configured", nil) : NSLocalizedString(@"Network down", nil);
+    } else {
+        state = linphone_proxy_config_get_state(config);
+        
+        switch (state) {
+            case LinphoneRegistrationOk: 
+                message = @"Registered"; break;
+            case LinphoneRegistrationNone: 
+			case LinphoneRegistrationCleared:
+				message = @"Not registered"; break;
+            case LinphoneRegistrationFailed: 
+                message = @"Registration failed"; break;
+            case LinphoneRegistrationProgress: 
+                message = @"Registration in progress"; break;
+                //case LinphoneRegistrationCleared: m= @"No SIP account"; break;
+            default: break;
+        }
+    }
+    
     label.hidden = NO;
     switch(state) {
         case LinphoneRegistrationCleared:

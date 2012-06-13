@@ -26,7 +26,7 @@
 #import "VideoZoomHandler.h"
 @class VideoViewController;
 
-@interface IncallViewController : UIViewController <ABPeoplePickerNavigationControllerDelegate,LinphoneUICallDelegate, UITableViewDelegate, UITableViewDataSource, UIActionSheetCustomDelegate> {
+@interface InCallViewController : UIViewController <ABPeoplePickerNavigationControllerDelegate,LinphoneUICallDelegate, UITableViewDelegate, UITableViewDataSource, UIActionSheetCustomDelegate> {
 	
 	
 	UIView* controlSubView, *hangUpView;

@@ -22,7 +22,7 @@
 #import "LinphoneUIDelegates.h"
 
 
-@interface FirstLoginViewController : UIViewController <UITextFieldDelegate,LinphoneUIRegistrationDelegate>{
+@interface FirstLoginViewController : UIViewController <UITextFieldDelegate>{
 	UIButton* ok;
 	UIButton* site;
 	UITextField* username;

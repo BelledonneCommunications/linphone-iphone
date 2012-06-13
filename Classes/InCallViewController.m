@@ -35,7 +35,7 @@
 
 const NSInteger SECURE_BUTTON_TAG=5;
 
-@implementation IncallViewController
+@implementation InCallViewController
 
 @synthesize controlSubView;
 @synthesize padSubView;
@@ -360,7 +360,7 @@ void addAnimationFadeTransition(UIView* view, float duration) {
             if (state == LinphoneCallStreamsRunning || state == LinphoneCallUpdated || state == LinphoneCallUpdatedByRemote) {
                 if (linphone_call_params_video_enabled(linphone_call_get_current_params(currentCall))) {
                     [addVideo setTitle:NSLocalizedString(@"-video", nil) forState:UIControlStateNormal];
-                    [IncallViewController updateIndicator: videoCallQuality withCallQuality:linphone_call_get_average_quality(currentCall)];
+                    [InCallViewController updateIndicator: videoCallQuality withCallQuality:linphone_call_get_average_quality(currentCall)];
                 } else {
                     [addVideo setTitle:NSLocalizedString(@"+video", nil) forState:UIControlStateNormal];
                 }
@@ -720,7 +720,7 @@ static void hideSpinner(LinphoneCall* lc, void* user_data);
 }
 
 static void hideSpinner(LinphoneCall* call, void* user_data) {
-    IncallViewController* thiz = (IncallViewController*) user_data;
+    InCallViewController* thiz = (InCallViewController*) user_data;
     [thiz hideSpinnerIndicator:call];
 }
 
@@ -1027,7 +1027,7 @@ static void hideSpinner(LinphoneCall* call, void* user_data) {
         else
             cell.accessoryType = UITableViewCellAccessoryNone;
     } else {
-        LinphoneCall* call = [IncallViewController retrieveCallAtIndex:indexPath.row inConference:NO];
+        LinphoneCall* call = [InCallViewController retrieveCallAtIndex:indexPath.row inConference:NO];
 		if (call == nil)
             return cell; // return dummy cell
 		LinphoneMediaEncryption enc = linphone_call_params_get_media_encryption(linphone_call_get_current_params(call));
@@ -1040,7 +1040,7 @@ static void hideSpinner(LinphoneCall* call, void* user_data) {
 				[view removeFromSuperview];
 			}
 		}
-        [IncallViewController updateCellImageView:cell.imageView Label:cell.textLabel DetailLabel:cell.detailTextLabel AndAccessoryView:(UIView*)cell.accessoryView withCall:call];
+        [InCallViewController updateCellImageView:cell.imageView Label:cell.textLabel DetailLabel:cell.detailTextLabel AndAccessoryView:(UIView*)cell.accessoryView withCall:call];
         if (linphone_core_get_current_call(lc) == call)
             activeCallCell = cell;
         cell.accessoryType = UITableViewCellAccessoryNone;
@@ -1050,7 +1050,7 @@ static void hideSpinner(LinphoneCall* call, void* user_data) {
 		[callquality setFrame:CGRectMake(0, 0, 28, 28)];
 		if (call->state == LinphoneCallStreamsRunning) 
 		{
-            [IncallViewController   updateIndicator: callquality withCallQuality:linphone_call_get_average_quality(call)];
+            [InCallViewController   updateIndicator: callquality withCallQuality:linphone_call_get_average_quality(call)];
 		}
 		else {
 			[callquality setImage:nil];
@@ -1092,7 +1092,7 @@ static void hideSpinner(LinphoneCall* call, void* user_data) {
     CGPoint currentTouchPos = [touch locationInView:self.callTableView];
     NSIndexPath *path = [self.callTableView indexPathForRowAtPoint:currentTouchPos];
     if (path) {
-        LinphoneCall* call = [IncallViewController retrieveCallAtIndex:path.row inConference:NO];
+        LinphoneCall* call = [InCallViewController retrieveCallAtIndex:path.row inConference:NO];
         // start action sheet to validate/unvalidate zrtp code
         CallDelegate* cd = [[CallDelegate alloc] init];
         cd.eventType = CD_ZRTP;
@@ -1233,7 +1233,7 @@ static void hideSpinner(LinphoneCall* call, void* user_data) {
 
     bool inConf = (indexPath.row == 0 && linphone_core_get_conference_size(lc) > 0);
     
-    LinphoneCall* selectedCall = [IncallViewController retrieveCallAtIndex:indexPath.row inConference:inConf];
+    LinphoneCall* selectedCall = [InCallViewController retrieveCallAtIndex:indexPath.row inConference:inConf];
     
     if (inConf) {
         if (linphone_core_is_in_conference(lc))

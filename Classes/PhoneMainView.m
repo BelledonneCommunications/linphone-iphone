@@ -21,6 +21,7 @@
 #import "PhoneViewController.h"
 #import "HistoryController.h"
 #import "ContactsController.h"
+#import "InCallViewController.h"
 
 typedef enum _TabBar {
     TabBar_Main,
@@ -44,10 +45,9 @@ typedef enum _TabBar {
 @synthesize contentView;
 @synthesize tabBarView;
 
-@synthesize callTabBar;
+@synthesize callTabBarController;
 @synthesize statusBarController;
 @synthesize mainTabBarController;
-@synthesize incomingTabBar;
 @synthesize addCallTabBar;
 
 - (void) changeView: (NSNotification*) notif {   
@@ -74,25 +74,31 @@ typedef enum _TabBar {
         contentFrame.origin.y = 0;
     }
     
-  
     // Resize tabbar
     CGRect tabFrame = tabBarView.frame;
-    tabFrame.origin.y += tabFrame.size.height;
-    tabFrame.origin.x += tabFrame.size.width;
-    tabFrame.size.height = description->tabBar.view.frame.size.height;
-    tabFrame.size.width = description->tabBar.view.frame.size.width;
-    tabFrame.origin.y -= tabFrame.size.height;
-    tabFrame.origin.x -= tabFrame.size.width;
-    tabBarView.frame = tabFrame;
-    for (UIView *view in description->tabBar.view.subviews) {
-        if(view.tag == -1) {
-            contentFrame.size.height = tabFrame.origin.y - contentFrame.origin.y + view.frame.origin.y;
-            break;
+    if(description->tabBar != nil) {
+        tabBarView.hidden = false;
+        tabFrame.origin.y += tabFrame.size.height;
+        tabFrame.origin.x += tabFrame.size.width;
+        tabFrame.size.height = description->tabBar.view.frame.size.height;
+        tabFrame.size.width = description->tabBar.view.frame.size.width;
+        tabFrame.origin.y -= tabFrame.size.height;
+        tabFrame.origin.x -= tabFrame.size.width;
+        tabBarView.frame = tabFrame;
+        contentFrame.size.height = tabFrame.origin.y - contentFrame.origin.y;
+        for (UIView *view in description->tabBar.view.subviews) {
+            if(view.tag == -1) {
+                contentFrame.size.height += view.frame.origin.y;
+                break;
+            }
         }
+        [tabBarView addSubview: description->tabBar.view];
+    } else {
+        tabBarView.hidden = true;
+        contentFrame.size.height = tabFrame.origin.y - tabFrame.size.height;
     }
     
     contentView.frame = contentFrame;
-    [tabBarView addSubview: description->tabBar.view];
 }
 
 -(void)viewDidLoad {
@@ -108,7 +114,9 @@ typedef enum _TabBar {
     // Status Bar
     [statusBarView addSubview: statusBarController.view];
     
+    //
     // Main View
+    //
     PhoneViewController* myPhoneViewController = [[PhoneViewController alloc]  
         initWithNibName:@"PhoneViewController" 
         bundle:[NSBundle mainBundle]];
@@ -119,7 +127,10 @@ typedef enum _TabBar {
     mainViewDescription->statusEnabled = true;
     [viewDescriptions setObject:mainViewDescription forKey:[NSNumber numberWithInt: PhoneView_Dialer]];
     
+    
+    //
     // Contacts View
+    //
     ContactsController* myContactsController = [[ContactsController alloc]
                                               initWithNibName:@"ContactsController" 
                                               bundle:[NSBundle mainBundle]];
@@ -130,7 +141,10 @@ typedef enum _TabBar {
     contactsDescription->statusEnabled = false;
     [viewDescriptions setObject:contactsDescription forKey:[NSNumber numberWithInt: PhoneView_Contacts]];
     
+    
+    //
     // Call History View
+    //
     HistoryController* myHistoryController = [[HistoryController alloc]
         initWithNibName:@"HistoryController" 
         bundle:[NSBundle mainBundle]];
@@ -141,12 +155,23 @@ typedef enum _TabBar {
     historyDescription->statusEnabled = false;
     [viewDescriptions setObject:historyDescription forKey:[NSNumber numberWithInt: PhoneView_History]];
     
+    
+    //
+    // InCall View
+    //
+    InCallViewController* myInCallController = [[InCallViewController alloc]
+                                              initWithNibName:@"InCallViewController" 
+                                              bundle:[NSBundle mainBundle]];
+    //[myHistoryController loadView];
+    ViewsDescription *inCallDescription = [ViewsDescription alloc];
+    inCallDescription->content = myInCallController;
+    inCallDescription->tabBar = callTabBarController;
+    inCallDescription->statusEnabled = false;
+    [viewDescriptions setObject:inCallDescription forKey:[NSNumber numberWithInt: PhoneView_InCall]];
+    
+    
     // Set observer
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeView:) name:@"LinphoneMainViewChange" object:nil];
-    
-    // Change to default view
-    NSDictionary* dict = [NSDictionary dictionaryWithObject: [NSNumber numberWithInt:PhoneView_Dialer] forKey:@"PhoneView"];
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneMainViewChange" object:self userInfo:dict];
 }
      
 - (void) viewDidUnload {

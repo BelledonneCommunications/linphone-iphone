@@ -17,7 +17,6 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */              
 
-
 #import "LinphoneManager.h"
 #include "linphonecore_utils.h"
 #include <sys/types.h>
@@ -52,7 +51,6 @@ extern  void libmsbcg729_init();
 #endif
 @implementation LinphoneManager
 @synthesize callDelegate;
-@synthesize registrationDelegate;
 @synthesize connectivity;
 @synthesize frontCamId;
 @synthesize backCamId;
@@ -65,9 +63,21 @@ extern  void libmsbcg729_init();
     }
     return self;
 }
+
 +(LinphoneManager*) instance {
 	return theLinphoneManager;
 }
+
+-(void) changeView:(PhoneView) view {
+    currentView = view;
+    NSDictionary* dict = [NSDictionary dictionaryWithObject: [NSNumber numberWithInt:currentView] forKey:@"view"];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneMainViewChange" object:self userInfo:dict];
+}
+
+-(PhoneView) currentView {
+    return currentView;
+}
+
 
 -(NSString*) getDisplayNameFromAddressBook:(NSString*) number andUpdateCallLog:(LinphoneCallLog*)log {
     //1 normalize
@@ -356,37 +366,21 @@ static void linphone_iphone_transfer_state_changed(LinphoneCore* lc, LinphoneCal
 -(void) onRegister:(LinphoneCore *)lc cfg:(LinphoneProxyConfig*) cfg state:(LinphoneRegistrationState) state message:(const char*) message {
     ms_warning("NEW REGISTRATION STATE: '%s' (message: '%s')", linphone_registration_state_to_string(state), message);
     
-	LinphoneAddress* lAddress = linphone_address_new(linphone_proxy_config_get_identity(cfg));
-	NSString* lUserName = linphone_address_get_username(lAddress)? [[NSString alloc] initWithUTF8String:linphone_address_get_username(lAddress) ]:@"";
-	NSString* lDisplayName = linphone_address_get_display_name(lAddress)? [[NSString alloc] initWithUTF8String:linphone_address_get_display_name(lAddress) ]:@"";
-	NSString* lDomain = [[NSString alloc] initWithUTF8String:linphone_address_get_domain(lAddress)];
-	linphone_address_destroy(lAddress);
-	
-	if (state == LinphoneRegistrationOk) {
-		[[(LinphoneManager*)linphone_core_get_user_data(lc) registrationDelegate] displayRegisteredFromUI:nil
-											  forUser:lUserName
-									  withDisplayName:lDisplayName
-											 onDomain:lDomain ];
-	} else if (state == LinphoneRegistrationProgress) {
-		[registrationDelegate displayRegisteringFromUI:mCurrentViewController
-											  forUser:lUserName
-									  withDisplayName:lDisplayName
-											 onDomain:lDomain ];
-		
-	} else if (state == LinphoneRegistrationCleared || state == LinphoneRegistrationNone) {
-		[registrationDelegate displayNotRegisteredFromUI:mCurrentViewController];
-	} else 	if (state == LinphoneRegistrationFailed ) {
+    // Post event
+    NSDictionary* dict = [[NSDictionary alloc] initWithObjectsAndKeys: 
+                          [NSNumber numberWithInt:state], @"state", 
+                          [[NSString stringWithFormat:@"%c", message] autorelease], @"message", 
+                          nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneRegistrationUpdate" object:self userInfo:dict];
+    
+    // Show error
+    if (state == LinphoneRegistrationFailed) {
 		NSString* lErrorMessage=nil;
 		if (linphone_proxy_config_get_error(cfg) == LinphoneReasonBadCredentials) {
 			lErrorMessage = NSLocalizedString(@"Bad credentials, check your account settings",nil);
 		} else if (linphone_proxy_config_get_error(cfg) == LinphoneReasonNoResponse) {
 			lErrorMessage = NSLocalizedString(@"SIP server unreachable",nil);
 		} 
-		[registrationDelegate displayRegistrationFailedFromUI:mCurrentViewController
-											   forUser:lUserName
-									   withDisplayName:lDisplayName
-											  onDomain:lDomain
-												forReason:lErrorMessage];
 		
 		if (lErrorMessage != nil 
 			&& linphone_proxy_config_get_error(cfg) != LinphoneReasonNoResponse) { //do not report network connection issue on registration
@@ -406,11 +400,6 @@ static void linphone_iphone_transfer_state_changed(LinphoneCore* lc, LinphoneCal
 		}
 		
 	}
-    
-    [lUserName release];
-    [lDisplayName release];
-    [lDomain release];
-	
 }
 static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyConfig* cfg, LinphoneRegistrationState state,const char* message) {
 	[(LinphoneManager*)linphone_core_get_user_data(lc) onRegister:lc cfg:cfg state:state message:message];

@@ -15,7 +15,8 @@
  *  You should have received a copy of the GNU General Public License   
  *  along with this program; if not, write to the Free Software         
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */                          
+ */       
+
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
 #import "linphonecore.h"
@@ -23,11 +24,11 @@
 #import "CallDelegate.h"
 
 @class MainScreenWithVideoPreview;
-@class IncallViewController;
+@class InCallViewController;
 @class FirstLoginViewController;
 
 
-@interface PhoneViewController : UIViewController <UITextFieldDelegate,LinphoneUICallDelegate, UIActionSheetCustomDelegate, LinphoneUIRegistrationDelegate> {
+@interface PhoneViewController : UIViewController <UITextFieldDelegate,LinphoneUICallDelegate, UIActionSheetCustomDelegate> {
 
 @private
 	//UI definition
@@ -61,7 +62,7 @@
 
 	UIActionSheet *mIncomingCallActionSheet;
 	FirstLoginViewController* myFirstLoginViewController;
-	IncallViewController* mIncallViewController;
+	InCallViewController* mIncallViewController;
     MainScreenWithVideoPreview* mMainScreenWithVideoPreview;
     
     UIButton* switchCamera;
@@ -96,4 +97,5 @@
 
 @property (nonatomic, retain) IBOutlet UITabBarController*  myTabBarController;
 @property (nonatomic, retain) IBOutlet MainScreenWithVideoPreview*  mMainScreenWithVideoPreview;
+-(IBAction) onAddContact: (id) event;
 @end

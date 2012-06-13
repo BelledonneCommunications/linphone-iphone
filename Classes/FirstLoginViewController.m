@@ -29,8 +29,6 @@
 @synthesize activityIndicator;
 @synthesize site;
 
-
-
 - (void)viewDidAppear:(BOOL)animated { 
     [super viewDidAppear:animated];
 	//[username setText:[[NSUserDefaults standardUserDefaults] stringForKey:@"username_preference"]];
@@ -43,7 +41,51 @@
 		siteUrl=@"http://www.linphone.org";
 	}
 	[site setTitle:siteUrl forState:UIControlStateNormal];
+    
+    // Set observer
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(registrationUpdate:) name:@"LinphoneRegistrationUpdate" object:nil];
 	
+}
+
+- (void)registrationUpdate: (NSNotification*) notif {  
+    LinphoneRegistrationState state = [[notif.userInfo objectForKey: @"state"] intValue];
+    switch (state) {
+        case LinphoneRegistrationOk: 
+        {
+            [[NSUserDefaults standardUserDefaults] setBool:false forKey:@"enable_first_login_view_preference"]; 
+            [self.activityIndicator setHidden:true];
+            [self dismissModalViewControllerAnimated:YES];
+            break;
+        }
+        case LinphoneRegistrationNone: 
+        case LinphoneRegistrationCleared:
+        {
+            [self.activityIndicator setHidden:true];	
+            break;
+        }
+        case LinphoneRegistrationFailed: 
+        {
+            [self.activityIndicator setHidden:true];
+            //default behavior if no registration delegates
+            
+            //UIAlertView* error = [[UIAlertView alloc]	initWithTitle:[NSString stringWithFormat:@"Registration failure for user %@",user]
+            //												message:reason
+            //											   delegate:nil 
+            //									  cancelButtonTitle:@"Continue" 
+            //									  otherButtonTitles:nil ,nil];
+            //[error show];
+            //[error release];
+            //erase uername passwd
+            [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"username_preference"];
+            [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"password_preference"];
+            break;
+        }
+        case LinphoneRegistrationProgress: {
+            [self.activityIndicator setHidden:false];
+            break;
+        }
+        default: break;
+    }
 }
 
 - (void)dealloc {
@@ -52,9 +94,12 @@
 	[site dealloc];
 	[username dealloc];
 	[activityIndicator dealloc];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-
+- (void) viewDidUnload {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
 
 -(void) doOk:(id)sender {
 	if (sender == site) {
@@ -87,33 +132,6 @@
 	
 	
 }
--(void) displayRegisteredFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName onDomain:(NSString*)domain {
-	[[NSUserDefaults standardUserDefaults] setBool:false forKey:@"enable_first_login_view_preference"]; 
-	[self.activityIndicator setHidden:true];
-	[self dismissModalViewControllerAnimated:YES];
-}
--(void) displayRegisteringFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName onDomain:(NSString*)domain {
-	[self.activityIndicator setHidden:false];
-}
--(void) displayRegistrationFailedFromUI:(UIViewController*) viewCtrl forUser:(NSString*) user withDisplayName:(NSString*) displayName onDomain:(NSString*)domain forReason:(NSString*) reason {
-	[self.activityIndicator setHidden:true];
-	//default behavior if no registration delegates
-	
-	//UIAlertView* error = [[UIAlertView alloc]	initWithTitle:[NSString stringWithFormat:@"Registration failure for user %@",user]
-	//												message:reason
-	//											   delegate:nil 
-	//									  cancelButtonTitle:@"Continue" 
-	//									  otherButtonTitles:nil ,nil];
-	//[error show];
-    //[error release];
-	//erase uername passwd
-	[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"username_preference"];
-	[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"password_preference"];
-}
--(void) displayNotRegisteredFromUI:(UIViewController*) viewCtrl { 
-	[self.activityIndicator setHidden:true];	
-}
-
 
 - (BOOL)textFieldShouldReturn:(UITextField *)theTextField {
     // When the user presses return, take focus away from the text field so that the keyboard is dismissed.

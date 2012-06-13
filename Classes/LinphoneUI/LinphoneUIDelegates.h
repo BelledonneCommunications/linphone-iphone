@@ -32,12 +32,3 @@
 -(void) firstVideoFrameDecoded:(LinphoneCall*) call;
 @end
 
-
-@protocol LinphoneUIRegistrationDelegate
-// UI changes for registration
--(void) displayRegisteredFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName onDomain:(NSString*)domain ;
--(void) displayRegisteringFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName onDomain:(NSString*)domain ;
--(void) displayRegistrationFailedFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName onDomain:(NSString*)domain forReason:(NSString*) reason;
--(void) displayNotRegisteredFromUI:(UIViewController*) viewCtrl; 
-@end
-
