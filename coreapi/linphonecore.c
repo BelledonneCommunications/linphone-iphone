@@ -3485,6 +3485,14 @@ void linphone_core_clear_call_logs(LinphoneCore *lc){
 	call_logs_write_to_config_file(lc);
 }
 
+int linphone_core_get_missed_calls_count(LinphoneCore *lc) {
+	return lc->missed_calls;
+}
+
+void linphone_core_remove_call_log(LinphoneCore *lc, void *data) {
+	lc->call_logs = ms_list_remove(lc->call_logs, data);
+}
+
 static void toggle_video_preview(LinphoneCore *lc, bool_t val){
 #ifdef VIDEO_ENABLED
 	if (val){

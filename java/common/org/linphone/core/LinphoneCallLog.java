@@ -94,4 +94,6 @@ public interface LinphoneCallLog {
 	 * @return
 	 */
 	public CallStatus getStatus();
+	
+	public long getNativePtr();
 }

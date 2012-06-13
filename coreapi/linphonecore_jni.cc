@@ -642,6 +642,18 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_stopDtmf(	JNIEnv*  env
 	linphone_core_stop_dtmf((LinphoneCore*)lc);
 }
 
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_getMissedCallsCount(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong lc) {
+	linphone_core_get_missed_calls_count((LinphoneCore*)lc);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_removeCallLog(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong lc, jlong log) {
+	linphone_core_remove_call_log((LinphoneCore*)lc, (void*) log);
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_clearCallLogs(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong lc) {

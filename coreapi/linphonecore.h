@@ -969,6 +969,8 @@ void linphone_core_set_rtp_no_xmit_on_audio_mute(LinphoneCore *lc, bool_t val);
 /* returns a list of LinphoneCallLog */
 const MSList * linphone_core_get_call_logs(LinphoneCore *lc);
 void linphone_core_clear_call_logs(LinphoneCore *lc);
+int linphone_core_get_missed_calls_count(LinphoneCore *lc);
+void linphone_core_remove_call_log(LinphoneCore *lc, void *data);
 
 /* video support */
 bool_t linphone_core_video_supported(LinphoneCore *lc);
