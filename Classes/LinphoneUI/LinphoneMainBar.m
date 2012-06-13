@@ -63,11 +63,16 @@
 
 - (void) viewDidUnload {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [historyButton release];
+    [contactsButton release];
+    [dialerButton release];
+    [settingsButton release];
+    [chatButton release];
 }
 
 - (void) dealloc {
-    [super dealloc];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [super dealloc];
 }
 
 - (IBAction) onHistoryClick: (id) sender {

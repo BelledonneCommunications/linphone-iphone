@@ -90,6 +90,7 @@ void sync_toc_address_book (ABAddressBookRef addressBook, CFDictionaryRef info, 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     OrderedDictionary *subDic = [addressBookMap objectForKey: [addressBookMap keyAtIndex: [indexPath section]]]; 
     ABRecordRef lPerson = [subDic objectForKey: [subDic keyAtIndex:[indexPath row]]];
+    // TODO
 }
 
 - (void)dealloc {

@@ -1,4 +1,4 @@
-/* IncallViewController.h
+/* InCallViewController.h
  *
  * Copyright (C) 2009  Belledonne Comunications, Grenoble, France
  *
@@ -16,24 +16,28 @@
  *  along with this program; if not, write to the Free Software         
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */              
+
 #import <UIKit/UIKit.h>
+#import <AddressBookUI/ABPeoplePickerNavigationController.h>
+
 #import "linphonecore.h"
 #import "PhoneViewController.h"
 #import "ConferenceCallDetailView.h"
-#import <AddressBookUI/ABPeoplePickerNavigationController.h>
-#include "UILinphone.h"
 #import "UIToggleVideoButton.h"
 #import "VideoZoomHandler.h"
+
+#include "UILinphone.h"
+
 @class VideoViewController;
 
-@interface InCallViewController : UIViewController <ABPeoplePickerNavigationControllerDelegate,LinphoneUICallDelegate, UITableViewDelegate, UITableViewDataSource, UIActionSheetCustomDelegate> {
+@interface InCallViewController : UIViewController <ABPeoplePickerNavigationControllerDelegate, UITableViewDelegate, UITableViewDataSource, UIActionSheetCustomDelegate> {
 	
 	
 	UIView* controlSubView, *hangUpView;
 	
 	UIButton* endCtrl;
 	UIButton* dialer;
-	UIMuteButton* mute;
+	UIMicroButton* mute;
     UIButton* pause;
 	UISpeakerButton* speaker;
 	UIButton* contacts;
@@ -96,8 +100,6 @@
     NSTimer* hideControlsTimer;
     VideoZoomHandler* videoZoomHandler;
 }
-
--(void)displayStatus:(NSString*) message;
 
 - (IBAction)doAction:(id)sender;
 

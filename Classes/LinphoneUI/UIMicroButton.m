@@ -15,42 +15,33 @@
  *  You should have received a copy of the GNU General Public License   
  *  along with this program; if not, write to the Free Software         
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */       
-#import "UIMuteButton.h"
-#include "LinphoneManager.h"
+ */      
 
+#import "UIMicroButton.h"
 
-@implementation UIMuteButton
+#import "LinphoneManager.h"
 
+@implementation UIMicroButton
 
-
--(void) onOn {
-	linphone_core_mute_mic([LinphoneManager getLc], true);
-}
--(void) onOff {
+- (void)onOn {
 	linphone_core_mute_mic([LinphoneManager getLc], false);
 }
--(bool) isInitialStateOn {
-	@try {
-		return true == linphone_core_is_mic_muted([LinphoneManager getLc]);
-	} @catch(NSException* e) {
-		//not ready yet
-		return false;
-	}
-	
+
+- (void)onOff {
+	linphone_core_mute_mic([LinphoneManager getLc], true);
 }
 
-/*
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect {
-    // Drawing code.
+- (bool)isInitialStateOn {
+	@try {
+		return linphone_core_is_mic_muted([LinphoneManager getLc]) == false;
+	} @catch(NSException* e) {
+		//not ready yet
+		return true;
+	}
 }
-*/
 
 - (void)dealloc {
     [super dealloc];
 }
-
 
 @end

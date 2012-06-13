@@ -21,14 +21,12 @@
 #include "ConsoleViewController.h"
 #import "LinphoneManager.h"
 
-
 @implementation MoreViewController
 @synthesize web;
 @synthesize credit;
 @synthesize console;
 @synthesize creditText;
 @synthesize weburi;
-
 
 //Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
@@ -39,8 +37,6 @@
 	isDebug =  [[NSUserDefaults standardUserDefaults] boolForKey:@"debugenable_preference"];  
 
 }
-
-
 
 /*
 // Override to allow orientations other than the default portrait orientation.
@@ -62,16 +58,12 @@
 	// e.g. self.myOutlet = nil;
 }
 
-
 - (void)dealloc {
     [super dealloc];
 }
 
-
-
 -(void) enableLogView {
 	isLogViewEnabled = true;
-	
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -98,9 +90,6 @@
 		}
 	}
 }
-
-
-
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 0) {

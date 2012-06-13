@@ -49,8 +49,20 @@ extern void libmssilk_init();
 #if HAVE_G729
 extern  void libmsbcg729_init();
 #endif
+
+@implementation LinphoneCallWrapper
+
+- (id) initWithCall: (LinphoneCall*) acall {
+    if((self = [super init]) != nil) {
+        call = acall;
+    }
+    return self;
+}
+
+@end
+
 @implementation LinphoneManager
-@synthesize callDelegate;
+
 @synthesize connectivity;
 @synthesize frontCamId;
 @synthesize backCamId;
@@ -69,15 +81,22 @@ extern  void libmsbcg729_init();
 }
 
 -(void) changeView:(PhoneView) view {
+    [self changeView:view dict:nil];
+}
+
+-(void) changeView:(PhoneView) view dict:(NSDictionary *)dict {
     currentView = view;
-    NSDictionary* dict = [NSDictionary dictionaryWithObject: [NSNumber numberWithInt:currentView] forKey:@"view"];
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneMainViewChange" object:self userInfo:dict];
+    
+    NSMutableDictionary* mdict = [NSMutableDictionary dictionaryWithObject: [NSNumber numberWithInt:currentView] forKey:@"view"];
+    if(dict != nil)
+        [mdict addEntriesFromDictionary:dict];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneMainViewChange" object:self userInfo:mdict];
 }
 
 -(PhoneView) currentView {
     return currentView;
 }
-
 
 -(NSString*) getDisplayNameFromAddressBook:(NSString*) number andUpdateCallLog:(LinphoneCallLog*)log {
     //1 normalize
@@ -151,6 +170,7 @@ extern  void libmsbcg729_init();
 }
 
 -(void) onCall:(LinphoneCall*) call StateChanged: (LinphoneCallState) new_state withMessage: (const char *)  message {
+    // Handling wrapper
     if(new_state == LinphoneCallReleased) {
         if(linphone_call_get_user_pointer(call) != NULL) {
             free (linphone_call_get_user_pointer(call));
@@ -158,85 +178,43 @@ extern  void libmsbcg729_init();
         }
         return;
     }
-    
-    const char* lUserNameChars=linphone_address_get_username(linphone_call_get_remote_address(call));
-    NSString* lUserName = lUserNameChars?[[[NSString alloc] initWithUTF8String:lUserNameChars] autorelease]:NSLocalizedString(@"Unknown",nil);
-    if (new_state == LinphoneCallIncomingReceived) {
-       [self updateCallWithAddressBookData:call]; // display name is updated 
-    }
-    const char* lDisplayNameChars =  linphone_address_get_display_name(linphone_call_get_remote_address(call));        
-	NSString* lDisplayName = [lDisplayNameChars?[[NSString alloc] initWithUTF8String:lDisplayNameChars]:@"" autorelease];
-    
-    bool canHideInCallView = (linphone_core_get_calls([LinphoneManager getLc]) == NULL);
-	
     if (!linphone_call_get_user_pointer(call)) {
         LinphoneCallAppData* data = (LinphoneCallAppData*) malloc(sizeof(LinphoneCallAppData));
         data->batteryWarningShown = FALSE;
         linphone_call_set_user_pointer(call, data);
     }
     
-	switch (new_state) {					
-		case LinphoneCallIncomingReceived: 
-			[callDelegate	displayIncomingCall:call 
-                           NotificationFromUI:mCurrentViewController
-														forUser:lUserName 
-												withDisplayName:lDisplayName];
-			break;
-			
-		case LinphoneCallOutgoingInit: 
-			[callDelegate		displayCall:call 
-                      InProgressFromUI:mCurrentViewController
-											   forUser:lUserName 
-									   withDisplayName:lDisplayName];
-			break;
-        case LinphoneCallPausedByRemote:
-		case LinphoneCallConnected:
-			[callDelegate	displayInCall: call 
-                                 FromUI:mCurrentViewController
-									  forUser:lUserName 
-							  withDisplayName:lDisplayName];
-			break;
-        case LinphoneCallUpdatedByRemote:
-        {
-            const LinphoneCallParams* current = linphone_call_get_current_params(call);
-            const LinphoneCallParams* remote = linphone_call_get_remote_params(call);
-
-            /* remote wants to add video */
-            if (!linphone_call_params_video_enabled(current) && linphone_call_params_video_enabled(remote) && !linphone_core_get_video_policy(theLinphoneCore)->automatically_accept) {
-                linphone_core_defer_call_update(theLinphoneCore, call);
-                [callDelegate displayAskToEnableVideoCall:call forUser:lUserName withDisplayName:lDisplayName];
-            } else if (linphone_call_params_video_enabled(current) && !linphone_call_params_video_enabled(remote)) {
-                [callDelegate displayInCall:call FromUI:mCurrentViewController forUser:lUserName withDisplayName:lDisplayName];
-            }
-            break;
-        }
-        case LinphoneCallUpdated:
-        {
-            const LinphoneCallParams* current = linphone_call_get_current_params(call);
-            if (linphone_call_params_video_enabled(current)) {
-                [callDelegate displayVideoCall:call FromUI:mCurrentViewController forUser:lUserName withDisplayName:lDisplayName];
+    if (new_state == LinphoneCallIncomingReceived) {
+        [self updateCallWithAddressBookData:call]; // display name is updated 
+    }
+    
+    // Post event
+    NSDictionary* dict = [[NSDictionary alloc] initWithObjectsAndKeys: 
+                          [[[LinphoneCallWrapper alloc] initWithCall: call] autorelease], @"call",
+                          [NSNumber numberWithInt:new_state], @"state", 
+                          [[NSString stringWithFormat:@"%c", message] autorelease], @"message", 
+                          nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneCallUpdate" object:self userInfo:dict];
+    
+    const char* lUserNameChars=linphone_address_get_username(linphone_call_get_remote_address(call));
+    NSString* lUserName = lUserNameChars?[[[NSString alloc] initWithUTF8String:lUserNameChars] autorelease]:NSLocalizedString(@"Unknown",nil);
+    switch (new_state) {
+        case LinphoneCallError: { 
+            /*
+             NSString* lTitle= state->message!=nil?[NSString stringWithCString:state->message length:strlen(state->message)]: @"Error";
+             NSString* lMessage=lTitle;
+             */
+            NSString* lMessage;
+            NSString* lTitle;
+            LinphoneProxyConfig* proxyCfg;	
+            //get default proxy
+            linphone_core_get_default_proxy([LinphoneManager getLc],&proxyCfg);
+            if (proxyCfg == nil) {
+                lMessage=NSLocalizedString(@"Please make sure your device is connected to the internet and double check your SIP account configuration in the settings.",nil    );
             } else {
-                [callDelegate displayInCall:call FromUI:mCurrentViewController forUser:lUserName withDisplayName:lDisplayName];
+                lMessage=[NSString stringWithFormat : NSLocalizedString(@"Cannot call %@",nil),lUserName];
             }
-            break;
-            
-        }
-		case LinphoneCallError: { 
-			/*
-			 NSString* lTitle= state->message!=nil?[NSString stringWithCString:state->message length:strlen(state->message)]: @"Error";
-			 NSString* lMessage=lTitle;
-			 */
-			NSString* lMessage;
-			NSString* lTitle;
-			LinphoneProxyConfig* proxyCfg;	
-			//get default proxy
-			linphone_core_get_default_proxy([LinphoneManager getLc],&proxyCfg);
-			if (proxyCfg == nil) {
-				lMessage=NSLocalizedString(@"Please make sure your device is connected to the internet and double check your SIP account configuration in the settings.",nil);
-			} else {
-				lMessage=[NSString stringWithFormat : NSLocalizedString(@"Cannot call %@",nil),lUserName];
-			}
-			
+    
             if (linphone_call_get_reason(call) == LinphoneReasonNotFound) {
                 lMessage=[NSString stringWithFormat : NSLocalizedString(@"'%@' not registered to Service",nil), lUserName];
             } else {
@@ -244,59 +222,20 @@ extern  void libmsbcg729_init();
                     lMessage=[NSString stringWithFormat : NSLocalizedString(@"%@\nReason was: %s",nil),lMessage, message];
                 }
             }
-			lTitle=NSLocalizedString(@"Call failed",nil);
-			
-			UIAlertView* error = [[UIAlertView alloc] initWithTitle:lTitle
-															message:lMessage 
-														   delegate:nil 
-												  cancelButtonTitle:NSLocalizedString(@"Dismiss",nil) 
-												  otherButtonTitles:nil];
-			[error show];
+            lTitle=NSLocalizedString(@"Call failed",nil);
+            UIAlertView* error = [[UIAlertView alloc] initWithTitle:lTitle
+                                                    message:lMessage 
+                                                   delegate:nil 
+                                          cancelButtonTitle:NSLocalizedString(@"Dismiss",nil) 
+                                          otherButtonTitles:nil];
+            [error show];
             [error release];
-            if (canHideInCallView) {
-                [callDelegate	displayDialerFromUI:mCurrentViewController
-									  forUser:@"" 
-							  withDisplayName:@""];
-            } else {
-				[callDelegate	displayInCall:call 
-									 FromUI:mCurrentViewController
-									forUser:lUserName 
-							withDisplayName:lDisplayName];	
-			}
-			break;
-		}
-		case LinphoneCallEnd:
-            if (canHideInCallView) {
-                [callDelegate	displayDialerFromUI:mCurrentViewController
-									  forUser:@"" 
-							  withDisplayName:@""];
-            } else {
-				[callDelegate	displayInCall:call 
-									 FromUI:mCurrentViewController
-									forUser:lUserName 
-							withDisplayName:lDisplayName];	
-			}
-			break;
-		case LinphoneCallStreamsRunning:
-			//check video
-			if (linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
-				[callDelegate	displayVideoCall:call FromUI:mCurrentViewController
-                                       forUser:lUserName 
-                               withDisplayName:lDisplayName];
-			} else {
-                [callDelegate displayInCall:call FromUI:mCurrentViewController forUser:lUserName withDisplayName:lDisplayName];
-            }
-			break;
+            break;
+        }
         default:
             break;
-	}
-	
-}
-
--(void) displayDialer {
-    [callDelegate	displayDialerFromUI:mCurrentViewController
-                              forUser:@"" 
-                      withDisplayName:@""];
+    }
+    
 }
 
 +(LinphoneCore*) getLc {
@@ -306,12 +245,18 @@ extern  void libmsbcg729_init();
 	return theLinphoneCore;
 }
 
--(void) addLog:(NSString*) log {
+- (void)addLog:(NSString*) log {
 	[mLogView addLog:log];
 }
--(void)displayStatus:(NSString*) message {
-	[callDelegate displayStatus:message];
+
+- (void)displayStatus:(NSString*) message {
+    // Post event
+    NSDictionary* dict = [[NSDictionary alloc] initWithObjectsAndKeys: 
+                          message, @"message", 
+                          nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneDisplayStatus" object:self userInfo:dict];
 }
+
 //generic log handler for debug version
 static void linphone_iphone_log_handler(int lev, const char *fmt, va_list args){
 	NSString* format = [[NSString alloc] initWithCString:fmt encoding:[NSString defaultCStringEncoding]];
@@ -1060,6 +1005,13 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
     return (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad);
 #endif
     return NO;
+}
+
++(void) set:(UIButton*)view enabled: (BOOL) enabled withName:(const char*)name andReason:(const char*) reason{
+    if (view.enabled != enabled) {
+        ms_message("UI - '%s' is now '%s' ('%s')", name, enabled ? "ENABLED" : "DISABLED", reason);
+        [view setEnabled:enabled];
+    }
 }
 
 +(void) set:(UIView*)view hidden: (BOOL) hidden withName:(const char*)name andReason:(const char*) reason{

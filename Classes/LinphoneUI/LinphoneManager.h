@@ -20,9 +20,9 @@
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVAudioSession.h>
 #import <SystemConfiguration/SCNetworkReachability.h>
-#include "linphonecore.h"
 #import "LogView.h"
-#import "LinphoneUIDelegates.h"
+
+#include "linphonecore.h"
 
 typedef enum _PhoneView {
     PhoneView_Dialer,
@@ -58,6 +58,12 @@ typedef struct _LinphoneCallAppData {
     int transferButtonIndex;
 } LinphoneCallAppData;
 
+@interface LinphoneCallWrapper : NSObject {
+    @public
+    LinphoneCall* call;
+}
+- (id) initWithCall: (LinphoneCall*) call; 
+@end
 
 @interface LinphoneManager : NSObject <AVAudioSessionDelegate> {
 @protected
@@ -66,7 +72,6 @@ typedef struct _LinphoneCallAppData {
 	NSTimer* mIterateTimer;
 	id<LogView> mLogView;	
 	bool isbackgroundModeEnabled;
-	id<LinphoneUICallDelegate> callDelegate;
 	
 	UIViewController* mCurrentViewController;
 	Connectivity connectivity;
@@ -85,9 +90,8 @@ typedef struct _LinphoneCallAppData {
 +(LinphoneCore*) getLc;
 +(BOOL) runningOnIpad;
 +(void) set:(UIView*)view hidden: (BOOL) hidden withName:(const char*)name andReason:(const char*) reason;
++(void) set:(UIButton*)view enabled: (BOOL) enabled withName:(const char*)name andReason:(const char*) reason;
 +(void) logUIElementPressed:(const char*) name;
-
--(void) displayDialer;
 
 -(void) registerLogView:(id<LogView>) view;
 
@@ -106,9 +110,9 @@ typedef struct _LinphoneCallAppData {
 -(void) refreshRegisters;
 
 -(void) changeView:(PhoneView) view;
+-(void) changeView:(PhoneView) view dict:(NSDictionary *)dict;
 -(PhoneView) currentView;
 
-@property (nonatomic, retain) id<LinphoneUICallDelegate> callDelegate;
 @property Connectivity connectivity;
 @property (readonly) const char*  frontCamId;
 @property (readonly) const char*  backCamId;

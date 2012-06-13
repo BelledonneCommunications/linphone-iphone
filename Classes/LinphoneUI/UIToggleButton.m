@@ -16,60 +16,55 @@
  *  along with this program; if not, write to the Free Software         
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */       
+
 #import "UIToggleButton.h"
-#include "linphonecore.h"
 
 @implementation UIToggleButton
 
--(void) touchUp:(id) sender {
+- (void)touchUp:(id) sender {
 	[self toggle];
 }
--(bool) isOn {
-	return mIsOn;
-}
--(bool) toggle {
-    ms_message("UI - Toggle button '%s' state change %d -> %d",
-               debugName, mIsOn, !mIsOn);
-	if (mIsOn) {
-		[self setImage:mOffImage forState:UIControlStateNormal];
-		mIsOn=!mIsOn;
+
+- (bool)toggle {
+	if (self.selected) {
+		self.selected=!self.selected;
 		[self onOff];
 	} else {
-		[self setImage:mOnImage forState:UIControlStateNormal];
-		mIsOn=!mIsOn;
+        self.selected=!self.selected;
 		[self onOn];
 	}
-	return mIsOn;
-	
-}
--(bool) reset {
-	mIsOn = [self isInitialStateOn];
-	[self setImage:mIsOn?mOnImage:mOffImage forState:UIControlStateNormal];
-	return mIsOn;
+	return self.selected;
 }
 
--(void) initWithOnImage:(UIImage*) onImage offImage:(UIImage*) offImage debugName:(const char *)name{
-    mOnImage = [onImage retain];
-    mOffImage = [offImage retain];
-    mIsOn=false;
-    debugName = name;
-	[self reset];
+- (bool)reset {
+	self.selected = [self isInitialStateOn];
+	return self.selected;
+}
+
+- (id) init {
+    [self reset];
 	[self addTarget:self action:@selector(touchUp:) forControlEvents:UIControlEventTouchUpInside];
-	
+	return self;
 }
-/*
- // Only override drawRect: if you perform custom drawing.
- // An empty implementation adversely affects performance during animation.
- - (void)drawRect:(CGRect)rect {
- // Drawing code.
- }
- */
 
+- (id)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if (self) {
+		[self init];
+    }
+    return self;
+}
+
+- (id)initWithCoder:(NSCoder *)decoder {
+    self = [super initWithCoder:decoder];
+    if (self) {
+		[self init];
+	}
+    return self;
+}	
 
 - (void)dealloc {
     [super dealloc];
-	[mOffImage release];
-	[mOffImage release];
 }
 
 -(void) onOn {
@@ -85,6 +80,5 @@
                 format:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)];
     return false;
 }
-
 
 @end

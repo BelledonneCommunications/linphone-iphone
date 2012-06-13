@@ -28,7 +28,7 @@
 @class FirstLoginViewController;
 
 
-@interface PhoneViewController : UIViewController <UITextFieldDelegate,LinphoneUICallDelegate, UIActionSheetCustomDelegate> {
+@interface PhoneViewController : UIViewController <UITextFieldDelegate, UIActionSheetCustomDelegate> {
 
 @private
 	//UI definition
@@ -62,7 +62,6 @@
 
 	UIActionSheet *mIncomingCallActionSheet;
 	FirstLoginViewController* myFirstLoginViewController;
-	InCallViewController* mIncallViewController;
     MainScreenWithVideoPreview* mMainScreenWithVideoPreview;
     
     UIButton* switchCamera;

@@ -102,6 +102,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    // Set observer
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(callUpdate:) name:@"LinphoneCallUpdate" object:nil];
+    
     [mDisplayName release];
 	mDisplayName = [UILabel alloc];
 	[zero initWithNumber:'0'  addressField:address dtmf:false];
@@ -120,10 +123,6 @@
 	[callLarge initWithAddress:address];
 	[erase initWithAddressField:address];
     [backToCallView addTarget:self action:@selector(backToCallViewPressed) forControlEvents:UIControlEventTouchUpInside];
-    
-    if (mIncallViewController == nil)
-        mIncallViewController = [[InCallViewController alloc]  initWithNibName:[LinphoneManager runningOnIpad]?@"InCallViewController-ipad":@"InCallViewController" 
-																	bundle:[NSBundle mainBundle]];
     
     /*if (statusSubViewController == nil) {
         statusSubViewController = [[StatusSubViewController alloc]  initWithNibName:@"StatusSubViewController" 
@@ -144,6 +143,7 @@
 - (void)viewDidUnload {
 	// Release any retained subviews of the main view.
 	// e.g. self.myOutlet = nil;
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)theTextField {
@@ -158,6 +158,107 @@
 - (void)viewWillAppear:(BOOL)animated {
     [self updateCallAndBackButtons];
     [super viewWillAppear:animated];
+}
+
+- (void)callUpdate: (NSNotification*) notif {  
+    LinphoneCallWrapper *callWrapper = [notif.userInfo objectForKey: @"call"];
+    LinphoneCall *call = callWrapper->call;
+    LinphoneCallState state = [[notif.userInfo objectForKey: @"state"] intValue];
+    
+    const char* lUserNameChars=linphone_address_get_username(linphone_call_get_remote_address(call));
+    NSString* lUserName = lUserNameChars?[[[NSString alloc] initWithUTF8String:lUserNameChars] autorelease]:NSLocalizedString(@"Unknown",nil);
+    const char* lDisplayNameChars =  linphone_address_get_display_name(linphone_call_get_remote_address(call));        
+	NSString* lDisplayName = [lDisplayNameChars?[[NSString alloc] initWithUTF8String:lDisplayNameChars]:@"" autorelease];
+    
+    bool canHideInCallView = (linphone_core_get_calls([LinphoneManager getLc]) == NULL);
+    
+	switch (state) {					
+		case LinphoneCallIncomingReceived: 
+			[self	displayIncomingCall:call 
+                           NotificationFromUI:nil
+                                      forUser:lUserName 
+                              withDisplayName:lDisplayName];
+			break;
+			
+		case LinphoneCallOutgoingInit: 
+			[self		displayCall:call 
+                      InProgressFromUI:nil
+                               forUser:lUserName 
+                       withDisplayName:lDisplayName];
+			break;
+        case LinphoneCallPausedByRemote:
+		case LinphoneCallConnected:
+			[self	displayInCall: call 
+                                 FromUI:nil
+                                forUser:lUserName 
+                        withDisplayName:lDisplayName];
+			break;
+        case LinphoneCallUpdatedByRemote:
+        {
+            const LinphoneCallParams* current = linphone_call_get_current_params(call);
+            const LinphoneCallParams* remote = linphone_call_get_remote_params(call);
+            
+            /* remote wants to add video */
+            if (!linphone_call_params_video_enabled(current) && 
+                linphone_call_params_video_enabled(remote) && 
+                !linphone_core_get_video_policy([LinphoneManager getLc])->automatically_accept) {
+                linphone_core_defer_call_update([LinphoneManager getLc], call);
+                [self displayAskToEnableVideoCall:call forUser:lUserName withDisplayName:lDisplayName];
+            } else if (linphone_call_params_video_enabled(current) && !linphone_call_params_video_enabled(remote)) {
+                [self displayInCall:call FromUI:nil forUser:lUserName withDisplayName:lDisplayName];
+            }
+            break;
+        }
+        case LinphoneCallUpdated:
+        {
+            const LinphoneCallParams* current = linphone_call_get_current_params(call);
+            if (linphone_call_params_video_enabled(current)) {
+                [self displayVideoCall:call FromUI:nil forUser:lUserName withDisplayName:lDisplayName];
+            } else {
+                [self displayInCall:call FromUI:nil forUser:lUserName withDisplayName:lDisplayName];
+            }
+            break;
+            
+        }
+		case LinphoneCallError: { 
+            if (canHideInCallView) {
+                [self	displayDialerFromUI:nil
+                                          forUser:@"" 
+                                  withDisplayName:@""];
+            } else {
+				[self	displayInCall:call 
+									 FromUI:nil
+									forUser:lUserName 
+							withDisplayName:lDisplayName];	
+			}
+			break;
+		}
+		case LinphoneCallEnd:
+            if (canHideInCallView) {
+                [self	displayDialerFromUI:nil
+                                          forUser:@"" 
+                                  withDisplayName:@""];
+            } else {
+				[self	displayInCall:call 
+									 FromUI:nil
+									forUser:lUserName 
+							withDisplayName:lDisplayName];	
+			}
+			break;
+		case LinphoneCallStreamsRunning:
+			//check video
+			if (linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
+				[self	displayVideoCall:call FromUI:nil
+                                       forUser:lUserName 
+                               withDisplayName:lDisplayName];
+			} else {
+                [self displayInCall:call FromUI:nil forUser:lUserName withDisplayName:lDisplayName];
+            }
+			break;
+        default:
+            break;
+	}
+
 }
 
 - (void)displayDialerFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
@@ -186,17 +287,10 @@
 		//first login case, dismmis first login view																		 
 		[self dismissModalViewControllerAnimated:true];
 	}; 
-	[mIncallViewController displayDialerFromUI:viewCtrl
-									   forUser:username
-							   withDisplayName:displayName];
 	
-	//[myTabBarController setSelectedIndex:DIALER_TAB_INDEX];
+    [[LinphoneManager instance] changeView:PhoneView_Dialer];
     
     [mMainScreenWithVideoPreview showPreview:YES];
-}
-
-- (void)displayStatus:(NSString*) message {     
-	[mIncallViewController displayStatus:message];
 }
 
 - (void)displayIncomingCall:(LinphoneCall*) call NotificationFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
@@ -245,7 +339,7 @@
 
 - (void)backToCallViewPressed {
     [UICallButton enableTransforMode:NO];
-    [self presentModalViewController:(UIViewController*)mIncallViewController animated:true];
+    [[LinphoneManager instance] changeView:PhoneView_InCall];
 
     LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
     
@@ -261,28 +355,19 @@
 
 - (void)displayCall: (LinphoneCall*) call InProgressFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
     [mMainScreenWithVideoPreview showPreview:NO]; 
-	if (self.presentedViewController != (UIViewController*)mIncallViewController) {
-		[self presentModalViewController:(UIViewController*)mIncallViewController animated:true];
+	if ([[LinphoneManager instance]currentView] != PhoneView_InCall) {
+		[[LinphoneManager instance] changeView:PhoneView_InCall];
 	}
-	[mIncallViewController displayCall:call InProgressFromUI:viewCtrl
-							   forUser:username
-					   withDisplayName:displayName];
     
     [mMainScreenWithVideoPreview showPreview:NO];
-	
 }
 
 - (void)displayInCall: (LinphoneCall*) call FromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
     [mMainScreenWithVideoPreview showPreview:NO]; 
-    if (self.presentedViewController != (UIViewController*)mIncallViewController && (call == 0x0 ||
+    if ([[LinphoneManager instance]currentView] != PhoneView_InCall && (call == 0x0 ||
 																  linphone_call_get_dir(call)==LinphoneCallIncoming)){
-		[self presentModalViewController:(UIViewController*)mIncallViewController animated:true];
-		
+		[[LinphoneManager instance] changeView:PhoneView_InCall];
 	}
-    
-	[mIncallViewController displayInCall:call FromUI:viewCtrl
-								 forUser:username
-						 withDisplayName:displayName];
     
     [LinphoneManager set:callLarge hidden:YES withName:"CALL_LARGE button" andReason:__FUNCTION__];
     [LinphoneManager set:switchCamera hidden:YES withName:"SWITCH_CAMERA button" andReason:__FUNCTION__];
@@ -295,19 +380,13 @@
 
 - (void)displayVideoCall:(LinphoneCall*) call FromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName { 
     [mMainScreenWithVideoPreview showPreview:NO]; 
-	[mIncallViewController  displayVideoCall:call FromUI:viewCtrl 
-									 forUser:username 
-							 withDisplayName:displayName];
     
     [mMainScreenWithVideoPreview showPreview:NO];
     [self updateCallAndBackButtons];
 }
 
 - (void)displayAskToEnableVideoCall:(LinphoneCall*) call forUser:(NSString*) username withDisplayName:(NSString*) displayName {
-	[mIncallViewController  displayAskToEnableVideoCall:call forUser:username withDisplayName:displayName];
 }
-
-
 
 - (void)actionSheet:(UIActionSheet *)actionSheet ofType:(enum CallDelegateType)type clickedButtonAtIndex:(NSInteger)buttonIndex withUserDatas:(void *)datas {
     if (type != CD_NEW_CALL)
@@ -323,8 +402,9 @@
 }
 
 - (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 	[address dealloc];
-	[ mDisplayName dealloc];
+	[mDisplayName dealloc];
 	[dialerView dealloc];
 	[callShort dealloc];
 	[callLarge dealloc];
@@ -342,7 +422,6 @@
 	[zero dealloc];
 	[hash dealloc];
 	[myTabBarController release];
-	[mIncallViewController release];
 	[super dealloc];
 }
 
@@ -371,7 +450,7 @@
 }
 
 - (void)firstVideoFrameDecoded: (LinphoneCall*) call {
-    [mIncallViewController firstVideoFrameDecoded:call];
+  //  [mIncallViewController firstVideoFrameDecoded:call];
 }
 
 - (IBAction)onAddContact: (id) event {

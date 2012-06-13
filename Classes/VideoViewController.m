@@ -78,9 +78,9 @@ NSTimer *callQualityRefresher;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	[mMute initWithOnImage:[UIImage imageNamed:@"micro_inverse.png"]  offImage:[UIImage imageNamed:@"micro.png"] debugName:"MUTE button"];
+	/*[mMute initWithOnImage:[UIImage imageNamed:@"micro_inverse.png"]  offImage:[UIImage imageNamed:@"micro.png"] debugName:"MUTE button"];
 	[mMuteLandRight initWithOnImage:[UIImage imageNamed:@"micro_inverse.png"]  offImage:[UIImage imageNamed:@"micro.png"] debugName:"MUTE2 button"];
-	[mMuteLandLeft initWithOnImage:[UIImage imageNamed:@"micro_inverse.png"]  offImage:[UIImage imageNamed:@"micro.png"] debugName:"MUTE3 button"];
+	[mMuteLandLeft initWithOnImage:[UIImage imageNamed:@"micro_inverse.png"]  offImage:[UIImage imageNamed:@"micro.png"] debugName:"MUTE3 button"];*/
 	[mCamSwitch setPreview:mPreview];
 	[mCamSwitchLandRight setPreview:mPreviewLandRight];
 	[mCamSwitchLandLeft setPreview:mPreviewLandLeft];

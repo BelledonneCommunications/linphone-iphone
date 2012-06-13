@@ -17,12 +17,12 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */     
 #import <UIKit/UIKit.h>
-#import "LinphoneUI/UIMuteButton.h"
+#import "LinphoneUI/UIMicroButton.h"
 #import "LinphoneUI/UISpeakerButton.h"
 
 @interface ConferenceCallDetailView : UIViewController<UITableViewDelegate, UITableViewDataSource> {
 
-    UIMuteButton* mute;
+    UIMicroButton* mute;
     UISpeakerButton* speaker;
     UIButton* back;
     UIButton* hangup;

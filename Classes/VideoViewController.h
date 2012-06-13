@@ -23,21 +23,21 @@
 	UIView* mPortrait;
 	UIView* mDisplay;
 	UIView* mPreview;
-	UIMuteButton* mMute;
+	UIMicroButton* mMute;
 	UIHangUpButton* mHangUp;
 	UICamSwitch* mCamSwitch;
 	
 	UIView* mLandscapeRight;
 	UIView* mDisplayLandRight;
 	UIView* mPreviewLandRight;
-	UIMuteButton* mMuteLandRight;
+	UIMicroButton* mMuteLandRight;
 	UIHangUpButton* mHangUpLandRight;
 	UICamSwitch* mCamSwitchLandRight;
 	
 	UIView* mLandscapeLeft;
 	UIView* mDisplayLandLeft;
 	UIView* mPreviewLandLeft;
-	UIMuteButton* mMuteLandLeft;
+	UIMicroButton* mMuteLandLeft;
 	UIHangUpButton* mHangUpLandLeft;
 	UICamSwitch* mCamSwitchLandLeft;
 	BOOL isFirst;
@@ -48,7 +48,7 @@
 @property (nonatomic, retain) IBOutlet UIView* mPortrait;
 @property (nonatomic, retain) IBOutlet UIView* mDisplay;
 @property (nonatomic, retain) IBOutlet UIView* mPreview;
-@property (nonatomic, retain) IBOutlet UIMuteButton* mMute;
+@property (nonatomic, retain) IBOutlet UIMicroButton* mMute;
 @property (nonatomic, retain) IBOutlet UIHangUpButton* mHangUp;
 @property (nonatomic, retain) IBOutlet UICamSwitch* mCamSwitch;
 @property (nonatomic, retain) IBOutlet UIImageView *mCallQuality;
@@ -56,7 +56,7 @@
 @property (nonatomic, retain) IBOutlet UIView* mLandscapeRight;
 @property (nonatomic, retain) IBOutlet UIView* mDisplayLandRight;
 @property (nonatomic, retain) IBOutlet UIView* mPreviewLandRight;
-@property (nonatomic, retain) IBOutlet UIMuteButton* mMuteLandRight;
+@property (nonatomic, retain) IBOutlet UIMicroButton* mMuteLandRight;
 @property (nonatomic, retain) IBOutlet UIHangUpButton* mHangUpLandRight;
 @property (nonatomic, retain) IBOutlet UICamSwitch* mCamSwitchLandRight;
 @property (nonatomic, retain) IBOutlet UIImageView *mCallQualityLandRight;
@@ -64,7 +64,7 @@
 @property (nonatomic, retain) IBOutlet UIView* mLandscapeLeft;
 @property (nonatomic, retain) IBOutlet UIView* mDisplayLandLeft;
 @property (nonatomic, retain) IBOutlet UIView* mPreviewLandLeft;
-@property (nonatomic, retain) IBOutlet UIMuteButton* mMuteLandLeft;
+@property (nonatomic, retain) IBOutlet UIMicroButton* mMuteLandLeft;
 @property (nonatomic, retain) IBOutlet UIHangUpButton* mHangUpLandLeft;
 @property (nonatomic, retain) IBOutlet UICamSwitch* mCamSwitchLandLeft;
 @property (retain, nonatomic) IBOutlet UIImageView *mCallQualityLandLeft;

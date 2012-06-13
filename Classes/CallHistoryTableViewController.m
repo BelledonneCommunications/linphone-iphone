@@ -185,9 +185,13 @@
     
     NSString* dispName = [[NSString alloc] initWithCString:displayName encoding:[NSString defaultCStringEncoding]];
     
-	[[LinphoneManager instance].callDelegate displayDialerFromUI:self 
+    
+    [[LinphoneManager instance] changeView:PhoneView_Dialer];
+    
+    //TODO
+	/*[[LinphoneManager instance].callDelegate displayDialerFromUI:self 
 														 forUser:phoneNumber 
-												 withDisplayName:dispName];
+												 withDisplayName:dispName];*/
 	[phoneNumber release];
     [dispName release];
 }

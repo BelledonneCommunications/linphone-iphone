@@ -19,8 +19,18 @@
 
 #import <UIKit/UIKit.h>
 
+#import "UIMicroButton.h"
+
 @interface LinphoneCallBar : UIViewController {
-    
+    UIButton* pauseButton;
+    UIButton* videoButton;
+    UIMicroButton* microButton;
+    UIButton* speakerButton;    
 }
 
+@property (nonatomic, retain) IBOutlet UIButton* pauseButton;
+@property (nonatomic, retain) IBOutlet UIButton* videoButton;
+@property (nonatomic, retain) IBOutlet UIMicroButton* microButton;
+@property (nonatomic, retain) IBOutlet UIButton* speakerButton;
+-(IBAction) onPauseClick: (id) event;
 @end

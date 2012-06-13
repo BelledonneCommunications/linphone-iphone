@@ -29,20 +29,23 @@
     @private
     NSMutableDictionary *viewDescriptions;
     NSArray *views;
-    UIViewController *callTabBarController;
+    
     UIViewController *statusBarController;
+    
+    UIViewController *callTabBarController;
     UIViewController *mainTabBarController;
-    UIView *addCallTabBar;
+    UIViewController *incomingCallTabBarController;
     
 }
 @property (nonatomic, retain) IBOutlet UIView* statusBarView;
 @property (nonatomic, retain) IBOutlet UIView* contentView;
 @property (nonatomic, retain) IBOutlet UIView* tabBarView;
 
-@property (nonatomic, retain) IBOutlet UIViewController* callTabBarController;
 @property (nonatomic, retain) IBOutlet UIViewController* statusBarController;
+
+@property (nonatomic, retain) IBOutlet UIViewController* callTabBarController;
 @property (nonatomic, retain) IBOutlet UIViewController* mainTabBarController;
-@property (nonatomic, retain) IBOutlet UIView* addCallTabBar;
+@property (nonatomic, retain) IBOutlet UIViewController* incomingCallTabBarController;
 
 -(void) changeView: (NSNotification*) notif;
 @end

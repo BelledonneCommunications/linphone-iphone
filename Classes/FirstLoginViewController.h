@@ -19,17 +19,14 @@
 
 #import <UIKit/UIKit.h>
 #import "LinphoneAppDelegate.h"
-#import "LinphoneUIDelegates.h"
-
 
 @interface FirstLoginViewController : UIViewController <UITextFieldDelegate>{
 	UIButton* ok;
 	UIButton* site;
 	UITextField* username;
 	UIView* activityIndicator;
-	
-	
 }
+
 -(void) doOk:(id)sender;
 
 @property (nonatomic, retain) IBOutlet UIButton* ok;
@@ -37,4 +34,5 @@
 @property (nonatomic, retain) IBOutlet UITextField* username;
 @property (nonatomic, retain) IBOutlet UITextField* passwd;
 @property (nonatomic, retain) IBOutlet UIView* activityIndicator;
+
 @end

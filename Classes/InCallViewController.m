@@ -1,4 +1,4 @@
-/* IncallViewController.h
+/* InCallViewController.h
  *
  * Copyright (C) 2009  Belledonne Comunications, Grenoble, France
  *
@@ -15,19 +15,20 @@
  *  You should have received a copy of the GNU General Public License   
  *  along with this program; if not, write to the Free Software         
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */              
+ */  
+
 #import "IncallViewController.h"
 #import "VideoViewController.h"
+#import "LinphoneManager.h"
 #import <AudioToolbox/AudioToolbox.h>
 #import <AddressBook/AddressBook.h>
-#import "linphonecore.h"
-#include "LinphoneManager.h"
-#include "private.h"
-#import "ContactPickerDelegate.h"
 #import <QuartzCore/CAAnimation.h>
 #import <QuartzCore/QuartzCore.h>
 #import <OpenGLES/EAGL.h>
 #import <OpenGLES/EAGLDrawable.h>
+
+#include "linphonecore.h"
+#include "private.h"
 
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
@@ -397,10 +398,14 @@ void addAnimationFadeTransition(UIView* view, float duration) {
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
     [super viewDidLoad];
-	//Controls
-	[mute initWithOnImage:[UIImage imageNamed:@"micro_inverse.png"]  offImage:[UIImage imageNamed:@"micro.png"] debugName:"MUTE button"];
-    [speaker initWithOnImage:[UIImage imageNamed:@"HP_inverse.png"]  offImage:[UIImage imageNamed:@"HP.png"] debugName:"SPEAKER button"];
     
+    // Set observer
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(callUpdate:) name:@"LinphoneCallUpdate" object:nil];
+    
+	//Controls
+	/*[mute initWithOnImage:[UIImage imageNamed:@"micro_inverse.png"]  offImage:[UIImage imageNamed:@"micro.png"] debugName:"MUTE button"];
+    [speaker initWithOnImage:[UIImage imageNamed:@"HP_inverse.png"]  offImage:[UIImage imageNamed:@"HP.png"] debugName:"SPEAKER button"];
+    */
     verified = [[UIImage imageNamed:@"secured.png"] retain];
     unverified = [[UIImage imageNamed:@"unverified.png"] retain];
 
@@ -420,7 +425,6 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     
     [addCall addTarget:self action:@selector(addCallPressed) forControlEvents:UIControlEventTouchUpInside];
     [mergeCalls addTarget:self action:@selector(mergeCallsPressed) forControlEvents:UIControlEventTouchUpInside];
-    [pause addTarget:self action:@selector(pauseCallPressed) forControlEvents:UIControlEventTouchUpInside];
     [LinphoneManager set:mergeCalls hidden:YES withName:"MERGE button" andReason:"initialisation"];
     
     if ([LinphoneManager runningOnIpad]) {
@@ -517,7 +521,7 @@ void addAnimationFadeTransition(UIView* view, float duration) {
         visibleActionSheet = nil;
         
         [UICallButton enableTransforMode:YES];
-        [[LinphoneManager instance] displayDialer];
+        [[LinphoneManager instance] changeView:PhoneView_Dialer];
     } else {
         // add 'Other' option
         [visibleActionSheet addButtonWithTitle:NSLocalizedString(@"Other...",nil)];
@@ -537,45 +541,14 @@ void addAnimationFadeTransition(UIView* view, float duration) {
 
 -(void) addCallPressed {
     [LinphoneManager logUIElementPressed:"CALL button"];
-    [[LinphoneManager instance] displayDialer];
+    [[LinphoneManager instance] changeView:PhoneView_Dialer];
 }
-
 
 -(void) mergeCallsPressed {
     [LinphoneManager logUIElementPressed:"MERGE button"];
     LinphoneCore* lc = [LinphoneManager getLc];
     linphone_core_add_all_to_conference(lc);
 }
-
--(void) pauseCallPressed {
-    [LinphoneManager logUIElementPressed:"PAUSE button"];
-    LinphoneCore* lc = [LinphoneManager getLc];
-    
-    LinphoneCall* currentCall = linphone_core_get_current_call(lc);
-	if (currentCall) {
-        if (linphone_call_get_state(currentCall) == LinphoneCallStreamsRunning) {
-            [pause setSelected:NO];
-            linphone_core_pause_call(lc, currentCall);
-            
-            // hide video view
-            [self disableVideoDisplay];
-        }
-    } else {
-        if (linphone_core_get_calls_nb(lc) == 1) {
-            LinphoneCall* c = (LinphoneCall*) linphone_core_get_calls(lc)->data;
-            if (linphone_call_get_state(c) == LinphoneCallPaused) {
-                linphone_core_resume_call(lc, c);
-                [pause setSelected:YES];
-                
-                const LinphoneCallParams* p = linphone_call_get_current_params(c);
-                if (linphone_call_params_video_enabled(p)) {
-                    [self enableVideoDisplay];
-                }
-            }
-        }
-    }
-}
-
 
 -(void)updateCallsDurations {
     [self updateUIFromLinphoneState: NO]; 
@@ -646,12 +619,7 @@ void addAnimationFadeTransition(UIView* view, float duration) {
 - (void)viewDidUnload {
     [verified release];
     [unverified release];
-}
-
-
-
--(void) displayStatus:(NSString*) message; {
-
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 -(void) displayPad:(bool) enable {
@@ -717,6 +685,108 @@ static void hideSpinner(LinphoneCall* lc, void* user_data);
     } /*else {
         linphone_call_set_next_video_frame_decoded_callback(call, hideSpinner, self);
     }*/
+}
+
+
+- (void)callUpdate: (NSNotification*) notif {  
+    LinphoneCallWrapper *callWrapper = [notif.userInfo objectForKey: @"call"];
+    LinphoneCall *call = callWrapper->call;
+    LinphoneCallState state = [[notif.userInfo objectForKey: @"state"] intValue];
+    
+    const char* lUserNameChars=linphone_address_get_username(linphone_call_get_remote_address(call));
+    NSString* lUserName = lUserNameChars?[[[NSString alloc] initWithUTF8String:lUserNameChars] autorelease]:NSLocalizedString(@"Unknown",nil);
+    const char* lDisplayNameChars =  linphone_address_get_display_name(linphone_call_get_remote_address(call));        
+	NSString* lDisplayName = [lDisplayNameChars?[[NSString alloc] initWithUTF8String:lDisplayNameChars]:@"" autorelease];
+    
+    bool canHideInCallView = (linphone_core_get_calls([LinphoneManager getLc]) == NULL);
+    
+	switch (state) {					
+		case LinphoneCallIncomingReceived: 
+			[self	displayIncomingCall:call 
+                   NotificationFromUI:nil
+                              forUser:lUserName 
+                      withDisplayName:lDisplayName];
+			break;
+			
+		case LinphoneCallOutgoingInit: 
+			[self		displayCall:call 
+              InProgressFromUI:nil
+                       forUser:lUserName 
+               withDisplayName:lDisplayName];
+			break;
+        case LinphoneCallPausedByRemote:
+		case LinphoneCallConnected:
+			[self	displayInCall: call 
+                         FromUI:nil
+                        forUser:lUserName 
+                withDisplayName:lDisplayName];
+			break;
+        case LinphoneCallUpdatedByRemote:
+        {
+            const LinphoneCallParams* current = linphone_call_get_current_params(call);
+            const LinphoneCallParams* remote = linphone_call_get_remote_params(call);
+            
+            /* remote wants to add video */
+            if (!linphone_call_params_video_enabled(current) && 
+                linphone_call_params_video_enabled(remote) && 
+                !linphone_core_get_video_policy([LinphoneManager getLc])->automatically_accept) {
+                linphone_core_defer_call_update([LinphoneManager getLc], call);
+                [self displayAskToEnableVideoCall:call forUser:lUserName withDisplayName:lDisplayName];
+            } else if (linphone_call_params_video_enabled(current) && !linphone_call_params_video_enabled(remote)) {
+                [self displayInCall:call FromUI:nil forUser:lUserName withDisplayName:lDisplayName];
+            }
+            break;
+        }
+        case LinphoneCallUpdated:
+        {
+            const LinphoneCallParams* current = linphone_call_get_current_params(call);
+            if (linphone_call_params_video_enabled(current)) {
+                [self displayVideoCall:call FromUI:nil forUser:lUserName withDisplayName:lDisplayName];
+            } else {
+                [self displayInCall:call FromUI:nil forUser:lUserName withDisplayName:lDisplayName];
+            }
+            break;
+            
+        }
+		case LinphoneCallError: { 
+            if (canHideInCallView) {
+                [self	displayDialerFromUI:nil
+                                  forUser:@"" 
+                          withDisplayName:@""];
+            } else {
+				[self	displayInCall:call 
+                             FromUI:nil
+                            forUser:lUserName 
+                    withDisplayName:lDisplayName];	
+			}
+			break;
+		}
+		case LinphoneCallEnd:
+            if (canHideInCallView) {
+                [self	displayDialerFromUI:nil
+                                  forUser:@"" 
+                          withDisplayName:@""];
+            } else {
+				[self	displayInCall:call 
+                             FromUI:nil
+                            forUser:lUserName 
+                    withDisplayName:lDisplayName];	
+			}
+			break;
+		case LinphoneCallStreamsRunning:
+			//check video
+			if (linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
+				[self	displayVideoCall:call FromUI:nil
+                               forUser:lUserName 
+                       withDisplayName:lDisplayName];
+			} else {
+                [self displayInCall:call FromUI:nil forUser:lUserName withDisplayName:lDisplayName];
+            }
+			break;
+        default:
+            break;
+	}
+    
 }
 
 static void hideSpinner(LinphoneCall* call, void* user_data) {
@@ -798,7 +868,8 @@ static void hideSpinner(LinphoneCall* call, void* user_data) {
 	} else if (sender == contacts) {
 		// start people picker
 		myPeoplePickerController = [[[ABPeoplePickerNavigationController alloc] init] autorelease];
-		[myPeoplePickerController setPeoplePickerDelegate:[[ContactPickerDelegate alloc] init] ];
+		// TODO
+        //[myPeoplePickerController setPeoplePickerDelegate:[[ContactPickerDelegate alloc] init] ];
 		
 		[self presentModalViewController: myPeoplePickerController animated:true]; 
 	} else if (sender == close) {
@@ -831,6 +902,7 @@ static void hideSpinner(LinphoneCall* call, void* user_data) {
 
 - (void)dealloc {
     [super dealloc]; 
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 +(LinphoneCall*) retrieveCallAtIndex: (NSInteger) index inConference:(bool) conf{
@@ -1177,7 +1249,7 @@ static void hideSpinner(LinphoneCall* call, void* user_data) {
             // user must jhave pressed 'other...' button as we did not find a call
             // with the correct indice
             [UICallButton enableTransforMode:YES];
-            [[LinphoneManager instance] displayDialer];
+            [[LinphoneManager instance] changeView:PhoneView_Dialer];
             break;
         }
         default:

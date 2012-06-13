@@ -35,14 +35,16 @@ static void audioRouteChangeListenerCallback (
    
 }
 
--(void) initWithOnImage:(UIImage*) onImage offImage:(UIImage*) offImage debugName:(const char *)name{
-   [super initWithOnImage:onImage offImage:offImage debugName:name];
+- (id)init {
+    if((self = [super init]) != nil) {
    
-   AudioSessionInitialize(NULL, NULL, NULL, NULL);
-   OSStatus lStatus = AudioSessionAddPropertyListener(routeChangeID, audioRouteChangeListenerCallback, self);
-   if (lStatus) {
-       ms_error ("cannot register route change handler [%ld]",lStatus);
-   }
+        AudioSessionInitialize(NULL, NULL, NULL, NULL);
+        OSStatus lStatus = AudioSessionAddPropertyListener(routeChangeID, audioRouteChangeListenerCallback, self);
+        if (lStatus) {
+            ms_error ("cannot register route change handler [%ld]",lStatus);
+        }
+    }
+    return self;
 }
 
 

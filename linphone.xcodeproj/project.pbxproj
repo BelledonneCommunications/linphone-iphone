@@ -56,8 +56,7 @@
 		2214783D1386A2030020F8B8 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2214783B1386A2030020F8B8 /* Localizable.strings */; };
 		2214EB7A12F846B1002A5394 /* UICallButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2214EB7912F846B1002A5394 /* UICallButton.m */; };
 		2214EB8912F84EBB002A5394 /* UIHangUpButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2214EB8812F84EBB002A5394 /* UIHangUpButton.m */; };
-		2214EBDA12F8558F002A5394 /* UIToggleButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2214EBD912F8558F002A5394 /* UIToggleButton.m */; };
-		2214EBF312F86360002A5394 /* UIMuteButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2214EBF212F86360002A5394 /* UIMuteButton.m */; };
+		2214EBF312F86360002A5394 /* UIMicroButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2214EBF212F86360002A5394 /* UIMicroButton.m */; };
 		2218A92512FBE1340088A667 /* FirstLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2218A92312FBE1340088A667 /* FirstLoginViewController.m */; };
 		2218A92612FBE1340088A667 /* FirstLoginViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2218A92412FBE1340088A667 /* FirstLoginViewController.xib */; };
 		22226C12118197C0000CA27B /* startcall-green.png in Resources */ = {isa = PBXBuildFile; fileRef = 22226C11118197C0000CA27B /* startcall-green.png */; };
@@ -105,7 +104,6 @@
 		22AA8AFE13D7125600B30535 /* libmsx264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22AA8AFC13D7125500B30535 /* libmsx264.a */; };
 		22AA8B0113D83F6300B30535 /* UICamSwitch.m in Sources */ = {isa = PBXBuildFile; fileRef = 22AA8B0013D83F6300B30535 /* UICamSwitch.m */; };
 		22B5EFA310CE50BD00777D97 /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22B5EFA210CE50BD00777D97 /* AddressBookUI.framework */; };
-		22B5EFE510CE5E5800777D97 /* ContactPickerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 22B5EFE410CE5E5800777D97 /* ContactPickerDelegate.m */; };
 		22B5F03510CE6B2F00777D97 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22B5F03410CE6B2F00777D97 /* AddressBook.framework */; };
 		22BB1A69132FF16A005CD7AA /* UIEraseButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22BB1A68132FF16A005CD7AA /* UIEraseButton.m */; };
 		22C755601317E59C007BC101 /* UIBluetoothButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22C7555F1317E59C007BC101 /* UIBluetoothButton.m */; };
@@ -138,15 +136,13 @@
 		22D8F144147548E2008C97DB /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		22D8F145147548E2008C97DB /* LinphoneAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* LinphoneAppDelegate.m */; };
 		22D8F146147548E2008C97DB /* PhoneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22F2508C107141E100AC9B3F /* PhoneViewController.m */; };
-		22D8F147147548E2008C97DB /* ContactPickerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 22B5EFE410CE5E5800777D97 /* ContactPickerDelegate.m */; };
 		22D8F14A147548E2008C97DB /* MoreViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E0A81C111C44E100B04932 /* MoreViewController.m */; };
 		22D8F14B147548E2008C97DB /* ConsoleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E0A81F111C44E100B04932 /* ConsoleViewController.m */; };
 		22D8F14C147548E2008C97DB /* UIDigitButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2248E90D12F7E4CF00220D9C /* UIDigitButton.m */; };
 		22D8F14D147548E2008C97DB /* LinphoneManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2248E99E12F801C200220D9C /* LinphoneManager.m */; };
 		22D8F14E147548E2008C97DB /* UICallButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2214EB7912F846B1002A5394 /* UICallButton.m */; };
 		22D8F14F147548E2008C97DB /* UIHangUpButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2214EB8812F84EBB002A5394 /* UIHangUpButton.m */; };
-		22D8F150147548E2008C97DB /* UIToggleButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2214EBD912F8558F002A5394 /* UIToggleButton.m */; };
-		22D8F151147548E2008C97DB /* UIMuteButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2214EBF212F86360002A5394 /* UIMuteButton.m */; };
+		22D8F151147548E2008C97DB /* UIMicroButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2214EBF212F86360002A5394 /* UIMicroButton.m */; };
 		22D8F152147548E2008C97DB /* UISpeakerButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22968A5E12F875C600588287 /* UISpeakerButton.m */; };
 		22D8F153147548E2008C97DB /* UIDuration.m in Sources */ = {isa = PBXBuildFile; fileRef = 22968A8712F87C2000588287 /* UIDuration.m */; };
 		22D8F154147548E2008C97DB /* FirstLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2218A92312FBE1340088A667 /* FirstLoginViewController.m */; };
@@ -264,6 +260,8 @@
 		D326483F1588950F00930C67 /* LinphoneCallBar.m in Sources */ = {isa = PBXBuildFile; fileRef = D326483C1588950F00930C67 /* LinphoneCallBar.m */; };
 		D32648401588950F00930C67 /* LinphoneCallBar.xib in Resources */ = {isa = PBXBuildFile; fileRef = D326483D1588950F00930C67 /* LinphoneCallBar.xib */; };
 		D32648411588950F00930C67 /* LinphoneCallBar.xib in Resources */ = {isa = PBXBuildFile; fileRef = D326483D1588950F00930C67 /* LinphoneCallBar.xib */; };
+		D32648441588F6FC00930C67 /* UIToggleButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D32648431588F6FB00930C67 /* UIToggleButton.m */; };
+		D32648451588F6FC00930C67 /* UIToggleButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D32648431588F6FB00930C67 /* UIToggleButton.m */; };
 		D347347A1580DDF1003C7B8C /* PhoneMainView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D34734791580DDF1003C7B8C /* PhoneMainView.xib */; };
 		D347347E1580E5F8003C7B8C /* history-actif.png in Resources */ = {isa = PBXBuildFile; fileRef = D347347C1580E5F8003C7B8C /* history-actif.png */; };
 		D347347F1580E5F8003C7B8C /* history-selectionne.png in Resources */ = {isa = PBXBuildFile; fileRef = D347347D1580E5F8003C7B8C /* history-selectionne.png */; };
@@ -635,11 +633,8 @@
 		2214EB8712F84EBB002A5394 /* UIHangUpButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIHangUpButton.h; sourceTree = "<group>"; };
 		2214EB8812F84EBB002A5394 /* UIHangUpButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIHangUpButton.m; sourceTree = "<group>"; };
 		2214EB8A12F84FE9002A5394 /* UILinphone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UILinphone.h; sourceTree = "<group>"; };
-		2214EBD812F8558F002A5394 /* UIToggleButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIToggleButton.h; sourceTree = "<group>"; };
-		2214EBD912F8558F002A5394 /* UIToggleButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIToggleButton.m; sourceTree = "<group>"; };
-		2214EBF112F86360002A5394 /* UIMuteButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIMuteButton.h; sourceTree = "<group>"; };
-		2214EBF212F86360002A5394 /* UIMuteButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIMuteButton.m; sourceTree = "<group>"; };
-		2218A5C412F9597B0088A667 /* LinphoneUIDelegates.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LinphoneUIDelegates.h; sourceTree = "<group>"; };
+		2214EBF112F86360002A5394 /* UIMicroButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIMicroButton.h; sourceTree = "<group>"; };
+		2214EBF212F86360002A5394 /* UIMicroButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIMicroButton.m; sourceTree = "<group>"; };
 		2218A5CE12F973450088A667 /* LogView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogView.h; sourceTree = "<group>"; };
 		2218A92212FBE1340088A667 /* FirstLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FirstLoginViewController.h; sourceTree = "<group>"; };
 		2218A92312FBE1340088A667 /* FirstLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FirstLoginViewController.m; sourceTree = "<group>"; };
@@ -696,8 +691,6 @@
 		22AA8AFF13D83F6300B30535 /* UICamSwitch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICamSwitch.h; sourceTree = "<group>"; };
 		22AA8B0013D83F6300B30535 /* UICamSwitch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICamSwitch.m; sourceTree = "<group>"; };
 		22B5EFA210CE50BD00777D97 /* AddressBookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBookUI.framework; path = System/Library/Frameworks/AddressBookUI.framework; sourceTree = SDKROOT; };
-		22B5EFE310CE5E5800777D97 /* ContactPickerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactPickerDelegate.h; sourceTree = "<group>"; };
-		22B5EFE410CE5E5800777D97 /* ContactPickerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactPickerDelegate.m; sourceTree = "<group>"; };
 		22B5F03410CE6B2F00777D97 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		22BB1A67132FF16A005CD7AA /* UIEraseButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIEraseButton.h; sourceTree = "<group>"; };
 		22BB1A68132FF16A005CD7AA /* UIEraseButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIEraseButton.m; sourceTree = "<group>"; };
@@ -842,6 +835,8 @@
 		D326483B1588950F00930C67 /* LinphoneCallBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LinphoneCallBar.h; sourceTree = "<group>"; };
 		D326483C1588950F00930C67 /* LinphoneCallBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LinphoneCallBar.m; sourceTree = "<group>"; };
 		D326483D1588950F00930C67 /* LinphoneCallBar.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LinphoneCallBar.xib; sourceTree = "<group>"; };
+		D32648421588F6FA00930C67 /* UIToggleButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIToggleButton.h; sourceTree = "<group>"; };
+		D32648431588F6FB00930C67 /* UIToggleButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIToggleButton.m; sourceTree = "<group>"; };
 		D34734791580DDF1003C7B8C /* PhoneMainView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PhoneMainView.xib; sourceTree = "<group>"; };
 		D347347C1580E5F8003C7B8C /* history-actif.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "history-actif.png"; path = "Resources/history-actif.png"; sourceTree = "<group>"; };
 		D347347D1580E5F8003C7B8C /* history-selectionne.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "history-selectionne.png"; path = "Resources/history-selectionne.png"; sourceTree = "<group>"; };
@@ -1074,8 +1069,6 @@
 				22E0A820111C44E100B04932 /* ConsoleViewController.h */,
 				22E0A81F111C44E100B04932 /* ConsoleViewController.m */,
 				22E0A81E111C44E100B04932 /* ConsoleViewController.xib */,
-				22B5EFE310CE5E5800777D97 /* ContactPickerDelegate.h */,
-				22B5EFE410CE5E5800777D97 /* ContactPickerDelegate.m */,
 				D35497FB15875372000081D8 /* ContactsController.h */,
 				D35497FC15875372000081D8 /* ContactsController.m */,
 				D35497FD15875372000081D8 /* ContactsController.xib */,
@@ -1342,7 +1335,6 @@
 				D354981E1587716B000081D8 /* LinphoneStatusBar.h */,
 				D354981F1587716B000081D8 /* LinphoneStatusBar.m */,
 				D35498201587716B000081D8 /* LinphoneStatusBar.xib */,
-				2218A5C412F9597B0088A667 /* LinphoneUIDelegates.h */,
 				2218A5CE12F973450088A667 /* LogView.h */,
 				22C7555E1317E59C007BC101 /* UIBluetoothButton.h */,
 				22C7555F1317E59C007BC101 /* UIBluetoothButton.m */,
@@ -1359,12 +1351,12 @@
 				2214EB8712F84EBB002A5394 /* UIHangUpButton.h */,
 				2214EB8812F84EBB002A5394 /* UIHangUpButton.m */,
 				2214EB8A12F84FE9002A5394 /* UILinphone.h */,
-				2214EBF112F86360002A5394 /* UIMuteButton.h */,
-				2214EBF212F86360002A5394 /* UIMuteButton.m */,
+				2214EBF112F86360002A5394 /* UIMicroButton.h */,
+				2214EBF212F86360002A5394 /* UIMicroButton.m */,
 				22968A5D12F875C600588287 /* UISpeakerButton.h */,
 				22968A5E12F875C600588287 /* UISpeakerButton.m */,
-				2214EBD812F8558F002A5394 /* UIToggleButton.h */,
-				2214EBD912F8558F002A5394 /* UIToggleButton.m */,
+				D32648421588F6FA00930C67 /* UIToggleButton.h */,
+				D32648431588F6FB00930C67 /* UIToggleButton.m */,
 				340751E5150F38FC00B89C47 /* UIToggleVideoButton.h */,
 				340751E6150F38FD00B89C47 /* UIToggleVideoButton.m */,
 			);
@@ -2086,15 +2078,13 @@
 				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
 				1D3623260D0F684500981E51 /* LinphoneAppDelegate.m in Sources */,
 				22F2508E107141E100AC9B3F /* PhoneViewController.m in Sources */,
-				22B5EFE510CE5E5800777D97 /* ContactPickerDelegate.m in Sources */,
 				22E0A822111C44E100B04932 /* MoreViewController.m in Sources */,
 				22E0A824111C44E100B04932 /* ConsoleViewController.m in Sources */,
 				2248E90E12F7E4CF00220D9C /* UIDigitButton.m in Sources */,
 				2248E99F12F801C200220D9C /* LinphoneManager.m in Sources */,
 				2214EB7A12F846B1002A5394 /* UICallButton.m in Sources */,
 				2214EB8912F84EBB002A5394 /* UIHangUpButton.m in Sources */,
-				2214EBDA12F8558F002A5394 /* UIToggleButton.m in Sources */,
-				2214EBF312F86360002A5394 /* UIMuteButton.m in Sources */,
+				2214EBF312F86360002A5394 /* UIMicroButton.m in Sources */,
 				22968A5F12F875C600588287 /* UISpeakerButton.m in Sources */,
 				22968A8812F87C2000588287 /* UIDuration.m in Sources */,
 				2218A92512FBE1340088A667 /* FirstLoginViewController.m in Sources */,
@@ -2119,6 +2109,7 @@
 				D3A55FBC15877E5E003FD403 /* ContactCell.m in Sources */,
 				D326483815887D5200930C67 /* OrderedDictionary.m in Sources */,
 				D326483E1588950F00930C67 /* LinphoneCallBar.m in Sources */,
+				D32648441588F6FC00930C67 /* UIToggleButton.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2129,15 +2120,13 @@
 				22D8F144147548E2008C97DB /* main.m in Sources */,
 				22D8F145147548E2008C97DB /* LinphoneAppDelegate.m in Sources */,
 				22D8F146147548E2008C97DB /* PhoneViewController.m in Sources */,
-				22D8F147147548E2008C97DB /* ContactPickerDelegate.m in Sources */,
 				22D8F14A147548E2008C97DB /* MoreViewController.m in Sources */,
 				22D8F14B147548E2008C97DB /* ConsoleViewController.m in Sources */,
 				22D8F14C147548E2008C97DB /* UIDigitButton.m in Sources */,
 				22D8F14D147548E2008C97DB /* LinphoneManager.m in Sources */,
 				22D8F14E147548E2008C97DB /* UICallButton.m in Sources */,
 				22D8F14F147548E2008C97DB /* UIHangUpButton.m in Sources */,
-				22D8F150147548E2008C97DB /* UIToggleButton.m in Sources */,
-				22D8F151147548E2008C97DB /* UIMuteButton.m in Sources */,
+				22D8F151147548E2008C97DB /* UIMicroButton.m in Sources */,
 				22D8F152147548E2008C97DB /* UISpeakerButton.m in Sources */,
 				22D8F153147548E2008C97DB /* UIDuration.m in Sources */,
 				22D8F154147548E2008C97DB /* FirstLoginViewController.m in Sources */,
@@ -2162,6 +2151,7 @@
 				D3A55FBD15877E5E003FD403 /* ContactCell.m in Sources */,
 				D326483915887D5200930C67 /* OrderedDictionary.m in Sources */,
 				D326483F1588950F00930C67 /* LinphoneCallBar.m in Sources */,
+				D32648451588F6FC00930C67 /* UIToggleButton.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

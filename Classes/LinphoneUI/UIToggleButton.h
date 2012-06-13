@@ -25,18 +25,9 @@
 	-(bool) isInitialStateOn;
 @end
 
-@interface UIToggleButton : UIButton <UIToggleButtonDelegate> {
-@private
-	UIImage* mOnImage;
-	UIImage* mOffImage;
-	bool mIsOn;
-    const char* debugName;
-	
-	
+@interface UIToggleButton : UIButton <UIToggleButtonDelegate> {	
 }
--(void) initWithOnImage:(UIImage*) onImage offImage:(UIImage*) offImage debugName:(const char*) name;
 -(bool) reset;
--(bool) isOn;
 -(bool) toggle;
 
 @end

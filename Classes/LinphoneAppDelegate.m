@@ -20,7 +20,6 @@
 #import "PhoneMainView.h"
 #import "PhoneViewController.h"
 #import "linphoneAppDelegate.h"
-#import "ContactPickerDelegate.h"
 #import "AddressBook/ABPerson.h"
 
 #import "CoreTelephony/CTCallCenter.h"

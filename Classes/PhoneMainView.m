@@ -45,13 +45,14 @@ typedef enum _TabBar {
 @synthesize contentView;
 @synthesize tabBarView;
 
-@synthesize callTabBarController;
 @synthesize statusBarController;
-@synthesize mainTabBarController;
-@synthesize addCallTabBar;
 
-- (void) changeView: (NSNotification*) notif {   
-    PhoneView view = [[notif.userInfo objectForKey: @"PhoneView"] intValue];
+@synthesize callTabBarController;
+@synthesize mainTabBarController;
+@synthesize incomingCallTabBarController;
+
+- (void)changeView: (NSNotification*) notif {   
+    PhoneView view = [[notif.userInfo objectForKey: @"view"] intValue];
     ViewsDescription *description = [viewDescriptions objectForKey:[NSNumber numberWithInt: view]];
     
     for (UIView *view in contentView.subviews) {
@@ -101,7 +102,7 @@ typedef enum _TabBar {
     contentView.frame = contentFrame;
 }
 
--(void)viewDidLoad {
+- (void)viewDidLoad {
     [super viewDidLoad];
     UIView *dumb;
     
@@ -174,11 +175,11 @@ typedef enum _TabBar {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeView:) name:@"LinphoneMainViewChange" object:nil];
 }
      
-- (void) viewDidUnload {
+- (void)viewDidUnload {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void) dealloc {
+- (void)dealloc {
     [super dealloc];
     [viewDescriptions dealloc];
     [statusBarView dealloc];
