@@ -3495,6 +3495,7 @@ int linphone_core_get_missed_calls_count(LinphoneCore *lc) {
 
 void linphone_core_remove_call_log(LinphoneCore *lc, void *data) {
 	lc->call_logs = ms_list_remove(lc->call_logs, data);
+	call_logs_write_to_config_file(lc);
 }
 
 static void toggle_video_preview(LinphoneCore *lc, bool_t val){
