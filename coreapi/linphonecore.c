@@ -467,6 +467,7 @@ static void sip_config_read(LinphoneCore *lc)
 	LCSipTransports tr;
 	int i,tmp;
 	int ipv6;
+	int random_port;
 
 	tmp=lp_config_get_int(lc->config,"sip","use_info",0);
 	linphone_core_set_use_info_for_dtmf(lc,tmp);
@@ -478,6 +479,7 @@ static void sip_config_read(LinphoneCore *lc)
 	sal_use_rport(lc->sal,lp_config_get_int(lc->config,"sip","use_rport",1));
 	sal_use_101(lc->sal,lp_config_get_int(lc->config,"sip","use_101",1));
 	sal_reuse_authorization(lc->sal, lp_config_get_int(lc->config,"sip","reuse_authorization",0));
+	sal_expire_old_registration_contacts(lc->sal,lp_config_get_int(lc->config,"sip","expire_old_registration_contacts",0));
 
 	tmp=lp_config_get_int(lc->config,"sip","use_rfc2833",0);
 	linphone_core_set_use_rfc2833_for_dtmf(lc,tmp);
@@ -488,21 +490,26 @@ static void sip_config_read(LinphoneCore *lc)
 	}
 	linphone_core_enable_ipv6(lc,ipv6);
 	memset(&tr,0,sizeof(tr));
-	if (lp_config_get_int(lc->config,"sip","sip_random_port",0)) {
-		tr.udp_port=(0xDFF&+random())+1024;
-	} else {
-		tr.udp_port=lp_config_get_int(lc->config,"sip","sip_port",5060);
-	}
-	if (lp_config_get_int(lc->config,"sip","sip_tcp_random_port",0)) {
-		tr.tcp_port=(0xDFF&+random())+1024;
-	} else {
-		tr.tcp_port=lp_config_get_int(lc->config,"sip","sip_tcp_port",0);
-	}
-	if (lp_config_get_int(lc->config,"sip","sip_tls_random_port",0)) {
-		tr.tls_port=(0xDFF&+random())+1024;
-	} else {
-		tr.tls_port=lp_config_get_int(lc->config,"sip","sip_tls_port",0);
-	}
+	
+	tr.udp_port=lp_config_get_int(lc->config,"sip","sip_port",0);
+	tr.tcp_port=lp_config_get_int(lc->config,"sip","sip_tcp_port",0);
+	tr.tls_port=lp_config_get_int(lc->config,"sip","sip_tls_port",0);
+	
+	if (lp_config_get_int(lc->config,"sip","sip_random_port",0)==1)
+		random_port=(0xDFFF&random())+1024;
+	else random_port=0;
+	
+	if (tr.udp_port==0 && tr.tcp_port==0 && tr.tls_port==0){
+		tr.udp_port=5060;
+	}	
+	
+	if (tr.udp_port>0 && random_port){
+		tr.udp_port=random_port;
+	}else if (tr.tcp_port>0 && random_port){
+		tr.tcp_port=random_port;
+	}else if (tr.tls_port>0 && random_port){
+		tr.tls_port=random_port;
+	} 
 
 #ifdef __linux
 	sal_set_root_ca(lc->sal, lp_config_get_string(lc->config,"sip","root_ca", "/etc/ssl/certs"));
@@ -1312,6 +1319,7 @@ int linphone_core_set_audio_codecs(LinphoneCore *lc, MSList *codecs)
 {
 	if (lc->codecs_conf.audio_codecs!=NULL) ms_list_free(lc->codecs_conf.audio_codecs);
 	lc->codecs_conf.audio_codecs=codecs;
+	_linphone_core_codec_config_write(lc);
 	return 0;
 }
 
@@ -1326,6 +1334,7 @@ int linphone_core_set_video_codecs(LinphoneCore *lc, MSList *codecs)
 {
 	if (lc->codecs_conf.video_codecs!=NULL) ms_list_free(lc->codecs_conf.video_codecs);
 	lc->codecs_conf.video_codecs=codecs;
+	_linphone_core_codec_config_write(lc);
 	return 0;
 }
 
@@ -1820,6 +1829,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 			ms_message("incoming call ringing for %i seconds",elapsed);
 			if (elapsed>lc->sip_conf.inc_timeout){
 				call->log->status=LinphoneCallMissed;
+				call->reason=LinphoneReasonNotAnswered;
 				linphone_core_terminate_call(lc,call);
 			}
 		}
@@ -2562,7 +2572,8 @@ int linphone_core_abort_call(LinphoneCore *lc, LinphoneCall *call, const char *e
 
 static void terminate_call(LinphoneCore *lc, LinphoneCall *call){
 	if (call->state==LinphoneCallIncomingReceived){
-		call->reason=LinphoneReasonDeclined;
+		if (call->reason!=LinphoneReasonNotAnswered)
+			call->reason=LinphoneReasonDeclined;
 	}
 	/*stop ringing*/
 	if (lc->ringstream!=NULL) {
@@ -3478,6 +3489,19 @@ void linphone_core_clear_call_logs(LinphoneCore *lc){
 	call_logs_write_to_config_file(lc);
 }
 
+int linphone_core_get_missed_calls_count(LinphoneCore *lc) {
+	return lc->missed_calls;
+}
+
+void linphone_core_reset_missed_calls_count(LinphoneCore *lc) {
+	lc->missed_calls=0;
+}
+
+void linphone_core_remove_call_log(LinphoneCore *lc, void *data) {
+	lc->call_logs = ms_list_remove(lc->call_logs, data);
+	call_logs_write_to_config_file(lc);
+}
+
 static void toggle_video_preview(LinphoneCore *lc, bool_t val){
 #ifdef VIDEO_ENABLED
 	if (val){
@@ -4254,38 +4278,43 @@ void video_config_uninit(LinphoneCore *lc)
 		ms_free(lc->video_conf.cams);
 }
 
-void codecs_config_uninit(LinphoneCore *lc)
-{
-	PayloadType *pt;
-	codecs_config_t *config=&lc->codecs_conf;
-	MSList *node;
-	char key[50];
-	int index;
-	index=0;
-	for(node=config->audio_codecs;node!=NULL;node=ms_list_next(node)){
-		pt=(PayloadType*)(node->data);
+void _linphone_core_codec_config_write(LinphoneCore *lc){
+	if (linphone_core_ready(lc)){
+		PayloadType *pt;
+		codecs_config_t *config=&lc->codecs_conf;
+		MSList *node;
+		char key[50];
+		int index;
+		index=0;
+		for(node=config->audio_codecs;node!=NULL;node=ms_list_next(node)){
+			pt=(PayloadType*)(node->data);
+			sprintf(key,"audio_codec_%i",index);
+			lp_config_set_string(lc->config,key,"mime",pt->mime_type);
+			lp_config_set_int(lc->config,key,"rate",pt->clock_rate);
+			lp_config_set_int(lc->config,key,"enabled",linphone_core_payload_type_enabled(lc,pt));
+			index++;
+		}
 		sprintf(key,"audio_codec_%i",index);
-		lp_config_set_string(lc->config,key,"mime",pt->mime_type);
-		lp_config_set_int(lc->config,key,"rate",pt->clock_rate);
-		lp_config_set_int(lc->config,key,"enabled",linphone_core_payload_type_enabled(lc,pt));
-		index++;
-	}
-	sprintf(key,"audio_codec_%i",index);
-	lp_config_clean_section (lc->config,key);
+		lp_config_clean_section (lc->config,key);
 
-	index=0;
-	for(node=config->video_codecs;node!=NULL;node=ms_list_next(node)){
-		pt=(PayloadType*)(node->data);
+		index=0;
+		for(node=config->video_codecs;node!=NULL;node=ms_list_next(node)){
+			pt=(PayloadType*)(node->data);
+			sprintf(key,"video_codec_%i",index);
+			lp_config_set_string(lc->config,key,"mime",pt->mime_type);
+			lp_config_set_int(lc->config,key,"rate",pt->clock_rate);
+			lp_config_set_int(lc->config,key,"enabled",linphone_core_payload_type_enabled(lc,pt));
+			lp_config_set_string(lc->config,key,"recv_fmtp",pt->recv_fmtp);
+			index++;
+		}
 		sprintf(key,"video_codec_%i",index);
-		lp_config_set_string(lc->config,key,"mime",pt->mime_type);
-		lp_config_set_int(lc->config,key,"rate",pt->clock_rate);
-		lp_config_set_int(lc->config,key,"enabled",linphone_core_payload_type_enabled(lc,pt));
-		lp_config_set_string(lc->config,key,"recv_fmtp",pt->recv_fmtp);
-		index++;
+		lp_config_clean_section (lc->config,key);
 	}
-	sprintf(key,"video_codec_%i",index);
-	lp_config_clean_section (lc->config,key);
+}
 
+static void codecs_config_uninit(LinphoneCore *lc)
+{
+	_linphone_core_codec_config_write(lc);
 	ms_list_free(lc->codecs_conf.audio_codecs);
 	ms_list_free(lc->codecs_conf.video_codecs);
 }
@@ -4510,7 +4539,7 @@ static PayloadType* find_payload_type_from_list(const char* type, int rate,const
 	const MSList *elem;
 	for(elem=from;elem!=NULL;elem=elem->next){
 		PayloadType *pt=(PayloadType*)elem->data;
-		if ((strcmp((char*)type, payload_type_get_mime(pt)) == 0) && (rate == -1 || rate==pt->clock_rate)) {
+		if ((strcasecmp((char*)type, payload_type_get_mime(pt)) == 0) && (rate == -1 || rate==pt->clock_rate)) {
 			return pt;
 		}
 	}
@@ -4577,6 +4606,8 @@ const char *linphone_reason_to_string(LinphoneReason err){
 			return "Call declined";
 		case LinphoneReasonNotFound:
 			return "User not found";
+		case LinphoneReasonNotAnswered:
+			return "Not answered";
 	}
 	return "unknown error";
 }

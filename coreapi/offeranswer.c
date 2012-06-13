@@ -233,7 +233,7 @@ static void initiate_incoming(const SalStreamDescription *local_cap,
 	result->proto=remote_offer->proto;
 	result->type=local_cap->type;
 	result->dir=compute_dir_incoming(local_cap->dir,remote_offer->dir);
-	if (result->payloads && !only_telephone_event(result->payloads)){
+	if (result->payloads && !only_telephone_event(result->payloads) && (remote_offer->port!=0 || remote_offer->port==SalStreamSendOnly)){
 		strcpy(result->addr,local_cap->addr);
 		memcpy(result->candidates,local_cap->candidates,sizeof(result->candidates));
 		result->port=local_cap->port;

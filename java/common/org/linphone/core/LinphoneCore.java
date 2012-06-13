@@ -20,6 +20,7 @@ package org.linphone.core;
 
 import java.util.Vector;
 
+import org.linphone.core.LinphoneCallLog;
 import org.linphone.core.LinphoneCallParams;
 
 /**
@@ -759,4 +760,19 @@ public interface LinphoneCore {
 	void setUserAgent(String name, String version);
 	
 	void setCpuCount(int count);
+	
+	/**
+	 * remove a call log
+	 */
+	public void removeCallLog(LinphoneCallLog log);
+	
+	/**
+	 * @return count of missed calls
+	 */
+	public int getMissedCallsCount();
+	
+	/**
+	 * Set missed calls count to zero
+	 */
+	public void resetMissedCallsCount();
 }

@@ -484,9 +484,18 @@ static void call_terminated(SalOp *op, const char *from){
 
 	if (call==NULL) return;
 	
-	if (linphone_call_get_state(call)==LinphoneCallEnd || linphone_call_get_state(call)==LinphoneCallError){
-		ms_warning("call_terminated: ignoring.");
-		return;
+	switch(linphone_call_get_state(call)){
+		case LinphoneCallEnd:
+		case LinphoneCallError:
+			ms_warning("call_terminated: ignoring.");
+			return;
+		break;
+		case LinphoneCallIncomingReceived:
+		case LinphoneCallIncomingEarlyMedia:
+			call->reason=LinphoneReasonNotAnswered;
+		break;
+		default:
+		break;
 	}
 	ms_message("Current call terminated...");
 	//we stop the call only if we have this current call or if we are in call

@@ -642,6 +642,24 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_stopDtmf(	JNIEnv*  env
 	linphone_core_stop_dtmf((LinphoneCore*)lc);
 }
 
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_getMissedCallsCount(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong lc) {
+	linphone_core_get_missed_calls_count((LinphoneCore*)lc);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_resetMissedCallsCount(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong lc) {
+	linphone_core_reset_missed_calls_count((LinphoneCore*)lc);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_removeCallLog(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong lc, jlong log) {
+	linphone_core_remove_call_log((LinphoneCore*)lc, (void*) log);
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_clearCallLogs(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong lc) {
@@ -1119,6 +1137,11 @@ extern "C" jlong Java_org_linphone_core_LinphoneCallLogImpl_getFrom(JNIEnv*  env
 																		,jlong ptr) {
 	return (jlong)((LinphoneCallLog*)ptr)->from;
 }
+extern "C" int Java_org_linphone_core_LinphoneCallLogImpl_getStatus(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	return (jlong)((LinphoneCallLog*)ptr)->status;
+}
 extern "C" jlong Java_org_linphone_core_LinphoneCallLogImpl_getTo(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr) {
@@ -1128,6 +1151,17 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCallLogImpl_isIncoming(JNIEnv
 																		,jobject  thiz
 																		,jlong ptr) {
 	return ((LinphoneCallLog*)ptr)->dir==LinphoneCallIncoming?JNI_TRUE:JNI_FALSE;
+}
+extern "C" jstring Java_org_linphone_core_LinphoneCallLogImpl_getStartDate(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	jstring jvalue =env->NewStringUTF(((LinphoneCallLog*)ptr)->start_date);
+	return jvalue;
+}
+extern "C" jint Java_org_linphone_core_LinphoneCallLogImpl_getCallDuration(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	return ((LinphoneCallLog*)ptr)->duration;
 }
 
 /*payloadType*/
