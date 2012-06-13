@@ -1146,6 +1146,12 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCallLogImpl_isIncoming(JNIEnv
 																		,jlong ptr) {
 	return ((LinphoneCallLog*)ptr)->dir==LinphoneCallIncoming?JNI_TRUE:JNI_FALSE;
 }
+extern "C" jstring Java_org_linphone_core_LinphoneCallLogImpl_getStartDate(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	jstring jvalue =env->NewStringUTF(((LinphoneCallLog*)ptr)->start_date);
+	return jvalue;
+}
 
 /*payloadType*/
 extern "C" jstring Java_org_linphone_core_PayloadTypeImpl_toString(JNIEnv*  env,jobject  thiz,jlong ptr) {
