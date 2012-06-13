@@ -770,4 +770,9 @@ public interface LinphoneCore {
 	 * @return count of missed calls
 	 */
 	public int getMissedCallsCount();
+	
+	/**
+	 * Set missed calls count to zero
+	 */
+	public void resetMissedCallsCount();
 }

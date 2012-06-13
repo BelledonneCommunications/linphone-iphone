@@ -648,6 +648,12 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_getMissedCallsCount(JNIE
 	linphone_core_get_missed_calls_count((LinphoneCore*)lc);
 }
 
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_resetMissedCallsCount(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong lc) {
+	linphone_core_reset_missed_calls_count((LinphoneCore*)lc);
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_removeCallLog(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong lc, jlong log) {
