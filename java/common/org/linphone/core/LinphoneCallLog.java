@@ -101,4 +101,9 @@ public interface LinphoneCallLog {
 	 * @return a human readble String with the start date/time of the call
 	 */
 	public String getStartDate();
+	
+	/**
+	 * @return the call duration, in seconds
+	 */
+	public int getCallDuration();
 }

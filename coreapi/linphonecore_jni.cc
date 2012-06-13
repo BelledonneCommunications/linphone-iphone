@@ -1152,6 +1152,11 @@ extern "C" jstring Java_org_linphone_core_LinphoneCallLogImpl_getStartDate(JNIEn
 	jstring jvalue =env->NewStringUTF(((LinphoneCallLog*)ptr)->start_date);
 	return jvalue;
 }
+extern "C" jint Java_org_linphone_core_LinphoneCallLogImpl_getCallDuration(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	return ((LinphoneCallLog*)ptr)->duration;
+}
 
 /*payloadType*/
 extern "C" jstring Java_org_linphone_core_PayloadTypeImpl_toString(JNIEnv*  env,jobject  thiz,jlong ptr) {
