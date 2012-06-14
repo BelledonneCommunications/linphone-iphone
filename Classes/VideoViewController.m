@@ -190,9 +190,9 @@ NSTimer *callQualityRefresher;
     [self performSelectorOnMainThread:@selector(configureOrientation)
              						   withObject:nil 
              						waitUntilDone:YES];
-    [mMute reset];
-    [mMuteLandRight reset];
-	[mMuteLandLeft reset];
+    [mMute update];
+    [mMuteLandRight update];
+	[mMuteLandLeft update];
 	maxCall = linphone_core_get_max_calls([LinphoneManager getLc]);
 	linphone_core_set_max_calls([LinphoneManager getLc], 1);
 }
@@ -218,9 +218,9 @@ NSTimer *callQualityRefresher;
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
 	[self configureOrientation:self.interfaceOrientation];
-	[mMute reset];
-    [mMuteLandRight reset];
-	[mMuteLandLeft reset];
+	[mMute update];
+    [mMuteLandRight update];
+	[mMuteLandLeft update];
 }
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
 	[mLandscapeLeft removeFromSuperview];

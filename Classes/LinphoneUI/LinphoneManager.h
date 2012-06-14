@@ -92,7 +92,7 @@ typedef struct _LinphoneCallAppData {
 +(void) set:(UIView*)view hidden: (BOOL) hidden withName:(const char*)name andReason:(const char*) reason;
 +(void) set:(UIButton*)view enabled: (BOOL) enabled withName:(const char*)name andReason:(const char*) reason;
 +(void) logUIElementPressed:(const char*) name;
-
++ (void)abstractCall:(id) object dict:(NSDictionary *) dict;
 -(void) registerLogView:(id<LogView>) view;
 
 -(void) startLibLinphone;

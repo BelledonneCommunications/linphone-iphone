@@ -18,8 +18,8 @@
  */     
 
 #import <UIKit/UIKit.h>
-#import <Foundation/Foundation.h>
 #import <AddressBook/AddressBook.h>
+
 #import "OrderedDictionary.h"
 
 @interface ContactTableViewController : UITableViewController {

@@ -23,7 +23,7 @@
 #import "linphonecore.h"
 #import "PhoneViewController.h"
 #import "ConferenceCallDetailView.h"
-#import "UIToggleVideoButton.h"
+#import "UIVideoButton.h"
 #import "VideoZoomHandler.h"
 
 #include "UILinphone.h"
@@ -37,11 +37,7 @@
 	
 	UIButton* endCtrl;
 	UIButton* dialer;
-	UIMicroButton* mute;
-    UIButton* pause;
-	UISpeakerButton* speaker;
 	UIButton* contacts;
-	UIToggleVideoButton* addVideo;
     UITableView* callTableView;
     UIButton* addCall, *mergeCalls;
     UIButton* transfer;
@@ -114,11 +110,7 @@
 
 @property (nonatomic, retain) IBOutlet UIButton* endCtrl;
 @property (nonatomic, retain) IBOutlet UIButton* dialer;
-@property (nonatomic, retain) IBOutlet UIButton* mute;
-@property (nonatomic, retain) IBOutlet UIButton* pause;
-@property (nonatomic, retain) IBOutlet UIButton* speaker;
 @property (nonatomic, retain) IBOutlet UIButton* contacts;
-@property (nonatomic, retain) IBOutlet UIToggleVideoButton* addVideo;
 @property (nonatomic, retain) IBOutlet UITableView* callTableView;
 @property (nonatomic, retain) IBOutlet UIButton* addCall;
 @property (nonatomic, retain) IBOutlet UIButton* mergeCalls;

@@ -19,7 +19,7 @@
 
 #include "ContactTableViewController.h"
 #import "FastAddressBook.h"
-#import "ContactCell.h"
+#import "UIContactCell.h"
 
 @implementation ContactTableViewController
 
@@ -36,20 +36,25 @@ void sync_toc_address_book (ABAddressBookRef addressBook, CFDictionaryRef info, 
          
         NSArray *lContacts = (NSArray *)ABAddressBookCopyArrayOfAllPeople(addressBook);
         for (id lPerson in lContacts) {
-            CFStringRef lValue = ABRecordCopyValue((ABRecordRef)lPerson, kABPersonFirstNameProperty);
-            CFStringRef lLocalizedLabel = ABAddressBookCopyLocalizedLabel(lValue);
-                
+            CFStringRef lFirstName = ABRecordCopyValue((ABRecordRef)lPerson, kABPersonFirstNameProperty);
+            CFStringRef lLocalizedFirstName = ABAddressBookCopyLocalizedLabel(lFirstName);
+            CFStringRef lLastName = ABRecordCopyValue((ABRecordRef)lPerson, kABPersonLastNameProperty);
+            CFStringRef lLocalizedLastName = ABAddressBookCopyLocalizedLabel(lLastName);
+            NSString *name =[NSString stringWithFormat:@"%@%@", [(NSString *)lLocalizedFirstName retain], [(NSString *)lLocalizedLastName retain]];
+
             // Put in correct subDic
-            NSString *firstChar = [[(NSString *)lLocalizedLabel substringToIndex:1] uppercaseString];
+            NSString *firstChar = [[name substringToIndex:1] uppercaseString];
             OrderedDictionary *subDic =[lAddressBookMap objectForKey: firstChar];
             if(subDic == nil) {
                 subDic = [[OrderedDictionary alloc] init];
                 [lAddressBookMap insertObject:subDic forKey:firstChar selector:@selector(caseInsensitiveCompare:)];
             }
-            [subDic insertObject:lPerson forKey:[(NSString *)lLocalizedLabel retain] selector:@selector(caseInsensitiveCompare:)];
-                
-            if (lLocalizedLabel) CFRelease(lLocalizedLabel);
-            CFRelease(lValue);
+            [subDic insertObject:lPerson forKey:name selector:@selector(caseInsensitiveCompare:)];
+              
+            CFRelease(lLocalizedLastName);
+            CFRelease(lLastName);
+            CFRelease(lLocalizedFirstName);
+            CFRelease(lFirstName);
         }
         CFRelease(lContacts);
     }
@@ -72,14 +77,29 @@ void sync_toc_address_book (ABAddressBookRef addressBook, CFDictionaryRef info, 
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    ContactCell *cell = [tableView dequeueReusableCellWithIdentifier:@"ContactCell"];
+    UIContactCell *cell = [tableView dequeueReusableCellWithIdentifier:@"UIContactCell"];
     if (cell == nil) {
-        cell = [[ContactCell alloc] init];
+        cell = [[UIContactCell alloc] init];
     }
     
     OrderedDictionary *subDic = [addressBookMap objectForKey: [addressBookMap keyAtIndex: [indexPath section]]]; 
     
-    [cell.label setText: (NSString *)[[subDic allKeys] objectAtIndex:[indexPath row]]];
+    NSString *key = [[subDic allKeys] objectAtIndex:[indexPath row]];
+    ABRecordRef record = [subDic objectForKey:key];
+    
+    CFStringRef lFirstName = ABRecordCopyValue(record, kABPersonFirstNameProperty);
+    CFStringRef lLocalizedFirstName = ABAddressBookCopyLocalizedLabel(lFirstName);
+    CFStringRef lLastName = ABRecordCopyValue(record, kABPersonLastNameProperty);
+    CFStringRef lLocalizedLastName = ABAddressBookCopyLocalizedLabel(lLastName);
+    
+    [cell.firstName setText: [(NSString *)lLocalizedFirstName retain]];
+    [cell.lastName setText: [(NSString *)lLocalizedLastName retain]];
+    [cell update];
+    
+    CFRelease(lLocalizedLastName);
+    CFRelease(lLastName);
+    CFRelease(lLocalizedFirstName);
+    CFRelease(lFirstName);
     return cell;
 }
 

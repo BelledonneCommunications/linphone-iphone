@@ -31,6 +31,7 @@
 
 @implementation PhoneViewController
 @synthesize dialerView;
+@synthesize mDisplayName;
 @synthesize address;
 @synthesize callShort;
 @synthesize callLarge;

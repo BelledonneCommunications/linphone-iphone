@@ -45,10 +45,7 @@ const NSInteger SECURE_BUTTON_TAG=5;
 
 @synthesize endCtrl;
 @synthesize close;
-@synthesize mute;
-@synthesize pause;
 @synthesize dialer;
-@synthesize speaker;
 @synthesize contacts;
 @synthesize callTableView;
 @synthesize addCall;
@@ -80,7 +77,7 @@ const NSInteger SECURE_BUTTON_TAG=5;
 @synthesize testVideoView;
 #endif
 
-@synthesize addVideo;
+//@synthesize addVideo;
 
 
 +(void) updateIndicator:(UIImageView*) indicator withCallQuality:(float) quality {
@@ -167,12 +164,13 @@ void addAnimationFadeTransition(UIView* view, float duration) {
             [UIView beginAnimations:nil context:NULL];
             [UIView setAnimationDuration:0.2f];
             endCtrl.imageView.transform = transform;
-            mute.imageView.transform = transform;
-            speaker.imageView.transform = transform;
-            pause.imageView.transform = transform;
+            //TODO
+            //mute.imageView.transform = transform;
+            //speaker.imageView.transform = transform;
+            //pause.imageView.transform = transform;
             contacts.imageView.transform = transform;
             addCall.imageView.transform = transform;
-            addVideo.imageView.transform = transform;
+            //addVideo.imageView.transform = transform;
             dialer.imageView.transform = transform;
             videoCallQuality.transform = transform;
             [UIView commitAnimations];
@@ -310,9 +308,10 @@ void addAnimationFadeTransition(UIView* view, float duration) {
 
     /* restore buttons orientation */
     endCtrl.imageView.transform = CGAffineTransformIdentity;
-    mute.imageView.transform = CGAffineTransformIdentity;
-    speaker.imageView.transform = CGAffineTransformIdentity;
-    pause.imageView.transform = CGAffineTransformIdentity;
+    //TODO
+    //mute.imageView.transform = CGAffineTransformIdentity;
+    //speaker.imageView.transform = CGAffineTransformIdentity;
+    //pause.imageView.transform = CGAffineTransformIdentity;
     contacts.imageView.transform = CGAffineTransformIdentity;
     addCall.imageView.transform = CGAffineTransformIdentity;
     dialer.imageView.transform = CGAffineTransformIdentity;
@@ -334,57 +333,24 @@ void addAnimationFadeTransition(UIView* view, float duration) {
         return;
     }
     // 1 call: show pause button, otherwise show merge btn
-    [LinphoneManager set:pause hidden:(callCount(lc) > 1) withName:"PAUSE button" andReason:"call count"];
-    [LinphoneManager set:mergeCalls hidden:!pause.hidden withName:"MERGE button" andReason:"call count"];
+    // [LinphoneManager set:mergeCalls hidden:!pause.hidden withName:"MERGE button" andReason:"call count"];
     // reload table (glow update + call duration)
     [callTableView reloadData];       
 
     LinphoneCall* currentCall = linphone_core_get_current_call([LinphoneManager getLc]);
-    int callsCount = linphone_core_get_calls_nb(lc);
 
     // hide pause/resume if in conference    
     if (currentCall) {
-        [mute reset];
-        if (linphone_core_is_in_conference(lc)) {
-            [LinphoneManager set:pause hidden:YES withName:"PAUSE button" andReason:"is in conference"];
-        }
-        else if (callCount(lc) == callsCount && callsCount == 1) {
-            [LinphoneManager set:pause hidden:NO withName:"PAUSE button" andReason:"call count == 1"];
-            pause.selected = NO;
-        } else {
-            [LinphoneManager set:pause hidden:YES withName:"PAUSE button" andReason:AT];
-        }
-        
         if (fullUpdate) {
             videoUpdateIndicator.hidden = YES;
             LinphoneCallState state = linphone_call_get_state(currentCall);
             if (state == LinphoneCallStreamsRunning || state == LinphoneCallUpdated || state == LinphoneCallUpdatedByRemote) {
-                if (linphone_call_params_video_enabled(linphone_call_get_current_params(currentCall))) {
-                    [addVideo setTitle:NSLocalizedString(@"-video", nil) forState:UIControlStateNormal];
-                    [InCallViewController updateIndicator: videoCallQuality withCallQuality:linphone_call_get_average_quality(currentCall)];
-                } else {
-                    [addVideo setTitle:NSLocalizedString(@"+video", nil) forState:UIControlStateNormal];
-                }
-                [addVideo setEnabled:YES];
             } else {
-                [addVideo setEnabled:NO];
                 [videoCallQuality setImage:nil];
             }
         }
-    } else {
-        if (callsCount == 1) {
-            LinphoneCall* c = (LinphoneCall*)linphone_core_get_calls(lc)->data;
-            if (linphone_call_get_state(c) == LinphoneCallPaused ||
-                linphone_call_get_state(c) == LinphoneCallPausing) {
-                pause.selected = YES;                
-            }
-            [LinphoneManager set:pause hidden:NO withName:"PAUSE button" andReason:AT];
-        } else {
-            [LinphoneManager set:pause hidden:YES withName:"PAUSE button" andReason:AT];
-        }
-        [addVideo setEnabled:NO];
-    }
-    [LinphoneManager set:mergeCalls hidden:!pause.hidden withName:"MERGE button" andReason:AT];
+    } 
+   // [LinphoneManager set:mergeCalls hidden:!pause.hidden withName:"MERGE button" andReason:AT];
     
     // update conference details view if displayed
     if (self.presentedViewController == conferenceDetail) {
@@ -464,7 +430,7 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     
     
     [videoCameraSwitch setPreview:videoPreview];
-    addVideo.videoUpdateIndicator = videoUpdateIndicator;
+    //addVideo.videoUpdateIndicator = videoUpdateIndicator;
     
     [transfer addTarget:self action:@selector(transferPressed) forControlEvents:UIControlEventTouchUpInside];
     
@@ -593,7 +559,7 @@ void addAnimationFadeTransition(UIView* view, float duration) {
 			bool enableVideo = [[NSUserDefaults standardUserDefaults] boolForKey:@"enable_video_preference"];
 
             [LinphoneManager set:contacts hidden:enableVideo withName:"CONTACT button" andReason:AT];
-            [LinphoneManager set:addVideo hidden:!contacts.hidden withName:"ADD_VIDEO button" andReason:AT];
+            //[LinphoneManager set:addVideo hidden:!contacts.hidden withName:"ADD_VIDEO button" andReason:AT];
 		}    
     }
 }
@@ -747,6 +713,12 @@ static void hideSpinner(LinphoneCall* lc, void* user_data);
             }
             break;
             
+        }
+        case LinphoneCallPausing:
+        case LinphoneCallPaused:
+        {
+            [self disableVideoDisplay];
+            break;
         }
 		case LinphoneCallError: { 
             if (canHideInCallView) {

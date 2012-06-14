@@ -1,4 +1,4 @@
-/* UIMuteButton.h
+/* UIMicroButton.h
  *
  * Copyright (C) 2011  Belledonne Comunications, Grenoble, France
  *
@@ -18,8 +18,8 @@
  */       
 
 #import <UIKit/UIKit.h>
-#import "UIToggleButton.h"
 
+#import "UIToggleButton.h"
 
 @interface UIMicroButton : UIToggleButton<UIToggleButtonDelegate> {
 

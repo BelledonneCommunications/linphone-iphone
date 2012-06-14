@@ -18,9 +18,10 @@
  */     
 
 #import "ConferenceCallDetailView.h"
-#import "linphonecore.h"
 #import "LinphoneManager.h"
-#import "IncallViewController.h"
+#import "InCallViewController.h"
+
+#include "linphonecore.h"
 
 @implementation ConferenceCallDetailView
 
@@ -86,8 +87,8 @@ NSTimer *callQualityRefresher;
 
 -(void) viewWillAppear:(BOOL)animated {
     [table reloadData];
-    [mute reset];
-    [speaker reset];
+    [mute update];
+    [speaker update];
     [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
     [super viewWillAppear:animated];
 }

@@ -70,6 +70,7 @@
 @property (nonatomic, retain) IBOutlet UIView* dialerView;
 
 @property (nonatomic, retain) IBOutlet UITextField* address;
+@property (nonatomic, retain) IBOutlet UILabel* mDisplayName;
 @property (nonatomic, retain) IBOutlet UIButton* callShort;
 @property (nonatomic, retain) IBOutlet UIButton* callLarge;
 @property (nonatomic, retain) IBOutlet UILabel* status;

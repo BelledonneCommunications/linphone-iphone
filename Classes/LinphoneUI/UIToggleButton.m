@@ -36,13 +36,13 @@
 	return self.selected;
 }
 
-- (bool)reset {
-	self.selected = [self isInitialStateOn];
+- (bool)update {
+	self.selected = [self onUpdate];
 	return self.selected;
 }
 
 - (id) init {
-    [self reset];
+    [self update];
 	[self addTarget:self action:@selector(touchUp:) forControlEvents:UIControlEventTouchUpInside];
 	return self;
 }
@@ -75,7 +75,7 @@
     [NSException raise:NSInternalInconsistencyException 
                 format:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)];
 }
--(bool) isInitialStateOn {
+-(bool) onUpdate {
     [NSException raise:NSInternalInconsistencyException 
                 format:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)];
     return false;

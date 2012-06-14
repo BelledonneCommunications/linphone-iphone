@@ -22,12 +22,12 @@
 @protocol UIToggleButtonDelegate 
 	-(void) onOn;
 	-(void) onOff;
-	-(bool) isInitialStateOn;
+	-(bool) onUpdate;
 @end
 
 @interface UIToggleButton : UIButton <UIToggleButtonDelegate> {	
 }
--(bool) reset;
+-(bool) update;
 -(bool) toggle;
 
 @end

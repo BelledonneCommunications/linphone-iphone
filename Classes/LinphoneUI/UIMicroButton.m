@@ -1,4 +1,4 @@
-/* UIMuteButton.m
+/* UIMicroButton.m
  *
  * Copyright (C) 2011  Belledonne Comunications, Grenoble, France
  *
@@ -31,7 +31,7 @@
 	linphone_core_mute_mic([LinphoneManager getLc], true);
 }
 
-- (bool)isInitialStateOn {
+- (bool)onUpdate {
 	@try {
 		return linphone_core_is_mic_muted([LinphoneManager getLc]) == false;
 	} @catch(NSException* e) {

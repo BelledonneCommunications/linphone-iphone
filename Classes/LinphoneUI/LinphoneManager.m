@@ -80,21 +80,21 @@ extern  void libmsbcg729_init();
 	return theLinphoneManager;
 }
 
--(void) changeView:(PhoneView) view {
+- (void)changeView:(PhoneView) view {
     [self changeView:view dict:nil];
 }
 
--(void) changeView:(PhoneView) view dict:(NSDictionary *)dict {
+- (void)changeView:(PhoneView) view dict:(NSDictionary *)dict {
     currentView = view;
     
     NSMutableDictionary* mdict = [NSMutableDictionary dictionaryWithObject: [NSNumber numberWithInt:currentView] forKey:@"view"];
     if(dict != nil)
-        [mdict addEntriesFromDictionary:dict];
+        [mdict setObject:dict forKey:@"args"];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneMainViewChange" object:self userInfo:mdict];
 }
 
--(PhoneView) currentView {
+- (PhoneView)currentView {
     return currentView;
 }
 
@@ -1025,5 +1025,26 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
     ms_message("UI - '%s' pressed", name);
 }
 
-
++ (void)abstractCall:(id) object dict:(NSDictionary *) dict {
+    for (NSString* identifier in dict) {
+        if([identifier characterAtIndex:([identifier length] -1)] == ':') {
+            NSArray *arguments = [dict objectForKey:identifier];
+            SEL selector = NSSelectorFromString(identifier);
+            NSMethodSignature *signature = [object methodSignatureForSelector:selector];
+            NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
+            [invocation setTarget:object];
+            [invocation setSelector:selector];
+            for(int i=0; i<[arguments count]; i++)
+            {
+                id arg = [arguments objectAtIndex:i];
+                [invocation setArgument:&arg atIndex:i+2]; // The first two arguments are the hidden arguments self and _cmd
+            }
+            [invocation invoke]; // Invoke the selector
+        } else {
+            NSDictionary *arguments = [dict objectForKey:identifier];
+            id new_object = [object performSelector:NSSelectorFromString(identifier)];
+            [LinphoneManager abstractCall:new_object dict:arguments];
+        }
+    }
+}
 @end

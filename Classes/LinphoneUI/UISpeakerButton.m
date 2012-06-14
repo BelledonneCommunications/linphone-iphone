@@ -31,7 +31,7 @@ static void audioRouteChangeListenerCallback (
                                        const void             *inPropertyValue                             // 4
                                        ) {
     if (inPropertyID != kAudioSessionProperty_AudioRouteChange) return; // 5
-    [(UISpeakerButton*)inUserData reset];  
+    [(UISpeakerButton*)inUserData update];  
    
 }
 
@@ -48,7 +48,7 @@ static void audioRouteChangeListenerCallback (
 }
 
 
--(void) onOn {
+- (void)onOn {
 	//redirect audio to speaker
 	UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;  
 	AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute
@@ -56,13 +56,13 @@ static void audioRouteChangeListenerCallback (
 							 , &audioRouteOverride);
 	
 }
--(void) onOff {
+- (void)onOff {
 	UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_None;  
 	AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute
 							 , sizeof (audioRouteOverride)
 							 , &audioRouteOverride);
 }
--(bool) isInitialStateOn {
+- (bool)onUpdate {
     CFStringRef lNewRoute=CFSTR("Unknown");
     UInt32 lNewRouteSize = sizeof(lNewRoute);
     OSStatus lStatus = AudioSessionGetProperty(kAudioSessionProperty_AudioRoute
@@ -78,15 +78,6 @@ static void audioRouteChangeListenerCallback (
         return false;
 }
 
-
-/*
- // Only override drawRect: if you perform custom drawing.
- // An empty implementation adversely affects performance during animation.
- - (void)drawRect:(CGRect)rect {
- // Drawing code.
- }
- */
-
 - (void)dealloc {
     OSStatus lStatus = AudioSessionRemovePropertyListenerWithUserData(routeChangeID, audioRouteChangeListenerCallback, self);
 	if (lStatus) {
@@ -94,6 +85,5 @@ static void audioRouteChangeListenerCallback (
 	}
 	[super dealloc];
 }
-
 
 @end

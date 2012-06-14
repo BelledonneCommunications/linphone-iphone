@@ -21,27 +21,26 @@
 #import "LinphoneManager.h"
 
 @interface PhoneMainView : UIViewController {
-    UIView *statusBarView;
+    UIView *stateBarView;
     UIView *contentView;
     UIView *tabBarView;
-    PhoneView currentView;
     
     @private
     NSMutableDictionary *viewDescriptions;
     NSArray *views;
     
-    UIViewController *statusBarController;
+    UIViewController *stateBarController;
     
     UIViewController *callTabBarController;
     UIViewController *mainTabBarController;
     UIViewController *incomingCallTabBarController;
     
 }
-@property (nonatomic, retain) IBOutlet UIView* statusBarView;
+@property (nonatomic, retain) IBOutlet UIView* stateBarView;
 @property (nonatomic, retain) IBOutlet UIView* contentView;
 @property (nonatomic, retain) IBOutlet UIView* tabBarView;
 
-@property (nonatomic, retain) IBOutlet UIViewController* statusBarController;
+@property (nonatomic, retain) IBOutlet UIViewController* stateBarController;
 
 @property (nonatomic, retain) IBOutlet UIViewController* callTabBarController;
 @property (nonatomic, retain) IBOutlet UIViewController* mainTabBarController;

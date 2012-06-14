@@ -19,8 +19,8 @@
 
 #import "PhoneMainView.h"
 #import "PhoneViewController.h"
-#import "HistoryController.h"
-#import "ContactsController.h"
+#import "HistoryViewController.h"
+#import "ContactsViewController.h"
 #import "InCallViewController.h"
 
 typedef enum _TabBar {
@@ -41,11 +41,11 @@ typedef enum _TabBar {
 
 @implementation PhoneMainView
 
-@synthesize statusBarView;
+@synthesize stateBarView;
 @synthesize contentView;
 @synthesize tabBarView;
 
-@synthesize statusBarController;
+@synthesize stateBarController;
 
 @synthesize callTabBarController;
 @synthesize mainTabBarController;
@@ -64,14 +64,15 @@ typedef enum _TabBar {
     if(description == nil)
         return;
     
-    [contentView addSubview: description->content.view];
+    UIView *innerView = description->content.view;
+    [contentView addSubview: innerView];
     
     CGRect contentFrame = contentView.frame;
     if(description->statusEnabled) {
-        statusBarView.hidden = false;
-        contentFrame.origin.y = statusBarView.frame.size.height + statusBarView.frame.origin.y;
+        stateBarView.hidden = false;
+        contentFrame.origin.y = stateBarView.frame.size.height + stateBarView.frame.origin.y;
     } else {
-        statusBarView.hidden = true;
+        stateBarView.hidden = true;
         contentFrame.origin.y = 0;
     }
     
@@ -85,7 +86,7 @@ typedef enum _TabBar {
         tabFrame.size.width = description->tabBar.view.frame.size.width;
         tabFrame.origin.y -= tabFrame.size.height;
         tabFrame.origin.x -= tabFrame.size.width;
-        tabBarView.frame = tabFrame;
+        [tabBarView setFrame: tabFrame];
         contentFrame.size.height = tabFrame.origin.y - contentFrame.origin.y;
         for (UIView *view in description->tabBar.view.subviews) {
             if(view.tag == -1) {
@@ -99,7 +100,14 @@ typedef enum _TabBar {
         contentFrame.size.height = tabFrame.origin.y - tabFrame.size.height;
     }
     
-    contentView.frame = contentFrame;
+    [contentView setFrame: contentFrame];
+    CGRect innerContentFrame = innerView.frame;
+    innerContentFrame.size = contentFrame.size;
+    [innerView setFrame: innerContentFrame];
+    
+    NSDictionary *dict = [notif.userInfo objectForKey: @"args"];
+    if(dict != nil)
+        [LinphoneManager abstractCall:description->content dict:dict];
 }
 
 - (void)viewDidLoad {
@@ -113,14 +121,14 @@ typedef enum _TabBar {
     dumb = mainTabBarController.view;
     
     // Status Bar
-    [statusBarView addSubview: statusBarController.view];
+    [stateBarView addSubview: stateBarController.view];
     
     //
     // Main View
     //
     PhoneViewController* myPhoneViewController = [[PhoneViewController alloc]  
-        initWithNibName:@"PhoneViewController" 
-        bundle:[NSBundle mainBundle]];
+                                                  initWithNibName:@"PhoneViewController" 
+                                                  bundle:[NSBundle mainBundle]];
     //[myPhoneViewController loadView];
     ViewsDescription *mainViewDescription = [ViewsDescription alloc];
     mainViewDescription->content = myPhoneViewController;
@@ -132,9 +140,9 @@ typedef enum _TabBar {
     //
     // Contacts View
     //
-    ContactsController* myContactsController = [[ContactsController alloc]
-                                              initWithNibName:@"ContactsController" 
-                                              bundle:[NSBundle mainBundle]];
+    ContactsViewController* myContactsController = [[ContactsViewController alloc]
+                                                initWithNibName:@"ContactsViewController" 
+                                                bundle:[NSBundle mainBundle]];
     //[myContactsController loadView];
     ViewsDescription *contactsDescription = [ViewsDescription alloc];
     contactsDescription->content = myContactsController;
@@ -146,9 +154,9 @@ typedef enum _TabBar {
     //
     // Call History View
     //
-    HistoryController* myHistoryController = [[HistoryController alloc]
-        initWithNibName:@"HistoryController" 
-        bundle:[NSBundle mainBundle]];
+    HistoryViewController* myHistoryController = [[HistoryViewController alloc]
+                                              initWithNibName:@"HistoryViewController" 
+                                              bundle:[NSBundle mainBundle]];
     //[myHistoryController loadView];
     ViewsDescription *historyDescription = [ViewsDescription alloc];
     historyDescription->content = myHistoryController;
@@ -161,8 +169,8 @@ typedef enum _TabBar {
     // InCall View
     //
     InCallViewController* myInCallController = [[InCallViewController alloc]
-                                              initWithNibName:@"InCallViewController" 
-                                              bundle:[NSBundle mainBundle]];
+                                                initWithNibName:@"InCallViewController" 
+                                                bundle:[NSBundle mainBundle]];
     //[myHistoryController loadView];
     ViewsDescription *inCallDescription = [ViewsDescription alloc];
     inCallDescription->content = myInCallController;
@@ -180,11 +188,13 @@ typedef enum _TabBar {
 }
 
 - (void)dealloc {
-    [super dealloc];
-    [viewDescriptions dealloc];
-    [statusBarView dealloc];
-    [statusBarController dealloc];
-    [mainTabBarController dealloc];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
+    [viewDescriptions release];
+    [stateBarView release];
+    [stateBarController release];
+    [mainTabBarController release];
+    
+    [super dealloc];
 }
 @end
