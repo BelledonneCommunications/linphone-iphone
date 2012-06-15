@@ -40,6 +40,17 @@
 				<int key="NSvFlags">292</int>
 				<object class="NSMutableArray" key="NSSubviews">
 					<bool key="EncodedWithXMLCoder">YES</bool>
+					<object class="IBUIView" id="813768660">
+						<reference key="NSNextResponder" ref="891400674"/>
+						<int key="NSvFlags">314</int>
+						<string key="NSFrame">{{0, 23}, {320, 380}}</string>
+						<reference key="NSSuperview" ref="891400674"/>
+						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView" ref="565712161"/>
+						<string key="NSReuseIdentifierKey">_NS:9</string>
+						<bool key="IBUIClipsSubviews">YES</bool>
+						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+					</object>
 					<object class="IBUIView" id="512515388">
 						<reference key="NSNextResponder" ref="891400674"/>
 						<int key="NSvFlags">274</int>
@@ -55,24 +66,12 @@
 						<bool key="IBUIClipsSubviews">YES</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 					</object>
-					<object class="IBUIView" id="813768660">
-						<reference key="NSNextResponder" ref="891400674"/>
-						<int key="NSvFlags">314</int>
-						<string key="NSFrame">{{0, 23}, {320, 380}}</string>
-						<reference key="NSSuperview" ref="891400674"/>
-						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="565712161"/>
-						<string key="NSReuseIdentifierKey">_NS:9</string>
-						<bool key="IBUIClipsSubviews">YES</bool>
-						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-					</object>
 					<object class="IBUIView" id="565712161">
 						<reference key="NSNextResponder" ref="891400674"/>
 						<int key="NSvFlags">280</int>
 						<string key="NSFrame">{{0, 400}, {320, 60}}</string>
 						<reference key="NSSuperview" ref="891400674"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<object class="NSColor" key="IBUIBackgroundColor">
 							<int key="NSColorSpace">1</int>
@@ -169,7 +168,6 @@
 						<string key="NSFrame">{{160, 0}, {160, 77}}</string>
 						<reference key="NSSuperview" ref="591517680"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
@@ -268,7 +266,6 @@
 						<string key="NSFrame">{{192, 0}, {128, 72}}</string>
 						<reference key="NSSuperview" ref="909644813"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
@@ -364,7 +361,7 @@
 			</object>
 			<object class="IBUIViewController" id="210198832">
 				<bool key="IBUIAutoresizesArchivedViewToFullSize">NO</bool>
-				<string key="IBUINibName">UIStatusBar</string>
+				<string key="IBUINibName">UIStateBar</string>
 				<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics"/>
 				<object class="IBUISimulatedOrientationMetrics" key="IBUISimulatedOrientationMetrics">
 					<int key="IBUIInterfaceOrientation">1</int>
@@ -1046,8 +1043,8 @@
 				<string>{254, 144}</string>
 				<string>{320, 154}</string>
 				<string>{320, 154}</string>
-				<string>{132, 144}</string>
-				<string>{132, 144}</string>
+				<string>{128, 154}</string>
+				<string>{128, 154}</string>
 				<string>{320, 154}</string>
 				<string>{320, 154}</string>
 			</object>

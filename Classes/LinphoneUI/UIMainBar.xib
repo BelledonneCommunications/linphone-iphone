@@ -38,7 +38,7 @@
 					<object class="IBUIView" id="83510153">
 						<reference key="NSNextResponder" ref="1018893129"/>
 						<int key="NSvFlags">-2147483356</int>
-						<string key="NSFrame">{{0, 7}, {320, 65}}</string>
+						<string key="NSFrame">{{0, 11}, {320, 66}}</string>
 						<reference key="NSSuperview" ref="1018893129"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="617445003"/>
@@ -50,6 +50,9 @@
 								<int key="NSID">2</int>
 							</object>
 						</object>
+						<bool key="IBUIOpaque">NO</bool>
+						<bool key="IBUIAutoresizesSubviews">NO</bool>
+						<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
 						<int key="IBUITag">-1</int>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -57,7 +60,7 @@
 					<object class="IBUIButton" id="318948703">
 						<reference key="NSNextResponder" ref="1018893129"/>
 						<int key="NSvFlags">292</int>
-						<string key="NSFrameSize">{64, 72}</string>
+						<string key="NSFrameSize">{64, 77}</string>
 						<reference key="NSSuperview" ref="1018893129"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="83510153"/>
@@ -107,7 +110,7 @@
 					<object class="IBUIButton" id="617445003">
 						<reference key="NSNextResponder" ref="1018893129"/>
 						<int key="NSvFlags">292</int>
-						<string key="NSFrame">{{64, 0}, {64, 72}}</string>
+						<string key="NSFrame">{{64, 0}, {64, 77}}</string>
 						<reference key="NSSuperview" ref="1018893129"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="562688945"/>
@@ -141,38 +144,10 @@
 						<reference key="IBUIFontDescription" ref="978094057"/>
 						<reference key="IBUIFont" ref="98882926"/>
 					</object>
-					<object class="IBUIButton" id="562688945">
-						<reference key="NSNextResponder" ref="1018893129"/>
-						<int key="NSvFlags">292</int>
-						<string key="NSFrame">{{128, 0}, {64, 72}}</string>
-						<reference key="NSSuperview" ref="1018893129"/>
-						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="60891552"/>
-						<string key="NSReuseIdentifierKey">_NS:9</string>
-						<bool key="IBUIOpaque">NO</bool>
-						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-							<string key="IBUIAccessibilityLabel">Dialer</string>
-						</object>
-						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-						<int key="IBUIContentHorizontalAlignment">0</int>
-						<int key="IBUIContentVerticalAlignment">0</int>
-						<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
-						<reference key="IBUINormalTitleShadowColor" ref="260229542"/>
-						<object class="NSCustomResource" key="IBUISelectedBackgroundImage">
-							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">dialer-actif.png</string>
-						</object>
-						<object class="NSCustomResource" key="IBUINormalBackgroundImage">
-							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">dialer-over.png</string>
-						</object>
-						<reference key="IBUIFontDescription" ref="978094057"/>
-						<reference key="IBUIFont" ref="98882926"/>
-					</object>
 					<object class="IBUIButton" id="60891552">
 						<reference key="NSNextResponder" ref="1018893129"/>
 						<int key="NSvFlags">292</int>
-						<string key="NSFrame">{{192, 0}, {64, 72}}</string>
+						<string key="NSFrame">{{192, 0}, {64, 77}}</string>
 						<reference key="NSSuperview" ref="1018893129"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="55915342"/>
@@ -206,13 +181,40 @@
 						<reference key="IBUIFontDescription" ref="978094057"/>
 						<reference key="IBUIFont" ref="98882926"/>
 					</object>
+					<object class="IBUIButton" id="562688945">
+						<reference key="NSNextResponder" ref="1018893129"/>
+						<int key="NSvFlags">292</int>
+						<string key="NSFrame">{{128, 0}, {64, 77}}</string>
+						<reference key="NSSuperview" ref="1018893129"/>
+						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView" ref="60891552"/>
+						<string key="NSReuseIdentifierKey">_NS:9</string>
+						<bool key="IBUIOpaque">NO</bool>
+						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
+							<string key="IBUIAccessibilityLabel">Dialer</string>
+						</object>
+						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+						<int key="IBUIContentHorizontalAlignment">0</int>
+						<int key="IBUIContentVerticalAlignment">0</int>
+						<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
+						<reference key="IBUINormalTitleShadowColor" ref="260229542"/>
+						<object class="NSCustomResource" key="IBUISelectedBackgroundImage">
+							<string key="NSClassName">NSImage</string>
+							<string key="NSResourceName">dialer-actif.png</string>
+						</object>
+						<object class="NSCustomResource" key="IBUINormalBackgroundImage">
+							<string key="NSClassName">NSImage</string>
+							<string key="NSResourceName">dialer-over.png</string>
+						</object>
+						<reference key="IBUIFontDescription" ref="978094057"/>
+						<reference key="IBUIFont" ref="98882926"/>
+					</object>
 					<object class="IBUIButton" id="55915342">
 						<reference key="NSNextResponder" ref="1018893129"/>
 						<int key="NSvFlags">292</int>
-						<string key="NSFrame">{{256, 0}, {64, 72}}</string>
+						<string key="NSFrame">{{256, 0}, {64, 77}}</string>
 						<reference key="NSSuperview" ref="1018893129"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
@@ -244,7 +246,7 @@
 						<reference key="IBUIFont" ref="98882926"/>
 					</object>
 				</array>
-				<string key="NSFrameSize">{320, 72}</string>
+				<string key="NSFrameSize">{320, 77}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
 				<reference key="NSNextKeyView" ref="318948703"/>
@@ -266,14 +268,6 @@
 						<reference key="destination" ref="318948703"/>
 					</object>
 					<int key="connectionID">13</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">dialerButton</string>
-						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="562688945"/>
-					</object>
-					<int key="connectionID">12</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
@@ -306,6 +300,14 @@
 						<reference key="destination" ref="60891552"/>
 					</object>
 					<int key="connectionID">29</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">dialerButton</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="562688945"/>
+					</object>
+					<int key="connectionID">12</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
@@ -378,10 +380,10 @@
 						<array class="NSMutableArray" key="children">
 							<reference ref="60891552"/>
 							<reference ref="617445003"/>
-							<reference ref="562688945"/>
 							<reference ref="318948703"/>
 							<reference ref="55915342"/>
 							<reference ref="83510153"/>
+							<reference ref="562688945"/>
 						</array>
 						<reference key="parent" ref="0"/>
 						<string key="objectName">mainTabBar</string>
@@ -389,6 +391,7 @@
 					<object class="IBObjectRecord">
 						<int key="objectID">4</int>
 						<reference key="object" ref="83510153"/>
+						<array class="NSMutableArray" key="children"/>
 						<reference key="parent" ref="1018893129"/>
 						<string key="objectName">mask</string>
 					</object>
@@ -405,12 +408,6 @@
 						<string key="objectName">history</string>
 					</object>
 					<object class="IBObjectRecord">
-						<int key="objectID">7</int>
-						<reference key="object" ref="562688945"/>
-						<reference key="parent" ref="1018893129"/>
-						<string key="objectName">dialer</string>
-					</object>
-					<object class="IBObjectRecord">
 						<int key="objectID">8</int>
 						<reference key="object" ref="617445003"/>
 						<reference key="parent" ref="1018893129"/>
@@ -421,6 +418,12 @@
 						<reference key="object" ref="60891552"/>
 						<reference key="parent" ref="1018893129"/>
 						<string key="objectName">settings</string>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">7</int>
+						<reference key="object" ref="562688945"/>
+						<reference key="parent" ref="1018893129"/>
+						<string key="objectName">dialer</string>
 					</object>
 				</array>
 			</object>
@@ -528,20 +531,20 @@
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 		<dictionary class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
-			<string key="contacts-actif.png">{127, 144}</string>
-			<string key="contacts-over.png">{127, 144}</string>
-			<string key="contacts-selectionne.png">{127, 144}</string>
-			<string key="dialer-actif.png">{132, 144}</string>
-			<string key="dialer-over.png">{132, 144}</string>
-			<string key="history-actif.png">{127, 144}</string>
-			<string key="history-over.png">{127, 144}</string>
-			<string key="history-selectionne.png">{127, 144}</string>
-			<string key="settings-actif.png">{127, 144}</string>
-			<string key="settings-over.png">{127, 144}</string>
-			<string key="settings-selectionne.png">{127, 144}</string>
-			<string key="tchat-actif.png">{127, 144}</string>
-			<string key="tchat-over.png">{127, 144}</string>
-			<string key="tchat-selectionne.png">{127, 144}</string>
+			<string key="contacts-actif.png">{128, 154}</string>
+			<string key="contacts-over.png">{128, 154}</string>
+			<string key="contacts-selectionne.png">{128, 154}</string>
+			<string key="dialer-actif.png">{128, 154}</string>
+			<string key="dialer-over.png">{128, 154}</string>
+			<string key="history-actif.png">{128, 154}</string>
+			<string key="history-over.png">{128, 154}</string>
+			<string key="history-selectionne.png">{128, 154}</string>
+			<string key="settings-actif.png">{128, 154}</string>
+			<string key="settings-over.png">{128, 154}</string>
+			<string key="settings-selectionne.png">{128, 154}</string>
+			<string key="tchat-actif.png">{128, 154}</string>
+			<string key="tchat-over.png">{128, 154}</string>
+			<string key="tchat-selectionne.png">{128, 154}</string>
 		</dictionary>
 		<string key="IBCocoaTouchPluginVersion">1181</string>
 	</data>

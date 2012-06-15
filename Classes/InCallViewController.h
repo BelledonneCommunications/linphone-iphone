@@ -20,17 +20,17 @@
 #import <UIKit/UIKit.h>
 #import <AddressBookUI/ABPeoplePickerNavigationController.h>
 
-#import "linphonecore.h"
-#import "PhoneViewController.h"
 #import "ConferenceCallDetailView.h"
 #import "UIVideoButton.h"
 #import "VideoZoomHandler.h"
+#import "UILinphone.h"
+#import "CallDelegate.h"
 
-#include "UILinphone.h"
+#include "linphonecore.h"
 
 @class VideoViewController;
 
-@interface InCallViewController : UIViewController <ABPeoplePickerNavigationControllerDelegate, UITableViewDelegate, UITableViewDataSource, UIActionSheetCustomDelegate> {
+@interface InCallViewController : UIViewController <ABPeoplePickerNavigationControllerDelegate, UITableViewDelegate, UITableViewDataSource, CallActionSheetDelegate> {
 	
 	
 	UIView* controlSubView, *hangUpView;
@@ -66,7 +66,6 @@
 #ifdef TEST_VIDEO_VIEW_CHANGE
     UIView* testVideoView;
 #endif
-    UIImageView* videoCallQuality;
     UICamSwitch* videoCameraSwitch;
     UIActivityIndicatorView* videoUpdateIndicator;
     UIActivityIndicatorView* videoWaitingForFirstImage;

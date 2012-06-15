@@ -80,6 +80,20 @@ extern  void libmsbcg729_init();
 	return theLinphoneManager;
 }
 
+- (void) showTabBar:(BOOL) show {
+    NSMutableDictionary* mdict = [NSMutableDictionary dictionaryWithObject: [NSNumber numberWithBool:show] forKey:@"tabBar"];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneMainViewChange" object:self userInfo:mdict];
+}
+
+- (void)fullScreen:(BOOL) enabled {
+    if(enabled)
+        [[UIApplication sharedApplication] setStatusBarHidden:enabled withAnimation:UIStatusBarAnimationSlide];
+    else
+        [[UIApplication sharedApplication] setStatusBarHidden:enabled withAnimation:UIStatusBarAnimationNone];
+    NSMutableDictionary* mdict = [NSMutableDictionary dictionaryWithObject: [NSNumber numberWithBool:enabled] forKey:@"fullscreen"];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneMainViewChange" object:self userInfo:mdict];
+}
+
 - (void)changeView:(PhoneView) view {
     [self changeView:view dict:nil];
 }
@@ -195,54 +209,17 @@ extern  void libmsbcg729_init();
                           [[NSString stringWithFormat:@"%c", message] autorelease], @"message", 
                           nil];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneCallUpdate" object:self userInfo:dict];
-    
-    const char* lUserNameChars=linphone_address_get_username(linphone_call_get_remote_address(call));
-    NSString* lUserName = lUserNameChars?[[[NSString alloc] initWithUTF8String:lUserNameChars] autorelease]:NSLocalizedString(@"Unknown",nil);
-    switch (new_state) {
-        case LinphoneCallError: { 
-            /*
-             NSString* lTitle= state->message!=nil?[NSString stringWithCString:state->message length:strlen(state->message)]: @"Error";
-             NSString* lMessage=lTitle;
-             */
-            NSString* lMessage;
-            NSString* lTitle;
-            LinphoneProxyConfig* proxyCfg;	
-            //get default proxy
-            linphone_core_get_default_proxy([LinphoneManager getLc],&proxyCfg);
-            if (proxyCfg == nil) {
-                lMessage=NSLocalizedString(@"Please make sure your device is connected to the internet and double check your SIP account configuration in the settings.",nil    );
-            } else {
-                lMessage=[NSString stringWithFormat : NSLocalizedString(@"Cannot call %@",nil),lUserName];
-            }
-    
-            if (linphone_call_get_reason(call) == LinphoneReasonNotFound) {
-                lMessage=[NSString stringWithFormat : NSLocalizedString(@"'%@' not registered to Service",nil), lUserName];
-            } else {
-                if (message!=nil){
-                    lMessage=[NSString stringWithFormat : NSLocalizedString(@"%@\nReason was: %s",nil),lMessage, message];
-                }
-            }
-            lTitle=NSLocalizedString(@"Call failed",nil);
-            UIAlertView* error = [[UIAlertView alloc] initWithTitle:lTitle
-                                                    message:lMessage 
-                                                   delegate:nil 
-                                          cancelButtonTitle:NSLocalizedString(@"Dismiss",nil) 
-                                          otherButtonTitles:nil];
-            [error show];
-            [error release];
-            break;
-        }
-        default:
-            break;
-    }
-    
 }
 
-+(LinphoneCore*) getLc {
++ (LinphoneCore*)getLc {
 	if (theLinphoneCore==nil) {
 		@throw([NSException exceptionWithName:@"LinphoneCoreException" reason:@"Linphone core not initialized yet" userInfo:nil]);
 	}
 	return theLinphoneCore;
+}
+
++ (BOOL)isLcReady {
+    return theLinphoneCore != nil;
 }
 
 - (void)addLog:(NSString*) log {

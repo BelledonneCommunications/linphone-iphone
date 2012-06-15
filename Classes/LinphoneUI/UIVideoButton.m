@@ -66,7 +66,7 @@
 }
 
 - (bool)onUpdate {
-    @try {
+    if([LinphoneManager isLcReady]) {
         bool val = false;
         LinphoneCall* currentCall = linphone_core_get_current_call([LinphoneManager getLc]);
         if (currentCall) {
@@ -83,7 +83,7 @@
             [self setEnabled:FALSE];
         } 
         return val;
-    } @catch(NSException* e) {
+    } else {
 		//not ready yet
 		return false;
 	}

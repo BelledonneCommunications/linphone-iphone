@@ -60,7 +60,7 @@
 
 - (bool)onUpdate {
     // TODO: disable pause on not running call
-    @try {
+    if([LinphoneManager isLcReady]) {
         bool ret = false;
         LinphoneCall* currentCall = [UIPauseButton getCall];
         if (currentCall != nil) {
@@ -84,7 +84,7 @@
             [LinphoneManager set:self enabled:FALSE withName:"PAUSE button" andReason:""];
         }
         return ret;
-    } @catch(NSException* e) {
+    } else {
 		//not ready yet
 		return false;
 	}

@@ -18,9 +18,22 @@
  */   
 
 #import <UIKit/UIKit.h>
-#import "LinphoneManager.h"
 
-@interface PhoneMainView : UIViewController {
+#import "LinphoneManager.h"
+#import "CallDelegate.h"
+
+@interface ViewsDescription: NSObject{
+@public
+    UIViewController *content;
+    UIViewController *tabBar;
+    bool tabBarEnabled;
+    bool statusEnabled;
+    bool fullscreen;
+}
+-(id) copy;
+@end
+
+@interface PhoneMainView : UIViewController<CallActionSheetDelegate> {
     UIView *stateBarView;
     UIView *contentView;
     UIView *tabBarView;
@@ -34,8 +47,11 @@
     UIViewController *callTabBarController;
     UIViewController *mainTabBarController;
     UIViewController *incomingCallTabBarController;
+    ViewsDescription *currentViewDescription;
     
+    UIActionSheet *incomingCallActionSheet;
 }
+
 @property (nonatomic, retain) IBOutlet UIView* stateBarView;
 @property (nonatomic, retain) IBOutlet UIView* contentView;
 @property (nonatomic, retain) IBOutlet UIView* tabBarView;

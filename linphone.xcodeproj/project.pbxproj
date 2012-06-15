@@ -72,7 +72,7 @@
 		22C755601317E59C007BC101 /* UIBluetoothButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22C7555F1317E59C007BC101 /* UIBluetoothButton.m */; };
 		22D1B68112A3E0BE001AE361 /* libresolv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 22D1B68012A3E0BE001AE361 /* libresolv.dylib */; };
 		22D8F11F147548E2008C97DB /* linphonerc in Resources */ = {isa = PBXBuildFile; fileRef = 2274550710700509006EC466 /* linphonerc */; };
-		22D8F120147548E2008C97DB /* PhoneViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22F2508D107141E100AC9B3F /* PhoneViewController.xib */; };
+		22D8F120147548E2008C97DB /* DialerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22F2508D107141E100AC9B3F /* DialerViewController.xib */; };
 		22D8F121147548E2008C97DB /* ringback.wav in Resources */ = {isa = PBXBuildFile; fileRef = 22F254801073D99800AC9B3F /* ringback.wav */; };
 		22D8F124147548E2008C97DB /* untitled.plist in Resources */ = {isa = PBXBuildFile; fileRef = 22F51EF5107FA66500F98953 /* untitled.plist */; };
 		22D8F125147548E2008C97DB /* oldphone-mono.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2237D4081084D7A9001383EE /* oldphone-mono.wav */; };
@@ -86,13 +86,12 @@
 		22D8F13B147548E2008C97DB /* FirstLoginViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2218A92412FBE1340088A667 /* FirstLoginViewController.xib */; };
 		22D8F13C147548E2008C97DB /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = 228B19AE130290C500F154D3 /* iTunesArtwork */; };
 		22D8F13D147548E2008C97DB /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2214783B1386A2030020F8B8 /* Localizable.strings */; };
-		22D8F13F147548E2008C97DB /* VideoViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22E028B613B4CCBD0068A713 /* VideoViewController.xib */; };
 		22D8F140147548E2008C97DB /* audio.plist in Resources */ = {isa = PBXBuildFile; fileRef = 226B563E13CAF1CD00921595 /* audio.plist */; };
 		22D8F141147548E2008C97DB /* video.plist in Resources */ = {isa = PBXBuildFile; fileRef = 22E1A9E713CAF4AA00219531 /* video.plist */; };
 		22D8F142147548E2008C97DB /* rootca.pem in Resources */ = {isa = PBXBuildFile; fileRef = 70571E1913FABCB000CDD3C2 /* rootca.pem */; };
 		22D8F144147548E2008C97DB /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		22D8F145147548E2008C97DB /* LinphoneAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* LinphoneAppDelegate.m */; };
-		22D8F146147548E2008C97DB /* PhoneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22F2508C107141E100AC9B3F /* PhoneViewController.m */; };
+		22D8F146147548E2008C97DB /* DialerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22F2508C107141E100AC9B3F /* DialerViewController.m */; };
 		22D8F14A147548E2008C97DB /* MoreViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E0A81C111C44E100B04932 /* MoreViewController.m */; };
 		22D8F14B147548E2008C97DB /* ConsoleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E0A81F111C44E100B04932 /* ConsoleViewController.m */; };
 		22D8F14C147548E2008C97DB /* UIDigitButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2248E90D12F7E4CF00220D9C /* UIDigitButton.m */; };
@@ -106,7 +105,6 @@
 		22D8F155147548E2008C97DB /* UIBluetoothButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22C7555F1317E59C007BC101 /* UIBluetoothButton.m */; };
 		22D8F156147548E2008C97DB /* UIEraseButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22BB1A68132FF16A005CD7AA /* UIEraseButton.m */; };
 		22D8F157147548E2008C97DB /* FastAddressBook.m in Sources */ = {isa = PBXBuildFile; fileRef = 223963161393CFAF001DE689 /* FastAddressBook.m */; };
-		22D8F158147548E2008C97DB /* VideoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E028B513B4CCBD0068A713 /* VideoViewController.m */; };
 		22D8F159147548E2008C97DB /* UICamSwitch.m in Sources */ = {isa = PBXBuildFile; fileRef = 22AA8B0013D83F6300B30535 /* UICamSwitch.m */; };
 		22D8F15B147548E2008C97DB /* libvpx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7066FC0B13E830E400EFC6DC /* libvpx.a */; };
 		22D8F15C147548E2008C97DB /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F413E147EB002BA2C0 /* QuartzCore.framework */; };
@@ -141,16 +139,14 @@
 		22D8F17E147548E2008C97DB /* libSKP_SILK_SDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226183AA1472527D0037138E /* libSKP_SILK_SDK.a */; };
 		22D8F17F147548E2008C97DB /* libsrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226183AB1472527D0037138E /* libsrtp.a */; };
 		22D8F180147548E2008C97DB /* libmssilk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226183AF147259670037138E /* libmssilk.a */; };
-		22E028B713B4CCBD0068A713 /* VideoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E028B513B4CCBD0068A713 /* VideoViewController.m */; };
-		22E028B813B4CCBD0068A713 /* VideoViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22E028B613B4CCBD0068A713 /* VideoViewController.xib */; };
 		22E0A822111C44E100B04932 /* MoreViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E0A81C111C44E100B04932 /* MoreViewController.m */; };
 		22E0A823111C44E100B04932 /* ConsoleViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22E0A81E111C44E100B04932 /* ConsoleViewController.xib */; };
 		22E0A824111C44E100B04932 /* ConsoleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E0A81F111C44E100B04932 /* ConsoleViewController.m */; };
 		22E1A9E813CAF4AA00219531 /* video.plist in Resources */ = {isa = PBXBuildFile; fileRef = 22E1A9E713CAF4AA00219531 /* video.plist */; };
 		22E5B0AF133B5EA20044EA25 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22E5B0AD133B5EA20044EA25 /* libssl.a */; };
 		22E5B0B0133B5EA20044EA25 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22E5B0AE133B5EA20044EA25 /* libcrypto.a */; };
-		22F2508E107141E100AC9B3F /* PhoneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22F2508C107141E100AC9B3F /* PhoneViewController.m */; };
-		22F2508F107141E100AC9B3F /* PhoneViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22F2508D107141E100AC9B3F /* PhoneViewController.xib */; };
+		22F2508E107141E100AC9B3F /* DialerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22F2508C107141E100AC9B3F /* DialerViewController.m */; };
+		22F2508F107141E100AC9B3F /* DialerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22F2508D107141E100AC9B3F /* DialerViewController.xib */; };
 		22F254811073D99800AC9B3F /* ringback.wav in Resources */ = {isa = PBXBuildFile; fileRef = 22F254801073D99800AC9B3F /* ringback.wav */; };
 		22F51EF6107FA66500F98953 /* untitled.plist in Resources */ = {isa = PBXBuildFile; fileRef = 22F51EF5107FA66500F98953 /* untitled.plist */; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
@@ -184,8 +180,6 @@
 		34C7646D14CD5585008E9607 /* history-orange.png in Resources */ = {isa = PBXBuildFile; fileRef = 34C7646B14CD5585008E9607 /* history-orange.png */; };
 		34CA852F148F646700503C01 /* MainScreenWithVideoPreview.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34CA852E148F646700503C01 /* MainScreenWithVideoPreview.xib */; };
 		34CA8530148F646700503C01 /* MainScreenWithVideoPreview.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34CA852E148F646700503C01 /* MainScreenWithVideoPreview.xib */; };
-		34CA8535148F669900503C01 /* VideoViewController-ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34CA8534148F669900503C01 /* VideoViewController-ipad.xib */; };
-		34CA8536148F669900503C01 /* VideoViewController-ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34CA8534148F669900503C01 /* VideoViewController-ipad.xib */; };
 		34CA8539148F692A00503C01 /* MainScreenWithVideoPreview.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CA8538148F692A00503C01 /* MainScreenWithVideoPreview.m */; };
 		34CA853A148F692A00503C01 /* MainScreenWithVideoPreview.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CA8538148F692A00503C01 /* MainScreenWithVideoPreview.m */; };
 		57282931154AF1460076F540 /* history-orange.png in Resources */ = {isa = PBXBuildFile; fileRef = 34C7646B14CD5585008E9607 /* history-orange.png */; };
@@ -206,6 +200,8 @@
 		D31C9C95158A1C1000756B45 /* appel-sortant.png in Resources */ = {isa = PBXBuildFile; fileRef = D31C9C8F158A1C1000756B45 /* appel-sortant.png */; };
 		D31C9C98158A1CDF00756B45 /* UIHistoryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D31C9C97158A1CDE00756B45 /* UIHistoryCell.m */; };
 		D31C9C99158A1CDF00756B45 /* UIHistoryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D31C9C97158A1CDE00756B45 /* UIHistoryCell.m */; };
+		D32409C3158B49A600C8C119 /* UILongTouchButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D32409C2158B49A600C8C119 /* UILongTouchButton.m */; };
+		D32409C4158B49A600C8C119 /* UILongTouchButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D32409C2158B49A600C8C119 /* UILongTouchButton.m */; };
 		D326483815887D5200930C67 /* OrderedDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = D326483715887D5200930C67 /* OrderedDictionary.m */; };
 		D326483915887D5200930C67 /* OrderedDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = D326483715887D5200930C67 /* OrderedDictionary.m */; };
 		D326483E1588950F00930C67 /* UICallBar.m in Sources */ = {isa = PBXBuildFile; fileRef = D326483C1588950F00930C67 /* UICallBar.m */; };
@@ -261,6 +257,10 @@
 		D35498241587716B000081D8 /* UIStateBar.xib in Resources */ = {isa = PBXBuildFile; fileRef = D35498201587716B000081D8 /* UIStateBar.xib */; };
 		D36FB2D51589EF7C0036F6F2 /* UIPauseButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D36FB2D41589EF7C0036F6F2 /* UIPauseButton.m */; };
 		D36FB2D61589EF7C0036F6F2 /* UIPauseButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D36FB2D41589EF7C0036F6F2 /* UIPauseButton.m */; };
+		D37295CA158B1E2D00D2C0C7 /* registration_inprogress.png in Resources */ = {isa = PBXBuildFile; fileRef = D37295C9158B1E2D00D2C0C7 /* registration_inprogress.png */; };
+		D37295CB158B1E2D00D2C0C7 /* registration_inprogress.png in Resources */ = {isa = PBXBuildFile; fileRef = D37295C9158B1E2D00D2C0C7 /* registration_inprogress.png */; };
+		D37295DB158B3C9600D2C0C7 /* video-OFF-disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D37295DA158B3C9600D2C0C7 /* video-OFF-disabled.png */; };
+		D37295DC158B3C9600D2C0C7 /* video-OFF-disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D37295DA158B3C9600D2C0C7 /* video-OFF-disabled.png */; };
 		D38327F31580FE3A00FA0D23 /* contacts-actif.png in Resources */ = {isa = PBXBuildFile; fileRef = D38327EB1580FE3A00FA0D23 /* contacts-actif.png */; };
 		D38327F41580FE3A00FA0D23 /* contacts-selectionne.png in Resources */ = {isa = PBXBuildFile; fileRef = D38327EC1580FE3A00FA0D23 /* contacts-selectionne.png */; };
 		D38327F51580FE3A00FA0D23 /* dialer-actif.png in Resources */ = {isa = PBXBuildFile; fileRef = D38327ED1580FE3A00FA0D23 /* dialer-actif.png */; };
@@ -718,9 +718,6 @@
 		22C7564B13265C6A007BC101 /* x509v3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x509v3.h; sourceTree = "<group>"; };
 		22D1B68012A3E0BE001AE361 /* libresolv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libresolv.dylib; path = usr/lib/libresolv.dylib; sourceTree = SDKROOT; };
 		22D8F187147548E2008C97DB /* linphone-no-gpl-thirdparties.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "linphone-no-gpl-thirdparties.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		22E028B413B4CCBD0068A713 /* VideoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoViewController.h; sourceTree = "<group>"; };
-		22E028B513B4CCBD0068A713 /* VideoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VideoViewController.m; sourceTree = "<group>"; };
-		22E028B613B4CCBD0068A713 /* VideoViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = VideoViewController.xib; sourceTree = "<group>"; };
 		22E0A81B111C44E100B04932 /* MoreViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MoreViewController.xib; sourceTree = "<group>"; };
 		22E0A81C111C44E100B04932 /* MoreViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoreViewController.m; sourceTree = "<group>"; };
 		22E0A81D111C44E100B04932 /* MoreViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoreViewController.h; sourceTree = "<group>"; };
@@ -730,9 +727,9 @@
 		22E1A9E713CAF4AA00219531 /* video.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = video.plist; path = Settings.bundle/video.plist; sourceTree = "<group>"; };
 		22E5B0AD133B5EA20044EA25 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = "liblinphone-sdk/apple-darwin/lib/libssl.a"; sourceTree = "<group>"; };
 		22E5B0AE133B5EA20044EA25 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = "liblinphone-sdk/apple-darwin/lib/libcrypto.a"; sourceTree = "<group>"; };
-		22F2508B107141E100AC9B3F /* PhoneViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoneViewController.h; sourceTree = "<group>"; };
-		22F2508C107141E100AC9B3F /* PhoneViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneViewController.m; sourceTree = "<group>"; };
-		22F2508D107141E100AC9B3F /* PhoneViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PhoneViewController.xib; sourceTree = "<group>"; };
+		22F2508B107141E100AC9B3F /* DialerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DialerViewController.h; sourceTree = "<group>"; };
+		22F2508C107141E100AC9B3F /* DialerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DialerViewController.m; sourceTree = "<group>"; };
+		22F2508D107141E100AC9B3F /* DialerViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DialerViewController.xib; sourceTree = "<group>"; };
 		22F254801073D99800AC9B3F /* ringback.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = ringback.wav; path = "liblinphone-sdk/apple-darwin/share/sounds/linphone/ringback.wav"; sourceTree = "<group>"; };
 		22F51EF5107FA66500F98953 /* untitled.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = untitled.plist; sourceTree = "<group>"; };
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -760,7 +757,6 @@
 		34C7646A14CD5585008E9607 /* dialer-orange.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "dialer-orange.png"; path = "submodules/linphone/pixmaps/dialer-orange.png"; sourceTree = "<group>"; };
 		34C7646B14CD5585008E9607 /* history-orange.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "history-orange.png"; path = "submodules/linphone/pixmaps/history-orange.png"; sourceTree = "<group>"; };
 		34CA852E148F646700503C01 /* MainScreenWithVideoPreview.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainScreenWithVideoPreview.xib; sourceTree = "<group>"; };
-		34CA8534148F669900503C01 /* VideoViewController-ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "VideoViewController-ipad.xib"; sourceTree = "<group>"; };
 		34CA8537148F692A00503C01 /* MainScreenWithVideoPreview.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainScreenWithVideoPreview.h; sourceTree = "<group>"; };
 		34CA8538148F692A00503C01 /* MainScreenWithVideoPreview.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainScreenWithVideoPreview.m; sourceTree = "<group>"; };
 		70571E1913FABCB000CDD3C2 /* rootca.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = rootca.pem; path = Resources/rootca.pem; sourceTree = "<group>"; };
@@ -775,6 +771,8 @@
 		D31C9C8F158A1C1000756B45 /* appel-sortant.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "appel-sortant.png"; path = "Resources/appel-sortant.png"; sourceTree = "<group>"; };
 		D31C9C96158A1CDE00756B45 /* UIHistoryCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIHistoryCell.h; sourceTree = "<group>"; };
 		D31C9C97158A1CDE00756B45 /* UIHistoryCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIHistoryCell.m; sourceTree = "<group>"; };
+		D32409C1158B49A600C8C119 /* UILongTouchButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UILongTouchButton.h; sourceTree = "<group>"; };
+		D32409C2158B49A600C8C119 /* UILongTouchButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UILongTouchButton.m; sourceTree = "<group>"; };
 		D326483615887D5200930C67 /* OrderedDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OrderedDictionary.h; path = Utils/OrderedDictionary.h; sourceTree = "<group>"; };
 		D326483715887D5200930C67 /* OrderedDictionary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OrderedDictionary.m; path = Utils/OrderedDictionary.m; sourceTree = "<group>"; };
 		D326483B1588950F00930C67 /* UICallBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICallBar.h; sourceTree = "<group>"; };
@@ -806,11 +804,13 @@
 		D3549815158761D0000081D8 /* ContactTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactTableViewController.m; sourceTree = "<group>"; };
 		D354981815876FE7000081D8 /* bouton-detail-contact-actif.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "bouton-detail-contact-actif.png"; path = "Resources/bouton-detail-contact-actif.png"; sourceTree = "<group>"; };
 		D354981915876FE7000081D8 /* bouton-detail-contact-over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "bouton-detail-contact-over.png"; path = "Resources/bouton-detail-contact-over.png"; sourceTree = "<group>"; };
-		D354981E1587716B000081D8 /* UIStateBar.h */ = {isa = PBXFileReference; fileEncoding = 4; path = UIStateBar.h; sourceTree = "<group>"; };
+		D354981E1587716B000081D8 /* UIStateBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIStateBar.h; sourceTree = "<group>"; };
 		D354981F1587716B000081D8 /* UIStateBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIStateBar.m; sourceTree = "<group>"; };
 		D35498201587716B000081D8 /* UIStateBar.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UIStateBar.xib; sourceTree = "<group>"; };
 		D36FB2D31589EF7C0036F6F2 /* UIPauseButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIPauseButton.h; sourceTree = "<group>"; };
 		D36FB2D41589EF7C0036F6F2 /* UIPauseButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIPauseButton.m; sourceTree = "<group>"; };
+		D37295C9158B1E2D00D2C0C7 /* registration_inprogress.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = registration_inprogress.png; path = Resources/registration_inprogress.png; sourceTree = "<group>"; };
+		D37295DA158B3C9600D2C0C7 /* video-OFF-disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "video-OFF-disabled.png"; path = "Resources/video-OFF-disabled.png"; sourceTree = "<group>"; };
 		D38327EB1580FE3A00FA0D23 /* contacts-actif.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "contacts-actif.png"; path = "Resources/contacts-actif.png"; sourceTree = "<group>"; };
 		D38327EC1580FE3A00FA0D23 /* contacts-selectionne.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "contacts-selectionne.png"; path = "Resources/contacts-selectionne.png"; sourceTree = "<group>"; };
 		D38327ED1580FE3A00FA0D23 /* dialer-actif.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "dialer-actif.png"; path = "Resources/dialer-actif.png"; sourceTree = "<group>"; };
@@ -1052,14 +1052,10 @@
 				D3F83F8D15822ABD00336684 /* PhoneMainView.m */,
 				D34734791580DDF1003C7B8C /* PhoneMainView.xib */,
 				3422AA5214978352000D4E8A /* PhoneViewController-ipad.xib */,
-				22F2508B107141E100AC9B3F /* PhoneViewController.h */,
-				22F2508C107141E100AC9B3F /* PhoneViewController.m */,
-				22F2508D107141E100AC9B3F /* PhoneViewController.xib */,
+				22F2508B107141E100AC9B3F /* DialerViewController.h */,
+				22F2508C107141E100AC9B3F /* DialerViewController.m */,
+				22F2508D107141E100AC9B3F /* DialerViewController.xib */,
 				D326483415887D4400930C67 /* Utils */,
-				34CA8534148F669900503C01 /* VideoViewController-ipad.xib */,
-				22E028B413B4CCBD0068A713 /* VideoViewController.h */,
-				22E028B513B4CCBD0068A713 /* VideoViewController.m */,
-				22E028B613B4CCBD0068A713 /* VideoViewController.xib */,
 				34216F3E1547EBCD00EA9777 /* VideoZoomHandler.h */,
 				34216F3F1547EBCD00EA9777 /* VideoZoomHandler.m */,
 			);
@@ -1303,6 +1299,8 @@
 				D31C9C97158A1CDE00756B45 /* UIHistoryCell.m */,
 				D31AC4AF158A29C600C2638B /* UIHistoryCell.xib */,
 				2214EB8A12F84FE9002A5394 /* UILinphone.h */,
+				D32409C1158B49A600C8C119 /* UILongTouchButton.h */,
+				D32409C2158B49A600C8C119 /* UILongTouchButton.m */,
 				D3ED3E841586291B006C0DE4 /* UIMainBar.h */,
 				D3ED3E851586291B006C0DE4 /* UIMainBar.m */,
 				D3ED3E861586291C006C0DE4 /* UIMainBar.xib */,
@@ -1310,11 +1308,11 @@
 				2214EBF212F86360002A5394 /* UIMicroButton.m */,
 				D36FB2D31589EF7C0036F6F2 /* UIPauseButton.h */,
 				D36FB2D41589EF7C0036F6F2 /* UIPauseButton.m */,
+				22968A5D12F875C600588287 /* UISpeakerButton.h */,
+				22968A5E12F875C600588287 /* UISpeakerButton.m */,
 				D354981E1587716B000081D8 /* UIStateBar.h */,
 				D354981F1587716B000081D8 /* UIStateBar.m */,
 				D35498201587716B000081D8 /* UIStateBar.xib */,
-				22968A5D12F875C600588287 /* UISpeakerButton.h */,
-				22968A5E12F875C600588287 /* UISpeakerButton.m */,
 				D32648421588F6FA00930C67 /* UIToggleButton.h */,
 				D32648431588F6FB00930C67 /* UIToggleButton.m */,
 				340751E5150F38FC00B89C47 /* UIVideoButton.h */,
@@ -1478,6 +1476,8 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				D37295DA158B3C9600D2C0C7 /* video-OFF-disabled.png */,
+				D37295C9158B1E2D00D2C0C7 /* registration_inprogress.png */,
 				D3F83F2C1582223B00336684 /* 0-actif.png */,
 				D3F83F2D1582223B00336684 /* 0-over.png */,
 				D3F83F2E1582223B00336684 /* 1-actif.png */,
@@ -1693,7 +1693,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2274550810700509006EC466 /* linphonerc in Resources */,
-				22F2508F107141E100AC9B3F /* PhoneViewController.xib in Resources */,
+				22F2508F107141E100AC9B3F /* DialerViewController.xib in Resources */,
 				22F254811073D99800AC9B3F /* ringback.wav in Resources */,
 				2245671D107699F700F10948 /* Settings.bundle in Resources */,
 				22F51EF6107FA66500F98953 /* untitled.plist in Resources */,
@@ -1708,14 +1708,12 @@
 				2218A92612FBE1340088A667 /* FirstLoginViewController.xib in Resources */,
 				228B19AF130290C500F154D3 /* iTunesArtwork in Resources */,
 				2214783D1386A2030020F8B8 /* Localizable.strings in Resources */,
-				22E028B813B4CCBD0068A713 /* VideoViewController.xib in Resources */,
 				226B563F13CAF1CD00921595 /* audio.plist in Resources */,
 				22E1A9E813CAF4AA00219531 /* video.plist in Resources */,
 				70571E1A13FABCB000CDD3C2 /* rootca.pem in Resources */,
 				344ABD72147FC438007420B6 /* ConferenceCallDetailView.xib in Resources */,
 				344ABD7A147FD32B007420B6 /* ConferenceCallDetailCell.xib in Resources */,
 				34CA852F148F646700503C01 /* MainScreenWithVideoPreview.xib in Resources */,
-				34CA8535148F669900503C01 /* VideoViewController-ipad.xib in Resources */,
 				3422AA5014975EC9000D4E8A /* InCallViewController-ipad.xib in Resources */,
 				3422AA5314978352000D4E8A /* PhoneViewController-ipad.xib in Resources */,
 				341FCA8E149798210084BC26 /* linphonerc-ipad in Resources */,
@@ -1836,6 +1834,8 @@
 				D3432A6C158A4446001C6B0B /* quality-call-3.png in Resources */,
 				D3432A71158A45AF001C6B0B /* status_inprogress.png in Resources */,
 				D3432A73158A45AF001C6B0B /* status_disconnected.png in Resources */,
+				D37295CA158B1E2D00D2C0C7 /* registration_inprogress.png in Resources */,
+				D37295DB158B3C9600D2C0C7 /* video-OFF-disabled.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1844,7 +1844,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				22D8F11F147548E2008C97DB /* linphonerc in Resources */,
-				22D8F120147548E2008C97DB /* PhoneViewController.xib in Resources */,
+				22D8F120147548E2008C97DB /* DialerViewController.xib in Resources */,
 				22D8F121147548E2008C97DB /* ringback.wav in Resources */,
 				22D8F124147548E2008C97DB /* untitled.plist in Resources */,
 				22D8F125147548E2008C97DB /* oldphone-mono.wav in Resources */,
@@ -1858,7 +1858,6 @@
 				22D8F13B147548E2008C97DB /* FirstLoginViewController.xib in Resources */,
 				22D8F13C147548E2008C97DB /* iTunesArtwork in Resources */,
 				22D8F13D147548E2008C97DB /* Localizable.strings in Resources */,
-				22D8F13F147548E2008C97DB /* VideoViewController.xib in Resources */,
 				22D8F140147548E2008C97DB /* audio.plist in Resources */,
 				22D8F141147548E2008C97DB /* video.plist in Resources */,
 				22D8F142147548E2008C97DB /* rootca.pem in Resources */,
@@ -1866,7 +1865,6 @@
 				344ABD73147FC438007420B6 /* ConferenceCallDetailView.xib in Resources */,
 				344ABD7B147FD32B007420B6 /* ConferenceCallDetailCell.xib in Resources */,
 				34CA8530148F646700503C01 /* MainScreenWithVideoPreview.xib in Resources */,
-				34CA8536148F669900503C01 /* VideoViewController-ipad.xib in Resources */,
 				3422AA5114975EC9000D4E8A /* InCallViewController-ipad.xib in Resources */,
 				3422AA5414978352000D4E8A /* PhoneViewController-ipad.xib in Resources */,
 				341FCA8F149798210084BC26 /* linphonerc-ipad in Resources */,
@@ -1971,6 +1969,8 @@
 				D3432A6D158A4446001C6B0B /* quality-call-3.png in Resources */,
 				D3432A72158A45AF001C6B0B /* status_inprogress.png in Resources */,
 				D3432A74158A45AF001C6B0B /* status_disconnected.png in Resources */,
+				D37295CB158B1E2D00D2C0C7 /* registration_inprogress.png in Resources */,
+				D37295DC158B3C9600D2C0C7 /* video-OFF-disabled.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1983,7 +1983,7 @@
 			files = (
 				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
 				1D3623260D0F684500981E51 /* LinphoneAppDelegate.m in Sources */,
-				22F2508E107141E100AC9B3F /* PhoneViewController.m in Sources */,
+				22F2508E107141E100AC9B3F /* DialerViewController.m in Sources */,
 				22E0A822111C44E100B04932 /* MoreViewController.m in Sources */,
 				22E0A824111C44E100B04932 /* ConsoleViewController.m in Sources */,
 				2248E90E12F7E4CF00220D9C /* UIDigitButton.m in Sources */,
@@ -1997,7 +1997,6 @@
 				22C755601317E59C007BC101 /* UIBluetoothButton.m in Sources */,
 				22BB1A69132FF16A005CD7AA /* UIEraseButton.m in Sources */,
 				223963171393CFAF001DE689 /* FastAddressBook.m in Sources */,
-				22E028B713B4CCBD0068A713 /* VideoViewController.m in Sources */,
 				22AA8B0113D83F6300B30535 /* UICamSwitch.m in Sources */,
 				2211DBBE14769C8300DEE054 /* CallDelegate.m in Sources */,
 				344ABD77147FCB68007420B6 /* ConferenceCallDetailView.m in Sources */,
@@ -2018,6 +2017,7 @@
 				D32648441588F6FC00930C67 /* UIToggleButton.m in Sources */,
 				D36FB2D51589EF7C0036F6F2 /* UIPauseButton.m in Sources */,
 				D31C9C98158A1CDF00756B45 /* UIHistoryCell.m in Sources */,
+				D32409C3158B49A600C8C119 /* UILongTouchButton.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2027,7 +2027,7 @@
 			files = (
 				22D8F144147548E2008C97DB /* main.m in Sources */,
 				22D8F145147548E2008C97DB /* LinphoneAppDelegate.m in Sources */,
-				22D8F146147548E2008C97DB /* PhoneViewController.m in Sources */,
+				22D8F146147548E2008C97DB /* DialerViewController.m in Sources */,
 				22D8F14A147548E2008C97DB /* MoreViewController.m in Sources */,
 				22D8F14B147548E2008C97DB /* ConsoleViewController.m in Sources */,
 				22D8F14C147548E2008C97DB /* UIDigitButton.m in Sources */,
@@ -2041,7 +2041,6 @@
 				22D8F155147548E2008C97DB /* UIBluetoothButton.m in Sources */,
 				22D8F156147548E2008C97DB /* UIEraseButton.m in Sources */,
 				22D8F157147548E2008C97DB /* FastAddressBook.m in Sources */,
-				22D8F158147548E2008C97DB /* VideoViewController.m in Sources */,
 				22D8F159147548E2008C97DB /* UICamSwitch.m in Sources */,
 				2211DBBF14769C8300DEE054 /* CallDelegate.m in Sources */,
 				344ABD78147FCB68007420B6 /* ConferenceCallDetailView.m in Sources */,
@@ -2062,6 +2061,7 @@
 				D32648451588F6FC00930C67 /* UIToggleButton.m in Sources */,
 				D36FB2D61589EF7C0036F6F2 /* UIPauseButton.m in Sources */,
 				D31C9C99158A1CDF00756B45 /* UIHistoryCell.m in Sources */,
+				D32409C4158B49A600C8C119 /* UILongTouchButton.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

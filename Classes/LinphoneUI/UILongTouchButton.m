@@ -1,6 +1,6 @@
-/* UIToggleButton.m
+/* UILongTouchButton.h
  *
- * Copyright (C) 2011  Belledonne Comunications, Grenoble, France
+ * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -10,41 +10,41 @@
  *  This program is distributed in the hope that it will be useful,     
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of      
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       
- *  GNU General Public License for more details.                
+ *  GNU Library General Public License for more details.                
  *                                                                      
  *  You should have received a copy of the GNU General Public License   
  *  along with this program; if not, write to the Free Software         
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */       
+ */  
 
-#import "UIToggleButton.h"
+#import "UILongTouchButton.h"
 
-@implementation UIToggleButton
-
-- (void)touchUp:(id) sender {
-	[self toggle];
-}
-
-- (bool)toggle {
-	if (self.selected) {
-		self.selected=!self.selected;
-		[self onOff];
-	} else {
-        self.selected=!self.selected;
-		[self onOn];
-	}
-	return self.selected;
-}
-
-- (bool)update {
-	self.selected = [self onUpdate];
-	return self.selected;
-}
+@implementation UILongTouchButton
 
 - (id)init {
-    [self update];
-	[self addTarget:self action:@selector(touchUp:) forControlEvents:UIControlEventTouchUpInside];
+	[self addTarget:self action:@selector(___touchDown:) forControlEvents:UIControlEventTouchDown];
+    [self addTarget:self action:@selector(___touchUp:) forControlEvents:UIControlEventTouchUpInside|UIControlEventTouchUpOutside];
 	return self;
+}
+
+- (void)___touchDown:(id) sender {
+    [self performSelector:@selector(doLongTouch) withObject:nil afterDelay:0.5];
+}
+
+- (void)___touchUp:(id) sender {
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(doLongTouch) object:nil];
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(doRepeatTouch) object:nil];
+}
+
+- (void)doLongTouch {
+    [self onLongTouch];
+    [self onRepeatTouch];
+	[self performSelector:@selector(doRepeatTouch) withObject:nil afterDelay:0.1];
+}
+
+- (void)doRepeatTouch {
+    [self onRepeatTouch];
+	[self performSelector:@selector(doRepeatTouch) withObject:nil afterDelay:0.1];
 }
 
 - (id)initWithFrame:(CGRect)frame {
@@ -63,22 +63,14 @@
     return self;
 }	
 
-- (void)dealloc {
-    [super dealloc];
+- (void)onRepeatTouch {
+    [NSException raise:NSInternalInconsistencyException 
+                format:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)];
 }
 
--(void) onOn {
+- (void)onLongTouch {
     [NSException raise:NSInternalInconsistencyException 
                 format:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)];
-}
--(void) onOff {
-    [NSException raise:NSInternalInconsistencyException 
-                format:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)];
-}
--(bool) onUpdate {
-    [NSException raise:NSInternalInconsistencyException 
-                format:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)];
-    return false;
 }
 
 @end

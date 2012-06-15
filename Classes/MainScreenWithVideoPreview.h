@@ -19,11 +19,12 @@
 
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
-#import "PhoneViewController.h"
+
+#import "DialerViewController.h"
  
 @interface MainScreenWithVideoPreview : UIViewController {
     UIWindow *window;
-    PhoneViewController* phoneMainView;
+    DialerViewController* phoneMainView;
     
     
     AVCaptureSession* session;
@@ -36,6 +37,6 @@
 
 -(void) useCameraAtIndex:(NSInteger)camIndex startSession:(BOOL)start;
 
-@property (nonatomic, retain) IBOutlet PhoneViewController* phoneMainView;
+@property (nonatomic, retain) IBOutlet DialerViewController* phoneMainView;
 @property (nonatomic, retain) IBOutlet UIWindow *window;
 @end

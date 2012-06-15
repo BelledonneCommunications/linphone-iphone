@@ -29,14 +29,14 @@ enum CallDelegateType {
     CD_TRANSFER_CALL
 };
 
-@protocol UIActionSheetCustomDelegate 
+@protocol CallActionSheetDelegate
 - (void)actionSheet:(UIActionSheet *)actionSheet ofType:(enum CallDelegateType) type clickedButtonAtIndex:(NSInteger)buttonIndex withUserDatas:(void*) datas;
 @end
 
 @interface CallDelegate : NSObject<UIActionSheetDelegate> {
     enum CallDelegateType eventType;
     LinphoneCall* call;
-    id<UIActionSheetCustomDelegate> delegate;
+    id<CallActionSheetDelegate> delegate;
     NSTimer* timeout;
 }
 

@@ -1,6 +1,6 @@
-/* UIEraseButton.m
+/* UILongTouchButton.h
  *
- * Copyright (C) 2011  Belledonne Comunications, Grenoble, France
+ * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -10,38 +10,22 @@
  *  This program is distributed in the hope that it will be useful,     
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of      
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       
- *  GNU General Public License for more details.                
+ *  GNU Library General Public License for more details.                
  *                                                                      
  *  You should have received a copy of the GNU General Public License   
  *  along with this program; if not, write to the Free Software         
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */              
+ */  
 
-#import "UIEraseButton.h"
+#import <UIKit/UIKit.h>
 
+@protocol UILongTouchButtonDelegate 
+-(void) onRepeatTouch;
+-(void) onLongTouch;
+@end
 
-@implementation UIEraseButton
--(void) touchDown:(id) sender {
-  	if ([mAddress.text length] > 0) {
-		[mAddress setText:[mAddress.text substringToIndex:[mAddress.text length]-1]];
-	}  
+@interface UILongTouchButton : UIButton <UILongTouchButtonDelegate> {
+    
 }
-
--(void) initWithAddressField:(UITextField*) address {
-	mAddress = address;
-	[self addTarget:self action:@selector(touchDown:) forControlEvents:UIControlEventTouchDown];
-}
-
-- (void)onRepeatTouch {
-}
-
-- (void)onLongTouch {
-    [mAddress setText:@""];
-}
-
-- (void)dealloc {
-    [super dealloc];
-}
-
 
 @end

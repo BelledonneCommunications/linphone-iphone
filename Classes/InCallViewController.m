@@ -18,7 +18,6 @@
  */  
 
 #import "IncallViewController.h"
-#import "VideoViewController.h"
 #import "LinphoneManager.h"
 #import <AudioToolbox/AudioToolbox.h>
 #import <AddressBook/AddressBook.h>
@@ -186,7 +185,7 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     // show controls    
     [UIView beginAnimations:nil context:nil];
     [UIView setAnimationDuration:0.3];
-    [controlSubView setAlpha:1.0];
+    [[LinphoneManager instance] showTabBar: true];
     [hangUpView setAlpha:1.0];
     if ([LinphoneManager instance].frontCamId !=nil ) {
         // only show camera switch button if we have more than 1 camera
@@ -205,6 +204,7 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     [hangUpView setAlpha:0.0];
     [videoCameraSwitch setAlpha:0.0];
     [UIView commitAnimations];
+     [[LinphoneManager instance] showTabBar: false];
     
     hideControlsTimer = nil;
 }
@@ -262,7 +262,7 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     [UIView beginAnimations:nil context:nil];
     [UIView setAnimationDuration:1.0];
     [videoGroup setAlpha:1.0];
-    [controlSubView setAlpha:0.0];
+
     [hangUpView setAlpha:0.0];
     [callTableView setAlpha:0.0];
     [UIView commitAnimations];
@@ -273,7 +273,8 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     linphone_core_set_native_video_window_id([LinphoneManager getLc],(unsigned long)videoView);	
     linphone_core_set_native_preview_window_id([LinphoneManager getLc],(unsigned long)videoPreview);
     
-    [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
+    [[LinphoneManager instance] fullScreen: true];
+    [[LinphoneManager instance] showTabBar: false];
     
     // This is a bit hacky: take into account toolbar removal (only once).
     // It's probably possible to do this from the Xib file (?)
@@ -295,7 +296,7 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     [UIView beginAnimations:nil context:nil];
     [UIView setAnimationDuration:1.0];
     [videoGroup setAlpha:0.0];
-    [controlSubView setAlpha:1.0];
+    [[LinphoneManager instance] showTabBar: true];
     [hangUpView setAlpha:1.0];
     [callTableView setAlpha:1.0];
     [videoCameraSwitch setAlpha:0.0];
@@ -317,7 +318,7 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     dialer.imageView.transform = CGAffineTransformIdentity;
     videoCallQuality.transform = CGAffineTransformIdentity;
     
-    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone]; 
+    [[LinphoneManager instance] fullScreen:false];
 }
 
 /* Update in call view buttons (visibility, state, ...) and call duration text.
@@ -327,11 +328,9 @@ void addAnimationFadeTransition(UIView* view, float duration) {
 
     // check LinphoneCore is initialized
     LinphoneCore* lc = nil;
-    @try {
+    if([LinphoneManager isLcReady])
         lc = [LinphoneManager getLc];
-    } @catch (NSException* exc) {
-        return;
-    }
+    
     // 1 call: show pause button, otherwise show merge btn
     // [LinphoneManager set:mergeCalls hidden:!pause.hidden withName:"MERGE button" andReason:"call count"];
     // reload table (glow update + call duration)
@@ -395,17 +394,11 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     
     if ([LinphoneManager runningOnIpad]) {
         ms_message("Running on iPad");
-        mVideoViewController =  [[VideoViewController alloc]  initWithNibName:@"VideoViewController-ipad" 
-                                                                       bundle:[NSBundle mainBundle]];
         conferenceDetail = [[ConferenceCallDetailView alloc]  initWithNibName:@"ConferenceCallDetailView-ipad" 
                                                                        bundle:[NSBundle mainBundle]];
-
     } else {
-        mVideoViewController =  [[VideoViewController alloc]  initWithNibName:@"VideoViewController" 
-																							 bundle:[NSBundle mainBundle]];
         conferenceDetail = [[ConferenceCallDetailView alloc]  initWithNibName:@"ConferenceCallDetailView" 
                                                                        bundle:[NSBundle mainBundle]];
-
     }
     
     UITapGestureRecognizer* singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showControls:)];
@@ -630,12 +623,12 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     if (modalVC != nil) {
         mVideoIsPending=FALSE;
         // clear previous native window ids
-        if (modalVC == mVideoViewController) {
+        /*if (modalVC == mVideoViewController) {
             mVideoShown=FALSE;
             linphone_core_set_native_video_window_id([LinphoneManager getLc],0);	
             linphone_core_set_native_preview_window_id([LinphoneManager getLc],0);
-        }
-		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone]; 
+        }*/
+		[[LinphoneManager instance] fullScreen:false];
 		[self dismissModalViewControllerAnimated:FALSE];//just in case
     }
 
@@ -777,19 +770,6 @@ static void hideSpinner(LinphoneCall* call, void* user_data) {
     if (call->videostream) {
         linphone_call_set_next_video_frame_decoded_callback(call, hideSpinner, self);
     }
-    return;
-    
-	if (mIncallViewIsReady) {
-        [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
-        mVideoShown=TRUE;
-        if (self.modalViewController != mVideoViewController)
-            [self presentModalViewController:mVideoViewController animated:true];
-        else
-            ms_message("Do not present again videoViewController");
-	} else {
-		//postpone presentation
-		mVideoIsPending=TRUE;
-	}
 }
 
 -(void) dismissActionSheet: (id)o {

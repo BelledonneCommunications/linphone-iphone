@@ -23,11 +23,15 @@
 
 @interface HistoryViewController : UIViewController {
     HistoryTableViewController *tableController;
+    UITableView *tableView;
+    
     UIButton *allButton;
     UIButton *missedButton;
 }
 
 @property (nonatomic, retain) IBOutlet HistoryTableViewController* tableController;
+@property (nonatomic, retain) IBOutlet UITableView *tableView;
+
 @property (nonatomic, retain) IBOutlet UIButton* allButton;
 @property (nonatomic, retain) IBOutlet UIButton* missedButton;
 

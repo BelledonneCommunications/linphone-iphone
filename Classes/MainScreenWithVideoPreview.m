@@ -129,12 +129,8 @@
 
 -(void) showPreview:(BOOL) show {
     LinphoneCore* lc;
-    @try {
+    if([LinphoneManager isLcReady])
         lc = [LinphoneManager getLc];
-    }
-    @catch (NSException *exception) {
-        return;
-    }
     
     bool enableVideo = [[NSUserDefaults standardUserDefaults] boolForKey:@"enable_video_preference"];
     
@@ -160,7 +156,8 @@
 
 -(void) viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    [phoneMainView.switchCamera addTarget:self action:@selector(switchCameraPressed) forControlEvents:UIControlEventTouchUpInside];
+    //TODO
+    //[phoneMainView.switchCamera addTarget:self action:@selector(switchCameraPressed) forControlEvents:UIControlEventTouchUpInside];
 }
 
 -(void) viewDidDisappear:(BOOL)animated {

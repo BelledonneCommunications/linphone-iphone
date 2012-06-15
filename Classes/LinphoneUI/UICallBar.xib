@@ -38,10 +38,10 @@
 					<object class="IBUIView" id="464536687">
 						<reference key="NSNextResponder" ref="931774220"/>
 						<int key="NSvFlags">-2147483356</int>
-						<string key="NSFrameSize">{320, 135}</string>
+						<string key="NSFrame">{{0, 10}, {320, 125}}</string>
 						<reference key="NSSuperview" ref="931774220"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="262544423"/>
+						<reference key="NSNextKeyView" ref="693636558"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<object class="NSColor" key="IBUIBackgroundColor">
 							<int key="NSColorSpace">3</int>
@@ -50,6 +50,9 @@
 								<int key="NSID">2</int>
 							</object>
 						</object>
+						<bool key="IBUIOpaque">NO</bool>
+						<bool key="IBUIAutoresizesSubviews">NO</bool>
+						<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
 						<int key="IBUITag">-1</int>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -60,7 +63,7 @@
 						<string key="NSFrameSize">{80, 67}</string>
 						<reference key="NSSuperview" ref="931774220"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="693636558"/>
+						<reference key="NSNextKeyView" ref="464536687"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
@@ -70,6 +73,7 @@
 						<int key="IBUIContentHorizontalAlignment">0</int>
 						<int key="IBUIContentVerticalAlignment">0</int>
 						<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
+						<bool key="IBUIAdjustsImageWhenDisabled">NO</bool>
 						<object class="NSColor" key="IBUIHighlightedTitleColor" id="707105299">
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MQA</bytes>
@@ -85,6 +89,10 @@
 						<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage">
 							<string key="NSClassName">NSImage</string>
 							<string key="NSResourceName">video-ON-over.png</string>
+						</object>
+						<object class="NSCustomResource" key="IBUIDisabledBackgroundImage">
+							<string key="NSClassName">NSImage</string>
+							<string key="NSResourceName">video-OFF-disabled.png</string>
 						</object>
 						<object class="NSCustomResource" key="IBUISelectedBackgroundImage">
 							<string key="NSClassName">NSImage</string>
@@ -318,7 +326,7 @@
 				<string key="NSFrameSize">{320, 135}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
-				<reference key="NSNextKeyView" ref="464536687"/>
+				<reference key="NSNextKeyView" ref="262544423"/>
 				<string key="NSReuseIdentifierKey">_NS:9</string>
 				<object class="NSColor" key="IBUIBackgroundColor">
 					<int key="NSColorSpace">1</int>
@@ -469,7 +477,7 @@
 				<real value="0.0" key="11.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="12.CustomClassName">UIVideoButton</string>
 				<string key="12.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-				<real value="0.0" key="12.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+				<real value="3" key="12.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="4.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="5.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="6.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -609,6 +617,7 @@
 			<string key="speacker-ON-actif.png">{160, 134}</string>
 			<string key="speacker-ON-over.png">{160, 134}</string>
 			<string key="video-OFF-actif.png">{160, 134}</string>
+			<string key="video-OFF-disabled.png">{160, 134}</string>
 			<string key="video-ON-actif.png">{160, 134}</string>
 			<string key="video-ON-over.png">{160, 134}</string>
 		</dictionary>

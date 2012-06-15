@@ -18,7 +18,6 @@
  */                                                                           
 
 #import "PhoneMainView.h"
-#import "PhoneViewController.h"
 #import "linphoneAppDelegate.h"
 #import "AddressBook/ABPerson.h"
 

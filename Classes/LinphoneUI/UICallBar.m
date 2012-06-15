@@ -37,11 +37,8 @@
 - (void)callUpdate: (NSNotification*) notif {
     // check LinphoneCore is initialized
     LinphoneCore* lc = nil;
-    @try {
+    if([LinphoneManager isLcReady])
         lc = [LinphoneManager getLc];
-    } @catch (NSException* exc) {
-        return;
-    }
     
     //TODO
     //[LinphoneManager set:mergeCalls hidden:!pause.hidden withName:"MERGE button" andReason:"call count"];     

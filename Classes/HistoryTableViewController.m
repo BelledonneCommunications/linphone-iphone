@@ -110,14 +110,8 @@
     
     // Go to dialer view
     NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:
-                           [[NSDictionary alloc] initWithObjectsAndKeys:
-                            [[NSArray alloc] initWithObjects: dispName, nil]
-                            , @"setText:", nil]
-                           , @"mDisplayName",
-                          [[NSDictionary alloc] initWithObjectsAndKeys:
-                            [[NSArray alloc] initWithObjects: phoneNumber, nil]
-                            , @"setText:", nil]
-                           , @"address",
+                          [[NSArray alloc] initWithObjects: phoneNumber, nil]
+                          , @"setAddress:",
                           nil];
     [[LinphoneManager instance] changeView:PhoneView_Dialer dict:dict];
 

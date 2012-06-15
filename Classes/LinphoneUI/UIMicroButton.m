@@ -32,9 +32,9 @@
 }
 
 - (bool)onUpdate {
-	@try {
+	if([LinphoneManager isLcReady]) {
 		return linphone_core_is_mic_muted([LinphoneManager getLc]) == false;
-	} @catch(NSException* e) {
+	} else {
 		//not ready yet
 		return true;
 	}

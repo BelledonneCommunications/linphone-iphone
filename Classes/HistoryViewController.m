@@ -21,7 +21,9 @@
 
 @implementation HistoryViewController
 
+@synthesize tableView;
 @synthesize tableController;
+
 @synthesize allButton;
 @synthesize missedButton;
 
@@ -30,6 +32,11 @@ typedef enum _HistoryView {
     History_Missed,
     History_MAX
 } HistoryView;
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+	[self.tableView reloadData];
+}
 
 - (void)changeView: (HistoryView) view {
     if(view == History_All) {

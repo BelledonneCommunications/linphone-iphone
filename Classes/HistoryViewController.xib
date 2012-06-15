@@ -156,7 +156,6 @@
 						<string key="NSFrame">{{0, 58}, {320, 402}}</string>
 						<reference key="NSSuperview" ref="812520855"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<object class="NSColor" key="IBUIBackgroundColor">
 							<int key="NSColorSpace">3</int>
@@ -165,7 +164,7 @@
 						<bool key="IBUIClipsSubviews">YES</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<double key="IBUIContentInset.top">0.0</double>
-						<double key="IBUIContentInset.bottom">15</double>
+						<double key="IBUIContentInset.bottom">10</double>
 						<double key="IBUIContentInset.left">0.0</double>
 						<double key="IBUIContentInset.right">0.0</double>
 						<bool key="IBUIAlwaysBounceVertical">YES</bool>
@@ -233,6 +232,14 @@
 						<reference key="destination" ref="596330568"/>
 					</object>
 					<int key="connectionID">28</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">tableView</string>
+						<reference key="source" ref="841351856"/>
+						<reference key="destination" ref="801043690"/>
+					</object>
+					<int key="connectionID">31</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
@@ -370,7 +377,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">30</int>
+			<int key="maxID">31</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -403,6 +410,7 @@
 						<string key="allButton">UIButton</string>
 						<string key="missedButton">UIButton</string>
 						<string key="tableController">HistoryTableViewController</string>
+						<string key="tableView">UITableView</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
 						<object class="IBToOneOutletInfo" key="allButton">
@@ -416,6 +424,10 @@
 						<object class="IBToOneOutletInfo" key="tableController">
 							<string key="name">tableController</string>
 							<string key="candidateClassName">HistoryTableViewController</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="tableView">
+							<string key="name">tableView</string>
+							<string key="candidateClassName">UITableView</string>
 						</object>
 					</dictionary>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">

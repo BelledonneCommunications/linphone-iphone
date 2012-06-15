@@ -19,8 +19,9 @@
 
 #import <UIKit/UIKit.h>
 
+#import "UILongTouchButton.h"
 
-@interface UIEraseButton : UIButton {
+@interface UIEraseButton : UILongTouchButton<UILongTouchButtonDelegate>  {
 @private
 	UITextField* mAddress;
 	

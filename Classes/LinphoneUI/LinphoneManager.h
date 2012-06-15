@@ -86,32 +86,35 @@ typedef struct _LinphoneCallAppData {
 @public
     CallContext currentCallContextBeforeGoingBackground;
 }
-+(LinphoneManager*) instance;
-+(LinphoneCore*) getLc;
-+(BOOL) runningOnIpad;
-+(void) set:(UIView*)view hidden: (BOOL) hidden withName:(const char*)name andReason:(const char*) reason;
-+(void) set:(UIButton*)view enabled: (BOOL) enabled withName:(const char*)name andReason:(const char*) reason;
-+(void) logUIElementPressed:(const char*) name;
++ (LinphoneManager*) instance;
++ (LinphoneCore*) getLc;
++ (BOOL)isLcReady;
++ (BOOL)runningOnIpad;
++ (void)set:(UIView*)view hidden: (BOOL) hidden withName:(const char*)name andReason:(const char*) reason;
++ (void)set:(UIButton*)view enabled: (BOOL) enabled withName:(const char*)name andReason:(const char*) reason;
++ (void)logUIElementPressed:(const char*) name;
 + (void)abstractCall:(id) object dict:(NSDictionary *) dict;
--(void) registerLogView:(id<LogView>) view;
+- (void)registerLogView:(id<LogView>) view;
 
--(void) startLibLinphone;
--(BOOL) isNotIphone3G;
--(void) destroyLibLinphone;
+- (void)startLibLinphone;
+- (BOOL)isNotIphone3G;
+- (void)destroyLibLinphone;
   
--(BOOL) enterBackgroundMode;
--(void) becomeActive;
--(void) kickOffNetworkConnection;
--(NSString*) getDisplayNameFromAddressBook:(NSString*) number andUpdateCallLog:(LinphoneCallLog*)log; 
--(UIImage*) getImageFromAddressBook:(NSString*) number;
+- (BOOL)enterBackgroundMode;
+- (void)becomeActive;
+- (void)kickOffNetworkConnection;
+- (NSString*)getDisplayNameFromAddressBook:(NSString*) number andUpdateCallLog:(LinphoneCallLog*)log; 
+- (UIImage*)getImageFromAddressBook:(NSString*) number;
 
--(BOOL) reconfigureLinphoneIfNeeded:(NSDictionary *)oldSettings;
--(void) setupNetworkReachabilityCallback;
--(void) refreshRegisters;
+- (BOOL)reconfigureLinphoneIfNeeded:(NSDictionary *)oldSettings;
+- (void)setupNetworkReachabilityCallback;
+- (void)refreshRegisters;
 
--(void) changeView:(PhoneView) view;
--(void) changeView:(PhoneView) view dict:(NSDictionary *)dict;
--(PhoneView) currentView;
+- (void)changeView:(PhoneView) view;
+- (void)changeView:(PhoneView) view dict:(NSDictionary *)dict;
+- (void)showTabBar:(BOOL) show;
+- (void)fullScreen:(BOOL) enabled;
+- (PhoneView) currentView;
 
 @property Connectivity connectivity;
 @property (readonly) const char*  frontCamId;

@@ -24,6 +24,8 @@
 @implementation ContactsViewController
 
 @synthesize tableController;
+@synthesize tableView;
+
 @synthesize allButton;
 @synthesize linphoneButton;
 
@@ -33,8 +35,12 @@ typedef enum _HistoryView {
     History_MAX
 } HistoryView;
 
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+	[self.tableView reloadData];
+}
 
-- (void) changeView: (HistoryView) view {
+- (void)changeView: (HistoryView) view {
     if(view == History_All) {
         allButton.selected = TRUE;
     } else {
@@ -48,16 +54,16 @@ typedef enum _HistoryView {
     }
 }
 
-- (void) viewDidLoad {
+- (void)viewDidLoad {
     [super viewDidLoad];
     [self changeView: History_All];
 }
 
--(IBAction) onAllClick: (id) event {
+- (IBAction)onAllClick: (id) event {
     [self changeView: History_All];
 }
 
--(IBAction) onLinphoneClick: (id) event {
+- (IBAction)onLinphoneClick: (id) event {
     [self changeView: History_Linphone];
 }
 

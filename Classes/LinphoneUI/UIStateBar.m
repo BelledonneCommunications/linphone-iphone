@@ -24,15 +24,28 @@
 
 @implementation UIStateBar
 
-@synthesize image;
-@synthesize spinner;
-@synthesize label;
+@synthesize registrationStateImage;
+@synthesize registrationStateLabel;
+@synthesize callQualityImage;
+
+NSTimer *callQualityTimer;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
     // Set observer
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(registrationUpdate:) name:@"LinphoneRegistrationUpdate" object:nil];
+    
+    // Set callQualityTimer
+    [callQualityImage setHidden: true];
+	callQualityTimer = [NSTimer scheduledTimerWithTimeInterval:1 
+													 target:self 
+												   selector:@selector(callQualityUpdate) 
+												   userInfo:nil 
+													repeats:YES];
+    
+    // Update to default state
+    [self proxyConfigUpdate: NULL];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -40,24 +53,56 @@
 }
 
 - (void)registrationUpdate: (NSNotification*) notif {  
-    LinphoneProxyConfig* config;
+    LinphoneProxyConfig* config = NULL;
     linphone_core_get_default_proxy([LinphoneManager getLc], &config);
-    
+    [self proxyConfigUpdate:config];
+}
+
+- (void)callQualityUpdate { 
+    UIImage *image = nil;
+    if([LinphoneManager isLcReady]) {
+        LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
+        if(call != NULL) {
+            float quality = linphone_call_get_average_quality(call);
+            if(quality < 1) {
+                image = [UIImage imageNamed:@"quality-call-0.png"];
+            } else if (quality < 2) {
+                image = [UIImage imageNamed:@"quality-call-1.png"];
+            } else if (quality < 3) {
+                image = [UIImage imageNamed:@"quality-call-2.png"];
+            } else {
+                image = [UIImage imageNamed:@"quality-call-3.png"];
+            }
+        }
+    }
+    if(image != nil) {
+        [callQualityImage setHidden: false];
+        [callQualityImage setImage: image];
+    } else {
+        [callQualityImage setHidden: true];
+    }
+}
+
+- (void)proxyConfigUpdate: (LinphoneProxyConfig*) config {
     LinphoneRegistrationState state;
     NSString* message = nil;
-    
+    UIImage* image = nil;
+
     if (config == NULL) {
         state = LinphoneRegistrationNone;
-        message = linphone_core_is_network_reachabled([LinphoneManager getLc]) ? NSLocalizedString(@"No SIP account configured", nil) : NSLocalizedString(@"Network down", nil);
+        if(![LinphoneManager isLcReady] || linphone_core_is_network_reachabled([LinphoneManager getLc]))
+            message = NSLocalizedString(@"No SIP account configured", nil);
+        else
+            message = NSLocalizedString(@"Network down", nil);
     } else {
         state = linphone_proxy_config_get_state(config);
-        
+    
         switch (state) {
             case LinphoneRegistrationOk: 
                 message = @"Registered"; break;
             case LinphoneRegistrationNone: 
-			case LinphoneRegistrationCleared:
-				message = @"Not registered"; break;
+            case LinphoneRegistrationCleared:
+                message = @"Not registered"; break;
             case LinphoneRegistrationFailed: 
                 message = @"Registration failed"; break;
             case LinphoneRegistrationProgress: 
@@ -66,44 +111,46 @@
             default: break;
         }
     }
-    
-    label.hidden = NO;
+
+    registrationStateLabel.hidden = NO;
     switch(state) {
         case LinphoneRegistrationCleared:
-/*            image.hidden = NO;
-            [image setImage:[UIImage imageNamed:@"status_orange.png"]];
-            [spinner stopAnimating];
-            [label setText:message != nil ? message : NSLocalizedString(@"No SIP account defined", nil)];*/
+            /*            image.hidden = NO;
+             [image setImage:[UIImage imageNamed:@"status_orange.png"]];
+             [spinner stopAnimating];
+             [label setText:message != nil ? message : NSLocalizedString(@"No SIP account defined", nil)];*/
+            break;
         case LinphoneRegistrationFailed:
-            image.hidden = NO;
-            [image setImage:[UIImage imageNamed:@"status_error.png"]];
-            [spinner stopAnimating];
-            [label setText:message];
+            registrationStateImage.hidden = NO;
+            image = [UIImage imageNamed:@"status_error.png"];
+            break;
         case LinphoneRegistrationNone:
-            image.hidden = NO;
-            [image setImage:[UIImage imageNamed:@"status_disconnected.png"]];
-            [spinner stopAnimating];
-            [label setText:message];
+            registrationStateImage.hidden = NO;
+            image =[UIImage imageNamed:@"status_disconnected.png"];
+            break;
         case LinphoneRegistrationProgress:
-            image.hidden = NO;
-            [image setImage:[UIImage imageNamed:@"status_inprogress.png"]];
-            [spinner stopAnimating];
-            [label setText:message];
+            registrationStateImage.hidden = NO;
+            image = [UIImage imageNamed:@"status_inprogress.png"];
+            break;
         case LinphoneRegistrationOk:
-            image.hidden = NO;
-            [image setImage:[UIImage imageNamed:@"status_connected.png"]];
-            [spinner stopAnimating];
-            [label setText:message];
+            registrationStateImage.hidden = NO;
+            image = [UIImage imageNamed:@"status_connected.png"];
+            break;
     }
+    [registrationStateLabel setText:message];
+    [registrationStateImage setImage:image];
 }
 
 - (void) viewDidUnload {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [callQualityTimer invalidate];
 }
 
 - (void) dealloc {
-    [super dealloc];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [callQualityTimer invalidate];
+    [callQualityTimer release];
+    [super dealloc];
 }
 
 @end

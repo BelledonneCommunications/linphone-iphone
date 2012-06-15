@@ -19,13 +19,18 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ContactTableViewController.h"
+
 @interface ContactsViewController : UIViewController {
-    UITableViewController *tableController;
+    ContactTableViewController *tableController;
+    UITableView *tableView;
+    
     UIButton *allButton;
     UIButton *linphoneButton;
 }
 
 @property (nonatomic, retain) IBOutlet UITableViewController* tableController;
+@property (nonatomic, retain) IBOutlet UITableView *tableView;
 @property (nonatomic, retain) IBOutlet UIButton* allButton;
 @property (nonatomic, retain) IBOutlet UIButton* linphoneButton;
 

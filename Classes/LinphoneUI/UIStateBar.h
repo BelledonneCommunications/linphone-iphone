@@ -20,13 +20,13 @@
 #import <UIKit/UIKit.h>
 
 @interface UIStateBar : UIViewController {
-    UIImageView* image;
-    UIActivityIndicatorView* spinner;
-    UILabel* label;
+    UIImageView*    registrationStateImage;
+    UILabel*        registrationStateLabel;
+    UIImageView*    callQualityImage;
 }
 
-@property (nonatomic, retain) IBOutlet UIImageView* image;
-@property (nonatomic, retain) IBOutlet UIActivityIndicatorView* spinner;
-@property (nonatomic, retain) IBOutlet UILabel* label;
+@property (nonatomic, retain) IBOutlet UIImageView* registrationStateImage;
+@property (nonatomic, retain) IBOutlet UILabel*     registrationStateLabel;
+@property (nonatomic, retain) IBOutlet UIImageView* callQualityImage;
 
 @end
