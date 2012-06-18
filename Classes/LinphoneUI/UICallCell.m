@@ -1,4 +1,4 @@
-/* UICallBar.m
+/* UICallCell.m
  *
  * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
@@ -15,38 +15,39 @@
  *  You should have received a copy of the GNU General Public License   
  *  along with this program; if not, write to the Free Software         
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */ 
+ */
 
-#import "UICallBar.h"
-#import "LinphoneManager.h"
+#import "UICallCell.h"
 
-#include "linphonecore.h"
-#include "private.h"
+@implementation UICallCell
 
-@implementation UICallBar
+@synthesize firstBackground;
+@synthesize otherBackground;
+@synthesize stateView;
+@synthesize numberLabel;
+@synthesize timeLabel;
 
-@synthesize pauseButton;
-@synthesize videoButton;
-@synthesize microButton;
-@synthesize speakerButton;   
-
-- (void)viewDidLoad {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(callUpdate:) name:@"LinphoneCallUpdate" object:nil];
+- (id)init {
+    if ((self = [super init]) != nil) {
+        NSArray *arrayOfViews = [[NSBundle mainBundle] loadNibNamed:@"UICallCell"
+                                                              owner:self
+                                                            options:nil];
+        
+        if ([arrayOfViews count] >= 1) {
+            [self addSubview:[[arrayOfViews objectAtIndex:0] retain]];
+        }
+    }
+    return self;
 }
 
-- (void)callUpdate: (NSNotification*) notif {
-    // check LinphoneCore is initialized
-    LinphoneCore* lc = nil;
-    if([LinphoneManager isLcReady])
-        lc = [LinphoneManager getLc];
-    
-    //TODO
-    //[LinphoneManager set:mergeCalls hidden:!pause.hidden withName:"MERGE button" andReason:"call count"];     
+- (void)firstCell{
+    [firstBackground setHidden:false];
+    [otherBackground setHidden:true];
+}
 
-    [speakerButton update];
-    [microButton update];
-    [pauseButton update];
-    [videoButton update];
+- (void)otherCell{
+    [firstBackground setHidden:true];
+    [otherBackground setHidden:false];
 }
 
 @end

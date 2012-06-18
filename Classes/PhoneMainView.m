@@ -219,8 +219,18 @@
     
     
     // Set observers
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeView:) name:@"LinphoneMainViewChange" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(callUpdate:) name:@"LinphoneCallUpdate" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self 
+                                             selector:@selector(changeView:) 
+                                                 name:@"LinphoneMainViewChange" 
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self 
+                                             selector:@selector(callUpdate:) 
+                                                 name:@"LinphoneCallUpdate" 
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self 
+                                             selector:@selector(batteryLevelChanged:) 
+                                                 name:UIDeviceBatteryLevelDidChangeNotification 
+                                               object:nil];
 }
      
 - (void)viewDidUnload {
@@ -409,19 +419,69 @@
 	}
 }
 
+- (void)batteryLevelChanged: (NSNotification*) notif {
+    LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
+    if (!call || !linphone_call_params_video_enabled(linphone_call_get_current_params(call)))
+        return;
+    LinphoneCallAppData* appData = (LinphoneCallAppData*) linphone_call_get_user_pointer(call);
+    if ([UIDevice currentDevice].batteryState == UIDeviceBatteryStateUnplugged) {
+        float level = [UIDevice currentDevice].batteryLevel;
+        ms_message("Video call is running. Battery level: %.2f", level);
+        if (level < 0.1 && !appData->batteryWarningShown) {
+            // notify user
+            CallDelegate* cd = [[CallDelegate alloc] init];
+            cd.eventType = CD_STOP_VIDEO_ON_LOW_BATTERY;
+            cd.delegate = self;
+            cd.call = call;
+            
+            if (batteryActionSheet != nil) {
+                [batteryActionSheet dismissWithClickedButtonIndex:batteryActionSheet.cancelButtonIndex animated:TRUE];
+            }
+            NSString* title = NSLocalizedString(@"Battery is running low. Stop video ?",nil);
+            batteryActionSheet = [[UIActionSheet alloc] initWithTitle:title
+                                                             delegate:cd 
+                                                    cancelButtonTitle:NSLocalizedString(@"Continue video",nil) 
+                                               destructiveButtonTitle:NSLocalizedString(@"Stop video",nil) 
+                                                    otherButtonTitles:nil];
+            
+            batteryActionSheet.actionSheetStyle = UIActionSheetStyleDefault;
+            [batteryActionSheet showInView: self.view];
+            [batteryActionSheet release];
+            appData->batteryWarningShown = TRUE;
+        }
+    }
+}
+
 - (void)actionSheet:(UIActionSheet *)actionSheet ofType:(enum CallDelegateType)type 
                                    clickedButtonAtIndex:(NSInteger)buttonIndex 
                                           withUserDatas:(void *)datas {
-    if (type != CD_NEW_CALL)
-        return;
     
-    LinphoneCall* call = (LinphoneCall*)datas;
-	if (buttonIndex == actionSheet.destructiveButtonIndex) {
-		linphone_core_accept_call([LinphoneManager getLc], call);	
-	} else {
-		linphone_core_terminate_call([LinphoneManager getLc], call);
-	}
-	incomingCallActionSheet = nil;
+    switch(type) {
+        case CD_NEW_CALL: 
+        {
+            LinphoneCall* call = (LinphoneCall*)datas;
+            if (buttonIndex == actionSheet.destructiveButtonIndex) {
+                linphone_core_accept_call([LinphoneManager getLc], call);	
+            } else {
+                linphone_core_terminate_call([LinphoneManager getLc], call);
+            }
+            incomingCallActionSheet = nil;
+            break;
+        }
+        case CD_STOP_VIDEO_ON_LOW_BATTERY: 
+        {
+            LinphoneCall* call = (LinphoneCall*)datas;
+            LinphoneCallParams* paramsCopy = linphone_call_params_copy(linphone_call_get_current_params(call));
+            if ([batteryActionSheet destructiveButtonIndex] == buttonIndex) {
+                // stop video
+                linphone_call_params_enable_video(paramsCopy, FALSE);
+                linphone_core_update_call([LinphoneManager getLc], call, paramsCopy);
+            }
+            break;
+        }
+        default:
+            break;
+    }
 }
 
 - (void)dealloc {

@@ -236,21 +236,19 @@
 						<int key="IBUIContentHorizontalAlignment">0</int>
 						<int key="IBUIContentVerticalAlignment">0</int>
 						<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
-						<reference key="IBUIHighlightedTitleColor" ref="707105299"/>
-						<object class="NSColor" key="IBUINormalTitleColor">
-							<int key="NSColorSpace">1</int>
-							<bytes key="NSRGB">MC4xOTYwNzg0MzQ2IDAuMzA5ODAzOTMyOSAwLjUyMTU2ODY1NgA</bytes>
-						</object>
 						<reference key="IBUINormalTitleShadowColor" ref="838911807"/>
-						<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage" id="509735403">
+						<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage">
 							<string key="NSClassName">NSImage</string>
 							<string key="NSResourceName">pause-over.png</string>
 						</object>
 						<object class="NSCustomResource" key="IBUISelectedBackgroundImage">
 							<string key="NSClassName">NSImage</string>
+							<string key="NSResourceName">play-actif.png</string>
+						</object>
+						<object class="NSCustomResource" key="IBUINormalBackgroundImage">
+							<string key="NSClassName">NSImage</string>
 							<string key="NSResourceName">pause-actif.png</string>
 						</object>
-						<reference key="IBUINormalBackgroundImage" ref="509735403"/>
 						<reference key="IBUIFontDescription" ref="794091713"/>
 						<reference key="IBUIFont" ref="993152718"/>
 					</object>
@@ -310,15 +308,15 @@
 							<bytes key="NSRGB">MC4xOTYwNzg0MzQ2IDAuMzA5ODAzOTMyOSAwLjUyMTU2ODY1NgA</bytes>
 						</object>
 						<reference key="IBUINormalTitleShadowColor" ref="838911807"/>
-						<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage" id="1031230911">
+						<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">dialer-meteo-sortir-over.png</string>
+							<string key="NSResourceName">clavier-secondaire-over.png</string>
 						</object>
-						<object class="NSCustomResource" key="IBUISelectedBackgroundImage">
+						<object class="NSCustomResource" key="IBUISelectedBackgroundImage" id="593667767">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">dialer-meteo-sortir-actif.png</string>
+							<string key="NSResourceName">clavier-secondaire-actif.png</string>
 						</object>
-						<reference key="IBUINormalBackgroundImage" ref="1031230911"/>
+						<reference key="IBUINormalBackgroundImage" ref="593667767"/>
 						<reference key="IBUIFontDescription" ref="794091713"/>
 						<reference key="IBUIFont" ref="993152718"/>
 					</object>
@@ -604,13 +602,14 @@
 		<dictionary class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
 			<string key="add-call-actif.png">{160, 134}</string>
 			<string key="add-call-over.png">{160, 134}</string>
-			<string key="dialer-meteo-sortir-actif.png">{209, 136}</string>
-			<string key="dialer-meteo-sortir-over.png">{209, 136}</string>
+			<string key="clavier-secondaire-actif.png">{209, 136}</string>
+			<string key="clavier-secondaire-over.png">{209, 136}</string>
 			<string key="micro-OFF-actif.png">{160, 134}</string>
 			<string key="micro-ON-actif.png">{160, 134}</string>
 			<string key="micro-ON-over.png">{160, 134}</string>
 			<string key="pause-actif.png">{209, 136}</string>
 			<string key="pause-over.png">{209, 136}</string>
+			<string key="play-actif.png">{209, 136}</string>
 			<string key="raccrocher-actif.png">{222, 136}</string>
 			<string key="raccrocher-over.png">{222, 136}</string>
 			<string key="speacker-OFF-actif.png">{160, 134}</string>

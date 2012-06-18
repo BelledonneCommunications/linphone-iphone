@@ -50,6 +50,7 @@
     ViewsDescription *currentViewDescription;
     
     UIActionSheet *incomingCallActionSheet;
+    UIActionSheet *batteryActionSheet;
 }
 
 @property (nonatomic, retain) IBOutlet UIView* stateBarView;

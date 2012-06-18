@@ -1,4 +1,4 @@
-/* UICallBar.m
+/* UICallCell.h
  *
  * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
@@ -15,38 +15,27 @@
  *  You should have received a copy of the GNU General Public License   
  *  along with this program; if not, write to the Free Software         
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */ 
+ */  
 
-#import "UICallBar.h"
-#import "LinphoneManager.h"
+#import <UIKit/UIKit.h>
 
-#include "linphonecore.h"
-#include "private.h"
-
-@implementation UICallBar
-
-@synthesize pauseButton;
-@synthesize videoButton;
-@synthesize microButton;
-@synthesize speakerButton;   
-
-- (void)viewDidLoad {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(callUpdate:) name:@"LinphoneCallUpdate" object:nil];
-}
-
-- (void)callUpdate: (NSNotification*) notif {
-    // check LinphoneCore is initialized
-    LinphoneCore* lc = nil;
-    if([LinphoneManager isLcReady])
-        lc = [LinphoneManager getLc];
+@interface UICallCell : UITableViewCell {
+    UIView *firstBackground;
+    UIView *otherBackground;
     
-    //TODO
-    //[LinphoneManager set:mergeCalls hidden:!pause.hidden withName:"MERGE button" andReason:"call count"];     
-
-    [speakerButton update];
-    [microButton update];
-    [pauseButton update];
-    [videoButton update];
+    UILabel *numberLabel;
+    UILabel *timeLabel;
+    UIImageView *stateView;
 }
+
+@property (nonatomic, retain) IBOutlet UIView* firstBackground;
+@property (nonatomic, retain) IBOutlet UIView* otherBackground;
+
+@property (nonatomic, retain) IBOutlet UILabel* numberLabel;
+@property (nonatomic, retain) IBOutlet UILabel* timeLabel;
+@property (nonatomic, retain) IBOutlet UIImageView* stateView;
+
+- (void)firstCell;
+- (void)otherCell;
 
 @end

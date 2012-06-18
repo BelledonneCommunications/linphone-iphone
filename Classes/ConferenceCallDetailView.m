@@ -151,8 +151,8 @@ NSTimer *callQualityRefresher;
 			[view removeFromSuperview];
 		}
 	}
-	UIImageView* callquality = (UIImageView*) [cell viewWithTag:3];
-    [InCallViewController updateIndicator:callquality withCallQuality:linphone_call_get_average_quality(call)];
+	//UIImageView* callquality = (UIImageView*) [cell viewWithTag:3];
+    //[InCallViewController updateIndicator:callquality withCallQuality:linphone_call_get_average_quality(call)];
     tableView.rowHeight = 80;
     
     return cell;

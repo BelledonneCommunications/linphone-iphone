@@ -255,6 +255,32 @@
 		D35498221587716B000081D8 /* UIStateBar.m in Sources */ = {isa = PBXBuildFile; fileRef = D354981F1587716B000081D8 /* UIStateBar.m */; };
 		D35498231587716B000081D8 /* UIStateBar.xib in Resources */ = {isa = PBXBuildFile; fileRef = D35498201587716B000081D8 /* UIStateBar.xib */; };
 		D35498241587716B000081D8 /* UIStateBar.xib in Resources */ = {isa = PBXBuildFile; fileRef = D35498201587716B000081D8 /* UIStateBar.xib */; };
+		D36C43C6158F2E5A0048BA40 /* UICallCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D36C43C5158F2E5A0048BA40 /* UICallCell.m */; };
+		D36C43C7158F2E5A0048BA40 /* UICallCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D36C43C5158F2E5A0048BA40 /* UICallCell.m */; };
+		D36C43CA158F2EE50048BA40 /* UICallCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D36C43C9158F2EE50048BA40 /* UICallCell.xib */; };
+		D36C43CB158F2EE50048BA40 /* UICallCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D36C43C9158F2EE50048BA40 /* UICallCell.xib */; };
+		D36C43D1158F2F370048BA40 /* champ-courbe-autres-numeros.png in Resources */ = {isa = PBXBuildFile; fileRef = D36C43CC158F2F370048BA40 /* champ-courbe-autres-numeros.png */; };
+		D36C43D2158F2F370048BA40 /* champ-courbe-autres-numeros.png in Resources */ = {isa = PBXBuildFile; fileRef = D36C43CC158F2F370048BA40 /* champ-courbe-autres-numeros.png */; };
+		D36C43D3158F2F370048BA40 /* champ-courbe-participant-conf.png in Resources */ = {isa = PBXBuildFile; fileRef = D36C43CD158F2F370048BA40 /* champ-courbe-participant-conf.png */; };
+		D36C43D4158F2F370048BA40 /* champ-courbe-participant-conf.png in Resources */ = {isa = PBXBuildFile; fileRef = D36C43CD158F2F370048BA40 /* champ-courbe-participant-conf.png */; };
+		D36C43D5158F2F370048BA40 /* champ-titre-conference.png in Resources */ = {isa = PBXBuildFile; fileRef = D36C43CE158F2F370048BA40 /* champ-titre-conference.png */; };
+		D36C43D6158F2F370048BA40 /* champ-titre-conference.png in Resources */ = {isa = PBXBuildFile; fileRef = D36C43CE158F2F370048BA40 /* champ-titre-conference.png */; };
+		D36C43D7158F2F370048BA40 /* clavier-secondaire-actif.png in Resources */ = {isa = PBXBuildFile; fileRef = D36C43CF158F2F370048BA40 /* clavier-secondaire-actif.png */; };
+		D36C43D8158F2F370048BA40 /* clavier-secondaire-actif.png in Resources */ = {isa = PBXBuildFile; fileRef = D36C43CF158F2F370048BA40 /* clavier-secondaire-actif.png */; };
+		D36C43D9158F2F370048BA40 /* clavier-secondaire-over.png in Resources */ = {isa = PBXBuildFile; fileRef = D36C43D0158F2F370048BA40 /* clavier-secondaire-over.png */; };
+		D36C43DA158F2F370048BA40 /* clavier-secondaire-over.png in Resources */ = {isa = PBXBuildFile; fileRef = D36C43D0158F2F370048BA40 /* clavier-secondaire-over.png */; };
+		D36C43E9158F3F7E0048BA40 /* play-actif.png in Resources */ = {isa = PBXBuildFile; fileRef = D36C43E7158F3F7E0048BA40 /* play-actif.png */; };
+		D36C43EA158F3F7E0048BA40 /* play-actif.png in Resources */ = {isa = PBXBuildFile; fileRef = D36C43E7158F3F7E0048BA40 /* play-actif.png */; };
+		D36C43EB158F3F7E0048BA40 /* play-over.png in Resources */ = {isa = PBXBuildFile; fileRef = D36C43E8158F3F7E0048BA40 /* play-over.png */; };
+		D36C43EC158F3F7E0048BA40 /* play-over.png in Resources */ = {isa = PBXBuildFile; fileRef = D36C43E8158F3F7E0048BA40 /* play-over.png */; };
+		D36C43F1158F61EA0048BA40 /* pause-champ-numero-actif.png in Resources */ = {isa = PBXBuildFile; fileRef = D36C43ED158F61EA0048BA40 /* pause-champ-numero-actif.png */; };
+		D36C43F2158F61EA0048BA40 /* pause-champ-numero-actif.png in Resources */ = {isa = PBXBuildFile; fileRef = D36C43ED158F61EA0048BA40 /* pause-champ-numero-actif.png */; };
+		D36C43F3158F61EA0048BA40 /* pause-champ-numero-over.png in Resources */ = {isa = PBXBuildFile; fileRef = D36C43EE158F61EA0048BA40 /* pause-champ-numero-over.png */; };
+		D36C43F4158F61EA0048BA40 /* pause-champ-numero-over.png in Resources */ = {isa = PBXBuildFile; fileRef = D36C43EE158F61EA0048BA40 /* pause-champ-numero-over.png */; };
+		D36C43F5158F61EA0048BA40 /* play-champ-numero-actif.png in Resources */ = {isa = PBXBuildFile; fileRef = D36C43EF158F61EA0048BA40 /* play-champ-numero-actif.png */; };
+		D36C43F6158F61EA0048BA40 /* play-champ-numero-actif.png in Resources */ = {isa = PBXBuildFile; fileRef = D36C43EF158F61EA0048BA40 /* play-champ-numero-actif.png */; };
+		D36C43F7158F61EA0048BA40 /* play-champ-numero-over.png in Resources */ = {isa = PBXBuildFile; fileRef = D36C43F0158F61EA0048BA40 /* play-champ-numero-over.png */; };
+		D36C43F8158F61EA0048BA40 /* play-champ-numero-over.png in Resources */ = {isa = PBXBuildFile; fileRef = D36C43F0158F61EA0048BA40 /* play-champ-numero-over.png */; };
 		D36FB2D51589EF7C0036F6F2 /* UIPauseButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D36FB2D41589EF7C0036F6F2 /* UIPauseButton.m */; };
 		D36FB2D61589EF7C0036F6F2 /* UIPauseButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D36FB2D41589EF7C0036F6F2 /* UIPauseButton.m */; };
 		D37295CA158B1E2D00D2C0C7 /* registration_inprogress.png in Resources */ = {isa = PBXBuildFile; fileRef = D37295C9158B1E2D00D2C0C7 /* registration_inprogress.png */; };
@@ -807,6 +833,20 @@
 		D354981E1587716B000081D8 /* UIStateBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIStateBar.h; sourceTree = "<group>"; };
 		D354981F1587716B000081D8 /* UIStateBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIStateBar.m; sourceTree = "<group>"; };
 		D35498201587716B000081D8 /* UIStateBar.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UIStateBar.xib; sourceTree = "<group>"; };
+		D36C43C4158F2E5A0048BA40 /* UICallCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICallCell.h; sourceTree = "<group>"; };
+		D36C43C5158F2E5A0048BA40 /* UICallCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICallCell.m; sourceTree = "<group>"; };
+		D36C43C9158F2EE50048BA40 /* UICallCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UICallCell.xib; sourceTree = "<group>"; };
+		D36C43CC158F2F370048BA40 /* champ-courbe-autres-numeros.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "champ-courbe-autres-numeros.png"; path = "Resources/champ-courbe-autres-numeros.png"; sourceTree = "<group>"; };
+		D36C43CD158F2F370048BA40 /* champ-courbe-participant-conf.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "champ-courbe-participant-conf.png"; path = "Resources/champ-courbe-participant-conf.png"; sourceTree = "<group>"; };
+		D36C43CE158F2F370048BA40 /* champ-titre-conference.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "champ-titre-conference.png"; path = "Resources/champ-titre-conference.png"; sourceTree = "<group>"; };
+		D36C43CF158F2F370048BA40 /* clavier-secondaire-actif.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "clavier-secondaire-actif.png"; path = "Resources/clavier-secondaire-actif.png"; sourceTree = "<group>"; };
+		D36C43D0158F2F370048BA40 /* clavier-secondaire-over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "clavier-secondaire-over.png"; path = "Resources/clavier-secondaire-over.png"; sourceTree = "<group>"; };
+		D36C43E7158F3F7E0048BA40 /* play-actif.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "play-actif.png"; path = "Resources/play-actif.png"; sourceTree = "<group>"; };
+		D36C43E8158F3F7E0048BA40 /* play-over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "play-over.png"; path = "Resources/play-over.png"; sourceTree = "<group>"; };
+		D36C43ED158F61EA0048BA40 /* pause-champ-numero-actif.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pause-champ-numero-actif.png"; path = "Resources/pause-champ-numero-actif.png"; sourceTree = "<group>"; };
+		D36C43EE158F61EA0048BA40 /* pause-champ-numero-over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pause-champ-numero-over.png"; path = "Resources/pause-champ-numero-over.png"; sourceTree = "<group>"; };
+		D36C43EF158F61EA0048BA40 /* play-champ-numero-actif.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "play-champ-numero-actif.png"; path = "Resources/play-champ-numero-actif.png"; sourceTree = "<group>"; };
+		D36C43F0158F61EA0048BA40 /* play-champ-numero-over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "play-champ-numero-over.png"; path = "Resources/play-champ-numero-over.png"; sourceTree = "<group>"; };
 		D36FB2D31589EF7C0036F6F2 /* UIPauseButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIPauseButton.h; sourceTree = "<group>"; };
 		D36FB2D41589EF7C0036F6F2 /* UIPauseButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIPauseButton.m; sourceTree = "<group>"; };
 		D37295C9158B1E2D00D2C0C7 /* registration_inprogress.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = registration_inprogress.png; path = Resources/registration_inprogress.png; sourceTree = "<group>"; };
@@ -1282,6 +1322,9 @@
 				D326483D1588950F00930C67 /* UICallBar.xib */,
 				2214EB7812F846B1002A5394 /* UICallButton.h */,
 				2214EB7912F846B1002A5394 /* UICallButton.m */,
+				D36C43C4158F2E5A0048BA40 /* UICallCell.h */,
+				D36C43C5158F2E5A0048BA40 /* UICallCell.m */,
+				D36C43C9158F2EE50048BA40 /* UICallCell.xib */,
 				22AA8AFF13D83F6300B30535 /* UICamSwitch.h */,
 				22AA8B0013D83F6300B30535 /* UICamSwitch.m */,
 				D3A55FBA15877E5E003FD403 /* UIContactCell.h */,
@@ -1476,8 +1519,6 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				D37295DA158B3C9600D2C0C7 /* video-OFF-disabled.png */,
-				D37295C9158B1E2D00D2C0C7 /* registration_inprogress.png */,
 				D3F83F2C1582223B00336684 /* 0-actif.png */,
 				D3F83F2D1582223B00336684 /* 0-over.png */,
 				D3F83F2E1582223B00336684 /* 1-actif.png */,
@@ -1521,7 +1562,12 @@
 				D354981915876FE7000081D8 /* bouton-detail-contact-over.png */,
 				D3F83F801582278D00336684 /* cancel-actif.png */,
 				D3F83F811582278D00336684 /* cancel-over.png */,
+				D36C43CC158F2F370048BA40 /* champ-courbe-autres-numeros.png */,
+				D36C43CD158F2F370048BA40 /* champ-courbe-participant-conf.png */,
 				D3ED3E441585FB8C006C0DE4 /* champ-saisie-numero.png */,
+				D36C43CE158F2F370048BA40 /* champ-titre-conference.png */,
+				D36C43CF158F2F370048BA40 /* clavier-secondaire-actif.png */,
+				D36C43D0158F2F370048BA40 /* clavier-secondaire-over.png */,
 				D3F83F821582278D00336684 /* contact-actif-add-call.png */,
 				D3F83F831582278D00336684 /* contact-over-add-call.png */,
 				D38327EB1580FE3A00FA0D23 /* contacts-actif.png */,
@@ -1565,7 +1611,13 @@
 				2242E312125235120061DDCE /* oldphone-mono-30s.caf */,
 				2237D4081084D7A9001383EE /* oldphone-mono.wav */,
 				D3F83EF8158205A100336684 /* pause-actif.png */,
+				D36C43ED158F61EA0048BA40 /* pause-champ-numero-actif.png */,
+				D36C43EE158F61EA0048BA40 /* pause-champ-numero-over.png */,
 				D3F83EF9158205A100336684 /* pause-over.png */,
+				D36C43E7158F3F7E0048BA40 /* play-actif.png */,
+				D36C43EF158F61EA0048BA40 /* play-champ-numero-actif.png */,
+				D36C43F0158F61EA0048BA40 /* play-champ-numero-over.png */,
+				D36C43E8158F3F7E0048BA40 /* play-over.png */,
 				D3432A5E158A4446001C6B0B /* quality-call-0.png */,
 				D3432A5F158A4446001C6B0B /* quality-call-1.png */,
 				D3432A60158A4446001C6B0B /* quality-call-2.png */,
@@ -1574,6 +1626,7 @@
 				D3F83EFB158205A100336684 /* raccrocher-over.png */,
 				D3F83F761582253100336684 /* refuser-actif.png */,
 				D3F83F771582253100336684 /* refuser-over.png */,
+				D37295C9158B1E2D00D2C0C7 /* registration_inprogress.png */,
 				22F254801073D99800AC9B3F /* ringback.wav */,
 				70571E1913FABCB000CDD3C2 /* rootca.pem */,
 				D38327EF1580FE3A00FA0D23 /* settings-actif.png */,
@@ -1593,6 +1646,7 @@
 				D38327FF158100E400FA0D23 /* tchat-over.png */,
 				D38327F21580FE3A00FA0D23 /* tchat-selectionne.png */,
 				D3F83F00158205A100336684 /* video-OFF-actif.png */,
+				D37295DA158B3C9600D2C0C7 /* video-OFF-disabled.png */,
 				D3F83F01158205A100336684 /* video-OFF-over.png */,
 				D3F83F02158205A100336684 /* video-ON-actif.png */,
 				D3F83F03158205A100336684 /* video-ON-over.png */,
@@ -1836,6 +1890,18 @@
 				D3432A73158A45AF001C6B0B /* status_disconnected.png in Resources */,
 				D37295CA158B1E2D00D2C0C7 /* registration_inprogress.png in Resources */,
 				D37295DB158B3C9600D2C0C7 /* video-OFF-disabled.png in Resources */,
+				D36C43CA158F2EE50048BA40 /* UICallCell.xib in Resources */,
+				D36C43D1158F2F370048BA40 /* champ-courbe-autres-numeros.png in Resources */,
+				D36C43D3158F2F370048BA40 /* champ-courbe-participant-conf.png in Resources */,
+				D36C43D5158F2F370048BA40 /* champ-titre-conference.png in Resources */,
+				D36C43D7158F2F370048BA40 /* clavier-secondaire-actif.png in Resources */,
+				D36C43D9158F2F370048BA40 /* clavier-secondaire-over.png in Resources */,
+				D36C43E9158F3F7E0048BA40 /* play-actif.png in Resources */,
+				D36C43EB158F3F7E0048BA40 /* play-over.png in Resources */,
+				D36C43F1158F61EA0048BA40 /* pause-champ-numero-actif.png in Resources */,
+				D36C43F3158F61EA0048BA40 /* pause-champ-numero-over.png in Resources */,
+				D36C43F5158F61EA0048BA40 /* play-champ-numero-actif.png in Resources */,
+				D36C43F7158F61EA0048BA40 /* play-champ-numero-over.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1971,6 +2037,18 @@
 				D3432A74158A45AF001C6B0B /* status_disconnected.png in Resources */,
 				D37295CB158B1E2D00D2C0C7 /* registration_inprogress.png in Resources */,
 				D37295DC158B3C9600D2C0C7 /* video-OFF-disabled.png in Resources */,
+				D36C43CB158F2EE50048BA40 /* UICallCell.xib in Resources */,
+				D36C43D2158F2F370048BA40 /* champ-courbe-autres-numeros.png in Resources */,
+				D36C43D4158F2F370048BA40 /* champ-courbe-participant-conf.png in Resources */,
+				D36C43D6158F2F370048BA40 /* champ-titre-conference.png in Resources */,
+				D36C43D8158F2F370048BA40 /* clavier-secondaire-actif.png in Resources */,
+				D36C43DA158F2F370048BA40 /* clavier-secondaire-over.png in Resources */,
+				D36C43EA158F3F7E0048BA40 /* play-actif.png in Resources */,
+				D36C43EC158F3F7E0048BA40 /* play-over.png in Resources */,
+				D36C43F2158F61EA0048BA40 /* pause-champ-numero-actif.png in Resources */,
+				D36C43F4158F61EA0048BA40 /* pause-champ-numero-over.png in Resources */,
+				D36C43F6158F61EA0048BA40 /* play-champ-numero-actif.png in Resources */,
+				D36C43F8158F61EA0048BA40 /* play-champ-numero-over.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2018,6 +2096,7 @@
 				D36FB2D51589EF7C0036F6F2 /* UIPauseButton.m in Sources */,
 				D31C9C98158A1CDF00756B45 /* UIHistoryCell.m in Sources */,
 				D32409C3158B49A600C8C119 /* UILongTouchButton.m in Sources */,
+				D36C43C6158F2E5A0048BA40 /* UICallCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2062,6 +2141,7 @@
 				D36FB2D61589EF7C0036F6F2 /* UIPauseButton.m in Sources */,
 				D31C9C99158A1CDF00756B45 /* UIHistoryCell.m in Sources */,
 				D32409C4158B49A600C8C119 /* UILongTouchButton.m in Sources */,
+				D36C43C7158F2E5A0048BA40 /* UICallCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
