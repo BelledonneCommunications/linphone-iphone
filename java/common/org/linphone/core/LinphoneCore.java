@@ -743,6 +743,7 @@ public interface LinphoneCore {
 	void tunnelEnable(boolean enable);
 	void tunnelAutoDetect();
 	void tunnelCleanServers();
+	void tunnelSetHttpProxy(String proxy_host, int port, String username, String password);
 	/**
 	 * @param host tunnel server ip address
 	 * @param port tunnel server tls port, recommended value is 443

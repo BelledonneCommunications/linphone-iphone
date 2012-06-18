@@ -1685,33 +1685,42 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setMaxCalls(JNIEnv *env,
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_tunnelAddServerAndMirror(JNIEnv *env,jobject thiz,jlong pCore,
 		jstring jHost, jint port, jint mirror, jint delay) {
-#ifdef TUNNEL_ENABLED
-	LinphoneTunnel *tunnel=((LinphoneCore *) pCore)->tunnel; if (!tunnel) return;
+	LinphoneTunnel *tunnel=((LinphoneCore *) pCore)->tunnel;
+	if (!tunnel) return;
 	const char* cHost=env->GetStringUTFChars(jHost, NULL);
 	linphone_tunnel_add_server_and_mirror(tunnel, cHost, port, mirror, delay);
 	env->ReleaseStringUTFChars(jHost, cHost);
-#endif
 }
 
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_tunnelSetHttpProxy(JNIEnv *env,jobject thiz,jlong pCore,
+		jstring jHost, jint port, jstring username, jstring password) {
+
+	LinphoneTunnel *tunnel=((LinphoneCore *) pCore)->tunnel;
+	if (!tunnel) return;
+	const char* cHost=(jHost!=NULL) ? env->GetStringUTFChars(jHost, NULL) : NULL;
+	const char* cUsername= (username!=NULL) ? env->GetStringUTFChars(username, NULL) : NULL;
+	const char* cPassword= (password!=NULL) ? env->GetStringUTFChars(password, NULL) : NULL;
+	linphone_tunnel_set_http_proxy(tunnel,cHost, port,cUsername,cPassword);
+	if (cHost) env->ReleaseStringUTFChars(jHost, cHost);
+	if (cUsername) env->ReleaseStringUTFChars(username, cUsername);
+	if (cPassword) env->ReleaseStringUTFChars(password, cPassword);
+}
+
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_tunnelAutoDetect(JNIEnv *env,jobject thiz,jlong pCore) {
-#ifdef TUNNEL_ENABLED
 	LinphoneTunnel *tunnel=((LinphoneCore *) pCore)->tunnel; if (!tunnel) return;
 	linphone_tunnel_auto_detect(tunnel);
-#endif
+
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_tunnelCleanServers(JNIEnv *env,jobject thiz,jlong pCore) {
-#ifdef TUNNEL_ENABLED
 	LinphoneTunnel *tunnel=((LinphoneCore *) pCore)->tunnel; if (!tunnel) return;
 	linphone_tunnel_clean_servers(tunnel);
-#endif
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_tunnelEnable(JNIEnv *env,jobject thiz,jlong pCore, jboolean enable) {
-#ifdef TUNNEL_ENABLED
 	LinphoneTunnel *tunnel=((LinphoneCore *) pCore)->tunnel; if (!tunnel) return;
 	linphone_tunnel_enable(tunnel, enable);
-#endif
 }
 
 

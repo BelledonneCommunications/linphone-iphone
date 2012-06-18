@@ -95,8 +95,6 @@ public interface LinphoneCallLog {
 	 */
 	public CallStatus getStatus();
 	
-	public long getNativePtr();
-	
 	/**
 	 * @return a human readble String with the start date/time of the call
 	 */
