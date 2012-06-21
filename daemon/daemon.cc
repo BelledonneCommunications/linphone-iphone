@@ -213,7 +213,6 @@ Daemon::Daemon(const char *config_path, const char *factory_config_path, const c
 	mLc = linphone_core_new(&vtable, config_path, factory_config_path, this);
 	linphone_core_set_user_data(mLc, this);
 	linphone_core_enable_video(mLc, capture_video, display_video);
-	linphone_core_enable_echo_cancellation(mLc, false);
 	initCommands();
 }
 
