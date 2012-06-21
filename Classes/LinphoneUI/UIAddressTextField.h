@@ -1,4 +1,4 @@
-/* UIHistoryCell.h
+/* UIAddressTextField.h
  *
  * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
@@ -15,21 +15,10 @@
  *  You should have received a copy of the GNU General Public License   
  *  along with this program; if not, write to the Free Software         
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */ 
+ */  
 
 #import <UIKit/UIKit.h>
 
-#include "linphonecore.h"
-
-@interface UIHistoryCell : UITableViewCell {
-    UIImageView*    imageView;
-    UILabel*        displayName;
-}
-
-@property (nonatomic, retain) IBOutlet UIImageView* imageView;
-@property (nonatomic, retain) IBOutlet UILabel*     displayName;
-
--(IBAction) onDetails: (id) event;
-- (void)update:(LinphoneCallLog*)  callLogs;
+@interface UIAddressTextField : UITextField
 
 @end

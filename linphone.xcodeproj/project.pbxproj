@@ -255,6 +255,16 @@
 		D35498221587716B000081D8 /* UIStateBar.m in Sources */ = {isa = PBXBuildFile; fileRef = D354981F1587716B000081D8 /* UIStateBar.m */; };
 		D35498231587716B000081D8 /* UIStateBar.xib in Resources */ = {isa = PBXBuildFile; fileRef = D35498201587716B000081D8 /* UIStateBar.xib */; };
 		D35498241587716B000081D8 /* UIStateBar.xib in Resources */ = {isa = PBXBuildFile; fileRef = D35498201587716B000081D8 /* UIStateBar.xib */; };
+		D35E757815931E5D0066B1C1 /* switch_camera_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D35E757515931E5D0066B1C1 /* switch_camera_default.png */; };
+		D35E757915931E5D0066B1C1 /* switch_camera_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D35E757515931E5D0066B1C1 /* switch_camera_default.png */; };
+		D35E757A15931E5D0066B1C1 /* switch_camera_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D35E757615931E5D0066B1C1 /* switch_camera_over.png */; };
+		D35E757B15931E5D0066B1C1 /* switch_camera_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D35E757615931E5D0066B1C1 /* switch_camera_over.png */; };
+		D35E7581159328EB0066B1C1 /* UIAddressTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = D35E7580159328EB0066B1C1 /* UIAddressTextField.m */; };
+		D35E7582159328EB0066B1C1 /* UIAddressTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = D35E7580159328EB0066B1C1 /* UIAddressTextField.m */; };
+		D35E758915932DE60066B1C1 /* backspace-disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D35E758815932DE60066B1C1 /* backspace-disabled.png */; };
+		D35E758A15932DE60066B1C1 /* backspace-disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D35E758815932DE60066B1C1 /* backspace-disabled.png */; };
+		D35E758D15934F360066B1C1 /* appeler-disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D35E758C15934F360066B1C1 /* appeler-disabled.png */; };
+		D35E758E15934F360066B1C1 /* appeler-disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D35E758C15934F360066B1C1 /* appeler-disabled.png */; };
 		D36C43C6158F2E5A0048BA40 /* UICallCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D36C43C5158F2E5A0048BA40 /* UICallCell.m */; };
 		D36C43C7158F2E5A0048BA40 /* UICallCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D36C43C5158F2E5A0048BA40 /* UICallCell.m */; };
 		D36C43CA158F2EE50048BA40 /* UICallCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D36C43C9158F2EE50048BA40 /* UICallCell.xib */; };
@@ -833,6 +843,12 @@
 		D354981E1587716B000081D8 /* UIStateBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIStateBar.h; sourceTree = "<group>"; };
 		D354981F1587716B000081D8 /* UIStateBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIStateBar.m; sourceTree = "<group>"; };
 		D35498201587716B000081D8 /* UIStateBar.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UIStateBar.xib; sourceTree = "<group>"; };
+		D35E757515931E5D0066B1C1 /* switch_camera_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = switch_camera_default.png; path = Resources/switch_camera_default.png; sourceTree = "<group>"; };
+		D35E757615931E5D0066B1C1 /* switch_camera_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = switch_camera_over.png; path = Resources/switch_camera_over.png; sourceTree = "<group>"; };
+		D35E757F159328EA0066B1C1 /* UIAddressTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIAddressTextField.h; sourceTree = "<group>"; };
+		D35E7580159328EB0066B1C1 /* UIAddressTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIAddressTextField.m; sourceTree = "<group>"; };
+		D35E758815932DE60066B1C1 /* backspace-disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "backspace-disabled.png"; path = "Resources/backspace-disabled.png"; sourceTree = "<group>"; };
+		D35E758C15934F360066B1C1 /* appeler-disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "appeler-disabled.png"; path = "Resources/appeler-disabled.png"; sourceTree = "<group>"; };
 		D36C43C4158F2E5A0048BA40 /* UICallCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICallCell.h; sourceTree = "<group>"; };
 		D36C43C5158F2E5A0048BA40 /* UICallCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICallCell.m; sourceTree = "<group>"; };
 		D36C43C9158F2EE50048BA40 /* UICallCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UICallCell.xib; sourceTree = "<group>"; };
@@ -1315,6 +1331,8 @@
 				2248E99D12F801C200220D9C /* LinphoneManager.h */,
 				2248E99E12F801C200220D9C /* LinphoneManager.m */,
 				2218A5CE12F973450088A667 /* LogView.h */,
+				D35E757F159328EA0066B1C1 /* UIAddressTextField.h */,
+				D35E7580159328EB0066B1C1 /* UIAddressTextField.m */,
 				22C7555E1317E59C007BC101 /* UIBluetoothButton.h */,
 				22C7555F1317E59C007BC101 /* UIBluetoothButton.m */,
 				D326483B1588950F00930C67 /* UICallBar.h */,
@@ -1554,8 +1572,10 @@
 				D31C9C8E158A1C1000756B45 /* appel-manque.png */,
 				D31C9C8F158A1C1000756B45 /* appel-sortant.png */,
 				D3ED3E7015861ABD006C0DE4 /* appeler-actif.png */,
+				D35E758C15934F360066B1C1 /* appeler-disabled.png */,
 				D3ED3E7115861ABD006C0DE4 /* appeler-over.png */,
 				D3ED3E7615861B1B006C0DE4 /* backspace-actif.png */,
+				D35E758815932DE60066B1C1 /* backspace-disabled.png */,
 				D3ED3E7715861B1B006C0DE4 /* backspace-over.png */,
 				D3ED3E511585FFFD006C0DE4 /* barre-noire-top.png */,
 				D354981815876FE7000081D8 /* bouton-detail-contact-actif.png */,
@@ -1642,6 +1662,8 @@
 				D3432A5D158A4446001C6B0B /* status_error.png */,
 				D3432A6F158A45AF001C6B0B /* status_inprogress.png */,
 				22226C13118197EC000CA27B /* stopcall-red.png */,
+				D35E757515931E5D0066B1C1 /* switch_camera_default.png */,
+				D35E757615931E5D0066B1C1 /* switch_camera_over.png */,
 				D38327F11580FE3A00FA0D23 /* tchat-actif.png */,
 				D38327FF158100E400FA0D23 /* tchat-over.png */,
 				D38327F21580FE3A00FA0D23 /* tchat-selectionne.png */,
@@ -1902,6 +1924,10 @@
 				D36C43F3158F61EA0048BA40 /* pause-champ-numero-over.png in Resources */,
 				D36C43F5158F61EA0048BA40 /* play-champ-numero-actif.png in Resources */,
 				D36C43F7158F61EA0048BA40 /* play-champ-numero-over.png in Resources */,
+				D35E757815931E5D0066B1C1 /* switch_camera_default.png in Resources */,
+				D35E757A15931E5D0066B1C1 /* switch_camera_over.png in Resources */,
+				D35E758915932DE60066B1C1 /* backspace-disabled.png in Resources */,
+				D35E758D15934F360066B1C1 /* appeler-disabled.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2049,6 +2075,10 @@
 				D36C43F4158F61EA0048BA40 /* pause-champ-numero-over.png in Resources */,
 				D36C43F6158F61EA0048BA40 /* play-champ-numero-actif.png in Resources */,
 				D36C43F8158F61EA0048BA40 /* play-champ-numero-over.png in Resources */,
+				D35E757915931E5D0066B1C1 /* switch_camera_default.png in Resources */,
+				D35E757B15931E5D0066B1C1 /* switch_camera_over.png in Resources */,
+				D35E758A15932DE60066B1C1 /* backspace-disabled.png in Resources */,
+				D35E758E15934F360066B1C1 /* appeler-disabled.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2097,6 +2127,7 @@
 				D31C9C98158A1CDF00756B45 /* UIHistoryCell.m in Sources */,
 				D32409C3158B49A600C8C119 /* UILongTouchButton.m in Sources */,
 				D36C43C6158F2E5A0048BA40 /* UICallCell.m in Sources */,
+				D35E7581159328EB0066B1C1 /* UIAddressTextField.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2142,6 +2173,7 @@
 				D31C9C99158A1CDF00756B45 /* UIHistoryCell.m in Sources */,
 				D32409C4158B49A600C8C119 /* UILongTouchButton.m in Sources */,
 				D36C43C7158F2E5A0048BA40 /* UICallCell.m in Sources */,
+				D35E7582159328EB0066B1C1 /* UIAddressTextField.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

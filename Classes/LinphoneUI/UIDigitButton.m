@@ -25,58 +25,43 @@
 
 @synthesize sendDtmfDuringCall;
 
-
-
--(void) touchDown:(id) sender {
+- (void)touchDown:(id) sender {
 	if (mAddress && (!sendDtmfDuringCall || !linphone_core_in_call([LinphoneManager getLc]))) {
 		NSString* newAddress = [NSString stringWithFormat:@"%@%c",mAddress.text,mDigit];
 		[mAddress setText:newAddress];	
 		linphone_core_play_dtmf([LinphoneManager getLc], mDigit, -1);
-		if (mDigit == '0') {
-			//start timer for +
-			[self performSelector:@selector(doKeyZeroLongPress) withObject:nil afterDelay:0.5];
-		}
 	} else {
-		linphone_core_send_dtmf([LinphoneManager getLc],mDigit);
+		linphone_core_send_dtmf([LinphoneManager getLc], mDigit);
 		linphone_core_play_dtmf([LinphoneManager getLc], mDigit, 100);
 	}
 }
 
--(void) touchUp:(id) sender {
+- (void)touchUp:(id) sender {
 	linphone_core_stop_dtmf([LinphoneManager getLc]);
-	if (mDigit == '0') {
-		//cancel timer for +
-		[NSObject cancelPreviousPerformRequestsWithTarget:self 
-												 selector:@selector(doKeyZeroLongPress)
-												   object:nil];
-	} 
-	
-	
 }
 
--(void)doKeyZeroLongPress {
-	NSString* newAddress = [[mAddress.text substringToIndex: [mAddress.text length]-1]  stringByAppendingString:@"+"];
-	[mAddress setText:newAddress];
-	
+- (void)onRepeatTouch {
 }
 
--(void) initWithNumber:(char)digit {
+- (void)onLongTouch {
+    if (mDigit == '0') {
+        NSString* newAddress = [[mAddress.text substringToIndex: [mAddress.text length]-1]  stringByAppendingString:@"+"];
+        [mAddress setText:newAddress];
+        [mAddress sendActionsForControlEvents:UIControlEventEditingChanged];
+    }
+}
+
+- (void)initWithNumber:(char)digit {
 	[self initWithNumber:digit addressField:nil dtmf:true];
 }
--(void) initWithNumber:(char)digit  addressField:(UITextField*) address dtmf:(bool_t)sendDtmf{
+
+- (void)initWithNumber:(char)digit  addressField:(UITextField*) address dtmf:(bool)sendDtmf{
     sendDtmfDuringCall = sendDtmf;
-	mDigit=digit ;
+	mDigit=digit;
 	mAddress=address?[address retain]:nil;
 	[self addTarget:self action:@selector(touchDown:) forControlEvents:UIControlEventTouchDown];
 	[self addTarget:self action:@selector(touchUp:) forControlEvents:UIControlEventTouchUpInside|UIControlEventTouchUpOutside];
 }
-/*
- // Only override drawRect: if you perform custom drawing.
- // An empty implementation adversely affects performance during animation.
- - (void)drawRect:(CGRect)rect {
- // Drawing code.
- }
- */
 
 - (void)dealloc {
     [super dealloc];

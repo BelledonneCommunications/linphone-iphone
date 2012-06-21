@@ -18,8 +18,6 @@
  */               
 
 #import <UIKit/UIKit.h>
-#import "LinphoneAppDelegate.h"
-
 
 int main(int argc, char *argv[]) {
     

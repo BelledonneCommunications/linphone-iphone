@@ -18,6 +18,7 @@
  */  
 
 #import <UIKit/UIKit.h>
+#import <AddressBook/AddressBook.h>
 
 @interface UIContactCell : UITableViewCell {
     UILabel *firstName;
@@ -27,5 +28,5 @@
 @property (nonatomic, retain) IBOutlet UILabel* firstName;
 @property (nonatomic, retain) IBOutlet UILabel* lastName;
 
-- (void) update;
+- (void)update:(ABRecordRef) record;
 @end

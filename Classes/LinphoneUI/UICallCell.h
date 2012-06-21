@@ -19,11 +19,13 @@
 
 #import <UIKit/UIKit.h>
 
+#include "linphonecore.h"
+
 @interface UICallCell : UITableViewCell {
     UIView *firstBackground;
     UIView *otherBackground;
     
-    UILabel *numberLabel;
+    UILabel *addressLabel;
     UILabel *timeLabel;
     UIImageView *stateView;
 }
@@ -31,11 +33,12 @@
 @property (nonatomic, retain) IBOutlet UIView* firstBackground;
 @property (nonatomic, retain) IBOutlet UIView* otherBackground;
 
-@property (nonatomic, retain) IBOutlet UILabel* numberLabel;
+@property (nonatomic, retain) IBOutlet UILabel* addressLabel;
 @property (nonatomic, retain) IBOutlet UILabel* timeLabel;
 @property (nonatomic, retain) IBOutlet UIImageView* stateView;
 
 - (void)firstCell;
 - (void)otherCell;
+- (void)updateCell:(LinphoneCall *)call;
 
 @end

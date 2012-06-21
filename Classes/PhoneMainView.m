@@ -17,6 +17,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */   
 
+#import <QuartzCore/QuartzCore.h>
+
 #import "PhoneMainView.h"
 #import "DialerViewController.h"
 #import "HistoryViewController.h"
@@ -25,13 +27,14 @@
 
 @implementation ViewsDescription
 
--(id) copy {
+- (id)copy {
     ViewsDescription *copy = [ViewsDescription alloc];
     copy->content = self->content;
     copy->tabBar = self->tabBar;
     copy->tabBarEnabled = self->tabBarEnabled;
     copy->statusEnabled = self->statusEnabled;
     copy->fullscreen = self->fullscreen;
+    copy->viewId = self->viewId;
     return copy;
 }
 @end
@@ -48,54 +51,105 @@
 @synthesize mainTabBarController;
 @synthesize incomingCallTabBarController;
 
++ (void)addSubView:(UIViewController*)controller view:(UIView*)view {
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [controller viewWillAppear:NO];
+    }
+    [view addSubview: controller.view];
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [controller viewDidAppear:NO];
+    }
+}
+
++ (void)removeSubView:(UIViewController*)controller {
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [controller viewWillDisappear:NO];
+    }
+    [controller.view removeFromSuperview];
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [controller viewDidDisappear:NO];
+    }
+}
+
 - (void)changeView: (NSNotification*) notif {   
     NSNumber *viewId = [notif.userInfo objectForKey: @"view"];
     NSNumber *tabBar = [notif.userInfo objectForKey: @"tabBar"];
     NSNumber *fullscreen = [notif.userInfo objectForKey: @"fullscreen"];
     
+    // Copy view description
+    ViewsDescription *oldViewDescription = (currentViewDescription != nil)? [currentViewDescription copy]: nil;
+    
+    // Check view change
     if(viewId != nil) {
         PhoneView view = [viewId intValue];
-        currentViewDescription = [[viewDescriptions objectForKey:[NSNumber numberWithInt: view]] copy];
+        ViewsDescription* description = [viewDescriptions objectForKey:[NSNumber numberWithInt: view]];
+        if(description == nil)
+            return;
+        description->viewId = view; // Auto-set viewId
+        if(currentViewDescription == nil || description->viewId != currentViewDescription->viewId) {
+            if(currentViewDescription != nil)
+                [currentViewDescription dealloc];
+            currentViewDescription = [description copy];
+        } else {
+            viewId = nil;
+        }
     }
-    
-    ViewsDescription *description = currentViewDescription;
-    if(description == nil) {
+
+    if(currentViewDescription == nil) {
         return;
     }
     
-    UIView *innerView = description->content.view;
-    
-    // Change view
-    if(viewId != nil) {
-        for (UIView *view in contentView.subviews) {
-            [view removeFromSuperview];
-        }
-        for (UIView *view in tabBarView.subviews) {
-            [view removeFromSuperview];
-        }
-        
-        [contentView addSubview: innerView];
-        [tabBarView addSubview: description->tabBar.view];
-    }
-    
     if(tabBar != nil) {
-        description->tabBarEnabled = [tabBar boolValue];
+        currentViewDescription->tabBarEnabled = [tabBar boolValue];
     }
     
     if(fullscreen != nil) {
-        description->fullscreen = [fullscreen boolValue];
+        currentViewDescription->fullscreen = [fullscreen boolValue];
+        [[UIApplication sharedApplication] setStatusBarHidden:currentViewDescription->fullscreen withAnimation:UIStatusBarAnimationSlide ];
+    } else {
+        [[UIApplication sharedApplication] setStatusBarHidden:currentViewDescription->fullscreen withAnimation:UIStatusBarAnimationNone];
     }
+    
+    // View Transitions
+    if(viewId != nil) {
+        if(oldViewDescription != nil) {
+            CATransition* trans = [CATransition animation];
+            [trans setType:kCATransitionPush];
+            [trans setDuration:0.35];
+            [trans setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
+            [trans setSubtype:kCATransitionFromRight];
+            [contentView.layer addAnimation:trans forKey:@"Transition"];
+            if((oldViewDescription->statusEnabled == true && currentViewDescription->statusEnabled == false) ||
+               (oldViewDescription->statusEnabled == false && currentViewDescription->statusEnabled == true)) {
+                [stateBarView.layer addAnimation:trans forKey:@"Transition"];
+            }
+            if(oldViewDescription->tabBar != currentViewDescription->tabBar) {
+                [tabBarView.layer addAnimation:trans forKey:@"Transition"];
+            }
+            [PhoneMainView removeSubView: oldViewDescription->content];
+            [PhoneMainView removeSubView: oldViewDescription->tabBar];
+        }
+    }
+    
+    // Start animation
+    if(tabBar != nil || fullscreen != nil) {
+        [UIView beginAnimations:@"resize" context:nil];
+        [UIView setAnimationDuration:0.35];
+        [UIView setAnimationBeginsFromCurrentState:TRUE];
+    }
+    
+    UIView *innerView = currentViewDescription->content.view;
     
     CGRect contentFrame = contentView.frame;
     
     // Resize StateBar
     CGRect stateBarFrame = stateBarView.frame;
-    if(description->fullscreen)
+    if(currentViewDescription->fullscreen)
         stateBarFrame.origin.y = -20;
     else
         stateBarFrame.origin.y = 0;
     
-    if(description->statusEnabled) {
+    if(currentViewDescription->statusEnabled) {
         stateBarView.hidden = false;
         [stateBarView setFrame: stateBarFrame];
         contentFrame.origin.y = stateBarFrame.size.height + stateBarFrame.origin.y;
@@ -106,39 +160,57 @@
     
     // Resize TabBar
     CGRect tabFrame = tabBarView.frame;
-    if(description->tabBar != nil && description->tabBarEnabled) {
-        tabBarView.hidden = false;
-        tabFrame.origin.y += tabFrame.size.height;
-        tabFrame.origin.x += tabFrame.size.width;
-        tabFrame.size.height = description->tabBar.view.frame.size.height;
-        tabFrame.size.width = description->tabBar.view.frame.size.width;
+    if(currentViewDescription->tabBar != nil && currentViewDescription->tabBarEnabled) {
+        tabFrame.origin.y = [[UIScreen mainScreen] bounds].size.height - 20;
+        tabFrame.origin.x = [[UIScreen mainScreen] bounds].size.width;
+        tabFrame.size.height = currentViewDescription->tabBar.view.frame.size.height;
+        tabFrame.size.width = currentViewDescription->tabBar.view.frame.size.width;
         tabFrame.origin.y -= tabFrame.size.height;
         tabFrame.origin.x -= tabFrame.size.width;
-        [tabBarView setFrame: tabFrame];
         contentFrame.size.height = tabFrame.origin.y - contentFrame.origin.y;
-        for (UIView *view in description->tabBar.view.subviews) {
+        for (UIView *view in currentViewDescription->tabBar.view.subviews) {
             if(view.tag == -1) {
                 contentFrame.size.height += view.frame.origin.y;
                 break;
             }
         }
     } else {
-        tabBarView.hidden = true;
         contentFrame.size.height = tabFrame.origin.y + tabFrame.size.height;
-        if(description->fullscreen)
+        if(currentViewDescription->fullscreen)
             contentFrame.size.height += 20;
+        tabFrame.origin.y = [[UIScreen mainScreen] bounds].size.height - 20;
     }
     
     // Resize innerView
-    [contentView setFrame: contentFrame];
     CGRect innerContentFrame = innerView.frame;
     innerContentFrame.size = contentFrame.size;
+    
+    
+    // Set frames
+    [contentView setFrame: contentFrame];
     [innerView setFrame: innerContentFrame];
+    [tabBarView setFrame: tabFrame];
+    
+    // Commit animation
+    if(tabBar != nil || fullscreen != nil) {
+        [UIView commitAnimations];
+    }
+    
+    // Change view
+    if(viewId != nil) {
+        [PhoneMainView addSubView: currentViewDescription->content view:contentView];
+        [PhoneMainView addSubView: currentViewDescription->tabBar view:tabBarView];
+    }
     
     // Call abstractCall
     NSDictionary *dict = [notif.userInfo objectForKey: @"args"];
     if(dict != nil)
-        [LinphoneManager abstractCall:description->content dict:dict];
+        [LinphoneManager abstractCall:currentViewDescription->content dict:dict];
+    
+    // Dealloc old view description
+    if(oldViewDescription != nil) {
+        [oldViewDescription dealloc];
+    }
 }
 
 - (void)viewDidLoad {
@@ -290,10 +362,10 @@
             if (canHideInCallView) {
                 if ([[LinphoneManager instance] currentView] != PhoneView_Dialer) {
                     // Go to dialer view
-                    NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:
-                                           [[NSArray alloc] initWithObjects: @"", nil]
+                    NSDictionary *dict = [[[NSDictionary alloc] initWithObjectsAndKeys:
+                                           [[[NSArray alloc] initWithObjects: @"", nil] autorelease]
                                           , @"setAddress:",
-                                          nil];
+                                          nil] autorelease];
                     [[LinphoneManager instance] changeView:PhoneView_Dialer dict:dict];
                 }
             } else {

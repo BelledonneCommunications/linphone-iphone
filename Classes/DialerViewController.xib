@@ -529,6 +529,7 @@
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<bool key="IBUIOpaque">NO</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+								<bool key="IBUIEnabled">NO</bool>
 								<int key="IBUIContentHorizontalAlignment">0</int>
 								<int key="IBUIContentVerticalAlignment">0</int>
 								<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
@@ -562,6 +563,7 @@
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<bool key="IBUIOpaque">NO</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+								<bool key="IBUIEnabled">NO</bool>
 								<int key="IBUIContentHorizontalAlignment">0</int>
 								<int key="IBUIContentVerticalAlignment">0</int>
 								<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
@@ -570,6 +572,10 @@
 								<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">appeler-over.png</string>
+								</object>
+								<object class="NSCustomResource" key="IBUIDisabledBackgroundImage">
+									<string key="NSClassName">NSImage</string>
+									<string key="NSResourceName">appeler-disabled.png</string>
 								</object>
 								<object class="NSCustomResource" key="IBUINormalBackgroundImage">
 									<string key="NSClassName">NSImage</string>
@@ -584,9 +590,11 @@
 								<string key="NSFrame">{{214, 0}, {106, 69}}</string>
 								<reference key="NSSuperview" ref="32193173"/>
 								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<bool key="IBUIOpaque">NO</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+								<bool key="IBUIEnabled">NO</bool>
 								<int key="IBUIContentHorizontalAlignment">0</int>
 								<int key="IBUIContentVerticalAlignment">0</int>
 								<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
@@ -600,6 +608,10 @@
 								<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">backspace-over.png</string>
+								</object>
+								<object class="NSCustomResource" key="IBUIDisabledBackgroundImage">
+									<string key="NSClassName">NSImage</string>
+									<string key="NSResourceName">backspace-disabled.png</string>
 								</object>
 								<object class="NSCustomResource" key="IBUINormalBackgroundImage">
 									<string key="NSClassName">NSImage</string>
@@ -767,11 +779,28 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">addContact</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="617539638"/>
+					</object>
+					<int key="connectionID">206</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">delegate</string>
 						<reference key="source" ref="751637181"/>
 						<reference key="destination" ref="372490531"/>
 					</object>
 					<int key="connectionID">190</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchEventConnection" key="connection">
+						<string key="label">onAddressChange:</string>
+						<reference key="source" ref="751637181"/>
+						<reference key="destination" ref="372490531"/>
+						<int key="IBEventType">18</int>
+					</object>
+					<int key="connectionID">208</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
@@ -822,8 +851,8 @@
 						<reference key="object" ref="312750714"/>
 						<object class="NSMutableArray" key="children">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<reference ref="751637181"/>
 							<reference ref="874403835"/>
+							<reference ref="751637181"/>
 						</object>
 						<reference key="parent" ref="542426306"/>
 						<string key="objectName">dialer</string>
@@ -850,7 +879,6 @@
 							<reference ref="607229252"/>
 							<reference ref="1070392235"/>
 							<reference ref="539781036"/>
-							<reference ref="573280603"/>
 							<reference ref="539158319"/>
 							<reference ref="150499342"/>
 							<reference ref="616388880"/>
@@ -858,6 +886,7 @@
 							<reference ref="310945439"/>
 							<reference ref="602859574"/>
 							<reference ref="465571136"/>
+							<reference ref="573280603"/>
 						</object>
 						<reference key="parent" ref="542426306"/>
 						<string key="objectName">pad</string>
@@ -1023,6 +1052,7 @@
 					<string>39.CustomClassName</string>
 					<string>39.IBPluginDependency</string>
 					<string>39.IBUIButtonInspectorSelectedStateConfigurationMetadataKey</string>
+					<string>4.CustomClassName</string>
 					<string>4.IBPluginDependency</string>
 					<string>40.CustomClassName</string>
 					<string>40.IBPluginDependency</string>
@@ -1047,10 +1077,10 @@
 					<real value="3"/>
 					<string>UICallButton</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-					<real value="1"/>
+					<real value="3"/>
 					<string>UIEraseButton</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-					<real value="1"/>
+					<real value="3"/>
 					<string>UIDigitButton</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>UIDigitButton</string>
@@ -1080,6 +1110,7 @@
 					<string>UIDigitButton</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<real value="1"/>
+					<string>UIAddressTextField</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>UIDigitButton</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -1101,7 +1132,7 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">205</int>
+			<int key="maxID">221</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -1110,20 +1141,42 @@
 					<string key="className">DialerViewController</string>
 					<string key="superclassName">UIViewController</string>
 					<object class="NSMutableDictionary" key="actions">
-						<string key="NS.key.0">onAddContact:</string>
-						<string key="NS.object.0">id</string>
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>onAddContact:</string>
+							<string>onAddressChange:</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>id</string>
+							<string>id</string>
+						</object>
 					</object>
 					<object class="NSMutableDictionary" key="actionInfosByName">
-						<string key="NS.key.0">onAddContact:</string>
-						<object class="IBActionInfo" key="NS.object.0">
-							<string key="name">onAddContact:</string>
-							<string key="candidateClassName">id</string>
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>onAddContact:</string>
+							<string>onAddressChange:</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<object class="IBActionInfo">
+								<string key="name">onAddContact:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">onAddressChange:</string>
+								<string key="candidateClassName">id</string>
+							</object>
 						</object>
 					</object>
 					<object class="NSMutableDictionary" key="outlets">
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>addContact</string>
 							<string>addressField</string>
 							<string>callButton</string>
 							<string>eightButton</string>
@@ -1142,6 +1195,7 @@
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>UIButton</string>
 							<string>UITextField</string>
 							<string>UIButton</string>
 							<string>UIButton</string>
@@ -1163,6 +1217,7 @@
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>addContact</string>
 							<string>addressField</string>
 							<string>callButton</string>
 							<string>eightButton</string>
@@ -1181,6 +1236,10 @@
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<object class="IBToOneOutletInfo">
+								<string key="name">addContact</string>
+								<string key="candidateClassName">UIButton</string>
+							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">addressField</string>
 								<string key="candidateClassName">UITextField</string>
@@ -1249,6 +1308,14 @@
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
+					<string key="className">UIAddressTextField</string>
+					<string key="superclassName">UITextField</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/UIAddressTextField.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
 					<string key="className">UICallButton</string>
 					<string key="superclassName">UIButton</string>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
@@ -1258,7 +1325,7 @@
 				</object>
 				<object class="IBPartialClassDescription">
 					<string key="className">UIDigitButton</string>
-					<string key="superclassName">UIButton</string>
+					<string key="superclassName">UILongTouchButton</string>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">./Classes/UIDigitButton.h</string>
@@ -1325,8 +1392,10 @@
 				<string>add-contact-inactif.png</string>
 				<string>add-contact-over.png</string>
 				<string>appeler-actif.png</string>
+				<string>appeler-disabled.png</string>
 				<string>appeler-over.png</string>
 				<string>backspace-actif.png</string>
+				<string>backspace-disabled.png</string>
 				<string>backspace-over.png</string>
 				<string>champ-saisie-numero.png</string>
 				<string>diese-actif.png</string>
@@ -1361,6 +1430,8 @@
 				<string>{213, 138}</string>
 				<string>{214, 138}</string>
 				<string>{214, 138}</string>
+				<string>{214, 138}</string>
+				<string>{213, 138}</string>
 				<string>{213, 138}</string>
 				<string>{213, 138}</string>
 				<string>{640, 135}</string>

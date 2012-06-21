@@ -63,11 +63,13 @@ extern  void libmsbcg729_init();
 
 @implementation LinphoneManager
 
+PhoneView currentView = -1;
+
 @synthesize connectivity;
 @synthesize frontCamId;
 @synthesize backCamId;
 
--(id) init {
+- (id)init {
     assert (!theLinphoneManager);
     if ((self= [super init])) {
         mFastAddressBook = [[FastAddressBook alloc] init];
@@ -76,7 +78,7 @@ extern  void libmsbcg729_init();
     return self;
 }
 
-+(LinphoneManager*) instance {
++ (LinphoneManager*)instance {
 	return theLinphoneManager;
 }
 
@@ -86,10 +88,6 @@ extern  void libmsbcg729_init();
 }
 
 - (void)fullScreen:(BOOL) enabled {
-    if(enabled)
-        [[UIApplication sharedApplication] setStatusBarHidden:enabled withAnimation:UIStatusBarAnimationSlide];
-    else
-        [[UIApplication sharedApplication] setStatusBarHidden:enabled withAnimation:UIStatusBarAnimationNone];
     NSMutableDictionary* mdict = [NSMutableDictionary dictionaryWithObject: [NSNumber numberWithBool:enabled] forKey:@"fullscreen"];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneMainViewChange" object:self userInfo:mdict];
 }
@@ -203,11 +201,10 @@ extern  void libmsbcg729_init();
     }
     
     // Post event
-    NSDictionary* dict = [[NSDictionary alloc] initWithObjectsAndKeys: 
+    NSDictionary* dict = [[[NSDictionary alloc] initWithObjectsAndKeys: 
                           [[[LinphoneCallWrapper alloc] initWithCall: call] autorelease], @"call",
                           [NSNumber numberWithInt:new_state], @"state", 
-                          [[NSString stringWithFormat:@"%c", message] autorelease], @"message", 
-                          nil];
+                          [NSString stringWithUTF8String:message], @"message", nil] autorelease];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneCallUpdate" object:self userInfo:dict];
 }
 
@@ -228,9 +225,9 @@ extern  void libmsbcg729_init();
 
 - (void)displayStatus:(NSString*) message {
     // Post event
-    NSDictionary* dict = [[NSDictionary alloc] initWithObjectsAndKeys: 
+    NSDictionary* dict = [[[NSDictionary alloc] initWithObjectsAndKeys: 
                           message, @"message", 
-                          nil];
+                          nil] autorelease];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneDisplayStatus" object:self userInfo:dict];
 }
 
@@ -289,10 +286,10 @@ static void linphone_iphone_transfer_state_changed(LinphoneCore* lc, LinphoneCal
     ms_warning("NEW REGISTRATION STATE: '%s' (message: '%s')", linphone_registration_state_to_string(state), message);
     
     // Post event
-    NSDictionary* dict = [[NSDictionary alloc] initWithObjectsAndKeys: 
+    NSDictionary* dict = [[[NSDictionary alloc] initWithObjectsAndKeys: 
                           [NSNumber numberWithInt:state], @"state", 
-                          [[NSString stringWithFormat:@"%c", message] autorelease], @"message", 
-                          nil];
+                          [NSString stringWithFormat:@"%c", message], @"message", 
+                          nil] autorelease];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneRegistrationUpdate" object:self userInfo:dict];
     
     // Show error
@@ -344,7 +341,7 @@ static LinphoneCoreVTable linphonec_vtable = {
 };
 
 
--(void) configurePayloadType:(const char*) type fromPrefKey: (NSString*)key withRate:(int)rate  {
+- (void)configurePayloadType:(const char*) type fromPrefKey: (NSString*)key withRate:(int)rate  {
 	if ([[NSUserDefaults standardUserDefaults] boolForKey:key]) { 		
 		PayloadType* pt;
 		if((pt = linphone_core_find_payload_type(theLinphoneCore,type,rate))) {
@@ -352,11 +349,13 @@ static LinphoneCoreVTable linphonec_vtable = {
 		}
 	} 
 }
--(void) kickOffNetworkConnection {
+
+- (void)kickOffNetworkConnection {
 	/*start a new thread to avoid blocking the main ui in case of peer host failure*/
 	[NSThread detachNewThreadSelector:@selector(runNetworkConnection) toTarget:self withObject:nil];
 }
--(void) runNetworkConnection {
+
+- (void)runNetworkConnection {
 	CFWriteStreamRef writeStream;
 	CFStreamCreatePairWithSocketToHost(NULL, (CFStringRef)@"192.168.0.200"/*"linphone.org"*/, 15000, nil, &writeStream);
 	CFWriteStreamOpen (writeStream);
@@ -437,7 +436,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	}
 }
 
--(BOOL) reconfigureLinphoneIfNeeded:(NSDictionary *)settings {
+- (BOOL)reconfigureLinphoneIfNeeded:(NSDictionary *)settings {
 	if (theLinphoneCore==nil) {
 		ms_warning("cannot configure linphone because not initialized yet");
 		return NO;
@@ -708,7 +707,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		[[NSUserDefaults standardUserDefaults] setBool:true forKey:@"check_config_disable_preference"];
 	}
 }
--(void) destroyLibLinphone {
+- (void)destroyLibLinphone {
 	[mIterateTimer invalidate]; 
 	AVAudioSession *audioSession = [AVAudioSession sharedInstance];
 	[audioSession setDelegate:nil];
@@ -726,7 +725,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 }
 
 //**********************BG mode management*************************///////////
--(BOOL) enterBackgroundMode {
+- (BOOL)enterBackgroundMode {
 	LinphoneProxyConfig* proxyCfg;
 	linphone_core_get_default_proxy(theLinphoneCore, &proxyCfg);	
 	linphone_core_stop_dtmf_stream(theLinphoneCore);
@@ -777,11 +776,11 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 
 
 //scheduling loop
--(void) iterate {
+- (void)iterate {
 	linphone_core_iterate(theLinphoneCore);
 }
 
--(void) setupNetworkReachabilityCallback {
+- (void)setupNetworkReachabilityCallback {
 	SCNetworkReachabilityContext *ctx=NULL;
 	const char *nodeName="linphone.org";
 	
@@ -816,7 +815,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 /*************
  *lib linphone init method
  */
--(void)startLibLinphone  {
+- (void)startLibLinphone  {
 	
 	//get default config from bundle
 	NSBundle* myBundle = [NSBundle mainBundle];
@@ -928,7 +927,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	
 }
 
--(void) refreshRegisters{
+- (void)refreshRegisters{
 	/*first check if network is available*/
 	if (proxyReachability){
 		SCNetworkReachabilityFlags flags=0;
@@ -947,7 +946,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	linphone_core_refresh_registers(theLinphoneCore);//just to make sure REGISTRATION is up to date
 }
 
--(void) becomeActive {
+- (void)becomeActive {
     if (theLinphoneCore == nil) {
 		//back from standby and background mode is disabled
 		[self	startLibLinphone];
@@ -961,11 +960,11 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	linphone_core_start_dtmf_stream(theLinphoneCore);
     
 }
--(void) registerLogView:(id<LogView>) view {
+- (void)registerLogView:(id<LogView>) view {
 	mLogView = view;
 }
 
--(void) beginInterruption {
+- (void)beginInterruption {
     LinphoneCall* c = linphone_core_get_current_call(theLinphoneCore);
     ms_message("Sound interruption detected!");
     if (c) {
@@ -973,32 +972,32 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
     }
 }
 
--(void) endInterruption {
+- (void)endInterruption {
     ms_message("Sound interruption ended!");
     //let the user resume the call manually.
 }
-+(BOOL) runningOnIpad {
++ (BOOL)runningOnIpad {
 #ifdef UI_USER_INTERFACE_IDIOM
     return (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad);
 #endif
     return NO;
 }
 
-+(void) set:(UIButton*)view enabled: (BOOL) enabled withName:(const char*)name andReason:(const char*) reason{
++ (void)set:(UIButton*)view enabled: (BOOL) enabled withName:(const char*)name andReason:(const char*) reason{
     if (view.enabled != enabled) {
         ms_message("UI - '%s' is now '%s' ('%s')", name, enabled ? "ENABLED" : "DISABLED", reason);
         [view setEnabled:enabled];
     }
 }
 
-+(void) set:(UIView*)view hidden: (BOOL) hidden withName:(const char*)name andReason:(const char*) reason{
++ (void)set:(UIView*)view hidden: (BOOL) hidden withName:(const char*)name andReason:(const char*) reason{
     if (view.hidden != hidden) {
         ms_message("UI - '%s' is now '%s' ('%s')", name, hidden ? "HIDDEN" : "SHOWN", reason);
         [view setHidden:hidden];
     }
 }
 
-+(void) logUIElementPressed:(const char*) name {
++ (void)logUIElementPressed:(const char*) name {
     ms_message("UI - '%s' pressed", name);
 }
 
@@ -1024,4 +1023,5 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
         }
     }
 }
+
 @end

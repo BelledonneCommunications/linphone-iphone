@@ -87,7 +87,7 @@
 					<object class="IBUIButton" id="364135044">
 						<reference key="NSNextResponder" ref="702431052"/>
 						<int key="NSvFlags">292</int>
-						<string key="NSFrame">{{289, 11}, {22, 22}}</string>
+						<string key="NSFrame">{{276, 0}, {44, 44}}</string>
 						<reference key="NSSuperview" ref="702431052"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView"/>
@@ -97,6 +97,10 @@
 						<int key="IBUIContentHorizontalAlignment">0</int>
 						<int key="IBUIContentVerticalAlignment">0</int>
 						<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
+						<double key="IBUIImageEdgeInsets.top">11</double>
+						<double key="IBUIImageEdgeInsets.bottom">11</double>
+						<double key="IBUIImageEdgeInsets.left">11</double>
+						<double key="IBUIImageEdgeInsets.right">11</double>
 						<object class="NSColor" key="IBUIHighlightedTitleColor">
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MQA</bytes>
@@ -109,11 +113,11 @@
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MC41AA</bytes>
 						</object>
-						<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage">
+						<object class="NSCustomResource" key="IBUIHighlightedImage">
 							<string key="NSClassName">NSImage</string>
 							<string key="NSResourceName">bouton-detail-contact-over.png</string>
 						</object>
-						<object class="NSCustomResource" key="IBUINormalBackgroundImage">
+						<object class="NSCustomResource" key="IBUINormalImage">
 							<string key="NSClassName">NSImage</string>
 							<string key="NSResourceName">bouton-detail-contact-actif.png</string>
 						</object>
@@ -131,7 +135,7 @@
 				<string key="NSFrameSize">{320, 44}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
-				<reference key="NSNextKeyView"/>
+				<reference key="NSNextKeyView" ref="811339934"/>
 				<string key="NSReuseIdentifierKey">_NS:9</string>
 				<object class="NSColor" key="IBUIBackgroundColor">
 					<int key="NSColorSpace">3</int>
@@ -185,9 +189,9 @@
 						<int key="objectID">12</int>
 						<reference key="object" ref="702431052"/>
 						<array class="NSMutableArray" key="children">
-							<reference ref="364135044"/>
 							<reference ref="123093962"/>
 							<reference ref="811339934"/>
+							<reference ref="364135044"/>
 						</array>
 						<reference key="parent" ref="0"/>
 					</object>
@@ -207,7 +211,7 @@
 						<int key="objectID">7</int>
 						<reference key="object" ref="364135044"/>
 						<reference key="parent" ref="702431052"/>
-						<string key="objectName">details</string>
+						<string key="objectName">detailsButton</string>
 					</object>
 				</array>
 			</object>
@@ -220,13 +224,14 @@
 				<string key="5.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="6.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="7.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<real value="2" key="7.IBUIButtonInspectorSelectedEdgeInsetMetadataKey"/>
 				<real value="1" key="7.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 			</dictionary>
 			<dictionary class="NSMutableDictionary" key="unlocalizedProperties"/>
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">12</int>
+			<int key="maxID">13</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">

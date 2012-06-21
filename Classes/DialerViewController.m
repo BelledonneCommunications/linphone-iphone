@@ -21,7 +21,6 @@
 #import <AudioToolbox/AudioToolbox.h>
 
 #import "DialerViewController.h"
-#import "linphoneAppDelegate.h"
 #import "IncallViewController.h"
 #import "LinphoneManager.h"
 #import "PhoneMainView.h"
@@ -32,6 +31,7 @@
 @implementation DialerViewController
 
 @synthesize addressField;
+@synthesize addContact;
 @synthesize callButton;
 @synthesize eraseButton;
 
@@ -87,7 +87,10 @@
 
 - (void)dealloc {
 	[addressField release];
+    [addContact release];
+    [eraseButton release];
 	[callButton release];
+    
 	[oneButton release];
 	[twoButton release];
 	[threeButton release];
@@ -112,6 +115,18 @@
 
 - (IBAction)onAddContact: (id) event {
     
+}
+
+- (IBAction)onAddressChange: (id)sender {
+    if([[addressField text] length] > 0) {
+        [addContact setEnabled:TRUE];
+        [eraseButton setEnabled:TRUE];
+        [callButton setEnabled:TRUE];
+    } else {
+        [addContact setEnabled:FALSE];
+        [eraseButton setEnabled:FALSE];
+        [callButton setEnabled:FALSE];
+    }
 }
 
 @end

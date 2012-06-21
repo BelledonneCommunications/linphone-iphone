@@ -26,6 +26,7 @@
 @private
 	//Buttons
 	UITextField*    addressField;
+    UIButton*       addContact;
 	UIEraseButton*  eraseButton;
 	UICallButton*   callButton;
 
@@ -47,6 +48,7 @@
 - (void)setAddress:(NSString*) address;
 
 @property (nonatomic, retain) IBOutlet UITextField* addressField;
+@property (nonatomic, retain) IBOutlet UIButton* addContact;
 @property (nonatomic, retain) IBOutlet UIButton* callButton;
 @property (nonatomic, retain) IBOutlet UIEraseButton* eraseButton;
 @property (nonatomic, retain) IBOutlet UIButton* oneButton;
@@ -63,5 +65,6 @@
 @property (nonatomic, retain) IBOutlet UIButton* hashButton;
 
 - (IBAction)onAddContact: (id) event;
+- (IBAction)onAddressChange: (id)sender;
 
 @end

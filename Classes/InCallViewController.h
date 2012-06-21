@@ -30,7 +30,7 @@
 
 @class VideoViewController;
 
-@interface InCallViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, CallActionSheetDelegate> {
+@interface InCallViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, CallActionSheetDelegate, UIGestureRecognizerDelegate> {
     
     UITableView* callTableView;
     
@@ -42,8 +42,6 @@
 #endif
     UICamSwitch* videoCameraSwitch;
     UIActivityIndicatorView* videoWaitingForFirstImage;
-    
-    bool dismissed;
     
     NSTimer *durationRefreasher;
     NSTimer *glowingTimer;
@@ -69,7 +67,7 @@
 }
 
 + (LinphoneCall*)retrieveCallAtIndex: (NSInteger) index inConference:(bool) conf;
-+ (void)updateCellImageView:(UIImageView*)imageView Label:(UILabel*)label DetailLabel:(UILabel*)detailLabel AndAccessoryView:(UIView*)accessoryView withCall:(LinphoneCall*) call;
+//+ (void)updateCellImageView:(UIImageView*)imageView Label:(UILabel*)label DetailLabel:(UILabel*)detailLabel AndAccessoryView:(UIView*)accessoryView withCall:(LinphoneCall*) call;
 
 @property (nonatomic, retain) IBOutlet UIViewController* conferenceDetail;
 @property (nonatomic, retain) IBOutlet UITableView* callTableView;

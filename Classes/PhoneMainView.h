@@ -29,6 +29,7 @@
     bool tabBarEnabled;
     bool statusEnabled;
     bool fullscreen;
+    PhoneView viewId;
 }
 -(id) copy;
 @end

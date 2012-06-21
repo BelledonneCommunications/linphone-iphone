@@ -72,8 +72,7 @@ typedef struct _LinphoneCallAppData {
 	NSTimer* mIterateTimer;
 	id<LogView> mLogView;	
 	bool isbackgroundModeEnabled;
-	
-	UIViewController* mCurrentViewController;
+    
 	Connectivity connectivity;
     FastAddressBook* mFastAddressBook;
 	const char*  frontCamId;

@@ -18,7 +18,6 @@
  */              
 
 #import <UIKit/UIKit.h>
-#import "LinphoneAppDelegate.h"
 
 @interface FirstLoginViewController : UIViewController <UITextFieldDelegate>{
 	UIButton* ok;

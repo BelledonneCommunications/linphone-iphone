@@ -45,35 +45,10 @@
         cell = [[UIHistoryCell alloc] init];
     }
     
-    // Set up the cell...
-	LinphoneAddress* partyToDisplay; 
 	const MSList * logs = linphone_core_get_call_logs([LinphoneManager getLc]);
-	LinphoneCallLog*  callLogs = ms_list_nth_data(logs,  indexPath.row) ;
-
-	NSString *path;
-	if (callLogs->dir == LinphoneCallIncoming) {
-        if (callLogs->status == LinphoneCallSuccess) {
-            path = [[NSBundle mainBundle] pathForResource:callLogs->video_enabled?@"appel-entrant":@"appel-entrant" ofType:@"png"];
-        } else {
-            //missed call
-            path = [[NSBundle mainBundle] pathForResource:@"appel-manque" ofType:@"png"];
-        }
-		partyToDisplay=callLogs->from;
-		
-	} else {
-		path = [[NSBundle mainBundle] pathForResource:callLogs->video_enabled?@"appel-sortant":@"appel-sortant" ofType:@"png"];
-		partyToDisplay=callLogs->to;
-		
-	}
-	UIImage *image = [UIImage imageWithContentsOfFile:path];
-	
-	const char* username = linphone_address_get_username(partyToDisplay)!=0?linphone_address_get_username(partyToDisplay):"";
+	LinphoneCallLog*  callLogs = ms_list_nth_data(logs,  indexPath.row);
     
-    //TODO
-    //const char* displayName = linphone_address_get_display_name(partyToDisplay);
-
-    [cell.displayName setText:[NSString stringWithFormat:@"%s", username]];
-    cell.imageView.image = image;
+    [cell update:callLogs];
 	
     return cell;
 }
@@ -109,10 +84,10 @@
     NSString* dispName = [[NSString alloc] initWithCString:displayName encoding:[NSString defaultCStringEncoding]];
     
     // Go to dialer view
-    NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:
-                          [[NSArray alloc] initWithObjects: phoneNumber, nil]
+    NSDictionary *dict = [[[NSDictionary alloc] initWithObjectsAndKeys:
+                          [[[NSArray alloc] initWithObjects: phoneNumber, nil] autorelease]
                           , @"setAddress:",
-                          nil];
+                          nil] autorelease];
     [[LinphoneManager instance] changeView:PhoneView_Dialer dict:dict];
 
 	[phoneNumber release];

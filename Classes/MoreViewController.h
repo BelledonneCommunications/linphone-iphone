@@ -18,10 +18,6 @@
  */              
 
 #import <UIKit/UIKit.h>
-#include "linphoneAppDelegate.h"
-
-
-
 
 @class ConsoleViewController;
 @interface MoreViewController : UITableViewController {

@@ -45,7 +45,31 @@
     [self setHighlighted:false animated:true];
 }
 
-- (void) update {
+- (void) update:(ABRecordRef) record {
+    CFStringRef lFirstName = ABRecordCopyValue(record, kABPersonFirstNameProperty);
+    CFStringRef lLocalizedFirstName = (lFirstName != nil)?ABAddressBookCopyLocalizedLabel(lFirstName):nil;
+    CFStringRef lLastName = ABRecordCopyValue(record, kABPersonLastNameProperty);
+    CFStringRef lLocalizedLastName = (lFirstName != nil)?ABAddressBookCopyLocalizedLabel(lLastName):nil;
+    
+    if(lLocalizedFirstName != nil)
+        [firstName setText: [(NSString *)lLocalizedFirstName retain]];
+    else
+        [firstName setText: @""];
+    
+    if(lLocalizedLastName != nil)
+        [lastName setText: [(NSString *)lLocalizedLastName retain]];
+    else
+        [lastName setText: @""];
+    
+    if(lLocalizedLastName != nil)
+        CFRelease(lLocalizedLastName);
+    if(lLastName != nil)
+        CFRelease(lLastName);
+    if(lLocalizedFirstName != nil)
+        CFRelease(lLocalizedFirstName);
+    if(lFirstName != nil)
+        CFRelease(lFirstName);
+    
     CGRect firstNameFrame = [firstName frame];
     CGRect lastNameFrame = [lastName frame];
     

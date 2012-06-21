@@ -24,7 +24,7 @@
 @synthesize firstBackground;
 @synthesize otherBackground;
 @synthesize stateView;
-@synthesize numberLabel;
+@synthesize addressLabel;
 @synthesize timeLabel;
 
 - (id)init {
@@ -48,6 +48,39 @@
 - (void)otherCell{
     [firstBackground setHidden:true];
     [otherBackground setHidden:false];
+}
+
+- (void)updateCell:(LinphoneCall *)call {
+    const LinphoneAddress* addr = linphone_call_get_remote_address(call);
+    
+    if (addr) {
+		const char* lUserNameChars=linphone_address_get_username(addr);
+		NSString* lUserName = lUserNameChars?[[[NSString alloc] initWithUTF8String:lUserNameChars] autorelease]:NSLocalizedString(@"Unknown",nil);
+        NSMutableString* mss = [[NSMutableString alloc] init];
+        // contact name 
+        const char* n = linphone_address_get_display_name(addr);
+        if (n) 
+            [mss appendFormat:@"%s", n, nil];
+        else
+            [mss appendFormat:@"%@",lUserName , nil];
+        
+        [addressLabel setText:mss];
+        
+        // TODO
+        //imageView.image = [[LinphoneManager instance] getImageFromAddressBook:lUserName];
+		[mss release];
+    } else {
+        [addressLabel setText:@"Unknown"];
+        //TODO
+        //imageView.image = nil;
+    }
+    
+    
+    NSMutableString* msDuration = [[NSMutableString alloc] init ];
+    int duration = linphone_call_get_duration(call);
+    [msDuration appendFormat:@"%02i:%02i", (duration/60), duration - 60 * (duration / 60), nil];
+    [timeLabel setText:msDuration];
+    [msDuration release];
 }
 
 @end

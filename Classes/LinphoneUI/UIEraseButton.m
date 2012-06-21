@@ -21,6 +21,7 @@
 
 
 @implementation UIEraseButton
+
 -(void) touchDown:(id) sender {
   	if ([mAddress.text length] > 0) {
 		[mAddress setText:[mAddress.text substringToIndex:[mAddress.text length]-1]];
