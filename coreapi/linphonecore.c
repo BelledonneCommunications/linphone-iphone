@@ -3473,7 +3473,6 @@ LinphoneFirewallPolicy linphone_core_get_firewall_policy(const LinphoneCore *lc)
  * @ingroup call_logs
 **/
 const MSList * linphone_core_get_call_logs(LinphoneCore *lc){
-	lc->missed_calls=0;
 	return lc->call_logs;
 }
 
@@ -3489,17 +3488,31 @@ void linphone_core_clear_call_logs(LinphoneCore *lc){
 	call_logs_write_to_config_file(lc);
 }
 
+/**
+ * Returns number of missed calls.
+ * Once checked, this counter can be reset with linphone_core_reset_missed_calls_count().
+**/
 int linphone_core_get_missed_calls_count(LinphoneCore *lc) {
 	return lc->missed_calls;
 }
 
+/**
+ * Resets the counter of missed calls.
+**/
 void linphone_core_reset_missed_calls_count(LinphoneCore *lc) {
 	lc->missed_calls=0;
 }
 
-void linphone_core_remove_call_log(LinphoneCore *lc, void *data) {
-	lc->call_logs = ms_list_remove(lc->call_logs, data);
+/**
+ * Remove a specific call log from call history list.
+ * This function destroys the call log object. It must not be accessed anymore by the application after calling this function.
+ * @param lc the linphone core object
+ * @param a LinphoneCallLog object.
+**/
+void linphone_core_remove_call_log(LinphoneCore *lc, LinphoneCallLog *cl){
+	lc->call_logs = ms_list_remove(lc->call_logs, cl);
 	call_logs_write_to_config_file(lc);
+	linphone_call_log_destroy(cl);
 }
 
 static void toggle_video_preview(LinphoneCore *lc, bool_t val){
@@ -3572,6 +3585,7 @@ bool_t linphone_core_video_enabled(LinphoneCore *lc){
  * This policy defines whether:
  * - video shall be initiated by default for outgoing calls
  * - video shall be accepter by default for incoming calls
+ * @ingroup media_parameters
 **/
 void linphone_core_set_video_policy(LinphoneCore *lc, const LinphoneVideoPolicy *policy){
 	lc->video_policy=*policy;
@@ -3584,6 +3598,7 @@ void linphone_core_set_video_policy(LinphoneCore *lc, const LinphoneVideoPolicy 
 /**
  * Get the default policy for video.
  * See linphone_core_set_video_policy() for more details.
+ * @ingroup media_parameters
 **/
 const LinphoneVideoPolicy *linphone_core_get_video_policy(LinphoneCore *lc){
 	return &lc->video_policy;
