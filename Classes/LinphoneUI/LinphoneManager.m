@@ -178,6 +178,14 @@ struct codec_name_pref_table codec_pref_table[]={
 }
 
 -(void) onCall:(LinphoneCall*) call StateChanged: (LinphoneCallState) new_state withMessage: (const char *)  message {
+    if(new_state == LinphoneCallReleased) {
+        if(linphone_call_get_user_pointer(call) != NULL) {
+            free (linphone_call_get_user_pointer(call));
+            linphone_call_set_user_pointer(call, NULL);
+        }
+        return;
+    }
+    
     const char* lUserNameChars=linphone_address_get_username(linphone_call_get_remote_address(call));
     NSString* lUserName = lUserNameChars?[[[NSString alloc] initWithUTF8String:lUserNameChars] autorelease]:NSLocalizedString(@"Unknown",nil);
     if (new_state == LinphoneCallIncomingReceived) {
@@ -306,9 +314,6 @@ struct codec_name_pref_table codec_pref_table[]={
                 [callDelegate displayInCall:call FromUI:mCurrentViewController forUser:lUserName withDisplayName:lDisplayName];
             }
 			break;
-        case LinphoneCallReleased:
-            free (linphone_call_get_user_pointer(call));
-            break;
         default:
             break;
 	}
@@ -322,12 +327,9 @@ struct codec_name_pref_table codec_pref_table[]={
 }
 
 +(LinphoneCore*) getLc {
-#if 0
 	if (theLinphoneCore==nil) {
 		@throw([NSException exceptionWithName:@"LinphoneCoreException" reason:@"Linphone core not initialized yet" userInfo:nil]);
 	}
-#else
-#endif
 	return theLinphoneCore;
 }
 
@@ -468,6 +470,14 @@ static LinphoneCoreVTable linphonec_vtable = {
 };
 
 
+-(void) configurePayloadType:(const char*) type fromPrefKey: (NSString*)key withRate:(int)rate  {
+	if ([[NSUserDefaults standardUserDefaults] boolForKey:key]) { 		
+		PayloadType* pt;
+		if((pt = linphone_core_find_payload_type(theLinphoneCore,type,rate))) {
+			linphone_core_enable_payload_type(theLinphoneCore,pt, TRUE);
+		}
+	} 
+}
 -(void) kickOffNetworkConnection {
 	/*start a new thread to avoid blocking the main ui in case of peer host failure*/
 	[NSThread detachNewThreadSelector:@selector(runNetworkConnection) toTarget:self withObject:nil];
@@ -575,7 +585,9 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 
 // no proxy configured alert 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-	
+	if (buttonIndex == 1) {
+		[[NSUserDefaults standardUserDefaults] setBool:true forKey:@"check_config_disable_preference"];
+	}
 }
 -(void) destroyLibLinphone {
 	[mIterateTimer invalidate]; 
@@ -631,6 +643,10 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		} else {
 			ms_warning("keepalive handler cannot be registered");
 		}
+		LCSipTransports transportValue;
+		if (linphone_core_get_sip_transports(theLinphoneCore, &transportValue)) {
+			ms_error("cannot get current transport");	
+		}
 		return YES;
 	}
 	else {
@@ -646,9 +662,12 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	linphone_core_iterate(theLinphoneCore);
 }
 
--(void) setupNetworkReachabilityCallback: (const char*) nodeName withContext:(SCNetworkReachabilityContext*) ctx {
+-(void) setupNetworkReachabilityCallback {
+	SCNetworkReachabilityContext *ctx=NULL;
+	const char *nodeName="linphone.org";
+	
     if (proxyReachability) {
-        ms_message("Cancel old network reachability check");
+        ms_message("Cancelling old network reachability");
         SCNetworkReachabilityUnscheduleFromRunLoop(proxyReachability, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
         CFRelease(proxyReachability);
         proxyReachability = nil;
@@ -723,7 +742,9 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	
 	linphone_core_set_zrtp_secrets_file(theLinphoneCore, [zrtpSecretsFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
     
-    [self setupNetworkReachabilityCallback: "linphone.org" withContext:nil];
+    [self setupNetworkReachabilityCallback];
+
+	[self reconfigureLinphoneIfNeeded:nil];
 	
 	// start scheduler
 	mIterateTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 
@@ -787,10 +808,14 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		linphone_core_enable_video(theLinphoneCore, FALSE, FALSE);
 	}
     
-    ms_warning("Linphone [%s]  started on [%s], running with [%u] processor(s)"
+    if ([LinphoneManager runningOnIpad])
+        ms_set_cpu_count(2);
+    else
+        ms_set_cpu_count(1);
+    
+    ms_warning("Linphone [%s]  started on [%s]"
                ,linphone_core_get_version()
-               ,[[UIDevice currentDevice].model cStringUsingEncoding:[NSString defaultCStringEncoding]],
-			   cpucount);
+               ,[[UIDevice currentDevice].model cStringUsingEncoding:[NSString defaultCStringEncoding]] );
 	
 }
 
@@ -799,9 +824,16 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	if (proxyReachability){
 		SCNetworkReachabilityFlags flags=0;
 		if (!SCNetworkReachabilityGetFlags(proxyReachability, &flags)) {
-			ms_error("Cannot get reachability flags");
-		}else
-			networkReachabilityCallBack(proxyReachability, flags, 0);	
+			ms_error("Cannot get reachability flags, re-creating reachability context.");
+			[self setupNetworkReachabilityCallback];
+		}else{
+			networkReachabilityCallBack(proxyReachability, flags, 0);
+			if (flags==0){
+				/*workaround iOS bug: reachability API cease to work after some time.*/
+				/*when flags==0, either we have no network, or the reachability object lies. To workaround, create a new one*/
+				[self setupNetworkReachabilityCallback];
+			}
+		}
 	}else ms_error("No proxy reachability context created !");
 	linphone_core_refresh_registers(theLinphoneCore);//just to make sure REGISTRATION is up to date
 }
@@ -810,13 +842,11 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
     if (theLinphoneCore == nil) {
 		//back from standby and background mode is disabled
 		[self	startLibLinphone];
-	} else {
-		[self refreshRegisters];
 	}
 	/*IOS specific*/
 	linphone_core_start_dtmf_stream(theLinphoneCore);
+    
 }
-
 -(void) registerLogView:(id<LogView>) view {
 	mLogView = view;
 }

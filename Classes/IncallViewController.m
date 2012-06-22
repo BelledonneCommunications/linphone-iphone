@@ -667,8 +667,8 @@ void addAnimationFadeTransition(UIView* view, float duration) {
 	dismissed = false;
 	UIDevice *device = [UIDevice currentDevice];
     device.proximityMonitoringEnabled = YES;
-	if ([speaker isOn]) 
-		[speaker toggle];
+	//if ([speaker isOn]) 
+	//	[speaker toggle];
     [self updateUIFromLinphoneState: YES]; 
 }
 
@@ -681,7 +681,7 @@ void addAnimationFadeTransition(UIView* view, float duration) {
 	UIDevice *device = [UIDevice currentDevice];
     device.proximityMonitoringEnabled = YES;
 	if (call !=nil  && linphone_call_get_dir(call)==LinphoneCallIncoming) {
-		if ([speaker isOn]) [speaker toggle];
+		//if ([speaker isOn]) [speaker toggle];
 	}
     [self updateUIFromLinphoneState: YES];
     
@@ -932,7 +932,11 @@ static void hideSpinner(LinphoneCall* call, void* user_data) {
         } else {
             switch (linphone_call_get_state(call)) {
                 case LinphoneCallPaused:
-                    [ms appendFormat:@"%@", NSLocalizedString(@"Paused (tap to resume)", nil), nil];
+                    if(!linphone_core_sound_resources_locked(linphone_call_get_core(call))) {
+                        [ms appendFormat:@"%@", NSLocalizedString(@"Paused (tap to resume)", nil), nil];
+                    } else {
+                        [ms appendFormat:@"%@", NSLocalizedString(@"Paused", nil), nil];
+                    }
                     break;
                 case LinphoneCallOutgoingInit:
                 case LinphoneCallOutgoingProgress:
@@ -1242,7 +1246,9 @@ static void hideSpinner(LinphoneCall* call, void* user_data) {
         if (linphone_core_is_in_conference(lc)) {
             linphone_core_leave_conference(lc);
         }
-        linphone_core_resume_call([LinphoneManager getLc], selectedCall);
+        if(!linphone_core_sound_resources_locked(lc)) {
+            linphone_core_resume_call([LinphoneManager getLc], selectedCall);
+        }
     }
     
     [self updateUIFromLinphoneState: YES];
