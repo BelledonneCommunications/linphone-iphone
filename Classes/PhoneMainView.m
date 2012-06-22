@@ -24,6 +24,8 @@
 #import "HistoryViewController.h"
 #import "ContactsViewController.h"
 #import "InCallViewController.h"
+#import "SettingsViewController.h"
+#import "ChatViewController.h"
 
 @implementation ViewsDescription
 
@@ -289,6 +291,36 @@
     inCallDescription->tabBarEnabled = true;
     [viewDescriptions setObject:inCallDescription forKey:[NSNumber numberWithInt: PhoneView_InCall]];
     
+    
+    //
+    // Settings View
+    //
+    SettingsViewController* mySettingsViewController = [[SettingsViewController alloc]
+                                                initWithNibName:@"SettingsViewController" 
+                                                bundle:[NSBundle mainBundle]];
+    //[myHistoryController loadView];
+    ViewsDescription *settingsDescription = [ViewsDescription alloc];
+    settingsDescription->content = mySettingsViewController;
+    settingsDescription->tabBar = mainTabBarController;
+    settingsDescription->statusEnabled = true;
+    settingsDescription->fullscreen = false;
+    settingsDescription->tabBarEnabled = true;
+    [viewDescriptions setObject:settingsDescription forKey:[NSNumber numberWithInt: PhoneView_Settings]];
+    
+    //
+    // Chat View
+    //
+    ChatViewController* myChatViewController = [[ChatViewController alloc]
+                                                        initWithNibName:@"ChatViewController" 
+                                                        bundle:[NSBundle mainBundle]];
+    //[myHistoryController loadView];
+    ViewsDescription *chatDescription = [ViewsDescription alloc];
+    chatDescription->content = myChatViewController;
+    chatDescription->tabBar = mainTabBarController;
+    chatDescription->statusEnabled = true;
+    chatDescription->fullscreen = false;
+    chatDescription->tabBarEnabled = true;
+    [viewDescriptions setObject:settingsDescription forKey:[NSNumber numberWithInt: PhoneView_Chat]];
     
     // Set observers
     [[NSNotificationCenter defaultCenter] addObserver:self 

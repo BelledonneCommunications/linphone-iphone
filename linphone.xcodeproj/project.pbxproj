@@ -265,6 +265,14 @@
 		D35E758A15932DE60066B1C1 /* backspace-disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D35E758815932DE60066B1C1 /* backspace-disabled.png */; };
 		D35E758D15934F360066B1C1 /* appeler-disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D35E758C15934F360066B1C1 /* appeler-disabled.png */; };
 		D35E758E15934F360066B1C1 /* appeler-disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D35E758C15934F360066B1C1 /* appeler-disabled.png */; };
+		D35E7597159460580066B1C1 /* ChatViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D35E7595159460560066B1C1 /* ChatViewController.m */; };
+		D35E7598159460580066B1C1 /* ChatViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D35E7595159460560066B1C1 /* ChatViewController.m */; };
+		D35E7599159460580066B1C1 /* ChatViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D35E7596159460570066B1C1 /* ChatViewController.xib */; };
+		D35E759A159460580066B1C1 /* ChatViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D35E7596159460570066B1C1 /* ChatViewController.xib */; };
+		D35E759F159460B70066B1C1 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D35E759D159460B50066B1C1 /* SettingsViewController.m */; };
+		D35E75A0159460B70066B1C1 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D35E759D159460B50066B1C1 /* SettingsViewController.m */; };
+		D35E75A1159460B70066B1C1 /* SettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D35E759E159460B60066B1C1 /* SettingsViewController.xib */; };
+		D35E75A2159460B70066B1C1 /* SettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D35E759E159460B60066B1C1 /* SettingsViewController.xib */; };
 		D36C43C6158F2E5A0048BA40 /* UICallCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D36C43C5158F2E5A0048BA40 /* UICallCell.m */; };
 		D36C43C7158F2E5A0048BA40 /* UICallCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D36C43C5158F2E5A0048BA40 /* UICallCell.m */; };
 		D36C43CA158F2EE50048BA40 /* UICallCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D36C43C9158F2EE50048BA40 /* UICallCell.xib */; };
@@ -849,6 +857,12 @@
 		D35E7580159328EB0066B1C1 /* UIAddressTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIAddressTextField.m; sourceTree = "<group>"; };
 		D35E758815932DE60066B1C1 /* backspace-disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "backspace-disabled.png"; path = "Resources/backspace-disabled.png"; sourceTree = "<group>"; };
 		D35E758C15934F360066B1C1 /* appeler-disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "appeler-disabled.png"; path = "Resources/appeler-disabled.png"; sourceTree = "<group>"; };
+		D35E7594159460560066B1C1 /* ChatViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatViewController.h; sourceTree = "<group>"; };
+		D35E7595159460560066B1C1 /* ChatViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatViewController.m; sourceTree = "<group>"; };
+		D35E7596159460570066B1C1 /* ChatViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChatViewController.xib; sourceTree = "<group>"; };
+		D35E759C159460B50066B1C1 /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
+		D35E759D159460B50066B1C1 /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
+		D35E759E159460B60066B1C1 /* SettingsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SettingsViewController.xib; sourceTree = "<group>"; };
 		D36C43C4158F2E5A0048BA40 /* UICallCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICallCell.h; sourceTree = "<group>"; };
 		D36C43C5158F2E5A0048BA40 /* UICallCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICallCell.m; sourceTree = "<group>"; };
 		D36C43C9158F2EE50048BA40 /* UICallCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UICallCell.xib; sourceTree = "<group>"; };
@@ -1069,6 +1083,9 @@
 			children = (
 				340751E4150E4D0200B89C47 /* CallDelegate.h */,
 				2211DBBB14769C8200DEE054 /* CallDelegate.m */,
+				D35E7594159460560066B1C1 /* ChatViewController.h */,
+				D35E7595159460560066B1C1 /* ChatViewController.m */,
+				D35E7596159460570066B1C1 /* ChatViewController.xib */,
 				344ABD79147FD32B007420B6 /* ConferenceCallDetailCell.xib */,
 				340A75AF14C0670A006AA708 /* ConferenceCallDetailView-ipad.xib */,
 				344ABD75147FCB68007420B6 /* ConferenceCallDetailView.h */,
@@ -1082,14 +1099,17 @@
 				D35497FD15875372000081D8 /* ContactsViewController.xib */,
 				D3549814158761CF000081D8 /* ContactTableViewController.h */,
 				D3549815158761D0000081D8 /* ContactTableViewController.m */,
+				22F2508B107141E100AC9B3F /* DialerViewController.h */,
+				22F2508C107141E100AC9B3F /* DialerViewController.m */,
+				22F2508D107141E100AC9B3F /* DialerViewController.xib */,
 				2218A92212FBE1340088A667 /* FirstLoginViewController.h */,
 				2218A92312FBE1340088A667 /* FirstLoginViewController.m */,
 				2218A92412FBE1340088A667 /* FirstLoginViewController.xib */,
+				D3ED3EA41587334B006C0DE4 /* HistoryTableViewController.h */,
+				D3ED3EA51587334C006C0DE4 /* HistoryTableViewController.m */,
 				D3ED3EB515873928006C0DE4 /* HistoryViewController.h */,
 				D3ED3EB615873929006C0DE4 /* HistoryViewController.m */,
 				D3ED3EB2158738FA006C0DE4 /* HistoryViewController.xib */,
-				D3ED3EA41587334B006C0DE4 /* HistoryTableViewController.h */,
-				D3ED3EA51587334C006C0DE4 /* HistoryTableViewController.m */,
 				3422AA4F14975EC9000D4E8A /* InCallViewController-ipad.xib */,
 				D3F83EE91582021700336684 /* InCallViewController.h */,
 				D3F83EEA1582021700336684 /* InCallViewController.m */,
@@ -1108,9 +1128,9 @@
 				D3F83F8D15822ABD00336684 /* PhoneMainView.m */,
 				D34734791580DDF1003C7B8C /* PhoneMainView.xib */,
 				3422AA5214978352000D4E8A /* PhoneViewController-ipad.xib */,
-				22F2508B107141E100AC9B3F /* DialerViewController.h */,
-				22F2508C107141E100AC9B3F /* DialerViewController.m */,
-				22F2508D107141E100AC9B3F /* DialerViewController.xib */,
+				D35E759C159460B50066B1C1 /* SettingsViewController.h */,
+				D35E759D159460B50066B1C1 /* SettingsViewController.m */,
+				D35E759E159460B60066B1C1 /* SettingsViewController.xib */,
 				D326483415887D4400930C67 /* Utils */,
 				34216F3E1547EBCD00EA9777 /* VideoZoomHandler.h */,
 				34216F3F1547EBCD00EA9777 /* VideoZoomHandler.m */,
@@ -1928,6 +1948,8 @@
 				D35E757A15931E5D0066B1C1 /* switch_camera_over.png in Resources */,
 				D35E758915932DE60066B1C1 /* backspace-disabled.png in Resources */,
 				D35E758D15934F360066B1C1 /* appeler-disabled.png in Resources */,
+				D35E7599159460580066B1C1 /* ChatViewController.xib in Resources */,
+				D35E75A1159460B70066B1C1 /* SettingsViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2079,6 +2101,8 @@
 				D35E757B15931E5D0066B1C1 /* switch_camera_over.png in Resources */,
 				D35E758A15932DE60066B1C1 /* backspace-disabled.png in Resources */,
 				D35E758E15934F360066B1C1 /* appeler-disabled.png in Resources */,
+				D35E759A159460580066B1C1 /* ChatViewController.xib in Resources */,
+				D35E75A2159460B70066B1C1 /* SettingsViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2128,6 +2152,8 @@
 				D32409C3158B49A600C8C119 /* UILongTouchButton.m in Sources */,
 				D36C43C6158F2E5A0048BA40 /* UICallCell.m in Sources */,
 				D35E7581159328EB0066B1C1 /* UIAddressTextField.m in Sources */,
+				D35E7597159460580066B1C1 /* ChatViewController.m in Sources */,
+				D35E759F159460B70066B1C1 /* SettingsViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2174,6 +2200,8 @@
 				D32409C4158B49A600C8C119 /* UILongTouchButton.m in Sources */,
 				D36C43C7158F2E5A0048BA40 /* UICallCell.m in Sources */,
 				D35E7582159328EB0066B1C1 /* UIAddressTextField.m in Sources */,
+				D35E7598159460580066B1C1 /* ChatViewController.m in Sources */,
+				D35E75A0159460B70066B1C1 /* SettingsViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

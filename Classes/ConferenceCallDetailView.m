@@ -132,14 +132,15 @@ NSTimer *callQualityRefresher;
         cell = conferenceDetailCell;
         self.conferenceDetailCell = nil;
     }
-    
+    //TODO
     /* retrieve cell's fields using tags */
-    UIImageView* image = (UIImageView*) [cell viewWithTag:1];
-    UILabel* label = (UILabel*) [cell viewWithTag:2];
+    //UIImageView* image = (UIImageView*) [cell viewWithTag:1];
+    //UILabel* label = (UILabel*) [cell viewWithTag:2];
     
     /* update cell content */
-	LinphoneCall* call = [InCallViewController retrieveCallAtIndex:indexPath.row inConference:YES];
-    [InCallViewController updateCellImageView:image Label:label DetailLabel:nil AndAccessoryView:nil withCall:call];
+	//LinphoneCall* call = [InCallViewController retrieveCallAtIndex:indexPath.row inConference:YES];
+    
+    //[InCallViewController updateCellImageView:image Label:label DetailLabel:nil AndAccessoryView:nil withCall:call];
     
 	cell.accessoryType = UITableViewCellAccessoryNone;
 	if (cell.accessoryView == nil) {

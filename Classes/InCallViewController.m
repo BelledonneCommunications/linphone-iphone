@@ -134,6 +134,7 @@ void addAnimationFadeTransition(UIView* view, float duration) {
         [hideControlsTimer invalidate];
         hideControlsTimer = nil;
     }
+    
     // show controls    
     [UIView beginAnimations:nil context:nil];
     [UIView setAnimationDuration:0.3];
@@ -157,9 +158,14 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     [UIView setAnimationDuration:0.3];
     [videoCameraSwitch setAlpha:0.0];
     [UIView commitAnimations];
-    [[LinphoneManager instance] showTabBar: false];
     
-    hideControlsTimer = nil;
+    if([[LinphoneManager instance] currentView] == PhoneView_InCall)
+        [[LinphoneManager instance] showTabBar: false];
+
+    if (hideControlsTimer) {
+        [hideControlsTimer invalidate];
+        hideControlsTimer = nil;
+    }
 }
 
 #ifdef TEST_VIDEO_VIEW_CHANGE
@@ -327,7 +333,6 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     videoGroup.alpha = 0;
     
     mVideoShown=FALSE;
-	mIncallViewIsReady=FALSE;
 	mVideoIsPending=FALSE;
     //selectedCall = nil;
     
@@ -434,7 +439,6 @@ void addAnimationFadeTransition(UIView* view, float duration) {
                                                   userInfo:nil 
                                                    repeats:YES];
     glow = 0;
-    mIncallViewIsReady=TRUE; 
     if (mVideoIsPending) {
         mVideoIsPending=FALSE;
         [self enableVideoDisplay: FALSE];
@@ -455,23 +459,22 @@ void addAnimationFadeTransition(UIView* view, float duration) {
     if (visibleActionSheet != nil) {
         [visibleActionSheet dismissWithClickedButtonIndex:visibleActionSheet.cancelButtonIndex animated:NO];
     }
-}
-
-- (void)viewDidDisappear:(BOOL)animated {
     if (hideControlsTimer != nil) {
         [hideControlsTimer invalidate];
         hideControlsTimer = nil;
     }
     if (durationRefreasher != nil) {
         [durationRefreasher invalidate];
-        durationRefreasher=nil;
+        durationRefreasher = nil;
     }
     if (glowingTimer != nil) {
         [glowingTimer invalidate];
         glowingTimer = nil;
     }
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
 	if (!mVideoShown) [[UIApplication sharedApplication] setIdleTimerDisabled:false];
-	mIncallViewIsReady=FALSE;
 }
 
 - (void)viewDidUnload {

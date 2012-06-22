@@ -57,7 +57,6 @@
     ConferenceCallDetailView* conferenceDetail;
     BOOL mVideoShown;
 	BOOL mVideoIsPending;
-	BOOL mIncallViewIsReady;
     
     UIImage* verified, *unverified;
     UIActionSheet* visibleActionSheet;

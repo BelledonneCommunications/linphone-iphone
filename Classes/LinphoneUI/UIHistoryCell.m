@@ -44,22 +44,22 @@
 - (void)update:(LinphoneCallLog*)  callLogs {
     // Set up the cell...
 	LinphoneAddress* partyToDisplay; 
-	NSString *path;
+	NSString *name;
 	if (callLogs->dir == LinphoneCallIncoming) {
         if (callLogs->status == LinphoneCallSuccess) {
-            path = [[NSBundle mainBundle] pathForResource:callLogs->video_enabled?@"appel-entrant":@"appel-entrant" ofType:@"png"];
+            name = callLogs->video_enabled?@"appel-entrant.png":@"appel-entrant.png";
         } else {
             //missed call
-            path = [[NSBundle mainBundle] pathForResource:@"appel-manque" ofType:@"png"];
+            name = @"appel-manque.png";
         }
 		partyToDisplay=callLogs->from;
 		
 	} else {
-		path = [[NSBundle mainBundle] pathForResource:callLogs->video_enabled?@"appel-sortant":@"appel-sortant" ofType:@"png"];
+		name = callLogs->video_enabled?@"appel-sortant.png":@"appel-sortant.png";
 		partyToDisplay=callLogs->to;
 		
 	}
-	UIImage *image = [UIImage imageWithContentsOfFile:path];
+	UIImage *image = [UIImage imageNamed:name];
 	
 	const char* username = linphone_address_get_username(partyToDisplay)!=0?linphone_address_get_username(partyToDisplay):"";
     
