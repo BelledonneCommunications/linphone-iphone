@@ -26,6 +26,7 @@
 
 #import "ConsoleViewController.h"
 #import "MoreViewController.h"
+#import "LinphoneCoreSettingsStore.h"
 
 #include "LinphoneManager.h"
 #include "linphonecore.h"
@@ -78,6 +79,8 @@ int __aeabi_idiv(int a, int b) {
     
 }
 - (void)applicationDidEnterBackground:(UIApplication *)application {
+	if ([[LinphoneManager instance] settingsStore]!=Nil)
+		[[[LinphoneManager instance] settingsStore] synchronize];
     if (![[LinphoneManager instance] enterBackgroundMode]) {
         // destroying eventHandler if app cannot go in background.
         // Otherwise if a GSM call happen and Linphone is resumed,
@@ -130,41 +133,15 @@ int __aeabi_idiv(int a, int b) {
 }
 
 - (void)loadDefaultSettings:(NSDictionary *) appDefaults {
-    
-    NSString *settingsBundle = [[NSBundle mainBundle] pathForResource:@"Settings" ofType:@"bundle"];
-    if(!settingsBundle) {
-        NSLog(@"Could not find Settings.bundle");
-        return;
-    }
-    
-    NSMutableDictionary *rootSettings = [NSDictionary dictionaryWithContentsOfFile:[settingsBundle stringByAppendingPathComponent:@"Root.plist"]];
-	NSMutableDictionary *audioSettings = [NSDictionary dictionaryWithContentsOfFile:[settingsBundle stringByAppendingPathComponent:@"audio.plist"]];
-	NSMutableDictionary *videoSettings = [NSDictionary dictionaryWithContentsOfFile:[settingsBundle stringByAppendingPathComponent:@"video.plist"]];
-    NSMutableDictionary *advancedSettings = [NSDictionary dictionaryWithContentsOfFile:[settingsBundle stringByAppendingPathComponent:@"Advanced.plist"]];
-
-    NSMutableArray *preferences = [rootSettings objectForKey:@"PreferenceSpecifiers"];
-    [preferences addObjectsFromArray:[audioSettings objectForKey:@"PreferenceSpecifiers"]];
-    [preferences addObjectsFromArray:[videoSettings objectForKey:@"PreferenceSpecifiers"]];
-    [preferences addObjectsFromArray:[advancedSettings objectForKey:@"PreferenceSpecifiers"]];
-	
-    NSMutableDictionary *defaultsToRegister = [[NSMutableDictionary alloc] initWithCapacity:[preferences count]];
-
-    for(NSDictionary *prefSpecification in preferences) {
-        NSString *key = [prefSpecification objectForKey:@"Key"];
-        if(key && [prefSpecification objectForKey:@"DefaultValue"]) {
-            [defaultsToRegister setObject:[prefSpecification objectForKey:@"DefaultValue"] forKey:key];
-        }
-    }
-    [defaultsToRegister addEntriesFromDictionary:appDefaults];
-    [[NSUserDefaults standardUserDefaults] registerDefaults:defaultsToRegister];
-    [defaultsToRegister release];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    [[[LinphoneManager instance] settingsStore] synchronize];
 }
 
 - (void)setupUI {
     
     // Change to default view
     [[LinphoneManager instance] changeView: PhoneView_Dialer];
+	
+	[UIDevice currentDevice].batteryMonitoringEnabled = YES;
 }
 
 - (void)setupGSMInteraction {
@@ -178,25 +155,16 @@ int __aeabi_idiv(int a, int b) {
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions{    
-    NSDictionary *appDefaults = [NSDictionary dictionaryWithObjectsAndKeys:
-                                 @"NO", @"enable_first_login_view_preference", //
-#ifdef HAVE_AMR                                 
-                                 @"YES",@"amr_8k_preference", // enable amr by default if compiled with
-#endif
-#ifdef HAVE_G729                                 
-                                 @"YES",@"g729_preference", // enable amr by default if compiled with
-#endif                                 
-								 //@"+33",@"countrycode_preference",
-                                 nil];
-    
-    [self loadDefaultSettings: appDefaults];
+    NSDictionary *appDefaults = [NSDictionary dictionaryWithObjectsAndKeys: nil];
+		// Put your default NSUserDefaults settings in the dictionary above.
     
     if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)] 
 		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground 
-        && [[NSUserDefaults standardUserDefaults] boolForKey:@"disable_autoboot_preference"]) {
+        && ![[NSUserDefaults standardUserDefaults] boolForKey:@"start_at_boot_preference"]) {
 		// autoboot disabled, doing nothing
 	} else {
         [self startApplication];
+        [self loadDefaultSettings: appDefaults];
     }
 
     return YES;
@@ -210,7 +178,7 @@ int __aeabi_idiv(int a, int b) {
     [self setupUI];
 
 	[[LinphoneManager instance]	startLibLinphone];
-
+    
 	[[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeSound];
     
     [self setupGSMInteraction];

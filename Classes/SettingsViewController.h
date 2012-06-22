@@ -19,8 +19,14 @@
 
 #import <UIKit/UIKit.h>
 
-@interface SettingsViewController : UIViewController {
-    
+#import "IASKAppSettingsViewController.h"
+
+@interface SettingsViewController: UIViewController {
+    IASKAppSettingsViewController *settingsController;
+    UINavigationController *navigationController;
 }
+
+@property (nonatomic, retain) IBOutlet UINavigationController *navigationController;
+@property (nonatomic, retain) IBOutlet IASKAppSettingsViewController *settingsController;
 
 @end

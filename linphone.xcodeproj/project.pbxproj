@@ -39,7 +39,6 @@
 		2237D4091084D7A9001383EE /* oldphone-mono.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2237D4081084D7A9001383EE /* oldphone-mono.wav */; };
 		223963171393CFAF001DE689 /* FastAddressBook.m in Sources */ = {isa = PBXBuildFile; fileRef = 223963161393CFAF001DE689 /* FastAddressBook.m */; };
 		2242E313125235120061DDCE /* oldphone-mono-30s.caf in Resources */ = {isa = PBXBuildFile; fileRef = 2242E312125235120061DDCE /* oldphone-mono-30s.caf */; };
-		2245671D107699F700F10948 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2245671C107699F700F10948 /* Settings.bundle */; };
 		224567C2107B968500F10948 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 224567C1107B968500F10948 /* AVFoundation.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		2245F78A1201D38000C4179D /* MoreViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22E0A81B111C44E100B04932 /* MoreViewController.xib */; };
 		2248E90E12F7E4CF00220D9C /* UIDigitButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2248E90D12F7E4CF00220D9C /* UIDigitButton.m */; };
@@ -49,7 +48,6 @@
 		226183AE1472527D0037138E /* libsrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226183AB1472527D0037138E /* libsrtp.a */; };
 		226183B0147259670037138E /* libmssilk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226183AF147259670037138E /* libmssilk.a */; };
 		2264B6D211200342002C2C53 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2264B6D111200342002C2C53 /* SystemConfiguration.framework */; };
-		226B563F13CAF1CD00921595 /* audio.plist in Resources */ = {isa = PBXBuildFile; fileRef = 226B563E13CAF1CD00921595 /* audio.plist */; };
 		226CDADF14E2D0B800513B67 /* libbcg729.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226CDADD14E2D0B800513B67 /* libbcg729.a */; };
 		226CDAE014E2D0B800513B67 /* libmsbcg729.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226CDADE14E2D0B800513B67 /* libmsbcg729.a */; };
 		226F2ED61344B0EF00F6EF27 /* libopencore-amrwb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226F2ED31344B0EF00F6EF27 /* libopencore-amrwb.a */; };
@@ -86,8 +84,6 @@
 		22D8F13B147548E2008C97DB /* FirstLoginViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2218A92412FBE1340088A667 /* FirstLoginViewController.xib */; };
 		22D8F13C147548E2008C97DB /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = 228B19AE130290C500F154D3 /* iTunesArtwork */; };
 		22D8F13D147548E2008C97DB /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2214783B1386A2030020F8B8 /* Localizable.strings */; };
-		22D8F140147548E2008C97DB /* audio.plist in Resources */ = {isa = PBXBuildFile; fileRef = 226B563E13CAF1CD00921595 /* audio.plist */; };
-		22D8F141147548E2008C97DB /* video.plist in Resources */ = {isa = PBXBuildFile; fileRef = 22E1A9E713CAF4AA00219531 /* video.plist */; };
 		22D8F142147548E2008C97DB /* rootca.pem in Resources */ = {isa = PBXBuildFile; fileRef = 70571E1913FABCB000CDD3C2 /* rootca.pem */; };
 		22D8F144147548E2008C97DB /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		22D8F145147548E2008C97DB /* LinphoneAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* LinphoneAppDelegate.m */; };
@@ -142,7 +138,6 @@
 		22E0A822111C44E100B04932 /* MoreViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E0A81C111C44E100B04932 /* MoreViewController.m */; };
 		22E0A823111C44E100B04932 /* ConsoleViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22E0A81E111C44E100B04932 /* ConsoleViewController.xib */; };
 		22E0A824111C44E100B04932 /* ConsoleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E0A81F111C44E100B04932 /* ConsoleViewController.m */; };
-		22E1A9E813CAF4AA00219531 /* video.plist in Resources */ = {isa = PBXBuildFile; fileRef = 22E1A9E713CAF4AA00219531 /* video.plist */; };
 		22E5B0AF133B5EA20044EA25 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22E5B0AD133B5EA20044EA25 /* libssl.a */; };
 		22E5B0B0133B5EA20044EA25 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22E5B0AE133B5EA20044EA25 /* libcrypto.a */; };
 		22F2508E107141E100AC9B3F /* DialerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22F2508C107141E100AC9B3F /* DialerViewController.m */; };
@@ -210,6 +205,8 @@
 		D32648411588950F00930C67 /* UICallBar.xib in Resources */ = {isa = PBXBuildFile; fileRef = D326483D1588950F00930C67 /* UICallBar.xib */; };
 		D32648441588F6FC00930C67 /* UIToggleButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D32648431588F6FB00930C67 /* UIToggleButton.m */; };
 		D32648451588F6FC00930C67 /* UIToggleButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D32648431588F6FB00930C67 /* UIToggleButton.m */; };
+		D32942A41594C94300556A1C /* SettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D32942A31594C94200556A1C /* SettingsViewController.xib */; };
+		D32942A51594C94300556A1C /* SettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D32942A31594C94200556A1C /* SettingsViewController.xib */; };
 		D3432A62158A4446001C6B0B /* status_connected.png in Resources */ = {isa = PBXBuildFile; fileRef = D3432A5C158A4446001C6B0B /* status_connected.png */; };
 		D3432A63158A4446001C6B0B /* status_connected.png in Resources */ = {isa = PBXBuildFile; fileRef = D3432A5C158A4446001C6B0B /* status_connected.png */; };
 		D3432A64158A4446001C6B0B /* status_error.png in Resources */ = {isa = PBXBuildFile; fileRef = D3432A5D158A4446001C6B0B /* status_error.png */; };
@@ -229,6 +226,8 @@
 		D347347A1580DDF1003C7B8C /* PhoneMainView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D34734791580DDF1003C7B8C /* PhoneMainView.xib */; };
 		D347347E1580E5F8003C7B8C /* history-actif.png in Resources */ = {isa = PBXBuildFile; fileRef = D347347C1580E5F8003C7B8C /* history-actif.png */; };
 		D347347F1580E5F8003C7B8C /* history-selectionne.png in Resources */ = {isa = PBXBuildFile; fileRef = D347347D1580E5F8003C7B8C /* history-selectionne.png */; };
+		D34F6F9E1594D3FB0095705B /* InAppSettings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = D34F6F9D1594D3FB0095705B /* InAppSettings.bundle */; };
+		D34F6F9F1594D3FB0095705B /* InAppSettings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = D34F6F9D1594D3FB0095705B /* InAppSettings.bundle */; };
 		D35497FE15875372000081D8 /* ContactsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D35497FC15875372000081D8 /* ContactsViewController.m */; };
 		D35497FF15875372000081D8 /* ContactsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D35497FC15875372000081D8 /* ContactsViewController.m */; };
 		D354980015875372000081D8 /* ContactsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D35497FD15875372000081D8 /* ContactsViewController.xib */; };
@@ -271,8 +270,6 @@
 		D35E759A159460580066B1C1 /* ChatViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D35E7596159460570066B1C1 /* ChatViewController.xib */; };
 		D35E759F159460B70066B1C1 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D35E759D159460B50066B1C1 /* SettingsViewController.m */; };
 		D35E75A0159460B70066B1C1 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D35E759D159460B50066B1C1 /* SettingsViewController.m */; };
-		D35E75A1159460B70066B1C1 /* SettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D35E759E159460B60066B1C1 /* SettingsViewController.xib */; };
-		D35E75A2159460B70066B1C1 /* SettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D35E759E159460B60066B1C1 /* SettingsViewController.xib */; };
 		D36C43C6158F2E5A0048BA40 /* UICallCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D36C43C5158F2E5A0048BA40 /* UICallCell.m */; };
 		D36C43C7158F2E5A0048BA40 /* UICallCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D36C43C5158F2E5A0048BA40 /* UICallCell.m */; };
 		D36C43CA158F2EE50048BA40 /* UICallCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D36C43C9158F2EE50048BA40 /* UICallCell.xib */; };
@@ -305,6 +302,52 @@
 		D37295CB158B1E2D00D2C0C7 /* registration_inprogress.png in Resources */ = {isa = PBXBuildFile; fileRef = D37295C9158B1E2D00D2C0C7 /* registration_inprogress.png */; };
 		D37295DB158B3C9600D2C0C7 /* video-OFF-disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D37295DA158B3C9600D2C0C7 /* video-OFF-disabled.png */; };
 		D37295DC158B3C9600D2C0C7 /* video-OFF-disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D37295DA158B3C9600D2C0C7 /* video-OFF-disabled.png */; };
+		D37DC6C11594AE1800B2A5EB /* LinphoneCoreSettingsStore.m in Sources */ = {isa = PBXBuildFile; fileRef = D37DC6C01594AE1800B2A5EB /* LinphoneCoreSettingsStore.m */; };
+		D37DC6C21594AE1800B2A5EB /* LinphoneCoreSettingsStore.m in Sources */ = {isa = PBXBuildFile; fileRef = D37DC6C01594AE1800B2A5EB /* LinphoneCoreSettingsStore.m */; };
+		D37DC6ED1594AE6F00B2A5EB /* IASKAppSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D37DC6C61594AE6F00B2A5EB /* IASKAppSettingsViewController.m */; };
+		D37DC6EE1594AE6F00B2A5EB /* IASKAppSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D37DC6C61594AE6F00B2A5EB /* IASKAppSettingsViewController.m */; };
+		D37DC6EF1594AE6F00B2A5EB /* IASKAppSettingsWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D37DC6C81594AE6F00B2A5EB /* IASKAppSettingsWebViewController.m */; };
+		D37DC6F01594AE6F00B2A5EB /* IASKAppSettingsWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D37DC6C81594AE6F00B2A5EB /* IASKAppSettingsWebViewController.m */; };
+		D37DC6F11594AE6F00B2A5EB /* IASKSpecifierValuesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D37DC6CA1594AE6F00B2A5EB /* IASKSpecifierValuesViewController.m */; };
+		D37DC6F21594AE6F00B2A5EB /* IASKSpecifierValuesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D37DC6CA1594AE6F00B2A5EB /* IASKSpecifierValuesViewController.m */; };
+		D37DC6F31594AE6F00B2A5EB /* IASKSettingsReader.m in Sources */ = {isa = PBXBuildFile; fileRef = D37DC6CE1594AE6F00B2A5EB /* IASKSettingsReader.m */; };
+		D37DC6F41594AE6F00B2A5EB /* IASKSettingsReader.m in Sources */ = {isa = PBXBuildFile; fileRef = D37DC6CE1594AE6F00B2A5EB /* IASKSettingsReader.m */; };
+		D37DC6F51594AE6F00B2A5EB /* IASKSettingsStore.m in Sources */ = {isa = PBXBuildFile; fileRef = D37DC6D01594AE6F00B2A5EB /* IASKSettingsStore.m */; };
+		D37DC6F61594AE6F00B2A5EB /* IASKSettingsStore.m in Sources */ = {isa = PBXBuildFile; fileRef = D37DC6D01594AE6F00B2A5EB /* IASKSettingsStore.m */; };
+		D37DC6F71594AE6F00B2A5EB /* IASKSettingsStoreFile.m in Sources */ = {isa = PBXBuildFile; fileRef = D37DC6D21594AE6F00B2A5EB /* IASKSettingsStoreFile.m */; };
+		D37DC6F81594AE6F00B2A5EB /* IASKSettingsStoreFile.m in Sources */ = {isa = PBXBuildFile; fileRef = D37DC6D21594AE6F00B2A5EB /* IASKSettingsStoreFile.m */; };
+		D37DC6F91594AE6F00B2A5EB /* IASKSettingsStoreUserDefaults.m in Sources */ = {isa = PBXBuildFile; fileRef = D37DC6D41594AE6F00B2A5EB /* IASKSettingsStoreUserDefaults.m */; };
+		D37DC6FA1594AE6F00B2A5EB /* IASKSettingsStoreUserDefaults.m in Sources */ = {isa = PBXBuildFile; fileRef = D37DC6D41594AE6F00B2A5EB /* IASKSettingsStoreUserDefaults.m */; };
+		D37DC6FB1594AE6F00B2A5EB /* IASKSpecifier.m in Sources */ = {isa = PBXBuildFile; fileRef = D37DC6D61594AE6F00B2A5EB /* IASKSpecifier.m */; };
+		D37DC6FC1594AE6F00B2A5EB /* IASKSpecifier.m in Sources */ = {isa = PBXBuildFile; fileRef = D37DC6D61594AE6F00B2A5EB /* IASKSpecifier.m */; };
+		D37DC6FD1594AE6F00B2A5EB /* IASKPSSliderSpecifierViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D37DC6D91594AE6F00B2A5EB /* IASKPSSliderSpecifierViewCell.m */; };
+		D37DC6FE1594AE6F00B2A5EB /* IASKPSSliderSpecifierViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D37DC6D91594AE6F00B2A5EB /* IASKPSSliderSpecifierViewCell.m */; };
+		D37DC6FF1594AE6F00B2A5EB /* IASKPSTextFieldSpecifierViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D37DC6DB1594AE6F00B2A5EB /* IASKPSTextFieldSpecifierViewCell.m */; };
+		D37DC7001594AE6F00B2A5EB /* IASKPSTextFieldSpecifierViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D37DC6DB1594AE6F00B2A5EB /* IASKPSTextFieldSpecifierViewCell.m */; };
+		D37DC7011594AE6F00B2A5EB /* IASKPSTitleValueSpecifierViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D37DC6DD1594AE6F00B2A5EB /* IASKPSTitleValueSpecifierViewCell.m */; };
+		D37DC7021594AE6F00B2A5EB /* IASKPSTitleValueSpecifierViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D37DC6DD1594AE6F00B2A5EB /* IASKPSTitleValueSpecifierViewCell.m */; };
+		D37DC7031594AE6F00B2A5EB /* IASKPSToggleSwitchSpecifierViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D37DC6DF1594AE6F00B2A5EB /* IASKPSToggleSwitchSpecifierViewCell.m */; };
+		D37DC7041594AE6F00B2A5EB /* IASKPSToggleSwitchSpecifierViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D37DC6DF1594AE6F00B2A5EB /* IASKPSToggleSwitchSpecifierViewCell.m */; };
+		D37DC7051594AE6F00B2A5EB /* IASKSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = D37DC6E11594AE6F00B2A5EB /* IASKSlider.m */; };
+		D37DC7061594AE6F00B2A5EB /* IASKSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = D37DC6E11594AE6F00B2A5EB /* IASKSlider.m */; };
+		D37DC7071594AE6F00B2A5EB /* IASKSwitch.m in Sources */ = {isa = PBXBuildFile; fileRef = D37DC6E31594AE6F00B2A5EB /* IASKSwitch.m */; };
+		D37DC7081594AE6F00B2A5EB /* IASKSwitch.m in Sources */ = {isa = PBXBuildFile; fileRef = D37DC6E31594AE6F00B2A5EB /* IASKSwitch.m */; };
+		D37DC7091594AE6F00B2A5EB /* IASKTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = D37DC6E51594AE6F00B2A5EB /* IASKTextField.m */; };
+		D37DC70A1594AE6F00B2A5EB /* IASKTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = D37DC6E51594AE6F00B2A5EB /* IASKTextField.m */; };
+		D37DC70B1594AE6F00B2A5EB /* IASKAppSettingsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D37DC6E71594AE6F00B2A5EB /* IASKAppSettingsView.xib */; };
+		D37DC70C1594AE6F00B2A5EB /* IASKAppSettingsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D37DC6E71594AE6F00B2A5EB /* IASKAppSettingsView.xib */; };
+		D37DC70D1594AE6F00B2A5EB /* IASKAppSettingsWebView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D37DC6E81594AE6F00B2A5EB /* IASKAppSettingsWebView.xib */; };
+		D37DC70E1594AE6F00B2A5EB /* IASKAppSettingsWebView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D37DC6E81594AE6F00B2A5EB /* IASKAppSettingsWebView.xib */; };
+		D37DC70F1594AE6F00B2A5EB /* IASKPSSliderSpecifierViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D37DC6E91594AE6F00B2A5EB /* IASKPSSliderSpecifierViewCell.xib */; };
+		D37DC7101594AE6F00B2A5EB /* IASKPSSliderSpecifierViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D37DC6E91594AE6F00B2A5EB /* IASKPSSliderSpecifierViewCell.xib */; };
+		D37DC7111594AE6F00B2A5EB /* IASKPSTextFieldSpecifierViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D37DC6EA1594AE6F00B2A5EB /* IASKPSTextFieldSpecifierViewCell.xib */; };
+		D37DC7121594AE6F00B2A5EB /* IASKPSTextFieldSpecifierViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D37DC6EA1594AE6F00B2A5EB /* IASKPSTextFieldSpecifierViewCell.xib */; };
+		D37DC7131594AE6F00B2A5EB /* IASKPSToggleSwitchSpecifierViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D37DC6EB1594AE6F00B2A5EB /* IASKPSToggleSwitchSpecifierViewCell.xib */; };
+		D37DC7141594AE6F00B2A5EB /* IASKPSToggleSwitchSpecifierViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D37DC6EB1594AE6F00B2A5EB /* IASKPSToggleSwitchSpecifierViewCell.xib */; };
+		D37DC7151594AE6F00B2A5EB /* IASKSpecifierValuesView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D37DC6EC1594AE6F00B2A5EB /* IASKSpecifierValuesView.xib */; };
+		D37DC7161594AE6F00B2A5EB /* IASKSpecifierValuesView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D37DC6EC1594AE6F00B2A5EB /* IASKSpecifierValuesView.xib */; };
+		D37DC7181594AF3400B2A5EB /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D37DC7171594AF3400B2A5EB /* MessageUI.framework */; };
+		D37DC7191594AF3F00B2A5EB /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D37DC7171594AF3400B2A5EB /* MessageUI.framework */; };
 		D38327F31580FE3A00FA0D23 /* contacts-actif.png in Resources */ = {isa = PBXBuildFile; fileRef = D38327EB1580FE3A00FA0D23 /* contacts-actif.png */; };
 		D38327F41580FE3A00FA0D23 /* contacts-selectionne.png in Resources */ = {isa = PBXBuildFile; fileRef = D38327EC1580FE3A00FA0D23 /* contacts-selectionne.png */; };
 		D38327F51580FE3A00FA0D23 /* dialer-actif.png in Resources */ = {isa = PBXBuildFile; fileRef = D38327ED1580FE3A00FA0D23 /* dialer-actif.png */; };
@@ -650,7 +693,6 @@
 		223963151393CFAE001DE689 /* FastAddressBook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FastAddressBook.h; sourceTree = "<group>"; };
 		223963161393CFAF001DE689 /* FastAddressBook.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FastAddressBook.m; sourceTree = "<group>"; };
 		2242E312125235120061DDCE /* oldphone-mono-30s.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "oldphone-mono-30s.caf"; path = "liblinphone-sdk/apple-darwin/share/sounds/linphone/rings/oldphone-mono-30s.caf"; sourceTree = "<group>"; };
-		2245671C107699F700F10948 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		224567C1107B968500F10948 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		2248E90C12F7E4CF00220D9C /* UIDigitButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDigitButton.h; sourceTree = "<group>"; };
 		2248E90D12F7E4CF00220D9C /* UIDigitButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIDigitButton.m; sourceTree = "<group>"; };
@@ -662,7 +704,6 @@
 		226183AB1472527D0037138E /* libsrtp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsrtp.a; path = "liblinphone-sdk/apple-darwin/lib/libsrtp.a"; sourceTree = "<group>"; };
 		226183AF147259670037138E /* libmssilk.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmssilk.a; path = "liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmssilk.a"; sourceTree = "<group>"; };
 		2264B6D111200342002C2C53 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
-		226B563E13CAF1CD00921595 /* audio.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = audio.plist; path = Settings.bundle/audio.plist; sourceTree = "<group>"; };
 		226CDADD14E2D0B800513B67 /* libbcg729.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbcg729.a; path = "liblinphone-sdk/apple-darwin/lib/libbcg729.a"; sourceTree = "<group>"; };
 		226CDADE14E2D0B800513B67 /* libmsbcg729.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmsbcg729.a; path = "liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmsbcg729.a"; sourceTree = "<group>"; };
 		226F2ED31344B0EF00F6EF27 /* libopencore-amrwb.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libopencore-amrwb.a"; path = "liblinphone-sdk/apple-darwin/lib/libopencore-amrwb.a"; sourceTree = "<group>"; };
@@ -768,7 +809,6 @@
 		22E0A81E111C44E100B04932 /* ConsoleViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ConsoleViewController.xib; sourceTree = "<group>"; };
 		22E0A81F111C44E100B04932 /* ConsoleViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConsoleViewController.m; sourceTree = "<group>"; };
 		22E0A820111C44E100B04932 /* ConsoleViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConsoleViewController.h; sourceTree = "<group>"; };
-		22E1A9E713CAF4AA00219531 /* video.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = video.plist; path = Settings.bundle/video.plist; sourceTree = "<group>"; };
 		22E5B0AD133B5EA20044EA25 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = "liblinphone-sdk/apple-darwin/lib/libssl.a"; sourceTree = "<group>"; };
 		22E5B0AE133B5EA20044EA25 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = "liblinphone-sdk/apple-darwin/lib/libcrypto.a"; sourceTree = "<group>"; };
 		22F2508B107141E100AC9B3F /* DialerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DialerViewController.h; sourceTree = "<group>"; };
@@ -824,6 +864,7 @@
 		D326483D1588950F00930C67 /* UICallBar.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UICallBar.xib; sourceTree = "<group>"; };
 		D32648421588F6FA00930C67 /* UIToggleButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIToggleButton.h; sourceTree = "<group>"; };
 		D32648431588F6FB00930C67 /* UIToggleButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIToggleButton.m; sourceTree = "<group>"; };
+		D32942A31594C94200556A1C /* SettingsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SettingsViewController.xib; sourceTree = "<group>"; };
 		D3432A5C158A4446001C6B0B /* status_connected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = status_connected.png; path = Resources/status_connected.png; sourceTree = "<group>"; };
 		D3432A5D158A4446001C6B0B /* status_error.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = status_error.png; path = Resources/status_error.png; sourceTree = "<group>"; };
 		D3432A5E158A4446001C6B0B /* quality-call-0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "quality-call-0.png"; path = "Resources/quality-call-0.png"; sourceTree = "<group>"; };
@@ -835,6 +876,7 @@
 		D34734791580DDF1003C7B8C /* PhoneMainView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PhoneMainView.xib; sourceTree = "<group>"; };
 		D347347C1580E5F8003C7B8C /* history-actif.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "history-actif.png"; path = "Resources/history-actif.png"; sourceTree = "<group>"; };
 		D347347D1580E5F8003C7B8C /* history-selectionne.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "history-selectionne.png"; path = "Resources/history-selectionne.png"; sourceTree = "<group>"; };
+		D34F6F9D1594D3FB0095705B /* InAppSettings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = InAppSettings.bundle; sourceTree = "<group>"; };
 		D35497FB15875372000081D8 /* ContactsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsViewController.h; sourceTree = "<group>"; };
 		D35497FC15875372000081D8 /* ContactsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactsViewController.m; sourceTree = "<group>"; };
 		D35497FD15875372000081D8 /* ContactsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ContactsViewController.xib; sourceTree = "<group>"; };
@@ -862,7 +904,6 @@
 		D35E7596159460570066B1C1 /* ChatViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChatViewController.xib; sourceTree = "<group>"; };
 		D35E759C159460B50066B1C1 /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
 		D35E759D159460B50066B1C1 /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
-		D35E759E159460B60066B1C1 /* SettingsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SettingsViewController.xib; sourceTree = "<group>"; };
 		D36C43C4158F2E5A0048BA40 /* UICallCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICallCell.h; sourceTree = "<group>"; };
 		D36C43C5158F2E5A0048BA40 /* UICallCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICallCell.m; sourceTree = "<group>"; };
 		D36C43C9158F2EE50048BA40 /* UICallCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UICallCell.xib; sourceTree = "<group>"; };
@@ -881,6 +922,46 @@
 		D36FB2D41589EF7C0036F6F2 /* UIPauseButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIPauseButton.m; sourceTree = "<group>"; };
 		D37295C9158B1E2D00D2C0C7 /* registration_inprogress.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = registration_inprogress.png; path = Resources/registration_inprogress.png; sourceTree = "<group>"; };
 		D37295DA158B3C9600D2C0C7 /* video-OFF-disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "video-OFF-disabled.png"; path = "Resources/video-OFF-disabled.png"; sourceTree = "<group>"; };
+		D37DC6BF1594AE1800B2A5EB /* LinphoneCoreSettingsStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LinphoneCoreSettingsStore.h; sourceTree = "<group>"; };
+		D37DC6C01594AE1800B2A5EB /* LinphoneCoreSettingsStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LinphoneCoreSettingsStore.m; sourceTree = "<group>"; };
+		D37DC6C51594AE6F00B2A5EB /* IASKAppSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKAppSettingsViewController.h; sourceTree = "<group>"; };
+		D37DC6C61594AE6F00B2A5EB /* IASKAppSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IASKAppSettingsViewController.m; sourceTree = "<group>"; };
+		D37DC6C71594AE6F00B2A5EB /* IASKAppSettingsWebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKAppSettingsWebViewController.h; sourceTree = "<group>"; };
+		D37DC6C81594AE6F00B2A5EB /* IASKAppSettingsWebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IASKAppSettingsWebViewController.m; sourceTree = "<group>"; };
+		D37DC6C91594AE6F00B2A5EB /* IASKSpecifierValuesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKSpecifierValuesViewController.h; sourceTree = "<group>"; };
+		D37DC6CA1594AE6F00B2A5EB /* IASKSpecifierValuesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IASKSpecifierValuesViewController.m; sourceTree = "<group>"; };
+		D37DC6CB1594AE6F00B2A5EB /* IASKViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKViewController.h; sourceTree = "<group>"; };
+		D37DC6CD1594AE6F00B2A5EB /* IASKSettingsReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKSettingsReader.h; sourceTree = "<group>"; };
+		D37DC6CE1594AE6F00B2A5EB /* IASKSettingsReader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IASKSettingsReader.m; sourceTree = "<group>"; };
+		D37DC6CF1594AE6F00B2A5EB /* IASKSettingsStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKSettingsStore.h; sourceTree = "<group>"; };
+		D37DC6D01594AE6F00B2A5EB /* IASKSettingsStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IASKSettingsStore.m; sourceTree = "<group>"; };
+		D37DC6D11594AE6F00B2A5EB /* IASKSettingsStoreFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKSettingsStoreFile.h; sourceTree = "<group>"; };
+		D37DC6D21594AE6F00B2A5EB /* IASKSettingsStoreFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IASKSettingsStoreFile.m; sourceTree = "<group>"; };
+		D37DC6D31594AE6F00B2A5EB /* IASKSettingsStoreUserDefaults.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKSettingsStoreUserDefaults.h; sourceTree = "<group>"; };
+		D37DC6D41594AE6F00B2A5EB /* IASKSettingsStoreUserDefaults.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IASKSettingsStoreUserDefaults.m; sourceTree = "<group>"; };
+		D37DC6D51594AE6F00B2A5EB /* IASKSpecifier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKSpecifier.h; sourceTree = "<group>"; };
+		D37DC6D61594AE6F00B2A5EB /* IASKSpecifier.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IASKSpecifier.m; sourceTree = "<group>"; };
+		D37DC6D81594AE6F00B2A5EB /* IASKPSSliderSpecifierViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKPSSliderSpecifierViewCell.h; sourceTree = "<group>"; };
+		D37DC6D91594AE6F00B2A5EB /* IASKPSSliderSpecifierViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IASKPSSliderSpecifierViewCell.m; sourceTree = "<group>"; };
+		D37DC6DA1594AE6F00B2A5EB /* IASKPSTextFieldSpecifierViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKPSTextFieldSpecifierViewCell.h; sourceTree = "<group>"; };
+		D37DC6DB1594AE6F00B2A5EB /* IASKPSTextFieldSpecifierViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IASKPSTextFieldSpecifierViewCell.m; sourceTree = "<group>"; };
+		D37DC6DC1594AE6F00B2A5EB /* IASKPSTitleValueSpecifierViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKPSTitleValueSpecifierViewCell.h; sourceTree = "<group>"; };
+		D37DC6DD1594AE6F00B2A5EB /* IASKPSTitleValueSpecifierViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IASKPSTitleValueSpecifierViewCell.m; sourceTree = "<group>"; };
+		D37DC6DE1594AE6F00B2A5EB /* IASKPSToggleSwitchSpecifierViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKPSToggleSwitchSpecifierViewCell.h; sourceTree = "<group>"; };
+		D37DC6DF1594AE6F00B2A5EB /* IASKPSToggleSwitchSpecifierViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IASKPSToggleSwitchSpecifierViewCell.m; sourceTree = "<group>"; };
+		D37DC6E01594AE6F00B2A5EB /* IASKSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKSlider.h; sourceTree = "<group>"; };
+		D37DC6E11594AE6F00B2A5EB /* IASKSlider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IASKSlider.m; sourceTree = "<group>"; };
+		D37DC6E21594AE6F00B2A5EB /* IASKSwitch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKSwitch.h; sourceTree = "<group>"; };
+		D37DC6E31594AE6F00B2A5EB /* IASKSwitch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IASKSwitch.m; sourceTree = "<group>"; };
+		D37DC6E41594AE6F00B2A5EB /* IASKTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKTextField.h; sourceTree = "<group>"; };
+		D37DC6E51594AE6F00B2A5EB /* IASKTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IASKTextField.m; sourceTree = "<group>"; };
+		D37DC6E71594AE6F00B2A5EB /* IASKAppSettingsView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = IASKAppSettingsView.xib; sourceTree = "<group>"; };
+		D37DC6E81594AE6F00B2A5EB /* IASKAppSettingsWebView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = IASKAppSettingsWebView.xib; sourceTree = "<group>"; };
+		D37DC6E91594AE6F00B2A5EB /* IASKPSSliderSpecifierViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = IASKPSSliderSpecifierViewCell.xib; sourceTree = "<group>"; };
+		D37DC6EA1594AE6F00B2A5EB /* IASKPSTextFieldSpecifierViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = IASKPSTextFieldSpecifierViewCell.xib; sourceTree = "<group>"; };
+		D37DC6EB1594AE6F00B2A5EB /* IASKPSToggleSwitchSpecifierViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = IASKPSToggleSwitchSpecifierViewCell.xib; sourceTree = "<group>"; };
+		D37DC6EC1594AE6F00B2A5EB /* IASKSpecifierValuesView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = IASKSpecifierValuesView.xib; sourceTree = "<group>"; };
+		D37DC7171594AF3400B2A5EB /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		D38327EB1580FE3A00FA0D23 /* contacts-actif.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "contacts-actif.png"; path = "Resources/contacts-actif.png"; sourceTree = "<group>"; };
 		D38327EC1580FE3A00FA0D23 /* contacts-selectionne.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "contacts-selectionne.png"; path = "Resources/contacts-selectionne.png"; sourceTree = "<group>"; };
 		D38327ED1580FE3A00FA0D23 /* dialer-actif.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "dialer-actif.png"; path = "Resources/dialer-actif.png"; sourceTree = "<group>"; };
@@ -985,6 +1066,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D37DC7181594AF3400B2A5EB /* MessageUI.framework in Frameworks */,
 				340751971506459A00B89C47 /* CoreTelephony.framework in Frameworks */,
 				226CDADF14E2D0B800513B67 /* libbcg729.a in Frameworks */,
 				226CDAE014E2D0B800513B67 /* libmsbcg729.a in Frameworks */,
@@ -1038,6 +1120,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D37DC7191594AF3F00B2A5EB /* MessageUI.framework in Frameworks */,
 				34075199150645A300B89C47 /* CoreTelephony.framework in Frameworks */,
 				22D8F15B147548E2008C97DB /* libvpx.a in Frameworks */,
 				22D8F15C147548E2008C97DB /* QuartzCore.framework in Frameworks */,
@@ -1117,6 +1200,8 @@
 				D3F83F9115824D3500336684 /* LinphoneApp.xib */,
 				1D3623240D0F684500981E51 /* LinphoneAppDelegate.h */,
 				1D3623250D0F684500981E51 /* LinphoneAppDelegate.m */,
+				D37DC6BF1594AE1800B2A5EB /* LinphoneCoreSettingsStore.h */,
+				D37DC6C01594AE1800B2A5EB /* LinphoneCoreSettingsStore.m */,
 				2214EB7012F84668002A5394 /* LinphoneUI */,
 				34CA8537148F692A00503C01 /* MainScreenWithVideoPreview.h */,
 				34CA8538148F692A00503C01 /* MainScreenWithVideoPreview.m */,
@@ -1130,7 +1215,7 @@
 				3422AA5214978352000D4E8A /* PhoneViewController-ipad.xib */,
 				D35E759C159460B50066B1C1 /* SettingsViewController.h */,
 				D35E759D159460B50066B1C1 /* SettingsViewController.m */,
-				D35E759E159460B60066B1C1 /* SettingsViewController.xib */,
+				D32942A31594C94200556A1C /* SettingsViewController.xib */,
 				D326483415887D4400930C67 /* Utils */,
 				34216F3E1547EBCD00EA9777 /* VideoZoomHandler.h */,
 				34216F3F1547EBCD00EA9777 /* VideoZoomHandler.m */,
@@ -1483,64 +1568,64 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				340751961506459A00B89C47 /* CoreTelephony.framework */,
-				226CDADD14E2D0B800513B67 /* libbcg729.a */,
-				226CDADE14E2D0B800513B67 /* libmsbcg729.a */,
-				344ABDEF14850AE9007420B6 /* libc++.1.dylib */,
-				344ABDF014850AE9007420B6 /* libstdc++.6.dylib */,
-				344ABDE71484E723007420B6 /* libzrtpcpp.a */,
-				2211DB9614764F6B00DEE054 /* nogpl-thirdparties */,
-				2211DB911475562600DEE054 /* liblinphone.a */,
-				2211DB8F147555C800DEE054 /* libmediastreamer.a */,
-				226183AF147259670037138E /* libmssilk.a */,
-				226183AA1472527D0037138E /* libSKP_SILK_SDK.a */,
-				226183AB1472527D0037138E /* libsrtp.a */,
-				7066FC0B13E830E400EFC6DC /* libvpx.a */,
-				70E542F413E147EB002BA2C0 /* QuartzCore.framework */,
-				70E542F213E147E3002BA2C0 /* OpenGLES.framework */,
-				22AA8AFB13D7125500B30535 /* libx264.a */,
-				22AA8AFC13D7125500B30535 /* libmsx264.a */,
-				22E1A9E713CAF4AA00219531 /* video.plist */,
-				226B563E13CAF1CD00921595 /* audio.plist */,
-				22276E8813C73DC000210156 /* CoreMedia.framework */,
-				22276E8613C73D8A00210156 /* CoreVideo.framework */,
+				2258633C11410BAC00C5A737 /* README */,
 				22276E8013C73D3100210156 /* libavcodec.a */,
 				22276E8113C73D3100210156 /* libavutil.a */,
-				22276E8213C73D3100210156 /* libswscale.a */,
-				2214783B1386A2030020F8B8 /* Localizable.strings */,
-				223148E51178A09900637D6A /* libmsilbc.a */,
-				223148E31178A08200637D6A /* libilbc.a */,
+				226CDADD14E2D0B800513B67 /* libbcg729.a */,
+				22E5B0AE133B5EA20044EA25 /* libcrypto.a */,
 				220FAD2810765B400068D98F /* libeXosip2.a */,
 				220FAD2910765B400068D98F /* libgsm.a */,
+				223148E31178A08200637D6A /* libilbc.a */,
+				2211DB911475562600DEE054 /* liblinphone.a */,
+				2211DB8F147555C800DEE054 /* libmediastreamer.a */,
+				226F2ED51344B0EF00F6EF27 /* libmsamr.a */,
+				226CDADE14E2D0B800513B67 /* libmsbcg729.a */,
+				223148E51178A09900637D6A /* libmsilbc.a */,
+				226183AF147259670037138E /* libmssilk.a */,
+				22AA8AFC13D7125500B30535 /* libmsx264.a */,
+				226F2ED41344B0EF00F6EF27 /* libopencore-amrnb.a */,
+				226F2ED31344B0EF00F6EF27 /* libopencore-amrwb.a */,
 				220FAD2C10765B400068D98F /* libortp.a */,
 				220FAD2D10765B400068D98F /* libosip2.a */,
 				220FAD2E10765B400068D98F /* libosipparser2.a */,
+				226183AA1472527D0037138E /* libSKP_SILK_SDK.a */,
 				220FAD2F10765B400068D98F /* libspeex.a */,
 				220FAD3010765B400068D98F /* libspeexdsp.a */,
-				226F2ED31344B0EF00F6EF27 /* libopencore-amrwb.a */,
-				226F2ED41344B0EF00F6EF27 /* libopencore-amrnb.a */,
-				226F2ED51344B0EF00F6EF27 /* libmsamr.a */,
-				220FAC77107654FC0068D98F /* include */,
-				080E96DDFE201D6D7F000001 /* Classes */,
-				29B97315FDCFA39411CA2CEA /* Other Sources */,
-				29B97317FDCFA39411CA2CEA /* Resources */,
-				29B97323FDCFA39411CA2CEA /* Frameworks */,
-				19C28FACFE9D520D11CA2CBB /* Products */,
-				22744019106F31BD006EC466 /* CoreAudio.framework */,
-				2274402E106F335E006EC466 /* AudioToolbox.framework */,
-				22744043106F33FC006EC466 /* Security.framework */,
-				22744056106F9BC9006EC466 /* CoreFoundation.framework */,
-				2245671C107699F700F10948 /* Settings.bundle */,
-				224567C1107B968500F10948 /* AVFoundation.framework */,
-				22F51EF5107FA66500F98953 /* untitled.plist */,
-				22B5EFA210CE50BD00777D97 /* AddressBookUI.framework */,
-				22B5F03410CE6B2F00777D97 /* AddressBook.framework */,
-				2264B6D111200342002C2C53 /* SystemConfiguration.framework */,
-				2258633C11410BAC00C5A737 /* README */,
-				228697C311AC29B800E9E0CA /* CFNetwork.framework */,
-				22D1B68012A3E0BE001AE361 /* libresolv.dylib */,
+				226183AB1472527D0037138E /* libsrtp.a */,
 				22E5B0AD133B5EA20044EA25 /* libssl.a */,
-				22E5B0AE133B5EA20044EA25 /* libcrypto.a */,
+				22276E8213C73D3100210156 /* libswscale.a */,
+				7066FC0B13E830E400EFC6DC /* libvpx.a */,
+				22AA8AFB13D7125500B30535 /* libx264.a */,
+				344ABDE71484E723007420B6 /* libzrtpcpp.a */,
+				344ABDEF14850AE9007420B6 /* libc++.1.dylib */,
+				22D1B68012A3E0BE001AE361 /* libresolv.dylib */,
+				344ABDF014850AE9007420B6 /* libstdc++.6.dylib */,
+				22B5F03410CE6B2F00777D97 /* AddressBook.framework */,
+				22B5EFA210CE50BD00777D97 /* AddressBookUI.framework */,
+				2274402E106F335E006EC466 /* AudioToolbox.framework */,
+				224567C1107B968500F10948 /* AVFoundation.framework */,
+				228697C311AC29B800E9E0CA /* CFNetwork.framework */,
+				22744019106F31BD006EC466 /* CoreAudio.framework */,
+				22744056106F9BC9006EC466 /* CoreFoundation.framework */,
+				22276E8813C73DC000210156 /* CoreMedia.framework */,
+				340751961506459A00B89C47 /* CoreTelephony.framework */,
+				22276E8613C73D8A00210156 /* CoreVideo.framework */,
+				D37DC7171594AF3400B2A5EB /* MessageUI.framework */,
+				70E542F213E147E3002BA2C0 /* OpenGLES.framework */,
+				70E542F413E147EB002BA2C0 /* QuartzCore.framework */,
+				22744043106F33FC006EC466 /* Security.framework */,
+				2264B6D111200342002C2C53 /* SystemConfiguration.framework */,
+				22F51EF5107FA66500F98953 /* untitled.plist */,
+				080E96DDFE201D6D7F000001 /* Classes */,
+				29B97323FDCFA39411CA2CEA /* Frameworks */,
+				D37DC6C31594AE5600B2A5EB /* InAppSettingsKit */,
+				220FAC77107654FC0068D98F /* include */,
+				2214783B1386A2030020F8B8 /* Localizable.strings */,
+				2211DB9614764F6B00DEE054 /* nogpl-thirdparties */,
+				29B97315FDCFA39411CA2CEA /* Other Sources */,
+				19C28FACFE9D520D11CA2CBB /* Products */,
+				29B97317FDCFA39411CA2CEA /* Resources */,
+				D398D3031594B0FB00FD553C /* Settings */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -1715,6 +1800,94 @@
 			name = Utils;
 			sourceTree = "<group>";
 		};
+		D37DC6C31594AE5600B2A5EB /* InAppSettingsKit */ = {
+			isa = PBXGroup;
+			children = (
+				D37DC6C41594AE6F00B2A5EB /* Controllers */,
+				D37DC6CC1594AE6F00B2A5EB /* Models */,
+				D37DC6D71594AE6F00B2A5EB /* Views */,
+				D37DC6E61594AE6F00B2A5EB /* Xibs */,
+			);
+			name = InAppSettingsKit;
+			sourceTree = "<group>";
+		};
+		D37DC6C41594AE6F00B2A5EB /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				D37DC6C51594AE6F00B2A5EB /* IASKAppSettingsViewController.h */,
+				D37DC6C61594AE6F00B2A5EB /* IASKAppSettingsViewController.m */,
+				D37DC6C71594AE6F00B2A5EB /* IASKAppSettingsWebViewController.h */,
+				D37DC6C81594AE6F00B2A5EB /* IASKAppSettingsWebViewController.m */,
+				D37DC6C91594AE6F00B2A5EB /* IASKSpecifierValuesViewController.h */,
+				D37DC6CA1594AE6F00B2A5EB /* IASKSpecifierValuesViewController.m */,
+				D37DC6CB1594AE6F00B2A5EB /* IASKViewController.h */,
+			);
+			name = Controllers;
+			path = InAppSettingsKit/Controllers;
+			sourceTree = "<group>";
+		};
+		D37DC6CC1594AE6F00B2A5EB /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				D37DC6CD1594AE6F00B2A5EB /* IASKSettingsReader.h */,
+				D37DC6CE1594AE6F00B2A5EB /* IASKSettingsReader.m */,
+				D37DC6CF1594AE6F00B2A5EB /* IASKSettingsStore.h */,
+				D37DC6D01594AE6F00B2A5EB /* IASKSettingsStore.m */,
+				D37DC6D11594AE6F00B2A5EB /* IASKSettingsStoreFile.h */,
+				D37DC6D21594AE6F00B2A5EB /* IASKSettingsStoreFile.m */,
+				D37DC6D31594AE6F00B2A5EB /* IASKSettingsStoreUserDefaults.h */,
+				D37DC6D41594AE6F00B2A5EB /* IASKSettingsStoreUserDefaults.m */,
+				D37DC6D51594AE6F00B2A5EB /* IASKSpecifier.h */,
+				D37DC6D61594AE6F00B2A5EB /* IASKSpecifier.m */,
+			);
+			name = Models;
+			path = InAppSettingsKit/Models;
+			sourceTree = "<group>";
+		};
+		D37DC6D71594AE6F00B2A5EB /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				D37DC6D81594AE6F00B2A5EB /* IASKPSSliderSpecifierViewCell.h */,
+				D37DC6D91594AE6F00B2A5EB /* IASKPSSliderSpecifierViewCell.m */,
+				D37DC6DA1594AE6F00B2A5EB /* IASKPSTextFieldSpecifierViewCell.h */,
+				D37DC6DB1594AE6F00B2A5EB /* IASKPSTextFieldSpecifierViewCell.m */,
+				D37DC6DC1594AE6F00B2A5EB /* IASKPSTitleValueSpecifierViewCell.h */,
+				D37DC6DD1594AE6F00B2A5EB /* IASKPSTitleValueSpecifierViewCell.m */,
+				D37DC6DE1594AE6F00B2A5EB /* IASKPSToggleSwitchSpecifierViewCell.h */,
+				D37DC6DF1594AE6F00B2A5EB /* IASKPSToggleSwitchSpecifierViewCell.m */,
+				D37DC6E01594AE6F00B2A5EB /* IASKSlider.h */,
+				D37DC6E11594AE6F00B2A5EB /* IASKSlider.m */,
+				D37DC6E21594AE6F00B2A5EB /* IASKSwitch.h */,
+				D37DC6E31594AE6F00B2A5EB /* IASKSwitch.m */,
+				D37DC6E41594AE6F00B2A5EB /* IASKTextField.h */,
+				D37DC6E51594AE6F00B2A5EB /* IASKTextField.m */,
+			);
+			name = Views;
+			path = InAppSettingsKit/Views;
+			sourceTree = "<group>";
+		};
+		D37DC6E61594AE6F00B2A5EB /* Xibs */ = {
+			isa = PBXGroup;
+			children = (
+				D37DC6E71594AE6F00B2A5EB /* IASKAppSettingsView.xib */,
+				D37DC6E81594AE6F00B2A5EB /* IASKAppSettingsWebView.xib */,
+				D37DC6E91594AE6F00B2A5EB /* IASKPSSliderSpecifierViewCell.xib */,
+				D37DC6EA1594AE6F00B2A5EB /* IASKPSTextFieldSpecifierViewCell.xib */,
+				D37DC6EB1594AE6F00B2A5EB /* IASKPSToggleSwitchSpecifierViewCell.xib */,
+				D37DC6EC1594AE6F00B2A5EB /* IASKSpecifierValuesView.xib */,
+			);
+			name = Xibs;
+			path = InAppSettingsKit/Xibs;
+			sourceTree = "<group>";
+		};
+		D398D3031594B0FB00FD553C /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				D34F6F9D1594D3FB0095705B /* InAppSettings.bundle */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1791,7 +1964,6 @@
 				2274550810700509006EC466 /* linphonerc in Resources */,
 				22F2508F107141E100AC9B3F /* DialerViewController.xib in Resources */,
 				22F254811073D99800AC9B3F /* ringback.wav in Resources */,
-				2245671D107699F700F10948 /* Settings.bundle in Resources */,
 				22F51EF6107FA66500F98953 /* untitled.plist in Resources */,
 				2237D4091084D7A9001383EE /* oldphone-mono.wav in Resources */,
 				22E0A823111C44E100B04932 /* ConsoleViewController.xib in Resources */,
@@ -1804,8 +1976,6 @@
 				2218A92612FBE1340088A667 /* FirstLoginViewController.xib in Resources */,
 				228B19AF130290C500F154D3 /* iTunesArtwork in Resources */,
 				2214783D1386A2030020F8B8 /* Localizable.strings in Resources */,
-				226B563F13CAF1CD00921595 /* audio.plist in Resources */,
-				22E1A9E813CAF4AA00219531 /* video.plist in Resources */,
 				70571E1A13FABCB000CDD3C2 /* rootca.pem in Resources */,
 				344ABD72147FC438007420B6 /* ConferenceCallDetailView.xib in Resources */,
 				344ABD7A147FD32B007420B6 /* ConferenceCallDetailCell.xib in Resources */,
@@ -1949,7 +2119,14 @@
 				D35E758915932DE60066B1C1 /* backspace-disabled.png in Resources */,
 				D35E758D15934F360066B1C1 /* appeler-disabled.png in Resources */,
 				D35E7599159460580066B1C1 /* ChatViewController.xib in Resources */,
-				D35E75A1159460B70066B1C1 /* SettingsViewController.xib in Resources */,
+				D37DC70B1594AE6F00B2A5EB /* IASKAppSettingsView.xib in Resources */,
+				D37DC70D1594AE6F00B2A5EB /* IASKAppSettingsWebView.xib in Resources */,
+				D37DC70F1594AE6F00B2A5EB /* IASKPSSliderSpecifierViewCell.xib in Resources */,
+				D37DC7111594AE6F00B2A5EB /* IASKPSTextFieldSpecifierViewCell.xib in Resources */,
+				D37DC7131594AE6F00B2A5EB /* IASKPSToggleSwitchSpecifierViewCell.xib in Resources */,
+				D37DC7151594AE6F00B2A5EB /* IASKSpecifierValuesView.xib in Resources */,
+				D32942A41594C94300556A1C /* SettingsViewController.xib in Resources */,
+				D34F6F9E1594D3FB0095705B /* InAppSettings.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1972,8 +2149,6 @@
 				22D8F13B147548E2008C97DB /* FirstLoginViewController.xib in Resources */,
 				22D8F13C147548E2008C97DB /* iTunesArtwork in Resources */,
 				22D8F13D147548E2008C97DB /* Localizable.strings in Resources */,
-				22D8F140147548E2008C97DB /* audio.plist in Resources */,
-				22D8F141147548E2008C97DB /* video.plist in Resources */,
 				22D8F142147548E2008C97DB /* rootca.pem in Resources */,
 				2211DB95147564B400DEE054 /* Settings.bundle in Resources */,
 				344ABD73147FC438007420B6 /* ConferenceCallDetailView.xib in Resources */,
@@ -2102,7 +2277,14 @@
 				D35E758A15932DE60066B1C1 /* backspace-disabled.png in Resources */,
 				D35E758E15934F360066B1C1 /* appeler-disabled.png in Resources */,
 				D35E759A159460580066B1C1 /* ChatViewController.xib in Resources */,
-				D35E75A2159460B70066B1C1 /* SettingsViewController.xib in Resources */,
+				D37DC70C1594AE6F00B2A5EB /* IASKAppSettingsView.xib in Resources */,
+				D37DC70E1594AE6F00B2A5EB /* IASKAppSettingsWebView.xib in Resources */,
+				D37DC7101594AE6F00B2A5EB /* IASKPSSliderSpecifierViewCell.xib in Resources */,
+				D37DC7121594AE6F00B2A5EB /* IASKPSTextFieldSpecifierViewCell.xib in Resources */,
+				D37DC7141594AE6F00B2A5EB /* IASKPSToggleSwitchSpecifierViewCell.xib in Resources */,
+				D37DC7161594AE6F00B2A5EB /* IASKSpecifierValuesView.xib in Resources */,
+				D32942A51594C94300556A1C /* SettingsViewController.xib in Resources */,
+				D34F6F9F1594D3FB0095705B /* InAppSettings.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2154,6 +2336,22 @@
 				D35E7581159328EB0066B1C1 /* UIAddressTextField.m in Sources */,
 				D35E7597159460580066B1C1 /* ChatViewController.m in Sources */,
 				D35E759F159460B70066B1C1 /* SettingsViewController.m in Sources */,
+				D37DC6C11594AE1800B2A5EB /* LinphoneCoreSettingsStore.m in Sources */,
+				D37DC6ED1594AE6F00B2A5EB /* IASKAppSettingsViewController.m in Sources */,
+				D37DC6EF1594AE6F00B2A5EB /* IASKAppSettingsWebViewController.m in Sources */,
+				D37DC6F11594AE6F00B2A5EB /* IASKSpecifierValuesViewController.m in Sources */,
+				D37DC6F31594AE6F00B2A5EB /* IASKSettingsReader.m in Sources */,
+				D37DC6F51594AE6F00B2A5EB /* IASKSettingsStore.m in Sources */,
+				D37DC6F71594AE6F00B2A5EB /* IASKSettingsStoreFile.m in Sources */,
+				D37DC6F91594AE6F00B2A5EB /* IASKSettingsStoreUserDefaults.m in Sources */,
+				D37DC6FB1594AE6F00B2A5EB /* IASKSpecifier.m in Sources */,
+				D37DC6FD1594AE6F00B2A5EB /* IASKPSSliderSpecifierViewCell.m in Sources */,
+				D37DC6FF1594AE6F00B2A5EB /* IASKPSTextFieldSpecifierViewCell.m in Sources */,
+				D37DC7011594AE6F00B2A5EB /* IASKPSTitleValueSpecifierViewCell.m in Sources */,
+				D37DC7031594AE6F00B2A5EB /* IASKPSToggleSwitchSpecifierViewCell.m in Sources */,
+				D37DC7051594AE6F00B2A5EB /* IASKSlider.m in Sources */,
+				D37DC7071594AE6F00B2A5EB /* IASKSwitch.m in Sources */,
+				D37DC7091594AE6F00B2A5EB /* IASKTextField.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2202,6 +2400,22 @@
 				D35E7582159328EB0066B1C1 /* UIAddressTextField.m in Sources */,
 				D35E7598159460580066B1C1 /* ChatViewController.m in Sources */,
 				D35E75A0159460B70066B1C1 /* SettingsViewController.m in Sources */,
+				D37DC6C21594AE1800B2A5EB /* LinphoneCoreSettingsStore.m in Sources */,
+				D37DC6EE1594AE6F00B2A5EB /* IASKAppSettingsViewController.m in Sources */,
+				D37DC6F01594AE6F00B2A5EB /* IASKAppSettingsWebViewController.m in Sources */,
+				D37DC6F21594AE6F00B2A5EB /* IASKSpecifierValuesViewController.m in Sources */,
+				D37DC6F41594AE6F00B2A5EB /* IASKSettingsReader.m in Sources */,
+				D37DC6F61594AE6F00B2A5EB /* IASKSettingsStore.m in Sources */,
+				D37DC6F81594AE6F00B2A5EB /* IASKSettingsStoreFile.m in Sources */,
+				D37DC6FA1594AE6F00B2A5EB /* IASKSettingsStoreUserDefaults.m in Sources */,
+				D37DC6FC1594AE6F00B2A5EB /* IASKSpecifier.m in Sources */,
+				D37DC6FE1594AE6F00B2A5EB /* IASKPSSliderSpecifierViewCell.m in Sources */,
+				D37DC7001594AE6F00B2A5EB /* IASKPSTextFieldSpecifierViewCell.m in Sources */,
+				D37DC7021594AE6F00B2A5EB /* IASKPSTitleValueSpecifierViewCell.m in Sources */,
+				D37DC7041594AE6F00B2A5EB /* IASKPSToggleSwitchSpecifierViewCell.m in Sources */,
+				D37DC7061594AE6F00B2A5EB /* IASKSlider.m in Sources */,
+				D37DC7081594AE6F00B2A5EB /* IASKSwitch.m in Sources */,
+				D37DC70A1594AE6F00B2A5EB /* IASKTextField.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

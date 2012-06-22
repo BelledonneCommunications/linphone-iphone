@@ -9,8 +9,6 @@
 			<string>SIP account</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
-			<key>FooterText</key>
-			<string>Linphone must be restarted for changes to take effect</string>
 		</dict>
 		<dict>
 			<key>AutocapitalizationType</key>
@@ -93,6 +91,16 @@
 			<string>Outbound proxy</string>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Enable video</string>
+			<key>Key</key>
+			<string>enable_video_preference</string>
+			<key>DefaultValue</key>
+			<true/>
 		</dict>
 		<dict>
 			<key>Title</key>

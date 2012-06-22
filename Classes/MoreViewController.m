@@ -20,6 +20,7 @@
 #import "MoreViewController.h"
 #include "ConsoleViewController.h"
 #import "LinphoneManager.h"
+#include "lpconfig.h"
 
 @implementation MoreViewController
 @synthesize web;
@@ -34,7 +35,7 @@
 	[creditText setText: [NSString stringWithFormat:creditText.text,[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]]];
 	consoleViewController = [[ConsoleViewController alloc] initWithNibName:@"ConsoleViewController" bundle:[NSBundle mainBundle]];
 	[[LinphoneManager instance] registerLogView:consoleViewController];
-	isDebug =  [[NSUserDefaults standardUserDefaults] boolForKey:@"debugenable_preference"];  
+	isDebug =  lp_config_get_int(linphone_core_get_config([LinphoneManager getLc]),"app","debugenable_preference",0);  
 
 }
 

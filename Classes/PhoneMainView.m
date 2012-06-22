@@ -282,7 +282,7 @@
     InCallViewController* myInCallController = [[InCallViewController alloc]
                                                 initWithNibName:@"InCallViewController" 
                                                 bundle:[NSBundle mainBundle]];
-    //[myHistoryController loadView];
+    //[myInCallController loadView];
     ViewsDescription *inCallDescription = [ViewsDescription alloc];
     inCallDescription->content = myInCallController;
     inCallDescription->tabBar = callTabBarController;
@@ -298,7 +298,7 @@
     SettingsViewController* mySettingsViewController = [[SettingsViewController alloc]
                                                 initWithNibName:@"SettingsViewController" 
                                                 bundle:[NSBundle mainBundle]];
-    //[myHistoryController loadView];
+    //[mySettingsViewController loadView];
     ViewsDescription *settingsDescription = [ViewsDescription alloc];
     settingsDescription->content = mySettingsViewController;
     settingsDescription->tabBar = mainTabBarController;
@@ -313,7 +313,7 @@
     ChatViewController* myChatViewController = [[ChatViewController alloc]
                                                         initWithNibName:@"ChatViewController" 
                                                         bundle:[NSBundle mainBundle]];
-    //[myHistoryController loadView];
+    //[myChatViewController loadView];
     ViewsDescription *chatDescription = [ViewsDescription alloc];
     chatDescription->content = myChatViewController;
     chatDescription->tabBar = mainTabBarController;

@@ -76,8 +76,8 @@
             //[error show];
             //[error release];
             //erase uername passwd
-            [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"username_preference"];
-            [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"password_preference"];
+			[[LinphoneManager instance].settingsStore setObject:Nil forKey:@"username_preference"];
+			[[LinphoneManager instance].settingsStore setObject:Nil forKey:@"password_preference"];
             break;
         }
         case LinphoneRegistrationProgress: {
@@ -124,9 +124,8 @@
 		[error show];
         [error release];
 	} else {
-		[[NSUserDefaults standardUserDefaults] setObject:username.text forKey:@"username_preference"];
-		[[NSUserDefaults standardUserDefaults] setObject:passwd.text forKey:@"password_preference"];
-        [[LinphoneManager instance] reconfigureLinphoneIfNeeded:nil];
+		[[LinphoneManager instance].settingsStore setObject:username.text forKey:@"username_preference"];
+		[[LinphoneManager instance].settingsStore setObject:passwd.text forKey:@"password_preference"];
 		[self.activityIndicator setHidden:false];
 	};
 	

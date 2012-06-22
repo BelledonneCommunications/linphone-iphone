@@ -18,7 +18,21 @@
  */ 
 
 #import "SettingsViewController.h"
+#import "LinphoneManager.h"
 
 @implementation SettingsViewController
+
+@synthesize settingsController;
+@synthesize navigationController;
+
+- (void)viewDidLoad {
+    settingsController.delegate = [LinphoneManager instance];
+    settingsController.settingsReaderDelegate = [LinphoneManager instance];
+    settingsController.settingsStore=[[LinphoneManager instance] settingsStore];
+    settingsController.showCreditsFooter = FALSE;
+    
+    navigationController.view.frame = self.view.frame;
+    [self.view addSubview: navigationController.view];
+}
 
 @end

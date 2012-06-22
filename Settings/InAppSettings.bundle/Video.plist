@@ -8,16 +8,6 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
-			<string>Enable video</string>
-			<key>Key</key>
-			<string>enable_video_preference</string>
-			<key>DefaultValue</key>
-			<true/>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
 			<string>Automatically start video</string>
 			<key>Key</key>
 			<string>start_video_preference</string>

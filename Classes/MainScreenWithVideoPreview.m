@@ -132,7 +132,11 @@
     if([LinphoneManager isLcReady])
         lc = [LinphoneManager getLc];
     
-    bool enableVideo = [[NSUserDefaults standardUserDefaults] boolForKey:@"enable_video_preference"];
+	lc = [LinphoneManager getLc];
+    
+    if (lc==NULL) return;
+    
+    bool enableVideo = linphone_core_video_enabled(lc);
     
     if (enableVideo) {
         LinphoneCall* call = linphone_core_get_current_call(lc);

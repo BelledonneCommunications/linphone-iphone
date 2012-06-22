@@ -42,6 +42,7 @@
 				<string key="NSFrameSize">{320, 480}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
+				<reference key="NSNextKeyView"/>
 				<object class="NSColor" key="IBUIBackgroundColor">
 					<int key="NSColorSpace">1</int>
 					<bytes key="NSRGB">MSAxIDEAA</bytes>
@@ -143,46 +144,61 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">12</int>
+			<int key="maxID">16</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
 				<object class="IBPartialClassDescription">
+					<string key="className">IASKAbstractSettingsStore</string>
+					<string key="superclassName">NSObject</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/IASKAbstractSettingsStore.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
 					<string key="className">LinphoneAppDelegate</string>
 					<string key="superclassName">NSObject</string>
-					<object class="NSMutableDictionary" key="outlets">
-						<string key="NS.key.0">window</string>
-						<string key="NS.object.0">UIWindow</string>
-					</object>
-					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<string key="NS.key.0">window</string>
-						<object class="IBToOneOutletInfo" key="NS.object.0">
+					<dictionary class="NSMutableDictionary" key="outlets">
+						<string key="settings">LinphoneCoreSettingsStore</string>
+						<string key="window">UIWindow</string>
+					</dictionary>
+					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<object class="IBToOneOutletInfo" key="settings">
+							<string key="name">settings</string>
+							<string key="candidateClassName">LinphoneCoreSettingsStore</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="window">
 							<string key="name">window</string>
 							<string key="candidateClassName">UIWindow</string>
 						</object>
-					</object>
+					</dictionary>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">./Classes/LinphoneAppDelegate.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
+					<string key="className">LinphoneCoreSettingsStore</string>
+					<string key="superclassName">IASKAbstractSettingsStore</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/LinphoneCoreSettingsStore.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
 					<string key="className">PhoneMainView</string>
 					<string key="superclassName">UIViewController</string>
 					<dictionary class="NSMutableDictionary" key="outlets">
-						<string key="addCallTabBar">UIView</string>
 						<string key="callTabBarController">UIViewController</string>
 						<string key="contentView">UIView</string>
+						<string key="incomingCallTabBarController">UIViewController</string>
 						<string key="mainTabBarController">UIViewController</string>
-						<string key="statusBarController">UIViewController</string>
-						<string key="statusBarView">UIView</string>
+						<string key="stateBarController">UIViewController</string>
+						<string key="stateBarView">UIView</string>
 						<string key="tabBarView">UIView</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<object class="IBToOneOutletInfo" key="addCallTabBar">
-							<string key="name">addCallTabBar</string>
-							<string key="candidateClassName">UIView</string>
-						</object>
 						<object class="IBToOneOutletInfo" key="callTabBarController">
 							<string key="name">callTabBarController</string>
 							<string key="candidateClassName">UIViewController</string>
@@ -191,16 +207,20 @@
 							<string key="name">contentView</string>
 							<string key="candidateClassName">UIView</string>
 						</object>
+						<object class="IBToOneOutletInfo" key="incomingCallTabBarController">
+							<string key="name">incomingCallTabBarController</string>
+							<string key="candidateClassName">UIViewController</string>
+						</object>
 						<object class="IBToOneOutletInfo" key="mainTabBarController">
 							<string key="name">mainTabBarController</string>
 							<string key="candidateClassName">UIViewController</string>
 						</object>
-						<object class="IBToOneOutletInfo" key="statusBarController">
-							<string key="name">statusBarController</string>
+						<object class="IBToOneOutletInfo" key="stateBarController">
+							<string key="name">stateBarController</string>
 							<string key="candidateClassName">UIViewController</string>
 						</object>
-						<object class="IBToOneOutletInfo" key="statusBarView">
-							<string key="name">statusBarView</string>
+						<object class="IBToOneOutletInfo" key="stateBarView">
+							<string key="name">stateBarView</string>
 							<string key="candidateClassName">UIView</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="tabBarView">

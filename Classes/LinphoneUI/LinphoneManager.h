@@ -20,7 +20,11 @@
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVAudioSession.h>
 #import <SystemConfiguration/SCNetworkReachability.h>
+
 #import "LogView.h"
+#import "IASKSettingsReader.h"
+#import "IASKSettingsStore.h"
+#import "IASKAppSettingsViewController.h"
 
 #include "linphonecore.h"
 
@@ -65,7 +69,7 @@ typedef struct _LinphoneCallAppData {
 - (id) initWithCall: (LinphoneCall*) call; 
 @end
 
-@interface LinphoneManager : NSObject <AVAudioSessionDelegate> {
+@interface LinphoneManager : NSObject <AVAudioSessionDelegate, IASKSettingsReaderFilterDelegate, IASKSettingsDelegate> {
 @protected
 	SCNetworkReachabilityRef proxyReachability;
 @private
@@ -80,7 +84,7 @@ typedef struct _LinphoneCallAppData {
     
     PhoneView currentView;
     
-    NSDictionary* currentSettings;
+    id<IASKSettingsStore> settingsStore;
     
 @public
     CallContext currentCallContextBeforeGoingBackground;
@@ -94,6 +98,7 @@ typedef struct _LinphoneCallAppData {
 + (void)logUIElementPressed:(const char*) name;
 + (void)abstractCall:(id) object dict:(NSDictionary *) dict;
 - (void)registerLogView:(id<LogView>) view;
++ (NSString *)getPrefForCodec: (const char*) name withRate: (int) rate;
 
 - (void)startLibLinphone;
 - (BOOL)isNotIphone3G;
@@ -105,7 +110,6 @@ typedef struct _LinphoneCallAppData {
 - (NSString*)getDisplayNameFromAddressBook:(NSString*) number andUpdateCallLog:(LinphoneCallLog*)log; 
 - (UIImage*)getImageFromAddressBook:(NSString*) number;
 
-- (BOOL)reconfigureLinphoneIfNeeded:(NSDictionary *)oldSettings;
 - (void)setupNetworkReachabilityCallback;
 - (void)refreshRegisters;
 
@@ -115,8 +119,12 @@ typedef struct _LinphoneCallAppData {
 - (void)fullScreen:(BOOL) enabled;
 - (PhoneView) currentView;
 
+@property (nonatomic, retain) id<IASKSettingsStore> settingsStore;
+
 @property Connectivity connectivity;
+@property (nonatomic) int defaultExpires;
 @property (readonly) const char*  frontCamId;
 @property (readonly) const char*  backCamId;
+
 @end
 

@@ -17,16 +17,20 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */              
 
-#import "LinphoneManager.h"
 #include "linphonecore_utils.h"
+#include "lpconfig.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
+#include <sys/sysctl.h>
+
 #import <AVFoundation/AVAudioSession.h>
 #import <AudioToolbox/AudioToolbox.h>
+#import <SystemConfiguration/SystemConfiguration.h>
+
+#import "LinphoneManager.h"
 #import "FastAddressBook.h"
-#include <sys/sysctl.h>
-#include <SystemConfiguration/SystemConfiguration.h>
+#import "LinphoneCoreSettingsStore.h"
 
 static LinphoneCore* theLinphoneCore=nil;
 static LinphoneManager* theLinphoneManager=nil;
@@ -41,7 +45,7 @@ extern void libmsx264_init();
 #endif
 #define FRONT_CAM_NAME "AV Capture: Front Camera"
 #define BACK_CAM_NAME "AV Capture: Back Camera"
-#define DEFAULT_EXPIRES 600
+
 #if defined (HAVE_SILK)
 extern void libmssilk_init(); 
 #endif
@@ -68,12 +72,48 @@ PhoneView currentView = -1;
 @synthesize connectivity;
 @synthesize frontCamId;
 @synthesize backCamId;
+@synthesize defaultExpires;
+@synthesize settingsStore;
+
+struct codec_name_pref_table{
+const char *name;
+int rate;
+NSString *prefname;
+};
+
+struct codec_name_pref_table codec_pref_table[]={
+	{ "speex", 8000, @"speex_8k_preference" },
+	{ "speex", 16000, @"speex_16k_preference" },
+	{ "silk", 24000, @"silk_24k_preference" },
+	{ "silk", 16000, @"silk_16k_preference" },
+	{ "amr", 8000, @"amr_8k_preference" },
+	{ "ilbc", 8000, @"ilbc_preference"},
+	{ "pcmu", 8000, @"pcmu_preference"},
+	{ "pcma", 8000, @"pcma_preference"},
+	{ "g722", 8000, @"g722_preference"},
+	{ "g729", 8000, @"g729_preference"},
+	{ "mp4v-es", 90000, @"mp4v-es_preference"},
+	{ "h264", 90000, @"h264_preference"},
+	{ "vp8", 90000, @"vp8_preference"},
+	{ NULL,0,Nil }
+};
+
++ (NSString *) getPrefForCodec: (const char*) name withRate: (int) rate{
+	int i;
+	for(i=0;codec_pref_table[i].name!=NULL;++i){
+		if (strcasecmp(codec_pref_table[i].name,name)==0 && codec_pref_table[i].rate==rate)
+			return codec_pref_table[i].prefname;
+	}
+	return Nil;
+}
+
 
 - (id)init {
     assert (!theLinphoneManager);
     if ((self= [super init])) {
         mFastAddressBook = [[FastAddressBook alloc] init];
         theLinphoneManager = self;
+		self.defaultExpires=600;
     }
     return self;
 }
@@ -232,7 +272,7 @@ PhoneView currentView = -1;
 }
 
 //generic log handler for debug version
-static void linphone_iphone_log_handler(int lev, const char *fmt, va_list args){
+void linphone_iphone_log_handler(int lev, const char *fmt, va_list args){
 	NSString* format = [[NSString alloc] initWithCString:fmt encoding:[NSString defaultCStringEncoding]];
 	NSLogv(format,args);
 	NSString* formatedString = [[NSString alloc] initWithFormat:format arguments:args];
@@ -401,7 +441,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 			[[LinphoneManager instance] kickOffNetworkConnection];
 		} else {
 			Connectivity  newConnectivity;
-			BOOL isWifiOnly = [[NSUserDefaults standardUserDefaults] boolForKey:@"wifi_only_preference"];
+			BOOL isWifiOnly = lp_config_get_int(linphone_core_get_config([LinphoneManager getLc]),"app","wifi_only_preference",FALSE);
             if (!ctx || ctx->testWWan)
                 newConnectivity = flags & kSCNetworkReachabilityFlagsIsWWAN ? wwan:wifi;
             else
@@ -413,7 +453,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 				&& (lLinphoneMgr.connectivity == newConnectivity || lLinphoneMgr.connectivity == none)) {
 				linphone_proxy_config_expires(proxy, 0);
 			} else if (proxy){
-				linphone_proxy_config_expires(proxy, DEFAULT_EXPIRES); //might be better to save the previous value
+				linphone_proxy_config_expires(proxy, lLinphoneMgr.defaultExpires); //might be better to save the previous value
 			}
 			
 			if (lLinphoneMgr.connectivity == none) {
@@ -436,268 +476,23 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	}
 }
 
-- (BOOL)reconfigureLinphoneIfNeeded:(NSDictionary *)settings {
-	if (theLinphoneCore==nil) {
-		ms_warning("cannot configure linphone because not initialized yet");
-		return NO;
-	}
-    
-    [[NSUserDefaults standardUserDefaults] synchronize];
-    NSDictionary* newSettings = [[NSUserDefaults standardUserDefaults] dictionaryRepresentation];
-    if (settings != nil) {
-        /* reconfigure only if newSettings != settings */
-        if ([newSettings isEqualToDictionary:settings]) {
-            ms_message("Same settings: no need to reconfigure linphone");
-            return NO;
-        }
-    }
-    NSLog(@"Configuring Linphone (new settings)");
-    
-    
-	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"debugenable_preference"]) {
-		//redirect all traces to the iphone log framework
-		linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
-	}
-	else {
-		linphone_core_disable_logs();
-	}
-    
-    NSBundle* myBundle = [NSBundle mainBundle];
-    
-    /* unregister before modifying any settings */
-    {
-        LinphoneProxyConfig* proxyCfg;
-        linphone_core_get_default_proxy(theLinphoneCore, &proxyCfg);
-        
-        if (proxyCfg) {
-            // this will force unregister WITHOUT destorying the proxyCfg object
-            linphone_proxy_config_edit(proxyCfg);
-            
-            int i=0;
-            while (linphone_proxy_config_get_state(proxyCfg)!=LinphoneRegistrationNone &&
-                   linphone_proxy_config_get_state(proxyCfg)!=LinphoneRegistrationCleared && 
-                    linphone_proxy_config_get_state(proxyCfg)!=LinphoneRegistrationFailed && 
-                   i++<40 ) {
-                linphone_core_iterate(theLinphoneCore);
-                usleep(100000);
-            }
-        }
-    }
-    
-    const char* lRootCa = [[myBundle pathForResource:@"rootca"ofType:@"pem"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
-    linphone_core_set_root_ca(theLinphoneCore, lRootCa);
-    
-	NSString* transport = [[NSUserDefaults standardUserDefaults] stringForKey:@"transport_preference"];
-		
-	LCSipTransports transportValue;
-	if (transport!=nil) {
-		if (linphone_core_get_sip_transports(theLinphoneCore, &transportValue)) {
-			ms_error("cannot get current transport");	
-		}
-		// Only one port can be set at one time, the others's value is 0
-		if ([transport isEqualToString:@"tcp"]) {
-			if (transportValue.tcp_port == 0) transportValue.tcp_port=transportValue.udp_port + transportValue.tls_port;
-			transportValue.udp_port=0;
-            transportValue.tls_port=0;
-		} else if ([transport isEqualToString:@"udp"]){
-			if (transportValue.udp_port == 0) transportValue.udp_port=transportValue.tcp_port + transportValue.tls_port;
-			transportValue.tcp_port=0;
-            transportValue.tls_port=0;
-		} else if ([transport isEqualToString:@"tls"]){
-			if (transportValue.tls_port == 0) transportValue.tls_port=transportValue.udp_port + transportValue.tcp_port;
-			transportValue.tcp_port=0;
-            transportValue.udp_port=0;
-		} else {
-			ms_error("unexpected transport [%s]",[transport cStringUsingEncoding:[NSString defaultCStringEncoding]]);
-		}
-		if (linphone_core_set_sip_transports(theLinphoneCore, &transportValue)) {
-			ms_error("cannot set transport");	
-		}
-	}
-	
-
-
-	// Set audio assets
-	const char*  lRing = [[myBundle pathForResource:@"oldphone-mono"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
-	linphone_core_set_ring(theLinphoneCore, lRing );
-	const char*  lRingBack = [[myBundle pathForResource:@"ringback"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
-	linphone_core_set_ringback(theLinphoneCore, lRingBack);
-
-	
-	
-	//configure sip account
-	
-	//madatory parameters
-	
-	NSString* username = [[NSUserDefaults standardUserDefaults] stringForKey:@"username_preference"];
-	NSString* domain = [[NSUserDefaults standardUserDefaults] stringForKey:@"domain_preference"];
-	NSString* accountPassword = [[NSUserDefaults standardUserDefaults] stringForKey:@"password_preference"];
-	bool configCheckDisable = [[NSUserDefaults standardUserDefaults] boolForKey:@"check_config_disable_preference"];
-	bool isOutboundProxy= [[NSUserDefaults standardUserDefaults] boolForKey:@"outbound_proxy_preference"];
-	
-	
-	//clear auth info list
-	linphone_core_clear_all_auth_info(theLinphoneCore);
-    //clear existing proxy config
-    linphone_core_clear_proxy_config(theLinphoneCore);
-	if (username && [username length] >0 && domain && [domain length]>0) {
-		const char* identity = [[NSString stringWithFormat:@"sip:%@@%@",username,domain] cStringUsingEncoding:[NSString defaultCStringEncoding]];
-		const char* password = [accountPassword cStringUsingEncoding:[NSString defaultCStringEncoding]];
-		
-		NSString* proxyAddress = [[NSUserDefaults standardUserDefaults] stringForKey:@"proxy_preference"];
-		if ((!proxyAddress || [proxyAddress length] <1 ) && domain) {
-			proxyAddress = [NSString stringWithFormat:@"sip:%@",domain] ;
-		} else {
-			proxyAddress = [NSString stringWithFormat:@"sip:%@",proxyAddress] ;
-		}
-		
-		const char* proxy = [proxyAddress cStringUsingEncoding:[NSString defaultCStringEncoding]];
-		
-		NSString* prefix = [[NSUserDefaults standardUserDefaults] stringForKey:@"prefix_preference"];
-        bool substitute_plus_by_00 = [[NSUserDefaults standardUserDefaults] boolForKey:@"substitute_+_by_00_preference"];
-		//possible valid config detected
-		LinphoneProxyConfig* proxyCfg;	
-		proxyCfg = linphone_proxy_config_new();
-        
-		// add username password
-		LinphoneAddress *from = linphone_address_new(identity);
-		LinphoneAuthInfo *info;
-		if (from !=0){
-			info=linphone_auth_info_new(linphone_address_get_username(from),NULL,password,NULL,NULL);
-			linphone_core_add_auth_info(theLinphoneCore,info);
-		}
-		linphone_address_destroy(from);
-		
-		// configure proxy entries
-		linphone_proxy_config_set_identity(proxyCfg,identity);
-		linphone_proxy_config_set_server_addr(proxyCfg,proxy);
-		linphone_proxy_config_enable_register(proxyCfg,true);
-		BOOL isWifiOnly = [[NSUserDefaults standardUserDefaults] boolForKey:@"wifi_only_preference"];
-		LinphoneManager* lLinphoneMgr = [LinphoneManager instance];
-		if (isWifiOnly && lLinphoneMgr.connectivity == wwan) {
-			linphone_proxy_config_expires(proxyCfg, 0);
-		} else {
-			linphone_proxy_config_expires(proxyCfg, DEFAULT_EXPIRES);
-		}
-		
-		if (isOutboundProxy)
-			linphone_proxy_config_set_route(proxyCfg,proxy);
-		
-		if ([prefix length]>0) {
-			linphone_proxy_config_set_dial_prefix(proxyCfg, [prefix cStringUsingEncoding:[NSString defaultCStringEncoding]]);
-		}
-		linphone_proxy_config_set_dial_escape_plus(proxyCfg,substitute_plus_by_00);
-		
-		linphone_core_add_proxy_config(theLinphoneCore,proxyCfg);
-		//set to default proxy
-		linphone_core_set_default_proxy(theLinphoneCore,proxyCfg);
-		
-	} else {
-		if (configCheckDisable == false ) {
-			UIAlertView* error = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"Warning",nil)
-															message:NSLocalizedString(@"It seems you have not configured any proxy server from settings",nil) 
-														   delegate:self
-												  cancelButtonTitle:NSLocalizedString(@"Continue",nil)
-												  otherButtonTitles:NSLocalizedString(@"Never remind",nil),nil];
-			[error show];
-            [error release];
-		}
-	}		
-	
-	//Configure Codecs
-	
-	PayloadType *pt;
-	//get codecs from linphonerc	
-	const MSList *audioCodecs=linphone_core_get_audio_codecs(theLinphoneCore);
-	const MSList *elem;
-	//disable all codecs
-	for (elem=audioCodecs;elem!=NULL;elem=elem->next){
-		pt=(PayloadType*)elem->data;
-		linphone_core_enable_payload_type(theLinphoneCore,pt,FALSE);
-	}
-	
-	//read codecs from setting  bundle and enable them one by one
-    if ([self isNotIphone3G]) {
-		[self configurePayloadType:"SILK" fromPrefKey:@"silk_24k_preference" withRate:24000];
-    }
-    else {
-        ms_message("SILK 24khz codec deactivated");
-    }
-	[self configurePayloadType:"speex" fromPrefKey:@"speex_16k_preference" withRate:16000];
-	[self configurePayloadType:"speex" fromPrefKey:@"speex_8k_preference" withRate:8000];
-	[self configurePayloadType:"SILK" fromPrefKey:@"silk_16k_preference" withRate:16000];
-    [self configurePayloadType:"AMR" fromPrefKey:@"amr_8k_preference" withRate:8000];
-	[self configurePayloadType:"GSM" fromPrefKey:@"gsm_8k_preference" withRate:8000];
-	[self configurePayloadType:"iLBC" fromPrefKey:@"ilbc_preference" withRate:8000];
-	[self configurePayloadType:"PCMU" fromPrefKey:@"pcmu_preference" withRate:8000];
-	[self configurePayloadType:"PCMA" fromPrefKey:@"pcma_preference" withRate:8000];
-	[self configurePayloadType:"G722" fromPrefKey:@"g722_preference" withRate:8000];
-	[self configurePayloadType:"G729" fromPrefKey:@"g729_preference" withRate:8000];
-	
-	//get video codecs from linphonerc
-	const MSList *videoCodecs=linphone_core_get_video_codecs(theLinphoneCore);
-	//disable video all codecs
-	for (elem=videoCodecs;elem!=NULL;elem=elem->next){
-		pt=(PayloadType*)elem->data;
-		linphone_core_enable_payload_type(theLinphoneCore,pt,FALSE);
-	}
-	[self configurePayloadType:"MP4V-ES" fromPrefKey:@"mp4v-es_preference" withRate:90000];
-	[self configurePayloadType:"H264" fromPrefKey:@"h264_preference" withRate:90000];
-    [self configurePayloadType:"VP8" fromPrefKey:@"vp8_preference" withRate:90000];
-	
-	if ([self isNotIphone3G]) {
-		bool enableVideo = [[NSUserDefaults standardUserDefaults] boolForKey:@"enable_video_preference"];
-		linphone_core_enable_video(theLinphoneCore, enableVideo, enableVideo);
-	} else {
-		linphone_core_enable_video(theLinphoneCore, FALSE, FALSE);
-		ms_warning("Disable video for phones prior to iPhone 3GS");
-	}
-	bool enableSrtp = [[NSUserDefaults standardUserDefaults] boolForKey:@"enable_srtp_preference"];
-	linphone_core_set_media_encryption(theLinphoneCore, enableSrtp?LinphoneMediaEncryptionSRTP:LinphoneMediaEncryptionZRTP);
-
-    NSString* stun_server = [[NSUserDefaults standardUserDefaults] stringForKey:@"stun_preference"];
-    if ([stun_server length]>0){
-        linphone_core_set_stun_server(theLinphoneCore,[stun_server cStringUsingEncoding:[NSString defaultCStringEncoding]]);
-        linphone_core_set_firewall_policy(theLinphoneCore, LinphonePolicyUseStun);
-    }else{
-        linphone_core_set_stun_server(theLinphoneCore, NULL);
-        linphone_core_set_firewall_policy(theLinphoneCore, LinphonePolicyNoFirewall);
-    }
-	
-    LinphoneVideoPolicy policy;
-    policy.automatically_accept = [[NSUserDefaults standardUserDefaults] boolForKey:@"start_video_preference"];;
-    policy.automatically_initiate = [[NSUserDefaults standardUserDefaults] boolForKey:@"start_video_preference"];
-    linphone_core_set_video_policy(theLinphoneCore, &policy);
-    
-	UIDevice* device = [UIDevice currentDevice];
-	bool backgroundSupported = false;
-	if ([device respondsToSelector:@selector(isMultitaskingSupported)])
-		backgroundSupported = [device isMultitaskingSupported];
-	
-	if (backgroundSupported) {
-		isbackgroundModeEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"backgroundmode_preference"];
-	} else {
-		isbackgroundModeEnabled=false;
-	}
-
-    [currentSettings release];
-    currentSettings = newSettings;
-    [currentSettings retain];
-    
-    return YES;
-}
 - (BOOL)isNotIphone3G
 {
-    size_t size;
-    sysctlbyname("hw.machine", NULL, &size, NULL, 0);
-    char *machine = malloc(size);
-    sysctlbyname("hw.machine", machine, &size, NULL, 0);
-    NSString *platform = [[NSString alloc ] initWithUTF8String:machine];
-    free(machine);
+	static BOOL done=FALSE;
+	static BOOL result;
+	if (!done){
+		size_t size;
+		sysctlbyname("hw.machine", NULL, &size, NULL, 0);
+		char *machine = malloc(size);
+		sysctlbyname("hw.machine", machine, &size, NULL, 0);
+		NSString *platform = [[NSString alloc ] initWithUTF8String:machine];
+		free(machine);
     
-    BOOL result = ![platform isEqualToString:@"iPhone1,2"];
+		result = ![platform isEqualToString:@"iPhone1,2"];
     
-    [platform release];
+		[platform release];
+		done=TRUE;
+	}
     return result;
 }
 
@@ -730,7 +525,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	linphone_core_get_default_proxy(theLinphoneCore, &proxyCfg);	
 	linphone_core_stop_dtmf_stream(theLinphoneCore);
 	
-	if (isbackgroundModeEnabled && proxyCfg) {
+	if (proxyCfg && lp_config_get_int(linphone_core_get_config(theLinphoneCore),"app","backgroundmode_preference",0)) {
 		//For registration register
 		linphone_core_refresh_registers(theLinphoneCore);
 		
@@ -823,17 +618,10 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
 	NSString *confiFileName = [[paths objectAtIndex:0] stringByAppendingString:@"/.linphonerc"];
 	NSString *zrtpSecretsFileName = [[paths objectAtIndex:0] stringByAppendingString:@"/zrtp_secrets"];
+	const char* lRootCa = [[myBundle pathForResource:@"rootca"ofType:@"pem"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
 	connectivity=none;
 	signal(SIGPIPE, SIG_IGN);
 	//log management	
-	
-	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"debugenable_preference"]) {
-		//redirect all traces to the iphone log framework
-		linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
-	}
-	else {
-		linphone_core_disable_logs();
-	}
 	
 	libmsilbc_init();
 #if defined (HAVE_SILK)
@@ -857,13 +645,17 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 										 , [factoryConfig cStringUsingEncoding:[NSString defaultCStringEncoding]]
 										 ,self);
 	
-	[[NSUserDefaults standardUserDefaults] synchronize];//sync before loading config 
+    linphone_core_set_root_ca(theLinphoneCore, lRootCa);
+	// Set audio assets
+	const char*  lRing = [[myBundle pathForResource:@"oldphone-mono"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
+	linphone_core_set_ring(theLinphoneCore, lRing );
+	const char*  lRingBack = [[myBundle pathForResource:@"ringback"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
+	linphone_core_set_ringback(theLinphoneCore, lRingBack);
 
+	
 	linphone_core_set_zrtp_secrets_file(theLinphoneCore, [zrtpSecretsFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
     
     [self setupNetworkReachabilityCallback];
-
-	[self reconfigureLinphoneIfNeeded:nil];
 	
 	// start scheduler
 	mIterateTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 
@@ -915,11 +707,24 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		//go directly to bg mode
 		[self enterBackgroundMode];
 	}
+    NSUInteger cpucount = [[NSProcessInfo processInfo] processorCount];
+	ms_set_cpu_count(cpucount);
+
+	if (![self isNotIphone3G]){
+		PayloadType *pt=linphone_core_find_payload_type(theLinphoneCore,"SILK",24000);
+		if (pt) {
+			linphone_core_enable_payload_type(theLinphoneCore,pt,FALSE);
+			ms_warning("SILK/24000 and video disabled on old iPhone 3G");
+		}
+		linphone_core_enable_video(theLinphoneCore, FALSE, FALSE);
+	}
     
     if ([LinphoneManager runningOnIpad])
         ms_set_cpu_count(2);
     else
         ms_set_cpu_count(1);
+    
+    settingsStore = [[LinphoneCoreSettingsStore alloc] init];
     
     ms_warning("Linphone [%s]  started on [%s]"
                ,linphone_core_get_version()
@@ -949,13 +754,10 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 - (void)becomeActive {
     if (theLinphoneCore == nil) {
 		//back from standby and background mode is disabled
-		[self	startLibLinphone];
+		[self startLibLinphone];
 	} else {
-        if (![self reconfigureLinphoneIfNeeded:currentSettings]) {
-            ms_message("becoming active with no config modification, make sure we are registered");
-			[self refreshRegisters];
-        }
-	}
+        [self refreshRegisters];
+    }
 	/*IOS specific*/
 	linphone_core_start_dtmf_stream(theLinphoneCore);
     
@@ -1022,6 +824,59 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
             [LinphoneManager abstractCall:new_object dict:arguments];
         }
     }
+}
+
+- (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController *)sender {
+    ms_message("Synchronize settings");
+    [[self settingsStore] synchronize];
+}
+
+- (BOOL)codecSupported:(NSString *) prefName{
+	int i;
+	for(i=0;codec_pref_table[i].name!=NULL;++i){
+		if ([prefName compare:codec_pref_table[i].prefname]==0){
+			return linphone_core_find_payload_type(theLinphoneCore,codec_pref_table[i].name, codec_pref_table[i].rate)!=NULL;
+		}
+	}
+	return TRUE;
+}
+
+- (NSDictionary*)filterPreferenceSpecifier:(NSDictionary *)specifier {
+    if (!theLinphoneCore) {
+        // LinphoneCore not ready: do not filter
+        return specifier;
+    }
+    NSString* identifier = [specifier objectForKey:@"Identifier"];
+    if (identifier == nil) {
+        identifier = [specifier objectForKey:@"Key"];
+    }
+    if (!identifier) {
+        // child pane maybe
+        NSString* title = [specifier objectForKey:@"Title"];
+        if ([title isEqualToString:@"Video"]) {
+            if (!linphone_core_video_supported(theLinphoneCore))
+                return nil;
+        }
+        return specifier;
+    }
+    // NSLog(@"Specifier received: %@", identifier);
+	if ([identifier isEqualToString:@"silk_24k_preference"]) {
+		if (![self isNotIphone3G])
+			return nil;
+	}
+    if ([identifier isEqualToString:@"backgroundmode_preference"]) {
+        UIDevice* device = [UIDevice currentDevice];
+        if ([device respondsToSelector:@selector(isMultitaskingSupported)]) {
+            if ([device isMultitaskingSupported]) {
+                return specifier;
+            }
+        }
+        // hide setting if bg mode not supported
+        return nil;
+    }
+	if (![self codecSupported:identifier])
+		return Nil;
+    return specifier;
 }
 
 @end
