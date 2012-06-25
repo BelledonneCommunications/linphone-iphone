@@ -30,6 +30,10 @@
 
 NSTimer *callQualityTimer;
 
+- (id)init {
+    return [super initWithNibName:@"UIStateBar" bundle:[NSBundle mainBundle]];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -45,7 +49,10 @@ NSTimer *callQualityTimer;
 													repeats:YES];
     
     // Update to default state
-    [self proxyConfigUpdate: NULL];
+    LinphoneProxyConfig* config = NULL;
+    if([LinphoneManager isLcReady])
+        linphone_core_get_default_proxy([LinphoneManager getLc], &config);
+    [self proxyConfigUpdate: config];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {

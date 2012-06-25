@@ -30,313 +30,163 @@
 
 #import "AbstractCall.h"
 
-@implementation ViewsDescription
-
-- (id)copy {
-    ViewsDescription *copy = [ViewsDescription alloc];
-    copy->content = self->content;
-    copy->tabBar = self->tabBar;
-    copy->tabBarEnabled = self->tabBarEnabled;
-    copy->statusEnabled = self->statusEnabled;
-    copy->fullscreen = self->fullscreen;
-    copy->viewId = self->viewId;
-    return copy;
-}
-@end
-
 @implementation PhoneMainView
 
-@synthesize stateBarView;
-@synthesize contentView;
-@synthesize tabBarView;
+@synthesize mainViewController;
+@synthesize modalViewController;
 
-@synthesize stateBarController;
-
-@synthesize callTabBarController;
-@synthesize mainTabBarController;
-@synthesize incomingCallTabBarController;
-
-+ (void)addSubView:(UIViewController*)controller view:(UIView*)view {
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [controller viewWillAppear:NO];
-    }
-    [view addSubview: controller.view];
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [controller viewDidAppear:NO];
-    }
+- (void)myInit {
+    self->currentPhoneView = -1;
 }
 
-+ (void)removeSubView:(UIViewController*)controller {
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [controller viewWillDisappear:NO];
+- (id)init {
+    self = [super init];
+    if (self) {
+		[self myInit];
     }
-    [controller.view removeFromSuperview];
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [controller viewDidDisappear:NO];
-    }
+    return self;
 }
+
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if (self) {
+		[self myInit];
+    }
+    return self;
+}
+
+- (id)initWithCoder:(NSCoder *)decoder {
+    self = [super initWithCoder:decoder];
+    if (self) {
+		[self myInit];
+	}
+    return self;
+}	
 
 - (void)changeView: (NSNotification*) notif {   
     NSNumber *viewId = [notif.userInfo objectForKey: @"view"];
     NSNumber *tabBar = [notif.userInfo objectForKey: @"tabBar"];
     NSNumber *fullscreen = [notif.userInfo objectForKey: @"fullscreen"];
     
-    // Copy view description
-    ViewsDescription *oldViewDescription = (currentViewDescription != nil)? [currentViewDescription copy]: nil;
-    
     // Check view change
     if(viewId != nil) {
         PhoneView view = [viewId intValue];
-        ViewsDescription* description = [viewDescriptions objectForKey:[NSNumber numberWithInt: view]];
+        UICompositeViewDescription* description = [viewDescriptions objectForKey:[NSNumber numberWithInt: view]];
         if(description == nil)
             return;
-        description->viewId = view; // Auto-set viewId
-        if(currentViewDescription == nil || description->viewId != currentViewDescription->viewId) {
-            if(currentViewDescription != nil)
-                [currentViewDescription dealloc];
-            currentViewDescription = [description copy];
-        } else {
-            viewId = nil;
-        }
-    }
-
-    if(currentViewDescription == nil) {
-        return;
+        if(view != currentPhoneView) {
+            [mainViewController changeView:description];
+            currentPhoneView = view;
+        } 
     }
     
     if(tabBar != nil) {
-        currentViewDescription->tabBarEnabled = [tabBar boolValue];
+        [mainViewController setToolBarHidden:![tabBar boolValue]];
     }
     
     if(fullscreen != nil) {
-        currentViewDescription->fullscreen = [fullscreen boolValue];
-        [[UIApplication sharedApplication] setStatusBarHidden:currentViewDescription->fullscreen withAnimation:UIStatusBarAnimationSlide ];
-    } else {
-        [[UIApplication sharedApplication] setStatusBarHidden:currentViewDescription->fullscreen withAnimation:UIStatusBarAnimationNone];
-    }
-    
-    // View Transitions
-    if(viewId != nil) {
-        if(oldViewDescription != nil) {
-            CATransition* trans = [CATransition animation];
-            [trans setType:kCATransitionPush];
-            [trans setDuration:0.35];
-            [trans setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
-            [trans setSubtype:kCATransitionFromRight];
-            [contentView.layer addAnimation:trans forKey:@"Transition"];
-            if((oldViewDescription->statusEnabled == true && currentViewDescription->statusEnabled == false) ||
-               (oldViewDescription->statusEnabled == false && currentViewDescription->statusEnabled == true)) {
-                [stateBarView.layer addAnimation:trans forKey:@"Transition"];
-            }
-            if(oldViewDescription->tabBar != currentViewDescription->tabBar) {
-                [tabBarView.layer addAnimation:trans forKey:@"Transition"];
-            }
-            [PhoneMainView removeSubView: oldViewDescription->content];
-            [PhoneMainView removeSubView: oldViewDescription->tabBar];
-        }
-    }
-    
-    // Start animation
-    if(tabBar != nil || fullscreen != nil) {
-        [UIView beginAnimations:@"resize" context:nil];
-        [UIView setAnimationDuration:0.35];
-        [UIView setAnimationBeginsFromCurrentState:TRUE];
-    }
-    
-    UIView *innerView = currentViewDescription->content.view;
-    
-    CGRect contentFrame = contentView.frame;
-    
-    // Resize StateBar
-    CGRect stateBarFrame = stateBarView.frame;
-    if(currentViewDescription->fullscreen)
-        stateBarFrame.origin.y = -20;
-    else
-        stateBarFrame.origin.y = 0;
-    
-    if(currentViewDescription->statusEnabled) {
-        stateBarView.hidden = false;
-        [stateBarView setFrame: stateBarFrame];
-        contentFrame.origin.y = stateBarFrame.size.height + stateBarFrame.origin.y;
-    } else {
-        stateBarView.hidden = true;
-        contentFrame.origin.y = stateBarFrame.origin.y;
-    }
-    
-    // Resize TabBar
-    CGRect tabFrame = tabBarView.frame;
-    if(currentViewDescription->tabBar != nil && currentViewDescription->tabBarEnabled) {
-        tabFrame.origin.y = [[UIScreen mainScreen] bounds].size.height - 20;
-        tabFrame.origin.x = [[UIScreen mainScreen] bounds].size.width;
-        tabFrame.size.height = currentViewDescription->tabBar.view.frame.size.height;
-        tabFrame.size.width = currentViewDescription->tabBar.view.frame.size.width;
-        tabFrame.origin.y -= tabFrame.size.height;
-        tabFrame.origin.x -= tabFrame.size.width;
-        contentFrame.size.height = tabFrame.origin.y - contentFrame.origin.y;
-        for (UIView *view in currentViewDescription->tabBar.view.subviews) {
-            if(view.tag == -1) {
-                contentFrame.size.height += view.frame.origin.y;
-                break;
-            }
-        }
-    } else {
-        contentFrame.size.height = tabFrame.origin.y + tabFrame.size.height;
-        if(currentViewDescription->fullscreen)
-            contentFrame.size.height += 20;
-        tabFrame.origin.y = [[UIScreen mainScreen] bounds].size.height - 20;
-    }
-    
-    // Resize innerView
-    CGRect innerContentFrame = innerView.frame;
-    innerContentFrame.size = contentFrame.size;
-    
-    
-    // Set frames
-    [contentView setFrame: contentFrame];
-    [innerView setFrame: innerContentFrame];
-    [tabBarView setFrame: tabFrame];
-    
-    // Commit animation
-    if(tabBar != nil || fullscreen != nil) {
-        [UIView commitAnimations];
-    }
-    
-    // Change view
-    if(viewId != nil) {
-        [PhoneMainView addSubView: currentViewDescription->content view:contentView];
-        [PhoneMainView addSubView: currentViewDescription->tabBar view:tabBarView];
+        [mainViewController setFullScreen:[fullscreen boolValue]];
     }
     
     // Call abstractCall
     NSDictionary *dict = [notif.userInfo objectForKey: @"args"];
     if(dict != nil)
-        [AbstractCall call:currentViewDescription->content dict:dict];
-    
-    // Dealloc old view description
-    if(oldViewDescription != nil) {
-        [oldViewDescription dealloc];
-    }
+        [AbstractCall call:[mainViewController getCurrentViewController] dict:dict];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    UIView *dumb;
+    
+    [[self view] addSubview: mainViewController.view];
     
     // Init view descriptions
     viewDescriptions = [[NSMutableDictionary alloc] init];
     
-    // Load Bars
-    dumb = mainTabBarController.view;
-    
-    // Status Bar
-    [stateBarView addSubview: stateBarController.view];
-    
     //
     // Main View
     //
-    DialerViewController* myDialerViewController = [[DialerViewController alloc]  
-                                                  initWithNibName:@"DialerViewController" 
-                                                  bundle:[NSBundle mainBundle]];
-    //[myPhoneViewController loadView];
-    ViewsDescription *dialerDescription = [ViewsDescription alloc];
-    dialerDescription->content = myDialerViewController;
-    dialerDescription->tabBar = mainTabBarController;
-    dialerDescription->statusEnabled = true;
-    dialerDescription->fullscreen = false;
+    UICompositeViewDescription *dialerDescription = [UICompositeViewDescription alloc];
+    dialerDescription->content = @"DialerViewController";
+    dialerDescription->tabBar = @"UIMainBar";
     dialerDescription->tabBarEnabled = true;
+    dialerDescription->stateBar = @"UIStateBar";
+    dialerDescription->stateBarEnabled = true;
+    dialerDescription->fullscreen = false;
     [viewDescriptions setObject:dialerDescription forKey:[NSNumber numberWithInt: PhoneView_Dialer]];
     
     
     //
     // Contacts View
     //
-    ContactsViewController* myContactsController = [[ContactsViewController alloc]
-                                                initWithNibName:@"ContactsViewController" 
-                                                bundle:[NSBundle mainBundle]];
-    //[myContactsController loadView];
-    ViewsDescription *contactsDescription = [ViewsDescription alloc];
-    contactsDescription->content = myContactsController;
-    contactsDescription->tabBar = mainTabBarController;
-    contactsDescription->statusEnabled = false;
-    contactsDescription->fullscreen = false;
+    UICompositeViewDescription *contactsDescription = [UICompositeViewDescription alloc];
+    contactsDescription->content = @"ContactsViewController";
+    contactsDescription->tabBar = @"UIMainBar";
     contactsDescription->tabBarEnabled = true;
+    contactsDescription->stateBar = nil;
+    contactsDescription->stateBarEnabled = false;
+    contactsDescription->fullscreen = false;
     [viewDescriptions setObject:contactsDescription forKey:[NSNumber numberWithInt: PhoneView_Contacts]];
     
     
     //
     // Call History View
     //
-    HistoryViewController* myHistoryController = [[HistoryViewController alloc]
-                                              initWithNibName:@"HistoryViewController" 
-                                              bundle:[NSBundle mainBundle]];
-    //[myHistoryController loadView];
-    ViewsDescription *historyDescription = [ViewsDescription alloc];
-    historyDescription->content = myHistoryController;
-    historyDescription->tabBar = mainTabBarController;
-    historyDescription->statusEnabled = false;
-    historyDescription->fullscreen = false;
+    UICompositeViewDescription *historyDescription = [UICompositeViewDescription alloc];
+    historyDescription->content = @"HistoryViewController";
+    historyDescription->tabBar = @"UIMainBar";
     historyDescription->tabBarEnabled = true;
+    historyDescription->stateBar = nil;
+    historyDescription->stateBarEnabled = false;
+    historyDescription->fullscreen = false;
     [viewDescriptions setObject:historyDescription forKey:[NSNumber numberWithInt: PhoneView_History]];
     
     //
     // IncomingCall View
     //
-    IncomingCallViewController* myIncomingCallController = [[IncomingCallViewController alloc]
-                                                initWithNibName:@"IncomingCallViewController" 
-                                                bundle:[NSBundle mainBundle]];
-    //[myChatViewController loadView];
-    ViewsDescription *incomingCallDescription = [ViewsDescription alloc];
-    incomingCallDescription->content = myIncomingCallController;
-    incomingCallDescription->tabBar = mainTabBarController;
-    incomingCallDescription->statusEnabled = true;
+    UICompositeViewDescription *incomingCallDescription = [UICompositeViewDescription alloc];
+    incomingCallDescription->content = @"IncomingCallViewController";
+    incomingCallDescription->tabBar = nil;
+    incomingCallDescription->tabBarEnabled = false;
+    incomingCallDescription->stateBar = @"UIStateBar";
+    incomingCallDescription->stateBarEnabled = true;
     incomingCallDescription->fullscreen = false;
-    incomingCallDescription->tabBarEnabled = true;
-    [viewDescriptions setObject:incomingCallDescription forKey:[NSNumber numberWithInt: PhoneView_Chat]];
+    [viewDescriptions setObject:incomingCallDescription forKey:[NSNumber numberWithInt: PhoneView_IncomingCall]];
     
     //
     // InCall View
     //
-    InCallViewController* myInCallController = [[InCallViewController alloc]
-                                                initWithNibName:@"InCallViewController" 
-                                                bundle:[NSBundle mainBundle]];
-    //[myInCallController loadView];
-    ViewsDescription *inCallDescription = [ViewsDescription alloc];
-    inCallDescription->content = myInCallController;
-    inCallDescription->tabBar = nil;
-    inCallDescription->statusEnabled = true;
+    UICompositeViewDescription *inCallDescription = [UICompositeViewDescription alloc];
+    inCallDescription->content = @"InCallViewController";
+    inCallDescription->tabBar = @"UICallBar";
+    inCallDescription->tabBarEnabled = true;
+    inCallDescription->stateBar = @"UIStateBar";
+    inCallDescription->stateBarEnabled = true;
     inCallDescription->fullscreen = false;
-    inCallDescription->tabBarEnabled = false;
     [viewDescriptions setObject:inCallDescription forKey:[NSNumber numberWithInt: PhoneView_InCall]];
     
     
     //
     // Settings View
     //
-    SettingsViewController* mySettingsViewController = [[SettingsViewController alloc]
-                                                initWithNibName:@"SettingsViewController" 
-                                                bundle:[NSBundle mainBundle]];
-    //[mySettingsViewController loadView];
-    ViewsDescription *settingsDescription = [ViewsDescription alloc];
-    settingsDescription->content = mySettingsViewController;
-    settingsDescription->tabBar = mainTabBarController;
-    settingsDescription->statusEnabled = false;
-    settingsDescription->fullscreen = false;
+    UICompositeViewDescription *settingsDescription = [UICompositeViewDescription alloc];
+    settingsDescription->content = @"SettingsViewController";
+    settingsDescription->tabBar = @"UIMainBar";
     settingsDescription->tabBarEnabled = true;
+    settingsDescription->stateBar = nil;
+    settingsDescription->stateBarEnabled = false;
+    settingsDescription->fullscreen = false;
     [viewDescriptions setObject:settingsDescription forKey:[NSNumber numberWithInt: PhoneView_Settings]];
     
     //
     // Chat View
     //
-    ChatViewController* myChatViewController = [[ChatViewController alloc]
-                                                        initWithNibName:@"ChatViewController" 
-                                                        bundle:[NSBundle mainBundle]];
-    //[myChatViewController loadView];
-    ViewsDescription *chatDescription = [ViewsDescription alloc];
-    chatDescription->content = myChatViewController;
-    chatDescription->tabBar = mainTabBarController;
-    chatDescription->statusEnabled = false;
-    chatDescription->fullscreen = false;
+    UICompositeViewDescription *chatDescription = [UICompositeViewDescription alloc];
+    chatDescription->content = @"ChatViewController";
+    chatDescription->tabBar = @"UIMainBar";
     chatDescription->tabBarEnabled = true;
+    chatDescription->stateBar = nil;
+    chatDescription->stateBarEnabled = false;
+    chatDescription->fullscreen = false;
     [viewDescriptions setObject:chatDescription forKey:[NSNumber numberWithInt: PhoneView_Chat]];
     
     // Set observers
@@ -395,7 +245,7 @@
 	}
 }
 
-- (void)callUpdate: (NSNotification*) notif {  
+- (void)callUpdate:(NSNotification*) notif {  
     LinphoneCall *call = [[notif.userInfo objectForKey: @"call"] pointerValue];
     LinphoneCallState state = [[notif.userInfo objectForKey: @"state"] intValue];
     NSString *message = [notif.userInfo objectForKey: @"message"];
@@ -521,6 +371,7 @@
 
 
 - (void)displayIncomingCall:(LinphoneCall*) call{
+#if 0
     const char* userNameChars=linphone_address_get_username(linphone_call_get_remote_address(call));
     NSString* userName = userNameChars?[[[NSString alloc] initWithUTF8String:userNameChars] autorelease]:NSLocalizedString(@"Unknown",nil);
     const char* displayNameChars =  linphone_address_get_display_name(linphone_call_get_remote_address(call));        
@@ -567,6 +418,10 @@
         }
 		[incomingCallActionSheet release];
 	}
+#endif
+    //UICompositeViewController *controller = [[UICompositeViewController alloc] initWithNibName:@"UICompositeViewController" bundle:[NSBundle mainBundle]];
+    [modalViewController changeView:[viewDescriptions objectForKey:[NSNumber numberWithInt:PhoneView_IncomingCall]]];
+    [self presentModalViewController:modalViewController animated:false];
 }
 
 - (void)batteryLevelChanged: (NSNotification*) notif {
@@ -637,10 +492,8 @@
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
+    [viewDescriptions removeAllObjects];
     [viewDescriptions release];
-    [stateBarView release];
-    [stateBarController release];
-    [mainTabBarController release];
     
     [super dealloc];
 }

@@ -23,6 +23,10 @@
 
 @synthesize addressLabel;
 
+- (id)init {
+    return [super initWithNibName:@"IncomingCallViewController" bundle:[NSBundle mainBundle]];
+}
+
 - (IBAction)onAcceptClick:(id) event {
     
 }

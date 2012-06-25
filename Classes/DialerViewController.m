@@ -48,6 +48,10 @@
 @synthesize zeroButton;
 @synthesize hashButton;
 
+- (id)init {
+    return [super initWithNibName:@"DialerViewController" bundle:[NSBundle mainBundle]];
+}
+
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     //TODO

@@ -21,6 +21,7 @@
 
 @implementation UIChatCell
 
+@synthesize avatarView;
 @synthesize displayNameLabel;
 @synthesize chatContentLabel;
 
@@ -42,6 +43,9 @@
 }
 
 - (void)update{
+    
+    [avatarView setImage:[UIImage imageNamed:@"avatar-small.png"]];
+    
     //
     // Adapt size
     //

@@ -48,6 +48,10 @@ const NSInteger SECURE_BUTTON_TAG=5;
 @synthesize testVideoView;
 #endif
 
+- (id)init {
+    return [super initWithNibName:@"InCallViewController" bundle:[NSBundle mainBundle]];
+}
+
 + (bool)isInConference:(LinphoneCall*) call {
     if (!call)
         return false;

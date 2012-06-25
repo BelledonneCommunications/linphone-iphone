@@ -25,6 +25,10 @@
 @synthesize settingsController;
 @synthesize navigationController;
 
+- (id)init {
+    return [super initWithNibName:@"SettingsViewController" bundle:[NSBundle mainBundle]];
+}
+
 - (void)viewDidLoad {
     settingsController.delegate = [LinphoneManager instance];
     settingsController.settingsReaderDelegate = self;

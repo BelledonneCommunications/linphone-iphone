@@ -30,6 +30,10 @@
 @synthesize microButton;
 @synthesize speakerButton;   
 
+- (id)init {
+    return [super initWithNibName:@"UICallBar" bundle:[NSBundle mainBundle]];
+}
+
 - (void)viewDidLoad {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(callUpdate:) name:@"LinphoneCallUpdate" object:nil];
 }

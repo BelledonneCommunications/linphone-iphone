@@ -20,10 +20,12 @@
 #import <UIKit/UIKit.h>
 
 @interface UIChatCell : UITableViewCell {
+    UIImageView *avatarView;
     UILabel *displayNameLabel;
     UILabel *chatContentLabel;
 }
 
+@property (nonatomic, retain) IBOutlet UIImageView *avatarView;
 @property (nonatomic, retain) IBOutlet UILabel* displayNameLabel;
 @property (nonatomic, retain) IBOutlet UILabel* chatContentLabel;
 

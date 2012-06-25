@@ -187,6 +187,10 @@
 		D31B4B22159876C0002E6C72 /* UICompositeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D31B4B1F159876C0002E6C72 /* UICompositeViewController.m */; };
 		D31B4B23159876C0002E6C72 /* UICompositeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D31B4B20159876C0002E6C72 /* UICompositeViewController.xib */; };
 		D31B4B24159876C0002E6C72 /* UICompositeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D31B4B20159876C0002E6C72 /* UICompositeViewController.xib */; };
+		D31B4B281598A390002E6C72 /* avatar-inconnu.png in Resources */ = {isa = PBXBuildFile; fileRef = D31B4B261598A390002E6C72 /* avatar-inconnu.png */; };
+		D31B4B291598A390002E6C72 /* avatar-inconnu.png in Resources */ = {isa = PBXBuildFile; fileRef = D31B4B261598A390002E6C72 /* avatar-inconnu.png */; };
+		D31B4B2A1598A390002E6C72 /* avatar-small.png in Resources */ = {isa = PBXBuildFile; fileRef = D31B4B271598A390002E6C72 /* avatar-small.png */; };
+		D31B4B2B1598A390002E6C72 /* avatar-small.png in Resources */ = {isa = PBXBuildFile; fileRef = D31B4B271598A390002E6C72 /* avatar-small.png */; };
 		D31C9C8A158A179A00756B45 /* fond-detail-numero.png in Resources */ = {isa = PBXBuildFile; fileRef = D31C9C89158A179A00756B45 /* fond-detail-numero.png */; };
 		D31C9C8B158A179A00756B45 /* fond-detail-numero.png in Resources */ = {isa = PBXBuildFile; fileRef = D31C9C89158A179A00756B45 /* fond-detail-numero.png */; };
 		D31C9C90158A1C1000756B45 /* appel-entrant.png in Resources */ = {isa = PBXBuildFile; fileRef = D31C9C8D158A1C1000756B45 /* appel-entrant.png */; };
@@ -884,6 +888,8 @@
 		D31B4B1E159876C0002E6C72 /* UICompositeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICompositeViewController.h; sourceTree = "<group>"; };
 		D31B4B1F159876C0002E6C72 /* UICompositeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICompositeViewController.m; sourceTree = "<group>"; };
 		D31B4B20159876C0002E6C72 /* UICompositeViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UICompositeViewController.xib; sourceTree = "<group>"; };
+		D31B4B261598A390002E6C72 /* avatar-inconnu.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "avatar-inconnu.png"; path = "Resources/avatar-inconnu.png"; sourceTree = "<group>"; };
+		D31B4B271598A390002E6C72 /* avatar-small.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "avatar-small.png"; path = "Resources/avatar-small.png"; sourceTree = "<group>"; };
 		D31C9C89158A179A00756B45 /* fond-detail-numero.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "fond-detail-numero.png"; path = "Resources/fond-detail-numero.png"; sourceTree = "<group>"; };
 		D31C9C8D158A1C1000756B45 /* appel-entrant.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "appel-entrant.png"; path = "Resources/appel-entrant.png"; sourceTree = "<group>"; };
 		D31C9C8E158A1C1000756B45 /* appel-manque.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "appel-manque.png"; path = "Resources/appel-manque.png"; sourceTree = "<group>"; };
@@ -1746,6 +1752,8 @@
 				D3ED3E7015861ABD006C0DE4 /* appeler-actif.png */,
 				D35E758C15934F360066B1C1 /* appeler-disabled.png */,
 				D3ED3E7115861ABD006C0DE4 /* appeler-over.png */,
+				D31B4B261598A390002E6C72 /* avatar-inconnu.png */,
+				D31B4B271598A390002E6C72 /* avatar-small.png */,
 				D3ED3E7615861B1B006C0DE4 /* backspace-actif.png */,
 				D35E758815932DE60066B1C1 /* backspace-disabled.png */,
 				D3ED3E7715861B1B006C0DE4 /* backspace-over.png */,
@@ -2217,6 +2225,8 @@
 				D3F26BF915986DAD005F9CAB /* ok-edit-list-history-over.png in Resources */,
 				D3F26BFC15987083005F9CAB /* champ-titre-incoming.png in Resources */,
 				D31B4B23159876C0002E6C72 /* UICompositeViewController.xib in Resources */,
+				D31B4B281598A390002E6C72 /* avatar-inconnu.png in Resources */,
+				D31B4B2A1598A390002E6C72 /* avatar-small.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2387,6 +2397,8 @@
 				D3F26BFA15986DAD005F9CAB /* ok-edit-list-history-over.png in Resources */,
 				D3F26BFD15987083005F9CAB /* champ-titre-incoming.png in Resources */,
 				D31B4B24159876C0002E6C72 /* UICompositeViewController.xib in Resources */,
+				D31B4B291598A390002E6C72 /* avatar-inconnu.png in Resources */,
+				D31B4B2B1598A390002E6C72 /* avatar-small.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

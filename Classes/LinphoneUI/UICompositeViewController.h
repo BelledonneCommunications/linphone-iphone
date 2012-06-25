@@ -18,9 +18,47 @@
  */ 
 
 #import <UIKit/UIKit.h>
+#import "LinphoneManager.h"
+
+@interface UICompositeViewDescription: NSObject{
+@public
+    NSString *content;
+    NSString *stateBar;
+    BOOL stateBarEnabled;
+    NSString *tabBar;
+    BOOL tabBarEnabled;
+    BOOL fullscreen;
+}
+- (id)copy;
+- (id)init:(NSString *)content stateBar:(NSString*)stateBar 
+                        stateBarEnabled:(BOOL) stateBarEnabled 
+                                 tabBar:(NSString*)tabBar
+                          tabBarEnabled:(BOOL) tabBarEnabled
+                             fullscreen:(BOOL) fullscreen;
+@end
 
 @interface UICompositeViewController : UIViewController {
+    @private
+    UIView *stateBarView;
+    UIViewController *stateBarViewController;
+    UIView *contentView;
+    UIViewController *contentViewController;
+    UIView *tabBarView;
+    UIViewController *tabBarViewController;
     
+    NSMutableDictionary *viewControllerCache;
+    
+    UICompositeViewDescription *currentViewDescription;
 }
+
+@property (nonatomic, retain) IBOutlet UIView* stateBarView;
+@property (nonatomic, retain) IBOutlet UIView* contentView;
+@property (nonatomic, retain) IBOutlet UIView* tabBarView;
+
+- (void) changeView:(UICompositeViewDescription *)description;
+- (void) setFullScreen:(BOOL) enabled;
+- (void) setToolBarHidden:(BOOL) hidden;
+
+- (UIViewController *) getCurrentViewController;
 
 @end

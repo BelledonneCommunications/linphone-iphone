@@ -28,12 +28,21 @@
 @synthesize settingsButton;
 @synthesize chatButton;
 
+- (id)init {
+    return [super initWithNibName:@"UIMainBar" bundle:[NSBundle mainBundle]];
+}
+
 - (void)viewDidLoad {
-   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveLinphoneMainViewChangeEvent:) name:@"LinphoneMainViewChange" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveLinphoneMainViewChangeEvent:) name:@"LinphoneMainViewChange" object:nil];
+    [self update:[[LinphoneManager instance] currentView]];
 }
 
 - (void)receiveLinphoneMainViewChangeEvent: (NSNotification*) notif {   
     PhoneView view = [[notif.userInfo objectForKey: @"view"] intValue];
+    [self update:view];
+}
+
+- (void)update:(PhoneView) view {
     if(view == PhoneView_History) {
         historyButton.selected = TRUE;
     } else {

@@ -21,6 +21,12 @@
 
 @implementation ChatViewController
 
+@synthesize tableController;
+
+- (id)init {
+    return [super initWithNibName:@"ChatViewController" bundle:[NSBundle mainBundle]];
+}
+
 - (IBAction)onNew: (id) event {
     
 }

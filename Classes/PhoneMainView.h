@@ -21,48 +21,21 @@
 
 #import "LinphoneManager.h"
 #import "CallDelegate.h"
-
-@interface ViewsDescription: NSObject{
-@public
-    UIViewController *content;
-    UIViewController *tabBar;
-    bool tabBarEnabled;
-    bool statusEnabled;
-    bool fullscreen;
-    PhoneView viewId;
-}
--(id) copy;
-@end
+#import "UICompositeViewController.h"
 
 @interface PhoneMainView : UIViewController<CallActionSheetDelegate> {
-    UIView *stateBarView;
-    UIView *contentView;
-    UIView *tabBarView;
+    UICompositeViewController *mainViewController;
+    UICompositeViewController *modalViewController;
     
     @private
     NSMutableDictionary *viewDescriptions;
-    NSArray *views;
-    
-    UIViewController *stateBarController;
-    
-    UIViewController *callTabBarController;
-    UIViewController *mainTabBarController;
-    UIViewController *incomingCallTabBarController;
-    ViewsDescription *currentViewDescription;
+    PhoneView currentPhoneView;
     
     UIActionSheet *incomingCallActionSheet;
     UIActionSheet *batteryActionSheet;
 }
 
-@property (nonatomic, retain) IBOutlet UIView* stateBarView;
-@property (nonatomic, retain) IBOutlet UIView* contentView;
-@property (nonatomic, retain) IBOutlet UIView* tabBarView;
+@property (nonatomic, retain) IBOutlet UICompositeViewController *mainViewController;
+@property (nonatomic, retain) IBOutlet UICompositeViewController *modalViewController;
 
-@property (nonatomic, retain) IBOutlet UIViewController* stateBarController;
-
-@property (nonatomic, retain) IBOutlet UIViewController* callTabBarController;
-@property (nonatomic, retain) IBOutlet UIViewController* mainTabBarController;
-@property (nonatomic, retain) IBOutlet UIViewController* incomingCallTabBarController;
-
--(void) changeView: (NSNotification*) notif;
 @end

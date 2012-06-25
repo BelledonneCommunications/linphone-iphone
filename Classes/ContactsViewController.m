@@ -35,6 +35,10 @@ typedef enum _HistoryView {
     History_MAX
 } HistoryView;
 
+- (id)init {
+    return [super initWithNibName:@"ContactsViewController" bundle:[NSBundle mainBundle]];
+}
+
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
 	[self.tableView reloadData];

@@ -19,9 +19,13 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ChatTableViewController.h"
+
 @interface ChatViewController : UIViewController {
-    
+    ChatTableViewController *tableController;
 }
+
+@property (nonatomic, retain) IBOutlet ChatTableViewController* tableController;
 
 - (IBAction)onNew:(id) event;
 - (IBAction)onEdit:(id) event;
