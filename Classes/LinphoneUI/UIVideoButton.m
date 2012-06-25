@@ -68,20 +68,27 @@
 - (bool)onUpdate {
     if([LinphoneManager isLcReady]) {
         bool val = false;
-        LinphoneCall* currentCall = linphone_core_get_current_call([LinphoneManager getLc]);
-        if (currentCall) {
-            LinphoneCallState state = linphone_call_get_state(currentCall);
-            if (state == LinphoneCallStreamsRunning || state == LinphoneCallUpdated || state == LinphoneCallUpdatedByRemote) {
-                if (linphone_call_params_video_enabled(linphone_call_get_current_params(currentCall))) {
-                    val = true;
+        if(linphone_core_video_enabled([LinphoneManager getLc])) {
+            LinphoneCall* currentCall = linphone_core_get_current_call([LinphoneManager getLc]);
+            if (currentCall) {
+                LinphoneCallState state = linphone_call_get_state(currentCall);
+                if (state == LinphoneCallStreamsRunning || state == LinphoneCallUpdated || state == LinphoneCallUpdatedByRemote) {
+                    if (linphone_call_params_video_enabled(linphone_call_get_current_params(currentCall))) {
+                        val = true;
+                    }
+                    [self setEnabled:TRUE];
+                } else {
+                    // Disable button if the call is not running
+                    [self setEnabled:FALSE];
                 }
-                [self setEnabled:TRUE];
             } else {
+                // Disable button if there is no call
                 [self setEnabled:FALSE];
             }
         } else {
+            // Disable button if video is not enabled
             [self setEnabled:FALSE];
-        } 
+        }
         return val;
     } else {
 		//not ready yet

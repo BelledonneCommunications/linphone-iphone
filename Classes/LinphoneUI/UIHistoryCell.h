@@ -23,13 +23,23 @@
 
 @interface UIHistoryCell : UITableViewCell {
     UIImageView*    imageView;
-    UILabel*        displayName;
+    UILabel*        displayNameLabel;
+    UIButton*       detailsButton;
+    UIButton*       deleteButton;
+    @private
+    LinphoneCallLog *callLog;
 }
 
 @property (nonatomic, retain) IBOutlet UIImageView* imageView;
-@property (nonatomic, retain) IBOutlet UILabel*     displayName;
+@property (nonatomic, retain) IBOutlet UILabel*     displayNameLabel;
+@property (nonatomic, retain) IBOutlet UIButton*    detailsButton;
+@property (nonatomic, retain) IBOutlet UIButton*    deleteButton;
 
--(IBAction) onDetails: (id) event;
+- (IBAction)onDetails:(id) event;
+- (IBAction)onDelete:(id) event;
+
 - (void)update:(LinphoneCallLog*)  callLogs;
+- (void)enterEditMode;
+- (void)exitEditMode;
 
 @end

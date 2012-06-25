@@ -35,6 +35,7 @@ typedef enum _PhoneView {
     PhoneView_Chat,
     PhoneView_Contacts,
     PhoneView_InCall,
+    PhoneView_IncomingCall,
     PhoneView_END
 } PhoneView;
 
@@ -43,6 +44,7 @@ typedef enum _Connectivity {
 	wwan
 	,none
 } Connectivity;
+
 @class FastAddressBook;
 
 /* Application specific call context */
@@ -62,14 +64,7 @@ typedef struct _LinphoneCallAppData {
     int transferButtonIndex;
 } LinphoneCallAppData;
 
-@interface LinphoneCallWrapper : NSObject {
-    @public
-    LinphoneCall* call;
-}
-- (id) initWithCall: (LinphoneCall*) call; 
-@end
-
-@interface LinphoneManager : NSObject <AVAudioSessionDelegate, IASKSettingsReaderFilterDelegate, IASKSettingsDelegate> {
+@interface LinphoneManager : NSObject <AVAudioSessionDelegate> {
 @protected
 	SCNetworkReachabilityRef proxyReachability;
 @private
@@ -96,10 +91,11 @@ typedef struct _LinphoneCallAppData {
 + (void)set:(UIView*)view hidden: (BOOL) hidden withName:(const char*)name andReason:(const char*) reason;
 + (void)set:(UIButton*)view enabled: (BOOL) enabled withName:(const char*)name andReason:(const char*) reason;
 + (void)logUIElementPressed:(const char*) name;
-+ (void)abstractCall:(id) object dict:(NSDictionary *) dict;
 - (void)registerLogView:(id<LogView>) view;
-+ (NSString *)getPrefForCodec: (const char*) name withRate: (int) rate;
 
++ (NSString *)getPreferenceForCodec: (const char*) name withRate: (int) rate;
++ (BOOL)codecIsSupported:(NSString *) prefName;
+    
 - (void)startLibLinphone;
 - (BOOL)isNotIphone3G;
 - (void)destroyLibLinphone;

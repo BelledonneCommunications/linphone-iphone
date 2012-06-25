@@ -1,4 +1,4 @@
-/* ContactTableViewController.m
+/* ContactsTableViewController.m
  *
  * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
@@ -17,16 +17,16 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */     
 
-#import "ContactTableViewController.h"
+#import "ContactsTableViewController.h"
 #import "UIContactCell.h"
 #import "LinphoneManager.h"
 
-@implementation ContactTableViewController
+@implementation ContactsTableViewController
 
 #pragma mark Table view methods
 
 void sync_toc_address_book (ABAddressBookRef addressBook, CFDictionaryRef info, void *context) {
-    ContactTableViewController* controller = (ContactTableViewController*)context;
+    ContactsTableViewController* controller = (ContactsTableViewController*)context;
     OrderedDictionary* lAddressBookMap = controller->addressBookMap;
     @synchronized (lAddressBookMap) {
         

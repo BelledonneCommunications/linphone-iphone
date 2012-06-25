@@ -62,12 +62,12 @@
 					<bool key="IBUIMultipleTouchEnabled">YES</bool>
 					<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 				</object>
-				<array key="IBUIViewControllers">
+				<array class="NSMutableArray" key="IBUIViewControllers">
 					<object class="IBUIViewController" id="73380722">
 						<bool key="IBUIAutoresizesArchivedViewToFullSize">NO</bool>
 						<object class="IBUINavigationItem" key="IBUINavigationItem" id="1014852814">
 							<reference key="IBUINavigationBar"/>
-							<string key="IBUITitle">Item</string>
+							<string key="IBUITitle">Settings</string>
 							<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						</object>
 						<reference key="IBUIParentViewController" ref="983459891"/>

@@ -19,22 +19,22 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ContactTableViewController.h"
+#import "ContactsTableViewController.h"
 
 @interface ContactsViewController : UIViewController {
-    ContactTableViewController *tableController;
+    ContactsTableViewController *tableController;
     UITableView *tableView;
     
     UIButton *allButton;
     UIButton *linphoneButton;
 }
 
-@property (nonatomic, retain) IBOutlet UITableViewController* tableController;
+@property (nonatomic, retain) IBOutlet ContactsTableViewController* tableController;
 @property (nonatomic, retain) IBOutlet UITableView *tableView;
 @property (nonatomic, retain) IBOutlet UIButton* allButton;
 @property (nonatomic, retain) IBOutlet UIButton* linphoneButton;
 
--(IBAction) onAllClick: (id) event;
--(IBAction) onLinphoneClick: (id) event;
+- (IBAction)onAllClick:(id) event;
+- (IBAction)onLinphoneClick:(id) event;
 
 @end

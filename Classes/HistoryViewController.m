@@ -26,6 +26,7 @@
 
 @synthesize allButton;
 @synthesize missedButton;
+@synthesize editButton;
 
 typedef enum _HistoryView {
     History_All,
@@ -55,14 +56,29 @@ typedef enum _HistoryView {
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self changeView: History_All];
+    
+    // Set selected+over background: IB lack !
+    [editButton setBackgroundImage:[UIImage imageNamed:@"ok-edit-list-history-over.png"] 
+                          forState:(UIControlStateHighlighted | UIControlStateSelected)];
 }
 
-- (IBAction)onAllClick: (id) event {
+- (IBAction)onAllClick:(id) event {
     [self changeView: History_All];
 }
 
-- (IBAction)onMissedClick: (id) event {
+- (IBAction)onMissedClick:(id) event {
     [self changeView: History_Missed];
+}
+
+- (IBAction)onEditClick:(id) event {
+    [tableController toggleEditMode];
+}
+
+- (void)dealloc {
+    [allButton release];
+    [missedButton release];
+    [editButton release];
+    [super dealloc];
 }
 
 @end

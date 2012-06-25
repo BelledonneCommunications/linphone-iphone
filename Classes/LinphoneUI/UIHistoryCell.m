@@ -18,11 +18,14 @@
  */ 
 
 #import "UIHistoryCell.h"
+#import "LinphoneManager.h"
 
 @implementation UIHistoryCell
 
-@synthesize displayName;
+@synthesize displayNameLabel;
 @synthesize imageView;
+@synthesize deleteButton;
+@synthesize detailsButton;
 
 - (id)init {
     if ((self = [super init]) != nil) {
@@ -33,45 +36,65 @@
         if ([arrayOfViews count] >= 1) {
             [self addSubview:[[arrayOfViews objectAtIndex:0] retain]];
         }
+        
+        self->callLog = NULL;
     }
     return self;
 }
 
-- (IBAction)onDetails: (id) event {
-    
+- (IBAction)onDetails:(id) event {
+    if(callLog != NULL) {
+        
+    }
 }
 
-- (void)update:(LinphoneCallLog*)  callLogs {
+- (IBAction)onDelete:(id)event {
+    if(callLog != NULL) {
+        linphone_core_remove_call_log([LinphoneManager getLc], callLog);
+        UITableView *parentTable = (UITableView *)self.superview;
+        [parentTable reloadData];
+    }
+}
+
+- (void)update:(LinphoneCallLog*)  aCallLog {
+    self->callLog = aCallLog;
     // Set up the cell...
 	LinphoneAddress* partyToDisplay; 
-	NSString *name;
-	if (callLogs->dir == LinphoneCallIncoming) {
-        if (callLogs->status == LinphoneCallSuccess) {
-            name = callLogs->video_enabled?@"appel-entrant.png":@"appel-entrant.png";
+	UIImage *image;
+	if (aCallLog->dir == LinphoneCallIncoming) {
+        if (aCallLog->status == LinphoneCallSuccess) {
+            image = [UIImage imageNamed:aCallLog->video_enabled?@"appel-entrant.png":@"appel-entrant.png"];
         } else {
             //missed call
-            name = @"appel-manque.png";
+            image = [UIImage imageNamed:@"appel-manque.png"];
         }
-		partyToDisplay=callLogs->from;
-		
+		partyToDisplay = aCallLog->from;
 	} else {
-		name = callLogs->video_enabled?@"appel-sortant.png":@"appel-sortant.png";
-		partyToDisplay=callLogs->to;
-		
+		image = [UIImage imageNamed:aCallLog->video_enabled?@"appel-sortant.png":@"appel-sortant.png"];
+		partyToDisplay = aCallLog->to;
 	}
-	UIImage *image = [UIImage imageNamed:name];
-	
-	const char* username = linphone_address_get_username(partyToDisplay)!=0?linphone_address_get_username(partyToDisplay):"";
     
-    //TODO
+	const char* username = linphone_address_get_username(partyToDisplay)!=0?linphone_address_get_username(partyToDisplay):"";
     //const char* displayName = linphone_address_get_display_name(partyToDisplay);
     
-    [displayName setText:[NSString stringWithFormat:@"%s", username]];
+    [displayNameLabel setText:[NSString stringWithUTF8String: username]];
     [imageView setImage: image];
 }
 
+- (void)enterEditMode {
+    [deleteButton setHidden:false];
+    [detailsButton setHidden:true];
+}
+
+- (void)exitEditMode {
+    [detailsButton setHidden:false];
+    [deleteButton setHidden:true];
+}
+
 - (void) dealloc {
-    [displayName release];
+    [detailsButton release];
+    [deleteButton release];
+    [displayNameLabel release];
     [imageView release];
     
     [super dealloc];

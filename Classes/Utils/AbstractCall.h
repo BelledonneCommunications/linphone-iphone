@@ -1,4 +1,4 @@
-/* ContactTableViewController.h
+/* AbstractCall.h
  *
  * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
@@ -15,17 +15,13 @@
  *  You should have received a copy of the GNU General Public License   
  *  along with this program; if not, write to the Free Software         
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */     
+ */   
 
-#import <UIKit/UIKit.h>
-#import <AddressBook/AddressBook.h>
+#import <Foundation/Foundation.h>
 
-#import "OrderedDictionary.h"
-
-@interface ContactTableViewController : UITableViewController {
-    OrderedDictionary* addressBookMap;
-    
-    ABAddressBookRef addressBook;
+@interface AbstractCall : NSObject {
 }
+
++ (void)call:(id) object dict:(NSDictionary *) dict;
 
 @end

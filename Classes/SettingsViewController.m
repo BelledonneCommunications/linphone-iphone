@@ -27,12 +27,55 @@
 
 - (void)viewDidLoad {
     settingsController.delegate = [LinphoneManager instance];
-    settingsController.settingsReaderDelegate = [LinphoneManager instance];
+    settingsController.settingsReaderDelegate = self;
     settingsController.settingsStore=[[LinphoneManager instance] settingsStore];
     settingsController.showCreditsFooter = FALSE;
     
     navigationController.view.frame = self.view.frame;
     [self.view addSubview: navigationController.view];
+}
+
+- (NSDictionary*)filterPreferenceSpecifier:(NSDictionary *)specifier {
+    if (![LinphoneManager isLcReady]) {
+        // LinphoneCore not ready: do not filter
+        return specifier;
+    }
+    NSString* identifier = [specifier objectForKey:@"Identifier"];
+    if (identifier == nil) {
+        identifier = [specifier objectForKey:@"Key"];
+    }
+    if (!identifier) {
+        // child pane maybe
+        NSString* title = [specifier objectForKey:@"Title"];
+        if ([title isEqualToString:@"Video"]) {
+            if (!linphone_core_video_supported([LinphoneManager getLc]))
+                return nil;
+        }
+        return specifier;
+    }
+    // NSLog(@"Specifier received: %@", identifier);
+	if ([identifier isEqualToString:@"silk_24k_preference"]) {
+		if (![[LinphoneManager instance] isNotIphone3G])
+			return nil;
+	}
+    if ([identifier isEqualToString:@"backgroundmode_preference"]) {
+        UIDevice* device = [UIDevice currentDevice];
+        if ([device respondsToSelector:@selector(isMultitaskingSupported)]) {
+            if ([device isMultitaskingSupported]) {
+                return specifier;
+            }
+        }
+        // hide setting if bg mode not supported
+        return nil;
+    }
+	if (![LinphoneManager codecIsSupported:identifier])
+		return Nil;
+    return specifier;
+}
+
+- (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController *)sender {
+    ms_message("Synchronize settings");
+    [[[LinphoneManager instance] settingsStore] synchronize];
 }
 
 @end

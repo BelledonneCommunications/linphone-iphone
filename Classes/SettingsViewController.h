@@ -21,7 +21,7 @@
 
 #import "IASKAppSettingsViewController.h"
 
-@interface SettingsViewController: UIViewController {
+@interface SettingsViewController: UIViewController<IASKSettingsReaderFilterDelegate, IASKSettingsDelegate> {
     IASKAppSettingsViewController *settingsController;
     UINavigationController *navigationController;
 }

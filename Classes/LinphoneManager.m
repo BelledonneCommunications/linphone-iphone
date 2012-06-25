@@ -54,17 +54,6 @@ extern void libmssilk_init();
 extern  void libmsbcg729_init();
 #endif
 
-@implementation LinphoneCallWrapper
-
-- (id) initWithCall: (LinphoneCall*) acall {
-    if((self = [super init]) != nil) {
-        call = acall;
-    }
-    return self;
-}
-
-@end
-
 @implementation LinphoneManager
 
 PhoneView currentView = -1;
@@ -76,9 +65,9 @@ PhoneView currentView = -1;
 @synthesize settingsStore;
 
 struct codec_name_pref_table{
-const char *name;
-int rate;
-NSString *prefname;
+    const char *name;
+    int rate;
+    NSString *prefname;
 };
 
 struct codec_name_pref_table codec_pref_table[]={
@@ -98,7 +87,7 @@ struct codec_name_pref_table codec_pref_table[]={
 	{ NULL,0,Nil }
 };
 
-+ (NSString *) getPrefForCodec: (const char*) name withRate: (int) rate{
++ (NSString *)getPreferenceForCodec: (const char*) name withRate: (int) rate{
 	int i;
 	for(i=0;codec_pref_table[i].name!=NULL;++i){
 		if (strcasecmp(codec_pref_table[i].name,name)==0 && codec_pref_table[i].rate==rate)
@@ -107,6 +96,15 @@ struct codec_name_pref_table codec_pref_table[]={
 	return Nil;
 }
 
++ (BOOL)codecIsSupported:(NSString *) prefName{
+	int i;
+	for(i=0;codec_pref_table[i].name!=NULL;++i){
+		if ([prefName compare:codec_pref_table[i].prefname]==0){
+			return linphone_core_find_payload_type([LinphoneManager getLc],codec_pref_table[i].name, codec_pref_table[i].rate)!=NULL;
+		}
+	}
+	return TRUE;
+}
 
 - (id)init {
     assert (!theLinphoneManager);
@@ -221,7 +219,7 @@ struct codec_name_pref_table codec_pref_table[]={
     return;
 }
 
--(void) onCall:(LinphoneCall*) call StateChanged: (LinphoneCallState) new_state withMessage: (const char *)  message {
+- (void)onCall:(LinphoneCall*) call StateChanged: (LinphoneCallState) new_state withMessage: (const char *)  message {
     // Handling wrapper
     if(new_state == LinphoneCallReleased) {
         if(linphone_call_get_user_pointer(call) != NULL) {
@@ -242,7 +240,7 @@ struct codec_name_pref_table codec_pref_table[]={
     
     // Post event
     NSDictionary* dict = [[[NSDictionary alloc] initWithObjectsAndKeys: 
-                          [[[LinphoneCallWrapper alloc] initWithCall: call] autorelease], @"call",
+                          [NSValue valueWithPointer:call], @"call",
                           [NSNumber numberWithInt:new_state], @"state", 
                           [NSString stringWithUTF8String:message], @"message", nil] autorelease];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneCallUpdate" object:self userInfo:dict];
@@ -328,38 +326,12 @@ static void linphone_iphone_transfer_state_changed(LinphoneCore* lc, LinphoneCal
     // Post event
     NSDictionary* dict = [[[NSDictionary alloc] initWithObjectsAndKeys: 
                           [NSNumber numberWithInt:state], @"state", 
-                          [NSString stringWithFormat:@"%c", message], @"message", 
+                          [NSValue valueWithPointer:cfg], @"cfg",
+                          [NSString stringWithUTF8String:message], @"message", 
                           nil] autorelease];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneRegistrationUpdate" object:self userInfo:dict];
-    
-    // Show error
-    if (state == LinphoneRegistrationFailed) {
-		NSString* lErrorMessage=nil;
-		if (linphone_proxy_config_get_error(cfg) == LinphoneReasonBadCredentials) {
-			lErrorMessage = NSLocalizedString(@"Bad credentials, check your account settings",nil);
-		} else if (linphone_proxy_config_get_error(cfg) == LinphoneReasonNoResponse) {
-			lErrorMessage = NSLocalizedString(@"SIP server unreachable",nil);
-		} 
-		
-		if (lErrorMessage != nil 
-			&& linphone_proxy_config_get_error(cfg) != LinphoneReasonNoResponse) { //do not report network connection issue on registration
-			//default behavior if no registration delegates
-			UIApplicationState s = [UIApplication sharedApplication].applicationState;
-            
-            // do not stack error message when going to backgroud
-            if (s != UIApplicationStateBackground) {
-                UIAlertView* error = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"Registration failure",nil)
-															message:lErrorMessage
-														   delegate:nil 
-												  cancelButtonTitle:NSLocalizedString(@"Continue",nil) 
-												  otherButtonTitles:nil ,nil];
-                [error show];
-                [error release];
-            }
-		}
-		
-	}
 }
+
 static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyConfig* cfg, LinphoneRegistrationState state,const char* message) {
 	[(LinphoneManager*)linphone_core_get_user_data(lc) onRegister:lc cfg:cfg state:state message:message];
 }
@@ -502,6 +474,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		[[NSUserDefaults standardUserDefaults] setBool:true forKey:@"check_config_disable_preference"];
 	}
 }
+
 - (void)destroyLibLinphone {
 	[mIterateTimer invalidate]; 
 	AVAudioSession *audioSession = [AVAudioSession sharedInstance];
@@ -762,6 +735,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	linphone_core_start_dtmf_stream(theLinphoneCore);
     
 }
+
 - (void)registerLogView:(id<LogView>) view {
 	mLogView = view;
 }
@@ -778,6 +752,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
     ms_message("Sound interruption ended!");
     //let the user resume the call manually.
 }
+
 + (BOOL)runningOnIpad {
 #ifdef UI_USER_INTERFACE_IDIOM
     return (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad);
@@ -801,82 +776,6 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 
 + (void)logUIElementPressed:(const char*) name {
     ms_message("UI - '%s' pressed", name);
-}
-
-+ (void)abstractCall:(id) object dict:(NSDictionary *) dict {
-    for (NSString* identifier in dict) {
-        if([identifier characterAtIndex:([identifier length] -1)] == ':') {
-            NSArray *arguments = [dict objectForKey:identifier];
-            SEL selector = NSSelectorFromString(identifier);
-            NSMethodSignature *signature = [object methodSignatureForSelector:selector];
-            NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
-            [invocation setTarget:object];
-            [invocation setSelector:selector];
-            for(int i=0; i<[arguments count]; i++)
-            {
-                id arg = [arguments objectAtIndex:i];
-                [invocation setArgument:&arg atIndex:i+2]; // The first two arguments are the hidden arguments self and _cmd
-            }
-            [invocation invoke]; // Invoke the selector
-        } else {
-            NSDictionary *arguments = [dict objectForKey:identifier];
-            id new_object = [object performSelector:NSSelectorFromString(identifier)];
-            [LinphoneManager abstractCall:new_object dict:arguments];
-        }
-    }
-}
-
-- (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController *)sender {
-    ms_message("Synchronize settings");
-    [[self settingsStore] synchronize];
-}
-
-- (BOOL)codecSupported:(NSString *) prefName{
-	int i;
-	for(i=0;codec_pref_table[i].name!=NULL;++i){
-		if ([prefName compare:codec_pref_table[i].prefname]==0){
-			return linphone_core_find_payload_type(theLinphoneCore,codec_pref_table[i].name, codec_pref_table[i].rate)!=NULL;
-		}
-	}
-	return TRUE;
-}
-
-- (NSDictionary*)filterPreferenceSpecifier:(NSDictionary *)specifier {
-    if (!theLinphoneCore) {
-        // LinphoneCore not ready: do not filter
-        return specifier;
-    }
-    NSString* identifier = [specifier objectForKey:@"Identifier"];
-    if (identifier == nil) {
-        identifier = [specifier objectForKey:@"Key"];
-    }
-    if (!identifier) {
-        // child pane maybe
-        NSString* title = [specifier objectForKey:@"Title"];
-        if ([title isEqualToString:@"Video"]) {
-            if (!linphone_core_video_supported(theLinphoneCore))
-                return nil;
-        }
-        return specifier;
-    }
-    // NSLog(@"Specifier received: %@", identifier);
-	if ([identifier isEqualToString:@"silk_24k_preference"]) {
-		if (![self isNotIphone3G])
-			return nil;
-	}
-    if ([identifier isEqualToString:@"backgroundmode_preference"]) {
-        UIDevice* device = [UIDevice currentDevice];
-        if ([device respondsToSelector:@selector(isMultitaskingSupported)]) {
-            if ([device isMultitaskingSupported]) {
-                return specifier;
-            }
-        }
-        // hide setting if bg mode not supported
-        return nil;
-    }
-	if (![self codecSupported:identifier])
-		return Nil;
-    return specifier;
 }
 
 @end

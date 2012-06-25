@@ -415,7 +415,7 @@ void addAnimationFadeTransition(UIView* view, float duration) {
         if ([LinphoneManager runningOnIpad]) {
             //[visibleActionSheet showFromRect:transfer.bounds inView:transfer animated:NO];
         } else
-            [visibleActionSheet showInView:self.view];
+            [visibleActionSheet showInView:[[UIApplication sharedApplication].delegate window]];
     }
 }
 
@@ -543,8 +543,7 @@ static void hideSpinner(LinphoneCall* lc, void* user_data);
 }
 
 - (void)callUpdate: (NSNotification*) notif {  
-    LinphoneCallWrapper *callWrapper = [notif.userInfo objectForKey: @"call"];
-    LinphoneCall *call = callWrapper->call;
+    LinphoneCall *call = [[notif.userInfo objectForKey: @"call"] pointerValue];
     LinphoneCallState state = [[notif.userInfo objectForKey: @"state"] intValue];
     
     const char* lUserNameChars=linphone_address_get_username(linphone_call_get_remote_address(call));
@@ -655,7 +654,7 @@ static void hideSpinner(LinphoneCall* call, void* user_data) {
                                            otherButtonTitles:nil];
     
     visibleActionSheet.actionSheetStyle = UIActionSheetStyleDefault;
-    [visibleActionSheet showInView:self.view];
+    [visibleActionSheet showInView:[[UIApplication sharedApplication].delegate window]];
     
     /* start cancel timer */
     cd.timeout = [NSTimer scheduledTimerWithTimeInterval:30 target:self selector:@selector(dismissActionSheet:) userInfo:nil repeats:NO];
@@ -972,7 +971,7 @@ static void hideSpinner(LinphoneCall* call, void* user_data) {
                                                     otherButtonTitles:nil];
         
 		visibleActionSheet.actionSheetStyle = UIActionSheetStyleDefault;
-		[visibleActionSheet showInView:self.view];
+		[visibleActionSheet showInView:[[UIApplication sharedApplication].delegate window]];
 		[visibleActionSheet release];
     }
 }

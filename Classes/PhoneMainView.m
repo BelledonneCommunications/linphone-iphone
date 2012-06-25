@@ -23,9 +23,12 @@
 #import "DialerViewController.h"
 #import "HistoryViewController.h"
 #import "ContactsViewController.h"
+#import "IncomingCallViewController.h"
 #import "InCallViewController.h"
 #import "SettingsViewController.h"
 #import "ChatViewController.h"
+
+#import "AbstractCall.h"
 
 @implementation ViewsDescription
 
@@ -207,7 +210,7 @@
     // Call abstractCall
     NSDictionary *dict = [notif.userInfo objectForKey: @"args"];
     if(dict != nil)
-        [LinphoneManager abstractCall:currentViewDescription->content dict:dict];
+        [AbstractCall call:currentViewDescription->content dict:dict];
     
     // Dealloc old view description
     if(oldViewDescription != nil) {
@@ -275,6 +278,20 @@
     historyDescription->tabBarEnabled = true;
     [viewDescriptions setObject:historyDescription forKey:[NSNumber numberWithInt: PhoneView_History]];
     
+    //
+    // IncomingCall View
+    //
+    IncomingCallViewController* myIncomingCallController = [[IncomingCallViewController alloc]
+                                                initWithNibName:@"IncomingCallViewController" 
+                                                bundle:[NSBundle mainBundle]];
+    //[myChatViewController loadView];
+    ViewsDescription *incomingCallDescription = [ViewsDescription alloc];
+    incomingCallDescription->content = myIncomingCallController;
+    incomingCallDescription->tabBar = mainTabBarController;
+    incomingCallDescription->statusEnabled = true;
+    incomingCallDescription->fullscreen = false;
+    incomingCallDescription->tabBarEnabled = true;
+    [viewDescriptions setObject:incomingCallDescription forKey:[NSNumber numberWithInt: PhoneView_Chat]];
     
     //
     // InCall View
@@ -285,10 +302,10 @@
     //[myInCallController loadView];
     ViewsDescription *inCallDescription = [ViewsDescription alloc];
     inCallDescription->content = myInCallController;
-    inCallDescription->tabBar = callTabBarController;
+    inCallDescription->tabBar = nil;
     inCallDescription->statusEnabled = true;
     inCallDescription->fullscreen = false;
-    inCallDescription->tabBarEnabled = true;
+    inCallDescription->tabBarEnabled = false;
     [viewDescriptions setObject:inCallDescription forKey:[NSNumber numberWithInt: PhoneView_InCall]];
     
     
@@ -302,7 +319,7 @@
     ViewsDescription *settingsDescription = [ViewsDescription alloc];
     settingsDescription->content = mySettingsViewController;
     settingsDescription->tabBar = mainTabBarController;
-    settingsDescription->statusEnabled = true;
+    settingsDescription->statusEnabled = false;
     settingsDescription->fullscreen = false;
     settingsDescription->tabBarEnabled = true;
     [viewDescriptions setObject:settingsDescription forKey:[NSNumber numberWithInt: PhoneView_Settings]];
@@ -317,10 +334,10 @@
     ViewsDescription *chatDescription = [ViewsDescription alloc];
     chatDescription->content = myChatViewController;
     chatDescription->tabBar = mainTabBarController;
-    chatDescription->statusEnabled = true;
+    chatDescription->statusEnabled = false;
     chatDescription->fullscreen = false;
     chatDescription->tabBarEnabled = true;
-    [viewDescriptions setObject:settingsDescription forKey:[NSNumber numberWithInt: PhoneView_Chat]];
+    [viewDescriptions setObject:chatDescription forKey:[NSNumber numberWithInt: PhoneView_Chat]];
     
     // Set observers
     [[NSNotificationCenter defaultCenter] addObserver:self 
@@ -332,6 +349,11 @@
                                                  name:@"LinphoneCallUpdate" 
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self 
+                                             selector:@selector(registrationUpdate:) 
+                                                 name:@"LinphoneRegistrationUpdate" 
+                                               object:nil];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(batteryLevelChanged:) 
                                                  name:UIDeviceBatteryLevelDidChangeNotification 
                                                object:nil];
@@ -341,9 +363,40 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+- (void)registrationUpdate: (NSNotification*) notif { 
+    LinphoneRegistrationState state = [[notif.userInfo objectForKey: @"state"] intValue];
+    LinphoneProxyConfig *cfg = [[notif.userInfo objectForKey: @"cfg"] pointerValue];
+    // Show error
+    if (state == LinphoneRegistrationFailed) {
+		NSString* lErrorMessage=nil;
+		if (linphone_proxy_config_get_error(cfg) == LinphoneReasonBadCredentials) {
+			lErrorMessage = NSLocalizedString(@"Bad credentials, check your account settings",nil);
+		} else if (linphone_proxy_config_get_error(cfg) == LinphoneReasonNoResponse) {
+			lErrorMessage = NSLocalizedString(@"SIP server unreachable",nil);
+		} 
+		
+		if (lErrorMessage != nil && linphone_proxy_config_get_error(cfg) != LinphoneReasonNoResponse) { 
+            //do not report network connection issue on registration
+			//default behavior if no registration delegates
+			UIApplicationState s = [UIApplication sharedApplication].applicationState;
+            
+            // do not stack error message when going to backgroud
+            if (s != UIApplicationStateBackground) {
+                UIAlertView* error = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Registration failure",nil)
+                                                                message:lErrorMessage
+                                                               delegate:nil 
+                                                      cancelButtonTitle:NSLocalizedString(@"Continue",nil) 
+                                                      otherButtonTitles:nil ,nil];
+                [error show];
+                [error release];
+            }
+		}
+		
+	}
+}
+
 - (void)callUpdate: (NSNotification*) notif {  
-    LinphoneCallWrapper *callWrapper = [notif.userInfo objectForKey: @"call"];
-    LinphoneCall *call = callWrapper->call;
+    LinphoneCall *call = [[notif.userInfo objectForKey: @"call"] pointerValue];
     LinphoneCallState state = [[notif.userInfo objectForKey: @"state"] intValue];
     NSString *message = [notif.userInfo objectForKey: @"message"];
     
@@ -370,14 +423,7 @@
             const LinphoneCallParams* current = linphone_call_get_current_params(call);
             const LinphoneCallParams* remote = linphone_call_get_remote_params(call);
             
-            /* remote wants to add video */
-            if (!linphone_call_params_video_enabled(current) && 
-                linphone_call_params_video_enabled(remote) && 
-                !linphone_core_get_video_policy([LinphoneManager getLc])->automatically_accept) {
-                linphone_core_defer_call_update([LinphoneManager getLc], call);
-                //TODO
-                //[self displayAskToEnableVideoCall:call forUser:lUserName withDisplayName:lDisplayName];
-            } else if (linphone_call_params_video_enabled(current) && !linphone_call_params_video_enabled(remote)) {
+            if (linphone_call_params_video_enabled(current) && !linphone_call_params_video_enabled(remote)) {
                 if ([[LinphoneManager instance] currentView] != PhoneView_InCall) {
                     [[LinphoneManager instance] changeView:PhoneView_InCall];
                 }

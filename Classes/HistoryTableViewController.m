@@ -23,9 +23,11 @@
 
 @implementation HistoryTableViewController
 
--(void) doAction:(id)sender {
-	linphone_core_clear_call_logs([LinphoneManager getLc]);
-	[self.tableView reloadData];
+- (id)init {
+    if((self = [super init]) != nil) {
+        self->editMode = false;
+    }
+    return self;
 }
 
 #pragma mark Table view methods
@@ -48,6 +50,11 @@
 	const MSList * logs = linphone_core_get_call_logs([LinphoneManager getLc]);
 	LinphoneCallLog*  callLogs = ms_list_nth_data(logs,  indexPath.row);
     
+    if(editMode) 
+        [cell enterEditMode];
+    else 
+        [cell exitEditMode];
+    
     [cell update:callLogs];
 	
     return cell;
@@ -61,10 +68,8 @@
 	LinphoneAddress* partyToCall; 
 	if (callLogs->dir == LinphoneCallIncoming) {
 		partyToCall=callLogs->from;
-		
 	} else {
 		partyToCall=callLogs->to;
-		
 	}
 	const char* username = linphone_address_get_username(partyToCall)!=0?linphone_address_get_username(partyToCall):"";
 	const char* displayName = linphone_address_get_display_name(partyToCall)!=0?linphone_address_get_display_name(partyToCall):"";
@@ -92,6 +97,11 @@
 
 	[phoneNumber release];
     [dispName release];
+}
+
+- (void) toggleEditMode {
+    editMode = !editMode;
+    [(UITableView*)[self view] reloadData];
 }
 
 - (void)dealloc {

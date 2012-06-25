@@ -78,7 +78,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	const MSList *elem=codecs;
 	for(;elem!=NULL;elem=elem->next){
 		PayloadType *pt=(PayloadType*)elem->data;
-		NSString *pref=[LinphoneManager getPrefForCodec:pt->mime_type withRate:pt->clock_rate];
+		NSString *pref=[LinphoneManager getPreferenceForCodec:pt->mime_type withRate:pt->clock_rate];
 		if (pref){
 			[self setBool: linphone_core_payload_type_enabled(lc,pt) forKey: pref];
 		}else{
@@ -173,7 +173,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 
 	if (linphone_core_tunnel_available()){
 		/*FIXME: enhance linphonecore API to handle tunnel more easily in applications */
-		LinphoneTunnel *tun=linphone_core_get_tunnel(lc);
+		//LinphoneTunnel *tun=linphone_core_get_tunnel(lc);
 		//[self setString: linphone_tunnel_get_servers(tun) forKey:tunnel_address_preference];
 		//[self setInteger: blabla forKey:tunnel_port_preference];
 		//[self setString: forKey:@"tunnel_enabled_preference"];
@@ -350,12 +350,12 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	
 	for (elem=linphone_core_get_audio_codecs(lc);elem!=NULL;elem=elem->next){
 		pt=(PayloadType*)elem->data;
-		NSString *pref=[LinphoneManager getPrefForCodec:pt->mime_type withRate:pt->clock_rate];
+		NSString *pref=[LinphoneManager getPreferenceForCodec:pt->mime_type withRate:pt->clock_rate];
 		linphone_core_enable_payload_type(lc,pt,[self boolForKey: pref]);
 	}
 	for (elem=linphone_core_get_video_codecs(lc);elem!=NULL;elem=elem->next){
 		pt=(PayloadType*)elem->data;
-		NSString *pref=[LinphoneManager getPrefForCodec:pt->mime_type withRate:pt->clock_rate];
+		NSString *pref=[LinphoneManager getPreferenceForCodec:pt->mime_type withRate:pt->clock_rate];
 		linphone_core_enable_payload_type(lc,pt,[self boolForKey: pref]);
 	}
 	

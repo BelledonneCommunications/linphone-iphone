@@ -21,4 +21,12 @@
 
 @implementation ChatViewController
 
+- (IBAction)onNew: (id) event {
+    
+}
+
+- (IBAction)onEdit: (id) event {
+
+}
+
 @end

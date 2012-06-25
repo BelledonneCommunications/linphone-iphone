@@ -22,11 +22,13 @@
 #import "HistoryTableViewController.h"
 
 @interface HistoryViewController : UIViewController {
+    @private
     HistoryTableViewController *tableController;
     UITableView *tableView;
     
     UIButton *allButton;
     UIButton *missedButton;
+    UIButton *editButton;
 }
 
 @property (nonatomic, retain) IBOutlet HistoryTableViewController* tableController;
@@ -34,8 +36,10 @@
 
 @property (nonatomic, retain) IBOutlet UIButton* allButton;
 @property (nonatomic, retain) IBOutlet UIButton* missedButton;
+@property (nonatomic, retain) IBOutlet UIButton* editButton;
 
--(IBAction) onAllClick: (id) event;
--(IBAction) onMissedClick: (id) event;
+- (IBAction)onAllClick:(id) event;
+- (IBAction)onMissedClick:(id) event;
+- (IBAction)onEditClick:(id) event;
 
 @end

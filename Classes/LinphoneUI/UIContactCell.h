@@ -21,12 +21,13 @@
 #import <AddressBook/AddressBook.h>
 
 @interface UIContactCell : UITableViewCell {
-    UILabel *firstName;
-    UILabel *lastName;
+    UILabel *firstNameLabel;
+    UILabel *lastNameLabel;
 }
 
-@property (nonatomic, retain) IBOutlet UILabel* firstName;
-@property (nonatomic, retain) IBOutlet UILabel* lastName;
+@property (nonatomic, retain) IBOutlet UILabel* firstNameLabel;
+@property (nonatomic, retain) IBOutlet UILabel* lastNameLabel;
 
 - (void)update:(ABRecordRef) record;
+
 @end
