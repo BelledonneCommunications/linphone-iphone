@@ -657,7 +657,7 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_resetMissedCallsCount(JN
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_removeCallLog(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong lc, jlong log) {
-	linphone_core_remove_call_log((LinphoneCore*)lc, (void*) log);
+	linphone_core_remove_call_log((LinphoneCore*)lc, (LinphoneCallLog*) log);
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_clearCallLogs(JNIEnv*  env
