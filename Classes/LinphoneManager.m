@@ -352,16 +352,6 @@ static LinphoneCoreVTable linphonec_vtable = {
     .transfer_state_changed=linphone_iphone_transfer_state_changed
 };
 
-
-- (void)configurePayloadType:(const char*) type fromPrefKey: (NSString*)key withRate:(int)rate  {
-	if ([[NSUserDefaults standardUserDefaults] boolForKey:key]) { 		
-		PayloadType* pt;
-		if((pt = linphone_core_find_payload_type(theLinphoneCore,type,rate))) {
-			linphone_core_enable_payload_type(theLinphoneCore,pt, TRUE);
-		}
-	} 
-}
-
 - (void)kickOffNetworkConnection {
 	/*start a new thread to avoid blocking the main ui in case of peer host failure*/
 	[NSThread detachNewThreadSelector:@selector(runNetworkConnection) toTarget:self withObject:nil];
@@ -471,7 +461,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 // no proxy configured alert 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (buttonIndex == 1) {
-		[[NSUserDefaults standardUserDefaults] setBool:true forKey:@"check_config_disable_preference"];
+		[[[LinphoneManager instance] settingsStore] setBool:true forKey:@"check_config_disable_preference"];
 	}
 }
 
@@ -498,7 +488,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	linphone_core_get_default_proxy(theLinphoneCore, &proxyCfg);	
 	linphone_core_stop_dtmf_stream(theLinphoneCore);
 	
-	if (proxyCfg && lp_config_get_int(linphone_core_get_config(theLinphoneCore),"app","backgroundmode_preference",0)) {
+	if (proxyCfg && [settingsStore boolForKey:@"backgroundmode_preference"]) {
 		//For registration register
 		linphone_core_refresh_registers(theLinphoneCore);
 		

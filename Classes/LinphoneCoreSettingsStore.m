@@ -25,62 +25,62 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 
 @implementation LinphoneCoreSettingsStore
 
-- (void)handleMigration{
-	
+- (void)handleMigration {
 	NSUserDefaults *oldconfig=[NSUserDefaults standardUserDefaults];
 	NSArray *allkeys=[[oldconfig dictionaryRepresentation] allKeys];
-	for(NSString* key in allkeys){
-		NSLog(@"Migrating old config item %@ to in app settings.",key);
-		[self setObject:[oldconfig objectForKey:key] forKey:key];
-	}
-	[self synchronize];
-	NSLog(@"Migration done");
+    for(NSString* key in allkeys){
+        NSLog(@"Migrating old config item %@ to in app settings.",key);
+        [self setObject:[oldconfig objectForKey:key] forKey:key];
+    }
+    [self synchronize];
+    NSLog(@"Migration done");
 }
 
-- (id)init{
+- (id)init {
 	self = [super init];
 	if (self){
 		dict=[[NSMutableDictionary alloc] init];
 		changedDict=[[NSMutableDictionary alloc] init];
-		LinphoneCore *lc=[LinphoneManager getLc];
-		if (lp_config_get_int(linphone_core_get_config(lc),"app","config_migrated",0)==0){
+		[self transformLinphoneCoreToKeys];
+        LinphoneCore *lc=[LinphoneManager getLc];
+		if (lp_config_get_int(linphone_core_get_config(lc),"app","config_migrated",0) == 0) {
 			[self handleMigration];
 			lp_config_set_int(linphone_core_get_config(lc),"app","config_migrated",1);
 		}
-		[self transformLinphoneCoreToKeys];
 	}
 	return self;
 }
 
-- (void)dealloc{
-	[super dealloc];
+- (void)dealloc {
 	[dict release];
 	[changedDict release];
+	[super dealloc];
 }
 
-- (void)transformKeysToLinphoneCore{
+- (void)transformKeysToLinphoneCore {
 	//LinphoneCore *lc=[LinphoneManager getLc];
 	
 }
 
-- (void)setString:(const char*)value forKey:(NSString*)key{
+- (void)setString:(const char*)value forKey:(NSString*)key {
 	id obj=Nil;
 	if (value) obj=[[NSString alloc] initWithCString:value encoding:[NSString defaultCStringEncoding] ];
 	[self setObject: obj forKey:key];
 }
 
-- (NSString*)stringForKey:(NSString*) key{
+- (NSString*)stringForKey:(NSString*) key {
 	return [self objectForKey: key];
 }
 
-- (void)transformCodecsToKeys: (const MSList *)codecs{
+- (void)transformCodecsToKeys: (const MSList *)codecs {
 	LinphoneCore *lc=[LinphoneManager getLc];
 	const MSList *elem=codecs;
 	for(;elem!=NULL;elem=elem->next){
 		PayloadType *pt=(PayloadType*)elem->data;
 		NSString *pref=[LinphoneManager getPreferenceForCodec:pt->mime_type withRate:pt->clock_rate];
 		if (pref){
-			[self setBool: linphone_core_payload_type_enabled(lc,pt) forKey: pref];
+            bool_t value = linphone_core_payload_type_enabled(lc,pt);
+			[self setBool:value  forKey: pref];
 		}else{
 			ms_warning("Codec %s/%i supported by core is not shown in iOS app config view.",
 					   pt->mime_type,pt->clock_rate);
@@ -88,7 +88,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	}
 }
 
-- (void)transformLinphoneCoreToKeys{
+- (void)transformLinphoneCoreToKeys {
 	LinphoneCore *lc=[LinphoneManager getLc];
 	LinphoneProxyConfig *cfg=NULL;
 	linphone_core_get_default_proxy(lc,&cfg);
@@ -157,11 +157,11 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		}
 		[self setString:val forKey:@"media_encryption_preference"];
 	}
-	
-	[self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","debugenable_preference",0) forKey:@"debugenable_preference"];
-	[self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","check_config_disable_preference",0) forKey:@"check_config_disable_preference"];
-	[self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","wifi_only_preference",0) forKey:@"wifi_only_preference"];
-	[self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","backgroundmode_preference",TRUE) forKey:@"backgroundmode_preference"];
+	[self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","enable_first_login_view_preference", 0) forKey:@"enable_first_login_view_preference"];
+	[self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","debugenable_preference", 0) forKey:@"debugenable_preference"];
+	[self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","check_config_disable_preference", 0) forKey:@"check_config_disable_preference"];
+	[self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","wifi_only_preference", 0) forKey:@"wifi_only_preference"];
+	[self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","backgroundmode_preference", TRUE) forKey:@"backgroundmode_preference"];
 	/*keep this one also in the standardUserDefaults so that it can be read before starting liblinphone*/
 	BOOL start_at_boot;
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"start_at_boot_preference"]==Nil)
@@ -169,8 +169,6 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	else start_at_boot=[[NSUserDefaults standardUserDefaults]  boolForKey:@"start_at_boot_preference"];
 	[self setBool: start_at_boot forKey:@"start_at_boot_preference"];
 	
-	
-
 	if (linphone_core_tunnel_available()){
 		/*FIXME: enhance linphonecore API to handle tunnel more easily in applications */
 		//LinphoneTunnel *tun=linphone_core_get_tunnel(lc);
@@ -200,14 +198,14 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
     return [dict valueForKey:key];
 }
 
-- (BOOL)valueChangedForKey:(NSString*)key{
+- (BOOL)valueChangedForKey:(NSString*)key {
 	return [ [changedDict valueForKey:key] boolValue];
 }
 
-- (void)synchronizeAccount{
-	LinphoneCore *lc=[LinphoneManager getLc];
+- (void)synchronizeAccount {
+	LinphoneCore *lc = [LinphoneManager getLc];
 	LinphoneManager* lLinphoneMgr = [LinphoneManager instance];
-	LinphoneProxyConfig* proxyCfg=NULL;
+	LinphoneProxyConfig* proxyCfg = NULL;
 	/* unregister before modifying any settings */
     {
         linphone_core_get_default_proxy(lc, &proxyCfg);
@@ -370,16 +368,16 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	else linphone_core_set_media_encryption(lc, LinphoneMediaEncryptionNone);
 	
     NSString* stun_server = [self stringForKey:@"stun_preference"];
-    if ([stun_server length]>0){
+    if ([stun_server length] > 0){
         linphone_core_set_stun_server(lc,[stun_server cStringUsingEncoding:[NSString defaultCStringEncoding]]);
         linphone_core_set_firewall_policy(lc, LinphonePolicyUseStun);
-    }else{
+    } else {
         linphone_core_set_stun_server(lc, NULL);
         linphone_core_set_firewall_policy(lc, LinphonePolicyNoFirewall);
     }
 	
     LinphoneVideoPolicy policy;
-    policy.automatically_accept = [self boolForKey:@"start_video_preference"];;
+    policy.automatically_accept = [self boolForKey:@"start_video_preference"];
     policy.automatically_initiate = [self boolForKey:@"start_video_preference"];
     linphone_core_set_video_policy(lc, &policy);
     
@@ -391,21 +389,24 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	if (backgroundSupported) {
 		isbackgroundModeEnabled = [self boolForKey:@"backgroundmode_preference"];
 	} else {
-		isbackgroundModeEnabled=false;
+		isbackgroundModeEnabled = false;
 	}
-	lp_config_set_int(linphone_core_get_config(lc),"app","backgroundmode_preference",isbackgroundModeEnabled);
+	lp_config_set_int(linphone_core_get_config(lc),"app","backgroundmode_preference", isbackgroundModeEnabled);
 	
-	BOOL debugmode=[self boolForKey:@"debugenable_preference"];
-	lp_config_set_int(linphone_core_get_config(lc),"app","debugenable_preference",debugmode);
+    BOOL firstloginview = [self boolForKey:@"enable_first_login_view_preference"];
+    lp_config_set_int(linphone_core_get_config(lc),"app","enable_first_login_view_preference", firstloginview);
+    
+	BOOL debugmode = [self boolForKey:@"debugenable_preference"];
+	lp_config_set_int(linphone_core_get_config(lc),"app","debugenable_preference", debugmode);
 	if (debugmode) linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
 	else linphone_core_disable_logs();
 	
 	/*keep this one also in the standardUserDefaults so that it can be read before starting liblinphone*/
-	BOOL start_at_boot=[self  boolForKey:@"start_at_boot_preference"];
+	BOOL start_at_boot = [self boolForKey:@"start_at_boot_preference"];
 	[[NSUserDefaults standardUserDefaults] setBool: start_at_boot forKey:@"start_at_boot_preference"];
 	
 	[changedDict release];
-	changedDict=[[NSMutableDictionary alloc] init];
+	changedDict = [[NSMutableDictionary alloc] init];
     return YES;
 }
 

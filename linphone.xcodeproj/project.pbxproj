@@ -444,6 +444,10 @@
 		D3F26BFA15986DAD005F9CAB /* ok-edit-list-history-over.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F26BF615986DAD005F9CAB /* ok-edit-list-history-over.png */; };
 		D3F26BFC15987083005F9CAB /* champ-titre-incoming.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F26BFB15987083005F9CAB /* champ-titre-incoming.png */; };
 		D3F26BFD15987083005F9CAB /* champ-titre-incoming.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F26BFB15987083005F9CAB /* champ-titre-incoming.png */; };
+		D3F34F301599B008005BE94F /* ombre-cotes-avatar.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F34F2F1599B008005BE94F /* ombre-cotes-avatar.png */; };
+		D3F34F311599B008005BE94F /* ombre-cotes-avatar.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F34F2F1599B008005BE94F /* ombre-cotes-avatar.png */; };
+		D3F34F351599C354005BE94F /* UIModalViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F34F341599C354005BE94F /* UIModalViewController.m */; };
+		D3F34F361599C354005BE94F /* UIModalViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F34F341599C354005BE94F /* UIModalViewController.m */; };
 		D3F83EEC1582021700336684 /* InCallViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F83EEA1582021700336684 /* InCallViewController.m */; };
 		D3F83EED1582021700336684 /* InCallViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F83EEA1582021700336684 /* InCallViewController.m */; };
 		D3F83EEE1582021700336684 /* InCallViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3F83EEB1582021700336684 /* InCallViewController.xib */; };
@@ -1063,6 +1067,9 @@
 		D3F26BF515986DAD005F9CAB /* ok-edit-list-history-actif.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "ok-edit-list-history-actif.png"; path = "Resources/ok-edit-list-history-actif.png"; sourceTree = "<group>"; };
 		D3F26BF615986DAD005F9CAB /* ok-edit-list-history-over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "ok-edit-list-history-over.png"; path = "Resources/ok-edit-list-history-over.png"; sourceTree = "<group>"; };
 		D3F26BFB15987083005F9CAB /* champ-titre-incoming.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "champ-titre-incoming.png"; path = "Resources/champ-titre-incoming.png"; sourceTree = "<group>"; };
+		D3F34F2F1599B008005BE94F /* ombre-cotes-avatar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "ombre-cotes-avatar.png"; path = "Resources/ombre-cotes-avatar.png"; sourceTree = "<group>"; };
+		D3F34F331599C354005BE94F /* UIModalViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIModalViewController.h; sourceTree = "<group>"; };
+		D3F34F341599C354005BE94F /* UIModalViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIModalViewController.m; sourceTree = "<group>"; };
 		D3F83EE91582021700336684 /* InCallViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InCallViewController.h; sourceTree = "<group>"; };
 		D3F83EEA1582021700336684 /* InCallViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InCallViewController.m; sourceTree = "<group>"; };
 		D3F83EEB1582021700336684 /* InCallViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = InCallViewController.xib; sourceTree = "<group>"; };
@@ -1545,6 +1552,8 @@
 				D3ED3E861586291C006C0DE4 /* UIMainBar.xib */,
 				2214EBF112F86360002A5394 /* UIMicroButton.h */,
 				2214EBF212F86360002A5394 /* UIMicroButton.m */,
+				D3F34F331599C354005BE94F /* UIModalViewController.h */,
+				D3F34F341599C354005BE94F /* UIModalViewController.m */,
 				D36FB2D31589EF7C0036F6F2 /* UIPauseButton.h */,
 				D36FB2D41589EF7C0036F6F2 /* UIPauseButton.m */,
 				22968A5D12F875C600588287 /* UISpeakerButton.h */,
@@ -1815,6 +1824,7 @@
 				D3F26BF615986DAD005F9CAB /* ok-edit-list-history-over.png */,
 				2242E312125235120061DDCE /* oldphone-mono-30s.caf */,
 				2237D4081084D7A9001383EE /* oldphone-mono.wav */,
+				D3F34F2F1599B008005BE94F /* ombre-cotes-avatar.png */,
 				D3F83EF8158205A100336684 /* pause-actif.png */,
 				D36C43ED158F61EA0048BA40 /* pause-champ-numero-actif.png */,
 				D36C43EE158F61EA0048BA40 /* pause-champ-numero-over.png */,
@@ -2227,6 +2237,7 @@
 				D31B4B23159876C0002E6C72 /* UICompositeViewController.xib in Resources */,
 				D31B4B281598A390002E6C72 /* avatar-inconnu.png in Resources */,
 				D31B4B2A1598A390002E6C72 /* avatar-small.png in Resources */,
+				D3F34F301599B008005BE94F /* ombre-cotes-avatar.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2399,6 +2410,7 @@
 				D31B4B24159876C0002E6C72 /* UICompositeViewController.xib in Resources */,
 				D31B4B291598A390002E6C72 /* avatar-inconnu.png in Resources */,
 				D31B4B2B1598A390002E6C72 /* avatar-small.png in Resources */,
+				D3F34F311599B008005BE94F /* ombre-cotes-avatar.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2471,6 +2483,7 @@
 				D3F26BEC159869A6005F9CAB /* AbstractCall.m in Sources */,
 				D3F26BF115986B73005F9CAB /* IncomingCallViewController.m in Sources */,
 				D31B4B21159876C0002E6C72 /* UICompositeViewController.m in Sources */,
+				D3F34F351599C354005BE94F /* UIModalViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2540,6 +2553,7 @@
 				D3F26BED159869A6005F9CAB /* AbstractCall.m in Sources */,
 				D3F26BF215986B73005F9CAB /* IncomingCallViewController.m in Sources */,
 				D31B4B22159876C0002E6C72 /* UICompositeViewController.m in Sources */,
+				D3F34F361599C354005BE94F /* UIModalViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

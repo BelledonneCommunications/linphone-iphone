@@ -130,6 +130,8 @@
     return controller;
 }
 
+#define IPHONE_STATUSBAR_HEIGHT 20
+
 - (void)update: (UICompositeViewDescription*) description tabBar:(NSNumber*)tabBar fullscreen:(NSNumber*)fullscreen {   
     
     // Copy view description
@@ -198,25 +200,22 @@
     
     // Resize StateBar
     CGRect stateBarFrame = stateBarView.frame;
+    int origin = 0;
     if(currentViewDescription->fullscreen)
-        stateBarFrame.origin.y = -20;
-    else
-        stateBarFrame.origin.y = 0;
+        origin = -IPHONE_STATUSBAR_HEIGHT;
     
     if(stateBarViewController != nil && currentViewDescription->stateBarEnabled) {
-        stateBarView.hidden = false;
-        [stateBarView setFrame: stateBarFrame];
-        contentFrame.origin.y = stateBarFrame.size.height + stateBarFrame.origin.y;
+        contentFrame.origin.y = origin + stateBarFrame.size.height;
+        stateBarFrame.origin.y = origin;
     } else {
-        stateBarView.hidden = true;
-        contentFrame.origin.y = stateBarFrame.origin.y;
+        contentFrame.origin.y = origin;
+        stateBarFrame.origin.y = origin - stateBarFrame.size.height;
     }
     
     // Resize TabBar
     CGRect tabFrame = tabBarView.frame;
     if(tabBarViewController != nil && currentViewDescription->tabBarEnabled) {
-        tabBarView.hidden = false;
-        tabFrame.origin.y = [[UIScreen mainScreen] bounds].size.height - 20;
+        tabFrame.origin.y = [[UIScreen mainScreen] bounds].size.height - IPHONE_STATUSBAR_HEIGHT;
         tabFrame.origin.x = [[UIScreen mainScreen] bounds].size.width;
         tabFrame.size.height = tabBarViewController.view.frame.size.height;
         tabFrame.size.width = tabBarViewController.view.frame.size.width;
@@ -230,11 +229,10 @@
             }
         }
     } else {
-        tabBarView.hidden = true;
         contentFrame.size.height = tabFrame.origin.y + tabFrame.size.height;
         if(currentViewDescription->fullscreen)
-            contentFrame.size.height += 20;
-        tabFrame.origin.y = [[UIScreen mainScreen] bounds].size.height - 20;
+            contentFrame.size.height += IPHONE_STATUSBAR_HEIGHT;
+        tabFrame.origin.y = [[UIScreen mainScreen] bounds].size.height - IPHONE_STATUSBAR_HEIGHT;
     }
     
     // Resize innerView
@@ -246,6 +244,7 @@
     [contentView setFrame: contentFrame];
     [innerView setFrame: innerContentFrame];
     [tabBarView setFrame: tabFrame];
+    [stateBarView setFrame: stateBarFrame];
     
     // Commit animation
     if(tabBar != nil || fullscreen != nil) {

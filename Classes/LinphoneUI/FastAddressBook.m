@@ -18,6 +18,8 @@
  */   
 
 #import "FastAddressBook.h"
+#import "LinphoneManager.h"
+
 @implementation FastAddressBook
 
 @synthesize addressBook;
@@ -30,7 +32,7 @@
 
 +(NSString*) appendCountryCodeIfPossible:(NSString*) number {
     if (![number hasPrefix:@"+"] && ![number hasPrefix:@"00"]) {
-        NSString* lCountryCode = [[NSUserDefaults standardUserDefaults] stringForKey:@"countrycode_preference"];
+        NSString* lCountryCode = [[LinphoneManager instance].settingsStore objectForKey:@"countrycode_preference"];
         if (lCountryCode && [lCountryCode length]>0) {
             //append country code
             return [lCountryCode stringByAppendingString:number];

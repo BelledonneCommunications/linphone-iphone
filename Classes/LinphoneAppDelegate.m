@@ -94,7 +94,7 @@ int __aeabi_idiv(int a, int b) {
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)] 
 		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground 
-        && [[NSUserDefaults standardUserDefaults] boolForKey:@"disable_autoboot_preference"]) {
+        && ![[NSUserDefaults standardUserDefaults] boolForKey:@"start_at_boot_preference"]) {
 		// autoboot disabled, doing nothing
         return;
     } else if ([LinphoneManager instance] == nil) {
@@ -133,13 +133,21 @@ int __aeabi_idiv(int a, int b) {
 }
 
 - (void)loadDefaultSettings:(NSDictionary *) appDefaults {
+    for(NSString* key in appDefaults){
+        NSLog(@"Overload %@ to in app settings.", key);
+        [[[LinphoneManager instance] settingsStore] setObject:[appDefaults objectForKey:key] forKey:key];
+    }
     [[[LinphoneManager instance] settingsStore] synchronize];
 }
 
 - (void)setupUI {
-    
-    // Change to default view
-    [[LinphoneManager instance] changeView: PhoneView_Dialer];
+	if ([[LinphoneManager instance].settingsStore boolForKey:@"enable_first_login_view_preference"] == true) {
+        // Change to fist login view
+        [[LinphoneManager instance] changeView: PhoneView_FirstLoginView];
+    } else {
+        // Change to default view
+        [[LinphoneManager instance] changeView: PhoneView_Dialer];
+    }
 	
 	[UIDevice currentDevice].batteryMonitoringEnabled = YES;
 }
@@ -174,10 +182,10 @@ int __aeabi_idiv(int a, int b) {
     /* explicitely instanciate LinphoneManager */
     LinphoneManager* lm = [[LinphoneManager alloc] init];
     assert(lm == [LinphoneManager instance]);
-    
-    [self setupUI];
 
 	[[LinphoneManager instance]	startLibLinphone];
+    
+    [self setupUI];
     
 	[[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeSound];
     
@@ -200,7 +208,7 @@ int __aeabi_idiv(int a, int b) {
         ms_warning("Local notification received with nil call");
         return;
     }
-	linphone_core_accept_call([LinphoneManager getLc], call);	
+	linphone_core_accept_call([LinphoneManager getLc], call);
 }
 
 @end

@@ -1,6 +1,6 @@
-/* FirstLoginViewController.h
+/* UIModalViewController.h
  *
- * Copyright (C) 2011  Belledonne Comunications, Grenoble, France
+ * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -15,25 +15,24 @@
  *  You should have received a copy of the GNU General Public License   
  *  along with this program; if not, write to the Free Software         
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */              
+ */ 
 
 #import <UIKit/UIKit.h>
 
-@interface FirstLoginViewController : UIViewController<UITextFieldDelegate>{
-	UIButton* loginButton;
-	UIButton* siteButton;
-	UITextField* usernameField;
-    UITextField* passwordField;
-	UIView* waitView;
+@class UIModalViewController;
+
+@protocol UIModalViewDelegate <NSObject>
+
+- (void)modalViewDismiss:(UIModalViewController*)controller value:(int)value;
+
+@end
+
+@interface UIModalViewController : UIViewController {
+    id<UIModalViewDelegate> modalDelegate;
 }
 
-- (IBAction)onLoginClick:(id)sender;
-- (IBAction)onSiteClick:(id)sender;
-
-@property (nonatomic, retain) IBOutlet UIButton* loginButton;
-@property (nonatomic, retain) IBOutlet UIButton* siteButton;
-@property (nonatomic, retain) IBOutlet UITextField* usernameField;
-@property (nonatomic, retain) IBOutlet UITextField* passwordField;
-@property (nonatomic, retain) IBOutlet UIView* waitView;
+- (void)setModalDelegate:(id<UIModalViewDelegate>)delegate;
+- (void)dismiss:(int)value;
+- (void)dismiss;
 
 @end

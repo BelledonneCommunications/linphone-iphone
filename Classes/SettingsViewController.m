@@ -30,7 +30,7 @@
 }
 
 - (void)viewDidLoad {
-    settingsController.delegate = [LinphoneManager instance];
+    settingsController.delegate = self;
     settingsController.settingsReaderDelegate = self;
     settingsController.settingsStore=[[LinphoneManager instance] settingsStore];
     settingsController.showCreditsFooter = FALSE;
@@ -72,14 +72,44 @@
         // hide setting if bg mode not supported
         return nil;
     }
+    if ([identifier isEqualToString:@"enable_first_login_view_preference"]) {
+        // hide first login view preference
+        return nil;
+    }
 	if (![LinphoneManager codecIsSupported:identifier])
 		return Nil;
     return specifier;
 }
 
 - (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController *)sender {
-    ms_message("Synchronize settings");
-    [[[LinphoneManager instance] settingsStore] synchronize];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [settingsController viewWillDisappear:NO];
+    }
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [settingsController viewWillAppear:NO];
+    }   
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [settingsController viewDidAppear:NO];
+    }   
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [settingsController viewDidDisappear:NO];
+    }  
 }
 
 @end

@@ -22,20 +22,23 @@
 #import "LinphoneManager.h"
 #import "CallDelegate.h"
 #import "UICompositeViewController.h"
+#import "UIModalViewController.h"
 
-@interface PhoneMainView : UIViewController<CallActionSheetDelegate> {
-    UICompositeViewController *mainViewController;
-    UICompositeViewController *modalViewController;
-    
+@interface PhoneMainView : UIViewController<CallActionSheetDelegate,UIModalViewDelegate> {
     @private
+    UICompositeViewController *mainViewController;
+    
+    NSMutableArray *modalControllers;
+    
     NSMutableDictionary *viewDescriptions;
     PhoneView currentPhoneView;
     
     UIActionSheet *incomingCallActionSheet;
     UIActionSheet *batteryActionSheet;
+    
+    int loadCount;
 }
 
 @property (nonatomic, retain) IBOutlet UICompositeViewController *mainViewController;
-@property (nonatomic, retain) IBOutlet UICompositeViewController *modalViewController;
 
 @end

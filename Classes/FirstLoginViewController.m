@@ -23,28 +23,31 @@
 
 @implementation FirstLoginViewController
 
-@synthesize ok;
-@synthesize username;
-@synthesize passwd;
-@synthesize activityIndicator;
-@synthesize site;
+@synthesize loginButton;
+@synthesize siteButton;
+@synthesize usernameField;
+@synthesize passwordField;
+@synthesize waitView;
+
+- (id)init {
+    return [super initWithNibName:@"FirstLoginViewController" bundle:[NSBundle mainBundle]];
+}
 
 - (void)viewDidAppear:(BOOL)animated { 
     [super viewDidAppear:animated];
-	//[username setText:[[NSUserDefaults standardUserDefaults] stringForKey:@"username_preference"]];
-	//[passwd setText:[[NSUserDefaults standardUserDefaults] stringForKey:@"password_preference"]];
+	[usernameField setText:[[LinphoneManager instance].settingsStore objectForKey:@"username_preference"]];
+	[passwordField setText:[[LinphoneManager instance].settingsStore objectForKey:@"password_preference"]];
 }
 
--(void) viewDidLoad {
-	NSString* siteUrl = [[NSUserDefaults standardUserDefaults] stringForKey:@"firt_login_view_url"];
+- (void)viewDidLoad {
+	NSString* siteUrl = [[LinphoneManager instance].settingsStore objectForKey:@"first_login_view_url"];
 	if (siteUrl==nil) {
 		siteUrl=@"http://www.linphone.org";
 	}
-	[site setTitle:siteUrl forState:UIControlStateNormal];
+	[siteButton setTitle:siteUrl forState:UIControlStateNormal];
     
     // Set observer
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(registrationUpdate:) name:@"LinphoneRegistrationUpdate" object:nil];
-	
 }
 
 - (void)registrationUpdate: (NSNotification*) notif {  
@@ -52,36 +55,36 @@
     switch (state) {
         case LinphoneRegistrationOk: 
         {
-            [[NSUserDefaults standardUserDefaults] setBool:false forKey:@"enable_first_login_view_preference"]; 
-            [self.activityIndicator setHidden:true];
-            [self dismissModalViewControllerAnimated:YES];
+            [[LinphoneManager instance].settingsStore setBool:false forKey:@"enable_first_login_view_preference"]; 
+            [self.waitView setHidden:true];
+            [[LinphoneManager instance] changeView:PhoneView_Dialer];
             break;
         }
         case LinphoneRegistrationNone: 
         case LinphoneRegistrationCleared:
         {
-            [self.activityIndicator setHidden:true];	
+            [self.waitView setHidden:true];	
             break;
         }
         case LinphoneRegistrationFailed: 
         {
-            [self.activityIndicator setHidden:true];
+            [self.waitView setHidden:true];
             //default behavior if no registration delegates
             
-            //UIAlertView* error = [[UIAlertView alloc]	initWithTitle:[NSString stringWithFormat:@"Registration failure for user %@",user]
-            //												message:reason
-            //											   delegate:nil 
-            //									  cancelButtonTitle:@"Continue" 
-            //									  otherButtonTitles:nil ,nil];
-            //[error show];
-            //[error release];
+            /*UIAlertView* error = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Registration failure for user %@", usernameField.text]
+            												message:[notif.userInfo objectForKey: @"message"]
+            											   delegate:nil 
+            									  cancelButtonTitle:@"Continue" 
+            									  otherButtonTitles:nil,nil];
+            [error show];
+            [error release];*/
             //erase uername passwd
 			[[LinphoneManager instance].settingsStore setObject:Nil forKey:@"username_preference"];
 			[[LinphoneManager instance].settingsStore setObject:Nil forKey:@"password_preference"];
             break;
         }
         case LinphoneRegistrationProgress: {
-            [self.activityIndicator setHidden:false];
+            [self.waitView setHidden:false];
             break;
         }
         default: break;
@@ -90,27 +93,29 @@
 
 - (void)dealloc {
     [super dealloc];
-	[ok dealloc];
-	[site dealloc];
-	[username dealloc];
-	[activityIndicator dealloc];
+	[loginButton dealloc];
+	[siteButton dealloc];
+	[usernameField dealloc];
+    [passwordField dealloc];
+	[waitView dealloc];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void) viewDidUnload {
+- (void)viewDidUnload {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
--(void) doOk:(id)sender {
-	if (sender == site) {
-		NSURL *url = [NSURL URLWithString:site.titleLabel.text];
-		[[UIApplication sharedApplication] openURL:url];
-		return;
-	}
+- (void)onSiteClick:(id)sender {
+    NSURL *url = [NSURL URLWithString:siteButton.titleLabel.text];
+    [[UIApplication sharedApplication] openURL:url];
+    return;
+}
+
+- (void)onLoginClick:(id)sender {
 	NSString* errorMessage=nil;
-	if ([username.text length]==0 ) {
+	if ([usernameField.text length]==0 ) {
 		errorMessage=NSLocalizedString(@"Enter your username",nil);
-	}  else if ([passwd.text length]==0 ) {
+	}  else if ([passwordField.text length]==0 ) {
 		errorMessage=NSLocalizedString(@"Enter your password",nil);
 	} 
 
@@ -124,12 +129,11 @@
 		[error show];
         [error release];
 	} else {
-		[[LinphoneManager instance].settingsStore setObject:username.text forKey:@"username_preference"];
-		[[LinphoneManager instance].settingsStore setObject:passwd.text forKey:@"password_preference"];
-		[self.activityIndicator setHidden:false];
+		[[LinphoneManager instance].settingsStore setObject:usernameField.text forKey:@"username_preference"];
+		[[LinphoneManager instance].settingsStore setObject:passwordField.text forKey:@"password_preference"];
+		[self.waitView setHidden:false];
+        [[LinphoneManager instance].settingsStore synchronize];
 	};
-	
-	
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)theTextField {
@@ -137,6 +141,5 @@
     [theTextField resignFirstResponder];
     return YES;
 }
-
 
 @end

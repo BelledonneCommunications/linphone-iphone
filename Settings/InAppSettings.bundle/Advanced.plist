@@ -130,6 +130,16 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>
+		<dict>
+                        <key>DefaultValue</key>
+                        <true/>
+                        <key>Key</key>
+                        <string>enable_first_login_view_preference</string>
+                        <key>Title</key>
+                        <string>First login view</string>
+                        <key>Type</key>
+                        <string>PSToggleSwitchSpecifier</string>
+                </dict>
 	</array>
 </dict>
 </plist>

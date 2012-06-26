@@ -54,12 +54,6 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    //TODO
-	/*if ([[NSUserDefaults standardUserDefaults] boolForKey:@"enable_first_login_view_preference"] == true) {
-		myFirstLoginViewController = [[FirstLoginViewController alloc]  initWithNibName:@"FirstLoginViewController" 
-																				 bundle:[NSBundle mainBundle]];
-		[self presentModalViewController:myFirstLoginViewController animated:true];
-	}*/
    // [[LinphoneManager instance] setRegistrationDelegate:self];
     
     //TODO

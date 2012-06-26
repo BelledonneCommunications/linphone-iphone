@@ -110,7 +110,7 @@
 		</dict>
 		<dict>
 			<key>File</key>
-			<string>audio</string>
+			<string>Audio</string>
 			<key>Title</key>
 			<string>Audio Codecs</string>
 			<key>Type</key>
@@ -118,7 +118,7 @@
 		</dict>
 		<dict>
 			<key>File</key>
-			<string>video</string>
+			<string>Video</string>
 			<key>Title</key>
 			<string>Video</string>
 			<key>Type</key>

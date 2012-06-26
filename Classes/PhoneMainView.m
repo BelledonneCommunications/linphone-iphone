@@ -20,23 +20,23 @@
 #import <QuartzCore/QuartzCore.h>
 
 #import "PhoneMainView.h"
-#import "DialerViewController.h"
-#import "HistoryViewController.h"
-#import "ContactsViewController.h"
+
+#import "FirstLoginViewController.h"
 #import "IncomingCallViewController.h"
-#import "InCallViewController.h"
-#import "SettingsViewController.h"
-#import "ChatViewController.h"
 
 #import "AbstractCall.h"
 
 @implementation PhoneMainView
 
 @synthesize mainViewController;
-@synthesize modalViewController;
 
 - (void)myInit {
-    self->currentPhoneView = -1;
+    currentPhoneView = -1;
+    loadCount = 0; // For avoiding IOS 4 bug
+    
+    // Init view descriptions
+    viewDescriptions = [[NSMutableDictionary alloc] init];
+    modalControllers = [[NSMutableArray alloc] init];
 }
 
 - (id)init {
@@ -95,12 +95,12 @@
 }
 
 - (void)viewDidLoad {
+    // Avoid IOS 4 bug
+    if(self->loadCount++ > 0)
+        return;
+    
     [super viewDidLoad];
-    
     [[self view] addSubview: mainViewController.view];
-    
-    // Init view descriptions
-    viewDescriptions = [[NSMutableDictionary alloc] init];
     
     //
     // Main View
@@ -141,18 +141,6 @@
     [viewDescriptions setObject:historyDescription forKey:[NSNumber numberWithInt: PhoneView_History]];
     
     //
-    // IncomingCall View
-    //
-    UICompositeViewDescription *incomingCallDescription = [UICompositeViewDescription alloc];
-    incomingCallDescription->content = @"IncomingCallViewController";
-    incomingCallDescription->tabBar = nil;
-    incomingCallDescription->tabBarEnabled = false;
-    incomingCallDescription->stateBar = @"UIStateBar";
-    incomingCallDescription->stateBarEnabled = true;
-    incomingCallDescription->fullscreen = false;
-    [viewDescriptions setObject:incomingCallDescription forKey:[NSNumber numberWithInt: PhoneView_IncomingCall]];
-    
-    //
     // InCall View
     //
     UICompositeViewDescription *inCallDescription = [UICompositeViewDescription alloc];
@@ -188,6 +176,18 @@
     chatDescription->stateBarEnabled = false;
     chatDescription->fullscreen = false;
     [viewDescriptions setObject:chatDescription forKey:[NSNumber numberWithInt: PhoneView_Chat]];
+ 
+    //
+    // IncomingCall View
+    //
+    UICompositeViewDescription *incomingCallDescription = [UICompositeViewDescription alloc];
+    incomingCallDescription->content = @"FirstLoginViewController";
+    incomingCallDescription->tabBar = nil;
+    incomingCallDescription->tabBarEnabled = false;
+    incomingCallDescription->stateBar = nil;
+    incomingCallDescription->stateBarEnabled = false;
+    incomingCallDescription->fullscreen = false;
+    [viewDescriptions setObject:incomingCallDescription forKey:[NSNumber numberWithInt: PhoneView_FirstLoginView]];
     
     // Set observers
     [[NSNotificationCenter defaultCenter] addObserver:self 
@@ -208,12 +208,16 @@
                                                  name:UIDeviceBatteryLevelDidChangeNotification 
                                                object:nil];
 }
-     
+
 - (void)viewDidUnload {
+    [super viewDidUnload];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
+    // Avoid IOS 4 bug
+    self->loadCount--;
 }
 
-- (void)registrationUpdate: (NSNotification*) notif { 
+- (void)registrationUpdate:(NSNotification*)notif { 
     LinphoneRegistrationState state = [[notif.userInfo objectForKey: @"state"] intValue];
     LinphoneProxyConfig *cfg = [[notif.userInfo objectForKey: @"cfg"] pointerValue];
     // Show error
@@ -236,7 +240,7 @@
                                                                 message:lErrorMessage
                                                                delegate:nil 
                                                       cancelButtonTitle:NSLocalizedString(@"Continue",nil) 
-                                                      otherButtonTitles:nil ,nil];
+                                                      otherButtonTitles:nil,nil];
                 [error show];
                 [error release];
             }
@@ -245,7 +249,7 @@
 	}
 }
 
-- (void)callUpdate:(NSNotification*) notif {  
+- (void)callUpdate:(NSNotification*)notif {  
     LinphoneCall *call = [[notif.userInfo objectForKey: @"call"] pointerValue];
     LinphoneCallState state = [[notif.userInfo objectForKey: @"state"] intValue];
     NSString *message = [notif.userInfo objectForKey: @"message"];
@@ -286,7 +290,7 @@
         }
 		case LinphoneCallEnd: 
         {
-            [self dismissIncomingCall];
+            [self dismissIncomingCall:call];
             if (canHideInCallView) {
                 if ([[LinphoneManager instance] currentView] != PhoneView_Dialer) {
                     // Go to dialer view
@@ -348,30 +352,18 @@
     [error release];
 }
 
-- (void)dismissIncomingCall {
+- (void)dismissIncomingCall:(LinphoneCall*)call {
 	//cancel local notification, just in case
 	if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]  
-		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground ) {
+		&& [UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
 		// cancel local notif if needed
 		[[UIApplication sharedApplication] cancelAllLocalNotifications];
-	} else {
-		if (incomingCallActionSheet) {
-			[incomingCallActionSheet dismissWithClickedButtonIndex:1 animated:true];
-			incomingCallActionSheet = nil;
-		}
 	}
-    
-    //TODO
-    /*
-     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"firstlogindone_preference" ] == true) {
-     //first login case, dismmis first login view																		 
-     [self dismissModalViewControllerAnimated:true];
-     }; */
 }
 
 
 - (void)displayIncomingCall:(LinphoneCall*) call{
-#if 0
+
     const char* userNameChars=linphone_address_get_username(linphone_call_get_remote_address(call));
     NSString* userName = userNameChars?[[[NSString alloc] initWithUTF8String:userNameChars] autorelease]:NSLocalizedString(@"Unknown",nil);
     const char* displayNameChars =  linphone_address_get_display_name(linphone_call_get_remote_address(call));        
@@ -394,37 +386,14 @@
 			
 			[[UIApplication sharedApplication]  presentLocalNotificationNow:notif];
 		}
-	} else 	{
-        CallDelegate* cd = [[CallDelegate alloc] init];
-        cd.eventType = CD_NEW_CALL;
-        cd.delegate = self;
-        cd.call = call;
-        
-		incomingCallActionSheet = [[UIActionSheet alloc] initWithTitle:[NSString  stringWithFormat:NSLocalizedString(@" %@ is calling you",nil),[displayName length]>0?displayName:userName]
-															   delegate:cd 
-													  cancelButtonTitle:nil 
-												 destructiveButtonTitle:NSLocalizedString(@"Answer",nil) 
-													  otherButtonTitles:NSLocalizedString(@"Decline",nil),nil];
-        
-		incomingCallActionSheet.actionSheetStyle = UIActionSheetStyleDefault;
-        //TODO
-        /*if ([LinphoneManager runningOnIpad]) {
-            if (self.modalViewController != nil)
-                [incomingCallActionSheet showInView:[self.modalViewController view]];
-            else
-                [incomingCallActionSheet showInView:self.parentViewController.view];
-        } else */{
-            [incomingCallActionSheet showInView: self.view];
-        }
-		[incomingCallActionSheet release];
+	} else {     
+        IncomingCallViewController *controller = [[IncomingCallViewController alloc] init];
+        [controller update:call];
+        [self addModalViewController:controller];
 	}
-#endif
-    //UICompositeViewController *controller = [[UICompositeViewController alloc] initWithNibName:@"UICompositeViewController" bundle:[NSBundle mainBundle]];
-    [modalViewController changeView:[viewDescriptions objectForKey:[NSNumber numberWithInt:PhoneView_IncomingCall]]];
-    [self presentModalViewController:modalViewController animated:false];
 }
 
-- (void)batteryLevelChanged: (NSNotification*) notif {
+- (void)batteryLevelChanged:(NSNotification*)notif {
     LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
     if (!call || !linphone_call_params_video_enabled(linphone_call_get_current_params(call)))
         return;
@@ -460,28 +429,17 @@
 - (void)actionSheet:(UIActionSheet *)actionSheet ofType:(enum CallDelegateType)type 
                                    clickedButtonAtIndex:(NSInteger)buttonIndex 
                                           withUserDatas:(void *)datas {
-    
     switch(type) {
-        case CD_NEW_CALL: 
-        {
-            LinphoneCall* call = (LinphoneCall*)datas;
-            if (buttonIndex == actionSheet.destructiveButtonIndex) {
-                linphone_core_accept_call([LinphoneManager getLc], call);	
-            } else {
-                linphone_core_terminate_call([LinphoneManager getLc], call);
-            }
-            incomingCallActionSheet = nil;
-            break;
-        }
         case CD_STOP_VIDEO_ON_LOW_BATTERY: 
         {
             LinphoneCall* call = (LinphoneCall*)datas;
             LinphoneCallParams* paramsCopy = linphone_call_params_copy(linphone_call_get_current_params(call));
-            if ([batteryActionSheet destructiveButtonIndex] == buttonIndex) {
+            if (buttonIndex == [batteryActionSheet destructiveButtonIndex]) {
                 // stop video
                 linphone_call_params_enable_video(paramsCopy, FALSE);
                 linphone_core_update_call([LinphoneManager getLc], call, paramsCopy);
             }
+            batteryActionSheet = nil;
             break;
         }
         default:
@@ -489,11 +447,49 @@
     }
 }
 
+- (void)modalViewDismiss:(UIModalViewController*)controller value:(int)value {
+    [self removeModalViewController:controller];
+}
+
+- (void)addModalViewController:(UIModalViewController*)controller {
+    [controller setModalDelegate:self];
+    [modalControllers insertObject:controller atIndex:0];
+    
+    CATransition* trans = [CATransition animation];
+    [trans setType:kCATransitionFade];
+    [trans setDuration:0.35];
+    [trans setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
+    [trans setSubtype:kCATransitionFromRight];
+    [[self view].layer addAnimation:trans forKey:@"Appear"];
+    
+    [[self view] addSubview:[controller view]];
+    [[self view] bringSubviewToFront:[controller view]];
+}
+
+- (void)removeModalViewController:(UIModalViewController*)controller {
+    [controller setModalDelegate:nil];
+    [modalControllers removeObject:controller];
+    
+    CATransition* trans = [CATransition animation];
+    [trans setType:kCATransitionFade];
+    [trans setDuration:0.35];
+    [trans setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
+    [trans setSubtype:kCATransitionFromRight];
+    [[self view].layer addAnimation:trans forKey:@"Disappear"];
+    
+    [[controller view] removeFromSuperview];
+}
+
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
+    [mainViewController release];
+    
     [viewDescriptions removeAllObjects];
     [viewDescriptions release];
+    
+    [modalControllers removeAllObjects];
+    [modalControllers release];
     
     [super dealloc];
 }

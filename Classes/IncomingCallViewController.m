@@ -18,21 +18,62 @@
  */
 
 #import "IncomingCallViewController.h"
+#import "LinphoneManager.h"
 
 @implementation IncomingCallViewController
 
 @synthesize addressLabel;
+@synthesize avatarImage;
 
 - (id)init {
-    return [super initWithNibName:@"IncomingCallViewController" bundle:[NSBundle mainBundle]];
+    self = [super initWithNibName:@"IncomingCallViewController" bundle:[NSBundle mainBundle]];
+    if(self) {
+        [[NSNotificationCenter defaultCenter] addObserver:self 
+                                                 selector:@selector(callUpdate:) 
+                                                     name:@"LinphoneCallUpdate" 
+                                                   object:nil];
+    }
+    return self;
 }
 
-- (IBAction)onAcceptClick:(id) event {
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     
+    [super dealloc];
 }
 
-- (IBAction)onDeclineClick:(id) event {
+- (void)callUpdate:(NSNotification*)notif {  
+    LinphoneCall *acall = [[notif.userInfo objectForKey: @"call"] pointerValue];
+    LinphoneCallState astate = [[notif.userInfo objectForKey: @"state"] intValue];
+    if(call == acall && (astate == LinphoneCallEnd || astate == LinphoneCallError)) {
+        [self dismiss: IncomingCall_Aborted];
+    }
+}
 
+- (IBAction)onAcceptClick:(id)event {
+    linphone_core_accept_call([LinphoneManager getLc], call);
+    [self dismiss: IncomingCall_Accepted];
+}
+
+- (IBAction)onDeclineClick:(id)event {
+    linphone_core_terminate_call([LinphoneManager getLc], call);
+    [self dismiss: IncomingCall_Decline];
+}
+
+- (void)update:(LinphoneCall*)acall {
+    [self view]; //Force view load
+    
+    call = acall;
+    const char* userNameChars=linphone_address_get_username(linphone_call_get_remote_address(call));
+    NSString* userName = userNameChars?[[[NSString alloc] initWithUTF8String:userNameChars] autorelease]:NSLocalizedString(@"Unknown",nil);
+    const char* displayNameChars =  linphone_address_get_display_name(linphone_call_get_remote_address(call));        
+	NSString* displayName = [displayNameChars?[[NSString alloc] initWithUTF8String:displayNameChars]:@"" autorelease];
+    
+    [addressLabel setText:([displayName length]>0)?displayName:userName];
+}
+
+- (LinphoneCall*) getCall {
+    return call;
 }
 
 @end
