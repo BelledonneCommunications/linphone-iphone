@@ -31,15 +31,16 @@ Mutex TunnelManager::sMutex;
 
 int TunnelManager::eXosipSendto(int fd,const void *buf, size_t len, int flags, const struct sockaddr *to, socklen_t tolen,void* userdata){
 	TunnelManager* lTunnelMgr=(TunnelManager*)userdata;
-	int err;
+	
 	sMutex.lock();
 	if (lTunnelMgr->mSipSocket==NULL){
 		sMutex.unlock();
-		return len;//let ignore the error
+		return len;
 	}
-	err=lTunnelMgr->mSipSocket->sendto(buf,len,to,tolen);
+	lTunnelMgr->mSipSocket->sendto(buf,len,to,tolen);
 	sMutex.unlock();
-	return err;
+	//ignore the error in all cases, retransmissions might be successful.
+	return len;
 }
 
 int TunnelManager::eXosipRecvfrom(int fd, void *buf, size_t len, int flags, struct sockaddr *from, socklen_t *fromlen,void* userdata){
